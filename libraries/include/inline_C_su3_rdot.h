@@ -3,10 +3,9 @@
 */
 
 #define _inline_C_su3_rdot( aa, bb ) \
-  ( ILvecpt = (aa), ILvecpt2 = (bb), \
-    (ILvecpt)->c[0].real * (ILvecpt2)->c[0].real + \
-    (ILvecpt)->c[0].imag * (ILvecpt2)->c[0].imag + \
-    (ILvecpt)->c[1].real * (ILvecpt2)->c[1].real + \
-    (ILvecpt)->c[1].imag * (ILvecpt2)->c[1].imag + \
-    (ILvecpt)->c[2].real * (ILvecpt2)->c[2].real + \
-    (ILvecpt)->c[2].imag * (ILvecpt2)->c[2].imag )
+  ( (aa)->c[0].real * (bb)->c[0].real + \
+    (aa)->c[0].imag * (bb)->c[0].imag + \
+    (aa)->c[1].real * (bb)->c[1].real + \
+    (aa)->c[1].imag * (bb)->c[1].imag + \
+    (aa)->c[2].real * (bb)->c[2].real + \
+    (aa)->c[2].imag * (bb)->c[2].imag )

@@ -1,6 +1,3 @@
-/* These auxiliary vectors are needed in some of the inlined functions */
-static su3_vector *ILvecpt, *ILvecpt2;
-
 #include "inline_C_s_m_a_vec.h"
 #include "inline_C_addvec.h"
 #include "inline_C_subvec.h"

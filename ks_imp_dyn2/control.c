@@ -205,7 +205,7 @@ main( int argc, char **argv )
   }
 #ifdef HAVE_QDP
   QDP_finalize();
-  normal_exit(0);
 #endif  
+  normal_exit(0);
   return 0;
 }
