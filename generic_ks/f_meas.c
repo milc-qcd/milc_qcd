@@ -78,23 +78,6 @@ BOMB THE COMPILE
       /* Make random source, and do inversion */
       /* generate g_rand random; phi_off = M g_rand */
       grsource_imp( phi_off, mass, EVENANDODD );
-#if 0
-      /* Debug */
-      restore_ks_vector_scidac("source",F_OFFSET(ttt));
-      FORALLSITES(i,st){
-	su3_vector debug;
-	float diff;
-	/**	sub_su3_vector((su3_vector *)F_PT(st,xxx_off), &st->ttt, &debug);**/
-	sub_su3_vector(&st->g_rand, &st->ttt, &debug);
-	diff = magsq_su3vec(&debug);
-	if(diff>1e-8){
-	  printf("error %d %e\n",i,diff);
-	  /** dumpvec((su3_vector *)F_PT(st,xxx_off));**/
-	  dumpvec(&st->g_rand);
-	  dumpvec(&st->ttt);
-	}
-      }
-#endif
       /* phi_off = M g_rand (still) */
       /* xxx_off = M^{-1} g_rand */
       mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass );
@@ -116,17 +99,10 @@ BOMB THE COMPILE
 	EVENANDODD, gen_pt[1] );
 
       FORALLSITES(i,st){
-#ifndef DSLASH_SITE_LINKS
 	mult_adj_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
 	mult_adj_su3_mat_vec( &(t_longlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->templongvec[TUP]) );
-#else
-	mult_adj_su3_mat_vec( &(st->fatlink[TUP]),
-	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
-	mult_adj_su3_mat_vec( &(st->longlink[TUP]),
-	    (su3_vector *)F_PT(st,xxx_off), &(st->templongvec[TUP]) );
-#endif
       }
 
       /* Start gathers from negative t-direction */
@@ -140,17 +116,10 @@ BOMB THE COMPILE
       wait_gather(tag1);
 
       FORALLSITES(i,st){
-#ifndef DSLASH_SITE_LINKS
 	mult_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
 	mult_su3_mat_vec( &(t_longlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[1][i], &(st->templongvec[0]) );
-#else
-	mult_su3_mat_vec( &(st->fatlink[TUP]),
-	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
-	mult_su3_mat_vec( &(st->longlink[TUP]),
-	    (su3_vector *)gen_pt[1][i], &(st->templongvec[0]) );
-#endif
       }
 
       /* Wait gathers from negative t-direction */
@@ -315,17 +284,10 @@ BOMB THE COMPILE
 	EVENANDODD, gen_pt[1] );
 
       FORALLSITES(i,st){
-#ifndef DSLASH_SITE_LINKS
 	mult_adj_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
 	mult_adj_su3_mat_vec( &(t_longlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->templongvec[TUP]) );
-#else
-	mult_adj_su3_mat_vec( &(st->fatlink[TUP]),
-	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
-	mult_adj_su3_mat_vec( &(st->longlink[TUP]),
-	    (su3_vector *)F_PT(st,xxx_off), &(st->templongvec[TUP]) );
-#endif
       }
 
       /* Start gathers from negative t-direction */
@@ -339,17 +301,10 @@ BOMB THE COMPILE
       wait_gather(tag1);
 
       FORALLSITES(i,st){
-#ifndef DSLASH_SITE_LINKS
 	mult_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
 	mult_su3_mat_vec( &(t_longlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[1][i], &(st->templongvec[0]) );
-#else
-	mult_su3_mat_vec( &(st->fatlink[TUP]),
-	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
-	mult_su3_mat_vec( &(st->longlink[TUP]),
-	    (su3_vector *)gen_pt[1][i], &(st->templongvec[0]) );
-#endif
       }
 
       /* Wait gathers from negative t-direction */

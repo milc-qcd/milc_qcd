@@ -3,12 +3,7 @@
 /* Kogut-Susskind fermions -- this version for "fat plus Naik" quark
    actions.  
 
-   This code combines d_congrad5_fn.c and d_congrad5_fn_tmp.c With
-   CONGRAD_SITE_VECTORS defined, puts temporary CG vectors in the
-   site structure.  Otherwise allocates field-major order and uses
-   them instead of the site-major temporaries.  They may be eliminated
-   from the site structure in the future.
-
+   This code combines d_congrad5_fn.c and d_congrad5_fn_tmp.c
    Calls dslash_fn or dslash_fn_on_temp depending accordingly. */
 
 /* Jim Hetrick, Kari Rummukainen, Doug Toussaint, Steven Gottlieb */
@@ -43,12 +38,10 @@ void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]); /* dslash_fn_tmp.c */
 #define LOOPEND
 #include "../include/loopend.h"
 
-#ifndef CONGRAD_SITE_VECTORS
 su3_vector *ttt,*cg_p;
 su3_vector *resid;
 su3_vector *t_dest;
 int first_congrad = 1;
-#endif
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
     int niter, Real rsqmin, int parity, Real *final_rsq_ptr ){
@@ -92,7 +85,6 @@ if(parity==EVENANDODD)nflop *=2;
 
         if (!valid_longlinks) load_longlinks();
         if (!valid_fatlinks) load_fatlinks();
-#ifndef CONGRAD_SITE_VECTORS
 	/* now we can allocate temporary variables and copy then */
 	/* PAD may be used to avoid cache trashing */
 #define PAD 0
@@ -104,18 +96,15 @@ if(parity==EVENANDODD)nflop *=2;
 	  t_dest = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
 	  first_congrad = 0;
  	}
-#endif
 
 #ifdef CGTIME
  dtimec = -dclock(); 
 #endif
 
-#ifndef CONGRAD_SITE_VECTORS
 	/* now we copy dest to temporaries */
   FORALLSITES(i,s) {
     t_dest[i] = *(su3_vector *)F_PT(s,dest);
   }
-#endif
 
 	/* initialization process */
 start:
@@ -135,18 +124,11 @@ start:
 	if(this_node==0)if(iteration>1)printf("CONGRAD: restart rsq = %.10e\n",rsq);
 #endif
         rsq = source_norm = 0.0;
-#ifndef CONGRAD_SITE_VECTORS
 	dslash_fn_on_temp_special(t_dest, ttt,l_otherparity,tags2,1);
 	dslash_fn_on_temp_special(ttt,ttt,l_parity,tags1,1);
 	cleanup_gathers(tags1,tags2);
-#else
-	/* Why not use dslash_fn_special here ??? -CD */
-	dslash_fn( dest, F_OFFSET(ttt), l_otherparity);
-	dslash_fn(F_OFFSET(ttt),F_OFFSET(ttt),l_parity);
-#endif
 	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
 	FORSOMEPARITY(i,s,l_parity){
-#ifndef CONGRAD_SITE_VECTORS
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VVVV( &ttt[i+FETCH_UP], 
 			   &t_dest[i+FETCH_UP],
@@ -163,21 +145,6 @@ start:
 	  /* note that we go back to the site structure for src */
 	  source_norm += (double)magsq_su3vec( (su3_vector *)F_PT(s,src) );
 	  rsq += (double)magsq_su3vec( &resid[i] );
-#else
-	  if( i < loopend-FETCH_UP ){
-	    prefetch_VVVV( &((s+FETCH_UP)->ttt), 
-			   (su3_vector *)F_PT(s+FETCH_UP,dest),
-			   (su3_vector *)F_PT(s+FETCH_UP,src),
-			   &((s+FETCH_UP)->resid));
-	  }
-	  scalar_mult_add_su3_vector( &(s->ttt), (su3_vector *)F_PT(s,dest),
-				      -msq_x4, &(s->ttt) );
-	  add_su3_vector( (su3_vector *)F_PT(s,src),
-			  &(s->ttt), &(s->resid) );
-	  s->cg_p = s->resid;
-	  source_norm += (double) magsq_su3vec( (su3_vector *)F_PT(s,src) );
-	  rsq += (double) magsq_su3vec( &(s->resid) );
-#endif
 	} END_LOOP
 	g_doublesum( &source_norm );
         g_doublesum( &rsq );
@@ -232,27 +199,13 @@ start:
 	/* sum of neighbors */
 
 	if(special_started==0){
-#ifndef CONGRAD_SITE_VECTORS
 	    dslash_fn_on_temp_special( cg_p, ttt, l_otherparity, tags2, 1 );
 	    dslash_fn_on_temp_special( ttt, ttt, l_parity, tags1, 1);
-#else
-	    dslash_fn_special( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
-		tags2, 1 );
-	    dslash_fn_special( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
-		tags1, 1);
-#endif
 	    special_started=1;
 	}
 	else {
-#ifndef CONGRAD_SITE_VECTORS
 	    dslash_fn_on_temp_special( cg_p, ttt, l_otherparity, tags2, 0 );
 	    dslash_fn_on_temp_special( ttt, ttt, l_parity, tags1, 0);
-#else
-	    dslash_fn_special( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
-		tags2, 0 );
-	    dslash_fn_special( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
-		tags1, 0 );
-#endif
 	}
 
 	/* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
@@ -260,21 +213,12 @@ start:
 	/* pkp  <- cg_p.(ttt - msq*cg_p) */
 	pkp = 0.0;
 	FORSOMEPARITY(i,s,l_parity){
-#ifndef CONGRAD_SITE_VECTORS
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VV( &ttt[i+FETCH_UP], &cg_p[i+FETCH_UP] );
 	  }
 	  scalar_mult_add_su3_vector( &ttt[i], &cg_p[i], -msq_x4,
 				      &ttt[i] );
 	  pkp += (double)su3_rdot( &cg_p[i], &ttt[i] );
-#else
-	  if( i < loopend-FETCH_UP ){
-	    prefetch_VV( &((s+FETCH_UP)->ttt), &((s+FETCH_UP)->cg_p) );
-	  }
-	  scalar_mult_add_su3_vector( &(s->ttt), &(s->cg_p), -msq_x4,
-				      &(s->ttt) );
-	  pkp += (double)su3_rdot( &(s->cg_p), &(s->ttt) );
-#endif
 	} END_LOOP
 	g_doublesum( &pkp );
 	iteration++;
@@ -286,7 +230,6 @@ start:
 	/* resid <- resid - a*ttt */
 	rsq=0.0;
 	FORSOMEPARITY(i,s,l_parity){
-#ifndef CONGRAD_SITE_VECTORS
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VVVV( &t_dest[i+FETCH_UP], 
 			   &cg_p[i+FETCH_UP], 
@@ -296,18 +239,6 @@ start:
 	  scalar_mult_add_su3_vector( &t_dest[i], &cg_p[i], a, &t_dest[i] );
 	  scalar_mult_add_su3_vector( &resid[i], &ttt[i], a, &resid[i]);
 	  rsq += (double)magsq_su3vec( &resid[i] );
-#else
-	  if( i < loopend-FETCH_UP ){
-	    prefetch_VVVV( (su3_vector *)F_PT((s+FETCH_UP),dest), 
-			   &((s+FETCH_UP)->cg_p),
-			   &((s+FETCH_UP)->resid), 
-			   &((s+FETCH_UP)->ttt) );
-	  }
-	  scalar_mult_add_su3_vector( (su3_vector *)F_PT(s,dest),
-				      &(s->cg_p), a, (su3_vector *)F_PT(s,dest) );
-	  scalar_mult_add_su3_vector( &(s->resid), &(s->ttt), a, &(s->resid));
-	  rsq += (double)magsq_su3vec( &(s->resid) );
-#endif
 	} END_LOOP
 	g_doublesum(&rsq);
 #ifdef CG_DEBUG
@@ -316,12 +247,10 @@ start:
 #endif
 	
         if( rsq <= rsqstop ){
-#ifndef CONGRAD_SITE_VECTORS
 	  /* copy t_dest back to site structure */
           FORSOMEPARITY(i,s,l_parity){
                   *(su3_vector *)F_PT(s,dest) = t_dest[i];
           } END_LOOP
-#endif
     	    /* if parity==EVENANDODD, set up to do odd sites and go back */
             if(parity == EVENANDODD) {
 		l_parity=ODD; l_otherparity=EVEN;
@@ -352,15 +281,10 @@ fflush(stdout);}
 
 	b = (Real)rsq/oldrsq;
 	/* cg_p  <- resid + b*cg_p */
-#ifndef CONGRAD_SITE_VECTORS
         FORSOMEPARITY(i,s,l_parity){
            scalar_mult_add_su3_vector( &resid[i],
                                       &cg_p[i] , b , &cg_p[i]);
         } END_LOOP
-#else
-	scalar_mult_add_latvec( F_OFFSET(resid), F_OFFSET(cg_p),
-	    b, F_OFFSET(cg_p), l_parity);
-#endif
 
     } while( iteration%niter != 0);
 
@@ -370,13 +294,11 @@ fflush(stdout);}
 #endif
 	 goto start;
     }
-#ifndef CONGRAD_SITE_VECTORS
     /* if we have gotten here, no convergence after several restarts: must
 	copy t_dest back to site structure */
           FORSOMEPARITY(i,s,l_parity){
                   *(su3_vector *)F_PT(s,dest) = t_dest[i];
           } END_LOOP
-#endif
 
     /* if parity==EVENANDODD, set up to do odd sites and go back */
     if(parity == EVENANDODD) {

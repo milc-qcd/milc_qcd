@@ -18,9 +18,7 @@
 * C.D. 3/05 Moved fermion force and dslash_eo to separate files.
 
 * This code combines quark_stuff.c and quark_stuff_tmp.c
-* with DSLASH_SITE_LINKS defined, keeps links in site-major variables
-* t_longlink and t_fatlink. Otherwise, puts them in the site structure.
-*
+
 * In this directory, assume all paths connect even to odd sites, etc.
 * Tabulate "backwards" paths (e.g. "XDOWN" is backward path to "XUP")
 * as separate parity transforms of the fundamental paths.  They will
@@ -521,11 +519,7 @@ dtime=-dclock();
   for (dir=XUP; dir<=TUP; dir++){ /* loop over longlink directions */
     /* set longlink to zero */
     FORALLSITES(i,s){
-#ifndef DSLASH_SITE_LINKS
       long1 = &(t_longlink[4*i+dir]);
-#else
-      long1 = &(s->longlink[dir]);
-#endif
       clear_su3mat( long1 );
     }
 
@@ -548,11 +542,7 @@ printf("\n");**/
 	path_product( q_paths[ipath].dir, q_paths[ipath].length );
 	FORALLSITES(i,s){
 	  su3_adjoint( &(s->tempmat1), &(s->staple) );
-#ifndef DSLASH_SITE_LINKS
 	  long1 = &(t_longlink[4*i+dir]);
-#else
-	  long1 = &(s->longlink[dir]);
-#endif
           scalar_mult_add_su3_matrix( long1,
 	    &(s->staple), -q_paths[ipath].coeff, long1 );
 		/* minus sign in coeff. because we used backward path*/
@@ -601,18 +591,10 @@ dtime=-dclock();
   for (dir=XUP; dir<=TUP; dir++){ /* loop over fatlink directions */
     /* set fatlink to zero */
     FORALLSITES(i,s){
-#ifndef DSLASH_SITE_LINKS
       fat1 = &(t_fatlink[4*i+dir]);
-#else
-      fat1 = &(s->fatlink[dir]);
-#endif
       clear_su3mat( fat1 );
 #ifdef DM_DU0
-#ifndef DSLASH_SITE_LINKS
       fat2 = &(t_dfatlink_du0[4*i+dir]);
-#else
-      fat2 = &(s->dfatlink_du0[dir]);
-#endif
       clear_su3mat( fat2 );
 #endif
     }
@@ -636,20 +618,12 @@ printf("\n");**/
 	path_product( q_paths[ipath].dir, q_paths[ipath].length );
 	FORALLSITES(i,s){
 	  su3_adjoint( &(s->tempmat1), &(s->staple) );
-#ifndef DSLASH_SITE_LINKS
 	  fat1 = &(t_fatlink[4*i+dir]);
-#else
-	  fat1 = &(s->fatlink[dir]);
-#endif
           scalar_mult_add_su3_matrix( fat1,
 	    &(s->staple), -q_paths[ipath].coeff, fat1 );
 		/* minus sign in coeff. because we used backward path*/
 #ifdef DM_DU0
-#ifndef DSLASH_SITE_LINKS
 	  fat2 = &(t_dfatlink_du0[4*i+dir]);
-#else
-	  fat2 = &(s->dfatlink_du0[dir]);
-#endif
           scalar_mult_add_su3_matrix( fat2,
 	    &(s->staple), -q_paths[ipath].coeff2, fat2 );
 		/* minus sign in coeff. because we used backward path*/
@@ -672,19 +646,11 @@ printf("\n");**/
  for (dir=XUP; dir<=TUP; dir++){
    FORALLSITES(i,s) /* Intialize fat links with c_1*U_\mu(x) */
      {
-#ifndef DSLASH_SITE_LINKS
        fat1 = &(t_fatlink[4*i+dir]);
-#else
-       fat1 = &(s->fatlink[dir]);
-#endif
        scalar_mult_su3_matrix(&(s->link[dir]), one_link ,
 			      fat1 );
 #ifdef DM_DU0
-#ifndef DSLASH_SITE_LINKS
        fat2 = &(t_dfatlink_du0[4*i+dir]);
-#else
-       fat2 = &(s->dfatlink_du0[dir]);
-#endif
        scalar_mult_su3_matrix(&(s->link[dir]), one_link2 ,
 			      fat2 );
 #endif
@@ -804,19 +770,11 @@ void compute_gen_staple(field_offset staple, int mu, int nu,
       mult_su3_na( (su3_matrix *)gen_pt[0][i],
 		   (su3_matrix *)gen_pt[1][i], &tmat1 );
       mult_su3_nn( &(s->link[nu]), &tmat1, &tmat2 );
-#ifndef DSLASH_SITE_LINKS
       fat1 = &(t_fatlink[4*i+mu]);
-#else
-      fat1 = &(s->fatlink[mu]);
-#endif
       scalar_mult_add_su3_matrix(fat1, &tmat2, coef,
 				 fat1) ;
 #ifdef DM_DU0
-#ifndef DSLASH_SITE_LINKS
       fat2 = &(t_dfatlink_du0[4*i+mu]);
-#else
-      fat2 = &(s->dfatlink_du0[mu]);
-#endif
       scalar_mult_add_su3_matrix(fat2, &tmat2, coef2,
 				 fat2) ;
 #endif
@@ -843,20 +801,12 @@ void compute_gen_staple(field_offset staple, int mu, int nu,
     FORALLSITES(i,s){
       add_su3_matrix( (su3_matrix *)F_PT(s,staple),(su3_matrix *)gen_pt[0][i], 
 		      (su3_matrix *)F_PT(s,staple) );
-#ifndef DSLASH_SITE_LINKS
       fat1 = &(t_fatlink[4*i+mu]);
-#else
-      fat1 = &(s->fatlink[mu]);
-#endif
       scalar_mult_add_su3_matrix( fat1,
 				 (su3_matrix *)F_PT(s,staple), coef, 
 				 fat1 );
 #ifdef DM_DU0
-#ifndef DSLASH_SITE_LINKS
       fat2 = &(t_dfatlink_du0[4*i+mu]);
-#else
-      fat2 = &(s->dfatlink_du0[mu]);
-#endif
       scalar_mult_add_su3_matrix( fat2,
 				 (su3_matrix *)F_PT(s,staple), coef2, 
 				 fat2 );
@@ -865,20 +815,12 @@ void compute_gen_staple(field_offset staple, int mu, int nu,
   }
   else{ /* No need to save the staple. Add it to the fatlinks */
     FORALLSITES(i,s){
-#ifndef DSLASH_SITE_LINKS
       fat1 = &(t_fatlink[4*i+mu]);
-#else
-      fat1 = &(s->fatlink[mu]);
-#endif
       scalar_mult_add_su3_matrix( fat1,
 				 (su3_matrix *)gen_pt[0][i], coef, 
 				 fat1 );
 #ifdef DM_DU0
-#ifndef DSLASH_SITE_LINKS
       fat2 = &(t_dfatlink_du0[4*i+mu]);
-#else
-      fat2 = &(s->dfatlink_du0[mu]);
-#endif
       scalar_mult_add_su3_matrix( fat2,
 				 (su3_matrix *)gen_pt[0][i], coef2, 
 				 fat2 );

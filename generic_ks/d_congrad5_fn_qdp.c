@@ -92,16 +92,8 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
 
   if (!valid_fatlinks) load_fatlinks();
   if (!valid_longlinks) load_longlinks();
-#ifndef DSLASH_SITE_LINKS
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
-#else
-  {int i;
-  for(i=0; i<4; i++) {
-    set_M_from_field(fatlinks[i], F_OFFSET(fatlink[i]));
-    set_M_from_field(longlinks[i], F_OFFSET(longlink[i]));
-  }}
-#endif
 
   {
     QDP_ColorMatrix *tcm;

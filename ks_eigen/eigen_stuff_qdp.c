@@ -578,15 +578,8 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
 
-#ifndef DSLASH_SITE_LINKS
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
-#else
-  for(i=0; i<4; i++) {
-    set_M_from_field(fatlinks[i], F_OFFSET(fatlink[i]));
-    set_M_from_field(longlinks[i], F_OFFSET(longlink[i]));
-  }
-#endif
 
   //ev = malloc(Nvecs*sizeof(QLA_Real));
   vec = malloc(Nvecs*sizeof(QDP_ColorVector *));

@@ -230,15 +230,8 @@ dslash_fn(field_offset src, field_offset dest, int parity)
   qdest = QDP_create_V();
   set_V_from_field(qsrc, src);
   set_V_from_field(qdest, dest);
-#ifndef DSLASH_SITE_LINKS
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
-#else
-  for(i=0; i<4; i++) {
-    set_M_from_field(fatlinks[i], F_OFFSET(fatlink[i]));
-    set_M_from_field(longlinks[i], F_OFFSET(longlink[i]));
-  }
-#endif
   dslash_fn_qdp(qsrc, qdest, subset);
   set_field_from_V(dest, qdest);
   QDP_destroy_V(qdest);
@@ -265,15 +258,8 @@ dslash_fn_special(field_offset src, field_offset dest,
   set_V_from_field(qsrc, src);
   set_V_from_field(qdest, dest);
   if(start) {
-#ifndef DSLASH_SITE_LINKS
     set4_M_from_temp(fatlinks, t_fatlink);
     set4_M_from_temp(longlinks, t_longlink);
-#else
-    for(i=0; i<4; i++) {
-      set_M_from_field(fatlinks[i], F_OFFSET(fatlink[i]));
-      set_M_from_field(longlinks[i], F_OFFSET(longlink[i]));
-    }
-#endif
   }
   dslash_fn_qdp(qsrc, qdest, subset);
   set_field_from_V(dest, qdest);
@@ -294,15 +280,8 @@ dslash_fn_on_temp(su3_vector *src, su3_vector *dest, int parity)
   qdest = QDP_create_V();
   set_V_from_temp(qsrc, src);
   set_V_from_temp(qdest, dest);
-#ifndef DSLASH_SITE_LINKS
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
-#else
-  for(i=0; i<4; i++) {
-    set_M_from_field(fatlinks[i], F_OFFSET(fatlink[i]));
-    set_M_from_field(longlinks[i], F_OFFSET(longlink[i]));
-  }
-#endif
   dslash_fn_qdp(qsrc, qdest, subset);
   set_temp_from_V(dest, qdest);
   QDP_destroy_V(qdest);
@@ -329,15 +308,8 @@ dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
   set_V_from_temp(qsrc, src);
   set_V_from_temp(qdest, dest);
   if(start) {
-#ifndef DSLASH_SITE_LINKS
     set4_M_from_temp(fatlinks, t_fatlink);
     set4_M_from_temp(longlinks, t_longlink);
-#else
-    for(i=0; i<4; i++) {
-      set_M_from_field(fatlinks[i], F_OFFSET(fatlink[i]));
-      set_M_from_field(longlinks[i], F_OFFSET(longlink[i]));
-    }
-#endif
   }
   dslash_fn_qdp(qsrc, qdest, qparity);
   set_temp_from_V(dest, qdest);

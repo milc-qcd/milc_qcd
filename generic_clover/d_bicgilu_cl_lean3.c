@@ -2,7 +2,6 @@
 /* MIMD version 6 */
 
 /* Modifications:
-   9/06/03 Include option CONGRAD_SITE_VECTORS to work with temp vectors CD
    7/18/01 calls dslash_special CD
    1/24/00 combined with Schroedinger functional version - UMH
    4/26/98 Moved parameters to structures CD
@@ -82,17 +81,8 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   Real RsdCG = qic->resid;  /* desired residual - 
 				 normalized as sqrt(r*r)/sqrt(src_e*src_e */
   int flag = qic->start_flag;   /* 0: use a zero initial guess; 1: use dest */
-#ifndef CONGRAD_SITE_VECTORS
   wilson_vector *tmp,*my_mp,*rv,*sss,*r,*p,*ttt,*t_dest;
   int static first_congrad = 1;
-#else
-  field_offset tmp = qic->wv1;   /* size of wilson_vector */
-  field_offset my_mp = qic->wv2;    /* size of wilson_vector */
-  field_offset rv = qic->wv3;    /* size of wilson_vector */
-  field_offset sss = qic->wv4;   /* size of wilson_vector */
-  register field_offset r,p;
-  field_offset ttt;
-#endif
 
   dirac_clover_param *dcp 
     = (dirac_clover_param *)dmp; /* Cast pass-through pointer */
@@ -131,7 +121,6 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   /* Take the inverse on the odd sublattice */
   make_clovinv(ODD);
   
-#ifndef CONGRAD_SITE_VECTORS
     /* now we can allocate temporary variables and copy then */
     /* PAD may be used to avoid cache trashing */
 #define PAD 0
@@ -147,14 +136,6 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
       ttt    = rv + even_sites_on_node;
       first_congrad = 0;
     }
-#else
-  r = src;
-  p = src + even_sites_on_node*sizeof(site);
-  /* This disgusting trick makes p for each even site actually be
-     src on some corresponding odd site */
-  ttt = rv + even_sites_on_node*sizeof(site);
-  /** if(this_node==0){printf("BiCGILU: p=%d\n",p);fflush(stdout);} **/
-#endif
 
   /* BiCGstab_ILU: */
   
@@ -165,35 +146,21 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   dtime = -dclock();
 #endif
   
-#ifndef CONGRAD_SITE_VECTORS
   /* now we copy dest and src to temporaries */
   FORALLSITES(i,s) {
     t_dest[i] = *(wilson_vector *)F_PT(s,dest);
     r[i] = *(wilson_vector *)F_PT(s,src);
   }
-#endif
   
-#ifndef CONGRAD_SITE_VECTORS
   mult_ldu_on_temp(r, my_mp, ODD);
   dslash_on_temp_special(my_mp, my_mp, PLUS, EVEN, tage, is_startede);
-#else
-  mult_ldu(src, my_mp, ODD);
-  dslash_special(my_mp, my_mp, PLUS, EVEN, tage, is_startede);
-#endif
   is_startede = 1;
   
   /* Normalization  */
   rsq = 0.0;
   FOREVENSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
     scalar_mult_add_wvec( &(r[i]), &(my_mp[i]), Kappa, &(r[i]) );
     rsq += (double)magsq_wvec( &(r[i]) );
-#else
-    scalar_mult_add_wvec( (wilson_vector *)F_PT(s,src), 
-			  (wilson_vector *)F_PT(s,my_mp),
-			 Kappa, (wilson_vector *)F_PT(s,src) );
-    rsq += (double)magsq_wvec( (wilson_vector *)F_PT(s,src) );
-#endif
   }
   fflush(stdout);
   g_doublesum(&rsq);
@@ -213,12 +180,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
      solution of the odd component of the equation is dest = src, before
      we rotate back to the basis in which  M is not checkerboard-diagonal) */
   FORODDSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
     copy_wvec( &(r[i]), &(t_dest[i]) );
-#else
-    copy_wvec( (wilson_vector *)F_PT(s,src),
-	      (wilson_vector *)F_PT(s,dest) );
-#endif
   }
   
   
@@ -226,11 +188,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   if(flag == 0) {
     /** if(this_node==0)printf("dest_0=0\n"); **/
     FOREVENSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
       clear_wvec( &(t_dest[i]) );
-#else
-      clear_wvec( (wilson_vector *)F_PT(s,dest) );
-#endif
     }
   }
   /* code if you want to start dest with some particular starting value... */
@@ -238,50 +196,23 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   if(flag != 0) {
     /** if(this_node==0)    printf("dest_0  !=0\n"); **/
     /* we use my_mp temporarily to construct r */
-#ifndef CONGRAD_SITE_VECTORS
     mult_ldu_on_temp(t_dest, tmp, EVEN);
     dslash_on_temp_special(t_dest, my_mp, PLUS, ODD, tago, is_startedo);
-#else
-    mult_ldu(dest, tmp, EVEN);
-    dslash_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
-#endif
     is_startedo = 1;
-#ifndef CONGRAD_SITE_VECTORS
     mult_ldu_on_temp(my_mp, tmp, ODD);
     dslash_on_temp_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
-#else
-    mult_ldu(my_mp, tmp, ODD);
-    dslash_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
-#endif
     is_startede = 1;
     FOREVENSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
       scalar_mult_add_wvec( &(tmp[i]), &(my_mp[i]), MKsq, &(my_mp[i]) );
       scalar_mult_add_wvec( &(r[i]),   &(my_mp[i]), -1.0, &(r[i])     );
-#else
-      scalar_mult_add_wvec( (wilson_vector *)F_PT(s,tmp), 
-			    (wilson_vector *)F_PT(s,my_mp), MKsq, 
-			    (wilson_vector *)F_PT(s,my_mp) );
-      scalar_mult_add_wvec( (wilson_vector *)F_PT(s,r),
-			   (wilson_vector *)F_PT(s,my_mp), -1.0, 
-			    (wilson_vector *)F_PT(s,r) );
-#endif
     }
   }
   
   rsq = 0.0;
   FOREVENSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
     rsq += (double)magsq_wvec( &(r[i]) );
     copy_wvec( &(r[i]), &(p[i]) );
     copy_wvec( &(r[i]), &(rv[i]) );
-#else
-    rsq += (double)magsq_wvec( (wilson_vector *)F_PT(s,r) );
-    copy_wvec( (wilson_vector *)F_PT(s,r),
-	      (wilson_vector *)F_PT(s,p) );
-    copy_wvec( (wilson_vector *)F_PT(s,r),
-	      (wilson_vector *)F_PT(s,rv) );
-#endif
   }
   g_doublesum(&rsq);
   qic->size_r = (Real)sqrt(rsq)/size_src;
@@ -293,36 +224,18 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
       N_iter = N_iter + 1) {
     
     /*   my_mp = M(u)*p */
-#ifndef CONGRAD_SITE_VECTORS
     mult_ldu_on_temp(p, tmp, EVEN);
     dslash_on_temp_special(p, my_mp, PLUS, ODD, tago, is_startedo);
-#else
-    mult_ldu(p, tmp, EVEN);
-    dslash_special(p, my_mp, PLUS, ODD, tago, is_startedo);
-#endif
     is_startedo = 1;
-#ifndef CONGRAD_SITE_VECTORS
     mult_ldu_on_temp(my_mp, tmp, ODD);
     dslash_on_temp_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
-#else
-    mult_ldu(my_mp, tmp, ODD);
-    dslash_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
-#endif
     is_startede = 1;
     
     /* rvv = <rv|my_mp> */
     rvv = dcmplx((double)0.0,(double)0.0);
     FOREVENSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
       scalar_mult_add_wvec( &(tmp[i]), &(my_mp[i]), MKsq, &(my_mp[i]) );
       ctmp = wvec_dot( &(rv[i]), &(my_mp[i]) );
-#else
-      scalar_mult_add_wvec( (wilson_vector *)F_PT(s,tmp), 
-			    (wilson_vector *)F_PT(s,my_mp), MKsq, 
-			    (wilson_vector *)F_PT(s,my_mp) );
-      ctmp = wvec_dot( (wilson_vector *)F_PT(s,rv), 
-		       (wilson_vector *)F_PT(s,my_mp) );
-#endif
       CSUM(rvv,ctmp);
     }
     g_dcomplexsum(&rvv);
@@ -331,51 +244,25 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     /* sss = r - a*my_mp  */
     CMULREAL(a,-1.0,ctmp);
     FOREVENSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
       c_scalar_mult_add_wvec( &(r[i]), &(my_mp[i]), &ctmp, &(sss[i]) );
-#else
-      c_scalar_mult_add_wvec( (wilson_vector *)F_PT(s,r),
-			     (wilson_vector *)F_PT(s,my_mp), &ctmp, 
-			      (wilson_vector *)F_PT(s,sss) );
-#endif
     }
     
     /* ttt = M(u)*sss */
-#ifndef CONGRAD_SITE_VECTORS
     mult_ldu_on_temp(sss, tmp, EVEN);
     dslash_on_temp_special(sss, sss, PLUS, ODD, tago, is_startedo);
-#else
-    mult_ldu(sss, tmp, EVEN);
-    dslash_special(sss, sss, PLUS, ODD, tago, is_startedo);
-#endif
     is_startedo = 1;
-#ifndef CONGRAD_SITE_VECTORS
     mult_ldu_on_temp(sss, tmp, ODD);
     dslash_on_temp_special(tmp, ttt, PLUS, EVEN, tage, is_startede);
-#else
-    mult_ldu(sss, tmp, ODD);
-    dslash_special(tmp, ttt, PLUS, EVEN, tage, is_startede);
-#endif
     is_startede = 1;
     
     /* tdots = <ttt|sss>; tsq=|ttt|^2 */
     tdots = dcmplx((double)0.0,(double)0.0);
     tsq = 0.0;
     FOREVENSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
       scalar_mult_add_wvec( &(tmp[i]), &(ttt[i]), MKsq, &(ttt[i]) );
       ctmp = wvec_dot( &(ttt[i]), &(sss[i]) );
       CSUM(tdots, ctmp);
       tsq += (double)magsq_wvec( &(ttt[i]) );
-#else
-      scalar_mult_add_wvec( (wilson_vector *)F_PT(s,tmp), 
-			    (wilson_vector *)F_PT(s,ttt),
-			   MKsq, (wilson_vector *)F_PT(s,ttt) );
-      ctmp = wvec_dot( (wilson_vector *)F_PT(s,ttt), 
-		       (wilson_vector *)F_PT(s,sss) );
-      CSUM(tdots, ctmp);
-      tsq += (double)magsq_wvec( (wilson_vector *)F_PT(s,ttt) );
-#endif
     }
     g_dcomplexsum(&tdots);
     g_doublesum(&tsq);
@@ -391,28 +278,12 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     rvro = rvr;
     rvr = dcmplx((double)0.0,(double)0.0);
     FOREVENSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
       c_scalar_mult_add_wvec( &(t_dest[i]), &(sss[i]), &omega,  &(t_dest[i]) );
       c_scalar_mult_add_wvec( &(t_dest[i]), &(p[i]),   &a,      &(t_dest[i]) );
       c_scalar_mult_add_wvec( &(sss[i]),    &(ttt[i]), &omegam, &(r[i])      );
       ctmp = wvec_dot( &(rv[i]), &(r[i]) );
       CSUM(rvr, ctmp);
       rsq += (double)magsq_wvec( &(r[i]) );
-#else
-      c_scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest),
-			     (wilson_vector *)F_PT(s,sss), &omega, 
-			     (wilson_vector *)F_PT(s,dest) );
-      c_scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest),
-			     (wilson_vector *)F_PT(s,p),
-			     &a, (wilson_vector *)F_PT(s,dest) );
-      c_scalar_mult_add_wvec( (wilson_vector *)F_PT(s,sss), 
-			      (wilson_vector *)F_PT(s,ttt),
-			     &omegam, (wilson_vector *)F_PT(s,r) );
-      ctmp = wvec_dot( (wilson_vector *)F_PT(s,rv),
-		      (wilson_vector *)F_PT(s,r) );
-      CSUM(rvr, ctmp);
-      rsq += (double)magsq_wvec( (wilson_vector *)F_PT(s,r) );
-#endif
     }
     g_dcomplexsum(&rvr);
     g_doublesum(&rsq);
@@ -423,17 +294,8 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     
     /*   p = r + b*(p - omega*my_mp)  */
     FOREVENSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
       c_scalar_mult_add_wvec( &(p[i]),  &(my_mp[i]), &omegam, &(p[i]) );
       c_scalar_mult_add_wvec( &(r[i]),  &(p[i]),     &b,      &(p[i]) );
-#else
-      c_scalar_mult_add_wvec( (wilson_vector *)F_PT(s,p),
-			     (wilson_vector *)F_PT(s,my_mp), &omegam,
-			     (wilson_vector *)F_PT(s,p) );
-      c_scalar_mult_add_wvec( (wilson_vector *)F_PT(s,r),
-			     (wilson_vector *)F_PT(s,p), &b, 
-			     (wilson_vector *)F_PT(s,p) );
-#endif
     }
     
     qic->size_r = (Real)sqrt(rsq)/size_src;
@@ -460,34 +322,19 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     } **/
   
   /* dest = R^(-1)*dest  */
-#ifndef CONGRAD_SITE_VECTORS
   dslash_on_temp_special(t_dest, my_mp, PLUS, ODD, tago, is_startedo);
-#else
-  dslash_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
-#endif
   is_startedo = 1;
   FORODDSITESDOMAIN(i,s) {
-#ifndef CONGRAD_SITE_VECTORS
     scalar_mult_add_wvec( &(t_dest[i]), &(my_mp[i]), Kappa, &(my_mp[i]) );
-#else
-    scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), (wilson_vector *)F_PT(s,my_mp),
-			 Kappa, (wilson_vector *)F_PT(s,my_mp) );
-#endif
   }
-#ifndef CONGRAD_SITE_VECTORS
   mult_ldu_on_temp(my_mp, t_dest, ODD);
-#else
-  mult_ldu(my_mp, dest, ODD);
-#endif
   
-#ifndef CONGRAD_SITE_VECTORS
   /* Copy back for all sites and free memory */
   FORALLSITES(i,s) {
     *(wilson_vector *)F_PT(s,dest) = t_dest[i];
   }
   free(tmp); free(my_mp); free(rv); free(sss); free(r); free(t_dest);
   first_congrad = 1;
-#endif
 
   for( i=XUP; i <= TUP; i++) {
     if(is_startedo)cleanup_gather(tago[i]);
@@ -498,9 +345,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   is_startede = is_startedo = 0;
     
   free_clov();
-#ifndef DSLASH_SITE_LINKS
   cleanup_tmp_links();
-#endif
   return(N_iter);
 }
 

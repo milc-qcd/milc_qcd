@@ -47,10 +47,6 @@ typedef struct {
 /* ------------------------------------------------------------ */
 	/* gauge field */
 	su3_matrix link[4];	/* the fundamental field */
-#if  ( defined(DSLASH_SITE_LINKS) && defined(FN) )
-	su3_matrix longlink[4];	/* three link straight paths */
-	su3_matrix fatlink[4];	/* link plus 3-link staples */
-#endif
 
 	/* antihermitian momentum matrices in each direction */
  	anti_hermitmat mom[4];
@@ -144,11 +140,9 @@ EXTERN site *lattice;
 #define N_POINTERS 16
 EXTERN char ** gen_pt[N_POINTERS];
 
-#ifndef DSLASH_SITE_LINKS
 /* field major storage DON't FORGET to MALLOC somewhere */
 EXTERN su3_matrix *t_longlink;
 EXTERN su3_matrix *t_fatlink;
-#endif
 
 #ifdef HAVE_QDP
 #include <qdp.h>

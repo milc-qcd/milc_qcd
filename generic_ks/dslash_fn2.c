@@ -4,10 +4,6 @@
    Naik" quark action.  Connection to nearest neighbors stored in
    fatlink and to third nearest neighbors in longlink */
 
-/* With DSLASH_SITE_LINKS, assumes that the gauge links have been
-   prestored in the site structure.  Otherwise, takes the
-   fatlinks and longlinks from t_longlinks and t_fatlinks. */
-
 /* This version waits for gathers from both positive and negative
    directions before computing, thereby combining two lattice loops in
    an attempt to gain prefetching time for sub_four_su3_vecs */
@@ -89,13 +85,8 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
     /* Use fat link for single link transport */
     FORSOMEPARITY( i, s, otherparity ){
       if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-	fat4 = (s+FETCH_UP)->fatlink;
-	long4 = (s+FETCH_UP)->longlink;
-#endif
 	prefetch_4MV4V( 
 		       fat4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
@@ -106,13 +97,8 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
 		       (s+FETCH_UP)->templongvec );
       }
 
-#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
-#else
-      fat4 = s->fatlink;
-      long4 = s->longlink;
-#endif
 	mult_adj_su3_mat_vec_4dir( fat4,
 	    (su3_vector *)F_PT(s,src), s->tempvec );
 	/* multiply by 3-link matrices too */
@@ -153,13 +139,8 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
 
 
     FORSOMEPARITY(i,s,parity){
-#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
-#else
-      fat4 = s->fatlink;
-      long4 = s->longlink;
-#endif
       mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
@@ -171,13 +152,8 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
 	    (su3_vector *) &(s->templongv1));
 
       if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-	fat4 = (s+FETCH_UP)->fatlink;
-	long4 = (s+FETCH_UP)->longlink;
-#endif
 	prefetch_4MVVVV( 
               fat4,
 	      (su3_vector *)gen_pt[XUP][i+FETCH_UP],
@@ -268,13 +244,8 @@ void dslash_fn_special( field_offset src, field_offset dest,
     /* Multiply by adjoint matrix at other sites */
     FORSOMEPARITY(i,s,otherparity){
       if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-	fat4 = (s+FETCH_UP)->fatlink;
-	long4 = (s+FETCH_UP)->longlink;
-#endif
 	prefetch_4MV4V( 
 		       fat4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
@@ -285,13 +256,8 @@ void dslash_fn_special( field_offset src, field_offset dest,
 		       (s+FETCH_UP)->templongvec );
       }
 
-#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
-#else
-      fat4 = s->fatlink;
-      long4 = s->longlink;
-#endif
 	mult_adj_su3_mat_vec_4dir( fat4,
 	    (su3_vector *)F_PT(s,src), s->tempvec );
 	/* multiply by 3-link matrices too */
@@ -341,13 +307,8 @@ void dslash_fn_special( field_offset src, field_offset dest,
 
     FORSOMEPARITY(i,s,parity){
       if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-	fat4 = (s+FETCH_UP)->fatlink;
-	long4 = (s+FETCH_UP)->longlink;
-#endif
 	prefetch_VV(
 		    (su3_vector *)F_PT(s+FETCH_UP,dest),
 		    (su3_vector *) &((s+FETCH_UP)->templongv1));
@@ -374,13 +335,8 @@ void dslash_fn_special( field_offset src, field_offset dest,
 		      (su3_vector *)gen_pt[Z3DOWN][i+FETCH_UP],
 		      (su3_vector *)gen_pt[T3DOWN][i+FETCH_UP] );
       }
-#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
-#else
-      fat4 = s->fatlink;
-      long4 = s->longlink;
-#endif
       mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
@@ -445,13 +401,8 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
    /* Use fat link for single link transport */
    FORSOMEPARITY( i, s, otherparity ){
      if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-       fat4 = (s+FETCH_UP)->fatlink;
-       long4 = (s+FETCH_UP)->longlink;
-#endif
        prefetch_V(&(src[i]));
        prefetch_4MVVVV(
 		       fat4,
@@ -467,13 +418,8 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 		       &(templongvec[2][i+FETCH_UP]), 
 		       &(templongvec[3][i+FETCH_UP])); 
      }
-#ifndef DSLASH_SITE_LINKS
      fat4 = &(t_fatlink[4*i]);
      long4 = &(t_longlink[4*i]);
-#else
-     fat4 = s->fatlink;
-     long4 = s->longlink;
-#endif
      mult_adj_su3_mat_4vec( fat4, &(src[i]), &(tempvec[0][i]),
 			    &(tempvec[1][i]), &(tempvec[2][i]), 
 			    &(tempvec[3][i]) );
@@ -505,13 +451,8 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 
     FORSOMEPARITY(i,s,parity){
      if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-       fat4 = (s+FETCH_UP)->fatlink;
-       long4 = (s+FETCH_UP)->longlink;
-#endif
        prefetch_VV(
 		   &(dest[i+FETCH_UP]),
 		   &(templongv1[i+FETCH_UP]));
@@ -529,13 +470,8 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 		       (su3_vector *)gen_pt[T3UP][i+FETCH_UP] );
        
      }
-#ifndef DSLASH_SITE_LINKS
      fat4 = &(t_fatlink[4*i]);
      long4 = &(t_longlink[4*i]);
-#else
-     fat4 = s->fatlink;
-     long4 = s->longlink;
-#endif
      mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
@@ -662,13 +598,8 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
   /* Use fat link for single link transport */
   FORSOMEPARITY( i, s, otherparity ){
     if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-       fat4 = (s+FETCH_UP)->fatlink;
-       long4 = (s+FETCH_UP)->longlink;
-#endif
        prefetch_V(&(src[i+FETCH_UP]));
        prefetch_4MVVVV( 
 		       fat4,
@@ -684,13 +615,8 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
 		       &(temp[7][i+FETCH_UP]) );
     }
 
-#ifndef DSLASH_SITE_LINKS
     fat4 = &(t_fatlink[4*i]);
     long4 = &(t_longlink[4*i]);
-#else
-    fat4 = s->fatlink;
-    long4 = s->longlink;
-#endif
     mult_adj_su3_mat_4vec( fat4, &(src[i]), &(temp[0][i]),
 			   &(temp[1][i]), &(temp[2][i]), &(temp[3][i]) );
     /* multiply by 3-link matrices too */
@@ -726,13 +652,8 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
 
     FORSOMEPARITY(i,s,parity){
       if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-	fat4 = (s+FETCH_UP)->fatlink;
-	long4 = (s+FETCH_UP)->longlink;
-#endif
 	prefetch_4MVVVV( 
 			fat4,
 			(su3_vector *)gen_pt[XUP][i+FETCH_UP],
@@ -757,13 +678,8 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
 		      (su3_vector *)gen_pt[T3DOWN][i+FETCH_UP] );
       }
       
-#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
-#else
-      fat4 = s->fatlink;
-      long4 = s->longlink;
-#endif
       mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
@@ -851,13 +767,8 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
     /* Use fat link for single link transport */
     FORSOMEPARITY( i, s, otherparity ){
       if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_dfatlink_du0[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-	fat4 = (s+FETCH_UP)->dfatlink_du0;
-	long4 = (s+FETCH_UP)->longlink;
-#endif
 	prefetch_4MV4V( 
 		       fat4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
@@ -868,13 +779,8 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
 		       (s+FETCH_UP)->templongvec );
       }
 
-#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_dfatlink_du0[4*i]);
       long4 = &(t_longlink[4*i]);
-#else
-      fat4 = s->dfatlink_du0;
-      long4 = s->longlink;
-#endif
 	mult_adj_su3_mat_vec_4dir( fat4,
 	    (su3_vector *)F_PT(s,src), s->tempvec );
 	/* multiply by 3-link matrices too */
@@ -918,13 +824,8 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
 
 
     FORSOMEPARITY(i,s,parity){
-#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_dfatlink_du0[4*i]);
       long4 = &(t_longlink[4*i]);
-#else
-      fat4 = s->dfatlink_du0;
-      long4 = s->longlink;
-#endif
       mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
@@ -938,13 +839,8 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
 			      (su3_vector *) &(s->templongv1) );
 
       if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_dfatlink_du0[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-	fat4 = (s+FETCH_UP)->dfatlink_du0;
-	long4 = (s+FETCH_UP)->longlink;
-#endif
 	prefetch_4MVVVV( 
               fat4,
 	      (su3_vector *)gen_pt[XUP][i+FETCH_UP],
@@ -1034,13 +930,8 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
    /* Use fat link for single link transport */
    FORSOMEPARITY( i, s, otherparity ){
      if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_dfatlink_du0[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-       fat4 = (s+FETCH_UP)->dfatlink_du0;
-       long4 = (s+FETCH_UP)->longlink;
-#endif
        prefetch_V(&(src[i]));
        prefetch_4MVVVV(
 		       fat4,
@@ -1056,13 +947,8 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 		       &(templongvec[2][i+FETCH_UP]), 
 		       &(templongvec[3][i+FETCH_UP])); 
      }
-#ifndef DSLASH_SITE_LINKS
      fat4 = &(t_dfatlink_du0[4*i]);
      long4 = &(t_longlink[4*i]);
-#else
-     fat4 = s->dfatlink_du0;
-     long4 = s->longlink;
-#endif
      mult_adj_su3_mat_4vec( fat4, &(src[i]), &(tempvec[0][i]),
 			    &(tempvec[1][i]), &(tempvec[2][i]), 
 			    &(tempvec[3][i]) );
@@ -1097,13 +983,8 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 
     FORSOMEPARITY(i,s,parity){
      if( i < loopend-FETCH_UP ){
-#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_dfatlink_du0[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
-#else
-       fat4 = (s+FETCH_UP)->dfatlink_du0;
-       long4 = (s+FETCH_UP)->longlink;
-#endif
        prefetch_VV(
 		   &(dest[i+FETCH_UP]),
 		   &(templongv1[i+FETCH_UP]));
@@ -1121,13 +1002,8 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 		       (su3_vector *)gen_pt[T3UP][i+FETCH_UP] );
        
      }
-#ifndef DSLASH_SITE_LINKS
      fat4 = &(t_dfatlink_du0[4*i]);
      long4 = &(t_longlink[4*i]);
-#else
-     fat4 = s->dfatlink_du0;
-     long4 = s->longlink;
-#endif
      mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],

@@ -1,8 +1,6 @@
 /******************* make_clov.c **************************************/
 
 /* MIMD version 6 */
-/* 9/06/03 Include option CONGRAD_SITE_VECTORS to work with temp vectors CD 
-           in mult_ldu */
 /* version of 1/4/95 by UMH */
 /* 1/21/00 combined with Schroedinger functional version - UMH */
 

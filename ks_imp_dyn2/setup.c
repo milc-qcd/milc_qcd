@@ -51,7 +51,7 @@ setup()
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-#ifndef DSLASH_SITE_LINKS
+
   /* Allocate space for t_longlink and t_fatlink */
   t_longlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
   if(t_longlink==NULL){
@@ -73,8 +73,7 @@ setup()
     terminate(1);
   }
 #endif
-  
-#endif
+
   node0_printf("Made lattice\n"); fflush(stdout);
   /* set up neighbor pointers and comlink structures
      code for this routine is in com_machine.c  */

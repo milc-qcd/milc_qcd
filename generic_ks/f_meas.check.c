@@ -105,17 +105,10 @@ BOMB THE COMPILE
 	EVENANDODD, gen_pt[1] );
 
       FORALLSITES(i,st){
-#ifndef DSLASH_SITE_LINKS
 	mult_adj_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
 	mult_adj_su3_mat_vec( &(t_longlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->templongvec[TUP]) );
-#else
-	mult_adj_su3_mat_vec( &(st->fatlink[TUP]),
-	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
-	mult_adj_su3_mat_vec( &(st->longlink[TUP]),
-	    (su3_vector *)F_PT(st,xxx_off), &(st->templongvec[TUP]) );
-#endif
       }
 
       /* Start gathers from negative t-direction */
@@ -129,23 +122,15 @@ BOMB THE COMPILE
       wait_gather(tag1);
 
       FORALLSITES(i,st){
-#ifndef DSLASH_SITE_LINKS
 	mult_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
 	mult_su3_mat_vec( &(t_longlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[1][i], &(st->templongvec[0]) );
-#else
-	mult_su3_mat_vec( &(st->fatlink[TUP]),
-	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
-	mult_su3_mat_vec( &(st->longlink[TUP]),
-	    (su3_vector *)gen_pt[1][i], &(st->templongvec[0]) );
-#endif
       }
 
       /* Wait gathers from negative t-direction */
       wait_gather(tag2);
       wait_gather(tag3);
-#endif
 
       /* fermion action = phi.xxx */
       /* psi-bar-psi on even sites = g_rand.xxx */
@@ -323,17 +308,10 @@ BOMB THE COMPILE
 	EVENANDODD, gen_pt[1] );
 
       FORALLSITES(i,st){
-#ifndef DSLASH_SITE_LINKS
 	mult_adj_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
 	mult_adj_su3_mat_vec( &(t_longlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->templongvec[TUP]) );
-#else
-	mult_adj_su3_mat_vec( &(st->fatlink[TUP]),
-	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
-	mult_adj_su3_mat_vec( &(st->longlink[TUP]),
-	    (su3_vector *)F_PT(st,xxx_off), &(st->templongvec[TUP]) );
-#endif
       }
 
       /* Start gathers from negative t-direction */
@@ -347,17 +325,10 @@ BOMB THE COMPILE
       wait_gather(tag1);
 
       FORALLSITES(i,st){
-#ifndef DSLASH_SITE_LINKS
 	mult_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
 	mult_su3_mat_vec( &(t_longlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[1][i], &(st->templongvec[0]) );
-#else
-	mult_su3_mat_vec( &(st->fatlink[TUP]),
-	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
-	mult_su3_mat_vec( &(st->longlink[TUP]),
-	    (su3_vector *)gen_pt[1][i], &(st->templongvec[0]) );
-#endif
       }
 
       /* Wait gathers from negative t-direction */

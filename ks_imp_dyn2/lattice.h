@@ -50,16 +50,8 @@ typedef struct {
 /* ------------------------------------------------------------ */
 	/* gauge field */
 	su3_matrix link[4];	/* the fundamental field */
-#if  ( defined(DSLASH_SITE_LINKS) && defined(FN) ) || defined(HYBRIDS)
+#if  defined(HYBRIDS)
 	su3_matrix longlink[4];	/* three link straight paths */
-#if  defined(DSLASH_SITE_LINKS) && defined(DM_DU0)
-	su3_matrix dfatlink_du0[4];	/* for inclusion of d(M)/d(u0) terms in
-					   equation of state calc's with Asqtad
-					   action */
-#endif
-#endif
-#if defined(DSLASH_SITE_LINKS) && defined(FN)
-	su3_matrix fatlink[4];	/* link plus 3-link staples */
 #endif
 
 #ifdef HMC_ALGORITHM
@@ -191,13 +183,11 @@ EXTERN site *lattice;
 #define N_POINTERS 16
 EXTERN char ** gen_pt[N_POINTERS];
 
-#ifndef DSLASH_SITE_LINKS
 /* field major storage DON't FORGET to MALLOC somewhere */
 EXTERN su3_matrix *t_longlink;
 EXTERN su3_matrix *t_fatlink;
 #ifdef DM_DU0
 EXTERN su3_matrix *t_dfatlink_du0;
-#endif
 #endif
 
 #ifdef HAVE_QDP
