@@ -30,10 +30,7 @@ G_KS_ALL = \
   grsource.o \
   io_helpers_ks.o \
   io_prop_ks.o \
-  io_prop_sgks.o \
-  io_helpers_ks_double.o \
-  io_prop_ks_double.o \
-  io_prop_sgks_double.o \
+  io_prop_ks_fm.o \
   io_scidac_ks.o \
   jacobi.o \
   ks_invert.o \
@@ -127,13 +124,7 @@ io_helpers_ks.o: ../generic_ks/io_helpers_ks.c
 	${CC} -c ${CFLAGS} $<
 io_prop_ks.o: ../generic_ks/io_prop_ks.c
 	${CC} -c ${CFLAGS} $<
-io_prop_sgks.o: ../generic_ks/io_prop_sgks.c
-	${CC} -c ${CFLAGS} $<
-io_helpers_ks_double.o: ../generic_ks/io_helpers_ks_double.c
-	${CC} -c ${CFLAGS} $<
-io_prop_ks_double.o: ../generic_ks/io_prop_ks_double.c
-	${CC} -c ${CFLAGS} $<
-io_prop_sgks_double.o: ../generic_ks/io_prop_sgks_double.c
+io_prop_ks_fm.o: ../generic_ks/io_prop_ks_fm.c
 	${CC} -c ${CFLAGS} $<
 io_scidac_ks.o: ../generic_ks/io_scidac_ks.c
 	${CC} -c ${CFLAGS} $<
