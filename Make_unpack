@@ -34,6 +34,7 @@ ALL_APPS = \
   clover_hybrids \
   clover_invert \
   dense_static_su3 \
+  file_utilities \
   h_dibaryon \
   heavy \
   hqet_heavy_to_light \
