@@ -370,7 +370,6 @@ Real realtrace_su3(  su3_matrix *a, su3_matrix *b );
 complex trace_su3(  su3_matrix *a );
 complex complextrace_su3( su3_matrix *a, su3_matrix *b );
 complex det_su3( su3_matrix *a );
-void add_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 void sub_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 void scalar_mult_su3_matrix( su3_matrix *src, Real scalar, su3_matrix *dest);
 void scalar_mult_sub_su3_matrix( su3_matrix *src1, su3_matrix *src2,
@@ -391,8 +390,6 @@ void su3mat_copy( su3_matrix *a, su3_matrix *b );
 void dumpmat( su3_matrix *m );
 
 complex su3_dot( su3_vector *a, su3_vector *b );
-Real su3_rdot( su3_vector *a, su3_vector *b );
-Real magsq_su3vec( su3_vector *a );
 void su3vec_copy( su3_vector *a, su3_vector *b );
 void dumpvec( su3_vector *v );
 void clearvec( su3_vector *v );
@@ -401,8 +398,6 @@ void mult_su3_mat_vec_sum(  su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_adj_su3_mat_vec_sum( su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_adj_su3_mat_vec_nsum( su3_matrix *a, su3_vector *b, su3_vector *c );
-
-void sub_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
 
 void scalar_mult_su3_vector(  su3_vector *src, Real scalar, 
 	su3_vector *dest);
@@ -474,72 +469,219 @@ Real gaussian_rand_no( double_prn *prn_pt );
 void byterevn(int32type w[], int n);
 void byterevn64(int32type w[], int n);
 
-/* For inserting Don Holmgren's SSE versions of some library routines */
-/* Use only for Gnu C on the P3 or P4 */
 
-/* The header inline_sse.h defines macros that can be used to replace
-   subroutine calls by inline assembly code.  Replacement occurs in
-   the compilation if the macro SSE_INLINE is also defined. */
+/********************************************************************/
+/* Inline macros                                                    */
+/********************************************************************/
 
-/* Define SSE ASM inline macros and, if SSE_INLINE is defined, define
-   macros that replace the library calls listed below */
+/* We have optional SSE and C inline macros for selected library
+   routines */
 
-#if defined SSE
+/* All macros are defined and available for selective inlining.
+   To invoke them selectively, it is necessary to replace the function
+   call with the appropriate macro */
+
+/* Inlining can also be implemented globally without requiring any
+   changes in the code.  SSE macros are inlined globally by defining
+   SSE_INLINE.  C macros are similarly inlined with C_INLINE */
+
+/* SSE macros for selected library functions are available in single
+   and double precision */
 
 #if PRECISION==1
 #include "../sse/include/inline_sse.h"
 #else
 #include "../sse2/include/inline_sse.h"
-/* The following routines are not currently available in double precision */
-void add_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
-void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,
-	Real scalar, su3_vector *dest);
-void scalar_mult_add_su3_matrix( su3_matrix *src1, su3_matrix *src2,
-	Real scalar, su3_matrix *dest);
-void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
-	su3_vector *b3, su3_vector *b4 );
 #endif
 
-#endif
+/* C macros are similarly available for selected library functions in
+   both precisions */
 
-/* If SSE_INLINE is not defined, the subroutine calls are used and the
-   assembly code macros must be invoked individually with their
-   otherwise internal names.  See sse/include/inline_sse.h.  This
-   allows selective testing */
+#include "../libraries/include/inline_C.h"
 
-/* The following inline macros are not currently available in double
-   precision so we keep the prototypes for external linkage */
+/* The following definitions cause the macros to be invoked globally
+   if SSE_INLINE and/or C_INLINE is defined.  Note that in each stanza
+   the same library routines are repeated, but with either a macro
+   definition when available or a prototype definition. */
 
-#if ! defined SSE_INLINE
+#if defined SSE_INLINE
 
-/* The usual case: prototypes for library calls when these are
-   externally linked */
+#if defined C_INLINE
 
-void add_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
-void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,
-	Real scalar, su3_vector *dest);
-void scalar_mult_add_su3_matrix( su3_matrix *src1, su3_matrix *src2,
-	Real scalar, su3_matrix *dest);
+/* CASE SSE_INLINE and C_INLINE both defined */
+
+/* In this case SSE takes precedence over C */
+
+#if PRECISION == 1
+
+#define add_su3_matrix(...) _inline_C_add_su3_matrix(__VA_ARGS__)
+#define add_su3_vector(...) _inline_sse_add_su3_vector(__VA_ARGS__)
+Real magsq_su3vec( su3_vector *a );
+#define mult_su3_nn(...) _inline_sse_mult_su3_nn(__VA_ARGS__)
+#define mult_su3_na(...) _inline_sse_mult_su3_na(__VA_ARGS__)
+#define mult_su3_an(...) _inline_sse_mult_su3_an(__VA_ARGS__)
+#define mult_su3_mat_vec(...) _inline_sse_mult_su3_mat_vec(__VA_ARGS__)
+#define mult_adj_su3_mat_vec(...) _inline_sse_mult_adj_su3_mat_vec(__VA_ARGS__)
+#define mult_adj_su3_mat_vec_4dir(...) _inline_sse_mult_adj_su3_mat_vec_4dir(__VA_ARGS__)
+#define mult_adj_su3_mat_4vec(...) _inline_sse_mult_adj_su3_mat_4vec(__VA_ARGS__)
+#define mult_adj_su3_mat_hwvec(...) _inline_sse_mult_adj_su3_mat_hwvec(__VA_ARGS__)
+#define mult_su3_mat_hwvec(...) _inline_sse_mult_su3_mat_hwvec(__VA_ARGS__)
+#define mult_su3_mat_vec_sum_4dir(...) _inline_sse_mult_su3_mat_vec_sum_4dir(__VA_ARGS__)
+#define scalar_mult_add_su3_matrix(a,b,c,d) {Real _temp = c; _inline_sse_scalar_mult_add_su3_matrix(a,b,_temp,d);}
+#define scalar_mult_add_su3_vector(a,b,c,d) {Real _temp = c; _inline_sse_scalar_mult_add_su3_vector(a,b,_temp,d);}
+#define su3_projector(...) _inline_sse_su3_projector(__VA_ARGS__)
+Real su3_rdot( su3_vector *a, su3_vector *b );
+#define sub_four_su3_vecs(...) _inline_sse_sub_four_su3_vecs(__VA_ARGS__)
+#define sub_su3_vector(...) _inline_C_sub_su3_vector(__VA_ARGS__)
+
+#else // PRECISION == 2
+
+#define add_su3_matrix(...) _inline_C_add_su3_matrix(__VA_ARGS__)
+#define add_su3_vector(...) _inline_C_add_su3_vector(__VA_ARGS__)
+#define magsq_su3vec(...) _inline_C_magsq_su3vec(__VA_ARGS__)
+#define mult_su3_nn(...) _inline_sse_mult_su3_nn(__VA_ARGS__)
+#define mult_su3_na(...) _inline_sse_mult_su3_na(__VA_ARGS__)
+#define mult_su3_an(...) _inline_sse_mult_su3_an(__VA_ARGS__)
+#define mult_su3_mat_vec(...) _inline_sse_mult_su3_mat_vec(__VA_ARGS__)
+#define mult_adj_su3_mat_vec(...) _inline_sse_mult_adj_su3_mat_vec(__VA_ARGS__)
+#define mult_adj_su3_mat_vec_4dir(...) _inline_sse_mult_adj_su3_mat_vec_4dir(__VA_ARGS__)
+#define mult_adj_su3_mat_4vec(...) _inline_sse_mult_adj_su3_mat_4vec(__VA_ARGS__)
+#define mult_adj_su3_mat_hwvec(...) _inline_sse_mult_adj_su3_mat_hwvec(__VA_ARGS__)
+#define mult_su3_mat_hwvec(...) _inline_sse_mult_su3_mat_hwvec(__VA_ARGS__)
+#define mult_su3_mat_vec_sum_4dir(...) _inline_sse_mult_su3_mat_vec_sum_4dir(__VA_ARGS__)
+#define scalar_mult_add_su3_matrix(a,b,c,d) {Real _temp = c; _inline_C_scalar_mult_add_su3_matrix(a,b,_temp,d);}
+#define scalar_mult_add_su3_vector(a,b,c,d) {Real _temp = c; _inline_C_scalar_mult_add_su3_vector(a,b,_temp,d);}
+#define su3_projector(...) _inline_sse_su3_projector(__VA_ARGS__)
+#define su3_rdot(...) _inline_C_su3_rdot(__VA_ARGS__)
 void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 	su3_vector *b3, su3_vector *b4 );
+#define sub_su3_vector(...) _inline_C_sub_su3_vector(__VA_ARGS__)
 
+#endif // PRECISION
+
+#else
+
+/* CASE SSE_INLINE and not C_INLINE */
+
+#if PRECISION == 1
+
+void add_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
+#define add_su3_vector(...) _inline_sse_add_su3_vector(__VA_ARGS__)
+Real magsq_su3vec( su3_vector *a );
+#define mult_su3_nn(...) _inline_sse_mult_su3_nn(__VA_ARGS__)
+#define mult_su3_na(...) _inline_sse_mult_su3_na(__VA_ARGS__)
+#define mult_su3_an(...) _inline_sse_mult_su3_an(__VA_ARGS__)
+#define mult_su3_mat_vec(...) _inline_sse_mult_su3_mat_vec(__VA_ARGS__)
+#define mult_adj_su3_mat_vec(...) _inline_sse_mult_adj_su3_mat_vec(__VA_ARGS__)
+#define mult_adj_su3_mat_vec_4dir(...) _inline_sse_mult_adj_su3_mat_vec_4dir(__VA_ARGS__)
+#define mult_adj_su3_mat_4vec(...) _inline_sse_mult_adj_su3_mat_4vec(__VA_ARGS__)
+#define mult_adj_su3_mat_hwvec(...) _inline_sse_mult_adj_su3_mat_hwvec(__VA_ARGS__)
+#define mult_su3_mat_hwvec(...) _inline_sse_mult_su3_mat_hwvec(__VA_ARGS__)
+#define mult_su3_mat_vec_sum_4dir(...) _inline_sse_mult_su3_mat_vec_sum_4dir(__VA_ARGS__)
+#define scalar_mult_add_su3_matrix(a,b,c,d) {Real _temp = c; _inline_sse_scalar_mult_add_su3_matrix(a,b,_temp,d);}
+#define scalar_mult_add_su3_vector(a,b,c,d) {Real _temp = c; _inline_sse_scalar_mult_add_su3_vector(a,b,_temp,d);}
+#define su3_projector(...) _inline_sse_su3_projector(__VA_ARGS__)
+Real su3_rdot( su3_vector *a, su3_vector *b );
+#define sub_four_su3_vecs(...) _inline_sse_sub_four_su3_vecs(__VA_ARGS__)
+void sub_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+
+#else // PRECISION == 2
+
+void add_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
+void add_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+Real magsq_su3vec( su3_vector *a );
+#define mult_su3_nn(...) _inline_sse_mult_su3_nn(__VA_ARGS__)
+#define mult_su3_na(...) _inline_sse_mult_su3_na(__VA_ARGS__)
+#define mult_su3_an(...) _inline_sse_mult_su3_an(__VA_ARGS__)
+#define mult_su3_mat_vec(...) _inline_sse_mult_su3_mat_vec(__VA_ARGS__)
+#define mult_adj_su3_mat_vec(...) _inline_sse_mult_adj_su3_mat_vec(__VA_ARGS__)
+#define mult_adj_su3_mat_vec_4dir(...) _inline_sse_mult_adj_su3_mat_vec_4dir(__VA_ARGS__)
+#define mult_adj_su3_mat_4vec(...) _inline_sse_mult_adj_su3_mat_4vec(__VA_ARGS__)
+#define mult_adj_su3_mat_hwvec(...) _inline_sse_mult_adj_su3_mat_hwvec(__VA_ARGS__)
+#define mult_su3_mat_hwvec(...) _inline_sse_mult_su3_mat_hwvec(__VA_ARGS__)
+#define mult_su3_mat_vec_sum_4dir(...) _inline_sse_mult_su3_mat_vec_sum_4dir(__VA_ARGS__)
+void scalar_mult_add_su3_matrix( su3_matrix *src1, su3_matrix *src2,
+	Real scalar, su3_matrix *dest);
+void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,
+	Real scalar, su3_vector *dest);
+#define su3_projector(...) _inline_sse_su3_projector(__VA_ARGS__)
+Real su3_rdot( su3_vector *a, su3_vector *b );
+void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
+	su3_vector *b3, su3_vector *b4 );
+void sub_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+
+#endif // PRECISION
+
+#endif // C_INLINE
+
+#else // Not SSE_INLINE
+
+#if defined C_INLINE
+
+/* CASE not SSE_INLINE but C_INLINE */
+
+#define add_su3_matrix(...) _inline_C_add_su3_matrix(__VA_ARGS__)
+#define add_su3_vector(...) _inline_C_add_su3_vector(__VA_ARGS__)
+#define magsq_su3vec(...) _inline_C_magsq_su3vec(__VA_ARGS__)
+#define mult_su3_nn(...) _inline_C_mult_su3_nn(__VA_ARGS__)
+#define mult_su3_na(...) _inline_C_mult_su3_na(__VA_ARGS__)
+void mult_su3_an ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
+void mult_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c );
+void mult_adj_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c );
+void mult_adj_su3_mat_vec_4dir( su3_matrix *a, su3_vector *b, su3_vector *c );
+void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
+			    su3_vector *dest0, su3_vector *dest1, 
+			    su3_vector *dest2, su3_vector *dest3  ) ;
+void mult_adj_su3_mat_hwvec( su3_matrix *mat, half_wilson_vector *src,
+	half_wilson_vector *dest );
+void mult_su3_mat_hwvec( su3_matrix *mat, half_wilson_vector *src,
+	half_wilson_vector *dest );
+void mult_su3_mat_vec_sum_4dir( su3_matrix *a, su3_vector *b0,
+	su3_vector *b1, su3_vector *b2, su3_vector *b3, su3_vector *c );
+#define scalar_mult_add_su3_matrix(a,b,c,d) {Real _temp = c; _inline_C_scalar_mult_add_su3_matrix(a,b,_temp,d);}
+#define scalar_mult_add_su3_vector(a,b,c,d) {Real _temp = c; _inline_C_scalar_mult_add_su3_vector(a,b,_temp,d);}
+void su3_projector( su3_vector *a, su3_vector *b, su3_matrix *c );
+#define su3_rdot(...) _inline_C_su3_rdot(__VA_ARGS__)
+void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
+	su3_vector *b3, su3_vector *b4 );
+#define sub_su3_vector(...) _inline_C_sub_su3_vector(__VA_ARGS__)
+
+#else
+
+/* CASE not SSE_INLINE and not C_INLINE */
+
+/* Use standard prototypes */
+
+void add_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
+void add_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+Real magsq_su3vec( su3_vector *a );
 void mult_su3_nn ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 void mult_su3_na ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 void mult_su3_an ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 void mult_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_adj_su3_mat_vec( su3_matrix *a, su3_vector *b, su3_vector *c );
-void mult_su3_mat_vec_sum_4dir( su3_matrix *a, su3_vector *b0,
-	su3_vector *b1, su3_vector *b2, su3_vector *b3, su3_vector *c );
 void mult_adj_su3_mat_vec_4dir( su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
 			    su3_vector *dest0, su3_vector *dest1, 
 			    su3_vector *dest2, su3_vector *dest3  ) ;
-void su3_projector( su3_vector *a, su3_vector *b, su3_matrix *c );
-void mult_su3_mat_hwvec( su3_matrix *mat, half_wilson_vector *src,
-	half_wilson_vector *dest );
 void mult_adj_su3_mat_hwvec( su3_matrix *mat, half_wilson_vector *src,
 	half_wilson_vector *dest );
+void mult_su3_mat_hwvec( su3_matrix *mat, half_wilson_vector *src,
+	half_wilson_vector *dest );
+void mult_su3_mat_vec_sum_4dir( su3_matrix *a, su3_vector *b0,
+	su3_vector *b1, su3_vector *b2, su3_vector *b3, su3_vector *c );
+void scalar_mult_add_su3_matrix( su3_matrix *src1, su3_matrix *src2,
+	Real scalar, su3_matrix *dest);
+void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,
+	Real scalar, su3_vector *dest);
+void su3_projector( su3_vector *a, su3_vector *b, su3_matrix *c );
+Real su3_rdot( su3_vector *a, su3_vector *b );
+void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
+	su3_vector *b3, su3_vector *b4 );
+void sub_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
 
-#endif
+#endif // C_INLINE
+
+#endif // SSE_INLINE
 
 #endif /* _SU3_H */

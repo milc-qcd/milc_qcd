@@ -53,6 +53,19 @@ void prefetch_matrix( su3_matrix * );
 int ks_congrad( field_offset src, field_offset dest, Real mass,
      int niter, Real rsqmin, int parity, Real *rsq );
 
+int ks_congrad_two_src(	/* Return value is number of iterations taken */
+    field_offset src1,    /* source vector (type su3_vector) */
+    field_offset src2,
+    field_offset dest1,	/* solution vectors */
+    field_offset dest2,
+    Real mass1,
+    Real mass2,
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real  *final_rsq_ptr 	/* final residue squared */
+    );
+
 void cleanup_gathers(msg_tag *tags1[], msg_tag *tags2[]);
 void cleanup_dslash_temps();
 
@@ -68,7 +81,7 @@ void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity );
 
 void dslash_eo_site( field_offset src, field_offset dest, int parity );
 
-/* These three do not exist yet (3/05 -CD) */
+/* The following three do not exist yet (3/05 -CD) */
 void dslash_eo_site_special( field_offset src, field_offset dest,
 			     int parity, msg_tag **tag, int start );
 void dslash_eo_field( su3_vector *src, su3_vector *dest, int parity );
@@ -199,6 +212,9 @@ int spectrum_nd( Real mass1, Real mass2, Real tol );
 int spectrum_nlpi2( Real qmass, Real amass, field_offset temp, Real tol);
 void mult_rho0( int fdir,  field_offset src, field_offset dest ) ;
 void mult_rhos( int fdir,  field_offset src, field_offset dest ) ;
+
+/* spectrum_singlets */
+int spectrum_singlets( Real mass, Real tol, field_offset temp_offset );
 
 #ifdef HAVE_QDP
 
