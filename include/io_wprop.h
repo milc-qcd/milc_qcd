@@ -268,6 +268,8 @@ int r_multidump_w_to_field(w_prop_file *wpf, int spin, int color,
 void r_multidump_w_c(w_prop_file *wpf);
 void r_multidump_w_f(w_prop_file *wpf);
 
+w_prop_file *setup_input_w_prop_file(char *filename);
+
 w_prop_file *w_ascii_w_i(char *filename);
 void w_ascii_w(w_prop_file *wpf, int spin, int color, 
 			 field_offset src);
@@ -348,7 +350,11 @@ int ask_ending_wprop( int prompt, int *flag, char *filename );
 void r_close_wprop(int flag, w_prop_file *wpf);
 void w_close_wprop(int flag, w_prop_file *wpf);
 
-/* Prototpyes for read_prop_w_fm1.c */
+/* Prototpyes for io_prop_w_fm.c */
+w_prop_file *r_serial_w_fm_i(char *filename);
+void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site, 
+		   wilson_propagator *dest_field);
+void r_serial_w_fm_f(w_prop_file *wpf);
 void r_prop_w_fm_to_site(char *filename, field_offset dest);
 void r_prop_w_fm_to_field(char *filename, wilson_propagator *dest);
 
