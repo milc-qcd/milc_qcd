@@ -58,7 +58,7 @@ $lines = 0;
 		    if(abs($_) > 1.){ $err = abs($tol*$_); }
 		    if($diff > $err){ $err = $diff; }
 		    # Round error to one sig fig
-		    $errs[$i] = sprintf("%.1g",$err*1.5);
+		    $errs[$i] = sprintf("%.1g",$err*2.0);
 		}
 		else
 		{

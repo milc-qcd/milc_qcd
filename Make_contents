@@ -91,7 +91,8 @@ CLOVER_DYNAMICAL =                 \
  clover_dynamical/*.h              \
  clover_dynamical/Make*            \
  clover_dynamical/in.sample*       \
- clover_dynamical/out.sample*
+ clover_dynamical/out.sample*      \
+ clover_dynamical/out.errtol*
 
 CLOVER_INVERT =                 \
  clover_invert/*.c              \
@@ -99,7 +100,8 @@ CLOVER_INVERT =                 \
  clover_invert/Make*            \
  clover_invert/in.sample*       \
  clover_invert/in.time*         \
- clover_invert/out.sample*
+ clover_invert/out.sample*      \
+ clover_invert/out.errtol*
 
 HVY_QPOT =                 \
  hvy_qpot/README           \
@@ -107,7 +109,8 @@ HVY_QPOT =                 \
  hvy_qpot/*.h              \
  hvy_qpot/Make*            \
  hvy_qpot/in.sample*       \
- hvy_qpot/out.sample*
+ hvy_qpot/out.sample*      \
+ hvy_qpot/out.errtol*
 
 KS_DYNAMICAL =                 \
  ks_dynamical/*.c              \
@@ -115,6 +118,7 @@ KS_DYNAMICAL =                 \
  ks_dynamical/Make*            \
  ks_dynamical/in.sample*       \
  ks_dynamical/in.time*         \
+ ks_dynamical/out.errtol*     \
  ks_dynamical/out.sample*
 
 PURE_GAUGE =                 \
@@ -122,6 +126,7 @@ PURE_GAUGE =                 \
  pure_gauge/*.h              \
  pure_gauge/Make*            \
  pure_gauge/in.sample*       \
+ pure_gauge/out.errtol*     \
  pure_gauge/out.sample*
 
 WILSON_DYNAMICAL =                 \
@@ -129,6 +134,7 @@ WILSON_DYNAMICAL =                 \
  wilson_dynamical/*.h              \
  wilson_dynamical/Make*            \
  wilson_dynamical/in.sample*       \
+ wilson_dynamical/out.errtol*     \
  wilson_dynamical/out.sample*
 
 # We split up the release into manageable components
@@ -281,6 +287,7 @@ WORK_ARB_DIRAC_EIGEN =          \
  arb_dirac_eigen/*.h            \
  arb_dirac_eigen/Make*          \
  arb_dirac_eigen/in.sample*     \
+ arb_dirac_eigen/out.errtol*     \
  arb_dirac_eigen/out.sample*
 
 WORK_ARB_DIRAC_INVERT =          \
@@ -289,6 +296,7 @@ WORK_ARB_DIRAC_INVERT =          \
  arb_dirac_invert/*.h            \
  arb_dirac_invert/Make*          \
  arb_dirac_invert/in.sample*     \
+ arb_dirac_invert/out.errtol*     \
  arb_dirac_invert/out.sample*
 
 WORK_CLOVER_DYNAMICAL =          \
@@ -296,6 +304,7 @@ WORK_CLOVER_DYNAMICAL =          \
  clover_dynamical/*.h            \
  clover_dynamical/Make*          \
  clover_dynamical/in.sample*     \
+ clover_dynamical/out.errtol*     \
  clover_dynamical/out.sample*
 
 WORK_CLOVER_HYBRIDS =            \
@@ -303,6 +312,7 @@ WORK_CLOVER_HYBRIDS =            \
  clover_hybrids/*.h              \
  clover_hybrids/Make*            \
  clover_hybrids/in.sample*       \
+ clover_hybrids/out.errtol*     \
  clover_hybrids/out.sample*
 
 WORK_CLOVER_INVERT =            \
@@ -311,6 +321,7 @@ WORK_CLOVER_INVERT =            \
  clover_invert/Make*            \
  clover_invert/in.sample*       \
  clover_invert/in.time*         \
+ clover_invert/out.errtol*     \
  clover_invert/out.sample*
 
 WORK_DENSE_STATIC_SU3 =           \
@@ -323,6 +334,7 @@ WORK_H_DIBARYON =            \
  h_dibaryon/*.h              \
  h_dibaryon/Make*            \
  h_dibaryon/in.sample*       \
+ h_dibaryon/out.errtol*     \
  h_dibaryon/out.sample*
 
 WORK_HEAVY        =   \
@@ -330,6 +342,7 @@ WORK_HEAVY        =   \
  heavy/*.c            \
  heavy/*.h            \
  heavy/in.sample*     \
+ heavy/out.errtol*    \     \
  heavy/out.sample*    \
  heavy/utilities/*.c  \
  heavy/utilities/*.h  \
@@ -341,6 +354,7 @@ WORK_HQET_HEAVY_TO_LIGHT =          \
  hqet_heavy_to_light/*.h            \
  hqet_heavy_to_light/Make*          \
  hqet_heavy_to_light/in.sample*     \
+ hqet_heavy_to_light/out.errtol*     \
  hqet_heavy_to_light/out.sample*
 
 WORK_HVY_QPOT     =   \
@@ -349,6 +363,7 @@ WORK_HVY_QPOT     =   \
  hvy_qpot/*.c         \
  hvy_qpot/*.h         \
  hvy_qpot/in.sample.* \
+ hvy_qpot/out.errtol*     \
  hvy_qpot/out.sample*
 
 WORK_KS_DYNAMICAL =          \
@@ -357,6 +372,7 @@ WORK_KS_DYNAMICAL =          \
  ks_dynamical/Make*          \
  ks_dynamical/in.sample*     \
  ks_dynamical/in.time*       \
+ ks_dynamical/out.errtol*     \
  ks_dynamical/out.sample*
 
 WORK_KS_EIGEN =          \
@@ -365,6 +381,7 @@ WORK_KS_EIGEN =          \
  ks_eigen/*.h            \
  ks_eigen/Make*          \
  ks_eigen/in.sample*     \
+ ks_eigen/out.errtol*     \
  ks_eigen/out.sample*
 
 WORK_KS_HL_SPECTRUM =    \
@@ -372,6 +389,7 @@ WORK_KS_HL_SPECTRUM =    \
  ks_hl_spectrum/*.h            \
  ks_hl_spectrum/Make*          \
  ks_hl_spectrum/in.sample*     \
+ ks_hl_spectrum/out.errtol*     \
  ks_hl_spectrum/out.sample*
 
 WORK_KS_IMP_DYN1 =           \
@@ -380,6 +398,7 @@ WORK_KS_IMP_DYN1 =           \
  ks_imp_dyn1/*.h             \
  ks_imp_dyn1/Make*           \
  ks_imp_dyn1/in.sample*      \
+ ks_imp_dyn1/out.errtol*     \
  ks_imp_dyn1/out.sample*
 
 WORK_KS_IMP_DYN2 =           \
@@ -389,6 +408,7 @@ WORK_KS_IMP_DYN2 =           \
  ks_imp_dyn2/Make*           \
  ks_imp_dyn2/in.sample*      \
  ks_imp_dyn2/in.time*        \
+ ks_imp_dyn2/out.errtol*     \
  ks_imp_dyn2/out.sample*
 
 WORK_KS_IMP_UTILITIES =           \
@@ -402,6 +422,7 @@ WORK_KS_IMP_INVERT_MULTI =           \
  ks_imp_invert_multi/*.h             \
  ks_imp_invert_multi/Make*           \
  ks_imp_invert_multi/in.sample*      \
+ ks_imp_invert_multi/out.errtol*     \
  ks_imp_invert_multi/out.sample*
 
 WORK_PROPAGATING_FORM_FACTOR =          \
@@ -409,6 +430,7 @@ WORK_PROPAGATING_FORM_FACTOR =          \
  propagating_form_factor/*.h            \
  propagating_form_factor/Make*          \
  propagating_form_factor/in.sample*     \
+ propagating_form_factor/out.errtol*    \     \
  propagating_form_factor/out.sample*    \
  propagating_form_factor/scripts/*       \
  propagating_form_factor/utilities/*.c  \
@@ -421,6 +443,7 @@ WORK_PURE_GAUGE =          \
  pure_gauge/*.h            \
  pure_gauge/Make*          \
  pure_gauge/in.sample*     \
+ pure_gauge/out.errtol*     \
  pure_gauge/out.sample*
 
 WORK_SCHROED_CL_INV =          \
@@ -428,6 +451,7 @@ WORK_SCHROED_CL_INV =          \
  schroed_cl_inv/*.h            \
  schroed_cl_inv/Make*          \
  schroed_cl_inv/in.sample*     \
+ schroed_cl_inv/out.errtol*     \
  schroed_cl_inv/out.sample*
 
 WORK_SCHROED_KS_DYN =          \
@@ -435,6 +459,7 @@ WORK_SCHROED_KS_DYN =          \
  schroed_ks_dyn/*.h            \
  schroed_ks_dyn/Make*          \
  schroed_ks_dyn/in.sample*     \
+ schroed_ks_dyn/out.errtol*     \
  schroed_ks_dyn/out.sample*
 
 WORK_SCHROED_PG =          \
@@ -442,6 +467,7 @@ WORK_SCHROED_PG =          \
  schroed_pg/*.h            \
  schroed_pg/Make*          \
  schroed_pg/in.sample*     \
+ schroed_pg/out.errtol*     \
  schroed_pg/out.sample*
 
 WORK_SMOOTH_INST =         \
@@ -451,6 +477,7 @@ WORK_SMOOTH_INST =         \
  smooth_inst/*.h           \
  smooth_inst/Make*         \
  smooth_inst/in.sample*    \
+ smooth_inst/out.errtol*   \     \
  smooth_inst/out.sample*   \
  smooth_inst/utilities/*.c \
  smooth_inst/utilities/Make_utilities
@@ -460,6 +487,7 @@ WORK_STRING_BREAK =          \
  string_break/*.h            \
  string_break/Make*          \
  string_break/in.sample*     \
+ string_break/out.errtol*     \
  string_break/out.sample*
 
 WORK_SYMANZIK_SL32 =         \
@@ -467,6 +495,7 @@ WORK_SYMANZIK_SL32 =         \
  symanzik_sl32/*.h           \
  symanzik_sl32/Make*         \
  symanzik_sl32/in.sample*    \
+ symanzik_sl32/out.errtol*     \
  symanzik_sl32/out.sample*
 
 WORK_WILSON_DYNAMICAL =          \
@@ -474,6 +503,7 @@ WORK_WILSON_DYNAMICAL =          \
  wilson_dynamical/*.h            \
  wilson_dynamical/Make*         \
  wilson_dynamical/in.sample*     \
+ wilson_dynamical/out.errtol*     \
  wilson_dynamical/out.sample*
 
 WORK_WILSON_STATIC        =   \
@@ -481,6 +511,7 @@ WORK_WILSON_STATIC        =   \
  wilson_static/*.c            \
  wilson_static/*.h            \
  wilson_static/in.sample*     \
+ wilson_static/out.errtol*    \     \
  wilson_static/out.sample*    \
  wilson_static/read_matrix_code/Make* \
  wilson_static/read_matrix_code/*.c \
