@@ -1,5 +1,10 @@
-/******* d_congrad5_fn_tmp.c - conjugate gradient for SU3/fermions ****/
+/******* d_congrad5_fn_fewsums.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 6 */
+
+/* TEST VERSION  4/18/03, TIMING FOR GLOBAL REDUCTIONS */
+/* REDUCE NUMBER OF GLOBAL SUMS */
+/* 4/18/03 D.T. */
+
 /* Kogut-Susskind fermions -- this version for "fat plus Naik" quark
    actions.  
 
@@ -49,7 +54,10 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
   register site *s;
   int iteration;	/* counter for iterations */
   Real a,b;	/* Sugar's a,b */
-  double rsq,oldrsq,pkp;	/* resid**2,last resid*2,pkp = cg_p.K.cg_p */
+  double true_rsq,rsq,oldrsq; /* rsq = |resid|, true_rsq = rsq from actual
+				 summation of resid */
+  double pkp;		/* pkp = cg_p.K.cg_p */
+  double c_tr,c_tt,tempsum[4];	/* Re<resid|ttt>, <ttt|ttt> */
   Real msq_x4;	/* 4*mass*mass */
   double source_norm;	/* squared magnitude of source vector */
   double rsqstop;	/* stopping residual normalized by source norm */
@@ -62,12 +70,14 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
 
 #ifdef CGTIME
 double dtimed,dtimec;
+double reduce_time; /*TEST*/
 #endif
 double nflop;
 
 /* debug */
 #ifdef CGTIME
  dtimec = -dclock(); 
+ reduce_time = 0.0; /*TEST*/
 #endif
 
 nflop = 1187;
@@ -145,12 +155,21 @@ start:
 	  /* note that we go back to the site structure for src */
 	  source_norm += (double)magsq_su3vec( (su3_vector *)F_PT(s,src) );
 	  rsq += (double)magsq_su3vec( &resid[i] );
-	} END_LOOP
-	g_doublesum( &source_norm );
-        g_doublesum( &rsq );
 #ifdef CG_DEBUG
 	if(this_node==0)printf("CONGRAD: start rsq = %.10e\n",rsq);
 #endif
+	} END_LOOP
+#ifdef CGTIME
+reduce_time -= dclock();
+#endif
+	true_rsq = rsq; /* not yet summed over nodes */
+	tempsum[0] = source_norm; tempsum[1] = rsq;
+        g_vecdoublesum( tempsum, 2 );
+	source_norm = tempsum[0]; rsq = tempsum[1];
+#ifdef CGTIME
+reduce_time += dclock();
+#endif
+	/**if(this_node==0)printf("CONGRAD: start rsq = %.10e\n",rsq);**/
         iteration++ ;  /* iteration counts number of multiplications
                            by M_adjoint*M */
 	total_iters++;
@@ -194,7 +213,7 @@ start:
            cg_p <- resid + b*cg_p
         */
     do{
-        oldrsq = rsq;
+        oldrsq = true_rsq;	/* not yet summed over nodes */
         pkp = 0.0;
 	/* sum of neighbors */
 
@@ -211,7 +230,7 @@ start:
 	/* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
 	/* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */
 	/* pkp  <- cg_p.(ttt - msq*cg_p) */
-	pkp = 0.0;
+	pkp = 0.0; c_tr=0.0; c_tt=0.0;
 	FORSOMEPARITY(i,s,l_parity){
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VV( &ttt[i+FETCH_UP], &cg_p[i+FETCH_UP] );
@@ -219,8 +238,19 @@ start:
 	  scalar_mult_add_su3_vector( &ttt[i], &cg_p[i], -msq_x4,
 				      &ttt[i] );
 	  pkp += (double)su3_rdot( &cg_p[i], &ttt[i] );
+	  c_tr += (double)su3_rdot( &ttt[i], &resid[i] );
+	  c_tt += (double)su3_rdot( &ttt[i], &ttt[i] );
 	} END_LOOP
-	g_doublesum( &pkp );
+#ifdef CGTIME
+reduce_time -= dclock();
+#endif
+	/* finally sum oldrsq over nodes, also other sums */
+	tempsum[0] = pkp; tempsum[1] = c_tr; tempsum[2] = c_tt; tempsum[3] = oldrsq;
+	g_vecdoublesum( tempsum, 4 );
+	pkp = tempsum[0]; c_tr = tempsum[1]; c_tt = tempsum[2]; oldrsq = tempsum[3];
+#ifdef CGTIME
+reduce_time += dclock();
+#endif
 	iteration++;
 	total_iters++;
 
@@ -228,7 +258,7 @@ start:
 
 	/* dest <- dest - a*cg_p */
 	/* resid <- resid - a*ttt */
-	rsq=0.0;
+	true_rsq=0.0;
 	FORSOMEPARITY(i,s,l_parity){
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VVVV( &t_dest[i+FETCH_UP], 
@@ -238,13 +268,15 @@ start:
 	  }
 	  scalar_mult_add_su3_vector( &t_dest[i], &cg_p[i], a, &t_dest[i] );
 	  scalar_mult_add_su3_vector( &resid[i], &ttt[i], a, &resid[i]);
-	  rsq += (double)magsq_su3vec( &resid[i] );
+	  true_rsq += (double)magsq_su3vec( &resid[i] );
 	} END_LOOP
-	g_doublesum(&rsq);
-#ifdef CG_DEBUG
-	if(mynode()==0){printf("iter=%d, rsq= %e, pkp=%e\n",
-	   iteration,(double)rsq,(double)pkp);fflush(stdout);}
-#endif
+	/**printf("XXX:  node %d\t%e\t%e\t%e\n",this_node,oldrsq,c_tr,c_tt);**/
+	rsq = oldrsq + 2.0*a*c_tr + a*a*c_tt; /*TEST - should equal true_rsq */
+	/**c_tt = true_rsq;**/ /* TEMP for test */
+	/**g_doublesum(&c_tt);**/ /* TEMP true value for rsq */
+	/**node0_printf("RSQTEST: %e\t%e\t%e\n",rsq,c_tt,rsq-c_tt);**/
+	/**if(mynode()==0){printf("iter=%d, rsq= %e, pkp=%e\n",
+	   iteration,(double)rsq,(double)pkp);fflush(stdout);}**/
 	
         if( rsq <= rsqstop ){
 	  /* copy t_dest back to site structure */
@@ -272,8 +304,18 @@ start:
 #endif
 #ifdef CGTIME
  dtimec += dclock();
-if(this_node==0){printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
+if(this_node==0){
+printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
+printf("TESTCONG: reduce_time = %e iters = %d time/iter = %e\n",
+reduce_time,iteration,reduce_time/iteration );
+//{ /* time stamp for NERSC performance studies */
+//      time_t time_now;
+//      char time_out[26];
+//      time(&time_now);
+//      ctime_r(&time_now,time_out);
+//      printf("  Time stamp:   %s",time_out);
+//}
 fflush(stdout);}
 #endif
              return (iteration);

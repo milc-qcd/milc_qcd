@@ -15,9 +15,11 @@ G_KS_ALL = \
   d_congrad6.o \
   d_congrad5_eo.o \
   d_congrad5_fn.o \
-  d_congrad_ks.o \
+  d_congrad5_fn_fewsums.o \
+  d_congrad_two_src.o \
   dslash_eo.o \
   dslash_fn.o \
+  dslash_fn_dblstore.o \
   dslash_fn_multi.o \
   dslash_fn2.o \
   eigen_stuff.o \
@@ -50,7 +52,8 @@ G_KS_ALL = \
   spectrum_multimom.o \
   spectrum_nd.o \
   spectrum_pt.o \
-  spectrum_nlpi2.o
+  spectrum_nlpi2.o \
+  spectrum_singlets.o
 
 # Must match our headers in generic_ks_includes.h
 G_KS_HEADERS = \
@@ -90,11 +93,15 @@ d_congrad5_eo.o: ../generic_ks/d_congrad5_eo.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn.o: ../generic_ks/d_congrad5_fn.c
 	${CC} -c ${CFLAGS} $<
-d_congrad_ks.o: ../generic_ks/d_congrad_ks.c
+d_congrad5_fn_fewsums.o: ../generic_ks/d_congrad5_fn_fewsums.c
+	${CC} -c ${CFLAGS} $<
+d_congrad_two_src.o: ../generic_ks/d_congrad_two_src.c
 	${CC} -c ${CFLAGS} $<
 dslash_eo.o: ../generic_ks/dslash_eo.c
 	${CC} -c ${CFLAGS} $<
 dslash_fn.o: ../generic_ks/dslash_fn.c
+	${CC} -c ${CFLAGS} $<
+dslash_fn_dblstore.o: ../generic_ks/dslash_fn_dblstore.c
 	${CC} -c ${CFLAGS} $<
 dslash_fn_multi.o: ../generic_ks/dslash_fn_multi.c
 	${CC} -c ${CFLAGS} $<
@@ -167,6 +174,8 @@ spectrum_nd.o: ../generic_ks/spectrum_nd.c
 spectrum_pt.o: ../generic_ks/spectrum_pt.c
 	${CC} -c ${CFLAGS} $<
 spectrum_nlpi2.o: ../generic_ks/spectrum_nlpi2.c
+	${CC} -c ${CFLAGS} $<
+spectrum_singlets.o: ../generic_ks/spectrum_singlets.c
 	${CC} -c ${CFLAGS} $<
 
 ifeq ($(strip ${HAVEQDP}),true)

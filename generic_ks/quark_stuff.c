@@ -506,6 +506,9 @@ void load_longlinks() {
   int ipath,dir;
   int disp[4];
   int nflop = 1804;
+#ifdef DBLSTORE_FN
+  msg_tag *tag[4];
+#endif
   register su3_matrix *long1;
 
 #ifdef LLTIME
@@ -551,6 +554,23 @@ printf("\n");**/
 
   } /* loop over directions */
 
+#ifdef DBLSTORE_FN
+  // gather backwards longlinks
+  for( dir=XUP; dir<=TUP; dir ++){
+    FORALLSITES(i,s){
+      s->tempmat1 = t_longlink[dir+4*i];
+    }
+    tag[dir] = start_gather_site( F_OFFSET(tempmat1),
+      sizeof(su3_matrix), OPP_3_DIR(DIR3(dir)), EVENANDODD, gen_pt[dir] );
+    wait_gather( tag[dir] );
+    FORALLSITES(i,s){
+      su3_adjoint( (su3_matrix *)gen_pt[dir][i],
+      &(t_longbacklink[dir+4*i]) );
+    }
+    cleanup_gather( tag[dir] );
+  }
+#endif
+
   valid_longlinks = 1;
 #ifdef LLTIME
 dtime += dclock();
@@ -565,6 +585,9 @@ void load_fatlinks() {
   register site *s;
   int dir;
   register su3_matrix *fat1;
+#ifdef DBLSTORE_FN
+  msg_tag *tag[4];
+#endif
 #ifdef DM_DU0
   register su3_matrix *fat2;
 #endif
@@ -698,6 +721,23 @@ printf("\n");**/
      } /* nu */
  }/* dir */  
 #endif
+
+#ifdef DBLSTORE_FN
+  // gather backwards fatlinks
+  for( dir=XUP; dir<=TUP; dir ++){
+    FORALLSITES(i,s){
+      s->tempmat1 = t_fatlink[dir+4*i];
+    }
+    tag[dir] = start_gather_site( F_OFFSET(tempmat1),
+      sizeof(su3_matrix), OPP_DIR(dir), EVENANDODD, gen_pt[dir] );
+    wait_gather( tag[dir] );
+    FORALLSITES(i,s){
+      su3_adjoint( (su3_matrix *)gen_pt[dir][i],
+      &(t_fatbacklink[dir+4*i]) );
+    }
+    cleanup_gather( tag[dir] );
+  }
+#endif //DBLSTORE_FN
 
   valid_fatlinks = 1;
 #ifdef LLTIME
