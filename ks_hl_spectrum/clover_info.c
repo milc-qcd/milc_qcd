@@ -113,3 +113,13 @@ void write_appl_w_prop_info(FILE *fp)
 			 sizeof(int));
 }
 
+char *create_w_XML(){
+  char dummy[] = "Wilson propagator";
+  char *recxml = (char *)malloc(sizeof(dummy)+1);
+  strcpy(recxml, dummy);
+  return recxml;
+}
+
+void free_w_XML(char *recxml){
+  if(recxml != NULL)free(recxml);
+}

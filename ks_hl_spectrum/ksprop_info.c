@@ -40,3 +40,14 @@ void write_appl_ksprop_info(FILE *fp)
 
 
 }
+
+char *create_ks_XML(){
+  char dummy[] = "KS Propagator";
+  char *filexml = (char *)malloc(sizeof(dummy)+1);
+  strcpy(filexml, dummy);
+  return filexml;
+}
+
+void free_ks_XML(char *filexml){
+  if(filexml != NULL)free(filexml);
+}
