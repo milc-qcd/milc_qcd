@@ -94,15 +94,18 @@ G_KS_OBJECTS = \
   rephase.o
 
 SPECTRUM_OBJECTS = \
+  ape_smear.o \
   flavor_ops.o \
   fpi_2.o \
   hvy_pot.o \
   nl_spectrum.o \
+  project_su3_hit.o \
   spectrum2.o \
   spectrum_mom.o \
   spectrum_multimom.o \
   spectrum_nd.o \
-  spectrum_nlpi2.o
+  spectrum_nlpi2.o \
+  spectrum_singlets.o
 
 # Objects depending on architecture and software package 
 
@@ -117,12 +120,17 @@ else
   endif
 endif
 
-# Choose dslash (dslash_fn.o dslash_fn2.o)
-DSLASH_FN = dslash_fn.o  # Or dslash_fn2.o
+# Choose non-QDP FN dslash (dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o )
+DSLASH_FN = dslash_fn2.o
+
+# Choose non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
+# or d_congrad5_fn_fewsums.o)
+CONGRAD_FN = d_congrad5_fn_fewsums.o d_congrad_two_src.o
 
 # Choose Asqtad fermion force 
 # (fermion_force_asqtad.o fermion_force_asqtad2.o fermion_force_asqtad_qdp.o)
 ASQFORCE = fermion_force_asqtad2.o
+
 
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o
@@ -133,7 +141,7 @@ ifeq ($(strip ${HAVEQDP}),true)
   INV_FN_OBJECTS = d_congrad5_fn_qdp.o ${DSLASH_FN} dslash_fn_qdp.o 
   MULTI_INV_FN = ks_multicg_qdp.o
 else
-  INV_FN_OBJECTS = d_congrad5_fn.o ${DSLASH_FN}
+  INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
   MULTI_INV_FN = ks_multicg.o
 endif
 MULTI_INV_EO = ks_multicg.o

@@ -65,6 +65,22 @@ setup()
     terminate(1);
   }
   
+#ifdef DBLSTORE_FN
+  /* Allocate space for t_longlink and t_fatlink */
+  t_longbacklink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+  if(t_longbacklink==NULL){
+    printf("NODE %d: no room for t_longbacklink\n",this_node);
+    terminate(1);
+  }
+  
+  t_fatbacklink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+  if(t_fatbacklink==NULL){
+    printf("NODE %d: no room for t_fatbacklink\n",this_node);
+    terminate(1);
+  }
+#endif
+  
+
 #ifdef DM_DU0
   /* Allocate space for u0 derivative of temp fatlinks */
   t_dfatlink_du0 = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));

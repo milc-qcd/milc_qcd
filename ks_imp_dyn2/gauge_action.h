@@ -1,17 +1,19 @@
-/* The Plaquette gauge action */
-
+/* Symanzik 1-loop gauge action: 1x1 + 1x2 + 1x1x1 */
 #ifdef GAUGE_ACTION_PART1
+/* defines NREPS NLOOP MAX_LENGTH MAX_NUM */
 #define NREPS 1
-#define NLOOP 1
-#define MAX_LENGTH 4
-#define MAX_NUM 6
+#define NLOOP 3
+#define MAX_LENGTH 6
+#define MAX_NUM 16
 #endif
 
 #ifdef GAUGE_ACTION_PART2
     static int loop_ind[NLOOP][MAX_LENGTH] = {
-    { XUP, YUP, XDOWN, YDOWN }
+    { XUP, YUP, XDOWN, YDOWN, NODIR, NODIR },
+    { XUP, XUP, YUP, XDOWN, XDOWN , YDOWN},
+    { XUP, YUP, ZUP, XDOWN, YDOWN , ZDOWN},
     };
-    static int loop_length_in[NLOOP] = {4};
+    static int loop_length_in[NLOOP] = {4,6,6};
 
     for(j=0;j<NLOOP;j++){
 	loop_num[j] = 0;
@@ -21,8 +23,11 @@
 	}
     }
 
-    /* set up the loop coefficients */
+    /* Loop coefficients from Urs */
     loop_coeff[0][0]= 1.0;
-    strcpy(gauge_action_description,"\"Single plaquette action\"");
-    node0_printf("Single plaquette action\n");
+    loop_coeff[1][0]=  -1.00/(20.0*u0*u0) * (1.00 - 0.6264*log(u0) ); 
+    loop_coeff[2][0]=  1.00/(u0*u0) * 0.04335 * log(u0); 
+    strcpy(gauge_action_description,"\"Symanzik 1x1 + 1x2 + 1x1x1 action\"");
+    node0_printf("Symanzik 1x1 + 1x2 + 1x1x1 action\n");
+
 #endif

@@ -140,6 +140,15 @@ main( int argc, char **argv )
 #endif
 	}
 	
+	if(strstr(spectrum_request,",spectrum_singlets,") != NULL){
+#ifdef ONEMASS
+	  avspect_iters += spectrum_singlets(mass, 5e-3, F_OFFSET(phi));
+#else
+	  avspect_iters += spectrum_singlets(mass1, 5e-3, F_OFFSET(phi1));
+	  avspect_iters += spectrum_singlets(mass2, 5e-3, F_OFFSET(phi1));
+#endif
+	}
+
 	if(strstr(spectrum_request,",fpi,") != NULL)
 	  {
 	    avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3 );
