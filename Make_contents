@@ -551,11 +551,7 @@ WORK_SF =                  \
  ${WORK_SCHROED_PG}
 
 WORK_WILSON =              \
- ${WORK_GENERIC_WILSON}    \
- ${WORK_HEAVY}             \
- ${WORK_WILSON_DYNAMICAL}  \
- ${WORK_WILSON_SCHROED}    \
- ${WORK_WILSON_STATIC}
+ ${WORK_GENERIC_WILSON}
 
 # The names of the component tar files
 
@@ -574,7 +570,8 @@ WORK_WILSON_TAR  = ${WORK_NAME_ROOT}_wilson.tar
 WORK_TAR =          \
  ${WORK_BASIC_TAR}  \
  ${WORK_KS_TAR}     \
- ${WORK_FORM_TAR}
+ ${WORK_FORM_TAR}   \
+ ${WORK_WILSON_TAR}
 
 # Contents of the whole ball of wax
 

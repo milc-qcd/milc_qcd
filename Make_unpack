@@ -69,7 +69,7 @@ hqet_heavy_to_light:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_form
 hvy_qpot: 		
 ks_dynamical:  		MAKE_generic_ks 
 ks_eigen:		MAKE_generic_ks 
-ks_hl_spectrum:	        MAKE_generic_ks Make_generic_wilson
+ks_hl_spectrum:	        MAKE_generic_ks MAKE_generic_wilson
 ks_imp_dyn1:		MAKE_generic_ks 
 ks_imp_dyn2:		MAKE_generic_ks 
 ks_imp_utilities:	MAKE_generic_ks 
