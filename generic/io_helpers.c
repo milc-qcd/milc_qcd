@@ -177,7 +177,7 @@ int ask_starting_lattice( int prompt, int *flag, char *filename ){
       return(1);
     }
     if(status !=1) {
-        printf("\nask_starting_lattice: ERROR IN INPUT: can't read starting lattice command\n",savebuf);
+        printf("\nask_starting_lattice: ERROR IN INPUT: can't read starting lattice command\n");
         return(1);
     }
 
@@ -200,7 +200,8 @@ int ask_starting_lattice( int prompt, int *flag, char *filename ){
        *flag = RELOAD_PARALLEL;
     }
     else{
-    	printf("\nask_starting_lattice: ERROR IN INPUT: lattice_command \"%s\" is invalid\n",savebuf); return(1);
+    	printf(" is not a valid starting lattice command. INPUT ERROR.\n"); 
+	return(1);
     }
 
     /*read name of file and load it */
@@ -280,7 +281,7 @@ int ask_ending_lattice( int prompt, int *flag, char *filename ){
 	printf("\n");
     }
     else {
-      printf("\nask_ending_lattice: ERROR IN INPUT: \"%s\" is not a save lattice command\n",savebuf);
+      printf("is not a save lattice command. INPUT ERROR\n");
       return(1);
     }
 
