@@ -22,7 +22,7 @@
 #include <time.h>
 #include <assert.h>
 #include "../include/io_lat.h" /* for utilities like get_f ,etc */
-#include "../include/io_prop_ks.h"
+#include "../include/io_ksprop.h"
 
 #ifndef HAVE_FSEEKO
 #define fseeko fseek

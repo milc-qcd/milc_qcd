@@ -111,7 +111,7 @@
 #include <string.h>
 #include <assert.h>
 #include "../include/io_lat.h"
-#include "../include/io_wb.h"
+#include "../include/io_wprop.h"
 #include "../include/file_types.h"
 
 #ifndef HAVE_FSEEKO

@@ -224,8 +224,6 @@ int read_F3_M(QIO_Reader *infile, field_offset dest, int count)
   QIO_RecordInfo rec_info;
   int status;
   /* We assume input precision is single */
-  char qdptype[] = "QDP_F3_ColorMatrix";
-  char prec[] = "F";
   int datum_size = sizeof(fsu3_matrix);
   int word_size = sizeof(float);
   
@@ -277,15 +275,18 @@ gauge_file *save_scidac(char *filename, int volfmt){
   QIO_close_write(outfile);
 
   /* Write information */
-  if(volfmt == QIO_SINGLEFILE)
+  if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved gauge configuration serially to binary file %s\n",
 		 filename);
-  else if(volfmt == QIO_MULTIFILE)
+  }
+  else if(volfmt == QIO_MULTIFILE){
     node0_printf("Saved gauge configuration as multifile to binary file %s\n",
 	   filename);
-  else if(volfmt == QIO_PARTFILE)
+  }
+  else if(volfmt == QIO_PARTFILE){
     node0_printf("Saved gauge configuration in partition format to binary file %s\n",
 	   filename);
+  }
 
   node0_printf("Time stamp %s\n",gf->header->time_stamp);
   node0_printf("Checksums %x %x\n",
@@ -424,15 +425,18 @@ QIO_Writer *save_color_matrix_scidac(char *filename, char *filexml,
   QIO_close_write(outfile);
 
   /* Write information */
-  if(volfmt == QIO_SINGLEFILE)
+  if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved KS matrix serially to binary file %s\n",
 		 filename);
-  else if(volfmt == QIO_MULTIFILE)
+  }
+  else if(volfmt == QIO_MULTIFILE){
     node0_printf("Saved KS matrix as multifile to binary file %s\n",
 	   filename);
-  else if(volfmt == QIO_PARTFILE)
+  }
+  else if(volfmt == QIO_PARTFILE){
     node0_printf("Saved KS matrix in partition format to binary file %s\n",
 	   filename);
+  }
 
   node0_printf("Checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),
@@ -466,15 +470,18 @@ QIO_Writer *save_color_matrix_scidac_from_temp(char *filename,
   QIO_close_write(outfile);
 
   /* Write information */
-  if(volfmt == QIO_SINGLEFILE)
+  if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved KS matrix serially to binary file %s\n",
 		 filename);
-  else if(volfmt == QIO_MULTIFILE)
+  }
+  else if(volfmt == QIO_MULTIFILE){
     node0_printf("Saved KS matrix as multifile to binary file %s\n",
 	   filename);
-  else if(volfmt == QIO_PARTFILE)
+  }
+  else if(volfmt == QIO_PARTFILE){
     node0_printf("Saved KS matrix in partition format to binary file %s\n",
 	   filename);
+  }
 
   node0_printf("Checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),

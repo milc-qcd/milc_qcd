@@ -9,7 +9,7 @@ forget
 
 number_of_kappas 1
 
-reload_serial_prop ../binary_samples/qf_d_d_0.124_00001
+reload_serial_wprop ../binary_samples/qf_d_d_0.124_00001
 kappa 0.124
 d1 0.09073
 format 1

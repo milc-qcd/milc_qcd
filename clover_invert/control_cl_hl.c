@@ -142,8 +142,8 @@ int main(int argc,char *argv[])
 	/* open files for wilson propagators */
 	
 	wqstmp = wqs[k];  /* For clover_info.c */
-	fp_in_w[k]  = r_open_prop(startflag_w[k], startfile_w[k]);
-	fp_out_w[k] = w_open_prop(saveflag_w[k],  savefile_w[k] );
+	fp_in_w[k]  = r_open_wprop(startflag_w[k], startfile_w[k]);
+	fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k] );
 	
 	/* Open scratch file and write header */
 	sprintf(scratch_file[k],"%s_%02d",scratchstem_w,k);
@@ -195,16 +195,16 @@ int main(int argc,char *argv[])
 	    
 	    /* load psi if requested */
 #ifdef IOTIME
-	    status = reload_propagator( startflag_w[k], fp_in_w[k], 
+	    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
 			       spin, color, F_OFFSET(psi),1);
 #else
-	    status = reload_propagator( startflag_w[k], fp_in_w[k], 
+	    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
 			       spin, color, F_OFFSET(psi),0);
 #endif	    
 	    if(status != 0)
 	      {
 		node0_printf("control_cl_hl: Recovering from error by resetting initial guess to zero\n");
-		reload_propagator( FRESH, fp_in_w[k], 
+		reload_wprop_sc( FRESH, fp_in_w[k], 
 			       spin, color, F_OFFSET(psi),0);
 		flag = 0;
 	      }
@@ -287,10 +287,10 @@ int main(int argc,char *argv[])
 	    
 	    /* save psi if requested */
 #ifdef IOTIME
-	    save_propagator( saveflag_w[k],fp_out_w[k],
+	    save_wprop_sc( saveflag_w[k],fp_out_w[k],
 			     spin,color,F_OFFSET(psi),1);
 #else
-	    save_propagator( saveflag_w[k],fp_out_w[k],
+	    save_wprop_sc( saveflag_w[k],fp_out_w[k],
 			     spin,color,F_OFFSET(psi),0);
 #endif
 	    
@@ -309,8 +309,8 @@ int main(int argc,char *argv[])
 	  scratch_file[k]); */
 	
 	/* close files for wilson propagators */
-	r_close_prop(startflag_w[k],fp_in_w[k]);
-	w_close_prop(saveflag_w[k],fp_out_w[k]);
+	r_close_wprop(startflag_w[k],fp_in_w[k]);
+	w_close_wprop(saveflag_w[k],fp_out_w[k]);
 	
       } /* kappas */
       

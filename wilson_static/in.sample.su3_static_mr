@@ -37,6 +37,6 @@
    smear_func local
    smear_func expon 0.3 end_param
    smear_meson_out smear_meson.test
-   fresh_prop
-   forget_prop
+   fresh_wprop
+   forget_wprop
    save_binary meson.test

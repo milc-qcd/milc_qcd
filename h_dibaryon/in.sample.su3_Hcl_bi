@@ -22,8 +22,8 @@ r0 1.5
 reload_serial ../binary_samples/lat.sample.l4448
 coulomb_gauge_fix
 forget
-fresh_prop
-fresh_prop
-forget_prop
-forget_prop
-serial_scratch_prop scratchprop
+fresh_wprop
+fresh_wprop
+forget_wprop
+forget_wprop
+serial_scratch_wprop scratchprop

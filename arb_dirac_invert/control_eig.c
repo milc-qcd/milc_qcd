@@ -117,8 +117,8 @@ boundary_flip(MINUS);
 
 	  /* open files for wilson propagators */
 	  
-	  fp_in_w[k]  = r_open_prop(startflag_w[k], startfile_w[k]);
-	  fp_out_w[k] = w_open_prop(saveflag_w[k],  savefile_w[k] );
+	  fp_in_w[k]  = r_open_wprop(startflag_w[k], startfile_w[k]);
+	  fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k] );
 
 spin=color=0;
  
@@ -130,10 +130,10 @@ spin=color=0;
 
                     /* load psi if requested */
 #ifdef IOTIME
-		    status = reload_propagator( startflag_w[k], fp_in_w[k], 
+		    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
 				      spin, color, F_OFFSET(psi),1);
 #else
-		    status = reload_propagator( startflag_w[k], fp_in_w[k], 
+		    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
 				      spin, color, F_OFFSET(psi),0);
 #endif
 		    node0_printf("BEGIN\n");
@@ -141,17 +141,17 @@ spin=color=0;
 
 		    /* save psi if requested */
 #ifdef IOTIME
-		    save_propagator( saveflag_w[k],fp_out_w[k],
+		    save_wprop_sc( saveflag_w[k],fp_out_w[k],
 				    spin,color,F_OFFSET(psi),1);
 #else
-		    save_propagator( saveflag_w[k],fp_out_w[k],
+		    save_wprop_sc( saveflag_w[k],fp_out_w[k],
 				    spin,color,F_OFFSET(psi),0);
 #endif
 	}
 
 	  /* close files for wilson propagators */
-	  r_close_prop(startflag_w[k],fp_in_w[k]);
-	  w_close_prop(saveflag_w[k],fp_out_w[k]);
+	  r_close_wprop(startflag_w[k],fp_in_w[k]);
+	  w_close_wprop(saveflag_w[k],fp_out_w[k]);
 	  
 
 	if(this_node==0)printf("RUNNING COMPLETED\n");

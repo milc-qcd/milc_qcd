@@ -33,9 +33,9 @@ extra_sink
 reload_serial ../binary_samples/lat.sample.l4448
 coulomb_gauge_fix
 forget
-fresh_prop
-forget_prop
+fresh_wprop
+forget_wprop
 save_binary meson.120
-fresh_prop
-forget_prop
+fresh_wprop
+forget_wprop
 save_binary meson.140

@@ -38,7 +38,7 @@ void load_in_zonked_light(int color, int k_zonked_light)
   
   /** open the light quark zonked propagator ***/
   
-  zonked_fp_in = r_open_prop(startflag_zonked_light[ k_zonked_light ],
+  zonked_fp_in = r_open_wprop(startflag_zonked_light[ k_zonked_light ],
 			     qfile_zonked_light[ k_zonked_light ]);
 
   node0_printf("Loading from %s\n",qfile_zonked_light[ k_zonked_light ]);
@@ -46,7 +46,7 @@ void load_in_zonked_light(int color, int k_zonked_light)
   for(spin = 0 ; spin < 4 ; ++spin )
   {
     /*** load the light zonked quark propagagor from disk ***/
-    if(reload_propagator( startflag_zonked_light[k_zonked_light],
+    if(reload_wprop_sc( startflag_zonked_light[k_zonked_light],
 			 zonked_fp_in, spin, color, 
 			 F_OFFSET(quark_zonked.d[spin]), 1)!=0)
       terminate(1);
@@ -104,7 +104,7 @@ void load_in_zonked_light(int color, int k_zonked_light)
   } /*** end the loop over the source spin ****/
 
   /** close light quark zonked propagator ***/
-  r_close_prop(startflag_zonked_light[ k_zonked_light ], zonked_fp_in);
+  r_close_wprop(startflag_zonked_light[ k_zonked_light ], zonked_fp_in);
 	
 
 
@@ -125,12 +125,12 @@ void load_in_zonked_light2(int color, int spin, int k_zonked_light,
   
   /** open the light quark zonked propagator ***/
   
-  zonked_fp_in = r_open_prop(startflag_zonked_light[ k_zonked_light ],
+  zonked_fp_in = r_open_wprop(startflag_zonked_light[ k_zonked_light ],
 			     qfile_zonked_light[ k_zonked_light ]);
 
   /*** load the light zonked quark propagagor from disk ***/
   node0_printf("Loading from %s\n",qfile_zonked_light[ k_zonked_light ]);
-  if(reload_propagator( startflag_zonked_light[k_zonked_light],
+  if(reload_wprop_sc( startflag_zonked_light[k_zonked_light],
 			zonked_fp_in, spin, color, 
 			dest, 1)!=0)
     terminate(1);
@@ -187,7 +187,7 @@ void load_in_zonked_light2(int color, int spin, int k_zonked_light,
   
   
   /** close light quark zonked propagator ***/
-  r_close_prop(startflag_zonked_light[ k_zonked_light ], zonked_fp_in);
+  r_close_wprop(startflag_zonked_light[ k_zonked_light ], zonked_fp_in);
 
 }  /***** end of load_in_zonked_light2  ******/
 
@@ -200,15 +200,15 @@ void load_in_zonked_heavy_smear(int color, int spin, int k_zonked_heavy,
   /************************************************************/
 
   zonked_fp_in = 
-    r_open_prop(reloadflag_zonked_heavy_ssink, 
+    r_open_wprop(reloadflag_zonked_heavy_ssink, 
 		qfile_zonked_heavy_ssink[k_zonked_heavy] ); 
 
   node0_printf("Loading from %s\n",qfile_zonked_heavy_ssink[ k_zonked_heavy ]);
-  if(reload_propagator(reloadflag_zonked_heavy_ssink, zonked_fp_in,
+  if(reload_wprop_sc(reloadflag_zonked_heavy_ssink, zonked_fp_in,
 		       spin, color, dest, 1) != 0 )  
     terminate(1);  
 
-  r_close_prop(reloadflag_zonked_heavy_ssink,zonked_fp_in); 
+  r_close_wprop(reloadflag_zonked_heavy_ssink,zonked_fp_in); 
 
 }  /***** end of load_in_zonked_heavy_smear  ******/
 
@@ -221,14 +221,14 @@ void load_in_zonked_heavy_local(int color, int spin, int k_zonked_heavy,
   /************************************************************/
 
   zonked_fp_in = 
-    r_open_prop(startflag_zonked_heavy[k_zonked_heavy], 
+    r_open_wprop(startflag_zonked_heavy[k_zonked_heavy], 
 		qfile_zonked_heavy[k_zonked_heavy] ); 
   node0_printf("Loading from %s\n",qfile_zonked_heavy[ k_zonked_heavy ]);
-  if(reload_propagator(startflag_zonked_heavy[k_zonked_heavy], zonked_fp_in,
+  if(reload_wprop_sc(startflag_zonked_heavy[k_zonked_heavy], zonked_fp_in,
 		       spin, color, dest, 1) != 0 )  
     terminate(1);  
 
-  r_close_prop(startflag_zonked_heavy[k_zonked_heavy],zonked_fp_in); 
+  r_close_wprop(startflag_zonked_heavy[k_zonked_heavy],zonked_fp_in); 
 
 }  /***** end of load_in_zonked_heavy_local  ******/
 
@@ -241,14 +241,14 @@ void load_in_zonked_light_ssink(int color, int spin, int k_zonked_light,
   /************************************************************/
 
   zonked_fp_in = 
-    r_open_prop(reloadflag_zonked_light_ssink, 
+    r_open_wprop(reloadflag_zonked_light_ssink, 
 		qfile_zonked_light_ssink[k_zonked_light] ); 
   node0_printf("Loading from %s\n",qfile_zonked_light_ssink[ k_zonked_light ]);
-  if(reload_propagator(reloadflag_zonked_light_ssink, zonked_fp_in,
+  if(reload_wprop_sc(reloadflag_zonked_light_ssink, zonked_fp_in,
 		       spin, color, dest, 1) != 0 )  
     terminate(1);  
 
-  r_close_prop(reloadflag_zonked_light_ssink,zonked_fp_in); 
+  r_close_wprop(reloadflag_zonked_light_ssink,zonked_fp_in); 
 
 }  /***** end of load_in_zonked_light_ssink  ******/
 

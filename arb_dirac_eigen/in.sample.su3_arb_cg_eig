@@ -21,9 +21,9 @@ error_decrseace .3
 fresh
 no_gauge_fix
 forget
-fresh_prop
-forget_prop
-serial_scratch_prop stem
+fresh_wprop
+forget_wprop
+serial_scratch_wprop stem
 
 
 

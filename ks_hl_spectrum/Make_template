@@ -22,8 +22,8 @@ GLOBAL_HEADERS = \
   ${INCLUDEDIR}/generic.h \
   ${INCLUDEDIR}/generic_wilson.h \
   ${INCLUDEDIR}/io_lat.h \
-  ${INCLUDEDIR}/io_wb.h  \
-  ${INCLUDEDIR}/io_prop_ks.h
+  ${INCLUDEDIR}/io_wprop.h  \
+  ${INCLUDEDIR}/io_ksprop.h
 
 MY_HEADERS = \
   lattice.h \

@@ -72,7 +72,7 @@ int main(int argc,char *argv[])
     
     for(k=0; k<num_kap; k++){
       kappa = kap[k];
-      reload_full_propagator(startflag_w[k], startfile_w[k], 
+      reload_wprop(startflag_w[k], startfile_w[k], 
 			     F_OFFSET(quark_propagator),1);
       if (format[k])
 	{

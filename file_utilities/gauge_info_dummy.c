@@ -27,7 +27,7 @@
 #include "../include/su3.h"
 #include "../include/macros.h"
 #include "../include/io_lat.h"
-#include "../include/io_wb.h"
+#include "../include/io_wprop.h"
 
 /*---------------------------------------------------------------------------*/
 /* This routine writes the ASCII info file.  It is called from one of

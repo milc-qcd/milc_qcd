@@ -25,7 +25,7 @@
 #include <time.h>
 #include <string.h>
 #include "../include/io_lat.h"
-#include "../include/io_wb.h"
+#include "../include/io_wprop.h"
 #include "../include/generic.h"
 
 #define PARALLEL 1

@@ -86,13 +86,13 @@ void calc_hqet_light_form(void)
 	/*** open the spectator light quark file *****/
 	kappa = kappa_spectator[k_spectator]  ;
 	
-	spectate_fp_in = r_open_prop(startflag_spectator[k_spectator], 
+	spectate_fp_in = r_open_wprop(startflag_spectator[k_spectator], 
 				     qfile_spectator[k_spectator]);
 
 	/** open the light quark zonked propagator ***/
 	kappa =   kappa_zonked_light[k_spectator] ;
 
-	zonked_fp_in = r_open_prop(startflag_zonked[ k_zonked_light ],
+	zonked_fp_in = r_open_wprop(startflag_zonked[ k_zonked_light ],
 				   qfile_zonked[ k_zonked_light ]);
 
 	for(color=0 ; color < 3 ; ++color)
@@ -113,7 +113,7 @@ void calc_hqet_light_form(void)
 	    IF_MASTER printf("------> starting to load light spectator k = %f <-----\n",kappa_spectator[k_spectator]);
 	    /*** Load in the spectator quark propagator ****/
 	    kappa = kappa_spectator[k_spectator]  ;
-	    if(reload_propagator( startflag_spectator[k_spectator],
+	    if(reload_wprop_sc( startflag_spectator[k_spectator],
 			      spectate_fp_in, spin, color, 
 			      F_OFFSET(quark_spectate.d[spin]),1)!=0)
 	      terminate(1);
@@ -175,7 +175,7 @@ void calc_hqet_light_form(void)
 	    /*** load the light zonked quark propagagor from disk ***/
 	    kappa =   kappa_zonked_light[ k_zonked_light ] ;
 
-	    if(reload_propagator( startflag_zonked[k_zonked_light],
+	    if(reload_wprop_sc( startflag_zonked[k_zonked_light],
 			      zonked_fp_in, spin, color, 
 			      F_OFFSET(quark_zonked.d[spin]), 1)!=0)
 	      terminate(1);
@@ -288,10 +288,10 @@ void calc_hqet_light_form(void)
 	}  /*** end the loop over the source colour *****/
 
 	/*** close the spectator light quark file *****/
-	r_close_prop(startflag_spectator[k_spectator],spectate_fp_in);
+	r_close_wprop(startflag_spectator[k_spectator],spectate_fp_in);
 
 	/** close light quark zonked propagator ***/
-	r_close_prop(startflag_zonked[ k_zonked_light ], zonked_fp_in);
+	r_close_wprop(startflag_zonked[ k_zonked_light ], zonked_fp_in);
 	
       } /*** end of the loop over k_zonked_light, k_spectator  ****/
 

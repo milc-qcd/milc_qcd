@@ -6,7 +6,7 @@
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-HEADERS= $(LIBDIR)/complex.h $(LIBDIR)/su3.h $(LIBDIR)/comdefs.h lattice_w_hl.h $(LIBDIR)/io_wb.h
+HEADERS= $(LIBDIR)/complex.h $(LIBDIR)/su3.h $(LIBDIR)/comdefs.h lattice_w_hl.h $(LIBDIR)/io_wprop.h
 
 # include file defining site structure, etc., for compiling generic code */
 LATDEF =  -DLATDEF='"../wilson_invert/lattice_w_hl.h"'

@@ -16,7 +16,7 @@
    kappa_spectator  0.120
    gaussian
    r0 2.0
-   reload_serial_prop  ../binary_samples/lprop.cl.sample.l4448
+   reload_serial_wprop  ../binary_samples/lprop.cl.sample.l4448
 
    nkap_light_zonked 1
    max_cg_iterations 100
@@ -25,8 +25,8 @@
    kappa_zonked_light 0.120
    gaussian
    r0 2.0
-   reload_serial_prop  ../binary_samples/lprop.cl.sample.l4448
-   save_serial_prop    _ssink
+   reload_serial_wprop  ../binary_samples/lprop.cl.sample.l4448
+   save_serial_wprop    _ssink
 
    nkap_heavy_zonked 1
    max_cg_iterations 100
@@ -36,8 +36,8 @@
    hopilu
    gaussian
    r0 2.0
-   save_serial_prop  hprop.cl.test.l4448
-   save_serial_prop    _ssink
+   save_serial_wprop  hprop.cl.test.l4448
+   save_serial_wprop    _ssink
 
    nkap_sequential 1
    kappa_seq  0.120

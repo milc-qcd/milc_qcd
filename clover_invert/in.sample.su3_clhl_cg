@@ -16,9 +16,9 @@ r0 1.5
 reload_parallel ../binary_samples/lat.sample.l4444
 coulomb_gauge_fix
 save_serial lat.test.gf
-fresh_prop
-save_serial_prop prop.test
-serial_scratch_prop prop.test.scratch
+fresh_wprop
+save_serial_wprop prop.test
+serial_scratch_wprop prop.test.scratch
 
 number_of_kappas 1
 kappa 0.1
@@ -32,8 +32,8 @@ r0 1.5
 reload_serial lat.test.gf
 no_gauge_fix
 forget
-reload_serial_prop prop.test
-forget_prop
-serial_scratch_prop prop.test.scratch
+reload_serial_wprop prop.test
+forget_wprop
+serial_scratch_wprop prop.test.scratch
 
 

@@ -7,7 +7,7 @@
 
 #include "generic_wilson_includes.h"
 #include "../include/io_lat.h"
-#include "../include/io_wb.h"
+#include "../include/io_wprop.h"
 #include "../include/file_types.h"
 #include "../include/io_scidac.h"
 #include "../include/io_scidac_w.h"
@@ -27,7 +27,7 @@ static file_type w_prop_list[N_WPROP_TYPES] =
 /* Open propagator file for reading one source spin-color at a time */
 /* Supported only in MILC formats */
 
-w_prop_file *r_open_prop(int flag, char *filename)
+w_prop_file *r_open_wprop(int flag, char *filename)
 {
   w_prop_file *wpf;
 
@@ -60,7 +60,7 @@ w_prop_file *r_open_prop(int flag, char *filename)
    source spin and color at a time.
    Supported only in MILC formats */
 
-w_prop_file *w_open_prop(int flag, char *filename)
+w_prop_file *w_open_wprop(int flag, char *filename)
 {
   w_prop_file *wpf;
   
@@ -101,7 +101,7 @@ w_prop_file *w_open_prop(int flag, char *filename)
    CONTINUE, RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL,
    RELOAD_MULTIDUMP
    */
-int reload_propagator( int flag, w_prop_file *wpf,
+int reload_wprop_sc( int flag, w_prop_file *wpf,
 		       int spin, int color, field_offset dest, int timing)
 {
   /* 0 normal exit value
@@ -139,7 +139,7 @@ int reload_propagator( int flag, w_prop_file *wpf,
     r_multidump_w_c(wpf);
     break;
   default:
-    node0_printf("reload_propagator: Unrecognized reload flag.\n");
+    node0_printf("reload_wprop_sc: Unrecognized reload flag.\n");
     terminate(1);
   }
   
@@ -153,7 +153,7 @@ int reload_propagator( int flag, w_prop_file *wpf,
 
   return status;
 
-} /* reload_propagator */
+} /* reload_wprop_sc */
 
 /*---------------------------------------------------------------*/
 /* reload a full propagator (all source colors and spins) in any of
@@ -162,7 +162,7 @@ int reload_propagator( int flag, w_prop_file *wpf,
    FRESH, CONTINUE,
    RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL, RELOAD_MULTIDUMP
    */
-int reload_full_propagator( int flag, char *filename,
+int reload_wprop( int flag, char *filename,
 			    field_offset dest, int timing)
 {
   /* 0 normal exit value
@@ -294,7 +294,7 @@ int reload_full_propagator( int flag, char *filename,
     break;
     
   default:
-    node0_printf("reload_propagator: Unrecognized reload flag.\n");
+    node0_printf("reload_wprop_sc: Unrecognized reload flag.\n");
     terminate(1);
   }
   
@@ -308,14 +308,14 @@ int reload_full_propagator( int flag, char *filename,
   
   return status;
 
-} /* reload_full_propagator */
+} /* reload_wprop */
 
 /*---------------------------------------------------------------*/
 /* save a propagator one source color and spin at a time MILC formats only:
    FORGET,
    SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_MULTIDUMP, SAVE_CHECKPOINT
 */
-void save_propagator( int flag, w_prop_file *wpf, 
+void save_wprop_sc( int flag, w_prop_file *wpf, 
 		      int spin, int color, field_offset src, int timing)
 {
   double dtime;
@@ -347,7 +347,7 @@ void save_propagator( int flag, w_prop_file *wpf,
     w_multidump_w_c(wpf);
     break;
   default:
-    node0_printf("save_propagator: Unrecognized save flag.\n");
+    node0_printf("save_wprop_sc: Unrecognized save flag.\n");
     terminate(1);
   }
   
@@ -358,7 +358,7 @@ void save_propagator( int flag, w_prop_file *wpf,
 	node0_printf("Time to save prop spin %d color %d = %e\n",
 		     spin,color,dtime);
     }
-} /* save_propagator */
+} /* save_wprop_sc */
 
 void save_full_propagator( int flag, char *filename,
 			   field_offset src, int timing)
@@ -463,7 +463,7 @@ void save_full_propagator( int flag, char *filename,
     w_multidump_w_f(wpf);
     break;
   default:
-    node0_printf("save_propagator: Unrecognized save flag.\n");
+    node0_printf("save_wprop: Unrecognized save flag.\n");
     terminate(1);
   }
   
@@ -476,7 +476,7 @@ void save_full_propagator( int flag, char *filename,
     }
 } /* save_full_propagator */
 /*---------------------------------------------------------------*/
-void r_close_prop(int flag, w_prop_file *wpf)
+void r_close_wprop(int flag, w_prop_file *wpf)
 {
   
   switch(flag){
@@ -494,7 +494,7 @@ void r_close_prop(int flag, w_prop_file *wpf)
   }
 }
 /*---------------------------------------------------------------*/
-void w_close_prop(int flag, w_prop_file *wpf)
+void w_close_wprop(int flag, w_prop_file *wpf)
 {
   switch(flag){
   case SAVE_ASCII:
@@ -518,37 +518,41 @@ void w_close_prop(int flag, w_prop_file *wpf)
    and propagator name if necessary.  This routine is only 
    called by node 0.
    */
-int ask_starting_prop( int prompt, int *flag, char *filename ){
+int ask_starting_wprop( int prompt, int *flag, char *filename ){
   char savebuf[256];
   int status;
   
   if (prompt!=0) 
-    printf("loading wilson propagator:\n enter 'fresh_prop','continue_prop', 'reload_ascii_prop', 'reload_serial_prop', 'reload_parallel_prop', or 'reload_multidump_prop'\n");
+    printf("loading wilson propagator:\n enter 'fresh_wprop','continue_wprop', 'reload_ascii_wprop', 'reload_serial_wprop', 'reload_parallel_wprop', or 'reload_multidump_wprop'\n");
   status=scanf("%s",savebuf);
+  if (status == EOF){
+    printf("ask_starting_wprop: EOF on STDIN.\n");
+    return(1);
+  }
   if(status !=1) {
-    printf("ERROR IN INPUT: 'fresh_prop' or 'reload_prop'\n");
+        printf("\nask_starting_wprop: ERROR IN INPUT: can't read starting wprop command\n");
     return(1);
   }
 
   printf("%s ",savebuf);
-  if(strcmp("fresh_prop",savebuf) == 0 ){
+  if(strcmp("fresh_wprop",savebuf) == 0 ){
     *flag = FRESH;
     printf("\n");
   }
-  else if(strcmp("continue_prop",savebuf) == 0 ) {
+  else if(strcmp("continue_wprop",savebuf) == 0 ) {
     *flag = CONTINUE;
     printf("(if possible)\n");
   }
-  else if(strcmp("reload_ascii_prop",savebuf) == 0 ) {
+  else if(strcmp("reload_ascii_wprop",savebuf) == 0 ) {
     *flag = RELOAD_ASCII;
   }
-  else if(strcmp("reload_serial_prop",savebuf) == 0 ) {
+  else if(strcmp("reload_serial_wprop",savebuf) == 0 ) {
     *flag = RELOAD_SERIAL;
   }
-  else if(strcmp("reload_multidump_prop",savebuf) == 0 ) {
+  else if(strcmp("reload_multidump_wprop",savebuf) == 0 ) {
     *flag = RELOAD_MULTIDUMP;
   }
-  else if(strcmp("reload_parallel_prop",savebuf) == 0 ) {
+  else if(strcmp("reload_parallel_wprop",savebuf) == 0 ) {
     *flag = RELOAD_PARALLEL;
   }
   else{
@@ -571,43 +575,48 @@ int ask_starting_prop( int prompt, int *flag, char *filename ){
 /* find out what do to with propagator at end, and propagator name if
    necessary.  This routine is only called by node 0.
    */
-int ask_ending_prop( int prompt, int *flag, char *filename ){
+int ask_ending_wprop( int prompt, int *flag, char *filename ){
   char savebuf[256];
   int status;
   
   if (prompt!=0) 
-    printf("save wilson propagator:\n enter 'forget_prop', 'save_ascii_prop', 'save_serial_prop' , 'save_serial_scidac_prop', 'save_partfile_scidac_prop', 'save_multfile_scidac_prop', 'save_parallel_prop', 'save_multidump_prop', or 'save_checkpoint_prop'\n");
+    printf("save wilson propagator:\n enter 'forget_wprop', 'save_ascii_wprop', 'save_serial_wprop' , 'save_serial_scidac_wprop', 'save_partfile_scidac_wprop', 'save_multfile_scidac_wprop', 'save_parallel_wprop', 'save_multidump_wprop', or 'save_checkpoint_wprop'\n");
   status=scanf("%s",savebuf);
-  if(status !=1) {
-    printf("ERROR IN INPUT: 'save_prop' or 'forget_prop'\n");
-    return(1);
-  }
+    if (status == EOF){
+      printf("ask_starting_wprop: EOF on STDIN.\n");
+      return(1);
+    }
+    if(status !=1) {
+        printf("\nask_ending_wprop: ERROR IN INPUT: can't read ending wprop command\n");
+        return(1);
+    }
+
   printf("%s ",savebuf);
-  if(strcmp("save_ascii_prop",savebuf) == 0 )  {
+  if(strcmp("save_ascii_wprop",savebuf) == 0 )  {
     *flag=SAVE_ASCII;
   }
-  else if(strcmp("save_serial_prop",savebuf) == 0 ) {
+  else if(strcmp("save_serial_wprop",savebuf) == 0 ) {
     *flag=SAVE_SERIAL;
   }
-  else if(strcmp("save_parallel_prop",savebuf) == 0 ) {
+  else if(strcmp("save_parallel_wprop",savebuf) == 0 ) {
     *flag=SAVE_PARALLEL;
   }
-  else if(strcmp("save_multidump_prop",savebuf) == 0 ) {
+  else if(strcmp("save_multidump_wprop",savebuf) == 0 ) {
     *flag=SAVE_MULTIDUMP;
   }
-  else if(strcmp("save_checkpoint_prop",savebuf) == 0 ) {
+  else if(strcmp("save_checkpoint_wprop",savebuf) == 0 ) {
     *flag=SAVE_CHECKPOINT;
   }
-  else if(strcmp("save_serial_scidac_prop",savebuf) == 0 ) {
+  else if(strcmp("save_serial_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_SERIAL_SCIDAC;
   }
-  else if(strcmp("save_partfile_scidac_prop",savebuf) == 0 ) {
+  else if(strcmp("save_partfile_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_PARTITION_SCIDAC;
   }
-  else if(strcmp("save_multifile_scidac_prop",savebuf) == 0 ) {
+  else if(strcmp("save_multifile_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_MULTIFILE_SCIDAC;
   }
-  else if(strcmp("forget_prop",savebuf) == 0 ) {
+  else if(strcmp("forget_wprop",savebuf) == 0 ) {
     *flag=FORGET;
     printf("\n");
   }

@@ -142,15 +142,18 @@ QIO_Writer *save_w_vector_scidac(char *filename, char *recxml, int volfmt,
   QIO_close_write(outfile);
 
   /* Write information */
-  if(volfmt == QIO_SINGLEFILE)
+  if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved Wilson vector serially to binary file %s\n",
 		 filename);
-  else if(volfmt == QIO_MULTIFILE)
+  }
+  else if(volfmt == QIO_MULTIFILE){
     node0_printf("Saved Wilson vector as multifile to binary file %s\n",
 	   filename);
-  else if(volfmt == QIO_PARTFILE)
+  }
+  else if(volfmt == QIO_PARTFILE){
     node0_printf("Saved Wilson vector in partition format to binary file %s\n",
 	   filename);
+  }
 
   node0_printf("Checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),

@@ -22,7 +22,7 @@
 #include <time.h>
 #include <string.h>
 #include "../include/file_types.h"
-#include "../include/io_prop_ks.h"
+#include "../include/io_ksprop.h"
 #include "../include/generic.h"
 #include "../include/generic_ks.h"
 #include "../include/io_lat.h"

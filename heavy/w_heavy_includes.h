@@ -14,7 +14,7 @@
 #include "lattice.h"
 #include "../include/comdefs.h"	/* definitions and variables for communications */
 #include "../include/io_lat.h"
-#include "../include/io_wb.h"
+#include "../include/io_wprop.h"
 #include "../include/generic.h"
 #include "../include/generic_wilson.h"
 #include "../include/int32type.h"

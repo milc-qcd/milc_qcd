@@ -16,9 +16,9 @@ r0 1.0
 reload_parallel lat.sample
 coulomb_gauge_fix
 save_parallel lat.sample.gf
-fresh_prop
-save_checkpoint_prop dummy_c_prop
-scratch_prop pscratch
+fresh_wprop
+save_checkpoint_wprop dummy_c_prop
+scratch_wprop pscratch
 
 number_of_kappas 1
 beta 5.0
@@ -32,9 +32,9 @@ r0 1.0
 reload_parallel lat.sample.gf
 no_gauge_fix
 forget
-reload_parallel_prop dummy_c_prop
-save_ascii_prop dummy_a_prop
-scratch_prop pscratch
+reload_parallel_wprop dummy_c_prop
+save_ascii_wprop dummy_a_prop
+scratch_wprop pscratch
 
 
 number_of_kappas 1
@@ -49,9 +49,9 @@ r0 1.0
 reload_parallel lat.sample.gf
 no_gauge_fix
 forget
-reload_ascii_prop dummy_a_prop
-save_serial_prop dummy_s_prop
-scratch_prop pscratch
+reload_ascii_wprop dummy_a_prop
+save_serial_wprop dummy_s_prop
+scratch_wprop pscratch
 
 number_of_kappas 1
 beta 5.0
@@ -65,9 +65,9 @@ r0 1.0
 reload_parallel lat.sample.gf
 no_gauge_fix
 forget
-reload_parallel_prop dummy_s_prop
-save_parallel_prop dummy_p_prop
-scratch_prop pscratch
+reload_parallel_wprop dummy_s_prop
+save_parallel_wprop dummy_p_prop
+scratch_wprop pscratch
 
 number_of_kappas 1
 beta 5.0
@@ -81,7 +81,7 @@ r0 1.0
 reload_parallel lat.sample.gf
 no_gauge_fix
 forget
-reload_serial_prop dummy_p_prop
+reload_serial_wprop dummy_p_prop
 forget
-scratch_prop pscratch
+scratch_wprop pscratch
 

@@ -1,7 +1,7 @@
 #ifndef _IO_PROP_KS_H
 #define _IO_PROP_KS_H
 
-/************************* io_prop_ks.h ******************************/
+/************************* io_ksprop.h ******************************/
 
 /* Macros, structures and prototypes for KS propagator I/O */
 

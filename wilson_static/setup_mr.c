@@ -1,6 +1,6 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.1 2005/02/23 00:06:10 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.2 2005/03/25 17:31:27 detar Exp $  ***/
 /* MIMD version 6 */
 #define IF_OK if(status==0)
 
@@ -414,10 +414,10 @@ int readin(int prompt)
     for (i = 0; i < par_buf.nkap; i++)
     {
 
-      IF_OK status += ask_starting_prop( prompt,&par_buf.startflag_w[i],
+      IF_OK status += ask_starting_wprop( prompt,&par_buf.startflag_w[i],
 				      par_buf.startfile_w[i]);
 
-      IF_OK status += ask_ending_prop( prompt,&par_buf.saveflag_w[i],
+      IF_OK status += ask_ending_wprop( prompt,&par_buf.saveflag_w[i],
 				      par_buf.savefile_w[i]);
 
       IF_OK 

@@ -107,7 +107,7 @@ int readin(int prompt)  {
     }
     
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += ask_starting_prop(prompt, &par_buf.startflag_w[i], 
+      IF_OK status += ask_starting_wprop(prompt, &par_buf.startflag_w[i], 
 					par_buf.startfile_w[i]);
       IF_OK status += get_f(prompt,"kappa", &par_buf.kap[i] );       
       IF_OK status += get_f(prompt,"d1", &par_buf.d1[i] );

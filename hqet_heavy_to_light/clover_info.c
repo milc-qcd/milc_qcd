@@ -20,7 +20,7 @@
        keyword  value
 
    To maintain a semblance of consistency, the possible keywords are
-   listed in io_wb.h.  Add more as the need arises, but be sure
+   listed in io_wprop.h.  Add more as the need arises, but be sure
    to notify the rest of the collaboration.
 
    */

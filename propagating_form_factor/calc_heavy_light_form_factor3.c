@@ -121,10 +121,10 @@ void load_in_spectator(int color, int spin, int k_spectator,
   /*** open the spectator light quark file *****/
   kappa = kappa_spectator[k_spectator] ;
   
-  spectator_fp_in = r_open_prop(startflag_spectator[k_spectator], 
+  spectator_fp_in = r_open_wprop(startflag_spectator[k_spectator], 
 				qfile_spectator[k_spectator]);
   /*** Load in the spectator quark propagator ****/
-  if(reload_propagator(startflag_spectator[k_spectator],
+  if(reload_wprop_sc(startflag_spectator[k_spectator],
 		       spectator_fp_in, spin, color, dest, 1)!=0)
     terminate(1);
   
@@ -178,7 +178,7 @@ void load_in_spectator(int color, int spin, int k_spectator,
 #endif
 
   /*** close the spectator light quark file *****/
-  r_close_prop(startflag_spectator[k_spectator],spectator_fp_in);
+  r_close_wprop(startflag_spectator[k_spectator],spectator_fp_in);
       
   
 }  /***** end of load_in_spectator  ******/
@@ -319,7 +319,7 @@ void calc_heavy_light_form()
       if(!exists_zonked_light_ssink[k_zonked_light] && 
 	 ((saveflag_HL2_GG != FORGET) || (saveflag_LL2_GG != FORGET) ))
 	zonked_light_ssink_fp[k_zonked_light]
-	  = w_open_prop(saveflag_zonked_light_ssink, 
+	  = w_open_wprop(saveflag_zonked_light_ssink, 
 			qfile_zonked_light_ssink[k_zonked_light] ); 
     }
 
@@ -347,7 +347,7 @@ void calc_heavy_light_form()
       wqstmp = wqs_zonked_heavy[k_zonked_heavy];   /* For clover_info */
       if(!exists_zonked_heavy[k_zonked_heavy])
 	zonked_heavy_fp[k_zonked_heavy] 
-	  = w_open_prop(saveflag_zonked_heavy[k_zonked_heavy], 
+	  = w_open_wprop(saveflag_zonked_heavy[k_zonked_heavy], 
 			qfile_zonked_heavy[k_zonked_heavy] ); 
 
       /* If it doesn't exist and we need it for the HL2_GG correlator,
@@ -357,7 +357,7 @@ void calc_heavy_light_form()
       if(!exists_zonked_heavy_ssink[k_zonked_heavy] && 
 	 (saveflag_HL2_GG != FORGET))
 	zonked_heavy_ssink_fp[k_zonked_heavy]
-	  = w_open_prop(saveflag_zonked_heavy_ssink, 
+	  = w_open_wprop(saveflag_zonked_heavy_ssink, 
 			qfile_zonked_heavy_ssink[k_zonked_heavy] ); 
     }
 
@@ -409,7 +409,7 @@ void calc_heavy_light_form()
 		
 		/** write the light ssink quark props to disk ***/
 		for(spin=0; spin < 4 ; ++spin ) 
-		  save_propagator(saveflag_zonked_light_ssink, 
+		  save_wprop_sc(saveflag_zonked_light_ssink, 
                         zonked_light_ssink_fp[k_zonked_light],
 			spin, color, 
 			F_OFFSET(quark_zonked_light[k_zonked_light].d[spin]),
@@ -435,7 +435,7 @@ void calc_heavy_light_form()
 
 	      /*** store the heavy quark propagator to disk ****/
 	      for(spin=0; spin < 4 ; ++spin ) 
-		save_propagator(saveflag_zonked_heavy[k_zonked_heavy], 
+		save_wprop_sc(saveflag_zonked_heavy[k_zonked_heavy], 
                         zonked_heavy_fp[k_zonked_heavy],
 			spin, color, 
 			F_OFFSET(quark_zonked_heavy[k_zonked_heavy].d[spin]), 
@@ -501,7 +501,7 @@ void calc_heavy_light_form()
 		
 		/*** store the smeared--smeared quark propagator to disk ***/
 		for(spin=0; spin < 4 ; ++spin ) 
-		  save_propagator(saveflag_zonked_heavy_ssink, 
+		  save_wprop_sc(saveflag_zonked_heavy_ssink, 
                      zonked_heavy_ssink_fp[k_zonked_heavy],
 		     spin, color, 
 		     F_OFFSET(quark_zonked_heavy[k_zonked_heavy].d[spin]), 1) ;
@@ -601,7 +601,7 @@ void calc_heavy_light_form()
     {
       if(!exists_zonked_light_ssink[k_zonked_light] && 
 	 ((saveflag_HL2_GG != FORGET) || (saveflag_LL2_GG != FORGET) ))
-	w_close_prop(saveflag_zonked_light_ssink, 
+	w_close_wprop(saveflag_zonked_light_ssink, 
 		     zonked_light_ssink_fp[k_zonked_light]); 
     }
 
@@ -609,11 +609,11 @@ void calc_heavy_light_form()
       ++k_zonked_heavy)
     {
       if(!exists_zonked_heavy[k_zonked_heavy])
-	w_close_prop(saveflag_zonked_heavy[k_zonked_heavy],
+	w_close_wprop(saveflag_zonked_heavy[k_zonked_heavy],
 		     zonked_heavy_fp[k_zonked_heavy]); 
       if(!exists_zonked_heavy_ssink[k_zonked_heavy] && 
 	 (saveflag_HL2_GG != FORGET))
-	w_close_prop(saveflag_zonked_heavy_ssink,
+	w_close_wprop(saveflag_zonked_heavy_ssink,
 		     zonked_heavy_ssink_fp[k_zonked_heavy]); 
     }
 

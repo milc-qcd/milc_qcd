@@ -177,7 +177,7 @@ int ask_starting_lattice( int prompt, int *flag, char *filename ){
       return(1);
     }
     if(status !=1) {
-        printf("\nask_starting_lattice: ERROR IN INPUT: starting lattice command \"%s\" is invalid\n",savebuf);
+        printf("\nask_starting_lattice: ERROR IN INPUT: can't read starting lattice command\n",savebuf);
         return(1);
     }
 

@@ -1,7 +1,7 @@
 /******** setup_hqet_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.1 2005/02/23 00:05:07 detar Exp $   ****/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.2 2005/03/25 17:30:58 detar Exp $   ****/
 /* MIMD code version 4 */
 
 #include "hqet_light_includes.h"
@@ -206,7 +206,7 @@ int readin(int prompt)
       IF_OK {
 	for(i=0;i< par_buf.no_spectator ;i++)
 	  {
-	    IF_OK status += ask_starting_prop( prompt,
+	    IF_OK status += ask_starting_wprop( prompt,
 					       &par_buf.startflag_spectator[i],
 					       par_buf.qfile_spectator[i] );
 	  }
@@ -268,7 +268,7 @@ int readin(int prompt)
       IF_OK {
 	for(i=0;i< par_buf.no_zonked_light ;i++)
 	  {    	
-	    IF_OK status += ask_starting_prop(prompt,
+	    IF_OK status += ask_starting_wprop(prompt,
 					      &par_buf.startflag_zonked[i],
 					      par_buf.qfile_zonked[i]);
 	  }

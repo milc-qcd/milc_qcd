@@ -20,7 +20,7 @@
 #include <complex.h>
 #include <su3.h>
 #include <io_lat.h>
-#include <io_wb.h>
+#include <io_wprop.h>
 #include "lattice_w_hl.h" 	/* global variables for lattice fields */
 #include <comdefs.h>	    /* definitions and variables for communications */
 #include <string.h>

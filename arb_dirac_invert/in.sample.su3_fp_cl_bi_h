@@ -14,6 +14,6 @@ r0 2.0
 reload_serial ../binary_samples/lat.sample.l4444
 no_gauge_fix
 forget
-fresh_prop
-forget_prop
-serial_scratch_prop stem
+fresh_wprop
+forget_wprop
+serial_scratch_wprop stem

@@ -10,7 +10,8 @@
 
 #include "generic_ks_includes.h"
 #include "../include/io_lat.h"
-#include "../include/io_prop_ks.h"
+#include "../include/io_ksprop.h"
+#include "../include/io_scidac.h"
 #include "../include/io_scidac_ks.h"
 #include "../include/file_types.h"
 #include <string.h>

@@ -188,23 +188,23 @@ int readin(int prompt) {
     
     /* find out starting propagator */
     IF_OK for(i=0;i<par_buf.num_masses;i++)
-      status += ask_starting_prop( prompt,&par_buf.startflag_w[i],
+      status += ask_starting_wprop( prompt,&par_buf.startflag_w[i],
 			par_buf.startfile_w[i]);
     
     /* what to do with computed propagator */
     IF_OK for(i=0;i<par_buf.num_masses;i++)
-      status += ask_ending_prop( prompt,&par_buf.saveflag_w[i],
+      status += ask_ending_wprop( prompt,&par_buf.saveflag_w[i],
 		      par_buf.savefile_w[i]);
 
     IF_OK if(prompt!=0)
-      printf("propagator scratch file:\n enter 'serial_scratch_prop' or 'parallel_scratch_prop'\n");
+      printf("propagator scratch file:\n enter 'serial_scratch_wprop' or 'parallel_scratch_wprop'\n");
     IF_OK status2=scanf("%s",save_w);
     IF_OK printf("%s ",save_w);
     IF_OK
       {
-        if(strcmp("serial_scratch_prop",save_w) == 0 )
+        if(strcmp("serial_scratch_wprop",save_w) == 0 )
           par_buf.scratchflag = SAVE_SERIAL;
-        else if(strcmp("parallel_scratch_prop",save_w) == 0 )
+        else if(strcmp("parallel_scratch_wprop",save_w) == 0 )
           par_buf.scratchflag = SAVE_CHECKPOINT;
         else
           {

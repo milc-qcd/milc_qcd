@@ -56,12 +56,12 @@
   ../include/int32type.h \
   ../include/file_types.h
 
-../include/io_prop_ks.h : \
+../include/io_ksprop.h : \
   ../include/int32type.h \
   ../include/macros.h \
   ../include/file_types.h
 
-../include/io_wb.h : \
+../include/io_wprop.h : \
   ../include/int32type.h \
   ../include/macros.h \
   ../include/file_types.h

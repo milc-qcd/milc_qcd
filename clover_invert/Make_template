@@ -31,7 +31,7 @@ GLOBAL_HEADERS = \
   ${INCLUDEDIR}/generic_wilson.h \
   ${INCLUDEDIR}/io_lat.h \
   ${INCLUDEDIR}/loopend.h \
-  ${INCLUDEDIR}/io_wb.h
+  ${INCLUDEDIR}/io_wprop.h
 
 MY_HEADERS = \
   lattice.h \

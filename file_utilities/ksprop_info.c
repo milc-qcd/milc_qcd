@@ -17,7 +17,7 @@
    where n is an integer.
 
    To maintain a semblance of consistency, the possible keywords are
-   listed in io_prop_ks.h.
+   listed in io_ksprop.h.
 
 */
 

@@ -98,57 +98,57 @@ int main(int argc,char *argv[])
       //r_prop_w_fm("/home/llevkova/test_data/wilson_prop/arch_fm/qf_d_d_0.124_00001", F_OFFSET(quark_propagator_copy));
        r_prop_w_fm("/home/llevkova/test_data/wilson_prop/arch_fm/qf_d_d_0.124_00001",F_OFFSET(quark_propagator));
        get_smearings_bi_serial("/home/llevkova/test_data/wf_1S");
-     //fp_out_w = w_open_prop(SAVE_SERIAL,"w_serial.out"); //in lattice.h
+     //fp_out_w = w_open_wprop(SAVE_SERIAL,"w_serial.out"); //in lattice.h
 
      /*for(color=0;color<3;color++)for(spin=0;spin<4;spin++)
       {
 #ifdef IOTIME
-        save_propagator( SAVE_SERIAL, fp_out_w, 
+        save_wprop_sc( SAVE_SERIAL, fp_out_w, 
                                     spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),1);
 #else
-        save_propagator( SAVE_SERIAL,fp_out_w, 
+        save_wprop_sc( SAVE_SERIAL,fp_out_w, 
                                     spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),0);
 #endif
       }
 
-      w_close_prop(SAVE_SERIAL,fp_out_w);*/
+      w_close_wprop(SAVE_SERIAL,fp_out_w);*/
     
-/*       fp_in_w = r_open_prop(RELOAD_SERIAL, */
+/*       fp_in_w = r_open_wprop(RELOAD_SERIAL, */
 /* 			  "/home/levkova/test_data/wilson_prop/milc_serial/qf_milc_0.124_00001.e-17"); */
 /*     printf("opened w_serial.out\n"); */
 
 /*     for(color=0;color<3;color++)for(spin=0;spin<4;spin++) */
 /*       { */
 /* #ifdef IOTIME */
-/*         status = reload_propagator( RELOAD_SERIAL,fp_in_w ,  */
+/*         status = reload_wprop_sc( RELOAD_SERIAL,fp_in_w ,  */
 /*                                     spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),1); */
 /* #else */
-/*         status = reload_propagator( RELOAD_SERIAL,fp_in_w,  */
+/*         status = reload_wprop_sc( RELOAD_SERIAL,fp_in_w,  */
 /*                                     spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),0); */
 /* #endif */
 /*       } */
 /*    printf("reloaded w_serial.out\n"); */
-/*    r_close_prop(RELOAD_SERIAL,fp_in_w); */
+/*    r_close_wprop(RELOAD_SERIAL,fp_in_w); */
       
 /*    //weyl2canopy_w_rot(F_OFFSET(quark_propagator),F_OFFSET(quark_propagator_copy)); */
 /*    rotate_wq(F_OFFSET(quark_propagator),F_OFFSET(quark_propagator_copy)); */
       //canopy2weyl_w_rot(F_OFFSET(quark_propagator_copy),F_OFFSET(quark_propagator_copy));
       //weyl2canopy_w_rot(F_OFFSET(quark_propagator_copy),F_OFFSET(quark_propagator_copy));
-    /*fp_in_w = r_open_prop(RELOAD_SERIAL,"/home/levkova/test_data/wilson_prop/milc_serial/qf_milc_0.124_00001.e-18");
+    /*fp_in_w = r_open_wprop(RELOAD_SERIAL,"/home/levkova/test_data/wilson_prop/milc_serial/qf_milc_0.124_00001.e-18");
     printf("opened w_serial.out\n");
 
     for(color=0;color<3;color++)for(spin=0;spin<4;spin++)
       {
 #ifdef IOTIME
-        status = reload_propagator( RELOAD_SERIAL,fp_in_w , 
+        status = reload_wprop_sc( RELOAD_SERIAL,fp_in_w , 
                                     spin, color, F_OFFSET(quark_propagator_copy.c[color].d[spin]),1);
 #else
-        status = reload_propagator( RELOAD_SERIAL,fp_in_w, 
+        status = reload_wprop_sc( RELOAD_SERIAL,fp_in_w, 
                                     spin, color, F_OFFSET(quark_propagator_copy.c[color].d[spin]),0);
 #endif
       }
    printf("reloaded w_serial.out\n");
-   r_close_prop(RELOAD_SERIAL,fp_in_w);*/
+   r_close_wprop(RELOAD_SERIAL,fp_in_w);*/
 
 
     

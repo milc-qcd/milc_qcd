@@ -144,8 +144,8 @@ boundary_flip(MINUS);
 
 
           /* open files for wilson propagators */
-          fp_in_w[k]  = r_open_prop(startflag_w[k], startfile_w[k]);
-          fp_out_w[k] = w_open_prop(saveflag_w[k],  savefile_w[k] );
+          fp_in_w[k]  = r_open_wprop(startflag_w[k], startfile_w[k]);
+          fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k] );
 
 
                     if(startflag_w[k] == FRESH)flag = 0;
@@ -187,10 +187,10 @@ if(this_node==0) printf("reading in %d wilson_vectors--must be <= 12\n",Nvecs);
 for(j=0;j<Nvecs;j++){
 printf("reading %d %d %d\n",j,spin,color);
 #ifdef IOTIME
-                    status = reload_propagator( startflag_w[k], fp_in_w[k], 
+                    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
                                       spin, color, F_OFFSET(psi),1);
 #else
-                    status = reload_propagator( startflag_w[k], fp_in_w[k], 
+                    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
                                       spin, color, F_OFFSET(psi),0);
 #endif
 
@@ -223,18 +223,18 @@ spin=color=0;
                 for(j=0;j<Nvecs;j++){
 		  FORALLSITES(i,s){s->psi=eigVec[j][i];}
 #ifdef IOTIME
-                    save_propagator( saveflag_w[k],fp_out_w[k],
+                    save_wprop_sc( saveflag_w[k],fp_out_w[k],
                                     spin,color,F_OFFSET(psi),1);
 #else
-                    save_propagator( saveflag_w[k],fp_out_w[k],
+                    save_wprop_sc( saveflag_w[k],fp_out_w[k],
                                     spin,color,F_OFFSET(psi),0);
 #endif
 spin++;
 if((spin %4) == 0){spin=0;color++;}
 		}
           /* close files for wilson propagators */
-          r_close_prop(startflag_w[k],fp_in_w[k]);
-          w_close_prop(saveflag_w[k],fp_out_w[k]);
+          r_close_wprop(startflag_w[k],fp_in_w[k]);
+          w_close_wprop(saveflag_w[k],fp_out_w[k]);
 
 
 

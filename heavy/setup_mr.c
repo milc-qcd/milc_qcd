@@ -297,10 +297,10 @@ int readin(int prompt)
     for (i = 0; i < par_buf.nkap; i++)
     {
 
-      IF_OK status += ask_starting_prop( prompt,&par_buf.startflag_w[i],
+      IF_OK status += ask_starting_wprop( prompt,&par_buf.startflag_w[i],
 				      par_buf.startfile_w[i]);
 
-      IF_OK status += ask_ending_prop( prompt,&par_buf.saveflag_w[i],
+      IF_OK status += ask_ending_wprop( prompt,&par_buf.saveflag_w[i],
 				      par_buf.savefile_w[i]);
 
       IF_OK 

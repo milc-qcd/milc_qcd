@@ -14,7 +14,7 @@
    gaussian
    kappa_spectator  0.120
    r0 1.0
-   fresh_prop
+   fresh_wprop
 
    nkap_light_zonked 1
    max_cg_iterations 100
@@ -23,7 +23,7 @@
    gaussian
    kappa_zonked_light 0.120
    r0 1.0
-   fresh_prop
+   fresh_wprop
 
    vel_file in.sample.input_vel
    mom_file  in.sample.input_mom

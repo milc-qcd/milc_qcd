@@ -16,8 +16,8 @@ r0 1.5
 reload_serial ../ks_dynamical/lat.time
 no_gauge_fix
 forget
-fresh_prop
-forget_prop
-serial_scratch_prop pscratch
+fresh_wprop
+forget_wprop
+serial_scratch_wprop pscratch
 
 

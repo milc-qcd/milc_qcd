@@ -132,12 +132,12 @@ int main(int argc, char **argv)
 	  meascount[nk]++;
 
 	  /* open file for wilson propagators */
-	  fp_in_w[nk]  = r_open_prop(startflag_w[nk], startfile_w[nk]);
+	  fp_in_w[nk]  = r_open_wprop(startflag_w[nk], startfile_w[nk]);
 
 	  if ((spin + color) == 0)
 	  {
 	    /*** first pass of the code  **/
-	    fp_out_w[nk] = w_open_prop(saveflag_w[nk],  savefile_w[nk] );
+	    fp_out_w[nk] = w_open_wprop(saveflag_w[nk],  savefile_w[nk] );
 
 	    /* open file for meson output and writet he header */
 	    if (saveflag_m == SAVE_MESON_ASCII)
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
 	  } /*** end of spin =0 && color == 0 **/
 	  else
 	  {
-	    fp_out_w[nk] = w_open_prop(saveflag_w[nk],  savefile_w[nk] );
+	    fp_out_w[nk] = w_open_wprop(saveflag_w[nk],  savefile_w[nk] );
 
 	    /* open file for meson output for appending output*/
 	    if (saveflag_m == SAVE_MESON_ASCII)
@@ -190,7 +190,7 @@ int main(int argc, char **argv)
 	    printf("color=%d spin=%d kappa=%f nk=%d\n", color, spin, (double) kappa, nk);
 
 	  /* load psi if requested */
-	  reload_propagator(startflag_w[nk], fp_in_w[nk], 
+	  reload_wprop_sc(startflag_w[nk], fp_in_w[nk], 
 			    spin, color, F_OFFSET(psi),1);
 
 	  if (nk == 0 || count2 == 1)
@@ -248,7 +248,7 @@ int main(int argc, char **argv)
 				      mrilu_w_or,&qic,(void *)&dwp);
 #endif
 	  /* save psi if requested */
-	  save_propagator( saveflag_w[nk],fp_out_w[nk],
+	  save_wprop_sc( saveflag_w[nk],fp_out_w[nk],
 			  spin,color,F_OFFSET(psi),1);
 
 
@@ -272,8 +272,8 @@ int main(int argc, char **argv)
 
 	  /* close files */
 
-	  r_close_prop(startflag_w[nk], fp_in_w[nk]);
-	  w_close_prop(saveflag_w[nk],fp_out_w[nk]);
+	  r_close_wprop(startflag_w[nk], fp_in_w[nk]);
+	  w_close_wprop(saveflag_w[nk],fp_out_w[nk]);
 
 	  if (saveflag_m == SAVE_MESON_ASCII)
 	    w_ascii_m_f(fp_m_out, savefile_m[nk]);

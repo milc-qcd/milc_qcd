@@ -1,6 +1,6 @@
 #ifndef _IO_WB_H
 #define _IO_WB_H
-/************************ io_wb.h *************************************/
+/************************ io_wprop.h *************************************/
 /* This header file defines the binary file format for the propagator file and
    defines structures for file descriptors that include the file header information */
 
@@ -299,20 +299,20 @@ void write_appl_w_prop_info(FILE *fp);
 
 /**********************************************************************/
 /* Prototypes for io_helpers_w.c */
-w_prop_file *r_open_prop(int flag, char *filename);
-w_prop_file *w_open_prop(int flag, char *filename);
-int reload_propagator( int flag, w_prop_file *wpf,
+w_prop_file *r_open_wprop(int flag, char *filename);
+w_prop_file *w_open_wprop(int flag, char *filename);
+int reload_wprop_sc( int flag, w_prop_file *wpf,
 		       int spin, int color, field_offset dest, int timing);
-void save_propagator( int flag, w_prop_file *wpf, 
+void save_wprop_sc( int flag, w_prop_file *wpf, 
 		     int spin, int color, field_offset src, int timing);
-int reload_full_propagator( int flag, char *filename,
+int reload_wprop( int flag, char *filename,
 			    field_offset dest, int timing);
-void save_full_propagator( int flag, char *filename, 
+void save_wprop( int flag, char *filename, 
 			   field_offset src, int timing);
-int ask_starting_prop( int prompt, int *flag, char *filename );
-int ask_ending_prop( int prompt, int *flag, char *filename );
-void r_close_prop(int flag, w_prop_file *wpf);
-void w_close_prop(int flag, w_prop_file *wpf);
+int ask_starting_wprop( int prompt, int *flag, char *filename );
+int ask_ending_wprop( int prompt, int *flag, char *filename );
+void r_close_wprop(int flag, w_prop_file *wpf);
+void w_close_wprop(int flag, w_prop_file *wpf);
 
 /* Prototpyes for read_prop_w_fm1.c */
 void r_prop_w_fm(char *filename, field_offset dest);

@@ -24,7 +24,7 @@ GLOBAL_HEADERS = \
   ${INCLUDEDIR}/su3.h \
   ${INCLUDEDIR}/comdefs.h \
   ${INCLUDEDIR}/io_lat.h \
-  ${INCLUDEDIR}/io_wb.h \
+  ${INCLUDEDIR}/io_wprop.h \
   ${INCLUDEDIR}/generic.h \
   ${INCLUDEDIR}/macros.h
 
