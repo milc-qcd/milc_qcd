@@ -18,7 +18,6 @@ void update_u( Real eps ){
 register int i,dir;
 register site *s;
 su3_matrix *link,temp1,temp2,htemp;
-su3_matrix temp4,temp3;
 register Real t2,t3,t4,t5,t6;
 /**TEMP**
 Real gf_x,gf_av,gf_max;

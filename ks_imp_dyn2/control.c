@@ -63,8 +63,12 @@ main( int argc, char **argv )
 	rephase(OFF);
 	g_measure( );
 	rephase(ON);
+#ifdef ONEMASS
+	f_meas_imp(F_OFFSET(phi),F_OFFSET(xxx),mass);
+#else
 	f_meas_imp( F_OFFSET(phi1), F_OFFSET(xxx1), mass1 );
 	f_meas_imp( F_OFFSET(phi2), F_OFFSET(xxx2), mass2 );
+#endif
 #ifdef SPECTRUM 
 	/* Fix TUP Coulomb gauge - gauge links only*/
 	rephase( OFF );
@@ -75,39 +79,65 @@ main( int argc, char **argv )
 	valid_fatlinks = valid_longlinks = 0;
 	
 	if(strstr(spectrum_request,",spectrum,") != NULL){
+#ifdef ONEMASS
+	  avspect_iters += spectrum2(mass,F_OFFSET(phi),F_OFFSET(xxx));
+#else
 	  avspect_iters += spectrum2( mass1, F_OFFSET(phi1),
 				      F_OFFSET(xxx1));
 	  avspect_iters += spectrum2( mass2, F_OFFSET(phi1),
 				      F_OFFSET(xxx1));
+#endif
 	}
 	
 	if(strstr(spectrum_request,",nl_spectrum,") != NULL){
+#ifdef ONEMASS
+	  avspect_iters += nl_spectrum(mass,F_OFFSET(phi),F_OFFSET(xxx),
+				       F_OFFSET(tempmat1),F_OFFSET(staple));
+#else
 	  avspect_iters += nl_spectrum( mass1, F_OFFSET(phi1), 
 		F_OFFSET(xxx1), F_OFFSET(tempmat1),F_OFFSET(staple));
+#endif
 	}
 	
 	if(strstr(spectrum_request,",spectrum_mom,") != NULL){
+#ifdef ONEMASS
+	  avspect_iters += spectrum_mom(mass,mass,F_OFFSET(phi),5e-3);
+#else
 	  avspect_iters += spectrum_mom( mass1, mass1, 
 					 F_OFFSET(phi1), 1e-1 );
+#endif
 	}
 	
 	if(strstr(spectrum_request,",spectrum_multimom,") != NULL){
+#ifdef ONEMASS
+	  avspect_iters += spectrum_multimom(mass,
+					     spectrum_multimom_low_mass,
+					     spectrum_multimom_mass_step,
+					     spectrum_multimom_nmasses,
+					     5e-3);
+#else
 	  avspect_iters += spectrum_multimom(mass1,
 					     spectrum_multimom_low_mass,
 					     spectrum_multimom_mass_step,
 					     spectrum_multimom_nmasses,
 					     5e-3);
+#endif
 	}
 	
+#ifndef ONEMASS
 	if(strstr(spectrum_request,",spectrum_nd,") != NULL){
 	  avspect_iters += spectrum_nd( mass1, mass2, 1e-1 );
 	}
-	
+#endif
 	if(strstr(spectrum_request,",spectrum_nlpi2,") != NULL){
+#ifdef ONEMASS
+	  avspect_iters += spectrum_nlpi2(mass,mass,F_OFFSET(phi),5e-3);
+#else
 	  avspect_iters += spectrum_nlpi2( mass1, mass1, 
 					   F_OFFSET(phi1),1e-1);
 	  avspect_iters += spectrum_nlpi2( mass2, mass2, 
 					   F_OFFSET(phi1),1e-1);
+#endif
 	}
 	
 	if(strstr(spectrum_request,",fpi,") != NULL)
@@ -117,8 +147,12 @@ main( int argc, char **argv )
 	
 #ifdef HYBRIDS
 	if(strstr(spectrum_request,",spectrum_hybrids,") != NULL){
+#ifdef ONEMASS
+	  avspect_iters += spectrum_hybrids( mass,F_OFFSET(phi),1e-1);
+#else
 	  avspect_iters += spectrum_hybrids( mass1, F_OFFSET(phi1), 5e-3 );
 	  avspect_iters += spectrum_hybrids( mass2, F_OFFSET(phi1), 2e-3 );
+#endif
 	}
 #endif
 #ifdef FN

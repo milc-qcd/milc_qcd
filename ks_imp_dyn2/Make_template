@@ -2,19 +2,28 @@
 #  MIMD version 7
 #  "ks_imp3", started 1/22/99, streamline ks_imp2
 #
-#  Generic make-include file for ks_imp_dyn2 codes
+#  Generic make-include file for ks_imp_dyn1 AND ks_imp_dyn2 codes
+#  Use -DONEMASS to build for a single degenerate quark mass
+#  Otherwise the build assumes two quark masses.
+#
 #  This template file defines rules and macros common to all architectures
 #  It is intended to be an include file for other Makefiles.
 #  Don't use it by itself!
 #
 #	"make su3_rmd" used the refreshed molecular dynamics algorithm
 #		for the Symanzik 1 loop gauge action and Asqtad quark action
+#	"make su3_rmd1" Same, but for one degenerate quark mass
+#
 #	"make su3_spectrum" uses the refreshed molecular dynamics
 #	        algorithm with the su3_rmd action and does spectrum
 #	        measurements
+#	"make su3_spectrum1" Same, but for one degenerate quark mass
+#
 #	"make su3_hybrids" uses the refreshed molecular dynamics
 #	        algorithm with the su3_rmd action and does spectrum
 #	        measurements, including the hybrid spectrum
+#	"make su3_hybrids1" Same, but for one degenerate quark mass
+#
 #       See examples below for naming and building targets for
 #               other actions
 
@@ -47,7 +56,6 @@ MY_OBJECTS= \
   control.o \
   gauge_info.o \
   setup.o \
-  update.o \
   update_h.o \
   update_u.o
 
@@ -207,27 +215,42 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 
 #	-DNPBP_REPS=10" \
 # 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
+#       -DONEMASS
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE}"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
+
+su3_rmd1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN ${DARCH} -DONEMASS" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update_onemass.o"
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE}"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
+
+su3_rmd_eos1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN ${DARCH} -DONEMASS" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update_onemass.o"
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DNPBP_REPS=100 -DCHEM_POT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE}"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -235,7 +258,17 @@ su3_hmc::
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} d_action.o"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	d_action.o update.o"
+
+su3_hmc1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN ${DARCH} -DONEMASS \
+	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	d_action.o update_onemass.o"
 
 # The following target is a superset of su3_spectrum
 
@@ -246,7 +279,17 @@ su3_hybrids::
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
 	${MULTI_INV_FN} ape_smear.o project_su3_hit.o \
-	field_strength.o spectrum_hybrids5.o \
+	field_strength.o spectrum_hybrids5.o update.o \
+	${SPECTRUM_OBJECTS}"
+
+su3_hybrids1::
+	make -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN ${DARCH}	-DSPECTRUM -DHYBRIDS -DONEMASS" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	${MULTI_INV_FN} ape_smear.o project_su3_hit.o \
+	field_strength.o spectrum_hybrids5.o update_onemass.o \
 	${SPECTRUM_OBJECTS}"
 
 # The following target will not do hybrids
@@ -257,7 +300,16 @@ su3_spectrum::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
-	${MULTI_INV_FN} ${SPECTRUM_OBJECTS}"
+	${MULTI_INV_FN} ${SPECTRUM_OBJECTS} update.o"
+
+
+su3_spectrum1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN ${DARCH}	-DSPECTRUM -DONEMASS" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	${MULTI_INV_FN} ${SPECTRUM_OBJECTS} update_onemass.o"
 
 
 # The following stanzas illustrate how to create targets for alternative
@@ -269,7 +321,7 @@ su3_rmd_eo_symzk1_fat7tad::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
 	"EXTRA_OBJECTS= d_congrad5_eo.o dslash_eo.o \
-	fermion_force_general.o"
+	fermion_force_general.o update.o"
 
 su3_rmd_plaq_fat7naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -277,7 +329,15 @@ su3_rmd_plaq_fat7naik::
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
-	fermion_force_general.o"
+	fermion_force_general.o update.o"
+
+su3_rmd_plaq_fat7naik1::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN ${DARCH} -DONEMASS" \
+	"GAUGE = plaquette_action.h" \
+	"QUARK = fat7naik_action.h" \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
+	fermion_force_general.o update_onemass.o"
 
 su3_rmd_symzk1_naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \

@@ -20,8 +20,14 @@ PROJS = \
   su3_rmd \
   su3_spectrum \
   su3_hybrids \
-  su3_rmd_plaq_fat7naik
+  su3_rmd_plaq_fat7naik \
+  su3_rmd1 \
+  su3_spectrum1 \
+  su3_hybrids1 \
+  su3_rmd_plaq_fat7naik1
 
 PATTERNS = WARMUPS RUNNING
 
 include ../Make_test_template
+
+check: test

@@ -12,7 +12,6 @@
    If "FN" is defined,
      Includes storage for Naik improvement (longlink[4], templongvec[4],
      gen_pt[16], etc.
-     Includes storage for "fat links"  (fatlink[4])
 */
 
 #include "defines.h"
@@ -67,12 +66,20 @@ typedef struct {
  	Real phase[4];
 
 	/* 3 element complex vectors */
+#ifdef ONEMASS
+ 	su3_vector phi;		/* Gaussian random source vector */
+ 	su3_vector xxx;		/* solution vector = Kinverse * phi */
+#ifdef PHI_ALGORITHM
+ 	su3_vector old_xxx;	/* For predicting next xxx */
+#endif
+#else
  	su3_vector phi1;	/* Gaussian random source vector, mass1 */
  	su3_vector phi2;	/* Gaussian random source vector, mass2 */
- 	su3_vector resid;	/* conjugate gradient residual vector */
- 	su3_vector cg_p;	/* conjugate gradient change vector */
  	su3_vector xxx1;	/* solution vector = Kinverse * phi, mass1 */
  	su3_vector xxx2;	/* solution vector = Kinverse * phi, mass2 */
+#endif
+ 	su3_vector resid;	/* conjugate gradient residual vector */
+ 	su3_vector cg_p;	/* conjugate gradient change vector */
  	su3_vector ttt;		/* temporary vector, for K*ppp */
  	su3_vector g_rand;	/* Gaussian random vector*/
 	/* Use trick of combining xxx=D^adj D)^(-1) on even sites with
@@ -126,16 +133,25 @@ typedef struct {
 
 /* The following are global scalars 
    beta is overall gauge coupling factor
-   mass1 and mass2 are quark masses
+   mass, mass1 and mass2 are quark masses
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,propinterval;
+#ifdef ONEMASS
+EXTERN  int nflavors;
+#else
 EXTERN	int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
+#endif
 EXTERN	Real epsilon;
-EXTERN  Real beta,mass1,mass2,u0;
+EXTERN  Real beta,u0;
+#ifdef ONEMASS
+EXTERN  Real mass;
+#else
+EXTERN  Real mass1,mass2;
+#endif
 EXTERN	Real rsqmin,rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */

@@ -43,7 +43,7 @@ setup()
   void make_3n_gathers();
   int i, prompt;
   
-  /* print banner, get volume, nflavors1,nflavors2, seed */
+  /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();
   /* initialize the node random number generator */
   initialize_prn( &node_prn, iseed, volume+mynode() );
@@ -112,8 +112,8 @@ int
 initial_set()
 {
   int prompt,status;
-  /* On node zero, read lattice size, seed, nflavors1, nflavors2
-     and send to others */
+  /* On node zero, read lattice size, seed, nflavors1, nflavors2,
+     nflavors, and send to others */
   if(mynode()==0){
     /* print banner */
     printf("SU3 with improved KS action\n");
@@ -132,13 +132,24 @@ initial_set()
     printf("With spectrum measurements\n");
 #endif
     status=get_prompt(&prompt);
+#ifdef ONEMASS
+    IF_OK status += get_i(prompt,"nflavors", &par_buf.nflavors );
+#else
     IF_OK status += get_i(prompt,"nflavors1", &par_buf.nflavors1 );
     IF_OK status += get_i(prompt,"nflavors2", &par_buf.nflavors2 );
+#endif
 #ifdef PHI_ALGORITHM
+#ifdef ONEMASS
+    IF_OK if(par_buf.nflavors != 4){
+      printf("Dummy! Use phi algorithm only for four flavors\n");
+      status++;
+    }
+#else
     IF_OK if( par_buf.nflavors1 != 4 || par_buf.nflavors2 != 4 ){
       printf("Dummy! Use phi algorithm only for four flavors\n");
       status++;
     }
+#endif
 #endif
     IF_OK status += get_i(prompt,"nx", &par_buf.nx );
     IF_OK status += get_i(prompt,"ny", &par_buf.ny );
@@ -160,8 +171,12 @@ initial_set()
   nz=par_buf.nz;
   nt=par_buf.nt;
   iseed=par_buf.iseed;
+#ifdef ONEMASS
+  nflavors=par_buf.nflavors;
+#else
   nflavors1=par_buf.nflavors1;
   nflavors2=par_buf.nflavors2;
+#endif
   
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -197,10 +212,14 @@ readin(int prompt)
       get_i(prompt,"traj_between_meas", &par_buf.propinterval );
     
     /* get couplings and broadcast to nodes	*/
-    /* beta, mass1, mass2 */
+    /* beta, mass1, mass2 or mass */
     IF_OK status += get_f(prompt,"beta", &par_buf.beta );
+#ifdef ONEMASS
+    IF_OK status += get_f(prompt,"mass", &par_buf.mass );
+#else
     IF_OK status += get_f(prompt,"mass1", &par_buf.mass1 );
     IF_OK status += get_f(prompt,"mass2", &par_buf.mass2 );
+#endif
     IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
     
     /* microcanonical time step */
@@ -286,8 +305,12 @@ readin(int prompt)
   rsqprop = par_buf.rsqprop;
   epsilon = par_buf.epsilon;
   beta = par_buf.beta;
+#ifdef ONEMASS
+  mass = par_buf.mass;
+#else
   mass1 = par_buf.mass1;
   mass2 = par_buf.mass2;
+#endif
   u0 = par_buf.u0;
 #ifdef SPECTRUM
   strcpy(spectrum_request,par_buf.spectrum_request);

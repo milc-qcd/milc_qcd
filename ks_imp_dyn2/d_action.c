@@ -1,10 +1,12 @@
 /*************** d_action.c ****************************************/
 /* MIMD version 6 */
 
-/* Measure total action, as needed by the hybrid Monte Carlo algorithm.
-   When this routine is called the conjugate gradient should already
-   have been run on the even sites, so that the vectors xxx1 and xxx2
-   contain (M_adjoint*M)^(-1) * phi1 and phi2.
+/* Measure total action, as needed by the hybrid Monte Carlo
+   algorithm.  When this routine is called the conjugate gradient
+   should already have been run on the even sites, so that in the case
+   of two masses, the vectors xxx1 and xxx2 contain (M_adjoint*M)^(-1)
+   * phi1 and phi2 and in the case of one mass the vector xxx contains
+   (M_adjoint*M)^(-1) * phi.
 */
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
@@ -52,10 +54,15 @@ double sum;
     sum=0.0;
     FOREVENSITES(i,s){
 	/* phi is defined on even sites only */
+#ifdef ONEMASS
+        cc = su3_dot( &(s->phi), &(s->xxx) );
+        sum += (double)cc.real;
+#else
         cc = su3_dot( &(s->phi1), &(s->xxx1) );
         sum += (double)cc.real;
         cc = su3_dot( &(s->phi2), &(s->xxx2) );
         sum += (double)cc.real;
+#endif
     }
     g_doublesum( &sum );
     return(sum);

@@ -10,14 +10,23 @@ typedef struct {
     /* INITIALIZATION PARAMETERS */
 	int nx,ny,nz,nt;  /* lattice dimensions */
 	int iseed;	/* for random numbers */
+#ifdef ONEMASS
+	int nflavors;	/* the number of flavors */
+#else
 	int nflavors1;	/* the number of flavors of first type */
 	int nflavors2;	/* the number of flavors of second type */
+#endif
     /*  REPEATING BLOCK */
 	int warms;	/* the number of warmup trajectories */
 	int trajecs;	/* the number of real trajectories */
 	int steps;	/* number of steps for updating */
 	int propinterval;     /* number of trajectories between measurements */
-	Real beta,mass1,mass2; /* gauge coupling, quark masses */
+	Real beta;      /* gauge coupling */
+#ifdef ONEMASS
+	Real mass;      /*  quark mass */
+#else
+	Real mass1,mass2; /*  quark masses */
+#endif
 	Real u0; /* tadpole parameter */
 	int niter; 	/* maximum number of c.g. iterations */
 	Real rsqmin,rsqprop;  /* for deciding on convergence */
