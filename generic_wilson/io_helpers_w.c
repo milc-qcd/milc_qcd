@@ -147,7 +147,7 @@ int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
     {
       dtime += dclock();
       if(flag != FRESH && flag != CONTINUE)
-	node0_printf("Time to reload prop spin %d color %d %e\n",
+	node0_printf("Time to reload wprop spin %d color %d %e\n",
 		     spin,color,dtime);
     }
 
@@ -302,8 +302,7 @@ int reload_wprop_to_site( int flag, char *filename,
     {
       dtime += dclock();
       if(flag != FRESH && flag != CONTINUE)
-	node0_printf("Time to reload prop spin %d color %d %e\n",
-		     spin,color,dtime);
+	node0_printf("Time to reload wprop %e\n",dtime);
     }
   
   return status;
@@ -369,7 +368,7 @@ int reload_wprop_to_field( int flag, char *filename,
 	/* Old MILC format has one record for each source spin, color */
 	/* So we allocate space for one wilson vector per site */
 	destcs = (wilson_vector *)malloc(sites_on_node*
-					 sizeof(wilson_vector *));
+					 sizeof(wilson_vector));
 	if(destcs == NULL){
 	  node0_printf("Can't malloc space to read propagator\n");
 	  status = 1;
@@ -410,7 +409,7 @@ int reload_wprop_to_field( int flag, char *filename,
 	if(infile == NULL)return 1;
 
 	destcs = (wilson_vector *)malloc(sites_on_node*
-					 4*sizeof(wilson_vector *));
+					 4*sizeof(wilson_vector));
 	if(destcs == NULL){
 	  node0_printf("Can't malloc space to read propagator\n");
 	  status = 1;
@@ -446,7 +445,7 @@ int reload_wprop_to_field( int flag, char *filename,
     /* Old MILC format has one record for each source spin, color */
     /* So we allocate space for one wilson vector per site */
     destcs = (wilson_vector *)malloc(sites_on_node*
-				     sizeof(wilson_vector *));
+				     sizeof(wilson_vector));
     if(destcs == NULL){
       node0_printf("Can't malloc space to read propagator\n");
       status = 1;
@@ -471,7 +470,7 @@ int reload_wprop_to_field( int flag, char *filename,
     /* Old MILC format has one record for each source spin, color */
     /* So we allocate space for one wilson vector per site */
     destcs = (wilson_vector *)malloc(sites_on_node*
-				     sizeof(wilson_vector *));
+				     sizeof(wilson_vector));
     if(destcs == NULL){
       node0_printf("Can't malloc space to read propagator\n");
       status = 1;
@@ -742,11 +741,51 @@ int save_wsprop_from_site( int flag, char *filename,
   return status;
 } /* save_wsprop_from_site */
 /*---------------------------------------------------------------*/
+/* read the lattice dimensions from a binary Wilson prop file */
+
+int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[])
+{
+  w_prop_file *wpf;
+  int i;
+
+  if(file_type == FILE_TYPE_W_PROP ||
+     file_type == FILE_TYPE_W_PROP_1996){
+    *ndim = 4;
+    nx = -1; ny = -1; nz = -1; nt = -1;
+    wpf = r_serial_w_i(filename);
+    for(i = 0; i < *ndim; i++)
+      dims[i] = wpf->header->dims[i];
+    r_serial_w_f(wpf);
+  }
+  else if(file_type == FILE_TYPE_W_FMPROP){
+    *ndim = 4;
+    nx = -1; ny = -1; nz = -1; nt = -1;
+    wpf = r_serial_w_fm_i(filename);
+    for(i = 0; i < *ndim; i++)
+      dims[i] = wpf->header->dims[i];
+    r_serial_w_fm_f(wpf);
+  }
+  else if(file_type == FILE_TYPE_W_QIOPROP){
+#ifdef HAVE_QIO
+    read_lat_dim_scidac(filename, ndim, dims);
+#else
+    node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
+    return 1;
+#endif
+  }
+  else{
+    node0_printf("Unsupported file type %d\n",file_type);
+    return 1;
+  }
+  return 0;
+}
+
+/*---------------------------------------------------------------*/
 /* save the full propagator
    FORGET,
    SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_MULTIDUMP, SAVE_CHECKPOINT
 */
-void save_wsprop_from_field( int flag, char *filename,
+void save_wprop_from_field( int flag, char *filename,
 			     wilson_propagator *src, int timing)
 {
   double dtime;
@@ -773,7 +812,7 @@ void save_wsprop_from_field( int flag, char *filename,
 
   case SAVE_SERIAL:
     srccs = (wilson_vector *)malloc(sites_on_node*
-				    sizeof(wilson_vector *));
+				    sizeof(wilson_vector));
     if(srccs == NULL){
       node0_printf("Can't malloc space to read propagator\n");
       status = 1;
@@ -813,7 +852,7 @@ void save_wsprop_from_field( int flag, char *filename,
       if(outfile == NULL)break;
 
       srccs = (wilson_vector *)malloc(sites_on_node*
-				       4*sizeof(wilson_vector *));
+				       4*sizeof(wilson_vector));
       if(srccs == NULL){
 	node0_printf("Can't malloc space to read propagator\n");
 	status = 1;
@@ -831,22 +870,36 @@ void save_wsprop_from_field( int flag, char *filename,
 	}
       QIO_close_write(outfile);
     }
+    free(srccs);
 #else
     node0_printf("To write a SciDAC file requires QIO compilation\n");
 #endif
     break;
   case SAVE_PARALLEL:
     wpf = w_parallel_w_i(filename);
+
+    srccs = (wilson_vector *)malloc(sites_on_node*
+				    4*sizeof(wilson_vector));
+    if(srccs == NULL){
+      node0_printf("Can't malloc space to read propagator\n");
+      status = 1;
+    }
+
     for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
       {
-	w_parallel_w_from_field(wpf,spin,color,src);
+	FORALLSITES(i,s){
+	  for(spin = 0; spin < 4; spin++)
+	    srccs[4*i + spin] = src[i].c[color].d[spin];
+	}
+	w_parallel_w_from_field(wpf,spin,color,srccs);
       }
     w_parallel_w_f(wpf);
+    free(srccs);
     break;
 
   case SAVE_CHECKPOINT:
     srccs = (wilson_vector *)malloc(sites_on_node*
-				    sizeof(wilson_vector *));
+				    sizeof(wilson_vector));
     if(srccs == NULL){
       node0_printf("Can't malloc space to read propagator\n");
       status = 1;
@@ -866,7 +919,7 @@ void save_wsprop_from_field( int flag, char *filename,
 
   case SAVE_MULTIDUMP:
     srccs = (wilson_vector *)malloc(sites_on_node*
-				    sizeof(wilson_vector *));
+				    sizeof(wilson_vector));
     if(srccs == NULL){
       node0_printf("Can't malloc space to read propagator\n");
       status = 1;
@@ -878,7 +931,7 @@ void save_wsprop_from_field( int flag, char *filename,
 	FORALLSITES(i,s){
 	  srccs[i] = src[i].c[color].d[spin];
 	}
-	w_multidump_w_from_field(wpf,spin,color,src);
+	w_multidump_w_from_field(wpf,spin,color,srccs);
       }
     free(srccs);
     w_multidump_w_f(wpf);
@@ -895,7 +948,7 @@ void save_wsprop_from_field( int flag, char *filename,
 	node0_printf("Time to save prop spin %d color %d = %e\n",
 		     spin,color,dtime);
     }
-  return status;
+
 } /* save_wsprop_from_field */
 /*---------------------------------------------------------------*/
 void r_close_wprop(int flag, w_prop_file *wpf)
@@ -935,6 +988,7 @@ void w_close_wprop(int flag, w_prop_file *wpf)
     w_multidump_w_f(wpf); 
   }
 }
+
 /*---------------------------------------------------------------*/
 /* find out what kind of starting propagator to use, 
    and propagator name if necessary.  This routine is only 
@@ -986,7 +1040,8 @@ int ask_starting_wprop( int prompt, int *flag, char *filename ){
     if(prompt!=0)printf("enter name of file containing props\n");
     status=scanf("%s",filename);
     if(status !=1) {
-      printf("ERROR IN INPUT: file name read\n"); return(1);
+      printf("\nask_starting wprop: ERROR IN INPUT: Can't read file name.\n");
+      return(1);
     }
     printf("%s\n",filename);
   }
@@ -1009,7 +1064,7 @@ int ask_ending_wprop( int prompt, int *flag, char *filename ){
       return(1);
     }
     if(status !=1) {
-        printf("\nask_ending_wprop: ERROR IN INPUT: can't read ending wprop command\n");
+        printf("\nask_ending_wprop: ERROR IN INPUT: Can't read ending wprop command\n");
         return(1);
     }
 
@@ -1043,7 +1098,7 @@ int ask_ending_wprop( int prompt, int *flag, char *filename ){
     printf("\n");
   }
   else {
-    printf("ERROR IN INPUT: %s is not a save propagator command\n",savebuf);
+    printf(" is not a valid save wprop command. INPUT ERROR.\n");
     return(1);
   }
   
@@ -1051,7 +1106,7 @@ int ask_ending_wprop( int prompt, int *flag, char *filename ){
     if(prompt!=0)printf("enter filename\n");
     status=scanf("%s",filename);
     if(status !=1){
-      printf("ERROR IN INPUT: save filename\n"); return(1);
+      printf("\nask_ending_wprop. ERROR IN INPUT. Can't read filename\n"); return(1);
     }
     printf("%s\n",filename);
   }

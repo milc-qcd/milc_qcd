@@ -402,13 +402,14 @@ w_prop_file *setup_input_w_prop_file(char *filename)
 
 /* Set up the output w_prop file and w_prop header structure */
 
+void build_w_prop_hdr(w_prop_header *);
+
 w_prop_file *setup_output_w_prop_file()
 {
   w_prop_file *wpf;
   w_prop_header *wph;
   time_t time_stamp;
   int i;
-  void build_w_prop_hdr(w_prop_header *);
 
   /* Allocate space for a new file structure */
 

@@ -138,7 +138,7 @@ void vput_F3_D_to_field(char *buf, size_t index, int count, void *arg)
   fwilson_vector *src = (fwilson_vector *)buf;
   wilson_vector *dest = (wilson_vector *)arg;
   /* Destination can be any precision */
-  wilson_vector *dest_vec = src + index * count;
+  wilson_vector *dest_vec = dest + index * count;
   
   /* Copy, changing precision, if necessary */
   for(j = 0; j < count; j++)

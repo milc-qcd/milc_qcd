@@ -16,21 +16,140 @@
 #endif
 #define NATURAL_ORDER 0
 
-void r_prop_w_fm(char *filename, field_offset dest_site, 
-		 wilson_propagator *dest_field)
+int read_w_fm_prop_hdr(w_prop_file *wpf)
+{
+  w_prop_header *wph = wpf->header;
+  int *dims = wph->dims;
+
+  int32type   tmp, magic_number,elements_per_site; 
+  int32type   size_of_element, order; 
+  int32type   t_stamp;
+  int byterevflag;
+  char myname[] = "read_w_fm_prop_hdr";
+
+  if( sizeof(float) != sizeof(int32type)) {
+    printf("%s: Can't byte reverse\n", wpf->filename);
+    printf("requires size of int32type(%d) = size of float(%d)\n",
+	   (int)sizeof(int32type),(int)sizeof(float));
+    terminate(1);
+  }
+
+  if(sread_data(wpf->fp,&wph->magic_number,sizeof(int32type),
+		myname,"magic_no")) terminate(1);
+
+  tmp = wph->magic_number;
+  if(wph->magic_number == IO_UNI_MAGIC) byterevflag = 0;
+  else 
+    {
+      byterevn((int32type *)&wph->magic_number,1);
+      if(wph->magic_number == IO_UNI_MAGIC) 
+	{
+	  byterevflag = 1; 
+	  printf("Reading with byte reversal\n");
+	}
+      else
+	{
+	  /* Restore magic number as originally read */
+	  wph->magic_number = tmp;
+	  
+	  /* End of the road. */
+	  printf("%s: Unrecognized magic number in prop file header.\n",
+		 wpf->filename);
+	  printf("Expected %x but read %x\n", IO_UNI_MAGIC,tmp);
+	  terminate(1);
+	}
+    };
+
+  if(sread_byteorder(byterevflag,wpf->fp,&t_stamp,
+	     sizeof(t_stamp),myname,"t_stamp"))terminate(1);
+  if(sread_byteorder(byterevflag,wpf->fp,&size_of_element,
+	     sizeof(int32type),myname,"size_of_element"))terminate(1);
+  if(sread_byteorder(byterevflag,wpf->fp,&elements_per_site,
+	     sizeof(int32type),myname,"elements_per_site"))terminate(1);
+  if(sread_byteorder(byterevflag,wpf->fp,dims,
+	     4*sizeof(int32type),myname,"dimensions"))terminate(1);
+
+  if( dims[0]!=nx || dims[1]!=ny || dims[2]!=nz || dims[3]!=nt )
+    {
+      /* So we can use this routine to discover the dimensions,
+	 we provide that if nx = ny = nz = nt = -1 initially
+	 we don't die */
+      
+      if(nx != -1 || ny != -1 || nz != -1 || nt != -1)
+	{
+	  printf(" Incorrect lattice size %d,%d,%d,%d\n",
+		 dims[0], dims[1], dims[2], dims[3]);
+	  terminate(1);
+	}
+    }
+  else
+    {
+      nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
+      volume = nx*ny*nz*nt;
+    }
+  
+  /* Consistency checks */
+  
+  if( size_of_element != sizeof(float) ||
+      elements_per_site != 288 /* wilson_propagator */)
+    {	
+      printf(" File %s is not a wilson propagator",
+	     wpf->filename);
+      printf(" got size_of_element %d and elements_per_site %d\n",
+	     size_of_element, elements_per_site);
+      terminate(1);
+    }
+  
+  /* The site order parameter is ignored */
+  
+  if(sread_byteorder(byterevflag,wpf->fp,&order,sizeof(int32type),
+		     myname,"order parameter"))terminate(1);
+  
+  return byterevflag;
+}
+ 
+w_prop_file *r_serial_w_fm_i(char *filename)
+{
+  /* Returns file descriptor for opened file */
+
+  w_prop_file *wpf;
+  w_prop_header *wph;
+
+  wpf = setup_input_w_prop_file(filename);
+  wph = wpf->header;
+
+  if(this_node==0){
+    wpf->fp = fopen(filename,"rb");
+    if(wpf->fp==NULL){
+      printf("Can't open propagator file %s, error %d\n",filename,errno);
+      terminate(1);
+    }
+    read_w_fm_prop_hdr(wpf);
+
+  }
+  else wpf->fp = NULL;
+
+  /* Node 0 broadcasts the header structure to all nodes */
+  broadcast_bytes((char *)wph,sizeof(w_prop_header));
+
+  return wpf;
+
+} /* r_serial_w_fm_i */
+
+
+void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site, 
+		   wilson_propagator *dest_field)
 {
   int rcv_rank, rcv_coords, status;
-  FILE *fp;
   int destnode;
   int x,y,z,t,i, byterevflag, c0,s0,c1,s1,a;
-  int32type tmp, magic_number,elements_per_site; 
-  int32type  size_of_element, order, dims[4]; 
-  int32type   t_stamp;
   struct {
     fwilson_matrix q;
     char pad[PAD_SEND_BUF];    /* Introduced because some switches
-				  perform better if message lengths are longer */
+				  perform better if message lengths
+				  are longer */
   } msg;
+
   int buf_length, where_in_buf;
   fwilson_matrix *pbuff;
   wilson_propagator *qp;
@@ -38,96 +157,6 @@ void r_prop_w_fm(char *filename, field_offset dest_site,
   u_int32type *val;
   int rank29,rank31;
   int k;
-
-  /*READING FILE HEADER*/
-
-  if(this_node==0){
-    fp = fopen(filename,"rb");
-    if(fp==NULL){
-      printf("Can't open propagator file %s, error %d\n",filename,errno);
-      terminate(1);
-    }
-
-    if(fread(&magic_number,sizeof(int32type),1,fp) != 1)
-      {
-	printf("error in reading magic number from file %s\n", filename);
-	terminate(1);
-      }
-    tmp=magic_number;
-    if(magic_number == IO_UNI_MAGIC) byterevflag=0;
-    else 
-      {
-	byterevn((int32type *)&magic_number,1);
-      if(magic_number == IO_UNI_MAGIC) 
-	{
-	  byterevflag=1; 
-	  printf("Reading with byte reversal\n");
-	  if( sizeof(float) != sizeof(int32type)) {
-	    printf("%s: Can't byte reverse\n", filename);
-	    printf("requires size of int32type(%d) = size of float(%d)\n",
-		   (int)sizeof(int32type),(int)sizeof(float));
-	    terminate(1);
-	  }
-	}
-      else
-	{
-	  /* Restore magic number as originally read */
-	  magic_number = tmp;
-	  
-	  /* End of the road. */
-	  printf("%s: Unrecognized magic number in prop file header.\n",
-		 filename);
-	  printf("Expected %x but read %x\n",
-		 IO_UNI_MAGIC,tmp);
-	  terminate(1);
-	}
-    };
-    if(fread(&t_stamp,sizeof(t_stamp),1,fp) != 1)
-     {	
-       printf("error in reading time stamp from file %s\n", filename);
-       terminate(1);
-     }
-    if(byterevflag)byterevn(&t_stamp,1);
-
-    if(fread(&size_of_element,sizeof(int32type),1,fp) != 1)
-     {	
-       printf("error in reading size of element from file %s\n", filename);
-       terminate(1);
-     }
-    if(byterevflag)byterevn(&size_of_element,1);
-
-    if(fread(&elements_per_site,sizeof(int32type),1,fp) != 1)
-      {	
-	printf("error in reading elements per site from file %s\n", filename);
-	terminate(1);
-      }
-    if(byterevflag)byterevn(&elements_per_site,1);
-
-    if(psread_byteorder(byterevflag,0,fp,dims,sizeof(dims),
-		       filename,"dimensions")!=0) terminate(1);
-
-    if( dims[0]!=nx || dims[1]!=ny || 
-	dims[2]!=nz || dims[3]!=nt )
-      {
-	printf(" Incorrect lattice size %d,%d,%d,%d\n",
-	       dims[0], dims[1], dims[2], dims[3]);
-	terminate(1);
-      }
-    if( size_of_element != sizeof(float) ||
-	elements_per_site != 288 /* wilson_propagator */)
-      {	
-	printf(" file %s is not a wilson propagator",
-	       filename);
-	printf(" got size_of_element %d and elements_per_site %d\n",
-	       size_of_element, elements_per_site);
-	terminate(1);
-      }
-    
-    /* The site order parameter is ignored */
-
-    if(psread_byteorder(byterevflag,0,fp,&order,sizeof(int32type),
-			filename,"order parameter")!=0) terminate(1);
-  } /*if this_node==0*/
 
   if(this_node == 0)
     {
@@ -150,7 +179,6 @@ void r_prop_w_fm(char *filename, field_offset dest_site,
   status = 0;
   for(rcv_rank=0; rcv_rank<volume; rcv_rank++)
     {
-
       /* We do only natural order here */
       rcv_coords = rcv_rank;
       
@@ -183,14 +211,14 @@ void r_prop_w_fm(char *filename, field_offset dest_site,
 	    buf_length = volume - rcv_rank;
 	    if(buf_length > MAX_BUF_LENGTH) buf_length = MAX_BUF_LENGTH;
 	    /* then do read */
-	    a=(int)fread(pbuff,sizeof(fwilson_matrix),buf_length,fp);
+	    a=(int)fread(pbuff,sizeof(fwilson_matrix),buf_length,wpf->fp);
 	    
 	    if( a  != buf_length)
 	      {
 		
 		if(status == 0)
 		  printf(" node %d propagator read error %d file %s\n",
-			 this_node, errno, filename); 
+			 this_node, errno, wpf->filename); 
 		fflush(stdout); 
 		status = 1;
 	      }
@@ -274,6 +302,40 @@ void r_prop_w_fm(char *filename, field_offset dest_site,
 		       test_wpc.sum29, test_wpc.sum31);
 	}
     } /* rcv_rank */
+
+  if(this_node==0)
+    {
+      printf("Read Wilson prop serially from file %s\n", wpf->filename);
+    }
+}
+
+/*----------------------------------------------------------------------*/
+
+void r_serial_w_fm_f(w_prop_file *wpf)
+
+/* Close the file and free associated structures */
+{
+  g_sync();
+  if(this_node==0)
+    {
+      if(wpf->fp != NULL)fclose(wpf->fp);
+      fflush(stdout);
+    }
+  
+  free(wpf->header);
+  free(wpf);
+  
+} /* r_serial_w_fm_f */
+
+/*--------------------------------------------------------------------*/
+void r_prop_w_fm(char *filename, field_offset dest_site, 
+		 wilson_propagator *dest_field)
+{
+  w_prop_file *wpf;
+  wpf = r_serial_w_fm_i(filename);
+  r_serial_w_fm(wpf, dest_site, dest_field);
+  r_serial_w_fm_f(wpf);
+  
 }
 
 /*--------------------------------------------------------------------*/
