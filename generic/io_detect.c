@@ -6,27 +6,55 @@
 /* Error return is -1 (not in table), -2 (open error) -3 (read error) */
 
 #include "generic_includes.h"
+#include <string.h>
 
 int io_detect(char *filename, file_type ft[], int ntypes){
   FILE *fp;
-  int i, status;
+  int i, status, words;
   int32type magic_no;
   int32type revmagic_no;
-  
-  fp = fopen(filename,"r");
-  if(fp == NULL)return -2;
+  char editfilename[513];
 
-  status = fread(&magic_no, sizeof(int32type), 1, fp);
-  fclose(fp);
+  /* Node 0 reads and checks */
+  if(this_node == 0){
+    fp = fopen(filename,"rb");
+    if(fp == NULL){
+      /* Special provision for partition or multifile format.  Try
+	 adding the extension to the filename */
+      strncpy(editfilename,filename,504);
+      editfilename[504] = '\0';  /* Just in case of truncation */
+      strcat(editfilename,".vol0000");
+      fp = fopen(filename,"rb");
+    }
 
-  if(status != 1)return -3;
+    if(fp == NULL)status = -2;
+    else
+      {
+	words = fread(&magic_no, sizeof(int32type), 1, fp);
+	fclose(fp);
 
-  revmagic_no = magic_no;
-  byterevn(&revmagic_no, 1);
+	if(words != 1)status = -3;
+	else
+	  {
+	    revmagic_no = magic_no;
+	    byterevn(&revmagic_no, 1);
 
-  for(i = 0; i < ntypes; i++)
-    if(ft[i].magic_no == magic_no || ft[i].magic_no == revmagic_no)
-      return ft[i].type;
+	    status = -1;
+	    for(i = 0; i < ntypes; i++){
+	      if(ft[i].magic_no == magic_no || 
+		 ft[i].magic_no == revmagic_no)
+		{
+		  status = ft[i].type;
+		  break;
+		}
+	    }
+	  }
+      }
+  }
 
-  return -1;
+  /* Node 0 broadcasts the result */
+  broadcast_bytes((char *)&status, sizeof(int));
+
+  /* All nodes return the same value */
+  return status;
 }

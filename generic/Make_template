@@ -29,7 +29,6 @@ G_ALL = \
  io_detect.o \
  io_helpers.o \
  io_helpers_nocheck.o \
- io_helpers_w.o \
  io_lat4.o \
  io_lat4_double_sg.o \
  io_nonansi.o \
@@ -37,8 +36,6 @@ G_ALL = \
  io_piofs.o \
  io_romio.o \
  io_scidac.o \
- io_wb2.o \
- io_wb3.o \
  layout_hyper.o \
  layout_hyper_prime.o \
  layout_hyper_2or3.o \
@@ -129,9 +126,6 @@ io_helpers.o: ../generic/io_helpers.c
 io_helpers_nocheck.o: ../include/io_lat.h
 io_helpers_nocheck.o: ../generic/io_helpers_nocheck.c
 	${CC} -c ${CFLAGS} $<
-io_helpers_w.o: ../include/io_lat.h ../include/io_wb.h
-io_helpers_w.o: ../generic/io_helpers_w.c
-	${CC} -c ${CFLAGS} $<
 io_lat4.o: ../include/io_lat.h
 io_lat4.o: ../generic/io_lat4.c
 	${CC} -c ${CFLAGS} $<
@@ -147,12 +141,6 @@ io_piofs.o: ../generic/io_piofs.c
 io_romio.o: ../generic/io_romio.c
 	${CC} -c ${CFLAGS} $<
 io_scidac.o: ../generic/io_scidac.c
-	${CC} -c ${CFLAGS} $<
-io_wb2.o: ../include/io_lat.h ../include/io_wb.h
-io_wb2.o: ../generic/io_wb2.c
-	${CC} -c ${CFLAGS} $<
-io_wb3.o: ../include/io_lat.h ../include/io_wb.h
-io_wb3.o: ../generic/io_wb3.c
 	${CC} -c ${CFLAGS} $<
 layout_hyper.o: ../generic/layout_hyper.c
 	${CC} -c ${CFLAGS} $<
