@@ -181,51 +181,7 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
 	/* Create record XML.  Substitute string until we have XML support */
 	snprintf(recxml,MAX_RECXML,"\nmass %g\nt_source %d\n",masses[j],
 		 t_source);
-	/* Fermilab format has one field with three su3_vectors per site */
-        if( kssaveflag == SAVE_SERIAL_FM ) {
-            kspf = w_open_ksprop( kssaveflag, kssavefile_tmp );
-            w_serial_ks_fm( kspf, F_OFFSET(propmat) );
-            w_close_ksprop( kssaveflag, kspf );
-        }
-	else if( kssaveflag == SAVE_SERIAL_SCIDAC ){
-#ifdef HAVE_QIO
- 	    save_ks_vector_scidac(kssavefile_tmp, recxml, QIO_SINGLEFILE, F_OFFSET(propmat), 3);
-#else
-	    node0_printf("multimass_inverter: ERROR save_serial_scidac requires QIO compilation\n");
-#endif
-	}
-	else if( kssaveflag == SAVE_MULTIFILE_SCIDAC ){
-#ifdef HAVE_QIO
- 	    save_ks_vector_scidac(kssavefile_tmp, recxml, QIO_MULTIFILE, F_OFFSET(propmat), 3);
-#else
-	    node0_printf("multimass_inverter: ERROR save_multifile_scidac requires QIO compilation\n");
-#endif
-	}
-	else if( kssaveflag == SAVE_PARTITION_SCIDAC ){
-#ifdef HAVE_QIO
- 	    save_ks_vector_scidac(kssavefile_tmp, recxml, QIO_PARTFILE, F_OFFSET(propmat), 3);
-#else
-	    node0_printf("multimass_inverter: ERROR save_partfile_scidac requires QIO compilation\n");
-#endif
-	}
-        /* maybe find a better way to call this */
-        else if( kssaveflag == SAVE_SERIAL_TSLICE ) {
-          w_ascii_ksprop_tt( kssavefile_tmp, F_OFFSET(propmat[0]),
-                              F_OFFSET(propmat[1]), F_OFFSET(propmat[2]) );
-        }
-        else if( kssaveflag == SAVE_SERIAL ){
-	/* Wingate format has three fields with one su3_vector per site */
-        kspf = w_open_ksprop( kssaveflag, kssavefile_tmp );
-        save_ksprop( kssaveflag, kspf, 0, F_OFFSET(propmat[0]), 1 );
-        save_ksprop( kssaveflag, kspf, 1, F_OFFSET(propmat[1]), 1 );
-        save_ksprop( kssaveflag, kspf, 2, F_OFFSET(propmat[2]), 1 );
-        w_close_ksprop( kssaveflag, kspf );
-        }
-	else {
-	  node0_printf("multimass_inverter: ERROR. Unrecognized save flag %d\n",
-		       kssaveflag);
-	}
-
+	save_ksprop( kssaveflag, kssavefile_tmp, recxml, F_OFFSET(propmat), 0);
    } /* end loop on j (masses) */
   } /* end loop on t_source */
 

@@ -68,6 +68,10 @@ void dslash_eo( field_offset src, field_offset dest, int parity );
 void dslash_eo_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start );
 
+void dslash_ks_( field_offset src, field_offset dest, int parity );
+void dslash_ks__special( field_offset src, field_offset dest,
+			 int parity, msg_tag **tag, int start );
+
 int congrad_ks(            /* Return value is number of iterations taken */
      field_offset src,       /* type su3_vector* (preloaded source) */
      field_offset dest,      /* type su3_vector*  (answer and initial guess) */
@@ -193,4 +197,21 @@ int spectrum_nlpi2( Real qmass, Real amass, field_offset temp, Real tol);
 void mult_rho0( int fdir,  field_offset src, field_offset dest ) ;
 void mult_rhos( int fdir,  field_offset src, field_offset dest ) ;
 
+#ifdef HAVE_QDP
+
+void dslash_fn_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
+		   QDP_Subset parity);
+void dslash_fn_special_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
+			   QDP_Subset parity, QDP_ColorVector *temp[]);
+void dslash_fn_special2_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
+			    QDP_Subset parity, QDP_ColorVector *temp[]);
+int ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
+		   int niter, QLA_Real rsqmin, QDP_Subset parity,
+		   QLA_Real *final_rsq_ptr);
+int ks_multicg_qdp(QDP_ColorVector *src, QDP_ColorVector **dest,
+		   QLA_Real *masses, int num_masses, int niter,
+		   QLA_Real rsqmin, QDP_Subset parity,
+		   QLA_Real *final_rsq_ptr);
+
+#endif /* HAVE_QDP */
 #endif /* _GENERIC_KS_H */

@@ -92,6 +92,8 @@ void dslash_on_temp( wilson_vector *src, wilson_vector *dest,
 		     int isign, int parity);
 void dslash_on_temp_special(wilson_vector *src, wilson_vector *dest,
 			    int isign,int parity,msg_tag **tag,int is_started);
+void dslash3( field_offset src, field_offset dest, int isign, int parity);
+
 void cleanup_tmp_links();
 void meson_cont(field_offset src1,field_offset src2,
 		int *gamma_in,int *gamma_out,int n_in,int n_out,

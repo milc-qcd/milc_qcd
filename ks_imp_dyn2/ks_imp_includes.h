@@ -18,7 +18,6 @@
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
 #include "../include/dirs.h"
-#include "../include/dirs.h"
 #ifdef HAVE_QDP
 #include <qdp.h>
 #endif

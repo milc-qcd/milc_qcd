@@ -33,10 +33,9 @@
 #define ASCII_PROP_INFO_EXT ".info"
 
 /* version numbers */
-#define KSPROP_VERSION_NUMBER_V0 230201 /* save_ksprop_ascii order, 2001 */
-#define KSPROP_VERSION_NUMBER 23209     /* w_ascii_ks order, June 2002 */
-#define KSFMPROP_VERSION_NUMBER  0x71626434     /* field major order for FNAL 
-		project Nov. 2002 S.G.  */
+#include "../include/file_types.h"
+
+/* tables of magic numbers for supported file types */
 
 /* Begin definition of stuctures */
 
@@ -136,6 +135,13 @@ char *ks_prop_info_keyword[] = {
       "quark.staple.w3",      /* link + w3*staples */
       "quark.u0",
       "quark.lightspeed.c0",
+
+      "ksprop.dim",
+      "ksprop.magic_number",
+      "ksprop.size-of-element",
+      "ksprop.elements-per-site",
+      "ksprop.site-order",
+      "ksprop.time_stamp",
       ""       /* Last entry MUST be a zero-length keyword */
 };
 #else
@@ -187,10 +193,8 @@ ks_prop_file *w_serial_ks_i(char *filename);
 void w_serial_ks(ks_prop_file *kspf, int color, field_offset src);
 void w_serial_ks_f(ks_prop_file *kspf);
 
-void w_serial_ksprop_tt(char *filename, field_offset prop0,
-		       field_offset prop1, field_offset prop2);
-void w_ascii_ksprop_tt(char *filename, field_offset prop0,
-		       field_offset prop1, field_offset prop2);
+void w_serial_ksprop_tt(char *filename, field_offset prop);
+void w_ascii_ksprop_tt(char *filename, field_offset prop);
 
 ks_prop_file *r_ascii_ks_i(char *filename);
 int r_ascii_ks(ks_prop_file *kspf, int color, field_offset src);
@@ -202,36 +206,28 @@ void w_ascii_ks_f(ks_prop_file *kspf);
 
 
 
-/*** DEPRECIATED: ***/
-ks_prop_file *restore_ksprop_ascii(char *filename, field_offset prop0,
-			      field_offset prop1, field_offset prop2);
-ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop0,
-			      field_offset prop1, field_offset prop2);
+/*** DEPRECATED: ***/
+ks_prop_file *restore_ksprop_ascii(char *filename, field_offset prop);
+ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop);
 
 /**********************************************************************/
-/* Prototypes for io_prop_sgks.c */
+/* Prototypes for io_prop_ks_fm.c */
+
 void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph);
 void write_ks_fmprop_info_file(ks_prop_file *pf);
 ks_prop_file *setup_output_ks_fmprop_file();
 ks_prop_file *w_serial_ks_fm_i(char *filename);
-void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop0,
-                       field_offset prop1, field_offset prop2);
-
-
-
+void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop);
+void w_serial_ks_fm_f(ks_prop_file *kspf);
+ks_prop_file *r_serial_ks_fm_i(char *filename);
+int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop);
+void r_serial_ks_fm_f(ks_prop_file *kspf);
 
 /* Prototypes for io_helpers_ks.c */
 
-ks_prop_file *r_open_ksprop(int flag, char *filename);
-ks_prop_file *w_open_ksprop(int flag, char *filename);
-
-int reload_ksprop( int flag, ks_prop_file *kspf, int color,
-		   field_offset src, int timing);
-void save_ksprop( int flag, ks_prop_file *kspf, int color, 
+int reload_ksprop( int flag, char *filename, field_offset dest, int timing);
+void save_ksprop( int flag, char *filename, char *recxml, 
 		  field_offset src, int timing);
-
-void r_close_ksprop(int flag, ks_prop_file *kspf);
-void w_close_ksprop(int flag, ks_prop_file *kspf);
 
 int ask_starting_ksprop( int prompt, int *flag, char *filename );
 int ask_ending_ksprop( int prompt, int *flag, char *filename );

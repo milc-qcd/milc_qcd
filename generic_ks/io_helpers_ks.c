@@ -11,67 +11,24 @@
 #include "generic_ks_includes.h"
 #include "../include/io_lat.h"
 #include "../include/io_prop_ks.h"
+#include "../include/file_types.h"
 #include <string.h>
-
-/*---------------------------------------------------------------*/
-/* Open propagator file for reading */
-ks_prop_file *r_open_ksprop(int flag, char *filename)
-{
-  ks_prop_file *kspf;
-  
-  switch(flag){
-  case RELOAD_ASCII:
-    kspf = r_ascii_ks_i(filename);
-    break;
-  case RELOAD_SERIAL:
-    kspf = r_serial_ks_i(filename);
-    break;
-  default:
-    kspf = NULL;
-  }
-  return kspf;
-}
-
-/*---------------------------------------------------------------*/
-/* Open propagator file for writing */
-ks_prop_file *w_open_ksprop(int flag, char *filename)
-{
-  ks_prop_file *kspf;
-  
-  switch(flag){
-  case SAVE_ASCII:
-    kspf = w_ascii_ks_i(filename);
-    break;
-  case SAVE_SERIAL:
-    kspf = w_serial_ks_i(filename);
-    break;
-  case SAVE_SERIAL_FM:
-    kspf = w_serial_ks_fm_i(filename);
-    break;
-  case SAVE_SERIAL_TSLICE:
-    kspf = w_serial_ks_i(filename);
-    break;
-  default:
-    kspf = NULL;
-  }
-
-  return kspf;
-
-}
 
 /*---------------------------------------------------------------*/
 /* reload a propagator in any of the formats, or cold propagator, or keep
    current propagator:
    FRESH, CONTINUE, RELOAD_ASCII, RELOAD_SERIAL
    */
-int reload_ksprop( int flag, ks_prop_file *kspf, int color,
-		   field_offset dest, int timing)
+int reload_ksprop( int flag, char *filename, field_offset dest, int timing)
 {
   /* 0 normal exit value
      1 read error */
 
   double dtime;
-  int i,status;
+  int i,status,color;
+  field_offset destc;
+  int file_type;
+  ks_prop_file *kspf;
   site *s;
 
   if(timing)dtime = -dclock();
@@ -83,10 +40,49 @@ int reload_ksprop( int flag, ks_prop_file *kspf, int color,
     FORALLSITES(i,s) clearvec( (su3_vector *)F_PT(s,dest));
     break;
   case RELOAD_ASCII:
-    status = r_ascii_ks(kspf,color,dest);
+    kspf = r_ascii_ks_i(filename);
+    for(color = 0; color < 3; color++){
+      destc = dest + color*sizeof(su3_vector);
+      status = r_ascii_ks(kspf,color,destc);
+    }
+    r_ascii_ks_f(kspf);
     break;
   case RELOAD_SERIAL:
-    status = r_serial_ks(kspf,color,dest); 
+    file_type = io_detect(filename, ksprop_list, N_KSPROP_TYPES);
+    if(file_type < 0){
+      node0_printf("reload_ksprop: Can't read file %s\n", filename);
+      return 1;
+    }
+    if(file_type == FILE_TYPE_KSPROP){
+      node0_printf("Reading as a standard KS prop file\n");
+      kspf = r_serial_ks_i(filename);
+      for(color = 0; color < 3; color++){
+	destc = dest + color*sizeof(su3_vector);
+	status = r_serial_ks(kspf,color,destc); 
+      }
+      r_serial_ks_f(kspf);
+      free(kspf);
+    }
+    else if(file_type = FILE_TYPE_KSFMPROP){
+      node0_printf("Reading as a Fermilab KS prop file\n");
+      kspf = r_serial_ks_fm_i(filename);
+      r_serial_ks_fm(kspf,dest);
+      r_serial_ks_fm_f(kspf);
+      free(kspf);
+    }
+    else if(file_type == FILE_TYPE_KSQIOPROP){
+#ifdef HAVE_QIO
+      node0_printf("Reading as a QIO KS prop file\n");
+      restore_ks_vector_scidac(filename, dest, 3);
+#else
+      node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
+      return 1;
+#endif
+    }
+    else{
+      node0_printf("Unsupported file type %d\n",file_type);
+      return 1;
+    }
     break;
   default:
     node0_printf("reload_ksprop: Unrecognized reload flag.\n");
@@ -106,25 +102,65 @@ int reload_ksprop( int flag, ks_prop_file *kspf, int color,
 
 /*---------------------------------------------------------------*/
 /* write a single su3_vector field to an open file in various formats
-   FORGET, SAVE_ASCII, SAVE_SERIAL, SAVE_SERIAL_TSLICE
+   FORGET, SAVE_ASCII, SAVE_SERIAL_TSLICE, SAVE_SERIAL,
+   SERIAL_SERIAL_FM, SAVE_XXX_SCIDAC
    */
-void save_ksprop( int flag, ks_prop_file *kspf, int color, 
+void save_ksprop( int flag, char *filename, char *recxml, 
 		  field_offset src, int timing)
 {
   double dtime;
+  int color;
+  field_offset srcc;
+  ks_prop_file *kspf;
   
   if(timing)dtime = -dclock();
   switch(flag){
   case FORGET:
     break;
   case SAVE_ASCII:
-    w_ascii_ks(kspf,color,src);
-    break;
-  case SAVE_SERIAL:
-    w_serial_ks(kspf,color,src);
+    kspf = w_ascii_ks_i(filename);
+    for(color = 0; color < 3; color++){
+      srcc = src + color*sizeof(su3_vector);
+      w_ascii_ks(kspf,color,srcc);
+    }
+    w_ascii_ks_f(kspf);
     break;
   case SAVE_SERIAL_TSLICE:
-    w_serial_ks(kspf,color,src);
+    w_ascii_ksprop_tt(filename, src);
+    break;
+  case SAVE_SERIAL:
+    kspf = w_serial_ks_i(filename);
+    for(color = 0; color < 3; color++){
+      srcc = src + color*sizeof(su3_vector);
+      w_serial_ks(kspf,color,srcc);
+    }
+    w_serial_ks_f(kspf);
+    break;
+  case SAVE_SERIAL_FM:
+    kspf = w_serial_ks_fm_i(filename);
+    w_serial_ks_fm(kspf,src);
+    w_serial_ks_fm_f(kspf);
+    break;
+  case SAVE_SERIAL_SCIDAC:
+#ifdef HAVE_QIO
+    save_ks_vector_scidac(filename, recxml, QIO_SINGLEFILE, src, 3);
+#else
+    node0_printf("Need QIO compilation to save in SciDAC format\n");
+#endif
+    break;
+  case SAVE_PARTITION_SCIDAC:
+#ifdef HAVE_QIO
+    save_ks_vector_scidac(filename, recxml, QIO_PARTFILE, src, 3);
+#else
+    node0_printf("Need QIO compilation to save in SciDAC format\n");
+#endif
+    break;
+  case SAVE_MULTIFILE_SCIDAC:
+#ifdef HAVE_QIO
+    save_ks_vector_scidac(filename, recxml, QIO_MULTIFILE, src, 3);
+#else
+    node0_printf("Need QIO compilation to save in SciDAC format\n");
+#endif
     break;
   default:
     node0_printf("save_ksprop: Unrecognized save flag.\n");
@@ -140,42 +176,6 @@ void save_ksprop( int flag, ks_prop_file *kspf, int color,
 
 } /* save_ksprop */
 
-/*---------------------------------------------------------------*/
-void r_close_ksprop(int flag, ks_prop_file *kspf)
-{
-  
-  switch(flag){
-  case RELOAD_ASCII:
-    r_ascii_ks_f(kspf);
-    break;
-  case RELOAD_SERIAL:
-    r_serial_ks_f(kspf);
-    break;
-  default:
-    node0_printf("r_close_ksprop: Unrecognized flag.\n");
-    terminate(1);    
-  }
-}
-
-/*---------------------------------------------------------------*/
-void w_close_ksprop(int flag, ks_prop_file *kspf)
-{
-  switch(flag){
-  case FORGET:
-    break;
-  case SAVE_ASCII:
-    w_ascii_ks_f(kspf);
-    break;
-  case SAVE_SERIAL:
-  case SAVE_SERIAL_FM:
-  case SAVE_SERIAL_TSLICE:
-    w_serial_ks_f(kspf); 
-    break;
-  default:
-    node0_printf("w_close_ksprop: Unrecognized flag.\n");
-    terminate(1);    
-  }
-}
 
 /* find out what if any KS propagator should be loaded.
    This routine is only called by node 0.
@@ -185,10 +185,14 @@ int ask_starting_ksprop( int prompt, int *flag, char *filename ){
     int status;
 
     if (prompt!=0) 
-      printf( "enter 'fresh_ks', 'reload_ks_ascii', 'reload_ks_serial'\n");
+      printf( "enter 'fresh_ks', 'reload_ks_ascii', 'reload_ks_serial', \n");
     status=scanf("%s",savebuf);
+    if (status == EOF){
+      printf("ask_starting_ksprop: EOF on STDIN.\n");
+      return(1);
+    }
     if(status !=1) {
-        printf("ask_starting_ksprop: ERROR IN INPUT: starting prop command\n");
+        printf("ask_starting_ksprop: ERROR IN INPUT: error reading starting prop command\n");
         return(1);
     }
 
@@ -214,7 +218,7 @@ int ask_starting_ksprop( int prompt, int *flag, char *filename ){
         if(prompt!=0) printf("enter name of file containing ksprop\n");
         status = scanf("%s",filename);
         if(status != 1) {
-	    printf("ask_starting_ksprop: ERROR IN INPUT: file name read\n"); 
+	    printf("ask_starting_ksprop: ERROR IN INPUT: error reading filename\n"); 
 	    return(1);
         }
 	printf("%s\n",filename);
@@ -232,7 +236,7 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
     int status;
 
     if (prompt!=0) printf(
-        "'forget_ks', 'save_ks_ascii', 'save_ks_serial', 'save_ks_serial_fm', save_ks_serial_tslice', 'save_ks_serial_scidac', 'save_ks_multifile_scidac', 'save_ks_partition_scidac' ?\n");
+        "'forget_ks', 'save_ks_ascii', 'save_ks_serial_tslice', 'save_ks_serial', 'save_ks_serial_fm', 'save_ks_serial_scidac', 'save_ks_multifile_scidac', 'save_ks_partition_scidac' ?\n");
     status=scanf("%s",savebuf);
     if(status !=1) {
         printf("ask_ending_ksprop: ERROR IN INPUT: ending ksprop command\n");
@@ -242,14 +246,14 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
     if(strcmp("save_ks_ascii",savebuf) == 0 )  {
         *flag=SAVE_ASCII;
     }
+    else if(strcmp("save_ks_serial_tslice",savebuf) == 0 ) {
+        *flag=SAVE_SERIAL_TSLICE;
+    }
     else if(strcmp("save_ks_serial",savebuf) == 0 ) {
         *flag=SAVE_SERIAL;
     }
     else if(strcmp("save_ks_serial_fm",savebuf) == 0 ) {
         *flag=SAVE_SERIAL_FM;
-    }
-    else if(strcmp("save_ks_serial_tslice",savebuf) == 0 ) {
-        *flag=SAVE_SERIAL_TSLICE;
     }
     else if(strcmp("save_ks_serial_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
@@ -280,7 +284,7 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
 	printf("\n");
     }
     else {
-      printf("ask_ending_ksprop: ERROR IN INPUT: %s is not a valid command\n",
+      printf("ask_ending_ksprop: ERROR IN INPUT: %s is not a valid save KS prop command\n",
 	     savebuf);
       return(1);
     }
@@ -289,7 +293,7 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
         if(prompt!=0)printf("enter filename\n");
         status = scanf("%s",filename);
         if(status != 1){
-    	    printf("ask_ending_ksprop: ERROR IN INPUT: save filename\n"); 
+    	    printf("ask_ending_ksprop: ERROR IN INPUT: error reading filename\n"); 
 	    return(1);
         }
 	printf("%s\n",filename);

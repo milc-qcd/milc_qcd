@@ -6,6 +6,7 @@
 
 #include "../include/int32type.h"
 #include "../include/macros.h"
+#include "../include/file_types.h"
 #include <stdio.h>
 
 #ifdef CONTROL
@@ -30,7 +31,6 @@
 /*--------------------------------------------------------------------*/
 /* version 5 binary file format */
 
-#define W_PROP_VERSION_NUMBER 12781
 #define MAX_TIME_STAMP 64
 #define MAX_SOURCE_SPINS 4
 
@@ -145,7 +145,6 @@ extern char *w_prop_info_keyword[];
 #define MAX_SOURCE_PARAM 2
 #define IDENTITY_MAP -1
 #define NO_MAP -2
-#define W_PROP_VERSION_NUMBER_1996 48291
 
 /* Begin definition of header stuctures */
 

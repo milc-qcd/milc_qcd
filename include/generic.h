@@ -19,6 +19,7 @@
 #include "../include/complex.h"
 #include "../include/macros.h"
 #include "../include/random.h"
+#include "../include/file_types.h"
 
 /* ape_smear.c */
 void ape_smear_dir(
@@ -102,6 +103,9 @@ void measure_glueball_ops();
 
 /* hvy_pot.c */
 void hvy_pot( field_offset links );
+
+/* io_detect.c */
+int io_detect(char *filename, file_type ft[], int ntypes);
 
 /* layout_*.c */
 void setup_layout( void );

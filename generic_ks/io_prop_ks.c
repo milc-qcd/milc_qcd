@@ -989,7 +989,7 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset src)
   
   if(this_node==0)
     {
-/*      printf("Read prop serially from file %s\n", filename); */
+      printf("Read prop serially from file %s\n", filename);
       
       /* Verify checksum */
       /* Checksums not implemented until version 5 */
@@ -1410,8 +1410,8 @@ void r_ascii_ks_f(ks_prop_file *kspf)
 /* Quick and dirty code for binary output of propagator, separated
    into one file per timeslice */
 
-void w_serial_ksprop_tt( char *filename, field_offset prop0,
-			field_offset prop1, field_offset prop2 ) {
+void w_serial_ksprop_tt( char *filename, field_offset prop)
+{
 
   char myname[] = "w_serial_ksprop_tt";
   FILE *fp;
@@ -1431,7 +1431,7 @@ void w_serial_ksprop_tt( char *filename, field_offset prop0,
   int x,y,z,t;
   register int i,a,b;
   fsu3_matrix pbuf;
-  su3_vector *proppt[3];
+  su3_vector *proppt;
   site *s;
     
   /* Set up ks_prop file and ks_prop header structs and load header values */
@@ -1515,14 +1515,12 @@ void w_serial_ksprop_tt( char *filename, field_offset prop0,
 	  /* just copy */
 	  i = node_index(x,y,z,t);
 	  s = &(lattice[i]);
-	  proppt[0] = (su3_vector *)F_PT(s,prop0);
-	  proppt[1] = (su3_vector *)F_PT(s,prop1);
-	  proppt[2] = (su3_vector *)F_PT(s,prop2);
+	  proppt = (su3_vector *)F_PT(s,prop);
 	  /* Copy, converting precision if necessary */
 	  for(a=0; a<3; a++){
 	    for(b=0; b<3; b++){
-	      pbuf.e[a][b].real = proppt[a]->c[b].real;
-	      pbuf.e[a][b].imag = proppt[a]->c[b].imag;
+	      pbuf.e[a][b].real = proppt[a].c[b].real;
+	      pbuf.e[a][b].imag = proppt[a].c[b].imag;
 	    }
 	  }
 	}
@@ -1556,14 +1554,12 @@ void w_serial_ksprop_tt( char *filename, field_offset prop0,
 	    i=node_index(x,y,z,t);
 	    /* Copy data into send buffer and send to node 0 with padding */
 	    s = &(lattice[i]);
-	    proppt[0] = (su3_vector *)F_PT(s,prop0);
-	    proppt[1] = (su3_vector *)F_PT(s,prop1);
-	    proppt[2] = (su3_vector *)F_PT(s,prop2);
+	    proppt = (su3_vector *)F_PT(s,prop);
 	    /* Copy, converting precision if necessary */
 	    for(a=0; a<3; a++){
 	      for(b=0; b<3; b++){
-		pbuf.e[a][b].real = proppt[a]->c[b].real;
-		pbuf.e[a][b].imag = proppt[a]->c[b].imag;
+		pbuf.e[a][b].real = proppt[a].c[b].real;
+		pbuf.e[a][b].imag = proppt[a].c[b].imag;
 	      }
 	    }
 	    send_field((char *)&pbuf,sizeof(fsu3_matrix),0);
@@ -1583,8 +1579,8 @@ void w_serial_ksprop_tt( char *filename, field_offset prop0,
 /* Quick and dirty code for ascii output of propagator, separated
    into one file per timeslice */
 
-void w_ascii_ksprop_tt( char *filename, field_offset prop0,
-			field_offset prop1, field_offset prop2 ) {
+void w_ascii_ksprop_tt( char *filename, field_offset prop) 
+{
 
   char myname[] = "w_ascii_ksprop_tt";
   FILE *fp;
@@ -1597,7 +1593,7 @@ void w_ascii_ksprop_tt( char *filename, field_offset prop0,
   int version_number,x,y,z,t;
   register int i,a,b;
   fsu3_matrix pbuf;
-  su3_vector *proppt[3];
+  su3_vector *proppt;
   site *s;
 
   /* Set up ks_prop file and ks_prop header structs and load header values */
@@ -1648,14 +1644,13 @@ void w_ascii_ksprop_tt( char *filename, field_offset prop0,
 	if(currentnode==0){ 
 	  i = node_index(x,y,z,t);
 	  s = &(lattice[i]);
-	  proppt[0] = (su3_vector *)F_PT(s,prop0);
-	  proppt[1] = (su3_vector *)F_PT(s,prop1);
-	  proppt[2] = (su3_vector *)F_PT(s,prop2);
+	  proppt = (su3_vector *)F_PT(s,prop);
+
 	  /* Copy, converting precision if necessary */
 	  for(a=0; a<3; a++){
 	    for(b=0; b<3; b++){
-	      pbuf.e[a][b].real = proppt[a]->c[b].real;
-	      pbuf.e[a][b].imag = proppt[a]->c[b].imag;
+	      pbuf.e[a][b].real = proppt[a].c[b].real;
+	      pbuf.e[a][b].imag = proppt[a].c[b].imag;
 	    }
 	  }
 	}
@@ -1676,14 +1671,12 @@ void w_ascii_ksprop_tt( char *filename, field_offset prop0,
 	if(this_node==currentnode){
 	  i = node_index(x,y,z,t);
 	  s = &(lattice[i]);
-	  proppt[0] = (su3_vector *)F_PT(s,prop0);
-	  proppt[1] = (su3_vector *)F_PT(s,prop1);
-	  proppt[2] = (su3_vector *)F_PT(s,prop2);
+	  proppt = (su3_vector *)F_PT(s,prop);
 	  /* Copy, converting precision if necessary */
 	  for(a=0; a<3; a++){
 	    for(b=0; b<3; b++){
-	      pbuf.e[a][b].real = proppt[a]->c[b].real;
-	      pbuf.e[a][b].imag = proppt[a]->c[b].imag;
+	      pbuf.e[a][b].real = proppt[a].c[b].real;
+	      pbuf.e[a][b].imag = proppt[a].c[b].imag;
 	    }
 	  }
 	  send_field((char *)&pbuf,sizeof(fsu3_matrix),0);
@@ -1722,8 +1715,8 @@ void w_ascii_ksprop_tt( char *filename, field_offset prop0,
 */
 
 /* one su3_vector for each source color */
-ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop0,
-				 field_offset prop1, field_offset prop2 ) {
+ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop )
+{
 
   ks_prop_header *ph;
   ks_prop_file *pf;
@@ -1732,7 +1725,7 @@ ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop0,
   int version_number,i,a,b,x,y,z,t;
   fsu3_matrix pbuf;
   int src_clr;
-  su3_vector *proppt[3];
+  su3_vector *proppt;
   site *s;
 
   /* Set up a prop file and prop header structure for reading */
@@ -1827,14 +1820,12 @@ ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop0,
       if(destnode==0){	/* just copy */
 	i = node_index(x,y,z,t);
 	s = &(lattice[i]);
-	proppt[0] = (su3_vector *)F_PT(s,prop0);
-	proppt[1] = (su3_vector *)F_PT(s,prop1);
-	proppt[2] = (su3_vector *)F_PT(s,prop2);
+	proppt = (su3_vector *)F_PT(s,prop);
 	/* Copy, converting precision if necessary */
 	for(src_clr=0; src_clr<3; src_clr++){
 	  for(b=0; b<3; b++){
-	    proppt[src_clr]->c[b].real = pbuf.e[src_clr][b].real;
-	    proppt[src_clr]->c[b].imag = pbuf.e[src_clr][b].imag;
+	    proppt[src_clr].c[b].real = pbuf.e[src_clr][b].real;
+	    proppt[src_clr].c[b].imag = pbuf.e[src_clr][b].imag;
 	  }
 	}
       }
@@ -1849,14 +1840,12 @@ ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop0,
 	get_field((char *)&pbuf,sizeof(fsu3_matrix),0);
 	i = node_index(x,y,z,t);
 	s = &(lattice[i]);
-	proppt[0] = (su3_vector *)F_PT(s,prop0);
-	proppt[1] = (su3_vector *)F_PT(s,prop1);
-	proppt[2] = (su3_vector *)F_PT(s,prop2);
+	proppt = (su3_vector *)F_PT(s,prop);
 	/* Copy, converting precision if necessary */
 	for(src_clr=0; src_clr<3; src_clr++){
 	  for(b=0; b<3; b++){
-	    proppt[src_clr]->c[b].real = pbuf.e[src_clr][b].real;
-	    proppt[src_clr]->c[b].imag = pbuf.e[src_clr][b].imag;
+	    proppt[src_clr].c[b].real = pbuf.e[src_clr][b].real;
+	    proppt[src_clr].c[b].imag = pbuf.e[src_clr][b].imag;
 	  }
 	}
       } /* if */
@@ -1883,8 +1872,8 @@ ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop0,
 /* Save a KS propagator in ASCII format serially (node 0 only) */
 
 /* one su3_vector for each source color */
-ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop0,
-			      field_offset prop1, field_offset prop2 ) {
+ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop)
+{
 
   ks_prop_header *ph;
   ks_prop_file *pf;
@@ -1893,7 +1882,7 @@ ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop0,
   int i,a,b,x,y,z,t;
   fsu3_matrix pbuf;
   int src_clr;
-  su3_vector *proppt[3];
+  su3_vector *proppt;
   site *s;
 
   /* Set up a prop file and prop header structure for reading */
@@ -1950,14 +1939,12 @@ ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop0,
       if(currentnode==0){ 
 	i = node_index(x,y,z,t);
 	s = &(lattice[i]);
-	proppt[0] = (su3_vector *)F_PT(s,prop0);
-	proppt[1] = (su3_vector *)F_PT(s,prop1);
-	proppt[2] = (su3_vector *)F_PT(s,prop2);
+	proppt = (su3_vector *)F_PT(s,prop);
 	/* Copy, converting precision if necessary */
 	for(src_clr=0; src_clr<3; src_clr++){
 	  for(b=0; b<3; b++){
-	    pbuf.e[src_clr][b].real = proppt[src_clr]->c[b].real;
-	    pbuf.e[src_clr][b].imag = proppt[src_clr]->c[b].imag;
+	    pbuf.e[src_clr][b].real = proppt[src_clr].c[b].real;
+	    pbuf.e[src_clr][b].imag = proppt[src_clr].c[b].imag;
 	  }
 	}
       }
@@ -1978,14 +1965,12 @@ ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop0,
       if(this_node==currentnode){
 	i = node_index(x,y,z,t);
 	s = &(lattice[i]);
-	proppt[0] = (su3_vector *)F_PT(s,prop0);
-	proppt[1] = (su3_vector *)F_PT(s,prop1);
-	proppt[2] = (su3_vector *)F_PT(s,prop2);
+	proppt = (su3_vector *)F_PT(s,prop);
 	/* Copy, converting precision if necessary */
 	for(src_clr=0; src_clr<3; src_clr++){
 	  for(b=0; b<3; b++){
-	    pbuf.e[src_clr][b].real = proppt[src_clr]->c[b].real;
-	    pbuf.e[src_clr][b].imag = proppt[src_clr]->c[b].imag;
+	    pbuf.e[src_clr][b].real = proppt[src_clr].c[b].real;
+	    pbuf.e[src_clr][b].imag = proppt[src_clr].c[b].imag;
 	  }
 	}
 	send_field((char *)&pbuf,sizeof(fsu3_matrix),0);

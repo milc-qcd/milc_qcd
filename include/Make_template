@@ -52,11 +52,19 @@
 
 ../include/int32type.h :	../include/config.h
 
-../include/io_lat.h :	../include/int32type.h
+../include/io_lat.h :	\
+  ../include/int32type.h \
+  ../include/file_types.h
+
+../include/io_prop_ks.h : \
+  ../include/int32type.h \
+  ../include/macros.h \
+  ../include/file_types.h
 
 ../include/io_wb.h : \
   ../include/int32type.h \
-  ../include/macros.h
+  ../include/macros.h \
+  ../include/file_types.h
 
 ../include/loopend.h :	../include/macros.h ../include/int32type.h
 

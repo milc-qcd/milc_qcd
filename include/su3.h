@@ -55,6 +55,11 @@ typedef struct { color_wilson_vector d[4]; } wilson_matrix;
 typedef struct { spin_wilson_vector c[3]; } wilson_propagator;
 
 typedef struct { fsu3_vector d[4]; } fwilson_vector;
+typedef struct { fsu3_vector h[2]; } fhalf_wilson_vector;
+typedef struct { fwilson_vector c[3]; } fcolor_wilson_vector;
+typedef struct { fwilson_vector d[4]; } fspin_wilson_vector;
+typedef struct { fcolor_wilson_vector d[4]; } fwilson_matrix;
+typedef struct { fspin_wilson_vector c[3]; } fwilson_propagator;
 
 #define GAMMAFIVE -1    /* some integer which is not a direction */
 #define PLUS 1          /* flags for selecting M or M_adjoint */
@@ -357,7 +362,7 @@ typedef struct { fsu3_vector d[4]; } fwilson_vector;
 * Real gaussian_rand_no( double_prn *prn_pt )
 *	file "gaussrand.c"
 * void byterevn(int32type w[], int n)
-
+* void byterevn64(int32type w[], int n)
 *
 */
 
@@ -467,6 +472,7 @@ void dump_wilson_vec( wilson_vector *src );
 Real gaussian_rand_no( double_prn *prn_pt );
 #include "../include/int32type.h"
 void byterevn(int32type w[], int n);
+void byterevn64(int32type w[], int n);
 
 /* For inserting Don Holmgren's SSE versions of some library routines */
 /* Use only for Gnu C on the P3 or P4 */

@@ -437,8 +437,8 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 
   if(this_node==0)
     {
-/*      printf("Wrote prop serially to file %s\n", kspf->filename); 
-	fflush(stdout); */
+      printf("Wrote KS prop serially to file %s\n", kspf->filename); 
+      fflush(stdout);
       free(pbuf);
 
       /* NOT DONE NOW NEED FOR EACH TIME SLICE Construct check record */
@@ -446,6 +446,31 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
     }
 
 } /* w_serial_ks_fm */
+
+/*---------------------------------------------------------------------------*/
+
+void w_serial_ks_fm_f(ks_prop_file *kspf)
+
+/* this subroutine closes the file and frees associated structures */
+{
+  g_sync();
+  if(this_node==0)
+    {
+      if(kspf->parallel == PARALLEL)
+	printf("w_serial_ks_f: Attempting serial close on file opened in parallel \n");
+
+      printf("Wrote prop file %s time stamp %s\n", kspf->filename,
+	     (kspf->header)->time_stamp);
+
+      if(kspf->fp != NULL) fclose(kspf->fp);
+    }
+
+  /* Free header and file structures */
+  free(kspf->header);
+  free(kspf);
+
+} /* w_serial_ks_fm_f */
+
 
 /* !!!!!!!!!!!!!!!!!!!!!!! My code for reading a binary fm staggered propagator*/
 
@@ -503,7 +528,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 	  terminate(1);
 	}
     }
-  printf("byterevflag %d, parallel %d\n, magic number %0x\n", byterevflag, parallel, ksph->magic_number);  
+  /**printf("byterevflag %d, parallel %d\n, magic number %0x\n", byterevflag, parallel, ksph->magic_number);  **/
   /* Read header, do byte reversal, 
      if necessary, and check consistency */
 
@@ -738,7 +763,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
       head_size = ksph->header_bytes + coord_list_size;
      
       offset = head_size; /*+ body_size*color;*/
-      printf("OFFSET %d\n", offset);
+      /**      printf("OFFSET %d\n", offset);**/
       pbuf = (fsu3_vector *)malloc(MAX_BUF_LENGTH*sizeof(fsu3_vector)*3);
       if(pbuf == NULL)
 	{
@@ -783,7 +808,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
   
   g_sync();
 
-  printf("   Start the reading from stag prop file, buf_length %d   \n", buf_length);
+  /**  printf("   Start the reading from stag prop file, buf_length %d   \n", buf_length); **/
   /* Node 0 reads and deals out the values */
   status = 0;
   for(rcv_rank=0; rcv_rank<volume; rcv_rank++)
@@ -896,7 +921,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
   
   if(this_node==0)
     {
-/*      printf("Read prop serially from file %s\n", filename); */
+      printf("Read KS prop serially from file %s\n", filename);
       
       /* Verify checksum */
       /* Checksums not implemented until version 5 */

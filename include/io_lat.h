@@ -49,9 +49,8 @@
 #include <stdio.h>
 #include "../include/int32type.h"
 #include "../include/macros.h"  /* For MAXFILENAME */
+#include "../include/file_types.h"
 
-/* LIME magic number */
-#define LIME_MAGIC_NO     1164413355
 
 /**********************************************************************/
 /* Binary lattice formats                                             */
@@ -69,7 +68,6 @@
 /*--------------------------------------------------------------------*/
 /* version 5 binary file format */
 
-#define GAUGE_VERSION_NUMBER 20103
 #define MAX_TIME_STAMP 64
 
 /* 1. Header comes first    */
@@ -186,12 +184,6 @@ extern char *gauge_info_keyword[];
 #define MAX_SOURCE_DESCRIPT 200
 #define MAX_SOURCE_PARAM 2
 #define MAX_SOURCE_SPINS 4
-#define GAUGE_VERSION_NUMBER_1996 53546
-#define GAUGE_VERSION_NUMBER_FNAL  0x71626434     /* field major order for FNAL
-             project Nov. 2002 S.G. Note it is the same for different fields */
-
-/* #define GAUGE_VERSION_NUMBER_ARCHIVE 1229407554 appears to be little endian */
-#define GAUGE_VERSION_NUMBER_ARCHIVE 1111836489
 
 /* Begin definition of header stuctures */
 
@@ -266,8 +258,6 @@ typedef struct {
 
 /**********************************************************************/
 /* Versions 1-4 file format */
-
-#define GAUGE_VERSION_NUMBER_V1 59354   /* Old number for compatibility */
 
 /* version number (32 bit integer) */
 
