@@ -26,6 +26,8 @@ PROJS = su3_hmc su3_hmc_bi su3_hmc_bi_spectrum su3_hmc_screen su3_rmd su3_rmd_bi
 # We haven't tested all the other combinations:
 # su3_phi su3_hmc_spectrum su3_rmd_spectrum su3_hmc_bi_screen 
 
+MACROLIST = ""
+
 PATTERNS = START RUNNING
 TOL = 1e-4
 

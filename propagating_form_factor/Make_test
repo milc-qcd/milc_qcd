@@ -22,6 +22,8 @@
 
 PROJS = w_mr_prop_form.x cl_bicg_prop_form.x
 
+MACROLIST = ""
+
 PATTERNS = P--Momentum RUNNING
 TOL = 3e-6
 

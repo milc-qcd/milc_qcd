@@ -19,6 +19,8 @@
 #------------------------------------------------------------
 
 PROJS = su3_rmd su3_hmc su3_ora
+MACROLIST = ""
+
 PATTERNS = WARMUPS RUNNING
 TOL = 1e-4
 

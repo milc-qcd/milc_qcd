@@ -22,6 +22,8 @@
 
 PROJS = su3_clov_cg su3_clov_bi su3_clhl_cg su3_clhl_bi
 
+MACROLIST = ""
+
 PATTERNS = POINTPION RUNNING
 TOL = 1e-4
 

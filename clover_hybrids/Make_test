@@ -22,6 +22,8 @@
 
 PROJS = hyb_bicg_clover hyb_cg_clover_for
 
+MACROLIST = ""
+
 PATTERNS = STARTPROP RUNNING
 TOL = 1e-4
 

@@ -22,6 +22,8 @@
 
 PROJS = w_mr_hqet_form.x cl_bicg_hqet_form.x
 
+MACROLIST = ""
+
 PATTERNS = "HQET-->" xxxxxxx
 TOL = 1e-5
 

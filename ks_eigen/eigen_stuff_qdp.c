@@ -59,8 +59,8 @@ Matrix_Vec_mult_qdp(QDP_ColorVector *src, QDP_ColorVector *res,
   else if(subset==QDP_odd) othersubset = QDP_even;
   else othersubset = QDP_all;
 
-  dslash_fn_special2_qdp(src, temp0, othersubset, temp1);
-  dslash_fn_special2_qdp(temp0, res, subset, temp2);
+  dslash_qdp_fn_special2(src, temp0, othersubset, temp1);
+  dslash_qdp_fn_special2(temp0, res, subset, temp2);
   QDP_V_eqm_V(res, res, subset);
 
 #ifdef DEBUG

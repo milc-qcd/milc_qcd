@@ -26,6 +26,10 @@ PROJS = \
   su3_hybrids1 \
   su3_rmd_plaq_fat7naik1
 
+MACROLIST = \
+  "PRECISION=1" \
+  "PRECISION=2"
+
 PATTERNS = WARMUPS RUNNING
 
 include ../Make_test_template

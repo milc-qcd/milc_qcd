@@ -22,6 +22,8 @@
 
 PROJS = su3_str_brk
 
+MACROLIST = ""
+
 PATTERNS = SMEARING RUNNING
 TOL = 1e-4
 

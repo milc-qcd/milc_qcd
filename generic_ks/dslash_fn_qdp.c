@@ -51,7 +51,7 @@ setup_dslash(void)
    sources parallel transported to site, with minus sign for transport
    from negative directions */
 void
-dslash_fn_special2_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
+dslash_qdp_fn_special2(QDP_ColorVector *src, QDP_ColorVector *dest,
 		       QDP_Subset parity, QDP_ColorVector *temp[])
 {
   int i;
@@ -95,7 +95,7 @@ dslash_fn_special2_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
    sources parallel transported to site, with minus sign for transport
    from negative directions */
 void
-dslash_fn_special_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
+dslash_qdp_fn_special(QDP_ColorVector *src, QDP_ColorVector *dest,
 		      QDP_Subset parity, QDP_ColorVector *temp[])
 {
   int i;
@@ -154,7 +154,7 @@ dslash_fn_special_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
 }
 
 void
-dslash_fn_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QDP_Subset parity)
+dslash_qdp_fn(QDP_ColorVector *src, QDP_ColorVector *dest, QDP_Subset parity)
 {
   QDP_ColorVector *vtemp[16];
   int i;
@@ -164,12 +164,12 @@ dslash_fn_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QDP_Subset parity)
   for(i=0; i<16; i++) {
     vtemp[i] = QDP_create_V();
   }
-  dslash_fn_special_qdp(src, dest, parity, vtemp);
+  dslash_qdp_fn_special(src, dest, parity, vtemp);
 #if 0
   if(parity==QDP_odd)
-    dslash_fn_special_qdp(src, dest, parity, temp2);
+    dslash_qdp_fn_special(src, dest, parity, temp2);
   else
-    dslash_fn_special_qdp(src, dest, parity, temp1);
+    dslash_qdp_fn_special(src, dest, parity, temp1);
 #endif
   for(i=0; i<16; i++) {
     QDP_destroy_V(vtemp[i]);
@@ -209,7 +209,7 @@ dslash_fn_site(field_offset src, field_offset dest, int parity)
   set_V_from_field(qdest, dest);
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
-  dslash_fn_qdp(qsrc, qdest, subset);
+  dslash_qdp_fn(qsrc, qdest, subset);
   set_field_from_V(dest, qdest);
 }
 
@@ -234,7 +234,7 @@ dslash_fn_site_special(field_offset src, field_offset dest,
     set4_M_from_temp(fatlinks, t_fatlink);
     set4_M_from_temp(longlinks, t_longlink);
   }
-  dslash_fn_qdp(qsrc, qdest, subset);
+  dslash_qdp_fn(qsrc, qdest, subset);
   set_field_from_V(dest, qdest);
 }
 
@@ -251,7 +251,7 @@ dslash_fn_field(su3_vector *src, su3_vector *dest, int parity)
   set_V_from_temp(qdest, dest);
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
-  dslash_fn_qdp(qsrc, qdest, subset);
+  dslash_qdp_fn(qsrc, qdest, subset);
   set_temp_from_V(dest, qdest);
 }
 
@@ -276,7 +276,7 @@ dslash_fn_field_special(su3_vector *src, su3_vector *dest,
     set4_M_from_temp(fatlinks, t_fatlink);
     set4_M_from_temp(longlinks, t_longlink);
   }
-  dslash_fn_qdp(qsrc, qdest, qparity);
+  dslash_qdp_fn(qsrc, qdest, qparity);
   set_temp_from_V(dest, qdest);
 }
 

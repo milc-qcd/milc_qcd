@@ -20,6 +20,8 @@ PROJS = \
   su3_spectrum \
   su3_spectrum_periodic
 
+MACROLIST = ""
+
 PATTERNS = STARTPROP RUNNING
 
 include ../Make_test_template

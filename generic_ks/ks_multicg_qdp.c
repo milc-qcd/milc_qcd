@@ -170,8 +170,8 @@ ks_multicg_qdp(	/* Return value is number of iterations taken */
     oldrsq = rsq;
     /* sum of neighbors */
 
-    dslash_fn_special2_qdp(cg_p, tttt, q_otherparity, temp1);
-    dslash_fn_special2_qdp(tttt, ttt, q_parity, temp2);
+    dslash_qdp_fn_special2(cg_p, tttt, q_otherparity, temp1);
+    dslash_qdp_fn_special2(tttt, ttt, q_parity, temp2);
 
     /* finish computation of (-1)*M_adjoint*m*p and (-1)*p*M_adjoint*M*p */
     /* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */

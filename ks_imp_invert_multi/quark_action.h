@@ -9,7 +9,7 @@
        by the fattening is added.  The Naik term corrects the dispersion
        relation  */
     /* Specify paths in orientation in which they appear in the
-       forward part of the x component of dslash_site().  Rotations and
+       forward part of the x component of dslash().  Rotations and
        reflections will be automatically included. Be careful
        about signs of coefficients.  See long comment at bottom
        of quark_stuff.c. */

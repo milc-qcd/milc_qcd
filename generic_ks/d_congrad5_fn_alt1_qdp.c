@@ -189,8 +189,8 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
 
     QDP_V_eq_V(cg_p, dest, q_parity);
 
-    dslash_fn_special2_qdp(cg_p, tttt, q_otherparity, temp1);
-    dslash_fn_special2_qdp(tttt, ttt, q_parity, temp2);
+    dslash_qdp_fn_special2(cg_p, tttt, q_otherparity, temp1);
+    dslash_qdp_fn_special2(tttt, ttt, q_parity, temp2);
     QDP_V_meq_r_times_V(ttt, &msq_x4, cg_p, q_parity);
     iteration++;    /* iteration counts multiplications by M_adjoint*M */
 
@@ -217,8 +217,8 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
       while(1) {
 	oldrsq = rsq;
 
-	dslash_fn_special2_qdp(cg_p, tttt, q_otherparity, temp1);
-	dslash_fn_special2_qdp(tttt, ttt, q_parity, temp2);
+	dslash_qdp_fn_special2(cg_p, tttt, q_otherparity, temp1);
+	dslash_qdp_fn_special2(tttt, ttt, q_parity, temp2);
 	QDP_V_meq_r_times_V(ttt, &msq_x4, cg_p, q_parity);
 	iteration++;
 

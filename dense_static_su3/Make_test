@@ -22,6 +22,8 @@
 
 PROJS = dense_su3 dense_eff_su3 halfdense_su3 dense_axial_su3 halfdense_axial_su3 dense_su3_lpbp
 
+MACROLIST = ""
+
 PATTERNS = WARMUPS RUNNING
 TOL = 1e-6
 

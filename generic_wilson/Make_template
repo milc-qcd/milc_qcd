@@ -21,8 +21,8 @@ G_WILSON_ALL =  \
     dslash_lean.o \
     dslash_lean2.o \
     dslash_lean_forwards.o \
+    dslash_w_space.o \
     dslash_w.o \
-    dslash_w2.o \
     dslash_w3.o \
     io_helpers_w.o \
     io_scidac_w.o \
@@ -86,9 +86,9 @@ dslash_lean2.o: ../generic_wilson/dslash_lean2.c
 	${CC} -c ${CFLAGS} $<
 dslash_lean_forwards.o: ../generic_wilson/dslash_lean_forwards.c
 	${CC} -c ${CFLAGS} $<
-dslash_w.o: ../generic_wilson/dslash_w.c
+dslash_w_space.o: ../generic_wilson/dslash_w_space.c
 	${CC} -c ${CFLAGS} $<
-dslash_w2.o: ../generic_wilson/dslash_w2.c
+dslash_w.o: ../generic_wilson/dslash_w.c
 	${CC} -c ${CFLAGS} $<
 dslash_w3.o: ../generic_wilson/dslash_w3.c
 	${CC} -c ${CFLAGS} $<

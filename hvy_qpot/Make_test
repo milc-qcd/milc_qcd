@@ -21,6 +21,8 @@
 # For comparing test output with sample output
 
 PROJS = su3_hqp
+MACROLIST = ""
+
 PATTERNS = CHECK RUNNING
 TOL = 1e-5
 

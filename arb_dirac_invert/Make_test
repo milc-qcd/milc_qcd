@@ -22,6 +22,8 @@
 
 PROJS = su3_fp_cl_bi su3_fp_cl_bi_h su3_fp_cl_bi_n su3_fp_cl_eig su3_fp_cg_eig
 
+MACROLIST = ""
+
 PATTERNS = BEGIN RUNNING
 TOL = 1e-5
 

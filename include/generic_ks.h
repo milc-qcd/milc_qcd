@@ -202,11 +202,11 @@ void mult_rhos( int fdir,  field_offset src, field_offset dest ) ;
 
 #ifdef HAVE_QDP
 
-void dslash_fn_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
+void dslash_qdp_fn(QDP_ColorVector *src, QDP_ColorVector *dest,
 		   QDP_Subset parity);
-void dslash_fn_special_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
+void dslash_qdp_fn_special(QDP_ColorVector *src, QDP_ColorVector *dest,
 			   QDP_Subset parity, QDP_ColorVector *temp[]);
-void dslash_fn_special2_qdp(QDP_ColorVector *src, QDP_ColorVector *dest,
+void dslash_qdp_fn_special2(QDP_ColorVector *src, QDP_ColorVector *dest,
 			    QDP_Subset parity, QDP_ColorVector *temp[]);
 int ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
 		   int niter, QLA_Real rsqmin, QDP_Subset parity,

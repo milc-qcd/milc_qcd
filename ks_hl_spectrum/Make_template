@@ -73,8 +73,8 @@ else
 endif
 
 G_WILSON_OBJECTS0 =    \
-  dslash_w2.o         \
-  io_prop_w_fm.o   \
+  dslash_w_space.o     \
+  io_prop_w_fm.o       \
   wilson_invert_lean.o 
 
 ifeq ($(strip ${HAVEQIO}),true)

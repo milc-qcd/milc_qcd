@@ -55,6 +55,7 @@ enum prop_name {
     nprops		/* nprops = number of propagators */
 };
 
+#include "generic_ks_includes.h"
 #include "../include/dslash_ks_redefine.h"
 
 int test_converge( int t_source );
