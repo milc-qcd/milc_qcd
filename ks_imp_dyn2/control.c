@@ -159,47 +159,6 @@ main( int argc, char **argv )
       save_lattice( saveflag, savefile );
       rephase( ON );
     }
-    /*TEMP*/
-#ifdef NONSENSE
-    {int dir ; site *s; double trace;
-    trace=0.0;
-    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
-      trace+= realtrace_su3( &(s->link[dir]), &(s->link[dir]) );
-    }
-    g_doublesum( &trace );
-    node0_printf("TRACE0 = %e\n",trace/(4.0*volume) );
-    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++)s->link[dir] = s->fatlink[dir];
-    rephase(OFF);
-    plaquette(&ssplaq,&stplaq);
-    printf("FAT PLAQ:  %e  %e\n",ssplaq,stplaq);
-    trace=0.0;
-    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
-      trace+= realtrace_su3( &(s->link[dir]), &(s->link[dir]) );
-    }
-    g_doublesum( &trace );
-    node0_printf("TRACE1 = %e\n",trace/(4.0*volume) );
-    g_sync();
-    rephase(ON);
-    
-    load_fatlinks();
-    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++)s->link[dir] = s->fatlink[dir];
-    rephase(OFF);
-    plaquette(&ssplaq,&stplaq);
-    printf("FAT2 PLAQ:  %e  %e\n",ssplaq,stplaq);
-    trace=0.0;
-    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
-      trace+= realtrace_su3( &(s->link[dir]), &(s->link[dir]) );
-    }
-    g_doublesum( &trace );
-    node0_printf("TRACE2 = %e\n",trace/(4.0*volume) );
-    g_sync();
-    rephase(ON);
-    
-    node0_printf("TEMP EXIT\n");
-    exit(0);
-    }
-#endif
-
   }
 #ifdef HAVE_QDP
   QDP_finalize();

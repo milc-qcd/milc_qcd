@@ -42,6 +42,7 @@ ALL_APPS = \
   ks_eigen \
   ks_imp_dyn1 \
   ks_imp_dyn2 \
+  ks_imp_utilities \
   propagating_form_factor \
   pure_gauge \
   schroed_cl_inv \
@@ -69,6 +70,7 @@ ks_dynamical:  		MAKE_generic_ks
 ks_eigen:		MAKE_generic_ks 
 ks_imp_dyn1:		MAKE_generic_ks 
 ks_imp_dyn2:		MAKE_generic_ks 
+ks_imp_utilities:	MAKE_generic_ks 
 propagating_form_factor:  MAKE_generic_wilson MAKE_generic_clover  MAKE_generic_form
 pure_gauge: 		MAKE_generic_pg
 schroed_cl_inv:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_schroed
@@ -137,6 +139,7 @@ ks_dynamical \
 ks_eigen \
 ks_imp_dyn1 \
 ks_imp_dyn2 \
+ks_imp_utilities \
 string_break \
 : ${WORK_KS_TAR}
 	tar -xf ${WORK_KS_TAR} $@

@@ -44,7 +44,6 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
 
 MY_OBJECTS= \
   control.o \
-  f_meas.o \
   gauge_info.o \
   setup.o \
   update.o \
@@ -78,6 +77,7 @@ else
 endif
 
 G_KS_OBJECTS = \
+  f_meas.o \
   grsource_imp.o \
   mat_invert.o \
   quark_stuff.o \
