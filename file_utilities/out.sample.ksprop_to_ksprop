@@ -1,4 +1,5 @@
 type 0 for no prompts  or 1 for prompts
+BEGIN
 reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
 save_serial_ksprop ksprop_milc.test.l4448.ll
 Dimensions 4 4 4 8
@@ -16,20 +17,20 @@ quark.t[7].checksum  "49fda91c 43d489fe"
 Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
 Computed 49fda91c 43d489fe.  Read 0 0.
 Wrote info file ksprop_milc.test.l4448.ll.info
-Wrote prop file ksprop_milc.test.l4448.ll time stamp Sun Mar 27 10:13:49 2005
-Time to save ksprop = 1.268439e-01
+Wrote prop file ksprop_milc.test.l4448.ll time stamp Sun Mar 27 10:34:12 2005
+Time to save ksprop = 1.197979e-01
 reload_serial_ksprop ksprop_milc.test.l4448.ll
-save_serial_scidac_ksprop ksprop_scidac.test.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac1.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
-Converting file ksprop_milc.test.l4448.ll to file ksprop_scidac.test.l4448.ll
+Converting file ksprop_milc.test.l4448.ll to file ksprop_scidac1.test.l4448.ll
 Reading as a standard KS prop file
 Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
 Read prop serially for color 1 from file ksprop_milc.test.l4448.ll
 Read prop serially for color 2 from file ksprop_milc.test.l4448.ll
-Saved KS vector serially to binary file ksprop_scidac.test.l4448.ll
+Saved KS vector serially to binary file ksprop_scidac1.test.l4448.ll
 Checksums 464717df 41647286
-Time to save ksprop = 7.100204e-02
+Time to save ksprop = 6.322407e-02
 reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
 save_serial_scidac_ksprop ksprop_scidac2.test.l4448.ll
 Dimensions 4 4 4 8
@@ -48,7 +49,7 @@ Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
 Computed 49fda91c 43d489fe.  Read 0 0.
 Saved KS vector serially to binary file ksprop_scidac2.test.l4448.ll
 Checksums 464717df 41647286
-Time to save ksprop = 4.643005e-02
+Time to save ksprop = 7.193503e-02
 reload_serial_ksprop ksprop_milc.test.l4448.ll
 save_serial_ksprop ksprop_fm.test.l4448.ll
 Dimensions 4 4 4 8
@@ -59,8 +60,8 @@ Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
 Read prop serially for color 1 from file ksprop_milc.test.l4448.ll
 Read prop serially for color 2 from file ksprop_milc.test.l4448.ll
 Wrote info file ksprop_fm.test.l4448.ll.info
-Wrote prop file ksprop_fm.test.l4448.ll time stamp Sun Mar 27 10:13:49 2005
-Time to save ksprop = 1.135909e-01
+Wrote prop file ksprop_fm.test.l4448.ll time stamp Sun Mar 27 10:34:13 2005
+Time to save ksprop = 1.142050e-01
 reload_serial_ksprop ksprop_fm.test.l4448.ll
 save_serial_scidac_ksprop ksprop_scidac3.test.l4448.ll
 Dimensions 4 4 4 8
@@ -72,5 +73,6 @@ Read prop serially for color 1 from file ksprop_fm.test.l4448.ll
 Read prop serially for color 2 from file ksprop_fm.test.l4448.ll
 Saved KS vector serially to binary file ksprop_scidac3.test.l4448.ll
 Checksums 464717df 41647286
-Time to save ksprop = 4.600503e-02
+Time to save ksprop = 7.240511e-02
 ask_starting_ksprop: EOF on STDIN.
+RUNNING COMPLETED

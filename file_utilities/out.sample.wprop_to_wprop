@@ -1,10 +1,10 @@
 type 0 for no prompts  or 1 for prompts
+BEGIN
 reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
 save_serial_wprop wprop_milc.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_milc.test.l4448.ll
-reload_wprop_to_field: flag = 13
 Reading as a Fermilab Wilson prop file
 quark.t[0].checksum  "7e685bd9 759261a0"
 quark.t[1].checksum  "458d636c 7fde95"
@@ -16,27 +16,25 @@ quark.t[6].checksum  "90dc8731 1bcbbc90"
 quark.t[7].checksum  "637519f8 3bf07bbe"
 Read Wilson prop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
 Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
-Time to reload wprop 1.350506e-02
-Wrote prop file wprop_milc.test.l4448.ll time stamp Sun Mar 27 07:38:51 2005
+Time to reload wprop 1.192491e-02
+Wrote prop file wprop_milc.test.l4448.ll time stamp Sun Mar 27 10:33:45 2005
 Saved wprop serially to file wprop_milc.test.l4448.ll
-Time to save wprop = 4.057599e-01
+Time to save wprop = 4.031979e-01
 reload_serial_wprop wprop_milc.test.l4448.ll
-save_serial_scidac_wprop wprop_scidac.test.l4448.ll
+save_serial_scidac_wprop wprop_scidac1.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
-Converting file wprop_milc.test.l4448.ll to file wprop_scidac.test.l4448.ll
-reload_wprop_to_field: flag = 13
+Converting file wprop_milc.test.l4448.ll to file wprop_scidac1.test.l4448.ll
 Reading as a MILC Wilson prop file
 Read wprop serially from file wprop_milc.test.l4448.ll
-Time to reload wprop 2.511909e-02
-Saved wprop serially to file wprop_scidac.test.l4448.ll
-Time to save wprop = 1.731191e-01
+Time to reload wprop 2.005301e-02
+Saved wprop serially to file wprop_scidac1.test.l4448.ll
+Time to save wprop = 1.618541e-01
 reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
 save_serial_scidac_wprop wprop_scidac2.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_scidac2.test.l4448.ll
-reload_wprop_to_field: flag = 13
 Reading as a Fermilab Wilson prop file
 quark.t[0].checksum  "7e685bd9 759261a0"
 quark.t[1].checksum  "458d636c 7fde95"
@@ -48,30 +46,29 @@ quark.t[6].checksum  "90dc8731 1bcbbc90"
 quark.t[7].checksum  "637519f8 3bf07bbe"
 Read Wilson prop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
 Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
-Time to reload wprop 1.360402e-02
+Time to reload wprop 1.198403e-02
 Saved wprop serially to file wprop_scidac2.test.l4448.ll
-Time to save wprop = 1.840640e-01
+Time to save wprop = 1.625730e-01
 reload_serial_wprop wprop_milc.test.l4448.ll
 save_checkpoint_wprop wprop_checkpoint.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 Converting file wprop_milc.test.l4448.ll to file wprop_checkpoint.test.l4448.ll
-reload_wprop_to_field: flag = 13
 Reading as a MILC Wilson prop file
 Read wprop serially from file wprop_milc.test.l4448.ll
-Time to reload wprop 2.123609e-02
-Wrote prop file wprop_checkpoint.test.l4448.ll time stamp Sun Mar 27 07:38:52 2005
+Time to reload wprop 1.637789e-02
+Wrote prop file wprop_checkpoint.test.l4448.ll time stamp Sun Mar 27 10:33:45 2005
 Saved wprop in checkpoint format to file wprop_checkpoint.test.l4448.ll
-Time to save wprop = 3.044720e-01
+Time to save wprop = 3.585530e-01
 reload_serial_wprop wprop_checkpoint.test.l4448.ll
 save_serial_scidac_wprop wprop_scidac3.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 Converting file wprop_checkpoint.test.l4448.ll to file wprop_scidac3.test.l4448.ll
-reload_wprop_to_field: flag = 13
 Reading as a MILC Wilson prop file
 Read wprop serially from file wprop_checkpoint.test.l4448.ll
-Time to reload wprop 2.509203e-02
+Time to reload wprop 2.003608e-02
 Saved wprop serially to file wprop_scidac3.test.l4448.ll
-Time to save wprop = 1.480639e-01
+Time to save wprop = 1.617519e-01
 ask_starting_wprop: EOF on STDIN.
+RUNNING COMPLETED

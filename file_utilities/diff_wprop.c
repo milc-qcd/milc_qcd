@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
   norm2 /= 4*3*volume;
   norm2 = sqrt(norm2);
   
-  printf("L2 norm difference is %e per Wilson vector\n",norm2);
+  fprintf(stderr,"L2 norm difference is %e per Wilson vector\n",norm2);
   
   free(wprop1);
   free(wprop2);

@@ -156,6 +156,8 @@ int main(int argc, char *argv[])
   if(get_prompt(&prompt) != 0)
     return 0;
 
+  node0_printf("BEGIN\n");
+
   /* Loop over input requests */
   while(readin(prompt) == 0)
     {
@@ -203,6 +205,8 @@ int main(int argc, char *argv[])
       free(wprop);
       free_lattice();
     }
+
+  node0_printf("RUNNING COMPLETED\n");
 
   return 0;
 }

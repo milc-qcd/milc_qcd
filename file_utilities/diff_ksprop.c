@@ -54,9 +54,6 @@ int x,y,z,t;            /* coordinates */
             lattice[i].index = x+nx*(y+ny*(z+nz*t));
             if( (x+y+z+t)%2 == 0)lattice[i].parity=EVEN;
             else                 lattice[i].parity=ODD;
-#ifdef SITERAND
-            initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
-#endif
         }
     }
 }
@@ -182,7 +179,7 @@ int main(int argc, char *argv[])
   norm2 /= 3*volume;
   norm2 = sqrt(norm2);
   
-  printf("L2 norm difference is %e per color vector\n",norm2);
+  fprintf(stderr,"L2 norm difference is %e per color vector\n",norm2);
   
   free(ksprop1);
   free(ksprop2);
