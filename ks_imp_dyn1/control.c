@@ -17,164 +17,166 @@
 
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 
-int main( int argc, char **argv ){
-    int meascount,traj_done;
-    int prompt;
-    int s_iters,avs_iters,avspect_iters,
-        avbcorr_iters;
-    double dtime, dclock();
-
-    initialize_machine(argc,argv);
-    g_sync();
-    /* set up */
-    prompt = setup();
-    /* loop over input sets */
-    while( readin(prompt) == 0){
-
-	/* perform warmup trajectories */
-	dtime = -dclock();
-	for( traj_done=0; traj_done < warms; traj_done++ ){
-            update();
-	}
-	node0_printf("WARMUPS COMPLETED\n"); fflush(stdout);
-
-	/* perform measuring trajectories, reunitarizing and measuring 	*/
-	meascount=0;		/* number of measurements 		*/
-	avspect_iters = avs_iters = avbcorr_iters = 0;
-	for( traj_done=0; traj_done < trajecs; traj_done++ ){ 
-
-	    /* do the trajectories */
-	    s_iters=update();
-
-	    /* measure every "propinterval" trajectories */
-	    if( (traj_done%propinterval)==(propinterval-1) ){
-
-	        /* call gauge_variable fermion_variable measuring routines */
-		/* results are printed in output file */
-	        rephase(OFF);
-		g_measure( );
-		rephase(ON);
-		f_meas_imp(F_OFFSET(phi),F_OFFSET(xxx),mass);
+int 
+main( int argc, char **argv )
+{
+  int meascount,traj_done;
+  int prompt;
+  int s_iters,avs_iters,avspect_iters,
+    avbcorr_iters;
+  double dtime, dclock();
+  
+  initialize_machine(argc,argv);
+  g_sync();
+  /* set up */
+  prompt = setup();
+  /* loop over input sets */
+  while( readin(prompt) == 0){
+    
+    /* perform warmup trajectories */
+    dtime = -dclock();
+    for( traj_done=0; traj_done < warms; traj_done++ ){
+      update();
+    }
+    node0_printf("WARMUPS COMPLETED\n"); fflush(stdout);
+    
+    /* perform measuring trajectories, reunitarizing and measuring 	*/
+    meascount=0;		/* number of measurements 		*/
+    avspect_iters = avs_iters = avbcorr_iters = 0;
+    for( traj_done=0; traj_done < trajecs; traj_done++ ){ 
+      
+      /* do the trajectories */
+      s_iters=update();
+      
+      /* measure every "propinterval" trajectories */
+      if( (traj_done%propinterval)==(propinterval-1) ){
+	
+	/* call gauge_variable fermion_variable measuring routines */
+	/* results are printed in output file */
+	rephase(OFF);
+	g_measure( );
+	rephase(ON);
+	f_meas_imp(F_OFFSET(phi),F_OFFSET(xxx),mass);
 #ifdef SPECTRUM 
-                rephase( OFF );
-                gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-          	   F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
-			 0,NULL,NULL,0,NULL,NULL);
-                rephase( ON );
-		valid_fatlinks = valid_longlinks = 0;
-
-		if(strstr(spectrum_request,",spectrum,") != NULL){
-		  avspect_iters += spectrum2(mass,F_OFFSET(phi),F_OFFSET(xxx));
-		}
-
-		if(strstr(spectrum_request,",nl_spectrum,") != NULL){
-		  avspect_iters += nl_spectrum(mass,F_OFFSET(phi),F_OFFSET(xxx),
-				F_OFFSET(tempmat1),F_OFFSET(staple));
-		}
-
-		if(strstr(spectrum_request,",spectrum_mom,") != NULL){
-		  avspect_iters += spectrum_mom(mass,mass,F_OFFSET(phi),5e-3);
-		}
-
-		if(strstr(spectrum_request,",spectrum_multimom,") != NULL){
-		  avspect_iters += spectrum_multimom(mass,
-				     spectrum_multimom_low_mass,
-				     spectrum_multimom_mass_step,
-				     spectrum_multimom_nmasses,
-				     5e-3);
-		}
-
-		if(strstr(spectrum_request,",spectrum_nlpi2,") != NULL){
-		  avspect_iters += spectrum_nlpi2(mass,mass,F_OFFSET(phi),5e-3);
-		}
-		if(strstr(spectrum_request,",fpi,") != NULL)
-		  {
-		    avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3 );
-		  }
-
+	rephase( OFF );
+	gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
+		 F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
+		 0,NULL,NULL,0,NULL,NULL);
+	rephase( ON );
+	valid_fatlinks = valid_longlinks = 0;
+	
+	if(strstr(spectrum_request,",spectrum,") != NULL){
+	  avspect_iters += spectrum2(mass,F_OFFSET(phi),F_OFFSET(xxx));
+	}
+	
+	if(strstr(spectrum_request,",nl_spectrum,") != NULL){
+	  avspect_iters += nl_spectrum(mass,F_OFFSET(phi),F_OFFSET(xxx),
+				       F_OFFSET(tempmat1),F_OFFSET(staple));
+	}
+	
+	if(strstr(spectrum_request,",spectrum_mom,") != NULL){
+	  avspect_iters += spectrum_mom(mass,mass,F_OFFSET(phi),5e-3);
+	}
+	
+	if(strstr(spectrum_request,",spectrum_multimom,") != NULL){
+	  avspect_iters += spectrum_multimom(mass,
+					     spectrum_multimom_low_mass,
+					     spectrum_multimom_mass_step,
+					     spectrum_multimom_nmasses,
+					     5e-3);
+	}
+	
+	if(strstr(spectrum_request,",spectrum_nlpi2,") != NULL){
+	  avspect_iters += spectrum_nlpi2(mass,mass,F_OFFSET(phi),5e-3);
+	}
+	if(strstr(spectrum_request,",fpi,") != NULL)
+	  {
+	    avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3 );
+	  }
+	
 #ifdef HYBRIDS
-		if(strstr(spectrum_request,",spectrum_hybrids,") != NULL){
-		  avspect_iters += spectrum_hybrids( mass,F_OFFSET(phi),1e-1);
-		}
+	if(strstr(spectrum_request,",spectrum_hybrids,") != NULL){
+	  avspect_iters += spectrum_hybrids( mass,F_OFFSET(phi),1e-1);
+	}
 #endif
 #ifdef FN
-		if( !valid_fatlinks )load_fatlinks();
+	if( !valid_fatlinks )load_fatlinks();
 #endif
-		if(strstr(spectrum_request,",hvy_pot,") != NULL){
-		  rephase( OFF );
-		  hvy_pot( F_OFFSET(link[XUP]) );
-		  rephase( ON );
-		}
-#endif
-		avs_iters += s_iters;
-	        ++meascount;
-		fflush(stdout);
-	    }
-	}	/* end loop over trajectories */
-
-	node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
-	if(meascount>0)  {
-	    node0_printf("average cg iters for step= %e\n",
-		(double)avs_iters/meascount);
-#ifdef SPECTRUM
-	    node0_printf("average cg iters for spectrum = %e\n",
-		(double)avspect_iters/meascount);
-#endif
+	if(strstr(spectrum_request,",hvy_pot,") != NULL){
+	  rephase( OFF );
+	  hvy_pot( F_OFFSET(link[XUP]) );
+	  rephase( ON );
 	}
-
-	dtime += dclock();
-	if(this_node==0){
-	    printf("Time = %e seconds\n",dtime);
-	    printf("total_iters = %d\n",total_iters);
-	}
+#endif
+	avs_iters += s_iters;
+	++meascount;
 	fflush(stdout);
-
-	/* save lattice if requested */
-        if( saveflag != FORGET ){
-          rephase( OFF );
-          save_lattice( saveflag, savefile );
-          rephase( ON );
-        }
-/*TEMP*/
+      }
+    }	/* end loop over trajectories */
+    
+    node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
+    if(meascount>0)  {
+      node0_printf("average cg iters for step= %e\n",
+		   (double)avs_iters/meascount);
+#ifdef SPECTRUM
+      node0_printf("average cg iters for spectrum = %e\n",
+		   (double)avspect_iters/meascount);
+#endif
+    }
+    
+    dtime += dclock();
+    if(this_node==0){
+      printf("Time = %e seconds\n",dtime);
+      printf("total_iters = %d\n",total_iters);
+    }
+    fflush(stdout);
+    
+    /* save lattice if requested */
+    if( saveflag != FORGET ){
+      rephase( OFF );
+      save_lattice( saveflag, savefile );
+      rephase( ON );
+    }
+    /*TEMP*/
 #ifdef NONSENSE
-{int dir ; site *s; double trace;
- Real ssplaq,stplaq;
- int i;
-trace=0.0;
-FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
-    trace+= realtrace_su3( &(s->link[dir]), &(s->link[dir]) );
-}
-g_doublesum( &trace );
-node0_printf("TRACE0 = %e\n",trace/(4.0*volume) );
-FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++)s->link[dir] = s->fatlink[dir];
-rephase(OFF);
-plaquette(&ssplaq,&stplaq);
-printf("FAT PLAQ:  %e  %e\n",ssplaq,stplaq);
-trace=0.0;
-FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
-    trace+= realtrace_su3( &(s->link[dir]), &(s->link[dir]) );
-}
-g_doublesum( &trace );
-node0_printf("TRACE1 = %e\n",trace/(4.0*volume) );
-g_sync();
-rephase(ON);
-
-load_fatlinks();
-FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++)s->link[dir] = s->fatlink[dir];
-rephase(OFF);
-plaquette(&ssplaq,&stplaq);
-printf("FAT2 PLAQ:  %e  %e\n",ssplaq,stplaq);
-trace=0.0;
-FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
-    trace+= realtrace_su3( &(s->link[dir]), &(s->link[dir]) );
-}
-g_doublesum( &trace );
-node0_printf("TRACE2 = %e\n",trace/(4.0*volume) );
-g_sync();
-rephase(ON);
-
-node0_printf("TEMP EXIT\n");
-exit(0);
+    {int dir ; site *s; double trace;
+    Real ssplaq,stplaq;
+    int i;
+    trace=0.0;
+    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
+      trace+= realtrace_su3( &(s->link[dir]), &(s->link[dir]) );
+    }
+    g_doublesum( &trace );
+    node0_printf("TRACE0 = %e\n",trace/(4.0*volume) );
+    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++)s->link[dir] = s->fatlink[dir];
+    rephase(OFF);
+    plaquette(&ssplaq,&stplaq);
+    printf("FAT PLAQ:  %e  %e\n",ssplaq,stplaq);
+    trace=0.0;
+    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
+      trace+= realtrace_su3( &(s->link[dir]), &(s->link[dir]) );
+    }
+    g_doublesum( &trace );
+    node0_printf("TRACE1 = %e\n",trace/(4.0*volume) );
+    g_sync();
+    rephase(ON);
+    
+    load_fatlinks();
+    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++)s->link[dir] = s->fatlink[dir];
+    rephase(OFF);
+    plaquette(&ssplaq,&stplaq);
+    printf("FAT2 PLAQ:  %e  %e\n",ssplaq,stplaq);
+    trace=0.0;
+    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
+      trace+= realtrace_su3( &(s->link[dir]), &(s->link[dir]) );
+    }
+    g_doublesum( &trace );
+    node0_printf("TRACE2 = %e\n",trace/(4.0*volume) );
+    g_sync();
+    rephase(ON);
+    
+    node0_printf("TEMP EXIT\n");
+    exit(0);
 }
 #endif
     }
