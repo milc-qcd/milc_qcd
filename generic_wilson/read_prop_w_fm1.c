@@ -123,10 +123,10 @@ void r_prop_w_fm(char *filename, field_offset dest)
 
   if(this_node == 0)
     {
-      pbuff = (fwilson_matrix *)malloc(MAX_BUF_LENGTH*sizeof(fwilson_propagator));
+      pbuff = (fwilson_matrix *)malloc(MAX_BUF_LENGTH*sizeof(fwilson_matrix));
       if(pbuff == NULL)
 	{
-	  printf("Node %d can't malloc pbuf\n",this_node);
+	  printf("Node %d can't malloc pbuff\n",this_node);
 	  fflush(stdout);
 	  terminate(1);
 	}

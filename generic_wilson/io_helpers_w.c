@@ -14,6 +14,13 @@
 #include <qio.h>
 #endif
 
+static file_type w_prop_list[N_WPROP_TYPES] =
+  { {FILE_TYPE_W_PROP,       W_PROP_VERSION_NUMBER},
+    {FILE_TYPE_W_PROP_1996,  W_PROP_VERSION_NUMBER_1996},
+    {FILE_TYPE_W_FMPROP,     W_FMPROP_VERSION_NUMBER},
+    {FILE_TYPE_W_QIOPROP,    LIME_MAGIC_NO}
+  };
+
 /*---------------------------------------------------------------*/
 /* Open propagator file for reading one source spin-color at a time */
 /* Supported only in MILC formats */
@@ -164,7 +171,10 @@ int reload_full_propagator( int flag, char *filename,
   site *s;
   wilson_propagator *wp;
   int spin, color;
-  field_offset destcs, destc;
+  field_offset destcs;
+#ifdef HAVE_QIO
+  field_offset destc;
+#endif
   int file_type;
   w_prop_file *wpf;
   
@@ -353,10 +363,12 @@ void save_full_propagator( int flag, char *filename,
 {
   double dtime;
   int spin, color;
-  wilson_propagator *wp;
   w_prop_file *wpf;
-  field_offset srccs, srcc;
+  field_offset srccs;
+#ifdef HAVE_QIO
+  field_offset srcc;
   int volfmt;
+#endif
   
   if(timing)dtime = -dclock();
   switch(flag){

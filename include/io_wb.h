@@ -305,6 +305,10 @@ int reload_propagator( int flag, w_prop_file *wpf,
 		       int spin, int color, field_offset dest, int timing);
 void save_propagator( int flag, w_prop_file *wpf, 
 		     int spin, int color, field_offset src, int timing);
+int reload_full_propagator( int flag, char *filename,
+			    field_offset dest, int timing);
+void save_full_propagator( int flag, char *filename, 
+			   field_offset src, int timing);
 int ask_starting_prop( int prompt, int *flag, char *filename );
 int ask_ending_prop( int prompt, int *flag, char *filename );
 void r_close_prop(int flag, w_prop_file *wpf);
