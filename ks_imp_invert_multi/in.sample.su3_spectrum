@@ -22,5 +22,5 @@ mass 0.02
 reload_serial ../binary_samples/lat.sample.l4448.gf
 no_gauge_fix
 forget
-save_ks_serial_fm ks.test.l4448
+save_serial_fm_ksprop ks.test.l4448
 
