@@ -300,7 +300,7 @@ gauge_file *save_scidac(char *filename, int volfmt){
 
 int read_lat_dim_scidac(char *filename, int *ndim, int dims[])
 {
-  QIO_Layout *layout;
+  QIO_Layout layout;
   int i;
   int *latsize;
   QIO_Reader *infile;
