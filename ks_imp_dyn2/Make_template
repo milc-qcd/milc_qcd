@@ -144,6 +144,8 @@ else
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
   MULTI_INV_FN = ks_multicg.o
 endif
+
+INV_EO_OBJECTS = d_congrad5_eo.o dslash_eo.o
 MULTI_INV_EO = ks_multicg.o
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
@@ -280,10 +282,10 @@ su3_hmc1::
 
 su3_rmd_naive::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DONEMASS" \
+	"DEFINES= -DEO ${DARCH} -DONEMASS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update_onemass.o"
+	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} fermion_force_general.o update_onemass.o"
 
 # The following target is a superset of su3_spectrum
 
@@ -335,7 +337,7 @@ su3_rmd_eo_symzk1_fat7tad::
 	"DEFINES= -DEO ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
-	"EXTRA_OBJECTS= d_congrad5_eo.o dslash_eo.o \
+	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} \
 	fermion_force_general.o update.o"
 
 su3_rmd_plaq_fat7naik::

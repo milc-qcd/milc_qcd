@@ -24,7 +24,8 @@ PROJS = \
   su3_rmd1 \
   su3_spectrum1 \
   su3_hybrids1 \
-  su3_rmd_plaq_fat7naik1
+  su3_rmd_plaq_fat7naik1 \
+  su3_rmd_naive
 
 MACROLIST = \
   "PRECISION=1" \
