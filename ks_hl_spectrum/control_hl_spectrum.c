@@ -2,38 +2,31 @@
 #include "ks_hl_spectrum_includes.h"
 #include <string.h>
 
-/* Comment these out if you want to suppress detailed timing */
-/*#define IOTIME*/
-/*#define PRTIME*/
-
 int main(int argc,char *argv[])
 {
   int prompt , k, ns, i;
-  double starttime,endtime,dtime;
   site *s;
   double space_vol;
-
-  int status, num_prop,t,color,spin, color1, spin1;
-
+  
+  int num_prop,t,color,spin, color1, spin1;
+  
   int key[4];
-
-#define restrict rstrict /* C-90 T3D cludge */
-  int restrict[4];
-
+  int dummy[4];
+  
   complex pr_tmp; 
   complex *prop_rot[35];
   complex *prop_smear[35];
-  w_prop_file *fp_in_w;
   wilson_propagator *qdest;
   wilson_propagator qtemp1;
-  char *trace_kind[35]=
-   {"P5_P5 p000","P5_P5 p100", "P5_P5 p110","P5_P5 p111", "P5_P5 p200",
+  char *trace_kind[35] = {
+    "P5_P5 p000","P5_P5 p100", "P5_P5 p110","P5_P5 p111", "P5_P5 p200",
     "P5_P5 p210","P5_P5 p211", "P5_P5 p220","P5_P5 p300", "P5_P5 p221",
     "P5_P5 p400","A4_P5 p000", "A4_P5 p100","A4_P5 p110", "A4_P5 p111",
     "A4_P5 p200","A1_P5 p100", "A1_P5 p110","A1_P5 p111", "A1_P5 p200",
     "P5_A1 p100","V1_V1 p000", "V1_V1 p100","V1_V1 p110", "V1_V1 p111",
     "V1_V1 p200","V1_V1 p210", "V1_V1 p211","V1_V1 p220", "V1_V1 p300",
-    "V1_V1 p221","V1_V1 p400", "S_S p000"  ,"A1_A1 p000", "T23_T23 p000"}; 
+    "V1_V1 p221","V1_V1 p400", "S_S p000"  ,"A1_A1 p000", "T23_T23 p000"
+  }; 
   
   key[XUP] = 1;
   key[YUP] = 1;
@@ -47,13 +40,11 @@ int main(int argc,char *argv[])
 #endif
   g_sync();
   prompt = setup(); 
-  setup_restrict_fourier(key, restrict);
+  setup_restrict_fourier(key, dummy);
   space_vol = (double)(nx*ny*nz);
   while( readin(prompt) == 0){
     
-    starttime=dclock();
     
-
     /**************************************************************/
     /*Allocate storage space for propagators*/
     for(num_prop=0;num_prop<35;num_prop++)
@@ -67,68 +58,55 @@ int main(int argc,char *argv[])
 	  prop_smear[num_prop][t].imag = 0.0; 
 	}
       }
- 
+    
     /**************************************************************/
     /*load staggered propagator*/
-
+    
     reload_ksprop(ks_prop_startflag, start_ks_prop_file, F_OFFSET(prop), 1);
-
+    
     FORALLSITES(i,s){
       for(color = 0; color < 3; color++)for(k = 0; k < 3; k++)
-	  s->stag_propagator.e[color][k] = s->prop[color].c[k];
+	s->stag_propagator.e[color][k] = s->prop[color].c[k];
     }
-			    
+    
     for(k=0; k<num_kap; k++){
       kappa = kap[k];
+      reload_full_propagator(startflag_w[k], startfile_w[k], 
+			     F_OFFSET(quark_propagator),1);
       if (format[k])
 	{
-	  /**************************************************************/
-	  /* Load the fm-style wilson heavy quark from a file*/ 
-	
-	  r_prop_w_fm(startfile_w[k], F_OFFSET(quark_propagator)); //loads in quark_propagator*/
-	  /* Rotate to Milc format  V g0 G g0 V^+ */
+	  /* Rotate FNAL to Milc format  V g0 G g0 V^+ */
 
 	  FORALLSITES(i,s)
-	  {	 
-	    for(color=0;color<3;color++){
-	      mult_swv_by_gamma_l( &(s->quark_propagator.c[color]), &(s->quark_propagator_copy.c[color]), TUP);
-	      mult_swv_by_gamma_r( &(s->quark_propagator_copy.c[color]), &(s->quark_propagator.c[color]), TUP);
+	    {	 
+	      for(color=0;color<3;color++){
+		mult_swv_by_gamma_l( &(s->quark_propagator.c[color]), 
+				     &(s->quark_propagator_copy.c[color]), 
+				     TUP);
+		mult_swv_by_gamma_r( &(s->quark_propagator_copy.c[color]), 
+				     &(s->quark_propagator.c[color]), 
+				     TUP);
+	      }
+	      
 	    }
-
-	  }
-	  weyl2canopy_w_rot( F_OFFSET(quark_propagator),  F_OFFSET(quark_propagator));
- 
+	  weyl2canopy_w_rot( F_OFFSET(quark_propagator),  
+			     F_OFFSET(quark_propagator));
+	  
 	}
-      else
-	{
-	  /**************************************************************/
-	  /* Load the milc style heavy quark.*/    
-	
-	  fp_in_w = r_open_prop(RELOAD_SERIAL, startfile_w[k]);
-	
-	  for(color=0;color<3;color++)for(spin=0;spin<4;spin++)
-	  {
-#ifdef IOTIME
-	    status = reload_propagator( RELOAD_SERIAL, fp_in_w , 
-					spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),1);
-#else
-	    status = reload_propagator( RELOAD_SERIAL, fp_in_w, 
-					spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),0);
-#endif
-	  }
-	  r_close_prop(RELOAD_SERIAL,fp_in_w);
-	} 
-    /*********************************************************************************/
-    /* Rotate the heavy quark */
-
-      rotate_w_quark(F_OFFSET(quark_propagator), F_OFFSET(quark_propagator_copy), d1[k]);  
-    // result in quark_propagator_copy
-
-
-    /**************************************************************/
-    /*Calculate and print out the spectrum with the rotated heavy quark propagators*/
+      /*******************************************************************/
+      /* Rotate the heavy quark */
       
-      All_KS_hl_prop(F_OFFSET(stag_propagator), F_OFFSET(quark_propagator_copy), prop_rot);
+      rotate_w_quark(F_OFFSET(quark_propagator), 
+		     F_OFFSET(quark_propagator_copy), d1[k]);  
+      // result in quark_propagator_copy
+
+
+      /**************************************************************/
+      /*Calculate and print out the spectrum with the rotated heavy
+        quark propagators*/
+      
+      All_KS_hl_prop(F_OFFSET(stag_propagator), 
+		     F_OFFSET(quark_propagator_copy), prop_rot);
       for(i=0;i<35;i++)
 	{
 	  if(this_node==0) printf("\n\nTr %d, %s_k_%f\n_________________________________\n",i, trace_kind[i],kap[k]);
@@ -141,20 +119,23 @@ int main(int argc,char *argv[])
 		       prop_rot[i][t].real, prop_rot[i][t].imag);
 	    }
 	}
-
-      for(i=0;i<35;i++)
-	for(t=0;t<nt;t++){  prop_rot[i][t].real=0.0; prop_rot[i][t].imag = 0.0; } 	
       
-         
-    /**************************************************************/
-    /*Smear quarks, calculate and print out the spectrum with the smeared heavy quark propagators*/
-
+      for(i=0;i<35;i++)
+	for(t=0;t<nt;t++){  
+	  prop_rot[i][t].real=0.0; prop_rot[i][t].imag = 0.0; 
+	} 	
+      
+      
+      /**************************************************************/
+      /*Smear quarks, calculate and print out the spectrum with the
+        smeared heavy quark propagators*/
+      
       for(color=0;color<3;color++)for(spin=0;spin<4;spin++){
 	restrict_fourier(F_OFFSET(quark_propagator.c[color].d[spin]),
 			 F_OFFSET(mp), F_OFFSET(tmp),
 			 sizeof(wilson_vector), FORWARDS);
       }
-
+      
       for(ns=0; ns<num_smear;ns++){
 	
 	if(strcmp(smearfile[ns],"none")==0) continue;
@@ -185,21 +166,25 @@ int main(int argc,char *argv[])
 			   F_OFFSET(mp), F_OFFSET(tmp),
 			   sizeof(wilson_vector), BACKWARDS);
 	}	
-
+	
 	FORALLSITES(i,s)
 	  {
 	    qdest = &(s->quark_propagator_copy);
 	    qtemp1 = s->quark_propagator_copy;
-	    for(spin=0;spin<4;spin++)for(color=0;color<3;color++)for(spin1=0;spin1<4;spin1++)for(color1=0;color1<3;color1++)
-	      {
-		qdest->c[color].d[spin1].d[spin].c[color1].real = qtemp1.c[color].d[spin].d[spin1].c[color1].real;
-		qdest->c[color].d[spin1].d[spin].c[color1].imag = qtemp1.c[color].d[spin].d[spin1].c[color1].imag;
-	      }
+	    for(spin=0;spin<4;spin++)for(color=0;color<3;color++)
+	      for(spin1=0;spin1<4;spin1++)for(color1=0;color1<3;color1++)
+		{
+		  qdest->c[color].d[spin1].d[spin].c[color1].real = 
+		    qtemp1.c[color].d[spin].d[spin1].c[color1].real;
+		qdest->c[color].d[spin1].d[spin].c[color1].imag = 
+		  qtemp1.c[color].d[spin].d[spin1].c[color1].imag;
+		}
 	  }
-
-      
 	
-	All_KS_hl_prop(F_OFFSET(stag_propagator), F_OFFSET(quark_propagator_copy), prop_smear);
+	
+	
+	All_KS_hl_prop(F_OFFSET(stag_propagator), 
+		       F_OFFSET(quark_propagator_copy), prop_smear);
 	
 	for(i=0;i<35;i++){
 	  if(this_node==0) printf("\n\nSMEAR_#%d, %s_k_%f\n_________________________________\n", 
@@ -210,20 +195,26 @@ int main(int argc,char *argv[])
 	      g_floatsum( &prop_smear[i][t].imag );
 	      if(this_node==0)
 		printf("%d %e %e\n", t,
-		       prop_smear[i][t].real/space_vol, prop_smear[i][t].imag/space_vol);
+		       prop_smear[i][t].real/space_vol, 
+		       prop_smear[i][t].imag/space_vol);
 	    }
 	}
 	for(i=0;i<35;i++)
-	  for(t=0;t<nt;t++){ prop_smear[i][t].real=0.0; prop_smear[i][t].imag = 0.0; }    
+	  for(t=0;t<nt;t++){ 
+	    prop_smear[i][t].real=0.0; prop_smear[i][t].imag = 0.0; 
+	  }    
 	
       }/* loop ns*/
-
+      
     }/*loop kappa*/
   }
+
+  node0_printf("\nRUNNING COMPLETED\n"); fflush(stdout);
+
 #ifdef HAVE_QDP
   QDP_finalize();
 #endif  
-
+  
   normal_exit(0);
   return 0;
 }

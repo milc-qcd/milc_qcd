@@ -3,9 +3,8 @@
 //V G V+
 void weyl2canopy_w_rot(field_offset src, field_offset dest)
 {
-  int s0,s1,c0,c1,i;
+  int s0,c0,c1,i;
   site *s;
-  complex z1,z2;
   wilson_propagator q, qtmp;
 
   FORALLSITES(i,s){
@@ -93,9 +92,8 @@ void weyl2canopy_w_rot(field_offset src, field_offset dest)
 
 void bj_to_w_rot(field_offset src, field_offset dest)
 {
-  int s0,s1,c0,c1,i;
+  int s0,c0,c1,i;
   site *s;
-  complex z1,z2;
   wilson_propagator q, qtmp;
 
   FORALLSITES(i,s){
@@ -182,9 +180,8 @@ void bj_to_w_rot(field_offset src, field_offset dest)
 
 void canopy2weyl_w_rot(field_offset src, field_offset dest)
 {
-  int s0,s1,c0,c1,i;
+  int s0,c0,c1,i;
   site *s;
-  complex z1,z2;
   wilson_propagator q, qtmp;
 
   FORALLSITES(i,s){
