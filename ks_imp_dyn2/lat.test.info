@@ -1,18 +1,16 @@
 magic_number = 20103
-time_stamp = "Mon Feb 14 14:48:13 2005"
-checksums = "2352c05 d137321d"
+time_stamp = "Sun Mar 27 22:02:23 2005"
+checksums = "67cd1b36 78c9798"
 nx = 4
 ny = 4
 nz = 4
 nt = 4
 action.description = "Gauge plus fermion (improved)"
-gauge.description = "Symanzik 1x1 + 1x2 + 1x1x1 action"
-gauge.nloops = 3
+gauge.description = "Single plaquette action"
+gauge.nloops = 1
 gauge.nreps = 1
-gauge.beta11 = 7.000000
-gauge.tadpole.u0 = 0.502000
-quark.description = "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
-quark.flavors1 = 4
-quark.flavors2 = 4
-quark.mass1 = 0.100000
-quark.mass2 = 0.050000
+gauge.beta11 = 5.600000
+gauge.tadpole.u0 = 1.000000
+quark.description = "Single link action"
+quark.flavors = 4
+quark.mass = 0.010000

@@ -270,6 +270,13 @@ su3_hmc1::
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
 	d_action.o update_onemass.o"
 
+su3_rmd_naive::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN ${DARCH} -DONEMASS" \
+	"GAUGE = plaquette_action.h" \
+	"QUARK = onelink_action.h" \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update_onemass.o"
+
 # The following target is a superset of su3_spectrum
 
 su3_hybrids::
