@@ -1,13 +1,11 @@
 #include "generic_wilson_includes.h"
+#include "../include/file_types.h"
 #include <sys/types.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include <time.h>
 #include <assert.h>
-
-
-#define IO_UNI_MAGIC 0x71626434
 
 #undef MAX_BUF_LENGTH
 #define MAX_BUF_LENGTH 4096
@@ -183,18 +181,6 @@ void r_prop_w_fm(char *filename, field_offset dest)
 
 	if(destnode==0){	/* just copy su3_matrix */
 	  i = node_index(x,y,z,t);
-#if 0
-	  for(s0=0;s0<4;s0++)for(c0=0;c0<3;c0++)
-	    for(s1=0;s1<4;s1++)for(c1=0;c1<3;c1++)
-	      {
-		s = &lattice[i];
-		qp = (wilson_propagator *)F_PT(s,dest);
-		qp->c[c0].d[s0].d[s1].c[c1].real 
-		  = pbuff[where_in_buf].d[s0].c[c0].d[s1].c[c1].real;
-		qp->c[c0].d[s0].d[s1].c[c1].imag 
-		  = pbuff[where_in_buf].d[s0].c[c0].d[s1].c[c1].imag;
-	      }
-#endif
 	}
 	else {		        /* send to correct node */
 	  send_field((char *)&msg, sizeof(msg), destnode);
@@ -206,18 +192,6 @@ void r_prop_w_fm(char *filename, field_offset dest)
 	if(this_node==destnode){
 	  i = node_index(x,y,z,t);
 	  get_field((char *)&msg, sizeof(msg),0);
-#if 0
-	  for(s0=0;s0<4;s0++)for(c0=0;c0<3;c0++)
-	    for(s1=0;s1<4;s1++)for(c1=0;c1<3;c1++)
-	      {
-		s = &lattice[i];
-		qp = (wilson_propagator *)F_PT(s,dest);
-		qp->c[c0].d[s0].d[s1].c[c1].real 
-		  = msg.q.d[s0].c[c0].d[s1].c[c1].real;
-		qp->c[c0].d[s0].d[s1].c[c1].imag 
-		  = msg.q.d[s0].c[c0].d[s1].c[c1].imag;
-	      }
-#endif    
 	}
       }
 
