@@ -23,6 +23,11 @@ setup_layout(void)
 {
   int c[4];
 
+  if(mynode()==0){
+    printf("LAYOUT = Hypercubes, options = ");
+    printf("QDP");
+    printf("\n");
+  }
   c[0] = nx;
   c[1] = ny;
   c[2] = nz;

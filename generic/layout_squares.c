@@ -38,7 +38,6 @@ void setup_layout(){
 register int i,j,k;
     if(mynode()==0){
 	printf("LAYOUT = 2d-squares, options = ");
-	printf("EVENFIRST,");
 	printf("\n");
     }
 

@@ -37,7 +37,6 @@ int zcuts;		/* number of times we must cut in z-direction, i.e,
 void setup_layout(){
     if(mynode()==0){
 	printf("LAYOUT = Timeslices, options = ");
-	printf("EVENFIRST,");
 	printf("\n");
     }
 

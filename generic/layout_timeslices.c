@@ -30,7 +30,6 @@ int nslices;		/* number of timeslices per node */
 void setup_layout(){
     if(mynode()==0){
 	printf("LAYOUT = Timeslices, options = ");
-	printf("EVENFIRST,");
 	printf("\n");
     }
 

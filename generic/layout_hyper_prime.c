@@ -47,7 +47,7 @@ void setup_layout(){
 register int i,j,k,dir;
     if(mynode()==0){
 	printf("LAYOUT = Hypercubes, options = ");
-	printf("EVENFIRST,");
+	printf("hyper_prime,");
 	printf("\n");
     }
 

@@ -44,7 +44,7 @@ QMP_u32_t *QMP_get_allocated_dimensions();
 #ifndef PPC440QCDOC
     if(mynode()==0){
 	printf("LAYOUT = Grid, options = ");
-	printf("EVENFIRST,");
+	printf("qcdoc,");
 	printf("\n");
     }
 #endif /* PPC440QCDOC */

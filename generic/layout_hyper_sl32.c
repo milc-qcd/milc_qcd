@@ -39,7 +39,7 @@ void setup_layout(){
 register int i,j,dir;
     if(mynode()==0){
 	printf("LAYOUT = Hypercubes, options = ");
-	printf("EVENFIRST,");
+	printf("hyper_sl32,");
 	printf("\n");
     }
 
