@@ -68,10 +68,6 @@ void dslash_eo( field_offset src, field_offset dest, int parity );
 void dslash_eo_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start );
 
-void dslash_ks_( field_offset src, field_offset dest, int parity );
-void dslash_ks__special( field_offset src, field_offset dest,
-			 int parity, msg_tag **tag, int start );
-
 int congrad_ks(            /* Return value is number of iterations taken */
      field_offset src,       /* type su3_vector* (preloaded source) */
      field_offset dest,      /* type su3_vector*  (answer and initial guess) */
