@@ -6,14 +6,15 @@
 
 # This file
 MAKEFILE = Make_linux_qdp
-COMMTYPE = QMP
+
+#QCDOC = true  # To turn on QCDOC requirements
+QCDOC =  # If we are not running on the QCDOC
 
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
 # 1. Compiler
-#CC               = mpicc    # ( mpicc cc gcc pgcc g++ )
-#CC               = gcc    # ( mpicc cc gcc pgcc g++ )
+#CC               = mpicc   # ( mpicc cc gcc pgcc g++ )
 CC = /usr/local/mpich/bin/mpicc -cc=${GCC_DIR}/bin/gcc
 
 #----------------------------------------------------------------------
@@ -23,7 +24,8 @@ OPT              = -O3   # ( -g -O, etc )
 #----------------------------------------------------------------------
 # 3. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
-#OCFLAGS =                # ( -Wall, etc )
+#OCFLAGS = -Wall   # ( -Wall, etc )
+
 #OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
 #OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
@@ -54,13 +56,13 @@ CLFS =             # Not researched for others
 #LMPI = #-L/usr/local/mpich/lib/shared -L/usr/local/mpich/lib -lmpich -L/opt/gm/lib/ -lgm
 
 #----------------- MPIPRO ---------------------------------------------
-#CMPI =
+#IMPI =
 # With Redhat, for MPI PRO see rpm -ql mpipro | more
 #LMPI = -lmpipro_tv -lpthread
 #LMPI = -lmpipro -lvipl -lpthread
 
 #----------------- MVICH ----------------------------------------------
-#CMPI = -I/uufs/icebox/sys/src/mpich/1.2.0-via/include  # MVICH
+#IMPI = -I/uufs/icebox/sys/src/mpich/1.2.0-via/include  # MVICH
 #LMPI = -L/uufs/icebox/sys/pkg/mpich/1.2.0-via/lib -lmpi -lvipl -lpthread # MVICH
 
 #----------------------------------------------------------------------
@@ -69,14 +71,35 @@ CLFS =             # Not researched for others
 # Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
 MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 
-HAVEQIO = true
-#HAVEQIO =    # If we don't want QIO, leave blank
-
-#QCDOC = true  # To turn on QCDOC requirements
-QCDOC =  # If we are not running on the QCDOC
-
 #----------------------------------------------------------------------
 # 7. QDP/C options
+
+# Edit these
+
+# Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
+WANTQDP =
+
+# Choose "true" or "". Implies HAVEQMP.
+WANTQIO = true
+
+# Choose "true" or "".
+WANTQMP =
+
+# Do not change these conditionals
+
+HAVEQDP = ${WANTQDP}
+
+ifeq ($(strip ${HAVEQDP}),true)
+   HAVEQIO = true #
+else
+   HAVEQIO = ${WANTQIO}
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+   HAVEQMP = true
+else
+   HAVEQMP = ${WANTQMP}
+endif
 
 #  *** edit these locations ***
 SCIDAC = ${HOME}/scidac
@@ -85,7 +108,7 @@ QMP = ${SCIDAC}/qmp
 QDP = ${SCIDAC}/qdp
 QLA = ${SCIDAC}/qla
 
-# shouldn't need to change this
+# shouldn't need to change the rest of this stanza
 
 IQMP = -I${QMP}/include
 LQMP = -L$(QMP)/lib -lqmp
@@ -100,11 +123,23 @@ LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
 IQDP = -I${QDP}/include
 LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
 
-LIBQIO = ${LQIO} ${LQMP}
-INCQIO = ${IQIO} ${IQMP}
+ifeq ($(strip ${HAVEQMP}),true)
+  LIBQMP = ${LQMP}
+  INCQMP = ${IQMP}
+endif
 
-INCQDP = ${IQDP} ${IQLA} ${IQIO} ${IQMP}
-LIBQDP = ${LQDP} ${LQLA} ${LQIO} ${LQMP}
+ifeq ($(strip ${HAVEQIO}),true)
+  LIBQIO = ${LQIO}
+  INCQIO = ${IQIO}
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  LIBQDP = ${LQDP} ${LQLA}
+  INCQDP = ${IQDP} ${IQLA}
+endif
+
+LIBSCIDAC = ${LIBQDP} ${LIBQIO} ${LIBQMP}
+INCSCIDAC = ${INCQDP} ${INCQIO} ${INCQMP}
 
 #----------------------------------------------------------------------
 # 8. Linker

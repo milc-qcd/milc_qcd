@@ -5,26 +5,37 @@
 #
 
 # This file
-MAKEFILE = Make_linux_mpi
-COMMTYPE = MPI
+MAKEFILE = Make_generic_mpp
+
+# To turn on QCDOC requirements. "true" or blank if we are not on the QCDOC
+#QCDOC = true
+
+ifeq ($(strip ${QCDOC}),true)
+  QOS		= /qcdoc/sfw/qos/devel/qos-2-4-pre6/
+  XPREFIX       = /qcdoc/local/gcc-3.2.2/bin/powerpc-gnu-elf-
+  SPECDIR	= $(QOS)/quser/gcc-lib-user///
+  LIBDIR	= $(QOS)/quser/gcc-lib-user///
+endif
 
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
 # 1. Compiler
-#CC               = gcc    # ( mpicc cc gcc pgcc g++ )
-CC = /usr/local/mpich/bin/mpicc  -cc=${GCC_DIR}/bin/gcc 
+#CC               = mpicc   # ( mpicc cc gcc pgcc g++ )
+CC = /usr/local/mpich/bin/mpicc -cc=${GCC_DIR}/bin/gcc
+#CC               = env GCC_EXEC_PREFIX=$(SPECDIR) $(XPREFIX)gcc # QCDOC
 
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
-OPT              = -O3    # ( -g -O, etc )
+OPT              = -O3  # ( -g -O, etc )
 
 #----------------------------------------------------------------------
 # 3. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
-#OCFLAGS = -Wall  # ( -DP3, -DP4 )
-#OCFLAGS =  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
-OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
+#OCFLAGS = -Wall   # ( -Wall, etc )
+
+#OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
+#OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
 #OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
 OCFLAGS =  -march=pentium4 -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/24/04
 #-------------- Intel icc/ecc -----------------------------------
@@ -66,16 +77,37 @@ CLFS =             # Not researched for others
 # 6. I/O routines
 # Both io_nonansi and io_ansi should work on a scalar machine
 # Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
-MACHINE_DEP_IO   = io_nonansi.o # (io_ansi.o io_nonansi.o io_romio.o)
-
-HAVEQIO = true
-#HAVEQIO =    # If we don't want QIO, leave blank
-
-#QCDOC = true  # To turn on QCDOC requirements
-QCDOC =  # If we are not running on the QCDOC
+MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 
 #----------------------------------------------------------------------
 # 7. QDP/C options
+
+# Edit these
+
+# Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
+WANTQDP =
+
+# Choose "true" or "". Implies HAVEQMP.
+WANTQIO = true
+
+# Choose "true" or "".
+WANTQMP =
+
+# Do not change these conditionals
+
+HAVEQDP = ${WANTQDP}
+
+ifeq ($(strip ${HAVEQDP}),true)
+   HAVEQIO = true #
+else
+   HAVEQIO = ${WANTQIO}
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+   HAVEQMP = true
+else
+   HAVEQMP = ${WANTQMP}
+endif
 
 #  *** edit these locations ***
 SCIDAC = ${HOME}/scidac
@@ -84,10 +116,12 @@ QMP = ${SCIDAC}/qmp
 QDP = ${SCIDAC}/qdp
 QLA = ${SCIDAC}/qla
 
-# shouldn't need to change this
+# shouldn't need to change the rest of this stanza
 
 IQMP = -I${QMP}/include
 LQMP = -L$(QMP)/lib -lqmp
+#LQMP = $(QOS)/quser/gcc-lib-user/libqcd_api.a  # QCDOC
+#LQMP = -lqcd_api                               # QCDOC
 
 IQIO = -I${QIO}/include
 LQIO = -L${QIO}/lib -lqio -llime 
@@ -99,13 +133,23 @@ LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
 IQDP = -I${QDP}/include
 LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
 
-ifdef HAVEQIO
-  LIBQIO = ${LQIO} ${LQMP}
-  INCQIO = ${IQIO} ${IQMP}
+ifeq ($(strip ${HAVEQMP}),true)
+  LIBQMP = ${LQMP}
+  INCQMP = ${IQMP}
 endif
 
-INCQDP = ${IQDP} ${IQLA} ${IQIO} ${IQMP}
-LIBQDP = ${LQDP} ${LQLA} ${LQIO} ${LQMP}
+ifeq ($(strip ${HAVEQIO}),true)
+  LIBQIO = ${LQIO}
+  INCQIO = ${IQIO}
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  LIBQDP = ${LQDP} ${LQLA}
+  INCQDP = ${IQDP} ${IQLA}
+endif
+
+LIBSCIDAC = ${LIBQDP} ${LIBQIO} ${LIBQMP}
+INCSCIDAC = ${INCQDP} ${INCQIO} ${INCQMP}
 
 #----------------------------------------------------------------------
 # 8. Linker
@@ -114,10 +158,13 @@ LD               = ${CC}
 #----------------------------------------------------------------------
 # 9. Extra linker flags
 LDFLAGS          =   # most
+#LDFLAGS          =   -L${LIBDIR} -Xlinker   # QCDOC
+#LDFLAGS          = -fast     # Sun SPARC
 
 #----------------------------------------------------------------------
 # 10. Extra libraries
-ILIB             = ${LIBQIO} ${LMPI}
+#ILIB             = -lm -lnet ${LIBSCIDAC} ${LMPI}
+ILIB             = ${LIBSCIDAC} ${LMPI}
 
 #----------------------------------------------------------------------
 # 11. Code alternatives 
@@ -132,23 +179,34 @@ PRECISION = 2
 # -DSSE_INLINE together with -DSSE gives automatic global inlining.
 # See also the libraries Make_SSE_nasm.
 
-CODETYPE         = -DNOPREFETCH -DPRECISION=${PRECISION} -DSSE -DSSE_INLINE
+CODETYPE         = -DNOPREFETCH -DPRECISION=${PRECISION} -DQDP_Precision=${PRECISION} -DSSE -DSSE_INLINE # -DQDP_PROFILE
 
 #----------------------------------------------------------------------
 # 11. Choose MILC library make file in libraries directory.  
 #    CHECK IT FOR FURTHER OPTIONS!
 
 MAKELIBRARIES = Make_vanilla  # or Make_SSE_nasm (don't use -DSSE with this)
+#MAKELIBRARIES = Make_qcdoc_gcc	# QCDOC
 
 #----------------------------------------------------------------------
 # End of user choices.  Please, also, check include/config.h.
 #----------------------------------------------------------------------
 
 # Routines that depend on both application and architecture
-MACHINE_DEP = com_qmp.o ${MACHINE_DEP_IO}
+ifeq ($(strip ${QDCOD}),true)
+  MACHINE_DEP = com_qmp.o qcdoc_alloc.o ${MACHINE_DEP_IO}
+else
+  MACHINE_DEP = com_qmp.o ${MACHINE_DEP_IO}
+endif
+
+ifeq ($(strip ${HAVEQMP}),true)
+   COMMTYPE = QMP
+else
+   COMMTYPE = MPI
+endif
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${CLFS} \
-	${INCQIO} -I${MYINCLUDEDIR} ${DEFINES}
+	${INCSCIDAC} -I${MYINCLUDEDIR} ${DEFINES}
 
 include Make_template

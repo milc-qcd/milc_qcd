@@ -5,7 +5,6 @@
 #
 #  CJ: make changes in the entries below
 
-SHELL           = /bin/bash
 QOS		= /qcdoc/sfw/qos/devel/qos-2-4-pre6/
 XPREFIX         = /qcdoc/local/gcc-3.2.2/bin/powerpc-gnu-elf-
 SPECDIR		= $(QOS)/quser/gcc-lib-user///
@@ -13,6 +12,7 @@ LIBDIR		= $(QOS)/quser/gcc-lib-user///
 
 # This file
 MAKEFILE = Make_qcdoc_gcc
+QCDOC = true
 
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
@@ -24,24 +24,18 @@ CC               = env GCC_EXEC_PREFIX=$(SPECDIR) $(XPREFIX)gcc
 
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
-#OPT              = -O3 -DNOPREFETCH -DFAST  # ( -g -O, etc )
-OPT              = -O3 -DNOPREFETCH -DFAST -DNATIVEDOUBLE # ( -g -O, etc )
-#OPT              =  -DNOPREFETCH  # ( -g -O, etc )
+OPT              = -O3  # ( -g -O, etc )
 
 #----------------------------------------------------------------------
 # 3. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
-OCFLAGS = -Wall  # ( -DP3, -DP4 )
-
-#-------------- Portland Group ----------------------------
-#OCFLAGS = -tp p6 -Munroll=c:4,n:4
-#OCFLAGS= -mpentiumpro -march=pentiumpro -funroll-all-loops -malign-double -D_REENTRANT  # Pentium pro
-
-#-------------- DEC Alpha ---------------------------------
-#OCFLAGS = -DT3E -float -fptm n 
-
-#-------------- SUN SPARC ---------------------------------
-#OCFLAGS= -fast -dalign -libmil -fQCDOCMACsimple=2 -fns  #Ultra
+OCFLAGS = -Wall  #
+#-------------- Gnu C -------------------------------------
+#OCFLAGS =                # ( -Wall, etc )
+#OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
+#OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
+#OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
+OCFLAGS =  -march=pentium4 -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/24/04
 
 #----------------------------------------------------------------------
 # 4. Choose large file support
@@ -49,21 +43,47 @@ OCFLAGS = -Wall  # ( -DP3, -DP4 )
 CLFS =             # Not researched for others
 
 #----------------------------------------------------------------------
-# 5. SCIDAC includes and libraries
-# These must have been built separately with appropriate choices
-# for the underlying communications scheme
-# CHANGE THESE!!!!
-
-CQMP = -I $(QOS)/quser/include/
-#LQMP = $(QOS)/quser/gcc-lib-user/libqcd_api.a
-LQMP = -lqcd_api
-
-
-#----------------------------------------------------------------------
-# 6. I/O routines
+# 5. I/O routines
 # Both io_nonansi and io_ansi should work on a scalar machine
 # Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
 MACHINE_DEP_IO   = io_nonansi.o # (io_ansi.o io_nonansi.o io_romio.o)
+
+HAVEQIO = true
+
+#----------------------------------------------------------------------
+# 7. QDP/C options
+
+WANTQDP = true
+
+#  *** edit these locations ***
+SCIDAC = ${HOME}/scidac
+QIO = $(SCIDAC)/qio
+QDP = ${SCIDAC}/qdp
+QLA = ${SCIDAC}/qla
+
+# shouldn't need to change this
+
+IQMP = -I$(QOS)/quser/include/
+#LQMP = $(QOS)/quser/gcc-lib-user/libqcd_api.a
+LQMP = -lqcd_api
+
+IQIO = -I${QIO}/include
+LQIO = -L${QIO}/lib -lqio -llime 
+
+IQLA = -I${QLA}/include
+LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
+          -lqla_dq3 -lqla_q3 -lqla_d -lqla_dq -lqla_q -lqla_random
+
+IQDP = -I${QDP}/include
+LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
+
+LIBQIO = ${LQIO} ${LQMP}
+INCQIO = ${IQIO} ${IQMP}
+
+ifdef WANTQDP
+  INCQDP = ${IQDP} ${IQLA} ${IQIO} ${IQMP}
+  LIBQDP = ${LQDP} ${LQLA} ${LQIO} ${LQMP}
+endif
 
 #----------------------------------------------------------------------
 # 7. Linker
@@ -77,12 +97,16 @@ LDFLAGS          =   -L${LIBDIR} -Xlinker
 
 #----------------------------------------------------------------------
 # 9. Extra libraries
-#ILIB             = -lm -lnet ${LQMP}    # not needed if using mpicc
-ILIB             = ${LQMP}    # not needed if using mpicc
+#ILIB             = -lm -lnet ${LQMP}
+ILIB             = ${LQMP}
 
 #----------------------------------------------------------------------
 # 10. Code alternatives 
-CODETYPE         = -DINLINE   # usually unchanged
+
+# 1 = single precision; 2 = double
+PRECISION = 2
+
+CODETYPE         = -DNOPREFETCH -DPRECISION=${PRECISION} -DQDP_Precision=${PRECISION} # -DQDP_PROFILE
 
 #----------------------------------------------------------------------
 # 11. Choose MILC library make file in libraries directory.  
@@ -98,8 +122,6 @@ MAKELIBRARIES = Make_qcdoc_gcc	# Generic.
 MACHINE_DEP = com_qmp.o qcdoc_alloc.o ${MACHINE_DEP_IO}
  
 # Complete set of compiler flags - do not change
-CFLAGS = ${OPT} ${OCFLAGS} ${CODETYPE} ${CLFS} ${CQMP} -I${MYINCLUDEDIR} ${DEFINES}
+CFLAGS = ${OPT} ${OCFLAGS} ${CODETYPE} ${CLFS} ${INCQDP} -I${MYINCLUDEDIR} ${DEFINES}
 
-QCDOC = true
-QIO = true
 include Make_template
