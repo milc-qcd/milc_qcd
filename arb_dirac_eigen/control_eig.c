@@ -187,10 +187,10 @@ if(this_node==0) printf("reading in %d wilson_vectors--must be <= 12\n",Nvecs);
 for(j=0;j<Nvecs;j++){
 printf("reading %d %d %d\n",j,spin,color);
 #ifdef IOTIME
-                    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
+                    status = reload_wprop_sc_to_site( startflag_w[k], fp_in_w[k], 
                                       spin, color, F_OFFSET(psi),1);
 #else
-                    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
+                    status = reload_wprop_sc_to_site( startflag_w[k], fp_in_w[k], 
                                       spin, color, F_OFFSET(psi),0);
 #endif
 
@@ -223,10 +223,10 @@ spin=color=0;
                 for(j=0;j<Nvecs;j++){
 		  FORALLSITES(i,s){s->psi=eigVec[j][i];}
 #ifdef IOTIME
-                    save_wprop_sc( saveflag_w[k],fp_out_w[k],
+                    save_wprop_sc_from_site( saveflag_w[k],fp_out_w[k],
                                     spin,color,F_OFFSET(psi),1);
 #else
-                    save_wprop_sc( saveflag_w[k],fp_out_w[k],
+                    save_wprop_sc_from_site( saveflag_w[k],fp_out_w[k],
                                     spin,color,F_OFFSET(psi),0);
 #endif
 spin++;
