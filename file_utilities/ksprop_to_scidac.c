@@ -92,8 +92,8 @@ int main(int argc, char *argv[])
   char recxml[MAX_RECXML];
   int i;
   int dims[4],ndim;
-  field_offset dest = F_OFFSET(prop[0]);
-  
+  su3_vector *ksprop;
+
   if(argc < 3)
     {
       fprintf(stderr,"Usage %s <MILC file> <SciDAC file>\n",argv[0]);
@@ -125,18 +125,26 @@ int main(int argc, char *argv[])
       nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
       printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
     }
-  
+
   /* Finish setup - broadcast dimensions */
   setup();
 
+  /* Allocate space for ksprop */
+  ksprop = (su3_vector *)malloc(sites_on_node*3*sizeof(su3_vector));
+  if(ksprop == NULL){
+    node0_printf("No room for propagator\n");
+    terminate(1);
+  }
+
   /* Read the whole file */
-  reload_ksprop(RELOAD_SERIAL, filename_milc, dest, 0);
+  reload_ksprop_to_field(RELOAD_SERIAL, filename_milc, ksprop, 0);
 
   /* Write file in SciDAC format */
   /* Some arbitrary metadata */
   snprintf(recxml,MAX_RECXML,"Converted from %s",filename_milc);
 
-  save_ks_vector_scidac(filename_scidac, recxml, QIO_SINGLEFILE, dest, 3);
+  save_ks_vector_scidac_from_field(filename_scidac, recxml, 
+				   QIO_SINGLEFILE, ksprop, 3);
 
   return 0;
 }

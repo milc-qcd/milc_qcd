@@ -29,7 +29,6 @@ struct site {
 	char parity;
 	int index;
 	su3_matrix link[4];
-        su3_vector prop[3];
 };
 typedef struct site site;
 
