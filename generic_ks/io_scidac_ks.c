@@ -16,7 +16,7 @@
 
 void vget_F3_V(char *buf, size_t index, int count, void *arg)
 {
-  int i;
+  int i,j;
   /* Assume output vector is single precision */
   fsu3_vector *dest = (fsu3_vector *)buf;
   field_offset src = *((field_offset *)arg);
@@ -25,10 +25,11 @@ void vget_F3_V(char *buf, size_t index, int count, void *arg)
   su3_vector *src_vec = (su3_vector *)F_PT(s,src);
 
   /* Copy, changing precision, if necessary */
-  for(i = 0; i < 3; i++){
-    dest->c[i].real = src_vec->c[i].real;
-    dest->c[i].imag = src_vec->c[i].imag;
-  }
+  for(j = 0; j < count; j++)
+    for(i = 0; i < 3; i++){
+      dest[j].c[i].real = src_vec[j].c[i].real;
+      dest[j].c[i].imag = src_vec[j].c[i].imag;
+    }
 }
 
 int write_F3_V(QIO_Writer *outfile, char *xml_write_lattice, 
@@ -46,7 +47,7 @@ int write_F3_V(QIO_Writer *outfile, char *xml_write_lattice,
 
   /* Create the record info for the field */
   rec_info = QIO_create_record_info(QIO_FIELD, qdptype, prec, 3,
-				    0, datum_size, 1);
+				    0, datum_size, count);
   /* Create the record XML for the field */
   xml_record_out = QIO_string_create();
   QIO_string_set(xml_record_out,xml_write_lattice);
@@ -66,7 +67,7 @@ int write_F3_V(QIO_Writer *outfile, char *xml_write_lattice,
    to site structure */
 void vput_F3_V(char *buf, size_t index, int count, void *arg)
 {
-  int i;
+  int i,j;
   fsu3_vector *src = (fsu3_vector *)buf;
   field_offset dest = *((field_offset *)arg);
   site *s = &lattice[index];
@@ -74,10 +75,11 @@ void vput_F3_V(char *buf, size_t index, int count, void *arg)
   su3_vector *dest_vec = (su3_vector *)F_PT(s,dest);
   
   /* Copy, changing precision, if necessary */
-  for(i = 0; i < 3; i++){
-    dest_vec->c[i].real = src->c[i].real;
-    dest_vec->c[i].imag = src->c[i].imag;
-  }
+  for(j = 0; j < count; j++)
+    for(i = 0; i < 3; i++){
+      dest_vec[j].c[i].real = src[j].c[i].real;
+      dest_vec[j].c[i].imag = src[j].c[i].imag;
+    }
 }
 
 /* Read a set of color vectors */

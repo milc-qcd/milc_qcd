@@ -45,18 +45,18 @@ int first_congrad = 1;
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
     int niter, Real rsqmin, int parity, Real *final_rsq_ptr ){
-    register int i;
-    register site *s;
-    int iteration;	/* counter for iterations */
-    Real a,b;			/* Sugar's a,b,resid**2,last resid*2 */
-    double rsq,oldrsq,pkp;		/* pkp = cg_p.K.cg_p */
-    Real msq_x4;	/* 4*mass*mass */
-    double source_norm;	/* squared magnitude of source vector */
-    double rsqstop;	/* stopping residual normalized by source norm */
-    int l_parity;	/* parity we are currently doing */
-    int l_otherparity;	/* the other parity */
-    msg_tag * tags1[16], *tags2[16];	/* tags for gathers to parity and opposite */
-    int special_started;	/* 1 if dslash_special has been called */
+  register int i;
+  register site *s;
+  int iteration;	/* counter for iterations */
+  Real a,b;	/* Sugar's a,b */
+  double rsq,oldrsq,pkp;	/* resid**2,last resid*2,pkp = cg_p.K.cg_p */
+  Real msq_x4;	/* 4*mass*mass */
+  double source_norm;	/* squared magnitude of source vector */
+  double rsqstop;	/* stopping residual normalized by source norm */
+  int l_parity;	/* parity we are currently doing */
+  int l_otherparity;	/* the other parity */
+  msg_tag * tags1[16], *tags2[16];	/* tags for gathers to parity and opposite */
+  int special_started;	/* 1 if dslash_special has been called */
 
 /* Timing */
 
@@ -175,8 +175,8 @@ start:
 #endif
              return (iteration);
         }
-	pkp=0.0;
 #ifdef CG_DEBUG
+	pkp=0.0;
 	if(mynode()==0){printf("iter=%d, rsq= %e, pkp=%e\n",
 	iteration,(double)rsq,(double)pkp);fflush(stdout);}
 #endif

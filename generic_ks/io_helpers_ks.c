@@ -62,8 +62,7 @@ ks_prop_file *w_open_ksprop(int flag, char *filename)
 /*---------------------------------------------------------------*/
 /* reload a propagator in any of the formats, or cold propagator, or keep
    current propagator:
-   FRESH, CONTINUE,
-   RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL, RELOAD_MULTIDUMP
+   FRESH, CONTINUE, RELOAD_ASCII, RELOAD_SERIAL
    */
 int reload_ksprop( int flag, ks_prop_file *kspf, int color,
 		   field_offset dest, int timing)
@@ -106,9 +105,8 @@ int reload_ksprop( int flag, ks_prop_file *kspf, int color,
 } /* reload_ksprop */
 
 /*---------------------------------------------------------------*/
-/* save a ksprop in any of the formats:
-   FORGET,
-   SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_MULTIDUMP, SAVE_CHECKPOINT
+/* write a single su3_vector field to an open file in various formats
+   FORGET, SAVE_ASCII, SAVE_SERIAL, SAVE_SERIAL_TSLICE
    */
 void save_ksprop( int flag, ks_prop_file *kspf, int color, 
 		  field_offset src, int timing)
@@ -234,7 +232,7 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
     int status;
 
     if (prompt!=0) printf(
-        "'forget_ks', 'save_ks_ascii', 'save_ks_serial', 'save_ks_serial_fm', save_ks_serial_tslice' ?\n");
+        "'forget_ks', 'save_ks_ascii', 'save_ks_serial', 'save_ks_serial_fm', save_ks_serial_tslice', 'save_ks_serial_scidac', 'save_ks_multifile_scidac', 'save_ks_partition_scidac' ?\n");
     status=scanf("%s",savebuf);
     if(status !=1) {
         printf("ask_ending_ksprop: ERROR IN INPUT: ending ksprop command\n");
@@ -252,6 +250,30 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
     }
     else if(strcmp("save_ks_serial_tslice",savebuf) == 0 ) {
         *flag=SAVE_SERIAL_TSLICE;
+    }
+    else if(strcmp("save_ks_serial_scidac",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+        *flag=SAVE_SERIAL_SCIDAC;
+#else
+	node0_printf("requires QIO compilation!\n");
+	terminate(1);
+#endif
+    }
+    else if(strcmp("save_ks_multifile_scidac",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+        *flag=SAVE_MULTIFILE_SCIDAC;
+#else
+	node0_printf("requires QIO compilation!\n");
+	terminate(1);
+#endif
+    }
+    else if(strcmp("save_ks_partition_scidac",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+        *flag=SAVE_PARTITION_SCIDAC;
+#else
+	node0_printf("requires QIO compilation!\n");
+	terminate(1);
+#endif
     }
     else if(strcmp("forget_ks",savebuf) == 0 ) {
         *flag=FORGET;

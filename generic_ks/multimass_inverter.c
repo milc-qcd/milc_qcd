@@ -25,6 +25,10 @@ enum prop_name {
 
 #include "generic_ks_includes.h"
 #include <string.h>
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
+
 #ifdef FN
 #define dslash dslash_fn
 #define dslash_on_temp dslash_fn_on_temp
@@ -37,6 +41,7 @@ enum prop_name {
 void f2d_vector(fsu3_vector *, su3_vector *);
 void d2f_vector(su3_vector *, fsu3_vector *);
 int test_converge(int t_source);
+#define MAX_RECXML 65
 
 int multimass_inverter( Real *masses, int nmasses, Real tol){
   /* arguments are array of masses, number of masses,
@@ -58,6 +63,7 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
   char kssavefile_tmp[MAXFILENAME],extension[24];
   int len1,len2;
   ks_prop_file *kspf; /* structure for opening ks prop file */
+  char recxml[MAX_RECXML];
 
   cgn=0; /* number of CG iterations */
   czero.real = czero.imag = 0.0;
@@ -172,24 +178,53 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
 	  s->propmat[2] = quark_props[j+2*nmasses][i];
         }
         /* save KS propagator if requested */
+	/* Create record XML.  Substitute string until we have XML support */
+	snprintf(recxml,MAX_RECXML,"\nmass %g\nt_source %d\n",masses[j],
+		 t_source);
+	/* Fermilab format has one field with three su3_vectors per site */
         if( kssaveflag == SAVE_SERIAL_FM ) {
             kspf = w_open_ksprop( kssaveflag, kssavefile_tmp );
-            w_serial_ks_fm( kspf, F_OFFSET(propmat[0]),
-                              F_OFFSET(propmat[1]), F_OFFSET(propmat[2]) );
+            w_serial_ks_fm( kspf, F_OFFSET(propmat) );
             w_close_ksprop( kssaveflag, kspf );
         }
+	else if( kssaveflag == SAVE_SERIAL_SCIDAC ){
+#ifdef HAVE_QIO
+ 	    save_ks_vector_scidac(kssavefile_tmp, recxml, QIO_SINGLEFILE, F_OFFSET(propmat), 3);
+#else
+	    node0_printf("multimass_inverter: ERROR save_serial_scidac requires QIO compilation\n");
+#endif
+	}
+	else if( kssaveflag == SAVE_MULTIFILE_SCIDAC ){
+#ifdef HAVE_QIO
+ 	    save_ks_vector_scidac(kssavefile_tmp, recxml, QIO_MULTIFILE, F_OFFSET(propmat), 3);
+#else
+	    node0_printf("multimass_inverter: ERROR save_multifile_scidac requires QIO compilation\n");
+#endif
+	}
+	else if( kssaveflag == SAVE_PARTITION_SCIDAC ){
+#ifdef HAVE_QIO
+ 	    save_ks_vector_scidac(kssavefile_tmp, recxml, QIO_PARTFILE, F_OFFSET(propmat), 3);
+#else
+	    node0_printf("multimass_inverter: ERROR save_partfile_scidac requires QIO compilation\n");
+#endif
+	}
         /* maybe find a better way to call this */
         else if( kssaveflag == SAVE_SERIAL_TSLICE ) {
           w_ascii_ksprop_tt( kssavefile_tmp, F_OFFSET(propmat[0]),
                               F_OFFSET(propmat[1]), F_OFFSET(propmat[2]) );
         }
-        else {
+        else if( kssaveflag == SAVE_SERIAL ){
+	/* Wingate format has three fields with one su3_vector per site */
         kspf = w_open_ksprop( kssaveflag, kssavefile_tmp );
         save_ksprop( kssaveflag, kspf, 0, F_OFFSET(propmat[0]), 1 );
         save_ksprop( kssaveflag, kspf, 1, F_OFFSET(propmat[1]), 1 );
         save_ksprop( kssaveflag, kspf, 2, F_OFFSET(propmat[2]), 1 );
         w_close_ksprop( kssaveflag, kspf );
         }
+	else {
+	  node0_printf("multimass_inverter: ERROR. Unrecognized save flag %d\n",
+		       kssaveflag);
+	}
 
    } /* end loop on j (masses) */
   } /* end loop on t_source */
