@@ -160,7 +160,8 @@ void destroyGaugeQCDML(String *st){
 
 char *create_QCDML(){
   char dummy[] = "Dummy QCDML";
-  char *qcdml = (char *)malloc(sizeof(dummy));
+  char *qcdml = (char *)malloc(sizeof(dummy)+1);
+  strcpy(qcdml, dummy);
   return qcdml;
 }
 

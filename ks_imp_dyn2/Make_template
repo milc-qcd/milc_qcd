@@ -29,6 +29,7 @@ GLOBAL_HEADERS = \
   ${INCLUDEDIR}/su3.h \
   ${INCLUDEDIR}/comdefs.h \
   ${INCLUDEDIR}/macros.h \
+  ${INCLUDEDIR}/file_types.h \
   ${INCLUDEDIR}/generic.h \
   ${INCLUDEDIR}/generic_ks.h \
   ${INCLUDEDIR}/loopend.h \
@@ -55,6 +56,7 @@ G_OBJECTS0 = \
   d_plaq4.o \
   gaugefix2.o \
   gauge_stuff.o \
+  io_detect.o \
   io_helpers.o \
   io_lat4.o \
   make_lattice.o \
