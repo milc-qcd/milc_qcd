@@ -539,6 +539,7 @@ gauge_file *setup_input_gauge_file(char *filename)
     }
 
   gf->header = gh;
+  gf->rank2rcv = NULL;
   gf->check.sum29 = 0;
   gf->check.sum31 = 0;
 
