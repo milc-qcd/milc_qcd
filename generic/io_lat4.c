@@ -3147,6 +3147,23 @@ gauge_file *save_ascii(char *filename) {
   return gf;
 }
 
+/* Read lattice dimensions from a binary file and close the file */
+void read_lat_dim_gf(char *filename, int *ndim, int dims[]){
+  gauge_file *gf;
+  int i;
+  
+  /* Only four dimensions here */
+  *ndim = 4;
+
+  /* Open the file */
+  nx = -1; ny = -1; nz = -1; nt = -1;
+  gf = r_serial_i(filename);
+
+  for(i = 0; i < *ndim; i++)
+    dims[i] = gf->header->dims[i];
+
+  r_serial_f(gf);
+}
 
 /*---------------------------------------------------------------------*/
 /* Restore lattice file by reading serially (node 0 only) */

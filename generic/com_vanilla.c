@@ -573,7 +573,7 @@ make_gather(
   int want_even_odd,	/* ALLOW_EVEN_ODD or NO_EVEN_ODD */
   int parity_conserve)	/* {SAME,SWITCH,SCRAMBLE}_PARITY */
 {
-  int i,j,subl;	        /* scratch */
+  int i,subl;	        /* scratch */
   site *s;	        /* scratch */
   int dir;		/* direction */
   int x,y,z,t;		/* coordinates */

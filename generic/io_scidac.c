@@ -298,6 +298,34 @@ gauge_file *save_scidac(char *filename, int volfmt){
 
 /* The functions below constitute the API */
 
+int read_lat_dim_scidac(char *filename, int *ndim, int dims[])
+{
+  QIO_Layout *layout;
+  int i;
+  int *latsize;
+  QIO_Reader *infile;
+
+  QIO_verbose(QIO_VERB_REG);
+
+  /* Build the layout structure */
+  nx = 0; ny = 0; nz = 0; nt = 0;
+  build_layout(&layout);
+
+  /* Get lattice dimensions from file */
+  infile = open_input(filename, &layout);
+  if(!infile)return 1;
+
+  *ndim = QIO_get_reader_latdim(infile);
+  latsize = QIO_get_reader_latsize(infile);
+
+  for(i = 0; i < *ndim; i++)
+    dims[i] = latsize[i];
+
+  QIO_close_read(infile);
+
+  return 0;
+}
+
 gauge_file *save_serial_scidac(char *filename){
   return save_scidac(filename,QIO_SINGLEFILE);
 }
