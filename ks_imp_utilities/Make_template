@@ -1,14 +1,12 @@
 #  Kogut-Susskind fermions with improved actions
-#  MIMD version 6
+#  MIMD version 7
 #  For checking KS inversion
 #
-#  Generic make-include file for ks_imp3 codes
+#  Generic make-include file for ks_imp_dyn2 codes
 #  This template file defines rules and macros common to all architectures
 #  It is intended to be an include file for other Makefiles.
 #  Don't use it by itself!
 #
-#       See examples below for naming and building targets for
-#               other actions
 
 MYINCLUDEDIR = .
 INCLUDEDIR = ../include
@@ -34,13 +32,6 @@ MY_HEADERS = \
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
 
-# Choose one of the lattice layout algorithms:
-ifdef QCDOC
-  LAYOUT = layout_qcdoc
-else
-  LAYOUT = layout_hyper
-endif
-
 MY_OBJECTS= \
   control.o \
   gauge_info.o \
@@ -49,7 +40,6 @@ MY_OBJECTS= \
   setup.o
 
 G_OBJECTS0 = \
-  ${LAYOUT}.o \
   check_unitarity.o \
   d_plaq4.o \
   gauge_stuff.o \
@@ -60,33 +50,70 @@ G_OBJECTS0 = \
   ranstuff.o \
   remap_stdio_from_args.o
 
-ifdef QCDOC
+ifeq ($(strip ${QCDOC}),true)
   G_OBJECTS1 = ${G_OBJECTS0} ploop2.o
 else
   G_OBJECTS1 = ${G_OBJECTS0} ploop3.o
 endif
 
-ifdef QIO
+ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS = ${G_OBJECTS1} io_scidac.o
 else
   G_OBJECTS = ${G_OBJECTS1}
 endif
 
 G_KS_OBJECTS0 = \
-  dslash_fn2.o \
   f_meas.o \
   grsource_imp.o \
   mat_invert.o \
+  quark_stuff.o \
   rephase.o
 
-ifdef QIO
+ifeq ($(strip ${HAVEQIO}),true)
   G_KS_OBJECTS = ${G_KS_OBJECTS0} io_scidac_ks.o
 else
   G_KS_OBJECTS = ${G_KS_OBJECTS0}
 endif
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} \
-  ${EXTRA_OBJECTS} ${MACHINE_DEP}
+# Objects depending on architecture and software package 
+
+# Layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o # Required
+  else
+    LAYOUT = layout_hyper.o # Choices possible here
+  endif
+endif
+
+# Choose dslash (dslash_fn.o dslash_fn2.o)
+DSLASH_FN = dslash_fn.o  # Or dslash_fn2.o
+
+# Choose Asqtad fermion force 
+# (fermion_force_asqtad.o fermion_force_asqtad2.o fermion_force_asqtad_qdp.o)
+ASQFORCE = fermion_force_asqtad2.o
+
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  QDP_OBJECTS = stuff_qdp.o
+  INV_FN_OBJECTS = d_congrad5_fn_qdp.o ${DSLASH_FN} dslash_fn_qdp.o 
+  MULTI_INV_FN = ks_multicg_qdp.o
+else
+  INV_FN_OBJECTS = d_congrad5_fn.o ${DSLASH_FN}
+  MULTI_INV_FN = ks_multicg.o
+endif
+MULTI_INV_EO = ks_multicg.o
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
+  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
@@ -108,7 +135,7 @@ ALL_MAKES = Make_template ../generic/Make_template \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
-quark_stuff4.o: quark_action.h 
+quark_stuff.o: quark_action.h 
 gauge_stuff.o: gauge_action.h 
 gauge_info.o:  quark_action.h
 
@@ -140,26 +167,30 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 # Optional DEFINES for quark number susceptibility
 # -DCHEM_POT
 
-##### Targets:
-#		("FN" = "fat+Naik")
-
-ifdef QCDOC
-  DARCH = -DQCDOC
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
 endif
 
-ifdef QIO
+ifeq ($(strip ${HAVEQIO}),true)
   DHAVE_QIO = -DHAVE_QIO
 endif
 
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
+
+##### Targets:
+#		("FN" = "fat+Naik")
 
 check_ks_invert::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCHECK_INVERT ${DARCH} ${DHAVE_QIO} \
-	-DHAVE_QIO" \
+	"DEFINES= -DFN -DCHECK_INVERT ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS=    check_invert2.o d_congrad5_fn.o \
-	check_ks_invert.o quark_stuff4.o"
+	"EXTRA_OBJECTS=  ${INV_FN_OBJECTS} ${ASQFORCE}\
+	check_invert2.o	check_ks_invert.o"
 
 check_fermion_force::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -167,7 +198,7 @@ check_fermion_force::
 	-DHAVE_QIO" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS=  check_fermion_force.o  d_congrad5_fn.o quark_stuff.o"
+	"EXTRA_OBJECTS=  ${INV_FN_OBJECTS} ${ASQFORCE} check_fermion_force.o"
 
 clean:
 	-/bin/rm -f *.o

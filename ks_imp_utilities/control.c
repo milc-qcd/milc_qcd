@@ -24,6 +24,9 @@ int main( int argc, char **argv ){
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
   initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
   g_sync();
   /* set up */
   prompt = setup();
@@ -52,6 +55,7 @@ int main( int argc, char **argv ){
 #ifdef FN
     /* save longlinks if requested */
     if (savelongflag != FORGET ){
+#ifdef HAVE_QIO
       filexml = create_ks_XML();
 #ifndef DSLASH_SITE_LINKS
       save_color_matrix_scidac_from_temp( savelongfile, filexml, 
@@ -61,10 +65,14 @@ int main( int argc, char **argv ){
 		"Long links", QIO_SINGLEFILE, F_OFFSET(longlink[0]), 4);
 #endif
       free_ks_XML(filexml);
+#else
+      printf("ERROR: Can't save the longlinks.  Recompile with QIO\n");
+#endif
     }
     
     /* save fatlinks if requested */
     if (savefatflag != FORGET ){
+#ifdef HAVE_QIO
       filexml = create_ks_XML();
 #ifndef DSLASH_SITE_LINKS
       save_color_matrix_scidac_from_temp( savefatfile, filexml, 
@@ -74,6 +82,9 @@ int main( int argc, char **argv ){
 		"Fat links", QIO_SINGLEFILE, F_OFFSET(fatlink[0]), 4);
 #endif
       free_ks_XML(filexml);
+#else
+      printf("ERROR: Can't save the fatlinks.  Recompile with QIO\n");
+#endif
     }
 #endif
     

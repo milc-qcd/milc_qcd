@@ -23,6 +23,9 @@
 #include "../include/io_scidac.h"
 #include "../include/io_scidac_ks.h"
 #endif
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
 
 #ifdef FN
 #define dslash dslash_fn

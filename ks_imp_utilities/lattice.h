@@ -150,4 +150,14 @@ EXTERN su3_matrix *t_longlink;
 EXTERN su3_matrix *t_fatlink;
 #endif
 
+#ifdef HAVE_QDP
+#include <qdp.h>
+
+EXTERN QDP_ColorMatrix **fatlinks, **longlinks, *implinks[8];
+EXTERN QDP_Shift neighbor3[4];
+EXTERN QDP_Shift shiftdirs[8];
+EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];
+
+#endif
+
 #endif /* _LATTICE_H */
