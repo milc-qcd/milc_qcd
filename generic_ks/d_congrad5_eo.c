@@ -79,8 +79,8 @@ start:
         */
 /**if(this_node==0)if(iteration>1)printf("CONGRAD: restart rsq = %.10e\n",rsq);**/
         rsq = source_norm = 0.0;
-	dslash_eo( dest, F_OFFSET(ttt), l_otherparity);
-	dslash_eo(F_OFFSET(ttt),F_OFFSET(ttt),l_parity);
+	dslash_eo_site( dest, F_OFFSET(ttt), l_otherparity);
+	dslash_eo_site(F_OFFSET(ttt),F_OFFSET(ttt),l_parity);
 	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
 	FORSOMEPARITY(i,s,l_parity){
 	  if( i < loopend-FETCH_UP ){
@@ -139,8 +139,8 @@ start:
         pkp = 0.0;
 	/* sum of neighbors */
 
-	dslash_eo( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity);
-	dslash_eo( F_OFFSET(ttt), F_OFFSET(ttt), l_parity);
+	dslash_eo_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity);
+	dslash_eo_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity);
 
 	/* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
 	/* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */
