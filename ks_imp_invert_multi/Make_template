@@ -31,6 +31,7 @@ GLOBAL_HEADERS = \
   ${INCLUDEDIR}/complex.h \
   ${INCLUDEDIR}/su3.h \
   ${INCLUDEDIR}/comdefs.h \
+  ${INCLUDEDIR}/file_types.h \
   ${INCLUDEDIR}/macros.h \
   ${INCLUDEDIR}/generic.h \
   ${INCLUDEDIR}/generic_ks.h \
@@ -73,28 +74,22 @@ else
   G_OBJECTS = ${G_OBJECTS1}
 endif
 
-G_KS_OBJECTS= \
+G_KS_OBJECTS0= \
    gauge_stuff.o \
    quark_stuff.o \
+   io_detect.o \
    io_helpers_ks.o \
    io_prop_ks.o \
-   io_prop_sgks.o \
+   io_prop_ks_fm.o \
+   mat_invert.o \
+   multimass_inverter.o \
    rephase.o
 
-#   f_meas.o \
-#   grsource_imp.o \
-#   mat_invert.o \
-
-SPECTRUM_OBJECTS = \
-   mat_invert.o \
-   multimass_inverter.o
-
-#   flavor_ops.o \
-#   hvy_pot.o \
-#   nl_spectrum.o \
-#   spectrum_mom.o \
-#   spectrum_multimom.o \
-#   spectrum_nlpi2.o
+ifeq ($(strip ${HAVEQIO}),true)
+  G_KS_OBJECTS = ${G_KS_OBJECTS0} io_scidac_ks.o
+else
+  G_KS_OBJECTS = ${G_KS_OBJECTS0}
+endif
 
 # Objects depending on architecture and software package 
 
@@ -202,26 +197,26 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 
 su3_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}	-DSPECTRUM" \
+	"DEFINES= -DFN -DFPI ${DARCH}	" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} \
-	${ASQFORCE} ${SPECTRUM_OBJECTS}"
+	${ASQFORCE}  fpi_2.o"
 
 su3_spectrum_periodic::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}	-DSPECTRUM -DPERIODICBC" \
+	"DEFINES= -DFN ${DARCH} -DPERIODICBC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} \
-	 ${ASQFORCE} ${SPECTRUM_OBJECTS}"
+	 ${ASQFORCE}"
 
 su3_unimp_spectrum_periodic::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DSPECTRUM -DPERIODICBC" \
+	"DEFINES= -DFN -DPERIODICBC" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${SPECTRUM_OBJECTS}"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN}"
 
 clean:
 	-/bin/rm -f *.o

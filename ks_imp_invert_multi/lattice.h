@@ -74,11 +74,9 @@ typedef struct {
 #ifdef PHI_ALGORITHM
  	su3_vector old_xxx;	/* For predicting next xxx */
 #endif
-#ifdef SPECTRUM
 	su3_vector propmat[3];	/* For three source colors */
 	su3_vector quark_source;
 	su3_matrix tempmat2;
-#endif
 
 	/* temporary vectors and matrices */
 	su3_vector tempvec[4];	/* One for each direction */

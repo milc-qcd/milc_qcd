@@ -34,15 +34,14 @@ mass 0.02
 reload_serial ../binary_samples/lat.sample.l4448.gf
 no_gauge_fix
 forget 
-save_ks_serial_fm ks.sample.l4448
-Reading with byte reversal
+save_ks_serial_fm ks.test.l4448
 Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4448.gf
 Time stamp Wed Oct 10 14:39:47 2001
 Checksums 92a1404 1416736 OK
-Time to reload gauge configuration = 3.525116e-03
+Time to reload gauge configuration = 1.171303e-02
 CHECK PLAQ: 1.723748e+00 1.690586e+00
 Unitarity checked.  Max deviation 9.20e-08
-Time to check unitarity = 4.523881e-03
+Time to check unitarity = 3.274918e-03
 Symanzik 1x1 + 1x2 + 1x1x1 action
 loop coefficients: nloop rep loop_coeff  multiplicity
                     0 0      1.000000e+00     6
@@ -94,112 +93,12 @@ G_LOOP:  2  14  6   	9.942737e-01	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	1.027284e+00	( 1 5 4 6 2 3  )
 GACTION: 6.587348e+00
 COULOMB GAUGE FIXING SKIPPED.
-fpi_2(): source time = 0, num_sourcevecs = 3
-CONGRAD5: time = 1.539544e+00 iters = 231 mflops = 1.897522e+02
-Inversion checked, frac. error = 2.083940e-11
-Inversion checked, frac. error = 9.411252e-09
-CONGRAD5: time = 1.506456e+00 iters = 231 mflops = 1.939199e+02
-Inversion checked, frac. error = 1.950576e-11
-Inversion checked, frac. error = 8.786596e-09
-CONGRAD5: time = 1.636315e+00 iters = 232 mflops = 1.793032e+02
-Inversion checked, frac. error = 1.747665e-11
-Inversion checked, frac. error = 7.897873e-09
-CONGRAD5: time = 1.872972e+00 iters = 233 mflops = 1.573227e+02
-Inversion checked, frac. error = 1.821148e-11
-Inversion checked, frac. error = 8.321170e-09
-CONGRAD5: time = 1.585157e+00 iters = 233 mflops = 1.858877e+02
-Inversion checked, frac. error = 1.769722e-11
-Inversion checked, frac. error = 8.083266e-09
-CONGRAD5: time = 1.543398e+00 iters = 233 mflops = 1.909171e+02
-Inversion checked, frac. error = 1.997197e-11
-Inversion checked, frac. error = 9.126505e-09
-STARTPROP
-MASSES:  5.00000e-02   5.00000e-02
-SOURCE: RANDOM_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 1.460181e-02 0.000000e+00 5.760221e-02 0.000000e+00
-1 5.033239e-03 0.000000e+00 3.235116e-02 0.000000e+00
-2 5.058505e-03 0.000000e+00 4.434325e-02 0.000000e+00
-3 3.434211e-03 0.000000e+00 2.266281e-02 0.000000e+00
-4 2.881000e-03 0.000000e+00 2.872767e-02 0.000000e+00
-5 2.692961e-03 0.000000e+00 1.747894e-02 0.000000e+00
-6 3.524166e-03 0.000000e+00 2.791564e-02 0.000000e+00
-7 5.552054e-03 0.000000e+00 2.512389e-02 0.000000e+00
-ENDPROP
-STARTPROP
-MASSES:  5.00000e-02   5.00000e-02
-SOURCE: FULL_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 3.914011e-02 0.000000e+00 9.614726e-01 0.000000e+00
-1 2.978126e-02 0.000000e+00 7.888547e-01 0.000000e+00
-2 3.277324e-02 0.000000e+00 8.069607e-01 0.000000e+00
-3 2.751174e-02 0.000000e+00 4.789445e-01 0.000000e+00
-4 1.969232e-02 0.000000e+00 4.251295e-01 0.000000e+00
-5 1.976782e-02 0.000000e+00 3.300792e-01 0.000000e+00
-6 1.906188e-02 0.000000e+00 3.698377e-01 0.000000e+00
-7 2.604399e-02 0.000000e+00 6.208437e-01 0.000000e+00
-ENDPROP
-STARTPROP
-MASSES:  5.00000e-02   2.00000e-02
-SOURCE: RANDOM_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 1.637534e-02 -3.760000e-04 7.918392e-02 -1.116190e-03
-1 6.663668e-03 -7.242669e-04 4.803913e-02 -1.087105e-02
-2 7.480127e-03 -2.706835e-04 7.217724e-02 -4.317328e-03
-3 5.243534e-03 -1.156955e-04 3.633564e-02 -1.613923e-03
-4 4.272532e-03 -2.563919e-04 4.710008e-02 -9.695695e-03
-5 4.015248e-03 6.761592e-05 2.620710e-02 3.779365e-03
-6 4.587829e-03 -4.051461e-04 3.996963e-02 -7.643061e-03
-7 6.877732e-03 8.395063e-05 3.749427e-02 3.259530e-03
-ENDPROP
-STARTPROP
-MASSES:  5.00000e-02   2.00000e-02
-SOURCE: FULL_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 4.782115e-02 -2.704251e-03 1.176776e+00 -5.936031e-02
-1 4.166398e-02 -5.725888e-03 9.589019e-01 -1.957794e-01
-2 4.944565e-02 -3.778329e-03 1.187028e+00 -9.670082e-02
-3 4.496801e-02 -5.190147e-03 7.708531e-01 -1.300652e-01
-4 3.218878e-02 -1.765802e-03 6.733047e-01 -6.824541e-02
-5 3.300484e-02 -9.694812e-04 5.034365e-01 3.917704e-02
-6 2.798852e-02 -2.227645e-03 5.031053e-01 -3.286277e-02
-7 3.701666e-02 9.380174e-04 7.699654e-01 7.044298e-02
-ENDPROP
-STARTPROP
-MASSES:  2.00000e-02   2.00000e-02
-SOURCE: RANDOM_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 2.011538e-02 0.000000e+00 1.203202e-01 0.000000e+00
-1 1.102768e-02 0.000000e+00 8.943817e-02 0.000000e+00
-2 1.301241e-02 0.000000e+00 1.308288e-01 0.000000e+00
-3 1.012437e-02 0.000000e+00 8.008373e-02 0.000000e+00
-4 7.733109e-03 0.000000e+00 8.655166e-02 0.000000e+00
-5 7.675958e-03 0.000000e+00 5.447728e-02 0.000000e+00
-6 7.318065e-03 0.000000e+00 6.827458e-02 0.000000e+00
-7 1.035423e-02 0.000000e+00 6.876103e-02 0.000000e+00
-ENDPROP
-STARTPROP
-MASSES:  2.00000e-02   2.00000e-02
-SOURCE: FULL_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 7.017881e-02 0.000000e+00 1.517857e+00 0.000000e+00
-1 7.406654e-02 0.000000e+00 1.401862e+00 0.000000e+00
-2 9.062306e-02 0.000000e+00 1.855162e+00 0.000000e+00
-3 8.909872e-02 0.000000e+00 1.439997e+00 0.000000e+00
-4 6.211799e-02 0.000000e+00 1.106514e+00 0.000000e+00
-5 6.466550e-02 0.000000e+00 8.777503e-01 0.000000e+00
-6 5.045125e-02 0.000000e+00 7.273591e-01 0.000000e+00
-7 6.370878e-02 0.000000e+00 1.082029e+00 0.000000e+00
-ENDPROP
 multimass_inverter(): source time = 0
-CONGRAD5: time = 8.401059e-01 iters = 232 mflops = 1.746187e+02
-Inversion checked, frac. error = 1.833120e-11
+Inversion checked, frac. error = 1.833160e-11
 Inversion checked, frac. error = 8.316574e-09
-CONGRAD5: time = 7.808769e-01 iters = 232 mflops = 1.878635e+02
-Inversion checked, frac. error = 1.821057e-11
+Inversion checked, frac. error = 1.821072e-11
 Inversion checked, frac. error = 8.263186e-09
-CONGRAD5: time = 7.971489e-01 iters = 230 mflops = 1.824422e+02
-Inversion checked, frac. error = 2.105312e-11
+Inversion checked, frac. error = 2.105346e-11
 Inversion checked, frac. error = 9.409621e-09
 write_ksprop_info_item: WARNING: keyword header.time_stamp not in table
 write_ksprop_info_item: WARNING: keyword header.dim not in table
@@ -207,16 +106,16 @@ write_ksprop_info_item: WARNING: keyword header.magic_number not in table
 write_ksprop_info_item: WARNING: keyword header.size-of-elment not in table
 write_ksprop_info_item: WARNING: keyword header.elements-per-site not in table
 write_ksprop_info_item: WARNING: keyword header.site-order not in table
-Wrote info file ks.sample.l4448_m0.0500_nt0.info
-Wrote prop file ks.sample.l4448_m0.0500_nt0 time stamp Thu Mar 17 17:12:43 2005
+Wrote info file ks.test.l4448_m0.0500_nt0.info
+Wrote prop file ks.test.l4448_m0.0500_nt0 time stamp Thu Mar 17 20:28:42 2005
 write_ksprop_info_item: WARNING: keyword header.time_stamp not in table
 write_ksprop_info_item: WARNING: keyword header.dim not in table
 write_ksprop_info_item: WARNING: keyword header.magic_number not in table
 write_ksprop_info_item: WARNING: keyword header.size-of-elment not in table
 write_ksprop_info_item: WARNING: keyword header.elements-per-site not in table
 write_ksprop_info_item: WARNING: keyword header.site-order not in table
-Wrote info file ks.sample.l4448_m0.0200_nt0.info
-Wrote prop file ks.sample.l4448_m0.0200_nt0 time stamp Thu Mar 17 17:12:43 2005
+Wrote info file ks.test.l4448_m0.0200_nt0.info
+Wrote prop file ks.test.l4448_m0.0200_nt0 time stamp Thu Mar 17 20:28:42 2005
 STARTPROP
 MASSES:  5.00000e-02   5.00000e-02
 SOURCE: POINT
@@ -257,11 +156,11 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 7 1.514962e-04 0.000000e+00 9.134404e-04 0.000000e+00
 ENDPROP
 RUNNING COMPLETED
-average cg iters for spectrum = 2.087000e+03
-Time = 1.242569e+01 seconds
-total_iters = 3479
+average cg iters for spectrum = 6.940000e+02
+Time = 7.232706e+00 seconds
+total_iters = 694
 
 
 get_f: EOF on STDIN while expecting beta.
-exit: Thu Mar 17 17:12:43 2005
+exit: Thu Mar 17 20:28:42 2005
 

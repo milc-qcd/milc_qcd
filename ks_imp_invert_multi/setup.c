@@ -107,9 +107,8 @@ int prompt,status;
 	printf("SU3 with improved KS action\n");
 	printf("MIMD version 6\n");
 	printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
-#ifdef SPECTRUM
 	printf("Multimass inverter\n");
-#endif
+
 	status=get_prompt(&prompt);
 	IF_OK status += get_i(prompt,"nflavors1", &par_buf.nflavors1 );
 	IF_OK status += get_i(prompt,"nflavors2", &par_buf.nflavors2 );
@@ -174,7 +173,6 @@ int readin(int prompt) {
 	IF_OK status += get_f(prompt,"error_for_propagator", &x );
 	IF_OK par_buf.rsqprop = x*x;
 
-#ifdef SPECTRUM
         /* source time slice and increment */
 	IF_OK status += get_i(prompt,"source_start", &par_buf.source_start );
 	IF_OK status += get_i(prompt,"source_inc", &par_buf.source_inc );
@@ -194,8 +192,6 @@ int readin(int prompt) {
 	                           &par_buf.fpi_mass[i]);
 	   }
 	/* } */
-
-#endif /*SPECTRUM*/
 
         /* find out what kind of starting lattice to use */
 	IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
@@ -243,7 +239,6 @@ int readin(int prompt) {
     mass1 = par_buf.mass1;
     mass2 = par_buf.mass2;
     u0 = par_buf.u0;
-#ifdef SPECTRUM
     source_start = par_buf.source_start;
     source_inc = par_buf.source_inc;
     n_sources = par_buf.n_sources;
@@ -252,7 +247,6 @@ int readin(int prompt) {
       fpi_mass[i] = par_buf.fpi_mass[i];
     }
 
-#endif /*SPECTRUM*/
     startflag = par_buf.startflag;
     saveflag = par_buf.saveflag;
     strcpy(startfile,par_buf.startfile);

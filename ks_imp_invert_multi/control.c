@@ -18,88 +18,84 @@
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 
 int main( int argc, char **argv ){
-    int meascount,traj_done;
-    int prompt;
-    int s_iters,avspect_iters;
-    double dtime, fixtime, dclock();
-
-#ifdef SPECTRUM
-    ks_prop_file *kspf;
-#endif
-
-    initialize_machine(argc,argv);
+  int meascount,traj_done;
+  int prompt;
+  int s_iters,avspect_iters;
+  double dtime, fixtime, dclock();
+  ks_prop_file *kspf;
+  
+  initialize_machine(argc,argv);
 #ifdef HAVE_QDP
-    QDP_initialize(argc, argv);
+  QDP_initialize(argc, argv);
 #endif
-    g_sync();
-    /* set up */
-    prompt = setup();
-    /* loop over input sets */
-    while( readin(prompt) == 0){
-
-	dtime = -dclock();
-
-	/* perform measuring trajectories, reunitarizing and measuring 	*/
-	meascount=0;		/* number of measurements 		*/
-	avspect_iters =   0;
-
-	        /* call gauge_variable measuring routines */
-		/* results are printed in output file */
-	        rephase(OFF);   /* note that the matching rephase call appears after
-					possible gauge fixing */
-		g_measure( );
-      if( fixflag == COULOMB_GAUGE_FIX)
-        {
-          if(this_node == 0)
-            printf("Fixing to Coulomb gauge\n");
-          fixtime = -dclock();
-                gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-          	   F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
-			 0,NULL,NULL,0,NULL,NULL);
-          fixtime += dclock();
-          if(this_node==0)printf("Time to gauge fix = %e\n",fixtime);
-	}
-      else
-        if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");
-
-                rephase( ON );
-
-#ifdef SPECTRUM 
+  g_sync();
+  /* set up */
+  prompt = setup();
+  /* loop over input sets */
+  while( readin(prompt) == 0){
+    
+    dtime = -dclock();
+    
+    /* perform measuring trajectories, reunitarizing and measuring 	*/
+    meascount=0;		/* number of measurements 		*/
+    avspect_iters =   0;
+    
+    /* call gauge_variable measuring routines */
+    /* results are printed in output file */
+    rephase(OFF);   /* note that the matching rephase call appears after
+		       possible gauge fixing */
+    g_measure( );
+    if( fixflag == COULOMB_GAUGE_FIX)
+      {
+	if(this_node == 0)
+	  printf("Fixing to Coulomb gauge\n");
+	fixtime = -dclock();
+	gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
+		 F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
+		 0,NULL,NULL,0,NULL,NULL);
+	fixtime += dclock();
+	if(this_node==0)printf("Time to gauge fix = %e\n",fixtime);
+      }
+    else
+      if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");
+    
+    rephase( ON );
+    
 #ifdef FN
-		valid_fatlinks = valid_longlinks = 0;
+    valid_fatlinks = valid_longlinks = 0;
 #endif
-		avspect_iters += multimass_inverter(fpi_mass, fpi_nmasses, 2e-3 );
-
+#ifdef FPI
+    avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3 );
 #endif
-	        ++meascount;
-		fflush(stdout);
-
-	node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
-
-#ifdef SPECTRUM
-	    node0_printf("average cg iters for spectrum = %e\n",
-		(double)avspect_iters/meascount);
-#endif
-
-	dtime += dclock();
-	if(this_node==0){
-	    printf("Time = %e seconds\n",dtime);
-	    printf("total_iters = %d\n",total_iters);
-	}
-	fflush(stdout);
-
-	/* save lattice if requested */
-        if( saveflag != FORGET ){
-          rephase( OFF );
-          save_lattice( saveflag, savefile );
-          rephase( ON );
-        }
-
+    avspect_iters += multimass_inverter(fpi_mass, fpi_nmasses, 2e-3 );
+    
+    ++meascount;
+    fflush(stdout);
+    
+    node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
+    
+    node0_printf("average cg iters for spectrum = %e\n",
+		 (double)avspect_iters/meascount);
+    
+    dtime += dclock();
+    if(this_node==0){
+      printf("Time = %e seconds\n",dtime);
+      printf("total_iters = %d\n",total_iters);
     }
+    fflush(stdout);
+    
+    /* save lattice if requested */
+    if( saveflag != FORGET ){
+      rephase( OFF );
+      save_lattice( saveflag, savefile );
+      rephase( ON );
+    }
+    
+  }
 #ifdef HAVE_QDP
-    QDP_finalize();
-    normal_exit(0);
+  QDP_finalize();
+  normal_exit(0);
 #endif
-
-    return 0;
+  
+  return 0;
 }

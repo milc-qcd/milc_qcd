@@ -11,7 +11,7 @@ nz 4
 nt 8
 iseed 1234
 LAYOUT = Hypercubes, options = EVENFIRST,
-Mallocing 1.8 MBytes per node for lattice
+Mallocing 1.2 MBytes per node for lattice
 Made lattice
 Made nn gathers
 Made 3nn gathers
@@ -33,15 +33,14 @@ mass 0.02
 reload_serial ../binary_samples/lat.sample.l4448.gf
 no_gauge_fix
 forget 
-save_ks_serial_fm ks.sample.l4448
-Reading with byte reversal
+save_ks_serial_fm ks.test.l4448
 Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4448.gf
 Time stamp Wed Oct 10 14:39:47 2001
 Checksums 92a1404 1416736 OK
-Time to reload gauge configuration = 3.850884e-03
+Time to reload gauge configuration = 1.126218e-02
 CHECK PLAQ: 1.723748e+00 1.690586e+00
 Unitarity checked.  Max deviation 9.20e-08
-Time to check unitarity = 4.462965e-03
+Time to check unitarity = 3.623962e-03
 Symanzik 1x1 + 1x2 + 1x1x1 action
 loop coefficients: nloop rep loop_coeff  multiplicity
                     0 0      1.000000e+00     6
@@ -94,23 +93,17 @@ G_LOOP:  2  15  6   	1.027284e+00	( 1 5 4 6 2 3  )
 GACTION: 6.587348e+00
 COULOMB GAUGE FIXING SKIPPED.
 fpi_2(): source time = 0, num_sourcevecs = 3
-CONGRAD5: time = 1.651791e+00 iters = 222 mflops = 1.699671e+02
-Inversion checked, frac. error = 3.302133e-11
+Inversion checked, frac. error = 3.302113e-11
 Inversion checked, frac. error = 9.217189e-09
-CONGRAD5: time = 1.653950e+00 iters = 222 mflops = 1.697452e+02
-Inversion checked, frac. error = 3.168570e-11
+Inversion checked, frac. error = 3.168541e-11
 Inversion checked, frac. error = 8.841691e-09
-CONGRAD5: time = 1.649612e+00 iters = 223 mflops = 1.709582e+02
-Inversion checked, frac. error = 2.702370e-11
-Inversion checked, frac. error = 7.549833e-09
-CONGRAD5: time = 1.864217e+00 iters = 224 mflops = 1.519562e+02
-Inversion checked, frac. error = 2.642127e-11
-Inversion checked, frac. error = 7.456547e-09
-CONGRAD5: time = 2.035493e+00 iters = 224 mflops = 1.391699e+02
-Inversion checked, frac. error = 2.668308e-11
-Inversion checked, frac. error = 7.529653e-09
-CONGRAD5: time = 1.670560e+00 iters = 223 mflops = 1.688145e+02
-Inversion checked, frac. error = 3.128866e-11
+Inversion checked, frac. error = 2.702364e-11
+Inversion checked, frac. error = 7.549970e-09
+Inversion checked, frac. error = 2.642161e-11
+Inversion checked, frac. error = 7.456505e-09
+Inversion checked, frac. error = 2.669440e-11
+Inversion checked, frac. error = 7.533382e-09
+Inversion checked, frac. error = 3.128776e-11
 Inversion checked, frac. error = 8.811969e-09
 STARTPROP
 MASSES:  5.00000e-02   5.00000e-02
@@ -191,31 +184,16 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 7 7.448775e-02 0.000000e+00 9.427907e-01 0.000000e+00
 ENDPROP
 multimass_inverter(): source time = 0
-CONGRAD5: time = 8.451619e-01 iters = 222 mflops = 1.660925e+02
-Inversion checked, frac. error = 3.422810e-11
+Inversion checked, frac. error = 3.422801e-11
 Inversion checked, frac. error = 9.553401e-09
-CONGRAD5: time = 8.522400e-01 iters = 222 mflops = 1.647130e+02
-Inversion checked, frac. error = 3.403516e-11
+Inversion checked, frac. error = 3.403471e-11
 Inversion checked, frac. error = 9.495642e-09
-CONGRAD5: time = 8.662109e-01 iters = 222 mflops = 1.620564e+02
-Inversion checked, frac. error = 3.452148e-11
+Inversion checked, frac. error = 3.452250e-11
 Inversion checked, frac. error = 9.646384e-09
-write_ksprop_info_item: WARNING: keyword header.time_stamp not in table
-write_ksprop_info_item: WARNING: keyword header.dim not in table
-write_ksprop_info_item: WARNING: keyword header.magic_number not in table
-write_ksprop_info_item: WARNING: keyword header.size-of-elment not in table
-write_ksprop_info_item: WARNING: keyword header.elements-per-site not in table
-write_ksprop_info_item: WARNING: keyword header.site-order not in table
-Wrote info file ks.sample.l4448_m0.0500_nt0.info
-Wrote prop file ks.sample.l4448_m0.0500_nt0 time stamp Thu Mar 17 17:10:39 2005
-write_ksprop_info_item: WARNING: keyword header.time_stamp not in table
-write_ksprop_info_item: WARNING: keyword header.dim not in table
-write_ksprop_info_item: WARNING: keyword header.magic_number not in table
-write_ksprop_info_item: WARNING: keyword header.size-of-elment not in table
-write_ksprop_info_item: WARNING: keyword header.elements-per-site not in table
-write_ksprop_info_item: WARNING: keyword header.site-order not in table
-Wrote info file ks.sample.l4448_m0.0200_nt0.info
-Wrote prop file ks.sample.l4448_m0.0200_nt0 time stamp Thu Mar 17 17:10:39 2005
+Wrote info file ks.test.l4448_m0.0500_nt0.info
+Wrote prop file ks.test.l4448_m0.0500_nt0 time stamp Thu Mar 17 20:55:51 2005
+Wrote info file ks.test.l4448_m0.0200_nt0.info
+Wrote prop file ks.test.l4448_m0.0200_nt0 time stamp Thu Mar 17 20:55:51 2005
 STARTPROP
 MASSES:  5.00000e-02   5.00000e-02
 SOURCE: POINT
@@ -257,10 +235,10 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 ENDPROP
 RUNNING COMPLETED
 average cg iters for spectrum = 2.004000e+03
-Time = 1.344249e+01 seconds
+Time = 3.090968e+01 seconds
 total_iters = 3342
 
 
 get_f: EOF on STDIN while expecting beta.
-exit: Thu Mar 17 17:10:39 2005
+exit: Thu Mar 17 20:55:51 2005
 
