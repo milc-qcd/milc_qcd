@@ -1,2 +1,0 @@
-diffn out.test.su3_schr_rmd_ph.tmp out.sample.su3_schr_rmd_ph.tmp 1e-5
-Compared 12 lines with a tolerance of 1e-5

@@ -1,2 +1,0 @@
-diffn out.test.hyb_bicg_clover.tmp out.sample.hyb_bicg_clover.tmp 1e-4
-Compared 418 lines with a tolerance of 1e-4

@@ -1,2 +1,0 @@
-diffn out.test.su3_fp_cl_bi_n.tmp out.sample.su3_fp_cl_bi_n.tmp 1e-5
-Compared 2 lines with a tolerance of 1e-5

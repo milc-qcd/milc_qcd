@@ -1,2 +1,0 @@
-diffn out.test.su3_rmd_bi.tmp out.sample.su3_rmd_bi.tmp 1e-4
-Compared 7 lines with a tolerance of 1e-4

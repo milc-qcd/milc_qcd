@@ -1,5 +1,0 @@
-diffn out.test.su3_hmc.tmp out.sample.su3_hmc.tmp 1e-4
-Field 5 Line 3
-< ACCEPT: delta S = -7.803953e-01
-> ACCEPT: delta S = -7.802390e-01
-Compared 8 lines with a tolerance of 1e-4

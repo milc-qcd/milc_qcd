@@ -1,2 +1,0 @@
-diffn out.test.su3_rmd_spectrum.tmp out.sample.su3_rmd_spectrum.tmp 1e-5
-Compared 64 lines with a tolerance of 1e-5

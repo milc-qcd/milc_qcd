@@ -1,2 +1,0 @@
-diffn out.test.su3_hqp.tmp out.sample.su3_hqp.tmp 1e-5
-Compared 94 lines with a tolerance of 1e-5

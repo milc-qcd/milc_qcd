@@ -1,8 +1,0 @@
-diffn out.test.su3_schr_ora.tmp out.sample.su3_schr_ora.tmp 1e-5
-Field 2 Line 3
-Field 3 Line 3
-Field 5 Line 3
-Field 6 Line 3
-< GMES -1.858245e+00 1.344408e+00 9.990000e+01 1.337048e+00 1.304152e+00
-> GMES -1.855541e+00 1.344365e+00 9.990000e+01 1.337109e+00 1.304207e+00
-Compared 4 lines with a tolerance of 1e-5

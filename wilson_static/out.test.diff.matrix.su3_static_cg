@@ -1,2 +1,0 @@
-diffn out.test.matrix.tmp out.sample.matrix.tmp 1e-5
-Compared 42 lines with a tolerance of 1e-5

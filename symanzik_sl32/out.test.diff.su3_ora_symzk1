@@ -1,2 +1,0 @@
-diffn out.test.su3_ora_symzk1.tmp out.sample.su3_ora_symzk1.tmp 1e-5
-Compared 5 lines with a tolerance of 1e-5
