@@ -187,11 +187,13 @@ void write_appl_ksprop_info(FILE *fp);
 */
 
 ks_prop_file *r_serial_ks_i(char *filename);
-int r_serial_ks(ks_prop_file *kspf, int color, field_offset src);
+int r_serial_ks_to_site(ks_prop_file *kspf, int color, field_offset src);
+int r_serial_ks_to_field(ks_prop_file *kspf, int color, su3_vector *src);
 void r_serial_ks_f(ks_prop_file *kspf);
 
 ks_prop_file *w_serial_ks_i(char *filename);
-void w_serial_ks(ks_prop_file *kspf, int color, field_offset src);
+void w_serial_ks_from_site(ks_prop_file *kspf, int color, field_offset src);
+void w_serial_ks_from_field(ks_prop_file *kspf, int color, su3_vector *src);
 void w_serial_ks_f(ks_prop_file *kspf);
 
 void w_serial_ksprop_tt(char *filename, field_offset prop);
@@ -218,19 +220,28 @@ void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph);
 void write_ks_fmprop_info_file(ks_prop_file *pf);
 ks_prop_file *setup_output_ks_fmprop_file();
 ks_prop_file *w_serial_ks_fm_i(char *filename);
-void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop);
+void w_serial_ks_fm_from_site(ks_prop_file *kspf, field_offset prop);
+void w_serial_ks_fm_from_field(ks_prop_file *kspf, su3_vector *prop);
 void w_serial_ks_fm_f(ks_prop_file *kspf);
 ks_prop_file *r_serial_ks_fm_i(char *filename);
-int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop);
+int r_serial_ks_fm_to_site(ks_prop_file *kspf, field_offset prop);
+int r_serial_ks_fm_to_field(ks_prop_file *kspf, su3_vector *prop);
 void r_serial_ks_fm_f(ks_prop_file *kspf);
 
 /* Prototypes for io_helpers_ks.c */
 
-int reload_serial_ksprop( int flag, int file_type, char *filename, 
+int reload_serial_ksprop_to_site( int flag, int file_type, char *filename, 
 			  field_offset dest, int timing);
-int reload_ksprop( int flag, char *filename, field_offset dest, int timing);
-void save_ksprop( int flag, char *filename, char *recxml, 
+int reload_serial_ksprop_to_field( int flag, int file_type, char *filename, 
+			  su3_vector *dest, int timing);
+int reload_ksprop_to_site( int flag, char *filename, 
+			   field_offset dest, int timing);
+int reload_ksprop_to_field( int flag, char *filename, su3_vector *dest, 
+			    int timing);
+void save_ksprop_from_site( int flag, char *filename, char *recxml, 
 		  field_offset src, int timing);
+void save_ksprop_from_field( int flag, char *filename, char *recxml, 
+		  su3_vector *src, int timing);
 int read_lat_dim_ksprop(char *filename, int file_type, int *ndim, int dims[]);
 
 int ask_starting_ksprop( int prompt, int *flag, char *filename );

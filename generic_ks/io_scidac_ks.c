@@ -14,7 +14,7 @@
    to single precision output */
 /* arg must point to the field_offset of the field */
 
-void vget_F3_V(char *buf, size_t index, int count, void *arg)
+void vget_F3_V_from_site(char *buf, size_t index, int count, void *arg)
 {
   int i,j;
   /* Assume output vector is single precision */
@@ -36,7 +36,7 @@ void vget_F3_V(char *buf, size_t index, int count, void *arg)
    to single precision output */
 /* arg must point to the field_offset of the field */
 
-void vget_F3_V_from_temp(char *buf, size_t index, int count, void *arg)
+void vget_F3_V_from_field(char *buf, size_t index, int count, void *arg)
 {
   int i,j;
   /* Assume output vector is single precision */
@@ -53,7 +53,7 @@ void vget_F3_V_from_temp(char *buf, size_t index, int count, void *arg)
     }
 }
 
-int write_F3_V(QIO_Writer *outfile, char *xml_write_lattice, 
+int write_F3_V_from_site(QIO_Writer *outfile, char *xml_write_lattice, 
 		    field_offset src, int count)
 {
   QIO_String *xml_record_out;
@@ -74,7 +74,7 @@ int write_F3_V(QIO_Writer *outfile, char *xml_write_lattice,
   QIO_string_set(xml_record_out,xml_write_lattice);
 
   /* Write the record for the field */
-  status = QIO_write(outfile, rec_info, xml_record_out, vget_F3_V, 
+  status = QIO_write(outfile, rec_info, xml_record_out, vget_F3_V_from_site, 
 		     count*datum_size, word_size, (void *)&src);
   if(status != QIO_SUCCESS)return 1;
 
@@ -84,7 +84,7 @@ int write_F3_V(QIO_Writer *outfile, char *xml_write_lattice,
   return 0;
 }
 
-int write_F3_V_from_temp(QIO_Writer *outfile, char *xml_write_lattice, 
+int write_F3_V_from_field(QIO_Writer *outfile, char *xml_write_lattice, 
 			 su3_vector *src, int count)
 {
   QIO_String *xml_record_out;
@@ -105,7 +105,7 @@ int write_F3_V_from_temp(QIO_Writer *outfile, char *xml_write_lattice,
   QIO_string_set(xml_record_out,xml_write_lattice);
 
   /* Write the record for the field */
-  status = QIO_write(outfile, rec_info, xml_record_out, vget_F3_V_from_temp, 
+  status = QIO_write(outfile, rec_info, xml_record_out, vget_F3_V_from_field, 
 		     count*datum_size, word_size, (void *)src);
   if(status != QIO_SUCCESS)return 1;
 
@@ -117,7 +117,7 @@ int write_F3_V_from_temp(QIO_Writer *outfile, char *xml_write_lattice,
 
 /* Factory function for moving single precision KS vector from input
    to site structure */
-void vput_F3_V(char *buf, size_t index, int count, void *arg)
+void vput_F3_V_to_site(char *buf, size_t index, int count, void *arg)
 {
   int i,j;
   fsu3_vector *src = (fsu3_vector *)buf;
@@ -136,7 +136,7 @@ void vput_F3_V(char *buf, size_t index, int count, void *arg)
 
 /* Factory function for moving single precision KS vector from input
    to field-major vector */
-void vput_F3_V_to_temp(char *buf, size_t index, int count, void *arg)
+void vput_F3_V_to_field(char *buf, size_t index, int count, void *arg)
 {
   int i,j;
   fsu3_vector *src = (fsu3_vector *)buf;
@@ -153,7 +153,7 @@ void vput_F3_V_to_temp(char *buf, size_t index, int count, void *arg)
 }
 
 /* Read a set of color vectors */
-int read_F3_V(QIO_Reader *infile, field_offset dest, int count)
+int read_F3_V_to_site(QIO_Reader *infile, field_offset dest, int count)
 {
   QIO_String *xml_record_in;
   QIO_RecordInfo rec_info;
@@ -165,7 +165,8 @@ int read_F3_V(QIO_Reader *infile, field_offset dest, int count)
   /* Read the field record */
   xml_record_in = QIO_string_create();
   status = QIO_read(infile, &rec_info, xml_record_in, 
-		    vput_F3_V, count*datum_size, word_size, (void *)&dest);
+		    vput_F3_V_to_site, count*datum_size, 
+		    word_size, (void *)&dest);
   node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in));
   if(status != QIO_SUCCESS)return 1;
 
@@ -178,7 +179,7 @@ int read_F3_V(QIO_Reader *infile, field_offset dest, int count)
 }
 
 /* Read a set of color vectors */
-int read_F3_V_to_temp(QIO_Reader *infile, su3_vector *dest, int count)
+int read_F3_V_to_field(QIO_Reader *infile, su3_vector *dest, int count)
 {
   QIO_String *xml_record_in;
   QIO_RecordInfo rec_info;
@@ -191,7 +192,7 @@ int read_F3_V_to_temp(QIO_Reader *infile, su3_vector *dest, int count)
   /* Read the field record */
   xml_record_in = QIO_string_create();
   status = QIO_read(infile, &rec_info, xml_record_in, 
-		    vput_F3_V_to_temp, count*datum_size, 
+		    vput_F3_V_to_field, count*datum_size, 
 		    word_size, (void *)dest);
   node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in));
   if(status != QIO_SUCCESS)return 1;
@@ -208,8 +209,8 @@ int read_F3_V_to_temp(QIO_Reader *infile, su3_vector *dest, int count)
    structure */
 /* We don't have a MILC format for such a file */
 
-QIO_Writer *save_ks_vector_scidac(char *filename, char *recxml, int volfmt, 
-				  field_offset src, int count)
+QIO_Writer *save_ks_vector_scidac_from_site(char *filename, char *recxml, 
+			  int volfmt,  field_offset src, int count)
 {
   QIO_Layout layout;
   QIO_Writer *outfile;
@@ -230,22 +231,25 @@ QIO_Writer *save_ks_vector_scidac(char *filename, char *recxml, int volfmt,
 
 
   /* Write the lattice field */
-  status = write_F3_V(outfile, recxml, src, count);
+  status = write_F3_V_from_site(outfile, recxml, src, count);
   if(status)terminate(1);
   
   /* Close the file */
   QIO_close_write(outfile);
 
   /* Write information */
-  if(volfmt == QIO_SINGLEFILE)
+  if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved KS vector serially to binary file %s\n",
 		 filename);
-  else if(volfmt == QIO_MULTIFILE)
+  }
+  else if(volfmt == QIO_MULTIFILE){
     node0_printf("Saved KS vector as multifile to binary file %s\n",
 	   filename);
-  else if(volfmt == QIO_PARTFILE)
+  }
+  else if(volfmt == QIO_PARTFILE){
     node0_printf("Saved KS vector in partition format to binary file %s\n",
 	   filename);
+  }
 
   node0_printf("Checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),
@@ -255,7 +259,7 @@ QIO_Writer *save_ks_vector_scidac(char *filename, char *recxml, int volfmt,
   return outfile;
 }
 
-QIO_Writer *save_ks_vector_scidac_from_temp(char *filename, char *recxml, 
+QIO_Writer *save_ks_vector_scidac_from_field(char *filename, char *recxml, 
     int volfmt, su3_vector *src, int count)
 {
   QIO_Layout layout;
@@ -277,22 +281,25 @@ QIO_Writer *save_ks_vector_scidac_from_temp(char *filename, char *recxml,
 
 
   /* Write the lattice field */
-  status = write_F3_V_from_temp(outfile, recxml, src, count);
+  status = write_F3_V_from_field(outfile, recxml, src, count);
   if(status)terminate(1);
   
   /* Close the file */
   QIO_close_write(outfile);
 
   /* Write information */
-  if(volfmt == QIO_SINGLEFILE)
+  if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved KS vector serially to binary file %s\n",
 		 filename);
-  else if(volfmt == QIO_MULTIFILE)
+  }
+  else if(volfmt == QIO_MULTIFILE){
     node0_printf("Saved KS vector as multifile to binary file %s\n",
 	   filename);
-  else if(volfmt == QIO_PARTFILE)
+  }
+  else if(volfmt == QIO_PARTFILE){
     node0_printf("Saved KS vector in partition format to binary file %s\n",
 	   filename);
+  }
 
   node0_printf("Checksums %0x %0x\n",
 	       QIO_get_writer_last_checksuma(outfile),
@@ -304,8 +311,8 @@ QIO_Writer *save_ks_vector_scidac_from_temp(char *filename, char *recxml,
 
 /* Read color vectors in SciDAC format */
 
-QIO_Reader *restore_ks_vector_scidac(char *filename, field_offset dest,
-				     int count){
+QIO_Reader *restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
+					     int count){
   QIO_Layout layout;
   QIO_Reader *infile;
   int status;
@@ -320,7 +327,7 @@ QIO_Reader *restore_ks_vector_scidac(char *filename, field_offset dest,
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one color vector */
-  status = read_F3_V(infile, dest, count);
+  status = read_F3_V_to_site(infile, dest, count);
   if(status)terminate(1);
 
   /* Close the file */
@@ -331,8 +338,8 @@ QIO_Reader *restore_ks_vector_scidac(char *filename, field_offset dest,
 
 /* Read color vectors in SciDAC format */
 
-QIO_Reader *restore_ks_vector_scidac_to_temp(char *filename, 
-			su3_vector *dest, int count){
+QIO_Reader *restore_ks_vector_scidac_to_field(char *filename, 
+			      su3_vector *dest, int count){
   QIO_Layout layout;
   QIO_Reader *infile;
   int status;
@@ -347,7 +354,7 @@ QIO_Reader *restore_ks_vector_scidac_to_temp(char *filename,
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one color vector */
-  status = read_F3_V_to_temp(infile, dest, count);
+  status = read_F3_V_to_field(infile, dest, count);
   if(status)terminate(1);
 
   /* Close the file */

@@ -390,7 +390,8 @@ void write_checksum_ks(int parallel, ks_prop_file *kspf)
    The propagator is passed as 3 su3_vectors, one for each source color 
 */
 
-void w_serial_ks(ks_prop_file *kspf, int color, field_offset src)
+void w_serial_ks(ks_prop_file *kspf, int color, field_offset src_site,
+		 su3_vector *src_field)
 {
   /* kspf  = file descriptor as opened by w_serial_w_i 
      src   = field offset for propagator su3 vector (type su3_vector)  */
@@ -491,7 +492,10 @@ void w_serial_ks(ks_prop_file *kspf, int color, field_offset src)
 	    {
 	      i=node_index(x,y,z,t);
 	      /* Copy or convert from structure to msg */
-	      d2f_vec((su3_vector *)F_PT(&lattice[i],src), &msg.ksv);
+	      if(src_site == (field_offset)(-1))
+		d2f_vec(src_field+3*i+color, &msg.ksv);
+	      else
+		d2f_vec((su3_vector *)F_PT(&lattice[i],src_site), &msg.ksv);
 	    }
 	  else
 	    {
@@ -532,7 +536,10 @@ void w_serial_ks(ks_prop_file *kspf, int color, field_offset src)
 	  if(this_node==currentnode){
 	    i=node_index(x,y,z,t);
 	    /* Copy data into send buffer and send to node 0 with padding */
-	    d2f_vec((su3_vector *)F_PT(&lattice[i],src), &msg.ksv);
+	    if(src_site == (field_offset)(-1))
+	      d2f_vec(src_field+3*i+color, &msg.ksv);
+	    else
+	      d2f_vec((su3_vector *)F_PT(&lattice[i],src_site), &msg.ksv);
 	    send_field((char *)&msg, sizeof(msg),0);
 	  }
 	}
@@ -567,6 +574,29 @@ void w_serial_ks(ks_prop_file *kspf, int color, field_offset src)
 
 } /* w_serial_ks */
 
+/*---------------------------------------------------------------------------*/
+/* Here only node 0 writes propagator to a serial file 
+   The propagator is passed as a single su3_vector in the site structure
+*/
+
+void w_serial_ks_from_site(ks_prop_file *kspf, int color, 
+			   field_offset src_site)
+{
+  w_serial_ks(kspf, color, src_site, NULL);
+}
+/*---------------------------------------------------------------------------*/
+/* Here only node 0 writes propagator to a serial file 
+   The propagator is passed as a single su3_vector in a field.
+   We assume the field is organized with three contiguous su3_vectors
+   per site.  But this call reads the vector for one color at a time.
+   So the values for the ith site are taken from src_field[color + 3*i].
+*/
+
+void w_serial_ks_from_field(ks_prop_file *kspf, int color, 
+			    su3_vector *src_field)
+{
+  w_serial_ks(kspf, color, (field_offset)(-1), src_field);
+}
 /*---------------------------------------------------------------------------*/
 
 void w_serial_ks_f(ks_prop_file *kspf)
@@ -765,7 +795,8 @@ ks_prop_file *r_serial_ks_i(char *filename)
 
 /* Here only node 0 reads the KS propagator from a binary file */
 
-int r_serial_ks(ks_prop_file *kspf, int color, field_offset src)
+int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
+		su3_vector *dest_field)
 {
   /* 0 is normal exit code
      1 for seek, read error, or missing data error */
@@ -968,7 +999,10 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset src)
 	      rank31++; if(rank31 >= 31)rank31 = 0;
 	    }
 	  /* Copy or convert vector from msg to lattice[idest] */
-	  dest = (su3_vector *)F_PT( &(lattice[idest]), src );
+	  if(dest_site == (field_offset)(-1))
+	    dest = dest_field + 3*idest + color;
+	  else
+	    dest = (su3_vector *)F_PT( &(lattice[idest]), dest_site );
 	  f2d_vec(&msg.ksv, dest);
 	}
       else
@@ -1017,6 +1051,29 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset src)
 
 } /* r_serial_ks */
 
+/*----------------------------------------------------------------------*/
+
+/* Node 0 reads the KS propagator from a binary file with result in the
+   site structure*/
+
+int r_serial_ks_to_site(ks_prop_file *kspf, int color, field_offset dest_site)
+{
+  return r_serial_ks(kspf, color, dest_site, NULL);
+}
+/*----------------------------------------------------------------------*/
+
+/* Node 0 reads the KS propagator from a binary file with result in 
+   a field.
+   The propagator is read as a single su3_vector in a field.
+   We assume the field is organized with three contiguous su3_vectors
+   per site.  But this call reads the vector for one color at a time.
+   So the values for the ith site are read to dest_field[color + 3*i]
+ */
+
+int r_serial_ks_to_field(ks_prop_file *kspf, int color, su3_vector *dest_field)
+{
+  return r_serial_ks(kspf, color, (field_offset)(-1), dest_field);
+}
 /*----------------------------------------------------------------------*/
 
 void r_serial_ks_f(ks_prop_file *kspf)

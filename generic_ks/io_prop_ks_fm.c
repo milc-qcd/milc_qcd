@@ -275,10 +275,11 @@ ks_prop_file *w_serial_ks_fm_i(char *filename)
 
 /*---------------------------------------------------------------------------*/
 
-void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
+void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site, 
+		    su3_vector *src_field)
 {
   /* kspf  = file descriptor as opened by w_serial_w_i 
-     prop[3]   = field offset of an array of three su3_vector types  */
+     src_site[3]   = field offset of an array of three su3_vector types  */
 
   FILE *fp;
   ks_prop_header *ksph;
@@ -301,7 +302,6 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
   int currentnode,newnode;
   int x,y,z,t;
   su3_vector *proppt;
-  site *s;
   FILE *info_fp;
 
   if(this_node==0)
@@ -380,15 +380,19 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 	  if(currentnode==0)
 	    {
 	      i=node_index(x,y,z,t);
-          	s = &(lattice[i]);
-          	proppt = (su3_vector *)F_PT(s,prop);
-		/* Convert precision if necessary */
-          	for(a=0; a<3; a++){
-            		for(b=0; b<3; b++){
-              			msg.ksv.e[a][b].real = proppt[a].c[b].real;
-              			msg.ksv.e[a][b].imag = proppt[a].c[b].imag;
-            		}
-	 	}
+
+	      if(src_site != (field_offset)(-1))
+		proppt = src_field + 3*i;
+	      else
+		proppt = (su3_vector *)F_PT(&lattice[i],src_site);
+
+	      /* Convert precision if necessary */
+	      for(a=0; a<3; a++){
+		for(b=0; b<3; b++){
+		  msg.ksv.e[a][b].real = proppt[a].c[b].real;
+		  msg.ksv.e[a][b].imag = proppt[a].c[b].imag;
+		}
+	      }
 	    }
 	  else
 	    {
@@ -429,8 +433,12 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 	  if(this_node==currentnode){
 	    i=node_index(x,y,z,t);
 	    /* Copy data into send buffer and send to node 0 with padding */
-          	s = &(lattice[i]);
-          	proppt = (su3_vector *)F_PT(s,prop);
+
+		if(src_site != (field_offset)(-1))
+		  proppt = src_field + 3*i;
+		else
+		  proppt = (su3_vector *)F_PT(&lattice[i],src_site);
+
 		/* Convert precision here if necessary */
           	for(a=0; a<3; a++){
             		for(b=0; b<3; b++){
@@ -469,6 +477,18 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
   
 } /* w_serial_ks_fm */
 
+/*---------------------------------------------------------------------------*/
+
+void w_serial_ks_fm_from_site(ks_prop_file *kspf, field_offset src_site)
+{
+  w_serial_ks_fm(kspf, src_site, NULL);
+}
+/*---------------------------------------------------------------------------*/
+
+void w_serial_ks_fm_from_field(ks_prop_file *kspf, su3_vector *src_field)
+{
+  w_serial_ks_fm(kspf, (field_offset)(-1), src_field);
+}
 /*---------------------------------------------------------------------------*/
 
 void w_serial_ks_fm_f(ks_prop_file *kspf)
@@ -721,7 +741,8 @@ ks_prop_file *r_serial_ks_fm_i(char *filename)
 
 
 
-int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
+int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site, 
+		   su3_vector *dest_field)
 {
   /* 0 is normal exit code
      1 for seek, read error, or missing data error */
@@ -915,7 +936,12 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 	      rank31++; if(rank31 >= 31)rank31 = 0;
 	    }
 	  /* Now copy to dest, converting to generic precision if needed */
-	  dest = (su3_vector *)F_PT(lattice+i,prop);
+
+	  if(dest_site == (field_offset)(-1))
+	    dest = dest_field + 3*i;
+	  else
+	    dest = (su3_vector *)F_PT(lattice+i,dest_site);
+
 	  for(a=0; a<3; a++)for(b=0;b<3;b++){
 	    dest[a].c[b].real = msg.ksv[a].c[b].real;
 	    dest[a].c[b].imag = msg.ksv[a].c[b].imag;
@@ -976,6 +1002,15 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 
 } /* r_serial_ks_fm */
 
+int r_serial_ks_fm_to_site(ks_prop_file *kspf, field_offset dest_site)
+{
+  return r_serial_ks_fm(kspf, dest_site, NULL);
+}
+
+int r_serial_ks_fm_to_field(ks_prop_file *kspf, su3_vector *dest_field)
+{
+  return r_serial_ks_fm(kspf, (field_offset)(-1), dest_field);
+}
 
 void r_serial_ks_fm_f(ks_prop_file *kspf)
 
