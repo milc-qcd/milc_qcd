@@ -183,11 +183,7 @@ G_KS_ALL_QDP = \
   ks_multicg_qdp.o
 
 G_KS_HEADERS_QDP = \
-  $(QDP)/include/qdp.h \
-  lattice_qdp.h \
-  ../include/generic_qdp.h \
-  ../include/generic_ks_qdp.h \
-  ../generic_ks/generic_ks_includes_qdp.h
+  $(QDP)/include/qdp.h
 
 G_KS_ALL_DEPEND_QDP = \
   ../generic_ks/Make_template_qdp \
