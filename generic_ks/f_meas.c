@@ -20,7 +20,6 @@
 */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
-#include "../include/io_scidac.h"
 
 void f_meas_imp( field_offset phi_off, field_offset xxx_off, Real mass ){
     Real r_psi_bar_psi_even, i_psi_bar_psi_even;
