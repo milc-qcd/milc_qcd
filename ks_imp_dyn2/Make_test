@@ -1,21 +1,17 @@
 # Makefile for testing code by comparing test output with sample output
-# For ks_imp_dyn2
+# For ks_imp_utilities
 
 #------------------------------------------------------------
-# Examples for vanilla tests:
+# Examples:
 
-#    make -f Make_test "ARCH=vanilla" test
+#    make -f Make_test check
 # or, for a specific project or projects
-#    make -f Make_test "ARCH=vanilla" "PROJS=su3_rmd" test
+#    make -f Make_test "PROJS=su3_rmd" check
 
-# For tests on the SP, do the same, but use "ARCH=sp_mpi" with
-# the appropriate MP_PROCS environment variable set.
+# Edit the Makefile for the appropriate architecture and the file
+# ../Make_test_template to select the appropriate LAUNCH.
 
-# For tests on other platforms, first edit the file ../Make_test_template
-# to select the appropriate LAUNCH and ARCH.  Then run
-# commands as above, but without the command line "ARCH=..." definition.
-
-# Results are in the files out.test.diff.* 
+# Results are in the files out.test.diff.*
 #------------------------------------------------------------
 
 # For comparing test output with sample output
@@ -27,6 +23,5 @@ PROJS = \
   su3_rmd_plaq_fat7naik
 
 PATTERNS = WARMUPS RUNNING
-TOL = 3e-5
 
 include ../Make_test_template
