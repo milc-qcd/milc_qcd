@@ -137,10 +137,10 @@ ksprop_to_scidac::
 	"EXTRA_OBJECTS=  ksprop_to_scidac.o io_helpers_ks.o \
 	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o"
 
-wprop_to_scidac::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= wprop_to_scidac" \
+wprop_to_wprop::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= wprop_to_wprop" \
 	"DEFINES= ${DARCH}" \
-	"EXTRA_OBJECTS=  wprop_to_scidac.o io_helpers_w.o \
+	"EXTRA_OBJECTS=  wprop_to_wprop.o io_helpers_w.o \
 	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o"
 
 ckpt1_to_v5::
