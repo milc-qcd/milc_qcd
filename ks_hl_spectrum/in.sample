@@ -1,0 +1,21 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+
+reload_serial ~llevkova/test_data/lattices/gf_milc/l4_8_5.6_m01-Coul.1
+forget
+
+number_of_kappas 1
+
+wilson_prop_file ~llevkova/test_data/wilson_prop/arch_fm/qf_d_d_0.124_00001
+kappa 0.124
+d1 0.09073
+format 1
+
+number_of_smearings 1
+smear_func_file  ~llevkova/test_data/wf_1S
+
+start_ks_prop_file ~llevkova/test_data/stag_prop/fm/qf_stag_d_d_001_m0.1000_nt0
+EOF
