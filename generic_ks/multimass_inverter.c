@@ -181,7 +181,8 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
 	/* Create record XML.  Substitute string until we have XML support */
 	snprintf(recxml,MAX_RECXML,"\nmass %g\nt_source %d\n",masses[j],
 		 t_source);
-	save_ksprop( kssaveflag, kssavefile_tmp, recxml, F_OFFSET(propmat), 0);
+	save_ksprop_from_site( kssaveflag, kssavefile_tmp, recxml, 
+			       F_OFFSET(propmat), 0);
    } /* end loop on j (masses) */
   } /* end loop on t_source */
 

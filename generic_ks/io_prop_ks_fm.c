@@ -72,7 +72,7 @@ void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph)
     sizeof(ksph->gmtime_stamp) + 2*sizeof(int32type) +
     sizeof(ksph->dims) + sizeof(ksph->order);
 
-  printf ( "swrite_ks_fmprop_hdr: sizeof(header) = %d\n", ksph->header_bytes );
+  /*  printf ( "swrite_ks_fmprop_hdr: sizeof(header) = %d\n", ksph->header_bytes ); */
 } /* swrite_ks_fmprop_hdr */
 
 /*------------------------------------------------------------------------*/
@@ -100,7 +100,7 @@ FILE *open_write_ks_fmprop_info_file(ks_prop_file *pf, char *mode)
 	     info_filename);
     }
 
-  printf("Writing info file %s\n",info_filename); 
+  /*  node0_printf("Writing info file %s\n",info_filename);  */
   fflush(stdout);
   return info_fp;
 }
@@ -381,7 +381,7 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
 	    {
 	      i=node_index(x,y,z,t);
 
-	      if(src_site != (field_offset)(-1))
+	      if(src_site == (field_offset)(-1))
 		proppt = src_field + 3*i;
 	      else
 		proppt = (su3_vector *)F_PT(&lattice[i],src_site);
@@ -434,7 +434,7 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
 	    i=node_index(x,y,z,t);
 	    /* Copy data into send buffer and send to node 0 with padding */
 
-		if(src_site != (field_offset)(-1))
+		if(src_site == (field_offset)(-1))
 		  proppt = src_field + 3*i;
 		else
 		  proppt = (su3_vector *)F_PT(&lattice[i],src_site);
@@ -470,7 +470,7 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
   if(this_node==0)
     {
       fclose(info_fp);
-      printf("Wrote KS prop serially to file %s\n", kspf->filename); 
+      /*      printf("Wrote KS prop serially to file %s\n", kspf->filename);  */
       fflush(stdout);
       free(pbuf);
     }
@@ -501,7 +501,7 @@ void w_serial_ks_fm_f(ks_prop_file *kspf)
       if(kspf->parallel == PARALLEL)
 	printf("w_serial_ks_f: Attempting serial close on file opened in parallel \n");
 
-      printf("Wrote prop file %s time stamp %s\n", kspf->filename,
+      printf("Wrote KS prop file %s time stamp %s\n", kspf->filename,
 	     (kspf->header)->time_stamp);
 
       if(kspf->fp != NULL) fclose(kspf->fp);

@@ -109,7 +109,7 @@ if(parity==EVENANDODD)nflop *=2;
 	/* initialization process */
 start:
 #ifdef CG_DEBUG
-	node0_printf("ks_congrad4: start, parity = %d\n",parity);
+	node0_printf("d_congrad5: start, parity = %d\n",parity);
 #endif
         /* ttt <-  (-1)*M_adjoint*M*dest
            resid,cg_p <- src + ttt

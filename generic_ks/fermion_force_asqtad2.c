@@ -290,7 +290,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
 		  u_shift_fermion(P7, P7rho, rho);
 		  side_link_force(rho,sig,SevenSt, Pnumu, P7, Prhonumu, P7rho);
 		  /* Add the P7rho vector to P5 */
-		  coeff = SevenSt/FiveSt ; 
+		  if(FiveSt != 0)coeff = SevenSt/FiveSt ; else coeff = 0;
 		  FORALLSITES(i,s)
 		    scalar_mult_add_su3_vector(&(P5[i]),&(P7rho[i]),coeff,
 					       &(P5[i]));
@@ -301,7 +301,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
 	      side_link_force(nu,sig,-FiveSt,Pmu,P5, 
 			      Pnumu,P5nu) ;
 	      /* Add the P5nu vector to P3 */
-	      coeff = FiveSt/ThreeSt ; 
+	      if(ThreeSt != 0)coeff = FiveSt/ThreeSt ; else coeff = 0;
 	      FORALLSITES(i,s)
 		scalar_mult_add_su3_vector(&(P3[i]),&(P5nu[i]),coeff,&(P3[i]));
 	    }/* nu */
@@ -322,7 +322,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
 	  u_shift_fermion(P5,P5nu, mu);
 	  side_link_force(mu, sig, -Lepage, Pmu, P5, Pnumu, P5nu) ;
 	  /* Add the P5nu vector to P3 */
-	  coeff = Lepage/ThreeSt ; 
+	  if(ThreeSt != 0) coeff = Lepage/ThreeSt ; else coeff = 0;
 	  FORALLSITES(i,s)
 	    scalar_mult_add_su3_vector(&(P3[i]),&(P5nu[i]),coeff,&(P3[i]));
 
@@ -638,8 +638,10 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 					temp_hw[rho]);
 		  side_link_3f_force_pppp(rho,sig,SevenSt,Pnumu,P7,Prhonumu,P7rho);
 		  /* Add the P7rho vector to P5 */
-		  coeff[0] = SevenSt[0]/FiveSt[0];
-		  coeff[1] = SevenSt[1]/FiveSt[1];
+		  if(FiveSt[0] != 0)coeff[0] = SevenSt[0]/FiveSt[0];
+		  else coeff[0] = 0;
+		  if(FiveSt[1] != 0)coeff[1] = SevenSt[1]/FiveSt[1];
+		  else coeff[1] = 0;
 #ifdef FFSTIME
 	time = -dclock();
 #endif
@@ -667,8 +669,10 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 	      u_shift_hw_fermion_np(P5[sig], P5nu, nu, &mt[nu], temp_hw[nu]);
 	      side_link_3f_force_nnpp(nu, sig, mFiveSt, Pmu, P5[sig], Pnumu, P5nu);
 	      /* Add the P5nu vector to P3 */
-	      coeff[0] = FiveSt[0]/ThreeSt[0]; 
-	      coeff[1] = FiveSt[1]/ThreeSt[1]; 
+	      if(ThreeSt[0] != 0)coeff[0] = FiveSt[0]/ThreeSt[0]; 
+	      else coeff[0] = 0;
+	      if(ThreeSt[1] != 0)coeff[1] = FiveSt[1]/ThreeSt[1]; 
+	      else coeff[1] = 0;
 #ifdef FFSTIME
 	time = -dclock();
 #endif
@@ -715,8 +719,10 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 	  u_shift_hw_fermion_pp(P5sig, P5nu, mu, &mt[mu], temp_hw[mu]);
 	  side_link_3f_force_npnp(mu, sig, mLepage, Pmu, P5sig, Pmumu, P5nu);
 	  /* Add the P5nu vector to P3 */
-	  coeff[0] = Lepage[0]/ThreeSt[0];
-	  coeff[1] = Lepage[1]/ThreeSt[1];
+	  if(ThreeSt[0] != 0)coeff[0] = Lepage[0]/ThreeSt[0];
+	  else coeff[0] = 0;
+	  if(ThreeSt[1] != 0)coeff[1] = Lepage[1]/ThreeSt[1];
+	  else coeff[1] = 0;
 #ifdef FFSTIME
 	  time = -dclock();
 #endif
