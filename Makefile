@@ -220,11 +220,10 @@ PRECISION = 2
 # these macros are automatically invoked where available
 
 # See also the libraries Make_SSE_nasm for building non-inline SSE
-# Don't use -DSSE together with Make_SSE_nasm.
-# Some compilers don't like -DSSE with the debugging -g option.
+# Some compilers don't like -DSSE_INLINE with the debugging -g option.
 
 # Choose nothing, C_INLINE or SSE_INLINE, or both
-INLINEOPT = -DC_INLINE -DSSE_INLINE
+INLINEOPT = -DC_INLINE # -DSSE_INLINE
 
 #----------------------------------------------------------------------
 # 14. Other miscellaneous macros you want for all of your compilations

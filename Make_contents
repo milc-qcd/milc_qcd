@@ -3,7 +3,7 @@
 # 8/9/02 C. DeTar
 
 #  Change these names to suit
-VER = 7.0.11-alpha
+VER = 7.0.12-alpha
 NAME_ROOT = milc_qcd-${VER}
 RELEASE_NAME_ROOT = ${NAME_ROOT}_release
 WORK_NAME_ROOT = ${NAME_ROOT}
@@ -205,6 +205,8 @@ WORK_THIS_DIR =         \
  diffn.pl               \
  diffn3.pl              \
  seterrfile.pl          \
+ trainerrfile.pl        \
+ train.sh               \
  headtail.pl            \
  convert_f2d.sh         \
  todo

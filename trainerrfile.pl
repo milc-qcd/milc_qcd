@@ -58,7 +58,7 @@ while($line1 = <FILE1>){
 	$tol = $errs[$i];
 	$diff = abs($_ - $fields2[$i]);
 	# Unless the corresponding errline field is XXX
-	if( (($_ + 1e-08 == 1e-08) && 
+	if( (($fields2[$i] + 1e-08 == 1e-08) && 
 	     ($_ ne $fields2[$i]) && $tol ne "XXX") )
 	{
 	    $errs[$i] = "XXX";

@@ -52,7 +52,7 @@ while($line1 = <FILE1>){
 	$diff = abs($_ - $fields2[$i]);
 	# Nonumeric or zero fields should match exactly
 	# Unless the corresponding errline field is XXX
-	if( (($_ + 1e-08 == 1e-08) && 
+	if( (($fields2[$i] + 1e-08 == 1e-08) &&
 	     ($_ ne $fields2[$i]) && $tol ne "XXX") ||
 	    $diff > $tol )
 	{
