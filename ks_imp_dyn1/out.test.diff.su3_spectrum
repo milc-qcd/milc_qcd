@@ -1,2 +1,0 @@
-diffn out.test.su3_spectrum.tmp out.sample.su3_spectrum.tmp 1e-5
-Compared 1278 lines with a tolerance of 1e-5

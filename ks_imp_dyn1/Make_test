@@ -26,6 +26,8 @@ PROJS = \
   su3_hybrids \
   su3_rmd_plaq_fat7naik
 
+MACROLIST = ""
+
 PATTERNS = WARMUPS RUNNING
 TOL = 1e-5
 
