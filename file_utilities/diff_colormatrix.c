@@ -118,10 +118,10 @@ int main(int argc, char *argv[])
       printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
     }
   
-  volume=nx*ny*nz*nt;
-  
   /* Finish setup - broadcast dimensions */
   setup_refresh();
+  
+  volume=nx*ny*nz*nt;
   
   /* Allocate space for ksprops */
   colormatrix1 = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));

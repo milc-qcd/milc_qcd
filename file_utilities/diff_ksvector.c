@@ -119,10 +119,10 @@ int main(int argc, char *argv[])
       printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
     }
   
-  volume=nx*ny*nz*nt;
-  
   /* Finish setup - broadcast dimensions */
   setup_refresh();
+  
+  volume=nx*ny*nz*nt;
   
   /* Allocate space for ksprops */
   ksvector1 = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
