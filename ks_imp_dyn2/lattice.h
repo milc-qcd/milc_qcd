@@ -20,6 +20,9 @@
 #include "../include/random.h"    /* For double_prn */
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
 
 /* Begin definition of site structure */
 
@@ -195,6 +198,13 @@ EXTERN su3_matrix *t_fatlink;
 #ifdef DM_DU0
 EXTERN su3_matrix *t_dfatlink_du0;
 #endif
+#endif
+
+#ifdef HAVE_QDP
+EXTERN QDP_ColorMatrix **fatlinks, **longlinks, *implinks[8];
+EXTERN QDP_Shift neighbor3[4];
+EXTERN QDP_Shift shiftdirs[8];
+EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];
 #endif
 
 #endif /* _LATTICE_H */

@@ -43,8 +43,10 @@ MY_HEADERS = \
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
 
 MY_OBJECTS= \
+  control.o \
   f_meas.o \
   gauge_info.o \
+  setup.o \
   update.o \
   update_h.o \
   update_u.o
@@ -63,13 +65,13 @@ G_OBJECTS0 = \
   remap_stdio_from_args.o \
   reunitarize2.o
 
-ifdef QCDOC
+ifeq ($(strip ${QCDOC}),true)
   G_OBJECTS1 = ${G_OBJECTS0} ploop2.o
 else
   G_OBJECTS1 = ${G_OBJECTS0} ploop3.o
 endif
 
-ifdef QIO
+ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS = ${G_OBJECTS1} io_scidac.o
 else
   G_OBJECTS = ${G_OBJECTS1}
@@ -96,12 +98,12 @@ SPECTRUM_OBJECTS = \
 
 # Layout
 ifeq ($(strip ${QCDOC}),true)
-  LAYOUT = layout_qcdoc.o      # Required
+  LAYOUT = layout_qcdoc.o # Required
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o      # Required
+    LAYOUT = layout_qdp.o # Required
   else
-    LAYOUT = layout_hyper.o    # Choices possible here
+    LAYOUT = layout_hyper.o # Choices possible here
   endif
 endif
 
@@ -117,17 +119,17 @@ ifeq ($(strip ${QCDOC}),true)
 endif
 
 ifeq ($(strip ${HAVEQDP}),true)
-  QDP_OBJECTS = stuff_qdp.o control_qdp.o setup_qdp.o
+  QDP_OBJECTS = stuff_qdp.o
   INV_FN_OBJECTS = d_congrad5_fn_qdp.o ${DSLASH_FN} dslash_fn_qdp.o 
-  MULTI_INV = ks_multicg_qdp.o
+  MULTI_INV_FN = ks_multicg_qdp.o
 else
-  GEN_OBJECTS = control.o setup.o 
   INV_FN_OBJECTS = d_congrad5_fn.o ${DSLASH_FN}
-  MULTI_INV = ks_multicg.o
+  MULTI_INV_FN = ks_multicg.o
 endif
+MULTI_INV_EO = ks_multicg.o
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
-   ${GEN_OBJECTS} ${SCIDAC_OBJECTS}
+   ${SCIDAC_OBJECTS}
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
   ${ADD_OBJECTS} ${EXTRA_OBJECTS}
@@ -188,23 +190,29 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 # Optional DEFINES for quark number susceptibility
 # -DCHEM_POT
 
-##### Targets:
-#		("FN" = "fat+Naik")
-
-ifdef QCDOC
-  DARCH = -DQCDOC
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
 endif
 
-ifdef HAVEQIO
+ifeq ($(strip ${HAVEQIO}),true)
   DHAVE_QIO = -DHAVE_QIO
 endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
+
+##### Targets:
+#		("FN" = "fat+Naik")
 
 #	-DNPBP_REPS=10" \
 # 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	"DEFINES= -DFN ${DARCH}  \
 	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -212,7 +220,7 @@ su3_rmd::
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	"DEFINES= -DFN ${DARCH}  \
 	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -228,7 +236,7 @@ su3_rmd_susc::
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	"DEFINES= -DFN ${DARCH}  \
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
@@ -239,13 +247,13 @@ su3_hmc::
 
 su3_hybrids::
 	make -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	"DEFINES= -DFN ${DARCH}  \
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
 	-DSPECTRUM -DHYBRIDS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
-	${MULTI_INV} ape_smear.o project_su3_hit.o \
+	${MULTI_INV_FN} ape_smear.o project_su3_hit.o \
 	field_strength.o spectrum_hybrids5.o \
 	${SPECTRUM_OBJECTS}"
 
@@ -253,13 +261,13 @@ su3_hybrids::
 
 su3_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	"DEFINES= -DFN ${DARCH}  \
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
 	-DSPECTRUM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
-	${MULTI_INV} ${SPECTRUM_OBJECTS}"
+	${MULTI_INV_FN} ${SPECTRUM_OBJECTS}"
 
 
 # The following stanzas illustrate how to create targets for alternative
@@ -267,7 +275,7 @@ su3_spectrum::
 
 su3_rmd_eo_symzk1_fat7tad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO ${DARCH} ${DHAVE_QIO} \
+	"DEFINES= -DEO ${DARCH}  \
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
@@ -276,7 +284,7 @@ su3_rmd_eo_symzk1_fat7tad::
 
 su3_rmd_plaq_fat7naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	"DEFINES= -DFN ${DARCH}  \
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
@@ -285,7 +293,7 @@ su3_rmd_plaq_fat7naik::
 
 su3_rmd_symzk1_naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	"DEFINES= -DFN ${DARCH}  \
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = naik_action.h" \
@@ -294,7 +302,7 @@ su3_rmd_symzk1_naik::
 
 su3_rmd_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO ${DARCH} ${DHAVE_QIO} \
+	"DEFINES= -DEO ${DARCH}  \
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \

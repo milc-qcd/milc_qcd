@@ -120,7 +120,7 @@ int qcdhdr_get_int32x(char *s,QCDheader *hdr,u_int32type *q) {
   *q = r;
   return (SUCCESS);
 }
-int qcdhdr_get_Real(char *s, QCDheader *hdr, Real *q) {
+int qcdhdr_get_float(char *s, QCDheader *hdr, Real *q) {
   char *p;
   qcdhdr_get_str(s,hdr,&p);
   if (p==NULL) return (FAILURE);
@@ -1454,7 +1454,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
     {
       /* LIME format suggests a SciDAC file */
       /* We do not read any further here:  Set flag and return */
-      printf("Reading as a SciDAC formatted file\n");
+      printf("%s: Reading as a SciDAC formatted file\n",myname);
       gh->magic_number = LIME_MAGIC_NO;
       return 0;
     }
@@ -1586,6 +1586,7 @@ gauge_file *r_serial_i(char *filename)
   gauge_file *gf;
   FILE *fp;
   int byterevflag;
+  char editfilename[513];
 
   /* All nodes set up a gauge file and gauge header structure for reading */
 
@@ -1597,13 +1598,28 @@ gauge_file *r_serial_i(char *filename)
 
   /* Node 0 alone opens the file and reads the header */
 
+  g_sync();
+
   if(this_node==0)
     {
       fp = fopen(filename, "rb");
       if(fp == NULL)
 	{
+	  /* If this is a partition format SciDAC file the node 0 name
+	     has an extension ".vol0000".  So try again. */
 	  printf("r_serial_i: Node %d can't open file %s, error %d\n",
-		 this_node,filename,errno);fflush(stdout);terminate(1);
+		 this_node,filename,errno);fflush(stdout);
+	  strncpy(editfilename,filename,504);
+	  editfilename[504] = '\0';  /* Just in case of truncation */
+	  strcat(editfilename,".vol0000");
+	  printf("r_serial_i: Trying SciDAC partition volume %s\n",editfilename);
+	  fp = fopen(editfilename, "rb");
+	  if(fp == NULL)
+	    {
+	      printf("r_serial_i: Node %d can't open file %s, error %d\n",
+		     this_node,editfilename,errno);fflush(stdout);terminate(1);
+	    }
+	  printf("r_serial_i: Open succeeded\n");
 	}
       
       gf->fp = fp;
@@ -1622,6 +1638,10 @@ gauge_file *r_serial_i(char *filename)
   /* Node 0 broadcasts the header structure to all nodes */
   
   broadcast_bytes((char *)gh,sizeof(gauge_header));
+
+  /* No further processing here if this is a SciDAC file */
+  if(gh->magic_number == LIME_MAGIC_NO)
+    return gf;
 
   /* Read site list and broadcast to all nodes */
 

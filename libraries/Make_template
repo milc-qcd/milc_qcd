@@ -31,7 +31,7 @@ COMPLEXOBJS = cadd.o cdiv.o ce_itheta.o cexp.o clog.o cmplx.o cmul.o \
 ${COMPLEXOBJS} : ${HEADERS} ${ALLMAKES} ${LASTMAKE}
 
 complex.${PRECISION}.a: ${COMPLEXOBJS}
-	ar rcs $@ ${COMPLEXOBJS}
+	${AR} rcs $@ ${COMPLEXOBJS}
 
 SU3OBJS = addmat.o addvec.o cmp_ahmat.o cs_m_a_vec.o cs_m_a_mat.o cs_m_s_vec.o \
 	cs_m_vec.o det_su3.o clear_mat.o dumpmat.o dumpvec.o clearvec.o \
@@ -68,9 +68,9 @@ gaussrand.o : ../include/random.h
 include ../include/Make_template
 
 su3.${PRECISION}.a::	 ${SU3OBJS}
-	ar rcs $@ ${SU3OBJS}
+	${AR} rcs $@ ${SU3OBJS}
 su3.${PRECISION}.a::	 ${WILSON_OBJS}
-	ar rcs $@ ${WILSON_OBJS}
+	${AR} rcs $@ ${WILSON_OBJS}
 
 
 LIBRARIES = complex.${PRECISION}.a su3.${PRECISION}.a

@@ -73,6 +73,7 @@ CODETYPE         = -DFAST  -DPRECISION=${PRECISION} # usually unchanged
 #----------------------------------------------------------------------
 # 5. Choose archiver to match compiler for the QCDOC
 #AR = powerpc-gnu-elf-ar  # QCDOC nonstandard for now
+AR = ar
 
 #----------------------------------------------------------------------
 # End of user choices.  PLEASE, ALSO, CHECK include/config.h.

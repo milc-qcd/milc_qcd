@@ -28,7 +28,7 @@
 
 int squaresize[4];	/* dimensions of hypercubes */
 int nsquares[4];	/* number of hypercubes in each direction */
-QMP_u32_t *nsquares2;   /* HACK. Use QMP to get machine size */
+int *nsquares2;   /* HACK. Use QMP to get machine size */
 int latdims[4];		/* size of lattice */
 /*int *nsquares;*/
 
