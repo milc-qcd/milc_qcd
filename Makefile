@@ -207,16 +207,24 @@ LIBADD =
 PRECISION = 2
 
 #----------------------------------------------------------------------
-# 13. SSE
+# 13. Inlining choices
 
-# SSE for P3 or P4 or Athlon Thunderbird and compliant compilers
-# -DSSE says we have the SSE package.  It does not do global inlining
-# but it allows selective inlining through explicit inline macro calls.
-# -DSSE_INLINE together with -DSSE gives automatic global inlining.
+# SSE ASM and explicit C inlining is available for some of the library
+# functions.
+
+# Use SSE for P3 or P4 or Athlon Thunderbird and compilers, such
+# as gcc that accept ASM macros
+
+# While both SSE and C inline macros can be invoked by changing
+# the function call to the macro name, with SSE_INLINE or C_INLINE
+# these macros are automatically invoked where available
+
 # See also the libraries Make_SSE_nasm for building non-inline SSE
 # Don't use -DSSE together with Make_SSE_nasm.
+# Some compilers don't like -DSSE with the debugging -g option.
 
-SSEOPT = -DSSE # -DSSE_INLINE
+# Choose nothing, C_INLINE or SSE_INLINE, or both
+INLINEOPT = -DC_INLINE -DSSE_INLINE
 
 #----------------------------------------------------------------------
 # 14. Other miscellaneous macros you want for all of your compilations
@@ -260,7 +268,7 @@ else
 endif
 
 # Complete set of compiler flags - do not change
-CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${SSEOPT} \
+CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 	${PREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DEFINES}
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}

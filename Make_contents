@@ -223,7 +223,8 @@ WORK_LIBRARIES =        \
  libraries/*.t3e        \
  libraries/*.alpha      \
  libraries/Make*        \
- libraries/README*
+ libraries/README*      \
+ libraries/include/*.h
 
 WORK_FILE_UTILITIES =     \
  file_utilities/Make*     \
