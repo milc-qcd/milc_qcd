@@ -3,7 +3,7 @@
 #define IF_OK if(status==0)
 
 
-#include "ks_dyn_includes.h"
+#include "ks_hl_spectrum_includes.h"
 #include <string.h>
 
 /* Each node has a params structure for passing simulation parameters */
@@ -72,7 +72,7 @@ int readin(int prompt)  {
 /* argument "prompt" is 1 if prompts are to be given for input	*/
 
 int status,i;
-float x;
+double x;
 
     /* On node zero, read parameters and send to all other nodes */
     if(this_node==0){
@@ -118,7 +118,9 @@ float x;
 	IF_OK status += get_i(prompt,"number_of_smearings", &par_buf.num_smear );
 	for(i=0;i<par_buf.num_smear;i++)
 	  IF_OK status += get_s(prompt,"smear_func_file", par_buf.smearfile[i]);
-	IF_OK status += get_s(prompt,"start_ks_prop_file", par_buf.start_ks_prop_file);
+	IF_OK status += ask_starting_ksprop (prompt, 
+					     &par_buf.ks_prop_startflag,
+					     par_buf.start_ks_prop_file);
 	if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
     } /* end if(this_node==0) */
 
@@ -147,6 +149,7 @@ float x;
       strcpy(smearfile[i],par_buf.smearfile[i]);
     strcpy(ensemble_id,par_buf.ensemble_id);
     strcpy(start_ks_prop_file, par_buf.start_ks_prop_file); 
+    ks_prop_startflag = par_buf.ks_prop_startflag;
     sequence_number = par_buf.sequence_number;
     num_smear = par_buf.num_smear;
     /* Do whatever is needed to get lattice */

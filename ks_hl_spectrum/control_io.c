@@ -1,6 +1,6 @@
 #define CONTROL
+#include "ks_hl_spectrum_includes.h"
 #include <string.h>
-#include "ks_includes.h"
 
 /* Comment these out if you want to suppress detailed timing */
 /*#define IOTIME*/
@@ -14,7 +14,7 @@ int main(int argc,char *argv[])
   int prompt ,j,i,x,y,z;
   double starttime,endtime,dtime;
   site *s;
-  float space_vol;
+  double space_vol;
 
   int status, num_prop,t,color,spin, color1, spin1;
   int c,sp,c1,s1,pr;

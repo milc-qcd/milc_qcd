@@ -1,6 +1,6 @@
 #define CONTROL
+#include "ks_hl_spectrum_includes.h"
 #include <string.h>
-#include "ks_includes.h"
 
 /* Comment these out if you want to suppress detailed timing */
 /*#define IOTIME*/
@@ -11,7 +11,7 @@ int main(int argc,char *argv[])
   int prompt , k, ns, i;
   double starttime,endtime,dtime;
   site *s;
-  float space_vol;
+  double space_vol;
 
   int status, num_prop,t,color,spin, color1, spin1;
 
@@ -23,7 +23,6 @@ int main(int argc,char *argv[])
   complex pr_tmp; 
   complex *prop_rot[35];
   complex *prop_smear[35];
-  ks_prop_file *spf;
   w_prop_file *fp_in_w;
   wilson_propagator *qdest;
   wilson_propagator qtemp1;
@@ -46,7 +45,7 @@ int main(int argc,char *argv[])
   g_sync();
   prompt = setup(); 
   setup_restrict_fourier(key, restrict);
-  space_vol = (float)(nx*ny*nz);
+  space_vol = (double)(nx*ny*nz);
   while( readin(prompt) == 0){
     
     starttime=dclock();
@@ -67,13 +66,15 @@ int main(int argc,char *argv[])
       }
  
     /**************************************************************/
-    /*load fermi-style staggered propagator*/
+    /*load staggered propagator*/
 
-    spf =  r_serial_ks_fm_i(start_ks_prop_file);
-    status = r_serial_ks_fm(spf, F_OFFSET(stag_propagator.e[0]), F_OFFSET(stag_propagator.e[1]),
-			    F_OFFSET(stag_propagator.e[2]));   
-    r_serial_ks_fm_f(spf);
+    reload_ksprop(ks_prop_startflag, start_ks_prop_file, F_OFFSET(prop), 1);
 
+    FORALLSITES(i,s){
+      for(color = 0; color < 3; color++)for(k = 0; k < 3; k++)
+	  s->stag_propagator.e[color][k] = s->prop[color].c[k];
+    }
+			    
     for(k=0; k<num_kap; k++){
       kappa = kap[k];
       if (format[k])

@@ -1,4 +1,4 @@
-#include "generic_wilson_includes.h"
+#include "ks_hl_spectrum_includes.h"
 
 //V G V+
 void weyl2canopy_w_rot(field_offset src, field_offset dest)

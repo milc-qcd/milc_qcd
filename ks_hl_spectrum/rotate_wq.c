@@ -1,12 +1,12 @@
-#include "generic_wilson_includes.h"
+#include "ks_hl_spectrum_includes.h"
 
 //the rotated quark ends up in the quark_propagator_copy!
 
-void rotate_w_quark(field_offset src, field_offset dest, float d1)
+void rotate_w_quark(field_offset src, field_offset dest, double d1)
 {
   int spin,color,spin1, color1,i;
   site *s;
-  float fconst;
+  double fconst;
   wilson_propagator *qsrc;
   wilson_propagator *qdest;
   wilson_vector qtemp;

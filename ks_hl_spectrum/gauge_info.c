@@ -22,21 +22,8 @@
 
    */
 
-/* Include files */
-#include "../include/config.h"  /* Keep this first */
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "../include/complex.h"
-#include "../include/su3.h"
-#include "../include/macros.h"
-#include "lattice.h"
-#include "../include/comdefs.h"	/* definitions and variables for communications */
-#include "../include/io_lat.h"
-#include "../include/io_wb.h"
-#include "../include/generic.h"
-#include "../include/generic_wilson.h"
-#include "../include/dirs.h"
+#include "ks_hl_spectrum_includes.h"
+
 /*---------------------------------------------------------------------------*/
 /* This routine writes the ASCII info file.  It is called from one of
    the lattice output routines in io_lat4.c.*/
@@ -44,7 +31,7 @@
 void write_appl_gauge_info(FILE *fp)
 {
   char sums[20];
-  float gauge_fix_tol = GAUGE_FIX_TOL;
+  double gauge_fix_tol = GAUGE_FIX_TOL;
 
   /* Note that the file has already been opened and
      the required magic number, time stamp, and lattice
