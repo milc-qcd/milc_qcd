@@ -14,6 +14,12 @@
 #include "../include/file_types.h"
 #include <string.h>
 
+static file_type ksprop_list[N_KSPROP_TYPES] =
+  { {FILE_TYPE_KSPROP,       KSPROP_VERSION_NUMBER},
+    {FILE_TYPE_KSFMPROP,     KSFMPROP_VERSION_NUMBER},
+    {FILE_TYPE_KSQIOPROP,    LIME_MAGIC_NO}
+  };
+
 /*---------------------------------------------------------------*/
 /* reload a propagator in any of the formats, or cold propagator, or keep
    current propagator:
@@ -61,14 +67,12 @@ int reload_ksprop( int flag, char *filename, field_offset dest, int timing)
 	status = r_serial_ks(kspf,color,destc); 
       }
       r_serial_ks_f(kspf);
-      free(kspf);
     }
-    else if(file_type = FILE_TYPE_KSFMPROP){
+    else if(file_type == FILE_TYPE_KSFMPROP){
       node0_printf("Reading as a Fermilab KS prop file\n");
       kspf = r_serial_ks_fm_i(filename);
       r_serial_ks_fm(kspf,dest);
       r_serial_ks_fm_f(kspf);
-      free(kspf);
     }
     else if(file_type == FILE_TYPE_KSQIOPROP){
 #ifdef HAVE_QIO

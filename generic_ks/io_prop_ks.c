@@ -784,7 +784,7 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset src)
 			      plus checksum record */
   int rcv_rank, rcv_coords;
   int destnode;
-  int i,k,x,y,z,t;
+  int k,x,y,z,t;
   int status;
   int buf_length, where_in_buf;
   ks_prop_check test_kspc;
@@ -1590,7 +1590,7 @@ void w_ascii_ksprop_tt( char *filename, field_offset prop)
   char tfilename[256];
   char *tag=".t";
   int currentnode, newnode;
-  int version_number,x,y,z,t;
+  int x,y,z,t;
   register int i,a,b;
   fsu3_matrix pbuf;
   su3_vector *proppt;

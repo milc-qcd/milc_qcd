@@ -51,7 +51,6 @@
 
 void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph)
 {
-  int i;
   int32type size_of_element = sizeof(Real);  /* Real */
   int32type elements_per_site = sizeof(fsu3_matrix)/size_of_element; /* propagator is 3 X 3 complex */
   char myname[] = "swrite_ks_fm_prop_hdr";
@@ -87,7 +86,6 @@ void write_ks_fmprop_info_file(ks_prop_file *pf)
   FILE *info_fp;
   ks_prop_header *ph;
   char info_filename[FILENAME_MAX];
-  char sums[20];
   int32type natural_order = NATURAL_ORDER;
   int32type size_of_element = sizeof(Real);  /* Real */
   int32type elements_per_site = sizeof(fsu3_matrix)/size_of_element; /* propagator is 3 X 3 complex */
@@ -284,12 +282,9 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 
   register int i,j,k,a,b;
   off_t offset;             /* File stream pointer */
-  off_t ks_prop_size;        /* Size of propagator blocks for all nodes */
-  off_t ks_prop_check_size;  /* Size of propagator checksum record */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
-  off_t body_size ;         /* Size of propagator blocks for all nodes 
-			      plus checksum record */
+
   int currentnode,newnode;
   int x,y,z,t;
   su3_vector *proppt;
@@ -310,20 +305,13 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
       fp = kspf->fp;
       ksph = kspf->header;
 
-/* these should no longer be needed
-      ks_prop_size = volume*sizeof(fsu3_vector);
-      ks_prop_check_size = sizeof(kspf->check.color) +
-	sizeof(kspf->check.sum29) + sizeof(kspf->check.sum31);
-      body_size = ks_prop_size + ks_prop_check_size;
-*/
-
       /* No coordinate list was written because fields are to be written
 	 in standard coordinate list order */
       
       coord_list_size = 0;
       head_size = ksph->header_bytes + coord_list_size;
       
-      offset = head_size /*+ body_size*color + ks_prop_check_size*/ ;
+      offset = head_size;
 
       fseek_return=fseeko(fp,offset,SEEK_SET);
       /* printf("w_serial_ks: Node %d fseek_return = %d\n",this_node,fseek_return); */
@@ -710,12 +698,9 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
   int byterevflag,a,b;
 
   off_t offset ;            /* File stream pointer */
-  off_t ks_prop_size;       /* Size of propagator blocks for all nodes */
-  off_t ks_prop_check_size; /* Size of propagator checksum record */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
-  off_t body_size ;         /* Size of propagator blocks for all nodes 
-			      plus checksum record */
+
   int rcv_rank, rcv_coords;
   int destnode;
   int i,k,x,y,z,t;
@@ -745,12 +730,6 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
     {
       if(kspf->parallel == PARALLEL)
 	printf("%s: Attempting serial read from parallel file \n",myname);
-      /*
-	// ks_prop_size = volume*sizeof(su3_vector) ;
-	 //ks_prop_check_size = sizeof(kspf->check.color) +
-	 //sizeof(kspf->check.sum29) + sizeof(kspf->check.sum31);
-	 
-	 //body_size = ks_prop_size + ks_prop_check_size;*/
     }
   broadcast_bytes((char *)&status,sizeof(int));
   if(status != 0) return status;
@@ -762,9 +741,9 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
       else coord_list_size = sizeof(int32type)*volume;
       head_size = ksph->header_bytes + coord_list_size;
      
-      offset = head_size; /*+ body_size*color;*/
+      offset = head_size;
       /**      printf("OFFSET %d\n", offset);**/
-      pbuf = (fsu3_vector *)malloc(MAX_BUF_LENGTH*sizeof(fsu3_vector)*3);
+      pbuf = (fsu3_vector *)malloc(MAX_BUF_LENGTH*3*sizeof(fsu3_vector));
       if(pbuf == NULL)
 	{
 	  printf("%s: Node %d can't malloc pbuf\n",myname,this_node);
@@ -898,7 +877,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 	      rank31++; if(rank31 >= 31)rank31 = 0;
 	    }
 	  /* Now copy to dest, converting to generic precision if needed */
-	  dest = (su3_vector *)F_PT(&lattice[i],prop);
+	  dest = (su3_vector *)F_PT(lattice+i,prop);
 	  for(a=0; a<3; a++)for(b=0;b<3;b++){
 	    dest[a].c[b].real = msg.ksv[a].c[b].real;
 	    dest[a].c[b].imag = msg.ksv[a].c[b].imag;
