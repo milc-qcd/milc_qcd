@@ -88,7 +88,7 @@ endif
 G_KS_OBJECTS = \
   grsource_imp.o \
   mat_invert.o \
-  quark_stuff4.o \
+  quark_stuff5.o \
   rephase.o
 
 SPECTRUM_OBJECTS = \
@@ -125,7 +125,7 @@ ALL_MAKES = Make_template ../generic/Make_template \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
-quark_stuff.o: quark_action.h 
+quark_stuff5.o: quark_action.h 
 gauge_stuff.o: gauge_action.h 
 gauge_info.o:  quark_action.h
 

@@ -14,7 +14,7 @@ COMMTYPE = VANILLA
 #----------------------------------------------------------------------
 # 1. Compiler
 CC               = gcc   # ( cc89 gcc xlc gcc pgcc cl g++ )
-CC = ${GCC_DIR}/bin/gcc
+#CC = ${GCC_DIR}/bin/gcc
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
 OPT              = -O3 -Wall # ( -g -O, etc )
@@ -24,7 +24,7 @@ OPT              = -O3 -Wall # ( -g -O, etc )
 #-------------- Gnu C -------------------------------------
 #OCFLAGS =                # ( -Wall, etc )
 #OCFLAGS =  -fexpensive-optimizations  -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
-OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
+#OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
 #OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
 #OCFLAGS =  -march=pentium4 -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/24/04
 #-------------- Intel icc -----------------------------------
