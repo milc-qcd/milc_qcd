@@ -9,17 +9,21 @@
 # 1.  Copy the Makefile to the application directory and edit it
 #     for the options and architecture you desire
 # 2.  Select the appropriate job launch command below by uncommenting
-#     the appropriate set.
+#     the appropriate set or creating one.
 # 3.  Go to the application directory
-# 4.  There should already be sample output files constructed from
+# 4.  There should already be sample input and output files constructed from
 #     code that you trust and the corresponding error tolerance files.
-#     If not, see instructions in seterrfile.pl for creating
-#     the error tolerance file.
+#     The sample files are called in.sample.TARGET out.sample.TARGET
+#     and out.errtol.TARGET where TARGET is built from "make TARGET".
+#     The test output file is called out.test.TARGET.
+#     To create an error tolerance file, see instructions in seterrfile.pl.
 # 5.  In the application directory, run the command
-#        make -f Make_test test
+#        make -f Make_test check > & maketest.log
 # 6.  Results are reported in files called out.test.diff.*
 #     These files show differences between the sample and test output files.
 #     using the error tolerance file to determine compliance.
+#     Results are also reported to stderr so should appear in maketest.log
+#     Look for lines with "Error" and "NOT OK".
 # 6.  The variable CUSTOM is normally undefined in the master
 #     Make_test file.  With this choice the test consists of comparing
 #     stdout from a test run with the corresponding sample output file.

@@ -1,6 +1,16 @@
-November 28, 2004
+March 28, 2005
 
 List of code projects to be done:
+
+Rename dslash to dslash_site throughout and dslash_on_temp to dslash_field etc.
+
+Standardize lattice I/O.
+
+Fold in Beat Jegerlehner's multimass clover inverter
+
+Add FNAL clover propagator creation
+
+Build FNAL-compatible form factor code.
 
 Throughout:
   Continue moving toward field-major layout.
@@ -15,7 +25,3 @@ a few places.
 Measure momentum dependence of correlators in clover_invert and
 wilson_invert.
 
-
-Unfix the Make_template files.
-
-Merge the QDP variants, using ifdefs.

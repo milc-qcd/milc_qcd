@@ -36,11 +36,12 @@ $difflines = 0;
 	{
 	    die "Premature end of file on $file2\n";
 	}
+	chop($line2);
 	if(!($errline = <ERR>))
 	{
 	    die "Premature end of file on $errfile\n";
 	}
-	chop($line2);
+	chop($errline);
 	@fields1 = split(/[ \t\n]+/,$line1);
 	@fields2 = split(/[ \t\n]+/,$line2);
 	@errs = split(/[ \t\n]+/,$errline);
@@ -52,14 +53,13 @@ $difflines = 0;
 	    $diff = abs($_ - $fields2[$i]);
 	    # Nonumeric or zero fields should match exactly
 	    # Unless the corresponding errline field is XXX
-	    if( (($_ + .001 == .001) && 
+	    if( (($_ + 1e-08 == 1e-08) && 
 		 ($_ ne $fields2[$i]) && $tol ne "XXX") ||
 		$diff > $tol )
 	    {
 		$same = 0;
-		break;
 		$field = $i+1; $line = $lines+1;
-		print "Field $field Line $line\n";
+		print "Field $field Line $line diff $diff > tol $tol\n";
 	    }
 	    $i++;
 	}

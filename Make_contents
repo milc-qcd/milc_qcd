@@ -203,6 +203,8 @@ WORK_THIS_DIR =         \
  README_RELEASE_NOTES   \
  cc.pl                  \
  diffn.pl               \
+ diffn3.pl              \
+ seterrfile.pl          \
  headtail.pl            \
  convert_f2d.sh         \
  todo
@@ -226,7 +228,10 @@ WORK_LIBRARIES =        \
 WORK_FILE_UTILITIES =     \
  file_utilities/Make*     \
  file_utilities/*.c       \
- file_utilities/*.h
+ file_utilities/*.h       \
+ file_utilities/in.sample.* \
+ file_utilities/out.errtol.* \
+ file_utilities/out.sample.*
 
 WORK_BINARY_SAMPLES =      \
  binary_samples/colormatrix.*sample* \
@@ -416,7 +421,9 @@ WORK_KS_IMP_UTILITIES =           \
  ks_imp_utilities/*.c             \
  ks_imp_utilities/*.h             \
  ks_imp_utilities/Make*           \
- ks_imp_utilities/in.sample*
+ ks_imp_utilities/in.sample*      \
+ ks_imp_utilities/out.errtol*     \
+ ks_imp_utilities/out.sample*
 
 WORK_KS_IMP_INVERT_MULTI =           \
  ks_imp_invert_multi/*.c             \

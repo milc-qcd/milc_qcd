@@ -1,7 +1,7 @@
 # Make file for exercising Make_test in all of the applications 
 # in the working version of the code.
 
-# (You probably don't need to be so thorough.)
+# You probably don't need to be so thorough.
 # You can also just run Make_test for one application
 # See the instructions in Make_test_template for testing your
 # favorite application.
@@ -29,6 +29,7 @@ DIRS = \
   ks_hl_spectrum \
   ks_imp_dyn2 \
   ks_imp_invert_multi \
+  ks_imp_utilities \
   propagating_form_factor \
   pure_gauge \
   schroed_cl_inv \
@@ -44,5 +45,13 @@ DIRS = \
 all:
 	for dir in ${DIRS};\
 	do\
-	    (echo "Testing $$dir"; cd $$dir; ${MAKE} -kf Make_test test > maketest.log 2>&1 )\
+	    (echo "Testing $$dir"; cd $$dir; ${MAKE} -kf Make_test check > maketest.log 2>&1 )\
 	done
+
+clean:
+	for dir in ${DIRS};\
+	do\
+	    cd $$dir; \
+	    ${MAKE} -f Make_test clean;\
+	done
+
