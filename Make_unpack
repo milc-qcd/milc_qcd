@@ -142,6 +142,7 @@ ks_eigen \
 ks_imp_dyn1 \
 ks_imp_dyn2 \
 ks_imp_utilities \
+ks_imp_invert_multi \
 string_break \
 : ${WORK_KS_TAR}
 	tar -xf ${WORK_KS_TAR} $@
