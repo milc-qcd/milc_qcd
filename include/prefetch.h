@@ -21,7 +21,7 @@
 
 #else
 
-#if defined NOPREFETCH
+#if ! defined PREFETCH
 
 /***************************************************************************/
 /*              Ignore Cache Manipulation Macros                           */

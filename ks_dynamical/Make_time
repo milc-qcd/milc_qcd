@@ -37,7 +37,7 @@ include ../Make_time_template
 
 ######################################################################
 # SUN SPARC Ultra 30 Make_vanilla
-#   gcc -O3 -DINLINE -DNOPREFETCH (libraries and application)
+#   gcc -O3 -DINLINE (libraries and application)
 #      8^4 lattice
 #      CGTIME mflops = 67
 #
@@ -45,7 +45,7 @@ include ../Make_time_template
 ######################################################################
 # SUN Sunfire Solaris 8 C compiler Make_vanilla
 #   cc -O5  -fast -dalign -libmil -fsimple=2 -fns -DFAST (libraries)
-#   cc -O5  -fast -dalign -libmil -fsimple=2 -fns -DINLINE -DNOPREFETCH (application)
+#   cc -O5  -fast -dalign -libmil -fsimple=2 -fns -DINLINE (application)
 #      8^4 lattice
 #      CGTIME mflops = 348
 #
@@ -55,10 +55,10 @@ include ../Make_time_template
 # Compaq Alphaserver Cluster (lemieux) 1:4 nodes
 # Compilation A:
 #  cc -O -float -arch=ev68 -DFAST (libraries)
-#  cc -O -float -arch=ev68 -DINLINE  -DNOPREFETCH (application)
+#  cc -O -float -arch=ev68 -DINLINE  (application)
 # Compilation B:
 #  cc -O4  -fast -float -ev68 -DFAST (libraries)
-	#  cc -O4  -fast -float -ev68 -DINLINE -DNOPREFETCH (application)
+	#  cc -O4  -fast -float -ev68 -DINLINE (application)
 #
 #      8^4 lattice
 #
@@ -71,10 +71,10 @@ include ../Make_time_template
 # 2 GHz AMD / Myrinet 2:4 nodes
 # Compilation A: Make_vanilla libraries
 #  gcc -O  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586 (libraries) -DFAST
-#  gcc -O  -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 -DINLINE -DSSE -DSSE_INLINE  -DNOPREFETCH (application)
+#  gcc -O  -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 -DINLINE -DSSE -DSSE_INLINE  (application)
 # Compilation B: Make_SSE_nasm libraries
 #  gcc -O  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586 (libraries) -DFAST
-#  gcc -O  -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 -DINLINE -DNOPREFETCH (application)
+#  gcc -O  -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 -DINLINE (application)
 #  
 #
 #      8^4 lattice
@@ -88,12 +88,12 @@ include ../Make_time_template
 # 1.6 GHz UMich AMD / Myrinet 4:4 nodes
 # Compilation A: Make_vanilla libraries
 #  pgcc -O3 -DFAST -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 (libraries)
-#  pgcc -O3 -DFAST -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 -DINLINE -DNOPREFETCH (application)
+#  pgcc -O3 -DFAST -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 -DINLINE (application)
 #  pgcc -O3 -DFAST -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 (libraries)
-#  pgcc -O3 -DNOPREFETCH -DINLINE -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 -DINLINE (application)
+#  pgcc -O3 -DINLINE -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 -DINLINE (application)
 # Compilation B: (with prefetching OFF)
 #  gcc -O -DFAST -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=athlon
-#  gcc -O -DNOPREFETCH -DINLINE -DP4 -DSSE -DSSE_INLINE -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=athlon
+#  gcc -O -DINLINE -DP4 -DSSE -DSSE_INLINE -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=athlon
 # Compilation C: (with prefetching ON)
 #  gcc -O -DFAST -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=athlon
 #  gcc -O -DINLINE -DP4 -DSSE -DSSE_INLINE -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=athlon
@@ -110,10 +110,10 @@ include ../Make_time_template
 # Compilation A: 
 #  config.h NATIVEDOUBLE
 #  xlc -O3 -Q=500 -qmaxmem=-1 -DFAST (Make_RS6K libraries)
-#  mpcc(xlc) -O3  -qarch=pwr3 -qtune=pwr3 -Q=500 -qmaxmem=-1 -bmaxdata:0x40000000 -bmaxstack:0x8000000 -DINLINE  -DNOPREFETCH (application)
+#  mpcc(xlc) -O3  -qarch=pwr3 -qtune=pwr3 -Q=500 -qmaxmem=-1 -bmaxdata:0x40000000 -bmaxstack:0x8000000 -DINLINE  (application)
 # Compilation B: 
 #  xlc -O3 -Q=500 -qarch=pwr3 -qtune=pwr3 -qmaxmem=-1 -DFAST (Make_RS6K libraries)
-#  mpcc(xlc) -O3  -qarch=pwr3 -qtune=pwr3 -Q=500 -qmaxmem=-1 -bmaxdata:0x40000000 -bmaxstack:0x8000000 -DINLINE  -DNOPREFETCH (application)
+#  mpcc(xlc) -O3  -qarch=pwr3 -qtune=pwr3 -Q=500 -qmaxmem=-1 -bmaxdata:0x40000000 -bmaxstack:0x8000000 -DINLINE  (application)
 #
 #  
 #
