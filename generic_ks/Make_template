@@ -15,10 +15,14 @@ G_KS_ALL = \
   d_congrad5_eo.o \
   d_congrad5_fn.o \
   d_congrad_ks.o \
+  dslash_eo.o \
   dslash_fn.o \
   dslash_fn_multi.o \
   dslash_fn2.o \
   eigen_stuff.o \
+  fermion_force_asqtad.o \
+  fermion_force_asqtad2.o \
+  fermion_force_asqtad_qdp.o \
   flavor_ops.o \
   f_meas.o \
   fpi_2.o \
@@ -38,6 +42,8 @@ G_KS_ALL = \
   nl_spectrum.o \
   quark_stuff.o \
   quark_stuff4.o \
+  quark_stuff5.o \
+  quark_stuff6.o \
   smear_links.o \
   spectrum.o \
   spectrum2.o \
@@ -86,6 +92,8 @@ d_congrad5_fn.o: ../generic_ks/d_congrad5_fn.c
 	${CC} -c ${CFLAGS}  ../generic_ks/d_congrad5_fn.c
 d_congrad_ks.o: ../generic_ks/d_congrad_ks.c
 	${CC} -c ${CFLAGS}  ../generic_ks/d_congrad_ks.c
+dslash_eo.o: ../generic_ks/dslash_eo.c
+	${CC} -c ${CFLAGS}  ../generic_ks/dslash_eo.c
 dslash_fn.o: ../generic_ks/dslash_fn.c
 	${CC} -c ${CFLAGS}  ../generic_ks/dslash_fn.c
 dslash_fn_multi.o: ../generic_ks/dslash_fn_multi.c
@@ -94,6 +102,14 @@ dslash_fn2.o: ../generic_ks/dslash_fn2.c
 	${CC} -c ${CFLAGS}  ../generic_ks/dslash_fn2.c
 eigen_stuff.o: ../generic_ks/eigen_stuff.c
 	${CC} -c ${CFLAGS}  ../generic_ks/eigen_stuff.c
+fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
+	${CC} -c ${CFLAGS}  ../generic_ks/fermion_force_asqtad.c
+fermion_force_asqtad2.o: ../generic_ks/fermion_force_asqtad2.c
+	${CC} -c ${CFLAGS}  ../generic_ks/fermion_force_asqtad2.c
+fermion_force_asqtad_qdp.o: ../generic_ks/fermion_force_asqtad_qdp.c
+	${CC} -c ${CFLAGS}  ../generic_ks/fermion_force_asqtad_qdp.c
+fermion_force_general.o: ../generic_ks/fermion_force_general.c
+	${CC} -c ${CFLAGS}  ../generic_ks/fermion_force_general.c
 f_meas.o: ../generic_ks/f_meas.c
 	${CC} -c ${CFLAGS}  ../generic_ks/f_meas.c
 fpi_2.o: ../generic_ks/fpi_2.c
@@ -134,6 +150,10 @@ quark_stuff.o: ../generic_ks/quark_stuff.c
 	${CC} -c ${CFLAGS}  ../generic_ks/quark_stuff.c
 quark_stuff4.o: ../generic_ks/quark_stuff4.c
 	${CC} -c ${CFLAGS}  ../generic_ks/quark_stuff4.c
+quark_stuff5.o: ../generic_ks/quark_stuff5.c
+	${CC} -c ${CFLAGS}  ../generic_ks/quark_stuff5.c
+quark_stuff6.o: ../generic_ks/quark_stuff6.c
+	${CC} -c ${CFLAGS}  ../generic_ks/quark_stuff6.c
 rephase.o: ../generic_ks/rephase.c
 	${CC} -c ${CFLAGS}  ../generic_ks/rephase.c
 smear_links.o: ../generic_ks/smear_links.c
