@@ -190,10 +190,8 @@ Inversion checked, frac. error = 3.403471e-11
 Inversion checked, frac. error = 9.495642e-09
 Inversion checked, frac. error = 3.452250e-11
 Inversion checked, frac. error = 9.646384e-09
-Wrote info file ks.test.l4448_m0.0500_nt0.info
-Wrote prop file ks.test.l4448_m0.0500_nt0 time stamp Thu Mar 17 20:55:51 2005
-Wrote info file ks.test.l4448_m0.0200_nt0.info
-Wrote prop file ks.test.l4448_m0.0200_nt0 time stamp Thu Mar 17 20:55:51 2005
+Wrote KS prop file ks.test.l4448_m0.0500_nt0 time stamp Thu Mar 17 20:55:51 2005
+Wrote KS prop file ks.test.l4448_m0.0200_nt0 time stamp Thu Mar 17 20:55:51 2005
 STARTPROP
 MASSES:  5.00000e-02   5.00000e-02
 SOURCE: POINT

@@ -100,21 +100,7 @@ Inversion checked, frac. error = 1.821072e-11
 Inversion checked, frac. error = 8.263186e-09
 Inversion checked, frac. error = 2.105346e-11
 Inversion checked, frac. error = 9.409621e-09
-write_ksprop_info_item: WARNING: keyword header.time_stamp not in table
-write_ksprop_info_item: WARNING: keyword header.dim not in table
-write_ksprop_info_item: WARNING: keyword header.magic_number not in table
-write_ksprop_info_item: WARNING: keyword header.size-of-elment not in table
-write_ksprop_info_item: WARNING: keyword header.elements-per-site not in table
-write_ksprop_info_item: WARNING: keyword header.site-order not in table
-Wrote info file ks.test.l4448_m0.0500_nt0.info
 Wrote prop file ks.test.l4448_m0.0500_nt0 time stamp Thu Mar 17 20:28:42 2005
-write_ksprop_info_item: WARNING: keyword header.time_stamp not in table
-write_ksprop_info_item: WARNING: keyword header.dim not in table
-write_ksprop_info_item: WARNING: keyword header.magic_number not in table
-write_ksprop_info_item: WARNING: keyword header.size-of-elment not in table
-write_ksprop_info_item: WARNING: keyword header.elements-per-site not in table
-write_ksprop_info_item: WARNING: keyword header.site-order not in table
-Wrote info file ks.test.l4448_m0.0200_nt0.info
 Wrote prop file ks.test.l4448_m0.0200_nt0 time stamp Thu Mar 17 20:28:42 2005
 STARTPROP
 MASSES:  5.00000e-02   5.00000e-02
