@@ -7,6 +7,17 @@
 
 #include "generic_includes.h"
 #include "../include/io_lat.h"
+#include "../include/file_types.h"
+
+static file_type gauge_list[N_GAUGE_TYPES] =
+  { {FILE_TYPE_GAUGE_V1,      GAUGE_VERSION_NUMBER_V1},
+    {FILE_TYPE_GAUGE_V5,      GAUGE_VERSION_NUMBER},
+    {FILE_TYPE_GAUGE_1996,    GAUGE_VERSION_NUMBER_1996},
+    {FILE_TYPE_GAUGE_FNAL,    GAUGE_VERSION_NUMBER_FNAL},
+    {FILE_TYPE_GAUGE_ARCHIVE, GAUGE_VERSION_NUMBER_ARCHIVE},
+    {FILE_TYPE_GAUGE_SCIDAC,  LIME_MAGIC_NO}
+  };
+
 
 
 /* save a lattice in any of the formats:

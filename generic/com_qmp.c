@@ -1493,14 +1493,22 @@ prepare_gather(msg_tag *mtag)
   }
 #endif
 
-  mtag->mhrecvlist = (QMP_msghandle_t *)malloc(mtag->nrecvs*sizeof(QMP_msghandle_t));
+  if( mtag->nrecvs == 0 )
+    mtag->mhrecvlist = NULL;
+  else{
+    mtag->mhrecvlist = (QMP_msghandle_t *)malloc(mtag->nrecvs*sizeof(QMP_msghandle_t));
+    if(mtag->mhrecvlist == NULL){
+      printf("NO ROOM for mrecv, node %d\n", mynode());
+      terminate(1);
+    }
+  }
   mrecv = mtag->recv_msgs;
   /* for each node which has neighbors of my sites */
   for(i=0; i<mtag->nrecvs; ++i) {
     mrecv[i].qmp_mem =
       QMP_allocate_aligned_memory( mrecv[i].msg_size, mem_align, mem_flags );
     if(mrecv[i].qmp_mem==NULL) {
-      printf("NO ROOM for msg_buf, node %d\n", mynode());
+      printf("NO ROOM for mrecv, node %d\n", mynode());
       terminate(1);
     }
     tpt = (char *) QMP_get_memory_pointer(mrecv[i].qmp_mem);
@@ -1522,7 +1530,15 @@ prepare_gather(msg_tag *mtag)
     mtag->mhrecv = QMP_declare_multiple( mtag->mhrecvlist, mtag->nrecvs );
   }
 
-  mtag->mhsendlist = (QMP_msghandle_t *)malloc(mtag->nsends*sizeof(QMP_msghandle_t));
+  if(mtag->nsends == 0)
+    mtag->mhsendlist = NULL;
+  else{
+    mtag->mhsendlist = (QMP_msghandle_t *)malloc(mtag->nsends*sizeof(QMP_msghandle_t));
+    if(mtag->mhsendlist == NULL){
+      printf("NO ROOM for msend, node %d\n", mynode());
+      terminate(1);
+    }
+  }
   msend = mtag->send_msgs;
   /* for each node whose neighbors I have */
   for(i=0; i<mtag->nsends; ++i) {
