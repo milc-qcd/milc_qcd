@@ -269,6 +269,7 @@ int write_w_prop_info_item( FILE *fpout,    /* ascii file pointer */
 
   int i,k,n;
   char *data;
+  Real tt;
 
   /* Check for valid keyword */
 
@@ -1980,6 +1981,7 @@ void w_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	      send = (wilson_vector *)F_PT( &(lattice[i]), src );
 	      /* Copy from site structure to msg structure, converting
 		 to single precision */
+
 	      d2f_wvec(send,&msg.wv);
 	      /* Then send the message */
 	      send_field((char *)&msg,sizeof(msg),destnode);
@@ -2343,7 +2345,7 @@ int r_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
   int rcv_rank,rcv_coords;
   register int i,k;
   int status;
-  float xstatus;
+  Real xstatus;
 
   off_t offset ;            /* File stream pointer */
   off_t w_prop_node_size;   /* Size of a propagator block for all sites on
@@ -3312,7 +3314,7 @@ w_prop_file *r_multidump_w_i(char *filename)
 
 /*----------------------------------------------------------------------*/
 
-* Read Wilson propagator from a separate multidump file for each node */
+/* Read Wilson propagator from a separate multidump file for each node */
 /* Spin, color combinations must be read in the same order as written */
 /* WARNING: The file is assumed to have been written in the same
    precision as read.  */
@@ -3339,7 +3341,7 @@ int r_multidump_w(w_prop_file *wpf, int spin, int color, field_offset src)
   register int i,k;
   register site *s;
   int status;
-  float xstatus;
+  Real xstatus;
 
   char myname[] = "r_multidump_w";
 

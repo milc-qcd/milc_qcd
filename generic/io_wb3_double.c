@@ -2342,7 +2342,7 @@ int r_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
   int rcv_rank,rcv_coords;
   register int i,k;
   int status;
-  float xstatus;
+  Real xstatus;
 
   off_t offset ;            /* File stream pointer */
   off_t w_prop_node_size;   /* Size of a propagator block for all sites on

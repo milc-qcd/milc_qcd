@@ -315,7 +315,7 @@ node0_printf("WARNING: THIS CODE IS NOT TESTED\n"); exit(0);
 #ifdef GFTIME
 dtime+=dclock();
 node0_printf("GFTIME:   time = %e (Symanzik1) mflops = %e\n",dtime,
-	     nflop*volume/(1e6*dtime*numnodes()) );
+	     nflop*(double)volume/(1e6*dtime*numnodes()) );
 #endif
 } /* imp_gauge_force.c */
 

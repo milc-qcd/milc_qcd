@@ -98,12 +98,13 @@ gauge_file *save_lattice( int flag, char *filename){
     FRESH, CONTINUE,
     RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL
 */
+void coldlat();
+
 gauge_file *reload_lattice( int flag, char *filename){
     double dtime;
     gauge_file *gf;
     double ssplaq, stplaq;
     Real max_deviation;
-    void coldlat();
 
     dtime = -dclock();
     switch(flag){
@@ -157,6 +158,10 @@ int ask_starting_lattice( int prompt, int *flag, char *filename ){
     if (prompt!=0) printf(
         "enter 'continue', 'fresh', 'reload_ascii', 'reload_serial', or 'reload_parallel'\n");
     status=scanf("%s",savebuf);
+    if (status == EOF){
+      printf("ask_starting_lattice: EOF on STDIN.\n");
+      return(1);
+    }
     if(status !=1) {
         printf("\nask_starting_lattice: ERROR IN INPUT: starting lattice command \"%s\" is invalid\n",savebuf);
         return(1);
@@ -326,7 +331,7 @@ void funnylat()  {
 }
 
 
-/* get_f is used to get a Realing point number.  If prompt is non-zero,
+/* get_f is used to get a floating point number.  If prompt is non-zero,
 it will prompt for the input value with the variable_name_string.  If
 prompt is zero, it will require that variable_name_string precede the
 input value.  get_i gets an integer.
@@ -355,8 +360,7 @@ int get_f( int prompt, char *variable_name_string, Real *value ){
     else  {
       s = scanf("%s",checkname);
       if (s == EOF){
-	printf("get_f: EOF on STDIN while expecting %s.\n",
-	       variable_name_string);
+	printf("get_f: EOF on STDIN.\n");
 	return(1);
       }
       else if(s==0){
@@ -411,8 +415,7 @@ int get_i( int prompt, char *variable_name_string, int *value ){
     else  {
       s = scanf("%s",checkname);
       if (s == EOF){
-	printf("get_i: EOF on STDIN while expecting %s.\n",
-	       variable_name_string);
+	printf("get_i: EOF on STDIN.\n");
 	return(1);
       }
       else if(s==0){
@@ -465,8 +468,7 @@ int get_s( int prompt, char *variable_name_string, char *value ){
     else  {
       s = scanf("%s",checkname);
       if (s == EOF){
-	printf("get_s: EOF on STDIN while expecting %s.\n",
-	       variable_name_string);
+	printf("get_s: EOF on STDIN.\n");
 	return(1);
       }
       else if(s==0){
