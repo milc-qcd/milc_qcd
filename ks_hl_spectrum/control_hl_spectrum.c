@@ -62,7 +62,8 @@ int main(int argc,char *argv[])
     /**************************************************************/
     /*load staggered propagator*/
     
-    reload_ksprop(ks_prop_startflag, start_ks_prop_file, F_OFFSET(prop), 1);
+    reload_ksprop_to_site(ks_prop_startflag, 
+			  start_ks_prop_file, F_OFFSET(prop), 1);
     
     FORALLSITES(i,s){
       for(color = 0; color < 3; color++)for(k = 0; k < 3; k++)
