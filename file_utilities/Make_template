@@ -34,9 +34,6 @@ MY_HEADERS = \
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
 
-# Choose one of the lattice layout algorithms:
-LAYOUT = layout_hyper
-
 MY_OBJECTS= \
   gauge_info.o
 
@@ -64,7 +61,7 @@ else
   ifeq ($(strip ${HAVEQDP}),true)
     LAYOUT = layout_qdp.o # Required
   else
-    LAYOUT = layout_hyper.o # Choices possible here
+    LAYOUT = layout_hyper_prime.o # Choices possible here
   endif
 endif
 

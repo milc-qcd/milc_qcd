@@ -147,14 +147,25 @@ int main(int argc, char *argv[])
   int dims[4],ndim;
   int prompt;
   wilson_propagator *wprop;
+  int status;
 
   initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
 
-  if(get_prompt(&prompt) != 0)
-    return 0;
+  if(this_node == 0){
+    if(get_prompt(&prompt) != 0) par_buf.stopflag = 1;
+    else par_buf.stopflag = 0;
+  }
+  
+  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+  
+  if( par_buf.stopflag != 0 )
+    normal_exit(0);
 
   node0_printf("BEGIN\n");
 
@@ -165,7 +176,7 @@ int main(int argc, char *argv[])
       file_type = io_detect(par_buf.startfile, w_prop_list, N_WPROP_TYPES);
       if(file_type < 0){
 	node0_printf("Can't determine Wilson prop file type %s\n", par_buf.startfile);
-	return 1;
+	normal_exit(1);
       }
       
       /* Get the lattice dimensions from the input file */
@@ -177,11 +188,11 @@ int main(int argc, char *argv[])
 	  printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
 	}
 
-      volume=nx*ny*nz*nt;
-      
       /* Finish setup - broadcast dimensions */
       setup_refresh();
       
+      volume=nx*ny*nz*nt;
+
       /* Allocate space for the full propagator on each node */
       wprop = (wilson_propagator *)malloc(sites_on_node*
 					  sizeof(wilson_propagator));
@@ -207,6 +218,11 @@ int main(int argc, char *argv[])
     }
 
   node0_printf("RUNNING COMPLETED\n");
+
+#ifdef HAVE_QDP
+  QDP_finalize();
+#endif  
+  normal_exit(0);
 
   return 0;
 }

@@ -109,6 +109,9 @@ int main(int argc, char *argv[])
   ksprop_file2 = argv[2];
 
   initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -132,13 +135,13 @@ int main(int argc, char *argv[])
   if(this_node == 0)
     {
       nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-      printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
+      printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);fflush(stdout);
     }
-  
-  volume=nx*ny*nz*nt;
   
   /* Finish setup - broadcast dimensions */
   setup_refresh();
+  
+  volume=nx*ny*nz*nt;
   
   /* Allocate space for ksprops */
   ksprop1 = (su3_vector *)malloc(sites_on_node*3*sizeof(su3_vector));
@@ -187,6 +190,11 @@ int main(int argc, char *argv[])
   free(ksprop1);
   free(ksprop2);
   free_lattice();
+
+#ifdef HAVE_QDP
+  QDP_finalize();
+#endif  
+  normal_exit(0);
 
   return 0;
 }

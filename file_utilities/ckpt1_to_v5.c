@@ -188,6 +188,9 @@ int main(int argc, char *argv[])
   filename_v5    = argv[2];
 
   initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -202,4 +205,10 @@ int main(int argc, char *argv[])
   /* Write file  in version 5 format */
   gf_v5 = save_parallel(filename_v5);
   
+#ifdef HAVE_QDP
+  QDP_finalize();
+#endif  
+  normal_exit(0);
+
+  return 0;
 }

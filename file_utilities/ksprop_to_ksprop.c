@@ -46,7 +46,6 @@ int x,y,z,t;            /* coordinates */
         printf("NODE %d: no room for lattice\n",this_node);
         terminate(1);
     }
-
     for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
         if(node_number(x,y,z,t)==mynode()){
             i=node_index(x,y,z,t);
@@ -97,7 +96,7 @@ void setup_refresh() {
   broadcast_bytes((char *)&ny,sizeof(int));
   broadcast_bytes((char *)&nz,sizeof(int));
   broadcast_bytes((char *)&nt,sizeof(int));
-  
+
   setup_layout();
   make_lattice();
 }
@@ -147,41 +146,52 @@ int main(int argc, char *argv[])
   int i,prompt;
   int dims[4],ndim;
   su3_vector *ksprop;
+  int status;
 
   initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
 
-  if(get_prompt(&prompt) != 0)
-    return 0;
+  if(this_node == 0){
+    if(get_prompt(&prompt) != 0) par_buf.stopflag = 1;
+    else par_buf.stopflag = 0;
+  }
+  
+  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+  
+  if( par_buf.stopflag != 0 )
+    normal_exit(0);
 
   node0_printf("BEGIN\n");
-
+    
   /* Loop over input requests */
   while(readin(prompt) == 0)
     {
       /* Sniff out the input file type */
       file_type = io_detect(par_buf.startfile, ksprop_list, N_KSPROP_TYPES);
+
       if(file_type < 0){
 	node0_printf("Can't determine KS prop file type %s\n", par_buf.startfile);
-	return 1;
+	normal_exit(1);
       }
-
+      
       /* Get the lattice dimensions from the input file */
       read_lat_dim_ksprop(par_buf.startfile, file_type, &ndim, dims);
-      
-      if(this_node == 0)
-	{
-	  nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-	  printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
-	}
 
-      volume=nx*ny*nz*nt;
+      if(this_node == 0){
+	nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
+	printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);fflush(stdout);
+      }
 
       /* Finish setup - broadcast dimensions */
       setup_refresh();
-      
+
+      volume=nx*ny*nz*nt;
+  
       /* Allocate space for ksprop */
       ksprop = (su3_vector *)malloc(sites_on_node*3*sizeof(su3_vector));
 
@@ -190,8 +200,8 @@ int main(int argc, char *argv[])
 	terminate(1);
       }
 
-      if(this_node == 0)printf("Converting file %s to file %s\n",
-			   par_buf.startfile, par_buf.savefile);
+      node0_printf("Converting file %s to file %s\n",
+		   par_buf.startfile, par_buf.savefile);
 
       /* Read the whole file */
       reload_ksprop_to_field(par_buf.startflag, par_buf.startfile, ksprop, 0);
@@ -206,6 +216,11 @@ int main(int argc, char *argv[])
     }
 
   node0_printf("RUNNING COMPLETED\n");
+
+#ifdef HAVE_QDP
+  QDP_finalize();
+#endif  
+  normal_exit(0);
 
   return 0;
 }

@@ -342,6 +342,9 @@ int main(int argc, char *argv[])
   filename = argv[1];
 
   initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -385,5 +388,10 @@ int main(int argc, char *argv[])
   /* Close file */
   r_serial_w_f(wpf);
 
-  exit(status);
+#ifdef HAVE_QDP
+  QDP_finalize();
+#endif  
+  normal_exit(0);
+
+  return 0;
 }

@@ -110,6 +110,9 @@ int main(int argc, char *argv[])
   wprop_file2 = argv[2];
 
   initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -136,10 +139,11 @@ int main(int argc, char *argv[])
       printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
     }
   
-  volume=nx*ny*nz*nt;
-  
+
   /* Finish setup - broadcast dimensions */
   setup_refresh();
+  
+  volume=nx*ny*nz*nt;
   
   /* Allocate space for wprops */
   wprop1 = (wilson_propagator *)malloc(sites_on_node*
@@ -193,6 +197,11 @@ int main(int argc, char *argv[])
   free(wprop1);
   free(wprop2);
   free_lattice();
+
+#ifdef HAVE_QDP
+  QDP_finalize();
+#endif  
+  normal_exit(0);
 
   return 0;
 }

@@ -105,6 +105,9 @@ int main(int argc, char *argv[])
 			   filename_milc, filename_scidac);
 
   initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -146,6 +149,11 @@ int main(int argc, char *argv[])
 
   /* Write file in SciDAC format */
   save_serial_scidac(filename_scidac);
+
+#ifdef HAVE_QDP
+  QDP_finalize();
+#endif  
+  normal_exit(0);
 
   return 0;
 }
