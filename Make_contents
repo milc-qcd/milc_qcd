@@ -224,8 +224,12 @@ WORK_FILE_UTILITIES =     \
 
 WORK_BINARY_SAMPLES =      \
  binary_samples/lat.sample*    \
+ binary_samples/l4_8_5.6_m01-Coul.1 \
  binary_samples/lprop.*sample* \
- binary_samples/in.sample.*smear*
+ binary_samples/in.sample.*smear* \
+ binary_samples/qf_d_d_0.124_00001 \
+ binary_samples/qf_stag_d_d_001_m0.1000_nt0 \
+ binary_samples/wf_1S
 
 WORK_INCLUDE =        \
  include/Make*        \
@@ -362,6 +366,13 @@ WORK_KS_EIGEN =          \
  ks_eigen/Make*          \
  ks_eigen/in.sample*     \
  ks_eigen/out.sample*
+
+WORK_KS_HL_SPECTRUM =    \
+ ks_hl_spectrum/*.c            \
+ ks_hl_spectrum/*.h            \
+ ks_hl_spectrum/Make*          \
+ ks_hl_spectrum/in.sample*     \
+ ks_hl_spectrum/out.sample*
 
 WORK_KS_IMP_DYN1 =           \
  ks_imp_dyn1/README          \
@@ -517,9 +528,7 @@ WORK_CLOVER =              \
  ${WORK_H_DIBARYON}
 
 WORK_FORM =                \
- ${WORK_GENERIC_FORM}      \
- ${WORK_HQET_HEAVY_TO_LIGHT}  \
- ${WORK_PROPAGATING_FORM_FACTOR}
+ ${WORK_KS_HL_SPECTRUM} \
 
 WORK_FP =                  \
  ${WORK_ARB_DIRAC_INVERT}  \
@@ -564,7 +573,8 @@ WORK_WILSON_TAR  = ${WORK_NAME_ROOT}_wilson.tar
 
 WORK_TAR =          \
  ${WORK_BASIC_TAR}  \
- ${WORK_KS_TAR}    
+ ${WORK_KS_TAR}     \
+ ${WORK_FORM_TAR}
 
 # Contents of the whole ball of wax
 
