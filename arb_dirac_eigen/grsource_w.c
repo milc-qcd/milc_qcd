@@ -1,11 +1,11 @@
-/************************ grsource.c *****************************/
+/************************ grsource_w.c *****************************/
 /* MIMD version 6 */
 
 #include "arb_dirac_eig_includes.h"
 
 
 
-void grsource() {
+void grsource_w() {
 register int i,j,k;
 register site *s;
     FORALLSITES(i,s){
@@ -20,6 +20,6 @@ register site *s;
         }
     }
 
-}/* grsource */
+}/* grsource_w */
 
 

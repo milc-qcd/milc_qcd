@@ -518,7 +518,7 @@ int Kalkreuter(wilson_vector **eigVec, double *eigVal, Real Tolerance,
   for(j=0;j<Nvecs;j++)
     {
       grad[j] = 1.0e+10 ;
-      grsource(parity);  
+      grsource_w(parity);  
       FORSOMEPARITY(i,s,parity){
 	copy_wvec(&(s->g_rand),&(eigVec[j][i]));
       }

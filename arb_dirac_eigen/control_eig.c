@@ -165,7 +165,7 @@ if(this_node==0) printf("random (but chiral) initial vectors\n");
       if(j< Nvecs/2){ source_chirality=1;}
       else{source_chirality= -1;}
       printf("source chirality %d\n",source_chirality);
-      grsource();
+      grsource_w();
       FORALLSITES(i,s){
         copy_wvec(&(s->g_rand),&(eigVec[j][i]));
 	if(source_chirality==1){
