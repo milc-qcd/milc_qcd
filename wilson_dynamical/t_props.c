@@ -37,19 +37,19 @@ wilson_vector tvec;
     }
 
     /* Multiply by M_adjoint, result in chi */
-    dslash( F_OFFSET(g_rand), F_OFFSET(g_rand), MINUS, ODD);
-    dslash( F_OFFSET(g_rand), F_OFFSET(chi)   , MINUS, EVEN);
+    dslash_w( F_OFFSET(g_rand), F_OFFSET(g_rand), MINUS, ODD);
+    dslash_w( F_OFFSET(g_rand), F_OFFSET(chi)   , MINUS, EVEN);
     FOREVENSITES(i,st){
         scalar_mult_add_wvec( &(st->g_rand), &(st->chi), -kappa*kappa,
             &(st->chi) );
     }
 
     /* Conjugate gradient to get M_inverse * source, result in psi */
-    iters += congrad( niter,rsqprop,&final_rsq);
+    iters += congrad_w( niter,rsqprop,&final_rsq);
 
     /* Multiply by U_inverse to get solution on all sites */
     /* Since the source was zero on odd sites there is no diagonal term */
-    dslash( F_OFFSET(psi), F_OFFSET(psi), PLUS, ODD);
+    dslash_w( F_OFFSET(psi), F_OFFSET(psi), PLUS, ODD);
     FORODDSITES(i,st){scalar_mult_wvec( &(st->psi), kappa, &(st->psi) );}
     /* Wingate found bug 10/4/95 */
 

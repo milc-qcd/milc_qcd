@@ -54,7 +54,7 @@ MY_OBJECTS =         \
   update.o           \
   update_u.o         \
   update_h.o         \
-  grsource.o         \
+  grsource_w.o       \
   ranmom.o           \
   f_measure3.o       \
   gauge_info.o

@@ -146,17 +146,17 @@ dtime = -dclock();**/
     /* set ferm_epsilon */
 #ifdef LU
     ferm_epsilon = nflavors*eps*kappa*kappa;
-    dslash( F_OFFSET(psi), F_OFFSET(psi), PLUS, ODD );
-    dslash( F_OFFSET(psi), F_OFFSET(p)  , PLUS, EVEN);
+    dslash_w( F_OFFSET(psi), F_OFFSET(psi), PLUS, ODD );
+    dslash_w( F_OFFSET(psi), F_OFFSET(p)  , PLUS, EVEN);
     FOREVENSITES(i,st)
         scalar_mult_add_wvec( &(st->psi), &(st->p), -kappa*kappa, &(st->p) );
 
     /* psi(odd) = Dslash * psi(even) already, set
          p(odd) = Dslash_adjoint * p(even) . */
-    dslash( F_OFFSET(p  ), F_OFFSET(p  ), MINUS, ODD );
+    dslash_w( F_OFFSET(p  ), F_OFFSET(p  ), MINUS, ODD );
 #else
     ferm_epsilon = nflavors*eps*kappa;
-    dslash( F_OFFSET(psi), F_OFFSET(p), PLUS, EVENANDODD );
+    dslash_w( F_OFFSET(psi), F_OFFSET(p), PLUS, EVENANDODD );
     FORALLSITES(i,st)
 	scalar_mult_add_wvec( &(st->psi), &(st->p), -kappa, &(st->p) );
 #endif

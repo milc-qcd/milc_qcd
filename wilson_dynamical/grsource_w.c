@@ -1,4 +1,4 @@
-/************************ grsource.c *****************************/
+/************************ grsource_w.c *****************************/
 /* MIMD version 6 */
 
 #include "wi_dyn_includes.h"
@@ -23,7 +23,7 @@
 #define FORMYSITES FORALLSITES
 #endif
 
-void grsource() {
+void grsource_w() {
 register int i,j,k;
 register site *s;
     FORMYSITES(i,s){
@@ -42,24 +42,24 @@ register site *s;
 #ifdef LU
     /* use g_rand on odd sites as temporary storage:
         g_rand(odd) = Dslash^adjoint * g_rand(even) */
-    dslash( F_OFFSET(g_rand), F_OFFSET(g_rand), MINUS, ODD);
-    dslash( F_OFFSET(g_rand), F_OFFSET(chi)   , MINUS, EVEN);
+    dslash_w( F_OFFSET(g_rand), F_OFFSET(g_rand), MINUS, ODD);
+    dslash_w( F_OFFSET(g_rand), F_OFFSET(chi)   , MINUS, EVEN);
     FOREVENSITES(i,s){
         scalar_mult_add_wvec( &(s->g_rand), &(s->chi), -kappa*kappa,
             &(s->chi) );
     }
 #else
-    dslash( F_OFFSET(g_rand), F_OFFSET(chi), MINUS, EVENANDODD);
+    dslash_w( F_OFFSET(g_rand), F_OFFSET(chi), MINUS, EVENANDODD);
     FORALLSITES(i,s){
         scalar_mult_add_wvec( &(s->g_rand), &(s->chi), -kappa,
 	    &(s->chi) );
     }
 #endif
-}/* grsource */
+}/* grsource_w */
 
 
 /* Check congrad by multiplying psi by Madj*M, compare result to chi */
-/* Before calling checkmul() you should call grsource() and congrad() */
+/* Before calling checkmul() you should call grsource_w() and congrad_w() */
 void checkmul() {
 register int i,j,k;
 register site *s;
@@ -67,19 +67,19 @@ register site *s;
 
     /* multiply by M_adjoint*M */
 #ifdef LU
-    dslash( F_OFFSET(psi), F_OFFSET(psi), PLUS, ODD );
-    dslash( F_OFFSET(psi), F_OFFSET(mp ), PLUS, EVEN);
+    dslash_w( F_OFFSET(psi), F_OFFSET(psi), PLUS, ODD );
+    dslash_w( F_OFFSET(psi), F_OFFSET(mp ), PLUS, EVEN);
     FOREVENSITES(i,s)
         scalar_mult_add_wvec( &(s->psi), &(s->mp), -kappa*kappa, &(s->mp) );
-   dslash( F_OFFSET(mp), F_OFFSET(mp), MINUS, ODD );
-    dslash( F_OFFSET(mp), F_OFFSET(p) , MINUS, EVEN);
+   dslash_w( F_OFFSET(mp), F_OFFSET(mp), MINUS, ODD );
+    dslash_w( F_OFFSET(mp), F_OFFSET(p) , MINUS, EVEN);
     FOREVENSITES(i,s)
         scalar_mult_add_wvec( &(s->mp), &(s->p), -kappa*kappa, &(s->p));
 #else
-    dslash( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
+    dslash_w( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
     FORALLSITES(i,s)
         scalar_mult_add_wvec( &(s->psi), &(s->mp), -kappa, &(s->mp) );
-    dslash( F_OFFSET(mp), F_OFFSET(p), MINUS, EVENANDODD);
+    dslash_w( F_OFFSET(mp), F_OFFSET(p), MINUS, EVENANDODD);
     FORALLSITES(i,s)
         scalar_mult_add_wvec( &(s->mp), &(s->p), -kappa, &(s->p) );
 #endif

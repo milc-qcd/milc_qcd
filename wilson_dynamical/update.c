@@ -41,14 +41,14 @@ Real xrandom;
 
 #ifdef PHI_ALGORITHM
         /* generate a pseudofermion configuration only at start*/
-        if(step==1){grsource(); old_cg_time = cg_time = -1.0e6;}
+        if(step==1){grsource_w(); old_cg_time = cg_time = -1.0e6;}
 
 #ifdef HMC_ALGORITHM
         /* find action */
         /* do conjugate gradient to get (Madj M)inverse * chi */
         if(step==1){
             /* do conjugate gradient to get (Madj M)inverse * chi */
-	    iters += congrad( niter,rsqmin,&final_rsq);
+	    iters += congrad_w( niter,rsqmin,&final_rsq);
 	    cg_time = 0.0;
 /**checkmul();**/
      	    startaction=d_action();
@@ -69,14 +69,14 @@ Real xrandom;
        	update_u(epsilon*(0.5-nflavors/4.0));
 
         /* generate a pseudofermion configuration */
-     	grsource();
+     	grsource_w();
 
 	/* update U's to middle of interval */
      	update_u(epsilon*nflavors/4.0);
 #endif
 
         /* do conjugate gradient to get (Madj M)inverse * chi */
-	iters += congrad( niter,rsqmin,&final_rsq);
+	iters += congrad_w( niter,rsqmin,&final_rsq);
         cg_time = ((Real)step - 0.5)*epsilon;
 /**checkmul();**/
 
@@ -98,7 +98,7 @@ Real xrandom;
     /* do conjugate gradient to get (Madj M)inverse * chi */
     next_cg_time = steps*epsilon;
     predict_next_psi(&old_cg_time,&cg_time,&next_cg_time);
-    iters += congrad( niter,rsqmin,&final_rsq);
+    iters += congrad_w( niter,rsqmin,&final_rsq);
     cg_time = steps*epsilon;
     endaction=d_action();
     change = endaction-startaction;
