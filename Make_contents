@@ -229,13 +229,14 @@ WORK_FILE_UTILITIES =     \
  file_utilities/*.h
 
 WORK_BINARY_SAMPLES =      \
+ binary_samples/colormatrix.*sample* \
  binary_samples/lat.sample*    \
- binary_samples/l4_8_5.6_m01-Coul.1 \
  binary_samples/lprop.*sample* \
  binary_samples/in.sample.*smear* \
- binary_samples/qf_d_d_0.124_00001 \
- binary_samples/qf_stag_d_d_001_m0.1000_nt0 \
- binary_samples/wf_1S
+ binary_samples/ksprop*.sample.* \
+ binary_samples/ksvector.*sample.* \
+ binary_samples/wprop*.sample.* \
+ binary_samples/smear*.sample.*
 
 WORK_INCLUDE =        \
  include/Make*        \

@@ -90,5 +90,6 @@ test_clean:
 	for proj in ${PROJS};\
 	do\
 	  /bin/rm out.test.$$proj.tmp out.sample.$$proj.tmp;\
+	  /bin/rm out.test.diff.$$proj out.test.$$proj; \
 	done
 

@@ -19,14 +19,16 @@ DIRS = \
   clover_dynamical \
   clover_hybrids \
   clover_invert \
+  file_utilities \
   h_dibaryon \
   heavy \
   hqet_heavy_to_light \
   hvy_qpot \
   ks_dynamical \
   ks_eigen \
-  ks_imp_dyn1 \
+  ks_hl_spectrum \
   ks_imp_dyn2 \
+  ks_imp_invert_multi \
   propagating_form_factor \
   pure_gauge \
   schroed_cl_inv \
