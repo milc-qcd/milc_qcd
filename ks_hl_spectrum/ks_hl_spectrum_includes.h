@@ -38,5 +38,4 @@ complex  KS_2pt_trace(su3_matrix * antiquark, wilson_propagator * quark,
 void KS_2pt_func(field_offset snk, field_offset src, int *g_snk, int n_snk,
 		 int *g_src, int n_src, int *p, complex *prop, int parity);
 void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator);
-int calculate_stag_prop();
 void get_smearings_bi_serial(char *filename);

@@ -173,11 +173,6 @@ ks_hl_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= ${DARCH}" \
 	"EXTRA_OBJECTS= control_hl_spectrum.o "
-io_test::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= " \
-	"EXTRA_OBJECTS= control_io.o"
-
 clean:
 	-/bin/rm -f *.o
 

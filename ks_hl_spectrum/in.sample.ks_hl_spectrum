@@ -17,4 +17,4 @@ format 1
 number_of_smearings 1
 smear_func_file  ../binary_samples/wf_1S
 
-reload_ks_serial ../binary_samples/qf_stag_d_d_001_m0.1000_nt0
+reload_serial_ksprop ../binary_samples/qf_stag_d_d_001_m0.1000_nt0

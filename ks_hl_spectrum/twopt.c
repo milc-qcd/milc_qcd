@@ -183,7 +183,7 @@ void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator)
 
 
 
- int p_100[3][3] = {{-1,0,0},  //0
+  int p_100[3][3] = {{-1,0,0},  //0
 		    {0,-1,0},  //1
 		    {0,0,-1}}; //2
 
@@ -835,51 +835,4 @@ void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator)
      //print to file ?
 
 
-}
-
-int calculate_stag_prop() /* return the C.G. iteration number */
-{
-  double mass_x2;
-  double finalrsq, th;
-  register int i,x,y,t,icol,cgn;
-
-
-  /* Fix ZUP Coulomb gauge - gauge links only*/
-  rephase( OFF );
-  gaugefix(ZUP,(double)1.8,500,(double)GAUGE_FIX_TOL,
-	   F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),0,NULL,NULL,0,NULL,NULL);
-  rephase( ON );
-  
-  mass_x2 = 2.*mass;
-  cgn=0;
-  /* Phase increment for minimum Matsubara frequency */
-  th = PI/nt;
-
-  for(icol=0; icol<3; icol++)
-    {
-      
-      /* initialize phi and xxx */
-      clear_latvec( F_OFFSET(phi), EVENANDODD);
-      clear_latvec( F_OFFSET(xxx), EVENANDODD);
-      for(x=0;x<nx;x+=2)for(y=0;y<ny;y+=2)for(t=0;t<nt;t+=2)
-	/**for(x=0;x<1;x+=2)for(y=0;y<1;y+=2)for(t=0;t<1;t+=2)**/
-	{
-	  if( node_number(x,y,0,t) != mynode() )continue;
-	  i=node_index(x,y,0,t);
-	  /* Modulate source with Matsubara phase */
-	  lattice[i].phi.c[icol].real = -cos((double)t*th);
-	}
-
-      /* do a C.G. (source in phi, result in xxx) */
-      cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			niter,rsqprop,EVEN,&finalrsq);
-      /* Multiply by -Madjoint */
-      dslash( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
-      scalar_mult_latvec( F_OFFSET(xxx), -mass_x2, F_OFFSET(ttt), EVEN);
-      
-      /* fill the hadron matrix */
-      copy_latvec( F_OFFSET(ttt), F_OFFSET(stag_propagator.e[icol]), EVENANDODD);
-    } /* end loop on icol */
-
-  return(cgn);
 }

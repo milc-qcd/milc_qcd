@@ -42,6 +42,8 @@ int main(int argc,char *argv[])
   prompt = setup(); 
   setup_restrict_fourier(key, dummy);
   space_vol = (double)(nx*ny*nz);
+  node0_printf("BEGIN\n");
+
   while( readin(prompt) == 0){
     
     
