@@ -26,3 +26,21 @@ void byterevn(int32type w[], int n)
     }
 } /* byterevn */
 
+/* Do byte reversal on n contiguous 64-bit words */
+void byterevn64(int32type w[], int n)
+{
+  int32type tmp;
+  int j;
+
+  assert(sizeof(int32type) == 4);
+  
+  /* First swap pairs of 32-bit words */
+  for(j=0; j<n; j++){
+    tmp = w[2*j];
+    w[2*j] = w[2*j+1];
+    w[2*j+1] = tmp;
+  }
+
+  /* Then swap bytes in 32-bit words */
+  byterevn(w, 2*n);
+}

@@ -41,6 +41,9 @@ OCFLAGS = -Wall
 
 #OCCLAGS =  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2
+#-------------- Intel icc/ecc -----------------------------------
+#OCFLAGS = -tpp2 -static
+
 #-------------- Portland Group ----------------------------
 #OCFLAGS = -tp p6 -Munroll=c:4,n:4
 
