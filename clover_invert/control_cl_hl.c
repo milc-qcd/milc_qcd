@@ -393,8 +393,8 @@ int main(int argc,char *argv[])
 			&(s->psi));
 	    
 	    /* Do Wilson Dslash on the psi field */
-	    dslash(F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
-	    dslash(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
+	    dslash_w(F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
+	    dslash_w(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
 	    
 	    /* From subtraction we get 2*Dslash */
 	    FORALLSITES(i,s)
@@ -493,8 +493,8 @@ int main(int argc,char *argv[])
 			  &(s->psi));
 	      
 	      /* Do Wilson Dslash on the psi field */
-	      dslash(F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
-	      dslash(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
+	      dslash_w(F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
+	      dslash_w(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
 	      
 	      /* From subtraction we get 2*Dslash */
 	      FORALLSITES(i,s)
@@ -512,8 +512,8 @@ int main(int argc,char *argv[])
 			  &(s->psi));
 	      
 	      /* Do Wilson Dslash on the psi field */
-	      dslash(F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
-	      dslash(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
+	      dslash_w(F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
+	      dslash_w(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
 	      
 	      /* From subtraction we get 2*Dslash */
 	      FORALLSITES(i,s)

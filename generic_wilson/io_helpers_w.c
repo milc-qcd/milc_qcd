@@ -9,6 +9,7 @@
 #include "../include/io_lat.h"
 #include "../include/io_wb.h"
 #include "../include/file_types.h"
+#include <string.h>
 #ifdef HAVE_QIO
 #include <qio.h>
 #endif

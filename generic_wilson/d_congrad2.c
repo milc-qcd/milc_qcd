@@ -30,7 +30,7 @@
 
 /**#define CGTIME**/
 
-int congrad(int niter,Real rsqmin,Real *final_rsq_ptr) 
+int congrad_w(int niter,Real rsqmin,Real *final_rsq_ptr) 
 {
 register int i;
 register site *s;
@@ -56,13 +56,13 @@ start:
 	*/
 	rsq = source_norm = 0.0;
 #ifdef LU
-        dslash_special(F_OFFSET(psi),F_OFFSET(psi),PLUS,ODD, tag, 0 );
-        dslash_special(F_OFFSET(psi),F_OFFSET(ttt),PLUS,EVEN,tag2,0 );
+        dslash_w_special(F_OFFSET(psi),F_OFFSET(psi),PLUS,ODD, tag, 0 );
+        dslash_w_special(F_OFFSET(psi),F_OFFSET(ttt),PLUS,EVEN,tag2,0 );
         FOREVENSITES(i,s){
             scalar_mult_add_wvec( &(s->psi),&(s->ttt), -kappa*kappa,&(s->ttt) );
         }
-        dslash_special(F_OFFSET(ttt),F_OFFSET(ttt),MINUS,ODD,tag,1 );
-        dslash_special(F_OFFSET(ttt),F_OFFSET(mp),MINUS,EVEN,tag2,1 );
+        dslash_w_special(F_OFFSET(ttt),F_OFFSET(ttt),MINUS,ODD,tag,1 );
+        dslash_w_special(F_OFFSET(ttt),F_OFFSET(mp),MINUS,EVEN,tag2,1 );
         FOREVENSITES(i,s){
             scalar_mult_add_wvec( &(s->ttt), &(s->mp), -kappa*kappa, &(s->mp) );
 	    sub_wilson_vector( &(s->chi), &(s->mp), &(s->r) );
@@ -72,11 +72,11 @@ start:
 	    rsq += (double)magsq_wvec( &(s->r) );
         }
 #else
-	dslash_special(F_OFFSET(psi),F_OFFSET(ttt),PLUS,EVENANDODD,tag,0);
+	dslash_w_special(F_OFFSET(psi),F_OFFSET(ttt),PLUS,EVENANDODD,tag,0);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->psi), &(s->ttt), -kappa, &(s->ttt) );
 	}
-	dslash_special(F_OFFSET(ttt),F_OFFSET(mp),MINUS,EVENANDODD,tag,1);
+	dslash_w_special(F_OFFSET(ttt),F_OFFSET(mp),MINUS,EVENANDODD,tag,1);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->ttt), &(s->mp), -kappa, &(s->mp) );
 	    sub_wilson_vector( &(s->chi), &(s->mp), &(s->r) );
@@ -126,23 +126,23 @@ iteration,(double)rsq,(double)pkp,(double)a );**/
 	oldrsq = rsq;
 	pkp = 0.0;
 #ifdef LU
-        dslash_special(F_OFFSET(p),F_OFFSET(p) ,PLUS,ODD,tag,1 );
-        dslash_special(F_OFFSET(p),F_OFFSET(ttt),PLUS,EVEN,tag2,1);
+        dslash_w_special(F_OFFSET(p),F_OFFSET(p) ,PLUS,ODD,tag,1 );
+        dslash_w_special(F_OFFSET(p),F_OFFSET(ttt),PLUS,EVEN,tag2,1);
         FOREVENSITES(i,s){
             scalar_mult_add_wvec( &(s->p), &(s->ttt), -kappa*kappa, &(s->ttt) );
         }
-        dslash_special(F_OFFSET(ttt),F_OFFSET(ttt),MINUS,ODD,tag,1 );
-        dslash_special(F_OFFSET(ttt),F_OFFSET(mp),MINUS,EVEN,tag2,1);
+        dslash_w_special(F_OFFSET(ttt),F_OFFSET(ttt),MINUS,ODD,tag,1 );
+        dslash_w_special(F_OFFSET(ttt),F_OFFSET(mp),MINUS,EVEN,tag2,1);
         FOREVENSITES(i,s){
             scalar_mult_add_wvec( &(s->ttt), &(s->mp), -kappa*kappa, &(s->mp) );
             pkp += (double)wvec_rdot( &(s->p), &(s->mp) );
         }
 #else
-	dslash_special(F_OFFSET(p),F_OFFSET(ttt),PLUS,EVENANDODD,tag,1);
+	dslash_w_special(F_OFFSET(p),F_OFFSET(ttt),PLUS,EVENANDODD,tag,1);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->p), &(s->ttt), -kappa, &(s->ttt) );
 	}
-	dslash_special(F_OFFSET(ttt),F_OFFSET(mp),MINUS,EVENANDODD,tag,1);
+	dslash_w_special(F_OFFSET(ttt),F_OFFSET(mp),MINUS,EVENANDODD,tag,1);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->ttt), &(s->mp), -kappa, &(s->mp) );
             pkp += (double)wvec_rdot( &(s->p), &(s->mp) );

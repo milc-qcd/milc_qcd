@@ -2,11 +2,11 @@
 /* MIMD version 6 */
 /* Version to use less memory - do things one direction at a time */
 
-/* 7/18/01 added dslash_special - CD */
+/* 7/18/01 added dslash_w_special - CD */
 /* 1/26/00 combined with Schroedinger functional version - UMH */
 
 /*
-  dslash(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
+  dslash_w(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
   Compute SUM_dirs ( 
   ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
   + ( 1 - isign*gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
@@ -26,7 +26,7 @@
 #define LOOPEND
 #include "../include/loopend.h"
 
-void dslash(field_offset src, field_offset dest, int isign, int parity)
+void dslash_w(field_offset src, field_offset dest, int isign, int parity)
 {
   half_wilson_vector hwv;
   
@@ -175,7 +175,7 @@ void dslash(field_offset src, field_offset dest, int isign, int parity)
   The calling program must clean up the gathers! */
 /*********************************************************************/
 
-void dslash_special(field_offset src,field_offset dest,
+void dslash_w_special(field_offset src,field_offset dest,
   int isign,int parity,msg_tag **tag,int is_started)
 {
   half_wilson_vector hwv;
@@ -194,12 +194,12 @@ void dslash_special(field_offset src,field_offset dest,
     /* NOTE: We should be defining MAXHTMP in all applications using
        dslash and dslash_w */
     if(MAXHTMP < 2){
-      printf("dslash_special: MAXHTMP must be 2 or more!\n");
+      printf("dslash_w_special: MAXHTMP must be 2 or more!\n");
       terminate(1);
     }
 #endif
     if(N_POINTERS < 8){
-      printf("dslash_special: N_POINTERS must be 8 or more!\n");
+      printf("dslash_w_special: N_POINTERS must be 8 or more!\n");
       terminate(1);
      }
 

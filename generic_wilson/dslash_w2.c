@@ -2,7 +2,7 @@
 /* MIMD version 6 */
 
 /*
-	dslash(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
+	dslash_w(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
 Compute SUM_dirs ( 
     ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
   + ( 1 - isign*gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
@@ -626,7 +626,7 @@ void wp_shrink_3dir2( wilson_vector *a,  half_wilson_vector *b1,
 
 }
 
-void dslash( field_offset src, field_offset dest, int isign, int parity) {
+void dslash_w( field_offset src, field_offset dest, int isign, int parity) {
 half_wilson_vector hwvx,hwvy,hwvz,hwvt;
 
 register int i;
@@ -724,7 +724,7 @@ msg_tag *tag[8];
 	cleanup_gather(tag[OPP_DIR(dir)]);
     }
 
-} /* end (of dslash() ) */
+} /* end (of dslash_w() ) */
 
 
 void dslash3( field_offset src, field_offset dest, int isign, int parity) {
@@ -839,7 +839,7 @@ msg_tag *tag[8];
   the gathers.
   The calling program must clean up the gathers! */
 
-void dslash_special(field_offset src,field_offset dest,
+void dslash_w_special(field_offset src,field_offset dest,
     int isign,int parity,msg_tag **tag,int is_started)
 
 {
@@ -859,12 +859,12 @@ register int dir,otherparity;
     /* NOTE: We should be defining MAXHTMP in all applications using
        dslash and dslash_w */
     if(MAXHTMP < 8){
-      printf("dslash_special: MAXHTMP must be 8 or more!\n");
+      printf("dslash_w_special: MAXHTMP must be 8 or more!\n");
       terminate(1);
     }
 #endif
     if(N_POINTERS < 8){
-      printf("dslash_special: N_POINTERS must be 8 or more!\n");
+      printf("dslash_w_special: N_POINTERS must be 8 or more!\n");
       terminate(1);
      }
 
@@ -940,4 +940,4 @@ register int dir,otherparity;
 	    -isign, 1 );	/* "1" SUMs in current dest */
     }
 
-} /* end (of dslash_special() ) */
+} /* end (of dslash_w_special() ) */

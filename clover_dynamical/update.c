@@ -52,7 +52,7 @@ Real xrandom;
 #else
 	    starttrlogA = (double)0.0;
 #endif /*LU*/
-	    grsource();
+	    grsource_w();
 	    old_cg_time = cg_time = -1.0e6;
  	}
 
@@ -89,7 +89,7 @@ Real xrandom;
 #ifdef LU
 	junktrlogA = make_clovinv(ODD);
 #endif /*LU*/
-     	grsource();
+     	grsource_w();
 	free_clov();
 
 	/* update U's to middle of interval */

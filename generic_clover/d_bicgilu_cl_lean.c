@@ -139,7 +139,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
 #endif
   
   mult_ldu(src, my_mp, ODD);
-  dslash(my_mp, my_mp, PLUS, EVEN);
+  dslash_w(my_mp, my_mp, PLUS, EVEN);
   
   /* Normalization  */
   rsq = 0.0;
@@ -185,9 +185,9 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     /*	if(this_node==0)    printf("dest_0  !=0\n"); */
     /* we use my_mp temporarily to construct r */
     mult_ldu(dest, tmp, EVEN);
-    dslash(dest, my_mp, PLUS, ODD);
+    dslash_w(dest, my_mp, PLUS, ODD);
     mult_ldu(my_mp, tmp, ODD);
-    dslash(tmp, my_mp, PLUS, EVEN);
+    dslash_w(tmp, my_mp, PLUS, EVEN);
     FOREVENSITESDOMAIN(i,s) {
       scalar_mult_add_wvec( (wilson_vector *)F_PT(s,tmp), 
 			    (wilson_vector *)F_PT(s,my_mp), MKsq, 
@@ -217,9 +217,9 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     
     /*   my_mp = M(u)*p */
     mult_ldu(p, tmp, EVEN);
-    dslash(p, my_mp, PLUS, ODD);
+    dslash_w(p, my_mp, PLUS, ODD);
     mult_ldu(my_mp, tmp, ODD);
-    dslash(tmp, my_mp, PLUS, EVEN);
+    dslash_w(tmp, my_mp, PLUS, EVEN);
     
     /* rvv = <rv|my_mp> */
     rvv = dcmplx((double)0.0,(double)0.0);
@@ -244,9 +244,9 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     
     /* ttt = M(u)*sss */
     mult_ldu(sss, tmp, EVEN);
-    dslash(sss, sss, PLUS, ODD);
+    dslash_w(sss, sss, PLUS, ODD);
     mult_ldu(sss, tmp, ODD);
-    dslash(tmp, ttt, PLUS, EVEN);
+    dslash_w(tmp, ttt, PLUS, EVEN);
     
     /* tdots = <ttt|sss>; tsq=|ttt|^2 */
     tdots = dcmplx((double)0.0,(double)0.0);
@@ -329,7 +329,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     } **/
   
   /* dest = R^(-1)*dest  */
-  dslash(dest, my_mp, PLUS, ODD);
+  dslash_w(dest, my_mp, PLUS, ODD);
   FORODDSITESDOMAIN(i,s) {
     scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), (wilson_vector *)F_PT(s,my_mp),
 			 Kappa, (wilson_vector *)F_PT(s,my_mp) );

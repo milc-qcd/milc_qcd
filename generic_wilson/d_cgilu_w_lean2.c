@@ -2,7 +2,7 @@
 /* MIMD version 6 */
 
 /* Modifications:
-   7/18/01 Using dslash_special CD
+   7/18/01 Using dslash_w_special CD
    4/26/98 Moved parameters to structures CD
    8/29/97 ANSI prototyping C. D.
    Code created by U.M.H.
@@ -90,7 +90,7 @@ int cgilu_w(             /* Return value is number of iterations taken */
   dtime = -dclock();
 #endif
   
-  dslash_special(src,mmp,PLUS,EVEN,tage,is_startede);
+  dslash_w_special(src,mmp,PLUS,EVEN,tage,is_startede);
   is_startede = 1;
   
   /* Normalisation  */
@@ -139,9 +139,9 @@ int cgilu_w(             /* Return value is number of iterations taken */
   if(flag != 0) {
     /**if(this_node==0)printf("dest_0  !=0\n");**/
     /* we use mmp temporarily to construct r */
-    dslash_special(dest,mmp,PLUS,ODD,tago,is_startedo);
+    dslash_w_special(dest,mmp,PLUS,ODD,tago,is_startedo);
     is_startedo = 1;
-    dslash_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
+    dslash_w_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
     is_startede = 1;
     FOREVENSITES(i,s) {
       scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest),
@@ -164,9 +164,9 @@ int cgilu_w(             /* Return value is number of iterations taken */
   }
   
   /*  p = [L^(-1)*M*U^(-1)]_dag*r  */
-  dslash_special(r,mmp,MINUS,ODD,tago,is_startedo);
+  dslash_w_special(r,mmp,MINUS,ODD,tago,is_startedo);
   is_startedo = 1;
-  dslash_special(mmp,p,MINUS,EVEN,tage,is_startede);
+  dslash_w_special(mmp,p,MINUS,EVEN,tage,is_startede);
   is_startede = 1;
   
   /* cp = |p|^2 */
@@ -184,9 +184,9 @@ int cgilu_w(             /* Return value is number of iterations taken */
     
     c=cp;
     /*   mmp = M(u)*p */
-    dslash_special(p,mmp,PLUS,ODD,tago,is_startedo);
+    dslash_w_special(p,mmp,PLUS,ODD,tago,is_startedo);
     is_startedo = 1;
-    dslash_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
+    dslash_w_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
     is_startede = 1;
     
     /* d = |mmp|^2  */
@@ -213,9 +213,9 @@ int cgilu_w(             /* Return value is number of iterations taken */
     
     /*   mmp = M(u)dag*r  */
     
-    dslash_special(r,mmp,MINUS,ODD,tago,is_startedo);
+    dslash_w_special(r,mmp,MINUS,ODD,tago,is_startedo);
     is_startedo = 1;
-    dslash_special(mmp,mmp,MINUS,EVEN,tage,is_startede);
+    dslash_w_special(mmp,mmp,MINUS,EVEN,tage,is_startede);
     is_startede = 1;
     /*   cp = |mmp|^2  */
     cp=0.0;
@@ -260,7 +260,7 @@ int cgilu_w(             /* Return value is number of iterations taken */
     }**/
   
   /* dest = R^(-1)*dest  */
-  dslash_special(dest,mmp,PLUS,ODD,tago,is_startedo);
+  dslash_w_special(dest,mmp,PLUS,ODD,tago,is_startedo);
   is_startedo = 1;
   FORODDSITES(i,s) {
     scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), 

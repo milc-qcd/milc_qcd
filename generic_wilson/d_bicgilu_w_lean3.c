@@ -104,7 +104,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     r[i] = *(wilson_vector *)F_PT(s,src);
   }
 
-  dslash_on_temp_special(r,mmp,PLUS,EVEN, tage, is_startede);
+  dslash_w_on_temp_special(r,mmp,PLUS,EVEN, tage, is_startede);
   is_startede = 1;
   
   /* Normalization  */
@@ -147,9 +147,9 @@ int bicgilu_w(          /* Return value is number of iterations taken */
   if(flag != 0) {
     /** if(this_node==0)printf("dest_0  !=0\n"); **/
     /* we use mmp temporarily to construct r */
-    dslash_on_temp_special(t_dest,mmp,PLUS,ODD,tago,is_startedo);
+    dslash_w_on_temp_special(t_dest,mmp,PLUS,ODD,tago,is_startedo);
     is_startedo = 1;
-    dslash_on_temp_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
+    dslash_w_on_temp_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
     is_startede = 1;
     FOREVENSITES(i,s) {
       scalar_mult_add_wvec( &t_dest[i], &mmp[i], MKsq, &mmp[i] );
@@ -173,9 +173,9 @@ int bicgilu_w(          /* Return value is number of iterations taken */
       N_iter = N_iter + 1) {
     
     /*   mmp = M(u)*p */
-    dslash_on_temp_special(p,mmp,PLUS,ODD,tago,is_startedo);
+    dslash_w_on_temp_special(p,mmp,PLUS,ODD,tago,is_startedo);
     is_startedo = 1;
-    dslash_on_temp_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
+    dslash_w_on_temp_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
     is_startede = 1;
     
     /* rvv = <rv|mmp> */
@@ -195,9 +195,9 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     }
     
     /* ttt = M(u)*sss */
-    dslash_on_temp_special(sss,sss,PLUS,ODD,tago,is_startedo);
+    dslash_w_on_temp_special(sss,sss,PLUS,ODD,tago,is_startedo);
     is_startedo = 1;
-    dslash_on_temp_special(sss,ttt,PLUS,EVEN,tage,is_startede);
+    dslash_w_on_temp_special(sss,ttt,PLUS,EVEN,tage,is_startede);
     is_startede = 1;
     
     /* tdots = <ttt|sss>; tsq=|ttt|^2 */
@@ -267,7 +267,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     } **/
   
   /* dest = R^(-1)*dest  */
-  dslash_on_temp_special(t_dest,mmp,PLUS,ODD,tago,is_startedo);
+  dslash_w_on_temp_special(t_dest,mmp,PLUS,ODD,tago,is_startedo);
   is_startedo = 1;
   FORODDSITES(i,s) {
     /* Odd site result is placed in dest */

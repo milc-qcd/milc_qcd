@@ -1491,7 +1491,7 @@ void mult_by_field_strength( int dir1, int dir2,
 void check_invert( field_offset src, field_offset dest ){
     register int i,j,k,flag;
     register site *s;
-    dslash( src, F_OFFSET(mp), PLUS, EVENANDODD);
+    dslash_w( src, F_OFFSET(mp), PLUS, EVENANDODD);
     FORALLSITES(i,s){
 	scalar_mult_add_wvec( (wilson_vector *)F_PT(s,src),
 	    &(s->mp), -kappa, &(s->mp) );

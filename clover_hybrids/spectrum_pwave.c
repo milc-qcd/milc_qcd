@@ -53,7 +53,7 @@ int test_converge(int t_source);
 
 int spectrum_pwave(){ /* return the C.G. iteration number */
 
-  int cgn,congrad();
+  int cgn;
   register int i,j;
   register site* s;
   register complex cc;

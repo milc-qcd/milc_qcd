@@ -310,7 +310,7 @@ int ask_ending_prop( int prompt, int *flag, char *filename );
 void r_close_prop(int flag, w_prop_file *wpf);
 void w_close_prop(int flag, w_prop_file *wpf);
 
-
-
+/* Prototpyes for read_prop_w_fm1.c */
+void r_prop_w_fm(char *filename, field_offset dest);
 
 #endif /* _IO_WB_H */

@@ -9,7 +9,6 @@
 #include "su3_dense_includes.h"
 
 #ifdef LIGHT_PBP
-void grsource(),f_measure();
 int niter;
 Real rsqmin;
 #endif

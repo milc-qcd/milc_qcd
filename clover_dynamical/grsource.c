@@ -24,7 +24,7 @@
 #define FORMYSITES FORALLSITES
 #endif
 
-void grsource() {
+void grsource_w() {
 register int i,j,k;
 register site *s;
 
@@ -59,11 +59,11 @@ register site *s;
 	    &(s->chi) );
     }
 #endif
-}/* grsource */
+}/* grsource_w */
 
 
 /* Check congrad by multiplying psi by Madj*M, compare result to chi */
-/* Before calling checkmul() you should call grsource_cl() and congrad() */
+/* Before calling checkmul() you should call grsource_cl() and congrad_w() */
 void checkmul() {
 register int i,j,k;
 register site *s;

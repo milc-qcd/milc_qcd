@@ -41,7 +41,7 @@ int wilson_invert_lean( /* Return value is number of iterations taken */
     );
 
 void boundary_flip(int sign );
-int congrad(int niter,Real rsqmin,Real *final_rsq_ptr);
+int congrad_w(int niter,Real rsqmin,Real *final_rsq_ptr);
 
 void copy_site_wilson_vector(field_offset src, field_offset dest);
 
@@ -84,13 +84,13 @@ void w_source_h(field_offset src,wilson_quark_source *wqs);
 void free_source_template();
 
 void bj_to_weyl( wilson_vector *src, wilson_vector *dest);
-void dslash(field_offset src,field_offset dest,
+void dslash_w(field_offset src,field_offset dest,
 	    int isign,int parity);
-void dslash_special(field_offset src,field_offset dest,
+void dslash_w_special(field_offset src,field_offset dest,
 		    int isign,int parity,msg_tag **tag,int is_started);
-void dslash_on_temp( wilson_vector *src, wilson_vector *dest, 
+void dslash_w_on_temp( wilson_vector *src, wilson_vector *dest, 
 		     int isign, int parity);
-void dslash_on_temp_special(wilson_vector *src, wilson_vector *dest,
+void dslash_w_on_temp_special(wilson_vector *src, wilson_vector *dest,
 			    int isign,int parity,msg_tag **tag,int is_started);
 void dslash3( field_offset src, field_offset dest, int isign, int parity);
 

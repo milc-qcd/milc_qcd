@@ -39,7 +39,7 @@ double rsqstop;
 Real a,b;
 double rsq,oldrsq,pkp;	/* Sugar's a,b,resid**2,previous resid*2 */
 				/* pkp = cg_p.K.cg_p */
-void dslash_special();
+void dslash_w_special();
 msg_tag *tag[8],*tag2[8];
 #ifdef LU
 Real KAP = -kappa*kappa;
@@ -60,16 +60,16 @@ start:
 	rsq = source_norm = 0.0;
 #ifdef LU
 	mult_ldu(F_OFFSET(psi), F_OFFSET(tmp), EVEN);
-        dslash_special(F_OFFSET(psi), F_OFFSET(mp), PLUS, ODD, tag, 0);
+        dslash_w_special(F_OFFSET(psi), F_OFFSET(mp), PLUS, ODD, tag, 0);
 	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), ODD);
-        dslash_special(F_OFFSET(tmp), F_OFFSET(mp), PLUS, EVEN, tag2, 0);
+        dslash_w_special(F_OFFSET(tmp), F_OFFSET(mp), PLUS, EVEN, tag2, 0);
         FOREVENSITESDOMAIN(i,s){
             scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp));
         }
 	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), EVEN);
-        dslash_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, ODD, tag, 1);
+        dslash_w_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, ODD, tag, 1);
 	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), ODD);
-        dslash_special(F_OFFSET(tmp), F_OFFSET(mp), MINUS, EVEN, tag2, 1);
+        dslash_w_special(F_OFFSET(tmp), F_OFFSET(mp), MINUS, EVEN, tag2, 1);
         FOREVENSITESDOMAIN(i,s){
             scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
 	    sub_wilson_vector( &(s->chi), &(s->mp), &(s->r) );
@@ -79,12 +79,12 @@ start:
         }
 #else
 	mult_ldu(F_OFFSET(psi), F_OFFSET(tmp), EVENANDODD);
-	dslash_special(F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD, tag, 0);
+	dslash_w_special(F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD, tag, 0);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
 	}
 	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), EVENANDODD);
-	dslash_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, EVENANDODD, tag, 1);
+	dslash_w_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, EVENANDODD, tag, 1);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
 	    sub_wilson_vector( &(s->chi), &(s->mp), &(s->r) );
@@ -133,28 +133,28 @@ iteration,(double)rsq,(double)pkp,(double)a );**/
 	pkp = 0.0;
 #ifdef LU
 	mult_ldu(F_OFFSET(p), F_OFFSET(tmp), EVEN);
-        dslash_special(F_OFFSET(p), F_OFFSET(mp), PLUS, ODD, tag, 1);
+        dslash_w_special(F_OFFSET(p), F_OFFSET(mp), PLUS, ODD, tag, 1);
 	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), ODD);
-        dslash_special(F_OFFSET(tmp), F_OFFSET(mp), PLUS, EVEN, tag2, 1);
+        dslash_w_special(F_OFFSET(tmp), F_OFFSET(mp), PLUS, EVEN, tag2, 1);
         FOREVENSITESDOMAIN(i,s){
             scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
         }
 	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), EVEN);
-        dslash_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, ODD, tag, 1);
+        dslash_w_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, ODD, tag, 1);
 	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), ODD);
-        dslash_special(F_OFFSET(tmp), F_OFFSET(mp), MINUS, EVEN, tag2, 1);
+        dslash_w_special(F_OFFSET(tmp), F_OFFSET(mp), MINUS, EVEN, tag2, 1);
         FOREVENSITESDOMAIN(i,s){
             scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
             pkp += (double)wvec_rdot( &(s->p), &(s->mp) );
         }
 #else
 	mult_ldu(F_OFFSET(p), F_OFFSET(tmp), EVENANDODD);
-	dslash_special(F_OFFSET(p), F_OFFSET(mp), PLUS, EVENANDODD, tag, 1);
+	dslash_w_special(F_OFFSET(p), F_OFFSET(mp), PLUS, EVENANDODD, tag, 1);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
 	}
 	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), EVENANDODD);
-	dslash_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, EVENANDODD, tag, 1);
+	dslash_w_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, EVENANDODD, tag, 1);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
             pkp += (double)wvec_rdot( &(s->p), &(s->mp) );

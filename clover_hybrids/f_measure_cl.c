@@ -114,7 +114,7 @@ No compile.  Requires LU
 /* Multiply by M and see if I get g_rand back */
 /* use dir as flag*/
 /**
-dslash( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
+dslash_w( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
 FORALLSITES(i,s)scalar_mult_add_wvec( &(s->psi), &(s->mp), -kappa, &(s->mp) );
 FORALLSITES(i,s){
     for(dir=0,j=0;j<4;j++)for(k=0;k<3;k++){

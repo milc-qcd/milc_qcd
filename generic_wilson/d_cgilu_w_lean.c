@@ -85,7 +85,7 @@ int cgilu_w(             /* Return value is number of iterations taken */
   dtime = -dclock();
 #endif
   
-  dslash(src,mmp,PLUS,EVEN);
+  dslash_w(src,mmp,PLUS,EVEN);
   
   /* Normalisation  */
   dsize_src=0.0;
@@ -133,8 +133,8 @@ int cgilu_w(             /* Return value is number of iterations taken */
   if(flag != 0) {
     /**if(this_node==0)printf("dest_0  !=0\n");**/
     /* we use mmp temporarily to construct r */
-    dslash(dest,mmp,PLUS,ODD);
-    dslash(mmp,mmp,PLUS,EVEN);
+    dslash_w(dest,mmp,PLUS,ODD);
+    dslash_w(mmp,mmp,PLUS,EVEN);
     FOREVENSITES(i,s) {
       scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest),
 			   (wilson_vector *)F_PT(s,mmp),MKsq, 
@@ -156,8 +156,8 @@ int cgilu_w(             /* Return value is number of iterations taken */
   }
   
   /*  p = [L^(-1)*M*U^(-1)]_dag*r  */
-  dslash(r,mmp,MINUS,ODD);
-  dslash(mmp,p,MINUS,EVEN);
+  dslash_w(r,mmp,MINUS,ODD);
+  dslash_w(mmp,p,MINUS,EVEN);
   
   /* cp = |p|^2 */
   cp=0.0;
@@ -174,8 +174,8 @@ int cgilu_w(             /* Return value is number of iterations taken */
     
     c=cp;
     /*   mmp = M(u)*p */
-    dslash(p,mmp,PLUS,ODD);
-    dslash(mmp,mmp,PLUS,EVEN);
+    dslash_w(p,mmp,PLUS,ODD);
+    dslash_w(mmp,mmp,PLUS,EVEN);
     
     /* d = |mmp|^2  */
     d=0.0;
@@ -201,8 +201,8 @@ int cgilu_w(             /* Return value is number of iterations taken */
     
     /*   mmp = M(u)dag*r  */
     
-    dslash(r,mmp,MINUS,ODD);
-    dslash(mmp,mmp,MINUS,EVEN);
+    dslash_w(r,mmp,MINUS,ODD);
+    dslash_w(mmp,mmp,MINUS,EVEN);
     /*   cp = |mmp|^2  */
     cp=0.0;
     FOREVENSITES(i,s) {
@@ -246,7 +246,7 @@ int cgilu_w(             /* Return value is number of iterations taken */
     }**/
   
   /* dest = R^(-1)*dest  */
-  dslash(dest,mmp,PLUS,ODD);
+  dslash_w(dest,mmp,PLUS,ODD);
   FORODDSITES(i,s) {
     scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), 
 			  (wilson_vector *)F_PT(s,mmp),

@@ -89,7 +89,7 @@ dslash_special_qdp(QDP_DiracFermion *dest, QDP_DiracFermion *src,
 		   int sign, QDP_Subset subset, QDP_DiracFermion *temp[]);
 
 int
-congrad(int niter, Real rsqmin, Real *final_rsq_ptr) 
+congrad_w(int niter, Real rsqmin, Real *final_rsq_ptr) 
 {
   int i;
   int iteration;	/* counter for iterations */

@@ -2,7 +2,7 @@
 /* MIMD version 6 */
 
 /* Modifications:
-   7/18/01 Uses dslash_special - CD
+   7/18/01 Uses dslash_w_special - CD
    1/24/00 combined with Schroedinger functional version - UMH
    4/26/98 Moved parameters to structures CD
    8/29/97 ANSI prototyping and added comments C. D.
@@ -129,7 +129,7 @@ int cgilu_cl(            /* Return value is number of iterations taken */
   /* mp_o = 1/R_o srce_e */
   mult_ldu(src, my_mp, ODD);
   /* mp_e = D_eo/R_o srce_e */
-  dslash_special(my_mp, my_mp, PLUS, EVEN, tage, is_startede);
+  dslash_w_special(my_mp, my_mp, PLUS, EVEN, tage, is_startede);
   is_startede = 1;
   
   /* src_e = srce_e + K D_eo/R_o srce_e */
@@ -179,12 +179,12 @@ int cgilu_cl(            /* Return value is number of iterations taken */
     /* tmp_e = R_e dest_e */
     mult_ldu(dest, tmp, EVEN);
     /* mp_o = D_oe dest_e */
-    dslash_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
+    dslash_w_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     /* tmp_o = 1/R_o D_oe dest_e */
     mult_ldu(my_mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe dest_e */
-    dslash_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
+    dslash_w_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     /* mp_e = R_e dest_e - K^2 D_eo/R_o D_oe dest_e = M_e dest_e */
     /* r_e = src_e - M_e dest_e */
@@ -209,10 +209,10 @@ int cgilu_cl(            /* Return value is number of iterations taken */
 
   /* --------- p_e = M_e_dag*r_e --------- */
   mult_ldu(r, tmp, EVEN);
-  dslash_special(r, my_mp, MINUS, ODD, tago, is_startedo);
+  dslash_w_special(r, my_mp, MINUS, ODD, tago, is_startedo);
   is_startedo = 1;
   mult_ldu(my_mp, tmp, ODD);
-  dslash_special(tmp, p, MINUS, EVEN, tage, is_startede);
+  dslash_w_special(tmp, p, MINUS, EVEN, tage, is_startede);
   is_startede = 1;
   
   /* --------- cp = |p|^2 --------- */
@@ -238,12 +238,12 @@ int cgilu_cl(            /* Return value is number of iterations taken */
     /* tmp_e = R_e p_e */
     mult_ldu(p, tmp, EVEN);
     /* mp_o = D_oe p_e */
-    dslash_special(p, my_mp, PLUS, ODD, tago, is_startedo);
+    dslash_w_special(p, my_mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     /* tmp_o = 1/R_o D_oe p_e */
     mult_ldu(my_mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe p_e */
-    dslash_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
+    dslash_w_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     
     /* mp_e = R_e p_e - K^2 D_eo/R_o D_oe p_e */
@@ -272,10 +272,10 @@ int cgilu_cl(            /* Return value is number of iterations taken */
     /* --------- mp_e M_e_dag*r_e --------- */
     
     mult_ldu(r, tmp, EVEN);
-    dslash_special(r, my_mp, MINUS, ODD, tago, is_startedo);
+    dslash_w_special(r, my_mp, MINUS, ODD, tago, is_startedo);
     is_startedo = 1;
     mult_ldu(my_mp, tmp, ODD);
-    dslash_special(tmp, my_mp, MINUS, EVEN, tage, is_startede);
+    dslash_w_special(tmp, my_mp, MINUS, EVEN, tage, is_startede);
     is_startede = 1;
 
     cp=0.0;
@@ -329,7 +329,7 @@ int cgilu_cl(            /* Return value is number of iterations taken */
   
   /* --------- dest_o = U^(-1)_oo/R_o dest_o + U^(-1)_oe dest_e --------- */
   /* mp_o = D_oe * dest_e */
-  dslash_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
+  dslash_w_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
   is_startedo = 1;
   /* mp_o = dest_o + K D_oe * dest_e (remember dest_o = original src_o still)*/
   FORODDSITESDOMAIN(i,s) {

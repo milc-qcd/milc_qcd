@@ -8,7 +8,7 @@
 */
 
 /*
-	dslash(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
+	dslash_w(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
 Compute SUM_dirs ( 
     ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
   + ( 1 - isign*gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
@@ -22,7 +22,7 @@ Compute SUM_dirs (
 #define LOOPEND
 #include "../include/loopend.h"
 
-void dslash(field_offset src,field_offset dest,int isign,int parity)
+void dslash_w(field_offset src,field_offset dest,int isign,int parity)
 {
 half_wilson_vector hwv;
 
