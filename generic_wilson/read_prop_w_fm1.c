@@ -117,6 +117,8 @@ void r_prop_w_fm(char *filename, field_offset dest)
 	terminate(1);
       }
     
+    /* The site order parameter is ignored */
+
     if(psread_byteorder(byterevflag,0,fp,&order,sizeof(int32type),
 			filename,"order parameter")!=0) terminate(1);
   } /*if this_node==0*/
@@ -142,10 +144,10 @@ void r_prop_w_fm(char *filename, field_offset dest)
   status = 0;
   for(rcv_rank=0; rcv_rank<volume; rcv_rank++)
     {
-      if(order == NATURAL_ORDER)
-	rcv_coords = rcv_rank;
+
+      /* We do only natural order here */
+      rcv_coords = rcv_rank;
       
-      else {printf("not natural order!\n");terminate(1);}
       x = rcv_coords % nx;   rcv_coords /= nx;
       y = rcv_coords % ny;   rcv_coords /= ny;
       z = rcv_coords % nz;   rcv_coords /= nz;

@@ -25,6 +25,7 @@ G_WILSON_ALL =  \
     dslash_w2.o \
     dslash_w3.o \
     io_helpers_w.o \
+    io_scidac_w.o \
     io_wb3.o \
     meson_cont.o \
     mrilu_w_or.o \
@@ -93,6 +94,8 @@ dslash_w3.o: ../generic_wilson/dslash_w3.c
 	${CC} -c ${CFLAGS} $<
 io_helpers_w.o: ../include/io_lat.h ../include/io_wb.h
 io_helpers_w.o: ../generic_wilson/io_helpers_w.c
+	${CC} -c ${CFLAGS} $<
+io_scidac_w.o: ../generic_wilson/io_scidac_w.c
 	${CC} -c ${CFLAGS} $<
 io_wb3.o: ../include/io_lat.h ../include/io_wb.h
 io_wb3.o: ../generic_wilson/io_wb3.c
