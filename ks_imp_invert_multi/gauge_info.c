@@ -70,7 +70,8 @@ void write_appl_gauge_info(FILE *fp)
 
 char *create_QCDML(){
   char dummy[] = "Dummy QCDML";
-  char *qcdml = (char *)malloc(sizeof(dummy));
+  char *qcdml = (char *)malloc(sizeof(dummy)+1);
+  strcpy(qcdml,dummy);
   return qcdml;
 }
 
