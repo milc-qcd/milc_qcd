@@ -81,13 +81,16 @@ out.test.diff.${PROJ}: out.test${CUSTOM}.${PROJ} out.sample${CUSTOM}.${PROJ}
 
 .PHONY: test
 test:
-	for proj in ${PROJS};\
+	for macros in ${MACROLIST};\
 	do\
-	     ${MAKE} clean;\
-	     ${MAKE} $$proj ${MAKEMACROS};\
-	     ${MAKE} -f Make_test "PROJ=$$proj" out.test.diff.$$proj;\
-	     /bin/rm -f $$proj;\
-	     /bin/rm -f localmake*;\
+	   for proj in ${PROJS};\
+	   do\
+	        ${MAKE} clean;\
+	        ${MAKE} $$proj $$macros ${ADDMACRO};\
+	        ${MAKE} -f Make_test "PROJ=$$proj" out.test.diff.$$proj;\
+	        /bin/rm -f $$proj;\
+	        /bin/rm -f localmake*;\
+	   done\
 	done
 
 test_clean:

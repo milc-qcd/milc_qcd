@@ -265,4 +265,10 @@ CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${SSEOPT} \
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
 
+check:
+	make -f Make_test check
+
+test_clean:
+	make -f Make_test test_clean
+
 include Make_template

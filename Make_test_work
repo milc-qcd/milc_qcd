@@ -42,10 +42,12 @@ DIRS = \
   wilson_static
 
 
+#ADDMACRO="MPP=true"
+
 all:
 	for dir in ${DIRS};\
 	do\
-	    (echo "Testing $$dir"; cd $$dir; ${MAKE} -kf Make_test check > maketest.log 2>&1 )\
+	    (echo "Testing $$dir"; cd $$dir; ${MAKE} -kf Make_test check ${ADDMACRO} > maketest.log 2>&1 )\
 	done
 
 clean:
