@@ -9,6 +9,8 @@
 #include "../include/io_lat.h"
 #include "../include/io_wb.h"
 #include "../include/file_types.h"
+#include "../include/io_scidac.h"
+#include "../include/io_scidac_w.h"
 #include <string.h>
 #ifdef HAVE_QIO
 #include <qio.h>
