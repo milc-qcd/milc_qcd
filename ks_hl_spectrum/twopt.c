@@ -19,7 +19,7 @@ complex  KS_2pt_trace(su3_matrix * antiquark, wilson_propagator * quark,
   int my_z;
   
   complex trace;
-  int s0,s1,s2,s3;
+  int s0;
   int c0,c1,i;
 
   wilson_propagator temp,temp1;
@@ -32,19 +32,6 @@ complex  KS_2pt_trace(su3_matrix * antiquark, wilson_propagator * quark,
   my_z = s->z;
   
   temp = *quark;
-
-  /*for(c0=0;c0<3;c0++){
-    mult_swv_by_gamma_l( &(temp1.c[c0]), &(temp.c[c0]), GAMMAFIVE);
-    mult_swv_by_gamma_r( &(temp.c[c0]), &(temp1.c[c0]), GAMMAFIVE);
-    }*/
-
-
-  /* for(c0=0;c0<3;c0++)for(c1=0;c1<3;c1++) for(s0=0;s0<4;s0++)for(s1=0;s1<4;s1++) */
-/*     { */
-/*       temp.c[c0].d[s0].d[s1].c[c1].real = temp1.c[c0].d[s1].d[s0].c[c1].real; */
-/*       temp.c[c0].d[s0].d[s1].c[c1].imag = temp1.c[c0].d[s1].d[s0].c[c1].imag; */
-/*     }  */
-  
 
   //multiply by gamma_snk
 
