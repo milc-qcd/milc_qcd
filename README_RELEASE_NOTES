@@ -1,0 +1,58 @@
+This is a work in progress.
+
+This is the beginning of version 7 of the MILC code.
+
+So far it contains only the following applications:
+
+file-utilities
+ks_imp_dyn2
+ks_imp_utilities
+ks_imp_invert_multi
+ks_hl_spectrum
+
+Build the code with GNU make.
+
+Here are the new features so far:
+
+1. Unified Makefile replaces Make_vanilla Make_linux_mpi, etc.
+   See various macros in Makefile, including MPP.
+   Requires GNU make.
+
+2. Unified support for single and double precision
+   See the PRECISION macro in Makefile.
+
+3. Support for SciDAC QIO
+   See the WANTQIO macro in Makefile
+
+4. Support for SciDAC QDP
+   See the WANTQDP macro in Makefile
+
+5. Support for single and double precision SSE
+   Uses the same SSE and SSE_INLINE macros as in version 6,
+   except that P3 or P4 compiler macros are not used.
+
+6. Standalone MILC/FNAL to SciDAC file conversion in file_utilities.
+
+7. Uses only temp vectors for dslash_fn and d_congrad5_fn.
+
+8. New applications:
+
+   ks_hl_spectrum: Ludmila's MILC version for the clover heavy
+      staggered light spectrum.
+   ks_imp_invert_multi: multimass inversion
+   ks_imp_utilities: for checking fermion force and inverter
+
+9. New file_utilities
+    Conversion among binary file types for KS and Wilson propagators.
+    Differencing for propagator files.
+
+10. Unified I/O for KS propagators supporting Wingate, Fermilab
+    and SciDAC formats.
+
+11. Unified I/O for Wilson propagators supporitng MILC, Fermilab,
+    and SciDAC formats.
+
+12. Time-slice checksums for Fermilab KS and Wilson propagators.
+
+C. DeTar, Utah
+27 Mar 2005
