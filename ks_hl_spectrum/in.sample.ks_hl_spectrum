@@ -4,17 +4,17 @@ ny 4
 nz 4
 nt 8
 
-reload_serial ../binary_samples/l4_8_5.6_m01-Coul.1
+reload_serial ../binary_samples/lat.sample.l4448.ll
 forget
 
 number_of_kappas 1
 
-reload_serial_wprop ../binary_samples/qf_d_d_0.124_00001
+reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
 kappa 0.124
 d1 0.09073
 format 1
 
 number_of_smearings 1
-smear_func_file  ../binary_samples/wf_1S
+smear_func_file  ../binary_samples/smear_fm.sample.l4448.ll
 
-reload_serial_ksprop ../binary_samples/qf_stag_d_d_001_m0.1000_nt0
+reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll

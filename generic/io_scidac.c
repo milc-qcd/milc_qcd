@@ -311,6 +311,8 @@ int read_lat_dim_scidac(char *filename, int *ndim, int dims[])
   /* Build the layout structure */
   nx = 0; ny = 0; nz = 0; nt = 0;
   build_layout(&layout);
+  /* Forces discovery */
+  layout.latdim = 0;
 
   /* Get lattice dimensions from file */
   infile = open_input(filename, &layout);

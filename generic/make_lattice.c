@@ -46,4 +46,12 @@ void make_lattice(){
   }
 }
 
+void free_lattice()
+{
+  int i;
 
+  for(i=0;i<N_POINTERS;i++)
+    free(gen_pt[i]);
+
+  free(lattice);
+}

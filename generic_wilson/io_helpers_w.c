@@ -204,6 +204,8 @@ int reload_wprop_to_site( int flag, char *filename,
 	if( r_ascii_w(wpf,spin,color,destcs) != 0)status = 1;
       }
     r_ascii_w_f(wpf);
+    if(status == 0)
+      node0_printf("Read wprop in ASCII format from file %s\n",wpf->filename);
     break;
 
   case RELOAD_SERIAL:
@@ -211,7 +213,7 @@ int reload_wprop_to_site( int flag, char *filename,
     file_type = io_detect(filename, w_prop_list, N_WPROP_TYPES);
 
     if(file_type < 0){
-      node0_printf("reload_ksprop: Can't read file %s\n", filename);
+      node0_printf("reload_wprop_to_site: Can't read file %s\n", filename);
       return 1;
     }
 
@@ -225,7 +227,7 @@ int reload_wprop_to_site( int flag, char *filename,
 	  {
 	    destcs = dest + color*sizeof(spin_wilson_vector) + 
 	      spin*sizeof(wilson_vector);
-	    if( r_serial_w_to_site(wpf,spin,color,dest) != 0)status = 1; 
+	    if( r_serial_w_to_site(wpf,spin,color,destcs) != 0)status = 1; 
 	  }
 	r_serial_w_f(wpf);
       }
@@ -265,6 +267,8 @@ int reload_wprop_to_site( int flag, char *filename,
       node0_printf("Unsupported file type %d\n",file_type);
       return 1;
     }
+    if(status == 0)
+      node0_printf("Read wprop serially from file %s\n",filename);
     break;
     
   case RELOAD_PARALLEL:
@@ -278,6 +282,8 @@ int reload_wprop_to_site( int flag, char *filename,
 	if( r_parallel_w_to_site(wpf,spin,color,destcs) != 0)status = 1;
       }
     r_parallel_w_f(wpf);
+    if(status == 0)
+      node0_printf("Read wprop in parallel from file %s\n",filename);
     break;
     
   case RELOAD_MULTIDUMP:
@@ -291,6 +297,8 @@ int reload_wprop_to_site( int flag, char *filename,
 	if(r_multidump_w_to_site(wpf,spin,color,destcs) != 0)status = 1;
       }
     r_multidump_w_f(wpf);
+    if(status == 0)
+      node0_printf("Read wprop in multidump format from file %s\n",filename);
     break;
     
   default:
@@ -349,6 +357,8 @@ int reload_wprop_to_field( int flag, char *filename,
   case RELOAD_ASCII:
     node0_printf("Reloading ASCII to temp wprop not supported\n");
     terminate(1);
+    if(status == 0)
+      node0_printf("Read wprop in ASCII format from file %s\n",filename);
     break;
 
   case RELOAD_SERIAL:
@@ -356,7 +366,7 @@ int reload_wprop_to_field( int flag, char *filename,
     file_type = io_detect(filename, w_prop_list, N_WPROP_TYPES);
 
     if(file_type < 0){
-      node0_printf("reload_ksprop: Can't read file %s\n", filename);
+      node0_printf("reload_wprop_to_field: Can't read file %s\n", filename);
       return 1;
     }
 
@@ -385,8 +395,9 @@ int reload_wprop_to_field( int flag, char *filename,
 	      }
 	    }
 	  }
-	free(destcs);
+
 	r_serial_w_f(wpf);
+	free(destcs);
       }
     
     else if(file_type == FILE_TYPE_W_FMPROP){
@@ -438,6 +449,8 @@ int reload_wprop_to_field( int flag, char *filename,
       node0_printf("Unsupported file type %d\n",file_type);
       return 1;
     }
+    if(status == 0)
+      node0_printf("Read wprop serially from file %s\n",filename);
     break;
     
   case RELOAD_PARALLEL:
@@ -464,6 +477,8 @@ int reload_wprop_to_field( int flag, char *filename,
       }
     free(destcs);
     r_parallel_w_f(wpf);
+    if(status == 0)
+      node0_printf("Read wprop in parallel from file %s\n",filename);
     break;
     
   case RELOAD_MULTIDUMP:
@@ -490,6 +505,8 @@ int reload_wprop_to_field( int flag, char *filename,
     free(destcs);
     r_multidump_w_f(wpf);
 
+    if(status == 0)
+      node0_printf("Read wprop in multidump format from file %s\n",filename);
     break;
     
   default:
@@ -501,8 +518,7 @@ int reload_wprop_to_field( int flag, char *filename,
     {
       dtime += dclock();
       if(flag != FRESH && flag != CONTINUE)
-	node0_printf("Time to reload prop spin %d color %d %e\n",
-		     spin,color,dtime);
+	node0_printf("Time to reload wprop %e\n",dtime);
     }
   
   return status;
@@ -621,7 +637,7 @@ int save_wprop_sc_from_field( int flag, w_prop_file *wpf,
    FORGET,
    SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_MULTIDUMP, SAVE_CHECKPOINT
 */
-int save_wsprop_from_site( int flag, char *filename,
+int save_wsprop_from_site( int flag, char *filename, char *recxml,
 			    field_offset src, int timing)
 {
   double dtime;
@@ -649,6 +665,8 @@ int save_wsprop_from_site( int flag, char *filename,
 	w_ascii_w(wpf,spin,color,srccs);
       }
     w_ascii_w_f(wpf);
+    if(status == 0)
+      node0_printf("Saved wprop in ASCII format to file %s\n",filename);
     break;
 
   case SAVE_SERIAL:
@@ -660,6 +678,8 @@ int save_wsprop_from_site( int flag, char *filename,
 	w_serial_w_from_site(wpf,spin,color,srccs);
       }
     w_serial_w_f(wpf);
+    if(status == 0)
+      node0_printf("Saved wprop serially to file %s\n",filename);
     break;
 
   case SAVE_SERIAL_SCIDAC:
@@ -669,7 +689,6 @@ int save_wsprop_from_site( int flag, char *filename,
     {
       QIO_Layout layout;
       QIO_Writer *outfile;
-      char recxml[64];
 
       build_layout(&layout);
       /* In this format we have three records, one for each
@@ -686,7 +705,6 @@ int save_wsprop_from_site( int flag, char *filename,
       for(color = 0; color < 3; color++)
 	{
 	  srcc = src + color*sizeof(spin_wilson_vector);
-	  sprintf(recxml,"Source color %d\n",color);
 	  if(write_F3_D_from_site(outfile, recxml, srcc, 4) != QIO_SUCCESS)
 	    status += 1;
 	}
@@ -695,6 +713,8 @@ int save_wsprop_from_site( int flag, char *filename,
 #else
     node0_printf("To write a SciDAC file requires QIO compilation\n");
 #endif
+    if(status == 0)
+      node0_printf("Saved wprop serially to file %s\n",filename);
     break;
   case SAVE_PARALLEL:
     wpf = w_parallel_w_i(filename);
@@ -705,6 +725,8 @@ int save_wsprop_from_site( int flag, char *filename,
 	w_parallel_w_from_site(wpf,spin,color,srccs);
       }
     w_parallel_w_f(wpf);
+    if(status == 0)
+      node0_printf("Saved wprop in parallel to file %s\n",filename);
     break;
   case SAVE_CHECKPOINT:
     wpf = w_checkpoint_w_i(filename);
@@ -715,6 +737,8 @@ int save_wsprop_from_site( int flag, char *filename,
 	w_checkpoint_w_from_site(wpf,spin,color,srccs);
       }
     w_checkpoint_w_f(wpf);
+    if(status == 0)
+      node0_printf("Saved wprop in checkpoint format to file %s\n",filename);
     break;
   case SAVE_MULTIDUMP:
     wpf = w_multidump_w_i(filename);
@@ -725,6 +749,8 @@ int save_wsprop_from_site( int flag, char *filename,
 	w_multidump_w_from_site(wpf,spin,color,srccs);
       }
     w_multidump_w_f(wpf);
+    if(status == 0)
+      node0_printf("Saved wprop in multidump format to file %s\n",filename);
     break;
   default:
     node0_printf("save_wprop_from_site: Unrecognized save flag.\n");
@@ -735,8 +761,7 @@ int save_wsprop_from_site( int flag, char *filename,
     {
       dtime += dclock();
       if(flag != FORGET)
-	node0_printf("Time to save prop spin %d color %d = %e\n",
-		     spin,color,dtime);
+	node0_printf("Time to save wprop = %e\n",dtime);
     }
   return status;
 } /* save_wsprop_from_site */
@@ -785,7 +810,7 @@ int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[])
    FORGET,
    SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_MULTIDUMP, SAVE_CHECKPOINT
 */
-void save_wprop_from_field( int flag, char *filename,
+void save_wprop_from_field( int flag, char *filename, char *recxml,
 			     wilson_propagator *src, int timing)
 {
   double dtime;
@@ -828,6 +853,8 @@ void save_wprop_from_field( int flag, char *filename,
       }
     free(srccs);
     w_serial_w_f(wpf);
+    if(status == 0)
+      node0_printf("Saved wprop serially to file %s\n",filename);
     break;
 
   case SAVE_SERIAL_SCIDAC:
@@ -837,7 +864,6 @@ void save_wprop_from_field( int flag, char *filename,
     {
       QIO_Layout layout;
       QIO_Writer *outfile;
-      char recxml[64];
 
       build_layout(&layout);
       /* In this format we have three records, one for each
@@ -864,7 +890,6 @@ void save_wprop_from_field( int flag, char *filename,
 	    for(spin = 0; spin < 4; spin++)
 	      srccs[4*i + spin] = src[i].c[color].d[spin];
 	  }
-	  sprintf(recxml,"Source color %d\n",color);
 	  if(write_F3_D_from_field(outfile, recxml, srccs, 4) 
 	     != QIO_SUCCESS)break;
 	}
@@ -874,6 +899,8 @@ void save_wprop_from_field( int flag, char *filename,
 #else
     node0_printf("To write a SciDAC file requires QIO compilation\n");
 #endif
+    if(status == 0)
+      node0_printf("Saved wprop serially to file %s\n",filename);
     break;
   case SAVE_PARALLEL:
     wpf = w_parallel_w_i(filename);
@@ -895,6 +922,8 @@ void save_wprop_from_field( int flag, char *filename,
       }
     w_parallel_w_f(wpf);
     free(srccs);
+    if(status == 0)
+      node0_printf("Saved wprop in parallel to file %s\n",filename);
     break;
 
   case SAVE_CHECKPOINT:
@@ -915,6 +944,8 @@ void save_wprop_from_field( int flag, char *filename,
       }
     free(srccs);
     w_checkpoint_w_f(wpf);
+    if(status == 0)
+      node0_printf("Saved wprop in checkpoint format to file %s\n",filename);
     break;
 
   case SAVE_MULTIDUMP:
@@ -935,6 +966,8 @@ void save_wprop_from_field( int flag, char *filename,
       }
     free(srccs);
     w_multidump_w_f(wpf);
+    if(status == 0)
+      node0_printf("Saved wprop in multidump format to file %s\n",filename);
     break;
   default:
     node0_printf("save_wprop_from_field: Unrecognized save flag.\n");
@@ -945,8 +978,7 @@ void save_wprop_from_field( int flag, char *filename,
     {
       dtime += dclock();
       if(flag != FORGET)
-	node0_printf("Time to save prop spin %d color %d = %e\n",
-		     spin,color,dtime);
+	node0_printf("Time to save wprop = %e\n",dtime);
     }
 
 } /* save_wsprop_from_field */

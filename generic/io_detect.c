@@ -4,6 +4,8 @@
 /* Read the 32-bit magic number of a file and look it up in a table */
 /* Returns the file type number from the table, which must be >= 0 */
 /* Error return is -1 (not in table), -2 (open error) -3 (read error) */
+/* Multidump files do not have a magic number, so can't be identified
+   this way */
 
 #include "generic_includes.h"
 #include <string.h>

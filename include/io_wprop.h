@@ -341,9 +341,9 @@ int reload_wprop_to_site( int flag, char *filename,
 			  field_offset dest, int timing);
 int reload_wprop_to_field( int flag, char *filename,
 			  wilson_propagator *dest, int timing);
-void save_wprop_from_site( int flag, char *filename, 
+void save_wprop_from_site( int flag, char *filename, char *recxml,
 			   field_offset src, int timing);
-void save_wprop_from_field( int flag, char *filename, 
+void save_wprop_from_field( int flag, char *filename, char *recxml,
 			   wilson_propagator *src, int timing);
 int ask_starting_wprop( int prompt, int *flag, char *filename );
 int ask_ending_wprop( int prompt, int *flag, char *filename );

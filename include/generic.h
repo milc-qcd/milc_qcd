@@ -115,6 +115,7 @@ int num_sites(int node);
 
 /* make_lattice.c */
 void make_lattice();
+void free_lattice();
 
 /* make_global_fields.c */
 void make_global_fields();

@@ -1023,7 +1023,8 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
   
   if(this_node==0)
     {
-      printf("Read prop serially from file %s\n", filename);
+      printf("Read prop serially for color %d from file %s\n", 
+	     color, filename);
       
       /* Verify checksum */
       /* Checksums not implemented until version 5 */

@@ -431,7 +431,7 @@ int ask_starting_ksprop( int prompt, int *flag, char *filename ){
     int status;
 
     if (prompt!=0) 
-      printf( "enter 'fresh_ks', 'reload_ascii_ksprop', 'reload_serial_ksprop', \n");
+      printf( "enter 'fresh_ks', 'reload_ascii_ksprop', 'reload_serial_ksprop' \n");
     status=scanf("%s",savebuf);
     if (status == EOF){
       printf("ask_starting_ksprop: EOF on STDIN.\n");
