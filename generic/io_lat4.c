@@ -26,6 +26,9 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
 
 #ifndef HAVE_FSEEKO
 #define fseeko fseek

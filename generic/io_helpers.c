@@ -8,6 +8,9 @@
 #include "generic_includes.h"
 #include "../include/io_lat.h"
 #include "../include/file_types.h"
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
 
 static file_type gauge_list[N_GAUGE_TYPES] =
   { {FILE_TYPE_GAUGE_V1,      GAUGE_VERSION_NUMBER_V1},
