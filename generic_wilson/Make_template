@@ -26,6 +26,7 @@ G_WILSON_ALL =  \
     dslash_w3.o \
     meson_cont.o \
     mrilu_w_or.o \
+    read_prop_w_fm1.o \
     w_baryon.o \
     w_baryon_hl.o \
     w_meson.o \
@@ -59,52 +60,54 @@ ${G_WILSON_ALL}: ${G_WILSON_ALL_DEPEND}
 include ../include/Make_template
 
 bj_to_weyl.o: ../generic_wilson/bj_to_weyl.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/bj_to_weyl.c 
+	${CC} -c ${CFLAGS} $<
 boundary_flip.o: ../generic_wilson/boundary_flip.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/boundary_flip.c 
+	${CC} -c ${CFLAGS} $<
 copy_site_wilson_vector.o: ../generic_wilson/copy_site_wilson_vector.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/copy_site_wilson_vector.c 
+	${CC} -c ${CFLAGS} $<
 d_bicgilu_w_lean.o: ../generic_wilson/d_bicgilu_w_lean.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/d_bicgilu_w_lean.c 
+	${CC} -c ${CFLAGS} $<
 d_bicgilu_w_lean2.o: ../generic_wilson/d_bicgilu_w_lean2.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/d_bicgilu_w_lean2.c 
+	${CC} -c ${CFLAGS} $<
 d_cgilu_w_lean.o: ../generic_wilson/d_cgilu_w_lean.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/d_cgilu_w_lean.c 
+	${CC} -c ${CFLAGS} $<
 d_cgilu_w_lean2.o: ../generic_wilson/d_cgilu_w_lean2.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/d_cgilu_w_lean2.c 
+	${CC} -c ${CFLAGS} $<
 d_congrad2.o: ../generic_wilson/d_congrad2.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/d_congrad2.c 
+	${CC} -c ${CFLAGS} $<
 d_w_meson.o: ../generic_wilson/d_w_meson.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/d_w_meson.c 
+	${CC} -c ${CFLAGS} $<
 dslash_lean.o: ../generic_wilson/dslash_lean.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_lean.c 
+	${CC} -c ${CFLAGS} $<
 dslash_lean2.o: ../generic_wilson/dslash_lean2.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_lean2.c 
+	${CC} -c ${CFLAGS} $<
 dslash_lean_forwards.o: ../generic_wilson/dslash_lean_forwards.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_lean_forwards.c 
+	${CC} -c ${CFLAGS} $<
 dslash_w.o: ../generic_wilson/dslash_w.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_w.c 
+	${CC} -c ${CFLAGS} $<
 dslash_w2.o: ../generic_wilson/dslash_w2.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_w2.c 
+	${CC} -c ${CFLAGS} $<
 dslash_w3.o: ../generic_wilson/dslash_w3.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_w3.c 
+	${CC} -c ${CFLAGS} $<
 meson_cont.o: ../generic_wilson/meson_cont.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/meson_cont.c 
+	${CC} -c ${CFLAGS} $<
 mrilu_w_or.o: ../generic_wilson/mrilu_w_or.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/mrilu_w_or.c 
+	${CC} -c ${CFLAGS} $<
+read_prop_w_fm1.o: ../generic_wilson/read_prop_w_fm1.c
+	${CC} -c ${CFLAGS} $<
 w_baryon.o: ../generic_wilson/w_baryon.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/w_baryon.c 
+	${CC} -c ${CFLAGS} $<
 w_baryon_hl.o: ../generic_wilson/w_baryon_hl.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/w_baryon_hl.c 
+	${CC} -c ${CFLAGS} $<
 w_meson.o: ../generic_wilson/w_meson.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/w_meson.c 
+	${CC} -c ${CFLAGS} $<
 w_source.o: ../generic_wilson/w_source.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/w_source.c 
+	${CC} -c ${CFLAGS} $<
 w_source_h.o: ../generic_wilson/w_source_h.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/w_source_h.c 
+	${CC} -c ${CFLAGS} $<
 wilson_invert.o: ../generic_wilson/wilson_invert.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/wilson_invert.c 
+	${CC} -c ${CFLAGS} $<
 wilson_invert_lean.o: ../generic_wilson/wilson_invert_lean.c
-	${CC} -c ${CFLAGS}  ../generic_wilson/wilson_invert_lean.c 
+	${CC} -c ${CFLAGS} $<
 
 
