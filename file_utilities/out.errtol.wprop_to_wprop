@@ -1,0 +1,71 @@
+BEGIN
+reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
+save_serial_wprop wprop_milc.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = XXX options = XXX
+Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_milc.test.l4448.ll
+Reading as a Fermilab Wilson prop file
+quark.t[0].checksum "7e685bd9 0
+quark.t[1].checksum "458d636c 0
+quark.t[2].checksum "b5a45a07 0
+quark.t[3].checksum "331f5357 0
+quark.t[4].checksum "d2a13ba2 0
+quark.t[5].checksum "4720052d 0
+quark.t[6].checksum "90dc8731 0
+quark.t[7].checksum "637519f8 0
+Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
+Time to reload wprop 1
+Wrote prop file wprop_milc.test.l4448.ll time stamp XXX XXX 1000 1000 1000
+Saved wprop serially to file wprop_milc.test.l4448.ll
+Time to save wprop = 1
+reload_serial_wprop wprop_milc.test.l4448.ll
+save_serial_scidac_wprop wprop_scidac1.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = XXX options = XXX
+Converting file wprop_milc.test.l4448.ll to file wprop_scidac1.test.l4448.ll
+Reading as a MILC Wilson prop file
+Read wprop serially from file wprop_milc.test.l4448.ll
+Time to reload wprop 1
+Saved wprop serially to file wprop_scidac1.test.l4448.ll
+Time to save wprop = 1
+reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
+save_serial_scidac_wprop wprop_scidac2.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = XXX options = XXX
+Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_scidac2.test.l4448.ll
+Reading as a Fermilab Wilson prop file
+quark.t[0].checksum "7e685bd9 0
+quark.t[1].checksum "458d636c 0
+quark.t[2].checksum "b5a45a07 0
+quark.t[3].checksum "331f5357 0
+quark.t[4].checksum "d2a13ba2 0
+quark.t[5].checksum "4720052d 0
+quark.t[6].checksum "90dc8731 0
+quark.t[7].checksum "637519f8 0
+Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
+Time to reload wprop 1
+Saved wprop serially to file wprop_scidac2.test.l4448.ll
+Time to save wprop = 1
+reload_serial_wprop wprop_milc.test.l4448.ll
+save_checkpoint_wprop wprop_checkpoint.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = XXX options = XXX
+Converting file wprop_milc.test.l4448.ll to file wprop_checkpoint.test.l4448.ll
+Reading as a MILC Wilson prop file
+Read wprop serially from file wprop_milc.test.l4448.ll
+Time to reload wprop 1
+Wrote prop file wprop_checkpoint.test.l4448.ll time stamp XXX XXX 1000 1000 1000
+Saved wprop in checkpoint format to file wprop_checkpoint.test.l4448.ll
+Time to save wprop = 1
+reload_serial_wprop wprop_checkpoint.test.l4448.ll
+save_serial_scidac_wprop wprop_scidac3.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = XXX options = XXX
+Converting file wprop_checkpoint.test.l4448.ll to file wprop_scidac3.test.l4448.ll
+Reading as a MILC Wilson prop file
+Read wprop serially from file wprop_checkpoint.test.l4448.ll
+Time to reload wprop 1
+Saved wprop serially to file wprop_scidac3.test.l4448.ll
+Time to save wprop = 1
+ask_starting_wprop: EOF on STDIN.
+RUNNING COMPLETED
