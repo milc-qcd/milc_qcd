@@ -765,7 +765,7 @@ make_gather(
 **  returns msg_tag containing details for specific gather
 **  handles gathers from both field offset and temp
 */
-static msg_tag *
+msg_tag *
 declare_strided_gather(
   void *field,	        /* source buffer aligned to desired field */
   int stride,           /* bytes between fields in source buffer */

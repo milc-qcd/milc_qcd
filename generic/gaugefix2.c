@@ -142,11 +142,13 @@ void accum_gauge_hit(int gauge_dir,int parity)
 	  /* Downward link matrix */
 	  m2 = (su3_matrix *)gen_pt[dir][i];
 
-	  if(diffmat_offset >= 0)
+	  if(diffmat_offset >= 0){
 	    add_su3_matrix((su3_matrix *)F_PT(s,diffmat_offset), m2, 
 			   (su3_matrix *)F_PT(s,diffmat_offset));
-	  else
+	  }
+	  else{
 	    add_su3_matrix( &diffmatp[i], m2, &diffmatp[i]);
+	  }
 	    
 	  if(sumvec_offset >= 0)
 	    {
