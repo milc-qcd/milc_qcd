@@ -23,6 +23,16 @@ EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 #define N_POINTERS 8	/* Number of generic pointers */
 EXTERN char ** gen_pt[N_POINTERS];
+/* Further source description */
+#ifdef CONTROL
+int n_spins = 4;                /* Number of spins generated */
+int source_loc[4] = {0,0,0,0};  /* Source location */
+int spins[4] = {0,1,2,3};       /* List of spins generated */
+#else
+extern int n_spins;
+extern int source_loc[4];
+extern int spins[4];
+#endif
 
 struct site {
 	short x,y,z,t;
