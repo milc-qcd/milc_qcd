@@ -3,7 +3,7 @@
 # 8/9/02 C. DeTar
 
 #  Change these names to suit
-VER = 7.0.9-alpha
+VER = 7.0.10-alpha
 NAME_ROOT = milc_qcd-${VER}
 RELEASE_NAME_ROOT = ${NAME_ROOT}_release
 WORK_NAME_ROOT = ${NAME_ROOT}

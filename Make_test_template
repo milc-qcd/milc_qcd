@@ -1,21 +1,25 @@
 # Generic make-include file for all applications
 # For inclusion in an application-specific Make_test
 # Not intended to be used as a standalone.
-# C.D. 3/19/00
+# C.D. 3/26/05
 
 # For making the test output.  Results are put in out.test.diff.${PROJ}
 
 # Instructions...
-# 1.  Select the appropriate job launch command below.
-# 2.  Go to the application directory
-# 3.  There should already be sample output files constructed from
-#     code that you trust.
-# 4.  Run the command
-#        make -f Make_test "ARCH=vanilla" test
-#     or replace "vanilla" with the architecture-dependent extension
-#     for any of the make files.
-# 5.  Results are reported in files called out.test.diff.*
+# 1.  Copy the Makefile to the application directory and edit it
+#     for the options and architecture you desire
+# 2.  Select the appropriate job launch command below by uncommenting
+#     the appropriate set.
+# 3.  Go to the application directory
+# 4.  There should already be sample output files constructed from
+#     code that you trust and the corresponding error tolerance files.
+#     If not, see instructions in seterrfile.pl for creating
+#     the error tolerance file.
+# 5.  In the application directory, run the command
+#        make -f Make_test test
+# 6.  Results are reported in files called out.test.diff.*
 #     These files show differences between the sample and test output files.
+#     using the error tolerance file to determine compliance.
 # 6.  The variable CUSTOM is normally undefined in the master
 #     Make_test file.  With this choice the test consists of comparing
 #     stdout from a test run with the corresponding sample output file.
@@ -24,47 +28,40 @@
 #     Make_test file for the file out.test${CUSTOM}.${PROJ} allows a custom 
 #     test - for example a test comparing output other than stdout.
 #     A corresponding out.sample${CUSTOM}.${PROJ} must be supplied.
+#
 # For the "heavy" application, follow instructions in heavy/Make_test
 
 # Provisions for architecture-dependent job launching
 # Change to suit...
 
+# The job is launched with the commad
+# ${LAUNCH} ./${PROJ} ${LAUNCH2} < in.sample.${PROJ} > out.test.${PROJ}
+
 # SGI Origin
 #LAUNCH = mpirun -np 4
 #LAUNCH2 = 
-#ARCH = origin_mpi
-
-# T3E
-#LAUNCH = mpprun -n 4
-#LAUNCH2 = 
-#ARCH = t3e_mpi
 
 # Linux MPI
 #LAUNCH = /uufs/icebox/sys/pkg/mpich/1.2.1/bin/mpirun -np 4 -machinefile $$PBS_NODEFILE  # icebox
 #LAUNCH = /usr/local/bin/vmi-launch -ncpus 8 --  #  VMI
 #LAUNCH2 = 
-#ARCH = linux_mpi
 
 # Linux QMP
 #LAUNCH = mpirun.ch_gm -np 8
 #LAUNCH2 = 
-#ARCH = linux_qmp
 
 # Compaq Alpha cluster (tcsini)
 #LAUNCH = prun -N $$RMS_NODES -n $$RMS_PROCS # (tcsini)
 #LAUNCH = prun -p test -B 1 -N 1 -n 4  (CHPC sierra cluster - private node sierra1)
 #LAUNCH2 =
-#ARCH = tcs_mpi
 
 # SP
 #LAUNCH = poe 
 #LAUNCH2 = -nodes 1 -tasks_per_node 4 -rmpool 1 -euilib ip -euidevice en0
-#ARCH = sp_mpi
 
-# Scalar
+# Scalar machine
 LAUNCH =
 LAUNCH2 = 
-ARCH = vanilla
 
 out.test.${PROJ}: ${PROJ} in.sample.${PROJ}
 	${LAUNCH} ./${PROJ} ${LAUNCH2} < in.sample.${PROJ} > out.test.${PROJ}
@@ -72,15 +69,15 @@ out.test.${PROJ}: ${PROJ} in.sample.${PROJ}
 out.test.diff.${PROJ}: out.test${CUSTOM}.${PROJ} out.sample${CUSTOM}.${PROJ}
 	../headtail.pl ${PATTERNS} < out.test${CUSTOM}.${PROJ} > out.test.${PROJ}.tmp
 	../headtail.pl ${PATTERNS} < out.sample${CUSTOM}.${PROJ} > out.sample.${PROJ}.tmp
-	../diffn.pl out.test.${PROJ}.tmp out.sample.${PROJ}.tmp ${TOL} > \
+	../diffn3.pl out.test.${PROJ}.tmp out.sample.${PROJ}.tmp out.errtol${CUSTOM}.${PROJ} > \
 	   out.test.diff.${PROJ}
-	rm out.test.${PROJ}.tmp out.sample.${PROJ}.tmp
+#	   /bin/rm out.test.${PROJ}.tmp out.sample.${PROJ}.tmp
 
 test:
 	for proj in ${PROJS};\
 	do\
-     	     cp -p ../Make_${ARCH} .;\
-	     ${MAKE} -f Make_${ARCH} $$proj;\
+	     ${MAKE} clean;\
+	     ${MAKE} $$proj ${MAKEMACROS};\
 	     ${MAKE} -f Make_test "PROJ=$$proj" out.test.diff.$$proj;\
 	     /bin/rm -f $$proj;\
 	     /bin/rm -f localmake*;\
