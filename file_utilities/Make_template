@@ -125,16 +125,28 @@ check_gauge::
 	"EXTRA_OBJECTS= check_gauge.o \
 	check_unitarity.o gauge_info_dummy.o"
 
+diff_ksprop::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksprop" \
+	"DEFINES= ${DARCH}" \
+	"EXTRA_OBJECTS=  diff_ksprop.o io_helpers_ks.o \
+	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o"
+
+diff_wprop::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_wprop" \
+	"DEFINES= ${DARCH}" \
+	"EXTRA_OBJECTS=  diff_wprop.o io_helpers_w.o \
+	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o"
+
 lattice_to_scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= lattice_to_scidac" \
 	"DEFINES= ${DARCH}" \
 	"EXTRA_OBJECTS=  lattice_to_scidac.o \
 	check_unitarity.o gauge_info_dummy.o io_scidac.o"
 
-ksprop_to_scidac::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= ksprop_to_scidac" \
+ksprop_to_ksprop::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= ksprop_to_ksprop" \
 	"DEFINES= ${DARCH}" \
-	"EXTRA_OBJECTS=  ksprop_to_scidac.o io_helpers_ks.o \
+	"EXTRA_OBJECTS=  ksprop_to_ksprop.o io_helpers_ks.o \
 	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o"
 
 wprop_to_wprop::

@@ -1,11 +1,11 @@
-/*************************** wprop_to_scidac.c ************************/
+/*************************** ksprop_to_scidac.c ************************/
 /* MIMD version 6 */
-/* Read a Wilson prop, convert to SciDAC format */
-/* C. DeTar 3/25/05 */
+/* Read a KS prop, convert to SciDAC format */
+/* C. DeTar 3/22/05 */
 
 /* Usage ...
 
-   wprop_to_scidac milc_file scidac_file
+   ksprop_to_scidac milc_file scidac_file
 
 */
 
@@ -22,19 +22,18 @@
 #include <time.h>
 #include <string.h>
 #include "../include/file_types.h"
-#include "../include/io_wprop.h"
+#include "../include/io_ksprop.h"
 #include "../include/generic.h"
-#include "../include/generic_wilson.h"
+#include "../include/generic_ks.h"
 #include "../include/io_lat.h"
 #include <qio.h>
 
 #define MAX_RECXML 512
 
-static file_type w_prop_list[N_WPROP_TYPES] =
-  { {FILE_TYPE_W_PROP,       W_PROP_VERSION_NUMBER},
-    {FILE_TYPE_W_PROP_1996,  W_PROP_VERSION_NUMBER_1996},
-    {FILE_TYPE_W_FMPROP,     W_FMPROP_VERSION_NUMBER},
-    {FILE_TYPE_W_QIOPROP,    LIME_MAGIC_NO}
+static file_type ksprop_list[N_KSPROP_TYPES] =
+  { {FILE_TYPE_KSPROP,       KSPROP_VERSION_NUMBER},
+    {FILE_TYPE_KSFMPROP,     KSFMPROP_VERSION_NUMBER},
+    {FILE_TYPE_KSQIOPROP,    LIME_MAGIC_NO}
   };
 
 /*----------------------------------------------------------------------*/
@@ -47,6 +46,7 @@ int x,y,z,t;            /* coordinates */
         printf("NODE %d: no room for lattice\n",this_node);
         terminate(1);
     }
+
     for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
         if(node_number(x,y,z,t)==mynode()){
             i=node_index(x,y,z,t);
@@ -123,11 +123,11 @@ int readin(prompt)
 
   if(this_node==0) {
 
-    IF_OK status += ask_starting_wprop( prompt, &(par_buf.startflag),
-					par_buf.startfile );
+    IF_OK status += ask_starting_ksprop( prompt, &(par_buf.startflag),
+					 par_buf.startfile );
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_wprop( prompt, &(par_buf.saveflag),
-				      par_buf.savefile );
+    IF_OK status += ask_ending_ksprop( prompt, &(par_buf.saveflag),
+				       par_buf.savefile );
     if(status > 0)par_buf.stopflag = 1; else par_buf.stopflag = 0;
   }
 
@@ -144,9 +144,9 @@ int main(int argc, char *argv[])
 
   int file_type;
   char recxml[MAX_RECXML];
+  int i,prompt;
   int dims[4],ndim;
-  int prompt;
-  wilson_propagator *wprop;
+  su3_vector *ksprop;
 
   initialize_machine(argc,argv);
 
@@ -160,14 +160,14 @@ int main(int argc, char *argv[])
   while(readin(prompt) == 0)
     {
       /* Sniff out the input file type */
-      file_type = io_detect(par_buf.startfile, w_prop_list, N_WPROP_TYPES);
+      file_type = io_detect(par_buf.startfile, ksprop_list, N_KSPROP_TYPES);
       if(file_type < 0){
-	node0_printf("Can't determine Wilson prop file type %s\n", par_buf.startfile);
+	node0_printf("Can't determine KS prop file type %s\n", par_buf.startfile);
 	return 1;
       }
-      
+
       /* Get the lattice dimensions from the input file */
-      read_lat_dim_wprop(par_buf.startfile, file_type, &ndim, dims);
+      read_lat_dim_ksprop(par_buf.startfile, file_type, &ndim, dims);
       
       if(this_node == 0)
 	{
@@ -176,31 +176,30 @@ int main(int argc, char *argv[])
 	}
 
       volume=nx*ny*nz*nt;
-      
+
       /* Finish setup - broadcast dimensions */
       setup_refresh();
       
-      /* Allocate space for the full propagator on each node */
-      wprop = (wilson_propagator *)malloc(sites_on_node*
-					  sizeof(wilson_propagator));
-      if(wprop == NULL){
+      /* Allocate space for ksprop */
+      ksprop = (su3_vector *)malloc(sites_on_node*3*sizeof(su3_vector));
+
+      if(ksprop == NULL){
 	node0_printf("No room for propagator\n");
 	terminate(1);
       }
-      
+
       if(this_node == 0)printf("Converting file %s to file %s\n",
-			       par_buf.startfile, par_buf.savefile);
-      
-      /* Read the whole propagator */
-      reload_wprop_to_field(par_buf.startflag, par_buf.startfile, wprop, 1);
-      
+			   par_buf.startfile, par_buf.savefile);
+
+      /* Read the whole file */
+      reload_ksprop_to_field(par_buf.startflag, par_buf.startfile, ksprop, 0);
+
       /* Write the whole propagator */
       /* Some arbitrary metadata */
       snprintf(recxml,MAX_RECXML,"Converted from %s",par_buf.startfile);
-      save_wprop_from_field(par_buf.saveflag, par_buf.savefile, recxml, 
-			    wprop, 1);
-
-      free(wprop);
+      save_ksprop_from_field(par_buf.saveflag, par_buf.savefile, recxml, 
+			     ksprop, 1);
+      free(ksprop);
       free_lattice();
     }
 

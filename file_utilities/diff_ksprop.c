@@ -1,11 +1,11 @@
-/*************************** ksprop_to_scidac.c ************************/
+/*************************** diff_ksprop.c ************************/
 /* MIMD version 6 */
-/* Read a KS prop, convert to SciDAC format */
-/* C. DeTar 3/22/05 */
+/* Compare two KS prop files of any format */
+/* C. DeTar 3/26/05 */
 
 /* Usage ...
 
-   ksprop_to_scidac milc_file scidac_file
+   diff_ksprop <ksprop_file1> <ksprop_file2>
 
 */
 
@@ -46,14 +46,6 @@ int x,y,z,t;            /* coordinates */
         printf("NODE %d: no room for lattice\n",this_node);
         terminate(1);
     }
-   /* Allocate address vectors */
-    for(i=0;i<8;i++){
-        gen_pt[i] = (char **)malloc(sites_on_node*sizeof(char *) );
-        if(gen_pt[i]==NULL){
-            printf("NODE %d: no room for pointer vector\n",this_node);
-            terminate(1);
-        }
-    }
 
     for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
         if(node_number(x,y,z,t)==mynode()){
@@ -73,9 +65,10 @@ void free_lattice()
 {
   free(lattice);
 }
+
 /*----------------------------------------------------------------------*/
 
-void setup() {
+void setup_refresh() {
 
   /* Set up lattice */
   broadcast_bytes((char *)&nx,sizeof(int));
@@ -100,90 +93,100 @@ params par_buf;
 
 /*----------------------------------------------------------------------*/
 
-#define IF_OK if(status==0)
-
-int readin(prompt)
-{
-  int status = 0;
-
-  if(this_node==0) {
-
-    IF_OK status += ask_starting_ksprop( prompt, &(par_buf.startflag),
-					 par_buf.startfile );
-    /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_ksprop( prompt, &(par_buf.saveflag),
-				       par_buf.savefile );
-  }
-
-  /* Node 0 broadcasts parameter buffer to all other nodes */
-  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
-  
-  return par_buf.stopflag;
-}
-
-/*----------------------------------------------------------------------*/
-
 int main(int argc, char *argv[])
 {
 
-  int file_type;
-  char recxml[MAX_RECXML];
-  int i;
+  int file_type1, file_type2;
+  int i,prompt,color;
+  site *s;
   int dims[4],ndim;
-  su3_vector *ksprop;
+  Real norm2;
+  su3_vector ksdiff;
+  su3_vector *ksprop1, *ksprop2;
+  char *ksprop_file1, *ksprop_file2;
+
+  if(argc < 3){
+    node0_printf("Usage %s <ksprop_file1> <ksprop_file2>\n", argv[0]);
+    return 1;
+  }
+
+  ksprop_file1 = argv[1];
+  ksprop_file2 = argv[2];
 
   initialize_machine(argc,argv);
 
   this_node = mynode();
   number_of_nodes = numnodes();
 
-  /* Loop over input requests */
-  while(readin(1) == 0)
+  /* Sniff out the input file types */
+  file_type1 = io_detect(ksprop_file1, ksprop_list, N_KSPROP_TYPES);
+  if(file_type1 < 0){
+    node0_printf("Can't determine KS prop file type %s\n", ksprop_file1);
+    return 1;
+  }
+  
+  file_type2 = io_detect(ksprop_file2, ksprop_list, N_KSPROP_TYPES);
+  if(file_type2 < 0){
+    node0_printf("Can't determine KS prop file type %s\n", ksprop_file2);
+    return 1;
+  }
+  
+  /* Get the lattice dimensions from the first input file */
+  read_lat_dim_ksprop(ksprop_file1, file_type1, &ndim, dims);
+  
+  if(this_node == 0)
     {
-      /* Sniff out the input file type */
-      file_type = io_detect(par_buf.startfile, ksprop_list, N_KSPROP_TYPES);
-      if(file_type < 0){
-	node0_printf("Can't read file %s\n", par_buf.startfile);
-	return 1;
-      }
-
-      /* Get the lattice dimensions from the input file */
-      read_lat_dim_ksprop(par_buf.startfile, file_type, &ndim, dims);
-      
-      if(this_node == 0)
-	{
-	  nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
-	  printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
-	}
-
-      volume=nx*ny*nz*nt;
-
-      /* Finish setup - broadcast dimensions */
-      setup();
-      
-      /* Allocate space for ksprop */
-      ksprop = (su3_vector *)malloc(sites_on_node*3*sizeof(su3_vector));
-
-      if(ksprop == NULL){
-	node0_printf("No room for propagator\n");
-	terminate(1);
-      }
-
-      if(this_node == 0)printf("Converting file %s to file %s\n",
-			   par_buf.startfile, par_buf.savefile);
-
-      /* Read the whole file */
-      reload_ksprop_to_field(par_buf.startflag, par_buf.startfile, ksprop, 0);
-
-      /* Write the whole propagator */
-      /* Some arbitrary metadata */
-      snprintf(recxml,MAX_RECXML,"Converted from %s",par_buf.startfile);
-
-      save_ksprop_from_field(par_buf.saveflag, par_buf.savefile, recxml, 
-			     ksprop, 1);
-      free(ksprop);
-      free_lattice();
+      nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
+      printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
     }
+  
+  volume=nx*ny*nz*nt;
+  
+  /* Finish setup - broadcast dimensions */
+  setup_refresh();
+  
+  /* Allocate space for ksprops */
+  ksprop1 = (su3_vector *)malloc(sites_on_node*3*sizeof(su3_vector));
+  
+  if(ksprop1 == NULL){
+    node0_printf("No room for propagator\n");
+    terminate(1);
+  }
+  
+  ksprop2 = (su3_vector *)malloc(sites_on_node*3*sizeof(su3_vector));
+  
+  if(ksprop2 == NULL){
+    node0_printf("No room for propagator\n");
+    terminate(1);
+  }
+  
+  if(this_node == 0)printf("Comparing file %s with file %s\n",
+			   ksprop_file1,ksprop_file2);
+  
+  /* Read all of both files */
+  reload_ksprop_to_field(RELOAD_SERIAL, ksprop_file1, ksprop1, 0);
+  reload_ksprop_to_field(RELOAD_SERIAL, ksprop_file2, ksprop2, 0);
+  
+  /* Compare data */
+  
+  norm2 = 0;
+  FORALLSITES(i,s){
+    for(color = 0; color < 3; color++){
+      sub_su3_vector(&ksprop1[3*i+color],&ksprop2[3*i+color],&ksdiff);
+      norm2 += magsq_su3vec(&ksdiff);
+    }
+  }
+  
+  /* Sum over lattice and normalize */
+  g_floatsum(&norm2);
+  norm2 /= 3*volume;
+  norm2 = sqrt(norm2);
+  
+  printf("L2 norm difference is %e per color vector\n",norm2);
+  
+  free(ksprop1);
+  free(ksprop2);
+  free_lattice();
 
   return 0;
 }
