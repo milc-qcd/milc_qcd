@@ -159,6 +159,10 @@ MACHINE_DEP = com_vanilla.o ${MACHINE_DEP_IO}
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${CLFS} \
 	${INCQIO} ${INCQDP} -I${MYINCLUDEDIR} ${DEFINES} # ${INCQDP}
 
+ifdef HAVEQDP
+include Make_template_qdp
+else
 include Make_template
+endif
 
 
