@@ -51,7 +51,7 @@
 
 void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph)
 {
-  int32type size_of_element = sizeof(Real);  /* Real */
+  int32type size_of_element = sizeof(float);  /* float */
   int32type elements_per_site = sizeof(fsu3_matrix)/size_of_element; /* propagator is 3 X 3 complex */
   char myname[] = "swrite_ks_fm_prop_hdr";
 
@@ -81,16 +81,10 @@ void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph)
 /*----------------------------------------------------------------------*/
 /* Open, write, and close the ASCII info file */
 
-void write_ks_fmprop_info_file(ks_prop_file *pf)
+FILE *open_write_ks_fmprop_info_file(ks_prop_file *pf, char *mode)
 {
   FILE *info_fp;
-  ks_prop_header *ph;
   char info_filename[FILENAME_MAX];
-  int32type natural_order = NATURAL_ORDER;
-  int32type size_of_element = sizeof(Real);  /* Real */
-  int32type elements_per_site = sizeof(fsu3_matrix)/size_of_element; /* propagator is 3 X 3 complex */
-
-  ph = pf->header;
 
   /* Construct header file name from propagator file name 
    by adding filename extension to propagator file name */
@@ -100,16 +94,38 @@ void write_ks_fmprop_info_file(ks_prop_file *pf)
 
   /* Open header file */
   
-  if((info_fp = fopen(info_filename,"w")) == NULL)
+  if((info_fp = fopen(info_filename, mode)) == NULL)
     {
-      printf("write_ksprop_fminfo_file: Can't open ascii info file %s\n",
+      printf("open_write_ksprop_fminfo_file: Can't open ascii info file %s\n",
 	     info_filename);
-      return;
     }
+
+  printf("Writing info file %s\n",info_filename); 
+  fflush(stdout);
+  return info_fp;
+}
   
+/* Open, write, and close the ASCII info file */
+
+void write_ks_fmprop_info_file(ks_prop_file *pf)
+{
+  FILE *info_fp;
+  ks_prop_header *ph;
+  int32type natural_order = NATURAL_ORDER;
+  int32type size_of_element = sizeof(float);  /* float */
+  int32type elements_per_site = sizeof(fsu3_matrix)/size_of_element; /* propagator is 3 X 3 complex */
+
+  ph = pf->header;
+
+  /* Open header file */
+  
+  if((info_fp = open_write_ks_fmprop_info_file(pf, "w")) == NULL)
+    return;
+
   /* Write required information */
 
-  write_ksprop_info_item(info_fp,"ksprop.time_stamp","\"%s\"",ph->time_stamp,0,0);
+  write_ksprop_info_item(info_fp,"ksprop.time_stamp","\"%s\"",
+			 ph->time_stamp,0,0);
   /*sprintf(sums,"%x %x",pf->check.sum29,pf->check.sum31);
   write_ksprop_info_item(info_fp,"checksums","\"%s\"",sums,0,0); */
   write_ksprop_info_item(info_fp,"ksprop.dim","%d",(char *)&ph->dims,4,
@@ -126,9 +142,6 @@ void write_ks_fmprop_info_file(ks_prop_file *pf)
   write_appl_ksprop_info(info_fp);
 
   fclose(info_fp);
-
-  printf("Wrote info file %s\n",info_filename); 
-  fflush(stdout);
 
 } /*write_ks_fmprop_info_file */
 
@@ -289,6 +302,7 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
   int x,y,z,t;
   su3_vector *proppt;
   site *s;
+  FILE *info_fp;
 
   if(this_node==0)
     {
@@ -326,14 +340,9 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 
   /* Buffered algorithm for writing fields in serial order */
   
-  /* initialize checksums */
-/* NEED TO MODIFY IF CHECKSUM FOR EACH TIME SLICE*/
-  kspf->check.sum31 = 0;
-  kspf->check.sum29 = 0;
-  /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
-  /* Here only node 0 uses these values */
-  rank29 = sizeof(fsu3_vector)/sizeof(int32type)*sites_on_node*this_node % 29;
-  rank31 = sizeof(fsu3_vector)/sizeof(int32type)*sites_on_node*this_node % 31;
+  /* Node 0 reopens info file for appending timeslice checksums */
+  if(this_node == 0)
+    info_fp = open_write_ks_fmprop_info_file(kspf, "a");
 
   g_sync();
   currentnode=0;
@@ -342,6 +351,20 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 
   for(j=0,t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++,j++)
     {
+
+      /* All nodes initialize timeslice checksums at the beginning of
+	 a time slice */
+      if(x == 0 && y == 0 && z == 0)
+	{
+	  kspf->check.sum31 = 0;
+	  kspf->check.sum29 = 0;
+	  /* counts 32-bit words mod 29 and mod 31 in order of appearance
+	     on file */
+	  /* Here all nodes see the same sequence because we read serially */
+	  rank29 = 0;
+	  rank31 = 0;
+	}
+
       newnode=node_number(x,y,z,t);
       if(newnode != currentnode){	/* switch to another node */
 	/* Send a few bytes of garbage to tell newnode it's OK to send */
@@ -419,20 +442,31 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 	  }
 	}
       
+      /* Accumulate and print checksum at the end of each time slice */
+      if(x == nx - 1 && y == ny - 1 && z == nz - 1)
+	{
+	  /* Combine node checksum contributions with global exclusive or */
+	  g_xor32(&kspf->check.sum29);
+	  g_xor32(&kspf->check.sum31);
+	  
+	  if(this_node == 0){
+	    fprintf(info_fp, "quark.t[%d].checksum  \"%0x %0x\"\n",t,
+		    kspf->check.sum29, kspf->check.sum31);
+	  }
+	}
+
     } /*close x,y,z,t loops */
   
   g_sync();
-
+  
   if(this_node==0)
     {
+      fclose(info_fp);
       printf("Wrote KS prop serially to file %s\n", kspf->filename); 
       fflush(stdout);
       free(pbuf);
-
-      /* NOT DONE NOW NEED FOR EACH TIME SLICE Construct check record */
-
     }
-
+  
 } /* w_serial_ks_fm */
 
 /*---------------------------------------------------------------------------*/
@@ -776,15 +810,6 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
   broadcast_bytes((char *)&status,sizeof(int));
   if(status != 0) return status;
 
-  /* all nodes initialize checksums */
-  test_kspc.sum31 = 0;
-  test_kspc.sum29 = 0;
-  /* counts 32-bit words mod 29 and mod 31 in order of appearance
-     on file */
-  /* Here all nodes see the same sequence because we read serially */
-  rank29 = 0;
-  rank31 = 0;
-  
   g_sync();
 
   /**  printf("   Start the reading from stag prop file, buf_length %d   \n", buf_length); **/
@@ -805,6 +830,19 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
       z = rcv_coords % nz;   rcv_coords /= nz;
       t = rcv_coords % nt;
      
+      /* All nodes initialize timeslice checksums at the beginning of
+	 a time slice */
+      if(x == 0 && y == 0 && z == 0)
+	{
+	  test_kspc.sum31 = 0;
+	  test_kspc.sum29 = 0;
+	  /* counts 32-bit words mod 29 and mod 31 in order of appearance
+	     on file */
+	  /* Here all nodes see the same sequence because we read serially */
+	  rank29 = 0;
+	  rank31 = 0;
+	}
+  
       /* The node that gets the next su3_vector */
 
       destnode=node_number(x,y,z,t);
@@ -866,7 +904,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 	  if(byterevflag==1)
 	    byterevn((int32type *)&msg.ksv, 
 		     3*sizeof(fsu3_vector)/sizeof(int32type));
-	  /* Accumulate checksums, is it needed? */
+	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)(&msg.ksv); 
 	      k < 3*(int)sizeof(fsu3_vector)/(int)sizeof(int32type); 
 	      k++, val++)
@@ -890,14 +928,23 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset prop)
 	  rank29 %= 29;
 	  rank31 %= 31;
 	}
-      }
+
+      /* Accumulate and print checksum at the end of each time slice */
+      if(x == nx - 1 && y == ny - 1 && z == nz - 1)
+	{
+	  /* Combine node checksum contributions with global exclusive or */
+	  g_xor32(&test_kspc.sum29);
+	  g_xor32(&test_kspc.sum31);
+
+	  node0_printf("quark.t[%d].checksum  \"%0x %0x\"\n",t,
+		       test_kspc.sum29, test_kspc.sum31);
+	}
+
+    } /* rcv_rank */
+
   broadcast_bytes((char *)&status,sizeof(int));
   if(status != 0) return status;
 
-  /* Combine node checksum contributions with global exclusive or */
-  g_xor32(&test_kspc.sum29);
-  g_xor32(&test_kspc.sum31);
-  
   if(this_node==0)
     {
       printf("Read KS prop serially from file %s\n", filename);
