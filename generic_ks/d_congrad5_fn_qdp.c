@@ -26,7 +26,7 @@
    parity=EVEN = do only even sites, parity=ODD = do odd sites,
    parity=EVENANDODD = do all sites
 */
-#include "generic_ks_includes_qdp.h"	/* definitions files and prototypes */
+#include "generic_ks_includes.h"	/* definitions files and prototypes */
 
 void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]); /* dslash_fn_tmp.c */
 

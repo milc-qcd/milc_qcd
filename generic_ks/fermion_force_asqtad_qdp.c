@@ -37,7 +37,7 @@
 /**#define FFSTIME**/
 /**#define QSINLINE**/
 
-#include "generic_ks_includes_qdp.h"	/* definitions files and prototypes */
+#include "generic_ks_includes.h"	/* definitions files and prototypes */
 
 /* This routine is valid only for Asqtad, so requires the FN flag */
 #ifndef FN

@@ -9,6 +9,8 @@
 
 void build_layout(QIO_Layout *layout);
 
+QIO_Reader *open_input(char *filename, QIO_Layout *layout);
+
 QIO_Writer *open_output(char *filename, int volfmt, QIO_Layout *layout,
 			char *xml_write_file);
 

@@ -27,7 +27,7 @@
    parity=EVENANDODD = do all sites
 */
 #define _GNU_SOURCE
-#include "generic_ks_includes_qdp.h"	/* definitions files and prototypes */
+#include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>

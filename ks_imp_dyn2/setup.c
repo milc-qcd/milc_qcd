@@ -276,8 +276,7 @@ readin(int prompt)
     /* Node 0 broadcasts parameter buffer to all other nodes */
   broadcast_bytes((char *)&par_buf,sizeof(par_buf));
   
-  if( par_buf.stopflag != 0 )
-    normal_exit(0);
+  if( par_buf.stopflag != 0 )return par_buf.stopflag;
   
   warms = par_buf.warms;
   trajecs = par_buf.trajecs;

@@ -1,4 +1,4 @@
-#include "generic_ks_includes_qdp.h"
+#include "generic_ks_includes.h"
 #include "mvmult.c"
 
 static int dslash_setup=0;
