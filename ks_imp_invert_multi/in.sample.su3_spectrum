@@ -1,10 +1,10 @@
 prompt 0
 nflavors1 2
 nflavors2 1
-nx 8
-ny 8
-nz 8
-nt 24
+nx 4
+ny 4
+nz 4
+nt 8
 iseed 1234
 
 beta 5.6
@@ -19,8 +19,8 @@ n_sources 1
 nmasses 2
 mass 0.05
 mass 0.02
-reload_serial ser_B8x24f3b630m100_000020
+reload_serial ../binary_samples/lat.sample.l4448.gf
 no_gauge_fix
 forget
-save_ks_ascii
-ks_B8x24f3b630m100_000020
+save_ks_serial_fm ks.test.l4448
+

@@ -67,3 +67,13 @@ void write_appl_gauge_info(FILE *fp)
     }
 
 }
+
+char *create_QCDML(){
+  char dummy[] = "Dummy QCDML";
+  char *qcdml = (char *)malloc(sizeof(dummy));
+  return qcdml;
+}
+
+void free_QCDML(char *qcdml){
+  if(qcdml != NULL)free(qcdml);
+}

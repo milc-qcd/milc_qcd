@@ -30,11 +30,10 @@
 #undef MAX_BUF_LENGTH
 #define MAX_BUF_LENGTH 512
 
-/* The send buffer would normally be the size of a single su3 matrix
-   but on we may need to pad for short messages generated
-   in serial reads and writes to avoid switch inefficiencies.  In that
-   case we define PAD_SEND_BUF on the compilation line to increase
-   this.  */
+/* The send buffer would normally be the size of a single SU(3) vector
+   but we may need to pad for short messages generated in serial reads
+   and writes to avoid switch inefficiencies.  In that case we define
+   PAD_SEND_BUF on the compilation line to increase this.  */
    
 #ifndef PAD_SEND_BUF
 #define PAD_SEND_BUF 8
@@ -98,7 +97,7 @@ void write_ks_fmprop_info_file(ks_prop_file *pf)
   
   if((info_fp = fopen(info_filename,"w")) == NULL)
     {
-      printf("write_ksprop_info_file: Can't open ascii info file %s\n",
+      printf("write_ksprop_fminfo_file: Can't open ascii info file %s\n",
 	     info_filename);
       return;
     }
@@ -295,7 +294,7 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset prop0,
       if(kspf->parallel == PARALLEL)
 	printf("w_serial_ks: Attempting serial write to file opened in parallel \n");
 
-      pbuf = (fsu3_matrix *)malloc(MAX_BUF_LENGTH*sizeof(su3_matrix));
+      pbuf = (fsu3_matrix *)malloc(MAX_BUF_LENGTH*sizeof(fsu3_matrix));
       if(pbuf == NULL)
 	{
 	  printf("w_serial_ks: Node 0 can't malloc pbuf\n"); 

@@ -78,7 +78,7 @@ int write_ksprop_info_item( FILE *fpout,    /* ascii file pointer */
 			    char *fmt,       /* output format -
 						must use s, d, e, f, or g */
 			    char *src,       /* address of starting data
-						Realing point data must be
+						floating point data must be
 						of type (Real) */
 			    int count,       /* number of data items if > 1 */
 			    int stride)      /* byte stride of data if

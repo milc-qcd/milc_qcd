@@ -30,11 +30,10 @@
 #undef MAX_BUF_LENGTH
 #define MAX_BUF_LENGTH 4096
 
-/* The send buffer would normally be the size of a single SU(3)
-   vector but we may need to pad for short messages generated
-   in serial reads and writes to avoid switch inefficiencies.  In that
-   case we define PAD_SEND_BUF on the compilation line to increase
-   this.  */
+/* The send buffer would normally be the size of a single SU(3) vector
+   but we may need to pad for short messages generated in serial reads
+   and writes to avoid switch inefficiencies.  In that case we define
+   PAD_SEND_BUF on the compilation line to increase this.  */
    
 #ifndef PAD_SEND_BUF
 #define PAD_SEND_BUF 8
@@ -52,7 +51,7 @@ void f2d_vec(fsu3_vector *a, su3_vector *b){
   }
 }
 
-/* Convert (or copy) four generic precision su3_matrices to single precision */
+/* Convert (or copy) one generic precision su3_vector to single precision */
 void d2f_vec(su3_vector *a, fsu3_vector *b){
   int i;
   
@@ -98,7 +97,7 @@ int write_ksprop_info_item( FILE *fpout,    /* ascii file pointer */
 			    char *fmt,       /* output format -
 						must use s, d, e, f, or g */
 			    char *src,       /* address of starting data
-						Realing point data must be
+						floating point data must be
 						of type (Real) */
 			    int count,       /* number of data items if > 1 */
 			    int stride)      /* byte stride of data if
@@ -832,7 +831,7 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset src)
      
       offset = head_size + body_size*color;
 
-      pbuf = (fsu3_vector *)malloc(MAX_BUF_LENGTH*sizeof(su3_vector));
+      pbuf = (fsu3_vector *)malloc(MAX_BUF_LENGTH*sizeof(fsu3_vector));
       if(pbuf == NULL)
 	{
 	  printf("%s: Node %d can't malloc pbuf\n",myname,this_node);

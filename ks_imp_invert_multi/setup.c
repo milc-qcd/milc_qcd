@@ -19,6 +19,7 @@
 #define IF_OK if(status==0)
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include <string.h>
 
 EXTERN gauge_header start_lat_hdr;
 gauge_file *gf;
@@ -31,14 +32,16 @@ gauge_file *r_binary_i(char *);
 void r_binary(gauge_file *);
 void r_binary_f(gauge_file *);
 
+void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
+int initial_set();
+void make_3n_gathers();
+
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
 params par_buf;
 
 int  setup()   {
-    int initial_set();
-    void make_3n_gathers();
-    int prompt;
+    int i, prompt;
 
 	/* print banner, get volume, seed */
     prompt=initial_set();
@@ -73,6 +76,22 @@ node0_printf("Made nn gathers\n"); fflush(stdout);
 node0_printf("Made 3nn gathers\n"); fflush(stdout);
 	/* set up K-S phase vectors, boundary conditions */
     phaseset();
+
+#ifdef HAVE_QDP
+  for(i=0; i<8; i++) {
+    implinks[i] = QDP_create_M();
+  }
+  fatlinks = implinks;
+  longlinks = implinks + 4;
+  for(i=0; i<4; ++i) {
+    shiftdirs[i] = QDP_neighbor[i];
+    shiftdirs[i+4] = neighbor3[i];
+  }
+  for(i=0; i<8; ++i) {
+    shiftfwd[i] = QDP_forward;
+    shiftbck[i] = QDP_backward;
+  }
+#endif
 
 node0_printf("Finished setup\n"); fflush(stdout);
     return( prompt );
@@ -132,7 +151,7 @@ int readin(int prompt) {
      int status;
      char savebuf[128];
      int i;
-     double x;
+     Real x;
 
     /* On node zero, read parameters and send to all other nodes */
     if(this_node==0){
@@ -266,7 +285,7 @@ int readin(int prompt) {
  */
 void make_3n_gathers(){
    int i;
-   void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
+   int disp[4]={0,0,0,0};
  
    for(i=XUP;i<=TUP;i++) {
       make_gather(third_neighbor,&i,WANT_INVERSE,
@@ -277,6 +296,14 @@ void make_3n_gathers(){
        so you can use X3UP, X3DOWN, etc. as argument in calling them. */
 
    sort_eight_neighborlists(X3UP);
+#ifdef HAVE_QDP
+
+   for(i=0; i<4; i++) {
+     disp[i] = 3;
+     neighbor3[i] = QDP_create_shift(disp);
+     disp[i] = 0;
+   }
+#endif
 }
  
 

@@ -13,13 +13,13 @@ typedef struct {
 	int nflavors2;  /* the number of flavors of second type */
 
     /*  REPEATING BLOCK */
-	double beta,mass1,mass2; /* gauge coupling, quark masses */
-	double u0; /* tadpole parameter */
+	Real beta,mass1,mass2; /* gauge coupling, quark masses */
+	Real u0; /* tadpole parameter */
 	int niter; 	/* maximum number of c.g. iterations */
-	double rsqmin,rsqprop;  /* for deciding on convergence */
+	Real rsqmin,rsqprop;  /* for deciding on convergence */
         int source_start, source_inc, n_sources; /* source time and increment */
 	int fpi_nmasses;
-	double fpi_mass[MAX_FPI_NMASSES]; 
+	Real fpi_mass[MAX_FPI_NMASSES]; 
 	int startflag;  /* what to do for beginning lattice */
 	int fixflag;    /* whether to gauge fix */
 	int saveflag;   /* what to do with lattice at end */

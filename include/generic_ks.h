@@ -149,7 +149,7 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol);
 /* multimass_inverter.c */
-int multimass_inverter( double *masses, int nmasses, double tol);
+int multimass_inverter( Real *masses, int nmasses, Real tol);
 
 /* nl_spectrum.c */
 int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,

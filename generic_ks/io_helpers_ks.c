@@ -11,6 +11,7 @@
 #include "generic_ks_includes.h"
 #include "../include/io_lat.h"
 #include "../include/io_prop_ks.h"
+#include <string.h>
 
 /*---------------------------------------------------------------*/
 /* Open propagator file for reading */

@@ -3,7 +3,7 @@
 # 8/9/02 C. DeTar
 
 #  Change these names to suit
-VER = 7.0.5-alpha
+VER = 7.0.7-alpha
 NAME_ROOT = milc_qcd-${VER}
 RELEASE_NAME_ROOT = ${NAME_ROOT}
 WORK_NAME_ROOT = ${NAME_ROOT}_collab
@@ -386,6 +386,13 @@ WORK_KS_IMP_UTILITIES =           \
  ks_imp_utilities/Make*           \
  ks_imp_utilities/in.sample*
 
+WORK_KS_IMP_INVERT_MULTI =           \
+ ks_imp_invert_multi/*.c             \
+ ks_imp_invert_multi/*.h             \
+ ks_imp_invert_multi/Make*           \
+ ks_imp_invert_multi/in.sample*      \
+ ks_imp_invert_multi/out.sample*
+
 WORK_PROPAGATING_FORM_FACTOR =          \
  propagating_form_factor/*.c            \
  propagating_form_factor/*.h            \
@@ -525,7 +532,8 @@ WORK_INST =                \
 WORK_KS =                  \
  ${WORK_GENERIC_KS}        \
  ${WORK_KS_IMP_DYN2}	   \
- ${WORK_KS_IMP_UTILITIES}
+ ${WORK_KS_IMP_UTILITIES}  \
+ ${WORK_KS_IMP_INVERT_MULTI}
 
 WORK_SF =                  \
  ${WORK_GENERIC_SCHROED}   \

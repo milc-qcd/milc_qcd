@@ -20,6 +20,9 @@
 #include "../include/generic_ks.h"
 #include "../include/dirs.h"
 #include "../include/io_prop_ks.h"
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
 
 
 

@@ -59,7 +59,7 @@ typedef struct {
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
- 	double phase[4];
+ 	Real phase[4];
 
 	/* 3 element complex vectors */
  	su3_vector phi;		/* Gaussian random source vector */
@@ -109,11 +109,11 @@ EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,propinterval;
 EXTERN  int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
-EXTERN	double epsilon;
-EXTERN  double beta,mass1,mass2,u0;
-EXTERN  double propmass;		/* this mass is used for writing propagator
+EXTERN	Real epsilon;
+EXTERN  Real beta,mass1,mass2,u0;
+EXTERN  Real propmass;		/* this mass is used for writing propagator
 				   header */
-EXTERN	double rsqmin,rsqprop;
+EXTERN	Real rsqmin,rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
 EXTERN  int fixflag;  /* gauge fix: COULOMB_GAUGE_FIX, NO_GAUGE_FIX */
@@ -130,7 +130,7 @@ EXTERN  int source_start, source_inc, n_sources;
         /* source time, increment for it, and number of source slices */
 /* parameters for fpi */
 EXTERN  int fpi_nmasses;
-EXTERN  double fpi_mass[MAX_FPI_NMASSES];
+EXTERN  Real fpi_mass[MAX_FPI_NMASSES];
 
 
 /* Some of these global variables are node dependent */
@@ -164,5 +164,15 @@ EXTERN char ** gen_pt[N_POINTERS];
 /* field major storage DON't FORGET to MALLOC somewhere */
 EXTERN su3_matrix *t_longlink;
 EXTERN su3_matrix *t_fatlink;
+
+#ifdef HAVE_QDP
+#include <qdp.h>
+
+EXTERN QDP_ColorMatrix **fatlinks, **longlinks, *implinks[8];
+EXTERN QDP_Shift neighbor3[4];
+EXTERN QDP_Shift shiftdirs[8];
+EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];
+
+#endif
 
 #endif /* _LATTICE_H */

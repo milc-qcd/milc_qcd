@@ -38,7 +38,7 @@ void f2d_vector(fsu3_vector *, su3_vector *);
 void d2f_vector(su3_vector *, fsu3_vector *);
 int test_converge(int t_source);
 
-int multimass_inverter( double *masses, int nmasses, double tol){
+int multimass_inverter( Real *masses, int nmasses, Real tol){
   /* arguments are array of masses, number of masses,
      tolerance for inverter check.
      return C.G. iteration number */
@@ -50,7 +50,7 @@ int multimass_inverter( double *masses, int nmasses, double tol){
   register int t_source;
   int sourcevec,color;	/* color for source */
   int src_count; /* number of source time slices used */
-  double finalrsq;
+  Real finalrsq;
   su3_vector **quark_props, **quark_props_color;
   su3_vector *temp_prop;
   complex **props;	/* arrays of propagators */

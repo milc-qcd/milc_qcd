@@ -28,6 +28,9 @@ int main( int argc, char **argv ){
 #endif
 
     initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+    QDP_initialize(argc, argv);
+#endif
     g_sync();
     /* set up */
     prompt = setup();
@@ -93,5 +96,10 @@ int main( int argc, char **argv ){
         }
 
     }
+#ifdef HAVE_QDP
+    QDP_finalize();
+    normal_exit(0);
+#endif
+
     return 0;
 }
