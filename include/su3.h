@@ -475,21 +475,16 @@ void byterevn(int32type w[], int n);
    subroutine calls by inline assembly code.  Replacement occurs in
    the compilation if the macro SSE_INLINE is also defined. */
 
-#if defined SSE && (defined P3 || defined P4) && defined __GNUC__
-#define _INLINE_ASM
-#else
-#undef _INLINE_ASM
-#endif
-
 /* Define SSE ASM inline macros and, if SSE_INLINE is defined, define
    macros that replace the library calls listed below */
 
-#if _INLINE_ASM
+#if defined SSE
 
 #if PRECISION==1
 #include "../sse/include/inline_sse.h"
 #else
 #include "../sse2/include/inline_sse.h"
+/* The following routines are not currently available in double precision */
 void add_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
 void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,
 	Real scalar, su3_vector *dest);
@@ -509,7 +504,7 @@ void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 /* The following inline macros are not currently available in double
    precision so we keep the prototypes for external linkage */
 
-#if ! defined _INLINE_ASM
+#if ! defined SSE_INLINE
 
 /* The usual case: prototypes for library calls when these are
    externally linked */

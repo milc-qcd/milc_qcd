@@ -3,9 +3,8 @@
 # 8/9/02 C. DeTar
 
 #  Change these names to suit
-DATE = 18nov04
-VER = v6
-NAME_ROOT = milc_qcd_${VER}_${DATE}
+VER = 7.0.0-alpha
+NAME_ROOT = milc_qcd-${VER}
 RELEASE_NAME_ROOT = ${NAME_ROOT}
 WORK_NAME_ROOT = ${NAME_ROOT}_collab
 
@@ -16,17 +15,9 @@ WORK_NAME_ROOT = ${NAME_ROOT}_collab
 
 THIS_DIR =             \
  getints.sh            \
- Make_SGIPC_mpi        \
- Make_exemplar_mpi     \
  Make_linux_mpi	       \
  Make_linux_qmp	       \
- Make_now_mpi	       \
- Make_nt_mpi	       \
- Make_origin_mpi       \
  Make_sample_template  \
- Make_sp_mpi	       \
- Make_tcs_mpi          \
- Make_t3e_mpi	       \
  Make_tar	       \
  Make_test_release     \
  Make_test_template    \
@@ -203,7 +194,7 @@ WORK_THIS_DIR =         \
  getints.sh             \
  Make*                  \
  README                 \
- README_${VER}_${DATE}  \
+ README_RELEASE_NOTES   \
  cc.pl                  \
  diffn.pl               \
  headtail.pl            \
@@ -483,14 +474,22 @@ WORK_BASIC =               \
  ${WORK_GENERIC}           \
  ${WORK_INCLUDE}           \
  ${WORK_LIBRARIES}         \
- ${WORK_SSE}
+ ${WORK_SSE}               \
+ ${WORK_SSE2}            
 
 WORK_SSE =               \
  sse/README_SSE          \
  sse/include/*.h         \
- sse/libraries/*.nas     \
- sse/libraries/Make_sse  \
- sse/libraries/nasm2c.pl
+ sse/include/Makefile    \
+ sse/nas/*.s             \
+ sse/bin/*.pl
+
+WORK_SSE2 =              \
+ sse2/README_SSE         \
+ sse2/include/*.h        \
+ sse2/include/Makefile   \
+ sse2/nas/*.s            \
+ sse2/bin/*.pl
 
 WORK_PG =          \
  ${WORK_GENERIC_PG}        \
@@ -519,12 +518,7 @@ WORK_INST =                \
 
 WORK_KS =                  \
  ${WORK_GENERIC_KS}        \
- ${WORK_DENSE_STATIC_SU3}  \
- ${WORK_KS_DYNAMICAL}      \
- ${WORK_KS_EIGEN}          \
- ${WORK_KS_IMP_DYN1}	   \
  ${WORK_KS_IMP_DYN2}	   \
- ${WORK_STRING_BREAK}
 
 WORK_SF =                  \
  ${WORK_GENERIC_SCHROED}   \
@@ -555,14 +549,7 @@ WORK_WILSON_TAR  = ${WORK_NAME_ROOT}_wilson.tar
 
 WORK_TAR =          \
  ${WORK_BASIC_TAR}  \
- ${WORK_PURE_GAUGE_TAR}  \
- ${WORK_KS_TAR}     \
- ${WORK_WILSON_TAR} \
- ${WORK_CLOVER_TAR} \
- ${WORK_FORM_TAR}   \
- ${WORK_INST_TAR}   \
- ${WORK_FP_TAR}     \
- ${WORK_SF_TAR}
+ ${WORK_KS_TAR}    
 
 # Contents of the whole ball of wax
 

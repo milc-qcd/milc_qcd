@@ -939,19 +939,27 @@ dtime=-dclock();
         if( ilink<length && GOES_FORWARDS(dir) ){
           uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
 	  su3_projector_for_inline( &(hw_tmp0[i].h[0]), &(hw_tmp0[i].h[1]), &tmat );
-	  if( s->parity==EVEN )scalar_mult_add_su3_matrix(
-	    &tmat2, &tmat,  coeff, &tmat2 );
-	  else		 scalar_mult_add_su3_matrix(
-	    &tmat2, &tmat, -coeff, &tmat2 );
+	  if( s->parity==EVEN ){
+	    scalar_mult_add_su3_matrix(
+	      &tmat2, &tmat,  coeff, &tmat2 );
+	  }
+	  else{
+	    scalar_mult_add_su3_matrix(
+	      &tmat2, &tmat, -coeff, &tmat2 );
+	  }
           make_anti_hermitian( &tmat2, &(s->mom[dir]) );
         }
 	if( ilink>0 && GOES_BACKWARDS(lastdir) ){
           uncompress_anti_hermitian( &(s->mom[OPP_DIR(lastdir)]), &tmat2 );
 	  su3_projector_for_inline( &(hw_tmp0[i].h[0]), &(hw_tmp0[i].h[1]), &tmat );
-	  if( s->parity==EVEN )scalar_mult_add_su3_matrix(
-	    &tmat2, &tmat, -coeff, &tmat2 );
-	  else		 scalar_mult_add_su3_matrix(
-	    &tmat2, &tmat,  coeff, &tmat2 );
+	  if( s->parity==EVEN ){
+	    scalar_mult_add_su3_matrix(
+	      &tmat2, &tmat, -coeff, &tmat2 );
+	  }
+	  else{
+	    scalar_mult_add_su3_matrix(
+	       &tmat2, &tmat,  coeff, &tmat2 );
+	  }
           make_anti_hermitian( &tmat2, &(s->mom[OPP_DIR(lastdir)]) );
         }
       }

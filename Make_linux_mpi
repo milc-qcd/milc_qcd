@@ -13,7 +13,7 @@ COMMTYPE = MPI
 #----------------------------------------------------------------------
 # 1. Compiler
 #CC               = gcc    # ( mpicc cc gcc pgcc g++ )
-CC = /usr/local/mpich/bin/mpicc  # 700 MHz P III
+CC = /usr/local/mpich/bin/mpicc  -cc=${GCC_DIR}/bin/gcc 
 
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
@@ -25,6 +25,11 @@ OPT              = -O3    # ( -g -O, etc )
 #OCFLAGS = -Wall  # ( -DP3, -DP4 )
 #OCFLAGS =  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
 OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
+#OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
+OCFLAGS =  -march=pentium4 -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/24/04
+#-------------- Intel icc/ecc -----------------------------------
+#OCFLAGS = -tpp2 -static
+
 #-------------- Portland Group ----------------------------
 #OCFLAGS = -tp p6 -Munroll=c:4,n:4
 #OCFLAGS= -mpentiumpro -march=pentiumpro -funroll-all-loops -malign-double -D_REENTRANT  # Pentium pro
@@ -43,19 +48,18 @@ CLFS =             # Not researched for others
 #----------------------------------------------------------------------
 # 5. Installation-specific MPI includes and libraries (if not using mpicc)
 
-
 #----------------- MPICH/GM ---------------------------------------------
 #IMPI = #-I/usr/local/mpich/include
 #LMPI = #-L/usr/local/mpich/lib/shared -L/usr/local/mpich/lib -lmpich -L/opt/gm/lib/ -lgm
 
 #----------------- MPIPRO ---------------------------------------------
-#CMPI =
+#IMPI =
 # With Redhat, for MPI PRO see rpm -ql mpipro | more
 #LMPI = -lmpipro_tv -lpthread
 #LMPI = -lmpipro -lvipl -lpthread
 
 #----------------- MVICH ----------------------------------------------
-#CMPI = -I/uufs/icebox/sys/src/mpich/1.2.0-via/include  # MVICH
+#IMPI = -I/uufs/icebox/sys/src/mpich/1.2.0-via/include  # MVICH
 #LMPI = -L/uufs/icebox/sys/pkg/mpich/1.2.0-via/lib -lmpi -lvipl -lpthread # MVICH
 
 #----------------------------------------------------------------------
@@ -89,11 +93,11 @@ IQIO = -I${QIO}/include
 LQIO = -L${QIO}/lib -lqio -llime 
 
 IQLA = -I${QLA}/include
-LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_df3 \
-          -lqla_d -lqla_random
+LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
+          -lqla_dq3 -lqla_q3 -lqla_d -lqla_dq -lqla_q -lqla_random
 
 IQDP = -I${QDP}/include
-LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_common
+LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
 
 ifdef HAVEQIO
   LIBQIO = ${LQIO} ${LQMP}
@@ -112,20 +116,23 @@ LD               = ${CC}
 LDFLAGS          =   # most
 
 #----------------------------------------------------------------------
-# 9. Extra libraries
-ILIB             = ${LIBQIO} ${LMPI}  # not needed if using mpicc
+# 10. Extra libraries
+ILIB             = ${LIBQIO} ${LMPI}
 
 #----------------------------------------------------------------------
-# 10. Code alternatives 
+# 11. Code alternatives 
 
 # 1 = single precision; 2 = double
 PRECISION = 2
 
-# -DSSE says we have the SSE package
-# For P3 or P4 or Athlon Thunderbird and GNUC Use -DSSE_INLINE to get
-# inline assembly code from the package.
+# SSE for P3 or P4 or Athlon Thunderbird and compliant compilers
 
-CODETYPE         = -DNOPREFETCH -DPRECISION=${PRECISION} -DSSE -DSSE_INLINE -DP4
+# -DSSE says we have the SSE package.  It does not do global inlining
+#  but it allows selective inlining through explicit inline macro calls.
+# -DSSE_INLINE together with -DSSE gives automatic global inlining.
+# See also the libraries Make_SSE_nasm.
+
+CODETYPE         = -DNOPREFETCH -DPRECISION=${PRECISION} -DSSE -DSSE_INLINE
 
 #----------------------------------------------------------------------
 # 11. Choose MILC library make file in libraries directory.  
@@ -134,14 +141,14 @@ CODETYPE         = -DNOPREFETCH -DPRECISION=${PRECISION} -DSSE -DSSE_INLINE -DP4
 MAKELIBRARIES = Make_vanilla  # or Make_SSE_nasm (don't use -DSSE with this)
 
 #----------------------------------------------------------------------
-# End of user choices.  PLEASE, ALSO, CHECK include/config.h.
+# End of user choices.  Please, also, check include/config.h.
 #----------------------------------------------------------------------
 
 # Routines that depend on both application and architecture
 MACHINE_DEP = com_qmp.o ${MACHINE_DEP_IO}
 
 # Complete set of compiler flags - do not change
-CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${CLFS} ${CMPI} \
+CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${CLFS} \
 	${INCQIO} -I${MYINCLUDEDIR} ${DEFINES}
 
 include Make_template

@@ -70,6 +70,10 @@ CLFS =             # Not researched for others
 MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 
 HAVEQIO = true
+#HAVEQIO =    # If we don't want QIO, leave blank
+
+#QCDOC = true  # To turn on QCDOC requirements
+QCDOC =  # If we are not running on the QCDOC
 
 #----------------------------------------------------------------------
 # 7. QDP/C options
@@ -121,11 +125,14 @@ ILIB             = ${LIBQDP} ${LMPI}  # not needed if using mpicc
 # 1 = single precision; 2 = double
 PRECISION = 2
 
-# -DSSE says we have the SSE package
-# For P3 or P4 or Athlon Thunderbird and GNUC Use -DSSE_INLINE to get
-# inline assembly code from the package.
+# SSE for P3 or P4 or Athlon Thunderbird and compliant compilers
 
-CODETYPE         = -DNOPREFETCH -DPRECISION=${PRECISION} -DQDP_Precision=${PRECISION} -DSSE -DSSE_INLINE -DP4 # -DQDP_PROFILE
+# -DSSE says we have the SSE package.  It does not do global inlining
+#  but it allows selective inlining through explicit inline macro calls.
+# -DSSE_INLINE together with -DSSE gives automatic global inlining.
+# See also the libraries Make_SSE_nasm.
+
+CODETYPE         = -DNOPREFETCH -DPRECISION=${PRECISION} -DQDP_Precision=${PRECISION} -DSSE -DSSE_INLINE # -DQDP_PROFILE
 
 #----------------------------------------------------------------------
 # 11. Choose MILC library make file in libraries directory.  

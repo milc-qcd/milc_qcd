@@ -14,10 +14,10 @@ COMMTYPE = VANILLA
 #----------------------------------------------------------------------
 # 1. Compiler
 CC               = gcc   # ( cc89 gcc xlc gcc pgcc cl g++ )
-
+CC = ${GCC_DIR}/bin/gcc
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
-OPT              = -g -Wall # ( -g -O, etc )
+OPT              = -O3 -Wall # ( -g -O, etc )
 
 #----------------------------------------------------------------------
 # 3. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -68,11 +68,14 @@ CLFS =                   #  Not researched for others
 # Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
 MACHINE_DEP_IO   = io_nonansi.o # (io_ansi.o io_nonansi.o)
 
-HAVEQIO = true
-#HAVEQIO =    # If we don't want QIO, leave blank
+HAVEQIO = true  # Can be used without QDP and QLA
+#HAVEQIO =      # If we don't want QIO, leave blank
 
 #----------------------------------------------------------------------
 # 6. QDP/C options
+
+HAVEQDP = true  # Note, this implies HAVEQIO, so leave HAVEQIO blank
+#HAVEQDP =      # If we don't want QDP, leave blank
 
 #  *** edit these locations ***
 SCIDAC = ${HOME}/scidac
@@ -101,8 +104,10 @@ ifdef HAVEQIO
   INCQIO = ${IQIO} ${IQMP}
 endif
 
-INCQDP = ${IQDP} ${IQLA} ${IQIO} ${IQMP}
-LIBQDP = ${LQDP} ${LQLA} ${LQIO} ${LQMP}
+ifdef HAVEQDP
+  INCQDP = ${IQDP} ${IQLA} ${IQIO} ${IQMP}
+  LIBQDP = ${LQDP} ${LQLA} ${LQIO} ${LQMP}
+endif
 
 #----------------------------------------------------------------------
 # 6. Linker
@@ -115,13 +120,22 @@ LDFLAGS          =    # most
 
 #----------------------------------------------------------------------
 # 8. Extra load libraries
-ILIB             =  ${LIBQIO} # ${LIBQDP}
+ILIB             =  ${LIBQIO} ${LIBQDP}
 
 #----------------------------------------------------------------------
 # 9. Code alternatives 
-#   1: single precision; 2: double
-PRECISION = 2
-CODETYPE         = -DINLINE -DNOPREFETCH -DPRECISION=${PRECISION} # -DSSE -DSSE_INLINE -DP3
+
+# 1: single precision; 2: double
+PRECISION = 1
+
+# SSE for P3 or P4 or Athlon Thunderbird and compliant compilers
+
+# -DSSE says we have the SSE package.  It does not do global inlining
+#  but it allows selective inlining through explicit inline macro calls.
+# -DSSE_INLINE together with -DSSE gives automatic global inlining.
+# See also the libraries Make_SSE_nasm.
+
+CODETYPE   = -DNOPREFETCH -DPRECISION=${PRECISION} -DSSE # -DSSE_INLINE
 
 #----------------------------------------------------------------------
 # 10. Choose MILC library make file in libraries directory.  
@@ -129,6 +143,7 @@ CODETYPE         = -DINLINE -DNOPREFETCH -DPRECISION=${PRECISION} # -DSSE -DSSE_
 #MAKELIBRARIES = Make_RS6K    # IBM RS6000 assembly code
 #MAKELIBRARIES = Make_t3e     # Cray T3E assembly code
 #MAKELIBRARIES = Make_alpha   # DEC alpha assembly code
+# Don't use -DSSE with Make_SSE_nasm
 #MAKELIBRARIES = Make_SSE_nasm # SSE nasm assembly code for P3, P4
 MAKELIBRARIES = Make_vanilla  # Generic.
 
@@ -140,8 +155,9 @@ MAKELIBRARIES = Make_vanilla  # Generic.
 MACHINE_DEP = com_vanilla.o ${MACHINE_DEP_IO}
 
 # Complete set of compiler flags - do not change
-CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${CLFS} ${CMPI} \
-	${INCQIO} -I${MYINCLUDEDIR} ${DEFINES} # ${INCQDP}
+
+CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${CLFS} \
+	${INCQIO} ${INCQDP} -I${MYINCLUDEDIR} ${DEFINES} # ${INCQDP}
 
 include Make_template
 
