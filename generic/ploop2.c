@@ -15,7 +15,7 @@ complex plp;
     sum = cmplx(0.0,0.0);
     FORALLSITES(i,st){lattice[i].tempmat2 = lattice[i].link[TUP];}
     for(t=1;t<nt;t++){
-	tag=start_gather( F_OFFSET(tempmat2), sizeof(su3_matrix),
+	tag=start_gather_site( F_OFFSET(tempmat2), sizeof(su3_matrix),
 	    TUP, EVENANDODD, gen_pt[0] );
 	wait_gather(tag);
         FORALLSITES(i,st){

@@ -97,8 +97,8 @@ start:
 	}
 /**if(this_node==0)if(iteration>1)printf("CONGRAD: start rsq = %.10e\n",rsq);**/
         rsq = source_norm = 0.0;
-	dslash(F_OFFSET(xxx),F_OFFSET(ttt),l_otherparity);
-	dslash(F_OFFSET(ttt),F_OFFSET(ttt),l_parity);
+	dslash_site(F_OFFSET(xxx),F_OFFSET(ttt),l_otherparity);
+	dslash_site(F_OFFSET(ttt),F_OFFSET(ttt),l_parity);
 	/* ttt  <- ttt - msq_x4*phi	(msq = mass squared) */
 	FORSOMEPARITY(i,s,l_parity){
 	    scalar_mult_add_su3_vector( &(s->ttt), &(s->xxx), -msq_x4,
@@ -156,15 +156,15 @@ dtimed = -dclock();
 #endif
 
 	if(special_started==0){
-	    /**printf("CONGRAD%: calling dslash_special - start\n");**/
-	    dslash_special(F_OFFSET(cg_p),F_OFFSET(ttt),l_otherparity, tags2,1);
-	    dslash_special(F_OFFSET(ttt),F_OFFSET(ttt),l_parity,tags1,1);
+	    /**printf("CONGRAD%: calling dslash_site_special - start\n");**/
+	    dslash_site_special(F_OFFSET(cg_p),F_OFFSET(ttt),l_otherparity, tags2,1);
+	    dslash_site_special(F_OFFSET(ttt),F_OFFSET(ttt),l_parity,tags1,1);
 	    special_started=1;
 	}
 	else {
-	    /**printf("CONGRAD%: calling dslash_special - restart\n");**/
-	    dslash_special(F_OFFSET(cg_p),F_OFFSET(ttt),l_otherparity,tags2,0);
-	    dslash_special(F_OFFSET(ttt),F_OFFSET(ttt),l_parity,tags1,0);
+	    /**printf("CONGRAD%: calling dslash_site_special - restart\n");**/
+	    dslash_site_special(F_OFFSET(cg_p),F_OFFSET(ttt),l_otherparity,tags2,0);
+	    dslash_site_special(F_OFFSET(ttt),F_OFFSET(ttt),l_parity,tags1,0);
 	}
 
 #ifdef DSLASHtime
@@ -388,7 +388,7 @@ void scalar_mult_latvec(field_offset src, Real scalar,
 /* D_slash routine - sets dest. on each site equal to sum of
    sources parallel transported to site, with minus sign for transport
    from negative directions */
-void dslash(src,dest,parity) field_offset src,dest; int parity; {
+void dslash_site(src,dest,parity) field_offset src,dest; int parity; {
 register int i;
 register site *s;
 register int dir,otherparity;
@@ -404,7 +404,7 @@ register su3_vector *a,*b1,*b2,*b3,*b4;
 
     /* Start gathers from positive directions */
     for(dir=XUP; dir<=TUP; dir++){
-	tag[dir] = start_gather( src, sizeof(su3_vector), dir, parity,
+	tag[dir] = start_gather_site( src, sizeof(su3_vector), dir, parity,
 	    gen_pt[dir] );
     }
 
@@ -423,7 +423,7 @@ if(otherparity==EVENANDODD)dtimem_iters +=2; else dtimem_iters++;
 
     /* Start gathers from negative directions */
     for( dir=XUP; dir <= TUP; dir++){
-	tag[OPP_DIR(dir)] = start_gather( F_OFFSET(tempvec[dir]),
+	tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
 	    sizeof(su3_vector), OPP_DIR( dir), parity,
 	    gen_pt[OPP_DIR(dir)] );
     }
@@ -487,12 +487,12 @@ if(otherparity==EVENANDODD)dtimem_iters +=2; else dtimem_iters++;
     }
 }
 
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash_site for use by congrad.  Uses restart_gather_site() when
   possible. Last argument is an array of message tags, to be set
   if this is the first use, otherwise reused. If start=1,use
-  start_gather, otherwise use restart_gather. 
+  start_gather_site, otherwise use restart_gather_site. 
   The calling program must clean up the gathers! */
-void dslash_special(src,dest,parity,tag,start)
+void dslash_site_special(src,dest,parity,tag,start)
 field_offset src,dest; int parity; msg_tag **tag; int start; {
 register int i;
 register site *s;
@@ -515,10 +515,10 @@ double dtime0,dtime1,dtime2,dtime3,dtime4,dtime5,dtime6,dclock();
 
     /* Start gathers from positive directions */
     for(dir=XUP; dir<=TUP; dir++){
-/**printf("dslash_special: up gathers, start=%d\n",start);**/
-	if(start==1) tag[dir] = start_gather( src, sizeof(su3_vector),
+/**printf("dslash_site_special: up gathers, start=%d\n",start);**/
+	if(start==1) tag[dir] = start_gather_site( src, sizeof(su3_vector),
 	    dir, parity, gen_pt[dir] );
-	else restart_gather( src, sizeof(su3_vector),
+	else restart_gather_site( src, sizeof(su3_vector),
 	    dir, parity, gen_pt[dir] , tag[dir] );
     }
 
@@ -573,10 +573,10 @@ if(otherparity==EVENANDODD)dtimem_iters +=2; else dtimem_iters++;
 
     /* Start gathers from negative directions */
     for( dir=XUP; dir <= TUP; dir++){
-/**printf("dslash_special: down gathers, start=%d\n",start);**/
-	if (start==1) tag[OPP_DIR(dir)] = start_gather( F_OFFSET(tempvec[dir]),
+/**printf("dslash_site_special: down gathers, start=%d\n",start);**/
+	if (start==1) tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
 	    sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
-	else restart_gather( F_OFFSET(tempvec[dir]), sizeof(su3_vector),
+	else restart_gather_site( F_OFFSET(tempvec[dir]), sizeof(su3_vector),
 	    OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] , tag[OPP_DIR(dir)] );
     }
 

@@ -37,8 +37,8 @@ void clover_rotate(field_offset src, field_offset dest)
 	-((char *)&(lattice[0]));
       
       /* Do Wilson "dslash" on the src_wv field with (1 +/- gamma) factor */
-      dslash_w(src_wv,F_OFFSET(TMP1), PLUS,EVENANDODD);
-      dslash_w(src_wv,F_OFFSET(TMP2),MINUS,EVENANDODD);
+      dslash_w_site(src_wv,F_OFFSET(TMP1), PLUS,EVENANDODD);
+      dslash_w_site(src_wv,F_OFFSET(TMP2),MINUS,EVENANDODD);
 
       /* Then subtraction leaves 2*Dslash (i.e. 2*gamma factor) */
       FORALLSITES(i,s){

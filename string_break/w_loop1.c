@@ -38,7 +38,7 @@ Real *wils_loop1,ftmp;
 	}
 
 	/* Start gather of forward time-like links */
-	mtag[0] = start_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+	mtag[0] = start_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 	    dir, EVENANDODD, gen_pt[0] );
 
 	/* Recursively construct the space-like segments and compute
@@ -61,16 +61,16 @@ Real *wils_loop1,ftmp;
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+	    mtag[TUP] = start_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 		TUP, EVENANDODD, gen_pt[TUP] );
 
 	    /* Inbetween gather space-links for next r, if still needed. */
 	    if( r==0 ){
-		mtag[1] = start_gather( F_OFFSET(s_link), sizeof(su3_matrix),
+		mtag[1] = start_gather_site( F_OFFSET(s_link), sizeof(su3_matrix),
 		    dir, EVENANDODD, gen_pt[1] );
 	    }
 	    else if( r<(nxh-1) ){
-		restart_gather( F_OFFSET(s_link), sizeof(su3_matrix),
+		restart_gather_site( F_OFFSET(s_link), sizeof(su3_matrix),
 		    dir, EVENANDODD, gen_pt[1], mtag[1] );
 	    }
 	    else{
@@ -100,7 +100,7 @@ Real *wils_loop1,ftmp;
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+		    restart_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 			TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
 		else{
@@ -126,7 +126,7 @@ Real *wils_loop1,ftmp;
 
 	    /* Start gather of forward time-like links for next r. */
 	    if( r<(nxh-1) ){
-		restart_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+		restart_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 		    dir, EVENANDODD, gen_pt[0], mtag[0] );
 	    }
 	    else{

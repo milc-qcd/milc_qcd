@@ -61,11 +61,11 @@ Real xnsrc;
 	}
 
 	/* Start gather of forward time-like links */
-	mtag[4] = start_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+	mtag[4] = start_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 	   dir, EVENANDODD, gen_pt[4] );
 
 	/* gather g_rand and light prop in direction dir  */
-	mtag[0] = start_gather( F_OFFSET(dtmpvecs[0]),
+	mtag[0] = start_gather_site( F_OFFSET(dtmpvecs[0]),
 	    sizeof(dble_su3_vec_src), dir, EVENANDODD, gen_pt[0]);
 
 
@@ -97,11 +97,11 @@ Real xnsrc;
 	    }
 
 	    /* Start gather of g_rand and light prop in ==TUP== direction */
-	    mtag[1] = start_gather( F_OFFSET(dtmpvecs[1]),
+	    mtag[1] = start_gather_site( F_OFFSET(dtmpvecs[1]),
 		sizeof(dble_su3_vec_src), TUP, EVENANDODD, gen_pt[1]);
 
 	    /* Start gather s_link_f for next time slice */
-	    mtag[3] = start_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+	    mtag[3] = start_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 		TUP, EVENANDODD, gen_pt[3]);
 
 	    /* Collect light props in direction dir */
@@ -132,10 +132,10 @@ Real xnsrc;
 	    /* gather next light propagators, random numbers and links
 	       in direction dir if needed  */
 	    if( r<(nxh-1) ){
-		restart_gather( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
+		restart_gather_site( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
 		    dir, EVENANDODD, gen_pt[0], mtag[0] );
 
-		restart_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+		restart_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 		    dir, EVENANDODD, gen_pt[4], mtag[4] );
 	    }
 	    else{
@@ -181,11 +181,11 @@ Real xnsrc;
 
 		/* start gather for next t if needed   */
 		if( t<(nth-1) ){
-		    restart_gather( F_OFFSET(dtmpvecs[1]),
+		    restart_gather_site( F_OFFSET(dtmpvecs[1]),
 			sizeof(dble_su3_vec_src), TUP, EVENANDODD,
 			gen_pt[1], mtag[1] );
 
-		    restart_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+		    restart_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 			TUP, EVENANDODD,
 			gen_pt[3], mtag[3] );
 		}

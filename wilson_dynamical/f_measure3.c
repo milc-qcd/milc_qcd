@@ -76,13 +76,13 @@ FORALLSITES(i,s){
 
     /* Invert, remember that we have LU preconditioned matrix in congrad */
     /* multiply by L inverse */
-    dslash_w( F_OFFSET(g_rand), F_OFFSET(psi), PLUS, EVEN);
+    dslash_w_site( F_OFFSET(g_rand), F_OFFSET(psi), PLUS, EVEN);
     FOREVENSITES(i,s){
         scalar_mult_add_wvec( &(s->g_rand), &(s->psi), kappa, &(s->chi));
     }
     /* Multiply by MM_adjoint */
-    dslash_w( F_OFFSET(chi), F_OFFSET(psi), MINUS, ODD);
-    dslash_w( F_OFFSET(psi), F_OFFSET(psi), MINUS, EVEN);
+    dslash_w_site( F_OFFSET(chi), F_OFFSET(psi), MINUS, ODD);
+    dslash_w_site( F_OFFSET(psi), F_OFFSET(psi), MINUS, EVEN);
     FOREVENSITES(i,s){
         scalar_mult_add_wvec( &(s->chi), &(s->psi),
      	-kappa*kappa, &(s->chi) );
@@ -92,7 +92,7 @@ FORALLSITES(i,s){
     /* fix up odd sites in psi, which congrad doesn't compute */
     FORODDSITES(i,s){ s->psi = s->g_rand; }
     /* Multiply by U inverse */
-    dslash_w( F_OFFSET(psi), F_OFFSET(chi), PLUS, ODD);
+    dslash_w_site( F_OFFSET(psi), F_OFFSET(chi), PLUS, ODD);
     FORODDSITES(i,s){
         scalar_mult_add_wvec( &(s->psi), &(s->chi), kappa, &(s->psi));
     }
@@ -101,7 +101,7 @@ FORALLSITES(i,s){
 /* Multiply by M and see if I get g_rand back */
 /* use dir as flag*/
 /**
-dslash_w( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
+dslash_w_site( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
 FORALLSITES(i,s)scalar_mult_add_wvec( &(s->psi), &(s->mp), -kappa, &(s->mp) );
 FORALLSITES(i,s){
     for(dir=0,j=0;j<4;j++)for(k=0;k<3;k++){
@@ -139,9 +139,9 @@ FORALLSITES(i,s){
 	    wp_shrink( &(s->g_rand), &hwv1, dir, PLUS );
 	    mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv1, &(s->htmp[1]) );
 	}
-	tag0 = start_gather( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
+	tag0 = start_gather_site( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
 	    dir, EVENANDODD, gen_pt[0] );
-	tag1 = start_gather( F_OFFSET(htmp[1]), sizeof(half_wilson_vector),
+	tag1 = start_gather_site( F_OFFSET(htmp[1]), sizeof(half_wilson_vector),
 	    OPP_DIR(dir), EVENANDODD, gen_pt[1] );
 	wait_gather(tag0);
 	wait_gather(tag1);

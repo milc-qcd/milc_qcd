@@ -71,7 +71,7 @@ ncount=0;
 
 /* now we must gather the path from direction dir, due to 
 	the way path.c works*/
-	mtag0 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
                 dir, EVENANDODD, gen_pt[0] );
 	wait_gather(mtag0);
 
@@ -171,13 +171,13 @@ ferm_epsilon = nflavors*eps;
 
 #ifdef LU
     KAP = -kappa*kappa;
-    dslash( F_OFFSET(psi), F_OFFSET(tmp), PLUS, ODD );
+    dslash_w_site( F_OFFSET(psi), F_OFFSET(tmp), PLUS, ODD );
     mult_ldu( F_OFFSET(tmp), F_OFFSET(psi), ODD );
-    dslash( F_OFFSET(psi), F_OFFSET(p), PLUS, EVEN );
+    dslash_w_site( F_OFFSET(psi), F_OFFSET(p), PLUS, EVEN );
     mult_ldu( F_OFFSET(psi), F_OFFSET(tmp), EVEN );
     FOREVENSITES(i,st)
         scalar_mult_add_wvec( &(st->tmp), &(st->p), KAP, &(st->p) );
-    dslash( F_OFFSET(p), F_OFFSET(tmp), MINUS, ODD );
+    dslash_w_site( F_OFFSET(p), F_OFFSET(tmp), MINUS, ODD );
     mult_ldu( F_OFFSET(tmp), F_OFFSET(p), ODD );
 
     /* M = A_even - kappa^2 * Dslash * A_odd^{-1} * Dslash
@@ -187,7 +187,7 @@ ferm_epsilon = nflavors*eps;
          p(odd)  = A_odd^{-1} * Dslash_adjoint * M * psi(even). */
 #else
     KAP = -kappa;
-    dslash( F_OFFSET(psi), F_OFFSET(p), PLUS, EVENANDODD );
+    dslash_w_site( F_OFFSET(psi), F_OFFSET(p), PLUS, EVENANDODD );
     mult_ldu( F_OFFSET(psi), F_OFFSET(tmp), EVENANDODD );
     FORALLSITES(i,st) {
         scalar_mult_add_wvec( &(st->tmp), &(st->p), KAP, &(st->p) );
@@ -204,9 +204,9 @@ ferm_epsilon = nflavors*eps;
 	    wp_shrink( &(st->psi), &(st->htmp[0]), mu, PLUS);
 	    wp_shrink( &(st->p), &(st->htmp[1]), mu, MINUS);
 	}
-	tag0 = start_gather( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
+	tag0 = start_gather_site( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
 	     mu, EVENANDODD, gen_pt[0] );
-	tag1 = start_gather( F_OFFSET(htmp[1]), sizeof(half_wilson_vector),
+	tag1 = start_gather_site( F_OFFSET(htmp[1]), sizeof(half_wilson_vector),
 	     mu, EVENANDODD, gen_pt[1] );
 	wait_gather(tag0);
 	wait_gather(tag1);

@@ -34,13 +34,7 @@
 /* Include files */
 #include "generic_ks_includes.h"
 #include "../include/jacobi.h"
-
-#ifdef FN
-#define dslash dslash_fn
-#endif
-#ifdef EO
-#define dslash dslash_eo
-#endif
+#include "../include/dslash_ks_redefine.h"
 
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity) ;
 void cleanup_Matrix() ;
@@ -117,8 +111,8 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity){
     terminate(1) ;
   }
 
-  dslash_fn_on_temp(src , temp, otherparity) ; 
-  dslash_fn_on_temp(temp, res , parity     ) ;
+  dslash_fn_field(src , temp, otherparity) ; 
+  dslash_fn_field(temp, res , parity     ) ;
   FORSOMEPARITY(i,s,parity){ 
     scalar_mult_su3_vector( &(res[i]), -1.0, &(res[i])) ;
   } 
@@ -167,8 +161,8 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity){
     terminate(1) ;
   }
   
-  dslash_fn_on_temp_special(src , temp, otherparity, tags1, dslash_start) ;
-  dslash_fn_on_temp_special(temp, res , parity     , tags2, dslash_start) ;
+  dslash_fn_field_special(src , temp, otherparity, tags1, dslash_start) ;
+  dslash_fn_field_special(temp, res , parity     , tags2, dslash_start) ;
   
   FORSOMEPARITY(i,s,parity){ 
     scalar_mult_su3_vector( &(res[i]), -1.0, &(res[i])) ;

@@ -3,7 +3,7 @@
 /* MIMD version 6 */
 /* update the  momenta with the fermion force */
 /* Assumes that the conjugate gradient has been run, with the answer in
-   xxx, and dslash(xxx,xxx,ODD) has been run. (fills in xxx_odd) */
+   xxx, and dslash_site(xxx,xxx,ODD) has been run. (fills in xxx_odd) */
 /* SEE LONG COMMENT AT END */
 /* OLD VERSION FOR OneFatNaik action!!! */
 #ifdef FN	/* Actually, requirements much stricter!! */
@@ -31,7 +31,7 @@ dtime=-dclock();
 
 /* SINGLE LINK PARTS:  NEED UX_p1 and X_m1U */
     /* gather xxx and Dslash*xxx from + direction */
-    tag[0] = start_gather( F_OFFSET(xxx), sizeof(su3_vector), dir, 
+    tag[0] = start_gather_site( F_OFFSET(xxx), sizeof(su3_vector), dir, 
 	EVENANDODD, gen_pt[0] );
     wait_gather(tag[0]);
 
@@ -70,7 +70,7 @@ dumpmat( &tmat1 );
 
 /* NAIK PARTS: UUX_p2, UUUX_p3, X_m1U, X_m2UU  */
     /* parallel transport xxx and dslash*xxx from minus */
-    tag[1] = start_gather( F_OFFSET(tempvec[0]), sizeof(su3_vector),
+    tag[1] = start_gather_site( F_OFFSET(tempvec[0]), sizeof(su3_vector),
 	OPP_DIR(dir), EVENANDODD, gen_pt[1] );
     wait_gather(tag[1]);
     FORALLSITES(i,s) { 
@@ -81,7 +81,7 @@ dumpmat( &tmat1 );
     cleanup_gather(tag[1]);
 
     /* start parallel transport from +, for distance two */
-    tag[0] = start_gather( F_OFFSET(UX_p1), sizeof(su3_vector), dir, 
+    tag[0] = start_gather_site( F_OFFSET(UX_p1), sizeof(su3_vector), dir, 
 			     EVENANDODD, gen_pt[0] );
     wait_gather(tag[0]);
     FORALLSITES(i,s) { 
@@ -91,7 +91,7 @@ dumpmat( &tmat1 );
     }
     cleanup_gather(tag[0]);
 
-    tag[2] = start_gather( F_OFFSET(tempvec[0]), sizeof(su3_vector),
+    tag[2] = start_gather_site( F_OFFSET(tempvec[0]), sizeof(su3_vector),
 	OPP_DIR(dir), EVENANDODD, gen_pt[2] );
     tag[0] = start_gather( F_OFFSET(UUX_p2), sizeof(su3_vector), dir, 
 			     EVENANDODD, gen_pt[0] );

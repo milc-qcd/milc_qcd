@@ -23,19 +23,19 @@ int disp[4];	/* displacement vector for general gather */
 	    disp[dir2] = -1;
 
 	    /* get link[dir2] from direction dir1 */
-	    tag0 = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	    tag0 = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 		dir1, parity, gen_pt[0] );
 
 	    /* get link[dir1] from direction dir2 */
-	    tag1 = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	    tag1 = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 		dir2, parity, gen_pt[1] );
 
 	    /* get link[dir2] from direction -dir2 */
-	    tag2 = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	    tag2 = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 		OPP_DIR(dir2), parity, gen_pt[2] );
 
 	    /* get link[dir1] from direction -dir2 */
-	    tag3 = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	    tag3 = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 		OPP_DIR(dir2), parity, gen_pt[3] );
 
 	    /* get link[dir2] from displacement +dir1-dir2 */

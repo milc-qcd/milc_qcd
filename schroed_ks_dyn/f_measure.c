@@ -47,7 +47,7 @@ complex cc;
     /* fermion energy and pressure */
     for(dir=XUP;dir<=TUP;dir++){
 	/* Bring g_rand down to even site */
-	tag1 = start_gather( F_OFFSET(g_rand), sizeof(su3_vector), dir,
+	tag1 = start_gather_site( F_OFFSET(g_rand), sizeof(su3_vector), dir,
 	    EVEN, gen_pt[1] );
 	FORODDSITES(i,st){
 	    if(st->t > 0){
@@ -62,7 +62,7 @@ complex cc;
 	    }
 	}
 	/* Bring result up to even site */
-	tag0 = start_gather( F_OFFSET(tempvec[0]), sizeof(su3_vector),
+	tag0 = start_gather_site( F_OFFSET(tempvec[0]), sizeof(su3_vector),
 	    OPP_DIR(dir), EVEN, gen_pt[0] );
 	wait_gather(tag0);
 	wait_gather(tag1);

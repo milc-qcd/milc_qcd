@@ -45,7 +45,7 @@ int spectrum() /* return the C.G. iteration number */
       cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			niter,rsqprop/(mass*mass),EVEN,&finalrsq);
       /* Multiply by -Madjoint */
-      dslash( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
+      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
       scalar_mult_latvec( F_OFFSET(xxx), -mass_x2, F_OFFSET(ttt), EVEN);
       
       /* fill the hadron matrix */
@@ -138,13 +138,13 @@ int spectrum() /* return the C.G. iteration number */
      even_forw[z] = even_back[z] = odd_forw[z] = odd_back[z] = cmplx(0.0,0.0);
   }
   for(icol=0; icol<3;icol++){
-     tag0 = start_gather( F_OFFSET(propmat[icol]), sizeof(su3_vector), ZUP,
+     tag0 = start_gather_site( F_OFFSET(propmat[icol]), sizeof(su3_vector), ZUP,
 	EVENANDODD, gen_pt[0] );
      FORALLSITES(i,st){
 	    mult_adj_su3_mat_vec( &(st->link[ZUP]),
                 &(st->propmat[icol]),  &(st->tempvec[icol]) );
      }
-     tag1 = start_gather( F_OFFSET(tempvec[icol]), sizeof(su3_vector),
+     tag1 = start_gather_site( F_OFFSET(tempvec[icol]), sizeof(su3_vector),
 		OPP_DIR(ZUP), EVENANDODD, gen_pt[1] );
      wait_gather(tag0);
      FORALLSITES(i,st){

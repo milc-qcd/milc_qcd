@@ -57,7 +57,7 @@ typedef struct {
         wilson_vector mp;       /* another CG vector */
         wilson_vector tmp;      /* another temporary CG vector */
 	wilson_vector r; 	/* residue */
-        /* wilson half vector (temporary used in dslash_w) */
+        /* wilson half vector (temporary used in dslash_w_site) */
         half_wilson_vector htmp[8];
 /**half_wilson_vector htmp2[8];**/ /* TEMP FOR TESTING */
 #ifdef PHI_ALGORITHM

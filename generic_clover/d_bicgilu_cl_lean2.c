@@ -2,7 +2,7 @@
 /* MIMD version 6 */
 
 /* Modifications:
-   7/18/01 calls dslash_w_special CD
+   7/18/01 calls dslash_w_site_special CD
    1/24/00 combined with Schroedinger functional version - UMH
    4/26/98 Moved parameters to structures CD
    8/29/97 ANSI prototyping and added comments C. D.
@@ -144,7 +144,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
 #endif
   
   mult_ldu(src, my_mp, ODD);
-  dslash_w_special(my_mp, my_mp, PLUS, EVEN, tage, is_startede);
+  dslash_w_site_special(my_mp, my_mp, PLUS, EVEN, tage, is_startede);
   is_startede = 1;
   
   /* Normalization  */
@@ -191,10 +191,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     /*	if(this_node==0)    printf("dest_0  !=0\n"); */
     /* we use my_mp temporarily to construct r */
     mult_ldu(dest, tmp, EVEN);
-    dslash_w_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
+    dslash_w_site_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     mult_ldu(my_mp, tmp, ODD);
-    dslash_w_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
+    dslash_w_site_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     FOREVENSITESDOMAIN(i,s) {
       scalar_mult_add_wvec( (wilson_vector *)F_PT(s,tmp), 
@@ -225,10 +225,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     
     /*   my_mp = M(u)*p */
     mult_ldu(p, tmp, EVEN);
-    dslash_w_special(p, my_mp, PLUS, ODD, tago, is_startedo);
+    dslash_w_site_special(p, my_mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     mult_ldu(my_mp, tmp, ODD);
-    dslash_w_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
+    dslash_w_site_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     
     /* rvv = <rv|my_mp> */
@@ -254,10 +254,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     
     /* ttt = M(u)*sss */
     mult_ldu(sss, tmp, EVEN);
-    dslash_w_special(sss, sss, PLUS, ODD, tago, is_startedo);
+    dslash_w_site_special(sss, sss, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     mult_ldu(sss, tmp, ODD);
-    dslash_w_special(tmp, ttt, PLUS, EVEN, tage, is_startede);
+    dslash_w_site_special(tmp, ttt, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     
     /* tdots = <ttt|sss>; tsq=|ttt|^2 */
@@ -341,7 +341,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     } **/
   
   /* dest = R^(-1)*dest  */
-  dslash_w_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
+  dslash_w_site_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
   is_startedo = 1;
   FORODDSITESDOMAIN(i,s) {
     scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), (wilson_vector *)F_PT(s,my_mp),

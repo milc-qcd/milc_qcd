@@ -11,7 +11,7 @@ void update_h( Real eps ) {
     /* fermionic force */
     /* First compute M*xxx in temporary vector ttt */
 	/* The diagonal term in M doesn't matter */
-    dslash( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
+    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
     fermion_force(eps);
 } /* update_h */
 
@@ -41,11 +41,11 @@ dtime = -dclock();**/
 	for(dir2=XUP;dir2<=TUP;dir2++)if(dir2 != dir1){
 
 	    /* get link[dir2] from direction dir1 */
-	    tag0 = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	    tag0 = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 		dir1, EVENANDODD, gen_pt[0] );
 
 	    /* Start gather for the "upper staple" */
-	    tag2 = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	    tag2 = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 		dir2, EVENANDODD, gen_pt[2] );
 
 	    /* begin the computation "at the dir2DOWN point", we will
@@ -59,7 +59,7 @@ dtime = -dclock();**/
 	    }
 
 	    /* Gather this partial result "up to home site" */
-	    tag1 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	    tag1 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 		OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
 
 	    /* begin the computation of the "upper" staple.  Note that
@@ -124,7 +124,7 @@ dtime, (double)(10848.0*volume/(1.0e6*dtime*numnodes())) );**/
 
 /* update the  momenta with the fermion force */
 /* Assumes that the conjugate gradient has been run, with the answer in
-   xxx, and dslash(xxx,ttt) has been run. */
+   xxx, and dslash_site(xxx,ttt) has been run. */
 void fermion_force( Real eps ) {
 register int i,dir;
 register site *st;
@@ -143,13 +143,13 @@ dtime = -dclock();**/
 
     ferm_epsilon = (nflavors/2.0)*eps;
     /* For even sites, gather ttt  get first one befor entering loop */
-    tag0 = start_gather( F_OFFSET(ttt), sizeof(su3_vector), XUP, EVEN,
+    tag0 = start_gather_site( F_OFFSET(ttt), sizeof(su3_vector), XUP, EVEN,
 	gen_pt[0] );
 
     for(dir=XUP;dir<=TUP;dir++){
 
 	/* For odd sites, gather xxx */
-	tag1 = start_gather( F_OFFSET(xxx), sizeof(su3_vector), dir, ODD,
+	tag1 = start_gather_site( F_OFFSET(xxx), sizeof(su3_vector), dir, ODD,
 	    gen_pt[1] );
 	wait_gather(tag0);
 	FOREVENSITES(i,st){
@@ -172,7 +172,7 @@ if(ff_x > ff_max) ff_max = ff_x;
 
 	/* For even sites, gather ttt */
 	if(dir<TUP){
-	    tag0 = start_gather( F_OFFSET(ttt), sizeof(su3_vector),
+	    tag0 = start_gather_site( F_OFFSET(ttt), sizeof(su3_vector),
 		dir+1, EVEN, gen_pt[0] );
 	}
 

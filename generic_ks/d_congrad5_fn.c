@@ -4,7 +4,7 @@
    actions.  
 
    This code combines d_congrad5_fn.c and d_congrad5_fn_tmp.c
-   Calls dslash_fn or dslash_fn_on_temp depending accordingly. */
+   Calls dslash_fn_site or dslash_fn_field depending accordingly. */
 
 /* Jim Hetrick, Kari Rummukainen, Doug Toussaint, Steven Gottlieb */
 /* 10/02/01 C. DeTar Consolidated with tmp version */
@@ -33,7 +33,7 @@
 /**#define CG_DEBUG **/
 
 
-void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]); /* dslash_fn_tmp.c */
+void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]); /* dslash_fn_field.c */
 
 #define LOOPEND
 #include "../include/loopend.h"
@@ -56,7 +56,7 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
   int l_parity;	/* parity we are currently doing */
   int l_otherparity;	/* the other parity */
   msg_tag * tags1[16], *tags2[16];	/* tags for gathers to parity and opposite */
-  int special_started;	/* 1 if dslash_special has been called */
+  int special_started;	/* 1 if dslash_fn_field_special has been called */
 
 /* Timing */
 
@@ -124,8 +124,8 @@ start:
 	if(this_node==0)if(iteration>1)printf("CONGRAD: restart rsq = %.10e\n",rsq);
 #endif
         rsq = source_norm = 0.0;
-	dslash_fn_on_temp_special(t_dest, ttt,l_otherparity,tags2,1);
-	dslash_fn_on_temp_special(ttt,ttt,l_parity,tags1,1);
+	dslash_fn_field_special(t_dest, ttt,l_otherparity,tags2,1);
+	dslash_fn_field_special(ttt,ttt,l_parity,tags1,1);
 	cleanup_gathers(tags1,tags2);
 	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
 	FORSOMEPARITY(i,s,l_parity){
@@ -199,13 +199,13 @@ start:
 	/* sum of neighbors */
 
 	if(special_started==0){
-	    dslash_fn_on_temp_special( cg_p, ttt, l_otherparity, tags2, 1 );
-	    dslash_fn_on_temp_special( ttt, ttt, l_parity, tags1, 1);
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1 );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1);
 	    special_started=1;
 	}
 	else {
-	    dslash_fn_on_temp_special( cg_p, ttt, l_otherparity, tags2, 0 );
-	    dslash_fn_on_temp_special( ttt, ttt, l_parity, tags1, 0);
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0 );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0);
 	}
 
 	/* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */

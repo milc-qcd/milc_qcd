@@ -34,12 +34,12 @@ void rotate_w_quark(field_offset src, field_offset dest, double d1)
 	s->psi = qsrc->c[color].d[spin];
       }
     
-    /* Do Wilson Dslash3 on the psi field */
-    dslash3(F_OFFSET(psi), F_OFFSET(mp), PLUS,  EVENANDODD);
+    /* Do Wilson Dslash_W_3D on the psi field */
+    dslash_w_3D(F_OFFSET(psi), F_OFFSET(mp), PLUS,  EVENANDODD);
  
-    dslash3(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
+    dslash_w_3D(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
    
-    /* From subtraction we get 2*Dslash3 */
+    /* From subtraction we get 2*Dslash_W_3D */
     
     FORALLSITES(i,s){
       qsrc = (wilson_propagator *)F_PT(s,src);

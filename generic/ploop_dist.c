@@ -31,7 +31,7 @@ int x,y,z;
     /* First multiply the link on every even site by the link above it */
     /* We will compute the Polyakov loop "at" the even sites in the 
 	first two time slices. */
-    tag=start_gather( F_OFFSET(link[TUP]), sizeof(su3_matrix),
+    tag=start_gather_site( F_OFFSET(link[TUP]), sizeof(su3_matrix),
 	TUP, EVEN, gen_pt[0] );
     wait_gather(tag);
     FOREVENSITES(i,st){

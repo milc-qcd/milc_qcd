@@ -74,7 +74,7 @@ mes_t = F_OFFSET(ttt.c[1]);
         su3_vec_to_src( &(s->g_rand[0]), &(s->dtmpvecs[0].n[1]), num_src);
     }
 
-    mtag[0] = start_gather( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
+    mtag[0] = start_gather_site( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
         TUP, EVENANDODD, gen_pt[0]);
 
 
@@ -99,7 +99,7 @@ mes_t = F_OFFSET(ttt.c[1]);
         }
 
         if( t<(nth-1) ){
-            restart_gather( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
+            restart_gather_site( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
                 TUP, EVENANDODD, gen_pt[0], mtag[0] );
         }
         else{

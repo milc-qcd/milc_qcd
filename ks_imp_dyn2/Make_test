@@ -31,3 +31,5 @@ PATTERNS = WARMUPS RUNNING
 include ../Make_test_template
 
 check: test
+
+clean: test_clean

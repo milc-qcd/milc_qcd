@@ -26,13 +26,13 @@ void w_meson_z(field_offset src1,field_offset src2);
     for(spin=0;spin<4;spin++) for(color=0;color<3;color++) {
 	w_source_z(F_OFFSET(chi),color,spin,WALL,0,0,0,0,(Real)0.0);
 	/* multiply by L inverse */
-	dslash_w( F_OFFSET(chi), F_OFFSET(psi), PLUS, EVEN);
+	dslash_w_site( F_OFFSET(chi), F_OFFSET(psi), PLUS, EVEN);
 	FOREVENSITES(i,s){
 	    scalar_mult_add_wvec( &(s->chi), &(s->psi), kappa, &(s->chi));
 	}
 	/* Multiply by M_adjoint */
-	dslash_w( F_OFFSET(chi), F_OFFSET(psi), MINUS, ODD);
-	dslash_w( F_OFFSET(psi), F_OFFSET(psi), MINUS, EVEN);
+	dslash_w_site( F_OFFSET(chi), F_OFFSET(psi), MINUS, ODD);
+	dslash_w_site( F_OFFSET(psi), F_OFFSET(psi), MINUS, EVEN);
 	FOREVENSITES(i,s){
 	    scalar_mult_add_wvec( &(s->chi), &(s->psi),
  		-kappa*kappa, &(s->chi) );
@@ -43,7 +43,7 @@ void w_meson_z(field_offset src1,field_offset src2);
 	/* In fact, congrad may muck up these sites of psi!! */
 	FORODDSITES(i,s){ s->psi = s->chi; }
 	/* Multiply by U inverse */
-	dslash_w( F_OFFSET(psi), F_OFFSET(chi), PLUS, ODD);
+	dslash_w_site( F_OFFSET(psi), F_OFFSET(chi), PLUS, ODD);
 	FORODDSITES(i,s){
 	    scalar_mult_add_wvec( &(s->psi), &(s->chi), kappa, &(s->psi));
 	}

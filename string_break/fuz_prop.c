@@ -25,14 +25,14 @@ msg_tag *tag0, *tag1;
 
 	for(dir=XUP;dir<=ZUP;dir++){
 	    /* Start gathering for 'backward' link-product */
-	    tag0 = start_gather(F_OFFSET(xxx), sizeof(su3_vector),
+	    tag0 = start_gather_site(F_OFFSET(xxx), sizeof(su3_vector),
 		dir, EVENANDODD, gen_pt[0]);
 
 	    /* Start 'forward' link-product */
 	    FORALLSITES(i,s) {
 		mult_adj_su3_mat_vec(&(s->link[dir]), &(s->xxx), &(s->ttt));
 	    }
-	    tag1 = start_gather(F_OFFSET(ttt), sizeof(su3_vector),
+	    tag1 = start_gather_site(F_OFFSET(ttt), sizeof(su3_vector),
 		OPP_DIR(dir), EVENANDODD, gen_pt[1]);
 
 	    for(k=1;k<r0;k++) {
@@ -49,11 +49,11 @@ msg_tag *tag0, *tag1;
 		}
 		if(k==1) {
 		    cleanup_gather(tag0);
-		    tag0 = start_gather(F_OFFSET(cg_p), sizeof(su3_vector),
+		    tag0 = start_gather_site(F_OFFSET(cg_p), sizeof(su3_vector),
 			dir, EVENANDODD, gen_pt[0]);
 		}
 		else {
-		    restart_gather(F_OFFSET(cg_p), sizeof(su3_vector),
+		    restart_gather_site(F_OFFSET(cg_p), sizeof(su3_vector),
 			dir, EVENANDODD, gen_pt[0], tag0);
 		}
 
@@ -69,7 +69,7 @@ msg_tag *tag0, *tag1;
 		    mult_adj_su3_mat_vec(&(s->link[dir]), &(s->resid),
 			&(s->ttt));
 		}
-		restart_gather(F_OFFSET(ttt), sizeof(su3_vector),
+		restart_gather_site(F_OFFSET(ttt), sizeof(su3_vector),
 		    OPP_DIR(dir), EVENANDODD, gen_pt[1], tag1);
 
 	    } /* k<r0 */

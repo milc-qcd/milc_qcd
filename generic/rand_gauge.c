@@ -44,7 +44,7 @@ void gauge_trans(field_offset G)
   msg_tag *tag[4];
 
   FORALLUPDIR(mu) 
-    tag[mu] = start_gather(G,sizeof(su3_matrix),mu,EVENANDODD,
+    tag[mu] = start_gather_site(G,sizeof(su3_matrix),mu,EVENANDODD,
 		       gen_pt[mu]);
 
   FORALLUPDIR(mu) {

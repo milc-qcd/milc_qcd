@@ -75,7 +75,7 @@ Real xrandom;
 	    /* with fermion_force only! */
 	    /* First compute M*xxx in temporary vector ttt */
 	    /* The diagonal term in M doesn't matter */
-	    dslash( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
+	    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
 	    fermion_force(0.5*epsilon);
 #else
 	    update_h(0.5*epsilon);
@@ -125,7 +125,7 @@ Real xrandom;
 #ifdef SEXT_WEIN
 	    /* with fermion_force only! */
 	    /* First compute M*xxx in temporary vector ttt */
-	    dslash( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
+	    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
 	    fermion_force(epsilon);
 #else
 	    update_h(epsilon);
@@ -136,7 +136,7 @@ Real xrandom;
 #ifdef SEXT_WEIN
 	    /* with fermion_force only! */
 	    /* First compute M*xxx in temporary vector ttt */
-	    dslash( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
+	    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
 	    fermion_force(0.5*epsilon);
 #else
 	    update_h(0.5*epsilon);

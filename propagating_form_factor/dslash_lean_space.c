@@ -46,7 +46,7 @@ msg_tag *tag[2];
 	wp_shrink( (wilson_vector *)F_PT(s,src), 
 		   &(s->htmp[0]), dir, isign);
       } END_LOOP
-      tag[0]=start_gather( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
+      tag[0]=start_gather_site( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
 			       dir, parity, gen_pt[0] );
 
         /* Take Wilson projection for src displaced in down direction,
@@ -61,7 +61,7 @@ msg_tag *tag[2];
 	  mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv, &(s->htmp[1]));
         } END_LOOP
 
-	tag[1]=start_gather(F_OFFSET(htmp[1]), 
+	tag[1]=start_gather_site(F_OFFSET(htmp[1]), 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[1] );
 
@@ -107,4 +107,4 @@ msg_tag *tag[2];
 	cleanup_gather(tag[1]);
 
     } /* end loop over directions */
-} /* end (of dslash_w.c) */
+} /* end (of dslash_space.c) */

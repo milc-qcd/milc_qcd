@@ -5,13 +5,7 @@
    been defined to be the appropriate "dslash_fn" or "dslash_eo"
 */
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
-
-#ifdef FN
-#define dslash dslash_fn
-#endif
-#ifdef EO
-#define dslash dslash_eo
-#endif
+#include "../include/dslash_ks_redefine.h"
 
 /* construct a gaussian random vector, g_rand, and phi=M(dagger)*g_rand  */
 /* "parity" is EVEN, ODD, or EVENANDODD.  The parity is the parity at
@@ -35,7 +29,7 @@ register site *s;
     if( !valid_longlinks )load_longlinks();
     if( !valid_fatlinks )load_fatlinks();
 #endif
-    dslash( F_OFFSET(g_rand), dest, parity);
+    dslash_site( F_OFFSET(g_rand), dest, parity);
     scalar_mult_latvec( dest, -1.0, dest, parity );
     scalar_mult_add_latvec( dest, F_OFFSET(g_rand), 2.0*mass,
 	dest, parity );
@@ -70,7 +64,7 @@ void grsource_plain( field_offset dest, int parity ) {
 void checkmul_imp( field_offset src, Real mass ) {
 register int i,j;
 register site *s;
-    dslash( src, F_OFFSET(ttt), EVENANDODD);
+    dslash_site( src, F_OFFSET(ttt), EVENANDODD);
     scalar_mult_add_latvec( F_OFFSET(ttt), src, 2.0*mass,
 	F_OFFSET(ttt), EVENANDODD );
     FORALLSITES(i,s){

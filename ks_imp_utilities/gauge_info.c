@@ -24,6 +24,7 @@
 
 #include "ks_imp_includes.h"
 #include <quark_action.h>
+#include <string.h>
 
 /*---------------------------------------------------------------------------*/
 /* This routine writes the ASCII info file.  It is called from one of
@@ -156,7 +157,8 @@ void destroyGaugeQCDML(String *st){
 
 char *create_QCDML(){
   char dummy[] = "Dummy QCDML";
-  char *qcdml = (char *)malloc(sizeof(dummy));
+  char *qcdml = (char *)malloc(sizeof(dummy)+1);
+  strncpy(qcdml,dummy,sizeof(dummy)+1);
   return qcdml;
 }
 

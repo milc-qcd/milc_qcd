@@ -4,11 +4,11 @@
 /* This version includes gathers from temp */
 
 /* 9/06/03 added gathers from temp - CD */
-/* 7/18/01 added dslash_w_special - CD */
+/* 7/18/01 added dslash_w_site_special - CD */
 /* 1/26/00 combined with Schroedinger functional version - UMH */
 
 /*
-  dslash_w(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
+  dslash_w_site(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
   Compute SUM_dirs ( 
   ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
   + ( 1 - isign*gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
@@ -27,7 +27,7 @@
 #define FETCH_UP 1
 #define LOOPEND
 #include "../include/loopend.h"
-/* Temporary work space for dslash_w_on_temp and dslash_w_on_temp_special */ 
+/* Temporary work space for dslash_w_field and dslash_w_field_special */ 
 static half_wilson_vector *htmp[2] ;
 /* Flag indicating if temp is allocated               */
 static int temp_not_allocated=1 ;
@@ -95,7 +95,7 @@ void dslash_w(field_offset src, field_offset dest, int isign, int parity)
       wp_shrink( (wilson_vector *)F_PT(s,src), 
 		 &(s->htmp[0]), dir, isign);
     } END_LOOP
-	tag[0]=start_gather( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
+	tag[0]=start_gather_site( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
 			     dir, parity, gen_pt[0] );
     
     /* Take Wilson projection for src displaced in down direction,
@@ -110,7 +110,7 @@ void dslash_w(field_offset src, field_offset dest, int isign, int parity)
       mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv, &(s->htmp[1]));
     } END_LOOP
 	
-	tag[1]=start_gather( F_OFFSET(htmp[1]), 
+	tag[1]=start_gather_site( F_OFFSET(htmp[1]), 
 			     sizeof(half_wilson_vector), OPP_DIR(dir),
 			     parity, gen_pt[1] );
     
@@ -196,10 +196,10 @@ void dslash_w(field_offset src, field_offset dest, int isign, int parity)
 
 
 /*********************************************************************/
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_site() when
   possible. Last argument is an integer, which will tell if
   gathers have been started.  If is_started=0,use
-  start_gather, otherwise use restart_gather.
+  start_gather_site, otherwise use restart_gather_site.
   Argument "tag" is a vector of a msg_tag *'s to use for
   the gathers.
   The calling program must clean up the gathers! */
@@ -243,10 +243,10 @@ void dslash_w_special(field_offset src,field_offset dest,
       wp_shrink( (wilson_vector *)F_PT(s,src), 
 		 &(s->htmp[0]), dir, isign);
     } END_LOOP
-	if(is_started==0)tag[dir]=start_gather( F_OFFSET(htmp[0]), 
+	if(is_started==0)tag[dir]=start_gather_site( F_OFFSET(htmp[0]), 
 		sizeof(half_wilson_vector),
 		dir, parity, gen_pt[dir] );
-        else restart_gather (F_OFFSET(htmp[0]), 
+        else restart_gather_site (F_OFFSET(htmp[0]), 
 		sizeof(half_wilson_vector),
 		dir, parity, gen_pt[dir], tag[dir]);
     
@@ -263,10 +263,10 @@ void dslash_w_special(field_offset src,field_offset dest,
     } END_LOOP
 	
 	if(is_started==0)
-           tag[OPP_DIR(dir)] = start_gather( F_OFFSET(htmp[1]), 
+           tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(htmp[1]), 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[OPP_DIR(dir)] );
-        else restart_gather(F_OFFSET(htmp[1]), 
+        else restart_gather_site(F_OFFSET(htmp[1]), 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[OPP_DIR(dir)], tag[OPP_DIR(dir)]);    
     /* Take Wilson projection for src displaced in up direction, gathered,
@@ -346,7 +346,7 @@ void dslash_w_special(field_offset src,field_offset dest,
 } /* dslash_lean.c */
 
   /********************************************************************/
-void dslash_w_on_temp( wilson_vector *src, wilson_vector *dest, int isign, int parity)
+void dslash_w_field( wilson_vector *src, wilson_vector *dest, int isign, int parity)
 {
   half_wilson_vector hwv;
   
@@ -378,7 +378,7 @@ void dslash_w_on_temp( wilson_vector *src, wilson_vector *dest, int isign, int p
       }
       wp_shrink( &src[i], &(htmp[0][i]), dir, isign);
     } END_LOOP
-	tag[0]=start_gather_from_temp( htmp[0], sizeof(half_wilson_vector),
+	tag[0]=start_gather_field( htmp[0], sizeof(half_wilson_vector),
 			     dir, parity, gen_pt[0] );
     
     /* Take Wilson projection for src displaced in down direction,
@@ -392,7 +392,7 @@ void dslash_w_on_temp( wilson_vector *src, wilson_vector *dest, int isign, int p
       mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv, &(htmp[1][i]) );
     } END_LOOP
 	
-	tag[1]=start_gather_from_temp( htmp[1],
+	tag[1]=start_gather_field( htmp[1],
 			     sizeof(half_wilson_vector), OPP_DIR(dir),
 			     parity, gen_pt[1] );
     
@@ -479,16 +479,16 @@ void dslash_w_on_temp( wilson_vector *src, wilson_vector *dest, int isign, int p
 
 
 /*********************************************************************/
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_site() when
   possible. Last argument is an integer, which will tell if
   gathers have been started.  If is_started=0,use
-  start_gather, otherwise use restart_gather.
+  start_gather_site, otherwise use restart_gather_site.
   Argument "tag" is a vector of a msg_tag *'s to use for
   the gathers.
   The calling program must clean up the gathers and temps! */
 /*********************************************************************/
 
-void dslash_w_on_temp_special(wilson_vector *src, wilson_vector *dest,
+void dslash_w_field_special(wilson_vector *src, wilson_vector *dest,
   int isign,int parity,msg_tag **tag,int is_started)
 {
   half_wilson_vector hwv;
@@ -521,10 +521,10 @@ void dslash_w_on_temp_special(wilson_vector *src, wilson_vector *dest,
       }
       wp_shrink( &src[i], &(htmp[0][i]), dir, isign);
     } END_LOOP
-	if(is_started==0)tag[dir]=start_gather_from_temp( htmp[0], 
+	if(is_started==0)tag[dir]=start_gather_field( htmp[0], 
 		sizeof(half_wilson_vector),
 		dir, parity, gen_pt[dir] );
-        else restart_gather_from_temp( htmp[0],
+        else restart_gather_field( htmp[0],
 		sizeof(half_wilson_vector),
 		dir, parity, gen_pt[dir], tag[dir]);
     
@@ -540,10 +540,10 @@ void dslash_w_on_temp_special(wilson_vector *src, wilson_vector *dest,
     } END_LOOP
 	
 	if(is_started==0)
-           tag[OPP_DIR(dir)] = start_gather_from_temp( htmp[1], 
+           tag[OPP_DIR(dir)] = start_gather_field( htmp[1], 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[OPP_DIR(dir)] );
-        else restart_gather_from_temp( htmp[1], 
+        else restart_gather_field( htmp[1], 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[OPP_DIR(dir)], tag[OPP_DIR(dir)]);    
     /* Take Wilson projection for src displaced in up direction, gathered,

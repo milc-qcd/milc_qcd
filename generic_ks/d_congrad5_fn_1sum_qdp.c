@@ -1,9 +1,7 @@
 /******* d_congrad5_fn_tmp.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 6 */
 /* Kogut-Susskind fermions -- this version for "fat plus Naik" quark
-   actions.  
-
-   Calls dslash_fn or dslash_fn_on_temp depending accordingly. */
+   actions.  */
 
 /* Jim Hetrick, Kari Rummukainen, Doug Toussaint, Steven Gottlieb */
 /* 10/02/01 C. DeTar Consolidated with tmp version */
@@ -52,8 +50,6 @@ print_mem(void)
   }
 }
 #endif
-
-void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]); /* dslash_fn_tmp.c */
 
 static int congrad_setup=0;
 static QDP_ColorVector *ttt, *tttt, *resid, *cg_p, *mmp;

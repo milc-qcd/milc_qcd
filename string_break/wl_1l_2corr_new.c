@@ -65,11 +65,11 @@ complex *wl1_mes, *wl1_mes_t, cc;
 	}
 
 	/* Start gather of forward time-like links */
-	mtag[3] = start_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+	mtag[3] = start_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 	    dir, EVENANDODD, gen_pt[3] );
 
 	/* gather g_rand in direction dir  */
-	mtag[0] = start_gather( F_OFFSET(dtmpvecs[0].n[0]),
+	mtag[0] = start_gather_site( F_OFFSET(dtmpvecs[0].n[0]),
 	    sizeof(su3_vector_src), dir, EVENANDODD, gen_pt[0]);
 
 	/* Recursively construct the space-like segments and compute
@@ -108,17 +108,17 @@ complex *wl1_mes, *wl1_mes_t, cc;
 
 	    /* Start gather of g_rand and light propagators
 	       in ==TUP== direction */
-	    mtag[1] = start_gather( F_OFFSET(dtmpvecs[1]),
+	    mtag[1] = start_gather_site( F_OFFSET(dtmpvecs[1]),
 		sizeof(dble_su3_vec_src), TUP, EVENANDODD, gen_pt[1]);
 
 
 	    /* Inbetween gather space-links for next r, if still needed. */
 	    if( r==0 ){
-		mtag[4] = start_gather( F_OFFSET(s_link), sizeof(su3_matrix),
+		mtag[4] = start_gather_site( F_OFFSET(s_link), sizeof(su3_matrix),
 		    dir, EVENANDODD, gen_pt[4] );
 	    }
 	    else if( r<(nxh-1) ){
-		restart_gather( F_OFFSET(s_link), sizeof(su3_matrix),
+		restart_gather_site( F_OFFSET(s_link), sizeof(su3_matrix),
 		    dir, EVENANDODD, gen_pt[4], mtag[4] );
 	    }
 	    else{
@@ -163,7 +163,7 @@ complex *wl1_mes, *wl1_mes_t, cc;
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather( F_OFFSET(dtmpvecs[1]),
+		    restart_gather_site( F_OFFSET(dtmpvecs[1]),
 			sizeof(dble_su3_vec_src),
 			TUP, EVENANDODD, gen_pt[1], mtag[1] );
 		}
@@ -208,11 +208,11 @@ complex *wl1_mes, *wl1_mes_t, cc;
 
 	    /* Start gather of forward time-like links for next r. */
 	    if( r<(nxh-1) ){
-		restart_gather( F_OFFSET(dtmpvecs[0].n[0]),
+		restart_gather_site( F_OFFSET(dtmpvecs[0].n[0]),
 		    sizeof(su3_vector_src),
 		    dir, EVENANDODD, gen_pt[0], mtag[0] );
 
-		restart_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+		restart_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 		    dir, EVENANDODD, gen_pt[3], mtag[3] );
 	    }
 	    else{

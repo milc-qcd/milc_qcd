@@ -31,9 +31,9 @@ complex *plaq_op, plaq;
     for(dir1=XUP;dir1<=YUP;dir1++){
 	for(dir2=dir1+1;dir2<=ZUP;dir2++){
 
-	    mtag0 = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	    mtag0 = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 		dir1, EVENANDODD, gen_pt[0] );
-	    mtag1 = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	    mtag1 = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 		dir2, EVENANDODD, gen_pt[1] );
 
 	    FORALLSITES(i,s){

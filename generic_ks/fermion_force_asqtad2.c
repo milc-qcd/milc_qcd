@@ -495,7 +495,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   
   /* Gather forward links */
   FORALLUPDIR(dir){
-    mtag[dir] = start_gather( F_OFFSET(link[dir]), sizeof(su3_matrix), 
+    mtag[dir] = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix), 
 			      OPP_DIR(dir), EVENANDODD, gen_pt[dir] );
   }
   FORALLUPDIR(dir){
@@ -831,7 +831,7 @@ void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
   
   if(GOES_FORWARDS(dir)) /* forward shift */
     {
-      mtag = start_gather_from_temp(src, sizeof(su3_vector), 
+      mtag = start_gather_field(src, sizeof(su3_vector), 
 				    dir, EVENANDODD, gen_pt[0]);
       wait_gather(mtag);
       FORALLSITES(i,s)
@@ -844,7 +844,7 @@ void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
       tmpvec = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
       FORALLSITES(i,s)
 	mult_adj_su3_mat_vec(&(s->link[OPP_DIR(dir)]),&(src[i]), &tmpvec[i]);
-      mtag = start_gather_from_temp(tmpvec, sizeof(su3_vector), dir, 
+      mtag = start_gather_field(tmpvec, sizeof(su3_vector), dir, 
 				    EVENANDODD, gen_pt[0]);
       wait_gather(mtag);
       /* copy the gen_pt to the dest */
@@ -884,10 +884,10 @@ void u_shift_hw_fermion_np(half_wilson_vector *src,
   time0 -= time1;
 #endif
   if(*mtag == NULL)
-    *mtag = start_gather_from_temp(tmpvec, sizeof(half_wilson_vector), 
+    *mtag = start_gather_field(tmpvec, sizeof(half_wilson_vector), 
 				   dir, EVENANDODD, (char **)dest_pt);
   else
-    restart_gather_from_temp(tmpvec, sizeof(half_wilson_vector), 
+    restart_gather_field(tmpvec, sizeof(half_wilson_vector), 
 			     dir, EVENANDODD, (char **)dest_pt, *mtag);
   wait_gather(*mtag);
 #ifdef FFSTIME
@@ -926,10 +926,10 @@ void u_shift_hw_fermion_pp(half_wilson_vector **src_pt,
   time0 -= time1;
 #endif
   if(*mtag == NULL)
-    *mtag = start_gather_from_temp(tmpvec, sizeof(half_wilson_vector), 
+    *mtag = start_gather_field(tmpvec, sizeof(half_wilson_vector), 
 				   dir, EVENANDODD, (char **)dest_pt);
   else
-    restart_gather_from_temp(tmpvec, sizeof(half_wilson_vector), 
+    restart_gather_field(tmpvec, sizeof(half_wilson_vector), 
 			     dir, EVENANDODD, (char **)dest_pt, *mtag);
   wait_gather(*mtag);
 #ifdef FFSTIME

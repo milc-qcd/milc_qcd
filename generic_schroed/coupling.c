@@ -18,11 +18,11 @@ msg_tag *mtag0,*mtag1,*mtag2;
     plq_sum = 0.0;
     for(dir=XUP;dir<TUP;dir++){
 
-	mtag0 = start_gather( F_OFFSET(link[dir]), sizeof(su3_matrix),
+	mtag0 = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix),
 	    TUP, EVENANDODD, gen_pt[0] );
-	mtag1 = start_gather( F_OFFSET(link[TUP]), sizeof(su3_matrix),
+	mtag1 = start_gather_site( F_OFFSET(link[TUP]), sizeof(su3_matrix),
 	    dir, EVENANDODD, gen_pt[1] );
-	mtag2 = start_gather( F_OFFSET(boundary[dir]), sizeof(su3_matrix),
+	mtag2 = start_gather_site( F_OFFSET(boundary[dir]), sizeof(su3_matrix),
 	    OPP_DIR(TUP), EVENANDODD, gen_pt[2] );
 
 	/* Note: the derivative of the boundary fields at t=0 are in

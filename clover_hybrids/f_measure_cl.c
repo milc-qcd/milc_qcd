@@ -114,7 +114,7 @@ No compile.  Requires LU
 /* Multiply by M and see if I get g_rand back */
 /* use dir as flag*/
 /**
-dslash_w( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
+dslash_w_site( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
 FORALLSITES(i,s)scalar_mult_add_wvec( &(s->psi), &(s->mp), -kappa, &(s->mp) );
 FORALLSITES(i,s){
     for(dir=0,j=0;j<4;j++)for(k=0;k<3;k++){
@@ -152,9 +152,9 @@ FORALLSITES(i,s){
 	    wp_shrink( &(s->g_rand), &hwv1, dir, PLUS );
 	    mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv1, &(s->htmp[1]) );
 	}
-	tag0 = start_gather( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
+	tag0 = start_gather_site( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
 	    dir, EVENANDODD, gen_pt[0] );
-	tag1 = start_gather( F_OFFSET(htmp[1]), sizeof(half_wilson_vector),
+	tag1 = start_gather_site( F_OFFSET(htmp[1]), sizeof(half_wilson_vector),
 	    OPP_DIR(dir), EVENANDODD, gen_pt[1] );
 	wait_gather(tag0);
 	wait_gather(tag1);

@@ -51,7 +51,7 @@ void path_product( const int *dir, const int length) {
 
     /* j=0 */
     if( GOES_FORWARDS(dir[0]) )  {
-	mtag0 = start_gather( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
+	mtag0 = start_gather_site( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
 	    OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
     }
     else{  /* if GOES_BACKWARDS(dir[0]) */
@@ -88,7 +88,7 @@ void path_product( const int *dir, const int length) {
 		    &(tempmat2t[i]) );
 	        } END_LOOP
 	      }
-	      mtag0 = start_gather_from_temp( tempmat2t, sizeof(su3_matrix),
+	      mtag0 = start_gather_field( tempmat2t, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	    }  /* for GOES_FORWARDS */
 
@@ -102,11 +102,11 @@ void path_product( const int *dir, const int length) {
 	          su3mat_copy((su3_matrix *)(gen_pt[0][i]),&(tempmat3t[i]) );
 	        } END_LOOP
 	        cleanup_gather(mtag0);
-	        mtag0 = start_gather_from_temp( tempmat3t, sizeof(su3_matrix),
+	        mtag0 = start_gather_field( tempmat3t, sizeof(su3_matrix),
 		  OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	      }
 	      else{ /*last step was backwards */
-	        mtag0 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	        mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 		  OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	      }
 	      wait_gather(mtag0);
@@ -146,7 +146,7 @@ void path_product( const int *dir, const int length) {
 		    &(s->tempmat1) );
 	      } END_LOOP
 	    }
-	    mtag0 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	    mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	  }  /* for GOES_FORWARDS */
 
@@ -161,11 +161,11 @@ void path_product( const int *dir, const int length) {
 	        su3mat_copy((su3_matrix *)(gen_pt[0][i]),&(tempmat3t[i]) ); 
 	      } END_LOOP
 	      cleanup_gather(mtag0);
-	      mtag0 = start_gather_from_temp( tempmat3t, sizeof(su3_matrix),
+	      mtag0 = start_gather_field( tempmat3t, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	    }
 	    else{ /* last step was backwards */
-	      mtag0 = start_gather_from_temp( tempmat2t, sizeof(su3_matrix),
+	      mtag0 = start_gather_field( tempmat2t, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	    }
 	    wait_gather(mtag0);
@@ -259,7 +259,7 @@ int j, nsubl;
     /* j=0 */
     if( GOES_FORWARDS(dir[0]) ) {
 	nsubl = neighsubl[subl][dir[0]];
-	mtag0 = start_gather( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
+	mtag0 = start_gather_site( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
 		OPP_DIR(dir[0]), nsubl, gen_pt[0] );
     }
     else{  /* if GOES_BACKWARDS(dir[0]) */
@@ -287,7 +287,7 @@ int j, nsubl;
 		}
 	      }
 	      nsubl = neighsubl[nsubl][dir[j]];
-	      mtag0 = start_gather_from_temp( tempmat2t, sizeof(su3_matrix),
+	      mtag0 = start_gather_field( tempmat2t, sizeof(su3_matrix),
 		      OPP_DIR(dir[j]), nsubl, gen_pt[0] );
 	    }  /* for GOES_FORWARDS */
 
@@ -299,12 +299,12 @@ int j, nsubl;
 		}
 		cleanup_gather(mtag0);
 		nsubl = neighsubl[nsubl][dir[j]];
-		mtag0 = start_gather_from_temp( tempmat3t, sizeof(su3_matrix),
+		mtag0 = start_gather_field( tempmat3t, sizeof(su3_matrix),
 			OPP_DIR(dir[j]), nsubl, gen_pt[0] );
 	      }
 	      else{ /*last step was backwards */
 		nsubl = neighsubl[nsubl][dir[j]];
-		mtag0 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+		mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 			OPP_DIR(dir[j]), nsubl, gen_pt[0] );
 	      }
 	      wait_gather(mtag0);
@@ -333,7 +333,7 @@ int j, nsubl;
 		}
 	      }
 	      nsubl = neighsubl[nsubl][dir[j]];
-	      mtag0 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	      mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 		      OPP_DIR(dir[j]), nsubl, gen_pt[0] );
 	    }  /* for GOES_FORWARDS */
 
@@ -345,12 +345,12 @@ int j, nsubl;
 		}
 		cleanup_gather(mtag0);
 		nsubl = neighsubl[nsubl][dir[j]];
-		mtag0 = start_gather_from_temp( tempmat3t, sizeof(su3_matrix),
+		mtag0 = start_gather_field( tempmat3t, sizeof(su3_matrix),
 			OPP_DIR(dir[j]), nsubl, gen_pt[0] );
 	      }
 	      else{ /*last step was backwards */
 		nsubl = neighsubl[nsubl][dir[j]];
-		mtag0 = start_gather_from_temp( tempmat2t, sizeof(su3_matrix),
+		mtag0 = start_gather_field( tempmat2t, sizeof(su3_matrix),
 			OPP_DIR(dir[j]), nsubl, gen_pt[0] );
 	      }
 	      wait_gather(mtag0);

@@ -15,7 +15,7 @@ int j;
 
 /* j=0 */
 	if(sign[0]>0)  {
-	    mtag0 = start_gather( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
+	    mtag0 = start_gather_site( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
 		OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
 	    wait_gather(mtag0);
 
@@ -40,7 +40,7 @@ int j;
 		mult_su3_nn( &(s->tempmat1),&(s->link[dir[j]]),
 		    &(s->tempmat2) );
 	      }
-	    mtag0 = start_gather( F_OFFSET(tempmat2), sizeof(su3_matrix),
+	    mtag0 = start_gather_site( F_OFFSET(tempmat2), sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	    wait_gather(mtag0);
 
@@ -51,7 +51,7 @@ int j;
 	}
 
 	if(sign[j] < 0) {
-	    mtag0 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	    mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 		dir[j], EVENANDODD, gen_pt[1] );
 	    wait_gather(mtag0);
 

@@ -38,7 +38,7 @@ void hvy_pot( field_offset links ) {
 	    }
 	}
 	else{
-	    mtag0 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	    mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 	        TUP, EVENANDODD, gen_pt[0] );
 	    wait_gather(mtag0);
 	    FORALLSITES(i,s){
@@ -94,7 +94,7 @@ void shiftmat( field_offset src, field_offset dest, int dir ){
     register int i;
     register site *s;
     msg_tag *mtag;
-    mtag = start_gather( src, sizeof(su3_matrix),
+    mtag = start_gather_site( src, sizeof(su3_matrix),
         dir, EVENANDODD, gen_pt[0] );
     wait_gather(mtag);
     FORALLSITES(i,s){

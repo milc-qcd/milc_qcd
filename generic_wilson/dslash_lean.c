@@ -2,11 +2,11 @@
 /* MIMD version 6 */
 /* Version to use less memory - do things one direction at a time */
 
-/* 7/18/01 added dslash_w_special - CD */
+/* 7/18/01 added dslash_w_site_special - CD */
 /* 1/26/00 combined with Schroedinger functional version - UMH */
 
 /*
-  dslash_w(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
+  dslash_w_site(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
   Compute SUM_dirs ( 
   ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
   + ( 1 - isign*gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
@@ -26,7 +26,7 @@
 #define LOOPEND
 #include "../include/loopend.h"
 
-void dslash_w(field_offset src, field_offset dest, int isign, int parity)
+void dslash_w_site(field_offset src, field_offset dest, int isign, int parity)
 {
   half_wilson_vector hwv;
   
@@ -43,7 +43,7 @@ void dslash_w(field_offset src, field_offset dest, int isign, int parity)
   
 #ifdef MAXHTMP
     /* NOTE: We should be defining MAXHTMP in all applications using
-       dslash and dslash_w */
+       dslash_site and dslash_w_site */
     if(MAXHTMP < 2){
       printf("dslash: MAXHTMP must be 2 or more!\n");
       terminate(1);
@@ -65,7 +65,7 @@ void dslash_w(field_offset src, field_offset dest, int isign, int parity)
       wp_shrink( (wilson_vector *)F_PT(s,src), 
 		 &(s->htmp[0]), dir, isign);
     } END_LOOP
-	tag[0]=start_gather( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
+	tag[0]=start_gather_site( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
 			     dir, parity, gen_pt[0] );
     
     /* Take Wilson projection for src displaced in down direction,
@@ -80,7 +80,7 @@ void dslash_w(field_offset src, field_offset dest, int isign, int parity)
       mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv, &(s->htmp[1]));
     } END_LOOP
 	
-	tag[1]=start_gather( F_OFFSET(htmp[1]), 
+	tag[1]=start_gather_site( F_OFFSET(htmp[1]), 
 			     sizeof(half_wilson_vector), OPP_DIR(dir),
 			     parity, gen_pt[1] );
     
@@ -166,16 +166,16 @@ void dslash_w(field_offset src, field_offset dest, int isign, int parity)
 
 
 /*********************************************************************/
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_site() when
   possible. Last argument is an integer, which will tell if
   gathers have been started.  If is_started=0,use
-  start_gather, otherwise use restart_gather.
+  start_gather_site, otherwise use restart_gather_site.
   Argument "tag" is a vector of a msg_tag *'s to use for
   the gathers.
   The calling program must clean up the gathers! */
 /*********************************************************************/
 
-void dslash_w_special(field_offset src,field_offset dest,
+void dslash_w_site_special(field_offset src,field_offset dest,
   int isign,int parity,msg_tag **tag,int is_started)
 {
   half_wilson_vector hwv;
@@ -192,14 +192,14 @@ void dslash_w_special(field_offset src,field_offset dest,
   
 #ifdef MAXHTMP
     /* NOTE: We should be defining MAXHTMP in all applications using
-       dslash and dslash_w */
+       dslash_site and dslash_w_site */
     if(MAXHTMP < 2){
-      printf("dslash_w_special: MAXHTMP must be 2 or more!\n");
+      printf("dslash_w_site_special: MAXHTMP must be 2 or more!\n");
       terminate(1);
     }
 #endif
     if(N_POINTERS < 8){
-      printf("dslash_w_special: N_POINTERS must be 8 or more!\n");
+      printf("dslash_w_site_special: N_POINTERS must be 8 or more!\n");
       terminate(1);
      }
 
@@ -213,10 +213,10 @@ void dslash_w_special(field_offset src,field_offset dest,
       wp_shrink( (wilson_vector *)F_PT(s,src), 
 		 &(s->htmp[0]), dir, isign);
     } END_LOOP
-	if(is_started==0)tag[dir]=start_gather( F_OFFSET(htmp[0]), 
+	if(is_started==0)tag[dir]=start_gather_site( F_OFFSET(htmp[0]), 
 		sizeof(half_wilson_vector),
 		dir, parity, gen_pt[dir] );
-        else restart_gather (F_OFFSET(htmp[0]), 
+        else restart_gather_site (F_OFFSET(htmp[0]), 
 		sizeof(half_wilson_vector),
 		dir, parity, gen_pt[dir], tag[dir]);
     
@@ -233,10 +233,10 @@ void dslash_w_special(field_offset src,field_offset dest,
     } END_LOOP
 	
 	if(is_started==0)
-           tag[OPP_DIR(dir)] = start_gather( F_OFFSET(htmp[1]), 
+           tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(htmp[1]), 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[OPP_DIR(dir)] );
-        else restart_gather(F_OFFSET(htmp[1]), 
+        else restart_gather_site(F_OFFSET(htmp[1]), 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[OPP_DIR(dir)], tag[OPP_DIR(dir)]);    
     /* Take Wilson projection for src displaced in up direction, gathered,

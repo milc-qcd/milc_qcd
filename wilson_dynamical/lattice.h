@@ -50,7 +50,7 @@ typedef struct {
         wilson_vector p;        /* conjugate gradient change vector */
         wilson_vector mp;       /* another CG vector */
 	wilson_vector r; 	/* residue */
-        /* wilson half vector (temporary used in dslash_w) */
+        /* wilson half vector (temporary used in dslash_w_site) */
         half_wilson_vector htmp[8];
 #ifdef PHI_ALGORITHM
  	wilson_vector old_psi;	/* For predicting next psi */

@@ -15,13 +15,7 @@
 */
 
 #include "ks_dyn_includes.h"
-
-#ifdef FN
-#define dslash dslash_fn
-#endif
-#ifdef EO
-#define dslash dslash_eo
-#endif
+#include "../include/dslash_ks_redefine.h"
 
 #define NL_PI_DIR ZUP  /* Defines direction for non-local pi propagator */
                        /* This direction depends on the choice of KS */
@@ -296,7 +290,7 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
 	  /* do a C.G. */
 	  cgn += congrad(niter,rsqprop,EVEN,&finalrsq);
 	  /* Multiply by -Madjoint */
-	  dslash( temp2, temp2, ODD);
+	  dslash_site( temp2, temp2, ODD);
 	  scalar_mult_latvec( temp2, -vmass_x2, temp2, EVEN);
 	  
 	  /* fill the hadron matrix */
@@ -324,7 +318,7 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
 	  /* do a C.G. */
 	  cgn += congrad(niter,rsqprop,ODD,&finalrsq);
 	  /* Multiply by -Madjoint */
-	  dslash( temp2, temp2, EVEN);
+	  dslash_site( temp2, temp2, EVEN);
 	  scalar_mult_latvec( temp2, -vmass_x2, temp2, ODD);
 	  
 	  /* fill the hadron matrix */
@@ -414,12 +408,12 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
       FORALLUPDIRBUT(TUP,dir) {
 	  /* Start bringing "q" = propmat from forward sites    */
 	  
-	  mtag[dir] = start_gather(F_OFFSET(propmat[0]), 
+	  mtag[dir] = start_gather_site(F_OFFSET(propmat[0]), 
 		   sizeof(su3_matrix), dir, EVENANDODD, gen_pt[dir]);
 	  
 	  /* Start bringing "q" from backward neighbors       */
 	  
-	  mtag[dir+4] = start_gather(F_OFFSET(propmat[0]), 
+	  mtag[dir+4] = start_gather_site(F_OFFSET(propmat[0]), 
 		   sizeof(su3_matrix), OPP_DIR(dir), EVENANDODD,
 		   gen_pt[dir+4]);
 	  wait_gather(mtag[dir]);
@@ -427,12 +421,12 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
 	  
 	  /* Start bringing "o" = propmat2 from forward sites   */
 	  
-	  mtag[8+dir] = start_gather(F_OFFSET(propmat2[0]), 
+	  mtag[8+dir] = start_gather_site(F_OFFSET(propmat2[0]), 
 		   sizeof(su3_matrix), dir, EVENANDODD, gen_pt[8+dir]);
 	  
 	      /* Start bringing "o" from backward neighbors       */
 	  
-	  mtag[8+dir+4] = start_gather(F_OFFSET(propmat2[0]), 
+	  mtag[8+dir+4] = start_gather_site(F_OFFSET(propmat2[0]), 
 		    sizeof(su3_matrix), OPP_DIR(dir), EVENANDODD,
 		    gen_pt[8+dir+4]);
 	  wait_gather(mtag[8+dir]);

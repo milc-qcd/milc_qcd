@@ -124,7 +124,7 @@ int cgilu_cl(            /* Return value is number of iterations taken */
   /* mp_o = 1/R_o srce_e */
   mult_ldu(src, my_mp, ODD);
   /* mp_e = D_eo/R_o srce_e */
-  dslash_w(my_mp, my_mp, PLUS, EVEN);
+  dslash_w_site(my_mp, my_mp, PLUS, EVEN);
   
   /* src_e = srce_e + K D_eo/R_o srce_e */
   /* (leaving src_o = src_o)   */
@@ -173,11 +173,11 @@ int cgilu_cl(            /* Return value is number of iterations taken */
     /* tmp_e = R_e dest_e */
     mult_ldu(dest, tmp, EVEN);
     /* mp_o = D_oe dest_e */
-    dslash_w(dest, my_mp, PLUS, ODD);
+    dslash_w_site(dest, my_mp, PLUS, ODD);
     /* tmp_o = 1/R_o D_oe dest_e */
     mult_ldu(my_mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe dest_e */
-    dslash_w(tmp, my_mp, PLUS, EVEN);
+    dslash_w_site(tmp, my_mp, PLUS, EVEN);
     /* mp_e = R_e dest_e - K^2 D_eo/R_o D_oe dest_e = M_e dest_e */
     /* r_e = src_e - M_e dest_e */
     FOREVENSITESDOMAIN(i,s) {
@@ -201,9 +201,9 @@ int cgilu_cl(            /* Return value is number of iterations taken */
 
   /* --------- p_e = M_e_dag*r_e --------- */
   mult_ldu(r, tmp, EVEN);
-  dslash_w(r, my_mp, MINUS, ODD);
+  dslash_w_site(r, my_mp, MINUS, ODD);
   mult_ldu(my_mp, tmp, ODD);
-  dslash_w(tmp, p, MINUS, EVEN);
+  dslash_w_site(tmp, p, MINUS, EVEN);
   
   /* --------- cp = |p|^2 --------- */
   cp=0.0;
@@ -228,11 +228,11 @@ int cgilu_cl(            /* Return value is number of iterations taken */
     /* tmp_e = R_e p_e */
     mult_ldu(p, tmp, EVEN);
     /* mp_o = D_oe p_e */
-    dslash_w(p, my_mp, PLUS, ODD);
+    dslash_w_site(p, my_mp, PLUS, ODD);
     /* tmp_o = 1/R_o D_oe p_e */
     mult_ldu(my_mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe p_e */
-    dslash_w(tmp, my_mp, PLUS, EVEN);
+    dslash_w_site(tmp, my_mp, PLUS, EVEN);
     
     /* mp_e = R_e p_e - K^2 D_eo/R_o D_oe p_e */
     d=0.0;
@@ -260,9 +260,9 @@ int cgilu_cl(            /* Return value is number of iterations taken */
     /* --------- mp_e M_e_dag*r_e --------- */
     
     mult_ldu(r, tmp, EVEN);
-    dslash_w(r, my_mp, MINUS, ODD);
+    dslash_w_site(r, my_mp, MINUS, ODD);
     mult_ldu(my_mp, tmp, ODD);
-    dslash_w(tmp, my_mp, MINUS, EVEN);
+    dslash_w_site(tmp, my_mp, MINUS, EVEN);
 
     cp=0.0;
     FOREVENSITESDOMAIN(i,s) {
@@ -315,7 +315,7 @@ int cgilu_cl(            /* Return value is number of iterations taken */
   
   /* --------- dest_o = U^(-1)_oo/R_o dest_o + U^(-1)_oe dest_e --------- */
   /* mp_o = D_oe * dest_e */
-  dslash_w(dest, my_mp, PLUS, ODD);
+  dslash_w_site(dest, my_mp, PLUS, ODD);
   /* mp_o = dest_o + K D_oe * dest_e (remember dest_o = original src_o still)*/
   FORODDSITESDOMAIN(i,s) {
     scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), 

@@ -49,11 +49,11 @@ complex ploop_staple(Real alpha_fuzz) {
 
 
     /* get link[dir] from direction TUP: Pulls [0] down to O */
-    tag0 = start_gather( F_OFFSET(link[dir]), sizeof(su3_matrix),
+    tag0 = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix),
 			TUP, EVENANDODD, gen_pt[0] );
     
     /* Start gather for the "upper staple" pulls [2] over to O */
-    tag2 = start_gather( F_OFFSET(link[TUP]), sizeof(su3_matrix),
+    tag2 = start_gather_site( F_OFFSET(link[TUP]), sizeof(su3_matrix),
 			dir, EVENANDODD, gen_pt[2] );
     
     /* begin the computation "at the dirDOWN point = O'", we will
@@ -67,7 +67,7 @@ complex ploop_staple(Real alpha_fuzz) {
     }
     
     /* Gather this partial result "up to home site" */
-    tag1 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+    tag1 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 			OPP_DIR(dir), EVENANDODD, gen_pt[1] );
     
     /* begin the computation of the "upper" staple.  Note that
@@ -131,7 +131,7 @@ complex ploop_staple(Real alpha_fuzz) {
   /* First multiply the link on every even site by the link above it */
   /* We will compute the Polyakov loop "at" the even sites in the 
      first two time slices. */
-  tag=start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+  tag=start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 		   TUP, EVEN, gen_pt[0] );
   wait_gather(tag);
   FOREVENSITES(i,st){

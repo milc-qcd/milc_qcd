@@ -97,7 +97,7 @@ int mom_spec() /* return the C.G. iteration number */
 			   niter,rsqprop,EVEN,&finalrsq);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, even site source -> propmat[0] */
-         dslash( F_OFFSET(xxx), F_OFFSET(propmat[0]), ODD);
+         dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[0]), ODD);
          FOREVENSITES(i,st){
             scalar_mult_su3_vector(&(st->xxx),-mass_x2, &(st->propmat[0]));
          }
@@ -125,7 +125,7 @@ int mom_spec() /* return the C.G. iteration number */
 			   niter,rsqprop,EVEN,&finalrsq);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, even site nonzero mom. source -> propmat[1]*/
-         dslash( F_OFFSET(xxx), F_OFFSET(propmat[1]), ODD);
+         dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[1]), ODD);
          FOREVENSITES(i,st){
             scalar_mult_su3_vector(&(st->xxx),-mass_x2, &(st->propmat[1]));
          }
@@ -152,7 +152,7 @@ int mom_spec() /* return the C.G. iteration number */
 			   niter,rsqprop,ODD,&finalrsq);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, odd site source -> ttt */
-         dslash( F_OFFSET(xxx), F_OFFSET(ttt), EVEN);
+         dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVEN);
          FORODDSITES(i,st){
             scalar_mult_su3_vector(&(st->xxx),-mass_x2, &(st->ttt));
          }
@@ -161,13 +161,13 @@ int mom_spec() /* return the C.G. iteration number */
         /* parallel transport the propagator forward and backward in all
            directions. */
         for(dir=XUP;dir<=TUP;dir++){
-             tag[dir] = start_gather( F_OFFSET(ttt), sizeof(su3_vector),
+             tag[dir] = start_gather_site( F_OFFSET(ttt), sizeof(su3_vector),
 	       dir, EVENANDODD, gen_pt[dir] );
            FORALLSITES(i,st){
 	     mult_adj_su3_mat_vec( &(st->link[dir]),
                    &(st->ttt),  &(st->tempvec[dir]) );
            }
-           tag[OPP_DIR(dir)] = start_gather( F_OFFSET(tempvec[dir]),
+           tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
 	      sizeof(su3_vector), OPP_DIR(dir), EVENANDODD,
 	      gen_pt[OPP_DIR(dir)] );
         }

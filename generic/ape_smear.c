@@ -130,9 +130,9 @@ void ape_smear_dir(
   for(dir2=XUP;dir2<=(space_only==1?ZUP:TUP);dir2++)if(dir2!=dir1){
     
     /* Upper staple, and simple link */
-    mtag0 = start_gather( src+dir2*sizeof(su3_matrix),
+    mtag0 = start_gather_site( src+dir2*sizeof(su3_matrix),
 			  sizeof(su3_matrix), dir1, EVENANDODD, gen_pt[0] );
-    mtag1 = start_gather( src+dir1*sizeof(su3_matrix),
+    mtag1 = start_gather_site( src+dir1*sizeof(su3_matrix),
 			  sizeof(su3_matrix), dir2, EVENANDODD, gen_pt[1] );
     wait_gather(mtag0);
     wait_gather(mtag1);
@@ -153,7 +153,7 @@ void ape_smear_dir(
     cleanup_gather(mtag1);
     
     /* lower staple */
-    mtag0 = start_gather( src+dir2*sizeof(su3_matrix),
+    mtag0 = start_gather_site( src+dir2*sizeof(su3_matrix),
 			  sizeof(su3_matrix), dir1,
 			  EVENANDODD, gen_pt[0] );
     wait_gather(mtag0);
@@ -165,7 +165,7 @@ void ape_smear_dir(
 		     &tmat1, &temp[i] );
       }
     cleanup_gather(mtag0);
-    mtag1 = start_gather_from_temp( temp, sizeof(su3_matrix),
+    mtag1 = start_gather_field( temp, sizeof(su3_matrix),
 				    OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
     wait_gather(mtag1);
     

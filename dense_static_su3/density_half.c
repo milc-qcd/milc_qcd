@@ -126,7 +126,7 @@ void measure() {
 #ifdef PPCORR
    dx=1; dy=0; dz=0;	/* Temporary - right now we just do nearest neighbor */
    for(dir=XUP;dir<=ZUP;dir++){
-      tag = start_gather( F_OFFSET(qprob[0]), 4*sizeof(complex), dir,
+      tag = start_gather_site( F_OFFSET(qprob[0]), 4*sizeof(complex), dir,
 	   EVENANDODD, gen_pt[0] );
       wait_gather(tag);
       FORALLSITES(i,s)if(s->t==nt-1){

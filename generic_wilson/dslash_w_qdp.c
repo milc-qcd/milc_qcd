@@ -1,8 +1,8 @@
-/*************  dslash_w.c *******************************/
+/*************  dslash_w_site.c *******************************/
 /* MIMD version 6 */
 
 /*
-	dslash_w(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
+	dslash_w_site(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
 Compute SUM_dirs ( 
     ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
   + ( 1 - isign*gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
@@ -72,7 +72,7 @@ my_grow_add_four_wvecs( wilson_vector *a, half_wilson_vector *b1,
   my_wp_grow_add( b4,a,TUP,sign);
 }
 
-void dslash_w( field_offset src, field_offset dest, int isign, int parity) {
+void dslash_w_site( field_offset src, field_offset dest, int isign, int parity) {
 half_wilson_vector hwvx,hwvy,hwvz,hwvt;
 
 register int i;
@@ -88,7 +88,7 @@ msg_tag *tag[8];
 
 #ifdef MAXHTMP
     /* NOTE: We should be defining MAXHTMP in all applications using
-       dslash and dslash_w */
+       dslash and dslash_w_site */
     if(MAXHTMP < 8){
       printf("dslash: MAXHTMP must be 8 or more!\n");
       terminate(1);
@@ -107,7 +107,7 @@ msg_tag *tag[8];
 	  &(s->htmp[YUP]), &(s->htmp[ZUP]), &(s->htmp[TUP]), isign);
     }
     for( dir=XUP; dir <= TUP; dir++) {
-	tag[dir]=start_gather( F_OFFSET(htmp[dir]), sizeof(half_wilson_vector),
+	tag[dir]=start_gather_site( F_OFFSET(htmp[dir]), sizeof(half_wilson_vector),
 	    dir, parity, gen_pt[dir] );
     }
 
@@ -123,7 +123,7 @@ msg_tag *tag[8];
     }
 
     for( dir=XUP; dir <= TUP; dir++) {
-	tag[OPP_DIR(dir)]=start_gather(F_OFFSET(htmp[OPP_DIR(dir)]), 
+	tag[OPP_DIR(dir)]=start_gather_site(F_OFFSET(htmp[OPP_DIR(dir)]), 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[OPP_DIR(dir)] );
     }
@@ -170,17 +170,17 @@ msg_tag *tag[8];
 	cleanup_gather(tag[OPP_DIR(dir)]);
     }
 
-} /* end (of dslash_w() ) */
+} /* end (of dslash_w_site() ) */
 
 
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_site() when
   possible. Last argument is an integer, which will tell if
   gathers have been started.  If is_started=0,use
-  start_gather, otherwise use restart_gather.
+  start_gather_site, otherwise use restart_gather_site.
   Argument "tag" is a vector of a msg_tag *'s to use for
   the gathers.
   The calling program must clean up the gathers! */
-void dslash_w_special(field_offset src,field_offset dest,
+void dslash_w_site_special(field_offset src,field_offset dest,
     int isign,int parity,msg_tag **tag,int is_started)
 
 {
@@ -198,14 +198,14 @@ register int dir,otherparity;
 
 #ifdef MAXHTMP
     /* NOTE: We should be defining MAXHTMP in all applications using
-       dslash and dslash_w */
+       dslash and dslash_w_site */
     if(MAXHTMP < 8){
-      printf("dslash_w_special: MAXHTMP must be 8 or more!\n");
+      printf("dslash_w_site_special: MAXHTMP must be 8 or more!\n");
       terminate(1);
     }
 #endif
     if(N_POINTERS < 8){
-      printf("dslash_w_special: N_POINTERS must be 8 or more!\n");
+      printf("dslash_w_site_special: N_POINTERS must be 8 or more!\n");
       terminate(1);
      }
 
@@ -217,9 +217,9 @@ register int dir,otherparity;
 	    &(s->htmp[YUP]), &(s->htmp[ZUP]), &(s->htmp[TUP]), isign);
     }
     for( dir=XUP; dir <= TUP; dir++) {
-	if(is_started==0)tag[dir]=start_gather( F_OFFSET(htmp[dir]),
+	if(is_started==0)tag[dir]=start_gather_site( F_OFFSET(htmp[dir]),
 	    sizeof(half_wilson_vector), dir, parity, gen_pt[dir] );
-	else restart_gather( F_OFFSET(htmp[dir]),
+	else restart_gather_site( F_OFFSET(htmp[dir]),
 	    sizeof(half_wilson_vector), dir, parity, gen_pt[dir], 
 			     tag[dir] );
     }
@@ -236,10 +236,10 @@ register int dir,otherparity;
     }
 
     for( dir=XUP; dir <= TUP; dir++) {
-	if(is_started==0)tag[OPP_DIR(dir)]=start_gather(
+	if(is_started==0)tag[OPP_DIR(dir)]=start_gather_site(
 	    F_OFFSET(htmp[OPP_DIR(dir)]), sizeof(half_wilson_vector),
 	    OPP_DIR(dir), parity, gen_pt[OPP_DIR(dir)] );
-	else restart_gather(
+	else restart_gather_site(
 	    F_OFFSET(htmp[OPP_DIR(dir)]), sizeof(half_wilson_vector),
 	    OPP_DIR(dir), parity, gen_pt[OPP_DIR(dir)], 
 	    tag[OPP_DIR(dir)] );
@@ -281,4 +281,4 @@ register int dir,otherparity;
 	    -isign, 1 );	/* "1" SUMs in current dest */
     }
 
-} /* end (of dslash_w_special() ) */
+} /* end (of dslash_w_site_special() ) */

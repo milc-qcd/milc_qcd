@@ -7,8 +7,6 @@
 /* CD 7/14/01 allow for multiple stochastic estimators NPBP_REPS */
 /* DT 12/97 */
 /* Kogut-Susskind fermions  -- this version for "fat plus Naik"
-   or general "even plus odd" quark actions.  Assumes "dslash" has
-   been defined to be the appropriate "dslash_fn" or "dslash_eo"
 */
 
 /* Measure fermionic observables:
@@ -88,10 +86,10 @@ BOMB THE COMPILE
 #ifdef DM_DU0
       r_pb_dMdu_p_even = r_pb_dMdu_p_odd = (double)0.0;
       /* dMdu_x = dM/du0 M^{-1} g_rand */
-      ddslash_fn_du0( xxx_off, F_OFFSET(dMdu_x), EVENANDODD );
+      ddslash_fn_du0_site( xxx_off, F_OFFSET(dMdu_x), EVENANDODD );
       /* check */ r_gb_dMdu_g_e = r_gb_dMdu_g_o = 0;
       /* check */ r_gb_M_g_e = r_gb_M_g_o = 0;
-      /* check */ ddslash_fn_du0 (F_OFFSET(g_rand), F_OFFSET(dM_check), EVENANDODD );
+      /* check */ ddslash_fn_du0_site (F_OFFSET(g_rand), F_OFFSET(dM_check), EVENANDODD );
 #endif
 
 #ifdef CHEM_POT
@@ -99,9 +97,9 @@ BOMB THE COMPILE
       pb_d2Mdmu2_p_e = pb_d2Mdmu2_p_o = dcmplx((double)0.0,(double)0.0);
 
       /* Start gathers from positive t-direction */
-      tag0 = start_gather( xxx_off, sizeof(su3_vector), TUP,
+      tag0 = start_gather_site( xxx_off, sizeof(su3_vector), TUP,
 	EVENANDODD, gen_pt[0] );
-      tag1 = start_gather( xxx_off, sizeof(su3_vector), T3UP,
+      tag1 = start_gather_site( xxx_off, sizeof(su3_vector), T3UP,
 	EVENANDODD, gen_pt[1] );
 
       FORALLSITES(i,st){
@@ -112,9 +110,9 @@ BOMB THE COMPILE
       }
 
       /* Start gathers from negative t-direction */
-      tag2 = start_gather( F_OFFSET(tempvec[TUP]), sizeof(su3_vector),
+      tag2 = start_gather_site( F_OFFSET(tempvec[TUP]), sizeof(su3_vector),
 	OPP_DIR(TUP), EVENANDODD, gen_pt[2] );
-      tag3 = start_gather( F_OFFSET(templongvec[TUP]), sizeof(su3_vector),
+      tag3 = start_gather_site( F_OFFSET(templongvec[TUP]), sizeof(su3_vector),
 	OPP_3_DIR(T3UP), EVENANDODD, gen_pt[3] );
 
       /* Wait gathers from positive t-direction and multiply by matrix */
@@ -302,9 +300,9 @@ BOMB THE COMPILE
       mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass );
 
       /* Start gathers from positive t-direction */
-      tag0 = start_gather( xxx_off, sizeof(su3_vector), TUP,
+      tag0 = start_gather_site( xxx_off, sizeof(su3_vector), TUP,
 	EVENANDODD, gen_pt[0] );
-      tag1 = start_gather( xxx_off, sizeof(su3_vector), T3UP,
+      tag1 = start_gather_site( xxx_off, sizeof(su3_vector), T3UP,
 	EVENANDODD, gen_pt[1] );
 
       FORALLSITES(i,st){
@@ -315,9 +313,9 @@ BOMB THE COMPILE
       }
 
       /* Start gathers from negative t-direction */
-      tag2 = start_gather( F_OFFSET(tempvec[TUP]), sizeof(su3_vector),
+      tag2 = start_gather_site( F_OFFSET(tempvec[TUP]), sizeof(su3_vector),
 	OPP_DIR(TUP), EVENANDODD, gen_pt[2] );
-      tag3 = start_gather( F_OFFSET(templongvec[TUP]), sizeof(su3_vector),
+      tag3 = start_gather_site( F_OFFSET(templongvec[TUP]), sizeof(su3_vector),
 	OPP_3_DIR(T3UP), EVENANDODD, gen_pt[3] );
 
       /* Wait gathers from positive t-direction and multiply by matrix */

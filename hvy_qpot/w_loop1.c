@@ -66,7 +66,7 @@ void w_loop1(int tot_smear) {
 	}
 
 	/* Start gather of forward time-like links */
-	mtag[0] = start_gather_from_temp( 
+	mtag[0] = start_gather_field( 
 			 (void *)t_link_f, sizeof(su3_matrix),
 			 dir, EVENANDODD, gen_pt[0] );
 
@@ -94,19 +94,19 @@ void w_loop1(int tot_smear) {
 	    }
 
 	    /* Start gather of forward space-like segments for next t */
-	    mtag[TUP] = start_gather_from_temp( 
+	    mtag[TUP] = start_gather_field( 
 			       (void *)s_link_f, sizeof(su3_matrix),
 			       TUP, EVENANDODD, gen_pt[TUP] );
 
 	    /* Concurrently gather space-like segment for next r, if
 	       still needed. */
 	    if( r==0 ){
-		mtag[1] = start_gather_from_temp( 
+		mtag[1] = start_gather_field( 
 			 (void *)s_link, sizeof(su3_matrix),
 			 dir, EVENANDODD, gen_pt[1] );
 	    }
 	    else if( r<(nxh-1) ){
-		restart_gather_from_temp(
+		restart_gather_field(
 			 (void *)s_link, sizeof(su3_matrix),
 			 dir, EVENANDODD, gen_pt[1], mtag[1] );
 	    }
@@ -137,7 +137,7 @@ void w_loop1(int tot_smear) {
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather_from_temp( 
+		    restart_gather_field( 
 		     (void *)s_link_f, sizeof(su3_matrix),
 		     TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
@@ -167,7 +167,7 @@ void w_loop1(int tot_smear) {
 
 	    /* Start gather of forward time-like links for next r. */
 	    if( r<(nxh-1) ){
-		restart_gather_from_temp( 
+		restart_gather_field( 
 			 (void *)t_link_f, sizeof(su3_matrix),
 			 dir, EVENANDODD, gen_pt[0], mtag[0] );
 	    }

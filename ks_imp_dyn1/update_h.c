@@ -18,7 +18,7 @@ void update_h( Real eps ){
     /* First compute M*xxx in temporary vector xxx_odd */
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
-    dslash( F_OFFSET(xxx), F_OFFSET(xxx), ODD );
+    dslash_site( F_OFFSET(xxx), F_OFFSET(xxx), ODD );
     eo_fermion_force( eps, nflavors, F_OFFSET(xxx) );
 } /* update_h */
 

@@ -708,7 +708,7 @@ int save_wsprop_from_site( int flag, char *filename, char *recxml,
 	  if(write_F3_D_from_site(outfile, recxml, srcc, 4) != QIO_SUCCESS)
 	    status += 1;
 	}
-      QIO_close_write(outfile);
+      close_output(outfile);
     }
 #else
     node0_printf("To write a SciDAC file requires QIO compilation\n");
@@ -893,7 +893,7 @@ void save_wprop_from_field( int flag, char *filename, char *recxml,
 	  if(write_F3_D_from_field(outfile, recxml, srccs, 4) 
 	     != QIO_SUCCESS)break;
 	}
-      QIO_close_write(outfile);
+      close_output(outfile);
     }
     free(srccs);
 #else

@@ -97,8 +97,8 @@ FORALLSITES(i,s){
 	/* Where dslash is the naive operator (without the Wilson term) */
 	
 	/* Do Wilson Dslash on the psi field */
-	dslash(F_OFFSET(psi),F_OFFSET(mp), PLUS,EVENANDODD);
-	dslash(F_OFFSET(psi),F_OFFSET(tmp),MINUS,EVENANDODD);
+	dslash_w_site(F_OFFSET(psi),F_OFFSET(mp), PLUS,EVENANDODD);
+	dslash_w_site(F_OFFSET(psi),F_OFFSET(tmp),MINUS,EVENANDODD);
 	/* From subtraction we get 2*Dslash */
 	FORALLSITES(i,s){
 	  sub_wilson_vector(&s->mp,&s->tmp,

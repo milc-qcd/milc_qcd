@@ -28,10 +28,12 @@
 #endif
 
 #ifdef FN
-#define dslash dslash_fn
+#define dslash_site dslash_fn_site
+#define dslash_field dslash_fn_field
 #endif
 #ifdef EO
-#define dslash dslash_eo
+#define dslash_site dslash_eo_site
+#define dslash_field dslash_eo_field
 #endif
 
 /* prototypes for functions in high level code */

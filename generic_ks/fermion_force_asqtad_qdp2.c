@@ -586,7 +586,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   FORALLUPDIR(dir){
   
     /* Gather backward links */
-    mtag = start_gather( F_OFFSET(link[dir]), sizeof(su3_matrix), 
+    mtag = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix), 
 			      OPP_DIR(dir), EVENANDODD, gen_pt[dir] );
     wait_gather(mtag);
     FORALLSITES(i,s){
@@ -979,7 +979,7 @@ void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
   
   if(GOES_FORWARDS(dir)) /* forward shift */
     {
-      mtag = start_gather_from_temp(src, sizeof(su3_vector), 
+      mtag = start_gather_field(src, sizeof(su3_vector), 
 				    dir, EVENANDODD, gen_pt[0]);
       wait_gather(mtag);
       FORALLSITES(i,s)
@@ -992,7 +992,7 @@ void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
       tmpvec = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
       FORALLSITES(i,s)
 	mult_adj_su3_mat_vec(&(s->link[OPP_DIR(dir)]),&(src[i]), &tmpvec[i]);
-      mtag = start_gather_from_temp(tmpvec, sizeof(su3_vector), dir, 
+      mtag = start_gather_field(tmpvec, sizeof(su3_vector), dir, 
 				    EVENANDODD, gen_pt[0]);
       wait_gather(mtag);
       /* copy the gen_pt to the dest */

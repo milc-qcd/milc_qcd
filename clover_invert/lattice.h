@@ -41,7 +41,7 @@ typedef struct {
  	wilson_vector mp;	/* another CG vector */
 	wilson_vector tmp;	/* another temporary CG vector */
  /*	wilson_vector r; residue: overwrites half the source */
-	/* wilson half vector (temporary used in dslash_w) */
+	/* wilson half vector (temporary used in dslash_w_site) */
 	half_wilson_vector htmp[MAXHTMP];
 
 	/* storage for one quark_propagator, for four source spins, three source colors */

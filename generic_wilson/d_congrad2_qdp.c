@@ -266,10 +266,10 @@ congrad_w(int niter, Real rsqmin, Real *final_rsq_ptr)
 /************ dslash *************/
 #ifdef PRESHIFT_LINKS
 
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_site() when
    possible. Last argument is an integer, which will tell if
    gathers have been started.  If is_started=0,use
-   start_gather, otherwise use restart_gather.
+   start_gather_site, otherwise use restart_gather_site.
    Argument "tag" is a vector of a msg_tag *'s to use for
    the gathers.
    The calling program must clean up the gathers! */
@@ -370,10 +370,10 @@ dslash_special_qdp(QDP_DiracFermion *dest, QDP_DiracFermion *src,
 
 #else
 
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_site() when
    possible. Last argument is an integer, which will tell if
    gathers have been started.  If is_started=0,use
-   start_gather, otherwise use restart_gather.
+   start_gather_site, otherwise use restart_gather_site.
    Argument "tag" is a vector of a msg_tag *'s to use for
    the gathers.
    The calling program must clean up the gathers! */

@@ -106,13 +106,13 @@ for(nu=0;nu<4;nu++)if(mu != nu){
 /* now gather each nu from OPP_DIR(nu) */
 
 
-        tag[0]=start_gather( F_OFFSET(cvct[nu]), sizeof(complex),
+        tag[0]=start_gather_site( F_OFFSET(cvct[nu]), sizeof(complex),
             OPP_DIR(nu), EVENANDODD, gen_pt[0] );
 
 /*  gather each nu from ahead */
 
 
-        tag[1]=start_gather( F_OFFSET(cvct[nu]), sizeof(complex),
+        tag[1]=start_gather_site( F_OFFSET(cvct[nu]), sizeof(complex),
             nu, EVENANDODD, gen_pt[1] );
 
 	wait_gather(tag[0]);

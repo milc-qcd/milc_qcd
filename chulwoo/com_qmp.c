@@ -1,5 +1,5 @@
 void
-restart_gather_from_temp_special(
+restart_gather_field_special(
   void *field,		/* which field? Pointer returned by malloc() */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
@@ -7,7 +7,7 @@ restart_gather_from_temp_special(
   int parity,		/* parity of sites whose neighbors we gather.
 			   one of EVEN, ODD or EVENANDODD. */
   char ** dest,		/* one of the vectors of pointers */
-  msg_tag *mtag)          /* previously returned by start_gather */
+  msg_tag *mtag)          /* previously returned by start_gather_site */
 {
   int i,j;
   site *s;
@@ -15,7 +15,7 @@ restart_gather_from_temp_special(
   gather_t *gt;         /* pointer to current gather */
 
   //if(mynode()==0) {printf("begin declare: %i\n",index);fflush(stdout);}
-  PRINT("restart_gather_from_temp_special\n");
+  PRINT("restart_gather_field_special\n");
   if(mtag->nsends!=0) mbuf = mtag->send_msgs;
   else mbuf = NULL;
 

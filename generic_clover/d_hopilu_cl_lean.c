@@ -127,7 +127,7 @@ int hopilu_cl(           /* Return value is number of iterations taken */
   /* mp_o = 1/R_o srce_o */
   mult_ldu(src, mp, ODD);
   /* mp_e = D_eo/R_o srce_o */
-  dslash_w(mp, mp, PLUS, EVEN);
+  dslash_w_site(mp, mp, PLUS, EVEN);
   /* src_e = srce_e + K D_eo/R_o srce_o */
   FOREVENSITES(i,s)
     scalar_mult_add_wvec( (wilson_vector *)F_PT(s,src), 
@@ -176,11 +176,11 @@ int hopilu_cl(           /* Return value is number of iterations taken */
     
     /* ---- r_e = H r_e =  K^2/R_e D_eo/R_o D_oe r_e ----- */
     /* mp_o = D_oe r_e */
-    dslash_w(r, mp, PLUS, ODD);
+    dslash_w_site(r, mp, PLUS, ODD);
     /* tmp_o = 1/R_o D_oe r_e */
     mult_ldu(mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe r_e */
-    dslash_w(tmp, mp, PLUS, EVEN);
+    dslash_w_site(tmp, mp, PLUS, EVEN);
     /* r_e = 1/R_e D_eo/R_o D_oe r_e */
     mult_ldu(mp, r, EVEN);
     /* r_e = K^2/R_e D_eo/R_o D_oe r_e */
@@ -231,7 +231,7 @@ int hopilu_cl(           /* Return value is number of iterations taken */
   
   /* --------- dest_o =  dest_o + K/R_o D_oe dest_e --------- */
   /* mp_o = D_oe * dest_e */
-  dslash_w(dest, mp, PLUS, ODD);
+  dslash_w_site(dest, mp, PLUS, ODD);
   /* mp_o = dest_o + K D_oe * dest_e (remember dest_o = original src_o still)*/
   FORODDSITES(i,s) {
     scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), 

@@ -303,7 +303,7 @@ printf("VECTOR %d %d %d %e\n",ix,iy,iz,s->cvc[nu].real);
 	}
 
 	for(nu=0;nu<4;nu++){
-        tag[0]=start_gather( F_OFFSET(cvc[nu]), sizeof(Real),
+        tag[0]=start_gather_site( F_OFFSET(cvc[nu]), sizeof(Real),
             OPP_DIR(nu), EVENANDODD, gen_pt[0] );
                 wait_gather(tag[0]);
 

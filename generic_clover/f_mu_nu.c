@@ -56,11 +56,11 @@ tempmat3 = F_OFFSET(htmp[0]);
     }
 
     /* get link[nu] from direction +mu */
-     tag0 = start_gather( F_OFFSET(link[nu]), sizeof(su3_matrix),
+     tag0 = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix),
 	 mu, EVENANDODD, gen_pt[0] );
 
      /* get link[mu] from direction +nu */
-     tag1 = start_gather( F_OFFSET(link[mu]), sizeof(su3_matrix),
+     tag1 = start_gather_site( F_OFFSET(link[mu]), sizeof(su3_matrix),
 	 nu, EVENANDODD, gen_pt[1] );
 
      /* Make one corner with link[nu]^dagger link[mu] */
@@ -98,11 +98,11 @@ tempmat3 = F_OFFSET(htmp[0]);
     }
 
     /* tempmat2 is the plaquette +mu -nu and must be gathered from -nu */
-    tag2 = start_gather( tempmat2, sizeof(su3_matrix),
+    tag2 = start_gather_site( tempmat2, sizeof(su3_matrix),
 	OPP_DIR(nu), EVENANDODD, gen_pt[2] );
 
     /* tempmat3 is the plaquette -mu +nu and must be gather from -mu */
-    tag3 = start_gather( tempmat3, sizeof(su3_matrix),
+    tag3 = start_gather_site( tempmat3, sizeof(su3_matrix),
 	OPP_DIR(mu), EVENANDODD, gen_pt[3] );
 
     /* Now make +mu +nu plaquette and put in f_mn */

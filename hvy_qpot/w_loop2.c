@@ -65,9 +65,9 @@ void w_loop2(int tot_smear) {
 
 	/* First construct the "diagonal" link in the (dir1,dir2) direction */
 
-	mtag[dir1] = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	mtag[dir1] = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[dir1] );
-	mtag[dir2] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[dir2] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir2, EVENANDODD, gen_pt[dir2] );
 
 	FORALLSITES(i,s){
@@ -130,7 +130,7 @@ void w_loop2(int tot_smear) {
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather_from_temp( 
+	    mtag[TUP] = start_gather_field( 
 		       (void *)s_link_f, sizeof(su3_matrix),
 		       TUP, EVENANDODD, gen_pt[TUP] );
 
@@ -166,7 +166,7 @@ void w_loop2(int tot_smear) {
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather_from_temp( 
+		    restart_gather_field( 
 		     (void *)s_link_f, sizeof(su3_matrix),
 		     TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
@@ -208,7 +208,7 @@ void w_loop2(int tot_smear) {
 	FORALLSITES(i,s){
 	    mult_su3_an( &(s->link[dir2]), &(s->link[dir1]), &(s->staple));
 	}
-	mtag[dir2] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[dir2] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[dir2] );
 
 	FORALLSITES(i,s){
@@ -271,7 +271,7 @@ void w_loop2(int tot_smear) {
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather_from_temp( 
+	    mtag[TUP] = start_gather_field( 
 		       (void *)s_link_f, sizeof(su3_matrix),
 		       TUP, EVENANDODD, gen_pt[TUP] );
 
@@ -307,7 +307,7 @@ void w_loop2(int tot_smear) {
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		  restart_gather_from_temp(
+		  restart_gather_field(
 			   (void *)s_link_f, sizeof(su3_matrix),
 			   TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
@@ -346,7 +346,7 @@ void w_loop2(int tot_smear) {
 
 	/* First construct the "diagonal" link in the (2*dir1,dir2) direction */
 
-	mtag[dir1] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[dir1] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[dir1] );
 
 	/* Start gather of dir2-link from "2*dir1" */
@@ -368,7 +368,7 @@ void w_loop2(int tot_smear) {
 	cleanup_gather( mtag[dir1]);
 
 	/* Gather the double links from dir2 direction */
-	mtag[dir2] = start_gather_from_temp( 
+	mtag[dir2] = start_gather_field( 
 		    (void *)s_link, sizeof(su3_matrix),
 		    dir2, EVENANDODD, gen_pt[dir2] );
 
@@ -432,7 +432,7 @@ void w_loop2(int tot_smear) {
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather_from_temp(
+	    mtag[TUP] = start_gather_field(
 		       (void *)s_link_f, sizeof(su3_matrix),
 		       TUP, EVENANDODD, gen_pt[TUP] );
 
@@ -468,7 +468,7 @@ void w_loop2(int tot_smear) {
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather_from_temp( 
+		    restart_gather_field( 
 		      (void *)s_link_f, sizeof(su3_matrix),
 		      TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
@@ -499,7 +499,7 @@ void w_loop2(int tot_smear) {
 
 	/* First construct the "diagonal" link in the (2*dir1,-dir2) dir */
 
-	mtag[dir1] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[dir1] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[dir1] );
 
 	/* Gather dir2-link from across the diagonal */
@@ -525,7 +525,7 @@ void w_loop2(int tot_smear) {
 	FORALLSITES(i,s){
 	    mult_su3_an( &(s->link[dir2]), s_link+i, &(s->staple));
 	}
-	mtag[dir2] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[dir2] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[dir2] );
 
 	/* Make second corner */
@@ -584,7 +584,7 @@ void w_loop2(int tot_smear) {
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather_from_temp( 
+	    mtag[TUP] = start_gather_field( 
 		       (void *)s_link_f, sizeof(su3_matrix),
 		       TUP, EVENANDODD, gen_pt[TUP] );
 
@@ -620,7 +620,7 @@ void w_loop2(int tot_smear) {
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather_from_temp(
+		    restart_gather_field(
 			     (void *)s_link_f, sizeof(su3_matrix),
 			     TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
@@ -660,15 +660,15 @@ void w_loop2(int tot_smear) {
 	   direction */
 
 	/* Gather for first "plaquette" */
-	mtag[0] = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	mtag[0] = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[0] );
-	mtag[1] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[1] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir2, EVENANDODD, gen_pt[1] );
 
 	/* Gather for second "plaquette" */
-	mtag[7] = start_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
+	mtag[7] = start_gather_site( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[7] );
-	mtag[5] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[5] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir3, EVENANDODD, gen_pt[5] );
 
 	FORALLSITES(i,s){
@@ -687,13 +687,13 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_gather( mtag[0]);
 	cleanup_gather( mtag[1]);
-	mtag[2] = start_gather_from_temp(s_link, sizeof(su3_matrix),
+	mtag[2] = start_gather_field(s_link, sizeof(su3_matrix),
 	    dir3, EVENANDODD, gen_pt[2] );
 
 	/* Gather for third "plaquette" */
-	mtag[1] = start_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
+	mtag[1] = start_gather_site( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    dir2, EVENANDODD, gen_pt[1] );
-	mtag[3] = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	mtag[3] = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    dir3, EVENANDODD, gen_pt[3] );
 
 	/* Make diagonal link in (dir1,dir3) direction and gather it */
@@ -708,7 +708,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_gather( mtag[7]);
 	cleanup_gather( mtag[5]);
-	mtag[6] = start_gather_from_temp(s_link_f, sizeof(su3_matrix),
+	mtag[6] = start_gather_field(s_link_f, sizeof(su3_matrix),
 	    dir2, EVENANDODD, gen_pt[6] );
 
 	/* Make first body diagonal */
@@ -731,7 +731,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_gather( mtag[1]);
 	cleanup_gather( mtag[3]);
-	mtag[0] = start_gather_from_temp( s_link, sizeof(su3_matrix),
+	mtag[0] = start_gather_field( s_link, sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[0] );
 
 	/* Make second body diagonal and add to first */
@@ -796,7 +796,7 @@ void w_loop2(int tot_smear) {
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather_from_temp(
+	    mtag[TUP] = start_gather_field(
 		       (void *)s_link_f, sizeof(su3_matrix),
 		       TUP, EVENANDODD, gen_pt[TUP] );
 
@@ -832,7 +832,7 @@ void w_loop2(int tot_smear) {
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather_from_temp( 
+		    restart_gather_field( 
 		     (void *)s_link_f, sizeof(su3_matrix),
 		     TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
@@ -865,9 +865,9 @@ void w_loop2(int tot_smear) {
 	   direction */
 
 	/* Gather for first "plaquette" */
-	mtag[0] = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	mtag[0] = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[0] );
-	mtag[1] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[1] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir2, EVENANDODD, gen_pt[1] );
 
 	/* Start one corner for second "plaquette" and gather */
@@ -879,7 +879,7 @@ void w_loop2(int tot_smear) {
 	disp[dir3] = -1;
 	gmtag = start_general_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
-	mtag[5] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[5] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir3), EVENANDODD, gen_pt[5] );
 
 	/* Make diagonal link in (dir1,dir2) direction, multiply to get
@@ -896,7 +896,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_gather( mtag[0]);
 	cleanup_gather( mtag[1]);
-	mtag[2] = start_gather_from_temp(
+	mtag[2] = start_gather_field(
 		 (void *)s_link, sizeof(su3_matrix),
 		 OPP_DIR(dir3), EVENANDODD, gen_pt[2] );
 
@@ -911,7 +911,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_general_gather( gmtag);
 	cleanup_gather( mtag[5]);
-	mtag[6] = start_gather_from_temp(
+	mtag[6] = start_gather_field(
 		 (void *)s_link_f, sizeof(su3_matrix),
 		 dir2, EVENANDODD, gen_pt[6] );
 
@@ -924,7 +924,7 @@ void w_loop2(int tot_smear) {
 	disp[dir3] = -1;
 	gmtag = start_general_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
-	mtag[3] = start_gather( F_OFFSET(diag), sizeof(su3_matrix),
+	mtag[3] = start_gather_site( F_OFFSET(diag), sizeof(su3_matrix),
 	    OPP_DIR(dir3), EVENANDODD, gen_pt[3] );
 
 	FORALLSITES(i,s){
@@ -942,7 +942,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_general_gather( gmtag);
 	cleanup_gather( mtag[3]);
-	mtag[0] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[0] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[0] );
 
 	/* Make second body diagonal and add to it gathered first */
@@ -1010,7 +1010,7 @@ void w_loop2(int tot_smear) {
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather_from_temp(
+	    mtag[TUP] = start_gather_field(
 		       (void *)s_link_f, sizeof(su3_matrix),
 		       TUP, EVENANDODD, gen_pt[TUP] );
 
@@ -1046,7 +1046,7 @@ void w_loop2(int tot_smear) {
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather_from_temp(
+		    restart_gather_field(
 			     (void *)s_link_f, sizeof(su3_matrix),
 			     TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
@@ -1079,9 +1079,9 @@ void w_loop2(int tot_smear) {
 	   direction */
 
 	/* Gather for first "plaquette" */
-	mtag[0] = start_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
+	mtag[0] = start_gather_site( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[0] );
-	mtag[2] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[2] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir3, EVENANDODD, gen_pt[2] );
 
 	/* Start one corner for second "plaquette" and gather */
@@ -1093,7 +1093,7 @@ void w_loop2(int tot_smear) {
 	disp[dir2] = -1;
 	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
-	mtag[6] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[6] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[6] );
 
 	/* Make diagonal link in (dir1,dir3) direction, multiply to get
@@ -1110,7 +1110,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_gather( mtag[0]);
 	cleanup_gather( mtag[2]);
-	mtag[1] = start_gather_from_temp(
+	mtag[1] = start_gather_field(
 		 (void *)s_link, sizeof(su3_matrix),
 		 OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
 
@@ -1125,7 +1125,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_general_gather( gmtag);
 	cleanup_gather( mtag[6]);
-	mtag[5] = start_gather_from_temp( 
+	mtag[5] = start_gather_field( 
 		 (void *)s_link_f, sizeof(su3_matrix),
 		 dir3, EVENANDODD, gen_pt[5] );
 
@@ -1138,7 +1138,7 @@ void w_loop2(int tot_smear) {
 	disp[dir3] = 1;
 	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
-	mtag[3] = start_gather( F_OFFSET(diag), sizeof(su3_matrix),
+	mtag[3] = start_gather_site( F_OFFSET(diag), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[3] );
 
 	FORALLSITES(i,s){
@@ -1156,7 +1156,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_general_gather( gmtag);
 	cleanup_gather( mtag[3]);
-	mtag[0] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[0] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[0] );
 
 	/* Make second body diagonal and add to it gathered first */
@@ -1224,7 +1224,7 @@ void w_loop2(int tot_smear) {
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather_from_temp(
+	    mtag[TUP] = start_gather_field(
 	        (void *)s_link_f, sizeof(su3_matrix),
 		TUP, EVENANDODD, gen_pt[TUP] );
 
@@ -1260,7 +1260,7 @@ void w_loop2(int tot_smear) {
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather_from_temp(
+		    restart_gather_field(
 		     (void *)s_link_f, sizeof(su3_matrix),
 		     TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
@@ -1293,9 +1293,9 @@ void w_loop2(int tot_smear) {
 	   direction */
 
 	/* Gather for first "plaquette" */
-	mtag[1] = start_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
+	mtag[1] = start_gather_site( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    dir2, EVENANDODD, gen_pt[1] );
-	mtag[2] = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	mtag[2] = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    dir3, EVENANDODD, gen_pt[2] );
 
 	/* Start one corner for second "plaquette" and gather */
@@ -1307,7 +1307,7 @@ void w_loop2(int tot_smear) {
 	disp[dir2] = -1;
 	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
-	mtag[6] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[6] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[6] );
 
 	/* Make diagonal link in (dir2,dir3) direction */
@@ -1335,7 +1335,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_general_gather( gmtag);
 	cleanup_gather( mtag[6]);
-	mtag[2] = start_gather_from_temp(
+	mtag[2] = start_gather_field(
 		 (void *)s_link_f, sizeof(su3_matrix),
 		 OPP_DIR(dir3), EVENANDODD, gen_pt[2] );
 
@@ -1348,7 +1348,7 @@ void w_loop2(int tot_smear) {
 	disp[dir3] = -1;
 	gmtag = start_general_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
-	mtag[3] = start_gather( F_OFFSET(diag), sizeof(su3_matrix),
+	mtag[3] = start_gather_site( F_OFFSET(diag), sizeof(su3_matrix),
 	    OPP_DIR(dir3), EVENANDODD, gen_pt[3] );
 
 	FORALLSITES(i,s){
@@ -1367,7 +1367,7 @@ void w_loop2(int tot_smear) {
 	}
 	cleanup_general_gather( gmtag);
 	cleanup_gather( mtag[3]);
-	mtag[1] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[1] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
 
 	/* Finally gather first "plaquette" */
@@ -1438,7 +1438,7 @@ void w_loop2(int tot_smear) {
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather_from_temp(
+	    mtag[TUP] = start_gather_field(
 	        (void *)s_link_f, sizeof(su3_matrix),
 		TUP, EVENANDODD, gen_pt[TUP] );
 
@@ -1474,7 +1474,7 @@ void w_loop2(int tot_smear) {
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather_from_temp(
+		    restart_gather_field(
 			     (void *)s_link_f, sizeof(su3_matrix),
 			     TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}

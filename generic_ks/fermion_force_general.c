@@ -40,12 +40,12 @@
 
 /* update the  momenta with the fermion force */
 /* Assumes that the conjugate gradient has been run, with the answer in
-   x_off, and dslash(x_off,x_off,ODD) has been run. (fills in x_off_odd) */
+   x_off, and dslash_site(x_off,x_off,ODD) has been run. (fills in x_off_odd) */
 /* SEE LONG COMMENTS AT END */
 
 /* update the  momenta with the fermion force */
 /* Assumes that the conjugate gradient has been run, with the answer in
-   x_off, and dslash(x_off,x_off,ODD) has been run. (fills in x_off_odd) */
+   x_off, and dslash_site(x_off,x_off,ODD) has been run. (fills in x_off_odd) */
 /* SEE LONG COMMENTS AT END */
 
 void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
@@ -116,7 +116,7 @@ dtime=-dclock();
             mult_adj_su3_mat_hwvec( &(s->link[lastdir]),
 	      &(hw_tmp0[i]), &(hw_tmp1[i]) );
 	  }
-	  mtag0 = start_gather_from_temp( hw_tmp1, 2*sizeof(su3_vector),
+	  mtag0 = start_gather_field( hw_tmp1, 2*sizeof(su3_vector),
              OPP_DIR(lastdir), EVENANDODD, gen_pt[0] );
           wait_gather(mtag0);
           FORALLSITES(i,s){
@@ -125,7 +125,7 @@ dtime=-dclock();
           cleanup_gather(mtag0);
 	}
 	else{   /* GOES_BACKWARDS(lastdir) */
-          mtag0 = start_gather_from_temp( hw_tmp0, 2*sizeof(su3_vector),
+          mtag0 = start_gather_field( hw_tmp0, 2*sizeof(su3_vector),
                OPP_DIR(lastdir), EVENANDODD, gen_pt[0] );
           wait_gather(mtag0);
           FORALLSITES(i,s){
@@ -262,7 +262,7 @@ if( x2_off-x1_off != sizeof(su3_vector) ){node0_printf("BOTCH\n"); exit(0);}
             mult_adj_mat_wilson_vec( &(s->link[lastdir]),
 	      &(w_tmp0[i]), &(w_tmp1[i]) );
 	  }
-	  mtag0 = start_gather_from_temp( w_tmp1, 4*sizeof(su3_vector),
+	  mtag0 = start_gather_field( w_tmp1, 4*sizeof(su3_vector),
              OPP_DIR(lastdir), EVENANDODD, gen_pt[0] );
           wait_gather(mtag0);
           FORALLSITES(i,s){
@@ -271,7 +271,7 @@ if( x2_off-x1_off != sizeof(su3_vector) ){node0_printf("BOTCH\n"); exit(0);}
           cleanup_gather(mtag0);
 	}
 	else{   /* GOES_BACKWARDS(lastdir) */
-          mtag0 = start_gather_from_temp( w_tmp0, 4*sizeof(su3_vector),
+          mtag0 = start_gather_field( w_tmp0, 4*sizeof(su3_vector),
                OPP_DIR(lastdir), EVENANDODD, gen_pt[0] );
           wait_gather(mtag0);
           FORALLSITES(i,s){

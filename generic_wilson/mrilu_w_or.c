@@ -95,7 +95,7 @@ int mrilu_w_or(          /* Return value is number of iterations taken */
     dtime = -dclock();
 #endif
 
-    dslash_w(src,mmp,PLUS,EVEN);
+    dslash_w_site(src,mmp,PLUS,EVEN);
 
     /* Normalisation  */
     dsize_src=0.0;
@@ -143,8 +143,8 @@ we rotate back to the basis in which  M is not checkerboard-diagonal) */
     if(flag != 0) {
         /**if(this_node==0)printf("dest_0  !=0\n");**/
         /* we use mmp temporarily to construct r */
-        dslash_w(dest,mmp,PLUS,ODD);
-        dslash_w(mmp,mmp,PLUS,EVEN);
+        dslash_w_site(dest,mmp,PLUS,ODD);
+        dslash_w_site(mmp,mmp,PLUS,EVEN);
         FOREVENSITES(i,s) {
             scalar_mult_add_wvec( ((wilson_vector *)F_PT(s,dest)),
                 (wilson_vector *)F_PT(s,mmp),MKsq, 
@@ -169,8 +169,8 @@ we rotate back to the basis in which  M is not checkerboard-diagonal) */
         N_iter = N_iter + 1) {
 
     	/*  mmp = [U^(-1)*M*L^(-1)]*r  */
-    	dslash_w(r,mmp,PLUS,ODD);
-    	dslash_w(mmp,mmp,PLUS,EVEN);
+    	dslash_w_site(r,mmp,PLUS,ODD);
+    	dslash_w_site(mmp,mmp,PLUS,EVEN);
 
         /* c = |mmp|^2,  d = (mmp,r)  */
     	c[0]=0.0;
@@ -246,7 +246,7 @@ if(this_node==0){
 	} **/
 
     /* dest = L^(-1)*dest  */
-    dslash_w(dest,mmp,PLUS,ODD);
+    dslash_w_site(dest,mmp,PLUS,ODD);
     FORODDSITES(i,s) {
         scalar_mult_add_wvec( ((wilson_vector *)F_PT(s,dest)), 
 			      (wilson_vector *)F_PT(s,mmp), Kappa, 

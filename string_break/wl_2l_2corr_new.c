@@ -59,7 +59,7 @@ mes_t = F_OFFSET(ttt.c[1]);
 	su3_vec_to_src( &(s->g_rand[0]), &(s->dtmpvecs[0].n[1]), num_src);
     }
 
-    mtag[0] = start_gather( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
+    mtag[0] = start_gather_site( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
 	TUP, EVENANDODD, gen_pt[0]);
 
     for(t=0;t<nth;t++){
@@ -84,7 +84,7 @@ mes_t = F_OFFSET(ttt.c[1]);
 	}
 
 	if( t<(nth-1) ){
-	    restart_gather( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
+	    restart_gather_site( F_OFFSET(dtmpvecs[0]), sizeof(dble_su3_vec_src),
 		TUP, EVENANDODD, gen_pt[0], mtag[0] );
 	}
 	else{
@@ -128,9 +128,9 @@ mes_t = F_OFFSET(ttt.c[1]);
 	    }
 
 	    /* Start gather of forward meson */
-	    mtag[1] = start_gather( F_OFFSET(dtmpvecs[1].n[1]),
+	    mtag[1] = start_gather_site( F_OFFSET(dtmpvecs[1].n[1]),
 		sizeof(su3_vector_src), dir, EVENANDODD, gen_pt[1] );
-   	    mtag[2] = start_gather( meson_f, sizeof(complex),
+   	    mtag[2] = start_gather_site( meson_f, sizeof(complex),
 		dir, EVENANDODD, gen_pt[2] );
 
 	    for(r=0;r<nxh;r++){
@@ -164,11 +164,11 @@ mes_t = F_OFFSET(ttt.c[1]);
 		}
 
 		if( r<(nxh-1) ){
-		    restart_gather( F_OFFSET(dtmpvecs[1].n[1]),
+		    restart_gather_site( F_OFFSET(dtmpvecs[1].n[1]),
 			sizeof(su3_vector_src), dir, EVENANDODD,
 			gen_pt[1], mtag[1] );
 
-		    restart_gather( meson_f, sizeof(complex),
+		    restart_gather_site( meson_f, sizeof(complex),
 			dir, EVENANDODD, gen_pt[2], mtag[2] );
 		}
 		else{

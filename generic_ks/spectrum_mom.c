@@ -8,8 +8,7 @@
 * DT 3/99 masses are arguments.
 */
 /* Kogut-Susskind fermions  -- this version for "fat plus Naik"
-   or general "even plus odd" quark actions.  Assumes "dslash" has
-   been defined to be the appropriate "dslash_fn" or "dslash_eo"
+   or general "even plus odd" quark actions.
 */
 #define mat_invert mat_invert_uml
 /**#define mat_invert mat_invert_cg**/

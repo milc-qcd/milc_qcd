@@ -16,7 +16,7 @@
    8/05/96 Added broadcast_bytes and wrappers for system-dependent
     parallel file system calls C.D.
     9/2/97  Revised to allow gathers from temporary fields.  neighbor[]
-       is now list of indices, add start/restart_gather_from_temp D.T.
+       is now list of indices, add start/restart_gather_field D.T.
 */
 
 /* Version for odd lattice */
@@ -65,17 +65,17 @@
    cleanup_field_pointer() frees the buffers that field_pointer...
    allocated.
 
-   start_gather() starts asynchronous sends and receives required
+   start_gather_site() starts asynchronous sends and receives required
    to gather neighbors.
-   start_gather_from_temp() starts asynchronous sends and receives required
+   start_gather_field() starts asynchronous sends and receives required
    to gather neighbors from temporary array of fields.
    wait_gather()  waits for receives to finish, insuring that the
    data has actually arrived.
    cleanup_gather() frees all the buffers that were allocated, WHICH
    MEANS THAT THE GATHERED DATA MAY SOON DISAPPEAR.
-   restart_gather() repeats the internode communications of a previous
+   restart_gather_site() repeats the internode communications of a previous
    gather.
-   restart_gather_from_temp() repeats the internode communications of a
+   restart_gather_field() repeats the internode communications of a
    previous gather of temporary field.
 
    send_field() sends a field to one other node.
@@ -316,14 +316,14 @@ void start_handlers(){
 
 /**********************************************************************/
 /* GATHER ROUTINES */
-/* start_gather() returns a pointer to a list of msg_tag's, which will
+/* start_gather_site() returns a pointer to a list of msg_tag's, which will
    be used as input to subsequent wait_gather() and cleanup_gather() calls.
    In the single processor version, the routine will always return NULL.
 
-   usage:  tag = start_gather( source, size, direction, parity, dest )
+   usage:  tag = start_gather_site( source, size, direction, parity, dest )
    example:
 	msg_tag *tag;
-	tag = start_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+	tag = start_gather_site( F_OFFSET(phi), sizeof(su3_vector), XUP,
 	    EVEN, gen_pt[0] );
 	  ** do other stuff **
 	wait_gather(tag);
@@ -339,11 +339,11 @@ void start_handlers(){
     Under certain circumstances it is possible to efficiently gather
     a field that has been previously gathered.  This happens when the
     field being gathered has been modified, but the pointers (the
-    destination of start_gather() ) have not been modified.  To use
-    restart_gather, the original gather must have been waited for but
+    destination of start_gather_site() ) have not been modified.  To use
+    restart_gather_site, the original gather must have been waited for but
     not cleaned up.  The usage is:
 	msg_tag *tag;
-	tag = start_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+	tag = start_gather_site( F_OFFSET(phi), sizeof(su3_vector), XUP,
 	    EVEN, gen_pt[0] );
 	  ** do other stuff, but don't modify tag or gen_pt[0] **
 	wait_gather(tag);
@@ -353,7 +353,7 @@ void start_handlers(){
 	   Do whatever you want with it here, but don't modify tag or
 	   gen_pt[0].
 	   Do modify the source field phi. **
-	restart_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+	restart_gather_site( F_OFFSET(phi), sizeof(su3_vector), XUP,
 	    EVEN, gen_pt[0], tag );
 	  ** do other stuff **
 	wait_gather(tag);
@@ -368,7 +368,7 @@ void start_handlers(){
 */
 
 /**********************************************************************/
-msg_tag * start_gather(
+msg_tag * start_gather_site(
 /* arguments */
  field_offset field,	/* which field? Some member of structure "site" */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -411,7 +411,7 @@ register site *s;	/* scratch pointer to site */
   previous gather.  The previous gather must have been waited for
   but not cleaned up.  Pointers to sites on the same node are not
   reset, and the same buffers are reused. */
-void restart_gather(
+void restart_gather_site(
 /* arguments */
  field_offset field,	/* which field? Some member of structure "site" */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -420,12 +420,12 @@ void restart_gather(
  int parity,		/* parity of sites whose neighbors we gather.
 			   one of EVEN, ODD or EVENANDODD. */
  char ** dest,		/* one of the vectors of pointers */
- msg_tag *mbuf)          /* previously returned by start_gather */
+ msg_tag *mbuf)          /* previously returned by start_gather_site */
 {
     /* Nothing to do */
 }
 /**********************************************************************/
-msg_tag * start_gather_from_temp(
+msg_tag * start_gather_field(
 /* arguments */
  void * field,		/* which field? Pointer returned by malloc() */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -468,7 +468,7 @@ register site *s;	/* scratch pointer to site */
   previous gather.  The previous gather must have been waited for
   but not cleaned up.  Pointers to sites on the same node are not
   reset, and the same buffers are reused. */
-void restart_gather_from_temp(
+void restart_gather_field(
 /* arguments */
  void * field,		/* which field? Pointer returned by malloc() */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -477,7 +477,7 @@ void restart_gather_from_temp(
  int parity,		/* parity of sites whose neighbors we gather.
 			   one of EVEN, ODD or EVENANDODD. */
  char ** dest,		/* one of the vectors of pointers */
- msg_tag *mbuf)          /* previously returned by start_gather */
+ msg_tag *mbuf)          /* previously returned by start_gather_field */
 {
     /* Nothing to do */
 }

@@ -9,13 +9,7 @@
    been defined to be the appropriate "dslash_fn" or "dslash_eo"
 */
 #include "generic_ks_includes.h"
-#ifdef FN
-#define dslash dslash_fn
-#endif
-#ifdef EO
-#define dslash dslash_eo
-#endif
-
+#include "../include/dslash_ks_redefine.h"
 
 /* Compute M^-1 * phi, answer in dest
   Uses phi, ttt, resid, xxx, and cg_p as workspace */
@@ -27,7 +21,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
     cgn = ks_congrad( src, dest, mass,
         niter,rsqprop,EVENANDODD,&finalrsq);
     /* Multiply by Madjoint */
-    dslash( dest, F_OFFSET(ttt), EVENANDODD);
+    dslash_site( dest, F_OFFSET(ttt), EVENANDODD);
     scalar_mult_add_latvec( F_OFFSET(ttt), dest,
        -2.0*mass, F_OFFSET(ttt), EVENANDODD);
     scalar_mult_latvec( F_OFFSET(ttt), -1.0, dest, EVENANDODD );
@@ -69,7 +63,7 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 	printf("BOTCH\n"); exit(0);
     }
     /* multiply by U - even sites only */
-    dslash( src, F_OFFSET(ttt), EVEN);
+    dslash_site( src, F_OFFSET(ttt), EVEN);
     scalar_mult_add_latvec( F_OFFSET(ttt), src,
        -2.0*mass, temp, EVEN);
     scalar_mult_latvec( temp, -1.0, temp, EVEN);
@@ -78,7 +72,7 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 	EVEN, &finalrsq );
     /* multiply by (1/2m)L, does nothing to even sites */
     /* fix up odd sites , 1/2m (Dslash_oe*dest_e + phi_odd) */
-    dslash( dest, F_OFFSET(ttt), ODD );
+    dslash_site( dest, F_OFFSET(ttt), ODD );
     FORODDSITES(i,s){
 	sub_su3_vector( (su3_vector *)F_PT(s,src), &(s->ttt), 
 	    (su3_vector *)F_PT(s,dest) );
@@ -95,7 +89,7 @@ void check_invert( field_offset src, field_offset dest, Real mass,
     register site *s;
     Real r_diff, i_diff;
     double sum,sum2;
-    dslash( src, F_OFFSET(cg_p), EVENANDODD);
+    dslash_site( src, F_OFFSET(cg_p), EVENANDODD);
     FORALLSITES(i,s){
 	scalar_mult_add_su3_vector( &(s->cg_p), (su3_vector *)F_PT(s,src),
 	    +2.0*mass, &(s->cg_p) );

@@ -41,7 +41,7 @@ int spectrum() /* return the C.G. iteration number */
 	}
 
       /* Multiply by -Madjoint */
-      dslash( F_OFFSET(ttt), F_OFFSET(phi), ODD);
+      dslash_site( F_OFFSET(ttt), F_OFFSET(phi), ODD);
       scalar_mult_latvec( F_OFFSET(ttt), -mass_x2, F_OFFSET(phi), EVEN);
       /* do a C.G. */
       cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,

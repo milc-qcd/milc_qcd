@@ -20,11 +20,11 @@ su3_matrix tmp1, utmp, uAcntr;		/* for middle steps */
 
 /**********  First work on upper leaf  **********/
     /* get link[nu] from direction +mu */
-    tag[0] = start_gather( F_OFFSET(link[nu]), sizeof(su3_matrix),
+    tag[0] = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix),
         mu, EVENANDODD, gen_pt[0] );
 
     /* get link[mu] from direction +nu */
-    tag[1] = start_gather( F_OFFSET(link[mu]), sizeof(su3_matrix),
+    tag[1] = start_gather_site( F_OFFSET(link[mu]), sizeof(su3_matrix),
         nu, EVENANDODD, gen_pt[1] );
 
  /*****  Upper leaf - same parity *****/
@@ -65,7 +65,7 @@ su3_matrix tmp1, utmp, uAcntr;		/* for middle steps */
  /***** upper leaf - different parity *****/
 
     /* get matsrc from +nu */
-    tag[3] = start_gather( matsrc, sizeof(su3_matrix), nu, EVEN, gen_pt[3] );
+    tag[3] = start_gather_site( matsrc, sizeof(su3_matrix), nu, EVEN, gen_pt[3] );
     wait_gather(tag[3]);
 
     /* uAcntr = staple*matsrc, utmp = link[nu]^dagger */
@@ -79,7 +79,7 @@ su3_matrix tmp1, utmp, uAcntr;		/* for middle steps */
 
     cleanup_gather(tag[3]);
     /* get matsrc from +mu */
-    tag[3] = start_gather( matsrc, sizeof(su3_matrix), mu, EVEN, gen_pt[3] );
+    tag[3] = start_gather_site( matsrc, sizeof(su3_matrix), mu, EVEN, gen_pt[3] );
     wait_gather(tag[3]);
 
     /* uAcntr = link[mu]*matsrc, utmp = staple */
@@ -99,11 +99,11 @@ su3_matrix tmp1, utmp, uAcntr;		/* for middle steps */
     cleanup_gather(tag[0]);
     cleanup_gather(tag[1]);
     /* get link[nu] from direction -nu */
-    tag[0] = start_gather( F_OFFSET(link[nu]), sizeof(su3_matrix),
+    tag[0] = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix),
         OPP_DIR(nu), EVENANDODD, gen_pt[0] );
 
     /* get link[mu] from direction -nu */
-    tag[1] = start_gather( F_OFFSET(link[mu]), sizeof(su3_matrix),
+    tag[1] = start_gather_site( F_OFFSET(link[mu]), sizeof(su3_matrix),
         OPP_DIR(nu), EVENANDODD, gen_pt[1] );
 
     /* get link[nu] from direction -nu +mu */
@@ -132,7 +132,7 @@ su3_matrix tmp1, utmp, uAcntr;		/* for middle steps */
 
     cleanup_gather(tag[3]);
     /* get matsrc from -nu */
-    tag[3] = start_gather( matsrc, sizeof(su3_matrix), OPP_DIR(nu),
+    tag[3] = start_gather_site( matsrc, sizeof(su3_matrix), OPP_DIR(nu),
 	EVEN, gen_pt[3] );
     wait_gather(tag[3]);
 

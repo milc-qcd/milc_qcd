@@ -116,7 +116,7 @@ initialize_machine(argc,argv);
 
 	    for(j=0; j<num_src; j++){
 		/* Put source, m^\dag qprop, in phi, result in xxx */
-		dslash( F_OFFSET(qprop[j]), F_OFFSET(phi), EVENANDODD);
+		dslash_site( F_OFFSET(qprop[j]), F_OFFSET(phi), EVENANDODD);
 		scalar_mult_latvec( F_OFFSET(phi), -1.0, F_OFFSET(phi),
 		    EVENANDODD);
 		scalar_mult_add_latvec( F_OFFSET(phi), F_OFFSET(qprop[j]),
@@ -196,7 +196,7 @@ initialize_machine(argc,argv);
 
 	    for(j=0; j<num_src; j++){ **/
 		/* Put source, m^\dag qprop, in phi, result in xxx */
-/**		dslash( F_OFFSET(qprop[j]), F_OFFSET(phi), EVENANDODD);
+/**		dslash_site( F_OFFSET(qprop[j]), F_OFFSET(phi), EVENANDODD);
 		scalar_mult_latvec( F_OFFSET(phi), -1.0, F_OFFSET(phi),
 		    EVENANDODD);
 		scalar_mult_add_latvec( F_OFFSET(phi), F_OFFSET(qprop[j]),

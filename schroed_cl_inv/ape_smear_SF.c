@@ -60,11 +60,11 @@ field_offset tmpmat;
 		sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
 	    /* get link[diro] from direction dir */
-	    tag0 = start_gather( F_OFFSET(link[diro]), sizeof(su3_matrix),
+	    tag0 = start_gather_site( F_OFFSET(link[diro]), sizeof(su3_matrix),
 		dir, EVENANDODD, gen_pt[0] );
 
 	    /* get link[dir] from direction diro */
-	    tag1 = start_gather( F_OFFSET(link[dir]), sizeof(su3_matrix),
+	    tag1 = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix),
 		diro, EVENANDODD, gen_pt[1] );
 
 	    /* Make one corner of lower staple and gather "up" */
@@ -79,7 +79,7 @@ field_offset tmpmat;
 			((su3_matrix *)F_PT(s,tmpmat)) );
 		}
 	    }
-	    tag2 = start_gather( tmpmat, sizeof(su3_matrix),
+	    tag2 = start_gather_site( tmpmat, sizeof(su3_matrix),
 		OPP_DIR(diro), EVENANDODD, gen_pt[2] );
 
 	    /* Make upper staple */

@@ -19,8 +19,8 @@ void check_invert2( field_offset src, field_offset dest,
   case EVENANDODD: otherparity=EVENANDODD; break;
   }
 					     
-  dslash( src, temp, otherparity);
-  dslash( temp, F_OFFSET(cg_p), parity);
+  dslash_site( src, temp, otherparity);
+  dslash_site( temp, F_OFFSET(cg_p), parity);
 
   FORSOMEPARITY(i,s,parity){
     scalar_mult_su3_vector( &(s->cg_p), -1.0, &(s->cg_p));

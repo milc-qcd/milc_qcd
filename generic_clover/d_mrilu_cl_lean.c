@@ -125,7 +125,7 @@ int mrilu_cl(		/* Return value is number of iterations taken */
 #endif
 
   mult_ldu(src, my_mp, ODD);
-  dslash_w(my_mp, my_mp, PLUS, EVEN);
+  dslash_w_site(my_mp, my_mp, PLUS, EVEN);
 
   /* Normalisation  */
   c = 0.0;
@@ -182,9 +182,9 @@ int mrilu_cl(		/* Return value is number of iterations taken */
     /*  if(this_node==0){printf("dest_0  !=0\n");fflush(stdout);} */
     /* we use my_mp temporarily to construct r */
     mult_ldu(dest, tmp, EVEN);
-    dslash_w(dest, my_mp, PLUS, ODD);
+    dslash_w_site(dest, my_mp, PLUS, ODD);
     mult_ldu(my_mp, tmp, ODD);
-    dslash_w(tmp, my_mp, PLUS, EVEN);
+    dslash_w_site(tmp, my_mp, PLUS, EVEN);
 #ifdef SCHROED_FUN
     FOREVENSITES(i,s) if(s->t > 0) {
 #else
@@ -217,9 +217,9 @@ int mrilu_cl(		/* Return value is number of iterations taken */
 
     /*   my_mp = M(u)*r */
     mult_ldu(r, tmp, EVEN);
-    dslash_w(r, my_mp, PLUS, ODD);
+    dslash_w_site(r, my_mp, PLUS, ODD);
     mult_ldu(my_mp, tmp, ODD);
-    dslash_w(tmp, my_mp, PLUS, EVEN);
+    dslash_w_site(tmp, my_mp, PLUS, EVEN);
 
     /* d = <Mr|r>  */
     /* c = <Mr|Mr>  */
@@ -299,7 +299,7 @@ int mrilu_cl(		/* Return value is number of iterations taken */
   } **/
 
   /* dest = R^(-1)*dest  */
-  dslash_w(dest, my_mp, PLUS, ODD);
+  dslash_w_site(dest, my_mp, PLUS, ODD);
 #ifdef SCHROED_FUN
   FORODDSITES(i,s) if(s->t > 0) {
 #else

@@ -54,7 +54,7 @@ int wf_pt_t() /* return the C.G. iteration number */
 	      cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 				niter,rsqprop,EVEN,&finalrsq);
 	      /* Multiply by -Madjoint */
-	      dslash( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
+	      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
 	      scalar_mult_latvec( F_OFFSET(xxx), -mass_x2, F_OFFSET(ttt), EVEN);
 	      
 	      /* fill the hadron matrix */
@@ -207,7 +207,7 @@ int wf_pt_t() /* return the C.G. iteration number */
 /* Temporary: use CG vectors for temps.  Have to be careful not
 to overwrite propmat2 before cleanup_gather, because we are still
 using it */
-	  tag=start_gather( F_OFFSET(propmat2[0]),3*sizeof(su3_vector),ZUP,
+	  tag=start_gather_site( F_OFFSET(propmat2[0]),3*sizeof(su3_vector),ZUP,
 	    EVENANDODD,gen_pt[ZUP]);
 	  wait_gather(tag);
 	  FORALLSITES(i,s){
@@ -224,7 +224,7 @@ using it */
 	    s->propmat2[1] = s->ttt;
 	    s->propmat2[2] = s->phi;
 	  }
-	  tag=start_gather( F_OFFSET(propmat2[0]),3*sizeof(su3_vector),ZUP,
+	  tag=start_gather_site( F_OFFSET(propmat2[0]),3*sizeof(su3_vector),ZUP,
 	    EVENANDODD,gen_pt[ZUP]);
 	  wait_gather(tag);
 	  FORALLSITES(i,s){

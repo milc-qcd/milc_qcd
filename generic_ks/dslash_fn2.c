@@ -19,7 +19,7 @@
 
 #define INDEX_3RD(dir) (dir - 8)      /* this gives the 'normal' direction */
 
-/* Temporary work space for dslash_fn_on_temp_special */ 
+/* Temporary work space for dslash_fn_field_special */ 
 static su3_vector *temp[9] ;
 /* Flag indicating if temp is allocated               */
 static int temp_not_allocated=1 ;
@@ -57,7 +57,7 @@ void cleanup_dslash_temps(){
    sources parallel transported to site, with minus sign for transport
    from negative directions.  Use "fatlinks" for one link transport,
    "longlinks" for three link transport. */
-void dslash_fn( field_offset src, field_offset dest, int parity ) {
+void dslash_fn_site( field_offset src, field_offset dest, int parity ) {
    register int i;
    register site *s;
    register int dir,otherparity;
@@ -75,9 +75,9 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
     /* Start gathers from positive directions */
     /* And start the 3-step gather too */
     for( dir=XUP; dir<=TUP; dir++ ){
-	tag[dir] = start_gather( src, sizeof(su3_vector), dir, parity,
+	tag[dir] = start_gather_site( src, sizeof(su3_vector), dir, parity,
 	    gen_pt[dir] );
-	tag[DIR3(dir)] = start_gather( src, sizeof(su3_vector), DIR3(dir),
+	tag[DIR3(dir)] = start_gather_site( src, sizeof(su3_vector), DIR3(dir),
 	    parity, gen_pt[DIR3(dir)] );
     }
 
@@ -108,7 +108,7 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
 
     /* Start gathers from negative directions */
     for( dir=XUP; dir <= TUP; dir++){
-	tag[OPP_DIR(dir)] = start_gather( F_OFFSET(tempvec[dir]),
+	tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
 	    sizeof(su3_vector), OPP_DIR( dir), parity,
 	    gen_pt[OPP_DIR(dir)] );
     }
@@ -116,7 +116,7 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
     /* Start 3-neighbour gathers from negative directions */
     for( dir=X3UP; dir <= T3UP; dir++){
 	tag[OPP_3_DIR(dir)] 
-           = start_gather( F_OFFSET(templongvec[INDEX_3RD(dir)]),
+           = start_gather_site( F_OFFSET(templongvec[INDEX_3RD(dir)]),
 			   sizeof(su3_vector), OPP_3_DIR( dir), parity,
 			   gen_pt[OPP_3_DIR(dir)] );
     }
@@ -202,14 +202,14 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
 	cleanup_gather(tag[dir]);
 	cleanup_gather(tag[OPP_3_DIR(dir)]);
     }
-} /* end dslash_fn */
+} /* end dslash_fn_site */
 
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_site() when
   possible. Last argument is an array of message tags, to be set
   if this is the first use, otherwise reused. If start=1,use
-  start_gather, otherwise use restart_gather. 
+  start_gather_site, otherwise use restart_gather_site. 
   The calling program must clean up the gathers! */
-void dslash_fn_special( field_offset src, field_offset dest,
+void dslash_fn_site_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start ){
     register int i;
     register site *s;
@@ -226,18 +226,18 @@ void dslash_fn_special( field_offset src, field_offset dest,
 
     /* Start gathers from positive directions */
     for(dir=XUP; dir<=TUP; dir++){
-/**printf("dslash_special: up gathers, start=%d\n",start);**/
-	if(start==1) tag[dir] = start_gather( src, sizeof(su3_vector),
+/**printf("dslash_fn_site_special: up gathers, start=%d\n",start);**/
+	if(start==1) tag[dir] = start_gather_site( src, sizeof(su3_vector),
 	    dir, parity, gen_pt[dir] );
-	else restart_gather( src, sizeof(su3_vector),
+	else restart_gather_site( src, sizeof(su3_vector),
 	    dir, parity, gen_pt[dir] , tag[dir] ); 
     }
 
     /* and start the 3rd neighbor gather */
     for(dir=X3UP; dir<=T3UP; dir++){
-        if(start==1) tag[dir] = start_gather( src, sizeof(su3_vector),
+        if(start==1) tag[dir] = start_gather_site( src, sizeof(su3_vector),
 	    dir, parity, gen_pt[dir] );
-	else restart_gather( src, sizeof(su3_vector),
+	else restart_gather_site( src, sizeof(su3_vector),
 	    dir, parity, gen_pt[dir] , tag[dir] ); 
     }
 
@@ -267,20 +267,20 @@ void dslash_fn_special( field_offset src, field_offset dest,
 
     /* Start gathers from negative directions */
     for( dir=XUP; dir <= TUP; dir++){
-/**printf("dslash_special: down gathers, start=%d\n",start);**/
-	if (start==1) tag[OPP_DIR(dir)] = start_gather( F_OFFSET(tempvec[dir]),
+/**printf("dslash_fn_site_special: down gathers, start=%d\n",start);**/
+	if (start==1) tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
 	    sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
-	else restart_gather( F_OFFSET(tempvec[dir]), sizeof(su3_vector),
+	else restart_gather_site( F_OFFSET(tempvec[dir]), sizeof(su3_vector),
 	    OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] , tag[OPP_DIR(dir)] );
     }
 
     /* and 3rd neighbours */
     for( dir=X3UP; dir <= T3UP; dir++){
-/**printf("dslash_special: down gathers, start=%d\n",start);**/
+/**printf("dslash_fn_site_special: down gathers, start=%d\n",start);**/
 	if (start==1) tag[OPP_3_DIR(dir)] = 
-	  start_gather( F_OFFSET(templongvec[INDEX_3RD(dir)]),
+	  start_gather_site( F_OFFSET(templongvec[INDEX_3RD(dir)]),
 	  sizeof(su3_vector), OPP_3_DIR(dir), parity, gen_pt[OPP_3_DIR(dir)] );
-	else restart_gather( F_OFFSET(templongvec[INDEX_3RD(dir)]),
+	else restart_gather_site( F_OFFSET(templongvec[INDEX_3RD(dir)]),
 	  sizeof(su3_vector), OPP_3_DIR( dir), parity, gen_pt[OPP_3_DIR(dir)],
 	  tag[OPP_3_DIR(dir)] );
     }
@@ -363,7 +363,7 @@ void dslash_fn_special( field_offset src, field_offset dest,
 
 }
 
-void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
+void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity ) {
    register int i;
    register site *s;
    register int dir,otherparity;
@@ -390,9 +390,9 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
    /* Start gathers from positive directions */
    /* And start the 3-step gather too */
    for( dir=XUP; dir<=TUP; dir++ ){
-     tag[dir] = start_gather_from_temp( src, sizeof(su3_vector), dir, parity,
+     tag[dir] = start_gather_field( src, sizeof(su3_vector), dir, parity,
 					gen_pt[dir] );
-     tag[DIR3(dir)] = start_gather_from_temp( src, sizeof(su3_vector), 
+     tag[DIR3(dir)] = start_gather_field( src, sizeof(su3_vector), 
 					      DIR3(dir),parity, 
 					      gen_pt[DIR3(dir)] );
    }
@@ -431,13 +431,13 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 
    /* Start gathers from negative directions */
    for( dir=XUP; dir <= TUP; dir++){
-     tag[OPP_DIR(dir)] = start_gather_from_temp( tempvec[dir],
+     tag[OPP_DIR(dir)] = start_gather_field( tempvec[dir],
 	   sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
    }
 
   /* Start 3-neighbour gathers from negative directions */
     for( dir=X3UP; dir <= T3UP; dir++){
-      tag[OPP_3_DIR(dir)]=start_gather_from_temp(templongvec[INDEX_3RD(dir)],
+      tag[OPP_3_DIR(dir)]=start_gather_field(templongvec[INDEX_3RD(dir)],
 	sizeof(su3_vector), OPP_3_DIR( dir), parity, gen_pt[OPP_3_DIR(dir)] );
     }
 
@@ -540,12 +540,12 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
     free(templongv1);
 }
 
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_field() when
   possible. Next to last argument is an array of message tags, to be set
   if this is the first use, otherwise reused. If start=1,use
-  start_gather, otherwise use restart_gather. 
+  start_gather_field, otherwise use restart_gather_field. 
   The calling program must clean up the gathers and temps! */
-void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
+void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			       int parity, msg_tag **tag, int start ){
   register int i;
   register site *s;
@@ -579,17 +579,17 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
   for( dir=XUP; dir<=TUP; dir++ ){
     if(start==1)
       {
-	tag[dir] = start_gather_from_temp( src, sizeof(su3_vector), 
+	tag[dir] = start_gather_field( src, sizeof(su3_vector), 
 					   dir, parity,gen_pt[dir] );
-	tag[DIR3(dir)] = start_gather_from_temp(src, sizeof(su3_vector),
+	tag[DIR3(dir)] = start_gather_field(src, sizeof(su3_vector),
 						DIR3(dir),parity, 
 						gen_pt[DIR3(dir)] );
       }
     else
       {
-	restart_gather_from_temp( src, sizeof(su3_vector), 
+	restart_gather_field( src, sizeof(su3_vector), 
 				  dir, parity,gen_pt[dir], tag[dir]);
-	restart_gather_from_temp(src, sizeof(su3_vector), DIR3(dir), parity, 
+	restart_gather_field(src, sizeof(su3_vector), DIR3(dir), parity, 
 				 gen_pt[DIR3(dir)], tag[DIR3(dir)]);
       }
   }
@@ -626,18 +626,18 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
       
   /* Start gathers from negative directions */
   for( dir=XUP; dir <= TUP; dir++){
-      if (start==1) tag[OPP_DIR(dir)] = start_gather_from_temp( temp[dir],
+      if (start==1) tag[OPP_DIR(dir)] = start_gather_field( temp[dir],
 	   sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
-      else restart_gather_from_temp( temp[dir], sizeof(su3_vector), 
+      else restart_gather_field( temp[dir], sizeof(su3_vector), 
 	   OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)], tag[OPP_DIR(dir)] );
    }
 
   /* Start 3-neighbour gathers from negative directions */
   for( dir=X3UP; dir <= T3UP; dir++){
-      if (start==1) tag[OPP_3_DIR(dir)]=start_gather_from_temp(
+      if (start==1) tag[OPP_3_DIR(dir)]=start_gather_field(
              temp[INDEX_3RD(dir)+4], sizeof(su3_vector), 
 	     OPP_3_DIR( dir), parity, gen_pt[OPP_3_DIR(dir)] );
-      else restart_gather_from_temp(temp[INDEX_3RD(dir)+4], 
+      else restart_gather_field(temp[INDEX_3RD(dir)+4], 
 	    sizeof(su3_vector), OPP_3_DIR( dir),parity, 
 	    gen_pt[OPP_3_DIR(dir)], tag[OPP_3_DIR(dir)] );
     }
@@ -739,7 +739,7 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
    sources parallel transported to site, with minus sign for transport
    from negative directions.  Use "fatlinks" for one link transport,
    "longlinks" for three link transport. */
-void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
+void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity ) {
    register int i;
    register site *s;
    register int dir,otherparity;
@@ -757,9 +757,9 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
     /* Start gathers from positive directions */
     /* And start the 3-step gather too */
     for( dir=XUP; dir<=TUP; dir++ ){
-	tag[dir] = start_gather( src, sizeof(su3_vector), dir, parity,
+	tag[dir] = start_gather_site( src, sizeof(su3_vector), dir, parity,
 	    gen_pt[dir] );
-	tag[DIR3(dir)] = start_gather( src, sizeof(su3_vector), DIR3(dir),
+	tag[DIR3(dir)] = start_gather_site( src, sizeof(su3_vector), DIR3(dir),
 	    parity, gen_pt[DIR3(dir)] );
     }
 
@@ -793,7 +793,7 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
 
     /* Start gathers from negative directions */
     for( dir=XUP; dir <= TUP; dir++){
-	tag[OPP_DIR(dir)] = start_gather( F_OFFSET(tempvec[dir]),
+	tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
 	    sizeof(su3_vector), OPP_DIR( dir), parity,
 	    gen_pt[OPP_DIR(dir)] );
     }
@@ -801,7 +801,7 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
     /* Start 3-neighbour gathers from negative directions */
     for( dir=X3UP; dir <= T3UP; dir++){
 	tag[OPP_3_DIR(dir)] 
-           = start_gather( F_OFFSET(templongvec[INDEX_3RD(dir)]),
+           = start_gather_site( F_OFFSET(templongvec[INDEX_3RD(dir)]),
 			   sizeof(su3_vector), OPP_3_DIR( dir), parity,
 			   gen_pt[OPP_3_DIR(dir)] );
     }
@@ -889,10 +889,10 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
 	cleanup_gather(tag[dir]);
 	cleanup_gather(tag[OPP_3_DIR(dir)]);
     }
-} /* end ddslash_fn_du0 */
+} /* end ddslash_fn_du0_site */
 
 
-void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
+void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity ) {
    register int i;
    register site *s;
    register int dir,otherparity;
@@ -919,9 +919,9 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
    /* Start gathers from positive directions */
    /* And start the 3-step gather too */
    for( dir=XUP; dir<=TUP; dir++ ){
-     tag[dir] = start_gather_from_temp( src, sizeof(su3_vector), dir, parity,
+     tag[dir] = start_gather_field( src, sizeof(su3_vector), dir, parity,
 					gen_pt[dir] );
-     tag[DIR3(dir)] = start_gather_from_temp( src, sizeof(su3_vector), 
+     tag[DIR3(dir)] = start_gather_field( src, sizeof(su3_vector), 
 					      DIR3(dir),parity, 
 					      gen_pt[DIR3(dir)] );
    }
@@ -963,13 +963,13 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 
    /* Start gathers from negative directions */
    for( dir=XUP; dir <= TUP; dir++){
-     tag[OPP_DIR(dir)] = start_gather_from_temp( tempvec[dir],
+     tag[OPP_DIR(dir)] = start_gather_field( tempvec[dir],
 	   sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
    }
 
   /* Start 3-neighbour gathers from negative directions */
     for( dir=X3UP; dir <= T3UP; dir++){
-      tag[OPP_3_DIR(dir)]=start_gather_from_temp(templongvec[INDEX_3RD(dir)],
+      tag[OPP_3_DIR(dir)]=start_gather_field(templongvec[INDEX_3RD(dir)],
 	sizeof(su3_vector), OPP_3_DIR( dir), parity, gen_pt[OPP_3_DIR(dir)] );
     }
 
@@ -1071,6 +1071,6 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
       free(templongvec[dir]);
     }
     free(templongv1);
-} /* end ddslash_fn_du0_on_temp */
+} /* end ddslash_fn_du0_field */
 
 #endif /* DM_DU0 */

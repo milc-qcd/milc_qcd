@@ -18,7 +18,7 @@ void load_longlinks_old() {
   /**node0_printf("Loading long links\n");**/
   /** gather from all forward directions **/
   for (dir=XUP; dir<=TUP; dir++){
-    tag[dir] = start_gather(F_OFFSET(link[dir]), sizeof(su3_matrix), dir,
+    tag[dir] = start_gather_site(F_OFFSET(link[dir]), sizeof(su3_matrix), dir,
 	EVENANDODD, gen_pt[dir] );
   }
 
@@ -34,7 +34,7 @@ void load_longlinks_old() {
     /* needs to be done -- restart does not work here? */
 
     /* start the new gather immediately */
-    tag[dir] = start_gather(F_OFFSET(longlink[dir]), sizeof(su3_matrix), dir,
+    tag[dir] = start_gather_site(F_OFFSET(longlink[dir]), sizeof(su3_matrix), dir,
 	EVENANDODD, gen_pt[dir] );
   }
   
@@ -101,9 +101,9 @@ void load_fatlinks_old() {
 	for(dir2=XUP;dir2<=TUP;dir2++)if(dir2!=dir1){
 
 	    /* Upper staple, and simple link */
-	    mtag0 = start_gather( F_OFFSET(link[dir2]),
+	    mtag0 = start_gather_site( F_OFFSET(link[dir2]),
 		sizeof(su3_matrix), dir1, EVENANDODD, gen_pt[0] );
-	    mtag1 = start_gather( F_OFFSET(link[dir1]),
+	    mtag1 = start_gather_site( F_OFFSET(link[dir1]),
 		 sizeof(su3_matrix), dir2, EVENANDODD, gen_pt[1] );
 	    wait_gather(mtag0);
 	    wait_gather(mtag1);
@@ -119,7 +119,7 @@ void load_fatlinks_old() {
 	    cleanup_gather(mtag1);
 
 	    /* lower staple */
-	    mtag0 = start_gather( F_OFFSET(link[dir2]),
+	    mtag0 = start_gather_site( F_OFFSET(link[dir2]),
 		 sizeof(su3_matrix), dir1, EVENANDODD, gen_pt[0] );
 	    wait_gather(mtag0);
 	    FORALLSITES(i,s){
@@ -128,7 +128,7 @@ void load_fatlinks_old() {
 		mult_su3_an( &(s->link[dir2]), &tmat1, &(s->tempmat1) );
 	    }
 	    cleanup_gather(mtag0);
-	    mtag1 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	    mtag1 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
                 OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
 	    wait_gather(mtag1);
 	    FORALLSITES(i,s){

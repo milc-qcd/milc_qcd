@@ -49,7 +49,7 @@ quark.t[4].checksum  "d2a13ba2 2daf8c59"
 quark.t[5].checksum  "4720052d 65bfc73d"
 quark.t[6].checksum  "90dc8731 1bcbbc90"
 quark.t[7].checksum  "637519f8 3bf07bbe"
-Read Wilson prop serially from file ../binary_samples/qf_d_d_0.124_00001
+Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
 Time to reload wprop 1.576706e-02
 
 

@@ -313,7 +313,7 @@ void restrict_fourier(
 	 coordinate you are combining with */
       
       /* Get the site at other end of butterfly */
-      tag = start_gather( src, size,
+      tag = start_gather_site( src, size,
 			 butterfly_dir[dir][level], EVENANDODD, gen_pt[0]);
       wait_gather(tag);
       
@@ -385,7 +385,7 @@ void restrict_fourier(
   } /* for loop on direction */
 
   /* Bit reverse */
-  tag = start_gather( src, size, bitrev_dir,
+  tag = start_gather_site( src, size, bitrev_dir,
 		     EVENANDODD, gen_pt[0]);
   wait_gather(tag);
   
@@ -434,7 +434,7 @@ void restrict_fourier(
   FORALLUPDIR(dir)if((logdim[dir] != -1)&&(pfactor[dir] != 1)){
 
     /* Start asynchronous cyclic gather from "space"*/
-    tag = start_gather( space, size, pcyclic_dir[dir],
+    tag = start_gather_site( space, size, pcyclic_dir[dir],
 		       EVENANDODD, gen_pt[0]);
 
     /* The fundamental angle, others are multiples of this */
@@ -506,7 +506,7 @@ void restrict_fourier(
 
 	/* Start next asynchronous cyclic gather from "space" if needed */
 	if(pfactor[dir]-jcycle>1)
-	  tag = start_gather( space, size, pcyclic_dir[dir],
+	  tag = start_gather_site( space, size, pcyclic_dir[dir],
 			     EVENANDODD, gen_pt[0]);
 
 	/* Accumulate result from "space" to "src" */
@@ -577,7 +577,7 @@ void restrict_fourier(
   /* Do p base analog of bit-reverse transform */
   if(notbase2)
     {
-	tag = start_gather( src, size, pbaserev_dir,
+	tag = start_gather_site( src, size, pbaserev_dir,
 			   EVENANDODD, gen_pt[0]);
 	wait_gather(tag);
 

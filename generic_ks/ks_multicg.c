@@ -16,13 +16,7 @@
 
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
-
-#ifdef FN
-#define dslash dslash_fn
-#endif
-#ifdef EO
-#define dslash dslash_eo
-#endif
+#include "../include/dslash_ks_redefine.h"
 
 #include "../include/loopend.h"
 
@@ -153,21 +147,21 @@ int ks_multicg(	/* Return value is number of iterations taken */
 
 #ifdef FN
 	if(special_started==0){
-	    dslash_fn_special( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
+	    dslash_fn_site_special( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
 		tags2, 1 );
-	    dslash_fn_special( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
+	    dslash_fn_site_special( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
 		tags1, 1);
 	    special_started = 1;
 	}
 	else {
-	    dslash_fn_special( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
+	    dslash_fn_site_special( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
 		tags2, 0 );
-	    dslash_fn_special( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
+	    dslash_fn_site_special( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
 		tags1, 0 );
 	}
 #else
-	dslash( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity);
-	dslash( F_OFFSET(ttt), F_OFFSET(ttt), l_parity);
+	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity);
+	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity);
 #endif
 
 	/* finish computation of (-1)*M_adjoint*m*p and (-1)*p*M_adjoint*M*p */

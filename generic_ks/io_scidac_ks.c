@@ -209,7 +209,7 @@ int read_F3_V_to_field(QIO_Reader *infile, su3_vector *dest, int count)
    structure */
 /* We don't have a MILC format for such a file */
 
-QIO_Writer *save_ks_vector_scidac_from_site(char *filename, char *recxml, 
+void save_ks_vector_scidac_from_site(char *filename, char *recxml, 
 			  int volfmt,  field_offset src, int count)
 {
   QIO_Layout layout;
@@ -234,9 +234,6 @@ QIO_Writer *save_ks_vector_scidac_from_site(char *filename, char *recxml,
   status = write_F3_V_from_site(outfile, recxml, src, count);
   if(status)terminate(1);
   
-  /* Close the file */
-  QIO_close_write(outfile);
-
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved KS vector serially to binary file %s\n",
@@ -255,11 +252,13 @@ QIO_Writer *save_ks_vector_scidac_from_site(char *filename, char *recxml,
 	       QIO_get_writer_last_checksuma(outfile),
 	       QIO_get_writer_last_checksumb(outfile));
 
+  /* Close the file */
+  QIO_close_write(outfile);
+
   free_ks_XML(filexml);
-  return outfile;
 }
 
-QIO_Writer *save_ks_vector_scidac_from_field(char *filename, char *recxml, 
+void save_ks_vector_scidac_from_field(char *filename, char *recxml, 
     int volfmt, su3_vector *src, int count)
 {
   QIO_Layout layout;
@@ -284,9 +283,6 @@ QIO_Writer *save_ks_vector_scidac_from_field(char *filename, char *recxml,
   status = write_F3_V_from_field(outfile, recxml, src, count);
   if(status)terminate(1);
   
-  /* Close the file */
-  QIO_close_write(outfile);
-
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved KS vector serially to binary file %s\n",
@@ -301,17 +297,19 @@ QIO_Writer *save_ks_vector_scidac_from_field(char *filename, char *recxml,
 	   filename);
   }
 
-  node0_printf("Checksums %0x %0x\n",
+  node0_printf("Checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),
 	       QIO_get_writer_last_checksumb(outfile));
 
+  /* Close the file */
+  QIO_close_write(outfile);
+
   free_ks_XML(filexml);
-  return outfile;
 }
 
 /* Read color vectors in SciDAC format */
 
-QIO_Reader *restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
+void restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
 					     int count){
   QIO_Layout layout;
   QIO_Reader *infile;
@@ -333,12 +331,11 @@ QIO_Reader *restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
   /* Close the file */
   QIO_close_read(infile);
 
-  return infile;
 }
 
 /* Read color vectors in SciDAC format */
 
-QIO_Reader *restore_ks_vector_scidac_to_field(char *filename, 
+void restore_ks_vector_scidac_to_field(char *filename, 
 			      su3_vector *dest, int count){
   QIO_Layout layout;
   QIO_Reader *infile;
@@ -360,6 +357,5 @@ QIO_Reader *restore_ks_vector_scidac_to_field(char *filename,
   /* Close the file */
   QIO_close_read(infile);
 
-  return infile;
 }
 

@@ -46,14 +46,14 @@ complex cc;
     /* fermion energy and pressure */
     for(dir=XUP;dir<=TUP;dir++){
         /* Bring g_rand down to odd site */
-        tag1 = start_gather( F_OFFSET(g_rand), sizeof(su3_vector), dir,
+        tag1 = start_gather_site( F_OFFSET(g_rand), sizeof(su3_vector), dir,
 	    ODD, gen_pt[1] );
         FOREVENSITES(i,st){
 	    mult_adj_su3_mat_vec( &(st->link[dir]), &(st->g_rand),
 		&(st->tempvec[0]));
         }
         /* Bring result up to odd site */
-        tag0 = start_gather( F_OFFSET(tempvec[0]), sizeof(su3_vector),
+        tag0 = start_gather_site( F_OFFSET(tempvec[0]), sizeof(su3_vector),
 	    OPP_DIR(dir), ODD, gen_pt[0] );
         wait_gather(tag0);
         wait_gather(tag1);

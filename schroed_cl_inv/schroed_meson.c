@@ -103,7 +103,7 @@ void w_source(field_offset src, wilson_quark_source *wqs)
 	/* In MILC convention P_+ and P_- appear interchanged */
 
 	/* get link[TUP] from direction -TUP */
-	tag0 = start_gather( F_OFFSET(link[TUP]), sizeof(su3_matrix),
+	tag0 = start_gather_site( F_OFFSET(link[TUP]), sizeof(su3_matrix),
 	    OPP_DIR(TUP), EVENANDODD, gen_pt[0]);
 
 	wait_gather(tag0);

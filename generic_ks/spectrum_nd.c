@@ -55,13 +55,7 @@ enum prop_name {
     nprops		/* nprops = number of propagators */
 };
 
-#include "generic_ks_includes.h"
-#ifdef FN
-#define dslash dslash_fn
-#endif
-#ifdef EO
-#define dslash dslash_eo
-#endif
+#include "../include/dslash_ks_redefine.h"
 
 int test_converge( int t_source );
 su3_vector * lightprop[3];
@@ -119,14 +113,14 @@ int spectrum_nd( Real mass1, Real mass2, Real tol ){
          cgn += ks_congrad( F_OFFSET(quark_source), F_OFFSET(g_rand),
 	    mass1, niter,rsqprop,EVEN,&finalrsq);
          /* Multiply by -Madjoint */
-         dslash( F_OFFSET(g_rand), F_OFFSET(quark_prop), ODD);
+         dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), ODD);
          scalar_mult_latvec( F_OFFSET(g_rand), -2.0*mass1, F_OFFSET(quark_prop),EVEN);
       }
       else {
         cgn += ks_congrad( F_OFFSET(quark_source), F_OFFSET(g_rand),
 	   mass1, niter,rsqprop,ODD,&finalrsq);
           /* Multiply by -Madjoint */
-          dslash( F_OFFSET(g_rand), F_OFFSET(quark_prop), EVEN);
+          dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), EVEN);
           scalar_mult_latvec( F_OFFSET(g_rand), -2.0*mass1, F_OFFSET(quark_prop),ODD);
       }
       FORALLSITES(i,s){ lightprop[color][i] = lattice[i].quark_prop; }
@@ -138,14 +132,14 @@ check_invert( F_OFFSET(g_rand), F_OFFSET(quark_source), mass1, tol);
          cgn += ks_congrad( F_OFFSET(quark_source), F_OFFSET(g_rand),
 	    mass2, niter,rsqprop,EVEN,&finalrsq);
          /* Multiply by -Madjoint */
-         dslash( F_OFFSET(g_rand), F_OFFSET(quark_prop), ODD);
+         dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), ODD);
          scalar_mult_latvec( F_OFFSET(g_rand), -2.0*mass2, F_OFFSET(quark_prop),EVEN);
       }
       else {
         cgn += ks_congrad( F_OFFSET(quark_source), F_OFFSET(g_rand),
 	   mass2, niter,rsqprop,ODD,&finalrsq);
           /* Multiply by -Madjoint */
-          dslash( F_OFFSET(g_rand), F_OFFSET(quark_prop), EVEN);
+          dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), EVEN);
           scalar_mult_latvec( F_OFFSET(g_rand), -2.0*mass2, F_OFFSET(quark_prop),ODD);
       }
       FORALLSITES(i,s){ heavyprop[color][i] = lattice[i].quark_prop; }

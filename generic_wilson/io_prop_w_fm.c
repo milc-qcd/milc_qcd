@@ -303,10 +303,10 @@ void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site,
 	}
     } /* rcv_rank */
 
-  if(this_node==0)
+  /**  if(this_node==0)
     {
       printf("Read Wilson prop serially from file %s\n", wpf->filename);
-    }
+      }**/
 }
 
 /*----------------------------------------------------------------------*/

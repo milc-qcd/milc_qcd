@@ -24,11 +24,11 @@ register Real eb3;
 	for(dir2=XUP;dir2<=TUP;dir2++)if(dir2 != dir1){
 
 	    /* get link[dir2] from direction dir1 */
-	    tag0 = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	    tag0 = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 		dir1, EVENANDODD, gen_pt[0] );
 
 	    /* Start gather for the "upper staple" */
-	    tag2 = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	    tag2 = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 		dir2, EVENANDODD, gen_pt[2] );
 
 	    /* begin the computation "at the dir2DOWN point", we will
@@ -59,7 +59,7 @@ register Real eb3;
 	    }
 
 	    /* Gather this partial result "up to home site" */
-	    tag1 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	    tag1 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 		OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
 
 	    /* begin the computation of the "upper" staple.  Note that

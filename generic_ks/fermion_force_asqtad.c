@@ -626,7 +626,7 @@ void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
   
   if(GOES_FORWARDS(dir)) /* forward shift */
     {
-      mtag = start_gather_from_temp(src, sizeof(su3_vector), 
+      mtag = start_gather_field(src, sizeof(su3_vector), 
 				    dir, EVENANDODD, gen_pt[0]);
       wait_gather(mtag);
       FORALLSITES(i,s)
@@ -639,7 +639,7 @@ void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
       tmpvec = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
       FORALLSITES(i,s)
 	mult_adj_su3_mat_vec(&(s->link[OPP_DIR(dir)]),&(src[i]), &tmpvec[i]);
-      mtag = start_gather_from_temp(tmpvec, sizeof(su3_vector), dir, 
+      mtag = start_gather_field(tmpvec, sizeof(su3_vector), dir, 
 				    EVENANDODD, gen_pt[0]);
       wait_gather(mtag);
       /* copy the gen_pt to the dest */
@@ -661,7 +661,7 @@ void u_shift_hw_fermion(half_wilson_vector *src,
   
   if(GOES_FORWARDS(dir)) /* forward shift */
     {
-      mtag = start_gather_from_temp(src, sizeof(half_wilson_vector), 
+      mtag = start_gather_field(src, sizeof(half_wilson_vector), 
 				    dir, EVENANDODD, gen_pt[0]);
       wait_gather(mtag);
       FORALLSITES(i,s)
@@ -675,7 +675,7 @@ void u_shift_hw_fermion(half_wilson_vector *src,
 	(half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
       FORALLSITES(i,s)
 	mult_adj_su3_mat_hwvec(&(s->link[OPP_DIR(dir)]),&(src[i]), &tmpvec[i]);
-      mtag = start_gather_from_temp(tmpvec, sizeof(half_wilson_vector), dir, 
+      mtag = start_gather_field(tmpvec, sizeof(half_wilson_vector), dir, 
 				    EVENANDODD, gen_pt[0]);
       wait_gather(mtag);
       /* copy the gen_pt to the dest */

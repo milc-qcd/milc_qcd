@@ -1177,12 +1177,12 @@ void mult_zero_pm_P( field_offset src, field_offset dest ){
 
 	/* parallel transport sss from positive dir2 direction */
 	/* parallel transport sss, from negative dir2 direction */
-        tag0=start_gather( F_OFFSET(sss), sizeof(wilson_vector),
+        tag0=start_gather_site( F_OFFSET(sss), sizeof(wilson_vector),
             dir2, EVENANDODD, gen_pt[0] );
 	FORALLSITES(i,s){
 	    mult_adj_mat_wilson_vec( &(s->link[dir2]), &(s->sss),  &(s->vtmp) );
 	}
-        tag1=start_gather( F_OFFSET(vtmp), sizeof(wilson_vector),
+        tag1=start_gather_site( F_OFFSET(vtmp), sizeof(wilson_vector),
             OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
 	wait_gather(tag0);
 	wait_gather(tag1);
@@ -1205,12 +1205,12 @@ void mult_zero_pm_P( field_offset src, field_offset dest ){
 
 	/* parallel transport mp from positive dir2 direction */
 	/* parallel transport mp from negative dir2 direction */
-        tag0=start_gather( F_OFFSET(mp), sizeof(wilson_vector),
+        tag0=start_gather_site( F_OFFSET(mp), sizeof(wilson_vector),
             dir2, EVENANDODD, gen_pt[0] );
 	FORALLSITES(i,s){
 	    mult_adj_mat_wilson_vec( &(s->link[dir2]), &(s->mp), &(s->vtmp) );
 	}
-        tag1=start_gather( F_OFFSET(vtmp), sizeof(wilson_vector),
+        tag1=start_gather_site( F_OFFSET(vtmp), sizeof(wilson_vector),
             OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
 	wait_gather(tag0);
 	wait_gather(tag1);
@@ -1258,12 +1258,12 @@ void mult_zero_mm_P( field_offset src, field_offset dest ){
 	/* parallel transport sss from positive k direction */
 	/* parallel transport sss, from negative k direction */
 	/* subtract, and multiply by field strength at site */
-        tag0=start_gather( F_OFFSET(sss), sizeof(wilson_vector),
+        tag0=start_gather_site( F_OFFSET(sss), sizeof(wilson_vector),
             k, EVENANDODD, gen_pt[0] );
 	FORALLSITES(in,s){
 	    mult_adj_mat_wilson_vec( &(s->link[k]), &(s->sss),  &(s->vtmp) );
 	}
-        tag1=start_gather( F_OFFSET(vtmp), sizeof(wilson_vector),
+        tag1=start_gather_site( F_OFFSET(vtmp), sizeof(wilson_vector),
             OPP_DIR(k), EVENANDODD, gen_pt[1] );
 	wait_gather(tag0);
 	wait_gather(tag1);
@@ -1286,12 +1286,12 @@ void mult_zero_mm_P( field_offset src, field_offset dest ){
 
 	/* parallel transport mp from positive k direction */
 	/* parallel transport mp from negative k direction */
-        tag0=start_gather( F_OFFSET(mp), sizeof(wilson_vector),
+        tag0=start_gather_site( F_OFFSET(mp), sizeof(wilson_vector),
             k, EVENANDODD, gen_pt[0] );
 	FORALLSITES(in,s){
 	    mult_adj_mat_wilson_vec( &(s->link[k]), &(s->mp), &(s->vtmp) );
 	}
-        tag1=start_gather( F_OFFSET(vtmp), sizeof(wilson_vector),
+        tag1=start_gather_site( F_OFFSET(vtmp), sizeof(wilson_vector),
             OPP_DIR(k), EVENANDODD, gen_pt[1] );
 	wait_gather(tag0);
 	wait_gather(tag1);
@@ -1334,12 +1334,12 @@ void mult_a1_P( int pdir,  field_offset src, field_offset dest ){
             mult_by_gamma( &tvec1, &(s->mp), GAMMAFIVE );
         }
 	/* parallel transport mp from forwards and backwards. */
-        tag0=start_gather( F_OFFSET(mp), sizeof(wilson_vector),
+        tag0=start_gather_site( F_OFFSET(mp), sizeof(wilson_vector),
             k, EVENANDODD, gen_pt[0] );
 	FORALLSITES(i,s){
 	    mult_adj_mat_wilson_vec( &(s->link[k]), &(s->mp), &(s->vtmp) );
 	}
-        tag1=start_gather( F_OFFSET(vtmp), sizeof(wilson_vector),
+        tag1=start_gather_site( F_OFFSET(vtmp), sizeof(wilson_vector),
             OPP_DIR(k), EVENANDODD, gen_pt[1] );
 	wait_gather(tag0);
 	wait_gather(tag1);
@@ -1491,7 +1491,7 @@ void mult_by_field_strength( int dir1, int dir2,
 void check_invert( field_offset src, field_offset dest ){
     register int i,j,k,flag;
     register site *s;
-    dslash_w( src, F_OFFSET(mp), PLUS, EVENANDODD);
+    dslash_w_site( src, F_OFFSET(mp), PLUS, EVENANDODD);
     FORALLSITES(i,s){
 	scalar_mult_add_wvec( (wilson_vector *)F_PT(s,src),
 	    &(s->mp), -kappa, &(s->mp) );

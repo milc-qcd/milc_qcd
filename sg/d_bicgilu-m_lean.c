@@ -1,6 +1,7 @@
 /******* d_bicgilu-m_w.c - BiCGstab-M-ILU for  Wilson fermions ****/
 /* MIMD version 4 */
 /* BJ 01/16/97    */
+/* See paper in Edinbugh Lattice Proceedings: hep-lat/9708029 */
 
 /* Memory requirements:
    7 + N_kappa * 1.5 wilson_vectors
@@ -173,11 +174,11 @@ int k_sol;          /* index of the main system */
 
       /* calculate ms = MPRE * ss[k_sol], beta = deltan/<y, ms> */
       if (pari == EVEN) {
-	dslash_w(ss[k_sol], tmp1, PLUS, ODD);
-	dslash_w(tmp1, ms, PLUS, EVEN);
+	dslash_w_site(ss[k_sol], tmp1, PLUS, ODD);
+	dslash_w_site(tmp1, ms, PLUS, EVEN);
       } else {
-	dslash_w(ss[k_sol], tmp1, PLUS, EVEN);
-	dslash_w(tmp1, ms, PLUS, ODD);
+	dslash_w_site(ss[k_sol], tmp1, PLUS, EVEN);
+	dslash_w_site(tmp1, ms, PLUS, ODD);
       }	
       z1 = zzero;
       FORSOMEPARITY(i, s, pari) {
@@ -218,11 +219,11 @@ int k_sol;          /* index of the main system */
       /* mw = MPRE * w, chi = <mw, w>/|mw|^2 */
 
       if (pari == EVEN) {
-	dslash_w(w, mw, PLUS, ODD);
-	dslash_w(mw, mw, PLUS, EVEN);
+	dslash_w_site(w, mw, PLUS, ODD);
+	dslash_w_site(mw, mw, PLUS, EVEN);
       } else {
-	dslash_w(w, mw, PLUS, EVEN);
-	dslash_w(mw, mw, PLUS, ODD);
+	dslash_w_site(w, mw, PLUS, EVEN);
+	dslash_w_site(mw, mw, PLUS, ODD);
       }
 
       z1 = zzero;
@@ -435,7 +436,7 @@ int sourcekind;     /* EVEN = source only on even sites, ODD only on odd,
 
   for (k=0;k < num_kappa;k++)
     {
-      dslash_w(dest[k], mem[0], PLUS, EVENANDODD);
+      dslash_w_site(dest[k], mem[0], PLUS, EVENANDODD);
       FORALLSITES(i,s) 
 	scalar_mult_add_wvec(W_PT(s,dest[k]), W_PT(s,mem[0]), Kappa[k], 
 			     W_PT(s,dest[k]));
@@ -453,7 +454,7 @@ int sourcekind;     /* EVEN = source only on even sites, ODD only on odd,
   
   for (k = 0;k < num_kappa;k++)
     {
-      dslash_w(dest[k], mem[0], PLUS, EVENANDODD);
+      dslash_w_site(dest[k], mem[0], PLUS, EVENANDODD);
       d1 = 0.0;
       FORALLSITES(i,s) {
 	scalar_mult_add_wvec(W_PT(s,dest[k]), W_PT(s,mem[0]), -Kappa[k],

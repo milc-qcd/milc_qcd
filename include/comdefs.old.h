@@ -93,7 +93,7 @@ void neighbor_coords(
  int dir,	              /* direction (eg XUP) */
  int *x2p, int *y2p, int *z2p, int *t2p);
                              /* pointers to coordinates of neighbor */
-msg_tag * start_gather(
+msg_tag * start_gather_site(
 /* arguments */
  field_offset field,	/* which field? Some member of structure "site" */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -103,7 +103,7 @@ msg_tag * start_gather(
 			   one of EVEN, ODD or EVENANDODD. */
  char ** dest);		/* one of the vectors of pointers */
 
-void restart_gather(
+void restart_gather_site(
 /* arguments */
  field_offset field,	/* which field? Some member of structure "site" */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -112,9 +112,9 @@ void restart_gather(
  int parity,		/* parity of sites whose neighbors we gather.
 			   one of EVEN, ODD or EVENANDODD. */
  char ** dest,		/* one of the vectors of pointers */
- msg_tag *mbuf);        /* previously returned by start_gather */
+ msg_tag *mbuf);        /* previously returned by start_gather_site */
 
-msg_tag * start_gather_from_temp(
+msg_tag * start_gather_field(
 /* arguments */
  void * field,		/* which field? pointer returned by malloc() */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -124,7 +124,7 @@ msg_tag * start_gather_from_temp(
 			   one of EVEN, ODD or EVENANDODD. */
  char ** dest);		/* one of the vectors of pointers */
 
-void restart_gather_from_temp(
+void restart_gather_field(
 /* arguments */
  void * field,		/* which field? pointer returned by malloc() */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -133,7 +133,7 @@ void restart_gather_from_temp(
  int parity,		/* parity of sites whose neighbors we gather.
 			   one of EVEN, ODD or EVENANDODD. */
  char ** dest,		/* one of the vectors of pointers */
- msg_tag *mbuf);        /* previously returned by start_gather */
+ msg_tag *mbuf);        /* previously returned by start_gather_field */
 
 void wait_gather(msg_tag *mbuf);
 void cleanup_gather(msg_tag *mbuf);

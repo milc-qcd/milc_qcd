@@ -84,15 +84,15 @@ void w_source_h(field_offset src,wilson_quark_source *wqs);
 void free_source_template();
 
 void bj_to_weyl( wilson_vector *src, wilson_vector *dest);
-void dslash_w(field_offset src,field_offset dest,
+void dslash_w_site(field_offset src,field_offset dest,
 	    int isign,int parity);
-void dslash_w_special(field_offset src,field_offset dest,
+void dslash_w_site_special(field_offset src,field_offset dest,
 		    int isign,int parity,msg_tag **tag,int is_started);
-void dslash_w_on_temp( wilson_vector *src, wilson_vector *dest, 
+void dslash_w_field( wilson_vector *src, wilson_vector *dest, 
 		     int isign, int parity);
-void dslash_w_on_temp_special(wilson_vector *src, wilson_vector *dest,
+void dslash_w_field_special(wilson_vector *src, wilson_vector *dest,
 			    int isign,int parity,msg_tag **tag,int is_started);
-void dslash3( field_offset src, field_offset dest, int isign, int parity);
+void dslash_w_3D( field_offset src, field_offset dest, int isign, int parity);
 
 void cleanup_tmp_links();
 void meson_cont(field_offset src1,field_offset src2,

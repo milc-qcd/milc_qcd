@@ -47,7 +47,7 @@ typedef struct {
  	wilson_vector mp;	/* another CG vector */
 	wilson_vector tmp;	/* another temporary CG vector */
 	wilson_vector tmpb;	/* auxiliary f_mn, etc. */
-	/* wilson half vector (temporary used in dslash_w) */
+	/* wilson half vector (temporary used in dslash_w_site) */
 	half_wilson_vector htmp[2];
 
 	/* storage for one full quark_propagator, for forward propagators */

@@ -153,7 +153,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   }
   
   mult_ldu_on_temp(r, my_mp, ODD);
-  dslash_w_on_temp_special(my_mp, my_mp, PLUS, EVEN, tage, is_startede);
+  dslash_w_field_special(my_mp, my_mp, PLUS, EVEN, tage, is_startede);
   is_startede = 1;
   
   /* Normalization  */
@@ -197,10 +197,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     /** if(this_node==0)    printf("dest_0  !=0\n"); **/
     /* we use my_mp temporarily to construct r */
     mult_ldu_on_temp(t_dest, tmp, EVEN);
-    dslash_w_on_temp_special(t_dest, my_mp, PLUS, ODD, tago, is_startedo);
+    dslash_w_field_special(t_dest, my_mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     mult_ldu_on_temp(my_mp, tmp, ODD);
-    dslash_w_on_temp_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
+    dslash_w_field_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     FOREVENSITESDOMAIN(i,s) {
       scalar_mult_add_wvec( &(tmp[i]), &(my_mp[i]), MKsq, &(my_mp[i]) );
@@ -225,10 +225,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     
     /*   my_mp = M(u)*p */
     mult_ldu_on_temp(p, tmp, EVEN);
-    dslash_w_on_temp_special(p, my_mp, PLUS, ODD, tago, is_startedo);
+    dslash_w_field_special(p, my_mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     mult_ldu_on_temp(my_mp, tmp, ODD);
-    dslash_w_on_temp_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
+    dslash_w_field_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     
     /* rvv = <rv|my_mp> */
@@ -249,10 +249,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     
     /* ttt = M(u)*sss */
     mult_ldu_on_temp(sss, tmp, EVEN);
-    dslash_w_on_temp_special(sss, sss, PLUS, ODD, tago, is_startedo);
+    dslash_w_field_special(sss, sss, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     mult_ldu_on_temp(sss, tmp, ODD);
-    dslash_w_on_temp_special(tmp, ttt, PLUS, EVEN, tage, is_startede);
+    dslash_w_field_special(tmp, ttt, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     
     /* tdots = <ttt|sss>; tsq=|ttt|^2 */
@@ -322,7 +322,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     } **/
   
   /* dest = R^(-1)*dest  */
-  dslash_w_on_temp_special(t_dest, my_mp, PLUS, ODD, tago, is_startedo);
+  dslash_w_field_special(t_dest, my_mp, PLUS, ODD, tago, is_startedo);
   is_startedo = 1;
   FORODDSITESDOMAIN(i,s) {
     scalar_mult_add_wvec( &(t_dest[i]), &(my_mp[i]), Kappa, &(my_mp[i]) );

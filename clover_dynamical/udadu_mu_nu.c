@@ -39,11 +39,11 @@ su3_matrix tmpmat;			/* for middle steps */
 
 /**********  First work on upper leaf  **********/
     /* get link[nu] from direction +mu */
-    tag[0] = start_gather( F_OFFSET(link[nu]), sizeof(su3_matrix),
+    tag[0] = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix),
         mu, EVENANDODD, gen_pt[0] );
 
     /* get link[mu] from direction +nu */
-    tag[1] = start_gather( F_OFFSET(link[mu]), sizeof(su3_matrix),
+    tag[1] = start_gather_site( F_OFFSET(link[mu]), sizeof(su3_matrix),
         nu, EVENANDODD, gen_pt[1] );
 
  /*****  Upper leaf - same parity *****/
@@ -95,9 +95,9 @@ su3_matrix tmpmat;			/* for middle steps */
  /***** upper leaf - different parity *****/
 
     /* get sources from +nu */
-    tag[4] = start_gather( lsrc, sizeof(wilson_vector),
+    tag[4] = start_gather_site( lsrc, sizeof(wilson_vector),
         nu, otherparity, gen_pt[4] );
-    tag[5] = start_gather( rsrc, sizeof(wilson_vector),
+    tag[5] = start_gather_site( rsrc, sizeof(wilson_vector),
         nu, otherparity, gen_pt[5] );
 
     wait_gather(tag[4]);
@@ -127,9 +127,9 @@ su3_matrix tmpmat;			/* for middle steps */
     cleanup_gather(tag[5]);
 
     /* get sources from +mu */
-    tag[4] = start_gather( lsrc, sizeof(wilson_vector),
+    tag[4] = start_gather_site( lsrc, sizeof(wilson_vector),
         mu, otherparity, gen_pt[4] );
-    tag[5] = start_gather( rsrc, sizeof(wilson_vector),
+    tag[5] = start_gather_site( rsrc, sizeof(wilson_vector),
         mu, otherparity, gen_pt[5] );
 
     wait_gather(tag[4]);
@@ -159,11 +159,11 @@ su3_matrix tmpmat;			/* for middle steps */
     cleanup_gather(tag[0]);
     cleanup_gather(tag[1]);
     /* get link[nu] from direction -nu */
-    tag[0] = start_gather( F_OFFSET(link[nu]), sizeof(su3_matrix),
+    tag[0] = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix),
         OPP_DIR(nu), EVENANDODD, gen_pt[0] );
 
     /* get link[mu] from direction -nu */
-    tag[1] = start_gather( F_OFFSET(link[mu]), sizeof(su3_matrix),
+    tag[1] = start_gather_site( F_OFFSET(link[mu]), sizeof(su3_matrix),
         OPP_DIR(nu), EVENANDODD, gen_pt[1] );
 
     /* get link[nu] from direction -nu +mu */
@@ -199,9 +199,9 @@ su3_matrix tmpmat;			/* for middle steps */
     cleanup_gather(tag[4]);
     cleanup_gather(tag[5]);
     /* get sources from -nu */
-    tag[4] = start_gather( lsrc, sizeof(wilson_vector),
+    tag[4] = start_gather_site( lsrc, sizeof(wilson_vector),
         OPP_DIR(nu), otherparity, gen_pt[4] );
-    tag[5] = start_gather( rsrc, sizeof(wilson_vector),
+    tag[5] = start_gather_site( rsrc, sizeof(wilson_vector),
         OPP_DIR(nu), otherparity, gen_pt[5] );
 
     wait_gather(tag[4]);

@@ -28,8 +28,8 @@ typedef struct {
 
 int congrad( int niter, Real rsqmin, int parity, Real *rsq );
 void copy_latvec(field_offset src, field_offset dest, int parity);
-void dslash( field_offset src, field_offset dest, int parity );
-void dslash_special( field_offset src, field_offset dest,
+void dslash_site( field_offset src, field_offset dest, int parity );
+void dslash_site_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start );
 void clear_latvec(field_offset v,int parity);
 
@@ -55,18 +55,25 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
 
 void cleanup_gathers(msg_tag *tags1[], msg_tag *tags2[]);
 void cleanup_dslash_temps();
-void dslash_fn( field_offset src, field_offset dest, int parity );
-void ddslash_fn_du0( field_offset src, field_offset dest, int parity );
-void dslash_fn_special( field_offset src, field_offset dest,
-    int parity, msg_tag **tag, int start );
-void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity );
-void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity );
-void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
-			       int parity, msg_tag **tag, int start );
 
-void dslash_eo( field_offset src, field_offset dest, int parity );
-void dslash_eo_special( field_offset src, field_offset dest,
-    int parity, msg_tag **tag, int start );
+void dslash_fn_site( field_offset src, field_offset dest, int parity );
+void dslash_fn_site_special( field_offset src, field_offset dest,
+			     int parity, msg_tag **tag, int start );
+void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity );
+
+void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity );
+void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
+			     int parity, msg_tag **tag, int start );
+void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity );
+
+void dslash_eo_site( field_offset src, field_offset dest, int parity );
+
+/* These three do not exist yet (3/05 -CD) */
+void dslash_eo_site_special( field_offset src, field_offset dest,
+			     int parity, msg_tag **tag, int start );
+void dslash_eo_field( su3_vector *src, su3_vector *dest, int parity );
+void dslash_eo_field_special( su3_vector *src, su3_vector *dest,
+			      int parity, msg_tag **tag, int start );
 
 int congrad_ks(            /* Return value is number of iterations taken */
      field_offset src,       /* type su3_vector* (preloaded source) */

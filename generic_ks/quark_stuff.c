@@ -13,7 +13,7 @@
 *
 * J.O. 3/04 Rearranged loops for optimization
 * J.O. C.D. 3/04 Copied forward links for optimization and 
-*                kept mtags open for restart_gather
+*                kept mtags open for restart_gather_site
 *                Worked with pointers where possible to avoid copying.
 * C.D. 3/05 Moved fermion force and dslash_eo to separate files.
 
@@ -41,7 +41,7 @@
                     * of the load_fatlinks subroutine */
 
     /* Specify paths in orientation in which they appear in the
-       forward part of the x component of dslash().  Rotations and
+       forward part of the x component of dslash_site().  Rotations and
        reflections will be automatically included. Be careful
        about signs of coefficients.  See long comment at bottom. */
 #include <quark_action.h>
@@ -355,7 +355,7 @@ void path_transport( field_offset src, field_offset dest, int parity,
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
-	    mtag0 = start_gather_from_temp( tmp_src, sizeof(su3_vector),
+	    mtag0 = start_gather_field( tmp_src, sizeof(su3_vector),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
 	    FORSOMEPARITY(i,s,tmp_parity){
@@ -371,7 +371,7 @@ void path_transport( field_offset src, field_offset dest, int parity,
 		mult_adj_su3_mat_vec( &(s->link[OPP_DIR(dir[j])]),
 		    &(tmp_src[i]), &(tmp_work[i]) );
 	    }
-	    mtag0 = start_gather_from_temp( tmp_work, sizeof(su3_vector),
+	    mtag0 = start_gather_field( tmp_work, sizeof(su3_vector),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
 	    FORSOMEPARITY(i,s,tmp_parity){
@@ -443,7 +443,7 @@ void path_transport_hwv( field_offset src, field_offset dest, int parity,
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
-	    mtag0 = start_gather_from_temp( tmp_src,
+	    mtag0 = start_gather_field( tmp_src,
 		sizeof(half_wilson_vector), dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
 	    FORSOMEPARITY(i,s,tmp_parity){
@@ -459,7 +459,7 @@ void path_transport_hwv( field_offset src, field_offset dest, int parity,
 		mult_adj_su3_mat_hwvec( &(s->link[OPP_DIR(dir[j])]),
 		    &(tmp_src[i]), &(tmp_work[i]) );
 	    }
-	    mtag0 = start_gather_from_temp( tmp_work,
+	    mtag0 = start_gather_field( tmp_work,
 		sizeof(half_wilson_vector), dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
 	    FORSOMEPARITY(i,s,tmp_parity){
@@ -752,8 +752,8 @@ void compute_gen_staple(field_offset staple, int mu, int nu,
   */
 
   /* Upper staple */
-  mtag0 = start_gather( link, sizeof(su3_matrix), nu, EVENANDODD, gen_pt[0] );
-  mtag1 = start_gather( F_OFFSET(link[nu]), sizeof(su3_matrix), mu, 
+  mtag0 = start_gather_site( link, sizeof(su3_matrix), nu, EVENANDODD, gen_pt[0] );
+  mtag1 = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix), mu, 
 			EVENANDODD, gen_pt[1] );
   wait_gather(mtag0);
   wait_gather(mtag1);
@@ -785,7 +785,7 @@ void compute_gen_staple(field_offset staple, int mu, int nu,
 
   /* lower staple */
   tempmat = (su3_matrix *)malloc( sites_on_node*sizeof(su3_matrix) );
-  mtag0 = start_gather( F_OFFSET(link[nu]),
+  mtag0 = start_gather_site( F_OFFSET(link[nu]),
 			sizeof(su3_matrix), mu, EVENANDODD, gen_pt[0] );
   wait_gather(mtag0);
   FORALLSITES(i,s){
@@ -793,7 +793,7 @@ void compute_gen_staple(field_offset staple, int mu, int nu,
     mult_su3_nn( &(tmat1),(su3_matrix *)gen_pt[0][i], &(tempmat[i]) );
   }
   cleanup_gather(mtag0);
-  mtag0 = start_gather_from_temp( tempmat, sizeof(su3_matrix),
+  mtag0 = start_gather_field( tempmat, sizeof(su3_matrix),
 				  OPP_DIR(nu), EVENANDODD, gen_pt[0] );
   wait_gather(mtag0);
 

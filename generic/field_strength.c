@@ -87,9 +87,9 @@ void make_field_strength(
     }
     
     /* Plaquette in +dir0 +dir1 direction */
-    mtag0 = start_gather( LINK_OFFSET(dir0), sizeof(su3_matrix),
+    mtag0 = start_gather_site( LINK_OFFSET(dir0), sizeof(su3_matrix),
 			  dir1, EVENANDODD, gen_pt[0] );
-    mtag1 = start_gather( LINK_OFFSET(dir1), sizeof(su3_matrix),
+    mtag1 = start_gather_site( LINK_OFFSET(dir1), sizeof(su3_matrix),
 			  dir0, EVENANDODD, gen_pt[1] );
     
     wait_gather(mtag0);
@@ -107,7 +107,7 @@ void make_field_strength(
     cleanup_gather(mtag1);
     
     /* Plaquette in -dir0 +dir1 direction */
-    /**mtag0 = start_gather( LINK_OFFSET(dir0), 
+    /**mtag0 = start_gather_site( LINK_OFFSET(dir0), 
        sizeof(su3_matrix), dir1, EVENANDODD, gen_pt[0] );
        wait_gather(mtag0);  Already gathered above**/
     
@@ -116,7 +116,7 @@ void make_field_strength(
 		   &LINK(dir0), &tmat1 );
       mult_su3_an( (su3_matrix *)(gen_pt[0][i]), &tmat1, &temp1[i] );
     }
-    mtag1 = start_gather_from_temp( temp1, sizeof(su3_matrix),
+    mtag1 = start_gather_field( temp1, sizeof(su3_matrix),
 				    OPP_DIR(dir0), EVENANDODD, gen_pt[1] );
     wait_gather(mtag1);
     FORALLSITES(i,s){
@@ -132,9 +132,9 @@ void make_field_strength(
     cleanup_gather(mtag1);
     
     /* Plaquette in -dir0 -dir1 direction */
-    mtag0 = start_gather( LINK_OFFSET(dir0), sizeof(su3_matrix),
+    mtag0 = start_gather_site( LINK_OFFSET(dir0), sizeof(su3_matrix),
 			  OPP_DIR(dir0), EVENANDODD, gen_pt[0] );
-    mtag1 = start_gather( LINK_OFFSET(dir1), sizeof(su3_matrix),
+    mtag1 = start_gather_site( LINK_OFFSET(dir1), sizeof(su3_matrix),
 			  OPP_DIR(dir1), EVENANDODD, gen_pt[1] );
     wait_gather(mtag0);
     wait_gather(mtag1);
@@ -144,10 +144,10 @@ void make_field_strength(
     }
     cleanup_gather(mtag0);
     cleanup_gather(mtag1);
-    mtag0 = start_gather_from_temp( temp1, sizeof(su3_matrix),
+    mtag0 = start_gather_field( temp1, sizeof(su3_matrix),
 				    OPP_DIR(dir1), EVENANDODD, gen_pt[0] );
     wait_gather(mtag0);
-    mtag1 = start_gather_from_temp( temp2, sizeof(su3_matrix),
+    mtag1 = start_gather_field( temp2, sizeof(su3_matrix),
 				    OPP_DIR(dir0), EVENANDODD, gen_pt[1] );
     wait_gather(mtag1);
     FORALLSITES(i,s){
@@ -163,7 +163,7 @@ void make_field_strength(
     cleanup_gather(mtag1);
     
     /* Plaquette in +dir0 -dir1 direction */
-    mtag1 = start_gather( LINK_OFFSET(dir1), sizeof(su3_matrix),
+    mtag1 = start_gather_site( LINK_OFFSET(dir1), sizeof(su3_matrix),
 			  dir0, EVENANDODD, gen_pt[1] );
     wait_gather(mtag1);
     FORALLSITES(i,s){
@@ -171,7 +171,7 @@ void make_field_strength(
       mult_su3_nn( &tmat1, (su3_matrix *)(gen_pt[1][i]), &temp1[i] );
     }
     cleanup_gather(mtag1);
-    mtag0 = start_gather_from_temp( temp1, sizeof(su3_matrix),
+    mtag0 = start_gather_field( temp1, sizeof(su3_matrix),
 				    OPP_DIR(dir1), EVENANDODD, gen_pt[0] );
     wait_gather(mtag0);
     FORALLSITES(i,s){

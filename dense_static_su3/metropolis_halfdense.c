@@ -327,7 +327,7 @@ void ploop_less_slice(int time,int parity){
     else {l_parity = OPP_PAR(parity);}
 
     /* gather current product from slice above */
-    tag = start_gather( F_OFFSET(ploop_t), sizeof(su3_matrix), TUP,
+    tag = start_gather_site( F_OFFSET(ploop_t), sizeof(su3_matrix), TUP,
       l_parity, gen_pt[0]);
     wait_gather(tag);
     FORSOMEPARITY( i,s,l_parity )if(s->t==c_time){
@@ -340,7 +340,7 @@ void ploop_less_slice(int time,int parity){
   } /* end loop over l_times */
 
   /* finish by bringing result to desired time slice */
-  tag = start_gather( F_OFFSET(ploop_t), sizeof(su3_matrix), TUP,
+  tag = start_gather_site( F_OFFSET(ploop_t), sizeof(su3_matrix), TUP,
     parity, gen_pt[0]);
   wait_gather(tag);
   FORSOMEPARITY( i,s,parity )if(s->t==time)

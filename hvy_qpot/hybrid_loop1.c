@@ -232,7 +232,7 @@ void hybrid_loop1(int tot_smear) {
       /* Start spatial (dir) transport of all transverse links */
       /* gen_pt[M_T_LINKS_F][i] will point to trans_links_f[i+dir] 
 	 for site i */
-      mtag[M_T_LINKS_F] = start_gather_from_temp( 
+      mtag[M_T_LINKS_F] = start_gather_field( 
 		       (void *)(trans_links_f), 
 		       NTRANS_F*sizeof(su3_matrix),
 		       dir, EVENANDODD, gen_pt[M_T_LINKS_F] );
@@ -260,12 +260,12 @@ void hybrid_loop1(int tot_smear) {
 	/* Shift the space-like segment for next r, if still needed. */
 	/* gen_pt[M_S_LINK][i] will point to s_link[i+dir] */
 	if( r==0 ){
-	  mtag[M_S_LINK] = start_gather_from_temp( 
+	  mtag[M_S_LINK] = start_gather_field( 
 			   (void *)FLUX_LINKS(0,S_LINK), sizeof(su3_matrix),
 			   dir, EVENANDODD, gen_pt[M_S_LINK] );
 	}
 	else if( r<(nxh-1) ){
-	  restart_gather_from_temp( 
+	  restart_gather_field( 
 			   (void *)FLUX_LINKS(0,S_LINK), sizeof(su3_matrix),
 			   dir, EVENANDODD, gen_pt[M_S_LINK], mtag[M_S_LINK] );
 	}
@@ -397,7 +397,7 @@ void hybrid_loop1(int tot_smear) {
 
 	/* Start gather of forward space-like segments for next t 
 	   gen_pt[M_F_LINKS_F][i] will point to flux_links_f[i+TUP] */
-	mtag[M_F_LINKS_F] = start_gather_from_temp( 
+	mtag[M_F_LINKS_F] = start_gather_field( 
 			   (void *)flux_links_f, 
 			   sizeof(su3_matrix)*NFLUX_F,
 			   TUP, EVENANDODD, gen_pt[M_F_LINKS_F] );
@@ -422,7 +422,7 @@ void hybrid_loop1(int tot_smear) {
 	  
 	  /* Start gather for next t, if still needed. */
 	  if( t<(nth-1) ){
-	    restart_gather_from_temp( 
+	    restart_gather_field( 
 		     (void *)flux_links_f, 
 		     sizeof(su3_matrix)*NFLUX_F,
 		     TUP, EVENANDODD, gen_pt[M_F_LINKS_F], 
@@ -495,7 +495,7 @@ void hybrid_loop1(int tot_smear) {
 	
 	/* Start gather of forward time-like links for next r. */
 	if( r<(nxh-1) ){
-	  restart_gather_from_temp( 
+	  restart_gather_field( 
 		   (void *)trans_links_f, 
 		   NTRANS_F*sizeof(su3_matrix),
 		   dir, EVENANDODD, gen_pt[M_T_LINKS_F], 

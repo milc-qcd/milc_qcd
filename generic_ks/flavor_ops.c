@@ -54,13 +54,13 @@ void sym_shift(int dir, field_offset src,field_offset dest)
   
   tvec = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
 
-  tag[0] = start_gather( src, sizeof(su3_vector), dir, EVENANDODD ,gen_pt[0] );
+  tag[0] = start_gather_site( src, sizeof(su3_vector), dir, EVENANDODD ,gen_pt[0] );
   FORALLSITES(i,s)
     {
       mult_adj_su3_mat_vec( &(s->link[dir]), (su3_vector *)F_PT(s,src), 
 			    &(tvec[i]) ) ;
     }
-  tag[1] = start_gather_from_temp(tvec, sizeof(su3_vector), OPP_DIR(dir), 
+  tag[1] = start_gather_field(tvec, sizeof(su3_vector), OPP_DIR(dir), 
 				  EVENANDODD ,gen_pt[1] );
   wait_gather(tag[0]);
   FORALLSITES(i,s)

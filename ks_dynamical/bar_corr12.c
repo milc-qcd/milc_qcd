@@ -272,7 +272,7 @@ field_offset dest;
   register int i,j;
   register site *s;
 
-  tag = start_gather( F_OFFSET(avg[0]), NBPAVRG*sizeof(complex), dir,
+  tag = start_gather_site( F_OFFSET(avg[0]), NBPAVRG*sizeof(complex), dir,
 		     EVENANDODD, gen_pt[0]);
   wait_gather(tag);
   FORALLSITES(i,s)
@@ -383,7 +383,7 @@ void line_avg(source,dest,temp1)
   
   /* First add "source" value on every even site to value above it */
   
-  tag=start_gather( source, sizeof(complex),
+  tag=start_gather_site( source, sizeof(complex),
 		   TUP, EVEN, gen_pt[0] );
   wait_gather(tag);
   FOREVENSITES(i,st)
@@ -420,7 +420,7 @@ void line_avg(source,dest,temp1)
 
   /* Move result in temp1 up to time slice 1*/
   
-  tag = start_gather( temp1 , sizeof(complex), 
+  tag = start_gather_site( temp1 , sizeof(complex), 
 		     sl_swap_dir, ODD, gen_pt[0]);
   wait_gather(tag);
 
@@ -503,7 +503,7 @@ int sngl_trace(bb0s11)
       /* Multiply by -Madjoint */
       /* Notice that this product includes an overall minus sign */
       /* which will be compensated by propmat2 */
-      dslash( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
+      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
       scalar_mult_latvec( F_OFFSET(xxx), -mass_x2, F_OFFSET(ttt), EVEN);
       
       /* Result goes into propmat */
@@ -538,7 +538,7 @@ int sngl_trace(bb0s11)
       /* Multiply by -Madjoint */
       /* Again this product includes an overall minus sign which 
 	 will cancel the sign in propmat */
-      dslash( F_OFFSET(xxx), F_OFFSET(ttt), EVEN);
+      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVEN);
       scalar_mult_latvec( F_OFFSET(xxx), -mass_x2, F_OFFSET(ttt), ODD);
       
       /* This time result goes into propmat2 */
@@ -560,7 +560,7 @@ int sngl_trace(bb0s11)
 	}
     }
       
-  tag = start_gather( F_OFFSET(tempvec[0]), 3*sizeof(su3_vector), 
+  tag = start_gather_site( F_OFFSET(tempvec[0]), 3*sizeof(su3_vector), 
 		     TDOWN, EVENANDODD, gen_pt[0] );
   wait_gather(tag);
 
@@ -600,7 +600,7 @@ int sngl_trace(bb0s11)
     }
       
   
-  tag = start_gather( F_OFFSET(tempvec[0]), 3*sizeof(su3_vector), 
+  tag = start_gather_site( F_OFFSET(tempvec[0]), 3*sizeof(su3_vector), 
 		     TDOWN, EVENANDODD, gen_pt[0] );
   wait_gather(tag);
   
@@ -700,7 +700,7 @@ int bar_corr()
 
   /* Move result in ploop up to time slice t0p1*/
   
-  tag = start_gather( F_OFFSET(ploop), sizeof(complex), 
+  tag = start_gather_site( F_OFFSET(ploop), sizeof(complex), 
 		     sl_swap_dir, ODD, gen_pt[0]);
   wait_gather(tag);
 
@@ -720,7 +720,7 @@ int bar_corr()
 
   /* Move result in ploop up to time slice t0p1*/
   
-  tag = start_gather( F_OFFSET(ploop_fuzz), sizeof(complex), 
+  tag = start_gather_site( F_OFFSET(ploop_fuzz), sizeof(complex), 
 		     sl_swap_dir, ODD, gen_pt[0]);
   
   wait_gather(tag);
@@ -814,7 +814,7 @@ int bar_corr()
       /* Compute quark propagator from random source with LU preconditioning */
       /* Preconditioning step */
       /* -phi_e' <- -2ma phi_e + Dslash_eo phi_o */
-      dslash( F_OFFSET(phi), F_OFFSET(ttt), EVEN);
+      dslash_site( F_OFFSET(phi), F_OFFSET(ttt), EVEN);
       scalar_mult_add_latvec( F_OFFSET(ttt), F_OFFSET(phi), 
 			     -mass_x2, F_OFFSET(phi), EVEN);
       /* Invert on even sites only */
@@ -826,7 +826,7 @@ int bar_corr()
       /* Even sites are now OK, except for a minus sign */
       /* Multiply by 1/2ma L for odd sites */
       /* -x_o <- [Dslash_eo (-x_e) + phi_o]/2ma */
-      dslash( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
+      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
       FORODDSITES(i,st){
 	add_su3_vector( &(st->ttt), &(st->phi), &(st->xxx));
 	scalar_mult_su3_vector( &(st->xxx), -1./(mass_x2), &(st->xxx));

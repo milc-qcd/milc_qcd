@@ -16,7 +16,7 @@ register site *s;
 su3_matrix tmat;
 msg_tag *mtag[4];
 
-    mtag[TUP] = start_gather( F_OFFSET(link[TUP]), sizeof(su3_matrix),
+    mtag[TUP] = start_gather_site( F_OFFSET(link[TUP]), sizeof(su3_matrix),
 	TDOWN, EVENANDODD, gen_pt[TUP] );
 
     /* Put gauge transformation into staple; it is unity for t=0 */
@@ -46,19 +46,19 @@ msg_tag *mtag[4];
 	}
 
 	if(t<(nt-1)){
-	    restart_gather( F_OFFSET(link[TUP]), sizeof(su3_matrix),
+	    restart_gather_site( F_OFFSET(link[TUP]), sizeof(su3_matrix),
 		TDOWN, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 	}
 	else{
 	    cleanup_gather( mtag[TUP]);
-	    mtag[TUP] = start_gather( F_OFFSET(link[TUP]),
+	    mtag[TUP] = start_gather_site( F_OFFSET(link[TUP]),
 		sizeof(su3_matrix), TUP, EVENANDODD, gen_pt[TUP] );
 	}
     }
 
     /* Now do the gauge transformation of the space-like links */
     for(dir=XUP;dir<=ZUP;dir++){
-	mtag[dir] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[dir] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    dir, EVENANDODD, gen_pt[dir] );
     }
 
@@ -90,7 +90,7 @@ msg_tag *mtag[4];
              su3mat_copy( (su3_matrix *)(gen_pt[TUP][i]),&(s->link[TUP]));
 	}
 
-	if(t>0) restart_gather( F_OFFSET(link[TUP]), sizeof(su3_matrix),
+	if(t>0) restart_gather_site( F_OFFSET(link[TUP]), sizeof(su3_matrix),
 		    TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
     }
 

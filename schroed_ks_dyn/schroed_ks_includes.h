@@ -37,8 +37,8 @@ void f_measure(Real *r_psi_bar_psi_even, Real *r_psi_bar_psi_odd,
 	       Real *r_ferm_action);
 
 int congrad(int niter, Real rsqmin, int parity, Real *rsq );
-void dslash(field_offset src, field_offset dest, int parity );
-void dslash_special(field_offset src, field_offset dest,
+void dslash_site(field_offset src, field_offset dest, int parity );
+void dslash_site_special(field_offset src, field_offset dest,
 		    int parity, msg_tag **tag, int start );
 
 void copy_latvec(field_offset src, field_offset dest, int parity);

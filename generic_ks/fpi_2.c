@@ -13,8 +13,8 @@
     Coulomb gauge should be fixed before this routine for wall source/sink
 
    Kogut-Susskind fermions  -- this version for "fat plus Naik"
-   or general "even plus odd" quark actions.  Assumes "dslash" has
-   been defined to be the appropriate "dslash_fn" or "dslash_eo"
+   or general "even plus odd" quark actions.  Assumes "dslash_site" has
+   been defined to be the appropriate "dslash_fn_site" or "dslash_eo_site"
 
   11/4/01 revisions: eliminate "single_point" source - it doesn't work as
     well as random wall.
@@ -32,14 +32,7 @@ enum prop_name {
 #define NSOURCEVECS 3
 
 #include "generic_ks_includes.h"
-#ifdef FN
-#define dslash dslash_fn
-#define dslash_on_temp dslash_fn_on_temp
-#endif
-#ifdef EO
-#define dslash dslash_eo
-#define dslash_on_temp dslash_eo_on_temp /* actually isn't written yet (4/01) */
-#endif
+#include "../include/dslash_ks_redefine.h"
 
 int test_converge(int t_source);
 
@@ -111,7 +104,7 @@ int fpi_2( Real *masses, int nmasses, Real tol){
 	   niter, rsqprop, EVENANDODD, &finalrsq);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
-	    dslash_on_temp( quark_props[j], temp_prop, EVENANDODD );
+	    dslash_field( quark_props[j], temp_prop, EVENANDODD );
 	    FORALLSITES(i,s){
 		scalar_mult_su3_vector( &(quark_props[j][i]), 2.0*masses[j], &(quark_props[j][i]) );
 		scalar_mult_add_su3_vector( &(quark_props[j][i]), &(temp_prop[i]), -1.0,
@@ -160,7 +153,7 @@ int fpi_2( Real *masses, int nmasses, Real tol){
 	   niter, rsqprop, EVENANDODD, &finalrsq);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
-	    dslash_on_temp( quark_props[j], temp_prop, EVENANDODD );
+	    dslash_field( quark_props[j], temp_prop, EVENANDODD );
 	    FORALLSITES(i,s){
 		scalar_mult_su3_vector( &(quark_props[j][i]), 2.0*masses[j], &(quark_props[j][i]) );
 		scalar_mult_add_su3_vector( &(quark_props[j][i]), &(temp_prop[i]), -1.0,

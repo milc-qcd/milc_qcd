@@ -192,7 +192,7 @@ void kappa_dslash(field_offset phi, field_offset temp, Real kappa, int parity)
   register int i;
   register site *s;
 
-  dslash_w(phi, temp, PLUS, parity);
+  dslash_w_site(phi, temp, PLUS, parity);
   FORSOMEPARITY(i, s, parity)
   {
     scalar_mult_wvec((wilson_vector *) F_PT(s, temp),

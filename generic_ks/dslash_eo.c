@@ -1,22 +1,22 @@
 /******* dslash_eo.c - dslash for improved KS fermions ****/
 /* MIMD version 6 */
-/* Kogut-Susskind fermions -- improved.  Stupid dslash routine that
-   follows all the paths.  Should optimize by precomputing sums of
-   paths to all the displacements Use dslash_fn for actions that
-   involve only +X and +X+X+X couplings.
+/* Kogut-Susskind fermions -- improved.  
+
+   D_slash routine - sets dest. on each site equal to sum of
+   sources parallel transported to site, with minus sign for transport
+   from negative directions.
+
+   Stupid dslash routine that follows all the paths.  Should optimize
+   by precomputing sums of paths to all the displacements.
+
+   Use dslash_fn for actions that involve only +X and +X+X+X
+   couplings.
 
 /* C. DeTar 3/05 Code split from quark_stuff?.c */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 
-/* Stupid dslash routine that follows all the paths.
-  Should optimize by precomputing sums of paths to all the displacements
-  Use dslash_fn for actions that involve only +X and +X+X+X couplings.
-*/
-/* D_slash routine - sets dest. on each site equal to sum of
-   sources parallel transported to site, with minus sign for transport
-   from negative directions.  */
-void dslash_eo( field_offset src, field_offset dest, int parity ) {
+void dslash_eo_site( field_offset src, field_offset dest, int parity ) {
   register int i;
   register site *s;
   register int ipath,otherparity;
@@ -44,5 +44,5 @@ void dslash_eo( field_offset src, field_offset dest, int parity ) {
 		   &(s->tempvec[0]), x, (su3_vector *)F_PT(s,dest) );
     }
   }   /* ipath */
-} /* dslash_eo */
+} /* dslash_eo_site */
 

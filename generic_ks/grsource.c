@@ -44,7 +44,7 @@ register site *s;
 #endif
     }
     clear_latvec( F_OFFSET(xxx), EVENANDODD );
-    dslash( F_OFFSET(g_rand), F_OFFSET(phi), parity);
+    dslash_site( F_OFFSET(g_rand), F_OFFSET(phi), parity);
     scalar_mult_latvec( F_OFFSET(phi), -1.0, F_OFFSET(phi), parity );
     scalar_mult_add_latvec( F_OFFSET(phi), F_OFFSET(g_rand), 2.0*mass,
 	F_OFFSET(phi), parity );
@@ -57,7 +57,7 @@ register site *s;
 void checkmul() {
 register int i,j;
 register site *s;
-    dslash( F_OFFSET(xxx), F_OFFSET(ttt), EVENANDODD);
+    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVENANDODD);
     scalar_mult_add_latvec( F_OFFSET(ttt), F_OFFSET(xxx), 2.0*mass,
 	F_OFFSET(ttt), EVENANDODD );
     FORALLSITESDOMAIN(i,s){

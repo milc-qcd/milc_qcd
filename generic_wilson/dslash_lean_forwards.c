@@ -8,7 +8,7 @@
 */
 
 /*
-	dslash_w(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
+	dslash_w_site(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
 Compute SUM_dirs ( 
     ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
   + ( 1 - isign*gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
@@ -22,7 +22,7 @@ Compute SUM_dirs (
 #define LOOPEND
 #include "../include/loopend.h"
 
-void dslash_w(field_offset src,field_offset dest,int isign,int parity)
+void dslash_w_site(field_offset src,field_offset dest,int isign,int parity)
 {
 half_wilson_vector hwv;
 
@@ -47,7 +47,7 @@ msg_tag *tag[2];
 	wp_shrink( (wilson_vector *)F_PT(s,src), 
 		   &(s->htmp[0]), dir, isign);
       } END_LOOP
-	tag[0]=start_gather( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
+	tag[0]=start_gather_site( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
 	    dir, parity, gen_pt[0] );
 
         /* Take Wilson projection for src displaced in down direction,
@@ -62,7 +62,7 @@ msg_tag *tag[2];
 	  mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv, &(s->htmp[1]));
         } END_LOOP
 
-	tag[1]=start_gather(F_OFFSET(htmp[1]), 
+	tag[1]=start_gather_site(F_OFFSET(htmp[1]), 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[1] );
 

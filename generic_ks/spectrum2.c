@@ -18,18 +18,12 @@
 *
 */
 /* Kogut-Susskind fermions  -- this version for "fat plus Naik"
-   or general "even plus odd" quark actions.  Assumes "dslash" has
-   been defined to be the appropriate "dslash_fn" or "dslash_eo"
+   or general "even plus odd" quark actions.  Assumes "dslash_site" has
+   been defined to be the appropriate "dslash_fn_site" or "dslash_eo_site"
 */
 
 #include "generic_ks_includes.h"
-
-#ifdef FN
-#define dslash dslash_fn
-#endif
-#ifdef EO
-#define dslash dslash_eo
-#endif
+#include "../include/dslash_ks_redefine.h"
 
 int spectrum2( Real vmass, field_offset temp1, field_offset temp2 ){ 
   /* return the C.G. iteration number */
@@ -77,7 +71,7 @@ int spectrum2( Real vmass, field_offset temp1, field_offset temp2 ){
 		cgn += ks_congrad( temp1, temp2, vmass,
 		    niter,rsqprop,EVEN,&finalrsq);
 	          /* Multiply by -Madjoint */
-	          dslash( temp2, F_OFFSET(ttt), ODD);
+	          dslash_site( temp2, F_OFFSET(ttt), ODD);
 	          scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt),
 			EVEN);
 /**copy_latvec( temp1, F_OFFSET(g_rand), EVENANDODD );
@@ -88,7 +82,7 @@ checkmul();**/
 		cgn += ks_congrad( temp1, temp2, vmass,
 		    niter,rsqprop,ODD,&finalrsq);
 	          /* Multiply by -Madjoint */
-	          dslash( temp2, F_OFFSET(ttt), EVEN);
+	          dslash_site( temp2, F_OFFSET(ttt), EVEN);
 	          scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt),
 			ODD);
 	      }

@@ -197,7 +197,7 @@ cleanup_dslash_temps(void)
 }
 
 void
-dslash_fn(field_offset src, field_offset dest, int parity)
+dslash_fn_site(field_offset src, field_offset dest, int parity)
 {
   QDP_Subset subset;
   //printf("dslash_fn %i\n", parity);
@@ -213,13 +213,13 @@ dslash_fn(field_offset src, field_offset dest, int parity)
   set_field_from_V(dest, qdest);
 }
 
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_site() when
    possible. Last argument is an array of message tags, to be set
    if this is the first use, otherwise reused. If start=1, use
-   start_gather, otherwise use restart_gather.
+   start_gather_site, otherwise use restart_gather_site.
    The calling program must clean up the gathers! */
 void
-dslash_fn_special(field_offset src, field_offset dest,
+dslash_fn_site_special(field_offset src, field_offset dest,
 		  int parity, msg_tag **tag, int start)
 {
   QDP_Subset subset;
@@ -239,7 +239,7 @@ dslash_fn_special(field_offset src, field_offset dest,
 }
 
 void
-dslash_fn_on_temp(su3_vector *src, su3_vector *dest, int parity)
+dslash_fn_field(su3_vector *src, su3_vector *dest, int parity)
 {
   QDP_Subset subset;
   //printf("dslash_fn_t %i\n", parity);
@@ -255,13 +255,13 @@ dslash_fn_on_temp(su3_vector *src, su3_vector *dest, int parity)
   set_temp_from_V(dest, qdest);
 }
 
-/* Special dslash for use by congrad.  Uses restart_gather() when
+/* Special dslash for use by congrad.  Uses restart_gather_field() when
    possible. Next to last argument is an array of message tags, to be set
    if this is the first use, otherwise reused. If start=1,use
-   start_gather, otherwise use restart_gather.
+   start_gather_field, otherwise use restart_gather_field.
    The calling program must clean up the gathers and temps! */
 void
-dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
+dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			  int parity, msg_tag **tag, int start)
 {
   QDP_Subset qparity;

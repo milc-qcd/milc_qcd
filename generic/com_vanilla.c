@@ -10,7 +10,7 @@
    1/28/00 combined with Schroedinger functional and
            32 sublattice versions - UMH
    9/2/97  Revised to allow gathers from temporary fields.  neighbor[]
-           is now list of indices, add start/restart_gather_from_temp D.T.
+           is now list of indices, add start/restart_gather_field D.T.
    8/05/97 ANSI prototyping for all routines C.D.
    10/5/96 Removed parallel I/O wrappers. Use io_ansi.c now.
    8/30/96 Added restore/save_checkpoint for compatibility
@@ -80,12 +80,12 @@
                                   in single step.
    declare_accumulate_gather_from_temp()  does declare_gather_from_temp() and
                                             accumulate_gather() in single step.
-   start_gather()        older function which does declare/prepare/do_gather
+   start_gather_site()        older function which does declare/prepare/do_gather
                            in a single step
-   start_gather_from_temp()  older function which does
+   start_gather_field()  older function which does
                                declare/prepare/do_gather_from_temp
-   restart_gather()      older function which is obsoleted by do_gather()
-   restart_gather_from_temp() older function which is obsoleted by do_gather() 
+   restart_gather_site()      older function which is obsoleted by do_gather()
+   restart_gather_field() older function which is obsoleted by do_gather() 
    start_general_gather()  starts asynchronous sends and receives required
                              to gather fields at arbitrary displacement.
    start_general_gather_from_temp() starts asynchronous sends and receives 
@@ -809,7 +809,7 @@ prepare_gather(msg_tag *mtag)
 **  actually execute the gather
 */
 void
-do_gather(msg_tag *mtag)  /* previously returned by start_gather */
+do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
 {
 }
 
@@ -855,7 +855,7 @@ declare_gather(
 **  old style gather routine which declares and starts in one call
 */
 msg_tag *
-start_gather(
+start_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
@@ -880,7 +880,7 @@ start_gather(
 **  instead
 */
 void
-restart_gather(
+restart_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
@@ -888,7 +888,7 @@ restart_gather(
   int parity,		/* parity of sites whose neighbors we gather.
 			   one of EVEN, ODD or EVENANDODD. */
   char ** dest,		/* one of the vectors of pointers */
-  msg_tag *mtag)        /* previously returned by start_gather */
+  msg_tag *mtag)        /* previously returned by start_gather_site */
 {
   do_gather(mtag);
 }
@@ -917,7 +917,7 @@ declare_gather_from_temp(
 **  old style gather routine which declares and starts in one call
 */
 msg_tag *
-start_gather_from_temp(
+start_gather_field(
   void * field,		/* which field? Pointer returned by malloc() */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
@@ -941,7 +941,7 @@ start_gather_from_temp(
 **  instead
 */
 void
-restart_gather_from_temp(
+restart_gather_field(
   void *field,		/* which field? Pointer returned by malloc() */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
@@ -949,7 +949,7 @@ restart_gather_from_temp(
   int parity,		/* parity of sites whose neighbors we gather.
 			   one of EVEN, ODD or EVENANDODD. */
   char ** dest,		/* one of the vectors of pointers */
-  msg_tag *mtag)          /* previously returned by start_gather */
+  msg_tag *mtag)          /* previously returned by start_gather_field */
 {
   do_gather(mtag);
 }

@@ -424,7 +424,7 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
       
       FORALLUPDIR(dir)
 	{
-	  mtag[dir] = start_gather( F_OFFSET(link[dir]), sizeof(su3_matrix),
+	  mtag[dir] = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix),
 			   OPP_DIR(dir), parity, gen_pt[dir] );
 	}
       
@@ -485,10 +485,10 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 
 	  /* Gather diffmat onto sites of opposite parity */
 	  if(diffmat_offset >= 0)
-	    mtag[dir] = start_gather( diffmat_offset, sizeof(su3_matrix),
+	    mtag[dir] = start_gather_site( diffmat_offset, sizeof(su3_matrix),
 				      dir, OPP_PAR(parity), gen_pt[dir] );
 	  else
-	    mtag[dir] = start_gather_from_temp( diffmatp, sizeof(su3_matrix),
+	    mtag[dir] = start_gather_field( diffmatp, sizeof(su3_matrix),
 				      dir, OPP_PAR(parity), gen_pt[dir] );
 
 	  wait_gather(mtag[dir]);

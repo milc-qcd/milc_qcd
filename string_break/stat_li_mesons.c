@@ -26,7 +26,7 @@ msg_tag *tag0;
     for(j=0; j<num_src; j++){
 
 	/* Start gather from next time slice */
-	tag0 = start_gather( F_OFFSET(qprop[j]), sizeof(su3_vector),
+	tag0 = start_gather_site( F_OFFSET(qprop[j]), sizeof(su3_vector),
 	    TUP, EVENANDODD, gen_pt[0]);
 
 	for(t=0; t<nth; t++)
@@ -50,11 +50,11 @@ msg_tag *tag0;
 
 	    if(t==1){
 		cleanup_gather(tag0);
-		tag0 = start_gather( F_OFFSET(ttt), sizeof(su3_vector),
+		tag0 = start_gather_site( F_OFFSET(ttt), sizeof(su3_vector),
 		    TUP, EVENANDODD, gen_pt[0]);
 	    }
 	    else if(t<(nth-1)){
-		restart_gather( F_OFFSET(ttt), sizeof(su3_vector),
+		restart_gather_site( F_OFFSET(ttt), sizeof(su3_vector),
 		    TUP, EVENANDODD, gen_pt[0], tag0);
 	    }
 	    else

@@ -80,7 +80,7 @@ int disp[4];    /* displacement vector for general gather */
 
 	/* First construct the "diagonal" link in (2*dir1,dir2) direction */
 
-	mtag[dir1] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[dir1] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[dir1] );
 
 	/* Start gather of dir2-link from "2*dir1" */
@@ -102,7 +102,7 @@ int disp[4];    /* displacement vector for general gather */
 	cleanup_gather( mtag[dir1]);
 
 	/* Gather the double links from dir2 direction */
-	mtag[dir2] = start_gather( F_OFFSET(s_link), sizeof(su3_matrix),
+	mtag[dir2] = start_gather_site( F_OFFSET(s_link), sizeof(su3_matrix),
 	    dir2, EVENANDODD, gen_pt[dir2] );
 
 	/* Make first corner */
@@ -164,7 +164,7 @@ int disp[4];    /* displacement vector for general gather */
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+	    mtag[TUP] = start_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 		TUP, EVENANDODD, gen_pt[TUP] );
 
 
@@ -220,7 +220,7 @@ int disp[4];    /* displacement vector for general gather */
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+		    restart_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 			TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
 		else{
@@ -271,7 +271,7 @@ int disp[4];    /* displacement vector for general gather */
 
 	/* First construct the "diagonal" link in the (2*dir1,-dir2) dir */
 
-	mtag[dir1] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[dir1] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[dir1] );
 
 	/* Gather dir2-link from across the diagonal */
@@ -297,7 +297,7 @@ int disp[4];    /* displacement vector for general gather */
 	FORALLSITES(i,s){
 	    mult_su3_an( &(s->link[dir2]), &(s->s_link), &(s->staple));
 	}
-	mtag[dir2] = start_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	mtag[dir2] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[dir2] );
 
 	/* Make second corner */
@@ -352,7 +352,7 @@ int disp[4];    /* displacement vector for general gather */
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+	    mtag[TUP] = start_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 		TUP, EVENANDODD, gen_pt[TUP] );
 
 
@@ -407,7 +407,7 @@ int disp[4];    /* displacement vector for general gather */
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+		    restart_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 			TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
 		else{
@@ -467,9 +467,9 @@ int disp[4];    /* displacement vector for general gather */
 
 	/* First construct the "diagonal" link in (2*dir1,2*dir2) direction */
 	/* First construct the "double links" */
-	mtag[dir1] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[dir1] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[dir1] );
-	mtag[dir2] = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	mtag[dir2] = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    dir2, EVENANDODD, gen_pt[dir2] );
 
 	wait_gather( mtag[dir1]);
@@ -562,7 +562,7 @@ int disp[4];    /* displacement vector for general gather */
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+	    mtag[TUP] = start_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 		TUP, EVENANDODD, gen_pt[TUP] );
 
 
@@ -617,7 +617,7 @@ int disp[4];    /* displacement vector for general gather */
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+		    restart_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 			TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
 		else{
@@ -667,9 +667,9 @@ int disp[4];    /* displacement vector for general gather */
 
 	/* First construct the "diagonal" link in the (2*dir1,-2*dir2) dir */
 	/* First construct the "double links" */
-	mtag[dir2] = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	mtag[dir2] = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    dir2, EVENANDODD, gen_pt[dir2] );
-	mtag[dir1] = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	mtag[dir1] = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 	    dir1, EVENANDODD, gen_pt[dir1] );
 
 	wait_gather( mtag[dir2]);
@@ -765,7 +765,7 @@ int disp[4];    /* displacement vector for general gather */
 	    }
 
 	    /* Start gather of forward space-like segments */
-	    mtag[TUP] = start_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+	    mtag[TUP] = start_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 		TUP, EVENANDODD, gen_pt[TUP] );
 
 
@@ -819,7 +819,7 @@ int disp[4];    /* displacement vector for general gather */
 
 		/* Start gather for next t, if still needed. */
 		if( t<(nth-1) ){
-		    restart_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+		    restart_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 			TUP, EVENANDODD, gen_pt[TUP], mtag[TUP] );
 		}
 		else{

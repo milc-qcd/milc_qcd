@@ -253,11 +253,11 @@ int disp[4];    /* displacement vector for general gather */
 	    }
 
 	    /* Start gather of g_rand and light prop in ==TUP== direction */
-	    mtag[1] = start_gather( F_OFFSET(dtmpvecs[1]),
+	    mtag[1] = start_gather_site( F_OFFSET(dtmpvecs[1]),
 		sizeof(dble_su3_vec_src), TUP, EVENANDODD, gen_pt[1]);
 
 	    /* Start gather s_link_f for next time slice */
-	    mtag[3] = start_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+	    mtag[3] = start_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 		TUP, EVENANDODD, gen_pt[3]);
 
 	    /* Collect light props in direction dir */
@@ -339,11 +339,11 @@ int disp[4];    /* displacement vector for general gather */
 
 		/* start gather for next t if needed   */
 		if( t<(nth-1) ){
-		    restart_gather( F_OFFSET(dtmpvecs[1]),
+		    restart_gather_site( F_OFFSET(dtmpvecs[1]),
 			sizeof(dble_su3_vec_src), TUP, EVENANDODD,
 			gen_pt[1], mtag[1] );
 
-		    restart_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+		    restart_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 			TUP, EVENANDODD,
 			gen_pt[3], mtag[3] );
 		}

@@ -25,8 +25,8 @@ void reunitarize();
 int update();
 double d_action();
 
-void dslash( field_offset src, field_offset dest, int parity );
-void dslash_special( field_offset src, field_offset dest,
+void dslash_site( field_offset src, field_offset dest, int parity );
+void dslash_site_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start );
 
 void rephase( int flag );

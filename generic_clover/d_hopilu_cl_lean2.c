@@ -8,7 +8,7 @@
 
 /* Modifications:
 
-   8/02/01 Uses dslash_w_special - CD
+   8/02/01 Uses dslash_w_site_special - CD
    4/25/98 Initial version based on UMH's d_cgilu_cl_lean.c CD
    */
 
@@ -133,7 +133,7 @@ int hopilu_cl(           /* Return value is number of iterations taken */
   /* mp_o = 1/R_o srce_o */
   mult_ldu(src, mp, ODD);
   /* mp_e = D_eo/R_o srce_o */
-  dslash_w_special(mp, mp, PLUS, EVEN, tage, is_startede);
+  dslash_w_site_special(mp, mp, PLUS, EVEN, tage, is_startede);
   is_startede = 1;
 
   /* src_e = srce_e + K D_eo/R_o srce_o */
@@ -184,12 +184,12 @@ int hopilu_cl(           /* Return value is number of iterations taken */
     
     /* ---- r_e = H r_e =  K^2/R_e D_eo/R_o D_oe r_e ----- */
     /* mp_o = D_oe r_e */
-    dslash_w_special(r, mp, PLUS, ODD, tago, is_startedo);
+    dslash_w_site_special(r, mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     /* tmp_o = 1/R_o D_oe r_e */
     mult_ldu(mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe r_e */
-    dslash_w_special(tmp, mp, PLUS, EVEN, tage, is_startede);
+    dslash_w_site_special(tmp, mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     /* r_e = 1/R_e D_eo/R_o D_oe r_e */
     mult_ldu(mp, r, EVEN);
@@ -241,7 +241,7 @@ int hopilu_cl(           /* Return value is number of iterations taken */
   
   /* --------- dest_o =  dest_o + K/R_o D_oe dest_e --------- */
   /* mp_o = D_oe * dest_e */
-  dslash_w_special(dest, mp, PLUS, ODD, tago, is_startedo);
+  dslash_w_site_special(dest, mp, PLUS, ODD, tago, is_startedo);
 
   /* mp_o = dest_o + K D_oe * dest_e (remember dest_o = original src_o still)*/
   FORODDSITES(i,s) {

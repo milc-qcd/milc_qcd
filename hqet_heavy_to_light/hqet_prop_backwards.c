@@ -1,6 +1,6 @@
 /************************* hqet_prop_backwards.c **********************/ 
 /* MIMD version 6 */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/hqet_prop_backwards.c,v 1.1 2005/02/23 00:05:07 detar Exp $
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/hqet_prop_backwards.c,v 1.2 2005/03/31 00:01:58 detar Exp $
 
   Generate a HQET propagator that moves backwards in time.
 
@@ -57,7 +57,7 @@
 #include DEBUGDEF
 #endif
 
-static char rcs_id[] = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/hqet_prop_backwards.c,v 1.1 2005/02/23 00:05:07 detar Exp $" ;
+static char rcs_id[] = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/hqet_prop_backwards.c,v 1.2 2005/03/31 00:01:58 detar Exp $" ;
 
 void generate_hqet_prop_back(field_offset hqet_prop, int tstart, int tend , int tcurrent, 
 int v1, int v2) 
@@ -123,7 +123,7 @@ int v1, int v2)
     /* Start gathers of the propagator from positive directions */
     for(dir=XUP; dir<=ZUP; dir++)
     {
-	tag[dir] = start_gather( hqet_prop, sizeof(su3_matrix), dir, EVENANDODD,
+	tag[dir] = start_gather_site( hqet_prop, sizeof(su3_matrix), dir, EVENANDODD,
 	    gen_pt[dir] );
     }
 
@@ -147,7 +147,7 @@ int v1, int v2)
     /* Start gathers from negative directions */
     for( dir=XUP; dir <= ZUP; dir++)
     {
-	tag[OPP_DIR(dir)] = start_gather( F_OFFSET(tempvec[dir]),
+	tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
 	    sizeof(su3_matrix), OPP_DIR( dir), EVENANDODD ,
 	    gen_pt[OPP_DIR(dir)] );
     }
@@ -204,7 +204,7 @@ int v1, int v2)
      */
 
     /* Pull the w(t)*u(t)  from the previous time slice ***/
-    tag[TUP] = start_gather( F_OFFSET(tempvec[TUP]), sizeof(su3_matrix),
+    tag[TUP] = start_gather_site( F_OFFSET(tempvec[TUP]), sizeof(su3_matrix),
 		     TUP, EVENANDODD, gen_pt[TUP] );
     wait_gather(tag[TUP] );
 

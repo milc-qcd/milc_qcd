@@ -49,7 +49,7 @@ main(int argc, char *argv[])
        * Note that the true odd part of the eigenvector is   *
        * i/sqrt(eigVal) Dslash Psi. But since I only compute *
        * the chirality the i factor is irrelevant (-i)*i=1!! */
-      dslash_fn_on_temp(eigVec[i], tmp, ODD);
+      dslash_fn_field(eigVec[i], tmp, ODD);
       FORSOMEPARITY(si,s,ODD) {
 	scalar_mult_su3_vector( &(tmp[si]),
 				1.0/sqrt(eigVal[i]),

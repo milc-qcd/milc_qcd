@@ -20,11 +20,11 @@ void update_h( Real eps ){
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
 #ifdef ONEMASS
-    dslash( F_OFFSET(xxx), F_OFFSET(xxx), ODD );
+    dslash_site( F_OFFSET(xxx), F_OFFSET(xxx), ODD );
     eo_fermion_force( eps, nflavors, F_OFFSET(xxx) );
 #else
-    dslash( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD );
-    dslash( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD );
+    dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD );
+    dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD );
 /**
     eo_fermion_force( eps, nflavors1, F_OFFSET(xxx1) );
     eo_fermion_force( eps, nflavors2, F_OFFSET(xxx2) );

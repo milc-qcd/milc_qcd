@@ -95,6 +95,16 @@ QIO_Reader *open_input(char *filename, QIO_Layout *layout){
   return infile;
 }
 
+void close_output(QIO_Writer *outfile)
+{
+  QIO_close_write(outfile);
+}
+
+void close_input(QIO_Reader *infile)
+{
+  QIO_close_read(infile);
+}
+
 /* Factory function for moving color matrices from site structure to
    single precision output */
 void vget_F3_M_from_site(char *buf, size_t index, int count, void *arg)
@@ -290,6 +300,7 @@ int read_F3_M_to_field(QIO_Reader *infile, su3_matrix *dest, int count)
 }
 
 /* Save the single precision lattice in SciDAC format */
+/* The QIO file is closed after writing the lattice */
 gauge_file *save_scidac(char *filename, int volfmt){
   QIO_Layout layout;
   QIO_Writer *outfile;
@@ -318,9 +329,6 @@ gauge_file *save_scidac(char *filename, int volfmt){
   status = write_F3_M_from_site(outfile, qcdml, src, LATDIM);
   if(status)terminate(1);
   
-  /* Close the file */
-  QIO_close_write(outfile);
-
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved gauge configuration serially to binary file %s\n",
@@ -339,6 +347,9 @@ gauge_file *save_scidac(char *filename, int volfmt){
   node0_printf("Checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),
 	       QIO_get_writer_last_checksumb(outfile));
+
+  /* Close the file */
+  QIO_close_write(outfile);
 
   free_QCDML(qcdml);
   return gf;
@@ -388,6 +399,7 @@ gauge_file *save_partition_scidac(char *filename){
   return save_scidac(filename,QIO_PARTFILE);
 }
 
+/* The QIO file is closed after reading the lattice */
 gauge_file *restore_serial_scidac(char *filename){
   QIO_Layout layout;
   QIO_Reader *infile;
@@ -421,8 +433,7 @@ gauge_file *restore_serial_scidac(char *filename){
 }
 
 /* Read color matrices in SciDAC format */
-
-QIO_Reader *restore_color_matrix_scidac_to_site(char *filename, 
+void restore_color_matrix_scidac_to_site(char *filename, 
 				field_offset dest, int count){
   QIO_Layout layout;
   QIO_Reader *infile;
@@ -441,15 +452,11 @@ QIO_Reader *restore_color_matrix_scidac_to_site(char *filename,
   status = read_F3_M_to_site(infile, dest, count);
   if(status)terminate(1);
 
-  /* Close the file */
-  QIO_close_read(infile);
-
-  return infile;
+  close_input(infile);
 }
 
 /* Read color matrices in SciDAC format */
-
-QIO_Reader *restore_color_matrix_scidac_to_field(char *filename, 
+void restore_color_matrix_scidac_to_field(char *filename, 
 				su3_matrix *dest, int count){
   QIO_Layout layout;
   QIO_Reader *infile;
@@ -468,16 +475,12 @@ QIO_Reader *restore_color_matrix_scidac_to_field(char *filename,
   status = read_F3_M_to_field(infile, dest, count);
   if(status)terminate(1);
 
-  /* Close the file */
-  QIO_close_read(infile);
-
-  return infile;
+  close_input(infile);
 }
 
 /* Write a set of color matrices in SciDAC format, taking data from the site
    structure */
-
-QIO_Writer *save_color_matrix_scidac_from_site(char *filename, char *filexml, 
+void save_color_matrix_scidac_from_site(char *filename, char *filexml, 
       char *recxml, int volfmt,  field_offset src, int count)
 {
   QIO_Layout layout;
@@ -497,9 +500,6 @@ QIO_Writer *save_color_matrix_scidac_from_site(char *filename, char *filexml,
   status = write_F3_M_from_site(outfile, recxml, src, count);
   if(status)terminate(1);
   
-  /* Close the file */
-  QIO_close_write(outfile);
-
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved KS matrix serially to binary file %s\n",
@@ -518,11 +518,12 @@ QIO_Writer *save_color_matrix_scidac_from_site(char *filename, char *filexml,
 	       QIO_get_writer_last_checksuma(outfile),
 	       QIO_get_writer_last_checksumb(outfile));
 
-  return outfile;
+  close_output(outfile);
 }
 
 
-QIO_Writer *save_color_matrix_scidac_from_field(char *filename, 
+/* Save a color matrix. */
+void save_color_matrix_scidac_from_field(char *filename, 
         char *filexml, char *recxml, int volfmt, su3_matrix *src, int count)
 {
   QIO_Layout layout;
@@ -542,9 +543,6 @@ QIO_Writer *save_color_matrix_scidac_from_field(char *filename,
   status = write_F3_M_from_field(outfile, recxml, src, count);
   if(status)terminate(1);
   
-  /* Close the file */
-  QIO_close_write(outfile);
-
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
     node0_printf("Saved KS matrix serially to binary file %s\n",
@@ -563,7 +561,7 @@ QIO_Writer *save_color_matrix_scidac_from_field(char *filename,
 	       QIO_get_writer_last_checksuma(outfile),
 	       QIO_get_writer_last_checksumb(outfile));
 
-  return outfile;
+  close_output(outfile);
 }
 
 

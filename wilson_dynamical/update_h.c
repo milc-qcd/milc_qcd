@@ -34,11 +34,11 @@ dtime = -dclock();**/
 	for(dir2=XUP;dir2<=TUP;dir2++)if(dir2 != dir1){
 
 	    /* get link[dir2] from direction dir1 */
-	    tag0 = start_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	    tag0 = start_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 		dir1, EVENANDODD, gen_pt[0] );
 
 	    /* Start gather for the "upper staple" */
-	    tag2 = start_gather( F_OFFSET(link[dir1]), sizeof(su3_matrix),
+	    tag2 = start_gather_site( F_OFFSET(link[dir1]), sizeof(su3_matrix),
 		dir2, EVENANDODD, gen_pt[2] );
 
 	    /* begin the computation "at the dir2DOWN point", we will
@@ -52,7 +52,7 @@ dtime = -dclock();**/
 	    }
 
 	    /* Gather this partial result "up to home site" */
-	    tag1 = start_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	    tag1 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 		OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
 
 	    /* begin the computation of the "upper" staple.  Note that
@@ -146,17 +146,17 @@ dtime = -dclock();**/
     /* set ferm_epsilon */
 #ifdef LU
     ferm_epsilon = nflavors*eps*kappa*kappa;
-    dslash_w( F_OFFSET(psi), F_OFFSET(psi), PLUS, ODD );
-    dslash_w( F_OFFSET(psi), F_OFFSET(p)  , PLUS, EVEN);
+    dslash_w_site( F_OFFSET(psi), F_OFFSET(psi), PLUS, ODD );
+    dslash_w_site( F_OFFSET(psi), F_OFFSET(p)  , PLUS, EVEN);
     FOREVENSITES(i,st)
         scalar_mult_add_wvec( &(st->psi), &(st->p), -kappa*kappa, &(st->p) );
 
     /* psi(odd) = Dslash * psi(even) already, set
          p(odd) = Dslash_adjoint * p(even) . */
-    dslash_w( F_OFFSET(p  ), F_OFFSET(p  ), MINUS, ODD );
+    dslash_w_site( F_OFFSET(p  ), F_OFFSET(p  ), MINUS, ODD );
 #else
     ferm_epsilon = nflavors*eps*kappa;
-    dslash_w( F_OFFSET(psi), F_OFFSET(p), PLUS, EVENANDODD );
+    dslash_w_site( F_OFFSET(psi), F_OFFSET(p), PLUS, EVENANDODD );
     FORALLSITES(i,st)
 	scalar_mult_add_wvec( &(st->psi), &(st->p), -kappa, &(st->p) );
 #endif
@@ -167,9 +167,9 @@ dtime = -dclock();**/
 	    wp_shrink( &(st->psi), &(st->htmp[0]), dir, PLUS);
 	    wp_shrink( &(st->p), &(st->htmp[1]), dir, MINUS);
 	}
-	tag0 = start_gather( F_OFFSET(htmp[0]), sizeof(half_wilson_vector), dir,
+	tag0 = start_gather_site( F_OFFSET(htmp[0]), sizeof(half_wilson_vector), dir,
 	    EVENANDODD, gen_pt[0] );
-	tag1 = start_gather( F_OFFSET(htmp[1]), sizeof(half_wilson_vector), dir,
+	tag1 = start_gather_site( F_OFFSET(htmp[1]), sizeof(half_wilson_vector), dir,
 	    EVENANDODD, gen_pt[1] );
 	wait_gather(tag0);
 	wait_gather(tag1);

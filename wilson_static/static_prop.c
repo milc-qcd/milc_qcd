@@ -1,7 +1,7 @@
 /****************** static_prop.c ************************************/
 /* MIMD version 6 */
 /*
-  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/static_prop.c,v 1.1 2005/02/23 00:06:11 detar Exp $
+  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/static_prop.c,v 1.2 2005/03/31 00:02:07 detar Exp $
   Calculate the Wilson lines required for the static
   quark propgator -- this  is used for the 2-pt function.
  
@@ -16,7 +16,7 @@
 
 #include "w_static_includes.h"
 
-static char rcs_id[] = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/static_prop.c,v 1.1 2005/02/23 00:06:11 detar Exp $" ;
+static char rcs_id[] = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/static_prop.c,v 1.2 2005/03/31 00:02:07 detar Exp $" ;
 
 
 /*  
@@ -57,7 +57,7 @@ void static_prop()
     }
 
     /* Pull the w(t)*u(t)  from the previous time slice ***/
-    tag=start_gather( F_OFFSET(smear_w_line[0]), sizeof(su3_matrix),
+    tag=start_gather_site( F_OFFSET(smear_w_line[0]), sizeof(su3_matrix),
 		     TDOWN, EVENANDODD, gen_pt[0] );
     wait_gather(tag);
 
@@ -84,7 +84,7 @@ void static_prop()
   {
     /* Pull the Wilson lines from the previous time slice ***/
 
-    tag=start_gather( F_OFFSET(w_line), sizeof(su3_matrix),
+    tag=start_gather_site( F_OFFSET(w_line), sizeof(su3_matrix),
 		     TUP, EVENANDODD, gen_pt[0] );
     wait_gather(tag);
 
@@ -143,7 +143,7 @@ void static_prop_bparam() {
     }
 
     /* Pull the w(t)*u(t)  from the previous time slice ***/
-    tag=start_gather( F_OFFSET(smear_w_line[0]), sizeof(su3_matrix),
+    tag=start_gather_site( F_OFFSET(smear_w_line[0]), sizeof(su3_matrix),
 		     TDOWN, EVENANDODD, gen_pt[0] );
     wait_gather(tag);
 
@@ -170,7 +170,7 @@ void static_prop_bparam() {
   {
     /* Pull the Wilson lines from the previous time slice ***/
 
-    tag=start_gather( F_OFFSET(w_line), sizeof(su3_matrix),
+    tag=start_gather_site( F_OFFSET(w_line), sizeof(su3_matrix),
 		     TUP, EVENANDODD, gen_pt[0] );
     wait_gather(tag);
 

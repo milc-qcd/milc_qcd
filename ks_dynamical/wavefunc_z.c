@@ -91,7 +91,7 @@ void permute_combine(field_offset src,field_offset space,int size,int dir);
         cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			 niter,rsqprop,EVEN,&finalrsq);
         /* Multiply by -Madjoint, result in propmat[color] */
-        dslash( F_OFFSET(xxx), F_OFFSET(propmat[color]), ODD);
+        dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[color]), ODD);
         scalar_mult_latvec( F_OFFSET(xxx), (Real)(-2.0*mass),
 	    F_OFFSET(propmat[color]), EVEN);
     }
@@ -162,7 +162,7 @@ you fft the quark propagator */
 	1,1,1	(-1)^(x+y+t)	pi_2, sigma (SC)
     */
     for(i=XUP;i<=TUP;i++)if(i!=ZUP){
-	tag = start_gather( F_OFFSET(ttt.c[0]), sizeof(complex),
+	tag = start_gather_site( F_OFFSET(ttt.c[0]), sizeof(complex),
 	    butterfly_dir[i][0], EVENANDODD, gen_pt[0]);
 	wait_gather(tag);
         FORALLSITES(j,s){
@@ -409,7 +409,7 @@ void symmetry_combine(field_offset src,field_offset space,int size,int dir){
 msg_tag *tag;
 register int i,j;
 register site *s;
-    tag = start_gather( src, size, dir, EVENANDODD, gen_pt[0]);
+    tag = start_gather_site( src, size, dir, EVENANDODD, gen_pt[0]);
     wait_gather(tag);
     FORALLSITES(i,s){
 	for(j=0;j<size/sizeof(complex);j++){
@@ -430,8 +430,8 @@ void permute_combine(field_offset src,field_offset space,int size,int dir){
 msg_tag *tag0,*tag1;
 register int i,j;
 register site *s;
-    tag0 = start_gather( src, size, dir, EVENANDODD, gen_pt[0]);
-    tag1 = start_gather( src, size, dir+1, EVENANDODD, gen_pt[1]);
+    tag0 = start_gather_site( src, size, dir, EVENANDODD, gen_pt[0]);
+    tag1 = start_gather_site( src, size, dir+1, EVENANDODD, gen_pt[1]);
     wait_gather(tag0);
     wait_gather(tag1);
     FORALLSITES(i,s){
@@ -641,7 +641,7 @@ int ncomp;	/* number of complex numbers in field */
             /* In blocked version, actual bit is one to the left of mask*/
 
 	    /* Get the site at other end of butterfly */
-	    tag = start_gather( src, size,
+	    tag = start_gather_site( src, size,
 		butterfly_dir[dir][level+1], EVENANDODD, gen_pt[0]);
 	    wait_gather(tag);
 	    FORALLSITES(i,s){
@@ -696,7 +696,7 @@ level,n,src_pt[0].real, src_pt[0].imag );
     } /* for loop on direction */
 
     /* Bit reverse */
-    tag = start_gather( src, size, bitrev_block_dir,
+    tag = start_gather_site( src, size, bitrev_block_dir,
 	EVENANDODD, gen_pt[0]);
     wait_gather(tag);
     FORALLSITES(i,s){
@@ -749,7 +749,7 @@ int ncomp;	/* number of complex numbers in field */
 		coordinate you are combining with */
 
 	    /* Get the site at other end of butterfly */
-	    tag = start_gather( src, size,
+	    tag = start_gather_site( src, size,
 		butterfly_dir[dir][level], EVENANDODD, gen_pt[0]);
 	    wait_gather(tag);
 	    FORALLSITES(i,s){
@@ -804,7 +804,7 @@ src_pt[0].real, src_pt[0].imag );
     } /* for loop on direction */
 
     /* Bit reverse */
-    tag = start_gather( src, size, bitrev_dir,
+    tag = start_gather_site( src, size, bitrev_dir,
 	EVENANDODD, gen_pt[0]);
     wait_gather(tag);
     FORALLSITES(i,s){
