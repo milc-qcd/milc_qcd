@@ -1,0 +1,8 @@
+diffn out.test.su3_schr_phi.tmp out.sample.su3_schr_phi.tmp 1e-5
+Field 4 Line 2
+< GMES 3.045396e+01 1.881691e+00 1.170000e+02 2.166827e+00 2.067334e+00
+> GMES 3.045397e+01 1.881691e+00 1.180000e+02 2.166827e+00 2.067334e+00
+Field 4 Line 10
+< GMES 1.967892e+01 1.756600e+00 1.020000e+02 1.930185e+00 1.854148e+00
+> GMES 1.967893e+01 1.756600e+00 1.030000e+02 1.930185e+00 1.854148e+00
+Compared 12 lines with a tolerance of 1e-5

@@ -1,0 +1,48 @@
+# Makefile for the code that creates the sources
+# for the smearing matrix and B parameter.
+#
+#  make new_src  :: creates the code that creates the sources
+#  make store    :: makes a tar file of all the program files
+#
+MAKEFILE = Makefile_src
+
+
+COMPILER = gcc 
+#COMPILER = gcc 
+FLAGS = -lm
+#CFLAGS = -DTIME
+CFLAGS =
+
+LIST =    \
+	associated_laguerre_src.c\
+	create_smear_src.c\
+	fft_smearing_func.c\
+	nrerror.c\
+	periodic_radius.c\
+	ran1.c\
+	setup_smearing_main.c\
+	titles.c\
+	where.c\
+	write_binary_smear.c
+
+
+
+INCS = 	
+
+OBJS=  $(LIST:.c=.o)
+
+
+.SUFFIXES:
+
+.SUFFIXES:	.o .c
+
+.c.o:
+	$(COMPILER) -c  $< $(CFLAGS)
+
+$(OBJS) : $(INCS) $(MAKEFILE)
+
+new_src : $(LIST) $(OBJS) $(INCS) $(MAKEFILE)
+	$(COMPILER) -o $@  $(OBJS)  $(FLAGS)
+
+store : 
+	tar cvf store.tar $(LIST) $(INCS) $(MAKEFILE)

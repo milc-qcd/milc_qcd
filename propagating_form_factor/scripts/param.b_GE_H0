@@ -1,0 +1,4 @@
+# Parameters for the initial B meson 2-pt correlator (GE relative smearing)
+zk=0      # Sequential quark
+op=0      # 2-pt operator
+name=HL2_GE_0.1245

@@ -1,0 +1,371 @@
+/* wp_grow_a.alpha: Dec assembler version of wp_grow_a.c */
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+#define XUP 0
+#define YUP 1
+#define ZUP 2
+#define TUP 3
+#define TDOWN 4
+#define ZDOWN 5
+#define YDOWN 6
+#define XDOWN 7
+#define PLUS +1
+#define MINUS -1
+    .globl wp_grow_add
+    .ent wp_grow_add 2
+
+/* register names */
+#define src a0	/* address of source half_wilson_vector */
+#define dest a1	/* address of dest. wilson_vector */
+#define dir a2	/* direction */
+#define sign a3	/* sign: PLUS = +1, MINUS = -1 */
+#define color t1 /* loop over colors */
+#define scratch t2	/*scratch integer*/
+
+wp_grow_add:
+	bis zero,zero,color	/* initialize color counter */
+	/* if (sign==-1) dir <- OPPDIR(dir) = 7-dir */
+	bge	sign,SKIP1
+	bis	zero,7,scratch
+	subq	scratch,dir,dir
+SKIP1:
+	/* switch(dir) */
+	cmpeq	dir,XUP,scratch
+	bne scratch,XUP_S
+	cmpeq	dir,YUP,scratch
+	bne scratch,YUP_S
+	cmpeq	dir,ZUP,scratch
+	bne scratch,ZUP_S
+	cmpeq	dir,TUP,scratch
+	bne scratch,TUP_S
+	cmpeq	dir,TDOWN,scratch
+	bne scratch,TDOWN_S
+	cmpeq	dir,ZDOWN,scratch
+	bne scratch,ZDOWN_S
+	cmpeq	dir,YDOWN,scratch
+	bne scratch,YDOWN_S
+	cmpeq	dir,XDOWN,scratch
+	bne scratch,XDOWN_S
+
+XUP_S:
+XUP_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	adds	ft8,ft3,ft8	/* result component 2 += -i*h[1] */
+	subs	ft9,ft2,ft9
+	adds	ft10,ft1,ft10	/* result component 3 += -i*h[0] */
+	subs	ft11,ft0,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,XUP_L
+	ret     zero,(ra)
+YUP_S:
+YUP_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	adds	ft8,ft2,ft8	/* result component 2 += +1*h[1] */
+	adds	ft9,ft3,ft9
+	subs	ft10,ft0,ft10	/* result component 3 += -1*h[0] */
+	subs	ft11,ft1,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,YUP_L
+	ret     zero,(ra)
+ZUP_S:
+ZUP_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	adds	ft8,ft1,ft8	/* result component 2 += -i*h[0] */
+	subs	ft9,ft0,ft9
+	subs	ft10,ft3,ft10	/* result component 3 += +i*h[1] */
+	adds	ft11,ft2,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,ZUP_L
+	ret     zero,(ra)
+TUP_S:
+TUP_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	adds	ft8,ft0,ft8	/* result component 2 += +1*h[0] */
+	adds	ft9,ft1,ft9
+	adds	ft10,ft2,ft10	/* result component 3 += +1*h[1] */
+	adds	ft11,ft3,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,TUP_L
+	ret     zero,(ra)
+XDOWN_S:
+XDOWN_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	subs	ft8,ft3,ft8	/* result component 2 += +i*h[1] */
+	adds	ft9,ft2,ft9
+	subs	ft10,ft1,ft10	/* result component 3 += +i*h[0] */
+	adds	ft11,ft0,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,XDOWN_L
+	ret     zero,(ra)
+YDOWN_S:
+YDOWN_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	subs	ft8,ft2,ft8	/* result component 2 += -1*h[1] */
+	subs	ft9,ft3,ft9
+	adds	ft10,ft0,ft10	/* result component 3 += +1*h[0] */
+	adds	ft11,ft1,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,YDOWN_L
+	ret     zero,(ra)
+ZDOWN_S:
+ZDOWN_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	subs	ft8,ft1,ft8	/* result component 2 += +i*h[0] */
+	adds	ft9,ft0,ft9
+	adds	ft10,ft3,ft10	/* result component 3 += -i*h[1] */
+	subs	ft11,ft2,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,ZDOWN_L
+	ret     zero,(ra)
+TDOWN_S:
+TDOWN_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	subs	ft8,ft0,ft8	/* result component 2 += -1*h[0] */
+	subs	ft9,ft1,ft9
+	subs	ft10,ft2,ft10	/* result component 3 += -0*h[1] */
+	subs	ft11,ft3,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,TDOWN_L
+	ret     zero,(ra)
+
+	.end wp_grow_add

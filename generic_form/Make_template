@@ -1,0 +1,78 @@
+#  Generic routines for form factor apps
+#  MIMD version 6
+#
+#  Generic make-include file for generic_form codes
+#  This template file defines rules and macros common to all applications
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  The paths are relative to the application directory.
+
+G_FORM_ALL = \
+	c_scale_wilson_vector2.o \
+	flip_source_rep.o \
+	load_momentum.o \
+	load_smearing.o \
+	load_smearing_double.o \
+	make_gammas.o \
+	msw_gamma_l.o \
+	msw_gamma_r.o \
+	w_meson_finite_mom.o \
+	w_meson_finite_mom_lean.o \
+	w_meson_finite_mom_lean2.o \
+	w_meson_finite_mom_lean3.o \
+	wilson_source_routines.o
+
+# Must match our headers in generic_form_includes.h
+G_FORM_HEADERS = \
+  ../include/config.h \
+  ../include/complex.h \
+  ../include/su3.h \
+  ../include/macros.h \
+  ../include/comdefs.h \
+  ../include/generic.h \
+  ../generic_form/gammatypes.h \
+  ../include/generic_form.h \
+  ../include/generic_wilson.h \
+  lattice.h \
+  ../include/int32type.h
+
+G_FORM_ALL_DEPEND = \
+  ../generic_form/generic_form_includes.h \
+  ../generic_form/Make_template \
+  ../include/Make_template \
+  ${LASTMAKE} \
+  ${G_FORM_HEADERS}
+
+${G_FORM_ALL} : ${G_FORM_ALL_DEPEND}
+
+# Rules for header files
+include ../include/Make_template
+
+c_scale_wilson_vector2.o: ../generic_form/c_scale_wilson_vector2.c
+	${CC} -c ${CFLAGS}  ../generic_form/c_scale_wilson_vector2.c 
+msw_gamma_l.o: ../generic_form/msw_gamma_l.c
+	${CC} -c ${CFLAGS}  ../generic_form/msw_gamma_l.c 
+msw_gamma_r.o: ../generic_form/msw_gamma_r.c
+	${CC} -c ${CFLAGS}  ../generic_form/msw_gamma_r.c 
+flip_source_rep.o: ../generic_form/flip_source_rep.c
+	${CC} -c ${CFLAGS}  ../generic_form/flip_source_rep.c 
+load_momentum.o: ../generic_form/load_momentum.c
+	${CC} -c ${CFLAGS}  ../generic_form/load_momentum.c 
+load_smearing.o: ../generic_form/load_smearing.c
+	${CC} -c ${CFLAGS}  ../generic_form/load_smearing.c 
+load_smearing_double.o: ../generic_form/load_smearing_double.c
+	${CC} -c ${CFLAGS}  ../generic_form/load_smearing_double.c 
+make_gammas.o: ../generic_form/make_gammas.c
+	${CC} -c ${CFLAGS}  ../generic_form/make_gammas.c 
+w_meson_finite_mom.o: ../generic_form/w_meson_finite_mom.c
+	${CC} -c ${CFLAGS}  ../generic_form/w_meson_finite_mom.c 
+w_meson_finite_mom_lean.o: ../generic_form/w_meson_finite_mom_lean.c
+	${CC} -c ${CFLAGS}  ../generic_form/w_meson_finite_mom_lean.c 
+w_meson_finite_mom_lean2.o: ../generic_form/w_meson_finite_mom_lean2.c
+	${CC} -c ${CFLAGS}  ../generic_form/w_meson_finite_mom_lean2.c 
+w_meson_finite_mom_lean3.o: ../generic_form/w_meson_finite_mom_lean3.c
+	${CC} -c ${CFLAGS}  ../generic_form/w_meson_finite_mom_lean3.c 
+wilson_source_routines.o: ../generic_form/wilson_source_routines.c
+	${CC} -c ${CFLAGS}  ../generic_form/wilson_source_routines.c 
+

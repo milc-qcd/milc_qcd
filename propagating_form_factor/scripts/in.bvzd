@@ -1,0 +1,3 @@
+cat << EOF >> ${inputparam} 
+SP 0 ZK ${zk} SQ ${sq} Q ${q3} P 0 OP 2 CP 0 WT 1.  ${threept_out}
+EOF

@@ -1,0 +1,483 @@
+# Assumes 64 byte cache line and 8 byte alignment
+# Hand optimized from cc output
+# C. DeTar 9/29/01
+#include "asdef.alpha.h"
+	.set noat
+	.set noreorder
+	.rdata
+$$1:
+	.text
+	.arch	generic
+	.align 4
+	.file 1 "../libraries/prefetch64.c"
+	.loc 1 88
+ #     88 void _prefetch_M( su3_matrix *a0 ){
+	.globl  _prefetch_M
+	.ent 	_prefetch_M
+	.loc 1 88
+_prefetch_M:														   # 000088
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 91
+ #     89   register float dummy;
+ #     90 
+ #     91   _pftch_M(a0);
+	lds	zero, (a0)												   # 000091
+	lds	zero, 64(a0)
+	.loc 1 93
+ #     92 
+ #     93 }
+	ret	(ra)													   # 000093
+	.end 	_prefetch_M
+	.loc 1 95
+ #     94 
+ #     95 void _prefetch_V( su3_vector *a0 ){
+	.globl  _prefetch_V
+	.ent 	_prefetch_V
+	.loc 1 95
+_prefetch_V:														   # 000095
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 98
+ #     96   register float dummy;
+ #     97 
+ #     98   _pftch_V(a0);
+	lds	zero, (a0)												   # 000098
+	lds	zero, 16(a0)
+	.loc 1 100
+ #     99 
+ #    100 }
+	ret	(ra)													   # 000100
+	.end 	_prefetch_V
+	.loc 1 102
+ #    101 
+ #    102 void _prefetch_W( wilson_vector *a0 ){
+	.globl  _prefetch_W
+	.ent 	_prefetch_W
+	.loc 1 102
+_prefetch_W:														   # 000102
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 105
+ #    103   register float dummy;
+ #    104 
+ #    105   _pftch_W(a0);
+	lds	zero, (a0)												   # 000105
+	lds	zero, 64(a0)
+	lds	zero, 88(a0)
+	.loc 1 107
+ #    106 
+ #    107 }
+	ret	(ra)													   # 000107
+	.end 	_prefetch_W
+	.loc 1 109
+ #    108 
+ #    109 void _prefetch_H( half_wilson_vector *a0 ){
+	.globl  _prefetch_H
+	.ent 	_prefetch_H
+	.loc 1 109
+_prefetch_H:														   # 000109
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 112
+ #    110   register float dummy;
+ #    111 
+ #    112   _pftch_H(a0);
+	lds	zero, (a0)												   # 000112
+	lds	zero, 40(a0)
+	.loc 1 114
+ #    113 
+ #    114 }
+	ret	(ra)													   # 000114
+	.end 	_prefetch_H
+	.loc 1 116
+ #    115 
+ #    116 void _prefetch_VV( su3_vector *a0, su3_vector *a1){
+	.globl  _prefetch_VV
+	.ent 	_prefetch_VV
+	.loc 1 116
+_prefetch_VV:														   # 000116
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 119
+ #    117   register float dummy;
+ #    118 
+ #    119   _pftch_V(a0);
+	lds	zero, (a0)												   # 000119
+	lds	zero, 16(a0)
+	.loc 1 120
+ #    120   _pftch_V(a1);
+	lds	zero, (a1)												   # 000120
+	lds	zero, 16(a1)
+	.loc 1 122
+ #    121 
+ #    122 }
+	ret	(ra)													   # 000122
+	.end 	_prefetch_VV
+	.loc 1 124
+ #    123 
+ #    124 void _prefetch_VVV( su3_vector *a0, su3_vector *a1, su3_vector *a2){
+	.globl  _prefetch_VVV
+	.ent 	_prefetch_VVV
+	.loc 1 124
+_prefetch_VVV:														   # 000124
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 127
+ #    125   register float dummy;
+ #    126 
+ #    127   _pftch_V(a0);
+	lds	zero, (a0)												   # 000127
+	lds	zero, 16(a0)
+	.loc 1 128
+ #    128   _pftch_V(a1);
+	lds	zero, (a1)												   # 000128
+	lds	zero, 16(a1)
+	.loc 1 129
+ #    129   _pftch_V(a2);
+	lds	zero, (a2)												   # 000129
+	lds	zero, 16(a2)
+	.loc 1 131
+ #    130 
+ #    131 }
+	ret	(ra)													   # 000131
+	.end 	_prefetch_VVV
+	.loc 1 133
+ #    132 
+ #    133 void _prefetch_VVVV( su3_vector *a0, su3_vector *a1, su3_vector *a2, 
+	.globl  _prefetch_VVVV
+	.ent 	_prefetch_VVVV
+	.loc 1 133
+_prefetch_VVVV:														   # 000133
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 137
+ #    134 		    su3_vector *a3){
+ #    135   register float dummy;
+ #    136 
+ #    137   _pftch_V(a0);
+	lds	zero, (a0)												   # 000137
+	lds	zero, 16(a0)
+	.loc 1 138
+ #    138   _pftch_V(a1);
+	lds	zero, (a1)												   # 000138
+	lds	zero, 16(a1)
+	.loc 1 139
+ #    139   _pftch_V(a2);
+	lds	zero, (a2)												   # 000139
+	lds	zero, 16(a2)
+	.loc 1 140
+ #    140   _pftch_V(a3);
+	lds	zero, (a3)												   # 000140
+	lds	zero, 16(a3)
+	.loc 1 142
+ #    141 
+ #    142 }
+	ret	(ra)													   # 000142
+	.end 	_prefetch_VVVV
+	.loc 1 143
+ #    143 void _prefetch_VVVVV( su3_vector *a0, su3_vector *a1, su3_vector *a2, 
+	.globl  _prefetch_VVVVV
+	.ent 	_prefetch_VVVVV
+	.loc 1 143
+_prefetch_VVVVV:													   # 000143
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 147
+ #    144 		     su3_vector *a3, su3_vector *a4){
+ #    145   register float dummy;
+ #    146 
+ #    147   _pftch_V(a0);
+	lds	zero, (a0)												   # 000147
+	lds	zero, 16(a0)
+	.loc 1 148
+ #    148   _pftch_V(a1);
+	lds	zero, (a1)												   # 000148
+	lds	zero, 16(a1)
+	.loc 1 149
+ #    149   _pftch_V(a2);
+	lds	zero, (a2)												   # 000149
+	lds	zero, 16(a2)
+	.loc 1 150
+ #    150   _pftch_V(a3);
+	lds	zero, (a3)												   # 000150
+	lds	zero, 16(a3)
+	.loc 1 151
+ #    151   _pftch_V(a4);
+	lds	zero, (a4)												   # 000151
+	lds	zero, 16(a4)
+	.loc 1 153
+ #    152 
+ #    153 }
+	ret	(ra)													   # 000153
+	.end 	_prefetch_VVVVV
+	.loc 1 155
+ #    154 
+ #    155 void _prefetch_WWW( wilson_vector *a0, wilson_vector *a1, wilson_vector *a2){
+	.globl  _prefetch_WWW
+	.ent 	_prefetch_WWW
+	.loc 1 155
+_prefetch_WWW:														   # 000155
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 158
+ #    156   register float dummy;
+ #    157 
+ #    158   _pftch_W(a0);
+	lds	zero, (a0)												   # 000158
+	lds	zero, 64(a0)
+	lds	zero, 88(a0)
+	.loc 1 159
+ #    159   _pftch_W(a1);
+	lds	zero, (a1)												   # 000159
+	lds	zero, 64(a1)
+	lds	zero, 88(a1)
+	.loc 1 160
+ #    160   _pftch_W(a2);
+	lds	zero, (a2)												   # 000160
+	lds	zero, 64(a2)
+	lds	zero, 88(a2)
+	.loc 1 162
+ #    161 
+ #    162 }
+	ret	(ra)													   # 000162
+	.end 	_prefetch_WWW
+	.loc 1 164
+ #    163 
+ #    164 void _prefetch_WWWW( wilson_vector *a0, wilson_vector *a1, 
+	.globl  _prefetch_WWWW
+	.ent 	_prefetch_WWWW
+	.loc 1 164
+_prefetch_WWWW:														   # 000164
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 168
+ #    165 		    wilson_vector *a2, wilson_vector *a3){
+ #    166   register float dummy;
+ #    167 
+ #    168   _pftch_W(a0);
+	lds	zero, (a0)												   # 000168
+	lds	zero, 64(a0)
+	lds	zero, 88(a0)
+	.loc 1 169
+ #    169   _pftch_W(a1);
+	lds	zero, (a1)												   # 000169
+	lds	zero, 64(a1)
+	lds	zero, 88(a1)
+	.loc 1 170
+ #    170   _pftch_W(a2);
+	lds	zero, (a2)												   # 000170
+	lds	zero, 64(a2)
+	lds	zero, 88(a2)
+	.loc 1 171
+ #    171   _pftch_W(a3);
+	lds	zero, (a3)												   # 000171
+	lds	zero, 64(a3)
+	lds	zero, 88(a3)
+	.loc 1 173
+ #    172 
+ #    173 }
+	ret	(ra)													   # 000173
+	.end 	_prefetch_WWWW
+	.loc 1 175
+ #    174 
+ #    175 void _prefetch_WWWWW( su3_vector *a0, su3_vector *a1, su3_vector *a2,
+	.globl  _prefetch_WWWWW
+	.ent 	_prefetch_WWWWW
+	.loc 1 175
+_prefetch_WWWWW:													   # 000175
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 179
+ #    176 		     su3_vector *a3, su3_vector *a4){
+ #    177   register float dummy;
+ #    178 
+ #    179   _pftch_W(a0);
+	lds	zero, (a0)												   # 000179
+	lds	zero, 64(a0)
+	lds	zero, 88(a0)
+	.loc 1 180
+ #    180   _pftch_W(a1);
+	lds	zero, (a1)												   # 000180
+	lds	zero, 64(a1)
+	lds	zero, 88(a1)
+	.loc 1 181
+ #    181   _pftch_W(a2);
+	lds	zero, (a2)												   # 000181
+	lds	zero, 64(a2)
+	lds	zero, 88(a2)
+	.loc 1 182
+ #    182   _pftch_W(a3);
+	lds	zero, (a3)												   # 000182
+	lds	zero, 64(a3)
+	lds	zero, 88(a3)
+	.loc 1 183
+ #    183   _pftch_W(a4);
+	lds	zero, (a4)												   # 000183
+	lds	zero, 64(a4)
+	lds	zero, 88(a4)
+	.loc 1 185
+ #    184 
+ #    185 }
+	ret	(ra)													   # 000185
+	.end 	_prefetch_WWWWW
+	.loc 1 187
+ #    186 
+ #    187 void _prefetch_4MVVVV( su3_matrix *a0, su3_vector *a1, su3_vector *a2, 
+	.globl  _prefetch_4MVVVV
+	.ent 	_prefetch_4MVVVV
+	.loc 1 187
+_prefetch_4MVVVV:													   # 000187
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 191
+ #    188 		      su3_vector *a3, su3_vector *a4){
+ #    189   register float dummy;
+ #    190 
+ #    191   _pftch_4M(a0);
+	lds	zero, (a0)												   # 000191
+	lds	zero, 64(a0)
+	lds	zero, 128(a0)
+	lds	zero, 192(a0)
+	lds	zero, 256(a0)
+	lds	zero, 280(a0)
+	.loc 1 192
+ #    192   _pftch_V(a1);
+	lds	zero, (a1)												   # 000192
+	lds	zero, 16(a1)
+	.loc 1 193
+ #    193   _pftch_V(a2);
+	lds	zero, (a2)												   # 000193
+	lds	zero, 16(a2)
+	.loc 1 194
+ #    194   _pftch_V(a3);
+	lds	zero, (a3)												   # 000194
+	lds	zero, 16(a3)
+	.loc 1 195
+ #    195   _pftch_V(a4);
+	lds	zero, (a4)												   # 000195
+	lds	zero, 16(a4)
+	.loc 1 197
+ #    196 
+ #    197 }
+	ret	(ra)													   # 000197
+	.end 	_prefetch_4MVVVV
+	.loc 1 199
+ #    198 
+ #    199 void _prefetch_4MWWWW( su3_matrix *a0, wilson_vector *a1, wilson_vector *a2, 
+	.globl  _prefetch_4MWWWW
+	.ent 	_prefetch_4MWWWW
+	.loc 1 199
+_prefetch_4MWWWW:													   # 000199
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 203
+ #    200 		      wilson_vector *a3, wilson_vector *a4){
+ #    201   register float dummy;
+ #    202 
+ #    203   _pftch_4M(a0);
+	lds	zero, (a0)												   # 000203
+	lds	zero, 64(a0)
+	lds	zero, 128(a0)
+	lds	zero, 192(a0)
+	lds	zero, 256(a0)
+	lds	zero, 280(a0)
+	.loc 1 204
+ #    204   _pftch_W(a1);
+	lds	zero, (a1)												   # 000204
+	lds	zero, 64(a1)
+	lds	zero, 88(a1)
+	.loc 1 205
+ #    205   _pftch_W(a2);
+	lds	zero, (a2)												   # 000205
+	lds	zero, 64(a2)
+	lds	zero, 88(a2)
+	.loc 1 206
+ #    206   _pftch_W(a3);
+	lds	zero, (a3)												   # 000206
+	lds	zero, 64(a3)
+	lds	zero, 88(a3)
+	.loc 1 207
+ #    207   _pftch_W(a4);
+	lds	zero, (a4)												   # 000207
+	lds	zero, 64(a4)
+	lds	zero, 88(a4)
+	.loc 1 209
+ #    208 
+ #    209 }
+	ret	(ra)													   # 000209
+	.end 	_prefetch_4MWWWW
+	.loc 1 210
+ #    210 void _prefetch_4MV4V( su3_matrix *a0, su3_vector *a1, su3_vector *a2){
+	.globl  _prefetch_4MV4V
+	.ent 	_prefetch_4MV4V
+	.loc 1 210
+_prefetch_4MV4V:													   # 000210
+	.frame  $sp, 0, ra
+	.prologue 0
+	.loc 1 213
+ #    211   register float dummy;
+ #    212 
+ #    213   _pftch_4M(a0);
+	lds	zero, (a0)												   # 000213
+	lds	zero, 64(a0)
+	lds	zero, 128(a0)
+	lds	zero, 192(a0)
+	lds	zero, 256(a0)
+	lds	zero, 280(a0)
+	.loc 1 214
+ #    214   _pftch_V(a1);
+	lds	zero, (a1)
+	lds	zero, 16(a1)
+	.loc 1 215
+ #    215   _pftch_4V(a2);
+	.loc 1 217
+	lds	zero, 64(a2)
+	lds	zero, 88(a2)
+	.loc 1 214
+ #    216 
+ #    217 }
+	ret	(ra)
+	.end 	_prefetch_4MV4V
+	.loc 1 220
+ #    218 
+ #    219 
+ #    220 void _prefetch_4MW4W( su3_matrix *a0, wilson_vector *a1, wilson_vector *a2){
+	.globl  _prefetch_4MW4W
+	.ent 	_prefetch_4MW4W
+	.loc 1 220
+_prefetch_4MW4W:													   # 000220
+	.frame  $sp, 0, ra
+	.prologue 0
+	mov	$16, $2
+	mov	$17, $1
+	mov	$18, $0
+	.loc 1 223
+ #    221   register float dummy;
+ #    222 
+ #    223   _pftch_4M(a0);
+	lds	zero, (a0)												   # 000223
+	lds	$f0, 64(a0)
+	lds	$f0, 128(a0)
+	lds	$f0, 192(a0)
+	lds	$f0, 256(a0)
+	lds	$f0, 280(a0)
+	.loc 1 224
+ #    224   _pftch_W(a1);
+	lds	$f0, ($1)												   # 000224
+	lds	$f0, 64(a1)
+	lds	$f0, 88(a1)
+	.loc 1 225
+ #    225   _pftch_4W(a2);
+	lds	$f0, (a2)												   # 000225
+	lds	$f0, 64(a2)
+	lds	$f0, 128(a2)
+	lds	$f0, 192(a2)
+	lds	$f0, 256(a2)
+	lds	$f0, 320(a2)
+	lds	$f0, 376(a2)
+	.loc 1 227
+ #    226 
+ #    227 }
+	ret	(ra)													   # 000227
+	.end 	_prefetch_4MW4W

@@ -1,0 +1,17 @@
+Directory QCDML contains a demo program that encodes a set of C structures
+into XML conforming to the ILDG QCDML schema for configuration metadata.
+
+Jim Simone 10/21/2004  Created
+C. DeTar    1/31/2005  Adapted for MILC code use
+
+cd Types
+make libs
+cd ..
+
+cd xmlWriter
+make libs
+cd ..
+
+cd QCDML
+make test-xmlOutput
+./test-xmlOutput

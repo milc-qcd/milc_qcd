@@ -1,0 +1,577 @@
+for proj in su3_fp_cl_bi su3_fp_cl_bi_h su3_fp_cl_bi_n su3_fp_cl_eig su3_fp_cg_eig;\
+do\
+     	     cp -p ../Make_vanilla .;\
+     make -f Make_vanilla $proj;\
+     make -f Make_test "PROJ=$proj" out.test.diff.$proj;\
+     rm -f $proj;\
+     rm -f target;\
+done
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make -f Make_vanilla target "MYTARGET= su3_fp_cl_bi" \
+"DEFINES= -DSPECTRUM -DCVC -DBI -DCGTIME" \
+"ADDHEADERS =  " \
+"EXTRA_OBJECTS= control_p.o cvc_fv.o hax.o cvc_pauli.o \
+           w_meson_p.o w_baryon_p.o rotate_field.o" 
+make[2]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME    ../generic/io_helpers_w.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME    ../generic/io_lat4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME    ../generic/io_wb3.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME    ../generic/plaquette4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME    ../generic/restrict_fourier.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME    ../generic_wilson/w_source.c 
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME   -c control_p.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME   -c cvc_fv.c
+cvc_fv.c: In function `void cvc(int, int, int, int, float (*)[24], float (*)[24])':
+cvc_fv.c:45: warning: unused variable `int my_z'
+cvc_fv.c:45: warning: unused variable `int my_y'
+cvc_fv.c:45: warning: unused variable `int my_x'
+cvc_fv.c:45: warning: unused variable `int iz'
+cvc_fv.c:45: warning: unused variable `int iy'
+cvc_fv.c:45: warning: unused variable `int ix'
+cvc_fv.c:25: warning: unused variable `float co'
+cvc_fv.c:22: warning: unused variable `int ci'
+cvc_fv.c:18: warning: unused variable `int t'
+cvc_fv.c:18: warning: unused variable `int z'
+cvc_fv.c:18: warning: unused variable `int y'
+cvc_fv.c:18: warning: unused variable `int x'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME   -c hax.c
+hax.c: In function `void hax(int, int, float (*)[24])':
+hax.c:42: warning: unused variable `int my_z'
+hax.c:42: warning: unused variable `int my_y'
+hax.c:42: warning: unused variable `int my_x'
+hax.c:42: warning: unused variable `int iz'
+hax.c:42: warning: unused variable `int iy'
+hax.c:42: warning: unused variable `int ix'
+hax.c:24: warning: unused variable `struct wilson_vector wvec3'
+hax.c:22: warning: unused variable `float co'
+hax.c:19: warning: unused variable `int ci'
+hax.c:15: warning: unused variable `int t'
+hax.c:15: warning: unused variable `int z'
+hax.c:15: warning: unused variable `int y'
+hax.c:15: warning: unused variable `int x'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME   -c cvc_pauli.c
+cvc_pauli.c: In function `void cvc_pauli(int, int)':
+cvc_pauli.c:18: warning: unused variable `float co'
+cvc_pauli.c:13: warning: unused variable `int k'
+cvc_pauli.c:10: warning: unused variable `int z'
+cvc_pauli.c:10: warning: unused variable `int y'
+cvc_pauli.c:10: warning: unused variable `int x'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME   -c w_meson_p.c
+w_meson_p.c: In function `void meson_cont_p(int, int, int *, int *, int, int, float (*)[24])':
+w_meson_p.c:151: warning: unused variable `int t'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME   -c w_baryon_p.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME   -c rotate_field.c
+rotate_field.c: In function `void build_rot_params(float, float *, float *)':
+rotate_field.c:40: warning: unused variable `int i'
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME    ../generic/com_vanilla.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM -DCVC -DBI -DCGTIME    ../generic/io_nonansi.c 
+g++  -o su3_fp_cl_bi \
+bicgstab.o build_params.o delta0.o f_mu_nu1.o fp_info.o gauge_info.o make_clov1.o monte_block_ape_b_many.o mult_ldu1.o path.o setup_links.o setup_offset.o setup_p_cl.o layout_hyper.o check_unitarity.o gaugefix.o io_helpers.o io_helpers_w.o io_lat4.o io_wb3.o plaquette4.o restrict_fourier.o w_source.o control_p.o cvc_fv.o hax.o cvc_pauli.o  w_meson_p.o w_baryon_p.o rotate_field.o com_vanilla.o io_nonansi.o ../libraries/su3.a ../libraries/complex.a   -lm
+touch target
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+su3_fp_cl_bi  < in.sample.su3_fp_cl_bi > out.test.su3_fp_cl_bi
+../headtail.pl BEGIN RUNNING < out.test.su3_fp_cl_bi > out.test.su3_fp_cl_bi.tmp
+../headtail.pl BEGIN RUNNING < out.sample.su3_fp_cl_bi > out.sample.su3_fp_cl_bi.tmp
+../diffn.pl out.test.su3_fp_cl_bi.tmp out.sample.su3_fp_cl_bi.tmp 1e-5 > \
+   out.test.diff.su3_fp_cl_bi
+rm out.test.su3_fp_cl_bi.tmp out.sample.su3_fp_cl_bi.tmp
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make -f Make_vanilla target "MYTARGET= su3_fp_cl_bi_h" \
+"DEFINES= -DSPECTRUM  -DBI -DCGTIME" \
+"ADDHEADERS =  " \
+"EXTRA_OBJECTS= control_p.o \
+           w_meson_p.o w_baryon_p.o rotate_field.o"
+make[2]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch .lastmake.humor_irix; /bin/rm -f .lastmake.*
+make -f Make_vanilla clean
+make[3]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch humor_irix.o; /bin/rm -f *.o
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch .lastmake.Make_vanilla.su3_fp_cl_bi_h
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c bicgstab.c
+bicgstab.c: In function `int bicgstab(int, int, int, float, float *, int)':
+bicgstab.c:37: warning: unused variable `struct msg_tag * tag2[8]'
+bicgstab.c:37: warning: unused variable `struct msg_tag * tag[8]'
+bicgstab.c: In function `int bicgstab_iter(int, int, double, double *, int)':
+bicgstab.c:136: warning: unused variable `double dtime'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c build_params.c
+build_params.c: In function `void build_params(float)':
+build_params.c:36: warning: unused variable `float numer'
+build_params.c:36: warning: unused variable `float c01'
+build_params.c:36: warning: unused variable `float c40'
+build_params.c:36: warning: unused variable `float d2'
+build_params.c:36: warning: unused variable `float d1'
+build_params.c:36: warning: unused variable `float rt'
+build_params.c:34: warning: unused variable `float u00'
+build_params.c:34: warning: unused variable `float beta'
+build_params.c:32: warning: unused variable `float c132'
+build_params.c:32: warning: unused variable `float c123'
+build_params.c:31: warning: unused variable `float rx'
+build_params.c:31: warning: unused variable `float ax'
+build_params.c:31: warning: unused variable `float an'
+build_params.c:29: warning: unused variable `float fpauli[4]'
+build_params.c:28: warning: unused variable `float cpauli[4]'
+build_params.c:27: warning: unused variable `float d'
+build_params.c:27: warning: unused variable `float as'
+build_params.c:27: warning: unused variable `float rn'
+build_params.c:26: warning: unused variable `float cl2'
+build_params.c:26: warning: unused variable `float cl1'
+build_params.c: At top level:
+build_params.c:8: warning: `float l0[5]' defined but not used
+build_params.c:11: warning: `float r0[5]' defined but not used
+build_params.c:14: warning: `float bl[5]' defined but not used
+build_params.c:17: warning: `float br[5]' defined but not used
+build_params.c:21: warning: `float u0[2]' defined but not used
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c delta0.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c f_mu_nu1.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c fp_info.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c gauge_info.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c make_clov1.c
+make_clov1.c: In function `void make_clov1()':
+make_clov1.c:19: warning: unused variable `int b'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c monte_block_ape_b_many.c
+monte_block_ape_b_many.c: In function `void monte_block_ape_b(int)':
+monte_block_ape_b_many.c:20: warning: unused variable `int cb'
+monte_block_ape_b_many.c:20: warning: unused variable `int inb'
+monte_block_ape_b_many.c:20: warning: unused variable `int ina'
+monte_block_ape_b_many.c:20: warning: unused variable `int index1'
+monte_block_ape_b_many.c:20: warning: unused variable `int NumTrj'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c mult_ldu1.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c path.c
+path.c: In function `void path(int *, int *, int)':
+path.c:12: warning: unused variable `struct msg_tag * mtag1'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c setup_links.c
+setup_links.c: In function `void setup_links(int)':
+setup_links.c:14: warning: unused variable `int index'
+setup_links.c:14: warning: unused variable `int n[4]'
+setup_links.c: In function `void path_stuff(int, int, int, int *, int (*)[24][4], int (*)[24][4], int (*)[24], float (*)[24])':
+setup_links.c:79: warning: unused variable `float sum'
+setup_links.c:77: warning: unused variable `int l3'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c setup_offset.c
+setup_offset.c: In function `void setup_offset()':
+setup_offset.c:17: warning: unused variable `int j'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c setup_p_cl.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/layout_hyper.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/check_unitarity.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/gaugefix.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/io_helpers.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/io_helpers_w.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/io_lat4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/io_wb3.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/plaquette4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/restrict_fourier.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic_wilson/w_source.c 
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c control_p.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c w_meson_p.c
+w_meson_p.c: In function `void meson_cont_p(int, int, int *, int *, int, int, float (*)[24])':
+w_meson_p.c:151: warning: unused variable `int t'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c w_baryon_p.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c rotate_field.c
+rotate_field.c: In function `void build_rot_params(float, float *, float *)':
+rotate_field.c:40: warning: unused variable `int i'
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/com_vanilla.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/io_nonansi.c 
+g++  -o su3_fp_cl_bi_h \
+bicgstab.o build_params.o delta0.o f_mu_nu1.o fp_info.o gauge_info.o make_clov1.o monte_block_ape_b_many.o mult_ldu1.o path.o setup_links.o setup_offset.o setup_p_cl.o layout_hyper.o check_unitarity.o gaugefix.o io_helpers.o io_helpers_w.o io_lat4.o io_wb3.o plaquette4.o restrict_fourier.o w_source.o control_p.o  w_meson_p.o w_baryon_p.o rotate_field.o com_vanilla.o io_nonansi.o ../libraries/su3.a ../libraries/complex.a   -lm
+touch target
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+su3_fp_cl_bi_h  < in.sample.su3_fp_cl_bi_h > out.test.su3_fp_cl_bi_h
+../headtail.pl BEGIN RUNNING < out.test.su3_fp_cl_bi_h > out.test.su3_fp_cl_bi_h.tmp
+../headtail.pl BEGIN RUNNING < out.sample.su3_fp_cl_bi_h > out.sample.su3_fp_cl_bi_h.tmp
+../diffn.pl out.test.su3_fp_cl_bi_h.tmp out.sample.su3_fp_cl_bi_h.tmp 1e-5 > \
+   out.test.diff.su3_fp_cl_bi_h
+Premature end of file on out.sample.su3_fp_cl_bi_h.tmp
+make[1]: *** [out.test.diff.su3_fp_cl_bi_h] Error 255
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make -f Make_vanilla target "MYTARGET= su3_fp_cl_bi_n" \
+"DEFINES= -DSPECTRUM  -DBI -DCGTIME" \
+"ADDHEADERS =  " \
+"EXTRA_OBJECTS= control_p_nothing.o "
+make[2]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch .lastmake.humor_irix; /bin/rm -f .lastmake.*
+make -f Make_vanilla clean
+make[3]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch humor_irix.o; /bin/rm -f *.o
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch .lastmake.Make_vanilla.su3_fp_cl_bi_n
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c bicgstab.c
+bicgstab.c: In function `int bicgstab(int, int, int, float, float *, int)':
+bicgstab.c:37: warning: unused variable `struct msg_tag * tag2[8]'
+bicgstab.c:37: warning: unused variable `struct msg_tag * tag[8]'
+bicgstab.c: In function `int bicgstab_iter(int, int, double, double *, int)':
+bicgstab.c:136: warning: unused variable `double dtime'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c build_params.c
+build_params.c: In function `void build_params(float)':
+build_params.c:36: warning: unused variable `float numer'
+build_params.c:36: warning: unused variable `float c01'
+build_params.c:36: warning: unused variable `float c40'
+build_params.c:36: warning: unused variable `float d2'
+build_params.c:36: warning: unused variable `float d1'
+build_params.c:36: warning: unused variable `float rt'
+build_params.c:34: warning: unused variable `float u00'
+build_params.c:34: warning: unused variable `float beta'
+build_params.c:32: warning: unused variable `float c132'
+build_params.c:32: warning: unused variable `float c123'
+build_params.c:31: warning: unused variable `float rx'
+build_params.c:31: warning: unused variable `float ax'
+build_params.c:31: warning: unused variable `float an'
+build_params.c:29: warning: unused variable `float fpauli[4]'
+build_params.c:28: warning: unused variable `float cpauli[4]'
+build_params.c:27: warning: unused variable `float d'
+build_params.c:27: warning: unused variable `float as'
+build_params.c:27: warning: unused variable `float rn'
+build_params.c:26: warning: unused variable `float cl2'
+build_params.c:26: warning: unused variable `float cl1'
+build_params.c: At top level:
+build_params.c:8: warning: `float l0[5]' defined but not used
+build_params.c:11: warning: `float r0[5]' defined but not used
+build_params.c:14: warning: `float bl[5]' defined but not used
+build_params.c:17: warning: `float br[5]' defined but not used
+build_params.c:21: warning: `float u0[2]' defined but not used
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c delta0.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c f_mu_nu1.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c fp_info.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c gauge_info.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c make_clov1.c
+make_clov1.c: In function `void make_clov1()':
+make_clov1.c:19: warning: unused variable `int b'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c monte_block_ape_b_many.c
+monte_block_ape_b_many.c: In function `void monte_block_ape_b(int)':
+monte_block_ape_b_many.c:20: warning: unused variable `int cb'
+monte_block_ape_b_many.c:20: warning: unused variable `int inb'
+monte_block_ape_b_many.c:20: warning: unused variable `int ina'
+monte_block_ape_b_many.c:20: warning: unused variable `int index1'
+monte_block_ape_b_many.c:20: warning: unused variable `int NumTrj'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c mult_ldu1.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c path.c
+path.c: In function `void path(int *, int *, int)':
+path.c:12: warning: unused variable `struct msg_tag * mtag1'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c setup_links.c
+setup_links.c: In function `void setup_links(int)':
+setup_links.c:14: warning: unused variable `int index'
+setup_links.c:14: warning: unused variable `int n[4]'
+setup_links.c: In function `void path_stuff(int, int, int, int *, int (*)[24][4], int (*)[24][4], int (*)[24], float (*)[24])':
+setup_links.c:79: warning: unused variable `float sum'
+setup_links.c:77: warning: unused variable `int l3'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c setup_offset.c
+setup_offset.c: In function `void setup_offset()':
+setup_offset.c:17: warning: unused variable `int j'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c setup_p_cl.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/layout_hyper.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/check_unitarity.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/gaugefix.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/io_helpers.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/io_helpers_w.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/io_lat4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/io_wb3.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/plaquette4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic/restrict_fourier.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME    ../generic_wilson/w_source.c 
+g++ -g -Wall -DINLINE -DVANILLA -I. -DSPECTRUM  -DBI -DCGTIME   -c control_p_nothing.c
+control_p_nothing.c:21: return type for `main' changed to `int'
+control_p_nothing.c: In function `int main(...)':
+control_p_nothing.c:49: warning: unused variable `float norm_fac[10]'
+control_p_nothing.c:47: warning: unused variable `int rstrict[4]'
+control_p_nothing.c:45: warning: unused variable `int key[4]'
+control_p_nothing.c:39: warning: unused variable `float inv_space_vol'
+control_p_nothing.c:39: warning: unused variable `float space_vol'
+control_p_nothing.c:38: warning: unused variable `int num_prop'
+control_p_nothing.c:37: warning: unused variable `int cf'
+control_p_nothing.c:37: warning: unused variable `int sf'
+control_p_nothing.c:37: warning: unused variable `int si'
+control_p_nothing.c:37: warning: unused variable `int ci'
+control_p_nothing.c:35: warning: unused variable `int t'
+control_p_nothing.c:35: warning: unused variable `int j'
+make[2]: *** [control_p_nothing.o] Error 1
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: *** [su3_fp_cl_bi_n] Error 2
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: *** No rule to make target `su3_fp_cl_bi_n', needed by `out.test.su3_fp_cl_bi_n'.  Stop.
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make -f Make_vanilla target "MYTARGET= su3_fp_cl_eig" \
+"DEFINES= -DRANDOM -DEIG -DBI  -DCGTIME" \
+"ADDHEADERS =  " \
+"EXTRA_OBJECTS= boundary_flip.o control_eig.o ranstuff.o \
+ f_measure2.o " 
+make[2]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch .lastmake.humor_irix; /bin/rm -f .lastmake.*
+make -f Make_vanilla clean
+make[3]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch humor_irix.o; /bin/rm -f *.o
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch .lastmake.Make_vanilla.su3_fp_cl_eig
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c bicgstab.c
+bicgstab.c: In function `int bicgstab(int, int, int, float, float *, int)':
+bicgstab.c:37: warning: unused variable `struct msg_tag * tag2[8]'
+bicgstab.c:37: warning: unused variable `struct msg_tag * tag[8]'
+bicgstab.c: In function `int bicgstab_iter(int, int, double, double *, int)':
+bicgstab.c:136: warning: unused variable `double dtime'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c build_params.c
+build_params.c: In function `void build_params(float)':
+build_params.c:36: warning: unused variable `float numer'
+build_params.c:36: warning: unused variable `float c01'
+build_params.c:36: warning: unused variable `float c40'
+build_params.c:36: warning: unused variable `float d2'
+build_params.c:36: warning: unused variable `float d1'
+build_params.c:36: warning: unused variable `float rt'
+build_params.c:34: warning: unused variable `float u00'
+build_params.c:34: warning: unused variable `float beta'
+build_params.c:32: warning: unused variable `float c132'
+build_params.c:32: warning: unused variable `float c123'
+build_params.c:31: warning: unused variable `float rx'
+build_params.c:31: warning: unused variable `float ax'
+build_params.c:31: warning: unused variable `float an'
+build_params.c:29: warning: unused variable `float fpauli[4]'
+build_params.c:28: warning: unused variable `float cpauli[4]'
+build_params.c:27: warning: unused variable `float d'
+build_params.c:27: warning: unused variable `float as'
+build_params.c:27: warning: unused variable `float rn'
+build_params.c:26: warning: unused variable `float cl2'
+build_params.c:26: warning: unused variable `float cl1'
+build_params.c: At top level:
+build_params.c:8: warning: `float l0[5]' defined but not used
+build_params.c:11: warning: `float r0[5]' defined but not used
+build_params.c:14: warning: `float bl[5]' defined but not used
+build_params.c:17: warning: `float br[5]' defined but not used
+build_params.c:21: warning: `float u0[2]' defined but not used
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c delta0.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c f_mu_nu1.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c fp_info.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c gauge_info.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c make_clov1.c
+make_clov1.c: In function `void make_clov1()':
+make_clov1.c:19: warning: unused variable `int b'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c monte_block_ape_b_many.c
+monte_block_ape_b_many.c: In function `void monte_block_ape_b(int)':
+monte_block_ape_b_many.c:20: warning: unused variable `int cb'
+monte_block_ape_b_many.c:20: warning: unused variable `int inb'
+monte_block_ape_b_many.c:20: warning: unused variable `int ina'
+monte_block_ape_b_many.c:20: warning: unused variable `int index1'
+monte_block_ape_b_many.c:20: warning: unused variable `int NumTrj'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c mult_ldu1.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c path.c
+path.c: In function `void path(int *, int *, int)':
+path.c:12: warning: unused variable `struct msg_tag * mtag1'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c setup_links.c
+setup_links.c: In function `void setup_links(int)':
+setup_links.c:14: warning: unused variable `int index'
+setup_links.c:14: warning: unused variable `int n[4]'
+setup_links.c: In function `void path_stuff(int, int, int, int *, int (*)[24][4], int (*)[24][4], int (*)[24], float (*)[24])':
+setup_links.c:79: warning: unused variable `float sum'
+setup_links.c:77: warning: unused variable `int l3'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c setup_offset.c
+setup_offset.c: In function `void setup_offset()':
+setup_offset.c:17: warning: unused variable `int j'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c setup_p_cl.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/layout_hyper.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/check_unitarity.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/gaugefix.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/io_helpers.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/io_helpers_w.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/io_lat4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/io_wb3.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/plaquette4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/restrict_fourier.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic_wilson/w_source.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic_wilson/boundary_flip.c 
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c control_eig.c
+control_eig.c: In function `int main(int, char **)':
+control_eig.c:57: warning: unused variable `struct complex * bar_prop[6][4]'
+control_eig.c:56: warning: unused variable `struct complex * smes_prop[6][10]'
+control_eig.c:55: warning: unused variable `struct complex * pmes_prop[6][10]'
+control_eig.c:53: warning: unused variable `char * bar_kind[4]'
+control_eig.c:51: warning: unused variable `char * mes_kind[10]'
+control_eig.c:49: warning: unused variable `float norm_fac[10]'
+control_eig.c:47: warning: unused variable `int rstrict[4]'
+control_eig.c:45: warning: unused variable `int key[4]'
+control_eig.c:39: warning: unused variable `float space_vol'
+control_eig.c:38: warning: unused variable `int num_prop'
+control_eig.c:37: warning: unused variable `int cf'
+control_eig.c:37: warning: unused variable `int sf'
+control_eig.c:37: warning: unused variable `int si'
+control_eig.c:37: warning: unused variable `int ci'
+control_eig.c:35: warning: unused variable `int t'
+control_eig.c:35: warning: unused variable `int spinindex'
+control_eig.c:33: warning: unused variable `struct site * s'
+control_eig.c:32: warning: unused variable `int i'
+control_eig.c:30: warning: unused variable `float size_r'
+control_eig.c:29: warning: unused variable `int MinCG'
+control_eig.c:27: warning: unused variable `double dtime'
+control_eig.c:24: warning: unused variable `float avs_iters'
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/ranstuff.c 
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME   -c f_measure2.c
+f_measure2.c: In function `int f_measure2(int)':
+f_measure2.c:31: warning: unused variable `int t'
+f_measure2.c:31: warning: unused variable `int z'
+f_measure2.c:31: warning: unused variable `int y'
+f_measure2.c:31: warning: unused variable `int x'
+f_measure2.c:29: warning: unused variable `int MinCG'
+f_measure2.c:23: warning: unused variable `struct msg_tag * tag1'
+f_measure2.c:23: warning: unused variable `struct msg_tag * tag0'
+f_measure2.c:21: warning: unused variable `int dir'
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/com_vanilla.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG -DBI  -DCGTIME    ../generic/io_nonansi.c 
+g++  -o su3_fp_cl_eig \
+bicgstab.o build_params.o delta0.o f_mu_nu1.o fp_info.o gauge_info.o make_clov1.o monte_block_ape_b_many.o mult_ldu1.o path.o setup_links.o setup_offset.o setup_p_cl.o layout_hyper.o check_unitarity.o gaugefix.o io_helpers.o io_helpers_w.o io_lat4.o io_wb3.o plaquette4.o restrict_fourier.o w_source.o boundary_flip.o control_eig.o ranstuff.o  f_measure2.o  com_vanilla.o io_nonansi.o ../libraries/su3.a ../libraries/complex.a   -lm
+touch target
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+su3_fp_cl_eig  < in.sample.su3_fp_cl_eig > out.test.su3_fp_cl_eig
+../headtail.pl BEGIN RUNNING < out.test.su3_fp_cl_eig > out.test.su3_fp_cl_eig.tmp
+../headtail.pl BEGIN RUNNING < out.sample.su3_fp_cl_eig > out.sample.su3_fp_cl_eig.tmp
+../diffn.pl out.test.su3_fp_cl_eig.tmp out.sample.su3_fp_cl_eig.tmp 1e-5 > \
+   out.test.diff.su3_fp_cl_eig
+Premature end of file on out.sample.su3_fp_cl_eig.tmp
+make[1]: *** [out.test.diff.su3_fp_cl_eig] Error 255
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make -f Make_vanilla target "MYTARGET= su3_fp_cg_eig" \
+"DEFINES= -DRANDOM -DEIG  -DCGTIME" \
+"ADDHEADERS =  " \
+"EXTRA_OBJECTS= boundary_flip.o control_eig.o ranstuff.o \
+f_measure2.o congrad_t.o"
+make[2]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch .lastmake.humor_irix; /bin/rm -f .lastmake.*
+make -f Make_vanilla clean
+make[3]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch humor_irix.o; /bin/rm -f *.o
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+touch .lastmake.Make_vanilla.su3_fp_cg_eig
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c bicgstab.c
+bicgstab.c: In function `int bicgstab(int, int, int, float, float *, int)':
+bicgstab.c:37: warning: unused variable `struct msg_tag * tag2[8]'
+bicgstab.c:37: warning: unused variable `struct msg_tag * tag[8]'
+bicgstab.c: In function `int bicgstab_iter(int, int, double, double *, int)':
+bicgstab.c:136: warning: unused variable `double dtime'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c build_params.c
+build_params.c: In function `void build_params(float)':
+build_params.c:36: warning: unused variable `float numer'
+build_params.c:36: warning: unused variable `float c01'
+build_params.c:36: warning: unused variable `float c40'
+build_params.c:36: warning: unused variable `float d2'
+build_params.c:36: warning: unused variable `float d1'
+build_params.c:36: warning: unused variable `float rt'
+build_params.c:34: warning: unused variable `float u00'
+build_params.c:34: warning: unused variable `float beta'
+build_params.c:32: warning: unused variable `float c132'
+build_params.c:32: warning: unused variable `float c123'
+build_params.c:31: warning: unused variable `float rx'
+build_params.c:31: warning: unused variable `float ax'
+build_params.c:31: warning: unused variable `float an'
+build_params.c:29: warning: unused variable `float fpauli[4]'
+build_params.c:28: warning: unused variable `float cpauli[4]'
+build_params.c:27: warning: unused variable `float d'
+build_params.c:27: warning: unused variable `float as'
+build_params.c:27: warning: unused variable `float rn'
+build_params.c:26: warning: unused variable `float cl2'
+build_params.c:26: warning: unused variable `float cl1'
+build_params.c: At top level:
+build_params.c:8: warning: `float l0[5]' defined but not used
+build_params.c:11: warning: `float r0[5]' defined but not used
+build_params.c:14: warning: `float bl[5]' defined but not used
+build_params.c:17: warning: `float br[5]' defined but not used
+build_params.c:21: warning: `float u0[2]' defined but not used
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c delta0.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c f_mu_nu1.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c fp_info.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c gauge_info.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c make_clov1.c
+make_clov1.c: In function `void make_clov1()':
+make_clov1.c:19: warning: unused variable `int b'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c monte_block_ape_b_many.c
+monte_block_ape_b_many.c: In function `void monte_block_ape_b(int)':
+monte_block_ape_b_many.c:20: warning: unused variable `int cb'
+monte_block_ape_b_many.c:20: warning: unused variable `int inb'
+monte_block_ape_b_many.c:20: warning: unused variable `int ina'
+monte_block_ape_b_many.c:20: warning: unused variable `int index1'
+monte_block_ape_b_many.c:20: warning: unused variable `int NumTrj'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c mult_ldu1.c
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c path.c
+path.c: In function `void path(int *, int *, int)':
+path.c:12: warning: unused variable `struct msg_tag * mtag1'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c setup_links.c
+setup_links.c: In function `void setup_links(int)':
+setup_links.c:14: warning: unused variable `int index'
+setup_links.c:14: warning: unused variable `int n[4]'
+setup_links.c: In function `void path_stuff(int, int, int, int *, int (*)[24][4], int (*)[24][4], int (*)[24], float (*)[24])':
+setup_links.c:79: warning: unused variable `float sum'
+setup_links.c:77: warning: unused variable `int l3'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c setup_offset.c
+setup_offset.c: In function `void setup_offset()':
+setup_offset.c:17: warning: unused variable `int j'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c setup_p_cl.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/layout_hyper.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/check_unitarity.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/gaugefix.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/io_helpers.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/io_helpers_w.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/io_lat4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/io_wb3.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/plaquette4.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/restrict_fourier.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic_wilson/w_source.c 
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic_wilson/boundary_flip.c 
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c control_eig.c
+control_eig.c: In function `int main(int, char **)':
+control_eig.c:57: warning: unused variable `struct complex * bar_prop[6][4]'
+control_eig.c:56: warning: unused variable `struct complex * smes_prop[6][10]'
+control_eig.c:55: warning: unused variable `struct complex * pmes_prop[6][10]'
+control_eig.c:53: warning: unused variable `char * bar_kind[4]'
+control_eig.c:51: warning: unused variable `char * mes_kind[10]'
+control_eig.c:49: warning: unused variable `float norm_fac[10]'
+control_eig.c:47: warning: unused variable `int rstrict[4]'
+control_eig.c:45: warning: unused variable `int key[4]'
+control_eig.c:39: warning: unused variable `float space_vol'
+control_eig.c:38: warning: unused variable `int num_prop'
+control_eig.c:37: warning: unused variable `int cf'
+control_eig.c:37: warning: unused variable `int sf'
+control_eig.c:37: warning: unused variable `int si'
+control_eig.c:37: warning: unused variable `int ci'
+control_eig.c:35: warning: unused variable `int t'
+control_eig.c:35: warning: unused variable `int spinindex'
+control_eig.c:33: warning: unused variable `struct site * s'
+control_eig.c:32: warning: unused variable `int i'
+control_eig.c:30: warning: unused variable `float size_r'
+control_eig.c:29: warning: unused variable `int MinCG'
+control_eig.c:27: warning: unused variable `double dtime'
+control_eig.c:24: warning: unused variable `float avs_iters'
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/ranstuff.c 
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c f_measure2.c
+f_measure2.c: In function `int f_measure2(int)':
+f_measure2.c:31: warning: unused variable `int t'
+f_measure2.c:31: warning: unused variable `int z'
+f_measure2.c:31: warning: unused variable `int y'
+f_measure2.c:31: warning: unused variable `int x'
+f_measure2.c:29: warning: unused variable `int MinCG'
+f_measure2.c:23: warning: unused variable `struct msg_tag * tag1'
+f_measure2.c:23: warning: unused variable `struct msg_tag * tag0'
+f_measure2.c:21: warning: unused variable `int dir'
+g++ -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME   -c congrad_t.c
+congrad_t.c: In function `int congrad_t(int, int, int, float, float *, int)':
+congrad_t.c:78: warning: use of `l' length character with `e' type character
+congrad_t.c:39: warning: unused variable `float test_tr'
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/com_vanilla.c
+g++ -c -g -Wall -DINLINE -DVANILLA -I. -DRANDOM -DEIG  -DCGTIME    ../generic/io_nonansi.c 
+g++  -o su3_fp_cg_eig \
+bicgstab.o build_params.o delta0.o f_mu_nu1.o fp_info.o gauge_info.o make_clov1.o monte_block_ape_b_many.o mult_ldu1.o path.o setup_links.o setup_offset.o setup_p_cl.o layout_hyper.o check_unitarity.o gaugefix.o io_helpers.o io_helpers_w.o io_lat4.o io_wb3.o plaquette4.o restrict_fourier.o w_source.o boundary_flip.o control_eig.o ranstuff.o  f_measure2.o congrad_t.o com_vanilla.o io_nonansi.o ../libraries/su3.a ../libraries/complex.a   -lm
+touch target
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/arb_clov_invert'
+su3_fp_cg_eig  < in.sample.su3_fp_cg_eig > out.test.su3_fp_cg_eig
+../headtail.pl BEGIN RUNNING < out.test.su3_fp_cg_eig > out.test.su3_fp_cg_eig.tmp
+../headtail.pl BEGIN RUNNING < out.sample.su3_fp_cg_eig > out.sample.su3_fp_cg_eig.tmp
+../diffn.pl out.test.su3_fp_cg_eig.tmp out.sample.su3_fp_cg_eig.tmp 1e-5 > \
+   out.test.diff.su3_fp_cg_eig
+Premature end of file on out.sample.su3_fp_cg_eig.tmp
+make[1]: *** [out.test.diff.su3_fp_cg_eig] Error 255
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/arb_clov_invert'

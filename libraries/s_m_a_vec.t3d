@@ -1,0 +1,39 @@
+; s_m_a_vec.t3d: T3D assembler version of s_m_a_vec.c
+	.ident s_m_a_vec$c
+
+	.psect	scalar_mult_add_su3_vector@code,code
+scalar_mult_add_su3_vector::
+	lds	f11, 0(r17)	; b.c[0].real
+	lds	f13, 4(r17)	; b.c[0].imag
+	lds	f15, 8(r17)	; b.c[1].real
+	muls/d	f11,f18,f11	; int.c[0].real
+	lds	f23, 12(r17)	; b.c[1].imag
+	muls/d	f13,f18,f13	; int.c[0].imag
+	lds	f25, 16(r17)	; b.c[2].real
+	muls/d	f15,f18,f15	; int.c[1].real
+	lds	f27, 20(r17)	; b.c[2].imag
+	muls/d	f23,f18,f23	; int.c[1].imag
+	lds	f10, 0(r16)	; a.c[0].real
+	muls/d	f25,f18,f25	; int.c[2].real
+	lds	f12, 4(r16)	; a.c[0].imag
+	muls/d	f27,f18,f27	; int.c[2].imag
+	lds	f14, 8(r16)	; a.c[1].real
+	adds/d	f10,f11,f11	; int.c[0].real
+	lds	f22, 12(r16)	; a.c[1].imag
+	adds/d	f12,f13,f13	; int.c[0].imag
+	lds	f24, 16(r16)	; a.c[2].real
+	adds/d	f14,f15,f15	; int.c[1].real
+	lds	f26, 20(r16)	; a.c[2].imag
+	adds/d	f22,f23,f23	; int.c[1].imag
+	adds/d	f24,f25,f25	; int.c[2].real
+	adds/d	f26,f27,f27	; int.c[2].imag
+	sts	f11, 0(r19)	; c.c[0].real
+	sts	f13, 4(r19)	; c.c[0].imag
+	sts	f15, 8(r19)	; c.c[1].real
+	sts	f23, 12(r19)	; c.c[1].imag
+	sts	f25, 16(r19)	; c.c[2].real
+	sts	f27, 20(r19)	; c.c[2].imag
+	ret	r31, (r26)
+	.endp
+
+	.end

@@ -1,0 +1,57 @@
+; su3_rdot.t3d: T3D assembler version of su3_rdot.c
+	.ident su3_rdot$c
+
+	.psect	su3_rdot@code,code
+su3_rdot::
+	lds	f10, 0(r16)	; a.c[0].real
+	lds	f11, 0(r17)	; b.c[0].real
+	lds	f12, 4(r16)	; a.c[0].imag
+	lds	f13, 4(r17)	; b.c[0].imag
+	muls/d	f10, f11, f10   ; c[0].real
+	lds	f14, 8(r16)	; a.c[1].real
+	lds	f15, 8(r17)	; b.c[1].real
+	muls/d	f12, f13, f12   ; c[0].imag
+	lds	f22, 12(r16)	; a.c[1].imag
+	lds	f23, 12(r17)	; b.c[1].imag
+	muls/d	f14, f15, f14   ; c[1].real
+	lds	f24, 16(r16)	; a.c[2].real
+	lds	f25, 16(r17)	; b.c[2].real
+	muls/d	f22, f23, f22   ; c[1].imag
+	lds	f26, 20(r16)	; a.c[2].imag
+	lds	f27, 20(r17)	; b.c[2].imag
+	muls/d	f24, f25, f24   ; c[2].real
+	adds/d	f10,f12,f10
+	muls/d	f26, f27, f26   ; c[2].imag
+	adds/d	f14,f22,f14
+	adds/d  f24,f26,f24
+	adds/d	f10,f14,f10
+	adds/d	f24,f10,f0
+	ret	r31, (r26)		; Line 17
+
+;	lds	f1, (r16)		; Line 11
+;	lds	f17, (r17)		; Line 11
+;	lds	f16, 4(r17)		; Line 12
+;	lds	f0, 4(r16)		; Line 12
+;	muls/d	f17, f1, f1		; Line 11
+;	muls/d	f16, f0, f16		; Line 12
+;	lds	f0, 8(r17)		; Line 13
+;	lds	f17, 8(r16)		; Line 13
+;	muls/d	f0, f17, f0		; Line 13
+;	adds/d	f1, f16, f1		; Line 12
+;	lds	f16, 12(r17)		; Line 14
+;	lds	f17, 12(r16)		; Line 14
+;	muls/d	f16, f17, f16		; Line 14
+;	adds/d	f1, f0, f0		; Line 13
+;	lds	f1, 16(r17)		; Line 15
+;	lds	f17, 16(r16)		; Line 15
+;	muls/d	f1, f17, f1		; Line 15
+;	adds/d	f0, f16, f16		; Line 14
+;	lds	f0, 20(r17)		; Line 16
+;	lds	f17, 20(r16)		; Line 16
+;	muls/d	f0, f17, f0		; Line 16
+;	adds/d	f16, f1, f1		; Line 15
+;	adds/d	f1, f0, f0		; Line 16
+;	ret	r31, (r26)		; Line 17
+	.endp
+
+	.end

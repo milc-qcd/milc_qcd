@@ -1,0 +1,9 @@
+# For generating sample ouptut from trusted code
+# For dense_static_su3
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = dense_su3 halfdense_su3 halfdense_axial_su3 dense_su3_lpbp
+
+include ../Make_sample_template

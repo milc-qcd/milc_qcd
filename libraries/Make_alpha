@@ -1,0 +1,67 @@
+# Makefile for Libraries for QCD programs
+#
+# For alpha workstations, includes assembler code
+# Originally designed for the Alpha 21064 processor
+#  DO NOT USE WITH DOUBLE PRECISION VERSION!! (Until we have double
+#     precision assembly code)
+
+MAKEFILE = Make_alpha
+
+# See Make_RS6K for IBM RS6000 assembly code
+# See Make_t3e for the Cray T3E assembly code
+# See Make_vanilla for generic code
+
+#CFLAGS =  -O  -DFAST -float	#Dec alpha cc
+CFLAGS =  -O  -DFAST -fast	#Dec alpha cc, new versions
+#CFLAGS =  -O  -DFAST 	        #gnu c cc
+
+CC = cc	#most
+#CC = gcc	#Gnu c cc
+
+#install .alpha (assembler code) in the suffixes list
+.SUFFIXES:
+.SUFFIXES: .o .alpha .c .y .l .s
+
+.c.o:
+	$(CC) $(CFLAGS) -c $*.c
+
+# compile alpha assembly language routines 
+.alpha.o:
+	cp $*.alpha $*.s
+	cc -O -DFAST -DPROTO -float -c $*.s
+	rm $*.s
+
+#Assembler language routines
+m_mat_nn.o: m_mat_nn.alpha
+m_mat_an.o: m_mat_an.alpha
+m_mat_na.o: m_mat_na.alpha
+addmat.o: addmat.alpha
+s_m_a_mat.o: s_m_a_mat.alpha
+
+m_matvec.o: m_matvec.alpha
+m_amatvec.o: m_amatvec.alpha
+m_amv_4dir.o: m_amv_4dir.alpha
+m_mv_s_4dir.o: m_mv_s_4dir.alpha
+s_m_a_vec.o: s_m_a_vec.alpha
+su3_rdot.o: su3_rdot.alpha
+msq_su3vec.o: msq_su3vec.alpha
+sub4vecs.o: sub4vecs.alpha
+
+cs_m_a_wvec.o: cs_m_a_wvec.alpha
+m_amat_hwvec.o: m_amat_hwvec.alpha
+m_mat_hwvec.o: m_mat_hwvec.alpha
+msq_wvec.o: msq_wvec.alpha
+wvec_dot.o: wvec_dot.alpha
+grow4wvecs.o: grow4wvecs.alpha
+wp_grow.o: wp_grow.alpha
+wp_grow_a.o: wp_grow_a.alpha
+wp_shrink.o: wp_shrink.alpha
+wp_shrink4.o: wp_shrink4.alpha
+
+# Prefetch - taken from T3E code
+prefetch.o: prefetch32.alpha
+	cp prefetch32.alpha prefetch.s
+	cc -O -DFAST -DPROTO -float -c prefetch.s
+	-/bin/rm prefetch.s
+
+include Make_template

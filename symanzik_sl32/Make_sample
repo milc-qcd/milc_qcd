@@ -1,0 +1,10 @@
+# For generating sample ouptut from trusted code
+# For symanzik_sl32
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_hmc_symzk1 su3_ora_symzk1
+
+include ../Make_sample_template
+

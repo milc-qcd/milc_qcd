@@ -1,0 +1,113 @@
+SU3 with Kogut-Susskind fermions
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+R algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 4
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+With spectrum measurements
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.6
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site 0.0001
+error_for_propagator 0.0001
+gauge configuration to be saved in lat.sample
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 2.000000e-02
+WARMUPS COMPLETED
+GFIX: Ended at step 21. Av gf action 9.333e-01, delta 1.758e-06
+MES_SCREEN  0  4.039758e+00  3.049206e+00  -6.552371e+00  -4.035276e+00  -3.046278e+00  6.559079e+00
+MES_SCREEN  1  8.653493e-01  4.296529e-01  1.097473e+00  8.646142e-01  4.295545e-01  1.098053e+00
+MES_SCREEN  2  1.229614e+00  7.709150e-01  -1.722970e+00  -1.228198e+00  -7.703252e-01  1.724514e+00
+MES_SCREEN  3  9.082884e-01  3.819038e-01  1.050282e+00  9.075959e-01  3.819159e-01  1.050728e+00
+NUC_SCREEN  0  6.438777e-06
+NUC_SCREEN  1  3.219685e-02
+NUC_SCREEN  2  6.552721e-07
+NUC_SCREEN  3  -2.467928e-02
+QM_PROP  0  6.009393e-02
+QM_PROP  1  2.548018e-02
+QM_PROP  2  -2.370479e-02
+GMES 1.893434e+00 4.791559e-02 3.300000e+01 2.091085e+00 2.083070e+00
+FMES 3.505176e-02 3.117323e-03 1.081791e+00 -6.244286e-01 1.477889e+00
+GFIX: Ended at step 21. Av gf action 9.137e-01, delta 1.878e-06
+MES_SCREEN  0  4.401164e+00  3.093261e+00  -6.895540e+00  -4.394501e+00  -3.089794e+00  6.903969e+00
+MES_SCREEN  1  1.270321e+00  4.097183e-01  1.243339e+00  1.268482e+00  4.093704e-01  1.244413e+00
+MES_SCREEN  2  1.218414e+00  6.206490e-01  -1.518764e+00  -1.216138e+00  -6.198841e-01  1.520752e+00
+MES_SCREEN  3  9.334769e-01  3.873284e-01  1.046808e+00  9.320128e-01  3.871390e-01  1.047528e+00
+NUC_SCREEN  0  8.817183e-06
+NUC_SCREEN  1  3.047205e-02
+NUC_SCREEN  2  1.016846e-06
+NUC_SCREEN  3  -2.860021e-02
+QM_PROP  0  7.774237e-02
+QM_PROP  1  2.692978e-02
+QM_PROP  2  -2.180728e-02
+GMES 1.394179e+00 3.827309e-02 4.700000e+01 1.909433e+00 1.898450e+00
+FMES -3.126919e-02 7.147789e-02 1.132612e+00 -6.355283e-01 1.519285e+00
+RUNNING COMPLETED
+average cg iters for step= 2.950000e+01
+average cg iters for measurement= 4.000000e+01
+average cg iters for spectrum = 1.360000e+02
+Time = 2.217000e+01 seconds
+total_iters = 1549
+Saved gauge configuration serially to binary file lat.sample
+Time stamp Sat Oct 18 19:41:25 1997
+Checksums a6962b21 d88fd754
+Wrote info file lat.sample.info
+Time to save = 4.000000e-02
+CHECK PLAQ: 1.909433e+00 1.898450e+00
+
+
+warms 0
+trajecs 1
+traj_between_meas 1
+beta 5.6
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 0
+max_cg_iterations 100
+error_per_site 0.0001
+error_for_propagator 0.0001
+Restored binary gauge configuration serially from file lat.sample
+Checksums a6962b21 d88fd754 OK
+Time to reload gauge configuration = 4.000000e-02
+CHECK PLAQ: 1.909433e+00 1.898450e+00
+Unitarity checked
+Time to check unitarity = 2.000000e-02
+WARMUPS COMPLETED
+GFIX: Ended at step 1. Av gf action 9.137e-01, delta 8.345e-07
+MES_SCREEN  0  4.400985e+00  3.093215e+00  -6.895226e+00  -4.394321e+00  -3.089748e+00  6.903653e+00
+MES_SCREEN  1  1.270307e+00  4.097663e-01  1.243585e+00  1.268468e+00  4.094180e-01  1.244660e+00
+MES_SCREEN  2  1.218169e+00  6.204649e-01  -1.518379e+00  -1.215894e+00  -6.197006e-01  1.520369e+00
+MES_SCREEN  3  9.333675e-01  3.872881e-01  1.046775e+00  9.319036e-01  3.870988e-01  1.047495e+00
+NUC_SCREEN  0  8.815803e-06
+NUC_SCREEN  1  3.047024e-02
+NUC_SCREEN  2  1.016502e-06
+NUC_SCREEN  3  -2.859737e-02
+QM_PROP  0  7.774588e-02
+QM_PROP  1  2.693388e-02
+QM_PROP  2  -2.179337e-02
+GMES 1.394179e+00 3.827304e-02 4.500000e+01 1.909433e+00 1.898450e+00
+FMES -5.595830e-03 4.929304e-02 1.019569e+00 -7.079723e-01 1.571687e+00
+RUNNING COMPLETED
+average cg iters for step= -9.900000e+01
+average cg iters for measurement= 4.500000e+01
+average cg iters for spectrum = 1.590000e+02
+Time = 1.260000e+00 seconds
+total_iters = 1753
+
+

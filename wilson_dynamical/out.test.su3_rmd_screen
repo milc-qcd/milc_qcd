@@ -1,0 +1,101 @@
+SU3 with Wilson fermions
+Microcanonical simulation with refreshing
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+R algorithm
+With spectrum measurements
+start: Fri Aug 30 23:29:52 2002
+
+type 0 for no prompts  or 1 for prompts
+nflavors 2
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.8 MBytes per node for lattice
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.46
+kappa 0.111
+microcanonical_time_step 0.02
+steps_per_trajectory 5
+max_cg_iterations 100
+error_per_site 1e-05
+error_for_propagator 1e-05
+fresh 
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 1.209021e-03
+WARMUPS COMPLETED
+F2MES 1.185831e+01 -5.956203e-02 -9.721693e-01 -4.750136e-01 1.212440e+01 6.781471e-02 3.022142e-07
+GFIX: Ended at step 3. Av gf action 9.91335094e-01, delta 8.747e-05
+SPROPS 0 0 4.5622189e+01 -3.5734072e-01
+SPROPS 0 1 5.8124986e+00 -3.2571807e+00
+SPROPS 0 2 2.2454672e+00 -3.9611310e-02
+SPROPS 0 3 5.6828108e+00 3.0437112e+00
+PSEUDO2_Z  0  2.035594e+03   2.264516e-01
+PSEUDO2_Z  1  2.731357e+02   1.495404e+02
+PSEUDO2_Z  2  1.073527e+02   -1.181102e-01
+PSEUDO2_Z  3  2.733106e+02   -1.489571e+02
+SIGMA  0  1.134474e+03
+SIGMA  1  -1.369935e+02
+SIGMA  2  -3.120759e+01
+SIGMA  3  -1.378486e+02
+RHO31312  0  1.135017e+03
+RHO31312  1  2.804222e+01
+RHO31312  2  -3.078286e+01
+RHO31312  3  2.705586e+01
+RHO112  0  2.032442e+03
+RHO112  1  2.723122e+02
+RHO112  2  1.069812e+02
+RHO112  3  2.725292e+02
+A1_112  0  1.135181e+03
+A1_112  1  -1.372114e+02
+A1_112  2  -3.121521e+01
+A1_112  3  -1.380032e+02
+GMES 2.853882e+00 1.535020e-03 1.600000e+01 2.852626e+00 2.848919e+00
+F2MES 1.175357e+01 -8.382120e-03 -1.129217e+00 -2.289034e-01 1.195514e+01 -2.643211e-01 2.640299e-07
+GFIX: Ended at step 3. Av gf action 9.84115571e-01, delta 9.698e-05
+SPROPS 0 0 4.4880424e+01 -1.1847296e-01
+SPROPS 0 1 5.4184313e+00 -3.1384885e+00
+SPROPS 0 2 2.0340540e+00 -5.4959454e-02
+SPROPS 0 3 5.3395376e+00 3.0026472e+00
+PSEUDO2_Z  0  2.004264e+03   -1.043745e+00
+PSEUDO2_Z  1  2.576550e+02   1.470061e+02
+PSEUDO2_Z  2  9.752266e+01   1.403694e-01
+PSEUDO2_Z  3  2.561239e+02   -1.463301e+02
+SIGMA  0  1.172247e+03
+SIGMA  1  -1.193875e+02
+SIGMA  2  -2.272103e+01
+SIGMA  3  -1.184281e+02
+RHO31312  0  1.174223e+03
+RHO31312  1  3.961383e+01
+RHO31312  2  -2.186003e+01
+RHO31312  3  3.874878e+01
+RHO112  0  1.997880e+03
+RHO112  1  2.561822e+02
+RHO112  2  9.695064e+01
+RHO112  3  2.547261e+02
+A1_112  0  1.174457e+03
+A1_112  1  -1.195934e+02
+A1_112  2  -2.272695e+01
+A1_112  3  -1.186769e+02
+GMES 2.734876e+00 -1.906293e-03 1.600000e+01 2.723430e+00 2.728001e+00
+RUNNING COMPLETED
+average cg iters for step= 1.150000e+01
+average cg iters for measurement= 1.600000e+01
+average cg iters for spectrum = 2.195000e+02
+Time = 2.394273e+00 seconds
+total_iters = 592
+
+
+get_i: EOF on STDIN while expecting warms.
+exit: Fri Aug 30 23:29:54 2002
+

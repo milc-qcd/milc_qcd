@@ -1,0 +1,110 @@
+SU3 with Kogut-Susskind fermions
+Microcanonical simulation with refreshing
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+R algorithm
+start: Tue Oct  8 17:18:40 2002
+
+type 0 for no prompts  or 1 for prompts
+nflavors 2
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 1234
+LAYOUT = 2d-squares, options = EVENFIRST,
+Mallocing 4.0 MBytes per node for lattice
+
+
+warms 0
+trajecs 5
+traj_between_meas 5
+beta 5.6
+mass 0.125
+microcanonical_time_step 0.1
+steps_per_trajectory 5
+max_cg_iterations 100
+error_per_site 0.125
+error_for_propagator 0.125
+fresh 
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 4.348040e-03
+WARMUPS COMPLETED
+CONGRAD5: time = 2.891099e-02 iters = 4 mflops = 3.434231e+02
+CONGRAD5: time = 2.858901e-02 iters = 4 mflops = 3.472909e+02
+CONGRAD5: time = 2.858007e-02 iters = 4 mflops = 3.473996e+02
+CONGRAD5: time = 3.568196e-02 iters = 5 mflops = 3.478194e+02
+CONGRAD5: time = 3.568196e-02 iters = 5 mflops = 3.478194e+02
+CONGRAD5: time = 3.571296e-02 iters = 5 mflops = 3.475176e+02
+CONGRAD5: time = 3.624105e-02 iters = 5 mflops = 3.424536e+02
+CONGRAD5: time = 3.564703e-02 iters = 5 mflops = 3.481602e+02
+CONGRAD5: time = 3.567910e-02 iters = 5 mflops = 3.478473e+02
+CONGRAD5: time = 3.563595e-02 iters = 5 mflops = 3.482685e+02
+CONGRAD5: time = 3.569496e-02 iters = 5 mflops = 3.476928e+02
+CONGRAD5: time = 3.565204e-02 iters = 5 mflops = 3.481113e+02
+CONGRAD5: time = 3.561902e-02 iters = 5 mflops = 3.484341e+02
+CONGRAD5: time = 3.566992e-02 iters = 5 mflops = 3.479368e+02
+CONGRAD5: time = 3.667200e-02 iters = 5 mflops = 3.384294e+02
+CONGRAD5: time = 4.239905e-02 iters = 5 mflops = 2.927160e+02
+CONGRAD5: time = 3.586197e-02 iters = 5 mflops = 3.460736e+02
+CONGRAD5: time = 3.572702e-02 iters = 5 mflops = 3.473807e+02
+CONGRAD5: time = 3.578699e-02 iters = 5 mflops = 3.467987e+02
+CONGRAD5: time = 3.569305e-02 iters = 5 mflops = 3.477114e+02
+CONGRAD5: time = 3.562903e-02 iters = 5 mflops = 3.483361e+02
+CONGRAD5: time = 3.563404e-02 iters = 5 mflops = 3.482872e+02
+CONGRAD5: time = 3.574908e-02 iters = 5 mflops = 3.471664e+02
+CONGRAD5: time = 3.563297e-02 iters = 5 mflops = 3.482977e+02
+CONGRAD5: time = 3.565192e-02 iters = 5 mflops = 3.481125e+02
+CONGRAD5: time = 3.564000e-02 iters = 5 mflops = 3.482289e+02
+GMES 2.475012e-01 2.016883e-02 5.000000e+00 1.757903e+00 1.751976e+00
+FMES 1.613250e-01 7.612324e-01 3.475577e-01 -3.480591e-01 1.411901e+00
+RUNNING COMPLETED
+average cg iters for step= 5.000000e+00
+average cg iters for measurement= 5.000000e+00
+Time = 9.019609e+00 seconds
+total_iters = 127
+
+
+warms 0
+trajecs 1
+traj_between_meas 1
+beta 5.6
+mass 0.0125
+microcanonical_time_step 0.01
+steps_per_trajectory 5
+max_cg_iterations 300
+error_per_site 1e-05
+error_for_propagator 1e-05
+continue 
+save_serial lat.time
+CHECK PLAQ: 1.757903e+00 1.751976e+00
+Unitarity checked.  Max deviation 2.98e-07
+Time to check unitarity = 4.997969e-03
+WARMUPS COMPLETED
+CONGRAD5: time = 9.858609e-01 iters = 138 mflops = 3.474529e+02
+CONGRAD5: time = 9.703660e-01 iters = 137 mflops = 3.504431e+02
+CONGRAD5: time = 9.884139e-01 iters = 137 mflops = 3.440442e+02
+CONGRAD5: time = 9.755660e-01 iters = 135 mflops = 3.434865e+02
+CONGRAD5: time = 1.007382e+00 iters = 139 mflops = 3.424942e+02
+CONGRAD5: time = 9.713830e-01 iters = 137 mflops = 3.500763e+02
+GMES 2.616659e-01 1.789247e-02 1.370000e+02 1.755954e+00 1.752037e+00
+FMES -3.823843e-04 6.903648e-02 3.819172e-01 -3.678602e-01 1.485491e+00
+RUNNING COMPLETED
+average cg iters for step= 1.370000e+02
+average cg iters for measurement= 1.370000e+02
+Time = 7.531632e+00 seconds
+total_iters = 950
+Saved gauge configuration serially to binary file lat.time
+Time stamp Tue Oct  8 17:18:56 2002
+Checksums 5acab4d5 116f7b54
+Wrote info file lat.time.info
+Time to save = 5.046390e-01
+CHECK PLAQ: 1.755954e+00 1.752037e+00
+
+
+get_i: EOF on STDIN while expecting warms.
+exit: Tue Oct  8 17:18:57 2002
+

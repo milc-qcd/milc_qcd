@@ -1,0 +1,54 @@
+#  Generic routines for pure gauge actions
+#  MIMD version 6
+#
+#  Generic make-include file for generic_pg codes
+#  This template file defines rules and macros common to all applications
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  The paths are relative to the application directory.
+
+G_PG_ALL = d_action.o dsdu_qhb.o monte.o relax.o update.o update_h.o \
+           update_ora.o update_u.o
+
+# Must match our headers in generic_pg_includes.h
+G_PG_HEADERS = \
+  ../include/config.h \
+  defines.h \
+  ../include/random.h \
+  lattice.h \
+  ../include/complex.h \
+  ../include/su3.h \
+  ../include/macros.h \
+  ../include/comdefs.h \
+  ../include/generic.h \
+  ../include/generic_pg.h
+
+G_PG_ALL_DEPEND = \
+  ../generic_pg/generic_pg_includes.h \
+  ../generic_pg/Make_template \
+  ../include/Make_template \
+  ${LASTMAKE} \
+  ${G_PG_HEADERS}
+
+${G_PG_ALL} : ${G_PG_ALL_DEPEND}
+
+# Rules for header files
+include ../include/Make_template
+
+d_action.o: ../generic_pg/d_action.c
+	${CC} -c ${CFLAGS}  ../generic_pg/d_action.c
+dsdu_qhb.o: ../generic_pg/dsdu_qhb.c
+	${CC} -c ${CFLAGS}  ../generic_pg/dsdu_qhb.c
+monte.o: ../generic_pg/monte.c
+	${CC} -c ${CFLAGS}  ../generic_pg/monte.c
+relax.o: ../generic_pg/relax.c
+	${CC} -c ${CFLAGS}  ../generic_pg/relax.c
+update.o: ../generic_pg/update.c
+	${CC} -c ${CFLAGS}  ../generic_pg/update.c
+update_h.o: ../generic_pg/update_h.c
+	${CC} -c ${CFLAGS}  ../generic_pg/update_h.c
+update_ora.o: ../generic_pg/update_ora.c
+	${CC} -c ${CFLAGS}  ../generic_pg/update_ora.c
+update_u.o: ../generic_pg/update_u.c
+	${CC} -c ${CFLAGS}  ../generic_pg/update_u.c

@@ -1,0 +1,9 @@
+# For generating sample ouptut from trusted code
+# For wilson_invert
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_wil_cg su3_wil_bi su3_whl_cg su3_whl_bi
+
+include ../Make_sample_template

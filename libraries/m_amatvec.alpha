@@ -1,0 +1,150 @@
+/* coded for the alpha 21064 */
+	.ugen	
+	.verstamp	3 11
+	.text	
+	.align	4
+	.file	2 "m_amatvec.c"
+	.globl	mult_adj_su3_mat_vec
+	.loc	2 64
+ #   64	void mult_adj_su3_mat_vec(a,b,c) su3_matrix *a; su3_vector *b,*c; {
+	.ent	mult_adj_su3_mat_vec 2
+mult_adj_su3_mat_vec:
+	.option	O2
+	ldgp	$gp, 0($27)
+	.frame	$sp, 0, $26, 0
+	.prologue	1
+	.loc	2 64
+
+	.loc	2 67
+ #   65	int i,j,k;
+ #   66	register float t,ar,ai,br,bi,cr,ci;
+ #   67	    for(i=0;i<3;i++){
+	bis	$31, $31, $0
+	bis	$16, $16, $19
+	bis	$18, $18, $20
+$32:
+	.loc	2 67
+
+	.loc	2 69
+ #   68	
+ #   69		ar=a->e[0][i].real; ai=a->e[0][i].imag;
+	lds	$f0, 0($19)
+	.loc	2 69
+
+	lds	$f1, 4($19)
+	.loc	2 70
+ #   70		br=b->c[0].real; bi=b->c[0].imag;
+	lds	$f16, 0($17)
+	.loc	2 70
+
+	lds	$f17, 4($17)
+	.loc	2 71
+ #   71		cr=ar*br; t=ai*bi; cr += t;
+	.loc	2 71
+
+	.loc	2 71
+
+	muls	$f0, $f16, $f10
+	muls	$f1, $f17, $f11
+	adds	$f10, $f11, $f18
+	.loc	2 72
+ #   72		ci=ar*bi; t=ai*br; ci -= t;
+	.loc	2 72
+
+	.loc	2 72
+
+	muls	$f0, $f17, $f12
+	muls	$f1, $f16, $f13
+	subs	$f12, $f13, $f19
+	.loc	2 74
+ #   73	
+ #   74		ar=a->e[1][i].real; ai=a->e[1][i].imag;
+	lds	$f0, 24($19)
+	.loc	2 74
+
+	lds	$f1, 28($19)
+	.loc	2 75
+ #   75		br=b->c[1].real; bi=b->c[1].imag;
+	lds	$f16, 8($17)
+	.loc	2 75
+
+	lds	$f17, 12($17)
+	.loc	2 76
+ #   76		t=ar*br; cr += t; t=ai*bi; cr += t;
+	.loc	2 76
+
+	muls	$f0, $f16, $f14
+	adds	$f18, $f14, $f18
+	.loc	2 76
+
+	.loc	2 76
+
+	muls	$f1, $f17, $f15
+	adds	$f18, $f15, $f18
+	.loc	2 77
+ #   77		t=ar*bi; ci += t; t=ai*br; ci -= t;
+	.loc	2 77
+
+	muls	$f0, $f17, $f22
+	adds	$f19, $f22, $f19
+	.loc	2 77
+
+	.loc	2 77
+
+	muls	$f1, $f16, $f23
+	subs	$f19, $f23, $f19
+	.loc	2 79
+ #   78	
+ #   79		ar=a->e[2][i].real; ai=a->e[2][i].imag;
+	lds	$f0, 48($19)
+	.loc	2 79
+
+	lds	$f1, 52($19)
+	.loc	2 80
+ #   80		br=b->c[2].real; bi=b->c[2].imag;
+	lds	$f16, 16($17)
+	.loc	2 80
+
+	lds	$f17, 20($17)
+	.loc	2 81
+ #   81		t=ar*br; cr += t; t=ai*bi; cr += t;
+	.loc	2 81
+
+	muls	$f0, $f16, $f24
+	adds	$f18, $f24, $f18
+	.loc	2 81
+
+	.loc	2 81
+
+	muls	$f1, $f17, $f25
+	adds	$f18, $f25, $f18
+	.loc	2 82
+ #   82		t=ar*bi; ci += t; t=ai*br; ci -= t;
+	.loc	2 82
+
+	muls	$f0, $f17, $f26
+	adds	$f19, $f26, $f19
+	.loc	2 82
+
+	.loc	2 82
+
+	muls	$f1, $f16, $f27
+	subs	$f19, $f27, $f19
+	.loc	2 84
+ #   83	
+ #   84		c->c[i].real=cr;
+	sts	$f18, 0($20)
+	.loc	2 85
+ #   85		c->c[i].imag=ci;
+	sts	$f19, 4($20)
+	addl	$0, 1, $0
+	addq	$19, 8, $19
+	addq	$20, 8, $20
+	subq	$0, 3, $1
+	bne	$1, $32
+	.loc	2 87
+ #   86	    }
+ #   87	}
+	.livereg	0x007F0002,0x3FC00000
+	ret	$31, ($26), 1
+	.end	mult_adj_su3_mat_vec

@@ -1,0 +1,71 @@
+SU3 Smoothing for Instantons
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+start: Tue Sep 16 21:51:33 2003
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.7 MBytes per node for lattice
+iloop,loop_num 0 384 10 
+iloop,loop_num 1 384 10 
+Instanton coefficients 
+ inst 0  7.872507e-02  3.173630e-01 
+ inst 1  -1.888383e-01  2.854577e-01 
+
+
+alpha 0.75
+alpha2 0.6
+alpha3 0.3
+sweeps 0
+sweeps_between_meas 1
+hits_per_sweep 9
+reload_serial ../binary_samples/lat.sample.inst
+NOT fixing the gauge
+topo density to be saved in topo.test
+forget 
+Reading as old-style gauge field configuration with byte reversal
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.inst
+Time to reload gauge configuration = 6.567955e-03
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+Unitarity checked.  Max deviation 1.49e-07
+Time to check unitarity = 2.200007e-03
+GAUGE FIXING SKIPPED.
+loop 0 completed 
+loop 1 completed 
+Topological charge  9.470578e-01 
+Sum_plus  9.494899e-01    Sum_minus  -2.431959e-03 
+RUNNING COMPLETED
+Time = 5.407266e+00 seconds
+Saved FFD in file  topo.test
+
+
+alpha 0.75
+alpha2 0.6
+alpha3 0.3
+sweeps 1
+sweeps_between_meas 1
+hits_per_sweep 9
+continue 
+NOT fixing the gauge
+forget 
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+Unitarity checked.  Max deviation 1.49e-07
+Time to check unitarity = 2.434015e-03
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.976299e+00 2.976299e+00
+GAUGE FIXING SKIPPED.
+loop 0 completed 
+loop 1 completed 
+Topological charge  8.651408e-01 
+Sum_plus  8.673251e-01    Sum_minus  -2.184318e-03 
+RUNNING COMPLETED
+Time = 5.694303e+00 seconds
+
+
+get_f: EOF on STDIN while expecting alpha.
+exit: Tue Sep 16 21:51:44 2003
+

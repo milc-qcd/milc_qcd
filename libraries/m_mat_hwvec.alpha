@@ -1,0 +1,273 @@
+/* m_mat_hwvec.alpha: DEC alpha assembler version of m_mat_hwvec.c*/
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+
+/* Create aliases for the registers*/
+
+#define	ear	fv0	/* real part of even element of A*/
+#define	eai	fv1     /* imaginary part of even element of A*/
+#define	oar	fa0     /* real part of odd element of A*/
+#define	oai	fa1     /* imaginary part of odd element of A*/
+
+#define	b0r	fa2     /* real part of B(0)*/
+#define	b0i	fa3     /* imaginary part of B(0)*/
+#define	b1r	fa4     /* real part of B(1)*/
+#define	b1i	fa5     /* imaginary part of B(1)*/
+#define	b2r	ft0     /* real part of B(2)*/
+#define	b2i	ft1     /* imaginary part of B(2)*/
+
+#define	tr1	ft7	/* temporary register*/
+#define	ti1	ft3	/* temporary register*/
+#define	tr2	ft4	/* temporary register*/
+#define	ti2	ft5	/* temporary register*/
+#define	tr3	ft6	/* temporary register*/
+#define	ti3	fs0	/* temporary register*/
+#define	tr4	ft8	/* temporary register*/
+#define	ti4	ft2	/* temporary register*/
+#define	tr5	fs1	/* temporary register*/
+#define	ti5	fs2	/* temporary register*/
+
+#define	c0r	ft12	/* result component 0 real*/
+#define	c0i	ft13	/* result component 0 imag*/
+#define	c1r	ft14	/* result component 1 real*/
+#define	c1i	ft9	/* result component 1 imag*/
+#define	c2r	ft10	/* result component 2 real*/
+#define	c2i	ft11	/* result component 2 imag*/
+
+/* Arguments*/
+
+#define	aptr	a0	/* pointer to 1st source matrix*/
+#define	bptr	a1	/* pointer to half_wilson_vector src*/
+#define	cptr	a2	/* pointer to destination half_wilson_vector */
+#define debug  a3
+
+/* Scratch integer registers*/
+
+#define	scratch	t1	/* pure scratch*/
+#define	count	t2	/* loop counter*/
+#define	idone	t3	/* done / not done boolean*/
+
+
+/* Subroutine code starts here*/
+
+    .globl mult_su3_mat_hwvec
+    .ent mult_su3_mat_hwvec 2
+
+mult_su3_mat_hwvec:
+
+/* Saved registers*/
+
+	lda	sp,-24(sp)
+	stt	fs0,0(sp)
+	/*stt	fs1,8(sp);woven into code*/
+	/*stt	fs2,16(sp);woven into code*/
+
+
+/* Load the first B vector*/
+
+	lds	b0r,0(bptr)
+	lds	b0i,4(bptr)
+	lds	b1r,8(bptr)
+	lds	b1i,12(bptr)
+	lds	b2r,16(bptr)
+	lds	b2i,20(bptr)
+
+/* Load the first complex value of the A array*/
+/* Elements of the A array will be alternately loaded in the even (ear, eai),*/
+/* and odd (oar, oai) registers.*/
+
+	lds	ear,0(aptr)
+	lds	eai,4(aptr)
+
+/* Prime the loop over 2 vectors. Subsequent iterations will fold the */
+/* initial operations into the loop.*/
+
+	muls	ear,b0r,tr1	/* AR(0,0)*BR(0) -> TR1*/
+	  lds	oar,8(aptr)	/**/
+	muls	eai,b0i,tr2	/* AI(0,0)*BI(0) -> TR2*/
+	  lds	oai,12(aptr)	/**/
+	muls	ear,b0i,ti1	/* AR(0,0)*BI(0) -> TI1*/
+	  bis	zero,zero,count	/* initialize loop count*/
+	muls	eai,b0r,ti2	/* AI(O,O)*BR(0) -> TI2*/
+
+	muls	oar,b1r,tr3	/* AR(0,1)*BR(1) -> TR3*/
+	  lds	ear,16(aptr)	/**/
+	muls	oai,b1i,tr4	/* AI(0,1)*BI(1) -> TR4*/
+	  lds	eai,20(aptr)	/**/
+	muls	oar,b1i,ti3	/* AR(0,1)*BI(1) -> TI3*/
+	muls	oai,b1r,ti4	/* AI(0,1)*BR(1) -> TI4*/
+
+	subs	tr1,tr2,c0r	/* Re{A(0,0)*B(0)}*/
+	  stt	fs1,8(sp)	/* store "saved" register*/
+	adds	ti1,ti2,c0i	/* Im{A(0,0)*B(0)}*/
+	  stt	fs2,16(sp)	/* store "saved" register*/
+
+LOOP:
+
+	muls	ear,b2r,tr2	/* AR(0,2)*BR(2) -> TR2*/
+	  lds	oar,24(aptr)	/**/
+	muls	eai,b2i,tr5	/* AI(0,2)*BI(2) -> TR5*/
+	  lds	oai,28(aptr)	/**/
+	muls	ear,b2i,ti2	/* AR(0,2)*BI(2) -> TI2*/
+	muls	eai,b2r,ti5	/* AI(O,2)*BR(2) -> CI5*/
+
+	subs	tr3,tr4,tr3	/* Re{A(0,1)*B(1)}*/
+	adds	ti3,ti4,ti3	/* Im{A(0,1)*B(1)}*/
+
+	muls	oar,b0r,tr1	/* AR(1,0)*BR(0) -> TR4*/
+	  lds	ear,32(aptr)	/**/
+	muls	oai,b0i,tr4	/* AI(1,0)*BI(0) -> CR6*/
+	  lds	eai,36(aptr)	/**/
+	muls	oar,b0i,ti1	/* AR(1,0)*BI(0) -> TI4*/
+	muls	oai,b0r,ti4	/* AI(1,0)*BR(0) -> CI6*/
+
+	adds	c0r,tr3,c0r	/* Re{A(0,0)*B(0) + A(0,1)*B(1)}*/
+	adds	c0i,ti3,c0i	/* Im{A(0,0)*B(0) + A(0,1)*B(1)}*/
+
+	subs	tr2,tr5,tr2	/* Re{A(0,2)*B(2)}*/
+	adds	ti2,ti5,ti2	/* Im{A(0,2)*B(2)}*/
+
+	subs	tr1,tr4,c1r	/* Re{A(1,0)*B(0)}*/
+	adds	ti1,ti4,c1i	/* Im{A(1,0)*B(0)}*/
+
+	muls	ear,b1r,tr3	/* AR(1,1)*BR(1) -> TR3*/
+	  lds	oar,40(aptr)	/**/
+	muls	eai,b1i,tr4	/* AI(1,1)*BI(1) -> TR5*/
+	  lds	oai,44(aptr)	/**/
+	muls	ear,b1i,ti3	/* AR(1,1)*BI(1) -> TI3*/
+	muls	eai,b1r,ti4	/* AI(1,1)*BR(1) -> CI5*/
+
+	adds	c0r,tr2,c0r	/* SUM [Re{A(0,k)*B(k)}], k=1,2,3*/
+	adds	c0i,ti2,c0i	/* SUM [Im{A(0,k)*B(k)}], k=1,2,3*/
+
+	subs	tr3,tr4,tr3	/* Re{A(1,1)*B(1)}*/
+	adds	ti3,ti4,ti3	/* Im{A(1,1)*B(1)}*/
+
+	muls	oar,b2r,tr1	/* AR(1,2)*BR(2) -> TR2*/
+	  lds	ear,48(aptr)	/**/
+	muls	oai,b2i,tr2	/* AI(1,2)*BI(2) -> TR5*/
+	  lds	eai,52(aptr)	/**/
+	muls	oar,b2i,ti1	/* AR(1,2)*BI(2) -> TI2*/
+	  sts	c0r,0(cptr)	/* store Re{C(0)}*/
+	muls	oai,b2r,ti2	/* AI(1,2)*BR(2) -> CI5*/
+	  sts	c0i,4(cptr)	/* store Im{C(0)}*/
+
+	adds	c1r,tr3,c1r	/* Re{A(1,0)*B(0)+A(1,1)*B(1)} -> TR3*/
+	adds	c1i,ti3,c1i	/* Im{A(1,0)*B(0)+A(1,1)*B(1)} -> TR3*/
+
+	muls	ear,b0r,tr3	/* AR(2,0)*BR(0) -> TR1*/
+	  lds	oar,56(aptr)	/**/
+	muls	eai,b0i,tr4	/* AI(2,0)*BI(0) -> TR4*/
+	  lds	oai,60(aptr)	/**/
+	muls	ear,b0i,ti3	/* AR(2,0)*BI(0) -> TI1*/
+	muls	eai,b0r,ti4	/* AI(2,0)*BR(0) -> TI4*/
+
+	subs	tr1,tr2,tr1	/* Re{A(1,2)*B(2)} -> TR2*/
+	adds	ti1,ti2,ti1	/* Im{A(1,2)*B(2)} -> TI2*/
+
+	muls	oar,b1r,tr2	/* AR(2,1)*BR(1) -> TR5*/
+	  lds	ear,64(aptr)	/**/
+	muls	oai,b1i,tr5	/* AI(2,1)*BI(1) -> CR6*/
+	  lds	eai,68(aptr)	/**/
+	muls	oar,b1i,ti2	/* AR(2,1)*BI(1) -> CI5*/
+	muls	oai,b1r,ti5	/* AI(2,1)*BR(1) -> CI6*/
+
+	subs	tr3,tr4,c2r	/* Re{A(2,0)*B(0)} -> TR1*/
+	adds	ti3,ti4,c2i	/* Im{A(2,0)*B(0)} -> TI1*/
+	  addq	bptr,24,bptr	/* update B pointer to next vector*/
+
+	adds	c1r,tr1,c1r	/* SUM [Re{A(1,k)*B(k)}], k=1,2,3->CR6*/
+	  addq	count,1,count	/* increment loop count*/
+	adds	c1i,ti1,c1i	/* SUM [Im{A(1,k)*B(k)}], k=1,2,3->CI6*/
+	  cmplt	count,2,idone	/* check loop limit*/
+
+	muls	ear,b2r,tr1	/* AR(2,2)*BR(2) -> TR4*/
+	muls	eai,b2i,tr4	/* AI(2,2)*BI(2) -> CR7*/
+	muls	ear,b2i,ti1	/* AR(2,2)*BI(2) -> TI4*/
+	muls	eai,b2r,ti4	/* AI(2,2)*BR(2) -> CI7*/
+
+	beq	idone,FINISH	/* special- case the last iteration */
+
+	subs	tr2,tr5,tr2	/* Re{A(2,1)*B(1)} -> TR5*/
+	  lds	b0r,0(bptr)	/* begin reading next B vector*/
+	adds	ti2,ti5,ti2	/* Im{A(2,1)*B(1)} -> CI5*/
+	  lds	b0i,4(bptr)
+		/* read b first, because it probably isn't in cache?*/
+
+	  lds	ear,0(aptr)	/**/
+	  lds	eai,4(aptr)	/**/
+
+	subs	tr1,tr4,tr4	/* Re{A(2,2)*B(2)} -> CR7*/
+	  lds	b1r,8(bptr)
+	adds	ti1,ti4,ti4	/* Im{A(2,2)*B(2)} -> CI7*/
+	  lds	b1i,12(bptr)
+
+	adds	c2r,tr2,c2r	/* Re{A(2,0)*B(0)+A(2,1)*B(1)} -> TR5*/
+	  lds	b2r,16(bptr)
+	adds	c2i,ti2,c2i	/* Im{A(2,0)*B(0)+A(2,1)*B(1)} -> TR5*/
+	  lds	b2i,20(bptr)
+
+/*   prime next loop iteration*/
+
+	muls	ear,b0r,tr1	/* AR(0,0)*BR(0) -> TR1*/
+	  lds	oar,8(aptr)
+	muls	eai,b0i,tr2	/* AI(0,0)*BI(0) -> TR2*/
+	  lds	oai,12(aptr)
+	muls	ear,b0i,ti1	/* AR(0,0)*BI(0) -> TI1*/
+	  sts	c1r,8(cptr)	/* store Re{C(1)}*/
+	muls	eai,b0r,ti2	/* AI(O,O)*BR(0) -> TI2*/
+	  sts	c1i,12(cptr)	/* store Im{C(1)}*/
+
+	adds	c2r,tr4,c2r	/* SUM [Re{A(2,k)*B(k)}], k=1,2,3->TR5*/
+	adds	c2i,ti4,c2i	/* SUM [Im{A(2,k)*B(k)}], k=1,2,3->CI5*/
+
+	muls	oar,b1r,tr3	/* AR(0,1)*BR(1) -> TR3*/
+	  lds	ear,16(aptr)
+	muls	oai,b1i,tr4	/* AI(0,1)*BI(1) -> TR4*/
+	  lds	eai,20(aptr)
+	muls	oar,b1i,ti3	/* AR(0,1)*BI(1) -> TI3*/
+	muls	oai,b1r,ti4	/* AI(0,1)*BR(1) -> TI4*/
+
+	subs	tr1,tr2,c0r	/* Re{A(0,0)*B(0)}*/
+	  sts	c2r,16(cptr)	/* store Re{C(2)}*/
+	adds	ti1,ti2,c0i	/* Im{A(0,0)*B(0)}*/
+	  sts	c2i,20(cptr)	/* store Im{C(2)}*/
+
+/*   jump back to loop*/
+
+        addq    cptr,24,cptr            /* advance cptr to next dest vector*/
+addq    debug,4,debug
+	  br	zero,LOOP
+
+/*   finish last iteration without any fetch-ahead*/
+
+FINISH:
+
+	subs	tr2,tr5,tr2	/* Re{A(2,1)*B(1)} -> TR5*/
+	  sts	c1r,8(cptr)	/* store Re{C(1)}*/
+	adds	ti2,ti5,ti2	/* Im{A(2,1)*B(1)} -> CI5*/
+	  sts	c1i,12(cptr)	/* store Im{C(1)}*/
+
+	subs	tr1,tr4,tr4	/* Re{A(2,2)*B(2)} -> CR7*/
+	adds	ti1,ti4,ti4	/* Im{A(2,2)*B(2)} -> CI7*/
+
+	adds	c2r,tr2,c2r	/* Re{A(2,0)*B(0)+A(2,1)*B(1)} -> TR5*/
+	adds	c2i,ti2,c2i	/* Im{A(2,0)*B(0)+A(2,1)*B(1)} -> TR5*/
+
+	adds	c2r,tr4,c2r	/* SUM [Re{A(2,k)*B(k)}], k=1,2,3-> TR5*/
+	adds	c2i,ti4,c2i	/* SUM [Im{A(2,k)*B(k)}], k=1,2,3-> CI5*/
+
+/* Restore frame pointer and other saved registers*/
+	ldt	fs0,0(sp)
+	ldt	fs1,8(sp)
+	ldt	fs2,16(sp)
+	lda	sp,24(sp)
+
+	sts	c2r,16(cptr)	/* store Re{C(2)}*/
+	sts	c2i,20(cptr)	/* store Im{C(2)}*/
+
+/* Return to caller*/
+
+	ret	zero,(ra)
+
+	.end

@@ -1,0 +1,25 @@
+/* msq_su3vec.t3d: T3D assembler version of msq_su3vec.c */
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+    .globl magsq_su3vec
+    .ent magsq_su3vec 2
+magsq_su3vec:
+	lds	ft0, 0(a0)	/* c[1].real*/
+	lds	ft1, 4(a0)	/* c[1].imag*/
+	lds	ft2, 8(a0)	/* c[2].real*/
+	muls	ft0, ft0, ft0
+	lds	ft3, 12(a0)	/* c[2].imag*/
+	muls	ft1, ft1, ft1
+	lds	ft4, 16(a0)	/* c[3].real*/
+	muls	ft2, ft2, ft2
+	lds	ft5, 20(a0)	/* c[3].imag*/
+	muls	ft3, ft3, ft3
+	muls	ft4, ft4, ft4
+	muls	ft5, ft5, ft5
+	adds	ft0, ft1, ft0
+	adds	ft2, ft3, ft2
+	adds	ft4, ft5, ft4
+	adds	ft2, ft0, ft0
+	adds	ft4, ft0, fv0
+	ret	zero, (ra), 1
+	.end magsq_su3vec

@@ -1,0 +1,21 @@
+magic_number 12781
+time_stamp "Wed Oct 10 15:17:44 2001"
+nx 4
+ny 4
+nz 4
+nt 4
+gauge.filename "lat.sample.gf"
+gauge.time_stamp "Wed Oct 10 15:17:36 2001"
+gauge.checksums "32b1f215 cca01ffa"
+gauge.fix.description "No gauge fixing"
+quark.description "Standard Wilson"
+quark.kappa 0.100000
+quark.boundary_condition "periodic all directions"
+source.description "gaussian"
+source.size 1.500000
+source.x 0
+source.y 0
+source.z 0
+source.t 0
+source.n_spins 4
+source.spins[4] 0 1 2 3

@@ -1,0 +1,56 @@
+MILC Version 6
+
+September 20. 2002
+
+There are so many applications in the MILC code suite that the code is
+packaged in several tar files.  You may unpack selectively to get only
+a portion of the code that interests you, or you may unpack the entire
+code.
+
+If you are reading this file, you have probably already completed the
+first step in extracting the tar files containing the components of
+the code.  There should also be a Make_unpack and a Make_contents file.
+
+From here you may either do
+
+ make -f Make_unpack all
+
+or select an application <app> from the list below and
+
+ make -f Make_unpack <app>
+
+This process should unpack the components needed for the requested
+application.  If you later decide to select another application, you
+may use the same procedure.  However, if you switch to unpacking
+"all", be advised that the reunpacking will undo any changes you may
+have made to the code files.
+
+----------------------------------------------------------------------
+
+Current application directories
+
+arb_dirac_eigen
+arb_dirac_invert
+clover_dynamical
+clover_hybrids
+clover_invert
+dense_static_su3
+h_dibaryon
+heavy
+hqet_heavy_to_light
+hvy_qpot
+include
+ks_dynamical
+ks_eigen
+ks_imp_dyn1
+ks_imp_dyn2
+propagating_form_factor
+pure_gauge
+schroed_cl_inv
+schroed_ks_dyn
+schroed_pg
+smooth_inst
+string_break
+symanzik_sl32
+wilson_dynamical
+wilson_static

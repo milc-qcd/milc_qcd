@@ -1,0 +1,237 @@
+; grow4wvecs.t3d: T3D assembler version of grow4wvecs.c 
+        .ident grow4wvecs$c
+        .psect  grow_add_four_wvecs@code,code
+#include <mpp/asdef.h>
+	CRI_REGISTER_NAMES      ; Use CRI defs for register names
+	 XUP <- 0
+	 YUP <- 1
+	 ZUP <- 2
+	 TUP <- 3
+	 TDOWN <- 4
+	 ZDOWN <- 5
+	 YDOWN <- 6
+	 XDOWN <- 7
+	 PLUS <- +1
+	 MINUS <- -1
+
+; register names 
+	 src0 <- a1	; address of XUP source half_wilson_vector 
+	 src1 <- a2	; address of YUP source half_wilson_vector 
+	 src2 <- a3	; address of ZUP source half_wilson_vector 
+	 src3 <- a4	; address of TUP source half_wilson_vector 
+	 dest <- a0	; address of dest. wilson_vector 
+	 sign <- a5	; sign: PLUS = +1, MINUS = -1 
+	 sum <- t0	; sum flag:  1 means add to current dest 
+	; will be passed in stack, only six argument registers 
+	 color <- t1 ; loop over colors 
+	 scratch <- t2	;scratch integer
+
+grow_add_four_wvecs::
+	ldq	sum,48(sp)	; get argument "sum" into register 
+	bis zero,zero,color	; initialize color counter 
+	; if (sign==-1) go to second half 
+	blt	sign,MINUS_CODE
+
+PLUS_CODE:
+
+	beq	sum,CLEAR1	; if sum==0, clear dest first 
+	lds	ft4,0(dest)	; dest->d[*].c[i] 
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+	br	fzero,XUP_L
+CLEAR1:
+	subs/d	fzero,fzero,ft4
+	subs/d	fzero,fzero,ft5
+	subs/d	fzero,fzero,ft6
+	subs/d	fzero,fzero,ft7
+	subs/d	fzero,fzero,ft8
+	subs/d	fzero,fzero,ft9
+	subs/d	fzero,fzero,ft10
+	subs/d	fzero,fzero,ft11
+
+XUP_L:
+	lds	ft0,0(src0)	; src0->h[0].c[i].real 
+	lds	ft1,4(src0)	; src0->h[0].c[i].imag 
+	lds	ft2,24(src0)	; src0->h[1].c[i].real 
+	lds	ft3,28(src0)	; src0->h[1].c[i].imag 
+
+	adds/d	ft4,ft0,ft4	; result component 0 
+	adds/d	ft5,ft1,ft5	
+	adds/d	ft10,ft1,ft10	; result component 3 += -i*h[0] 
+	subs/d	ft11,ft0,ft11
+	adds/d	ft6,ft2,ft6	; result component 1 
+	adds/d	ft7,ft3,ft7	
+	lds	ft0,0(src1)	; src1->h[0].c[i].real 
+	adds/d	ft8,ft3,ft8	; result component 2 += -i*h[1] 
+	lds	ft1,4(src1)	; src1->h[0].c[i].imag 
+	subs/d	ft9,ft2,ft9
+	lds	ft2,24(src1)	; src1->h[1].c[i].real 
+
+YUP_L:
+
+	adds/d	ft4,ft0,ft4	; result component 0 
+	lds	ft3,28(src1)	; src1->h[1].c[i].imag 
+	adds/d	ft5,ft1,ft5	
+	subs/d	ft10,ft0,ft10	; result component 3 += -1*h[0] 
+	subs/d	ft11,ft1,ft11
+	adds/d	ft6,ft2,ft6	; result component 1 
+	adds/d	ft7,ft3,ft7	
+	lds	ft0,0(src2)	; src2->h[0].c[i].real 
+	adds/d	ft8,ft2,ft8	; result component 2 += +1*h[1] 
+	lds	ft1,4(src2)	; src2->h[0].c[i].imag 
+	adds/d	ft9,ft3,ft9
+	lds	ft2,24(src2)	; src2->h[1].c[i].real 
+
+ZUP_L:
+
+	adds/d	ft4,ft0,ft4	; result component 0 
+	lds	ft3,28(src2)	; src2->h[1].c[i].imag 
+	adds/d	ft5,ft1,ft5	
+	adds/d	ft8,ft1,ft8	; result component 2 += -i*h[0] 
+	addq src0,8,src0		; next color 
+	subs/d	ft9,ft0,ft9
+	addq src1,8,src1
+	adds/d	ft6,ft2,ft6	; result component 1 
+	addq src2,8,src2
+	adds/d	ft7,ft3,ft7	
+	lds	ft0,0(src3)	; src3->h[0].c[i].real 
+	subs/d	ft10,ft3,ft10	; result component 3 += +i*h[1] 
+	lds	ft1,4(src3)	; src3->h[0].c[i].imag 
+	adds/d	ft11,ft2,ft11
+	lds	ft2,24(src3)	; src3->h[1].c[i].real 
+
+TUP_L:
+
+	adds/d	ft4,ft0,ft4	; result component 0 
+	lds	ft3,28(src3)	; src3->h[1].c[i].imag 
+	adds/d	ft5,ft1,ft5	
+	addq color,1,color
+	adds/d	ft8,ft0,ft8	; result component 2 += +1*h[0] 
+	addq src3,8,src3
+	adds/d	ft9,ft1,ft9
+	sts	ft4,0(dest)
+	adds/d	ft6,ft2,ft6	; result component 1 
+	sts	ft5,4(dest)
+	adds/d	ft7,ft3,ft7	
+	sts	ft8,48(dest)	
+	adds/d	ft10,ft2,ft10	; result component 3 += +1*h[1] 
+	sts	ft9,52(dest)
+	adds/d	ft11,ft3,ft11
+	sts	ft6,24(dest)
+
+	sts	ft7,28(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,PLUS_CODE
+	ret     zero,(r26)
+
+MINUS_CODE:
+	beq	sum,CLEAR2	; if sum==0, clear dest first 
+	lds	ft4,0(dest)	; dest->d[*].c[i] 
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+	br	fzero,XDOWN_L
+CLEAR2:
+	subs/d	fzero,fzero,ft4
+	subs/d	fzero,fzero,ft5
+	subs/d	fzero,fzero,ft6
+	subs/d	fzero,fzero,ft7
+	subs/d	fzero,fzero,ft8
+	subs/d	fzero,fzero,ft9
+	subs/d	fzero,fzero,ft10
+	subs/d	fzero,fzero,ft11
+
+XDOWN_L:
+	lds	ft0,0(src0)	; src0->h[0].c[i].real 
+	lds	ft1,4(src0)	; src0->h[0].c[i].imag 
+	lds	ft2,24(src0)	; src0->h[1].c[i].real 
+	lds	ft3,28(src0)	; src0->h[1].c[i].imag 
+
+	adds/d	ft4,ft0,ft4	; result component 0 
+	adds/d	ft5,ft1,ft5	
+	subs/d	ft10,ft1,ft10	; result component 3 += +i*h[0] 
+	adds/d	ft11,ft0,ft11
+	adds/d	ft6,ft2,ft6	; result component 1 
+	adds/d	ft7,ft3,ft7	
+	lds	ft0,0(src1)	; src1->h[0].c[i].real 
+	subs/d	ft8,ft3,ft8	; result component 2 += +i*h[1] 
+	lds	ft1,4(src1)	; src1->h[0].c[i].imag 
+	adds/d	ft9,ft2,ft9
+	lds	ft2,24(src1)	; src1->h[1].c[i].real 
+
+YDOWN_L:
+
+	adds/d	ft4,ft0,ft4	; result component 0 
+	lds	ft3,28(src1)	; src1->h[1].c[i].imag 
+	adds/d	ft5,ft1,ft5	
+	adds/d	ft10,ft0,ft10	; result component 3 += +1*h[0] 
+	adds/d	ft11,ft1,ft11
+	adds/d	ft6,ft2,ft6	; result component 1 
+	adds/d	ft7,ft3,ft7	
+	lds	ft0,0(src2)	; src2->h[0].c[i].real 
+	subs/d	ft8,ft2,ft8	; result component 2 += -1*h[1] 
+	lds	ft1,4(src2)	; src2->h[0].c[i].imag 
+	subs/d	ft9,ft3,ft9
+	lds	ft2,24(src2)	; src2->h[1].c[i].real 
+
+ZDOWN_L:
+
+	adds/d	ft4,ft0,ft4	; result component 0 
+	lds	ft3,28(src2)	; src2->h[1].c[i].imag 
+	adds/d	ft5,ft1,ft5	
+	subs/d	ft8,ft1,ft8	; result component 2 += +i*h[0] 
+	addq src0,8,src0		; next color 
+	adds/d	ft9,ft0,ft9
+	addq src1,8,src1
+	adds/d	ft6,ft2,ft6	; result component 1 
+	addq src2,8,src2
+	adds/d	ft7,ft3,ft7	
+	lds	ft0,0(src3)	; src3->h[0].c[i].real 
+	adds/d	ft10,ft3,ft10	; result component 3 += -i*h[1] 
+	lds	ft1,4(src3)	; src3->h[0].c[i].imag 
+	subs/d	ft11,ft2,ft11
+	lds	ft2,24(src3)	; src3->h[1].c[i].real 
+
+TDOWN_L:
+
+	adds/d	ft4,ft0,ft4	; result component 0 
+	lds	ft3,28(src3)	; src3->h[1].c[i].imag 
+	adds/d	ft5,ft1,ft5	
+	addq color,1,color
+	subs/d	ft8,ft0,ft8	; result component 2 += -1*h[0] 
+	addq src3,8,src3
+	subs/d	ft9,ft1,ft9
+	sts	ft4,0(dest)
+	adds/d	ft6,ft2,ft6	; result component 1 
+	sts	ft5,4(dest)
+	adds/d	ft7,ft3,ft7	
+	sts	ft8,48(dest)	
+	subs/d	ft10,ft2,ft10	; result component 3 += -0*h[1] 
+	sts	ft9,52(dest)
+	subs/d	ft11,ft3,ft11
+	sts	ft6,24(dest)
+
+	sts	ft7,28(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,MINUS_CODE
+	ret     zero,(r26)
+
+	.endp
+	.end

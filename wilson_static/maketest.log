@@ -1,0 +1,733 @@
+make[1]: Entering directory `/home/dirac/detar/milc/v6/wilson_static'
+cp -p ../Make_vanilla .
+make -f Make_vanilla su3_static_mr
+make[2]: Entering directory `/home/dirac/detar/milc/v6/wilson_static'
+make -f Make_vanilla target "MYTARGET= su3_static_mr" \
+"DEFINES= " \
+"EXTRA_OBJECTS= mrilu_w_or.o "
+make[3]: Entering directory `/home/dirac/detar/milc/v6/wilson_static'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=CC    " all
+make[4]: Entering directory `/home/dirac/detar/milc/v6/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: CC . Application: CC
+================================================================
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/libraries'
+/bin/rm -f .lastmake.*
+make -f Make_vanilla clean
+make[4]: Entering directory `/home/dirac/detar/milc/v6/wilson_static'
+/bin/rm -f *.o
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/wilson_static'
+touch .lastmake.Make_vanilla.su3_static_mr
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic_wilson/bj_to_weyl.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   bparam_smear_routines.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   calc_matrix.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   calc_smear_meson.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   control_mr.c
+"../include/io_lat.h", line 119: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 120: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 121: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 122: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 123: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 124: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 125: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 126: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 128: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 129: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 130: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 131: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 132: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 133: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 134: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 135: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 136: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 137: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 138: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 139: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 140: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 141: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 143: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 144: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 145: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 146: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 147: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 148: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 149: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 150: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 151: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 152: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 153: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 154: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 155: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 157: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 99: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 100: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 101: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 102: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 103: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 104: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 105: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 106: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 107: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 108: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 109: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 110: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 111: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 112: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 113: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 114: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 115: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 116: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 117: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 118: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 119: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 120: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 121: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 122: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 123: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 124: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 125: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 127: Warning: String literal converted to char* in initialization.
+64 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   create_smear_source.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   cs_wv.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   debug_static.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   fft_su3_matrix.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   gauge_info.c
+"gauge_info.c", line 42: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"gauge_info.c", line 42: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"gauge_info.c", line 43: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"gauge_info.c", line 44: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"gauge_info.c", line 44: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+5 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   hopping.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   light_meson.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   loadup_stripquark.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   m_wvec_matdagger.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   mb_gamma_r_wvec.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   output_m.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   output_mb2.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   setup_mr.c
+"setup_mr.c", line 48: Warning: String literal converted to char* in formal argument msg in call to time_stamp(char*).
+"setup_mr.c", line 52: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 53: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 54: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 55: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 117: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 127: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 128: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 129: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 130: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 131: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 132: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 137: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 141: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 143: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 147: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 150: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 153: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 158: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 161: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 179: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 190: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 191: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 192: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 193: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 232: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 234: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 313: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+28 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   setup_smearing.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   static_prop.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   util_vary.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   w_meson_hop.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   wall_sink_h.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   wilson_info.c
+"wilson_info.c", line 68: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 68: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 70: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 70: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 73: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 73: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 77: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 77: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 78: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 79: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 79: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 83: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 83: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 85: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 85: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 88: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 88: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 92: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 92: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 93: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 94: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 94: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 95: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 96: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 96: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 97: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 97: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 98: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 99: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 99: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 103: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 103: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 104: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 104: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 107: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 107: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 108: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 108: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 109: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 109: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 110: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 110: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 111: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 111: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 112: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 112: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+46 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   write_smear_meson.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   write_vary_matrix.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/layout_hyper.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/check_unitarity.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/d_plaq4.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/gaugefix2.c 
+"../generic/gaugefix2.c", line 489: Warning: The variable old_av has not yet been assigned a value.
+1 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/io_helpers.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/io_helpers_w.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/io_lat4.c 
+"../generic/io_lat4.c", line 327: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 329: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 331: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 333: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 352: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 354: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 356: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 358: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 455: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 455: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 456: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 456: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 458: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 458: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 459: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 459: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 460: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 460: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 461: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 461: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 462: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 462: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 651: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 654: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 681: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 683: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 965: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1009: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1015: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1058: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1060: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1131: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1162: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1168: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1174: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1191: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1203: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1220: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1259: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1342: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int(char*, QCDheader*, int*).
+"../generic/io_lat4.c", line 1343: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1344: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int(char*, QCDheader*, int*).
+"../generic/io_lat4.c", line 1345: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1346: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int(char*, QCDheader*, int*).
+"../generic/io_lat4.c", line 1347: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1348: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int(char*, QCDheader*, int*).
+"../generic/io_lat4.c", line 1349: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1354: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int32x(char*, QCDheader*, unsigned*).
+"../generic/io_lat4.c", line 1355: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1363: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1406: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1416: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 3131: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3131: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3133: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3133: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3134: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3134: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3135: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3135: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3136: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3136: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3137: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3137: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+64 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/io_wb3.c 
+"../generic/io_wb3.c", line 165: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 167: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 169: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 171: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 173: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 178: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 181: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 204: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 206: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 208: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 210: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 212: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 217: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 220: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 320: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 320: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 322: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 322: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 323: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 323: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 324: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 324: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 325: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 325: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 326: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 326: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 519: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 521: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 523: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 525: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 869: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 900: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 906: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 913: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 931: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 941: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 958: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 964: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 981: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 991: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1006: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1012: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1030: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1040: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1056: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1059: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1065: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1083: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1129: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1174: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1204: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1215: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1220: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1226: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1406: Warning: String literal converted to char* in formal argument descrip in call to sread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1408: Warning: String literal converted to char* in formal argument descrip in call to sread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1410: Warning: String literal converted to char* in formal argument descrip in call to sread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1415: Warning: String literal converted to char* in formal argument descrip in call to sread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 2387: Warning: String literal converted to char* in formal argument descrip in call to pread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 2389: Warning: String literal converted to char* in formal argument descrip in call to pread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 2391: Warning: String literal converted to char* in formal argument descrip in call to pread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 2396: Warning: String literal converted to char* in formal argument descrip in call to pread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 3382: Warning: String literal converted to char* in formal argument descrip in call to sread_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 3384: Warning: String literal converted to char* in formal argument descrip in call to sread_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 3386: Warning: String literal converted to char* in formal argument descrip in call to sread_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 3388: Warning: String literal converted to char* in formal argument descrip in call to sread_data(__FILE*, void*, unsigned, char*, char*).
+66 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/make_lattice.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/restrict_fourier.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/reunitarize2.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic_wilson/dslash_lean.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic_wilson/w_source_h.c 
+"../generic_wilson/w_source_h.c", line 179: Warning: String literal converted to char* in assignment.
+1 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic_wilson/wilson_invert_lean.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic_wilson/mrilu_w_or.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/com_vanilla.c
+"../generic/com_vanilla.c", line 177: Warning: String literal converted to char* in formal argument msg in call to time_stamp(char*).
+"../generic/com_vanilla.c", line 187: Warning: String literal converted to char* in formal argument msg in call to time_stamp(char*).
+2 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I.   ../generic/io_nonansi.c 
+CC      -o su3_static_mr \
+bj_to_weyl.o bparam_smear_routines.o calc_matrix.o calc_smear_meson.o control_mr.o create_smear_source.o cs_wv.o debug_static.o fft_su3_matrix.o gauge_info.o hopping.o light_meson.o loadup_stripquark.o m_wvec_matdagger.o mb_gamma_r_wvec.o output_m.o output_mb2.o setup_mr.o setup_smearing.o static_prop.o util_vary.o w_meson_hop.o wall_sink_h.o wilson_info.o write_smear_meson.o write_vary_matrix.o layout_hyper.o check_unitarity.o d_plaq4.o gaugefix2.o io_helpers.o io_helpers_w.o io_lat4.o io_wb3.o make_lattice.o restrict_fourier.o reunitarize2.o dslash_lean.o w_source_h.o wilson_invert_lean.o mrilu_w_or.o  com_vanilla.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a   -lm
+touch localmake
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/wilson_static'
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/wilson_static'
+make -f Make_test out.test.diff.matrix.su3_static_mr
+make[2]: Entering directory `/home/dirac/detar/milc/v6/wilson_static'
+su3_static_mr  < in.sample.su3_static_mr > out.test.su3_static_mr
+read_matrix_code/look.x bin.test.matrix.su3_static_mr > out.test.matrix.su3_static_mr
+/bin/rm bin.test.matrix.su3_static_mr
+../headtail.pl Here END < out.test.matrix.su3_static_mr > out.test.matrix.tmp
+../headtail.pl Here END < out.sample.matrix.su3_static_mr > out.sample.matrix.tmp
+../diffn.pl out.test.matrix.tmp out.sample.matrix.tmp 1e-5 > \
+   out.test.diff.matrix.su3_static_mr
+rm out.test.matrix.tmp out.sample.matrix.tmp
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/wilson_static'
+make -f Make_vanilla su3_static_cg
+make[2]: Entering directory `/home/dirac/detar/milc/v6/wilson_static'
+make -f Make_vanilla target "MYTARGET= su3_static_cg" \
+"DEFINES= -DCG" \
+"EXTRA_OBJECTS= d_cgilu_w_lean.o "
+make[3]: Entering directory `/home/dirac/detar/milc/v6/wilson_static'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=CC    " all
+make[4]: Entering directory `/home/dirac/detar/milc/v6/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: CC . Application: CC
+================================================================
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/libraries'
+/bin/rm -f .lastmake.*
+make -f Make_vanilla clean
+make[4]: Entering directory `/home/dirac/detar/milc/v6/wilson_static'
+/bin/rm -f *.o
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/wilson_static'
+touch .lastmake.Make_vanilla.su3_static_cg
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic_wilson/bj_to_weyl.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  bparam_smear_routines.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  calc_matrix.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  calc_smear_meson.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  control_mr.c
+"../include/io_lat.h", line 119: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 120: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 121: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 122: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 123: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 124: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 125: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 126: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 128: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 129: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 130: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 131: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 132: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 133: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 134: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 135: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 136: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 137: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 138: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 139: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 140: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 141: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 143: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 144: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 145: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 146: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 147: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 148: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 149: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 150: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 151: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 152: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 153: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 154: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 155: Warning: String literal converted to char* in initialization.
+"../include/io_lat.h", line 157: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 99: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 100: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 101: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 102: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 103: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 104: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 105: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 106: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 107: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 108: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 109: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 110: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 111: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 112: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 113: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 114: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 115: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 116: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 117: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 118: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 119: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 120: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 121: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 122: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 123: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 124: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 125: Warning: String literal converted to char* in initialization.
+"../include/io_wb.h", line 127: Warning: String literal converted to char* in initialization.
+64 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  create_smear_source.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  cs_wv.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  debug_static.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  fft_su3_matrix.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  gauge_info.c
+"gauge_info.c", line 42: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"gauge_info.c", line 42: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"gauge_info.c", line 43: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"gauge_info.c", line 44: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"gauge_info.c", line 44: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+5 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  hopping.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  light_meson.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  loadup_stripquark.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  m_wvec_matdagger.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  mb_gamma_r_wvec.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  output_m.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  output_mb2.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  setup_mr.c
+"setup_mr.c", line 48: Warning: String literal converted to char* in formal argument msg in call to time_stamp(char*).
+"setup_mr.c", line 52: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 53: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 54: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 55: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 117: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 127: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 128: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 129: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 130: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 131: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 132: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 137: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 141: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 143: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 147: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 150: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 153: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 158: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 161: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 179: Warning: String literal converted to char* in formal argument variable_name_string in call to get_f(int, char*, float*).
+"setup_mr.c", line 190: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 191: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 192: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 193: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 232: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 234: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+"setup_mr.c", line 313: Warning: String literal converted to char* in formal argument variable_name_string in call to get_i(int, char*, int*).
+28 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  setup_smearing.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  static_prop.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  util_vary.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  w_meson_hop.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  wall_sink_h.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  wilson_info.c
+"wilson_info.c", line 68: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 68: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 70: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 70: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 73: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 73: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 77: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 77: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 78: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 79: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 79: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 83: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 83: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 85: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 85: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 88: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 88: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 92: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 92: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 93: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 94: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 94: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 95: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 96: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 96: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 97: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 97: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 98: Warning: String literal converted to char* in formal argument src in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 99: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 99: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 103: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 103: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 104: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 104: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 107: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 107: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 108: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 108: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 109: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 109: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 110: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 110: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 111: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 111: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 112: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"wilson_info.c", line 112: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+46 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  write_smear_meson.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  write_vary_matrix.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/layout_hyper.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/check_unitarity.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/d_plaq4.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/gaugefix2.c 
+"../generic/gaugefix2.c", line 489: Warning: The variable old_av has not yet been assigned a value.
+1 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/io_helpers.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/io_helpers_w.c
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/io_lat4.c 
+"../generic/io_lat4.c", line 327: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 329: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 331: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 333: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 352: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 354: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 356: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 358: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 455: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 455: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 456: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 456: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 458: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 458: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 459: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 459: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 460: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 460: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 461: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 461: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 462: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 462: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 651: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 654: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 681: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 683: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 965: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1009: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1015: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1058: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1060: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1131: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1162: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1168: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1174: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1191: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1203: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1220: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1259: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1342: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int(char*, QCDheader*, int*).
+"../generic/io_lat4.c", line 1343: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1344: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int(char*, QCDheader*, int*).
+"../generic/io_lat4.c", line 1345: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1346: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int(char*, QCDheader*, int*).
+"../generic/io_lat4.c", line 1347: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1348: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int(char*, QCDheader*, int*).
+"../generic/io_lat4.c", line 1349: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1354: Warning: String literal converted to char* in formal argument s in call to qcdhdr_get_int32x(char*, QCDheader*, unsigned*).
+"../generic/io_lat4.c", line 1355: Warning: String literal converted to char* in formal argument s in call to error_exit(char*).
+"../generic/io_lat4.c", line 1363: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1406: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 1416: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_lat4.c", line 3131: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3131: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3133: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3133: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3134: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3134: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3135: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3135: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3136: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3136: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3137: Warning: String literal converted to char* in formal argument keyword in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_lat4.c", line 3137: Warning: String literal converted to char* in formal argument fmt in call to write_gauge_info_item(__FILE*, char*, char*, char*, int, int).
+64 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/io_wb3.c 
+"../generic/io_wb3.c", line 165: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 167: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 169: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 171: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 173: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 178: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 181: Warning: String literal converted to char* in formal argument descrip in call to pwrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 204: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 206: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 208: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 210: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 212: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 217: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 220: Warning: String literal converted to char* in formal argument descrip in call to swrite_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 320: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 320: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 322: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 322: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 323: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 323: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 324: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 324: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 325: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 325: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 326: Warning: String literal converted to char* in formal argument keyword in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 326: Warning: String literal converted to char* in formal argument fmt in call to write_w_prop_info_item(__FILE*, char*, char*, char*, int, int).
+"../generic/io_wb3.c", line 519: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 521: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 523: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 525: Warning: String literal converted to char* in formal argument descrip in call to pswrite_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 869: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 900: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 906: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 913: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 931: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 941: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 958: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 964: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 981: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 991: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1006: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1012: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1030: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1040: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1056: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1059: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1065: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1083: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1129: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1174: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1204: Warning: String literal converted to char* in formal argument descrip in call to psread_data(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1215: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1220: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1226: Warning: String literal converted to char* in formal argument descrip in call to psread_byteorder(int, int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1406: Warning: String literal converted to char* in formal argument descrip in call to sread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1408: Warning: String literal converted to char* in formal argument descrip in call to sread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1410: Warning: String literal converted to char* in formal argument descrip in call to sread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 1415: Warning: String literal converted to char* in formal argument descrip in call to sread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 2387: Warning: String literal converted to char* in formal argument descrip in call to pread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 2389: Warning: String literal converted to char* in formal argument descrip in call to pread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 2391: Warning: String literal converted to char* in formal argument descrip in call to pread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 2396: Warning: String literal converted to char* in formal argument descrip in call to pread_byteorder(int, __FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 3382: Warning: String literal converted to char* in formal argument descrip in call to sread_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 3384: Warning: String literal converted to char* in formal argument descrip in call to sread_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 3386: Warning: String literal converted to char* in formal argument descrip in call to sread_data(__FILE*, void*, unsigned, char*, char*).
+"../generic/io_wb3.c", line 3388: Warning: String literal converted to char* in formal argument descrip in call to sread_data(__FILE*, void*, unsigned, char*, char*).
+66 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/make_lattice.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/restrict_fourier.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/reunitarize2.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic_wilson/dslash_lean.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic_wilson/w_source_h.c 
+"../generic_wilson/w_source_h.c", line 179: Warning: String literal converted to char* in assignment.
+1 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic_wilson/wilson_invert_lean.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic_wilson/d_cgilu_w_lean.c 
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/com_vanilla.c
+"../generic/com_vanilla.c", line 177: Warning: String literal converted to char* in formal argument msg in call to time_stamp(char*).
+"../generic/com_vanilla.c", line 187: Warning: String literal converted to char* in formal argument msg in call to time_stamp(char*).
+2 Warning(s) detected.
+CC     -c -O     -DVANILLA -DINLINE -DNOPREFETCH   -I. -DCG  ../generic/io_nonansi.c 
+CC      -o su3_static_cg \
+bj_to_weyl.o bparam_smear_routines.o calc_matrix.o calc_smear_meson.o control_mr.o create_smear_source.o cs_wv.o debug_static.o fft_su3_matrix.o gauge_info.o hopping.o light_meson.o loadup_stripquark.o m_wvec_matdagger.o mb_gamma_r_wvec.o output_m.o output_mb2.o setup_mr.o setup_smearing.o static_prop.o util_vary.o w_meson_hop.o wall_sink_h.o wilson_info.o write_smear_meson.o write_vary_matrix.o layout_hyper.o check_unitarity.o d_plaq4.o gaugefix2.o io_helpers.o io_helpers_w.o io_lat4.o io_wb3.o make_lattice.o restrict_fourier.o reunitarize2.o dslash_lean.o w_source_h.o wilson_invert_lean.o d_cgilu_w_lean.o  com_vanilla.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a   -lm
+touch localmake
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/wilson_static'
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/wilson_static'
+make -f Make_test out.test.diff.matrix.su3_static_cg
+make[2]: Entering directory `/home/dirac/detar/milc/v6/wilson_static'
+su3_static_cg  < in.sample.su3_static_cg > out.test.su3_static_cg
+read_matrix_code/look.x bin.test.matrix.su3_static_cg > out.test.matrix.su3_static_cg
+/bin/rm bin.test.matrix.su3_static_cg
+../headtail.pl Here END < out.test.matrix.su3_static_cg > out.test.matrix.tmp
+../headtail.pl Here END < out.sample.matrix.su3_static_cg > out.sample.matrix.tmp
+../diffn.pl out.test.matrix.tmp out.sample.matrix.tmp 1e-5 > \
+   out.test.diff.matrix.su3_static_cg
+rm out.test.matrix.tmp out.sample.matrix.tmp
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/wilson_static'
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/wilson_static'

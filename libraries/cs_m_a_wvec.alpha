@@ -1,0 +1,84 @@
+/* cs_m_a_wvec.alpha: Dec assembler assembler version of cs_m_a_wvec.c */
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+
+/* register names */
+#define s_real ft0
+#define s_imag ft1
+#define src1	a0
+#define src2	a1
+#define scalar	a2
+#define dest	a3
+#define scratch t2      /*scratch integer*/
+#define count t0
+
+    .globl c_scalar_mult_add_wvec
+    .ent c_scalar_mult_add_wvec 2
+c_scalar_mult_add_wvec:
+
+	lds	s_real,0(scalar)
+	lds	s_imag,4(scalar)
+	addq	zero,10,count
+
+	lds	ft2,0(src2)	/* Re(src2) */
+	lds	ft3,4(src2)	/* Im(src2) */
+	lds	ft4,0(src1)	/* Re(src1) */
+	lds	ft5,4(src1)	/* Im(src1) */
+
+	muls	ft2,s_real,ft6
+	muls	ft3,s_imag,ft9
+	muls	ft2,s_imag,ft7
+	muls	ft3,s_real,ft8
+LOOP:
+	adds	ft4,ft6,ft4
+	lds	ft10,8(src2)	/* Re(src2) */
+	subs	ft4,ft9,ft4
+	lds	ft11,12(src2)	/* Im(src2) */
+	adds	ft5,ft7,ft5
+	lds	ft12,8(src1)	/* Re(src1) */
+	adds	ft5,ft8,ft5
+	lds	ft13,12(src1)	/* Im(src1) */
+
+	muls	ft10,s_real,fa0
+	addq	src1,16,src1
+	muls	ft11,s_imag,fa3
+	addq	src2,16,src2
+	muls	ft10,s_imag,fa1
+	sts	ft4,0(dest)
+	muls	ft11,s_real,fa2
+	sts	ft5,4(dest)
+
+	beq	count,FINISH
+
+	adds	ft12,fa0,ft12
+	lds	ft2,0(src2)	/* Re(src2) */
+	subs	ft12,fa3,ft12
+	lds	ft3,4(src2)	/* Im(src2) */
+	adds	ft13,fa1,ft13
+	lds	ft4,0(src1)	/* Re(src1) */
+	adds	ft13,fa2,ft13
+	lds	ft5,4(src1)	/* Im(src1) */
+
+	muls	ft2,s_real,ft6
+	addq	count,-2,count
+	muls	ft3,s_imag,ft9
+	sts	ft12,8(dest)
+	muls	ft2,s_imag,ft7
+	sts	ft13,12(dest)
+	muls	ft3,s_real,ft8
+	addq	dest,16,dest
+
+	br	LOOP
+
+FINISH:
+	adds	ft12,fa0,ft12
+	subs	ft12,fa3,ft12
+	adds	ft13,fa1,ft13
+	adds	ft13,fa2,ft13
+
+	sts	ft12,8(dest)
+	sts	ft13,12(dest)
+
+	ret	zero,(ra)
+
+	.end c_scalar_mult_add_wvec

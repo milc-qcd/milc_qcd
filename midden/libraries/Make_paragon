@@ -1,0 +1,115 @@
+# Makefile for Libraries for QCD programs
+#
+# Paragon version, using the Portland Group cc
+
+MAKEFILE = Make_paragon
+CFLAGS = -nx -O4 -Mquad -Mx,2,15 -W0,-dalign -DFAST -DPARAGON 	#pgcc
+
+CC = cc	# Portland Group
+
+all: complex.a su3.a
+
+#install .m4 (assembler code) in the suffixes list
+.SUFFIXES:
+.SUFFIXES: .o .m4 .c .y .l .s
+# compile c code for the Intel machine
+.c.o:
+	$(CC) $(CFLAGS) -c $*.c
+
+# compile Intel assembly language routines with the m4 preprocessor
+.m4.o:
+	m4 $*.m4 > $*.mac
+	as860 $*.mac
+	rm $*.mac
+
+COMPLEXOBJS = cadd.o cdiv.o ce_itheta.o cexp.o clog.o cmplx.o cmul.o \
+	conjg.o csqrt.o csub.o dcadd.o dcdiv.o dce_itheta.o \
+	dcexp.o dclog.o dcmplx.o dcmul.o dconjg.o dcsqrt.o dcsub.o 
+$(COMPLEXOBJS) : complex.h
+#Paragon
+complex.a:	complex.h $(COMPLEXOBJS)
+	ar860 rc complex.a $(COMPLEXOBJS)
+	
+SU3OBJS = addmat.o addvec.o cmp_ahmat.o cs_m_a_vec.o cs_m_a_mat.o cs_m_s_vec.o \
+	cs_m_vec.o det_su3.o clear_mat.o dumpmat.o dumpvec.o clearvec.o \
+	m_amatvec_s.o m_amatvec.o m_amatvec_ns.o m_mat_an.o \
+	m_mat_na.o m_mat_nn.o m_matvec.o m_matvec_ns.o m_matvec_s.o \
+	make_ahmat.o rand_ahmat.o realtr.o complextr.o \
+	s_m_a_mat.o s_m_a_vec.o s_m_s_mat.o s_m_s_vec.o s_m_sum_vec.o \
+	s_m_vec.o s_m_mat.o cs_m_mat.o cs_m_s_mat.o \
+	su3_adjoint.o su3_dot.o su3_rdot.o su3_proj.o su3mat_copy.o \
+	su3vec_copy.o \
+	submat.o subvec.o trace_su3.o uncmp_ahmat.o \
+	msq_su3vec.o sub4vecs.o m_amv_4dir.o m_amv_4dir_2.o m_mv_s_4dir.o \
+	flush_to_zero.o \
+	l_su2_hit_n.o r_su2_hit_a.o dumpsu2.o \
+	m_su2_mat_vec_n.o m_su2_mat_vec_a.o \
+	gaussrand.o
+WILSON_OBJS = wp_shrink.o wp_grow.o wp_grow_a.o dump_wvec.o clear_wvec.o \
+	su3_proj_w.o copy_wvec.o add_wvec.o sub_wvec.o s_m_wvec.o \
+	s_m_hwvec.o msq_wvec.o wvec_dot.o wvec2_dot.o wvec_rdot.o \
+	s_m_a_wvec.o s_m_atm_wvec.o mb_gamma.o mb_gamma_l.o mb_gamma_r.o \
+	cs_m_a_wvec.o cs_m_a_wvec2.o \
+	m_mat_wvec.o m_mat_hwvec.o m_amat_wvec.o m_amat_hwvec.o \
+	grow4wvecs.o wp_shrink4.o
+$(SU3OBJS) : ../include/complex.h ../include/su3.h
+$(WILSON_OBJS) : ../includecomplex.h ../includesu3.h
+#Paragon
+su3.a::	../includesu3.h $(SU3OBJS)
+	ar860 rc su3.a $(SU3OBJS)
+su3.a::	../includesu3.h $(WILSON_OBJS)
+	ar860 rc su3.a $(WILSON_OBJS)
+
+clean:
+	rm *.o
+
+## For real Intel machine only - Assembler language routines
+wp_shrink.o: wp_shrink.m4
+wp_shrink4.o: wp_shrink4.m4
+wp_shrink8.o: wp_shrink8.m4
+wp_grow_a.o: wp_grow_a.m4
+#grow4wvecs.o: grow4wvecs.m4
+m_amatvec.o: m_amatvec.m4
+#m_amv_4dir.o: m_amv_4dir.m4
+m_amv_4dir.o: m_amv_4di2.m4
+	m4 m_amv_4di2.m4 > m_amv_4dir.mac
+	as860 m_amv_4dir.mac
+	rm m_amv_4dir.mac
+m_matvec.o: m_matvec.m4
+#m_mv_s_4dir.o: m_mv_s_4dir.m4
+m_mv_s_4dir.o: m_mv_s_4di2.m4
+	m4 m_mv_s_4di2.m4 > m_mv_s_4dir.mac
+	as860 m_mv_s_4dir.mac
+	rm m_mv_s_4dir.mac
+m_matvec_s.o: m_matvec_s.m4
+s_m_a_mat.o: s_m_a_mat.m4
+s_m_a_vec.o: s_m_a_vec.m4
+s_m_a_wvec.o: s_m_a_wvec.m4
+s_m_sum_vec.o: s_m_sum_vec.m4
+m_mat_nn.o: m_mat_nn.m4
+m_mat_xx.o: m_mat_xx.m4
+m_mat_an.o: m_mat_an.m4
+m_mat_na.o: m_mat_na.m4
+addmat.o: addmat.m4
+addvec.o: addvec.m4
+subvec.o: subvec.m4
+sub4vecs.o: sub4vecs.m4
+msq_su3vec.o: msq_su3vec.m4
+msq_wvec.o: msq_wvec.m4
+su3_rdot.o: su3_rdot.m4
+wvec_rdot.o: wvec_rdot.m4
+su3vec_copy.o: su3vec_copy.m4
+m_amat_hwve.o: m_amat_hwve.m4
+m_amat_hwvec.o: m_amat_hwve.o
+	cp m_amat_hwve.o m_amat_hwvec.o
+# to avoid problem with System V file name length limits
+m_mat_hwvec.o: m_mat_hwvec.m4
+cs_m_a_wvec.o: cs_m_a_wvec.m4
+wvec_dot.o: wvec_dot.m4
+
+#
+##Special case compile for Green Hills cc - -OLM hangs on this one
+#mb_gamma_l.o: mb_gamma_l.c $(HEADERS)
+#	$(CC) -O -i860 -DFAST -X167 -c mb_gamma_l.c
+#mb_gamma_r.o: mb_gamma_r.c $(HEADERS)
+#	$(CC) -O -i860 -DFAST -X167 -c mb_gamma_r.c

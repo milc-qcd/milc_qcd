@@ -1,0 +1,45 @@
+\initial {*}
+\entry {\code {*savefile}}{13}
+\entry {\code {*startfile}}{13}
+\initial {B}
+\entry {\code {beta}}{13}
+\initial {C}
+\entry {\code {CONTROL}}{12}
+\initial {E}
+\entry {\code {epsilon}}{13}
+\entry {\code {even_sites_on_node}}{13}
+\entry {\code {EXTERN}}{12}
+\initial {F}
+\entry {\code {F_OFFSET}}{18}
+\entry {\code {F_PT}}{18}
+\entry {\code {field_offset}}{18}
+\entry {\code {field_pointer}}{18}
+\entry {\code {fixflag}}{13}
+\initial {I}
+\entry {\code {Include files. The local header defines.h must be included near the}}{12}
+\entry {\code {iseed}}{13}
+\initial {M}
+\entry {\code {mass}}{13}
+\initial {N}
+\entry {\code {nflavors}}{13}
+\entry {\code {number_of_nodes}}{13}
+\entry {\code {nx,ny,nz,nt}}{13}
+\initial {O}
+\entry {\code {odd_sites_on_node}}{13}
+\initial {P}
+\entry {\code {params}}{13}
+\initial {S}
+\entry {\code {saveflag}}{13}
+\entry {\code {site}}{14}
+\entry {\code {sites_on_node}}{13}
+\entry {\code {startflag}}{13}
+\entry {\code {steps}}{13}
+\entry {\code {stepsQ}}{13}
+\initial {T}
+\entry {\code {this_node}}{13}
+\entry {\code {total_iters}}{13}
+\entry {\code {trajecs}}{13}
+\initial {V}
+\entry {\code {volume}}{13}
+\initial {W}
+\entry {\code {warms}}{13}

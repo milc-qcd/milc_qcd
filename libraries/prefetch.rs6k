@@ -1,0 +1,1043 @@
+#*****************  prefetch.rs6k  (in su3.a) *****************************
+#
+#	For IBM RS6000
+#	C. DeTar 10/13/01
+#
+#									
+#  Cache manipulation routines - 
+#
+#  This version assumes 8 byte alignment and a 32 byte cache line
+#
+#   Abbreviations for data types...
+#   M  SU(3) matrix
+#   V  SU(3) vector
+#   W  Wilson vector
+#   H  Half Wilson vector
+#  
+#
+#
+#
+#
+#
+
+# Branch hints suppressed.
+.set r0,0; .set SP,1; .set RTOC,2; .set r3,3; .set r4,4
+.set r5,5; .set r6,6; .set r7,7; .set r8,8; .set r9,9
+.set r10,10; .set r11,11; .set r12,12; .set r13,13; .set r14,14
+.set r15,15; .set r16,16; .set r17,17; .set r18,18; .set r19,19
+.set r20,20; .set r21,21; .set r22,22; .set r23,23; .set r24,24
+.set r25,25; .set r26,26; .set r27,27; .set r28,28; .set r29,29
+.set r30,30; .set r31,31
+.set fp0,0; .set fp1,1; .set fp2,2; .set fp3,3; .set fp4,4
+.set fp5,5; .set fp6,6; .set fp7,7; .set fp8,8; .set fp9,9
+.set fp10,10; .set fp11,11; .set fp12,12; .set fp13,13; .set fp14,14
+.set fp15,15; .set fp16,16; .set fp17,17; .set fp18,18; .set fp19,19
+.set fp20,20; .set fp21,21; .set fp22,22; .set fp23,23; .set fp24,24
+.set fp25,25; .set fp26,26; .set fp27,27; .set fp28,28; .set fp29,29
+.set fp30,30; .set fp31,31
+.set MQ,0; .set XER,1; .set FROM_RTCU,4; .set FROM_RTCL,5; .set FROM_DEC,6
+.set LR,8; .set CTR,9; .set TID,17; .set DSISR,18; .set DAR,19; .set TO_RTCU,20
+.set TO_RTCL,21; .set TO_DEC,22; .set SDR_0,24; .set SDR_1,25; .set SRR_0,26
+.set SRR_1,27
+.set BO_dCTR_NZERO_AND_NOT,0; .set BO_dCTR_NZERO_AND_NOT_1,1
+.set BO_dCTR_ZERO_AND_NOT,2; .set BO_dCTR_ZERO_AND_NOT_1,3
+.set BO_IF_NOT,4; .set BO_IF_NOT_1,5; .set BO_IF_NOT_2,6
+.set BO_IF_NOT_3,7; .set BO_dCTR_NZERO_AND,8; .set BO_dCTR_NZERO_AND_1,9
+.set BO_dCTR_ZERO_AND,10; .set BO_dCTR_ZERO_AND_1,11; .set BO_IF,12
+.set BO_IF_1,13; .set BO_IF_2,14; .set BO_IF_3,15; .set BO_dCTR_NZERO,16
+.set BO_dCTR_NZERO_1,17; .set BO_dCTR_ZERO,18; .set BO_dCTR_ZERO_1,19
+.set BO_ALWAYS,20; .set BO_ALWAYS_1,21; .set BO_ALWAYS_2,22
+.set BO_ALWAYS_3,23; .set BO_dCTR_NZERO_8,24; .set BO_dCTR_NZERO_9,25
+.set BO_dCTR_ZERO_8,26; .set BO_dCTR_ZERO_9,27; .set BO_ALWAYS_8,28
+.set BO_ALWAYS_9,29; .set BO_ALWAYS_10,30; .set BO_ALWAYS_11,31
+.set CR0_LT,0; .set CR0_GT,1; .set CR0_EQ,2; .set CR0_SO,3
+.set CR1_FX,4; .set CR1_FEX,5; .set CR1_VX,6; .set CR1_OX,7
+.set CR2_LT,8; .set CR2_GT,9; .set CR2_EQ,10; .set CR2_SO,11
+.set CR3_LT,12; .set CR3_GT,13; .set CR3_EQ,14; .set CR3_SO,15
+.set CR4_LT,16; .set CR4_GT,17; .set CR4_EQ,18; .set CR4_SO,19
+.set CR5_LT,20; .set CR5_GT,21; .set CR5_EQ,22; .set CR5_SO,23
+.set CR6_LT,24; .set CR6_GT,25; .set CR6_EQ,26; .set CR6_SO,27
+.set CR7_LT,28; .set CR7_GT,29; .set CR7_EQ,30; .set CR7_SO,31
+.set TO_LT,16; .set TO_GT,8; .set TO_EQ,4; .set TO_LLT,2; .set TO_LGT,1
+
+#	General purpose registers
+#	Retained as called
+	
+	.set	a0,3
+	.set	a1,4
+	.set	a2,5
+	.set	a3,6
+	.set	a4,7
+	.set	a5,8
+	.set	a6,9
+
+
+#	Floating point registers
+#	Linkage conventions require preserving registers 14-31
+	
+	.set	fzero,fp1
+
+	.rename	H.50.NO_SYMBOL{PR},""
+	.rename	H.237._prefetch_4MW4W{TC},"_prefetch_4MW4W"
+	.rename	H.241._prefetch_4MV4V{TC},"_prefetch_4MV4V"
+	.rename	H.245._prefetch_4MWWWW{TC},"_prefetch_4MWWWW"
+	.rename	H.249._prefetch_4MVVVV{TC},"_prefetch_4MVVVV"
+	.rename	H.253._prefetch_WWWWW{TC},"_prefetch_WWWWW"
+	.rename	H.257._prefetch_WWWW{TC},"_prefetch_WWWW"
+	.rename	H.261._prefetch_WWW{TC},"_prefetch_WWW"
+	.rename	H.265._prefetch_VVVVV{TC},"_prefetch_VVVVV"
+	.rename	H.269._prefetch_VVVV{TC},"_prefetch_VVVV"
+	.rename	H.273._prefetch_VVV{TC},"_prefetch_VVV"
+	.rename	H.277._prefetch_VV{TC},"_prefetch_VV"
+	.rename	H.281._prefetch_H{TC},"_prefetch_H"
+	.rename	H.285._prefetch_W{TC},"_prefetch_W"
+	.rename	H.289._prefetch_V{TC},"_prefetch_V"
+	.rename	H.293._prefetch_M{TC},"_prefetch_M"
+
+	.lglobl	H.50.NO_SYMBOL{PR}      
+	.globl	._prefetch_4MW4W        
+	.globl	._prefetch_4MV4V        
+	.globl	._prefetch_4MWWWW       
+	.globl	._prefetch_4MVVVV       
+	.globl	._prefetch_WWWWW        
+	.globl	._prefetch_WWWW         
+	.globl	._prefetch_WWW          
+	.globl	._prefetch_VVVVV        
+	.globl	._prefetch_VVVV         
+	.globl	._prefetch_VVV          
+	.globl	._prefetch_VV           
+	.globl	._prefetch_H            
+	.globl	._prefetch_W            
+	.globl	._prefetch_V            
+	.globl	._prefetch_M            
+	.globl	_prefetch_4MW4W{DS}     
+	.globl	_prefetch_4MV4V{DS}     
+	.globl	_prefetch_4MWWWW{DS}    
+	.globl	_prefetch_4MVVVV{DS}    
+	.globl	_prefetch_WWWWW{DS}     
+	.globl	_prefetch_WWWW{DS}      
+	.globl	_prefetch_WWW{DS}       
+	.globl	_prefetch_VVVVV{DS}     
+	.globl	_prefetch_VVVV{DS}      
+	.globl	_prefetch_VVV{DS}       
+	.globl	_prefetch_VV{DS}        
+	.globl	_prefetch_H{DS}         
+	.globl	_prefetch_W{DS}         
+	.globl	_prefetch_V{DS}         
+	.globl	_prefetch_M{DS}         
+
+
+# .text section
+	.file	"prefetch.c"            
+
+
+	.csect	H.50.NO_SYMBOL{PR}      
+._prefetch_4MW4W:                       # 0x00000000 (H.50.NO_SYMBOL)
+	.stabx	"_prefetch_4MW4W:F-11",0x00,0x8e,0x0
+	.function ._prefetch_4MW4W,._prefetch_4MW4W,2,0
+	stu	SP,-80(SP)
+	.bf	231
+	.stabx	"a0:p9",0x068,0x82,0x0
+	.stabx	"a1:p19",0x06c,0x82,0x0
+	.stabx	"a2:p19",0x070,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,64(a0)
+	lfs	fp1,96(a0)
+	lfs	fp1,128(a0)
+	lfs	fp1,160(a0)
+	lfs	fp1,192(a0)
+	lfs	fp1,224(a0)
+	lfs	fp1,256(a0)
+	lfs	fp1,280(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,32(a1)
+	lfs	fp1,64(a1)
+	lfs	fp1,88(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,32(a2)
+	lfs	fp1,64(a2)
+	lfs	fp1,96(a2)
+	lfs	fp1,128(a2)
+	lfs	fp1,160(a2)
+	lfs	fp1,192(a2)
+	lfs	fp1,224(a2)
+	lfs	fp1,256(a2)
+	lfs	fp1,288(a2)
+	lfs	fp1,320(a2)
+	lfs	fp1,352(a2)
+	lfs	fp1,376(a2)
+	.line	5
+	b	__L158
+__L158:                                 # 0x00000158 (H.50.NO_SYMBOL+0x158)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	235
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x03			# FIXEDPARMS=3
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x00000160		# TB_OFFSET
+	.short	15			# NAME_LEN
+	.byte	"_prefetch_4MW4W"
+	.byte	0			# padding
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_4MV4V:                       # 0x00000188 (H.50.NO_SYMBOL+0x188)
+	.stabx	"_prefetch_4MV4V:F-11",0x0188,0x8e,0x0
+	.function ._prefetch_4MV4V,._prefetch_4MV4V,2,0
+	stu	SP,-80(SP)
+	.bf	221
+	.stabx	"a0:p9",0x068,0x82,0x0
+	.stabx	"a1:p14",0x06c,0x82,0x0
+	.stabx	"a2:p14",0x070,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,64(a0)
+	lfs	fp1,96(a0)
+	lfs	fp1,128(a0)
+	lfs	fp1,160(a0)
+	lfs	fp1,192(a0)
+	lfs	fp1,224(a0)
+	lfs	fp1,256(a0)
+	lfs	fp1,280(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,16(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,32(a2)
+	lfs	fp1,64(a2)
+	lfs	fp1,88(a2)
+	.line	5
+	b	__L25c
+__L25c:                                 # 0x0000025c (H.50.NO_SYMBOL+0x25c)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	225
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x03			# FIXEDPARMS=3
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x000000dc		# TB_OFFSET
+	.short	15			# NAME_LEN
+	.byte	"_prefetch_4MV4V"
+	.byte	0			# padding
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_4MWWWW:                      # 0x0000028c (H.50.NO_SYMBOL+0x28c)
+	.stabx	"_prefetch_4MWWWW:F-11",0x028c,0x8e,0x0
+	.function ._prefetch_4MWWWW,._prefetch_4MWWWW,2,0
+	stu	SP,-80(SP)
+	.bf	211
+	.stabx	"a0:p9",0x068,0x82,0x0
+	.stabx	"a1:p19",0x06c,0x82,0x0
+	.stabx	"a2:p19",0x070,0x82,0x0
+	.stabx	"a3:p19",0x074,0x82,0x0
+	.stabx	"a4:p19",0x078,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,64(a0)
+	lfs	fp1,96(a0)
+	lfs	fp1,128(a0)
+	lfs	fp1,160(a0)
+	lfs	fp1,192(a0)
+	lfs	fp1,224(a0)
+	lfs	fp1,256(a0)
+	lfs	fp1,280(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,32(a1)
+	lfs	fp1,64(a1)
+	lfs	fp1,88(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,32(a2)
+	lfs	fp1,64(a2)
+	lfs	fp1,88(a2)
+	.line	4
+	lfs	fp1,0(a3)
+	lfs	fp1,32(a3)
+	lfs	fp1,64(a3)
+	lfs	fp1,88(a3)
+	.line	5
+	lfs	fp1,0(a4)
+	lfs	fp1,32(a4)
+	lfs	fp1,64(a4)
+	lfs	fp1,88(a4)
+	.line	7
+	b	__L3e0
+__L3e0:                                 # 0x000003e0 (H.50.NO_SYMBOL+0x3e0)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	217
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x05			# FIXEDPARMS=5
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x0000015c		# TB_OFFSET
+	.short	16			# NAME_LEN
+	.byte	"_prefetch_4MWWWW"
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_4MVVVV:                      # 0x00000410 (H.50.NO_SYMBOL+0x410)
+	.stabx	"_prefetch_4MVVVV:F-11",0x0410,0x8e,0x0
+	.function ._prefetch_4MVVVV,._prefetch_4MVVVV,2,0
+	stu	SP,-80(SP)
+	.bf	199
+	.stabx	"a0:p9",0x068,0x82,0x0
+	.stabx	"a1:p14",0x06c,0x82,0x0
+	.stabx	"a2:p14",0x070,0x82,0x0
+	.stabx	"a3:p14",0x074,0x82,0x0
+	.stabx	"a4:p14",0x078,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,64(a0)
+	lfs	fp1,96(a0)
+	lfs	fp1,128(a0)
+	lfs	fp1,160(a0)
+	lfs	fp1,192(a0)
+	lfs	fp1,224(a0)
+	lfs	fp1,256(a0)
+	lfs	fp1,280(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,16(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,16(a2)
+	.line	4
+	lfs	fp1,0(a3)
+	lfs	fp1,16(a3)
+	.line	5
+	lfs	fp1,0(a4)
+	lfs	fp1,16(a4)
+	.line	7
+	b	__L504
+__L504:                                 # 0x00000504 (H.50.NO_SYMBOL+0x504)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	205
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x05			# FIXEDPARMS=5
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x000000fc		# TB_OFFSET
+	.short	16			# NAME_LEN
+	.byte	"_prefetch_4MVVVV"
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_WWWWW:                       # 0x00000534 (H.50.NO_SYMBOL+0x534)
+	.stabx	"_prefetch_WWWWW:F-11",0x0534,0x8e,0x0
+	.function ._prefetch_WWWWW,._prefetch_WWWWW,2,0
+	stu	SP,-80(SP)
+	.bf	187
+	.stabx	"a0:p19",0x068,0x82,0x0
+	.stabx	"a1:p19",0x06c,0x82,0x0
+	.stabx	"a2:p19",0x070,0x82,0x0
+	.stabx	"a3:p19",0x074,0x82,0x0
+	.stabx	"a4:p19",0x078,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,64(a0)
+	lfs	fp1,88(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,32(a1)
+	lfs	fp1,64(a1)
+	lfs	fp1,88(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,32(a2)
+	lfs	fp1,64(a2)
+	lfs	fp1,88(a2)
+	.line	4
+	lfs	fp1,0(a3)
+	lfs	fp1,32(a3)
+	lfs	fp1,64(a3)
+	lfs	fp1,88(a3)
+	.line	5
+	lfs	fp1,0(a4)
+	lfs	fp1,32(a4)
+	lfs	fp1,64(a4)
+	lfs	fp1,88(a4)
+	.line	7
+	b	__L640
+__L640:                                 # 0x00000640 (H.50.NO_SYMBOL+0x640)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	193
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x05			# FIXEDPARMS=5
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x00000114		# TB_OFFSET
+	.short	15			# NAME_LEN
+	.byte	"_prefetch_WWWWW"
+	.byte	0			# padding
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_WWWW:                        # 0x00000670 (H.50.NO_SYMBOL+0x670)
+	.stabx	"_prefetch_WWWW:F-11",0x0670,0x8e,0x0
+	.function ._prefetch_WWWW,._prefetch_WWWW,2,0
+	stu	SP,-80(SP)
+	.bf	176
+	.stabx	"a0:p19",0x068,0x82,0x0
+	.stabx	"a1:p19",0x06c,0x82,0x0
+	.stabx	"a2:p19",0x070,0x82,0x0
+	.stabx	"a3:p19",0x074,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,64(a0)
+	lfs	fp1,88(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,32(a1)
+	lfs	fp1,64(a1)
+	lfs	fp1,88(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,32(a2)
+	lfs	fp1,64(a2)
+	lfs	fp1,88(a2)
+	.line	4
+	lfs	fp1,0(a3)
+	lfs	fp1,32(a3)
+	lfs	fp1,64(a3)
+	lfs	fp1,88(a3)
+	.line	6
+	b	__L748
+__L748:                                 # 0x00000748 (H.50.NO_SYMBOL+0x748)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	181
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x04			# FIXEDPARMS=4
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x000000e0		# TB_OFFSET
+	.short	14			# NAME_LEN
+	.byte	"_prefetch_WWWW"
+# End of traceback table
+._prefetch_WWW:                         # 0x00000774 (H.50.NO_SYMBOL+0x774)
+	.stabx	"_prefetch_WWW:F-11",0x0774,0x8e,0x0
+	.function ._prefetch_WWW,._prefetch_WWW,2,0
+	stu	SP,-80(SP)
+	.bf	166
+	.stabx	"a0:p19",0x068,0x82,0x0
+	.stabx	"a1:p19",0x06c,0x82,0x0
+	.stabx	"a2:p19",0x070,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,64(a0)
+	lfs	fp1,88(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,32(a1)
+	lfs	fp1,64(a1)
+	lfs	fp1,88(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,32(a2)
+	lfs	fp1,64(a2)
+	lfs	fp1,88(a2)
+	.line	5
+	b	__L818
+__L818:                                 # 0x00000818 (H.50.NO_SYMBOL+0x818)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	170
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x03			# FIXEDPARMS=3
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x000000ac		# TB_OFFSET
+	.short	13			# NAME_LEN
+	.byte	"_prefetch_WWW"
+	.byte	0			# padding
+# End of traceback table
+._prefetch_VVVVV:                       # 0x00000844 (H.50.NO_SYMBOL+0x844)
+	.stabx	"_prefetch_VVVVV:F-11",0x0844,0x8e,0x0
+	.function ._prefetch_VVVVV,._prefetch_VVVVV,2,0
+	stu	SP,-80(SP)
+	.bf	155
+	.stabx	"a0:p14",0x068,0x82,0x0
+	.stabx	"a1:p14",0x06c,0x82,0x0
+	.stabx	"a2:p14",0x070,0x82,0x0
+	.stabx	"a3:p14",0x074,0x82,0x0
+	.stabx	"a4:p14",0x078,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,16(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,16(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,16(a2)
+	.line	4
+	lfs	fp1,0(a3)
+	lfs	fp1,16(a3)
+	.line	5
+	lfs	fp1,0(a4)
+	lfs	fp1,16(a4)
+	.line	7
+	b	__L8d8
+__L8d8:                                 # 0x000008d8 (H.50.NO_SYMBOL+0x8d8)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	161
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x05			# FIXEDPARMS=5
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x0000009c		# TB_OFFSET
+	.short	15			# NAME_LEN
+	.byte	"_prefetch_VVVVV"
+	.byte	0			# padding
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_VVVV:                        # 0x00000908 (H.50.NO_SYMBOL+0x908)
+	.stabx	"_prefetch_VVVV:F-11",0x0908,0x8e,0x0
+	.function ._prefetch_VVVV,._prefetch_VVVV,2,0
+	stu	SP,-80(SP)
+	.bf	145
+	.stabx	"a0:p14",0x068,0x82,0x0
+	.stabx	"a1:p14",0x06c,0x82,0x0
+	.stabx	"a2:p14",0x070,0x82,0x0
+	.stabx	"a3:p14",0x074,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,16(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,16(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,16(a2)
+	.line	4
+	lfs	fp1,0(a3)
+	lfs	fp1,16(a3)
+	.line	6
+	b	__L980
+__L980:                                 # 0x00000980 (H.50.NO_SYMBOL+0x980)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	150
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x04			# FIXEDPARMS=4
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x00000080		# TB_OFFSET
+	.short	14			# NAME_LEN
+	.byte	"_prefetch_VVVV"
+# End of traceback table
+._prefetch_VVV:                         # 0x000009ac (H.50.NO_SYMBOL+0x9ac)
+	.stabx	"_prefetch_VVV:F-11",0x09ac,0x8e,0x0
+	.function ._prefetch_VVV,._prefetch_VVV,2,0
+	stu	SP,-80(SP)
+	.bf	135
+	.stabx	"a0:p14",0x068,0x82,0x0
+	.stabx	"a1:p14",0x06c,0x82,0x0
+	.stabx	"a2:p14",0x070,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,16(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,16(a1)
+	.line	3
+	lfs	fp1,0(a2)
+	lfs	fp1,16(a2)
+	.line	5
+	b	__La08
+__La08:                                 # 0x00000a08 (H.50.NO_SYMBOL+0xa08)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	139
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x03			# FIXEDPARMS=3
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x00000064		# TB_OFFSET
+	.short	13			# NAME_LEN
+	.byte	"_prefetch_VVV"
+	.byte	0			# padding
+# End of traceback table
+._prefetch_VV:                          # 0x00000a34 (H.50.NO_SYMBOL+0xa34)
+	.stabx	"_prefetch_VV:F-11",0x0a34,0x8e,0x0
+	.function ._prefetch_VV,._prefetch_VV,2,0
+	stu	SP,-80(SP)
+	.bf	127
+	.stabx	"a0:p14",0x068,0x82,0x0
+	.stabx	"a1:p14",0x06c,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,16(a0)
+	.line	2
+	lfs	fp1,0(a1)
+	lfs	fp1,16(a1)
+	.line	4
+	b	__La74
+__La74:                                 # 0x00000a74 (H.50.NO_SYMBOL+0xa74)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	130
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x02			# FIXEDPARMS=2
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x00000048		# TB_OFFSET
+	.short	12			# NAME_LEN
+	.byte	"_prefetch_VV"
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_H:                           # 0x00000aa0 (H.50.NO_SYMBOL+0xaa0)
+	.stabx	"_prefetch_H:F-11",0x0aa0,0x8e,0x0
+	.function ._prefetch_H,._prefetch_H,2,0
+	stu	SP,-80(SP)
+	.bf	120
+	.stabx	"a0:p24",0x068,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,40(a0)
+	.line	3
+	b	__Lad0
+__Lad0:                                 # 0x00000ad0 (H.50.NO_SYMBOL+0xad0)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	122
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x01			# FIXEDPARMS=1
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x00000038		# TB_OFFSET
+	.short	11			# NAME_LEN
+	.byte	"_prefetch_H"
+	.byte	0			# padding
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_W:                           # 0x00000afc (H.50.NO_SYMBOL+0xafc)
+	.stabx	"_prefetch_W:F-11",0x0afc,0x8e,0x0
+	.function ._prefetch_W,._prefetch_W,2,0
+	stu	SP,-80(SP)
+	.bf	113
+	.stabx	"a0:p19",0x068,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,64(a0)
+	lfs	fp1,88(a0)
+	.line	3
+	b	__Lb38
+__Lb38:                                 # 0x00000b38 (H.50.NO_SYMBOL+0xb38)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	115
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x01			# FIXEDPARMS=1
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x00000044		# TB_OFFSET
+	.short	11			# NAME_LEN
+	.byte	"_prefetch_W"
+	.byte	0			# padding
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_V:                           # 0x00000b64 (H.50.NO_SYMBOL+0xb64)
+	.stabx	"_prefetch_V:F-11",0x0b64,0x8e,0x0
+	.function ._prefetch_V,._prefetch_V,2,0
+	stu	SP,-80(SP)
+	.bf	106
+	.stabx	"a0:p14",0x068,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,16(a0)
+	.line	3
+	b	__Lb88
+__Lb88:                                 # 0x00000b88 (H.50.NO_SYMBOL+0xb88)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	108
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x01			# FIXEDPARMS=1
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x0000002c		# TB_OFFSET
+	.short	11			# NAME_LEN
+	.byte	"_prefetch_V"
+	.byte	0			# padding
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+._prefetch_M:                           # 0x00000bb4 (H.50.NO_SYMBOL+0xbb4)
+	.stabx	"_prefetch_M:F-11",0x0bb4,0x8e,0x0
+	.function ._prefetch_M,._prefetch_M,2,0
+	stu	SP,-80(SP)
+	.bf	99
+	.stabx	"a0:p9",0x068,0x82,0x0
+	.stabx	"dummy:-12",0x040,0x81,0x0
+	.line	1
+	lfs	fp1,0(a0)
+	lfs	fp1,32(a0)
+	lfs	fp1,64(a0)
+	.line	3
+	b	__Lbe4
+__Lbe4:                                 # 0x00000be4 (H.50.NO_SYMBOL+0xbe4)
+	cal	SP,80(SP)
+	bcr	BO_ALWAYS,CR0_LT
+	.ef	101
+	.long	0x00000000
+# traceback table
+	.byte	0x00			# VERSION=0
+	.byte	0x00			# LANG=TB_C
+	.byte	0x22			# IS_GL=0,IS_EPROL=0,HAS_TBOFF=1
+					# INT_PROC=0,HAS_CTL=0,TOCLESS=0
+					# FP_PRESENT=1,LOG_ABORT=0
+	.byte	0x40			# INT_HNDL=0,NAME_PRESENT=1
+					# USES_ALLOCA=0,CL_DIS_INV=WALK_ONCOND
+					# SAVES_CR=0,SAVES_LR=0
+	.byte	0x80			# STORES_BC=1,FPR_SAVED=0
+	.byte	0x00			# GPR_SAVED=0
+	.byte	0x01			# FIXEDPARMS=1
+	.byte	0x01			# FLOATPARMS=0,PARMSONSTK=1
+	.long	0x00000000		# 
+	.long	0x00000038		# TB_OFFSET
+	.short	11			# NAME_LEN
+	.byte	"_prefetch_M"
+	.byte	0			# padding
+	.byte	0			# padding
+	.byte	0			# padding
+# End of traceback table
+# End	csect	H.50.NO_SYMBOL{PR}
+
+# .data section
+
+
+	.toc	                        # 0x00000c10 
+T.237._prefetch_4MW4W:
+	.tc	H.237._prefetch_4MW4W{TC},_prefetch_4MW4W{DS}
+T.241._prefetch_4MV4V:
+	.tc	H.241._prefetch_4MV4V{TC},_prefetch_4MV4V{DS}
+T.245._prefetch_4MWWWW:
+	.tc	H.245._prefetch_4MWWWW{TC},_prefetch_4MWWWW{DS}
+T.249._prefetch_4MVVVV:
+	.tc	H.249._prefetch_4MVVVV{TC},_prefetch_4MVVVV{DS}
+T.253._prefetch_WWWWW:
+	.tc	H.253._prefetch_WWWWW{TC},_prefetch_WWWWW{DS}
+T.257._prefetch_WWWW:
+	.tc	H.257._prefetch_WWWW{TC},_prefetch_WWWW{DS}
+T.261._prefetch_WWW:
+	.tc	H.261._prefetch_WWW{TC},_prefetch_WWW{DS}
+T.265._prefetch_VVVVV:
+	.tc	H.265._prefetch_VVVVV{TC},_prefetch_VVVVV{DS}
+T.269._prefetch_VVVV:
+	.tc	H.269._prefetch_VVVV{TC},_prefetch_VVVV{DS}
+T.273._prefetch_VVV:
+	.tc	H.273._prefetch_VVV{TC},_prefetch_VVV{DS}
+T.277._prefetch_VV:
+	.tc	H.277._prefetch_VV{TC},_prefetch_VV{DS}
+T.281._prefetch_H:
+	.tc	H.281._prefetch_H{TC},_prefetch_H{DS}
+T.285._prefetch_W:
+	.tc	H.285._prefetch_W{TC},_prefetch_W{DS}
+T.289._prefetch_V:
+	.tc	H.289._prefetch_V{TC},_prefetch_V{DS}
+T.293._prefetch_M:
+	.tc	H.293._prefetch_M{TC},_prefetch_M{DS}
+
+
+	.csect	_prefetch_4MW4W{DS}     
+	.long	._prefetch_4MW4W        # "\0\0\0\0"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_4MW4W{DS}
+
+
+	.csect	_prefetch_4MV4V{DS}     
+	.long	._prefetch_4MV4V        # "\0\0\001\210"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_4MV4V{DS}
+
+
+	.csect	_prefetch_4MWWWW{DS}    
+	.long	._prefetch_4MWWWW       # "\0\0\002\214"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_4MWWWW{DS}
+
+
+	.csect	_prefetch_4MVVVV{DS}    
+	.long	._prefetch_4MVVVV       # "\0\0\004\020"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_4MVVVV{DS}
+
+
+	.csect	_prefetch_WWWWW{DS}     
+	.long	._prefetch_WWWWW        # "\0\0\0054"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_WWWWW{DS}
+
+
+	.csect	_prefetch_WWWW{DS}      
+	.long	._prefetch_WWWW         # "\0\0\006p"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_WWWW{DS}
+
+
+	.csect	_prefetch_WWW{DS}       
+	.long	._prefetch_WWW          # "\0\0\at"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_WWW{DS}
+
+
+	.csect	_prefetch_VVVVV{DS}     
+	.long	._prefetch_VVVVV        # "\0\0\bD"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_VVVVV{DS}
+
+
+	.csect	_prefetch_VVVV{DS}      
+	.long	._prefetch_VVVV         # "\0\0\t\b"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_VVVV{DS}
+
+
+	.csect	_prefetch_VVV{DS}       
+	.long	._prefetch_VVV          # "\0\0\t\254"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_VVV{DS}
+
+
+	.csect	_prefetch_VV{DS}        
+	.long	._prefetch_VV           # "\0\0\n4"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_VV{DS}
+
+
+	.csect	_prefetch_H{DS}         
+	.long	._prefetch_H            # "\0\0\n\240"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_H{DS}
+
+
+	.csect	_prefetch_W{DS}         
+	.long	._prefetch_W            # "\0\0\n\374"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_W{DS}
+
+
+	.csect	_prefetch_V{DS}         
+	.long	._prefetch_V            # "\0\0\vd"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_V{DS}
+
+
+	.csect	_prefetch_M{DS}         
+	.long	._prefetch_M            # "\0\0\v\264"
+	.long	TOC{TC0}                # "\0\0\f\020"
+	.long	0x00000000              # "\0\0\0\0"
+# End	csect	_prefetch_M{DS}
+
+
+
+# .bss section

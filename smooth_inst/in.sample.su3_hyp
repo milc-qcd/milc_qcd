@@ -1,0 +1,27 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 4
+
+alpha 0.75
+alpha2 0.6
+alpha3 0.3
+sweeps 0
+sweeps_between_meas 1
+hits_per_sweep 9
+reload_serial ../binary_samples/lat.sample.inst
+no_gauge_fix
+save_topo topo.test
+forget
+
+alpha 0.75
+alpha2 0.6
+alpha3 0.3
+sweeps 1
+sweeps_between_meas 1
+hits_per_sweep 9
+continue
+no_gauge_fix
+forget_topo
+forget

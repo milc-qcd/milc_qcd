@@ -1,0 +1,65 @@
+# Partial makefile for the HQET heavy--light form factor calculation
+# This file is to be included in Make_template
+# It contains all the RCS stuff
+
+# RCS rules
+CO = co
+VPATH = RCS
+.SUFFIXES: .c,v .h,v .h
+.h,v.h: ; ${CO} $*.h
+.c,v.c: ; ${CO} $*.c
+
+# This ugly list of dependencies is apparently forced upon us by our 
+# version of make, which doesn't use VPATH in resolving suffix rules.
+
+
+calc_heavy_light_form_factor.c:	   calc_heavy_light_form_factor.c,v
+clover_info.c:                     clover_info.c,v
+clover_rotate.c:                   clover_rotate.c,v
+clover_rotate_fermilab.c:         clover_rotate_fermilab.c,v
+contract_heavy_to_heavy.c:	   contract_heavy_to_heavy.c,v
+contract_heavy_to_light.c:	   contract_heavy_to_light.c,v
+contract_two_pt_prop.c:	           contract_two_pt_prop.c,v
+control_form.c:	                   control_form.c,v
+copy_site_spin_wilson_vector.c:   copy_site_spin_wilson_vector.c,v
+corr_prop_routines.c:	           corr_prop_routines.c,v
+corrlist.h:                        corrlist.h,v 
+debug_form.c:	                   debug_form.c,v
+debug_form.h:	                   debug_form.h,v
+gauge_info.c:	                   gauge_info.c,v
+lattice_form.h:	                   lattice_form.h,v
+meson_spectrum.c:                  meson_spectrum.c,v
+opertypes.h:                       opertypes.h,v 
+prop_form_includes.h:              prop_form_includes.h,v
+sequential_source.c:	           sequential_source.c,v
+setup_control_form.c:	           setup_control_form.c,v
+setup_form.c:	                   setup_form.c,v
+setup_timeslice_fft.c:	           setup_timeslice_fft.c,v
+sink_smear_quark.c:	           sink_smear_quark.c,v
+wilson_info.c:			   wilson_info.c,v
+write_propagating_form.c:	   write_propagating_form.c,v
+write_propagating_two_pt.c:	   write_propagating_two_pt.c,v
+zonked_quark_routines.c:         zonked_quark_routines.c,v
+
+
+
+
+#
+#  looks at what is locked in the local RCS directory
+#
+what_locked :
+	@ echo "Here are files that are locked out of RCS" 
+	rlog  -L -R RCS/*
+
+
+#
+# Look at the differences between the source code and stuff in RCS
+#
+hdiff :
+	rcsdiff *.h
+
+
+cdiff :
+	rcsdiff *.c
+
+

@@ -1,0 +1,24 @@
+magic_number 12781
+time_stamp "Tue Sep 16 15:03:28 2003"
+nx 4
+ny 4
+nz 4
+nt 8
+gauge.filename "../binary_samples/lat.sample.l4448"
+gauge.time_stamp "Wed Oct 10 14:27:08 2001"
+gauge.checksums "13f3b413 161f7dde"
+gauge.fix.description "Coulomb"
+gauge.fix.tolerance 1e-07
+quark.description "Clover"
+quark.kappa 0.100000
+quark.clover.clov_c 1.100000
+quark.clover.u0 0.900000
+quark.boundary_condition "periodic all directions"
+source.description ""
+source.size 0.000000
+source.x 0
+source.y 0
+source.z 0
+source.t 0
+source.n_spins 4
+source.spins[4] 0 1 2 3

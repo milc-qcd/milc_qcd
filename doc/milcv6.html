@@ -1,0 +1,3050 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<!-- This HTML file has been created by texi2html 1.47
+     from milcv6.texi on 22 November 2002 -->
+
+<TITLE>The MILC Code (version: 6.20sep02)</TITLE>
+</HEAD>
+<BODY>
+<H1>The MILC Code (version: 6.20sep02)</H1>
+
+<P>
+The MILC Code
+<P>
+
+</P>
+<P>
+version --6.20sep02---
+<P>
+<STRONG>Claude Bernard</STRONG> (<EM>Washington U.</EM>) &#60;cb@lump.wustl.edu&#62;
+<STRONG>Tom Burch</STRONG> (<EM>U. of Arizona</EM>) &#60;tburch@klingon.physics.arizona.edu&#62;
+<STRONG>Tom DeGrand</STRONG> (<EM>U. of Colorado</EM>) &#60;degrand@aurinko.colorado.edu&#62;
+<STRONG>Carleton DeTar</STRONG> (<EM>U. of Utah</EM>) &#60;detar@mail.physics.utah.edu&#62;
+<STRONG>Steve Gottlieb</STRONG> (<EM>Indiana U.</EM>) &#60;sg@denali.physics.indiana.edu&#62;
+<STRONG>Urs Heller</STRONG> (<EM>SCRI</EM>) &#60;heller@csit.fsu.edu,&#62;
+<STRONG>James Hetrick</STRONG> (<EM>U. of the Pacific</EM>) &#60;jhetrick@uop.edu&#62;
+<STRONG>Craig McNeile</STRONG> (<EM>Liverpool U.</EM>) &#60;mcneile@amtp.liv.ac.uk&#62;
+<STRONG>Kostas Orginos</STRONG> (<EM>UBrookhaven Natl. Lab</EM>) &#60;kostas@bln.gov&#62;
+<STRONG>James Osborn</STRONG> (<EM>U. of Utah</EM>) &#60;osborn@physics.utah.edu&#62;
+<STRONG>Kari Rummukainen</STRONG> (<EM>Niels Bohr Institute</EM>) &#60;rummukai@nbi.dk&#62;
+<STRONG>Bob Sugar</STRONG> (<EM>U.C. Santa Barbara</EM>) &#60;sugar@sarek.physics.ucsb.edu&#62;
+<STRONG>Doug Toussaint</STRONG> (<EM>U. of Arizona</EM>) &#60;doug@klingon.physics.arizona.edu&#62;
+
+</P>
+
+<P>
+The MILC Code is a body of high performance research software written in C
+ for doing SU(3) lattice gauge theory on several different (MIMD)
+parallel computers in current use. In scalar mode, it runs on a variety
+of workstations making it extremely versatile for both production and
+exploratory applications.  Currently supported code runs on:
+
+<UL>
+<LI>Most scalar machines ("vanilla" version)
+
+<LI>SGI Origin 2000
+
+<LI>IBM SP
+
+<LI>NT Clusters
+
+<LI>Compaq Sierra cluster
+
+<LI>and various Beowulf (Linux+MPI) clusters
+
+</UL>
+
+
+<UL>
+<LI>http://www.physics.utah.edu/~detar/milc/
+
+<LI>http://physics.indiana.edu/~sg/milc.html
+
+<LI>http://cliodhna.cop.uop.edu/~hetrick/milc/
+
+</UL>
+
+<P>
+At present there is no special accommodation for parallel architectures
+with multiple share-memory processors (SMP) on a node.  Each processor
+is treated as though it is a separate node, requiring a communications
+operation to exchange data, regardless of whether data is in commonly
+shared memory or truly off node.  Throughout this documentation "node"
+is therefore synonymous with "processor."
+
+</P>
+<P>
+<A NAME="IDX1"></A>
+Copyright (C) 2000, by The MILC Collaboration
+
+</P>
+<P>
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+</P>
+<P>
+<A NAME="IDX2"></A>
+<BR>Last change: [detar:08 31 2002]
+
+</P>
+
+
+
+<H1><A NAME="SEC1" HREF="milcv6_toc.html#SEC1">Obtaining the MILC Code</A></H1>
+<P>
+<A NAME="IDX3"></A>
+
+</P>
+<P>
+This chapter explains how to get the code, copyright conditions and the
+installation process.
+
+</P>
+
+
+
+<H2><A NAME="SEC2" HREF="milcv6_toc.html#SEC2">Web sites</A></H2>
+<P>
+<A NAME="IDX4"></A>
+<A NAME="IDX5"></A>
+
+</P>
+<P>
+The most up-to-date information and access to the MILC Code can be found
+
+</P>
+
+<UL>
+<LI>via WWW at:
+
+
+<UL>
+<LI><KBD>http://physics.indiana.edu/~sg/milc.html</KBD>
+
+<LI><KBD>http://physics.utah.edu/~detar/milc/</KBD>
+
+</UL>
+
+<LI>via email request to the authors' representatives at:
+
+
+<UL>
+<LI><KBD>doug@klingon.physics.arizona.edu</KBD>
+
+<LI><KBD>detar@physics.utah.edu</KBD>
+
+</UL>
+
+</UL>
+
+
+
+<H2><A NAME="SEC3" HREF="milcv6_toc.html#SEC3">Usage conditions</A></H2>
+<P>
+<A NAME="IDX6"></A>
+<A NAME="IDX7"></A>
+<A NAME="IDX8"></A>
+
+</P>
+<P>
+The MILC Code is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation.
+
+</P>
+<P>
+<STRONG>Publications of research work done using this code or
+derivatives of this code should acknowledge its use.</STRONG> The MILC project
+is supported in part by grants for the US Department of Energy and
+National Science Foundation and we ask that you use (at least) the
+following string in publications which derive results using this
+material: 
+<P>
+
+</P>
+<P>
+<STRONG>This work was in part based on the MILC
+collaboration's public lattice gauge theory code. See
+<STRONG>http://physics.utah.edu/~detar/milc.html</STRONG></STRONG>
+<P>
+
+</P>
+<P>
+This software is distributed in the hope that it will be useful, but
+without any warranty; without even the implied warranty of
+merchantability or fitness for a particular purpose. See the GNU
+General Public License for more details, a copy of which License can be
+obtained from
+
+<PRE>
+Free Software Foundation, Inc., 
+675 Mass Ave, Cambridge, MA 02139, USA.
+</PRE>
+
+<P>
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+</P>
+
+
+<H2><A NAME="SEC4" HREF="milcv6_toc.html#SEC4">Installing the MILC Code</A></H2>
+<P>
+<A NAME="IDX9"></A>
+
+</P>
+<P>
+The major code sections are currently bundled into several tar files,
+which are, in turn, wrapped into a single compressed tar file.  Start
+unpacking in a clean directory using the command
+
+<PRE>
+    tar -xzf milc*.tar.gz
+</PRE>
+
+<P>
+or, if your version of tar doesn't have the <KBD>z</KBD> uncompress option,
+use
+
+<PRE>
+   gzip -dc milc*.tar.gz | tar -xf -
+</PRE>
+
+<P>
+You should then find a <KBD>README_UNPACK</KBD> file or
+<KBD>README_UNPACK_RELEASE</KBD> file that explains how to complete the
+unpacking.  The procedure for building the MILC code is explained later
+in this document (see section <A HREF="milcv6.html#SEC7">Building the MILC Code</A>) or in the <KBD>README</KBD>
+file that accompanies the code.
+
+</P>
+
+
+<H2><A NAME="SEC5" HREF="milcv6_toc.html#SEC5">Portability</A></H2>
+<P>
+<A NAME="IDX10"></A>
+<A NAME="IDX11"></A>
+
+</P>
+<P>
+One of our aims in writing this code was to make it very portable
+across machine architectures and configurations. While the code must
+be compiled with the architecture-specific low-level communication
+files (see section <A HREF="milcv6.html#SEC7">Building the MILC Code</A>), the application codes contain
+a minimum of architecture-dependent <STRONG>#ifdef</STRONG>'s, which now are
+mostly for machine-dependent performance optimizations in the
+conjugate gradient routines, etc, since MPI has become a portable
+standard.
+
+</P>
+<P>
+Similarly, with regard to random numbers, care has been taken to ensure
+convenience and reproducibility. With <STRONG>SITERAND</STRONG> set
+(see section <A HREF="milcv6.html#SEC26">Random numbers</A>), the random number generator will produce
+the same sequence for a given seed, across architectures and
+varying the number of nodes.
+
+</P>
+<P>
+<A NAME="IDX12"></A>
+
+</P>
+<P>
+The software component of the U.S. Department of Energy SciDAC
+project, currently under development, will provide a multilayer
+interface for lattice gauge theory code that provides portability even
+to specialized platforms, such as the Columbia University QCDOC.  This
+release of the MILC code achieves minimal portability through optional
+access to the SciDAC message passing interface.
+
+</P>
+
+
+<H2><A NAME="SEC6" HREF="milcv6_toc.html#SEC6">Supported architectures</A></H2>
+<P>
+<A NAME="IDX13"></A>
+This manual covers <STRONG>version 6.20sep02</STRONG> which is currently supposed to
+run on: 
+<P>
+
+<UL>
+<LI>Most scalar machines ("vanilla" version)
+
+<LI>SGI Origin 2000
+
+<LI>IBM SP
+
+<LI>NT Clusters
+
+<LI>Compaq Alpha Clusters
+
+<LI>and various Beowulf (Linux+MPI) clusters
+
+<LI>QCDOC
+
+</UL>
+
+<P>
+In addition it has run in the past on
+
+<UL>
+<LI>The Intel iPSC-860
+
+<LI>Intel Paragon
+
+<LI>PVM (version 3.2)
+
+<LI>The Ncube 2
+
+<LI>The Thinking Machines CM5
+
+<LI>SGI/Cray T3E
+
+</UL>
+
+<P>
+and many other long gone (but not forgotten) computers.
+
+</P>
+<P>
+<A NAME="IDX14"></A>
+If you have a machine which is not listed above, or would like specific
+information about a particular workstation, write to
+<KBD>doug@klingon.physics.arizona.edu</KBD>. It is quite possible that code
+for your machine is in developement, or that certain routines for your
+workstation have been optimized.
+
+</P>
+<P>
+<A NAME="IDX15"></A>
+<A NAME="IDX16"></A>
+Since this is our working code, it is continually in a state of
+development.  We informally support the code as best we can by answering
+questions and fixing bugs.  We will be very grateful for reports of
+problems and suggestions for improvements, which may be sent to
+
+<PRE>
+doug@klingon.physics.arizona.edu
+detar@physics.utah.edu
+</PRE>
+
+
+
+<H1><A NAME="SEC7" HREF="milcv6_toc.html#SEC7">Building the MILC Code</A></H1>
+<P>
+<A NAME="IDX17"></A>
+
+</P>
+<P>
+<A NAME="IDX18"></A>
+<A NAME="IDX19"></A>
+
+</P>
+<P>
+Here are the steps required to build the code.
+
+<OL>
+<LI>Select the application you wish to build
+
+<LI>Select the architecture-dependent make file.
+
+From the top-level directory choose one of the following
+<TT>`Make_&#60;arch&#62;'</TT> files appropriate to the architecture.
+
+<PRE>
+Make_vanilla (for scalar mode on workstations and PC's) 
+Make_SGIPC_mpi
+Make_linux_mpi
+Make_linux_qmp (for SciDAC QMP message passing )
+Make_now_mpi
+Make_nt_mpi
+Make_origin_mpi
+Make_t3e_mpi
+Make_tcs_mpi (Compaq Alpha cluster)
+</PRE>
+
+<LI>Copy and edit the makefile.
+
+Copy the architecture-dependent make file to the application directory
+and edit the compilation options according to your system environment.
+This file also defines a special <TT>`Make_&#60;arch&#62;'</TT> file for the libraries.
+The libraries make file is <EM>not</EM> the same as the application make file.
+While the make file for the library is preset to correspond to the make file
+for the application, see the next section to check for compatibility.
+<LI>Edit the <TT>`configure.h'</TT> file in the <TT>`include'</TT> directory.
+
+At the moment we do not run an automated configure to get information
+about the system environment.
+<LI>Select a make target
+
+The generic <TT>`Make_template'</TT> file in the application directory
+lists a variety of targets followed by a double colon <KBD>::</KBD>.
+<LI>Build the target
+
+Compile the code using
+<CODE> make -f Make_&#60;arch&#62; &#60;target&#62; &#62; &#38; make.log </CODE>
+Do not use the <TT>`Make_template'</TT> file by itself to build the code.
+</OL>
+
+
+
+<H2><A NAME="SEC8" HREF="milcv6_toc.html#SEC8">Making the Libraries</A></H2>
+<P>
+<A NAME="IDX20"></A>
+The libraries should be built automatically when you make
+the application target.  However, it is a good idea to verify that
+the compilation of the libaries is compatible with the compilation
+of the application.
+There are two libraries needed for SU(3) operations:
+
+<UL>
+<LI><STRONG>complex.a</STRONG>
+
+contains routines for operations on complex
+numbers. See <TT>`complex.h'</TT> for a summary.
+<LI><STRONG>su3.a</STRONG>
+
+contains routines for operations on SU3 matrices,
+3 element complex vectors, and Wilson vectors (12 element complex
+vectors).  See <TT>`su3.h'</TT> for a summary.
+</UL>
+
+<P>
+Assembler code for some routines and some CPUs is provided.  In each
+case a ".c" file of the same name contains a C routine which should
+work identically.  
+
+</P>
+
+<UL>
+<LI>.m4  --   Intel/Paragon
+
+<LI>.rs6k --  IBM/RS6000
+
+<LI>.t3e  --  SGI/Cray T3E
+
+<LI>.alpha --  DEC/alpha
+
+</UL>
+
+<P>
+The scalar workstation code is written in ANSI standard C.  If your
+compiler is not ANSI compliant, try using the gnu C compiler gcc
+instead.  Note that if the library code is compiled with gcc the
+application directory code must also be compiled with gcc, and vice
+versa.  This is because gcc understands prototypes and some other C
+compilers don't, and they therefore pass float arguments differently.
+We recommend gcc.  The code can also be compiled under C++, but it uses
+no exclusively C++ constructs.
+
+</P>
+<P>
+All library routines are single processor (no communications here) so
+choose the appropriate make file according to the target processor.
+
+</P>
+<P>
+Here are the steps for making the libraries:
+
+</P>
+<P>
+Choose a make file as follows:
+
+</P>
+
+<UL>
+<LI>SGI/Cray T3E   --   Make_t3e
+
+<LI>IBM RS6000     --   Make_RS6K
+
+<LI>DEC alpha      --   Make_alpha
+
+<LI>P3 P4 SSE NASM --   Make_SSE_nasm
+
+<LI>any processor  --   Make_vanilla (no assembly language coding)
+
+</UL>
+
+<P>
+Edit the make file to get the CFLAGS and CC right.  Check the
+applications make file to be sure the chosen libraries make file is
+specified.
+
+</P>
+
+
+<H2><A NAME="SEC9" HREF="milcv6_toc.html#SEC9">Checking the Build</A></H2>
+<P>
+<A NAME="IDX21"></A>
+
+</P>
+<P>
+ Sample input and output files are provided for most make targets.
+   It is a good idea to run the compiled code with the sample input
+   file and compare the results with the sample output.  Since comparing
+   a long list of numbers is tedious, each application directory contains 
+   a <TT>`Make_test'</TT> facility for testing the code and doing the comparison for you.  
+   To run this utility for the target <KBD>su3_rmd</KBD> building with the
+   make file <TT>`Make_vanilla'</TT> use the command
+
+</P>
+<P>
+<CODE> make -f Make_test "ARCH=vanilla" "PROJS=su3_rmd" test   </CODE>
+
+</P>
+<P>
+   Omitting the <KBD>PROJS</KBD> definition tests all targets in the application.
+   The test consists in most cases of generating 
+   a file <KBD>out.test.su3_rmd</KBD> and comparing
+   key sections of the file with the trusted output <KBD>out.sample.su3_rmd</KBD>. 
+   The comparision checks line-by-line the absolute difference of numerical 
+   values on a line for numeric values greater than 1 and the relative
+   difference for values less than 1 and writes a message 
+   if a field is found to differ by 
+   more than a tolerance specified in the <TT>`Make_test'</TT> file.  This is a rather
+   crude test, since fractional discrepancies in some cases are more
+   appropriate than absolute discrepancies and the test does not associate
+   real and imaginary parts of a complex value.  Differences may arise because
+   of round-off or, in molecular dynamics updates, a round-off-initiated drift.
+   They may also arise because a value is simply a large number with an
+   acceptably small fractional discrepancy.
+
+</P>
+<P>
+   If you are testing in parallel mode, edit the file
+   <TT>`Make_test_template'</TT> to get the correct job-launching commands.
+
+</P>
+
+
+<H1><A NAME="SEC10" HREF="milcv6_toc.html#SEC10">General description</A></H1>
+<P>
+<A NAME="IDX22"></A>
+
+</P>
+<P>
+<A NAME="IDX23"></A>
+<STRONG>The MILC Code</STRONG> is a set of codes written in C developed by the MIMD
+Lattice Computation (MILC) collaboration for doing simulations of four
+dimensional SU(3) lattice gauge theory on MIMD parallel machines.
+The MILC
+Code is publicly available for research purposes. Publications of work
+done using this code or derivatives of this code should acknowledge this
+use. section <A HREF="milcv6.html#SEC3">Usage conditions</A>.
+
+</P>
+
+
+
+<H2><A NAME="SEC11" HREF="milcv6_toc.html#SEC11">Directory Layout</A></H2>
+<P>
+<A NAME="IDX24"></A>
+
+</P>
+<P>
+The new reader peering into the parent directory sees a bewildering set
+of files. The Makefiles are for producing code on various platforms (see
+see section <A HREF="milcv6.html#SEC7">Building the MILC Code</A> for a description). The directories fall
+into six categories: "applications," "generic," "include,"
+"libraries," "doc," and "file_utilities."
+
+</P>
+<P>
+<A NAME="IDX25"></A>
+Each <STRONG>application</STRONG>, or major project of a research program, will
+have its own directory. Applications are subjects like
+<STRONG>ks_dynamical</STRONG> (simulations with conventional dynamical
+Kogut-Susskind quarks), <STRONG>clover_invert</STRONG> (clover Dirac operator
+inversion and spectroscopy), etc. All applications share the
+<STRONG>libraries</STRONG> directory containing low-level routines, the
+<STRONG>include</STRONG> directory containing most of the header files, the
+<STRONG>generic</STRONG> directory containing high level routines that is more
+or less independent of the physics, and a set of slightly more specific
+<STRONG>generic_XXX</STRONG> directories. Examples of <STRONG>generic</STRONG> code are
+the random number routines, the layout routines, routines to evaluate
+the plaquette or Polyakov loop, etc.
+
+</P>
+<P>
+Each application usually has several variants that appear as separate
+targets in the make file.  For example, the ks_dynamical application can
+be compiled for hybrid Monte Carlo updating (su3_hmc) or the R algorithm
+(su3_rmd).  All application directories have separate sample input and
+output files for each target, labelled with the name of the target: for
+example "in.sample.su3_hmc", etc., and a corresponding output file
+"out.sample.su3_rmd", "out.sample.su3_hmc", etc.)
+
+</P>
+<P>
+All declarations for top-level (external to a code file) functions are
+in a single header file called something like "app_includes.h".  See
+ks_dynamical/ks_dyn_includes.h for an example.  This header is to be
+used for all compilations in the "app" directory.
+
+</P>
+<P>
+The MILC Code should unpack into at least the following directories.
+(see section <A HREF="milcv6.html#SEC7">Building the MILC Code</A>)
+
+</P>
+<P>
+<EM>SUPPORT ROUTINES</EM>
+<DL COMPACT>
+
+<DT><STRONG>libraries:</STRONG>
+<DD>
+Low level routines and include files.
+
+<UL>
+
+<LI>complex.a
+
+Library of routines for complex numbers.
+
+<LI>su3.a
+
+Library of routines for SU(3) operations.
+
+</UL>
+
+<DT><STRONG>include:</STRONG>
+<DD>
+
+<UL>
+
+<LI>config.h
+
+Specification of processor configuration and operating system environment.
+
+<LI>complex.h
+
+Header file of definitions and macros for complex numbers.
+<LI>su3.h
+
+Header file of definitions and macros for SU(3) matrix and fermion
+operations.
+
+<LI>comdefs.h
+
+Header files for communications
+
+<LI>generic_XXX.h
+
+Header files and declarations for routines in directory generic_XXX
+
+<LI>dirs.h
+
+Defines some standard macros for lattice directions.
+
+<LI>macros.h
+
+Definitions required in all applications: field offsets, field pointers,
+looping over variables...
+
+<LI>io_lat.h and io_wb.h
+
+Header files for routines for reading and writing lattices (the routines
+are in <KBD>generic</KBD>)
+
+<LI>int32type.h
+
+Defines 32-bit integer type
+
+<LI>loopend.h
+
+Small optimization for loop control.
+
+<LI>prefetch.h prefetch_asm.h
+
+Header files defining subroutine or macro calls for cache preloading.
+
+<LI>random.h
+
+Definition of structure for random number state.
+
+</UL>
+
+<DT><STRONG>generic:</STRONG>
+<DD>
+	This directory holds all the communications routines and
+        a few useful routines for generating random numbers and computing
+the plaquette and Polyakov loop.
+
+<DT><STRONG>generic_XXX:</STRONG>
+<DD>
+	High level code which several applications directories might use.
+This includes inverters and simple measurement routines, such as for
+spectroscopy.
+  The
+	other directories, which are for real applications,  use
+	the routines in these directories where possible, otherwise
+	copy routines from these directories and modify them or write
+	new routines. Presently "XXX" includes 
+generic_clover, generic_form, generic_ks, generic_pg, and generic_wilson.
+
+</DL>
+<P>
+  A set of wrappers for calls to the inverters is provided in
+<KBD>generic_wilson</KBD> and <KBD>generic_clover</KBD>. 
+ Using them is optional, of course.
+These wrappers make it possible to "plug" in the inverter at
+compilation time by linking the appropriate wrapper and inverter.  The
+wrappers come in a "lean" and a not-so-lean version.  Since the
+inverters they call destroy the source, and restarting requires
+restoring the source, the options are recreating the source (lean
+version) or saving it (not-so-lean).  Both versions requires a
+structure "<KBD>wilson_quark_source</KBD>" that holds the source parameters.
+This structure is declared in the <KBD>lattice.h</KBD> file.  See
+<KBD>wilson_invert/lattice.h</KBD> for an example.  This structure can be
+customized.  The structure is loaded by the calling program and then
+passed as an argument to the wrapper function.  The wrapper, in turn
+passes it through to the function that creates the source, which you
+select at compilation time.  The source is built by a routine in
+<KBD>generic_wilson</KBD> or <KBD>generic_clover</KBD>. 
+ All source routines have the same
+function name, so the source is selected from the <KBD>Make_template</KBD> file
+by linking from the appropriate object file.  For the not-so-lean
+wrappers, the calling function builds the source.  The supplied source
+routines require the "<KBD>wilson_quark_source" structure</KBD>. If you want to
+create a new source, see <KBD>generic_wilson/w_source.c</KBD> and
+<KBD>generic_wilson/w_source_h.c</KBD> for an example.
+
+</P>
+
+
+<H2><A NAME="SEC12" HREF="milcv6_toc.html#SEC12">Overview of Applications</A></H2>
+<P>
+<A NAME="IDX26"></A>
+<DL COMPACT>
+
+<DT><STRONG>ks_dynamical:</STRONG>
+<DD>
+	Simulations with dynamical Kogut-Susskind fermions.  Make targets
+	include the "R", "phi" and hybrid Monte Carlo updating
+	algorithms.  Measurements of the plaquette, Polyakov loop,
+        , and fermions energy and pressure are included.  Optional
+	measurements include the hadron spectrum, screening spectrum,
+	and some wave functions (FFT routines are included in wave
+        function codes)
+
+<DT><STRONG>pure_gauge:</STRONG>
+<DD>
+	Simulation of the pure gauge theory, using microcanonical overrelaxed
+and quasi-heat bath, or hybrid Monte Carlo algorithms. Doesn't really
+measure very much.
+
+<DT><STRONG>clover_invert:</STRONG>
+<DD>
+	Inversion of clover fermion matrix (conjugate gradient, MR, and
+        BiCG algorithms) and measurements with
+	clover quarks.  Lattices are supposed to be generated by
+	someone else. 
+
+<DT><STRONG>clover_dynamical:</STRONG>
+<DD>
+	Dynamical clover QCD with a single degenerate quark mass.
+
+<DT><STRONG>hvy_qpot:</STRONG>
+<DD>
+        Wilson loops for potentials
+
+<DT><STRONG>wilson_dynamical:</STRONG>
+<DD>
+	Simulations with dynamical Wilson fermions.  Variants
+	include the "R", "phi" and hybrid Monte Carlo updating
+	algorithms.  Measurements of the plaquette, Polyakov loop,
+        ,and fermion energy and pressure.  Optional
+	measurements include hadron spectrum, screening spectrum,
+	axial current quark mass, and Landau gauge quark propagators.
+
+<DT><STRONG>clover_dynamical:</STRONG>
+<DD>
+	Simulations with dynamical clover fermions.  Variants
+	include the "R", "phi" and hybrid Monte Carlo updating
+	algorithms. 
+</DL>
+
+<P>
+<EM>ADDITIONAL APPLICATIONS IN DEVELOPMENT VERSION</EM>
+<DL COMPACT>
+
+<DT><STRONG>arb_dirac_eigen:</STRONG>
+<DD>
+        Eigenvalues and eigenvectors of very general fermion actions with
+        four Dirac spin indices.  Not tested for more than one node.
+        <KBD>degrand@physics.colorado.edu</KBD>.
+
+<DT><STRONG>arb_dirac_invert:</STRONG>
+<DD>
+        Spectrum for very general fermion actions with four Dirac spin indices.
+        Not tested for more than one node.
+        <KBD>degrand@physics.colorado.edu</KBD>.
+
+<DT><STRONG>clover_hybrids</STRONG>
+<DD>
+	Hybrid spectroscopy with clover fermions.
+        <KBD>doug@klingon.physics.arizona.edu</KBD>)
+
+<DT><STRONG>h_dibaryon:</STRONG>
+<DD>
+	H-dibaryon spectrum for clover quarks.
+
+<DT><STRONG>heavy</STRONG>
+<DD>
+	Wilson heavy-light spectroscopy with hopping parameter expansion.
+
+<DT><STRONG>hqet_heavy_to_light:</STRONG>
+<DD>
+        HQET form factor code.  Not used in production, yet.
+
+<DT><STRONG>ks_eigen</STRONG>
+<DD>
+        Eigenvalues for improved staggered fermion operators.
+        <KBD>kostas@physics.arizona.edu</KBD>)
+
+<DT><STRONG>ks_hybrids2</STRONG>
+<DD>
+        Hybrid staggered spectroscopy.
+        <KBD>doug@klingon.physics.arizona.edu</KBD>)
+
+<DT><STRONG>ks_imp_dyn1</STRONG>
+<DD>
+	Dynamical QCD with improved staggered quarks of 1 degenerate mass.
+        <KBD>doug@klingon.physics.arizona.edu</KBD>)
+
+<DT><STRONG>ks_imp_dyn2</STRONG>
+<DD>
+	Dynamical QCD with improved staggered quarks of 2 masses.
+        <KBD>doug@klingon.physics.arizona.edu</KBD>)
+
+<DT><STRONG>propagating_form_factor</STRONG>
+<DD>
+        Form factors with propagating quarks.
+        <KBD>detar@physics.utah.edu</KBD>)
+
+<DT><STRONG>schroed_cl_inv</STRONG>
+<DD>
+        Schroedinger functional code (quenched) with clover fermions.
+        <KBD>heller@scri.fsu.edu</KBD>)
+
+<DT><STRONG>schroed_ks_dyn</STRONG>
+<DD>
+        Schroedinger functional code (dynamical) with staggered fermions.
+        <KBD>heller@scri.fsu.edu</KBD>)
+
+<DT><STRONG>schroed_pg</STRONG>
+<DD>
+        Pure gauge schroedinger functional code.
+        <KBD>heller@scri.fsu.edu</KBD>)
+
+<DT><STRONG>smooth_inst</STRONG>
+<DD>
+        Does APE smoothing of gauge configurations and computes
+        the topological charge density. 
+
+<DT><STRONG>string_break</STRONG>
+<DD>
+        Staggered fermion string breaking.
+
+<DT><STRONG>symanzik_sl32</STRONG>
+<DD>
+        Pure gauge Monte Carlo for an arbitrary hypercubic action.
+
+<DT><STRONG>wilson_static</STRONG>
+<DD>
+        Static light spectroscopy for Wilson fermions.
+
+</DL>
+
+<P>
+The top level directory contains a <TT>`README'</TT> file with specific information
+on how to <KBD>make</KBD> an application code (see section <A HREF="milcv6.html#SEC7">Building the MILC Code</A>).
+
+</P>
+<P>
+<A NAME="IDX27"></A>
+<A NAME="IDX28"></A>
+
+</P>
+<P>
+We list some macros affecting compilation of various sections of the
+code that may be defined by user option.  Unless otherwise stated, they
+are defined in the application <TT>`Make_template'</TT> file in the line
+<KBD>DEFINES =</KBD>.  Thus, for example, in routines that call a conjugate
+gradient inverter, the line <KBD>DEFINES = -DCGTIME</KBD> causes timing
+information to be printed to standard output.  Also check the
+application Make_template files for information about compilation
+options.
+
+</P>
+<P>
+The table shows what is turned on if the macro is defined.
+
+</P>
+<DL COMPACT>
+
+<DT><STRONG>SITERAND</STRONG>
+<DD>
+      Usually defined in the application file <TT>`defines.h'</TT>.  
+Keep a separate random number generate for each site.  Makes the
+code results deterministic irrespective of node number and layout.
+
+<DT><STRONG>LU</STRONG>
+<DD>
+      Use LU decomposition in <TT>`generic_clover/d_congrad2_cl.c'</TT> and <TT>`generic_wilson/d_congrad2.c'</TT>
+
+<DT><STRONG>CONGRAD_TMP_VECTORS</STRONG>
+<DD>
+      For improved staggered fermion inverters.  Puts the temporary
+conjugate gradient vectors in a field-major array, rather than inside
+the site structure.  May give better performance.
+
+<DT><STRONG>DSLASH_TMP_LINKS</STRONG>
+<DD>
+      For improved staggered dslash.  Puts longlinks and fatlinks in a
+field-major array, rather than inside the site structure.  May give
+better performance.
+
+<DT><STRONG>INLINE</STRONG>
+<DD>
+      Usually defined in the architecture make file.  Calls for inline
+versions of some code.
+
+<DT><STRONG>FAST</STRONG>
+<DD>
+      Defined in the library make files.  Calls for unrolled versions of
+various library routines.
+
+<DT><STRONG>NPBP_REPS</STRONG>
+<DD>
+      For use with staggered fermion calcuation of stochastic
+estimations of psi-bar-psi.  Sets the number of stochastic sources per
+configuration.  If undefined, defaults to one.
+
+<DT><STRONG>CGTIME</STRONG>
+<DD>
+      Print timing information for the various inverters.
+
+<DT><STRONG>MRTIME</STRONG>
+<DD>
+      Print timing information for the <KBD>generic_wilson/mrilu_w_or.c</KBD> inverter.
+
+<DT><STRONG>GFTIME</STRONG>
+<DD>
+      For use with the improved staggered fermion code and the Symanzik
+pure gauge code.  Print timing information for the computation of the
+gauge field force from <KBD>generic_ks/gauge_stuff.c</KBD>.
+
+<DT><STRONG>DSLASHTIME</STRONG>
+<DD>
+      Print timing of staggered fermion dslash calls.
+
+<DT><STRONG>DSLASHTIMES</STRONG>
+<DD>
+      Print more detailed timing of staggered fermion dslash operation.
+
+<DT><STRONG>FFTIME</STRONG>
+<DD>
+      For use with the improved staggered fermion code. Print timing
+information in <KBD>generic_ks/quark_stuff.c</KBD> for the calculation of the
+fermion force.
+
+<DT><STRONG>LLTIME</STRONG>
+<DD>
+      For use with the improved staggered fermion code. Print timing
+information in <KBD>generic_ks/quark_stuff.c</KBD> for the calculation of
+long links and fat links.
+
+<DT><STRONG>M4TIME</STRONG>
+<DD>
+      For use with the conventional staggered fermion inverters.  Prints
+performance information about SU(3) matrix multiplication in dslash.
+
+<DT><STRONG>IOTIME</STRONG>
+<DD>
+      In some applications, reports file I/O timing. 
+
+<DT><STRONG>PRTIME</STRONG>
+<DD>
+      In some applications, reports time for hadron propagator
+calcuations.
+
+<DT><STRONG>NOPREFETCH</STRONG>
+<DD>
+      Suppresses prefetching.  Used to study optmization strategies.
+
+<DT><STRONG>P3 and P4</STRONG>
+<DD>
+      Use only for Intel P3 and P4 processors. Turns on gcc asm 
+      prefetching macros.
+
+<DT><STRONG>SSE</STRONG>
+<DD>
+      Use only for processors supporting the SSE instructions and the
+      gcc compiler.  Intel P3 and P4 processors and Athlon Thunderbird.  In
+      conjunction with SSE_INLINE, inserts inline SSE assembly code
+      for selected SU(3) linear algebra library calls.  For details
+      see <KBD>sse/README_SSE</KBD>.
+
+<DT><STRONG>SSE_INLINE</STRONG>
+<DD>
+      See SSE above.
+      
+</DL>
+
+
+
+<H1><A NAME="SEC13" HREF="milcv6_toc.html#SEC13">Programming with MILC Code</A></H1>
+<P>
+<A NAME="IDX29"></A>
+
+</P>
+
+<P>
+These notes document some of the features of the MILC QCD code.  They
+are intended to help people understand the basic philosophy and
+structure of the code, and to outline how one would modify existing
+applications for a new project.
+
+</P>
+
+
+
+<H2><A NAME="SEC14" HREF="milcv6_toc.html#SEC14">Header files</A></H2>
+<P>
+<A NAME="IDX30"></A>
+
+</P>
+<P>
+Various header files define structures, macros, and global
+variables.  The minimal set at the moment is:
+<A NAME="IDX31"></A>
+<A NAME="IDX32"></A>
+<A NAME="IDX33"></A>
+<A NAME="IDX34"></A>
+<A NAME="IDX35"></A>
+<A NAME="IDX36"></A>
+<A NAME="IDX37"></A>
+<A NAME="IDX38"></A>
+
+</P>
+<DL COMPACT>
+
+<DT><TT>`config.h'</TT>
+<DD>
+specifies processor and operating-system-dependent macros
+
+<DT><TT>`complex.h'</TT>
+<DD>
+code for complex numbers (see section <A HREF="milcv6.html#SEC18">Library routines</A>).
+
+<DT><TT>`su3.h'</TT>
+<DD>
+routines for SU(3) operations, eg. matrix multiply (see section <A HREF="milcv6.html#SEC18">Library routines</A>).
+
+<DT><TT>`comdefs.h'</TT>
+<DD>
+macros and defines for communication routines (see section <A HREF="milcv6.html#SEC18">Library routines</A>).
+
+<DT><TT>`defines.h'</TT>
+<DD>
+defines local macros.  SITERAND should be defined here.  Other macros
+that are independent of the site structure can also be defined here.
+Compiler macros common to all targets are also defined here.
+
+<DT><TT>`params.h'</TT>
+<DD>
+defines the parameter structure for holding parameter values read from
+standard input, such as the lattice size, number of iterations, etc.
+
+<DT><TT>`lattice.h'</TT>
+<DD>
+defines lattice fields and global variables, found in applications directories
+</DL>
+
+<P>
+This last file is rather special.  It defines the site structure
+(fields) for the lattice. While other header files are stored in the
+<STRONG>include</STRONG> directory and not changed, a <TT>`lattice.h'</TT> is stored
+in the application directory, since it is modified to contain the fields
+pecific to a particular application.
+
+</P>
+<P>
+<A NAME="IDX39"></A>
+top of the lattice.h file.  Other headers, of course, should be included
+to declare data types appearing in the lattice.h file.
+
+</P>
+<P>
+<A NAME="IDX40"></A>
+<A NAME="IDX41"></A>
+Global variables are defined using a macro <KBD>EXTERN</KBD> which is usually
+just "extern", but when <KBD>CONTROL</KBD> is defined, is null. The effect is
+to reserve storage in whichever file <KBD>CONTROL</KBD> is defined, so that
+exactly one file, typically the <EM>main()</EM> program, which is
+typically part of a file with a name like <KBD>control.c</KBD>, should
+contain a <KBD>#define CONTROL</KBD> before all the other includes (C++ would
+fix this nonsense).
+
+</P>
+
+
+
+<H2><A NAME="SEC15" HREF="milcv6_toc.html#SEC15">Global variables</A></H2>
+<P>
+<A NAME="IDX42"></A>
+
+</P>
+<P>
+<A NAME="IDX43"></A>
+<A NAME="IDX44"></A>
+<A NAME="IDX45"></A>
+<A NAME="IDX46"></A>
+<A NAME="IDX47"></A>
+<A NAME="IDX48"></A>
+<A NAME="IDX49"></A>
+<A NAME="IDX50"></A>
+<A NAME="IDX51"></A>
+<A NAME="IDX52"></A>
+<A NAME="IDX53"></A>
+<A NAME="IDX54"></A>
+<A NAME="IDX55"></A>
+<A NAME="IDX56"></A>
+<A NAME="IDX57"></A>
+<A NAME="IDX58"></A>
+<A NAME="IDX59"></A>
+<A NAME="IDX60"></A>
+<A NAME="IDX61"></A>
+<A NAME="IDX62"></A>
+<A NAME="IDX63"></A>
+<A NAME="IDX64"></A>
+<A NAME="IDX65"></A>
+<A NAME="IDX66"></A>
+There are a number of global variables available.  Most of these are
+declared in <TT>`lattice.h'</TT>. Unless specified, these variables are
+initialized in the function <KBD>initial_set()</KBD>.  Most of them take
+values from a parameter input file at run time.
+
+</P>
+<DL COMPACT>
+
+<DT><KBD>int nx,ny,nz,nt</KBD>
+<DD>
+lattice dimensions
+<DT><KBD>int volume</KBD>
+<DD>
+volume = nx * ny * nz * nt
+<DT><KBD>int iseed</KBD>
+<DD>
+random number seed
+</DL>
+
+<P>
+Other variables are used to keep track of the relation between sites of the
+lattice and nodes:
+<DL COMPACT>
+
+<DT><KBD>int this_node</KBD>
+<DD>
+number of this node
+<DT><KBD>int number_of_nodes</KBD>
+<DD>
+number of nodes in use
+<DT><KBD>int sites_on_node</KBD>
+<DD>
+number of sites on this node. [<EM>This variable is set in:</EM>
+<KBD>setup_layout()</KBD>]
+<DT><KBD>int even_sites_on_node</KBD>
+<DD>
+number of evensites on this node. [<EM>This variable is set in:</EM>
+<KBD>setup_layout()</KBD>]
+<DT><KBD>int odd_sites_on_node</KBD>
+<DD>
+number of odd sites on this node. [<EM>This variable is set in:</EM>
+<KBD>setup_layout()</KBD>]
+</DL>
+
+<P>
+<A NAME="IDX67"></A>
+<A NAME="IDX68"></A>
+There are other variables which are not fundamental to the layout of the
+lattice but vary from application to application. These dynamical
+variables are part of a <KBD>params</KBD> struct, defined in the required
+header @cindex params.h, which is passed between nodes by
+<KBD>initial_set()</KBD> in <TT>`setup.c'</TT> For example, a pure gauge
+simulation might have a <KBD>params</KBD> struct like this:
+
+<PRE>
+/* structure for passing simulation parameters to each node */
+typedef struct {
+        int nx,ny,nz,nt;  /* lattice dimensions */
+        int iseed;      /* for random numbers */
+        int warms;      /* the number of warmup trajectories */
+        int trajecs;    /* the number of real trajectories */
+        int steps;      /* number of steps for updating */
+        int stepsQ;     /* number of steps for quasi-heatbath */
+        int propinterval;  /* number of trajectories between measurements */
+        int startflag;  /* what to do for beginning lattice */
+        int fixflag;    /* whether to gauge fix */
+        int saveflag;   /* what to do with lattice at end */
+        float beta;     /* gauge coupling */
+        float epsilon;  /* time step */
+        char startfile[80],savefile[80];
+} params; 
+</PRE>
+
+<P>
+These run-time variables are usually loaded by a loop over
+<KBD>readin()</KBD> defined in <TT>`setup.c'</TT>.
+
+</P>
+
+
+
+<H2><A NAME="SEC16" HREF="milcv6_toc.html#SEC16">Lattice storage</A></H2>
+<P>
+<A NAME="IDX69"></A>
+<A NAME="IDX70"></A>
+<A NAME="IDX71"></A>
+<A NAME="IDX72"></A>
+
+</P>
+<P>
+ All the variables of your project which
+live on one site of the lattice (gauge fields, quarks, plus auxilliaries)
+ are found in structures of type <KBD>site</KBD>.  This
+structure is defined in <TT>`lattice.h'</TT> (see section <A HREF="milcv6.html#SEC14">Header files</A>). Each
+<EM>node</EM> of the parallel machine has an array of such structures
+called <KBD>lattice</KBD>, with as many elements as there are sites on the
+<EM>node</EM>. 
+ In scalar mode there is only one <EM>node</EM>.  The
+<KBD>site</KBD> structure looks like this:
+
+<PRE>
+typedef struct {
+    /* The first part is standard to all programs */
+        /* coordinates of this site */
+        short x,y,z,t;
+        /* is it even or odd? */
+        char parity;
+        /* my index in the lattice array */
+        int index;
+
+    /* Now come the physical fields, application dependent. We will 
+       add or delete whatever we need. This is just an example. */
+        /* gauge field */
+        su3_matrix link[4];
+
+        /* antihermitian momentum matrices in each direction */
+         anti_hermitmat mom[4];
+
+         su3_vector phi; /* Gaussian random source vector */ 
+} site; 
+</PRE>
+
+<P>
+At run time space for the lattice sites is allocated dynamically,
+typically as an array <KBD>lattice[i]</KBD>, each element of which is a site
+structure.  Thus, to refer to the <KBD>phi</KBD> field on a particular
+lattice site, site "<KBD>i</KBD>" on this node, you say
+
+<PRE>
+   lattice[i].phi,
+</PRE>
+
+<P>
+and for the real part of color 0
+
+<PRE>
+   lattice[i].phi.c[0].real,
+</PRE>
+
+<P>
+etc. You usually won't need to know the relation between the index
+<KBD>i</KBD> and a the location of a particular site (but see
+ (see section <A HREF="milcv6.html#SEC24">Distributing sites among nodes</A> for how to figure out
+the index <KBD>i</KBD>). 
+
+</P>
+<P>
+In general, looping over sites is done using a pointer to the
+ site, and then you would
+refer to the field as:
+
+<PRE>
+site *s; ...  
+/* s gets set to &#38;(lattice[i]) */ 
+s-&#62;phi
+</PRE>
+
+<P>
+The coordinate, parity and index fields are used by the gather routines
+and other utility routines, so it is probably a bad idea to mess with
+them unless you want to change a lot of things.  Other things can be
+added or deleted with abandon.
+
+</P>
+<P>
+The routine <KBD>generic/make_lattice()</KBD> is called from <KBD>setup()</KBD> to
+allocate the lattice on each node.
+
+</P>
+<P>
+<A NAME="IDX73"></A>
+In addition to the fields in the <KBD>site</KBD> structure, there are two
+sets of vectors whose elements correspond to lattice sites. 
+They are hidden in the communications routines and you are likely never to
+encounter them. These are
+the eight vectors of integers:
+
+<PRE>
+int *neighbor[MAX_GATHERS]
+</PRE>
+
+<P>
+<KBD>neighbor[XDOWN][i]</KBD> is the index of the site in the <STRONG>XDOWN</STRONG>
+direction from the i'th site on the
+node, if that site is on the same node. If the neighboring site is on
+another node, this pointer will be <STRONG>NOT_HERE (= -1)</STRONG>. These
+vectors are mostly used by the gather routines.
+
+</P>
+<P>
+<A NAME="IDX74"></A>
+There are a number of important vectors of pointers used for accessing
+fields at other (usually neighboring) neighboring sites,
+
+<PRE>
+char **gen_pt[MAX_GATHERS]
+</PRE>
+
+<P>
+These vectors of pointers are declared in <TT>`lattice.h'</TT> and allocated
+in <KBD>generic/make_lattice()</KBD>. They are filled by the gather routines,
+<KBD>start_gather()</KBD> and <KBD>start_general_gather()</KBD>, with pointers to
+the gathered field. See section <A HREF="milcv6.html#SEC22">Accessing fields at other sites</A>.  You use one
+of these pointer vectors for each simultaneous gather you have going.
+
+</P>
+
+<P>
+This storage scheme seems to allow the easiest coding, and likely the
+fastest performance.  It certainly makes gathers about as easy as
+possible.  However, it is somewhat wasteful of memory, since all fields
+are statically allocated.  (You can use unions if two fields are needed
+in mutually exclusive parts of the program.)  Also, there is no
+mechanism for defining a field on only even or odd sites.
+
+</P>
+<P>
+The "<EM>site major</EM>" ordering of variables in memory probably means
+that useful variables will fairly often be in cache.  The contrasting
+"<EM>field major</EM>" ordering ( <KBD>su3_matrix</KBD>
+<KBD>xlink[volume]</KBD>, <KBD>ylink[volume]</KBD>...) is more suitable for
+vectorizing in the traditional sense.
+
+</P>
+
+
+<H2><A NAME="SEC17" HREF="milcv6_toc.html#SEC17">Data types</A></H2>
+<P>
+<A NAME="IDX75"></A>
+
+</P>
+<P>
+Various data structures have been defined for QCD computations, which
+we now list.   You may define new ones if you wish.
+In names of members of structure, we  use the following conventions:
+<DL COMPACT>
+
+<DT><KBD>c</KBD>
+<DD>
+means color, and has an index which takes three values (0,1,2).
+<DT><KBD>d</KBD>
+<DD>
+means Dirac spin, and its index takes four values (0-3).
+<DT><KBD>e</KBD>
+<DD>
+means element of a matrix, and has two indices which take three values -
+row and column--(0-2),(0-2)
+</DL>
+
+<P>
+Complex numbers: (in <TT>`complex.h'</TT>)
+
+<PRE>
+typedef struct { /* standard complex number declaration for single- */
+   float real;    /* precision complex numbers */
+   float imag; 
+} complex;
+
+typedef struct { /* standard complex number declaration for double- */
+   double real;   /* precision complex numbers */
+   double imag; 
+} double_complex;
+</PRE>
+
+<P>
+Three component complex vectors, 3x3 complex matrices, and 3x3
+antihermitian matrices stored in triangular (compressed) format.  (in
+<TT>`su3.h'</TT>)
+
+<PRE>
+typedef struct { complex e[3][3]; } su3_matrix; 
+typedef struct { complex c[3]; } su3_vector; 
+typedef struct {
+  float m00im,m11im,m22im;
+  complex m01,m02,m12; 
+} anti_hermitmat;
+</PRE>
+
+<P>
+Wilson vectors have both Dirac and color indices:
+
+<PRE>
+  typedef struct { su3_vector d[4]; } wilson_vector;
+</PRE>
+
+<P>
+Projections of Wilson vectors
+
+<PRE>
+  typedef struct { su3_vector h[2]; } half_wilson_vector;
+</PRE>
+
+<P>
+A definition to be used in the next definition:
+
+<PRE>
+  typedef struct { wilson_vector d[4]; } spin_wilson_vector;
+</PRE>
+
+<P>
+A four index object -- source spin and color by sink spin and color:
+
+<PRE>
+  typedef struct { spin_wilson_vector c[3]; } wilson_propagator
+</PRE>
+
+<P>
+Examples:
+
+<PRE>
+su3_vector phi; /* declares a vector */ 
+su3_matrix m1,m2,m3;         /* declares 3x3 complex matrices */ 
+wilson_vector wvec;          /* declares a Wilson quark vector */
+
+phi.c[0].real = 1.0;         /* sets real part of color 0 to 1.0 */ 
+phi.c[1] = cmplx(0.0,0.0);   /* sets color 1 to zero (requires
+                                including "complex.h" */ 
+m1.e[0][0] = cmplx(0,0);     /* refers to 0,0 element */ 
+mult_su3_nn( &#38;m1, &#38;m2, &#38;m3); /* subroutine arguments are usually
+                                addresses of structures */
+wvec.d[2].c[0].imag = 1.0;   /* How to refer to imaginary part of
+                                spin two, color zero. */
+</PRE>
+
+
+
+<H2><A NAME="SEC18" HREF="milcv6_toc.html#SEC18">Library routines</A></H2>
+<P>
+<A NAME="IDX76"></A>
+
+</P>
+
+
+<H3><A NAME="SEC19" HREF="milcv6_toc.html#SEC19">Complex numbers</A></H3>
+<P>
+<TT>`complex.h'</TT> and <TT>`complex.a'</TT> contain macros and subroutines for
+complex numbers.  For example:
+
+<PRE>
+complex a,b,c; 
+CMUL(a,b,c); /* macro: c &#60;- a*b */
+</PRE>
+
+<P>
+Note that all the subroutines (<KBD>cmul()</KBD>, etc.) take addresses as
+arguments, but the macros generally take the structures themselves.
+These functions have separate versions for single and double precision
+complex numbers.  The macros work with either single or double precison
+(or mixed).  <TT>`complex.a'</TT> contains:
+
+<PRE>
+complex cmplx(float r, float i);      /* (r,i) */ 
+complex cadd(complex *a, complex *b); /* a + b */ 
+complex cmul(complex *a, complex *b); /* a * b */ 
+complex csub(complex *a, complex *b); /* a - b */ 
+complex cdiv(complex *a, complex *b); /* a / b */ 
+complex conjg(complex *a);            /* conjugate of a */ 
+complex cexp(complex *a);             /* exp(a) */ 
+complex clog(complex *a);             /* ln(a) */ 
+complex csqrt(complex *a);            /* sqrt(a) */
+complex ce_itheta(float theta);       /* exp( i*theta) */
+
+double_complex dcmplx(double r, double i);                  /* (r,i) */ 
+double_complex dcadd(double_complex *a, double_complex *b); /* a + b */ 
+double_complex dcmul(double_complex *a, double_complex *b); /* a * b */ 
+double_complex dcsub(double_complex *a, double_complex *b); /* a - b */ 
+double_complex dcdiv(double_complex *a, double_complex *b); /* a / b */ 
+double_complex dconjg(double_complex *a);          /* conjugate of a */ 
+double_complex dcexp(double_complex *a);                   /* exp(a) */ 
+double_complex dclog(double_complex *a);                    /* ln(a) */ 
+double_complex dcsqrt(double_complex *a);                 /* sqrt(a) */ 
+double_complex dce_itheta(double theta);            /* exp( i*theta) */
+</PRE>
+
+<P>
+and macros:
+
+<PRE>
+CONJG(a,b)        b = conjg(a)
+CADD(a,b,c)       c = a + b
+CSUM(a,b)         a += b
+CSUB(a,b,c)       c = a - b
+CMUL(a,b,c)       c = a * b
+CDIV(a,b,c)       c = a / b
+CMUL_J(a,b,c)     c = a * conjg(b)
+CMULJ_(a,b,c)     c = conjg(a) * b
+CMULJJ(a,b,c)     c = conjg(a*b)
+CNEGATE(a,b)      b = -a
+CMUL_I(a,b)       b = ia
+CMUL_MINUS_I(a,b) b = -ia
+CMULREAL(a,b,c)   c = ba with b real and a complex
+CDIVREAL(a,b,c)   c = a/b with a complex and b real
+</PRE>
+
+
+
+<H3><A NAME="SEC20" HREF="milcv6_toc.html#SEC20">SU(3) operations</A></H3>
+<P>
+<TT>`su3.h'</TT> and <TT>`su3.a'</TT> contain a plethora of
+functions for SU(3) operations.
+For example:
+
+<PRE>
+void mult_su3_nn(su3_matrix *a, su3_matrix *b, su3_matrix *c); 
+/* matrix multiply, no adjoints
+   *c &#60;- *a * *b (arguments are pointers) */
+
+void mult_su3_mat_vec_sum(su3_matrix *a, su3_vector *b, su3_vector *c);
+/* su3_matrix times su3_vector multiply and add to another su3_vector
+   *c &#60;- *A * *b + *c */
+</PRE>
+
+<P>
+There have come to be a great many of these routines, too many to keep a
+duplicate list of here.  Consult the include file <TT>`su3.h'</TT> for a
+list of prototypes and description of functions. An html version of
+<TT>`su3.h'</TT> is available at &#60;a
+href="http://www.cliodhna.cop.uop.edu/~hetrick/milc/su3.html"&#62;su3.html&#60;/a&#62;.
+
+</P>
+
+
+
+<H2><A NAME="SEC21" HREF="milcv6_toc.html#SEC21">Moving around in the lattice</A></H2>
+<P>
+<A NAME="IDX77"></A>
+
+</P>
+<P>
+<A NAME="IDX78"></A>
+<A NAME="IDX79"></A>
+<A NAME="IDX80"></A>
+<A NAME="IDX81"></A>
+Various definitions, macros and routines exist for dealing with the
+lattice fields.  
+The definitions and macros (defined in <TT>`dirs.h'</TT>) are:
+
+<PRE>
+/* Directions, and a macro to give the opposite direction */ 
+/* These must go from 0 to 7 because they will be used to index an
+   array. */ 
+/* Also define NDIRS = number of directions */
+#define XUP 0 
+#define YUP 1 
+#define ZUP 2 
+#define TUP 3 
+#define TDOWN 4 
+#define ZDOWN 5 
+#define YDOWN 6 
+#define XDOWN 7 
+#define OPP_DIR(dir) (7-(dir))  /* Opposite direction */ 
+                                /* for example, OPP_DIR(XUP) is XDOWN */
+/* number of directions */ 
+#define NDIRS 8 
+</PRE>
+
+<P>
+The parity of a site is <STRONG>EVEN</STRONG> or <STRONG>ODD</STRONG>, where
+<STRONG>EVEN</STRONG> means (x+y+z+t)%2=0.  Lots of routines take <STRONG>EVEN</STRONG>,
+<STRONG>ODD</STRONG> or <STRONG>EVENANDODD</STRONG> as an argument. Specifically (in hex):
+
+<PRE>
+#define EVEN 0x02 
+#define ODD 0x01 
+#define EVENANDODD 0x03
+</PRE>
+
+<P>
+Often we want to use the name of a field as an argument to a routine, as
+in <KBD>dslash(chi,phi)</KBD>. Often these fields are elements of the structure 
+<KBD>site</KBD>, and such variables can't be used directly as arguments
+ in C. Instead, we use a
+ macro to convert the name of a field
+into an integer, and another one to convert this integer back into an
+address at a given site.  A type <KBD>field_offset</KBD>, which is secretly
+an integer, is defined to help make the programs clearer.
+
+</P>
+<P>
+<STRONG>F_OFFSET</STRONG>(<KBD>fieldname</KBD>) gives the offset in the site structure of
+the named field. <STRONG>F_PT</STRONG>(<KBD>*site</KBD>, <KBD>field_offset</KBD>) gives the
+address of the field whose offset is <KBD>field_offset</KBD> at the site
+<KBD>*site</KBD>. An example is certainly in order:
+
+<PRE>
+main() {
+  copyfield( F_OFFSET(phi), F_OFFSET(chi) );
+  /* "phi" and "chi" are names of su3_vector's in site. */ 
+}
+
+/* Copy an su3_vector field over the whole lattice */
+copyfield(field_offset off1, field_offset off2) {
+  register int i;
+  register site *s;
+  register su3_vector *v1,*v2;
+
+  for(i=0;i&#60;nsites_on_node;i++) { /* loop over sites on node */
+     s = &#38;(lattice[i]); /* pointer to current site */
+     v1 = (su3_vector *)F_PT( s, off1); /* address of first vector */
+     v2 = (su3_vector *)F_PT( s, off2);
+     *v2 = *v1; /* copy the vector at this site */
+  } 
+}
+</PRE>
+
+<P>
+For ANSI prototyping, you must
+ typecast the result of the
+<STRONG>F_PT</STRONG> macro to the appropriate pointer type.  (It naturally
+produces a character pointer).  The code for copyfield could be much
+shorter at the expense of clarity.  Here we use a macro to be defined
+below.
+
+<PRE>
+void copyfield(field_offset off1, field_offset off2) {
+  register int i;
+  register site *s;
+  FORALLSITES(i,s) {
+    *(su3_vector *)F_PT(s,off1) = *(su3_vector *)F_PT(s,off2);
+  } 
+}
+</PRE>
+
+<P>
+The following macros are not necessary, but are very useful.  You may
+use them or ignore them as you see fit. Loops over sites are so common
+that we have defined macros for them ( in
+<TT>`include/macros.h'</TT>). These macros use an integer and a site pointer,
+which are available inside the loop.  The site pointer is especially
+useful for accessing fields at the site.
+
+<PRE>
+/* macros to loop over sites of a given parity, or all sites on a node.
+   Usage:
+        int i;
+        site *s;
+        FOREVENSITES(i,s) {
+            Commands go here, where s is a pointer to the current
+            site and i is the index of the site on the node.
+            For example, the phi vector at this site is "s-&#62;phi".
+        } */ 
+#define FOREVENSITES(i,s) \
+    for(i=0,s=lattice;i&#60;even_sites_on_node;i++,s++)
+#define FORODDSITES(i,s) \
+    for(i=even_sites_on_node,s= &#38;(lattice[i]);i&#60;sites_on_node;i++,s++)
+#define FORALLSITES(i,s) \
+    for(i=0,s=lattice;i&#60;sites_on_node;i++,s++)
+#define FORSOMEPARITY(i,s,parity) \
+    for( i=((choice)==ODD ? even_sites_on_node : 0 ),  \
+    s= &#38;(lattice[i]); \
+    i&#60; ( (choice)==EVEN ? even_sites_on_node : sites_on_node); \
+    i++,s++)
+</PRE>
+
+<P>
+The first three of these macros loop over even, odd or all sites on the
+node, setting a pointer to the site and the index in the array.  The
+index and pointer are available for use by the commands inside the
+braces.  The last macro takes an additional argument which should be one
+of <STRONG>EVEN</STRONG>, <STRONG>ODD</STRONG> or <STRONG>EVENANDODD</STRONG>, and loops over
+sites of the selected parity.
+
+</P>
+
+
+<H2><A NAME="SEC22" HREF="milcv6_toc.html#SEC22">Accessing fields at other sites</A></H2>
+<P>
+<A NAME="IDX82"></A>
+
+</P>
+
+<P>
+At present, each node only reads and writes fields on its own sites.  To read
+fields at other sites, we use gather routines.  These are portable in
+the sense that they will look the same on all the machines on which this
+code runs, although what is inside them is quite
+different.  All of these routines return pointers to fields.  If the
+fields are on the same node, these are just pointers into the lattice,
+and if the fields are on sites on another node some message passing
+takes place.  Because the communcation routines may have to allocate
+buffers for data, it is necessary to free the buffers by calling the
+appropriate cleanup routine when you are finished with the data.  These
+routines are in <TT>`com_XXXXX.c'</TT>, where <KBD>XXXXX</KBD> identifies the
+machine.
+
+</P>
+<P>
+The three routines are <KBD>start_gather</KBD>, which starts the data
+exchange, <KBD>wait_gather</KBD>, which interrupts the processor until the
+data arrives, and <KBD>cleanup_gather</KBD>, which frees the memory used by
+the gathered data.  A special <KBD>msg_tag</KBD> structure is used to
+identify the gather.  If you are doing more than one gather at a time,
+just use different <KBD>*msg_tags</KBD> for each one to keep them straight.
+
+</P>
+<P>
+The abstraction used in gathers is that sites fetch data from sites,
+rather than nodes from nodes.  In this way the physical distribution of
+data among the nodes is hidden from the higher level call.  Any
+one-to-one mapping of sites onto sites can be used to define a gather
+operation, but the most common gather fetches data from a neigboring
+site in one of the eight cardinal directions.  The result of a gather is
+presented as a list of pointers.  Generally one of the <KBD>gen_pt[0]</KBD>,
+etc. arrays is used. (see section <A HREF="milcv6.html#SEC16">Lattice storage</A>). On each site, or on each
+site of the selected parity, this pointer either points to an on-node
+address when the required data is on-node or points to an address in a
+communications buffer when the required data has been passed from
+another node.
+
+</P>
+<P>
+These routines use asynchronous sends and receives when possible, so it
+is possible to start one or more gathers going, and do something else
+while awaiting the data.
+
+</P>
+<P>
+Here are the three gather routines:
+
+</P>
+
+<PRE>
+/* "start_gather()" starts asynchronous sends and receives required
+    to gather neighbors. */
+
+msg_tag * start_gather(field,size,direction,parity,dest);
+  /* arguments */
+  field_offset field;  /* which field? Some member of structure "site" */
+  int size;            /* size in bytes of the field
+                            (eg. sizeof(su3_vector))*/
+  int direction;       /* direction to gather from. eg XUP */
+  int parity;          /* parity of sites whose neighbors we gather.
+                            one of EVEN, ODD or EVENANDODD. */ 
+  char * dest;         /* one of the vectors of pointers */
+
+/* "wait_gather()" waits for receives to finish, insuring that the
+   data has actually arrived.  The argument is the (msg_tag *) returned
+   by start_gather. */
+
+void wait_gather(msg_tag *mbuf);
+
+/* "cleanup_gather()" frees all the buffers that were allocated, WHICH
+    MEANS THAT THE GATHERED DATA MAY SOON DISAPPEAR. */
+
+void cleanup_gather(msg_tag *mbuf);
+</PRE>
+
+<P>
+Nearest neighbor gathers are done as follows. In the first example
+we gather <KBD>phi</KBD> at all even sites from the neighbors in the
+<STRONG>XUP</STRONG> direction.  (<EM>Gathering at <STRONG>EVEN</STRONG> sites means
+that <KBD>phi</KBD> at odd sites will be made available for computations at
+<STRONG>EVEN</STRONG> sites.</EM>)
+
+<PRE>
+msg_tag *tag; 
+site *s; 
+int i;
+
+tag = start_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+                    EVEN, gen_pt[0] );
+
+/* do other stuff */
+
+wait_gather(tag); 
+/* *(su3_vector *)gen_pt[0][i] now contains the address of the
+    phi vector (or a copy therof) on the neighbor of site i in the
+    XUP direction for all even sites i.  */
+
+FOREVENSITES(i,s) { 
+/* do whatever you want with it here.
+   (su3_vector *)(gen_pt[0][i]) is a pointer to phi on
+   the neighbor site. */ 
+}
+
+cleanup_gather(tag); 
+/* subsequent calls will overwrite the gathered fields. but if you 
+don't clean up, you will eventually run out of space */
+</PRE>
+
+<P>
+This second example gathers <KBD>phi</KBD> from two directions at once:
+
+<PRE>
+msg_tag *tag0,*tag1; 
+tag0 = start_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+                     EVENANDODD, gen_pt[0] ); 
+tag1 = start_gather( F_OFFSET(phi), sizeof(su3_vector), YUP,
+                     EVENANDODD, gen_pt[1] );
+
+/** do other stuff **/
+
+wait_gather(tag0); 
+/* you may now use *(su3_vector *)gen_pt[0][i], the
+   neighbors in the XUP direction. */
+
+wait_gather(tag1); 
+/* you may now use *(su3_vector *)gen_pt[1][i], the
+   neighbors in the YUP direction. */
+
+cleanup_gather(tag0); 
+cleanup_gather(tag1);
+</PRE>
+
+<P>
+Of course, you can also simultaneously gather different fields, or
+gather one field to even sites and another field to odd sites.  Just be
+sure to keep your <KBD>msg_tag</KBD> pointers straight.  The internal
+workings of these routines are far too horrible to discuss here.
+Consult the source code and comments in <TT>`com_XXXXX.c'</TT> if you must.
+
+</P>
+<P>
+Another predefined gather fetches a field at an arbitrary displacement
+from a site.  It uses the family of calls <KBD>start_general_gather</KBD>,
+<KBD>wait_general_gather</KBD>, <KBD>cleanup_general_gather</KBD>.  It works like
+the gather described above except that instead of specifying the
+direction you specify a four-component array of integers which is the
+relative displacement of the field to be fetched.  It is a bit slower
+than a gather defined by <KBD>make_gather</KBD>, because it is necessary to
+build the neighbor tables with each call to <KBD>start_general_gather</KBD>.
+
+</P>
+<P>
+Also, there can only be one <KBD>general_gather</KBD> at a time working.
+Thus if you need to do two <KBD>general_gathers</KBD> you must
+wait for the first gather before starting the second. (It is not
+necessary to cleanup the first gather before starting the second.)
+
+</P>
+<P>
+Chaos will ensue if you use <KBD>wait_gather()</KBD> with a message tag
+returned by <KBD>start_general_gather()</KBD>, or vice-versa.
+<KBD>start_general_gather()</KBD> has the following format:
+
+<PRE>
+/* "start_general_gather()" starts asynchronous sends and receives
+    required to gather neighbors. */ 
+msg_tag * start_general_gather(field,size,displacement,parity,dest)
+  /* arguments */
+  field_offset field; /* which field? Some member of structure site */
+  int size;           /* size in bytes of the field 
+                           (eg. sizeof(su3_vector))*/
+  int *displacement;  /* displacement to gather from,
+                           a four component array */
+  int parity;         /* parity of sites whose neighbors we gather.
+                           one of EVEN, ODD or EVENANDODD. */
+  char ** dest;       /* one of the vectors of pointers */
+
+/* "wait_general_gather()" waits for receives to finish, insuring that
+    the data has actually arrived.  The argument is the (msg_tag *) 
+    returned by start_general_gather. */ 
+void wait_general_gather(msg_tag *mbuf);
+
+/* "cleanup_general_gather()" frees all the buffers that were
+    allocated, <EM>WHICH MEANS THAT THE GATHERED DATA MAY SOON
+    DISAPPEAR.</EM>  */ 
+void cleanup_general_gather(msg_tag *mbuf);
+</PRE>
+
+<P>
+This example gathers <KBD>phi</KBD> from a site displaced by +1 in the x
+direction and -1 in the y direction.
+
+<PRE>
+msg_tag *tag; 
+site *s; 
+int i, disp[4];
+
+disp[XUP] = +1; disp[YUP] = -1; disp[ZUP] = disp[TUP] = 0;
+
+tag = start_general_gather( F_OFFSET(phi), sizeof(su3_vector), disp,
+                            EVEN, gen_pt[0] ); /* do other stuff */
+
+wait_general_gather(tag); 
+/* gen_pt[0][i] now contains the address of the phi
+   vector (or a copy therof) on the site displaced from site i
+   by the vector "disp" for all even sites i. */
+
+FOREVENSITES(i,s) { 
+/* do whatever you want with it here.
+   (su3_vector *)(gen_pt[0][i]) is a pointer to phi on
+   the other site. */ 
+}
+
+cleanup_general_gather(tag);
+</PRE>
+
+<P>
+Version 6 supports gathers from fields, which are not a part of the
+site structure.  Sample usage is:
+
+<PRE>
+  su3_vector *tempvec;
+  msg_tag *tag;
+  tempvec = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
+  ...
+  FORALLSITES(i,s){  tempvec[i] = s-&#62;grand; }
+  ...
+  tag=start_gather_from_temp( tempvec, sizeof(su3_vector), dir,EVEN,gen_pt[1] );
+  ...
+  wait_gather(tag);
+  ...
+  cleanup_gather(tag);
+  ...
+  free(tempvec);
+</PRE>
+
+<P>
+  Don't use the site pointers to refer to elements of temporaries.
+  You can't gather a part of a temporary field.  For example, the
+    gauge links are typically defined as an array of 4 <KBD>su3_matrices</KBD>,
+    and we typically gather only one of them.  This won't work with
+    temporaries.
+
+</P>
+<P>
+  Don't try to implement successive gathers by using
+ <KBD>start_gather_from_temp</KBD>
+     to gather the <KBD>gen_pt fields</KBD>.  It will gather the pointers, but not
+     what they point to.  This is insidious, because it will work on one
+     node as you are testing it, but fail on multiple nodes.
+
+</P>
+<P>
+To set up the data structures required by the gather routines,
+<KBD>make_nn_gathers()</KBD> is called in the setup part of the program.
+This must be done <EM>after</EM> the call to <KBD>make_lattice()</KBD>.
+
+</P>
+
+
+<H2><A NAME="SEC23" HREF="milcv6_toc.html#SEC23">Details of gathers and creating new ones</A></H2>
+<P>
+<A NAME="IDX83"></A>
+
+</P>
+<P>
+(You don't need to read this section the first time through.)
+
+</P>
+<P>
+The nearest-neighbor and fixed-displacement gathers are always available
+at run time, but a user can make other gathers using the
+<KBD>make_gather</KBD> routine.  Examples of such gathers are the bit-reverse
+and butterfly maps used in FFT's.  The only requirement is that the
+gather pattern must correspond to a one-to-one map of sites onto sites.
+<KBD>make_gather</KBD> speeds up gathers by preparing tables on each node
+containing information about what sites must be sent to other nodes or
+received from other nodes. The call to this routine is:
+
+<PRE>
+#include &#60;comdefs.h&#62; 
+int make_gather( function, arg_pointer, inverse, want_even_odd,
+                 parity_conserve )
+  int (*function)();
+  int *arg_pointer;
+  int inverse;
+  int parity_conserve;
+</PRE>
+
+<P>
+The <KBD>"function"</KBD> argument is a pointer to a function which defines
+the mapping. This function must have the following form:
+
+<PRE>
+int function( x, y, z, t, arg_pointer, forw_back, xpt, ypt, zpt, tpt)
+  int x,y,z,t;
+  int *arg_pointer;
+  int forw_back;
+  int *xpt,*ypt,*zpt,*tpt;
+</PRE>
+
+<P>
+Here <KBD>x,y,z,t</KBD> are the coordinates of the site <EM>RECEIVING</EM> the
+data.  <KBD>arg_pointer</KBD> is a pointer to a list of integers, which is
+passed through to the function from the call to <KBD>make_gather()</KBD>.
+This provides a mechanism to use the same function for different
+gathers.  For example, in setting up nearest neighbor gathers we would
+want to specify the direction.  See the examples below.
+
+</P>
+<P>
+<KBD>forw_back</KBD> is either <STRONG>FORWARDS</STRONG> or <STRONG>BACKWARDS</STRONG>.  If
+it is <STRONG>FORWARDS</STRONG>, the function should compute the coordinates of
+the site that sends data to <KBD>x,y,z,t</KBD>.  If it is <STRONG>BACKWARDS</STRONG>,
+the function should compute the coordinates of the site which gets data
+from <KBD>x,y,z,t</KBD>.  It is necessary for the function to handle
+<STRONG>BACKWARDS</STRONG> correctly even if you don't want to set up the
+inverse gather (see below).  At the moment, only one-to-one (invertible)
+mappings are supported.
+
+</P>
+<P>
+<A NAME="IDX84"></A>
+<A NAME="IDX85"></A>
+The <KBD>inverse</KBD> argument to <KBD>make_gather()</KBD> is one of
+<STRONG>OWN_INVERSE</STRONG>, <STRONG>WANT_INVERSE</STRONG>, or <STRONG>NO_INVERSE</STRONG>.  If
+it is <STRONG>OWN_INVERSE</STRONG>, the mapping is its own inverse.  In other
+words, if site <KBD>x1,y1,z1,t1</KBD> gets data from <KBD>x2,y2,z2,t2</KBD> then
+site <KBD>x2,y2,z2,t2</KBD> gets data from <KBD>x1,y1,z1,t1</KBD>.  Examples of
+mappings which are there own inverse are the butterflies in FFT's.  If
+<KBD>inverse</KBD> is <STRONG>WANT_INVERSE</STRONG>, then <KBD>make_gather()</KBD> will
+make two sets of lists, one for the gather and one for the gather using
+the inverse mapping.  If <KBD>inverse</KBD> is <STRONG>NO_INVERSE</STRONG>, then
+only one set of tables is made.
+
+</P>
+<P>
+The <KBD>want_even_odd</KBD> argument is one of <STRONG>ALLOW_EVEN_ODD</STRONG> or
+<STRONG>NO_EVEN_ODD</STRONG>.  If it is <STRONG>ALLOW_EVEN_ODD</STRONG> separate tables
+are made for even and odd sites, so that start gather can be called with
+parity <STRONG>EVEN</STRONG>, <STRONG>ODD</STRONG> or <STRONG>EVENANDODD</STRONG>.  If it is
+<STRONG>NO_EVEN_ODD</STRONG>, only one set of tables is made and you can only
+call gathers with parity <STRONG>EVENANDODD</STRONG>.
+
+</P>
+<P>
+The <KBD>parity_conserve</KBD> argument to <KBD>make_gather()</KBD> is one of
+<STRONG>SAME_PARITY</STRONG>, <STRONG>SWITCH_PARITY</STRONG>, or <STRONG>SCRAMBLE_PARITY</STRONG>.
+Use <STRONG>SAME_PARITY</STRONG> if the gather connects even sites to even sites
+and odd sites to odd sites.  Use <STRONG>SWITCH_PARITY</STRONG> if the gather
+connects even sites to odd sites and vice versa.  Use
+<STRONG>SCRAMBLE_PARITY</STRONG> if the gather connects some even sites to even
+sites and some even sites to odd sites.  If you have specified
+<STRONG>NO_EVEN_ODD</STRONG> for <KBD>want_even_odd</KBD>, then the
+<KBD>parity_conserve</KBD> argument does nothing.  Otherwise, it is used by
+<KBD>make_gather()</KBD> to help avoid making redundant lists.
+
+</P>
+<P>
+<KBD>make_gather()</KBD> returns an integer, which can then be used as the
+<KBD>direction</KBD> argument to <KBD>start_gather()</KBD>.  If an inverse
+gather is also requested, its <KBD>direction</KBD> will be one more than
+the value returned by <KBD>make_gather()</KBD>.  In other words, if
+<KBD>make_gather()</KBD> returns 10, then to gather using the inverse mapping
+you would use 11 as the direction argument in start_gather.
+
+</P>
+<P>
+Notice that the nearest neighbor gathers do not have their inverse
+directions numbered this convention.  Instead, they are sorted so that
+<STRONG>OPP_DIR</STRONG>(<KBD>direction</KBD>) gives the gather using the inverse
+mapping.
+
+</P>
+
+<P>
+Now for some examples which hopefully clarify all this.
+
+</P>
+<P>
+First, suppose we wished to set up nearest neighbor gathers.  (Ordinarily.
+ <KBD>make_comlinks()</KBD> already does this for you, but it is a
+good example.)  The function which defines the mapping is basically
+<KBD>neighbor_coords()</KBD>, with a wrapper which fixes up the arguments.
+<KBD>arg</KBD> should be set to the address of the direction ---
+<STRONG>XUP</STRONG>, etc.
+
+<PRE>
+/* The function which defines the mapping */
+neighbor_temp(x,y,z,t, arg, forw_back, xpt, ypt, zpt, tpt)
+  int x,y,z,t;
+  int *arg;
+  int forw_back;
+  int *xpt,*ypt,*zpt,*tpt;
+{
+  register int dir; /* local variable */
+  dir = *arg;
+  if(forw_back==BACKWARDS)dir=OPP_DIR(dir);
+  neighbor_coords(x,y,z,t,dir,xpt,ypt,zpt,tpt);
+}
+
+/* Code fragment to set up the gathers */
+/* Do this once, in the setup part of the program. */
+int xup_dir, xdown_dir;
+int temp;
+temp = XUP; /* we need the address of XUP */
+xup_dir = make_gather( neighbor_temp, &#38;temp, WANT_INVERSE,
+                       ALLOW_EVEN_ODD, SWITCH_PARITY);
+xdown_dir = xup_dir+1;
+
+/* Now you can start gathers */
+start_gather( F_OFFSET(phi), sizeof(su3_vector), xup_dir, EVEN,
+              gen_pt[0] );
+/* and use wait_gather, cleanup_gather as always. */
+</PRE>
+
+<P>
+Again, once it is set up it works just as before.  Essentially, you are
+just defining new <KBD>directions</KBD>.  Again, <KBD>make_comlinks()</KBD> does
+the same thing, except that it arranges the directions so that you can
+just use <STRONG>XUP</STRONG>, <STRONG>XDOWN</STRONG>, etc. as the <KBD>direction</KBD>
+argument to <KBD>start_gather()</KBD>.
+
+</P>
+<P>
+A second example is for a gather from a general displacement.  You
+might, for example, set up a bunch of these to take care of the link
+gathered from the second mearest neighbor in evaluating the plaquette in
+the pure gauge code.  In this example, the mapping function needs a list
+of four arguments -- the displacement in each of four directions.  Notice
+that for this displacement even sites connect to even sites, etc.
+
+<PRE>
+/* The function which defines the mapping */
+/* arg is a four element array, with the four displacements */
+general_displacement(x,y,z,t, arg, forw_back, xpt, ypt, zpt, tpt)
+  int x,y,z,t;
+  int *arg;
+  int forw_back;
+  int *xpt,*ypt,*zpt,*tpt;
+{
+    if( forw_back==FORWARDS ) { /* add displacement */
+       *xpt = (x+nx+arg[0])%nx;
+       *ypt = (y+ny+arg[1])%ny;
+       *zpt = (z+nz+arg[2])%nz;
+       *tpt = (t+nt+arg[3])%nt;
+    }
+    else { /* subtract displacement */
+       *xpt = (x+nx-arg[0])%nx;
+       *ypt = (y+ny-arg[1])%ny;
+       *zpt = (z+nz-arg[2])%nz;
+       *tpt = (t+nt-arg[3])%nt;
+    }
+}
+
+/* Code fragment to set up the gathers */
+/* Do this once, in the setup part of the program. */
+/* In this example, I set up to gather from displacement -1 in
+   the x direction and +1 in the y direction */
+int plus_x_minus_y;
+int disp[4];
+disp[0] = -1;
+disp[1] = +1;
+disp[2] = 0;
+disp[3] = 0;
+plus_x_minus_y = make_gather( general_displacement, disp,
+                              NO_INVERSE, ALLOW_EVEN_ODD, SAME_PARITY);
+
+/* Now you can start gathers */
+start_gather( F_OFFSET(link[YUP]), sizeof(su3_matrix), plus_x_minus_y,
+              EVEN, gen_pt[0] );
+/* and use wait_gather, cleanup_gather as always. */
+</PRE>
+
+<P>
+Finally, we would set up an FFT butterfly  roughly as
+follows.  Here the function wants two arguments: the direction of the
+butterfly and the level.
+
+<PRE>
+/* The function which defines the mapping */
+/* arg is a two element array, with the direction and level */
+butterfly_map(x,y,z,t, arg, forw_back, xpt, ypt, zpt, tpt)
+  int x,y,z,t;
+  int *arg;
+  int forw_back;
+  int *xpt,*ypt,*zpt,*tpt;
+{
+int direction,level;
+    direction = arg[0];
+    level = arg[1];
+    /* Rest of code goes here */
+}
+
+/* Code fragment to set up the gathers */
+/* Do this once, in the setup part of the program. */
+int butterfly_dir[5]; /* for nx=16 */
+int args[2];
+args[0]=XUP;
+for( level=1; level&#60;=4; level++ ) {
+    args[1]=level;
+    butterfly_dir[level] = make_gather( butterfly_map, args,
+       OWN_INVERSE, NO_EVEN_ODD, SCRAMBLE_PARITY);
+}
+/* similarly for y,z,t directions */
+</PRE>
+
+<P>
+<A NAME="IDX86"></A>
+<A NAME="IDX87"></A>
+<A NAME="IDX88"></A>
+
+</P>
+<P>
+The code was originally designed with functions to provide a general way
+of accessing fields at any site.  However, they require the ability for
+one node to interupt another. So far as we know, this works reliably on 
+the iPSC-860, unreliably on the Intel Paragon, and not at all on most
+other parallel machines. So we actually don't use the following routines.
+However, for historical purposes, and in anticipation of better hardware
+in the future, we include the following notes on arbitrary data access
+across the nodes.
+
+</P>
+<P>
+To set up the interrupt handlers required by the <KBD>field_pointer</KBD>
+routines, call <KBD>start_handlers()</KBD> in the setup part of the program.
+
+<PRE>
+/* "field_pointer_at_coordinates()" returns a pointer to a field in
+    the lattice given its coordinates. */ 
+char * field_pointer_at_coordinates( field, size, x,y,z,t );
+  /* arguments */
+  field_offset field; /* offset of one of the fields in lattice[] */
+  int size;           /* size of the field in bytes */
+  int x,y,z,t;        /* coordinates of point to get field from */
+
+/* "field_pointer_at_direction()" returns a pointer to a field in the
+    lattice at a direction from a given site. */ char *
+field_pointer_at_direction( field,size, s, direction );
+  /* arguments */
+  int field;         /* offset of one of the fields in lattice[] */
+  int size;          /* size of the field in bytes */
+  site *s;           /* pointer to a site on this node */
+  int direction;     /* direction of site's neighbor to get data from. */
+
+/* "cleanup_field_pointer()" frees the buffers that field_pointer...
+    allocated. */ 
+void cleanup_field_pointer(char *buf);
+</PRE>
+
+<P>
+An example of the usage of these routines is:
+
+<PRE>
+su3_matrix *pt; int x,y,z,t; 
+/* set x,y,z,t to the coordinates of the desited site here, then: */
+
+  pt = (su3_matrix *)field_pointer_at_coordinates( F_OFFSET(xlink),
+                                                   sizeof(su3_matrix),
+                                                   x,y,z,t );
+
+/* now "pt" points to the xlink at the site whose coordinates are
+   x,y,z,t. It may point either to the original data or a copy.
+   Use it for whatever you want, and when you are done with it: */
+
+  cleanup_field_pointer( (char *)pt );
+
+/* subsequent calls to malloc may overwrite *pt, so don't use it any
+   more */
+</PRE>
+
+
+
+<H2><A NAME="SEC24" HREF="milcv6_toc.html#SEC24">Distributing sites among nodes</A></H2>
+<P>
+<A NAME="IDX89"></A>
+
+</P>
+<P>
+Four functions are used to determine the distribution of <KBD>sites</KBD>
+among the parallel <EM>nodes</EM>.
+
+</P>
+<P>
+<KBD>setup_layout()</KBD> is called once on each node at initialization time,
+to do any calculation and set up any static variables that the other
+functions may need.  At the time <KBD>setup_layout()</KBD> is called the
+global variables <KBD>nx,ny,nz</KBD> and <KBD>nt</KBD> (the lattice dimensions)
+will have been set.  
+<P>
+
+</P>
+<P>
+<KBD>setup_layout()</KBD> must initialize the global variables:
+
+<PRE>
+sites_on_node, 
+even_sites_on_node, 
+odd_sites_on_node.
+</PRE>
+
+<P>
+
+<P>
+The following functions are available for node/site reference:
+<DL COMPACT>
+
+<DT><KBD>num_sites(node)</KBD>
+<DD>
+returns the number of sites on a node
+<DT><KBD>node_number(x,y,z,t)</KBD>
+<DD>
+returns the node number on which a site lives.
+<DT><KBD>node_index(x,y,z,t)</KBD>
+<DD>
+returns the index of the site on the node.
+</DL>
+<P>
+Thus, the site at <KBD>x,y,z,t</KBD> is <KBD>lattice[node_index(x,y,z,t)]</KBD>.
+
+</P>
+<P>
+ These functions may be changed, but
+chaos will ensue if they are not consistent. For example, it is a gross
+error for the <KBD>node_index</KBD> function to return a value larger than or
+equal to the value returned by <KBD>num_sites</KBD> of the appropriate node.
+In fact, <KBD>node_index</KBD> must provide a one-to-one mapping of the
+coordinates of the <KBD>sites</KBD> on one node to the integers from 0 to
+<KBD>num_sites(node)-1</KBD>.
+
+</P>
+
+<P>
+A good choice of site distribution on nodes will minimize the amount of
+communication.  These routines are in <TT>`layout_XXX.c'</TT>. There are
+currently several layout strategies to choose from; select one in your
+<TT>`Makefile'</TT> (see section <A HREF="milcv6.html#SEC7">Building the MILC Code</A>).
+<DL COMPACT>
+
+<DT><TT>`layout_hyper.c'</TT>
+<DD>
+Divides the lattice up into hypercubes by dividing dimensions by factors
+of two.  Fails if there aren't enough powers of two in the dimensions.
+This is pretty much our standard layout these days.
+
+<DT><TT>`layout_timeslices.c'</TT>
+<DD>
+This version puts entire timeslices on nodes. It requires that <KBD>nt</KBD>,
+   the time extent, is a multiple of the number of nodes used.
+   We hope this speeds up spatial FFT's.
+
+<DT><TT>`layout_timeslices_2.c'</TT>
+<DD>
+This version puts entire timeslices on nodes, if it can. It requires that
+  <KBD>nt</KBD>,
+   the time extent, is a multiple of the number of nodes used, or
+   that the number of nodes be a multiple of <KBD>nt</KBD>, and that <KBD>z</KBD>
+ be divisble by the
+   factor.
+   We hope this speeds up spatial FFT's.
+
+<DT><TT>`layout_hyper_2or3.c'</TT>
+<DD>
+ This version divides the lattice by factors of three or two in any of the
+   four directions.  It prefers to divide the longest dimensions,
+   which mimimizes the area of the surfaces.  Similarly, it prefers
+   to divide dimensions which have already been divided, thus not
+   introducing more off-node directions.
+     First the code will look for dimensions that can be divided by
+        three, then it will look for dimensions that can be divided by two.
+   This requires that the lattice volume be divisible by the number
+   of nodes, which is a (power of three)*(power of two).
+
+<DT><TT>`layout_hyper_sl32.c'</TT>
+<DD>
+Version for 32 sublattices, for extended actions.
+This version divides the lattice by factors of two in any of the
+   four directions.  It prefers to divide the longest dimensions,
+   which mimimizes the area of the surfaces.  Similarly, it prefers
+   to divide dimensions which have already been divided, thus not
+   introducing more off-node directions.
+ This requires that the lattice volume be divisible by the number
+   of nodes, which is a power of two.
+</DL>
+
+<P>
+Below is a completely simple example, which just deals out the sites
+among nodes like cards in a deck.  It works, but you would really want
+to do much better.
+
+<PRE>
+int Num_of_nodes; /* static storage used by these routines */
+
+void setup_layout() {
+  Num_of_nodes = numnodes();
+  sites_on_node = nx*ny*nz*nt/Num_of_nodes;
+  even_sites_on_node = odd_sites_on_node = sites_on_node/2; 
+}
+
+int node_number(x,y,z,t) 
+int x,y,z,t; 
+{
+  register int i;
+  i = x+nx*(y+ny*(z+nz*t));
+  return( i%Num_of_nodes ); 
+}
+
+int node_index(x,y,z,t) 
+int x,y,z,t; 
+{
+  register int i;
+  i = x+nx*(y+ny*(z+nz*t));
+  return( i/Num_of_nodes ); 
+}
+
+int num_sites(node) 
+int node; 
+{ 
+  register int i;
+  i = nx*ny*nz*nt;
+  if( node&#60; i%Num_of_nodes ) return( i/Num_of_nodes+1 );
+  else return( i/Num_of_nodes ); 
+}
+</PRE>
+
+
+<PRE>
+/* utility function for finding coordinates of neighbor */ 
+/* x,y,z,t are the coordinates of some site, and x2p... are
+   pointers.  *x2p... will be set to the coordinates of the
+   neighbor site at direction "dir".
+
+neighbor_coords( x,y,z,t,dir, x2p,y2p,z2p,t2p)
+  int x,y,z,t,dir; /* coordinates of site, and direction (eg XUP) */
+  int *x2p,*y2p,*z2p,*t2p;
+</PRE>
+
+
+
+<H2><A NAME="SEC25" HREF="milcv6_toc.html#SEC25">Reading and writing lattices</A></H2>
+<P>
+<A NAME="IDX90"></A>
+
+</P>
+<P>
+Our gauge configuration file format includes a companion ASCII
+information file with standardized fields to describe the parameters
+that went into creating the configuration.  Two binary formats are
+produced: one, a single file with site data in typewriter order and one,
+a single file with data in node-dump order for the fastest parallel I/O
+checkpoint files.  Although the checkpoint files are designed to be read
+efficiently onto the same layout and number of nodes, they can be read
+to any configuration with some penalty in time, of course.  There is a
+single, multi-purpose binary lattice I/O routine "<KBD>io_lat4.c</KBD>" that
+handles all lattice formats in current use, (with the exception of some
+of the peculiar checkpoint formats) and an architecture-specific choice
+of parallel I/O wrappers: <KBD>io_paragon2.c</KBD>, <KBD>io_ansi.c</KBD>,
+<KBD>io_piofs.c</KBD>, <KBD>io_nonansi.c</KBD>, <KBD>io_romio.c</KBD> (for MPI-2
+parallel writes and reads). The new format includes a 64-bit checksum.
+All binary restore routines accept all version 4, 5 and 6 formats,
+including the checkpoint format, except that propagator multidump files
+must be restored to the same number of nodes with propagator multidump
+routines.
+
+</P>
+<P>
+Input and output are set at run time.
+Here is a summary of the I/O choices:
+
+</P>
+<DL COMPACT>
+
+<DT><KBD>reload_ascii</KBD>
+<DD>
+<DT><KBD>reload_serial</KBD>
+<DD>
+   Binary read by node 0
+<DT><KBD>reload_parallel</KBD>
+<DD>
+  Binary read by all nodes.  Only where hardware is available.
+<DT><KBD>save_ascii</KBD>
+<DD>
+<DT><KBD>save_serial</KBD>
+<DD>
+     Binary through node 0 - standard index order
+<DT><KBD>save_parallel</KBD>
+<DD>
+    Binary parallel - standard index order.  Only where hardware is available.
+<DT><KBD>save_checkpoint</KBD>
+<DD>
+ Binary parallel - node dump order
+<DT><KBD>save_serial_archive</KBD>
+<DD>
+    NERSC Gauge Connection format.  For the moment a parallel version
+    is not available.
+</DL>
+
+<P>
+One can also read in or write Wilson-type variables (such as
+propagators).  The Wilson/clover propagator file format is similar to
+the gauge configuration file format.  A companion ASCII information file
+is also produced and there are three formats - one in standard
+typewriter order, one in node-dump format for checkpointing, and a
+third, multiple files, one per node (<KBD>multidump</KBD> format).  The first
+two formats are designed for files that can be archived.  The third is
+intended for fast temporary I/O to local disks private to each node, and
+is not suitable for archiving.  Separate checksums are generated for
+each source spin and color.  The checksum feature is not implemented yet
+under the Intel nx system for the Paragon.  The I/O choices are
+identical to the lattice choices, except there is no "old_binary"
+format.  All propagator I/O parameter-file commands have the suffix
+"<KBD>_prop</KBD>", as in "<KBD>reload_parallel_prop</KBD>", to distinguish them
+from gauge configuration commands.
+
+</P>
+<P>
+The options are identical to the ones for gauge fields.
+
+</P>
+<P>
+Usually one writes out three source colors and four source spins worth
+of Wilson vectors (making a complete Wilson propagator). However, an
+arbitrary number can be written. <KBD> io_wb3.c</KBD> allocates file space in
+blocks of three source colors, but you can have as many or as few source
+"spins" as you want: just change the <KBD>build_w_prop_hdr</KBD> routine in
+the application directory, and the <KBD>n_spins</KBD> variable in
+<KBD>lattice.h</KBD>.  See, for example, <KBD>clover_invert/clover_info.c</KBD>.
+The advantage of this approach is that you can recall the Wilson vectors
+in any order you want from the file by just specifying the "spin" and
+"color".  And if you try to recall a "spin" that isn't there, you get an
+error message.
+
+</P>
+<P>
+To print out variables for debugging purposes, the library routines
+<KBD>dumpvec</KBD>, <KBD>dumpmat</KBD> and <KBD>dump_wvec</KBD> (for SU(3) vectors,
+SU(3) matrices and Wilson vectors) are quite useful:
+
+</P>
+
+<PRE>
+
+          FORALLSITES(i,s) {
+        if(magsq_wvec(&#38;(s-&#62;psi)) &#62; 1.e-10) {
+        printf("%d %d %d %d\n", s-&#62;x, s-&#62;y, s-&#62;z,s-&#62;t);
+        printf("psi\n");
+        dump_wvec(&#38;(s-&#62;psi));
+        }
+    }
+</PRE>
+
+
+
+<H2><A NAME="SEC26" HREF="milcv6_toc.html#SEC26">Random numbers</A></H2>
+<P>
+<A NAME="IDX91"></A>
+
+</P>
+<P>
+The random number generator is the exclusive-OR of a 127 bit feedback
+shift register and a 32 bit integer congruence generator.  It is
+supposed to be machine independent.  Each node or site uses a different
+multipler in the congruence generator and different initial state in the
+shift register, so all are generating different
+sequences of numbers.  If <STRONG>SITERAND</STRONG> is defined, each lattice
+site has its own random number generator state.  This takes extra
+storage, but means that the results of the program will be independent
+of the number of nodes or the distribution of the sites among the nodes.
+The random number routine is <KBD>generic/ranstuff.c</KBD>.
+
+</P>
+
+
+
+<H2><A NAME="SEC27" HREF="milcv6_toc.html#SEC27">A Sample Applications Directory</A></H2>
+<P>
+<A NAME="IDX92"></A>
+
+</P>
+<P>
+An example of
+the files which make up an application are listed here.  This list depends
+very much on which application of the program (Kogut-Susskind/Wilson?
+Thermodynamics/Spectrum?) is being built. The listing here is for a bare
+bones Kogut-Susskind application.
+<DL COMPACT>
+
+<DT><TT>`Make_template:'</TT>
+<DD>
+	Contains instructions for compiling and linking. 
+	Three routines you can make, "su3_rmd", "su3_phi" and "su3_hmc",
+	 are programs for the R algorithm, the phi algorithm, or
+        the hybrid Monte Carlo algorithm. Used with Make_MACHINE, for
+a machine-dependent target.
+</DL>
+<P>
+
+<P>
+<STRONG>SOME HIGH LEVEL ROUTINES:</STRONG>
+<DL COMPACT>
+
+<DT><TT>`control.c'</TT>
+<DD>
+	main procedure - directs traffic.
+	It must call initialize_machine() first thing.
+<DT><TT>`setup.c'</TT>
+<DD>
+	most of the initialization stuff - called from control.c
+<DT><TT>`update.c'</TT>
+<DD>
+	update the gauge fields by refreshing the momenta and
+        integrating
+	for one trajectory.  Knows three different algorithms through
+	preprocessor switches.
+<DT><TT>`update_h.c'</TT>
+<DD>
+	Update the gauge momenta
+<DT><TT>`update_u.c'</TT>
+<DD>
+	Update the gauge fields
+<DT><TT>`grsource.c'</TT>
+<DD>
+	Heat bath update of the phi field - "Gaussian random source"
+<DT><TT>`d_congrad5.c'</TT>
+<DD>
+	A Kogut-Susskind inverter (kept in <KBD>generic_ks</KBD>)
+<DT><TT>`ks_multicg.c'</TT>
+<DD>
+	A Kogut-Susskind multimass CG inverter (kept in <KBD>generic_ks</KBD>)
+<DT><TT>`reunitarize2.c'</TT>
+<DD>
+	Reunitarize the gauge fields (kept in <KBD>generic_ks</KBD>)
+<DT><TT>`action.c'</TT>
+<DD>
+	Measure the action.  Used only in the hybrid Monte Carlo
+        algorithm.
+<DT><TT>`ranmom.c'</TT>
+<DD>
+	Produce Gaussian random momenta for the gauge fields.
+(kept in <KBD>generic_ks</KBD>)
+<DT><TT>`plaquette3.c or plaquette4.c'</TT>
+<DD>
+	Measure the plaquette.  
+<DT><TT>`ploop3.c'</TT>
+<DD>
+	Measure Polyakov loop (kept in <KBD>generic</KBD>) (n.b. the
+<KBD>ploop</KBD> and <KBD>plaquette</KBD> routines may need elements of the 
+<KBD>site</KBD> structure which you have not defined--such as <KBD>tempmat1</KBD>
+and <KBD>tempmat2</KBD>.)
+<DT><TT>`f_measure.c'</TT>
+<DD>
+	Measure fermion stuff - psi-bar-psi, fermion energy and
+        pressure.
+<DT><TT>`spectrum.c'</TT>
+<DD>
+	Measure hadron propagators
+<DT><TT>`spectrum_s.c'</TT>
+<DD>
+	Measure hadron screening propagators
+<DT><TT>`gaugefix.c'</TT>
+<DD>
+<DT><TT>`gaugefix2.c'</TT>
+<DD>
+	Fix to lattice Landau or Coulomb (in any direction) gauge
+(kept in <KBD>generic</KBD>)
+</DL>
+<P>
+
+<P>
+<STRONG>HEADERS</STRONG>
+<DL COMPACT>
+
+<DT><TT>`lattice.h'</TT>
+<DD>
+    Required. Defines the site structure and global variables.
+<DT><TT>`defines.h'</TT>
+<DD>
+    Required. Local macros common to all targets in an application.
+    SITERAND should be defined here.  Other macros that are independent of
+    the site structure can also be defined here.
+<DT><TT>`params.h'</TT>
+<DD>
+    Required. Defines the parameter structure used in <KBD>setup.c</KBD> for passing
+    input parameters to the nodes.
+<DT><TT>`ks_dyn_includes.h'</TT>
+<DD>
+    Function prototypes for all files in the <KBD>ks_dynamical</KBD> application directory.
+</DL>
+<P>
+
+<P>
+<STRONG>LOWER LEVEL ROUTINES</STRONG>
+<DL COMPACT>
+
+<DT><TT>`ranstuff.c'</TT>
+<DD>
+	Routines for random numbers on multiple nodes:
+	<KBD>initialize_prn()</KBD> and <KBD>myrand()</KBD>
+<DT><TT>`layout_XXX.c'</TT>
+<DD>
+	Routines which tell which node a site lives on, and where on
+	the node it lives.
+<DT><TT>`com_XXX.c'</TT>
+<DD>
+	Communication routines - gather, <KBD>field_pointer</KBD>, setup routines
+	for communications.  These are very machine dependent.
+	Choose the appropriate one for your target machine.
+<DT><TT>`io_lat.c,'</TT>
+<DD>
+	Input and output routines - read and write lattices.
+	Some optimized versions for special machines exist such as
+         <TT>`io_paragon.c'</TT>.
+<P>
+</DL>
+<P>
+
+<P>
+<STRONG>LIBRARIES</STRONG>
+<DL COMPACT>
+
+<DT><TT>`complex.a'</TT>
+<DD>
+	complex number operations.  See section on "Library routines".
+<DT><TT>`su3.a'</TT>
+<DD>
+	3x3 matrix and 3 component vector operations.  See "utility
+	subroutines".
+</DL>
+
+
+
+<H2><A NAME="SEC28" HREF="milcv6_toc.html#SEC28">Bugs and features</A></H2>
+<P>
+<A NAME="IDX93"></A>
+<A NAME="IDX94"></A>
+<A NAME="IDX95"></A>
+
+</P>
+
+<P>
+Some variants of the version 4 MILC code had library routines and
+applications for doing SU(2) gauge theory. This code has not been
+translated into version 6 conventions.
+
+</P>
+<P>
+The MILC code is hard-wired for four dimensional simulations.
+Three and five dimensional variants are believed to exist, but are not
+maintained by us.
+
+</P>
+<P>
+For some unknown reason, lost in the mists of time,
+ the MILC code uses the opposite convention for the projectors
+rather than the more standard convention
+Furthermore, the sign convention for 
+is minus the standard convention.  Thus the MILC spinor fields differ
+from the "conventional" ones by a gamma-5 multiplication
+and a reflection in the x-z plane.
+  MILC uses Weyl-basis (gamma-5 diagonal)
+ Dirac matrices.
+
+</P>
+
+
+<H1><A NAME="SEC29" HREF="milcv6_toc.html#SEC29">Writing Your Own Application</A></H1>
+<P>
+<A NAME="IDX96"></A>
+
+</P>
+<P>
+Each application typically uses at least four header files,
+<KBD>APP_includes.h</KBD>, <KBD>lattice.h</KBD>, <KBD>defines.h</KBD> and
+<KBD>params.h</KBD>. The first contains definitions of all the routines in
+the application directory; the second contains a list of global macros
+and global definitions and a specification of the <KBD>site</KBD> structure
+(all the variables living on the sites of your lattice); the third
+contains local macros common to all targets in an application; and the
+last defines the parameter structure used for passing input parameters
+to the nodes.  The application directory also has its own makefile,
+<KBD>Make_template</KBD>, which contains all the (machine-independent)
+dependencies necessary for your applications.
+
+</P>
+<P>
+It is customary to put the <KBD>main()</KBD> routine in a file which begins with
+the word "control" (e.g. <KBD>control_clov_p.c</KBD>). Beyond that, you are
+on your own. If you poke around, you may find a routine similar
+to the one you want to write, which you can modify. A typical application
+reads in a lattice 
+reads in some input parameters,
+does things to variables on every site,
+moves information from site to site (see section <A HREF="milcv6.html#SEC22">Accessing fields at other sites</A>)
+and
+writes out a lattice at the end.
+
+</P>
+<P>
+One problem is how to read in global parameters (like a coupling
+or the number of iterations of a process). This is done in a file with
+a name similar to <KBD>setup.c</KBD>. To read in a global variable and
+broadcast it to all the nodes, you must first edit <KBD>lattice.h</KBD>
+adding the variable to the list of globals
+ (in the long set of <KBD>EXTERN</KBD>'s
+at the top), and edit the <KBD>params.h</KBD> file to
+add it to the <KBD>params</KBD> structure. Next, in <KBD>setup.c</KBD>,
+add a set of lines to prompt for the input,
+and find the place where the <KBD>params</KBD> structure is initialized or read.
+Add your variable once to each list, to put it into <KBD>par_buf</KBD>,
+and then to extract it. Good luck!
+
+</P>
+
+
+<H1><A NAME="SEC30" HREF="milcv6_toc.html#SEC30">Precision</A></H1>
+<P>
+<A NAME="IDX97"></A>
+
+</P>
+<P>
+As shipped, the MILC code does all calcuations in single precision
+with a few exceptions (e.g. double precision accumulation of global
+sums).  A clumsy hack is provided for converting the entire code to
+double precision.  To make the conversion, copy the entire code to a
+new directory tree.  Then run the script <KBD>convert_f2d.sh</KBD>, found
+in the top level directory.  This script edits all files in place,
+changing all occurrences of <KBD>float</KBD> to <KBD>double</KBD>, with some
+selected exceptions.  Since our binary file formats are all single
+precision, special care is required to read and write them in a double
+precision environment.  In the generic directory, the files
+<KBD>io_lat4_double.c</KBD> and <KBD>io_wb3_double.c</KBD> provide this
+capability.  This script also replaces <KBD>io_lat4.o</KBD> and
+<KBD>io_wb3.o</KBD> with their double-precision equivalents in all
+<KBD>Make_template</KBD> files, so they will automatically be compiled and
+linked when you build the double precision application.
+
+</P>
+<P>
+Since we do not have double precision versions of the assembly code,
+the double precision libraries must be built with <KBD>Make_vanilla</KBD>,
+rather than the architecture specific <KBD>Make_RS6K</KBD>,
+<KBD>Make_alpha</KBD>, or <KBD>Make_t3e</KBD>.
+
+</P>
+
+
+<H1><A NAME="SEC31" HREF="milcv6_toc.html#SEC31">Concept Index</A></H1>
+<P>
+<H2>a</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX92">A Sample Applications Directory</A>
+<LI><A HREF="milcv6.html#IDX82">Accessing fields at other sites</A>
+<LI><A HREF="milcv6.html#IDX18">architecture specific Makefiles</A>
+</DIR>
+<H2>b</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX93">Bugs and features</A>
+<LI><A HREF="milcv6.html#IDX15">bugs reports</A>
+<LI><A HREF="milcv6.html#IDX17">Building the code</A>
+<LI><A HREF="milcv6.html#IDX85">Butterflies (FFT)</A>
+</DIR>
+<H2>c</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX21">checking the build</A>
+<LI><A HREF="milcv6.html#IDX35">comdefs.h</A>
+<LI><A HREF="milcv6.html#IDX28">Compilation Macros</A>
+<LI><A HREF="milcv6.html#IDX32">complex.h</A>
+<LI><A HREF="milcv6.html#IDX31">config.h</A>
+<LI><A HREF="milcv6.html#IDX1">Copyright</A>
+</DIR>
+<H2>d</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX75">Data types</A>
+<LI><A HREF="milcv6.html#IDX36">defines.h</A>
+<LI><A HREF="milcv6.html#IDX83">Details of gathers and creating new ones</A>
+<LI><A HREF="milcv6.html#IDX24">Directory Layout</A>
+<LI><A HREF="milcv6.html#IDX89">Distributing sites among nodes</A>
+<LI><A HREF="milcv6.html#IDX95">doubleword boundaries</A>
+</DIR>
+<H2>f</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX84">FFT</A>
+<LI><A HREF="milcv6.html#IDX7">Free Software Foundation</A>
+</DIR>
+<H2>g</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX74">gen_pt[]</A>
+<LI><A HREF="milcv6.html#IDX22">General description of the MILC Code</A>
+<LI><A HREF="milcv6.html#IDX42">Global variables</A>
+<LI><A HREF="milcv6.html#IDX8">GNU General Public License</A>
+</DIR>
+<H2>h</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX30">header files</A>
+</DIR>
+<H2>i</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX94">i860 assembler</A>
+<LI><A HREF="milcv6.html#IDX11">Installing the Code</A>
+<LI><A HREF="milcv6.html#IDX9">Installing the MILC Code</A>
+<LI><A HREF="milcv6.html#IDX87">Intel Paragon</A>
+<LI><A HREF="milcv6.html#IDX88">interupts</A>
+<LI><A HREF="milcv6.html#IDX86">iPSC-860</A>
+</DIR>
+<H2>l</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX2">Last change</A>
+<LI><A HREF="milcv6.html#IDX69">Lattice storage</A>
+<LI><A HREF="milcv6.html#IDX37">lattice.h</A>
+<LI><A HREF="milcv6.html#IDX72">lattice[]</A>
+<LI><A HREF="milcv6.html#IDX25">libraries</A>
+<LI><A HREF="milcv6.html#IDX76">Library routines</A>
+</DIR>
+<H2>m</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX27">Macros, Optional</A>
+<LI><A HREF="milcv6.html#IDX34">macros.h</A>
+<LI><A HREF="milcv6.html#IDX19">Makefiles</A>
+<LI><A HREF="milcv6.html#IDX20">making the libraries</A>
+<LI><A HREF="milcv6.html#IDX23">MILC Collaboration</A>
+<LI><A HREF="milcv6.html#IDX5">MILC Homepage</A>
+<LI><A HREF="milcv6.html#IDX77">Moving around in the lattice</A>
+</DIR>
+<H2>n</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX73">neighbor[]</A>
+</DIR>
+<H2>o</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX3">Obtaining the MILC Code</A>
+<LI><A HREF="milcv6.html#IDX14">Optimized versions</A>
+<LI><A HREF="milcv6.html#IDX26">Overview of Applications in Release Version</A>
+</DIR>
+<H2>p</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX38">params.h</A>
+<LI><A HREF="milcv6.html#IDX10">Portability</A>
+<LI><A HREF="milcv6.html#IDX97">Precision</A>
+<LI><A HREF="milcv6.html#IDX29">Programming with MILC Code</A>
+</DIR>
+<H2>q</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX16">questions to the authors</A>
+</DIR>
+<H2>r</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX91">Random numbers</A>
+<LI><A HREF="milcv6.html#IDX90">Reading and writing lattices</A>
+</DIR>
+<H2>s</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX12">SciDAC</A>
+<LI><A HREF="milcv6.html#IDX67"><TT>`setup.c'</TT></A>
+<LI><A HREF="milcv6.html#IDX70">site</A>
+<LI><A HREF="milcv6.html#IDX33">su3.h</A>
+<LI><A HREF="milcv6.html#IDX13">Supported architectures</A>
+</DIR>
+<H2>u</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX6">Usage conditions</A>
+</DIR>
+<H2>w</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX4">Web sites</A>
+<LI><A HREF="milcv6.html#IDX96">Writing Your Own Application</A>
+</DIR>
+
+</P>
+
+
+<H1><A NAME="SEC32" HREF="milcv6_toc.html#SEC32">Variable Index</A></H1>
+<P>
+<H2>*</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX63">*savefile</A>
+<LI><A HREF="milcv6.html#IDX62">*startfile</A>
+</DIR>
+<H2>b</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX58">beta</A>
+</DIR>
+<H2>c</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX41">CONTROL</A>
+</DIR>
+<H2>e</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX50">epsilon</A>, <A HREF="milcv6.html#IDX60">epsilon</A>
+<LI><A HREF="milcv6.html#IDX46">even_sites_on_node</A>
+<LI><A HREF="milcv6.html#IDX40">EXTERN</A>
+</DIR>
+<H2>f</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX80">F_OFFSET</A>
+<LI><A HREF="milcv6.html#IDX81">F_PT</A>
+<LI><A HREF="milcv6.html#IDX78">field_offset</A>
+<LI><A HREF="milcv6.html#IDX79">field_pointer</A>
+<LI><A HREF="milcv6.html#IDX61">fixflag</A>
+</DIR>
+<H2>i</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX39">Include files. The local header defines.h must be included near the</A>
+<LI><A HREF="milcv6.html#IDX52">iseed</A>
+</DIR>
+<H2>m</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX59">mass</A>
+</DIR>
+<H2>n</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX51">nflavors</A>
+<LI><A HREF="milcv6.html#IDX44">number_of_nodes</A>
+<LI><A HREF="milcv6.html#IDX48">nx,ny,nz,nt</A>
+</DIR>
+<H2>o</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX47">odd_sites_on_node</A>
+</DIR>
+<H2>p</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX68">params</A>
+</DIR>
+<H2>s</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX57">saveflag</A>, <A HREF="milcv6.html#IDX65">saveflag</A>
+<LI><A HREF="milcv6.html#IDX71">site</A>
+<LI><A HREF="milcv6.html#IDX45">sites_on_node</A>
+<LI><A HREF="milcv6.html#IDX64">startflag</A>
+<LI><A HREF="milcv6.html#IDX55">steps</A>
+<LI><A HREF="milcv6.html#IDX56">stepsQ</A>
+</DIR>
+<H2>t</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX43">this_node</A>
+<LI><A HREF="milcv6.html#IDX66">total_iters</A>
+<LI><A HREF="milcv6.html#IDX54">trajecs</A>
+</DIR>
+<H2>v</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX49">volume</A>
+</DIR>
+<H2>w</H2>
+<DIR>
+<LI><A HREF="milcv6.html#IDX53">warms</A>
+</DIR>
+
+</P>
+</BODY>
+</HTML>

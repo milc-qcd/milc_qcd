@@ -1,0 +1,236 @@
+SU3 Wilson valence fermions;  heavy-light static
+Static variational smearing and B_B parameters correlators
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+start: Tue Sep 16 14:51:39 2003
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.9 MBytes per node for lattice
+
+
+nkap 1
+start_spin 0
+start_color 0
+start_kap 0
+end_spin 3
+end_color 2
+end_kap 0
+beta 5.7
+kappa 0.12
+approx_kappa_c 0.125
+max_iterations 200
+max_restarts 24
+error_for_propagator 5e-07
+flag = 1 to start with non-zero light quark prop, 0 if psi=0
+flag 0
+number_hopping_steps 20
+point_weyl
+width^(-2): source=exp(-width^(-2)*r*r)
+width^(-2) 0
+source_x 0
+source_y 0
+source_z 0
+source_t 0
+source_parity= 0
+wall_cutoff 2
+wall_separation 2
+no extra sinks will be computed
+reload_serial ../binary_samples/lat.sample.l4448
+coulomb_gauge_fix
+forget 
+no_smearing_func 2
+The variational matrix will be saved to bin.test.matrix.su3_static_cg
+The smearing code is local
+The smearing code is end_param
+The smeared meson correlators will be to saved to smear_meson.test
+fresh_prop 
+forget_prop 
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4448
+Time stamp Wed Oct 10 14:27:08 2001
+Checksums 13f3b413 161f7dde OK
+Time to reload gauge configuration = 1.215804e-02
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 3.597021e-03
+Fixing to Coulomb gauge
+GFIX: Ended at step 16. Av gf action 8.62915993e-01, delta 8.941e-08
+Time to gauge fix = 5.003051e-01
+START 1.723748e+00 1.690586e+00
+The smearing function name is local_smear
+The smearing function name is exp_smear_0.3
+Residue=5.000000e-07
+ meson output file is named meson.test
+color=0 spin=0 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 3.1e-07 iters= 23
+LIGHT_MESON: time = 3.232002e-03 = 6.312504e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = 28.3526 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.442616e-03
+HOPPING: time = 1.319311e-01 = 1.288389e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=1 spin=0 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 3e-07 iters= 23
+LIGHT_MESON: time = 3.178000e-03 = 6.207032e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = 28.9708 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.359336e-03
+HOPPING: time = 1.293420e-01 = 1.263105e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=2 spin=0 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 2.9e-07 iters= 23
+LIGHT_MESON: time = 3.075004e-03 = 6.005866e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = 29.5794 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.335555e-03
+HOPPING: time = 1.261650e-01 = 1.232080e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=0 spin=1 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 3e-07 iters= 23
+LIGHT_MESON: time = 3.194094e-03 = 6.238464e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = 30.1822 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.567197e-03
+HOPPING: time = 1.255291e-01 = 1.225870e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=1 spin=1 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 4.5e-07 iters= 22
+LIGHT_MESON: time = 3.072023e-03 = 6.000046e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = 30.7562 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.304255e-03
+HOPPING: time = 1.435059e-01 = 1.401425e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=2 spin=1 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 3.1e-07 iters= 23
+LIGHT_MESON: time = 3.053069e-03 = 5.963026e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = 31.3728 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.350422e-03
+HOPPING: time = 1.358731e-01 = 1.326886e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=0 spin=2 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 3.2e-07 iters= 23
+LIGHT_MESON: time = 3.790975e-03 = 7.404247e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = -31.9715 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.272586e-03
+HOPPING: time = 1.216730e-01 = 1.188213e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=1 spin=2 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 3e-07 iters= 23
+LIGHT_MESON: time = 3.089905e-03 = 6.034970e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = -31.3628 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.481922e-03
+HOPPING: time = 1.212860e-01 = 1.184434e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=2 spin=2 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 3e-07 iters= 23
+LIGHT_MESON: time = 3.060937e-03 = 5.978392e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = -30.7746 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.625416e-03
+HOPPING: time = 1.207200e-01 = 1.178907e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=0 spin=3 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 3.1e-07 iters= 23
+LIGHT_MESON: time = 3.353953e-03 = 6.550690e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = -30.1771 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.574192e-03
+HOPPING: time = 3.139290e-01 = 3.065713e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=1 spin=3 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 4.9e-07 iters= 22
+LIGHT_MESON: time = 3.084898e-03 = 6.025191e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = -29.4242 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.306217e-03
+HOPPING: time = 1.256220e-01 = 1.226778e-05/site-iter
+Saved binary meson propagator in file  meson.test
+ meson output file is named meson.test
+color=2 spin=3 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ OK converged size_r= 3.3e-07 iters= 23
+LIGHT_MESON: time = 3.347039e-03 = 6.537186e-06/site
+Light mesons found
+Time to calculate the smeared mesons (for B parameter) = -28.8252 sec
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=9.999999e-01
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.399001e-03
+HOPPING: time = 1.241430e-01 = 1.212334e-05/site-iter
+Saved binary meson propagator in file  meson.test
+RUNNING COMPLETED
+total mr iters for measurement= 2.740000e+02
+average mr iters per spin-color= 2.283333e+01
+Time = 7.408124e+00 seconds
+I have written the smeared mesons to the file smear_meson.test
+I have written the variational matrix to the file bin.test.matrix.su3_static_cg
+Time to calculate the variational smearing matrix = -28.6057 sec
+>> The end of the static variational code <<<<
+Time = 7.408124e+00 seconds
+
+
+get_i: EOF on STDIN while expecting nkap.
+exit: Tue Sep 16 14:51:47 2003
+

@@ -1,0 +1,399 @@
+This is TeX, Version 3.1415 (C version 6.1) (format=plain 99.11.6)  22 NOV 2002 12:19
+**/home/dirac/detar/milc/v6/doc/milcv6.texi
+(/home/dirac/detar/milc/v6/doc/milcv6.texi
+(/usr/local/share/lib/tex/inputs/texinfo.tex
+Loading texinfo [version 2002-03-01.06]: Basics,
+\bindingoffset=\dimen16
+\normaloffset=\dimen17
+\pagewidth=\dimen18
+\pageheight=\dimen19
+\outerhsize=\dimen20
+\outervsize=\dimen21
+\cornerlong=\dimen22
+\cornerthick=\dimen23
+\topandbottommargin=\dimen24
+\headlinebox=\box16
+\footlinebox=\box17
+\margin=\insert252
+\EMsimple=\toks12
+\singlespaceskip=\skip18
+\groupinvalidhelp=\toks13
+\mil=\dimen25
+\exdentamount=\skip19
+\inmarginspacing=\skip20
+ pdf,
+\tempnum=\count26
+\lnkcount=\count27
+\filename=\toks14
+\filenamelength=\count28
+\pgn=\count29
+\toksA=\toks15
+\toksB=\toks16
+\toksC=\toks17
+\toksD=\toks18
+\boxA=\box18
+\countA=\count30
+ fonts,
+\sffam=\fam8
+\textleading=\dimen26
+\mainmagstep=\count31
+\fontdepth=\count32
+ page headings,
+\titlepagetopglue=\skip21
+\titlepagebottomglue=\skip22
+\evenheadline=\toks19
+\oddheadline=\toks20
+\evenfootline=\toks21
+\oddfootline=\toks22
+
+tables,
+\tableindent=\dimen27
+\itemindent=\dimen28
+\itemmargin=\dimen29
+\itemmax=\dimen30
+\itemno=\count33
+\multitableparskip=\skip23
+\multitableparindent=\skip24
+\multitablecolspace=\dimen31
+\multitablelinespace=\skip25
+\colcount=\count34
+ conditionals, indexing,
+\secondaryindent=\skip26
+\partialpage=\box19
+\doublecolumnhsize=\dimen32
+ sectioning,
+\chapno=\count35
+\secno=\count36
+\subsecno=\count37
+\subsubsecno=\count38
+\appendixno=\count39
+\absseclevel=\count40
+\secbase=\count41
+\chapheadingskip=\skip27
+\secheadingskip=\skip28
+\subsecheadingskip=\skip29
+ toc,
+\tocfile=\write0
+\contentsrightmargin=\skip30
+\savepageno=\count42
+\lastnegativepageno=\count43
+\shortappendixwidth=\dimen33
+\tocindent=\dimen34
+ environments,
+\dblarrowbox=\box20
+\longdblarrowbox=\box21
+\pushcharbox=\box22
+\bullbox=\box23
+\equivbox=\box24
+\errorbox=\box25
+\lispnarrowing=\skip31
+\envskipamount=\skip32
+\circthick=\dimen35
+\cartouter=\dimen36
+\cartinner=\dimen37
+\normbskip=\skip33
+\normpskip=\skip34
+\normlskip=\skip35
+\lskip=\skip36
+\rskip=\skip37
+\tabw=\dimen38
+ defuns,
+\defbodyindent=\skip38
+\defargsindent=\skip39
+\deftypemargin=\skip40
+\deflastargmargin=\skip41
+\parencount=\count44
+ macros,
+\macscribble=\write1
+\paramno=\count45
+\macname=\toks23
+
+cross references,
+\auxfile=\write2
+\savesfregister=\count46
+\footnoteno=\count47
+ (/usr/local/share/lib/tex/inputs/epsf.tex
+This is `epsf.tex' v2.7.1 <18 May 2002>
+\epsffilein=\read0
+\epsfframemargin=\dimen39
+\epsfframethickness=\dimen40
+\epsfrsize=\dimen41
+\epsftmp=\dimen42
+\epsftsize=\dimen43
+\epsfxsize=\dimen44
+\epsfysize=\dimen45
+\pspoints=\dimen46
+)
+\noepsfhelp=\toks24
+ localization,
+\nolanghelp=\toks25
+\defaultparindent=\dimen47
+ and turning on texinfo input format.) (milcv6.aux)
+@cpindfile=@write3
+@fnindfile=@write4
+@vrindfile=@write5
+@tpindfile=@write6
+@kyindfile=@write7
+@pgindfile=@write8
+ [1] [2]
+Chapter 1 [1] [2] Chapter 2 [3] [4] Chapter 3 [5] [6] [7]
+Underfull \hbox (badness 7433) in paragraph at lines 678--681
+ []@textrm Eigenvalues and eigen-vec-tors of very gen-eral fermion ac-tions wit
+h
+
+@hbox(7.60416+2.12917)x433.62, glue set 4.20872
+.@glue(@leftskip) 57.81621
+.@hbox(0.0+0.0)x0.0
+.@textrm E
+.@textrm i
+.@textrm g
+.etc.
+
+
+Underfull \hbox (badness 7012) in paragraph at lines 678--681
+ @textrm four Dirac spin in-dices. Not tested for more than one node.
+
+@hbox(7.60416+2.12917)x433.62, glue set 4.12526
+.@glue(@leftskip) 57.81621
+.@textrm f
+.@textrm o
+.@textrm u
+.@textrm r
+.etc.
+
+[8]
+Overfull \hbox (13.36559pt too wide) in paragraph at lines 688--690
+ []@textrm Hybrid spec-troscopy with clover fermions. @textttsl doug@texttt @@t
+extttsl klingon.physics.arizona.edu[]@textrm ) |
+
+@hbox(8.2125+2.73749)x433.62, glue set - 1.0
+.@glue(@leftskip) 57.81621
+.@hbox(0.0+0.0)x0.0
+.@textrm H
+.@textrm y
+.@textrm b
+.etc.
+
+
+Overfull \hbox (36.57393pt too wide) in paragraph at lines 700--703
+ @textbf ks[]eigen@textrm Eigenvalues for im-proved stag-gered fermion op-er-a-
+tors. @textttsl kostas@texttt @@textttsl physics.arizona.edu[]@textrm ) |
+
+@hbox(8.2125+2.73749)x433.62, glue set - 1.0
+.@glue(@leftskip) 57.81621
+.@penalty 10000
+.@kern -57.81621
+.@textbf k
+.@textbf s
+.etc.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 713--715
+ []@textrm Dynamical QCD with im-proved stag-gered quarks of 2 masses.
+
+@hbox(7.60416+2.12917)x433.62, glue set 5.38023
+.@glue(@leftskip) 57.81621
+.@hbox(0.0+0.0)x0.0
+.@textrm D
+.@textrm y
+.@textrm n
+.etc.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 721--723
+ []@textrm Schroedinger func-tional code (quenched) with clover fermions.
+
+@hbox(8.2125+2.73749)x433.62, glue set 7.08109
+.@glue(@leftskip) 57.81621
+.@hbox(0.0+0.0)x0.0
+.@textrm S
+.@textrm c
+.@kern-0.30418
+.etc.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 725--727
+ []@textrm Schroedinger func-tional code (dy-nam-i-cal) with stag-gered fermion
+s.
+
+@hbox(8.2125+2.73749)x433.62, glue set 5.07552
+.@glue(@leftskip) 57.81621
+.@hbox(0.0+0.0)x0.0
+.@textrm S
+.@textrm c
+.@kern-0.30418
+.etc.
+
+[9]
+Underfull \hbox (badness 10000) in paragraph at lines 772--774
+ @textbf LU@textrm Use LU de-com-po-si-tion in `@texttt generic_clover/d_congra
+d2_cl.c[]@textrm '[] and
+
+@hbox(7.60416+2.43333)x433.62, glue set 5.62196
+.@glue(@leftskip) 57.81621
+.@penalty 10000
+.@kern -57.81621
+.@textbf L
+.@textbf U
+.etc.
+
+[10] Chapter 4 [11] [12]
+Overfull \hbox (32.18782pt too wide) in paragraph at lines 1023--1023
+ []        @texttt int propinterval;  /* number of trajectories between measure
+ments */[] |
+
+@hbox(7.60416+2.43333)x433.62
+.@glue(@leftskip) 28.90755
+.@hbox(0.0+0.0)x0.0
+.@penalty 10000
+.@glue 5.74869
+.@penalty 10000
+.etc.
+
+[13] [14]
+Underfull \hbox (badness 10000) in paragraph at lines 1128--1133
+[]@textrm These vec-tors of point-ers are de-clared in `@texttt lattice.h[]@tex
+trm '[] and al-lo-cated in
+
+@hbox(7.60416+2.12917)x433.62, glue set 4.51978
+.@hbox(0.0+0.0)x15.0
+.@textrm T
+.@textrm h
+.@textrm e
+.@textrm s
+.etc.
+
+[15] [16]
+Underfull \hbox (badness 3039) in paragraph at lines 1296--1301
+@textrm and de-scrip-tion of func-tions. An html ver-sion of `@texttt su3.h[]@t
+extrm '[] is avail-able at @texttt <@textrm a
+
+@hbox(7.60416+2.12917)x433.62, glue set 3.12143
+.@textrm a
+.@textrm n
+.@textrm d
+.@glue 3.65 plus 1.825 minus 1.21666
+.@textrm d
+.etc.
+
+[17] [18] [19]
+Overfull \hbox (14.94176pt too wide) in paragraph at lines 1478--1478
+ []  @texttt field_offset field;  /* which field? Some member of structure "sit
+e" */[] |
+
+@hbox(7.60416+1.52081)x433.62
+.@glue(@leftskip) 28.90755
+.@hbox(0.0+0.0)x0.0
+.@penalty 10000
+.@glue 5.74869
+.@penalty 10000
+.etc.
+
+[20] [21]
+Underfull \hbox (badness 2020) in paragraph at lines 1560--1568
+@textrm site. It uses the fam-ily of calls @textttsl start_general_gather[]@tex
+trm , @textttsl wait_general_gather[]@textrm ,
+
+@hbox(7.60416+2.43333)x433.62, glue set 2.72696
+.@textrm s
+.@textrm i
+.@textrm t
+.@textrm e
+.@textrm .
+.etc.
+
+[22]
+Overfull \hbox (55.18257pt too wide) in paragraph at lines 1637--1637
+ []  @texttt tag=start_gather_from_temp( tempvec, sizeof(su3_vector), dir,EVEN,
+gen_pt[1] );[] |
+
+@hbox(7.60416+2.43333)x433.62
+.@glue(@leftskip) 28.90755
+.@hbox(0.0+0.0)x0.0
+.@penalty 10000
+.@glue 5.74869
+.@penalty 10000
+.etc.
+
+[23]
+Underfull \hbox (badness 10000) in paragraph at lines 1713--1723
+[]@textrm The @textttsl inverse[] @textrm ar-gu-ment to @textttsl make_gather()
+[] @textrm is one of @textbf OWN[]INVERSE@textrm ,
+
+@hbox(7.60416+2.43333)x433.62, glue set 5.69539
+.@hbox(0.0+0.0)x15.0
+.@textrm T
+.@textrm h
+.@textrm e
+.@glue 3.65 plus 1.825 minus 1.21666
+.etc.
+
+
+Underfull \hbox (badness 3769) in paragraph at lines 1713--1723
+@textbf WANT[]INVERSE@textrm , or @textbf NO[]INVERSE@textrm . If it is @textbf
+ OWN[]INVERSE@textrm , the map-ping is
+
+@hbox(7.60416+2.12917)x433.62, glue set 3.35681
+.@textbf W
+.@kern-1.21667
+.@textbf A
+.@textbf N
+.@textbf T
+.etc.
+
+[24]
+Underfull \hbox (badness 2781) in paragraph at lines 1757--1763
+[]@textrm First, sup-pose we wished to set up near-est neigh-bor gath-ers. (Or-
+di-nar-ily.
+
+@hbox(8.2125+2.73749)x433.62, glue set 3.03108
+.@hbox(0.0+0.0)x15.0
+.@textrm F
+.@textrm i
+.@textrm r
+.@textrm s
+.etc.
+
+[25] [26]
+Overfull \hbox (14.94176pt too wide) in paragraph at lines 1908--1908
+ []  @texttt int direction;     /* direction of site's neighbor to get data fro
+m. */[] |
+
+@hbox(7.60416+2.43333)x433.62
+.@glue(@leftskip) 28.90755
+.@hbox(0.0+0.0)x0.0
+.@penalty 10000
+.@glue 5.74869
+.@penalty 10000
+.etc.
+
+[27] [28] [29] [30] [31] [32] [33] Chapter 5 [34] Chapter 6 [35]
+(Concept Index) [36] (milcv6.cps)
+Overfull \vbox (81.42207pt too high) has occurred while \output is active
+\vbox(643.19986+0.0)x433.62, glue set - 1.0
+.\glue(\topskip) 24.00002
+.\vbox(11.99998+3.35999)x433.62
+..\hbox(11.99998+3.35999)x433.62, glue set 308.74078fil
+...\hbox(0.0+0.0)x0.0
+...\chaprm C
+...\chaprm o
+...\chaprm n
+...\chaprm c
+...etc.
+.\penalty 10000
+.\glue 12.0 plus 4.0 minus 4.0
+.\penalty 10000
+.etc.
+
+
+[37] (Variable Index) (milcv6.vrs) [38] (milcv6.toc) [-1] [-2] ) 
+Here is how much of TeX's memory you used:
+ 1377 strings out of 13035
+ 15798 string characters out of 96204
+ 47835 words of memory out of 262141
+ 2232 multiletter control sequences out of 9500
+ 31784 words of font info for 110 fonts, out of 100000 for 255
+ 19 hyphenation exceptions out of 607
+ 12i,6n,11p,275b,364s stack positions out of 300i,40n,60p,3000b,4000s
+
+Output written on milcv6.dvi (42 pages, 142100 bytes).

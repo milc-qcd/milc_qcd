@@ -1,0 +1,28 @@
+; msq_su3vec.t3d: T3D assembler version of msq_su3vec.c
+#include <mpp/asdef.h>
+; Use the CRI definitions for the register names.
+        .ident msq_su3vec$c
+
+	.psect	magsq_su3vec@code,code
+magsq_su3vec::				; Codeblock 0
+	lds	f10, 0(r16)	; c[1].real
+	lds	f11, 4(r16)	; c[1].imag
+	lds	f12, 8(r16)	; c[2].real
+	muls/d	f10, f10, f10
+	lds	f13, 12(r16)	; c[2].imag
+	muls/d	f11, f11, f11
+	lds	f14, 16(r16)	; c[3].real
+	muls/d	f12, f12, f12
+	lds	f15, 20(r16)	; c[3].imag
+	muls/d	f13, f13, f13
+	muls/d	f14, f14, f14
+	muls/d	f15, f15, f15
+	adds/d	f10, f11, f10
+	adds/d	f12, f13, f12
+	adds/d	f14, f15, f14
+	adds/d	f12, f10, f10
+	adds/d	f14, f10, f0
+	ret	r31, (r26)
+	.endp
+
+	.end

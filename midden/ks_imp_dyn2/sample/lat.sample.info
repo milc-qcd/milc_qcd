@@ -1,0 +1,18 @@
+magic_number 20103
+time_stamp "Tue Apr  4 09:54:00 2000"
+checksums "aca2709e 2b8b2a55"
+nx 4
+ny 4
+nz 4
+nt 4
+action.description "Gauge plus fermion (improved)"
+gauge.description "Symanzik 1x1 + 1x2 + 1x1x1 action"
+gauge.nloops 3
+gauge.nreps 1
+gauge.beta11 7.000000
+gauge.tadpole.u0 0.844100
+quark.description "KS fermions, fat link plus Naik"
+quark.flavors1 2
+quark.flavors2 1
+quark.mass1 0.100000
+quark.mass2 0.200000

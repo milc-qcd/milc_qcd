@@ -1,0 +1,24 @@
+# Makefile
+#
+# Makefile for instanton utility programs
+# Mark Stephenson  01/26/97
+
+CC = gcc
+CFLAGS = -c -g
+LDFLAGS = -g
+BASIC_LIBS = -lm
+
+.c.o :
+	${CC} ${CFLAGS} $<
+
+TOPO_INFO_OBJS = topo_info.o
+topo_info: ${TOPO_INFO_OBJS}
+	${CC} ${LDFLAGS} -o $@ ${TOPO_INFO_OBJS} ${BASIC_LIBS}
+
+INST_SIZE_OBJS = inst_size.o
+inst_size: ${INST_SIZE_OBJS}
+	${CC} ${LDFLAGS} -o $@ ${INST_SIZE_OBJS} ${BASIC_LIBS}
+
+
+clean:
+	/bin/rm -f *.o *~

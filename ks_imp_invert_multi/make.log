@@ -1,0 +1,161 @@
+make -f Make_linux_qdp target "MYTARGET= su3_inv_symzk1_asqtad_periodic" \
+"DEFINES= -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID" \
+"GAUGE = symanzik_1loop_action.h" \
+"QUARK = asqtad_action.h" \
+"EXTRA_OBJECTS= dslash_fn_qdp.o d_congrad5_fn_qdp.o ks_multicg_qdp.o mat_invert.o multimass_inverter.o"
+make[1]: Entering directory `/home/detar/v6.20sep02_double.simone/ks_imp_invert_multi'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=/opt/gcc/bin/gcc" all
+make[2]: Entering directory `/home/detar/v6.20sep02_double.simone/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: gcc . Application: /opt/gcc/bin/gcc
+================================================================
+make[2]: Leaving directory `/home/detar/v6.20sep02_double.simone/libraries'
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  control_qdp.c 
+control_qdp.c: In function `main':
+control_qdp.c:21: warning: unused variable `traj_done'
+control_qdp.c:23: warning: unused variable `s_iters'
+control_qdp.c:27: warning: unused variable `kspf'
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  gauge_info.c 
+quark_action.h:22: warning: `path_ind' defined but not used
+quark_action.h:30: warning: `path_length_in' defined but not used
+quark_action.h:31: warning: `quark_action_npaths' defined but not used
+quark_action.h:32: warning: `path_coeff' defined but not used
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ksprop_info.c 
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  setup_qdp.c 
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID ../generic/layout_qdp.c
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/check_unitarity.c 
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/d_plaq4.c 
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/gaugefix2.c 
+../generic/gaugefix2.c: In function `gaugefix':
+../generic/gaugefix2.c:464: warning: `old_av' might be used uninitialized in this function
+../generic/gaugefix2.c:464: warning: `del_av' might be used uninitialized in this function
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/io_helpers.c 
+../generic/io_helpers.c: In function `save_lattice':
+../generic/io_helpers.c:17: warning: `gf' might be used uninitialized in this function
+../generic/io_helpers.c: In function `reload_lattice':
+../generic/io_helpers.c:62: warning: `gf' might be used uninitialized in this function
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/io_lat4_double_sg.c 
+../generic/io_lat4_double_sg.c: In function `w_serial_i':
+../generic/io_lat4_double_sg.c:618: warning: `fp' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `w_serial':
+../generic/io_lat4_double_sg.c:721: warning: `fp' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:722: warning: `gh' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:725: warning: `lbuf' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:729: warning: `offset' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:732: warning: `checksum_offset' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `read_gauge_hdr':
+../generic/io_lat4_double_sg.c:1387: warning: `hdr' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `r_serial':
+../generic/io_lat4_double_sg.c:1641: warning: unused variable `i'
+../generic/io_lat4_double_sg.c:1650: warning: unused variable `ii'
+../generic/io_lat4_double_sg.c:1650: warning: unused variable `dir'
+../generic/io_lat4_double_sg.c:1650: warning: unused variable `row'
+../generic/io_lat4_double_sg.c:1650: warning: unused variable `col'
+../generic/io_lat4_double_sg.c:1634: warning: `offset' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1638: warning: `checksum_offset' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1643: warning: `buf_length' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1643: warning: `where_in_buf' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1647: warning: `lbuf' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1651: warning: `idest' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `r_serial_arch':
+../generic/io_lat4_double_sg.c:1862: warning: `uin' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1863: warning: `big_end' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `restore_ascii':
+../generic/io_lat4_double_sg.c:2892: warning: `fp' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `save_ascii':
+../generic/io_lat4_double_sg.c:3025: warning: `fp' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `save_serial_archive':
+../generic/io_lat4_double_sg.c:3215: warning: `outfile' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:3219: warning: `uout' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:3224: warning: `vol3' might be used uninitialized in this function
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/make_lattice.c 
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/path_product.c 
+../generic/path_product.c: In function `path_product':
+../generic/path_product.c:25: warning: `mtag0' might be used uninitialized in this function
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/ploop3.c 
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/ranstuff.c 
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/reunitarize2.c 
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID ../generic/stuff_qdp.c
+../generic/stuff_qdp.c:89:35: warning: pasting "set_field_from_I" and "(" does not give a valid preprocessing token
+../generic/stuff_qdp.c:89:35: warning: pasting "set_field_from_R" and "(" does not give a valid preprocessing token
+../generic/stuff_qdp.c:89:35: warning: pasting "set_field_from_V" and "(" does not give a valid preprocessing token
+../generic/stuff_qdp.c:89:35: warning: pasting "set_field_from_M" and "(" does not give a valid preprocessing token
+../generic/stuff_qdp.c:93:34: warning: pasting "set_temp_from_I" and "(" does not give a valid preprocessing token
+../generic/stuff_qdp.c:93:34: warning: pasting "set_temp_from_R" and "(" does not give a valid preprocessing token
+../generic/stuff_qdp.c:93:34: warning: pasting "set_temp_from_V" and "(" does not give a valid preprocessing token
+../generic/stuff_qdp.c:93:34: warning: pasting "set_temp_from_M" and "(" does not give a valid preprocessing token
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/gauge_stuff.c
+../generic/gauge_stuff.c: In function `imp_gauge_force':
+../generic/gauge_stuff.c:211: warning: unused variable `nflop'
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/quark_stuff.c
+../generic_ks/quark_stuff.c: In function `path_transport':
+../generic_ks/quark_stuff.c:255: warning: `tmp_parity' might be used uninitialized in this function
+../generic_ks/quark_stuff.c:255: warning: `tmp_otherparity' might be used uninitialized in this function
+../generic_ks/quark_stuff.c: In function `path_transport_hwv':
+../generic_ks/quark_stuff.c:338: warning: `tmp_parity' might be used uninitialized in this function
+../generic_ks/quark_stuff.c:338: warning: `tmp_otherparity' might be used uninitialized in this function
+../generic_ks/quark_stuff.c: In function `load_longlinks':
+../generic_ks/quark_stuff.c:472: warning: unused variable `nflop'
+../generic_ks/quark_stuff.c: In function `load_fatlinks':
+../generic_ks/quark_stuff.c:545: warning: unused variable `one_link2'
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/io_helpers_ks_double.c
+../generic_ks/io_helpers_ks_double.c: In function `reload_ksprop':
+../generic_ks/io_helpers_ks_double.c:80: warning: `dtime' might be used uninitialized in this function
+../generic_ks/io_helpers_ks_double.c: In function `save_ksprop':
+../generic_ks/io_helpers_ks_double.c:123: warning: `dtime' might be used uninitialized in this function
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/io_prop_ks_double.c
+../generic_ks/io_prop_ks_double.c: In function `w_serial_ks_i':
+../generic_ks/io_prop_ks_double.c:297: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `w_serial_ks':
+../generic_ks/io_prop_ks_double.c:379: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:383: warning: `pbuf' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:397: warning: `head_size' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:398: warning: `body_size' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `read_ks_prop_hdr':
+../generic_ks/io_prop_ks_double.c:587: warning: `byterevflag' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `r_serial_ks':
+../generic_ks/io_prop_ks_double.c:763: warning: `body_size' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:769: warning: `buf_length' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:769: warning: `where_in_buf' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:773: warning: `pbuf' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:774: warning: `dest' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `w_serial_ksprop_tt':
+../generic_ks/io_prop_ks_double.c:1390: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `w_ascii_ksprop_tt':
+../generic_ks/io_prop_ks_double.c:1568: warning: unused variable `version_number'
+../generic_ks/io_prop_ks_double.c:1561: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `restore_ksprop_ascii':
+../generic_ks/io_prop_ks_double.c:1699: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `save_ksprop_ascii':
+../generic_ks/io_prop_ks_double.c:1858: warning: `fp' might be used uninitialized in this function
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/io_prop_sgks_double.c
+../generic_ks/io_prop_sgks_double.c: In function `swrite_ks_fm_prop_hdr':
+../generic_ks/io_prop_sgks_double.c:50: warning: unused variable `i'
+../generic_ks/io_prop_sgks_double.c: In function `write_ks_fmprop_info_file':
+../generic_ks/io_prop_sgks_double.c:85: warning: unused variable `sums'
+../generic_ks/io_prop_sgks_double.c: In function `w_serial_ks_fm_i':
+../generic_ks/io_prop_sgks_double.c:210: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_sgks_double.c: In function `w_serial_ks_fm':
+../generic_ks/io_prop_sgks_double.c:283: warning: unused variable `ks_prop_size'
+../generic_ks/io_prop_sgks_double.c:284: warning: unused variable `ks_prop_check_size'
+../generic_ks/io_prop_sgks_double.c:287: warning: unused variable `body_size'
+../generic_ks/io_prop_sgks_double.c:268: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_sgks_double.c:272: warning: `pbuf' might be used uninitialized in this function
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/rephase.c
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID ../generic_ks/dslash_fn_qdp.c
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID ../generic_ks/d_congrad5_fn_qdp.c
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID ../generic_ks/ks_multicg_qdp.c
+../generic_ks/ks_multicg_qdp.c: In function `ks_multicg_qdp':
+../generic_ks/ks_multicg_qdp.c:154: warning: label `start' defined but not used
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/mat_invert.c
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/multimass_inverter.c
+../generic_ks/multimass_inverter.c: In function `multimass_inverter':
+../generic_ks/multimass_inverter.c:51: warning: unused variable `sourcevec'
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID ../generic/com_qdp.c
+/opt/gcc/bin/gcc -c -O3     -Wall -O3 -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer -DQDP -DNOPREFETCH -DSSE -DSSE_INLINE -DCGTIME   -I/home/detar/QDP/local/include -I/home/detar/QLA/local/include -I/usr/local/mpich/include -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/io_ansi.c 
+/opt/gcc/bin/gcc  -o su3_inv_symzk1_asqtad_periodic \
+control_qdp.o gauge_info.o ksprop_info.o setup_qdp.o  layout_qdp.o check_unitarity.o d_plaq4.o gaugefix2.o io_helpers.o io_lat4_double_sg.o make_lattice.o path_product.o ploop3.o ranstuff.o reunitarize2.o stuff_qdp.o gauge_stuff.o quark_stuff.o io_helpers_ks_double.o io_prop_ks_double.o io_prop_sgks_double.o rephase.o dslash_fn_qdp.o d_congrad5_fn_qdp.o ks_multicg_qdp.o mat_invert.o multimass_inverter.o com_qdp.o io_ansi.o  ../libraries/su3.a ../libraries/complex.a  -L/home/detar/QDP/local/lib -lqdp_int -lqdp_d -lqdp_d3 -lqdp_common_mpi -L/home/detar/QLA/local/lib -lqla_int -lqla_d -lqla_d3 -lqla_dq -lqla_dq3 -lqla_q -L/home/detar/QIO/local/lib -lqio  /usr/local/mpich-gm/lib/libmpich.a -L/usr/local/gm/binary/lib/ -L/usr/local/gm/lib/ -lgm     -lm
+touch localmake
+make[1]: Leaving directory `/home/detar/v6.20sep02_double.simone/ks_imp_invert_multi'

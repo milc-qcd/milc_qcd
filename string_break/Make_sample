@@ -1,0 +1,10 @@
+# For generating sample ouptut from trusted code
+# For string_break
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_str_brk
+
+include ../Make_sample_template
+

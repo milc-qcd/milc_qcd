@@ -1,0 +1,21 @@
+magic_number 12781
+time_stamp "Fri Nov 14 16:54:34 1997"
+nx 4
+ny 4
+nz 4
+nt 4
+gauge.filename "lat.sample.gf"
+gauge.time_stamp "Fri Nov 14 16:52:33 1997"
+gauge.checksums "2deb96fa 131cfb83"
+gauge.fix.description "No gauge fixing"
+quark.description "Standard Wilson"
+quark.kappa 0.110000
+quark.boundary_condition "periodic all directions"
+source.description "Gaussian wall source"
+source.size 1.500000
+source.x 0
+source.y 0
+source.z 0
+source.t 0
+source.n_spins 4
+source.spins[4] 0 1 2 3

@@ -1,0 +1,39 @@
+#  MIMD version 6
+#  Standard application makefile for Linux cluster
+#  Do not use for making libraries
+#  Copy this file into the application directory and run make there.
+#
+
+# This file
+MAKEFILE = Make_linux_mpi
+
+MACHINE_DEP = com_mpi.o io_ansi.o
+
+# Application-architecture-dependent routines
+MACH_DEP_KS_CONGRAD = d_congrad5.o
+MACH_DEP_KS_CONGRAD = d_congrad5_foster.o
+MACH_DEP_KS_DSLASH_FN = dslash_fn.o
+
+CC = gcc
+#CC = pgcc   # Portland group
+#CC = /opt/bin/gcc  # enhanced gcc
+
+CFLAGS0 = -DMPI -DPAD_SEND_BUF=256 -I/uufs/icebox/sys/pkg/mpich/mpich-1.2.0/include -I${MYINCLUDEDIR} -DINLINE ${DEFINES} # CHPC icebox - works
+
+CFLAGS0 = -DMPI -DPAD_SEND_BUF=256 -I/usr/local/vmi/mpich/include -I${MYINCLUDEDIR} ${DEFINES} # platinum
+
+#CFLAGS0 = -DMPI -DPAD_SEND_BUF=256 -I/opt/mpich/egcs/include -I/opt/mpich/egcs/build/LINUX/ch_p4/include -I${MYINCLUDEDIR} -DINLINE ${DEFINES} # CHPC icebox (supposed to work, but executable hangs randomly)
+
+CFLAGS= -DCGTIME -O3 -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE64  ${CFLAGS0}
+# for large file support we need -D_FILE_OFFSET_BITS=64
+#CFLAGS= -D_FILE_OFFSET_BITS=64 -DCGTIME -O3 -tp p6  -Munroll=c:4,n:4 ${CFLAGS0}  # Portland group pgcc Pentium II
+
+LD = gcc
+#LD = pgcc
+#LD = /opt/bin/gcc  # enhanced gcc
+#ILIB = -L/opt/mpich/egcs/build/LINUX/ch_p4/lib -lmpich  # Supposed to work
+#ILIB = -L/usr/mpich/lib/LINUX/ch_p4 -lmpi  # Works
+ILIB = -L/uufs/icebox/sys/pkg/mpich/mpich-1.2.0/lib -lmpi
+ILIB = -L/usr/local/vmi/mpich/lib/gcc -lmpich -lvmi -ldl -lpthread
+
+include Make_template

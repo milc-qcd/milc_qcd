@@ -1,0 +1,8 @@
+instant: instant.c
+	cc -O instant.c -o $@ -lm
+
+topo_info: topo_info.c
+	cc -O topo_info.c -o $@
+
+inst_size: inst_size.c ../../include/config.h
+	cc -O inst_size.c -o $@ -lm

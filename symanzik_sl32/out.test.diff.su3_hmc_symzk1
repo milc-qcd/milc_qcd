@@ -1,0 +1,2 @@
+diffn out.test.su3_hmc_symzk1.tmp out.sample.su3_hmc_symzk1.tmp 1e-5
+Compared 20 lines with a tolerance of 1e-5

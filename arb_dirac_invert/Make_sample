@@ -1,0 +1,10 @@
+# For generating sample ouptut from trusted code
+# For arb_dirac_invert
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_fp_cl_bi su3_fp_cl_bi_h su3_fp_cl_bi_n su3_fp_cl_eig su3_fp_cg_eig
+
+include ../Make_sample_template
+

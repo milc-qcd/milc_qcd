@@ -1,0 +1,8 @@
+diffn out.test.su3_fp_cl_bi_h.tmp out.sample.su3_fp_cl_bi_h.tmp 1e-5
+Field 5 Line 2
+< Time for diagonal baryons 1.160980e+00
+> Time for diagonal baryons 1.295710e+00
+Field 5 Line 3
+< Time for diagonal mesons 6.918158e+00
+> Time for diagonal mesons 6.924561e+00
+Compared 100 lines with a tolerance of 1e-5

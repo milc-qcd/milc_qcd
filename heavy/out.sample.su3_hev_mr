@@ -1,0 +1,362 @@
+SU3 Wilson valence fermions;  heavy-light w/ hopping
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+nkap 2
+start_spin 0
+start_color 0
+start_kap 0
+end_spin 3
+end_color 2
+end_kap 1
+beta 6
+kappa 0.12
+kappa 0.13
+approx_kappa_c 0.17
+max_iterations 50
+max_restarts 24
+error_for_propagator 5e-07
+flag = 1 to start with non-zero light quark prop, 0 if psi=0
+flag 0
+number_hopping_steps 20
+cutoff_gaussian_weyl
+width^(-2): source=exp(-width^(-2)*r*r)
+width^(-2) 0.7
+source_x 2
+source_y 2
+source_z 2
+source_t 7
+source_parity= 0
+wall_cutoff 2
+wall_separation 2
+computing extra sinks
+coulomb_gauge_fix
+fresh_prop 
+forget_prop 
+fresh_prop 
+forget_prop 
+Reading as old-style gauge field configuration with byte reversal
+Old format header parameters are 5.500000 0.050000
+Restored binary gauge configuration serially from file lat.sample
+Time to reload gauge configuration = 3.400000e-01
+CHECK PLAQ: 1.723750e+00 1.690586e+00
+Unitarity checked
+Time to check unitarity = 1.100000e-01
+Fixing to Coulomb gauge
+GFIX: Ended at step 16. Av gf action 8.62916082e-01, delta 5.960e-08
+Time to gauge fix = 9.890000e+00
+START 1.723750e+00 1.690586e+00
+Residue=5.000000e-07
+ meson output file is named meson.120
+color=0 spin=0 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 2.9e-07 iters= 20
+LIGHT_MESON: time = 3.800000e-01 = 7.421875e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.502509e+00
+HOPPING: time = 5.040000e+00 = 4.921875e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=0 spin=0 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 4e-07 iters= 27
+LIGHT_MESON: time = 3.900000e-01 = 7.617188e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.502509e+00
+HOPPING: time = 5.020000e+00 = 4.902344e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=1 spin=0 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.1e-07 iters= 20
+LIGHT_MESON: time = 3.800000e-01 = 7.421875e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.532308e+00
+HOPPING: time = 5.010000e+00 = 4.892578e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=1 spin=0 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.4e-07 iters= 28
+LIGHT_MESON: time = 3.800000e-01 = 7.421875e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.532308e+00
+HOPPING: time = 4.990000e+00 = 4.873047e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=2 spin=0 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 2.7e-07 iters= 20
+LIGHT_MESON: time = 4.000000e-01 = 7.812500e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+call 100 to w_meson_hop: time for wall channels= 8.000000e-02
+call 100 to w_meson_hop: time for wall channels= 1.600000e-01
+iteration= 19, residue= 1.420070e+00
+HOPPING: time = 5.050000e+00 = 4.931641e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=2 spin=0 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 4.3e-07 iters= 27
+LIGHT_MESON: time = 3.700000e-01 = 7.226562e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.420070e+00
+HOPPING: time = 4.980000e+00 = 4.863281e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=0 spin=1 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3e-07 iters= 20
+LIGHT_MESON: time = 3.800000e-01 = 7.421875e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.537660e+00
+HOPPING: time = 5.030000e+00 = 4.912109e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=0 spin=1 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.2e-07 iters= 28
+LIGHT_MESON: time = 3.800000e-01 = 7.421875e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.537660e+00
+HOPPING: time = 4.990000e+00 = 4.873047e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=1 spin=1 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 2.7e-07 iters= 20
+LIGHT_MESON: time = 3.900000e-01 = 7.617188e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.327034e+00
+HOPPING: time = 5.120000e+00 = 5.000000e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=1 spin=1 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 4.1e-07 iters= 27
+LIGHT_MESON: time = 4.000000e-01 = 7.812500e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+call 200 to w_meson_hop: time for wall channels= 8.000000e-02
+call 200 to w_meson_hop: time for wall channels= 1.500000e-01
+iteration= 19, residue= 1.327034e+00
+HOPPING: time = 5.020000e+00 = 4.902344e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=2 spin=1 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.4e-07 iters= 20
+LIGHT_MESON: time = 3.800000e-01 = 7.421875e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.492823e+00
+HOPPING: time = 4.990000e+00 = 4.873047e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=2 spin=1 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.6e-07 iters= 28
+LIGHT_MESON: time = 4.100000e-01 = 8.007813e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.492823e+00
+HOPPING: time = 5.040000e+00 = 4.921875e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=0 spin=2 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.3e-07 iters= 20
+LIGHT_MESON: time = 4.000000e-01 = 7.812500e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.392187e+00
+HOPPING: time = 5.140000e+00 = 5.019531e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=0 spin=2 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.6e-07 iters= 28
+LIGHT_MESON: time = 3.900000e-01 = 7.617187e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.392187e+00
+HOPPING: time = 5.200000e+00 = 5.078125e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=1 spin=2 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 2.7e-07 iters= 20
+LIGHT_MESON: time = 3.800000e-01 = 7.421875e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+call 300 to w_meson_hop: time for wall channels= 7.000000e-02
+call 300 to w_meson_hop: time for wall channels= 1.500000e-01
+iteration= 19, residue= 1.389692e+00
+HOPPING: time = 4.980000e+00 = 4.863281e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=1 spin=2 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 4.3e-07 iters= 27
+LIGHT_MESON: time = 3.900000e-01 = 7.617187e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.389692e+00
+HOPPING: time = 5.020000e+00 = 4.902344e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=2 spin=2 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 2.9e-07 iters= 20
+LIGHT_MESON: time = 3.800000e-01 = 7.421875e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.481132e+00
+HOPPING: time = 5.020000e+00 = 4.902344e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=2 spin=2 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 4.2e-07 iters= 27
+LIGHT_MESON: time = 3.900000e-01 = 7.617187e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.481132e+00
+HOPPING: time = 4.990000e+00 = 4.873047e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=0 spin=3 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 2.7e-07 iters= 20
+LIGHT_MESON: time = 3.700000e-01 = 7.226563e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.388769e+00
+HOPPING: time = 5.080000e+00 = 4.960938e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=0 spin=3 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.9e-07 iters= 27
+call 400 to w_meson_hop: time for wall channels= 1.700000e-01
+call 400 to w_meson_hop: time for wall channels= 3.300000e-01
+LIGHT_MESON: time = 4.100000e-01 = 8.007813e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.388769e+00
+HOPPING: time = 5.000000e+00 = 4.882812e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=1 spin=3 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.1e-07 iters= 20
+LIGHT_MESON: time = 3.900000e-01 = 7.617187e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.420012e+00
+HOPPING: time = 5.000000e+00 = 4.882812e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=1 spin=3 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.3e-07 iters= 28
+LIGHT_MESON: time = 3.700000e-01 = 7.226563e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.420012e+00
+HOPPING: time = 5.030000e+00 = 4.912109e-04/site-iter
+Saved binary meson propagator in file  meson.140
+ meson output file is named meson.120
+color=2 spin=3 kappa=0.120000 nk=0
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.1e-07 iters= 20
+LIGHT_MESON: time = 4.000000e-01 = 7.812500e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+iteration= 19, residue= 1.541907e+00
+HOPPING: time = 5.000000e+00 = 4.882812e-04/site-iter
+Saved binary meson propagator in file  meson.120
+ meson output file is named meson.140
+color=2 spin=3 kappa=0.130000 nk=1
+w_source_h:: source rep. flipped bj-->weyl
+ MR OK converged size_r= 3.1e-07 iters= 28
+LIGHT_MESON: time = 3.900000e-01 = 7.617187e-04/site
+Light mesons found
+w_source_h:: source rep. flipped bj-->weyl
+beginning hopping--size_src=1.320437e+00
+iteration= 0, residue= 1.000000e+00
+call 500 to w_meson_hop: time for wall channels= 7.000000e-02
+call 500 to w_meson_hop: time for wall channels= 1.400000e-01
+iteration= 19, residue= 1.541907e+00
+HOPPING: time = 4.970000e+00 = 4.853516e-04/site-iter
+Saved binary meson propagator in file  meson.140
+RUNNING COMPLETED
+total mr iters for measurement= 2.400000e+02
+average mr iters per spin-color= 2.000000e+01
+total mr iters for measurement= 3.300000e+02
+average mr iters per spin-color= 2.750000e+01
+Time = 2.219800e+02 seconds
+
+

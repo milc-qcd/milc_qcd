@@ -1,0 +1,27 @@
+	make -f Make_origin_mpi target "MYTARGET= su3_schr_ora" \
+	"DEFINES= -DORA_ALGORITHM" \
+	"EXTRA_OBJECTS=  update_ora.o dsdu_qhb.o relax.o monte.o"
+	touch .lastmake.humor_irix; /bin/rm -f .lastmake.*
+	make -f Make_origin_mpi clean
+	touch humor_irix.o; /bin/rm -f *.o
+	touch .lastmake.Make_origin_mpi.su3_schr_ora
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c control.c
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c setup.c
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c gauge_info.c
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic/layout_hyper.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic/io_lat4.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic/ranstuff.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic_schroed/plaq4_SF.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic_schroed/d_plaq2_SF.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic_schroed/check_unitar_SF.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic_schroed/reunitarize2_SF.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic_schroed/io_helpers_SF.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic_schroed/coupling.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c update_ora.c
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c dsdu_qhb.c
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c relax.c
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c monte.c
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic_schroed/com_mpi_SF.c 
+	cc -64 -O3 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 -DMPI -DLOOPEND -DINLINE -I../libraries -I. -DLATDEF=\<lattice.h\> -DORA_ALGORITHM       -c  ../generic/io_nonansi.c 
+	cc -64 -mips4 -o su3_schr_ora \
+	control.o           setup.o             gauge_info.o layout_hyper.o         io_lat4.o           ranstuff.o plaq4_SF.o          d_plaq2_SF.o        check_unitar_SF.o   reunitarize2_SF.o   io_helpers_SF.o     coupling.o  update_ora.o dsdu_qhb.o relax.o monte.o com_mpi_SF.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a -lmpi -lm

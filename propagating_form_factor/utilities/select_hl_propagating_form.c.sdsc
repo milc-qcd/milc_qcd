@@ -1,0 +1,211 @@
+/* 
+ *  Read in the propagating heavy---> light three point functions
+ *  from a disk file.
+ *
+ *  NOTE this is scalar code -- it should only be run on 
+ *  one node.
+ *
+ */
+
+
+#include "read_hl_form.h"
+#include "prop_form_utilities.h"
+
+/* Functions declarations used in the routines in this file ***/
+
+void read_select_form_corr(
+  complex **corr,      /* pointer to complex array: the two point correlator */
+  char filename[80],   /* the name of the disk file */
+  int zonked_pt,       /* zonked quark index */
+  int seq_pt,          /* sequential quark index */
+  int spect_pt,        /* spectator quark index */
+  int q_pt,            /* momentum index */
+  int p_pt,            /* momentum index */
+  int oper_pt,         /* operator index */
+  int copy_pt,         /* copy index */
+  type32 **p_momselect,   /* momentum list */	
+  type32 **q_momselect,   /* momentum list */	
+  int *hl_flag,        /* identifies meson source/sink smearing */
+  int *ntime           /* number of time steps */
+  )
+{
+  FILE *fp ;
+  size_t nobj ; 
+  const type32 magic_number = 14567332 ; 
+  const type32 version_number  = 1  ; /** update this flag when the data format changes ***/
+  int i ;
+  size_t  name_len = 80 ;
+  size_t howmany ;
+  size_t where,skip,corr_stride;
+  int check_sum ; 
+  int check_sum_in ; 
+  int dim ; 
+  int byte_rev_flag  =  do_nothing ;
+  int nt,no_q_values,no_p_values,no_spectator,no_sequential;
+  int no_zonked_light,no_oper,nocopies;
+  type32 *q_momstore,*p_momstore;
+  
+  /* Memory for some header information ***/
+#define HEADER_DIM_WRITE_CORR 13
+  size_t  header_size = (size_t) HEADER_DIM_WRITE_CORR ;
+  type32 header_data[HEADER_DIM_WRITE_CORR] ;
+
+
+  /**** open the file ******/
+  if( (fp = fopen(filename ,"rb")) == NULL )
+  {
+    printf("Could not open the file %s\n",filename);
+    exit(1);
+  }
+
+  /** write the header information ***/
+  if( fread(header_data,sizeof(type32),header_size,fp) != header_size )
+  {
+    printf("There was an error during the raeding of the form factor HEADER from %s\n",filename);
+    exit(1);
+  }
+
+
+
+
+  /***** check the header ****/
+  if( header_data[0] != magic_number )
+  {
+    printf("ERROR: magic number mismatch between code %d and file %d\n",magic_number, header_data[0]  );
+    printf("I will try byte reversing the data\n"); 
+    byte_rev_flag = do_byte_rev ;
+  }
+
+  if(  byte_rev_flag == do_byte_rev    )
+  {
+    byte_rev_array( header_data, header_size); 
+  }
+
+
+
+  if( header_data[0] != magic_number )
+  {
+    printf("ERROR: magic number mismatch between code %d and file %d\n",magic_number, header_data[0]  );
+    exit(1); 
+  }
+
+  if( header_data[1] != version_number )
+  {
+    printf("ERROR: version number mismatch between code %d and file %d\n",version_number, header_data[1]);
+    exit(1); 
+  }
+
+
+  nt = header_data[2]  ;
+  *ntime = nt;
+  check_sum_in = header_data[3] ;
+  no_p_values = header_data[4] ;
+  no_q_values = header_data[5] ;
+  no_oper = header_data[6] ;
+  no_spectator = header_data[7]   ;
+  no_zonked_light = header_data[8]  ;
+  dim = header_data[9]  ;
+  *hl_flag  = header_data[10]  ;
+  no_sequential = header_data[11]  ;
+  nocopies = header_data[12]  ;
+
+  /*******  read some more data from the file **********/
+
+  /*** read the external momentum from the  file ***/
+  howmany = (size_t) 3*(no_q_values) ;
+  if( ( q_momstore = (type32 *)calloc( howmany , sizeof(type32))   )  == NULL) 
+  {
+    printf("There was an error in allocating q-momentum \n");
+    exit(1);
+  }
+
+  if( fread((q_momstore)  ,sizeof(type32),howmany,fp) != howmany   )
+  {
+    printf("There was an error during the reading of the q-momentum table from %s\n",filename);
+    exit(1);
+  }
+
+  if(  byte_rev_flag == do_byte_rev    )
+  {
+    byte_rev_array((q_momstore) , (int) howmany );
+  }
+
+
+
+
+  /*** read the external momentum from the  file ***/
+  howmany = (size_t) 3*(no_p_values) ;
+  if( ( (p_momstore) = (type32 *)calloc( howmany , sizeof(type32))   )  == NULL) 
+  {
+    printf("There was an error in allocating p--momentum \n");
+    exit(1);
+  }
+
+  if( fread((p_momstore)  ,sizeof(type32),howmany,fp) != howmany   )
+  {
+    printf("There was an error during the reading of the p-momentum table from %s\n",filename);
+    exit(1);
+  }
+
+  if(  byte_rev_flag == do_byte_rev    )
+  {
+    byte_rev_array((p_momstore) , (int) howmany );
+  }
+
+  /* Pretend we read only one three-vector */
+  *q_momselect = &q_momstore[3*q_pt];
+
+  /* Pretend we read only one three-vector */
+  *p_momselect = &p_momstore[3*p_pt];
+
+  /*** reserve memory for the three point function ****/
+  nobj = (size_t) nt ; 
+  if( ((*corr) = (complex *)calloc( nobj , sizeof(complex) ) )  == NULL) 
+  {
+    printf("There was an error in allocating the three point function, nobj = %d\n",nobj);
+    exit(1);
+  }
+
+  /** locate the required correlator on disk **/
+
+  corr_stride = LIGHT_FORM_WHERE(nt,no_zonked_light-1,no_sequential-1,
+				 no_spectator-1,no_q_values-1,no_p_values-1,
+				 no_oper-1) ; 
+  where = corr_stride*copy_pt + 
+    LIGHT_FORM_WHERE(0,zonked_pt,seq_pt,spect_pt,q_pt,p_pt,oper_pt) ;
+
+  skip = where*sizeof(complex);
+
+  if(fseek(fp,skip,SEEK_CUR) != 0)
+    {
+      printf("There was an error seeking the two point function on %s\n",
+	     filename);
+      exit(1);
+    }
+
+
+  /** read the three point function from disk *****/
+  if( fread((*corr),sizeof(complex),nobj,fp) != nobj   )
+  {
+    printf("There was an error during the reading of the form factor data from %s\n",filename);
+    exit(1);
+  }
+
+  if(  byte_rev_flag == do_byte_rev    )
+  {
+    byte_rev_array((type32*) (*corr), nobj*2 );
+  }
+
+
+  /*** close the file ****/
+  if( fclose(fp) != 0 )
+  {
+    printf("There was an error during the closing of %s \n",filename);
+    exit(1);
+  }
+
+  printf("I have read one propagating three point function from the file %s\n",filename);
+
+}
+
+

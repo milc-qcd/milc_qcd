@@ -1,0 +1,9 @@
+# For generating sample ouptut from trusted code
+# For H dibaryon (clover)
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_Hcl_bi su3_Hcl_cg
+
+include ../Make_sample_template

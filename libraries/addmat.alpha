@@ -1,0 +1,93 @@
+/* addmat.t3d: Cray T3D assembler version of addmat.c*/
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+
+/* Create aliases for the registers*/
+
+#define	at1	fv0	/* temporary register for matrix A*/
+#define	at2	fv1     
+#define	at3	fa0     
+#define	at4	fa1     
+
+#define	b1	fa2     /* temporary register for matrix B*/
+#define	b2	fa3     
+#define	b3	fa4     
+#define	b4	fa5     
+#define	b2r	ft0     
+#define	b2i	ft1     
+
+#define	c1	ft2	/* temporary register for matrix C*/
+#define	c2	ft3
+#define	c3	ft4	
+#define	c4	ft5	
+#define	c5	ft6	
+#define	c6	ft7	
+#define	tr4	ft8	
+#define	ti4	ft9	
+#define	tr5	ft10	
+#define	ti5	ft11	
+#define	tr6	ft13
+#define	ti6	ft14	
+
+
+/* Arguments*/
+
+#define	aptr	a0	/* pointer to 1st source matrix*/
+#define	bptr	a1	/* pointer to 2nd source matrix*/
+#define	cptr	a2	/* pointer to destination matrix*/
+#define	debug  a3
+
+/* Scratch integer registers*/
+
+#define	scratch	t1	/* pure scratch*/
+#define	count	t2	/* loop counter*/
+#define	idone	t3	/* done / not done boolean*/
+
+    .globl add_su3_matrix
+    .ent add_su3_matrix 2
+
+add_su3_matrix:
+
+	bis	zero,zero,count
+LOOP:
+	lds	at1,0(aptr)
+	lds	b1,0(bptr)
+	lds	at2,4(aptr)
+	addq	count,1,count
+	cmplt	count,3,idone
+	adds	at1,b1,c1
+	  lds	b2,4(bptr)
+	lds	at3,8(aptr)
+	adds	at2,b2,c2
+	  lds	b3,8(bptr)
+	lds	at1,12(aptr)
+	adds	at3,b3,c3
+
+	  lds	b1,12(bptr)
+	lds	at2,16(aptr)
+	lds	b2,16(bptr)
+	adds	at1,b1,c4
+	  lds	at3,20(aptr)
+	lds	b3,20(bptr)
+	adds	at2,b2,c5
+	  sts	c1,0(cptr)
+	sts	c2,4(cptr)
+	adds	at3,b3,c6
+	  sts	c3,8(cptr)
+
+	addq	aptr,24,aptr	/* next six words*/
+	addq	bptr,24,bptr	/* next six words*/
+	sts	c4,12(cptr)
+	sts	c5,16(cptr)
+	sts	c6,20(cptr)
+	addq	cptr,24,cptr	/* next six words*/
+
+	beq	idone,FINISH
+	br	zero,LOOP
+
+FINISH:
+
+/* Return to caller*/
+	ret	zero,(ra)
+
+	.end add_su3_matrix

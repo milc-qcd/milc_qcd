@@ -1,0 +1,367 @@
+; WARNING: This code is an wild guess extrapolation of prefetch.exemplar
+; AND HAS NEVER BEEN CHECKED OR TESTED
+; C. DeTar 9/13/01
+; prefetch2.exemplar: put objects into cache
+; assuming 8 byte alignment, XX byte cache line
+; need to go from address to (address+size-8)
+	.LEVEL	2.0N
+
+	.SPACE	$TEXT$,SORT=8
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_M
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x00
+        LDW     32(%r26),%r0    ;offset 0x20
+        LDW     64(%r26),%r0    ;offset 0x40
+        BVE     (%r2)           ;offset 0x48
+        .EXIT
+	.PROCEND	;in=26;
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_V
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x00
+        LDW     16(%r26),%r0    ;offset 0x10
+        BVE     (%r2)   ;offset 0x8
+        .EXIT
+	.PROCEND	;in=26;
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_W
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x00
+        LDW     32(%r26),%r0    ;offset 0x20
+        LDW     64(%r26),%r0    ;offset 0x40
+        LDW     88(%r26),%r0    ;offset 0x58
+        BVE     (%r2)   ;offset 0x28
+        .EXIT
+	.PROCEND	;in=26;
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_H
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x00
+        LDW     32(%r26),%r0    ;offset 0x20
+        LDW     40(%r26),%r0    ;offset 0x28
+        BVE     (%r2)   ;offset 0x38
+        .EXIT
+	.PROCEND	;in=26;
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_VV
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x10
+        LDW     16(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0     ;offset 0x1c
+        LDW     16(%r25),%r0    ;offset 0x1c
+        BVE     (%r2)           ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=24,25,26;
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_VVV
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x10
+        LDW     16(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0     ;offset 0x1c
+        LDW     16(%r25),%r0    ;offset 0x1c
+        LDW     0(%r24),%r0     ;offset 0x28
+        LDW     16(%r24),%r0    ;offset 0x28
+        BVE     (%r2)           ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=24,25,26;
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_VVVV
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0    ;offset 0x10
+        LDW     16(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0    ;offset 0x1c
+        LDW     16(%r25),%r0    ;offset 0x1c
+        LDW     0(%r24),%r0    ;offset 0x28
+        LDW     16(%r24),%r0    ;offset 0x28
+        LDW     0(%r23),%r0    ;offset 0x34
+        LDW     16(%r23),%r0    ;offset 0x34
+        BVE     (%r2)   ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=23,24,25,26;
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_WWW
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x10
+        LDW     32(%r26),%r0    ;offset 0x10
+        LDW     64(%r26),%r0    ;offset 0x10
+        LDW     88(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0     ;offset 0x10
+        LDW     32(%r25),%r0    ;offset 0x10
+        LDW     64(%r25),%r0    ;offset 0x10
+        LDW     88(%r25),%r0    ;offset 0x10
+        LDW     0(%r24),%r0     ;offset 0x10
+        LDW     32(%r24),%r0    ;offset 0x10
+        LDW     64(%r24),%r0    ;offset 0x10
+        LDW     88(%r24),%r0    ;offset 0x10
+        BVE     (%r2)           ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=24,25,26;
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_WWWW
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x10
+        LDW     32(%r26),%r0    ;offset 0x10
+        LDW     64(%r26),%r0    ;offset 0x10
+        LDW     88(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0     ;offset 0x10
+        LDW     32(%r25),%r0    ;offset 0x10
+        LDW     64(%r25),%r0    ;offset 0x10
+        LDW     88(%r25),%r0    ;offset 0x10
+        LDW     0(%r24),%r0     ;offset 0x10
+        LDW     32(%r24),%r0    ;offset 0x10
+        LDW     64(%r24),%r0    ;offset 0x10
+        LDW     88(%r24),%r0    ;offset 0x10
+        LDW     0(%r23),%r0     ;offset 0x10
+        LDW     32(%r23),%r0    ;offset 0x10
+        LDW     64(%r23),%r0    ;offset 0x10
+        LDW     88(%r23),%r0    ;offset 0x10
+        BVE     (%r2)           ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=23,24,25,26;
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_WWWWW
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x10
+        LDW     32(%r26),%r0    ;offset 0x10
+        LDW     64(%r26),%r0    ;offset 0x10
+        LDW     88(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0     ;offset 0x10
+        LDW     32(%r25),%r0    ;offset 0x10
+        LDW     64(%r25),%r0    ;offset 0x10
+        LDW     88(%r25),%r0    ;offset 0x10
+        LDW     0(%r24),%r0     ;offset 0x10
+        LDW     32(%r24),%r0    ;offset 0x10
+        LDW     64(%r24),%r0    ;offset 0x10
+        LDW     88(%r24),%r0    ;offset 0x10
+        LDW     0(%r23),%r0     ;offset 0x10
+        LDW     32(%r23),%r0    ;offset 0x10
+        LDW     64(%r23),%r0    ;offset 0x10
+        LDW     88(%r23),%r0    ;offset 0x10
+        LDW     0(%r22),%r0     ;offset 0x10
+        LDW     32(%r22),%r0    ;offset 0x10
+        LDW     64(%r22),%r0    ;offset 0x10
+        LDW     88(%r22),%r0    ;offset 0x10
+        BVE     (%r2)           ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=22,23,24,25,26;
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_4MVVVV
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x10
+        LDW     32(%r26),%r0    ;offset 0x10
+        LDW     64(%r26),%r0    ;offset 0x10
+        LDW     96(%r26),%r0    ;offset 0x10
+        LDW     128(%r26),%r0    ;offset 0x10
+        LDW     160(%r26),%r0    ;offset 0x10
+        LDW     192(%r26),%r0    ;offset 0x10
+        LDW     224(%r26),%r0    ;offset 0x10
+        LDW     256(%r26),%r0    ;offset 0x10
+        LDW     280(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0     ;offset 0x10
+        LDW     16(%r25),%r0    ;offset 0x10
+        LDW     0(%r24),%r0     ;offset 0x10
+        LDW     16(%r24),%r0    ;offset 0x10
+        LDW     0(%r23),%r0     ;offset 0x10
+        LDW     16(%r23),%r0    ;offset 0x10
+        LDW     0(%r22),%r0     ;offset 0x10
+        LDW     16(%r22),%r0    ;offset 0x10
+        BVE     (%r2)           ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=22,23,24,25,26;
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_4MWWWW
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x10
+        LDW     32(%r26),%r0    ;offset 0x10
+        LDW     64(%r26),%r0    ;offset 0x10
+        LDW     96(%r26),%r0    ;offset 0x10
+        LDW     128(%r26),%r0    ;offset 0x10
+        LDW     160(%r26),%r0    ;offset 0x10
+        LDW     192(%r26),%r0    ;offset 0x10
+        LDW     224(%r26),%r0    ;offset 0x10
+        LDW     256(%r26),%r0    ;offset 0x10
+        LDW     280(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0     ;offset 0x10
+        LDW     32(%r25),%r0    ;offset 0x10
+        LDW     64(%r25),%r0    ;offset 0x10
+        LDW     88(%r25),%r0    ;offset 0x10
+        LDW     0(%r24),%r0     ;offset 0x10
+        LDW     32(%r24),%r0    ;offset 0x10
+        LDW     64(%r24),%r0    ;offset 0x10
+        LDW     88(%r24),%r0    ;offset 0x10
+        LDW     0(%r23),%r0     ;offset 0x10
+        LDW     32(%r23),%r0    ;offset 0x10
+        LDW     64(%r23),%r0    ;offset 0x10
+        LDW     88(%r23),%r0    ;offset 0x10
+        LDW     0(%r22),%r0     ;offset 0x10
+        LDW     32(%r22),%r0    ;offset 0x10
+        LDW     64(%r22),%r0    ;offset 0x10
+        LDW     88(%r22),%r0    ;offset 0x10
+        BVE     (%r2)           ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=22,23,24,25,26;
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_4MV4V
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x10
+        LDW     32(%r26),%r0    ;offset 0x10
+        LDW     64(%r26),%r0    ;offset 0x10
+        LDW     96(%r26),%r0    ;offset 0x10
+        LDW     128(%r26),%r0    ;offset 0x10
+        LDW     160(%r26),%r0    ;offset 0x10
+        LDW     192(%r26),%r0    ;offset 0x10
+        LDW     224(%r26),%r0    ;offset 0x10
+        LDW     256(%r26),%r0    ;offset 0x10
+        LDW     280(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0     ;offset 0x10
+        LDW     16(%r25),%r0    ;offset 0x10
+        LDW     0(%r24),%r0     ;offset 0x10
+        LDW     32(%r24),%r0    ;offset 0x10
+        LDW     64(%r24),%r0     ;offset 0x10
+        LDW     88(%r24),%r0    ;offset 0x10
+        BVE     (%r2)           ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=24,25,26;
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+_prefetch_4MW4W
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0     ;offset 0x10
+        LDW     32(%r26),%r0    ;offset 0x10
+        LDW     64(%r26),%r0    ;offset 0x10
+        LDW     96(%r26),%r0    ;offset 0x10
+        LDW     128(%r26),%r0    ;offset 0x10
+        LDW     160(%r26),%r0    ;offset 0x10
+        LDW     192(%r26),%r0    ;offset 0x10
+        LDW     224(%r26),%r0    ;offset 0x10
+        LDW     256(%r26),%r0    ;offset 0x10
+        LDW     280(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0     ;offset 0x10
+        LDW     32(%r25),%r0    ;offset 0x10
+        LDW     64(%r25),%r0    ;offset 0x10
+        LDW     88(%r25),%r0    ;offset 0x10
+        LDW     0(%r24),%r0     ;offset 0x10
+        LDW     32(%r24),%r0    ;offset 0x10
+        LDW     64(%r24),%r0    ;offset 0x10
+        LDW     96(%r24),%r0    ;offset 0x10
+        LDW     128(%r24),%r0    ;offset 0x10
+        LDW     160(%r24),%r0    ;offset 0x10
+        LDW     192(%r24),%r0    ;offset 0x10
+        LDW     224(%r24),%r0    ;offset 0x10
+        LDW     256(%r24),%r0    ;offset 0x10
+        LDW     288(%r24),%r0    ;offset 0x10
+        LDW     320(%r24),%r0    ;offset 0x10
+        LDW     352(%r24),%r0    ;offset 0x10
+        LDW     376(%r24),%r0    ;offset 0x10
+        BVE     (%r2)           ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=24,25,26;
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SPACE	$PRIVATE$,SORT=16
+	.SUBSPA	$DATA$,QUAD=1,ALIGN=64,ACCESS=0x1f,SORT=16
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_M,ENTRY,PRIV_LEV=3,ARGW0=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_V,ENTRY,PRIV_LEV=3,ARGW0=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_W,ENTRY,PRIV_LEV=3,ARGW0=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_H,ENTRY,PRIV_LEV=3,ARGW0=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_VV,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_VVV,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_WWW,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_VVVV,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,ARGW3=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_WWWW,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,ARGW3=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_WWWWW,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,ARGW3=GR,ARGW4=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_4MVVVV,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,ARGW3=GR,ARGW4=GR,LONG_RETURN
+	.EXPORT	_prefetch_4MWWWW,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,ARGW3=GR,ARGW4=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_4MV4V,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	_prefetch_4MW4W,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,LONG_RETURN
+	.END
+

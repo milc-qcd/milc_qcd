@@ -1,0 +1,36 @@
+make[1]: Entering directory `/home/dirac/detar/milc/v6/hvy_qpot'
+for proj in su3_hqp;\
+do\
+     	     cp -p ../Make_vanilla .;\
+     make -f Make_vanilla $proj;\
+     make -f Make_test "PROJ=$proj" out.test.diff.$proj;\
+     /bin/rm -f $proj;\
+     /bin/rm -f localmake*;\
+done
+make[2]: Entering directory `/home/dirac/detar/milc/v6/hvy_qpot'
+make -f Make_vanilla target "MYTARGET= su3_hqp" \
+"DEFINES= " \
+"EXTRA_OBJECTS= "
+make[3]: Entering directory `/home/dirac/detar/milc/v6/hvy_qpot'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=CC    " all
+make[4]: Entering directory `/home/dirac/detar/milc/v6/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: CC . Application: CC
+================================================================
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/libraries'
+CC      -o su3_hqp \
+control.o gball_simp.o hybrid_loop1.o setup.o smearing.o w_loop1.o w_loop2.o layout_hyper.o ape_smear.o ax_gauge.o check_unitarity.o d_plaq4.o gaugefix2.o gauge_info.o io_helpers.o io_lat4.o make_lattice.o path_product.o project_su3_hit.o reunitarize2.o  com_vanilla.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a  -lm
+touch localmake
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/hvy_qpot'
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/hvy_qpot'
+make[2]: Entering directory `/home/dirac/detar/milc/v6/hvy_qpot'
+su3_hqp  < in.sample.su3_hqp > out.test.su3_hqp
+../headtail.pl CHECK RUNNING < out.test.su3_hqp > out.test.su3_hqp.tmp
+../headtail.pl CHECK RUNNING < out.sample.su3_hqp > out.sample.su3_hqp.tmp
+../diffn.pl out.test.su3_hqp.tmp out.sample.su3_hqp.tmp 1e-5 > \
+   out.test.diff.su3_hqp
+rm out.test.su3_hqp.tmp out.sample.su3_hqp.tmp
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/hvy_qpot'
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/hvy_qpot'

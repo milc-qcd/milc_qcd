@@ -1,0 +1,120 @@
+make[1]: Entering directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+for proj in hyb_bicg_smear hyb_bicg_fat;\
+do\
+     	     cp -p ../Make_vanilla .;\
+     make -f Make_vanilla $proj;\
+     make -f Make_test "PROJ=$proj" out.test.diff.$proj;\
+     rm -f $proj;\
+     rm -f localmake;\
+done
+make[2]: Entering directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+make -f Make_vanilla target "MYTARGET= hyb_bicg_smear" \
+"DEFINES= -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1" \
+"EXTRA_OBJECTS= dslash_lean.o d_bicgilu_w_lean.o smear_links_space.o"
+make[3]: Entering directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=gcc    " all
+make[4]: Entering directory `/home/dirac/detar/milc/v6/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: gcc . Application: gcc
+================================================================
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/libraries'
+/bin/rm -f .lastmake.*
+make -f Make_vanilla clean
+make[4]: Entering directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+/bin/rm -f *.o
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+touch .lastmake.Make_vanilla.hyb_bicg_smear
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 control.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 gauge_info.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 field_strength.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 setup.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 spectrum_hybrids4a.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/check_unitarity.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/d_plaq4.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 f_measure3.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/gaugefix2.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/io_helpers.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/io_lat4.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/layout_hyper.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/make_lattice.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/ranstuff.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/reunitarize2.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/boundary_flip.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/mrilu_w_or.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/d_cgilu_w_lean.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/dslash_lean.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/d_bicgilu_w_lean.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 smear_links_space.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/com_vanilla.c
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DLEAN -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/io_nonansi.c 
+gcc      -o hyb_bicg_smear \
+control.o gauge_info.o field_strength.o setup.o spectrum_hybrids4a.o check_unitarity.o d_plaq4.o f_measure3.o gaugefix2.o io_helpers.o io_lat4.o layout_hyper.o make_lattice.o ranstuff.o reunitarize2.o boundary_flip.o mrilu_w_or.o d_cgilu_w_lean.o dslash_lean.o d_bicgilu_w_lean.o smear_links_space.o com_vanilla.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a  -lm
+touch localmake
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+make[2]: Entering directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+hyb_bicg_smear  < in.sample.hyb_bicg_smear > out.test.hyb_bicg_smear
+../headtail.pl STARTPROP RUNNING < out.test.hyb_bicg_smear > out.test.hyb_bicg_smear.tmp
+../headtail.pl STARTPROP RUNNING < out.sample.hyb_bicg_smear > out.sample.hyb_bicg_smear.tmp
+../diffn.pl out.test.hyb_bicg_smear.tmp out.sample.hyb_bicg_smear.tmp 1e-5 > \
+   out.test.diff.hyb_bicg_smear
+rm out.test.hyb_bicg_smear.tmp out.sample.hyb_bicg_smear.tmp
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+make[2]: Entering directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+make -f Make_vanilla target "MYTARGET= hyb_bicg_fat" \
+"DEFINES= -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1" \
+"EXTRA_OBJECTS= dslash_w.o d_bicgilu_w_lean.o smear_links_space.o"
+make[3]: Entering directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=gcc    " all
+make[4]: Entering directory `/home/dirac/detar/milc/v6/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: gcc . Application: gcc
+================================================================
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/libraries'
+/bin/rm -f .lastmake.*
+make -f Make_vanilla clean
+make[4]: Entering directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+/bin/rm -f *.o
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+touch .lastmake.Make_vanilla.hyb_bicg_fat
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 control.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 gauge_info.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 field_strength.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 setup.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 spectrum_hybrids4a.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/check_unitarity.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/d_plaq4.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 f_measure3.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/gaugefix2.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/io_helpers.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/io_lat4.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/layout_hyper.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/make_lattice.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/ranstuff.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/reunitarize2.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/boundary_flip.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/mrilu_w_or.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/d_cgilu_w_lean.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/dslash_w.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic_wilson/d_bicgilu_w_lean.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1 smear_links_space.c 
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/com_vanilla.c
+gcc     -c -O3      -DVANILLA -DINLINE      -I. -DLU -DBICONGRAD -Dmat_invert=mat_invert_bicgilu -DSMEAR=1  ../generic/io_nonansi.c 
+gcc      -o hyb_bicg_fat \
+control.o gauge_info.o field_strength.o setup.o spectrum_hybrids4a.o check_unitarity.o d_plaq4.o f_measure3.o gaugefix2.o io_helpers.o io_lat4.o layout_hyper.o make_lattice.o ranstuff.o reunitarize2.o boundary_flip.o mrilu_w_or.o d_cgilu_w_lean.o dslash_w.o d_bicgilu_w_lean.o smear_links_space.o com_vanilla.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a  -lm
+touch localmake
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+make[2]: Entering directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+hyb_bicg_fat  < in.sample.hyb_bicg_fat > out.test.hyb_bicg_fat
+../headtail.pl STARTPROP RUNNING < out.test.hyb_bicg_fat > out.test.hyb_bicg_fat.tmp
+../headtail.pl STARTPROP RUNNING < out.sample.hyb_bicg_fat > out.sample.hyb_bicg_fat.tmp
+../diffn.pl out.test.hyb_bicg_fat.tmp out.sample.hyb_bicg_fat.tmp 1e-5 > \
+   out.test.diff.hyb_bicg_fat
+rm out.test.hyb_bicg_fat.tmp out.sample.hyb_bicg_fat.tmp
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/wilson_hybrids'
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/wilson_hybrids'

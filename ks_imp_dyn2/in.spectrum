@@ -1,0 +1,26 @@
+prompt 0
+nflavors1 4
+nflavors2 4
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 5682304
+
+warms 0
+trajecs 1
+traj_between_meas 1
+beta 5.60
+mass1 0.1
+mass2 0.2
+u0   0.8441
+microcanonical_time_step 0.02
+steps_per_trajectory 0
+max_cg_iterations 300
+error_per_site .000005
+error_for_propagator .000002
+source_start 0
+source_inc 2
+n_sources 1
+reload_serial testlat4448
+forget

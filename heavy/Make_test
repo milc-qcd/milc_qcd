@@ -1,0 +1,52 @@
+# Makefile for testing code by comparing test output with sample output
+# For heavy
+
+#------------------------------------------------------------
+# Examples for vanilla tests:
+
+#    make -f Make_test "ARCH=vanilla" test
+# or, for a specific project or projects
+#    make -f Make_test "ARCH=vanilla" "PROJS=su3_rmd" test
+
+# For tests on the SP, do the same, but use "ARCH=sp_mpi" with
+# the appropriate MP_PROCS environment variable set.
+
+# For tests on other platforms, first edit the file ../Make_test_template
+# to select the appropriate LAUNCH and ARCH.  Then run
+# commands as above, but without the command line "ARCH=..." definition.
+
+# Results are in the files out.test.diff.* 
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = su3_hev_mr su3_hev_cg
+
+PATTERNS = BEGIN_ALL END_ALL
+TOL = 1e-5
+
+CUSTOM = .meson
+
+include ../Make_test_template
+
+# Change according to in.sample.su3_sum
+OUTSTEM = out.meson.120
+TESTOUTLIST = ${OUTSTEM}.static ${OUTSTEM}.100 ${OUTSTEM}.120
+OUTBIN = meson.120 meson.140
+
+utilities/su3_sum:
+	cd utilities; make -f Make_vanilla su3_sum ; cd ..
+
+${TESTOUTLIST}: utilities/su3_sum in.sample.su3_sum out.test.${PROJ} ${OUTBIN}
+	utilities/su3_sum < in.sample.su3_sum > out.test.su3_sum
+	rm -f ${OUTBIN}
+
+out.test.meson.${PROJ}: ${TESTOUTLIST}
+	echo "BEGIN_ALL" > out.test.meson.${PROJ}
+	for file in ${TESTOUTLIST};\
+	do\
+	   echo $$file >> $@;\
+	   cat  $$file >> $@;\
+	done
+	echo "END_ALL" >> $@
+	-/bin/rm -f ${TESTOUTLIST}

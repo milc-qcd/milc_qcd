@@ -1,0 +1,45 @@
+# Makefile for Libraries for QCD programs
+#
+# No communications here, so good for SP (parallel) as well as workstations
+
+# RS6000 specialization:
+#   Some SU(3) operations assembly coded.  See files with suffix .rs6k.
+#    so far, assembly code does not use any architecture specific commands
+
+MAKEFILE = Make_RS6K
+#   Architecture and cc flags
+#ARCH= pwrx   # For POWER2
+#ARCH= ppc    # For POWERPC
+
+#CARCH= -qarch=$(ARCH)  # Use this one if you defined ARCH above
+CARCH= # Otherwise, use this one
+
+CFLAGS=-O3 $(CARCH) -DFAST      #RS6000
+CFLAGS = -O3 -Q=500 -qmaxmem=-1 -qarch=pwr3 -qtune=pwr3 -DFAST
+
+CC = xlc  #IBM ANSI
+
+# Add suffix for assembly code
+.SUFFIXES:
+.SUFFIXES: .o .rs6k .c .y .l .s
+
+# compile IBM RS6000 Assembler code from .rs6k file
+.rs6k.o:
+	as -o $*.o $*.rs6k
+
+grow4wvecs.o: grow4wvecs.rs6k
+m_amat_hwvec.o: m_amat_hwvec.rs6k
+m_amat_wvec.o: m_amat_wvec.rs6k
+m_amatvec.o: m_amatvec.rs6k
+m_amv_4dir.o: m_amv_4dir.rs6k
+m_mat_an.o: m_mat_an.rs6k
+m_mat_hwvec.o: m_mat_hwvec.rs6k
+m_mat_na.o: m_mat_na.rs6k
+m_mat_nn.o: m_mat_nn.rs6k
+m_mat_wvec.o: m_mat_wvec.rs6k
+m_matvec.o: m_matvec.rs6k
+m_matvec_s.o: m_matvec_s.rs6k
+m_mv_s_4dir.o: m_mv_s_4dir.rs6k
+wp_shrink4.o: wp_shrink4.rs6k
+
+include Make_template

@@ -1,0 +1,14 @@
+Make_template
+c_scale_wilson_vector.c
+copy_site_wilson_vector.c
+flip_source_rep.c
+gammatypes.h
+generic_form_includes.h
+load_momentum.c
+load_smearing.c
+make_gammas.c
+msw_gamma_l.c
+msw_gamma_r.c
+w_meson_finite_mom.c
+wilson_source_routines.c
+

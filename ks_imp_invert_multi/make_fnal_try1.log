@@ -1,0 +1,68 @@
+make -f Make_linux_mpi target "MYTARGET= su3_inv_symzk1_asqtad_periodic" \
+"DEFINES= -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID" \
+"GAUGE = symanzik_1loop_action.h" \
+"QUARK = asqtad_action.h" \
+"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o ks_multicg.o mat_invert.o multimass_inverter.o"
+make[1]: Entering directory `/home/sg/v6.20_double/ks_imp_invert_multi'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=/usr/local/mpich/bin/mpicc    " all
+make[2]: Entering directory `/home/sg/v6.20_double/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: gcc . Application: /usr/local/mpich/bin/mpicc
+================================================================
+make[2]: Leaving directory `/home/sg/v6.20_double/libraries'
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  control.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  gauge_info.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ksprop_info.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  setup.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/layout_hyper.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/check_unitarity.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/d_plaq4.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/gaugefix2.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/io_helpers.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/io_lat4_double_sg.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/make_lattice.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/path_product.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/ploop3.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/ranstuff.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/reunitarize2.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/gauge_stuff.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/quark_stuff.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/io_helpers_ks_double.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/io_prop_ks_double.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/io_prop_sgks_double.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/rephase.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/dslash_fn.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/d_congrad5_fn.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/ks_multicg.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/mat_invert.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/multimass_inverter.c
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/com_mpi.c 
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/io_nonansi.c 
+/usr/local/mpich/bin/mpicc      -o su3_inv_symzk1_asqtad_periodic \
+control.o gauge_info.o ksprop_info.o setup.o  layout_hyper.o check_unitarity.o d_plaq4.o gaugefix2.o io_helpers.o io_lat4_double_sg.o make_lattice.o path_product.o ploop3.o ranstuff.o reunitarize2.o gauge_stuff.o quark_stuff.o io_helpers_ks_double.o io_prop_ks_double.o io_prop_sgks_double.o rephase.o dslash_fn.o d_congrad5_fn.o ks_multicg.o mat_invert.o multimass_inverter.o com_mpi.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a       -lm
+touch localmake
+make[1]: Leaving directory `/home/sg/v6.20_double/ks_imp_invert_multi'
+make -f Make_linux_mpi target "MYTARGET= su3_inv_symzk1_asqtad_periodic" \
+"DEFINES= -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID" \
+"GAUGE = symanzik_1loop_action.h" \
+"QUARK = asqtad_action.h" \
+"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o ks_multicg.o mat_invert.o multimass_inverter.o"
+make[1]: Entering directory `/home/sg/v6.20_double/ks_imp_invert_multi'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=/usr/local/mpich/bin/mpicc    " all
+make[2]: Entering directory `/home/sg/v6.20_double/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: gcc . Application: /usr/local/mpich/bin/mpicc
+================================================================
+make[2]: Leaving directory `/home/sg/v6.20_double/libraries'
+/usr/local/mpich/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/multimass_inverter.c
+../generic_ks/multimass_inverter.c: In function `multimass_inverter':
+../generic_ks/multimass_inverter.c:163: warning: implicit declaration of function `strncat'
+../generic_ks/multimass_inverter.c:50: warning: unused variable `sourcevec'
+/usr/local/mpich/bin/mpicc      -o su3_inv_symzk1_asqtad_periodic \
+control.o gauge_info.o ksprop_info.o setup.o  layout_hyper.o check_unitarity.o d_plaq4.o gaugefix2.o io_helpers.o io_lat4_double_sg.o make_lattice.o path_product.o ploop3.o ranstuff.o reunitarize2.o gauge_stuff.o quark_stuff.o io_helpers_ks_double.o io_prop_ks_double.o io_prop_sgks_double.o rephase.o dslash_fn.o d_congrad5_fn.o ks_multicg.o mat_invert.o multimass_inverter.o com_mpi.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a       -lm
+touch localmake
+make[1]: Leaving directory `/home/sg/v6.20_double/ks_imp_invert_multi'

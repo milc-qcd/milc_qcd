@@ -1,0 +1,2 @@
+diffn out.test.su3_clov_bi.tmp out.sample.su3_clov_bi.tmp 1e-4
+Compared 137 lines with a tolerance of 1e-4

@@ -1,0 +1,33 @@
+# For generating sample ouptut from trusted code
+# For heavy
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+out.sample.su3_hev_mr: su3_hev_mr su3_sum in.sample.su3_hev_mr
+	su3_hev_mr < in.sample.su3_hev_mr > out.sample.su3_hev_mr
+
+# Change according to in.sample.su3_sum
+OUTSTEM = out.meson.120
+OUTLIST = ${OUTSTEM}.static ${OUTSTEM}.100 ${OUTSTEM}.120
+
+${OUTLIST}: su3_sum in.sample.su3_sum out.sample.su3_hev_mr
+	su3_sum < in.sample.su3_sum > out.sample.su3_sum
+
+out.sample.meson: ${OUTLIST}
+	echo START > $@
+	for file in ${OUTLIST};\
+	do\
+	   echo $$file >> $@;\
+	   cat  $$file >> $@;\
+	done
+	echo END >> $@
+	/bin/rm ${OUTLIST}
+
+samples:
+	cp -p ../Make_${ARCH} .
+	cp -p ../Make_vanilla .
+	make -f Make_${ARCH} su3_hev_mr
+	make -f Make_vanilla su3_sum
+	make -f Make_sample out.sample.meson
+

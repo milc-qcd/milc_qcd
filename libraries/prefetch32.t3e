@@ -1,0 +1,280 @@
+; prefetch32.t3e: put objects into cache
+; assuming 8 byte alignment, 32 byte cache line
+; need to go from address to (address+size-align)
+#include <mpp/asdef.h>
+CRI_REGISTER_NAMES
+
+	.ident prefetch$c
+	;.psect	kernel@data,data,cache
+
+	;.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_M,zero,user
+_prefetch_M::	; su3_matrix
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_V,zero,user
+_prefetch_V::	; su3_vector
+	ldq	zero,0(a0)
+	ldq	zero,16(a0)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_W,zero,user
+_prefetch_W::	; wilson_vector
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ldq	zero,88(a0)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_H,zero,user
+_prefetch_H::	; half_wilson_vector
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,40(a0)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_VVV,zero,user
+_prefetch_VVV::	; su3_vector su3_vector su3_vector su3_vector
+	ldq	zero,0(a0)
+	ldq	zero,16(a0)
+	ldq	zero,0(a1)
+	ldq	zero,16(a1)
+	ldq	zero,0(a2)
+	ldq	zero,16(a2)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_VV,zero,user
+_prefetch_VV::	; su3_vector su3_vector su3_vector su3_vector
+	ldq	zero,0(a0)
+	ldq	zero,16(a0)
+	ldq	zero,0(a1)
+	ldq	zero,16(a1)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_VVVV,zero,user
+_prefetch_VVVV::	; su3_vector su3_vector su3_vector su3_vector
+	ldq	zero,0(a0)
+	ldq	zero,16(a0)
+	ldq	zero,0(a1)
+	ldq	zero,16(a1)
+	ldq	zero,0(a2)
+	ldq	zero,16(a2)
+	ldq	zero,0(a3)
+	ldq	zero,16(a3)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_VVVVV,zero,user
+_prefetch_VVVVV::	; su3_vector su3_vector su3_vector su3_vector su3_vector
+	ldq	zero,0(a0)
+	ldq	zero,16(a0)
+	ldq	zero,0(a1)
+	ldq	zero,16(a1)
+	ldq	zero,0(a2)
+	ldq	zero,16(a2)
+	ldq	zero,0(a3)
+	ldq	zero,16(a3)
+	ldq	zero,0(a4)
+	ldq	zero,16(a4)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_WWW,zero,user
+_prefetch_WWW::	; wilson_vector wilson_vector wilson_vector
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ldq	zero,88(a0)
+	ldq	zero,0(a1)
+	ldq	zero,32(a1)
+	ldq	zero,64(a1)
+	ldq	zero,88(a1)
+	ldq	zero,0(a2)
+	ldq	zero,32(a2)
+	ldq	zero,64(a2)
+	ldq	zero,88(a2)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_WWWW,zero,user
+_prefetch_WWWW::	; wilson_vector wilson_vector wilson_vector wilson_vector
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ldq	zero,88(a0)
+	ldq	zero,0(a1)
+	ldq	zero,32(a1)
+	ldq	zero,64(a1)
+	ldq	zero,88(a1)
+	ldq	zero,0(a2)
+	ldq	zero,32(a2)
+	ldq	zero,64(a2)
+	ldq	zero,88(a2)
+	ldq	zero,0(a3)
+	ldq	zero,32(a3)
+	ldq	zero,64(a3)
+	ldq	zero,88(a3)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_WWWWW,zero,user
+_prefetch_WWWWW::  ; wilson_vector wilson_vector wilson_vector wilson_vector wilson_vector
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ldq	zero,88(a0)
+	ldq	zero,0(a1)
+	ldq	zero,32(a1)
+	ldq	zero,64(a1)
+	ldq	zero,88(a1)
+	ldq	zero,0(a2)
+	ldq	zero,32(a2)
+	ldq	zero,64(a2)
+	ldq	zero,88(a2)
+	ldq	zero,0(a3)
+	ldq	zero,32(a3)
+	ldq	zero,64(a3)
+	ldq	zero,88(a3)
+	ldq	zero,0(a4)
+	ldq	zero,32(a4)
+	ldq	zero,64(a4)
+	ldq	zero,88(a4)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_4MVVVV,zero,user
+_prefetch_4MVVVV::	; su3_matrix[4] su3_vector su3_vector su3_vector su3_vector
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ldq	zero,96(a0)
+	ldq	zero,128(a0)
+	ldq	zero,160(a0)
+	ldq	zero,192(a0)
+	ldq	zero,224(a0)
+	ldq	zero,256(a0)
+	ldq	zero,280(a0)
+	ldq	zero,0(a1)
+	ldq	zero,16(a1)
+	ldq	zero,0(a2)
+	ldq	zero,16(a2)
+	ldq	zero,0(a3)
+	ldq	zero,16(a3)
+	ldq	zero,0(a4)
+	ldq	zero,16(a4)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_4MWWWW,zero,user
+_prefetch_4MWWWW::	; su3_matrix[4] wilson_vector wilson_vector wilson_vector wilson_vector
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ldq	zero,96(a0)
+	ldq	zero,128(a0)
+	ldq	zero,160(a0)
+	ldq	zero,192(a0)
+	ldq	zero,224(a0)
+	ldq	zero,256(a0)
+	ldq	zero,280(a0)
+	ldq	zero,0(a1)
+	ldq	zero,32(a1)
+	ldq	zero,64(a1)
+	ldq	zero,88(a1)
+	ldq	zero,0(a2)
+	ldq	zero,32(a2)
+	ldq	zero,64(a2)
+	ldq	zero,88(a2)
+	ldq	zero,0(a3)
+	ldq	zero,32(a3)
+	ldq	zero,64(a3)
+	ldq	zero,88(a3)
+	ldq	zero,0(a4)
+	ldq	zero,32(a4)
+	ldq	zero,64(a4)
+	ldq	zero,88(a4)
+	ret	zero,(ra)
+	.endp
+
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_4MV4V,zero,user
+_prefetch_4MV4V::	; su3_matrix[4] su3_vector su3_vector[4]
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ldq	zero,96(a0)
+	ldq	zero,128(a0)
+	ldq	zero,160(a0)
+	ldq	zero,192(a0)
+	ldq	zero,224(a0)
+	ldq	zero,256(a0)
+	ldq	zero,280(a0)
+	ldq	zero,0(a1)
+	ldq	zero,16(a1)
+	ldq	zero,0(a2)
+	ldq	zero,32(a2)
+	ldq	zero,64(a2)
+	ldq	zero,88(a2)
+	ret	zero,(ra)
+	.endp
+
+
+	.psect	kernel@code,code,cache
+;	 ENTER	_prefetch_4MW4W,zero,user
+_prefetch_4MW4W::	; su3_matrix[4] wilson_vector wilson_vector[4]
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ldq	zero,96(a0)
+	ldq	zero,128(a0)
+	ldq	zero,160(a0)
+	ldq	zero,192(a0)
+	ldq	zero,224(a0)
+	ldq	zero,256(a0)
+	ldq	zero,280(a0)
+	ldq	zero,0(a1)
+	ldq	zero,32(a1)
+	ldq	zero,64(a1)
+	ldq	zero,88(a1)
+	ldq	zero,0(a2)
+	ldq	zero,32(a2)
+	ldq	zero,64(a2)
+	ldq	zero,96(a2)
+	ldq	zero,128(a2)
+	ldq	zero,160(a2)
+	ldq	zero,192(a2)
+	ldq	zero,224(a2)
+	ldq	zero,256(a2)
+	ldq	zero,288(a2)
+	ldq	zero,320(a2)
+	ldq	zero,352(a2)
+	ldq	zero,376(a2)
+	ret	zero,(ra)
+	.endp
+	.end
+
+

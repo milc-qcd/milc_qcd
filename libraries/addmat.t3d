@@ -1,0 +1,117 @@
+; addmat.t3d: Cray T3D assembler version of addmat.c
+#include <mpp/asdef.h>
+
+; Use the CRI definitions for the register names. Define the macro LEA
+; for getting the address of the scratch space.
+
+	CRI_REGISTER_NAMES
+
+	.macro	LEA	reg,name
+		laum	reg, name(r31)
+		sll	reg, 32, reg
+		lalm	reg, name(reg)
+		lal	reg, name(reg)
+	.endm
+
+;------------------------------------------------------------------------------
+
+; Create aliases for the registers
+
+	at1	<-	fv0	; temporary register for matrix A
+	at2	<-	fv1     
+	at3	<-	fa0     
+	at4	<-	fa1     
+
+	b1	<-	fa2     ; temporary register for matrix B
+	b2	<-	fa3     
+	b3	<-	fa4     
+	b4	<-	fa5     
+	b2r	<-	ft0     
+	b2i	<-	ft1     
+
+	c1	<-	ft2	; temporary register for matrix C
+	c2	<-	ft3
+	c3	<-	ft4	
+	c4	<-	ft5	
+	c5	<-	ft6	
+	c6	<-	ft7	
+	tr4	<-	ft8	
+	ti4	<-	ft9	
+	tr5	<-	ft10	
+	ti5	<-	ft11	
+	tr6	<-	ft13
+	ti6	<-	ft14	
+
+
+; Arguments
+
+	aptr	<-	a0	; pointer to 1st source matrix
+	bptr	<-	a1	; pointer to 2nd source matrix
+	cptr	<-	a2	; pointer to destination matrix
+	debug <- a3
+
+; Scratch integer registers
+
+	scratch	<-	t1	; pure scratch
+	count	<-	t2	; loop counter
+	idone	<-	t3	; done / not done boolean
+
+;------------------------------------------------------------------------------
+
+	.ident m_mat_nn$c
+
+;------------------------------------------------------------------------------
+
+
+; Subroutine code starts here
+
+	.psect	kernel@code,code,cache
+
+;	 ENTER	add_su3_matrix,zero,user
+
+add_su3_matrix::
+
+	bis	zero,zero,count
+LOOP:
+	lds	at1,0(aptr)
+	lds	b1,0(bptr)
+	lds	at2,4(aptr)
+	addq	count,1,count
+	cmplt	count,3,idone
+	adds/d	at1,b1,c1
+	  lds	b2,4(bptr)
+	lds	at3,8(aptr)
+	adds/d	at2,b2,c2
+	  lds	b3,8(bptr)
+	lds	at1,12(aptr)
+	adds/d	at3,b3,c3
+
+	  lds	b1,12(bptr)
+	lds	at2,16(aptr)
+	lds	b2,16(bptr)
+	adds/d	at1,b1,c4
+	  lds	at3,20(aptr)
+	lds	b3,20(bptr)
+	adds/d	at2,b2,c5
+	  sts	c1,0(cptr)
+	sts	c2,4(cptr)
+	adds/d	at3,b3,c6
+	  sts	c3,8(cptr)
+
+	addq	aptr,24,aptr	; next six words
+	addq	bptr,24,bptr	; next six words
+	sts	c4,12(cptr)
+	sts	c5,16(cptr)
+	sts	c6,20(cptr)
+	addq	cptr,24,cptr	; next six words
+
+	beq	idone,FINISH
+	br	zero,LOOP
+
+FINISH:
+
+; Return to caller
+	ret	zero,(ra)
+
+	.endp
+	.end

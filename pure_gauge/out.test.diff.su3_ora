@@ -1,0 +1,2 @@
+diffn out.test.su3_ora.tmp out.sample.su3_ora.tmp 1e-4
+Compared 4 lines with a tolerance of 1e-4

@@ -1,0 +1,41 @@
+#  Generic routines for Kogut-Susskind fermions
+#  MIMD version 6
+#
+#  Generic make-include file for generic_ks codes
+#  This template file defines rules and macros common to all applications
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  The paths are relative to the application directory.
+
+include ../generic_ks/Make_template
+
+G_KS_ALL_QDP = \
+  d_congrad5_fn_qdp.o \
+  dslash_fn_qdp.o \
+  ks_multicg_qdp.o
+
+G_KS_HEADERS_QDP = \
+  $(QDP)/include/qdp.h \
+  lattice_qdp.h \
+  ../include/generic_qdp.h \
+  ../include/generic_ks_qdp.h \
+  ../generic_ks/generic_ks_includes_qdp.h
+
+G_KS_ALL_DEPEND_QDP = \
+  ../generic_ks/Make_template_qdp \
+  ../include/Make_template_qdp \
+  ${G_KS_HEADERS_QDP} \
+  ${G_KS_ALL_DEPEND}
+
+${G_KS_ALL_QDP} : ${G_KS_ALL_DEPEND_QDP}
+
+# Rules for header files
+include ../include/Make_template_qdp
+
+d_congrad5_fn_qdp.o: ../generic_ks/d_congrad5_fn_qdp.c
+	${CC} -c ${CFLAGS} $<
+dslash_fn_qdp.o: ../generic_ks/dslash_fn_qdp.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_qdp.o: ../generic_ks/ks_multicg_qdp.c
+	${CC} -c ${CFLAGS} $<

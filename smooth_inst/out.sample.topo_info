@@ -1,0 +1,10 @@
+magic_number  66051
+nx ny nz nt   4 4 4 4
+startfile     lat.sample
+total_sweeps  0
+ape_weight    0.000
+First few density values:
+-0.000280
+-0.000141
+-0.000105
+-0.000369

@@ -1,0 +1,40 @@
+#! /bin/sh
+
+# B(000) gamma_0 pi seq 0 zonk 0
+
+# Parameters for the 3-pt correlator
+fb3pt=fold
+zk3=0      # Zonked quark
+sq3=0      # Sequential quark
+pselect3=00 # Momentum of B meson (for this file)
+p3=0       # Momentum index - also label for file
+op3=3      # 3-pt operator
+name3=HL3_p${p3}_0.1245
+
+# Parameters for the recoil meson 2-pt correlator
+fb2pt2=fold
+twoptname2=p_GG_L${zk2}
+. param.${twoptname2}
+zk2=${zk}
+op2=${op}
+name2=${name}
+
+# Parameters for the initial B meson 2-pt correlator (GE relative smearing)
+fb2pt1=fold
+twoptname1=b_GE_H${sq1}
+p1=${p3} # Momentum
+. param.${twoptname1}
+sq1=${zk}
+op1=${op}
+name1=${name}
+
+# Parameters for the initial B meson 2-pt correlator (GG shell source and sink)
+fb2pt3=fold
+twoptname0=b_GG_H${sq0}
+p0=${p3}  # Momentum
+. param.${twoptname0}
+sq0=${zk}
+op0=${op}
+name0=${name}
+
+

@@ -1,0 +1,58 @@
+make[1]: Entering directory `/home/dirac/detar/milc/v6/clover_invert'
+for proj in su3_clov_bi;\
+do\
+     	     cp -p ../Make_vanilla .;\
+     make -f Make_vanilla $proj;\
+     make -f Make_time "PROJ=$proj" out.time.$proj;\
+     /bin/rm -f $proj;\
+     /bin/rm -f localmake*;\
+done
+make[2]: Entering directory `/home/dirac/detar/milc/v6/clover_invert'
+make -f Make_vanilla target "MYTARGET= su3_clov_bi" \
+"DEFINES= -DIOTIME -DPRTIME -DBI " \
+"ADDHEADERS = addsite_clov_bi.h " \
+"EXTRA_OBJECTS= control_cl.o d_bicgilu_cl_lean2.o "
+make[3]: Entering directory `/home/dirac/detar/milc/v6/clover_invert'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=gcc   " all
+make[4]: Entering directory `/home/dirac/detar/milc/v6/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: gcc . Application: gcc
+================================================================
+make[4]: Leaving directory `/home/dirac/detar/milc/v6/libraries'
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI  clover_info.c
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI  gauge_info.c
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI  setup_cl.c
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/layout_hyper.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/check_unitarity.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/d_plaq4.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/gaugefix2.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/io_helpers.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/io_helpers_w.c
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/io_lat4.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/io_wb3.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/make_lattice.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/reunitarize2.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/restrict_fourier.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic_wilson/dslash_w2.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic_wilson/meson_cont.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic_wilson/w_baryon.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic_wilson/wilson_invert_lean.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic_wilson/w_meson.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic_wilson/w_source.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic_clover/f_mu_nu.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic_clover/make_clov.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI  control_cl.c
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic_clover/d_bicgilu_cl_lean2.c 
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/com_vanilla.c
+gcc    -c -O     -DVANILLA -DINLINE -DNOPREFETCH -DCGTIME -DFFTIME -DLLTIME -DGFTIME    -I. -DIOTIME -DPRTIME -DBI   ../generic/io_nonansi.c 
+gcc     -o su3_clov_bi \
+clover_info.o gauge_info.o setup_cl.o layout_hyper.o check_unitarity.o d_plaq4.o gaugefix2.o io_helpers.o io_helpers_w.o io_lat4.o io_wb3.o make_lattice.o reunitarize2.o restrict_fourier.o dslash_w2.o meson_cont.o w_baryon.o wilson_invert_lean.o w_meson.o w_source.o f_mu_nu.o make_clov.o control_cl.o d_bicgilu_cl_lean2.o  com_vanilla.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a   -lm
+touch localmake
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/clover_invert'
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/clover_invert'
+make[2]: Entering directory `/home/dirac/detar/milc/v6/clover_invert'
+su3_clov_bi  < in.time.su3_clov_bi > out.time.su3_clov_bi
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/clover_invert'
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/clover_invert'

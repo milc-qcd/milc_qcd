@@ -1,0 +1,33 @@
+#! /bin/sh
+
+# B gamma_3 D
+
+# Parameters for the 3-pt correlator
+fb3pt=forward
+op3=2      # 3-pt operator
+name3=HH3_p${p3}_0${kappa_spect}
+
+# Parameters for the recoil meson 2-pt correlator
+fb2pt2=forward
+twoptname2=b_GG
+. param.${twoptname2}
+op2=${op}
+name2=${name}_0${kappa_spect}
+
+# Parameters for the initial B meson 2-pt correlator (GE relative smearing)
+fb2pt1=forward
+twoptname1=b_GE
+p1=${p3} # Momentum
+. param.${twoptname1}
+op1=${op}
+name1=${name}_0${kappa_spect}
+
+# Parameters for the initial B meson 2-pt correlator (GG shell source and sink)
+fb2pt3=forward
+twoptname0=b_GG
+p0=${p3}  # Momentum
+. param.${twoptname0}
+op0=${op}
+name0=${name}_0${kappa_spect}
+
+

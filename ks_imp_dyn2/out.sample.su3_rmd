@@ -1,0 +1,148 @@
+SU3 with improved KS action
+Microcanonical simulation with refreshing
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+R algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors1 4
+nflavors2 4
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.3 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 7
+mass1 0.1
+mass2 0.1
+u0 0.8441
+microcanonical_time_step 0.02
+steps_per_trajectory 4
+max_cg_iterations 300
+error_per_site 5e-06
+error_for_propagator 2e-06
+reload_serial lat.sample.l4444
+forget 
+Reading with byte reversal
+Restored binary gauge configuration serially from file lat.sample.l4444
+Time stamp Thu Feb 12 13:40:21 1998
+Checksums 2352c05 d137321d OK
+Time to reload gauge configuration = 2.635396e-02
+CHECK PLAQ: 1.794675e+00 1.774426e+00
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 1.765013e-03
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.762509e-02     12
+                    2 0      -1.031171e-02     16
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -5.847914e-02     8
+                    2      -8.771871e-02     48
+                    3      3.077829e-02     192
+                    4      -7.199551e-03     384
+                    5      -1.231132e-01     48
+WARMUPS COMPLETED
+PLAQ:	1.795188	1.776954
+P_LOOP:	1.303896e+00	2.127145e-04
+G_LOOP:  0  0  4   	1.867359e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.761557e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.767350e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.756649e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.770745e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.792769e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.263136e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.127389e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.125057e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.236699e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.143111e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.141499e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.169416e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.170549e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.193353e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.205942e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.244971e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.245488e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.118738e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.169141e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.145994e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.130589e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.123008e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.127793e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.159023e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.203137e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.180229e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.149857e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.185700e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.176650e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.141347e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.166222e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.105839e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.112603e+00	( 1 5 4 6 2 3  )
+GACTION: 5.291246e+00
+PBP: mass 1.000000e-01     1.664135e-01  4.386600e-02  6.991375e-02  6.991313e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-01,  1.452431e+00 ( 1 of 1 )
+PBP: mass 1.000000e-01     1.278005e-01  1.023654e-01  1.160817e-02  1.160585e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-01,  1.519379e+00 ( 1 of 1 )
+PLAQ:	1.793290	1.784225
+P_LOOP:	1.310010e+00	1.569648e-02
+G_LOOP:  0  0  4   	1.862752e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.769696e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.772696e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.747423e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.789414e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.790564e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.251591e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.128882e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.129054e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.242098e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.105238e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.135158e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.184289e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.178048e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.166473e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.191654e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.233747e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.224785e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.111337e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.154933e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.165255e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.146599e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.132999e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.108145e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.176130e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.209694e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.184857e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.145260e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.164886e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.165701e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.119747e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.163078e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.092699e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.118373e+00	( 1 5 4 6 2 3  )
+GACTION: 5.267336e+00
+PBP: mass 1.000000e-01     1.642402e-01  4.235972e-02  -5.172790e-02  -5.172875e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-01,  1.449081e+00 ( 1 of 1 )
+PBP: mass 1.000000e-01     1.313930e-01  1.030564e-01  -6.536272e-02  -6.536257e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-01,  1.496034e+00 ( 1 of 1 )
+RUNNING COMPLETED
+average cg iters for step= 7.800000e+01
+Time = 2.417495e+01 seconds
+total_iters = 796
+
+
+get_i: EOF on STDIN while expecting warms.
+exit: Thu Aug 15 17:13:13 2002
+

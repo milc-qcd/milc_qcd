@@ -1,0 +1,9 @@
+# For generating sample ouptut from trusted code
+# For clover_dynamical
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_hmc su3_hmc_bi su3_hmc_bi_spectrum su3_hmc_screen su3_rmd su3_rmd_bi 
+
+include ../Make_sample_template

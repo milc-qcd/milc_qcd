@@ -1,0 +1,101 @@
+#  MIMD version 6
+#  Standard application makefile for generic scalar workstation
+#  Do not use for making libraries
+
+#  Edit options below
+#  Copy this file into the application directory and run make there.
+#
+
+MAKEFILE = Make_vanilla
+COMMTYPE = VANILLA
+
+#----------------------------------------------------------------------
+#  User choices - edit to suit 
+#----------------------------------------------------------------------
+# 1. Compiler
+CC               = gcc   # ( cc89 gcc xlc gcc pgcc cl g++ )
+
+#----------------------------------------------------------------------
+# 2. Compiler optimization level
+OPT              = -O3   # ( -g -O, etc )
+
+#----------------------------------------------------------------------
+# 3. Other compiler optimization flags.  Uncomment stanza to suit.
+#-------------- Gnu C -------------------------------------
+#OCFLAGS =                # ( -Wall, etc )
+
+#-------------- Portland Group ----------------------------
+#OCFLAGS = -tp p6 -Munroll=c:4,n:4
+
+#-------------- SUN SPARC ---------------------------------
+#OCFLAGS= -fast -dalign -libmil -fsimple=2 -fns  #Ultra (use OPT=-O4 or none)
+
+#-------------- IBM RS6000 --------------------------------
+#CARCH = -qarch=pwr3 -qtune=pwr3   # Architecture: ( ppc pwr2 )
+#OCFLAGS= ${CARCH} -bmaxdata:0x40000000 -bmaxstack:0x8000000
+
+#-------------- MIPS --------------------------------------
+#OCFLAGS= -f 
+
+#-------------- SGI Origin single node  -------------------
+#OCFLAGS=  -DSGI -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1   # (would -64 work??)
+
+#-------------- DEC Alpha ---------------------------------
+#OCFLAGS = -DT3E -float -fptm n 
+
+#-------------- Convex Exemplar ----------------------------
+#OCFLAGS = +Oinfo +Onofltacc +Oaggressive +Onoautopar 	#NPACI Exemplar
+
+#-------------- NT cl compiler -----------------------------
+#OCFLAGS = -Fo$*.o -Ox -Oa -G6
+
+#----------------------------------------------------------------------
+# 4. Choose large file support
+#CLFS = -D_LARGE_FILES   #  RS6000
+CLFS =                   #  Not researched for others
+
+#----------------------------------------------------------------------
+# 5. I/O routines
+# Both io_nonansi and io_ansi should work on a scalar machine
+# Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
+MACHINE_DEP_IO   = io_nonansi.o # (io_ansi.o io_nonansi.o)
+
+#----------------------------------------------------------------------
+# 6. Linker
+LD               = ${CC}
+
+#----------------------------------------------------------------------
+# 7. Extra linker flags
+LDFLAGS          =           # most
+#LDFLAGS          = -fast     # Sun SPARC
+
+#----------------------------------------------------------------------
+# 8. Extra load libraries
+ILIB             =           # not needed in most cases
+
+#----------------------------------------------------------------------
+# 9. Code alternatives 
+CODETYPE         = -DINLINE -DNOPREFETCH  # -DSSE -DSSE_INLINE -DP3
+
+#----------------------------------------------------------------------
+# 10. Choose MILC library make file in libraries directory.  
+#    CHECK IT FOR FURTHER OPTIONS!
+#MAKELIBRARIES = Make_RS6K    # IBM RS6000 assembly code
+#MAKELIBRARIES = Make_t3e     # Cray T3E assembly code
+#MAKELIBRARIES = Make_alpha   # DEC alpha assembly code
+#MAKELIBRARIES = Make_SSE_nasm # SSE nasm assembly code for P3, P4
+MAKELIBRARIES = Make_vanilla  # Generic.
+
+#----------------------------------------------------------------------
+# End of user choices.  PLEASE, ALSO, CHECK include/config.h.
+#----------------------------------------------------------------------
+
+# Routines that depend on both application and architecture
+MACHINE_DEP = com_vanilla.o ${MACHINE_DEP_IO}
+
+# Complete set of compiler flags - do not change
+CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${CLFS} ${CMPI} -I${MYINCLUDEDIR} ${DEFINES}
+
+include Make_template
+
+

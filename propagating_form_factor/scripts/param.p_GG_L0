@@ -1,0 +1,4 @@
+# Parameters for the recoil meson 2-pt correlator
+zk=0      # Zonked quark
+op=0      # 2-pt operator
+name=LL2_GG_0.1245

@@ -1,0 +1,197 @@
+#  Generic routines for all applications
+#  MIMD version 6
+#
+#  Generic make-include file for generic directory codes
+#  This template file defines rules and macros common to all applications
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  The paths are relative to the application directory.
+
+G_ALL = \
+ ape_smear.o \
+ ax_gauge.o \
+ bsd_sum.o \
+ byterevn.o \
+ check_unitarity.o \
+ com_mpi.o \
+ com_qmp.o \
+ com_vanilla.o \
+ d_plaq2.o \
+ d_plaq4.o \
+ field_strength.o \
+ gaugefix.o \
+ gaugefix2.o \
+ gauge_stuff.o \
+ glueball_op.o \
+ hvy_pot.o \
+ io_ansi.o \
+ io_helpers.o \
+ io_helpers_nocheck.o \
+ io_helpers_w.o \
+ io_lat4.o \
+ io_lat4_double.o \
+ io_lat4_double_sg.o \
+ io_nonansi.o \
+ io_paragon3.o \
+ io_piofs.o \
+ io_romio.o \
+ io_scidac.o \
+ io_wb2.o \
+ io_wb3.o \
+ io_wb3_double.o \
+ layout_hyper.o \
+ layout_hyper_prime.o \
+ layout_hyper_2or3.o \
+ layout_timeslices.o \
+ layout_squares.o \
+ layout_hyper_sl32.o \
+ layout_qcdoc.o \
+ make_lattice.o \
+ path_product.o \
+ plaquette3.o \
+ plaquette4.o \
+ ploop2.o \
+ ploop3.o \
+ ploop_dist.o \
+ ploop_staple.o \
+ project_su3_hit.o \
+ qcdoc_alloc.o \
+ rand_gauge.o \
+ ranmom.o \
+ ranstuff.o \
+ remap_stdio_from_args.o \
+ restrict_fourier.o \
+ reunitarize2.o
+
+# Must match our headers in generic_includes.h
+G_HEADERS = \
+  ../include/config.h \
+  ../include/complex.h \
+  ../include/su3.h \
+  ../include/macros.h \
+  ../include/comdefs.h \
+  ../include/generic.h \
+  ../include/generic_schroed.h \
+  ../include/int32type.h \
+  ../include/io_scidac.h \
+  lattice.h
+
+G_ALL_DEPEND = \
+  ../generic/generic_includes.h \
+  ../generic/Make_template \
+  ../include/Make_template \
+  ${LASTMAKE} \
+  ${G_HEADERS}
+
+${G_ALL} : ${G_ALL_DEPEND}
+
+# Rules for header files
+include ../include/Make_template
+
+ape_smear.o: ../generic/ape_smear.c
+	${CC} -c ${CFLAGS}  ../generic/ape_smear.c 
+ax_gauge.o: ../generic/ax_gauge.c
+	${CC} -c ${CFLAGS}  ../generic/ax_gauge.c 
+bsd_sum.o: ../generic/bsd_sum.c
+	${CC} -c ${CFLAGS}  ../generic/bsd_sum.c 
+check_unitarity.o: ../generic/check_unitarity.c
+	${CC} -c ${CFLAGS}  ../generic/check_unitarity.c 
+com_mpi.o: ../generic/com_mpi.c
+	${CC} -c ${CFLAGS}  ../generic/com_mpi.c 
+com_qmp.o: ../generic/com_qmp.c
+	${CC} -c ${CFLAGS}  ../generic/com_qmp.c 
+com_vanilla.o: ../generic/com_vanilla.c
+	${CC} -c ${CFLAGS}  ../generic/com_vanilla.c
+d_plaq2.o: ../generic/d_plaq2.c
+	${CC} -c ${CFLAGS}  ../generic/d_plaq2.c 
+d_plaq4.o: ../generic/d_plaq4.c
+	${CC} -c ${CFLAGS}  ../generic/d_plaq4.c 
+field_strength.o: ../generic/field_strength.c
+	${CC} -c ${CFLAGS}  ../generic/field_strength.c
+gaugefix.o: ../generic/gaugefix.c
+	${CC} -c ${CFLAGS}  ../generic/gaugefix.c 
+gaugefix2.o: ../generic/gaugefix2.c
+	${CC} -c ${CFLAGS}  ../generic/gaugefix2.c 
+gauge_stuff.o: ../generic/gauge_stuff.c
+	${CC} -c ${CFLAGS}  ../generic/gauge_stuff.c
+glueball_op.o: ../generic/glueball_op.c
+	${CC} -c ${CFLAGS}  ../generic/glueball_op.c
+hvy_pot.o: ../generic/hvy_pot.c
+	${CC} -c ${CFLAGS}  ../generic/hvy_pot.c 
+io_ansi.o: ../generic/io_ansi.c
+	${CC} -c ${CFLAGS}  ../generic/io_ansi.c 
+io_helpers.o: ../generic/io_helpers.c  ../include/io_lat.h
+	${CC} -c ${CFLAGS}  ../generic/io_helpers.c 
+io_helpers_nocheck.o: ../generic/io_helpers_nocheck.c ../include/io_lat.h
+	${CC} -c ${CFLAGS}  ../generic/io_helpers_nocheck.c 
+io_helpers_w.o: ../generic/io_helpers_w.c ../include/io_lat.h ../include/io_wb.h
+	${CC} -c ${CFLAGS}  ../generic/io_helpers_w.c
+io_lat4.o: ../generic/io_lat4.c ../include/io_lat.h
+	${CC} -c ${CFLAGS}  ../generic/io_lat4.c 
+io_lat4_double.o: ../generic/io_lat4_double.c ../include/io_lat.h
+	${CC} -c ${CFLAGS}  ../generic/io_lat4_double.c 
+io_lat4_double_sg.o: ../generic/io_lat4_double_sg.c ../include/io_lat.h
+	${CC} -c ${CFLAGS}  ../generic/io_lat4_double_sg.c 
+io_nonansi.o: ../generic/io_nonansi.c
+	${CC} -c ${CFLAGS}  ../generic/io_nonansi.c 
+io_paragon3.o: ../generic/io_paragon3.c
+	${CC} -c ${CFLAGS}  ../generic/io_paragon3.c 
+io_piofs.o: ../generic/io_piofs.c
+	${CC} -c ${CFLAGS}  ../generic/io_piofs.c 
+io_romio.o: ../generic/io_romio.c
+	${CC} -c ${CFLAGS}  ../generic/io_romio.c 
+io_scidac.o: ../generic/io_scidac.c
+	${CC} -c ${CFLAGS}  ../generic/io_scidac.c 
+io_wb2.o: ../generic/io_wb2.c ../include/io_lat.h ../include/io_wb.h
+	${CC} -c ${CFLAGS}  ../generic/io_wb2.c 
+io_wb3.o: ../generic/io_wb3.c ../include/io_lat.h ../include/io_wb.h
+	${CC} -c ${CFLAGS}  ../generic/io_wb3.c 
+io_wb3_double.o: ../generic/io_wb3_double.c ../include/io_lat.h ../include/io_wb.h
+	${CC} -c ${CFLAGS}  ../generic/io_wb3_double.c 
+layout_hyper.o: ../generic/layout_hyper.c
+	${CC} -c ${CFLAGS}  ../generic/layout_hyper.c 
+layout_hyper_prime.o: ../generic/layout_hyper_prime.c
+	${CC} -c ${CFLAGS}  ../generic/layout_hyper_prime.c 
+layout_hyper_2or3.o: ../generic/layout_hyper_2or3.c
+	${CC} -c ${CFLAGS}  ../generic/layout_hyper_2or3.c 
+layout_hyper_sl32.o: ../generic/layout_hyper_sl32.c
+	${CC} -c ${CFLAGS}  ../generic/layout_hyper_sl32.c 
+layout_timeslices.o: ../generic/layout_timeslices.c
+	${CC} -c ${CFLAGS}  ../generic/layout_timeslices.c 
+layout_squares.o: ../generic/layout_squares.c
+	${CC} -c ${CFLAGS}  ../generic/layout_squares.c 
+layout_qcdoc.o: ../generic/layout_qcdoc.c
+	${CC} -c ${CFLAGS}  ../generic/layout_qcdoc.c 
+make_lattice.o: ../generic/make_lattice.c
+	${CC} -c ${CFLAGS}  ../generic/make_lattice.c 
+path_product.o: ../generic/path_product.c
+	${CC} -c ${CFLAGS}  ../generic/path_product.c 
+plaquette3.o: ../generic/plaquette3.c
+	${CC} -c ${CFLAGS}  ../generic/plaquette3.c 
+plaquette4.o: ../generic/plaquette4.c
+	${CC} -c ${CFLAGS}  ../generic/plaquette4.c 
+ploop2.o: ../generic/ploop2.c
+	${CC} -c ${CFLAGS}  ../generic/ploop2.c 
+ploop3.o: ../generic/ploop3.c
+	${CC} -c ${CFLAGS}  ../generic/ploop3.c 
+ploop_dist.o: ../generic/ploop_dist.c
+	${CC} -c ${CFLAGS}  ../generic/ploop_dist.c 
+ploop_staple.o: ../generic/ploop_staple.c
+	${CC} -c ${CFLAGS}  ../generic/ploop_staple.c 
+project_su3_hit.o: ../generic/project_su3_hit.c
+	${CC} -c ${CFLAGS}  ../generic/project_su3_hit.c 
+qcdoc_alloc.o: ../generic/qcdoc_alloc.c
+	${CC} -c ${CFLAGS}  ../generic/qcdoc_alloc.c 
+rand_gauge.o: ../generic/rand_gauge.c
+	${CC} -c ${CFLAGS}  ../generic/rand_gauge.c 
+ranmom.o: ../generic/ranmom.c
+	${CC} -c ${CFLAGS}  ../generic/ranmom.c 
+ranstuff.o: ../generic/ranstuff.c
+	${CC} -c ${CFLAGS}  ../generic/ranstuff.c 
+remap_stdio_from_args.o: ../generic/remap_stdio_from_args.c
+	${CC} -c ${CFLAGS}  ../generic/remap_stdio_from_args.c 
+restrict_fourier.o: ../generic/restrict_fourier.c
+	${CC} -c ${CFLAGS}  ../generic/restrict_fourier.c 
+reunitarize2.o: ../generic/reunitarize2.c
+	${CC} -c ${CFLAGS}  ../generic/reunitarize2.c 

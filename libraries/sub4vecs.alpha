@@ -1,0 +1,78 @@
+/* sub4vecs.alpha: DEC alpha assembler version of sub4vecs.c*/
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+
+    .globl sub_four_su3_vecs
+    .ent sub_four_su3_vecs 2
+sub_four_su3_vecs:
+	/* a0=A  a1=B0  a2=B1  a3=B2  a4=B3*/
+	/* ft6 = A[0]real ft7 = A[0].imag*/
+	/* ft8 = A[1]real ft9 = A[1].imag*/
+	/* ft10 = A[2]real ft11 = A[2].imag*/
+	lds	ft0, (a1)
+	lds	ft1, (a0)
+	lds	ft2, 4(a1)
+	lds	ft3, 4(a0)
+	lds	ft4, 8(a1)
+	lds	ft5, 8(a0)
+	subs	ft1, ft0, ft6
+	lds	fa0, 12(a1)
+	lds	fa1, 12(a0)
+	subs	ft3, ft2, ft7
+	lds	fa2, 16(a1)
+	lds	fa3, 16(a0)
+	subs	ft5, ft4, ft8
+	lds	fa4, 20(a1)
+	lds	fa5, 20(a0)
+	subs	fa1, fa0, ft9
+	/* Start on b1*/
+	lds	ft0, (a2)
+	subs	fa3, fa2, ft10
+	lds	ft1, 4(a2)
+	subs	fa5, fa4, ft11
+	lds	ft2, 8(a2)
+	subs	ft6, ft0, ft6
+	lds	ft3, 12(a2)
+	subs	ft7, ft1, ft7
+	lds	ft4, 16(a2)
+	subs	ft8, ft2, ft8
+	lds	ft5, 20(a2)
+	subs	ft9, ft3, ft9
+	/* Start on b2*/
+	lds	fa0, (a3)
+	subs	ft10, ft4, ft10
+	lds	fa1, 4(a3)
+	subs	ft11, ft5, ft11
+	lds	fa2, 8(a3)
+	subs	ft6, fa0, ft6
+	lds	fa3, 12(a3)
+	subs	ft7, fa1, ft7
+	lds	fa4, 16(a3)
+	subs	ft8, fa2, ft8
+	lds	fa5, 20(a3)
+	subs	ft9, fa3, ft9
+	/* Start on B3*/
+	lds	ft0, (a4)
+	subs	ft10, fa4, ft10
+	lds	ft1, 4(a4)
+	subs	ft11, fa5, ft11
+	lds	ft2, 8(a4)
+	subs	ft6, ft0, ft6
+	lds	ft3, 12(a4)
+	subs	ft7, ft1, ft7
+	sts	ft6, (a0)
+	lds	ft4, 16(a4)
+	subs	ft8, ft2, ft8
+	sts	ft7, 4(a0)
+	lds	ft5, 20(a4)
+	subs	ft9, ft3, ft9
+	sts	ft8, 8(a0)
+	subs	ft10, ft4, ft10
+	sts	ft9, 12(a0)
+	subs	ft11, ft5, ft11
+	sts	ft10, 16(a0)
+	bis	zero, zero, v0
+	sts	ft11, 20(a0)
+	ret	zero, (ra)
+
+	.end

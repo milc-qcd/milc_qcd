@@ -1,0 +1,24 @@
+magic_number 12781
+time_stamp "Sun Mar 19 10:54:28 2000"
+nx 4
+ny 4
+nz 4
+nt 8
+gauge.filename "/uufs/icebox/common/home//physics/detar/v5/propagating_form_factor/lat.sample.l4448"
+gauge.time_stamp ""
+gauge.checksums "0 0"
+gauge.fix.description "Coulomb"
+gauge.fix.tolerance 1e-07
+quark.description "Clover"
+quark.kappa 0.120000
+quark.clover.clov_c 0.000000
+quark.clover.u0 0.836000
+quark.boundary_condition "periodic all directions"
+source.description ""
+source.size 0.000000
+source.x 0
+source.y 0
+source.z 0
+source.t 0
+source.n_spins 4
+source.spins[4] 0 1 2 3

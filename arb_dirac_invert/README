@@ -1,0 +1,67 @@
+This directory contains files for the inversion of arbitrary fermion actions.
+It is presently designed for Wilson or clover type fermions (four Dirac
+components per site). While it shares code with the rest of the Milc
+package, it is purposefully not optimized with all kinds of clever tricks.
+
+[This application has not been properly integrated into the rest of   ]
+[version 6 code.  For example, one should explore whether the         ]
+[generic_clover routines can be modified to accommodate the needs of  ]
+[this application, thereby reducing numerous duplications.            ] - CD
+
+[THIS APPLICATION HAS NOT BEEN DEBUGGED ON MORE THAN ONE PROCESSOR!!] -CD
+
+These codes have been used in my approximate fixed-point action
+work--and beyond--hence the ubiquitous ``fp_'' prefix.
+
+The Dirac operator is encoded in a routine delta0.c and the inverters
+(a biconjugate gradient and a conjugate gradient) call it as
+    delta0( F_OFFSET(sss), F_OFFSET(ttt), PLUS );
+or
+void delta0(field_offset src,field_offset dest,  int isign)
+for dest= delta0*src
+
+In the present code delta0 is set up to loop over a set of offsets;
+each offset is presumed to have its own link. The coefficients of the
+action are set in a file called build_params.c and many choices are
+present. The user is supposed to input one parameter, the bare mass,
+and build_params is sipposed to construct the appropriate free action
+
+S = \bar \psi(\lambda(x) +  sum_\mu \gamma_\mu rho_\mu(x)) \psi
+
+The clover action is coded in  build_params_w.c, as a simple example.
+
+The offsets for the terms in delta0 are created in setup_offset.c.
+The links associated with an offset are created in setup_links.c
+At present, it just averages over all the topologically distinct paths
+connecting the fermions (x,y and y,x for offset +x,+y, for example).
+I have only used this code for actions which are confined to a hypercube
+but there is no reason it cannot be extended. It is quite possible to shrink
+the size of the executable by eliminating offsets (and their associated
+links). I have also inserted intermediate routines between delta0.c and
+build_params.c for really interesting (iterated) actions.
+
+The code allows for fat gauge links--with the fattening hardwired in.
+See monte_block_ape_b_many.c.
+
+The clover term code does not include the ''1'' of the tricky standard
+MILC version. This code only keeps the simple clover term, but I also
+have code to do complicated Pauli-type interactions.
+
+The code includes routines to measure the Noether current and the associated
+axial current, cvc_fv.ax and hax.ax. These routines run glacially due to the
+large number of gauge fields.
+
+The code uses some nonstandard measuring routines, w_meson_p.c and
+ w_baryon_p.c, which do several momentum values. They hard wire storage
+and you must alter the MAX_P and MAX_NT flags (especially the last one)
+if you run on lattices greater than nt=24 sites. The normalization
+of two point functions is also different from the ''Milc standard.''
+
+Finally,  executables su3_fp_cg_eig and su3_fp_cl_eig measure psibar-psi
+and other average fermion observables (the former using conjugate gradient
+and the latter with conjugate residue) by inverting against a random source.
+An inverse iteration code can be used to find real eigenvalues
+(f_measure2_inv_it.c)
+
+T. DeGrand
+degrand@aurinko.colorado.edu

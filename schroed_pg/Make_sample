@@ -1,0 +1,10 @@
+# For generating sample ouptut from trusted code
+# For schroed_pg
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_schr_rmd su3_schr_hmc su3_schr_ora
+
+include ../Make_sample_template
+

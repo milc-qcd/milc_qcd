@@ -1,0 +1,48 @@
+Schroedinger functional for pure gauge SU3
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 8352
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 5
+bc_flag 1
+microcanonical_time_step 0.1
+steps_per_trajectory 10
+fresh 
+save_serial gdummy
+unit gauge configuration loaded
+Boundary values set
+CHECK PLAQ: 3.000000e+00 2.721664e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 1.000000e-02
+WARMUPS COMPLETED
+GMES 1.283406e+01 2.105203e+00 9.990000e+01 2.511374e+00 2.308376e+00
+GMES 1.364558e+01 1.977805e+00 9.990000e+01 2.230425e+00 2.089000e+00
+GMES 8.731639e+00 1.794548e+00 9.990000e+01 1.997656e+00 1.868924e+00
+GMES 6.506830e-01 1.679438e+00 9.990000e+01 1.811014e+00 1.751566e+00
+GMES 2.213916e+00 1.574888e+00 9.990000e+01 1.734800e+00 1.624946e+00
+GMES 6.650467e+00 1.491519e+00 9.990000e+01 1.658326e+00 1.569014e+00
+GMES -2.371402e+00 1.383193e+00 9.990000e+01 1.555164e+00 1.483671e+00
+GMES -5.351953e-01 1.373638e+00 9.990000e+01 1.506073e+00 1.418793e+00
+GMES 5.659229e+00 1.347723e+00 9.990000e+01 1.493058e+00 1.392338e+00
+GMES 3.224149e+00 1.324779e+00 9.990000e+01 1.387903e+00 1.350212e+00
+RUNNING COMPLETED
+Time = 1.349000e+01 seconds
+Saved gauge configuration serially to binary file gdummy
+Time stamp Fri Jan 21 10:09:26 2000
+Checksums b81f3785 d0379d2a
+Wrote info file gdummy.info
+Time to save = 1.000000e-02
+CHECK PLAQ: 1.387903e+00 1.350212e+00
+
+

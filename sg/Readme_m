@@ -1,0 +1,35 @@
+Notes for using the multiple mass algorithm:
+
+New files:
+- Make_t3d_hl        -> added target su3_whl_bi_m 
+- control_m_w_hl.c   -> modified control file
+- d_bicgilu-m_lean.c -> bicgstab-m aalgorithm
+
+There are no additional fields in lattice_w_hl.c neccessary (at least if 
+MAX_KAP is not much bigger than 6).
+This version of the files rely on MAX_KAP = 6 due to memory management. 
+Changing this one has to change the allocation of auxiliary fields at
+the beginning of control_m_w_hl.c. 
+While d_bicgilu-m_lean.c is prepared for point sources, one has to adjust 
+a parameter in control_m_w_hl.c.
+
+The algorithm calculates the real residuals and checks if they are less than
+1.5 times the desired residual. Experience shows that the real residual can
+differ from the iterated residual by this factor (in d_bicgilu_lean.c), so
+this seems to be fair. If this check fails for a kappa value smaller than
+the largest value, the solver in d_bicgilu_lean.c is called. In this case the
+returned residual is not the real residual but the residual calculated in
+this routine. 
+It is reasonable to demand higher precision for systems with smaller kappa,
+since those systems converge faster in the multiple mass algorithm. 
+If the smaller kappa systems do not converge, the reason might be that the
+desired precision is too high in comparison to the precision of the largest
+system or because the convergence of these systems stagnates. It mght then
+be reasonable to use the single point algorithm instead.
+The program terminates if the source sizes are not the same for all kappa.
+(At least it calls terminate). 
+
+Due to the additional caxpy operations one iteration can be around 20% slower
+than one iteration of d_bicgilu_lean.c (this is for 6 kappa values. This
+percentage also depends on the value of the kappas, since converged systems are
+not further iterated.). Maybe cache considerations have an effect, too.

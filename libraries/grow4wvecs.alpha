@@ -1,0 +1,236 @@
+/* grow4wvecs.alpha: Dec assembler version of grow4wvecs.c */
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+#define XUP 0
+#define YUP 1
+#define ZUP 2
+#define TUP 3
+#define TDOWN 4
+#define ZDOWN 5
+#define YDOWN 6
+#define XDOWN 7
+#define PLUS +1
+#define MINUS -1
+    .globl grow_add_four_wvecs
+    .ent grow_add_four_wvecs 2
+
+/* register names */
+#define src0 a1	/* address of XUP source half_wilson_vector */
+#define src1 a2	/* address of YUP source half_wilson_vector */
+#define src2 a3	/* address of ZUP source half_wilson_vector */
+#define src3 a4	/* address of TUP source half_wilson_vector */
+#define dest a0	/* address of dest. wilson_vector */
+#define sign a5	/* sign: PLUS = +1, MINUS = -1 */
+#define sum t0	/* sum flag:  1 means add to current dest */
+	/* will be passed in stack, only six argument registers */
+#define color t1 /* loop over colors */
+#define scratch t2	/*scratch integer*/
+
+grow_add_four_wvecs:
+	ldq	sum,0(sp)	/* get argument "sum" into register */
+	bis zero,zero,color	/* initialize color counter */
+	/* if (sign==-1) go to second half */
+	blt	sign,MINUS_CODE
+
+PLUS_CODE:
+
+	beq	sum,CLEAR1	/* if sum==0, clear dest first */
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+	br	XUP_L
+CLEAR1:
+	fmov	fzero,ft4
+	fmov	fzero,ft5
+	fmov	fzero,ft6
+	fmov	fzero,ft7
+	fmov	fzero,ft8
+	fmov	fzero,ft9
+	fmov	fzero,ft10
+	fmov	fzero,ft11
+
+XUP_L:
+	lds	ft0,0(src0)	/* src0->h[0].c[i].real */
+	lds	ft1,4(src0)	/* src0->h[0].c[i].imag */
+	lds	ft2,24(src0)	/* src0->h[1].c[i].real */
+	lds	ft3,28(src0)	/* src0->h[1].c[i].imag */
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	adds	ft8,ft3,ft8	/* result component 2 += -i*h[1] */
+	subs	ft9,ft2,ft9
+	adds	ft10,ft1,ft10	/* result component 3 += -i*h[0] */
+	subs	ft11,ft0,ft11
+
+YUP_L:
+	lds	ft0,0(src1)	/* src1->h[0].c[i].real */
+	lds	ft1,4(src1)	/* src1->h[0].c[i].imag */
+	lds	ft2,24(src1)	/* src1->h[1].c[i].real */
+	lds	ft3,28(src1)	/* src1->h[1].c[i].imag */
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	adds	ft8,ft2,ft8	/* result component 2 += +1*h[1] */
+	adds	ft9,ft3,ft9
+	subs	ft10,ft0,ft10	/* result component 3 += -1*h[0] */
+	subs	ft11,ft1,ft11
+
+ZUP_L:
+	lds	ft0,0(src2)	/* src2->h[0].c[i].real */
+	lds	ft1,4(src2)	/* src2->h[0].c[i].imag */
+	lds	ft2,24(src2)	/* src2->h[1].c[i].real */
+	lds	ft3,28(src2)	/* src2->h[1].c[i].imag */
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	adds	ft8,ft1,ft8	/* result component 2 += -i*h[0] */
+	subs	ft9,ft0,ft9
+	subs	ft10,ft3,ft10	/* result component 3 += +i*h[1] */
+	adds	ft11,ft2,ft11
+
+TUP_L:
+	lds	ft0,0(src3)	/* src3->h[0].c[i].real */
+	lds	ft1,4(src3)	/* src3->h[0].c[i].imag */
+	lds	ft2,24(src3)	/* src3->h[1].c[i].real */
+	lds	ft3,28(src3)	/* src3->h[1].c[i].imag */
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	adds	ft8,ft0,ft8	/* result component 2 += +1*h[0] */
+	adds	ft9,ft1,ft9
+	adds	ft10,ft2,ft10	/* result component 3 += +1*h[1] */
+	adds	ft11,ft3,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src0,8,src0		/* next color */
+	addq src1,8,src1
+	addq src2,8,src2
+	addq src3,8,src3
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,PLUS_CODE
+	ret     zero,(ra)
+
+MINUS_CODE:
+	beq	sum,CLEAR2	/* if sum==0, clear dest first */
+	lds	ft4,0(dest)	/* dest->d[*].c[i] */
+	lds	ft5,4(dest)
+	lds	ft6,24(dest)
+	lds	ft7,28(dest)
+	lds	ft8,48(dest)
+	lds	ft9,52(dest)
+	lds	ft10,72(dest)
+	lds	ft11,76(dest)
+	br	XDOWN_L
+CLEAR2:
+	fmov	fzero,ft4
+	fmov	fzero,ft5
+	fmov	fzero,ft6
+	fmov	fzero,ft7
+	fmov	fzero,ft8
+	fmov	fzero,ft9
+	fmov	fzero,ft10
+	fmov	fzero,ft11
+
+XDOWN_L:
+	lds	ft0,0(src0)	/* src0->h[0].c[i].real */
+	lds	ft1,4(src0)	/* src0->h[0].c[i].imag */
+	lds	ft2,24(src0)	/* src0->h[1].c[i].real */
+	lds	ft3,28(src0)	/* src0->h[1].c[i].imag */
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	subs	ft8,ft3,ft8	/* result component 2 += +i*h[1] */
+	adds	ft9,ft2,ft9
+	subs	ft10,ft1,ft10	/* result component 3 += +i*h[0] */
+	adds	ft11,ft0,ft11
+
+YDOWN_L:
+	lds	ft0,0(src1)	/* src1->h[0].c[i].real */
+	lds	ft1,4(src1)	/* src1->h[0].c[i].imag */
+	lds	ft2,24(src1)	/* src1->h[1].c[i].real */
+	lds	ft3,28(src1)	/* src1->h[1].c[i].imag */
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	subs	ft8,ft2,ft8	/* result component 2 += -1*h[1] */
+	subs	ft9,ft3,ft9
+	adds	ft10,ft0,ft10	/* result component 3 += +1*h[0] */
+	adds	ft11,ft1,ft11
+
+ZDOWN_L:
+	lds	ft0,0(src2)	/* src2->h[0].c[i].real */
+	lds	ft1,4(src2)	/* src2->h[0].c[i].imag */
+	lds	ft2,24(src2)	/* src2->h[1].c[i].real */
+	lds	ft3,28(src2)	/* src2->h[1].c[i].imag */
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	subs	ft8,ft1,ft8	/* result component 2 += +i*h[0] */
+	adds	ft9,ft0,ft9
+	adds	ft10,ft3,ft10	/* result component 3 += -i*h[1] */
+	subs	ft11,ft2,ft11
+
+TDOWN_L:
+	lds	ft0,0(src3)	/* src3->h[0].c[i].real */
+	lds	ft1,4(src3)	/* src3->h[0].c[i].imag */
+	lds	ft2,24(src3)	/* src3->h[1].c[i].real */
+	lds	ft3,28(src3)	/* src3->h[1].c[i].imag */
+
+	adds	ft4,ft0,ft4	/* result component 0 */
+	adds	ft5,ft1,ft5	
+	adds	ft6,ft2,ft6	/* result component 1 */
+	adds	ft7,ft3,ft7	
+	subs	ft8,ft0,ft8	/* result component 2 += -1*h[0] */
+	subs	ft9,ft1,ft9
+	subs	ft10,ft2,ft10	/* result component 3 += -0*h[1] */
+	subs	ft11,ft3,ft11
+
+	sts	ft4,0(dest)
+	sts	ft5,4(dest)
+	sts	ft6,24(dest)
+	sts	ft7,28(dest)
+	sts	ft8,48(dest)	
+	sts	ft9,52(dest)
+	sts	ft10,72(dest)	
+	sts	ft11,76(dest)
+
+	addq color,1,color
+	addq src0,8,src0		/* next color */
+	addq src1,8,src1
+	addq src2,8,src2
+	addq src3,8,src3
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,MINUS_CODE
+	ret     zero,(ra)
+
+	.end grow_add_four_wvecs

@@ -1,0 +1,68 @@
+# Makefile for testing code by comparing test output with sample output
+# For propagating_form_factor
+
+#------------------------------------------------------------
+# Examples for vanilla tests:
+
+#    make -f Make_test "ARCH=vanilla" test
+# or, for a specific project or projects
+#    make -f Make_test "ARCH=vanilla" "PROJS=su3_rmd" test
+
+# For tests on the SP, do the same, but use "ARCH=sp_mpi" with
+# the appropriate MP_PROCS environment variable set.
+
+# For tests on other platforms, first edit the file ../Make_test_template
+# to select the appropriate LAUNCH and ARCH.  Then run
+# commands as above, but without the command line "ARCH=..." definition.
+
+# Results are in the files out.test.diff.* 
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = w_mr_prop_form.x cl_bicg_prop_form.x
+
+PATTERNS = P--Momentum RUNNING
+TOL = 3e-6
+
+CUSTOM = .2pt3pt
+
+include ../Make_test_template
+
+
+W_MR_CORRLIST = \
+ out.test.HH3_l4448.w_mr_prop_form.x \
+ out.test.HL3_l4448.w_mr_prop_form.x \
+ out.test.HH2_GL_l4448.w_mr_prop_form.x \
+ out.test.LL2_GG_l4448.w_mr_prop_form.x \
+ out.test.HL2_GG_l4448.w_mr_prop_form.x \
+ out.test.HL2_GE_l4448.w_mr_prop_form.x \
+ out.test.HL2_GL_l4448.w_mr_prop_form.x
+
+${W_MR_CORRLIST}: out.test.${PROJ}
+
+out.test.2pt3pt.w_mr_prop_form.x: ${W_MR_CORRLIST}
+	echo "BEGIN_ALL" > $@
+	cat ${W_MR_CORRLIST} >> $@
+	echo "END_ALL" >> $@;
+	-/bin/rm ${W_MR_CORRLIST} out.test.${PROJ}
+
+CL_BICG_CORRLIST = \
+ out.test.HH3_l4448.cl_bicg_prop_form.x \
+ out.test.HL3_l4448.cl_bicg_prop_form.x \
+ out.test.HH2_GL_l4448.cl_bicg_prop_form.x \
+ out.test.LL2_GG_l4448.cl_bicg_prop_form.x \
+ out.test.HL2_GG_l4448.cl_bicg_prop_form.x \
+ out.test.HL2_GE_l4448.cl_bicg_prop_form.x \
+ out.test.HL2_GL_l4448.cl_bicg_prop_form.x
+
+${CL_BICG_CORRLIST}: out.test.${PROJ}
+
+out.test.2pt3pt.cl_bicg_prop_form.x: ${CL_BICG_CORRLIST}
+	echo "BEGIN_ALL" > $@; \
+	cat ${CL_BICG_CORRLIST} >> $@; \
+	echo "END_ALL" >> $@
+	-/bin/rm -f ${CL_BICG_CORRLIST} out.test.${PROJ}
+
+
+

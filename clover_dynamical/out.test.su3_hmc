@@ -1,0 +1,65 @@
+SU3 with Clover fermions
+Microcanonical simulation with refreshing
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+Hybrid Monte Carlo algorithm
+PHI algorithm
+start: Fri Aug 30 22:53:39 2002
+
+type 0 for no prompts  or 1 for prompts
+nflavors 2
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 3190
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.6 MBytes per node for lattice
+
+
+warms 0
+trajecs 1
+traj_between_meas 1
+beta 7.3
+kappa 0.114
+clov_c 1
+u0 0.8695
+microcanonical_time_step 0.03
+steps_per_trajectory 2
+max_cg_iterations 100
+max_cg_restarts 10
+error_per_site 1e-06
+error_for_propagator 1e-06
+fresh 
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 1.254082e-03
+
+
+Note O_2 is really O_3 in the notes! 
+
+
+loop coefficients: nloop rep loop_coeff   multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.192793e-02     12
+                    2 0      -8.018109e-03     16
+START 3.000000e+00 3.000000e+00 6.000000e+00
+WARMUPS COMPLETED
+ACCEPT: delta S = -7.803953e-01
+ACTION_V  6.452112e+01  4.200593e-02
+ OK converged size_r= 8.3e-07 iters= 15
+F2MES 1.142565e+01 -1.774417e-01 -1.721920e+00 -5.761266e-01 1.181898e+01 -2.743965e-01 -8.847564e-09
+GMES 2.944701e+00 -4.089189e-05 1.500000e+01 2.944760e+00 2.943844e+00
+RUNNING COMPLETED
+STOP 2.944760e+00 2.943844e+00 5.888603e+00
+average cg iters for step= 2.100000e+01
+average cg iters for measurement= 1.500000e+01
+Time = 1.255261e+00 seconds
+total_iters = 42
+
+
+get_i: EOF on STDIN while expecting warms.
+exit: Fri Aug 30 22:53:40 2002
+

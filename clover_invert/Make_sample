@@ -1,0 +1,9 @@
+# For generating sample ouptut from trusted code
+# For clover_invert
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_clov_cg su3_clov_bi su3_clhl_cg su3_clhl_bi
+
+include ../Make_sample_template

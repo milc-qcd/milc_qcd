@@ -1,0 +1,175 @@
+make -f Make_linux_mpi target "MYTARGET= su3_inv_symzk1_asqtad_periodic" \
+"DEFINES= -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID" \
+"GAUGE = symanzik_1loop_action.h" \
+"QUARK = asqtad_action.h" \
+"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o ks_multicg.o mat_invert.o multimass_inverter.o"
+make[1]: Entering directory `/N/B/sg/v6.20_double/ks_imp_invert_multi'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=/usr/local/mpich-gcc/bin/mpicc    " all
+make[2]: Entering directory `/N/B/sg/v6.20_double/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: gcc . Application: /usr/local/mpich-gcc/bin/mpicc
+================================================================
+make[2]: Leaving directory `/N/B/sg/v6.20_double/libraries'
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  control.c 
+control.c: In function `main':
+control.c:68: warning: implicit declaration of function `multimass_inverter'
+control.c:21: warning: unused variable `traj_done'
+control.c:23: warning: unused variable `s_iters'
+control.c:27: warning: unused variable `kspf'
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  gauge_info.c 
+quark_action.h:22: warning: `path_ind' defined but not used
+quark_action.h:30: warning: `path_length_in' defined but not used
+quark_action.h:31: warning: `quark_action_npaths' defined but not used
+quark_action.h:32: warning: `path_coeff' defined but not used
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ksprop_info.c 
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  setup.c 
+setup.c: In function `readin':
+setup.c:177: warning: implicit declaration of function `strcmp'
+setup.c:225: warning: implicit declaration of function `strcpy'
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/layout_hyper.c 
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/check_unitarity.c 
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/d_plaq4.c 
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/gaugefix2.c 
+../generic/gaugefix2.c: In function `gaugefix':
+../generic/gaugefix2.c:464: warning: `old_av' might be used uninitialized in this function
+../generic/gaugefix2.c:464: warning: `del_av' might be used uninitialized in this function
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/io_helpers.c 
+../generic/io_helpers.c: In function `save_lattice':
+../generic/io_helpers.c:17: warning: `gf' might be used uninitialized in this function
+../generic/io_helpers.c: In function `reload_lattice':
+../generic/io_helpers.c:62: warning: `gf' might be used uninitialized in this function
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/io_lat4_double_sg.c 
+../generic/io_lat4_double_sg.c: In function `w_serial':
+../generic/io_lat4_double_sg.c:765: warning: implicit declaration of function `fseeko'
+../generic/io_lat4_double_sg.c:721: warning: `fp' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:722: warning: `gh' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:725: warning: `lbuf' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:729: warning: `offset' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:732: warning: `checksum_offset' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `read_gauge_hdr':
+../generic/io_lat4_double_sg.c:1387: warning: `hdr' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `r_serial':
+../generic/io_lat4_double_sg.c:1641: warning: unused variable `i'
+../generic/io_lat4_double_sg.c:1650: warning: unused variable `ii'
+../generic/io_lat4_double_sg.c:1650: warning: unused variable `dir'
+../generic/io_lat4_double_sg.c:1650: warning: unused variable `row'
+../generic/io_lat4_double_sg.c:1650: warning: unused variable `col'
+../generic/io_lat4_double_sg.c:1634: warning: `offset' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1638: warning: `checksum_offset' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1643: warning: `buf_length' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1643: warning: `where_in_buf' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1647: warning: `lbuf' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1651: warning: `idest' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `r_serial_arch':
+../generic/io_lat4_double_sg.c:1862: warning: `uin' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:1863: warning: `big_end' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `restore_ascii':
+../generic/io_lat4_double_sg.c:2892: warning: `fp' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `save_ascii':
+../generic/io_lat4_double_sg.c:3025: warning: `fp' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c: In function `save_serial_archive':
+../generic/io_lat4_double_sg.c:3244: warning: dereferencing type-punned pointer will break strict-aliasing rules
+../generic/io_lat4_double_sg.c:3247: warning: dereferencing type-punned pointer will break strict-aliasing rules
+../generic/io_lat4_double_sg.c:3215: warning: `outfile' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:3219: warning: `uout' might be used uninitialized in this function
+../generic/io_lat4_double_sg.c:3224: warning: `vol3' might be used uninitialized in this function
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/make_lattice.c 
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/path_product.c 
+../generic/path_product.c: In function `path_product':
+../generic/path_product.c:25: warning: `mtag0' might be used uninitialized in this function
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/ploop3.c 
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/ranstuff.c 
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/reunitarize2.c 
+/bin/cp ../generic/imp_actions/symanzik_1loop_action.h gauge_action.h
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/gauge_stuff.c
+../generic/gauge_stuff.c: In function `imp_gauge_force':
+../generic/gauge_stuff.c:211: warning: unused variable `nflop'
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/quark_stuff.c
+../generic_ks/quark_stuff.c: In function `path_transport':
+../generic_ks/quark_stuff.c:255: warning: `tmp_parity' might be used uninitialized in this function
+../generic_ks/quark_stuff.c:255: warning: `tmp_otherparity' might be used uninitialized in this function
+../generic_ks/quark_stuff.c: In function `path_transport_hwv':
+../generic_ks/quark_stuff.c:338: warning: `tmp_parity' might be used uninitialized in this function
+../generic_ks/quark_stuff.c:338: warning: `tmp_otherparity' might be used uninitialized in this function
+../generic_ks/quark_stuff.c: In function `load_longlinks':
+../generic_ks/quark_stuff.c:472: warning: unused variable `nflop'
+../generic_ks/quark_stuff.c: In function `load_fatlinks':
+../generic_ks/quark_stuff.c:545: warning: unused variable `one_link2'
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/io_helpers_ks_double.c
+../generic_ks/io_helpers_ks_double.c: In function `reload_ksprop':
+../generic_ks/io_helpers_ks_double.c:78: warning: `dtime' might be used uninitialized in this function
+../generic_ks/io_helpers_ks_double.c: In function `save_ksprop':
+../generic_ks/io_helpers_ks_double.c:121: warning: `dtime' might be used uninitialized in this function
+../generic_ks/io_helpers_ks_double.c: In function `ask_starting_ksprop':
+../generic_ks/io_helpers_ks_double.c:203: warning: implicit declaration of function `strcmp'
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/io_prop_ks_double.c
+../generic_ks/io_prop_ks_double.c: In function `w_serial_ks':
+../generic_ks/io_prop_ks_double.c:431: warning: implicit declaration of function `fseeko'
+../generic_ks/io_prop_ks_double.c:379: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:383: warning: `pbuf' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:397: warning: `head_size' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:398: warning: `body_size' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `read_ks_prop_hdr':
+../generic_ks/io_prop_ks_double.c:587: warning: `byterevflag' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `r_serial_ks':
+../generic_ks/io_prop_ks_double.c:763: warning: `body_size' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:769: warning: `buf_length' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:769: warning: `where_in_buf' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:773: warning: `pbuf' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c:774: warning: `dest' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `w_serial_ksprop_tt':
+../generic_ks/io_prop_ks_double.c:1390: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `w_ascii_ksprop_tt':
+../generic_ks/io_prop_ks_double.c:1568: warning: unused variable `version_number'
+../generic_ks/io_prop_ks_double.c:1561: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `restore_ksprop_ascii':
+../generic_ks/io_prop_ks_double.c:1699: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_ks_double.c: In function `save_ksprop_ascii':
+../generic_ks/io_prop_ks_double.c:1858: warning: `fp' might be used uninitialized in this function
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/io_prop_sgks_double.c
+../generic_ks/io_prop_sgks_double.c: In function `swrite_ks_fm_prop_hdr':
+../generic_ks/io_prop_sgks_double.c:50: warning: unused variable `i'
+../generic_ks/io_prop_sgks_double.c: In function `write_ks_fmprop_info_file':
+../generic_ks/io_prop_sgks_double.c:85: warning: unused variable `sums'
+../generic_ks/io_prop_sgks_double.c: In function `w_serial_ks_fm':
+../generic_ks/io_prop_sgks_double.c:324: warning: implicit declaration of function `fseeko'
+../generic_ks/io_prop_sgks_double.c:283: warning: unused variable `ks_prop_size'
+../generic_ks/io_prop_sgks_double.c:284: warning: unused variable `ks_prop_check_size'
+../generic_ks/io_prop_sgks_double.c:287: warning: unused variable `body_size'
+../generic_ks/io_prop_sgks_double.c:268: warning: `fp' might be used uninitialized in this function
+../generic_ks/io_prop_sgks_double.c:272: warning: `pbuf' might be used uninitialized in this function
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/rephase.c
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/dslash_fn.c
+../generic_ks/dslash_fn.c: In function `dslash_fn':
+../generic_ks/dslash_fn.c:67: warning: `otherparity' might be used uninitialized in this function
+../generic_ks/dslash_fn.c: In function `dslash_fn_special':
+../generic_ks/dslash_fn.c:246: warning: `otherparity' might be used uninitialized in this function
+../generic_ks/dslash_fn.c: In function `dslash_fn_on_temp':
+../generic_ks/dslash_fn.c:427: warning: `otherparity' might be used uninitialized in this function
+../generic_ks/dslash_fn.c: In function `dslash_fn_on_temp_special':
+../generic_ks/dslash_fn.c:630: warning: `otherparity' might be used uninitialized in this function
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/d_congrad5_fn.c
+../generic_ks/d_congrad5_fn.c: In function `ks_congrad':
+../generic_ks/d_congrad5_fn.c:72: warning: unused variable `dtimed'
+../generic_ks/d_congrad5_fn.c:64: warning: `l_parity' might be used uninitialized in this function
+../generic_ks/d_congrad5_fn.c:65: warning: `l_otherparity' might be used uninitialized in this function
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/ks_multicg.c
+../generic_ks/ks_multicg.c: In function `ks_multicg':
+../generic_ks/ks_multicg.c:60: warning: unused variable `dtimed'
+../generic_ks/ks_multicg.c:47: warning: `l_parity' might be used uninitialized in this function
+../generic_ks/ks_multicg.c:48: warning: `l_otherparity' might be used uninitialized in this function
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/mat_invert.c
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic_ks/multimass_inverter.c
+../generic_ks/multimass_inverter.c: In function `multimass_inverter':
+../generic_ks/multimass_inverter.c:151: warning: implicit declaration of function `strlen'
+../generic_ks/multimass_inverter.c:155: warning: implicit declaration of function `strcpy'
+../generic_ks/multimass_inverter.c:164: warning: implicit declaration of function `strncat'
+../generic_ks/multimass_inverter.c:50: warning: unused variable `sourcevec'
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/com_mpi.c 
+/usr/local/mpich-gcc/bin/mpicc     -c -O3     -Wall   -DMPI -DINLINE -DP4   -I. -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID  ../generic/io_nonansi.c 
+/usr/local/mpich-gcc/bin/mpicc      -o su3_inv_symzk1_asqtad_periodic \
+control.o gauge_info.o ksprop_info.o setup.o  layout_hyper.o check_unitarity.o d_plaq4.o gaugefix2.o io_helpers.o io_lat4_double_sg.o make_lattice.o path_product.o ploop3.o ranstuff.o reunitarize2.o gauge_stuff.o quark_stuff.o io_helpers_ks_double.o io_prop_ks_double.o io_prop_sgks_double.o rephase.o dslash_fn.o d_congrad5_fn.o ks_multicg.o mat_invert.o multimass_inverter.o com_mpi.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a       -lm
+touch localmake
+make[1]: Leaving directory `/N/B/sg/v6.20_double/ks_imp_invert_multi'

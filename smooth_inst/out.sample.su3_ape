@@ -1,0 +1,65 @@
+SU3 Smoothing for Instantons
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+start: Tue Sep 16 21:50:15 2003
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.2 MBytes per node for lattice
+iloop,loop_num 0 384 10 
+iloop,loop_num 1 384 10 
+Instanton coefficients 
+ inst 0  7.872507e-02  3.173630e-01 
+ inst 1  -1.888383e-01  2.854577e-01 
+
+
+ape_weight 0.45
+sweeps 0
+sweeps_between_meas 1
+hits_per_sweep 9
+reload_serial ../binary_samples/lat.sample.inst
+NOT fixing the gauge
+forget 
+Reading as old-style gauge field configuration with byte reversal
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.inst
+Time to reload gauge configuration = 6.333113e-03
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+Unitarity checked.  Max deviation 1.49e-07
+Time to check unitarity = 1.675963e-03
+GAUGE FIXING SKIPPED.
+loop 0 completed 
+loop 1 completed 
+Topological charge  9.470578e-01 
+Sum_plus  9.494899e-01    Sum_minus  -2.431959e-03 
+RUNNING COMPLETED
+Time = 5.578187e+00 seconds
+
+
+ape_weight 0.45
+sweeps 1
+sweeps_between_meas 1
+hits_per_sweep 9
+continue 
+NOT fixing the gauge
+forget 
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+Unitarity checked.  Max deviation 1.49e-07
+Time to check unitarity = 1.668930e-03
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.974836e+00 2.974836e+00
+GAUGE FIXING SKIPPED.
+loop 0 completed 
+loop 1 completed 
+Topological charge  9.370361e-01 
+Sum_plus  9.400312e-01    Sum_minus  -2.995060e-03 
+RUNNING COMPLETED
+Time = 5.062850e+00 seconds
+
+
+get_f: EOF on STDIN while expecting ape_weight.
+exit: Tue Sep 16 21:50:26 2003
+

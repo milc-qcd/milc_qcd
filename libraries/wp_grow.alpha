@@ -1,0 +1,251 @@
+/* wp_grow.alpha: Dec assembler version of wp_grow.c */
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+#define XUP 0
+#define YUP 1
+#define ZUP 2
+#define TUP 3
+#define TDOWN 4
+#define ZDOWN 5
+#define YDOWN 6
+#define XDOWN 7
+#define PLUS +1
+#define MINUS -1
+    .globl wp_grow
+    .ent wp_grow 2
+
+/* register names */
+#define src a0	/* address of source wilson_vector */
+#define dest a1	/* address of dest. half_wilson_vector */
+#define dir a2	/* direction */
+#define sign a3	/* sign: PLUS = +1, MINUS = -1 */
+#define color t1 /* loop over colors */
+#define scratch t2	/*scratch integer*/
+
+wp_grow:
+	bis zero,zero,color	/* initialize color counter */
+	/* if (sign==-1) dir <- OPPDIR(dir) = 7-dir */
+	bge	sign,SKIP1
+	bis	zero,7,scratch
+	subq	scratch,dir,dir
+SKIP1:
+	/* switch(dir) */
+	cmpeq	dir,XUP,scratch
+	bne scratch,XUP_S
+	cmpeq	dir,YUP,scratch
+	bne scratch,YUP_S
+	cmpeq	dir,ZUP,scratch
+	bne scratch,ZUP_S
+	cmpeq	dir,TUP,scratch
+	bne scratch,TUP_S
+	cmpeq	dir,TDOWN,scratch
+	bne scratch,TDOWN_S
+	cmpeq	dir,ZDOWN,scratch
+	bne scratch,ZDOWN_S
+	cmpeq	dir,YDOWN,scratch
+	bne scratch,YDOWN_S
+	cmpeq	dir,XDOWN,scratch
+	bne scratch,XDOWN_S
+
+XUP_S:
+XUP_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	sts	ft0,0(dest)
+	sts	ft1,4(dest)
+	sts	ft2,24(dest)
+	sts	ft3,28(dest)
+
+	sts	ft3,48(dest)	/*  d[1] * -i */
+	cpysn	ft2,ft2,ft5
+	sts	ft5,52(dest)
+	sts	ft1,72(dest)	/*  d[0] * -i */
+	cpysn	ft0,ft0,ft6
+	sts	ft6,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,XUP_L
+	ret     zero,(ra)
+YUP_S:
+YUP_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	sts	ft0,0(dest)
+	sts	ft1,4(dest)
+	sts	ft2,24(dest)
+	sts	ft3,28(dest)
+
+	sts	ft2,48(dest)	/*  d[1] * +1 */
+	sts	ft3,52(dest)
+	cpysn	ft0,ft0,ft5
+	sts	ft5,72(dest)	/*  d[0] * -1 */
+	cpysn	ft1,ft1,ft6
+	sts	ft6,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,YUP_L
+	ret     zero,(ra)
+ZUP_S:
+ZUP_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	sts	ft0,0(dest)
+	sts	ft1,4(dest)
+	sts	ft2,24(dest)
+	sts	ft3,28(dest)
+
+	sts	ft1,48(dest)	/*  d[0] * -i */
+	cpysn	ft0,ft0,ft5
+	sts	ft5,52(dest)
+	cpysn	ft3,ft3,ft6
+	sts	ft6,72(dest)	/*  d[1] * +i */
+	sts	ft2,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,ZUP_L
+	ret     zero,(ra)
+TUP_S:
+TUP_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	sts	ft0,0(dest)
+	sts	ft1,4(dest)
+	sts	ft2,24(dest)
+	sts	ft3,28(dest)
+
+	sts	ft0,48(dest)	/*  d[0] * +1 */
+	sts	ft1,52(dest)
+	sts	ft2,72(dest)	/*  d[1] * +1 */
+	sts	ft3,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,TUP_L
+	ret     zero,(ra)
+XDOWN_S:
+XDOWN_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	sts	ft0,0(dest)
+	sts	ft1,4(dest)
+	sts	ft2,24(dest)
+	sts	ft3,28(dest)
+
+	cpysn	ft3,ft3,ft5
+	sts	ft5,48(dest)	/*  d[1] * +i */
+	sts	ft2,52(dest)
+	cpysn	ft1,ft1,ft6
+	sts	ft6,72(dest)	/*  d[0] * +i */
+	sts	ft0,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,XDOWN_L
+	ret     zero,(ra)
+YDOWN_S:
+YDOWN_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	sts	ft0,0(dest)
+	sts	ft1,4(dest)
+	sts	ft2,24(dest)
+	sts	ft3,28(dest)
+
+	cpysn	ft2,ft2,ft5
+	sts	ft5,48(dest)	/*  d[1] * -1 */
+	cpysn	ft3,ft3,ft6
+	sts	ft6,52(dest)
+	sts	ft0,72(dest)	/*  d[0] * +1 */
+	sts	ft1,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,YDOWN_L
+	ret     zero,(ra)
+ZDOWN_S:
+ZDOWN_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	sts	ft0,0(dest)
+	sts	ft1,4(dest)
+	sts	ft2,24(dest)
+	sts	ft3,28(dest)
+
+	cpysn	ft1,ft1,ft5
+	sts	ft5,48(dest)	/*  d[0] * +i */
+	sts	ft0,52(dest)
+	sts	ft3,72(dest)	/*  d[1] * -i */
+	cpysn	ft2,ft2,ft6
+	sts	ft6,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,ZDOWN_L
+	ret     zero,(ra)
+TDOWN_S:
+TDOWN_L:
+	lds	ft0,0(src)	/* src->h[0].c[i].real */
+	lds	ft1,4(src)	/* src->h[0].c[i].imag */
+	lds	ft2,24(src)	/* src->h[1].c[i].real */
+	lds	ft3,28(src)	/* src->h[1].c[i].imag */
+
+	sts	ft0,0(dest)
+	sts	ft1,4(dest)
+	sts	ft2,24(dest)
+	sts	ft3,28(dest)
+
+	cpysn	ft0,ft0,ft5
+	sts	ft5,48(dest)	/*  d[0] * -1 */
+	cpysn	ft1,ft1,ft6
+	sts	ft6,52(dest)
+	cpysn	ft2,ft2,ft7
+	sts	ft7,72(dest)	/*  d[1] * -1 */
+	cpysn	ft3,ft3,ft8
+	sts	ft8,76(dest)
+
+	addq color,1,color
+	addq src,8,src		/* next color */
+	addq dest,8,dest
+	cmplt color,3,scratch
+	bne scratch,TDOWN_L
+	ret     zero,(ra)
+
+	.end wp_grow

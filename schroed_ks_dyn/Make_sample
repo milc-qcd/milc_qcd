@@ -1,0 +1,11 @@
+# For generating sample ouptut from trusted code
+# For schroed_ks_dyn
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_schr_rmd su3_schr_phi su3_schr_hmc \
+   su3_schr_sw_hmc su3_schr_rmd_ph su3_schr_rw_rmd 
+
+include ../Make_sample_template
+

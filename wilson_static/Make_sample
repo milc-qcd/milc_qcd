@@ -1,0 +1,62 @@
+# For generating sample ouptut from trusted code
+# For wilson_static
+
+# Instructions...
+# 1.  Select the appropriate job launch command below.
+# 2.  Run the command
+#    make -f Make_sample "ARCH=vanilla" samples
+
+
+# Change to suit...
+
+# SGI Origin
+#LAUNCH = mpirun -np 4
+#LAUNCH2 = 
+#ARCH = origin_mpi
+
+# T3E
+#LAUNCH = mpprun -n 4
+#LAUNCH2 = 
+#ARCH = t3e_mpi
+
+# Scalar or SP
+LAUNCH =
+LAUNCH2 = 
+ARCH = vanilla
+
+# Paragon at ORNL (weird)
+#LAUNCH = pexec
+#LAUNCH2 = -sz 4
+#ARCH = paragon
+
+out.sample.su3_hev_mr: su3_hev_mr su3_sum in.sample.su3_hev_mr
+	su3_hev_mr < in.sample.su3_hev_mr > out.sample.su3_hev_mr
+
+OUTSAMPLE = out.sample.matrix
+BINTEST = bin.test.matrix
+READMATRIX = read_matrix_code/look.x
+
+${READMATRIX}: read_matrix_code/read_vary_matrix.c
+	cd read_matrix_code; make look.x
+
+${BINTEST}.su3_static_mr: su3_static_mr ${READMATRIX} in.sample.su3_static_mr
+	${LAUNCH} su3_static_mr ${LAUNCH2} < in.sample.su3_static_mr > out.sample.su3_static_mr
+
+${BINTEST}.su3_static_cg: su3_static_cg ${READMATRIX} in.sample.su3_static_cg
+	${LAUNCH} su3_static_cg ${LAUNCH2} < in.sample.su3_static_cg > out.sample.su3_static_cg
+
+${OUTSAMPLE}.su3_static_mr: ${READMATRIX} ${BINTEST}.su3_static_mr ${BINTEST}.su3_static_mr
+	${READMATRIX} ${BINTEST}.su3_static_mr > ${OUTSAMPLE}.su3_static_mr
+	/bin/rm ${BINTEST}.su3_static_mr
+
+${OUTSAMPLE}.su3_static_cg: ${READMATRIX} ${BINTEST}.su3_static_cg ${BINTEST}.su3_static_cg
+	${READMATRIX} ${BINTEST}.su3_static_cg > ${OUTSAMPLE}.su3_static_cg
+	/bin/rm ${BINTEST}.su3_static_cg
+
+samples:
+	cp -p ../Make_${ARCH} .
+	make -f Make_${ARCH} su3_static_mr
+	make -f Make_sample ${OUTSAMPLE}.su3_static_mr
+	make -f Make_${ARCH} su3_static_cg
+	make -f Make_sample ${OUTSAMPLE}.su3_static_cg
+

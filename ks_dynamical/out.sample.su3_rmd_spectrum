@@ -1,0 +1,128 @@
+SU3 with Kogut-Susskind fermions
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+R algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 4
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+With spectrum measurements
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.6
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site 0.0001
+error_for_propagator 0.0001
+gauge configuration to be saved in lat.sample
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 2.000000e-02
+WARMUPS COMPLETED
+GFIX: Ended at step 21. Av gf action 9.331e-01, delta 1.788e-06
+MES_PRO0  0  1.751464e+00  -1.284671e+00  -1.734986e+00  1.325908e+00
+MES_PRO0  1  8.240776e+00  2.128637e+01  8.237635e+00  2.128879e+01
+MES_PRO0  2  2.033503e+00  -1.570382e+00  -2.032098e+00  1.572076e+00
+MES_PRO0  3  8.333787e+00  2.107320e+01  8.330793e+00  2.107538e+01
+NUC_PRO0  0  3.849290e-05
+NUC_PRO0  1  1.325624e+00
+NUC_PRO0  2  -9.119887e-08
+NUC_PRO0  3  1.316164e+00
+MES_PRO2  0  1.588667e+00  -1.163023e+00  -1.573565e+00  1.201185e+00
+MES_PRO2  1  8.252028e+00  2.083410e+01  8.249402e+00  2.083581e+01
+MES_PRO2  2  1.960403e+00  -1.385905e+00  -1.958905e+00  1.387456e+00
+MES_PRO2  3  7.902361e+00  2.017618e+01  7.899232e+00  2.017847e+01
+NUC_PRO2  0  3.540287e-05
+NUC_PRO2  1  1.294691e+00
+NUC_PRO2  2  5.360710e-08
+NUC_PRO2  3  1.234402e+00
+GMES 1.893434e+00 4.791559e-02 3.300000e+01 2.091085e+00 2.083070e+00
+FMES 3.505176e-02 3.117323e-03 1.081791e+00 -6.244286e-01 1.477889e+00
+GFIX: Ended at step 21. Av gf action 9.166e-01, delta 1.758e-06
+MES_PRO0  0  2.634213e+00  -1.933267e+00  -2.611968e+00  1.982654e+00
+MES_PRO0  1  7.995275e+00  1.893056e+01  7.988523e+00  1.893449e+01
+MES_PRO0  2  2.875636e+00  -1.711693e+00  -2.871797e+00  1.714817e+00
+MES_PRO0  3  9.072322e+00  2.160989e+01  9.066093e+00  2.161393e+01
+NUC_PRO0  0  5.337058e-05
+NUC_PRO0  1  1.136061e+00
+NUC_PRO0  2  -2.950360e-07
+NUC_PRO0  3  1.377067e+00
+MES_PRO2  0  2.383823e+00  -1.469656e+00  -2.356318e+00  1.532366e+00
+MES_PRO2  1  9.749089e+00  2.341587e+01  9.739966e+00  2.342157e+01
+MES_PRO2  2  3.300458e+00  -2.333409e+00  -3.295567e+00  2.336516e+00
+MES_PRO2  3  9.923363e+00  2.436150e+01  9.916861e+00  2.436537e+01
+NUC_PRO2  0  7.524072e-05
+NUC_PRO2  1  1.580204e+00
+NUC_PRO2  2  3.249738e-07
+NUC_PRO2  3  1.649531e+00
+GMES 1.435049e+00 2.427412e-02 4.600000e+01 1.928710e+00 1.896710e+00
+FMES -2.165220e-02 6.147623e-02 1.073809e+00 -6.551959e-01 1.519482e+00
+RUNNING COMPLETED
+average cg iters for step= 2.950000e+01
+average cg iters for measurement= 3.950000e+01
+average cg iters for spectrum = 2.825000e+02
+Time = 2.331000e+01 seconds
+total_iters = 1830
+Saved gauge configuration serially to binary file lat.sample
+Time stamp Sat Oct 18 13:47:36 1997
+Checksums cfdcffe9 f072a885
+Wrote info file lat.sample.info
+Time to save = 4.000000e-02
+CHECK PLAQ: 1.928710e+00 1.896710e+00
+
+
+warms 0
+trajecs 1
+traj_between_meas 1
+beta 5.6
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 0
+max_cg_iterations 100
+error_per_site 0.0001
+error_for_propagator 0.0001
+Restored binary gauge configuration serially from file lat.sample
+Checksums cfdcffe9 f072a885 OK
+Time to reload gauge configuration = 4.000000e-02
+CHECK PLAQ: 1.928710e+00 1.896710e+00
+Unitarity checked
+Time to check unitarity = 2.000000e-02
+WARMUPS COMPLETED
+GFIX: Ended at step 1. Av gf action 9.166e-01, delta 7.749e-07
+MES_PRO0  0  2.632643e+00  -1.931802e+00  -2.610394e+00  1.981200e+00
+MES_PRO0  1  7.997514e+00  1.893590e+01  7.990763e+00  1.893983e+01
+MES_PRO0  2  2.875982e+00  -1.711520e+00  -2.872140e+00  1.714647e+00
+MES_PRO0  3  9.074941e+00  2.161524e+01  9.068710e+00  2.161928e+01
+NUC_PRO0  0  5.338641e-05
+NUC_PRO0  1  1.136562e+00
+NUC_PRO0  2  -2.954240e-07
+NUC_PRO0  3  1.377562e+00
+MES_PRO2  0  2.386066e+00  -1.470961e+00  -2.358566e+00  1.533661e+00
+MES_PRO2  1  9.746076e+00  2.340863e+01  9.736954e+00  2.341433e+01
+MES_PRO2  2  3.300142e+00  -2.333049e+00  -3.295252e+00  2.336154e+00
+MES_PRO2  3  9.922400e+00  2.435808e+01  9.915899e+00  2.436196e+01
+NUC_PRO2  0  7.522925e-05
+NUC_PRO2  1  1.579458e+00
+NUC_PRO2  2  3.242528e-07
+NUC_PRO2  3  1.649230e+00
+GMES 1.435048e+00 2.427409e-02 4.500000e+01 1.928710e+00 1.896710e+00
+FMES 1.941359e-02 2.565980e-02 1.003965e+00 -7.133309e-01 1.572173e+00
+RUNNING COMPLETED
+average cg iters for step= -9.900000e+01
+average cg iters for measurement= 4.500000e+01
+average cg iters for spectrum = 3.350000e+02
+Time = 2.100000e+00 seconds
+total_iters = 2210
+
+

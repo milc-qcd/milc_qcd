@@ -1,0 +1,902 @@
+#*****************  grow4wvecs.s  (in su3.a) ****************************
+#
+#	For IBM RS6000
+#	U.M. Heller 01/12/97
+#									*
+#  If sum=0,								*
+#  Grow and add four wilson_vectors 					*
+#  If sum=1,								*
+#  Grow and sum four wilson_vectors to another wilson_vector		*
+# void grow_add_four_wvecs(a,b1,b2,b3,b4,sign,sum)			*
+# wilson_vector *a; half_wilson_vector *b1,*b2,*b3,*b4;			*
+# int sign,sum;								*
+# A  <-  B1 + B2 + B3 + B4   or						*
+# A  <-  A + B1 + B2 + B3 + B4						*
+# B1 is expanded using gamma_x, B2 using gamma_y, etc. 			*
+#
+######################################################################
+
+	.file	"grow4wvecs.s"
+#	XCOFF table of contents entry for subroutine linkage
+	
+	.globl	grow_add_four_wvecs[ds]
+	.csect	grow_add_four_wvecs[ds]
+	.long	.grow_add_four_wvecs[PR]
+	.long	TOC[tc0]
+	.long	0
+
+	.toc
+T.grow_add_four_wvecs:	.tc	.grow_add_four_wvecs[tc],grow_add_four_wvecs[ds]
+	
+	.globl	.grow_add_four_wvecs[PR]
+	.csect	.grow_add_four_wvecs[PR]
+
+#	General purpose registers
+#	Retained as called
+	
+	.set	a,3
+	.set	b1,4
+	.set	b2,5
+	.set	b3,6
+	.set	b4,7
+	.set	sg,8
+	.set	su,9
+
+
+#	Offsets for arrays and structures ...
+		
+#	Real and imaginary parts of components of half_wilson_vector
+#	and of wilson_vector (half_wilson_vector uses only first half!)
+
+	.set 	word,4               # Single precision
+	.set	h00re,0*word
+	.set	h00im,1*word
+	.set	h01re,2*word
+	.set	h01im,3*word
+	.set	h02re,4*word
+	.set	h02im,5*word
+
+	.set	h10re,6*word
+	.set	h10im,7*word
+	.set	h11re,8*word
+	.set	h11im,9*word
+	.set	h12re,10*word
+	.set	h12im,11*word
+
+	.set	h20re,12*word
+	.set	h20im,13*word
+	.set	h21re,14*word
+	.set	h21im,15*word
+	.set	h22re,16*word
+	.set	h22im,17*word
+
+	.set	h30re,18*word
+	.set	h30im,19*word
+	.set	h31re,20*word
+	.set	h31im,21*word
+	.set	h32re,22*word
+	.set	h32im,23*word
+
+#	Floating point registers
+#	Linkage conventions require preserving registers 14-31
+		
+	.set	a0r,0
+	.set	a0i,1
+	.set	a1r,2
+	.set	a1i,3
+	.set	a2r,4
+	.set	a2i,5
+	.set	a3r,6
+	.set	a3i,7
+
+	.set	b0r,8
+	.set	b0i,9
+	.set	b1r,10
+	.set	b1i,11
+
+	.set 	prefetch,13
+
+.set BO_IF_NOT,4; .set CR1_VX,6; .set CR0_EQ,2;
+
+######################################################################
+#
+#define CSUM_TPI(a,b) { (a).real -= (b).imag; (a).imag +=  (b).real; }
+#define CSUM_TMI(a,b) { (a).real += (b).imag; (a).imag -=  (b).real; }
+#
+######################################################################
+# if(sign==PLUS)
+
+	cmpi	0,su,0
+	cmpi	1,sg,1
+
+	bc	BO_IF_NOT,CR1_VX,__LSGN
+
+######################################################################
+#
+#	Color component i=0
+#
+######################################################################
+
+#   if(sum==0)
+
+	bc	BO_IF_NOT,CR0_EQ,__LSM0
+
+#     /* wp_grow( b1,a,XUP,sign); */
+#	a->d[0].c[i]      = b1->h[0].c[i];
+#	a->d[1].c[i]      = b1->h[1].c[i];
+#	TIMESMINUSI( b1->h[0].c[i], a->d[3].c[i]);
+#	TIMESMINUSI( b1->h[1].c[i], a->d[2].c[i]);
+
+	lfs	a0r,h00re(b1)
+	lfs	a0i,h00im(b1)
+	lfs	a1r,h10re(b1)
+	lfs	a1i,h10im(b1)
+	
+#	fe	a2r,a1i
+	lfs	a2r,h10im(b1)
+	fneg	a2i,a1r
+#	feq	a3r,a0i
+	lfs	a3r,h00im(b1)
+	fneg	a3i,a0r
+
+	b	__LYU0
+
+__LSM0:
+#     /* wp_grow_add( b1,a,XUP,sign); */
+#	CSUM( a->d[0].c[i], b1->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b1->h[1].c[i]);
+#	CSUM_TMI( a->d[2].c[i], b1->h[1].c[i] );
+#	CSUM_TMI( a->d[3].c[i], b1->h[0].c[i] );
+
+	lfs	b0r,h00re(b1)
+	lfs	b0i,h00im(b1)
+	lfs	b1r,h10re(b1)
+	lfs	b1i,h10im(b1)
+
+	lfs	a0r,h00re(a)
+	lfs	a0i,h00im(a)
+	lfs	a1r,h10re(a)
+	lfs	a1i,h10im(a)
+	lfs	a2r,h20re(a)
+	lfs	a2i,h20im(a)
+	lfs	a3r,h30re(a)
+	lfs	a3i,h30im(a)
+
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b1i
+	fs	a2i,a2i,b1r
+	fa	a3r,a3r,b0i
+	fs	a3i,a3i,b0r
+
+__LYU0:
+#     /* wp_grow_add( b2,a,YUP,sign); */
+#	CSUM( a->d[0].c[i], b2->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b2->h[1].c[i]);
+#	CSUM( a->d[2].c[i], b2->h[1].c[i]);
+#	CSUB( a->d[3].c[i], b2->h[0].c[i], a->d[3].c[i] );
+
+	lfs	b0r,h00re(b2)
+	lfs	b0i,h00im(b2)
+	lfs	b1r,h10re(b2)
+	lfs	b1i,h10im(b2)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b1r
+	fa	a2i,a2i,b1i
+	fs	a3r,a3r,b0r
+	fs	a3i,a3i,b0i
+
+#     /* wp_grow_add( b3,a,ZUP,sign); */
+#	CSUM( a->d[0].c[i], b3->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b3->h[1].c[i]);
+#	CSUM_TMI( a->d[2].c[i], b3->h[0].c[i] );
+#	CSUM_TPI( a->d[3].c[i], b3->h[1].c[i] );
+
+	lfs	b0r,h00re(b3)
+	lfs	b0i,h00im(b3)
+	lfs	b1r,h10re(b3)
+	lfs	b1i,h10im(b3)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b0i
+	fs	a2i,a2i,b0r
+	fs	a3r,a3r,b1i
+	fa	a3i,a3i,b1r
+
+#     /* wp_grow_add( b4,a,TUP,sign); */
+#	CSUM( a->d[0].c[i], b4->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b4->h[1].c[i]);
+#	CSUM( a->d[2].c[i], b4->h[0].c[i]);
+#	CSUM( a->d[3].c[i], b4->h[1].c[i]);
+
+	lfs	b0r,h00re(b4)
+	lfs	b0i,h00im(b4)
+	lfs	b1r,h10re(b4)
+	lfs	b1i,h10im(b4)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b0r
+	fa	a2i,a2i,b0i
+	fa	a3r,a3r,b1r
+	fa	a3i,a3i,b1i
+
+	stfs	a0r,h00re(a)
+	stfs	a0i,h00im(a)
+	stfs	a1r,h10re(a)
+	stfs	a1i,h10im(a)
+	stfs	a2r,h20re(a)
+	stfs	a2i,h20im(a)
+	stfs	a3r,h30re(a)
+	stfs	a3i,h30im(a)
+
+######################################################################
+#
+#	Color component i=1
+#
+######################################################################
+
+#   if(sum==0)
+
+	bc	BO_IF_NOT,CR0_EQ,__LSM1
+
+#     /* wp_grow( b1,a,XUP,sign); */
+#	a->d[0].c[i]      = b1->h[0].c[i];
+#	a->d[1].c[i]      = b1->h[1].c[i];
+#	TIMESMINUSI( b1->h[0].c[i], a->d[3].c[i]);
+#	TIMESMINUSI( b1->h[1].c[i], a->d[2].c[i]);
+
+	lfs	a0r,h01re(b1)
+	lfs	a0i,h01im(b1)
+	lfs	a1r,h11re(b1)
+	lfs	a1i,h11im(b1)
+	
+#	fe	a2r,a1i
+	lfs	a2r,h11im(b1)
+	fneg	a2i,a1r
+#	feq	a3r,a0i
+	lfs	a3r,h01im(b1)
+	fneg	a3i,a0r
+
+	b	__LYU1
+
+__LSM1:
+#     /* wp_grow_add( b1,a,XUP,sign); */
+#	CSUM( a->d[0].c[i], b1->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b1->h[1].c[i]);
+#	CSUM_TMI( a->d[2].c[i], b1->h[1].c[i] );
+#	CSUM_TMI( a->d[3].c[i], b1->h[0].c[i] );
+
+	lfs	b0r,h01re(b1)
+	lfs	b0i,h01im(b1)
+	lfs	b1r,h11re(b1)
+	lfs	b1i,h11im(b1)
+
+	lfs	a0r,h01re(a)
+	lfs	a0i,h01im(a)
+	lfs	a1r,h11re(a)
+	lfs	a1i,h11im(a)
+	lfs	a2r,h21re(a)
+	lfs	a2i,h21im(a)
+	lfs	a3r,h31re(a)
+	lfs	a3i,h31im(a)
+
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b1i
+	fs	a2i,a2i,b1r
+	fa	a3r,a3r,b0i
+	fs	a3i,a3i,b0r
+
+__LYU1:
+#     /* wp_grow_add( b2,a,YUP,sign); */
+#	CSUM( a->d[0].c[i], b2->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b2->h[1].c[i]);
+#	CSUM( a->d[2].c[i], b2->h[1].c[i]);
+#	CSUB( a->d[3].c[i], b2->h[0].c[i], a->d[3].c[i] );
+
+	lfs	b0r,h01re(b2)
+	lfs	b0i,h01im(b2)
+	lfs	b1r,h11re(b2)
+	lfs	b1i,h11im(b2)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b1r
+	fa	a2i,a2i,b1i
+	fs	a3r,a3r,b0r
+	fs	a3i,a3i,b0i
+
+#     /* wp_grow_add( b3,a,ZUP,sign); */
+#	CSUM( a->d[0].c[i], b3->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b3->h[1].c[i]);
+#	CSUM_TMI( a->d[2].c[i], b3->h[0].c[i] );
+#	CSUM_TPI( a->d[3].c[i], b3->h[1].c[i] );
+
+	lfs	b0r,h01re(b3)
+	lfs	b0i,h01im(b3)
+	lfs	b1r,h11re(b3)
+	lfs	b1i,h11im(b3)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b0i
+	fs	a2i,a2i,b0r
+	fs	a3r,a3r,b1i
+	fa	a3i,a3i,b1r
+
+#     /* wp_grow_add( b4,a,TUP,sign); */
+#	CSUM( a->d[0].c[i], b4->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b4->h[1].c[i]);
+#	CSUM( a->d[2].c[i], b4->h[0].c[i]);
+#	CSUM( a->d[3].c[i], b4->h[1].c[i]);
+
+	lfs	b0r,h01re(b4)
+	lfs	b0i,h01im(b4)
+	lfs	b1r,h11re(b4)
+	lfs	b1i,h11im(b4)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b0r
+	fa	a2i,a2i,b0i
+	fa	a3r,a3r,b1r
+	fa	a3i,a3i,b1i
+
+	stfs	a0r,h01re(a)
+	stfs	a0i,h01im(a)
+	stfs	a1r,h11re(a)
+	stfs	a1i,h11im(a)
+	stfs	a2r,h21re(a)
+	stfs	a2i,h21im(a)
+	stfs	a3r,h31re(a)
+	stfs	a3i,h31im(a)
+
+######################################################################
+#
+#	Color component i=2
+#
+######################################################################
+
+#   if(sum==0)
+
+	bc	BO_IF_NOT,CR0_EQ,__LSM2
+
+#     /* wp_grow( b1,a,XUP,sign); */
+#	a->d[0].c[i]      = b1->h[0].c[i];
+#	a->d[1].c[i]      = b1->h[1].c[i];
+#	TIMESMINUSI( b1->h[0].c[i], a->d[3].c[i]);
+#	TIMESMINUSI( b1->h[1].c[i], a->d[2].c[i]);
+
+	lfs	a0r,h02re(b1)
+	lfs	a0i,h02im(b1)
+	lfs	a1r,h12re(b1)
+	lfs	a1i,h12im(b1)
+	
+#	fe	a2r,a1i
+	lfs	a2r,h12im(b1)
+	fneg	a2i,a1r
+#	feq	a3r,a0i
+	lfs	a3r,h02im(b1)
+	fneg	a3i,a0r
+
+	b	__LYU2
+
+__LSM2:
+#     /* wp_grow_add( b1,a,XUP,sign); */
+#	CSUM( a->d[0].c[i], b1->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b1->h[1].c[i]);
+#	CSUM_TMI( a->d[2].c[i], b1->h[1].c[i] );
+#	CSUM_TMI( a->d[3].c[i], b1->h[0].c[i] );
+
+	lfs	b0r,h02re(b1)
+	lfs	b0i,h02im(b1)
+	lfs	b1r,h12re(b1)
+	lfs	b1i,h12im(b1)
+
+	lfs	a0r,h02re(a)
+	lfs	a0i,h02im(a)
+	lfs	a1r,h12re(a)
+	lfs	a1i,h12im(a)
+	lfs	a2r,h22re(a)
+	lfs	a2i,h22im(a)
+	lfs	a3r,h32re(a)
+	lfs	a3i,h32im(a)
+
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b1i
+	fs	a2i,a2i,b1r
+	fa	a3r,a3r,b0i
+	fs	a3i,a3i,b0r
+
+__LYU2:
+#     /* wp_grow_add( b2,a,YUP,sign); */
+#	CSUM( a->d[0].c[i], b2->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b2->h[1].c[i]);
+#	CSUM( a->d[2].c[i], b2->h[1].c[i]);
+#	CSUB( a->d[3].c[i], b2->h[0].c[i], a->d[3].c[i] );
+
+	lfs	b0r,h02re(b2)
+	lfs	b0i,h02im(b2)
+	lfs	b1r,h12re(b2)
+	lfs	b1i,h12im(b2)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b1r
+	fa	a2i,a2i,b1i
+	fs	a3r,a3r,b0r
+	fs	a3i,a3i,b0i
+
+#     /* wp_grow_add( b3,a,ZUP,sign); */
+#	CSUM( a->d[0].c[i], b3->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b3->h[1].c[i]);
+#	CSUM_TMI( a->d[2].c[i], b3->h[0].c[i] );
+#	CSUM_TPI( a->d[3].c[i], b3->h[1].c[i] );
+
+	lfs	b0r,h02re(b3)
+	lfs	b0i,h02im(b3)
+	lfs	b1r,h12re(b3)
+	lfs	b1i,h12im(b3)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b0i
+	fs	a2i,a2i,b0r
+	fs	a3r,a3r,b1i
+	fa	a3i,a3i,b1r
+
+#     /* wp_grow_add( b4,a,TUP,sign); */
+#	CSUM( a->d[0].c[i], b4->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b4->h[1].c[i]);
+#	CSUM( a->d[2].c[i], b4->h[0].c[i]);
+#	CSUM( a->d[3].c[i], b4->h[1].c[i]);
+
+	lfs	b0r,h02re(b4)
+	lfs	b0i,h02im(b4)
+	lfs	b1r,h12re(b4)
+	lfs	b1i,h12im(b4)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fa	a2r,a2r,b0r
+	fa	a2i,a2i,b0i
+	fa	a3r,a3r,b1r
+	fa	a3i,a3i,b1i
+
+	stfs	a0r,h02re(a)
+	stfs	a0i,h02im(a)
+	stfs	a1r,h12re(a)
+	stfs	a1i,h12im(a)
+	stfs	a2r,h22re(a)
+	stfs	a2i,h22im(a)
+	stfs	a3r,h32re(a)
+	stfs	a3i,h32im(a)
+
+#	Return
+	br
+
+__LSGN:
+# sign==MINUS
+
+######################################################################
+#
+#	Color component i=0
+#
+######################################################################
+
+#   if(sum==0)
+
+	bc	BO_IF_NOT,CR0_EQ,__LSM3
+
+#     /* wp_grow( b1,a,XDOWN,sign); */
+#	a->d[0].c[i]      = b1->h[0].c[i];
+#	a->d[1].c[i]      = b1->h[1].c[i];
+#	TIMESPLUSI( b1->h[0].c[i], a->d[3].c[i]);
+#	TIMESPLUSI( b1->h[1].c[i], a->d[2].c[i]);
+
+	lfs	a0r,h00re(b1)
+	lfs	a0i,h00im(b1)
+	lfs	a1r,h10re(b1)
+	lfs	a1i,h10im(b1)
+	
+	fneg	a2r,a1i
+#	feq	a2i,a1r
+	lfs	a2i,h10re(b1)
+	fneg	a3r,a0i
+#	feq	a3i,a0r
+	lfs	a3i,h00re(b1)
+
+	b	__LYU3
+
+__LSM3:
+#     /* wp_grow_add( b1,a,XDOWN,sign); */
+#	CSUM( a->d[0].c[i], b1->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b1->h[1].c[i]);
+#	CSUM_TPI( a->d[2].c[i], b1->h[1].c[i] );
+#	CSUM_TPI( a->d[3].c[i], b1->h[0].c[i] );
+
+	lfs	b0r,h00re(b1)
+	lfs	b0i,h00im(b1)
+	lfs	b1r,h10re(b1)
+	lfs	b1i,h10im(b1)
+	
+	lfs	a0r,h00re(a)
+	lfs	a0i,h00im(a)
+	lfs	a1r,h10re(a)
+ 	lfs	a1i,h10im(a)
+	lfs	a2r,h20re(a)
+	lfs	a2i,h20im(a)
+	lfs	a3r,h30re(a)
+ 	lfs	a3i,h30im(a)
+
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b1i
+	fa	a2i,a2i,b1r
+	fs	a3r,a3r,b0i
+	fa	a3i,a3i,b0r
+
+__LYU3:
+#     /* wp_grow_add( b2,a,YDOWN,sign); */
+#	CSUM( a->d[0].c[i], b2->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b2->h[1].c[i]);
+#	CSUB( a->d[2].c[i], b2->h[1].c[i], a->d[2].c[i] );
+#	CSUM( a->d[3].c[i], b2->h[0].c[i]);
+
+	lfs	b0r,h00re(b2)
+	lfs	b0i,h00im(b2)
+	lfs	b1r,h10re(b2)
+	lfs	b1i,h10im(b2)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b1r
+	fs	a2i,a2i,b1i
+	fa	a3r,a3r,b0r
+	fa	a3i,a3i,b0i
+
+#     /* wp_grow_add( b3,a,ZDOWN,sign); */
+#	CSUM( a->d[0].c[i], b3->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b3->h[1].c[i]);
+#	CSUM_TPI( a->d[2].c[i], b3->h[0].c[i] );
+#	CSUM_TMI( a->d[3].c[i], b3->h[1].c[i] );
+
+	lfs	b0r,h00re(b3)
+	lfs	b0i,h00im(b3)
+	lfs	b1r,h10re(b3)
+	lfs	b1i,h10im(b3)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b0i
+	fa	a2i,a2i,b0r
+	fa	a3r,a3r,b1i
+	fs	a3i,a3i,b1r
+
+#     /* wp_grow_add( b4,a,TDOWN,sign); */
+#	CSUM( a->d[0].c[i], b4->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b4->h[1].c[i]);
+#	CSUB( a->d[2].c[i], b4->h[0].c[i], a->d[2].c[i] );
+#	CSUB( a->d[3].c[i], b4->h[1].c[i], a->d[3].c[i] );
+
+	lfs	b0r,h00re(b4)
+	lfs	b0i,h00im(b4)
+	lfs	b1r,h10re(b4)
+	lfs	b1i,h10im(b4)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b0r
+	fs	a2i,a2i,b0i
+	fs	a3r,a3r,b1r
+	fs	a3i,a3i,b1i
+
+	stfs	a0r,h00re(a)
+	stfs	a0i,h00im(a)
+	stfs	a1r,h10re(a)
+	stfs	a1i,h10im(a)
+	stfs	a2r,h20re(a)
+	stfs	a2i,h20im(a)
+	stfs	a3r,h30re(a)
+	stfs	a3i,h30im(a)
+
+######################################################################
+#
+#	Color component i=1
+#
+######################################################################
+
+#   if(sum==0)
+
+	bc	BO_IF_NOT,CR0_EQ,__LSM4
+
+#     /* wp_grow( b1,a,XDOWN,sign); */
+#	a->d[0].c[i]      = b1->h[0].c[i];
+#	a->d[1].c[i]      = b1->h[1].c[i];
+#	TIMESPLUSI( b1->h[0].c[i], a->d[3].c[i]);
+#	TIMESPLUSI( b1->h[1].c[i], a->d[2].c[i]);
+
+	lfs	a0r,h01re(b1)
+	lfs	a0i,h01im(b1)
+	lfs	a1r,h11re(b1)
+	lfs	a1i,h11im(b1)
+
+	fneg	a2r,a1i
+#	feq	a2i,a1r
+	lfs	a2i,h11re(b1)
+	fneg	a3r,a0i
+#	feq	a3i,a0r
+	lfs	a3i,h01re(b1)
+
+	b	__LYU4
+
+__LSM4:
+#     /* wp_grow_add( b1,a,XDOWN,sign); */
+#	CSUM( a->d[0].c[i], b1->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b1->h[1].c[i]);
+#	CSUM_TPI( a->d[2].c[i], b1->h[1].c[i] );
+#	CSUM_TPI( a->d[3].c[i], b1->h[0].c[i] );
+
+	lfs	b0r,h01re(b1)
+	lfs	b0i,h01im(b1)
+	lfs	b1r,h11re(b1)
+	lfs	b1i,h11im(b1)
+	
+	lfs	a0r,h01re(a)
+	lfs	a0i,h01im(a)
+	lfs	a1r,h11re(a)
+ 	lfs	a1i,h11im(a)
+	lfs	a2r,h21re(a)
+	lfs	a2i,h21im(a)
+	lfs	a3r,h31re(a)
+ 	lfs	a3i,h31im(a)
+
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b1i
+	fa	a2i,a2i,b1r
+	fs	a3r,a3r,b0i
+	fa	a3i,a3i,b0r
+
+__LYU4:
+#     /* wp_grow_add( b2,a,YDOWN,sign); */
+#	CSUM( a->d[0].c[i], b2->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b2->h[1].c[i]);
+#	CSUB( a->d[2].c[i], b2->h[1].c[i], a->d[2].c[i] );
+#	CSUM( a->d[3].c[i], b2->h[0].c[i]);
+
+	lfs	b0r,h01re(b2)
+	lfs	b0i,h01im(b2)
+	lfs	b1r,h11re(b2)
+	lfs	b1i,h11im(b2)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b1r
+	fs	a2i,a2i,b1i
+	fa	a3r,a3r,b0r
+	fa	a3i,a3i,b0i
+
+#     /* wp_grow_add( b3,a,ZDOWN,sign); */
+#	CSUM( a->d[0].c[i], b3->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b3->h[1].c[i]);
+#	CSUM_TPI( a->d[2].c[i], b3->h[0].c[i] );
+#	CSUM_TMI( a->d[3].c[i], b3->h[1].c[i] );
+
+	lfs	b0r,h01re(b3)
+	lfs	b0i,h01im(b3)
+	lfs	b1r,h11re(b3)
+	lfs	b1i,h11im(b3)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b0i
+	fa	a2i,a2i,b0r
+	fa	a3r,a3r,b1i
+	fs	a3i,a3i,b1r
+
+#     /* wp_grow_add( b4,a,TDOWN,sign); */
+#	CSUM( a->d[0].c[i], b4->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b4->h[1].c[i]);
+#	CSUB( a->d[2].c[i], b4->h[0].c[i], a->d[2].c[i] );
+#	CSUB( a->d[3].c[i], b4->h[1].c[i], a->d[3].c[i] );
+
+	lfs	b0r,h01re(b4)
+	lfs	b0i,h01im(b4)
+	lfs	b1r,h11re(b4)
+	lfs	b1i,h11im(b4)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b0r
+	fs	a2i,a2i,b0i
+	fs	a3r,a3r,b1r
+	fs	a3i,a3i,b1i
+
+	stfs	a0r,h01re(a)
+	stfs	a0i,h01im(a)
+	stfs	a1r,h11re(a)
+	stfs	a1i,h11im(a)
+	stfs	a2r,h21re(a)
+	stfs	a2i,h21im(a)
+	stfs	a3r,h31re(a)
+	stfs	a3i,h31im(a)
+
+######################################################################
+#
+#	Color component i=2
+#
+######################################################################
+
+#   if(sum==0)
+
+	bc	BO_IF_NOT,CR0_EQ,__LSM5
+
+#     /* wp_grow( b1,a,XDOWN,sign); */
+#	a->d[0].c[i]      = b1->h[0].c[i];
+#	a->d[1].c[i]      = b1->h[1].c[i];
+#	TIMESPLUSI( b1->h[0].c[i], a->d[3].c[i]);
+#	TIMESPLUSI( b1->h[1].c[i], a->d[2].c[i]);
+
+	lfs	a0r,h02re(b1)
+	lfs	a0i,h02im(b1)
+	lfs	a1r,h12re(b1)
+	lfs	a1i,h12im(b1)
+
+	fneg	a2r,a1i
+#	feq	a2i,a1r
+	lfs	a2i,h12re(b1)
+	fneg	a3r,a0i
+#	feq	a3i,a0r
+	lfs	a3i,h02re(b1)
+
+	b	__LYU5
+
+__LSM5:
+#     /* wp_grow_add( b1,a,XDOWN,sign); */
+#	CSUM( a->d[0].c[i], b1->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b1->h[1].c[i]);
+#	CSUM_TPI( a->d[2].c[i], b1->h[1].c[i] );
+#	CSUM_TPI( a->d[3].c[i], b1->h[0].c[i] );
+
+	lfs	b0r,h02re(b1)
+	lfs	b0i,h02im(b1)
+	lfs	b1r,h12re(b1)
+	lfs	b1i,h12im(b1)
+	
+	lfs	a0r,h02re(a)
+	lfs	a0i,h02im(a)
+	lfs	a1r,h12re(a)
+ 	lfs	a1i,h12im(a)
+	lfs	a2r,h22re(a)
+	lfs	a2i,h22im(a)
+	lfs	a3r,h32re(a)
+ 	lfs	a3i,h32im(a)
+
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b1i
+	fa	a2i,a2i,b1r
+	fs	a3r,a3r,b0i
+	fa	a3i,a3i,b0r
+
+__LYU5:
+#     /* wp_grow_add( b2,a,YDOWN,sign); */
+#	CSUM( a->d[0].c[i], b2->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b2->h[1].c[i]);
+#	CSUB( a->d[2].c[i], b2->h[1].c[i], a->d[2].c[i] );
+#	CSUM( a->d[3].c[i], b2->h[0].c[i]);
+
+	lfs	b0r,h02re(b2)
+	lfs	b0i,h02im(b2)
+	lfs	b1r,h12re(b2)
+	lfs	b1i,h12im(b2)
+
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b1r
+	fs	a2i,a2i,b1i
+	fa	a3r,a3r,b0r
+	fa	a3i,a3i,b0i
+
+#     /* wp_grow_add( b3,a,ZDOWN,sign); */
+#	CSUM( a->d[0].c[i], b3->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b3->h[1].c[i]);
+#	CSUM_TPI( a->d[2].c[i], b3->h[0].c[i] );
+#	CSUM_TMI( a->d[3].c[i], b3->h[1].c[i] );
+
+	lfs	b0r,h02re(b3)
+	lfs	b0i,h02im(b3)
+	lfs	b1r,h12re(b3)
+	lfs	b1i,h12im(b3)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b0i
+	fa	a2i,a2i,b0r
+	fa	a3r,a3r,b1i
+	fs	a3i,a3i,b1r
+
+#     /* wp_grow_add( b4,a,TDOWN,sign); */
+#	CSUM( a->d[0].c[i], b4->h[0].c[i]);
+#	CSUM( a->d[1].c[i], b4->h[1].c[i]);
+#	CSUB( a->d[2].c[i], b4->h[0].c[i], a->d[2].c[i] );
+#	CSUB( a->d[3].c[i], b4->h[1].c[i], a->d[3].c[i] );
+
+	lfs	b0r,h02re(b4)
+	lfs	b0i,h02im(b4)
+	lfs	b1r,h12re(b4)
+	lfs	b1i,h12im(b4)
+	
+	fa	a0r,a0r,b0r
+	fa	a0i,a0i,b0i
+	fa	a1r,a1r,b1r
+	fa	a1i,a1i,b1i
+	fs	a2r,a2r,b0r
+	fs	a2i,a2i,b0i
+	fs	a3r,a3r,b1r
+	fs	a3i,a3i,b1i
+
+	stfs	a0r,h02re(a)
+	stfs	a0i,h02im(a)
+	stfs	a1r,h12re(a)
+	stfs	a1i,h12im(a)
+	stfs	a2r,h22re(a)
+	stfs	a2i,h22im(a)
+	stfs	a3r,h32re(a)
+	stfs	a3i,h32im(a)
+
+#	Return
+	br
+

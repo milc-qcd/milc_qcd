@@ -1,0 +1,13 @@
+three_point_select forward
+SP 0 ZK 0 SQ 0 Q 11 P 0 OP 3 CP 0 WT 0.33333
+SP 0 ZK 0 SQ 0 Q 12 P 0 OP 3 CP 0 WT 0.33333
+SP 0 ZK 0 SQ 0 Q 13 P 0 OP 3 CP 0 WT 0.33333
+
+two_point_recoil_select forward
+SP 0 ZK 0 K 23 OP 0 CP 0 WT 0.33333
+SP 0 ZK 0 K 24 OP 0 CP 0 WT 0.33333
+SP 0 ZK 0 K 25 OP 0 CP 0 WT 0.33333
+two_point_sequential_select forward
+SP 0 SQ 0 P 0 OP 0 CP 0 WT 1.
+
+filelist HL3_p0list

@@ -1,0 +1,152 @@
+#  Clover inverter with spectroscopy
+#  MIMD version 6
+
+#  Generic make-include file for clover_invert codes
+#  For BOTH flavor-diagonal and mixed flavor {heavy-light} codes
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = \
+  ${INCLUDEDIR}/config.h \
+  ${INCLUDEDIR}/complex.h \
+  ${INCLUDEDIR}/su3.h \
+  ${INCLUDEDIR}/comdefs.h \
+  ${INCLUDEDIR}/macros.h \
+  ${INCLUDEDIR}/generic.h \
+  ${INCLUDEDIR}/generic_wilson.h \
+  ${INCLUDEDIR}/io_lat.h \
+  ${INCLUDEDIR}/io_wb.h  \
+  ${INCLUDEDIR}/io_prop_ks.h \
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  onium_generic.h \
+  onium_includes.h \
+  generic_wilson_includes.h 
+
+  ${ADDHEADERS}
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
+
+# Choose one of the lattice layout algorithms:
+LAYOUT = layout_hyper
+
+# All required object files
+# Basic set from current directory
+MY_OBJECTS = \
+  rotate_wq.o       \
+  twopt.o \
+  set_up.o \
+  gauge_info.o \
+  lat_io.o \
+  r_smear.o \
+  canopy2weyl_rot.o
+
+# Basic set from generic directory
+G_OBJECTS =          \
+  ${LAYOUT}.o        \
+  check_unitarity.o  \
+  d_plaq4.o           \
+  gaugefix2.o        \
+  io_helpers.o       \
+  io_helpers_w.o     \
+  io_lat4.o          \
+  io_wb3.o           \
+  make_lattice.o     \
+  ploop3.o \
+  ranstuff.o \
+  reunitarize2.o     \
+  restrict_fourier.o
+# Basic set from generic_wilson directory
+G_WILSON_OBJECTS =   \
+  dslash_w2.o         \
+  wilson_invert_lean.o 
+# Basic set from generic_ks directory
+G_KS_OBJECTS = \
+  d_congrad5_hl.o \
+  grsource.o \
+  rephase.o  \
+  read_prop_w_fm1.o \
+ 
+ 
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_WILSON_OBJECTS} \
+  ${G_KS_OBJECTS} ${EXTRA_OBJECTS} ${MACHINE_DEP}
+
+#Libraries for complex numbers and su3 functions
+QCDLIB = ${LIBDIR}/su3.a ${LIBDIR}/complex.a 
+
+# Default rule for C compilation
+.c.o:
+	${CC} -c ${CFLAGS} $<
+
+# All make files used in this compilation
+ALL_MAKES = Make_template ../generic/Make_template \
+  ../generic_ks/Make_template \
+  ../generic_wilson/Make_template \
+  ${MAKEFILE} ../include/Make_template
+
+# Used to force a full remake when changing targets or a make file
+LASTMAKE = .lastmake.${MAKEFILE}.${MYTARGET}
+
+${LASTMAKE}: ${ALL_MAKES}
+	-/bin/rm -f .lastmake.*
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+# All objects should depend on these
+ALL_DEPEND = ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
+
+${OBJECTS}: ${ALL_DEPEND}
+
+##### Targets:
+# Note: we prefer double precison version of inverters {for global sums}
+
+# Optional DEFINES for timing:
+# -DIOTIME for I/O timing
+# -DPRTIME for propagator timing
+# -DCGTIME for cg timing and iterations
+
+onium_spectrum::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= " \
+	"EXTRA_OBJECTS= control_onium_spectrum.o "
+io_test::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= " \
+	"EXTRA_OBJECTS= control_io.o"
+
+clean:
+	-/bin/rm -f *.o
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+
+# Rules for header files
+include ../include/Make_template
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" all
+
+localmake: ${OBJECTS} ${QCDLIB}
+	${LD} ${LDFLAGS} -o ${MYTARGET} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 

@@ -1,0 +1,44 @@
+# Generic make-include file for all applications
+# For inclusion in an application-specific Make_test
+# Not intended to be used as a standalone
+# C.D. 10/18/97
+
+# Change to suit...
+
+# SGI Origin
+#LAUNCH = mpirun -np 4
+#LAUNCH2 = 
+#ARCH = origin_mpi
+
+# T3E
+#LAUNCH = mpprun -n 4
+#LAUNCH2 = 
+#ARCH = t3e_mpi
+
+# Scalar or SP
+LAUNCH =
+LAUNCH2 = 
+ARCH = vanilla
+
+# Paragon at ORNL (weird)
+#LAUNCH = pexec
+#LAUNCH2 = -sz 4
+#ARCH = paragon
+
+out.sample.${PROJ}: ${PROJ} in.sample.${PROJ}
+	${LAUNCH} ${PROJ} ${LAUNCH2} < in.sample.${PROJ} > out.sample.${PROJ}
+
+# For making sample output
+# The samples are the baseline, so this make should be done with the
+# code you trust.
+
+samples:
+	for proj in ${PROJS};\
+	do\
+     	     cp ../Make_${ARCH} .;\
+	     make -f Make_${ARCH} clean;\
+	     rm -f $$proj;\
+	     make -f Make_${ARCH} $$proj;\
+	     make -f Make_sample "PROJ=$$proj" out.sample.$$proj;\
+	     rm -f $$proj;\
+	done

@@ -1,0 +1,15 @@
+generic/io_scidac.c
+generic/io_helpers.c
+generic/io_lat4.c
+generic/remap_stdio_from_args.c
+ks_imp_dyn2/control.c
+include/complex.h
+include/io_lat.h
+ks_imp_dyn2/lattice.h
+include/generic.h
+ks_imp_dyn2/Make_vanilla
+ks_imp_dyn2/Make_template
+libraries/Make_vanilla
+generic/Make_template
+Make_qcdoc_gcc
+Make_linux_mpi

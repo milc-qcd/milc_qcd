@@ -1,0 +1,195 @@
+	A gather is basically defined by a mapping, where each site
+receives data from some other site.  To speed up gathers, there are
+routines which prepare tables on each node containing information about
+what sites must be sent to other nodes or received from other nodes.
+Before calling such a gather, a routine must be called to set up the
+tables.  The call to this routine is:
+
+   #include <comdefs.h>
+   int make_gather(  function, arg_pointer, inverse, want_even_odd,
+     parity_conserve )
+	int (*function)();
+	int *arg_pointer;
+	int inverse;
+	int parity_conserve;
+
+The "function" argument is a pointer to a function which defines the
+mapping.  This function must have the following form:
+
+    int function( x, y, z, t, arg_pointer, forw_back, xpt, ypt, zpt, tpt)
+	int x,y,z,t;
+	int *arg_pointer;
+	int forw_back;
+	int *xpt,*ypt,*zpt,*tpt;
+
+	Here x,y,z,t are the coordinates of the site RECEIVING the data.
+"arg_pointer" is a pointer to a list of integers, which is passed
+through to the function from the call to make_gather.  This provides
+a mechanism to use the same function for different gathers.  For
+example, in setting up nearest neighbor gathers we would want to specify
+the direction.  See the examples below.
+	"forw_back" is either FORWARDS or BACKWARDS.  If it is FORWARDS,
+the function should compute the coordinates of the site that sends data
+to x,y,z,t.  If it is BACKWARDS, the function should compute the coordinates
+of the site which gets data from x,y,z,t.  It is necessary for the function
+to handle BACKWARDS correctly even if you don't want to set up the inverse
+gather (see below).  At the moment, only one-to-one (invertible)
+mappings are supported.
+
+	The "inverse" argument to make_gather() is one of OWN_INVERSE,
+WANT_INVERSE, or NO_INVERSE.
+If it is OWN_INVERSE, the mapping is its own inverse.  In other words,
+if site x1,y1,z1,t1 gets data from x2,y2,z2,t2 then site x2,y2,z2,t2
+gets data from x1,y1,z1,t1.  Examples of mappings which are there own
+inverse are the butterflys in FFT's.  If "inverse" is WANT_INVERSE, then
+make_gather() will make two sets of lists, one for the gather and one
+for the gather using the inverse mapping.  If "inverse" is NO_INVERSE,
+then only one set of tables is made.
+
+	The "want_even_odd" argument is one of ALLOW_EVEN_ODD or
+NO_EVEN_ODD.  If it is ALLOW_EVEN_ODD separate tables are made for even
+and odd sites, so that start gather can be called with parity EVEN, ODD
+or EVENANDODD.  If it is NO_EVEN_ODD, only one set of tables is made and
+you can only call gathers with parity EVENANDODD.
+
+	The "parity_conserve" argument to make_gather() is one of
+SAME_PARITY, SWITCH_PARITY, or SCRAMBLE_PARITY.  Use SAME_PARITY if the
+gather connects even sites to even sites and odd sites to odd sites.
+Use SWITCH_PARITY if the gather connects even sites to odd sites and
+vice versa.  Use SCRAMBLE_PARITY if the gather connects some even sites
+to even sites and some even sites to odd sites.  If you have specified
+NO_EVEN_ODD for "want_even_odd", then the "parity_conserve" argument
+does nothing.  Otherwise, it is used by make_gather() to help avoid
+making redundant lists.
+
+make_gather() returns an integer, which can then be used as the
+"direction" argument to start_gather.  If an inverse gather is also
+requested, its "direction" will be one more than the value returned
+by make_gather().  In other words, if make_gather() returns 10, then 
+to gather using the inverse mapping you would use 11 as the direction
+argument in start_gather.
+	Notice that the nearest neighbor gathers do not have their
+inverse directions in this convention.  Instead, they are sorted so
+that OPP_DIR(direction) gives the gather using the inverse mapping.
+
+
+
+Now for some examples which hopefully clarify all this.
+
+First, suppose we wished to set up nearest neighbor gathers.  (Of
+course, "make_comlinks()" already does this for you, but it is a good
+example.  The function which defines the mapping is basically
+neighbor_coords(), with a wrapper which fixes up the arguments.
+"arg" should be set to the address of the direction - XUP etc.
+
+	/* The function which defines the mapping */
+	neighbor_temp(x,y,z,t, arg, forw_back, xpt, ypt, zpt, tpt)
+	int x,y,z,t;
+	int *arg;
+	int forw_back;
+	int *xpt,*ypt,*zpt,*tpt;
+	{
+	register int dir;	/* local variable */
+	    dir = *arg;
+	    if(forw_back==BACKWARDS)dir=OPP_DIR(dir);
+	    neighbor_coords(x,y,z,t,dir,xpt,ypt,zpt,tpt);
+	}
+
+	/* Code fragment to setup the gathers */
+	/* Do this once, in the setup part of the program. */
+	int xup_dir, xdown_dir;
+	int temp;
+	temp = XUP;	/* we need the address of XUP */
+	xup_dir = make_gather( neighbor_temp, &temp, WANT_INVERSE,
+	    ALLOW_EVEN_ODD, SWITCH_PARITY);
+	xdown_dir = xup_dir+1;
+
+	/* Now you can start gathers */
+	start_gather( F_OFFSET(phi), sizeof(su3_vector), xup_dir, EVEN,
+	    gen_pt[0] );
+	/* and use wait_gather, cleanup_gather as always. */
+
+Again, once it is set up it works just as before.  Essentially, you are
+just defining new "directions".  Again, make_comlinks() does the same
+thing, except that it arranges the directions so that you can just use
+XUP, XDOWN, etc. as the "direction" argument to start_gather().
+
+
+A second example is for a gather from a general displacement.  You
+might, for example, set up a bunch of these to take care of the link
+gathered from the second mearest neighbor in evaluating the plaquette in
+the pure gauge code.  In this example, the mapping function needs a list
+of four arguments - the displacement in each of four directions.  Notice
+that for this displacement even sites connect to even sitesm etc.
+
+	/* The function which defines the mapping */
+	/* arg is a four element array, with the four displacements */
+	general_displacement(x,y,z,t, arg, forw_back, xpt, ypt, zpt, tpt)
+	int x,y,z,t;
+	int *arg;
+	int forw_back;
+	int *xpt,*ypt,*zpt,*tpt;
+	{
+	    if( forw_back==FORWARDS ){	/* add displacement */
+		*xpt = (x+nx+arg[0])%nx;
+		*ypt = (y+ny+arg[1])%ny;
+		*zpt = (z+nz+arg[2])%nz;
+		*tpt = (t+nt+arg[3])%nt;
+	    }
+	    else{	/* subtract displacement */
+		*xpt = (x+nx-arg[0])%nx;
+		*ypt = (y+ny-arg[1])%ny;
+		*zpt = (z+nz-arg[2])%nz;
+		*tpt = (t+nt-arg[3])%nt;
+	    }
+	}
+
+	/* Code fragment to setup the gathers */
+	/* Do this once, in the setup part of the program. */
+	/* In this example, I set up to gather from displacement -1 in
+	   the x direction and +1 in the y direction */
+	int plus_x_minus_y;
+	int disp[4];
+	disp[0] = -1;
+	disp[1] = +1;
+	disp[2] = 0;
+	disp[3] = 0;
+	plus_x_minus_y = make_gather( general_displacement, disp, NO_INVERSE,
+	    ALLOW_EVEN_ODD, SAME_PARITY);
+
+	/* Now you can start gathers */
+	start_gather( F_OFFSET(link[YUP]), sizeof(su3_matrix), plus_x_minus_y,
+	    EVEN, gen_pt[0] );
+	/* and use wait_gather, cleanup_gather as always. */
+
+
+Finally, for an FFT butterfly, we would want to set up roughly as
+follows.  Here the function wants two arguments: the direction of
+the butterfly and the level.
+
+	/* The function which defines the mapping */
+	/* arg is a two element array, with the direction and level */
+	butterfly_map(x,y,z,t, arg, forw_back, xpt, ypt, zpt, tpt)
+	int x,y,z,t;
+	int *arg;
+	int forw_back;
+	int *xpt,*ypt,*zpt,*tpt;
+	{
+	int direction,level;
+	    direction = arg[0];
+	    level = arg[1];
+	    /* Rest of code goes here */
+	}
+
+	/* Code fragment to setup the gathers */
+	/* Do this once, in the setup part of the program. */
+	int butterfly_dir[5];	/* for nx=16 */
+	int args[2];
+	args[0]=XUP;
+	for( level=1; level<=4; level++ ){
+	    args[1]=level;
+	    butterfly_dir[level] = make_gather( butterfly_map, args,
+	        OWN_INVERSE, NO_EVEN_ODD, SCRAMBLE_PARITY);
+	}
+	/* similarly for y,z,t directions */
+

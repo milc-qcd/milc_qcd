@@ -1,0 +1,3 @@
+cat << EOF >> ${inputparam}
+SP 0 ZK ${zk} K ${k} OP 0 CP 0 WT 1.
+EOF

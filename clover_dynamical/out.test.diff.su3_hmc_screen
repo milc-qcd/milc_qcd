@@ -1,0 +1,14 @@
+diffn out.test.su3_hmc_screen.tmp out.sample.su3_hmc_screen.tmp 1e-4
+Field 5 Line 3
+< ACCEPT: delta S = -7.803953e-01
+> ACCEPT: delta S = -7.802390e-01
+Field 5 Line 8
+< GFIX: Ended at step 8. Av gf action 9.96776849e-01, delta 8.941e-08
+> GFIX: Ended at step 9. Av gf action 9.968e-01, delta 5.960e-08
+Field 5 Line 10
+< SPROPS 0 0 4.7952854e+01 4.7310209e-01
+> SPROPS 0 0 4.7952843e+01 4.7518334e-01
+Field 5 Line 12
+< SPROPS 0 2 3.0672860e+00 8.9675352e-02
+> SPROPS 0 2 3.0672886e+00 8.9813583e-02
+Compared 14 lines with a tolerance of 1e-4

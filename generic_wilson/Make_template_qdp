@@ -1,0 +1,37 @@
+#  Generic routines for Wilson fermions
+#  MIMD version 6
+#
+#  Generic make-include file for generic_wilson codes
+#  This template file defines rules and macros common to all applications
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  The paths are relative to the application directory.
+
+include ../generic_wilson/Make_template
+
+G_WILSON_ALL_QDP =  \
+    d_congrad2_qdp.o \
+    dslash_w_qdp.o
+
+# Must list our headers in generic_wilson_includes.h
+G_WILSON_HEADERS_QDP = \
+  $(QDP)/include/qdp.h \
+  lattice_qdp.h \
+  ../include/generic_qdp.h
+
+G_WILSON_ALL_DEPEND_QDP = \
+  ../generic_wilson/Make_template_qdp \
+  ../include/Make_template_qdp \
+  ${G_WILSON_HEADERS_QDP} \
+  ${G_WILSON_ALL_DEPEND}
+
+${G_WILSON_ALL}: ${G_WILSON_ALL_DEPEND}
+
+# Rules for header files
+include ../include/Make_template_qdp
+
+d_congrad2_qdp.o: ../generic_wilson/d_congrad2_qdp.c
+	${CC} -c ${CFLAGS}  $<
+dslash_w_qdp.o: ../generic_wilson/dslash_w_qdp.c
+	${CC} -c ${CFLAGS}  $<

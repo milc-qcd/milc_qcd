@@ -1,0 +1,85 @@
+; cs_m_a_wvec.t3d: T3D assembler assembler version of cs_m_a_wvec.c 
+        .ident cs_m_a_wvec$c
+        .psect  c_scalar_mult_add_wvec@code,code
+#include <mpp/asdef.h>
+        CRI_REGISTER_NAMES      ; Use CRI defs for register names
+
+; register names 
+	 s_real <- ft0
+	 s_imag <- ft1
+	 src1	<- a0
+	 src2	<- a1
+	 scalar	<- a2
+	 dest	<- a3
+	 scratch <- t2      ;scratch integer
+	 count <- t0
+
+c_scalar_mult_add_wvec::
+
+	lds	s_real,0(scalar)
+	lds	s_imag,4(scalar)
+	addq	zero,10,count
+
+	lds	ft2,0(src2)	; Re(src2) 
+	lds	ft3,4(src2)	; Im(src2) 
+	lds	ft4,0(src1)	; Re(src1) 
+	lds	ft5,4(src1)	; Im(src1) 
+
+	muls/d	ft2,s_real,ft6
+	muls/d	ft3,s_imag,ft9
+	muls/d	ft2,s_imag,ft7
+	muls/d	ft3,s_real,ft8
+LOOP:
+	adds/d	ft4,ft6,ft4
+	lds	ft10,8(src2)	; Re(src2) 
+	subs/d	ft4,ft9,ft4
+	lds	ft11,12(src2)	; Im(src2) 
+	adds/d	ft5,ft7,ft5
+	lds	ft12,8(src1)	; Re(src1) 
+	adds/d	ft5,ft8,ft5
+	lds	ft13,12(src1)	; Im(src1) 
+
+	muls/d	ft10,s_real,fa0
+	addq	src1,16,src1
+	muls/d	ft11,s_imag,fa3
+	addq	src2,16,src2
+	muls/d	ft10,s_imag,fa1
+	sts	ft4,0(dest)
+	muls/d	ft11,s_real,fa2
+	sts	ft5,4(dest)
+
+	beq	count,FINISH
+
+	adds/d	ft12,fa0,ft12
+	lds	ft2,0(src2)	; Re(src2) 
+	subs/d	ft12,fa3,ft12
+	lds	ft3,4(src2)	; Im(src2) 
+	adds/d	ft13,fa1,ft13
+	lds	ft4,0(src1)	; Re(src1) 
+	adds/d	ft13,fa2,ft13
+	lds	ft5,4(src1)	; Im(src1) 
+
+	muls/d	ft2,s_real,ft6
+	subq	count,2,count
+	muls/d	ft3,s_imag,ft9
+	sts	ft12,8(dest)
+	muls/d	ft2,s_imag,ft7
+	sts	ft13,12(dest)
+	muls/d	ft3,s_real,ft8
+	addq	dest,16,dest
+
+	br	zero,LOOP
+
+FINISH:
+	adds/d	ft12,fa0,ft12
+	subs/d	ft12,fa3,ft12
+	adds/d	ft13,fa1,ft13
+	adds/d	ft13,fa2,ft13
+
+	sts	ft12,8(dest)
+	sts	ft13,12(dest)
+
+	ret	zero,(r26)
+
+	.endp
+	.end

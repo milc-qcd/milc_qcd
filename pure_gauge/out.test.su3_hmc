@@ -1,0 +1,77 @@
+Pure gauge SU3
+Microcanonical simulation with refreshing
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+Hybrid Monte Carlo algorithm
+start: Fri Aug 30 23:20:22 2002
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 8352
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.5 MBytes per node for lattice
+
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 6
+microcanonical_time_step 0.01
+steps_per_trajectory 4
+fresh 
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 2.421975e-03
+WARMUPS COMPLETED
+ACTION: g,h = -1.843200e+04  8.279642e+03  -1.015236e+04
+ACTION: g,h = -1.827631e+04  8.123866e+03  -1.015244e+04
+ACCEPT: delta S = -8.655173e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.974521e+00 2.974799e+00
+ACTION: g,h = -1.827631e+04  8.330827e+03  -9.945484e+03
+ACTION: g,h = -1.812056e+04  8.174992e+03  -9.945571e+03
+ACCEPT: delta S = -8.680671e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.948749e+00 2.949872e+00
+ACTION: g,h = -1.812056e+04  8.386232e+03  -9.734331e+03
+ACTION: g,h = -1.796923e+04  8.234813e+03  -9.734414e+03
+ACCEPT: delta S = -8.285072e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.923513e+00 2.925845e+00
+ACTION: g,h = -1.796923e+04  8.168836e+03  -9.800390e+03
+ACTION: g,h = -1.782966e+04  8.029199e+03  -9.800466e+03
+ACCEPT: delta S = -7.596061e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.900677e+00 2.903250e+00
+ACTION: g,h = -1.782966e+04  8.093247e+03  -9.736418e+03
+ACTION: g,h = -1.770239e+04  7.965904e+03  -9.736484e+03
+ACCEPT: delta S = -6.646153e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.879548e+00 2.882948e+00
+ACTION: g,h = -1.770239e+04  8.277888e+03  -9.424499e+03
+ACTION: g,h = -1.757151e+04  8.146941e+03  -9.424568e+03
+ACCEPT: delta S = -6.829205e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.858544e+00 2.861348e+00
+ACTION: g,h = -1.757151e+04  8.256526e+03  -9.314982e+03
+ACTION: g,h = -1.744256e+04  8.127511e+03  -9.315051e+03
+ACCEPT: delta S = -6.831637e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.837686e+00 2.840231e+00
+ACTION: g,h = -1.744256e+04  8.316103e+03  -9.126459e+03
+ACTION: g,h = -1.732335e+04  8.196828e+03  -9.126520e+03
+ACCEPT: delta S = -6.143636e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.818257e+00 2.820854e+00
+ACTION: g,h = -1.732335e+04  8.182519e+03  -9.140830e+03
+ACTION: g,h = -1.720064e+04  8.059752e+03  -9.140891e+03
+ACCEPT: delta S = -6.177267e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.798279e+00 2.800889e+00
+ACTION: g,h = -1.720064e+04  8.259401e+03  -8.941242e+03
+ACTION: g,h = -1.709815e+04  8.156861e+03  -8.941292e+03
+ACCEPT: delta S = -5.019560e-02
+GMES 9.990000e+01 9.990000e+01 9.990000e+01 2.781879e+00 2.783927e+00
+RUNNING COMPLETED
+Time = 1.338543e+00 seconds
+
+
+get_i: EOF on STDIN while expecting warms.
+exit: Fri Aug 30 23:20:23 2002
+

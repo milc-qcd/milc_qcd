@@ -1,0 +1,58 @@
+SU3 Wilson valence fermions;  summing heavy-light hopping
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts, 1 for prompts or 2 for list of prompts
+type 0 for no prompts  or 1 for prompts
+nt 8
+number of time slices = 8
+source_t 7
+source time slice = 7
+beta 6
+kappa 0.12
+approx_kappa_c 0.17
+number_hopping_steps 20
+computing extra sinks
+writeflag=0 for final result only, 1 for partial sums
+writeflag 0
+ writing result only 
+
+
+kappa_h 0.12
+heavy_kappa = light_kappa: using light quark
+	propagator twice; hopping expansion ignored.
+	To override use any kappa_h > 1.0 
+heavy_kappa= 0.120000
+ input file is named meson.120
+ meson output file is named out.meson.120.120
+SUM: time = 1.300000e-01
+done reading binary meson propagator in file  meson.120
+Saved ascii meson propagator in file  out.meson.120.120
+RUNNING COMPLETED
+Time = 1.300000e-01 seconds
+
+
+kappa_h 0.1
+heavy_kappa= 0.100000
+ input file is named meson.120
+ meson output file is named out.meson.120.100
+SUM: time = 1.300000e-01
+done reading binary meson propagator in file  meson.120
+Saved ascii meson propagator in file  out.meson.120.100
+RUNNING COMPLETED
+Time = 1.400000e-01 seconds
+
+
+kappa_h 0
+heavy_kappa=0; static assumed 
+static result will include a heavy particle 
+	propagating forward in time AND a heavy 
+	antiparticle propagating backward in time
+ input file is named meson.120
+ meson output file is named out.meson.120.static
+SUM: time = 1.200000e-01
+done reading binary meson propagator in file  meson.120
+Saved ascii meson propagator in file  out.meson.120.static
+RUNNING COMPLETED
+Time = 1.200000e-01 seconds
+
+

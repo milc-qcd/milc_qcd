@@ -1,0 +1,315 @@
+; m_mat_an.t3d: Cray T3D assembler version of m_mat_an.c
+; A matrix is adjoint
+#include <mpp/asdef.h>
+
+; Use the CRI definitions for the register names. Define the macro LEA
+; for getting the address of the scratch space.
+
+	CRI_REGISTER_NAMES
+
+	.macro	LEA	reg,name
+		laum	reg, name(r31)
+		sll	reg, 32, reg
+		lalm	reg, name(reg)
+		lal	reg, name(reg)
+	.endm
+
+;------------------------------------------------------------------------------
+
+; Create aliases for the registers
+
+	ear	<-	fv0	; real part of even element of A
+	eai	<-	fv1     ; imaginary part of even element of A
+	oar	<-	fa0     ; real part of odd element of A
+	oai	<-	fa1     ; imaginary part of odd element of A
+
+	b0r	<-	fa2     ; real part of B(0)
+	b0i	<-	fa3     ; imaginary part of B(0)
+	b1r	<-	fa4     ; real part of B(1)
+	b1i	<-	fa5     ; imaginary part of B(1)
+	b2r	<-	ft0     ; real part of B(2)
+	b2i	<-	ft1     ; imaginary part of B(2)
+
+	tr1	<-	ft7	; temporary register
+	ti1	<-	ft3	; temporary register
+	tr2	<-	ft4	; temporary register
+	ti2	<-	ft5	; temporary register
+	tr3	<-	ft6	; temporary register
+	ti3	<-	fs0	; temporary register
+	tr4	<-	ft8	; temporary register
+	ti4	<-	ft2	; temporary register
+	tr5	<-	fs1	; temporary register
+	ti5	<-	fs2	; temporary register
+
+	c0r	<-	ft12	; result component 0 real
+	c0i	<-	ft13	; result component 0 imag
+	c1r	<-	ft14	; result component 1 real
+	c1i	<-	ft9	; result component 1 imag
+	c2r	<-	ft10	; result component 2 real
+	c2i	<-	ft11	; result component 2 imag
+
+; Arguments
+
+	aptr	<-	a0	; pointer to 1st source matrix
+	bptr	<-	a1	; pointer to 2nd source matrix
+	cptr	<-	a2	; pointer to destination matrix
+debug <- a3
+
+; Scratch integer registers
+
+	scratch	<-	t1	; pure scratch
+	count	<-	t2	; loop counter
+	idone	<-	t3	; done / not done boolean
+
+;------------------------------------------------------------------------------
+
+	.ident m_mat_an$c
+
+;------------------------------------------------------------------------------
+
+; Declare some scratch space
+
+	.psect	kernel@data,data,cache
+
+savefp:	.quad	0:3
+
+	.endp
+
+; Subroutine code starts here
+
+	.psect	kernel@code,code,cache
+
+;	 ENTER	mult_su3_an,zero,user
+
+mult_su3_an::
+
+; Saved registers
+
+	LEA	scratch,savefp
+	stt	fs0,0(scratch)
+	;stt	fs1,8(scratch);woven into code
+	;stt	fs2,16(scratch);woven into code
+
+
+; Prefetch all data required for this site
+
+;	lds	fzero,0(aptr)	; 1st complex value in A(0)
+;	lds	fzero,32(aptr)	; next cache line
+;	lds	fzero,40(aptr)	; etc
+
+;	lds	fzero,0(bptr)
+;	lds	fzero,32(bptr)
+;	lds	fzero,40(bptr)
+
+;	lds	fzero,0(cptr)
+;	lds	fzero,32(cptr)
+;	lds	fzero,40(cptr)
+
+; Load the first B vector
+
+	lds	b0r,0(bptr)
+	lds	b0i,4(bptr)
+	lds	b1r,24(bptr)
+	lds	b1i,28(bptr)
+	lds	b2r,48(bptr)
+	lds	b2i,52(bptr)
+
+; Load the first complex value of the A array
+; Elements of the A array will be alternately loaded in the even (ear, eai),
+; and odd (oar, oai) registers.
+
+	lds	ear,0(aptr)
+	lds	eai,4(aptr)
+
+; Prime the loop over 3 column. Subsequent iterations will fold the 
+; initial operations into the loop.
+
+	muls/d	ear,b0r,tr1		; AR(0,0)*BR(0,0) -> TR1
+	  lds	oar,24(aptr)		;
+	muls/d	eai,b0i,tr2		; AI(0,0)*BI(0,0) -> TR2
+	  lds	oai,28(aptr)		;
+	muls/d	ear,b0i,ti1		; AR(0,0)*BI(0,0) -> TI1
+	  bis	zero,zero,count		; initialize loop count
+	muls/d	eai,b0r,ti2		; AI(O,O)*BR(0,0) -> TI2
+
+	muls/d	oar,b1r,tr3		; AR(1,0)*BR(1,0) -> TR3
+	  lds	ear,48(aptr)		;
+	muls/d	oai,b1i,tr4		; AI(1,0)*BI(1,0) -> TR4
+	  lds	eai,52(aptr)		;
+	muls/d	oar,b1i,ti3		; AR(1,0)*BI(1,0) -> TI3
+	muls/d	oai,b1r,ti4		; AI(1,0)*BR(1,0) -> TI4
+
+	adds/d	tr1,tr2,c0r		; Re{A(0,0)*B(0,0)}
+	  stt	fs1,8(scratch)		; store "saved" register
+	subs/d	ti1,ti2,c0i		; Im{A(0,0)*B(0,0)}
+	  stt	fs2,16(scratch)		; store "saved" register
+
+LOOP:
+
+	muls/d	ear,b2r,tr2		; AR(2,0)*BR(2,i) -> TR2
+	  lds	oar,8(aptr)		;
+	muls/d	eai,b2i,tr5		; AI(2,0)*BI(2,i) -> TR5
+	  lds	oai,12(aptr)		;
+	muls/d	ear,b2i,ti2		; AR(2,0)*BI(2,i) -> TI2
+	muls/d	eai,b2r,ti5		; AI(2,0)*BR(2,i) -> CI5
+
+	adds/d	tr3,tr4,tr3		; Re{A(1,0)*B(1,i)}
+	subs/d	ti3,ti4,ti3		; Im{A(1,0)*B(1,i)}
+
+	muls/d	oar,b0r,tr1		; AR(0,1)*BR(0,i) -> TR4
+	  lds	ear,32(aptr)		;
+	muls/d	oai,b0i,tr4		; AI(0,1)*BI(0,i) -> CR6
+	  lds	eai,36(aptr)		;
+	muls/d	oar,b0i,ti1		; AR(0,1)*BI(0,i) -> TI4
+	muls/d	oai,b0r,ti4		; AI(0,1)*BR(0,i) -> CI6
+
+	adds/d	c0r,tr3,c0r		; Re{A(0,0)*B(0,i) + A(1,0)*B(1,i)}
+	adds/d	c0i,ti3,c0i		; Im{A(0,0)*B(0,i) + A(1,0)*B(1,i)}
+
+	adds/d	tr2,tr5,tr2		; Re{A(2,0)*B(2,i)}
+	subs/d	ti2,ti5,ti2		; Im{A(2,0)*B(2,i)}
+
+	adds/d	tr1,tr4,c1r		; Re{A(0,1)*B(0,i)}
+	subs/d	ti1,ti4,c1i		; Im{A(0,1)*B(0,i)}
+
+	muls/d	ear,b1r,tr3		; AR(1,1)*BR(1,i) -> TR3
+	  lds	oar,56(aptr)		;
+	muls/d	eai,b1i,tr4		; AI(1,1)*BI(1,i) -> TR5
+	  lds	oai,60(aptr)		;
+	muls/d	ear,b1i,ti3		; AR(1,1)*BI(1,i) -> TI3
+	muls/d	eai,b1r,ti4		; AI(1,1)*BR(1,i) -> CI5
+
+	adds/d	c0r,tr2,c0r		; SUM [Re{A(k,0)*B(k,i)}], k=1,2,3
+	adds/d	c0i,ti2,c0i		; SUM [Im{A(k,0)*B(k,i)}], k=1,2,3
+
+	adds/d	tr3,tr4,tr3		; Re{A(1,1)*B(1,i)}
+	subs/d	ti3,ti4,ti3		; Im{A(1,1)*B(1,i)}
+
+	muls/d	oar,b2r,tr1		; AR(2,1)*BR(2,i) -> TR2
+	  lds	ear,16(aptr)		;
+	muls/d	oai,b2i,tr2		; AI(2,1)*BI(2,i) -> TR5
+	  lds	eai,20(aptr)		;
+	muls/d	oar,b2i,ti1		; AR(2,1)*BI(2,i) -> TI2
+	  sts	c0r,0(cptr)		; store Re{C(0,i)}
+	muls/d	oai,b2r,ti2		; AI(2,1)*BR(2,i) -> CI5
+	  sts	c0i,4(cptr)		; store Im{C(0,i)}
+
+	adds/d	c1r,tr3,c1r		; Re{A(0,1)*B(0,i)+A(1,1)*B(1,i)} -> TR3
+	adds/d	c1i,ti3,c1i		; Im{A(0,1)*B(0,i)+A(1,1)*B(1,i)} -> TR3
+
+	muls/d	ear,b0r,tr3		; AR(0,2)*BR(0,i) -> TR1
+	  lds	oar,40(aptr)		;
+	muls/d	eai,b0i,tr4		; AI(0,2)*BI(0,i) -> TR4
+	  lds	oai,44(aptr)		;
+	muls/d	ear,b0i,ti3		; AR(0,2)*BI(0,i) -> TI1
+	muls/d	eai,b0r,ti4		; AI(0,2)*BR(0,i) -> TI4
+
+	adds/d	tr1,tr2,tr1		; Re{A(2,1)*B(2,i)} -> TR2
+	subs/d	ti1,ti2,ti1		; Im{A(2,1)*B(2,i)} -> TI2
+
+	muls/d	oar,b1r,tr2		; AR(1,2)*BR(1,i) -> TR5
+	  lds	ear,64(aptr)		;
+	muls/d	oai,b1i,tr5		; AI(1,2)*BI(1,i) -> CR6
+	  lds	eai,68(aptr)		;
+	muls/d	oar,b1i,ti2		; AR(1,2)*BI(1,i) -> CI5
+	muls/d	oai,b1r,ti5		; AI(1,2)*BR(1,i) -> CI6
+
+	adds/d	tr3,tr4,c2r		; Re{A(0,2)*B(0,i)} -> TR1
+	subs/d	ti3,ti4,c2i		; Im{A(0,2)*B(0,i)} -> TI1
+	  addq	bptr,8,bptr		; update B pointer to next column
+
+	adds/d	c1r,tr1,c1r		; SUM [Re{A(k,1)*B(k,i)}], k=1,2,3->CR6
+	  addq	count,1,count		; increment loop count
+	adds/d	c1i,ti1,c1i		; SUM [Im{A(k,1)*B(k,i)}], k=1,2,3->CI6
+	  cmplt	count,3,idone		; check loop limit
+
+	muls/d	ear,b2r,tr1		; AR(2,2)*BR(2,i) -> TR4
+	muls/d	eai,b2i,tr4		; AI(2,2)*BI(2,i) -> CR7
+	muls/d	ear,b2i,ti1		; AR(2,2)*BI(2,i) -> TI4
+	muls/d	eai,b2r,ti4		; AI(2,2)*BR(2,i) -> CI7
+
+	beq	idone,FINISH		; special- case the last iteration 
+
+	adds/d	tr2,tr5,tr2		; Re{A(1,2)*B(1,i)} -> TR5
+	  lds	b0r,0(bptr)		; begin reading next B vector
+	subs/d	ti2,ti5,ti2		; Im{A(1,2)*B(1,i)} -> CI5
+	  lds	b0i,4(bptr)
+			; read b first, because it probably isn't in cache?
+
+	  lds	ear,0(aptr)		;
+	  lds	eai,4(aptr)		;
+
+	adds/d	tr1,tr4,tr4		; Re{A(2,2)*B(2,i)} -> CR7
+	  lds	b1r,24(bptr)
+	subs/d	ti1,ti4,ti4		; Im{A(2,2)*B(2,i)} -> CI7
+	  lds	b1i,28(bptr)
+
+	adds/d	c2r,tr2,c2r		; Re{A(0,2)*B(0,i)+A(1,2)*B(1,i)} -> TR5
+	  lds	b2r,48(bptr)
+	adds/d	c2i,ti2,c2i		; Im{A(0,2)*B(0,i)+A(1,2)*B(1,i)} -> TR5
+	  lds	b2i,52(bptr)
+
+;   prime next loop iteration
+
+	muls/d	ear,b0r,tr1		; AR(0,0)*BR(0,i) -> TR1
+	  lds	oar,24(aptr)
+	muls/d	eai,b0i,tr2		; AI(0,0)*BI(0,i) -> TR2
+	  lds	oai,28(aptr)
+	muls/d	ear,b0i,ti1		; AR(0,0)*BI(0,i) -> TI1
+	  sts	c1r,24(cptr)		; store Re{C(1,i)}
+	muls/d	eai,b0r,ti2		; AI(O,O)*BR(0,i) -> TI2
+	  sts	c1i,28(cptr)		; store Im{C(1,i)}
+
+	adds/d	c2r,tr4,c2r		; SUM [Re{A(k,2)*B(k,i)}], k=1,2,3->TR5
+	adds/d	c2i,ti4,c2i		; SUM [Im{A(k,2)*B(k,i)}], k=1,2,3->CI5
+
+	muls/d	oar,b1r,tr3		; AR(1,0)*BR(1,i) -> TR3
+	  lds	ear,48(aptr)
+	muls/d	oai,b1i,tr4		; AI(1,0)*BI(1,i) -> TR4
+	  lds	eai,52(aptr)
+	muls/d	oar,b1i,ti3		; AR(1,0)*BI(1,i) -> TI3
+	muls/d	oai,b1r,ti4		; AI(1,0)*BR(1,i) -> TI4
+
+	adds/d	tr1,tr2,c0r		; Re{A(0,0)*B(0,i)}
+	  sts	c2r,48(cptr)		; store Re{C(2,i)}
+	subs/d	ti1,ti2,c0i		; Im{A(0,0)*B(0,i)}
+	  sts	c2i,52(cptr)		; store Im{C(2,i)}
+
+;   jump back to loop
+
+        addq    cptr,8,cptr            ; advance cptr to next dest vector
+addq    debug,4,debug
+	  br	zero,LOOP
+
+;   finish last iteration without any fetch-ahead
+
+FINISH:
+
+	adds/d	tr2,tr5,tr2		; Re{A(1,2)*B(1,2)} -> TR5
+	  sts	c1r,24(cptr)		; store Re{C(1,2)}
+	subs/d	ti2,ti5,ti2		; Im{A(1,2)*B(1,2)} -> CI5
+	  sts	c1i,28(cptr)		; store Im{C(1,2)}
+
+	adds/d	tr1,tr4,tr4		; Re{A(2,2)*B(2,2)} -> CR7
+	subs/d	ti1,ti4,ti4		; Im{A(2,2)*B(2,2)} -> CI7
+
+	adds/d	c2r,tr2,c2r		; Re{A(0,2)*B(0,2)+A(1,2)*B(1,2)} -> TR5
+	adds/d	c2i,ti2,c2i		; Im{A(0,2)*B(0,2)+A(1,2)*B(1,2)} -> TR5
+
+	adds/d	c2r,tr4,c2r		; SUM [Re{A(k,2)*B(k,2)}], k=1,2,3-> TR5
+	adds/d	c2i,ti4,c2i		; SUM [Im{A(k,2)*B(k,2)}], k=1,2,3-> CI5
+
+; Restore frame pointer and other saved registers
+	ldt	fs0,0(scratch)
+	ldt	fs1,8(scratch)
+	ldt	fs2,16(scratch)
+
+	sts	c2r,48(cptr)		; store Re{C(2,2)}
+	sts	c2i,52(cptr)		; store Im{C(2,2)}
+
+; Return to caller
+
+	ret	zero,(ra)
+
+	.endp
+	.end

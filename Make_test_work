@@ -1,0 +1,46 @@
+# Make file for exercising Make_test in all of the applications 
+# in the working version of the code.
+
+# (You probably don't need to be so thorough.)
+# You can also just run Make_test for one application
+# See the instructions in Make_test_template for testing your
+# favorite application.
+# C.D. 3/17/00
+
+# Note: dense_static_su3 is omitted for want of sample test files
+# C.D. 12/06/97
+
+# Note: Neither arb_dirac_eigen nor arb_dirac_invert are debugged
+# as parallel code.
+
+DIRS = \
+  arb_dirac_eigen \
+  arb_dirac_invert \
+  clover_dynamical \
+  clover_hybrids \
+  clover_invert \
+  h_dibaryon \
+  heavy \
+  hqet_heavy_to_light \
+  hvy_qpot \
+  ks_dynamical \
+  ks_eigen \
+  ks_imp_dyn1 \
+  ks_imp_dyn2 \
+  propagating_form_factor \
+  pure_gauge \
+  schroed_cl_inv \
+  schroed_ks_dyn \
+  schroed_pg \
+  smooth_inst \
+  string_break \
+  symanzik_sl32 \
+  wilson_dynamical \
+  wilson_static
+
+
+all:
+	for dir in ${DIRS};\
+	do\
+	    (echo "Testing $$dir"; cd $$dir; ${MAKE} -kf Make_test test > maketest.log 2>&1 )\
+	done

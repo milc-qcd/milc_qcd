@@ -1,0 +1,198 @@
+QCD programs for MIMD Machines, version 6
+
+  March 23, 2000  Carleton DeTar
+  October 12, 2001 updated C. D.
+
+  For main changes from Version 5 to Version 6, see README_v6_20apr00
+  For changes from v6_20apr00 to v6_15oct01 see README_v6_15oct01.
+
+  Porting Code from Versions 4 and 5 to Version 6
+
+Here are the steps you should follow to convert version 4 code and
+version 5 code to version 6.  This description assumes that you are
+converting code that already appears in an applications directory
+under version 4 or 5 called "version4/app" or "version5/app".  IF THE
+CODE ALREADY RUNS UNDER VERSION 5, SEE ONLY ITEMS MARKED WITH "*".
+
+*0. Test input and output files
+   Before you change any working version 4 or 5 code, for each target in
+   your application (for ks_dynamical, that would be su3_rmd, su3_hmc,
+   etc) create an appropriate sample input file, "in.sample.su3_rmd",
+   "in.sample.su3_hmc", etc., run that target executable, and generate the
+   corresponding output file "out.sample.su3_rmd", "out.sample.su3_hmc",
+   etc.)  These are to be used to check your port.  If you need any
+   auxiliary files for your test, such as sample lattice files, create
+   them as well.  If possible, use the naming convention "*.sample*",
+   such as "lat.sample".
+
+*1. Consider removing duplicate code
+   Compare functions in the generic directories with functions in the
+app directory and consider using the generic routine instead.  You may
+need to modify the calling sequence to achieve the same functionality.
+
+2. Convert to ANSI prototyping
+   Convert all Kernighan-Ritchie style function definitions and
+   declarations to the ANSI standard.  Delete all declarations for
+   functions that appear in the generic or libraries directories.  Please
+   use global scope for all function declarations, wherever possible.
+   You should also check and then insert explicit casts for any
+   improperly cast function pointer arguments.  The most common example
+   is the use of gen_pt as a pointer to a data type or structure in a
+   function call. (gen_pt is defined as char *).  Your compiler should
+   help you find them.  The gcc compiler with the -Wall flag does a good
+   job of this.
+
+3. Create the application header file
+   Collect all declarations for top-level (external) functions in a
+   single header file called something like "app_includes.h".  See
+   ks_dynamical/ks_dyn_includes.h for an example.  This header is to be
+   used for all compilations in the "app" directory.  Also collect all
+   common includes in this file.  A typical set of includes that should
+   be placed at the top of app_includes.h is
+   
+     #include "../include/config.h"
+     #include <stdio.h>
+     #include <stdlib.h>
+     #include <math.h>
+     #include "../include/complex.h"
+     #include "../include/su3.h"
+     #include "../include/defines.h"
+     #include "lattice.h"
+     #include "../include/macros.h"
+     #include "../include/comdefs.h"
+     #include "../include/io_lat.h"
+     #include "../include/generic.h"
+   
+   Please note the new headers "macros.h", found in "libraries" collects
+   several macros that were previously defined in "lattice.h".  The
+   headers "generic.h", "io_lat.h" and "comdefs.h" declare functions,
+   globals, and types for routines in the "generic" directory.
+
+*4. In the applications header file, change all <> MILC includes
+    to an explicit "../include/*.h" as above.  Change LATDEF to "lattice.h".
+    Include the defines.h header.
+
+5. Insert the application header file.
+  Replace the includes in all files with a single
+
+   #include app_includes.h
+
+(Of course, selective special includes, e.g. <string.h> might still be
+kept where needed.)
+
+6. Modifications to the "lattice.h" header file. Remove macro
+  definitions that already appear in includes/macros.h.  Remove the
+  macro VERSION_NUMBER, unless the code does not use io_lat.h or
+  io_wb.h.  Modify the declaration for gen_pt, defining a macro for
+  the number of pointers as
+
+   #define N_POINTERS 8
+   EXTERN char ** gen_pt[N_POINTERS];
+
+  For codes computing Wilson or clover propagators you may also want to define
+a "wilson_quark_source" structure.  See 13 below.
+
+*7. "lattice.h", "defines.h", "params.h":  Change to the standard name
+    "lattice.h".  Move the definition of the params structure to "params.h".
+    Move application-wide macros to "defines.h".  Protect all headers
+    from multiple inclusion with "ifndefs".  See ks_dynamical/*.h for
+    the macro conventions.
+
+8. Modifications to setup*.c
+   This requires some detailed rewriting, but mostly deleting.  Use the
+   routines in generic/io_helpers.c where possible.  See
+   ks_dynamical/setup.c for an example.
+
+*9. Further modifications to setup*.c.  Add "#include "params.h" before
+  the declaration for "par_buf".  Remove the private "make_lattice"
+  procedure, (which has been superceded by generic/make_lattice.c),
+  but compare before removing to be sure your application isn't adding
+  more functionality.  If so, delete all but the custom code in setup.c,
+  rename the procedure, and call it after the make_lattice() call.
+  (For 95% of our applications, make_lattice will be the same.)
+  Remove send_parameters and get_parameters ... replaced by
+  broadcast_bytes((char *)&par_buf,sizeof(par_buf));
+
+10. Lattice I/O
+  Use reload_lattice and save_lattice in generic/io_helpers.c.
+
+11. Propagator I/O
+  Use r_open_prop, w_open_prop, reload_propagator, save_propagator,
+  r_close_prop, and w_close_prop in generic/io_helpers_w.c.
+
+12. gauge_info.c
+  Create a file gauge_info.c with code for writing the ASCII info
+  file.  See ks_dynamical/gauge_info.c for an example.
+
+13. wilson_info.c or clover_info.c 
+  If you do propagator I/O, create a
+  file wilson_info.c or clover_info.c for writing the corresponding
+  info file for the propagator files.  See wilson_invert or
+  clover_invert for an example.
+
+14. Make_template 
+  The make files for separate architectures are now
+  kept in the top-level directory e.g. "version5".  They are to be
+  copied into the app directory as needed.  They pull in the
+  application-specific file "Make_template", which you must provide.
+  Use ks_dynamical/Make_template as a template and modify as needed.
+  Be sure to include the *_info.o" file.
+
+*15. Further changes to Make_template
+  Remove definition of LIBDIR1 and LATDEF and add MYINCLUDEDIR.  See,
+  for example, ks_dynamical/Make_template.  Replace ${LIBDIR} in header
+  path with new macro ${INCLUDEDIR} = ../include.  Replace io_wb2.o
+  with io_wb3.o, if you use it.
+
+16. Make_test 
+  This is a convenience.  This make file is used to
+  provide a trivial first test of the correctness of the code -
+  especially useful when porting to a new platform.  It runs the test
+  suite you created in step 0 and compares the results with the
+  out.sample.* files.  You can use this procedure to test your port to
+  version 5.  See ks_dynamical/Make_test for an example.
+
+17. Wrappers for Wilson propagator or clover propagator inversions
+
+  A set of wrappers for calls to the inverters is provided in
+  generic_wilson and generic_clover.  Using them is optional, of
+  course.  These wrappers make it possible to "plug" in the inverter
+  at compilation time by linking the appropriate wrapper and inverter.
+  The wrappers come in a "lean" and a not-so-lean version.  Since the
+  inverters they call destroy the source, and restarting requires
+  restoring the source, the options are recreating the source (lean
+  version) or saving it (not-so-lean).  The lean version requires a
+  structure "wilson_quark_source" that holds the source parameters.
+  This structure is declared in the LATDEF file.  See
+  wilson_invert/lattice_w.h for an example.  This structure can be
+  customized.  The structure is loaded by the calling program and then
+  passed as an argument to the wrapper function.  The wrapper, in turn
+  passes it through to the function that creates the source, which you
+  select at compilation time.  The source is built by a routine in
+  generic_wilson or generic_clover.  All source routines have the same
+  function name, so the source is selected from the Make_template file
+  by linking from the appropriate object file.  for the not-so-lean
+  wrappers, the calling function builds the source.  The supplied
+  source routines require the "wilson_quark_source" structure. If you
+  want to create a new source, see wilson_invert/w_source.c and
+  wilson_invert/w_source.h for an example.
+
+*18. Compile the code with the "g++" compiler (the libraries must be
+  similarly compiled) and test it with the sample input and ouptut
+  files.  Fix any casts and remove extraneous conflicting
+  declarations.  We have stopped using (void) types, so a typical
+  change requires putting (char *) in front of every "&" in
+  gauge_info.c and clover_info.c.
+
+19. Release
+  When you are satisfied with your port and feel you would like to
+share it with the rest of the collaboration or the rest of the world,
+let us (Doug or Carleton) know and we will include it in the next release.
+
+
+
+
+
+
+
+

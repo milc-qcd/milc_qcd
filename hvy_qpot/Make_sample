@@ -1,0 +1,9 @@
+# For generating sample ouptut from trusted code
+# For hvy_qpot
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_hqp
+
+include ../Make_sample_template

@@ -1,0 +1,11 @@
+0 0 0  smear_file ../binary_samples/in.sample.local_smear
+0 0 0  smear_file ../binary_samples/in.sample.wall_smear
+0.1 0.2 0.3  smear_file  ../binary_samples/in.sample.local_smear
+0.1 0.2 0.3  smear_file ../binary_samples/in.sample.wall_smear
+0.3 0.3 0.3  smear_file ../binary_samples/in.sample.exp_smear_1
+
+
+
+
+
+

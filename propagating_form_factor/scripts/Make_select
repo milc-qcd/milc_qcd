@@ -1,0 +1,64 @@
+# For generating matrix elements and associated 2 pt functions
+
+# Work directory tree
+
+WORKDIR=/work/u2219/prop_form/b560m01
+HPSSCORRDIR=prop_ff/b560m01/correlators
+
+# Rules for fetching correlation files from HPSS
+
+# Three-point functions
+
+SPECT=.1218
+SP=2
+
+${WORKDIR}/${CFG}/HL3_p0_0${SPECT}.${CFG}:
+	hpss_get.sh HL3_p0_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+${WORKDIR}/${CFG}/HL3_p1_0${SPECT}.${CFG}:
+	hpss_get.sh HL3_p1_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+${WORKDIR}/${CFG}/HL3_p2_0${SPECT}.${CFG}:
+	hpss_get.sh HL3_p2_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+${WORKDIR}/${CFG}/HH3_p0_0${SPECT}.${CFG}:
+	hpss_get.sh HH3_p0_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+${WORKDIR}/${CFG}/HH3_p1_0${SPECT}.${CFG}:
+	hpss_get.sh HH3_p1_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+${WORKDIR}/${CFG}/HH3_p2_0${SPECT}.${CFG}:
+	hpss_get.sh HH3_p2_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+
+# Two-point functions
+
+${WORKDIR}/${CFG}/LL2_GG_0${SPECT}.${CFG}:
+	hpss_get.sh LL2_GG_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+${WORKDIR}/${CFG}/HL2_GE_0${SPECT}.${CFG}:
+	hpss_get.sh HL2_GE_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+${WORKDIR}/${CFG}/HL2_GG_0${SPECT}.${CFG}:
+	hpss_get.sh HL2_GG_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+
+${WORKDIR}/${CFG}/HL2_GL_0${SPECT}.${CFG}:
+	hpss_get.sh HL2_GL_0${SPECT}.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+
+${WORKDIR}/${CFG}/HH2_GL.${CFG}:
+	hpss_get.sh HH2_GL.${CFG} ${HPSSCORRDIR} ${WORKDIR}/${CFG} 0 nohup.out
+
+# List of files for form factor calculation and two point function analysis
+
+TWOFILELISTS= \
+   HH2_GLlist         \
+   HL2_GE_sp${SP}list \
+   HL2_GG_sp${SP}list \
+   HL2_GL_sp${SP}list \
+   LL2_GG_sp${SP}list
+
+THREEFILELISTS= \
+   HL3_p0_sp${SP}list   \
+   HL3_p1_sp${SP}list   \
+   HL3_p2_sp${SP}list   \
+   HH3_p0_sp${SP}list   \
+   HH3_p1_sp${SP}list   \
+   HH3_p2_sp${SP}list
+
+${TWOFILELISTS} ${THREEFILELISTS}: getcfg_sp${SP} hitcfg_sp${SP}
+	setup_filelist.sh getcfg_sp${SP} hitcfg_sp${SP} ${SPECT} ${SP}
+
+all: ${TWOFILELISTS} ${THREEFILELISTS}
+

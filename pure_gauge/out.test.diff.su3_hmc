@@ -1,0 +1,32 @@
+diffn out.test.su3_hmc.tmp out.sample.su3_hmc.tmp 1e-4
+Field 5 Line 4
+< ACCEPT: delta S = -8.655173e-02
+> ACCEPT: delta S = -8.984375e-02
+Field 5 Line 8
+< ACCEPT: delta S = -8.680671e-02
+> ACCEPT: delta S = -8.593750e-02
+Field 5 Line 12
+< ACCEPT: delta S = -8.285072e-02
+> ACCEPT: delta S = -7.910156e-02
+Field 5 Line 16
+< ACCEPT: delta S = -7.596061e-02
+> ACCEPT: delta S = -7.714844e-02
+Field 5 Line 20
+< ACCEPT: delta S = -6.646153e-02
+> ACCEPT: delta S = -5.566406e-02
+Field 5 Line 24
+< ACCEPT: delta S = -6.829205e-02
+> ACCEPT: delta S = -6.347656e-02
+Field 5 Line 28
+< ACCEPT: delta S = -6.831637e-02
+> ACCEPT: delta S = -8.984375e-02
+Field 5 Line 32
+< ACCEPT: delta S = -6.143636e-02
+> ACCEPT: delta S = -5.761719e-02
+Field 5 Line 36
+< ACCEPT: delta S = -6.177267e-02
+> ACCEPT: delta S = -6.152344e-02
+Field 5 Line 40
+< ACCEPT: delta S = -5.019560e-02
+> ACCEPT: delta S = -3.125000e-02
+Compared 42 lines with a tolerance of 1e-4

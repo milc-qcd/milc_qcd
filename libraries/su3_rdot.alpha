@@ -1,0 +1,33 @@
+/* su3_rdot.alpha: DEC alpha assembler version of su3_rdot.c*/
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+
+    .globl su3_rdot
+    .ent su3_rdot 2
+su3_rdot:
+	lds	ft0, 0(a0)	/* a.c[0].real*/
+	lds	ft1, 0(a1)	/* b.c[0].real*/
+	lds	ft2, 4(a0)	/* a.c[0].imag*/
+	lds	ft3, 4(a1)	/* b.c[0].imag*/
+	muls	ft0, ft1, ft0   /* c[0].real*/
+	lds	ft4, 8(a0)	/* a.c[1].real*/
+	lds	ft5, 8(a1)	/* b.c[1].real*/
+	muls	ft2, ft3, ft2   /* c[0].imag*/
+	lds	ft6, 12(a0)	/* a.c[1].imag*/
+	lds	ft7, 12(a1)	/* b.c[1].imag*/
+	muls	ft4, ft5, ft4   /* c[1].real*/
+	lds	ft8, 16(a0)	/* a.c[2].real*/
+	lds	ft9, 16(a1)	/* b.c[2].real*/
+	muls	ft6, ft7, ft6   /* c[1].imag*/
+	lds	ft10, 20(a0)	/* a.c[2].imag*/
+	lds	ft11, 20(a1)	/* b.c[2].imag*/
+	muls	ft8, ft9, ft8   /* c[2].real*/
+	adds	ft0,ft2,ft0
+	muls	ft10, ft11, ft10   /* c[2].imag*/
+	adds	ft4,ft6,ft4
+	adds  ft8,ft10,ft8
+	adds	ft0,ft4,ft0
+	adds	ft8,ft0,fv0
+	ret	zero, (ra)
+
+	.end

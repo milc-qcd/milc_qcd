@@ -1,0 +1,88 @@
+; sub4vecs.t3d: T3D assembler version of sub4vecs.c
+	.ident sub4vecs$c
+;
+;	Created by Cray MPPCG Std C 4.0.0
+;	Using command line options -o sub4vecs.o -S sub4vecs.s -DFAST -DPROTO 
+;	Created from source file sub4vecs.c
+;		located in directory /afstest/afs/psc/usr/1/toussain/version4/libraries
+;	On 02/11/94 at 16:18:07
+;
+
+	.psect	sub_four_su3_vecs@code,code
+sub_four_su3_vecs::				; Codeblock 0
+	; r16=A  r17=B0  r18=B1  r19=B2  r20=B3
+	; r22 = A[0]real r23 = A[0].imag
+	; r24 = A[1]real r25 = A[1].imag
+	; r26 = A[2]real r27 = A[2].imag
+	lds	f10, (r17)		; Line 23
+	lds	f11, (r16)		; Line 23
+	lds	f12, 4(r17)		; Line 23
+	lds	f13, 4(r16)		; Line 23
+	lds	f14, 8(r17)		; Line 24
+	lds	f15, 8(r16)		; Line 24
+	subs/d	f11, f10, f22		; Line 23
+	lds	f16, 12(r17)		; Line 24
+	lds	f17, 12(r16)		; Line 24
+	subs/d	f13, f12, f23		; Line 23
+	lds	f18, 16(r17)		; Line 25
+	lds	f19, 16(r16)		; Line 25
+	subs/d	f15, f14, f24		; Line 24
+	lds	f20, 20(r17)		; Line 25
+	lds	f21, 20(r16)		; Line 25
+	subs/d	f17, f16, f25		; Line 24
+	; Start on b1
+	lds	f10, (r18)		; Line 26
+	subs/d	f19, f18, f26		; Line 25
+	lds	f11, 4(r18)		; Line 26
+	subs/d	f21, f20, f27		; Line 25
+	lds	f12, 8(r18)		; Line 27
+	subs/d	f22, f10, f22		; Line 26
+	lds	f13, 12(r18)		; Line 27
+	subs/d	f23, f11, f23		; Line 26
+	lds	f14, 16(r18)		; Line 28
+	subs/d	f24, f12, f24		; Line 27
+	lds	f15, 20(r18)		; Line 28
+	subs/d	f25, f13, f25		; Line 27
+	; Start on b2
+	lds	f16, (r19)		; Line 29
+	subs/d	f26, f14, f26		; Line 28
+	lds	f17, 4(r19)		; Line 29
+	subs/d	f27, f15, f27		; Line 28
+	lds	f18, 8(r19)		; Line 30
+	subs/d	f22, f16, f22		; Line 29
+	lds	f19, 12(r19)		; Line 30
+	subs/d	f23, f17, f23		; Line 29
+	lds	f20, 16(r19)		; Line 31
+	subs/d	f24, f18, f24		; Line 30
+	lds	f21, 20(r19)		; Line 31
+	subs/d	f25, f19, f25		; Line 30
+	; Start on B3
+	lds	f10, (r20)		; Line 32
+	subs/d	f26, f20, f26		; Line 31
+	lds	f11, 4(r20)		; Line 32
+	subs/d	f27, f21, f27		; Line 31
+	lds	f12, 8(r20)		; Line 33
+	subs/d	f22, f10, f22		; Line 32
+	lds	f13, 12(r20)		; Line 33
+	subs/d	f23, f11, f23		; Line 32
+	sts	f22, (r16)		; Line 32
+	lds	f14, 16(r20)		; Line 34
+	subs/d	f24, f12, f24		; Line 33
+	sts	f23, 4(r16)		; Line 32
+	lds	f15, 20(r20)		; Line 34
+	subs/d	f25, f13, f25		; Line 33
+	sts	f24, 8(r16)		; Line 33
+	subs/d	f26, f14, f26		; Line 34
+	sts	f25, 12(r16)		; Line 33
+	subs/d	f27, f15, f27		; Line 34
+	sts	f26, 16(r16)		; Line 34
+	bis	r31, r31, r0		; Line 35
+	sts	f27, 20(r16)		; Line 34
+	ret	r31, (r26)		; Line 35
+	.endp
+
+
+	.psect	sub4vecs$c@code,code
+	.endp
+
+	.end

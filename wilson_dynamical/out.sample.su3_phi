@@ -1,0 +1,49 @@
+SU3 with Wilson fermions
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+PHI algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 2
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.46
+kappa 0.111
+microcanonical_time_step 0.02
+steps_per_trajectory 5
+max_cg_iterations 100
+error_per_site 1e-05
+error_for_propagator 1e-05
+gauge configuration to be saved in lat.sample
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 1.000000e-02
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+WARMUPS COMPLETED
+F2MES 1.184386e+01 -1.304808e-01 -1.134136e+00 2.363524e-02 1.196188e+01 -1.495685e-01 -1.802109e-07
+GMES 2.853794e+00 1.523490e-03 1.600000e+01 2.852669e+00 2.848922e+00
+F2MES 1.144469e+01 1.017016e-01 -8.931652e-01 -3.591847e-01 1.166344e+01 1.592546e-01 -1.458859e-06
+GMES 2.710892e+00 -2.644613e-03 1.600000e+01 2.728163e+00 2.731602e+00
+RUNNING COMPLETED
+average cg iters for step= 7.000000e+00
+average cg iters for measurement= 1.600000e+01
+Time = 2.960000e+00 seconds
+total_iters = 108
+Saved gauge configuration in parallel to binary file lat.sample
+Time stamp Thu Oct 16 13:35:35 1997
+Checksums 52842396 c959b7f
+Wrote info file lat.sample.info
+Time to save = 4.000000e-02
+CHECK PLAQ: 2.728163e+00 2.731602e+00
+
+

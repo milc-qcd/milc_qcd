@@ -1,0 +1,11 @@
+# For generating sample ouptut from trusted code
+# For ks_imp_dyn2
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_rmd_eo su3_rmd_fn su3_hmc_eo su3_hmc_fn su3_rmd_spectrum_eo su3_rmd_spectrum_fn \
+   su3_2spec
+
+include ../Make_sample_template
+

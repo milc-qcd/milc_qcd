@@ -1,0 +1,103 @@
+Addition table for momentum indices giving  k = q - p
+Used for selecting the two-point function momenta for the
+form factor ratio
+
+This table is scanned by a script that looks for a "P" in the first
+field.  All other lines are ignored and may be edited.
+
+P  0  Q  0  K  0
+P  0  Q  1  K  1
+P  0  Q  2  K  2
+P  0  Q	 3  K  3
+P  0  Q	 4  K  4
+P  0  Q	 5  K  5
+P  0  Q	 6  K  6
+P  0  Q	 7  K 10
+P  0  Q	 8  K 13
+P  0  Q	 9  K 14
+P  0  Q	10  K 15
+P  0  Q	11  K 23
+P  0  Q	12  K 24
+P  0  Q	13  K 25
+P  0  Q	14  K 29
+P  0  Q	15  K 30
+P  0  Q	16  K 31
+P  0  Q	17  K 34
+P  0  Q	18  K 38
+P  0  Q	19  K 39
+P  0  Q	20  K 40
+
+P  1  Q  0  K  1
+P  1  Q  1  K  0
+P  1  Q  2  K  7
+P  1  Q	 3  K  8
+P  1  Q	 4  K  2
+P  1  Q	 5  K  3
+P  1  Q	 6  K 12
+P  1  Q	 7  K  6
+P  1  Q	 8  K  1
+P  1  Q	 9  K 16
+P  1  Q	10  K 17
+P  1  Q	11  K 10
+P  1  Q	12  K 19
+P  1  Q	13  K 20
+P  1  Q	14  K 21
+P  1  Q	15  K 22
+P  1  Q	16  K 32
+P  1  Q	17  K 33
+P  1  Q	18  K 23
+P  1  Q	19  K 36
+P  1  Q	20  K 37
+
+P  2  Q  0  K  4
+P  2  Q  1  K  2
+P  2  Q  2  K  1
+P  2  Q	 3  K 11
+P  2  Q	 4  K  0
+P  2  Q	 5  K  9
+P  2  Q	 6  K  8
+P  2  Q	 7  K  3
+P  2  Q	 8  K  7
+P  2  Q	 9  K  7
+P  2  Q	10  K 26
+P  2  Q	11  K  5
+P  2  Q	12  K  6
+P  2  Q	13  K 15
+P  2  Q	14  K  4
+P  2  Q	15  K 27
+P  2  Q	16  K 28
+P  2  Q	17  K 25
+P  2  Q	18  K 18
+P  2  Q	19  K 19
+P  2  Q	20  K 35
+
+
+p momenta
+ 0	0 0 0
+ 1	1 0 0
+ 2	1 1 0
+
+q momenta	  k momenta
+
+ 0	0 0 0	  0        0  0 0   	 21       1  2 0
+ 1	1 0 0	  1        1  0 0	 22       1  0 2
+ 2	0 1 0	  2        0  1 0	 23       2  1 1
+ 3	0 0 1	  3        0  0 1	 24       1  2 1
+ 4	1 1 0	  4        1  1 0	 25       1  1 2
+ 5	1 0 1	  5        1  0 1	 26      -1 -1 2
+ 6	0 1 1	  6        0  1 1	 27       1 -1 2
+ 7	1 1 1	  7       -1  1 0	 28      -1  1 2
+ 8	2 0 0	  8       -1  0 1	 29       2  2 0
+ 9	0 2 0	  9        0 -1 1	 30       2  0 2
+10	0 0 2	  10       1  1 1	 31       0  2 2
+11	2 1 1	  11      -1 -1 1	 32      -1  2 2
+12	1 2 1	  12      -1  1 1	 33       1  2 2
+13	1 1 2	  13       2  0 0	 34       2  2 2
+14	2 2 0	  14       0  2 0	 35       0  0 3
+15	2 0 2	  15       0  0 2	 36       0  3 1
+16	0 2 2	  16      -1  2 0	 37       0  1 3
+17	2 2 2	  17      -1  0 2	 38       3  1 1
+18	3 1 1	  18       2  0 1	 39       1  3 1
+19	1 3 1	  19       0  2 1	 40       1  1 3
+20	1 1 3	  20       0  1 2
+

@@ -1,0 +1,5 @@
+diffn out.test.su3_hmc_bi_spectrum.tmp out.sample.su3_hmc_bi_spectrum.tmp 1e-4
+Field 5 Line 3
+< ACCEPT: delta S = -7.803953e-01
+> ACCEPT: delta S = -7.802390e-01
+Compared 57 lines with a tolerance of 1e-4

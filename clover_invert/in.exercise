@@ -1,0 +1,87 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 4
+ 
+number_of_kappas 1
+beta 5.0
+kappa 0.1
+clov_c 1.0
+u0 1.0
+max_cg_iterations 100
+error_for_propagator .00001
+wallflag 2
+r0 1.0
+reload_parallel lat.sample
+coulomb_gauge_fix
+save_parallel lat.sample.gf
+fresh_prop
+save_checkpoint_prop dummy_c_prop
+scratch_prop pscratch
+
+number_of_kappas 1
+beta 5.0
+kappa 0.1
+clov_c 1.0
+u0 1.0
+max_cg_iterations 100
+error_for_propagator .00001
+wallflag 2
+r0 1.0
+reload_parallel lat.sample.gf
+no_gauge_fix
+forget
+reload_parallel_prop dummy_c_prop
+save_ascii_prop dummy_a_prop
+scratch_prop pscratch
+
+
+number_of_kappas 1
+beta 5.0
+kappa 0.1
+clov_c 1.0
+u0 1.0
+max_cg_iterations 100
+error_for_propagator .00001
+wallflag 2
+r0 1.0
+reload_parallel lat.sample.gf
+no_gauge_fix
+forget
+reload_ascii_prop dummy_a_prop
+save_serial_prop dummy_s_prop
+scratch_prop pscratch
+
+number_of_kappas 1
+beta 5.0
+kappa 0.1
+clov_c 1.0
+u0 1.0
+max_cg_iterations 100
+error_for_propagator .00001
+wallflag 2
+r0 1.0
+reload_parallel lat.sample.gf
+no_gauge_fix
+forget
+reload_parallel_prop dummy_s_prop
+save_parallel_prop dummy_p_prop
+scratch_prop pscratch
+
+number_of_kappas 1
+beta 5.0
+kappa 0.1
+clov_c 1.0
+u0 1.0
+max_cg_iterations 100
+error_for_propagator .00001
+wallflag 2
+r0 1.0
+reload_parallel lat.sample.gf
+no_gauge_fix
+forget
+reload_serial_prop dummy_p_prop
+forget
+scratch_prop pscratch
+

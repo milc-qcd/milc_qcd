@@ -1,0 +1,125 @@
+SU3 with improved KS action
+Eigenvalues and eigenvectors
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.4 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+mass 0.1
+u0 1
+max_cg_iterations 300
+error_per_site 5e-06
+error_for_propagator 2e-06
+Number_of_eigenvals 32
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+Kalkreuter_iters 20
+eigenval_tolerance 1e-07
+error_decrease 0.3
+reload_serial ../binary_samples/lat.sample.inst
+Reading as old-style gauge field configuration with byte reversal
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.inst
+Time to reload gauge configuration = 1.648498e-02
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+Unitarity checked.  Max deviation 1.49e-07
+Time to check unitarity = 1.954079e-03
+Calling for path table
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
+Done with path table
+PBP: mass 1.000000e-01     1.011303e-01  1.080407e-01  6.531504e-02  6.531510e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-01,  1.416704e+00 ( 1 of 1 )
+Eigenvalues after diagonalization at iteration 20
+BEGIN RESULTS
+Eigenvalue(0) = 0.0334421 +/- 1.976727e-09	 cvg? 0  
+Eigenvalue(1) = 0.0334421 +/- 3.830448e-09	 cvg? 0  
+Eigenvalue(2) = 1.94645 +/- 3.785886e-07	 cvg? 0  
+Eigenvalue(3) = 1.94645 +/- 3.366403e-07	 cvg? 0  
+Eigenvalue(4) = 1.95596 +/- 4.060482e-07	 cvg? 0  
+Eigenvalue(5) = 1.95596 +/- 2.068111e-06	 cvg? 0  
+Eigenvalue(6) = 1.98104 +/- 4.493703e-07	 cvg? 0  
+Eigenvalue(7) = 1.98104 +/- 1.941341e-06	 cvg? 0  
+Eigenvalue(8) = 2.0133 +/- 2.648498e-07	 cvg? 0  
+Eigenvalue(9) = 2.0133 +/- 1.857241e-06	 cvg? 0  
+Eigenvalue(10) = 2.11768 +/- 4.358735e-07	 cvg? 0  
+Eigenvalue(11) = 2.11769 +/- 4.319401e-06	 cvg? 0  
+Eigenvalue(12) = 2.1465 +/- 7.485110e-08	 cvg? 0  
+Eigenvalue(13) = 2.1465 +/- 1.028329e-07	 cvg? 0  
+Eigenvalue(14) = 2.34722 +/- 7.813906e-08	 cvg? 0  
+Eigenvalue(15) = 2.34722 +/- 8.266871e-08	 cvg? 0  
+Eigenvalue(16) = 2.34722 +/- 5.085757e-08	 cvg? 0  
+Eigenvalue(17) = 2.34722 +/- 2.213239e-07	 cvg? 0  
+Eigenvalue(18) = 2.34722 +/- 1.826147e-07	 cvg? 0  
+Eigenvalue(19) = 2.34722 +/- 4.450849e-07	 cvg? 0  
+Eigenvalue(20) = 2.34722 +/- 7.497409e-07	 cvg? 0  
+Eigenvalue(21) = 2.34722 +/- 8.979686e-07	 cvg? 0  
+Eigenvalue(22) = 2.34722 +/- 1.136500e-06	 cvg? 0  
+Eigenvalue(23) = 2.34722 +/- 2.510362e-06	 cvg? 0  
+Eigenvalue(24) = 2.34722 +/- 2.237177e-06	 cvg? 0  
+Eigenvalue(25) = 2.34722 +/- 2.836201e-06	 cvg? 0  
+Eigenvalue(26) = 2.34722 +/- 4.216467e-06	 cvg? 0  
+Eigenvalue(27) = 2.34723 +/- 2.516636e-06	 cvg? 0  
+Eigenvalue(28) = 2.34723 +/- 2.210635e-05	 cvg? 0  
+Eigenvalue(29) = 2.34731 +/- 1.104121e-03	 cvg? 0  
+Eigenvalue(30) = 2.42137 +/- 1.333144e-06	 cvg? 0  
+Eigenvalue(31) = 2.42137 +/- 4.790527e-06	 cvg? 0  
+Chirality(0): -0.349875
+Chirality(1): -0.349875
+Chirality(2): 0.0572426
+Chirality(3): 0.057246
+Chirality(4): 0.0547565
+Chirality(5): 0.0547525
+Chirality(6): 0.0484481
+Chirality(7): 0.04845
+Chirality(8): 0.0471447
+Chirality(9): 0.0471215
+Chirality(10): 0.0317769
+Chirality(11): 0.0317878
+Chirality(12): 0.0198428
+Chirality(13): 0.0198292
+Chirality(14): -9.51695e-09
+Chirality(15): 1.84518e-08
+Chirality(16): 2.93512e-08
+Chirality(17): -4.70118e-09
+Chirality(18): -2.34577e-08
+Chirality(19): -2.56696e-08
+Chirality(20): -2.21917e-08
+Chirality(21): -3.59869e-08
+Chirality(22): -2.1857e-08
+Chirality(23): -3.43607e-09
+Chirality(24): -1.45919e-07
+Chirality(25): -2.32512e-07
+Chirality(26): 1.87065e-08
+Chirality(27): -1.91161e-07
+Chirality(28): 8.65475e-08
+Chirality(29): -7.23293e-06
+Chirality(30): -0.0240749
+Chirality(31): -0.0240752
+RUNNING COMPLETED
+average cg iters for step= 2.311840e+05
+Time = 1.089308e+09 seconds
+total_iters = 25
+total Rayleigh iters = 18188
+
+
+get_f: EOF on STDIN while expecting mass.
+exit: Thu Jul  8 11:27:11 2004
+

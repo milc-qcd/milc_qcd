@@ -1,0 +1,47 @@
+Schroedinger functional for pure gauge SU3
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+Overrelaxed/quasi-heat bath algorithm
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 8352
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 10
+traj_between_meas 1
+beta 5
+bc_flag 1
+steps_per_trajectory 2
+qhb_steps 1
+gauge configuration to be saved in gdummy
+unit gauge configuration loaded
+Boundary values set
+CHECK PLAQ: 3.000000e+00 2.721664e+00
+Unitarity checked
+Time to check unitarity = 1.000000e-02
+WARMUPS COMPLETED
+GMES 2.176997e+01 1.635357e+00 9.990000e+01 1.891570e+00 1.747827e+00
+GMES 4.964029e+00 1.458620e+00 9.990000e+01 1.618213e+00 1.536661e+00
+GMES 8.497558e-01 1.421534e+00 9.990000e+01 1.442399e+00 1.416085e+00
+GMES 9.418031e+00 1.373820e+00 9.990000e+01 1.427112e+00 1.381877e+00
+GMES 5.165492e+00 1.391818e+00 9.990000e+01 1.436743e+00 1.395320e+00
+GMES -2.767925e+00 1.283824e+00 9.990000e+01 1.392822e+00 1.337467e+00
+GMES 1.011897e+00 1.289341e+00 9.990000e+01 1.380508e+00 1.286989e+00
+GMES -5.591020e+00 1.250523e+00 9.990000e+01 1.291418e+00 1.301839e+00
+GMES -8.566690e+00 1.281549e+00 9.990000e+01 1.278870e+00 1.305917e+00
+GMES -4.930817e+00 1.321437e+00 9.990000e+01 1.346018e+00 1.314557e+00
+RUNNING COMPLETED
+Time = 1.650000e+00 seconds
+Saved gauge configuration serially to binary file gdummy
+Time stamp Wed Feb 11 22:47:02 1998
+Checksums c4f8d6f7 5fb985b1
+Wrote info file gdummy.info
+Time to save = 1.000000e-02
+CHECK PLAQ: 1.346017e+00 1.314556e+00
+
+

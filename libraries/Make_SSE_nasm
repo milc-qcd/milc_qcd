@@ -1,0 +1,79 @@
+# Makefile for Libraries for QCD programs
+#
+# No communications here, so good for clusters as well as workstations
+
+# NASM SSE P3/P4 specialization 
+# You will need the NASM assembler.  See http://nasm.2y.net
+#  DO NOT USE WITH DOUBLE PRECISION VERSION!! (Until we have double
+#     precision assembly code)
+
+# Some SU(3) operations assembly coded in NASM.  See files in the
+# sse/libraries directory with suffix .nas.
+
+MAKEFILE = Make_SSE_nasm
+
+# See Make_vanilla for a generic processor
+# See Make_t3e for the Cray T3E assembly code
+# See Make_alpha for  DEC alpha assembly code
+# See Make_RS6K for IBM AIX RS6000
+
+#   Architecture and cc flags
+
+CARCH=
+CARCH= -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586
+
+CODETYPE         = -DFAST  -DPRECISION=${PRECISION} # usually unchanged
+
+CFLAGS = -O ${CARCH} -Wall ${CODETYPE}
+
+CC = gcc
+
+# For invoking the NASM assembler
+ASM = nasm
+ASMFLAGS = -f elf
+
+ifeq (${PRECISION},1)
+   NASM_SOURCE = ../sse/nas
+else
+   NASM_SOURCE = ../sse2/nas
+endif
+
+# The list below should conform to the routines in the libraries
+
+# The first set is available only in double precision
+
+ifeq (${PRECISION},1)
+addvec.o: ${NASM_SOURCE}/sse_addvec.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_addvec.s
+sub4vecs.o: ${NASM_SOURCE}/sse_sub4vecs.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_sub4vecs.s
+s_m_a_vec.o: ${NASM_SOURCE}/sse_s_m_a_vec.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_s_m_a_vec.s
+s_m_a_mat.o: ${NASM_SOURCE}/sse_s_m_a_mat.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_s_m_a_mat.s
+endif
+
+m_amat_hwvec.o: ${NASM_SOURCE}/sse_m_amat_hwvec.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_amat_hwvec.s
+m_amatvec.o: ${NASM_SOURCE}/sse_m_amatvec.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_amatvec.s
+m_amv_4dir.o: ${NASM_SOURCE}/sse_m_amv_4dir.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_amv_4dir.s
+m_amv_4vec.o: ${NASM_SOURCE}/sse_m_amv_4vec.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_amv_4vec.s
+m_mat_an.o: ${NASM_SOURCE}/sse_m_mat_an.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mat_an.s
+m_mat_hwvec.o: ${NASM_SOURCE}/sse_m_mat_hwvec.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mat_hwvec.s
+m_mat_na.o: ${NASM_SOURCE}/sse_m_mat_na.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mat_na.s
+m_mat_nn.o: ${NASM_SOURCE}/sse_m_mat_nn.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mat_nn.s
+m_matvec.o: ${NASM_SOURCE}/sse_m_matvec.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_matvec.s
+m_mv_s_4dir.o: ${NASM_SOURCE}/sse_m_mv_s_4dir.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mv_s_4dir.s
+su3_proj.o: ${NASM_SOURCE}/sse_su3_proj.s
+	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_su3_proj.s
+
+include Make_template

@@ -1,0 +1,10 @@
+magic_number 20103
+time_stamp "Wed Aug 25 08:30:50 1999"
+checksums "2e218ab1 2d188e6b"
+nx 4
+ny 4
+nz 4
+nt 8
+action.description "Pure gauge Schroedinger functional"
+gauge.description "One plaqette action with bc_flag 2"
+gauge.beta11 5.700000

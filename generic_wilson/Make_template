@@ -1,0 +1,110 @@
+#  Generic routines for Wilson fermions
+#  MIMD version 6
+#
+#  Generic make-include file for generic_wilson codes
+#  This template file defines rules and macros common to all applications
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  The paths are relative to the application directory.
+
+G_WILSON_ALL =  \
+    bj_to_weyl.o \
+    boundary_flip.o \
+    copy_site_wilson_vector.o \
+    d_bicgilu_w_lean.o \
+    d_bicgilu_w_lean2.o \
+    d_cgilu_w_lean.o \
+    d_cgilu_w_lean2.o \
+    d_congrad2.o \
+    d_w_meson.o \
+    dslash_lean.o \
+    dslash_lean2.o \
+    dslash_lean_forwards.o \
+    dslash_w.o \
+    dslash_w2.o \
+    dslash_w3.o \
+    meson_cont.o \
+    mrilu_w_or.o \
+    w_baryon.o \
+    w_baryon_hl.o \
+    w_meson.o \
+    w_source.o \
+    w_source_h.o \
+    wilson_invert.o \
+    wilson_invert_lean.o
+
+# Must list our headers in generic_wilson_includes.h
+G_WILSON_HEADERS = \
+  ../include/config.h \
+  ../include/complex.h \
+  ../include/su3.h \
+  ../include/macros.h \
+  ../include/comdefs.h \
+  ../include/generic.h \
+  ../include/generic_quark_types.h \
+  ../include/generic_wilson.h \
+  lattice.h
+
+G_WILSON_ALL_DEPEND = \
+  ../generic_wilson/generic_wilson_includes.h \
+  ../generic_wilson/Make_template \
+  ../include/Make_template \
+  ${LASTMAKE} \
+  ${G_WILSON_HEADERS}
+
+${G_WILSON_ALL}: ${G_WILSON_ALL_DEPEND}
+
+# Rules for header files
+include ../include/Make_template
+
+bj_to_weyl.o: ../generic_wilson/bj_to_weyl.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/bj_to_weyl.c 
+boundary_flip.o: ../generic_wilson/boundary_flip.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/boundary_flip.c 
+copy_site_wilson_vector.o: ../generic_wilson/copy_site_wilson_vector.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/copy_site_wilson_vector.c 
+d_bicgilu_w_lean.o: ../generic_wilson/d_bicgilu_w_lean.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/d_bicgilu_w_lean.c 
+d_bicgilu_w_lean2.o: ../generic_wilson/d_bicgilu_w_lean2.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/d_bicgilu_w_lean2.c 
+d_cgilu_w_lean.o: ../generic_wilson/d_cgilu_w_lean.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/d_cgilu_w_lean.c 
+d_cgilu_w_lean2.o: ../generic_wilson/d_cgilu_w_lean2.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/d_cgilu_w_lean2.c 
+d_congrad2.o: ../generic_wilson/d_congrad2.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/d_congrad2.c 
+d_w_meson.o: ../generic_wilson/d_w_meson.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/d_w_meson.c 
+dslash_lean.o: ../generic_wilson/dslash_lean.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_lean.c 
+dslash_lean2.o: ../generic_wilson/dslash_lean2.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_lean2.c 
+dslash_lean_forwards.o: ../generic_wilson/dslash_lean_forwards.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_lean_forwards.c 
+dslash_w.o: ../generic_wilson/dslash_w.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_w.c 
+dslash_w2.o: ../generic_wilson/dslash_w2.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_w2.c 
+dslash_w3.o: ../generic_wilson/dslash_w3.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/dslash_w3.c 
+meson_cont.o: ../generic_wilson/meson_cont.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/meson_cont.c 
+mrilu_w_or.o: ../generic_wilson/mrilu_w_or.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/mrilu_w_or.c 
+w_baryon.o: ../generic_wilson/w_baryon.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/w_baryon.c 
+w_baryon_hl.o: ../generic_wilson/w_baryon_hl.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/w_baryon_hl.c 
+w_meson.o: ../generic_wilson/w_meson.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/w_meson.c 
+w_source.o: ../generic_wilson/w_source.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/w_source.c 
+w_source_h.o: ../generic_wilson/w_source_h.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/w_source_h.c 
+wilson_invert.o: ../generic_wilson/wilson_invert.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/wilson_invert.c 
+wilson_invert_lean.o: ../generic_wilson/wilson_invert_lean.c
+	${CC} -c ${CFLAGS}  ../generic_wilson/wilson_invert_lean.c 
+
+

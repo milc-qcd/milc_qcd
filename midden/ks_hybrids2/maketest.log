@@ -1,0 +1,35 @@
+for proj in ks_hybrids;\
+do\
+     	     cp -p ../Make_vanilla .;\
+     make -f Make_vanilla $proj;\
+     make -f Make_test "PROJ=$proj" out.test.diff.$proj;\
+     rm -f $proj;\
+     rm -f localmake;\
+done
+make[1]: Entering directory `/home/dirac/detar/milc/v6/ks_hybrids2'
+make -f Make_vanilla target "MYTARGET= ks_hybrids" \
+"DEFINES= " \
+"EXTRA_OBJECTS = "
+make[2]: Entering directory `/home/dirac/detar/milc/v6/ks_hybrids2'
+Building libraries with Make_vanilla
+cd ../libraries ;\
+make -f Make_vanilla   "APP_CC=gcc    " all
+make[3]: Entering directory `/home/dirac/detar/milc/v6/libraries'
+================================================================
+PLEASE CHECK COMPILERS: Libraries: gcc . Application: gcc
+================================================================
+make[3]: Leaving directory `/home/dirac/detar/milc/v6/libraries'
+gcc     -c -O3      -DVANILLA -DINLINE      -I.   ../generic_ks/d_congrad5.c
+gcc      -o ks_hybrids \
+control.o d_congrad5.o d_plaq4.o gaugefix2.o make_lattice.o setup.o reunitarize2.o ranstuff.o rephase.o check_unitarity.o layout_hyper.o io_lat4.o io_helpers.o gauge_info.o field_strength.o spectrum_hybrids4.o smear_links.o  com_vanilla.o io_nonansi.o  ../libraries/su3.a ../libraries/complex.a  -lm
+touch localmake
+make[2]: Leaving directory `/home/dirac/detar/milc/v6/ks_hybrids2'
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/ks_hybrids2'
+make[1]: Entering directory `/home/dirac/detar/milc/v6/ks_hybrids2'
+ks_hybrids  < in.sample.ks_hybrids > out.test.ks_hybrids
+../headtail.pl STARTPROP total_iters < out.test.ks_hybrids > out.test.ks_hybrids.tmp
+../headtail.pl STARTPROP total_iters < out.sample.ks_hybrids > out.sample.ks_hybrids.tmp
+../diffn.pl out.test.ks_hybrids.tmp out.sample.ks_hybrids.tmp 1e-6 > \
+   out.test.diff.ks_hybrids
+rm out.test.ks_hybrids.tmp out.sample.ks_hybrids.tmp
+make[1]: Leaving directory `/home/dirac/detar/milc/v6/ks_hybrids2'

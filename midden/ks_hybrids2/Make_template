@@ -1,0 +1,95 @@
+#  Makefile for the Kogut-Susskind inversion program
+#  Kogut-Susskind fermions
+#  MIMD version 6
+#
+#  Generic make-include file for ks_hybrids2 codes
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+
+# Choose one of the lattice layout algorithms:
+LAYOUT = layout_hyper
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = \
+  ${INCLUDEDIR}/config.h \
+  ${INCLUDEDIR}/complex.h \
+  ${INCLUDEDIR}/su3.h \
+  ${INCLUDEDIR}/comdefs.h \
+  ${INCLUDEDIR}/macros.h \
+  ${INCLUDEDIR}/generic.h \
+  ${INCLUDEDIR}/generic_ks.h \
+  ${INCLUDEDIR}/io_lat.h
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  ks_hyb_includes.h \
+  ${ADDHEADERS}
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
+
+MY_OBJECTS= control.o d_congrad5.o d_plaq4.o gaugefix2.o make_lattice.o \
+	setup.o reunitarize2.o ranstuff.o rephase.o \
+	check_unitarity.o ${LAYOUT}.o  io_helpers.o gauge_info.o \
+	field_strength.o spectrum_hybrids4.o smear_links.o
+
+#Libraries for complex numbers and su3 functions
+QCDLIB = ${LIBDIR}/su3.a ${LIBDIR}/complex.a
+
+.c.o: ; ${CC} -c ${CFLAGS} $*.c
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${MYTARGET}
+
+${LASTMAKE}:
+	-/bin/rm -f .lastmake.*
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+# To force a remake when changing make files
+ALL_MAKES = Make_template ../generic/Make_template \
+  ../generic_ks/Make_template ${MAKEFILE} ../include/Make_template
+
+OBJECTS = ${MY_OBJECTS} ${EXTRA_OBJECTS} ${MACHINE_DEP}
+
+${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+##### Targets:
+# Optional DEFINES for timing:
+# -DCGTIME for cg timing and iterations
+
+ks_hybrids::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= " \
+	"EXTRA_OBJECTS = "
+
+clean:
+	-/bin/rm -f *.o
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+# Rules for header files
+include ../include/Make_template
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" all
+
+localmake: ${OBJECTS} ${QCDLIB}
+	${LD} ${LDFLAGS} -o ${MYTARGET} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 

@@ -1,0 +1,76 @@
+	This directory contains code for the measurement of time-like
+Wilson loops with APE-smeared links for the space-like segments, giving
+better overlap for the extraction of the heavy quark potential.
+
+The program always measures planar, time-like Wilson loops, and depending
+on the input parameter "off_axis_flag" also off-axis time-like loops with
+the space like parts along the directions (1,1,0), (2,1,0) and (1,1,1)
+plus others related by the lattice symmetry.
+
+The computation of the Wilson loops is done by first performing a gauge
+transformation to axial gauge, after the desired APE smearing of space-like
+links is accomplished.
+
+Some simple glueball operators are also measured from the original and then
+the smeared links, namely the 3 orientation of spatial plaquettes summed
+over each time slice. The O++, 2++ and 1+- glueball correaltion functions
+can then be constructed in the analysis stage.
+
+-new files: smearing.c  -- does the APE smearing of space-like links
+            ax_gauge.c  -- transforms to axial gauge: the non-trivial
+                           time-like links of the last time slice are
+                           copied to all other time slices, to save
+                           comunications later on.
+            w_loop1.c   -- computation of planar Wilson loops
+            w_loop2.c   -- computation of off-axis time-like Wilson loops
+            s_m_mat.c   -- multiply a SU(3) matrix with a scalar
+
+-changed files: control.c, setup.c, lattice_wlp.h
+
+Before compiling this code, the libraries must be compiled.  See the
+"libraries" directory.
+
+Use different Makefiles for different machines:
+        For a generic workstation, use "Make_vanilla".
+        For the Intel machine or Intel simulator, use "Make_intel".
+        For the Ncube machine, use "Make_ncube
+
+To make the code:
+  Edit "Make_XXXX" to get the library directories, etc. set right
+  make -f Make_XXXX su3_hqp >& make.log &
+Here "Make_XXXX" is the Makefile
+For the Ncube machine, use:
+  make -f Make_ncube nodes=NN su3_hqp >& make.log &
+        here "NN" is the number of nodes you want to use.
+
+To run the code on your workstation (using "com_vanilla.c")
+   su3_hqp < in.sample > out.sample
+
+To run the code on the Intel machine:
+  getcube -tNN
+  newserver > out.sample
+  load su3_hqp
+  waitcube < in.sample
+  relcube
+where NN is the number of nodes you want to use
+
+To run the code on the Intel machine simulator:
+  bsim
+  getcube -tNN
+  load su3_hqp
+  start
+      enter the input by hand
+      ctrl-d to stop program
+      ctrl-c to awaken simulator
+  quit
+where NN is the number of nodes you want to use
+
+To run the code on the Ncube machine:
+   xnc -d XX su3_hqp < in.sample > out.sample
+or
+   xnc -d XX -N YY su3_hqp < in.sample > out.sample
+where XX is the dimension of the cube and YY is the starting node.
+(Number of nodes = 2^XX)
+
+"in.sample" is a sample input file
+

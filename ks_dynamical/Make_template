@@ -1,0 +1,181 @@
+#  Kogut-Susskind fermions
+#  MIMD version 6
+#
+#  Generic make-include file for ks_dynamical codes
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#	"make su3_rmd" uses the refreshed molecular dynamics algorithm
+#	"make su3_phi" uses phi algorithm.
+#	"make su3_hmc" uses hybrid Monte Carlo algorithm.
+#	"make su3_rmd_spectrum" uses the refreshed molecular dynamics
+#		algorithm and does spectrum measurements
+#	"make su3_rmd_nlspec" uses the refreshed molecular dynamics
+#		algorithm and does spectrum measurements including
+#		nonlocal and nonzero momentum mesons for rho decay
+#	"make su3_rmd_screen" uses the refreshed molecular dynamics
+#		algorithm and does screening measurements
+#       "make su3_screenfunc" uses the R algorithm to measure
+#               the quark wavefunction of the screening propagator
+#
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+# To force a remake when changing headers
+
+GLOBAL_HEADERS = \
+  ${INCLUDEDIR}/config.h \
+  ${INCLUDEDIR}/complex.h \
+  ${INCLUDEDIR}/config.h \
+  ${INCLUDEDIR}/su3.h \
+  ${INCLUDEDIR}/comdefs.h \
+  ${INCLUDEDIR}/macros.h \
+  ${INCLUDEDIR}/generic.h \
+  ${INCLUDEDIR}/generic_ks.h \
+  ${INCLUDEDIR}/io_lat.h \
+  ${INCLUDEDIR}/loopend.h
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  ks_dyn_includes.h \
+  ${ADDHEADERS}
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
+
+# Choose one of the lattice layout algorithms:
+LAYOUT = layout_squares
+
+MY_OBJECTS= \
+  control.o \
+  f_measure.o \
+  gauge_info.o \
+  ranmom.o \
+  setup.o \
+  update.o \
+  update_h.o \
+  update_u.o
+
+# Basic set from generic directory
+G_OBJECTS = \
+  ${LAYOUT}.o \
+  d_congrad5.o \
+  check_unitarity.o \
+  d_plaq4.o \
+  io_helpers.o \
+  ${IO_LAT_REAL} \
+  make_lattice.o \
+  ploop3.o \
+  ranstuff.o \
+  reunitarize2.o
+
+# Basic set from generic_ks directory
+G_KS_OBJECTS = \
+  grsource.o \
+  rephase.o
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} \
+  ${EXTRA_OBJECTS} ${MACHINE_DEP}
+
+# Libraries for complex numbers and su3 functions
+QCDLIB = ${LIBDIR}/su3.a ${LIBDIR}/complex.a
+
+.c.o: ; ${CC} -c ${CFLAGS} $*.c 
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${MYTARGET}
+
+${LASTMAKE}:
+	-/bin/rm -f .lastmake.*
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+# To force a remake when changing make files
+ALL_MAKES = \
+  Make_template \
+  ../generic/Make_template \
+  ../generic_ks/Make_template \
+  ../include/Make_template \
+  ${MAKEFILE}
+
+ALL_DEPEND = ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+${OBJECTS} : ${ALL_DEPEND}
+
+########################################################
+# Optional DEFINES for timing:
+# -DCGTIME for cg timing and iterations
+
+su3_rmd::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= " \
+	"EXTRA_OBJECTS= analyze.o "
+
+su3_phi::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DPHI_ALGORITHM" \
+	"EXTRA_OBJECTS=  analyze.o"
+
+su3_hmc::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"EXTRA_OBJECTS= d_action.o analyze.o"
+
+su3_rmd_spectrum::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DSPECTRUM" \
+	"ADDHEADERS = addsite_spectrum.h" \
+	"EXTRA_OBJECTS= gaugefix2.o  \
+	spectrum.o analyze_spectrum.o"
+
+su3_rmd_nlspec::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DNLSPEC" \
+	"ADDHEADERS = addsite_nlspec.h" \
+	"EXTRA_OBJECTS= gaugefix2.o  \
+	spectrum.o mom_spec5.o nl_spectrum.o analyze_nlspec.o"
+
+su3_rmd_screen::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DSPECTRUM" \
+	"ADDHEADERS = addsite_spectrum.h " \
+	"EXTRA_OBJECTS= gaugefix2.o  \
+	spectrum_s2.o analyze_spectrum.o"
+
+su3_rmd_screenfunc::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DSCREENFUNC" \
+	"ADDHEADERS = addsite_screenfunc.h " \
+	"EXTRA_OBJECTS= gaugefix2.o spectrum_s2.o \
+	wavefunc_z.o analyze_screenfunc.o"
+
+
+clean:
+	-/bin/rm -f *.o
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+# Rules for header files
+include ../include/Make_template
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" all
+
+localmake: ${OBJECTS} ${QCDLIB}
+	${LD} ${LDFLAGS} -o ${MYTARGET} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 
+

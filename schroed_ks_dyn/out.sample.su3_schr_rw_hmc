@@ -1,0 +1,67 @@
+SU3 Schroedinger functional with Kogut-Susskind fermions
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+Hybrid Monte Carlo algorithm
+PHI algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 4
+nx 4
+ny 4
+nz 4
+nt 5
+iseed 8352
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.5 MBytes per node for lattice
+
+
+warms 0
+trajecs 5
+beta 6
+mass 0
+gamma 0.05
+bc_flag 1
+microcanonical_time_step 0.05
+steps_per_trajectory 10
+max_cg_iterations 100
+error_per_site 1e-05
+fresh 
+forget 
+unit gauge configuration loaded
+Boundary values set
+CHECK PLAQ: 3.000000e+00 2.817523e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 1.000000e-02
+WARMUPS COMPLETED
+ACTION: g,h,f = -1.001453e+04  4.410830e+03  3.875350e+02  -5.216163e+03
+ACTION: g,h,f = -7.295530e+03  1.756481e+03  3.037019e+02  -5.235348e+03
+ACCEPT: delta S = -1.918497e+01
+GMES 2.975684e+01 1.881269e+00 1.180000e+02 2.166729e+00 2.067148e+00
+FMES 2.522152e-02 0.000000e+00 8.545724e-01 -6.894113e-01 1.461404e+00
+ACTION: g,h,f = -7.295530e+03  4.340119e+03  3.675712e+02  -2.587840e+03
+ACTION: g,h,f = -6.663873e+03  3.730387e+03  3.430806e+02  -2.590405e+03
+ACCEPT: delta S = -2.565575e+00
+GMES 1.906009e+01 1.800204e+00 1.620000e+02 1.953360e+00 1.908576e+00
+FMES 4.349848e-02 0.000000e+00 6.959466e-01 -7.004535e-01 1.398654e+00
+ACTION: g,h,f = -6.663873e+03  4.390839e+03  3.801761e+02  -1.892859e+03
+ACTION: g,h,f = -6.495157e+03  4.226253e+03  3.933244e+02  -1.875579e+03
+REJECT: delta S = 1.727937e+01
+GMES 1.906009e+01 1.800204e+00 1.590000e+02 1.953360e+00 1.908576e+00
+FMES 5.387324e-03 0.000000e+00 9.447428e-01 -7.420259e-01 1.585410e+00
+ACTION: g,h,f = -6.663873e+03  4.340133e+03  3.827936e+02  -1.940947e+03
+ACTION: g,h,f = -6.415872e+03  4.308324e+03  3.835595e+02  -1.723988e+03
+REJECT: delta S = 2.169589e+02
+GMES 1.906009e+01 1.800204e+00 1.560000e+02 1.953360e+00 1.908576e+00
+FMES -9.608624e-02 0.000000e+00 1.023870e+00 -7.378493e-01 1.618709e+00
+ACTION: g,h,f = -6.663873e+03  4.305073e+03  3.608635e+02  -1.997936e+03
+ACTION: g,h,f = -6.555300e+03  4.278764e+03  3.464169e+02  -1.930120e+03
+REJECT: delta S = 6.781644e+01
+GMES 1.906009e+01 1.800204e+00 1.580000e+02 1.953360e+00 1.908576e+00
+FMES -9.540042e-02 0.000000e+00 8.935556e-01 -7.154767e-01 1.519993e+00
+RUNNING COMPLETED
+average cg iters for step= 1.314000e+02
+average cg iters for measurement= 1.506000e+02
+Time = 3.254000e+01 seconds
+total_iters = 7356
+
+

@@ -1,0 +1,153 @@
+; wp_shrink4.t3d: T3D assembler version of wp_shrink4.c 
+	.ident wp_shrink4$c
+	.psect  wp_shrink_4dir@code,code
+#include <mpp/asdef.h>
+	CRI_REGISTER_NAMES	; Use CRI defs for register names
+	 XUP <- 0
+	 YUP <- 1
+	 ZUP <- 2
+	 TUP <- 3
+	 TDOWN <- 4
+	 ZDOWN <- 5
+	 YDOWN <- 6
+	 XDOWN <- 7
+	 PLUS <- +1
+	 MINUS <- -1
+
+; register names 
+	 src <- a0	; address of source wilson_vector 
+	 dest0 <- a1	; address of XUP dest. half_wilson_vector 
+	 dest1 <- a2	; address of YUP dest. half_wilson_vector 
+	 dest2 <- a3	; address of ZUP dest. half_wilson_vector 
+	 dest3 <- a4	; address of TUP dest. half_wilson_vector 
+	 sign <- a5	; sign: PLUS = +1, MINUS = -1 
+	 color <- t1 	; loop over colors 
+	 scratch <- t2	;scratch integer
+
+wp_shrink_4dir::
+	bis zero,zero,color	; initialize color counter 
+	; if (sign==-1) go to second half 
+        blt     sign,MINUS_CODE
+
+PLUS_CODE:
+	lds	ft0,0(src)	; src->d[0].c[i].real 
+	lds	ft1,4(src)	; src->d[0].c[i].imag 
+	lds	ft2,24(src)	; src->d[1].c[i].real 
+	lds	ft3,28(src)	; src->d[1].c[i].imag 
+	lds	ft4,48(src)	; src->d[2].c[i].real 
+	lds	ft5,52(src)	; src->d[2].c[i].imag 
+	lds	ft6,72(src)	; src->d[3].c[i].real 
+	lds	ft7,76(src)	; src->d[3].c[i].imag 
+
+	subs/d	ft0,ft7,ft9	; XUP direction 
+	addq color,1,color
+	adds/d	ft1,ft6,ft10
+	addq src,8,src		; next color 
+	subs/d	ft2,ft5,ft11
+	cmplt color,3,scratch
+	adds/d	ft3,ft4,ft12
+
+
+	subs/d	ft0,ft6,ft13	; YUP direction 
+	sts	ft9,0(dest0)
+	subs/d	ft1,ft7,ft14
+	sts	ft11,24(dest0)
+	adds/d	ft2,ft4,fa0
+	sts	ft12,28(dest0)
+	adds/d	ft3,ft5,fa1
+	sts	ft10,4(dest0)
+
+
+	subs/d	ft0,ft5,ft9	; ZUP direction 
+	sts	ft13,0(dest1)
+	adds/d	ft1,ft4,ft10
+	sts	ft14,4(dest1)
+	adds/d	ft2,ft7,ft11
+	sts	fa0,24(dest1)
+	subs/d	ft3,ft6,ft12
+	sts	fa1,28(dest1)
+
+
+	adds/d	ft0,ft4,ft13	; TUP direction 
+	sts	ft9,0(dest2)
+	adds/d	ft1,ft5,ft14
+	sts	ft10,4(dest2)
+	adds/d	ft2,ft6,fa0
+	sts	ft11,24(dest2)
+	adds/d	ft3,ft7,fa1
+	sts	ft12,28(dest2)
+
+	sts	ft13,0(dest3)
+	sts	ft14,4(dest3)
+	sts	fa0,24(dest3)
+	sts	fa1,28(dest3)
+
+	addq dest0,8,dest0
+	addq dest1,8,dest1
+	addq dest2,8,dest2
+	addq dest3,8,dest3
+	bne scratch,PLUS_CODE
+	ret     zero,(r26)
+
+MINUS_CODE:
+	lds	ft0,0(src)	; src->d[0].c[i].real 
+	lds	ft1,4(src)	; src->d[0].c[i].imag 
+	lds	ft2,24(src)	; src->d[1].c[i].real 
+	lds	ft3,28(src)	; src->d[1].c[i].imag 
+	lds	ft4,48(src)	; src->d[2].c[i].real 
+	lds	ft5,52(src)	; src->d[2].c[i].imag 
+	lds	ft6,72(src)	; src->d[3].c[i].real 
+	lds	ft7,76(src)	; src->d[3].c[i].imag 
+
+	adds/d	ft0,ft7,ft9	; XDOWN direction 
+	addq color,1,color
+	subs/d	ft1,ft6,ft10
+	addq src,8,src		; next color 
+	adds/d	ft2,ft5,ft11
+	cmplt color,3,scratch
+	subs/d	ft3,ft4,ft12
+
+
+	adds/d	ft0,ft6,ft13	; YDOWN direction 
+	sts	ft9,0(dest0)
+	adds/d	ft1,ft7,ft14
+	sts	ft10,4(dest0)
+	subs/d	ft2,ft4,fa0
+	sts	ft11,24(dest0)
+	subs/d	ft3,ft5,fa1
+	sts	ft12,28(dest0)
+
+
+	adds/d	ft0,ft5,ft9	; ZDOWN direction 
+	sts	ft13,0(dest1)
+	subs/d	ft1,ft4,ft10
+	sts	ft14,4(dest1)
+	subs/d	ft2,ft7,ft11
+	sts	fa0,24(dest1)
+	adds/d	ft3,ft6,ft12
+	sts	fa1,28(dest1)
+
+
+	subs/d	ft0,ft4,ft13	; TDOWN direction 
+	sts	ft9,0(dest2)
+	subs/d	ft1,ft5,ft14
+	sts	ft10,4(dest2)
+	subs/d	ft2,ft6,fa0
+	sts	ft11,24(dest2)
+	subs/d	ft3,ft7,fa1
+	sts	ft12,28(dest2)
+
+	sts	ft13,0(dest3)
+	sts	ft14,4(dest3)
+	sts	fa0,24(dest3)
+	sts	fa1,28(dest3)
+
+	addq dest0,8,dest0
+	addq dest1,8,dest1
+	addq dest2,8,dest2
+	addq dest3,8,dest3
+	bne scratch,MINUS_CODE
+	ret     zero,(r26)
+
+	.endp
+	.end

@@ -1,0 +1,65 @@
+Main changes since version 6.15oct01
+
+1. SciDAC QMP support
+   generic/com_qmp.c       Calls SciDAC QMP for message passing.
+
+2. SciDAC compatibility    New entry points for QMP functionality
+   generic/com_mpi.c       Includes multimessage consolidation
+   generic/com_vanilla.c
+
+3. generic_ks/dslash_fn.c  Multimessage version for Asqtad.
+			   Also includes Tom B's DM/Du0 code
+
+4. dclock()                Returns wall clock time now
+   dclock_cpu()            Returns CPU clock time
+
+5. generic_ks/fpi_2.c      Staggered fermion f_pi
+
+6. generic_ks/spectrum_hybrids.c  Staggered fermion hybrids. New version.
+
+7. ks_imp_dyn?/control.c   Changed input parameter format
+   ks_imp_dyn?/setup.c     to systematize selection of spectrum
+   ks_imp_dyn?/*.h         and related measurements.
+   ks_imp_dyn?/Make_template Streamlined list of compilation targets
+
+8. SSE support             Includes Don Holmgren's illustrative
+   sse directory	   SSE assembly-coded variants of a few
+   libraries/su3.h         library routines.  Also
+   libraries/Make_SSE_nasm NASM assembly language for SSE
+
+9. Double precision        Hack to convert entire code to double
+   convert_f2d.csh         precision.
+   generic/io_lat4_double.c Single precision I/O in 
+   generic/io_wb3_double.c  a double precision context
+
+10.f_meas.c                Multiple hits for psi-bar-psi and derivs
+			   for quark number susceptibility
+
+11. com_*.c                g_vecdcomplexsum added.
+			   get_field and get_integer now require
+			   a source node argument.
+
+12. APE smearing
+
+    Consolidated the several APE smearing routines in a single
+    multipurpose generic/ape_smear.c and created a separate
+    generic/project_su3_hit.c.  Converted to malloc'ing the temps.
+    Applications and code affected:
+      smooth_inst, generic_ks/spectrum_hybrids4.c, hvy_qpot
+      string_break, clover_hybrids, wilson_hybrids
+       
+13. Field strength
+
+    Consolidated the several field_strength routines to make a 
+    single generic/field_strength.c. Converted to malloc'ing the temps.
+    Applications affected:
+      clover_hybrids, wilson_hybrids, generic_ks/spectrum_hybrids4.c
+
+14. Retired         Applications that have fallen out of use.
+    ks_hybrids2
+    wilson_invert
+    wilson_hybrids
+
+
+-- C DeTar 31 August 2002
+

@@ -1,0 +1,73 @@
+#  Generic routines for clover fermions
+#  MIMD version 6
+#
+#  Generic make-include file for generic_clover codes
+#  This template file defines rules and macros common to all applications
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  The paths are relative to the application directory.
+
+G_CLOVER_ALL = \
+    d_bicgilu_cl_lean.o \
+    d_bicgilu_cl_lean2.o \
+    d_bicgilu_cl_lean3.o \
+    d_cgilu_cl_lean.o \
+    d_cgilu_cl_lean2.o \
+    d_hopilu_cl_lean.o \
+    d_hopilu_cl_lean2.o \
+    d_mrilu_cl_lean.o \
+    f_mu_nu.o \
+    make_clov.o \
+    make_clov2.o
+
+# Must match our headers in generic_clover_includes.h
+G_CLOVER_HEADERS = \
+  ../include/config.h \
+  ../include/complex.h \
+  ../include/su3.h \
+  ../include/macros.h \
+  ../include/comdefs.h \
+  ../include/generic.h \
+  ../include/generic_quark_types.h \
+  ../include/generic_wilson.h \
+  ../include/generic_clover.h \
+  lattice.h
+
+G_CLOVER_ALL_DEPEND = \
+  ../generic_clover/generic_clover_includes.h \
+  ../generic_clover/Make_template \
+  ../include/Make_template \
+  ${LASTMAKE} \
+  ${G_CLOVER_HEADERS}
+
+${G_CLOVER_ALL} : ${G_CLOVER_ALL_DEPEND}
+
+# Rules for header files
+include ../include/Make_template
+
+d_bicgilu_cl_lean.o: ../generic_clover/d_bicgilu_cl_lean.c
+	${CC} -c ${CFLAGS}  ../generic_clover/d_bicgilu_cl_lean.c 
+d_bicgilu_cl_lean2.o: ../generic_clover/d_bicgilu_cl_lean2.c
+	${CC} -c ${CFLAGS}  ../generic_clover/d_bicgilu_cl_lean2.c 
+d_bicgilu_cl_lean3.o: ../generic_clover/d_bicgilu_cl_lean3.c
+	${CC} -c ${CFLAGS}  ../generic_clover/d_bicgilu_cl_lean3.c 
+d_cgilu_cl_lean.o: ../generic_clover/d_cgilu_cl_lean.c
+	${CC} -c ${CFLAGS}  ../generic_clover/d_cgilu_cl_lean.c 
+d_cgilu_cl_lean2.o: ../generic_clover/d_cgilu_cl_lean2.c
+	${CC} -c ${CFLAGS}  ../generic_clover/d_cgilu_cl_lean2.c 
+d_mrilu_cl_lean.o: ../generic_clover/d_mrilu_cl_lean.c
+	${CC} -c ${CFLAGS}  ../generic_clover/d_mrilu_cl_lean.c 
+d_hopilu_cl_lean.o: ../generic_clover/d_hopilu_cl_lean.c
+	${CC} -c ${CFLAGS}  ../generic_clover/d_hopilu_cl_lean.c 
+d_hopilu_cl_lean2.o: ../generic_clover/d_hopilu_cl_lean2.c
+	${CC} -c ${CFLAGS}  ../generic_clover/d_hopilu_cl_lean2.c 
+f_mu_nu.o: ../generic_clover/f_mu_nu.c
+	${CC} -c ${CFLAGS}  ../generic_clover/f_mu_nu.c 
+make_clov.o: ../generic_clover/make_clov.c
+	${CC} -c ${CFLAGS}  ../generic_clover/make_clov.c 
+make_clov2.o: ../generic_clover/make_clov2.c
+	${CC} -c ${CFLAGS}  ../generic_clover/make_clov2.c 
+d_congrad2_cl.o: ../generic_clover/d_congrad2_cl.c
+	${CC} -c ${CFLAGS}  ../generic_clover/d_congrad2_cl.c 
+

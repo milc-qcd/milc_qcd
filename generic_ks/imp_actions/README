@@ -1,0 +1,30 @@
+Date: Mon, 3 Apr 2000 14:11:28 -0700 (MST)
+From: Kostas Orginos <kostas@physics.arizona.edu>
+To: detar@physics.utah.edu
+cc: Doug Toussaint <doug@physics.arizona.edu>
+Subject: List of actions:
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+
+Carleton,
+
+ Here is a list of the actions we have and the modes that they can run
+in.
+
+mode:          EO               |           FN
+--------------------------------+-------------------
+          onelink               |  onelink   
+          naik                  |  naik     
+          onefatnaik            |  onefatnaik     
+          p4                    |         
+          fat5                  |  fat5      
+          fat5tad               |  fat5tad       
+          fat7                  |  fat7       
+          fat7tad               |  fat7tad     
+                                |  asqtad
+                                |  asq
+
+The asq and asqtad can not run in EO mode due to the optimizations we
+have done. The p4 can not run in FN mode.  Also I have modified
+p4_action.h so that it does not compile if FN is on.
+
+Kostas.

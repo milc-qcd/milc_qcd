@@ -1,0 +1,98 @@
+prompt 0
+nflavors 2
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.60
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site .0001
+error_for_propagator .0001
+fresh
+save_ascii lat.ascii
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.60
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site .0001
+error_for_propagator .0001
+continue
+save_old_binary lat.oldbinary
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.60
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site .0001
+error_for_propagator .0001
+reload_ascii lat.ascii
+save_serial lat.binary
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.60
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site .0001
+error_for_propagator .0001
+reload_serial lat.oldbinary
+save_parallel lat.parallel
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.60
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site .0001
+error_for_propagator .0001
+reload_serial lat.binary
+save_serial lat.checkpoint
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.60
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site .0001
+error_for_propagator .0001
+reload_parallel lat.parallel
+forget
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.60
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site .0001
+error_for_propagator .0001
+reload_serial lat.checkpoint
+forget

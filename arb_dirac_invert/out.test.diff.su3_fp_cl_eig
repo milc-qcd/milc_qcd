@@ -1,0 +1,2 @@
+diffn out.test.su3_fp_cl_eig.tmp out.sample.su3_fp_cl_eig.tmp 1e-5
+Compared 15 lines with a tolerance of 1e-5

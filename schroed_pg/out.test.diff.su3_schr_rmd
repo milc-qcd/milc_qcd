@@ -1,0 +1,5 @@
+diffn out.test.su3_schr_rmd.tmp out.sample.su3_schr_rmd.tmp 1e-5
+Field 2 Line 9
+< GMES -5.351768e-01 1.373638e+00 9.990000e+01 1.506073e+00 1.418793e+00
+> GMES -5.351953e-01 1.373638e+00 9.990000e+01 1.506073e+00 1.418793e+00
+Compared 12 lines with a tolerance of 1e-5

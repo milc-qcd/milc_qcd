@@ -1,0 +1,333 @@
+#****************  m_matvec_s.s  (in su3.a) *****************************
+#	For IBM RS6000
+#	C. DeTar 2/10/95
+#       Corrected error in Im c1 5/22/96
+#
+#									*
+# void mult_su3_mat_vec_sum(su3_matrix *a, su3_vector *b, su3_vector *c);
+# su3_matrix times su3_vector multiply and add to another su3_vector 	*
+# C  <-  C + A*B 							*
+#
+#	This version is for single precision
+#	Intermediate results are computed in double precision
+#	but WITHOUT ROUNDING TO SINGLE PRECISION: TRUNCATION only
+#
+######################################################################
+#
+#   This routine does one cumulative SU(3) matrix times vector product
+#   of the form
+#
+#	C = C + A * B 
+#
+#	where A is an SU(3) matrix and B and C are SU(3) 
+#
+######################################################################
+
+	.file	"m_matvec_s.s"
+
+#	XCOFF table of contents entry for subroutine linkage
+	
+	.globl	mult_su3_mat_vec_sum[ds]
+	.csect	mult_su3_mat_vec_sum[ds]
+	.long	.mult_su3_mat_vec_sum[PR]
+	.long	TOC[tc0]
+	.long	0
+
+	.toc
+T.mult_su3_mat_vec_sum:	.tc	.mult_su3_mat_vec_sum[tc],mult_su3_mat_vec_sum[ds]
+	
+	.globl	.mult_su3_mat_vec_sum[PR]
+	.csect	.mult_su3_mat_vec_sum[PR]
+
+#	General purpose registers
+#	Retained as called
+	
+	.set	a,3
+	.set	b,4
+	.set	c,5
+
+
+#	Offsets for arrays and structures ...
+		
+	.set 	sizeof_word,4               # Single precision
+	.set	sizeof_su3_matrix,18*sizeof_word
+	.set	sizeof_su3_vector,6*sizeof_word
+
+#	Real and imaginary parts of components of 3D complex vector
+	
+			
+	.set	c0re,   0*sizeof_word + 0*sizeof_su3_vector
+	.set	c0im,   1*sizeof_word + 0*sizeof_su3_vector
+	.set	c1re,   2*sizeof_word + 0*sizeof_su3_vector
+	.set	c1im,   3*sizeof_word + 0*sizeof_su3_vector
+	.set	c2re,   4*sizeof_word + 0*sizeof_su3_vector
+	.set	c2im,   5*sizeof_word + 0*sizeof_su3_vector
+
+#	Real and imaginary parts of components of first SU(3) matrix
+
+	.set	e00re,  0*sizeof_word + 0*sizeof_su3_matrix
+	.set	e00im,  1*sizeof_word + 0*sizeof_su3_matrix
+	.set	e01re,  2*sizeof_word + 0*sizeof_su3_matrix
+	.set	e01im,  3*sizeof_word + 0*sizeof_su3_matrix
+	.set	e02re,  4*sizeof_word + 0*sizeof_su3_matrix
+	.set	e02im,  5*sizeof_word + 0*sizeof_su3_matrix 
+
+	.set	e10re,  6*sizeof_word + 0*sizeof_su3_matrix
+	.set	e10im,  7*sizeof_word + 0*sizeof_su3_matrix
+	.set	e11re,  8*sizeof_word + 0*sizeof_su3_matrix
+	.set	e11im,  9*sizeof_word + 0*sizeof_su3_matrix
+	.set	e12re, 10*sizeof_word + 0*sizeof_su3_matrix
+	.set	e12im, 11*sizeof_word + 0*sizeof_su3_matrix
+
+	.set	e20re, 12*sizeof_word + 0*sizeof_su3_matrix
+	.set	e20im, 13*sizeof_word + 0*sizeof_su3_matrix
+	.set	e21re, 14*sizeof_word + 0*sizeof_su3_matrix
+	.set	e21im, 15*sizeof_word + 0*sizeof_su3_matrix
+	.set	e22re, 16*sizeof_word + 0*sizeof_su3_matrix
+	.set	e22im, 17*sizeof_word + 0*sizeof_su3_matrix
+			
+#	Floating point registers
+	
+#	Linkage conventions require preserving registers 14-31
+#	We don't use them, so no saves and restores required
+	
+	.set	c0r,0
+	.set	c0i,1
+	.set	c1r,2
+	.set	c1i,3
+	.set	c2r,4
+	.set	c2i,5
+
+	.set	b0r,6
+	.set	b0i,7
+
+	.set	b1r,8
+	.set	b1i,9
+
+	.set	b2r,6
+	.set	b2i,7
+	
+	.set	a00r,10
+	.set	a10r,11
+	.set	a20r,12
+
+	.set	a00i,10
+	.set	a10i,11
+	.set	a20i,12
+
+	.set	a01r,10
+	.set	a11r,11
+	.set	a21r,12
+
+	.set	a01i,10
+	.set	a11i,11
+	.set	a21i,12
+
+	.set	a02r,10
+	.set	a12r,11
+	.set	a22r,12
+
+	.set	a02i,10
+	.set	a12i,11
+	.set	a22i,12
+
+	.set 	prefetch,13
+
+######################################################################
+#
+#    Notation for a single matrix times vector product
+#
+######################################################################
+
+#	SU(3) matrix notation for A
+
+# 	amnr = a->e[m][n].real
+#	amni = a->e[m][n].imag
+
+#	SU(3) vector notation for B
+
+#	bnr=b->c[n].real
+#	bni=b->c[n].real
+
+#	SU(3) vector notation for C
+	
+#	cnr=c->c[n].real
+#	cni=c->c[n].real
+
+#	Formulas for dot products computed...
+  
+#  c0r += a00r*b0r - a00i*b0i + a01r*b1r - a01i*b1i + a02r*b2r - a02i*b2i;
+#  c0i += a00r*b0i + a00i*b0r + a01r*b1i + a01i*b1r + a02r*b2i + a02i*b2r;
+
+#  c1r += a10r*b0r - a10i*b0i + a11r*b1r - a11i*b1i + a12r*b2r - a12i*b2i;
+#  c1i += a10r*b0i + a10i*b0r + a11r*b1i + a11i*b1r + a12r*b2i + a12i*b2r;
+
+#  c2r += a20r*b0r - a20i*b0i + a21r*b1r - a21i*b1i + a22r*b2r - a22i*b2i;
+#  c2i += a20r*b0i + a20i*b0r + a21r*b1i + a21i*b1r + a22r*b2i + a22i*b2r;
+
+#    These dot products are organized in a minivector form
+#    by treating c0r, c1r, c2r, c0i, c1i, c2i as a six-component
+#    vector.
+
+	
+####################	
+#	c0r += a00r*b0r
+#	c1r += a10r*b0r
+#	c2r += a10r*b0r
+#  	c0i += a00r*b0i
+#  	c1i += a20r*b0i
+#  	c2i += a20r*b0i
+
+
+	lfs	c0r,c0re(c)
+	lfs	c1r,c1re(c)
+	lfs	c2r,c2re(c)
+
+	lfs	a00r,e00re(a)
+	lfs	a10r,e10re(a)
+	lfs	a20r,e20re(a)
+	
+	lfs	b0r,c0re(b)
+
+	fma	c0r,a00r,b0r,c0r
+	fma	c1r,a10r,b0r,c1r
+	fma	c2r,a20r,b0r,c2r
+	
+	lfs	c0i,c0im(c)
+	lfs	c1i,c1im(c)
+	lfs	c2i,c2im(c)
+
+	lfs	b0i,c0im(b)
+
+	fma	c0i,a00r,b0i,c0i
+	fma	c1i,a10r,b0i,c1i
+	fma	c2i,a20r,b0i,c2i
+
+####################	
+#	c0r -= a00i*b0i
+#	c1r -= a10i*b0i
+#	c2r -= a20i*b0i
+#	c0i += a00i*b0r
+#	c1i += a10i*b0r
+#	c2i += a20i*b0r
+	
+	lfs	a00i,e00im(a)
+	lfs	a10i,e10im(a)
+	lfs	a20i,e20im(a)
+
+	fnms	c0r,a00i,b0i,c0r
+	fnms	c1r,a10i,b0i,c1r
+	fnms	c2r,a20i,b0i,c2r
+
+	fma	c0i,a00i,b0r,c0i
+	fma	c1i,a10i,b0r,c1i
+	fma	c2i,a20i,b0r,c2i
+
+
+####################	
+#	c0r += a01r*b1r
+#	c1r += a11r*b1r
+#	c2r += a21r*b1r
+#	c0i += a01r*b1i
+#	c1i += a11r*b1i
+#	c2i += a21r*b1i
+
+	lfs	a01r,e01re(a)
+	lfs	a11r,e11re(a)
+	lfs	a21r,e21re(a)
+
+	lfs	b1r,c1re(b)
+
+	fma	c0r,a01r,b1r,c0r
+	fma	c1r,a11r,b1r,c1r
+	fma	c2r,a21r,b1r,c2r
+
+	lfs	b1i,c1im(b)
+
+	fma	c0i,a01r,b1i,c0i
+	fma	c1i,a11r,b1i,c1i
+	fma	c2i,a21r,b1i,c2i
+
+####################	
+#	c0r -= a01i*b1i
+#	c1r -= a11i*b1i
+#	c2r -= a21i*b1i
+#	c0i += a01i*b1r
+#	c1i += a11i*b1r
+#	c2i += a21i*b1r
+	
+	lfs	a01i,e01im(a)
+	lfs	a11i,e11im(a)
+	lfs	a21i,e21im(a)
+
+	fnms	c0r,a01i,b1i,c0r
+	fnms	c1r,a11i,b1i,c1r
+	fnms	c2r,a21i,b1i,c2r
+
+	fma	c0i,a01i,b1r,c0i
+	fma	c1i,a11i,b1r,c1i
+	fma	c2i,a21i,b1r,c2i
+
+####################	
+#	c0r += a02r*b2r
+#	c1r += a12r*b2r
+#	c2r += a22r*b2r
+#	c0i += a02r*b2i
+#	c1i += a12r*b2i
+#	c2i += a22r*b2i
+
+	lfs	a02r,e02re(a)
+	lfs	a12r,e12re(a)
+	lfs	a22r,e22re(a)
+
+	lfs	b2r,c2re(b)
+
+	fma	c0r,a02r,b2r,c0r
+	fma	c1r,a12r,b2r,c1r
+	fma	c2r,a22r,b2r,c2r
+
+	lfs	b2i,c2im(b)
+
+	fma	c0i,a02r,b2i,c0i
+	fma	c1i,a12r,b2i,c1i
+	fma	c2i,a22r,b2i,c2i
+
+####################	
+#	c0r -= a02i*b2i;
+#	c1r -= a12i*b2i;
+#	c2r -= a22i*b2i;
+#	c0i += a02i*b2r;
+#	c1i += a12i*b2r;
+#	c2i += a22i*b2r;
+
+	lfs	a02i,e02im(a)
+	lfs	a12i,e12im(a)
+	lfs	a22i,e22im(a)
+
+	fnms	c0r,a02i,b2i,c0r
+	fnms	c1r,a12i,b2i,c1r
+	fnms	c2r,a22i,b2i,c2r
+
+	fma	c0i,a02i,b2r,c0i
+	fma	c1i,a12i,b2r,c1i
+	fma	c2i,a22i,b2r,c2i
+
+####################	
+#	frsp     c0r,c0r	# Round to single precision
+#	frsp     c0i,c0i	# Round to single precision
+#	frsp     c1r,c1r	# Round to single precision
+#	frsp     c1i,c1i	# Round to single precision
+#	frsp     c2r,c2r	# Round to single precision
+#	frsp     c2i,c2i	# Round to single precision
+
+	stfs     c0r,c0re(c)
+	stfs     c0i,c0im(c)
+	stfs     c1r,c1re(c)
+	stfs     c1i,c1im(c)
+	stfs     c2r,c2re(c)
+	stfs     c2i,c2im(c)
+
+#	Return
+		
+	br
+

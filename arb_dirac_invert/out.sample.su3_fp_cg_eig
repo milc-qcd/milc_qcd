@@ -1,0 +1,80 @@
+SU3 Hypercubic valence fermions
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 9911
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 1.3 MBytes per node for lattice
+
+
+number_of_masses 1
+m0 0.1
+max_cg_iterations 200
+max_cg_restarts 1
+error_for_propagator 1e-06
+gaussian
+r0 1
+reload_serial ../binary_samples/lat.sample.l4444
+no_gauge_fix
+forget 
+fresh_prop 
+forget_prop 
+serial_scratch_prop stem
+Reading with byte reversal
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4444
+Time stamp Thu Feb 12 13:40:21 1998
+Checksums 2352c05 d137321d OK
+Time to reload gauge configuration = 6.098032e-03
+CHECK PLAQ: 1.794675e+00 1.774426e+00
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 1.801968e-03
+END OF HEADER
+pure APE blocking with alpha  3.000000e-01 N 3
+mass= 0.1 r0= 1 residue= 1e-06
+lambda[0] = 4.100000e+00
+lambda[1] = -5.000000e-01
+lambda[2] = 0.000000e+00
+lambda[3] = 0.000000e+00
+lambda[4] = 0.000000e+00
+rho[1] = -5.000000e-01
+rho[2] = 0.000000e+00
+rho[3] = 0.000000e+00
+rho[4] = 0.000000e+00
+boosting clover term by 1.000000e+00 to 5.000000e-01
+clover normalization 5.000000e-01
+entered clover setup with term=5.000000e-01
+BEGIN
+psi_0=0
+congrad: source_norm = 3.119557e+03
+iter 0 residue 6.641286e+03
+iter 5 residue 4.888656e+01
+iter 10 residue 5.825017e+00
+iter 15 residue 1.368768e+00
+iter 20 residue 2.077579e-01
+iter 25 residue 6.711027e-02
+iter 30 residue 1.238140e-02
+iter 35 residue 3.913569e-03
+iter 40 residue 8.785426e-04
+iter 45 residue 2.637694e-04
+iter 50 residue 6.362536e-05
+iter 55 residue 1.096115e-05
+iter 60 residue 2.528345e-06
+iter 65 residue 3.126156e-07
+iter 70 residue 9.259594e-08
+iter 75 residue 1.009058e-08
+size_r= 2.616473e-09, iters= 8.100000e+01
+F2MES 2.864126e+00 -6.599917e-02 1.145894e-02 -1.804437e-08
+RUNNING COMPLETED
+total cg iters for measurement= 0.000000e+00
+cg iters for measurement= 0.000000e+00
+Time = 4.475370e+00 seconds
+total_iters = 81
+
+
+get_i: EOF on STDIN while expecting number_of_masses.
+exit: Tue Sep 16 22:25:24 2003
+

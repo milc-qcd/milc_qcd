@@ -1,0 +1,10 @@
+# For generating sample ouptut from trusted code
+# For ks_eigen
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_eigen_asqtad
+
+include ../Make_sample_template
+

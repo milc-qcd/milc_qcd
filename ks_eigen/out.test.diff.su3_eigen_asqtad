@@ -1,0 +1,5 @@
+diffn out.test.su3_eigen_asqtad.tmp out.sample.su3_eigen_asqtad.tmp 1e-4
+Field 5 Line 31
+< Eigenvalue(29) = 2.34731 +/- 1.104121e-03	 cvg? 0  
+> Eigenvalue(29) = 2.34724 +/- 1.751262e-04 
+Compared 66 lines with a tolerance of 1e-4

@@ -1,0 +1,819 @@
+QCD program for MIMD machines, version 2
+Programming notes
+PRELIMINARY DRAFT 8/9/90
+LAST CHANGE 3/7/93
+
+These notes document some of the features of the QCD program we are
+developing.  They are intended to help group members understand and
+modify the code.
+
+CONTENTS:
+I.  HEADER FILES
+II. GLOBAL VARIABLES
+III. LATTICE STORAGE
+IV.  GETTING AROUND IN THE LATTICE
+V. ACCESSING FIELDS AT OTHER SITES
+VI.  UTILITY SUBROUTINES
+VII.  DISTRIBUTING SITES AMONG NODES
+VIII. RANDOM NUMBERS
+IX. FILES
+X.  BUGS AND FEATURES
+
+
+
+
+I.  HEADER FILES:
+	Various header files are around to define structures, macros,
+and global variables.  They are, at the moment:
+	complex.h	-macros and functions for complex numbers.
+			- see later discussion under UTILITY SUBROUTINES
+	su3.h		-routines for su3 operations, eg matrix multiply
+			- see later discussion under UTILITY SUBROUTINES
+	su2.h		-routines for su2 operations, eg matrix multiply
+			- see later discussion under UTILITY SUBROUTINES
+	globaldefs.h	- in SU(2) code, things that are really common
+			  to SU(2) and SU(3)
+	lattice.h	-defines lattice fields and global variables
+	comdefs.h	-macros and defines for communication routines
+Some of these include files depend on previous ones, so the order of
+inclusion matters.  A scheme which works (what the heck, throw them all
+in) is:
+#include <stdio.h>
+#include <math.h>
+#include "complex.h"
+#include "su3.h"
+#include "lattice.h"
+#include "comdefs.h"
+The external variables are defined using a macro EXTERN which is usually
+just "extern" but when CONTROL is defined is null.  The effect is to
+reserve storage in whichever file CONTROL is defined, so exactly one
+file, typically the main program, should contain a
+#define CONTROL
+before all the other includes.
+
+
+II. GLOBAL VARIABLES
+
+There are a number of global variables available.  Most of these are
+defined in "lattice.h".
+    TYPE NAME		MEANING			WHERE SET
+    int	this_node	number of this node	initial_set()
+    int number_of_nodes number of nodes in use	initial_set()
+    int sites_on_node	# of sites on this node	setup_layout()
+    int even_sites_on_node	# of evensites on this node "
+    int odd_sites_on_node	# of odd sites on this node "
+    int nx,ny,nz,nt	lattice dimensions	initial_set();
+    int volume		nx*ny*nz*nt		initial_set();
+    int nflavors	# of flavors		initial_set();
+    int iseed		random # seed		initial_set()
+
+    The rest are not terribly fundamental.  Most are set in readin().
+    int warms
+    int trajecs
+    int steps
+    int niter
+    int propinterval
+    int saveflag
+    float rsqmin
+    float rsqprop
+    float beta
+    float mass
+    float epsilon
+    char *startfile
+    char *savefile
+    int startflag
+    int saveflag
+    int total_iters
+
+III. LATTICE STORAGE
+	The fields on the lattice are in structures of type "site".  This
+structure is defined in "lattice.h".  Each node has an array of such
+structures called "lattice", with as many elements as there are sites
+on the node.
+	The structure looks like:
+
+struct site {
+    /* The first part is standard to all programs */
+	/* coordinates of this site */
+	short x,y,z,t;
+	/* is it even or odd? */
+	char parity;
+	/* my index in the array */
+	int index;
+
+    /* Now come the physical fields, program dependent.  We will add or
+	delete whatever we need. This is just an example. */
+	/* gauge field */
+	su3_matrix xlink, ylink, zlink, tlink;
+
+	/* antihermitian momentum matrices in each direction */
+ 	anti_hermitmat xmom, ymom, zmom, tmom;
+
+ 	su3_vector phi;		/* Gaussian random source vector */
+};
+typedef struct site site;
+
+
+Thus, to refer to the phi field on a particular lattice site, site "i"
+on this node, you say
+   lattice[i].phi,
+and for the real part of color 0
+   lattice[i].phi.c[0].real,
+etc.
+See later on for how to figure out the index i. (Actually you usually
+won't need it.)
+In general, there is a pointer to a site around, and then you would
+refer to the field as:
+
+site *s;
+...  /* s gets set to &(lattice[i]) */
+s->phi
+
+The coordinate, parity and index fields are used by the gather
+routines and other utility routines, so it is probably a bad idea to
+mess with them unless you want to change a lot of things.  Other things
+can be added or deleted with abandon.
+	The routine "make_lattice()" is called from "setup()" to
+allocate the lattice on each node.  This routine currently is in the
+file "setup.c".
+	In addition to the fields in the "site" structure, there are
+two sets of vectors whose elements correspond to lattice sites.
+	There are eight vectors of integers: "int * neighbor[8];"
+"neighbor[XDOWN][i]" is the index of the site in the XDOWN direction
+from the i'th site on the node, if that site is on the same node.  If
+the neighboring site is on another node, this pointer will be NOT_HERE (-1).
+These vectors are mostly used by the gather routines, so most
+application code doesn't have to worry about them.
+	There are a number of vectors of pointers, "char ** gen_pt[8]",
+for example.  These vectors of pointers are declared in "lattice.h",
+or whatever the header file in the application directory is called, and
+allocated in "make_lattice()".  They are used by the gather routines,
+which fill them with pointers to the gathered field.  See the discussion
+of start_gather() and start_general_gather() in the section of accessing
+fields at other sites.
+You will need one of these pointer vectors for each simultaneous gather you
+have going.
+
+Comments:
+This storage scheme seems to make for the easiest coding, and likely
+the fastest performance.  It certainly makes gathers about as easy as
+possible.  However, it is somewhat wasteful of memory, since all fields
+are statically allocated.  (You can use unions if two fields are needed
+in mutually exclusive parts of the program.)  Also, there is no
+mechanism for defining a field on only even or odd sites.
+
+skip this cryptic comment if you want:
+The "site major" ordering of variables in memory probably means that
+variables will fairly often be in cache.  The contrasting "field major"
+ordering ( su3_matrix xlink[volume],ylink[volume]...) is somewhat more
+suitable for vectorizing in the traditional sense.
+
+The EVENFIRST option causes all the even sites to be stored first in
+the array, followed by all the odd sites.  This makes looping over sites
+of a given parity more efficient.  At some point, this will quit being
+an option and become a requirement for all layout schemes.  At the
+moment it is useful for debugging to be able to turn this on and off.
+
+
+IV.  GETTING AROUND IN THE LATTICE
+Various definitions, macros and routines exist for dealing with the lattice
+fields.  So far, the only macros which are really necessary are F_OFFSET
+and F_PT ("field_offset" and "field_pointer").
+The definitions and macros are:
+
+/* Directions, and a macro to give the opposite direction */
+/*  These must go from 0 to 7 because they will be used to index an
+    array. */
+/* Also define NDIRS = number of directions */
+#define XUP 0
+#define YUP 1
+#define ZUP 2
+#define TUP 3
+#define TDOWN 4
+#define ZDOWN 5
+#define YDOWN 6
+#define XDOWN 7
+#define OPP_DIR(dir)    (7-(dir))       /* Opposite direction */
+#define NDIRS 8                         /* number of directions */
+/* for example, OPP_DIR(XUP) is XDOWN */
+
+The parity of a site is EVEN or ODD, where EVEN means (x+y+z+t)%2=0.
+Lots of routines take EVEN, ODD or EVENANDODD as an argument.
+#define EVEN 0x02
+#define ODD 0x01
+#define EVENANDODD 0x03
+
+Often we want to use the name of a field as an argument to a routine,
+as in "dslash(chi,phi)".  There is a macro to convert the name of a
+field into an integer, and another one to convert this integer back
+into an address at a given site.  A type "field_offset", which is
+secretly an integer, is defined to help make the programs clearer.
+
+F_OFFSET(fieldname) gives the offset in the site structure of the
+named field.
+F_PT( sitepointer, field_offset) gives the address of the field whose
+offset is field_offset at the site *sitepointer.
+Schematic example:
+
+main(){
+    copyfield( F_OFFSET(phi), F_OFFSET(chi) );
+    /* "phi" and "chi" are names of su3_vector's in site. */
+}
+
+/* Copy an su3_vector field over the whole lattice */
+copyfield( off1, off2)  field_offset off1,off2; {
+register int i;
+register site *s;
+register su3_vector *v1,*v2;
+    for(i=0;i<nsites_on_node;i++){	/* loop over sites on node */
+	s = &(lattice[i]);		/* pointer to current site */
+        v1 = (su3_vector *)F_PT( s, off1);	/* address of first vector */
+        v2 = (su3_vector *)F_PT( s, off2);
+	*v2 = *v1;	/* copy the vector at this site */
+    }
+}
+
+Comments:
+	It will generally be good form to typecast the result of the
+F_PT macro to the appropriate pointer type.  It naturally produces a
+character pointer.
+	The code for copyfield could be much shorter at the expense of
+clarity.  Here I use one more macro to be defined later.
+
+copyfield( off1, off2)  field_offset off1,off2; {
+register int i;
+register site *s;
+    FORALLSITES(i,s){
+	*(su3_vector *)F_PT(s,off1) = *(su3_vector *)F_PT(s,off2);
+    }
+}
+
+
+
+The remaining macros are not necessary, but I find them very useful.
+You may use them or ignore them as you see fit.
+
+Loops over sites are so common that I defined macros for them.  These
+macros use an integer and a site pointer, which are available inside
+the loop.  The site pointer is especially useful for accessing fields
+at the site.
+/* macros to loop over sites of a given parity, or all sites on a node.
+   Usage:
+        int i;
+        site *s;
+        FOREVENSITES(i,s){
+            Commands go here, where s is a pointer to the current
+	    site and i is the index of the site on the node.
+	    For example, the phi vector at this site is "s->phi".
+        }
+*/
+#define FOREVENSITES(i,s) \
+    for(i=0,s=lattice;i<nsites_on_node;i++,s++)if(s->parity==EVEN)
+#define FORODDSITES(i,s) \
+    for(i=0,s=lattice;i<nsites_on_node;i++,s++)if(s->parity==ODD)
+#define FORALLSITES(i,s) \
+    for(i=0,s=lattice;i<nsites_on_node;i++,s++)
+#define FORSOMEPARITY(i,s,parity) \
+    for(i=0,s=lattice;i<nsites_on_node;i++,s++)if(s->parity & (parity) != 0)
+
+The first three of these macros loop over even, odd or all sites on the
+node, setting a pointer to the site and the index in the array.  The
+index and pointer are available for use by the commands inside the braces.
+The last macro takes an additional argument which should be one of EVEN,
+ODD or EVENANDODD, and loops over sites of the selected parity.
+	The actual definitions are not quite those written above if
+the EVENFIRST option is turned on, but they are logically equivalent.
+
+
+V. ACCESSING FIELDS AT OTHER SITES.
+	For the moment, each node only writes fields on its own sites.
+
+	To read fields at other sites, there are some routines.
+These are portable in the sense that they will look the same of all
+the machines on which this code runs (Intel, Ncube, ...?), although what
+is inside them will be different.  All of these routines return pointers to
+fields.  If the fields are on the same node, these are just pointers
+into the lattice, and if the fields are on sites on another node some
+message passing takes place.  Because the communcation routines may have
+to allocate buffers for data, if is necessary to free the buffers by
+calling the appropriate cleanup routine when you are finished with the
+data.  These routines are in "com_XXXXX.c", where "XXX" identifies the
+machine.
+
+	The first routines provide a general way of accessing
+fields at any site.  However, at least on the Intel machine, they will
+be excruciatingly slow.
+	To set up the interrupt handlers required by the field_pointer
+ routines, call "start_handlers()" in the setup part of the program.
+
+/* "field_pointer_at_coordinates()" returns a pointer to a field in
+   the lattice given its coordinates. */
+char * field_pointer_at_coordinates( field, size, x,y,z,t )
+/* arguments */
+field_offset field;      /* offset of one of the fields in lattice[] */
+int size;       /* size of the field in bytes */
+int x,y,z,t;    /* coordinates of point to get field from */
+
+/* "field_pointer_at_direction()" returns a pointer to a field in the
+   lattice at a direction from a given site. */
+char * field_pointer_at_direction( field,size, s, direction )
+/* arguments */
+int field;      /* offset of one of the fields in lattice[] */
+int size;       /* size of the field in bytes */
+site *s;        /* pointer to a site on this node */
+int direction;  /* direction of site's neighbor to get data from. */
+
+/* "cleanup_field_pointer()" frees the buffers that field_pointer...
+   allocated. */
+void cleanup_field_pointer(buf) char * buf;
+
+Example:
+        su3_matrix *pt;
+	int x,y,z,t;
+	   /* set x,y,z,t to the coordinates of the desited site here,
+		then: */
+        pt = (su3_matrix *)field_pointer_at_coordinates(
+          F_OFFSET(xlink), sizeof(su3_matrix), x,y,z,t );
+              /* now "pt" points to the xlink at the site whose
+		  coordinates are x,y,z,t.  It may point either to
+		  the original data or a copy.  Use it for whatever you
+		  want, and when you are done with it: */
+        cleanup_field_pointer( (char *)pt );
+	    /* subsequent calls to malloc may overwrite *pt, so don't
+		use it any more */
+
+
+
+	The gather routines provide a hopefully optimized way to
+gather a field from the neighboring sites.  There is another type
+defined, "msg_tag", which remembers the information needed from one
+gather routine to the next.  The destination of the gather is one
+of the vectors of pointers, "gen_pt[0]" etc. (These were described in
+the section on "lattice storage".)  On each
+site, or on each site of the selected parity, this pointer will be
+set to the address of the desired field on the neighboring site, or
+a copy thereof if the site lives on a different node.
+	These routines use asynchronous sends and receives when possible,
+so it is possible to start one or more gathers going, and do something else
+while awaiting the data.  If you are doing more than one gather at a time,
+just use different *msg_tags for each one to keep them straight.
+	To set up the data structures required by the gather routines,
+call "make_nn_gathers()" in the setup part of the program.  This must
+be done after the call to "make_lattice()".
+
+/* "start_gather()" starts asynchronous sends and receives required
+   to gather neighbors. */
+msg_tag * start_gather(field,size,direction,parity,dest)
+/* arguments */
+field_offset field;     /* which field? Some member of structure "site" */
+int size;               /* size in bytes of the field (eg sizeof(su3_vector))*/
+int direction;          /* direction to gather from. eg XUP */
+int parity;             /* parity of sites whose neighbors we gather.
+                           one of EVEN, ODD or EVENANDODD. */
+char * dest;	   	/* one of the vectors of pointers */
+
+
+/* "wait_gather()"  waits for receives to finish, insuring that the
+   data has actually arrived.  The argument is the (msg_tag *) returned
+   by start_gather. */
+void wait_gather(mbuf) msg_tag *mbuf;
+
+/* "cleanup_gather()" frees all the buffers that were allocated, WHICH
+   MEANS THAT THE GATHERED DATA MAY SOON DISAPPEAR. */
+void cleanup_gather(mbuf) msg_tag *mbuf;
+
+
+Examples:
+The first example gathers phi at all even sites from the neighbors in
+the XUP direction.  (Gathering at even sites means that phi at odd sites
+will be made available for computations "at even sites".)
+        msg_tag *tag;
+	site *s;
+	int i;
+        tag = start_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+                EVEN, gen_pt[0] );
+            /* do other stuff */
+	wait_gather(tag);
+            /*  *(su3_vector *)gen_pt[0][i] now contains the address of the
+               phi vector (or a copy therof) on the neighbor of site i in the
+               XUP direction for all even sites i.  (The type cast
+		"(su3_vector *)" is usually not necessary.) */
+	FOREVENSITES(i,s){
+	    /* do whatever you want with it here.
+	       (su3_vector *)(gen_pt[0][i]) is a pointer to phi on
+	       the neighbor site. */
+	}
+	cleanup_gather(tag);
+          /* subsequent calls will overwrite the gathered fields. but if you
+           don't clean up, you will eventually run out of space */
+
+The second example gathers phi from two directions at once:
+        msg_tag *tag0,*tag1;
+        tag0 = start_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+            EVENANDODD, gen_pt[0] );
+        tag1 = start_gather( F_OFFSET(phi), sizeof(su3_vector), YUP,
+            EVENANDODD, gen_pt[1] );
+          ** do other stuff **
+	wait_gather(tag0);
+	   /* you may now use *(su3_vector *)gen_pt[0][i], the
+		neighbors in the XUP direction. */
+	wait_gather(tag1);
+	   /* you may now use *(su3_vector *)gen_pt[1][i], the
+		neighbors in the YUP direction. */
+	cleanup_gather(tag0);
+	cleanup_gather(tag1);
+
+          ** subsequent calls will overwrite the gathered fields. but if you
+           don't clean up, you will eventually run out of space **
+
+	Of course, you can also simultaneously gather different fields, or
+gather one field to even sites and another field to odd sites.  Just
+be sure to keep your msg_tag pointers straight.
+	The internal workings of these routines are too horrible to
+discuss here.  Consult the source code and comments in "com_XXX.c".
+
+
+	There is another type of gather for getting a field from
+an arbitrary displacement.  It works like the gather described above
+except that instead of specifying the direction you specify a four
+component array of integers which is the relative displacement of the
+field to be fetched.  This mechanism is much slower than gathering from
+neighbors, but far faster than field_pointers.  Also, there can only
+be one general_gather at a time working.  This means that if you
+need to do two general_gathers you
+must wait for the first gather before starting the second. (It is not
+necessary to cleanup the first gather before starting the second.)
+
+Chaos will ensue if you use wait_gather() with a message tag returned
+by start_general_gather(), or vice-versa.
+
+
+/* "start_general_gather()" starts asynchronous sends and receives required
+   to gather neighbors. */
+msg_tag * start_general_gather(field,size,displacement,parity,dest)
+/* arguments */
+field_offset field;     /* which field? Some member of structure "site" */
+int size;               /* size in bytes of the field (eg sizeof(su3_vector))*/
+int *displacement;     /* displacement to gather from. a four component array */
+int parity;             /* parity of sites whose neighbors we gather.
+                           one of EVEN, ODD or EVENANDODD. */
+char ** dest;	      /* one of the vectors of pointers */
+
+
+/* "wait_general_gather()"  waits for receives to finish, insuring that the
+   data has actually arrived.  The argument is the (msg_tag *) returned
+   by start_general_gather. */
+void wait_general_gather(mbuf) msg_tag *mbuf;
+
+/* "cleanup_general_gather()" frees all the buffers that were allocated, WHICH
+   MEANS THAT THE GATHERED DATA MAY SOON DISAPPEAR. */
+void cleanup_general_gather(mbuf) msg_tag *mbuf;
+
+
+This example gathers phi from a site displaced by +1 in the x direction
+and -1 in the y direction.
+        msg_tag *tag;
+	site *s;
+	int i, disp[4];
+	disp[XUP] = +1; disp[YUP] = -1; disp[ZUP] = disp[TUP] = 0;
+        tag = start_general_gather( F_OFFSET(phi), sizeof(su3_vector), disp,
+                EVEN, gen_pt[0] );
+            /* do other stuff */
+	wait_general_gather(tag);
+            /* gen_pt[0][i] now contains the address of the phi
+               vector (or a copy therof) on the site displaced from site i
+               by the vector "disp" for all even sites i. */
+	FOREVENSITES(i,s){
+	    /* do whatever you want with it here.
+	       (su3_vector *)(gen_pt[0][i]) is a pointer to phi on
+	       the other site. */
+	}
+	cleanup_general_gather(tag);
+
+
+IV.  DEFINED DATA TYPES
+	Various data structures have been defined for QCD computations.
+More will be defined as we progress, notably Wilson fermion spinors.
+Again, you are free to use these or not, and to define any other types.
+	In names of members of structure, I will use the following
+conventions:
+    "c" means color, and has an index which takes three values (0,1,2).
+    "d" means Dirac spin, and its index takes four values (0-4).
+    "e" means element of a matrix, and has two indices which take
+	three values - row and column.
+
+Complex numbers: (in "complex.h")
+  typedef struct {         /* standard complex number declaration for single- */
+   float real;             /* precision complex numbers */
+   float imag;
+  } complex;
+  typedef struct {         /* standard complex number declaration for double- */
+   double real;            /* precision complex numbers */
+   double imag;
+  } double_complex;
+
+Three component complex vectors, 3x3 complex matrices, and 3x3
+antihermitian matrices stored in triangular (compressed) format.
+(in "su3.h")
+  typedef struct { complex e[3][3]; } su3_matrix;
+  typedef struct { complex c[3]; } su3_vector;
+  typedef struct {float m00im,m11im,m22im; complex m01,m02,m12;} anti_hermitmat;
+
+Wilson vectors:
+  typedef struct { su3_vector d[4]; } wilson_vector;
+Projections of Wilson vectors, using 1 +- gamma_mu:
+  typedef struct { su3_vector h[2]; } half_wilson_vector;
+A definition to be used in the next definition:
+  typedef struct { wilson_vector c[3]; } color_wilson_vector;
+A four index object - source spin and color by sink spin and color:
+  typedef struct { color_wilson_vector d[4]; } wilson_matrix
+
+
+
+Examples:
+
+su3_vector phi;		/* declares a vector */
+su3_matrix m1,m2,m3;	/* declares 3x3 complex matrices */
+wilson_vector wvec;	/* declares a Wilson quark vector */
+
+phi.c[0].real = 1.0;		/* sets real part of color 0 to 1.0 */
+phi.c[1] = cmplx(0.0,0.0);	/* sets color 1 to zero (requires 
+				including "complex.h" */
+m1.e[0][0] = cmplx(0,0); 	/* refers to 0,0 element */
+mult_su3_nn( &m1, &m2, &m3);	/* subroutine arguments are usually
+				addresses of structures */
+wvec.d[2].c[0].imag = 1.0;	/* How to refer to imaginary part of
+				spin two, color zero. */
+
+
+VI.  UTILITY SUBROUTINES.
+    A.  Complex numbers.
+	"complex.h" and "complex.a" contain macros and subroutines for
+	complex numbers.  For example:
+	   complex a,b,c;
+	   CMUL(a,b,c);		/* macro:  c <- a*b */
+	Note that all the subroutines ("cmul()", etc.) take addresses
+	as arguments, but the macros generally take the structures
+	themselves.  These functions have separate versions
+	for single and double precision complex numbers.  The macros
+	work with either single or double precison (or mixed).
+
+	complex cmplx(float r, float i);      /* (r,i) */
+	complex cadd(complex *a, complex *b); /* a + b */
+	complex cmul(complex *a, complex *b); /* a * b */
+	complex csub(complex *a, complex *b); /* a - b */
+	complex cdiv(complex *a, complex *b); /* a / b */
+	complex conjg(complex *a);	      /* conjugate of a */
+	complex cexp(complex *a);             /* exp(a) */
+	complex clog(complex *a);             /* ln(a)  */
+	complex csqrt(complex *a);            /* sqrt(a)  */
+	complex ce_itheta(float theta);       /* exp( i*theta) */
+
+	double_complex dcmplx(double r, double i);   	/* (r,i) */
+	double_complex dcadd(double_complex *a, double_complex *b); /* a + b */
+	double_complex dcmul(double_complex *a, double_complex *b); /* a * b */
+	double_complex dcsub(double_complex *a, double_complex *b); /* a - b */
+	double_complex dcdiv(double_complex *a, double_complex *b); /* a / b */
+	double_complex dconjg(double_complex *a);	/* conjugate of a */
+	double_complex dcexp(double_complex *a);        /* exp(a) */
+	double_complex dclog(double_complex *a);        /* ln(a)  */
+	double_complex dcsqrt(double_complex *a);       /* sqrt(a)  */
+	double_complex dce_itheta(double theta);      	/* exp( i*theta) */
+
+	macros:
+	CONJG(a,b)        b = conjg(a)
+	CADD(a,b,c)       c = a + b
+	CSUM(a,b)         a += b
+	CSUB(a,b,c)       c = a - b
+	CMUL(a,b,c)       c = a * b
+	CDIV(a,b,c)       c = a / b
+	CMUL_J(a,b,c)     c = a * conjg(b)
+	CMULJ_(a,b,c)     c = conjg(a) * b
+	CMULJJ(a,b,c)     c = conjg(a*b)
+	CNEGATE(a,b)      b = -a
+	CMUL_I(a,b)       b = ia
+	CMUL_MINUS_I(a,b) b = -ia
+	CMULREAL(a,b,c)   c = ba with b real and a complex
+	CDIVREAL(a,b,c)   c = a/b with a complex and b real
+
+    B.  su3 operations:
+	"su3.h" and "su3.a" contain functions for su3 operations.
+	For example:
+	    void mult_su3_nn( a,b,c )su3_matrix *a,*b,*c;
+	    /* matrix multiply, no adjoints */
+	    /*   *c <-  *a  *  *b   (arguments are pointers) */
+
+	    /* su3_matrix times su3_vector multiply and add to another
+		su3_vector */
+	    /*   *c  <-  *A * *b + *c  */
+	    void mult_su3_mat_vec_sum( a,b,c )su3_matrix *a; su3_vector *b,*c;
+
+	There have come to be a great many of these routines, too many
+	to keep a duplicate list of here.  Consult the include file
+	"su3.h" for a hopefully correct list of prototypes and
+	description of functions.
+
+
+    C.  SU(2) functions
+
+	Most of the SU(3) utility routines also exist for SU(2).  See
+	the directory libsu2, which contains the include file su2.h
+	and the file globaldefs.h.  Globaldefs.h includes things that
+	are really common to both SU(2) and SU(3), and in some later
+	code version these routines should be removed from su3.h.
+
+    D.  Miscellaneous functions:
+	These will probably be collected somewhere as the code evolves.
+
+	/* utility function for finding coordinates of neighbor */
+	/* x,y,z,t are the coordinates of some site, and x2p... are
+	   pointers.  *x2p... will be set to the coordinates of the
+	   neighbor site at direction "dir".
+	neighbor_coords( x,y,z,t,dir, x2p,y2p,z2p,t2p)
+	int x,y,z,t,dir;       /* coordinates of site, and direction (eg XUP) */
+	int *x2p,*y2p,*z2p,*t2p; 
+
+
+VII.  DISTRIBUTING SITES AMONG NODES
+	Four functions are used to determine the distribution of sites
+among the nodes. These functions may be changed, but chaos will ensue if they
+are not consistent.  For example, it is a gross error for the node_index
+function to return a value larger than or equal to the value returned
+by num_sites of the appropriate node.  In fact, node_index must provide
+a one-to-one mapping of the coordinates of the sites on one node to the
+integers from 0 to num_sites(node)-1.
+   setup_layout() is called once on each node at initialization
+     time, to do any calculation and set up any static variables
+     that the other functions may need.  At the time setup_layout()
+     is called the global variables ns,ny,nz and nt (the lattice
+     dimensions) will have been set.
+     setup_layout() must initialize the global variables sites_on_node,
+	even_sites_on_node, and odd_sites_on_node.
+   num_sites(node) returns the number of sites on a node
+   node_number(x,y,z,t) returns the node number on which a site lives.
+   node_index(x,y,z,t) returns the index of the site on the node - ie the
+     site is lattice[node_index(x,y,z,t)].
+Below is a stupid simple example.  It just deals out the sites among
+the nodes, one site at a time to each node.  A good choice will minimize
+the amount of communication.
+	These routines are in "layout.c".  There are currently several
+layout strategies to choose from.  Copy one of these files to "layout.c".
+  layout_gen.c:  "generic" stupid layout, mostly for testing.
+  layout_planes.c:  distributes 2-d planes enely among nodes.
+  layout_squares.c: divides longest two directions of the lattice
+		by factors of two.  Fails if there aren't enough powers
+		of two in the dimensions.
+  layout_hyper.c: divides the lattice up into hypercubes by dividing
+		dimensions by factors of two.  Fails if there aren't enough
+		powers of two in the dimensions.
+  AS OF 11/9/90, LAYOUT_HYPER IS UNRELIABLE.
+
+	Below is a completely stupid example, which just deals out the
+sites among nodes like cards in a deck.  It works, but you would really
+want to do much better.
+
+    int Num_of_nodes;	/* static storage used by these routines */
+
+    void setup_layout(){
+        Num_of_nodes = numnodes();
+	sites_on_node = nx*ny*nz*nt/Num_of_nodes;
+	even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+    }
+    int node_number(x,y,z,t) int x,y,z,t; {
+    register int i;
+        i = x+nx*(y+ny*(z+nz*t));
+        return( i%Num_of_nodes );
+    }
+    int node_index(x,y,z,t) int x,y,z,t; {
+    register int i;
+        i = x+nx*(y+ny*(z+nz*t));
+        return( i/Num_of_nodes );
+    }
+    int num_sites(node) int node; {
+    register int i;
+        i = nx*ny*nz*nt;
+        if( node< i%Num_of_nodes )return( i/Num_of_nodes+1 );
+        else return( i/Num_of_nodes );
+    }
+
+Some of the layout files have options, set in lattice.h.
+The EVENFIRST option causes all the even sites to be stored first in
+the array, followed by all the odd sites.  This makes looping over sites
+of a given parity more efficient.
+The GRAYCODE option causes node numbers to be Gray coded, thus
+increasing the chance that neighboring sites are on a neighboring node
+in a hypercube.
+The ACCORDION option, used when we are laying out two dimensional
+planes, say planes of given x an y for definiteness, causes the t
+coordinate to be swept in opposite directions for alternate values of
+z, which usually decreases the surface area of the lattice section
+stored on a node.
+
+AT SOME FUTURE TIME, "EVENFIRST" WILL BECOME REQUIRED.
+
+
+VIII.  RANDOM NUMBERS
+The random number generator is the exclusive-or of a 127 bit feedback
+shift register and a 32 bit integer congruence generator.  It is
+supposed to be machine independent.  Each node or site uses a different
+multipler in the congruence generator, so all are generating different
+sequences of numbers.  If SITERAND is defined, each lattice site has its
+own random number generator state.  This takes extra storage, but means
+that the results of the program should be independent of the number of
+nodes or the distribution of the sites among the nodes.
+
+
+IX. FILES
+The files which make up the program are listed here.  This list depends
+very much on which version of the program (Kogut-Susskind/Wilson?
+Thermodynamics/Spectrum?)  The listing here is for the bare bones
+Kogut-Susskind program on which I am developing the code.
+
+    Makefile:
+	Contains instructions for compiling and linking.  There are
+	three things you can make, "su3_rmd", "su3_phi" and "su3_hmc",
+	which are programs for the R algorithm, the phi algorithm, or the
+	hybrid Monte Carlo algorithm.  Definitions in this file
+	need to be changed to move from machine to machine.  At the
+	moment I am trying to maintain definitions for the Sun workstation
+	simulator, the DEC workstation simulator, and the real Intel
+	machine - comment things in and out as needed.
+
+    "HIGH LEVEL" ROUTINES:
+    control.c
+	main procedure - directs traffic
+	it must call initialize_machine() first thing.
+    setup.c
+	most of the initialization stuff - called from control.c
+    update.c
+	update the gauge fields by refreshing the momenta and integrating
+	for one trajectory.  Knows three different algorithms through
+	preprocessor switches.
+    update_h.c
+	Update the gauge momenta
+    update_u.c
+	Update the gauge fields
+    grsource.c
+	Heat bath update of the phi field - "Gaussian random source"
+    congrad3.c
+	A Kogut-Susskind inverter
+    reunitarize.c
+	Reunitarize the gauge fields
+    action.c
+	Measure the action.  Used only in the hybrid Monte Carlo algorithm.
+    ranmom.c
+	Produce Gaussian random momenta for the gauge fields.
+
+    plaquette.c
+    plaquette2.c
+	Measure the plaquette.  plaquette2 is the good one, the first one
+	is obsolete except for testing field_pointer routines.
+    ploop.c
+	Measure Polyakov loop
+    f_measure.c
+	Measure fermion stuff - psi-bar-psi, fermion energy and pressure.
+    spectrum.c
+	Measure hadron propagators
+    spectrum_s.c
+	Measure hadron screening propagators
+    gaugefix.c
+	Fix to lattice Landau or Coulomb (in any direction) gauge
+
+    LOWER LEVEL STUFF
+    ranstuff.c
+	Routines for random numbers on multiple nodes:
+	initialize_prn() and myrand()
+    layout.c - currently one of layout_gen.c, layout_planes.c,
+	layout_squares.c or layout_hyper.c.
+	Routines which tell which node a site lives on, and where on
+	the node it lives.
+    com_intel.c, com_intelsim.c, com_ncube.c
+    com_cm5.c, com_pvm.c
+	Communication routines - gather, field_pointer, setup routines
+	for communications.  This one is very machine dependent.
+	Choose the appropriate one for your target machine.
+	com_intelsim.c is different from con_intel.c because the
+	simulator works a little better with synchronous sends and receives.
+    io_lat.c,
+	Input and output routines - read and write lattices.
+	Some optimized versions for special machines exist.
+
+    LIBRARIES
+    complex.a
+	complex number operations.  See section on "utility subroutines".
+    su3.a
+	3x3 matrix and 3 component vector operations.  See "utility
+	subroutines".
+
+
+X. BUGS AND FEATURES, or known problems with the code.
+    The i860assembler language subroutines use doubleword loads to get
+    complex numbers, and if they are not aligned on doubleword
+   boundaries the program slows down at best and crashes at worst.
+    I do not yet know an elegant way to insure this - putting a double
+    in the site structure ahead of all the complex stuff doesn't work
+    because the compiler doesn't align doubles to doubleword boundaries!
+    The current workaround is to insert integers in the site structure
+    as needed.  Currently, only one such kludge is needed; the random
+    number generator state is 11 words so it is padded to 12 words with
+    and integer to keep things aligned on double words.

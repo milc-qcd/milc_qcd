@@ -1,0 +1,21 @@
+November 28, 2004
+
+List of code projects to be done:
+
+Throughout:
+  Continue moving toward field-major layout.
+
+Continue testing prefetching and layout strategies.
+
+Fix arb_dirac_eigen?  It has not been debugged for parallel running.
+
+Merge clover_invert and wilson_invert with ifdefs where they differ in
+a few places.
+
+Measure momentum dependence of correlators in clover_invert and
+wilson_invert.
+
+
+Unfix the Make_template files.
+
+Merge the QDP variants, using ifdefs.

@@ -1,0 +1,127 @@
+# Makefile for benchmarking code
+# For clover_invert
+
+#------------------------------------------------------------
+# Instructions ...
+
+# 1. Edit the CODETYPE macro in Make_${ARCH} file in the top level
+#    directory to include the compiler macros 
+#      -DCGTIME
+#    for conjugate gradient.
+# 2. Edit the file ../Make_time_template to select or create the
+#    appropriate ARCH and LAUNCH for your platform -- see instructions there.
+# 3. Create a lattice file called lat.time of suitable size.  For example
+#    run ks_dynamical/Make_time and save the final lattice:
+#       Edit the file ks_dynamical/in.time.su3_rmd, changing the command
+#       "forget" to "save_serial lat.time".
+# 4. Edit the in.time.${PROJS} file to select the desired lattice size
+# 5. In this directory, run
+
+#    make -f Make_time time
+
+#    Results are in the files out.time.${PROJ}
+# 6. Compare results with benchmarks given by 
+#    http://www.physics.indiana.edu/~sg/milc/benchmark.html
+#    Note that the test probably includes a warmup part and a timing part.
+# 7. You are welcome to contribute to the above site.
+#------------------------------------------------------------
+
+# For running benchmarks
+
+PROJS = \
+  su3_clov_bi
+
+include ../Make_time_template
+
+######################################################################
+# An assortment of results ...
+# For detailed benchmarks, please see 
+#   http://www.physics.indiana.edu/~sg/milc/benchmarks.html
+######################################################################
+# SUN SPARC Ultra 30  Make_vanilla
+#   gcc -O3 -DINLINE -DNOPREFETCH (libraries and application)
+#      8^4 lattice
+#      BiCGILU        58 MF
+
+######################################################################
+# SUN Sunfire Solaris 8 compiler  Make_vanilla
+#   cc -O5  -fast -dalign -libmil -fsimple=2 -fns -DFAST (libraries)
+#   cc -O5  -fast -dalign -libmil -fsimple=2 -fns -DINLINE -DNOPREFETCH (application)
+#      8^4 lattice
+#      BiCGILU        179 MF
+#
+#
+
+######################################################################
+# Compaq Alphaserver Cluster (lemieux) 1:4 nodes
+# Compilation A:
+#  cc -O -float -arch=ev68 -DFAST (libraries)
+#  cc -O -float -arch=ev68 -DINLINE  -DNOPREFETCH (application)
+# Compilation B:
+#  cc -O4  -fast -float -ev68 -DFAST (libraries)
+#  cc -O4  -fast -float -ev68 -DINLINE -DNOPREFETCH (application)
+#
+#      8^4 lattice
+#
+#                      MF sec
+#                       A   B
+#      CGTIME          460 469
+#
+
+######################################################################
+# 2 GHz AMD / Myrinet 2:4 nodes
+# Compilation A: Make_vanilla libraries
+#  gcc -O  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586 (libraries) -DFAST
+#  gcc -O  -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 -DINLINE -DSSE -DSSE_INLINE  -DNOPREFETCH (application)
+# Compilation B: Make_SSE_nasm libraries
+#  gcc -O  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586 (libraries) -DFAST
+#  gcc -O  -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 -DINLINE -DNOPREFETCH (application)
+#  
+#
+#      8^4 lattice
+#
+#                      MF sec
+#                       A   B
+#      CGTIME          236 215
+#
+
+######################################################################
+# 1.6 GHz UMich AMD / Myrinet 4:4 nodes
+# Compilation A: Make_vanilla libraries
+#  pgcc -O3 -DFAST -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 (libraries)
+#  pgcc -O3 -DFAST -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 -DINLINE -DNOPREFETCH (application)
+#  pgcc -O3 -DFAST -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 (libraries)
+#  pgcc -O3 -DNOPREFETCH -DINLINE -tp athlonxp -Munroll=c:4,n:4 -fast -Minline=levels:10 -DINLINE (application)
+# Compilation B: (with prefetching OFF)
+#  gcc -O -DFAST -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=athlon
+#  gcc -O -DNOPREFETCH -DINLINE -DP4 -DSSE -DSSE_INLINE -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=athlon
+# Compilation C: (with prefetching ON)
+#  gcc -O -DFAST -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=athlon
+#  gcc -O -DINLINE -DP4 -DSSE -DSSE_INLINE -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=athlon
+#
+#      8^4 lattice
+#
+#                      MF sec
+#                       A   B  C
+#      CGTIME          318 335 328
+#
+
+######################################################################
+# ORNL eagle (375 MHz Power3) 1:4 nodes
+# Compilation A: 
+#  config.h NATIVEDOUBLE
+#  xlc -O3 -Q=500 -qmaxmem=-1 -DFAST (Make_RS6K libraries)
+#  mpcc(xlc) -O3  -qarch=pwr3 -qtune=pwr3 -Q=500 -qmaxmem=-1 -bmaxdata:0x40000000 -bmaxstack:0x8000000 -DINLINE  -DNOPREFETCH (application)
+# Compilation B: 
+#  xlc -O3 -Q=500 -qarch=pwr3 -qtune=pwr3 -qmaxmem=-1 -DFAST (Make_RS6K libraries)
+#  mpcc(xlc) -O3  -qarch=pwr3 -qtune=pwr3 -Q=500 -qmaxmem=-1 -bmaxdata:0x40000000 -bmaxstack:0x8000000 -DINLINE  -DNOPREFETCH (application)
+#
+#  
+#
+#      8^4 lattice
+#
+#                      MF sec
+#                       A   B
+#      CGTIME          323 309
+#
+

@@ -1,0 +1,48 @@
+/* wvec_dot.alpha: DEC alpha assembler version of wvec_dot.c*/
+/* coded for the alpha 21064 */
+/* result left at -8(sp) */
+#include "asdef.alpha.h"
+
+    .globl wvec_dot
+    .ent wvec_dot 2
+wvec_dot:
+	addq	zero,11,t0	/* loop count */
+	fmov	fzero,ft4	/* answer.real */
+	fmov	fzero,ft5	/* answer.imag */
+
+        lds     ft0, 0(a1)      /* a.c[i].real*/
+        lds     ft1, 4(a1)      /* a.c[i].imag*/
+        lds     ft2, 0(a2)      /* b.c[i].real*/
+        lds     ft3, 4(a2)      /* b.c[i].imag*/
+LOOP:
+        muls    ft0, ft2, ft6   /* answer.real*/
+	subq	t0,1,t0
+        muls    ft0, ft3, ft7   /* answer.imag*/
+	addq	a1,8,a1
+        muls    ft1, ft3, ft8   /* answer.real*/
+	addq	a2,8,a2
+        muls    ft1, ft2, ft9   /* answer.imag*/
+        lds     ft0, 0(a1)      /* a.c[i].real*/
+	adds	ft6,ft8,ft10
+        lds     ft1, 4(a1)      /* a.c[i].imag*/
+	subs	ft7,ft9,ft11
+        lds     ft2, 0(a2)      /* b.c[i].real*/
+	adds	ft4,ft10,ft4
+        lds     ft3, 4(a2)      /* b.c[i].imag*/
+	adds	ft5,ft11,ft5
+	bne	t0,LOOP
+
+        muls    ft0, ft2, ft6   /* answer.real*/
+        muls    ft0, ft3, ft7   /* answer.imag*/
+        muls    ft1, ft3, ft8   /* answer.real*/
+        muls    ft1, ft2, ft9   /* answer.imag*/
+	adds	ft6,ft8,ft10
+	subs	ft7,ft9,ft11
+	adds	ft4,ft10,ft4
+	adds	ft5,ft11,ft5
+
+	sts	ft4,0(a0)
+	sts	ft5,4(a0)
+	ret	zero, (ra)
+
+	.end

@@ -1,0 +1,44 @@
+#! /bin/sh
+
+# B gamma_0 pi seq 0 zonk 0
+
+# Parameters for the 3-pt correlator
+fb3=forward
+sp3=0      # Spectator quark
+zk3=0      # Zonked quark
+sq3=0      # Sequential quark
+p3=00      # Momentum of B meson
+op3=3      # 3-pt operator
+cp3=0      # Copy
+
+# Parameters for the recoil meson 2-pt correlator
+fb2=forward
+sp2=${sp3} # Spectator quark
+zk2=${zk3} # Zonked quark
+op2=0      # 2-pt operator
+cp2=0      # Copy
+twoptname2=p_GG_zk0
+
+# Parameters for the initial B meson 2-pt correlator (relative smearing)
+fb1=forward
+sp1=${sp3} # Spectator quark
+sq1=${sq3} # Sequential quark
+p1=${p3}   # Momentum
+op1=0      # 2-pt operator
+cp1=0      # Copy
+twoptname1=b_GE_sq0
+
+# Parameters for the initial B meson 2-pt correlator (shell source and sink)
+sp0=${sp3} # Spectator quark
+sq0=${sq3} # Sequential quark
+p0=${p3}   # Momentum
+op0=0      # 2-pt operator
+cp0=0      # Copy
+twoptname0=b_GG_sq0
+
+# Names of files
+name3=HL3_p0_0.1245
+name2=LL2_GG_0.1245
+name1=HL2_GE_p0_0.1245
+name0=HL2_GG_0.1245
+name=HL3_p0

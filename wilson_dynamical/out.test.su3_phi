@@ -1,0 +1,49 @@
+SU3 with Wilson fermions
+Microcanonical simulation with refreshing
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+PHI algorithm
+start: Fri Aug 30 23:28:45 2002
+
+type 0 for no prompts  or 1 for prompts
+nflavors 2
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.6 MBytes per node for lattice
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.46
+kappa 0.111
+microcanonical_time_step 0.02
+steps_per_trajectory 5
+max_cg_iterations 100
+error_per_site 1e-05
+error_for_propagator 1e-05
+fresh 
+forget 
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 1.209021e-03
+WARMUPS COMPLETED
+F2MES 1.184386e+01 -1.304806e-01 -1.134137e+00 2.363453e-02 1.196188e+01 -1.495689e-01 -2.018642e-07
+GMES 2.853795e+00 1.523495e-03 1.600000e+01 2.852669e+00 2.848923e+00
+F2MES 1.144469e+01 1.017013e-01 -8.931657e-01 -3.591847e-01 1.166344e+01 1.592551e-01 -1.149601e-06
+GMES 2.710892e+00 -2.644612e-03 1.600000e+01 2.728162e+00 2.731602e+00
+RUNNING COMPLETED
+average cg iters for step= 7.000000e+00
+average cg iters for measurement= 1.600000e+01
+Time = 6.018541e-01 seconds
+total_iters = 108
+
+
+get_i: EOF on STDIN while expecting warms.
+exit: Fri Aug 30 23:28:45 2002
+

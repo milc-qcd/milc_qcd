@@ -1,0 +1,9 @@
+/******************** prefetch.alpha ***************************************
+#include "../include/config.h"
+#if defined HAVE_64_BYTE_CACHELINE
+/* Prefetch with 64 byte cache line
+#include "prefetch64.alpha"
+#else
+/* Prefetch with 32 byte cache line
+#include "prefetch32.alpha"
+/* prefetch.alpha */ 

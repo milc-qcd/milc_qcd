@@ -1,0 +1,2 @@
+diffn out.test.su3_phi.tmp out.sample.su3_phi.tmp 1e-5
+Compared 6 lines with a tolerance of 1e-5

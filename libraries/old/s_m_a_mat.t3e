@@ -1,0 +1,83 @@
+; s_m_a_mat.t3d: T3D assembler version of s_m_a_mat.c
+	.ident s_m_a_mat$c
+
+	.psect	scalar_mult_add_su3_matrix@code,code
+scalar_mult_add_su3_matrix::
+
+	lds	f11, 0(r17)	; b.c[N][0].real
+	lds	f13, 4(r17)	; b.c[N][0].imag
+	lds	f15, 8(r17)	; b.c[N][1].real
+	addq	r31,2,r2	; r2 is loop counter
+LOOP:
+	muls/d	f11,f18,f11	; int.c[N][0].real
+	lds	f23, 12(r17)	; b.c[N][1].imag
+	muls/d	f13,f18,f13	; int.c[N][0].imag
+	lds	f25, 16(r17)	; b.c[N][2].real
+	muls/d	f15,f18,f15	; int.c[N][1].real
+	lds	f27, 20(r17)	; b.c[N][2].imag
+	muls/d	f23,f18,f23	; int.c[N][1].imag
+	lds	f10, 0(r16)	; a.c[N][0].real
+	muls/d	f25,f18,f25	; int.c[N][2].real
+	lds	f12, 4(r16)	; a.c[N][0].imag
+	muls/d	f27,f18,f27	; int.c[N][2].imag
+	lds	f14, 8(r16)	; a.c[N][1].real
+	adds/d	f10,f11,f11	; int.c[N][0].real
+	lds	f22, 12(r16)	; a.c[N][1].imag
+	adds/d	f12,f13,f13	; int.c[N][0].imag
+	lds	f24, 16(r16)	; a.c[N][2].real
+	adds/d	f14,f15,f15	; int.c[N][1].real
+	lds	f26, 20(r16)	; a.c[N][2].imag
+	adds/d	f22,f23,f23	; int.c[N][1].imag
+	addq	r16,24,r16
+	adds/d	f24,f25,f25	; int.c[N][2].real
+	addq	r17,24,r17
+	adds/d	f26,f27,f27	; int.c[N][2].imag
+	addq	r19,24,r19
+	subq	r2,1,r2
+	sts	f11, -24(r19)	; c.c[N][0].real
+	sts	f13, -20(r19)	; c.c[N][0].imag
+	sts	f15, -16(r19)	; c.c[N][1].real
+	lds	f11, 0(r17)	; b.c[N][0].real
+	lds	f13, 4(r17)	; b.c[N][0].imag
+	lds	f15, 8(r17)	; b.c[N][1].real
+	sts	f23, -12(r19)	; c.c[N][1].imag
+	sts	f25, -8(r19)	; c.c[N][2].real
+	sts	f27, -4(r19)	; c.c[N][2].imag
+
+	bne	r2,LOOP
+
+	muls/d	f11,f18,f11	; int.c[N][0].real
+	lds	f23, 12(r17)	; b.c[N][1].imag
+	muls/d	f13,f18,f13	; int.c[N][0].imag
+	lds	f25, 16(r17)	; b.c[N][2].real
+	muls/d	f15,f18,f15	; int.c[N][1].real
+	lds	f27, 20(r17)	; b.c[N][2].imag
+	muls/d	f23,f18,f23	; int.c[N][1].imag
+	lds	f10, 0(r16)	; a.c[N][0].real
+	muls/d	f25,f18,f25	; int.c[N][2].real
+	lds	f12, 4(r16)	; a.c[N][0].imag
+	muls/d	f27,f18,f27	; int.c[N][2].imag
+	lds	f14, 8(r16)	; a.c[N][1].real
+	adds/d	f10,f11,f11	; int.c[N][0].real
+	lds	f22, 12(r16)	; a.c[N][1].imag
+	adds/d	f12,f13,f13	; int.c[N][0].imag
+	lds	f24, 16(r16)	; a.c[N][2].real
+	adds/d	f14,f15,f15	; int.c[N][1].real
+	lds	f26, 20(r16)	; a.c[N][2].imag
+	adds/d	f22,f23,f23	; int.c[N][1].imag
+	addq	r16,24,r16
+	adds/d	f24,f25,f25	; int.c[N][2].real
+	addq	r17,24,r17
+	adds/d	f26,f27,f27	; int.c[N][2].imag
+	addq	r19,24,r19
+	sts	f11, -24(r19)	; c.c[N][0].real
+	sts	f13, -20(r19)	; c.c[N][0].imag
+	sts	f15, -16(r19)	; c.c[N][1].real
+	sts	f23, -12(r19)	; c.c[N][1].imag
+	sts	f25, -8(r19)	; c.c[N][2].real
+	sts	f27, -4(r19)	; c.c[N][2].imag
+
+	ret	r31, (r26)
+	.endp
+
+	.end

@@ -1,0 +1,45 @@
+#  Makefile for the conversion of the variational correlarors
+#  to text format
+#
+#   make convert_vary.x  : to create the conversion executable
+#
+
+MAKEFILE = Makefile_convert
+
+COMPILER = gcc  
+#COMPILER = gcc  -pg
+#COMPILER = cc  -g
+#COMPILER = gcc -Wall -pedantic
+FLAGS =  -lm
+CFLAGS = -g -DDEBUG  -DLATDEF='"header_convert.h"'  
+#CFLAGS =
+
+LIST =    \
+	byterev_array.c\
+	convert_vary_matrix.c\
+	read_vary_header.c
+
+
+INCS = \
+	header_convert.h
+
+
+OBJS =  $(LIST:.c=.o)
+
+
+.SUFFIXES:
+
+.SUFFIXES:	.o .c
+
+.c.o:
+	$(COMPILER) -c  $< $(CFLAGS)
+
+
+$(OBJS): $(INCS) $(MAKEFILE)
+
+
+convert_vary.x : $(LIST) $(OBJS) $(INCS) $(MAKEFILE) 
+	$(COMPILER) -o $@   $(OBJS)   $(FLAGS)
+
+
+

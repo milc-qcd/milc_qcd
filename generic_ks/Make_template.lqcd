@@ -1,0 +1,148 @@
+#  Generic routines for Kogut-Susskind fermions
+#  MIMD version 6
+#
+#  Generic make-include file for generic_ks codes
+#  This template file defines rules and macros common to all applications
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  The paths are relative to the application directory.
+
+G_KS_ALL = \
+  d_congrad5.cppacs.o \
+  d_congrad5.o \
+  d_congrad6.o \
+  d_congrad5_eo.o \
+  d_congrad5_fn.o \
+  d_congrad_ks.o \
+  dslash_fn.o \
+  dslash_fn_multi.o \
+  dslash_fn2.o \
+  flavor_ops.o \
+  f_meas.o \
+  fpi_2.o \
+  grsource.o \
+  io_helpers_ks.o \
+  io_prop_ks.o \
+  io_prop_sgks.o \
+  io_helpers_ks_double.o \
+  io_prop_ks_double.o \
+  io_prop_sgks_double.o \
+  ks_invert.o \
+  ks_multicg.o \
+  mat_invert.o \
+  multimass_inverter.o \
+  nl_spectrum.o \
+  quark_stuff.o \
+  quark_stuff2.o \
+  smear_links.o \
+  spectrum.o \
+  spectrum2.o \
+  spectrum_hybrids5.o \
+  spectrum_mom.o \
+  spectrum_multimom.o \
+  spectrum_nd.o \
+  spectrum_pt.o \
+  spectrum_nlpi2.o
+
+# Must match our headers in generic_ks_includes.h
+G_KS_HEADERS = \
+  ../include/config.h \
+  ../include/random.h \
+  lattice.h \
+  ../include/complex.h \
+  ../include/su3.h \
+  ../include/macros.h \
+  ../include/comdefs.h \
+  ../include/generic.h \
+  ../include/generic_quark_types.h \
+  ../include/generic_ks.h
+
+G_KS_ALL_DEPEND = \
+  ../generic_ks/generic_ks_includes.h \
+  ../generic_ks/Make_template \
+  ../include/Make_template \
+  ${LASTMAKE} \
+  ${G_KS_HEADERS}
+
+${G_KS_ALL} : ${G_KS_ALL_DEPEND}
+
+# Rules for header files
+include ../include/Make_template
+
+d_congrad5.cppacs.o: ../generic_ks/d_congrad5.cppacs.c
+	${CC} -c ${CFLAGS}  ../generic_ks/d_congrad5.cppacs.c
+d_congrad5.o: ../generic_ks/d_congrad5.c
+	${CC} -c ${CFLAGS}  ../generic_ks/d_congrad5.c
+d_congrad6.o: ../generic_ks/d_congrad6.c
+	${CC} -c ${CFLAGS}  ../generic_ks/d_congrad6.c
+d_congrad5_eo.o: ../generic_ks/d_congrad5_eo.c
+	${CC} -c ${CFLAGS}  ../generic_ks/d_congrad5_eo.c
+d_congrad5_fn.o: ../generic_ks/d_congrad5_fn.c
+	${CC} -c ${CFLAGS}  ../generic_ks/d_congrad5_fn.c
+d_congrad_ks.o: ../generic_ks/d_congrad_ks.c
+	${CC} -c ${CFLAGS}  ../generic_ks/d_congrad_ks.c
+dslash_fn.o: ../generic_ks/dslash_fn.c
+	${CC} -c ${CFLAGS}  ../generic_ks/dslash_fn.c
+dslash_fn_multi.o: ../generic_ks/dslash_fn_multi.c
+	${CC} -c ${CFLAGS}  ../generic_ks/dslash_fn_multi.c
+dslash_fn2.o: ../generic_ks/dslash_fn2.c
+	${CC} -c ${CFLAGS}  ../generic_ks/dslash_fn2.c
+f_meas.o: ../generic_ks/f_meas.c
+	${CC} -c ${CFLAGS}  ../generic_ks/f_meas.c
+fpi_2.o: ../generic_ks/fpi_2.c
+	${CC} -c ${CFLAGS}  ../generic_ks/fpi_2.c
+flavor_ops.o: ../generic_ks/flavor_ops.c
+	${CC} -c ${CFLAGS}  ../generic_ks/flavor_ops.c
+grsource.o: ../generic_ks/grsource.c
+	${CC} -c ${CFLAGS}  ../generic_ks/grsource.c
+grsource_imp.o: ../generic_ks/grsource_imp.c
+	${CC} -c ${CFLAGS}  ../generic_ks/grsource_imp.c
+io_helpers_ks.o: ../generic_ks/io_helpers_ks.c
+	${CC} -c ${CFLAGS}  ../generic_ks/io_helpers_ks.c
+io_prop_ks.o: ../generic_ks/io_prop_ks.c
+	${CC} -c ${CFLAGS}  ../generic_ks/io_prop_ks.c
+io_prop_sgks.o: ../generic_ks/io_prop_sgks.c
+	${CC} -c ${CFLAGS}  ../generic_ks/io_prop_sgks.c
+io_helpers_ks_double.o: ../generic_ks/io_helpers_ks_double.c
+	${CC} -c ${CFLAGS}  ../generic_ks/io_helpers_ks_double.c
+io_prop_ks_double.o: ../generic_ks/io_prop_ks_double.c
+	${CC} -c ${CFLAGS}  ../generic_ks/io_prop_ks_double.c
+io_prop_sgks_double.o: ../generic_ks/io_prop_sgks_double.c
+	${CC} -c ${CFLAGS}  ../generic_ks/io_prop_sgks_double.c
+ks_invert.o: ../generic_ks/ks_invert.c
+	${CC} -c ${CFLAGS}  ../generic_ks/ks_invert.c
+ks_multicg.o: ../generic_ks/ks_multicg.c
+	${CC} -c ${CFLAGS}  ../generic_ks/ks_multicg.c
+mat_invert.o: ../generic_ks/mat_invert.c
+	${CC} -c ${CFLAGS}  ../generic_ks/mat_invert.c
+multimass_inverter.o: ../generic_ks/multimass_inverter.c
+	${CC} -c ${CFLAGS}  ../generic_ks/multimass_inverter.c
+nl_spectrum.o: ../generic_ks/nl_spectrum.c
+	${CC} -c ${CFLAGS}  ../generic_ks/nl_spectrum.c
+quark_stuff.o: ../generic_ks/quark_stuff.c
+	${CC} -c ${CFLAGS}  ../generic_ks/quark_stuff.c
+quark_stuff2.o: ../generic_ks/quark_stuff2.c
+	${CC} -c ${CFLAGS}  ../generic_ks/quark_stuff2.c
+rephase.o: ../generic_ks/rephase.c
+	${CC} -c ${CFLAGS}  ../generic_ks/rephase.c
+smear_links.o: ../generic_ks/smear_links.c
+	${CC} -c ${CFLAGS}  ../generic_ks/smear_links.c
+spectrum.o: ../generic_ks/spectrum.c
+	${CC} -c ${CFLAGS}  ../generic_ks/spectrum.c
+spectrum_hybrids5.o: ../generic_ks/spectrum_hybrids5.c
+	${CC} -c ${CFLAGS}  ../generic_ks/spectrum_hybrids5.c
+spectrum2.o: ../generic_ks/spectrum2.c
+	${CC} -c ${CFLAGS}  ../generic_ks/spectrum2.c
+spectrum_mom.o: ../generic_ks/spectrum_mom.c
+	${CC} -c ${CFLAGS}  ../generic_ks/spectrum_mom.c
+spectrum_multimom.o: ../generic_ks/spectrum_multimom.c
+	${CC} -c ${CFLAGS}  ../generic_ks/spectrum_multimom.c
+spectrum_nd.o: ../generic_ks/spectrum_nd.c
+	${CC} -c ${CFLAGS}  ../generic_ks/spectrum_nd.c
+spectrum_pt.o: ../generic_ks/spectrum_pt.c
+	${CC} -c ${CFLAGS}  ../generic_ks/spectrum_pt.c
+spectrum_nlpi2.o: ../generic_ks/spectrum_nlpi2.c
+	${CC} -c ${CFLAGS}  ../generic_ks/spectrum_nlpi2.c
+
+

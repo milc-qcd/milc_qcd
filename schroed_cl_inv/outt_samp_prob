@@ -1,0 +1,207 @@
+SU3 Wilson valence fermion Schroedinger functional
+MIMD version 4
+Machine = MPI (portable), with 4 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+LAYOUT = Hypercubes, options = EVENFIRST,
+make_nn_gathers: Possible overflow of gather message type
+ 1638 > 255 flag 1: Fix the program
+
+
+number_of_kappas 2
+bc_flag 2
+num_smear 5
+alpha 0.45
+kappa 0.12
+kappa 0.125
+clov_c 1
+ferm_phases[0] 1
+ferm_phases[1] 1
+ferm_phases[2] 1
+max_cg_iterations 100
+error_for_propagator 1e-06
+error_for_propagator 1e-06
+Reading with byte reversal
+Restored binary gauge configuration serially from file lat.sample.5p7
+Time stamp Wed Aug 25 08:30:50 1999
+read_checksum: Checksum violation. Computed 72d77a0a 19447b24.  Read 2e218ab1 2d188e6b.
+Time to reload gauge configuration = 2.000000e-02
+Boundary values set
+CHECK PLAQ: 1.704564e+00 1.749537e+00
+Unitarity checked
+Time to check unitarity = 0.000000e+00
+Fermion phases set
+END OF HEADER
+At smearing 1 plaq: 2.456309e+00 2.449988e+00
+At smearing 2 plaq: 2.725445e+00 2.706472e+00
+At smearing 3 plaq: 2.842100e+00 2.821898e+00
+At smearing 4 plaq: 2.899984e+00 2.880913e+00
+At smearing 5 plaq: 2.932067e+00 2.914231e+00
+SMEARING COMPLETED
+num_kap = 2
+Kappa=1.200000e-01 residue=1.000000e-06
+color=0 spin=0
+CGILU: size_r= 8.21e-07 iters= 46
+size_r= 8.206496e-07, iters= 4.600000e+01
+color=0 spin=1
+CGILU: size_r= 8.34e-07 iters= 46
+size_r= 8.337455e-07, iters= 4.600000e+01
+color=0 spin=0
+CGILU: size_r= 7.60e-07 iters= 46
+size_r= 7.601975e-07, iters= 4.600000e+01
+color=0 spin=1
+CGILU: size_r= 9.98e-07 iters= 45
+size_r= 9.977454e-07, iters= 4.500000e+01
+color=1 spin=0
+CGILU: size_r= 8.08e-07 iters= 45
+size_r= 8.084376e-07, iters= 4.500000e+01
+color=1 spin=1
+CGILU: size_r= 9.69e-07 iters= 45
+size_r= 9.687972e-07, iters= 4.500000e+01
+color=1 spin=0
+CGILU: size_r= 8.16e-07 iters= 44
+size_r= 8.163456e-07, iters= 4.400000e+01
+color=1 spin=1
+CGILU: size_r= 7.97e-07 iters= 44
+size_r= 7.967666e-07, iters= 4.400000e+01
+color=2 spin=0
+CGILU: size_r= 8.30e-07 iters= 44
+size_r= 8.295410e-07, iters= 4.400000e+01
+color=2 spin=1
+CGILU: size_r= 7.94e-07 iters= 45
+size_r= 7.941038e-07, iters= 4.500000e+01
+color=2 spin=0
+CGILU: size_r= 8.00e-07 iters= 42
+size_r= 7.997186e-07, iters= 4.200000e+01
+color=2 spin=1
+CGILU: size_r= 8.87e-07 iters= 43
+size_r= 8.868691e-07, iters= 4.300000e+01
+Kappa=1.250000e-01 residue=1.000000e-06
+color=0 spin=0
+CGILU: size_r= 9.51e-07 iters= 51
+size_r= 9.509181e-07, iters= 5.100000e+01
+color=0 spin=1
+CGILU: size_r= 8.66e-07 iters= 51
+size_r= 8.660052e-07, iters= 5.100000e+01
+color=0 spin=0
+CGILU: size_r= 6.87e-07 iters= 51
+size_r= 6.871640e-07, iters= 5.100000e+01
+color=0 spin=1
+CGILU: size_r= 8.08e-07 iters= 51
+size_r= 8.081186e-07, iters= 5.100000e+01
+color=1 spin=0
+CGILU: size_r= 7.19e-07 iters= 51
+size_r= 7.185941e-07, iters= 5.100000e+01
+color=1 spin=1
+CGILU: size_r= 8.35e-07 iters= 51
+size_r= 8.354872e-07, iters= 5.100000e+01
+color=1 spin=0
+CGILU: size_r= 9.47e-07 iters= 50
+size_r= 9.469431e-07, iters= 5.000000e+01
+color=1 spin=1
+CGILU: size_r= 9.22e-07 iters= 50
+size_r= 9.221864e-07, iters= 5.000000e+01
+color=2 spin=0
+CGILU: size_r= 9.61e-07 iters= 51
+size_r= 9.613138e-07, iters= 5.100000e+01
+color=2 spin=1
+CGILU: size_r= 9.49e-07 iters= 51
+size_r= 9.491786e-07, iters= 5.100000e+01
+color=2 spin=0
+CGILU: size_r= 7.39e-07 iters= 49
+size_r= 7.392032e-07, iters= 4.900000e+01
+color=2 spin=1
+CGILU: size_r= 9.36e-07 iters= 49
+size_r= 9.357597e-07, iters= 4.900000e+01
+FORW_PION 0 0  0.000000e+00 0.000000e+00
+FORW_PION 0 1  1.762534e+00 0.000000e+00
+FORW_PION 0 2  7.415172e-01 0.000000e+00
+FORW_PION 0 3  3.550607e-01 0.000000e+00
+FORW_PION 0 4  1.713620e-01 0.000000e+00
+FORW_PION 0 5  6.692278e-02 0.000000e+00
+FORW_PION 0 6  2.091694e-02 0.000000e+00
+FORW_PION 0 7  5.157413e-03 0.000000e+00
+FORW_PION 1 0  0.000000e+00 0.000000e+00
+FORW_PION 1 1  2.530626e+00 0.000000e+00
+FORW_PION 1 2  1.219165e+00 0.000000e+00
+FORW_PION 1 3  7.329605e-01 0.000000e+00
+FORW_PION 1 4  4.282942e-01 0.000000e+00
+FORW_PION 1 5  1.873728e-01 0.000000e+00
+FORW_PION 1 6  6.369229e-02 0.000000e+00
+FORW_PION 1 7  1.679596e-02 0.000000e+00
+FORW_PS505 0 0  0.000000e+00 0.000000e+00
+FORW_PS505 0 1  -7.541794e-01 1.309672e-10
+FORW_PS505 0 2  -3.633155e-01 3.092282e-11
+FORW_PS505 0 3  -1.748469e-01 -1.136868e-11
+FORW_PS505 0 4  -7.124069e-02 1.347189e-11
+FORW_PS505 0 5  -2.527050e-02 -1.946887e-11
+FORW_PS505 0 6  -7.399798e-03 1.403677e-11
+FORW_PS505 0 7  -2.683160e-03 -2.671641e-12
+FORW_PS505 1 0  0.000000e+00 0.000000e+00
+FORW_PS505 1 1  -2.375465e-01 -4.292815e-10
+FORW_PS505 1 2  -1.850363e-01 -8.367351e-11
+FORW_PS505 1 3  -1.257711e-01 3.747118e-10
+FORW_PS505 1 4  -6.162929e-02 -2.080469e-10
+FORW_PS505 1 5  -3.040407e-02 -3.706191e-11
+FORW_PS505 1 6  -1.156424e-02 8.006040e-12
+FORW_PS505 1 7  -7.278761e-03 -6.167511e-12
+BACKW_PION 0 0  0.000000e+00 0.000000e+00
+BACKW_PION 0 1  1.118530e+00 0.000000e+00
+BACKW_PION 0 2  3.245509e-01 0.000000e+00
+BACKW_PION 0 3  9.494249e-02 0.000000e+00
+BACKW_PION 0 4  2.952375e-02 0.000000e+00
+BACKW_PION 0 5  1.165579e-02 0.000000e+00
+BACKW_PION 0 6  5.381369e-03 0.000000e+00
+BACKW_PION 0 7  2.617686e-03 0.000000e+00
+BACKW_PION 1 0  0.000000e+00 0.000000e+00
+BACKW_PION 1 1  1.427165e+00 0.000000e+00
+BACKW_PION 1 2  4.775525e-01 0.000000e+00
+BACKW_PION 1 3  1.565602e-01 0.000000e+00
+BACKW_PION 1 4  5.282145e-02 0.000000e+00
+BACKW_PION 1 5  2.397770e-02 0.000000e+00
+BACKW_PION 1 6  1.348516e-02 0.000000e+00
+BACKW_PION 1 7  8.109268e-03 0.000000e+00
+BACKW_PS505 0 0  0.000000e+00 0.000000e+00
+BACKW_PS505 0 1  -4.116884e-01 -2.146407e-10
+BACKW_PS505 0 2  -1.219989e-01 3.433342e-11
+BACKW_PS505 0 3  -3.533618e-02 -1.273293e-11
+BACKW_PS505 0 4  -1.390261e-02 -2.160050e-12
+BACKW_PS505 0 5  -6.746684e-03 -7.460699e-14
+BACKW_PS505 0 6  -3.588605e-03 -2.641443e-12
+BACKW_PS505 0 7  -2.156954e-03 -2.700062e-13
+BACKW_PS505 1 0  0.000000e+00 0.000000e+00
+BACKW_PS505 1 1  -2.353198e-01 -3.965397e-10
+BACKW_PS505 1 2  -7.601608e-02 -2.410161e-10
+BACKW_PS505 1 3  -2.129854e-02 -2.069100e-11
+BACKW_PS505 1 4  -1.217519e-02 -4.388312e-11
+BACKW_PS505 1 5  -9.096670e-03 -1.651301e-11
+BACKW_PS505 1 6  -7.250746e-03 5.556444e-12
+BACKW_PS505 1 7  -6.391720e-03 -1.705303e-13
+ZV_f_1 0  nan
+ZV_f_V 0 0  0.000000e+00 0.000000e+00
+ZV_f_V 0 1  nan nan
+ZV_f_V 0 2  nan nan
+ZV_f_V 0 3  nan nan
+ZV_f_V 0 4  nan nan
+ZV_f_V 0 5  nan nan
+ZV_f_V 0 6  nan nan
+ZV_f_V 0 7  nan nan
+ZV_f_1 1  nan
+ZV_f_V 1 0  0.000000e+00 0.000000e+00
+ZV_f_V 1 1  nan nan
+ZV_f_V 1 2  nan nan
+ZV_f_V 1 3  nan nan
+ZV_f_V 1 4  nan nan
+ZV_f_V 1 5  nan nan
+ZV_f_V 1 6  nan nan
+ZV_f_V 1 7  nan nan
+RUNNING COMPLETED
+total cg iters for measurement= 1.141000e+03
+cg iters for measurement= 4.754167e+01
+Time = 2.659000e+01 seconds
+total_iters = 0
+
+

@@ -1,0 +1,162 @@
+
+Double precision inline SSE routines for MILC V6
+
+November 2004 Amitoj Singh and D.J. Holmgren authors
+November 2004 C. DeTar: names of sse/libraries/*.nas files
+             conform to ugly names of corresponding libraries/*.c files.
+
+This tar file contains SSE versions of a number of the C-language
+matrix-vector and matrix-matrix routines:
+
+	mult_su3_nn
+	mult_su3_na
+	mult_su3_an
+	mult_su3_mat_vec
+	mult_adj_su3_mat_vec
+	mult_su3_mat_vec_sum_4dir
+	mult_adj_su3_mat_vec_4dir
+	mult_adj_su3_mat_4vec
+	su3_projector
+	mult_su3_mat_hwvec
+	mult_adj_su3_mat_hwvec
+
+The following are unavailable for now:
+
+	sub_four_su3_vecs
+	add_su3_vector
+	scalar_mult_add_su3_vector
+	scalar_mult_add_su3_matrix
+
+These have all been implemented using the NASM assembler (see
+http://nasm.2y.net).  However, using this assembler implies that these
+routines must be called as subroutines.  Compared with the comparable inline
+assembler codes which may be implemented with gcc, there's a substantial
+overhead associated with the subroutine calls (about 25 cycles).  Consequently
+I've implemented a translator (nas2m2c.pl) which generates gcc inline macros
+from each of these codes.
+
+To use these inline routines, do the following:
+
+1. Unpack this tar file in the top level MILC directory
+2. In include/, do:  `make all`
+3. In any MILC C program where you want to substitute these inline macros for
+   their corresponding C routines, add the following near the top of the file:
+     #define SSE_INLINE
+     #include "../include/inline_sse.h"
+
+Note that in step 3, the SSE_INLINE macro will enable macros similar to the
+following:
+
+   #define mult_su3_nn(...) _inline_mult_su3_nn(__VA_ARGS__)
+
+The effect of these macros is to transparently substitute the inline
+macros for the original C invocations.  If you prefer, do not define
+SSE_INLINE and edit each C invocation in the code, adding an
+"_inline_" prefix.  However, please note that if an argument is an
+expression, it must be stored explicitly in a temporary and the
+temporary passed in its stead.
+
+To use these inline routines in all of the modules of a build, add the lines
+in step #3 above to include/su3.h (or any other header file universally
+included).
+
+You may also use the NASM assembler to create object files.  Invoke the
+assembler as follows:
+
+    nasm -f elf sse_mult_nn.nas
+
+Include the resulting sse_mult_nn.o file in your link step.  You'll have to
+edit all invocations of C routines to add "sse_" prefixes, or use macros like
+those shown above (note, however, that only gcc allows varargs-type macro
+constructions).  Using nasm-generated object files is useful when you're using
+a non-gcc compiler to build these codes.
+
+Don Holmgren, Fermilab
+djholm@fnal.gov
+
+----------------------------------------------------------------------
+Note added for this release of the MILC code:
+
+A full SSE package has been included with this MILC release, so it
+needs no further unpacking or building.
+
+With the MILC code there are four levels of use of the SSE instruction
+set for Intel P3, P4 processors.  Here is how to invoke them.
+
+1. NASM (assembly language) linked subroutines
+
+    Edit the Make_<ARCH> file as follows:
+
+      MAKELIBRARIES = Make_SSE_nasm
+      CODETYPE = -DP3 (or -DP4) (plus any other macros)
+
+    Note: Do not use -DSSE or -DSSE_INLINE in this case.  They
+    are used to invoke inline substitution (see below).
+
+    This change causes the libraries to be built with Make_SSE_nasm
+    instead of Make_vanilla.  The resulting su3.a will have
+    nasm-assembled SSE modules in place of the corresponding
+    C-compiled routines.
+
+
+2. Inline SSE: global compilation invocation
+
+    Edit the Make_<ARCH> file as follows:
+
+      MAKELIBRARIES = Make_vanilla (or Make_SSE_nasm)
+      CODETYPE = -DSSE -DSSE_INLINE -DP3 (or -DP4) (plus any other macros)
+      CC = gcc (or equivalent)
+
+    Edit the libraries/Make_vanilla file as follows:
+
+      CC = gcc (or equivalent)    
+
+    If you don't use gcc, inline substitution won't take place.
+    Instead the modules in su3.a will be used.
+    
+3. Inline SSE: source-file-by-source-file compilation invocation 
+
+    Same as 2 above, except do not define -DSSE_INLINE in Make_<ARCH>
+
+      CODETYPE = -DSSE -DP3 (or -DP4) (plus any other macros)
+
+    Instead, at the top of the file where you want to invoke inline
+    subsitution, BEFORE any #include directives, add the line
+
+      #define SSE_INLINE
+
+    (The inclusion of "inline_sse.h" is automatic in this release.)
+
+4. Inline SSE: call-by-call compilation invocation 
+
+    Same as 2 above, except do not define -DSSE_INLINE in Make_<ARCH>
+    and do not, as in 3, define SSE_INLINE at the top of the source
+    file.
+
+      CODETYPE = -DSSE -DP3 (or -DP4) (plus any other macros)
+
+    Instead, for the call you wish to inline, modify the call,
+    replacing
+
+      foo(a,b,c,...); -> _inline_foo(a,b,c,...);
+
+    If there are scalar expressions as value arguments, it is also
+    necessary to define a temporary intermediate.  For example
+
+      foo(a,2*b,c,...); -> {float temp = 2*b; _inline_foo(a,temp,c,...);}
+    
+
+C. DeTar, Utah
+detar@physics.utah.edu
+Sep 6, 2002
+
+----------------------------------------------------------------------
+Note added for the subsequent release of the MILC code:
+
+The directory tree has been reorganized, but the functionality is
+unchanged.
+
+C. DeTar, Utah
+detar@physics.utah.edu
+Feb 22, 2005
+

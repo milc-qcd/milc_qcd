@@ -1,0 +1,82 @@
+/* s_m_a_mat.alpha: Dec assembler assembler version of s_m_a_mat.c */
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+    .globl scalar_mult_add_su3_matrix
+    .ent scalar_mult_add_su3_matrix 2
+scalar_mult_add_su3_matrix:
+	lds	ft1, 0(a1)	/* b.c[N][0].real*/
+	lds	ft3, 4(a1)	/* b.c[N][0].imag*/
+	lds	ft5, 8(a1)	/* b.c[N][1].real*/
+	addq	zero,2,t1	/* loop counter */
+LOOP:
+	muls	ft1,fa2,ft1	/* int.c[N][0].real*/
+	lds	ft7, 12(a1)	/* b.c[N][1].imag*/
+	muls	ft3,fa2,ft3	/* int.c[N][0].imag*/
+	lds	ft9, 16(a1)	/* b.c[N][2].real*/
+	muls	ft5,fa2,ft5	/* int.c[N][1].real*/
+	lds	ft11, 20(a1)	/* b.c[N][2].imag*/
+	muls	ft7,fa2,ft7	/* int.c[N][1].imag*/
+	lds	ft0, 0(a0)	/* a.c[N][0].real*/
+	muls	ft9,fa2,ft9	/* int.c[N][2].real*/
+	lds	ft2, 4(a0)	/* a.c[N][0].imag*/
+	muls	ft11,fa2,ft11	/* int.c[N][2].imag*/
+	lds	ft4, 8(a0)	/* a.c[N][1].real*/
+	adds	ft0,ft1,ft1	/* int.c[N][0].real*/
+	lds	ft6, 12(a0)	/* a.c[N][1].imag*/
+	adds	ft2,ft3,ft3	/* int.c[N][0].imag*/
+	lds	ft8, 16(a0)	/* a.c[N][2].real*/
+	adds	ft4,ft5,ft5	/* int.c[N][1].real*/
+	lds	ft10, 20(a0)	/* a.c[N][2].imag*/
+	adds	ft6,ft7,ft7	/* int.c[N][1].imag*/
+	addq	a0,24,a0
+	adds	ft8,ft9,ft9	/* int.c[N][2].real*/
+	addq	a1,24,a1
+	adds	ft10,ft11,ft11	/* int.c[N][2].imag*/
+	addq	a3,24,a3
+	addq	t1,-1,t1
+	sts	ft1, -24(a3)	/* c.c[N][0].real*/
+	sts	ft3, -20(a3)	/* c.c[N][0].imag*/
+	sts	ft5, -16(a3)	/* c.c[N][1].real*/
+	lds	ft1, 0(a1)	/* b.c[N][0].real*/
+	lds	ft3, 4(a1)	/* b.c[N][0].imag*/
+	lds	ft5, 8(a1)	/* b.c[N][1].real*/
+	sts	ft7, -12(a3)	/* c.c[N][1].imag*/
+	sts	ft9, -8(a3)	/* c.c[N][2].real*/
+	sts	ft11, -4(a3)	/* c.c[N][2].imag*/
+
+	bne	t1,LOOP
+
+	muls	ft1,fa2,ft1	/* int.c[N][0].real*/
+	lds	ft7, 12(a1)	/* b.c[N][1].imag*/
+	muls	ft3,fa2,ft3	/* int.c[N][0].imag*/
+	lds	ft9, 16(a1)	/* b.c[N][2].real*/
+	muls	ft5,fa2,ft5	/* int.c[N][1].real*/
+	lds	ft11, 20(a1)	/* b.c[N][2].imag*/
+	muls	ft7,fa2,ft7	/* int.c[N][1].imag*/
+	lds	ft0, 0(a0)	/* a.c[N][0].real*/
+	muls	ft9,fa2,ft9	/* int.c[N][2].real*/
+	lds	ft2, 4(a0)	/* a.c[N][0].imag*/
+	muls	ft11,fa2,ft11	/* int.c[N][2].imag*/
+	lds	ft4, 8(a0)	/* a.c[N][1].real*/
+	adds	ft0,ft1,ft1	/* int.c[N][0].real*/
+	lds	ft6, 12(a0)	/* a.c[N][1].imag*/
+	adds	ft2,ft3,ft3	/* int.c[N][0].imag*/
+	lds	ft8, 16(a0)	/* a.c[N][2].real*/
+	adds	ft4,ft5,ft5	/* int.c[N][1].real*/
+	lds	ft10, 20(a0)	/* a.c[N][2].imag*/
+	adds	ft6,ft7,ft7	/* int.c[N][1].imag*/
+	addq	a0,24,a0
+	adds	ft8,ft9,ft9	/* int.c[N][2].real*/
+	addq	a1,24,a1
+	adds	ft10,ft11,ft11	/* int.c[N][2].imag*/
+	addq	a3,24,a3
+	sts	ft1, -24(a3)	/* c.c[N][0].real*/
+	sts	ft3, -20(a3)	/* c.c[N][0].imag*/
+	sts	ft5, -16(a3)	/* c.c[N][1].real*/
+	sts	ft7, -12(a3)	/* c.c[N][1].imag*/
+	sts	ft9, -8(a3)	/* c.c[N][2].real*/
+	sts	ft11, -4(a3)	/* c.c[N][2].imag*/
+
+	ret	zero, (ra)
+
+	.end scalar_mult_add_su3_matrix

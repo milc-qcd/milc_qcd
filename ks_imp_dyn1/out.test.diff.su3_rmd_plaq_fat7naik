@@ -1,0 +1,2 @@
+diffn out.test.su3_rmd_plaq_fat7naik.tmp out.sample.su3_rmd_plaq_fat7naik.tmp 1e-5
+Compared 24 lines with a tolerance of 1e-5

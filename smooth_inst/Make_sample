@@ -1,0 +1,9 @@
+# For generating sample ouptut from trusted code
+# For smooth_inst
+
+# Example: 
+#    make -f Make_sample "ARCH=vanilla" samples
+
+PROJS = su3_smooth su3_fat
+
+include ../Make_sample_template

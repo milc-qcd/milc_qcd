@@ -1,0 +1,2 @@
+diffn out.test.su3_hybrids.tmp out.sample.su3_hybrids.tmp 1e-5
+Compared 65 lines with a tolerance of 1e-5

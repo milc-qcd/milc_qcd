@@ -1,0 +1,73 @@
+SU3 Hypercubic valence fermions
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 9911
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 1.3 MBytes per node for lattice
+
+
+number_of_masses 1
+m0 0.1
+max_cg_iterations 200
+max_cg_restarts 1
+error_for_propagator 1e-06
+gaussian
+r0 1
+reload_serial ../binary_samples/lat.sample.l4444
+no_gauge_fix
+forget 
+fresh_prop 
+forget_prop 
+serial_scratch_prop stem
+Reading with byte reversal
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4444
+Time stamp Thu Feb 12 13:40:21 1998
+Checksums 2352c05 d137321d OK
+Time to reload gauge configuration = 6.842971e-03
+CHECK PLAQ: 1.794675e+00 1.774426e+00
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 1.820922e-03
+END OF HEADER
+pure APE blocking with alpha  3.000000e-01 N 3
+mass= 0.1 r0= 1 residue= 1e-06
+lambda[0] = 4.100000e+00
+lambda[1] = -5.000000e-01
+lambda[2] = 0.000000e+00
+lambda[3] = 0.000000e+00
+lambda[4] = 0.000000e+00
+rho[1] = -5.000000e-01
+rho[2] = 0.000000e+00
+rho[3] = 0.000000e+00
+rho[4] = 0.000000e+00
+boosting clover term by 1.000000e+00 to 5.000000e-01
+clover normalization 5.000000e-01
+entered clover setup with term=5.000000e-01
+BEGIN
+psi_0=0
+bicgstab: source_norm = 3.119557e+03
+BiCongrad: iter 5, rsq 3.011323e+00, rvr -8.494586e+00, 6.446323e-01
+BiCongrad: iter 10, rsq 5.263232e+00, rvr -6.126749e-01, 4.095873e+00
+BiCongrad: iter 15, rsq 4.346995e-03, rvr 2.646211e-01, 4.215042e-02
+BiCongrad: iter 20, rsq 1.123450e-04, rvr 1.109110e-02, -3.711538e-03
+BiCongrad: iter 25, rsq 6.996802e-06, rvr 1.539293e-03, -1.167127e-03
+BiCongrad: iter 30, rsq 8.809118e-06, rvr -9.233682e-05, 8.361059e-04
+BiCongrad: iter 35, rsq 2.389585e-08, rvr 5.058729e-07, 2.499821e-05
+BiCongrad: iter 40, rsq 2.277190e-09, rvr -5.379152e-07, -2.474342e-06
+bicgstab: iter 41, rsq 2.27719e-09
+size_r= 2.277190e-09, iters= 4.100000e+01
+F2MES 2.864126e+00 -6.599919e-02 1.145867e-02 -1.138542e-07
+RUNNING COMPLETED
+total cg iters for measurement= 0.000000e+00
+cg iters for measurement= 0.000000e+00
+Time = 2.759656e+00 seconds
+total_iters = 41
+
+
+get_i: EOF on STDIN while expecting number_of_masses.
+exit: Tue Sep 16 22:24:31 2003
+

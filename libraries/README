@@ -1,0 +1,52 @@
+           August 5, 1997
+
+	This directory contains code with ANSI prototyping for low
+level routines for QCD simulations, and include files used by many
+programs
+
+There are two library files:
+-complex.a contains routines for operations on complex numbers.  See
+ complex.h for a summary.
+-su3.a contains routines for operations on SU3 matrices, 3 element
+ complex vectors, and Wilson vectors (12 element complex vectors).
+ See su3.h for a summary.
+
+Assembler code for some routines and some CPUs is provided.  In each
+case a ".c" file of the same name contains a C routine which should
+work identically.  
+
+   .m4     Intel/Paragon
+   .rs6k   IBM/RS6000
+   .t3d    Cray T3D
+   .t3e    SGI/Cray T3E
+   .alpha  DEC/alpha
+
+The scalar workstation code is written in ANSI standard C.  If your
+compiler is not ANSI compliant, try using the gnu C compiler gcc
+instead.  Note that if the library code is compiled with gcc the
+application directory code must also be compiled with gcc, and vice
+versa.  This is because gcc understands prototypes and the sun4 c
+compiler doesn't, and they therefore pass float arguments differently.
+We recommend gcc.
+
+All library routines are single processor (no communications here) so
+choose the appropriate make file according to the target processor.
+
+Here are the steps for making the libraries:
+
+1. Choose a make file as follows:
+
+	SGI/Cray T3E	Make_t3e
+	IBM RS6000	Make_RS6K
+	Intel/i860	Make_paragon
+	Cray T3D	Make_t3d
+	DEC alpha	Make_alpha
+	any processor	Make_vanilla (no assembly language coding)
+
+2. Edit the Make file to get the CFLAGS and CC right.
+
+3. Build complex.a and su3.a using, for example
+
+      make -f Make_foo all >& make.log &
+
+

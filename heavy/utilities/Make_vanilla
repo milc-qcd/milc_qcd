@@ -1,0 +1,65 @@
+#  MIMD version 5
+#  Standard application makefile for generic scalar workstation
+#  Do not use for making libraries
+
+#  Choose a CC and CFLAGS
+#  Copy this file into the application directory and run make there.
+#
+
+MAKEFILE = Make_vanilla
+
+# Both io_nonansi and io_ansi should work on a scalar machine
+# Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
+MACHINE_DEP = com_vanilla.o io_nonansi.o
+MACH_DEP_KS_CONGRAD = d_congrad5.o
+MACH_DEP_KS_DSLASH_FN = dslash_fn.o
+MACH_DEP_SCHROED_KS = d_congrad5_SF.o
+
+CC = cc	 # most
+FC = f77        # most
+#CC = xlc        # IBM/AIX
+#FC = xlf        # IBM/AIX
+#CC = gcc	 # gnu c compiler
+#CC = g++
+
+# Do not comment out this line:
+CFLAGS0 = -DVANILLA -I${MYINCLUDEDIR} ${DEFINES}
+
+#-------------- generic --------------------
+CFLAGS = -O ${CFLAGS0}
+
+#-------------- Gnu C ----------------------------
+#CFLAGS= -g -Wall -DINLINE ${CFLAGS0}  # debug
+#CFLAGS= -O -DSEEK_SET=0 -Dsize_t=int ${CFLAGS0} # do we still need SEEK_SET
+
+#-------------- MIPS ----------------------------
+#CFLAGS= -O -f ${CFLAGS0}
+
+#-------------- IBM RS6000 ----------------------------
+#CFLAGS= -O3 -qmaxmem=-1 -DNATIVEDOUBLE -DINLINE -D_POSIX_SOURCE ${CFLAGS0}	#AIX 3.2.3
+#CFLAGS= -g -DNATIVEDOUBLE -DINLINE -D_POSIX_SOURCE ${CFLAGS0}	    #AIX 3.2.3 DEBUG
+#CFLAGS= -O3 -qmaxmem=-1 -DNATIVEDOUBLE -DINLINE ${CFLAGS0}
+#CFLAGS= -O3 -qarch=ppc -qmaxmem=-1 -DNATIVEDOUBLE -DINLINE ${CFLAGS0}    #Power PC
+FFLAGS= -O3
+
+#-------------- SUN SPARC ----------------------------
+#CFLAGS= -O5 -dalign -libmil -fsimple=2 -fns ${CFLAGS0}    #Ultra
+
+#-------------- DEC Alpha ----------------------------
+#CFLAGS =  -O4 -DT3E -float -fptm n -DSHORT32 ${CFLAGS0}
+#CFLAGS =  -O4 -DT3E -fast -fptm n -DSHORT32 ${CFLAGS0}	#new versions
+
+#-------------- Convex Exemplar ----------------------------
+#CFLAGS =  -O3 -float sp_ops -float sp_const -noautopar ${CFLAGS0}
+#CFLAGS2 =  -O3 -float sp_ops -float sp_const ${CFLAGS0}
+
+#-------------- SGI Power Challenge single node  ----------------------------
+#CFLAGS= -DLOOPEND -DSGI -O3 -mips4 -r10000 -OPT:alias=restrict -TENV:X=1 ${CFLAGS0}
+
+LD = ${CC}
+ILIB =
+LDFLAGS =
+
+include Make_template
+
+

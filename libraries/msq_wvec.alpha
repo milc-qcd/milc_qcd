@@ -1,0 +1,38 @@
+/* msq_wvec.t3d: T3D assembler version of msq_wvec.c */
+/* coded for the alpha 21064 */
+#include "asdef.alpha.h"
+    .globl magsq_wvec
+    .ent magsq_wvec 2
+magsq_wvec:
+
+	fmov	fzero, fv0
+	addq	zero,4,t0
+
+LOOP:
+	lds	ft0, 0(a0)	/* c[1].real*/
+	lds	ft1, 4(a0)	/* c[1].imag*/
+	lds	ft2, 8(a0)	/* c[2].real*/
+	muls	ft0, ft0, ft0
+	lds	ft3, 12(a0)	/* c[2].imag*/
+	muls	ft1, ft1, ft1
+	lds	ft4, 16(a0)	/* c[3].real*/
+	muls	ft2, ft2, ft2
+	lds	ft5, 20(a0)	/* c[3].imag*/
+	muls	ft3, ft3, ft3
+	muls	ft4, ft4, ft4
+	muls	ft5, ft5, ft5
+
+	adds	ft0, ft1, ft6
+	adds	ft2, ft3, ft7
+	adds	ft4, ft5, ft8
+	adds	ft6, ft7, ft6
+	adds	ft6, ft8, ft6
+addt	fv0, ft6, fv0
+
+	subq	t0,1,t0
+	addq	a0,24,a0
+	bne	t0,LOOP
+cvtts	fv0,fv0
+
+	ret	zero, (ra), 1
+	.end magsq_wvec

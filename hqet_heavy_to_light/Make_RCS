@@ -1,0 +1,69 @@
+# Partial makefile for the HQET heavy--light form factor calculation
+# This file is to be included in Make_template
+# It contains all the RCS stuff
+
+# RCS rules
+CO = co
+VPATH = RCS
+.SUFFIXES: .c,v .h,v .h
+.h,v.h: ; ${CO} $*.h
+.c,v.c: ; ${CO} $*.c
+
+# This ugly list of dependencies is apparently forced upon us by our 
+# version of make, which doesn't use VPATH in resolving suffix rules.
+
+lattice_form.h:                lattice_form.h,v
+debug_form.h:                  debug_form.h,v
+corrlist.h:		       corrlist.h,v
+opertypes.h:                   opertypes.h,v
+hqet_light_includes.h:         hqet_light_includes.h,v
+3submat.c:                     3submat.c,v
+apply_hqet_proj.c:             apply_hqet_proj.c,v
+calc_hqet_light_form_factor.c: calc_hqet_light_form_factor.c,v
+clover_info.c:                 clover_info.c,v
+clover_rotate.c:	       clover_rotate.c,v
+contract_hqet_to_light.c:      contract_hqet_to_light.c,v
+contract_two_pt.c:             contract_two_pt.c,v
+control_form.c:                control_form.c,v
+copy_spin_wilson_vector.c:     copy_spin_wilson_vector.c,v
+corr_routines.c:               corr_routines.c,v
+debug_form.c:                  debug_form.c,v
+evolve_hqet_prop.c:            evolve_hqet_prop.c,v
+gauge_info.c:                  gauge_info.c,v
+hqet_prop.c:                   hqet_prop.c,v
+hqet_prop_backwards.c:         hqet_prop_backwards.c,v
+load_velocity.c:               load_velocity.c,v
+m_mat_an_z.c:                  m_mat_an_z.c,v
+m_mat_nn_z_inc.c:              m_mat_nn_z_inc.c,v
+make_template.c:               make_template.c,v
+sequential_hqet_source.c:      sequential_hqet_source.c,v
+setup_control_hqet_form.c:     setup_control_hqet_form.c,v
+setup_hqet_form.c:             setup_hqet_form.c,v
+setup_timeslice_fft.c:         setup_timeslice_fft.c,v
+smear_hqet_prop.c:             smear_hqet_prop.c,v
+twopt_sequential.c:            twopt_sequential.c,v
+wilson_info.c:                 wilson_info.c,v
+write_hl_hqet_form.c:          write_hl_hqet_form.c,v
+write_seq_twopt.c:             write_seq_twopt.c,v
+write_twopt.c:                 write_twopt.c,v
+
+
+#
+#  looks at what is locked in the local RCS directory
+#
+what_locked :
+	@ echo "Here are files that are locked out of RCS" 
+	rlog  -L -R RCS/*
+
+
+#
+# Look at the differences between the source code and stuff in RCS
+#
+hdiff :
+	rcsdiff *.h
+
+
+cdiff :
+	rcsdiff *.c
+
+

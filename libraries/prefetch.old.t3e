@@ -1,0 +1,61 @@
+; prefetch.t3e: put objects into cache
+; assuming 8 byte alinment, 32 byte cache line
+; need to go from address to (address+size-8)
+#include <mpp/asdef.h>
+CRI_REGISTER_NAMES
+
+	.ident sub$c
+	;.psect	kernel@data,data,cache
+
+	;.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	prefetch_vector,zero,user
+prefetch_vector::	; su3_vector
+	ldq	zero,0(a0)
+	ldq	zero,16(a0)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	prefetch_4_vectors,zero,user
+prefetch_4_vectors::	; su3_vector
+	ldq	zero,0(a0)
+	ldq	zero,16(a0)
+	ldq	zero,0(a1)
+	ldq	zero,16(a1)
+	ldq	zero,0(a2)
+	ldq	zero,16(a2)
+	ldq	zero,0(a3)
+	ldq	zero,16(a3)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	prefetch_wvec,zero,user
+prefetch_wvec::	; wilson_vector
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ldq	zero,88(a0)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	prefetch_hwvec,zero,user
+prefetch_hwvec::	; half_wilson_vector
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,40(a0)
+	ret	zero,(ra)
+	.endp
+
+	.psect	kernel@code,code,cache
+;	 ENTER	prefetch_matrix,zero,user
+prefetch_matrix::	; su3_matrix
+	ldq	zero,0(a0)
+	ldq	zero,32(a0)
+	ldq	zero,64(a0)
+	ret	zero,(ra)
+	.endp
+	.end

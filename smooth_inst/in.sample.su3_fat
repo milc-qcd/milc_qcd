@@ -1,0 +1,23 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 4
+
+ape_weight 0.45
+sweeps 0
+sweeps_between_meas 1
+hits_per_sweep 9
+reload_serial ../binary_samples/lat.sample.inst
+no_gauge_fix
+forget_topo
+forget
+
+ape_weight 0.45
+sweeps 1
+sweeps_between_meas 1
+hits_per_sweep 9
+continue
+no_gauge_fix
+forget_topo
+forget

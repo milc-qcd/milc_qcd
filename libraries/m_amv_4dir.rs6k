@@ -1,0 +1,900 @@
+#*****************  m_amv_4dir.s  (in su3.a) *****************************
+#	For IBM RS6000
+#	C. DeTar 12/19/94
+#
+#									
+#  void mult_adj_su3_mat_vec_4dir( su3_matrix *mat,			*
+#  su3_vector *src, su3_vector *dest )					*
+#  Multiply an su3_vector by an array of four adjoint su3_matrices,	*
+#  result in an array of four su3_vectors.				*
+#  dest[i]  <-  A_adjoint[i] * src					*
+
+#	This version is for single precision
+#	Intermediate results are computed in double precision
+#	but WITHOUT ROUNDING TO SINGLE PRECISION: TRUNCATION only
+#
+#
+
+	.file	"m_amv_4dir.s"
+#	XCOFF table of contents entry for subroutine linkage
+	
+	.globl	mult_adj_su3_mat_vec_4dir[ds]
+	.csect	mult_adj_su3_mat_vec_4dir[ds]
+	.long	.mult_adj_su3_mat_vec_4dir[PR]
+	.long	TOC[tc0]
+	.long	0
+
+	.toc
+.mult_adj_su3_mat_vec_4dir:	.tc	.mult_adj_su3_mat_vec_4dir[tc],mult_adj_su3_mat_vec_4dir[ds]
+	
+	.globl	.mult_adj_su3_mat_vec_4dir[PR]
+	.csect	.mult_adj_su3_mat_vec_4dir[PR]
+
+#	General purpose registers
+#	Retained as called
+	
+	.set	a,3
+	.set	b,4
+	.set	c,5
+
+
+#	Offsets for arrays and structures ...
+		
+	.set 	sizeof_word,4               # Single precision
+	.set	sizeof_su3_matrix,18*sizeof_word
+	.set	sizeof_su3_vector,6*sizeof_word
+
+#	Real and imaginary parts of components of first 3D complex vector
+			
+	.set	c0re0,   0*sizeof_word + 0*sizeof_su3_vector
+	.set	c0im0,   1*sizeof_word + 0*sizeof_su3_vector
+	.set	c1re0,   2*sizeof_word + 0*sizeof_su3_vector
+	.set	c1im0,   3*sizeof_word + 0*sizeof_su3_vector
+	.set	c2re0,   4*sizeof_word + 0*sizeof_su3_vector
+	.set	c2im0,   5*sizeof_word + 0*sizeof_su3_vector
+
+#	Real and imaginary parts of components of first SU(3) matrix
+
+	.set	e00re0,  0*sizeof_word + 0*sizeof_su3_matrix
+	.set	e00im0,  1*sizeof_word + 0*sizeof_su3_matrix
+	.set	e01re0,  2*sizeof_word + 0*sizeof_su3_matrix
+	.set	e01im0,  3*sizeof_word + 0*sizeof_su3_matrix
+	.set	e02re0,  4*sizeof_word + 0*sizeof_su3_matrix
+	.set	e02im0,  5*sizeof_word + 0*sizeof_su3_matrix 
+
+	.set	e10re0,  6*sizeof_word + 0*sizeof_su3_matrix
+	.set	e10im0,  7*sizeof_word + 0*sizeof_su3_matrix
+	.set	e11re0,  8*sizeof_word + 0*sizeof_su3_matrix
+	.set	e11im0,  9*sizeof_word + 0*sizeof_su3_matrix
+	.set	e12re0, 10*sizeof_word + 0*sizeof_su3_matrix
+	.set	e12im0, 11*sizeof_word + 0*sizeof_su3_matrix
+
+	.set	e20re0, 12*sizeof_word + 0*sizeof_su3_matrix
+	.set	e20im0, 13*sizeof_word + 0*sizeof_su3_matrix
+	.set	e21re0, 14*sizeof_word + 0*sizeof_su3_matrix
+	.set	e21im0, 15*sizeof_word + 0*sizeof_su3_matrix
+	.set	e22re0, 16*sizeof_word + 0*sizeof_su3_matrix
+	.set	e22im0, 17*sizeof_word + 0*sizeof_su3_matrix
+			
+#	Real and imaginary parts of components of second 3D complex vector
+			
+	.set	c0re1,   0*sizeof_word + 1*sizeof_su3_vector
+	.set	c0im1,   1*sizeof_word + 1*sizeof_su3_vector
+	.set	c1re1,   2*sizeof_word + 1*sizeof_su3_vector
+	.set	c1im1,   3*sizeof_word + 1*sizeof_su3_vector
+	.set	c2re1,   4*sizeof_word + 1*sizeof_su3_vector
+	.set	c2im1,   5*sizeof_word + 1*sizeof_su3_vector
+
+#	Real and imaginary parts of components of second SU(3) matrix
+
+	.set	e00re1,  0*sizeof_word + 1*sizeof_su3_matrix
+	.set	e00im1,  1*sizeof_word + 1*sizeof_su3_matrix
+	.set	e01re1,  2*sizeof_word + 1*sizeof_su3_matrix
+	.set	e01im1,  3*sizeof_word + 1*sizeof_su3_matrix
+	.set	e02re1,  4*sizeof_word + 1*sizeof_su3_matrix
+	.set	e02im1,  5*sizeof_word + 1*sizeof_su3_matrix 
+
+	.set	e10re1,  6*sizeof_word + 1*sizeof_su3_matrix
+	.set	e10im1,  7*sizeof_word + 1*sizeof_su3_matrix
+	.set	e11re1,  8*sizeof_word + 1*sizeof_su3_matrix
+	.set	e11im1,  9*sizeof_word + 1*sizeof_su3_matrix
+	.set	e12re1, 10*sizeof_word + 1*sizeof_su3_matrix
+	.set	e12im1, 11*sizeof_word + 1*sizeof_su3_matrix
+
+	.set	e20re1, 12*sizeof_word + 1*sizeof_su3_matrix
+	.set	e20im1, 13*sizeof_word + 1*sizeof_su3_matrix
+	.set	e21re1, 14*sizeof_word + 1*sizeof_su3_matrix
+	.set	e21im1, 15*sizeof_word + 1*sizeof_su3_matrix
+	.set	e22re1, 16*sizeof_word + 1*sizeof_su3_matrix
+	.set	e22im1, 17*sizeof_word + 1*sizeof_su3_matrix
+			
+#	Real and imaginary parts of components of third 3D complex vector
+			
+	.set	c0re2,   0*sizeof_word + 2*sizeof_su3_vector
+	.set	c0im2,   1*sizeof_word + 2*sizeof_su3_vector
+	.set	c1re2,   2*sizeof_word + 2*sizeof_su3_vector
+	.set	c1im2,   3*sizeof_word + 2*sizeof_su3_vector
+	.set	c2re2,   4*sizeof_word + 2*sizeof_su3_vector
+	.set	c2im2,   5*sizeof_word + 2*sizeof_su3_vector
+
+#	Real and imaginary parts of components of third SU(3) matrix
+
+	.set	e00re2,  0*sizeof_word + 2*sizeof_su3_matrix
+	.set	e00im2,  1*sizeof_word + 2*sizeof_su3_matrix
+	.set	e01re2,  2*sizeof_word + 2*sizeof_su3_matrix
+	.set	e01im2,  3*sizeof_word + 2*sizeof_su3_matrix
+	.set	e02re2,  4*sizeof_word + 2*sizeof_su3_matrix
+	.set	e02im2,  5*sizeof_word + 2*sizeof_su3_matrix 
+
+	.set	e10re2,  6*sizeof_word + 2*sizeof_su3_matrix
+	.set	e10im2,  7*sizeof_word + 2*sizeof_su3_matrix
+	.set	e11re2,  8*sizeof_word + 2*sizeof_su3_matrix
+	.set	e11im2,  9*sizeof_word + 2*sizeof_su3_matrix
+	.set	e12re2, 10*sizeof_word + 2*sizeof_su3_matrix
+	.set	e12im2, 11*sizeof_word + 2*sizeof_su3_matrix
+
+	.set	e20re2, 12*sizeof_word + 2*sizeof_su3_matrix
+	.set	e20im2, 13*sizeof_word + 2*sizeof_su3_matrix
+	.set	e21re2, 14*sizeof_word + 2*sizeof_su3_matrix
+	.set	e21im2, 15*sizeof_word + 2*sizeof_su3_matrix
+	.set	e22re2, 16*sizeof_word + 2*sizeof_su3_matrix
+	.set	e22im2, 17*sizeof_word + 2*sizeof_su3_matrix
+			
+#	Real and imaginary parts of components of fourth 3D complex vector
+			
+	.set	c0re3,   0*sizeof_word + 3*sizeof_su3_vector
+	.set	c0im3,   1*sizeof_word + 3*sizeof_su3_vector
+	.set	c1re3,   2*sizeof_word + 3*sizeof_su3_vector
+	.set	c1im3,   3*sizeof_word + 3*sizeof_su3_vector
+	.set	c2re3,   4*sizeof_word + 3*sizeof_su3_vector
+	.set	c2im3,   5*sizeof_word + 3*sizeof_su3_vector
+
+#	Real and imaginary parts of components of fourth SU(3) matrix
+
+	.set	e00re3,  0*sizeof_word + 3*sizeof_su3_matrix
+	.set	e00im3,  1*sizeof_word + 3*sizeof_su3_matrix
+	.set	e01re3,  2*sizeof_word + 3*sizeof_su3_matrix
+	.set	e01im3,  3*sizeof_word + 3*sizeof_su3_matrix
+	.set	e02re3,  4*sizeof_word + 3*sizeof_su3_matrix
+	.set	e02im3,  5*sizeof_word + 3*sizeof_su3_matrix 
+
+	.set	e10re3,  6*sizeof_word + 3*sizeof_su3_matrix
+	.set	e10im3,  7*sizeof_word + 3*sizeof_su3_matrix
+	.set	e11re3,  8*sizeof_word + 3*sizeof_su3_matrix
+	.set	e11im3,  9*sizeof_word + 3*sizeof_su3_matrix
+	.set	e12re3, 10*sizeof_word + 3*sizeof_su3_matrix
+	.set	e12im3, 11*sizeof_word + 3*sizeof_su3_matrix
+
+	.set	e20re3, 12*sizeof_word + 3*sizeof_su3_matrix
+	.set	e20im3, 13*sizeof_word + 3*sizeof_su3_matrix
+	.set	e21re3, 14*sizeof_word + 3*sizeof_su3_matrix
+	.set	e21im3, 15*sizeof_word + 3*sizeof_su3_matrix
+	.set	e22re3, 16*sizeof_word + 3*sizeof_su3_matrix
+	.set	e22im3, 17*sizeof_word + 3*sizeof_su3_matrix
+
+	.set	cachesize, 64
+	.set	cache0, 0*cachesize
+	.set	cache1, 1*cachesize
+	.set	cache2, 2*cachesize
+	.set	cache3, 3*cachesize
+	.set	cache4, 4*cachesize
+
+
+#	Floating point registers
+#	Linkage conventions require preserving registers 14-31
+	
+	.set	c0r,0
+	.set	c0i,1
+	.set	c1r,2
+	.set	c1i,3
+	.set	c2r,4
+	.set	c2i,5
+
+	.set	b0r,6
+	.set	b0i,7
+
+	.set	b1r,8
+	.set	b1i,9
+
+	.set	b2r,6
+	.set	b2i,7
+	
+	.set	a00r,10
+	.set	a10r,11
+	.set	a20r,12
+
+	.set	a00i,10
+	.set	a10i,11
+	.set	a20i,12
+
+	.set	a01r,10
+	.set	a11r,11
+	.set	a21r,12
+
+	.set	a01i,10
+	.set	a11i,11
+	.set	a21i,12
+
+	.set	a02r,10
+	.set	a12r,11
+	.set	a22r,12
+
+	.set	a02i,10
+	.set	a12i,11
+	.set	a22i,12
+
+	.set 	prefetch,13
+
+######################################################################
+#	First dot product to be computed
+  
+#  b0r=b->c[0].real;    b0i=b->c[0].imag;
+#  b1r=b->c[1].real;    b1i=b->c[1].imag;
+#  b2r=b->c[2].real;    b2i=b->c[2].imag;
+
+#  a00r=a->e[0][0].real; a00i=a->e[0][0].imag;
+#  a01r=a->e[1][0].real; a01i=a->e[1][0].imag;
+#  a02r=a->e[2][0].real; a02i=a->e[2][0].imag;
+
+#  c->c[0].real = a00r*b0r + a00i*b0i + a01r*b1r + a01i*b1i + a02r*b2r + a02i*b2i;
+#  c->c[0].imag = a00r*b0i - a00i*b0r + a01r*b1i - a01i*b1r + a02r*b2i - a02i*b2r;
+  
+######################################################################
+#	Second dot product to be computed
+
+#  a10r=a->e[0][1].real; a10i=a->e[0][1].imag;
+#  a11r=a->e[1][1].real; a11i=a->e[1][1].imag;
+#  a12r=a->e[2][1].real; a12i=a->e[2][1].imag;
+
+#  c->c[1].real = a10r*b0r + a10i*b0i + a11r*b1r + a11i*b1i + a12r*b2r + a12i*b2i;
+#  c->c[1].imag = a10r*b0i - a10i*b0r + a11r*b1i - a11i*b1r + a12r*b2i - a12i*b2r;
+
+######################################################################
+#	Third dot product to be computed
+
+#  a20r=a->e[0][2].real; a20i=a->e[0][2].imag;
+#  a21r=a->e[1][2].real; a21i=a->e[1][2].imag;
+#  a22r=a->e[2][2].real; a22i=a->e[2][2].imag;
+
+#  c->c[2].real = a20r*b0r + a20i*b0i + a21r*b1r + a21i*b1i + a22r*b2r + a22i*b2i;
+#  c->c[2].imag = a20r*b0i - a20i*b0r + a21r*b1i - a21i*b1r + a22r*b2i - a22i*b2r;
+
+  
+######################################################################
+#
+#	First su3 matrix times vector
+#
+####################	
+#	c0r  = a00r*b0r
+#	c1r  = a10r*b0r
+#	c2r  = a20r*b0r
+
+	lfs	b0r,c0re0(b)
+	lfs	a00r,e00re0(a)
+	lfs	a10r,e01re0(a)
+	lfs	a20r,e02re0(a)
+
+	fm 	c0r,a00r,b0r
+	fm 	c1r,a10r,b0r
+	fm	c2r,a20r,b0r
+	
+####################	
+#  	c0i  = a00r*b0i
+#  	c1i  = a10r*b0i
+#  	c2i  = a20r*b0i
+
+	lfs	b0i,c0im0(b)
+	fm 	c0i,a00r,b0i
+	fm 	c1i,a10r,b0i
+	fm	c2i,a20r,b0i
+	
+####################	
+#	c0r += a00i*b0i
+#	c1r += a10i*b0i
+#	c2r += a20i*b0i
+
+	lfs	a00i,e00im0(a)
+	lfs	a10i,e01im0(a)
+	lfs	a20i,e02im0(a)
+	fma 	c0r,a00i,b0i,c0r
+	fma 	c1r,a10i,b0i,c1r
+	fma 	c2r,a20i,b0i,c2r
+	
+####################	
+#	c0i -= a00i*b0r
+#	c1i -= a10i*b0r
+#	c2i -= a20i*b0r
+
+	fnms	c0i,a00i,b0r,c0i
+	fnms	c1i,a10i,b0r,c1i
+	fnms	c2i,a20i,b0r,c2i
+	
+	
+####################	
+#	c0r += a01r*b1r
+#	c1r += a11r*b1r
+#	c2r += a21r*b1r
+
+	lfs	b1r,c1re0(b)
+	lfs	a01r,e10re0(a)
+	lfs	a11r,e11re0(a)
+	lfs	a21r,e12re0(a)
+	fma	c0r,a01r,b1r,c0r
+	fma	c1r,a11r,b1r,c1r
+	fma	c2r,a21r,b1r,c2r
+	
+####################	
+#	c0i += a01r*b1i
+#	c1i += a11r*b1i
+#	c2i += a21r*b1i
+
+	lfs	b1i,c1im0(b)
+	fma	c0i,a01r,b1i,c0i
+	fma	c1i,a11r,b1i,c1i
+	fma	c2i,a21r,b1i,c2i
+
+	
+####################	
+#	c0r += a01i*b1i
+#	c1r += a11i*b1i
+#	c2r += a21i*b1i
+
+	lfs	a01i,e10im0(a)
+	lfs	a11i,e11im0(a)
+	lfs	a21i,e12im0(a)
+	fma 	c0r,a01i,b1i,c0r
+	fma 	c1r,a11i,b1i,c1r
+	fma 	c2r,a21i,b1i,c2r
+
+####################	
+#	c0i -= a01i*b1r
+#	c1i -= a11i*b1r
+#	c2i -= a21i*b1r
+	
+	fnms	c0i,a01i,b1r,c0i
+	fnms	c1i,a11i,b1r,c1i
+	fnms	c2i,a21i,b1r,c2i
+	
+		
+####################	
+#	c0r += a02r*b2r
+#	c1r += a12r*b2r
+#	c2r += a22r*b2r
+
+	lfs	b2r,c2re0(b)
+	lfs	a02r,e20re0(a)
+	lfs	a12r,e21re0(a)
+	lfs	a22r,e22re0(a)
+	fma	c0r,a02r,b2r,c0r
+	fma	c1r,a12r,b2r,c1r
+	fma	c2r,a22r,b2r,c2r
+	
+####################	
+#	c0i += a02r*b2i
+#	c1i += a12r*b2i
+#	c2i += a22r*b2i
+
+	lfs	b2i,c2im0(b)
+	fma	c0i,a02r,b2i,c0i
+	fma	c1i,a12r,b2i,c1i
+	fma	c2i,a22r,b2i,c2i
+
+####################	
+#	c0r += a02i*b2i;
+#	c1r += a12i*b2i;
+#	c2r += a22i*b2i;
+
+	lfs	a02i,e20im0(a)
+	lfs	a12i,e21im0(a)
+	lfs	a22i,e22im0(a)
+	fma 	c0r,a02i,b2i,c0r
+	fma 	c1r,a12i,b2i,c1r
+	fma 	c2r,a22i,b2i,c2r
+	
+####################	
+#	c0i -= a02i*b2r;
+#	c1i -= a12i*b2r;
+#	c2i -= a22i*b2r;
+
+	fnms	c0i,a02i,b2r,c0i
+	fnms	c1i,a12i,b2r,c1i
+	fnms	c2i,a22i,b2r,c2i
+
+	
+####################	
+#	Round and save product of first matrix times vector
+
+# 	frsp     c0r,c0r	# Round to single precision
+# 	frsp     c1r,c1r	# Round to single precision
+# 	frsp     c2r,c2r	# Round to single precision
+# 	frsp     c0i,c0i	# Round to single precision
+# 	frsp     c1i,c1i	# Round to single precision
+# 	frsp     c2i,c2i	# Round to single precision
+	stfs     c0r,c0re0(c)
+	stfs     c1r,c1re0(c)
+	stfs     c2r,c2re0(c)
+	stfs     c0i,c0im0(c)
+	stfs     c1i,c1im0(c)
+	stfs     c2i,c2im0(c)
+	
+######################################################################
+#
+#	Second su3 matrix times vector
+#
+####################	
+#	c0r  = a00r*b0r
+#	c1r  = a10r*b0r
+#	c2r  = a20r*b0r
+
+	lfs	b0r,c0re0(b)
+	lfs	a00r,e00re1(a)
+	lfs	a10r,e01re1(a)
+	lfs	a20r,e02re1(a)
+	fm 	c0r,a00r,b0r
+	fm 	c1r,a10r,b0r
+	fm	c2r,a20r,b0r
+	
+####################	
+#  	c0i  = a00r*b0i
+#  	c1i  = a10r*b0i
+#  	c2i  = a20r*b0i
+
+	lfs	b0i,c0im0(b)
+	fm 	c0i,a00r,b0i
+	fm 	c1i,a10r,b0i
+	fm	c2i,a20r,b0i
+	
+####################	
+#	c0r += a00i*b0i
+#	c1r += a10i*b0i
+#	c2r += a20i*b0i
+
+	lfs	a00i,e00im1(a)
+	lfs	a10i,e01im1(a)
+	lfs	a20i,e02im1(a)
+	fma 	c0r,a00i,b0i,c0r
+	fma 	c1r,a10i,b0i,c1r
+	fma 	c2r,a20i,b0i,c2r
+	
+####################	
+#	c0i -= a00i*b0r
+#	c1i -= a10i*b0r
+#	c2i -= a20i*b0r
+
+	fnms	c0i,a00i,b0r,c0i
+	fnms	c1i,a10i,b0r,c1i
+	fnms	c2i,a20i,b0r,c2i
+	
+	
+####################	
+#	c0r += a01r*b1r
+#	c1r += a11r*b1r
+#	c2r += a21r*b1r
+
+	lfs	b1r,c1re0(b)
+	lfs	a01r,e10re1(a)
+	lfs	a11r,e11re1(a)
+	lfs	a21r,e12re1(a)
+	fma	c0r,a01r,b1r,c0r
+	fma	c1r,a11r,b1r,c1r
+	fma	c2r,a21r,b1r,c2r
+	
+#	lfs	prefetch,e21re1(a)  # Try prefetching 3rd a cache line
+
+####################	
+#	c0i += a01r*b1i
+#	c1i += a11r*b1i
+#	c2i += a21r*b1i
+
+
+	lfs	b1i,c1im0(b)
+	fma	c0i,a01r,b1i,c0i
+	fma	c1i,a11r,b1i,c1i
+	fma	c2i,a21r,b1i,c2i
+
+	
+####################	
+#	c0r += a01i*b1i
+#	c1r += a11i*b1i
+#	c2r += a21i*b1i
+
+	lfs	a01i,e10im1(a)
+	lfs	a11i,e11im1(a)
+	lfs	a21i,e12im1(a)
+	fma 	c0r,a01i,b1i,c0r
+	fma 	c1r,a11i,b1i,c1r
+	fma 	c2r,a21i,b1i,c2r
+
+####################	
+#	c0i -= a01i*b1r
+#	c1i -= a11i*b1r
+#	c2i -= a21i*b1r
+	
+	fnms	c0i,a01i,b1r,c0i
+	fnms	c1i,a11i,b1r,c1i
+	fnms	c2i,a21i,b1r,c2i
+	
+		
+####################	
+#	c0r += a02r*b2r
+#	c1r += a12r*b2r
+#	c2r += a22r*b2r
+
+	lfs	b2r,c2re0(b)
+	lfs	a02r,e20re1(a)
+	lfs	a12r,e21re1(a)
+	lfs	a22r,e22re1(a)
+	fma	c0r,a02r,b2r,c0r
+	fma	c1r,a12r,b2r,c1r
+	fma	c2r,a22r,b2r,c2r
+	
+####################	
+#	c0i += a02r*b2i
+#	c1i += a12r*b2i
+#	c2i += a22r*b2i
+
+#	stfs	prefetch,c2re2(c)   # Try prefetching 2nd c cache line
+	lfs	b2i,c2im0(b)
+	fma	c0i,a02r,b2i,c0i
+	fma	c1i,a12r,b2i,c1i
+	fma	c2i,a22r,b2i,c2i
+
+####################	
+#	c0r += a02i*b2i;
+#	c1r += a12i*b2i;
+#	c2r += a22i*b2i;
+
+	lfs	a02i,e20im1(a)
+	lfs	a12i,e21im1(a)
+	lfs	a22i,e22im1(a)
+	fma 	c0r,a02i,b2i,c0r
+	fma 	c1r,a12i,b2i,c1r
+	fma 	c2r,a22i,b2i,c2r
+	
+####################	
+#	c0i -= a02i*b2r;
+#	c1i -= a12i*b2r;
+#	c2i -= a22i*b2r;
+
+	fnms	c0i,a02i,b2r,c0i
+	fnms	c1i,a12i,b2r,c1i
+	fnms	c2i,a22i,b2r,c2i
+
+	
+####################	
+#	Round and save product of second matrix times vector
+
+# 	frsp     c0r,c0r	# Round to single precision
+# 	frsp     c1r,c1r	# Round to single precision
+# 	frsp     c2r,c2r	# Round to single precision
+# 	frsp     c0i,c0i	# Round to single precision
+# 	frsp     c1i,c1i	# Round to single precision
+# 	frsp     c2i,c2i	# Round to single precision
+	stfs     c0r,c0re1(c)
+	stfs     c1r,c1re1(c)
+	stfs     c2r,c2re1(c)
+	stfs     c0i,c0im1(c)
+	stfs     c1i,c1im1(c)
+	stfs     c2i,c2im1(c)
+	
+######################################################################
+#
+#	Third su3 matrix times vector
+#
+####################	
+#	c0r  = a00r*b0r
+#	c1r  = a10r*b0r
+#	c2r  = a20r*b0r
+
+	lfs	b0r,c0re0(b)
+	lfs	a00r,e00re2(a)
+	lfs	a10r,e01re2(a)
+	lfs	a20r,e02re2(a)
+	fm 	c0r,a00r,b0r
+	fm 	c1r,a10r,b0r
+	fm	c2r,a20r,b0r
+
+#	lfs	prefetch,e20re2(a)   # Try prefetching 4th a cache line
+		
+####################	
+#  	c0i  = a00r*b0i
+#  	c1i  = a10r*b0i
+#  	c2i  = a20r*b0i
+
+	lfs	b0i,c0im0(b)
+	fm 	c0i,a00r,b0i
+	fm 	c1i,a10r,b0i
+	fm	c2i,a20r,b0i
+	
+####################	
+#	c0r += a00i*b0i
+#	c1r += a10i*b0i
+#	c2r += a20i*b0i
+
+	lfs	a00i,e00im2(a)
+	lfs	a10i,e01im2(a)
+	lfs	a20i,e02im2(a)
+	fma 	c0r,a00i,b0i,c0r
+	fma 	c1r,a10i,b0i,c1r
+	fma 	c2r,a20i,b0i,c2r
+	
+####################	
+#	c0i -= a00i*b0r
+#	c1i -= a10i*b0r
+#	c2i -= a20i*b0r
+
+	fnms	c0i,a00i,b0r,c0i
+	fnms	c1i,a10i,b0r,c1i
+	fnms	c2i,a20i,b0r,c2i
+	
+	
+####################	
+#	c0r += a01r*b1r
+#	c1r += a11r*b1r
+#	c2r += a21r*b1r
+
+	lfs	b1r,c1re0(b)
+	lfs	a01r,e10re2(a)
+	lfs	a11r,e11re2(a)
+	lfs	a21r,e12re2(a)
+	fma	c0r,a01r,b1r,c0r
+	fma	c1r,a11r,b1r,c1r
+	fma	c2r,a21r,b1r,c2r
+	
+	
+####################	
+#	c0i += a01r*b1i
+#	c1i += a11r*b1i
+#	c2i += a21r*b1i
+
+	lfs	b1i,c1im0(b)
+#	lfs	prefetch,e12re3(a)      # Try prefetching 5th a cache line
+	fma	c0i,a01r,b1i,c0i
+	fma	c1i,a11r,b1i,c1i
+	fma	c2i,a21r,b1i,c2i
+
+	
+####################	
+#	c0r += a01i*b1i
+#	c1r += a11i*b1i
+#	c2r += a21i*b1i
+
+	lfs	a01i,e10im2(a)
+	lfs	a11i,e11im2(a)
+	lfs	a21i,e12im2(a)
+	fma 	c0r,a01i,b1i,c0r
+	fma 	c1r,a11i,b1i,c1r
+	fma 	c2r,a21i,b1i,c2r
+
+####################	
+#	c0i -= a01i*b1r
+#	c1i -= a11i*b1r
+#	c2i -= a21i*b1r
+	
+	fnms	c0i,a01i,b1r,c0i
+	fnms	c1i,a11i,b1r,c1i
+	fnms	c2i,a21i,b1r,c2i
+	
+		
+####################	
+#	c0r += a02r*b2r
+#	c1r += a12r*b2r
+#	c2r += a22r*b2r
+
+	lfs	b2r,c2re0(b)
+	lfs	a02r,e20re2(a)
+	lfs	a12r,e21re2(a)
+	lfs	a22r,e22re2(a)
+	fma	c0r,a02r,b2r,c0r
+	fma	c1r,a12r,b2r,c1r
+	fma	c2r,a22r,b2r,c2r
+	
+####################	
+#	c0i += a02r*b2i
+#	c1i += a12r*b2i
+#	c2i += a22r*b2i
+
+	lfs	b2i,c2im0(b)
+	fma	c0i,a02r,b2i,c0i
+	fma	c1i,a12r,b2i,c1i
+	fma	c2i,a22r,b2i,c2i
+
+####################	
+#	c0r += a02i*b2i;
+#	c1r += a12i*b2i;
+#	c2r += a22i*b2i;
+
+	lfs	a02i,e20im2(a)
+	lfs	a12i,e21im2(a)
+	lfs	a22i,e22im2(a)
+	fma 	c0r,a02i,b2i,c0r
+	fma 	c1r,a12i,b2i,c1r
+	fma 	c2r,a22i,b2i,c2r
+
+		
+####################	
+#	c0i -= a02i*b2r;
+#	c1i -= a12i*b2r;
+#	c2i -= a22i*b2r;
+
+	fnms	c0i,a02i,b2r,c0i
+	fnms	c1i,a12i,b2r,c1i
+	fnms	c2i,a22i,b2r,c2i
+
+	
+####################	
+#	Round and save product of third matrix times vector
+
+# 	frsp     c0r,c0r	# Round to single precision
+# 	frsp     c1r,c1r	# Round to single precision
+# 	frsp     c2r,c2r	# Round to single precision
+# 	frsp     c0i,c0i	# Round to single precision
+# 	frsp     c1i,c1i	# Round to single precision
+# 	frsp     c2i,c2i	# Round to single precision
+	stfs     c0r,c0re2(c)
+	stfs     c1r,c1re2(c)
+	stfs     c2r,c2re2(c)
+	stfs     c0i,c0im2(c)
+	stfs     c1i,c1im2(c)
+	stfs     c2i,c2im2(c)
+	
+######################################################################
+#
+#	Fourth su3 matrix times vector
+#
+####################	
+#	c0r  = a00r*b0r
+#	c1r  = a10r*b0r
+#	c2r  = a20r*b0r
+
+	lfs	b0r,c0re0(b)
+	lfs	a00r,e00re3(a)
+	lfs	a10r,e01re3(a)
+	lfs	a20r,e02re3(a)
+	fm 	c0r,a00r,b0r
+	fm 	c1r,a10r,b0r
+	fm	c2r,a20r,b0r
+	
+####################	
+#  	c0i  = a00r*b0i
+#  	c1i  = a10r*b0i
+#  	c2i  = a20r*b0i
+
+	lfs	b0i,c0im0(b)
+	fm 	c0i,a00r,b0i
+	fm 	c1i,a10r,b0i
+	fm	c2i,a20r,b0i
+	
+####################	
+#	c0r += a00i*b0i
+#	c1r += a10i*b0i
+#	c2r += a20i*b0i
+
+	lfs	a00i,e00im3(a)
+	lfs	a10i,e01im3(a)
+	lfs	a20i,e02im3(a)
+	fma 	c0r,a00i,b0i,c0r
+	fma 	c1r,a10i,b0i,c1r
+	fma 	c2r,a20i,b0i,c2r
+	
+####################	
+#	c0i -= a00i*b0r
+#	c1i -= a10i*b0r
+#	c2i -= a20i*b0r
+
+	fnms	c0i,a00i,b0r,c0i
+	fnms	c1i,a10i,b0r,c1i
+	fnms	c2i,a20i,b0r,c2i
+	
+	
+####################	
+#	c0r += a01r*b1r
+#	c1r += a11r*b1r
+#	c2r += a21r*b1r
+
+	lfs	b1r,c1re0(b)
+	lfs	a01r,e10re3(a)
+	lfs	a11r,e11re3(a)
+	lfs	a21r,e12re3(a)
+	fma	c0r,a01r,b1r,c0r
+	fma	c1r,a11r,b1r,c1r
+	fma	c2r,a21r,b1r,c2r
+	
+####################	
+#	c0i += a01r*b1i
+#	c1i += a11r*b1i
+#	c2i += a21r*b1i
+
+	lfs	b1i,c1im0(b)
+	fma	c0i,a01r,b1i,c0i
+	fma	c1i,a11r,b1i,c1i
+	fma	c2i,a21r,b1i,c2i
+
+	
+####################	
+#	c0r += a01i*b1i
+#	c1r += a11i*b1i
+#	c2r += a21i*b1i
+
+	lfs	a01i,e10im3(a)
+	lfs	a11i,e11im3(a)
+	lfs	a21i,e12im3(a)
+	fma 	c0r,a01i,b1i,c0r
+	fma 	c1r,a11i,b1i,c1r
+	fma 	c2r,a21i,b1i,c2r
+
+####################	
+#	c0i -= a01i*b1r
+#	c1i -= a11i*b1r
+#	c2i -= a21i*b1r
+	
+	fnms	c0i,a01i,b1r,c0i
+	fnms	c1i,a11i,b1r,c1i
+	fnms	c2i,a21i,b1r,c2i
+	
+		
+####################	
+#	c0r += a02r*b2r
+#	c1r += a12r*b2r
+#	c2r += a22r*b2r
+
+	lfs	b2r,c2re0(b)
+	lfs	a02r,e20re3(a)
+	lfs	a12r,e21re3(a)
+	lfs	a22r,e22re3(a)
+	fma	c0r,a02r,b2r,c0r
+	fma	c1r,a12r,b2r,c1r
+	fma	c2r,a22r,b2r,c2r
+	
+####################	
+#	c0i += a02r*b2i
+#	c1i += a12r*b2i
+#	c2i += a22r*b2i
+
+	lfs	b2i,c2im0(b)
+	fma	c0i,a02r,b2i,c0i
+	fma	c1i,a12r,b2i,c1i
+	fma	c2i,a22r,b2i,c2i
+
+####################	
+#	c0r += a02i*b2i;
+#	c1r += a12i*b2i;
+#	c2r += a22i*b2i;
+
+	lfs	a02i,e20im3(a)
+	lfs	a12i,e21im3(a)
+	lfs	a22i,e22im3(a)
+	fma 	c0r,a02i,b2i,c0r
+	fma 	c1r,a12i,b2i,c1r
+	fma 	c2r,a22i,b2i,c2r
+	
+####################	
+#	c0i -= a02i*b2r;
+#	c1i -= a12i*b2r;
+#	c2i -= a22i*b2r;
+
+	fnms	c0i,a02i,b2r,c0i
+	fnms	c1i,a12i,b2r,c1i
+	fnms	c2i,a22i,b2r,c2i
+
+	
+####################	
+#	Round and save product of fourth matrix times vector
+
+# 	frsp     c0r,c0r	# Round to single precision
+# 	frsp     c1r,c1r	# Round to single precision
+# 	frsp     c2r,c2r	# Round to single precision
+# 	frsp     c0i,c0i	# Round to single precision
+# 	frsp     c1i,c1i	# Round to single precision
+# 	frsp     c2i,c2i	# Round to single precision
+	stfs     c0r,c0re3(c)
+	stfs     c1r,c1re3(c)
+	stfs     c2r,c2re3(c)
+	stfs     c0i,c0im3(c)
+	stfs     c1i,c1im3(c)
+	stfs     c2i,c2im3(c)
+	
+#	Return
+		
+	br
+

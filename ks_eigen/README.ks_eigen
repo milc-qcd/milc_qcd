@@ -1,0 +1,56 @@
+TARGET: su3_eigen
+
+INPUT PARAMETERS:
+
+ Max_Rayleigh_iters : Maximum iterations allowed for Ritz functional
+                      minimization. This limit should be rarely reached.
+	              Use a large number 200-300
+                      
+ Restart_Rayleigh : The Ritz functional minimization looses orthogonality
+                     and has to be restarted. This should be a number
+                     in the range 10 to 30. In my case the optimum was 10
+                     But you may find otherwise in you case.
+
+ Kalkreuter_iters : This the maximum number of Kalkruter iterations.
+                     One iteration is a Ritz minimization for each
+                     eigenvector followed by a diagonalization of the
+                     resulting matrix.
+            
+ eigenval_tolerance : The eigenvalue tolerance need. 
+                     See also comments in eigen_stuff.c about 
+                     the convergenve criterion  (STRICT_CONVERGENCE).
+
+ error_decrseace : After the error has decrease by a factor of
+                   error_decrease in the Ritz minization the Rayleigh
+                   iteration stops. Kalkreuter suggests .3 as the optimum
+                   value. The reason is that you do not want to waist a
+                   lot of time minimizing the Ritz functional because
+                   converging a little for each eigenvector and then
+                   moving the next one you achieve uniform convergence
+                   for all the eigenvectors. 
+
+
+The rest of the input parameters are the same as the ones in ks_imp_dyn1.
+
+TEST INPUT: in.eigen
+TEST OUTPUT: out.eigen
+Action used in tests: asqtad_action.h
+
+--------------
+
+Date: Thu, 23 Mar 2000 18:17:48 -0700
+From: Kostas Orginos <kostas@andros.physics.arizona.edu>
+To: detar@physics.utah.edu
+Subject: One last comment
+
+I just fixed some problems I had in the past with dslash_special. The
+code I sent you uses either dslash_special or the regular dslash. 
+The dslash_special is chosen by defining USE_DSLASH_SPECIAL in
+eigen_stuff.c. All my running was done with out the dslash_special.
+I have tested the dslash_special both in vanilla and mpi mode on a cold lattice
+and on an instanton. Both versions give the same results. Thus I assume the 
+version with the dslash_special is correct. I kept both options available
+just in case... 
+
+Kostas.
+

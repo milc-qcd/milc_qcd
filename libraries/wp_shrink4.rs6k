@@ -1,0 +1,491 @@
+#*****************  wp_shrink4.s  (in su3.a) ****************************
+#
+#	For IBM RS6000
+#	U.M. Heller 01/13/97
+#									*
+# Shrink a wilson vector in four directions, producing four		*
+#  half_wilson_vectors.							*
+# void wp_shrink_4dir(a,b1,b2,b3,b4,sign)				*
+# wilson_vector *a; half_wilson_vector *b1,*b2,*b3,*b4;			*
+# int sign;								*
+# B1 <- (1 +- gamma_x)A,, projection					*
+#  argument "sign" is sign of gamma matrix. 				*
+#
+######################################################################
+
+	.file	"wp_shrink4.s"
+#	XCOFF table of contents entry for subroutine linkage
+	
+	.globl	wp_shrink_4dir[ds]
+	.csect	wp_shrink_4dir[ds]
+	.long	.wp_shrink_4dir[PR]
+	.long	TOC[tc0]
+	.long	0
+
+	.toc
+T.wp_shrink_4dir:	.tc	.wp_shrink_4dir[tc],wp_shrink_4dir[ds]
+	
+	.globl	.wp_shrink_4dir[PR]
+	.csect	.wp_shrink_4dir[PR]
+
+#	General purpose registers
+#	Retained as called
+	
+	.set	a,3
+	.set	b1,4
+	.set	b2,5
+	.set	b3,6
+	.set	b4,7
+	.set	sg,8
+	.set	su,9
+
+
+#	Offsets for arrays and structures ...
+		
+#	Real and imaginary parts of components of half_wilson_vector
+#	and of wilson_vector (half_wilson_vector uses only first half!)
+
+	.set 	word,4               # Single precision
+	.set	h00re,0*word
+	.set	h00im,1*word
+	.set	h01re,2*word
+	.set	h01im,3*word
+	.set	h02re,4*word
+	.set	h02im,5*word
+
+	.set	h10re,6*word
+	.set	h10im,7*word
+	.set	h11re,8*word
+	.set	h11im,9*word
+	.set	h12re,10*word
+	.set	h12im,11*word
+
+	.set	h20re,12*word
+	.set	h20im,13*word
+	.set	h21re,14*word
+	.set	h21im,15*word
+	.set	h22re,16*word
+	.set	h22im,17*word
+
+	.set	h30re,18*word
+	.set	h30im,19*word
+	.set	h31re,20*word
+	.set	h31im,21*word
+	.set	h32re,22*word
+	.set	h32im,23*word
+
+#	Floating point registers
+#	Linkage conventions require preserving registers 14-31
+		
+	.set	a0r,0
+	.set	a0i,1
+	.set	a1r,2
+	.set	a1i,3
+	.set	a2r,4
+	.set	a2i,5
+	.set	a3r,6
+	.set	a3i,7
+
+	.set	b0r,8
+	.set	b0i,9
+	.set	b1r,10
+	.set	b1i,11
+
+	.set 	prefetch,13
+
+.set BO_IF_NOT,4; .set CR1_VX,6;
+
+######################################################################
+# if(sign==PLUS)
+
+	cmpi	1,sg,1
+
+	bc	BO_IF_NOT,CR1_VX,__LSGN
+
+######################################################################
+#
+#	Color component i=0
+#
+######################################################################
+
+#     /* wp_shrink( b1,a,XUP,sign); */
+
+	lfs	a0r,h00re(a)
+	lfs	a0i,h00im(a)
+	lfs	a1r,h10re(a)
+	lfs	a1i,h10im(a)
+	lfs	a2r,h20re(a)
+	lfs	a2i,h20im(a)
+	lfs	a3r,h30re(a)
+	lfs	a3i,h30im(a)
+
+	fs	b0r,a0r,a3i
+	fa	b0i,a0i,a3r
+	fs	b1r,a1r,a2i
+	fa	b1i,a1i,a2r
+
+	stfs	b0r,h00re(b1)
+	stfs	b0i,h00im(b1)
+	stfs	b1r,h10re(b1)
+	stfs	b1i,h10im(b1)
+	
+#     /* wp_shrink( b2,a,YUP,sign); */
+
+	fs	b0r,a0r,a3r
+	fs	b0i,a0i,a3i
+	fa	b1r,a1r,a2r
+	fa	b1i,a1i,a2i
+
+	stfs	b0r,h00re(b2)
+	stfs	b0i,h00im(b2)
+	stfs	b1r,h10re(b2)
+	stfs	b1i,h10im(b2)
+
+#     /* wp_shrink( b3,a,ZUP,sign); */
+	
+	fs	b0r,a0r,a2i
+	fa	b0i,a0i,a2r
+	fa	b1r,a1r,a3i
+	fs	b1i,a1i,a3r
+
+	stfs	b0r,h00re(b3)
+	stfs	b0i,h00im(b3)
+	stfs	b1r,h10re(b3)
+	stfs	b1i,h10im(b3)
+
+#     /* wp_shrink( b4,a,TUP,sign); */
+	
+	fa	b0r,a0r,a2r
+	fa	b0i,a0i,a2i
+	fa	b1r,a1r,a3r
+	fa	b1i,a1i,a3i
+
+	stfs	b0r,h00re(b4)
+	stfs	b0i,h00im(b4)
+	stfs	b1r,h10re(b4)
+	stfs	b1i,h10im(b4)
+
+######################################################################
+#
+#	Color component i=1
+#
+######################################################################
+
+#     /* wp_shrink( b1,a,XUP,sign); */
+
+	lfs	a0r,h01re(a)
+	lfs	a0i,h01im(a)
+	lfs	a1r,h11re(a)
+	lfs	a1i,h11im(a)
+	lfs	a2r,h21re(a)
+	lfs	a2i,h21im(a)
+	lfs	a3r,h31re(a)
+	lfs	a3i,h31im(a)
+
+	fs	b0r,a0r,a3i
+	fa	b0i,a0i,a3r
+	fs	b1r,a1r,a2i
+	fa	b1i,a1i,a2r
+
+	stfs	b0r,h01re(b1)
+	stfs	b0i,h01im(b1)
+	stfs	b1r,h11re(b1)
+	stfs	b1i,h11im(b1)
+	
+#     /* wp_shrink( b2,a,YUP,sign); */
+
+	fs	b0r,a0r,a3r
+	fs	b0i,a0i,a3i
+	fa	b1r,a1r,a2r
+	fa	b1i,a1i,a2i
+
+	stfs	b0r,h01re(b2)
+	stfs	b0i,h01im(b2)
+	stfs	b1r,h11re(b2)
+	stfs	b1i,h11im(b2)
+
+#     /* wp_shrink( b3,a,ZUP,sign); */
+	
+	fs	b0r,a0r,a2i
+	fa	b0i,a0i,a2r
+	fa	b1r,a1r,a3i
+	fs	b1i,a1i,a3r
+
+	stfs	b0r,h01re(b3)
+	stfs	b0i,h01im(b3)
+	stfs	b1r,h11re(b3)
+	stfs	b1i,h11im(b3)
+
+#     /* wp_shrink( b4,a,TUP,sign); */
+	
+	fa	b0r,a0r,a2r
+	fa	b0i,a0i,a2i
+	fa	b1r,a1r,a3r
+	fa	b1i,a1i,a3i
+
+	stfs	b0r,h01re(b4)
+	stfs	b0i,h01im(b4)
+	stfs	b1r,h11re(b4)
+	stfs	b1i,h11im(b4)
+
+######################################################################
+#
+#	Color component i=2
+#
+######################################################################
+
+#     /* wp_shrink( b1,a,XUP,sign); */
+
+	lfs	a0r,h02re(a)
+	lfs	a0i,h02im(a)
+	lfs	a1r,h12re(a)
+	lfs	a1i,h12im(a)
+	lfs	a2r,h22re(a)
+	lfs	a2i,h22im(a)
+	lfs	a3r,h32re(a)
+	lfs	a3i,h32im(a)
+
+	fs	b0r,a0r,a3i
+	fa	b0i,a0i,a3r
+	fs	b1r,a1r,a2i
+	fa	b1i,a1i,a2r
+
+	stfs	b0r,h02re(b1)
+	stfs	b0i,h02im(b1)
+	stfs	b1r,h12re(b1)
+	stfs	b1i,h12im(b1)
+	
+#     /* wp_shrink( b2,a,YUP,sign); */
+
+	fs	b0r,a0r,a3r
+	fs	b0i,a0i,a3i
+	fa	b1r,a1r,a2r
+	fa	b1i,a1i,a2i
+
+	stfs	b0r,h02re(b2)
+	stfs	b0i,h02im(b2)
+	stfs	b1r,h12re(b2)
+	stfs	b1i,h12im(b2)
+
+#     /* wp_shrink( b3,a,ZUP,sign); */
+	
+	fs	b0r,a0r,a2i
+	fa	b0i,a0i,a2r
+	fa	b1r,a1r,a3i
+	fs	b1i,a1i,a3r
+
+	stfs	b0r,h02re(b3)
+	stfs	b0i,h02im(b3)
+	stfs	b1r,h12re(b3)
+	stfs	b1i,h12im(b3)
+
+#     /* wp_shrink( b4,a,TUP,sign); */
+	
+	fa	b0r,a0r,a2r
+	fa	b0i,a0i,a2i
+	fa	b1r,a1r,a3r
+	fa	b1i,a1i,a3i
+
+	stfs	b0r,h02re(b4)
+	stfs	b0i,h02im(b4)
+	stfs	b1r,h12re(b4)
+	stfs	b1i,h12im(b4)
+
+#	Return
+	br
+
+__LSGN:
+# sign==MINUS
+
+######################################################################
+#
+#	Color component i=0
+#
+######################################################################
+
+#     /* wp_shrink( b1,a,XDOWN,sign); */
+
+	lfs	a0r,h00re(a)
+	lfs	a0i,h00im(a)
+	lfs	a1r,h10re(a)
+	lfs	a1i,h10im(a)
+	lfs	a2r,h20re(a)
+	lfs	a2i,h20im(a)
+	lfs	a3r,h30re(a)
+	lfs	a3i,h30im(a)
+
+	fa	b0r,a0r,a3i
+	fs	b0i,a0i,a3r
+	fa	b1r,a1r,a2i
+	fs	b1i,a1i,a2r
+
+	stfs	b0r,h00re(b1)
+	stfs	b0i,h00im(b1)
+	stfs	b1r,h10re(b1)
+	stfs	b1i,h10im(b1)
+
+#     /* wp_shrink( b2,a,YDOWN,sign); */
+
+	fa	b0r,a0r,a3r
+	fa	b0i,a0i,a3i
+	fs	b1r,a1r,a2r
+	fs	b1i,a1i,a2i
+
+	stfs	b0r,h00re(b2)
+	stfs	b0i,h00im(b2)
+	stfs	b1r,h10re(b2)
+	stfs	b1i,h10im(b2)
+
+#     /* wp_shrink( b3,a,ZDOWN,sign); */
+
+	fa	b0r,a0r,a2i
+	fs	b0i,a0i,a2r
+	fs	b1r,a1r,a3i
+	fa	b1i,a1i,a3r
+
+	stfs	b0r,h00re(b3)
+	stfs	b0i,h00im(b3)
+	stfs	b1r,h10re(b3)
+	stfs	b1i,h10im(b3)
+
+#     /* wp_shrink( b4,a,TDOWN,sign); */
+
+	fs	b0r,a0r,a2r
+	fs	b0i,a0i,a2i
+	fs	b1r,a1r,a3r
+	fs	b1i,a1i,a3i
+
+	stfs	b0r,h00re(b4)
+	stfs	b0i,h00im(b4)
+	stfs	b1r,h10re(b4)
+	stfs	b1i,h10im(b4)
+
+######################################################################
+#
+#	Color component i=1
+#
+######################################################################
+
+#     /* wp_shrink( b1,a,XDOWN,sign); */
+
+	lfs	a0r,h01re(a)
+	lfs	a0i,h01im(a)
+	lfs	a1r,h11re(a)
+	lfs	a1i,h11im(a)
+	lfs	a2r,h21re(a)
+	lfs	a2i,h21im(a)
+	lfs	a3r,h31re(a)
+	lfs	a3i,h31im(a)
+
+	fa	b0r,a0r,a3i
+	fs	b0i,a0i,a3r
+	fa	b1r,a1r,a2i
+	fs	b1i,a1i,a2r
+
+	stfs	b0r,h01re(b1)
+	stfs	b0i,h01im(b1)
+	stfs	b1r,h11re(b1)
+	stfs	b1i,h11im(b1)
+
+#     /* wp_shrink( b2,a,YDOWN,sign); */
+
+	fa	b0r,a0r,a3r
+	fa	b0i,a0i,a3i
+	fs	b1r,a1r,a2r
+	fs	b1i,a1i,a2i
+
+	stfs	b0r,h01re(b2)
+	stfs	b0i,h01im(b2)
+	stfs	b1r,h11re(b2)
+	stfs	b1i,h11im(b2)
+
+#     /* wp_shrink( b3,a,ZDOWN,sign); */
+
+	fa	b0r,a0r,a2i
+	fs	b0i,a0i,a2r
+	fs	b1r,a1r,a3i
+	fa	b1i,a1i,a3r
+
+	stfs	b0r,h01re(b3)
+	stfs	b0i,h01im(b3)
+	stfs	b1r,h11re(b3)
+	stfs	b1i,h11im(b3)
+
+#     /* wp_shrink( b4,a,TDOWN,sign); */
+
+	fs	b0r,a0r,a2r
+	fs	b0i,a0i,a2i
+	fs	b1r,a1r,a3r
+	fs	b1i,a1i,a3i
+
+	stfs	b0r,h01re(b4)
+	stfs	b0i,h01im(b4)
+	stfs	b1r,h11re(b4)
+	stfs	b1i,h11im(b4)
+
+######################################################################
+#
+#	Color component i=2
+#
+######################################################################
+
+#     /* wp_shrink( b1,a,XDOWN,sign); */
+
+	lfs	a0r,h02re(a)
+	lfs	a0i,h02im(a)
+	lfs	a1r,h12re(a)
+	lfs	a1i,h12im(a)
+	lfs	a2r,h22re(a)
+	lfs	a2i,h22im(a)
+	lfs	a3r,h32re(a)
+	lfs	a3i,h32im(a)
+
+	fa	b0r,a0r,a3i
+	fs	b0i,a0i,a3r
+	fa	b1r,a1r,a2i
+	fs	b1i,a1i,a2r
+
+	stfs	b0r,h02re(b1)
+	stfs	b0i,h02im(b1)
+	stfs	b1r,h12re(b1)
+	stfs	b1i,h12im(b1)
+
+#     /* wp_shrink( b2,a,YDOWN,sign); */
+
+	fa	b0r,a0r,a3r
+	fa	b0i,a0i,a3i
+	fs	b1r,a1r,a2r
+	fs	b1i,a1i,a2i
+
+	stfs	b0r,h02re(b2)
+	stfs	b0i,h02im(b2)
+	stfs	b1r,h12re(b2)
+	stfs	b1i,h12im(b2)
+
+#     /* wp_shrink( b3,a,ZDOWN,sign); */
+
+	fa	b0r,a0r,a2i
+	fs	b0i,a0i,a2r
+	fs	b1r,a1r,a3i
+	fa	b1i,a1i,a3r
+
+	stfs	b0r,h02re(b3)
+	stfs	b0i,h02im(b3)
+	stfs	b1r,h12re(b3)
+	stfs	b1i,h12im(b3)
+
+#     /* wp_shrink( b4,a,TDOWN,sign); */
+
+	fs	b0r,a0r,a2r
+	fs	b0i,a0i,a2i
+	fs	b1r,a1r,a3r
+	fs	b1i,a1i,a3i
+
+	stfs	b0r,h02re(b4)
+	stfs	b0i,h02im(b4)
+	stfs	b1r,h12re(b4)
+	stfs	b1i,h12im(b4)
+
+#	Return
+	br
+

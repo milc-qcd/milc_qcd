@@ -1,0 +1,96 @@
+; prefetch_exemplar.s: put objects into cache
+; assuming 8 byte alignment, XX byte cache line
+; need to go from address to (address+size-8)
+	.LEVEL	2.0N
+
+	.SPACE	$TEXT$,SORT=8
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+prefetch_vector
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0    ;offset 0x0
+        BVE     (%r2)   ;offset 0x8
+        .EXIT
+	.PROCEND	;in=26;
+
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+prefetch_4_vectors
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0    ;offset 0x10
+        LDW     0(%r25),%r0    ;offset 0x1c
+        LDW     0(%r24),%r0    ;offset 0x28
+        LDW     0(%r23),%r0    ;offset 0x34
+        BVE     (%r2)   ;offset 0x3c
+        .EXIT
+	.PROCEND	;in=23,24,25,26;
+
+
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+prefetch_wvec
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0    ;offset 0x20
+        LDW     32(%r26),%r0    ;offset 0x20
+        LDW     64(%r26),%r0    ;offset 0x20
+        LDW     88(%r26),%r0    ;offset 0x20
+        BVE     (%r2)   ;offset 0x28
+        .EXIT
+	.PROCEND	;in=26;
+
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+prefetch_hwvec
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r0    ;offset 0x30
+        BVE     (%r2)   ;offset 0x38
+        .EXIT
+	.PROCEND	;in=26;
+
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$,QUAD=0,ALIGN=4,ACCESS=0x2c,CODE_ONLY,SORT=24
+prefetch_matrix
+	.PROC
+	.CALLINFO FRAME=0,ARGS_SAVED
+        .ENTRY
+        LDW     0(%r26),%r31    ;offset 0x40
+        BVE     (%r2)   ;offset 0x48
+        .EXIT
+	.PROCEND	;in=26;
+
+
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SUBSPA	$CODE$
+	.SPACE	$PRIVATE$,SORT=16
+	.SUBSPA	$DATA$,QUAD=1,ALIGN=64,ACCESS=0x1f,SORT=16
+	.SPACE	$TEXT$
+	.SUBSPA	$CODE$
+	.EXPORT	prefetch_vector,ENTRY,PRIV_LEV=3,ARGW0=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	prefetch_4_vectors,ENTRY,PRIV_LEV=3,ARGW0=GR,ARGW1=GR,ARGW2=GR,ARGW3=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	prefetch_wvec,ENTRY,PRIV_LEV=3,ARGW0=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	prefetch_hwvec,ENTRY,PRIV_LEV=3,ARGW0=GR,LONG_RETURN
+	.SUBSPA	$CODE$
+	.EXPORT	prefetch_matrix,ENTRY,PRIV_LEV=3,ARGW0=GR,LONG_RETURN
+	.END

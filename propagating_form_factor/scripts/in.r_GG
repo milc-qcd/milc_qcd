@@ -1,0 +1,5 @@
+cat << EOF >> ${inputparam}
+SP 0 ZK ${zk} K ${k} OP 4 CP 0 WT 0.33333333  ${twopt_out}
+SP 0 ZK ${zk} K ${k} OP 5 CP 0 WT 0.33333333  ${twopt_out}
+SP 0 ZK ${zk} K ${k} OP 6 CP 0 WT 0.33333333  ${twopt_out}
+EOF

@@ -1,0 +1,18 @@
+magic_number = 20103
+time_stamp = "Sat Aug 10 10:46:56 2002"
+checksums = "c1d08f5 68164bef"
+nx = 6
+ny = 6
+nz = 6
+nt = 6
+action.description = "Gauge plus fermion (improved)"
+gauge.description = "Symanzik 1x1 + 1x2 + 1x1x1 action"
+gauge.nloops = 3
+gauge.nreps = 1
+gauge.beta11 = 6.000000
+gauge.tadpole.u0 = 0.878800
+quark.description = "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+quark.flavors1 = 2
+quark.flavors2 = 1
+quark.mass1 = 0.012400
+quark.mass2 = 0.031000

@@ -1,0 +1,77 @@
+SU3 Hypercubic valence fermions
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 2
+ny 2
+nz 2
+nt 2
+iseed 1234
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+number_of_masses 1
+m0 0
+max_cg_iterations 108
+max_cg_restarts 1
+error_for_propagator 1e-09
+gaussian
+r0 2
+Number_of_eigenvals 2
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+Kalkreuter_iters 10
+eigenval_tolerance 0.01
+error_decrseace 0.3
+no_gauge_fix
+fresh_prop 
+forget_prop 
+serial_scratch_prop stem
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 0.000000e+00
+END OF HEADER
+only enough offsets for planar action
+pure APE blocking with alpha  4.500000e-01 N 10
+FATPLAQ  3.000000e+00 3.000000e+00
+AP time BC
+mass= 0 r0= 2 residue= 1e-09
+lambda[0] = 2.834440e+00
+lambda[1] = -1.701600e-01
+lambda[2] = -6.138000e-02
+lambda[3] = 0.000000e+00
+lambda[4] = 0.000000e+00
+rho[1] = -1.769300e-01
+rho[2] = -5.384000e-02
+rho[3] = 0.000000e+00
+rho[4] = 0.000000e+00
+ computing  clover term by linear extrapolation
+clover term frozen to m=0 value
+clover normalization -1.029941e+00
+entered clover setup with term=5.149705e-01
+random (but chiral) initial vectors
+source chirality 1
+source chirality -1
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 2.15964 +/- 1.098901e+16 |grad|=0.00134829
+quot(1) = 2.15964 +/- 1.098901e+16 |grad|=0.00643432
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 2.15964 +/- 4.339349e-07 |grad|=0.00135034
+quot(1) = 2.15964 +/- 8.187451e-08 |grad|=0.00643391
+Eigenvalue(0) = 2.15964 +/- 4.339349e-07 
+Eigenvalue(1) = 2.15964 +/- 8.187451e-08 
+F3MES 0 -1.078407e+00 4.901085e-08 -9.996606e-01 0.000000e+00
+F3MES 1 1.078409e+00 3.531750e-08 9.996604e-01 0.000000e+00
+F3D5MES 0 -1.080428e+00 -9.967528e-01 0.000000e+00
+F3D5MES 1 1.080430e+00 9.967528e-01 0.000000e+00
+total Rayleigh iters = 11
+RUNNING COMPLETED
+Time = 1.833260e-01 seconds
+total_iters = 0
+
+
+exit: Wed Mar 22 12:24:02 2000
+
