@@ -123,7 +123,7 @@ ALL_MAKES = Make_template_qdp ../generic/Make_template_qdp \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
-quark_stuff4.o: quark_action.h 
+quark_stuff.o: quark_action.h 
 gauge_stuff.o: gauge_action.h 
 gauge_info.o:  quark_action.h
 
@@ -175,7 +175,8 @@ endif
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
+	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o dslash_fn_qdp.o \
@@ -183,16 +184,15 @@ su3_rmd::
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS \
-	-DCGTIME -DFFTIME -DGFTIME -DLLTIME \
-	-DNPBP_REPS=10 -DDM_DU0" \
+	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o fermion_force_asqtad2.o"
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS \
+	"DEFINES= -DFN -DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
 	-DNPBP_REPS=100 -DCHEM_POT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -201,7 +201,8 @@ su3_rmd_susc::
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
+	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -212,7 +213,8 @@ su3_hmc::
 
 su3_hybrids::
 	make -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
+	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
 	-DSPECTRUM -DHYBRIDS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -225,7 +227,9 @@ su3_hybrids::
 
 su3_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DSPECTRUM" \
+	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
+	-DSPECTRUM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o dslash_fn_qdp.o \
@@ -238,7 +242,8 @@ su3_spectrum::
 
 su3_rmd_eo_symzk1_fat7tad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DEO ${DARCH} ${DHAVE_QIO} \
+	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
 	"EXTRA_OBJECTS= d_congrad5_eo.o dslash_eo.o \
@@ -246,7 +251,8 @@ su3_rmd_eo_symzk1_fat7tad::
 
 su3_rmd_plaq_fat7naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o \
@@ -254,7 +260,8 @@ su3_rmd_plaq_fat7naik::
 
 su3_rmd_symzk1_naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DFN ${DARCH} ${DHAVE_QIO} \
+	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = naik_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o \
@@ -262,7 +269,8 @@ su3_rmd_symzk1_naik::
 
 su3_rmd_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DEO ${DARCH} ${DHAVE_QIO} \
+	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
 	"EXTRA_OBJECTS= d_congrad5_eo.o fermion_force_general.o"

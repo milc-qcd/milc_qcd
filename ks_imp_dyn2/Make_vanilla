@@ -127,6 +127,14 @@ ILIB             =  ${LIBQIO} ${LIBQDP}
 
 # 1: single precision; 2: double
 PRECISION = 1
+
+# SSE for P3 or P4 or Athlon Thunderbird and compliant compilers
+
+# -DSSE says we have the SSE package.  It does not do global inlining
+#  but it allows selective inlining through explicit inline macro calls.
+# -DSSE_INLINE together with -DSSE gives automatic global inlining.
+# See also the libraries Make_SSE_nasm.
+
 CODETYPE   = -DNOPREFETCH -DPRECISION=${PRECISION} -DSSE # -DSSE_INLINE
 
 #----------------------------------------------------------------------
@@ -151,6 +159,10 @@ MACHINE_DEP = com_vanilla.o ${MACHINE_DEP_IO}
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${CLFS} \
 	${INCQIO} ${INCQDP} -I${MYINCLUDEDIR} ${DEFINES} # ${INCQDP}
 
+ifdef HAVEQDP
+include Make_template_qdp
+else
 include Make_template
+endif
 
 
