@@ -293,7 +293,7 @@ su3_hybrids::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
-	${MULTI_INV_FN} ape_smear.o project_su3_hit.o \
+	${MULTI_INV_FN} \
 	field_strength.o spectrum_hybrids5.o update.o \
 	${SPECTRUM_OBJECTS}"
 
@@ -303,7 +303,7 @@ su3_hybrids1::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
-	${MULTI_INV_FN} ape_smear.o project_su3_hit.o \
+	${MULTI_INV_FN} \
 	field_strength.o spectrum_hybrids5.o update_onemass.o \
 	${SPECTRUM_OBJECTS}"
 
