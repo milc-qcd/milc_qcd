@@ -13,6 +13,19 @@
 #include "../include/generic_quark_types.h"
 #include "../include/comdefs.h"
 
+/* Structure specifying each rotation and reflection of each kind of
+	path.  */
+#define MAX_PATH_LENGTH 16
+typedef struct {
+  int dir[MAX_PATH_LENGTH];	/* directions in path */
+  int length;		/* length of path */
+  Real coeff;	/* coefficient, including minus sign if backwards */
+#ifdef DM_DU0
+  Real coeff2;	/* coefficient for d(Dslash)/d(u0) */
+#endif
+  Real forwback;	/* +1 if in forward Dslash, -1 if in backward */
+} Q_path;
+
 int congrad( int niter, Real rsqmin, int parity, Real *rsq );
 void copy_latvec(field_offset src, field_offset dest, int parity);
 void dslash( field_offset src, field_offset dest, int parity );
@@ -144,12 +157,18 @@ int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 
 /* quark_stuff.c */
 void make_path_table();
+int get_num_q_paths();
+Q_path *get_q_paths();
 Real *get_quark_path_coeff();
 void eo_fermion_force( Real eps, int nflavors, field_offset x_off );
 void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 	int nflav2, field_offset x2_off  );
 void load_longlinks();
 void load_fatlinks();
+void path_transport( field_offset src, field_offset dest, int parity,
+    int *dir, int length );
+void path_transport_hwv( field_offset src, field_offset dest, int parity,
+    int *dir, int length );
 
 /* spectrum.c */
 int spectrum();
