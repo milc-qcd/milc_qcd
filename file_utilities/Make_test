@@ -1,0 +1,59 @@
+# Makefile for testing code by comparing test output with sample output
+# For file_utilities
+
+#------------------------------------------------------------
+# Examples:
+
+#    make -f Make_test check
+
+# Edit the Makefile for the appropriate architecture and the file
+# ../Make_test_template to select the appropriate LAUNCH.
+
+# Results are in the files out.test.diff.* and *.test.compare
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = \
+  ksprop_to_ksprop \
+  wprop_to_wprop
+
+MACROLIST = ""
+
+PATTERNS = BEGIN RUNNING
+MAKEMACROS = "PRECISION=1"
+
+include ../Make_test_template
+
+KSFILE1 = ksprop_scidac1.test.l4448.ll
+KSFILE2 = ksprop_scidac2.test.l4448.ll
+KSFILE3 = ksprop_scidac3.test.l4448.ll
+WFILE1 = wprop_scidac1.test.l4448.ll
+WFILE2 = wprop_scidac2.test.l4448.ll
+WFILE3 = wprop_scidac3.test.l4448.ll
+
+KSFILES = ${KSFILE1} ${KSFILE2} ${KSFILE3}
+WFILES  = ${WFILE1} ${WFILE2} ${WFILE3}
+
+diff_ksprop:
+	make diff_ksprop
+
+diff_wprop:
+	make diff_wprop
+
+ksprop.test.compare: ${KSFILES} diff_ksprop
+	./diff_ksprop ${KSFILE1} ${KSFILE2} > ksprop.test.compare
+	./diff_ksprop ${KSFILE1} ${KSFILE2} >> ksprop.test.compare
+
+wprop.test.compare:  ${WFILES}  diff_wprop
+	./diff_wprop  ${WFILE1}  ${WFILE2} > wprop.test.compare
+	./diff_wprop  ${WFILE1}  ${WFILE2} >> wprop.test.compare
+
+.PHONY: check
+check: test ksprop.test.compare wprop.test.compare 
+
+.PHONY: clean compare_clean
+compare_clean:
+	-/bin/rm ksprop.test.compare wprop.test.compare ${KSFILES} ${WFILES}
+
+clean: test_clean compare_clean
