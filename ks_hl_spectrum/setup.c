@@ -127,9 +127,7 @@ double x;
     /* Node 0 broadcasts parameter buffer to all other nodes */
     broadcast_bytes((char *)&par_buf,sizeof(par_buf));
 
-    if( par_buf.stopflag != 0 )
-      normal_exit(0);
-
+    if( par_buf.stopflag != 0 ) return par_buf.stopflag;
    
     startflag = par_buf.startflag;
     saveflag = par_buf.saveflag;
