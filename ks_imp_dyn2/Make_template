@@ -1,8 +1,8 @@
 #  Kogut-Susskind fermions with improved actions
-#  MIMD version 6
+#  MIMD version 7
 #  "ks_imp3", started 1/22/99, streamline ks_imp2
 #
-#  Generic make-include file for ks_imp3 codes
+#  Generic make-include file for ks_imp_dyn2 codes
 #  This template file defines rules and macros common to all architectures
 #  It is intended to be an include file for other Makefiles.
 #  Don't use it by itself!
@@ -42,24 +42,14 @@ MY_HEADERS = \
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
 
-# Choose one of the lattice layout algorithms:
-ifdef QCDOC
-  LAYOUT = layout_qcdoc
-else
-  LAYOUT = layout_hyper
-endif
-
 MY_OBJECTS= \
-  control.o \
   f_meas.o \
   gauge_info.o \
-  setup.o \
   update.o \
   update_h.o \
   update_u.o
 
 G_OBJECTS0 = \
-  ${LAYOUT}.o \
   check_unitarity.o \
   d_plaq4.o \
   gaugefix2.o \
@@ -102,8 +92,45 @@ SPECTRUM_OBJECTS = \
   spectrum_nd.o \
   spectrum_nlpi2.o
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} \
-  ${EXTRA_OBJECTS} ${MACHINE_DEP}
+# Objects depending on architecture and software package 
+
+# Layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o      # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o      # Required
+  else
+    LAYOUT = layout_hyper.o    # Choices possible here
+  endif
+endif
+
+# Choose dslash (dslash_fn.o dslash_fn2.o)
+DSLASH_FN = dslash_fn.o  # Or dslash_fn2.o
+
+# Choose Asqtad fermion force 
+# (fermion_force_asqtad.o fermion_force_asqtad2.o fermion_force_asqtad_qdp.o)
+ASQFORCE = fermion_force_asqtad2.o
+
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  QDP_OBJECTS = stuff_qdp.o control_qdp.o setup_qdp.o
+  INV_FN_OBJECTS = d_congrad5_fn_qdp.o ${DSLASH_FN} dslash_fn_qdp.o 
+  MULTI_INV = ks_multicg_qdp.o
+else
+  GEN_OBJECTS = control.o setup.o 
+  INV_FN_OBJECTS = d_congrad5_fn.o ${DSLASH_FN}
+  MULTI_INV = ks_multicg.o
+endif
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${GEN_OBJECTS} ${SCIDAC_OBJECTS}
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
+  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
@@ -181,7 +208,7 @@ su3_rmd::
 	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= dslash_fn2.o d_congrad5_fn.o fermion_force_asqtad.o"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE}"
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -189,7 +216,7 @@ su3_rmd_eos::
 	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o fermion_force_asqtad2.o"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE}"
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -197,8 +224,7 @@ su3_rmd_susc::
 	-DNPBP_REPS=100 -DCHEM_POT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= dslash_fn2.o dslash_fn_qdp.o \
-	d_congrad5_fn.o fermion_force_asqtad2.o"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE}"
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -207,8 +233,7 @@ su3_hmc::
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o d_action.o \
-	fermion_force_asqtad2.o"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} d_action.o"
 
 # The following target is a superset of su3_spectrum
 
@@ -219,9 +244,9 @@ su3_hybrids::
 	-DSPECTRUM -DHYBRIDS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o \
-	ks_multicg.o ape_smear.o project_su3_hit.o \
-	field_strength.o spectrum_hybrids5.o fermion_force_asqtad2.o \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	${MULTI_INV} ape_smear.o project_su3_hit.o \
+	field_strength.o spectrum_hybrids5.o \
 	${SPECTRUM_OBJECTS}"
 
 # The following target will not do hybrids
@@ -233,8 +258,8 @@ su3_spectrum::
 	-DSPECTRUM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o \
-	ks_multicg.o fermion_force_asqtad2.o ${SPECTRUM_OBJECTS}"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	${MULTI_INV} ${SPECTRUM_OBJECTS}"
 
 
 # The following stanzas illustrate how to create targets for alternative
@@ -247,7 +272,7 @@ su3_rmd_eo_symzk1_fat7tad::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
 	"EXTRA_OBJECTS= d_congrad5_eo.o dslash_eo.o \
-	fermion_force_generial.o"
+	fermion_force_general.o"
 
 su3_rmd_plaq_fat7naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -255,7 +280,7 @@ su3_rmd_plaq_fat7naik::
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
-	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
 	fermion_force_general.o"
 
 su3_rmd_symzk1_naik::
@@ -264,7 +289,7 @@ su3_rmd_symzk1_naik::
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = naik_action.h" \
-	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o \
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
 	fermion_force_general.o"
 
 su3_rmd_eo_symzk1_p4::
@@ -273,7 +298,8 @@ su3_rmd_eo_symzk1_p4::
 	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
-	"EXTRA_OBJECTS= d_congrad5_eo.o fermion_force_general.o"
+	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	 fermion_force_general.o"
 
 clean:
 	-/bin/rm -f *.o

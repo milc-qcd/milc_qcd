@@ -175,4 +175,36 @@ spectrum_pt.o: ../generic_ks/spectrum_pt.c
 spectrum_nlpi2.o: ../generic_ks/spectrum_nlpi2.c
 	${CC} -c ${CFLAGS}  ../generic_ks/spectrum_nlpi2.c
 
+ifeq ($(strip ${HAVEQDP}),true)
 
+G_KS_ALL_QDP = \
+  d_congrad5_fn_qdp.o \
+  dslash_fn_qdp.o \
+  ks_multicg_qdp.o
+
+G_KS_HEADERS_QDP = \
+  $(QDP)/include/qdp.h \
+  lattice_qdp.h \
+  ../include/generic_qdp.h \
+  ../include/generic_ks_qdp.h \
+  ../generic_ks/generic_ks_includes_qdp.h
+
+G_KS_ALL_DEPEND_QDP = \
+  ../generic_ks/Make_template_qdp \
+  ../include/Make_template_qdp \
+  ${G_KS_HEADERS_QDP} \
+  ${G_KS_ALL_DEPEND}
+
+${G_KS_ALL_QDP} : ${G_KS_ALL_DEPEND_QDP}
+
+# Rules for header files
+include ../include/Make_template_qdp
+
+d_congrad5_fn_qdp.o: ../generic_ks/d_congrad5_fn_qdp.c
+	${CC} -c ${CFLAGS} $<
+dslash_fn_qdp.o: ../generic_ks/dslash_fn_qdp.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_qdp.o: ../generic_ks/ks_multicg_qdp.c
+	${CC} -c ${CFLAGS} $<
+
+endif

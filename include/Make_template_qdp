@@ -11,8 +11,6 @@
 #    cd includes; grep "\#include" *.h
 #  
 
-include ../include/Make_template
-
 ../include/generic_qdp.h: \
   ../include/generic.h
 

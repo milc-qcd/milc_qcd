@@ -28,14 +28,7 @@ MAKEFILE = Make_vanilla
 #----------------------------------------------------------------------
 # 1. Compiler
 CC               = gcc    # ( cc89 gcc xlc gcc pgcc cl g++ )
-
-#----------------------------------------------------------------------
-# QCDOC
-
-#QOS		= /qcdoc/sfw/qos/devel/qos-2-4-pre6/
-#XPREFIX        = /qcdoc/local/gcc-3.2.2/bin/powerpc-gnu-elf-
-#LIBDIR         = $(QOS)/quser/gcc-lib-user///
-#CC             = env GCC_EXEC_PREFIX=$(LIBDIR) $(XPREFIX)gcc
+#CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
 
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
@@ -76,6 +69,10 @@ OCFLAGS = -Wall
 #----------------------------------------------------------------------
 # 4. Code alternatives 
 CODETYPE         = -DFAST  -DPRECISION=${PRECISION} # usually unchanged
+
+#----------------------------------------------------------------------
+# 5. Choose archiver to match compiler for the QCDOC
+#AR = powerpc-gnu-elf-ar  # QCDOC nonstandard for now
 
 #----------------------------------------------------------------------
 # End of user choices.  PLEASE, ALSO, CHECK include/config.h.

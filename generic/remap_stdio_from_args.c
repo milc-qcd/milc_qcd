@@ -12,26 +12,30 @@
 #include "generic_includes.h"
 
 int remap_stdio_from_args(int argc, char *argv[]){
+  FILE *fp;
   if(argc > 1){
-    stdin = fopen(argv[1],"r");
-    if(stdin == NULL){
+    fp = fopen(argv[1],"r");
+    if(fp == NULL){
       node0_printf("Can't open stdin file %s for reading.\n",argv[1]);
       return 1;
     }
+    *stdin = *fp;
   }
   if(argc > 2){
-    stdout = fopen(argv[2],"w");
-    if(stdin == NULL){
+    fp = fopen(argv[2],"w");
+    if(fp == NULL){
       node0_printf("Can't open stdout file %s for writing\n",argv[2]);
       return 1;
     }
+    *stdout = *fp;
   }
   if(argc > 3){
-    stdout = fopen(argv[3],"w");
-    if(stdin == NULL){
+    fp = fopen(argv[3],"w");
+    if(fp == NULL){
       node0_printf("Can't open stderr file %s for writing\n",argv[3]);
       return 1;
     }
+    *stderr = *fp;
   }
   return 0;
 }

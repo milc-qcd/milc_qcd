@@ -12,6 +12,7 @@ void set_field_from_D(field_offset dest, QDP_DiracFermion *src);
 void set_field_from_M(field_offset dest, QDP_ColorMatrix *src);
 
 void set_V_from_temp(QDP_ColorVector *dest, su3_vector *src);
+void set_H_from_temp(QDP_HalfFermion *dest, half_wilson_vector *src);
 void set_M_from_temp(QDP_ColorMatrix *dest, su3_matrix *src);
 
 void set_temp_from_V(su3_vector *dest, QDP_ColorVector *src);

@@ -69,3 +69,12 @@
   ../include/random.h \
   ../include/int32type.h
 
+ifeq ($(strip ${HAVEQDP}),true)
+
+../include/generic_qdp.h: \
+  ../include/generic.h
+
+../include/generic_ks_qdp.h: \
+  ../include/generic_ks.h
+
+endif

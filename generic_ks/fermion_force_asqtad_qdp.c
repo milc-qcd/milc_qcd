@@ -39,6 +39,7 @@
 
 /**#define FFTIME**/
 /**#define FFSTIME**/
+/**#define QSINLINE**/
 
 #include "generic_ks_includes_qdp.h"	/* definitions files and prototypes */
 
@@ -50,14 +51,15 @@ BOMB THE COMPILE
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
 
-typedef struct {
-  QDP_HalfFermion *tmp[8];
-  QDP_ColorMatrix *link[8];
-  QDP_Shift shift[8];
-  QDP_ShiftDir fb[8];
-} Vshift_hw;
-
 typedef int Shiftno;
+
+typedef struct {
+    QDP_HalfFermion *tmp[8];
+    QDP_ColorMatrix *link[8];
+    QDP_Shift shift[8];
+    QDP_ShiftDir fb[8];
+    Shiftno dirs[8];
+} Vshift_hw;
 
 void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) ;
 void vadd_pos_3f_force_to_mom(QDP_HalfFermion *back_qdp[],
@@ -166,7 +168,6 @@ void add_3f_force_to_mom(QDP_HalfFermion *back,
 #define su3_projector_for_inline( a, b, dest ) su3_projector( a, b, dest )
 #endif
 
-static su3_matrix *backwardlink[4];
 static su3_matrix *tempmom[4];
 
 static QDP_ColorMatrix *bcklink[4];
@@ -187,38 +188,16 @@ int shiftfb(Shiftno sno){
   if(sno % 2 == 0)return 1; else return -1;
 }
 
-/* Make a list of secondary shift directions */
-void make_shiftno(Shiftno snos[], int dirs[], int flip)
-{
-  int d, dir, sflip, s;
-  Shiftno mu, sig;
-
-  /* Iterate over primary shift direction and sign */
-  for(d = 0; d < 4; d++)for(s = -1; s <= 1; s +=2)
-    {
-      /* Linearized index for primary shift */
-      mu = shiftno(d,s);
-      /* Direction of secondary shift */
-      dir = dirs[d];
-      /* Sign of secondary shift */
-      sflip = s*flip;
-      /* Linearized index for secondary shift */
-      sig = shiftno(dir,sflip);
-      snos[mu] = sig;
-    }
-}
-
 void discard8_H(QDP_HalfFermion *tmp[]){
   int mu;
   for(mu = 0; mu < 8; mu++)
     QDP_discard_H(tmp[mu]);
 }
 
-
 /* Generate a vector shift table from a list of permuted directions */
 /* Input dirs, flip */
 
-void make_vshift_hw(Vshift_hw *v, Shiftno snos[], Shiftno dirs[], int flip)
+void make_vshift_hw(Vshift_hw *v, Shiftno dirs[], int flip)
 {
   int d, dir, sflip, s;
   Shiftno mu, sig;
@@ -234,7 +213,7 @@ void make_vshift_hw(Vshift_hw *v, Shiftno snos[], Shiftno dirs[], int flip)
       sflip = s*flip;
       /* Linearized index for secondary shift */
       sig = shiftno(dir,sflip);
-      snos[mu] = sig;
+      v->dirs[mu] = sig;
       /* Make tmp pointer match the shift direction.  Since gathers
 	 are always done from tmp, this permits restarting gathers */
       v->tmp[mu] = msgbuf_hw[sig];
@@ -257,6 +236,28 @@ void make_vshift_hw(Vshift_hw *v, Shiftno snos[], Shiftno dirs[], int flip)
 	  v->link[mu] = fwdlink[dir];
 	}
     }  
+}
+
+/* Make a list of secondary shift directions */
+/* Same as make_vshift_hw, except only the dirs member is set */
+void make_shiftno(Vshift_hw *v, int dirs[], int flip)
+{
+  int d, dir, sflip, s;
+  Shiftno mu, sig;
+
+  /* Iterate over primary shift direction and sign */
+  for(d = 0; d < 4; d++)for(s = -1; s <= 1; s +=2)
+    {
+      /* Linearized index for primary shift */
+      mu = shiftno(d,s);
+      /* Direction of secondary shift */
+      dir = dirs[d];
+      /* Sign of secondary shift */
+      sflip = s*flip;
+      /* Linearized index for secondary shift */
+      sig = shiftno(dir,sflip);
+      v->dirs[mu] = sig;
+    }
 }
 
 /**********************************************************************/
@@ -488,7 +489,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   /* For each link we need x_off transported from both ends of path. */
   int i;
   site *s;
-  int mu,nu,rho,sig;
+  int mu,sig;
   int dir;
   Real coeff[2],ferm_epsilon;
   Real *act_path_coeff;
@@ -506,17 +507,14 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   QDP_HalfFermion *tmp2_hw[8];
   QDP_HalfFermion *Pmu[8];
   QDP_HalfFermion *Pmumu[8];
-  QDP_Shift shift[8];
-  QDP_ShiftDir fb[8];
   QDP_ColorMatrix *tmplink;
-  QDP_ColorMatrix *fblink[8];
   half_wilson_vector *temp_x, *temp_y;
-  msg_tag *mtag[4];
-  int d2,d3,d4;
+  msg_tag *mtag;
+  int d2,d3;
   int fb2,fb3,fb4;
+  su3_matrix *backwardlink;
   Shiftno d2fb,d3fb,d4fb;
-  Shiftno muno[8],signo[8],rhono[8],nuno[8];
-  Vshift_hw vshift;
+  Vshift_hw vmu,vnu,vrho,vsig;
 
 #ifdef FFSTIME
   double time;
@@ -556,7 +554,6 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   
   /* Required fourth direction lists, given the first three */
 
-  int dir4no = 1;
   int dir4[3][2][4] = {
     {
       {3, 0, 1, 2},
@@ -581,43 +578,38 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 #endif
 
   /* Double store forward gauge links */
-  FORALLUPDIR(dir){
-    su3_matrix *pt;
-    pt = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-    if(pt == NULL){
+  tmplink = QDP_create_M();
+
+  backwardlink = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+  if(backwardlink == NULL){
       printf("eo_fermion_force_3f: No room for backwardlink\n");
       terminate(1);
-    }
-    backwardlink[dir] = pt;
-  }
-  
-  /* Gather backward links */
-  FORALLUPDIR(dir){
-    mtag[dir] = start_gather( F_OFFSET(link[dir]), sizeof(su3_matrix), 
-			      OPP_DIR(dir), EVENANDODD, gen_pt[dir] );
-  }
-  FORALLUPDIR(dir){
-    wait_gather(mtag[dir]);
-    FORALLSITES(i,s){
-      backwardlink[dir][i] = *((su3_matrix *)gen_pt[dir][i]);
-    }
-    cleanup_gather(mtag[dir]);
   }
 
-  /* Create QDP fields */
   FORALLUPDIR(dir){
+  
+    /* Gather backward links */
+    mtag = start_gather( F_OFFSET(link[dir]), sizeof(su3_matrix), 
+			      OPP_DIR(dir), EVENANDODD, gen_pt[dir] );
+    wait_gather(mtag);
+    FORALLSITES(i,s){
+      backwardlink[i] = *((su3_matrix *)gen_pt[dir][i]);
+    }
+    cleanup_gather(mtag);
+
+    /* Create QDP fields */
     bcklink[dir] = QDP_create_M();
     fwdlink[dir] = QDP_create_M();
-  }
-  tmplink = QDP_create_M();
   
-  /* Set values of QDP fields */
-  FORALLUPDIR(dir){
-    set_M_from_temp(bcklink[dir], backwardlink[dir]);
+    /* Set values of QDP fields */
+    set_M_from_temp(bcklink[dir], backwardlink);
     /* Take adjoint of foward link */
     set_M_from_field(tmplink, F_OFFSET(link[dir]));
     QDP_M_eq_Ma(fwdlink[dir], tmplink, QDP_all);
+
   }
+
+  free(backwardlink);
   QDP_destroy_M(tmplink);
 
   /* Uncompress gauge momenta */
@@ -695,8 +687,8 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   /* Pmu is the result of shifting the pseudofermion source backward
      in the mu (first direction ) (all 8) */
 
-  make_vshift_hw(&vshift, muno, dir1, -1);
-  vu_shift_hw_fermion(x_qdps, Pmu, &vshift);
+  make_vshift_hw(&vmu, dir1, -1);
+  vu_shift_hw_fermion(x_qdps, Pmu, &vmu);
 
   /* Iterate over permutations of second direction */
 
@@ -704,9 +696,9 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     d2fb = shiftno(d2, fb2);
     
     /* Shift Pmu forward in nu (second) direction to make P3 */
-    make_vshift_hw(&vshift, nuno, dir2[d2], fb2);
-    vu_shift_hw_fermion(Pmu, P3[d2fb], &vshift);
-    vadd_pos_3f_force_to_mom(P3[d2fb], Pmu, nuno, mThreeSt);
+    make_vshift_hw(&vnu, dir2[d2], fb2);
+    vu_shift_hw_fermion(Pmu, P3[d2fb], &vnu);
+    vadd_pos_3f_force_to_mom(P3[d2fb], Pmu, vnu.dirs, mThreeSt);
   }
 
   for(d2 = 0; d2 < dir2no; d2++)for(fb2 = -1; fb2 <= 1; fb2 +=2){
@@ -715,8 +707,8 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     /* Shift Pmu backward in nu direction to make Pnumu */
     /* We could also have gotten Pnumu by copying P3 in reverse, but
        it would have required more memory */
-    make_vshift_hw(&vshift, nuno, dir2[d2], -fb2);
-    vu_shift_hw_fermion(Pmu, Pnumu, &vshift);
+    make_vshift_hw(&vnu, dir2[d2], -fb2);
+    vu_shift_hw_fermion(Pmu, Pnumu, &vnu);
 
     for(d3 = 0; d3 < dir3no; d3++)for(fb3 = -1; fb3 <= 1; fb3 +=2){
       d3fb = shiftno(d3, fb3);
@@ -726,9 +718,9 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
        *                                   |   |             *
        *                                   o   o             *
        * the 2 link in the path: + (numbering starts form 0) */
-      make_vshift_hw(&vshift, rhono, dir3[d2][d3], fb3);
-      vu_shift_hw_fermion(Pnumu, P5[d3fb], &vshift);
-      vadd_pos_3f_force_to_mom(P5[d3fb], Pnumu, rhono, FiveSt);
+      make_vshift_hw(&vrho, dir3[d2][d3], fb3);
+      vu_shift_hw_fermion(Pnumu, P5[d3fb], &vrho);
+      vadd_pos_3f_force_to_mom(P5[d3fb], Pnumu, vrho.dirs, FiveSt);
 
     } /* d3, fb3 */
 
@@ -739,15 +731,15 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
       /* We could also have gotten Pnumu by copying P5 in reverse, but
 	 it would have required more memory */
       Prhonumu = tmp2_hw;
-      make_vshift_hw(&vshift, rhono, dir3[d2][d3], -fb3);
-      vu_shift_hw_fermion(Pnumu, Prhonumu, &vshift);
+      make_vshift_hw(&vrho, dir3[d2][d3], -fb3);
+      vu_shift_hw_fermion(Pnumu, Prhonumu, &vrho);
 
       for(fb4 = -1; fb4 <= 1; fb4 += 2){
 	d4fb = shiftno(0, fb4);
 
 	/* Shift Prhonumu in sig (fourth) direction to make P7 */
-	make_vshift_hw(&vshift, signo, dir4[d2][d3], fb4);
-	vu_shift_hw_fermion(Prhonumu, P7, &vshift);
+	make_vshift_hw(&vsig, dir4[d2][d3], fb4);
+	vu_shift_hw_fermion(Prhonumu, P7, &vsig);
 
 	/* Add the force F_sig[x+mu+nu+rho]:  x--+             *
 	 *                                   |   |             *
@@ -755,14 +747,14 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 	 * the 3 link in the path: - (numbering starts form 0) */
 	
 	vadd_pos_3f_force_to_mom(P7, Prhonumu, 
-				 signo, mSevenSt);
+				 vsig.dirs, mSevenSt);
 
 	/* Shift P7 in rho (third) direction to make P7rho */
 	P7rho = tmp1_hw;
-	make_vshift_hw(&vshift, rhono, dir3[d2][d3], fb3);
-	vu_shift_hw_fermion(P7, P7rho, &vshift);
-	make_shiftno(signo, dir4[d2][d3], fb4);
-	vside_link_3f_force(rhono, signo, SevenSt, 
+	make_vshift_hw(&vrho, dir3[d2][d3], fb3);
+	vu_shift_hw_fermion(P7, P7rho, &vrho);
+	make_shiftno(&vsig, dir4[d2][d3], fb4);
+	vside_link_3f_force(vrho.dirs, vsig.dirs, SevenSt, 
 			    Pnumu, P7, Prhonumu,
 			    P7rho);
 	discard8_H(P7);
@@ -803,10 +795,10 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 
       /* Shift P5 in nu (second) direction to make P5nu */
       P5nu = tmp1_hw;
-      make_vshift_hw(&vshift, nuno, dir2[d2], fb2);
-      vu_shift_hw_fermion(P5[d3fb], P5nu, &vshift);
-      make_shiftno(rhono, dir3[d2][d3], fb3);
-      vside_link_3f_force(nuno, rhono, mFiveSt,
+      make_vshift_hw(&vnu, dir2[d2], fb2);
+      vu_shift_hw_fermion(P5[d3fb], P5nu, &vnu);
+      make_shiftno(&vrho, dir3[d2][d3], fb3);
+      vside_link_3f_force(vnu.dirs, vrho.dirs, mFiveSt,
 			  Pmu, P5[d3fb],
 			  Pnumu, P5nu);
       discard8_H(Pnumu);
@@ -844,22 +836,22 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 
   /* Now the Lepage term... It is the same as 5-link paths with
      nu=mu and FiveSt=Lepage. */
-  make_vshift_hw(&vshift, muno, dir1, -1);
-  vu_shift_hw_fermion(Pmu, Pmumu, &vshift);
+  make_vshift_hw(&vmu, dir1, -1);
+  vu_shift_hw_fermion(Pmu, Pmumu, &vmu);
 
   for(d2 = 0; d2 < dir2no; d2++)
     for(fb2 = -1; fb2 <= 1; fb2 +=2){
       d2fb = shiftno(d2, fb2);
-      make_vshift_hw(&vshift, nuno, dir2[d2], fb2);
+      make_vshift_hw(&vnu, dir2[d2], fb2);
       P5sig = tmp2_hw;
-      vu_shift_hw_fermion(Pmumu, P5sig, &vshift);
-      vadd_pos_3f_force_to_mom(P5sig, Pmumu, nuno, Lepage);
+      vu_shift_hw_fermion(Pmumu, P5sig, &vnu);
+      vadd_pos_3f_force_to_mom(P5sig, Pmumu, vnu.dirs, Lepage);
 
       /* Add the force F_nu the 1(3) link in the path: -     */
       P5nu = tmp1_hw;
-      make_vshift_hw(&vshift, muno, dir1, +1);
-      vu_shift_hw_fermion(P5sig, P5nu, &vshift);
-      vside_link_3f_force(muno, nuno, mLepage, Pmu, P5sig, Pmumu, P5nu);
+      make_vshift_hw(&vmu, dir1, +1);
+      vu_shift_hw_fermion(P5sig, P5nu, &vmu);
+      vside_link_3f_force(vmu.dirs, vnu.dirs, mLepage, Pmu, P5sig, Pmumu, P5nu);
       discard8_H(P5sig);
       discard8_H(Pmumu);
 
@@ -892,11 +884,11 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 #endif
       /* Length 3 paths (Not the Naik term) */
       /* Add the force F_mu the 0(2) link in the path: +     */
-      make_vshift_hw(&vshift, muno, dir1, +1);
+      make_vshift_hw(&vmu, dir1, +1);
       P3mu = tmp1_hw; /* OK to clobber P5nu */
       /* The last 4 of the shifted values are ignored */
-      vu_shift_hw_fermion(P3[d2fb], P3mu, &vshift);
-      vside_link_3f_force(muno, nuno, ThreeSt, x_qdps, P3[d2fb], 
+      vu_shift_hw_fermion(P3[d2fb], P3mu, &vmu);
+      vside_link_3f_force(vmu.dirs, vnu.dirs, ThreeSt, x_qdps, P3[d2fb], 
 			  Pmu, P3mu);
       discard8_H(P3mu);
       discard8_H(P3[d2fb]);
@@ -908,24 +900,24 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   /* The one link */
   /* Here we have to do together the Naik term and the one link term */
   Pmumumu = tmp1_hw;
-  make_vshift_hw(&vshift, muno, dir1, -1);
-  vu_shift_hw_fermion(Pmumu, Pmumumu, &vshift);
+  make_vshift_hw(&vmu, dir1, -1);
+  vu_shift_hw_fermion(Pmumu, Pmumumu, &vmu);
   /* link no 0: + */
-  vadd_pos_3f_force_to_mom(Pmumumu, x_qdps, muno, Naik);
-  vadd_pos_3f_force_to_mom(Pmu, x_qdps, muno, OneLink);
+  vadd_pos_3f_force_to_mom(Pmumumu, x_qdps, vmu.dirs, Naik);
+  vadd_pos_3f_force_to_mom(Pmu, x_qdps, vmu.dirs, OneLink);
 
   /* Popmu is a backward shift */
   Popmu = tmp1_hw;
   /* We need only the forward mu terms here */
-  make_vshift_hw(&vshift, muno, dir1, +1);
-  vu_shift_hw_fermion(x_qdps, Popmu, &vshift);
+  make_vshift_hw(&vmu, dir1, +1);
+  vu_shift_hw_fermion(x_qdps, Popmu, &vmu);
   /* The Naik */
   /* link no 1: - */
-  make_shiftno(muno, dir1, -1);
-  vadd_pos_3f_force_to_mom(Pmumu, Popmu, muno, mNaik);
+  make_shiftno(&vmu, dir1, -1);
+  vadd_pos_3f_force_to_mom(Pmumu, Popmu, vmu.dirs, mNaik);
   /* The rest of the Naik terms */
-  make_shiftno(muno, dir1, +1);
-  vadd_pos_3f_force_to_mom(Popmu, Pmumu, muno, Naik);
+  make_shiftno(&vmu, dir1, +1);
+  vadd_pos_3f_force_to_mom(Popmu, Pmumu, vmu.dirs, Naik);
 
   /* Repack momenta */
 
@@ -956,7 +948,6 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   }
 
   FORALLUPDIR(dir){
-    free(backwardlink[dir]);
     free(tempmom[dir]);
   }
 
@@ -1021,6 +1012,10 @@ void vu_shift_hw_fermion(QDP_HalfFermion *src[], QDP_HalfFermion *dest[],
 			 Vshift_hw *v)
 {
   int mu;
+  QDP_HalfFermion *destp[8],*tmpp[8];
+  QDP_Shift shiftp[8];
+  QDP_ShiftDir fbp[8];
+  Shiftno sig;
 #ifdef FFSTIME
   double time0, time1;
   time0 = -dclock();
@@ -1050,7 +1045,15 @@ void vu_shift_hw_fermion(QDP_HalfFermion *src[], QDP_HalfFermion *dest[],
   time0 -= time1;
 #endif
 
-  QDP_H_veq_sH(dest, v->tmp, v->shift, v->fb, QDP_all, 8);
+  /* Put the shift directions in standard order */
+  for(mu = 0; mu < 8; mu++){
+      sig = v->dirs[mu];
+      destp[sig]   = dest[mu];
+      tmpp[sig]    = v->tmp[mu];
+      shiftp[sig]  = v->shift[mu];
+      fbp[sig]     = v->fb[mu];
+  }
+  QDP_H_veq_sH(destp, tmpp, shiftp, fbp, QDP_all, 8);
 
   for(mu = 0; mu < 8; mu++)
     QDP_discard_H(v->tmp[mu]);
