@@ -176,10 +176,6 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 # -DFFTIME for fermion force timing
 # -DLLTIME for long link timing
 
-# Optional DEFINES for data layout:
-# -DDSLASH_TMP_LINKS puts fatlinks and longlinks in temp
-# -DCONGRAD_TMP_VECTORS puts congrad vectors in temp
-
 # Optional DEFINES for pbp estimates
 # -DNPBP_REPS Number of repeated evaluations of stochastic 
 #       psi-bar-psi
@@ -212,32 +208,28 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}  \
-	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
+	"DEFINES= -DFN ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE}"
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}  \
-	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
+	"DEFINES= -DFN ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE}"
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS \
-	-DNPBP_REPS=100 -DCHEM_POT" \
+	"DEFINES= -DFN -DNPBP_REPS=100 -DCHEM_POT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE}"
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}  \
-	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
+	"DEFINES= -DFN ${DARCH} \
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -247,9 +239,7 @@ su3_hmc::
 
 su3_hybrids::
 	make -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}  \
-	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
-	-DSPECTRUM -DHYBRIDS" \
+	"DEFINES= -DFN ${DARCH}	-DSPECTRUM -DHYBRIDS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
@@ -261,9 +251,7 @@ su3_hybrids::
 
 su3_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}  \
-	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS \
-	-DSPECTRUM" \
+	"DEFINES= -DFN ${DARCH}	-DSPECTRUM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
@@ -275,8 +263,7 @@ su3_spectrum::
 
 su3_rmd_eo_symzk1_fat7tad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO ${DARCH}  \
-	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DEO ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
 	"EXTRA_OBJECTS= d_congrad5_eo.o dslash_eo.o \
@@ -284,8 +271,7 @@ su3_rmd_eo_symzk1_fat7tad::
 
 su3_rmd_plaq_fat7naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}  \
-	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DFN ${DARCH}" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
@@ -293,8 +279,7 @@ su3_rmd_plaq_fat7naik::
 
 su3_rmd_symzk1_naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}  \
-	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DFN ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = naik_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
@@ -302,8 +287,7 @@ su3_rmd_symzk1_naik::
 
 su3_rmd_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO ${DARCH}  \
-	-DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DEO ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \

@@ -20,10 +20,6 @@
  * C.D. 3/05 vector QDP version
  * C.D. 3/05 Separated from quark_stuff?.c
  
- * This code combines quark_stuff.c and quark_stuff_tmp.c
- * with DSLASH_TMP_LINKS defined, puts links in field-major variables
- * t_longlink and t_fatlink. Otherwise, puts them in the site structure.
- *
  * In this directory, assume all paths connect even to odd sites, etc.
  * Tabulate "backwards" paths (e.g. "XDOWN" is backward path to "XUP")
  * as separate parity transforms of the fundamental paths.  They will

@@ -130,10 +130,6 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 # -DFFTIME for fermion force timing
 # -DLLTIME for long link timing
 
-# Optional DEFINES for data layout:
-# -DDSLASH_TMP_LINKS puts fatlinks and longlinks in temp
-# -DCONGRAD_TMP_VECTORS puts congrad vectors in temp
-
 # Optional DEFINES for pbp estimates
 # -DNPBP_REPS Number of repeated evaluations of stochastic 
 #       psi-bar-psi
@@ -159,7 +155,6 @@ endif
 check_ks_invert::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DCHECK_INVERT ${DARCH} ${DHAVE_QIO} \
-	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS \
 	-DHAVE_QIO" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -169,7 +164,6 @@ check_ks_invert::
 check_fermion_force::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DFERMION_FORCE ${DARCH} ${DHAVE_QIO} \
-	-DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS \
 	-DHAVE_QIO" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \

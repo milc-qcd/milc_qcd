@@ -3,11 +3,11 @@
 /* Kogut-Susskind fermions -- this version for "fat plus Naik" quark
    actions.  
 
-   This code combines d_congrad5_fn.c and d_congrad5_fn_tmp.c
-   With CONGRAD_TMP_VECTORS defined, allocates temporary CG vectors in
-   field-major order and uses them instead of the site-major
-   temporaries.  They may be eliminated from the site structure in the
-   future.
+   This code combines d_congrad5_fn.c and d_congrad5_fn_tmp.c With
+   CONGRAD_SITE_VECTORS defined, puts temporary CG vectors in the
+   site structure.  Otherwise allocates field-major order and uses
+   them instead of the site-major temporaries.  They may be eliminated
+   from the site structure in the future.
 
    Calls dslash_fn or dslash_fn_on_temp depending accordingly. */
 
@@ -43,7 +43,7 @@ void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]); /* dslash_fn_tmp.c */
 #define LOOPEND
 #include "../include/loopend.h"
 
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 su3_vector *ttt,*cg_p;
 su3_vector *resid;
 su3_vector *t_dest;
@@ -92,7 +92,7 @@ if(parity==EVENANDODD)nflop *=2;
 
         if (!valid_longlinks) load_longlinks();
         if (!valid_fatlinks) load_fatlinks();
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 	/* now we can allocate temporary variables and copy then */
 	/* PAD may be used to avoid cache trashing */
 #define PAD 0
@@ -110,7 +110,7 @@ if(parity==EVENANDODD)nflop *=2;
  dtimec = -dclock(); 
 #endif
 
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 	/* now we copy dest to temporaries */
   FORALLSITES(i,s) {
     t_dest[i] = *(su3_vector *)F_PT(s,dest);
@@ -135,7 +135,7 @@ start:
 	if(this_node==0)if(iteration>1)printf("CONGRAD: restart rsq = %.10e\n",rsq);
 #endif
         rsq = source_norm = 0.0;
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 	dslash_fn_on_temp_special(t_dest, ttt,l_otherparity,tags2,1);
 	dslash_fn_on_temp_special(ttt,ttt,l_parity,tags1,1);
 	cleanup_gathers(tags1,tags2);
@@ -146,7 +146,7 @@ start:
 #endif
 	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
 	FORSOMEPARITY(i,s,l_parity){
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VVVV( &ttt[i+FETCH_UP], 
 			   &t_dest[i+FETCH_UP],
@@ -232,7 +232,7 @@ start:
 	/* sum of neighbors */
 
 	if(special_started==0){
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 	    dslash_fn_on_temp_special( cg_p, ttt, l_otherparity, tags2, 1 );
 	    dslash_fn_on_temp_special( ttt, ttt, l_parity, tags1, 1);
 #else
@@ -244,7 +244,7 @@ start:
 	    special_started=1;
 	}
 	else {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 	    dslash_fn_on_temp_special( cg_p, ttt, l_otherparity, tags2, 0 );
 	    dslash_fn_on_temp_special( ttt, ttt, l_parity, tags1, 0);
 #else
@@ -260,7 +260,7 @@ start:
 	/* pkp  <- cg_p.(ttt - msq*cg_p) */
 	pkp = 0.0;
 	FORSOMEPARITY(i,s,l_parity){
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VV( &ttt[i+FETCH_UP], &cg_p[i+FETCH_UP] );
 	  }
@@ -286,7 +286,7 @@ start:
 	/* resid <- resid - a*ttt */
 	rsq=0.0;
 	FORSOMEPARITY(i,s,l_parity){
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VVVV( &t_dest[i+FETCH_UP], 
 			   &cg_p[i+FETCH_UP], 
@@ -316,7 +316,7 @@ start:
 #endif
 	
         if( rsq <= rsqstop ){
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
 	  /* copy t_dest back to site structure */
           FORSOMEPARITY(i,s,l_parity){
                   *(su3_vector *)F_PT(s,dest) = t_dest[i];
@@ -352,7 +352,7 @@ fflush(stdout);}
 
 	b = (Real)rsq/oldrsq;
 	/* cg_p  <- resid + b*cg_p */
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
         FORSOMEPARITY(i,s,l_parity){
            scalar_mult_add_su3_vector( &resid[i],
                                       &cg_p[i] , b , &cg_p[i]);
@@ -370,7 +370,7 @@ fflush(stdout);}
 #endif
 	 goto start;
     }
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     /* if we have gotten here, no convergence after several restarts: must
 	copy t_dest back to site structure */
           FORSOMEPARITY(i,s,l_parity){

@@ -3,12 +3,6 @@
 /* Kogut-Susskind fermions -- this version for "fat plus Naik" quark
    actions.  
 
-   This code combines d_congrad5_fn.c and d_congrad5_fn_tmp.c
-   With CONGRAD_TMP_VECTORS defined, allocates temporary CG vectors in
-   field-major order and uses them instead of the site-major
-   temporaries.  They may be eliminated from the site structure in the
-   future.
-
    Calls dslash_fn or dslash_fn_on_temp depending accordingly. */
 
 /* Jim Hetrick, Kari Rummukainen, Doug Toussaint, Steven Gottlieb */
@@ -149,7 +143,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
 
   if (!valid_fatlinks) load_fatlinks();
   if (!valid_longlinks) load_longlinks();
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
 #else
@@ -191,7 +185,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
     for(i=0; i<8; ++i) {
       implinks[i] = QDP_create_M();
     }
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
     set4_M_from_temp(fatlinks, t_fatlink);
     set4_M_from_temp(longlinks, t_longlink);
 #else

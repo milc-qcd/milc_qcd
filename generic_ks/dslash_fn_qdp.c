@@ -207,7 +207,7 @@ dslash_fn(field_offset src, field_offset dest, int parity)
   else subset = QDP_all;
   set_V_from_field(qsrc, src);
   set_V_from_field(qdest, dest);
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
 #else
@@ -239,7 +239,7 @@ dslash_fn_special(field_offset src, field_offset dest,
   set_V_from_field(qsrc, src);
   set_V_from_field(qdest, dest);
   if(start) {
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
     set4_M_from_temp(fatlinks, t_fatlink);
     set4_M_from_temp(longlinks, t_longlink);
 #else
@@ -265,7 +265,7 @@ dslash_fn_on_temp(su3_vector *src, su3_vector *dest, int parity)
   else subset = QDP_all;
   set_V_from_temp(qsrc, src);
   set_V_from_temp(qdest, dest);
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
 #else
@@ -297,7 +297,7 @@ dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
   set_V_from_temp(qsrc, src);
   set_V_from_temp(qdest, dest);
   if(start) {
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
     set4_M_from_temp(fatlinks, t_fatlink);
     set4_M_from_temp(longlinks, t_longlink);
 #else

@@ -4,9 +4,9 @@
    Naik" quark action.  Connection to nearest neighbors stored in
    fatlink and to third nearest neighbors in longlink */
 
-/* With DSLASH_TMP_LINKS, assumes that the gauge links have been
-   prestored in t_fatlinks and t_longlinks.  Otherwise, takes the
-   fatlinks and longlinks from the site structure. */
+/* With DSLASH_SITE_LINKS, assumes that the gauge links have been
+   prestored in the site structure.  Otherwise, takes the
+   fatlinks and longlinks from t_longlinks and t_fatlinks. */
 
 /* This version waits for gathers from both positive and negative
    directions before computing, thereby combining two lattice loops in
@@ -89,7 +89,7 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
     /* Use fat link for single link transport */
     FORSOMEPARITY( i, s, otherparity ){
       if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -106,7 +106,7 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
 		       (s+FETCH_UP)->templongvec );
       }
 
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
 #else
@@ -153,7 +153,7 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
 
 
     FORSOMEPARITY(i,s,parity){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
 #else
@@ -171,7 +171,7 @@ void dslash_fn( field_offset src, field_offset dest, int parity ) {
 	    (su3_vector *) &(s->templongv1));
 
       if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -268,7 +268,7 @@ void dslash_fn_special( field_offset src, field_offset dest,
     /* Multiply by adjoint matrix at other sites */
     FORSOMEPARITY(i,s,otherparity){
       if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -285,7 +285,7 @@ void dslash_fn_special( field_offset src, field_offset dest,
 		       (s+FETCH_UP)->templongvec );
       }
 
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
 #else
@@ -341,7 +341,7 @@ void dslash_fn_special( field_offset src, field_offset dest,
 
     FORSOMEPARITY(i,s,parity){
       if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -374,7 +374,7 @@ void dslash_fn_special( field_offset src, field_offset dest,
 		      (su3_vector *)gen_pt[Z3DOWN][i+FETCH_UP],
 		      (su3_vector *)gen_pt[T3DOWN][i+FETCH_UP] );
       }
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
 #else
@@ -445,7 +445,7 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
    /* Use fat link for single link transport */
    FORSOMEPARITY( i, s, otherparity ){
      if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -467,7 +467,7 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 		       &(templongvec[2][i+FETCH_UP]), 
 		       &(templongvec[3][i+FETCH_UP])); 
      }
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
      fat4 = &(t_fatlink[4*i]);
      long4 = &(t_longlink[4*i]);
 #else
@@ -505,7 +505,7 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 
     FORSOMEPARITY(i,s,parity){
      if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -529,7 +529,7 @@ void dslash_fn_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 		       (su3_vector *)gen_pt[T3UP][i+FETCH_UP] );
        
      }
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
      fat4 = &(t_fatlink[4*i]);
      long4 = &(t_longlink[4*i]);
 #else
@@ -662,7 +662,7 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
   /* Use fat link for single link transport */
   FORSOMEPARITY( i, s, otherparity ){
     if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -684,7 +684,7 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
 		       &(temp[7][i+FETCH_UP]) );
     }
 
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
     fat4 = &(t_fatlink[4*i]);
     long4 = &(t_longlink[4*i]);
 #else
@@ -726,7 +726,7 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
 
     FORSOMEPARITY(i,s,parity){
       if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -757,7 +757,7 @@ void dslash_fn_on_temp_special(su3_vector *src, su3_vector *dest,
 		      (su3_vector *)gen_pt[T3DOWN][i+FETCH_UP] );
       }
       
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
 #else
@@ -851,7 +851,7 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
     /* Use fat link for single link transport */
     FORSOMEPARITY( i, s, otherparity ){
       if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_dfatlink_du0[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -868,7 +868,7 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
 		       (s+FETCH_UP)->templongvec );
       }
 
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_dfatlink_du0[4*i]);
       long4 = &(t_longlink[4*i]);
 #else
@@ -918,7 +918,7 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
 
 
     FORSOMEPARITY(i,s,parity){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       fat4 = &(t_dfatlink_du0[4*i]);
       long4 = &(t_longlink[4*i]);
 #else
@@ -938,7 +938,7 @@ void ddslash_fn_du0( field_offset src, field_offset dest, int parity ) {
 			      (su3_vector *) &(s->templongv1) );
 
       if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	fat4 = &(t_dfatlink_du0[4*(i+FETCH_UP)]);
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -1034,7 +1034,7 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
    /* Use fat link for single link transport */
    FORSOMEPARITY( i, s, otherparity ){
      if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_dfatlink_du0[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -1056,7 +1056,7 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 		       &(templongvec[2][i+FETCH_UP]), 
 		       &(templongvec[3][i+FETCH_UP])); 
      }
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
      fat4 = &(t_dfatlink_du0[4*i]);
      long4 = &(t_longlink[4*i]);
 #else
@@ -1097,7 +1097,7 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 
     FORSOMEPARITY(i,s,parity){
      if( i < loopend-FETCH_UP ){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
        fat4 = &(t_dfatlink_du0[4*(i+FETCH_UP)]);
        long4 = &(t_longlink[4*(i+FETCH_UP)]);
 #else
@@ -1121,7 +1121,7 @@ void ddslash_fn_du0_on_temp( su3_vector *src, su3_vector *dest, int parity ) {
 		       (su3_vector *)gen_pt[T3UP][i+FETCH_UP] );
        
      }
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
      fat4 = &(t_dfatlink_du0[4*i]);
      long4 = &(t_longlink[4*i]);
 #else

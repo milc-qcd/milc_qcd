@@ -51,7 +51,7 @@ setup()
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
   /* Allocate space for t_longlink and t_fatlink */
   t_longlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
   if(t_longlink==NULL){

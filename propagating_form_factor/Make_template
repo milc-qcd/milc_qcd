@@ -203,7 +203,7 @@ w_mr_prop_form.x::
 # clover quarks using the biconjugate or hopping algorithm
 cl_bicg_prop_form.x::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DCLOVER -DCGTIME -DLARGE_MEMORY_SMEAR -DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS"\
+	"DEFINES= -DCLOVER -DCGTIME -DLARGE_MEMORY_SMEAR  "\
 	"EXTRA_OBJECTS= ${OBJECTS_CLOVER}"
 
 # Rules for generic routines

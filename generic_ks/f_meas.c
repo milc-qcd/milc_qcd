@@ -116,7 +116,7 @@ BOMB THE COMPILE
 	EVENANDODD, gen_pt[1] );
 
       FORALLSITES(i,st){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	mult_adj_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
 	mult_adj_su3_mat_vec( &(t_longlink[4*i+TUP]),
@@ -140,7 +140,7 @@ BOMB THE COMPILE
       wait_gather(tag1);
 
       FORALLSITES(i,st){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	mult_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
 	mult_su3_mat_vec( &(t_longlink[4*i+TUP]),
@@ -315,7 +315,7 @@ BOMB THE COMPILE
 	EVENANDODD, gen_pt[1] );
 
       FORALLSITES(i,st){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	mult_adj_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)F_PT(st,xxx_off), &(st->tempvec[TUP]) );
 	mult_adj_su3_mat_vec( &(t_longlink[4*i+TUP]),
@@ -339,7 +339,7 @@ BOMB THE COMPILE
       wait_gather(tag1);
 
       FORALLSITES(i,st){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	mult_su3_mat_vec( &(t_fatlink[4*i+TUP]),
 	    (su3_vector *)gen_pt[0][i], &(st->tempvec[0]) );
 	mult_su3_mat_vec( &(t_longlink[4*i+TUP]),

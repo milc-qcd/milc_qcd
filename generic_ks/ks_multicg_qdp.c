@@ -123,7 +123,7 @@ ks_multicg_qdp(	/* Return value is number of iterations taken */
   if (!valid_longlinks) load_longlinks();
   if (!valid_fatlinks) load_fatlinks();
 #endif
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
 #else

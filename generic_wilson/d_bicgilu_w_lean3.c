@@ -2,7 +2,7 @@
 /* MIMD version 6 */
 
 /* Modifications:
-   9/06/03 Include option CONGRAD_TMP_VECTORS to work with temp vectors CD
+   9/06/03 Include option CONGRAD_SITE_VECTORS to work with temp vectors CD
    7/17/01 Use dslash_special CD
    8/29/97 ANSI prototyping and added comments C. D.
    Code created by U.M.H.
@@ -44,7 +44,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
 				 normalized as sqrt(r*r)/sqrt(src_e*src_e */
   int flag = qic->start_flag;   /* 0: use a zero initial guess; 1: use dest */
 
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
   wilson_vector *mmp,*rv,*sss,*r,*p,*ttt,*t_dest;
   int static first_congrad = 1;
 #else
@@ -82,7 +82,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
       terminate(1);
     } 
 
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     /* now we can allocate temporary variables and copy then */
     /* PAD may be used to avoid cache trashing */
 #define PAD 0
@@ -116,7 +116,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
   dtime = -dclock();
 #endif
   
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
   /* now we copy dest and src to temporaries */
   FORALLSITES(i,s) {
     t_dest[i] = *(wilson_vector *)F_PT(s,dest);
@@ -124,7 +124,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
   }
 #endif
   
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
   dslash_on_temp_special(r,mmp,PLUS,EVEN, tage, is_startede);
 #else
   dslash_special(src,mmp,PLUS,EVEN, tage, is_startede);
@@ -134,7 +134,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
   /* Normalization  */
   rsq = 0.0;
   FOREVENSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     scalar_mult_add_wvec( &r[i], &mmp[i], Kappa, &r[i] );
     rsq += (double)magsq_wvec( &r[i] );
 #else
@@ -162,7 +162,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
      solution of the odd component of the equation is dest = src, before
      we rotate back to the basis in which  M is not checkerboard-diagonal) */
   FORODDSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     copy_wvec( &r[i], &t_dest[i] );
 #else
     copy_wvec( (wilson_vector *)F_PT(s,src),
@@ -175,7 +175,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
   if(flag == 0) {
     /** if(this_node==0)printf("dest_0=0\n"); **/
     FOREVENSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
       clear_wvec( &t_dest[i] );
 #else
       clear_wvec( (wilson_vector *)F_PT(s,dest) );
@@ -187,20 +187,20 @@ int bicgilu_w(          /* Return value is number of iterations taken */
   if(flag != 0) {
     /** if(this_node==0)printf("dest_0  !=0\n"); **/
     /* we use mmp temporarily to construct r */
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     dslash_on_temp_special(t_dest,mmp,PLUS,ODD,tago,is_startedo);
 #else
     dslash_special(dest,mmp,PLUS,ODD,tago,is_startedo);
 #endif
     is_startedo = 1;
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     dslash_on_temp_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
 #else
     dslash_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
 #endif
     is_startede = 1;
     FOREVENSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
       scalar_mult_add_wvec( &t_dest[i], &mmp[i], MKsq, &mmp[i] );
       scalar_mult_add_wvec( &r[i], &mmp[i], -1.0, &r[i] );
 #else
@@ -216,7 +216,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
   
   rsq = 0.0;
   FOREVENSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     rsq += (double)magsq_wvec( &r[i] );
     copy_wvec( &r[i], &p[i] );
     copy_wvec( &r[i], &rv[i] );
@@ -238,13 +238,13 @@ int bicgilu_w(          /* Return value is number of iterations taken */
       N_iter = N_iter + 1) {
     
     /*   mmp = M(u)*p */
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     dslash_on_temp_special(p,mmp,PLUS,ODD,tago,is_startedo);
 #else
     dslash_special(p,mmp,PLUS,ODD,tago,is_startedo);
 #endif
     is_startedo = 1;
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     dslash_on_temp_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
 #else
     dslash_special(mmp,mmp,PLUS,EVEN,tage,is_startede);
@@ -254,7 +254,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     /* rvv = <rv|mmp> */
     rvv = dcmplx((double)0.0,(double)0.0);
     FOREVENSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
       scalar_mult_add_wvec( &p[i], &mmp[i], MKsq, &mmp[i] );
       ctmp = wvec_dot( &rv[i], &mmp[i] );
 #else
@@ -272,7 +272,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     /* sss = r - a*mmp  */
     CMULREAL(a,-1.0,ctmp);
     FOREVENSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
       c_scalar_mult_add_wvec( &r[i], &mmp[i], &ctmp, &sss[i] );
 #else
       c_scalar_mult_add_wvec( (wilson_vector *)F_PT(s,r),
@@ -282,13 +282,13 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     }
     
     /* ttt = M(u)*sss */
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     dslash_on_temp_special(sss,sss,PLUS,ODD,tago,is_startedo);
 #else
     dslash_special(sss,sss,PLUS,ODD,tago,is_startedo);
 #endif
     is_startedo = 1;
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     dslash_on_temp_special(sss,ttt,PLUS,EVEN,tage,is_startede);
 #else
     dslash_special(sss,ttt,PLUS,EVEN,tage,is_startede);
@@ -299,7 +299,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     tdots = dcmplx((double)0.0,(double)0.0);
     tsq = 0.0;
     FOREVENSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
       scalar_mult_add_wvec( &sss[i], &ttt[i], MKsq, &ttt[i] );
       ctmp = wvec_dot( (wilson_vector *)F_PT(s,ttt), 
 		       (wilson_vector *)F_PT(s,sss) );
@@ -329,7 +329,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     rvro = rvr;
     rvr = dcmplx((double)0.0,(double)0.0);
     FOREVENSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
       c_scalar_mult_add_wvec( &t_dest[i], &sss[i], &omega,  &t_dest[i] );
       c_scalar_mult_add_wvec( &t_dest[i], &p[i],   &a,      &t_dest[i] );
       c_scalar_mult_add_wvec( &sss[i],    &ttt[i], &omegam, &r[i]      );
@@ -361,7 +361,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     
     /*   p = r + b*(p - omega*mmp)  */
     FOREVENSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
       c_scalar_mult_add_wvec( &p[i],  &mmp[i], &omegam, &p[i] );
       c_scalar_mult_add_wvec( &r[i],  &p[i],   &b,      &p[i] );
 #else
@@ -397,14 +397,14 @@ int bicgilu_w(          /* Return value is number of iterations taken */
     } **/
   
   /* dest = R^(-1)*dest  */
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
   dslash_on_temp_special(t_dest,mmp,PLUS,ODD,tago,is_startedo);
 #else
   dslash_special(dest,mmp,PLUS,ODD,tago,is_startedo);
 #endif
   is_startedo = 1;
   FORODDSITES(i,s) {
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
     /* Odd site result is placed in dest */
     scalar_mult_add_wvec( &t_dest[i], &mmp[i], Kappa, 
 			  (wilson_vector *)F_PT(s,dest) );
@@ -414,7 +414,7 @@ int bicgilu_w(          /* Return value is number of iterations taken */
 			 Kappa, (wilson_vector *)F_PT(s,dest) );
 #endif
   }
-#ifdef CONGRAD_TMP_VECTORS
+#ifndef CONGRAD_SITE_VECTORS
   /* Copy back for even sites and free memory */
   FOREVENSITES(i,s) {
     *(wilson_vector *)F_PT(s,dest) = t_dest[i];

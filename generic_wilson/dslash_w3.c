@@ -19,7 +19,7 @@ static half_wilson_vector *htmp[8] ;
 /* Flag indicating if temp is allocated               */
 static int temp_not_allocated=1 ;
 
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 /* Temporary work space for gauge links */ 
 static su3_matrix *t_links;
 
@@ -50,7 +50,7 @@ void cleanup_dslash_temps(){
   temp_not_allocated=1 ;
 }
 
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 void setup_tmp_links(){
   register int i, dir;
   register site *s;
@@ -733,7 +733,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
 
   /* The calling program must clean up the temps! */
   malloc_dslash_temps();
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
   setup_tmp_links();
 #endif
 
@@ -764,7 +764,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
         multiply it by adjoint link matrix, gather it "up" */
     FORSOMEPARITY(i,s,otherparity){
         wp_shrink_4dir2( &(src[i]), &hwvx, &hwvy, &hwvz, &hwvt, -isign);
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
 	linkx = &t_links[4*i+XUP];
 	linky = &t_links[4*i+YUP];
 	linkz = &t_links[4*i+ZUP];
@@ -796,7 +796,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
 	wait_gather(tag[dir]);
     }
     FORSOMEPARITY(i,s,parity){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       linkx = &t_links[4*i+XUP];
       linky = &t_links[4*i+YUP];
       linkz = &t_links[4*i+ZUP];
@@ -863,7 +863,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
   /* allocate temporary work space only if not already allocated */
   /* The calling program must clean up this space */
   malloc_dslash_temps();
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
   setup_tmp_links();
 #endif
   
@@ -897,7 +897,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
         /* Take Wilson projection for src displaced in down direction,
         multiply it by adjoint link matrix, gather it "up" */
     FORSOMEPARITY(i,s,otherparity){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       linkx = &t_links[4*i+XUP];
       linky = &t_links[4*i+YUP];
       linkz = &t_links[4*i+ZUP];
@@ -933,7 +933,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
 	wait_gather(tag[dir]);
     }
     FORSOMEPARITY(i,s,parity){
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       linkx = &t_links[4*i+XUP];
       linky = &t_links[4*i+YUP];
       linkz = &t_links[4*i+ZUP];

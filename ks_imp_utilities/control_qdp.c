@@ -54,7 +54,7 @@ int main( int argc, char **argv ){
     /* save longlinks if requested */
     if (savelongflag != FORGET ){
       filexml = create_ks_XML();
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       save_color_matrix_scidac_from_temp( savelongfile, filexml, 
 			  "Long links", QIO_SINGLEFILE, t_longlink, 4);
 #else
@@ -67,7 +67,7 @@ int main( int argc, char **argv ){
     /* save fatlinks if requested */
     if (savefatflag != FORGET ){
       filexml = create_ks_XML();
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
       save_color_matrix_scidac_from_temp( savefatfile, filexml, 
 		  "Fat links", QIO_SINGLEFILE, t_fatlink, 4);
 #else

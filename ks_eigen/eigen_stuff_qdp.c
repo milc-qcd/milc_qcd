@@ -578,7 +578,7 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
 
-#ifdef DSLASH_TMP_LINKS
+#ifndef DSLASH_SITE_LINKS
   set4_M_from_temp(fatlinks, t_fatlink);
   set4_M_from_temp(longlinks, t_longlink);
 #else

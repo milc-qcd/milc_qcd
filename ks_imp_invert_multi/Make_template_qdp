@@ -134,17 +134,13 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 # -DCGTIME for cg timing and iterations
 # -DGFTIME for gauge force timing
 
-# Optional DEFINES for data layout:
-# -DDSLASH_TMP_LINKS puts fatlinks and longlinks in temp
-# -DCONGRAD_TMP_VECTORS puts congrad vectors in temp
-
 # Optional DEFINES for pbp estimates
 # -DNPBP_REPS Number of repeated evaluations of stochastic psi-bar-psi
 ##### Targets:
 
 su3_inv_symzk1_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCONGRAD_TMP_LINKS" \
+	"DEFINES= -DFN" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn2.o d_congrad5_fn.o"
@@ -199,7 +195,7 @@ su3_rmd_eo_symzk1_onelink::
 	"EXTRA_OBJECTS= d_congrad5_eo.o"
 
 
-#"DEFINES= -DFN  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DSPECTRUM -DCGTIME -DSSE_SUBS" \
+#"DEFINES= -DFN    -DSPECTRUM -DCGTIME -DSSE_SUBS" \
 
 su3_rmd_spectrum_symzk1_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -210,14 +206,14 @@ su3_rmd_spectrum_symzk1_asqtad::
 
 su3_inv_symzk1_asqtad_periodic::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DRELATIVE_RESID" \
+	"DEFINES= -DFN -DSPECTRUM -DCGTIME -DPERIODICBC    -DRELATIVE_RESID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn_qdp.o d_congrad5_fn_qdp.o ${SPECTRUM_OBJECTS}"
 
 su3_inv_periodic::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DSPECTRUM -DCGTIME -DPERIODICBC  -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS " \
+	"DEFINES= -DFN -DSPECTRUM -DCGTIME -DPERIODICBC    " \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o ${SPECTRUM_OBJECTS}"

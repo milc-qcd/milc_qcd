@@ -127,10 +127,6 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 # -DCGTIME for cg timing and iterations
 # -DGFTIME for gauge force timing
 
-# Optional DEFINES for data layout:
-# -DDSLASH_TMP_LINKS puts fatlinks and longlinks in temp
-# -DCONGRAD_TMP_VECTORS puts congrad vectors in temp
-
 # Optional DEFINES for pbp estimates
 # -DNPBP_REPS Number of repeated evaluations of stochastic 
 #       psi-bar-psi
@@ -145,15 +141,15 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
+	"DEFINES= -DFN  " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o dslash_fn_qdp.o d_congrad5_fn_qdp.o"
 
 su3_rmd_symzk1_asqtad_pb10::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DNPBP_REPS=10 -DCONGRAD_TMP_VECTORS \
-		  -DDSLASH_TMP_LINKS" \
+	"DEFINES= -DFN -DNPBP_REPS=10  \
+		  " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o dslash_fn_qdp.o d_congrad5_fn_qdp.o"
@@ -161,14 +157,14 @@ su3_rmd_symzk1_asqtad_pb10::
 su3_rmd_symzk1_asqtad_dMdu0::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DNPBP_REPS=100 -DDM_DU0 -DCHEM_POT \
-		  -DCONGRAD_TMP_VECTORS -DDSLASH_TMP_LINKS" \
+		   " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o dslash_fn_qdp.o d_congrad5_fn_qdp.o"
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DFN   -DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o dslash_fn_qdp.o d_congrad5_fn_qdp.o d_action.o"
@@ -177,14 +173,14 @@ su3_hmc::
 
 su3_hybrids::
 	make -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DSPECTRUM -DHYBRIDS" \
+	"DEFINES= -DFN   -DSPECTRUM -DHYBRIDS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o dslash_fn_qdp.o d_congrad5_fn_qdp.o ks_multicg_qdp.o ape_smear.o project_su3_hit.o field_strength.o spectrum_hybrids5.o ${SPECTRUM_OBJECTS}"
 
 su3_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DSPECTRUM" \
+	"DEFINES= -DFN   -DSPECTRUM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o dslash_fn_qdp.o d_congrad5_fn_qdp.o ks_multicg_qdp.o ${SPECTRUM_OBJECTS}"
@@ -194,35 +190,35 @@ su3_spectrum::
 
 su3_rmd_plaq_fat7naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DFN  " \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o"
 
 su3_rmd_eo_symzk1_fat7tad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DEO  " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
 	"EXTRA_OBJECTS= d_congrad5_eo.o"
 
 su3_hmc_symzk1_naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DFN   -DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = naik_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o d_action.o"
 
 su3_rmd_symzk1_naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS" \
+	"DEFINES= -DFN  " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = naik_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o"
 
 su3_hmc_plaq_onefatnaik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDSLASH_TMP_LINKS -DCONGRAD_TMP_VECTORS -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DFN   -DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onefatnaik_action.h" \
 	"EXTRA_OBJECTS= dslash_fn.o d_congrad5_fn.o d_action.o"
