@@ -26,6 +26,7 @@
 
 #include "../include/int32type.h"
 #include "../include/macros.h"
+#include "../include/io_lat.h"
 #include <stdio.h>
 
 /* Used to create info file name */
@@ -225,9 +226,12 @@ void r_serial_ks_fm_f(ks_prop_file *kspf);
 
 /* Prototypes for io_helpers_ks.c */
 
+int reload_serial_ksprop( int flag, int file_type, char *filename, 
+			  field_offset dest, int timing);
 int reload_ksprop( int flag, char *filename, field_offset dest, int timing);
 void save_ksprop( int flag, char *filename, char *recxml, 
 		  field_offset src, int timing);
+int read_lat_dim_ksprop(char *filename, int file_type, int *ndim, int dims[]);
 
 int ask_starting_ksprop( int prompt, int *flag, char *filename );
 int ask_ending_ksprop( int prompt, int *flag, char *filename );

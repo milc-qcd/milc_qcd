@@ -170,7 +170,7 @@ void KS_2pt_func(field_offset snk, field_offset src, int *g_snk, int n_snk,
 void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator)
 {
 
-  int i, j;
+  int i;
   int g_snk[4],g_src[4];
   int n_snk,n_src;
   double temp;
@@ -840,10 +840,8 @@ void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator)
 int calculate_stag_prop() /* return the C.G. iteration number */
 {
   double mass_x2;
-  register complex cc,cc2;
   double finalrsq, th;
-  register int i,x,y,z,t,icol,cgn;
-  site *st;
+  register int i,x,y,t,icol,cgn;
 
 
   /* Fix ZUP Coulomb gauge - gauge links only*/

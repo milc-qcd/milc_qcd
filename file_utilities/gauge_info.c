@@ -51,3 +51,14 @@ void write_appl_gauge_info(FILE *fp)
 			"\"One plaquette gauge action.\"",0,0);
   write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
 }
+
+char *create_QCDML(){
+  char dummy[] = "Dummy QCDML";
+  char *qcdml = (char *)malloc(sizeof(dummy)+1);
+  strcpy(qcdml, dummy);
+  return qcdml;
+}
+
+void free_QCDML(char *qcdml){
+  if(qcdml != NULL)free(qcdml);
+}

@@ -37,15 +37,46 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
 # Choose one of the lattice layout algorithms:
 LAYOUT = layout_hyper
 
-MY_OBJECTS= 
+MY_OBJECTS= \
+  gauge_info.o
 
 # Basic set from generic directory
-G_OBJECTS = \
-  ${LAYOUT}.o \
+G_OBJECTS1 = \
   d_plaq4.o \
+  io_detect.o \
   io_lat4.o
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${EXTRA_OBJECTS} ${MACHINE_DEP}
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS = ${G_OBJECTS1} io_scidac.o
+else
+  G_OBJECTS = ${G_OBJECTS1}
+endif
+
+# Basic set from generic KS directory
+G_KS_OBJECTS = \
+
+# Objects depending on architecture and software package 
+
+# Layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o # Required
+  else
+    LAYOUT = layout_hyper.o # Choices possible here
+  endif
+endif
+
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} \
+	${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
@@ -68,32 +99,58 @@ ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
 ########################################################
 
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DHAVE_QIO = -DHAVE_QIO
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
+
 check_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_prop" \
-	"DEFINES= " \
+	"DEFINES= ${ARCH}" \
 	"EXTRA_OBJECTS=  check_prop.o io_wb3.o wilson_info_dummy.o \
 	gauge_info_dummy.o"
 
 check_gauge::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_gauge" \
-	"DEFINES= " \
-	"EXTRA_OBJECTS=  check_gauge.o check_unitarity.o gauge_info_dummy.o"
+	"DEFINES= ${ARCH}" \
+	"EXTRA_OBJECTS= check_gauge.o \
+	check_unitarity.o gauge_info_dummy.o"
 
 lattice_to_scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= lattice_to_scidac" \
+	"DEFINES= ${ARCH}" \
+	"EXTRA_OBJECTS=  lattice_to_scidac.o \
+	check_unitarity.o gauge_info_dummy.o io_scidac.o"
+
+ksprop_to_scidac::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= ksprop_to_scidac" \
 	"DEFINES= -DHAVE_QIO" \
-	"EXTRA_OBJECTS=  lattice_to_scidac.o check_unitarity.o gauge_info_dummy.o io_scidac.o"
+	"EXTRA_OBJECTS=  ksprop_to_scidac.o io_helpers_ks.o \
+	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o"
 
 ckpt1_to_v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= ckpt1_to_v5" \
-	"DEFINES= " \
-	"EXTRA_OBJECTS=  ckpt1_to_v5.o check_unitarity.o gauge_info.o"
+	"DEFINES= ${ARCH}" \
+	"EXTRA_OBJECTS=  ckpt1_to_v5.o \
+	check_unitarity.o gauge_info.o"
 
 clean:
 	-/bin/rm -f *.o
 
 # Rules for generic routines
 include ../generic/Make_template
+
+# Rules for generic routines
+include ../generic_ks/Make_template
 
 # Rules for header files
 include ../include/Make_template

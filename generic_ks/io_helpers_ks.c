@@ -13,12 +13,60 @@
 #include "../include/io_prop_ks.h"
 #include "../include/file_types.h"
 #include <string.h>
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
 
 static file_type ksprop_list[N_KSPROP_TYPES] =
   { {FILE_TYPE_KSPROP,       KSPROP_VERSION_NUMBER},
     {FILE_TYPE_KSFMPROP,     KSFMPROP_VERSION_NUMBER},
     {FILE_TYPE_KSQIOPROP,    LIME_MAGIC_NO}
   };
+
+/*---------------------------------------------------------------*/
+/* reload a binary propagator in any of the formats */
+
+int reload_serial_ksprop( int flag, int file_type, char *filename, 
+			  field_offset dest, int timing)
+{
+  /* 0 normal exit value
+     1 read error */
+
+  ks_prop_file *kspf;
+  int status,color;
+  field_offset destc;
+
+  if(file_type == FILE_TYPE_KSPROP){
+    node0_printf("Reading as a standard KS prop file\n");
+    kspf = r_serial_ks_i(filename);
+    for(color = 0; color < 3; color++){
+      destc = dest + color*sizeof(su3_vector);
+      status = r_serial_ks(kspf,color,destc); 
+    }
+    r_serial_ks_f(kspf);
+  }
+  else if(file_type == FILE_TYPE_KSFMPROP){
+    node0_printf("Reading as a Fermilab KS prop file\n");
+    kspf = r_serial_ks_fm_i(filename);
+    r_serial_ks_fm(kspf,dest);
+    r_serial_ks_fm_f(kspf);
+  }
+  else if(file_type == FILE_TYPE_KSQIOPROP){
+#ifdef HAVE_QIO
+    node0_printf("Reading as a QIO KS prop file\n");
+    restore_ks_vector_scidac(filename, dest, 3);
+#else
+    node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
+    return 1;
+#endif
+  }
+  else{
+    node0_printf("Unsupported file type %d\n",file_type);
+    return 1;
+  }
+  return 0;
+
+} /* reload_serial_ksprop */
 
 /*---------------------------------------------------------------*/
 /* reload a propagator in any of the formats, or cold propagator, or keep
@@ -59,34 +107,10 @@ int reload_ksprop( int flag, char *filename, field_offset dest, int timing)
       node0_printf("reload_ksprop: Can't read file %s\n", filename);
       return 1;
     }
-    if(file_type == FILE_TYPE_KSPROP){
-      node0_printf("Reading as a standard KS prop file\n");
-      kspf = r_serial_ks_i(filename);
-      for(color = 0; color < 3; color++){
-	destc = dest + color*sizeof(su3_vector);
-	status = r_serial_ks(kspf,color,destc); 
-      }
-      r_serial_ks_f(kspf);
-    }
-    else if(file_type == FILE_TYPE_KSFMPROP){
-      node0_printf("Reading as a Fermilab KS prop file\n");
-      kspf = r_serial_ks_fm_i(filename);
-      r_serial_ks_fm(kspf,dest);
-      r_serial_ks_fm_f(kspf);
-    }
-    else if(file_type == FILE_TYPE_KSQIOPROP){
-#ifdef HAVE_QIO
-      node0_printf("Reading as a QIO KS prop file\n");
-      restore_ks_vector_scidac(filename, dest, 3);
-#else
-      node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
-      return 1;
-#endif
-    }
-    else{
-      node0_printf("Unsupported file type %d\n",file_type);
-      return 1;
-    }
+
+    status = reload_serial_ksprop(flag, file_type, filename, dest, timing);
+    if(status != 0)return status;
+
     break;
   default:
     node0_printf("reload_ksprop: Unrecognized reload flag.\n");
@@ -103,6 +127,46 @@ int reload_ksprop( int flag, char *filename, field_offset dest, int timing)
   return status;
 
 } /* reload_ksprop */
+
+/*---------------------------------------------------------------*/
+/* read the lattice dimensions from a binary ks prop file */
+
+int read_lat_dim_ksprop(char *filename, int file_type, int *ndim, int dims[])
+{
+  ks_prop_file *kspf;
+  int i;
+
+  if(file_type == FILE_TYPE_KSPROP){
+    *ndim = 4;
+    nx = -1; ny = -1; nz = -1; nt = -1;
+    kspf = r_serial_ks_i(filename);
+    for(i = 0; i < *ndim; i++)
+      dims[i] = kspf->header->dims[i];
+    r_serial_ks_f(kspf);
+  }
+  else if(file_type == FILE_TYPE_KSFMPROP){
+    *ndim = 4;
+    nx = -1; ny = -1; nz = -1; nt = -1;
+    kspf = r_serial_ks_fm_i(filename);
+    for(i = 0; i < *ndim; i++)
+      dims[i] = kspf->header->dims[i];
+    r_serial_ks_fm_f(kspf);
+  }
+  else if(file_type == FILE_TYPE_KSQIOPROP){
+#ifdef HAVE_QIO
+    node0_printf("Reading as a QIO KS prop file\n");
+    read_lat_dim_scidac(filename, ndim, dims);
+#else
+    node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
+    return 1;
+#endif
+  }
+  else{
+    node0_printf("Unsupported file type %d\n",file_type);
+    return 1;
+  }
+  return 0;
+}
 
 /*---------------------------------------------------------------*/
 /* write a single su3_vector field to an open file in various formats

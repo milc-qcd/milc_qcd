@@ -293,6 +293,7 @@ EXTERN  int sequence_number;
 void complete_U(float *u);
 int big_endian();
 
+void read_lat_dim_gf(char *filename, int *ndim, int dims[]);
 gauge_file *restore_ascii(char *filename);
 gauge_file *save_ascii(char *filename);
 gauge_file *restore_serial(char *filename);

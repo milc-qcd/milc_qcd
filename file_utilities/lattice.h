@@ -3,6 +3,7 @@
 /* The following are global scalars */
 
 #include "../include/macros.h"
+#include "../include/su3.h"
 
 #ifdef CONTROL
 #define EXTERN 
@@ -28,6 +29,7 @@ struct site {
 	char parity;
 	int index;
 	su3_matrix link[4];
+        su3_vector prop[3];
 };
 typedef struct site site;
 

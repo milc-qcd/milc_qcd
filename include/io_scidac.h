@@ -14,6 +14,8 @@ QIO_Reader *open_input(char *filename, QIO_Layout *layout);
 QIO_Writer *open_output(char *filename, int volfmt, QIO_Layout *layout,
 			char *xml_write_file);
 
+int read_lat_dim_scidac(char *filename, int *ndim, int dims[]);
+
 QIO_Writer *save_color_matrix_scidac(char *filename, char *filexml,
                        char *recxml, int volfmt, field_offset src, int count);
 
