@@ -10,8 +10,10 @@ typedef struct {
 /* LIME (SCIDAC/QIO)(all files) */
 /* Files may be identified by the record XML containing site data
    sizes and counts */
+#ifndef HAVE_QIO
 #define LIME_MAGIC_NO                0x456789ab /* decimal 1164413355
 						   see lime_defs.h */
+#endif
 
 /* FNAL (all files) */
 /* Files may be identified through the header which contains element

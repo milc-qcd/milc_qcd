@@ -9,9 +9,13 @@
 
 QIO_Writer *save_ks_vector_scidac(char *filename, char *filexml, int volfmt, 
 				  field_offset src, int count);
+QIO_Writer *save_ks_vector_scidac_from_temp(char *filename, char *recxml, 
+			    int volfmt, su3_vector *src, int count);
 
 QIO_Reader *restore_ks_vector_scidac(char *filename, field_offset dest,
 				     int count);
+QIO_Reader *restore_ks_vector_scidac_to_temp(char *filename, 
+					     su3_vector *dest, int count);
 /**********************************************************************/
 /* In ks_info.c (application dependent) */
 
