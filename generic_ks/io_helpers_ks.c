@@ -263,7 +263,6 @@ int read_lat_dim_ksprop(char *filename, int file_type, int *ndim, int dims[])
   }
   else if(file_type == FILE_TYPE_KSQIOPROP){
 #ifdef HAVE_QIO
-    node0_printf("Reading as a QIO KS prop file\n");
     read_lat_dim_scidac(filename, ndim, dims);
 #else
     node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
@@ -432,14 +431,14 @@ int ask_starting_ksprop( int prompt, int *flag, char *filename ){
     int status;
 
     if (prompt!=0) 
-      printf( "enter 'fresh_ks', 'reload_ks_ascii', 'reload_ks_serial', \n");
+      printf( "enter 'fresh_ks', 'reload_ascii_ksprop', 'reload_serial_ksprop', \n");
     status=scanf("%s",savebuf);
     if (status == EOF){
       printf("ask_starting_ksprop: EOF on STDIN.\n");
       return(1);
     }
     if(status !=1) {
-        printf("ask_starting_ksprop: ERROR IN INPUT: error reading starting prop command\n");
+        printf("ask_starting_ksprop: ERROR IN INPUT: error reading starting ksprop command\n");
         return(1);
     }
 
@@ -448,15 +447,14 @@ int ask_starting_ksprop( int prompt, int *flag, char *filename ){
        *flag = FRESH;
     printf("\n");
     }
-    else if(strcmp("reload_ks_ascii",savebuf) == 0 ) {
+    else if(strcmp("reload_ascii_ksprop",savebuf) == 0 ) {
        *flag = RELOAD_ASCII;
     }
-    else if(strcmp("reload_ks_serial",savebuf) == 0 ) {
+    else if(strcmp("reload_serial_ksprop",savebuf) == 0 ) {
        *flag = RELOAD_SERIAL;
     }
     else{
-    	printf("ask_starting_ksprop: ERROR IN INPUT: command %s is invalid\n",
-	       savebuf); 
+      printf("is not a valid starting ksprop command: INPUT ERROR\n");
 	return(1);
     }
 
@@ -465,7 +463,7 @@ int ask_starting_ksprop( int prompt, int *flag, char *filename ){
         if(prompt!=0) printf("enter name of file containing ksprop\n");
         status = scanf("%s",filename);
         if(status != 1) {
-	    printf("ask_starting_ksprop: ERROR IN INPUT: error reading filename\n"); 
+	  printf("\nask_starting_ksprop: ERROR IN INPUT: Can't read filename\n");
 	    return(1);
         }
 	printf("%s\n",filename);
@@ -483,26 +481,32 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
     int status;
 
     if (prompt!=0) printf(
-        "'forget_ks', 'save_ks_ascii', 'save_ks_serial_tslice', 'save_ks_serial', 'save_ks_serial_fm', 'save_ks_serial_scidac', 'save_ks_multifile_scidac', 'save_ks_partition_scidac' ?\n");
+        "'forget_ksprop', 'save_ascii_ksprop', 'save_serial_ksprop_tslice', 'save_serial_ksprop', 'save_serial_fm_ksprop', 'save_serial_scidac_ksprop', 'save_multifile_scidac_ksprop', 'save_partition_scidac_ksprop' ?\n");
+
     status=scanf("%s",savebuf);
+    if (status == EOF){
+      printf("ask_ending_ksprop: EOF on STDIN.\n");
+      return(1);
+    }
     if(status !=1) {
         printf("ask_ending_ksprop: ERROR IN INPUT: ending ksprop command\n");
         return(1);
     }
     printf("%s ",savebuf);
-    if(strcmp("save_ks_ascii",savebuf) == 0 )  {
+
+    if(strcmp("save_ascii_ksprop",savebuf) == 0 )  {
         *flag=SAVE_ASCII;
     }
-    else if(strcmp("save_ks_serial_tslice",savebuf) == 0 ) {
+    else if(strcmp("save_serial_ksprop_tslice",savebuf) == 0 ) {
         *flag=SAVE_SERIAL_TSLICE;
     }
-    else if(strcmp("save_ks_serial",savebuf) == 0 ) {
+    else if(strcmp("save_serial_ksprop",savebuf) == 0 ) {
         *flag=SAVE_SERIAL;
     }
-    else if(strcmp("save_ks_serial_fm",savebuf) == 0 ) {
+    else if(strcmp("save_serial_fm_ksprop",savebuf) == 0 ) {
         *flag=SAVE_SERIAL_FM;
     }
-    else if(strcmp("save_ks_serial_scidac",savebuf) == 0 ) {
+    else if(strcmp("save_serial_scidac_ksprop",savebuf) == 0 ) {
 #ifdef HAVE_QIO
         *flag=SAVE_SERIAL_SCIDAC;
 #else
@@ -510,7 +514,7 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
 	terminate(1);
 #endif
     }
-    else if(strcmp("save_ks_multifile_scidac",savebuf) == 0 ) {
+    else if(strcmp("save_multifile_scidac_ksprop",savebuf) == 0 ) {
 #ifdef HAVE_QIO
         *flag=SAVE_MULTIFILE_SCIDAC;
 #else
@@ -518,7 +522,7 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
 	terminate(1);
 #endif
     }
-    else if(strcmp("save_ks_partition_scidac",savebuf) == 0 ) {
+    else if(strcmp("save_partition_scidac_ksprop",savebuf) == 0 ) {
 #ifdef HAVE_QIO
         *flag=SAVE_PARTITION_SCIDAC;
 #else
@@ -526,13 +530,12 @@ int ask_ending_ksprop( int prompt, int *flag, char *filename ){
 	terminate(1);
 #endif
     }
-    else if(strcmp("forget_ks",savebuf) == 0 ) {
+    else if(strcmp("forget_ksprop",savebuf) == 0 ) {
         *flag=FORGET;
 	printf("\n");
     }
     else {
-      printf("ask_ending_ksprop: ERROR IN INPUT: %s is not a valid save KS prop command\n",
-	     savebuf);
+      node0_printf("is not a valid save KS prop command. INPUT ERROR.\n");
       return(1);
     }
 
