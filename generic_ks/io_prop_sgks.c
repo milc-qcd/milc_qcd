@@ -104,18 +104,18 @@ void write_ks_fmprop_info_file(ks_prop_file *pf)
   
   /* Write required information */
 
-  write_ksprop_info_item(info_fp,"header.time_stamp","\"%s\"",ph->time_stamp,0,0);
+  write_ksprop_info_item(info_fp,"ksprop.time_stamp","\"%s\"",ph->time_stamp,0,0);
   /*sprintf(sums,"%x %x",pf->check.sum29,pf->check.sum31);
   write_ksprop_info_item(info_fp,"checksums","\"%s\"",sums,0,0); */
-  write_ksprop_info_item(info_fp,"header.dim","%d",(char *)&ph->dims,4,
+  write_ksprop_info_item(info_fp,"ksprop.dim","%d",(char *)&ph->dims,4,
 	sizeof(int32type));
-  write_ksprop_info_item(info_fp,"header.magic_number","%d",(char *)&ph->magic_number,0,0);
-  write_ksprop_info_item(info_fp,"header.size-of-elment","%d",
+  write_ksprop_info_item(info_fp,"ksprop.magic_number","%d",(char *)&ph->magic_number,0,0);
+  write_ksprop_info_item(info_fp,"ksprop.size-of-element","%d",
 		(char *)&size_of_element,0,0);
-  write_ksprop_info_item(info_fp,"header.elements-per-site","%d",
+  write_ksprop_info_item(info_fp,"ksprop.elements-per-site","%d",
 		(char *)&elements_per_site,0,0);
 /* only natural order is supported now */
-  write_ksprop_info_item(info_fp,"header.site-order","%d",
+  write_ksprop_info_item(info_fp,"ksprop.site-order","%d",
 		(char *)&natural_order,0,0);
 
   write_appl_ksprop_info(info_fp);
