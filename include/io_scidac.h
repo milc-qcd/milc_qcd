@@ -16,14 +16,16 @@ QIO_Writer *open_output(char *filename, int volfmt, QIO_Layout *layout,
 
 int read_lat_dim_scidac(char *filename, int *ndim, int dims[]);
 
-QIO_Writer *save_color_matrix_scidac(char *filename, char *filexml,
+QIO_Writer *save_color_matrix_scidac_from_site(char *filename, char *filexml,
                        char *recxml, int volfmt, field_offset src, int count);
 
-QIO_Writer *save_color_matrix_scidac_from_temp(char *filename, char *filexml,
+QIO_Writer *save_color_matrix_scidac_from_field(char *filename, char *filexml,
 		       char *recxml, int volfmt, su3_matrix *src, int count);
 
-QIO_Reader *restore_color_matrix_scidac(char *filename, 
+QIO_Reader *restore_color_matrix_scidac_to_site(char *filename, 
 					field_offset dest, int count);
+QIO_Reader *restore_color_matrix_scidac_to_field(char *filename, 
+					su3_matrix *dest, int count);
 /**********************************************************************/
 /* In gauge_info.c (application dependent) */
 

@@ -97,7 +97,7 @@ QIO_Reader *open_input(char *filename, QIO_Layout *layout){
 
 /* Factory function for moving color matrices from site structure to
    single precision output */
-void vget_F3_M(char *buf, size_t index, int count, void *arg)
+void vget_F3_M_from_site(char *buf, size_t index, int count, void *arg)
 {
   int dir;
   int i,j;
@@ -119,7 +119,7 @@ void vget_F3_M(char *buf, size_t index, int count, void *arg)
 
 /* Factory function for moving color matrices from temp to
    single precision output */
-void vget_F3_M_from_temp(char *buf, size_t index, int count, void *arg)
+void vget_F3_M_from_field(char *buf, size_t index, int count, void *arg)
 {
   int dir;
   int i,j;
@@ -138,7 +138,7 @@ void vget_F3_M_from_temp(char *buf, size_t index, int count, void *arg)
     }
 }
 
-int write_F3_M(QIO_Writer *outfile, char *xml_write_lattice,
+int write_F3_M_from_site(QIO_Writer *outfile, char *xml_write_lattice,
 	       field_offset src, int count){
   QIO_String *xml_record_out;
   int status;
@@ -157,7 +157,7 @@ int write_F3_M(QIO_Writer *outfile, char *xml_write_lattice,
   QIO_string_set(xml_record_out,xml_write_lattice);
 
   /* Write the record for the field */
-  status = QIO_write(outfile, rec_info, xml_record_out, vget_F3_M, 
+  status = QIO_write(outfile, rec_info, xml_record_out, vget_F3_M_from_site, 
 		     count*datum_size, word_size, (void *)&src);
  if(status != QIO_SUCCESS)return 1;
 
@@ -167,7 +167,7 @@ int write_F3_M(QIO_Writer *outfile, char *xml_write_lattice,
   return 0;
 }
 
-int write_F3_M_from_temp(QIO_Writer *outfile, char *xml_write_lattice,
+int write_F3_M_from_field(QIO_Writer *outfile, char *xml_write_lattice,
 	         su3_matrix *src, int count){
   QIO_String *xml_record_out;
   int status;
@@ -186,8 +186,9 @@ int write_F3_M_from_temp(QIO_Writer *outfile, char *xml_write_lattice,
   QIO_string_set(xml_record_out,xml_write_lattice);
 
   /* Write the record for the field */
-  status = QIO_write(outfile, rec_info, xml_record_out, vget_F3_M_from_temp, 
-		     count*datum_size, word_size, (void *)src);
+  status = QIO_write(outfile, rec_info, xml_record_out, 
+		     vget_F3_M_from_field, count*datum_size, word_size, 
+		     (void *)src);
   if(status != QIO_SUCCESS)return 1;
 
   QIO_destroy_record_info(rec_info);
@@ -198,7 +199,7 @@ int write_F3_M_from_temp(QIO_Writer *outfile, char *xml_write_lattice,
 
 /* Factory function for moving single precision gauge field from input
    to site structure */
-void vput_F3_M(char *buf, size_t index, int count, void *arg)
+void vput_F3_M_to_site(char *buf, size_t index, int count, void *arg)
 {
   int dir;
   int i,j;
@@ -217,8 +218,28 @@ void vput_F3_M(char *buf, size_t index, int count, void *arg)
     }
 }
 
+/* Factory function for moving single precision gauge field from input
+   to field */
+void vput_F3_M_to_field(char *buf, size_t index, int count, void *arg)
+{
+  int dir;
+  int i,j;
+  /* Assume input lattice is single precision, 3 colors */
+  fsu3_matrix *src = (fsu3_matrix *)buf;
+  su3_matrix *dest = (su3_matrix *)arg;
+  /* Destination can be any precision */
+  su3_matrix *dest_mat = dest + index * count;
+  
+  /* Copy, changing precision, if necessary */
+  for (dir=0;dir<count;dir++)
+    for(i = 0; i < 3; i++)for(j = 0; j < 3; j++){
+      dest_mat[dir].e[i][j].real = src[dir].e[i][j].real;
+      dest_mat[dir].e[i][j].imag = src[dir].e[i][j].imag;
+    }
+}
+
 /* Read a set of color matrices */
-int read_F3_M(QIO_Reader *infile, field_offset dest, int count)
+int read_F3_M_to_site(QIO_Reader *infile, field_offset dest, int count)
 {
   QIO_String *xml_record_in;
   QIO_RecordInfo rec_info;
@@ -230,7 +251,33 @@ int read_F3_M(QIO_Reader *infile, field_offset dest, int count)
   /* Read the field record */
   xml_record_in = QIO_string_create();
   status = QIO_read(infile, &rec_info, xml_record_in, 
-		    vput_F3_M, datum_size*count, word_size, (void *)&dest);
+		    vput_F3_M_to_site, datum_size*count, word_size, (void *)&dest);
+  node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in));
+  if(status != QIO_SUCCESS)return 1;
+
+  node0_printf("Checksums %x %x\n",
+	       QIO_get_reader_last_checksuma(infile),
+	       QIO_get_reader_last_checksumb(infile));
+
+  QIO_string_destroy(xml_record_in);
+  return 0;
+}
+
+/* Read a set of color matrices */
+int read_F3_M_to_field(QIO_Reader *infile, su3_matrix *dest, int count)
+{
+  QIO_String *xml_record_in;
+  QIO_RecordInfo rec_info;
+  int status;
+  /* We assume input precision is single */
+  int datum_size = sizeof(fsu3_matrix);
+  int word_size = sizeof(float);
+  
+  /* Read the field record */
+  xml_record_in = QIO_string_create();
+  status = QIO_read(infile, &rec_info, xml_record_in, 
+		    vput_F3_M_to_field, datum_size*count, word_size, 
+		    (void *)dest);
   node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in));
   if(status != QIO_SUCCESS)return 1;
 
@@ -268,7 +315,7 @@ gauge_file *save_scidac(char *filename, int volfmt){
   qcdml = create_QCDML();
 
   /* Write the lattice field */
-  status = write_F3_M(outfile, qcdml, src, LATDIM);
+  status = write_F3_M_from_site(outfile, qcdml, src, LATDIM);
   if(status)terminate(1);
   
   /* Close the file */
@@ -364,7 +411,7 @@ gauge_file *restore_serial_scidac(char *filename){
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field */
-  status = read_F3_M(infile, dest, LATDIM);
+  status = read_F3_M_to_site(infile, dest, LATDIM);
   if(status)terminate(1);
 
   /* Close the file */
@@ -375,8 +422,8 @@ gauge_file *restore_serial_scidac(char *filename){
 
 /* Read color matrices in SciDAC format */
 
-QIO_Reader *restore_color_matrix_scidac(char *filename, 
-					field_offset dest, int count){
+QIO_Reader *restore_color_matrix_scidac_to_site(char *filename, 
+				field_offset dest, int count){
   QIO_Layout layout;
   QIO_Reader *infile;
   int status;
@@ -391,7 +438,34 @@ QIO_Reader *restore_color_matrix_scidac(char *filename,
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field */
-  status = read_F3_M(infile, dest, count);
+  status = read_F3_M_to_site(infile, dest, count);
+  if(status)terminate(1);
+
+  /* Close the file */
+  QIO_close_read(infile);
+
+  return infile;
+}
+
+/* Read color matrices in SciDAC format */
+
+QIO_Reader *restore_color_matrix_scidac_to_field(char *filename, 
+				su3_matrix *dest, int count){
+  QIO_Layout layout;
+  QIO_Reader *infile;
+  int status;
+
+  QIO_verbose(QIO_VERB_OFF);
+
+  /* Build the layout structure */
+  build_layout(&layout);
+
+  /* Open file for reading */
+  infile = open_input(filename, &layout);
+  if(infile == NULL)terminate(1);
+
+  /* Read the lattice field */
+  status = read_F3_M_to_field(infile, dest, count);
   if(status)terminate(1);
 
   /* Close the file */
@@ -403,7 +477,7 @@ QIO_Reader *restore_color_matrix_scidac(char *filename,
 /* Write a set of color matrices in SciDAC format, taking data from the site
    structure */
 
-QIO_Writer *save_color_matrix_scidac(char *filename, char *filexml, 
+QIO_Writer *save_color_matrix_scidac_from_site(char *filename, char *filexml, 
       char *recxml, int volfmt,  field_offset src, int count)
 {
   QIO_Layout layout;
@@ -420,7 +494,7 @@ QIO_Writer *save_color_matrix_scidac(char *filename, char *filexml,
   if(outfile == NULL)terminate(1);
 
   /* Write the lattice field */
-  status = write_F3_M(outfile, recxml, src, count);
+  status = write_F3_M_from_site(outfile, recxml, src, count);
   if(status)terminate(1);
   
   /* Close the file */
@@ -448,7 +522,7 @@ QIO_Writer *save_color_matrix_scidac(char *filename, char *filexml,
 }
 
 
-QIO_Writer *save_color_matrix_scidac_from_temp(char *filename, 
+QIO_Writer *save_color_matrix_scidac_from_field(char *filename, 
         char *filexml, char *recxml, int volfmt, su3_matrix *src, int count)
 {
   QIO_Layout layout;
@@ -465,7 +539,7 @@ QIO_Writer *save_color_matrix_scidac_from_temp(char *filename,
   if(outfile == NULL)terminate(1);
 
   /* Write the lattice field */
-  status = write_F3_M_from_temp(outfile, recxml, src, count);
+  status = write_F3_M_from_field(outfile, recxml, src, count);
   if(status)terminate(1);
   
   /* Close the file */

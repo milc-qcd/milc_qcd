@@ -28,8 +28,6 @@
 #include "../include/io_lat.h"
 #include <qio.h>
 
-#define MAX_RECXML 512
-
 static file_type ksprop_list[N_KSPROP_TYPES] =
   { {FILE_TYPE_KSPROP,       KSPROP_VERSION_NUMBER},
     {FILE_TYPE_KSFMPROP,     KSFMPROP_VERSION_NUMBER},
@@ -97,7 +95,7 @@ int main(int argc, char *argv[])
   int i,prompt,color;
   site *s;
   int dims[4],ndim;
-  Real norm2;
+  Real norm2,maxnorm2,avnorm2;
   su3_vector ksdiff;
   su3_vector *ksprop1, *ksprop2;
   char *ksprop_file1, *ksprop_file2;
@@ -166,20 +164,25 @@ int main(int argc, char *argv[])
   
   /* Compare data */
   
-  norm2 = 0;
+  maxnorm2 = 0;
+  avnorm2 = 0;
   FORALLSITES(i,s){
     for(color = 0; color < 3; color++){
       sub_su3_vector(&ksprop1[3*i+color],&ksprop2[3*i+color],&ksdiff);
-      norm2 += magsq_su3vec(&ksdiff);
+      norm2 = magsq_su3vec(&ksdiff);
+      avnorm2 += norm2;
+      if(norm2 > maxnorm2)maxnorm2 = norm2;
     }
   }
   
   /* Sum over lattice and normalize */
-  g_floatsum(&norm2);
-  norm2 /= 3*volume;
-  norm2 = sqrt(norm2);
+  g_floatsum(&avnorm2);
+  avnorm2 /= 3*volume;
+  avnorm2 = sqrt(avnorm2);
+  maxnorm2 = sqrt(maxnorm2);
   
-  fprintf(stderr,"L2 norm difference is %e per color vector\n",norm2);
+  fprintf(stderr,"L2 norm difference is mean %e ; max %e\n",
+	  avnorm2,maxnorm2);
   
   free(ksprop1);
   free(ksprop2);

@@ -23,7 +23,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
 
   /* Make a random source in xxx if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
-    restore_ks_vector_scidac (srcfile, src, 1);
+    restore_ks_vector_scidac_to_site (srcfile, src, 1);
   }
   else {
     /* generate g_rand random; phi = Mdagger g_rand */
@@ -53,7 +53,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
 
   /* If the answer file is given, read it for comparison */
   if(ansflag == RELOAD_SERIAL){
-    restore_color_matrix_scidac(ansfile, F_OFFSET(ansmom[0]), 4);
+    restore_color_matrix_scidac_to_site(ansfile, F_OFFSET(ansmom[0]), 4);
     node0_printf("Checking the answer\n");
   }
 
@@ -97,14 +97,14 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   /* Save source and answer if requested */
 #ifdef HAVE_QIO
   if(srcflag == SAVE_SERIAL)
-    save_ks_vector_scidac(srcfile, "source color vector field", 
+    save_ks_vector_scidac_from_site(srcfile, "source color vector field", 
 			  QIO_SINGLEFILE, src, 1);
   
   if(ansflag == SAVE_SERIAL){
-    filexml = create_ks_XML();
-    save_color_matrix_scidac(ansfile, filexml, "fermion force matrices", 
-			     QIO_SINGLEFILE,  F_OFFSET(ansmom[0]), 4);
-    free_ks_XML(filexml);
+    filexml = create_QCDML();
+    save_color_matrix_scidac_from_site(ansfile, filexml, 
+       "fermion force matrices", QIO_SINGLEFILE,  F_OFFSET(ansmom[0]), 4);
+    free_QCDML(filexml);
   }
 #endif
 

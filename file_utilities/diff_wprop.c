@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
   int i,prompt,color,spin;
   site *s;
   int dims[4],ndim;
-  Real norm2;
+  Real norm2,maxnorm2,avnorm2;
   wilson_vector wdiff;
   wilson_propagator *wprop1, *wprop2;
   char *wprop_file1, *wprop_file2;
@@ -167,24 +167,29 @@ int main(int argc, char *argv[])
   
   /* Compare data */
   
-  norm2 = 0;
+  maxnorm2 = 0;
+  avnorm2 = 0;
   FORALLSITES(i,s){
     for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
       {
 	sub_wilson_vector(&wprop1[i].c[color].d[spin],
 			  &wprop2[i].c[color].d[spin],
 			  &wdiff);
-      norm2 += magsq_wvec(&wdiff);
+	norm2 = magsq_wvec(&wdiff);
+	avnorm2 += norm2;
+	if(norm2 > maxnorm2)maxnorm2 = norm2;
     }
   }
   
   /* Sum over lattice and normalize */
-  g_floatsum(&norm2);
-  norm2 /= 4*3*volume;
-  norm2 = sqrt(norm2);
+  g_floatsum(&avnorm2);
+  avnorm2 /= 4*3*volume;
+  avnorm2 = sqrt(avnorm2);
+  maxnorm2 = sqrt(maxnorm2);
   
-  fprintf(stderr,"L2 norm difference is %e per Wilson vector\n",norm2);
-  
+  fprintf(stderr,"L2 norm difference is mean %e ; max %e\n",
+	  avnorm2,maxnorm2);
+
   free(wprop1);
   free(wprop2);
   free_lattice();

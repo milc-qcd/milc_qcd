@@ -84,7 +84,7 @@ QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a
 .c.o: ; ${CC} -c ${CFLAGS} $*.c 
 
 # To force a full remake when changing targets
-LASTMAKE = .lastmake.${MAKEFILE}.${MYTARGET}
+LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
 
 ${LASTMAKE}:
 	-/bin/rm -f .lastmake.*
@@ -125,11 +125,21 @@ check_gauge::
 	"EXTRA_OBJECTS= check_gauge.o \
 	check_unitarity.o gauge_info_dummy.o"
 
+diff_colormatrix::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_colormatrix" \
+	"DEFINES= ${DARCH}" \
+	"EXTRA_OBJECTS=  diff_colormatrix.o"
+
 diff_ksprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksprop" \
 	"DEFINES= ${DARCH}" \
 	"EXTRA_OBJECTS=  diff_ksprop.o io_helpers_ks.o \
 	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o"
+
+diff_ksvector::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksvector" \
+	"DEFINES= ${DARCH}" \
+	"EXTRA_OBJECTS=  diff_ksvector.o io_scidac_ks.o ksprop_info.o"
 
 diff_wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_wprop" \

@@ -56,10 +56,10 @@ int main( int argc, char **argv ){
     /* save longlinks if requested */
     if (savelongflag != FORGET ){
 #ifdef HAVE_QIO
-      filexml = create_ks_XML();
-      save_color_matrix_scidac_from_temp( savelongfile, filexml, 
+      filexml = create_QCDXML();
+      save_color_matrix_scidac_from_field( savelongfile, filexml, 
 			  "Long links", QIO_SINGLEFILE, t_longlink, 4);
-      free_ks_XML(filexml);
+      free_QCDXML(filexml);
 #else
       printf("ERROR: Can't save the longlinks.  Recompile with QIO\n");
 #endif
@@ -68,10 +68,10 @@ int main( int argc, char **argv ){
     /* save fatlinks if requested */
     if (savefatflag != FORGET ){
 #ifdef HAVE_QIO
-      filexml = create_ks_XML();
-      save_color_matrix_scidac_from_temp( savefatfile, filexml, 
+      filexml = create_QCDXML();
+      save_color_matrix_scidac_from_field( savefatfile, filexml, 
 		  "Fat links", QIO_SINGLEFILE, t_fatlink, 4);
-      free_ks_XML(filexml);
+      free_QCDML(filexml);
 #else
       printf("ERROR: Can't save the fatlinks.  Recompile with QIO\n");
 #endif

@@ -92,7 +92,7 @@ ALL_MAKES = Make_template ../generic/Make_template \
   ${MAKEFILE} ../include/Make_template
 
 # To force a full remake when changing targets
-LASTMAKE = .lastmake.${MAKEFILE}.${MYTARGET}
+LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
 
 ${LASTMAKE}: ${ALL_MAKES}
 	-/bin/rm -f .lastmake.*

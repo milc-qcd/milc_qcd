@@ -21,7 +21,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   
   /* Make a random source in phi if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
-    restore_ks_vector_scidac (srcfile, src, 1);
+    restore_ks_vector_scidac_to_site (srcfile, src, 1);
   }
   else {
     /* generate g_rand random; phi = Mdagger g_rand */
@@ -31,7 +31,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   
   /* Do the inversion if we aren't reloading the answer */
   if(ansflag == RELOAD_SERIAL){
-    restore_ks_vector_scidac (ansfile, ans, 1);
+    restore_ks_vector_scidac_to_site (ansfile, ans, 1);
   }
   else {
     node0_printf("Doing the inversion\n");
@@ -62,13 +62,16 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   /* Save source and answer if requested */
 #ifdef HAVE_QIO
   if(srcflag == SAVE_SERIAL)
-    save_ks_vector_scidac(srcfile, "source color vector field", QIO_SINGLEFILE, src, 1);
+    save_ks_vector_scidac_from_site(srcfile, "source color vector field", 
+				    QIO_SINGLEFILE, src, 1);
   
   if(ansflag == SAVE_SERIAL){
     if(inverttype == INVERT_M)
-      save_ks_vector_scidac(ansfile, "answer = M^-1 source", QIO_SINGLEFILE, ans, 1);
+      save_ks_vector_scidac_from_site(ansfile, "answer = M^-1 source", 
+				      QIO_SINGLEFILE, ans, 1);
     else
-      save_ks_vector_scidac(ansfile, "answer = (MdaggerM)^-1 source", QIO_SINGLEFILE, ans, 1);
+      save_ks_vector_scidac_from_site(ansfile, "answer = (MdaggerM)^-1 source",
+				      QIO_SINGLEFILE, ans, 1);
   }
 #endif
 }      
