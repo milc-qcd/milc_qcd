@@ -1,5 +1,6 @@
 #include "generic_wilson_includes.h"
 #include "../include/file_types.h"
+#include "../include/io_wprop.h"
 #include <sys/types.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -15,9 +16,10 @@
 #endif
 #define NATURAL_ORDER 0
 
-void r_prop_w_fm(char *filename, field_offset dest)
+void r_prop_w_fm(char *filename, field_offset dest_site, 
+		 wilson_propagator *dest_field)
 {
-  int rcv_rank, rcv_coords,status;
+  int rcv_rank, rcv_coords, status;
   FILE *fp;
   int destnode;
   int x,y,z,t,i, byterevflag, c0,s0,c1,s1,a;
@@ -32,7 +34,11 @@ void r_prop_w_fm(char *filename, field_offset dest)
   int buf_length, where_in_buf;
   fwilson_matrix *pbuff;
   wilson_propagator *qp;
-  site *s;
+  w_prop_check test_wpc;
+  u_int32type *val;
+  int rank29,rank31;
+  int k;
+
   /*READING FILE HEADER*/
 
   if(this_node==0){
@@ -153,6 +159,19 @@ void r_prop_w_fm(char *filename, field_offset dest)
       z = rcv_coords % nz;   rcv_coords /= nz;
       t = rcv_coords % nt;
 
+      /* All nodes initialize timeslice checksums at the beginning of
+	 a time slice */
+      if(x == 0 && y == 0 && z == 0)
+	{
+	  test_wpc.sum31 = 0;
+	  test_wpc.sum29 = 0;
+	  /* counts 32-bit words mod 29 and mod 31 in order of appearance
+	     on file */
+	  /* Here all nodes see the same sequence because we read serially */
+	  rank29 = 0;
+	  rank31 = 0;
+	}
+
       destnode=node_number(x,y,z,t);
 
       if(this_node==0){
@@ -206,11 +225,27 @@ void r_prop_w_fm(char *filename, field_offset dest)
 	  if(byterevflag==1)
 	    byterevn((int32type *)&msg.q, 
 		     sizeof(fwilson_matrix)/sizeof(int32type));
+	  
+	  /* Accumulate checksums */
+	  for(k = 0, val = (u_int32type *)(&msg.q); 
+	      k < (int)sizeof(fwilson_matrix)/(int)sizeof(int32type); 
+	      k++, val++)
+	    {
+	      test_wpc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
+	      test_wpc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
+	      rank29++; if(rank29 >= 29)rank29 = 0;
+	      rank31++; if(rank31 >= 31)rank31 = 0;
+	    }
 
-	  /* Now copy the site data into the site structure,
-	     switching to propagator storage and converting to
-	     generic precision if needed */
-	  qp = (wilson_propagator *)F_PT(&lattice[i],dest);
+	  /* Now copy the site data into the site structure or field
+	     switching to propagator storage and converting to generic
+	     precision if needed */
+
+	  if(dest_site == (field_offset)(-1))
+	    qp = dest_field + i;
+	  else
+	    qp = (wilson_propagator *)F_PT(&lattice[i],dest_site);
+
 	  for(s0=0;s0<4;s0++)for(c0=0;c0<3;c0++)
 	    for(s1=0;s1<4;s1++)for(c1=0;c1<3;c1++)
 	      {
@@ -220,13 +255,37 @@ void r_prop_w_fm(char *filename, field_offset dest)
 		  = msg.q.d[s0].c[c0].d[s1].c[c1].imag;
 	      }
 	}
-    }
+      else
+	{
+	  rank29 += sizeof(fwilson_matrix)/sizeof(int32type);
+	  rank31 += sizeof(fwilson_matrix)/sizeof(int32type);
+	  rank29 %= 29;
+	  rank31 %= 31;
+	}
+
+      /* Accumulate and print checksum at the end of each time slice */
+      if(x == nx - 1 && y == ny - 1 && z == nz - 1)
+	{
+	  /* Combine node checksum contributions with global exclusive or */
+	  g_xor32(&test_wpc.sum29);
+	  g_xor32(&test_wpc.sum31);
+	  
+	  node0_printf("quark.t[%d].checksum  \"%0x %0x\"\n",t,
+		       test_wpc.sum29, test_wpc.sum31);
+	}
+    } /* rcv_rank */
 }
 
+/*--------------------------------------------------------------------*/
+void r_prop_w_fm_to_site(char *filename, field_offset dest_site)
+{
+  r_prop_w_fm(filename, dest_site, NULL);
+}
 
+/*--------------------------------------------------------------------*/
+void r_prop_w_fm_to_field(char *filename, wilson_propagator *dest_field)
+{
+  r_prop_w_fm(filename, (field_offset)(-1), dest_field);
+}
 
-
-
-
-
-
+/*--------------------------------------------------------------------*/

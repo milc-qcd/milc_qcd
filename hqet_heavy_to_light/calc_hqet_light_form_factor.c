@@ -113,7 +113,7 @@ void calc_hqet_light_form(void)
 	    IF_MASTER printf("------> starting to load light spectator k = %f <-----\n",kappa_spectator[k_spectator]);
 	    /*** Load in the spectator quark propagator ****/
 	    kappa = kappa_spectator[k_spectator]  ;
-	    if(reload_wprop_sc( startflag_spectator[k_spectator],
+	    if(reload_wprop_sc_to_site( startflag_spectator[k_spectator],
 			      spectate_fp_in, spin, color, 
 			      F_OFFSET(quark_spectate.d[spin]),1)!=0)
 	      terminate(1);
@@ -175,7 +175,7 @@ void calc_hqet_light_form(void)
 	    /*** load the light zonked quark propagagor from disk ***/
 	    kappa =   kappa_zonked_light[ k_zonked_light ] ;
 
-	    if(reload_wprop_sc( startflag_zonked[k_zonked_light],
+	    if(reload_wprop_sc_to_site( startflag_zonked[k_zonked_light],
 			      zonked_fp_in, spin, color, 
 			      F_OFFSET(quark_zonked.d[spin]), 1)!=0)
 	      terminate(1);

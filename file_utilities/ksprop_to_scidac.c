@@ -145,6 +145,6 @@ int main(int argc, char *argv[])
 
   save_ks_vector_scidac_from_field(filename_scidac, recxml, 
 				   QIO_SINGLEFILE, ksprop, 3);
-
+  free(ksprop);
   return 0;
 }

@@ -54,7 +54,7 @@ G_OBJECTS0 =          \
   io_helpers.o       \
   io_helpers_w.o     \
   io_lat4.o          \
-  io_wb3.o           \
+  io_prop_w.o        \
   make_lattice.o     \
   ranstuff.o \
   reunitarize2.o     \
@@ -74,7 +74,7 @@ endif
 
 G_WILSON_OBJECTS0 =    \
   dslash_w2.o         \
-  read_prop_w_fm1.o   \
+  io_prop_w_fm.o   \
   wilson_invert_lean.o 
 
 ifeq ($(strip ${HAVEQIO}),true)

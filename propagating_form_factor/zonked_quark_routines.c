@@ -46,7 +46,7 @@ void load_in_zonked_light(int color, int k_zonked_light)
   for(spin = 0 ; spin < 4 ; ++spin )
   {
     /*** load the light zonked quark propagagor from disk ***/
-    if(reload_wprop_sc( startflag_zonked_light[k_zonked_light],
+    if(reload_wprop_sc_to_site( startflag_zonked_light[k_zonked_light],
 			 zonked_fp_in, spin, color, 
 			 F_OFFSET(quark_zonked.d[spin]), 1)!=0)
       terminate(1);
@@ -130,7 +130,7 @@ void load_in_zonked_light2(int color, int spin, int k_zonked_light,
 
   /*** load the light zonked quark propagagor from disk ***/
   node0_printf("Loading from %s\n",qfile_zonked_light[ k_zonked_light ]);
-  if(reload_wprop_sc( startflag_zonked_light[k_zonked_light],
+  if(reload_wprop_sc_to_site( startflag_zonked_light[k_zonked_light],
 			zonked_fp_in, spin, color, 
 			dest, 1)!=0)
     terminate(1);
@@ -204,7 +204,7 @@ void load_in_zonked_heavy_smear(int color, int spin, int k_zonked_heavy,
 		qfile_zonked_heavy_ssink[k_zonked_heavy] ); 
 
   node0_printf("Loading from %s\n",qfile_zonked_heavy_ssink[ k_zonked_heavy ]);
-  if(reload_wprop_sc(reloadflag_zonked_heavy_ssink, zonked_fp_in,
+  if(reload_wprop_sc_to_site(reloadflag_zonked_heavy_ssink, zonked_fp_in,
 		       spin, color, dest, 1) != 0 )  
     terminate(1);  
 
@@ -224,7 +224,7 @@ void load_in_zonked_heavy_local(int color, int spin, int k_zonked_heavy,
     r_open_wprop(startflag_zonked_heavy[k_zonked_heavy], 
 		qfile_zonked_heavy[k_zonked_heavy] ); 
   node0_printf("Loading from %s\n",qfile_zonked_heavy[ k_zonked_heavy ]);
-  if(reload_wprop_sc(startflag_zonked_heavy[k_zonked_heavy], zonked_fp_in,
+  if(reload_wprop_sc_to_site(startflag_zonked_heavy[k_zonked_heavy], zonked_fp_in,
 		       spin, color, dest, 1) != 0 )  
     terminate(1);  
 
@@ -244,7 +244,7 @@ void load_in_zonked_light_ssink(int color, int spin, int k_zonked_light,
     r_open_wprop(reloadflag_zonked_light_ssink, 
 		qfile_zonked_light_ssink[k_zonked_light] ); 
   node0_printf("Loading from %s\n",qfile_zonked_light_ssink[ k_zonked_light ]);
-  if(reload_wprop_sc(reloadflag_zonked_light_ssink, zonked_fp_in,
+  if(reload_wprop_sc_to_site(reloadflag_zonked_light_ssink, zonked_fp_in,
 		       spin, color, dest, 1) != 0 )  
     terminate(1);  
 

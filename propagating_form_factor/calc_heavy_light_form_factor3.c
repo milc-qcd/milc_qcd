@@ -124,7 +124,7 @@ void load_in_spectator(int color, int spin, int k_spectator,
   spectator_fp_in = r_open_wprop(startflag_spectator[k_spectator], 
 				qfile_spectator[k_spectator]);
   /*** Load in the spectator quark propagator ****/
-  if(reload_wprop_sc(startflag_spectator[k_spectator],
+  if(reload_wprop_sc_to_site(startflag_spectator[k_spectator],
 		       spectator_fp_in, spin, color, dest, 1)!=0)
     terminate(1);
   
@@ -409,7 +409,7 @@ void calc_heavy_light_form()
 		
 		/** write the light ssink quark props to disk ***/
 		for(spin=0; spin < 4 ; ++spin ) 
-		  save_wprop_sc(saveflag_zonked_light_ssink, 
+		  save_wprop_sc_from_site(saveflag_zonked_light_ssink, 
                         zonked_light_ssink_fp[k_zonked_light],
 			spin, color, 
 			F_OFFSET(quark_zonked_light[k_zonked_light].d[spin]),
@@ -435,7 +435,7 @@ void calc_heavy_light_form()
 
 	      /*** store the heavy quark propagator to disk ****/
 	      for(spin=0; spin < 4 ; ++spin ) 
-		save_wprop_sc(saveflag_zonked_heavy[k_zonked_heavy], 
+		save_wprop_sc_from_site(saveflag_zonked_heavy[k_zonked_heavy], 
                         zonked_heavy_fp[k_zonked_heavy],
 			spin, color, 
 			F_OFFSET(quark_zonked_heavy[k_zonked_heavy].d[spin]), 
@@ -501,7 +501,7 @@ void calc_heavy_light_form()
 		
 		/*** store the smeared--smeared quark propagator to disk ***/
 		for(spin=0; spin < 4 ; ++spin ) 
-		  save_wprop_sc(saveflag_zonked_heavy_ssink, 
+		  save_wprop_sc_from_site(saveflag_zonked_heavy_ssink, 
                      zonked_heavy_ssink_fp[k_zonked_heavy],
 		     spin, color, 
 		     F_OFFSET(quark_zonked_heavy[k_zonked_heavy].d[spin]), 1) ;

@@ -72,8 +72,8 @@ int main(int argc,char *argv[])
     
     for(k=0; k<num_kap; k++){
       kappa = kap[k];
-      reload_wprop(startflag_w[k], startfile_w[k], 
-			     F_OFFSET(quark_propagator),1);
+      reload_wprop_to_site(startflag_w[k], startfile_w[k], 
+			   F_OFFSET(quark_propagator),1);
       if (format[k])
 	{
 	  /* Rotate FNAL to Milc format  V g0 G g0 V^+ */

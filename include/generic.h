@@ -12,7 +12,7 @@
 
    For com_*.c, see comdefs.h
    For io_lat4.c io_ansi.c, io_nonansi.c, io_piofs.c, io_romio.c see io_lat.h
-   For io_wb3.c, see io_wprop.h
+   For io_prop_w.c, see io_wprop.h
 */
 
 #include "../include/int32type.h"

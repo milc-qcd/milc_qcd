@@ -1,4 +1,4 @@
-/*********************** io_wb3.c *************************/
+/*********************** io_prop_w.c *************************/
 /* MIMD version 6 */
 /* This reads/write single precision propagator files */
 
@@ -556,7 +556,8 @@ void write_checksum_w(int parallel, w_prop_file *wpf)
 /*---------------------------------------------------------------------------*/
 /* Here only node 0 writes propagator to a serial file for this spin and color */
 
-void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src)
+void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src_site,
+		wilson_vector *src_field)
 {
   /* wpf  = file descriptor as opened by w_serial_w_i 
      src  = field offset for propagator Wilson vector (type wilson_vector)  */
@@ -566,6 +567,7 @@ void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src)
   u_int32type *val;
   int rank29,rank31;
   fwilson_vector *lbuf;
+  wilson_vector *src;
   int fseek_return;  /* added by S.G. for large file debugging */
   struct {
     fwilson_vector wv;
@@ -673,7 +675,13 @@ void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	    {
 	      i=node_index(x,y,z,t);
 	      /* Load msg structure with single precision wilson vector */
-	      d2f_wvec((wilson_vector *)F_PT(&lattice[i],src),&msg.wv);
+
+ 	      if(src_site == (field_offset)(-1))
+		src = src_field + i;
+	      else
+		src = (wilson_vector *)F_PT( &(lattice[i]), src_site );
+
+	      d2f_wvec(src, &msg.wv);
 	    }
 	  else
 	    {
@@ -715,7 +723,13 @@ void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	    i=node_index(x,y,z,t);
 	    /* Copy or convert data into send buffer and send to node
 	       0 with padding */
-	    d2f_wvec((wilson_vector *)F_PT(&lattice[i],src),&msg.wv);
+
+	    if(src_site == (field_offset)(-1))
+	      src = src_field + i;
+	    else
+	      src = (wilson_vector *)F_PT( &(lattice[i]), src_site );
+
+	    d2f_wvec(src, &msg.wv);
 	    send_field((char *)&msg, sizeof(msg),0);
 	  }
 	}
@@ -751,6 +765,30 @@ void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src)
     }
       
 } /* w_serial_w */
+
+/*---------------------------------------------------------------------------*/
+/* Here only node 0 writes propagator to a serial file for this spin and color */
+
+void w_serial_w_from_site(w_prop_file *wpf, int spin, int color, 
+			  field_offset src_site)
+{
+  /* wpf  = file descriptor as opened by w_serial_w_i 
+     src  = field offset for propagator Wilson vector (type wilson_vector)  */
+
+  w_serial_w(wpf, spin, color, src_site, NULL);
+}
+
+/*---------------------------------------------------------------------------*/
+/* Here only node 0 writes propagator to a serial file for this spin and color */
+
+void w_serial_w_from_field(w_prop_file *wpf, int spin, int color, 
+		wilson_vector *src_field)
+{
+  /* wpf  = file descriptor as opened by w_serial_w_i 
+     src  = field offset for propagator Wilson vector (type wilson_vector)  */
+
+  w_serial_w(wpf, spin, color, (field_offset)(-1), src_field);
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -1319,10 +1357,13 @@ w_prop_file *r_serial_w_i(char *filename)
 
 /* Here only node 0 reads the Wilson propagator from a binary file */
 
-int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset src)
+int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset dest_site,
+	       wilson_vector *dest_field)
 {
   /* wpf  = propagator file structure 
-     src  = field offset for propagator Wilson vector  */
+     dest_site  = field offset for propagator Wilson vector
+     dest_field = pointer to field
+     use only one of the dest parameters!  */
 
   /* 0 is normal exit code
      1 for seek, read error, or missing data error */
@@ -1517,7 +1558,12 @@ int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	if(destnode==0){	
 	  /* no need to send the Wilson vector - will just copy */
 	  i = node_index(x,y,z,t);
-	  dest = (wilson_vector *)F_PT( &(lattice[i]), src );
+
+	  if(dest_site == (field_offset)(-1))
+	    dest = dest_field + i;
+	  else
+	    dest = (wilson_vector *)F_PT( &(lattice[i]), dest_site );
+
 	  /* Copy to msg.wv for further processing */
 	  msg.wv = lbuf[where_in_buf];
 	}
@@ -1534,7 +1580,12 @@ int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	/* for all nodes other than node 0, receive the message */
 	if(this_node==destnode){
 	  i = node_index(x,y,z,t);
-	  dest = (wilson_vector *)F_PT( &(lattice[i]), src );
+
+	  if(dest_site == (field_offset)(-1))
+	    dest = dest_field + i;
+	  else
+	    dest = (wilson_vector *)F_PT( &(lattice[i]), dest_site );
+	  
 	  /* Receive padded message in msg */
 	  get_field((char *)&msg, sizeof(msg), 0);
 	}
@@ -1610,6 +1661,38 @@ int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset src)
   return 0;
   
 } /* r_serial_w */
+
+/*----------------------------------------------------------------------*/
+
+/* Here only node 0 reads the Wilson propagator from a binary file */
+
+int r_serial_w_to_site(w_prop_file *wpf, int spin, int color, 
+		       field_offset dest_site)
+{
+  /* wpf  = propagator file structure 
+     dest  = field offset for propagator Wilson vector  */
+
+  /* 0 is normal exit code
+     1 for seek, read error, or missing data error */
+
+  return r_serial_w(wpf, spin, color, dest_site, NULL);
+}
+
+/*----------------------------------------------------------------------*/
+
+/* Here only node 0 reads the Wilson propagator from a binary file */
+
+int r_serial_w_to_field(w_prop_file *wpf, int spin, int color, 
+			wilson_vector *dest_field)
+{
+  /* wpf  = propagator file structure 
+     dest  = field offset for propagator Wilson vector  */
+
+  /* 0 is normal exit code
+     1 for seek, read error, or missing data error */
+
+  return r_serial_w(wpf, spin, color, (field_offset)(-1), dest_field);
+}
 
 /*----------------------------------------------------------------------*/
 
@@ -1891,14 +1974,16 @@ fwilson_vector *w_parallel_setup_w(w_prop_file *wpf, off_t *checksum_offset,
 
 /* Write parallel propagator for this spin and color */
 
-void w_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
+void w_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src_site,
+		  wilson_vector *src_field)
 {
   /* wpf  = file descriptor as opened by w_parallel_w_i 
-     src  = field offset for propagator Wilson vector  */
+     src_site  = field offset for propagator Wilson vector
+     src_field  = pointer to Wilson vector */
 
   FILE *fp;
   fwilson_vector *lbuf;
-  wilson_vector *send;
+  wilson_vector *src;
   int buf_length,where_in_buf;
   u_int32type *val;
   int rank29,rank31;
@@ -1979,11 +2064,16 @@ void w_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	      /* Message consists of site coordinates and Wilson vector */
 	      msg.x = x; msg.y = y; msg.z = z; msg.t = t;
 	      i = node_index(x,y,z,t);
-	      send = (wilson_vector *)F_PT( &(lattice[i]), src );
+
+	      if(src_site == (field_offset)(-1))
+		src = src_field + i;
+	      else
+		src = (wilson_vector *)F_PT( &(lattice[i]), src_site );
+
 	      /* Copy from site structure to msg structure, converting
 		 to single precision */
 
-	      d2f_wvec(send,&msg.wv);
+	      d2f_wvec(src,&msg.wv);
 	      /* Then send the message */
 	      send_field((char *)&msg,sizeof(msg),destnode);
 	    }
@@ -1992,11 +2082,14 @@ void w_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	      if(destnode==sendnode){ 
 		/* just copy Wilson vector */
 		i = node_index(x,y,z,t);
-		send = (wilson_vector *)F_PT( &(lattice[i]), src );
+		if(src_site == (field_offset)(-1))
+		  src = src_field + i;
+		else
+		  src = (wilson_vector *)F_PT( &(lattice[i]), src_site );
 		where_in_buf = buf_length;
 		/* Copy from site structure to write buffer,
 		   converting to single precision */
-		d2f_wvec(send,&lbuf[where_in_buf]);
+		d2f_wvec(src,&lbuf[where_in_buf]);
 
 		rank29 = rank31 = 
 		  sizeof(fwilson_vector)/sizeof(int32type)*rcv_rank;
@@ -2093,16 +2186,43 @@ void w_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
         
 /*---------------------------------------------------------------------------*/
 
+/* Write parallel propagator for this spin and color */
+
+void w_parallel_w_from_site(w_prop_file *wpf, int spin, int color, 
+			    field_offset src_site)
+{
+  /* wpf  = file descriptor as opened by w_parallel_w_i 
+     src  = field offset for propagator Wilson vector  */
+
+  w_parallel_w(wpf, spin, color, src_site, NULL);
+}
+
+/*---------------------------------------------------------------------------*/
+
+/* Write parallel propagator for this spin and color */
+
+void w_parallel_w_from_field(w_prop_file *wpf, int spin, int color, 
+			     wilson_vector *src_field)
+{
+  /* wpf  = file descriptor as opened by w_parallel_w_i 
+     src  = field offset for propagator Wilson vector  */
+
+  w_parallel_w(wpf, spin,color, (field_offset)(-1), src_field);
+}
+
+/*---------------------------------------------------------------------------*/
+
 /* Write checkpoint propagator for this spin and color */
 
-void w_checkpoint_w(w_prop_file *wpf, int spin, int color, field_offset src)
+void w_checkpoint_w(w_prop_file *wpf, int spin, int color, 
+		    field_offset src_site, wilson_vector *src_field)
 {
   /* wpf  = file descriptor as opened by w_checkpoint_w_i 
      src  = field offset for propagator Wilson vector  */
 
   FILE *fp;
   fwilson_vector *lbuf;
-  wilson_vector *send;
+  wilson_vector *src;
   u_int32type *val;
   int k;
   int rank29,rank31;
@@ -2133,8 +2253,13 @@ void w_checkpoint_w(w_prop_file *wpf, int spin, int color, field_offset src)
         
     /* load the quark propagator into the write buffer, converting to
        single precision */
-    send = (wilson_vector *)F_PT(s,src);
-    d2f_wvec(send,&lbuf[buf_length]);
+
+    if(src_site == (field_offset)(-1))
+      src = src_field + i;
+    else
+      src = (wilson_vector *)F_PT( s, src_site );
+
+    d2f_wvec(src,&lbuf[buf_length]);
 
     /* Accumulate checksums - contribution from next site moved into buffer*/
     for(k = 0, val = (u_int32type *)&lbuf[buf_length]; 
@@ -2193,6 +2318,32 @@ void w_checkpoint_w(w_prop_file *wpf, int spin, int color, field_offset src)
     }
       
 } /* w_checkpoint_w */
+
+/*---------------------------------------------------------------------------*/
+
+/* Write checkpoint propagator for this spin and color */
+
+void w_checkpoint_w_from_site(w_prop_file *wpf, int spin, int color, 
+			      field_offset src_site)
+{
+  /* wpf  = file descriptor as opened by w_checkpoint_w_i 
+     src  = field offset for propagator Wilson vector  */
+
+  w_checkpoint_w(wpf, spin, color, src_site, NULL);
+}
+
+/*---------------------------------------------------------------------------*/
+
+/* Write checkpoint propagator for this spin and color */
+
+void w_checkpoint_w_from_field(w_prop_file *wpf, int spin, int color, 
+			       wilson_vector *src_field)
+{
+  /* wpf  = file descriptor as opened by w_checkpoint_w_i 
+     src  = field offset for propagator Wilson vector  */
+
+  w_checkpoint_w(wpf, spin, color, (field_offset)(-1), src_field);
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -2316,10 +2467,13 @@ void r_parallel_w_o(w_prop_file *wpf)
 /*----------------------------------------------------------------------*/
 
 /* Read Wilson propagator in parallel from a single file */
-int r_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
+int r_parallel_w(w_prop_file *wpf, int spin, int color, field_offset dest_site,
+		 wilson_vector *dest_field)
 {
   /* wpf  = propagator file structure 
-     src  = field offset for propagator Wilson vector  */
+     dest_site  = field offset for propagator Wilson vector
+     dest_field = pointer to field
+     use only one of the dest parameters!  */
 
   /* 0 is normal exit code
      1 for seek, read error, or missing data error */
@@ -2592,7 +2746,12 @@ int r_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	      if(destnode==sendnode){	
 		/* just copy Wilson vector */
 		i = node_index(x,y,z,t);
-		dest = (wilson_vector *)F_PT( &(lattice[i]), src );
+
+		if(dest_site == (field_offset)(-1))
+		  dest = dest_field + i;
+		else
+		  dest = (wilson_vector *)F_PT( &(lattice[i]), dest_site );
+
 		/* copy from read buffer to site structure, converting
 		   to double precision */
 		f2d_wvec(&lbuf[where_in_buf],dest);
@@ -2611,7 +2770,12 @@ int r_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	      if(this_node==destnode){
 		get_field((char *)&msg,sizeof(msg),sendnode);
 		i = node_index(msg.x,msg.y,msg.z,msg.t);
-		dest = (wilson_vector *)F_PT( &(lattice[i]), src );
+
+		if(dest_site == (field_offset)(-1))
+		  dest = dest_field + i;
+		else
+		  dest = (wilson_vector *)F_PT( &(lattice[i]), dest_site );
+
 		if(this_node!= node_number(msg.x,msg.y,msg.z,msg.t))
 		  {
 		    printf("BOTCH. Node %d received %d %d %d %d\n",
@@ -2669,6 +2833,35 @@ int r_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src)
   return 0;
   
 } /* r_parallel_w */
+
+/*----------------------------------------------------------------------*/
+
+/* Read Wilson propagator in parallel from a single file */
+int r_parallel_w_to_site(w_prop_file *wpf, int spin, int color, 
+			 field_offset dest_site)
+{
+  /* wpf  = propagator file structure 
+     dest_site  = field offset for propagator Wilson vector  */
+
+  /* 0 is normal exit code
+     1 for seek, read error, or missing data error */
+  return r_parallel_w(wpf, spin, color, dest_site, NULL);
+}
+
+/*----------------------------------------------------------------------*/
+
+/* Read Wilson propagator in parallel from a single file */
+int r_parallel_w_to_field(w_prop_file *wpf, int spin, int color, 
+			  wilson_vector *dest_field)
+{
+  /* wpf  = propagator file structure 
+     dest_field  = pointer to Wilson vector  */
+
+  /* 0 is normal exit code
+     1 for seek, read error, or missing data error */
+
+  return r_parallel_w(wpf, spin, color, (field_offset)(-1), dest_field);
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -3120,12 +3313,13 @@ w_prop_file *w_multidump_w_i(char *filename)
 /* Since these files are certainly not archived, but more likely used
    as temporary extended storage, the file is in generic precision */
 
-void w_multidump_w(w_prop_file *wpf, int spin, int color, field_offset src)
+void w_multidump_w(w_prop_file *wpf, int spin, int color, 
+		   field_offset src_site, wilson_vector *src_field)
 {
 
   FILE *fp;
   wilson_vector *lbuf;
-  wilson_vector *send;
+  wilson_vector *src;
   u_int32type *val;
   int k;
   int rank29,rank31;
@@ -3178,8 +3372,13 @@ void w_multidump_w(w_prop_file *wpf, int spin, int color, field_offset src)
   {
         
     /* load the quark propagator into the buffer */
-    send = (wilson_vector *)F_PT(s,src);
-    lbuf[buf_length]= *send;
+    if(src_site == (field_offset)(-1))
+      src = src_field + i;
+    else
+      src = (wilson_vector *)F_PT( s, src_site );
+
+    /* Just write as is.  No precision conversion. */
+    lbuf[buf_length]= *src;
 
     /* Accumulate checksums - contribution from next site moved into buffer*/
     for(k = 0, val = (u_int32type *)&lbuf[buf_length]; 
@@ -3228,6 +3427,31 @@ void w_multidump_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	     spin,color,wpf->filename);fflush(stdout);*/
 
 } /* w_multidump_w */
+
+/*---------------------------------------------------------------------------*/
+/* Dumps wilson vector to a no-frills dump file for this spin and color */
+/* Since these files are certainly not archived, but more likely used
+   as temporary extended storage, the file is in generic precision */
+
+void w_multidump_w_from_site(w_prop_file *wpf, int spin, int color, 
+		   field_offset src_site)
+{
+
+  w_multidump_w(wpf, spin, color, src_site, NULL);
+}
+
+/*---------------------------------------------------------------------------*/
+/* Dumps wilson vector to a no-frills dump file for this spin and color */
+/* Since these files are certainly not archived, but more likely used
+   as temporary extended storage, the file is in generic precision */
+
+void w_multidump_w_from_field(w_prop_file *wpf, int spin, int color, 
+			      wilson_vector *src_field)
+{
+
+  w_multidump_w(wpf, spin, color, (field_offset)(-1), src_field);
+}
+
 
 /*---------------------------------------------------------------------------*/
 
@@ -3323,10 +3547,13 @@ w_prop_file *r_multidump_w_i(char *filename)
 /* WARNING: The file is assumed to have been written in the same
    precision as read.  */
 
-int r_multidump_w(w_prop_file *wpf, int spin, int color, field_offset src)
+int r_multidump_w(w_prop_file *wpf, int spin, int color, 
+		  field_offset dest_site, wilson_vector *dest_field)
 {
   /* wpf  = propagator file structure 
-     src  = field offset for propagator Wilson vector  */
+     dest_site  = field offset for propagator Wilson vector
+     dest_field = pointer to field
+     use only one of the dest parameters!  */
 
   /* 0 is normal exit code
      1 for seek, read error, or missing data error */
@@ -3429,7 +3656,12 @@ int r_multidump_w(w_prop_file *wpf, int spin, int color, field_offset src)
 	rank31++; if(rank31 >= 31)rank31 = 0;
       }
 
-    dest = (wilson_vector *)F_PT( &(lattice[i]), src );
+    if(dest_site == (field_offset)(-1))
+      dest = dest_field + i;
+    else
+      dest = (wilson_vector *)F_PT( &(lattice[i]), dest_site );
+
+    /* No precision conversion.  Data is written as is */
     *dest = lbuf[where_in_buf];
 
     where_in_buf++;
@@ -3499,6 +3731,44 @@ int r_multidump_w(w_prop_file *wpf, int spin, int color, field_offset src)
   
 } /* r_multidump_w */
 
+
+/*----------------------------------------------------------------------*/
+
+/* Read Wilson propagator from a separate multidump file for each node */
+/* Spin, color combinations must be read in the same order as written */
+/* WARNING: The file is assumed to have been written in the same
+   precision as read.  */
+
+int r_multidump_w_to_site(w_prop_file *wpf, int spin, int color, 
+			  field_offset dest_site)
+{
+  /* wpf  = propagator file structure 
+     dest_site  = field offset for propagator Wilson vector */
+
+  /* 0 is normal exit code
+     1 for seek, read error, or missing data error */
+
+  return r_multidump_w(wpf, spin, color, dest_site, NULL);
+}
+
+/*----------------------------------------------------------------------*/
+
+/* Read Wilson propagator from a separate multidump file for each node */
+/* Spin, color combinations must be read in the same order as written */
+/* WARNING: The file is assumed to have been written in the same
+   precision as read.  */
+
+int r_multidump_w_to_field(w_prop_file *wpf, int spin, int color, 
+			   wilson_vector *dest_field)
+{
+  /* wpf  = propagator file structure 
+     dest_field = pointer to field */
+
+  /* 0 is normal exit code
+     1 for seek, read error, or missing data error */
+
+  return r_multidump_w(wpf, spin, color, (field_offset)(-1), dest_field);
+}
 
 /*----------------------------------------------------------------------*/
 

@@ -116,7 +116,7 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 check_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_prop" \
 	"DEFINES= ${ARCH}" \
-	"EXTRA_OBJECTS=  check_prop.o io_wb3.o wilson_info_dummy.o \
+	"EXTRA_OBJECTS=  check_prop.o io_prop_w.o wilson_info_dummy.o \
 	gauge_info_dummy.o"
 
 check_gauge::

@@ -11,7 +11,7 @@
    CD 11/23/97 */
 
 /* Application-dependent routine for writing gauge info file
-   called from one of the output routines in io_wb2.c */
+   called from one of the output routines in io_prop_w.c */
 
 /* This file is an ASCII companion to the gauge configuration file
    and contains information about the action used to generate it.
@@ -44,7 +44,7 @@ void build_w_prop_hdr(w_prop_header *wph)
   int i;
 
   /* Note that all other values in the header structure are
-     loaded by the io_wb2.c routines, since they are common
+     loaded by the io_prop_w.c routines, since they are common
      to all projects */
 
   /* Copy from values preset in lattice_cl.h */
@@ -57,7 +57,7 @@ void build_w_prop_hdr(w_prop_header *wph)
 
 /*---------------------------------------------------------------------------*/
 /* This routine writes the ASCII info file.  It is called from one of
-   the lattice output routines in io_wb2.c.*/
+   the lattice output routines in io_prop_w.c.*/
 
 void write_appl_w_prop_info(FILE *fp)
 {

@@ -353,7 +353,7 @@ size_t g_read(void *ptr, size_t size, size_t nmemb, FILE *stream);
 int g_close(FILE *stream);
 
 /**********************************************************************/
-/* Prototypes for io_lat4.c routines also used in io_wb2.c */
+/* Prototypes for io_lat4.c routines also used in io_prop_w.c */
 
 void byterevn(int32type w[], int n);
 void swrite_data(FILE* fp, void *src, size_t size, 

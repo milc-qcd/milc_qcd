@@ -155,16 +155,16 @@ printf("warning: no fattening of links\n");
 
                     /* load psi if requested */
 #ifdef IOTIME
-		    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
+		    status = reload_wprop_sc_to_site( startflag_w[k], fp_in_w[k], 
 				      spin, color, F_OFFSET(psi),1);
 #else
-		    status = reload_wprop_sc( startflag_w[k], fp_in_w[k], 
+		    status = reload_wprop_sc_to_site( startflag_w[k], fp_in_w[k], 
 				      spin, color, F_OFFSET(psi),0);
 #endif
 	    if(status != 0)
 	      {
 		node0_printf("control_w: Recovering from error by resetting initial guess to zero\n");
-		reload_wprop_sc( FRESH, fp_in_w[k], 
+		reload_wprop_sc_to_site( FRESH, fp_in_w[k], 
 			       spin, color, F_OFFSET(psi),0);
 		flag = 0;
 	      }
@@ -196,10 +196,10 @@ printf("warning: no fattening of links\n");
 
 		    /* save psi if requested */
 #ifdef IOTIME
-		    save_wprop_sc( saveflag_w[k],fp_out_w[k],
+		    save_wprop_sc_from_site( saveflag_w[k],fp_out_w[k],
 				    spin,color,F_OFFSET(psi),1);
 #else
-		    save_wprop_sc( saveflag_w[k],fp_out_w[k],
+		    save_wprop_sc_from_site( saveflag_w[k],fp_out_w[k],
 				    spin,color,F_OFFSET(psi),0);
 #endif
 		} /* source spins */

@@ -103,10 +103,10 @@ int main(int argc,char *argv[])
      /*for(color=0;color<3;color++)for(spin=0;spin<4;spin++)
       {
 #ifdef IOTIME
-        save_wprop_sc( SAVE_SERIAL, fp_out_w, 
+        save_wprop_sc_from_site( SAVE_SERIAL, fp_out_w, 
                                     spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),1);
 #else
-        save_wprop_sc( SAVE_SERIAL,fp_out_w, 
+        save_wprop_sc_from_site( SAVE_SERIAL,fp_out_w, 
                                     spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),0);
 #endif
       }
@@ -120,10 +120,10 @@ int main(int argc,char *argv[])
 /*     for(color=0;color<3;color++)for(spin=0;spin<4;spin++) */
 /*       { */
 /* #ifdef IOTIME */
-/*         status = reload_wprop_sc( RELOAD_SERIAL,fp_in_w ,  */
+/*         status = reload_wprop_sc_to_site( RELOAD_SERIAL,fp_in_w ,  */
 /*                                     spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),1); */
 /* #else */
-/*         status = reload_wprop_sc( RELOAD_SERIAL,fp_in_w,  */
+/*         status = reload_wprop_sc_to_site( RELOAD_SERIAL,fp_in_w,  */
 /*                                     spin, color, F_OFFSET(quark_propagator.c[color].d[spin]),0); */
 /* #endif */
 /*       } */
@@ -140,10 +140,10 @@ int main(int argc,char *argv[])
     for(color=0;color<3;color++)for(spin=0;spin<4;spin++)
       {
 #ifdef IOTIME
-        status = reload_wprop_sc( RELOAD_SERIAL,fp_in_w , 
+        status = reload_wprop_sc_to_site( RELOAD_SERIAL,fp_in_w , 
                                     spin, color, F_OFFSET(quark_propagator_copy.c[color].d[spin]),1);
 #else
-        status = reload_wprop_sc( RELOAD_SERIAL,fp_in_w, 
+        status = reload_wprop_sc_to_site( RELOAD_SERIAL,fp_in_w, 
                                     spin, color, F_OFFSET(quark_propagator_copy.c[color].d[spin]),0);
 #endif
       }

@@ -26,10 +26,10 @@ G_WILSON_ALL =  \
     dslash_w3.o \
     io_helpers_w.o \
     io_scidac_w.o \
-    io_wb3.o \
+    io_prop_w.o \
     meson_cont.o \
     mrilu_w_or.o \
-    read_prop_w_fm1.o \
+    io_prop_w_fm.o \
     w_baryon.o \
     w_baryon_hl.o \
     w_meson.o \
@@ -97,14 +97,14 @@ io_helpers_w.o: ../generic_wilson/io_helpers_w.c
 	${CC} -c ${CFLAGS} $<
 io_scidac_w.o: ../generic_wilson/io_scidac_w.c
 	${CC} -c ${CFLAGS} $<
-io_wb3.o: ../include/io_lat.h ../include/io_wprop.h
-io_wb3.o: ../generic_wilson/io_wb3.c
+io_prop_w.o: ../include/io_lat.h ../include/io_wprop.h
+io_prop_w.o: ../generic_wilson/io_prop_w.c
+	${CC} -c ${CFLAGS} $<
+io_prop_w_fm.o: ../generic_wilson/io_prop_w_fm.c
 	${CC} -c ${CFLAGS} $<
 meson_cont.o: ../generic_wilson/meson_cont.c
 	${CC} -c ${CFLAGS} $<
 mrilu_w_or.o: ../generic_wilson/mrilu_w_or.c
-	${CC} -c ${CFLAGS} $<
-read_prop_w_fm1.o: ../generic_wilson/read_prop_w_fm1.c
 	${CC} -c ${CFLAGS} $<
 w_baryon.o: ../generic_wilson/w_baryon.c
 	${CC} -c ${CFLAGS} $<

@@ -244,44 +244,66 @@ int r_ascii_w(w_prop_file *wpf, int spin, int color, field_offset src);
 void r_ascii_w_f(w_prop_file *wpf);
 
 w_prop_file *r_serial_w_i(char *filename);
-int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset src);
+int r_serial_w_to_site(w_prop_file *wpf, int spin, int color, 
+		       field_offset src);
+int r_serial_w_to_field(w_prop_file *wpf, int spin, int color, 
+			wilson_vector *src);
 void r_serial_w_f(w_prop_file *wpf);
 
 w_prop_file *r_parallel_w_i(char *filename);
 void r_parallel_w_o(w_prop_file *wpf);
-int r_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src);
+int r_parallel_w_to_site(w_prop_file *wpf, int spin, int color, 
+			 field_offset src);
+int r_parallel_w_to_field(w_prop_file *wpf, int spin, int color, 
+			  wilson_vector *src);
 void r_parallel_w_c(w_prop_file *wpf);
 void r_parallel_w_f(w_prop_file *wpf);
 
 w_prop_file *r_multidump_w_i(char *filename);
 void r_multidump_w_o(w_prop_file *wpf);
-int r_multidump_w(w_prop_file *wpf, int spin, int color, field_offset src);
+int r_multidump_w_to_site(w_prop_file *wpf, int spin, int color, 
+			  field_offset src);
+int r_multidump_w_to_field(w_prop_file *wpf, int spin, int color, 
+			   wilson_vector *src);
 void r_multidump_w_c(w_prop_file *wpf);
 void r_multidump_w_f(w_prop_file *wpf);
 
 w_prop_file *w_ascii_w_i(char *filename);
-void w_ascii_w(w_prop_file *wpf, int spin, int color, field_offset src);
+void w_ascii_w(w_prop_file *wpf, int spin, int color, 
+			 field_offset src);
 void w_ascii_w_f(w_prop_file *wpf);
 
 w_prop_file *w_serial_w_i(char *filename);
-void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src);
+void w_serial_w_from_site(w_prop_file *wpf, int spin, int color, 
+			  field_offset src);
+void w_serial_w_from_field(w_prop_file *wpf, int spin, int color, 
+			   wilson_vector *src);
 void w_serial_w_f(w_prop_file *wpf);
 
 w_prop_file *w_parallel_w_i(char *filename);
 void w_parallel_w_o(w_prop_file *wpf);
-void w_parallel_w(w_prop_file *wpf, int spin, int color, field_offset src);
+void w_parallel_w_from_site(w_prop_file *wpf, int spin, int color, 
+			    field_offset src);
+void w_parallel_w_from_field(w_prop_file *wpf, int spin, int color, 
+			     wilson_vector *src);
 void w_parallel_w_c(w_prop_file *wpf);
 void w_parallel_w_f(w_prop_file *wpf);
 
 w_prop_file *w_checkpoint_w_i(char *filename);
 void w_checkpoint_w_o(w_prop_file *wpf);
-void w_checkpoint_w(w_prop_file *wpf, int spin, int color, field_offset src);
+void w_checkpoint_w_from_site(w_prop_file *wpf, int spin, int color, 
+			      field_offset src);
+void w_checkpoint_w_from_field(w_prop_file *wpf, int spin, int color, 
+			       wilson_vector *src);
 void w_checkpoint_w_c(w_prop_file *wpf);
 void w_checkpoint_w_f(w_prop_file *wpf);
 
 w_prop_file *w_multidump_w_i(char *filename);
 void w_multidump_w_o(w_prop_file *wpf);
-void w_multidump_w(w_prop_file *wpf, int spin, int color, field_offset src);
+void w_multidump_w_from_site(w_prop_file *wpf, int spin, int color, 
+			     field_offset src);
+void w_multidump_w_from_field(w_prop_file *wpf, int spin, int color, 
+			      wilson_vector *src);
 void w_multidump_w_c(w_prop_file *wpf);
 void w_multidump_w_f(w_prop_file *wpf);
 
@@ -301,20 +323,33 @@ void write_appl_w_prop_info(FILE *fp);
 /* Prototypes for io_helpers_w.c */
 w_prop_file *r_open_wprop(int flag, char *filename);
 w_prop_file *w_open_wprop(int flag, char *filename);
-int reload_wprop_sc( int flag, w_prop_file *wpf,
-		       int spin, int color, field_offset dest, int timing);
-void save_wprop_sc( int flag, w_prop_file *wpf, 
-		     int spin, int color, field_offset src, int timing);
-int reload_wprop( int flag, char *filename,
-			    field_offset dest, int timing);
-void save_wprop( int flag, char *filename, 
+int reload_wprop_sc_to_site_to_site( int flag, w_prop_file *wpf,
+			     int spin, int color, field_offset dest, 
+			     int timing);
+int reload_wprop_sc_to_site_to_field( int flag, w_prop_file *wpf,
+			      int spin, int color, wilson_vector *dest, 
+			      int timing);
+void save_wprop_sc_from_site_from_site( int flag, w_prop_file *wpf, 
+			      int spin, int color, field_offset src, 
+			      int timing);
+void save_wprop_sc_from_site_from_field( int flag, w_prop_file *wpf, 
+			      int spin, int color, wilson_vector *src, 
+			      int timing);
+int reload_wprop_to_site( int flag, char *filename,
+			  field_offset dest, int timing);
+int reload_wprop_to_field( int flag, char *filename,
+			  wilson_propagator *dest, int timing);
+void save_wprop_from_site( int flag, char *filename, 
 			   field_offset src, int timing);
+void save_wprop_from_field( int flag, char *filename, 
+			   wilson_propagator *src, int timing);
 int ask_starting_wprop( int prompt, int *flag, char *filename );
 int ask_ending_wprop( int prompt, int *flag, char *filename );
 void r_close_wprop(int flag, w_prop_file *wpf);
 void w_close_wprop(int flag, w_prop_file *wpf);
 
 /* Prototpyes for read_prop_w_fm1.c */
-void r_prop_w_fm(char *filename, field_offset dest);
+void r_prop_w_fm_to_site(char *filename, field_offset dest);
+void r_prop_w_fm_to_field(char *filename, wilson_propagator *dest);
 
 #endif /* _IO_WB_H */
