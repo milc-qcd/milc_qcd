@@ -85,7 +85,7 @@ checkmul();**/
 /**check_invert( F_OFFSET(ttt), temp1 );**/
 	      }
 	      else {
-		cgn += ks_congrad_w( temp1, temp2, vmass,
+		cgn += ks_congrad( temp1, temp2, vmass,
 		    niter,rsqprop,ODD,&finalrsq);
 	          /* Multiply by -Madjoint */
 	          dslash( temp2, F_OFFSET(ttt), EVEN);
