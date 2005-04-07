@@ -37,7 +37,7 @@ SU3OBJS = addmat.o addvec.o cmp_ahmat.o cs_m_a_vec.o cs_m_a_mat.o cs_m_s_vec.o \
 	cs_m_vec.o det_su3.o clear_mat.o dumpmat.o dumpvec.o clearvec.o \
 	m_amatvec_s.o m_amatvec.o m_amatvec_ns.o m_mat_an.o \
 	m_mat_na.o m_mat_nn.o m_matvec.o m_matvec_ns.o m_matvec_s.o \
-	make_ahmat.o rand_ahmat.o realtr.o complextr.o \
+	make_ahmat.o rand_ahmat.o realtr.o complextr.o s_m_a_hwvec_proj.o \
 	s_m_a_mat.o s_m_a_vec.o s_m_s_mat.o s_m_s_vec.o s_m_sum_vec.o \
 	s_m_vec.o s_m_mat.o cs_m_mat.o cs_m_s_mat.o \
 	su3_adjoint.o su3_dot.o su3_rdot.o su3_proj.o su3mat_copy.o \

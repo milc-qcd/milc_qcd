@@ -41,6 +41,7 @@ void mult_su3_mat_vec_sum_4dir(  su3_matrix *a, su3_vector *b0,
     case(1): b=b1; break;
     case(2): b=b2; break;
     case(3): b=b3; break;
+    default: b = 0;
   }
 
   br=b->c[0].real;    bi=b->c[0].imag;
@@ -142,6 +143,7 @@ void mult_su3_mat_vec_sum_4dir(  su3_matrix *a, su3_vector *b0,
     case(1): b=b1; break;
     case(2): b=b2; break;
     case(3): b=b3; break;
+    default: b = 0;
     }
     for(i=0;i<3;i++){
       
