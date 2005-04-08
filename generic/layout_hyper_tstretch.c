@@ -100,6 +100,10 @@ register int i,j,k,dir;
 
     sites_on_node =
 	    squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
+
+if( mynode()==0)
+  printf("ON MOST NODES %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
+                squaresize[ZUP],squaresize[TUP]);
     if( !((nx*ny*nz*nt)%numnodes() == 0) && (nx*ny*nz*(nt+1))%numnodes() == 0 ){
 	/* stretched t direction by one */
 	if( mynode()==0)printf("SOME NODES HAVE FEWER SITES\n");
@@ -113,9 +117,6 @@ register int i,j,k,dir;
 	printf("SORRY, CAN'T LAY OUT THIS LATTICE\n");
 	terminate(0);
     }
-if( mynode()==0)
-  printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
-                squaresize[ZUP],squaresize[TUP]);
 if( mynode()==0 && sites_on_node%2 != 0)
 	printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
     even_sites_on_node = odd_sites_on_node = sites_on_node/2;
