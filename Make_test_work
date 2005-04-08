@@ -42,7 +42,7 @@ DIRS = \
   wilson_static
 
 
-#ADDMACRO="MPP=true"
+ADDMACRO="WANTQIO=false"
 
 all:
 	for dir in ${DIRS};\
