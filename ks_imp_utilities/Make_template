@@ -84,7 +84,7 @@ else
   ifeq ($(strip ${HAVEQDP}),true)
     LAYOUT = layout_qdp.o # Required
   else
-    LAYOUT = layout_hyper.o # Choices possible here
+    LAYOUT = layout_hyper_prime.o # Choices possible here
   endif
 endif
 
