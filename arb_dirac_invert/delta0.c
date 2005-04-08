@@ -88,7 +88,7 @@ printf("ipath=%d k=%d  %e   %e \n",ipath,k,rho[k],lambda[k]);
  /*printf("ahead %d %d %d %d\n",offset[ipath][0], offset[ipath][1],
 offset[ipath][2],offset[ipath][3]);  */
 
-			tag[0] = start_general_gather( src,
+			tag[0] = start_general_gather_site( src,
 			    sizeof(wilson_vector), offset[ipath],
 				 EVENANDODD, gen_pt[0] );
 
@@ -127,7 +127,7 @@ offset[ipath][2],offset[ipath][3]);  */
 			}
 
 /* printf("behind %d %d %d %d\n",n[0],n[1],n[2],n[3]); */
-			tag[1] = start_general_gather( F_OFFSET(htmp[1]),
+			tag[1] = start_general_gather_site( F_OFFSET(htmp[1]),
 			    sizeof(wilson_vector), n, EVENANDODD, gen_pt[1] );
 			wait_general_gather(tag[1]);
 /* printf("mult 2\n"); */

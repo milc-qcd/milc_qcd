@@ -76,14 +76,11 @@ G_HEADERS = \
 G_ALL_DEPEND = \
   ../generic/generic_includes.h \
   ../generic/Make_template \
-  ../include/Make_template \
+  ../include \
   ${LASTMAKE} \
   ${G_HEADERS}
 
 ${G_ALL} : ${G_ALL_DEPEND}
-
-# Rules for header files
-include ../include/Make_template
 
 ape_smear.o: ../generic/ape_smear.c
 	${CC} -c ${CFLAGS} $<

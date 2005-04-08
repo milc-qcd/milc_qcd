@@ -96,7 +96,7 @@ nu=TUP;{
                   path(dir[k][ipath],sign[k][ipath],length[k][ipath]);
 /* path.c puts the end of the path at location ``zero.''
 We must gather so that the beginning of the path (psibar end) is at zero */
-                tag[0]=start_general_gather(F_OFFSET(tempmat1),
+                tag[0]=start_general_gather_site(F_OFFSET(tempmat1),
 		sizeof(su3_matrix),
                 offset[ioffset], EVENANDODD, gen_pt[0] );
 
@@ -129,7 +129,7 @@ needed...) */
 		pathsign *= -1.0;
 		for(l2=0;l2<4;l2++){mid_offset[l2]*= -1;end_offset[l2]*= -1;}
 
-		tag[0]=start_general_gather(F_OFFSET(tempmat1),
+		tag[0]=start_general_gather_site(F_OFFSET(tempmat1),
 		sizeof(su3_matrix),
                 end_offset, EVENANDODD, gen_pt[0] );
 
@@ -150,7 +150,7 @@ needed...) */
 
 /* we gather the quark sitting on site end_offset to our site */
 
-                  tag[0] = start_general_gather( src2,
+                  tag[0] = start_general_gather_site( src2,
                   sizeof(spin_wilson_vector), end_offset,
                                  EVENANDODD, gen_pt[0] );
 
@@ -236,7 +236,7 @@ mid_offset. We must gather up from below and add to current*/
 
 		for(l2=0;l2<4;l2++){n_offset[l2]= -mid_offset[l2];}
 
-                tag[0]=start_general_gather(F_OFFSET(cvct[nu]),
+                tag[0]=start_general_gather_site(F_OFFSET(cvct[nu]),
 		sizeof(complex),
                 n_offset, EVENANDODD, gen_pt[0] );
 

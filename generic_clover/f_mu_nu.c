@@ -132,7 +132,7 @@ tempmat3 = F_OFFSET(htmp[0]);
     for(i=XUP;i<=TUP;i++)disp[i]=0;
     disp[mu] = -1;
     disp[nu] = -1;
-    tag4 = start_general_gather( tempmat2, sizeof(su3_matrix),
+    tag4 = start_general_gather_site( tempmat2, sizeof(su3_matrix),
 	disp, EVENANDODD, gen_pt[4] );
 
     /* Now gather -mu +nu plaquette and add to f_mn */

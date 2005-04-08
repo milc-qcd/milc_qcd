@@ -52,7 +52,7 @@ and adds it to the total, which is then put in blocked_link[ioffset]. */
 
 /* path.c puts the end of the path at location ``zero.''
 We must gather so that the beginning of the path is at zero */
-		tag=start_general_gather(F_OFFSET(staple),sizeof(su3_matrix),
+		tag=start_general_gather_site(F_OFFSET(staple),sizeof(su3_matrix),
                 offset[ioffset], EVENANDODD, gen_pt[0] );
 
 		wait_general_gather(tag);

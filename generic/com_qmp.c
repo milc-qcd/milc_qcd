@@ -7,7 +7,7 @@
 /* Modifications
 
     5/09/02 officially split from com_mpi.c and modified for QMP
-    4/20/02 added start_general_gather_from_temp C.D.
+    4/20/02 added start_general_gather_field C.D.
    10/15/01 condensed and modified to use multiple gathers - JCO
     1/30/00 combined with Schroedinger functional and
             32 sublattice versions - UMH
@@ -64,10 +64,10 @@
                            nodes containing neighbor sites.
    make_gather()         calculates and stores necessary communications lists
                            for a given gather mapping
-   declare_gather()      creates a message tag that defines specific details
+   declare_gather_site()      creates a message tag that defines specific details
                            of a gather to be used later
-   declare_gather_from_temp()  creates a message tag that defines specific
-                                 details of a gather from temp to be used later
+   declare_gather_field()  creates a message tag that defines specific
+                                details of a gather from field to be used later
    prepare_gather()      optional call that allocates buffers for a previously
                            declared gather.  will automatically be called from
                            do_gather() if not done before.
@@ -77,19 +77,19 @@
    cleanup_gather()      frees all the buffers that were allocated, WHICH
                            MEANS THAT THE GATHERED DATA MAY SOON DISAPPEAR.
    accumulate_gather()   combines gathers into single message tag
-   declare_accumulate_gather()  does declare_gather() and accumulate_gather()
+   declare_accumulate_gather_site()  does declare_gather() and accumulate_gather()
                                   in single step.
-   declare_accumulate_gather_from_temp()  does declare_gather_from_temp() and
+   declare_accumulate_gather_field()  does declare_gather_field() and
                                             accumulate_gather() in single step.
    start_gather_site()        older function which does declare/prepare/do_gather
                            in a single step
    start_gather_field()  older function which does
-                               declare/prepare/do_gather_from_temp
+                               declare/prepare/do_gather_field
    restart_gather_site()      older function which is obsoleted by do_gather()
    restart_gather_field() older function which is obsoleted by do_gather() 
-   start_general_gather()  starts asynchronous sends and receives required
+   start_general_gather_site()  starts asynchronous sends and receives required
                              to gather fields at arbitrary displacement.
-   start_general_gather_from_temp() starts asynchronous sends and receives 
+   start_general_gather_field() starts asynchronous sends and receives 
                              required to gather neighbors from a temporary 
 			     array of fields.
    wait_general_gather()   waits for receives to finish, insuring that the
@@ -1281,9 +1281,9 @@ make_gather(
    be used as input to subsequent prepare_gather() (optional), do_gather(),
    wait_gather() and cleanup_gather() calls.
 
-   This handles gathers from both field offset and temp and is not called
-   directly by the user.  Instead they should call declare_gather() or
-   declare_gather_from_temp().
+   This handles gathers from both the site structure and arrays of
+   fields and is not called directly by the user.  Instead they should
+   call declare_gather_site() or declare_gather_field().
 
  prepare_gather() allocates buffers needed for the gather.  This call is
    optional since it will automatically be called from do_gather() if
@@ -1298,7 +1298,7 @@ make_gather(
 
    example:
 	msg_tag *tag;
-	tag = declare_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+	tag = declare_gather_site( F_OFFSET(phi), sizeof(su3_vector), XUP,
 	                      EVEN, gen_pt[0] );
         prepare_gather(tag);  ** this step is optional **
         do_gather(tag);
@@ -1323,7 +1323,7 @@ make_gather(
 
 /*
 **  returns msg_tag containing details for specific gather
-**  handles gathers from both field offset and temp
+**  handles gathers from both the site structure and arrays of fields
 */
 msg_tag *
 declare_strided_gather(
@@ -1689,7 +1689,7 @@ cleanup_gather(msg_tag *mtag)
 **  declare gather with a field offset
 */
 msg_tag *
-declare_gather(
+declare_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
@@ -1770,14 +1770,14 @@ restart_gather_site(
 }
 
 /*****************************
- * gather routines from temp *
+ * gather routines from an array of fields *
  *****************************/
 
 /*
-**  declares a gather from a temp array
+**  declares a gather from an array of fields
 */
 msg_tag *
-declare_gather_from_temp(
+declare_gather_field(
   void * field,		/* which field? Pointer returned by malloc() */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
@@ -1865,15 +1865,15 @@ restart_gather_field(
    The second argument (tag) would be merged with the first (mtag).
    If mtag is NULL then this just copies tag into mtag.
 
- declare_accumulate_gather() declares and joins gathers.
+ declare_accumulate_gather_site() declares and joins gathers.
 
  example:
 
    msg_tag *tag1, *tag2, *mtag;
 
-   tag1 = declare_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+   tag1 = declare_gather_site( F_OFFSET(phi), sizeof(su3_vector), XUP,
 	                  EVEN, gen_pt1 );
-   tag2 = declare_gather( F_OFFSET(phi), sizeof(su3_vector), XDOWN,
+   tag2 = declare_gather_site( F_OFFSET(phi), sizeof(su3_vector), XDOWN,
 	                  EVEN, gen_pt2 );
    mtag = NULL;
    accumulate_gather( &mtag, tag1 );
@@ -1897,9 +1897,9 @@ restart_gather_field(
    msg_tag *mtag;
 
    mtag = NULL;
-   declare_accumulate_gather( &mtag, F_OFFSET(phi), sizeof(su3_vector), XUP,
+   declare_accumulate_gather_site( &mtag, F_OFFSET(phi), sizeof(su3_vector), XUP,
 	                      EVEN, gen_pt1 );
-   declare_accumulate_gather( &mtag, F_OFFSET(phi), sizeof(su3_vector), XDOWN,
+   declare_accumulate_gather_site( &mtag, F_OFFSET(phi), sizeof(su3_vector), XDOWN,
 	                      EVEN, gen_pt2 );
    prepare_gather( mtag );  ** optional **
    do_gather( mtag );
@@ -1911,10 +1911,10 @@ restart_gather_field(
 
  one coule also replace
    mtag = NULL;
-   declare_accumulate_gather( &mtag, F_OFFSET(phi), sizeof(su3_vector), XUP,
+   declare_accumulate_gather_site( &mtag, F_OFFSET(phi), sizeof(su3_vector), XUP,
 	                      EVEN, gen_pt1 );
  with
-   mtag = declare_gather( F_OFFSET(phi), sizeof(su3_vector), XUP,
+   mtag = declare_gather_site( F_OFFSET(phi), sizeof(su3_vector), XUP,
 	                  EVEN, gen_pt1 );
  since they do the same thing, however the first form is a bit more uniform
  in the given example.
@@ -2017,7 +2017,7 @@ accumulate_gather(msg_tag **mmtag, msg_tag *mtag)
 
 /*
 **  declares and merges gather
-**  handles both field offset and temp
+**  handles both the site structure and an array of fields
 */
 static void
 declare_accumulate_strided_gather(
@@ -2046,7 +2046,7 @@ declare_accumulate_strided_gather(
 **  declares and merges gather from field offset
 */
 void
-declare_accumulate_gather(
+declare_accumulate_gather_site(
   msg_tag **mmtag,
   field_offset field,	/* which field? Some member of structure "site" */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -2061,10 +2061,10 @@ declare_accumulate_gather(
 }
 
 /*
-**  declares and merges gather from temp
+**  declares and merges gather from an array of fields
 */
 void
-declare_accumulate_gather_from_temp(
+declare_accumulate_gather_field(
   msg_tag **mmtag,
   void * field,		/* which field? Pointer returned by malloc() */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -2083,16 +2083,16 @@ declare_accumulate_gather_from_temp(
  *                     GENERAL GATHER ROUTINES                        *
  **********************************************************************
 
- start_general_gather() returns a msg_tag which will
+ start_general_gather_site() returns a msg_tag which will
    be used as input to subsequent wait_general_gather() and
    cleanup_general_gather() calls.
 
-   usage: tag = start_general_gather( source, size, displacement, parity, dest)
+   usage: tag = start_general_gather_site( source, size, displacement, parity, dest)
    example:
 	msg_tag *tag;
 	int disp[4]; 
         disp[XUP]=1; disp[YUP]= -1; disp[ZUP] = disp[TUP] = 0;
-	tag = start_general_gather( F_OFFSET(phi), sizeof(su3_vector), disp,
+	tag = start_general_gather_site( F_OFFSET(phi), sizeof(su3_vector), disp,
 	    EVEN, gen_pt[0] );
 	  ** do other stuff **
 	wait_general_gather(tag);
@@ -2113,7 +2113,7 @@ static int g_gather_flag=0; /* flag to tell if general gather in progress */
 static int tsize;	    /* size of entry in messages =2*sizeof(int)+size */
 static char ** tdest;	    /* tdest is copy of dest */
 /* from_nodes, tsize and tdest are global because they are set in 
-   start_general_gather() and used in wait_general_gather().  This
+   start_general_gather_site() and used in wait_general_gather().  This
    works because we allow only one general_gather in progress at a
    time. */
 
@@ -2663,7 +2663,7 @@ start_general_strided_gather(
 #endif	/* N_SUBL32 */
 
 msg_tag *
-start_general_gather(
+start_general_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */
@@ -2676,7 +2676,7 @@ start_general_gather(
 }
 
 msg_tag *
-start_general_gather_from_temp(
+start_general_gather_field(
   void * field,	        /* which field? Pointer returned by malloc() */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */

@@ -50,13 +50,13 @@ su3_matrix tmpmat;			/* for middle steps */
     /*get sources from +mu +nu */
     for(i=XUP;i<=TUP;i++) disp[i]=0;
     disp[mu] = 1;  disp[nu] = 1;
-    tag[2] = start_general_gather( lsrc, sizeof(wilson_vector),
+    tag[2] = start_general_gather_site( lsrc, sizeof(wilson_vector),
         disp, parity, gen_pt[2] );
 
     wait_gather(tag[0]);
     wait_gather(tag[1]);
     wait_general_gather(tag[2]);
-    tag[3] = start_general_gather( rsrc, sizeof(wilson_vector),
+    tag[3] = start_general_gather_site( rsrc, sizeof(wilson_vector),
         disp, parity, gen_pt[3] );
 
     /* ltemp = lsrc, rtemp = plaq*rsrc */
@@ -169,7 +169,7 @@ su3_matrix tmpmat;			/* for middle steps */
     /* get link[nu] from direction -nu +mu */
     /* disp[mu] = 1; already */
     disp[nu] = -1;
-    tag[6] = start_general_gather( F_OFFSET(link[nu]), sizeof(su3_matrix),
+    tag[6] = start_general_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix),
         disp, EVENANDODD, gen_pt[6] );
 
     wait_gather(tag[0]);
@@ -230,10 +230,10 @@ su3_matrix tmpmat;			/* for middle steps */
     cleanup_general_gather(tag[3]);
     /* get sources from +mu -nu */
     /* disp[mu] = 1;  disp[nu] = -1; already */
-    tag[2] = start_general_gather( lsrc, sizeof(wilson_vector),
+    tag[2] = start_general_gather_site( lsrc, sizeof(wilson_vector),
         disp, parity, gen_pt[2] );
     wait_general_gather(tag[2]);
-    tag[3] = start_general_gather( rsrc, sizeof(wilson_vector),
+    tag[3] = start_general_gather_site( rsrc, sizeof(wilson_vector),
         disp, parity, gen_pt[3] );
 
     /* ltemp = plaq*lsrc, rtemp = rsrc */

@@ -78,7 +78,7 @@ int disp[4];	/* displacement vector for general gather */
     for(i=XUP;i<=TUP;i++)disp[i]=0;
     disp[mu] = -1;
     disp[nu] = -1;
-    tag4 = start_general_gather( F_OFFSET(tempmat2),
+    tag4 = start_general_gather_site( F_OFFSET(tempmat2),
 	sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
     /* Now gather -mu +nu plaquette and add to f_mn */

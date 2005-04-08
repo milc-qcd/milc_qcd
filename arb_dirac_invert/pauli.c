@@ -49,7 +49,7 @@ offset_p[ipath][2],offset_p[ipath][3]);
 printf("pauli_term %e  sigma_p %d\n",pauli_term[k],sigma_p[ipath]);
 */
 
-			tag[0] = start_general_gather( src,
+			tag[0] = start_general_gather_site( src,
 			    sizeof(wilson_vector), offset_p[ipath],
 				 EVENANDODD, gen_pt[0] );
 
@@ -84,7 +84,7 @@ printf("pauli_term %e  sigma_p %d\n",pauli_term[k],sigma_p[ipath]);
 /*
  printf("behind %d %d %d %d\n",n[0],n[1],n[2],n[3]); 
 */
-			tag[1] = start_general_gather( F_OFFSET(htmp[0]),
+			tag[1] = start_general_gather_site( F_OFFSET(htmp[0]),
 			    sizeof(wilson_vector), n, EVENANDODD, gen_pt[1] );
 
 

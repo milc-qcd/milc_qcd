@@ -40,7 +40,7 @@ int d[4];
 
     for(t=2;t<nt;t+=2){
 	d[TUP] = t;	/* distance from which to gather */
-	tag=start_general_gather( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	tag=start_general_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
 	    d, EVEN, gen_pt[0] );
 	wait_general_gather(tag);
         FOREVENSITES(i,st){

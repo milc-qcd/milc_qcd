@@ -31,7 +31,7 @@ su3_matrix tmp1, utmp, uAcntr;		/* for middle steps */
     /* get matsrc from +mu +nu */
     for(i=XUP;i<=TUP;i++) disp[i]=0;
     disp[mu] = 1;  disp[nu] = 1;
-    tag[2] = start_general_gather( matsrc, sizeof(su3_matrix),
+    tag[2] = start_general_gather_site( matsrc, sizeof(su3_matrix),
         disp, ODD, gen_pt[2] );
 
     wait_gather(tag[0]);
@@ -109,7 +109,7 @@ su3_matrix tmp1, utmp, uAcntr;		/* for middle steps */
     /* get link[nu] from direction -nu +mu */
     /* disp[mu] = 1; already */
     disp[nu] = -1;
-    tag[4] = start_general_gather( F_OFFSET(link[nu]), sizeof(su3_matrix),
+    tag[4] = start_general_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix),
         disp, EVENANDODD, gen_pt[4] );
 
     wait_gather(tag[0]);
@@ -155,7 +155,7 @@ su3_matrix tmp1, utmp, uAcntr;		/* for middle steps */
     cleanup_general_gather(tag[2]);
     /* get matsrc from +mu -nu */
     /* disp[mu] = 1;  disp[nu] = -1; already */
-    tag[2] = start_general_gather( matsrc, sizeof(su3_matrix), disp,
+    tag[2] = start_general_gather_site( matsrc, sizeof(su3_matrix), disp,
 	ODD, gen_pt[2] );
 
     /* utmp= plaq */

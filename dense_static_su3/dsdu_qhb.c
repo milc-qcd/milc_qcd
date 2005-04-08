@@ -39,7 +39,7 @@ int disp[4];	/* displacement vector for general gather */
 		OPP_DIR(dir2), parity, gen_pt[3] );
 
 	    /* get link[dir2] from displacement +dir1-dir2 */
-	    tag4 = start_general_gather( F_OFFSET(link[dir2]),
+	    tag4 = start_general_gather_site( F_OFFSET(link[dir2]),
 		sizeof(su3_matrix), disp, parity, gen_pt[4] );
 
 	    /* Upper staple */
