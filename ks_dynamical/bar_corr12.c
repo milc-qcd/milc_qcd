@@ -401,7 +401,7 @@ void line_avg(source,dest,temp1)
   for(t=2;t<nt;t+=2)
     {
       d[TUP] = t;	/* distance from which to gather */
-      tag=start_general_gather( temp1, sizeof(complex),
+      tag=start_general_gather_site( temp1, sizeof(complex),
 			       d, EVEN, gen_pt[0] );
       wait_general_gather(tag);
       FOREVENSITES(i,st)

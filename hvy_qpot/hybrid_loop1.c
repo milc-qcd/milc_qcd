@@ -289,7 +289,7 @@ void hybrid_loop1(int tot_smear) {
 	/* Start making flux_links[i][STAP_NEG1] <- backward s_link
 	   at -disp */
 	FORALLUPDIR(j){disp[j] = -trans_path[dir1].disp[j];}
-	mtag[M_STAP_NEG1] = start_general_gather_from_temp(
+	mtag[M_STAP_NEG1] = start_general_gather_field(
 			 (void *)FLUX_LINKS(0,S_LINK), sizeof(su3_matrix),
 			 disp, EVENANDODD, gen_pt[M_STAP_NEG1] );
 
@@ -309,7 +309,7 @@ void hybrid_loop1(int tot_smear) {
 	/* Start making flux_links[i][STAP_NEG2] <- backward s_link
 	   at -disp */
 	FORALLUPDIR(j){disp[j] = -trans_path[dir2].disp[j];}
-	mtag[M_STAP_NEG2] = start_general_gather_from_temp(
+	mtag[M_STAP_NEG2] = start_general_gather_field(
 			 (void *)FLUX_LINKS(0,S_LINK), sizeof(su3_matrix),
 			 disp, EVENANDODD, gen_pt[M_STAP_NEG2] );
 	
@@ -327,7 +327,7 @@ void hybrid_loop1(int tot_smear) {
 
 	/* Shift staples to the sites where the t_links join them */
 	FORALLUPDIR(j){disp[j] = trans_path[dir1].disp[j];}
-	mtag[M_STAP_POS1] = start_general_gather_from_temp(
+	mtag[M_STAP_POS1] = start_general_gather_field(
 			 (void *)FLUX_LINKS(0,STAP_POS1), sizeof(su3_matrix),
 			 disp, EVENANDODD, gen_pt[M_STAP_POS1] );
 	
@@ -355,7 +355,7 @@ void hybrid_loop1(int tot_smear) {
 
 	/* Shift staples to the sites where the t_links join them */
 	FORALLUPDIR(j){disp[j] = trans_path[dir2].disp[j];}
-	mtag[M_STAP_POS2] = start_general_gather_from_temp(
+	mtag[M_STAP_POS2] = start_general_gather_field(
 			 (void *)FLUX_LINKS(0,STAP_POS2), sizeof(su3_matrix),
 			 disp, EVENANDODD, gen_pt[M_STAP_POS2] );
 	

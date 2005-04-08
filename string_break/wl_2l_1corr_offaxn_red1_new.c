@@ -215,7 +215,7 @@ int disp[4];    /* displacement vector for general gather */
           su3_vec_to_src( &(s->g_rand[0]), &(s->dtmpvecs[0].n[0]), num_src);
         }
 
-        gmtag = start_general_gather( F_OFFSET(dtmpvecs[0]),
+        gmtag = start_general_gather_site( F_OFFSET(dtmpvecs[0]),
            sizeof(dble_su3_vec_src),disp, EVENANDODD, gen_pt[0]);
 
 
@@ -272,7 +272,7 @@ int disp[4];    /* displacement vector for general gather */
             cleanup_general_gather( gmtag);
 
             /* Gather time-like links across the diagonal. */
-            gmtag = start_general_gather( F_OFFSET(t_link_f),
+            gmtag = start_general_gather_site( F_OFFSET(t_link_f),
                 sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
 	    FORALLSITES(i,s){
@@ -297,7 +297,7 @@ int disp[4];    /* displacement vector for general gather */
 	    /* gather next light propagators, random numbers and links
 	       in direction dir if needed  */
 	    if( r<(rmax-1) ){
-		gmtag = start_general_gather(F_OFFSET(dtmpvecs[0]),
+		gmtag = start_general_gather_site(F_OFFSET(dtmpvecs[0]),
                     sizeof(dble_su3_vec_src),
 		    disp, EVENANDODD, gen_pt[0] );
 

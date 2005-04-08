@@ -286,7 +286,7 @@ mes_t = F_OFFSET(ttt.c[1]);
 
 	    /* Start gather of forward meson */
 
-	    gmtag = start_general_gather( meson_f, sizeof(complex),
+	    gmtag = start_general_gather_site( meson_f, sizeof(complex),
 		disp, EVENANDODD, gen_pt[4] );
 
    	    wait_general_gather( gmtag);
@@ -298,7 +298,7 @@ mes_t = F_OFFSET(ttt.c[1]);
 		}
 	    cleanup_general_gather( gmtag);
 
-	    gmtag = start_general_gather( F_OFFSET(dtmpvecs[1].n[1]),
+	    gmtag = start_general_gather_site( F_OFFSET(dtmpvecs[1].n[1]),
                  sizeof(su3_vector_src),disp,EVENANDODD, gen_pt[1] );
 
 
@@ -337,7 +337,7 @@ mes_t = F_OFFSET(ttt.c[1]);
 
                 if( r<(rmax-1) ){
 
-	         gmtag = start_general_gather( meson_f, sizeof(complex),
+	         gmtag = start_general_gather_site( meson_f, sizeof(complex),
 		   disp, EVENANDODD, gen_pt[4] );
 
    	         wait_general_gather( gmtag);
@@ -350,7 +350,7 @@ mes_t = F_OFFSET(ttt.c[1]);
 	         cleanup_general_gather( gmtag);
 
 
-	        gmtag = start_general_gather( F_OFFSET(dtmpvecs[1].n[1]),
+	        gmtag = start_general_gather_site( F_OFFSET(dtmpvecs[1].n[1]),
                    sizeof(su3_vector_src),disp,EVENANDODD, gen_pt[1] );
 
                 }

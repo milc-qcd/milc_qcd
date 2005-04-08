@@ -150,7 +150,7 @@ void dsdu_ape2(register int dir1, int parity)
 			   OPP_DIR(dir2), parity, gen_pt[3] );
       
       /* get blocked_link[8+count2] from displacement +dir1-dir2 */
-      tag4 = start_general_gather( F_OFFSET(blocked_link[8+count2]),
+      tag4 = start_general_gather_site( F_OFFSET(blocked_link[8+count2]),
 				   sizeof(su3_matrix), disp, parity, gen_pt[4] );
       
       /* Upper staple */
@@ -244,7 +244,7 @@ void dsdu_ape_ext1(register int dir1, register int dir3, int parity)
 			 OPP_DIR(dir2), parity, gen_pt[3] );
     
     /* get blocked_link[20+count2] from displacement +dir1-dir2 */
-    tag4 = start_general_gather( F_OFFSET(blocked_link[20+count2]),
+    tag4 = start_general_gather_site( F_OFFSET(blocked_link[20+count2]),
 				 sizeof(su3_matrix), disp, parity, gen_pt[4] );
     
     /* Upper staple */
@@ -333,7 +333,7 @@ void dsdu_ape_ext2(register int dir1, register int dir2, int parity)
 		       OPP_DIR(dir2), parity, gen_pt[3] );
   
   /* get blocked_link[4+dir2] from displacement +dir1-dir2 */
-  tag4 = start_general_gather( F_OFFSET(blocked_link[4+dir2]),
+  tag4 = start_general_gather_site( F_OFFSET(blocked_link[4+dir2]),
 			       sizeof(su3_matrix), disp, parity, gen_pt[4] );
   
   /* Upper staple */

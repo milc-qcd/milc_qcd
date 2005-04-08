@@ -56,7 +56,7 @@ field_offset tmpmat;
 	    for(i=XUP;i<=TUP;i++)disp[i]=0;
 	    disp[dir] = 1;
 	    disp[diro] = -1;
-	    tag4 = start_general_gather( F_OFFSET(link[diro]),
+	    tag4 = start_general_gather_site( F_OFFSET(link[diro]),
 		sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
 	    /* get link[diro] from direction dir */

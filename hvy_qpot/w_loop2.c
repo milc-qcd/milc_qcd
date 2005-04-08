@@ -79,7 +79,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 1;
 	disp[dir2] = 1;
-	gmtag = start_general_gather_from_temp(
+	gmtag = start_general_gather_field(
 		       (void *)t_link_f, sizeof(su3_matrix),
 		       disp, EVENANDODD, gen_pt[4] );
 
@@ -116,7 +116,7 @@ void w_loop2(int tot_smear) {
 		cleanup_general_gather( gmtag);
 
 		/* Inbetween gather time-like links across the diagonal. */
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)t_link_f,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
@@ -146,7 +146,7 @@ void w_loop2(int tot_smear) {
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather_from_temp( 
+		gmtag = start_general_gather_field( 
  	         (void *)s_link,
 	         sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
@@ -234,7 +234,7 @@ void w_loop2(int tot_smear) {
 	cleanup_gather( mtag[dir2]);
 
 	/* Start gather of time-like links across the diagonal. */
-	gmtag = start_general_gather_from_temp( 
+	gmtag = start_general_gather_field( 
 	       (void *)t_link_f, sizeof(su3_matrix),
 	       disp, EVENANDODD, gen_pt[4] );
 
@@ -257,7 +257,7 @@ void w_loop2(int tot_smear) {
 		cleanup_general_gather( gmtag);
 
 		/* Inbetween gather time-like links across the diagonal. */
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)t_link_f,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
@@ -287,7 +287,7 @@ void w_loop2(int tot_smear) {
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather_from_temp( 
+		gmtag = start_general_gather_field( 
 		       (void *)s_link,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
@@ -395,7 +395,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 2;
 	disp[dir2] = 1;
-	gmtag = start_general_gather_from_temp(
+	gmtag = start_general_gather_field(
 		       (void *)t_link_f, sizeof(su3_matrix),
 		       disp, EVENANDODD, gen_pt[4] );
 
@@ -418,7 +418,7 @@ void w_loop2(int tot_smear) {
 		cleanup_general_gather( gmtag);
 
 		/* Inbetween gather time-like links across the diagonal. */
-		gmtag = start_general_gather_from_temp( 
+		gmtag = start_general_gather_field( 
 		       (void *)t_link_f,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
@@ -448,7 +448,7 @@ void w_loop2(int tot_smear) {
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh/2-1) ){
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)s_link,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
@@ -547,7 +547,7 @@ void w_loop2(int tot_smear) {
 	cleanup_gather( mtag[dir2]);
 
 	/* Start gather of time-like links across the diagonal. */
-	gmtag = start_general_gather_from_temp(
+	gmtag = start_general_gather_field(
 	       (void *)t_link_f, sizeof(su3_matrix),
 	       disp, EVENANDODD, gen_pt[4] );
 
@@ -570,7 +570,7 @@ void w_loop2(int tot_smear) {
 		cleanup_general_gather( gmtag);
 
 		/* Inbetween gather time-like links across the diagonal. */
-		gmtag = start_general_gather_from_temp( 
+		gmtag = start_general_gather_field( 
 		       (void *)t_link_f,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
@@ -600,7 +600,7 @@ void w_loop2(int tot_smear) {
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh/2-1) ){
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)s_link,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
@@ -759,7 +759,7 @@ void w_loop2(int tot_smear) {
 	disp[dir2] = 1;
 	disp[dir3] = 1;
 	disp[TUP] = 0;
-	gmtag = start_general_gather_from_temp(
+	gmtag = start_general_gather_field(
 	       (void *)t_link_f, sizeof(su3_matrix),
 	       disp, EVENANDODD, gen_pt[4] );
 
@@ -782,7 +782,7 @@ void w_loop2(int tot_smear) {
 		cleanup_general_gather( gmtag);
 
 		/* Inbetween gather time-like links across the diagonal. */
-		gmtag = start_general_gather_from_temp( 
+		gmtag = start_general_gather_field( 
 		       (void *)t_link_f,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
@@ -812,7 +812,7 @@ void w_loop2(int tot_smear) {
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)s_link,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
@@ -973,7 +973,7 @@ void w_loop2(int tot_smear) {
 	disp[dir2] = 1;
 	disp[dir3] = -1;
 	disp[TUP] = 0;
-	gmtag = start_general_gather_from_temp(
+	gmtag = start_general_gather_field(
 		       (void *)t_link_f, sizeof(su3_matrix),
 		       disp, EVENANDODD, gen_pt[4] );
 
@@ -996,7 +996,7 @@ void w_loop2(int tot_smear) {
 		cleanup_general_gather( gmtag);
 
 		/* Inbetween gather time-like links across the diagonal. */
-		gmtag = start_general_gather_from_temp( 
+		gmtag = start_general_gather_field( 
 		       (void *)t_link_f,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
@@ -1026,7 +1026,7 @@ void w_loop2(int tot_smear) {
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)s_link,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
@@ -1187,7 +1187,7 @@ void w_loop2(int tot_smear) {
 	disp[dir2] = -1;
 	disp[dir3] = 1;
 	disp[TUP] = 0;
-	gmtag = start_general_gather_from_temp(
+	gmtag = start_general_gather_field(
 	       (void *)t_link_f, sizeof(su3_matrix),
 	       disp, EVENANDODD, gen_pt[4] );
 
@@ -1210,7 +1210,7 @@ void w_loop2(int tot_smear) {
 		cleanup_general_gather( gmtag);
 
 		/* Inbetween gather time-like links across the diagonal. */
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)t_link_f,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
@@ -1240,7 +1240,7 @@ void w_loop2(int tot_smear) {
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)s_link,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
@@ -1375,7 +1375,7 @@ void w_loop2(int tot_smear) {
 	disp[dir2] = -1;
 	disp[dir3] = -1;
 	disp[TUP] = 0;
-	gmtag = start_general_gather_from_temp(
+	gmtag = start_general_gather_field(
 	       (void *)s_link, sizeof(su3_matrix),
 	       disp, EVENANDODD, gen_pt[4] );
 
@@ -1401,7 +1401,7 @@ void w_loop2(int tot_smear) {
 	cleanup_general_gather( gmtag);
 
 	/* Start gather of time-like links across the body diagonal. */
-	gmtag = start_general_gather_from_temp(
+	gmtag = start_general_gather_field(
 	       (void *)t_link_f, sizeof(su3_matrix),
 	       disp, EVENANDODD, gen_pt[4] );
 
@@ -1424,7 +1424,7 @@ void w_loop2(int tot_smear) {
 		cleanup_general_gather( gmtag);
 
 		/* Inbetween gather time-like links across the diagonal. */
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)t_link_f,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
@@ -1454,7 +1454,7 @@ void w_loop2(int tot_smear) {
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather_from_temp(
+		gmtag = start_general_gather_field(
 		       (void *)s_link,
 		       sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }

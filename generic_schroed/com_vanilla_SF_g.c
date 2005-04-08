@@ -495,7 +495,7 @@ register int i,i0;
 
 /**********************************************************************/
 /* GENERAL_GATHER ROUTINES */
-/* start_general_gather() returns a pointer to a list of msg_tag's, which will
+/* start_general_gather_site() returns a pointer to a list of msg_tag's, which will
    be used as input to subsequent wait_general_gather() and
    cleanup_general_gather() calls.
    This list contains msg_tags for all receive buffers, followed by
@@ -504,12 +504,12 @@ register int i,i0;
    If no messages at all are required, the routine will return NULL.
    msg_buf=NULL should be a reliable indicator of no message.
 
-   usage:  tag = start_general_gather( source, size, displacement, parity, dest)
+   usage:  tag = start_general_gather_site( source, size, displacement, parity, dest)
    example:
 	msg_tag *tag;
 	int disp[4]; 
         disp[XUP]=1; disp[YUP]= -1; disp[ZUP] = disp[TUP] = 0;
-	tag = start_general_gather( F_OFFSET(phi), sizeof(su3_vector), disp,
+	tag = start_general_gather_site( F_OFFSET(phi), sizeof(su3_vector), disp,
 	    EVEN, gen_pt[0] );
 	  ** do other stuff **
 	wait_general_gather(tag);
@@ -527,7 +527,7 @@ struct msg_tmp { int node,count; }; /* temporary structure for keeping
 	track of messages to be sent or received */
 int g_gather_flag=0;	/* flag to tell if general gather in progress */
 
-msg_tag * start_general_gather(
+msg_tag * start_general_gather_site(
 /* arguments */
  field_offset field,	/* which field? Some member of structure "site" */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/

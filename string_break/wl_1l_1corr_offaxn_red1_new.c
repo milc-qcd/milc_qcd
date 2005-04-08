@@ -86,7 +86,7 @@ int disp[4];    /* displacement vector for general gather */
 	/* Start gather of dir2-link from "2*dir1" */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 2;
-	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	FORALLSITES(i,s){
@@ -128,7 +128,7 @@ int disp[4];    /* displacement vector for general gather */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 2;
 	disp[dir2] = 1;
-	gmtag = start_general_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 
@@ -154,7 +154,7 @@ int disp[4];    /* displacement vector for general gather */
 		}
 
                 /* Inbetween gather time-like links across the diagonal. */
-                gmtag = start_general_gather( F_OFFSET(t_link_f),
+                gmtag = start_general_gather_site( F_OFFSET(t_link_f),
                    sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
 
@@ -181,7 +181,7 @@ int disp[4];    /* displacement vector for general gather */
 
            /*  gather light prop     */
           
-            gmtag = start_general_gather( F_OFFSET(dtmpvecs[1].n[0]),
+            gmtag = start_general_gather_site( F_OFFSET(dtmpvecs[1].n[0]),
               sizeof(su3_vector_src),disp, EVENANDODD, gen_pt[5] );
 
 
@@ -201,7 +201,7 @@ int disp[4];    /* displacement vector for general gather */
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather( F_OFFSET(s_link),
+		gmtag = start_general_gather_site( F_OFFSET(s_link),
 		    sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
 
@@ -278,7 +278,7 @@ int disp[4];    /* displacement vector for general gather */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 2;
 	disp[dir2] = -1;
-	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	FORALLSITES(i,s){
@@ -319,7 +319,7 @@ int disp[4];    /* displacement vector for general gather */
 	cleanup_gather( mtag[dir2]);
 
 	/* Start gather of time-like links across the diagonal. */
-	gmtag = start_general_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	/* Recursively construct the space-like segments and compute
@@ -343,7 +343,7 @@ int disp[4];    /* displacement vector for general gather */
 		}
 
                 /* Inbetween gather time-like links across the diagonal. */
-                gmtag = start_general_gather( F_OFFSET(t_link_f),
+                gmtag = start_general_gather_site( F_OFFSET(t_link_f),
                    sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
 
@@ -368,7 +368,7 @@ int disp[4];    /* displacement vector for general gather */
 
           
             /* Collect forward light props       */
-            gmtag = start_general_gather( F_OFFSET(dtmpvecs[1].n[0]),
+            gmtag = start_general_gather_site( F_OFFSET(dtmpvecs[1].n[0]),
               sizeof(su3_vector_src),disp, EVENANDODD, gen_pt[5] );
 
 
@@ -388,7 +388,7 @@ int disp[4];    /* displacement vector for general gather */
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather( F_OFFSET(s_link),
+		gmtag = start_general_gather_site( F_OFFSET(s_link),
 		    sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
 
@@ -482,7 +482,7 @@ int disp[4];    /* displacement vector for general gather */
 	/* Start gather of dir1-double-link from site "2*dir2" */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir2] = 2;
-	gmtag = start_general_gather( F_OFFSET(s_link), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(s_link), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	wait_gather( mtag[dir2]);
@@ -503,7 +503,7 @@ int disp[4];    /* displacement vector for general gather */
 	/* Start gather of dir2-double-link from site "2*dir1" */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 2;
-	gmtag = start_general_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	FORALLSITES(i,s){
@@ -526,7 +526,7 @@ int disp[4];    /* displacement vector for general gather */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 2;
 	disp[dir2] = 2;
-	gmtag = start_general_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 
@@ -548,7 +548,7 @@ int disp[4];    /* displacement vector for general gather */
 		cleanup_general_gather( gmtag);
 
                 /* Inbetween gather time-like links across the diagonal. */
-                gmtag = start_general_gather( F_OFFSET(t_link_f),
+                gmtag = start_general_gather_site( F_OFFSET(t_link_f),
                    sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
 		FORALLSITES(i,s){
@@ -579,7 +579,7 @@ int disp[4];    /* displacement vector for general gather */
 
            /*  gather light prop     */
           
-            gmtag = start_general_gather( F_OFFSET(dtmpvecs[1].n[0]),
+            gmtag = start_general_gather_site( F_OFFSET(dtmpvecs[1].n[0]),
               sizeof(su3_vector_src),disp, EVENANDODD, gen_pt[5] );
 
             /* Collect forward light props       */
@@ -598,7 +598,7 @@ int disp[4];    /* displacement vector for general gather */
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather( F_OFFSET(s_link),
+		gmtag = start_general_gather_site( F_OFFSET(s_link),
 		    sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
 
@@ -683,7 +683,7 @@ int disp[4];    /* displacement vector for general gather */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 2;
 	disp[dir2] = -2;
-	gmtag = start_general_gather( F_OFFSET(s_link_f), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(s_link_f), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	wait_gather( mtag[dir1]);
@@ -709,7 +709,7 @@ int disp[4];    /* displacement vector for general gather */
 	/* Start gather first corner from site "-2*dir2" */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir2] = -2;
-	gmtag = start_general_gather( F_OFFSET(staple), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	FORALLSITES(i,s){
@@ -731,7 +731,7 @@ int disp[4];    /* displacement vector for general gather */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] =  2;
 	disp[dir2] = -2;
-	gmtag = start_general_gather( F_OFFSET(t_link_f), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(t_link_f), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	/* Recursively construct the space-like segments and compute
@@ -752,7 +752,7 @@ int disp[4];    /* displacement vector for general gather */
 		cleanup_general_gather( gmtag);
 
                 /* Inbetween gather time-like links across the diagonal. */
-                gmtag = start_general_gather( F_OFFSET(t_link_f),
+                gmtag = start_general_gather_site( F_OFFSET(t_link_f),
                    sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 
 		FORALLSITES(i,s){
@@ -781,7 +781,7 @@ int disp[4];    /* displacement vector for general gather */
 
           
             /* Collect forward light props       */
-            gmtag = start_general_gather( F_OFFSET(dtmpvecs[1].n[0]),
+            gmtag = start_general_gather_site( F_OFFSET(dtmpvecs[1].n[0]),
               sizeof(su3_vector_src),disp, EVENANDODD, gen_pt[5] );
 
             /* Collect forward light props       */
@@ -800,7 +800,7 @@ int disp[4];    /* displacement vector for general gather */
 
 	    /* Inbetween gather space-links across the diagonal for next r. */
 	    if( r<(nxh-1) ){
-		gmtag = start_general_gather( F_OFFSET(s_link),
+		gmtag = start_general_gather_site( F_OFFSET(s_link),
 		    sizeof(su3_matrix), disp, EVENANDODD, gen_pt[4] );
 	    }
 
