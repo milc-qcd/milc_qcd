@@ -50,11 +50,13 @@ while($line1 = <FILE1>){
     {
 	$tol = $errs[$i];
 	$diff = abs($_ - $fields2[$i]);
-	# Nonumeric or zero fields should match exactly
-	# Unless the corresponding errline field is XXX
-	if( (($fields2[$i] + 1e-08 == 1e-08) &&
-	     ($_ ne $fields2[$i]) && $tol ne "XXX") ||
-	    $diff > $tol )
+	# Allow any difference if errline field is XXX
+	# Otherwise nonumeric or zero fields should match exactly
+	# And nonzero numeric fields should differ by less than the tolerance
+	if( $tol ne "XXX" &&
+	    ((($fields2[$i] + 1e-08 == 1e-08) &&
+	     ($_ ne $fields2[$i])) ||
+	     $diff > $tol ))
 	{
 	    $same = 0;
 	    $field = $i+1; $line = $lines+1;
