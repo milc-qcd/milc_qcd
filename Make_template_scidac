@@ -1,0 +1,91 @@
+# This is not a standalone Makefile
+# It is intended to be included in other Makefiles
+
+# It defines these macros
+# HAVEQDP HAVEQIO HAVEQMP          What we are compiling with
+# LIBSCIDAC INCSCIDAC              The -L and -I compiler and linker lists
+# SCIDAC_LIBRARIES SCIDAC_HEADERS  Lists for make dependencies
+
+# Requires input macros
+# MPP                     true if multiprocessor compilation
+# QMPPAR                  Path to multiprocessor QMP
+# QMPSNG                  Path to single processor QMP
+# QIO                     Path to the QIO package
+# QLA                     Path to the QLA package
+# QDP                     Path to the QDP package
+# WANTQDP WANTQIO WANTQMP User requests (true or otherwise)
+
+HAVEQDP = ${WANTQDP}
+
+ifeq ($(strip ${HAVEQDP}),true)
+   HAVEQIO = true #
+else
+   HAVEQIO = ${WANTQIO}
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+   HAVEQMP = true
+else
+   HAVEQMP = ${WANTQMP}
+endif
+
+# Shouldn't need to change the rest of this stanza (except see "QCDOC
+# nonstandard")
+
+ifeq ($(strip ${MPP}),true)
+   QMP = ${QMPPAR}
+else
+   QMP = ${QMPSNG}
+endif
+
+QMPINCDIR = ${QMP}/include
+QMPLIBDIR = ${QMP}/lib
+QIOINCDIR = ${QIO}/include
+QIOLIBDIR = ${QIO}/lib
+QLAINCDIR = ${QLA}/include
+QLALIBDIR = ${QLA}/lib
+QDPINCDIR = ${QDP}/include
+QDPLIBDIR = ${QDP}/lib
+
+IQMP = -I${QMPINCDIR}
+LQMP = -L$(QMP)/lib -lqmp
+
+# QCDOC nonstandard
+#LQMP = -L$(QMP)/lib -lqcd_api
+#LQMP = -L$(QMP)/lib -lqcd_api_nn -lscu -lscu_devel
+
+IQIO = -I${QIOINCDIR}
+LQIO = -L${QIOLIBDIR} -lqio -llime 
+
+IQLA = -I${QLAINCDIR}
+LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
+          -lqla_dq3 -lqla_q3 -lqla_d -lqla_dq -lqla_q -lqla_random
+
+IQDP = -I${QDP}/include
+LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
+
+ifeq ($(strip ${HAVEQMP}),true)
+  LIBQMP = ${LQMP}
+  INCQMP = ${IQMP}
+  INCDEPQMP = ${QMPINCDIR}
+  LIBDEPQMP = ${QMPLIBDIR}
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  LIBQIO = ${LQIO}
+  INCQIO = ${IQIO}
+  INCDEPQIO = ${QIOINCDIR}
+  LIBDEPQIO = ${QIOLIBDIR}
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  LIBQDP = ${LQDP} ${LQLA}
+  INCQDP = ${IQDP} ${IQLA}
+  INCDEPQDP = ${QDPINCDIR} ${QLAINCDIR}
+  LIBDEPQDP = ${QDPLIBDIR} ${QLALIBDIR}
+endif
+
+LIBSCIDAC = ${LIBQDP} ${LIBQIO} ${LIBQMP}
+INCSCIDAC = ${INCQDP} ${INCQIO} ${INCQMP}
+SCIDAC_LIBRARIES = ${LIBDEPQDP} ${LIBDEPQIO} ${LIBDEPQMP}
+SCIDAC_HEADERS = ${INCDEPQDP} ${INCDEPQIO} ${INCDEPQMP}
