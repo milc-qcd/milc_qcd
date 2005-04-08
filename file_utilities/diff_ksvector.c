@@ -111,7 +111,9 @@ int main(int argc, char *argv[])
   number_of_nodes = numnodes();
 
   /* Get the lattice dimensions from the first input file */
-  read_lat_dim_scidac(ksvector_file1, &ndim, dims);
+  if(read_lat_dim_scidac(ksvector_file1, &ndim, dims)!=0){
+    terminate(1);
+  }
   
   if(this_node == 0)
     {

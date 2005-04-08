@@ -131,7 +131,9 @@ int main(int argc, char *argv[])
   }
   
   /* Get the lattice dimensions from the first input file */
-  read_lat_dim_wprop(wprop_file1, file_type1, &ndim, dims);
+  if(read_lat_dim_wprop(wprop_file1, file_type1, &ndim, dims)!=0){
+    terminate(1);
+  }
   
   if(this_node == 0)
     {

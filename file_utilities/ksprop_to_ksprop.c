@@ -180,7 +180,9 @@ int main(int argc, char *argv[])
       }
       
       /* Get the lattice dimensions from the input file */
-      read_lat_dim_ksprop(par_buf.startfile, file_type, &ndim, dims);
+      if(read_lat_dim_ksprop(par_buf.startfile, file_type, &ndim, dims)!=0){
+	terminate(1);
+      }
 
       if(this_node == 0){
 	nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];

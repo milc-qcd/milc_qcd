@@ -4,6 +4,7 @@ reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
 save_serial_wprop wprop_milc.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
+ON EACH NODE 4 x 4 x 4 x 2
 Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_milc.test.l4448.ll
 Reading as a Fermilab Wilson prop file
 quark.t[0].checksum  "7e685bd9 759261a0"
@@ -23,6 +24,7 @@ reload_serial_wprop wprop_milc.test.l4448.ll
 save_serial_scidac_wprop wprop_scidac1.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
+ON EACH NODE 4 x 4 x 4 x 2
 Converting file wprop_milc.test.l4448.ll to file wprop_scidac1.test.l4448.ll
 Reading as a MILC Wilson prop file
 Read wprop serially from file wprop_milc.test.l4448.ll
@@ -33,6 +35,7 @@ reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
 save_serial_scidac_wprop wprop_scidac2.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
+ON EACH NODE 4 x 4 x 4 x 2
 Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_scidac2.test.l4448.ll
 Reading as a Fermilab Wilson prop file
 quark.t[0].checksum  "7e685bd9 759261a0"
@@ -51,6 +54,7 @@ reload_serial_wprop wprop_milc.test.l4448.ll
 save_checkpoint_wprop wprop_checkpoint.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
+ON EACH NODE 4 x 4 x 4 x 2
 Converting file wprop_milc.test.l4448.ll to file wprop_checkpoint.test.l4448.ll
 Reading as a MILC Wilson prop file
 Read wprop serially from file wprop_milc.test.l4448.ll
@@ -62,6 +66,7 @@ reload_serial_wprop wprop_checkpoint.test.l4448.ll
 save_serial_scidac_wprop wprop_scidac3.test.l4448.ll
 Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
+ON EACH NODE 4 x 4 x 4 x 2
 Converting file wprop_checkpoint.test.l4448.ll to file wprop_scidac3.test.l4448.ll
 Reading as a MILC Wilson prop file
 Read wprop serially from file wprop_checkpoint.test.l4448.ll
