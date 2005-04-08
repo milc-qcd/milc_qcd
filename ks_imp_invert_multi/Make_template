@@ -146,7 +146,7 @@ ${LASTMAKE}:
 	touch ${LASTMAKE}
 
 ALL_MAKES = Make_template ../generic/Make_template \
-	../generic_ks/Make_template ${MAKEFILE} ../include
+	../generic_ks/Make_template ${MAKEFILE} ../include/Make_template
 
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
@@ -226,6 +226,9 @@ include ../generic/Make_template
 
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
+
+# Rules for header files
+include ../include/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
