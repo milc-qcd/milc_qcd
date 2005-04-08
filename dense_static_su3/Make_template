@@ -64,7 +64,7 @@ ${LASTMAKE}:
 
 # To force a remake when changing make files
 ALL_MAKES = Make_template ../generic/Make_template \
-  ../generic_ks/Make_template ${MAKEFILE} ../include/Make_template
+  ../generic_ks/Make_template ${MAKEFILE} ../include
 
 ${OBJECTS} ${EXTRA_OBJECTS} ${MACHINE_DEP} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
@@ -109,9 +109,6 @@ clean:
 include ../generic/Make_template
 
 include ../generic_ks/Make_template
-
-# Rules for header files
-include ../include/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}

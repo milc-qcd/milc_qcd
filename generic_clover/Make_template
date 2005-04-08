@@ -37,14 +37,11 @@ G_CLOVER_HEADERS = \
 G_CLOVER_ALL_DEPEND = \
   ../generic_clover/generic_clover_includes.h \
   ../generic_clover/Make_template \
-  ../include/Make_template \
+  ../include \
   ${LASTMAKE} \
   ${G_CLOVER_HEADERS}
 
 ${G_CLOVER_ALL} : ${G_CLOVER_ALL_DEPEND}
-
-# Rules for header files
-include ../include/Make_template
 
 d_bicgilu_cl_lean.o: ../generic_clover/d_bicgilu_cl_lean.c
 	${CC} -c ${CFLAGS}  ../generic_clover/d_bicgilu_cl_lean.c 

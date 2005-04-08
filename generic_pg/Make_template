@@ -27,14 +27,11 @@ G_PG_HEADERS = \
 G_PG_ALL_DEPEND = \
   ../generic_pg/generic_pg_includes.h \
   ../generic_pg/Make_template \
-  ../include/Make_template \
+  ../include \
   ${LASTMAKE} \
   ${G_PG_HEADERS}
 
 ${G_PG_ALL} : ${G_PG_ALL_DEPEND}
-
-# Rules for header files
-include ../include/Make_template
 
 d_action.o: ../generic_pg/d_action.c
 	${CC} -c ${CFLAGS}  ../generic_pg/d_action.c

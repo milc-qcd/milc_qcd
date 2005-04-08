@@ -89,7 +89,7 @@ QCDLIB = ${LIBDIR}/su3.a ${LIBDIR}/complex.a
 # All make files used in this compilation
 ALL_MAKES = Make_template ../generic/Make_template \
   ../generic_wilson/Make_template \
-  ${MAKEFILE} ../include/Make_template
+  ${MAKEFILE} ../include
 
 # To force a full remake when changing targets
 LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
@@ -151,9 +151,6 @@ include ../generic/Make_template
 
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template
-
-# Rules for header files
-include ../include/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}

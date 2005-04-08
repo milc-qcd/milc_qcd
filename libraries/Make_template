@@ -17,7 +17,7 @@ HEADERS = \
 # To force a full remake when switching or updating Makefiles and precision
 LASTMAKE = .lastmake.${PRECISION}.${MAKEFILE}
 
-ALL_MAKES = ${MAKEFILE} Make_template ../include/Make_template
+ALL_MAKES = ${MAKEFILE} Make_template ../include
 
 ${LASTMAKE}: ${ALL_MAKES}
 	-/bin/rm -f .lastmake.*
@@ -63,9 +63,6 @@ ${SU3OBJS} ${WILSON_OBJS} : ${HEADERS} ${MAKEFILE} ${LASTMAKE}
 # Special header dependencies
 byterevn.o : ../include/int32type.h
 gaussrand.o : ../include/random.h
-
-# Rules for header files
-include ../include/Make_template
 
 su3.${PRECISION}.a::	 ${SU3OBJS}
 	${AR} rcs $@ ${SU3OBJS}

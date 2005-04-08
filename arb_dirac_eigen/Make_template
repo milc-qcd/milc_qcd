@@ -91,7 +91,7 @@ ALL_MAKES = \
   Make_template \
   ../generic/Make_template \
   ../generic_wilson/Make_template \
-  ../include/Make_template \
+  ../include
   ${MAKEFILE}
 
 # Used to force a full remake when changing targets or a make file
@@ -134,9 +134,6 @@ include ../generic/Make_template
 
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template
-
-# Rules for header files
-include ../include/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}

@@ -74,7 +74,7 @@ ALL_MAKES = \
   ../generic_wilson/Make_template \
   ../generic_clover/Make_template \
   ${MAKEFILE} \
-  ../include/Make_template
+  ../include
 
 MY_OBJECTS= \
         c_scale_wilson_vector2.o\
@@ -217,9 +217,6 @@ include ../generic_clover/Make_template
 
 # Rules for generic_form routines
 include ../generic_form/Make_template
-
-# Rules for header files
-include ../include/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}

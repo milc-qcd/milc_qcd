@@ -100,7 +100,7 @@ ALL_MAKES = \
   Make_template \
   ../generic/Make_template \
   ../generic_ks/Make_template \
-  ../include/Make_template \
+  ../include
   ${MAKEFILE}
 
 ALL_DEPEND = ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
@@ -163,9 +163,6 @@ include ../generic/Make_template
 
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
-
-# Rules for header files
-include ../include/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}

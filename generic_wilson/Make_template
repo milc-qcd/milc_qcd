@@ -53,14 +53,11 @@ G_WILSON_HEADERS = \
 G_WILSON_ALL_DEPEND = \
   ../generic_wilson/generic_wilson_includes.h \
   ../generic_wilson/Make_template \
-  ../include/Make_template \
+  ../include \
   ${LASTMAKE} \
   ${G_WILSON_HEADERS}
 
 ${G_WILSON_ALL}: ${G_WILSON_ALL_DEPEND}
-
-# Rules for header files
-include ../include/Make_template
 
 bj_to_weyl.o: ../generic_wilson/bj_to_weyl.c
 	${CC} -c ${CFLAGS} $<
