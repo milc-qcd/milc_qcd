@@ -72,14 +72,11 @@ G_KS_HEADERS = \
 G_KS_ALL_DEPEND = \
   ../generic_ks/generic_ks_includes.h \
   ../generic_ks/Make_template \
-  ../include/Make_template \
+  ../include \
   ${LASTMAKE} \
   ${G_KS_HEADERS}
 
 ${G_KS_ALL} : ${G_KS_ALL_DEPEND}
-
-# Rules for header files
-include ../include/Make_template
 
 d_congrad5.cppacs.o: ../generic_ks/d_congrad5.cppacs.c
 	${CC} -c ${CFLAGS} $<

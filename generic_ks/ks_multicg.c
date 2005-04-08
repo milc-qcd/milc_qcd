@@ -5,20 +5,27 @@
 
 /* Based on B. Jegerlehner, hep-lat/9612014.
    See also A. Frommer, S. G\"usken, T. Lippert, B. N\"ockel,"
-   K. Schilling, Int. J. Mod. Phys. C6 (1995) 627. */
+   K. Schilling, Int. J. Mod. Phys. C6 (1995) 627. 
 
-/* This version is based on d_congrad5_fn.c and d_congrad5_eo.c */
+   This version is based on d_congrad5_fn.c and d_congrad5_eo.c 
 
-/* For "fat link actions", ie when FN is defined, this version
+   For "fat link actions", ie when FN is defined, this version
    assumes connection to nearest neighbor points is stored in fatlink.
    For actions with a Naik term, it assumes the connection to third
-   nearest neighbors is in longlink. */
+   nearest neighbors is in longlink.
+
+*/
 
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/dslash_ks_redefine.h"
 
 #include "../include/loopend.h"
+
+static su3_vector *ttt,*cg_p;
+static su3_vector *resid;
+static su3_vector *t_dest;
+static int first_multicongrad = 1;
 
 int ks_multicg(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
@@ -103,9 +110,21 @@ int ks_multicg(	/* Return value is number of iterations taken */
     if (!valid_fatlinks) load_fatlinks();
 #endif
 
+#define PAD 0
+    /* now we can allocate temporary variables and copy then */
+    /* PAD may be used to avoid cache thrashing */
+    if(first_multicongrad) {
+      ttt = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+      cg_p = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+      resid = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+      first_multicongrad = 0;
+    }
+
 #ifdef CGTIME
     dtimec = -dclock(); 
 #endif
+
+
 
     /* initialization process */
     start:
@@ -118,12 +137,12 @@ int ks_multicg(	/* Return value is number of iterations taken */
 	source_norm = 0.0;
 	FORSOMEPARITY(i,s,l_parity){
 	    source_norm += (double) magsq_su3vec( (su3_vector *)F_PT(s,src) );
-	    su3vec_copy((su3_vector *)F_PT(s,src), &(s->resid));
-	    su3vec_copy(&(s->resid), &(s->cg_p));
+	    su3vec_copy((su3_vector *)F_PT(s,src), &(resid[i]));
+	    su3vec_copy(&(resid[i]), &(cg_p[i]));
 	    clearvec(&(psim[j_low][i]));
 	    for(j=0;j<num_masses;j++) if(j!=j_low){
 		clearvec(&(psim[j][i]));
-		su3vec_copy(&(s->resid), &(pm[j][i]));
+		su3vec_copy(&(resid[i]), &(pm[j][i]));
 	    }
 	} END_LOOP
 	g_doublesum( &source_norm );
@@ -147,17 +166,13 @@ int ks_multicg(	/* Return value is number of iterations taken */
 
 #ifdef FN
 	if(special_started==0){
-	    dslash_fn_site_special( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
-		tags2, 1 );
-	    dslash_fn_site_special( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
-		tags1, 1);
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1 );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1 );
 	    special_started = 1;
 	}
 	else {
-	    dslash_fn_site_special( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
-		tags2, 0 );
-	    dslash_fn_site_special( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
-		tags1, 0 );
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0 );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0 );
 	}
 #else
 	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity);
@@ -169,9 +184,8 @@ int ks_multicg(	/* Return value is number of iterations taken */
 	/* pkp  <- cg_p . ttt */
 	pkp = 0.0;
 	FORSOMEPARITY(i,s,l_parity){
-	    scalar_mult_add_su3_vector( &(s->ttt), &(s->cg_p), msq_xm4,
-		&(s->ttt) );
-	    pkp += (double)su3_rdot( &(s->cg_p), &(s->ttt) );
+	    scalar_mult_add_su3_vector( &(ttt[i]), &(cg_p[i]), msq_xm4, &(ttt[i]) );
+	    pkp += (double)su3_rdot( &(cg_p[i]), &(ttt[i]) );
 	} END_LOOP
 	g_doublesum( &pkp );
 	iteration++;
@@ -191,7 +205,7 @@ int ks_multicg(	/* Return value is number of iterations taken */
 	/* dest <- dest + beta*cg_p */
 	FORSOMEPARITY(i,s,l_parity){
 	    scalar_mult_add_su3_vector( &(psim[j_low][i]),
-		&(s->cg_p), (Real)beta_i[j_low], &(psim[j_low][i]));
+		&(cg_p[i]), (Real)beta_i[j_low], &(psim[j_low][i]));
 	    for(j=0;j<num_masses;j++) if(j!=j_low){
 		scalar_mult_add_su3_vector( &(psim[j][i]),
 		    &(pm[j][i]), (Real)beta_i[j], &(psim[j][i]));
@@ -201,9 +215,9 @@ int ks_multicg(	/* Return value is number of iterations taken */
 	/* resid <- resid + beta*ttt */
 	rsq = 0.0;
 	FORSOMEPARITY(i,s,l_parity){
-	    scalar_mult_add_su3_vector( &(s->resid), &(s->ttt),
-		(Real)beta_i[j_low], &(s->resid));
-	    rsq += (double)magsq_su3vec( &(s->resid) );
+	    scalar_mult_add_su3_vector( &(resid[i]), &(ttt[i]),
+		(Real)beta_i[j_low], &(resid[i]));
+	    rsq += (double)magsq_su3vec( &(resid[i]) );
 	} END_LOOP
 	g_doublesum(&rsq);
 
@@ -257,12 +271,12 @@ int ks_multicg(	/* Return value is number of iterations taken */
 
 	/* cg_p  <- resid + alpha*cg_p */
 	FORSOMEPARITY(i,s,l_parity){
-	    scalar_mult_add_su3_vector( &(s->resid), &(s->cg_p),
-		(Real)alpha[j_low], &(s->cg_p));
+	    scalar_mult_add_su3_vector( &(resid[i]), &(cg_p[i]),
+		(Real)alpha[j_low], &(cg_p[i]));
 	    for(j=0;j<num_masses;j++) if(j!=j_low){
-		scalar_mult_su3_vector( &(s->resid),
-		    (Real)zeta_ip1[j], &(s->ttt));
-		scalar_mult_add_su3_vector( &(s->ttt), &(pm[j][i]),
+		scalar_mult_su3_vector( &(resid[i]),
+		    (Real)zeta_ip1[j], &(ttt[i]));
+		scalar_mult_add_su3_vector( &(ttt[i]), &(pm[j][i]),
 		    (Real)alpha[j], &(pm[j][i]));
 	    }
 	} END_LOOP

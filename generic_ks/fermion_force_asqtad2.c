@@ -89,94 +89,6 @@ void side_link_3f_force_nnnp(int mu, int nu, Real coeff[2],
 			half_wilson_vector *Path_mu, 
 			half_wilson_vector **Path_numu) ;
 
-#ifdef QSINLINE
-#define mult_su3_mat_hwvec_for_inline( mat, src, dest ) {\
-\
-  Real _a0r,_a0i,_a1r,_a1i,_a2r,_a2i;\
-  Real _b0r,_b0i,_b1r,_b1i,_b2r,_b2i;\
-  \
-\
-  _a0r=(mat)->e[0][0].real;    _a0i=(mat)->e[0][0].imag;\
-  _b0r=(src)->h[0].c[0].real;  _b0i=(src)->h[0].c[0].imag;\
-  _a1r=(mat)->e[0][1].real;    _a1i=(mat)->e[0][1].imag;\
-  _b1r=(src)->h[0].c[1].real;  _b1i=(src)->h[0].c[1].imag;\
-  _a2r=(mat)->e[0][2].real;    _a2i=(mat)->e[0][2].imag;\
-  _b2r=(src)->h[0].c[2].real;  _b2i=(src)->h[0].c[2].imag;\
-\
-  (dest)->h[0].c[0].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[0].c[0].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-  \
-  _a0r=(mat)->e[1][0].real;    _a0i=(mat)->e[1][0].imag;\
-  _b0r=(src)->h[0].c[0].real;  _b0i=(src)->h[0].c[0].imag;\
-  _a1r=(mat)->e[1][1].real;    _a1i=(mat)->e[1][1].imag;\
-  _b1r=(src)->h[0].c[1].real;  _b1i=(src)->h[0].c[1].imag;\
-  _a2r=(mat)->e[1][2].real;    _a2i=(mat)->e[1][2].imag;\
-  _b2r=(src)->h[0].c[2].real;  _b2i=(src)->h[0].c[2].imag;\
-\
-  (dest)->h[0].c[1].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[0].c[1].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-\
-  _a0r=(mat)->e[2][0].real;    _a0i=(mat)->e[2][0].imag;\
-  _b0r=(src)->h[0].c[0].real;  _b0i=(src)->h[0].c[0].imag;\
-  _a1r=(mat)->e[2][1].real;    _a1i=(mat)->e[2][1].imag;\
-  _b1r=(src)->h[0].c[1].real;  _b1i=(src)->h[0].c[1].imag;\
-  _a2r=(mat)->e[2][2].real;    _a2i=(mat)->e[2][2].imag;\
-  _b2r=(src)->h[0].c[2].real;  _b2i=(src)->h[0].c[2].imag;\
-\
-  (dest)->h[0].c[2].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[0].c[2].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-\
-\
-  _a0r=(mat)->e[0][0].real;    _a0i=(mat)->e[0][0].imag;\
-  _b0r=(src)->h[1].c[0].real;  _b0i=(src)->h[1].c[0].imag;\
-  _a1r=(mat)->e[0][1].real;    _a1i=(mat)->e[0][1].imag;\
-  _b1r=(src)->h[1].c[1].real;  _b1i=(src)->h[1].c[1].imag;\
-  _a2r=(mat)->e[0][2].real;    _a2i=(mat)->e[0][2].imag;\
-  _b2r=(src)->h[1].c[2].real;  _b2i=(src)->h[1].c[2].imag;\
-\
-  (dest)->h[1].c[0].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[1].c[0].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-  \
-  _a0r=(mat)->e[1][0].real;    _a0i=(mat)->e[1][0].imag;\
-  _b0r=(src)->h[1].c[0].real;  _b0i=(src)->h[1].c[0].imag;\
-  _a1r=(mat)->e[1][1].real;    _a1i=(mat)->e[1][1].imag;\
-  _b1r=(src)->h[1].c[1].real;  _b1i=(src)->h[1].c[1].imag;\
-  _a2r=(mat)->e[1][2].real;    _a2i=(mat)->e[1][2].imag;\
-  _b2r=(src)->h[1].c[2].real;  _b2i=(src)->h[1].c[2].imag;\
-\
-  (dest)->h[1].c[1].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[1].c[1].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-\
-  _a0r=(mat)->e[2][0].real;    _a0i=(mat)->e[2][0].imag;\
-  _b0r=(src)->h[1].c[0].real;  _b0i=(src)->h[1].c[0].imag;\
-  _a1r=(mat)->e[2][1].real;    _a1i=(mat)->e[2][1].imag;\
-  _b1r=(src)->h[1].c[1].real;  _b1i=(src)->h[1].c[1].imag;\
-  _a2r=(mat)->e[2][2].real;    _a2i=(mat)->e[2][2].imag;\
-  _b2r=(src)->h[1].c[2].real;  _b2i=(src)->h[1].c[2].imag;\
-\
-  (dest)->h[1].c[2].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[1].c[2].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-\
-}
-
-#define su3_projector_for_inline( a, b, dest ){\
-  int _i,_j;\
-  Real _tmp,_tmp2;\
-    for(_i=0;_i<3;_i++)for(_j=0;_j<3;_j++){\
-	_tmp2 = (a)->c[_i].real * (b)->c[_j].real;\
-	_tmp = (a)->c[_i].imag * (b)->c[_j].imag;\
-	(dest)->e[_i][_j].real = _tmp + _tmp2;\
-	_tmp2 = (a)->c[_i].real * (b)->c[_j].imag;\
-	_tmp = (a)->c[_i].imag * (b)->c[_j].real;\
-	(dest)->e[_i][_j].imag = _tmp - _tmp2;\
-    }\
-}
-
-#else /* External versions */
-#define mult_su3_mat_hwvec_for_inline( mat, src, dest ) mult_su3_mat_hwvec( mat, src, dest ) 
-#define su3_projector_for_inline( a, b, dest ) su3_projector( a, b, dest )
-#endif
-
 /**********************************************************************/
 /*   Version for a single set of degenerate flavors                   */
 /**********************************************************************/
@@ -871,7 +783,7 @@ void u_shift_hw_fermion_np(half_wilson_vector *src,
   if(GOES_FORWARDS(dir)) /* forward shift */
     {
       FORALLSITES(i,s)
-	mult_su3_mat_hwvec_for_inline(forwardlink[dir] + i, src+i, tmpvec+i);
+	mult_su3_mat_hwvec(forwardlink[dir] + i, src+i, tmpvec+i);
     }
   else /* backward shift */
     {
@@ -913,7 +825,7 @@ void u_shift_hw_fermion_pp(half_wilson_vector **src_pt,
   if(GOES_FORWARDS(dir)) /* forward shift */
     {
       FORALLSITES(i,s)
-	mult_su3_mat_hwvec_for_inline(forwardlink[dir] + i, src_pt[i], tmpvec+i);
+	mult_su3_mat_hwvec(forwardlink[dir] + i, src_pt[i], tmpvec+i);
     }
   else /* backward shift */
     {
@@ -959,7 +871,7 @@ void add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,Real coeff) {
     else
       tmp_coeff = coeff ;
     uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
-    su3_projector_for_inline(&(back[i]), &(forw[i]), &tmat);
+    su3_projector(&(back[i]), &(forw[i]), &tmat);
     scalar_mult_add_su3_matrix(&tmat2, &tmat,  tmp_coeff, &tmat2 );
     make_anti_hermitian( &tmat2, &(s->mom[dir]) ); 
   }
@@ -997,10 +909,15 @@ void add_3f_force_to_mom_nn(half_wilson_vector *back,
 	tmp_coeff[1] = coeff[1] ;
       }
     tmat2 = tempmom[dir] + i;
-    su3_projector_for_inline(&(back[i].h[0]), &(forw[i].h[0]), &tmat);
+#if 0
+    su3_projector(&(back[i].h[0]), &(forw[i].h[0]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[0], tmat2 );
-    su3_projector_for_inline(&(back[i].h[1]), &(forw[i].h[1]), &tmat);
+    su3_projector(&(back[i].h[1]), &(forw[i].h[1]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[1], tmat2 );
+#else
+    scalar_mult_add_hwvec_proj(tmat2, &back[i], &forw[i], 
+			       tmp_coeff, tmat2 );
+#endif
   }
 #ifdef FFSTIME
   time += dclock();
@@ -1041,10 +958,15 @@ void add_3f_force_to_mom_np(half_wilson_vector *back,
 	tmp_coeff[1] = coeff[1] ;
       }
     tmat2 = tempmom[dir] + i;
-    su3_projector_for_inline(&(back[i].h[0]), &(forw_pt[i]->h[0]), &tmat);
+#if 0
+    su3_projector(&(back[i].h[0]), &(forw_pt[i]->h[0]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[0], tmat2 );
-    su3_projector_for_inline(&(back[i].h[1]), &(forw_pt[i]->h[1]), &tmat);
+    su3_projector(&(back[i].h[1]), &(forw_pt[i]->h[1]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[1], tmat2 );
+#else
+    scalar_mult_add_hwvec_proj(tmat2, &back[i], forw_pt[i], 
+					 tmp_coeff, tmat2 );
+#endif
   }
 #ifdef FFSTIME
   time += dclock();
@@ -1085,10 +1007,15 @@ void add_3f_force_to_mom_pn(half_wilson_vector **back_pt,
 	tmp_coeff[1] = coeff[1] ;
       }
     tmat2 = tempmom[dir] + i;
-    su3_projector_for_inline(&(back_pt[i]->h[0]), &(forw[i].h[0]), &tmat);
+#if 0
+    su3_projector(&(back_pt[i]->h[0]), &(forw[i].h[0]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[0], tmat2 );
-    su3_projector_for_inline(&(back_pt[i]->h[1]), &(forw[i].h[1]), &tmat);
+    su3_projector(&(back_pt[i]->h[1]), &(forw[i].h[1]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[1], tmat2 );
+#else
+    scalar_mult_add_hwvec_proj(tmat2, back_pt[i], &forw[i], 
+					 tmp_coeff, tmat2 );
+#endif
   }
 #ifdef FFSTIME
   time += dclock();
@@ -1129,10 +1056,15 @@ void add_3f_force_to_mom_pp(half_wilson_vector **back_pt,
 	tmp_coeff[1] = coeff[1] ;
       }
     tmat2 = tempmom[dir] + i;
-    su3_projector_for_inline(&(back_pt[i]->h[0]), &(forw_pt[i]->h[0]), &tmat);
+#if 0
+    su3_projector(&(back_pt[i]->h[0]), &(forw_pt[i]->h[0]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[0], tmat2 );
-    su3_projector_for_inline(&(back_pt[i]->h[1]), &(forw_pt[i]->h[1]), &tmat);
+    su3_projector(&(back_pt[i]->h[1]), &(forw_pt[i]->h[1]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[1], tmat2 );
+#else
+    scalar_mult_add_hwvec_proj(tmat2, back_pt[i], forw_pt[i], 
+					 tmp_coeff, tmat2 );
+#endif
   }
 #ifdef FFSTIME
   time += dclock();
