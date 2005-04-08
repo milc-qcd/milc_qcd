@@ -909,7 +909,7 @@ void add_3f_force_to_mom_nn(half_wilson_vector *back,
 	tmp_coeff[1] = coeff[1] ;
       }
     tmat2 = tempmom[dir] + i;
-#if 0
+#if SSE_INLINE
     su3_projector(&(back[i].h[0]), &(forw[i].h[0]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[0], tmat2 );
     su3_projector(&(back[i].h[1]), &(forw[i].h[1]), &tmat);
@@ -958,7 +958,7 @@ void add_3f_force_to_mom_np(half_wilson_vector *back,
 	tmp_coeff[1] = coeff[1] ;
       }
     tmat2 = tempmom[dir] + i;
-#if 0
+#if SSE_INLINE
     su3_projector(&(back[i].h[0]), &(forw_pt[i]->h[0]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[0], tmat2 );
     su3_projector(&(back[i].h[1]), &(forw_pt[i]->h[1]), &tmat);
@@ -1007,7 +1007,7 @@ void add_3f_force_to_mom_pn(half_wilson_vector **back_pt,
 	tmp_coeff[1] = coeff[1] ;
       }
     tmat2 = tempmom[dir] + i;
-#if 0
+#if SSE_INLINE
     su3_projector(&(back_pt[i]->h[0]), &(forw[i].h[0]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[0], tmat2 );
     su3_projector(&(back_pt[i]->h[1]), &(forw[i].h[1]), &tmat);
@@ -1056,7 +1056,7 @@ void add_3f_force_to_mom_pp(half_wilson_vector **back_pt,
 	tmp_coeff[1] = coeff[1] ;
       }
     tmat2 = tempmom[dir] + i;
-#if 0
+#if SSE_INLINE
     su3_projector(&(back_pt[i]->h[0]), &(forw_pt[i]->h[0]), &tmat);
     scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[0], tmat2 );
     su3_projector(&(back_pt[i]->h[1]), &(forw_pt[i]->h[1]), &tmat);
