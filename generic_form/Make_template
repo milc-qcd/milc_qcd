@@ -40,14 +40,11 @@ G_FORM_HEADERS = \
 G_FORM_ALL_DEPEND = \
   ../generic_form/generic_form_includes.h \
   ../generic_form/Make_template \
-  ../include/Make_template \
+  ../include \
   ${LASTMAKE} \
   ${G_FORM_HEADERS}
 
 ${G_FORM_ALL} : ${G_FORM_ALL_DEPEND}
-
-# Rules for header files
-include ../include/Make_template
 
 c_scale_wilson_vector2.o: ../generic_form/c_scale_wilson_vector2.c
 	${CC} -c ${CFLAGS}  ../generic_form/c_scale_wilson_vector2.c 
