@@ -99,7 +99,7 @@ else
   ifeq ($(strip ${HAVEQDP}),true)
     LAYOUT = layout_qdp.o # Required
   else
-    LAYOUT = layout_hyper.o # Choices possible here
+    LAYOUT = layout_hyper_prime.o # Choices possible here
   endif
 endif
 
@@ -128,7 +128,7 @@ ALL_MAKES = \
    ${MAKEFILE} \
    ../Make_template_scidac \
    ../generic/Make_template \
-   ../generic_ks/Make_template
+   ../generic_ks/Make_template \
    ../generic_wilson/Make_template
 
 # Used to force a full remake when changing targets or a make file
