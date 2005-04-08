@@ -1,28 +1,12 @@
-SU3 with improved KS action
-Inversion checking
-MIMD version 0
-Machine = QMP (portable), with 0 nodes
-type 0 for no prompts or 0 for prompts
-nx 0
-ny 0
-nz 0
-nt 0
-iseed 0
-LAYOUT = Hypercubes, options = EVENFIRST,
-Mallocing 1 MBytes per node for lattice
-Made lattice
-Made nn gathers
-Made 5 gathers
-Finished setup
 BEGIN
 
 
 mass 0
 u0 0
-max_cg_iterations 0
+max_cg_iterations 0 0.05 0.05
 error_for_propagator 0
 reload_serial ../binary_samples/lat.sample.l8
-forget
+forget 0.02 0.02
 forget
 forget
 reload_serial_ks_vector ../binary_samples/ksvector.src.sample.l8
@@ -57,11 +41,11 @@ File info
 "
 Derived MILC KS field
 gauge.filename ../binary_samples/lat.sample.l8
-layout.boundary_conditions space: periodic time: antiperiodic
+layout.boundary_conditions space: periodic time: antiperiodic 2e-18
 asqtad.u0 2e-09
-asqtad.path_coeff[0] 2e-09
+asqtad.path_coeff[0] 2e-09 6e-16 6e-16
 asqtad.path_coeff[1] 2e-09
-asqtad.path_coeff[2] 2e-09
+asqtad.path_coeff[2] 4e+04 2e+02
 asqtad.path_coeff[3] 2e-09
 asqtad.path_coeff[4] 2e-09
 asqtad.path_coeff[5] 2e-09
@@ -77,7 +61,7 @@ Inversion required 0 iters resid 2e-09
 Checking the inversion
 Inversion checked, frac. error = 2e-09
 Saved KS vector serially to binary file ksvector.ans.MdaggerMinv.test.l8
-Checksums 0 0
+Checksums XXX XXX
 
 
 mass 0
@@ -114,9 +98,9 @@ Derived MILC KS field
 gauge.filename ../binary_samples/lat.sample.l8
 layout.boundary_conditions space: periodic time: antiperiodic
 asqtad.u0 0
-asqtad.path_coeff[0] 2e-09
+asqtad.path_coeff[0] 2e-09 2e-09 2e-09
 asqtad.path_coeff[1] 2e-09
-asqtad.path_coeff[2] 2e-09
+asqtad.path_coeff[2] 4e+01 6
 asqtad.path_coeff[3] 2e-09
 asqtad.path_coeff[4] 2e-09
 asqtad.path_coeff[5] 2e-09
@@ -126,13 +110,13 @@ inv_arg.rsqprop 0
 "
 Record info
 "source color vector field"
-Checksums 0 adc0f9ee
+Checksums 18c175b6 adc0f9ee
 Doing the inversion
-Inversion required 0 iters
+Inversion required 57 iters
 Checking the inversion
 Inversion checked, frac. error = 2e-09
 Saved KS vector serially to binary file ksvector.ans.Minv.test.l8
-Checksums f769c39b aa3f5f77
+Checksums XXX XXX
 
 
 get_f: EOF on STDIN.

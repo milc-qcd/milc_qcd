@@ -30,7 +30,7 @@ int main( int argc, char **argv ){
   g_sync();
   /* set up */
   prompt = setup();
-  printf("BEGIN\n");
+  node0_printf("BEGIN\n");
   /* loop over input sets */
   while( readin(prompt) == 0){
     
