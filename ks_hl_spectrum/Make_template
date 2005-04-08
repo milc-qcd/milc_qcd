@@ -12,18 +12,12 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/complex.h \
-  ${INCLUDEDIR}/su3.h \
-  ${INCLUDEDIR}/comdefs.h \
-  ${INCLUDEDIR}/macros.h \
-  ${INCLUDEDIR}/file_types.h \
-  ${INCLUDEDIR}/generic.h \
-  ${INCLUDEDIR}/generic_wilson.h \
-  ${INCLUDEDIR}/io_lat.h \
-  ${INCLUDEDIR}/io_wprop.h  \
-  ${INCLUDEDIR}/io_ksprop.h
+GLOBAL_HEADERS = ${INCLUDEDIR}
+
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
 
 MY_HEADERS = \
   lattice.h \
@@ -31,7 +25,7 @@ MY_HEADERS = \
   defines.h \
   ks_hl_spectrum_includes.h
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 # All required object files
 # Basic set from current directory
@@ -122,15 +116,20 @@ OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_WILSON_OBJECTS} ${G_KS_OBJECTS} \
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
 
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
+
 # Default rule for C compilation
 .c.o:
 	${CC} -c ${CFLAGS} $<
 
 # All make files used in this compilation
-ALL_MAKES = Make_template ../generic/Make_template \
-  ../generic_ks/Make_template \
-  ../generic_wilson/Make_template \
-  ${MAKEFILE} ../include
+ALL_MAKES = \
+   Make_template \
+   ${MAKEFILE} \
+   ../Make_template_scidac \
+   ../generic/Make_template \
+   ../generic_ks/Make_template
+   ../generic_wilson/Make_template
 
 # Used to force a full remake when changing targets or a make file
 LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
@@ -191,7 +190,7 @@ libmake:
 	cd ${LIBDIR} ;\
 	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
 
-localmake: ${OBJECTS} ${QCDLIB}
+localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} ${LDFLAGS} -o ${MYTARGET} \
 	${OBJECTS} ${QCDLIB} ${ILIB} -lm
 	touch localmake

@@ -153,6 +153,7 @@ QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a
 
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 
+# Default rule for C compilation
 .c.o: ; ${CC} -c ${CFLAGS}  $*.c 
 
 # To force a full remake when changing targets

@@ -18,21 +18,18 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/complex.h \
-  ${INCLUDEDIR}/su3.h \
-  ${INCLUDEDIR}/comdefs.h \
-  ${INCLUDEDIR}/io_lat.h \
-  ${INCLUDEDIR}/io_wprop.h \
-  ${INCLUDEDIR}/generic.h \
-  ${INCLUDEDIR}/macros.h
+GLOBAL_HEADERS = ${INCLUDEDIR}
+
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
 
 MY_HEADERS = \
   lattice.h \
   defines.h
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 MY_OBJECTS= \
   gauge_info.o
@@ -78,6 +75,8 @@ OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} \
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
 
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
+
 .c.o: ; ${CC} -c ${CFLAGS} $*.c 
 
 # To force a full remake when changing targets
@@ -89,8 +88,13 @@ ${LASTMAKE}:
 	touch ${LASTMAKE}
 
 # To force a remake when changing make files
-ALL_MAKES = Make_template ../generic/Make_template \
-  ${MAKEFILE} ../include
+ALL_MAKES = \
+   Make_template \
+   ${MAKEFILE} \
+   ../Make_template_scidac \
+   ../generic/Make_template \
+   ../generic_ks/Make_template \
+   ../generic_wilson/Make_template
 
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
@@ -185,7 +189,7 @@ libmake:
 	cd ${LIBDIR} ;\
 	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
 
-localmake: ${OBJECTS} ${QCDLIB}
+localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} ${LDFLAGS} -o ${MYTARGET} \
 	${OBJECTS} ${QCDLIB} ${ILIB} -lm
 	touch localmake
