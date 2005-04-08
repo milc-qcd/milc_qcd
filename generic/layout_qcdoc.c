@@ -94,6 +94,12 @@ printf("nsquares[TUP]=%d\n",nsquares[TUP]);
 	terminate(0);
     }
     even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+if( mynode()==0)
+  printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
+                squaresize[ZUP],squaresize[TUP]);
+if( mynode()==0 && sites_on_node%2 != 0)
+	printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
+    even_sites_on_node = odd_sites_on_node = sites_on_node/2;
 }
 
 int node_number(int x,int y,int z,int t) {
