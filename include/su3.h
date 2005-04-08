@@ -527,6 +527,7 @@ Real magsq_su3vec( su3_vector *a );
 #define mult_adj_su3_mat_hwvec(...) _inline_sse_mult_adj_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_hwvec(...) _inline_sse_mult_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_vec_sum_4dir(...) _inline_sse_mult_su3_mat_vec_sum_4dir(__VA_ARGS__)
+#define scalar_mult_add_hwvec_proj(...) _inline_C_scalar_mult_add_hwvec_proj(__VA_ARGS__)
 #define scalar_mult_add_su3_matrix(a,b,c,d) {Real _temp = c; _inline_sse_scalar_mult_add_su3_matrix(a,b,_temp,d);}
 #define scalar_mult_add_su3_vector(a,b,c,d) {Real _temp = c; _inline_sse_scalar_mult_add_su3_vector(a,b,_temp,d);}
 #define su3_projector(...) _inline_sse_su3_projector(__VA_ARGS__)
@@ -549,6 +550,7 @@ Real su3_rdot( su3_vector *a, su3_vector *b );
 #define mult_adj_su3_mat_hwvec(...) _inline_sse_mult_adj_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_hwvec(...) _inline_sse_mult_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_vec_sum_4dir(...) _inline_sse_mult_su3_mat_vec_sum_4dir(__VA_ARGS__)
+#define scalar_mult_add_hwvec_proj(...) _inline_C_scalar_mult_add_hwvec_proj(__VA_ARGS__)
 #define scalar_mult_add_su3_matrix(a,b,c,d) {Real _temp = c; _inline_C_scalar_mult_add_su3_matrix(a,b,_temp,d);}
 #define scalar_mult_add_su3_vector(a,b,c,d) {Real _temp = c; _inline_C_scalar_mult_add_su3_vector(a,b,_temp,d);}
 #define su3_projector(...) _inline_sse_su3_projector(__VA_ARGS__)
@@ -578,6 +580,10 @@ Real magsq_su3vec( su3_vector *a );
 #define mult_adj_su3_mat_hwvec(...) _inline_sse_mult_adj_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_hwvec(...) _inline_sse_mult_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_vec_sum_4dir(...) _inline_sse_mult_su3_mat_vec_sum_4dir(__VA_ARGS__)
+void scalar_mult_add_hwvec_proj( su3_matrix * const a, 
+				 half_wilson_vector * const b, 
+				 half_wilson_vector * const c, 
+				 Real * const s, su3_matrix *d );
 #define scalar_mult_add_su3_matrix(a,b,c,d) {Real _temp = c; _inline_sse_scalar_mult_add_su3_matrix(a,b,_temp,d);}
 #define scalar_mult_add_su3_vector(a,b,c,d) {Real _temp = c; _inline_sse_scalar_mult_add_su3_vector(a,b,_temp,d);}
 #define su3_projector(...) _inline_sse_su3_projector(__VA_ARGS__)
@@ -600,6 +606,10 @@ Real magsq_su3vec( su3_vector *a );
 #define mult_adj_su3_mat_hwvec(...) _inline_sse_mult_adj_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_hwvec(...) _inline_sse_mult_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_vec_sum_4dir(...) _inline_sse_mult_su3_mat_vec_sum_4dir(__VA_ARGS__)
+void scalar_mult_add_hwvec_proj( su3_matrix * const a, 
+				 half_wilson_vector * const b, 
+				 half_wilson_vector * const c, 
+				 Real * const s, su3_matrix *d );
 void scalar_mult_add_su3_matrix( su3_matrix *src1, su3_matrix *src2,
 	Real scalar, su3_matrix *dest);
 void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,
@@ -634,13 +644,13 @@ void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
 			    su3_vector *dest2, su3_vector *dest3  ) ;
 void mult_adj_su3_mat_hwvec( su3_matrix *mat, half_wilson_vector *src,
 	half_wilson_vector *dest );
-void mult_su3_mat_hwvec( su3_matrix *mat, half_wilson_vector *src,
-	half_wilson_vector *dest );
+#define mult_su3_mat_hwvec(...) _inline_C_mult_su3_mat_hwvec(__VA_ARGS__)
 void mult_su3_mat_vec_sum_4dir( su3_matrix *a, su3_vector *b0,
 	su3_vector *b1, su3_vector *b2, su3_vector *b3, su3_vector *c );
+#define scalar_mult_add_hwvec_proj(...) _inline_C_scalar_mult_add_hwvec_proj(__VA_ARGS__)
 #define scalar_mult_add_su3_matrix(a,b,c,d) {Real _temp = c; _inline_C_scalar_mult_add_su3_matrix(a,b,_temp,d);}
 #define scalar_mult_add_su3_vector(a,b,c,d) {Real _temp = c; _inline_C_scalar_mult_add_su3_vector(a,b,_temp,d);}
-void su3_projector( su3_vector *a, su3_vector *b, su3_matrix *c );
+#define su3_projector(...) _inline_C_su3_projector(__VA_ARGS__)
 #define su3_rdot(...) _inline_C_su3_rdot(__VA_ARGS__)
 void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 	su3_vector *b3, su3_vector *b4 );
@@ -670,6 +680,10 @@ void mult_su3_mat_hwvec( su3_matrix *mat, half_wilson_vector *src,
 	half_wilson_vector *dest );
 void mult_su3_mat_vec_sum_4dir( su3_matrix *a, su3_vector *b0,
 	su3_vector *b1, su3_vector *b2, su3_vector *b3, su3_vector *c );
+void scalar_mult_add_hwvec_proj( su3_matrix * const a, 
+				 half_wilson_vector * const b, 
+				 half_wilson_vector * const c, 
+				 Real * const s, su3_matrix *d );
 void scalar_mult_add_su3_matrix( su3_matrix *src1, su3_matrix *src2,
 	Real scalar, su3_matrix *dest);
 void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,

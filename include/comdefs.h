@@ -89,7 +89,7 @@ int make_gather(
   int want_even_odd,	/* ALLOW_EVEN_ODD or NO_EVEN_ODD */
   int parity_conserve);	/* {SAME,SWITCH,SCRAMBLE}_PARITY */
 
-msg_tag * declare_gather(
+msg_tag * declare_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
@@ -122,7 +122,7 @@ void restart_gather_site(
   char ** dest,		/* one of the vectors of pointers */
   msg_tag *mbuf);       /* previously returned by start_gather_site */
 
-msg_tag * declare_gather_from_temp(
+msg_tag * declare_gather_field(
   void * field,		/* which field? pointer returned by malloc() */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
@@ -164,7 +164,7 @@ void accumulate_gather(
   msg_tag **mmtag,      /* msg_tag to accumulate into */
   msg_tag *mtag);       /* msg_tag to add to the gather */
 
-void declare_accumulate_gather(
+void declare_accumulate_gather_site(
   msg_tag **mmtag,      /* msg_tag to accumulate into */
   field_offset field,	/* which field? Some member of structure "site" */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -174,7 +174,7 @@ void declare_accumulate_gather(
 			   one of EVEN, ODD or EVENANDODD. */
   char ** dest);	/* one of the vectors of pointers */
 
-void declare_accumulate_gather_from_temp(
+void declare_accumulate_gather_field(
   msg_tag **mmtag,      /* msg_tag to accumulate into */
   void * field,		/* which field? pointer returned by malloc() */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
@@ -184,7 +184,7 @@ void declare_accumulate_gather_from_temp(
 			   one of EVEN, ODD or EVENANDODD. */
   char ** dest);	/* one of the vectors of pointers */
 
-msg_tag * start_general_gather(
+msg_tag * start_general_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */
@@ -192,7 +192,7 @@ msg_tag * start_general_gather(
 			   one of EVEN, ODD or EVENANDODD. */
   char ** dest);	/* one of the vectors of pointers */
 
-msg_tag * start_general_gather_from_temp(
+msg_tag * start_general_gather_field(
 /* arguments */
  void * field,	        /* which field? Pointer returned by malloc() */
  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/

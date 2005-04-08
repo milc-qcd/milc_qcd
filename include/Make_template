@@ -18,71 +18,89 @@
   ../include/complex.h \
   ../include/macros.h \
   lattice.h
+	touch $@
 
 ../include/generic.h :	\
   ../include/int32type.h \
   ../include/complex.h \
   ../include/macros.h \
   ../include/random.h
+	touch $@
 
 ../include/generic_clover.h : \
   ../include/generic_quark_types.h \
   ../include/macros.h
+	touch $@
 
 ../include/generic_form.h : \
   ../include/macros.h \
   ../include/su3.h \
   ../generic_form/gammatypes.h
+	touch $@
 
 ../include/generic_ks.h : \
   ../include/complex.h \
   ../include/su3.h \
   ../include/generic_quark_types.h \
   ../include/comdefs.h
+	touch $@
 
 ../include/generic_pg.h :	../include/macros.h
+	touch $@
 
 ../include/generic_quark_types.h :	../include/macros.h
+	touch $@
 
 ../include/generic_wilson.h : \
   ../include/su3.h \
   ../include/comdefs.h \
   ../include/macros.h \
   ../include/generic_quark_types.h
+	touch $@
 
 ../include/int32type.h :	../include/config.h
+	touch $@
 
 ../include/io_lat.h :	\
   ../include/int32type.h \
   ../include/file_types.h
+	touch $@
 
 ../include/io_ksprop.h : \
   ../include/int32type.h \
   ../include/macros.h \
   ../include/file_types.h
+	touch $@
 
 ../include/io_wprop.h : \
   ../include/int32type.h \
   ../include/macros.h \
   ../include/file_types.h
+	touch $@
 
 ../include/loopend.h :	../include/macros.h ../include/int32type.h
+	touch $@
 
 ../include/macros.h :	defines.h
+	touch $@
 
 ../include/prefetch.h : ../include/prefetch_asm.h
+	touch $@
 
 ../include/su3.h : \
   ../include/complex.h \
   ../include/random.h \
   ../include/int32type.h
+	touch $@
 
 ifeq ($(strip ${HAVEQDP}),true)
 
 ../include/generic_qdp.h: \
   ../include/generic.h
+	touch $@
 
 ../include/generic_ks_qdp.h: \
   ../include/generic_ks.h
+	touch $@
 
 endif
