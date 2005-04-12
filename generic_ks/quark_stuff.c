@@ -88,80 +88,6 @@ int num_basic_paths;	/* number of paths before rotation/reflection */
 int is_path_equal( int *path1, int* path2, int length );
 int add_basic_path( int *vec, int length, Real coeff );
 
-#ifdef QSINLINE
-#define mult_su3_mat_hwvec_for_inline( mat, src, dest ) {\
-\
-  Real _a0r,_a0i,_a1r,_a1i,_a2r,_a2i;\
-  Real _b0r,_b0i,_b1r,_b1i,_b2r,_b2i;\
-  \
-\
-  _a0r=(mat)->e[0][0].real;    _a0i=(mat)->e[0][0].imag;\
-  _b0r=(src)->h[0].c[0].real;  _b0i=(src)->h[0].c[0].imag;\
-  _a1r=(mat)->e[0][1].real;    _a1i=(mat)->e[0][1].imag;\
-  _b1r=(src)->h[0].c[1].real;  _b1i=(src)->h[0].c[1].imag;\
-  _a2r=(mat)->e[0][2].real;    _a2i=(mat)->e[0][2].imag;\
-  _b2r=(src)->h[0].c[2].real;  _b2i=(src)->h[0].c[2].imag;\
-\
-  (dest)->h[0].c[0].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[0].c[0].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-  \
-  _a0r=(mat)->e[1][0].real;    _a0i=(mat)->e[1][0].imag;\
-  _b0r=(src)->h[0].c[0].real;  _b0i=(src)->h[0].c[0].imag;\
-  _a1r=(mat)->e[1][1].real;    _a1i=(mat)->e[1][1].imag;\
-  _b1r=(src)->h[0].c[1].real;  _b1i=(src)->h[0].c[1].imag;\
-  _a2r=(mat)->e[1][2].real;    _a2i=(mat)->e[1][2].imag;\
-  _b2r=(src)->h[0].c[2].real;  _b2i=(src)->h[0].c[2].imag;\
-\
-  (dest)->h[0].c[1].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[0].c[1].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-\
-  _a0r=(mat)->e[2][0].real;    _a0i=(mat)->e[2][0].imag;\
-  _b0r=(src)->h[0].c[0].real;  _b0i=(src)->h[0].c[0].imag;\
-  _a1r=(mat)->e[2][1].real;    _a1i=(mat)->e[2][1].imag;\
-  _b1r=(src)->h[0].c[1].real;  _b1i=(src)->h[0].c[1].imag;\
-  _a2r=(mat)->e[2][2].real;    _a2i=(mat)->e[2][2].imag;\
-  _b2r=(src)->h[0].c[2].real;  _b2i=(src)->h[0].c[2].imag;\
-\
-  (dest)->h[0].c[2].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[0].c[2].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-\
-\
-  _a0r=(mat)->e[0][0].real;    _a0i=(mat)->e[0][0].imag;\
-  _b0r=(src)->h[1].c[0].real;  _b0i=(src)->h[1].c[0].imag;\
-  _a1r=(mat)->e[0][1].real;    _a1i=(mat)->e[0][1].imag;\
-  _b1r=(src)->h[1].c[1].real;  _b1i=(src)->h[1].c[1].imag;\
-  _a2r=(mat)->e[0][2].real;    _a2i=(mat)->e[0][2].imag;\
-  _b2r=(src)->h[1].c[2].real;  _b2i=(src)->h[1].c[2].imag;\
-\
-  (dest)->h[1].c[0].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[1].c[0].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-  \
-  _a0r=(mat)->e[1][0].real;    _a0i=(mat)->e[1][0].imag;\
-  _b0r=(src)->h[1].c[0].real;  _b0i=(src)->h[1].c[0].imag;\
-  _a1r=(mat)->e[1][1].real;    _a1i=(mat)->e[1][1].imag;\
-  _b1r=(src)->h[1].c[1].real;  _b1i=(src)->h[1].c[1].imag;\
-  _a2r=(mat)->e[1][2].real;    _a2i=(mat)->e[1][2].imag;\
-  _b2r=(src)->h[1].c[2].real;  _b2i=(src)->h[1].c[2].imag;\
-\
-  (dest)->h[1].c[1].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[1].c[1].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-\
-  _a0r=(mat)->e[2][0].real;    _a0i=(mat)->e[2][0].imag;\
-  _b0r=(src)->h[1].c[0].real;  _b0i=(src)->h[1].c[0].imag;\
-  _a1r=(mat)->e[2][1].real;    _a1i=(mat)->e[2][1].imag;\
-  _b1r=(src)->h[1].c[1].real;  _b1i=(src)->h[1].c[1].imag;\
-  _a2r=(mat)->e[2][2].real;    _a2i=(mat)->e[2][2].imag;\
-  _b2r=(src)->h[1].c[2].real;  _b2i=(src)->h[1].c[2].imag;\
-\
-  (dest)->h[1].c[2].real = _a0r*_b0r - _a0i*_b0i + _a1r*_b1r - _a1i*_b1i + _a2r*_b2r - _a2i*_b2i;\
-  (dest)->h[1].c[2].imag = _a0r*_b0i + _a0i*_b0r + _a1r*_b1i + _a1i*_b1r + _a2r*_b2i + _a2i*_b2r;\
-\
-}
-
-#else /* External versions */
-#define mult_su3_mat_hwvec_for_inline( mat, src, dest ) mult_su3_mat_hwvec( mat, src, dest ) 
-#endif
-
 /********************************************************************/
 /* Make table of paths in action */
 /********************************************************************/
@@ -447,7 +373,7 @@ void path_transport_hwv( field_offset src, field_offset dest, int parity,
 		sizeof(half_wilson_vector), dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
 	    FORSOMEPARITY(i,s,tmp_parity){
-		mult_su3_mat_hwvec_for_inline( &(s->link[dir[j]]),
+		mult_su3_mat_hwvec( &(s->link[dir[j]]),
 		    (half_wilson_vector *)(gen_pt[0][i]),
 		    &(tmp_dest[i]) );
 	    }
@@ -519,6 +445,26 @@ dtime=-dclock();
     node0_printf("BOTCH: load_longlinks needs phases in\n");
     terminate(0);
   }
+  /* Allocate space for t_longlink if NULL */
+  if(t_longlink == NULL){
+    t_longlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+    if(t_longlink==NULL){
+      printf("NODE %d: no room for t_longlink\n",this_node);
+      terminate(1);
+    }
+  }
+  
+#ifdef DBLSTORE_FN
+  /* Allocate space for t_longlink if NULL */
+  if(t_longbacklink == NULL){
+    t_longbacklink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+    if(t_longbacklink==NULL){
+      printf("NODE %d: no room for t_longbacklink\n",this_node);
+      terminate(1);
+    }
+  }
+#endif
+
   for (dir=XUP; dir<=TUP; dir++){ /* loop over longlink directions */
     /* set longlink to zero */
     FORALLSITES(i,s){
@@ -579,6 +525,18 @@ node0_printf("LLTIME(long): time =  %e (Naik) mflops = %e\n",dtime,
 #endif
 }  /* load_longlinks() */
 
+
+void free_longlinks(){
+  if(t_longlink != NULL)
+    free(t_longlink);
+  t_longlink = NULL;
+#ifdef DBLSTORE_FN
+  if(t_longbacklink != NULL)
+    free(t_longbacklink);
+  t_longbacklink = NULL;
+#endif
+}
+
 /* KS phases and APBC must be in the links. See long comment at bottom*/
 void load_fatlinks() {
   register int i;
@@ -609,6 +567,26 @@ dtime=-dclock();
     node0_printf("BOTCH: load_fatlinks needs phases in\n");
     terminate(0);
   }
+
+  /* Allocate space for t_fatlink if NULL */
+  if(t_fatlink == NULL){
+    t_fatlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+    if(t_fatlink==NULL){
+      printf("NODE %d: no room for t_fatlink\n",this_node);
+      terminate(1);
+    }
+  }
+  
+#ifdef DBLSTORE_FN
+  /* Allocate space for t_fatlink if NULL */
+  if(t_fatbacklink == NULL){
+    t_fatbacklink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+    if(t_fatbacklink==NULL){
+      printf("NODE %d: no room for t_fatbacklink\n",this_node);
+      terminate(1);
+    }
+  }
+#endif
 
 #ifndef  ASQ_OPTIMIZED_FATTENING   /* general case code */
   for (dir=XUP; dir<=TUP; dir++){ /* loop over fatlink directions */
@@ -748,6 +726,17 @@ dtime += dclock();
 }  /* load_fatlinks() */
 #endif /* ifdef FN */
 
+
+void free_fatlinks(){
+  if(t_fatlink != NULL)
+    free(t_fatlink);
+  t_fatlink = NULL;
+#ifdef DBLSTORE_FN
+  if(t_fatbacklink != NULL)
+    free(t_fatbacklink);
+  t_fatbacklink = NULL;
+#endif
+}
 
 /********************************************************************/
 /* compare two paths, return 1 if equal, else zero */
