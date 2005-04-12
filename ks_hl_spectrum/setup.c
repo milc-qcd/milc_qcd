@@ -111,7 +111,6 @@ int readin(int prompt)  {
 					par_buf.startfile_w[i]);
       IF_OK status += get_f(prompt,"kappa", &par_buf.kap[i] );       
       IF_OK status += get_f(prompt,"d1", &par_buf.d1[i] );
-      IF_OK status += get_i(prompt,"format", &(par_buf.format[i]));
     }
     
     IF_OK status += get_i(prompt,"number_of_smearings", &par_buf.num_smear );
@@ -141,7 +140,6 @@ int readin(int prompt)  {
     strcpy(startfile_w[i],par_buf.startfile_w[i]);
     strcpy(savefile_w[i],par_buf.savefile_w[i]);
     startflag_w[i] = par_buf.startflag_w[i];
-    format[i] = par_buf.format[i];
   }
   for(i=0;i<par_buf.num_smear;i++)
     strcpy(smearfile[i],par_buf.smearfile[i]);

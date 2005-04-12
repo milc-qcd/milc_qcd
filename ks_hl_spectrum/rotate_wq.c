@@ -2,11 +2,11 @@
 
 //the rotated quark ends up in the quark_propagator_copy!
 
-void rotate_w_quark(field_offset src, field_offset dest, double d1)
+void rotate_w_quark(field_offset src, field_offset dest, Real d1)
 {
   int spin,color,spin1, color1,i;
   site *s;
-  double fconst;
+  Real fconst;
   wilson_propagator *qsrc;
   wilson_propagator *qdest;
   wilson_vector qtemp;
@@ -34,7 +34,7 @@ void rotate_w_quark(field_offset src, field_offset dest, double d1)
 	s->psi = qsrc->c[color].d[spin];
       }
     
-    /* Do Wilson Dslash_W_3D on the psi field */
+    /* Do Wilson Dslash_w_3D on the psi field */
     dslash_w_3D(F_OFFSET(psi), F_OFFSET(mp), PLUS,  EVENANDODD);
  
     dslash_w_3D(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);

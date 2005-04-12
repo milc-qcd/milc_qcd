@@ -42,8 +42,6 @@ int main(int argc,char *argv[])
   prompt = setup(); 
   setup_restrict_fourier(key, dummy);
   space_vol = (double)(nx*ny*nz);
-  node0_printf("BEGIN\n");
-
   while( readin(prompt) == 0){
     
     
@@ -76,26 +74,7 @@ int main(int argc,char *argv[])
       kappa = kap[k];
       reload_wprop_to_site(startflag_w[k], startfile_w[k], 
 			   F_OFFSET(quark_propagator),1);
-      if (format[k])
-	{
-	  /* Rotate FNAL to Milc format  V g0 G g0 V^+ */
 
-	  FORALLSITES(i,s)
-	    {	 
-	      for(color=0;color<3;color++){
-		mult_swv_by_gamma_l( &(s->quark_propagator.c[color]), 
-				     &(s->quark_propagator_copy.c[color]), 
-				     TUP);
-		mult_swv_by_gamma_r( &(s->quark_propagator_copy.c[color]), 
-				     &(s->quark_propagator.c[color]), 
-				     TUP);
-	      }
-	      
-	    }
-	  weyl2canopy_w_rot( F_OFFSET(quark_propagator),  
-			     F_OFFSET(quark_propagator));
-	  
-	}
       /*******************************************************************/
       /* Rotate the heavy quark */
       
@@ -107,6 +86,7 @@ int main(int argc,char *argv[])
       /**************************************************************/
       /*Calculate and print out the spectrum with the rotated heavy
         quark propagators*/
+      node0_printf("BEGIN\n");
       
       All_KS_hl_prop(F_OFFSET(stag_propagator), 
 		     F_OFFSET(quark_propagator_copy), prop_rot);

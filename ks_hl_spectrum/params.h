@@ -34,8 +34,6 @@ typedef struct {
         int num_smear; /* number of smearings */
         Real kap[MAX_KAP];	/* kappa values for multiple propagators */	
         Real d1[MAX_KAP];   /*rotation parameter*/
-        int format[MAX_KAP]; /* propagator format. milc =0, fermi=1*/
-        int a_format;
 }  params;
 
 #endif /* _PARAMS_H */

@@ -163,8 +163,6 @@ EXTERN char ** gen_pt[N_POINTERS];
 EXTERN	int iseed;
 
 EXTERN  int num_smear;
-EXTERN  int format[MAX_KAP];
-EXTERN  int a_format;
 EXTERN	double rsqmin,rsqprop,beta,mass;
 EXTERN	int warms,trajecs,steps,niter,propinterval,nflavors;
 EXTERN	double epsilon;

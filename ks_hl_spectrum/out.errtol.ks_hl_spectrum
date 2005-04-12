@@ -1,45 +1,5 @@
 BEGIN
-reload_serial XXX
-forget
-number_of_kappas 0
-reload_serial_wprop XXX
-kappa 0
-d1 0
-format 0
-number_of_smearings 0
-smear_func_file XXX
-reload_serial_ksprop XXX
-Restored binary gauge configuration serially from file XXX
-Time stamp Wed Oct 0 0 0
-Checksums 0 0 OK
-Time to reload gauge configuration = 1
-CHECK PLAQ: 3e-09 2e-09
-Unitarity checked. Max deviation 1e-07
-Time to check unitarity = 1
-Reading as a Fermilab KS prop file
-quark.t[0].checksum "256fe380 c09de649"
-quark.t[1].checksum "8ced0a1c 0
-quark.t[2].checksum "2017d4ff 0
-quark.t[3].checksum "65b00a8b 0
-quark.t[4].checksum "2b2f460d f3da5621"
-quark.t[5].checksum "d23f979 fa0caf1a"
-quark.t[6].checksum "26f72465 c1afedc7"
-quark.t[7].checksum "49fda91c 0
-Read KS prop serially from file XXX
-Computed 0 0 Read 0 0.
-Time to reload ksprop = 1
-Reading as a Fermilab Wilson prop file
-quark.t[0].checksum "7e685bd9 0.001
-quark.t[1].checksum "458d636c 1e-08
-quark.t[2].checksum "b5a45a07 1e-06
-quark.t[3].checksum "331f5357 2e-08
-quark.t[4].checksum "d2a13ba2 3e-09
-quark.t[5].checksum "4720052d 1e-07
-quark.t[6].checksum "90dc8731 2e-09
-quark.t[7].checksum "637519f8 5e-09
-Read wprop serially from file XXX
-Time to reload wprop 1
-
+BEGIN
 
 Tr 0, P5_P5 p000_k_0.124000
 _________________________________
@@ -459,6 +419,7 @@ _________________________________
 0 2e-07 2e-07
 0 2e-07 2e-07
 0 2e-07 2e-07
+Reading XXX byte reversal
 Restored smearing function from binary file XXX
 
 
@@ -680,7 +641,7 @@ _________________________________
 
 SMEAR_#0, A1_P5 p111_k_0.124000
 _________________________________
-0 2e-07 2e-07
+0 2e-07 4e-07
 0 2e-07 2e-07
 0 2e-07 2e-07
 0 2e-07 2e-07

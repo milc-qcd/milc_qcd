@@ -12,7 +12,6 @@ number_of_kappas 1
 reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
 kappa 0.124
 d1 0.09073
-format 1
 
 number_of_smearings 1
 smear_func_file  ../binary_samples/smear_fm.sample.l4448.ll

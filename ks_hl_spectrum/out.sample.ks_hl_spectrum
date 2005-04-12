@@ -10,7 +10,6 @@ nz 4
 nt 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 Mallocing 4.4 MBytes per node for lattice
-BEGIN
 reload_serial ../binary_samples/l4_8_5.6_m01-Coul.1
 forget 
 number_of_kappas 1
@@ -51,6 +50,7 @@ quark.t[6].checksum  "90dc8731 1bcbbc90"
 quark.t[7].checksum  "637519f8 3bf07bbe"
 Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
 Time to reload wprop 1.576706e-02
+BEGIN
 
 
 Tr 0, P5_P5 p000_k_0.124000
@@ -471,6 +471,7 @@ _________________________________
 5 -1.462961e-02 -2.328572e-03
 6 3.724796e-02 2.300946e-03
 7 -6.578391e-01 1.196840e-02
+Reading without byte reversal
 Restored smearing function from binary file  ../binary_samples/wf_1S
 
 

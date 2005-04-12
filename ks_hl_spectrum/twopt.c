@@ -106,7 +106,7 @@ void KS_2pt_func(field_offset snk, field_offset src, int *g_snk, int n_snk,
   int i, t, my_x,my_y,my_z;
   site *s;
   complex trace, trace1, epx,epx1;
-  double pi, mom[3];
+  Real pi, mom[3];
 
   su3_matrix *antiquark;
   wilson_propagator  *quark;
@@ -116,9 +116,9 @@ void KS_2pt_func(field_offset snk, field_offset src, int *g_snk, int n_snk,
      for(i=0;i<nt;i++) printf("%.9e %.9e\n", prop[i].real,prop[i].imag);*/
 
   pi = 4.0 * atan( 1.);
-  mom[0] = -2.*pi/(double)nx;  
-  mom[1] = -2.*pi/(double)ny;  
-  mom[2] = -2.*pi/(double)nz; 
+  mom[0] = -2.*pi/(Real)nx;  
+  mom[1] = -2.*pi/(Real)ny;  
+  mom[2] = -2.*pi/(Real)nz; 
  
   FORALLSITES(i,s){
     t = s->t;
@@ -127,8 +127,8 @@ void KS_2pt_func(field_offset snk, field_offset src, int *g_snk, int n_snk,
     my_z = s->z;
   
     epx1.real = 0.0;
-    epx1.imag = (mom[0]*(double)p[0]*(double)my_x + mom[1]*(double)p[1]*(double)my_y 
-		+ mom[2]*(double)p[2]*(double)my_z);
+    epx1.imag = (mom[0]*(Real)p[0]*(Real)my_x + mom[1]*(Real)p[1]*(Real)my_y 
+		+ mom[2]*(Real)p[2]*(Real)my_z);
     epx = cexp(&epx1);
 
     antiquark = (su3_matrix *)F_PT(s, snk);
@@ -173,7 +173,7 @@ void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator)
   int i;
   int g_snk[4],g_src[4];
   int n_snk,n_src;
-  double temp;
+  Real temp;
 
   int p000[3] ={0,0,0}; 
 

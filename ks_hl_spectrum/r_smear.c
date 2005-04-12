@@ -37,7 +37,10 @@ void get_smearings_bi_serial(char *filename)
 	terminate(1);
       }
     tmp=magic_number;
-    if(magic_number == IO_UNI_MAGIC) byterevflag=0;
+    if(magic_number == IO_UNI_MAGIC) {
+      byterevflag=0;
+      printf("Reading without byte reversal\n");
+    }
     else 
       {
 	byterevn((int32type *)&magic_number,1);
