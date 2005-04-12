@@ -53,5 +53,6 @@ complex ploop() {
   g_complexsum( &sum );
   plp.real = sum.real /((Real)(nx*ny*nz));
   plp.imag = sum.imag /((Real)(nx*ny*nz));
+  free(tempmat);
   return(plp);
 }
