@@ -1,0 +1,64 @@
+# Makefile for testing code by comparing test output with sample output
+# For ks_imp_utilities
+
+#------------------------------------------------------------
+# Examples:
+
+#    make -f Make_test check
+# or, for a specific project or projects
+#    make -f Make_test "PROJS=su3_rmd" check
+
+# Edit the Makefile for the appropriate architecture and the file
+# ../Make_test_template to select the appropriate LAUNCH.
+
+# Results are in the files out.test.diff.* and *.test.compare
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = \
+  check_ks_invert \
+  check_fermion_force
+
+MACROLIST = ""
+
+PATTERNS = BEGIN RUNNING
+MAKEMACROS = "PRECISION=2"
+
+include ../Make_test_template
+
+KSFILE1 = ksvector.ans.MdaggerMinv.test.l8
+KSFILE2 = ../binary_samples/ksvector.ans.MdaggerMinv.sample.l8
+KSFILE3 = ksvector.ans.Minv.test.l8
+KSFILE4 = ../binary_samples/ksvector.ans.Minv.sample.l8
+FFFILE1 = colormatrix.mom.test.l8
+FFFILE2 = ../binary_samples/colormatrix.mom.sample.l8
+
+KSFILES = ${KSFILE1} ${KSFILE2} ${KSFILE3} ${KSFILE4}
+FFFILES  = ${FFFILE1} ${FFFILE2}
+
+../file_utilities/diff_ksvector:
+	cd ../file_utilities; \
+	make diff_ksvector; \
+	cd ../ks_imp_utilities
+
+../file_utilities/diff_colormatrix:
+	cd ../file_utilities; \
+	make diff_colormatrix; \
+	cd ../ks_imp_utilities
+
+ksvector.test.compare: ${KSFILES} ../file_utilities/diff_ksvector
+	${LAUNCH} ../file_utilities/diff_ksvector ${KSFILE1} ${KSFILE2} > ksvector.test.compare
+	${LAUNCH} ../file_utilities/diff_ksvector ${KSFILE3} ${KSFILE4} >> ksvector.test.compare
+
+colormatrix.test.compare:  ${FFFILES}  ../file_utilities/diff_colormatrix
+	${LAUNCH} ../file_utilities/diff_colormatrix  ${FFFILE1}  ${FFFILE2} > colormatrix.test.compare
+
+.PHONY: check
+check: test ksvector.test.compare colormatrix.test.compare 
+
+.PHONY: clean compare_clean
+compare_clean:
+	-/bin/rm ksvector.test.compare colormatrix.test.compare ${KSFILES} ${FFFILES}
+
+clean: test_clean compare_clean
