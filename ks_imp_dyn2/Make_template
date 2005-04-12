@@ -136,7 +136,7 @@ else
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
   MULTI_INV_FN = ks_multicg.o
 # Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
-  ASQFORCE = fermion_force_asqtad3.o ff_opt.o
+  ASQFORCE = fermion_force_asqtad2.o
 endif
 
 INV_EO_OBJECTS = d_congrad5_eo.o dslash_eo.o
