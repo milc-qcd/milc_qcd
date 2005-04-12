@@ -185,6 +185,8 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 	int nflav2, field_offset x2_off  );
 void load_longlinks();
 void load_fatlinks();
+void free_longlinks();
+void free_fatlinks();
 void path_transport( field_offset src, field_offset dest, int parity,
     int *dir, int length );
 void path_transport_hwv( field_offset src, field_offset dest, int parity,

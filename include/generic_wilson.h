@@ -41,6 +41,17 @@ int wilson_invert_lean( /* Return value is number of iterations taken */
     );
 
 void boundary_flip(int sign );
+
+/* canopy2weyl_rot.c */
+void weyl2canopy_site(field_offset src, field_offset dest);
+void canopy2weyl_site(field_offset src, field_offset dest);
+void weyl2canopy_field(wilson_propagator *src, wilson_propagator *dest);
+void canopy2weyl_field(wilson_propagator *src, wilson_propagator *dest);
+void convert_wprop_fnal_to_milc_site(field_offset wprop);
+void convert_wprop_fnal_to_milc_field(wilson_propagator *wprop);
+void convert_wprop_milc_to_fnal_site(field_offset wprop);
+void convert_wprop_milc_to_fnal_field(wilson_propagator *wprop);
+
 int congrad_w(int niter,Real rsqmin,Real *final_rsq_ptr);
 
 void copy_site_wilson_vector(field_offset src, field_offset dest);

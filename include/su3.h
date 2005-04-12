@@ -444,16 +444,10 @@ Real wvec_rdot( wilson_vector *a, wilson_vector *b );
 
 void wp_shrink( wilson_vector *src, half_wilson_vector *dest,
 	int dir, int sign );
-void wp_shrink_4dir( wilson_vector *a,  half_wilson_vector *b1,
-	half_wilson_vector *b2, half_wilson_vector *b3,
-	half_wilson_vector *b4,	int sign );
 void wp_grow(  half_wilson_vector *src, wilson_vector *dest,
 	int dir, int sign );
 void wp_grow_add( half_wilson_vector *src, wilson_vector *dest,
 	int dir, int sign );
-void grow_add_four_wvecs( wilson_vector *a, half_wilson_vector *b1,
-	half_wilson_vector *b2, half_wilson_vector *b3,
-	half_wilson_vector *b4, int sign, int sum );
 void mult_by_gamma( wilson_vector *src, wilson_vector *dest, int dir );
 void mult_by_gamma_left( wilson_matrix *src,  wilson_matrix *dest, int dir );
 void mult_by_gamma_right( wilson_matrix *src,  wilson_matrix *dest, int dir );
@@ -516,6 +510,7 @@ void byterevn64(int32type w[], int n);
 
 #define add_su3_matrix(...) _inline_C_add_su3_matrix(__VA_ARGS__)
 #define add_su3_vector(...) _inline_sse_add_su3_vector(__VA_ARGS__)
+#define grow_add_four_wvecs(...)  _inline_C_grow_add_four_wvecs(__VA_ARGS__)
 Real magsq_su3vec( su3_vector *a );
 #define mult_su3_nn(...) _inline_sse_mult_su3_nn(__VA_ARGS__)
 #define mult_su3_na(...) _inline_sse_mult_su3_na(__VA_ARGS__)
@@ -534,11 +529,13 @@ Real magsq_su3vec( su3_vector *a );
 Real su3_rdot( su3_vector *a, su3_vector *b );
 #define sub_four_su3_vecs(...) _inline_sse_sub_four_su3_vecs(__VA_ARGS__)
 #define sub_su3_vector(...) _inline_C_sub_su3_vector(__VA_ARGS__)
+#define wp_shrink_4dir(...) _inline_C_wp_shrink_4dir(__VA_ARGS__)
 
 #else // PRECISION == 2
 
 #define add_su3_matrix(...) _inline_C_add_su3_matrix(__VA_ARGS__)
 #define add_su3_vector(...) _inline_C_add_su3_vector(__VA_ARGS__)
+#define grow_add_four_wvecs(...)  _inline_C_grow_add_four_wvecs(__VA_ARGS__)
 #define magsq_su3vec(...) _inline_C_magsq_su3vec(__VA_ARGS__)
 #define mult_su3_nn(...) _inline_sse_mult_su3_nn(__VA_ARGS__)
 #define mult_su3_na(...) _inline_sse_mult_su3_na(__VA_ARGS__)
@@ -558,6 +555,7 @@ Real su3_rdot( su3_vector *a, su3_vector *b );
 void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 	su3_vector *b3, su3_vector *b4 );
 #define sub_su3_vector(...) _inline_C_sub_su3_vector(__VA_ARGS__)
+#define wp_shrink_4dir(...) _inline_C_wp_shrink_4dir(__VA_ARGS__)
 
 #endif // PRECISION
 
@@ -570,6 +568,9 @@ void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 void add_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 #define add_su3_vector(...) _inline_sse_add_su3_vector(__VA_ARGS__)
 Real magsq_su3vec( su3_vector *a );
+void grow_add_four_wvecs( wilson_vector *a, half_wilson_vector *b1,
+	half_wilson_vector *b2, half_wilson_vector *b3,
+	half_wilson_vector *b4, int sign, int sum );
 #define mult_su3_nn(...) _inline_sse_mult_su3_nn(__VA_ARGS__)
 #define mult_su3_na(...) _inline_sse_mult_su3_na(__VA_ARGS__)
 #define mult_su3_an(...) _inline_sse_mult_su3_an(__VA_ARGS__)
@@ -590,11 +591,17 @@ void scalar_mult_add_hwvec_proj( su3_matrix * const a,
 Real su3_rdot( su3_vector *a, su3_vector *b );
 #define sub_four_su3_vecs(...) _inline_sse_sub_four_su3_vecs(__VA_ARGS__)
 void sub_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+void wp_shrink_4dir( wilson_vector *a,  half_wilson_vector *b1,
+	half_wilson_vector *b2, half_wilson_vector *b3,
+	half_wilson_vector *b4,	int sign );
 
 #else // PRECISION == 2
 
 void add_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 void add_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+void grow_add_four_wvecs( wilson_vector *a, half_wilson_vector *b1,
+	half_wilson_vector *b2, half_wilson_vector *b3,
+	half_wilson_vector *b4, int sign, int sum );
 Real magsq_su3vec( su3_vector *a );
 #define mult_su3_nn(...) _inline_sse_mult_su3_nn(__VA_ARGS__)
 #define mult_su3_na(...) _inline_sse_mult_su3_na(__VA_ARGS__)
@@ -619,6 +626,9 @@ Real su3_rdot( su3_vector *a, su3_vector *b );
 void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 	su3_vector *b3, su3_vector *b4 );
 void sub_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+void wp_shrink_4dir( wilson_vector *a,  half_wilson_vector *b1,
+	half_wilson_vector *b2, half_wilson_vector *b3,
+	half_wilson_vector *b4,	int sign );
 
 #endif // PRECISION
 
@@ -632,6 +642,7 @@ void sub_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
 
 #define add_su3_matrix(...) _inline_C_add_su3_matrix(__VA_ARGS__)
 #define add_su3_vector(...) _inline_C_add_su3_vector(__VA_ARGS__)
+#define grow_add_four_wvecs(...)  _inline_C_grow_add_four_wvecs(__VA_ARGS__)
 #define magsq_su3vec(...) _inline_C_magsq_su3vec(__VA_ARGS__)
 #define mult_su3_nn(...) _inline_C_mult_su3_nn(__VA_ARGS__)
 #define mult_su3_na(...) _inline_C_mult_su3_na(__VA_ARGS__)
@@ -642,8 +653,7 @@ void mult_adj_su3_mat_vec_4dir( su3_matrix *a, su3_vector *b, su3_vector *c );
 void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
 			    su3_vector *dest0, su3_vector *dest1, 
 			    su3_vector *dest2, su3_vector *dest3  ) ;
-void mult_adj_su3_mat_hwvec( su3_matrix *mat, half_wilson_vector *src,
-	half_wilson_vector *dest );
+#define mult_adj_su3_mat_hwvec(...) _inline_C_mult_adj_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_hwvec(...) _inline_C_mult_su3_mat_hwvec(__VA_ARGS__)
 void mult_su3_mat_vec_sum_4dir( su3_matrix *a, su3_vector *b0,
 	su3_vector *b1, su3_vector *b2, su3_vector *b3, su3_vector *c );
@@ -655,6 +665,7 @@ void mult_su3_mat_vec_sum_4dir( su3_matrix *a, su3_vector *b0,
 void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 	su3_vector *b3, su3_vector *b4 );
 #define sub_su3_vector(...) _inline_C_sub_su3_vector(__VA_ARGS__)
+#define wp_shrink_4dir(...) _inline_C_wp_shrink_4dir(__VA_ARGS__)
 
 #else
 
@@ -664,6 +675,9 @@ void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 
 void add_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 void add_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+void grow_add_four_wvecs( wilson_vector *a, half_wilson_vector *b1,
+	half_wilson_vector *b2, half_wilson_vector *b3,
+	half_wilson_vector *b4, int sign, int sum );
 Real magsq_su3vec( su3_vector *a );
 void mult_su3_nn ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 void mult_su3_na ( su3_matrix *a, su3_matrix *b, su3_matrix *c );
@@ -693,6 +707,9 @@ Real su3_rdot( su3_vector *a, su3_vector *b );
 void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 	su3_vector *b3, su3_vector *b4 );
 void sub_su3_vector( su3_vector *a, su3_vector *b, su3_vector *c );
+void wp_shrink_4dir( wilson_vector *a,  half_wilson_vector *b1,
+	half_wilson_vector *b2, half_wilson_vector *b3,
+	half_wilson_vector *b4,	int sign );
 
 #endif // C_INLINE
 
