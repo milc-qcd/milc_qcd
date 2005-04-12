@@ -85,6 +85,7 @@ Real xrandom;
      	iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
 	    niter, rsqmin, EVEN, &final_rsq );
 #else
+	/* For future use */
 	iters += ks_congrad_two_src( F_OFFSET(phi1), F_OFFSET(phi2),
 				     F_OFFSET(xxx1), F_OFFSET(xxx2),
 				     mass1, mass2, niter, rsqmin, 

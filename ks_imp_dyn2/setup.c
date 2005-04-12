@@ -52,34 +52,14 @@ setup()
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
 
-  /* Allocate space for t_longlink and t_fatlink */
-  t_longlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
-  if(t_longlink==NULL){
-    printf("NODE %d: no room for t_longlink\n",this_node);
-    terminate(1);
-  }
-  
-  t_fatlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
-  if(t_fatlink==NULL){
-    printf("NODE %d: no room for t_fatlink\n",this_node);
-    terminate(1);
-  }
+  /* Mark t_longlink and t_fatlink as unallocated */
+  t_longlink = NULL;  
+  t_fatlink = NULL;
   
 #ifdef DBLSTORE_FN
-  /* Allocate space for t_longlink and t_fatlink */
-  t_longbacklink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
-  if(t_longbacklink==NULL){
-    printf("NODE %d: no room for t_longbacklink\n",this_node);
-    terminate(1);
-  }
-  
-  t_fatbacklink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
-  if(t_fatbacklink==NULL){
-    printf("NODE %d: no room for t_fatbacklink\n",this_node);
-    terminate(1);
-  }
+  t_longbacklink = NULL;
+  t_fatbacklink = NULL;
 #endif
-  
 
 #ifdef DM_DU0
   /* Allocate space for u0 derivative of temp fatlinks */

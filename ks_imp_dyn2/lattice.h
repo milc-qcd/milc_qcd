@@ -84,9 +84,6 @@ typedef struct {
  	su3_vector g_rand;	/* Gaussian random vector*/
 	/* Use trick of combining xxx=D^adj D)^(-1) on even sites with
 	   Dslash times this on odd sites when computing fermion force */
-#ifdef QCDOC
-        su3_matrix tempmat2;   /* For ploop2 */
-#endif
 	
 #ifdef HYBRIDS
         su3_matrix field_strength[6];

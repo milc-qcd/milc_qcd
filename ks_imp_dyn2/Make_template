@@ -130,13 +130,13 @@ ifeq ($(strip ${HAVEQDP}),true)
   QDP_OBJECTS = stuff_qdp.o
   INV_FN_OBJECTS = d_congrad5_fn_qdp.o ${DSLASH_FN} dslash_fn_qdp.o 
   MULTI_INV_FN = ks_multicg_qdp.o
-# Choose (fermion_force_asqtad_qdp.o fermion_force_asqtad.o fermion_force_asqtad2.o )
+# Choose (fermion_force_asqtad_qdp.o )
   ASQFORCE = fermion_force_asqtad_qdp.o
 else
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
   MULTI_INV_FN = ks_multicg.o
 # Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
-  ASQFORCE = fermion_force_asqtad2.o
+  ASQFORCE = fermion_force_asqtad3.o ff_opt.o
 endif
 
 INV_EO_OBJECTS = d_congrad5_eo.o dslash_eo.o
