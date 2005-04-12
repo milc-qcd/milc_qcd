@@ -11,6 +11,7 @@
 G_WILSON_ALL =  \
     bj_to_weyl.o \
     boundary_flip.o \
+    canopy2weyl_rot.o \
     copy_site_wilson_vector.o \
     d_bicgilu_w_lean.o \
     d_bicgilu_w_lean2.o \
@@ -62,6 +63,8 @@ ${G_WILSON_ALL}: ${G_WILSON_ALL_DEPEND}
 bj_to_weyl.o: ../generic_wilson/bj_to_weyl.c
 	${CC} -c ${CFLAGS} $<
 boundary_flip.o: ../generic_wilson/boundary_flip.c
+	${CC} -c ${CFLAGS} $<
+canopy2weyl_rot.o: ../generic_wilson/canopy2weyl_rot.c
 	${CC} -c ${CFLAGS} $<
 copy_site_wilson_vector.o: ../generic_wilson/copy_site_wilson_vector.c
 	${CC} -c ${CFLAGS} $<

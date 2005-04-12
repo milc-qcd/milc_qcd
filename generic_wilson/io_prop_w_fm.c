@@ -114,6 +114,7 @@ w_prop_file *r_serial_w_fm_i(char *filename)
 
   w_prop_file *wpf;
   w_prop_header *wph;
+  int byterevflag;
 
   wpf = setup_input_w_prop_file(filename);
   wph = wpf->header;
@@ -124,11 +125,15 @@ w_prop_file *r_serial_w_fm_i(char *filename)
       printf("Can't open propagator file %s, error %d\n",filename,errno);
       terminate(1);
     }
-    read_w_fm_prop_hdr(wpf);
+    byterevflag = read_w_fm_prop_hdr(wpf);
 
   }
   else wpf->fp = NULL;
 
+  /* Broadcast the byterevflag from node 0 to all nodes */
+  broadcast_bytes((char *)&byterevflag,sizeof(byterevflag));
+  wpf->byterevflag = byterevflag;
+  
   /* Node 0 broadcasts the header structure to all nodes */
   broadcast_bytes((char *)wph,sizeof(w_prop_header));
 
@@ -157,6 +162,8 @@ void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site,
   u_int32type *val;
   int rank29,rank31;
   int k;
+
+  byterevflag = wpf->byterevflag;
 
   if(this_node == 0)
     {

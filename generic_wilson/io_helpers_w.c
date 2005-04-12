@@ -9,10 +9,10 @@
 #include "../include/io_lat.h"
 #include "../include/io_wprop.h"
 #include "../include/file_types.h"
-#include "../include/io_scidac.h"
-#include "../include/io_scidac_w.h"
 #include <string.h>
 #ifdef HAVE_QIO
+#include "../include/io_scidac.h"
+#include "../include/io_scidac_w.h"
 #include <qio.h>
 #endif
 
@@ -236,6 +236,7 @@ int reload_wprop_to_site( int flag, char *filename,
       node0_printf("Reading as a Fermilab Wilson prop file\n");
       /* FNAL format has a full propagator in one record */
       r_prop_w_fm_to_site( filename, dest );
+      convert_wprop_fnal_to_milc_site( dest );
     }
 
     else if(file_type == FILE_TYPE_W_QIOPROP)
@@ -404,6 +405,7 @@ int reload_wprop_to_field( int flag, char *filename,
       node0_printf("Reading as a Fermilab Wilson prop file\n");
       /* FNAL format has a full propagator in one record */
       r_prop_w_fm_to_field( filename, dest );
+      convert_wprop_fnal_to_milc_field( dest );
     }
 
     else if(file_type == FILE_TYPE_W_QIOPROP)
