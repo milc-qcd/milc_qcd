@@ -45,7 +45,7 @@ int read_w_fm_prop_hdr(w_prop_file *wpf)
       if(wph->magic_number == IO_UNI_MAGIC) 
 	{
 	  byterevflag = 1; 
-	  printf("Reading with byte reversal\n");
+	  /** printf("Reading with byte reversal\n"); **/
 	}
       else
 	{

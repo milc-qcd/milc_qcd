@@ -1205,7 +1205,7 @@ int read_w_prop_hdr(w_prop_file *wpf, int parallel)
       if(wph->magic_number == W_PROP_VERSION_NUMBER) 
 	{
 	  byterevflag=1;
-	  printf("Reading with byte reversal\n");
+	  /** printf("Reading with byte reversal\n"); **/
 	  if( sizeof(float) != sizeof(int32type)) {
 	    printf("%s: Can't byte reverse\n",myname);
 	    printf("requires size of int32type(%d) = size of float(%d)\n",
