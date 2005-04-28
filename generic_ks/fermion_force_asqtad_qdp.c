@@ -35,7 +35,7 @@
  */
 
 /**#define FFTIME**/
-#define FFSTIME
+/**#define FFSTIME**/
 /**#define QSINLINE**/
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */

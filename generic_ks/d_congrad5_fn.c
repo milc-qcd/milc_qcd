@@ -41,7 +41,7 @@ void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]); /* dslash_fn_field.c */
 su3_vector *ttt,*cg_p;
 su3_vector *resid;
 su3_vector *t_dest;
-int first_congrad = 1;
+static int first_congrad = 1;
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
     int niter, Real rsqmin, int parity, Real *final_rsq_ptr ){
@@ -173,6 +173,8 @@ start:
 #ifdef CG_DEBUG
 	    node0_printf("instant return\n"); fflush(stdout);
 #endif
+	    cleanup_dslash_temps();
+	    free(ttt); free(cg_p); free(resid); free(t_dest); first_congrad = 1;
              return (iteration);
         }
 #ifdef CG_DEBUG
@@ -276,6 +278,8 @@ if(this_node==0){printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
 fflush(stdout);}
 #endif
+	    cleanup_dslash_temps();
+	    free(ttt); free(cg_p); free(resid); free(t_dest); first_congrad = 1;
              return (iteration);
         }
 
@@ -317,6 +321,8 @@ fflush(stdout);}
         "CG not converged after %d iterations, res. = %e wanted %e\n",
         iteration,rsq,rsqstop);
     fflush(stdout);
+    cleanup_dslash_temps();
+    free(ttt); free(cg_p); free(resid); free(t_dest); first_congrad = 1;
     return(iteration);
 }
 

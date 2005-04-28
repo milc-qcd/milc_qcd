@@ -23,6 +23,4 @@
 #ifdef HAVE_QDP
 #include <qdp.h>
 #endif
-
-
-
+#include "../include/check_malloc.h"

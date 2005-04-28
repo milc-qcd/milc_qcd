@@ -549,7 +549,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
       if(ksph->magic_number == KSFMPROP_VERSION_NUMBER) 
 	{
 	  byterevflag=1; 
-	  printf("Reading with byte reversal\n");
+	  /** printf("Reading with byte reversal\n"); **/
 	  if( sizeof(float) != sizeof(int32type)) {
 	    printf("%s: Can't byte reverse\n",myname);
 	    printf("requires size of int32type(%d) = size of float(%d)\n",
