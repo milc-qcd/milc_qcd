@@ -3,7 +3,7 @@ reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
 save_serial_ksprop ksprop_milc.test.l4448.ll
 Dimensions 0 0 0 0
 LAYOUT = XXX options = XXX
-ON EACH NODE 0 x 0 x 0 x 0
+ON EACH NODE XXX x XXX x XXX x XXX
 Converting file ../binary_samples/ksprop_fm.sample.l4448.ll to file ksprop_milc.test.l4448.ll
 Reading as a Fermilab KS prop file
 quark.t[0].checksum "256fe380 c09de649"
@@ -23,7 +23,7 @@ reload_serial_ksprop ksprop_milc.test.l4448.ll
 save_serial_scidac_ksprop ksprop_scidac1.test.l4448.ll
 Dimensions 0 0 0 0
 LAYOUT = XXX options = XXX
-ON EACH NODE 0 x 0 x 0 x 0
+ON EACH NODE XXX x XXX x XXX x XXX
 Converting file ksprop_milc.test.l4448.ll to file ksprop_scidac1.test.l4448.ll
 Reading as a standard KS prop file
 Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
@@ -36,7 +36,7 @@ reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
 save_serial_scidac_ksprop ksprop_scidac2.test.l4448.ll
 Dimensions 0 0 0 0
 LAYOUT = XXX options = XXX
-ON EACH NODE 0 x 0 x 0 x 0
+ON EACH NODE XXX x XXX x XXX x XXX
 Converting file ../binary_samples/ksprop_fm.sample.l4448.ll to file ksprop_scidac2.test.l4448.ll
 Reading as a Fermilab KS prop file
 quark.t[0].checksum "256fe380 c09de649"
@@ -56,7 +56,7 @@ reload_serial_ksprop ksprop_milc.test.l4448.ll
 save_serial_ksprop ksprop_fm.test.l4448.ll
 Dimensions 0 0 0 0
 LAYOUT = XXX options = XXX
-ON EACH NODE 0 x 0 x 0 x 0
+ON EACH NODE XXX x XXX x XXX x XXX
 Converting file ksprop_milc.test.l4448.ll to file ksprop_fm.test.l4448.ll
 Reading as a standard KS prop file
 Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
@@ -69,7 +69,7 @@ reload_serial_ksprop ksprop_fm.test.l4448.ll
 save_serial_scidac_ksprop ksprop_scidac3.test.l4448.ll
 Dimensions 0 0 0 0
 LAYOUT = XXX options = XXX
-ON EACH NODE 0 x 0 x 0 x 0
+ON EACH NODE XXX x XXX x XXX x XXX
 Converting file ksprop_fm.test.l4448.ll to file ksprop_scidac3.test.l4448.ll
 Reading as a standard KS prop file
 Read prop serially for color 0 from file ksprop_fm.test.l4448.ll

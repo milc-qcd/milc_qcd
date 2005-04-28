@@ -21,6 +21,7 @@
 #include "../include/comdefs.h"
 #include <time.h>
 #include <string.h>
+#include <math.h>
 #include "../include/file_types.h"
 #include "../include/io_ksprop.h"
 #include "../include/generic.h"
