@@ -153,7 +153,7 @@ int io_detect(char *filename, file_type ft[], int ntypes);
 void setup_layout( void );
 int node_number(int x,int y,int z,int t);
 int node_index(int x,int y,int z,int t);
-int num_sites(int node);
+size_t num_sites(int node);
 
 /* make_lattice.c */
 void make_lattice();
@@ -163,8 +163,9 @@ void free_lattice();
 void make_global_fields();
 
 /* path_product.c */
-void path_product( const int *dir, const int length);
-void path_prod_subl(const int *dir, const int length, const int subl);
+void path_product( const int *dir, const int length, su3_matrix *tempmat1);
+void path_prod_subl(const int *dir, const int length, const int subl,
+		    su3_matrix *tempmat1);
 
 /* plaquette4.c */
 void plaquette(Real *ss_plaq,Real *st_plaq);
