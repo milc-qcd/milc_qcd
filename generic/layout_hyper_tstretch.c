@@ -44,6 +44,7 @@
 
 int squaresize[4];	/* dimensions of hypercubes */
 int nsquares[4];	/* number of hypercubes in each direction */
+static int sites_on_lastnodes;
 
 int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
 # define MAXPRIMES ( sizeof(prime) / sizeof(int) )
@@ -100,6 +101,7 @@ register int i,j,k,dir;
 
     sites_on_node =
 	    squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
+    sites_on_lastnodes = sites_on_node;
 
 if( mynode()==0)
   printf("ON MOST NODES %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
@@ -109,6 +111,7 @@ if( mynode()==0)
 	if( mynode()==0)printf("SOME NODES HAVE FEWER SITES\n");
 	if( mynode() >=  nsquares[XUP]*nsquares[YUP]*nsquares[ZUP]*(nsquares[TUP]-1) ){
 	    sites_on_node = squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*(squaresize[TUP]-1);
+	    sites_on_lastnodes = sites_on_node;
 	}
     }
 
@@ -143,7 +146,10 @@ register int i,xr,yr,zr,tr;
     }
 }
 
-int num_sites(int node) {
-    return( sites_on_node );
+size_t num_sites(int node) {
+  if( node >=  nsquares[XUP]*nsquares[YUP]*nsquares[ZUP]*(nsquares[TUP]-1) )
+    return sites_on_lastnodes;
+  else
+    return sites_on_node;
 }
 

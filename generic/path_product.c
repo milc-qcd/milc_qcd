@@ -1,9 +1,9 @@
 /********************** path_product.c ***************************/
 /* MIMD version 6 */
 /* Compute product of links along a specified path */
-/* On return lattice[i].tempmat1 contains the product for the path
+/* On return tempmat1[i] contains the product for the path
    ENDING at site i.  e.g., for the 1-link path XUP,
-   lattice[i].tempmat1 = lattice[i-\hat x][XUP] */
+   tempmat1[i] = lattice[i-\hat x][XUP] */
 
 #include "generic_includes.h"	/* definitions files and prototypes */
 #include "../include/prefetch.h"
@@ -19,7 +19,7 @@ for( i=0,  s=lattice ; i<loopend; i++,s++ )
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
 
-void path_product( const int *dir, const int length) {
+void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
     register int i;
     register site *s;
     msg_tag *mtag0;
@@ -38,9 +38,9 @@ void path_product( const int *dir, const int length) {
     /* Trivial path case */
     if(length == 0){
       FORALLSITES(i,s){
-	clear_su3mat(&(s->tempmat1));
-	s->tempmat1.e[0][0].real = s->tempmat1.e[1][1].real 
-	  = s->tempmat1.e[2][2].real = 1.;
+	clear_su3mat(&tempmat1[i]);
+	tempmat1[i].e[0][0].real = tempmat1[i].e[1][1].real 
+	  = tempmat1[i].e[2][2].real = 1.;
       } END_LOOP
       return;
     }
@@ -57,9 +57,9 @@ void path_product( const int *dir, const int length) {
     else{  /* if GOES_BACKWARDS(dir[0]) */
 	FORALLSITES(i,s){
 	  if( i < loopend-FETCH_UP ){
-	    prefetch_M( &((s+FETCH_UP)->tempmat1) );
+	    prefetch_M( &tempmat1[i+FETCHUP] );
 	  }
-	    su3_adjoint(&(s->link[OPP_DIR(dir[0])]),&(s->tempmat1) );
+	    su3_adjoint(&(s->link[OPP_DIR(dir[0])]),&tempmat1[i] );
 	} END_LOOP
     }
 
@@ -81,10 +81,10 @@ void path_product( const int *dir, const int length) {
 	      else{ /* last link was backwards */
 	        FORALLSITES(i,s){
 		  if( i < loopend-FETCH_UP ){
-		    prefetch_M( &((s+FETCH_UP)->tempmat1) );
+		    prefetch_M( &(tempmat1[i+FETCH_UP]) );
 		    prefetch_M(  &(tempmat2t[i+FETCH_UP]) );
 		  }
-		  mult_su3_nn( &(s->tempmat1),&(s->link[dir[j]]),
+		  mult_su3_nn( &tempmat1[i],&(s->link[dir[j]]),
 		    &(tempmat2t[i]) );
 	        } END_LOOP
 	      }
@@ -106,7 +106,7 @@ void path_product( const int *dir, const int length) {
 		  OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	      }
 	      else{ /*last step was backwards */
-	        mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	        mtag0 = start_gather_field( tempmat1, sizeof(su3_matrix),
 		  OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	      }
 	      wait_gather(mtag0);
@@ -132,7 +132,7 @@ void path_product( const int *dir, const int length) {
 		  prefetch_M(  &((s+FETCH_UP)->link[dir[j]]) );
 		}
 		mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(s->link[dir[j]]),
-		    &(s->tempmat1) );
+		    &tempmat1[i] );
 	      } END_LOOP
 	      cleanup_gather(mtag0);
 	    }
@@ -143,10 +143,10 @@ void path_product( const int *dir, const int length) {
 		  prefetch_M(  &((s+FETCH_UP)->link[dir[j]]) );
 		}
 		mult_su3_nn( &(tempmat2t[i]),&(s->link[dir[j]]),
-		    &(s->tempmat1) );
+		    &tempmat1[i] );
 	      } END_LOOP
 	    }
-	    mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	    mtag0 = start_gather_field( tempmat1, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	  }  /* for GOES_FORWARDS */
 
@@ -175,7 +175,7 @@ void path_product( const int *dir, const int length) {
 		prefetch_M(  &((s+FETCH_UP)->link[OPP_DIR(dir[j])]) );
 	      }
 	      mult_su3_na((su3_matrix *)(gen_pt[0][i]),
-		    &(s->link[OPP_DIR(dir[j])]), &(s->tempmat1) );
+		    &(s->link[OPP_DIR(dir[j])]), &tempmat1[i] );
 	    } END_LOOP
 	    cleanup_gather(mtag0);
 	  } /* for GOES_BACKWARDS */
@@ -191,7 +191,7 @@ void path_product( const int *dir, const int length) {
 	    if( i < loopend-FETCH_UP ){
 	      prefetch_M( (su3_matrix *)(gen_pt[0][i+FETCH_UP]) );
 	    }
-	    su3mat_copy((su3_matrix *)(gen_pt[0][i]),&(s->tempmat1) ); 
+	    su3mat_copy((su3_matrix *)(gen_pt[0][i]),&tempmat1[i] ); 
 	} END_LOOP
 	cleanup_gather(mtag0);
       }
@@ -200,7 +200,7 @@ void path_product( const int *dir, const int length) {
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_M( &(tempmat2t[i+FETCH_UP]) );
 	  }
-	  su3mat_copy(&(tempmat2t[i]),&(s->tempmat1) );
+	  su3mat_copy(&(tempmat2t[i]),&tempmat1[i] );
 	} END_LOOP
       }
     }
@@ -218,7 +218,7 @@ void path_product( const int *dir, const int length) {
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_M( &(tempmat3t[i+FETCH_UP]) );
 	  }
-	  su3mat_copy( &(tempmat3t[i]), &(s->tempmat1) );
+	  su3mat_copy( &(tempmat3t[i]), &tempmat1[i] );
 	} END_LOOP
       }
       else{
@@ -234,7 +234,8 @@ void path_product( const int *dir, const int length) {
 
 /* This is a modification of "path_product" from gauge_stuff.c
    which works only on one sublattice. */
-void path_prod_subl(const int *dir, const int length, const int subl)
+void path_prod_subl(const int *dir, const int length, const int subl, 
+		    su3_matrix *tempmat1)
 {
 register int i;
 register site *s;
@@ -265,7 +266,7 @@ int j, nsubl;
     else{  /* if GOES_BACKWARDS(dir[0]) */
 	nsubl = neighsubl[subl][dir[0]];
 	FORSOMESUBLATTICE(i,s,nsubl){
-	    su3_adjoint(&(s->link[OPP_DIR(dir[0])]), &(s->tempmat1) );
+	    su3_adjoint(&(s->link[OPP_DIR(dir[0])]), &tempmat1[i] );
 	}
     }
 
@@ -282,7 +283,7 @@ int j, nsubl;
 	      }
 	      else{ /* last link was backwards */
 		FORSOMESUBLATTICE(i,s,nsubl){
-		  mult_su3_nn( &(s->tempmat1),
+		  mult_su3_nn( &tempmat1[i],
 		    &(s->link[dir[j]]), &(tempmat2t[i]) );
 		}
 	      }
@@ -304,7 +305,7 @@ int j, nsubl;
 	      }
 	      else{ /*last step was backwards */
 		nsubl = neighsubl[nsubl][dir[j]];
-		mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
+		mtag0 = start_gather_field( tempmat1, sizeof(su3_matrix),
 			OPP_DIR(dir[j]), nsubl, gen_pt[0] );
 	      }
 	      wait_gather(mtag0);
@@ -322,18 +323,18 @@ int j, nsubl;
 		wait_gather(mtag0);
 		FORSOMESUBLATTICE(i,s,nsubl){
 		  mult_su3_nn( (su3_matrix *)(gen_pt[0][i]),
-		    &(s->link[dir[j]]), &(s->tempmat1) );
+		    &(s->link[dir[j]]), &tempmat1[i] );
 		}
 		cleanup_gather(mtag0);
 	      }
 	      else{ /* last link was backwards */
 		FORSOMESUBLATTICE(i,s,nsubl){
 		  mult_su3_nn( &(tempmat2t[i]),
-		    &(s->link[dir[j]]), &(s->tempmat1) );
+		    &(s->link[dir[j]]), &tempmat1[i] );
 		}
 	      }
 	      nsubl = neighsubl[nsubl][dir[j]];
-	      mtag0 = start_gather_site( F_OFFSET(tempmat1), sizeof(su3_matrix),
+	      mtag0 = start_gather_field( tempmat1, sizeof(su3_matrix),
 		      OPP_DIR(dir[j]), nsubl, gen_pt[0] );
 	    }  /* for GOES_FORWARDS */
 
@@ -356,7 +357,7 @@ int j, nsubl;
 	      wait_gather(mtag0);
 	      FORSOMESUBLATTICE(i,s,nsubl){
 		mult_su3_na((su3_matrix *)(gen_pt[0][i]),
-		  &(s->link[OPP_DIR(dir[j])]), &(s->tempmat1) );
+		  &(s->link[OPP_DIR(dir[j])]), &tempmat1[i] );
 	      }
 	      cleanup_gather(mtag0);
 	    } /* end for GOES_BACKWARDS */
@@ -369,13 +370,13 @@ int j, nsubl;
 	if( GOES_FORWARDS(dir[length-1]) ){
 	    wait_gather(mtag0);
 	    FORSOMESUBLATTICE(i,s,nsubl){
-	      su3mat_copy((su3_matrix *)(gen_pt[0][i]), &(s->tempmat1) );
+	      su3mat_copy((su3_matrix *)(gen_pt[0][i]), &tempmat1[i] );
 	    }
 	    cleanup_gather(mtag0);
 	}
 	else{
 	    FORSOMESUBLATTICE(i,s,nsubl){
-	      su3mat_copy(&(tempmat2t[i]), &(s->tempmat1) );
+	      su3mat_copy(&(tempmat2t[i]), &tempmat1[i] );
 	    }
 	}
     }
@@ -387,7 +388,7 @@ int j, nsubl;
 	    }
 	    cleanup_gather(mtag0);
 	    FORSOMESUBLATTICE(i,s,nsubl){
-	      su3mat_copy(&(tempmat3t[i]), &(s->tempmat1) );
+	      su3mat_copy(&(tempmat3t[i]), &tempmat1[i] );
 	    }
 	}
     }

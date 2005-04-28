@@ -91,7 +91,7 @@ register int i, tr, zr;
     }
 }
 
-int num_sites(int node) {
+size_t num_sites(int node) {
     return( sites_on_node );
 }
 

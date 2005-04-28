@@ -1446,7 +1446,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
     {
       byterevflag=1;
       gh->magic_number = btmp;
-      printf("Reading with byte reversal\n");
+      /**      printf("Reading with byte reversal\n"); **/
       if( sizeof(float) != sizeof(int32type)) {
 	printf("%s: Can't byte reverse\n",myname);
 	printf("requires size of int32type(%d) = size of float(%d)\n",

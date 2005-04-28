@@ -164,6 +164,7 @@ double imp_gauge_action() {
     complex trace;
     double g_action;
     double action,act2,total_action;
+    su3_matrix *tempmat1;
     int length;
 
     /* these are for loop_table  */
@@ -171,16 +172,22 @@ double imp_gauge_action() {
 
     g_action=0.0;
 
+    tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    if(tempmat1 == NULL){
+      printf("imp_gauge_action: Can't malloc temporary\n");
+      terminate(1);
+  }
+
     /* gauge action */
     for(iloop=0;iloop<NLOOP;iloop++){
 	length=loop_length[iloop];
 	/* loop over rotations and reflections */
 	for(ln=0;ln<loop_num[iloop];ln++){
 
-	    path_product( loop_table[iloop][ln] , length );
+	    path_product( loop_table[iloop][ln] , length, tempmat1 );
 
 	    FORALLSITES(i,s){
-		trace=trace_su3( &s->tempmat1 );
+		trace=trace_su3( &tempmat1[i] );
 		action =  3.0 - (double)trace.real;
 		/* need the "3 -" for higher characters */
         	total_action= (double)loop_coeff[iloop][0]*action;
@@ -197,6 +204,7 @@ double imp_gauge_action() {
     } /* iloop */
 
     g_doublesum( &g_action );
+    free(tempmat1);
     return( g_action );
 } /* imp_gauge_action */
 
@@ -208,11 +216,11 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
     su3_matrix tmat1,tmat2;
     register Real eb3;
     register anti_hermitmat* momentum;
+    su3_matrix *staple, *tempmat1;
     int nflop = 153004;  /* For Symanzik1 action */
 #ifdef GFTIME
     double dtime;
 #endif
-
     int j,k;
     int dirs[MAX_LENGTH],length;
     int path_dir[MAX_LENGTH],path_length;
@@ -225,13 +233,26 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
 #ifdef GFTIME
 dtime=-dclock();
 #endif
+
+    staple = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    if(staple == NULL){
+      printf("imp_gauge_force: Can't malloc temporary\n");
+      terminate(1);
+    }
+
+    tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    if(tempmat1 == NULL){
+      printf("imp_gauge_force: Can't malloc temporary\n");
+      terminate(1);
+    }
+
     eb3 = eps*beta/3.0;
 
     /* Loop over directions, update mom[dir] */
     for(dir=XUP; dir<=TUP; dir++){
 
 	FORALLSITES(i,st)for(j=0;j<3;j++)for(k=0;k<3;k++){
-			st->staple.e[j][k]=cmplx(0.0,0.0);
+			staple[i].e[j][k]=cmplx(0.0,0.0);
 	} END_LOOP
 
 	ncount=0;
@@ -265,7 +286,7 @@ dtime=-dclock();
 			    OPP_DIR(dirs[(k+j+1)%length]);
 		    }
 /**if(dir==XUP)printf("X_UPDATE PATH: "); printpath( path_dir, path_length );**/
-		    path_product(path_dir,path_length);
+		    path_product(path_dir,path_length, tempmat1);
 
 		    /* We took the path in the other direction from our
 			old convention in order to get it to end up
@@ -273,7 +294,7 @@ dtime=-dclock();
 		    /* then compute "single_action" contribution to
 			staple */
 		    FORALLSITES(i,st){
-			su3_adjoint( &(st->tempmat1), &tmat1 );
+			su3_adjoint( &(tempmat1[i]), &tmat1 );
 			/* first we compute the fundamental term */
 			new_term = loop_coeff[iloop][0];
 
@@ -291,8 +312,8 @@ node0_printf("WARNING: THIS CODE IS NOT TESTED\n"); exit(0);
 			    }
 			}  /* end if NREPS > 1 */
 
-			scalar_mult_add_su3_matrix( &(st->staple), &tmat1,
-				new_term, &(st->staple) );
+			scalar_mult_add_su3_matrix( &(staple[i]), &tmat1,
+				new_term, &(staple[i]) );
 
 		    } END_LOOP
 
@@ -304,12 +325,12 @@ node0_printf("WARNING: THIS CODE IS NOT TESTED\n"); exit(0);
 
 	/* Now multiply the staple sum by the link, then update momentum */
 	FORALLSITES(i,st){
-	    mult_su3_na( &(st->link[dir]), &(st->staple), &tmat1 );
+	    mult_su3_na( &(st->link[dir]), &(staple[i]), &tmat1 );
 	    momentum = (anti_hermitmat *)F_PT(st,mom_off);
 	    uncompress_anti_hermitian( &momentum[dir], &tmat2 );
 	    scalar_mult_sub_su3_matrix( &tmat2, &tmat1,
-		eb3, &(st->staple) );
-	    make_anti_hermitian( &(st->staple), &momentum[dir] );
+		eb3, &(staple[i]) );
+	    make_anti_hermitian( &(staple[i]), &momentum[dir] );
 	} END_LOOP
     } /* dir loop */
 #ifdef GFTIME
@@ -317,6 +338,8 @@ dtime+=dclock();
 node0_printf("GFTIME:   time = %e (Symanzik1) mflops = %e\n",dtime,
 	     nflop*(double)volume/(1e6*dtime*numnodes()) );
 #endif
+ free(staple); 
+ free(tempmat1); 
 } /* imp_gauge_force.c */
 
 /* Measure gauge observables:
@@ -332,8 +355,15 @@ void g_measure( ){
     complex trace;
     double average[NREPS],action,act2,total_action;
     int length;
+    su3_matrix *tempmat1;
     /* these are for loop_table  */
     int ln,iloop,rep;
+
+    tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    if(tempmat1 == NULL){
+      printf("g_measure: Can't malloc temporary\n");
+      terminate(1);
+    }
 
     /* KS and BC minus signs should be out for this routine */
     d_plaquette( &ss_plaquette, &st_plaquette );
@@ -349,11 +379,11 @@ void g_measure( ){
 	/* loop over rotations and reflections */
 	for(ln=0;ln<loop_num[iloop];ln++){
 
-	    path_product( loop_table[iloop][ln] , length );
+	    path_product( loop_table[iloop][ln] , length, tempmat1 );
 
 	    for(rep=0;rep<NREPS;rep++)average[rep] = 0.0;
 	    FORALLSITES(i,s){
-		trace=trace_su3( &s->tempmat1 );
+		trace=trace_su3( &tempmat1[i] );
 		average[0] += (double)trace.real;
 		action =  3.0 - (double)trace.real;
 		total_action += (double)loop_coeff[iloop][0]*action;
@@ -379,7 +409,7 @@ void g_measure( ){
     /**node0_printf("CHECK:   %e   %e\n",total_action,imp_gauge_action() );**/
 
     if(this_node==0)fflush(stdout);
-
+    free(tempmat1);
 }
 
 void printpath( int *path, int length ){
@@ -406,13 +436,25 @@ register int i;
 int iloop, ln, k, j;
 int dirs[MAX_LENGTH], length;
 int path_dir[MAX_LENGTH], path_length;
-su3_matrix tmat1;
+su3_matrix tmat1, *tempmat1, *staple;
 int fsubl;
 
  assert(NREPS==1);   /* This procedure designed only for NREPS = 1 */
 
+ tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+ if(tempmat1 == NULL){
+   printf("dsdu_qhb_subl: Can't malloc temporary\n");
+   terminate(1);
+ }
+
+ staple = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+ if(staple == NULL){
+   printf("imp_gauge_force: Can't malloc temporary\n");
+   terminate(1);
+ }
+ 
     FORSOMESUBLATTICE(i,st,subl) {
-	clear_su3mat(&(st->staple));
+	clear_su3mat(&staple[i]);
     }
 
     for(iloop=0;iloop<NLOOP;iloop++){
@@ -444,20 +486,22 @@ int fsubl;
 		    path_dir[path_length-1-j] =
 			OPP_DIR(dirs[(k+j+1)%length]);
 		}
-		path_prod_subl(path_dir, path_length, fsubl);
+		path_prod_subl(path_dir, path_length, fsubl, tempmat1);
 
 		/* We took the path in the other direction from our old
 		   convention in order to get it to end up "at our site".
 		   So now take adjoint */
 		FORSOMESUBLATTICE(i,st,subl) {
-		    su3_adjoint(&(st->tempmat1), &tmat1 );
-		    scalar_mult_add_su3_matrix(&(st->staple), &tmat1,
-			loop_coeff[iloop][0], &(st->staple) );
+		    su3_adjoint( &tempmat1[i], &tmat1 );
+		    scalar_mult_add_su3_matrix(&staple[i], &tmat1,
+			loop_coeff[iloop][0], &staple[i]) );
 		}
 	    } /* k (location in path) */
 	} /* ln */
     } /* iloop */
 
+    free(tempmat1);
+    free(staple);
     g_sync();
 
 } /* dsdu_qhb */

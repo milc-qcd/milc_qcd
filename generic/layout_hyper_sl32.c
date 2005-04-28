@@ -109,6 +109,6 @@ register int i,xr,yr,zr,tr,k;
     return( i/2 + k*subl_sites_on_node );
 }
 
-int num_sites(int node) {
+size_t num_sites(int node) {
     return( sites_on_node );
 }

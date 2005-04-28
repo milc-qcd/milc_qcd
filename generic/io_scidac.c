@@ -33,6 +33,10 @@ void qio_get_coords(int x[], int node, int index){
   x[3] = lattice[index].t;
 }
 
+size_t qio_num_sites(int node){
+  return num_sites(node);
+}
+
 void build_layout(QIO_Layout *layout){
   static int lattice_size[LATDIM];
 
@@ -44,6 +48,7 @@ void build_layout(QIO_Layout *layout){
   layout->node_number     = qio_node_number;
   layout->node_index      = qio_node_index;
   layout->get_coords      = qio_get_coords;
+  layout->num_sites       = qio_num_sites;
   layout->latsize         = lattice_size;
   layout->latdim          = LATDIM;
   layout->volume          = volume;

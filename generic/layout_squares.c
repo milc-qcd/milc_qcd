@@ -125,6 +125,6 @@ int coords[4];
     }
 }
 
-int num_sites(int node) {
+size_t num_sites(int node) {
     return( nsites_per*xsquaresize*ysquaresize );
 }

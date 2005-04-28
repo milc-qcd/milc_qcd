@@ -76,8 +76,8 @@
 
 /* Scratch space */
 
-su3_matrix *diffmatp;                       /* malloced diffmat pointer */
-su3_vector *sumvecp;                        /* malloced sumvec pointer */
+static su3_matrix *diffmatp;               /* malloced diffmat pointer */
+static su3_vector *sumvecp;                /* malloced sumvec pointer */
 field_offset diffmat_offset,sumvec_offset;  /* field offsets */
 
 void accum_gauge_hit(int gauge_dir,int parity)

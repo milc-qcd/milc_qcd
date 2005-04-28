@@ -123,6 +123,6 @@ register int i,xr,yr,zr,tr;
     }
 }
 
-int num_sites(int node) {
+size_t num_sites(int node) {
     return( sites_on_node );
 }

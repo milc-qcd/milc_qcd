@@ -21,3 +21,4 @@
 #ifdef SCHROED_FUN
 #include "../include/generic_schroed.h"
 #endif
+#include "../include/check_malloc.h"
