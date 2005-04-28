@@ -14,6 +14,7 @@
 
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#define NULL_FP -1
 
 EXTERN gauge_header start_lat_hdr;	/* Input gauge field header */
 
@@ -73,7 +74,7 @@ main( int argc, char **argv )
 	/* Fix TUP Coulomb gauge - gauge links only*/
 	rephase( OFF );
 	gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-		 F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
+		 NULL_FP,NULL_FP,
 		 0,NULL,NULL,0,NULL,NULL);
 	rephase( ON );
 	valid_fatlinks = valid_longlinks = 0;

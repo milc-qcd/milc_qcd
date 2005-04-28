@@ -89,6 +89,7 @@ typedef struct {
         su3_matrix field_strength[6];
 #endif
 #ifdef SPECTRUM
+        su3_matrix tempmat1,staple;
 	su3_vector propmat[3];	/* For three source colors */
 	su3_vector propmat2[3];	/* nl_spectrum() */
 	su3_matrix tempmat2;
@@ -115,7 +116,6 @@ typedef struct {
 #ifdef CHEM_POT
  	su3_vector dM_M_inv;	/* temp vector for dM/dmu M^{-1} g_rand */
 #endif
-	su3_matrix tempmat1,staple;
 } site;
 
 /* End definition of site structure */
