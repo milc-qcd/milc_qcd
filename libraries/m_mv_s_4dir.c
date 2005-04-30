@@ -21,13 +21,17 @@ void mult_su3_mat_vec_sum_4dir(  su3_matrix *a, su3_vector *b0,
 
 #else
 /* Fast code, with subroutines inlined */
-#ifdef NATIVEDOUBLE /* IBM RS6000 version */
 void mult_su3_mat_vec_sum_4dir(  su3_matrix *a, su3_vector *b0,
        su3_vector *b1, su3_vector *b2, su3_vector *b3, su3_vector *c  ){
 
   register int n;
+#ifdef NATIVEDOUBLE /* IBM RS6000 version */
   register double c0r,c0i,c1r,c1i,c2r,c2i;
   register double br,bi,a0,a1,a2;
+#else
+  register Real c0r,c0i,c1r,c1i,c2r,c2i;
+  register Real br,bi,a0,a1,a2;
+#endif
   register su3_matrix *mat;
   register su3_vector *b;
 
@@ -124,48 +128,4 @@ void mult_su3_mat_vec_sum_4dir(  su3_matrix *a, su3_vector *b0,
 
 }
 
-#else
-void mult_su3_mat_vec_sum_4dir(  su3_matrix *a, su3_vector *b0,
-       su3_vector *b1, su3_vector *b2, su3_vector *b3, su3_vector *c  ){
-  int i,n;
-  register su3_matrix *at;
-  register su3_vector *b;
-  register Real t,ar,ai,br,bi,cr,ci;
-  
-  for(i=0;i<3;i++){
-    c->c[i].real = 0.0;
-    c->c[i].imag = 0.0;
-  }
-  for(n=0;n<4;n++){
-    at = a+n;
-    switch(n){
-    case(0): b=b0; break;
-    case(1): b=b1; break;
-    case(2): b=b2; break;
-    case(3): b=b3; break;
-    default: b = 0;
-    }
-    for(i=0;i<3;i++){
-      
-      ar=at->e[i][0].real; ai=at->e[i][0].imag;
-      br=b->c[0].real; bi=b->c[0].imag;
-      cr=ar*br; t=ai*bi; cr -= t;
-      ci=ar*bi; t=ai*br; ci += t;
-      
-      ar=at->e[i][1].real; ai=at->e[i][1].imag;
-      br=b->c[1].real; bi=b->c[1].imag;
-      t=ar*br; cr += t; t=ai*bi; cr -= t;
-      t=ar*bi; ci += t; t=ai*br; ci += t;
-      
-      ar=at->e[i][2].real; ai=at->e[i][2].imag;
-      br=b->c[2].real; bi=b->c[2].imag;
-      t=ar*br; cr += t; t=ai*bi; cr -= t;
-      t=ar*bi; ci += t; t=ai*br; ci += t;
-      
-      c->c[i].real += cr;
-      c->c[i].imag += ci;
-    }
-  }
-}
-#endif  /* End of "#ifdef NATIVEDOUBLE" */
 #endif	/* End of "#ifdef FAST" */
