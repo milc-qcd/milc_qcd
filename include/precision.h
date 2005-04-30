@@ -6,7 +6,7 @@
 #define PRECISION 1
 #endif
 
-#if PRECISION == 2
+#if (PRECISION == 2)
 typedef double Real;
 #else
 typedef float Real;
