@@ -5,6 +5,7 @@
 #include "inline_C_m_mat_hwvec.h"
 #include "inline_C_m_mat_na.h"
 #include "inline_C_m_mat_nn.h"
+#include "inline_C_m_mv_4dir.h"
 #include "inline_C_msq_su3vec.h"
 #include "inline_C_s_m_a_hwvec_proj.h"
 #include "inline_C_s_m_a_mat.h"
