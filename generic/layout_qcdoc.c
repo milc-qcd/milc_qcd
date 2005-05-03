@@ -1,5 +1,5 @@
 /******** layout_qcdocsim.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
 
 /* This version divides each dimension by a machine determined
@@ -26,103 +26,235 @@
 #include "generic_includes.h"
 #include <qmp.h>
 
-int squaresize[4];	/* dimensions of hypercubes */
-int nsquares[4];	/* number of hypercubes in each direction */
-int *nsquares2;   /* HACK. Use QMP to get machine size */
-int latdims[4];		/* size of lattice */
-/*int *nsquares;*/
+int lattice_dimensions[ 4 ];
+int lattice_nx = -1;
+int lattice_ny = -1;
+int lattice_nz = -1;
+int lattice_nt = -1;
 
-void setup_layout(){
-register int i,j,dir;
-#if 0
-QMP_u32_t *QMP_get_allocated_dimensions();
-#endif
+int machine_dimensions[ 4 ];  /* DBR: Should this be 4? */
+int machine_nx = -1;
+int machine_ny = -1;
+int machine_nz = -1;
+int machine_nt = -1;
 
+int sub_lattice_dimensions[ 4 ];
+int sub_lattice_nx = -1;
+int sub_lattice_ny = -1;
+int sub_lattice_nz = -1;
+int sub_lattice_nt = -1;
 
-/* nsquares=(int*)malloc(sizeof(int)*4);*/
+int sub_lattice_volume = -1;
 
-#ifndef PPC440QCDOC
-    if(mynode()==0){
-	printf("LAYOUT = Grid, options = ");
-	printf("qcdoc,");
-	printf("\n");
-    }
-#endif /* PPC440QCDOC */
+int machine_coordinates[ 4 ];  /* DBR: Should this be 4? */
+int machine_x = -1;
+int machine_y = -1;
+int machine_z = -1;
+int machine_t = -1;
 
-    printf("QMP num dim= %d, this_node=%d\n", QMP_get_allocated_number_of_dimensions (), this_node);fflush(stdout);
+void setup_layout( void )
+{
+  int number_machine_dimensions = -1;
+  const int* p_machine_dimensions = NULL;
+  int number_logical_dimensions = -1;
+  const int* p_logical_dimensions = NULL;
+  const int* p_machine_coordinates = NULL;
+  int i;
 
-    /* Figure out dimensions of rectangle */
-#ifndef DUMMYTEST
-    /*
-        if( QMP_get_allocated_number_of_dimensions () != 4){
-      node0_printf("BONEHEAD! THIS WORKS ONLY ON 4D GRID MACHINE\n"); terminate(0);
-        }
-    */
-    nsquares2 = QMP_get_allocated_dimensions ();
-    nsquares[XUP]=nsquares2[0];
-    nsquares[YUP]=nsquares2[1];
-    nsquares[ZUP]=nsquares2[2];
-    nsquares[TUP]=nsquares2[3];
-#ifndef PPC440QCDOC
-printf("nsquares[XUP]=%d\n",nsquares[XUP]);
-printf("nsquares[YUP]=%d\n",nsquares[YUP]);
-printf("nsquares[ZUP]=%d\n",nsquares[ZUP]);
-printf("nsquares[TUP]=%d\n",nsquares[TUP]);
-#endif /* PPC440QCDOC */
-#else  /*DUMMYTEST*/
-    nsquares[XUP]=2;
-    nsquares[YUP]=1;
-    nsquares[ZUP]=3;
-    nsquares[TUP]=numnodes()/( 2*1*3 );
-#endif /*DUMMYTEST*/
+  lattice_nx = nx;
+  lattice_ny = ny;
+  lattice_nz = nz;
+  lattice_nt = nt;
 
-    /* set grid dimensions */
-    /* find dimensions of each block */
-    latdims[XUP]=nx; latdims[YUP]=ny; latdims[ZUP]=nz; latdims[TUP]=nt;
-    for(dir=XUP;dir<=TUP;dir++){
-	if( latdims[dir]%nsquares[dir] != 0){
-	    node0_printf("LATTICE SIZE DOESN'T FIT GRID\n"); terminate(0);
-	}
-	squaresize[dir] = latdims[dir]/nsquares[dir];
-    }
+  lattice_dimensions[ XUP ] = lattice_nx;
+  lattice_dimensions[ YUP ] = lattice_ny;
+  lattice_dimensions[ ZUP ] = lattice_nz;
+  lattice_dimensions[ TUP ] = lattice_nt;
 
-    sites_on_node =
-	    squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
-    /* Need even number of sites per hypercube */
-    if( mynode()==0)if( sites_on_node%2 != 0){
-	printf("SORRY, CAN'T LAY OUT THIS LATTICE\n");
+  printf( "lattice_nx = %i\n", lattice_nx );
+  printf( "lattice_ny = %i\n", lattice_ny );
+  printf( "lattice_nz = %i\n", lattice_nz );
+  printf( "lattice_nt = %i\n", lattice_nt );
+
+  number_machine_dimensions = QMP_get_allocated_number_of_dimensions();
+  printf( "number of QMP machine dimensions = %i\n", number_machine_dimensions );
+
+  p_machine_dimensions = QMP_get_allocated_dimensions();
+  if( p_machine_dimensions == NULL )
+  {
+    printf( "p_machines_dimensions is NULL\n" );
+    terminate( 0 );
+  }
+
+  for( i = 0; i < number_machine_dimensions; i++ )
+  {
+    printf( "QMP machine dimension ( %i ) = %i\n", i, p_machine_dimensions[ i ] );
+  }
+
+  number_logical_dimensions = QMP_get_allocated_number_of_dimensions();
+  printf( "number of QMP logical dimensions = %i\n", number_logical_dimensions );
+
+  p_logical_dimensions = QMP_get_allocated_dimensions();
+  if( p_logical_dimensions == NULL )
+  {
+    printf( "p_logicals_dimensions is NULL\n" );
+    terminate( 0 );
+  }
+
+  for( i = 0; i < number_logical_dimensions; i++ )
+  {
+    printf( "QMP logical dimension ( %i ) = %i\n", i, p_logical_dimensions[ i ] );
+  }
+
+  p_logical_dimensions = NULL;
+
+  machine_nx = p_machine_dimensions[ 0 ];
+  machine_ny = p_machine_dimensions[ 1 ];
+  machine_nz = p_machine_dimensions[ 2 ];
+  machine_nt = p_machine_dimensions[ 3 ];
+
+  p_machine_dimensions = NULL;
+
+  machine_dimensions[ XUP ] = machine_nx;
+  machine_dimensions[ YUP ] = machine_ny;
+  machine_dimensions[ ZUP ] = machine_nz;
+  machine_dimensions[ TUP ] = machine_nt;
+
+  printf( "machine_nx = %i\n", machine_nx );
+  printf( "machine_ny = %i\n", machine_ny );
+  printf( "machine_nz = %i\n", machine_nz );
+  printf( "machine_nt = %i\n", machine_nt );
+
+  /* Each lattice dimension must be a mutliple of the corresponding machine dimension. */
+
+  if( ( lattice_nx % machine_nx ) != 0 )
+  {
+    printf( "lattice_nx = %i is not a multiple of machine_nx = %i\n", lattice_nx, machine_nx );
+    terminate( 0 );
+  }
+  if( ( lattice_ny % machine_ny ) != 0 )
+  {
+    printf( "lattice_ny = %i is not a multiple of machine_ny = %i\n", lattice_ny, machine_ny );
+    terminate( 0 );
+  }
+  if( ( lattice_nz % machine_nz ) != 0 )
+  {
+    printf( "lattice_nz = %i is not a multiple of machine_nz = %i\n", lattice_nz, machine_nz );
+    terminate( 0 );
+  }
+  if( ( lattice_nt % machine_nt ) != 0 )
+  {
+    printf( "lattice_nt = %i is not a multiple of machine_nt = %i\n", lattice_nt, machine_nt );
+    terminate( 0 );
+  }
+
+  sub_lattice_nx = lattice_nx / machine_nx;
+  sub_lattice_ny = lattice_ny / machine_ny;
+  sub_lattice_nz = lattice_nz / machine_nz;
+  sub_lattice_nt = lattice_nt / machine_nt;
+
+  sub_lattice_dimensions[ XUP ] = sub_lattice_nx;
+  sub_lattice_dimensions[ YUP ] = sub_lattice_ny;
+  sub_lattice_dimensions[ ZUP ] = sub_lattice_nz;
+  sub_lattice_dimensions[ TUP ] = sub_lattice_nt;
+
+  printf( "sub_lattice_nx = %i\n", sub_lattice_nx );
+  printf( "sub_lattice_ny = %i\n", sub_lattice_ny );
+  printf( "sub_lattice_nz = %i\n", sub_lattice_nz );
+  printf( "sub_lattice_nt = %i\n", sub_lattice_nt );
+
+  sites_on_node = sub_lattice_nx * sub_lattice_ny * sub_lattice_nz * sub_lattice_nt;
+
+  sub_lattice_volume = sites_on_node;
+
+  /* The number of sites per node must be even. */
+
+  if( mynode() == 0 )
+  {
+    if( sites_on_node % 2 != 0)
+    {
+        printf( "sites_on_node is not even\n" );
 	terminate(0);
     }
-    even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+  }
+
+  even_sites_on_node = sites_on_node / 2;
+  odd_sites_on_node  = sites_on_node / 2;
+
+  p_machine_coordinates = QMP_get_logical_coordinates();
+  if( p_machine_coordinates == NULL )
+  {
+    printf( "p_machines_coordinates is NULL\n" );
+    terminate( 0 );
+  }
+
+  for( i = 0; i < number_logical_dimensions; i++ )
+  {
+    printf( "QMP machine cooridinate ( %i ) = %i\n", i, p_machine_coordinates[ i ] );
+  }
+
+  machine_x = p_machine_coordinates[ 0 ];
+  machine_y = p_machine_coordinates[ 1 ];
+  machine_z = p_machine_coordinates[ 2 ];
+  machine_t = p_machine_coordinates[ 3 ];
+
+  p_machine_coordinates = NULL;
+
+  machine_coordinates[ XUP ] = machine_x;
+  machine_coordinates[ YUP ] = machine_y;
+  machine_coordinates[ ZUP ] = machine_z;
+  machine_coordinates[ TUP ] = machine_t;
+
+  printf( "machine_x = %i\n", machine_x );
+  printf( "machine_y = %i\n", machine_y );
+  printf( "machine_z = %i\n", machine_z );
+  printf( "machine_t = %i\n", machine_t );
+
 if( mynode()==0)
-  printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
-                squaresize[ZUP],squaresize[TUP]);
+  printf("ON EACH NODE %d x %d x %d x %d\n",sub_lattice_nx,sub_lattice_ny,
+                sub_lattice_ny,sub_lattice_nz);
 if( mynode()==0 && sites_on_node%2 != 0)
 	printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
-    even_sites_on_node = odd_sites_on_node = sites_on_node/2;
 }
 
-int node_number(int x,int y,int z,int t) {
-register int i;
-    x /= squaresize[XUP]; y /= squaresize[YUP];
-    z /= squaresize[ZUP]; t /= squaresize[TUP];
-    i = x + nsquares[XUP]*( y + nsquares[YUP]*( z + nsquares[ZUP]*( t )));
-    return( i );
+int node_number( int x, int y, int z, int t )
+{
+  x /= sub_lattice_nx;  /* x -> machine_x */
+  y /= sub_lattice_ny;  /* y -> machine_y */
+  z /= sub_lattice_nz;  /* z -> machine_z */
+  t /= sub_lattice_nt;  /* t -> machine_t */
+
+  return( x + machine_nx * ( y + machine_ny * ( z + machine_nz * t ) ) );
 }
 
-int node_index(int x,int y,int z,int t) {
-register int i,xr,yr,zr,tr;
-    xr = x%squaresize[XUP]; yr = y%squaresize[YUP];
-    zr = z%squaresize[ZUP]; tr = t%squaresize[TUP];
-    i = xr + squaresize[XUP]*( yr + squaresize[YUP]*( zr + squaresize[ZUP]*tr));
-    if( (x+y+z+t)%2==0 ){	/* even site */
-	return( i/2 );
-    }
-    else {
-	return( (i + sites_on_node)/2 );
-    }
+int node_index( int x, int y, int z, int t )
+{
+  register int index;
+  register int sub_lattice_x;
+  register int sub_lattice_y;
+  register int sub_lattice_z;
+  register int sub_lattice_t;
+
+  sub_lattice_x = x % sub_lattice_nx;
+  sub_lattice_y = y % sub_lattice_ny;
+  sub_lattice_z = z % sub_lattice_nz;
+  sub_lattice_t = t % sub_lattice_nt;
+
+  index = sub_lattice_x + sub_lattice_nx * ( sub_lattice_y + sub_lattice_ny * ( sub_lattice_z + sub_lattice_nz * sub_lattice_t ) );
+
+  if( ( x + y + z + t ) % 2 == 0 )
+  {
+    /* even site */
+    return( index / 2 );
+  }
+  else
+  {
+    /* odd site */
+    return( ( index + sites_on_node ) / 2 );
+  }
 }
 
-size_t num_sites(int node) {
-    return( sites_on_node );
+size_t num_sites( int node )
+{
+  return( sites_on_node );
 }
