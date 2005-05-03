@@ -17,8 +17,10 @@ void update_h( Real eps ){
     dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD );
     dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD );
 #endif
+#ifdef FN
     free_longlinks();
     free_fatlinks();
+#endif
     /* gauge field force */
     rephase(OFF);
     imp_gauge_force(eps,F_OFFSET(mom));

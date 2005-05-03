@@ -118,9 +118,13 @@ endif
 # Choose non-QDP FN dslash (dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o )
 DSLASH_FN = dslash_fn2.o
 
-# Choose non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
-# or d_congrad5_fn_fewsums.o)
-CONGRAD_FN = d_congrad5_fn.o
+ifeq ($(strip ${HAVEQOP}),true)
+  CONGRAD_FN = d_congrad5_fn_qop.o
+else
+  # Choose non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
+  # or d_congrad5_fn_fewsums.o)
+  CONGRAD_FN = d_congrad5_fn.o
+endif
 
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o
@@ -258,7 +262,7 @@ su3_rmd_eos1::
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DNPBP_REPS=4 -DCHEM_POT" \
+	"DEFINES= -DFN ${DARCH} -DNPBP_REPS=4 -DCHEM_POT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
