@@ -16,6 +16,7 @@ G_KS_ALL = \
   d_congrad5_eo.o \
   d_congrad5_fn.o \
   d_congrad5_fn_fewsums.o \
+  d_congrad5_fn_qop.o \
   d_congrad_two_src.o \
   dslash_eo.o \
   dslash_fn.o \
@@ -92,6 +93,8 @@ d_congrad5_eo.o: ../generic_ks/d_congrad5_eo.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn.o: ../generic_ks/d_congrad5_fn.c
 	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_qop.o: ../generic_ks/d_congrad5_fn_qop.cc
+	${CXX} -c ${CFLAGS} $<
 d_congrad5_fn_fewsums.o: ../generic_ks/d_congrad5_fn_fewsums.c
 	${CC} -c ${CFLAGS} $<
 d_congrad_two_src.o: ../generic_ks/d_congrad_two_src.c
