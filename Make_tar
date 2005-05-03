@@ -68,7 +68,7 @@ ${WORK_SF_TAR}: ${WORK_SF}
 ${WORK_NAME_ROOT}.tar.gz: ${WORK}
 	tar -cvf ${WORK_NAME_ROOT}.tar ${WORK}
 	gzip ${WORK_NAME_ROOT}.tar
-	/bin/rm -i ${WORK_TAR}
+	-/bin/rm ${WORK_TAR}
 
 work: ${WORK_NAME_ROOT}.tar.gz
 
