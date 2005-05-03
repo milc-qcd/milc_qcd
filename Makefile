@@ -27,18 +27,28 @@ MAKEFILE = Makefile
 #QCDOC = true
 
 #----------------------------------------------------------------------
-# 2. Compiler
-CC = gcc   # ( mpicc cc gcc pgcc g++ )
+# 3. Precision 
+
+# 1 = single precision; 2 = double
+PRECISION = 1
+#----------------------------------------------------------------------
+# 4. Compiler
+# Choices include mpicc cc gcc pgcc g++
+CC = gcc
 
 #CC = /usr/local/mpich/bin/mpicc -cc=${GCC_DIR}/bin/gcc  # FNAL
 #CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
 
-#----------------------------------------------------------------------
-# 3. Compiler optimization level
-OPT              = -O3  # ( -g -O, etc )
+# C++ compiler (needed only for QCDOC Level 3 wrapper)
+CXX = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-g++
 
 #----------------------------------------------------------------------
-# 4. Other compiler optimization flags.  Uncomment stanza to suit.
+# 5. Compiler optimization level
+# Choices include -g -O, etc
+OPT              = -O3
+
+#----------------------------------------------------------------------
+# 6. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
 #OCFLAGS = -Wall   # ( -Wall, etc )
 
@@ -69,13 +79,13 @@ OPT              = -O3  # ( -g -O, etc )
 #OCFLAGS= ${CARCH} -Q=500 -qmaxmem=-1 -bmaxdata:0x40000000 -bmaxstack:0x8000000
 
 #----------------------------------------------------------------------
-# 5. Choose large file support
+# 7. Choose large file support
 #CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE64 # Large files gcc only
-CLFS =             # Not researched for others
+CLFS = # Not researched for others
 #CLFS = -D_LARGE_FILES   # Blue Horizon
 
 #----------------------------------------------------------------------
-# 6. Installation-specific MPI includes and libraries
+# 8. Installation-specific MPI includes and libraries
 #    Not needed if using mpicc or on single processor
 
 #----------------- MPICH/GM ---------------------------------------------
@@ -96,15 +106,18 @@ CLFS =             # Not researched for others
 #LMPI = -L/uufs/icebox/sys/pkg/mpich/1.2.0-via/lib -lmpi -lvipl -lpthread # MVICH
 
 #----------------------------------------------------------------------
-# 7. I/O routines
+# 9. I/O routines
 # Both io_nonansi and io_ansi should work on a scalar machine
 # Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
 MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 
 #----------------------------------------------------------------------
-# 8. QDP/C options
+# 10. QDP/C options
 
 # Edit these "wants"
+
+# Choose "true" or blank. Does not imply any other SciDAC package
+WANTQOP =
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
 WANTQDP =
@@ -126,88 +139,33 @@ QMPPAR = ${SCIDAC}/qmp
 QMPSNG = ${SCIDAC}/qmp-single
 QDP = ${SCIDAC}/qdp
 QLA = ${SCIDAC}/qla
+# Level 3
+QOP = /home/chulwoo/SciDAC/Asqtad_L3
 
-# Do not change these conditionals
+# Make_template_scidac defines these macros:
+# HAVEQDP HAVEQIO HAVEQMP (Says what we are compiling with)
+# LIBSCIDAC INCSCIDAC (The -L and -I compiler and linker lists)
+# SCIDAC_LIBRARIES SCIDAC_HEADERS  (Lists for make dependencies)
 
-HAVEQDP = ${WANTQDP}
-
-ifeq ($(strip ${HAVEQDP}),true)
-   HAVEQIO = true #
-else
-   HAVEQIO = ${WANTQIO}
-endif
-
-ifeq ($(strip ${HAVEQIO}),true)
-   HAVEQMP = true
-else
-   HAVEQMP = ${WANTQMP}
-endif
-
-# Shouldn't need to change the rest of this stanza (except see "QCDOC
-# nonstandard")
-
-ifeq ($(strip ${MPP}),true)
-   QMP = ${QMPPAR}
-else
-   QMP = ${QMPSNG}
-endif
-
-IQMP = -I${QMP}/include
-LQMP = -L$(QMP)/lib -lqmp
-#LQMP = -L$(QMP)/lib -lqcd_api     # QCDOC nonstandard
-#LQMP = -L$(QMP)/lib -lqcd_api_nn -lscu -lscu_devel # QCDOC nonstandard
-
-IQIO = -I${QIO}/include
-LQIO = -L${QIO}/lib -lqio -llime 
-
-IQLA = -I${QLA}/include
-LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
-          -lqla_dq3 -lqla_q3 -lqla_d -lqla_dq -lqla_q -lqla_random
-
-IQDP = -I${QDP}/include
-LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
-
-ifeq ($(strip ${HAVEQMP}),true)
-  LIBQMP = ${LQMP}
-  INCQMP = ${IQMP}
-endif
-
-ifeq ($(strip ${HAVEQIO}),true)
-  LIBQIO = ${LQIO}
-  INCQIO = ${IQIO}
-endif
-
-ifeq ($(strip ${HAVEQDP}),true)
-  LIBQDP = ${LQDP} ${LQLA}
-  INCQDP = ${IQDP} ${IQLA}
-endif
-
-LIBSCIDAC = ${LIBQDP} ${LIBQIO} ${LIBQMP}
-INCSCIDAC = ${INCQDP} ${INCQIO} ${INCQMP}
+include ../Make_template_scidac
 
 #----------------------------------------------------------------------
-# 9. Linker
+# 11. Linker
 LD               = ${CC}
 
 #----------------------------------------------------------------------
-# 10. Extra linker flags
+# 12. Extra linker flags
 LDFLAGS          =   # most
+LDFLAGS          =   -Xlinker   # QCDOC
 #LDFLAGS          = -fast     # Sun SPARC
-#LDFLAGS          =   -L$(QOS)/quser/gcc-lib-user/// -Xlinker   # QCDOC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
 
 #----------------------------------------------------------------------
-# 11. Extra libraries
-LIBADD = 
+# 13. Extra libraries
+LIBADD =
 
 #----------------------------------------------------------------------
-# 12. Precision 
-
-# 1 = single precision; 2 = double
-PRECISION = 2
-
-#----------------------------------------------------------------------
-# 13. Inlining choices
+# 14. Inlining choices
 
 # SSE ASM and explicit C inlining is available for some of the library
 # functions.
@@ -226,13 +184,13 @@ PRECISION = 2
 INLINEOPT = -DC_INLINE # -DSSE_INLINE
 
 #----------------------------------------------------------------------
-# 14. Other miscellaneous macros you want for all of your compilations
+# 15. Other miscellaneous macros you want for all of your compilations
 
-CODETYPE  = # -DQDP_PROFILE
+CODETYPE =# -DQDP_PROFILE
 # Choices include -DPREFETCH (not recommended)
 
 #----------------------------------------------------------------------
-# 15. Choose MILC library make file in libraries directory.  
+# 16. Choose MILC library make file in libraries directory.  
 #    CHECK IT FOR FURTHER OPTIONS!
 
 MAKELIBRARIES = Make_vanilla  # or Make_SSE_nasm (don't use -DSSE with this)

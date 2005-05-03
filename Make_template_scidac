@@ -14,6 +14,9 @@
 # QLA                     Path to the QLA package
 # QDP                     Path to the QDP package
 # WANTQDP WANTQIO WANTQMP User requests (true or otherwise)
+# WANTQOP                 User requests (true or otherwise)
+
+HAVEQOP = ${WANTQOP}
 
 HAVEQDP = ${WANTQDP}
 
@@ -38,21 +41,31 @@ else
    QMP = ${QMPSNG}
 endif
 
-QMPINCDIR = ${QMP}/include
-QMPLIBDIR = ${QMP}/lib
+# Allow for QCDOC non-standard for now for QMP installation
+ifeq ($(strip ${QCDOC}),true)
+  QMPINCDIR = ${QOS}/quser/include
+  QMPLIBDIR = ${QOS}/quser/gcc-lib-user
+else
+  QMPINCDIR = ${QMP}/include
+  QMPLIBDIR = ${QMP}/lib
+endif
+
 QIOINCDIR = ${QIO}/include
 QIOLIBDIR = ${QIO}/lib
 QLAINCDIR = ${QLA}/include
 QLALIBDIR = ${QLA}/lib
 QDPINCDIR = ${QDP}/include
 QDPLIBDIR = ${QDP}/lib
+# QCDOC temporary
+QOPINCDIR = ${QOP}/include
+QOPLIBDIR = ${QOP}/build
 
-IQMP = -I${QMPINCDIR}
-LQMP = -L$(QMP)/lib -lqmp
+#IQMP = -I${QMPINCDIR}
+#LQMP = -L$(QMP)/lib -lqmp
 
 # QCDOC nonstandard
-#LQMP = -L$(QMP)/lib -lqcd_api
-#LQMP = -L$(QMP)/lib -lqcd_api_nn -lscu -lscu_devel
+IQMP = -I${QOS}/quser/include
+LQMP = -L${QOS}/quser/gcc-lib-user -lqmp
 
 IQIO = -I${QIOINCDIR}
 LQIO = -L${QIOLIBDIR} -lqio -llime 
@@ -63,6 +76,14 @@ LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
 
 IQDP = -I${QDP}/include
 LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
+
+# QCDOC temporary paths
+ifeq ($(strip ${PRECISION}),1)
+  IQOP = -DSCIDAC -DASQD_SINGLE -I${QOPINCDIR}
+else
+  IQOP = -DSCIDAC -I${QOP}/include/
+endif
+LQOP = -L${QOPLIBDIR} -lasqd_s
 
 ifeq ($(strip ${HAVEQMP}),true)
   LIBQMP = ${LQMP}
@@ -85,7 +106,14 @@ ifeq ($(strip ${HAVEQDP}),true)
   LIBDEPQDP = ${QDPLIBDIR} ${QLALIBDIR}
 endif
 
-LIBSCIDAC = ${LIBQDP} ${LIBQIO} ${LIBQMP}
-INCSCIDAC = ${INCQDP} ${INCQIO} ${INCQMP}
-SCIDAC_LIBRARIES = ${LIBDEPQDP} ${LIBDEPQIO} ${LIBDEPQMP}
-SCIDAC_HEADERS = ${INCDEPQDP} ${INCDEPQIO} ${INCDEPQMP}
+ifeq ($(strip ${HAVEQOP}),true)
+  LIBQOP = ${LQOP}
+  INCQOP = ${IQOP}
+  INCDEPQOP = ${QOPINCDIR}
+  LIBDEPQOP = ${QOPLIBDIR}
+endif
+
+LIBSCIDAC = ${LIBQDP} ${LIBQIO} ${LIBQMP} ${LIBQOP}
+INCSCIDAC = ${INCQDP} ${INCQIO} ${INCQMP} ${INCQOP}
+SCIDAC_LIBRARIES = ${LIBDEPQDP} ${LIBDEPQIO} ${LIBDEPQMP} ${LIBDEPQOP}
+SCIDAC_HEADERS = ${INCDEPQDP} ${INCDEPQIO} ${INCDEPQMP} ${INCDEPQOP}
