@@ -62,3 +62,8 @@ node_index(int x, int y, int z, int t)
   c[3] = t;
   return QDP_index(c);
 }
+
+size_t num_sites(int node) {
+    return( sites_on_node );
+}
+

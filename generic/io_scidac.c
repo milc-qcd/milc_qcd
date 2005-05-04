@@ -10,6 +10,7 @@
 #include "../include/io_scidac.h"
 #include <string.h>
 #define LATDIM 4
+void QIO_set_trelease(double t_in, double t_out);
 
 /* Map QIO layout functions to MILC functions */
 
@@ -67,6 +68,9 @@ QIO_Writer *open_output(char *filename, int volfmt, QIO_Layout *layout,
   QIO_string_set(xml_file_out,xml_write_file);
 
   /* Open the file for writing */
+#ifdef QIO_TRELEASE
+  QIO_set_trelease(0,QIO_TRELEASE);
+#endif
   outfile = QIO_open_write(xml_file_out, filename, volfmt, layout, 0);
   if(outfile == NULL){
     printf("open_output(%d): QIO_open_write returned NULL\n",this_node);
@@ -85,6 +89,9 @@ QIO_Reader *open_input(char *filename, QIO_Layout *layout){
   xml_file_in = QIO_string_create();
 
   /* Open the file for reading */
+#ifdef QIO_TRELEASE
+  QIO_set_trelease(0,QIO_TRELEASE);
+#endif
   infile = QIO_open_read(xml_file_in, filename, layout, 0);
   if(infile == NULL){
     printf("%s(%d): QIO_open_read returns NULL.\n",myname,this_node);
