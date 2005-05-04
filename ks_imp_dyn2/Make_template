@@ -234,42 +234,42 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}" \
+	"DEFINES= -DFN -DCOM_QMP_CRC -DQIO_TRELEASE=2.0" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
 
 su3_rmd1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DONEMASS" \
+	"DEFINES= -DFN  -DONEMASS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update_onemass.o"
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DDM_DU0 -DNPBP_REPS=4" \
+	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS=4" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
 
 su3_rmd_eos1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DDM_DU0 -DNPBP_REPS=4 -DONEMASS" \
+	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS=4 -DONEMASS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update_onemass.o"
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DNPBP_REPS=4 -DCHEM_POT" \
+	"DEFINES= -DFN  -DNPBP_REPS=4 -DCHEM_POT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
 
 su3_rmd_dblstore_gath13_fewsums::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DDBLSTORE_FN -DFN_GATHER13" \
+	"DEFINES= -DFN  -DDBLSTORE_FN -DFN_GATHER13" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${ASQFORCE} d_congrad5_fn_fewsums.o \
@@ -277,7 +277,7 @@ su3_rmd_dblstore_gath13_fewsums::
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} \
+	"DEFINES= -DFN  \
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -286,7 +286,7 @@ su3_hmc::
 
 su3_hmc1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DONEMASS \
+	"DEFINES= -DFN  -DONEMASS \
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -295,7 +295,7 @@ su3_hmc1::
 
 su3_rmd_naive::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO ${DARCH} -DONEMASS" \
+	"DEFINES= -DEO  -DONEMASS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
 	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} fermion_force_general.o update_onemass.o"
@@ -304,7 +304,7 @@ su3_rmd_naive::
 
 su3_hybrids::
 	make -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}	-DSPECTRUM -DHYBRIDS" \
+	"DEFINES= -DFN 	-DSPECTRUM -DHYBRIDS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
@@ -314,7 +314,7 @@ su3_hybrids::
 
 su3_hybrids1::
 	make -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}	-DSPECTRUM -DHYBRIDS -DONEMASS" \
+	"DEFINES= -DFN 	-DSPECTRUM -DHYBRIDS -DONEMASS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
@@ -326,7 +326,7 @@ su3_hybrids1::
 
 su3_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}	-DSPECTRUM" \
+	"DEFINES= -DFN 	-DSPECTRUM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
@@ -335,7 +335,7 @@ su3_spectrum::
 
 su3_spectrum1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}	-DSPECTRUM -DONEMASS" \
+	"DEFINES= -DFN 	-DSPECTRUM -DONEMASS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
@@ -347,7 +347,7 @@ su3_spectrum1::
 
 su3_rmd_eo_symzk1_fat7tad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO ${DARCH}" \
+	"DEFINES= -DEO " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
 	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} \
@@ -355,7 +355,7 @@ su3_rmd_eo_symzk1_fat7tad::
 
 su3_rmd_plaq_fat7naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}" \
+	"DEFINES= -DFN " \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
@@ -363,7 +363,7 @@ su3_rmd_plaq_fat7naik::
 
 su3_rmd_plaq_fat7naik1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DONEMASS" \
+	"DEFINES= -DFN  -DONEMASS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
@@ -371,7 +371,7 @@ su3_rmd_plaq_fat7naik1::
 
 su3_rmd_symzk1_naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH}" \
+	"DEFINES= -DFN " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = naik_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
@@ -379,7 +379,7 @@ su3_rmd_symzk1_naik::
 
 su3_rmd_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO ${DARCH}" \
+	"DEFINES= -DEO " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
@@ -400,7 +400,7 @@ libmake:
 	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
 
 localmake: ${OBJECTS} ${LIBRARIES}
-	${LD} ${LDFLAGS} -o ${MYTARGET} \
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
 	${OBJECTS} ${QCDLIB} ${ILIB} -lm
 	touch localmake
 
