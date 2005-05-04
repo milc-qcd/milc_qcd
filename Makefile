@@ -50,7 +50,7 @@ OPT              = -O3
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
-#OCFLAGS = -Wall   # ( -Wall, etc )
+#OCFLAGS = -Wall # ( -Wall, etc )
 
 #OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
@@ -155,8 +155,7 @@ LD               = ${CC}
 
 #----------------------------------------------------------------------
 # 12. Extra linker flags
-LDFLAGS          =   # most
-LDFLAGS          =   -Xlinker   # QCDOC
+#LDFLAGS = -Xlinker   # QCDOC
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
 
@@ -226,7 +225,7 @@ endif
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
-	${PREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DEFINES}
+	${PREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DEFINES} ${DARCH}
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
 

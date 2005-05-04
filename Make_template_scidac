@@ -60,12 +60,14 @@ QDPLIBDIR = ${QDP}/lib
 QOPINCDIR = ${QOP}/include
 QOPLIBDIR = ${QOP}/build
 
-#IQMP = -I${QMPINCDIR}
-#LQMP = -L$(QMP)/lib -lqmp
-
-# QCDOC nonstandard
-IQMP = -I${QOS}/quser/include
-LQMP = -L${QOS}/quser/gcc-lib-user -lqmp
+# Allow for QCDOC nonstandard for now
+ifeq ($(strip ${QCDOC}),true)
+  IQMP = -I${QOS}/quser/include
+  LQMP = -L${QOS}/quser/gcc-lib-user -lqmp
+else
+  IQMP = -I${QMPINCDIR}
+  LQMP = -L${QMPLIBDIR} -lqmp
+endif
 
 IQIO = -I${QIOINCDIR}
 LQIO = -L${QIOLIBDIR} -lqio -llime 
