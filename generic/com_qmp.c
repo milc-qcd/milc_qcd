@@ -121,7 +121,7 @@
 /* If we want to do our own checksums */
 #ifdef COM_QMP_CRC
 u_int32type crc32(u_int32type crc, const unsigned char *buf, size_t len);
-#define CRCBYTES 4
+#define CRCBYTES 8
 #else
 #define CRCBYTES 0
 #endif
@@ -1666,6 +1666,7 @@ wait_gather(msg_tag *mtag)
       if(*crc != crcgot){
 	printf("Node %d received checksum %x != node %d sent checksum %x\n",
 	       mynode(),*crc, mbuf->msg_node, crcgot);
+	fflush(stdout);
 	terminate(1);
       }
     }

@@ -31,63 +31,113 @@
      each site on the node.)
 */
 #include "generic_includes.h"
+#ifdef HAVE_QMP
+#include <qmp.h>
+#endif
 
 int squaresize[4];	/* dimensions of hypercubes */
 int nsquares[4];	/* number of hypercubes in each direction */
 
+#ifdef HAVE_QMP
+static void setup_qmp_grid(){
+  int ndim = 4;
+  int len[4];
+  int ndim2, i;
+  const int *nsquares2;
+
+  len[0] = nx; len[1] = ny; len[2] = nz; len[3] = nt;
+
+  if(mynode()==0){
+    printf("qmp_grid,");
+    printf("\n");
+  }
+
+  ndim2 = QMP_get_allocated_number_of_dimensions();
+  nsquares2 = QMP_get_allocated_dimensions();
+  for(i=0; i<ndim; i++) {
+    if(i<ndim2) nsquares[i] = nsquares2[i];
+    else nsquares[i] = 1;
+  }
+
+  for(i=0; i<ndim; i++) {
+    if(len[i]%nsquares[i] != 0) {
+      printf("LATTICE SIZE DOESN'T FIT GRID\n");
+      QMP_abort(0);
+    }
+    squaresize[i] = len[i]/nsquares[i];
+  }
+}
+#endif
+
+static void setup_hyper_prime(){
+  int i,j,k,dir;
+
+  if(mynode()==0){
+    printf("hyper_sl32,");
+    printf("\n");
+  }
+
+  /* Figure out dimensions of rectangle */
+  squaresize[XUP] = nx; squaresize[YUP] = ny;
+  squaresize[ZUP] = nz; squaresize[TUP] = nt;
+  nsquares[XUP] = nsquares[YUP] = nsquares[ZUP] = nsquares[TUP] = 1;
+  
+  i = 1;	/* current number of hypercubes */
+  while(i<numnodes()){
+    /* figure out which direction to divide */
+    
+    /* find largest dimension of h-cubes divisible by 4 */
+    for(j=1,dir=XUP;dir<=TUP;dir++)
+      if( squaresize[dir]>j && squaresize[dir]%4==0 ) j=squaresize[dir];
+    
+    /* if one direction with largest dimension has already been
+       divided, divide it again.  Otherwise divide first direction
+       with largest dimension. */
+    for(dir=XUP;dir<=TUP;dir++)
+      if( squaresize[dir]==j && nsquares[dir]>1 )break;
+    if( dir > TUP)for(dir=XUP;dir<=TUP;dir++)
+      if( squaresize[dir]==j )break;
+    /* This can fail if I run out of factors of 2 in the dimensions */
+    if(dir > TUP){
+      if(mynode()==0)
+	printf("LAYOUT: Can't lay out this lattice, not enough factors of 2\n");
+      terminate(1);
+    }
+    
+    /* do the surgery */
+    i*=2; squaresize[dir] /= 2; nsquares[dir] *= 2;
+  }
+  
+}
+
 void setup_layout(){
-register int i,j,dir;
-    if(mynode()==0){
-	printf("LAYOUT = Hypercubes, options = ");
-	printf("hyper_sl32,");
-	printf("\n");
-    }
 
-    /* Figure out dimensions of rectangle */
-    squaresize[XUP] = nx; squaresize[YUP] = ny;
-    squaresize[ZUP] = nz; squaresize[TUP] = nt;
-    nsquares[XUP] = nsquares[YUP] = nsquares[ZUP] = nsquares[TUP] = 1;
+  if(mynode()==0)
+    printf("LAYOUT = Hypercubes, options = ");
 
-    i = 1;	/* current number of hypercubes */
-    while(i<numnodes()){
-	/* figure out which direction to divide */
+#ifdef HAVE_QMP
+  if(QMP_get_msg_passing_type()==QMP_GRID)
+    setup_qmp_grid();
+  else
+    setup_hyper_prime();
+#else
+  setup_hyper_prime();
+#endif
 
-	/* find largest dimension of h-cubes divisible by 4 */
-	for(j=1,dir=XUP;dir<=TUP;dir++)
-	    if( squaresize[dir]>j && squaresize[dir]%4==0 ) j=squaresize[dir];
-
-	/* if one direction with largest dimension has already been
-	   divided, divide it again.  Otherwise divide first direction
-	   with largest dimension. */
-	for(dir=XUP;dir<=TUP;dir++)
-	    if( squaresize[dir]==j && nsquares[dir]>1 )break;
-	if( dir > TUP)for(dir=XUP;dir<=TUP;dir++)
-	    if( squaresize[dir]==j )break;
-	/* This can fail if I run out of factors of 2 in the dimensions */
-	if(dir > TUP){
-	    if(mynode()==0)printf(
-	    "LAYOUT: Can't lay out this lattice, not enough factors of 2\n");
-	    terminate(1);
-	}
-
-	/* do the surgery */
-	i*=2; squaresize[dir] /= 2; nsquares[dir] *= 2;
-    }
-
-    sites_on_node =
-	    squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
-    /* Need number of sites per hypercube divisible by 32 */
-    if( mynode()==0)if( sites_on_node%32 != 0){
-	printf("SORRY, CAN'T LAY OUT THIS LATTICE\n");
-	terminate(0);
-    }
-    subl_sites_on_node = sites_on_node/32;
-if( mynode()==0)
-  printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
-                squaresize[ZUP],squaresize[TUP]);
-if( mynode()==0 && sites_on_node%2 != 0)
-	printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
-    even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+  sites_on_node =
+    squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
+  /* Need number of sites per hypercube divisible by 32 */
+  if( mynode()==0)if( sites_on_node%32 != 0){
+    printf("SORRY, CAN'T LAY OUT THIS LATTICE\n");
+    terminate(0);
+  }
+  subl_sites_on_node = sites_on_node/32;
+  if( mynode()==0)
+    printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
+	   squaresize[ZUP],squaresize[TUP]);
+  if( mynode()==0 && sites_on_node%2 != 0)
+    printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
+  even_sites_on_node = odd_sites_on_node = sites_on_node/2;
 }
 
 int node_number(int x, int y, int z, int t) {

@@ -27,6 +27,9 @@
      each site on the node.)
 */
 #include "generic_includes.h"
+#ifdef HAVE_QMP
+#include <qio.h>
+#endif
 
 int dirs[4];	/* list of directions, longest first */
 int dims[4];	/* lattice dimensions, in order X,Y,Z,T */
@@ -36,6 +39,14 @@ int nxsquares,nysquares;	/* number of rectangles in each direction */
 
 void setup_layout(){
 register int i,j,k;
+
+#ifdef HAVE_QMP
+ if(QMP_get_msg_passing_type()==QMP_GRID){
+   printf("This layout should not be used on a grid architecture\n");
+   terminate(1);
+ }
+#endif
+
     if(mynode()==0){
 	printf("LAYOUT = 2d-squares, options = ");
 	printf("\n");

@@ -41,6 +41,9 @@
      each site on the node.)
 */
 #include "generic_includes.h"
+#ifdef HAVE_QMP
+#include <qio.h>
+#endif
 
 int squaresize[4];	/* dimensions of hypercubes */
 int nsquares[4];	/* number of hypercubes in each direction */
@@ -51,6 +54,14 @@ int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
 
 void setup_layout(){
 register int i,j,k,dir;
+
+#ifdef HAVE_QMP
+ if(QMP_get_msg_passing_type()==QMP_GRID){
+   printf("This layout should not be used on a grid architecture\n");
+   terminate(1);
+ }
+#endif
+
     if(mynode()==0){
 	printf("LAYOUT = Hypercubes, options = ");
 	printf("tstretch,");

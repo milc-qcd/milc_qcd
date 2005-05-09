@@ -28,6 +28,9 @@
      each site on the node.)
 */
 #include "generic_includes.h"
+#ifdef HAVE_QMP
+#include <qio.h>
+#endif
 
 int ntslices;		/* number of timeslices per node */
 int nzslices;		/* number of z values per node */
@@ -35,6 +38,14 @@ int zcuts;		/* number of times we must cut in z-direction, i.e,
 							zcuts*nzslices=nz */
 
 void setup_layout(){
+
+#ifdef HAVE_QMP
+ if(QMP_get_msg_passing_type()==QMP_GRID){
+   printf("This layout should not be used on a grid architecture\n");
+   terminate(1);
+ }
+#endif
+
     if(mynode()==0){
 	printf("LAYOUT = Timeslices, options = ");
 	printf("\n");

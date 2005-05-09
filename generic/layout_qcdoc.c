@@ -212,7 +212,7 @@ void setup_layout( void )
 
 if( mynode()==0)
   printf("ON EACH NODE %d x %d x %d x %d\n",sub_lattice_nx,sub_lattice_ny,
-                sub_lattice_ny,sub_lattice_nz);
+                sub_lattice_nz,sub_lattice_nt);
 if( mynode()==0 && sites_on_node%2 != 0)
 	printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
 }

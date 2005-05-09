@@ -36,6 +36,9 @@
      each site on the node.)
 */
 #include "generic_includes.h"
+#ifdef HAVE_QMP
+#include <qmp.h>
+#endif
 
 int squaresize[4];	/* dimensions of hypercubes */
 int nsquares[4];	/* number of hypercubes in each direction */
@@ -43,66 +46,112 @@ int nsquares[4];	/* number of hypercubes in each direction */
 int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
 # define MAXPRIMES ( sizeof(prime) / sizeof(int) )
 
-void setup_layout(){
-register int i,j,k,dir;
-    if(mynode()==0){
-	printf("LAYOUT = Hypercubes, options = ");
-	printf("hyper_prime,");
-	printf("\n");
+#ifdef HAVE_QMP
+static void setup_qmp_grid(){
+  int ndim = 4;
+  int len[4];
+  int ndim2, i;
+  const int *nsquares2;
+
+  len[0] = nx; len[1] = ny; len[2] = nz; len[3] = nt;
+
+  if(mynode()==0){
+    printf("qmp_grid,");
+    printf("\n");
+  }
+
+  ndim2 = QMP_get_allocated_number_of_dimensions();
+  nsquares2 = QMP_get_allocated_dimensions();
+  for(i=0; i<ndim; i++) {
+    if(i<ndim2) nsquares[i] = nsquares2[i];
+    else nsquares[i] = 1;
+  }
+
+  for(i=0; i<ndim; i++) {
+    if(len[i]%nsquares[i] != 0) {
+      printf("LATTICE SIZE DOESN'T FIT GRID\n");
+      QMP_abort(0);
     }
+    squaresize[i] = len[i]/nsquares[i];
+  }
+}
+#endif
 
-    /* Figure out dimensions of rectangle */
-    squaresize[XUP] = nx; squaresize[YUP] = ny;
-    squaresize[ZUP] = nz; squaresize[TUP] = nt;
-    nsquares[XUP] = nsquares[YUP] = nsquares[ZUP] = nsquares[TUP] = 1;
+static void setup_hyper_prime(){
+  int i,j,k,dir;
 
-    i = 1;	/* current number of hypercubes */
-    while(i<numnodes()){
-	/* figure out which prime to divide by starting with largest */
-	k = MAXPRIMES-1;
-	while( (numnodes()/i)%prime[k] != 0 && k>0 ) --k;
-	/* figure out which direction to divide */
+  if(mynode()==0){
+    printf("hyper_prime,");
+    printf("\n");
+  }
 
-	/* find largest even dimension of h-cubes */
-	for(j=1,dir=XUP;dir<=TUP;dir++)
-	    if( squaresize[dir]>j && squaresize[dir]%prime[k]==0 )
-		j=squaresize[dir];
-
-	/* if one direction with largest dimension has already been
-	   divided, divide it again.  Otherwise divide first direction
-	   with largest dimension. */
-	for(dir=XUP;dir<=TUP;dir++)
-	    if( squaresize[dir]==j && nsquares[dir]>1 )break;
-	if( dir > TUP)for(dir=XUP;dir<=TUP;dir++)
-	    if( squaresize[dir]==j )break;
-	/* This can fail if I run out of prime factors in the dimensions */
-	if(dir > TUP){
-	    if(mynode()==0)printf(
-	    "LAYOUT: Can't lay out this lattice, not enough factors of %d\n"
-		,prime[k]);
-	    terminate(1);
-	}
-
-	/* do the surgery */
-	i*=prime[k]; squaresize[dir] /= prime[k]; nsquares[dir] *= prime[k];
+  /* Figure out dimensions of rectangle */
+  squaresize[XUP] = nx; squaresize[YUP] = ny;
+  squaresize[ZUP] = nz; squaresize[TUP] = nt;
+  nsquares[XUP] = nsquares[YUP] = nsquares[ZUP] = nsquares[TUP] = 1;
+  
+  i = 1;	/* current number of hypercubes */
+  while(i<numnodes()){
+    /* figure out which prime to divide by starting with largest */
+    k = MAXPRIMES-1;
+    while( (numnodes()/i)%prime[k] != 0 && k>0 ) --k;
+    /* figure out which direction to divide */
+    
+    /* find largest even dimension of h-cubes */
+    for(j=1,dir=XUP;dir<=TUP;dir++)
+      if( squaresize[dir]>j && squaresize[dir]%prime[k]==0 )
+	j=squaresize[dir];
+    
+    /* if one direction with largest dimension has already been
+       divided, divide it again.  Otherwise divide first direction
+       with largest dimension. */
+    for(dir=XUP;dir<=TUP;dir++)
+      if( squaresize[dir]==j && nsquares[dir]>1 )break;
+    if( dir > TUP)for(dir=XUP;dir<=TUP;dir++)
+      if( squaresize[dir]==j )break;
+    /* This can fail if I run out of prime factors in the dimensions */
+    if(dir > TUP){
+      if(mynode()==0)
+	printf("LAYOUT: Can't lay out this lattice, not enough factors of %d\n"
+	       ,prime[k]);
+      terminate(1);
     }
-
-    sites_on_node =
-	    squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
-    /* Need even number of sites per hypercube */
-    if( mynode()==0)if( sites_on_node%2 != 0){
-	printf("SORRY, CAN'T LAY OUT THIS LATTICE\n");
-	terminate(0);
-    }
-if( mynode()==0)
-  printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
-                squaresize[ZUP],squaresize[TUP]);
-if( mynode()==0 && sites_on_node%2 != 0)
-	printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
-    even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+    
+    /* do the surgery */
+    i*=prime[k]; squaresize[dir] /= prime[k]; nsquares[dir] *= prime[k];
+  }
 }
 
-int node_number(int x,int y,int z,int t) {
+void setup_layout(){
+
+  if(mynode()==0)
+    printf("LAYOUT = Hypercubes, options = ");
+
+#ifdef HAVE_QMP
+  if(QMP_get_msg_passing_type()==QMP_GRID)
+    setup_qmp_grid();
+  else
+    setup_hyper_prime();
+#else
+  setup_hyper_prime();
+#endif
+
+  sites_on_node =
+    squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
+  /* Need even number of sites per hypercube */
+  if( mynode()==0)if( sites_on_node%2 != 0){
+    printf("SORRY, CAN'T LAY OUT THIS LATTICE\n");
+    terminate(0);
+  }
+  if( mynode()==0)
+    printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
+	   squaresize[ZUP],squaresize[TUP]);
+  if( mynode()==0 && sites_on_node%2 != 0)
+    printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
+  even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+}
+
+int node_number(int x, int y, int z, int t) {
 register int i;
     x /= squaresize[XUP]; y /= squaresize[YUP];
     z /= squaresize[ZUP]; t /= squaresize[TUP];
@@ -110,7 +159,7 @@ register int i;
     return( i );
 }
 
-int node_index(int x,int y,int z,int t) {
+int node_index(int x, int y, int z, int t) {
 register int i,xr,yr,zr,tr;
     xr = x%squaresize[XUP]; yr = y%squaresize[YUP];
     zr = z%squaresize[ZUP]; tr = t%squaresize[TUP];
