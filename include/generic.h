@@ -218,6 +218,11 @@ void restrict_fourier(
 void reunitarize( void );
 int reunit_su3(su3_matrix *c);
 
+#ifdef QCDOC
+void *qcdoc_alloc(size_t nbytes);
+void qfree(void *);
+#endif
+
 #ifdef HAVE_QDP
 #include <qdp.h>
 
