@@ -183,9 +183,30 @@ static int ks_congrad_qop( Float* qop_src, Float* qop_sol,
 
   #endif
 
-  //printf( "MILC: QOP_asqtad_inv_raw called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-  int iterations_used = QOP_asqtad_inv_raw( qop_invert_arg, qop_sol, qop_src );
-  //printf( "MILC: QOP_asqtad_inv_raw finished in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
+
+  // This is hard wired to use at most 5 restarts.
+  int number_restarts = 5;
+  int iterations_used = 0;
+  for( int restart = 0; restart < number_restarts; restart ++ )
+  {
+    //printf( "MILC: QOP_asqtad_inv_raw called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
+    int iterations_used_this_restart = QOP_asqtad_inv_raw( qop_invert_arg, qop_sol, qop_src );
+    //printf( "MILC: QOP_asqtad_inv_raw finished in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
+
+    iterations_used += iterations_used_this_restart;
+
+    if( iterations_used_this_restart < qop_invert_arg->max_iter )
+    {
+      break;
+    }
+    else
+    {
+      if( restart == ( number_restarts - 1 ) )
+      {
+        printf( "MILC: The number of restarts, %i, was saturated.\n", number_restarts );
+      }
+    }
+  }
 
   #ifdef CGTIME
   {

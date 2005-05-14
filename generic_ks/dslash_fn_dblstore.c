@@ -407,6 +407,10 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 
 }
 
+/* We don't need temps, but d_congrad5_fn thinks we do.  Do nothing */
+void cleanup_dslash_temps(){
+}
+
 
 #ifdef DM_DU0
 

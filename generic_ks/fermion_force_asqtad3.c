@@ -63,6 +63,14 @@ void side_link_3f_force(int mu, int nu, Real coeff[2],
 			half_wilson_vector *Path_mu, 
 			half_wilson_vector *Path_numu) ;
 
+#ifdef QCDOC
+#define special_alloc qcdoc_alloc
+#define special_free qfree
+#else
+#define special_alloc malloc
+#define special_free free
+#endif
+
 /**********************************************************************/
 /*   Version for a single set of degenerate flavors                   */
 /**********************************************************************/
@@ -283,7 +291,7 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 /**********************************************************************/
 
 su3_matrix *backwardlink[4];
-su3_matrix *tempmom[4];
+anti_hermitmat *tempmom[4];
 
 void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off, 
 			  int nflav2, field_offset x2_off ) {
@@ -323,6 +331,32 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   dtime=-dclock();
 #endif
 
+  /* Allocate temporary hw vector */
+  for(mu = 0; mu < 8; mu++){
+    half_wilson_vector *pt;
+    pt = (half_wilson_vector *)
+      special_alloc(sites_on_node*sizeof(half_wilson_vector));
+    if(pt == NULL){
+      printf("eo_fermion_force_3f: No room for hw\n");
+      terminate(1);
+    }
+    hw[mu] = pt;
+  }
+
+  Pmu = 
+    (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
+  if(Pmu == NULL){
+    printf("eo_fermion_force_3f: No room for Pmu\n");
+    terminate(1);
+  }
+  
+  Pmumu = 
+    (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
+  if(Pmumu == NULL){
+    printf("eo_fermion_force_3f: No room for Pmumu\n");
+    terminate(1);
+  }
+  
   /* Allocate temporary vectors */
   for(mu=0; mu<8; mu++) {
     P3[mu]=
@@ -339,34 +373,8 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     }
   }
 
-  Pmu = 
-    (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
-  if(Pmu == NULL){
-    printf("eo_fermion_force_3f: No room for Pmu\n");
-    terminate(1);
-  }
-  
-  Pmumu = 
-    (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
-  if(Pmumu == NULL){
-    printf("eo_fermion_force_3f: No room for Pmumu\n");
-    terminate(1);
-  }
-  
   /* Initialize message pointers */
   for(mu = 0; mu < 8; mu++)mt[mu] = NULL;
-
-  /* Allocate communication pointers (gen_pt type) */
-  for(mu = 0; mu < 8; mu++){
-    half_wilson_vector *pt;
-    pt = (half_wilson_vector *)
-      malloc(sites_on_node*sizeof(half_wilson_vector));
-    if(pt == NULL){
-      printf("eo_fermion_force_3f: No room for hw\n");
-      terminate(1);
-    }
-    hw[mu] = pt;
-  }
 
   /* Double store backward gauge links */
   FORALLUPDIR(dir){
@@ -392,10 +400,10 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     cleanup_gather(mtag[dir]);
   }
   
-  /* Uncompress gauge momenta */
+  /* Copy gauge momenta */
   FORALLUPDIR(dir){
-    su3_matrix *pt;
-    pt = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    anti_hermitmat *pt;
+    pt = (anti_hermitmat *)malloc(sites_on_node*sizeof(anti_hermitmat));
     if(pt == NULL){
       printf("eo_fermion_force_3f: No room for tempmom\n");
       terminate(1);
@@ -404,7 +412,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   }
   FORALLUPDIR(dir){
     FORALLSITES(i,s){
-      uncompress_anti_hermitian( &(s->mom[dir]), &tempmom[dir][i] );
+      tempmom[dir][i] = s->mom[dir];
     }
   }
   
@@ -667,19 +675,19 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 
   FORALLUPDIR(dir){
     FORALLSITES(i,s){
-      make_anti_hermitian( &tempmom[dir][i], &(s->mom[dir]) ); 
+      s->mom[dir] = tempmom[dir][i];
     }
   }
 
   /* Free temporary vectors */
   free(temp_x) ;
-  free(Pmu) ;
-  free(Pmumu) ;
+  special_free(Pmu) ;
+  special_free(Pmumu) ;
 
   for(mu=0; mu<8; mu++) {
     free(P3[mu]);
     free(P5[mu]);
-    free(hw[mu]);
+    special_free(hw[mu]);
     free(temp_hw[mu]);
   }
 
@@ -825,7 +833,7 @@ void add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,Real coeff) {
 }
 
 
-void scalar_mult_add_lathwvec_proj(su3_matrix *mom, half_wilson_vector *back, 
+void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom, half_wilson_vector *back, 
 				   half_wilson_vector *forw, Real coeff[2]);
 
 /* Add in contribution to the force ( 3flavor case ) */

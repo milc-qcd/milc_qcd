@@ -4,13 +4,15 @@
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
+#ifdef QCDOC
 #ifdef XLC
 #define cache_touch(A) __dcbt(A)
 #else
-/*#define cache_touch(A) asm ( "dcbt %0 , %1" : : "r" (0)  , "r" (A) )*/
+#define cache_touch(A) asm ( "dcbt %0 , %1" : : "r" (0)  , "r" (A) )
+#endif
+#else
 #define cache_touch(A)
 #endif
-
 
 void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
 				      half_wilson_vector **src_pt, 
@@ -29,13 +31,9 @@ void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
     {
       if(i < sites_on_node - 1){
 	su3_matrix *an = a + 1;
-	half_wilson_vector **bn = b + 1;
 
 	cache_touch(&(an->e[0][0].real));
 	cache_touch(&(an->e[1][1].real));
-	cache_touch(&(an->e[2][2].real));
-	cache_touch(&((*bn)->h[0].c[0].real));
-	cache_touch(&((*bn)->h[1].c[0].real));
       }
 #if 0
       mult_adj_su3_mat_hwvec( a, *b, c );
@@ -71,6 +69,14 @@ void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
       a2r=a->e[2][2].real;      a2i=a->e[2][2].imag;
       b2r=(*b)->h[0].c[2].real; b2i=(*b)->h[0].c[2].imag;
       
+      if(i < sites_on_node - 1){
+	su3_matrix *an = a + 1;
+	half_wilson_vector **bn = b + 1;
+
+	cache_touch(&(an->e[2][2].real));
+	cache_touch(&((*bn)->h[0].c[0].real));
+	cache_touch(&((*bn)->h[1].c[0].real));
+      }
       c->h[0].c[2].real = a0r*b0r + a0i*b0i + a1r*b1r 
 	+ a1i*b1i + a2r*b2r + a2i*b2i;
       c->h[0].c[2].imag = a0r*b0i - a0i*b0r + a1r*b1i 
@@ -95,6 +101,11 @@ void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
       a2r=a->e[2][1].real;      a2i=a->e[2][1].imag;
       b2r=(*b)->h[1].c[2].real; b2i=(*b)->h[1].c[2].imag;
       
+      if(i < sites_on_node - 1){
+	half_wilson_vector **bn = b + 1;
+
+	cache_touch(&((*bn)->h[1].c[2].imag));
+      }
       c->h[1].c[1].real = a0r*b0r + a0i*b0i + a1r*b1r 
 	+ a1i*b1i + a2r*b2r + a2i*b2i;
       c->h[1].c[1].imag = a0r*b0i - a0i*b0r + a1r*b1i 
@@ -111,6 +122,7 @@ void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
 	+ a1i*b1i + a2r*b2r + a2i*b2i;
       c->h[1].c[2].imag = a0r*b0i - a0i*b0r + a1r*b1i 
 	- a1i*b1r + a2r*b2i - a2i*b2r;
+
 #endif
 
     }
@@ -141,8 +153,6 @@ void mult_su3_sitelink_lathwvec( int dir,
 	cache_touch(&(an->e[0][0].real));
 	cache_touch(&(an->e[1][1].real));
 	cache_touch(&(an->e[2][2].real));
-	cache_touch(&((*bn)->h[0].c[0].real));
-	cache_touch(&((*bn)->h[1].c[0].real));
       }
 #if 0
       mult_su3_mat_hwvec( a, *b, c );
@@ -184,6 +194,15 @@ void mult_su3_sitelink_lathwvec( int dir,
       c->h[0].c[2].imag = a0r*b0i + a0i*b0r + a1r*b1i 
 	+ a1i*b1r + a2r*b2i + a2i*b2r;
       
+      if(i < sites_on_node - 1){
+	site *sn = s + 1;
+	su3_matrix *an = &(sn->link[dir]);
+	half_wilson_vector **bn = b + 1;
+
+	cache_touch(&((*bn)->h[0].c[0].real));
+	cache_touch(&((*bn)->h[1].c[0].real));
+      }
+
       a0r=a->e[0][0].real;       a0i=a->e[0][0].imag;
       b0r=(*b)->h[1].c[0].real;  b0i=(*b)->h[1].c[0].imag;
       a1r=a->e[0][1].real;       a1i=a->e[0][1].imag;
@@ -223,66 +242,233 @@ void mult_su3_sitelink_lathwvec( int dir,
     }      
 }
 
-void scalar_mult_add_lathwvec_proj(su3_matrix *mom, half_wilson_vector *back, 
+void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom, 
+				   half_wilson_vector *back, 
 				   half_wilson_vector *forw, Real coeff[2])
 {
   int i,j,k;
   site *s;
-  Real tmp_coeff[2];
-  su3_matrix tmat, *a;
+  Real tmp_coeff[2], tmp_coeffd2[2];
+  su3_matrix tmat, tmat2;
+  anti_hermitmat *a;
   half_wilson_vector *b, *f;
   Real tmp0,tmp1;
+  Real trim, tmp;
 
   for(i = 0, a = mom, b = back, f = forw, s = lattice; 
       i < sites_on_node;
       i++, a++, b++, f++, s++)
   {
-      if(i < sites_on_node - 1){
-	su3_matrix *an = a + 1;
-	half_wilson_vector *bn = b + 1;
-	half_wilson_vector *fn = f + 1;
-
-	cache_touch(&(an->e[0][0].real));
-	cache_touch(&(an->e[1][1].real));
-	cache_touch(&(an->e[2][2].real));
-	cache_touch(&(bn->h[0].c[0].real));
-	cache_touch(&(bn->h[1].c[0].real));
-	cache_touch(&(fn->h[0].c[0].real));
-	cache_touch(&(fn->h[1].c[0].real));
-      }
-
     if(s->parity==ODD)
       {	tmp_coeff[0] = -coeff[0] ; tmp_coeff[1] = -coeff[1] ; }
     else
       {	tmp_coeff[0] = coeff[0] ;  tmp_coeff[1] = coeff[1] ;  }
 
-#if SSE_INLINE
-    su3_projector(&(b->h[0]), &(f->h[0]), &tmat);
-    scalar_mult_add_su3_matrix(a, &tmat, tmp_coeff[0], a );
-    su3_projector(&(b->h[1]), &(f->h[1]), &tmat);
-    scalar_mult_add_su3_matrix(a, &tmat, tmp_coeff[1], a );
-#else
-#if 0
-    scalar_mult_add_hwvec_proj(a, b, f, tmp_coeff, a );
-#else
-    for(k=0;k<3;k++)for(j=0;j<3;j++){
-	tmp1 = b->h[0].c[k].real * f->h[0].c[j].real;
-	tmp0 = b->h[0].c[k].imag * f->h[0].c[j].imag;
-	a->e[k][j].real = a->e[k][j].real + (tmp0 + tmp1)*tmp_coeff[0];
+    tmp_coeffd2[0] = tmp_coeff[0]/2;
+    tmp_coeffd2[1] = tmp_coeff[1]/2;
 
-	tmp1 = b->h[0].c[k].real * f->h[0].c[j].imag;
-	tmp0 = b->h[0].c[k].imag * f->h[0].c[j].real;
-	a->e[k][j].imag += (tmp0 - tmp1)*tmp_coeff[0];
-
-	tmp1 = b->h[1].c[k].real * f->h[1].c[j].real;
-	tmp0 = b->h[1].c[k].imag * f->h[1].c[j].imag;
-	a->e[k][j].real += (tmp0 + tmp1)*tmp_coeff[1];
-
-	tmp1 = b->h[1].c[k].real * f->h[1].c[j].imag;
-	tmp0 = b->h[1].c[k].imag * f->h[1].c[j].real;
-	a->e[k][j].imag += (tmp0 - tmp1)*tmp_coeff[1];
+    if(i < sites_on_node - 1){
+      anti_hermitmat *an = a + 1;
+      
+      cache_touch(&(an->m01.real));
     }
-#endif
+
+#if 0
+    uncompress_anti_hermitian( a, &tmat2);
+    su3_projector(&(b->h[0]), &(f->h[0]), &tmat);
+    scalar_mult_add_su3_matrix(&tmat2, &tmat, tmp_coeff[0], &tmat2 );
+    su3_projector(&(b->h[1]), &(f->h[1]), &tmat);
+    scalar_mult_add_su3_matrix(&tmat2, &tmat, tmp_coeff[1], &tmat2 );
+    make_anti_hermitian(&tmat2, a);
+    
+#else
+    trim = 0;
+
+    /* k = 0 */
+
+    tmp1 = b->h[0].c[0].real * f->h[0].c[0].imag;
+    tmp0 = b->h[0].c[0].imag * f->h[0].c[0].real;
+    tmp = (tmp0 - tmp1)*tmp_coeff[0];
+    
+    tmp1 = b->h[1].c[0].real * f->h[1].c[0].imag;
+    tmp0 = b->h[1].c[0].imag * f->h[1].c[0].real;
+    tmp += (tmp0 - tmp1)*tmp_coeff[1];
+    a->m00im += tmp;
+    trim += tmp;
+    
+    
+    tmp1 = b->h[0].c[0].real * f->h[0].c[1].real;
+    tmp0 = b->h[0].c[0].imag * f->h[0].c[1].imag;
+    tmp = (tmp0 + tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[0].real * f->h[1].c[1].real;
+    tmp0 = b->h[1].c[0].imag * f->h[1].c[1].imag;
+    tmp += (tmp0 + tmp1)*tmp_coeffd2[1];
+    a->m01.real += tmp;
+
+    if(i < sites_on_node - 1){
+      anti_hermitmat *an = a + 1;
+      
+      cache_touch(&(an->m22im));
+    }
+
+    tmp1 = b->h[0].c[0].real * f->h[0].c[1].imag;
+    tmp0 = b->h[0].c[0].imag * f->h[0].c[1].real;
+    tmp = (tmp0 - tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[0].real * f->h[1].c[1].imag;
+    tmp0 = b->h[1].c[0].imag * f->h[1].c[1].real;
+    tmp += (tmp0 - tmp1)*tmp_coeffd2[1];
+    a->m01.imag += tmp;
+    
+    
+    tmp1 = b->h[0].c[0].real * f->h[0].c[2].real;
+    tmp0 = b->h[0].c[0].imag * f->h[0].c[2].imag;
+    tmp = (tmp0 + tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[0].real * f->h[1].c[2].real;
+    tmp0 = b->h[1].c[0].imag * f->h[1].c[2].imag;
+    tmp += (tmp0 + tmp1)*tmp_coeffd2[1];
+    a->m02.real += tmp;
+    
+    tmp1 = b->h[0].c[0].real * f->h[0].c[2].imag;
+    tmp0 = b->h[0].c[0].imag * f->h[0].c[2].real;
+    tmp = (tmp0 - tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[0].real * f->h[1].c[2].imag;
+    tmp0 = b->h[1].c[0].imag * f->h[1].c[2].real;
+    tmp += (tmp0 - tmp1)*tmp_coeffd2[1];
+    a->m02.imag += tmp;
+    
+
+    if(i < sites_on_node - 1){
+      half_wilson_vector *bn = b + 1;
+      
+      cache_touch(&(bn->h[0].c[0].real));
+    }
+
+    /* k = 1 */
+
+    tmp1 = b->h[0].c[1].real * f->h[0].c[0].real;
+    tmp0 = b->h[0].c[1].imag * f->h[0].c[0].imag;
+    tmp = (tmp0 + tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[1].real * f->h[1].c[0].real;
+    tmp0 = b->h[1].c[1].imag * f->h[1].c[0].imag;
+    tmp += (tmp0 + tmp1)*tmp_coeffd2[1];
+    a->m01.real -= tmp;
+    
+    tmp1 = b->h[0].c[1].real * f->h[0].c[0].imag;
+    tmp0 = b->h[0].c[1].imag * f->h[0].c[0].real;
+    tmp = (tmp0 - tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[1].real * f->h[1].c[0].imag;
+    tmp0 = b->h[1].c[1].imag * f->h[1].c[0].real;
+    tmp += (tmp0 - tmp1)*tmp_coeffd2[1];
+    a->m01.imag += tmp;
+    
+    tmp1 = b->h[0].c[1].real * f->h[0].c[1].imag;
+    tmp0 = b->h[0].c[1].imag * f->h[0].c[1].real;
+    tmp = (tmp0 - tmp1)*tmp_coeff[0];
+    
+    if(i < sites_on_node - 1){
+      half_wilson_vector *bn = b + 1;
+      
+      cache_touch(&(bn->h[1].c[2].imag));
+    }
+
+    tmp1 = b->h[1].c[1].real * f->h[1].c[1].imag;
+    tmp0 = b->h[1].c[1].imag * f->h[1].c[1].real;
+    tmp += (tmp0 - tmp1)*tmp_coeff[1];
+    a->m11im += tmp;
+    trim += tmp;
+    
+    
+    tmp1 = b->h[0].c[1].real * f->h[0].c[2].real;
+    tmp0 = b->h[0].c[1].imag * f->h[0].c[2].imag;
+    tmp = (tmp0 + tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[1].real * f->h[1].c[2].real;
+    tmp0 = b->h[1].c[1].imag * f->h[1].c[2].imag;
+    tmp += (tmp0 + tmp1)*tmp_coeffd2[1];
+    a->m12.real += tmp;
+    
+    tmp1 = b->h[0].c[1].real * f->h[0].c[2].imag;
+    tmp0 = b->h[0].c[1].imag * f->h[0].c[2].real;
+    tmp = (tmp0 - tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[1].real * f->h[1].c[2].imag;
+    tmp0 = b->h[1].c[1].imag * f->h[1].c[2].real;
+    tmp += (tmp0 - tmp1)*tmp_coeffd2[1];
+    a->m12.imag += tmp;
+    
+
+    if(i < sites_on_node - 1){
+      half_wilson_vector *fn = f + 1;
+      
+      cache_touch(&(fn->h[0].c[0].real));
+    }
+
+    /* k = 2 */
+
+    tmp1 = b->h[0].c[2].real * f->h[0].c[0].real;
+    tmp0 = b->h[0].c[2].imag * f->h[0].c[0].imag;
+    tmp = (tmp0 + tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[2].real * f->h[1].c[0].real;
+    tmp0 = b->h[1].c[2].imag * f->h[1].c[0].imag;
+    tmp += (tmp0 + tmp1)*tmp_coeffd2[1];
+    a->m02.real -= tmp;
+    
+    tmp1 = b->h[0].c[2].real * f->h[0].c[0].imag;
+    tmp0 = b->h[0].c[2].imag * f->h[0].c[0].real;
+    tmp = (tmp0 - tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[2].real * f->h[1].c[0].imag;
+    tmp0 = b->h[1].c[2].imag * f->h[1].c[0].real;
+    tmp += (tmp0 - tmp1)*tmp_coeffd2[1];
+    a->m02.imag += tmp;
+    
+    
+    tmp1 = b->h[0].c[2].real * f->h[0].c[1].real;
+    tmp0 = b->h[0].c[2].imag * f->h[0].c[1].imag;
+    tmp = (tmp0 + tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[2].real * f->h[1].c[1].real;
+    tmp0 = b->h[1].c[2].imag * f->h[1].c[1].imag;
+    tmp += (tmp0 + tmp1)*tmp_coeffd2[1];
+    a->m12.real -= tmp;
+    
+    if(i < sites_on_node - 1){
+      half_wilson_vector *fn = f + 1;
+      
+      cache_touch(&(fn->h[1].c[2].imag));
+    }
+
+    tmp1 = b->h[0].c[2].real * f->h[0].c[1].imag;
+    tmp0 = b->h[0].c[2].imag * f->h[0].c[1].real;
+    tmp = (tmp0 - tmp1)*tmp_coeffd2[0];
+    
+    tmp1 = b->h[1].c[2].real * f->h[1].c[1].imag;
+    tmp0 = b->h[1].c[2].imag * f->h[1].c[1].real;
+    tmp += (tmp0 - tmp1)*tmp_coeffd2[1];
+    a->m12.imag += tmp;
+    
+    
+    tmp1 = b->h[0].c[2].real * f->h[0].c[2].imag;
+    tmp0 = b->h[0].c[2].imag * f->h[0].c[2].real;
+    tmp = (tmp0 - tmp1)*tmp_coeff[0];
+    
+    tmp1 = b->h[1].c[2].real * f->h[1].c[2].imag;
+    tmp0 = b->h[1].c[2].imag * f->h[1].c[2].real;
+    tmp += (tmp0 - tmp1)*tmp_coeff[1];
+    a->m22im += tmp;
+    trim += tmp;
+
+    trim *= 0.33333333333333333;
+    a->m00im -= trim;
+    a->m11im -= trim;
+    a->m22im -= trim;
 #endif
   }
 }
@@ -302,9 +488,7 @@ void scalar_mult_add_lathwvec(half_wilson_vector *dest,
 	half_wilson_vector *an = a + 1;
 
 	cache_touch(&(an->h[0].c[0].real));
-	cache_touch(&(an->h[1].c[0].real));
-	cache_touch(&(bn->h[0].c[0].real));
-	cache_touch(&(bn->h[1].c[0].real));
+	cache_touch(&(an->h[1].c[2].imag));
       }
 #if 0
       scalar_mult_add_su3_vector(&(a->h[0]), &(b->h[0]), s[0],
@@ -313,20 +497,28 @@ void scalar_mult_add_lathwvec(half_wilson_vector *dest,
 				 &(a->h[1]));
 #else
 
-  a->h[0].c[0].real = a->h[0].c[0].real + s[0]*b->h[0].c[0].real;
-  a->h[0].c[0].imag = a->h[0].c[0].imag + s[0]*b->h[0].c[0].imag;
-  a->h[0].c[1].real = a->h[0].c[1].real + s[0]*b->h[0].c[1].real;
-  a->h[0].c[1].imag = a->h[0].c[1].imag + s[0]*b->h[0].c[1].imag;
-  a->h[0].c[2].real = a->h[0].c[2].real + s[0]*b->h[0].c[2].real;
-  a->h[0].c[2].imag = a->h[0].c[2].imag + s[0]*b->h[0].c[2].imag;
-
-  a->h[1].c[0].real = a->h[1].c[0].real + s[0]*b->h[1].c[0].real;
-  a->h[1].c[0].imag = a->h[1].c[0].imag + s[0]*b->h[1].c[0].imag;
-  a->h[1].c[1].real = a->h[1].c[1].real + s[0]*b->h[1].c[1].real;
-  a->h[1].c[1].imag = a->h[1].c[1].imag + s[0]*b->h[1].c[1].imag;
-  a->h[1].c[2].real = a->h[1].c[2].real + s[0]*b->h[1].c[2].real;
-  a->h[1].c[2].imag = a->h[1].c[2].imag + s[0]*b->h[1].c[2].imag;
-
+      a->h[0].c[0].real = a->h[0].c[0].real + s[0]*b->h[0].c[0].real;
+      a->h[0].c[0].imag = a->h[0].c[0].imag + s[0]*b->h[0].c[0].imag;
+      a->h[0].c[1].real = a->h[0].c[1].real + s[0]*b->h[0].c[1].real;
+      a->h[0].c[1].imag = a->h[0].c[1].imag + s[0]*b->h[0].c[1].imag;
+      a->h[0].c[2].real = a->h[0].c[2].real + s[0]*b->h[0].c[2].real;
+      a->h[0].c[2].imag = a->h[0].c[2].imag + s[0]*b->h[0].c[2].imag;
+      
+      if(i < sites_on_node - 1){
+	half_wilson_vector *bn = b + 1;
+	half_wilson_vector *an = a + 1;
+	
+	cache_touch(&(bn->h[0].c[0].real));
+	cache_touch(&(bn->h[1].c[2].imag));
+      }
+      
+      a->h[1].c[0].real = a->h[1].c[0].real + s[0]*b->h[1].c[0].real;
+      a->h[1].c[0].imag = a->h[1].c[0].imag + s[0]*b->h[1].c[0].imag;
+      a->h[1].c[1].real = a->h[1].c[1].real + s[0]*b->h[1].c[1].real;
+      a->h[1].c[1].imag = a->h[1].c[1].imag + s[0]*b->h[1].c[1].imag;
+      a->h[1].c[2].real = a->h[1].c[2].real + s[0]*b->h[1].c[2].real;
+      a->h[1].c[2].imag = a->h[1].c[2].imag + s[0]*b->h[1].c[2].imag;
+      
 #endif
     }
 }
