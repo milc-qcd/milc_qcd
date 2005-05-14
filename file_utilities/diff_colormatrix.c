@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
   
   volume=nx*ny*nz*nt;
   
-  /* Allocate space for ksprops */
+  /* Allocate space for 4 color matrices */
   colormatrix1 = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
   
   if(colormatrix1 == NULL){

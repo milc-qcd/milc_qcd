@@ -116,64 +116,64 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 
 check_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_prop" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS=  check_prop.o io_prop_w.o wilson_info_dummy.o \
 	gauge_info_dummy.o"
 
 check_gauge::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_gauge" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS= check_gauge.o \
 	check_unitarity.o gauge_info_dummy.o"
 
 diff_colormatrix::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_colormatrix" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS=  diff_colormatrix.o gauge_info_dummy.o"
 
 diff_ksprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksprop" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS=  diff_ksprop.o io_helpers_ks.o \
 	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o \
 	gauge_info_dummy.o"
 
 diff_ksvector::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksvector" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS=  diff_ksvector.o io_scidac_ks.o ksprop_info.o \
 	gauge_info_dummy.o"
 
 diff_wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_wprop" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS=  diff_wprop.o io_helpers_w.o canopy2weyl_rot.o \
 	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o \
 	gauge_info_dummy.o"
 
 lattice_to_scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= lattice_to_scidac" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS=  lattice_to_scidac.o \
 	check_unitarity.o gauge_info_dummy.o"
 
 ksprop_to_ksprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= ksprop_to_ksprop" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS=  ksprop_to_ksprop.o io_helpers_ks.o \
 	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o \
 	gauge_info_dummy.o"
 
 wprop_to_wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= wprop_to_wprop" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS=  wprop_to_wprop.o io_helpers_w.o canopy2weyl_rot.o \
 	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o \
 	gauge_info_dummy.o"
 
 ckpt1_to_v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= ckpt1_to_v5" \
-	"DEFINES= ${DARCH}" \
+	"DEFINES= " \
 	"EXTRA_OBJECTS=  ckpt1_to_v5.o \
 	check_unitarity.o gauge_info.o"
 
