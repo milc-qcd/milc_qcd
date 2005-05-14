@@ -37,10 +37,10 @@ OPT              = -O3    # ( -g -O, etc )
 #----------------------------------------------------------------------
 # 3. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
-OCFLAGS = -Wall
+#OCFLAGS = -Wall
 
+#OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -fprefetch-loop-arrays # QCDOC
 #OCCLAGS =  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
-#OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2
 #-------------- Intel icc/ecc -----------------------------------
 #OCFLAGS = -tpp2 -static
 
