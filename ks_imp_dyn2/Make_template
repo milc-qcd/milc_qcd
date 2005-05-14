@@ -140,7 +140,7 @@ else
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
   MULTI_INV_FN = ks_multicg.o
 # Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
-  ASQFORCE = fermion_force_asqtad2.o
+  ASQFORCE = fermion_force_asqtad3.o ff_opt.o
 endif
 
 INV_EO_OBJECTS = d_congrad5_eo.o dslash_eo.o
@@ -215,6 +215,10 @@ ifeq ($(strip ${QCDOC}),true)
   DQCDOC = -DQCDOC
 endif
 
+ifeq ($(strip ${HAVEQMP}),true)
+  DHAVE_QMP = -DHAVE_QMP
+endif
+
 ifeq ($(strip ${HAVEQIO}),true)
   DHAVE_QIO = -DHAVE_QIO
 endif
@@ -223,7 +227,7 @@ ifeq ($(strip ${HAVEQDP}),true)
   DHAVE_QDP = -DHAVE_QDP
 endif
 
-DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
+DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP}
 
 ##### Targets:
 #		("FN" = "fat+Naik")
@@ -231,10 +235,11 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 #	-DNPBP_REPS=10" \
 # 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
 #       -DONEMASS
+#	-DQIO_TRELEASE=2.0
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCOM_QMP_CRC -DQIO_TRELEASE=2.0" \
+	"DEFINES= -DFN -DCOM_QMP_CRC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
