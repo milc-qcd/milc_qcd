@@ -177,6 +177,12 @@ ckpt1_to_v5::
 	"EXTRA_OBJECTS=  ckpt1_to_v5.o \
 	check_unitarity.o gauge_info.o"
 
+scidac_to_v5::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= scidac_to_v5" \
+	"DEFINES= " \
+	"EXTRA_OBJECTS=  scidac_to_v5.o \
+	check_unitarity.o gauge_info_scidac.o"
+
 clean:
 	-/bin/rm -f *.o
 
