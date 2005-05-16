@@ -7,7 +7,12 @@
 /**********************************************************************/
 /* In io_scidac.c */
 
-void build_layout(QIO_Layout *layout);
+void build_qio_layout(QIO_Layout *layout);
+
+QIO_Writer *open_scidac_output(char *filename, int volfmt, QIO_Layout *layout,
+			       char *xml_write_file);
+
+QIO_Reader *open_scidac_input(char *filename, QIO_Layout *layout);
 
 QIO_Reader *open_input(char *filename, QIO_Layout *layout);
 

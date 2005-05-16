@@ -311,6 +311,18 @@ int write_gauge_info_item( FILE *fpout, /* ascii file pointer */
 		       int count,       /* number of data items if > 1 */
 		       int stride);     /* byte stride of data if
 					   count > 1 */
+int sprint_gauge_info_item( 
+  char *string,    /* character string */
+  size_t nstring,     /* string length */			    
+  char *keyword,   /* keyword */
+  char *fmt,       /* output format -
+		      must use s, d, e, f, or g */
+  char *src,       /* address of starting data
+		      floating point data must be
+		      of type (Real) */
+  int count,       /* number of data items if > 1 */
+  int stride);     /* byte stride of data if
+		      count > 1 */
 gauge_file *setup_output_gauge_file(void);
 gauge_file *setup_input_gauge_file(char *filename);
 
