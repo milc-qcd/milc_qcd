@@ -460,6 +460,91 @@ int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
   return 0;
 }
 
+/*------------------------------------------------------------------------*/
+
+/* Write a data item to a character string */
+int sprint_gauge_info_item( 
+  char *string,    /* character string */
+  size_t nstring,     /* string length */			    
+  char *keyword,   /* keyword */
+  char *fmt,       /* output format -
+		      must use s, d, e, f, or g */
+  char *src,       /* address of starting data
+		      floating point data must be
+		      of type (Real) */
+  int count,       /* number of data items if > 1 */
+  int stride)      /* byte stride of data if
+		      count > 1 */
+{
+
+  int i,k,n;
+  int bytes;
+  char *data;
+  float tt;
+
+  /* Check for valid keyword */
+
+  for(i=0;strlen(gauge_info_keyword[i])>0 &&
+      strcmp(gauge_info_keyword[i],keyword) != 0; i++);
+  if(strlen(gauge_info_keyword[i])==0)
+    printf("write_gauge_info_item: WARNING: keyword %s not in table\n",
+	    keyword);
+
+  /* Write keyword */
+  bytes = 0;
+
+  snprintf(string,nstring-bytes,"%s =",keyword);
+  bytes = strlen(string);
+  if(bytes >= nstring)return 1;
+
+  /* Write count if more than one item */
+  if(count > 1){
+    snprintf(string+bytes, nstring-bytes, "[%d]",count);
+    bytes = strlen(string);
+    if(bytes >= nstring)return 1;
+  }
+    
+  n = count; if(n==0)n = 1;
+  
+  /* Write data */
+  for(k = 0, data = (char *)src; k < n; k++, data += stride)
+    {
+      snprintf(string+bytes, nstring-bytes," ");
+      bytes = strlen(string);
+      if(bytes >= nstring)return 1;
+
+      if(strstr(fmt,"s") != NULL){
+	snprintf(string+bytes,nstring-bytes, fmt,data);
+	bytes = strlen(string);
+	if(bytes >= nstring)return 1;
+      }
+      else if(strstr(fmt,"d") != NULL){
+	snprintf(string+bytes,nstring-bytes,fmt,*(int *)data);
+	bytes = strlen(string);
+	if(bytes >= nstring)return 1;
+      }
+      else if(strstr(fmt,"e") != NULL || 
+	      strstr(fmt,"f") != NULL || 
+	      strstr(fmt,"g") != NULL)
+	{
+	  tt = *(Real *)data;
+	  snprintf(string+bytes,nstring-bytes,fmt,tt);
+	  bytes = strlen(string);
+	  if(bytes >= nstring)return 1;
+	}
+      else
+	{
+	  printf("write_gauge_info_item: Unrecognized data type %s\n",fmt);
+	  return 1;
+	}
+    }
+  snprintf(string+bytes,nstring-bytes,"\n");
+  bytes = strlen(string);
+  if(bytes >= nstring)return 1;
+
+  return 0;
+}
+
 /*----------------------------------------------------------------------*/
 /* Open, write, and close the ASCII info file */
 
@@ -882,7 +967,7 @@ void w_serial(gauge_file *gf)
       if( fseeko(fp,checksum_offset,SEEK_SET) < 0 ) 
 	{
 	  printf("w_serial: Node %d fseeko %lld failed error %d file %s\n",
-		 this_node,(long long)offset,errno,gf->filename);
+		 this_node,(long long)checksum_offset,errno,gf->filename);
 	  fflush(stdout);terminate(1);
 	}
       write_checksum(SERIAL,gf);

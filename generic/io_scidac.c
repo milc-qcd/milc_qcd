@@ -38,7 +38,7 @@ size_t qio_num_sites(int node){
   return num_sites(node);
 }
 
-void build_layout(QIO_Layout *layout){
+void build_qio_layout(QIO_Layout *layout){
   static int lattice_size[LATDIM];
 
   lattice_size[0] = nx;
@@ -58,7 +58,7 @@ void build_layout(QIO_Layout *layout){
   layout->number_of_nodes = number_of_nodes;
 }
 
-QIO_Writer *open_output(char *filename, int volfmt, QIO_Layout *layout,
+QIO_Writer *open_scidac_output(char *filename, int volfmt, QIO_Layout *layout,
 			char *xml_write_file){
   QIO_String *xml_file_out;
   QIO_Writer *outfile;
@@ -73,17 +73,17 @@ QIO_Writer *open_output(char *filename, int volfmt, QIO_Layout *layout,
 #endif
   outfile = QIO_open_write(xml_file_out, filename, volfmt, layout, 0);
   if(outfile == NULL){
-    printf("open_output(%d): QIO_open_write returned NULL\n",this_node);
+    printf("open_scidac_output(%d): QIO_open_write returned NULL\n",this_node);
     return NULL;
   }
   QIO_string_destroy(xml_file_out);
   return outfile;
 }
 
-QIO_Reader *open_input(char *filename, QIO_Layout *layout){
+QIO_Reader *open_scidac_input(char *filename, QIO_Layout *layout){
   QIO_String *xml_file_in;
   QIO_Reader *infile;
-  char myname[] = "open_input";
+  char myname[] = "open_scidac_input";
 
   /* Create the file XML */
   xml_file_in = QIO_string_create();
@@ -324,13 +324,13 @@ gauge_file *save_scidac(char *filename, int volfmt){
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Make a dummy gauge file structure for MILC use */
   gf = setup_output_gauge_file();
 
   /* Open file for writing */
-  outfile = open_output(filename, volfmt, &layout,
+  outfile = open_scidac_output(filename, volfmt, &layout,
 			"MILC ILDG archival gauge configuration");
   if(outfile == NULL)terminate(1);
 
@@ -380,12 +380,12 @@ int read_lat_dim_scidac(char *filename, int *ndim, int dims[])
 
   /* Build the layout structure */
   nx = 0; ny = 0; nz = 0; nt = 0;
-  build_layout(&layout);
+  build_qio_layout(&layout);
   /* Forces discovery */
   layout.latdim = 0;
 
   /* Get lattice dimensions from file */
-  infile = open_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout);
   if(!infile)return 1;
 
   *ndim = QIO_get_reader_latdim(infile);
@@ -422,7 +422,7 @@ gauge_file *restore_serial_scidac(char *filename){
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Make a dummy gauge file structure for MILC use */
   gf = setup_input_gauge_file(filename);
@@ -431,7 +431,7 @@ gauge_file *restore_serial_scidac(char *filename){
   gf->filename = filename;
 
   /* Open file for reading */
-  infile = open_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field */
@@ -454,10 +454,10 @@ void restore_color_matrix_scidac_to_site(char *filename,
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Open file for reading */
-  infile = open_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field */
@@ -477,10 +477,10 @@ void restore_color_matrix_scidac_to_field(char *filename,
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Open file for reading */
-  infile = open_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field */
@@ -502,10 +502,10 @@ void save_color_matrix_scidac_from_site(char *filename, char *filexml,
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Open file for writing */
-  outfile = open_output(filename, volfmt, &layout, filexml);
+  outfile = open_scidac_output(filename, volfmt, &layout, filexml);
   if(outfile == NULL)terminate(1);
 
   /* Write the lattice field */
@@ -545,10 +545,10 @@ void save_color_matrix_scidac_from_field(char *filename,
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Open file for writing */
-  outfile = open_output(filename, volfmt, &layout, filexml);
+  outfile = open_scidac_output(filename, volfmt, &layout, filexml);
   if(outfile == NULL)terminate(1);
 
   /* Write the lattice field */
