@@ -17,7 +17,9 @@ G_KS_ALL = \
   d_congrad5_fn.o \
   d_congrad5_fn_fewsums.o \
   d_congrad5_fn_qop.o \
-  d_congrad_two_src.o \
+  d_congrad5_fn_qop_two_src.o \
+  d_congrad5_two_src.o \
+  d_congrad5_fn_two_src2.o \
   dslash_eo.o \
   dslash_fn.o \
   dslash_fn_dblstore.o \
@@ -95,9 +97,13 @@ d_congrad5_fn.o: ../generic_ks/d_congrad5_fn.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop.o: ../generic_ks/d_congrad5_fn_qop.cc
 	${CXX} -c ${CFLAGS} $<
+d_congrad5_fn_qop_two_src.o: ../generic_ks/d_congrad5_fn_qop_two_src.cc
+	${CXX} -c ${CFLAGS} $<
 d_congrad5_fn_fewsums.o: ../generic_ks/d_congrad5_fn_fewsums.c
 	${CC} -c ${CFLAGS} $<
-d_congrad_two_src.o: ../generic_ks/d_congrad_two_src.c
+d_congrad5_two_src.o: ../generic_ks/d_congrad5_two_src.c
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_two_src2.o: ../generic_ks/d_congrad5_fn_two_src2.c
 	${CC} -c ${CFLAGS} $<
 dslash_eo.o: ../generic_ks/dslash_eo.c
 	${CC} -c ${CFLAGS} $<

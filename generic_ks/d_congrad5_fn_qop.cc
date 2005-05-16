@@ -45,22 +45,25 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
 		int niter, Real rsqmin, int parity, Real *final_rsq_ptr );
 
 static int is_congrad_initialized = 0;  // This is used by initialize_congrad and finalize_congrad.
+
+extern "C" {
 void initialize_congrad( void );
 void finalize_congrad( void );
 
-static void allocate_qop_fields( Float** qop_fat_links, Float** qop_long_links, Float** qop_src, Float** qop_sol );
+void allocate_qop_fields( Float** qop_fat_links, Float** qop_long_links, Float** qop_src, Float** qop_sol );
 
-static void map_milc_to_qop( field_offset milc_src, field_offset milc_sol,
-                             Float* qop_fat_links, Float* qop_long_links,
-                             Float* qop_src, Float* qop_sol, int milc_parity );
+void map_milc_to_qop( field_offset milc_src, field_offset milc_sol,
+		      Float* qop_fat_links, Float* qop_long_links,
+		      Float* qop_src, Float* qop_sol, int milc_parity );
 
-static void set_qop_invert_arg( QOP_invert_arg* qop_invert_arg, Real mass, int max_iterations, Real min_resid_sq, int milc_parity );
+void set_qop_invert_arg( QOP_invert_arg* qop_invert_arg, Real mass, int max_iterations, Real min_resid_sq, int milc_parity );
 
-static void map_qop_to_milc( Float* qop_sol, field_offset milc_sol, int milc_parity );
+void map_qop_to_milc( Float* qop_sol, field_offset milc_sol, int milc_parity );
 
-static int ks_congrad_qop( Float* qop_source, Float* qop_solution,
+int ks_congrad_qop( Float* qop_source, Float* qop_solution,
                            Float* qop_fat_links, Float* qop_long_links,
                            QOP_invert_arg* qop_invert_arg, Real* final_rsq_ptr );
+}
 
 int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
 	        int niter, Real rsqmin, int milc_parity, Real* final_rsq_ptr )
@@ -134,8 +137,8 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
   // free qop fields                                   //
   ///////////////////////////////////////////////////////
 
-  //free( qop_fat_links );   qop_fat_links  = NULL;
-  //free( qop_long_links );  qop_long_links = NULL;
+  free( qop_fat_links );   qop_fat_links  = NULL;
+  free( qop_long_links );  qop_long_links = NULL;
   free( qop_src );         qop_src        = NULL;
   free( qop_sol );         qop_sol        = NULL;
 
@@ -157,7 +160,7 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
   return( iterations_used );
 }
 
-static int ks_congrad_qop( Float* qop_src, Float* qop_sol,
+int ks_congrad_qop( Float* qop_src, Float* qop_sol,
                            Float* qop_fat_links, Float* qop_long_links,
                            QOP_invert_arg* qop_invert_arg, Real* final_rsq_ptr )
 {
@@ -171,8 +174,8 @@ static int ks_congrad_qop( Float* qop_src, Float* qop_sol,
   //printf( "MILC: QOP_asqtad_invert_load_links_raw finished in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
 
   // QOP remaps the links again, so this copy isn't needed
-  free( qop_fat_links );   qop_fat_links  = NULL;
-  free( qop_long_links );  qop_long_links = NULL;
+  // free( qop_fat_links );   qop_fat_links  = NULL;
+  // free( qop_long_links );  qop_long_links = NULL;
 
   #ifdef CGTIME
 
@@ -301,7 +304,7 @@ void finalize_congrad( void )
   return;
 }
 
-static void allocate_qop_fields( Float** qop_fat_links, Float** qop_long_links, Float** qop_src, Float** qop_sol )
+void allocate_qop_fields( Float** qop_fat_links, Float** qop_long_links, Float** qop_src, Float** qop_sol )
 {
   //printf( "MILC: allocate_qop_fields called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
 
@@ -373,7 +376,7 @@ static void allocate_qop_fields( Float** qop_fat_links, Float** qop_long_links, 
   return;
 }
 
-static void set_qop_invert_arg( QOP_invert_arg* qop_invert_arg, Real mass, int max_iters, Real min_resid_sq, int milc_parity )
+void set_qop_invert_arg( QOP_invert_arg* qop_invert_arg, Real mass, int max_iters, Real min_resid_sq, int milc_parity )
 {
   qop_invert_arg->mass     = mass;
   qop_invert_arg->max_iter = max_iters;
@@ -395,7 +398,7 @@ static void set_qop_invert_arg( QOP_invert_arg* qop_invert_arg, Real mass, int m
   return;
 }
 
-static void map_milc_to_qop( field_offset milc_src, field_offset milc_sol, Float* qop_fat_links, Float* qop_long_links, Float* qop_src, Float* qop_sol, int milc_parity )
+void map_milc_to_qop( field_offset milc_src, field_offset milc_sol, Float* qop_fat_links, Float* qop_long_links, Float* qop_src, Float* qop_sol, int milc_parity )
 {
   //printf( "MILC: map_milc_to_qop called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
 
@@ -544,7 +547,7 @@ static void map_milc_to_qop( field_offset milc_src, field_offset milc_sol, Float
   return;
 }
 
-static void map_qop_to_milc( Float* qop_sol, field_offset milc_sol, int milc_parity )
+void map_qop_to_milc( Float* qop_sol, field_offset milc_sol, int milc_parity )
 {
   //printf( "MILC: map_qop_to_milc called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
 
