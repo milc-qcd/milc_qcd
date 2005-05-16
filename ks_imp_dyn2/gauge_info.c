@@ -162,6 +162,8 @@ void destroyGaugeQCDML(String *st){
 
 #endif
 
+#if 0
+/* Eventually we should create files with the proper QCDML */
 char *create_QCDML(){
   char dummy[] = "Dummy QCDML";
   char *qcdml = (char *)malloc(sizeof(dummy)+1);
@@ -173,3 +175,63 @@ void free_QCDML(char *qcdml){
   if(qcdml != NULL)free(qcdml);
 }
 
+#else
+#define INFOSTRING_MAX 2048
+/* For now we simply use the MILC info */
+char *create_QCDML(){
+
+  size_t bytes = 0;
+  char *info = (char *)malloc(INFOSTRING_MAX);
+  size_t max = INFOSTRING_MAX;
+
+  sprint_gauge_info_item(info+bytes, max-bytes,"action.description","%s",
+			"\"Gauge plus fermion (improved)\"",0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.description","%s",
+			gauge_action_description,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.nloops","%d",
+			 (char *)&gauge_action_nloops,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.nreps","%d",
+			 (char *)&gauge_action_nreps,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.beta11","%f",
+			 (char *)&beta,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.tadpole.u0","%f",
+			 (char *)&u0,0,0);
+  
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.description","%s",
+			 quark_action_description,0,0);
+  bytes = strlen(info);
+#ifdef ONEMASS
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.flavors","%d",
+			 (char *)&nflavors,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.mass","%f",
+			 (char *)&mass,0,0);
+  bytes = strlen(info);
+#else
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.flavors1","%d",
+			 (char *)&nflavors1,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.flavors2","%d",
+			 (char *)&nflavors2,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.mass1","%f",
+			 (char *)&mass1,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.mass2","%f",
+			 (char *)&mass2,0,0);
+  bytes = strlen(info);
+#endif  
+  return info;
+}
+
+void free_QCDML(char *info){
+  if(info != NULL)free(info);
+}
+
+#endif

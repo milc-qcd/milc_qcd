@@ -11,12 +11,6 @@
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
 void update_h( Real eps ){
-#ifdef ONEMASS
-    dslash_site( F_OFFSET(xxx), F_OFFSET(xxx), ODD );
-#else
-    dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD );
-    dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD );
-#endif
 #ifdef FN
     free_longlinks();
     free_fatlinks();

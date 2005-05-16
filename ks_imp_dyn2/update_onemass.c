@@ -79,6 +79,7 @@ checkmul();**/
         /* do conjugate gradient to get (Madj M)inverse * phi */
      	iters += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx), mass, 
 			     niter, rsqmin, EVEN, &final_rsq );
+	dslash_site( F_OFFSET(xxx), F_OFFSET(xxx), ODD );
 	cg_time = ((Real)step - 0.5)*epsilon;
 	/* now update H by full time interval */
     	update_h(epsilon);

@@ -79,7 +79,7 @@ Real xrandom;
 #endif
 
         /* do conjugate gradient to get (Madj M)inverse * phi */
-#if 1
+#if 0
      	iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
 	    niter, rsqmin, EVEN, &final_rsq );
      	iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
@@ -91,6 +91,8 @@ Real xrandom;
 				     mass1, mass2, niter, rsqmin, 
 				     EVEN, &final_rsq);
 #endif
+	dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD );
+	dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD );
 	/* now update H by full time interval */
     	update_h(epsilon);
 
