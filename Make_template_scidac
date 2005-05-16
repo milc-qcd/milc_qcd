@@ -82,10 +82,11 @@ LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
 # QCDOC temporary paths
 ifeq ($(strip ${PRECISION}),1)
   IQOP = -DSCIDAC -DASQD_SINGLE -I${QOPINCDIR}
+  LQOP = -L${QOPLIBDIR} -lasqd_s
 else
   IQOP = -DSCIDAC -I${QOP}/include/
+  LQOP = -L${QOPLIBDIR} -lasqd
 endif
-LQOP = -L${QOPLIBDIR} -lasqd_s
 
 ifeq ($(strip ${HAVEQMP}),true)
   LIBQMP = ${LQMP}

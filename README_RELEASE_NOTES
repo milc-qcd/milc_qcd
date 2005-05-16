@@ -54,5 +54,9 @@ Here are the new features so far:
 
 12. Time-slice checksums for Fermilab KS and Wilson propagators.
 
+13. QCDOC support
+
+14. C-coded optimized fermion force term for QCDOC
+
 C. DeTar, Utah
-27 Mar 2005
+05 May 2005
