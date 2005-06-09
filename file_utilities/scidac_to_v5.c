@@ -166,7 +166,7 @@ void w_serial_start_lattice(gauge_file *gf, w_serial_site_writer *state)
 
 /*----------------------------------------------------------------------*/
 /* Factory function for the SciDAC reader.  Writes the data to the
-   MILC v5 file */
+   MILC v5 file in the order this function is called regardless of "index". */
 void w_serial_site_links(char *buf, size_t index, int count, void *arg)
 {
   w_serial_site_writer *state = (w_serial_site_writer *)arg;
@@ -180,18 +180,12 @@ void w_serial_site_links(char *buf, size_t index, int count, void *arg)
   FILE *fp = gf->fp;
   u_int32type *val;
   register int i,j,k;
-  int newnode;
-  int x,y,z,t;
 
   if(count != 4){
     printf("w_serial_site_links: expecting 4 color matrices but got %d\n",
 	   count);
     terminate(1);
   }
-  x = lattice[index].x;
-  y = lattice[index].y;
-  z = lattice[index].z;
-  t = lattice[index].t;
 
   /* Copy buf to lbuf, converting precision if necessary */
   d2f_4mat((su3_matrix *)buf,&lbuf[4*buf_length]);
