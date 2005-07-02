@@ -7,7 +7,7 @@
 #define  _inline_C_mult_su3_nn( aa, bb, cc ) { \
   register su3_matrix *aaa, *bbb, *ccc; \
   register int iii,jjj; \
-  register float t,ar,ai,br,bi,cr,ci; \
+  register Real t,ar,ai,br,bi,cr,ci; \
     aaa = (aa) ; bbb = (bb) ; ccc = (cc) ; \
     for(iii=0;iii<3;iii++)for(jjj=0;jjj<3;jjj++){ \
 	ar=aaa->e[iii][0].real; ai=aaa->e[iii][0].imag; \

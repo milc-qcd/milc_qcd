@@ -1,4 +1,4 @@
-/* float su3_rdot( su3_vector *a, su3_vector *b )			*
+/* Real su3_rdot( su3_vector *a, su3_vector *b )			*
 * return real part of dot product of two su3_vectors			*
 */
 

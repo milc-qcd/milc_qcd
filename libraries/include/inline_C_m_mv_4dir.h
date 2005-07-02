@@ -9,8 +9,8 @@
 #define _inline_C_mult_su3_mat_vec_sum_4dir(  aa , bb0, bb1, bb2, bb3, cc ) \
 { \
   register int n; \
-  register float c0r,c0i,c1r,c1i,c2r,c2i; \
-  register float br,bi,a0,a1,a2; \
+  register Real c0r,c0i,c1r,c1i,c2r,c2i; \
+  register Real br,bi,a0,a1,a2; \
   register su3_matrix *mat; \
   register su3_vector *b; \
   c0r = c0i = c1r = c1i = c2r = c2i = 0.0; \

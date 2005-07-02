@@ -1,5 +1,5 @@
 
-/* float magsq_su3vec( su3_vector *a )                                   *
+/* Real magsq_su3vec( su3_vector *a )                                   *
 * return squared magnitude of an SU3 vector */
 
 #define _inline_C_magsq_su3vec( aa ) \
