@@ -20,9 +20,9 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
 
   int myiters = 0;
 
-  myiters += ks_congrad( src1, dest1, mass1, niter, rsqmin, EVEN, 
+  myiters += ks_congrad( src1, dest1, mass1, niter, rsqmin, parity, 
 			 final_rsq_ptr );
-  myiters += ks_congrad( src2, dest2, mass2, niter, rsqmin, EVEN, 
+  myiters += ks_congrad( src2, dest2, mass2, niter, rsqmin, parity, 
 			 final_rsq_ptr );
 
   return myiters;

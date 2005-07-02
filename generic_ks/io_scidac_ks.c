@@ -220,13 +220,13 @@ void save_ks_vector_scidac_from_site(char *filename, char *recxml,
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Create the file metadata */
   filexml = create_ks_XML();
 
   /* Open file for writing */
-  outfile = open_output(filename, volfmt, &layout, filexml);
+  outfile = open_scidac_output(filename, volfmt, &layout, filexml);
   if(outfile == NULL)terminate(1);
 
 
@@ -269,13 +269,13 @@ void save_ks_vector_scidac_from_field(char *filename, char *recxml,
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Create the file metadata */
   filexml = create_ks_XML();
 
   /* Open file for writing */
-  outfile = open_output(filename, volfmt, &layout, filexml);
+  outfile = open_scidac_output(filename, volfmt, &layout, filexml);
   if(outfile == NULL)terminate(1);
 
 
@@ -318,10 +318,10 @@ void restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Open file for reading */
-  infile = open_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one color vector */
@@ -344,10 +344,10 @@ void restore_ks_vector_scidac_to_field(char *filename,
   QIO_verbose(QIO_VERB_OFF);
 
   /* Build the layout structure */
-  build_layout(&layout);
+  build_qio_layout(&layout);
 
   /* Open file for reading */
-  infile = open_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one color vector */

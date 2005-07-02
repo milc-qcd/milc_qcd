@@ -38,9 +38,10 @@
 
 
     /* Specify paths in orientation in which they appear in the
-       forward part of the x component of dslash_site().  Rotations and
-       reflections will be automatically included. Be careful
-       about signs of coefficients.  See long comment at bottom. */
+       forward part of the x component of dslash_site().  Rotations
+       and reflections will be automatically included. Be careful
+       about signs of coefficients.  See long comment at end of
+       fermion_force_general.c. */
 #include <quark_action.h>
     /* Include file specifies the basic paths */
 
@@ -427,7 +428,8 @@ void path_transport_hwv( field_offset src, field_offset dest, int parity,
    the opposite displacement from the displacement of the point
    that we want to transport to this site, and take the adjoint
    of the matrix at the end. clear? */
-/* KS phases and APBC must be in the links. See long comment at bottom*/
+/* KS phases and APBC must be in the links. See long comment at 
+   end of fermion_force_general.c */
 void load_longlinks() {
   register int i;
   register site *s;
@@ -557,7 +559,8 @@ void free_longlinks(){
 #endif
 }
 
-/* KS phases and APBC must be in the links. See long comment at bottom*/
+/* KS phases and APBC must be in the links. See long comment at 
+   end of fermion_force_general.c */
 void load_fatlinks() {
   register int i;
   register site *s;
