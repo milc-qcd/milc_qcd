@@ -1,5 +1,5 @@
 # Makefile for upacking tar files of MILC code
-#  C. DeTar 8/9/02
+#  C. DeTar 7/13/05
 
 # Targets
 #   all    gets all
@@ -17,8 +17,8 @@
 
 include Make_contents
 
-all: ${WORK_TAR}
-	for f in ${WORK_TAR} ;\
+all: ${TAR}
+	for f in ${TAR} ;\
         do \
 	tar -xf $$f ;\
 	done
@@ -39,10 +39,8 @@ ALL_APPS = \
   heavy \
   hqet_heavy_to_light \
   hvy_qpot \
-  ks_dynamical \
   ks_eigen \
-  ks_imp_dyn1 \
-  ks_imp_dyn2 \
+  ks_imp_dyn \
   ks_imp_utilities \
   ks_imp_invert_multi \
   propagating_form_factor \
@@ -68,11 +66,9 @@ h_dibaryon:  		MAKE_generic_wilson MAKE_generic_clover
 heavy:  		MAKE_generic_wilson 
 hqet_heavy_to_light:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_form
 hvy_qpot: 		
-ks_dynamical:  		MAKE_generic_ks 
 ks_eigen:		MAKE_generic_ks 
 ks_hl_spectrum:	        MAKE_generic_ks MAKE_generic_wilson
-ks_imp_dyn1:		MAKE_generic_ks 
-ks_imp_dyn2:		MAKE_generic_ks 
+ks_imp_dyn:		MAKE_generic_ks 
 ks_imp_utilities:	MAKE_generic_ks 
 ks_imp_invert_multi:	MAKE_generic_ks 
 propagating_form_factor:  MAKE_generic_wilson MAKE_generic_clover  MAKE_generic_form
@@ -88,22 +84,22 @@ wilson_static:  	MAKE_generic_wilson
 # Rules for the generic directories
 
 MAKE_basic:
-	tar -xf ${WORK_BASIC_TAR}
+	tar -xf ${BASIC_TAR}
 
 MAKE_generic_clover:
-	tar -xf ${WORK_CLOVER_TAR} generic_clover
+	tar -xf ${CLOVER_TAR} generic_clover
 
 MAKE_generic_form:
-	tar -xf ${WORK_FORM_TAR} generic_form
+	tar -xf ${FORM_TAR} generic_form
 
 MAKE_generic_ks:
-	tar -xf ${WORK_KS_TAR} generic_ks
+	tar -xf ${KS_TAR} generic_ks
 
 MAKE_generic_pg:
-	tar -xf ${WORK_PURE_GAUGE_TAR} generic_pg
+	tar -xf ${PURE_GAUGE_TAR} generic_pg
 
 MAKE_generic_wilson:
-	tar -xf ${WORK_WILSON_TAR} generic_wilson
+	tar -xf ${WILSON_TAR} generic_wilson
 
 
 # Rules for specific application directories
@@ -111,56 +107,54 @@ MAKE_generic_wilson:
 generic_pg \
 pure_gauge \
 hvy_qpot \
-: ${WORK_PURE_GAUGE_TAR}
-	tar -xf ${WORK_PURE_GAUGE_TAR} $@
+: ${PURE_GAUGE_TAR}
+	tar -xf ${PURE_GAUGE_TAR} $@
 
 generic_clover \
 clover_dynamical \
 clover_hybrids \
 clover_invert \
 h_dibaryon \
-: ${WORK_CLOVER_TAR}
-	tar -xf ${WORK_CLOVER_TAR} $@
+: ${CLOVER_TAR}
+	tar -xf ${CLOVER_TAR} $@
 
 generic_form \
 hqet_heavy_to_light \
 ks_hl_spectrum \
 propagating_form_factor \
-: ${WORK_FORM_TAR}
-	tar -xf ${WORK_FORM_TAR} $@
+: ${FORM_TAR}
+	tar -xf ${FORM_TAR} $@
 
 arb_dirac_invert \
 arb_dirac_eigen \
 symanzik_sl32 \
-: ${WORK_FP_TAR}
-	tar -xf ${WORK_FP_TAR} $@
+: ${FP_TAR}
+	tar -xf ${FP_TAR} $@
 
-smooth_inst : ${WORK_INST_TAR}
-	tar -xf ${WORK_INST_TAR} $@
+smooth_inst : ${INST_TAR}
+	tar -xf ${INST_TAR} $@
 
 generic_ks \
 dense_static_su3 \
-ks_dynamical \
 ks_eigen \
-ks_imp_dyn1 \
-ks_imp_dyn2 \
+ks_imp_dyn \
 ks_imp_utilities \
 ks_imp_invert_multi \
 string_break \
-: ${WORK_KS_TAR}
-	tar -xf ${WORK_KS_TAR} $@
+: ${KS_TAR}
+	tar -xf ${KS_TAR} $@
 
 generic_schroed \
 schroed_cl_inv \
 schroed_ks_dyn \
 schroed_pg \
-: ${WORK_SF_TAR}
-	tar -xf ${WORK_SF_TAR} $@
+: ${SF_TAR}
+	tar -xf ${SF_TAR} $@
 
 generic_wilson \
 heavy \
 wilson_dynamical \
 wilson_schroed \
 wilson_static \
-: ${WORK_WILSON_TAR}
-	tar -xf ${WORK_WILSON_TAR} $@
+: ${WILSON_TAR}
+	tar -xf ${WILSON_TAR} $@

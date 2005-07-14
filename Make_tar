@@ -1,75 +1,45 @@
-# Makefile for building tar files of MILC code
-#  C. DeTar 8/9/02
-
-# Two ultimate targets:
-#   release  more stable code for general use
-#   work     less stable code for expert use
+# Makefile for building the tar file for the MILC code
+#  C. DeTar 7/13/05
 
 include Make_contents
-
-######################################################################
-# Release version
-
-# The rules for the component tar files
-
-${RELEASE_BASIC_TAR}: ${RELEASE_BASIC}
-	tar -cvf $@ ${RELEASE_BASIC}
-
-${RELEASE_PURE_GAUGE_TAR}: ${RELEASE_PG}
-	tar -cvf $@ ${RELEASE_PG}
-
-${RELEASE_KS_TAR}: ${RELEASE_KS}
-	tar -cvf $@ ${RELEASE_KS}
-
-${RELEASE_WILSON_TAR}: ${RELEASE_WILSON}
-	tar -cvf $@ ${RELEASE_WILSON}
-
-${RELEASE_CLOVER_TAR}: ${RELEASE_CLOVER}
-	tar -cvf $@ ${RELEASE_CLOVER}
-
-${RELEASE_NAME_ROOT}.tar.gz: ${RELEASE}
-	tar -cvf ${RELEASE_NAME_ROOT}.tar ${RELEASE}
-	gzip ${RELEASE_NAME_ROOT}.tar
-
-release: ${RELEASE_NAME_ROOT}.tar.gz
 
 ######################################################################
 # Collaboration version
 
 # The rules for the component tar files
 
-${WORK_BASIC_TAR}: ${WORK_BASIC}
-	tar -cvf $@ ${WORK_BASIC}
+${BASIC_TAR}: ${BASIC}
+	tar -cvf $@ ${BASIC}
 
-${WORK_PURE_GAUGE_TAR}: ${WORK_PG}
-	tar -cvf $@ ${WORK_PG}
+${PURE_GAUGE_TAR}: ${PG}
+	tar -cvf $@ ${PG}
 
-${WORK_FP_TAR}: ${WORK_FP}
-	tar -cvf $@ ${WORK_FP}
+${FP_TAR}: ${FP}
+	tar -cvf $@ ${FP}
 
-${WORK_KS_TAR}: ${WORK_KS}
-	tar -cvf $@ ${WORK_KS}
+${KS_TAR}: ${KS}
+	tar -cvf $@ ${KS}
 
-${WORK_WILSON_TAR}: ${WORK_WILSON}
-	tar -cvf $@ ${WORK_WILSON}
+${WILSON_TAR}: ${WILSON}
+	tar -cvf $@ ${WILSON}
 
-${WORK_CLOVER_TAR}: ${WORK_CLOVER}
-	tar -cvf $@ ${WORK_CLOVER}
+${CLOVER_TAR}: ${CLOVER}
+	tar -cvf $@ ${CLOVER}
 
-${WORK_FORM_TAR}: ${WORK_FORM}
-	tar -cvf $@ ${WORK_FORM}
+${FORM_TAR}: ${FORM}
+	tar -cvf $@ ${FORM}
 
-${WORK_INST_TAR}: ${WORK_INST}
-	tar -cvf $@ ${WORK_INST}
+${INST_TAR}: ${INST}
+	tar -cvf $@ ${INST}
 
-${WORK_SF_TAR}: ${WORK_SF}
-	tar -cvf $@ ${WORK_SF}
+${SF_TAR}: ${SF}
+	tar -cvf $@ ${SF}
 
-${WORK_NAME_ROOT}.tar.gz: ${WORK}
-	tar -cvf ${WORK_NAME_ROOT}.tar ${WORK}
-	gzip ${WORK_NAME_ROOT}.tar
-	-/bin/rm ${WORK_TAR}
+${NAME_ROOT}.tar.gz: ${WORK}
+	tar -cvf ${NAME_ROOT}.tar ${WORK}
+	gzip ${NAME_ROOT}.tar
+	-/bin/rm ${TAR}
 
-work: ${WORK_NAME_ROOT}.tar.gz
+all: ${NAME_ROOT}.tar.gz
 
 ######################################################################

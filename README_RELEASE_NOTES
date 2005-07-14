@@ -5,7 +5,7 @@ This is the beginning of version 7 of the MILC code.
 So far it contains only the following applications:
 
 file-utilities
-ks_imp_dyn2
+ks_imp_dyn
 ks_imp_utilities
 ks_imp_invert_multi
 ks_hl_spectrum
@@ -54,9 +54,15 @@ Here are the new features so far:
 
 12. Time-slice checksums for Fermilab KS and Wilson propagators.
 
-13. QCDOC support
+13. QCDOC support - including the SciDAC Level 3 inverter
 
 14. C-coded optimized fermion force term for QCDOC
 
+15. An assortment of C-inline routines
+
+16. Support for ILDG lattice formats and QIO parallel I/O.
+
+17. Few-gather and few-sum versions of the MILC inverter.
+
 C. DeTar, Utah
-05 May 2005
+13 Jul 2005

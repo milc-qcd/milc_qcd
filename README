@@ -1,4 +1,4 @@
-           MILC Version 6 (for general release)
+                          MILC Version 7
 
 This code was developed by the MILC collaboration for simulations of
 SU3 lattice gauge theory on MIMD parallel machines.  This code is
@@ -23,7 +23,7 @@ sent to
 
 Target architectures:
 
-This directory contains version 6 of the SU3 code for MIMD machines.
+This directory contains version 7 of the SU3 code for MIMD machines.
 Actually, this one contains only the "ks_dynamical",
 "wilson_dynamical" and "pure_gauge" applications.  For others that are
 undergoing more rapid change, like fat link inversion, etc., please
@@ -31,31 +31,27 @@ contact us directly.
 
 Currently code is supposed to run on:
 1. Any scalar machine ("vanilla" version)
-2. the Intel Paragon
-3. PVM (version 3.2)
-4. The Cray and T3E
-5. The IBM SP
-6. The SGI Origin 2000
-7. The HP-Convex Exemplar
-8. Any other machine running MPI
+2. Linux switched clusters via MPI
+3. MPP GigE mesh architectures
+4. QCDOC
 
 Overview of the code:
 
-Each "application", or major variant of the code, has its own directory.
-For example, the ks_dynamical directory, an applications directory,
-contains code for simulating full QCD in the staggered fermion scheme.
-The compilation requires code from the "libraries", "generic", and
-"generic_ks" directories, as well as the "ks_dynamical" directory
-itself.  All applications share the "libraries" directory containing
-low-level stuff, and the "generic" directory containing high level
-stuff that is more or less independent of the physics.  The various
-staggered fermion applications share the "generic_ks" directory.
-Examples of "generic" code are the random number routines, the lattice
-layout routines, routines to evaluate the plaquette or Polyakov loop,
-etc.  Of the shared code, only the libraries must be built separately
-before building any application code.  Code in the various generic
-directories is compiled automatically as needed, and should not be
-compiled separately.
+Each "application", or major variant of the code, has its own
+directory.  For example, the ks_imp_dyn directory, an applications
+directory, contains code for simulating full QCD in the staggered
+fermion scheme.  The compilation requires code from the "libraries",
+"generic", and "generic_ks" directories, as well as the "ks_dynamical"
+directory itself.  All applications share the "libraries" directory
+containing low-level stuff, and the "generic" directory containing
+high level stuff that is more or less independent of the physics.  The
+various staggered fermion applications share the "generic_ks"
+directory.  Examples of "generic" code are the random number routines,
+the lattice layout routines, routines to evaluate the plaquette or
+Polyakov loop, etc.  Of the shared code, only the libraries must be
+built separately before building any application code.  Code in the
+various generic directories is compiled automatically as needed, and
+should not be compiled separately.
 
 doc:  More detailed documentation of the code
 
@@ -63,8 +59,10 @@ libraries:	Low level routines and include files
 	
 	complex.h:	Definitions and macros for complex numbers
 	su3.h		Definitions and macros for SU(3)
-	complex.a 	Routines for complex numbers.
-	su3.a 		Routines for SU(3) operations
+	complex.1.a 	Routines for complex numbers (single precision)
+	complex.2.a 	Routines for complex numbers (double precision)
+	su3.1.a		Routines for SU(3) operations (single precision)
+	su3.2.a		Routines for SU(3) operations (double precision)
 
 include:   Header files required by the code
 
@@ -81,14 +79,14 @@ generic_wilson:   High level code shared by Wilson fermion applications.
 
 The remaining directories are "applications" directories.  Most of the
 application code can be built in various ways, depending on the
-requirements of the project.  For example, the ks_dynamical directory
+requirements of the project.  For example, the ks_imp_dyn directory
 contains code for simulating full QCD in the staggered fermion scheme.
 This code can be built to use the "R", "phi", and hybrid Monte Carlo
 algorithms, and may also include measurements of the hadron spectrum.
 These variants are obtained by selecting the appropriate compilation
 target, as indicated in the application Make_template file.
 
-ks_dynamical:
+ks_imp_dyn:
 	Simulations with dynamical Kogut-Susskind fermions.  Variants
 	include the "R", "phi" and hybrid Monte Carlo updating
 	algorithms.  Measurements include plaquette, Polyakov loop,
@@ -122,19 +120,12 @@ How to build the code:
    for further instructions.
 
 2. Then to make code for a particular application on a particular machine, 
-   copy the standard makefile called "Make_MACHINE" from
-   this parent directory to the application directory.  The biggest machine
-   dependence is that each machine uses the file "com_MACHINE.c" in the generic
-   directory.  Hopefully, all of the communication calls are in this file.
-   "MACHINE" is something like "t3e" or "sp_mpi".
+   edit the Makefile according to instructions there.
 
-3. You may need to modify the CFLAGS, CC, and possibly LFLAGS macros
-   in Make_MACHINE for your installation.
-
-4. Select a particular target by consulting the Make_template file
+3. Select a particular target by consulting the Make_template file
    in the desired applications directory.
 
-5. Sample input and output files are provided for each target.
+4. Sample input and output files are provided for each target.
    It is a good idea to run the compiled code with the sample input
    file and compare the results with the sample output.
 

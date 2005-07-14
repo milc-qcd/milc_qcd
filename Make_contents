@@ -1,202 +1,16 @@
 # This file is for inclusion in Make_tar and Make_unpack_*
 # It is not intended to be run stand-alone
-# 8/9/02 C. DeTar
+# 7/13/05 C. DeTar
 
 #  Change these names to suit
-VER = 7.0.18-alpha
+VER = 7.1.0
 NAME_ROOT = milc_qcd-${VER}
-RELEASE_NAME_ROOT = ${NAME_ROOT}_release
-WORK_NAME_ROOT = ${NAME_ROOT}
 
 ######################################################################
-# Release table of contents 
-# This is intended to be a more restrictive list with
-# only the code suited for general use
-
-THIS_DIR =             \
- getints.sh            \
- Make_linux_mpi	       \
- Make_linux_qmp	       \
- Make_sample_template  \
- Make_tar	       \
- Make_test_release     \
- Make_test_template    \
- Make_time_release     \
- Make_time_template    \
- Make_vanilla          \
- README                \
- diffn.pl              \
- headtail.pl
-
-DOC = \
- doc/Makefile           \
- doc/milcv6.texi        \
- doc/port_notes.txt
-
-FILE_UTILITIES =        \
- file_utilities/Make*   \
- file_utilities/*.c     \
- file_utilities/*.h
-
-BINARY_SAMPLES =          \
- binary_samples/lat.sample*    \
- binary_samples/lprop.*sample* \
- binary_samples/in.sample.*smear*
-
-INCLUDE = \
- include/Make*        \
- include/*.h
-
-GENERIC =              \
- generic/Make*         \
- generic/*.c           \
- generic/*.h           \
- generic/imp_actions/*.h
-
-GENERIC_CLOVER =          \
- generic_clover/Make*     \
- generic_clover/*.c       \
- generic_clover/*.h       \
- generic_clover/utilities/Make*  \
- generic_clover/utilities/*.c
-
-GENERIC_KS =              \
- generic_ks/Make*         \
- generic_ks/*.c           \
- generic_ks/*.h
-
-GENERIC_PG =              \
- generic_pg/Make*         \
- generic_pg/*.c           \
- generic_pg/*.h
-
-GENERIC_WILSON =              \
- generic_wilson/Make*         \
- generic_wilson/*.c           \
- generic_wilson/*.h
-
-LIBRARIES =             \
- libraries/*.c          \
- libraries/*.h          \
- libraries/*.m4         \
- libraries/*.rs6k       \
- libraries/*.t3d        \
- libraries/*.t3e        \
- libraries/*.alpha      \
- libraries/Make*        \
- libraries/README*
-
-CLOVER_DYNAMICAL =                 \
- clover_dynamical/*.c              \
- clover_dynamical/*.h              \
- clover_dynamical/Make*            \
- clover_dynamical/in.sample*       \
- clover_dynamical/out.sample*      \
- clover_dynamical/out.errtol*
-
-CLOVER_INVERT =                 \
- clover_invert/*.c              \
- clover_invert/*.h              \
- clover_invert/Make*            \
- clover_invert/in.sample*       \
- clover_invert/in.time*         \
- clover_invert/out.sample*      \
- clover_invert/out.errtol*
-
-HVY_QPOT =                 \
- hvy_qpot/README           \
- hvy_qpot/*.c              \
- hvy_qpot/*.h              \
- hvy_qpot/Make*            \
- hvy_qpot/in.sample*       \
- hvy_qpot/out.sample*      \
- hvy_qpot/out.errtol*
-
-KS_DYNAMICAL =                 \
- ks_dynamical/*.c              \
- ks_dynamical/*.h              \
- ks_dynamical/Make*            \
- ks_dynamical/in.sample*       \
- ks_dynamical/in.time*         \
- ks_dynamical/out.errtol*     \
- ks_dynamical/out.sample*
-
-PURE_GAUGE =                 \
- pure_gauge/*.c              \
- pure_gauge/*.h              \
- pure_gauge/Make*            \
- pure_gauge/in.sample*       \
- pure_gauge/out.errtol*     \
- pure_gauge/out.sample*
-
-WILSON_DYNAMICAL =                 \
- wilson_dynamical/*.c              \
- wilson_dynamical/*.h              \
- wilson_dynamical/Make*            \
- wilson_dynamical/in.sample*       \
- wilson_dynamical/out.errtol*     \
- wilson_dynamical/out.sample*
-
-# We split up the release into manageable components
-
-RELEASE_BASIC =     \
- ${THIS_DIR}        \
- ${DOC}             \
- ${FILE_UTILITIES}  \
- ${BINARY_SAMPLES}  \
- ${GENERIC}         \
- ${INCLUDE}         \
- ${LIBRARIES}
-
-RELEASE_KS =        \
- ${GENERIC_KS}      \
- ${KS_DYNAMICAL}
-
-RELEASE_PG = \
- ${GENERIC_PG} \
- ${PURE_GAUGE} \
- ${HVY_QPOT}
-
-RELEASE_WILSON =    \
- ${GENERIC_WILSON}  \
- ${WILSON_DYNAMICAL}
-
-RELEASE_CLOVER =    \
- ${GENERIC_CLOVER}  \
- ${CLOVER_DYNAMICAL} \
- ${CLOVER_INVERT}
-
-# The names of the component tar files
-
-RELEASE_BASIC_TAR  = ${RELEASE_NAME_ROOT}_basic.tar
-RELEASE_PURE_GAUGE_TAR  = ${RELEASE_NAME_ROOT}_pure_gauge.tar
-RELEASE_KS_TAR     = ${RELEASE_NAME_ROOT}_ks.tar
-RELEASE_WILSON_TAR = ${RELEASE_NAME_ROOT}_wilson.tar
-RELEASE_CLOVER_TAR = ${RELEASE_NAME_ROOT}_clover.tar
-
-# The combined tar files
-
-RELEASE_TAR = \
- ${RELEASE_BASIC_TAR}  \
- ${RELEASE_PURE_GAUGE_TAR}  \
- ${RELEASE_KS_TAR}     \
- ${RELEASE_WILSON_TAR} \
- ${RELEASE_CLOVER_TAR}
-
-# Contents of the whole ball of wax
-
-RELEASE =              \
- README_UNPACK_RELEASE  \
- Make_contents          \
- Make_unpack_release    \
- ${RELEASE_TAR}
-
-######################################################################
-######################################################################
-# Working code table of contents
+# Table of contents
 # This list is intended to be all-inclusive
 
-WORK_THIS_DIR =         \
+THIS_DIR =         \
  getints.sh             \
  Make*                  \
  README                 \
@@ -211,12 +25,12 @@ WORK_THIS_DIR =         \
  convert_f2d.sh         \
  todo
 
-WORK_DOC =              \
+DOC =              \
  doc/Makefile           \
  doc/milcv6.texi        \
  doc/port_notes.txt
 
-WORK_LIBRARIES =        \
+LIBRARIES =        \
  libraries/*.c          \
  libraries/*.h          \
  libraries/*.m4         \
@@ -228,7 +42,7 @@ WORK_LIBRARIES =        \
  libraries/README*      \
  libraries/include/*.h
 
-WORK_FILE_UTILITIES =     \
+FILE_UTILITIES =     \
  file_utilities/Make*     \
  file_utilities/*.c       \
  file_utilities/*.h       \
@@ -236,7 +50,7 @@ WORK_FILE_UTILITIES =     \
  file_utilities/out.errtol.* \
  file_utilities/out.sample.*
 
-WORK_BINARY_SAMPLES =      \
+BINARY_SAMPLES =      \
  binary_samples/colormatrix.*sample* \
  binary_samples/lat.sample*    \
  binary_samples/lprop.*sample* \
@@ -246,17 +60,17 @@ WORK_BINARY_SAMPLES =      \
  binary_samples/wprop*.sample.* \
  binary_samples/smear*.sample.*
 
-WORK_INCLUDE =        \
+INCLUDE =        \
  include/Make*        \
  include/*.h
 
-WORK_GENERIC =        \
+GENERIC =        \
  generic/Make*        \
  generic/*.c          \
  generic/*.h          \
  generic/imp_actions/*.h
 
-WORK_GENERIC_KS =     \
+GENERIC_KS =     \
  generic_ks/Make*     \
  generic_ks/*.c       \
  generic_ks/*.cc      \
@@ -264,34 +78,34 @@ WORK_GENERIC_KS =     \
  generic_ks/imp_actions/README \
  generic_ks/imp_actions/*.h
 
-WORK_GENERIC_PG =     \
+GENERIC_PG =     \
  generic_pg/Make*     \
  generic_pg/*.c       \
  generic_pg/*.h
 
-WORK_GENERIC_SCHROED =         \
+GENERIC_SCHROED =         \
  generic_schroed/Make*         \
  generic_schroed/*.c           \
  generic_schroed/*.h
 
-WORK_GENERIC_WILSON =     \
+GENERIC_WILSON =     \
  generic_wilson/Make*     \
  generic_wilson/*.c       \
  generic_wilson/*.h
 
-WORK_GENERIC_CLOVER =          \
+GENERIC_CLOVER =          \
  generic_clover/Make*     \
  generic_clover/*.c       \
  generic_clover/*.h       \
  generic_clover/utilities/Make*  \
  generic_clover/utilities/*.c
 
-WORK_GENERIC_FORM =     \
+GENERIC_FORM =     \
  generic_form/Make*     \
  generic_form/*.c       \
  generic_form/*.h
 
-WORK_ARB_DIRAC_EIGEN =          \
+ARB_DIRAC_EIGEN =          \
  arb_dirac_eigen/README         \
  arb_dirac_eigen/*.c            \
  arb_dirac_eigen/*.h            \
@@ -300,7 +114,7 @@ WORK_ARB_DIRAC_EIGEN =          \
  arb_dirac_eigen/out.errtol*     \
  arb_dirac_eigen/out.sample*
 
-WORK_ARB_DIRAC_INVERT =          \
+ARB_DIRAC_INVERT =          \
  arb_dirac_invert/README         \
  arb_dirac_invert/*.c            \
  arb_dirac_invert/*.h            \
@@ -309,7 +123,7 @@ WORK_ARB_DIRAC_INVERT =          \
  arb_dirac_invert/out.errtol*     \
  arb_dirac_invert/out.sample*
 
-WORK_CLOVER_DYNAMICAL =          \
+CLOVER_DYNAMICAL =          \
  clover_dynamical/*.c            \
  clover_dynamical/*.h            \
  clover_dynamical/Make*          \
@@ -317,7 +131,7 @@ WORK_CLOVER_DYNAMICAL =          \
  clover_dynamical/out.errtol*     \
  clover_dynamical/out.sample*
 
-WORK_CLOVER_HYBRIDS =            \
+CLOVER_HYBRIDS =            \
  clover_hybrids/*.c              \
  clover_hybrids/*.h              \
  clover_hybrids/Make*            \
@@ -325,7 +139,7 @@ WORK_CLOVER_HYBRIDS =            \
  clover_hybrids/out.errtol*     \
  clover_hybrids/out.sample*
 
-WORK_CLOVER_INVERT =            \
+CLOVER_INVERT =            \
  clover_invert/*.c              \
  clover_invert/*.h              \
  clover_invert/Make*            \
@@ -334,12 +148,12 @@ WORK_CLOVER_INVERT =            \
  clover_invert/out.errtol*     \
  clover_invert/out.sample*
 
-WORK_DENSE_STATIC_SU3 =           \
+DENSE_STATIC_SU3 =           \
  dense_static_su3/*.c             \
  dense_static_su3/*.h             \
  dense_static_su3/Make*     
 
-WORK_H_DIBARYON =            \
+H_DIBARYON =            \
  h_dibaryon/*.c              \
  h_dibaryon/*.h              \
  h_dibaryon/Make*            \
@@ -347,7 +161,7 @@ WORK_H_DIBARYON =            \
  h_dibaryon/out.errtol*     \
  h_dibaryon/out.sample*
 
-WORK_HEAVY        =   \
+HEAVY        =   \
  heavy/Make*          \
  heavy/*.c            \
  heavy/*.h            \
@@ -359,7 +173,7 @@ WORK_HEAVY        =   \
  heavy/utilities/Make* \
  heavy/utilities/in.sample*
 
-WORK_HQET_HEAVY_TO_LIGHT =          \
+HQET_HEAVY_TO_LIGHT =          \
  hqet_heavy_to_light/*.c            \
  hqet_heavy_to_light/*.h            \
  hqet_heavy_to_light/Make*          \
@@ -367,7 +181,7 @@ WORK_HQET_HEAVY_TO_LIGHT =          \
  hqet_heavy_to_light/out.errtol*     \
  hqet_heavy_to_light/out.sample*
 
-WORK_HVY_QPOT     =   \
+HVY_QPOT     =   \
  hvy_qpot/README      \
  hvy_qpot/Make*       \
  hvy_qpot/*.c         \
@@ -376,7 +190,7 @@ WORK_HVY_QPOT     =   \
  hvy_qpot/out.errtol*     \
  hvy_qpot/out.sample*
 
-WORK_KS_DYNAMICAL =          \
+KS_DYNAMICAL =          \
  ks_dynamical/*.c            \
  ks_dynamical/*.h            \
  ks_dynamical/Make*          \
@@ -385,7 +199,7 @@ WORK_KS_DYNAMICAL =          \
  ks_dynamical/out.errtol*     \
  ks_dynamical/out.sample*
 
-WORK_KS_EIGEN =          \
+KS_EIGEN =          \
  ks_eigen/README*        \
  ks_eigen/*.c            \
  ks_eigen/*.h            \
@@ -394,7 +208,7 @@ WORK_KS_EIGEN =          \
  ks_eigen/out.errtol*     \
  ks_eigen/out.sample*
 
-WORK_KS_HL_SPECTRUM =    \
+KS_HL_SPECTRUM =    \
  ks_hl_spectrum/*.c            \
  ks_hl_spectrum/*.h            \
  ks_hl_spectrum/Make*          \
@@ -402,26 +216,17 @@ WORK_KS_HL_SPECTRUM =    \
  ks_hl_spectrum/out.errtol*     \
  ks_hl_spectrum/out.sample*
 
-WORK_KS_IMP_DYN1 =           \
- ks_imp_dyn1/README          \
- ks_imp_dyn1/*.c             \
- ks_imp_dyn1/*.h             \
- ks_imp_dyn1/Make*           \
- ks_imp_dyn1/in.sample*      \
- ks_imp_dyn1/out.errtol*     \
- ks_imp_dyn1/out.sample*
+KS_IMP_DYN =           \
+ ks_imp_dyn/README          \
+ ks_imp_dyn/*.c             \
+ ks_imp_dyn/*.h             \
+ ks_imp_dyn/Make*           \
+ ks_imp_dyn/in.sample*      \
+ ks_imp_dyn/in.time*        \
+ ks_imp_dyn/out.errtol*     \
+ ks_imp_dyn/out.sample*
 
-WORK_KS_IMP_DYN2 =           \
- ks_imp_dyn2/README          \
- ks_imp_dyn2/*.c             \
- ks_imp_dyn2/*.h             \
- ks_imp_dyn2/Make*           \
- ks_imp_dyn2/in.sample*      \
- ks_imp_dyn2/in.time*        \
- ks_imp_dyn2/out.errtol*     \
- ks_imp_dyn2/out.sample*
-
-WORK_KS_IMP_UTILITIES =           \
+KS_IMP_UTILITIES =           \
  ks_imp_utilities/*.c             \
  ks_imp_utilities/*.h             \
  ks_imp_utilities/Make*           \
@@ -429,7 +234,7 @@ WORK_KS_IMP_UTILITIES =           \
  ks_imp_utilities/out.errtol*     \
  ks_imp_utilities/out.sample*
 
-WORK_KS_IMP_INVERT_MULTI =           \
+KS_IMP_INVERT_MULTI =           \
  ks_imp_invert_multi/*.c             \
  ks_imp_invert_multi/*.h             \
  ks_imp_invert_multi/Make*           \
@@ -437,7 +242,7 @@ WORK_KS_IMP_INVERT_MULTI =           \
  ks_imp_invert_multi/out.errtol*     \
  ks_imp_invert_multi/out.sample*
 
-WORK_PROPAGATING_FORM_FACTOR =          \
+PROPAGATING_FORM_FACTOR =          \
  propagating_form_factor/*.c            \
  propagating_form_factor/*.h            \
  propagating_form_factor/Make*          \
@@ -450,7 +255,7 @@ WORK_PROPAGATING_FORM_FACTOR =          \
  propagating_form_factor/utilities/Make* \
  propagating_form_factor/utilities/in.sample*
 
-WORK_PURE_GAUGE =          \
+PURE_GAUGE =          \
  pure_gauge/*.c            \
  pure_gauge/*.h            \
  pure_gauge/Make*          \
@@ -458,7 +263,7 @@ WORK_PURE_GAUGE =          \
  pure_gauge/out.errtol*     \
  pure_gauge/out.sample*
 
-WORK_SCHROED_CL_INV =          \
+SCHROED_CL_INV =          \
  schroed_cl_inv/*.c            \
  schroed_cl_inv/*.h            \
  schroed_cl_inv/Make*          \
@@ -466,7 +271,7 @@ WORK_SCHROED_CL_INV =          \
  schroed_cl_inv/out.errtol*     \
  schroed_cl_inv/out.sample*
 
-WORK_SCHROED_KS_DYN =          \
+SCHROED_KS_DYN =          \
  schroed_ks_dyn/*.c            \
  schroed_ks_dyn/*.h            \
  schroed_ks_dyn/Make*          \
@@ -474,7 +279,7 @@ WORK_SCHROED_KS_DYN =          \
  schroed_ks_dyn/out.errtol*     \
  schroed_ks_dyn/out.sample*
 
-WORK_SCHROED_PG =          \
+SCHROED_PG =          \
  schroed_pg/*.c            \
  schroed_pg/*.h            \
  schroed_pg/Make*          \
@@ -482,7 +287,7 @@ WORK_SCHROED_PG =          \
  schroed_pg/out.errtol*     \
  schroed_pg/out.sample*
 
-WORK_SMOOTH_INST =         \
+SMOOTH_INST =         \
  smooth_inst/README*       \
  smooth_inst/*.c           \
  smooth_inst/*.c.unused    \
@@ -494,7 +299,7 @@ WORK_SMOOTH_INST =         \
  smooth_inst/utilities/*.c \
  smooth_inst/utilities/Make_utilities
 
-WORK_STRING_BREAK =          \
+STRING_BREAK =          \
  string_break/*.c            \
  string_break/*.h            \
  string_break/Make*          \
@@ -502,7 +307,7 @@ WORK_STRING_BREAK =          \
  string_break/out.errtol*     \
  string_break/out.sample*
 
-WORK_SYMANZIK_SL32 =         \
+SYMANZIK_SL32 =         \
  symanzik_sl32/*.c           \
  symanzik_sl32/*.h           \
  symanzik_sl32/Make*         \
@@ -510,7 +315,7 @@ WORK_SYMANZIK_SL32 =         \
  symanzik_sl32/out.errtol*     \
  symanzik_sl32/out.sample*
 
-WORK_WILSON_DYNAMICAL =          \
+WILSON_DYNAMICAL =          \
  wilson_dynamical/*.c            \
  wilson_dynamical/*.h            \
  wilson_dynamical/Make*         \
@@ -518,7 +323,7 @@ WORK_WILSON_DYNAMICAL =          \
  wilson_dynamical/out.errtol*     \
  wilson_dynamical/out.sample*
 
-WORK_WILSON_STATIC        =   \
+WILSON_STATIC        =   \
  wilson_static/Make*          \
  wilson_static/*.c            \
  wilson_static/*.h            \
@@ -533,88 +338,88 @@ WORK_WILSON_STATIC        =   \
 
 # We split up the archive into manageable components
 
-WORK_BASIC =               \
- ${WORK_THIS_DIR}          \
- ${WORK_DOC}               \
- ${WORK_FILE_UTILITIES}    \
- ${WORK_BINARY_SAMPLES}    \
- ${WORK_GENERIC}           \
- ${WORK_INCLUDE}           \
- ${WORK_LIBRARIES}         \
- ${WORK_SSE}               \
- ${WORK_SSE2}            
+BASIC =               \
+ ${THIS_DIR}          \
+ ${DOC}               \
+ ${FILE_UTILITIES}    \
+ ${BINARY_SAMPLES}    \
+ ${GENERIC}           \
+ ${INCLUDE}           \
+ ${LIBRARIES}         \
+ ${SSE}               \
+ ${SSE2}            
 
-WORK_SSE =               \
+SSE =               \
  sse/README_SSE          \
  sse/include/*.h         \
  sse/include/Makefile    \
  sse/nas/*.s             \
  sse/bin/*.pl
 
-WORK_SSE2 =              \
+SSE2 =              \
  sse2/README_SSE         \
  sse2/include/*.h        \
  sse2/include/Makefile   \
  sse2/nas/*.s            \
  sse2/bin/*.pl
 
-WORK_PG =          \
- ${WORK_GENERIC_PG}        \
- ${WORK_PURE_GAUGE}        \
- ${WORK_HVY_QPOT}
+PG =          \
+ ${GENERIC_PG}        \
+ ${PURE_GAUGE}        \
+ ${HVY_QPOT}
 
-WORK_CLOVER =              \
- ${WORK_GENERIC_CLOVER}    \
- ${WORK_CLOVER_DYNAMICAL}  \
- ${WORK_CLOVER_HYBRIDS}    \
- ${WORK_CLOVER_INVERT}     \
- ${WORK_H_DIBARYON}
+CLOVER =              \
+ ${GENERIC_CLOVER}    \
+ ${CLOVER_DYNAMICAL}  \
+ ${CLOVER_HYBRIDS}    \
+ ${CLOVER_INVERT}     \
+ ${H_DIBARYON}
 
-WORK_FORM =                \
- ${WORK_KS_HL_SPECTRUM} \
+FORM =                \
+ ${KS_HL_SPECTRUM} \
 
-WORK_FP =                  \
- ${WORK_ARB_DIRAC_INVERT}  \
- ${WORK_ARB_DIRAC_EIGEN}   \
- ${WORK_SYMANZIK_SL32}
+FP =                  \
+ ${ARB_DIRAC_INVERT}  \
+ ${ARB_DIRAC_EIGEN}   \
+ ${SYMANZIK_SL32}
 
-WORK_INST =                \
- ${WORK_SMOOTH_INST}
+INST =                \
+ ${SMOOTH_INST}
 
-WORK_KS =                  \
- ${WORK_GENERIC_KS}        \
- ${WORK_KS_IMP_DYN2}	   \
- ${WORK_KS_IMP_UTILITIES}  \
- ${WORK_KS_IMP_INVERT_MULTI}
+KS =                  \
+ ${GENERIC_KS}        \
+ ${KS_IMP_DYN}	   \
+ ${KS_IMP_UTILITIES}  \
+ ${KS_IMP_INVERT_MULTI}
 
-WORK_SF =                  \
- ${WORK_GENERIC_SCHROED}   \
- ${WORK_SCHROED_CL_INV}    \
- ${WORK_SCHROED_KS_DYN}    \
- ${WORK_SCHROED_PG}
+SF =                  \
+ ${GENERIC_SCHROED}   \
+ ${SCHROED_CL_INV}    \
+ ${SCHROED_KS_DYN}    \
+ ${SCHROED_PG}
 
-WORK_WILSON =              \
- ${WORK_GENERIC_WILSON}
+WILSON =              \
+ ${GENERIC_WILSON}
 
 # The names of the component tar files
 
-WORK_BASIC_TAR   = ${WORK_NAME_ROOT}_basic.tar
-WORK_CLOVER_TAR  = ${WORK_NAME_ROOT}_clover.tar
-WORK_FORM_TAR    = ${WORK_NAME_ROOT}_form.tar
-WORK_FP_TAR      = ${WORK_NAME_ROOT}_fp.tar
-WORK_INST_TAR    = ${WORK_NAME_ROOT}_inst.tar
-WORK_KS_TAR      = ${WORK_NAME_ROOT}_ks.tar
-WORK_PURE_GAUGE_TAR  = ${WORK_NAME_ROOT}_pure_gauge.tar
-WORK_SF_TAR      = ${WORK_NAME_ROOT}_sf.tar
-WORK_WILSON_TAR  = ${WORK_NAME_ROOT}_wilson.tar
+BASIC_TAR   = ${NAME_ROOT}_basic.tar
+CLOVER_TAR  = ${NAME_ROOT}_clover.tar
+FORM_TAR    = ${NAME_ROOT}_form.tar
+FP_TAR      = ${NAME_ROOT}_fp.tar
+INST_TAR    = ${NAME_ROOT}_inst.tar
+KS_TAR      = ${NAME_ROOT}_ks.tar
+PURE_GAUGE_TAR  = ${NAME_ROOT}_pure_gauge.tar
+SF_TAR      = ${NAME_ROOT}_sf.tar
+WILSON_TAR  = ${NAME_ROOT}_wilson.tar
 
 # The combined tar file
 
-WORK_TAR =          \
- ${WORK_BASIC_TAR}  \
- ${WORK_KS_TAR}     \
- ${WORK_FORM_TAR}   \
- ${WORK_WILSON_TAR}
+TAR =          \
+ ${BASIC_TAR}  \
+ ${KS_TAR}     \
+ ${FORM_TAR}   \
+ ${WILSON_TAR}
 
 # Contents of the whole ball of wax
 
@@ -622,5 +427,4 @@ WORK =              \
  README_UNPACK      \
  Make_contents      \
  Make_unpack        \
- ${WORK_TAR}
-
+ ${TAR}

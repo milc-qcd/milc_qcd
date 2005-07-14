@@ -27,7 +27,7 @@ DIRS = \
   ks_dynamical \
   ks_eigen \
   ks_hl_spectrum \
-  ks_imp_dyn2 \
+  ks_imp_dyn \
   ks_imp_invert_multi \
   ks_imp_utilities \
   propagating_form_factor \

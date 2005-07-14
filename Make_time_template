@@ -9,7 +9,7 @@
 
 # 1.  See Make_time in the applications directory for instructions for
 #     compiling to turn on timing.  Currently we have timing for
-#     the applications "ks_imp_dyn2", "ks_dynamical", and "clover_invert"
+#     the applications "ks_imp_dyn" and "clover_invert"
 # 2.  Edit to select the appropriate job launch command below or
 #     create one for your platform.
 # 3.  Go to the application directory and run "make -f Make_time"

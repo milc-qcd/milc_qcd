@@ -1,6 +1,6 @@
-MILC Version 6
+MILC Version 7
 
-September 20. 2002
+July 13, 2005
 
 There are so many applications in the MILC code suite that the code is
 packaged in several tar files.  You may unpack selectively to get only
@@ -40,10 +40,10 @@ heavy
 hqet_heavy_to_light
 hvy_qpot
 include
-ks_dynamical
 ks_eigen
-ks_imp_dyn1
-ks_imp_dyn2
+ks_imp_dyn
+ks_imp_invert_multi
+ks_imp_utilities
 propagating_form_factor
 pure_gauge
 schroed_cl_inv
