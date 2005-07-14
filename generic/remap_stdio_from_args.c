@@ -1,5 +1,5 @@
 /********************** remap_stdio_from_args.c****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* CD 11/04
    In case input and output redirection is not an option
 

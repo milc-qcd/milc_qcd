@@ -1,5 +1,5 @@
 /*********************** clover_info.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* For clover_invert */
 

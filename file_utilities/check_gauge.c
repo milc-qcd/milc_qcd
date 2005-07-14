@@ -1,5 +1,5 @@
 /*************************** check_gauge.c ************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Read gauge configuration, check checksums (in version 5),
    and unitarity */
 

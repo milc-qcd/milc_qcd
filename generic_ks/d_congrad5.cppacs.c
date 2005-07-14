@@ -1,5 +1,5 @@
 /******* d_congrad5.cppacs.c - conjugate gradient for SU3/fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* NOT MAINTAINED! CHECK BEFORE USE.  SHCROED_FUN OPTION NOT FULLY INTEGRATED!
 
 /* 4/03/00 combined with Schroedinger functional version INCOMPLETE - CD */

@@ -1,5 +1,5 @@
 /****** gauge_stuff.c  -- ******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* gauge action stuff for improved action
 * T.D. and A.H. general gauge action updating code
 * D.T. modified  5/97

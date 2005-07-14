@@ -1,5 +1,5 @@
 /******** spectrum_singlets.c *************/
-/* MIMD version 6*/
+/* MIMD version 7*/
 /* DT 2/04
    point source/sink propagators for eta_prime, sigma
    Use unit random vectors for point sources
@@ -407,7 +407,7 @@ static su3_matrix *smear_links()
 /******************************** flavor_ops_smear ***************************/
 /* This is "flavor_ops.c", except that we use the APE smeared links for
  * parallel transport.  Also, field offsets have been replace by temp vectors */
-/* MIMD version 6*/
+/* MIMD version 7*/
 /* Implementation of the flavor (\Xi_\mu) operators. 
    See Golterman & Smit Nulc. Phys. B245 (1984) 61.
    They are used for constructing the non-local pion sources

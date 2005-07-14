@@ -1,5 +1,5 @@
 /******** spectrum_hybrids5.c *************/
-/* MIMD version 6*/
+/* MIMD version 7*/
 /* DT 11/21/95 started */
 /* DT 2/21/96 version2.  Make it easy to add operators.  Keep collection
    of "mult_by_1mps" routines around.  Select only operators that look

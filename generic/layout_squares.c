@@ -1,5 +1,5 @@
 /******** layout_squares.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UNTESTED!! C. DeTar 7/26/99 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
 

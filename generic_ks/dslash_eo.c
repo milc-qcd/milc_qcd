@@ -1,5 +1,5 @@
 /******* dslash_eo.c - dslash for improved KS fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Kogut-Susskind fermions -- improved.  
 
    D_slash routine - sets dest. on each site equal to sum of

@@ -1,5 +1,5 @@
 /*************************** ranmom.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Produce Gaussian random momenta for the gauge fields. */
 

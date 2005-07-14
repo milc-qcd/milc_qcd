@@ -1,5 +1,5 @@
 /****** quark_stuff.c  -- ******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* quark action stuff for improved action
 * D.T. 1/28/98, starting from gauge_stuff.c
 * K.O. 3/99 Added optimized fattening for Asq actions

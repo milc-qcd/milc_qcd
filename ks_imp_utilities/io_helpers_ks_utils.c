@@ -1,5 +1,5 @@
 /********************** io_helpers.c **********************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 #include "ks_imp_includes.h"
 #include "../include/io_lat.h"

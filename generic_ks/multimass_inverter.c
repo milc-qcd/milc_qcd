@@ -1,5 +1,5 @@
 /******** multimass_inverter.c *************/
-/* MIMD version 6*/
+/* MIMD version 7*/
 /* SG 9/03   based on fpi_2.c
    point sources only for now
 

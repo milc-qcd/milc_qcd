@@ -1,7 +1,7 @@
 /************ restrict_fourier.c *****************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
-/* MIMD version 6.000 by T.D., D.T. */
+/* MIMD version 7.000 by T.D., D.T. */
 /* Modified to permit F.T. with some coordinates fixed by C.D. */
 /* Modified to allow dimension p * 2^k with any p (up to storage limit) C.D. */
 

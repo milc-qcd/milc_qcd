@@ -1,5 +1,5 @@
 /******** spectrum_multimom.c *************/
-/* MIMD version 6*/
+/* MIMD version 7*/
 /* DT 4/01
    Rho masses for various quark masses and momenta.  Do many valence masses,
    one of which is presumably the dynamical mass.

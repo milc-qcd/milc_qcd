@@ -7,7 +7,7 @@
 /******************************  su3.h **********************************
 *									*
 *  Defines and subroutine declarations for SU3 simulation		*
-*  MIMD version 6 							*
+*  MIMD version 7 							*
 *									*
 */
 /* SU(3) */

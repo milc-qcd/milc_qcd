@@ -4,7 +4,7 @@
 *									*
 *  Macros and declarations for generic_pg routines                      *
 *  This header is for codes that call generic_pg routines               *
-*  MIMD version 6 							*
+*  MIMD version 7 							*
 *									*
 */
 

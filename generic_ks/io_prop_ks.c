@@ -1,5 +1,5 @@
 /* io_prop_ks.c -- reads and writes KS quark propagators
-   MIMD version 6
+   MIMD version 7
    MBW: 21 Feb 2001 -- just ASCII format for now, modified from
                       routines in ../generic/io_lat4.c
    MBW: Apr 2002 -- adding binary I/O

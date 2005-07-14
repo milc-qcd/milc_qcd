@@ -1,5 +1,5 @@
 /******* d_congrad6.c - conjugate gradient for SU3/fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Kogut-Susskind fermions */
 
 /* 4/03/00 combined with Schroedinger functional version - CD */

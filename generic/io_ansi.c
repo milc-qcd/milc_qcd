@@ -1,6 +1,6 @@
 /******************  io_ansi.c *****************************************/
 /* Parallel I/O routines for the SU3 program */
-/*   MIMD version 6. */
+/*   MIMD version 7. */
 
 /* Wrappers for parallel file access. */
 /* This version uses ANSI standard I/O which works for the T3D 

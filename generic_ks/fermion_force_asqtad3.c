@@ -1,5 +1,5 @@
 /****** fermion_force_asqtad.c  -- ******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* fermion force optimized for the Asqtad action
  * Uses restart-gathers and a bit more memory for better performance
  * The algorithm is the same as fermion_force_asqtad2.c, except that
@@ -272,7 +272,7 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force(version 6) */
+} /* eo_fermion_force(version 7) */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     

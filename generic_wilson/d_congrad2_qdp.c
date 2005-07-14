@@ -1,5 +1,5 @@
 /******* d_congrad2.c - conjugate gradient for SU3/fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Wilson fermions */
 
 /* if "LU" is defined use the LU preconditioned fermion matrix, where

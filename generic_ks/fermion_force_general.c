@@ -1,5 +1,5 @@
 /****** fermion_force_general.c -- ******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Fermion force for a general quark action.  Not optimized.
 * D.T. 1/28/98, starting from gauge_stuff.c
 * K.O. 3/99 Added optimized fattening for Asq actions
@@ -176,7 +176,7 @@ node0_printf("FFTIME:  time = %e (1 mass) mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force(version 6) */
+} /* eo_fermion_force(version 7) */
 
 /**********************************************************************/
 /*   Version for two sets of flavors with distinct masses             */
@@ -324,7 +324,7 @@ node0_printf("FFTIME:  time = %e (2 mass) mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force_3f(version 6) */
+} /* eo_fermion_force_3f(version 7) */
 
 /* LONG COMMENTS
    Here we have combined "xxx", (offset "x_off")  which is

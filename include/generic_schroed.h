@@ -4,7 +4,7 @@
 *									*
 *  Macros and declarations for miscellaneous generic_schroed routines   *
 *  This header is for codes that call generic_schroed routines          *
-*  MIMD version 6 							*
+*  MIMD version 7 							*
 *									*
 */
 

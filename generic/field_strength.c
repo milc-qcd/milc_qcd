@@ -1,5 +1,5 @@
 /************************** field_strength.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* started 8/4/95 DT */
 /* removed trace 9/3/95 CD */
 /* temporary storage malloc'ed and source and sink passed as args

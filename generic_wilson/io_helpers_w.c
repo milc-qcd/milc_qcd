@@ -1,5 +1,5 @@
 /********************** io_helpers_w.c **********************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* CD 10/97 from io_helpers.c DT 8/97 
    General purpose high level propagator I/O routines, 
    to be used by any application that wants them.

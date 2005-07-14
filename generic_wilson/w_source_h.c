@@ -1,5 +1,5 @@
 /************************** w_source_h.c *****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Set up a quark source based on a Gaussian with a box cutoff */
 
 /* CB wrote this */

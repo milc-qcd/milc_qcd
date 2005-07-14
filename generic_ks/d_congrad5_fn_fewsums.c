@@ -1,5 +1,5 @@
 /******* d_congrad5_fn_fewsums.c - conjugate gradient for SU3/fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* TEST VERSION  4/18/03, TIMING FOR GLOBAL REDUCTIONS */
 /* REDUCE NUMBER OF GLOBAL SUMS */

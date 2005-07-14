@@ -1,5 +1,5 @@
 /********************** io_helpers_ks.c *********************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Started 17 April 2002 by MBW, derived from io_helpers_w.c,
    pretty much cut-paste-query-replace.  Someday make one set of routines
    for lattices, Wilson, and KS props? */

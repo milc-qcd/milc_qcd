@@ -1,5 +1,5 @@
 /******** layout_qdp.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
 /* This version uses QDP for layout */
 /*

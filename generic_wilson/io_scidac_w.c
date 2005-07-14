@@ -1,6 +1,6 @@
 /********************** io_scidac_w.c **********************************/
 /* MILC/QIO interface for Wilson fields */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* CD 2/2005
 */
 

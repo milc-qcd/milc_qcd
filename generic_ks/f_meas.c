@@ -1,5 +1,5 @@
 /**************** f_meas.c ***************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UH 11/01 Include measurements for quark number susceptibilities */
 /*          Note: this does not work for p4-action! */
 /* UH 11/1/01 write complex stochastic estimators */

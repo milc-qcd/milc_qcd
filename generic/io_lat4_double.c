@@ -1,5 +1,5 @@
 /*********************** io_lat4_double.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This reads/writes single precision lattice files */
 
 /* routines for gauge configuration input/output. */
@@ -10,7 +10,7 @@
 /* 10/04/01 Removed save_old_binary (but can still read old binary) C.D. */
 /* 7/11/01 large file (64 bit addressing) support */
 /* 4/16/00 additions to READ ARChive format J.H. */
-/*         adapted for version 6 12/21/00 UMH */
+/*         adapted for version 7 12/21/00 UMH */
 /* 4/17/98 r_parallel_w: g_syncs to prevent shmem message pileups C.D. */
 /* 9/19/97 version 5 format with checksums C.D. */
 /* 9/04/97 parallel files to be written in typewriter order C.D. */

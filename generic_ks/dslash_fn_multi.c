@@ -1,5 +1,5 @@
 /******* dslash_fn_multi.c - dslash for improved KS fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Kogut-Susskind fermions -- improved.  This version for "fat plus
    Naik" quark action.  Connection to nearest neighbors stored in
    fatlink and to third nearest neighbors in longlink */

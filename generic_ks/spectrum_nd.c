@@ -1,5 +1,5 @@
 /******** spectrum_nd.c *************/
-/* MILC version 6 */
+/* MILC version 7 */
 /* DT 9/20/00 started, from spectrum_nlpi2.c
    KS hadron masses with nondegenerate quarks ("nd")
    compute corner source propagators with two masses, assemble

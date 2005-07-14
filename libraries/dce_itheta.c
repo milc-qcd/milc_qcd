@@ -1,5 +1,5 @@
 /********************** dce_itheta.c (in complex.a) **********************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Subroutines for operations on complex numbers */
 /* double complex exp( i*theta ) */
 #include "../include/config.h"

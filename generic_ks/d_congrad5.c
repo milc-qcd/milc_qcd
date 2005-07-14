@@ -1,5 +1,5 @@
 /******* d_congrad5.c - conjugate gradient for conventional fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Kogut-Susskind fermions */
 
 /* 1/27/00 combined with Schroedinger functional version - UMH */

@@ -1,5 +1,5 @@
 /******* ks_multicg.c - multi-mass CG for SU3/fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Multi-mass CG inverter for staggered fermions */
 

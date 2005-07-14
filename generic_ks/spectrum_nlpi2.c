@@ -1,5 +1,5 @@
 /******** spectrum_nlpi2.c *************/
-/* MIMD version 6*/
+/* MIMD version 7*/
 /* DT 2/25/98 started
    All KS pions, and some rhos
    DT 3/99, masses are arguments

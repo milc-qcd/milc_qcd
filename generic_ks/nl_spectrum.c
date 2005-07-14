@@ -1,5 +1,5 @@
 /******** nl_spectrum.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* C.E.D.  7/91  first verion
 * D.T. modified 5/97 for improved action program, changed source
 *   slice logic, use gen_pt[8-15] instead of gen_pt2[].

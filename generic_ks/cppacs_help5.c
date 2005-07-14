@@ -2,7 +2,7 @@
 /* scalar_mult_add_latvec in main call in congrad */
 /* NOT MAINTAINED.  TEST BEFORE USE! */
 /* unroll to color loops */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Kogut-Susskind fermions */
 
 #include "ks_dyn_includes.h"

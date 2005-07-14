@@ -1,5 +1,5 @@
 /*********************** io_prop_w.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This reads/write single precision propagator files */
 
 /* routines for Wilson propagator binary input/output  */

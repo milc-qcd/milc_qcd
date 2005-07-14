@@ -1,5 +1,5 @@
 /*************************** diff_ksprop.c ************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Compare two KS prop files of any format */
 /* C. DeTar 3/26/05 */
 

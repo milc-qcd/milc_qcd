@@ -1,7 +1,7 @@
 /****************** io_nonansi.c *****************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Parallel I/O routines for the SU3 program */
-/*   MIMD version 6. */
+/*   MIMD version 7. */
 
 /* Wrappers for parallel file access. */
 /* This version uses non ANSI "open" "close" "read" "write" and "lseek" */

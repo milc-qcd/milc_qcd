@@ -1,5 +1,5 @@
 /********************** path_product.c ***************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Compute product of links along a specified path */
 /* On return tempmat1[i] contains the product for the path
    ENDING at site i.  e.g., for the 1-link path XUP,

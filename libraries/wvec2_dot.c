@@ -1,5 +1,5 @@
 /****************** wvec2_dot.c  (in su3.a) ***************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*									*
 * complex wvec2_dot( wilson_vector *a, wilson_vector *b )		*
 * return dot product of two wilson_vectors = a-dagger times b		*

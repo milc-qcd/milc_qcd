@@ -3,7 +3,7 @@
 /************************ comdefs.h *************************************
 *									*
 *  Macros and declarations for communications routines com_*.c          *
-*  MIMD version 6 							*
+*  MIMD version 7 							*
 *									*
 */
 

@@ -1,5 +1,5 @@
 /*************************** ksprop_to_scidac.c ************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Read a KS prop, convert to SciDAC format */
 /* C. DeTar 3/22/05 */
 

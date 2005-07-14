@@ -1,5 +1,5 @@
 /****************** ploop_staple.c ************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* NOT MAINTAINED.  TEST BEFORE USE! */
 /* evaluate fuzzy Polyakov loops (including weighted contributions from
    time-oriented staples).  This version uses general_gathers. */

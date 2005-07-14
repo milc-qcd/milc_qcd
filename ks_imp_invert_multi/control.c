@@ -1,5 +1,5 @@
 /************************* control.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Main procedure for SU3 with dynamical fermions 			*/
 /* Naik plus fat link fermions, general gauge action */
 

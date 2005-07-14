@@ -1,6 +1,6 @@
 /********************** io_scidac.c **********************************/
 /* MILC/QIO interface.  Produces a ILDG archivable file */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* CD 11/2004
 */
 

@@ -1,5 +1,5 @@
 /*********************** ksprop_info.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* For ks_spect */
 

@@ -1,5 +1,5 @@
 /********** w_baryon.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UMH April 96 */
 
 /* Baryon spectrum for Wilson hadrons */
@@ -121,7 +121,7 @@ complex *prop_tmp;
 }  /* w_baryon */
 
 /******** baryon_cont1.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UMH April 96 */
 
 /* Construct baryon propagator contraction 1, where the first two quark
@@ -220,7 +220,7 @@ complex diquark, diquark_temp;
 }  /* baryon_cont1 */
 
 /******** baryon_cont2.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UMH April 96 */
 
 /* Construct baryon propagator contraction 2, with no contracted loop,

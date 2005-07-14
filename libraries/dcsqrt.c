@@ -1,5 +1,5 @@
 /********************** dcsqrt.c (in complex.a) **********************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Subroutines for operations on complex numbers */
 /* double precision complex square root */
 #include "../include/config.h"

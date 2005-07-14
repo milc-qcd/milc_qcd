@@ -1,5 +1,5 @@
 /****************** ploop2.c ************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* evaluate the Polyakov loops.  This version uses gathers. */
 
 #include "generic_includes.h"

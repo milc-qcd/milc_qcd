@@ -4,7 +4,7 @@
 *									*
 *  Macros and declarations for miscellaneous generic routines           *
 *  This header is for codes that call generic_form routines             *
-*  MIMD version 6 							*
+*  MIMD version 7 							*
 *									*
 */
 

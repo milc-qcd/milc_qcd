@@ -1,5 +1,5 @@
 /************************ grsource.c *****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* 1/27/00 combined with Schroedinger functional version - UMH */
 

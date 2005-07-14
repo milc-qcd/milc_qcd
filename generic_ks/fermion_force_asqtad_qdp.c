@@ -1,5 +1,5 @@
 /****** fermion_force_asqtad_qdp3.c  -- ******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Fermion force for Asqtad optimized with single direction QDP operations
  * smaller memory requirement.
  * This method still requires too many restarts in QDP shift operation
@@ -365,7 +365,7 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force(version 6) */
+} /* eo_fermion_force(version 7) */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     

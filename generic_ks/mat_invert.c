@@ -1,5 +1,5 @@
 /******** mat_invert.c *************/
-/* MIMD version 6*/
+/* MIMD version 7*/
 /* DT 6/97
 * separated from spectrum_mom.c 12/97
 * Modify check_invert() to compute magnitude of error 11/98 DT

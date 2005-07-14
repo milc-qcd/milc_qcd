@@ -1,5 +1,5 @@
 /********************** ks_invert.c *********************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*  Generic wrapper for KS quark inverter
  *

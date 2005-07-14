@@ -1,7 +1,7 @@
 /******** spectrum2.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Spectrum for Kogut-Susskind pointlike hadrons, wall source 
-* MIMD version 6 with SG additions
+* MIMD version 7 with SG additions
 * updated 2/21/95, by SG.
 * modified 7/96 DT, do both Naik and conventional spectrum, wall
 *	sources only. 

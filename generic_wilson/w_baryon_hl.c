@@ -1,5 +1,5 @@
 /********** w_baryon_hl.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UMH April 96 */
 
 /* Heavy-light baryon spectrum for Wilson hadrons */

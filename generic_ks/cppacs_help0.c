@@ -1,7 +1,7 @@
 /******* cppacs_help0.c -vector routine for CPPACS */
 /*  mult_adj_su3_mat_vec_4dir loop in dslash_special */
 /* unroll color loops */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* NOT MAINTAINED.  TEST BEFORE USE! */
 /* Kogut-Susskind fermions */
 

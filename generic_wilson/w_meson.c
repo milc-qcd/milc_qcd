@@ -1,5 +1,5 @@
 /*********** w_meson.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UMH April 96 
  2/27/98 Simplify and avoid bug in Origin compiler UMH
  4/03/00 Split out meson_cont.c as a separate file CD 

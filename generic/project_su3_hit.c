@@ -5,7 +5,7 @@
    is also available. 
 */
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* C. DeTar 11/30/97 based on monte.c by T. DeGrand March 1991.
    See cubic.c from Tom's inverse blocking code for a more

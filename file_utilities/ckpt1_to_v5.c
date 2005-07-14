@@ -1,5 +1,5 @@
 /**********************  ckpt1_to_v5.c ***************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Convert gauge configuration from "checkpoint1" format to version 5 format */
 
 /* 01 Nov 1997 C. DeTar */

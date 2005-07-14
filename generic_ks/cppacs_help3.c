@@ -1,7 +1,7 @@
 /******* cppacs_help3.c -vector routine for CPPACS */
 /* loop number 3 in main call in congrad */
 /* unroll to color loops */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* NOT MAINTAINED.  TEST BEFORE USE! */
 /* Kogut-Susskind fermions */
 

@@ -1,5 +1,5 @@
 /****************** ploop_dist.c ************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* evaluate the Polyakov loops.  This version uses general_gathers. */
 /* It assumes that nt is even.  Actually, all the code does.  */
 /* Modified C. DeTar July 20, 1993 */

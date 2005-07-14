@@ -1,5 +1,5 @@
 /*************************** diff_ksvector.c ************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Compare two KS vector files (SciDAC format only) */
 /* C. DeTar 3/27/05 */
 

@@ -1,5 +1,5 @@
 /************************** d_plaq2.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This version uses gathers to get the neighbors */
 /* UMH: Combined with Schroedinger functional version, Jan 2000 */
 

@@ -1,5 +1,5 @@
 /********************** io_helpers.c **********************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* DT 8/97 
      General purpose high level routines, to be used by any application
      that wants them.

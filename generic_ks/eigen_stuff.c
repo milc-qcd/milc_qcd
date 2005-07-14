@@ -5,7 +5,7 @@
 * EBG 2/15/02 changed phi -> phi1, mass -> mass1 so could be used 
 *    w/ ks_imp_dyn2
 * EBG 6/2004 fixed some memory leaks
-* MIMD version 6
+* MIMD version 7
 *
 *  These routines are for the computation of the Eigenvalues and Eigevectors
 * of the Kogut-Susskind dslash^2. 

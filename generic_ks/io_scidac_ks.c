@@ -1,6 +1,6 @@
 /********************** io_scidac_ks.c **********************************/
 /* MILC/QIO interface for KS fields */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* CD 2/2005
 */
 

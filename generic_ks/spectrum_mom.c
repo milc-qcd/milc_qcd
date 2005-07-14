@@ -1,5 +1,5 @@
 /******** spectrum_mom.c *************/
-/* MIMD version 6*/
+/* MIMD version 7*/
 /* DT 6/97
 * start from ../ks_hybrids2/spectrum_hybrids4.c
 * Need hadrons with various momenta, flexibility to change what we look at.

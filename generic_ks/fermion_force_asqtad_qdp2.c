@@ -1,5 +1,5 @@
 /****** fermion_force_asqtad_qdp.c  -- ******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Fermion force for Asqtad optimized with vector QDP operations
  * requires large memory.  Needs optimized QDP_H_veq_M_times_H for
  * decent performance.
@@ -459,7 +459,7 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force(version 6) */
+} /* eo_fermion_force(version 7) */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     

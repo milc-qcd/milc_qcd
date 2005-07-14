@@ -1,5 +1,5 @@
 /******* d_bicgilu_w_lean.c - BiCGstab-ILU for  Wilson fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications:
    7/17/01 Use dslash_w_site_special

@@ -1,5 +1,5 @@
 /******** layout_timeslices_2.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
 
 /* This version puts entire timeslices on nodes, if it can. It

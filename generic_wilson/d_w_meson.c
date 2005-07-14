@@ -1,5 +1,5 @@
 /*********** d_w_meson.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UMH April 96 
  2/27/98 Simplify and avoid bug in Origin compiler UMH
  4/12/99 Double precision version.  (Requires double_complex prop) 

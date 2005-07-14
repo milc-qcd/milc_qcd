@@ -1,5 +1,5 @@
 /****** fermion_force_asqtad.c  -- ******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* fermion force optimized for the Asqtad action
  * (algorithm previously found in quark_stuff.c)
  * D.T. 1/28/98, starting from gauge_stuff.c
@@ -262,7 +262,7 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force(version 6) */
+} /* eo_fermion_force(version 7) */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     
@@ -514,7 +514,7 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force_3f(version 6) */
+} /* eo_fermion_force_3f(version 7) */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     

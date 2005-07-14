@@ -1,5 +1,5 @@
 /****************** msq_su3vec.c  (in su3.a) ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*									*
 * Real magsq_su3vec( su3_vector *a )					*
 * return squared magnitude of an SU3 vector

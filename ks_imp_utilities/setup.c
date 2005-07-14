@@ -1,5 +1,5 @@
 /************************ setup.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*			    -*- Mode: C -*-
 // File: setup.c
 // Created: Fri Aug  4 1995
@@ -15,7 +15,7 @@
 //         Ref: Phys. Rev. D48 (1993) 2250
 //
 */
-/* MIMD version 6 */
+/* MIMD version 7 */
 #define IF_OK if(status==0)
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
@@ -97,7 +97,7 @@ initial_set()
     /* print banner */
     printf("SU3 with improved KS action\n");
     printf("Inversion checking\n");
-    printf("MIMD version 6\n");
+    printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 
     status=get_prompt(&prompt);

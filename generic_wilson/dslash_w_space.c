@@ -1,5 +1,5 @@
 /*************  dslash_w_space.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 #include "generic_wilson_includes.h"
 

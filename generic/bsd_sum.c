@@ -1,5 +1,5 @@
 /**************************** bsd_sum.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*  This function calculates a simple checksum. It uses the same algorithm as
     the UNIX routine "sum".
 

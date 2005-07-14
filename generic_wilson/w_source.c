@@ -1,5 +1,5 @@
 /************************** w_source.c *****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*  2/15/98 to fail on illegal source type CD */
 

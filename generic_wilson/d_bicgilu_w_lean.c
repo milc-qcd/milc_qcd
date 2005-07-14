@@ -1,5 +1,5 @@
 /******* d_bicgilu_w_lean.c - BiCGstab-ILU for  Wilson fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications:
    8/29/97 ANSI prototyping and added comments C. D.

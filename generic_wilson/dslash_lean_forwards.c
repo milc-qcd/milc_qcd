@@ -1,5 +1,5 @@
 /************* dslash_lean_forwards.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Version to use less memory - do things one direction at a time */
 
 /* Version for "valence approximation":

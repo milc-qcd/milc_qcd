@@ -1,5 +1,5 @@
 /*************************** wprop_to_scidac.c ************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Read a Wilson prop, convert to SciDAC format */
 /* C. DeTar 3/25/05 */
 

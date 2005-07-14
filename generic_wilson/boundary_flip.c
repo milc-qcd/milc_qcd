@@ -1,5 +1,5 @@
 /********** boundary_flip.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Flip the time direction boundary conditions.  (Just multiply time
    links on last time slice by -1.)

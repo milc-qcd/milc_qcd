@@ -1,5 +1,5 @@
 /************************** plaquette4.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This version mallocs the temporary su3_matrix */
 
 /* Modifications

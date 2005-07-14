@@ -1,5 +1,5 @@
 /******************  wvec_dot.c  (in su3.a) ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*									*
 * complex wvec_dot(a,b) wilson_vector *a,*b;				*
 * return dot product of two wilson_vectors					*

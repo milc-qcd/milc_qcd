@@ -1,5 +1,5 @@
 /*************  dslash_w_site.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* 9/06/03 added gathers from temp - CD */
 

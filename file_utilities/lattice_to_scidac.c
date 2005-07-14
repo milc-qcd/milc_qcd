@@ -1,5 +1,5 @@
 /*************************** lattice_to_scidac.c ************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Read gauge configuration, convert to SciDAC format */
 /* C. DeTar 1/30/05 */
 

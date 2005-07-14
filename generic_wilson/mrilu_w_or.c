@@ -1,5 +1,5 @@
 /******* mrilu_w_or.c - MR-ILU for  Wilson fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications:
    4/26/98 Moved parameters to structures CD

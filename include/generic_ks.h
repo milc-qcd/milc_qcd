@@ -4,7 +4,7 @@
 *									*
 *  Macros and declarations for generic_ks routines                      *
 *  This header is for codes that call generic_ks routines               *
-*  MIMD version 6 							*
+*  MIMD version 7 							*
 *									*
 */
 

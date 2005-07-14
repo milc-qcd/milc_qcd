@@ -1,5 +1,5 @@
 /******************************** byterevn.c ***************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* WARNING - MUST BE COMPILED WITH APPROPRIATE SHORT32 FLAG! */
 #include "../include/config.h"

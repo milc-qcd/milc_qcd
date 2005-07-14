@@ -1,5 +1,5 @@
 /*********************** check_unitarity.c ***************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Claude Bernard, original version */
 /* Modified 7/96 DT to quit after finding violation */
 /* 9/4/96 DT added Urs' row orthogonality checks, if STRONG defined */

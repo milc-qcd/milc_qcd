@@ -1,5 +1,5 @@
 /******* d_cgilu_w_lean.c - CG-ILU for  Wilson fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications:
    7/18/01 Using dslash_w_site_special CD

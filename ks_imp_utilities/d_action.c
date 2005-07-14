@@ -1,5 +1,5 @@
 /*************** d_action.c ****************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Measure total action, as needed by the hybrid Monte Carlo algorithm.
    When this routine is called the conjugate gradient should already

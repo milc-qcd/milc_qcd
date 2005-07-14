@@ -1,5 +1,5 @@
 /******************* ranstuff.c *********************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*  c language random number generator for parallel processors */
 /*  exclusive or of feedback shift register and integer congruence
     generator.  Use a different multiplier on each generator, and make sure

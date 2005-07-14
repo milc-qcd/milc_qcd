@@ -4,7 +4,7 @@
 *									*
 *  Macros and declarations for generic_clover routines                  *
 *  This header is for codes that call generic_clover routines           *
-*  MIMD version 6 							*
+*  MIMD version 7 							*
 *									*
 */
 

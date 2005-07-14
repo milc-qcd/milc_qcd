@@ -1,5 +1,5 @@
 /*************  dslash_w_site.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
 	dslash_w_site(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);

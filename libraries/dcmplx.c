@@ -1,5 +1,5 @@
 /********************** dcmplx.c (in complex.a) **********************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Subroutines for operations on complex numbers */
 /* make a double complex number from two double precision reals */
 #include "../include/config.h"

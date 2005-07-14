@@ -1,5 +1,5 @@
 /******** layout_hyper_sl32.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
 
 /* Version for 32 sublattices, for extended actions */

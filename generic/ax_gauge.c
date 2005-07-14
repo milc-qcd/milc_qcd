@@ -1,5 +1,5 @@
 /************************** ax_gauge.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This version uses gathers to get the neighbors */
 /* version of 3/13/94 by UMH */
 /* 2/19/98 Version 5 port CD */

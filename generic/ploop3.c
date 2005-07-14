@@ -1,5 +1,5 @@
 /****************** ploop3.c ************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* evaluate the Polyakov loops.  This version uses general_gathers. */
 /* It assumes that nt is even.  Actually, all the code does.  */
 /* DT 12/97 use local matrix "tmat" instead of "tempmat2" */

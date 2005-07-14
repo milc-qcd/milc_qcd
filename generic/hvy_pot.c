@@ -1,6 +1,6 @@
 /****** hvy_pot.c  -- ******************/
 /* Heavy quark potential
-* MIMD version 6
+* MIMD version 7
 * DT 6/10/97
 * DT 7/17/97 modified to do all displacements
 * Evaluate in different spatial directions, to check rotational

@@ -1,5 +1,5 @@
 /********************** wilson_invert_lean.c *********************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*  Generic wrapper for quark inverter
  *

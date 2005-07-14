@@ -1,5 +1,5 @@
 /************************ grsource_imp.c *****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Kogut-Susskind fermions  -- this version for "fat plus Naik"
    or general "even plus odd" quark actions.  Assumes "dslash" has
    been defined to be the appropriate "dslash_fn" or "dslash_eo"

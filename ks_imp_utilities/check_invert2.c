@@ -1,5 +1,5 @@
 /************************* check_invert2.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
 

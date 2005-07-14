@@ -1,5 +1,5 @@
 /******* d_congrad5_eo.c - conjugate gradient for SU3/fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Kogut-Susskind fermions  -- improved */
 /* for general even-odd dslash, using dslash_eo(), no longlinks
    or fatlinks */

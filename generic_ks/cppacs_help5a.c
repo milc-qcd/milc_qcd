@@ -1,7 +1,7 @@
 /******* cppacs_help5a.c -vector routine for CPPACS */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* scalar_mult_add_latvec in main call in congrad */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* NOT MAINTAINED.  TEST BEFORE USE! */
 /* Kogut-Susskind fermions */
 

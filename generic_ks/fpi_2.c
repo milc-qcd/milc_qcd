@@ -1,5 +1,5 @@
 /******** fpi_2.c *************/
-/* MIMD version 6*/
+/* MIMD version 7*/
 /* DT 6/01
    wall and point source/sink propagators for f_pi, f_K, ...
    Use unit random vectors for point sources

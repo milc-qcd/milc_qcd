@@ -4,7 +4,7 @@
 *									*
 *  Macros and declarations for generic_wilson routines                  *
 *  This header is for codes that call generic_wilson routines           *
-*  MIMD version 6 							*
+*  MIMD version 7 							*
 *									*
 */
 

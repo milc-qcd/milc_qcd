@@ -1,5 +1,5 @@
 /******** setup.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 #define IF_OK if(status==0)
 
 
@@ -34,7 +34,7 @@ int initial_set(){
   if(mynode()==0){
     /* print banner */
     printf("Heavy-light spectroscpy with Kogut-Susskind light fermions\n");
-    printf("MIMD version 6\n");
+    printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     time_stamp("start");
     status = get_prompt( &prompt );

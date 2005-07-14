@@ -1,5 +1,5 @@
 /********************** clog.c (in complex.a) **********************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Subroutines for operations on complex numbers */
 /* complex logarithm */
 #include "../include/config.h"
