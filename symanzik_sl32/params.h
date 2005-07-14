@@ -21,6 +21,7 @@ typedef struct {
 	Real u0;	/* <Tr(U_p)>^{1/4} */
 	Real epsilon;	/* time step */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
 
 #endif	/* _PARAMS_H */

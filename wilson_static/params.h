@@ -45,7 +45,8 @@ typedef struct {
 	Real smear_code[MAX_SMEAR][5]; /** the code for smearing functions ***/
 
 	int fixflag;    /* whether to gauge fix **/
-	char savefile[MAXFILENAME];  /** what to do with the gauge file ***/
+	char savefile[MAXFILENAME];  /** name of the output gauge file ***/
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 	int saveflag ;
 
 	int stopflag ; 

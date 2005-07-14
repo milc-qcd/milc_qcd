@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     /* save lattice if requested */
     if( saveflag != FORGET )
     {
-      save_lattice( saveflag, savefile );
+      save_lattice( saveflag, savefile, stringLFN );
     }
 
 

@@ -196,6 +196,8 @@ int status;
 	/* find out what to do with lattice at end */
 	IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
 	    par_buf.savefile );
+	IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+				      par_buf.stringLFN );
 
 	/* send parameter structure */
 	if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
@@ -219,6 +221,7 @@ int status;
     u0 = par_buf.u0;
     strcpy(startfile,par_buf.startfile);
     strcpy(savefile,par_buf.savefile);
+    strcpy(stringLFN, par_buf.stringLFN);
 
     /* Do whatever is needed to get lattice */
     startlat_p = reload_lattice( startflag, startfile );

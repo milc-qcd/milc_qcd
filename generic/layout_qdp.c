@@ -17,11 +17,15 @@
 */
 #include "generic_includes.h"
 #include <qdp.h>
+#include <qmp.h>
 
 void
 setup_layout(void)
 {
   int c[4];
+  int i,n_mach;
+  int* dim_mach;
+  int d[4];
 
   if(mynode()==0){
     printf("LAYOUT = Hypercubes, options = ");
@@ -37,6 +41,17 @@ setup_layout(void)
   sites_on_node = QDP_sites_on_node;
   even_sites_on_node = QDP_subset_len(QDP_even);
   odd_sites_on_node = QDP_subset_len(QDP_odd);
+
+  /* Report sublattice dimensions */
+  n_mach = QMP_get_allocated_number_of_dimensions();
+  dim_mach = QMP_get_dimensions();
+  for(i = 0; i < 4; i++){
+    /* Any extra machine dimensions are assumed to be 1 */
+    if(i < n_mach)d[i] = c[i]/dim_mach[i];
+    else d[i] = c[i];
+  }
+  if( mynode()==0)
+    printf("ON EACH NODE %d x %d x %d x %d\n",d[0],d[1],d[2],d[3]);
 }
 
 int

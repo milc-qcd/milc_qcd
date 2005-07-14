@@ -65,6 +65,7 @@ EXTERN  Real ape_weight;       /* weight parameter in APE blocking */
 EXTERN  int sweeps,hits,measinterval;
 EXTERN  int total_sweeps;
 EXTERN  char startfile[MAXFILENAME],savefile[MAXFILENAME],topofile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  int startflag;  /* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN  int fixflag;  /* gauge fix: COULOMB_GAUGE_FIX, NO_GAUGE_FIX */
 EXTERN  int saveflag;   /* do with lattice: 1=save; */

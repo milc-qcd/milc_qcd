@@ -31,6 +31,7 @@ typedef struct {
 	int startflag;  /* what to do for beginning lattice */
 	int saveflag;   /* what to do with lattice at end */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
 
 #endif /* _PARAMS_H */

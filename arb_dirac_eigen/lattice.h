@@ -103,6 +103,7 @@ EXTERN	Real source_r0,mass[MAX_MASSES],resid[MAX_MASSES];
 EXTERN	int num_masses;		/* max number of masses <= MAX_MASSES */
 EXTERN  Real m0,lambda[5],rho[5];
 EXTERN  char startfile[MAXFILENAME], savefile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char savefile_w[MAX_MASSES][MAXFILENAME],
              startfile_w[MAX_MASSES][MAXFILENAME];
 EXTERN  char scratchstem_w[MAXFILENAME];

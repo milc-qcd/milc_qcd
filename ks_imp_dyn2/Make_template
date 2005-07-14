@@ -277,8 +277,8 @@ su3_rmd_dblstore_gath13_fewsums::
 	"DEFINES= -DFN  -DDBLSTORE_FN -DFN_GATHER13" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${ASQFORCE} d_congrad5_fn_fewsums.o \
-	dslash_fn_dblstore.o update.o"
+	"EXTRA_OBJECTS= ${ASQFORCE} d_congrad5_two_src.o \
+	d_congrad5_fn_fewsums.o dslash_fn_dblstore.o update.o"
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \

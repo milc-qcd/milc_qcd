@@ -106,7 +106,7 @@ double dtime;
 	/* save lattice if requested */
 	if( saveflag != FORGET ){
 	    rephase_sf( OFF );
-	    save_lattice( saveflag, savefile );
+	    save_lattice( saveflag, savefile, stringLFN );
 	}
     }
     return 0;

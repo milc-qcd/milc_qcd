@@ -22,6 +22,7 @@ typedef struct {
 	Real C;	/* mass/mu parameter */
 	Real epsilon;	/* time step */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
 
 

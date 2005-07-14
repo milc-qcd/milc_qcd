@@ -109,7 +109,7 @@ if(this_node==0)printf("Fat Polyakov loop parameter %f\n",ALPHA_FUZZ);
 
         /* save lattice if requested */
         if( saveflag != FORGET ){
-          save_lattice( saveflag, savefile );
+	  save_lattice( saveflag, savefile, stringLFN );
         }
     }
     return 0;

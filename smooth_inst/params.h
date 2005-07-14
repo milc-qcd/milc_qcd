@@ -25,6 +25,7 @@ typedef struct {
         int saveflag;   /* what to do with lattice at end */
         int savetopoflag;  /* what to do with topo file at end */
         char startfile[MAXFILENAME],savefile[MAXFILENAME],topofile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
 
 #endif /* _PARAMS_H */

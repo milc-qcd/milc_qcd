@@ -76,6 +76,7 @@ EXTERN	int warms,trajecs,steps,stepsQ,propinterval;
 EXTERN	Real beta;
 EXTERN	Real epsilon;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN  int fixflag;  /* gauge fix: COULOMB_GAUGE_FIX, NO_GAUGE_FIX */
 EXTERN	int saveflag;	/* do with lattice: 1=save; */

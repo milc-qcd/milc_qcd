@@ -84,6 +84,7 @@ EXTERN	Real gamma_rv;		/* Reweigh dS/deta coefficient */
 EXTERN	Real ferm_phases[3];	/* fermion phase factors */
 EXTERN	int n_sxw;		/* n for Sexton-Weingarten update */
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN	int saveflag;	/* do with lattice: 1=save; */
 EXTERN	int total_iters;

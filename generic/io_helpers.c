@@ -21,30 +21,16 @@ static file_type gauge_list[N_GAUGE_TYPES] =
     {FILE_TYPE_GAUGE_SCIDAC,  LIME_MAGIC_NO}
   };
 
-
-
 /* save a lattice in any of the formats:
     SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_CHECKPOINT
 */
-gauge_file *save_lattice( int flag, char *filename){
+gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     double dtime;
     gauge_file *gf;
     double ssplaq, stplaq;
     int do_scidac = 0;
 
     dtime = -dclock();
-
-    /* SciDAC files need QCDML string */
-    if(flag == SAVE_SERIAL_SCIDAC ||
-       flag == SAVE_MULTIFILE_SCIDAC ||
-       flag == SAVE_PARTITION_SCIDAC){
-      do_scidac = 1;
-    }
-
-    /* TO DO: construct QCDML.  Then write it below. */
-    if(do_scidac){
-      
-    }
 
     switch( flag ){
         case FORGET:
@@ -65,11 +51,51 @@ gauge_file *save_lattice( int flag, char *filename){
         case SAVE_SERIAL_FM:
  	    printf("Save serial FNAL format not implemented\n");
 	    break;
+        case SAVE_SERIAL_ILDG:
+#ifdef HAVE_QIO
+ 	    gf = save_serial_ildg(filename,stringLFN);
+#else
+	    node0_printf("save_serial_ildg requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
+        case SAVE_PARALLEL_ILDG:
+#ifdef HAVE_QIO
+ 	    gf = save_parallel_ildg(filename,stringLFN);
+#else
+	    node0_printf("save_parallel_ildg requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
+        case SAVE_PARTITION_ILDG:
+#ifdef HAVE_QIO
+ 	    gf = save_partition_ildg(filename,stringLFN);
+#else
+	    node0_printf("save_partition_ildg requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
+        case SAVE_MULTIFILE_ILDG:
+#ifdef HAVE_QIO
+ 	    gf = save_multifile_ildg(filename,stringLFN);
+#else
+	    node0_printf("save_multifile_ildg requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
         case SAVE_SERIAL_SCIDAC:
 #ifdef HAVE_QIO
  	    gf = save_serial_scidac(filename);
 #else
 	    node0_printf("save_serial_scidac requires QIO compilation\n");
+	    terminate(1);
+#endif
+            break;
+        case SAVE_PARALLEL_SCIDAC:
+#ifdef HAVE_QIO
+ 	    gf = save_parallel_scidac(filename);
+#else
+	    node0_printf("save_parallel_scidac requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
@@ -91,9 +117,6 @@ gauge_file *save_lattice( int flag, char *filename){
             break;
 	case SAVE_SERIAL_ARCHIVE:
 	    gf = save_serial_archive(filename);
-	    break;
-	case SAVE_PARALLEL_ARCHIVE:
-	    gf = save_parallel_archive(filename);
 	    break;
 	default:
 	    node0_printf("\nsave_lattice: ERROR: unknown type for saving lattice\n");
@@ -224,7 +247,7 @@ int ask_ending_lattice( int prompt, int *flag, char *filename ){
     int status;
 
     if (prompt!=0) printf(
-        "'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_multifile_scidac', 'save_partition_scidac', 'save_serial_archive', or 'save_parallel_archive'\n");
+        "'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partition_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_partition_ildg', or 'save_multifile_ildg'\n");
     status=scanf("%s",savebuf);
     if(status !=1) {
         printf("\nask_ending_lattice: ERROR IN INPUT: error reading ending lattice command\n");
@@ -254,6 +277,14 @@ int ask_ending_lattice( int prompt, int *flag, char *filename ){
 	terminate(1);
 #endif
     }
+    else if(strcmp("save_parallel_scidac",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+        *flag=SAVE_PARALLEL_SCIDAC;
+#else
+	node0_printf("requires QIO compilation!\n");
+	terminate(1);
+#endif
+    }
     else if(strcmp("save_multifile_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
         *flag=SAVE_MULTIFILE_SCIDAC;
@@ -273,8 +304,37 @@ int ask_ending_lattice( int prompt, int *flag, char *filename ){
     else if(strcmp("save_serial_archive",savebuf) == 0 ) {
         *flag=SAVE_SERIAL_ARCHIVE;
     }
-    else if(strcmp("save_parallel_archive",savebuf) == 0 ) {
-        *flag=SAVE_PARALLEL_ARCHIVE;
+    else if(strcmp("save_serial_ildg",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+        *flag=SAVE_SERIAL_ILDG;
+#else
+	node0_printf("requires QIO compilation!\n");
+	terminate(1);
+#endif
+    }
+    else if(strcmp("save_parallel_ildg",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+        *flag=SAVE_PARALLEL_ILDG;
+#else
+	node0_printf("requires QIO compilation!\n");
+	terminate(1);
+#endif
+    }
+    else if(strcmp("save_partition_ildg",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+        *flag=SAVE_PARTITION_ILDG;
+#else
+	node0_printf("requires QIO compilation!\n");
+	terminate(1);
+#endif
+    }
+    else if(strcmp("save_multifile_ildg",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+        *flag=SAVE_MULTIFILE_ILDG;
+#else
+	node0_printf("requires QIO compilation!\n");
+	terminate(1);
+#endif
     }
     else if(strcmp("forget",savebuf) == 0 ) {
         *flag=FORGET;
@@ -285,8 +345,6 @@ int ask_ending_lattice( int prompt, int *flag, char *filename ){
       return(1);
     }
 
-
-
     if( *flag != FORGET ){
         if(prompt!=0)printf("enter filename\n");
         status=scanf("%s",filename);
@@ -296,9 +354,23 @@ int ask_ending_lattice( int prompt, int *flag, char *filename ){
 	printf("%s\n",filename);
 
     }
-    return(0);
+    return 0;
 }
 
+int ask_ildg_LFN(int prompt, int flag, char *stringLFN){
+  int status = 0;
+
+  /* For ILDG output formats we require a logical file name next */
+  if( flag == SAVE_SERIAL_ILDG ||
+      flag == SAVE_PARALLEL_ILDG ||
+      flag == SAVE_PARTITION_ILDG ||
+      flag == SAVE_MULTIFILE_ILDG ){
+    status = get_s(prompt, "ILDG_LFN", stringLFN);
+  }
+  else
+    stringLFN[0] = '\0';
+  return status;
+}
 
 void coldlat(){
     /* sets link matrices to unit matrices */

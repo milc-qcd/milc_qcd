@@ -40,7 +40,7 @@ EXTERN QIO_String *xml_record_in;
 void write_appl_gauge_info(FILE *fp)
 {
   /* Copy Scidac record metadata to the info file specified by fp */
-  fprintf(fp,"%s",QIO_string_ptr(xml_record_in));
+  fprintf(fp,"%s\n",QIO_string_ptr(xml_record_in));
 }
 
 char *create_QCDML(){

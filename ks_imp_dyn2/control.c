@@ -28,13 +28,13 @@ main( int argc, char **argv )
   int s_iters, avs_iters, avspect_iters, avbcorr_iters;
   double dtime, dclock();
   
-  /* Remap standard I/O */
-  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
-  
   initialize_machine(argc,argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
+  /* Remap standard I/O */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
+  
   g_sync();
   /* set up */
   prompt = setup();
@@ -200,7 +200,7 @@ main( int argc, char **argv )
     /* save lattice if requested */
     if( saveflag != FORGET ){
       rephase( OFF );
-      save_lattice( saveflag, savefile );
+      save_lattice( saveflag, savefile, stringLFN );
       rephase( ON );
     }
   }

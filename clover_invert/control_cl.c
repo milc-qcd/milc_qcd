@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
       
       /* save lattice if requested */
       if( saveflag != FORGET ){
-	savelat_p = save_lattice( saveflag, savefile );
+	savelat_p = save_lattice( saveflag, savefile, stringLFN );
       }
       
       if(this_node==0)printf("END OF HEADER\n");

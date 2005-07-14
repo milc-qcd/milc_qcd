@@ -1,7 +1,7 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice_w.h ********************************/
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.1 2005/02/23 00:06:10 detar Exp $   **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.2 2005/07/14 02:45:03 detar Exp $   **/
 /* include file for MIMD heavy-light, version 4
    This file defines global scalars and the fields in the lattice. */
 
@@ -110,7 +110,8 @@ EXTERN	int niter,nrestart,nhop,flag;
 EXTERN	Real rsqmin,rsqprop,beta,kappa_c,width;
 EXTERN	char startfile[MAXFILENAME],savefile_w[MAX_NKAP][MAXFILENAME];
 EXTERN  char startfile_w[MAX_NKAP][MAXFILENAME],savefile_m[MAX_NKAP][MAXFILENAME];
-EXTERN  char savefile[MAXFILENAME];  /** what to do with the gauge file ***/
+EXTERN  char savefile[MAXFILENAME];  /** ending gauge file name ***/
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int saveflag ;
 
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */

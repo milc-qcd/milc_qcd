@@ -197,6 +197,8 @@ int readin(int prompt) {
     /* find out what to do with lattice at end */
     IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
 			     par_buf.savefile );
+    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+				  par_buf.stringLFN );
     
     /* find out starting propagator */
     IF_OK for(i=0;i<par_buf.num_kap;i++)
@@ -266,6 +268,7 @@ int readin(int prompt) {
   }
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);
+  strcpy(stringLFN, par_buf.stringLFN);
   for(i=0;i<num_kap;i++){
     strcpy(startfile_w[i],par_buf.startfile_w[i]);
     strcpy(savefile_w[i],par_buf.savefile_w[i]);

@@ -127,6 +127,8 @@ char savebuf[128];
 	/* find out what to do with lattice at end */
 	IF_OK ask_ending_lattice( prompt, &(par_buf.saveflag),
 	    par_buf.savefile );
+	IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+				      par_buf.stringLFN );
 
 	if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
     } /* end if(this_node==0) */

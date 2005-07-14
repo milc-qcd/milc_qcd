@@ -248,8 +248,8 @@ int reload_wprop_to_site( int flag, char *filename,
 	QIO_Reader *infile;
 	
 	node0_printf("Reading as a SciDAC Wilson prop file\n");
-	build_layout(&layout);
-	infile = open_input(filename, &layout);
+	build_qio_layout(&layout);
+	infile = open_scidac_input(filename, &layout);
 	if(infile == NULL)return 1;
 	
 	for(color = 0; color < 3; color++)
@@ -417,8 +417,8 @@ int reload_wprop_to_field( int flag, char *filename,
 	QIO_Reader *infile;
 
 	node0_printf("Reading as a SciDAC Wilson prop file\n");
-	build_layout(&layout);
-	infile = open_input(filename, &layout);
+	build_qio_layout(&layout);
+	infile = open_scidac_input(filename, &layout);
 	if(infile == NULL)return 1;
 
 	destcs = (wilson_vector *)malloc(sites_on_node*
@@ -692,15 +692,15 @@ int save_wsprop_from_site( int flag, char *filename, char *recxml,
       QIO_Layout layout;
       QIO_Writer *outfile;
 
-      build_layout(&layout);
+      build_qio_layout(&layout);
       /* In this format we have three records, one for each
 	 source color.  So one spin_wilson_vector field per record */
       if(flag == SAVE_SERIAL_SCIDAC)volfmt = QIO_SINGLEFILE;
       else if(flag == SAVE_PARTITION_SCIDAC)volfmt = QIO_PARTFILE;
       else if(flag == SAVE_MULTIFILE_SCIDAC)volfmt = QIO_MULTIFILE;
 
-      build_layout(&layout);
-      outfile = open_output(filename, volfmt, &layout,
+      build_qio_layout(&layout);
+      outfile = open_scidac_output(filename, volfmt, &layout,
 			    "MILC Wilson propagator");
       if(outfile == NULL)break;
 
@@ -867,15 +867,15 @@ void save_wprop_from_field( int flag, char *filename, char *recxml,
       QIO_Layout layout;
       QIO_Writer *outfile;
 
-      build_layout(&layout);
+      build_qio_layout(&layout);
       /* In this format we have three records, one for each
 	 source color.  So one spin_wilson_vector field per record */
       if(flag == SAVE_SERIAL_SCIDAC)volfmt = QIO_SINGLEFILE;
       else if(flag == SAVE_PARTITION_SCIDAC)volfmt = QIO_PARTFILE;
       else if(flag == SAVE_MULTIFILE_SCIDAC)volfmt = QIO_MULTIFILE;
 
-      build_layout(&layout);
-      outfile = open_output(filename, volfmt, &layout,
+      build_qio_layout(&layout);
+      outfile = open_scidac_output(filename, volfmt, &layout,
 			    "MILC Wilson propagator");
       if(outfile == NULL)break;
 

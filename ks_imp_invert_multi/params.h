@@ -24,6 +24,7 @@ typedef struct {
 	int fixflag;    /* whether to gauge fix */
 	int saveflag;   /* what to do with lattice at end */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
         int kssaveflag;	/* whether to save ks propagator */
         char kssavefile[MAXFILENAME];
 }  params;

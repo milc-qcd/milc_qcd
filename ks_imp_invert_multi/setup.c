@@ -219,6 +219,9 @@ int readin(int prompt) {
 	IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
 	    par_buf.savefile );
 
+	IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+				      par_buf.stringLFN );
+
         /* find out whether or not to save propagator at end */
         IF_OK status += ask_ending_ksprop( prompt, &(par_buf.kssaveflag),
                                            par_buf.kssavefile );
@@ -252,6 +255,7 @@ int readin(int prompt) {
     strcpy(startfile,par_buf.startfile);
     fixflag = par_buf.fixflag;
     strcpy(savefile,par_buf.savefile);
+    strcpy(stringLFN, par_buf.stringLFN);
     kssaveflag = par_buf.kssaveflag;
     strcpy(kssavefile,par_buf.kssavefile);
 

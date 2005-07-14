@@ -19,6 +19,7 @@ typedef struct {
 	double rsqmin,rsqprop;  /* for deciding on convergence */
   //	double epsilon;	/* time step */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
         char ensemble_id[MAXFILENAME];
         int sequence_number;
 

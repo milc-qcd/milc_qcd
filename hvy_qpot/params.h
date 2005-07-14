@@ -17,6 +17,7 @@ typedef struct {
 	Real beta;	/* gauge coupling */
 	Real smear_fac;	/* smearing factor = weight of direct link */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
 
 #endif /* _PARAMS_H */

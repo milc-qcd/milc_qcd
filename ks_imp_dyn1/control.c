@@ -134,7 +134,7 @@ main( int argc, char **argv )
     /* save lattice if requested */
     if( saveflag != FORGET ){
       rephase( OFF );
-      save_lattice( saveflag, savefile );
+      save_lattice( saveflag, savefile, stringLFN );
       rephase( ON );
     }
     /*TEMP*/

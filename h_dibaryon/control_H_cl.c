@@ -184,7 +184,7 @@ int main(int argc,char *argv[])
       if( saveflag != FORGET ){
 	/* Note: beta, kappa are kept only for save_old_binary */
 	STARTIOTIME;
-	savelat_p = save_lattice( saveflag, savefile );
+	savelat_p = save_lattice( saveflag, savefile, stringLFN );
 	STOPIOTIME("save lattice");
       }
 

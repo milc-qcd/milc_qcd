@@ -21,6 +21,7 @@ typedef struct {
 	Real beta;	/* gauge coupling */
 	Real epsilon;	/* time step */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
 
 #endif /* _PARAMS_H */

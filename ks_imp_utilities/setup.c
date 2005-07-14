@@ -221,6 +221,7 @@ readin(int prompt)
   ansflag = par_buf.ansflag;
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);
+  strcpy(stringLFN, par_buf.stringLFN);
   strcpy(savelongfile,par_buf.savelongfile);
   strcpy(savefatfile,par_buf.savefatfile);
   strcpy(srcfile,par_buf.srcfile);

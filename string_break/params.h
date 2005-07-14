@@ -23,6 +23,7 @@ typedef struct {
 	int niter;	/* maximum number of c.g. iterations */
 	Real rsqmin;	/* for deciding on convergence */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
 
 #endif /* _PARAMS_H */

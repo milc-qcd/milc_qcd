@@ -89,6 +89,7 @@ EXTERN	Real rsqmin,rsqprop,beta,kappa_c,width;
 EXTERN	char startfile[MAXFILENAME],savefile_w[MAX_NKAP][MAXFILENAME];
 EXTERN  char startfile_w[MAX_NKAP][MAXFILENAME],savefile_m[MAX_NKAP][MAXFILENAME];
 EXTERN  char savefile[MAXFILENAME];  /** what to do with the gauge file ***/
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int saveflag ;
 
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */

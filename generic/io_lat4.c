@@ -3300,8 +3300,24 @@ gauge_file *restore_parallel(char *filename)
   gauge_file *gf;
 
   gf = r_parallel_i(filename);
-  r_parallel(gf);
-  r_parallel_f(gf);
+  if(gf->header->magic_number == LIME_MAGIC_NO)
+    {
+      r_serial_f(gf);
+      /* Close this reader and reread to get the header */
+      free(gf->header);
+      free(gf);
+#ifdef HAVE_QIO
+      gf = restore_parallel_scidac(filename);
+#else
+      node0_printf("Looks like a SciDAC file.  Recompile with QIO.\n");
+      terminate(1);
+#endif
+    }
+  else
+    {
+      r_parallel(gf);
+      r_parallel_f(gf);
+    }
 
   return gf;
   
@@ -3542,9 +3558,3 @@ gauge_file *save_serial_archive(char *filename) {
   return gf;
 }
 
-/*---------------------------------------------------------------------------*/
-gauge_file *save_parallel_archive(char *filename) {
-  /* All nodes write in archive file format */
-  printf("Parallel archive saves are not implemented, yet\n");
-  return NULL;
-}

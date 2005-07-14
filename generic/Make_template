@@ -30,6 +30,7 @@ G_ALL = \
  io_helpers.o \
  io_helpers_nocheck.o \
  io_lat4.o \
+ io_lat4xt.o \
  io_lat4_double_sg.o \
  io_nonansi.o \
  io_paragon3.o \
@@ -125,6 +126,8 @@ io_helpers_nocheck.o: ../generic/io_helpers_nocheck.c
 	${CC} -c ${CFLAGS} $<
 io_lat4.o: ../include/io_lat.h
 io_lat4.o: ../generic/io_lat4.c
+	${CC} -c ${CFLAGS} $<
+io_lat4xt.o: ../generic/io_lat4xt.c
 	${CC} -c ${CFLAGS} $<
 io_lat4_double_sg.o: ../include/io_lat.h
 io_lat4_double_sg.o: ../generic/io_lat4_double_sg.c

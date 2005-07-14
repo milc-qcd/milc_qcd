@@ -118,6 +118,7 @@ EXTERN  int fixflag;  /* gauge fix: COULOMB_GAUGE_FIX, NO_GAUGE_FIX */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
 			   SAVE_CHECKPOINT */
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  int kssaveflag; /* save KS propagator or not */
 	/* forget_ks, save_ks_ascii, save_ks_serial, save_ks_serial_fm, save_ks_serial_tslice */
 	/* FORGET, SAVE_ASCII, SAVE_SERIAL, SAVE_SERIAL_FM, SAVE_SERIAL_TSLICE */

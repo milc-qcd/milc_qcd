@@ -292,6 +292,8 @@ int readin(int prompt)
     /* find out what to do with lattice at end */
     IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
 			     par_buf.savefile );
+    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+				  par_buf.stringLFN );
 
 
     for (i = 0; i < par_buf.nkap; i++)
@@ -385,6 +387,7 @@ int readin(int prompt)
     nchannels = par_buf.nchannels;
   strcpy(startfile, par_buf.startfile);
   strcpy(savefile, par_buf.savefile);
+  strcpy(stringLFN, par_buf.stringLFN);
   fixflag = par_buf.fixflag ; 
   saveflag = par_buf.saveflag  ;
 

@@ -25,6 +25,7 @@ typedef struct {
 	Real ferm_phas[3];	/* fermion phase factors */
 	int n_sxw;	/* n for Sexton-Weingarten update */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
 
 #endif	/* _PARAMS_H */

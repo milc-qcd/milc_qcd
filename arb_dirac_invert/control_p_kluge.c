@@ -134,7 +134,7 @@ w_prop_file *fp_out_w[MAX_MASSES];       /* For propagator files */
         /* save lattice if requested */
         if( saveflag != FORGET ){
 	  /* Note: beta, kappa are kept only for save_old_binary */
-          save_lattice( saveflag, savefile );
+	  save_lattice( saveflag, savefile, stringLFN );
         }
 
 	if(this_node==0)printf("END OF HEADER\n");

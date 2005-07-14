@@ -23,13 +23,17 @@
 #define SAVE_SERIAL 42
 #define SAVE_CHECKPOINT 43
 #define SAVE_SERIAL_FM 44
-#define SAVE_SERIAL_SCIDAC 45
-#define SAVE_MULTIFILE_SCIDAC 46
-#define SAVE_PARTITION_SCIDAC 47
-#define SAVE_PARALLEL 48
-#define SAVE_MULTIDUMP 49
-#define SAVE_SERIAL_ARCHIVE 50
-#define SAVE_PARALLEL_ARCHIVE 51
+#define SAVE_SERIAL_ILDG 45
+#define SAVE_PARALLEL_ILDG 46
+#define SAVE_MULTIFILE_ILDG 47
+#define SAVE_PARTITION_ILDG 48
+#define SAVE_SERIAL_SCIDAC 49
+#define SAVE_PARALLEL_SCIDAC 50
+#define SAVE_MULTIFILE_SCIDAC 51
+#define SAVE_PARTITION_SCIDAC 52
+#define SAVE_PARALLEL 53
+#define SAVE_MULTIDUMP 54
+#define SAVE_SERIAL_ARCHIVE 55
 
 /* For KS propagators */
 #define SAVE_SERIAL_TSLICE 932
@@ -335,10 +339,11 @@ void write_appl_gauge_info(FILE *fp);
 
 /**********************************************************************/
 /* Prototypes for io_helpers.c */
-gauge_file *save_lattice( int flag, char *filename );
+gauge_file *save_lattice( int flag, char *filename, char *stringLFN );
 gauge_file *reload_lattice( int flag, char *filename);
 int ask_starting_lattice( int prompt, int *flag, char *filename );
 int ask_ending_lattice( int prompt, int *flag, char *filename );
+int ask_ildg_LFN(int prompt, int flag, char *stringLFN);
 void coldlat();
 void funnylat();
 int get_f( int prompt, char *variable_name_string, Real *value );
@@ -350,9 +355,15 @@ int get_prompt( int *value );
 /**********************************************************************/
 /* Prototypes for io_scidac routines */
 gauge_file *save_serial_scidac(char *filename);
+gauge_file *save_parallel_scidac(char *filename);
 gauge_file *save_multifile_scidac(char *filename);
 gauge_file *save_partition_scidac(char *filename);
+gauge_file *save_serial_ildg(char *filename, char *stringLFN);
+gauge_file *save_parallel_ildg(char *filename, char *stringLFN);
+gauge_file *save_partition_ildg(char *filename, char *stringLFN);
+gauge_file *save_multifile_ildg(char *filename, char *stringLFN);
 gauge_file *restore_serial_scidac(char *filename);
+gauge_file *restore_parallel_scidac(char *filename);
 
 /**********************************************************************/
 /* Prototypes for parallel I/O routine interfaces:

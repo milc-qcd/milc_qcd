@@ -108,6 +108,7 @@ EXTERN	int source_start, source_inc, n_sources;
 	/* source time, increment for it, and number of source slices */
 EXTERN	Real rsqprop,beta,kappa;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;	/* beginning lattice flag */
 EXTERN  int saveflag;	/* end lattice flag */
 EXTERN	int total_iters;

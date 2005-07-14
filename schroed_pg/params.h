@@ -21,6 +21,7 @@ typedef struct {
 	int bc_flag;    /* gauge boundary condition flag */
 	Real epsilon;	/* time step */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
 
 #endif /* _PARAMS_H */

@@ -82,7 +82,7 @@ int main(int argc, char **argv)
     if( saveflag != FORGET )
     {
       /* Note: beta, kappa are kept only for save_old_binary */
-      save_lattice( saveflag, savefile );
+      save_lattice( saveflag, savefile, stringLFN );
     }
 
 

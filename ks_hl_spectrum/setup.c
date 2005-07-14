@@ -84,6 +84,8 @@ int readin(int prompt)  {
     /* find out what to do with lattice at end */
     IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
 					par_buf.savefile );
+    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+				  par_buf.stringLFN );
     
     /* Get ensemble values for NERSC archive */
     IF_OK if (par_buf.saveflag == SAVE_SERIAL_ARCHIVE ||
@@ -133,6 +135,7 @@ int readin(int prompt)  {
   
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);
+  strcpy(stringLFN, par_buf.stringLFN);
   num_kap = par_buf.num_kap;
   for(i=0;i<par_buf.num_kap;i++){
     kap[i] = par_buf.kap[i]; 

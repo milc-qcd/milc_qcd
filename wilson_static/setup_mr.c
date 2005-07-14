@@ -1,6 +1,6 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.2 2005/03/25 17:31:27 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.3 2005/07/14 02:45:03 detar Exp $  ***/
 /* MIMD version 6 */
 #define IF_OK if(status==0)
 
@@ -306,7 +306,8 @@ int readin(int prompt)
     /* find out what to do with lattice at end */
     IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
 			     par_buf.savefile );
-
+    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+			     par_buf.stringLFN );
 
     /*** load in information for static variational calculation *****/
     /* The number of smearing functions to use ***/
@@ -501,6 +502,7 @@ int readin(int prompt)
     nchannels = par_buf.nchannels;
   strcpy(startfile, par_buf.startfile);
   strcpy(savefile, par_buf.savefile);
+  strcpy(stringLFN, par_buf.stringLFN);
   fixflag = par_buf.fixflag ; 
   saveflag = par_buf.saveflag  ;
 

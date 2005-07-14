@@ -30,6 +30,7 @@ typedef struct {
 	char startfile[MAXFILENAME];
 	char startfile_w[MAX_KAP][MAXFILENAME];
 	char savefile[MAXFILENAME];
+	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 	char savefile_w[MAX_KAP][MAXFILENAME];
 	char scratchstem_w[MAXFILENAME];
         int scratchflag;

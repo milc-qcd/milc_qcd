@@ -326,7 +326,7 @@ int main(int argc, char *argv[])
   build_qio_layout(&layout);
 
   /* Open the SciDAC file for reading */
-  infile = open_scidac_input(filename_scidac, &layout);
+  infile = open_scidac_input(filename_scidac, &layout, QIO_SERIAL);
   if(infile == NULL)terminate(1);
 
   /* Open the MILC v5 file for writing */

@@ -133,7 +133,7 @@ double dtime;
 
 	/* save lattice if requested */
         if( saveflag != FORGET ){
-          save_lattice( saveflag, savefile );
+	  save_lattice( saveflag, savefile, stringLFN );
         }
     }
     QDP_finalize();

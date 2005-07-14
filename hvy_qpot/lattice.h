@@ -51,6 +51,7 @@ EXTERN	int no_smear_level,smear_num[5],off_axis_flag;
 EXTERN  int tot_smear;  /* running total of smearing steps for lattice */
 EXTERN	Real smear_fac;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN	int saveflag;	/* do with lattice: 1=save; */
 EXTERN	int total_iters;

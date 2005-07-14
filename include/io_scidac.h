@@ -9,10 +9,13 @@
 
 void build_qio_layout(QIO_Layout *layout);
 
-QIO_Writer *open_scidac_output(char *filename, int volfmt, QIO_Layout *layout,
+QIO_Writer *open_scidac_output(char *filename, int volfmt, 
+			       int serpar, int ildgtype, 
+			       char *stringLFN, QIO_Layout *layout,
 			       char *xml_write_file);
 
-QIO_Reader *open_scidac_input(char *filename, QIO_Layout *layout);
+QIO_Reader *open_scidac_input(char *filename, QIO_Layout *layout, 
+			      int serpar);
 
 QIO_Reader *open_input(char *filename, QIO_Layout *layout);
 

@@ -14,28 +14,25 @@
 int remap_stdio_from_args(int argc, char *argv[]){
   FILE *fp;
   if(argc > 1){
-    fp = fopen(argv[1],"r");
+    fp = freopen(argv[1],"r",stdin);
     if(fp == NULL){
       node0_printf("Can't open stdin file %s for reading.\n",argv[1]);
       return 1;
     }
-    *stdin = *fp;
   }
   if(argc > 2){
-    fp = fopen(argv[2],"w");
+    fp = freopen(argv[2],"w",stdout);
     if(fp == NULL){
       node0_printf("Can't open stdout file %s for writing\n",argv[2]);
       return 1;
     }
-    *stdout = *fp;
   }
   if(argc > 3){
-    fp = fopen(argv[3],"w");
+    fp = freopen(argv[3],"w",stderr);
     if(fp == NULL){
       node0_printf("Can't open stderr file %s for writing\n",argv[3]);
       return 1;
     }
-    *stderr = *fp;
   }
   return 0;
 }

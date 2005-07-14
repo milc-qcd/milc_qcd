@@ -64,6 +64,7 @@ EXTERN	int warms,trajecs,steps,stepsQ,propinterval;
 EXTERN	Real beta,u0;
 EXTERN	Real epsilon;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN	int saveflag;	/* do with lattice: 1=save; */
 EXTERN	int total_iters;

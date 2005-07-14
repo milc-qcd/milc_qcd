@@ -86,6 +86,7 @@ EXTERN	int warms,trajecs,steps,niter,propinterval,nflavors;
 EXTERN	Real rsqmin,rsqprop,beta,kappa;
 EXTERN	Real epsilon;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN	int saveflag;	/* do with lattice: 1=save; */
 EXTERN	int total_iters;

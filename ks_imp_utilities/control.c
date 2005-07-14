@@ -20,13 +20,13 @@ int main( int argc, char **argv ){
   char *filexml;
   double dtime, dclock();
   
-  /* Remap standard I/O if needed */
-  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
-  
   initialize_machine(argc,argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
+  /* Remap standard I/O if needed */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
+  
   g_sync();
   /* set up */
   prompt = setup();
@@ -49,7 +49,7 @@ int main( int argc, char **argv ){
     /* save lattice if requested */
     if( saveflag != FORGET ){
       rephase( OFF );
-      save_lattice( saveflag, savefile );
+      save_lattice( saveflag, savefile, NULL );
       rephase( ON );
     }
     
