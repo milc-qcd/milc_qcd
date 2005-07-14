@@ -1,0 +1,236 @@
+SU3 with improved KS action
+Microcanonical simulation with refreshing
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+R algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors1 4
+nflavors2 4
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.3 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 7
+mass1 0.1
+mass2 0.1
+u0 0.8441
+microcanonical_time_step 0.02
+steps_per_trajectory 4
+max_cg_iterations 300
+error_per_site 5e-06
+error_for_propagator 2e-06
+reload_serial ../binary_samples/lat.sample.l4444
+forget 
+Reading with byte reversal
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4444
+Time stamp Thu Feb 12 13:40:21 1998
+Checksums 2352c05 d137321d OK
+Time to reload gauge configuration = 1.862597e-02
+CHECK PLAQ: 1.794675e+00 1.774426e+00
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 4.708052e-03
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.762509e-02     12
+                    2 0      -1.031171e-02     16
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -5.847914e-02     8
+                    2      -8.771871e-02     48
+                    3      3.077829e-02     192
+                    4      -7.199551e-03     384
+                    5      -1.231132e-01     48
+WARMUPS COMPLETED
+PLAQ:	1.795188	1.776954
+P_LOOP:	1.303895e+00	2.127057e-04
+G_LOOP:  0  0  4   	1.867359e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.761557e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.767350e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.756649e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.770745e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.792769e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.263136e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.127389e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.125057e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.236699e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.143111e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.141499e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.169416e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.170549e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.193353e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.205942e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.244971e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.245488e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.118738e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.169141e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.145994e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.130589e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.123008e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.127793e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.159023e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.203137e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.180229e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.149857e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.185700e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.176650e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.141347e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.166222e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.105839e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.112603e+00	( 1 5 4 6 2 3  )
+GACTION: 5.291246e+00
+PBP: mass 1.000000e-01     1.664134e-01  4.386549e-02  6.991372e-02  6.991278e-02 ( 1 of 4 )
+FACTION: mass = 1.000000e-01,  1.452431e+00 ( 1 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  7.632824e-03  7.093432e-02  9.365349e-02  -8.411083e-02 ( 1 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  6.567424e-01  5.654971e-01  -2.131626e-02  -1.603792e-01 ( 1 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.037292e-01 ( 1 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  4.983321e-02 ( 1 of 4 )
+PBP: mass 1.000000e-01     1.277998e-01  1.023682e-01  1.160803e-02  1.160929e-02 ( 2 of 4 )
+FACTION: mass = 1.000000e-01,  1.519379e+00 ( 2 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  -3.760273e-02  -2.109620e-02  3.662169e-02  2.082873e-02 ( 2 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  8.670499e-01  7.055810e-01  5.693528e-02  -3.674275e-03 ( 2 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.533134e-01 ( 2 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -1.793617e-02 ( 2 of 4 )
+PBP: mass 1.000000e-01     1.273657e-01  8.612007e-02  -4.340119e-02  -4.340116e-02 ( 3 of 4 )
+FACTION: mass = 1.000000e-01,  1.456930e+00 ( 3 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  7.706044e-02  3.225819e-02  -1.371661e-02  4.437779e-02 ( 3 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  7.380155e-01  5.918540e-01  -3.183614e-02  -1.080246e-02 ( 3 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.120545e-01 ( 3 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -4.412348e-02 ( 3 of 4 )
+PBP: mass 1.000000e-01     1.954202e-01  5.156582e-02  -2.561471e-02  -2.561755e-02 ( 4 of 4 )
+FACTION: mass = 1.000000e-01,  1.536871e+00 ( 4 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  8.055016e-02  -4.747731e-02  9.964645e-02  -2.878416e-02 ( 4 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  7.493439e-01  6.854894e-01  4.234407e-02  -4.880273e-02 ( 4 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.901632e-01 ( 4 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -6.435041e-02 ( 4 of 4 )
+PBP: mass 1.000000e-01     1.598620e-01  8.216430e-02  -2.084826e-02  -2.084841e-02 ( 1 of 4 )
+FACTION: mass = 1.000000e-01,  1.435102e+00 ( 1 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  -8.650246e-02  -8.894514e-02  -1.496987e-01  -3.622168e-02 ( 1 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  7.766941e-01  6.461320e-01  2.333275e-02  -1.057549e-02 ( 1 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.783195e-01 ( 1 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -7.886250e-02 ( 1 of 4 )
+PBP: mass 1.000000e-01     1.076457e-01  1.514506e-01  -4.435675e-02  -4.435613e-02 ( 2 of 4 )
+FACTION: mass = 1.000000e-01,  1.419024e+00 ( 2 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  3.332071e-02  -7.514003e-02  -3.966323e-02  -2.785324e-02 ( 2 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  7.445570e-01  5.880924e-01  2.579762e-02  1.100543e-01 ( 2 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -6.134109e-01 ( 2 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -8.224055e-02 ( 2 of 4 )
+PBP: mass 1.000000e-01     1.094839e-01  1.138523e-01  -5.809659e-02  -5.809680e-02 ( 3 of 4 )
+FACTION: mass = 1.000000e-01,  1.344243e+00 ( 3 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  4.314210e-02  1.313443e-01  1.709625e-02  7.546610e-02 ( 3 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  7.006239e-01  6.197239e-01  1.111161e-02  -2.122442e-02 ( 3 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.316489e-01 ( 3 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -1.154071e-01 ( 3 of 4 )
+PBP: mass 1.000000e-01     1.128994e-01  1.346673e-01  -1.017895e-01  -1.017885e-01 ( 4 of 4 )
+FACTION: mass = 1.000000e-01,  1.609609e+00 ( 4 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  -7.826466e-02  1.201107e-01  3.819131e-02  -7.978806e-04 ( 4 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  6.452969e-01  6.708946e-01  3.114367e-02  -4.507798e-02 ( 4 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.912309e-01 ( 4 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -1.783145e-02 ( 4 of 4 )
+PLAQ:	1.795726	1.779579
+P_LOOP:	1.271026e+00	1.432906e-02
+G_LOOP:  0  0  4   	1.858475e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.767466e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.787913e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.761236e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.771497e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.779329e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.269219e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.146039e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.121535e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.229226e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.147326e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.142369e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.195980e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.173421e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.193733e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.201637e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.241763e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.214401e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.134877e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.172575e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.147484e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.125243e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.117240e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.121618e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.148708e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.194469e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.195635e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.198922e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.171427e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.174544e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.147852e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.169186e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.099456e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.110353e+00	( 1 5 4 6 2 3  )
+GACTION: 5.282886e+00
+PBP: mass 1.000000e-01     1.031784e-01  1.020212e-01  5.554539e-02  5.554652e-02 ( 1 of 4 )
+FACTION: mass = 1.000000e-01,  1.558838e+00 ( 1 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  1.335349e-01  1.178993e-02  4.943397e-02  2.542420e-02 ( 1 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  5.840042e-01  5.967172e-01  3.509413e-02  5.592311e-02 ( 1 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -4.930376e-01 ( 1 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  1.336996e-02 ( 1 of 4 )
+PBP: mass 1.000000e-01     1.277483e-01  8.868906e-02  -5.694950e-03  -5.694398e-03 ( 2 of 4 )
+FACTION: mass = 1.000000e-01,  1.505904e+00 ( 2 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  4.244193e-02  -8.135434e-02  1.261052e-01  1.285360e-01 ( 2 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  6.527358e-01  7.488182e-01  -1.197668e-01  -4.042394e-03 ( 2 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.197072e-01 ( 2 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  1.276109e-02 ( 2 of 4 )
+PBP: mass 1.000000e-01     1.251915e-01  9.088062e-02  3.382963e-02  3.383068e-02 ( 3 of 4 )
+FACTION: mass = 1.000000e-01,  1.454490e+00 ( 3 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  1.415407e-01  -3.759835e-02  3.454868e-02  -1.101304e-01 ( 3 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  7.620136e-01  6.491064e-01  9.796960e-02  7.912903e-02 ( 3 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.186847e-01 ( 3 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  1.587627e-02 ( 3 of 4 )
+PBP: mass 1.000000e-01     5.305776e-02  1.679384e-01  -4.462862e-02  -4.462807e-02 ( 4 of 4 )
+FACTION: mass = 1.000000e-01,  1.483196e+00 ( 4 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  -1.432786e-01  1.589120e-01  -1.251006e-01  4.931523e-02 ( 4 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  6.921391e-01  6.691531e-01  6.503952e-02  -7.881147e-04 ( 4 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.297814e-01 ( 4 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  3.071615e-02 ( 4 of 4 )
+PBP: mass 1.000000e-01     9.952402e-02  1.163060e-01  -4.716054e-03  -4.715079e-03 ( 1 of 4 )
+FACTION: mass = 1.000000e-01,  1.308929e+00 ( 1 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  -2.994513e-02  3.620285e-02  2.248774e-02  2.164542e-03 ( 1 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  7.193505e-01  5.151527e-01  -1.693692e-02  -2.635620e-02 ( 1 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.149400e-01 ( 1 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -5.096915e-02 ( 1 of 4 )
+PBP: mass 1.000000e-01     7.237048e-02  1.655323e-01  -1.464913e-03  -1.464825e-03 ( 2 of 4 )
+FACTION: mass = 1.000000e-01,  1.644285e+00 ( 2 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  -2.348196e-02  3.862627e-02  -8.060683e-03  -6.413322e-02 ( 2 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  5.647966e-01  7.481483e-01  2.045966e-02  7.699812e-02 ( 2 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.683484e-01 ( 2 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -2.860435e-02 ( 2 of 4 )
+PBP: mass 1.000000e-01     8.402766e-02  1.488756e-01  -5.733790e-02  -5.733782e-02 ( 3 of 4 )
+FACTION: mass = 1.000000e-01,  1.518541e+00 ( 3 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  1.065887e-01  -2.852976e-01  4.880007e-02  9.772975e-03 ( 3 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  6.933976e-01  7.065452e-01  2.067420e-03  -9.213136e-02 ( 3 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.578040e-01 ( 3 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  1.189619e-02 ( 3 of 4 )
+PBP: mass 1.000000e-01     2.919747e-02  2.045228e-01  8.223148e-02  8.223194e-02 ( 4 of 4 )
+FACTION: mass = 1.000000e-01,  1.427296e+00 ( 4 of 4 )
+PB_DMDMU_P: mass 1.000000e-01  8.488560e-02  -1.412767e-01  -1.920386e-03  1.105292e-01 ( 4 of 4 )
+PB_D2MDMU2_P: mass 1.000000e-01  7.669813e-01  6.485465e-01  -5.402635e-02  -7.231484e-02 ( 4 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.608408e-01 ( 4 of 4 )
+TR_MidM_MidM: mass 1.000000e-01,  -8.353539e-02 ( 4 of 4 )
+RUNNING COMPLETED
+average cg iters for step= 7.800000e+01
+Time = 3.210382e+01 seconds
+total_iters = 2773
+
+
+get_i: EOF on STDIN while expecting warms.
+exit: Wed Apr  6 22:05:23 2005
+

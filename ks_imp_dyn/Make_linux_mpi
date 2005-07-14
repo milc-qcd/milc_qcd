@@ -1,0 +1,147 @@
+#  MIMD version 6
+#  Standard application makefile for Linux cluster
+#  Do not use for making libraries
+#  Copy this file into the application directory and run make there.
+#
+
+# This file
+MAKEFILE = Make_linux_mpi
+COMMTYPE = MPI
+
+#----------------------------------------------------------------------
+#  User choices - edit to suit 
+#----------------------------------------------------------------------
+# 1. Compiler
+#CC               = gcc    # ( mpicc cc gcc pgcc g++ )
+CC = /usr/local/mpich/bin/mpicc  # 700 MHz P III
+
+#----------------------------------------------------------------------
+# 2. Compiler optimization level
+OPT              = -O3    # ( -g -O, etc )
+
+#----------------------------------------------------------------------
+# 3. Other compiler optimization flags.  Uncomment stanza to suit.
+#-------------- Gnu C -------------------------------------
+#OCFLAGS = -Wall  # ( -DP3, -DP4 )
+#OCFLAGS =  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
+OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
+#-------------- Portland Group ----------------------------
+#OCFLAGS = -tp p6 -Munroll=c:4,n:4
+#OCFLAGS= -mpentiumpro -march=pentiumpro -funroll-all-loops -malign-double -D_REENTRANT  # Pentium pro
+
+#-------------- DEC Alpha ---------------------------------
+#OCFLAGS = -DT3E -float -fptm n 
+
+#-------------- SUN SPARC ---------------------------------
+#OCFLAGS= -fast -dalign -xlibmil -fsimple=2 -fns  #Ultra
+
+#----------------------------------------------------------------------
+# 4. Choose large file support
+#CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE64 # Large files gcc only
+CLFS =             # Not researched for others
+
+#----------------------------------------------------------------------
+# 5. Installation-specific MPI includes and libraries (if not using mpicc)
+
+
+#----------------- MPICH/GM ---------------------------------------------
+#IMPI = #-I/usr/local/mpich/include
+#LMPI = #-L/usr/local/mpich/lib/shared -L/usr/local/mpich/lib -lmpich -L/opt/gm/lib/ -lgm
+
+#----------------- MPIPRO ---------------------------------------------
+#CMPI =
+# With Redhat, for MPI PRO see rpm -ql mpipro | more
+#LMPI = -lmpipro_tv -lpthread
+#LMPI = -lmpipro -lvipl -lpthread
+
+#----------------- MVICH ----------------------------------------------
+#CMPI = -I/uufs/icebox/sys/src/mpich/1.2.0-via/include  # MVICH
+#LMPI = -L/uufs/icebox/sys/pkg/mpich/1.2.0-via/lib -lmpi -lvipl -lpthread # MVICH
+
+#----------------------------------------------------------------------
+# 6. I/O routines
+# Both io_nonansi and io_ansi should work on a scalar machine
+# Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
+MACHINE_DEP_IO   = io_nonansi.o # (io_ansi.o io_nonansi.o io_romio.o)
+
+HAVEQIO = true
+#HAVEQIO =    # If we don't want QIO, leave blank
+
+#QCDOC = true  # To turn on QCDOC requirements
+QCDOC =  # If we are not running on the QCDOC
+
+#----------------------------------------------------------------------
+# 7. QDP/C options
+
+#  *** edit these locations ***
+SCIDAC = ${HOME}/scidac
+QIO = $(SCIDAC)/qio
+QMP = ${SCIDAC}/qmp
+QDP = ${SCIDAC}/qdp
+QLA = ${SCIDAC}/qla
+
+# shouldn't need to change this
+
+IQMP = -I${QMP}/include
+LQMP = -L$(QMP)/lib -lqmp
+
+IQIO = -I${QIO}/include
+LQIO = -L${QIO}/lib -lqio -llime 
+
+IQLA = -I${QLA}/include
+LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_df3 \
+          -lqla_d -lqla_random
+
+IQDP = -I${QDP}/include
+LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_common
+
+ifdef HAVEQIO
+  LIBQIO = ${LQIO} ${LQMP}
+  INCQIO = ${IQIO} ${IQMP}
+endif
+
+INCQDP = ${IQDP} ${IQLA} ${IQIO} ${IQMP}
+LIBQDP = ${LQDP} ${LQLA} ${LQIO} ${LQMP}
+
+#----------------------------------------------------------------------
+# 8. Linker
+LD               = ${CC}
+
+#----------------------------------------------------------------------
+# 9. Extra linker flags
+LDFLAGS          =   # most
+
+#----------------------------------------------------------------------
+# 9. Extra libraries
+ILIB             = ${LIBQIO} ${LMPI}  # not needed if using mpicc
+
+#----------------------------------------------------------------------
+# 10. Code alternatives 
+
+# 1 = single precision; 2 = double
+PRECISION = 2
+
+# -DSSE says we have the SSE package
+# For P3 or P4 or Athlon Thunderbird and GNUC Use -DSSE_INLINE to get
+# inline assembly code from the package.
+
+CODETYPE         = -DNOPREFETCH -DPRECISION=${PRECISION} -DSSE -DSSE_INLINE -DP4
+
+#----------------------------------------------------------------------
+# 11. Choose MILC library make file in libraries directory.  
+#    CHECK IT FOR FURTHER OPTIONS!
+
+MAKELIBRARIES = Make_vanilla  # or Make_SSE_nasm (don't use -DSSE with this)
+
+#----------------------------------------------------------------------
+# End of user choices.  PLEASE, ALSO, CHECK include/config.h.
+#----------------------------------------------------------------------
+
+# Routines that depend on both application and architecture
+MACHINE_DEP = com_qmp.o ${MACHINE_DEP_IO}
+
+# Complete set of compiler flags - do not change
+CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${CLFS} ${CMPI} \
+	${INCQIO} -I${MYINCLUDEDIR} ${DEFINES}
+
+include Make_template
