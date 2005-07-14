@@ -7,7 +7,7 @@
 #define GOES_BACKWARDS(dir) (dir>TUP)
 #ifdef XLC
 #define cache_touch(A) __dcbt(A)
-#define outReal(A) 
+#define outfloat(A) 
 #else
 #define cache_touch(A) asm ( "dcbt %0 , %1" : : "r" (0)  , "r" (A) )
 #endif
@@ -26,9 +26,9 @@ int *nei, int local, int nsites, site *lat){
   site *s;
   register su3_vector *b, *bn, *c, *cn;
   register su3_matrix *a;
-  register Real c0r,c0i,c1r,c1i,c2r,c2i;
-  register Real b0r,b0i,b1r,b1i,b2r,b2i;
-  register Real a0r,a0i,a1r,a1i,a2r,a2i;
+  register float c0r,c0i,c1r,c1i,c2r,c2i;
+  register float b0r,b0i,b1r,b1i,b2r,b2i;
+  register float a0r,a0i,a1r,a1i,a2r,a2i;
   i=0;
   s = lat;
   b = source;
@@ -194,14 +194,14 @@ int *nei, int local, int nsites, site *lat){
     c->c[2].imag = c2i;
 }
 
-void all_add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,Real coeff, Real onehalf, Real onethird, int neven, int nsites, site *lat){
+void all_add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,float coeff, float onehalf, float onethird, int neven, int nsites, site *lat){
   register anti_hermitmat *c,*cn;
   register su3_vector *a, *b;
-  register Real a0r,a0i,a1r,a1i,a2r,a2i;
-  register Real b0r,b0i,b1r,b1i,b2r,b2i;
-  register Real c00i,c11i,c22i,c01r,c01i,c02r,c02i,c12r,c12i;
-  register Real temp0,temp1,temp2,temp3;
-  register Real tmp_coeff, tmp_coeff2;
+  register float a0r,a0i,a1r,a1i,a2r,a2i;
+  register float b0r,b0i,b1r,b1i,b2r,b2i;
+  register float c00i,c11i,c22i,c01r,c01i,c02r,c02i,c12r,c12i;
+  register float temp0,temp1,temp2,temp3;
+  register float tmp_coeff, tmp_coeff2;
   register site *s;
   int i;
 
@@ -292,15 +292,15 @@ void all_add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,Real coeff, 
 
 #if 0
     PRINT2("i=%d\n",i);
-    outReal(lat[i].mom[dir].m00im);
-    outReal(lat[i].mom[dir].m11im);
-    outReal(lat[i].mom[dir].m22im);
-    outReal(lat[i].mom[dir].m01.real);
-    outReal(lat[i].mom[dir].m01.imag);
-    outReal(lat[i].mom[dir].m02.real);
-    outReal(lat[i].mom[dir].m02.imag);
-    outReal(lat[i].mom[dir].m12.real);
-    outReal(lat[i].mom[dir].m12.imag);
+    outfloat(lat[i].mom[dir].m00im);
+    outfloat(lat[i].mom[dir].m11im);
+    outfloat(lat[i].mom[dir].m22im);
+    outfloat(lat[i].mom[dir].m01.real);
+    outfloat(lat[i].mom[dir].m01.imag);
+    outfloat(lat[i].mom[dir].m02.real);
+    outfloat(lat[i].mom[dir].m02.imag);
+    outfloat(lat[i].mom[dir].m12.real);
+    outfloat(lat[i].mom[dir].m12.imag);
 #endif
 
     c=cn;
@@ -370,15 +370,15 @@ void all_add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,Real coeff, 
 
 #if 0
     PRINT2("i=%d\n",i);
-    outReal(lat[i].mom[dir].m00im);
-    outReal(lat[i].mom[dir].m11im);
-    outReal(lat[i].mom[dir].m22im);
-    outReal(lat[i].mom[dir].m01.real);
-    outReal(lat[i].mom[dir].m01.imag);
-    outReal(lat[i].mom[dir].m02.real);
-    outReal(lat[i].mom[dir].m02.imag);
-    outReal(lat[i].mom[dir].m12.real);
-    outReal(lat[i].mom[dir].m12.imag);
+    outfloat(lat[i].mom[dir].m00im);
+    outfloat(lat[i].mom[dir].m11im);
+    outfloat(lat[i].mom[dir].m22im);
+    outfloat(lat[i].mom[dir].m01.real);
+    outfloat(lat[i].mom[dir].m01.imag);
+    outfloat(lat[i].mom[dir].m02.real);
+    outfloat(lat[i].mom[dir].m02.imag);
+    outfloat(lat[i].mom[dir].m12.real);
+    outfloat(lat[i].mom[dir].m12.imag);
 #endif
 
     c=cn;
@@ -426,37 +426,37 @@ void all_add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,Real coeff, 
 
 #if 0
     PRINT2("i=%d\n",i);
-    outReal(lat[i].mom[dir].m00im);
-    outReal(lat[i].mom[dir].m11im);
-    outReal(lat[i].mom[dir].m22im);
-    outReal(lat[i].mom[dir].m01.real);
-    outReal(lat[i].mom[dir].m01.imag);
-    outReal(lat[i].mom[dir].m02.real);
-    outReal(lat[i].mom[dir].m02.imag);
-    outReal(lat[i].mom[dir].m12.real);
-    outReal(lat[i].mom[dir].m12.imag);
+    outfloat(lat[i].mom[dir].m00im);
+    outfloat(lat[i].mom[dir].m11im);
+    outfloat(lat[i].mom[dir].m22im);
+    outfloat(lat[i].mom[dir].m01.real);
+    outfloat(lat[i].mom[dir].m01.imag);
+    outfloat(lat[i].mom[dir].m02.real);
+    outfloat(lat[i].mom[dir].m02.imag);
+    outfloat(lat[i].mom[dir].m12.real);
+    outfloat(lat[i].mom[dir].m12.imag);
 #endif
   
 #if 0
      PRINT("add_force_to_mom()\n");
-  outReal(lat[0].mom[dir].m00im);
+  outfloat(lat[0].mom[dir].m00im);
   PRINT2("%0.8e\n",lat[0].mom[dir].m00im);
-  outReal(lat[0].mom[dir].m11im);
+  outfloat(lat[0].mom[dir].m11im);
   PRINT2("%0.8e\n",lat[0].mom[dir].m11im);
-  outReal(lat[0].mom[dir].m22im);
+  outfloat(lat[0].mom[dir].m22im);
   PRINT2("%0.8e\n",lat[0].mom[dir].m22im);
-  outReal(lat[0].mom[dir].m01.real);
+  outfloat(lat[0].mom[dir].m01.real);
   PRINT2("%0.8e\n",lat[0].mom[dir].m01.real);
-  outReal(lat[0].mom[dir].m01.imag);
+  outfloat(lat[0].mom[dir].m01.imag);
   PRINT2("%0.8e\n",lat[0].mom[dir].m01.imag);
 #if 0
-  outReal(lat[0].mom[dir].m02.real);
+  outfloat(lat[0].mom[dir].m02.real);
   PRINT2("%0.8e\n",lat[0].mom[dir].m02.real);
-  outReal(lat[0].mom[dir].m02.imag);
+  outfloat(lat[0].mom[dir].m02.imag);
   PRINT2("%0.8e\n",lat[0].mom[dir].m02.imag);
-  outReal(lat[0].mom[dir].m12.real);
+  outfloat(lat[0].mom[dir].m12.real);
   PRINT2("%0.8e\n",lat[0].mom[dir].m12.real);
-  outReal(lat[0].mom[dir].m12.imag);
+  outfloat(lat[0].mom[dir].m12.imag);
   PRINT2("%0.8e\n",lat[0].mom[dir].m12.imag);
 #endif
 #endif
@@ -469,9 +469,9 @@ int *nei, int local, int nsites, site *lat){
   site *s;
   register su3_vector *b, *bn, *c, *cn;
   register su3_matrix *a;
-  register Real c0r,c0i,c1r,c1i,c2r,c2i;
-  register Real b0r,b0i,b1r,b1i,b2r,b2i;
-  register Real a0r,a0i,a1r,a1i,a2r,a2i;
+  register float c0r,c0i,c1r,c1i,c2r,c2i;
+  register float b0r,b0i,b1r,b1i,b2r,b2i;
+  register float a0r,a0i,a1r,a1i,a2r,a2i;
   i=0;
   s = lat;
   c = result;

@@ -13,10 +13,10 @@ void u_shift_fermion_special(su3_vector *src, su3_vector *dest, int dir,
   u_shift_fermion_plus_called++;
 #endif
       if(start)
-      *tag = start_gather_field(src, sizeof(su3_vector), 
+      *tag = start_gather_from_temp(src, sizeof(su3_vector), 
 				    dir, EVENANDODD, gen_pt[0]);
       else
-           restart_gather_field_special(src, sizeof(su3_vector), 
+           restart_gather_from_temp_special(src, sizeof(su3_vector), 
 				    dir, EVENANDODD, gen_pt[0], *tag);
 #if 0
       FORALLSITES(i,s)
@@ -55,10 +55,10 @@ void u_shift_fermion_special(su3_vector *src, su3_vector *dest, int dir,
 lattice);
 #endif
       if(start)
-      *tag = start_gather_field(tmpvec, sizeof(su3_vector), 
+      *tag = start_gather_from_temp(tmpvec, sizeof(su3_vector), 
 				    dir, EVENANDODD, gen_pt[0]);
       else
-           restart_gather_field_special(tmpvec, sizeof(su3_vector), 
+           restart_gather_from_temp_special(tmpvec, sizeof(su3_vector), 
 				    dir, EVENANDODD, gen_pt[0], *tag);
 /*  parallel transport for local points */
 #if 0
@@ -78,10 +78,10 @@ lattice);
 
 }
 
-void add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,Real coeff) {
+void add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,float coeff) {
   register site *s ;
   register int i ,ii,jj;  
-  register Real tmp_coeff ,temp0,temp1,temp2,temp;
+  register float tmp_coeff ,temp0,temp1,temp2,temp;
   register complex tcmplx0,tcmplx1;
 
   if(GOES_BACKWARDS(dir))
