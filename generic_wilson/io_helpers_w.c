@@ -209,6 +209,7 @@ int reload_wprop_to_site( int flag, char *filename,
     break;
 
   case RELOAD_SERIAL:
+  case RELOAD_PARALLEL:
     /* Sniff out the file type */
     file_type = io_detect(filename, w_prop_list, N_WPROP_TYPES);
 
@@ -220,16 +221,33 @@ int reload_wprop_to_site( int flag, char *filename,
     if(file_type == FILE_TYPE_W_PROP ||
        file_type == FILE_TYPE_W_PROP_1996)
       {
-	node0_printf("Reading as a MILC Wilson prop file\n");
-	/* Old MILC format has one record for each source spin, color */
-	wpf = r_serial_w_i(filename);
-	for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
-	  {
-	    destcs = dest + color*sizeof(spin_wilson_vector) + 
-	      spin*sizeof(wilson_vector);
-	    if( r_serial_w_to_site(wpf,spin,color,destcs) != 0)status = 1; 
-	  }
-	r_serial_w_f(wpf);
+	if(flag == RELOAD_SERIAL){
+	  node0_printf("Reading serially as a MILC Wilson prop file\n");
+	  wpf = r_serial_w_i(filename);
+
+	  /* Old MILC format has one record for each source spin, color */
+	  for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
+	    {
+	      destcs = dest + color*sizeof(spin_wilson_vector) + 
+		spin*sizeof(wilson_vector);
+	      if( r_serial_w_to_site(wpf,spin,color,destcs) != 0)status = 1; 
+	    }
+	  r_serial_w_f(wpf);
+	}
+	else{
+	  node0_printf("Reading in parallel as a MILC Wilson prop file\n");
+	  wpf = r_parallel_w_i(filename);
+
+	  /* Old MILC format has one record for each source spin, color */
+	  for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
+	    {
+	      destcs = dest + color*sizeof(spin_wilson_vector) + 
+		spin*sizeof(wilson_vector);
+	      if( r_parallel_w_to_site(wpf,spin,color,destcs) != 0)status = 1; 
+	    }
+	  r_parallel_w_f(wpf);
+	  node0_printf("Read wprop in parallel from file %s\n",filename);
+	}
       }
     
     else if(file_type == FILE_TYPE_W_FMPROP){
@@ -247,9 +265,16 @@ int reload_wprop_to_site( int flag, char *filename,
 	QIO_Layout layout;
 	QIO_Reader *infile;
 	
-	node0_printf("Reading as a SciDAC Wilson prop file\n");
 	build_qio_layout(&layout);
-	infile = open_scidac_input(filename, &layout);
+	if(flag == RELOAD_SERIAL){
+	  node0_printf("Reading serially as a SciDAC Wilson prop file\n");
+	  infile = open_scidac_input(filename, &layout, QIO_SERIAL);
+	}
+	else{
+	  node0_printf("Reading in parallel as a SciDAC Wilson prop file\n");
+	  infile = open_scidac_input(filename, &layout, QIO_PARALLEL);
+	}
+
 	if(infile == NULL)return 1;
 	
 	for(color = 0; color < 3; color++)
@@ -270,21 +295,6 @@ int reload_wprop_to_site( int flag, char *filename,
     }
     if(status == 0)
       node0_printf("Read wprop serially from file %s\n",filename);
-    break;
-    
-  case RELOAD_PARALLEL:
-    /* Reopen, read, and close temporarily */
-    r_parallel_w_i(filename);
-    /* Old MILC format has one record for each source spin, color */
-    for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
-      {
-	destcs = dest + color*sizeof(spin_wilson_vector) + 
-	  spin*sizeof(wilson_vector);
-	if( r_parallel_w_to_site(wpf,spin,color,destcs) != 0)status = 1;
-      }
-    r_parallel_w_f(wpf);
-    if(status == 0)
-      node0_printf("Read wprop in parallel from file %s\n",filename);
     break;
     
   case RELOAD_MULTIDUMP:
@@ -363,6 +373,7 @@ int reload_wprop_to_field( int flag, char *filename,
     break;
 
   case RELOAD_SERIAL:
+  case RELOAD_PARALLEL:
     /* Sniff out the file type */
     file_type = io_detect(filename, w_prop_list, N_WPROP_TYPES);
 
@@ -374,31 +385,60 @@ int reload_wprop_to_field( int flag, char *filename,
     if(file_type == FILE_TYPE_W_PROP ||
        file_type == FILE_TYPE_W_PROP_1996)
       {
-	node0_printf("Reading as a MILC Wilson prop file\n");
+	if(flag == RELOAD_SERIAL){
+	  node0_printf("Reading serially as a MILC Wilson prop file\n");
 
-	/* Old MILC format has one record for each source spin, color */
-	/* So we allocate space for one wilson vector per site */
-	destcs = (wilson_vector *)malloc(sites_on_node*
-					 sizeof(wilson_vector));
-	if(destcs == NULL){
-	  node0_printf("Can't malloc space to read propagator\n");
-	  status = 1;
-	}
-
-	wpf = r_serial_w_i(filename);
-	for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
-	  {
-	    if(status == 0){
-	      if( r_serial_w_to_field(wpf,spin,color,destcs) != 0)
-		status += 1; 
-	      FORALLSITES(i,s){
-		dest[i].c[color].d[spin] = destcs[i];
+	  /* Old MILC format has one record for each source spin, color */
+	  /* So we allocate space for one wilson vector per site */
+	  destcs = (wilson_vector *)malloc(sites_on_node*
+					   sizeof(wilson_vector));
+	  if(destcs == NULL){
+	    node0_printf("Can't malloc space to read propagator\n");
+	    status = 1;
+	  }
+	  
+	  wpf = r_serial_w_i(filename);
+	  for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
+	    {
+	      if(status == 0){
+		if( r_serial_w_to_field(wpf,spin,color,destcs) != 0)
+		  status += 1; 
+		FORALLSITES(i,s){
+		  dest[i].c[color].d[spin] = destcs[i];
+		}
 	      }
 	    }
-	  }
+	  
+	  r_serial_w_f(wpf);
+	  free(destcs);
+	}
+	else {
+	  node0_printf("Reading in parallel as a MILC Wilson prop file\n");
 
-	r_serial_w_f(wpf);
-	free(destcs);
+	  /* Old MILC format has one record for each source spin, color */
+	  /* So we allocate space for one wilson vector per site */
+	  destcs = (wilson_vector *)malloc(sites_on_node*
+					   sizeof(wilson_vector));
+	  if(destcs == NULL){
+	    node0_printf("Can't malloc space to read propagator\n");
+	    status = 1;
+	  }
+	  
+	  wpf = r_parallel_w_i(filename);
+	  for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
+	    {
+	      if(status == 0){
+		if( r_parallel_w_to_field(wpf,spin,color,destcs) != 0)
+		  status += 1; 
+		FORALLSITES(i,s){
+		  dest[i].c[color].d[spin] = destcs[i];
+		}
+	      }
+	    }
+	  
+	  r_parallel_w_f(wpf);
+	  free(destcs);
+	}
       }
     
     else if(file_type == FILE_TYPE_W_FMPROP){
@@ -416,9 +456,16 @@ int reload_wprop_to_field( int flag, char *filename,
 	QIO_Layout layout;
 	QIO_Reader *infile;
 
-	node0_printf("Reading as a SciDAC Wilson prop file\n");
 	build_qio_layout(&layout);
-	infile = open_scidac_input(filename, &layout);
+	if(flag == RELOAD_SERIAL){
+	  node0_printf("Reading serially as a SciDAC Wilson prop file\n");
+	  infile = open_scidac_input(filename, &layout, QIO_SERIAL);
+	}
+	else{
+	  node0_printf("Reading in parallel as a SciDAC Wilson prop file\n");
+	  infile = open_scidac_input(filename, &layout, QIO_PARALLEL);
+	}
+
 	if(infile == NULL)return 1;
 
 	destcs = (wilson_vector *)malloc(sites_on_node*
@@ -453,34 +500,6 @@ int reload_wprop_to_field( int flag, char *filename,
     }
     if(status == 0)
       node0_printf("Read wprop serially from file %s\n",filename);
-    break;
-    
-  case RELOAD_PARALLEL:
-
-    /* Old MILC format has one record for each source spin, color */
-    /* So we allocate space for one wilson vector per site */
-    destcs = (wilson_vector *)malloc(sites_on_node*
-				     sizeof(wilson_vector));
-    if(destcs == NULL){
-      node0_printf("Can't malloc space to read propagator\n");
-      status = 1;
-    }
-
-    wpf = r_parallel_w_i(filename);
-    for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
-      {
-	if(status == 0){
-	  if( r_parallel_w_to_field(wpf,spin,color,destcs) != 0)
-	    status += 1;
-	  FORALLSITES(i,s){
-	    dest[i].c[color].d[spin] = destcs[i];
-	  }
-	}
-      }
-    free(destcs);
-    r_parallel_w_f(wpf);
-    if(status == 0)
-      node0_printf("Read wprop in parallel from file %s\n",filename);
     break;
     
   case RELOAD_MULTIDUMP:
@@ -685,6 +704,7 @@ int save_wsprop_from_site( int flag, char *filename, char *recxml,
     break;
 
   case SAVE_SERIAL_SCIDAC:
+  case SAVE_PARALLEL_SCIDAC:
   case SAVE_PARTITION_SCIDAC:
   case SAVE_MULTIFILE_SCIDAC:
 #ifdef HAVE_QIO
@@ -696,12 +716,19 @@ int save_wsprop_from_site( int flag, char *filename, char *recxml,
       /* In this format we have three records, one for each
 	 source color.  So one spin_wilson_vector field per record */
       if(flag == SAVE_SERIAL_SCIDAC)volfmt = QIO_SINGLEFILE;
+      else if(flag == SAVE_PARALLEL_SCIDAC)volfmt = QIO_SINGLEFILE;
       else if(flag == SAVE_PARTITION_SCIDAC)volfmt = QIO_PARTFILE;
       else if(flag == SAVE_MULTIFILE_SCIDAC)volfmt = QIO_MULTIFILE;
 
       build_qio_layout(&layout);
-      outfile = open_scidac_output(filename, volfmt, &layout,
-			    "MILC Wilson propagator");
+      if(flag == SAVE_PARALLEL_SCIDAC)
+	outfile = open_scidac_output(filename, volfmt, QIO_PARALLEL, 
+				     QIO_ILDGNO, NULL, &layout, 
+				     "MILC Wilson propagator");
+      else
+	outfile = open_scidac_output(filename, volfmt, QIO_SERIAL, QIO_ILDGNO,
+				     NULL, &layout, "MILC Wilson propagator");
+
       if(outfile == NULL)break;
 
       for(color = 0; color < 3; color++)
@@ -811,6 +838,8 @@ int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[])
 /* save the full propagator
    FORGET,
    SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_MULTIDUMP, SAVE_CHECKPOINT
+   SAVE_SERIAL_SCIDAC, SAVE_PARALLEL_SCIDAC, SAVE_PARTITION_SCIDAC,
+   SAVE_MULTFILE_SCIDAC
 */
 void save_wprop_from_field( int flag, char *filename, char *recxml,
 			     wilson_propagator *src, int timing)
@@ -860,6 +889,7 @@ void save_wprop_from_field( int flag, char *filename, char *recxml,
     break;
 
   case SAVE_SERIAL_SCIDAC:
+  case SAVE_PARALLEL_SCIDAC:
   case SAVE_PARTITION_SCIDAC:
   case SAVE_MULTIFILE_SCIDAC:
 #ifdef HAVE_QIO
@@ -871,12 +901,19 @@ void save_wprop_from_field( int flag, char *filename, char *recxml,
       /* In this format we have three records, one for each
 	 source color.  So one spin_wilson_vector field per record */
       if(flag == SAVE_SERIAL_SCIDAC)volfmt = QIO_SINGLEFILE;
+      else if(flag == SAVE_PARALLEL_SCIDAC)volfmt = QIO_SINGLEFILE;
       else if(flag == SAVE_PARTITION_SCIDAC)volfmt = QIO_PARTFILE;
       else if(flag == SAVE_MULTIFILE_SCIDAC)volfmt = QIO_MULTIFILE;
 
       build_qio_layout(&layout);
-      outfile = open_scidac_output(filename, volfmt, &layout,
-			    "MILC Wilson propagator");
+      if(flag == SAVE_PARALLEL_SCIDAC)
+	outfile = open_scidac_output(filename, volfmt, QIO_PARALLEL, 
+				     QIO_ILDGNO, NULL, &layout, 
+				     "MILC Wilson propagator");
+      else
+	outfile = open_scidac_output(filename, volfmt, QIO_SERIAL, 
+				     QIO_ILDGNO, NULL, &layout, 
+				     "MILC Wilson propagator");
       if(outfile == NULL)break;
 
       srccs = (wilson_vector *)malloc(sites_on_node*
@@ -1091,7 +1128,7 @@ int ask_ending_wprop( int prompt, int *flag, char *filename ){
   int status;
   
   if (prompt!=0) 
-    printf("save wilson propagator:\n enter 'forget_wprop', 'save_ascii_wprop', 'save_serial_wprop' , 'save_serial_scidac_wprop', 'save_partfile_scidac_wprop', 'save_multfile_scidac_wprop', 'save_parallel_wprop', 'save_multidump_wprop', or 'save_checkpoint_wprop'\n");
+    printf("save wilson propagator:\n enter 'forget_wprop', 'save_ascii_wprop', 'save_serial_wprop' , 'save_serial_scidac_wprop', 'save_parallel_scidac_wprop', 'save_partfile_scidac_wprop', 'save_multfile_scidac_wprop', 'save_parallel_wprop', 'save_multidump_wprop', or 'save_checkpoint_wprop'\n");
   status=scanf("%s",savebuf);
     if (status == EOF){
       printf("ask_starting_wprop: EOF on STDIN.\n");
@@ -1120,6 +1157,9 @@ int ask_ending_wprop( int prompt, int *flag, char *filename ){
   }
   else if(strcmp("save_serial_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_SERIAL_SCIDAC;
+  }
+  else if(strcmp("save_parallel_scidac_wprop",savebuf) == 0 ) {
+    *flag=SAVE_PARALLEL_SCIDAC;
   }
   else if(strcmp("save_partfile_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_PARTITION_SCIDAC;

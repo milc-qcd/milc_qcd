@@ -88,11 +88,9 @@ int readin(int prompt)  {
 				  par_buf.stringLFN );
     
     /* Get ensemble values for NERSC archive */
-    IF_OK if (par_buf.saveflag == SAVE_SERIAL_ARCHIVE ||
-	      par_buf.saveflag == SAVE_PARALLEL_ARCHIVE)
+    IF_OK if (par_buf.saveflag == SAVE_SERIAL_ARCHIVE)
       status += get_s( prompt,"ensemble_id", par_buf.ensemble_id );
-    IF_OK if (par_buf.saveflag == SAVE_SERIAL_ARCHIVE ||
-	      par_buf.saveflag == SAVE_PARALLEL_ARCHIVE)
+    IF_OK if (par_buf.saveflag == SAVE_SERIAL_ARCHIVE)
       status += get_i( prompt,"sequence_number", 
 		       &par_buf.sequence_number );
     /* Number of kappas */

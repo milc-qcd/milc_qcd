@@ -26,10 +26,10 @@ static file_type ksprop_list[N_KSPROP_TYPES] =
   };
 
 /*---------------------------------------------------------------*/
-/* reload a binary propagator in any of the formats */
+/* reload a binary KS propagator in any of the formats */
 
-int reload_serial_ksprop_to_site( int flag, int file_type, char *filename, 
-			  field_offset dest, int timing)
+int reload_serpar_ksprop_to_site( int flag, int file_type, char *filename, 
+				  field_offset dest, int timing)
 {
   /* 0 normal exit value
      1 read error */
@@ -39,7 +39,7 @@ int reload_serial_ksprop_to_site( int flag, int file_type, char *filename,
   field_offset destc;
 
   if(file_type == FILE_TYPE_KSPROP){
-    node0_printf("Reading as a standard KS prop file\n");
+    node0_printf("Reading serially as a standard KS prop file\n");
     kspf = r_serial_ks_i(filename);
     for(color = 0; color < 3; color++){
       destc = dest + color*sizeof(su3_vector);
@@ -48,15 +48,22 @@ int reload_serial_ksprop_to_site( int flag, int file_type, char *filename,
     r_serial_ks_f(kspf);
   }
   else if(file_type == FILE_TYPE_KSFMPROP){
-    node0_printf("Reading as a Fermilab KS prop file\n");
+    node0_printf("Reading serially as a Fermilab KS prop file\n");
     kspf = r_serial_ks_fm_i(filename);
     r_serial_ks_fm_to_site(kspf,dest);
     r_serial_ks_fm_f(kspf);
   }
   else if(file_type == FILE_TYPE_KSQIOPROP){
 #ifdef HAVE_QIO
-    node0_printf("Reading as a QIO KS prop file\n");
-    restore_ks_vector_scidac_to_site(filename, dest, 3);
+    if(flag == RELOAD_SERIAL){
+      node0_printf("Reading serially as a QIO KS prop file\n");
+      restore_ks_vector_scidac_to_site(filename, dest, QIO_SERIAL, 3);
+    }
+    else{
+      node0_printf("Reading in parallel as a QIO KS prop file\n");
+      restore_ks_vector_scidac_to_site(filename, dest, QIO_PARALLEL, 3);
+    }
+
 #else
     node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
     return 1;
@@ -68,12 +75,12 @@ int reload_serial_ksprop_to_site( int flag, int file_type, char *filename,
   }
   return 0;
 
-} /* reload_serial_ksprop_to_site */
+} /* reload_serpar_ksprop_to_site */
 
 /*---------------------------------------------------------------*/
 /* reload a binary propagator in any of the formats */
 
-int reload_serial_ksprop_to_field( int flag, int file_type, char *filename, 
+int reload_serpar_ksprop_to_field( int flag, int file_type, char *filename, 
 				   su3_vector *dest, int timing)
 {
   /* 0 normal exit value
@@ -83,7 +90,7 @@ int reload_serial_ksprop_to_field( int flag, int file_type, char *filename,
   int status,color;
 
   if(file_type == FILE_TYPE_KSPROP){
-    node0_printf("Reading as a standard KS prop file\n");
+    node0_printf("Reading serially as a standard KS prop file\n");
     kspf = r_serial_ks_i(filename);
     for(color = 0; color < 3; color++){
       status = r_serial_ks_to_field(kspf,color,dest); 
@@ -91,15 +98,21 @@ int reload_serial_ksprop_to_field( int flag, int file_type, char *filename,
     r_serial_ks_f(kspf);
   }
   else if(file_type == FILE_TYPE_KSFMPROP){
-    node0_printf("Reading as a Fermilab KS prop file\n");
+    node0_printf("Reading serially as a Fermilab KS prop file\n");
     kspf = r_serial_ks_fm_i(filename);
     r_serial_ks_fm_to_field(kspf,dest);
     r_serial_ks_fm_f(kspf);
   }
   else if(file_type == FILE_TYPE_KSQIOPROP){
 #ifdef HAVE_QIO
-    node0_printf("Reading as a QIO KS prop file\n");
-    restore_ks_vector_scidac_to_field(filename, dest, 3);
+    if(flag == RELOAD_SERIAL){
+      node0_printf("Reading serially as a QIO KS prop file\n");
+      restore_ks_vector_scidac_to_field(filename, dest, QIO_SERIAL, 3);
+    }
+    else{
+      node0_printf("Reading in parallel as a QIO KS prop file\n");
+      restore_ks_vector_scidac_to_field(filename, dest, QIO_PARALLEL, 3);
+    }
 #else
     node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
     return 1;
@@ -111,15 +124,15 @@ int reload_serial_ksprop_to_field( int flag, int file_type, char *filename,
   }
   return 0;
 
-} /* reload_serial_ksprop_to_field */
+} /* reload_serpar_ksprop_to_field */
 
 /*---------------------------------------------------------------*/
 /* reload a propagator in any of the formats, or cold propagator, or keep
    current propagator:
    FRESH, CONTINUE, RELOAD_ASCII, RELOAD_SERIAL
    */
-int reload_ksprop_to_site( int flag, char *filename, field_offset dest, 
-			   int timing)
+int reload_ksprop_to_site( int flag, char *filename, 
+			   field_offset dest, int timing)
 {
   /* 0 normal exit value
      1 read error */
@@ -152,18 +165,20 @@ int reload_ksprop_to_site( int flag, char *filename, field_offset dest,
     r_ascii_ks_f(kspf);
     break;
   case RELOAD_SERIAL:
+  case RELOAD_PARALLEL:
     file_type = io_detect(filename, ksprop_list, N_KSPROP_TYPES);
     if(file_type < 0){
-      node0_printf("reload_ksprop: Can't read file %s\n", filename);
+      node0_printf("reload_ksprop_to_site: Can't read file %s\n", filename);
       return 1;
     }
 
-    status = reload_serial_ksprop_to_site(flag, file_type, filename, dest, timing);
+    status = reload_serpar_ksprop_to_site(flag, file_type, filename, 
+					  dest, timing);
     if(status != 0)return status;
 
     break;
   default:
-    node0_printf("reload_ksprop: Unrecognized reload flag.\n");
+    node0_printf("reload_ksprop_to_site: Unrecognized reload flag.\n");
     terminate(1);
   }
   
@@ -176,7 +191,7 @@ int reload_ksprop_to_site( int flag, char *filename, field_offset dest,
 
   return status;
 
-} /* reload_ksprop */
+} /* reload_ksprop_to_site */
 
 /*---------------------------------------------------------------*/
 /* reload a propagator in any of the formats, or cold propagator, or keep
@@ -211,12 +226,13 @@ int reload_ksprop_to_field( int flag, char *filename,
     terminate(1);
     break;
   case RELOAD_SERIAL:
+  case RELOAD_PARALLEL:
     file_type = io_detect(filename, ksprop_list, N_KSPROP_TYPES);
     if(file_type < 0){
       node0_printf("reload_ksprop_to_field: Can't read file %s\n", filename);
       return 1;
     }
-    status = reload_serial_ksprop_to_field(flag, file_type, filename, 
+    status = reload_serpar_ksprop_to_field(flag, file_type, filename,
 					   dest, timing);
     if(status != 0)return status;
 
@@ -319,21 +335,32 @@ void save_ksprop_from_site( int flag, char *filename, char *recxml,
     break;
   case SAVE_SERIAL_SCIDAC:
 #ifdef HAVE_QIO
-    save_ks_vector_scidac_from_site(filename, recxml, QIO_SINGLEFILE, src, 3);
+    save_ks_vector_scidac_from_site(filename, recxml, QIO_SINGLEFILE, 
+				    QIO_SERIAL, src, 3);
+#else
+    node0_printf("Need QIO compilation to save in SciDAC format\n");
+#endif
+    break;
+  case SAVE_PARALLEL_SCIDAC:
+#ifdef HAVE_QIO
+    save_ks_vector_scidac_from_site(filename, recxml, QIO_SINGLEFILE, 
+				    QIO_PARALLEL, src, 3);
 #else
     node0_printf("Need QIO compilation to save in SciDAC format\n");
 #endif
     break;
   case SAVE_PARTITION_SCIDAC:
 #ifdef HAVE_QIO
-    save_ks_vector_scidac_from_site(filename, recxml, QIO_PARTFILE, src, 3);
+    save_ks_vector_scidac_from_site(filename, recxml, QIO_PARTFILE, 
+				    QIO_SERIAL, src, 3);
 #else
     node0_printf("Need QIO compilation to save in SciDAC format\n");
 #endif
     break;
   case SAVE_MULTIFILE_SCIDAC:
 #ifdef HAVE_QIO
-    save_ks_vector_scidac_from_site(filename, recxml, QIO_MULTIFILE, src, 3);
+    save_ks_vector_scidac_from_site(filename, recxml, QIO_MULTIFILE, 
+				    QIO_SERIAL, src, 3);
 #else
     node0_printf("Need QIO compilation to save in SciDAC format\n");
 #endif
@@ -389,21 +416,32 @@ void save_ksprop_from_field( int flag, char *filename, char *recxml,
     break;
   case SAVE_SERIAL_SCIDAC:
 #ifdef HAVE_QIO
-    save_ks_vector_scidac_from_field(filename, recxml, QIO_SINGLEFILE, src, 3);
+    save_ks_vector_scidac_from_field(filename, recxml, QIO_SINGLEFILE, 
+				     QIO_SERIAL, src, 3);
+#else
+    node0_printf("Need QIO compilation to save in SciDAC format\n");
+#endif
+    break;
+  case SAVE_PARALLEL_SCIDAC:
+#ifdef HAVE_QIO
+    save_ks_vector_scidac_from_field(filename, recxml, QIO_SINGLEFILE, 
+				     QIO_PARALLEL, src, 3);
 #else
     node0_printf("Need QIO compilation to save in SciDAC format\n");
 #endif
     break;
   case SAVE_PARTITION_SCIDAC:
 #ifdef HAVE_QIO
-    save_ks_vector_scidac_from_field(filename, recxml, QIO_PARTFILE, src, 3);
+    save_ks_vector_scidac_from_field(filename, recxml, QIO_PARTFILE, 
+				     QIO_SERIAL, src, 3);
 #else
     node0_printf("Need QIO compilation to save in SciDAC format\n");
 #endif
     break;
   case SAVE_MULTIFILE_SCIDAC:
 #ifdef HAVE_QIO
-    save_ks_vector_scidac_from_field(filename, recxml, QIO_MULTIFILE, src, 3);
+    save_ks_vector_scidac_from_field(filename, recxml, QIO_MULTIFILE, 
+				     QIO_SERIAL, src, 3);
 #else
     node0_printf("Need QIO compilation to save in SciDAC format\n");
 #endif
@@ -431,7 +469,7 @@ int ask_starting_ksprop( int prompt, int *flag, char *filename ){
     int status;
 
     if (prompt!=0) 
-      printf( "enter 'fresh_ks', 'reload_ascii_ksprop', 'reload_serial_ksprop' \n");
+      printf( "enter 'fresh_ks', 'reload_ascii_ksprop', 'reload_serial_ksprop', 'reload_parallel_ksprop' \n");
     status=scanf("%s",savebuf);
     if (status == EOF){
       printf("ask_starting_ksprop: EOF on STDIN.\n");
@@ -452,6 +490,9 @@ int ask_starting_ksprop( int prompt, int *flag, char *filename ){
     }
     else if(strcmp("reload_serial_ksprop",savebuf) == 0 ) {
        *flag = RELOAD_SERIAL;
+    }
+    else if(strcmp("reload_parallel_ksprop",savebuf) == 0 ) {
+       *flag = RELOAD_PARALLEL;
     }
     else{
       printf("is not a valid starting ksprop command: INPUT ERROR\n");

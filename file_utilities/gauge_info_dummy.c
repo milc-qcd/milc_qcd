@@ -23,6 +23,7 @@
    */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "../include/complex.h"
 #include "../include/su3.h"
 #include "../include/macros.h"

@@ -8,13 +8,13 @@
 /* In io_scidac_w.c */
 
 void save_w_vector_scidac_from_site(char *filename, char *filexml, 
-	   int volfmt, field_offset src, int count);
+	   int volfmt, int serpar, field_offset src, int count);
 void save_w_vector_scidac_from_field(char *filename, char *filexml, 
-	    int volfmt, wilson_vector *src, int count);
+	    int volfmt, int serpar, wilson_vector *src, int count);
 
-void restore_w_vector_scidac_to_site(char *filename, 
+void restore_w_vector_scidac_to_site(char *filename, int serpar,
 			      field_offset dest, int count);
-void restore_w_vector_scidac_to_field(char *filename, 
+void restore_w_vector_scidac_to_field(char *filename, int serpar,
 			      wilson_vector *dest, int count);
 int read_F3_D_to_site(QIO_Reader *infile, field_offset dest, int count);
 int read_F3_D_to_field(QIO_Reader *infile, wilson_vector *dest, int count);

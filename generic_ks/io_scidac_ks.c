@@ -210,7 +210,7 @@ int read_F3_V_to_field(QIO_Reader *infile, su3_vector *dest, int count)
 /* We don't have a MILC format for such a file */
 
 void save_ks_vector_scidac_from_site(char *filename, char *recxml, 
-			  int volfmt,  field_offset src, int count)
+			  int volfmt, int serpar, field_offset src, int count)
 {
   QIO_Layout layout;
   QIO_Writer *outfile;
@@ -226,7 +226,8 @@ void save_ks_vector_scidac_from_site(char *filename, char *recxml,
   filexml = create_ks_XML();
 
   /* Open file for writing */
-  outfile = open_scidac_output(filename, volfmt, &layout, filexml);
+  outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
+			       NULL, &layout, filexml);
   if(outfile == NULL)terminate(1);
 
 
@@ -259,7 +260,7 @@ void save_ks_vector_scidac_from_site(char *filename, char *recxml,
 }
 
 void save_ks_vector_scidac_from_field(char *filename, char *recxml, 
-    int volfmt, su3_vector *src, int count)
+    int volfmt, int serpar, su3_vector *src, int count)
 {
   QIO_Layout layout;
   QIO_Writer *outfile;
@@ -275,7 +276,8 @@ void save_ks_vector_scidac_from_field(char *filename, char *recxml,
   filexml = create_ks_XML();
 
   /* Open file for writing */
-  outfile = open_scidac_output(filename, volfmt, &layout, filexml);
+  outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
+			       NULL, &layout, filexml);
   if(outfile == NULL)terminate(1);
 
 
@@ -310,7 +312,7 @@ void save_ks_vector_scidac_from_field(char *filename, char *recxml,
 /* Read color vectors in SciDAC format */
 
 void restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
-					     int count){
+					     int serpar, int count){
   QIO_Layout layout;
   QIO_Reader *infile;
   int status;
@@ -321,7 +323,7 @@ void restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
   build_qio_layout(&layout);
 
   /* Open file for reading */
-  infile = open_scidac_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout, serpar);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one color vector */
@@ -336,7 +338,7 @@ void restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
 /* Read color vectors in SciDAC format */
 
 void restore_ks_vector_scidac_to_field(char *filename, 
-			      su3_vector *dest, int count){
+			      su3_vector *dest, int serpar, int count){
   QIO_Layout layout;
   QIO_Reader *infile;
   int status;
@@ -347,7 +349,7 @@ void restore_ks_vector_scidac_to_field(char *filename,
   build_qio_layout(&layout);
 
   /* Open file for reading */
-  infile = open_scidac_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout, serpar);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one color vector */

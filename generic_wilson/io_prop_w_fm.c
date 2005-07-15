@@ -1,5 +1,6 @@
 #include "generic_wilson_includes.h"
 #include "../include/file_types.h"
+#include "../include/io_lat.h"
 #include "../include/io_wprop.h"
 #include <sys/types.h>
 #include <fcntl.h>

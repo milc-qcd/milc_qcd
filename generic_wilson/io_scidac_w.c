@@ -209,7 +209,8 @@ int read_F3_D_to_field(QIO_Reader *infile, wilson_vector *dest, int count)
 /* We don't have a MILC format for such a file */
 
 void save_w_vector_scidac_from_site(char *filename, char *recxml, 
-				   int volfmt, field_offset src, int count)
+				    int volfmt, int serpar,
+				    field_offset src, int count)
 {
   QIO_Layout layout;
   QIO_Writer *outfile;
@@ -225,7 +226,8 @@ void save_w_vector_scidac_from_site(char *filename, char *recxml,
   filexml = create_w_XML();
 
   /* Open file for writing */
-  outfile = open_scidac_output(filename, volfmt, &layout, filexml);
+  outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
+			       NULL, &layout, filexml);
   if(outfile == NULL)terminate(1);
 
 
@@ -261,7 +263,8 @@ void save_w_vector_scidac_from_site(char *filename, char *recxml,
 /* We don't have a MILC format for such a file */
 
 void save_w_vector_scidac_from_field(char *filename, char *recxml, 
-				   int volfmt, wilson_vector *src, int count)
+				   int volfmt, int serpar,
+				     wilson_vector *src, int count)
 {
   QIO_Layout layout;
   QIO_Writer *outfile;
@@ -277,7 +280,8 @@ void save_w_vector_scidac_from_field(char *filename, char *recxml,
   filexml = create_w_XML();
 
   /* Open file for writing */
-  outfile = open_scidac_output(filename, volfmt, &layout, filexml);
+  outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
+			       NULL, &layout, filexml);
   if(outfile == NULL)terminate(1);
 
 
@@ -312,7 +316,7 @@ void save_w_vector_scidac_from_field(char *filename, char *recxml,
 /* Read Wilson vectors in SciDAC format */
 
 void restore_w_vector_scidac_to_site(char *filename, field_offset dest,
-				     int count){
+				     int serpar, int count){
   QIO_Layout layout;
   QIO_Reader *infile;
   int status;
@@ -323,7 +327,7 @@ void restore_w_vector_scidac_to_site(char *filename, field_offset dest,
   build_qio_layout(&layout);
 
   /* Open file for reading */
-  infile = open_scidac_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout, serpar);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one Wilson vector */
@@ -336,7 +340,7 @@ void restore_w_vector_scidac_to_site(char *filename, field_offset dest,
 
 /* Read Wilson vectors in SciDAC format */
 
-void restore_w_vector_scidac_to_field(char *filename, 
+void restore_w_vector_scidac_to_field(char *filename, int serpar,
 		     wilson_vector *dest, int count){
   QIO_Layout layout;
   QIO_Reader *infile;
@@ -348,7 +352,7 @@ void restore_w_vector_scidac_to_field(char *filename,
   build_qio_layout(&layout);
 
   /* Open file for reading */
-  infile = open_scidac_input(filename, &layout);
+  infile = open_scidac_input(filename, &layout, serpar);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one Wilson vector */

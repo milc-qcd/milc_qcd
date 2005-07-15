@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 #include "../include/complex.h"
 #include "../include/su3.h"
 #include <lattice.h>    /* global variables for lattice fields */

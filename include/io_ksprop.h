@@ -230,10 +230,10 @@ void r_serial_ks_fm_f(ks_prop_file *kspf);
 
 /* Prototypes for io_helpers_ks.c */
 
-int reload_serial_ksprop_to_site( int flag, int file_type, char *filename, 
-			  field_offset dest, int timing);
-int reload_serial_ksprop_to_field( int flag, int file_type, char *filename, 
-			  su3_vector *dest, int timing);
+int reload_serpar_ksprop_to_site( int flag, int file_type, char *filename, 
+			   field_offset dest, int timing);
+int reload_serpar_ksprop_to_field( int flag, int file_type, char *filename, 
+			    su3_vector *dest, int timing);
 int reload_ksprop_to_site( int flag, char *filename, 
 			   field_offset dest, int timing);
 int reload_ksprop_to_field( int flag, char *filename, su3_vector *dest, 

@@ -237,7 +237,7 @@ typedef struct {
 } w_prop_file;
 
 /**********************************************************************/
-/* Declarations for I/O routines in io_wb.c */
+/* Declarations for I/O routines in io_prop_w.c */
 
 w_prop_file *r_ascii_w_i(char *filename);
 int r_ascii_w(w_prop_file *wpf, int spin, int color, field_offset src);
@@ -341,6 +341,7 @@ int reload_wprop_to_site( int flag, char *filename,
 			  field_offset dest, int timing);
 int reload_wprop_to_field( int flag, char *filename,
 			  wilson_propagator *dest, int timing);
+int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[]);
 void save_wprop_from_site( int flag, char *filename, char *recxml,
 			   field_offset src, int timing);
 void save_wprop_from_field( int flag, char *filename, char *recxml,
