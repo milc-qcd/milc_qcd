@@ -1,6 +1,6 @@
 /*************************** lattice_to_scidac.c ************************/
 /* MIMD version 7 */
-/* Read gauge configuration, convert to SciDAC format */
+/* Read gauge configuration, convert any gauge cfg lattice to SciDAC format */
 /* C. DeTar 1/30/05 */
 
 /* Usage ...

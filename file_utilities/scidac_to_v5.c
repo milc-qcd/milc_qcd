@@ -49,9 +49,14 @@ typedef struct {
   off_t checksum_offset;
 } w_serial_site_writer;
 
+void d2f_4mat(su3_matrix *a, fsu3_matrix *b);
+void write_checksum(int parallel, gauge_file *gf);
+void swrite_gauge_hdr(FILE *fp, gauge_header *gh);
+void w_serial_f(gauge_file *gf);
+
 /*----------------------------------------------------------------------*/
 void make_lattice(){
-register int i,j;               /* scratch */
+register int i;               /* scratch */
 int x,y,z,t;            /* coordinates */
     /* allocate space for lattice, fill in parity, coordinates and index.  */
     lattice = (site *)malloc( sites_on_node * sizeof(site) );
@@ -103,23 +108,15 @@ void w_serial_start_lattice(gauge_file *gf, w_serial_site_writer *state)
 
   FILE *fp;
   gauge_header *gh;
-  u_int32type *val;
-  int rank29,rank31;
   fsu3_matrix *lbuf;
-  fsu3_matrix tbuf[4];
-  int buf_length;
-  register int i,j,k;
   off_t offset;             /* File stream pointer */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
   off_t checksum_offset;    /* Location of checksum */
   off_t gauge_check_size;   /* Size of checksum record */
 
-  int currentnode,newnode;
-  int x,y,z,t;
-
   if(gf->parallel)
-    printf("w_serial: Attempting serial write to parallel file \n");
+    printf("w_serial_start_lattice: Attempting serial write to parallel file \n");
   
   lbuf = (fsu3_matrix *)malloc(MAX_BUF_LENGTH*4*sizeof(fsu3_matrix));
   if(lbuf == NULL)
@@ -179,7 +176,7 @@ void w_serial_site_links(char *buf, size_t index, int count, void *arg)
 
   FILE *fp = gf->fp;
   u_int32type *val;
-  register int i,j,k;
+  register int k;
 
   if(count != 4){
     printf("w_serial_site_links: expecting 4 color matrices but got %d\n",
@@ -233,29 +230,23 @@ void w_serial_finish_lattice(w_serial_site_writer *state)
   fsu3_matrix *lbuf = state->lbuf;
   FILE *fp = gf->fp;
   gauge_header *gh = gf->header;
-  u_int32type *val;
-  int rank29 = state->rank29;
-  int rank31 = state->rank31;
   off_t checksum_offset = state->checksum_offset;    /* Location of checksum */
   
-  if(this_node==0)
-    {
-      free(lbuf);
-      printf("Saved gauge configuration serially to binary file %s\n",
-	     gf->filename);
-      printf("Time stamp %s\n",gh->time_stamp);
-      
-      /* Write checksum */
-      /* Position file pointer */
-      if( fseeko(fp,checksum_offset,SEEK_SET) < 0 ) 
-	{
-	  printf("w_serial: Node %d fseeko %lld failed error %d file %s\n",
-		 this_node,(long long)checksum_offset,errno,gf->filename);
-	  fflush(stdout);terminate(1);
-	}
-      write_checksum(SERIAL,gf);
-    }
+  free(lbuf);
+  printf("Saved gauge configuration serially to binary file %s\n",
+	 gf->filename);
+  printf("Time stamp %s\n",gh->time_stamp);
   
+  /* Write checksum */
+  /* Position file pointer */
+  if( fseeko(fp,checksum_offset,SEEK_SET) < 0 ) 
+    {
+      printf("w_serial: Node %d fseeko %lld failed error %d file %s\n",
+	     this_node,(long long)checksum_offset,errno,gf->filename);
+      fflush(stdout);terminate(1);
+    }
+  write_checksum(SERIAL,gf);
+
 } /* w_serial_finish_lattice */
 
 /*----------------------------------------------------------------------*/
@@ -271,7 +262,6 @@ int main(int argc, char *argv[])
   FILE *fp;
   char *filename_milc,*filename_scidac;
   QIO_Layout layout;
-  int i;
   QIO_Reader *infile;
   QIO_RecordInfo *rec_info, *cmp_info;
   int status;

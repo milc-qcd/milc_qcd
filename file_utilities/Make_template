@@ -177,6 +177,12 @@ ckpt1_to_v5::
 	"EXTRA_OBJECTS=  ckpt1_to_v5.o \
 	check_unitarity.o gauge_info.o"
 
+v5_to_scidac::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= v5_to_scidac" \
+	"DEFINES= " \
+	"EXTRA_OBJECTS=  v5_to_scidac.o \
+	check_unitarity.o gauge_info_dummy.o"
+
 scidac_to_v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= scidac_to_v5" \
 	"DEFINES= " \
