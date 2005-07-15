@@ -34,7 +34,7 @@ void qio_get_coords(int x[], int node, int index){
   x[3] = lattice[index].t;
 }
 
-size_t qio_num_sites(int node){
+int qio_num_sites(int node){
   return num_sites(node);
 }
 

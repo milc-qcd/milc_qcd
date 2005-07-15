@@ -1760,7 +1760,7 @@ void r_serial(gauge_file *gf)
   off_t checksum_offset;    /* Where we put the checksum */
   int rcv_rank, rcv_coords;
   int destnode;
-  int i,k;
+  int k;
   int x,y,z,t;
   int buf_length,where_in_buf;
   gauge_check test_gc;
@@ -1769,7 +1769,6 @@ void r_serial(gauge_file *gf)
   fsu3_matrix *lbuf;
   fsu3_matrix tmpsu3[4];
   char myname[] = "r_serial";
-  int ii,dir,row,col;
   int idest;
 
   fp = gf->fp;
