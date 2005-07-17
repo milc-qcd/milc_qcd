@@ -81,8 +81,8 @@ OPT              = -O3
 #----------------------------------------------------------------------
 # 7. Choose large file support
 #CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE64 # Large files gcc only
-CLFS = # Not researched for others
-#CLFS = -D_LARGE_FILES   # Blue Horizon
+#CLFS = -D_LARGEFILE_SOURCE # ia64 icc
+#CLFS = -D_LARGE_FILES   # AIX
 
 #----------------------------------------------------------------------
 # 8. Installation-specific MPI includes and libraries

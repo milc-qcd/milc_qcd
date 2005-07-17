@@ -24,7 +24,6 @@ DIRS = \
   heavy \
   hqet_heavy_to_light \
   hvy_qpot \
-  ks_dynamical \
   ks_eigen \
   ks_hl_spectrum \
   ks_imp_dyn \
