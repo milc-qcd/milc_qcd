@@ -22,6 +22,7 @@ typedef struct {
   int ansflag; /* what to do for answer lattice */
   
   char startfile[MAXFILENAME],savefile[MAXFILENAME];
+  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
   char savelongfile[MAXFILENAME],savefatfile[MAXFILENAME];
   char srcfile[MAXFILENAME],ansfile[MAXFILENAME];
   int inverttype;

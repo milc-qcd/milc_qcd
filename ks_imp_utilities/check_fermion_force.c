@@ -53,8 +53,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
 
   /* If the answer file is given, read it for comparison */
   if(ansflag == RELOAD_SERIAL){
-    restore_color_matrix_scidac_to_site(ansfile, F_OFFSET(ansmom[0]), 
-					QIO_SERIAL, 4);
+    restore_color_matrix_scidac_to_site(ansfile, F_OFFSET(ansmom[0]), 4);
     node0_printf("Checking the answer\n");
   }
 

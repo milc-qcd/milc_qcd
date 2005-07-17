@@ -164,6 +164,8 @@ readin(int prompt)
     /* find out what to do with lattice at end */
     IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
 					par_buf.savefile );
+    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+				  par_buf.stringLFN );
 
     /* find out what to do with longlinks at end */
     IF_OK status += ask_ending_lattice( prompt, &(par_buf.savelongflag),

@@ -106,6 +106,7 @@ EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
 EXTERN  int savelongflag, savefatflag;
 EXTERN  int srcflag, ansflag;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char savelongfile[MAXFILENAME],savefatfile[MAXFILENAME];
 EXTERN  char srcfile[MAXFILENAME],ansfile[MAXFILENAME];
 EXTERN  int inverttype;

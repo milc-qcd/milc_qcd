@@ -15,13 +15,33 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
 		      field_offset tmp, Real mass)
 {
   Real final_rsq = 0;
-  Real tol = 1e-5;
+  /* Note: these are absolute, not relative errors. */
+#if (PRECISION == 1)
+  Real tol_M = 5e-3;
+  Real tol_MdagM = 1e-4;
+#else
+  Real tol_M = 5e-6;
+  Real tol_MdagM = 1e-7;
+#endif
   int iters = 0;
   char *filexml;
   
   /* Make a random source in phi if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
+#ifdef HAVE_QIO
     restore_ks_vector_scidac_to_site (srcfile, src, QIO_SERIAL, 1);
+#else
+    printf("QIO compilation is required for loading source or answer\n");
+    terminate(1);
+#endif
+  }
+  else if(srcflag == RELOAD_PARALLEL){
+#ifdef HAVE_QIO
+    restore_ks_vector_scidac_to_site (srcfile, src, QIO_PARALLEL, 1);
+#else
+    printf("QIO compilation is required for loading source or answer\n");
+    terminate(1);
+#endif
   }
   else {
     /* generate g_rand random; phi = Mdagger g_rand */
@@ -31,7 +51,20 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   
   /* Do the inversion if we aren't reloading the answer */
   if(ansflag == RELOAD_SERIAL){
+#ifdef HAVE_QIO
     restore_ks_vector_scidac_to_site (ansfile, ans, QIO_SERIAL, 1);
+#else
+    printf("QIO compilation is required for loading source or answer\n");
+    terminate(1);
+#endif
+  }
+  else if(ansflag == RELOAD_PARALLEL){
+#ifdef HAVE_QIO
+    restore_ks_vector_scidac_to_site (ansfile, ans, QIO_PARALLEL, 1);
+#else
+    printf("QIO compilation is required for loading source or answer\n");
+    terminate(1);
+#endif
   }
   else {
     node0_printf("Doing the inversion\n");
@@ -54,10 +87,10 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   node0_printf("Checking the inversion\n");
   if(inverttype == INVERT_M)
     /* Is M xxx = phi ? */
-    check_invert( ans, src, mass, tol);
+    check_invert( ans, src, mass, tol_M);
   else
     /* Is MdaggerM xxx = phi ? */
-    check_invert2( ans, src, tmp, mass, tol, EVENANDODD);
+    check_invert2( ans, src, tmp, mass, tol_MdagM, EVENANDODD);
   
   /* Save source and answer if requested */
 #ifdef HAVE_QIO
