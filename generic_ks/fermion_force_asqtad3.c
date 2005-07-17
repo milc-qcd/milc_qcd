@@ -39,6 +39,18 @@
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 
+void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
+				      half_wilson_vector **src_pt, 
+				      half_wilson_vector *dest);
+void mult_su3_sitelink_lathwvec( int dir, 
+				 half_wilson_vector **src_pt, 
+				 half_wilson_vector *dest);
+void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom, 
+				   half_wilson_vector *back, 
+				   half_wilson_vector *forw, Real coeff[2]);
+void scalar_mult_add_lathwvec(half_wilson_vector *dest, 
+			      half_wilson_vector *src, Real s[2]);
+
 /* This routine is valid only for Asqtad, so requires the FN flag */
 #ifndef FN
 BOMB THE COMPILE
