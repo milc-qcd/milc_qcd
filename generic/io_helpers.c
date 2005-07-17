@@ -126,7 +126,12 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     if(flag != FORGET)
       node0_printf("Time to save = %e\n",dtime);
     d_plaquette(&ssplaq,&stplaq);
+#if (PRECISION==1)
     node0_printf("CHECK PLAQ: %e %e\n",ssplaq,stplaq);
+#else
+    /* Double precision */
+    node0_printf("CHECK PLAQ: %.16e %.16e\n",ssplaq,stplaq);
+#endif
     return gf;
 }
 
@@ -173,7 +178,12 @@ gauge_file *reload_lattice( int flag, char *filename){
 #endif
     d_plaquette(&ssplaq,&stplaq);
     if(this_node==0){
+#if (PRECISION==1)
         printf("CHECK PLAQ: %e %e\n",ssplaq,stplaq);fflush(stdout);
+#else
+	/* Double precision */
+	node0_printf("CHECK PLAQ: %.16e %.16e\n",ssplaq,stplaq);fflush(stdout);
+#endif
     }
     dtime = -dclock();
     max_deviation = check_unitarity();
