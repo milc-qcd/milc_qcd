@@ -116,7 +116,7 @@ params par_buf;
 
 #define IF_OK if(status==0)
 
-int readin(prompt)
+int readin(int prompt)
 {
   int status = 0;
 

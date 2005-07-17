@@ -26,7 +26,7 @@ Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 ON EACH NODE 4 x 4 x 4 x 2
 Converting file ksprop_milc.test.l4448.ll to file ksprop_scidac1.test.l4448.ll
-Reading serially as a Fermilab KS prop file
+Reading serially as a standard KS prop file
 Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
 Read prop serially for color 1 from file ksprop_milc.test.l4448.ll
 Read prop serially for color 2 from file ksprop_milc.test.l4448.ll
@@ -59,7 +59,7 @@ Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 ON EACH NODE 4 x 4 x 4 x 2
 Converting file ksprop_milc.test.l4448.ll to file ksprop_fm.test.l4448.ll
-Reading serially as a Fermilab KS prop file
+Reading serially as a standard KS prop file
 Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
 Read prop serially for color 1 from file ksprop_milc.test.l4448.ll
 Read prop serially for color 2 from file ksprop_milc.test.l4448.ll
@@ -72,7 +72,7 @@ Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 ON EACH NODE 4 x 4 x 4 x 2
 Converting file ksprop_fm.test.l4448.ll to file ksprop_scidac3.test.l4448.ll
-Reading serially as a Fermilab KS prop file
+Reading serially as a standard KS prop file
 Read prop serially for color 0 from file ksprop_fm.test.l4448.ll
 Read prop serially for color 1 from file ksprop_fm.test.l4448.ll
 Read prop serially for color 2 from file ksprop_fm.test.l4448.ll
