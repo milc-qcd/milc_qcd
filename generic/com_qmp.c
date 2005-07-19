@@ -1664,8 +1664,9 @@ wait_gather(msg_tag *mtag)
       crcgot = crc32(0, tpt, msg_size );
 
       if(*crc != crcgot){
-	printf("Node %d received checksum %x != node %d sent checksum %x\n",
-	       mynode(),*crc, mbuf->msg_node, crcgot);
+	fprintf(stderr,
+		"Node %d received checksum %x != node %d sent checksum %x\n",
+		mynode(),*crc, mbuf->msg_node, crcgot);
 	fflush(stdout);
 	terminate(1);
       }

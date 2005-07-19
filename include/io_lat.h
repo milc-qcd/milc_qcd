@@ -54,7 +54,7 @@
 #include "../include/int32type.h"
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "../include/file_types.h"
-
+#include "../include/su3.h"
 
 /**********************************************************************/
 /* Binary lattice formats                                             */
@@ -294,7 +294,6 @@ EXTERN  int sequence_number;
 /**********************************************************************/
 /* Prototypes for io_lat4.c */
 
-void complete_U(float *u);
 int big_endian();
 
 void read_lat_dim_gf(char *filename, int *ndim, int dims[]);
@@ -376,26 +375,74 @@ size_t g_read(void *ptr, size_t size, size_t nmemb, FILE *stream);
 int g_close(FILE *stream);
 
 /**********************************************************************/
-/* Prototypes for io_lat4.c routines also used in io_prop_w.c */
+/* Prototypes for io_lat_util.c routines */
 
-void byterevn(int32type w[], int n);
-void swrite_data(FILE* fp, void *src, size_t size, 
-		 char *myname, char *descrip);
-void pwrite_data(FILE* fp, void *src, size_t size, 
-		 char *myname, char *descrip);
+int qcdhdr_get_str(char *s, QCDheader *hdr, char **q);
+int qcdhdr_get_int(char *s,QCDheader *hdr,int *q);
+int qcdhdr_get_int32x(char *s,QCDheader *hdr,u_int32type *q);
+int qcdhdr_get_float(char *s, QCDheader *hdr, Real *q);
+void error_exit(char *s);
+void complete_U(float *u);
+QCDheader * qcdhdr_get_hdr(FILE *in);
+void f2d_4mat(fsu3_matrix *a, su3_matrix *b);
+void d2f_4mat(su3_matrix *a, fsu3_matrix *b);
+void swrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip);
+void pwrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip);
 void pswrite_data(int parallel, FILE* fp, void *src, size_t size, 
 		  char *myname, char *descrip);
-int sread_data(FILE* fp, void *src, size_t size, 
-	       char *myname, char *descrip);
-int pread_data(FILE* fp, void *src, size_t size, 
-	       char *myname, char *descrip);
-int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, 
-		    char *myname, char *descrip);
-int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, 
-		    char *myname, char *descrip);
+int sread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip);
+int pread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip);
+int pread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myname, char *descrip);
+int sread_byteorder(int byterevflag, FILE* fp, void *src, size_t size, char *myname, char *descrip);
 int psread_data(int parallel, FILE* fp, void *src, size_t size, 
 		char *myname, char *descrip);
 int psread_byteorder(int byterevflag, int parallel, FILE* fp, 
-		      void *src, size_t size, char *myname, char *descrip);
+		      void *src, size_t size, 
+		     char *myname, char *descrip);
+void pwrite_gauge_hdr(FILE *fp, gauge_header *gh);
+void swrite_gauge_hdr(FILE *fp, gauge_header *gh);
+int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
+		       char *keyword,   /* keyword */
+		       char *fmt,       /* output format -
+					      must use s, d, e, f, or g */
+		       char *src,       /* address of starting data
+					   floating point data must be
+					   of type (Real) */
+		       int count,       /* number of data items if > 1 */
+		       int stride);      /* byte stride of data if
+                                           count > 1 */
+int sprint_gauge_info_item( 
+  char *string,    /* character string */
+  size_t nstring,     /* string length */			    
+  char *keyword,   /* keyword */
+  char *fmt,       /* output format -
+		      must use s, d, e, f, or g */
+  char *src,       /* address of starting data
+		      floating point data must be
+		      of type (Real) */
+  int count,       /* number of data items if > 1 */
+  int stride);      /* byte stride of data if
+		      count > 1 */
+void write_gauge_info_file(gauge_file *gf);
+gauge_file *setup_input_gauge_file(char *filename);
+gauge_file *setup_output_gauge_file();
+void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc);
+void write_checksum(int parallel, gauge_file *gf);
+void read_site_list(int parallel,gauge_file *gf);
+int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag);
+int read_1996_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag);
+int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag);
+int read_gauge_hdr(gauge_file *gf, int parallel);
+void write_site_list(FILE *fp, gauge_header *gh);
+gauge_file *parallel_open(int order, char *filename);
+fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset);
+void w_serial_f(gauge_file *gf);
+void r_serial_f(gauge_file *gf);
+void w_parallel_f(gauge_file *gf);
+void r_parallel_f(gauge_file *gf);
+
+
+void byterevn(int32type w[], int n);
+
 
 #endif /* _IO_LAT_H */

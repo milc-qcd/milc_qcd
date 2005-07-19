@@ -48,6 +48,7 @@ G_OBJECTS0 =          \
   io_helpers.o       \
   io_helpers_w.o     \
   io_lat4.o          \
+  io_lat_utils.o          \
   io_prop_w.o        \
   make_lattice.o     \
   ranstuff.o \

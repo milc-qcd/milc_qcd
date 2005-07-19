@@ -62,6 +62,7 @@ G_OBJECTS0 = \
   io_detect.o \
   io_helpers.o \
   io_lat4.o \
+  io_lat_utils.o \
   make_lattice.o \
   path_product.o \
   ranmom.o \

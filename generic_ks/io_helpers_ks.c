@@ -206,9 +206,7 @@ int reload_ksprop_to_field( int flag, char *filename,
 
   double dtime;
   int i,status,color;
-  field_offset destc;
   int file_type;
-  ks_prop_file *kspf;
   site *s;
 
   if(timing)dtime = -dclock();
@@ -389,7 +387,6 @@ void save_ksprop_from_field( int flag, char *filename, char *recxml,
 {
   double dtime;
   int color;
-  field_offset srcc;
   ks_prop_file *kspf;
   
   if(timing)dtime = -dclock();

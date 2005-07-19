@@ -331,6 +331,14 @@ int read_F3_M_to_field(QIO_Reader *infile, su3_matrix *dest, int count)
   return 0;
 }
 
+#ifdef NOLINKS
+gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
+			char *stringLFN){
+  printf("Can't save a lattice if we compile with -DNOLINKS\n");
+  terminate(1);
+  return NULL;
+}
+#else
 /* Save the single precision lattice in SciDAC format */
 /* The QIO file is closed after writing the lattice */
 gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
@@ -388,6 +396,8 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
   free_QCDML(qcdml);
   return gf;
 }
+#endif /* NOLINKS */
+
 
 /* The functions below constitute the API */
 
@@ -458,6 +468,13 @@ gauge_file *save_partition_ildg(char *filename, char *stringLFN){
 }
 
 /* The QIO file is closed after reading the lattice */
+#ifdef NOLINKS
+gauge_file *restore_scidac(char *filename, int serpar){
+  printf("Can't restore a lattice if we compile with -DNOLINKS\n");
+  terminate(1);
+  return NULL;
+}
+#else
 gauge_file *restore_scidac(char *filename, int serpar){
   QIO_Layout layout;
   QIO_Reader *infile;
@@ -489,6 +506,7 @@ gauge_file *restore_scidac(char *filename, int serpar){
 
   return gf;
 }
+#endif
 
 /* The QIO file is closed after reading the lattice */
 gauge_file *restore_serial_scidac(char *filename){

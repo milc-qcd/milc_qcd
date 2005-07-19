@@ -125,7 +125,9 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     dtime += dclock();
     if(flag != FORGET)
       node0_printf("Time to save = %e\n",dtime);
+#ifndef NOLINKS
     d_plaquette(&ssplaq,&stplaq);
+#endif
 #if (PRECISION==1)
     node0_printf("CHECK PLAQ: %e %e\n",ssplaq,stplaq);
 #else
@@ -176,7 +178,9 @@ gauge_file *reload_lattice( int flag, char *filename){
 #ifdef SCHROED_FUN
     set_boundary_fields();
 #endif
+#ifndef NOLINKS
     d_plaquette(&ssplaq,&stplaq);
+#endif
     if(this_node==0){
 #if (PRECISION==1)
         printf("CHECK PLAQ: %e %e\n",ssplaq,stplaq);fflush(stdout);

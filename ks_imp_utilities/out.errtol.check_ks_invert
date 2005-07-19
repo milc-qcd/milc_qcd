@@ -20,7 +20,7 @@ Record info
 "Dummy user record XML for lattice field"
 Checksums d2f7866d 0
 Time to reload gauge configuration = 1
-CHECK PLAQ: 0 0
+CHECK PLAQ: 3e-07 8e-07
 Unitarity checked. Max deviation 2e-09
 Time to check unitarity = 1
 Symanzik 0 + 0 + 0 action
@@ -75,7 +75,7 @@ forget
 reload_serial_ks_vector ../binary_samples/ksvector.src.sample.l8
 save_serial_ks_vector ksvector.ans.Minv.test.l8
 invert M
-CHECK PLAQ: 4e-09 4e-09
+CHECK PLAQ: 3e-07 8e-07
 Unitarity checked. Max deviation 2e-09
 Time to check unitarity = 1
 Symanzik 2e-09 + 2e-09 + 2e-09 action
@@ -114,7 +114,7 @@ Checksums 18c175b6 adc0f9ee
 Doing the inversion
 Inversion required 57 iters
 Checking the inversion
-Inversion checked, frac. error = 2e-09
+Inversion checked, frac. error = 1e-07
 Saved KS vector serially to binary file ksvector.ans.Minv.test.l8
 Checksums XXX XXX
 

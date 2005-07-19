@@ -155,8 +155,6 @@ int read_F3_D_to_site(QIO_Reader *infile, field_offset dest, int count)
   QIO_RecordInfo rec_info;
   int status;
   /* We assume input precision is single */
-  char qdptype[] = "QDP_F3_DiracVector";
-  char prec[] = "F";
   int datum_size = sizeof(fwilson_vector);
   int word_size = sizeof(float);
   
@@ -183,8 +181,6 @@ int read_F3_D_to_field(QIO_Reader *infile, wilson_vector *dest, int count)
   QIO_RecordInfo rec_info;
   int status;
   /* We assume input precision is single */
-  char qdptype[] = "QDP_F3_DiracVector";
-  char prec[] = "F";
   int datum_size = sizeof(fwilson_vector);
   int word_size = sizeof(float);
   

@@ -53,6 +53,7 @@ G_OBJECTS0= \
    gaugefix2.o \
    io_helpers.o \
    io_lat4.o \
+   io_lat_utils.o \
    make_lattice.o \
    path_product.o \
    ranstuff.o \
