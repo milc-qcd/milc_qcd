@@ -38,7 +38,9 @@ struct site {
 	short x,y,z,t;
 	char parity;
 	int index;
+#ifdef LEAN
 	su3_matrix link[4];
+#endif
 };
 typedef struct site site;
 

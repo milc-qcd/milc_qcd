@@ -179,13 +179,13 @@ ckpt1_to_v5::
 
 v5_to_scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= v5_to_scidac" \
-	"DEFINES= " \
+	"DEFINES= -DLEAN" \
 	"EXTRA_OBJECTS=  v5_to_scidac.o \
 	check_unitarity.o gauge_info_dummy.o"
 
 scidac_to_v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= scidac_to_v5" \
-	"DEFINES= " \
+	"DEFINES= -DLEAN" \
 	"EXTRA_OBJECTS=  scidac_to_v5.o \
 	check_unitarity.o gauge_info_scidac.o"
 
