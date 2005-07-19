@@ -492,7 +492,6 @@ int main(int argc, char *argv[])
   gauge_file *gf;
   gauge_header *gh;
   char *filename;
-  int color,spin,spinindex;
   float max_deviation;
   gauge_file *r_serial_i(char *filename);
   void r_serial_f(gauge_file *gf);
