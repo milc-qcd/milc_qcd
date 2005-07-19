@@ -180,7 +180,7 @@ v5_to_scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= v5_to_scidac" \
 	"DEFINES= -DNOLINKS" \
 	"EXTRA_OBJECTS=  v5_to_scidac.o \
-	check_unitarity.o gauge_info_dummy.o"
+	gauge_info_dummy.o"
 
 scidac_to_v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= scidac_to_v5" \

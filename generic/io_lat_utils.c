@@ -1586,6 +1586,30 @@ fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset)
   return lbuf;
 } /* w_parallel_setup */
 
+/*-----------------------------------------------------------------------*/
+
+/* Open a file for parallel writing in natural order */
+gauge_file *w_parallel_i(char *filename)
+{
+  /* All nodes open the same filename */
+  /* Returns a file structure describing the opened file */
+
+  return parallel_open(NATURAL_ORDER,filename);
+
+} /* w_parallel_i */
+
+
+/*---------------------------------------------------------------------------*/
+/* Open a file for parallel writing in node-dump order */
+gauge_file *w_checkpoint_i(char *filename)
+{
+  /* All nodes open the same filename */
+  /* Returns a file structure describing the opened file */
+
+  return parallel_open(NODE_DUMP_ORDER,filename);
+
+} /* w_checkpoint_i */
+
 /*---------------------------------------------------------------------------*/
 
 void w_serial_f(gauge_file *gf)
@@ -1608,6 +1632,81 @@ void w_serial_f(gauge_file *gf)
   /* Do not free gf and gf->header so calling program can use them */
 
 } /* w_serial_f */
+
+/*---------------------------------------------------------------------------*/
+
+gauge_file *r_serial_i(char *filename)
+{
+  /* Returns file descriptor for opened file */
+
+  gauge_header *gh;
+  gauge_file *gf;
+  FILE *fp;
+  int byterevflag;
+  char editfilename[513];
+
+  /* All nodes set up a gauge file and gauge header structure for reading */
+
+  gf = setup_input_gauge_file(filename);
+  gh = gf->header;
+
+  /* File opened for serial reading */
+  gf->parallel = 0;
+
+  /* Node 0 alone opens the file and reads the header */
+
+  g_sync();
+
+  if(this_node==0)
+    {
+      fp = fopen(filename, "rb");
+      if(fp == NULL)
+	{
+	  /* If this is a partition format SciDAC file the node 0 name
+	     has an extension ".vol0000".  So try again. */
+	  printf("r_serial_i: Node %d can't open file %s, error %d\n",
+		 this_node,filename,errno);fflush(stdout);
+	  strncpy(editfilename,filename,504);
+	  editfilename[504] = '\0';  /* Just in case of truncation */
+	  strcat(editfilename,".vol0000");
+	  printf("r_serial_i: Trying SciDAC partition volume %s\n",editfilename);
+	  fp = fopen(editfilename, "rb");
+	  if(fp == NULL)
+	    {
+	      printf("r_serial_i: Node %d can't open file %s, error %d\n",
+		     this_node,editfilename,errno);fflush(stdout);terminate(1);
+	    }
+	  printf("r_serial_i: Open succeeded\n");
+	}
+      
+      gf->fp = fp;
+
+      byterevflag = read_gauge_hdr(gf,SERIAL);
+
+    }
+
+  else gf->fp = NULL;  /* The other nodes don't know about this file */
+
+  /* Broadcast the byterevflag from node 0 to all nodes */
+
+  broadcast_bytes((char *)&byterevflag,sizeof(byterevflag));
+  gf->byterevflag = byterevflag;
+  
+  /* Node 0 broadcasts the header structure to all nodes */
+  
+  broadcast_bytes((char *)gh,sizeof(gauge_header));
+
+  /* No further processing here if this is a SciDAC file */
+  if(gh->magic_number == LIME_MAGIC_NO)
+    return gf;
+
+  /* Read site list and broadcast to all nodes */
+
+  read_site_list(SERIAL,gf);
+
+  return gf;
+
+}/* r_serial_i */
 
 /*----------------------------------------------------------------------*/
 
@@ -1673,4 +1772,24 @@ void r_parallel_f(gauge_file *gf)
   /* Do not free gf and gf->header so calling program can use them */
 
  } /* r_parallel_f */
+
+/*---------------------------------------------------------------------------*/
+
+/* Read lattice dimensions from a binary file and close the file */
+void read_lat_dim_gf(char *filename, int *ndim, int dims[]){
+  gauge_file *gf;
+  int i;
+  
+  /* Only four dimensions here */
+  *ndim = 4;
+
+  /* Open the file */
+  nx = -1; ny = -1; nz = -1; nt = -1;
+  gf = r_serial_i(filename);
+
+  for(i = 0; i < *ndim; i++)
+    dims[i] = gf->header->dims[i];
+
+  r_serial_f(gf);
+}
 
