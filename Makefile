@@ -132,7 +132,8 @@ WANTQMP =
 # It is assumed that these are the parents of "include" and "lib"
 
 SCIDAC = ${HOME}/scidac
-QIO = $(SCIDAC)/qio
+QIOSNG = $(SCIDAC)/qio-single
+QIOPAR = $(SCIDAC)/qio
 # Parallel version
 QMPPAR = ${SCIDAC}/qmp
 # Single processor version

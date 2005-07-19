@@ -60,9 +60,11 @@ Here are the new features so far:
 
 15. An assortment of C-inline routines
 
-16. Support for ILDG lattice formats and QIO parallel I/O.
+16. Support for SciDAC Level 3 QOP for QCDOC
 
-17. Few-gather and few-sum versions of the MILC inverter.
+17. Support for ILDG lattice formats and QIO parallel I/O.
+
+18. Few-gather and few-sum versions of the MILC inverter.
 
 C. DeTar, Utah
 17 Jul 2005

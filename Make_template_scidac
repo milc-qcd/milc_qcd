@@ -10,7 +10,8 @@
 # MPP                     true if multiprocessor compilation
 # QMPPAR                  Path to multiprocessor QMP
 # QMPSNG                  Path to single processor QMP
-# QIO                     Path to the QIO package
+# QIOPAR                  Path to the multiprocessor QIO package
+# QIOSNG                  Path to the singleprocessor QIO package
 # QLA                     Path to the QLA package
 # QDP                     Path to the QDP package
 # WANTQDP WANTQIO WANTQMP User requests (true or otherwise)
@@ -37,8 +38,10 @@ endif
 
 ifeq ($(strip ${MPP}),true)
    QMP = ${QMPPAR}
+   QIO = ${QIOPAR}
 else
    QMP = ${QMPSNG}
+   QIO = ${QIOSNG}
 endif
 
 # Allow for QCDOC non-standard for now for QMP installation
