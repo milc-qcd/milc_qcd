@@ -29,7 +29,7 @@ int y;
 }
 
 
-int func_block (int x[])
+int func_block (int x[], void *arg)
 {
 int i,c=0;
 
@@ -53,7 +53,7 @@ QDP_Subset *test;
   if ( n == NRG) block->sub = QDP_all;
   else
   {
-   test = QDP_create_subset(func_block,2);
+   test = QDP_create_subset(func_block,NULL,2);
    block->sub = test[0];
   }
 

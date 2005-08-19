@@ -7,7 +7,7 @@
 int len2;
 int r[4];
 
-int hyp_func ( int x[])
+int hyp_func ( int x[], void *arg)
 {
   int i,c[4];
   
@@ -38,7 +38,7 @@ void RG_transf_field(QDP_ColorVector *dest, QDP_ColorVector *src[RG_Ncn], int le
     offset = QDP_create_shift(r);
  
     len2 = 2*len;
-    QDP_hyp = QDP_create_subset(hyp_func,1);
+    QDP_hyp = QDP_create_subset(hyp_func,NULL,1);
     QDP_V_eq_sV(dest,src[i],offset,QDP_backward,*QDP_hyp); 
 
     QDP_destroy_shift(offset);
@@ -193,7 +193,7 @@ QDP_Subset *QDP_hyp;
     r[j] = rvs[i][j];
 
    len2 = 2;
-   QDP_hyp = QDP_create_subset(hyp_func,1);
+   QDP_hyp = QDP_create_subset(hyp_func,NULL,1);
 #ifdef CHECK_TRACE_UNIT
    QDP_V_eq_V(dest[i],src,*QDP_hyp);
 #else

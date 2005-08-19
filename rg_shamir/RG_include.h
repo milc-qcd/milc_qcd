@@ -78,7 +78,7 @@ typedef struct {
 
 int intpow(int base, int exp);
 
-int hyp_func(int x[]);
+int hyp_func(int x[], void *arg);
 
 void check_cv(QLA_ColorVector *df, int coords[]);
 
