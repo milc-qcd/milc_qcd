@@ -31,11 +31,13 @@ MAKEFILE = Makefile
 
 # 1 = single precision; 2 = double
 PRECISION = 1
+
 #----------------------------------------------------------------------
 # 4. Compiler
 # Choices include mpicc cc gcc pgcc g++
 CC = gcc
 
+#CC = /uufs/delicatearch.arches/sys/pkg/mpich-gm/std/bin/mpicc
 #CC = /usr/local/mpich/bin/mpicc -cc=${GCC_DIR}/bin/gcc  # FNAL
 #CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
 
