@@ -44,7 +44,7 @@ setup_layout(void)
 
   /* Report sublattice dimensions */
   n_mach = QMP_get_allocated_number_of_dimensions();
-  dim_mach = QMP_get_dimensions();
+  dim_mach = QMP_get_allocated_dimensions();
   for(i = 0; i < 4; i++){
     /* Any extra machine dimensions are assumed to be 1 */
     if(i < n_mach)d[i] = c[i]/dim_mach[i];
