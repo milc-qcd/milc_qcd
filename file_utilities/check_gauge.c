@@ -335,7 +335,7 @@ void r_check_arch(gauge_file *gf)
   int mu,a,b,p;
   float *uin, *q;
   int big_end;
-  double U[4][18];
+  float U[4][18];
   u_int32type chksum;
   
   fp = gf->fp;
@@ -401,7 +401,7 @@ void r_check_arch(gauge_file *gf)
 	for (mu=0;mu<4;mu++) {
 	  for (p=0;p<12;p++) {
 	    chksum += *(u_int32type *) q;
-	    U[mu][p] = (double) *q++;
+	    U[mu][p] = (float) *q++;
 	  }
 	  complete_U(U[mu]);
 	  /**

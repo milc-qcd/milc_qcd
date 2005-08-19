@@ -66,11 +66,12 @@ int x,y,z,t;            /* coordinates */
     }
    /* Allocate address vectors */
     for(i=0;i<8;i++){
-        gen_pt[i] = (char **)malloc(sites_on_node*sizeof(char *) );
+      /** gen_pt[i] = (char **)malloc(sites_on_node*sizeof(char *) );
         if(gen_pt[i]==NULL){
             printf("NODE %d: no room for pointer vector\n",this_node);
             terminate(1);
-        }
+	    }**/
+      gen_pt[i] = NULL;
     }
 
     for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
