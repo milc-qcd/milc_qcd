@@ -1,0 +1,338 @@
+SU3 with improved KS action
+Microcanonical simulation with refreshing
+MIMD version 6
+Machine = QMP (portable), with 1 nodes
+R algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 4
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 5682304
+LAYOUT = Hypercubes, options = QDP
+ON EACH NODE 8 x 8 x 8 x 8
+Mallocing 8.0 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+Start 
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.6
+mass 0.1
+u0 1
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 500
+error_per_site 5e-07
+error_for_propagator 1e-04
+reload_serial ../binary_samples/lat.sample.l8
+forget 
+read_gauge_hdr: Reading as a SciDAC formatted file
+Restoring binary SciDAC file ../binary_samples/lat.sample.l8
+File info 
+"Dummy user file XML"
+Record info 
+"Dummy user record XML for lattice field"
+Checksums d2f7866d 5f48ca3e
+Time to reload gauge configuration = 2.408599e-02
+CHECK PLAQ: 2.620398e+00 2.621447e+00
+Unitarity checked.  Max deviation 8.94e-08
+Time to check unitarity = 1.486099e-02
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -5.000000e-02     12
+                    2 0      0.000000e+00     16
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
+Create a subset for lattice 4 x a, this node 0
+Create a subset for lattice 2 x a, this node 0
+Create a subset for lattice 1 x a, this node 0
+Setup................
+Fix the gauge
+GFIX: Ended at step 18. Av gf action 9.74561483e-01, delta 1.848e-06
+node 0: projecting 4......... 
+node 0: projecting 4......... 
+node 0: projecting 4......... 
+node 0: projecting 4......... 
+node 0:paths from lattice 4 to lattice 2
+node 0: projecting 16......... 
+node 0:paths from lattice 2 to lattice 1
+node 0: projecting 16......... 
+Color source set to one at the origin
+0 0 0 0 1	0
+wils-wils completed
+16 inversions completed
+S = 0 T = 0  NRG = 2
+S = 0 T = 1  NRG = 2
+S = 0 T = 2  NRG = 2
+S = 0 T = 3  NRG = 2
+S = 0 T = 4  NRG = 2
+S = 0 T = 5  NRG = 2
+S = 0 T = 6  NRG = 2
+S = 0 T = 7  NRG = 2
+S = 0 T = 8  NRG = 2
+S = 0 T = 9  NRG = 2
+S = 0 T = 10  NRG = 2
+S = 0 T = 11  NRG = 2
+S = 0 T = 12  NRG = 2
+S = 0 T = 13  NRG = 2
+S = 0 T = 14  NRG = 2
+S = 0 T = 15  NRG = 2
+S = 1 T = 0  NRG = 2
+S = 1 T = 1  NRG = 2
+S = 1 T = 2  NRG = 2
+S = 1 T = 3  NRG = 2
+S = 1 T = 4  NRG = 2
+S = 1 T = 5  NRG = 2
+S = 1 T = 6  NRG = 2
+S = 1 T = 7  NRG = 2
+S = 1 T = 8  NRG = 2
+S = 1 T = 9  NRG = 2
+S = 1 T = 10  NRG = 2
+S = 1 T = 11  NRG = 2
+S = 1 T = 12  NRG = 2
+S = 1 T = 13  NRG = 2
+S = 1 T = 14  NRG = 2
+S = 1 T = 15  NRG = 2
+S = 2 T = 0  NRG = 2
+S = 2 T = 1  NRG = 2
+S = 2 T = 2  NRG = 2
+S = 2 T = 3  NRG = 2
+S = 2 T = 4  NRG = 2
+S = 2 T = 5  NRG = 2
+S = 2 T = 6  NRG = 2
+S = 2 T = 7  NRG = 2
+S = 2 T = 8  NRG = 2
+S = 2 T = 9  NRG = 2
+S = 2 T = 10  NRG = 2
+S = 2 T = 11  NRG = 2
+S = 2 T = 12  NRG = 2
+S = 2 T = 13  NRG = 2
+S = 2 T = 14  NRG = 2
+S = 2 T = 15  NRG = 2
+S = 3 T = 0  NRG = 2
+S = 3 T = 1  NRG = 2
+S = 3 T = 2  NRG = 2
+S = 3 T = 3  NRG = 2
+S = 3 T = 4  NRG = 2
+S = 3 T = 5  NRG = 2
+S = 3 T = 6  NRG = 2
+S = 3 T = 7  NRG = 2
+S = 3 T = 8  NRG = 2
+S = 3 T = 9  NRG = 2
+S = 3 T = 10  NRG = 2
+S = 3 T = 11  NRG = 2
+S = 3 T = 12  NRG = 2
+S = 3 T = 13  NRG = 2
+S = 3 T = 14  NRG = 2
+S = 3 T = 15  NRG = 2
+S = 4 T = 0  NRG = 2
+S = 4 T = 1  NRG = 2
+S = 4 T = 2  NRG = 2
+S = 4 T = 3  NRG = 2
+S = 4 T = 4  NRG = 2
+S = 4 T = 5  NRG = 2
+S = 4 T = 6  NRG = 2
+S = 4 T = 7  NRG = 2
+S = 4 T = 8  NRG = 2
+S = 4 T = 9  NRG = 2
+S = 4 T = 10  NRG = 2
+S = 4 T = 11  NRG = 2
+S = 4 T = 12  NRG = 2
+S = 4 T = 13  NRG = 2
+S = 4 T = 14  NRG = 2
+S = 4 T = 15  NRG = 2
+S = 5 T = 0  NRG = 2
+S = 5 T = 1  NRG = 2
+S = 5 T = 2  NRG = 2
+S = 5 T = 3  NRG = 2
+S = 5 T = 4  NRG = 2
+S = 5 T = 5  NRG = 2
+S = 5 T = 6  NRG = 2
+S = 5 T = 7  NRG = 2
+S = 5 T = 8  NRG = 2
+S = 5 T = 9  NRG = 2
+S = 5 T = 10  NRG = 2
+S = 5 T = 11  NRG = 2
+S = 5 T = 12  NRG = 2
+S = 5 T = 13  NRG = 2
+S = 5 T = 14  NRG = 2
+S = 5 T = 15  NRG = 2
+S = 6 T = 0  NRG = 2
+S = 6 T = 1  NRG = 2
+S = 6 T = 2  NRG = 2
+S = 6 T = 3  NRG = 2
+S = 6 T = 4  NRG = 2
+S = 6 T = 5  NRG = 2
+S = 6 T = 6  NRG = 2
+S = 6 T = 7  NRG = 2
+S = 6 T = 8  NRG = 2
+S = 6 T = 9  NRG = 2
+S = 6 T = 10  NRG = 2
+S = 6 T = 11  NRG = 2
+S = 6 T = 12  NRG = 2
+S = 6 T = 13  NRG = 2
+S = 6 T = 14  NRG = 2
+S = 6 T = 15  NRG = 2
+S = 7 T = 0  NRG = 2
+S = 7 T = 1  NRG = 2
+S = 7 T = 2  NRG = 2
+S = 7 T = 3  NRG = 2
+S = 7 T = 4  NRG = 2
+S = 7 T = 5  NRG = 2
+S = 7 T = 6  NRG = 2
+S = 7 T = 7  NRG = 2
+S = 7 T = 8  NRG = 2
+S = 7 T = 9  NRG = 2
+S = 7 T = 10  NRG = 2
+S = 7 T = 11  NRG = 2
+S = 7 T = 12  NRG = 2
+S = 7 T = 13  NRG = 2
+S = 7 T = 14  NRG = 2
+S = 7 T = 15  NRG = 2
+S = 8 T = 0  NRG = 2
+S = 8 T = 1  NRG = 2
+S = 8 T = 2  NRG = 2
+S = 8 T = 3  NRG = 2
+S = 8 T = 4  NRG = 2
+S = 8 T = 5  NRG = 2
+S = 8 T = 6  NRG = 2
+S = 8 T = 7  NRG = 2
+S = 8 T = 8  NRG = 2
+S = 8 T = 9  NRG = 2
+S = 8 T = 10  NRG = 2
+S = 8 T = 11  NRG = 2
+S = 8 T = 12  NRG = 2
+S = 8 T = 13  NRG = 2
+S = 8 T = 14  NRG = 2
+S = 8 T = 15  NRG = 2
+S = 9 T = 0  NRG = 2
+S = 9 T = 1  NRG = 2
+S = 9 T = 2  NRG = 2
+S = 9 T = 3  NRG = 2
+S = 9 T = 4  NRG = 2
+S = 9 T = 5  NRG = 2
+S = 9 T = 6  NRG = 2
+S = 9 T = 7  NRG = 2
+S = 9 T = 8  NRG = 2
+S = 9 T = 9  NRG = 2
+S = 9 T = 10  NRG = 2
+S = 9 T = 11  NRG = 2
+S = 9 T = 12  NRG = 2
+S = 9 T = 13  NRG = 2
+S = 9 T = 14  NRG = 2
+S = 9 T = 15  NRG = 2
+S = 10 T = 0  NRG = 2
+S = 10 T = 1  NRG = 2
+S = 10 T = 2  NRG = 2
+S = 10 T = 3  NRG = 2
+S = 10 T = 4  NRG = 2
+S = 10 T = 5  NRG = 2
+S = 10 T = 6  NRG = 2
+S = 10 T = 7  NRG = 2
+S = 10 T = 8  NRG = 2
+S = 10 T = 9  NRG = 2
+S = 10 T = 10  NRG = 2
+S = 10 T = 11  NRG = 2
+S = 10 T = 12  NRG = 2
+S = 10 T = 13  NRG = 2
+S = 10 T = 14  NRG = 2
+S = 10 T = 15  NRG = 2
+S = 11 T = 0  NRG = 2
+S = 11 T = 1  NRG = 2
+S = 11 T = 2  NRG = 2
+S = 11 T = 3  NRG = 2
+S = 11 T = 4  NRG = 2
+S = 11 T = 5  NRG = 2
+S = 11 T = 6  NRG = 2
+S = 11 T = 7  NRG = 2
+S = 11 T = 8  NRG = 2
+S = 11 T = 9  NRG = 2
+S = 11 T = 10  NRG = 2
+S = 11 T = 11  NRG = 2
+S = 11 T = 12  NRG = 2
+S = 11 T = 13  NRG = 2
+S = 11 T = 14  NRG = 2
+S = 11 T = 15  NRG = 2
+S = 12 T = 0  NRG = 2
+S = 12 T = 1  NRG = 2
+S = 12 T = 2  NRG = 2
+S = 12 T = 3  NRG = 2
+S = 12 T = 4  NRG = 2
+S = 12 T = 5  NRG = 2
+S = 12 T = 6  NRG = 2
+S = 12 T = 7  NRG = 2
+S = 12 T = 8  NRG = 2
+S = 12 T = 9  NRG = 2
+S = 12 T = 10  NRG = 2
+S = 12 T = 11  NRG = 2
+S = 12 T = 12  NRG = 2
+S = 12 T = 13  NRG = 2
+S = 12 T = 14  NRG = 2
+S = 12 T = 15  NRG = 2
+S = 13 T = 0  NRG = 2
+S = 13 T = 1  NRG = 2
+S = 13 T = 2  NRG = 2
+S = 13 T = 3  NRG = 2
+S = 13 T = 4  NRG = 2
+S = 13 T = 5  NRG = 2
+S = 13 T = 6  NRG = 2
+S = 13 T = 7  NRG = 2
+S = 13 T = 8  NRG = 2
+S = 13 T = 9  NRG = 2
+S = 13 T = 10  NRG = 2
+S = 13 T = 11  NRG = 2
+S = 13 T = 12  NRG = 2
+S = 13 T = 13  NRG = 2
+S = 13 T = 14  NRG = 2
+S = 13 T = 15  NRG = 2
+S = 14 T = 0  NRG = 2
+S = 14 T = 1  NRG = 2
+S = 14 T = 2  NRG = 2
+S = 14 T = 3  NRG = 2
+S = 14 T = 4  NRG = 2
+S = 14 T = 5  NRG = 2
+S = 14 T = 6  NRG = 2
+S = 14 T = 7  NRG = 2
+S = 14 T = 8  NRG = 2
+S = 14 T = 9  NRG = 2
+S = 14 T = 10  NRG = 2
+S = 14 T = 11  NRG = 2
+S = 14 T = 12  NRG = 2
+S = 14 T = 13  NRG = 2
+S = 14 T = 14  NRG = 2
+S = 14 T = 15  NRG = 2
+S = 15 T = 0  NRG = 2
+S = 15 T = 1  NRG = 2
+S = 15 T = 2  NRG = 2
+S = 15 T = 3  NRG = 2
+S = 15 T = 4  NRG = 2
+S = 15 T = 5  NRG = 2
+S = 15 T = 6  NRG = 2
+S = 15 T = 7  NRG = 2
+S = 15 T = 8  NRG = 2
+S = 15 T = 9  NRG = 2
+S = 15 T = 10  NRG = 2
+S = 15 T = 11  NRG = 2
+S = 15 T = 12  NRG = 2
+S = 15 T = 13  NRG = 2
+S = 15 T = 14  NRG = 2
+S = 15 T = 15  NRG = 2
+Timing: 278.712184
+QDP finalize: this node:0
+QDP finalize completed: this node 0
+exit: Sun Aug 21 22:23:28 2005
+
