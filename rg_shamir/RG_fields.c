@@ -1,3 +1,7 @@
+/************************* RG_fields.c *******************************/
+/* MIMD version 7 */
+/* F. Maresca Jul 2005 */
+
 /*****************************************************************************/
 /*    RG_initialize_field : set N_f dirac spinors to be equal to 1           */
 /*    RG_create_field : builds RG_Ncn phi_c(2x) = W(2x,2x+r)*phi(2x),where  */

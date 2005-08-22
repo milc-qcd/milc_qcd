@@ -1,3 +1,6 @@
+/************************* RG_trace_old.c *******************************/
+/* MIMD version 7 */
+/* F. Maresca Jul 2005 */
 #include <stdio.h>
 #include <qdp.h>
 #include <math.h>

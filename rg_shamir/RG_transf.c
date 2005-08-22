@@ -1,3 +1,6 @@
+/************************* RG_transf.c *******************************/
+/* MIMD version 7 */
+/* F. Maresca Jul 2005 */
 #include <stdio.h>
 #include <qdp.h>
 #include "RG_Shamir_includes.h"

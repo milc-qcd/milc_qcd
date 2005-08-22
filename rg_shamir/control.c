@@ -1,7 +1,8 @@
-/************************* control_qdp.c *******************************/
+/************************* control.c *******************************/
 /* MIMD version 7 */
 /* Main procedure for RG blocking a la Shamir        */
 /* general quark action, general gauge action */
+/* F. Maresca Jul 2005 */
 
 #define CONTROL
 #include "RG_Shamir_includes.h"	/* definitions files and prototypes */

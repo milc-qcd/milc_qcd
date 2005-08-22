@@ -1,9 +1,10 @@
 /******************* smearing.c ****************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* original version of 5/23/94 by UMH */
 /* 2/19/98 Version 5 port CD */
 /* 11/25/01 Removed redundant code. Changed to call ape_smear_dir CD */
+/* See string_break/smearing.c and hvy_pot/smearing.c */
 
 /* Perform one iteration of "APE smearing" on the space-like links.
    For the projection back to SU(3) use multiples of 3 hits over the
@@ -19,7 +20,6 @@
 void smearing( void ) {
   register int dir,i;
   register site *s;
-  QDP_ColorMatrix *link_qdp ;
 
   /* Loop over the space directions and APE-smear the links.
      The results will temporarily be stored in s_link, s_link_f

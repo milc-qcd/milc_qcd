@@ -1,3 +1,6 @@
+/************************* plaquette_qdp.c *******************************/
+/* MIMD version 7 */
+/* J. Osborn F. Maresca Jul 2005 */
 //#include <stdlib.h>
 #include <stdio.h>
 #include <qdp.h>

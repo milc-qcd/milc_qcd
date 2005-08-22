@@ -1,31 +1,12 @@
 #  Kogut-Susskind fermions with improved actions
 #  MIMD version 7
-#  "ks_imp3", started 1/22/99, streamline ks_imp2
 #
-#  Generic make-include file for ks_imp_dyn1 AND ks_imp_dyn2 codes
-#  Use -DONEMASS to build for a single degenerate quark mass
-#  Otherwise the build assumes two quark masses.
+#  Generic make-include file for rg_shamir
 #
 #  This template file defines rules and macros common to all architectures
 #  It is intended to be an include file for other Makefiles.
 #  Don't use it by itself!
 #
-#	"make su3_rmd" used the refreshed molecular dynamics algorithm
-#		for the Symanzik 1 loop gauge action and Asqtad quark action
-#	"make su3_rmd1" Same, but for one degenerate quark mass
-#
-#	"make su3_spectrum" uses the refreshed molecular dynamics
-#	        algorithm with the su3_rmd action and does spectrum
-#	        measurements
-#	"make su3_spectrum1" Same, but for one degenerate quark mass
-#
-#	"make su3_hybrids" uses the refreshed molecular dynamics
-#	        algorithm with the su3_rmd action and does spectrum
-#	        measurements, including the hybrid spectrum
-#	"make su3_hybrids1" Same, but for one degenerate quark mass
-#
-#       See examples below for naming and building targets for
-#               other actions
 
 MYINCLUDEDIR = .
 INCLUDEDIR = ../include
@@ -230,15 +211,12 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 
 ##### Targets:
 #		("FN" = "fat+Naik")
-
-#	-DNPBP_REPS=10" \
 # 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
-#       -DONEMASS
 
 
 RG_Shamir_nrg2::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DONEMASS -DNRG=2" \
+	"DEFINES= -DFN ${DARCH} -DNRG=2" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} "

@@ -1,7 +1,7 @@
 /*********************** gauge_info.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
-/* For ks_imp_dyn */
+/* For rg_shamir */
 
 /* Application-dependent routine for writing gauge info file */
 /* This file is an ASCII companion to the gauge configuration file
@@ -51,15 +51,8 @@ void write_appl_gauge_info(FILE *fp)
   write_gauge_info_item(fp,"gauge.tadpole.u0","%f",(char *)&u0,0,0);
 
   write_gauge_info_item(fp,"quark.description","%s",quark_action_description,0,0);
-#ifdef ONEMASS
   write_gauge_info_item(fp,"quark.flavors","%d",(char *)&nflavors,0,0);
   write_gauge_info_item(fp,"quark.mass","%f",(char *)&mass,0,0);
-#else
-  write_gauge_info_item(fp,"quark.flavors1","%d",(char *)&nflavors1,0,0);
-  write_gauge_info_item(fp,"quark.flavors2","%d",(char *)&nflavors2,0,0);
-  write_gauge_info_item(fp,"quark.mass1","%f",(char *)&mass1,0,0);
-  write_gauge_info_item(fp,"quark.mass2","%f",(char *)&mass2,0,0);
-#endif
 }
 
 #if 0
