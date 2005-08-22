@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <qdp.h>
 #include "RG_include.h"
-#include "ks_imp_includes_qdp.h"
+#include "RG_Shamir_includes.h"
 //#define LOCAL_SUM
 
 QLA_Real plaquette_qdp(QDP_ColorMatrix *link_qdp[],QDP_Sub_Block s,int n)

@@ -1,4 +1,4 @@
-/****************** ks_imp_includes.h ******************************/
+/****************** RG_Shamir_includes.h ******************************/
 /*
 *  Include files for Kogut-Susskind dynamical improved action application
 */

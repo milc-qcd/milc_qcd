@@ -18,7 +18,7 @@
 /* MIMD version 6 */
 #define IF_OK if(status==0)
 
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "RG_Shamir_includes.h"	/* definitions files and prototypes */
 
 EXTERN gauge_header start_lat_hdr;
 gauge_file *gf;

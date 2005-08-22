@@ -14,7 +14,7 @@
 
 #include <stdio.h>
 #include <qdp.h>
-#include "ks_imp_includes_qdp.h"
+#include "RG_Shamir_includes.h"
 #include "RG_include.h"
 
 shift_v create_shift(int x[4], int n,int len)

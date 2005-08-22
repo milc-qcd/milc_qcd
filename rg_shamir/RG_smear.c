@@ -1,7 +1,7 @@
 //#include <stdlib.h>
 #include <stdio.h>
 #include <qdp.h>
-#include "ks_imp_includes_qdp.h"
+#include "RG_Shamir_includes.h"
 #include "RG_include.h"
 
 void RG_smear_dir (QDP_ColorMatrix *sm_link, QDP_ColorMatrix *link[], QLA_Real

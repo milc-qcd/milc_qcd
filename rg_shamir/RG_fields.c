@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 #include <qdp.h>
-#include "ks_imp_includes_qdp.h"
+#include "RG_Shamir_includes.h"
 #include "RG_include.h"
 
 

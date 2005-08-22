@@ -1,4 +1,6 @@
-#define NRG 2 
+#ifndef RG_include_h
+#define RG_include_h
+
 #define RG_Nd 4
 #define RG_Ncn 16 
 #define RG_Nf 4 
@@ -241,3 +243,4 @@ EXTERN int T;
 
 EXTERN_OP int fact;
 
+#endif /* RG_include_h */

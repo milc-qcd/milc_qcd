@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <qdp.h>
 #include <math.h>
-#include "ks_imp_includes_qdp.h"
+#include "RG_Shamir_includes.h"
 #define RG_BLOCK_SUB
 #include "RG_include.h"
 

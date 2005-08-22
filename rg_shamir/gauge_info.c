@@ -22,7 +22,7 @@
 
    */
 
-#include "ks_imp_includes.h"
+#include "RG_Shamir_includes.h"
 #include <quark_action.h>
 
 /*---------------------------------------------------------------------------*/

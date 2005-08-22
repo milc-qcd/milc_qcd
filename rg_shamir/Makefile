@@ -47,7 +47,7 @@ CXX = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-g++
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc
-OPT              = -O3
+OPT              = -g
 
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -133,7 +133,7 @@ WANTQMP = true
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ${HOME}/scidac
+SCIDAC = ${HOME}/scidac-linux
 QIOSNG = $(SCIDAC)/qio-single
 QIOPAR = $(SCIDAC)/qio
 # Parallel version

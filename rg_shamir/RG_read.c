@@ -13,7 +13,7 @@
    in update.c */
 
 #define CONTROL
-#include "ks_imp_includes_qdp.h"	/* definitions files and prototypes */
+#include "RG_Shamir_includes.h"	/* definitions files and prototypes */
 #include "RG_include.h"
 EXTERN gauge_header start_lat_hdr;	/* Input gauge field header */
 

@@ -11,7 +11,7 @@
    Note: only this complete projection makes the smearing truly
    gauge invariant. */
 #include <qdp.h>
-#include "ks_imp_includes.h"
+#include "RG_Shamir_includes.h"
 #include "RG_include.h"
 #define TOL 1e-5
 #define MAXCOUNT 50
