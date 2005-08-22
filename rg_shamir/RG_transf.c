@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <qdp.h>
-#include "RG_shamir_includes.h"
+#include "RG_Shamir_includes.h"
 #include "RG_include.h"
 #define tol  10e-5
 

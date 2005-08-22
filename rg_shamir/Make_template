@@ -43,7 +43,7 @@ MY_HEADERS = \
   lattice.h \
   params.h \
   defines.h \
-  ks_imp_includes_qdp.h \
+  RG_Shamir_includes.h \
   RG_include.h 
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
