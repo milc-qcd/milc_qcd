@@ -36,16 +36,19 @@ void d2f_vector(su3_vector *, fsu3_vector *);
 int test_converge(int t_source);
 #define MAX_RECXML 65
 
-int multimass_inverter( Real *masses, int nmasses, Real tol){
+int multimass_inverter( params_mminv *mminv){
   /* arguments are array of masses, number of masses,
      tolerance for inverter check.
      return C.G. iteration number */
 
+  int nmasses = mminv->nmasses;
+  Real *masses = mminv->masses;
+  Real tol = mminv->tol;
   int cgn;
   register int i,j,m1,m2;
   register site* s;
   register complex cc,czero;
-  register int t_source;
+  int x_source, y_source, z_source, t_source;
   int sourcevec,color;	/* color for source */
   int src_count; /* number of source time slices used */
   Real finalrsq;
@@ -53,7 +56,7 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
   su3_vector *temp_prop;
   complex **props;	/* arrays of propagators */
   su3_vector *wall_sink_m1,*wall_sink_m2; 
-  char kssavefile_tmp[MAXFILENAME],extension[24];
+  char kssavefile_tmp[MAXFILENAME],extension[48];
   int len1,len2;
   ks_prop_file *kspf; /* structure for opening ks prop file */
   char recxml[MAX_RECXML];
@@ -85,18 +88,27 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
   }
 
   /* loop over "source" time slice */
-  for(src_count=0,t_source=source_start; t_source<nt && src_count<n_sources;
-    t_source += source_inc,src_count++){
-    if(this_node==0)printf("multimass_inverter(): source time = %d\n",
-      t_source);
+  for(src_count=0; src_count<mminv->n_sources; src_count++){
+    x_source = mminv->r0[src_count][0];
+    y_source = mminv->r0[src_count][1];
+    z_source = mminv->r0[src_count][2];
+    t_source = mminv->r0[src_count][3];
+    if(this_node==0)
+      printf("multimass_inverter(): source time = %d x,y,z = %d %d %d\n",
+	     t_source,x_source,y_source,z_source);
+    if((x_source + y_source + z_source + t_source) % 2 != 0){
+      node0_printf("ERROR: Source coordinate should be even.\n");
+      terminate(1);
+    }
 
     /* point source at spatial origin */
     for(color=0;color<3;color++){
 	    clear_latvec( F_OFFSET(quark_source), EVENANDODD );
 
-		if( node_number(0,0,0,t_source) == mynode() )
+		if( node_number(x_source,y_source,z_source,t_source) 
+		    == mynode() )
 		   {
-		     i=node_index(0,0,0,t_source);
+		     i=node_index(x_source,y_source,z_source,t_source);
 		     lattice[i].quark_source.c[color].real
 		                         = 1.0; 
 		     /* this should have the same normalization as the
@@ -109,7 +121,7 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
 		/* must use the correct block of quark_props */
 		quark_props_color = &(quark_props[nmasses*color]);
 	cgn += ks_multicg( F_OFFSET(quark_source), quark_props_color, masses, nmasses,
-	   niter, rsqprop, EVEN, &finalrsq);
+	   niter, mminv->rsqprop, EVEN, &finalrsq);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
 	    dslash_field( quark_props_color[j], temp_prop, ODD);
@@ -152,7 +164,8 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
      for(j=0;j<nmasses;j++){
 	     /* create a file name for this propagator */
     	     strcpy(kssavefile_tmp, kssavefile); 
-	     sprintf(extension,"_m%.4f_nt%d",masses[j],t_source);
+	     sprintf(extension,"_m%.4f_t%d_x%d_y%d_z%d",masses[j],
+		     t_source,x_source,y_source,z_source);
 	     len2=strlen(extension);
 	     len2 += len1;   /* total string length */
 		     if (len2 >= MAXFILENAME)  {
@@ -177,7 +190,7 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
 	save_ksprop_from_site( kssaveflag, kssavefile_tmp, recxml, 
 			       F_OFFSET(propmat), 0);
    } /* end loop on j (masses) */
-  } /* end loop on t_source */
+  } /* end loop on src_count */
 
 
   /* Sum propagator arrays over nodes */
@@ -188,13 +201,13 @@ int multimass_inverter( Real *masses, int nmasses, Real tol){
   }
   for(i=0;i<nmasses*nmasses;i++){
       for(j=0;j<nt;j++){
-          CDIVREAL(props[NPROPS*i+POINTPOINT][j],(double)n_sources*nx*ny*nz*nx*ny*nz,
+          CDIVREAL(props[NPROPS*i+POINTPOINT][j],(double)mminv->n_sources*nx*ny*nz*nx*ny*nz,
 	    props[NPROPS*i+POINTPOINT][j]);
-          CDIVREAL(props[NPROPS*i+POINTWALL ][j],(double)n_sources*nx*ny*nz*nx*ny*nz,
+          CDIVREAL(props[NPROPS*i+POINTWALL ][j],(double)mminv->n_sources*nx*ny*nz*nx*ny*nz,
 	    props[NPROPS*i+POINTWALL ][j]);
-          CDIVREAL(props[NPROPS*i+WALLPOINT ][j],3.0*n_sources*nx*ny*nz*nx*ny*nz,
+          CDIVREAL(props[NPROPS*i+WALLPOINT ][j],3.0*mminv->n_sources*nx*ny*nz*nx*ny*nz,
 	    props[NPROPS*i+WALLPOINT ][j]);
-          CDIVREAL(props[NPROPS*i+WALLWALL  ][j],3.0*n_sources*nx*ny*nz*nx*ny*nz,
+          CDIVREAL(props[NPROPS*i+WALLWALL  ][j],3.0*mminv->n_sources*nx*ny*nz*nx*ny*nz,
 	    props[NPROPS*i+WALLWALL  ][j]);
       }
   }
