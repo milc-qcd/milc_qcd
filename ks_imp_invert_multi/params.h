@@ -20,6 +20,7 @@ typedef struct {
         int source_start, source_inc, n_sources; /* source time and increment */
 	int fpi_nmasses;
 	Real fpi_mass[MAX_FPI_NMASSES]; 
+        params_mminv mminv;
 	int startflag;  /* what to do for beginning lattice */
 	int fixflag;    /* whether to gauge fix */
 	int saveflag;   /* what to do with lattice at end */

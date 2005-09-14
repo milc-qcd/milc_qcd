@@ -67,7 +67,8 @@ int main( int argc, char **argv ){
 #ifdef FPI
     avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3 );
 #endif
-    avspect_iters += multimass_inverter(fpi_mass, fpi_nmasses, 2e-3 );
+    mminv.tol = 2e-3;
+    avspect_iters += multimass_inverter(&mminv);
     
     ++meascount;
     fflush(stdout);

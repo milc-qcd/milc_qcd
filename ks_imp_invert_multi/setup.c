@@ -173,25 +173,52 @@ int readin(int prompt) {
 	IF_OK status += get_f(prompt,"error_for_propagator", &x );
 	IF_OK par_buf.rsqprop = x*x;
 
+	/* Parameters for fpi */
         /* source time slice and increment */
 	IF_OK status += get_i(prompt,"source_start", &par_buf.source_start );
 	IF_OK status += get_i(prompt,"source_inc", &par_buf.source_inc );
 	IF_OK status += get_i(prompt,"n_sources", &par_buf.n_sources );
-
-	/* Additional parameters for multimass_inverter.  We reuse fpi input structure */
+	
 	par_buf.fpi_nmasses = 0;
-	/*   if(strstr(par_buf.spectrum_request,",fpi,") != NULL){ */
-	   IF_OK status += get_i(prompt,"nmasses",
-	                         &par_buf.fpi_nmasses );
-	   if(par_buf.fpi_nmasses > MAX_FPI_NMASSES){
-	      printf("Maximum of %d exceeded.\n",MAX_FPI_NMASSES);
-	      terminate(1);
-	   }
-	   for(i = 0; i < par_buf.fpi_nmasses; i++){
-	     IF_OK status += get_f(prompt,"mass",
-	                           &par_buf.fpi_mass[i]);
-	   }
-	/* } */
+	IF_OK status += get_i(prompt,"nmasses",
+			      &par_buf.fpi_nmasses );
+	if(par_buf.fpi_nmasses > MAX_FPI_NMASSES){
+	  printf("Maximum of %d exceeded.\n",MAX_FPI_NMASSES);
+	  terminate(1);
+	}
+	for(i = 0; i < par_buf.fpi_nmasses; i++){
+	  IF_OK status += get_f(prompt,"mass",
+				&par_buf.fpi_mass[i]);
+	}
+
+	/* Parameters for multimass_inverter. */
+
+        /* point source locations */
+	IF_OK status += get_i(prompt,"n_sources_mminv", 
+			      &par_buf.mminv.n_sources );
+	for(i = 0; i < par_buf.mminv.n_sources; i++ ){
+	  IF_OK status += get_vi(prompt,"r0", par_buf.mminv.r0[i],4);
+	  /* We want an even source */
+	  if((par_buf.mminv.r0[i][0] + par_buf.mminv.r0[i][1] + 
+	      par_buf.mminv.r0[i][2] + par_buf.mminv.r0[i][3]) % 2 != 0){
+	    printf("ERROR: Source coordinate should be even\n");
+	    status = 1;
+	  }
+	}
+	IF_OK status += get_i(prompt,"nmasses_mminv", &par_buf.mminv.nmasses );
+	if(par_buf.mminv.nmasses > MAX_MMINV_NMASSES){
+	  printf("Maximum of %d exceeded.\n",MAX_FPI_NMASSES);
+	  terminate(1);
+	}
+	for(i = 0; i < par_buf.mminv.nmasses; i++){
+	  IF_OK status += get_f(prompt,"mass",
+				&par_buf.mminv.masses[i]);
+	}
+
+	/* error for propagator multimass conjugate gradient */
+	IF_OK status += get_f(prompt,"error_for_propagator_mminv", &x );
+	IF_OK par_buf.mminv.rsqprop = x*x;
+
 
         /* find out what kind of starting lattice to use */
 	IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
@@ -249,6 +276,7 @@ int readin(int prompt) {
     for(i = 0; i < fpi_nmasses; i++){
       fpi_mass[i] = par_buf.fpi_mass[i];
     }
+    memcpy(&mminv,&par_buf.mminv,sizeof(params_mminv)); 
 
     startflag = par_buf.startflag;
     saveflag = par_buf.saveflag;

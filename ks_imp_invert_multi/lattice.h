@@ -17,6 +17,7 @@
 */
 
 #include "defines.h"
+#include "../include/generic_ks.h"
 #include "../include/generic_quark_types.h"
 #include "../include/random.h"
 #include "../include/macros.h"  /* For MAXFILENAME */
@@ -131,6 +132,8 @@ EXTERN  int source_start, source_inc, n_sources;
 EXTERN  int fpi_nmasses;
 EXTERN  Real fpi_mass[MAX_FPI_NMASSES];
 
+/* Parameters for multimass inverter */
+EXTERN  params_mminv mminv;
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
