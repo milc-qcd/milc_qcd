@@ -66,5 +66,9 @@ Here are the new features so far:
 
 18. Few-gather and few-sum versions of the MILC inverter.
 
+19. Support for parallel I/O and ILDG LFN
+
+20. Modified multimass inverter to allow arbitrary source points.
+
 C. DeTar, Utah
-17 Jul 2005
+14 Sept 2005
