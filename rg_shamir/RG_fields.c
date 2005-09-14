@@ -65,30 +65,51 @@ void point_2V(QLA_ColorVector *s, int coords[])
 
 }
 
-void RG_create_field(QDP_ColorVector *phi_c[RG_Ncn], QDP_ColorVector *phi, QDP_ColorMatrix *wlink[RG_Ncn],QDP_Sub_Block s)
+/* Input: 
+
+   wlink[i] -- the gauge connection from the hypercube site i to the
+   hypercube origin.
+
+   phi -- the field at the hypercube origin.
+
+   s -- the subset of hypercube origins
+
+   Output:
+
+   phi_c[i] -- wlink[i] * phi.  Lives at the hypercube origin. Still
+   needs to be shifted to the hypercube site.
+
+*/
+
+void RG_create_field(QDP_ColorVector *phi_c[RG_Ncn], 
+		     QDP_ColorVector *phi, 
+		     QDP_ColorMatrix *wlink[RG_Ncn],QDP_Sub_Block s)
 {
-int i,j;
-QLA_Real norm = 1.0/16.0;
-//QLA_Real norm = 1.0;
-QDP_ColorVector *phi_1[RG_Ncn]; 
-
- 
- for(j=0; j<RG_Ncn; ++j)
+  int i,j;
+  QLA_Real norm = 1.0/16.0;
+  //QLA_Real norm = 1.0;
+  QDP_ColorVector *phi_1[RG_Ncn]; 
+  
+  
+  for(j=0; j<RG_Ncn; ++j)
     phi_1[j] = QDP_create_V();
-
-
+  
   for (i=0;i<RG_Ncn;i++)
-   {
-   SQDP_V_eq_Ma_times_V(phi_1[i],wlink[i],phi,s);
-   SQDP_V_eq_r_times_V(phi_c[i],&norm,phi_1[i],s);
-   }
-
-
-
+    {
+#ifdef NOTRANS
+      /* Just copy */
+      SQDP_V_eq_V(phi_1[i],phi,s);
+#else
+      /* Parallel transport */
+      SQDP_V_eq_Ma_times_V(phi_1[i],wlink[i],phi,s);
+#endif
+      SQDP_V_eq_r_times_V(phi_c[i],&norm,phi_1[i],s);
+    }
+  
   for(j=0; j<RG_Ncn; ++j)
     QDP_destroy_V(phi_1[j]);
-
-return;
-
+  
+  return;
+  
 }
 

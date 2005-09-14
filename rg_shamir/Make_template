@@ -216,14 +216,14 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 
 RG_Shamir_nrg2::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DNRG=2" \
+	"DEFINES= -DFN ${DARCH}" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} "
 
-RG_Shamir_nrg3::
+RG_Shamir_nrg2_notrans::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DONEMASS -DNRG=3" \
+	"DEFINES= -DFN ${DARCH} -DNOTRANS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} "

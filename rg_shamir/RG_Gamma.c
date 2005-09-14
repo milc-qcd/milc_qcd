@@ -43,8 +43,8 @@ void RG_Gamma_Id()
     phi_check[i] = QDP_create_D();
   }
 
-  RG_create_block(&QDP_block[0],NRG);
-  RG_create_block(&QDP_block[1],NRG-1);
+  RG_create_block(&QDP_block[0],nrg);
+  RG_create_block(&QDP_block[1],nrg-1);
   
 
   RG_initialize_field(phi,0,0,QDP_block[0]);

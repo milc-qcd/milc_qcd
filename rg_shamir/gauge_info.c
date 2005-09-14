@@ -47,7 +47,6 @@ void write_appl_gauge_info(FILE *fp)
 			gauge_action_description,0,0);
   write_gauge_info_item(fp,"gauge.nloops","%d",(char *)&gauge_action_nloops,0,0);
   write_gauge_info_item(fp,"gauge.nreps","%d",(char *)&gauge_action_nreps,0,0);
-  write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
   write_gauge_info_item(fp,"gauge.tadpole.u0","%f",(char *)&u0,0,0);
 
   write_gauge_info_item(fp,"quark.description","%s",quark_action_description,0,0);

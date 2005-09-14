@@ -64,14 +64,14 @@ void RG_transformation( QDP_Sub_Block QDP_block[NRG+1])
 
 
 
-  for (i = 0; i < NRG; i++)
+  for (i = 0; i < nrg; i++)
   for (j = 0; j < RG_Ncn; j++)
    wlink[i][j] = QDP_create_M();
 
   RG_setup(QDP_block,wlink);
   node0_printf("-------START CHECK: hermicity of the paths--------------\n");
   node0_printf("Expected a zero matrix\n"); fflush(stdout);
-  for (i = 0; i < NRG; i++)
+  for (i = 0; i < nrg; i++)
    RG_check_hermicity(wlink[i],QDP_block[i]);
   node0_printf("-------END CHECK: hermicity of the paths --------------\n");
 
@@ -92,13 +92,13 @@ void RG_transformation( QDP_Sub_Block QDP_block[NRG+1])
  
   RG_coarse_to_fine(phi_c,QDP_block,phi,wlink);
   
-  //printf("RG %d from lattice %d to lattice %d\n",NRG-1,1,2); fflush(stdout);
+  //printf("RG %d from lattice %d to lattice %d\n",nrg-1,1,2); fflush(stdout);
  
-  RG_inv_transf_field(phi_1,phi_c,wlink[NRG-1],QDP_block[NRG-1],1); 
+  RG_inv_transf_field(phi_1,phi_c,wlink[nrg-1],QDP_block[nrg-1],1); 
 
   RG_fine_to_coarse(phi_f, QDP_block, phi_1, wlink);
 
-  fact_n = pow(norm,(double)NRG);
+  fact_n = pow(norm,(double)nrg);
 
   SQDP_V_eq_r_times_V_minus_V(res,&fact_n,phi,phi_f,QDP_block[0]);
  
@@ -113,7 +113,7 @@ void RG_transformation( QDP_Sub_Block QDP_block[NRG+1])
   node0_printf("---------------END CHECK: Wilson<->Wilson --------------\n");
   fflush(stdout);
 
- for (i = 0; i < NRG; i++)
+ for (i = 0; i < nrg; i++)
   for(j=0; j<RG_Ncn; ++j)
    QDP_destroy_M(wlink[i][j]);
 
@@ -157,7 +157,7 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
    set_M_from_field(link_qdp[i],F_OFFSET(link[i]));
   }
 
-  dssplaq1=plaquette_qdp(link_qdp,s[NRG],0);
+  dssplaq1=plaquette_qdp(link_qdp,s[nrg],0);
   rephase(OFF);
   rand_gauge(F_OFFSET(rgt));
   rephase(ON);
@@ -169,7 +169,7 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
     set_M_from_field(link_qdp_g[i],F_OFFSET(link[i]));
    }
  
-  dssplaq_g1=plaquette_qdp(link_qdp_g,s[NRG],0);
+  dssplaq_g1=plaquette_qdp(link_qdp_g,s[nrg],0);
 
 
   fprintf(stderr,"CHECK PLAQ: gauge diff: %e\n",dssplaq_g1-dssplaq1);
@@ -194,13 +194,13 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
   }
 
 
- RG_smearing(pr_link,link_qdp,s[NRG],1);
- SQDP_M_eq_M(pr_link[3],link_qdp[3],s[NRG]);
- dssplaq1=plaquette_qdp(pr_link,s[NRG],0);
+ RG_smearing(pr_link,link_qdp,s[nrg],1);
+ SQDP_M_eq_M(pr_link[3],link_qdp[3],s[nrg]);
+ dssplaq1=plaquette_qdp(pr_link,s[nrg],0);
  smearing();
  for(i=0; i< RG_Nd; ++i)
   set_M_from_field(pr_link[i],F_OFFSET(link[i]));
- dssplaqn=plaquette_qdp(pr_link,s[NRG],0);
+ dssplaqn=plaquette_qdp(pr_link,s[nrg],0);
  
  printf("QDP/MILC %e/%e\n",dssplaq1,dssplaqn);
  printf("diff: %e\n",dssplaqn-dssplaq1);
@@ -225,7 +225,7 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
  smearing();
  for(i=0; i< 3; ++i)
   set_M_from_field(pr_link[i],F_OFFSET(sm_link[i]));
- dssplaq1=plaquette_qdp(pr_link,s[NRG],0);
+ dssplaq1=plaquette_qdp(pr_link,s[nrg],0);
 
  rand_gauge(F_OFFSET(rgt));
 
@@ -238,7 +238,7 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
  smearing();
  for(i=0; i< 3; ++i)
   set_M_from_field(pr_link_g[i],F_OFFSET(sm_link[i]));
- dssplaq_g1=plaquette_qdp(pr_link_g,s[NRG],0);
+ dssplaq_g1=plaquette_qdp(pr_link_g,s[nrg],0);
  
  printf("SMEAR-GAUGED TYPE 2 MILC %e/%e\n",dssplaq1,dssplaq_g1);
  
@@ -264,8 +264,8 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
   }
 
  
- RG_smearing(pr_link,link_qdp,s[NRG],1);
- dssplaq1=plaquette_qdp(pr_link,s[NRG],0);
+ RG_smearing(pr_link,link_qdp,s[nrg],1);
+ dssplaq1=plaquette_qdp(pr_link,s[nrg],0);
  for(i=0; i< RG_Nd; ++i)
    set_field_from_M(F_OFFSET(link[i]),pr_link[i]);
 
@@ -273,7 +273,7 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
  rand_gauge(F_OFFSET(rgt));
  for(i=0; i< RG_Nd; ++i)
    set_M_from_field(pr_link_g[i],F_OFFSET(link[i]));
- dssplaq_g1=plaquette_qdp(pr_link_g,s[NRG],0);
+ dssplaq_g1=plaquette_qdp(pr_link_g,s[nrg],0);
  
  printf("SMEAR-GAUGED %e/%e\n",dssplaq1,dssplaq_g1);
   if (fabs(dssplaq1-dssplaq_g1) > TOL )   
@@ -298,17 +298,17 @@ printf("Check difference in QDP s(l) = sg(l)\n");
   }
 
  
- RG_smearing(pr_link,link_qdp,s[NRG],1);
- SQDP_M_eq_M(pr_link[3],link_qdp[3],s[NRG]);
- dssplaq1=plaquette_qdp(pr_link,s[NRG],0);
+ RG_smearing(pr_link,link_qdp,s[nrg],1);
+ SQDP_M_eq_M(pr_link[3],link_qdp[3],s[nrg]);
+ dssplaq1=plaquette_qdp(pr_link,s[nrg],0);
 
  rand_gauge(F_OFFSET(rgt));
  for(i=0; i< RG_Nd; ++i)
    set_M_from_field(link_qdp_g[i],F_OFFSET(link[i]));
 
- RG_smearing(pr_link_g,link_qdp_g,s[NRG],1);
- SQDP_M_eq_M(pr_link_g[3],link_qdp_g[3],s[NRG]);
- dssplaq_g1=plaquette_qdp(pr_link_g,s[NRG],0);
+ RG_smearing(pr_link_g,link_qdp_g,s[nrg],1);
+ SQDP_M_eq_M(pr_link_g[3],link_qdp_g[3],s[nrg]);
+ dssplaq_g1=plaquette_qdp(pr_link_g,s[nrg],0);
  
  printf("SMEAR-GAUGED TYPE 2 %e/%e\n",dssplaq1,dssplaq_g1);
   if (fabs(dssplaq1-dssplaq_g1) > TOL )   
@@ -327,7 +327,7 @@ printf("Check DeGrand trick\n");
  rephase(OFF);
  for(i=0; i< RG_Nd; ++i)
   {
-   for(j=0; j<NRG; ++j)
+   for(j=0; j<nrg; ++j)
    {
     rg_link_g[j][i] = QDP_create_M();
     rg_link[j][i] = QDP_create_M();
@@ -339,8 +339,8 @@ printf("Check DeGrand trick\n");
 
   RG_gauge(rg_link,link_qdp,s);
 
-  for(j=0; j<NRG; ++j)
-   dssplaq[j]=plaquette_qdp(rg_link[j],s[j+1],NRG-j-1);
+  for(j=0; j<nrg; ++j)
+   dssplaq[j]=plaquette_qdp(rg_link[j],s[j+1],nrg-j-1);
 
   rand_gauge(F_OFFSET(rgt));
   for(i=0; i< RG_Nd; ++i)
@@ -350,17 +350,17 @@ printf("Check DeGrand trick\n");
    }
 
   RG_gauge(rg_link_g,link_qdp_g,s);
-  for(j=0; j<NRG; ++j)
-   dssplaq_g[j]=plaquette_qdp(rg_link_g[j],s[j+1],NRG-j-1);
+  for(j=0; j<nrg; ++j)
+   dssplaq_g[j]=plaquette_qdp(rg_link_g[j],s[j+1],nrg-j-1);
 
 
-  for(j=0; j<NRG; ++j)
+  for(j=0; j<nrg; ++j)
   {
    printf("DEGRAND/GAUGED %e/%e\n",dssplaq[j],dssplaq_g[j]);
    if (fabs(dssplaq[j]-dssplaq_g[j]) > TOL )   
     {
     printf("Error: QDP-SMEAR not gauge invariant \n");
-    printf("diff for len %d: %e\n",intpow(2,NRG-j-1),fabs(dssplaq[j]-dssplaq_g[j]));
+    printf("diff for len %d: %e\n",intpow(2,nrg-j-1),fabs(dssplaq[j]-dssplaq_g[j]));
     status = 1;
     }
   }

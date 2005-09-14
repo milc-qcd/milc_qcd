@@ -19,6 +19,7 @@
 #define IF_OK if(status==0)
 
 #include "RG_Shamir_includes.h"	/* definitions files and prototypes */
+#include "RG_include.h"
 
 EXTERN gauge_header start_lat_hdr;
 gauge_file *gf;
@@ -112,26 +113,11 @@ initial_set()
      nflavors, and send to others */
   if(mynode()==0){
     /* print banner */
-    printf("SU3 with improved KS action\n");
-    printf("Microcanonical simulation with refreshing\n");
-    printf("MIMD version 6\n");
+    printf("RG_Shamir for KS action\n");
+    printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
-#ifdef HMC_ALGORITHM
-    printf("Hybrid Monte Carlo algorithm\n");
-#endif
-#ifdef PHI_ALGORITHM
-    printf("PHI algorithm\n");
-#else
-    printf("R algorithm\n");
-#endif
     status=get_prompt(&prompt);
     IF_OK status += get_i(prompt,"nflavors", &par_buf.nflavors );
-#ifdef PHI_ALGORITHM
-    IF_OK if(par_buf.nflavors != 4){
-      printf("Dummy! Use phi algorithm only for four flavors\n");
-      status++;
-    }
-#endif
     IF_OK status += get_i(prompt,"nx", &par_buf.nx );
     IF_OK status += get_i(prompt,"ny", &par_buf.ny );
     IF_OK status += get_i(prompt,"nz", &par_buf.nz );
@@ -177,34 +163,21 @@ readin(int prompt)
     printf("\n\n");
     status=0;
     
-    /* warms, trajecs */
-    IF_OK status += get_i(prompt,"warms", &par_buf.warms );
-    IF_OK status += get_i(prompt,"trajecs", &par_buf.trajecs );
-    
-    /* trajectories between propagator measurements */
-    IF_OK status += 
-      get_i(prompt,"traj_between_meas", &par_buf.propinterval );
-    
-    /* get couplings and broadcast to nodes	*/
-    /* beta, mass1, mass2 or mass */
-    IF_OK status += get_f(prompt,"beta", &par_buf.beta );
+    /* get mass and tadpole */
     IF_OK status += get_f(prompt,"mass", &par_buf.mass );
     IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
+
+    /* get number of RG blocking steps, counting the
+       staggered to Wilson as the first step */
     
-    /* microcanonical time step */
-    IF_OK status += 
-      get_f(prompt,"microcanonical_time_step", &par_buf.epsilon );
-    
-    /*microcanonical steps per trajectory */
-    IF_OK status += get_i(prompt,"steps_per_trajectory", &par_buf.steps );
-    
+    IF_OK status += get_i(prompt,"nrg", &par_buf.nrg );
+    if(nrg > NRG){
+      printf("Too many nrg steps.  Recompile with NRG >= %d\n",nrg);
+      status = 1;
+    }
+
     /* maximum no. of conjugate gradient iterations */
     IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
-    
-    /* error per site for conjugate gradient */
-    IF_OK status += get_f(prompt,"error_per_site", &x );
-    IF_OK par_buf.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
-    /* New conjugate gradient normalizes rsqmin by norm of source */
     
     /* error for propagator conjugate gradient */
     IF_OK status += get_f(prompt,"error_for_propagator", &x );
@@ -220,6 +193,7 @@ readin(int prompt)
 					par_buf.savefile );
     IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
 				  par_buf.stringLFN );
+    IF_OK status += get_s(prompt,"save_blocked_prop",par_buf.propfile);
     
     if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(this_node==0) */
@@ -229,22 +203,17 @@ readin(int prompt)
   
   if( par_buf.stopflag != 0 )return par_buf.stopflag;
   
-  warms = par_buf.warms;
-  trajecs = par_buf.trajecs;
-  steps = par_buf.steps;
-  propinterval = par_buf.propinterval;
   niter = par_buf.niter;
-  rsqmin = par_buf.rsqmin;
   rsqprop = par_buf.rsqprop;
-  epsilon = par_buf.epsilon;
-  beta = par_buf.beta;
   mass = par_buf.mass;
   u0 = par_buf.u0;
+  nrg = par_buf.nrg;
   startflag = par_buf.startflag;
   saveflag = par_buf.saveflag;
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);
   strcpy(stringLFN, par_buf.stringLFN);
+  strcpy(propfile, par_buf.propfile);
   
   /* Do whatever is needed to get lattice */
   if( startflag == CONTINUE ){

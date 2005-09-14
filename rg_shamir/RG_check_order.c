@@ -10,7 +10,9 @@
 
 #define TOL 10e-6
 
-void RG_gauge_paths(QDP_ColorMatrix *wlink[NRG][RG_Ncn], QDP_ColorMatrix *rg_link[NRG][RG_Nd],QDP_Sub_Block QDP_block[NRG+1])
+void RG_gauge_paths(QDP_ColorMatrix *wlink[NRG][RG_Ncn], 
+		    QDP_ColorMatrix *rg_link[NRG][RG_Nd],
+		    QDP_Sub_Block QDP_block[NRG+1])
 {
 int i,j,len;
 QDP_ColorMatrix *unit,*link_qdp[RG_Nd];
@@ -27,7 +29,7 @@ QLA_Complex one;
     set_M_from_field(link_qdp[i],F_OFFSET(link[i]));
    }
 
-  for(j=0; j<NRG; ++j)
+  for(j=0; j<nrg; ++j)
   for(i=0; i<RG_Nd; ++i)
    {
     rg_link[j][i] = QDP_create_M();
@@ -41,9 +43,9 @@ QLA_Complex one;
     QDP_destroy_M(link_qdp[i]);
 
 /* Create paths W(2x,2x+r) that connect the 16 corners of the hypercube */
-  for (i=0; i < NRG; i++)
+  for (i=0; i < nrg; i++)
   {
-  len = intpow(2,NRG-i-1);
+  len = intpow(2,nrg-i-1);
 
   printf("node %d:paths from lattice %d to lattice %d\n",this_node,2*len,len);
   fflush(stdout);
@@ -164,85 +166,89 @@ return (trace/vol);
 
 int RG_check_path()
 {
-int i,j,status=0;
-int len;
-QLA_Real check[NRG][RG_Ncn],checkg[NRG][RG_Ncn];
-QDP_Sub_Block QDP_block[NRG+1];
-QDP_ColorMatrix *wlink[NRG][RG_Ncn], *rg_link[NRG][RG_Nd];
-
-  for (i = 0; i < NRG+1; i++)
-   RG_create_block(&QDP_block[i],i);
-
-//  test(QDP_block);
-
+  int i,j,status=0;
+  int len;
+  QLA_Real check[NRG][RG_Ncn],checkg[NRG][RG_Ncn];
+  QDP_Sub_Block QDP_block[NRG+1];
+  QDP_ColorMatrix *wlink[NRG][RG_Ncn], *rg_link[NRG][RG_Nd];
+  
+  for (i = 0; i < nrg+1; i++)
+    RG_create_block(&QDP_block[i],i);
+  
+  //  test(QDP_block);
+  
   printf("START CHECK:-----------------order paths-----------------\n");
-  for (i = 0; i < NRG; i++)
-  {
-
-  for (j = 0; j < RG_Ncn; j++)
-  {
-   wlink[i][j] = QDP_create_M();
-   QDP_M_eq_zero(wlink[i][j],QDP_all);
-  }
-
-  for (j = 0; j < RG_Nd; j++)
-  {
-   rg_link[i][j] = QDP_create_M();
-   QDP_M_eq_zero(rg_link[i][j],QDP_all);
-  }
-
-  }
-
+  for (i = 0; i < nrg; i++)
+    {
+      
+      for (j = 0; j < RG_Ncn; j++)
+	{
+	  wlink[i][j] = QDP_create_M();
+	  QDP_M_eq_zero(wlink[i][j],QDP_all);
+	}
+      
+      for (j = 0; j < RG_Nd; j++)
+	{
+	  rg_link[i][j] = QDP_create_M();
+	  QDP_M_eq_zero(rg_link[i][j],QDP_all);
+	}
+      
+    }
+  
   
   rephase(OFF);
   RG_gauge_paths(wlink,rg_link,QDP_block);
-
+  
   printf("paths created\n");
-  for (i = 0; i < NRG; i++)
-  {
-   len = intpow(2,NRG-i-1);
-  for (j = 0; j < RG_Ncn; j++)
-   check[i][j] = RG_check_order(wlink[i][j],rg_link[i],QDP_block[i],len,j);
-  }
+  for (i = 0; i < nrg; i++)
+    {
+      len = intpow(2,nrg-i-1);
+      for (j = 0; j < RG_Ncn; j++)
+	check[i][j] = RG_check_order(wlink[i][j],
+				     rg_link[i],
+				     QDP_block[i],len,j);
+    }
   printf("Traces evaluated\n");
   
-  for (i = 0; i < NRG; i++)
-  {
-
-   for (j = 0; j < RG_Ncn; j++)
-    QDP_M_eq_zero(wlink[i][j],QDP_all);
-
-   for (j = 0; j < RG_Nd; j++)
-    QDP_M_eq_zero(rg_link[i][j],QDP_all);
-   
-  }
+  for (i = 0; i < nrg; i++)
+    {
+      
+      for (j = 0; j < RG_Ncn; j++)
+	QDP_M_eq_zero(wlink[i][j],QDP_all);
+      
+      for (j = 0; j < RG_Nd; j++)
+	QDP_M_eq_zero(rg_link[i][j],QDP_all);
+      
+    }
   
   rand_gauge(F_OFFSET(rgt));
   RG_gauge_paths(wlink,rg_link,QDP_block);
   rephase(ON);
- 
-  for (i = 0; i < NRG; i++)
-  {
-   len = intpow(2,NRG-i-1);
-  for (j = 0; j < RG_Ncn; j++)
-   checkg[i][j] = RG_check_order(wlink[i][j],rg_link[i],QDP_block[i],len,j);
-  }
   
-  for (i = 0; i < NRG; i++)
-   {
-    len = intpow(2,NRG-i-1);
-    for (j = 0; j < RG_Ncn; j++)
+  for (i = 0; i < nrg; i++)
     {
-    printf("For len = %d and paths %d diff:  %.9e = %.9e\n",len,j,checkg[i][j],check[i][j]);
-    if ( fabs(checkg[i][j] - check[i][j] ) > TOL )
-      {
-      //printf("For nrg = %d and paths %d diff: %e=%e\n",i,j,checkg[i][j],check[i][j]);
-      status = 1;
-      }
+      len = intpow(2,nrg-i-1);
+      for (j = 0; j < RG_Ncn; j++)
+	checkg[i][j] = RG_check_order(wlink[i][j],
+				      rg_link[i],
+				      QDP_block[i],len,j);
     }
-   }
-    
+  
+  for (i = 0; i < nrg; i++)
+    {
+      len = intpow(2,nrg-i-1);
+      for (j = 0; j < RG_Ncn; j++)
+	{
+	  printf("For len = %d and paths %d diff:  %.9e = %.9e\n",len,j,checkg[i][j],check[i][j]);
+	  if ( fabs(checkg[i][j] - check[i][j] ) > TOL )
+	    {
+	      //printf("For nrg = %d and paths %d diff: %e=%e\n",i,j,checkg[i][j],check[i][j]);
+	      status = 1;
+	    }
+	}
+    }
+  
   printf("END CHECK:-----------------order paths-----------------\n");
-
+  
   return status;
 } 

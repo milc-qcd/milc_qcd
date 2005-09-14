@@ -53,14 +53,6 @@ typedef struct {
         su3_matrix sm_link[4];  /* the smeared field */
         su3_matrix stapleg;
         su3_vector tempvecg;       
-#if  defined(HYBRIDS)
-	su3_matrix longlink[4];	/* three link straight paths */
-#endif
-
-#ifdef HMC_ALGORITHM
- 	su3_matrix old_link[4];
-	/* For accept/reject */
-#endif
 
 	/* antihermitian momentum matrices in each direction */
  	anti_hermitmat mom[4];
@@ -72,9 +64,6 @@ typedef struct {
 	/* 3 element complex vectors */
  	su3_vector phi;		/* Gaussian random source vector */
  	su3_vector xxx;		/* solution vector = Kinverse * phi */
-#ifdef PHI_ALGORITHM
- 	su3_vector old_xxx;	/* For predicting next xxx */
-#endif
  	su3_vector resid;	/* conjugate gradient residual vector */
  	su3_vector phi2;	/* Gaussian random source vector, mass2 */
  	su3_vector cg_p;	/* conjugate gradient change vector */
@@ -82,26 +71,12 @@ typedef struct {
  	su3_vector g_rand;	/* Gaussian random vector*/
 	/* Use trick of combining xxx=D^adj D)^(-1) on even sites with
 	   Dslash times this on odd sites when computing fermion force */
-	
-#ifdef HYBRIDS
-        su3_matrix field_strength[6];
-#endif
-	/* temporary vectors and matrices */
+
 	su3_vector tempvec[4];	/* One for each direction */
         su3_matrix s_link,s_link_f,t_link_f,diag,test[4];
 #ifdef FN
 	su3_vector templongvec[4];	/* One for each direction */
         su3_vector templongv1;
-#endif
-#ifdef DM_DU0
-	su3_vector dMdu_x;	/* temp vector for <psi-bar(dM/du0)psi>
-				   calculation in 'f_meas.c' */
-#endif
-#ifdef NPBP_REPS
- 	su3_vector M_inv;	/* temp vector for M^{-1} g_rand */
-#endif
-#ifdef CHEM_POT
- 	su3_vector dM_M_inv;	/* temp vector for dM/dmu M^{-1} g_rand */
 #endif
 } site;
 
@@ -123,22 +98,24 @@ typedef struct {
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
-EXTERN	int warms,trajecs,steps,niter,propinterval;
+EXTERN  Real beta;
+EXTERN	int niter;
 EXTERN  int nflavors;
-EXTERN	Real epsilon;
-EXTERN  Real beta,u0;
+EXTERN  Real u0;
 EXTERN  Real mass;
-EXTERN	Real rsqmin,rsqprop;
+EXTERN	Real rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
 			   SAVE_CHECKPOINT */
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
+EXTERN  char propfile[MAXFILENAME];   /* For blocked propagator */
 EXTERN	int total_iters;
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
 EXTERN  int source_start, source_inc, n_sources;
         /* source time, increment for it, and number of source slices */
+EXTERN  int nrg;   /* Working number of RG steps */
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */

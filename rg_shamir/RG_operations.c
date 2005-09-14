@@ -49,11 +49,11 @@ void RG_create_block(QDP_Sub_Block *block, int n)
 {
 QDP_Subset *test;
 
-  block->fact = fact = intpow(2,NRG-n);
+  block->fact = fact = intpow(2,nrg-n);
 
   printf("Create a subset for lattice %d x a, this node %d\n",fact,this_node); fflush(stdout);
 
-  if ( n == NRG) block->sub = QDP_all;
+  if ( n == nrg) block->sub = QDP_all;
   else
   {
    test = QDP_create_subset(func_block,NULL,2);
@@ -234,10 +234,10 @@ return;
 void SQDP_V_eq_V(QDP_ColorVector *a ,QDP_ColorVector *b, QDP_Sub_Block s)
 {
 
-fact = s.fact;
-QDP_V_eq_V(a,b,s.sub);
-
-return;
+  fact = s.fact;
+  QDP_V_eq_V(a,b,s.sub);
+  
+  return;
 }
 
 void SQDP_V_peq_V(QDP_ColorVector *a ,QDP_ColorVector *b, QDP_Sub_Block s)

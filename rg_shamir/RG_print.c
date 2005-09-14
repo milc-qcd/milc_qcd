@@ -6,6 +6,7 @@
 #include <math.h>
 #include "RG_Shamir_includes.h"
 #include "RG_include.h"
+#include <string.h>
 #define TOL 10e-6
 
 
@@ -51,47 +52,53 @@ return;
 }
 
 
+/* Print the 0 color component only */
 void print_cv_node(QLA_ColorVector *df, int coords[])
 {
   QLA_Complex z;
-  char file[10] = "RG_file";
-  char filename[20];
-  FILE *fw;
+  static char filename[MAXFILENAME+8];
+  static FILE *fw = NULL;
   int i,j;
 
-  sprintf(file,"%s.%d",file,this_node);
-  fw = fopen(file,"a");
+  if(fw == NULL){
+    sprintf(filename,"%s.%d",propfile,this_node);
+    fw = fopen(filename,"w");
+  }
 
   z = QLA_elem_V(*df,0);
 //  if ( (fabs(QLA_real(z)) > TOL) || fabs((QLA_imag(z)) > TOL) )
-    fprintf(fw,"%d %d %d %d %d %d %g\t%g\n",S,T,coords[0],coords[1],coords[2],coords[3],QLA_real(z), QLA_imag(z));fflush(stdout);
+  fprintf(fw,"%d %d %d %d %d %d %g\t%g\n",S,T,
+	  coords[0],coords[1],coords[2],coords[3],
+	  QLA_real(z), QLA_imag(z));fflush(stdout);
+  //  fclose(fw);
   
-
-  fclose(fw);
-
-return;
+  return;
 }
 
+/* Print all color components */
 void print_cv_node_tot(QLA_ColorVector *df, int coords[])
 {
   QLA_Complex z;
-  char file[10] = "RG_file";
-  char filename[20];
-  FILE *fw;
+  static char filename[MAXFILENAME+8];
+  static FILE *fw = NULL;
   int i,j;
 
-  sprintf(file,"%s.%d",file,this_node);
-  fw = fopen(file,"a");
+  if(fw == NULL){
+    sprintf(filename,"%s.%d",propfile,this_node);
+    fw = fopen(filename,"a");
+  }
 
-    for(j=0; j<QLA_Nc; j++) 
+  for(j=0; j<QLA_Nc; j++) 
     {
-     z = QLA_elem_V(*df,j);
-    fprintf(fw,"%d %d %d %d %d %d %d %g\t%g\n",S,T,j,coords[0],coords[1],coords[2],coords[3],QLA_real(z), QLA_imag(z));fflush(stdout);
+      z = QLA_elem_V(*df,j);
+      fprintf(fw,"%d %d %d %d %d %d %d %g\t%g\n",S,T,j,
+	      coords[0],coords[1],coords[2],coords[3],
+	      QLA_real(z), QLA_imag(z));
     }
 
-  fclose(fw);
+  //  fclose(fw);
 
-return;
+  return;
 }
 
 

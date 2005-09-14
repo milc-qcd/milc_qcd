@@ -31,15 +31,15 @@ QLA_Complex unit;
 
 
   for(i=0; i<RG_Nd; ++i)
-  SQDP_M_eq_c(link_qdp[i],&unit,QDP_block[NRG]);
+  SQDP_M_eq_c(link_qdp[i],&unit,QDP_block[nrg]);
   
 //  printf("Created!!! this node %d\n",this_node); fflush(stdout);
 
   for(i=0; i<RG_Nd; ++i)
-   SQDP_M_eq_sM(prova[i], link_qdp[i], QDP_neighbor[i], QDP_forward, QDP_block[NRG-1]);
+   SQDP_M_eq_sM(prova[i], link_qdp[i], QDP_neighbor[i], QDP_forward, QDP_block[nrg-1]);
 
 //  printf("I am out!!! this node %d\n",this_node); fflush(stdout);
-//  SQDP_M_eq_func(prova[0],print_gl,QDP_block[NRG-1]);
+//  SQDP_M_eq_func(prova[0],print_gl,QDP_block[nrg-1]);
 //  printf("I have printed!!! this node %d\n",this_node); fflush(stdout);
  
  

@@ -47,7 +47,7 @@ void RG_smearing(QDP_ColorMatrix *dest[RG_Nd], QDP_ColorMatrix *src[RG_Nd],QDP_S
   RG_value(&staple_w,&link0,&space_only);
   /* Two smearing steps  */
 
-  RG_smearing_qdp(sm_link,src,&staple_w,&link0,s,len);
+  RG_smearing_qdp(sm_link, src, &staple_w, &link0, s, len);
 #ifdef CHECK_SMEAR_QDP_MILC
   project_qdp(sm_link, dest,&space_only);
 #else
@@ -75,86 +75,97 @@ void RG_smearing(QDP_ColorMatrix *dest[RG_Nd], QDP_ColorMatrix *src[RG_Nd],QDP_S
 return;
 }
 
-void RG_create_gauge(QDP_ColorMatrix *res[RG_Nd], QDP_ColorMatrix *src[RG_Nd], QDP_Sub_Block s,int len)
+/* On a lattice with lattice constant len, along each axis, multiply
+   two adjacent smeared links in src to form a coarse link res on a
+   lattice s with lattice constant 2 * len */
+void RG_create_gauge(QDP_ColorMatrix *res[RG_Nd], 
+		     QDP_ColorMatrix *src[RG_Nd], 
+		     QDP_Sub_Block s, int len)
 {
   int i,j,k;
   int v[RG_Nd];
   QDP_ColorMatrix *temp,*temp1;
   QDP_Shift offset;
   
-
-   temp = QDP_create_M();
-   temp1 = QDP_create_M();
-
-   for(j=0; j<RG_Nd; ++j)
-   {
   
-   for(k=0; k<RG_Nd; ++k) v[k] = 0;
-   v[j] = len; 
-
-
-   offset = QDP_create_shift(v);
-   SQDP_M_eq_M_times_sM(res[j],src[j],src[j],offset,QDP_forward,s);
-   QDP_destroy_shift(offset);
-   
-  // printf("Multp........node %d for %d\n",this_node,j); fflush(stdout);
-   }
-
- // node0_printf(".......................done\n"); fflush(stdout);
-
+  temp = QDP_create_M();
+  temp1 = QDP_create_M();
+  
+  for(j=0; j<RG_Nd; ++j)
+    {
+      
+      /* On axis displacement of length len */
+      for(k=0; k<RG_Nd; ++k) v[k] = 0;
+      v[j] = len; 
+      
+      offset = QDP_create_shift(v);
+      SQDP_M_eq_M_times_sM(res[j],src[j],src[j],offset,QDP_forward,s);
+      QDP_destroy_shift(offset);
+      
+      // printf("Multp........node %d for %d\n",this_node,j); fflush(stdout);
+    }
+  
+  // node0_printf(".......................done\n"); fflush(stdout);
+  
   QDP_destroy_M(temp);
   QDP_destroy_M(temp1);
-return;
-
+  return;
 }
   
-void RG_gauge(QDP_ColorMatrix *rg_link[NRG][RG_Nd], QDP_ColorMatrix *link_qdp[RG_Nd], QDP_Sub_Block s[NRG+1])
+/* Working from the finest lattice, smear the links at each level of
+   coarseness and multiply to form the links on the next higher
+   level.  Results in rg_link. */
+void RG_gauge(QDP_ColorMatrix *rg_link[NRG][RG_Nd], 
+	      QDP_ColorMatrix *link_qdp[RG_Nd], 
+	      QDP_Sub_Block s[NRG+1])
 {
   int i,j,len;
   QDP_ColorMatrix *pr_sm_link[RG_Nd];
-
- // node0_printf("Smearing links with Degrand trick........\n"); fflush(stdout);
- 
+  
+  // node0_printf("Smearing links with Degrand trick........\n"); fflush(stdout);
+  
   for(i=0; i< RG_Nd; ++i)
     pr_sm_link[i] = QDP_create_M();
-
-
+  
+  
 #ifdef CHECK_DEGRAND_WO_SMEAR
   for(i=0; i< RG_Nd; ++i)
-  SQDP_M_eq_M(rg_link[NRG-1][i],link_qdp[i],s[NRG]);
+    SQDP_M_eq_M(rg_link[nrg-1][i],link_qdp[i],s[nrg]);
 #else
-  RG_smearing(rg_link[NRG-1],link_qdp,s[NRG],1);
+  RG_smearing(rg_link[nrg-1],link_qdp,s[nrg],1);
 #ifdef CHECK_DEGRAND_W_SMEAR
-  SQDP_M_eq_M(rg_link[NRG-1][3],link_qdp[3],s[NRG]);
+  SQDP_M_eq_M(rg_link[nrg-1][3],link_qdp[3],s[nrg]);
 #endif
 #endif
-
-
-  for (i=1;i<NRG;i++)
-  {
-  len = intpow(2,i-1);
-
- //  printf("node %d: Smear links of length %d x a'\n",this_node,len); fflush(stdout);
- //  printf("node %d: rg_links of length %d x a'\n",this_node,2*len); fflush(stdout);
-
+  
+  
+  /* Work from the finest to the coarsest level */
+  for (i=1;i<nrg;i++)
+    {
+      len = intpow(2,i-1);
+      
+      //  printf("node %d: Smear links of length %d x a'\n",this_node,len); fflush(stdout);
+      //  printf("node %d: rg_links of length %d x a'\n",this_node,2*len); fflush(stdout);
+      
+      /* Smear the links */
 #ifdef CHECK_DEGRAND_WO_SMEAR
-  for(j=0; j< RG_Nd; ++j)
-   SQDP_M_eq_M(pr_sm_link[j],rg_link[NRG-i][j],s[NRG-i+1]);
+      for(j=0; j< RG_Nd; ++j)
+	SQDP_M_eq_M(pr_sm_link[j],rg_link[nrg-i][j],s[nrg-i+1]);
 #else
-  RG_smearing(pr_sm_link,rg_link[NRG-i],s[NRG-i+1],len);
+      RG_smearing(pr_sm_link,rg_link[nrg-i],s[nrg-i+1],len);
 #ifdef CHECK_DEGRAND_W_SMEAR
-  SQDP_M_eq_M(pr_sm_link[3],rg_link[NRG-i][3],s[NRG-i+1]);
+      SQDP_M_eq_M(pr_sm_link[3],rg_link[nrg-i][3],s[nrg-i+1]);
 #endif
 #endif
-
-  RG_create_gauge(rg_link[NRG-i-1],pr_sm_link,s[NRG-i],len);
-
-  }
- 
-
-//  node0_printf(".......................done\n"); fflush(stdout);
+      
+      /* Multiply the links */
+      RG_create_gauge(rg_link[nrg-i-1],pr_sm_link,s[nrg-i],len);
+    }
+  
+  
+  //  node0_printf(".......................done\n"); fflush(stdout);
   for(i=0; i< RG_Nd; ++i)
-   QDP_destroy_M(pr_sm_link[i]);
+    QDP_destroy_M(pr_sm_link[i]);
 
 return;
 
