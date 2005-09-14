@@ -600,6 +600,64 @@ int get_s( int prompt, char *variable_name_string, char *value ){
     return(0);
 }
 
+/* Read a vector of integers */
+int get_vi( int prompt, char *variable_name_string, int *value, int nvalues ){
+    int s;
+    int i;
+    char checkname[80];
+
+    if(prompt)  {
+      s = 0;
+      while(s != 1){
+    	printf("enter %s with %d values",variable_name_string, nvalues);
+	scanf("%s",checkname);
+    	s=sscanf(checkname,"%d",value);
+    	if (s == 1)
+	  printf("%s %d\n",variable_name_string,*value);
+	else
+	  printf("Data format error.\n");
+      }
+    }
+    else  {
+      s = scanf("%s",checkname);
+      if (s == EOF){
+	printf("get_i: EOF on STDIN.\n");
+	return(1);
+      }
+      else if(s==0){
+	printf("\nget_i: Format error looking for %s\n",variable_name_string);
+	return(1);
+      }
+      else if(strcmp(checkname,variable_name_string) != 0){
+	printf("\nget_i: ERROR IN INPUT: expected %s but found %s\n",
+	       variable_name_string,checkname);
+	return(1);
+      }
+
+      printf("%s ",variable_name_string);
+	  
+      for(i = 0; i < nvalues; i++){
+	
+	s = scanf("%d",value + i);
+	if (s == EOF){
+	  printf("\nget_i: Expecting value for %s but found EOF.\n",
+		 variable_name_string);
+	  return(1);
+	}
+	else if(s==0){
+	  printf("\nget_i: Format error reading value for %s\n",
+		 variable_name_string);
+	  return(1);
+	}
+	printf("%d ",*value);
+      }
+      printf("\n");
+    }
+    
+    return(0);
+
+}
+
 /* get_prompt gets the initial value of prompt */
 /* 0 for reading from file, 1 prompts for input from terminal */
 /* should be called only by node 0 */

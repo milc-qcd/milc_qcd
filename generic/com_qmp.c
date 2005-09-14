@@ -119,7 +119,7 @@
 #endif
 
 /* If we want to do our own checksums */
-#ifdef COM_QMP_CRC
+#ifdef COM_CRC
 u_int32type crc32(u_int32type crc, const unsigned char *buf, size_t len);
 #define CRCBYTES 8
 #else
@@ -219,6 +219,9 @@ typedef struct {
    it has the same name as the typedef which contains this structure which
    the user sees */
 struct msg_tag {
+#ifdef CRC_DEBUG
+  int index;
+#endif
   int prepared;
   //  int *ids;          /* array of message ids used in gather */
   //  int nids;          /* number of message ids used in gather */
@@ -1380,6 +1383,9 @@ declare_strided_gather(
 
   /*  allocate the message tag */
   mtag = (msg_tag *)malloc(sizeof(msg_tag));
+#ifdef CRC_DEBUG
+  mtag->index = index;
+#endif
   mtag->prepared = 0;
 
 #if 0
@@ -1521,6 +1527,9 @@ prepare_gather(msg_tag *mtag)
     }
     tpt = (char *) QMP_get_memory_pointer(mrecv[i].qmp_mem);
     mrecv[i].msg_buf = tpt;
+#ifdef CRC_DEBUG
+    memset(tpt, '\0', mrecv[i].msg_size+CRCBYTES);
+#endif
     mrecv[i].mm = QMP_declare_msgmem(mrecv[i].msg_buf, mrecv[i].msg_size+CRCBYTES);
     //mrecv[i].mh = QMP_declare_receive_from(mrecv[i].mm, mrecv[i].msg_node, 0);
     mtag->mhrecvlist[i] = QMP_declare_receive_from(mrecv[i].mm, mrecv[i].msg_node, 0);
@@ -1603,7 +1612,7 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
       }
     } while((gmem=gmem->next)!=NULL);
     /* start the send */
-#ifdef COM_QMP_CRC
+#ifdef COM_CRC
     {
       int msg_size;
       char *crc_pt;
@@ -1615,6 +1624,17 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
       crc = (u_int32type *)crc_pt;
 
       *crc = crc32(0, tpt, msg_size );
+#ifdef CRC_DEBUG
+      {
+	char filename[128];
+	FILE *dump;
+	sprintf(filename,"/tmp/send.%d.to.%d.dir%d.msg%d",
+		mynode(),mbuf[i].msg_node,mtag->index,i);
+	dump = fopen(filename,"w");
+	fwrite(tpt, 1, msg_size + CRCBYTES, dump);
+	fclose(dump);
+      }
+#endif      
     }
 #endif
     //QMP_start(mbuf[i].mh);
@@ -1629,6 +1649,9 @@ void
 wait_gather(msg_tag *mtag)
 {
   int i;
+#ifdef COM_CRC
+  int fail = 0;
+#endif
 
   /* wait for all receive messages */
 #if 0
@@ -1645,7 +1668,7 @@ wait_gather(msg_tag *mtag)
   }
 #endif
   if(mtag->nsends>0) QMP_wait( mtag->mhsend );
-#if COM_QMP_CRC
+#if COM_CRC
   /* Verify the checksums received */
   for(i=0; i<mtag->nrecvs; i++) {
     {
@@ -1666,12 +1689,25 @@ wait_gather(msg_tag *mtag)
       if(*crc != crcgot){
 	fprintf(stderr,
 		"Node %d received checksum %x != node %d sent checksum %x\n",
-		mynode(),*crc, mbuf->msg_node, crcgot);
+		mynode(),*crc, mbuf[i].msg_node, crcgot);
 	fflush(stdout);
-	terminate(1);
+	fail = 1;
+#ifdef CRC_DEBUG
+	{
+	  char filename[128];
+	  FILE *dump;
+	  sprintf(filename,"/tmp/receive.%d.from.%d.dir%d.msg%d",mynode(),
+		  mbuf[i].msg_node,mtag->index,i);
+	  dump = fopen(filename,"w");
+	  fwrite(tpt, 1, msg_size + CRCBYTES, dump);
+	  fclose(dump);
+	}
+#endif      
       }
     }
   }
+  QMP_sum_int(&fail);
+  if(fail > 0)terminate(1);
 #endif
 }
 
@@ -2787,7 +2823,7 @@ cleanup_general_gather(msg_tag *mtag)
   free(mtag);
 }
 
-#ifdef COM_QMP_CRC
+#ifdef COM_CRC
 /*
 ** compute crc32 checksum
 */
