@@ -116,15 +116,20 @@ else
   endif
 endif
 
-# Choose non-QDP FN dslash (dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o )
+# Choose a non-QDP FN dslash (dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o )
 DSLASH_FN = dslash_fn2.o
 
+# Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
   CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o
 else
-  # Choose non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
-  # or d_congrad5_fn_fewsums.o)
-  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o
+  ifeq ($(strip ${HAVEQDP}),true)
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o
+  else
+    # Choose a non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
+    # or d_congrad5_fn_fewsums.o)
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o
+  endif
 endif
 
 ifeq ($(strip ${QCDOC}),true)
@@ -133,7 +138,7 @@ endif
 
 ifeq ($(strip ${HAVEQDP}),true)
   QDP_OBJECTS = stuff_qdp.o
-  INV_FN_OBJECTS = d_congrad5_two_src.o d_congrad5_fn_qdp.o ${DSLASH_FN} dslash_fn_qdp.o 
+  INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
   MULTI_INV_FN = ks_multicg_qdp.o
 # Choose (fermion_force_asqtad_qdp.o )
   ASQFORCE = fermion_force_asqtad_qdp.o
@@ -240,7 +245,7 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP}
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCOM_QMP_CRC" \
+	"DEFINES= -DFN -DCOM_CRC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
