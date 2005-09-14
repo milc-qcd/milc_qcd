@@ -347,6 +347,7 @@ void coldlat();
 void funnylat();
 int get_f( int prompt, char *variable_name_string, Real *value );
 int get_i( int prompt, char *variable_name_string, int *value );
+int get_vi( int prompt, char *variable_name_string, int *value, int nvalues );
 int get_s( int prompt, char *variable_name_string, char *value );
 int get_prompt( int *value );
 

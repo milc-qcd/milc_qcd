@@ -169,7 +169,18 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol);
 /* multimass_inverter.c */
-int multimass_inverter( Real *masses, int nmasses, Real tol);
+#define MAX_MMINV_NMASSES 32
+#define MAX_MMINV_SOURCES 16
+typedef struct {
+  Real masses[MAX_MMINV_NMASSES];
+  int nmasses;
+  int n_sources;
+  int r0[MAX_MMINV_SOURCES][4];
+  Real tol;
+  Real rsqprop;
+} params_mminv;
+
+int multimass_inverter( params_mminv *mminv);
 
 /* nl_spectrum.c */
 int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
