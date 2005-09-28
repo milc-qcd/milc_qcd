@@ -70,5 +70,7 @@ Here are the new features so far:
 
 20. Modified multimass inverter to allow arbitrary source points.
 
+21. Add C versions of MILC QOP wrappers.  Make wrappers support QOP/QDP.
+
 C. DeTar, Utah
-14 Sept 2005
+28 Sept 2005
