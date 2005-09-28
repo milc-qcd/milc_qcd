@@ -233,7 +233,11 @@ ifeq ($(strip ${HAVEQDP}),true)
   DHAVE_QDP = -DHAVE_QDP
 endif
 
-DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP}
+ifeq ($(strip ${HAVEQOP}),true)
+  DHAVE_QOP = -DHAVE_QOP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 ##### Targets:
 #		("FN" = "fat+Naik")

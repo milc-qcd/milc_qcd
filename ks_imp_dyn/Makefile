@@ -82,7 +82,7 @@ OPT              = -O3
 # 7. Choose large file support
 #CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE64 # Large files gcc only
 CLFS = # Not researched for others
-#CLFS = -D_LARGE_FILES   # Blue Horizon
+#CLFS = -D_LARGE_FILES   # AIX
 
 #----------------------------------------------------------------------
 # 8. Installation-specific MPI includes and libraries
@@ -141,7 +141,8 @@ QMPSNG = ${SCIDAC}/qmp-single
 QDP = ${SCIDAC}/qdp
 QLA = ${SCIDAC}/qla
 # Level 3
-QOP = /home/chulwoo/SciDAC/Asqtad_L3
+#QOP = /host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05
+QOP = ${SCIDAC}/qop
 
 # Make_template_scidac defines these macros:
 # HAVEQDP HAVEQIO HAVEQMP (Says what we are compiling with)
@@ -219,10 +220,14 @@ else
 endif
 
 ifeq ($(strip ${HAVEQDP}),true)
-  PREC = -DPRECISION=${PRECISION} -DQDP_Precision=${PRECISION}
-else
-  PREC = -DPRECISION=${PRECISION}
+  QDPPREC = -DQDP_Precision=${PRECISION}
 endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  QOPPREC = -DQOP_Precision=${PRECISION}
+endif
+
+PREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC}
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
