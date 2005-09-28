@@ -1,63 +1,32 @@
+/******* d_congrad5_fn_qop_two_src.c - conjugate gradient for SU3/fermions **/
+/* MIMD version 7 */
 
-#ifndef __cplusplus
-#error d_congrad5_fn_qop_two_src.c requires a c++ compiler
-#endif
+/* This is the two-source MILC wrapper for the SciDAC Level 3 QOP inverter */
+/* 2/2005 D. Renner and C. Jung */
+/* 5/2005 C. DeTar two source version eliminates one remapping */
 
-// The file qop.h is a c++ header file.
-#include "qop.h"
-
-// The file generic_ks_includes.h is a c header.  This
-// syntax may be dangerous.
-extern "C" {
 #include "generic_ks_includes.h"
-}
 
-// This requires that the choosen layout supplies the following global
-// variables.  Current acceptable options for the layout are layout_qdp
-// and layout_qcdoc.  The following list of globals can be made smaller
-// if needed, but is convenient for now.
+#include <qop.h>
 
-extern "C" int lattice_nx;  // This is another name for nx.
-extern "C" int lattice_ny;  // This is another name for ny.
-extern "C" int lattice_nz;  // This is another name for nz.
-extern "C" int lattice_nt;  // This is another name for nt.
+// The following are defined in layout_qcdoc.c, the only choice for
+// the QCDOC
 
-extern "C" int sub_lattice_nx;
-extern "C" int sub_lattice_ny;
-extern "C" int sub_lattice_nz;
-extern "C" int sub_lattice_nt;
+extern int sub_lattice_nx;
+extern int sub_lattice_ny;
+extern int sub_lattice_nz;
+extern int sub_lattice_nt;
 
-extern "C" int sub_lattice_volume;
-
-extern "C" int machine_nx;
-extern "C" int machine_ny;
-extern "C" int machine_nz;
-extern "C" int machine_nt;
-
-extern "C" int machine_x;
-extern "C" int machine_y;
-extern "C" int machine_z;
-extern "C" int machine_t;
-
-extern "C" {
-void allocate_qop_fields( Float** qop_fat_links, Float** qop_long_links, Float** qop_src, Float** qop_sol );
-
-void map_milc_to_qop( field_offset milc_src, field_offset milc_sol,
-		      Float* qop_fat_links, Float* qop_long_links,
-		      Float* qop_src, Float* qop_sol, int milc_parity );
-
-void set_qop_invert_arg( QOP_invert_arg* qop_invert_arg, Real mass, int max_iterations, Real min_resid_sq, int milc_parity );
-
-void map_qop_to_milc( Float* qop_sol, field_offset milc_sol, int milc_parity );
-
-int ks_congrad_qop( Float* qop_source, Float* qop_solution,
-		    Float* qop_fat_links, Float* qop_long_links,
-		    QOP_invert_arg* qop_invert_arg, Real* final_rsq_ptr );
-}
+extern int machine_x;
+extern int machine_y;
+extern int machine_z;
+extern int machine_t;
 
 
-static void map_milc_src_sol_to_qop( field_offset milc_src, field_offset milc_sol,
-                             Float* qop_src, Float* qop_sol, int milc_parity );
+static void map_milc_src_sol_to_qop( field_offset milc_src, 
+				     field_offset milc_sol,
+				     Real* qop_src, Real* qop_sol, 
+				     int milc_parity );
 
 
 int ks_congrad_two_src(	/* Return value is number of iterations taken */
@@ -78,7 +47,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   double dtimec;
   double nflop = 1187;
   if( milc_parity == EVENANDODD ) nflop *= 2;
-
+  
 #endif
   
   ///////////////////////////////////////////////////////
@@ -89,23 +58,21 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   if( valid_longlinks != 1 ) load_longlinks();
   
 #ifdef CGTIME
-  
   dtimec = -dclock(); 
-  
 #endif
-
+  
   ///////////////////////////////////////////////////////
   // allocate qop fields                               //
   ///////////////////////////////////////////////////////
   
-  // Float is the QOP precision.  It reduces to float if SINGLE
+  // Real is the QOP precision.  It reduces to float if SINGLE
   // is defined and defaults to double otherwise.
-  Float* qop_fat_links = NULL;
-  Float* qop_long_links = NULL;
-  Float* qop_src = NULL;
-  Float* qop_sol = NULL;
+  Real* qop_fat_links = NULL;
+  Real* qop_long_links = NULL;
+  Real* qop_src = NULL;
+  Real* qop_sol = NULL;
   
-  allocate_qop_fields( & qop_fat_links, & qop_long_links, 
+  congrad_fn_allocate_qop_fields( & qop_fat_links, & qop_long_links, 
 		       & qop_src, & qop_sol );
   
   ///////////////////////////////////////////////////////
@@ -113,7 +80,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   ///////////////////////////////////////////////////////
   
   // The milc_fat_links and milc_long_links are passed implicitly.
-  map_milc_to_qop( milc_src1, milc_sol1, 
+  congrad_fn_map_milc_to_qop_raw( milc_src1, milc_sol1, 
 		   qop_fat_links, qop_long_links, 
 		   qop_src, qop_sol, milc_parity );
   
@@ -129,7 +96,8 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   
   QOP_invert_arg qop_invert_arg;
   
-  set_qop_invert_arg( & qop_invert_arg, mass1, niter, rsqmin, milc_parity );
+  congrad_fn_set_qop_invert_arg( & qop_invert_arg, mass1, niter, 
+				 rsqmin, milc_parity );
   
   ///////////////////////////////////////////////////////
   // qop conjugate gradient                            //
@@ -145,7 +113,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   // map qop field to milc sol1 field                  //
   ///////////////////////////////////////////////////////
   
-  map_qop_to_milc( qop_sol, milc_sol1, milc_parity );
+  congrad_fn_map_qop_raw_to_milc( qop_sol, milc_sol1, milc_parity );
   
 #ifdef CGTIME
   {
@@ -174,13 +142,15 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   // reset qop_invert_arg                                //
   ///////////////////////////////////////////////////////
 
-  set_qop_invert_arg( & qop_invert_arg, mass2, niter, rsqmin, milc_parity );
+  congrad_fn_set_qop_invert_arg( & qop_invert_arg, mass2, niter, 
+				 rsqmin, milc_parity );
 
   ///////////////////////////////////////////////////////
   // qop conjugate gradient                            //
   ///////////////////////////////////////////////////////
 
-  iterations_used = ks_congrad_qop( qop_src, qop_sol, qop_fat_links, qop_long_links, & qop_invert_arg, final_rsq_ptr );
+  iterations_used = ks_congrad_qop( qop_src, qop_sol, qop_fat_links, 
+			    qop_long_links, & qop_invert_arg, final_rsq_ptr );
 
   total_iters += iterations_used;
 
@@ -188,7 +158,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   // map qop fields to milc sol2 fields                //
   ///////////////////////////////////////////////////////
 
-  map_qop_to_milc( qop_sol, milc_sol2, milc_parity );
+  congrad_fn_map_qop_raw_to_milc( qop_sol, milc_sol2, milc_parity );
 
   ///////////////////////////////////////////////////////
   // free qop fields                                   //
@@ -204,8 +174,10 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     dtimec += dclock();
     if( this_node == 0 )
     {
-      printf("CONGRAD5(total): time = %e iters = %d mflops = %e\n", dtimec, iterations_used,
-        (double)( nflop * volume * iterations_used / ( 1.0e6 * dtimec * numnodes() ) ) );
+      printf("CONGRAD5(total): time = %e iters = %d mflops = %e\n", 
+	     dtimec, iterations_used,
+        (double)( nflop * volume * iterations_used / 
+		  ( 1.0e6 * dtimec * numnodes() ) ) );
       fflush(stdout);
     }
   }
@@ -218,43 +190,49 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
 static void map_milc_src_sol_to_qop( 
    field_offset milc_src, 
    field_offset milc_sol, 
-   Float* qop_src, 
-   Float* qop_sol, 
+   Real* qop_src, 
+   Real* qop_sol, 
    int milc_parity )
 {
-  //printf( "MILC: map_milc_to_qop called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
+  //printf( "MILC: map_milc_src_sol_to_qop called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
   
-  // These are the lattice coordinates of the point with sub-lattice coordinates (0,0,0,0).
+  // These are the lattice coordinates of the point with sub-lattice
+  // coordinates (0,0,0,0).
   int corner_x = machine_x * sub_lattice_nx;
   int corner_y = machine_y * sub_lattice_ny;
   int corner_z = machine_z * sub_lattice_nz;
   int corner_t = machine_t * sub_lattice_nt;
+  int sub_lattice_t;
+  int sub_lattice_z;
+  int sub_lattice_y;
+  int sub_lattice_x;
+  int c;
   
   // The following are qop fields.
   
-  Float* qop_even_src = qop_src;
-  Float* qop_odd_src  = qop_src + even_sites_on_node;
+  Real* qop_even_src = qop_src;
+  Real* qop_odd_src  = qop_src + even_sites_on_node;
   
-  Float* qop_even_sol = qop_sol;
-  Float* qop_odd_sol  = qop_sol + even_sites_on_node;
+  Real* qop_even_sol = qop_sol;
+  Real* qop_odd_sol  = qop_sol + even_sites_on_node;
   
   // This loops over all the sub-lattice coordinates.
-  for( int sub_lattice_t = 0 ; sub_lattice_t < sub_lattice_nt ; 
+  for( sub_lattice_t = 0 ; sub_lattice_t < sub_lattice_nt ; 
        sub_lattice_t ++ )
     {
       int lattice_t = corner_t + sub_lattice_t;
       
-      for( int sub_lattice_z = 0 ; sub_lattice_z < sub_lattice_nz ; 
+      for( sub_lattice_z = 0 ; sub_lattice_z < sub_lattice_nz ; 
 	   sub_lattice_z ++ )
 	{
 	  int lattice_z = corner_z + sub_lattice_z;
 	  
-	  for( int sub_lattice_y = 0 ; sub_lattice_y < sub_lattice_ny ; 
+	  for( sub_lattice_y = 0 ; sub_lattice_y < sub_lattice_ny ; 
 	       sub_lattice_y ++ )
 	    {
 	      int lattice_y = corner_y + sub_lattice_y;
 	      
-	      for( int sub_lattice_x = 0 ; sub_lattice_x < sub_lattice_nx ; 
+	      for( sub_lattice_x = 0 ; sub_lattice_x < sub_lattice_nx ; 
 		   sub_lattice_x ++ )
 		{
 		  int lattice_x = corner_x + sub_lattice_x;
@@ -275,10 +253,10 @@ static void map_milc_src_sol_to_qop(
 		      Real* milc_even_sol = (Real*) F_PT( site_variable, 
 							  milc_sol );
 		      
-		      for( int c = 0; c < 6; c++ )
+		      for( c = 0; c < 6; c++ )
 			{
-			  qop_even_src[ c ] = (Float) milc_even_src[ c ];
-			  qop_even_sol[ c ] = (Float) milc_even_sol[ c ];
+			  qop_even_src[ c ] = (Real) milc_even_src[ c ];
+			  qop_even_sol[ c ] = (Real) milc_even_sol[ c ];
 			}
 		      
 		      qop_even_src += 6;
@@ -298,10 +276,10 @@ static void map_milc_src_sol_to_qop(
 		      Real* milc_odd_sol = (Real*) F_PT( site_variable, 
 							 milc_sol );
 		      
-		      for( int c = 0; c < 6; c++ )
+		      for( c = 0; c < 6; c++ )
 			{
-			  qop_odd_src[ c ] = (Float) milc_odd_src[ c ];
-			  qop_odd_sol[ c ] = (Float) milc_odd_sol[ c ];
+			  qop_odd_src[ c ] = (Real) milc_odd_src[ c ];
+			  qop_odd_sol[ c ] = (Real) milc_odd_sol[ c ];
 			}
 		      
 		      qop_odd_src += 6;
