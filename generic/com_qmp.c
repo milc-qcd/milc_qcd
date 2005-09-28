@@ -1706,7 +1706,9 @@ wait_gather(msg_tag *mtag)
       }
     }
   }
+#ifdef CRC_DEBUG
   QMP_sum_int(&fail);
+#endif
   if(fail > 0)terminate(1);
 #endif
 }
