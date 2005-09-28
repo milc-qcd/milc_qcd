@@ -118,6 +118,38 @@ int ks_multicg(	/* Return value is number of iterations taken */
     Real *final_rsq_ptr	/* final residue squared */
     );
 
+/* d_congrad5_fn_qop.c */
+void initialize_congrad( void );
+void finalize_congrad( void );
+
+void congrad_fn_allocate_qop_fields( Real** qop_fat_links, 
+				     Real** qop_long_links, 
+				     Real** qop_src, Real** qop_sol );
+
+void congrad_fn_map_milc_to_qop_raw( field_offset milc_src, 
+				     field_offset milc_sol,
+				     Real* qop_fat_links, 
+				     Real* qop_long_links,
+				     Real* qop_src, 
+				     Real* qop_sol, int milc_parity );
+
+
+void congrad_fn_map_qop_raw_to_milc( Real* qop_sol, field_offset milc_sol, 
+				     int milc_parity );
+
+
+#ifdef HAVE_QOP
+#include <qop.h>
+void congrad_fn_set_qop_invert_arg( QOP_invert_arg* qop_invert_arg, Real mass, 
+			 int max_iterations, Real min_resid_sq, 
+			 int milc_parity );
+
+int ks_congrad_qop( Real* qop_source, Real* qop_solution,
+		    Real* qop_fat_links, Real* qop_long_links,
+		    QOP_invert_arg* qop_invert_arg, Real* final_rsq_ptr );
+
+#endif
+
 /* eigen_stuff.c */
 int Rayleigh_min(su3_vector *vec,su3_vector **eigVec,Real Tolerance, 
 		 Real RelTol,int Nvecs,int MaxIter,int Restart,int parity);
@@ -168,6 +200,7 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 		   Real mass );
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol);
+
 /* multimass_inverter.c */
 #define MAX_MMINV_NMASSES 32
 #define MAX_MMINV_SOURCES 16
