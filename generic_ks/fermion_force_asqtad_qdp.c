@@ -520,6 +520,8 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   temp_x_qdp = QDP_create_H();
   set_H_from_temp(temp_x_qdp, temp_x);
 
+  free(temp_x);
+
   for(mu=0; mu<8; mu++)
     {
       u_shift_hw_fermion(temp_x_qdp, Pmu, OPP_DIR(mu), temp_hw[OPP_DIR(mu)]);
