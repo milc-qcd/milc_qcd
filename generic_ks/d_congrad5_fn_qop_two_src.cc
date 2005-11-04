@@ -233,10 +233,10 @@ static void map_milc_src_sol_to_qop(
   // The following are qop fields.
   
   Float* qop_even_src = qop_src;
-  Float* qop_odd_src  = qop_src + even_sites_on_node;
+  Float* qop_odd_src  = qop_src + 6*even_sites_on_node;
   
   Float* qop_even_sol = qop_sol;
-  Float* qop_odd_sol  = qop_sol + even_sites_on_node;
+  Float* qop_odd_sol  = qop_sol + 6*even_sites_on_node;
   
   // This loops over all the sub-lattice coordinates.
   for( int sub_lattice_t = 0 ; sub_lattice_t < sub_lattice_nt ; 
