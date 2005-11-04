@@ -10,6 +10,8 @@
    node_number(x,y,z,t) returns the node number on which a site lives.
    node_index(x,y,z,t) returns the index of the site on the node - ie the
      site is lattice[node_index(x,y,z,t)].
+   get_logical_dimensions() returns the machine dimensions
+   get_logical_coordinates() returns the mesh coordinates of this node
    These routines will change as we change our minds about how to distribute
      sites among the nodes.  Hopefully the setup routines will work for any
      consistent choices. (ie node_index should return a different value for
@@ -19,12 +21,13 @@
 #include <qdp.h>
 #include <qmp.h>
 
+static int* dim_mach;
+
 void
 setup_layout(void)
 {
   int c[4];
   int i,n_mach;
-  int* dim_mach;
   int d[4];
 
   if(mynode()==0){
@@ -43,8 +46,8 @@ setup_layout(void)
   odd_sites_on_node = QDP_subset_len(QDP_odd);
 
   /* Report sublattice dimensions */
-  n_mach = QMP_get_allocated_number_of_dimensions();
-  dim_mach = QMP_get_allocated_dimensions();
+  n_mach = QMP_get_logical_number_of_dimensions();
+  dim_mach = QMP_get_logical_dimensions();
   for(i = 0; i < 4; i++){
     /* Any extra machine dimensions are assumed to be 1 */
     if(i < n_mach)d[i] = c[i]/dim_mach[i];
@@ -82,3 +85,10 @@ size_t num_sites(int node) {
     return( sites_on_node );
 }
 
+int *get_logical_dimensions(){
+  return dim_mach;
+}
+
+int *get_logical_coordinate(){
+  return QMP_logical_coordinates();
+}

@@ -18,6 +18,8 @@
    node_number(x,y,z,t) returns the node number on which a site lives.
    node_index(x,y,z,t) returns the index of the site on the node - ie the
      site is lattice[node_index(x,y,z,t)].
+   get_logical_dimensions() returns the machine dimensions
+   get_logical_coordinates() returns the mesh coordinates of this node
    These routines will change as we change our minds about how to distribute
      sites among the nodes.  Hopefully the setup routines will work for any
      consistent choices. (ie node_index should return a different value for
@@ -26,60 +28,33 @@
 #include "generic_includes.h"
 #include <qmp.h>
 
-int lattice_dimensions[ 4 ];
-int lattice_nx = -1;
-int lattice_ny = -1;
-int lattice_nz = -1;
-int lattice_nt = -1;
+static int machine_dimensions[ 4 ];  /* DBR: Should this be 4? */
+static int machine_nx = -1;
+static int machine_ny = -1;
+static int machine_nz = -1;
+static int machine_nt = -1;
 
-int machine_dimensions[ 4 ];  /* DBR: Should this be 4? */
-int machine_nx = -1;
-int machine_ny = -1;
-int machine_nz = -1;
-int machine_nt = -1;
+static int sub_lattice_dimensions[ 4 ];
+static int sub_lattice_nx = -1;
+static int sub_lattice_ny = -1;
+static int sub_lattice_nz = -1;
+static int sub_lattice_nt = -1;
 
-int sub_lattice_dimensions[ 4 ];
-int sub_lattice_nx = -1;
-int sub_lattice_ny = -1;
-int sub_lattice_nz = -1;
-int sub_lattice_nt = -1;
-
-int sub_lattice_volume = -1;
-
-int machine_coordinates[ 4 ];  /* DBR: Should this be 4? */
-int machine_x = -1;
-int machine_y = -1;
-int machine_z = -1;
-int machine_t = -1;
+static int sub_lattice_volume = -1;
 
 void setup_layout( void )
 {
-  int number_machine_dimensions = -1;
-  const int* p_machine_dimensions = NULL;
   int number_logical_dimensions = -1;
   const int* p_logical_dimensions = NULL;
-  const int* p_machine_coordinates = NULL;
+  const int *p_machine_dimensions = NULL;
+  int number_machine_dimensions = -1;
+
   int i;
 
-  lattice_nx = nx;
-  lattice_ny = ny;
-  lattice_nz = nz;
-  lattice_nt = nt;
-
-  lattice_dimensions[ XUP ] = lattice_nx;
-  lattice_dimensions[ YUP ] = lattice_ny;
-  lattice_dimensions[ ZUP ] = lattice_nz;
-  lattice_dimensions[ TUP ] = lattice_nt;
-
-  printf( "lattice_nx = %i\n", lattice_nx );
-  printf( "lattice_ny = %i\n", lattice_ny );
-  printf( "lattice_nz = %i\n", lattice_nz );
-  printf( "lattice_nt = %i\n", lattice_nt );
-
-  number_machine_dimensions = QMP_get_allocated_number_of_dimensions();
+  number_machine_dimensions = QMP_get_logical_number_of_dimensions();
   printf( "number of QMP machine dimensions = %i\n", number_machine_dimensions );
 
-  p_machine_dimensions = QMP_get_allocated_dimensions();
+  p_machine_dimensions = QMP_get_logical_dimensions();
   if( p_machine_dimensions == NULL )
   {
     printf( "p_machines_dimensions is NULL\n" );
@@ -90,23 +65,6 @@ void setup_layout( void )
   {
     printf( "QMP machine dimension ( %i ) = %i\n", i, p_machine_dimensions[ i ] );
   }
-
-  number_logical_dimensions = QMP_get_allocated_number_of_dimensions();
-  printf( "number of QMP logical dimensions = %i\n", number_logical_dimensions );
-
-  p_logical_dimensions = QMP_get_allocated_dimensions();
-  if( p_logical_dimensions == NULL )
-  {
-    printf( "p_logicals_dimensions is NULL\n" );
-    terminate( 0 );
-  }
-
-  for( i = 0; i < number_logical_dimensions; i++ )
-  {
-    printf( "QMP logical dimension ( %i ) = %i\n", i, p_logical_dimensions[ i ] );
-  }
-
-  p_logical_dimensions = NULL;
 
   machine_nx = p_machine_dimensions[ 0 ];
   machine_ny = p_machine_dimensions[ 1 ];
@@ -127,31 +85,31 @@ void setup_layout( void )
 
   /* Each lattice dimension must be a mutliple of the corresponding machine dimension. */
 
-  if( ( lattice_nx % machine_nx ) != 0 )
+  if( ( nx % machine_nx ) != 0 )
   {
-    printf( "lattice_nx = %i is not a multiple of machine_nx = %i\n", lattice_nx, machine_nx );
+    printf( "nx = %i is not a multiple of machine_nx = %i\n", nx, machine_nx );
     terminate( 0 );
   }
-  if( ( lattice_ny % machine_ny ) != 0 )
+  if( ( ny % machine_ny ) != 0 )
   {
-    printf( "lattice_ny = %i is not a multiple of machine_ny = %i\n", lattice_ny, machine_ny );
+    printf( "ny = %i is not a multiple of machine_ny = %i\n", ny, machine_ny );
     terminate( 0 );
   }
-  if( ( lattice_nz % machine_nz ) != 0 )
+  if( ( nz % machine_nz ) != 0 )
   {
-    printf( "lattice_nz = %i is not a multiple of machine_nz = %i\n", lattice_nz, machine_nz );
+    printf( "nz = %i is not a multiple of machine_nz = %i\n", nz, machine_nz );
     terminate( 0 );
   }
-  if( ( lattice_nt % machine_nt ) != 0 )
+  if( ( nt % machine_nt ) != 0 )
   {
-    printf( "lattice_nt = %i is not a multiple of machine_nt = %i\n", lattice_nt, machine_nt );
+    printf( "nt = %i is not a multiple of machine_nt = %i\n", nt, machine_nt );
     terminate( 0 );
   }
 
-  sub_lattice_nx = lattice_nx / machine_nx;
-  sub_lattice_ny = lattice_ny / machine_ny;
-  sub_lattice_nz = lattice_nz / machine_nz;
-  sub_lattice_nt = lattice_nt / machine_nt;
+  sub_lattice_nx = nx / machine_nx;
+  sub_lattice_ny = ny / machine_ny;
+  sub_lattice_nz = nz / machine_nz;
+  sub_lattice_nt = nt / machine_nt;
 
   sub_lattice_dimensions[ XUP ] = sub_lattice_nx;
   sub_lattice_dimensions[ YUP ] = sub_lattice_ny;
@@ -180,35 +138,6 @@ void setup_layout( void )
 
   even_sites_on_node = sites_on_node / 2;
   odd_sites_on_node  = sites_on_node / 2;
-
-  p_machine_coordinates = QMP_get_logical_coordinates();
-  if( p_machine_coordinates == NULL )
-  {
-    printf( "p_machines_coordinates is NULL\n" );
-    terminate( 0 );
-  }
-
-  for( i = 0; i < number_logical_dimensions; i++ )
-  {
-    printf( "QMP machine cooridinate ( %i ) = %i\n", i, p_machine_coordinates[ i ] );
-  }
-
-  machine_x = p_machine_coordinates[ 0 ];
-  machine_y = p_machine_coordinates[ 1 ];
-  machine_z = p_machine_coordinates[ 2 ];
-  machine_t = p_machine_coordinates[ 3 ];
-
-  p_machine_coordinates = NULL;
-
-  machine_coordinates[ XUP ] = machine_x;
-  machine_coordinates[ YUP ] = machine_y;
-  machine_coordinates[ ZUP ] = machine_z;
-  machine_coordinates[ TUP ] = machine_t;
-
-  printf( "machine_x = %i\n", machine_x );
-  printf( "machine_y = %i\n", machine_y );
-  printf( "machine_z = %i\n", machine_z );
-  printf( "machine_t = %i\n", machine_t );
 
 if( mynode()==0)
   printf("ON EACH NODE %d x %d x %d x %d\n",sub_lattice_nx,sub_lattice_ny,
@@ -257,4 +186,12 @@ int node_index( int x, int y, int z, int t )
 size_t num_sites( int node )
 {
   return( sites_on_node );
+}
+
+int *get_logical_dimensions(){
+  return machine_dimensions;
+}
+
+int *get_logical_coordinate(){
+  return QMP_get_logical_coordinate();
 }
