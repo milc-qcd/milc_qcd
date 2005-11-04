@@ -154,6 +154,8 @@ void setup_layout( void );
 int node_number(int x,int y,int z,int t);
 int node_index(int x,int y,int z,int t);
 size_t num_sites(int node);
+int *get_logical_dimensions();
+int *get_logical_coordinate();
 
 /* make_lattice.c */
 void make_lattice();
