@@ -1,22 +1,25 @@
 /******* d_congrad5_fn_qop_two_src.c - conjugate gradient for SU3/fermions **/
 /* MIMD version 7 */
 
-/* This is the two-source MILC wrapper for the SciDAC Level 3 QOP inverter */
+/* This is the two-source MILC wrapper for the SciDAC Level 3 QOP inverter 
+   using the raw interface */
 /* 2/2005 D. Renner and C. Jung */
 /* 5/2005 C. DeTar two source version eliminates one remapping */
+/* 9/2005 C. DeTar converted to C code */
 
 #include "generic_ks_includes.h"
 
 #include <qop.h>
 
-// The following are defined in layout_qcdoc.c, the only choice for
-// the QCDOC
-
+// These values are set in initialize_congrad
+// Dimension of sub lattice on this node
 extern int sub_lattice_nx;
 extern int sub_lattice_ny;
 extern int sub_lattice_nz;
 extern int sub_lattice_nt;
 
+// These values are set in initialize_congrad
+// Logical mesh coordinates of this node
 extern int machine_x;
 extern int machine_y;
 extern int machine_z;
@@ -44,6 +47,13 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
 {
 #ifdef CGTIME
   
+  // Real is the QOP precision.  It reduces to float if SINGLE
+  // is defined and defaults to double otherwise.
+  Real* qop_fat_links = NULL;
+  Real* qop_long_links = NULL;
+  Real* qop_src = NULL;
+  Real* qop_sol = NULL;
+  
   double dtimec;
   double nflop = 1187;
   if( milc_parity == EVENANDODD ) nflop *= 2;
@@ -60,17 +70,13 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
 #ifdef CGTIME
   dtimec = -dclock(); 
 #endif
+
+  // Initialize geometry variables
+  initialize_congrad();
   
   ///////////////////////////////////////////////////////
   // allocate qop fields                               //
   ///////////////////////////////////////////////////////
-  
-  // Real is the QOP precision.  It reduces to float if SINGLE
-  // is defined and defaults to double otherwise.
-  Real* qop_fat_links = NULL;
-  Real* qop_long_links = NULL;
-  Real* qop_src = NULL;
-  Real* qop_sol = NULL;
   
   congrad_fn_allocate_qop_fields( & qop_fat_links, & qop_long_links, 
 		       & qop_src, & qop_sol );
@@ -211,10 +217,10 @@ static void map_milc_src_sol_to_qop(
   // The following are qop fields.
   
   Real* qop_even_src = qop_src;
-  Real* qop_odd_src  = qop_src + even_sites_on_node;
+  Real* qop_odd_src  = qop_src + 6*even_sites_on_node;
   
   Real* qop_even_sol = qop_sol;
-  Real* qop_odd_sol  = qop_sol + even_sites_on_node;
+  Real* qop_odd_sol  = qop_sol + 6*even_sites_on_node;
   
   // This loops over all the sub-lattice coordinates.
   for( sub_lattice_t = 0 ; sub_lattice_t < sub_lattice_nt ; 
