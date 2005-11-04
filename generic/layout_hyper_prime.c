@@ -30,6 +30,8 @@
    node_number(x,y,z,t) returns the node number on which a site lives.
    node_index(x,y,z,t) returns the index of the site on the node - ie the
      site is lattice[node_index(x,y,z,t)].
+   get_logical_dimensions() returns the machine dimensions
+   get_logical_coordinates() returns the mesh coordinates of this node
    These routines will change as we change our minds about how to distribute
      sites among the nodes.  Hopefully the setup routines will work for any
      consistent choices. (ie node_index should return a different value for
@@ -40,8 +42,8 @@
 #include <qmp.h>
 #endif
 
-int squaresize[4];	/* dimensions of hypercubes */
-int nsquares[4];	/* number of hypercubes in each direction */
+static int squaresize[4];	/* dimensions of hypercubes */
+static int nsquares[4];	/* number of hypercubes in each direction */
 
 int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
 # define MAXPRIMES ( sizeof(prime) / sizeof(int) )
@@ -60,8 +62,8 @@ static void setup_qmp_grid(){
     printf("\n");
   }
 
-  ndim2 = QMP_get_allocated_number_of_dimensions();
-  nsquares2 = QMP_get_allocated_dimensions();
+  ndim2 = QMP_get_logical_number_of_dimensions();
+  nsquares2 = QMP_get_logical_dimensions();
   for(i=0; i<ndim; i++) {
     if(i<ndim2) nsquares[i] = nsquares2[i];
     else nsquares[i] = 1;
@@ -176,3 +178,23 @@ size_t num_sites(int node) {
     return( sites_on_node );
 }
 
+int *get_logical_dimensions(){
+  return nsquares;
+}
+
+/* Coordinates simulate a mesh architecture and must correspond
+   to the node_number result */
+int *get_logical_coordinate(){
+  int k = mynode();
+  static int machine_coordinates[4];
+
+  machine_coordinates[XUP] = k % squaresize[XUP];
+  k /= squaresize[XUP];
+  machine_coordinates[YUP] = k % squaresize[YUP];
+  k /= squaresize[YUP];
+  machine_coordinates[ZUP] = k % squaresize[ZUP];
+  k /= squaresize[ZUP];
+  machine_coordinates[TUP] = k % squaresize[TUP];
+
+  return machine_coordinates;
+}
