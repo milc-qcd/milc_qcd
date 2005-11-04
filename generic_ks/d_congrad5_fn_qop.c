@@ -7,25 +7,23 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-// The following are defined in layout_qcdoc.c, the only choice for
-// the QCDOC
+static int *machine_dimensions;
 
-extern int lattice_nx;  // This is another name for nx.
-extern int lattice_ny;  // This is another name for ny.
-extern int lattice_nz;  // This is another name for nz.
-extern int lattice_nt;  // This is another name for nt.
+// These values are set in initialize_congrad
+// Dimension of sub lattice on this node
+int sub_lattice_nx;
+int sub_lattice_ny;
+int sub_lattice_nz;
+int sub_lattice_nt;
 
-extern int sub_lattice_nx;
-extern int sub_lattice_ny;
-extern int sub_lattice_nz;
-extern int sub_lattice_nt;
+static int sub_lattice_volume;
 
-extern int sub_lattice_volume;
-
-extern int machine_x;
-extern int machine_y;
-extern int machine_z;
-extern int machine_t;
+// These values are set in initialize_congrad
+// Logical mesh coordinates of this node
+int machine_x;
+int machine_y;
+int machine_z;
+int machine_t;
 
 // Used by initialize_congrad and finalize_congrad:
 static int is_congrad_initialized = 0;
@@ -47,7 +45,6 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
     double dtimec;
     double nflop = 1187;
     if( milc_parity == EVENANDODD ) nflop *= 2;
-    dtimec = -dclock(); 
 
   #endif
 
@@ -57,6 +54,13 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
 
   if( valid_fatlinks  != 1 ) load_fatlinks();
   if( valid_longlinks != 1 ) load_longlinks();
+
+#ifdef CGTIME
+  dtimec = -dclock(); 
+#endif
+
+  // Initialize geometry variables
+  initialize_congrad();
 
   ///////////////////////////////////////////////////////
   // allocate qop fields                               //
@@ -211,13 +215,26 @@ void initialize_congrad( void )
 {
   //printf( "MILC: initialize_congrad called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
 
-
   if( is_congrad_initialized == 1 )
     {
       //printf( "MILC: congrad is initialized already\n" );
       //printf( "MILC: initialize_congrad finished: FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
       return;
     }
+
+  machine_dimensions = get_logical_machine_dimensions();
+  sub_lattice_nx = nx/machine_dimensions[XUP];
+  sub_lattice_ny = ny/machine_dimensions[YUP];
+  sub_lattice_nz = nz/machine_dimensions[ZUP];
+  sub_lattice_nt = nt/machine_dimensions[TUP];
+  sub_lattice_volume = sub_lattice_nx*sub_lattice_ny*
+    sub_lattice_nz*sub_lattice_nt;
+
+  machine_coordinates = get_logical_machine_coordinates();
+  machine_x = machine_coordinates[XUP];
+  machine_y = machine_coordinates[YUP];
+  machine_z = machine_coordinates[ZUP];
+  machine_t = machine_coordinates[TUP];
 
   if( sub_lattice_nt % 2 != 0 )
     {
@@ -390,10 +407,10 @@ void congrad_fn_map_milc_to_qop_raw( field_offset milc_src,
   // The following are qop fields.
   
   Real* qop_even_src = qop_src;
-  Real* qop_odd_src  = qop_src + even_sites_on_node;
+  Real* qop_odd_src  = qop_src + 6*even_sites_on_node;
   
   Real* qop_even_sol = qop_sol;
-  Real* qop_odd_sol  = qop_sol + even_sites_on_node;
+  Real* qop_odd_sol  = qop_sol + 6*even_sites_on_node;
   
   Real* qop_fat_t_link = qop_fat_links;
   Real* qop_fat_x_link = qop_fat_t_link + 18 * sub_lattice_volume;
@@ -551,7 +568,7 @@ void congrad_fn_map_qop_raw_to_milc( Real* qop_sol,
 
   // The following are qop fields.
   Real* qop_even_sol = qop_sol;
-  Real* qop_odd_sol  = qop_sol + even_sites_on_node;
+  Real* qop_odd_sol  = qop_sol + 6*even_sites_on_node;
 
   // This loops over all the sub-lattice coordinates.
   for( sub_lattice_t = 0 ; sub_lattice_t < sub_lattice_nt ; sub_lattice_t ++ )

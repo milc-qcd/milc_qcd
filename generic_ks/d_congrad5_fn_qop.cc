@@ -411,10 +411,10 @@ void map_milc_to_qop( field_offset milc_src, field_offset milc_sol, Float* qop_f
   // The following are qop fields.
 
   Float* qop_even_src = qop_src;
-  Float* qop_odd_src  = qop_src + even_sites_on_node;
+  Float* qop_odd_src  = qop_src + 6*even_sites_on_node;
 
   Float* qop_even_sol = qop_sol;
-  Float* qop_odd_sol  = qop_sol + even_sites_on_node;
+  Float* qop_odd_sol  = qop_sol + 6*even_sites_on_node;
 
   Float* qop_fat_t_link = qop_fat_links;
   Float* qop_fat_x_link = qop_fat_t_link + 18 * sub_lattice_volume;
@@ -559,7 +559,7 @@ void map_qop_to_milc( Float* qop_sol, field_offset milc_sol, int milc_parity )
 
   // The following are qop fields.
   Float* qop_even_sol = qop_sol;
-  Float* qop_odd_sol  = qop_sol + even_sites_on_node;
+  Float* qop_odd_sol  = qop_sol + 6*even_sites_on_node;
 
   // This loops over all the sub-lattice coordinates.
   for( int sub_lattice_t = 0 ; sub_lattice_t < sub_lattice_nt ; sub_lattice_t ++ )
