@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.3  2005/11/10 16:58:44  detar
+//  Experimenting with tags and versions
+//
 //  Revision 1.2  2005/11/10 16:55:09  detar
 //  Add CVS version and log tags to file
 //
@@ -118,7 +121,7 @@ initial_set()
     /* print banner */
     printf("SU3 with improved KS action\n");
     printf("Microcanonical simulation with refreshing\n");
-    printf("MIMD version 7 $Revision: 1.2 $\n");
+    printf("MIMD version 7 $Name:  $\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 #ifdef HMC_ALGORITHM
     printf("Hybrid Monte Carlo algorithm\n");
