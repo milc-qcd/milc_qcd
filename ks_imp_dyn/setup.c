@@ -13,6 +13,10 @@
 //              Includes a parameter prompt for Lepage-Mackenzie 
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
+//  $Log: setup.c,v $
+//  Revision 1.2  2005/11/10 16:55:09  detar
+//  Add CVS version and log tags to file
+//
 //
 */
 /* MIMD version 7 */
@@ -114,7 +118,7 @@ initial_set()
     /* print banner */
     printf("SU3 with improved KS action\n");
     printf("Microcanonical simulation with refreshing\n");
-    printf("MIMD version 7\n");
+    printf("MIMD version 7 $Revision: 1.2 $\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 #ifdef HMC_ALGORITHM
     printf("Hybrid Monte Carlo algorithm\n");
