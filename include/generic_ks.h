@@ -148,8 +148,6 @@ int ks_congrad_qop( Real* qop_source, Real* qop_solution,
 		    Real* qop_fat_links, Real* qop_long_links,
 		    QOP_invert_arg* qop_invert_arg, Real* final_rsq_ptr );
 
-#endif
-
 #ifdef HAVE_QDP
 /* d_congrad5_fn_qopqdp.c */
 void set_M_from_strided_parity_temp(QDP_ColorMatrix *dest, su3_matrix *src,
@@ -162,6 +160,8 @@ int ks_congrad_qopqdp( QDP_ColorVector *qop_src, QDP_ColorVector *qop_sol,
 		       QDP_ColorMatrix *qop_fat_links[4], 
 		       QDP_ColorMatrix *qop_long_links[4],
 		       QOP_invert_arg* qop_invert_arg, Real* final_rsq_ptr );
+#endif
+
 #endif
 
 /* eigen_stuff.c */
