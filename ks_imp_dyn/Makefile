@@ -131,7 +131,7 @@ WANTQMP = true
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ${HOME}/scidac
+SCIDAC = ${HOME}/scidac-sun
 QIOSNG = $(SCIDAC)/qio-single
 QIOPAR = $(SCIDAC)/qio
 # Parallel version
