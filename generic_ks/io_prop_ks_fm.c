@@ -81,20 +81,28 @@ void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph)
 /*----------------------------------------------------------------------*/
 /* Open, write, and close the ASCII info file */
 
-FILE *open_write_ks_fmprop_info_file(ks_prop_file *pf, char *mode)
+void *open_write_ks_fmprop_info_file(ks_prop_file *pf)
 {
   FILE *info_fp;
   char info_filename[FILENAME_MAX];
 
+  /* If file is already open, do nothing */
+  if(pf->info_fp != NULL)return;
+
   /* Construct header file name from propagator file name 
-   by adding filename extension to propagator file name */
+     by adding filename extension to propagator file name */
 
   strcpy(info_filename,pf->filename);
   strcat(info_filename,ASCII_PROP_INFO_EXT);
 
   /* Open header file */
   
-  if((info_fp = fopen(info_filename, mode)) == NULL)
+  info_fp = fopen(info_filename, "w");
+
+  /* Save info file pointer in ks_prop_file structure */
+  pf->info_fp = info_fp;
+
+  if(info_fp == NULL)
     {
       printf("open_write_ksprop_fminfo_file: Can't open ascii info file %s\n",
 	     info_filename);
@@ -102,9 +110,18 @@ FILE *open_write_ks_fmprop_info_file(ks_prop_file *pf, char *mode)
 
   /*  node0_printf("Writing info file %s\n",info_filename);  */
   fflush(stdout);
-  return info_fp;
 }
   
+void *close_write_ks_fmprop_info_file(ks_prop_file *pf)
+{
+  FILE *info_fp = pf->info_fp;
+
+  if(info_fp == NULL)return;
+  fclose(info_fp);
+
+  pf->info_fp = NULL;
+}
+
 /* Open, write, and close the ASCII info file */
 
 void write_ks_fmprop_info_file(ks_prop_file *pf)
@@ -119,7 +136,9 @@ void write_ks_fmprop_info_file(ks_prop_file *pf)
 
   /* Open header file */
   
-  if((info_fp = open_write_ks_fmprop_info_file(pf, "w")) == NULL)
+  open_write_ks_fmprop_info_file(pf);
+  info_fp = pf->info_fp;
+  if(info_fp == NULL)
     return;
 
   /* Write required information */
@@ -140,8 +159,6 @@ void write_ks_fmprop_info_file(ks_prop_file *pf)
 		(char *)&natural_order,0,0);
 
   write_appl_ksprop_info(info_fp);
-
-  fclose(info_fp);
 
 } /*write_ks_fmprop_info_file */
 
@@ -180,6 +197,9 @@ ks_prop_file *setup_output_ks_fmprop_file()
   /* Initialize */
   pf->check.sum29 = 0;
   pf->check.sum31 = 0;
+
+  /* Initialize pointer to info file */
+  pf->info_fp = NULL;
 
   /* Load header values */
 
@@ -302,7 +322,7 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
   int currentnode,newnode;
   int x,y,z,t;
   su3_vector *proppt;
-  FILE *info_fp;
+  FILE *info_fp = kspf->info_fp;
 
   if(this_node==0)
     {
@@ -340,10 +360,6 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
 
   /* Buffered algorithm for writing fields in serial order */
   
-  /* Node 0 reopens info file for appending timeslice checksums */
-  if(this_node == 0)
-    info_fp = open_write_ks_fmprop_info_file(kspf, "a");
-
   g_sync();
   currentnode=0;
 
@@ -469,7 +485,7 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
   
   if(this_node==0)
     {
-      fclose(info_fp);
+      close_write_ks_fmprop_info_file(kspf);
       /*      printf("Wrote KS prop serially to file %s\n", kspf->filename);  */
       fflush(stdout);
       free(pbuf);
