@@ -12,6 +12,9 @@
 #include "../include/su3.h"
 #include "../include/generic_quark_types.h"
 #include "../include/comdefs.h"
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
 
 /* Structure specifying each rotation and reflection of each kind of
 	path.  */
