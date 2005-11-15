@@ -67,15 +67,16 @@ typedef struct {
 
 /**********************************************************************/
 typedef struct {
-  FILE *         fp;            /* File pointer */
+  FILE *           fp;            /* File pointer */
   ks_prop_header*  header;        /* Pointer to header for file */
-  char *         filename;       /* Pointer to file name string */
-  int            byterevflag;   /* Byte reverse flag - used only for reading */
-  int32type *       rank2rcv;      /* File site list - used only for 
-				   serial reading */ 
-  int            parallel;      /* 1 if file was opened in parallel
-				   0 if serial */
+  char *           filename;      /* Pointer to file name string */
+  int              byterevflag;   /* Byte reverse flag - used only for reading */
+  int32type *      rank2rcv;      /* File site list - used only for 
+				     serial reading */ 
+  int              parallel;      /* 1 if file was opened in parallel
+				     0 if serial */
   ks_prop_check    check;         /* Checksum */
+  FILE *           info_fp;       /* Pointer to info file */
 } ks_prop_file;
 
 /**********************************************************************/
