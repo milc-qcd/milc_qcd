@@ -106,6 +106,8 @@ int write_ksprop_info_item( FILE *fpout,    /* ascii file pointer */
 
   int i,k,n;
   char *data;
+#define MAXITEM 128
+  char item[MAXITEM];
 
   /* Check for valid keyword */
 
@@ -116,36 +118,58 @@ int write_ksprop_info_item( FILE *fpout,    /* ascii file pointer */
 	    keyword);
 
   /* Write keyword */
+  /* All fprintf's converted to fwrite's to humor dcache utilities at FNAL */
 
-  fprintf(fpout,"%s",keyword);
+  fwrite(keyword,strlen(keyword),1,fpout);
+  /*  fprintf(fpout,"%s",keyword); */
 
   /* Write count if more than one item */
-  if(count > 1)
-    fprintf(fpout,"[%d]",count);
+  if(count > 1){
+    sprintf(item,"[%d]",count);
+    fwrite(item,strlen(item),1,fpout);
+    /*fprintf(fpout,"[%d]",count);  */
+  }
 
   n = count; if(n==0)n = 1;
   
   /* Write data */
   for(k = 0, data = (char *)src; k < n; k++, data += stride)
     {
-      fprintf(fpout," ");
-      if(strstr(fmt,"s") != NULL)
-	fprintf(fpout,fmt,data);
-      else if(strstr(fmt,"d") != NULL)
-	fprintf(fpout,fmt,*(int *)data);
-      else if(strstr(fmt,"e") != NULL)
-	fprintf(fpout,fmt,(double)(*(Real *)data));
-      else if(strstr(fmt,"f") != NULL)
-	fprintf(fpout,fmt,(double)(*(Real *)data));
-      else if(strstr(fmt,"g") != NULL)
-	fprintf(fpout,fmt,(double)(*(Real *)data));
+      fwrite(" ",1,1,fpout);
+      /*fprintf(fpout," ");*/
+      if(strstr(fmt,"s") != NULL){
+	sprintf(item,fmt,data);
+	fwrite(item,strlen(item),1,fpout);
+	/*fprintf(fpout,fmt,data);*/
+      }
+      else if(strstr(fmt,"d") != NULL){
+	sprintf(item,fmt,*(int *)data);
+	fwrite(item,strlen(item),1,fpout);
+	/*fprintf(fpout,fmt,*(int *)data);*/
+      }
+      else if(strstr(fmt,"e") != NULL){
+	sprintf(item,fmt,(double)(*(Real *)data));
+	fwrite(item,strlen(item),1,fpout);
+	/*fprintf(fpout,fmt,(double)(*(Real *)data));*/
+      }
+      else if(strstr(fmt,"f") != NULL){
+	sprintf(item,fmt,(double)(*(Real *)data));
+	fwrite(item,strlen(item),1,fpout);
+	/*fprintf(fpout,fmt,(double)(*(Real *)data));*/
+      }
+      else if(strstr(fmt,"g") != NULL){
+	sprintf(item,fmt,(double)(*(Real *)data));
+	fwrite(item,strlen(item),1,fpout);
+	/*fprintf(fpout,fmt,(double)(*(Real *)data));*/
+      }
       else
 	{
 	  printf("write_ksprop_info_item: Unrecognized data type %s\n",fmt);
 	  return 1;
 	}
     }
-  fprintf(fpout,"\n");
+  /*fprintf(fpout,"\n");*/
+  fwrite("\n",1,1,fpout);
   return 0;
 
 } /* end write_ksprop_info_item() */
