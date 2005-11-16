@@ -621,15 +621,15 @@ int get_vi( int prompt, char *variable_name_string, int *value, int nvalues ){
     else  {
       s = scanf("%s",checkname);
       if (s == EOF){
-	printf("get_i: EOF on STDIN.\n");
+	printf("get_vi: EOF on STDIN.\n");
 	return(1);
       }
       else if(s==0){
-	printf("\nget_i: Format error looking for %s\n",variable_name_string);
+	printf("\nget_vi: Format error looking for %s\n",variable_name_string);
 	return(1);
       }
       else if(strcmp(checkname,variable_name_string) != 0){
-	printf("\nget_i: ERROR IN INPUT: expected %s but found %s\n",
+	printf("\nget_vi: ERROR IN INPUT: expected %s but found %s\n",
 	       variable_name_string,checkname);
 	return(1);
       }
@@ -640,16 +640,16 @@ int get_vi( int prompt, char *variable_name_string, int *value, int nvalues ){
 	
 	s = scanf("%d",value + i);
 	if (s == EOF){
-	  printf("\nget_i: Expecting value for %s but found EOF.\n",
+	  printf("\nget_vi: Expecting value for %s but found EOF.\n",
 		 variable_name_string);
 	  return(1);
 	}
 	else if(s==0){
-	  printf("\nget_i: Format error reading value for %s\n",
+	  printf("\nget_vi: Format error reading value for %s\n",
 		 variable_name_string);
 	  return(1);
 	}
-	printf("%d ",*value);
+	printf("%d ",value[i]);
       }
       printf("\n");
     }
