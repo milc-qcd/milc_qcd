@@ -19,7 +19,7 @@ Record inf
 "Dummy user record XML for lattice field"
 Checksums d2f7866d 0
 Time to reload gauge configuration = 1
-CHECK PLAQ: 4e-09 4e-09
+CHECK PLAQ: 3e-07 8e-07
 Unitarity checked. Max deviation 2e-09
 Time to check unitarity = 1
 Symanzik 0 + 0 + 0 action
