@@ -15,9 +15,7 @@
 # QLA                     Path to the QLA package
 # QDP                     Path to the QDP package
 # WANTQDP WANTQIO WANTQMP User requests (true or otherwise)
-# WANTQOP                 User requests (true or otherwise)
-
-HAVEQOP = ${WANTQOP}
+# LIBQOP INCQOP LIBDEPQOP INCDEPQOP Defined in Make_template_qop
 
 HAVEQDP = ${WANTQDP}
 
@@ -59,9 +57,6 @@ QLAINCDIR = ${QLA}/include
 QLALIBDIR = ${QLA}/lib
 QDPINCDIR = ${QDP}/include
 QDPLIBDIR = ${QDP}/lib
-# QCDOC temporary
-QOPINCDIR = ${QOP}/include
-QOPLIBDIR = ${QOP}/build
 
 # Allow for QCDOC nonstandard for now
 ifeq ($(strip ${QCDOC}),true)
@@ -82,15 +77,6 @@ LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
 IQDP = -I${QDP}/include
 LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
 
-# QCDOC temporary paths
-ifeq ($(strip ${PRECISION}),1)
-  IQOP = -DSCIDAC -DASQD_SINGLE -I${QOPINCDIR}
-  LQOP = -L${QOPLIBDIR} -lasqd_s
-else
-  IQOP = -DSCIDAC -I${QOP}/include/
-  LQOP = -L${QOPLIBDIR} -lasqd
-endif
-
 ifeq ($(strip ${HAVEQMP}),true)
   LIBQMP = ${LQMP}
   INCQMP = ${IQMP}
@@ -110,13 +96,6 @@ ifeq ($(strip ${HAVEQDP}),true)
   INCQDP = ${IQDP} ${IQLA}
   INCDEPQDP = ${QDPINCDIR} ${QLAINCDIR}
   LIBDEPQDP = ${QDPLIBDIR} ${QLALIBDIR}
-endif
-
-ifeq ($(strip ${HAVEQOP}),true)
-  LIBQOP = ${LQOP}
-  INCQOP = ${IQOP}
-  INCDEPQOP = ${QOPINCDIR}
-  LIBDEPQOP = ${QOPLIBDIR}
 endif
 
 LIBSCIDAC = ${LIBQDP} ${LIBQIO} ${LIBQMP} ${LIBQOP}

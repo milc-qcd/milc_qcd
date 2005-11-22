@@ -1,0 +1,48 @@
+# This is not a standalone Makefile
+# It is intended to be included in other Makefiles
+
+# It macros for QOP (SciDAC Level 3)
+# HAVEQOP          What we are compiling with
+# LIBQOP INCQOP    The -L and -I compiler and linker lists
+# INCDEPQOP LIBDEPQOP  Lists for make dependencies
+# ASQFORCEQOP
+
+# Requires input macros
+# WANTQOP                 User requests (true or otherwise)
+
+HAVEQOP = ${WANTQOP}
+
+QOPINCDIR = ${QOP}/include
+# In case QOP is packaged
+QOPLIBDIR = ${QOP}/lib
+
+ifeq ($(strip ${QCDOC}),true)
+# QCDOC temporary paths
+  ifeq ($(strip ${PRECISION}),1)
+    IQOP = -DSCIDAC -DASQD_SINGLE -I${QOPINCDIR}
+    LQOP = -L${QOPLIBDIR} -lasqd_s
+  else
+    IQOP = -DSCIDAC -I${QOP}/include/
+    LQOP = -L${QOPLIBDIR} -lasqd
+  endif
+  LIBDEPQOP = ${QOPLIBDIR}
+  INCDEPQOP = ${QOPINCDIR}
+else
+  IQOP = -I${QOPINCDIR}
+  INCDEPQOP = ${QOPINCDIR}
+endif
+
+# Non-packaged QOP objects
+
+# MILC implementation 
+# Conjugate gradient
+  ASQINVERTQOP = 
+# Fermion force
+  ASQFORCEQOP += qop_milc.o fermion_force_asqtad_qop_milc.o ff_opt.o
+
+ifeq ($(strip ${HAVEQOP}),true)
+  LIBQOP = ${LQOP}
+  INCQOP = ${IQOP}
+endif
+
+
