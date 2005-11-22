@@ -32,6 +32,8 @@ G_KS_ALL = \
   fermion_force_asqtad2.o \
   fermion_force_asqtad3.o \
   fermion_force_asqtad_qdp.o \
+  fermion_force_asqtad_qop_milc.o \
+  fermion_force_asqtad_qop.o \
   ff_opt.o \
   flavor_ops.o \
   f_meas.o \
@@ -130,6 +132,10 @@ fermion_force_asqtad2.o: ../generic_ks/fermion_force_asqtad2.c
 fermion_force_asqtad3.o: ../generic_ks/fermion_force_asqtad3.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qdp.o: ../generic_ks/fermion_force_asqtad_qdp.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_qop.o: ../generic_ks/fermion_force_asqtad_qop.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_qop_milc.o: ../generic_ks/fermion_force_asqtad_qop_milc.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_general.o: ../generic_ks/fermion_force_general.c
 	${CC} -c ${CFLAGS} $<
