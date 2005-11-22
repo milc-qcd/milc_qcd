@@ -42,8 +42,9 @@
 #include <qmp.h>
 #endif
 
-static int squaresize[4];	/* dimensions of hypercubes */
-static int nsquares[4];	/* number of hypercubes in each direction */
+static int squaresize[4];	   /* dimensions of hypercubes */
+static int nsquares[4];	           /* number of hypercubes in each direction */
+static int machine_coordinates[4]; /* logical machine coordinates */ 
 
 int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
 # define MAXPRIMES ( sizeof(prime) / sizeof(int) )
@@ -125,8 +126,9 @@ static void setup_hyper_prime(){
 }
 
 void setup_layout(){
+  int k = mynode();
 
-  if(mynode()==0)
+  if(k == 0)
     printf("LAYOUT = Hypercubes, options = ");
 
 #ifdef HAVE_QMP
@@ -137,7 +139,17 @@ void setup_layout(){
 #else
   setup_hyper_prime();
 #endif
+  
+  /* Compute machine coordinates */
+  machine_coordinates[XUP] = k % squaresize[XUP];
+  k /= squaresize[XUP];
+  machine_coordinates[YUP] = k % squaresize[YUP];
+  k /= squaresize[YUP];
+  machine_coordinates[ZUP] = k % squaresize[ZUP];
+  k /= squaresize[ZUP];
+  machine_coordinates[TUP] = k % squaresize[TUP];
 
+  /* Number of sites on node */
   sites_on_node =
     squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
   /* Need even number of sites per hypercube */
@@ -184,17 +196,7 @@ int *get_logical_dimensions(){
 
 /* Coordinates simulate a mesh architecture and must correspond
    to the node_number result */
+
 int *get_logical_coordinate(){
-  int k = mynode();
-  static int machine_coordinates[4];
-
-  machine_coordinates[XUP] = k % squaresize[XUP];
-  k /= squaresize[XUP];
-  machine_coordinates[YUP] = k % squaresize[YUP];
-  k /= squaresize[YUP];
-  machine_coordinates[ZUP] = k % squaresize[ZUP];
-  k /= squaresize[ZUP];
-  machine_coordinates[TUP] = k % squaresize[TUP];
-
   return machine_coordinates;
 }

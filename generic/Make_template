@@ -45,6 +45,7 @@ G_ALL = \
  layout_squares.o \
  layout_hyper_sl32.o \
  layout_qcdoc.o \
+ map_milc_to_qop.o \
  make_lattice.o \
  path_product.o \
  plaquette3.o \
@@ -55,6 +56,7 @@ G_ALL = \
  ploop_staple.o \
  project_su3_hit.o \
  qcdoc_alloc.o \
+ qop_milc.o \
  rand_gauge.o \
  ranmom.o \
  ranstuff.o \
@@ -159,6 +161,8 @@ layout_qcdoc.o: ../generic/layout_qcdoc.c
 	${CC} -c ${CFLAGS} $<
 make_lattice.o: ../generic/make_lattice.c
 	${CC} -c ${CFLAGS} $<
+map_milc_to_qop.o: ../generic/map_milc_to_qop.c
+	${CC} -c ${CFLAGS} $<
 path_product.o: ../generic/path_product.c
 	${CC} -c ${CFLAGS} $<
 plaquette3.o: ../generic/plaquette3.c
@@ -176,6 +180,8 @@ ploop_staple.o: ../generic/ploop_staple.c
 project_su3_hit.o: ../generic/project_su3_hit.c
 	${CC} -c ${CFLAGS} $<
 qcdoc_alloc.o: ../generic/qcdoc_alloc.c
+	${CC} -c ${CFLAGS} $<
+qop_milc.o: ../generic/qop_milc.c
 	${CC} -c ${CFLAGS} $<
 rand_gauge.o: ../generic/rand_gauge.c
 	${CC} -c ${CFLAGS} $<
