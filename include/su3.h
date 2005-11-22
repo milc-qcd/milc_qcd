@@ -61,6 +61,13 @@ typedef struct { fwilson_vector d[4]; } fspin_wilson_vector;
 typedef struct { fcolor_wilson_vector d[4]; } fwilson_matrix;
 typedef struct { fspin_wilson_vector c[3]; } fwilson_propagator;
 
+typedef struct { dsu3_vector d[4]; } dwilson_vector;
+typedef struct { dsu3_vector h[2]; } dhalf_wilson_vector;
+typedef struct { dwilson_vector c[3]; } dcolor_wilson_vector;
+typedef struct { dwilson_vector d[4]; } dspin_wilson_vector;
+typedef struct { dcolor_wilson_vector d[4]; } dwilson_matrix;
+typedef struct { dspin_wilson_vector c[3]; } dwilson_propagator;
+
 #define GAMMAFIVE -1    /* some integer which is not a direction */
 #define PLUS 1          /* flags for selecting M or M_adjoint */
 #define MINUS -1

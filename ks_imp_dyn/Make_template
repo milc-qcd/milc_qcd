@@ -2,7 +2,7 @@
 #  MIMD version 7
 #  "ks_imp3", started 1/22/99, streamline ks_imp2
 #
-#  Generic make-include file for ks_imp_dyn1 AND ks_imp_dyn2 codes
+#  Generic make-include file for ks_imp_dyn
 #  Use -DONEMASS to build for a single degenerate quark mass
 #  Otherwise the build assumes two quark masses.
 #
@@ -105,7 +105,7 @@ SPECTRUM_OBJECTS = \
 
 # Objects depending on architecture and software package 
 
-# Layout
+# Selection of layout
 ifeq ($(strip ${QCDOC}),true)
   LAYOUT = layout_qcdoc.o # Required
 else
@@ -116,12 +116,16 @@ else
   endif
 endif
 
-# Choose a non-QDP FN dslash (dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o )
+# Selection of a non-QDP FN Dslash 
+# Choices are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
 DSLASH_FN = dslash_fn2.o
 
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
-  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o
+# Standard QOP interface
+#  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o
+  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o
+  CONGRAD_FN += ${ASQINVERTQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
     CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o
@@ -132,24 +136,39 @@ else
   endif
 endif
 
-ifeq ($(strip ${QCDOC}),true)
-  QCDOC_OBJECTS = qcdoc_alloc.o
+# Selection of the fermion force algorithm
+ifeq ($(strip ${HAVEQOP}),true)
+# Standard QOP interface
+  ASQFORCE = map_milc_to_qop.o fermion_force_asqtad_qop.o
+# The implementation of the interface (if not packaged)
+  ASQFORCE += ${ASQFORCEQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+# Choose (fermion_force_asqtad_qdp.o )
+    ASQFORCE = fermion_force_asqtad_qdp.o
+  else
+# Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
+# or  fermion_force_asqtad3.o + ff_opt.o
+    ASQFORCE = fermion_force_asqtad3.o ff_opt.o
+  endif
 endif
 
+# Selection of the multimass inverter
 ifeq ($(strip ${HAVEQDP}),true)
   QDP_OBJECTS = stuff_qdp.o
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
   MULTI_INV_FN = ks_multicg_qdp.o
-# Choose (fermion_force_asqtad_qdp.o )
-  ASQFORCE = fermion_force_asqtad_qdp.o
 else
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
   MULTI_INV_FN = ks_multicg.o
-# Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
-# or  fermion_force_asqtad3.o + ff_opt.o
-  ASQFORCE = fermion_force_asqtad.o
 endif
 
+# EDRAM allocation for QCDOC
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
+
+# The only choice for inverters and Dslash for EO actions
 INV_EO_OBJECTS = d_congrad5_eo.o dslash_eo.o
 MULTI_INV_EO = ks_multicg.o
 
@@ -179,6 +198,7 @@ ${LASTMAKE}:
 ALL_MAKES = \
    Make_template \
    ${MAKEFILE} \
+   ../Make_template_qop \
    ../Make_template_scidac \
    ../generic/Make_template \
    ../generic_ks/Make_template

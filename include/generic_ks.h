@@ -143,13 +143,13 @@ void congrad_fn_map_qop_raw_to_milc( Real* qop_sol, field_offset milc_sol,
 
 #ifdef HAVE_QOP
 #include <qop.h>
-void congrad_fn_set_qop_invert_arg( QOP_invert_arg* qop_invert_arg, Real mass, 
+void congrad_fn_set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg, Real mass, 
 			 int max_iterations, Real min_resid_sq, 
 			 int milc_parity );
 
 int ks_congrad_qop( Real* qop_source, Real* qop_solution,
 		    Real* qop_fat_links, Real* qop_long_links,
-		    QOP_invert_arg* qop_invert_arg, Real* final_rsq_ptr );
+		    QOP_invert_arg_t* qop_invert_arg, Real* final_rsq_ptr );
 
 #ifdef HAVE_QDP
 /* d_congrad5_fn_qopqdp.c */
