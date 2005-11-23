@@ -102,6 +102,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   
   if(ansflag == SAVE_SERIAL){
     filexml = create_QCDML();
+    node0_printf("Saving the answer\n");
     save_color_matrix_scidac_from_site(ansfile, filexml, 
        "fermion force matrices", QIO_SINGLEFILE,  F_OFFSET(ansmom[0]), 4);
     free_QCDML(filexml);
