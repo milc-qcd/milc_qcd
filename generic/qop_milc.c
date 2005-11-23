@@ -2,8 +2,8 @@
 /* Implementation of generic QOP API for MILC testing                   */
 /* C. DeTar 10/19/2005                                                  */
 
-#include "../include/qop_milc.h"
 #include "generic_includes.h"
+#include "../include/qop_milc.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -57,7 +57,7 @@ QOP_status_t QOP_finalize(void){
 
 QOP_ColorVector *QOP_create_V_from_raw(Real *src){
   su3_vector *v;
-  char myname[] = __func__;
+  char myname[] = "QOP_create_V_from_raw";
   QOP_ColorVector *qopv;
 
   if(!qop_is_initialized){
@@ -85,7 +85,7 @@ QOP_ColorVector *QOP_create_V_from_raw(Real *src){
 
 QOP_DiracFermion *QOP_create_D_from_raw(Real *src){
   wilson_vector *d;
-  char myname[] = __func__;
+  char myname[] = "QOP_create_D_from_raw";
   QOP_DiracFermion *qopd;
 
   if(!qop_is_initialized){
@@ -114,7 +114,7 @@ QOP_DiracFermion *QOP_create_D_from_raw(Real *src){
 
 QOP_GaugeField *QOP_create_G_from_raw(Real *src[]){
   su3_matrix *g;
-  char myname[] = __func__;
+  char myname[] = "QOP_create_G_from_raw";
   QOP_GaugeField *qopg;
   int dir;
 
@@ -146,7 +146,7 @@ QOP_GaugeField *QOP_create_G_from_raw(Real *src[]){
 
 QOP_Force *QOP_create_F_from_raw(Real *src[]){
   su3_matrix *f;
-  char myname[] = __func__;
+  char myname[] = "QOP_create_F_from_raw";
   QOP_Force *qopf;
   int dir;
 

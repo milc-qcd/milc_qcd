@@ -193,5 +193,5 @@ int *get_logical_dimensions(){
 }
 
 int *get_logical_coordinate(){
-  return QMP_get_logical_coordinate();
+  return QMP_get_logical_coordinates();
 }
