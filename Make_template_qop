@@ -20,13 +20,15 @@ ifeq ($(strip ${QCDOC}),true)
 # QCDOC temporary paths
   ifeq ($(strip ${PRECISION}),1)
     IQOP = -DSCIDAC -DASQD_SINGLE -I${QOPINCDIR}
-    LQOP = -L${QOPLIBDIR} -lasqd_s
+#    LQOP = -L${QOPLIBDIR} -lasqd_s
+    LQOP = -L/host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05/build  -lasqd_s
   else
     IQOP = -DSCIDAC -I${QOP}/include/
-    LQOP = -L${QOPLIBDIR} -lasqd
+#    LQOP = -L${QOPLIBDIR} -lasqd
+    LQOP = -L/host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05/build -lasqd
   endif
-  LIBDEPQOP = ${QOPLIBDIR}
-  INCDEPQOP = ${QOPINCDIR}
+#  LIBDEPQOP = ${QOPLIBDIR}
+#  INCDEPQOP = ${QOPINCDIR}
 else
   IQOP = -I${QOPINCDIR}
   INCDEPQOP = ${QOPINCDIR}

@@ -3,7 +3,7 @@
 # 7/13/05 C. DeTar
 
 #  Change these names to suit
-VER = 7.1.7
+VER = 7.1.7a
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
