@@ -9,7 +9,7 @@
 
 #include "generic_ks_includes.h"
 
-#include <qop.h>
+#include "/host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05/include/qop.h"
 
 // These values are set in initialize_congrad
 // Dimension of sub lattice on this node
