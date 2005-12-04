@@ -72,5 +72,14 @@ Here are the new features so far:
 
 21. Add C versions of MILC QOP wrappers.  Make wrappers support QOP/QDP.
 
+22. Support new Level 3 API for Asqtad fermion force and inverter
+    Support for QOP/QDP awaits upgrade.
+
+23. Change write_ksprop_info_item to use fwrite instead of fprintf
+
+24. Add MILC imitations of Level 3 force and inverter for testing
+
+25. Make dummy QCDML be legitimate XML
+
 C. DeTar, Utah
-28 Sept 2005
+4 December 2005
