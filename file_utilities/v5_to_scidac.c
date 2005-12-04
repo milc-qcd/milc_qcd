@@ -313,7 +313,7 @@ int main(int argc, char *argv[])
   int word_size = sizeof(float);
   r_serial_site_reader state;
   QIO_String *xml_record_out;
-  char dummy[] = "<?xml version="1.0" encoding="UTF-8"?><title>Dummy QCDML</tit
+  char dummy[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Dummy QCDML</title>";
 
   if(argc < 3)
     {
