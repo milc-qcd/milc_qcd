@@ -230,11 +230,14 @@ void qfree(void *);
 #include <qop.h>
 QOP_status_t initialize_qop();
 su3_matrix **create_raw_G_from_site_links();
+su3_matrix **create_raw_G_from_field_links();
 void destroy_raw_G(su3_matrix *rawlinks[]);
 su3_matrix **create_raw_F_from_site_mom();
 void unload_raw_F_to_site_mom(su3_matrix *rawforce[]);
 void destroy_raw_F(su3_matrix *rawforce[]);
-su3_vector *create_raw_V_from_site(field_offset x);
+su3_vector *create_raw_V_from_site(field_offset x, int parity);
+void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
+			  int parity);
 void destroy_raw_V(su3_vector *rawsu3vec);
 #endif
 

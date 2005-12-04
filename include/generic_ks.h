@@ -34,24 +34,18 @@ void copy_latvec(field_offset src, field_offset dest, int parity);
 void dslash_site( field_offset src, field_offset dest, int parity );
 void dslash_site_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start );
-void clear_latvec(field_offset v,int parity);
 
-void scalar_mult_latvec(field_offset src, Real scalar,
-			field_offset dest, int parity);
-void scalar_mult_add_latvec(field_offset src1, field_offset src2,
-			    Real scalar, field_offset dest, int parity);
-void scalar2_mult_add_su3_vector(su3_vector *a, Real s1, su3_vector *b, 
-				 Real s2, su3_vector *c);
-
-void scalar2_mult_add_latvec(field_offset src1,Real scalar1,
-			     field_offset src2,Real scalar2,
-			     field_offset dest,int parity);
 void checkmul();
 void phaseset();
 void rephase( int flag );
 
 void prefetch_vector( su3_vector * );
 void prefetch_matrix( su3_matrix * );
+
+int ks_congrad_qop(int niter, Real rsqmin, 
+		   Real *masses[], int nmass[], 
+		   field_offset milc_srcs[], field_offset *milc_sols[],
+		   int nsrc, Real* final_rsq_ptr, int milc_parity );
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
      int niter, Real rsqmin, int parity, Real *rsq );
@@ -125,31 +119,33 @@ int ks_multicg(	/* Return value is number of iterations taken */
 void initialize_congrad( void );
 void finalize_congrad( void );
 
-void congrad_fn_allocate_qop_fields( Real** qop_fat_links, 
-				     Real** qop_long_links, 
-				     Real** qop_src, Real** qop_sol );
-
-void congrad_fn_map_milc_to_qop_raw( field_offset milc_src, 
-				     field_offset milc_sol,
-				     Real* qop_fat_links, 
-				     Real* qop_long_links,
-				     Real* qop_src, 
-				     Real* qop_sol, int milc_parity );
-
-
-void congrad_fn_map_qop_raw_to_milc( Real* qop_sol, field_offset milc_sol, 
-				     int milc_parity );
+/* dslash_fn_qop_milc.c */
+void cleanup_gathers_qop_milc(msg_tag *tags1[], msg_tag *tags2[]);
+void cleanup_dslash_qop_milc_temps();
+void dslash_fn_qop_milc( su3_matrix *fatlinks, su3_matrix *longlinks,
+			 su3_vector *src, su3_vector *dest, int parity );
+void dslash_fn_qop_milc_field_special(su3_matrix *fatlinks, 
+				      su3_matrix *longlinks,
+				      su3_vector *src, su3_vector *dest,
+				      int parity, msg_tag **tag, int start );
 
 
+/* d_congrad_opt.c */
+
+void clear_latvec(field_offset v,int parity);
+
+void scalar_mult_latvec(field_offset src, Real scalar,
+			field_offset dest, int parity);
+void scalar_mult_add_latvec(field_offset src1, field_offset src2,
+			    Real scalar, field_offset dest, int parity);
+void scalar2_mult_add_su3_vector(su3_vector *a, Real s1, su3_vector *b, 
+				 Real s2, su3_vector *c);
+
+void scalar2_mult_add_latvec(field_offset src1,Real scalar1,
+			     field_offset src2,Real scalar2,
+			     field_offset dest,int parity);
 #ifdef HAVE_QOP
 #include <qop.h>
-void congrad_fn_set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg, Real mass, 
-			 int max_iterations, Real min_resid_sq, 
-			 int milc_parity );
-
-int ks_congrad_qop( Real* qop_source, Real* qop_solution,
-		    Real* qop_fat_links, Real* qop_long_links,
-		    QOP_invert_arg_t* qop_invert_arg, Real* final_rsq_ptr );
 
 #ifdef HAVE_QDP
 /* d_congrad5_fn_qopqdp.c */
@@ -183,6 +179,22 @@ int fpi_2( /* Return value is number of C.G. iterations taken */
   int nmasses,      /* number of masses */
   Real tol        /* tolerance for inverter check. */
   );
+
+/* ff_opt.c */
+void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
+				      half_wilson_vector **src_pt, 
+				      half_wilson_vector *dest);
+void mult_su3_sitelink_lathwvec( int dir, 
+				 half_wilson_vector **src_pt, 
+				 half_wilson_vector *dest);
+void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom, 
+				   half_wilson_vector *back, 
+				   half_wilson_vector *forw, Real coeff[2]);
+void scalar_mult_add_lathwvec(half_wilson_vector *dest, 
+			      half_wilson_vector *src, Real s[2]);
+void mult_su3_fieldlink_lathwvec( su3_matrix *link,
+				  half_wilson_vector **src_pt, 
+				  half_wilson_vector *dest);
 
 /* flavor_ops.c */
 void sym_shift(int dir, field_offset src,field_offset dest) ;
