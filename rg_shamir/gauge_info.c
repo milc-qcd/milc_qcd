@@ -137,6 +137,7 @@ gaugeConfigurationMetadata *createGaugeMD ( )
 
 String *createGaugeQCDML ( gaugeConfigurationMetadata *gaugeConfiguration )
 {
+  char dummy[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Dummy QCDML</title>";
   size_t size = 4000;
   String* st = new_String ( size, "\n####### String ############\n" );
   outStream* os = new_outStreamString ( st );
@@ -155,7 +156,7 @@ void destroyGaugeQCDML(String *st){
 #endif
 
 char *create_QCDML(){
-  char dummy[] = "Dummy QCDML";
+  char dummy[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Dummy QCDML</title>";
   char *qcdml = (char *)malloc(sizeof(dummy)+1);
   strcpy(qcdml, dummy);
   return qcdml;

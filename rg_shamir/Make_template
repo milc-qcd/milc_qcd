@@ -108,7 +108,7 @@ DSLASH_FN = dslash_fn2.o
 
 # Choose non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
 # or d_congrad5_fn_fewsums.o)
-CONGRAD_FN = d_congrad5_fn.o
+CONGRAD_FN = d_congrad5_fn.o d_congrad_opt.o
 
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o
