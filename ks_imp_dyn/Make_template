@@ -123,16 +123,16 @@ DSLASH_FN = dslash_fn2.o
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Standard QOP interface
-#  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o
-  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o
+  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o d_congrad_opt.o
+#  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
   CONGRAD_FN += ${ASQINVERTQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o d_congrad_opt.o
   else
     # Choose a non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
     # or d_congrad5_fn_fewsums.o)
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
   endif
 endif
 
@@ -174,6 +174,11 @@ MULTI_INV_EO = ks_multicg.o
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
+
+# Generic QOP objects
+ifeq ($(strip ${HAVEQOP}),true)
+  ADD_OBJECTS += ${GENERICQOP}
+endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
   ${ADD_OBJECTS} ${EXTRA_OBJECTS}
@@ -270,7 +275,8 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCOM_CRC" \
+	"DEFINES= -DFN -DCOM_CRC \
+ 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
