@@ -2,55 +2,149 @@
 /* MIMD version 7 */
 
 /* This is the MILC wrapper for the SciDAC Level 3 QOP inverter */
+
 /* 2/2005 D. Renner and C. Jung */
+/* 12/2005 C. DeTar upgrade to new Level 3 API */
 
 #include "generic_ks_includes.h"
-#include "/host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05/include/qop.h"
+#include <qop.h>
 
-static int *machine_dimensions;
-
-// These values are set in initialize_congrad
-// Dimension of sub lattice on this node
-int sub_lattice_nx;
-int sub_lattice_ny;
-int sub_lattice_nz;
-int sub_lattice_nt;
-
-static int sub_lattice_volume;
-
-// These values are set in initialize_congrad
-// Logical mesh coordinates of this node
-int machine_x;
-int machine_y;
-int machine_z;
-int machine_t;
-
-// Used by initialize_congrad and finalize_congrad:
-static int is_congrad_initialized = 0;
-
-/* Generic MILC interface for the Asqtad inverter */
-int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
-	        int niter, Real rsqmin, int milc_parity, Real* final_rsq_ptr )
+/* Load QOP_FermionLinksAsqtad object from MILC fat and long links */
+static void load_fermion_links_asqtad( QOP_FermionLinksAsqtad** qop_links )
 {
-  Real* qop_fat_links = NULL;
-  Real* qop_long_links = NULL;
-  Real* qop_src = NULL;
-  Real* qop_sol = NULL;
+  su3_matrix **raw_fat_links, **raw_long_links;
 
-  //printf( "MILC: ks_congrad called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-  //printf( "MILC: level 3 conjugate gradient being used\n" );
+  /* Map fat and long links to raw format */
 
-  #ifdef CGTIME
+  raw_fat_links  = create_raw_G_from_field_links(t_fatlink);
+  if(raw_fat_links == NULL)terminate(1);
+  raw_long_links = create_raw_G_from_field_links(t_longlink);
+  if(raw_long_links == NULL)terminate(1);
 
-    double dtimec;
-    double nflop = 1187;
-    if( milc_parity == EVENANDODD ) nflop *= 2;
+#if 0
+  // Release for memory savings.  Links may need to be recomputed later.
+  free_fatlinks();
+  free_longlinks();
+  valid_fatlinks = 0;
+  valid_longlinks = 0;
+#endif
 
-  #endif
+  /* Map raw to QOP format */
 
-  ///////////////////////////////////////////////////////
-  // load fat and long links                           //
-  ///////////////////////////////////////////////////////
+  *qop_links = QOP_asqtad_create_L_from_raw((Real **)raw_fat_links, 
+					    (Real **)raw_long_links);
+  destroy_raw_G(raw_fat_links);
+  destroy_raw_G(raw_long_links);
+  return;
+}
+
+/* Map color vector field from site structure to QOP field */
+
+static void load_V_from_site( QOP_ColorVector** qop, 
+			      field_offset milc, 
+			      int parity)
+{
+  su3_vector *raw;
+
+  raw = create_raw_V_from_site(milc, parity);
+  if(raw == NULL)terminate(1);
+  *qop = QOP_create_V_from_raw((Real *)raw);
+  destroy_raw_V(raw);
+
+  return;
+}
+
+/* Map color vector from QOP field to site */
+
+static void unload_V_to_site( field_offset milc, QOP_ColorVector *qop,
+			      int parity){
+  su3_vector *raw;
+
+  raw = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+  if(raw == NULL){
+    printf("unload_V_to_site: No room for raw vector\n");
+    terminate(1);
+  }
+
+  QOP_extract_V_to_raw((Real *)raw, qop);
+  unload_raw_V_to_site(milc, raw, parity);
+
+  destroy_raw_V(raw);
+}
+
+/* Load inversion args for Level 3 inverter */
+
+static void congrad_fn_set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg, 
+					   int max_iters, Real min_resid_sq, 
+					   int max_restart, int milc_parity )
+{
+  qop_invert_arg->max_iter = max_iters;
+  qop_invert_arg->rsqmin   = min_resid_sq;
+  qop_invert_arg->restart  = max_restart;
+  
+  switch( milc_parity )
+    {
+    case( EVEN ):  qop_invert_arg->evenodd = QOP_EVEN;     break;
+    case( ODD ):   qop_invert_arg->evenodd = QOP_ODD;      break;
+    default:       qop_invert_arg->evenodd = QOP_EVENODD;  break;
+    }
+
+  return;
+}
+
+/* General MILC interface for Level 3 inverter */
+
+static int ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links, 
+			    QOP_invert_arg_t* qop_invert_arg, Real *masses[],
+			    int nmass[], 
+			    QOP_ColorVector **qop_sol[], 
+			    QOP_ColorVector* qop_src[], 
+			    int nsrc,		    
+			    Real* final_rsq_ptr )
+{
+
+  if(nsrc == 1 && nmass[0] == 1)
+    QOP_asqtad_invert( qop_links, qop_invert_arg, masses[0][0],
+		       qop_sol[0][0], qop_src[0] );
+  else
+    QOP_asqtad_invert_multi( qop_links, qop_invert_arg, masses,
+			     nmass, qop_sol, qop_src, nsrc );
+  
+  *final_rsq_ptr = qop_invert_arg->final_rsq;
+
+  return qop_invert_arg->final_iter;
+}
+
+/* Map MILC fields to QOP format and call generic QOP driver */
+
+#define MAXSRC 20
+
+int ks_congrad_qop(int niter, Real rsqmin, 
+		   Real *masses[], int nmass[], 
+		   field_offset milc_srcs[], field_offset *milc_sols[],
+		   int nsrc, Real* final_rsq_ptr, int milc_parity )
+{
+  int isrc, imass;
+  QOP_FermionLinksAsqtad *qop_links = NULL;
+  QOP_ColorVector **qop_sol[MAXSRC], *qop_src[MAXSRC];
+  QOP_invert_arg_t qop_invert_arg;
+  int iterations_used = 0;
+  int max_restart = 5;              /* Hard wired at the moment */
+
+#ifdef CGTIME
+  
+  double dtimec;
+  double nflop = 1187;
+  if( milc_parity == EVENANDODD ) nflop *= 2;
+  
+#endif
+
+  if(nsrc > MAXSRC){
+    printf("ks_congrad_qop: too many sources\n");
+    terminate(1);
+  }
+
+  /* Create fat and long links if necessary */
 
   if( valid_fatlinks  != 1 ) load_fatlinks();
   if( valid_longlinks != 1 ) load_longlinks();
@@ -59,707 +153,105 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
   dtimec = -dclock(); 
 #endif
 
-  // Initialize geometry variables
-  initialize_congrad();
+  /* Initialize QOP */
+  if(initialize_qop() != QOP_SUCCESS){
+    printf("ks_congrad: Error initializing QOP\n");
+    terminate(1);
+  }
 
-  ///////////////////////////////////////////////////////
-  // allocate qop fields                               //
-  ///////////////////////////////////////////////////////
+  /* Set qop_invert_arg */
+  congrad_fn_set_qop_invert_arg( & qop_invert_arg, niter, 
+				 rsqmin, max_restart, milc_parity );
+  
+  /* Map MILC fat and long links to QOP links object */
 
-  congrad_fn_allocate_qop_fields( & qop_fat_links, & qop_long_links, 
-				 & qop_src, & qop_sol );
+  load_fermion_links_asqtad( &qop_links );
 
-  ///////////////////////////////////////////////////////
-  // map milc fields to qop fields                     //
-  ///////////////////////////////////////////////////////
-
-  // The milc_fat_links and milc_long_links are passed implicitly.
-  congrad_fn_map_milc_to_qop_raw( milc_src, milc_sol, qop_fat_links, 
-			  qop_long_links, qop_src, qop_sol, milc_parity );
-
-  // For memory savings.  Links may need to be recomputed later.
-  free_fatlinks();
-  free_longlinks();
-  valid_fatlinks = 0;
-  valid_longlinks = 0;
-
-  ///////////////////////////////////////////////////////
-  // set qop_invert_arg                                //
-  ///////////////////////////////////////////////////////
-
-  QOP_invert_arg qop_invert_arg;
-
-  congrad_fn_set_qop_invert_arg( & qop_invert_arg, mass, niter, 
-				 rsqmin, milc_parity );
-
-  ///////////////////////////////////////////////////////
-  // qop conjugate gradient                            //
-  ///////////////////////////////////////////////////////
-
-  int iterations_used = ks_congrad_qop( qop_src, qop_sol, qop_fat_links, 
-		qop_long_links, & qop_invert_arg, final_rsq_ptr );
-
-  ///////////////////////////////////////////////////////
-  // map qop fields to milc fields                     //
-  ///////////////////////////////////////////////////////
-
-  congrad_fn_map_qop_raw_to_milc( qop_sol, milc_sol, milc_parity );
-
-  ///////////////////////////////////////////////////////
-  // free qop fields                                   //
-  ///////////////////////////////////////////////////////
-
-  free( qop_fat_links );   qop_fat_links  = NULL;
-  free( qop_long_links );  qop_long_links = NULL;
-  free( qop_src );         qop_src        = NULL;
-  free( qop_sol );         qop_sol        = NULL;
-
-  #ifdef CGTIME
-  {
-    dtimec += dclock();
-    if( this_node == 0 )
-    {
-      printf("CONGRAD5(total): time = %e iters = %d mflops = %e\n", 
-	     dtimec, iterations_used,
-        (double)( nflop * volume * iterations_used / 
-		  ( 1.0e6 * dtimec * numnodes() ) ) );
-      fflush(stdout);
+  /* Pointers for solution vectors */
+  for(isrc = 0; isrc < nsrc; isrc++){
+    qop_sol[isrc] = 
+      (QOP_ColorVector **)malloc(sizeof(QOP_ColorVector *)*nmass[isrc]);
+    if(qop_sol[isrc] == NULL){
+      printf("ks_congrad_qop: Can't allocate qop_sol\n");
+      terminate(1);
     }
   }
-  #endif
 
-  total_iters += iterations_used;
-
-  //printf( "MILC: ks_congrad finished in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-  return( iterations_used );
-}
-
-/* Local QOP interface */
-int ks_congrad_qop( Real* qop_src, Real* qop_sol,
-		    Real* qop_fat_links, Real* qop_long_links,
-		    QOP_invert_arg* qop_invert_arg, Real* final_rsq_ptr )
-{
-
-  //printf( "MILC: ks_congrad_qop called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-
-  // This will only initialize congrad if it is not already done.
-  initialize_congrad();
-
-  QOP_asqtad_invert_load_links_raw( qop_fat_links, qop_long_links );
-
-  // QOP remaps the links again, so this copy isn't needed
-  // free( qop_fat_links );   qop_fat_links  = NULL;
-  // free( qop_long_links );  qop_long_links = NULL;
-
-  #ifdef CGTIME
-
-    double dtimec;
-    double nflop = 1187;
-    if( qop_invert_arg->evenodd == QOP_EVENODD ) nflop *= 2;
-    dtimec = -dclock(); 
-
-  #endif
-
-
-  // This is hard wired to use at most 5 restarts.
-  int number_restarts = 5;
-  int iterations_used = 0;
-  int restart;
-
-  for( restart = 0; restart < number_restarts; restart ++ )
-  {
-    int iterations_used_this_restart = 
-      QOP_asqtad_inv_raw( qop_invert_arg, qop_sol, qop_src );
-
-    iterations_used += iterations_used_this_restart;
-    
-    if( iterations_used_this_restart < qop_invert_arg->max_iter )
-      {
-	break;
-      }
-    else
-      {
-	if( restart == ( number_restarts - 1 ) )
-	  {
-	    printf( "MILC: The number of restarts, %i, was saturated.\n", 
-		    number_restarts );
-	  }
-      }
+  /* Map MILC source and sink to QOP fields */
+  for(isrc = 0; isrc < nsrc; isrc++){
+    load_V_from_site( &qop_src[isrc], milc_srcs[isrc], milc_parity);
+    for(imass = 0; imass < nmass[isrc]; imass++){
+      load_V_from_site( &qop_sol[isrc][imass], 
+			milc_sols[isrc][imass], milc_parity);
+    }
   }
   
+  /* Call QOP inverter via restart driver */
+
+  iterations_used = ks_congrad_qop_generic( qop_links, & qop_invert_arg, 
+	    masses, nmass, qop_sol, qop_src, nsrc, final_rsq_ptr );
+  
+  /* Map qop solutions to MILC site structure   */
+
+  for(isrc = 0; isrc < nsrc; isrc++)
+    for(imass = 0; imass < nmass[isrc]; imass++)
+      unload_V_to_site( milc_sols[isrc][imass], 
+			  qop_sol[isrc][imass], milc_parity );
+
+  /* Free QOP fields  */
+
+  QOP_destroy_L(qop_links);          
+  qop_links  = NULL;
+  for(isrc = 0; isrc < nsrc; isrc++){
+    QOP_destroy_V(qop_src[isrc]);    
+    qop_src[isrc] = NULL;
+    for(imass = 0; imass < nmass[isrc]; imass++){
+      QOP_destroy_V(qop_sol[isrc][imass]);     
+      free(qop_sol[isrc]);
+      qop_sol[isrc] = NULL;
+    }
+  }
+
 #ifdef CGTIME
   {
     dtimec += dclock();
-    if( this_node == 0 )
-      {
-	printf("CONGRAD5(level 3 only): time = %e iters = %d mflops = %e\n", 
-	       dtimec, iterations_used,
-	       (double)( nflop * volume * iterations_used / 
-			 ( 1.0e6 * dtimec * numnodes() ) ) );
-	fflush(stdout);
-      }
+    node0_printf("CONGRAD5(total): time = %e iters = %d mflops = %e\n",
+		 dtimec,qop_invert_arg.final_iter,
+		 qop_invert_arg.final_flop/(1.0e6*dtimec) );
+    fflush(stdout);
   }
 #endif
+  return iterations_used;
+}
 
-  QOP_asqtad_invert_unload_links();
+/* Standard MILC interface for the Asqtad inverter */
 
-  // This will only close congrad if it is not already done.
-  // Eventually it should be moved somewhere else.
-  finalize_congrad();
+int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
+	        int niter, Real rsqmin, int milc_parity, Real* final_rsq_ptr )
+{
+  int iterations_used;
+  static Real t_mass;
+  Real *masses[1];
+  int nmass[1], nsrc;
+  field_offset milc_srcs[1], milc_sols0[1], *milc_sols[1];
 
-  //printf( "MILC: ks_congrad_qop finished in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
+  /* Set up general source and solution pointers for one mass, one source */
+  nsrc = 1;
+  milc_srcs[0] = milc_src;
+
+  nmass[0] = 1;
+  t_mass = mass;
+  masses[0] = &t_mass;
+
+  milc_sols0[0] = milc_sol;
+  milc_sols[0] =  milc_sols0;
+
+  iterations_used = ks_congrad_qop( niter, rsqmin, 
+				    masses, nmass, milc_srcs,
+				    milc_sols, nsrc, final_rsq_ptr,
+				    milc_parity );
+
+  total_iters += iterations_used;
   return( iterations_used );
 }
 
-void initialize_congrad( void )
-{
-  //printf( "MILC: initialize_congrad called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-
-  if( is_congrad_initialized == 1 )
-    {
-      //printf( "MILC: congrad is initialized already\n" );
-      //printf( "MILC: initialize_congrad finished: FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-      return;
-    }
-
-  machine_dimensions = get_logical_machine_dimensions();
-  sub_lattice_nx = nx/machine_dimensions[XUP];
-  sub_lattice_ny = ny/machine_dimensions[YUP];
-  sub_lattice_nz = nz/machine_dimensions[ZUP];
-  sub_lattice_nt = nt/machine_dimensions[TUP];
-  sub_lattice_volume = sub_lattice_nx*sub_lattice_ny*
-    sub_lattice_nz*sub_lattice_nt;
-
-  machine_coordinates = get_logical_machine_coordinates();
-  machine_x = machine_coordinates[XUP];
-  machine_y = machine_coordinates[YUP];
-  machine_z = machine_coordinates[ZUP];
-  machine_t = machine_coordinates[TUP];
-
-  if( sub_lattice_nt % 2 != 0 )
-    {
-      printf( "MILC: sub_lattice_nt must be even : FILE %s at LINE %i\n", 
-	      __FILE__, __LINE__ );
-      terminate( 0 );
-    }
-  
-  ///////////////////////////////////////////////////////
-  // set qop layout                                    //
-  ///////////////////////////////////////////////////////
-  
-  QOP_layout qop_layout;
-  
-  // The number of dimensions is hardwired to 4.
-  qop_layout.ndims = 4;
-  
-  // Set the sub-lattice length in each direction.
-  qop_layout.sites[ 0 ] = sub_lattice_nx;
-  qop_layout.sites[ 1 ] = sub_lattice_ny;
-  qop_layout.sites[ 2 ] = sub_lattice_nz;
-  qop_layout.sites[ 3 ] = sub_lattice_nt;
-  
-  // Set the boundary condition in each direction.
-  qop_layout.bc[ 0 ] = 0;  // x direction
-  qop_layout.bc[ 1 ] = 0;  // y direction
-  qop_layout.bc[ 2 ] = 0;  // z direction
-  qop_layout.bc[ 3 ] = 1;  // t direction
-  
-  QOP_asqtad_invert_init( & qop_layout );
-
-  is_congrad_initialized = 1;
-
-  //printf( "MILC: initialize_congrad finished: FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-  return;
-}
-
-void finalize_congrad( void )
-{
-  //printf( "MILC: finalize_congrad called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-
-  if( is_congrad_initialized == 0 )
-  {
-    return;
-  }
-
-  QOP_asqtad_invert_finalize();
-
-  is_congrad_initialized = 0;
-
-  //printf( "MILC: finalize_congrad finished in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-  return;
-}
-
-void congrad_fn_allocate_qop_fields( Real** qop_fat_links, 
-     Real** qop_long_links, Real** qop_src, Real** qop_sol )
-{
-  //printf( "MILC: congrad_fn_allocate_qop_fields called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-  // This is a little paranoid.
-  if( *qop_fat_links != NULL )
-  {
-    printf( "MILC: qop_fat_links should not be allocated twice in FILE %s at LINE %i\n", __FILE__, __LINE__ );
-    fflush( NULL );
-    terminate( 0 );
-  }
-  if( *qop_long_links != NULL )
-    {
-      printf( "MILC: qop_long_links should not be allocated twice in FILE %s at LINE %i\n", __FILE__, __LINE__ );
-      fflush( NULL );
-      terminate( 0 );
-    }
-  if( *qop_src != NULL )
-    {
-      printf( "MILC: qop_src should not be allocated twice in FILE %s at LINE %i\n", __FILE__, __LINE__ );
-      fflush( NULL );
-      terminate( 0 );
-    }
-  if( *qop_sol != NULL )
-    {
-      printf( "MILC: qop_sol should not be allocated twice in FILE %s at LINE %i\n", __FILE__, __LINE__ );
-      fflush( NULL );
-      terminate( 0 );
-    }
-  
-  // 6 = 3 * 2
-  *qop_src = (Real*) malloc( sub_lattice_volume * 6 * sizeof(Real) );
-  *qop_sol = (Real*) malloc( sub_lattice_volume * 6 * sizeof(Real) );
-  // 72 = 4 * 3 * 3 * 2
-  *qop_fat_links  = (Real*) malloc( sub_lattice_volume * 72 * sizeof(Real) );
-  *qop_long_links = (Real*) malloc( sub_lattice_volume * 72 * sizeof(Real) );
-  
-  if( *qop_src == NULL )
-    {
-      printf( "MILC: failed to allocate qop_src in FILE %s at LINE %i\n", 
-	      __FILE__, __LINE__ );
-      fflush( NULL );
-      terminate( 0 );
-    }
-  if( *qop_sol == NULL )
-    {
-      printf( "MILC: failed to allocate qop_sol in FILE %s at LINE %i\n", 
-	      __FILE__, __LINE__ );
-      fflush( NULL );
-      terminate( 0 );
-    }
-  if( *qop_fat_links == NULL )
-    {
-      printf("MILC: failed to allocate qop_fat_links in FILE %s at LINE %i\n", 
-	      __FILE__, __LINE__ );
-      fflush( NULL );
-      terminate( 0 );
-    }
-  if( *qop_long_links == NULL )
-    {
-      printf("MILC: failed to allocate qop_long_links in FILE %s at LINE %i\n", 
-	     __FILE__, __LINE__ );
-      fflush( NULL );
-      terminate( 0 );
-    }
-  
-  // This is a little paranoid.
-  //memset( (void*) *qop_fat_links,  0, sub_lattice_volume * 72 * sizeof(Real) );
-  //memset( (void*) *qop_long_links, 0, sub_lattice_volume * 72 * sizeof(Real) );
-  //memset( (void*) *qop_src, 0, sub_lattice_volume * 6 * sizeof(Real) );
-  //memset( (void*) *qop_sol, 0, sub_lattice_volume * 6 * sizeof(Real) );
-  
-  //printf( "MILC: congrad_fn_allocate_qop_fields finished in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-  return;
-}
-
-void congrad_fn_set_qop_invert_arg( QOP_invert_arg* qop_invert_arg, Real mass, 
-			 int max_iters, Real min_resid_sq, int milc_parity )
-{
-  qop_invert_arg->mass     = mass;
-  qop_invert_arg->max_iter = max_iters;
-  qop_invert_arg->rsqmin   = min_resid_sq;
-  
-  switch( milc_parity )
-    {
-    case( EVEN ):  qop_invert_arg->evenodd = QOP_EVEN;     break;
-    case( ODD ):   qop_invert_arg->evenodd = QOP_ODD;      break;
-    default:       qop_invert_arg->evenodd = QOP_EVENODD;  break;
-    }
-  
-  if( milc_parity != EVEN )
-    {
-      printf( "MILC: only even parity is allowed in congrad for now\n" );
-      normal_exit( 0 );
-    }
-  
-  return;
-}
-
-void congrad_fn_map_milc_to_qop_raw( field_offset milc_src, 
-				     field_offset milc_sol, 
-				     Real* qop_fat_links, 
-				     Real* qop_long_links, 
-				     Real* qop_src, Real* qop_sol, 
-				     int milc_parity )
-{
-  //printf( "MILC: congrad_fn_map_milc_to_qop_raw called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-
-  
-  // These are the lattice coordinates of the point with sub-lattice coordinates (0,0,0,0).
-  int corner_x = machine_x * sub_lattice_nx;
-  int corner_y = machine_y * sub_lattice_ny;
-  int corner_z = machine_z * sub_lattice_nz;
-  int corner_t = machine_t * sub_lattice_nt;
-  
-  // The following are qop fields.
-  
-  Real* qop_even_src = qop_src;
-  Real* qop_odd_src  = qop_src + 6*even_sites_on_node;
-  
-  Real* qop_even_sol = qop_sol;
-  Real* qop_odd_sol  = qop_sol + 6*even_sites_on_node;
-  
-  Real* qop_fat_t_link = qop_fat_links;
-  Real* qop_fat_x_link = qop_fat_t_link + 18 * sub_lattice_volume;
-  Real* qop_fat_y_link = qop_fat_x_link + 18 * sub_lattice_volume;
-  Real* qop_fat_z_link = qop_fat_y_link + 18 * sub_lattice_volume;
-  
-  Real* qop_long_t_link = qop_long_links;
-  Real* qop_long_x_link = qop_long_t_link + 18 * sub_lattice_volume;
-  Real* qop_long_y_link = qop_long_x_link + 18 * sub_lattice_volume;
-  Real* qop_long_z_link = qop_long_y_link + 18 * sub_lattice_volume;
-  
-  int sub_lattice_t;
-  int sub_lattice_z;
-  int sub_lattice_y;
-  int sub_lattice_x;
-  int c;
-
-  // This loops over all the sub-lattice coordinates.
-  for( sub_lattice_t = 0 ; sub_lattice_t < sub_lattice_nt ; sub_lattice_t ++ )
-  {
-    int lattice_t = corner_t + sub_lattice_t;
-
-  for( sub_lattice_z = 0 ; sub_lattice_z < sub_lattice_nz ; sub_lattice_z ++ )
-  {
-    int lattice_z = corner_z + sub_lattice_z;
-
-  for( sub_lattice_y = 0 ; sub_lattice_y < sub_lattice_ny ; sub_lattice_y ++ )
-  {
-    int lattice_y = corner_y + sub_lattice_y;
-
-  for( sub_lattice_x = 0 ; sub_lattice_x < sub_lattice_nx ; sub_lattice_x ++ )
-  {
-    int lattice_x = corner_x + sub_lattice_x;
-
-    int site_index = node_index( lattice_x, lattice_y, lattice_z, lattice_t );
-    site* site_variable = & lattice[ site_index ];
-
-    ///////////////////////////////////////////////////////
-    // remap even source and solution vectors            //
-    ///////////////////////////////////////////////////////
-
-    if( ( ( milc_parity == EVENANDODD )                                     ) ||
-        ( ( milc_parity == EVEN       ) & ( site_variable->parity == EVEN ) )    )
-    {
-      Real* milc_even_src = (Real*) F_PT( site_variable, milc_src );
-      Real* milc_even_sol = (Real*) F_PT( site_variable, milc_sol );
-
-      for( c = 0; c < 6; c++ )
-      {
-        qop_even_src[ c ] = (Real) milc_even_src[ c ];
-        qop_even_sol[ c ] = (Real) milc_even_sol[ c ];
-      }
-
-      qop_even_src += 6;
-      qop_even_sol += 6;
-    }
-
-    ///////////////////////////////////////////////////////
-    // remap odd source and solution vectors             //
-    ///////////////////////////////////////////////////////
-
-    if( ( milc_parity == EVENANDODD ) ||
-	( ( milc_parity == ODD  ) && ( site_variable->parity == ODD  ) ) )
-    {
-      Real* milc_odd_src = (Real*) F_PT( site_variable, milc_src );
-      Real* milc_odd_sol = (Real*) F_PT( site_variable, milc_sol );
-
-      for( c = 0; c < 6; c++ )
-      {
-        qop_odd_src[ c ] = (Real) milc_odd_src[ c ];
-        qop_odd_sol[ c ] = (Real) milc_odd_sol[ c ];
-      }
-
-      qop_odd_src += 6;
-      qop_odd_sol += 6;
-    }
-
-    ///////////////////////////////////////////////////////
-    // remap fat and long links                          //
-    ///////////////////////////////////////////////////////
-
-    {
-      Real* milc_fat_x_link = NULL;
-      Real* milc_fat_y_link = NULL;
-      Real* milc_fat_z_link = NULL;
-      Real* milc_fat_t_link = NULL;
-
-      Real* milc_long_x_link = NULL;
-      Real* milc_long_y_link = NULL;
-      Real* milc_long_z_link = NULL;
-      Real* milc_long_t_link = NULL;
-
-      {
-        int site_index_4 = site_index * 4;
-
-        milc_fat_x_link = (Real*) &( t_fatlink[ 0 + site_index_4 ] );
-        milc_fat_y_link = (Real*) &( t_fatlink[ 1 + site_index_4 ] );
-        milc_fat_z_link = (Real*) &( t_fatlink[ 2 + site_index_4 ] );
-        milc_fat_t_link = (Real*) &( t_fatlink[ 3 + site_index_4 ] );
-
-        milc_long_x_link = (Real*) &( t_longlink[ 0 + site_index_4 ] );
-        milc_long_y_link = (Real*) &( t_longlink[ 1 + site_index_4 ] );
-        milc_long_z_link = (Real*) &( t_longlink[ 2 + site_index_4 ] );
-        milc_long_t_link = (Real*) &( t_longlink[ 3 + site_index_4 ] );
-      }
-
-      for( c = 0; c < 18; c ++ )
-      {
-        qop_fat_x_link[ c ] = milc_fat_x_link[ c ];
-        qop_fat_y_link[ c ] = milc_fat_y_link[ c ];
-        qop_fat_z_link[ c ] = milc_fat_z_link[ c ];
-        qop_fat_t_link[ c ] = milc_fat_t_link[ c ];
-
-        qop_long_x_link[ c ] = milc_long_x_link[ c ];
-        qop_long_y_link[ c ] = milc_long_y_link[ c ];
-        qop_long_z_link[ c ] = milc_long_z_link[ c ];
-        qop_long_t_link[ c ] = milc_long_t_link[ c ];
-      }
-
-      qop_fat_x_link += 18;
-      qop_fat_y_link += 18;
-      qop_fat_z_link += 18;
-      qop_fat_t_link += 18;
-
-      qop_long_x_link += 18;
-      qop_long_y_link += 18;
-      qop_long_z_link += 18;
-      qop_long_t_link += 18;
-    }
-  }
-  }
-  }
-  }
-
-  //printf( "MILC: congrad_fn_map_milc_to_qop_raw finished in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-  return;
-}
-
-void congrad_fn_map_qop_raw_to_milc( Real* qop_sol, 
-				     field_offset milc_sol, int milc_parity )
-{
-  //printf( "MILC: congrad_fn_map_qop_raw_to_milc called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-
-
-  // These are the lattice coordinates of the point with sub-lattice coordinates (0,0,0,0).
-  int corner_x = machine_x * sub_lattice_nx;
-  int corner_y = machine_y * sub_lattice_ny;
-  int corner_z = machine_z * sub_lattice_nz;
-  int corner_t = machine_t * sub_lattice_nt;
-  int sub_lattice_t;
-  int sub_lattice_z;
-  int sub_lattice_y;
-  int sub_lattice_x;
-  int c;
-
-  // The following are qop fields.
-  Real* qop_even_sol = qop_sol;
-  Real* qop_odd_sol  = qop_sol + 6*even_sites_on_node;
-
-  // This loops over all the sub-lattice coordinates.
-  for( sub_lattice_t = 0 ; sub_lattice_t < sub_lattice_nt ; sub_lattice_t ++ )
-  {
-    int lattice_t = corner_t + sub_lattice_t;
-
-  for( sub_lattice_z = 0 ; sub_lattice_z < sub_lattice_nz ; sub_lattice_z ++ )
-  {
-    int lattice_z = corner_z + sub_lattice_z;
-
-  for( sub_lattice_y = 0 ; sub_lattice_y < sub_lattice_ny ; sub_lattice_y ++ )
-  {
-    int lattice_y = corner_y + sub_lattice_y;
-
-  for( sub_lattice_x = 0 ; sub_lattice_x < sub_lattice_nx ; sub_lattice_x ++ )
-  {
-    int lattice_x = corner_x + sub_lattice_x;
-
-    site* site_variable = & lattice[ node_index( lattice_x, lattice_y, lattice_z, lattice_t ) ];
-
-    ///////////////////////////////////////////////////////
-    // remap even source and solution vectors            //
-    ///////////////////////////////////////////////////////
-
-    if( ( milc_parity == EVENANDODD ) ||
-        ( ( milc_parity == EVEN     ) && ( site_variable->parity == EVEN ) ) )
-    {
-      Real* milc_even_sol = (Real*) F_PT( site_variable, milc_sol );
-
-      for( c = 0; c < 6; c++ )
-      {
-        milc_even_sol[ c ] = (Real) qop_even_sol[ c ];
-      }
-
-      qop_even_sol += 6;
-    }
-
-    ///////////////////////////////////////////////////////
-    // remap odd source and solution vectors             //
-    ///////////////////////////////////////////////////////
-
-    if( ( milc_parity == EVENANDODD ) ||
-	( ( milc_parity == ODD      ) & ( site_variable->parity == ODD  ) ) )
-    {
-      Real* milc_odd_sol = (Real*) F_PT( site_variable, milc_sol );
-
-      for( c = 0; c < 6; c++ )
-      {
-        milc_odd_sol[ c ] = (Real) qop_odd_sol[ c ];
-      }
-
-      qop_odd_sol += 6;
-    }
-  }
-  }
-  }
-  }
-
-  //printf( "MILC: congrad_fn_map_qop_raw_to_milc finished in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
-  return;
-}
-
-
-/***************************/
-/* original MILC functions */
-/***************************/
-
-#include "../include/loopend.h"
-#include "../include/prefetch.h"
-#define FETCH_UP 1
-
-/* clear an su3_vector in the lattice */
-void clear_latvec(field_offset v,int parity){
-register int i,j;
-register site *s;
-register su3_vector *vv;
-    switch(parity){
-	case EVEN: FOREVENSITES(i,s){
-		vv = (su3_vector *)F_PT(s,v);
-		for(j=0;j<3;j++){ vv->c[j].real = vv->c[j].imag = 0.0; }
-	    } break;
-	case ODD: FORODDSITES(i,s){
-		vv = (su3_vector *)F_PT(s,v);
-		for(j=0;j<3;j++){ vv->c[j].real = vv->c[j].imag = 0.0; }
-	    } break;
-	case EVENANDODD: FORALLSITES(i,s){
-		vv = (su3_vector *)F_PT(s,v);
-		for(j=0;j<3;j++){ vv->c[j].real = vv->c[j].imag = 0.0; }
-	    } break;
-    } 
-}
-
-/* copy an su3_vector in the lattice */
-void copy_latvec(field_offset src,field_offset sol,int parity){
-register int i;
-register site *s;
-register su3_vector *spt,*dpt;
-    switch(parity){
-	case EVEN: FOREVENSITES(i,s){
-		s = &(lattice[i]);
-		spt = (su3_vector *)F_PT(s,src);
-		dpt = (su3_vector *)F_PT(s,sol);
-		*dpt = *spt;
-	    } break;
-	case ODD: FORODDSITES(i,s){
-		s = &(lattice[i]);
-		spt = (su3_vector *)F_PT(s,src);
-		dpt = (su3_vector *)F_PT(s,sol);
-		*dpt = *spt;
-	    } break;
-	case EVENANDODD: FORALLSITES(i,s){
-		s = &(lattice[i]);
-		spt = (su3_vector *)F_PT(s,src);
-		dpt = (su3_vector *)F_PT(s,sol);
-		*dpt = *spt;
-	    } break;
-    } 
-}
-
-/* scalar multiply and add an SU3 vector in the lattice */
-void scalar_mult_add_latvec(field_offset src1,field_offset src2,
-			    Real scalar,field_offset sol,int parity)
-{
-register int i;
-register site *s;
-register su3_vector *spt1,*spt2,*dpt;
-        FORSOMEPARITY(i,s,parity){
-               spt1 = (su3_vector *)F_PT(s,src1);
-                spt2 = (su3_vector *)F_PT(s,src2);
-                dpt = (su3_vector *)F_PT(s,sol);
-		if( i < loopend-FETCH_UP ){
-		  prefetch_VVV( (su3_vector *)F_PT((s+FETCH_UP),src1),
-				(su3_vector *)F_PT((s+FETCH_UP),src2),
-				(su3_vector *)F_PT((s+FETCH_UP),sol) );
-		}
-                scalar_mult_add_su3_vector( spt1 , spt2 , scalar , dpt);
-       } END_LOOP
-}
-
-void scalar2_mult_add_su3_vector(su3_vector *a, Real s1, su3_vector *b, 
-				 Real s2, su3_vector *c){
-register int i;
-    for(i=0;i<3;i++){
-        c->c[i].real = s1*a->c[i].real + s2*b->c[i].real;
-        c->c[i].imag = s1*a->c[i].imag + s2*b->c[i].imag;
-    }
-}
-
-/* scalar multiply two SU3 vector and add through the lattice */
-void scalar2_mult_add_latvec(field_offset src1,Real scalar1,
-			     field_offset src2,Real scalar2,
-			     field_offset sol,int parity)
-{
-register int i;
-register site *s;
-register su3_vector *spt1,*spt2,*dpt;
-        FORSOMEPARITY(i,s,parity){
-		spt1 = (su3_vector *)F_PT(s,src1);
-		spt2 = (su3_vector *)F_PT(s,src2);
-		dpt  = (su3_vector *)F_PT(s,sol);
-		if( i < loopend-FETCH_UP ){
-		  prefetch_VVV((su3_vector *)F_PT((s+FETCH_UP),src1),
-			       (su3_vector *)F_PT((s+FETCH_UP),src2),
-			       (su3_vector *)F_PT((s+FETCH_UP),sol) );
-		}
-		scalar2_mult_add_su3_vector( spt1, scalar1, spt2, scalar2, dpt);
-       } END_LOOP
-}
-
-/* scalar multiply an SU3 vector in the lattice */
-void scalar_mult_latvec(field_offset src,Real scalar,
-			field_offset sol,int parity)
-{
-register int i;
-register site *s;
-register su3_vector *spt,*dpt;
-    switch(parity){
-	case EVEN: FOREVENSITES(i,s){
-		spt = (su3_vector *)F_PT(s,src);
-		dpt = (su3_vector *)F_PT(s,sol);
-		scalar_mult_su3_vector( spt , scalar , dpt );
-	    } break;
-	case ODD: FORODDSITES(i,s){
-		spt = (su3_vector *)F_PT(s,src);
-		dpt = (su3_vector *)F_PT(s,sol);
-		scalar_mult_su3_vector( spt , scalar , dpt );
-	    } break;
-	case EVENANDODD: FORALLSITES(i,s){
-		spt = (su3_vector *)F_PT(s,src);
-		dpt = (su3_vector *)F_PT(s,sol);
-		scalar_mult_su3_vector( spt , scalar , dpt );
-	    } break;
-    } 
-}
