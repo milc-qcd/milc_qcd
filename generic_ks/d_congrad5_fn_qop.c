@@ -6,6 +6,15 @@
 /* 2/2005 D. Renner and C. Jung */
 /* 12/2005 C. DeTar upgrade to new Level 3 API */
 
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.5 2005/12/04 18:19:57 detar Exp $";
+
+/*
+ * $Log: d_congrad5_fn_qop.c,v $
+ * Revision 1.5  2005/12/04 18:19:57  detar
+ * Add Log header
+ *
+ */
+
 #include "generic_ks_includes.h"
 #include <qop.h>
 
