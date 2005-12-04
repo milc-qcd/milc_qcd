@@ -113,9 +113,9 @@ int write_ksprop_info_item( FILE *fpout,    /* ascii file pointer */
 
   for(i=0;strlen(ks_prop_info_keyword[i])>0 &&
       strcmp(ks_prop_info_keyword[i],keyword) != 0; i++);
-  if(strlen(ks_prop_info_keyword[i])==0)
+  /**  if(strlen(ks_prop_info_keyword[i])==0)
     printf("write_ksprop_info_item: WARNING: keyword %s not in table\n",
-	    keyword);
+    keyword); **/
 
   /* Write keyword */
   /* All fprintf's converted to fwrite's to humor dcache utilities at FNAL */
