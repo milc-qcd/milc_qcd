@@ -12,21 +12,24 @@ G_KS_ALL = \
   d_congrad5.cppacs.o \
   d_congrad5.o \
   d_congrad5_hl.o \
-  d_congrad6.o \
   d_congrad5_eo.o \
   d_congrad5_fn.o \
   d_congrad5_fn_fewsums.o \
   d_congrad5_fn_qop.o \
+  d_congrad5_fn_qop_milc.o \
   d_congrad5_fn_qop_two_src.o \
   d_congrad5_fn_qopdp.o \
   d_congrad5_fn_qopqdp_two_src.o \
   d_congrad5_two_src.o \
   d_congrad5_fn_two_src2.o \
+  d_congrad6.o \
+  d_congrad_opt.o \
   dslash_eo.o \
   dslash_fn.o \
+  dslash_fn2.o \
   dslash_fn_dblstore.o \
   dslash_fn_multi.o \
-  dslash_fn2.o \
+  dslash_fn_qop_milc.o \
   eigen_stuff.o \
   fermion_force_asqtad.o \
   fermion_force_asqtad2.o \
@@ -93,13 +96,13 @@ d_congrad5.o: ../generic_ks/d_congrad5.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_hl.o: ../generic_ks/d_congrad5_hl.c
 	${CC} -c ${CFLAGS} $<
-d_congrad6.o: ../generic_ks/d_congrad6.c
-	${CC} -c ${CFLAGS} $<
 d_congrad5_eo.o: ../generic_ks/d_congrad5_eo.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn.o: ../generic_ks/d_congrad5_fn.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop.o: ../generic_ks/d_congrad5_fn_qop.c
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_qop_milc.o: ../generic_ks/d_congrad5_fn_qop_milc.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop_two_src.o: ../generic_ks/d_congrad5_fn_qop_two_src.c
 	${CC} -c ${CFLAGS} $<
@@ -113,15 +116,21 @@ d_congrad5_two_src.o: ../generic_ks/d_congrad5_two_src.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_two_src2.o: ../generic_ks/d_congrad5_fn_two_src2.c
 	${CC} -c ${CFLAGS} $<
+d_congrad6.o: ../generic_ks/d_congrad6.c
+	${CC} -c ${CFLAGS} $<
+d_congrad_opt.o: ../generic_ks/d_congrad_opt.c
+	${CC} -c ${CFLAGS} $<
 dslash_eo.o: ../generic_ks/dslash_eo.c
 	${CC} -c ${CFLAGS} $<
 dslash_fn.o: ../generic_ks/dslash_fn.c
+	${CC} -c ${CFLAGS} $<
+dslash_fn2.o: ../generic_ks/dslash_fn2.c
 	${CC} -c ${CFLAGS} $<
 dslash_fn_dblstore.o: ../generic_ks/dslash_fn_dblstore.c
 	${CC} -c ${CFLAGS} $<
 dslash_fn_multi.o: ../generic_ks/dslash_fn_multi.c
 	${CC} -c ${CFLAGS} $<
-dslash_fn2.o: ../generic_ks/dslash_fn2.c
+dslash_fn_qop_milc.o: ../generic_ks/dslash_fn_qop_milc.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff.o: ../generic_ks/eigen_stuff.c
 	${CC} -c ${CFLAGS} $<

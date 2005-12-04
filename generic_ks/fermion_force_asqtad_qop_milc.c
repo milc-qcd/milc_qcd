@@ -1,9 +1,11 @@
 /****** fermion_force_asqtad_qop_milc.c  -- ******************/
 /* MIMD version 7 */
 /* fermion force optimized for the Asqtad action
+
  * This version implements the QOP API with the standard MILC algorithm
  * It is intended for testing other QOP routines.
  * It is based on fermion_force_asqtad3.c
+
  * Uses restart-gathers and a bit more memory for better performance
  * The algorithm is the same as fermion_force_asqtad2.c, except that
  * the shifts are consistent with Dslash.
@@ -297,6 +299,7 @@ QOP_status_t QOP_asqtad_force(QOP_GaugeField *gauge,
 node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
+ return QOP_SUCCESS; 
 #endif
 } /* eo_fermion_force(version 7) */
 #undef Pmu          
@@ -719,6 +722,7 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
 node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
   /**printf("TLENGTH: %d\n",tlength);**/
+ return QOP_SUCCESS; 
 #endif
 
 

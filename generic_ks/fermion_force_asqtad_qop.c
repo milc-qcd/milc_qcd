@@ -90,7 +90,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
   load_links_and_mom_site( &links, &mom, &rawlinks, &rawmom );
 
   /* Copy color vector from site structure to raw and then to QOP format */
-  rawvecx = create_raw_V_from_site(x_off);
+  rawvecx = create_raw_V_from_site(x_off,EVENANDODD);
   if(rawvecx == NULL)terminate(1);
   vecx = QOP_create_V_from_raw((Real *)rawvecx);
 
@@ -131,11 +131,11 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 
   /* Loop over fermion species */
   /* Copy color vectors from site structure to raw and then to QOP format */
-  rawvecx[0] = create_raw_V_from_site(x1_off);
+  rawvecx[0] = create_raw_V_from_site(x1_off, EVENANDODD);
   if(rawvecx[0] == NULL)terminate(1);
   vecx[0] = QOP_create_V_from_raw((Real *)rawvecx[0]);
 
-  rawvecx[1] = create_raw_V_from_site(x2_off);
+  rawvecx[1] = create_raw_V_from_site(x2_off, EVENANDODD);
   if(rawvecx[1] == NULL)terminate(1);
   vecx[1] = QOP_create_V_from_raw((Real *)rawvecx[1]);
 
