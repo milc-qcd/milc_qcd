@@ -313,6 +313,7 @@ int main(int argc, char *argv[])
   int word_size = sizeof(float);
   r_serial_site_reader state;
   QIO_String *xml_record_out;
+  char dummy[] = "<?xml version="1.0" encoding="UTF-8"?><title>Dummy QCDML</tit
 
   if(argc < 3)
     {
@@ -382,7 +383,7 @@ int main(int argc, char *argv[])
      site links from the MILC file */
 
   xml_record_out = QIO_string_create();
-  QIO_string_set(xml_record_out,"Dummy QCDML");
+  QIO_string_set(xml_record_out,dummy);
   rec_info = QIO_create_record_info(QIO_FIELD, "QDP_F3_ColorMatrix", "F", 
 				    3, 0, datum_size, 4);
   status = QIO_write(outfile, rec_info, xml_record_out,

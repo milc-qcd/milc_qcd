@@ -39,7 +39,7 @@ void write_appl_gauge_info(FILE *fp)
 }
 
 char *create_QCDML(){
-  char dummy[] = "Dummy QCDML";
+  char dummy[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Dummy QCDML</title>";
   char *qcdml = (char *)malloc(sizeof(dummy)+1);
   strcpy(qcdml, dummy);
   return qcdml;
