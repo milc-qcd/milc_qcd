@@ -175,6 +175,31 @@ QOP_Force *QOP_create_F_from_raw(Real *src[]){
   return qopf;
 }
 
+QOP_FermionLinksAsqtad *QOP_asqtad_create_L_from_raw(Real *fatlinks[], 
+						     Real *longlinks[]){
+  char myname[] = "QOP_create_L_from_raw";
+  QOP_FermionLinksAsqtad *qopl;
+
+  if(!qop_is_initialized){
+    printf("%s: QOP is not initialized\n",myname);
+    return NULL;
+  }
+
+  qopl = (QOP_FermionLinksAsqtad *)malloc(sizeof(QOP_FermionLinksAsqtad));
+  if(qopl == NULL){
+    printf("%s: No room\n",myname);
+    return NULL;
+  }
+  
+  qopl->fat  = QOP_create_G_from_raw((Real **)fatlinks);
+  if(qopl->fat == NULL)return NULL;
+  qopl->lng = QOP_create_G_from_raw((Real **)longlinks);
+  if(qopl->lng == NULL)return NULL;
+
+  return qopl;
+}
+
+
 void QOP_extract_V_to_raw(Real *dest, QOP_ColorVector *src){
   memcpy(dest, src->v, sites_on_node*sizeof(su3_vector));
 }
@@ -223,3 +248,9 @@ void QOP_destroy_F(QOP_Force *field){
   free(field);
 }
 
+void QOP_destroy_L(QOP_FermionLinksAsqtad *field){
+  if(field == NULL)return;
+  QOP_destroy_G(field->fat);
+  QOP_destroy_G(field->lng);
+  free(field);
+}

@@ -22,7 +22,6 @@ static int milc_node_index(const int coords[]){
 /* Initialize QOP */
 
 QOP_status_t initialize_qop(){
-  int dir;
   QOP_status_t status;
   static int latsize[4];
   QOP_layout_t layout;
@@ -38,8 +37,8 @@ QOP_status_t initialize_qop(){
   layout.node_index = milc_node_index;
   layout.latdim = 4;
   layout.latsize = latsize;
-  layout.machdims = 4;
-  layout.gridsize = get_logical_coordinate();
+  layout.machdim = 4;
+  layout.machsize = get_logical_dimensions();
   layout.this_node = this_node;
   layout.sites_on_node = sites_on_node;
 
@@ -88,6 +87,38 @@ su3_matrix **create_raw_G_from_site_links(){
 
   return rawlinks;
 }
+
+/* Map MILC field links to raw order */
+su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links){
+  int coords[4];
+  int i,j,dir;
+  site *s;
+  su3_matrix **rawlinks = NULL;
+
+  rawlinks = (su3_matrix **)malloc(4*sizeof(su3_matrix *));
+  FORALLUPDIR(dir){
+    rawlinks[dir] = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    if(rawlinks == NULL){
+      printf("create_raw_G_from_field: No room for rawlinks\n");
+      return NULL;
+    }
+  }
+  
+  FORALLSITES(i,s){
+    site_coords(coords,s);
+    if(QOP_node_number_raw(coords) != this_node){
+      printf("create_raw_G_from_field: incompatible layout\n");
+      return NULL;
+    }
+    j = QOP_node_index_raw_G(coords);
+    FORALLUPDIR(dir){
+      memcpy(rawlinks[dir] + j, t_links + 4*i + dir, sizeof(su3_matrix));
+    }
+  }
+
+  return rawlinks;
+}
+
 
 void destroy_raw_G(su3_matrix *rawlinks[]){
   int dir;
@@ -143,8 +174,8 @@ void unload_raw_F_to_site_mom(su3_matrix *rawforce[]){
   FORALLSITES(i,s){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
-      printf("create_raw_F_from_site_mom: incompatible layout\n");
-      return NULL;
+      printf("unload_raw_F_to_site_mom: incompatible layout\n");
+      terminate(1);
     }
     j = QOP_node_index_raw_F(coords);
     FORALLUPDIR(dir){
@@ -167,7 +198,7 @@ void destroy_raw_F(su3_matrix *rawforce[]){
 }
 
 /* Map MILC site color vector to raw order */
-su3_vector *create_raw_V_from_site(field_offset x){
+su3_vector *create_raw_V_from_site(field_offset x, int parity){
   int coords[4];
   int i,j,dir;
   site *s;
@@ -175,11 +206,11 @@ su3_vector *create_raw_V_from_site(field_offset x){
 
   rawsu3vec = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
   if(rawsu3vec == NULL){
-    printf("create_raw_V_from_site_link: No room for rawlink\n");
+    printf("create_raw_V_from_site_link: No room for raw vector\n");
     return NULL;
   }
   
-  FORALLSITES(i,s){
+  FORSOMEPARITY(i,s,parity){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
       printf("create_raw_V_from_site_link: incompatible layout\n");
@@ -193,6 +224,27 @@ su3_vector *create_raw_V_from_site(field_offset x){
 
   return rawsu3vec;
 }
+
+/* Map raw force to MILC site structure mom */
+void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
+			  int parity){
+  int coords[4];
+  int i,j,dir;
+  site *s;
+
+  FORSOMEPARITY(i,s,parity){
+    site_coords(coords,s);
+    if(QOP_node_number_raw(coords) != this_node){
+      printf("unload_raw_V_to_site: incompatible layout\n");
+      terminate(1);
+    }
+    j = QOP_node_index_raw_V(coords);
+    FORALLUPDIR(dir){
+      memcpy((void *)F_PT(s,vec), rawsu3vec + j, sizeof(su3_vector));
+    }
+  }
+}
+
 
 void destroy_raw_V(su3_vector *rawsu3vec){
   
