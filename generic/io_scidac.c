@@ -349,6 +349,7 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
   field_offset src = F_OFFSET(link[0]);
   gauge_file *gf;
   char *qcdml;
+  char default_file_xml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>MILC ILDG archival gauge configuration</title>";
 
   QIO_verbose(QIO_VERB_OFF);
 
@@ -360,8 +361,7 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
 
   /* Open file for writing */
   outfile = open_scidac_output(filename, volfmt, serpar, ildgstyle, 
-			stringLFN, &layout,
-			"MILC ILDG archival gauge configuration");
+			stringLFN, &layout,default_file_xml);
   if(outfile == NULL)terminate(1);
 
   /* Create the QCDML string for this configuration */
