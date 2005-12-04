@@ -165,7 +165,7 @@ void destroyGaugeQCDML(String *st){
 #if 0
 /* Eventually we should create files with the proper QCDML */
 char *create_QCDML(){
-  char dummy[] = "Dummy QCDML";
+  char dummy[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Dummy QCDML</title>";
   char *qcdml = (char *)malloc(sizeof(dummy)+1);
   strcpy(qcdml, dummy);
   return qcdml;
@@ -183,6 +183,11 @@ char *create_QCDML(){
   size_t bytes = 0;
   char *info = (char *)malloc(INFOSTRING_MAX);
   size_t max = INFOSTRING_MAX;
+  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
+  char end[] = "</info>";
+
+  snprintf(info+bytes, max-bytes,"%s",begin);
+  bytes = strlen(info);
 
   sprint_gauge_info_item(info+bytes, max-bytes,"action.description","%s",
 			"\"Gauge plus fermion (improved)\"",0,0);
@@ -227,6 +232,7 @@ char *create_QCDML(){
 			 (char *)&mass2,0,0);
   bytes = strlen(info);
 #endif  
+  snprintf(info+bytes, max-bytes,"%s",end);
   return info;
 }
 
