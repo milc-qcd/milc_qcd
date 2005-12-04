@@ -156,7 +156,7 @@ void destroyGaugeQCDML(String *st){
 #endif
 
 char *create_QCDML(){
-  char dummy[] = "Dummy QCDML";
+  char dummy[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Dummy QCDML</title>";
   char *qcdml = (char *)malloc(sizeof(dummy)+1);
   strncpy(qcdml,dummy,sizeof(dummy)+1);
   return qcdml;
