@@ -19,6 +19,28 @@ static int milc_node_index(const int coords[]){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
+QOP_evenodd_t milc2qop_parity(int milc_parity){
+  switch(milc_parity){
+  case(EVEN):       return QOP_EVEN;
+  case(ODD ):       return QOP_ODD;
+  case(EVENANDODD): return QOP_EVENODD;
+  default:
+    printf("qop_parity: Bad MILC parity %d\n", milc_parity);
+    terminate(1);
+  }
+}
+
+int qop2milc_parity(QOP_evenodd_t qop_parity){
+  switch(qop_parity){
+  case(QOP_EVEN):     return EVEN;
+  case(QOP_ODD ):     return ODD;
+  case(QOP_EVENODD ): return EVENANDODD;
+  default:
+    printf("milc_parity: Bad QOP parity %d\n", qop_parity);
+    terminate(1);
+  }
+}
+
 /* Initialize QOP */
 
 QOP_status_t initialize_qop(){
@@ -58,7 +80,7 @@ void site_coords(int coords[4],site *s){
 }
 
 /* Map MILC links to raw order */
-su3_matrix **create_raw_G_from_site_links(){
+su3_matrix **create_raw_G_from_site_links(int milc_parity){
   int coords[4];
   int i,j,dir;
   site *s;
@@ -73,13 +95,13 @@ su3_matrix **create_raw_G_from_site_links(){
     }
   }
   
-  FORALLSITES(i,s){
+  FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
       printf("create_raw_G_from_site_link: incompatible layout\n");
       return NULL;
     }
-    j = QOP_node_index_raw_G(coords);
+    j = QOP_node_index_raw_G(coords, milc2qop_parity(milc_parity));
     FORALLUPDIR(dir){
       memcpy(rawlinks[dir] + j, &(s->link[dir]), sizeof(su3_matrix));
     }
@@ -89,7 +111,8 @@ su3_matrix **create_raw_G_from_site_links(){
 }
 
 /* Map MILC field links to raw order */
-su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links){
+su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links,
+					   int milc_parity){
   int coords[4];
   int i,j,dir;
   site *s;
@@ -104,13 +127,13 @@ su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links){
     }
   }
   
-  FORALLSITES(i,s){
+  FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
       printf("create_raw_G_from_field: incompatible layout\n");
       return NULL;
     }
-    j = QOP_node_index_raw_G(coords);
+    j = QOP_node_index_raw_G(coords, milc2qop_parity(milc_parity));
     FORALLUPDIR(dir){
       memcpy(rawlinks[dir] + j, t_links + 4*i + dir, sizeof(su3_matrix));
     }
@@ -132,7 +155,7 @@ void destroy_raw_G(su3_matrix *rawlinks[]){
 }
 
 /* Map MILC momentum to raw order */
-su3_matrix **create_raw_F_from_site_mom(){
+su3_matrix **create_raw_F_from_site_mom(int milc_parity){
   int coords[4];
   int i,j,dir;
   site *s;
@@ -148,13 +171,13 @@ su3_matrix **create_raw_F_from_site_mom(){
     }
   }
   
-  FORALLSITES(i,s){
+  FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
       printf("create_raw_F_from_site_mom: incompatible layout\n");
       return NULL;
     }
-    j = QOP_node_index_raw_F(coords);
+    j = QOP_node_index_raw_F(coords, milc2qop_parity(milc_parity));
     FORALLUPDIR(dir){
       uncompress_anti_hermitian( &(s->mom[dir]), &tmat );
       memcpy(rawforce[dir] + j, &tmat, sizeof(su3_matrix));
@@ -165,19 +188,19 @@ su3_matrix **create_raw_F_from_site_mom(){
 }
 
 /* Map raw force to MILC site structure mom */
-void unload_raw_F_to_site_mom(su3_matrix *rawforce[]){
+void unload_raw_F_to_site_mom(su3_matrix *rawforce[], int milc_parity){
   int coords[4];
   int i,j,dir;
   site *s;
   su3_matrix tmat;
 
-  FORALLSITES(i,s){
+  FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
       printf("unload_raw_F_to_site_mom: incompatible layout\n");
       terminate(1);
     }
-    j = QOP_node_index_raw_F(coords);
+    j = QOP_node_index_raw_F(coords, milc2qop_parity(milc_parity));
     FORALLUPDIR(dir){
       memcpy(&tmat, rawforce[dir] + j, sizeof(su3_matrix));
       make_anti_hermitian( &tmat, &(s->mom[dir]) ); 
@@ -198,7 +221,7 @@ void destroy_raw_F(su3_matrix *rawforce[]){
 }
 
 /* Map MILC site color vector to raw order */
-su3_vector *create_raw_V_from_site(field_offset x, int parity){
+su3_vector *create_raw_V_from_site(field_offset x, int milc_parity){
   int coords[4];
   int i,j,dir;
   site *s;
@@ -210,13 +233,13 @@ su3_vector *create_raw_V_from_site(field_offset x, int parity){
     return NULL;
   }
   
-  FORSOMEPARITY(i,s,parity){
+  FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
       printf("create_raw_V_from_site_link: incompatible layout\n");
       return NULL;
     }
-    j = QOP_node_index_raw_V(coords);
+    j = QOP_node_index_raw_V(coords, milc2qop_parity(milc_parity));
     FORALLUPDIR(dir){
       memcpy(rawsu3vec + j, F_PT(s,x), sizeof(su3_vector));
     }
@@ -227,18 +250,18 @@ su3_vector *create_raw_V_from_site(field_offset x, int parity){
 
 /* Map raw force to MILC site structure mom */
 void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
-			  int parity){
+			  int milc_parity){
   int coords[4];
   int i,j,dir;
   site *s;
 
-  FORSOMEPARITY(i,s,parity){
+  FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
       printf("unload_raw_V_to_site: incompatible layout\n");
       terminate(1);
     }
-    j = QOP_node_index_raw_V(coords);
+    j = QOP_node_index_raw_V(coords, milc2qop_parity(milc_parity));
     FORALLUPDIR(dir){
       memcpy((void *)F_PT(s,vec), rawsu3vec + j, sizeof(su3_vector));
     }

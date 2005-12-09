@@ -16,23 +16,23 @@ int QOP_node_number_raw(int coords[]){
   return user_layout.node_number(coords);
 }
 
-int QOP_node_index_raw_M(int coords[]){
+int QOP_node_index_raw_M(int coords[], QOP_evenodd_t evenodd){
   return user_layout.node_index(coords);
 }
 
-int QOP_node_index_raw_V(int coords[]){
+int QOP_node_index_raw_V(int coords[], QOP_evenodd_t evenodd){
   return user_layout.node_index(coords);
 }
 
-int QOP_node_index_raw_D(int coords[]){
+int QOP_node_index_raw_D(int coords[], QOP_evenodd_t evenodd){
   return user_layout.node_index(coords);
 }
 
-int QOP_node_index_raw_G(int coords[]){
+int QOP_node_index_raw_G(int coords[], QOP_evenodd_t evenodd){
   return user_layout.node_index(coords);
 }
 
-int QOP_node_index_raw_F(int coords[]){
+int QOP_node_index_raw_F(int coords[], QOP_evenodd_t evenodd){
   return user_layout.node_index(coords);
 }
 
@@ -55,7 +55,7 @@ QOP_status_t QOP_finalize(void){
   return QOP_SUCCESS;
 }
 
-QOP_ColorVector *QOP_create_V_from_raw(Real *src){
+QOP_ColorVector *QOP_create_V_from_raw(Real *src, QOP_evenodd_t qop_parity){
   su3_vector *v;
   char myname[] = "QOP_create_V_from_raw";
   QOP_ColorVector *qopv;
@@ -80,10 +80,11 @@ QOP_ColorVector *QOP_create_V_from_raw(Real *src){
   }
   
   qopv->v = v;
+  qopv->evenodd = qop_parity;
   return qopv;
 }
 
-QOP_DiracFermion *QOP_create_D_from_raw(Real *src){
+QOP_DiracFermion *QOP_create_D_from_raw(Real *src, QOP_evenodd_t qop_parity){
   wilson_vector *d;
   char myname[] = "QOP_create_D_from_raw";
   QOP_DiracFermion *qopd;
@@ -108,11 +109,12 @@ QOP_DiracFermion *QOP_create_D_from_raw(Real *src){
   }
   
   qopd->d = d;
+  qopd->evenodd = qop_parity;
   return qopd;
 }
 
 
-QOP_GaugeField *QOP_create_G_from_raw(Real *src[]){
+QOP_GaugeField *QOP_create_G_from_raw(Real *src[], QOP_evenodd_t qop_parity){
   su3_matrix *g;
   char myname[] = "QOP_create_G_from_raw";
   QOP_GaugeField *qopg;
@@ -140,11 +142,12 @@ QOP_GaugeField *QOP_create_G_from_raw(Real *src[]){
   }
   
   qopg->g = g;
+  qopg->evenodd = qop_parity;
   return qopg;
 }
 
 
-QOP_Force *QOP_create_F_from_raw(Real *src[]){
+QOP_Force *QOP_create_F_from_raw(Real *src[], QOP_evenodd_t qop_parity){
   su3_matrix *f;
   char myname[] = "QOP_create_F_from_raw";
   QOP_Force *qopf;
@@ -172,11 +175,12 @@ QOP_Force *QOP_create_F_from_raw(Real *src[]){
   }
   
   qopf->f = f;
+  qopf->evenodd = qop_parity;
   return qopf;
 }
 
 QOP_FermionLinksAsqtad *QOP_asqtad_create_L_from_raw(Real *fatlinks[], 
-						     Real *longlinks[]){
+				     Real *longlinks[], QOP_evenodd_t qop_parity){
   char myname[] = "QOP_create_L_from_raw";
   QOP_FermionLinksAsqtad *qopl;
 
@@ -191,24 +195,25 @@ QOP_FermionLinksAsqtad *QOP_asqtad_create_L_from_raw(Real *fatlinks[],
     return NULL;
   }
   
-  qopl->fat  = QOP_create_G_from_raw((Real **)fatlinks);
+  qopl->fat  = QOP_create_G_from_raw((Real **)fatlinks, qop_parity);
   if(qopl->fat == NULL)return NULL;
-  qopl->lng = QOP_create_G_from_raw((Real **)longlinks);
+  qopl->lng = QOP_create_G_from_raw((Real **)longlinks, qop_parity);
   if(qopl->lng == NULL)return NULL;
 
+  qopl->evenodd = qop_parity;
   return qopl;
 }
 
 
-void QOP_extract_V_to_raw(Real *dest, QOP_ColorVector *src){
+void QOP_extract_V_to_raw(Real *dest, QOP_ColorVector *src, QOP_evenodd_t qop_parity){
   memcpy(dest, src->v, sites_on_node*sizeof(su3_vector));
 }
 
-void QOP_extract_D_to_raw(Real *dest, QOP_DiracFermion *src){
+void QOP_extract_D_to_raw(Real *dest, QOP_DiracFermion *src, QOP_evenodd_t qop_parity){
   memcpy(dest, src->d, sites_on_node*sizeof(wilson_vector));
 }
 
-void QOP_extract_G_to_raw(Real *dest[], QOP_GaugeField *src){
+void QOP_extract_G_to_raw(Real *dest[], QOP_GaugeField *src, QOP_evenodd_t qop_parity){
   int dir;
   FORALLUPDIR(dir){
     memcpy(dest[dir], src->g+dir*sites_on_node, 
@@ -216,7 +221,7 @@ void QOP_extract_G_to_raw(Real *dest[], QOP_GaugeField *src){
   }
 }
 
-void QOP_extract_F_to_raw(Real *dest[], QOP_Force *src){
+void QOP_extract_F_to_raw(Real *dest[], QOP_Force *src, QOP_evenodd_t qop_parity){
   int dir;
   FORALLUPDIR(dir){
     memcpy(dest[dir], src->f+dir*sites_on_node, 
