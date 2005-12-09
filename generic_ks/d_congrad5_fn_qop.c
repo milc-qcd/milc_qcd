@@ -6,10 +6,11 @@
 /* 2/2005 D. Renner and C. Jung */
 /* 12/2005 C. DeTar upgrade to new Level 3 API */
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.6 2005/12/09 16:59:02 detar Exp $";
-
 /*
  * $Log: d_congrad5_fn_qop.c,v $
+ * Revision 1.7  2005/12/09 17:07:33  detar
+ * Move cvsheader def
+ *
  * Revision 1.6  2005/12/09 16:59:02  detar
  * Support new version of qop.h with parity-dependent create_from_raw
  *
@@ -20,6 +21,8 @@ static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d
 
 #include "generic_ks_includes.h"
 #include <qop.h>
+
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.7 2005/12/09 17:07:33 detar Exp $";
 
 /* Load QOP_FermionLinksAsqtad object from MILC fat and long links */
 static void load_fermion_links_asqtad( QOP_FermionLinksAsqtad** qop_links )
