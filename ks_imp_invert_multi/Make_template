@@ -114,10 +114,11 @@ endif
 
 ifeq ($(strip ${HAVEQDP}),true)
   QDP_OBJECTS = stuff_qdp.o
-  INV_FN_OBJECTS = d_congrad5_fn_qdp.o ${DSLASH_FN} dslash_fn_qdp.o 
+  INV_FN_OBJECTS = d_congrad5_fn_qdp.o ${DSLASH_FN} dslash_fn_qdp.o d_congrad_opt.o
+  
   MULTI_INV_FN = ks_multicg_qdp.o
 else
-  INV_FN_OBJECTS = d_congrad5_fn.o ${DSLASH_FN}
+  INV_FN_OBJECTS = d_congrad5_fn.o ${DSLASH_FN} d_congrad_opt.o
   MULTI_INV_FN = ks_multicg.o
 endif
 MULTI_INV_EO = ks_multicg.o
