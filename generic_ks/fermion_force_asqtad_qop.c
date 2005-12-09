@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.5  2005/12/09 17:03:16  detar
+ * *** empty log message ***
+ *
  * Revision 1.4  2005/12/09 17:02:28  detar
  * Add CVS log and header
  *
@@ -14,7 +17,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header";
+static char* cvsHeader = "$Header:";
 
 void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
