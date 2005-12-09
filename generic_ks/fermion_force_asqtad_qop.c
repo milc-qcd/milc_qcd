@@ -13,17 +13,17 @@ void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 
   /* Copy gauge links from site structure to raw and then to QOP format */
   
-  *rawlinks = create_raw_G_from_site_links();
+  *rawlinks = create_raw_G_from_site_links(EVENANDODD);
   if(*rawlinks == NULL)terminate(1);
   
-  *links = QOP_create_G_from_raw((Real **)(*rawlinks));
+  *links = QOP_create_G_from_raw((Real **)(*rawlinks),QOP_EVENODD);
 
   /* Copy momentum from site structure to raw and then to QOP format */
 
-  *rawmom = create_raw_F_from_site_mom();
+  *rawmom = create_raw_F_from_site_mom(EVENANDODD);
   if(*rawmom == NULL)terminate(1);
 
-  *mom = QOP_create_F_from_raw((Real **)(*rawmom));
+  *mom = QOP_create_F_from_raw((Real **)(*rawmom),QOP_EVENODD);
   
 }
 
@@ -38,9 +38,9 @@ void unload_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 
   /* Copy momentum from QOP format to raw and then to site structure */
 
-  QOP_extract_F_to_raw((Real **)(*rawmom), *mom);
+  QOP_extract_F_to_raw((Real **)(*rawmom), *mom, QOP_EVENODD);
 
-  unload_raw_F_to_site_mom(*rawmom);
+  unload_raw_F_to_site_mom(*rawmom, EVENANDODD);
 
   destroy_raw_F (*rawmom);   rawmom = NULL;
   QOP_destroy_F (*mom);
@@ -92,7 +92,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
   /* Copy color vector from site structure to raw and then to QOP format */
   rawvecx = create_raw_V_from_site(x_off,EVENANDODD);
   if(rawvecx == NULL)terminate(1);
-  vecx = QOP_create_V_from_raw((Real *)rawvecx);
+  vecx = QOP_create_V_from_raw((Real *)rawvecx,QOP_EVENODD);
 
   /* Load coefficients */
   load_qop_asqtad_coeffs(&coeff, nflavors);
@@ -133,11 +133,11 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   /* Copy color vectors from site structure to raw and then to QOP format */
   rawvecx[0] = create_raw_V_from_site(x1_off, EVENANDODD);
   if(rawvecx[0] == NULL)terminate(1);
-  vecx[0] = QOP_create_V_from_raw((Real *)rawvecx[0]);
+  vecx[0] = QOP_create_V_from_raw((Real *)rawvecx[0],QOP_EVENODD);
 
   rawvecx[1] = create_raw_V_from_site(x2_off, EVENANDODD);
   if(rawvecx[1] == NULL)terminate(1);
-  vecx[1] = QOP_create_V_from_raw((Real *)rawvecx[1]);
+  vecx[1] = QOP_create_V_from_raw((Real *)rawvecx[1],QOP_EVENODD);
 
   /* Load coefficients */
   epsv[0] = eps;  epsv[1] = eps;

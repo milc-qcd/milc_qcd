@@ -53,7 +53,9 @@ static int first_congrad = 1;
 /*  MILC imitation of Asqtad Level 3 inverter */
 
 QOP_status_t QOP_asqtad_invert(QOP_FermionLinksAsqtad *links,
-			       QOP_invert_arg_t *inv_arg, Real mass,
+			       QOP_invert_arg_t *inv_arg, 
+			       QOP_resid_arg_t *res_arg, 
+			       Real mass,
 			       QOP_ColorVector *dest_pt,
 			       QOP_ColorVector *src_pt)
 {
@@ -69,8 +71,11 @@ QOP_status_t QOP_asqtad_invert(QOP_FermionLinksAsqtad *links,
   int l_otherparity;	/* the other parity */
   msg_tag * tags1[16], *tags2[16];	/* tags for gathers to parity and opposite */
   int special_started;	/* 1 if dslash_fn_field_special has been called */
-  int parity; /* parity requested */
-  Real rsqmin         = inv_arg->rsqmin;
+  QOP_evenodd_t qop_parity = inv_arg->evenodd;
+  int parity = qop2milc_parity(qop_parity);
+
+  /* parity requested */
+  Real rsqmin         = res_arg->rsqmin;
   int niter           = inv_arg->max_iter;
   int max_restart     = inv_arg->restart;
   su3_vector *srcp = src_pt->v;
@@ -89,11 +94,16 @@ QOP_status_t QOP_asqtad_invert(QOP_FermionLinksAsqtad *links,
   
   nflop = 1187;
   
-  switch(inv_arg->evenodd){
-  case(QOP_EVEN): parity = EVEN; break;
-  case(QOP_ODD ): parity = ODD ; break;
-  default: parity = EVENANDODD;
-  }
+  /* Parity consistency is required */
+  if(src_pt->evenodd != dest_pt->evenodd ||
+     links->evenodd != QOP_EVENODD       ||
+     qop_parity != src_pt->evenodd )
+    {
+      printf("QOP_asqtad_invert: Bad parity src %d dest %d links %d request %d\n",
+	     src_pt->evenodd,dest_pt->evenodd,links->evenodd,qop_parity);
+      terminate(1);
+    }
+  
 
   if(parity==EVENANDODD)nflop *=2;
 	
@@ -193,12 +203,13 @@ start:
 	    free(ttt); free(cg_p); free(resid); first_congrad = 1;
 
 	    /* Save diagnostics */
-            inv_arg->final_rsq=(Real)rsq;
-	    inv_arg->final_iter = iteration;
+            res_arg->final_rsq=(Real)rsq;
+	    res_arg->final_iter = iteration;
+	    inv_arg->final_iter += iteration;
 	    final_flop = (double)(nflop*volume*iteration)/(double)numnodes();
-	    inv_arg->final_flop = final_flop;
+	    inv_arg->final_flop += final_flop;
 	    dtimec += dclock();
-	    inv_arg->final_sec  = dtimec;
+	    inv_arg->final_sec  += dtimec;
 #ifdef CGTIME
 	    node0_printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 			 dtimec,iteration,final_flop/(1.0e6*dtimec) );
@@ -293,7 +304,6 @@ start:
 #endif
 		goto start;
 	    }
-            inv_arg->final_rsq=(Real)rsq;
 	    if(special_started==1) {
 	      cleanup_gathers_qop_milc(tags1,tags2);
 	      special_started = 0;
@@ -306,12 +316,12 @@ start:
 	    free(ttt); free(cg_p); free(resid); first_congrad = 1;
 
 	    /* Save diagnostics */
-            inv_arg->final_rsq=(Real)rsq;
-	    inv_arg->final_iter = iteration;
+            res_arg->final_rsq  = (Real)rsq;
+	    inv_arg->final_iter += iteration;
 	    final_flop = (double)(nflop*volume*iteration)/(double)numnodes();
-	    inv_arg->final_flop = final_flop;
+	    inv_arg->final_flop += final_flop;
 	    dtimec += dclock();
-	    inv_arg->final_sec  = dtimec;
+	    inv_arg->final_sec  += dtimec;
 #ifdef CGTIME
 	    node0_printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 			 dtimec,iteration,final_flop/(1.0e6*dtimec) );
@@ -346,7 +356,6 @@ start:
 	goto start;
     }
 
-    inv_arg->final_rsq=(Real)rsq;
     if(special_started==1){	/* clean up gathers */
       cleanup_gathers_qop_milc(tags1,tags2);
       special_started = 0;
@@ -360,11 +369,13 @@ start:
     free(ttt); free(cg_p); free(resid); first_congrad = 1;
 
     /* Save diagnostics */
-    inv_arg->final_rsq=(Real)rsq;
-    inv_arg->final_iter = iteration;
-    inv_arg->final_flop = (double)(nflop)*volume*iteration/(double)numnodes();
+
+    res_arg->final_rsq  =(Real)rsq;
+    inv_arg->final_iter += iteration;
+    final_flop = (double)(nflop*volume*iteration)/(double)numnodes();
+    inv_arg->final_flop += final_flop;
     dtimec += dclock();
-    inv_arg->final_sec  = dtimec;
+    inv_arg->final_sec  += dtimec;
 #ifdef CGTIME
     node0_printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 		 dtimec,iteration,final_flop/(1.0e6*dtimec) );
@@ -376,13 +387,13 @@ start:
 /* Just do repeated single inversions */
 QOP_status_t QOP_asqtad_invert_multi(QOP_FermionLinksAsqtad *links,
 				     QOP_invert_arg_t *inv_arg,
+				     QOP_resid_arg_t **res_arg[],
 				     Real *masses[], int nmass[],
 				     QOP_ColorVector **dest_pt[],
 				     QOP_ColorVector *src_pt[],
 				     int nsrc){
   int isrc, imass;
   QOP_status_t status;
-  Real max_final_rsq = 0;
   Real cum_sec = 0;
   Real cum_flop = 0;
   int cum_iter = 0;
@@ -391,25 +402,13 @@ QOP_status_t QOP_asqtad_invert_multi(QOP_FermionLinksAsqtad *links,
     for(imass = 0; imass < nmass[isrc]; imass++){
 
       /* Do the inversion */
-      status = QOP_asqtad_invert(links, inv_arg, masses[isrc][imass],
+      status = QOP_asqtad_invert(links, inv_arg, res_arg[isrc][imass],
+				 masses[isrc][imass],
 				 dest_pt[isrc][imass], src_pt[isrc]);
-
-      /* Diagnostics */
-      max_final_rsq = (inv_arg->final_rsq > max_final_rsq) ? 
-	inv_arg->final_rsq : max_final_rsq;
-      cum_sec  += inv_arg->final_sec;
-      cum_flop += inv_arg->final_flop;
-      cum_iter += inv_arg->final_iter;
       if(status != QOP_SUCCESS)break;
     }
     if(status != QOP_SUCCESS)break;
   }
-
-  /* Summary diagnostics */
-  inv_arg->final_rsq = max_final_rsq;
-  inv_arg->final_sec = cum_sec;
-  inv_arg->final_flop = cum_flop;
-  inv_arg->final_iter = cum_iter;
 
   return status;
 }

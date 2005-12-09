@@ -26,7 +26,6 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     Real  *final_rsq_ptr 	/* final residue squared */
     )
 {
-  QOP_invert_arg_t qop_invert_arg;
   int iterations_used;
   static Real t_mass1;
   static Real t_mass2;

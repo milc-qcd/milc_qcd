@@ -139,6 +139,17 @@ QOP_status_t QOP_asqtad_force(QOP_GaugeField *gauge,
 
   dtime=-dclock();
 #endif
+  
+  /* Parity requirements */
+  if(gauge->evenodd != QOP_EVENODD ||
+     force->evenodd != QOP_EVENODD ||
+     in_pt->evenodd != QOP_EVENODD
+     )
+    {
+      printf("QOP_asqtad_force: Bad parity src %d gauge %d force %d\n",
+	     in_pt->evenodd, gauge->evenodd, force->evenodd);
+      terminate(1);
+    }
 
   /* Map field pointers to local static pointers */
 
@@ -352,6 +363,7 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
   msg_tag *mt[8];
   msg_tag *mtag[4];
   half_wilson_vector *hw[8];
+  int isrc;
 
 #ifdef FFSTIME
   double time;
@@ -368,6 +380,23 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
     printf("QOP_asqtad_force_multi: This implementation doesn't do %d sources\n",nsrc);
     terminate(1);
   }
+
+  /* Parity requirements */
+  for(isrc = 0; isrc < nsrc; isrc++){
+    if(in_pt[isrc]->evenodd != QOP_EVENODD){
+      printf("QOP_asqtad_force_multi: Bad parity in_pt[%d] %d\n",
+	     isrc, in_pt[isrc]->evenodd);
+      terminate(1);
+    }
+  }
+  if(gauge->evenodd != QOP_EVENODD ||
+     force->evenodd != QOP_EVENODD 
+     )
+    {
+      printf("QOP_asqtad_force_multi: Bad parity gauge %d force %d\n",
+	     gauge->evenodd, force->evenodd);
+      terminate(1);
+    }
 
   FORALLUPDIR(dir){
     forwardlink[dir] = gauge->g + dir*sites_on_node;
