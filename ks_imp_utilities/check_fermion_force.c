@@ -14,12 +14,13 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
 			  char *ansfile, int ansflag, Real mass)
 {
   Real diff, maxdiff, norm, maxnorm, reldiff;
-  char *filexml;
   int i, dir;
   site *s;
   Real eps = 1.;
   int nflavors = 4;
   su3_matrix tmat, diffmat, tnorm;
+  char *filexml;
+  char recxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test fermion force field</title>";
 
   /* Make a random source in xxx if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
@@ -104,7 +105,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
     filexml = create_QCDML();
     node0_printf("Saving the answer\n");
     save_color_matrix_scidac_from_site(ansfile, filexml, 
-       "fermion force matrices", QIO_SINGLEFILE,  F_OFFSET(ansmom[0]), 4);
+       recxml, QIO_SINGLEFILE,  F_OFFSET(ansmom[0]), 4);
     free_QCDML(filexml);
   }
 #endif

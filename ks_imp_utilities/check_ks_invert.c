@@ -1,4 +1,4 @@
-/************************* control.c *******************************/
+/*********************** check_ks_invert.c *******************************/
 /* MIMD version 7 */
 /* Main procedure for SU3 with dynamical staggered fermions        */
 /* general quark action, general gauge action */
@@ -24,7 +24,9 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   Real tol_MdagM = 1e-7;
 #endif
   int iters = 0;
-  char *filexml;
+  char srcrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Sample source color vector field</title>";
+  char ansMrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test answer = M^-1 source</title>";
+  char ansMdMrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test answer = answer = (MdaggerM)^-1 source</title>";
   
   /* Make a random source in phi if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
@@ -95,15 +97,15 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   /* Save source and answer if requested */
 #ifdef HAVE_QIO
   if(srcflag == SAVE_SERIAL)
-    save_ks_vector_scidac_from_site(srcfile, "source color vector field", 
+    save_ks_vector_scidac_from_site(srcfile, srcrecxml, 
 				    QIO_SINGLEFILE, QIO_SERIAL, src, 1);
   
   if(ansflag == SAVE_SERIAL){
     if(inverttype == INVERT_M)
-      save_ks_vector_scidac_from_site(ansfile, "answer = M^-1 source", 
+      save_ks_vector_scidac_from_site(ansfile, ansMrecxml, 
 				      QIO_SINGLEFILE, QIO_SERIAL, ans, 1);
     else
-      save_ks_vector_scidac_from_site(ansfile, "answer = (MdaggerM)^-1 source",
+      save_ks_vector_scidac_from_site(ansfile, ansMdMrecxml,
 				      QIO_SINGLEFILE, QIO_SERIAL, ans, 1);
   }
 #endif
