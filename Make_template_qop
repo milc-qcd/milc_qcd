@@ -12,37 +12,40 @@
 
 HAVEQOP = ${WANTQOP}
 
-QOPINCDIR = ${QOP}/include
-# In case QOP is packaged
-QOPLIBDIR = ${QOP}/lib
+
+# Temporary paths for QCDOC.
+QCDOCQOP=/qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/
+
+# We always need the qop.h header
+QOPINCDIR = ${QCDOCQOP}/include
+# In case QOP is packaged we need the path
+QOPLIBDIR = ${QCDOCQOP}/build
 
 ifeq ($(strip ${QCDOC}),true)
 # QCDOC temporary paths
   ifeq ($(strip ${PRECISION}),1)
-    IQOP = -DSCIDAC -DASQD_SINGLE -I${QOPINCDIR}
-#    LQOP = -L${QOPLIBDIR} -lasqd_s
-    LQOP = -L/host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05/build  -lasqd_s
+    IQOP = -I${QOPINCDIR}
+    LQOP = -L${QOPLIBDIR} -lasqd_s
   else
-    IQOP = -DSCIDAC -I${QOP}/include/
-#    LQOP = -L${QOPLIBDIR} -lasqd
-    LQOP = -L/host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05/build -lasqd
+    IQOP = -I${QOP}/include/
+    LQOP = -L${QOPLIBDIR} -lasqd
   endif
-#  LIBDEPQOP = ${QOPLIBDIR}
-#  INCDEPQOP = ${QOPINCDIR}
+  LIBDEPQOP = ${QOPLIBDIR}
+  INCDEPQOP = ${QOPINCDIR}
 else
   IQOP = -I${QOPINCDIR}
   INCDEPQOP = ${QOPINCDIR}
-endif
-
 # Non-packaged QOP objects
 
 # MILC implementation 
 # General
-  GENERICQOP = qop_milc.o 
+    GENERICQOP = qop_milc.o 
 # Conjugate gradient
-  ASQINVERTQOP += d_congrad5_fn_qop_milc.o dslash_fn_qop_milc.o
+    ASQINVERTQOP += d_congrad5_fn_qop_milc.o dslash_fn_qop_milc.o
 # Fermion force
-  ASQFORCEQOP += fermion_force_asqtad_qop_milc.o ff_opt.o
+    ASQFORCEQOP += fermion_force_asqtad_qop_milc.o ff_opt.o
+endif
+
 
 ifeq ($(strip ${HAVEQOP}),true)
   LIBQOP = ${LQOP}
