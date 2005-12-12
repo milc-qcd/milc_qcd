@@ -31,7 +31,6 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   static Real t_mass2;
   Real *masses[2];
   int nmass[2], nsrc;
-  static field_offset t_milc_sol1, t_milc_sol2;
   field_offset milc_srcs[2], milc_sols0[1], milc_sols1[1], *milc_sols[2];
 
   /* Set up general source and solution pointers for two sources,

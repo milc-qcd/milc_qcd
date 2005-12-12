@@ -8,6 +8,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop.c,v $
+ * Revision 1.8  2005/12/12 23:18:18  detar
+ * Correct the name of QOP_asqtad_destroy_L and remove an unused declaration.
+ *
  * Revision 1.7  2005/12/09 17:07:33  detar
  * Move cvsheader def
  *
@@ -22,7 +25,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.7 2005/12/09 17:07:33 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.8 2005/12/12 23:18:18 detar Exp $";
 
 /* Load QOP_FermionLinksAsqtad object from MILC fat and long links */
 static void load_fermion_links_asqtad( QOP_FermionLinksAsqtad** qop_links )
@@ -243,7 +246,7 @@ int ks_congrad_qop(int niter, Real rsqmin,
 
   /* Free QOP fields  */
 
-  QOP_destroy_L(qop_links);          
+  QOP_asqtad_destroy_L(qop_links);          
   qop_links  = NULL;
   for(isrc = 0; isrc < nsrc; isrc++){
     QOP_destroy_V(qop_src[isrc]);    
