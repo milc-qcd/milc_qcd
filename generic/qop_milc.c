@@ -253,7 +253,7 @@ void QOP_destroy_F(QOP_Force *field){
   free(field);
 }
 
-void QOP_destroy_L(QOP_FermionLinksAsqtad *field){
+void QOP_asqtad_destroy_L(QOP_FermionLinksAsqtad *field){
   if(field == NULL)return;
   QOP_destroy_G(field->fat);
   QOP_destroy_G(field->lng);
