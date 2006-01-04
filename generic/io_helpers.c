@@ -196,6 +196,16 @@ gauge_file *reload_lattice( int flag, char *filename){
     if(this_node==0)printf("Unitarity checked.  Max deviation %.2e\n",
 			   max_deviation); fflush(stdout);
     if(this_node==0)printf("Time to check unitarity = %e\n",dtime);
+#if (PRECISION==2)
+    reunitarize();
+    dtime = -dclock();
+    max_deviation = check_unitarity();
+    g_floatmax(&max_deviation);
+    dtime += dclock();
+    if(this_node==0)printf("Unitarity checked.  Max deviation %.2e\n",
+                       max_deviation); fflush(stdout);
+    if(this_node==0)printf("Time to check unitarity = %e\n",dtime);
+#endif
     return gf;
 }
 
