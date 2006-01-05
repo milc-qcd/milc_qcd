@@ -155,9 +155,6 @@ start:
 	  /* note that we go back to the site structure for src */
 	  source_norm += (double)magsq_su3vec( (su3_vector *)F_PT(s,src) );
 	  rsq += (double)magsq_su3vec( &resid[i] );
-#ifdef CG_DEBUG
-	if(this_node==0)printf("CONGRAD: start rsq = %.10e\n",rsq);
-#endif
 	} END_LOOP
 #ifdef CGTIME
 reduce_time -= dclock();
@@ -168,6 +165,9 @@ reduce_time -= dclock();
 	source_norm = tempsum[0]; rsq = tempsum[1];
 #ifdef CGTIME
 reduce_time += dclock();
+#endif
+#ifdef CG_DEBUG
+	if(this_node==0)printf("CONGRAD: start rsq = %.10e\n",rsq);
 #endif
 	/**if(this_node==0)printf("CONGRAD: start rsq = %.10e\n",rsq);**/
         iteration++ ;  /* iteration counts number of multiplications
