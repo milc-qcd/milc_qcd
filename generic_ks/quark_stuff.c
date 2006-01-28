@@ -48,6 +48,14 @@
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
 
+#ifdef QCDOC
+#define special_alloc qcdoc_alloc
+#define special_free qfree
+#else
+#define special_alloc malloc
+#define special_free free
+#endif
+
 void printpath( int *path, int length );
 
 #ifdef DM_DU0
@@ -254,9 +262,9 @@ void path_transport( field_offset src, field_offset dest, int parity,
     int tmp_parity, tmp_otherparity; /* parity for this step */
 
   if( length > 0 ){
-    tmp_src = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
-    tmp_dest = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
-    tmp_work = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
+    tmp_src = (su3_vector *)special_alloc( sites_on_node*sizeof(su3_vector) );
+    tmp_dest = (su3_vector *)special_alloc( sites_on_node*sizeof(su3_vector) );
+    tmp_work = (su3_vector *)special_alloc( sites_on_node*sizeof(su3_vector) );
 
     for( j=length-1; j>=0; j-- ){
 	/* figure out parities for this step */
@@ -339,11 +347,11 @@ void path_transport_hwv( field_offset src, field_offset dest, int parity,
     int tmp_parity, tmp_otherparity; /* parity for this step */
 
   if( length > 0 ){
-    tmp_src = (half_wilson_vector *)malloc(
+    tmp_src = (half_wilson_vector *)special_alloc(
       sites_on_node*sizeof(half_wilson_vector) );
-    tmp_dest = (half_wilson_vector *)malloc(
+    tmp_dest = (half_wilson_vector *)special_alloc(
        sites_on_node*sizeof(half_wilson_vector) );
-    tmp_work = (half_wilson_vector *)malloc(
+    tmp_work = (half_wilson_vector *)special_alloc(
        sites_on_node*sizeof(half_wilson_vector) );
 
     for( j=length-1; j>=0; j-- ){
@@ -452,7 +460,7 @@ dtime=-dclock();
   }
   /* Allocate space for t_longlink if NULL */
   if(t_longlink == NULL){
-    t_longlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+    t_longlink = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
     if(t_longlink==NULL){
       printf("NODE %d: no room for t_longlink\n",this_node);
       terminate(1);
@@ -462,7 +470,7 @@ dtime=-dclock();
 #ifdef DBLSTORE_FN
   /* Allocate space for t_longlink if NULL */
   if(t_longbacklink == NULL){
-    t_longbacklink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+    t_longbacklink = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
     if(t_longbacklink==NULL){
       printf("NODE %d: no room for t_longbacklink\n",this_node);
       terminate(1);
@@ -470,13 +478,13 @@ dtime=-dclock();
   }
 #endif
 
-  staple = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+  staple = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
   if(staple == NULL){
     printf("load_longlinks: Can't malloc temporary\n");
     terminate(1);
   }
 
-  tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+  tempmat1 = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
   if(tempmat1 == NULL){
     printf("load_longlinks: Can't malloc temporary\n");
     terminate(1);
@@ -596,7 +604,7 @@ dtime=-dclock();
 
   /* Allocate space for t_fatlink if NULL */
   if(t_fatlink == NULL){
-    t_fatlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+    t_fatlink = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
     if(t_fatlink==NULL){
       printf("NODE %d: no room for t_fatlink\n",this_node);
       terminate(1);
@@ -606,7 +614,7 @@ dtime=-dclock();
 #ifdef DBLSTORE_FN
   /* Allocate space for t_fatlink if NULL */
   if(t_fatbacklink == NULL){
-    t_fatbacklink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+    t_fatbacklink = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
     if(t_fatbacklink==NULL){
       printf("NODE %d: no room for t_fatbacklink\n",this_node);
       terminate(1);
@@ -614,13 +622,13 @@ dtime=-dclock();
   }
 #endif
 
-  staple = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+  staple = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
   if(staple == NULL){
     printf("load_fatlinks: Can't malloc temporary\n");
     terminate(1);
   }
 
-  tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+  tempmat1 = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
   if(tempmat1 == NULL){
     printf("load_fatlinks: Can't malloc temporary\n");
     terminate(1);
@@ -853,7 +861,7 @@ void compute_gen_staple_site(su3_matrix *staple, int mu, int nu,
   cleanup_gather(mtag1);
 
   /* lower staple */
-  tempmat = (su3_matrix *)malloc( sites_on_node*sizeof(su3_matrix) );
+  tempmat = (su3_matrix *)special_alloc( sites_on_node*sizeof(su3_matrix) );
   mtag0 = start_gather_site( F_OFFSET(link[nu]),
 			sizeof(su3_matrix), mu, EVENANDODD, gen_pt[0] );
   wait_gather(mtag0);
@@ -967,7 +975,7 @@ void compute_gen_staple_field(su3_matrix *staple, int mu, int nu,
   cleanup_gather(mtag1);
 
   /* lower staple */
-  tempmat = (su3_matrix *)malloc( sites_on_node*sizeof(su3_matrix) );
+  tempmat = (su3_matrix *)special_alloc( sites_on_node*sizeof(su3_matrix) );
   mtag0 = start_gather_site( F_OFFSET(link[nu]),
 			sizeof(su3_matrix), mu, EVENANDODD, gen_pt[0] );
   wait_gather(mtag0);

@@ -28,6 +28,14 @@ void printpath( int *path, int length );
 #include <gauge_action.h>
 #undef GAUGE_ACTION_PART1
 
+#ifdef QCDOC
+#define special_alloc qcdoc_alloc
+#define special_free qfree
+#else
+#define special_alloc malloc
+#define special_free free
+#endif
+
 char gauge_action_description[128];
 int  gauge_action_nloops=NLOOP;
 int  gauge_action_nreps=NREPS;
@@ -172,7 +180,7 @@ double imp_gauge_action() {
 
     g_action=0.0;
 
-    tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    tempmat1 = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
     if(tempmat1 == NULL){
       printf("imp_gauge_action: Can't malloc temporary\n");
       terminate(1);
@@ -234,13 +242,13 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
 dtime=-dclock();
 #endif
 
-    staple = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    staple = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
     if(staple == NULL){
       printf("imp_gauge_force: Can't malloc temporary\n");
       terminate(1);
     }
 
-    tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    tempmat1 = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
     if(tempmat1 == NULL){
       printf("imp_gauge_force: Can't malloc temporary\n");
       terminate(1);
@@ -359,7 +367,7 @@ void g_measure( ){
     /* these are for loop_table  */
     int ln,iloop,rep;
 
-    tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    tempmat1 = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
     if(tempmat1 == NULL){
       printf("g_measure: Can't malloc temporary\n");
       terminate(1);
@@ -441,13 +449,13 @@ int fsubl;
 
  assert(NREPS==1);   /* This procedure designed only for NREPS = 1 */
 
- tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+ tempmat1 = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
  if(tempmat1 == NULL){
    printf("dsdu_qhb_subl: Can't malloc temporary\n");
    terminate(1);
  }
 
- staple = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+ staple = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
  if(staple == NULL){
    printf("imp_gauge_force: Can't malloc temporary\n");
    terminate(1);

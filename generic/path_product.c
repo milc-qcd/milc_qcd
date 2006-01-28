@@ -19,6 +19,14 @@ for( i=0,  s=lattice ; i<loopend; i++,s++ )
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
 
+#ifdef QCDOC
+#define special_alloc qcdoc_alloc
+#define special_free qfree
+#else
+#define special_alloc malloc
+#define special_free free
+#endif
+
 void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
     register int i;
     register site *s;
@@ -46,8 +54,8 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
     }
 
     /* allocate temporary space */
-    tempmat3t = (su3_matrix *)malloc( sites_on_node*sizeof(su3_matrix) );
-    tempmat2t = (su3_matrix *)malloc( sites_on_node*sizeof(su3_matrix) );
+    tempmat3t = (su3_matrix *)special_alloc( sites_on_node*sizeof(su3_matrix) );
+    tempmat2t = (su3_matrix *)special_alloc( sites_on_node*sizeof(su3_matrix) );
 
     /* j=0 */
     if( GOES_FORWARDS(dir[0]) )  {
