@@ -1,4 +1,4 @@
-/******* fermion_foce_asqtad_milc_qop.c ****************/
+/******* fermion_force_asqtad_milc_qop.c ****************/
 /* MIMD version 7 */
 
 /* This is the MILC wrapper for the SciDAC Level 3 QOP fermion force routine */
@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.7  2006/01/28 17:59:08  detar
+ * Add FFTIME reporting
+ *
  * Revision 1.6  2005/12/09 17:04:01  detar
  * Fix Header entry
  *
@@ -20,7 +23,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.6 2005/12/09 17:04:01 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.7 2006/01/28 17:59:08 detar Exp $";
 
 void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
@@ -95,6 +98,13 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
   
   QOP_asqtad_coeffs_t coeff;
 
+#ifdef FFTIME
+  int nflop = 253935;
+  double dtime;
+
+  dtime=-dclock();
+#endif
+
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
     printf("eo_fermion_force: Error initializing QOP\n");
@@ -117,6 +127,12 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
+
+#ifdef FFTIME
+  dtime += dclock();
+node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
+#endif
 }
 
 /* Generic MILC interface for the two-species Asqtad fermion force routine */
@@ -134,6 +150,13 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   QOP_asqtad_coeffs_t coeff[2];
   int i;
   Real epsv[2];
+
+#ifdef FFTIME
+  int nflop = 433968;
+  double dtime;
+
+  dtime=-dclock();
+#endif
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
@@ -164,5 +187,11 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
+
+#ifdef FFTIME
+  dtime += dclock();
+  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+#endif
 }
 
