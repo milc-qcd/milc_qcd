@@ -46,7 +46,8 @@ G_OBJECTS0 = \
   make_lattice.o \
   path_product.o \
   ranstuff.o \
-  remap_stdio_from_args.o
+  remap_stdio_from_args.o \
+  reunitarize2.o
 
 ifeq ($(strip ${QCDOC}),true)
   G_OBJECTS1 = ${G_OBJECTS0} ploop2.o
