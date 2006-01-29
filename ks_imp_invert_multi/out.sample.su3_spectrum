@@ -93,18 +93,42 @@ G_LOOP:  2  15  6   	1.027284e+00	( 1 5 4 6 2 3  )
 GACTION: 6.587348e+00
 COULOMB GAUGE FIXING SKIPPED.
 fpi_2(): source time = 0, num_sourcevecs = 3
-Inversion checked, frac. error = 3.302113e-11
-Inversion checked, frac. error = 9.217189e-09
-Inversion checked, frac. error = 3.168541e-11
-Inversion checked, frac. error = 8.841691e-09
-Inversion checked, frac. error = 2.702364e-11
-Inversion checked, frac. error = 7.549970e-09
-Inversion checked, frac. error = 2.642161e-11
-Inversion checked, frac. error = 7.456505e-09
-Inversion checked, frac. error = 2.669440e-11
-Inversion checked, frac. error = 7.533382e-09
-Inversion checked, frac. error = 3.128776e-11
-Inversion checked, frac. error = 8.811969e-09
+Inversion checked, frac. error = 1.608117e-05
+Flagged comparisons = 0
+Max err. = 3.120171e-05 frac. = 4.412588e-05
+Inversion checked, frac. error = 7.002483e-05
+Flagged comparisons = 0
+Max err. = 1.494930e-04 frac. = 2.114150e-04
+Inversion checked, frac. error = 1.182601e-05
+Flagged comparisons = 0
+Max err. = 2.417845e-05 frac. = 3.419349e-05
+Inversion checked, frac. error = 4.847001e-05
+Flagged comparisons = 0
+Max err. = 1.323897e-04 frac. = 1.872273e-04
+Inversion checked, frac. error = 1.605596e-05
+Flagged comparisons = 0
+Max err. = 2.845267e-05 frac. = 4.023815e-05
+Inversion checked, frac. error = 7.223412e-05
+Flagged comparisons = 0
+Max err. = 1.646062e-04 frac. = 2.327883e-04
+Inversion checked, frac. error = 3.620700e-05
+Flagged comparisons = 0
+Max err. = 7.504803e-05 frac. = 1.061339e-04
+Inversion checked, frac. error = 1.365480e-04
+Flagged comparisons = 0
+Max err. = 2.721340e-04 frac. = 3.848556e-04
+Inversion checked, frac. error = 4.131792e-05
+Flagged comparisons = 0
+Max err. = 8.715794e-05 frac. = 1.232599e-04
+Inversion checked, frac. error = 1.454984e-04
+Flagged comparisons = 0
+Max err. = 2.734971e-04 frac. = 3.867832e-04
+Inversion checked, frac. error = 3.424595e-05
+Flagged comparisons = 0
+Max err. = 7.512105e-05 frac. = 1.062372e-04
+Inversion checked, frac. error = 1.169595e-04
+Flagged comparisons = 0
+Max err. = 2.242892e-04 frac. = 3.171928e-04
 STARTPROP
 MASSES:  5.00000e-02   5.00000e-02
 SOURCE: RANDOM_WALL
@@ -183,13 +207,25 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 6 5.917766e-02 0.000000e+00 7.964906e-01 0.000000e+00
 7 7.448775e-02 0.000000e+00 9.427907e-01 0.000000e+00
 ENDPROP
-multimass_inverter(): source time = 0
-Inversion checked, frac. error = 3.422801e-11
-Inversion checked, frac. error = 9.553401e-09
-Inversion checked, frac. error = 3.403471e-11
-Inversion checked, frac. error = 9.495642e-09
-Inversion checked, frac. error = 3.452250e-11
-Inversion checked, frac. error = 9.646384e-09
+multimass_inverter(): source time = 0 x,y,z = 0 0 0
+Inversion checked, frac. error = 1.092776e-05
+Flagged comparisons = 0
+Max err. = 1.688522e-06 frac. = 3.820689e-05
+Inversion checked, frac. error = 3.446058e-05
+Flagged comparisons = 0
+Max err. = 4.830624e-06 frac. = 1.093046e-04
+Inversion checked, frac. error = 1.313269e-05
+Flagged comparisons = 0
+Max err. = 1.654545e-06 frac. = 3.743808e-05
+Inversion checked, frac. error = 5.566304e-05
+Flagged comparisons = 0
+Max err. = 8.940358e-06 frac. = 2.022972e-04
+Inversion checked, frac. error = 1.101933e-05
+Flagged comparisons = 0
+Max err. = 2.503443e-06 frac. = 5.664644e-05
+Inversion checked, frac. error = 3.590937e-05
+Flagged comparisons = 0
+Max err. = 7.956541e-06 frac. = 1.800360e-04
 Wrote KS prop file ks.test.l4448_m0.0500_nt0 time stamp Thu Mar 17 20:55:51 2005
 Wrote KS prop file ks.test.l4448_m0.0200_nt0 time stamp Thu Mar 17 20:55:51 2005
 STARTPROP

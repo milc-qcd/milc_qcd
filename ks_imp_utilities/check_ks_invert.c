@@ -17,8 +17,8 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   Real final_rsq = 0;
   /* Note: these are absolute, not relative errors. */
 #if (PRECISION == 1)
-  Real tol_M = 5e-3;
-  Real tol_MdagM = 1e-4;
+  Real tol_M = 1e-2;
+  Real tol_MdagM = 1e-3;
 #else
   Real tol_M = 5e-6;
   Real tol_MdagM = 1e-7;

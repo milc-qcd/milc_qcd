@@ -21,6 +21,12 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   su3_matrix tmat, diffmat, tnorm;
   char *filexml;
   char recxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test fermion force field</title>";
+#if (PRECISION == 1)
+  Real tol = 1e-3;
+#else
+  Real tol = 1e-5;
+#endif
+  
 
   /* Make a random source in xxx if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
@@ -69,12 +75,11 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
 	sub_su3_matrix( &(s->ansmom[dir]), &tmat, &diffmat);
 	diff = sqrt(realtrace_su3( &diffmat, &diffmat ));
 	norm = sqrt(realtrace_su3( &tmat, &tmat));
-	if(diff > 1e-5 * norm){
+	if(diff > tol * norm){
 	  printf("Intolerable difference %e node %d site %d\n",
 		 diff,this_node,i);
 	  dumpmat(&(s->ansmom[dir]));
 	  dumpmat(&tmat);
-	  return;
 	}
 	if(maxdiff < diff)maxdiff = diff;
 	if(maxnorm < norm)maxnorm = norm;
@@ -103,7 +108,6 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   
   if(ansflag == SAVE_SERIAL){
     filexml = create_QCDML();
-    node0_printf("Saving the answer\n");
     save_color_matrix_scidac_from_site(ansfile, filexml, 
        recxml, QIO_SINGLEFILE,  F_OFFSET(ansmom[0]), 4);
     free_QCDML(filexml);
