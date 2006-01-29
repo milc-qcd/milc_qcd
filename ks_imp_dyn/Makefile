@@ -30,7 +30,7 @@ MAKEFILE = Makefile
 # 3. Precision 
 
 # 1 = single precision; 2 = double
-PRECISION = 1
+PRECISION = 2
 #----------------------------------------------------------------------
 # 4. Compiler
 # Choices include mpicc cc gcc pgcc g++
@@ -45,7 +45,7 @@ CXX = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-g++
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc
-OPT              = -g -Wall
+OPT              = -O3
 
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -117,7 +117,7 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 # Edit these "wants"
 
 # Choose "true" or blank. Does not imply any other SciDAC package
-WANTQOP = true
+WANTQOP = 
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
 WANTQDP = 
