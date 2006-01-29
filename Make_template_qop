@@ -15,14 +15,17 @@ HAVEQOP = ${WANTQOP}
 
 # Temporary paths for QCDOC.
 QCDOCQOP=/qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/
-
 # We always need the qop.h header
-QOPINCDIR = ${QCDOCQOP}/include
+QOPINCDIR = ${QOP}/include
 # In case QOP is packaged we need the path
-QOPLIBDIR = ${QCDOCQOP}/build
+QOPLIBDIR = ${QOP}/lib
 
 ifeq ($(strip ${QCDOC}),true)
 # QCDOC temporary paths
+# We always need the qop.h header
+  QOPINCDIR = ${QCDOCQOP}/include
+# In case QOP is packaged we need the path
+  QOPLIBDIR = ${QCDOCQOP}/build
   ifeq ($(strip ${PRECISION}),1)
     IQOP = -I${QOPINCDIR}
     LQOP = -L${QOPLIBDIR} -lasqd_s

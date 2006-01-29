@@ -37,7 +37,6 @@ PRECISION = 1
 # Choices include mpicc cc gcc pgcc g++
 CC = gcc
 
-#CC = /uufs/delicatearch.arches/sys/pkg/mpich-gm/std/bin/mpicc
 #CC = /usr/local/mpich/bin/mpicc -cc=${GCC_DIR}/bin/gcc  # FNAL
 #CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
 
@@ -54,6 +53,7 @@ OPT              = -O3
 #-------------- Gnu C -------------------------------------
 #OCFLAGS = -Wall # ( -Wall, etc )
 
+#OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -fprefetch-loop-arrays # QCDOC
 #OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
 #OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
@@ -125,10 +125,10 @@ WANTQOP =
 WANTQDP =
 
 # Choose "true" or "". Implies HAVEQMP.
-WANTQIO =
+WANTQIO = true
 
 # Choose "true" or "".
-WANTQMP =
+WANTQMP = true
 
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
@@ -145,6 +145,13 @@ QLA = ${SCIDAC}/qla
 # Level 3
 #QOP = /host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05
 QOP = ${SCIDAC}/qop
+
+# Make_template_qop defines these macros:
+# HAVEQOP
+# LIBQOP INCQOP
+# INCDEPQOP LIBDEPQOP
+
+include ../Make_template_qop
 
 # Make_template_scidac defines these macros:
 # HAVEQDP HAVEQIO HAVEQMP (Says what we are compiling with)
