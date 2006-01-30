@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.8  2006/01/30 20:29:14  detar
+ * Fix memory leak
+ *
  * Revision 1.7  2006/01/28 17:59:08  detar
  * Add FFTIME reporting
  *
@@ -23,7 +26,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.7 2006/01/28 17:59:08 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.8 2006/01/30 20:29:14 detar Exp $";
 
 void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
@@ -128,6 +131,12 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
 
+  /* Free QOP source vector */
+  QOP_destroy_V(vecx);
+
+  /* Free raw source vector */
+  destroy_raw_V(rawvecx);
+
 #ifdef FFTIME
   dtime += dclock();
 node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
@@ -187,6 +196,14 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
+
+  /* Free QOP source vectors */
+  QOP_destroy_V(vecx[0]);
+  QOP_destroy_V(vecx[1]);
+
+  /* Free raw source vectors */
+  destroy_raw_V(rawvecx[0]);
+  destroy_raw_V(rawvecx[1]);
 
 #ifdef FFTIME
   dtime += dclock();
