@@ -81,5 +81,7 @@ Here are the new features so far:
 
 25. Make dummy QCDML be legitimate XML
 
+26. Support new level 3 interface for asqtad_invert and asqtad_force
+
 C. DeTar, Utah
-4 December 2005
+28 January 2006
