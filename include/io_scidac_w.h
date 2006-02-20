@@ -26,7 +26,7 @@ int write_F3_D_from_field(QIO_Writer *outfile, char *xml_write_lattice,
 /**********************************************************************/
 /* In clover_info.c (application dependent) */
 
-char *create_w_XML();
-void free_w_XML(char *xml);
+char *create_w_QCDML();
+void free_w_QCDML(char *xml);
 
 #endif /* _IO_SCIDAC_W_H */
