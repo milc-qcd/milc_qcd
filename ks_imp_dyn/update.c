@@ -17,6 +17,12 @@
 */
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
+#if 1
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
+#endif
+
 int update()  {
 int step, iters=0;
 Real final_rsq;
@@ -94,6 +100,29 @@ Real xrandom;
 	dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD );
 	/* now update H by full time interval */
     	update_h(epsilon);
+
+#if 1
+#ifdef HAVE_QIO
+	{
+	  char *filexml;
+	  char recxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test fermion force field</title>";
+	  char ansfile[128];
+	  char rootname[] = "fermion_force_dump";
+
+	  /* Do this at the specified interval */
+	  if(step%3 == 1){
+	    
+	    /* Construct a file name */
+	    sprintf(ansfile,"%s%02d",rootname,step);
+	    /* Dump the computed fermion force from the site structure */
+	    filexml = create_QCDML();
+	    save_color_matrix_scidac_from_site(ansfile, filexml, 
+			     recxml, QIO_PARTFILE,  F_OFFSET(mom[0]), 4);
+	    free_QCDML(filexml);
+	  }
+	}
+#endif
+#endif
 
     	/* update U's by half time step to get to even time */
     	update_u(epsilon*0.5);
