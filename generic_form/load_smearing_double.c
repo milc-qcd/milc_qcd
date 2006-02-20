@@ -1,5 +1,5 @@
 /********************* load_smearing_double.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  *  This file contains a number of routines to load in 
  *  the smearing functions.

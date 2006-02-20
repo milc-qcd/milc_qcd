@@ -1,5 +1,5 @@
 /**************************** c_scale_wilson_vector2.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  *  Scale a su3_vectore by a complex vector
  *

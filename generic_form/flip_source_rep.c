@@ -1,5 +1,5 @@
 /**************** flip_source_rep.c ********************************/  
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Flip the gamma matrix represenatation at the
   source. This function is required to use 
   quark propagators from Claude's hopping variational code.

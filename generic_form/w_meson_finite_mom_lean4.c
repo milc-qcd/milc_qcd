@@ -1,5 +1,5 @@
 /************* w_meson_finite_mom_lean3.c **************************/
-/* MIMD version 6  ***/
+/* MIMD version 7  ***/
 
 /* The optimizations in this version assume that the gamma_corr table
    is sorted so all entries with the same gout are contiguous */

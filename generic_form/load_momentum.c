@@ -1,5 +1,5 @@
 /**************************** load_momentum.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  *  Scalar code to load in the spatial momentum from a disk file.
  *

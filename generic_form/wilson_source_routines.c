@@ -1,11 +1,11 @@
 /**************************** wilson_source_routines.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
    A collection of routines to create the source for a light
    quark inversion
  */
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Initialize a source for the inverter */
 #include "generic_form_includes.h"

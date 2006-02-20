@@ -1,5 +1,5 @@
 /************* w_meson_finite_mom.c **************************/
-/* MIMD version 6  ***/
+/* MIMD version 7  ***/
 
 /* Modifications
    Original version UMH April 96  w_meson.c
