@@ -1,5 +1,5 @@
 /*********************** clover_info.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* For clover_invert */
 
@@ -111,5 +111,116 @@ void write_appl_w_prop_info(FILE *fp)
   write_w_prop_info_item(fp,"source.n_spins","%d",(char *)&n_spins,0,0);
   write_w_prop_info_item(fp,"source.spins","%d",(char *)&spins[0],n_spins,
 			 sizeof(int));
+}
+
+#define INFOSTRING_MAX 2048
+
+/* For now we simply use the MILC info */
+char *create_w_QCDML(){
+
+  size_t bytes = 0;
+  char *info = (char *)malloc(INFOSTRING_MAX);
+  size_t max = INFOSTRING_MAX;
+  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
+  char end[] = "</info>";
+  char sums[20];
+  Real gauge_fix_tol = GAUGE_FIX_TOL;
+  
+  snprintf(info+bytes, max-bytes,"%s",begin);
+  bytes = strlen(info);
+  
+  if(startlat_p != NULL)
+    {
+      bytes = strlen(info);
+      sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.filename","%s",
+			      startlat_p->filename,0,0);
+      bytes = strlen(info);
+      sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.time_stamp","%s",
+			      startlat_p->header->time_stamp,0,0);
+      bytes = strlen(info);
+      sprintf(sums,"%x %x",startlat_p->check.sum29,startlat_p->check.sum31);
+      bytes = strlen(info);
+      sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.checksums",
+			      "%s",sums,0,0);
+    }
+  if(fixflag==COULOMB_GAUGE_FIX)
+    {
+      bytes = strlen(info);
+      sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.fix.description",
+			      "%s", "Coulomb",0,0);
+      bytes = strlen(info);
+      sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.fix.tolerance","%g",
+			      (char *)&gauge_fix_tol,0,0);
+      if(savelat_p != NULL)
+	{
+	  bytes = strlen(info);
+	  sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.fix.filename",
+				  "%s", savelat_p->filename,0,0);
+	  bytes = strlen(info);
+	  sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.fix.time_stamp",
+				  "%s", savelat_p->header->time_stamp,0,0);
+	  bytes = strlen(info);
+	  sprintf(sums,"%x %x",savelat_p->check.sum29,savelat_p->check.sum31);
+	  bytes = strlen(info);
+	  sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.fix.checksums",
+				  "%s",sums,0,0);
+	}
+    }
+  else
+    bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.fix.description","%s",
+			  "No gauge fixing",0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"quark.description","%s",
+			  "Clover",0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"quark.kappa",
+			  "%f",(char *)&kappa,0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"quark.clover.clov_c",
+			  "%f",(char *)&clov_c,0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"quark.clover.u0",
+			  "%f",(char *)&u0,0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"quark.boundary_condition",
+			  "%s", "periodic all directions",0,0);
+  /* It would be better to code this in w_source, since it
+     depends on how the source is defined CD */
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"source.description","%s",
+			  wqstmp.descrp,0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"source.size",
+			  "%f",(char *)&wqstmp.r0,0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"source.x",
+			  "%d",(char *)&wqstmp.x0,0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"source.y",
+			  "%d",(char *)&wqstmp.y0,0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"source.z",
+			  "%d",(char *)&wqstmp.z0,0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"source.t",
+			  "%d",(char *)&wqstmp.t0,0,0);
+  
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"source.n_spins",
+			  "%d",(char *)&n_spins,0,0);
+  bytes = strlen(info);
+  sprint_w_prop_info_item(info+bytes, max-bytes,"source.spins",
+			  "%d",(char *)&spins[0],n_spins,
+			  sizeof(int));
+  
+  bytes = strlen(info);
+  snprintf(info+bytes, max-bytes,"%s",end);
+
+  return info;
+}
+
+void free_w_QCDML(char *info){
+  if(info != NULL)free(info);
 }
 

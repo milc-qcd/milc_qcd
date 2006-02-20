@@ -1,5 +1,5 @@
 /******** setup_cl.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 #define IF_OK if(status==0)
 
 /* Modifications ...
@@ -9,6 +9,12 @@
    8/15/96 Added prompts and param member for variable scratch file name C.D. 
    8/15/96 Added unitarity checking C.D.
    8/10/96 Revised propagator IO prompts and param file names C.D. */
+
+//  $Log: setup_cl.c,v $
+//  Revision 1.4  2006/02/20 23:47:19  detar
+//  Update to version 7 and add hopping parameter inversion option
+//
+
 
 #include "cl_inv_includes.h"
 #include <string.h>
@@ -41,7 +47,7 @@ int initial_set(){
   if(mynode()==0){
     /* print banner */
     printf("SU3 Wilson valence fermions\n");
-    printf("MIMD version 6\n");
+    printf("MIMD version 7 $Name:  $\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     time_stamp("start");
     

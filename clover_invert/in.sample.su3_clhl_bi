@@ -32,7 +32,7 @@ r0 1.5
 reload_serial lat.test.gf
 no_gauge_fix
 forget
-reload_serial_wprop dummy_s_prop
+reload_serial_wprop prop.test
 forget_wprop
 serial_scratch_wprop prop.test.scratch
 

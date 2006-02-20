@@ -1,7 +1,7 @@
 /***************** control_cl.c *****************************************/
 
 /* Main procedure for quenched SU3 clover fermions 			*/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* This version computes propagators for clover fermions on a
    supplied background field config */
@@ -218,6 +218,20 @@ int main(int argc, char *argv[])
 					w_source,&wqs[k],
 					bicgilu_cl,&qic,(void *)&dcp);
 #else
+#ifdef HOP
+	    /* Load temporaries specific to inverter */
+	    qic.wv1 = F_OFFSET(tmp);
+	    qic.wv2 = F_OFFSET(mp);
+
+	    qic.nrestart = 1; /* No restarts with hopping inverter */
+
+	    /* compute the propagator.  Result in psi. */
+	    
+	    avs_iters = 
+	      (Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
+					w_source,&wqs[k],
+					hopilu_cl,&qic,(void *)&dcp);
+#else
 	    /* Load temporaries specific to inverter */
 	    qic.wv1 = F_OFFSET(tmp);
 	    qic.wv2 = F_OFFSET(mp);
@@ -228,6 +242,7 @@ int main(int argc, char *argv[])
 	      (Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
 					w_source,&wqs[k],
 					cgilu_cl,&qic,(void *)&dcp);
+#endif
 #endif
 	    avm_iters += avs_iters;
 
