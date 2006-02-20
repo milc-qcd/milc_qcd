@@ -35,10 +35,10 @@ out.sample.${PROJ}: ${PROJ} in.sample.${PROJ}
 samples:
 	for proj in ${PROJS};\
 	do\
-     	     cp ../Make_${ARCH} .;\
-	     make -f Make_${ARCH} clean;\
+     	     cp ../Makefile .;\
+	     make clean;\
 	     rm -f $$proj;\
-	     make -f Make_${ARCH} $$proj;\
+	     make $$proj;\
 	     make -f Make_sample "PROJ=$$proj" out.sample.$$proj;\
 	     rm -f $$proj;\
 	done

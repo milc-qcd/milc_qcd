@@ -3,7 +3,7 @@
 # 7/13/05 C. DeTar
 
 #  Change these names to suit
-VER = 7.1.11
+VER = 7.1.12
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -417,8 +417,9 @@ WILSON_TAR  = ${NAME_ROOT}_wilson.tar
 
 TAR =          \
  ${BASIC_TAR}  \
- ${KS_TAR}     \
+ ${CLOVER_TAR} \
  ${FORM_TAR}   \
+ ${KS_TAR}     \
  ${WILSON_TAR}
 
 # Contents of the whole ball of wax
