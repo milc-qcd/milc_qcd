@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
   avnorm2 = sqrt(avnorm2);
   maxnorm2 = sqrt(maxnorm2);
   
-  fprintf(stderr,"L2 norm difference is mean %e ; max %e\n",
+  if(this_node==0)fprintf(stderr,"L2 norm difference is mean %e ; max %e\n",
 	  avnorm2,maxnorm2);
   
   free(colormatrix1);
