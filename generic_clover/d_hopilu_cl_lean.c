@@ -1,5 +1,5 @@
 /******* d_hopilu_cl_lean.c - hopping expansion for heavy clover fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Memory stingy version
    "r" overwrites src on even sites
    "p" overwrites src on odd sites

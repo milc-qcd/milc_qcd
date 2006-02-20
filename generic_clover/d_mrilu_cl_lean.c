@@ -1,5 +1,5 @@
 /******* d_mrilu_cl_lean.c - MR-ILU for  clover fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications:
    1/24/00 adapted from Schroedinger functional version, and

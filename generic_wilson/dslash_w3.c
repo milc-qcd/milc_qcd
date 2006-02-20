@@ -104,7 +104,7 @@ msg_tag *tag[8];
     /* Take Wilson projection for src displaced in up direction, gather
        it to "our site" */
     FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir2( (wilson_vector *)F_PT(s,src), &(s->htmp[XUP]),
+        wp_shrink_4dir( (wilson_vector *)F_PT(s,src), &(s->htmp[XUP]),
 	    &(s->htmp[YUP]), &(s->htmp[ZUP]), &(s->htmp[TUP]), isign);
     }
     for( dir=XUP; dir <= TUP; dir++) {
@@ -115,7 +115,7 @@ msg_tag *tag[8];
         /* Take Wilson projection for src displaced in down direction,
         multiply it by adjoint link matrix, gather it "up" */
     FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir2( (wilson_vector *)F_PT(s,src),
+        wp_shrink_4dir( (wilson_vector *)F_PT(s,src),
 	    &hwvx, &hwvy, &hwvz, &hwvt, -isign);
 	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, &(s->htmp[XDOWN]));
 	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, &(s->htmp[YDOWN]));
@@ -160,7 +160,7 @@ msg_tag *tag[8];
     }
 
     FORSOMEPARITY(i,s,parity){
-	grow_add_four_wvecs2( (wilson_vector *)F_PT(s,dest),
+	grow_add_four_wvecs( (wilson_vector *)F_PT(s,dest),
 	    (half_wilson_vector *)(gen_pt[XDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[YDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[ZDOWN][i]),
@@ -214,7 +214,7 @@ register int dir,otherparity;
     /* Take Wilson projection for src displaced in up direction, gather
        it to "our site" */
     FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir2( (wilson_vector *)F_PT(s,src), &(s->htmp[XUP]),
+        wp_shrink_4dir( (wilson_vector *)F_PT(s,src), &(s->htmp[XUP]),
 	    &(s->htmp[YUP]), &(s->htmp[ZUP]), &(s->htmp[TUP]), isign);
     }
 
@@ -229,12 +229,12 @@ register int dir,otherparity;
         /* Take Wilson projection for src displaced in down direction,
         multiply it by adjoint link matrix, gather it "up" */
     FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir2( (wilson_vector *)F_PT(s,src),
+        wp_shrink_4dir( (wilson_vector *)F_PT(s,src),
 	    &hwvx, &hwvy, &hwvz, &hwvt, -isign);
-	mult_adj_su3_mat_hwvec2( &(s->link[XUP]), &hwvx, &(s->htmp[XDOWN]));
-	mult_adj_su3_mat_hwvec2( &(s->link[YUP]), &hwvy, &(s->htmp[YDOWN]));
-	mult_adj_su3_mat_hwvec2( &(s->link[ZUP]), &hwvz, &(s->htmp[ZDOWN]));
-	mult_adj_su3_mat_hwvec2( &(s->link[TUP]), &hwvt, &(s->htmp[TDOWN]));
+	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, &(s->htmp[XDOWN]));
+	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, &(s->htmp[YDOWN]));
+	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, &(s->htmp[ZDOWN]));
+	mult_adj_su3_mat_hwvec( &(s->link[TUP]), &hwvt, &(s->htmp[TDOWN]));
     }
 
     for( dir=XUP; dir <= TUP; dir++) {
@@ -256,15 +256,15 @@ register int dir,otherparity;
 	wait_gather(tag[dir]);
     }
     FORSOMEPARITY(i,s,parity){
-	mult_su3_mat_hwvec2( &(s->link[XUP]), 
+	mult_su3_mat_hwvec( &(s->link[XUP]), 
 		(half_wilson_vector * )(gen_pt[XUP][i]), &hwvx ); 
-	mult_su3_mat_hwvec2( &(s->link[YUP]), 
+	mult_su3_mat_hwvec( &(s->link[YUP]), 
 		(half_wilson_vector * )(gen_pt[YUP][i]), &hwvy ); 
-	mult_su3_mat_hwvec2( &(s->link[ZUP]), 
+	mult_su3_mat_hwvec( &(s->link[ZUP]), 
 		(half_wilson_vector * )(gen_pt[ZUP][i]), &hwvz ); 
-	mult_su3_mat_hwvec2( &(s->link[TUP]), 
+	mult_su3_mat_hwvec( &(s->link[TUP]), 
 		(half_wilson_vector * )(gen_pt[TUP][i]), &hwvt ); 
-	grow_add_four_wvecs2( (wilson_vector *)F_PT(s,dest),
+	grow_add_four_wvecs( (wilson_vector *)F_PT(s,dest),
 	    &hwvx, &hwvy, &hwvz, &hwvt, isign, 0 ); /* "0" is NOSUM */
     }
 
@@ -275,7 +275,7 @@ register int dir,otherparity;
     }
 
     FORSOMEPARITY(i,s,parity){
-	grow_add_four_wvecs2( (wilson_vector *)F_PT(s,dest),
+	grow_add_four_wvecs( (wilson_vector *)F_PT(s,dest),
 	    (half_wilson_vector *)(gen_pt[XDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[YDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[ZDOWN][i]),
@@ -313,7 +313,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
     /* Take Wilson projection for src displaced in up direction, gather
        it to "our site" */
     FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir2( &(src[i]), &(htmp[XUP][i]),
+        wp_shrink_4dir( &(src[i]), &(htmp[XUP][i]),
 	    &(htmp[YUP][i]), &(htmp[ZUP][i]), &(htmp[TUP][i]), isign);
     }
     for( dir=XUP; dir <= TUP; dir++) {
@@ -324,16 +324,16 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
         /* Take Wilson projection for src displaced in down direction,
         multiply it by adjoint link matrix, gather it "up" */
     FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir2( &(src[i]), &hwvx, &hwvy, &hwvz, &hwvt, -isign);
+        wp_shrink_4dir( &(src[i]), &hwvx, &hwvy, &hwvz, &hwvt, -isign);
 
 	linkx = &t_links[4*i+XUP];
 	linky = &t_links[4*i+YUP];
 	linkz = &t_links[4*i+ZUP];
 	linkt = &t_links[4*i+TUP];
-	mult_adj_su3_mat_hwvec2( linkx, &hwvx, &(htmp[XDOWN][i]));
-	mult_adj_su3_mat_hwvec2( linky, &hwvy, &(htmp[YDOWN][i]));
-	mult_adj_su3_mat_hwvec2( linkz, &hwvz, &(htmp[ZDOWN][i]));
-	mult_adj_su3_mat_hwvec2( linkt, &hwvt, &(htmp[TDOWN][i]));
+	mult_adj_su3_mat_hwvec( linkx, &hwvx, &(htmp[XDOWN][i]));
+	mult_adj_su3_mat_hwvec( linky, &hwvy, &(htmp[YDOWN][i]));
+	mult_adj_su3_mat_hwvec( linkz, &hwvz, &(htmp[ZDOWN][i]));
+	mult_adj_su3_mat_hwvec( linkt, &hwvt, &(htmp[TDOWN][i]));
     }
 
     for( dir=XUP; dir <= TUP; dir++) {
@@ -355,15 +355,15 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
       linky = &t_links[4*i+YUP];
       linkz = &t_links[4*i+ZUP];
       linkt = &t_links[4*i+TUP];
-      mult_su3_mat_hwvec2( linkx, 
+      mult_su3_mat_hwvec( linkx, 
 			   (half_wilson_vector * )(gen_pt[XUP][i]), &hwvx ); 
-      mult_su3_mat_hwvec2( linky, 
+      mult_su3_mat_hwvec( linky, 
 			   (half_wilson_vector * )(gen_pt[YUP][i]), &hwvy ); 
-      mult_su3_mat_hwvec2( linkz, 
+      mult_su3_mat_hwvec( linkz, 
 			   (half_wilson_vector * )(gen_pt[ZUP][i]), &hwvz ); 
-      mult_su3_mat_hwvec2( linkt, 
+      mult_su3_mat_hwvec( linkt, 
 			   (half_wilson_vector * )(gen_pt[TUP][i]), &hwvt ); 
-      grow_add_four_wvecs2( &(dest[i]),
+      grow_add_four_wvecs( &(dest[i]),
 	    &hwvx, &hwvy, &hwvz, &hwvt, isign, 0 ); /* "0" is NOSUM */
     }
     for( dir=XUP; dir <= TUP; dir++) {
@@ -377,7 +377,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
     }
 
     FORSOMEPARITY(i,s,parity){
-	grow_add_four_wvecs2( &(dest[i]),
+	grow_add_four_wvecs( &(dest[i]),
 	    (half_wilson_vector *)(gen_pt[XDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[YDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[ZDOWN][i]),
@@ -428,7 +428,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
     /* Take Wilson projection for src displaced in up direction, gather
        it to "our site" */
     FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir2( &(src[i]), &(htmp[XUP][i]),
+        wp_shrink_4dir( &(src[i]), &(htmp[XUP][i]),
 	    &(htmp[YUP][i]), &(htmp[ZUP][i]), &(htmp[TUP][i]), isign);
     }
 
@@ -447,11 +447,11 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
       linky = &t_links[4*i+YUP];
       linkz = &t_links[4*i+ZUP];
       linkt = &t_links[4*i+TUP];
-      wp_shrink_4dir2( &(src[i]), &hwvx, &hwvy, &hwvz, &hwvt, -isign);
-      mult_adj_su3_mat_hwvec2( linkx, &hwvx, &(htmp[XDOWN][i]));
-      mult_adj_su3_mat_hwvec2( linky, &hwvy, &(htmp[YDOWN][i]));
-      mult_adj_su3_mat_hwvec2( linkz, &hwvz, &(htmp[ZDOWN][i]));
-      mult_adj_su3_mat_hwvec2( linkt, &hwvt, &(htmp[TDOWN][i]));
+      wp_shrink_4dir( &(src[i]), &hwvx, &hwvy, &hwvz, &hwvt, -isign);
+      mult_adj_su3_mat_hwvec( linkx, &hwvx, &(htmp[XDOWN][i]));
+      mult_adj_su3_mat_hwvec( linky, &hwvy, &(htmp[YDOWN][i]));
+      mult_adj_su3_mat_hwvec( linkz, &hwvz, &(htmp[ZDOWN][i]));
+      mult_adj_su3_mat_hwvec( linkt, &hwvt, &(htmp[TDOWN][i]));
     }
 
     for( dir=XUP; dir <= TUP; dir++) {
@@ -476,15 +476,15 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
       linky = &t_links[4*i+YUP];
       linkz = &t_links[4*i+ZUP];
       linkt = &t_links[4*i+TUP];
-      mult_su3_mat_hwvec2( linkx, 
+      mult_su3_mat_hwvec( linkx, 
 			   (half_wilson_vector * )(gen_pt[XUP][i]), &hwvx ); 
-      mult_su3_mat_hwvec2( linky, 
+      mult_su3_mat_hwvec( linky, 
 			   (half_wilson_vector * )(gen_pt[YUP][i]), &hwvy ); 
-      mult_su3_mat_hwvec2( linkz, 
+      mult_su3_mat_hwvec( linkz, 
 			   (half_wilson_vector * )(gen_pt[ZUP][i]), &hwvz ); 
-      mult_su3_mat_hwvec2( linkt, 
+      mult_su3_mat_hwvec( linkt, 
 			   (half_wilson_vector * )(gen_pt[TUP][i]), &hwvt ); 
-      grow_add_four_wvecs2( &(dest[i]),
+      grow_add_four_wvecs( &(dest[i]),
 	    &hwvx, &hwvy, &hwvz, &hwvt, isign, 0 ); /* "0" is NOSUM */
     }
 
@@ -495,7 +495,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
     }
 
     FORSOMEPARITY(i,s,parity){
-	grow_add_four_wvecs2( &(dest[i]),
+	grow_add_four_wvecs( &(dest[i]),
 	    (half_wilson_vector *)(gen_pt[XDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[YDOWN][i]),
 	    (half_wilson_vector *)(gen_pt[ZDOWN][i]),

@@ -1,5 +1,5 @@
 /******* d_congrad2_cl.c - conjugate gradient for clover fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Clover fermions */
 /* For clover_dynamical/update.c.  Solves M_adjoint*M psi = chi */
 

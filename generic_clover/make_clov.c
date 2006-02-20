@@ -1,6 +1,6 @@
 /******************* make_clov.c **************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* version of 1/4/95 by UMH */
 /* 1/21/00 combined with Schroedinger functional version - UMH */
 
@@ -271,7 +271,7 @@ register complex ctmp;
 
 /******************* make_clovinv.c ***********************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications
    added parity selection CD
@@ -434,7 +434,7 @@ void mult_ldu(
 } /* mult_ldu */
 
 /******** tr_sigma_ldu.c *************/
-/* MIMD version 6, May 95, MBW */
+/* MIMD version 7, May 95, MBW */
 /* Used in clover_diagonal */
 /* Left multiplies a color-dirac matrix stored in "ldu" form
 by sigma_mu_nu = gamma_mu gamma_nu where

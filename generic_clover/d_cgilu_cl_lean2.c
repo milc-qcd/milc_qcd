@@ -1,5 +1,5 @@
 /******* d_cgilu_cl_lean.c - CG-ILU for  clover fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications:
    7/18/01 Uses dslash_w_site_special - CD

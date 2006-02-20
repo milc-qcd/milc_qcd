@@ -219,7 +219,7 @@ void save_w_vector_scidac_from_site(char *filename, char *recxml,
   build_qio_layout(&layout);
 
   /* Create the file metadata */
-  filexml = create_w_XML();
+  filexml = create_w_QCDML();
 
   /* Open file for writing */
   outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
@@ -252,7 +252,7 @@ void save_w_vector_scidac_from_site(char *filename, char *recxml,
   /* Close the file */
   QIO_close_write(outfile);
 
-  free_w_XML(filexml);
+  free_w_QCDML(filexml);
 }
 
 /* Write Wilson vectors in SciDAC format, taking data from a field */
@@ -273,7 +273,7 @@ void save_w_vector_scidac_from_field(char *filename, char *recxml,
   build_qio_layout(&layout);
 
   /* Create the file metadata */
-  filexml = create_w_XML();
+  filexml = create_w_QCDML();
 
   /* Open file for writing */
   outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
@@ -306,7 +306,7 @@ void save_w_vector_scidac_from_field(char *filename, char *recxml,
   /* Close the file */
   QIO_close_write(outfile);
 
-  free_w_XML(filexml);
+  free_w_QCDML(filexml);
 }
 
 /* Read Wilson vectors in SciDAC format */

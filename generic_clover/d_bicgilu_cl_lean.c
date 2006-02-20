@@ -1,5 +1,5 @@
 /******* d_bicgilu_cl_lean.c - BiCGstab-ILU for  clover fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications:
    1/24/00 combined with Schroedinger functional version - UMH

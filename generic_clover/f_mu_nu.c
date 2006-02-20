@@ -1,6 +1,6 @@
 /******************* f_mu_nu.c ****************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This version uses gathers to get the neighbors */
 /* version of 1/4/95 by UMH */
 /* 1/24/00 combined with Schroedinger functional version - UMH */

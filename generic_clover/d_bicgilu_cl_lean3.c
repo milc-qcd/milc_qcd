@@ -1,5 +1,5 @@
 /******* d_bicgilu_cl_lean.c - BiCGstab-ILU for  clover fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications:
    7/18/01 calls dslash_special CD
