@@ -101,7 +101,7 @@ Real xrandom;
 	/* now update H by full time interval */
     	update_h(epsilon);
 
-#if 1
+#if 0
 #ifdef HAVE_QIO
 	{
 	  char *filexml;
