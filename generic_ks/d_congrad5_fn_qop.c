@@ -8,6 +8,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop.c,v $
+ * Revision 1.9  2006/02/25 16:35:29  detar
+ * Fix printf error message
+ *
  * Revision 1.8  2005/12/12 23:18:18  detar
  * Correct the name of QOP_asqtad_destroy_L and remove an unused declaration.
  *
@@ -25,7 +28,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.8 2005/12/12 23:18:18 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.9 2006/02/25 16:35:29 detar Exp $";
 
 /* Load QOP_FermionLinksAsqtad object from MILC fat and long links */
 static void load_fermion_links_asqtad( QOP_FermionLinksAsqtad** qop_links )
@@ -183,7 +186,7 @@ int ks_congrad_qop(int niter, Real rsqmin,
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
-    printf("ks_congrad: Error initializing QOP\n");
+    printf("ks_congrad_qop: Error initializing QOP\n");
     terminate(1);
   }
 
