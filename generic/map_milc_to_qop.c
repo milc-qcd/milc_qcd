@@ -46,7 +46,7 @@ int qop2milc_parity(QOP_evenodd_t qop_parity){
 QOP_status_t initialize_qop(){
   QOP_status_t status;
   static int latsize[4];
-  QOP_layout_t layout;
+  static QOP_layout_t layout;
   
   latsize[0] = nx;
   latsize[1] = ny;
@@ -89,7 +89,7 @@ su3_matrix **create_raw_G_from_site_links(int milc_parity){
   rawlinks = (su3_matrix **)malloc(4*sizeof(su3_matrix *));
   FORALLUPDIR(dir){
     rawlinks[dir] = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-    if(rawlinks == NULL){
+    if(rawlinks[dir] == NULL){
       printf("create_raw_G_from_site_link: No room for rawlinks\n");
       return NULL;
     }
@@ -121,7 +121,7 @@ su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links,
   rawlinks = (su3_matrix **)malloc(4*sizeof(su3_matrix *));
   FORALLUPDIR(dir){
     rawlinks[dir] = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-    if(rawlinks == NULL){
+    if(rawlinks[dir] == NULL){
       printf("create_raw_G_from_field: No room for rawlinks\n");
       return NULL;
     }
@@ -165,7 +165,7 @@ su3_matrix **create_raw_F_from_site_mom(int milc_parity){
   rawforce = (su3_matrix **)malloc(4*sizeof(su3_matrix *));
   FORALLUPDIR(dir){
     rawforce[dir] = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-    if(rawforce == NULL){
+    if(rawforce[dir] == NULL){
       printf("create_raw_F_from_site_mom: No room for rawforce\n");
       return NULL;
     }
