@@ -99,7 +99,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
       QDP_M_eq_sM(tcm, implinks[i], shiftdirs[i], QDP_backward, QDP_all);
       QDP_M_eqm_Ma(bcklink[i], tcm, QDP_all);
     }
-    QDP_destroy_M(tcm);
+    QDP_destroy_M(tcm); tcm = NULL;
   }
 
 #ifdef CGTIME
@@ -220,8 +220,8 @@ ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
 
   set_field_from_V(f_dest, dest);
 
-  QDP_destroy_V(dest);
-  QDP_destroy_V(src);
+  QDP_destroy_V(dest); dest = NULL;
+  QDP_destroy_V(src);  src = NULL;
 
   return(iteration);
 }

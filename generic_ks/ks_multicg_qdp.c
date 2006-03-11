@@ -134,6 +134,7 @@ ks_multicg_qdp(	/* Return value is number of iterations taken */
       QDP_M_eqm_Ma(bcklink[i], tcm, QDP_all);
     }
     QDP_destroy_M(tcm);
+    tcm = NULL;
   }
 
 #ifdef CGTIME
@@ -209,14 +210,15 @@ ks_multicg_qdp(	/* Return value is number of iterations taken */
       /* Free stuff */
       for(j=0;j<num_masses;j++) if(j!=j_low) QDP_destroy_V(pm[j]);
       free(pm);
+      pm = NULL;
 
-      free(zeta_i);
-      free(zeta_ip1);
-      free(zeta_im1);
-      free(beta_i);
-      free(beta_im1);
-      free(alpha);
-      free(shifts);
+      free(zeta_i);   zeta_i = NULL;
+      free(zeta_ip1); zeta_ip1 = NULL;
+      free(zeta_im1); zeta_im1 = NULL;
+      free(beta_i);   beta_i = NULL; 
+      free(beta_im1); beta_im1 = NULL;
+      free(alpha);    alpha = NULL;
+      free(shifts);   shifts = NULL;
 
 #ifdef CGTIME
       dtimec += dclock();
@@ -260,15 +262,15 @@ ks_multicg_qdp(	/* Return value is number of iterations taken */
 
   /* Free stuff */
   for(j=0;j<num_masses;j++) if(j!=j_low) QDP_destroy_V(pm[j]);
-  free(pm);
+  free(pm);           pm = NULL;
 
-  free(zeta_i);
-  free(zeta_ip1);
-  free(zeta_im1);
-  free(beta_i);
-  free(beta_im1);
-  free(alpha);
-  free(shifts);
+  free(zeta_i);       zeta_i = NULL;
+  free(zeta_ip1);     zeta_ip1 = NULL;
+  free(zeta_im1);     zetz_im1 = NULL;
+  free(beta_i);       beta_i = NULL;
+  free(beta_im1);     beta_im1 = NULL;
+  free(alpha);        alpha = NULL;
+  free(shifts);       shifts = NULL;
 
   return(iteration);
 }
@@ -316,9 +318,9 @@ ks_multicg(	/* Return value is number of iterations taken */
     set_temp_from_V(psim[i], dest[i]);
     QDP_destroy_V(dest[i]);
   }
-  free(qmasses);
-  free(dest);
-  QDP_destroy_V(src);
+  free(qmasses);      qmasses = NULL;
+  free(dest);         dest = NULL;
+  QDP_destroy_V(src); src = NULL;
 
   return(iteration);
 }

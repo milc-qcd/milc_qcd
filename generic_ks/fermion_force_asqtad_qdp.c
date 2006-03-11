@@ -355,9 +355,11 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
     }/*sig */
 
   /* Free temporary vectors */
-  free(temp_x) ;
-  for(mu=0;mu<8;mu++)
+  free(temp_x) ;        temp_x = NULL;
+  for(mu=0;mu<8;mu++){
     free(tempvec[mu]) ;
+    tempvec[mu] = NULL;
+  }
 
 #ifdef FFTIME
   dtime += dclock();
@@ -520,7 +522,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   temp_x_qdp = QDP_create_H();
   set_H_from_temp(temp_x_qdp, temp_x);
 
-  free(temp_x);
+  free(temp_x);  temp_x = NULL;
 
   for(mu=0; mu<8; mu++)
     {
@@ -718,26 +720,26 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   }
 
   /* Free temporary vectors */
-  QDP_destroy_H(temp_x_qdp) ;
-  QDP_destroy_H(Pmu);
-  QDP_destroy_H(Pmumu);
+  QDP_destroy_H(temp_x_qdp) ;  temp_x_qdp = NULL ; 
+  QDP_destroy_H(Pmu);	       Pmu = NULL ;	      
+  QDP_destroy_H(Pmumu);        Pmumu= NULL;       
 
   for(mu = 0; mu < 8; mu++){
-    QDP_destroy_H(temp_hw[mu]);
-    QDP_destroy_H(hw_qdp[mu]);
-    QDP_destroy_H(P3[mu]);
-    QDP_destroy_H(P5[mu]);
+    QDP_destroy_H(temp_hw[mu]); temp_hw[mu] = NULL;
+    QDP_destroy_H(hw_qdp[mu]);	hw_qdp[mu] = NULL; 
+    QDP_destroy_H(P3[mu]);	P3[mu] = NULL;     
+    QDP_destroy_H(P5[mu]);     	P5[mu] = NULL;     
   }
 
   FORALLUPDIR(dir){
-    free(backwardlink[dir]);
-    free(tempmom[dir]);
+    free(backwardlink[dir]); backwardlink[dir] = NULL;
+    free(tempmom[dir]);      tempmom[dir] = NULL;
   }
 
   /* Free the temporary gauge link fields */
   FORALLUPDIR(dir){
-    QDP_destroy_M(bcklink[dir]);
-    QDP_destroy_M(fwdlink[dir]);
+    QDP_destroy_M(bcklink[dir]); bcklink[dir] = NULL;
+    QDP_destroy_M(fwdlink[dir]); fwdlink[dir] = NULL;
   }
 
 #ifdef FFTIME
@@ -793,7 +795,7 @@ void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
       FORALLSITES(i,s)
 	dest[i] = *(su3_vector *)gen_pt[0][i];
       cleanup_gather(mtag);
-      free(tmpvec) ;
+      free(tmpvec) ; tmpvec = NULL;
     }
 }
 

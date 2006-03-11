@@ -449,9 +449,11 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
     }/*sig */
 
   /* Free temporary vectors */
-  free(temp_x) ;
-  for(mu=0;mu<8;mu++)
+  free(temp_x) ;    temp_x = NULL;
+  for(mu=0;mu<8;mu++){
     free(tempvec[mu]) ;
+    tempvec[mu] = NULL;
+  }
 
 #ifdef FFTIME
   dtime += dclock();
@@ -606,8 +608,8 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 
   }
 
-  free(backwardlink);
-  QDP_destroy_M(tmplink);
+  free(backwardlink);     backwardlink = NULL;
+  QDP_destroy_M(tmplink); tmplink = NULL;
 
   /* Uncompress gauge momenta */
   FORALLUPDIR(dir){
@@ -678,7 +680,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 
   x_qdp = QDP_create_H();
   set_H_from_temp(x_qdp, temp_x);
-  free(temp_x);
+  free(temp_x); temp_x = NULL;
   for(mu=0; mu<8; mu++) x_qdps[mu] = x_qdp;
 
   /* Pmu is the result of shifting the pseudofermion source backward
@@ -925,33 +927,34 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   }
 
   /* Free temporary vectors */
-  QDP_destroy_H(x_qdp) ;
+  QDP_destroy_H(x_qdp) ;  x_qdp = NULL;
 
   for(mu = 0; mu < 8; mu++){
-    QDP_destroy_H(P7[mu]);
-    QDP_destroy_H(Pmu[mu]);
-    QDP_destroy_H(Pmumu[mu]);
-    QDP_destroy_H(Pnumu[mu]);
-    QDP_destroy_H(tmp1_hw[mu]);
-    QDP_destroy_H(tmp2_hw[mu]);
-    QDP_destroy_H(msgbuf_hw[mu]);
+    QDP_destroy_H(P7[mu]);          P7[mu] = NULL;
+    QDP_destroy_H(Pmu[mu]);         Pmu[mu] = NULL;
+    QDP_destroy_H(Pmumu[mu]);       Pmumu[mu] = NULL;
+    QDP_destroy_H(Pnumu[mu]);       Pnumu[mu] = NULL;
+    QDP_destroy_H(tmp1_hw[mu]);     tmp1_h2[mu] = NULL;
+    QDP_destroy_H(tmp2_hw[mu]);     tmp2_nw[mu] = NULL;
+    QDP_destroy_H(msgbuf_hw[mu]);   msgbuf_hw[mu] = NULL;
   }
 
   for(mu = 0; mu < 8; mu++){
     for(sig = 0; sig < 2*dir2no; sig++){
-      QDP_destroy_H(P3[sig][mu]);
-      QDP_destroy_H(P5[sig][mu]);
+      QDP_destroy_H(P3[sig][mu]);  P3[sig][mu] = NULL;
+      QDP_destroy_H(P5[sig][mu]);  P5[sig][mu] = NULL;
     }
   }
 
   FORALLUPDIR(dir){
     free(tempmom[dir]);
+    tempmom[dir] = NULL;
   }
 
   /* Free the temporary gauge link fields */
   FORALLUPDIR(dir){
-    QDP_destroy_M(bcklink[dir]);
-    QDP_destroy_M(fwdlink[dir]);
+    QDP_destroy_M(bcklink[dir]);  bcklink[dir] = NULL;
+    QDP_destroy_M(fwdlink[dir]);  fwdlink[dir] = NULL;
   }
 
 #ifdef FFTIME
@@ -999,7 +1002,7 @@ void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
       FORALLSITES(i,s)
 	dest[i] = *(su3_vector *)gen_pt[0][i];
       cleanup_gather(mtag);
-      free(tmpvec) ;
+      free(tmpvec) ;  tmpvec = NULL;
     }
 }
 

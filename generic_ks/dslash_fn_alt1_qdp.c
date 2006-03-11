@@ -60,7 +60,7 @@ unset_dslash(void)
     int i;
     dslash_setup = 0;
     for(i=0; i<8; i++) {
-      QDP_destroy_M(bcklink[i]);
+      QDP_destroy_M(bcklink[i]); bcklink[i] = NULL;
     }
   }
 }
@@ -183,7 +183,7 @@ dslash_qdp_fn_special(QDP_ColorVector *src, QDP_ColorVector *dest,
     QDP_discard_V(temp[i+8]);
   }
   for(i=0; i<8; i++) {
-    QDP_destroy_V(tempvec[i]);
+    QDP_destroy_V(tempvec[i]); tempvec[i] = NULL;
   }
 }
 
@@ -199,7 +199,7 @@ dslash_qdp_fn(QDP_ColorVector *src, QDP_ColorVector *dest, QDP_Subset parity)
   //else
   dslash_qdp_fn_special(src, dest, parity, temp1);
   for(i=0; i<16; i++) {
-    QDP_destroy_V(temp1[i]);
+    QDP_destroy_V(temp1[i]); temp1[i] = NULL;
   }
 }
 
@@ -234,8 +234,8 @@ dslash_fn(field_offset src, field_offset dest, int parity)
   set4_M_from_temp(longlinks, t_longlink);
   dslash_qdp_fn(qsrc, qdest, subset);
   set_field_from_V(dest, qdest);
-  QDP_destroy_V(qdest);
-  QDP_destroy_V(qsrc);
+  QDP_destroy_V(qdest); qdest = NULL;
+  QDP_destroy_V(qsrc);  qsrc = NULL;
 }
 
 /* Special dslash for use by congrad.  Uses restart_gather_site() when
@@ -263,8 +263,8 @@ dslash_fn_special(field_offset src, field_offset dest,
   }
   dslash_qdp_fn(qsrc, qdest, subset);
   set_field_from_V(dest, qdest);
-  QDP_destroy_V(qdest);
-  QDP_destroy_V(qsrc);
+  QDP_destroy_V(qdest); qdest = NULL;
+  QDP_destroy_V(qsrc);  qsrc = NULL;
 }
 
 void
@@ -284,8 +284,8 @@ dslash_fn_on_temp(su3_vector *src, su3_vector *dest, int parity)
   set4_M_from_temp(longlinks, t_longlink);
   dslash_qdp_fn(qsrc, qdest, subset);
   set_temp_from_V(dest, qdest);
-  QDP_destroy_V(qdest);
-  QDP_destroy_V(qsrc);
+  QDP_destroy_V(qdest); qdest = NULL;
+  QDP_destroy_V(qsrc);  qsrc = NULL;
 }
 
 /* Special dslash for use by congrad.  Uses restart_gather_field() when
@@ -313,6 +313,6 @@ dslash_fn_field_special(su3_vector *src, su3_vector *dest,
   }
   dslash_qdp_fn(qsrc, qdest, qparity);
   set_temp_from_V(dest, qdest);
-  QDP_destroy_V(qdest);
-  QDP_destroy_V(qsrc);
+  QDP_destroy_V(qdest); qdest = NULL;
+  QDP_destroy_V(qsrc);  qsrc = NULL;
 }

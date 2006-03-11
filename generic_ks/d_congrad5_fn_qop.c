@@ -8,6 +8,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop.c,v $
+ * Revision 1.10  2006/03/11 04:24:51  detar
+ * Set pointers to null after freeing them
+ *
  * Revision 1.9  2006/02/25 16:35:29  detar
  * Fix printf error message
  *
@@ -28,7 +31,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.9 2006/02/25 16:35:29 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.10 2006/03/11 04:24:51 detar Exp $";
 
 /* Load QOP_FermionLinksAsqtad object from MILC fat and long links */
 static void load_fermion_links_asqtad( QOP_FermionLinksAsqtad** qop_links )
@@ -55,8 +58,8 @@ static void load_fermion_links_asqtad( QOP_FermionLinksAsqtad** qop_links )
   *qop_links = QOP_asqtad_create_L_from_raw((Real **)raw_fat_links, 
 					    (Real **)raw_long_links,
 					    QOP_EVENODD);
-  destroy_raw_G(raw_fat_links);
-  destroy_raw_G(raw_long_links);
+  destroy_raw_G(raw_fat_links);   raw_fat_links = NULL;
+  destroy_raw_G(raw_long_links);  raw_long_links = NULL;
   return;
 }
 
@@ -71,7 +74,7 @@ static void load_V_from_site( QOP_ColorVector** qop,
   raw = create_raw_V_from_site(milc, parity);
   if(raw == NULL)terminate(1);
   *qop = QOP_create_V_from_raw((Real *)raw, milc2qop_parity(parity));
-  destroy_raw_V(raw);
+  destroy_raw_V(raw); raw = NULL;
 
   return;
 }
@@ -91,7 +94,7 @@ static void unload_V_to_site( field_offset milc, QOP_ColorVector *qop,
   QOP_extract_V_to_raw((Real *)raw, qop, milc2qop_parity(parity));
   unload_raw_V_to_site(milc, raw, parity);
 
-  destroy_raw_V(raw);
+  destroy_raw_V(raw); raw = NULL;
 }
 
 /* Load inversion args for Level 3 inverter */
@@ -249,7 +252,7 @@ int ks_congrad_qop(int niter, Real rsqmin,
 
   /* Free QOP fields  */
 
-  QOP_asqtad_destroy_L(qop_links);          
+  QOP_asqtad_destroy_L(qop_links);
   qop_links  = NULL;
   for(isrc = 0; isrc < nsrc; isrc++){
     QOP_destroy_V(qop_src[isrc]);    
@@ -261,6 +264,7 @@ int ks_congrad_qop(int niter, Real rsqmin,
       free(qop_resid_arg[isrc][imass]);
     }
     free(qop_resid_arg[isrc]);
+    qop_resid_arg[isrc] = NULL;
   }
 
 #ifdef CGTIME

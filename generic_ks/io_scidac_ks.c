@@ -78,8 +78,8 @@ int write_F3_V_from_site(QIO_Writer *outfile, char *xml_write_lattice,
 		     count*datum_size, word_size, (void *)&src);
   if(status != QIO_SUCCESS)return 1;
 
-  QIO_destroy_record_info(rec_info);
-  QIO_string_destroy(xml_record_out);
+  QIO_destroy_record_info(rec_info);   rec_info = NULL;
+  QIO_string_destroy(xml_record_out);  xml_record_out = NULL;
 
   return 0;
 }
@@ -109,8 +109,8 @@ int write_F3_V_from_field(QIO_Writer *outfile, char *xml_write_lattice,
 		     count*datum_size, word_size, (void *)src);
   if(status != QIO_SUCCESS)return 1;
 
-  QIO_destroy_record_info(rec_info);
-  QIO_string_destroy(xml_record_out);
+  QIO_destroy_record_info(rec_info);    rec_info = NULL;
+  QIO_string_destroy(xml_record_out);   xml_record_out = NULL;
 
   return 0;
 }
@@ -174,7 +174,7 @@ int read_F3_V_to_site(QIO_Reader *infile, field_offset dest, int count)
 	       QIO_get_reader_last_checksuma(infile),
 	       QIO_get_reader_last_checksumb(infile));
 
-  QIO_string_destroy(xml_record_in);
+  QIO_string_destroy(xml_record_in);  xml_record_in = NULL;
   return 0;
 }
 
@@ -201,7 +201,7 @@ int read_F3_V_to_field(QIO_Reader *infile, su3_vector *dest, int count)
 	       QIO_get_reader_last_checksuma(infile),
 	       QIO_get_reader_last_checksumb(infile));
 
-  QIO_string_destroy(xml_record_in);
+  QIO_string_destroy(xml_record_in);  xml_record_in = NULL;
   return 0;
 }
 

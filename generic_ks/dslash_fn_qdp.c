@@ -172,10 +172,10 @@ dslash_qdp_fn(QDP_ColorVector *src, QDP_ColorVector *dest, QDP_Subset parity)
     dslash_qdp_fn_special(src, dest, parity, temp1);
 #endif
   for(i=0; i<16; i++) {
-    QDP_destroy_V(vtemp[i]);
+    QDP_destroy_V(vtemp[i]);  vtemp[i] = NULL;
   }
   for(i=0; i<8; i++) {
-    QDP_destroy_V(tempvec[i]);
+    QDP_destroy_V(tempvec[i]); tempvec[i] = NULL;
   }
 }
 

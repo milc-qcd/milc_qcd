@@ -46,7 +46,7 @@ print_mem(void)
     fflush(stdout);
     asprintf(&s, "ps -o vsz= -p %i", pid);
     system(s);
-    free(s);
+    free(s);  s = NULL;
   }
 }
 #endif
@@ -84,14 +84,14 @@ unset_congrad(void)
   if(congrad_setup) {
     int i;
     unset_dslash();
-    QDP_destroy_V(ttt);
-    QDP_destroy_V(tttt);
-    QDP_destroy_V(resid);
-    QDP_destroy_V(cg_p);
-    QDP_destroy_V(mmp);
+    QDP_destroy_V(ttt);     ttt = NULL;	  
+    QDP_destroy_V(tttt);    tttt = NULL;  
+    QDP_destroy_V(resid);   resid = NULL; 
+    QDP_destroy_V(cg_p);    cg_p = NULL;  
+    QDP_destroy_V(mmp);     mmp = NULL;   
     for(i=0; i<16; i++) {
-      QDP_destroy_V(temp1[i]);
-      QDP_destroy_V(temp2[i]);
+      QDP_destroy_V(temp1[i]); temp1[i] = NULL;
+      QDP_destroy_V(temp2[i]); temp2[i] = NULL;
     }
     congrad_setup = 0;
   }
@@ -152,7 +152,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
       QDP_M_eq_sM(tcm, implinks[i], shiftdirs[i], QDP_backward, QDP_all);
       QDP_M_eqm_Ma(bcklink[i], tcm, QDP_all);
     }
-    QDP_destroy_M(tcm);
+    QDP_destroy_M(tcm); tcm = NULL;
   }
   //#endif
 
@@ -169,7 +169,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
 #if 0
     //QDP_Debug=0;
     for(i=0; i<8; ++i) {
-      QDP_destroy_M(implinks[i]);
+      QDP_destroy_M(implinks[i]); implinks[i] = NULL;
     }
     for(i=0; i<8; ++i) {
       implinks[i] = QDP_create_M();
@@ -337,8 +337,8 @@ ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
 
   set_field_from_V(f_dest, dest);
 
-  QDP_destroy_V(dest);
-  QDP_destroy_V(src);
+  QDP_destroy_V(dest); dest = NULL;
+  QDP_destroy_V(src);  src = NULL;
 
   //print_mem();
   //if(QDP_this_node==0) printf("end\n");
