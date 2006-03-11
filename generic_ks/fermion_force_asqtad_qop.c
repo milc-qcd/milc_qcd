@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.9  2006/03/11 04:24:22  detar
+ * Change to conform to current Level 3 interface for QOP_asqtad_force_multi
+ *
  * Revision 1.8  2006/01/30 20:29:14  detar
  * Fix memory leak
  *
@@ -26,7 +29,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.8 2006/01/30 20:29:14 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.9 2006/03/11 04:24:22 detar Exp $";
 
 void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
@@ -54,8 +57,8 @@ void unload_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 
   /* Destroy gauge links and QOP links */
 
-  destroy_raw_G (*rawlinks);   rawlinks = NULL;
-  QOP_destroy_G (*links);
+  destroy_raw_G (*rawlinks);   *rawlinks = NULL;
+  QOP_destroy_G (*links);      *links = NULL;
 
   /* Copy momentum from QOP format to raw and then to site structure */
 
@@ -63,8 +66,8 @@ void unload_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 
   unload_raw_F_to_site_mom(*rawmom, EVENANDODD);
 
-  destroy_raw_F (*rawmom);   rawmom = NULL;
-  QOP_destroy_F (*mom);
+  destroy_raw_F (*rawmom);   *rawmom = NULL;
+  QOP_destroy_F (*mom);      *mom = NULL;
 }
 
 void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, int nflavors)
@@ -132,10 +135,10 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
 
   /* Free QOP source vector */
-  QOP_destroy_V(vecx);
+  QOP_destroy_V(vecx);  vecx = NULL;
 
   /* Free raw source vector */
-  destroy_raw_V(rawvecx);
+  destroy_raw_V(rawvecx); rawvecx = NULL;
 
 #ifdef FFTIME
   dtime += dclock();
@@ -156,7 +159,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   QOP_Force *mom;
   QOP_ColorVector *vecx[2];
   
-  QOP_asqtad_coeffs_t coeff[2];
+  QOP_asqtad_coeffs_t coeff;
   int i;
   Real epsv[2];
 
@@ -187,23 +190,22 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   vecx[1] = QOP_create_V_from_raw((Real *)rawvecx[1],QOP_EVENODD);
 
   /* Load coefficients */
-  epsv[0] = eps;  epsv[1] = eps;
-  load_qop_asqtad_coeffs(&coeff[0], nflav1);
-  load_qop_asqtad_coeffs(&coeff[1], nflav2);
+  epsv[0] = eps*nflav1/4.0;  epsv[1] = eps*nflav2/4.0;
+  load_qop_asqtad_coeffs(&coeff, 4.0);
 
   /* Compute fermion force */
-  QOP_asqtad_force_multi(links, mom, coeff, epsv, vecx, 2);
+  QOP_asqtad_force_multi(links, mom, &coeff, epsv, vecx, 2);
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
 
   /* Free QOP source vectors */
-  QOP_destroy_V(vecx[0]);
-  QOP_destroy_V(vecx[1]);
+  QOP_destroy_V(vecx[0]);  vecx[0] = NULL;
+  QOP_destroy_V(vecx[1]);  vecx[1] = NULL;
 
   /* Free raw source vectors */
-  destroy_raw_V(rawvecx[0]);
-  destroy_raw_V(rawvecx[1]);
+  destroy_raw_V(rawvecx[0]); rawvecx[0] = NULL;
+  destroy_raw_V(rawvecx[1]); rawvecx[1] = NULL;
 
 #ifdef FFTIME
   dtime += dclock();

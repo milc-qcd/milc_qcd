@@ -476,19 +476,19 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
   
   /* Path coefficients times fermion epsilon */
 
-  OneLink[0] = coef[0].one_link*eps[0];
-  Naik[0]    = coef[0].naik*eps[0];         mNaik[0]    = -Naik[0];
-  ThreeSt[0] = coef[0].three_staple*eps[0]; mThreeSt[0] = -ThreeSt[0];
-  FiveSt[0]  = coef[0].five_staple*eps[0];  mFiveSt[0]  = -FiveSt[0];
-  SevenSt[0] = coef[0].seven_staple*eps[0]; mSevenSt[0] = -SevenSt[0];
-  Lepage[0]  = coef[0].lepage*eps[0];       mLepage[0]  = -Lepage[0];
+  OneLink[0] = coef->one_link*eps[0];
+  Naik[0]    = coef->naik*eps[0];         mNaik[0]    = -Naik[0];
+  ThreeSt[0] = coef->three_staple*eps[0]; mThreeSt[0] = -ThreeSt[0];
+  FiveSt[0]  = coef->five_staple*eps[0];  mFiveSt[0]  = -FiveSt[0];
+  SevenSt[0] = coef->seven_staple*eps[0]; mSevenSt[0] = -SevenSt[0];
+  Lepage[0]  = coef->lepage*eps[0];       mLepage[0]  = -Lepage[0];
 
-  OneLink[1] = coef[1].one_link*eps[1];
-  Naik[1]    = coef[1].naik*eps[1];         mNaik[1]    = -Naik[1];
-  ThreeSt[1] = coef[1].three_staple*eps[1]; mThreeSt[1] = -ThreeSt[1];
-  FiveSt[1]  = coef[1].five_staple*eps[1];  mFiveSt[1]  = -FiveSt[1];
-  SevenSt[1] = coef[1].seven_staple*eps[1]; mSevenSt[1] = -SevenSt[1];
-  Lepage[1]  = coef[1].lepage*eps[1];       mLepage[1]  = -Lepage[1];
+  OneLink[1] = coef->one_link*eps[1];
+  Naik[1]    = coef->naik*eps[1];         mNaik[1]    = -Naik[1];
+  ThreeSt[1] = coef->three_staple*eps[1]; mThreeSt[1] = -ThreeSt[1];
+  FiveSt[1]  = coef->five_staple*eps[1];  mFiveSt[1]  = -FiveSt[1];
+  SevenSt[1] = coef->seven_staple*eps[1]; mSevenSt[1] = -SevenSt[1];
+  Lepage[1]  = coef->lepage*eps[1];       mLepage[1]  = -Lepage[1];
 
   /* *************************************** */
 
