@@ -1,12 +1,18 @@
 /*************************** v5_to_scidac.c ************************/
 /* MIMD version 7 */
 /* Read gauge configuration, convert MILD v5 to SciDAC format */
+/* Optionally include ILDG records in the conversion */
 /* C. DeTar 1/30/05 */
+/* C. DeTar 5/4/06 support for ILDG format */
 
 /* Usage ...
 
-   lattice_to_scidac milc_file scidac_file
+   lattice_to_scidac [--ildg] milc_file scidac_file
+   [LFN string]
 
+   The LFN string is used as the logical file name for ILDG usage.
+   If the MILC info file is also present, it is copied into the
+   user record XML.
 */
 
 #define CONTROL
@@ -33,6 +39,11 @@
 #define LATDIM 4
 #define PARALLEL 1
 #define SERIAL 0
+#define MAX_ILDGLFN 513
+#define MAX_INFO 4097
+#define MAX_INFO_LINE 129
+#define MAX_INFO_FILENAME 513
+#define MAX_RECXML_LENGTH 4097
 
 #define NODE_DUMP_ORDER 1
 #define NATURAL_ORDER 0
@@ -53,6 +64,66 @@ typedef struct {
 void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc);
 gauge_file *r_serial_i(char *filename);
 void r_serial_f(gauge_file *gf);
+
+/*----------------------------------------------------------------------*/
+/* Read the lattice info file if it exists and put its contents in "buf"
+   with tags suitable for the user record XML */
+int read_info(char *buf, char *latfilename, int maxlength){
+  char infofilename[MAX_INFO_FILENAME];
+  FILE *infofp;
+  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
+  char end[] = "</info>";
+  char missing[] = "missing";
+  char infoline[MAX_INFO_LINE];
+  int length = 0;
+
+  /* Construct file name */
+  if(strlen(latfilename) + 5 >= MAX_INFO_FILENAME){
+    fprintf(stderr,"Not enough room for info filename\n");
+    return 1;
+  }
+  strcpy(infofilename,latfilename);
+  strcat(infofilename,".info");
+
+  /* Start the buffer */
+  length += strlen(begin);
+  if(length < maxlength)
+    strcpy(buf, begin);
+
+  /* Look for info file in directory */
+  infofp = fopen(infofilename,"r");
+  if(infofp == NULL){
+    fprintf(stderr,"Can't find the info file %s\nIgnoring it.\n",
+	    infofilename);
+  }
+
+  /* Read and copy if we have a file */
+  if(infofp != NULL){
+    while(feof(infofp) == 0){
+      infoline[0] = '\0';
+      fgets(infoline, MAX_INFO_LINE, infofp);
+      length += strlen(infoline);
+      if(length < maxlength)
+	strcat(buf, infoline);
+    }
+  }
+  else{
+      length += strlen(missing);
+      if(length < maxlength)
+	strcat(buf, missing);
+  }
+
+  /* Finish the buffer */
+  length += strlen(end);
+  if(length < maxlength)
+    strcat(buf, end);
+
+  if(length >= maxlength){
+    fprintf(stderr,"Not enough room for the info file data\n");
+    return 1;
+  }
+  return 0;
+}
 
 /*----------------------------------------------------------------------*/
 void make_lattice(){
@@ -307,24 +378,47 @@ int main(int argc, char *argv[])
   QIO_Writer *outfile;
   QIO_RecordInfo *rec_info;
   int status;
+  int ildgstyle;
   /* We assume input precision is single */
   int datum_size = sizeof(fsu3_matrix);
   int count = 4;
   int word_size = sizeof(float);
   r_serial_site_reader state;
   QIO_String *xml_record_out;
-  char dummy[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Dummy QCDML</title>";
+  char ildg_lfn[MAX_ILDGLFN];
+  char recxml[MAX_RECXML_LENGTH];
+  char filexml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>MILC ILDG archival gauge configuration</title>";
 
-  if(argc < 3)
+  if(argc < 3 || 
+     (argc < 4 && argv[1][0] == '-') || 
+     (argc >= 4 && (strcmp(argv[1],"--ildg") != 0)))
     {
-      fprintf(stderr,"Usage %s <MILC file> <SciDAC file>\n",argv[0]);
-      exit(1);
+      fprintf(stderr,"Usage %s [--ildg] <MILC file> <SciDAC file>\n",argv[0]);
+      return 1;
     }
-  filename_milc   = argv[1];
-  filename_scidac = argv[2];
+
+  if(argc < 4){
+    filename_milc   = argv[1];
+    filename_scidac = argv[2];
+    ildgstyle = QIO_ILDGNO;
+  }
+  else{
+    filename_milc   = argv[2];
+    filename_scidac = argv[3];
+    ildgstyle = QIO_ILDGLAT;
+    if(fgets(ildg_lfn, MAX_ILDGLFN, stdin) == NULL){
+      fprintf(stderr,"Couldn't read the LFN\n");
+      return 1;
+    }
+  }
+
+  if(read_info(recxml, filename_milc, MAX_RECXML_LENGTH) != 0)return 1;
+
 
   if(this_node == 0)printf("Converting MILC v5 file %s to SciDAC file %s\n",
 			   filename_milc, filename_scidac);
+  if(ildgstyle == QIO_ILDGLAT)
+    printf("in ILDG compatible format with LFN\n%s\n",ildg_lfn);
 
   initialize_machine(argc,argv);
 #ifdef HAVE_QDP
@@ -372,8 +466,8 @@ int main(int argc, char *argv[])
 
   /* Open the SciDAC file for writing */
   outfile = open_scidac_output(filename_scidac, QIO_SINGLEFILE,
-			       QIO_SERIAL, QIO_ILDGNO, NULL, &layout,
-			       "Converted MILC lattice file");
+			       QIO_SERIAL, ildgstyle, ildg_lfn, &layout,
+			       filexml);
   if(outfile == NULL)terminate(1);
 
   /* Initialize reading the MILC lattice data */
@@ -383,7 +477,7 @@ int main(int argc, char *argv[])
      site links from the MILC file */
 
   xml_record_out = QIO_string_create();
-  QIO_string_set(xml_record_out,dummy);
+  QIO_string_set(xml_record_out, recxml);
   rec_info = QIO_create_record_info(QIO_FIELD, "QDP_F3_ColorMatrix", "F", 
 				    3, 0, datum_size, 4);
   status = QIO_write(outfile, rec_info, xml_record_out,
