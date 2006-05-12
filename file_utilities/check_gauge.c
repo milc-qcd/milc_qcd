@@ -28,6 +28,12 @@
 #include <string.h>
 #include "../include/io_lat.h"
 #include "../include/generic.h"
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
+
+gauge_file *r_serial_i(char *filename);
+void r_serial_f(gauge_file *gf);
 
 #define PARALLEL 1
 #define SERIAL 0
@@ -484,6 +490,7 @@ void r_check_arch(gauge_file *gf)
     }
   
 } /* r_check_arch */
+
 /*----------------------------------------------------------------------*/
 
 int main(int argc, char *argv[])
@@ -493,8 +500,6 @@ int main(int argc, char *argv[])
   gauge_header *gh;
   char *filename;
   float max_deviation;
-  gauge_file *r_serial_i(char *filename);
-  void r_serial_f(gauge_file *gf);
   
   if(argc < 2)
     {
@@ -517,6 +522,11 @@ int main(int argc, char *argv[])
   nx = ny = nz = nt = -1;  /* To suppress dimension checking */
   gf = r_serial_i(filename);
   gh = gf->header;
+
+  if(gh->magic_number == LIME_MAGIC_NO){
+    printf("Can't check a SciDAC file yet\n");
+    return 1;
+  }
 
   if(this_node == 0)
     {
