@@ -658,7 +658,7 @@ int save_wprop_sc_from_field( int flag, w_prop_file *wpf,
    FORGET,
    SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_MULTIDUMP, SAVE_CHECKPOINT
 */
-int save_wsprop_from_site( int flag, char *filename, char *recxml,
+int save_wprop_from_site( int flag, char *filename, char *recxml,
 			    field_offset src, int timing)
 {
   double dtime;
@@ -1020,7 +1020,7 @@ void save_wprop_from_field( int flag, char *filename, char *recxml,
 	node0_printf("Time to save wprop = %e\n",dtime);
     }
 
-} /* save_wsprop_from_field */
+} /* save_wprop_from_field */
 /*---------------------------------------------------------------*/
 void r_close_wprop(int flag, w_prop_file *wpf)
 {
