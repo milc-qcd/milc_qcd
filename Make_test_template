@@ -90,7 +90,7 @@ test:
 	        ${MAKE} -f Make_test "PROJ=$$proj" out.test.diff.$$proj;\
 	        /bin/rm -f $$proj;\
 	        /bin/rm -f localmake*;\
-	   done\
+	   done;\
 	done
 
 test_clean:
