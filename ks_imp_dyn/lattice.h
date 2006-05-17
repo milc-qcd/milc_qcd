@@ -113,8 +113,9 @@ typedef struct {
 #ifdef NPBP_REPS
  	su3_vector M_inv;	/* temp vector for M^{-1} g_rand */
 #endif
-#ifdef CHEM_POT
+#if defined(CHEM_POT) || defined(D_CHEM_POT)
  	su3_vector dM_M_inv;	/* temp vector for dM/dmu M^{-1} g_rand */
+        su3_vector deriv[6];
 #endif
 } site;
 
@@ -137,6 +138,7 @@ EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,propinterval;
+EXTERN  int npbp_reps_in;
 #ifdef ONEMASS
 EXTERN  int nflavors;
 #else

@@ -20,6 +20,7 @@ PROJS = \
   su3_rmd \
   su3_rmd_eos \
   su3_rmd_susc \
+  su3_rmd_mu_eos \
   su3_spectrum \
   su3_hybrids \
   su3_rmd_dblstore_gath13_fewsums \

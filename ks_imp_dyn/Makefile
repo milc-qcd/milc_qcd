@@ -45,7 +45,7 @@ CXX = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-g++
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc
-OPT              = -O3
+OPT              = -g
 
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -117,7 +117,7 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 # Edit these "wants"
 
 # Choose "true" or blank. Does not imply any other SciDAC package
-WANTQOP = true
+WANTQOP = 
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
 WANTQDP = 

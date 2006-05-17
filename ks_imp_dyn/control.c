@@ -64,12 +64,25 @@ main( int argc, char **argv )
 	rephase(OFF);
 	g_measure( );
 	rephase(ON);
+
+	/* Measure pbp, etc */
 #ifdef ONEMASS
 	f_meas_imp(F_OFFSET(phi),F_OFFSET(xxx),mass);
 #else
 	f_meas_imp( F_OFFSET(phi1), F_OFFSET(xxx1), mass1 );
 	f_meas_imp( F_OFFSET(phi2), F_OFFSET(xxx2), mass2 );
 #endif
+
+	/* Measure derivatives wrto chemical potential */
+#ifdef D_CHEM_POT
+#ifdef ONEMASS
+	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass );
+#else
+	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass1 );
+	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass2 );
+#endif
+#endif
+
 #ifdef SPECTRUM 
 	/* Fix TUP Coulomb gauge - gauge links only*/
 	rephase( OFF );
@@ -86,6 +99,17 @@ main( int argc, char **argv )
 	  avspect_iters += spectrum2( mass1, F_OFFSET(phi1),
 				      F_OFFSET(xxx1));
 	  avspect_iters += spectrum2( mass2, F_OFFSET(phi1),
+				      F_OFFSET(xxx1));
+#endif
+	}
+	
+	if(strstr(spectrum_request,",spectrum_point,") != NULL){
+#ifdef ONEMASS
+	  avspect_iters += spectrum_fzw(mass,F_OFFSET(phi),F_OFFSET(xxx));
+#else
+	  avspect_iters += spectrum_fzw( mass1, F_OFFSET(phi1),
+				      F_OFFSET(xxx1));
+	  avspect_iters += spectrum_fzw( mass2, F_OFFSET(phi1),
 				      F_OFFSET(xxx1));
 #endif
 	}

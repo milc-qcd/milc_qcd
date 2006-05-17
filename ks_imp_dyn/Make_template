@@ -97,6 +97,7 @@ SPECTRUM_OBJECTS = \
   nl_spectrum.o \
   project_su3_hit.o \
   spectrum2.o \
+  spectrum_fzw.o \
   spectrum_mom.o \
   spectrum_multimom.o \
   spectrum_nd.o \
@@ -139,13 +140,14 @@ endif
 # Selection of the fermion force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Standard QOP interface
-  ASQFORCE = map_milc_to_qop.o fermion_force_asqtad_qop.o
+  ASQFORCE = fermion_force_asqtad_qop.o
 # The implementation of the interface (if not packaged)
   ASQFORCE += ${ASQFORCEQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
 # Choose (fermion_force_asqtad_qdp.o )
-    ASQFORCE = fermion_force_asqtad_qdp.o
+#    ASQFORCE = fermion_force_asqtad_qdp.o
+    ASQFORCE = fermion_force_asqtad3.o ff_opt.o
   else
 # Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
 # or  fermion_force_asqtad3.o + ff_opt.o
@@ -177,7 +179,7 @@ ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
 
 # Generic QOP objects
 ifeq ($(strip ${HAVEQOP}),true)
-  ADD_OBJECTS += ${GENERICQOP}
+  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o 
 endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
@@ -243,6 +245,9 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 # Optional DEFINES for quark number susceptibility
 # -DCHEM_POT
 
+# Optional DEFINES for derivatives wrto chem pot
+# -DD_CHEM_POT
+
 ifeq ($(strip ${QCDOC}),true)
   DQCDOC = -DQCDOC
 endif
@@ -268,10 +273,11 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 ##### Targets:
 #		("FN" = "fat+Naik")
 
-#	-DNPBP_REPS=10" \
+#	-DNPBP_REPS" \
 # 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
 #       -DONEMASS
 #	-DQIO_TRELEASE=2.0
+#       -D
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -290,24 +296,31 @@ su3_rmd1::
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS=4" \
+	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
 
 su3_rmd_eos1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS=4 -DONEMASS" \
+	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS -DONEMASS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update_onemass.o"
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DNPBP_REPS=4 -DCHEM_POT" \
+	"DEFINES= -DFN  -DNPBP_REPS -DCHEM_POT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
+
+su3_rmd_mu_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DDM_DU0 -DNPBP_REPS -DD_CHEM_POT" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS=  ${INV_FN_OBJECTS} ${ASQFORCE} update.o mu_fast.o"
 
 su3_rmd_dblstore_gath13_fewsums::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
