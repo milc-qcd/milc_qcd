@@ -53,12 +53,8 @@ BOMB THE COMPILE
     double MidM_MidM;
 #endif
 
-    /* If this feature is used more commonly, we should make npbp_reps
-       a user-supplied parameter, instead of a macro and define it
-       globally */
-
 #ifdef NPBP_REPS
-    int npbp_reps = NPBP_REPS;  /* Number of repetitions of stochastic
+    int npbp_reps = npbp_reps_in;  /* Number of repetitions of stochastic
                                    estimate */
 #else
     int npbp_reps = 1;

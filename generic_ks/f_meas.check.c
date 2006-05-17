@@ -38,7 +38,7 @@ void f_meas_imp( field_offset phi_off, field_offset xxx_off, Real mass ){
     /* check */ double r_gb_M_g_e, r_gb_M_g_o;
 #endif
 
-#ifdef CHEM_POT
+#ifdef IM_CHEM_POT
 #ifndef FN		/* FN is assumed for quark number susc. */
 BOMB THE COMPILE
 #endif
@@ -55,12 +55,8 @@ BOMB THE COMPILE
     double MidM_MidM;
 #endif
 
-    /* If this feature is used more commonly, we should make npbp_reps
-       a user-supplied parameter, instead of a macro and define it
-       globally */
-
 #ifdef NPBP_REPS
-    int npbp_reps = NPBP_REPS;  /* Number of repetitions of stochastic
+    int npbp_reps = npbp_reps_in;  /* Number of repetitions of stochastic
                                    estimate */
 #else
     int npbp_reps = 1;
@@ -92,7 +88,7 @@ BOMB THE COMPILE
       /* check */ ddslash_fn_du0_site (F_OFFSET(g_rand), F_OFFSET(dM_check), EVENANDODD );
 #endif
 
-#ifdef CHEM_POT
+#ifdef IM_CHEM_POT
       pb_dMdmu_p_e = pb_dMdmu_p_o = dcmplx((double)0.0,(double)0.0);
       pb_d2Mdmu2_p_e = pb_d2Mdmu2_p_o = dcmplx((double)0.0,(double)0.0);
 
@@ -148,7 +144,7 @@ BOMB THE COMPILE
 	/* check */ r_gb_M_g_e += cc.real;
 #endif
 
-#ifdef CHEM_POT
+#ifdef IM_CHEM_POT
 	cc = su3_dot( &(st->g_rand), &(st->tempvec[0]) );
 	CSUM(pb_dMdmu_p_e, cc);
 	CSUM(pb_d2Mdmu2_p_e, cc);
@@ -188,7 +184,7 @@ BOMB THE COMPILE
 	/* check */ r_gb_M_g_o += cc.real;
 #endif
 
-#ifdef CHEM_POT
+#ifdef IM_CHEM_POT
 	cc = su3_dot( &(st->g_rand), &(st->tempvec[0]) );
 	CSUM(pb_dMdmu_p_o, cc);
 	CSUM(pb_d2Mdmu2_p_o, cc);
@@ -250,7 +246,7 @@ BOMB THE COMPILE
       node0_printf("FACTION: mass = %e,  %e ( %d of %d )\n", mass,
 		   r_ferm_action, jpbp_reps+1, npbp_reps);
 
-#ifdef CHEM_POT
+#ifdef IM_CHEM_POT
       /* free up the buffers */
       cleanup_gather(tag0);
       cleanup_gather(tag1);
@@ -296,7 +292,7 @@ BOMB THE COMPILE
 		   pbp_pbp, jpbp_reps+1, npbp_reps);
 #endif
 
-#ifdef CHEM_POT
+#ifdef IM_CHEM_POT
       mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass );
 
       /* Start gathers from positive t-direction */

@@ -50,6 +50,8 @@ G_KS_ALL = \
   ks_invert.o \
   ks_multicg.o \
   mat_invert.o \
+  mu.c \
+  mu_fast.c \
   multimass_inverter.o \
   nl_spectrum.o \
   quark_stuff.o \
@@ -59,6 +61,7 @@ G_KS_ALL = \
   smear_links.o \
   spectrum.o \
   spectrum2.o \
+  spectrum_fzw.o \
   spectrum_hybrids5.o \
   spectrum_mom.o \
   spectrum_multimom.o \
@@ -176,6 +179,10 @@ ks_multicg.o: ../generic_ks/ks_multicg.c
 	${CC} -c ${CFLAGS} $<
 mat_invert.o: ../generic_ks/mat_invert.c
 	${CC} -c ${CFLAGS} $<
+mu.o: ../generic_ks/mu.c
+	${CC} -c ${CFLAGS} $<
+mu_fast.o: ../generic_ks/mu_fast.c
+	${CC} -c ${CFLAGS} $<
 multimass_inverter.o: ../generic_ks/multimass_inverter.c
 	${CC} -c ${CFLAGS} $<
 nl_spectrum.o: ../generic_ks/nl_spectrum.c
@@ -197,6 +204,8 @@ spectrum.o: ../generic_ks/spectrum.c
 spectrum_hybrids5.o: ../generic_ks/spectrum_hybrids5.c
 	${CC} -c ${CFLAGS} $<
 spectrum2.o: ../generic_ks/spectrum2.c
+	${CC} -c ${CFLAGS} $<
+spectrum_fzw.o: ../generic_ks/spectrum_fzw.c
 	${CC} -c ${CFLAGS} $<
 spectrum_mom.o: ../generic_ks/spectrum_mom.c
 	${CC} -c ${CFLAGS} $<
