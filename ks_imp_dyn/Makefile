@@ -117,7 +117,7 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 # Edit these "wants"
 
 # Choose "true" or blank. Does not imply any other SciDAC package
-WANTQOP = 
+WANTQOP =
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
 WANTQDP = 
