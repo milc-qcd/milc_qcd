@@ -106,13 +106,25 @@ SMEARING IS ON, level 32
 Smearing: staple_weight = 2.500000e-01
 APE projection is on, NHIT = 10
 spectrum_hybrids(): source time = 2
-Inversion checked, frac. error = 2.123312e-04
-Inversion checked, frac. error = 1.800775e-04
-Inversion checked, frac. error = 1.774825e-04
+Inversion checked, frac. error = 2.066286e-04
+Flagged comparisons = 0
+Max err. = 1.864831e-04 frac. = 4.567884e-04
+Inversion checked, frac. error = 1.718626e-04
+Flagged comparisons = 0
+Max err. = 1.798280e-04 frac. = 4.404869e-04
+Inversion checked, frac. error = 1.706950e-04
+Flagged comparisons = 0
+Max err. = 1.480322e-04 frac. = 3.626034e-04
 spectrum_hybrids(): source time = 4
-Inversion checked, frac. error = 1.844327e-04
-Inversion checked, frac. error = 2.165678e-04
-Inversion checked, frac. error = 1.806045e-04
+Inversion checked, frac. error = 1.764739e-04
+Flagged comparisons = 0
+Max err. = 1.681411e-04 frac. = 4.118600e-04
+Inversion checked, frac. error = 2.085964e-04
+Flagged comparisons = 0
+Max err. = 1.987566e-04 frac. = 4.868523e-04
+Inversion checked, frac. error = 1.732366e-04
+Flagged comparisons = 0
+Max err. = 1.653846e-04 frac. = 4.051079e-04
 STARTPROP
 MASSES:  1.240000e-02   1.240000e-02
 SOURCE: ONEMP_S
@@ -129,13 +141,25 @@ SMEARING IS ON, level 32
 Smearing: staple_weight = 2.500000e-01
 APE projection is on, NHIT = 10
 spectrum_hybrids(): source time = 2
-Inversion checked, frac. error = 8.541330e-05
-Inversion checked, frac. error = 7.230912e-05
-Inversion checked, frac. error = 6.976867e-05
+Inversion checked, frac. error = 8.160731e-05
+Flagged comparisons = 0
+Max err. = 7.335971e-05 frac. = 1.796939e-04
+Inversion checked, frac. error = 6.958665e-05
+Flagged comparisons = 0
+Max err. = 7.184896e-05 frac. = 1.759933e-04
+Inversion checked, frac. error = 6.614360e-05
+Flagged comparisons = 0
+Max err. = 5.803094e-05 frac. = 1.421462e-04
 spectrum_hybrids(): source time = 4
-Inversion checked, frac. error = 7.207380e-05
-Inversion checked, frac. error = 8.268198e-05
-Inversion checked, frac. error = 7.015674e-05
+Inversion checked, frac. error = 6.827299e-05
+Flagged comparisons = 0
+Max err. = 6.483054e-05 frac. = 1.588017e-04
+Inversion checked, frac. error = 8.081980e-05
+Flagged comparisons = 0
+Max err. = 7.678004e-05 frac. = 1.880719e-04
+Inversion checked, frac. error = 6.691210e-05
+Flagged comparisons = 0
+Max err. = 6.331688e-05 frac. = 1.550941e-04
 STARTPROP
 MASSES:  3.100000e-02   3.100000e-02
 SOURCE: ONEMP_S

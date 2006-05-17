@@ -1,5 +1,5 @@
 WARMUPS COMPLETED
-PLAQ: 3e-09 3e-09
+PLAQ: 3e-09 2e-06
 P_LOOP: 2e-06 3e-08
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
@@ -20,6 +20,7 @@ G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
@@ -28,8 +29,7 @@ G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-09 ( 0 0 0 0 0 0 )
@@ -46,13 +46,25 @@ SMEARING IS ON, level 0
 Smearing: staple_weight = 2e-09
 APE projection is on, NHIT = 0
 spectrum_hybrids(): source time = 0
-Inversion checked, frac. error = 1e-03
-Inversion checked, frac. error = 1e-03
-Inversion checked, frac. error = 1e-03
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 0.0001
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 4e-05
 spectrum_hybrids(): source time = 0
-Inversion checked, frac. error = 1e-03
-Inversion checked, frac. error = 1e-03
-Inversion checked, frac. error = 1e-03
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 7e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 8e-05 frac. = 0.0002
 STARTPROP
 MASSES: 2e-09 2e-09
 SOURCE: ONEMP_S
@@ -69,13 +81,25 @@ SMEARING IS ON, level 0
 Smearing: staple_weight = 2e-09
 APE projection is on, NHIT = 0
 spectrum_hybrids(): source time = 0
-Inversion checked, frac. error = 1e-03
-Inversion checked, frac. error = 1e-03
-Inversion checked, frac. error = 1e-03
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 9e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
 spectrum_hybrids(): source time = 0
-Inversion checked, frac. error = 1e-03
-Inversion checked, frac. error = 1e-03
-Inversion checked, frac. error = 1e-03
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
 STARTPROP
 MASSES: 2e-09 2e-09
 SOURCE: ONEMP_S

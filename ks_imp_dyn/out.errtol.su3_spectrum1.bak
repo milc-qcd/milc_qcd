@@ -44,7 +44,7 @@ STARTPROP
 MASSES: 0 0
 SOURCE: CORNER
 SINKS: PION_PS PION_SC RHO_VT RHO_PV
-0 3e-07 0.0 4e-07 0.0 3e-07 0.0 4e-07 0.0
+0 2e-06 0.0 4e-07 0.0 3e-07 0.0 4e-07 0.0
 0 2e-05 0.0 4e-06 0.0 1e-05 0.0 1e-05 0.0
 0 2e-07 0.0 2e-06 0.0 2e-07 0.0 2e-07 0.0
 0 4e-06 0.0 4e-06 0.0 1e-05 0.0 1e-05 0.0
@@ -108,9 +108,15 @@ SINKS: NUCLEON DELTA
 0 2e-07 0.0 2e-06 0.0
 ENDPROP
 spectrum_mom(): source time = 0
-Inversion checked, frac. error = 8e-07
-Inversion checked, frac. error = 9e-07
-Inversion checked, frac. error = 7e-07
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
 STARTPROP
 MASSES: 0 0
 SOURCE: PION_001
@@ -142,36 +148,48 @@ SINKS: RHO_001
 0 2e-07 2e-07
 0 2e-07 2e-07
 0 2e-07 2e-07
-0 4e-07 2e-07
+0 4e-07 4e-07
 ENDPROP
 spectrum_multimom(): source time = 0
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 2e-07
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
 STARTPROP
 MASSES: 0 0
 SOURCE: CORNER_MOM
 SINKS: KAON_000 KAON_001 KAON_011
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 4e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 4e-07 2e-07 2e-07 2e-07
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: CORNER_MOM
 SINKS: RHO_000 RHO_001PERP RHO_001PARA RHO_011PERP RHO_011PARA
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 6e-07 0.000000e+00 6e-07 2e-07 4e-07 2e-07 2e-07 2e-07 4e-07 2e-07
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 4e-07 0.000000e+00 4e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 2e-06 2e-07 2e-07 2e-07 2e-07 2e-07 1e-06 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
+0 6e-07 XXX 6e-07 2e-07 4e-07 2e-07 2e-07 2e-07 4e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
+0 4e-07 XXX 4e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-06 2e-07 2e-07 2e-07 2e-07 2e-07 1e-06 2e-07
 ENDPROP
 STARTPROP
 MASSES: 0 0
@@ -188,17 +206,23 @@ STARTPROP
 MASSES: 0 0
 SOURCE: CORNER_MOM
 SINKS: RHO_000 RHO_001PERP RHO_001PARA RHO_011PERP RHO_011PARA
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 1e-06 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 4e-07 0.000000e+00 4e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 2e-07 0.000000e+00 4e-07 2e-07 4e-07 2e-07 2e-07 2e-07 4e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
+0 4e-07 XXX 1e-06 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
+0 4e-07 XXX 4e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 4e-07 2e-07 4e-07 2e-07 2e-07 2e-07 4e-07 2e-07
 ENDPROP
 spectrum_nlpi2(): source time = 0
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 4e-07
-Inversion checked, frac. error = 2e-06
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
 STARTPROP
 MASSES: 0 0
 SOURCE: FUNNYWALL1
@@ -206,97 +230,205 @@ SINKS: PION_5 PION_i5 PION_i PION_s RHO_i RHO_s
 0 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
 0 1e-06 5e-07 1e-06 9e-07 4e-07 4e-07 6e-07 2e-07 2e-06 7e-07 6e-07 1e-06
 0 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 8e-07 5e-07 8e-07 9e-07 2e-06 2e-07 4e-07 4e-07 2e-06 1e-06 8e-07 1e-06
+0 8e-07 5e-07 8e-07 9e-07 2e-06 5e-07 4e-07 4e-07 2e-06 1e-06 8e-07 1e-06
 0 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 1e-06 4e-07 1e-06 5e-07 4e-07 2e-07 4e-07 2e-07 1e-06 1e-06 1e-06 8e-07
+0 1e-06 4e-07 1e-06 5e-07 4e-07 6e-07 4e-07 4e-07 1e-06 1e-06 1e-06 8e-07
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: FUNNYWALL2
 SINKS: PION_05 PION_ij PION_i0 PION_0 RHO_i0 RHO_0
 0 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 4e-07 5e-07 6e-07 9e-07 4e-07 2e-07 6e-07 2e-07 1e-06 4e-07 1e-06 5e-07
+0 4e-07 5e-07 6e-07 9e-07 4e-07 4e-07 6e-07 2e-07 1e-06 4e-07 1e-06 5e-07
 0 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
-0 8e-07 1e-06 1e-06 1e-06 1e-06 2e-07 6e-07 2e-07 3e-06 1e-06 6e-07 1e-06
+0 8e-07 1e-06 1e-06 1e-06 1e-06 5e-07 6e-07 2e-07 3e-06 1e-06 6e-07 1e-06
 0 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07 2e-07
 0 2e-06 6e-07 1e-06 7e-07 4e-07 2e-07 6e-07 2e-07 2e-06 5e-07 2e-06 6e-07
 ENDPROP
 fpi_2(): source time = 0, num_sourcevecs = 0
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 7e-07
-Inversion checked, frac. error = 6e-07
-Inversion checked, frac. error = 6e-07
-Inversion checked, frac. error = 6e-07
-Inversion checked, frac. error = 6e-07
-Inversion checked, frac. error = 6e-07
-Inversion checked, frac. error = 6e-07
-Inversion checked, frac. error = 6e-07
-Inversion checked, frac. error = 6e-07
-Inversion checked, frac. error = 6e-07
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 4e-07
-Inversion checked, frac. error = 5e-07
-Inversion checked, frac. error = 2e-07
-Inversion checked, frac. error = 4e-07
-Inversion checked, frac. error = 4e-07
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 1e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
-Inversion checked, frac. error = 2e-06
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
+Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 2e-05
 STARTPROP
 MASSES: 0 0
 SOURCE: RANDOM_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 8e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 4e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 8e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 4e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
@@ -478,23 +610,23 @@ STARTPROP
 MASSES: 0 0
 SOURCE: RANDOM_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 4e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 4e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 6e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 4e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 4e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 6e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
@@ -654,23 +786,23 @@ STARTPROP
 MASSES: 0 0
 SOURCE: RANDOM_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 6e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 6e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 6e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 6e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 6e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 6e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
@@ -780,7 +912,7 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 0 2e-07 2e-07 2e-07 2e-07
 0 2e-07 2e-07 4e-07 2e-07
 0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 4e-07 2e-07
+0 2e-07 2e-07 8e-07 2e-07
 ENDPROP
 STARTPROP
 MASSES: 0 0
@@ -808,23 +940,23 @@ STARTPROP
 MASSES: 0 0
 SOURCE: RANDOM_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 1e-06 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 6e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 1e-06 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 6e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
@@ -940,23 +1072,23 @@ STARTPROP
 MASSES: 0 0
 SOURCE: RANDOM_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 8e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 6e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 8e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 6e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
@@ -1022,72 +1154,6 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 0 2e-07 2e-07 2e-07 2e-07
 0 2e-07 2e-07 4e-07 2e-07
 0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-ENDPROP
-STARTPROP
-MASSES: 0 0
-SOURCE: RANDOM_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-ENDPROP
-STARTPROP
-MASSES: 0 0
-SOURCE: FULL_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 4e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 4e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 4e-07 2e-07
-ENDPROP
-STARTPROP
-MASSES: 0 0
-SOURCE: RANDOM_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-ENDPROP
-STARTPROP
-MASSES: 0 0
-SOURCE: FULL_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 4e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 1e-06 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 4e-07 0.000000e+00
-ENDPROP
-STARTPROP
-MASSES: 0 0
-SOURCE: RANDOM_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-ENDPROP
-STARTPROP
-MASSES: 0 0
-SOURCE: FULL_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 6e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 4e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
 0 2e-07 2e-07 4e-07 2e-07
 ENDPROP
 STARTPROP
@@ -1116,45 +1182,23 @@ STARTPROP
 MASSES: 0 0
 SOURCE: RANDOM_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 4e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 4e-07 2e-07
-ENDPROP
-STARTPROP
-MASSES: 0 0
-SOURCE: RANDOM_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-ENDPROP
-STARTPROP
-MASSES: 0 0
-SOURCE: FULL_WALL
-SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 8e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 4e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 4e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 4e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 1e-06 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 4e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
@@ -1196,31 +1240,75 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 0 2e-07 2e-07 2e-07 2e-07
 0 2e-07 2e-07 4e-07 2e-07
 0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 4e-07 2e-07
 0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
-0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 4e-07 2e-07
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: RANDOM_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 4e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 6e-07 0.000000e+00
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 4e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 4e-07 2e-07
+ENDPROP
+STARTPROP
+MASSES: 0 0
+SOURCE: RANDOM_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+ENDPROP
+STARTPROP
+MASSES: 0 0
+SOURCE: FULL_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 8e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 4e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 4e-07 XXX
+ENDPROP
+STARTPROP
+MASSES: 0 0
+SOURCE: RANDOM_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+ENDPROP
+STARTPROP
+MASSES: 0 0
+SOURCE: FULL_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 6e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 4e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 4e-07 2e-07
 ENDPROP
 STARTPROP
 MASSES: 0 0
@@ -1248,23 +1336,67 @@ STARTPROP
 MASSES: 0 0
 SOURCE: RANDOM_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
 ENDPROP
 STARTPROP
 MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 8e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 6e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
-0 2e-07 0.000000e+00 2e-07 0.000000e+00
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 4e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 4e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 6e-07 XXX
+ENDPROP
+STARTPROP
+MASSES: 0 0
+SOURCE: RANDOM_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+ENDPROP
+STARTPROP
+MASSES: 0 0
+SOURCE: FULL_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 4e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 4e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+0 2e-07 2e-07 2e-07 2e-07
+ENDPROP
+STARTPROP
+MASSES: 0 0
+SOURCE: RANDOM_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+ENDPROP
+STARTPROP
+MASSES: 0 0
+SOURCE: FULL_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 8e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 6e-07 XXX
+0 2e-07 XXX 2e-07 XXX
+0 2e-07 XXX 2e-07 XXX
 ENDPROP
 hvy_pot(): MAX_T = 2e-07 MAX_X = 0
 POT_LOOP: 0 0 0 0 6e-07

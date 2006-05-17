@@ -1,60 +1,3 @@
-SU3 with improved KS action
-Microcanonical simulation with refreshing
-MIMD version 0 $Name:  $
-Machine = QMP (portable), with 0 nodes
-R algorithm
-type 0 for no prompts or 0 for prompts
-nflavors1 0
-nflavors2 0
-nx 0
-ny 0
-nz 0
-nt 0
-iseed 0
-LAYOUT = Hypercubes, options = hyper_prime,
-ON EACH NODE 0 x 0 x 0 x 0
-Mallocing 0.6 MBytes per node for lattice
-Made lattice
-Made nn gathers
-Made 6e-05 gathers
-Finished setup
-
-
-warms 0
-trajecs 0
-traj_between_meas 0
-beta 0
-mass1 2e-05
-mass2 2e-05
-u0 2e-05
-microcanonical_time_step 2e-05
-steps_per_trajectory 0
-max_cg_iterations 0
-error_per_site 2e-05
-error_for_propagator 2e-05
-npbp_reps 0
-reload_serial ../binary_samples/lat.sample.l4444
-forget
-Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4444
-Time stamp Thu Feb 0 0.0003 0
-Checksums 0.05 d137321d OK
-Time to reload gauge configuration = 0.1
-CHECK PLAQ: 4e-05 4e-05
-XXX XXX XXX XXX XXX XXX 2e-05 XXX XXX 2e-05
-Time to check unitarity = 0.02
-Symanzik 2e-05 + 2e-05 + 2e-05 action
-loop coefficients: nloop rep loop_coeff multiplicity
-0 0 2e-05 0
-0 0 2e-05 0
-0 0 2e-05 0
-"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
-path coefficients: npath path_coeff multiplicity
-0 2e-05 0
-0 2e-05 0
-0 2e-05 0
-0 2e-05 0
-0 2e-05 0
-0 2e-05 0
 WARMUPS COMPLETED
 PLAQ: 4e-05 4e-05
 P_LOOP: 3e-05 2e-05
@@ -515,11 +458,3 @@ d4_trdMduMi_dmu4: mass 2e-05 R: 0.0001 Im: 2e-05 ( 0 of 0 )
 d5_trdMduMi_dmu5: mass 2e-05 R: 0.001 Im: 0.0006 ( 0 of 0 )
 d6_trdMduMi_dmu6: mass 2e-05 R: 0.007 Im: 0.008 ( 0 of 0 )
 RUNNING COMPLETED
-average cg iters for step= 0.002
-Time = 1e+02 seconds
-total_iters = 0
-
-
-get_i: EOF on STDIN.
-exit: XXX May 0 2e+01 0
-

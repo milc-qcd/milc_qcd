@@ -134,8 +134,14 @@ SINKS: NUCLEON DELTA
 ENDPROP
 spectrum_mom(): source time = 0
 Inversion checked, frac. error = 8.053522e-04
+Flagged comparisons = 0
+Max err. = 6.802981e-04 frac. = 1.666383e-03
 Inversion checked, frac. error = 7.823827e-04
+Flagged comparisons = 0
+Max err. = 8.828491e-04 frac. = 2.162530e-03
 Inversion checked, frac. error = 8.043386e-04
+Flagged comparisons = 0
+Max err. = 8.942090e-04 frac. = 2.190356e-03
 STARTPROP
 MASSES:  3.000000e-02   3.000000e-02
 SOURCE: PION_001
@@ -170,12 +176,24 @@ SINKS: RHO_001
 5 2.187772e-01 1.774307e-03
 ENDPROP
 spectrum_multimom(): source time = 0
-Inversion checked, frac. error = 3.605472e-05
-Inversion checked, frac. error = 3.519469e-05
-Inversion checked, frac. error = 3.712838e-05
-Inversion checked, frac. error = 3.623076e-05
-Inversion checked, frac. error = 3.252997e-05
-Inversion checked, frac. error = 3.182583e-05
+Inversion checked, frac. error = 3.605146e-05
+Flagged comparisons = 0
+Max err. = 2.448930e-05 frac. = 8.483342e-05
+Inversion checked, frac. error = 3.521177e-05
+Flagged comparisons = 0
+Max err. = 2.391891e-05 frac. = 8.285753e-05
+Inversion checked, frac. error = 3.710350e-05
+Flagged comparisons = 0
+Max err. = 2.358174e-05 frac. = 8.168954e-05
+Inversion checked, frac. error = 3.623903e-05
+Flagged comparisons = 0
+Max err. = 2.303231e-05 frac. = 7.978627e-05
+Inversion checked, frac. error = 3.252773e-05
+Flagged comparisons = 0
+Max err. = 2.684273e-05 frac. = 9.298594e-05
+Inversion checked, frac. error = 3.178284e-05
+Flagged comparisons = 0
+Max err. = 2.622803e-05 frac. = 9.085655e-05
 STARTPROP
 MASSES:  3.00000e-02   3.00000e-02
 SOURCE: CORNER_MOM
@@ -221,12 +239,24 @@ SINKS: RHO_000 RHO_001PERP  RHO_001PARA  RHO_011PERP RHO_011PARA
 5 3.231589e-01 0.000000e+00 3.306818e-01 7.933489e-09 1.671741e-01 2.173086e-09 5.569071e-02 1.810905e-09 1.153476e-01 -1.013244e-09
 ENDPROP
 spectrum_nd(): source time = 0
-Inversion checked, frac. error = 2.825267e-05
-Inversion checked, frac. error = 3.102124e-05
-Inversion checked, frac. error = 3.521520e-05
-Inversion checked, frac. error = 3.118857e-05
-Inversion checked, frac. error = 3.022513e-05
-Inversion checked, frac. error = 3.919801e-05
+Inversion checked, frac. error = 2.815325e-05
+Flagged comparisons = 0
+Max err. = 9.419449e-06 frac. = 6.525986e-05
+Inversion checked, frac. error = 3.097091e-05
+Flagged comparisons = 0
+Max err. = 9.736308e-06 frac. = 6.745512e-05
+Inversion checked, frac. error = 3.515475e-05
+Flagged comparisons = 0
+Max err. = 1.185566e-05 frac. = 8.213842e-05
+Inversion checked, frac. error = 3.115835e-05
+Flagged comparisons = 0
+Max err. = 1.040321e-05 frac. = 7.207554e-05
+Inversion checked, frac. error = 3.019288e-05
+Flagged comparisons = 0
+Max err. = 1.067609e-05 frac. = 7.396610e-05
+Inversion checked, frac. error = 3.918713e-05
+Flagged comparisons = 0
+Max err. = 1.409539e-05 frac. = 9.765572e-05
 STARTPROP
 MASSES:  3.000000e-02   3.000000e-02
 SOURCE: CORNER
@@ -305,9 +335,15 @@ SINKS: NUCLEON
 5 2.604477e+00 -7.704628e-02
 ENDPROP
 spectrum_nlpi2(): source time = 0
-Inversion checked, frac. error = 8.076060e-04
-Inversion checked, frac. error = 7.822706e-04
-Inversion checked, frac. error = 8.042400e-04
+Inversion checked, frac. error = 4.406938e-04
+Flagged comparisons = 0
+Max err. = 3.838292e-04 frac. = 9.401858e-04
+Inversion checked, frac. error = 4.446789e-04
+Flagged comparisons = 0
+Max err. = 5.018889e-04 frac. = 1.229372e-03
+Inversion checked, frac. error = 4.627741e-04
+Flagged comparisons = 0
+Max err. = 5.103822e-04 frac. = 1.250176e-03
 STARTPROP
 MASSES:  3.000000e-02   3.000000e-02
 SOURCE: FUNNYWALL1
@@ -331,9 +367,15 @@ SINKS: PION_05 PION_ij PION_i0 PION_0 RHO_i0 RHO_0
 5 -6.882378e-01 3.301468e-03 -6.023505e-01 -1.994393e-03 -4.512061e-01 4.017713e-03 3.934504e-01 -7.246103e-06 6.479722e-01 -1.918443e-03 5.866747e-01 2.594236e-03
 ENDPROP
 spectrum_nlpi2(): source time = 0
-Inversion checked, frac. error = 4.411363e-04
-Inversion checked, frac. error = 4.446216e-04
-Inversion checked, frac. error = 4.630366e-04
+Inversion checked, frac. error = 4.406938e-04
+Flagged comparisons = 0
+Max err. = 3.838292e-04 frac. = 9.401858e-04
+Inversion checked, frac. error = 4.446789e-04
+Flagged comparisons = 0
+Max err. = 5.018889e-04 frac. = 1.229372e-03
+Inversion checked, frac. error = 4.627741e-04
+Flagged comparisons = 0
+Max err. = 5.103822e-04 frac. = 1.250176e-03
 STARTPROP
 MASSES:  5.000000e-02   5.000000e-02
 SOURCE: FUNNYWALL1
@@ -357,60 +399,168 @@ SINKS: PION_05 PION_ij PION_i0 PION_0 RHO_i0 RHO_0
 5 -6.792423e-01 3.409489e-03 -5.949094e-01 -1.346974e-03 -4.474433e-01 4.122067e-03 3.891976e-01 -1.695591e-04 6.398289e-01 -2.188275e-03 5.785260e-01 2.046372e-03
 ENDPROP
 fpi_2(): source time = 0, num_sourcevecs = 3
-Inversion checked, frac. error = 3.853171e-05
-Inversion checked, frac. error = 3.850435e-05
-Inversion checked, frac. error = 3.843812e-05
-Inversion checked, frac. error = 3.827404e-05
-Inversion checked, frac. error = 3.808263e-05
-Inversion checked, frac. error = 3.778517e-05
-Inversion checked, frac. error = 3.746702e-05
-Inversion checked, frac. error = 3.662804e-05
-Inversion checked, frac. error = 3.559087e-05
-Inversion checked, frac. error = 3.809235e-05
-Inversion checked, frac. error = 3.806717e-05
-Inversion checked, frac. error = 3.799690e-05
-Inversion checked, frac. error = 3.785023e-05
-Inversion checked, frac. error = 3.763377e-05
-Inversion checked, frac. error = 3.736357e-05
-Inversion checked, frac. error = 3.704054e-05
-Inversion checked, frac. error = 3.622975e-05
-Inversion checked, frac. error = 3.520990e-05
-Inversion checked, frac. error = 3.657889e-05
-Inversion checked, frac. error = 3.655999e-05
-Inversion checked, frac. error = 3.650057e-05
-Inversion checked, frac. error = 3.635223e-05
-Inversion checked, frac. error = 3.616273e-05
-Inversion checked, frac. error = 3.590248e-05
-Inversion checked, frac. error = 3.557966e-05
-Inversion checked, frac. error = 3.479970e-05
-Inversion checked, frac. error = 3.383756e-05
-Inversion checked, frac. error = 3.637358e-05
-Inversion checked, frac. error = 3.630921e-05
-Inversion checked, frac. error = 3.623026e-05
-Inversion checked, frac. error = 3.608165e-05
-Inversion checked, frac. error = 3.581702e-05
-Inversion checked, frac. error = 3.550186e-05
-Inversion checked, frac. error = 3.516511e-05
-Inversion checked, frac. error = 3.423707e-05
-Inversion checked, frac. error = 3.311457e-05
-Inversion checked, frac. error = 3.464218e-05
-Inversion checked, frac. error = 3.462294e-05
-Inversion checked, frac. error = 3.457181e-05
-Inversion checked, frac. error = 3.436756e-05
-Inversion checked, frac. error = 3.419584e-05
-Inversion checked, frac. error = 3.386702e-05
-Inversion checked, frac. error = 3.354270e-05
-Inversion checked, frac. error = 3.265949e-05
-Inversion checked, frac. error = 3.159817e-05
-Inversion checked, frac. error = 3.444070e-05
-Inversion checked, frac. error = 3.442589e-05
-Inversion checked, frac. error = 3.434745e-05
-Inversion checked, frac. error = 3.420406e-05
-Inversion checked, frac. error = 3.392136e-05
-Inversion checked, frac. error = 3.367852e-05
-Inversion checked, frac. error = 3.330266e-05
-Inversion checked, frac. error = 3.248599e-05
-Inversion checked, frac. error = 3.140977e-05
+Inversion checked, frac. error = 3.852461e-05
+Flagged comparisons = 0
+Max err. = 5.696343e-05 frac. = 6.976566e-05
+Inversion checked, frac. error = 3.849479e-05
+Flagged comparisons = 0
+Max err. = 5.691917e-05 frac. = 6.971146e-05
+Inversion checked, frac. error = 3.843150e-05
+Flagged comparisons = 0
+Max err. = 5.682526e-05 frac. = 6.959644e-05
+Inversion checked, frac. error = 3.827688e-05
+Flagged comparisons = 0
+Max err. = 5.659580e-05 frac. = 6.931542e-05
+Inversion checked, frac. error = 3.806157e-05
+Flagged comparisons = 0
+Max err. = 5.627629e-05 frac. = 6.892410e-05
+Inversion checked, frac. error = 3.778671e-05
+Flagged comparisons = 0
+Max err. = 5.586844e-05 frac. = 6.842459e-05
+Inversion checked, frac. error = 3.745377e-05
+Flagged comparisons = 0
+Max err. = 5.537441e-05 frac. = 6.781953e-05
+Inversion checked, frac. error = 3.662090e-05
+Flagged comparisons = 0
+Max err. = 5.413867e-05 frac. = 6.630605e-05
+Inversion checked, frac. error = 3.558015e-05
+Flagged comparisons = 0
+Max err. = 5.259467e-05 frac. = 6.441505e-05
+Inversion checked, frac. error = 3.808726e-05
+Flagged comparisons = 0
+Max err. = 4.902943e-05 frac. = 6.004854e-05
+Inversion checked, frac. error = 3.805805e-05
+Flagged comparisons = 0
+Max err. = 4.899156e-05 frac. = 6.000216e-05
+Inversion checked, frac. error = 3.799605e-05
+Flagged comparisons = 0
+Max err. = 4.891119e-05 frac. = 5.990373e-05
+Inversion checked, frac. error = 3.784457e-05
+Flagged comparisons = 0
+Max err. = 4.871483e-05 frac. = 5.966324e-05
+Inversion checked, frac. error = 3.763362e-05
+Flagged comparisons = 0
+Max err. = 4.844140e-05 frac. = 5.932836e-05
+Inversion checked, frac. error = 3.736431e-05
+Flagged comparisons = 0
+Max err. = 4.809235e-05 frac. = 5.890086e-05
+Inversion checked, frac. error = 3.703806e-05
+Flagged comparisons = 0
+Max err. = 4.766953e-05 frac. = 5.838301e-05
+Inversion checked, frac. error = 3.622180e-05
+Flagged comparisons = 0
+Max err. = 4.661177e-05 frac. = 5.708752e-05
+Inversion checked, frac. error = 3.520152e-05
+Flagged comparisons = 0
+Max err. = 4.528991e-05 frac. = 5.546858e-05
+Inversion checked, frac. error = 3.657820e-05
+Flagged comparisons = 0
+Max err. = 5.112601e-05 frac. = 6.261632e-05
+Inversion checked, frac. error = 3.655034e-05
+Flagged comparisons = 0
+Max err. = 5.108682e-05 frac. = 6.256832e-05
+Inversion checked, frac. error = 3.649124e-05
+Flagged comparisons = 0
+Max err. = 5.100364e-05 frac. = 6.246645e-05
+Inversion checked, frac. error = 3.634682e-05
+Flagged comparisons = 0
+Max err. = 5.080042e-05 frac. = 6.221756e-05
+Inversion checked, frac. error = 3.614571e-05
+Flagged comparisons = 0
+Max err. = 5.051742e-05 frac. = 6.187095e-05
+Inversion checked, frac. error = 3.588894e-05
+Flagged comparisons = 0
+Max err. = 5.015613e-05 frac. = 6.142847e-05
+Inversion checked, frac. error = 3.557786e-05
+Flagged comparisons = 0
+Max err. = 4.971845e-05 frac. = 6.089241e-05
+Inversion checked, frac. error = 3.479942e-05
+Flagged comparisons = 0
+Max err. = 4.862334e-05 frac. = 5.955119e-05
+Inversion checked, frac. error = 3.382620e-05
+Flagged comparisons = 0
+Max err. = 4.725448e-05 frac. = 5.787468e-05
+Inversion checked, frac. error = 3.630192e-05
+Flagged comparisons = 0
+Max err. = 6.052900e-05 frac. = 7.413258e-05
+Inversion checked, frac. error = 3.626918e-05
+Flagged comparisons = 0
+Max err. = 6.047446e-05 frac. = 7.406579e-05
+Inversion checked, frac. error = 3.619972e-05
+Flagged comparisons = 0
+Max err. = 6.035876e-05 frac. = 7.392408e-05
+Inversion checked, frac. error = 3.603007e-05
+Flagged comparisons = 0
+Max err. = 6.007619e-05 frac. = 7.357800e-05
+Inversion checked, frac. error = 3.579404e-05
+Flagged comparisons = 0
+Max err. = 5.968303e-05 frac. = 7.309648e-05
+Inversion checked, frac. error = 3.549305e-05
+Flagged comparisons = 0
+Max err. = 5.918168e-05 frac. = 7.248246e-05
+Inversion checked, frac. error = 3.512895e-05
+Flagged comparisons = 0
+Max err. = 5.857519e-05 frac. = 7.173967e-05
+Inversion checked, frac. error = 3.422051e-05
+Flagged comparisons = 0
+Max err. = 5.706196e-05 frac. = 6.988634e-05
+Inversion checked, frac. error = 3.309019e-05
+Flagged comparisons = 0
+Max err. = 5.517906e-05 frac. = 6.758027e-05
+Inversion checked, frac. error = 3.459552e-05
+Flagged comparisons = 0
+Max err. = 5.668455e-05 frac. = 6.942412e-05
+Inversion checked, frac. error = 3.456443e-05
+Flagged comparisons = 0
+Max err. = 5.663363e-05 frac. = 6.936175e-05
+Inversion checked, frac. error = 3.449847e-05
+Flagged comparisons = 0
+Max err. = 5.652558e-05 frac. = 6.922941e-05
+Inversion checked, frac. error = 3.433738e-05
+Flagged comparisons = 0
+Max err. = 5.626171e-05 frac. = 6.890624e-05
+Inversion checked, frac. error = 3.411323e-05
+Flagged comparisons = 0
+Max err. = 5.589456e-05 frac. = 6.845658e-05
+Inversion checked, frac. error = 3.382741e-05
+Flagged comparisons = 0
+Max err. = 5.542637e-05 frac. = 6.788316e-05
+Inversion checked, frac. error = 3.348163e-05
+Flagged comparisons = 0
+Max err. = 5.485997e-05 frac. = 6.718947e-05
+Inversion checked, frac. error = 3.261884e-05
+Flagged comparisons = 0
+Max err. = 5.344669e-05 frac. = 6.545857e-05
+Inversion checked, frac. error = 3.154519e-05
+Flagged comparisons = 0
+Max err. = 5.168801e-05 frac. = 6.330462e-05
+Inversion checked, frac. error = 3.440628e-05
+Flagged comparisons = 0
+Max err. = 4.440333e-05 frac. = 5.438275e-05
+Inversion checked, frac. error = 3.437541e-05
+Flagged comparisons = 0
+Max err. = 4.436336e-05 frac. = 5.433380e-05
+Inversion checked, frac. error = 3.430991e-05
+Flagged comparisons = 0
+Max err. = 4.427858e-05 frac. = 5.422996e-05
+Inversion checked, frac. error = 3.414995e-05
+Flagged comparisons = 0
+Max err. = 4.407151e-05 frac. = 5.397635e-05
+Inversion checked, frac. error = 3.392738e-05
+Flagged comparisons = 0
+Max err. = 4.378340e-05 frac. = 5.362349e-05
+Inversion checked, frac. error = 3.364355e-05
+Flagged comparisons = 0
+Max err. = 4.341600e-05 frac. = 5.317353e-05
+Inversion checked, frac. error = 3.330018e-05
+Flagged comparisons = 0
+Max err. = 4.297155e-05 frac. = 5.262919e-05
+Inversion checked, frac. error = 3.244337e-05
+Flagged comparisons = 0
+Max err. = 4.186259e-05 frac. = 5.127099e-05
+Inversion checked, frac. error = 3.137710e-05
+Flagged comparisons = 0
+Max err. = 4.048266e-05 frac. = 4.958093e-05
 STARTPROP
 MASSES:  5.00000e-03   5.00000e-03
 SOURCE: RANDOM_WALL

@@ -276,13 +276,11 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 #	-DNPBP_REPS" \
 # 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
 #       -DONEMASS
-#	-DQIO_TRELEASE=2.0
-#       -D
+#       -DCOM_CRC
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCOM_CRC \
- 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
+	"DEFINES= -DFN -DCOM_CRC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
@@ -327,7 +325,7 @@ su3_rmd_dblstore_gath13_fewsums::
 	"DEFINES= -DFN  -DDBLSTORE_FN -DFN_GATHER13" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${ASQFORCE} d_congrad5_two_src.o \
+	"EXTRA_OBJECTS= ${ASQFORCE} d_congrad5_two_src.o d_congrad_opt.o \
 	d_congrad5_fn_fewsums.o dslash_fn_dblstore.o update.o"
 
 su3_hmc::
@@ -353,7 +351,7 @@ su3_rmd_naive::
 	"DEFINES= -DEO  -DONEMASS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
-	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} fermion_force_general.o update_onemass.o"
+	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} fermion_force_general.o update_onemass.o d_congrad_opt.o"
 
 # The following target is a superset of su3_spectrum
 
