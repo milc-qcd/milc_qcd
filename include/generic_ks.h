@@ -230,6 +230,10 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol);
 
+/* mu.c and mu_fast.c */
+void M_derivatives(field_offset phi_off, field_offset xxx_off, field_offset xxx1_off, Real mass);
+void Deriv_O6(field_offset phi_off, field_offset xxx_off, field_offset xxx1_off, Real mass );
+
 /* multimass_inverter.c */
 #define MAX_MMINV_NMASSES 32
 #define MAX_MMINV_SOURCES 16
@@ -270,6 +274,9 @@ int spectrum();
 
 /* spectrum2.c */
 int spectrum2( Real vmass, field_offset temp1, field_offset temp2 );
+
+/* spectrum_fzw.c */
+int spectrum_fzw( Real vmass, field_offset temp1, field_offset temp2 );
 
 /* spectrum_hybrids.c */
 int spectrum_hybrids( Real mass, field_offset temp, Real tol );
