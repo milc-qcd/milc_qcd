@@ -31,7 +31,6 @@ typedef struct {
   Real Kappa;        /* hopping */
   Real Clov_c;       /* Perturbative clover coeff */
   Real U0;           /* Tadpole correction to Clov_c */
-  field_offset work_f_mn;       /* ugly su3_matrix temporary */
 } dirac_clover_param;
 
 /* Same for Wilson case */

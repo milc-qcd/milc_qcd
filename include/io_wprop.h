@@ -325,16 +325,16 @@ void write_appl_w_prop_info(FILE *fp);
 /* Prototypes for io_helpers_w.c */
 w_prop_file *r_open_wprop(int flag, char *filename);
 w_prop_file *w_open_wprop(int flag, char *filename);
-int reload_wprop_sc_to_site_to_site( int flag, w_prop_file *wpf,
+int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
 			     int spin, int color, field_offset dest, 
 			     int timing);
-int reload_wprop_sc_to_site_to_field( int flag, w_prop_file *wpf,
+int reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
 			      int spin, int color, wilson_vector *dest, 
 			      int timing);
-void save_wprop_sc_from_site_from_site( int flag, w_prop_file *wpf, 
+void save_wprop_sc_from_site( int flag, w_prop_file *wpf, 
 			      int spin, int color, field_offset src, 
 			      int timing);
-void save_wprop_sc_from_site_from_field( int flag, w_prop_file *wpf, 
+void save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
 			      int spin, int color, wilson_vector *src, 
 			      int timing);
 int reload_wprop_to_site( int flag, char *filename,
