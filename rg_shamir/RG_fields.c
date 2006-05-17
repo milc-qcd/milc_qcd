@@ -81,6 +81,11 @@ void point_2V(QLA_ColorVector *s, int coords[])
 
 */
 
+/* First step in parallel transport phi on hypercube origin s to
+   phi_c[i] for each hypercube displacement i.  This step just
+   multiplies by the gauge connection.  Must follow up with
+   RG_transf_field to shift the result to the hypercube location. */
+
 void RG_create_field(QDP_ColorVector *phi_c[RG_Ncn], 
 		     QDP_ColorVector *phi, 
 		     QDP_ColorMatrix *wlink[RG_Ncn],QDP_Sub_Block s)

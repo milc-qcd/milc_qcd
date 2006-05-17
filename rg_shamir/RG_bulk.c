@@ -27,7 +27,10 @@ int find_corner(int v[RG_Nd])
 }
 
 
-
+/* For hypercube displacement cmp = S, T, etap, parallel transport
+   src[eta(cmp)] to the origin s of the hypercube, using the gauge
+   connection wlink */
+   
 void RG_decompose(QDP_ColorVector *dest, 
 		  QDP_ColorVector *src[RG_Ncn],
 		  int cmp[4], 
