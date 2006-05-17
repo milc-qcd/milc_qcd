@@ -85,7 +85,6 @@ int mrilu_cl(		/* Return value is number of iterations taken */
   dirac_clover_param *dcp
     = (dirac_clover_param *)dmp;	/* Cast pass-through pointer */
 
-  field_offset f_mn = dcp->work_f_mn;	/* size of su3_matrix */
   Real Kappa = dcp->Kappa;	/* hopping */
   Real Clov_c = dcp->Clov_c;	/* Perturbative clover coeff */
   Real U0 = dcp->U0;		/* Tadpole correction to Clov_c */
@@ -108,7 +107,7 @@ int mrilu_cl(		/* Return value is number of iterations taken */
       terminate(1);
     }
 
-  make_clov(CKU0,f_mn);
+  make_clov(CKU0);
 
   /* Take the inverse on the odd sublattice */
   make_clovinv(ODD);
@@ -124,7 +123,7 @@ int mrilu_cl(		/* Return value is number of iterations taken */
   dtime = -dclock();
 #endif
 
-  mult_ldu(src, my_mp, ODD);
+  mult_ldu_site(src, my_mp, ODD);
   dslash_w_site(my_mp, my_mp, PLUS, EVEN);
 
   /* Normalisation  */
@@ -181,9 +180,9 @@ int mrilu_cl(		/* Return value is number of iterations taken */
   if(flag != 0) {
     /*  if(this_node==0){printf("dest_0  !=0\n");fflush(stdout);} */
     /* we use my_mp temporarily to construct r */
-    mult_ldu(dest, tmp, EVEN);
+    mult_ldu_site(dest, tmp, EVEN);
     dslash_w_site(dest, my_mp, PLUS, ODD);
-    mult_ldu(my_mp, tmp, ODD);
+    mult_ldu_site(my_mp, tmp, ODD);
     dslash_w_site(tmp, my_mp, PLUS, EVEN);
 #ifdef SCHROED_FUN
     FOREVENSITES(i,s) if(s->t > 0) {
@@ -216,9 +215,9 @@ int mrilu_cl(		/* Return value is number of iterations taken */
       N_iter = N_iter + 1) {
 
     /*   my_mp = M(u)*r */
-    mult_ldu(r, tmp, EVEN);
+    mult_ldu_site(r, tmp, EVEN);
     dslash_w_site(r, my_mp, PLUS, ODD);
-    mult_ldu(my_mp, tmp, ODD);
+    mult_ldu_site(my_mp, tmp, ODD);
     dslash_w_site(tmp, my_mp, PLUS, EVEN);
 
     /* d = <Mr|r>  */
@@ -309,7 +308,7 @@ int mrilu_cl(		/* Return value is number of iterations taken */
 			  (wilson_vector *)F_PT(s,my_mp), Kappa,
 			  (wilson_vector *)F_PT(s,my_mp) );
   }
-  mult_ldu(my_mp, dest, ODD);
+  mult_ldu_site(my_mp, dest, ODD);
 
   free_clov();
   return(N_iter);

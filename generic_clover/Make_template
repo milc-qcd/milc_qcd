@@ -18,7 +18,6 @@ G_CLOVER_ALL = \
     d_hopilu_cl_lean2.o \
     d_mrilu_cl_lean.o \
     f_mu_nu.o \
-    make_clov.o \
     make_clov2.o
 
 # Must match our headers in generic_clover_includes.h
@@ -61,8 +60,6 @@ d_hopilu_cl_lean2.o: ../generic_clover/d_hopilu_cl_lean2.c
 	${CC} -c ${CFLAGS}  ../generic_clover/d_hopilu_cl_lean2.c 
 f_mu_nu.o: ../generic_clover/f_mu_nu.c
 	${CC} -c ${CFLAGS}  ../generic_clover/f_mu_nu.c 
-make_clov.o: ../generic_clover/make_clov.c
-	${CC} -c ${CFLAGS}  ../generic_clover/make_clov.c 
 make_clov2.o: ../generic_clover/make_clov2.c
 	${CC} -c ${CFLAGS}  ../generic_clover/make_clov2.c 
 d_congrad2_cl.o: ../generic_clover/d_congrad2_cl.c

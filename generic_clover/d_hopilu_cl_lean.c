@@ -69,7 +69,6 @@ int hopilu_cl(           /* Return value is number of iterations taken */
   dirac_clover_param *dcp 
     = (dirac_clover_param *)dmp; /* Cast pass-through pointer */
 
-  field_offset f_mn = dcp->work_f_mn;  /* size of su3_matrix */
   Real Kappa = dcp->Kappa;     /* hopping */
   Real Clov_c = dcp->Clov_c;   /* Perturbative clover coeff */
   Real U0 = dcp->U0;           /* Tadpole correction to Clov_c */
@@ -94,7 +93,7 @@ int hopilu_cl(           /* Return value is number of iterations taken */
     }
   
   /* Compute R_e and R_o and put in "clov" and "clov_diag" */
-  make_clov(CKU0,f_mn);
+  make_clov(CKU0);
 
   /* Invert BOTH R_o and R_e in place in "clov" and "clov_diag" */
   make_clovinv(EVENANDODD);
@@ -125,7 +124,7 @@ int hopilu_cl(           /* Return value is number of iterations taken */
   /* (leaving src_o = src_o)   */
 
   /* mp_o = 1/R_o srce_o */
-  mult_ldu(src, mp, ODD);
+  mult_ldu_site(src, mp, ODD);
   /* mp_e = D_eo/R_o srce_o */
   dslash_w_site(mp, mp, PLUS, EVEN);
   /* src_e = srce_e + K D_eo/R_o srce_o */
@@ -150,7 +149,7 @@ int hopilu_cl(           /* Return value is number of iterations taken */
   }
   
   /* --------- dest_e <- R_e^(-1) srce_e ---------- */
-  mult_ldu(src, dest, EVEN);
+  mult_ldu_site(src, dest, EVEN);
   
   /* ------------ r_e <- dest_e -------------- */
   FOREVENSITES(i,s) {
@@ -178,11 +177,11 @@ int hopilu_cl(           /* Return value is number of iterations taken */
     /* mp_o = D_oe r_e */
     dslash_w_site(r, mp, PLUS, ODD);
     /* tmp_o = 1/R_o D_oe r_e */
-    mult_ldu(mp, tmp, ODD);
+    mult_ldu_site(mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe r_e */
     dslash_w_site(tmp, mp, PLUS, EVEN);
     /* r_e = 1/R_e D_eo/R_o D_oe r_e */
-    mult_ldu(mp, r, EVEN);
+    mult_ldu_site(mp, r, EVEN);
     /* r_e = K^2/R_e D_eo/R_o D_oe r_e */
     sr=0.0;
     FOREVENSITES(i,s){
@@ -239,7 +238,7 @@ int hopilu_cl(           /* Return value is number of iterations taken */
 			  (wilson_vector *)F_PT(s,mp) );
   }
   /* dest_o = 1/R_o dest_o + K/R_o D_oe * dest_e */
-  mult_ldu(mp, dest, ODD);
+  mult_ldu_site(mp, dest, ODD);
   
   free_clov();
   return(N_iter);

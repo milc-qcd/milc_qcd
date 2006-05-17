@@ -65,7 +65,6 @@ int cgilu_cl(            /* Return value is number of iterations taken */
   dirac_clover_param *dcp 
     = (dirac_clover_param *)dmp; /* Cast pass-through pointer */
 
-  field_offset f_mn = dcp->work_f_mn;  /* size of su3_matrix */
   Real Kappa = dcp->Kappa;     /* hopping */
   Real Clov_c = dcp->Clov_c;   /* Perturbative clover coeff */
   Real U0 = dcp->U0;           /* Tadpole correction to Clov_c */
@@ -90,7 +89,7 @@ int cgilu_cl(            /* Return value is number of iterations taken */
     }
   
   /* Compute R_e and R_o */
-  make_clov(CKU0,f_mn);
+  make_clov(CKU0);
 
   /* Invert R_o only, leaving R_e on even sites and 1/R_o on odd sites 
      in "clov" and "clov_diag" */
@@ -122,7 +121,7 @@ int cgilu_cl(            /* Return value is number of iterations taken */
      */
   
   /* mp_o = 1/R_o srce_e */
-  mult_ldu(src, my_mp, ODD);
+  mult_ldu_site(src, my_mp, ODD);
   /* mp_e = D_eo/R_o srce_e */
   dslash_w_site(my_mp, my_mp, PLUS, EVEN);
   
@@ -171,11 +170,11 @@ int cgilu_cl(            /* Return value is number of iterations taken */
   if(flag != 0) {
 /*    if(this_node==0)    printf("dest_0  !=0\n"); */
     /* tmp_e = R_e dest_e */
-    mult_ldu(dest, tmp, EVEN);
+    mult_ldu_site(dest, tmp, EVEN);
     /* mp_o = D_oe dest_e */
     dslash_w_site(dest, my_mp, PLUS, ODD);
     /* tmp_o = 1/R_o D_oe dest_e */
-    mult_ldu(my_mp, tmp, ODD);
+    mult_ldu_site(my_mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe dest_e */
     dslash_w_site(tmp, my_mp, PLUS, EVEN);
     /* mp_e = R_e dest_e - K^2 D_eo/R_o D_oe dest_e = M_e dest_e */
@@ -200,9 +199,9 @@ int cgilu_cl(            /* Return value is number of iterations taken */
   
 
   /* --------- p_e = M_e_dag*r_e --------- */
-  mult_ldu(r, tmp, EVEN);
+  mult_ldu_site(r, tmp, EVEN);
   dslash_w_site(r, my_mp, MINUS, ODD);
-  mult_ldu(my_mp, tmp, ODD);
+  mult_ldu_site(my_mp, tmp, ODD);
   dslash_w_site(tmp, p, MINUS, EVEN);
   
   /* --------- cp = |p|^2 --------- */
@@ -226,11 +225,11 @@ int cgilu_cl(            /* Return value is number of iterations taken */
 
     /* ---------  mp_e = M_e*p_e --------- */
     /* tmp_e = R_e p_e */
-    mult_ldu(p, tmp, EVEN);
+    mult_ldu_site(p, tmp, EVEN);
     /* mp_o = D_oe p_e */
     dslash_w_site(p, my_mp, PLUS, ODD);
     /* tmp_o = 1/R_o D_oe p_e */
-    mult_ldu(my_mp, tmp, ODD);
+    mult_ldu_site(my_mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe p_e */
     dslash_w_site(tmp, my_mp, PLUS, EVEN);
     
@@ -259,9 +258,9 @@ int cgilu_cl(            /* Return value is number of iterations taken */
     
     /* --------- mp_e M_e_dag*r_e --------- */
     
-    mult_ldu(r, tmp, EVEN);
+    mult_ldu_site(r, tmp, EVEN);
     dslash_w_site(r, my_mp, MINUS, ODD);
-    mult_ldu(my_mp, tmp, ODD);
+    mult_ldu_site(my_mp, tmp, ODD);
     dslash_w_site(tmp, my_mp, MINUS, EVEN);
 
     cp=0.0;
@@ -323,7 +322,7 @@ int cgilu_cl(            /* Return value is number of iterations taken */
 			  (wilson_vector *)F_PT(s,my_mp) );
   }
   /* dest_o = 1/R_o dest_o + K/R_o D_oe * dest_e */
-  mult_ldu(my_mp, dest, ODD);
+  mult_ldu_site(my_mp, dest, ODD);
 
   free_clov();
   return(N_iter);

@@ -89,7 +89,6 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   dirac_clover_param *dcp 
     = (dirac_clover_param *)dmp; /* Cast pass-through pointer */
 
-  field_offset f_mn = dcp->work_f_mn;  /* size of su3_matrix */
   Real Kappa = dcp->Kappa;     /* hopping */
   Real Clov_c = dcp->Clov_c;   /* Perturbative clover coeff */
   Real U0 = dcp->U0;           /* Tadpole correction to Clov_c */
@@ -120,7 +119,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
       terminate(1);
     }
   
-  make_clov(CKU0,f_mn);
+  make_clov(CKU0);
 
   /* Take the inverse on the odd sublattice */
   make_clovinv(ODD);
@@ -143,7 +142,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   dtime = -dclock();
 #endif
   
-  mult_ldu(src, my_mp, ODD);
+  mult_ldu_site(src, my_mp, ODD);
   dslash_w_site_special(my_mp, my_mp, PLUS, EVEN, tage, is_startede);
   is_startede = 1;
   
@@ -190,10 +189,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   if(flag != 0) {
     /*	if(this_node==0)    printf("dest_0  !=0\n"); */
     /* we use my_mp temporarily to construct r */
-    mult_ldu(dest, tmp, EVEN);
+    mult_ldu_site(dest, tmp, EVEN);
     dslash_w_site_special(dest, my_mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
-    mult_ldu(my_mp, tmp, ODD);
+    mult_ldu_site(my_mp, tmp, ODD);
     dslash_w_site_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     FOREVENSITESDOMAIN(i,s) {
@@ -224,10 +223,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
       N_iter = N_iter + 1) {
     
     /*   my_mp = M(u)*p */
-    mult_ldu(p, tmp, EVEN);
+    mult_ldu_site(p, tmp, EVEN);
     dslash_w_site_special(p, my_mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
-    mult_ldu(my_mp, tmp, ODD);
+    mult_ldu_site(my_mp, tmp, ODD);
     dslash_w_site_special(tmp, my_mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     
@@ -253,10 +252,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     }
     
     /* ttt = M(u)*sss */
-    mult_ldu(sss, tmp, EVEN);
+    mult_ldu_site(sss, tmp, EVEN);
     dslash_w_site_special(sss, sss, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
-    mult_ldu(sss, tmp, ODD);
+    mult_ldu_site(sss, tmp, ODD);
     dslash_w_site_special(tmp, ttt, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
     
@@ -347,7 +346,7 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), (wilson_vector *)F_PT(s,my_mp),
 			 Kappa, (wilson_vector *)F_PT(s,my_mp) );
   }
-  mult_ldu(my_mp, dest, ODD);
+  mult_ldu_site(my_mp, dest, ODD);
   
   for( i=XUP; i <= TUP; i++) {
     if(is_startedo)cleanup_gather(tago[i]);

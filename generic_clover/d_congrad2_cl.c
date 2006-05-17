@@ -59,16 +59,16 @@ start:
 	*/
 	rsq = source_norm = 0.0;
 #ifdef LU
-	mult_ldu(F_OFFSET(psi), F_OFFSET(tmp), EVEN);
+	mult_ldu_site(F_OFFSET(psi), F_OFFSET(tmp), EVEN);
         dslash_w_site_special(F_OFFSET(psi), F_OFFSET(mp), PLUS, ODD, tag, 0);
-	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), ODD);
+	mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), ODD);
         dslash_w_site_special(F_OFFSET(tmp), F_OFFSET(mp), PLUS, EVEN, tag2, 0);
         FOREVENSITESDOMAIN(i,s){
             scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp));
         }
-	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), EVEN);
+	mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), EVEN);
         dslash_w_site_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, ODD, tag, 1);
-	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), ODD);
+	mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), ODD);
         dslash_w_site_special(F_OFFSET(tmp), F_OFFSET(mp), MINUS, EVEN, tag2, 1);
         FOREVENSITESDOMAIN(i,s){
             scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
@@ -78,12 +78,12 @@ start:
 	    rsq += (double)magsq_wvec( &(s->r) );
         }
 #else
-	mult_ldu(F_OFFSET(psi), F_OFFSET(tmp), EVENANDODD);
+	mult_ldu_site(F_OFFSET(psi), F_OFFSET(tmp), EVENANDODD);
 	dslash_w_site_special(F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD, tag, 0);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
 	}
-	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), EVENANDODD);
+	mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), EVENANDODD);
 	dslash_w_site_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, EVENANDODD, tag, 1);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
@@ -132,28 +132,28 @@ iteration,(double)rsq,(double)pkp,(double)a );**/
 	oldrsq = rsq;
 	pkp = 0.0;
 #ifdef LU
-	mult_ldu(F_OFFSET(p), F_OFFSET(tmp), EVEN);
+	mult_ldu_site(F_OFFSET(p), F_OFFSET(tmp), EVEN);
         dslash_w_site_special(F_OFFSET(p), F_OFFSET(mp), PLUS, ODD, tag, 1);
-	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), ODD);
+	mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), ODD);
         dslash_w_site_special(F_OFFSET(tmp), F_OFFSET(mp), PLUS, EVEN, tag2, 1);
         FOREVENSITESDOMAIN(i,s){
             scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
         }
-	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), EVEN);
+	mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), EVEN);
         dslash_w_site_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, ODD, tag, 1);
-	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), ODD);
+	mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), ODD);
         dslash_w_site_special(F_OFFSET(tmp), F_OFFSET(mp), MINUS, EVEN, tag2, 1);
         FOREVENSITESDOMAIN(i,s){
             scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
             pkp += (double)wvec_rdot( &(s->p), &(s->mp) );
         }
 #else
-	mult_ldu(F_OFFSET(p), F_OFFSET(tmp), EVENANDODD);
+	mult_ldu_site(F_OFFSET(p), F_OFFSET(tmp), EVENANDODD);
 	dslash_w_site_special(F_OFFSET(p), F_OFFSET(mp), PLUS, EVENANDODD, tag, 1);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
 	}
-	mult_ldu(F_OFFSET(mp), F_OFFSET(tmp), EVENANDODD);
+	mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), EVENANDODD);
 	dslash_w_site_special(F_OFFSET(mp), F_OFFSET(mp), MINUS, EVENANDODD, tag, 1);
 	FORALLSITES(i,s){
 	    scalar_mult_add_wvec( &(s->tmp), &(s->mp), KAP, &(s->mp) );
