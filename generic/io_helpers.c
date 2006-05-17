@@ -148,7 +148,7 @@ gauge_file *reload_lattice( int flag, char *filename){
     double dtime;
     gauge_file *gf;
     double ssplaq, stplaq;
-    Real max_deviation;
+    Real max_deviation, max_deviation2;
 
     dtime = -dclock();
     switch(flag){
@@ -192,20 +192,19 @@ gauge_file *reload_lattice( int flag, char *filename){
     dtime = -dclock();
     max_deviation = check_unitarity();
     g_floatmax(&max_deviation);
-    dtime += dclock();
+#if (PRECISION==1)
     if(this_node==0)printf("Unitarity checked.  Max deviation %.2e\n",
 			   max_deviation); fflush(stdout);
-    if(this_node==0)printf("Time to check unitarity = %e\n",dtime);
-#if (PRECISION==2)
+#else
     reunitarize();
-    dtime = -dclock();
-    max_deviation = check_unitarity();
-    g_floatmax(&max_deviation);
-    dtime += dclock();
-    if(this_node==0)printf("Unitarity checked.  Max deviation %.2e\n",
-                       max_deviation); fflush(stdout);
-    if(this_node==0)printf("Time to check unitarity = %e\n",dtime);
+    max_deviation2 = check_unitarity();
+    g_floatmax(&max_deviation2);
+    if(this_node==0)
+      printf("Reunitarized for double precision. Max deviation %.2e changed to %.2e\n",
+                       max_deviation,max_deviation2); fflush(stdout);
 #endif
+    dtime += dclock();
+    if(this_node==0)printf("Time to check unitarity = %e\n",dtime);
     return gf;
 }
 
