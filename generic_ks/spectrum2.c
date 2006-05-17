@@ -15,7 +15,12 @@
 * This version does arbitrary number of wall sources 
 * This version DOES NOT fix the gauge -- you should do that before 
 *	calling it
-*
+* 5/9/06 CD Restored point source capability (zero momentum only)
+*     source_start >= 0 with
+*      source_start + n_sources*source_inc < nt invokes corner wall src
+*     source_start >= nt with
+*      source_start + n_sources*source_inc < 2*nt invokes point src
+*     Caution: any other choice mixes point and corner wall sources.
 */
 /* Kogut-Susskind fermions  -- this version for "fat plus Naik"
    or general "even plus odd" quark actions.  Assumes "dslash_site" has
@@ -34,6 +39,8 @@ int spectrum2( Real vmass, field_offset temp1, field_offset temp2 ){
   int isrc;
   register int i,x,y,z,t,icol,cgn;
   register int t_source,t_off;
+  int source_type = 0;  /* 1 corner wall 2 point 3 mixed */
+  char *source_string[4] = {"GOOFED","CORNER","POINT","MIXED"};
 
   vmass_x2 = 2.*vmass;
   cgn=0;
@@ -64,6 +71,16 @@ int spectrum2( Real vmass, field_offset temp1, field_offset temp2 ){
 		     ((su3_vector *)(F_PT(&lattice[i],temp1)))->c[icol].real
 		       = -1.0;
 	 	 }
+		 source_type |= 1;
+	      }
+	      else{  /* point source at origin */
+		if( node_number(0,0,0,t_source%nt) == mynode() )
+		  { 
+		    i=node_index(0,0,0,t_source%nt);
+		    ((su3_vector *)(F_PT(&lattice[i],temp1)))->c[icol].real
+		      = (-nx*ny*nz/8);
+		  }
+		source_type |= 2;
 	      }
 		
 	      /* do a C.G. (source in temp1, result in temp2) */
@@ -162,7 +179,7 @@ checkmul();**/
   if( this_node==0 ){
     printf("STARTPROP\n");
     printf("MASSES:  %e   %e\n",vmass,vmass);
-    printf("SOURCE: CORNER\n");
+    printf("SOURCE: %s\n",source_string[source_type]);
     printf("SINKS: PION_PS PION_SC RHO_VT RHO_PV\n");
     for(t=0;t<nt;t++) printf("%d %e 0.0 %e 0.0 %e 0.0 %e 0.0\n",t,
       pi_ps_prop[t]/n_sources, pi_sc_prop[t]/n_sources,
@@ -171,7 +188,7 @@ checkmul();**/
 
     printf("STARTPROP\n");
     printf("MASSES:  %e   %e  %e\n",vmass,vmass,vmass);
-    printf("SOURCE: CORNER\n");
+    printf("SOURCE: %s\n",source_string[source_type]);
     printf("SINKS: NUCLEON\n");
     for(t=0;t<nt;t++) printf("%d %e 0.0\n",t,
       barprop[t]/n_sources);
