@@ -35,6 +35,7 @@
 #include "../include/generic.h"
 #include "../include/io_scidac.h"
 #include <qio.h>
+#include <dml.h>
 
 #define LATDIM 4
 #define PARALLEL 1
@@ -59,6 +60,7 @@ typedef struct {
   fsu3_matrix * lbuf;
   off_t checksum_offset;
   gauge_check test_gc;
+  uint32_t crc;
 } r_serial_site_reader;
 
 void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc);
@@ -252,6 +254,7 @@ void r_serial_start_lattice(gauge_file *gf, r_serial_site_reader *state)
   state->checksum_offset = checksum_offset;
   state->test_gc.sum29   = 0;
   state->test_gc.sum31   = 0;
+  state->crc             = 0;
 
 }
 /*----------------------------------------------------------------------*/
@@ -326,7 +329,8 @@ void r_serial_site_links(char *buf, size_t index, int count, void *arg)
       state->rank29++; if(state->rank29 >= 29)state->rank29 = 0;
       state->rank31++; if(state->rank31 >= 31)state->rank31 = 0;
     }
-
+  state->crc = 
+    DML_crc32(state->crc, (char *)buf, 4*(int)sizeof(fsu3_matrix));
   state->buf_length  = buf_length;
   state->where_in_buf = where_in_buf;
   state->siterank++;
@@ -383,6 +387,7 @@ int main(int argc, char *argv[])
   int datum_size = sizeof(fsu3_matrix);
   int count = 4;
   int word_size = sizeof(float);
+  int length;
   r_serial_site_reader state;
   QIO_String *xml_record_out;
   char ildg_lfn[MAX_ILDGLFN];
@@ -409,6 +414,13 @@ int main(int argc, char *argv[])
     if(fgets(ildg_lfn, MAX_ILDGLFN, stdin) == NULL){
       fprintf(stderr,"Couldn't read the LFN\n");
       return 1;
+    }
+    else{
+      /* Chop end-of-line character */
+      length = strlen(ildg_lfn);
+      if(ildg_lfn[length-1] == '\n'){
+	ildg_lfn[length-1] = '\0';
+      }
     }
   }
 
@@ -488,6 +500,7 @@ int main(int argc, char *argv[])
   node0_printf("SciDAC checksums %x %x\n",
 	       QIO_get_writer_last_checksuma(outfile),
 	       QIO_get_writer_last_checksumb(outfile));
+  printf("crc32 checksum node %d %lu\n",this_node,state.crc);
 
   /* Close the SciDAC file */
   QIO_close_write(outfile);
