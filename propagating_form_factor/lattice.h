@@ -60,8 +60,6 @@ typedef struct {
 	wilson_vector tmpb;	/* auxiliary for other internal biCG vectors */
 	wilson_vector tmp ;	/* auxiliary for other internal biCG vectors */
 
-        su3_matrix f_mn  ;
-
 #endif
 
 	/* The smearing functions for the sequential source  ****/

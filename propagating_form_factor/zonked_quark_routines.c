@@ -83,7 +83,6 @@ void load_in_zonked_light(int color, int k_zonked_light)
     dcp.Kappa = kappa_zonked_light[k_zonked_light];
     dcp.Clov_c = clov_c;
     dcp.U0 = u0;
-    dcp.work_f_mn = F_OFFSET(f_mn);
 
     wilson_invert_lean(F_OFFSET(chi), F_OFFSET(quark_zonked.d[spin]),
 		       w_source,&wqs_zonked_light[k_zonked_light],
@@ -167,7 +166,6 @@ void load_in_zonked_light2(int color, int spin, int k_zonked_light,
   dcp.Kappa = kappa_zonked_light[k_zonked_light];
   dcp.Clov_c = clov_c;
   dcp.U0 = u0;
-  dcp.work_f_mn = F_OFFSET(f_mn);
   
   wilson_invert_lean(F_OFFSET(chi), dest,
 		     w_source,&wqs_zonked_light[k_zonked_light],
@@ -293,7 +291,6 @@ void generate_heavy_zonked(int color, int spin,
   dcp.Kappa = Kappa;
   dcp.Clov_c = clov_c;
   dcp.U0 = u0;
-  dcp.work_f_mn = F_OFFSET(f_mn);
   
   /* Use specified inverter */
   if(inverter_type == HOPILU)

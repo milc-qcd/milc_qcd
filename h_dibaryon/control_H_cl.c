@@ -287,7 +287,6 @@ int main(int argc,char *argv[])
 	    dcp.Kappa = kappa;
 	    dcp.Clov_c = clov_c;
 	    dcp.U0 = u0;
-	    dcp.work_f_mn = F_OFFSET(f_mn);
 
 #ifdef BI
 	    /* Load temporaries specific to inverter */

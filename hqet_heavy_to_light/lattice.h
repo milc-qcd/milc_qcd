@@ -58,9 +58,6 @@ typedef struct {
 	wilson_vector sss;	/* internal biconjugate gradient vector */
 	wilson_vector tmpb;	/* auxiliary for other internal biCG vectors */
 	wilson_vector tmp ;	/* auxiliary for other internal biCG vectors */
-
-        su3_matrix f_mn  ;
-
 #endif
 
 

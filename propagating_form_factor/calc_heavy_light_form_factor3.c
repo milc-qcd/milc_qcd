@@ -159,7 +159,6 @@ void load_in_spectator(int color, int spin, int k_spectator,
   dcp.Kappa = kappa_spectator[k_spectator];
   dcp.Clov_c = clov_c;
   dcp.U0 = u0;
-  dcp.work_f_mn = F_OFFSET(f_mn);
   
   wilson_invert_lean(F_OFFSET(chi), dest,
 		     w_source,&wqs_spectator[k_spectator],

@@ -63,7 +63,6 @@ typedef struct {
 	/* Two diquark propagators */
 	dipauli_propagator diquark_prop1;
 	dipauli_propagator diquark_prop2;
-        su3_matrix f_mn;
 
 #ifdef BI
 #include "addsite_clhl_bi.h"
