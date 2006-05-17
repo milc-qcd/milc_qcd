@@ -46,7 +46,7 @@ typedef struct {
 #endif
  	wilson_vector mp;	/* another CG vector */
 	wilson_vector tmp;	/* another temporary CG vector */
-	wilson_vector tmpb;	/* auxiliary f_mn, etc. */
+	wilson_vector tmpb;	/* auxiliary */
 	/* wilson half vector (temporary used in dslash_w_site) */
 	half_wilson_vector htmp[2];
 

@@ -152,7 +152,6 @@ Real f_1[MAX_KAP];
 		    dcp.Kappa = kappa;
 		    dcp.Clov_c = clov_c;
 		    dcp.U0 = 1.0;
-		    dcp.work_f_mn = F_OFFSET(tmpb);
 
 #ifdef BI
 		    /* Load temporaries specific to inverter */
@@ -248,7 +247,6 @@ Real f_1[MAX_KAP];
 		    dcp.Kappa = kappa;
 		    dcp.Clov_c = clov_c;
 		    dcp.U0 = 1.0;
-		    dcp.work_f_mn = F_OFFSET(tmpb);
 
 #ifdef BI
 		    /* Load temporaries specific to inverter */
