@@ -207,6 +207,11 @@ su3_clhl_hop::
 	"DEFINES= -DHOP -DHL" \
 	"EXTRA_OBJECTS= control_cl_hl.o d_hopilu_cl_lean2.o w_baryon_hl.o "
 
+su3_clhl_hop_multi::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DHOP -DHL" \
+	"EXTRA_OBJECTS= control_cl_hl_multi.o d_hopilu_cl_lean2.o w_baryon_hl.o "
+
 clean:
 	-/bin/rm -f *.o
 

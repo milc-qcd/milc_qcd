@@ -45,7 +45,6 @@ wilson_vector tvec;
     qic.start_flag = 0;   /* Use zero initial guess for psi */
     
     /* Load Dirac matrix parameters */
-    dcp.work_f_mn = F_OFFSET(tempmat1);
     
 #ifdef BI
     /* Load temporaries specific to inverter */

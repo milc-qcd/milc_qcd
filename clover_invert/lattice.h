@@ -34,8 +34,10 @@ typedef struct {
 	su3_matrix link[4];
 
 	/* wilson complex vectors */
+#ifndef MULTI
  	wilson_vector psi;	/* solution vector */
  	wilson_vector chi;	/* source vector */
+#endif
  /* 	wilson_vector p; conjugate gradient change vector:
 				overwrites half the source */
  	wilson_vector mp;	/* another CG vector */

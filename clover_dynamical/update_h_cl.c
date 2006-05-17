@@ -172,13 +172,13 @@ ferm_epsilon = nflavors*eps;
 #ifdef LU
     KAP = -kappa*kappa;
     dslash_w_site( F_OFFSET(psi), F_OFFSET(tmp), PLUS, ODD );
-    mult_ldu( F_OFFSET(tmp), F_OFFSET(psi), ODD );
+    mult_ldu_site( F_OFFSET(tmp), F_OFFSET(psi), ODD );
     dslash_w_site( F_OFFSET(psi), F_OFFSET(p), PLUS, EVEN );
-    mult_ldu( F_OFFSET(psi), F_OFFSET(tmp), EVEN );
+    mult_ldu_site( F_OFFSET(psi), F_OFFSET(tmp), EVEN );
     FOREVENSITES(i,st)
         scalar_mult_add_wvec( &(st->tmp), &(st->p), KAP, &(st->p) );
     dslash_w_site( F_OFFSET(p), F_OFFSET(tmp), MINUS, ODD );
-    mult_ldu( F_OFFSET(tmp), F_OFFSET(p), ODD );
+    mult_ldu_site( F_OFFSET(tmp), F_OFFSET(p), ODD );
 
     /* M = A_even - kappa^2 * Dslash * A_odd^{-1} * Dslash
        psi(even) = psi(even)
@@ -188,7 +188,7 @@ ferm_epsilon = nflavors*eps;
 #else
     KAP = -kappa;
     dslash_w_site( F_OFFSET(psi), F_OFFSET(p), PLUS, EVENANDODD );
-    mult_ldu( F_OFFSET(psi), F_OFFSET(tmp), EVENANDODD );
+    mult_ldu_site( F_OFFSET(psi), F_OFFSET(tmp), EVENANDODD );
     FORALLSITES(i,st) {
         scalar_mult_add_wvec( &(st->tmp), &(st->p), KAP, &(st->p) );
 }
@@ -287,7 +287,7 @@ ferm_epsilon = nflavors*eps;
 /* Add the Tr_{dirac} \sigma_mu_nu A_odd^{-1} U dA_odd/dU term */
 #ifdef LU
 	/* staple is used as a temporary su3_matrix */
-	tr_sigma_ldu_mu_nu( F_OFFSET(staple), mu, nu );
+	tr_sigma_ldu_mu_nu_site( F_OFFSET(staple), mu, nu );
 	udadu_mat_mu_nu( F_OFFSET(staple), F_OFFSET(tempmat2), mu, nu );
 	FORALLSITES(i,st) {
 	    scalar_mult_add_su3_matrix( &(st->tempmat1),

@@ -88,7 +88,6 @@ No compile.  Requires LU
   qic.start_flag = 0;   /* Use zero initial guess for psi */
  
   /* Load Dirac matrix parameters */
-  dcp.work_f_mn = F_OFFSET(f_mn);
   
 #ifdef BI
   /* Load temporaries specific to inverter */

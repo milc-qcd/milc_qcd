@@ -46,7 +46,7 @@ Real xrandom;
         /* generate a pseudofermion configuration only at start*/
 
         if(step==1){
-          make_clov(CKU0,F_OFFSET(tempmat1));
+          make_clov(CKU0);
 #ifdef LU
 	  starttrlogA = make_clovinv(ODD);
 #else
@@ -85,7 +85,7 @@ Real xrandom;
        	update_u(epsilon*(0.5-nflavors/4.0));
 
         /* generate a pseudofermion configuration */
-         make_clov(CKU0,F_OFFSET(tempmat1));
+         make_clov(CKU0);
 #ifdef LU
 	junktrlogA = make_clovinv(ODD);
 #endif /*LU*/
@@ -97,7 +97,7 @@ Real xrandom;
 #endif /* phi & R */
 
         /* do conjugate gradient to get (Madj M)inverse * chi */
-         make_clov(CKU0,F_OFFSET(tempmat1));
+         make_clov(CKU0);
 #ifdef LU
 	  junktrlogA = make_clovinv(ODD);
 #endif /*LU*/
@@ -124,7 +124,7 @@ Real xrandom;
     /* do conjugate gradient to get (Madj M)inverse * chi */
     next_cg_time = steps*epsilon;
     predict_next_psi(&old_cg_time,&cg_time,&next_cg_time);
-    make_clov(CKU0,F_OFFSET(tempmat1));
+    make_clov(CKU0);
 #ifdef LU
     endtrlogA = make_clovinv(ODD);
 #else

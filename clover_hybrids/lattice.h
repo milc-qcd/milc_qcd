@@ -81,7 +81,6 @@ typedef struct  {
 /**** clover stuff ***/
         wilson_vector tmp;      /* another temporary CG vector */
          wilson_vector tmpb;    /* auxiliary for other internal biCG vectors */
-	su3_matrix f_mn  ;
 /**** end of clover stuff ***/
 
 	/** storage space for the baryon correlators ***/

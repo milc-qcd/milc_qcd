@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 	      }
 
 	    /* Conjugate gradient inversion uses site structure
-	       temporaries "tmpb", "chi" and "f_mn" */
+	       temporaries "tmpb", "chi" */
 
 	    /* Complete the source structure */
 	    wqs[k].color = color;
@@ -202,7 +202,6 @@ int main(int argc, char *argv[])
 	    dcp.Kappa = kappa;
 	    dcp.Clov_c = clov_c;
 	    dcp.U0 = u0;
-	    dcp.work_f_mn = F_OFFSET(rot_propagator);
 
 #ifdef BI
 	    /* Load temporaries specific to inverter */
