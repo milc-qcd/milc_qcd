@@ -12,47 +12,50 @@
 
 HAVEQOP = ${WANTQOP}
 
-
-# Temporary paths for QCDOC.
-QCDOCQOP=/qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/
-# We always need the qop.h header
-QOPINCDIR = ${QOP}/include
-# In case QOP is packaged we need the path
-QOPLIBDIR = ${QOP}/lib
-
-ifeq ($(strip ${QCDOC}),true)
-# QCDOC temporary paths
-# We always need the qop.h header
-  QOPINCDIR = ${QCDOCQOP}/include
-# In case QOP is packaged we need the path
-  QOPLIBDIR = ${QCDOCQOP}/build
-  ifeq ($(strip ${PRECISION}),1)
-    IQOP = -I${QOPINCDIR}
-    LQOP = -L${QOPLIBDIR} -lasqd_s
-  else
-    IQOP = -I${QOP}/include/
-    LQOP = -L${QOPLIBDIR} -lasqd
-  endif
-  LIBDEPQOP = ${QOPLIBDIR}
-  INCDEPQOP = ${QOPINCDIR}
-else
-  IQOP = -I${QOPINCDIR}
-  INCDEPQOP = ${QOPINCDIR}
-# Non-packaged QOP objects
-
-# MILC implementation 
-# General
-    GENERICQOP = qop_milc.o 
-# Conjugate gradient
-    ASQINVERTQOP += d_congrad5_fn_qop_milc.o dslash_fn_qop_milc.o
-# Fermion force
-    ASQFORCEQOP += fermion_force_asqtad_qop_milc.o ff_opt.o
-endif
-
-
+# Nothing needs to be defined here if we don't want QOP
 ifeq ($(strip ${HAVEQOP}),true)
-  LIBQOP = ${LQOP}
-  INCQOP = ${IQOP}
-endif
 
+  # Temporary paths for QCDOC.
+  QCDOCQOP=/qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/
+  # We always need the qop.h header
+  QOPINCDIR = ${QOP}/include
+  # In case QOP is packaged we need the path
+  QOPLIBDIR = ${QOP}/lib
+  
+  ifeq ($(strip ${QCDOC}),true)
+  # QCDOC temporary paths
+  # We always need the qop.h header
+    QOPINCDIR = ${QCDOCQOP}/include
+  # In case QOP is packaged we need the path
+    QOPLIBDIR = ${QCDOCQOP}/build
+    ifeq ($(strip ${PRECISION}),1)
+      IQOP = -I${QOPINCDIR}
+      LQOP = -L${QOPLIBDIR} -lasqd_s
+    else
+      IQOP = -I${QOP}/include/
+      LQOP = -L${QOPLIBDIR} -lasqd
+    endif
+    LIBDEPQOP = ${QOPLIBDIR}
+    INCDEPQOP = ${QOPINCDIR}
+  else
+    IQOP = -I${QOPINCDIR}
+    INCDEPQOP = ${QOPINCDIR}
+  # Non-packaged QOP objects
+  
+  # MILC implementation 
+  # General
+      GENERICQOP = qop_milc.o 
+  # Conjugate gradient
+      ASQINVERTQOP += d_congrad5_fn_qop_milc.o dslash_fn_qop_milc.o
+  # Fermion force
+      ASQFORCEQOP += fermion_force_asqtad_qop_milc.o ff_opt.o
+  endif
+  
+  
+  ifeq ($(strip ${HAVEQOP}),true)
+    LIBQOP = ${LQOP}
+    INCQOP = ${IQOP}
+  endif
+
+endif  # if HAVEQOP
 
