@@ -31,9 +31,6 @@ else
    HAVEQMP = ${WANTQMP}
 endif
 
-# Shouldn't need to change the rest of this stanza (except see "QCDOC
-# nonstandard")
-
 ifeq ($(strip ${MPP}),true)
    QMP = ${QMPPAR}
    QIO = ${QIOPAR}
@@ -42,19 +39,15 @@ else
    QIO = ${QIOSNG}
 endif
 
-# Allow for QCDOC non-standard for now for QMP installation
-ifeq ($(strip ${QCDOC}),true)
-  QMPINCDIR = ${QOS}/quser/include
-  QMPLIBDIR = ${QOS}/quser/gcc-lib-user
-else
-  QMPINCDIR = ${QMP}/include
-  QMPLIBDIR = ${QMP}/lib
-endif
+QMPINCDIR = ${QMP}/include
+QMPLIBDIR = ${QMP}/lib
 
 QIOINCDIR = ${QIO}/include
 QIOLIBDIR = ${QIO}/lib
+
 QLAINCDIR = ${QLA}/include
 QLALIBDIR = ${QLA}/lib
+
 QDPINCDIR = ${QDP}/include
 QDPLIBDIR = ${QDP}/lib
 
