@@ -13,7 +13,7 @@
    the somewhat dirty structure, equivalent to a wilson_vector: */
 typedef struct { complex b[2][6]; } wilson_block_vector;
 
-void mult_ldu1(field_offset src,field_offset dest,
+void mult_ldu1_site(field_offset src,field_offset dest,
 field_offset triang,field_offset diag, int parity)
  {
 register int i;
@@ -55,5 +55,5 @@ complex ctmp;
 	}
     }
 
-} /* mult_ldu */
+} /* mult_ldu1 */
 

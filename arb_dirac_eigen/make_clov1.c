@@ -51,7 +51,7 @@ MILC code!
 Clov_c=clover_term;
 if(this_node==0)printf("entered clover setup with term=%e\n",Clov_c);
 
-    f_mu_nu(f_mn, 0, 1);
+    f_mu_nu_site(f_mn, 0, 1);
     FORALLSITES(i,s){
         scalar_mult_su3_matrix( ((su3_matrix *)F_PT(s,f_mn)), Clov_c,
 	    ((su3_matrix *)F_PT(s,f_mn)) );
@@ -85,7 +85,7 @@ if(this_node==0)printf("entered clover setup with term=%e\n",Clov_c);
 	}
     }
 
-    f_mu_nu(f_mn, 2, 3);
+    f_mu_nu_site(f_mn, 2, 3);
     FORALLSITES(i,s){
         scalar_mult_su3_matrix( ((su3_matrix *)F_PT(s,f_mn)), Clov_c,
 	    ((su3_matrix *)F_PT(s,f_mn)) );
@@ -116,7 +116,7 @@ if(this_node==0)printf("entered clover setup with term=%e\n",Clov_c);
 	}
     }
 
-    f_mu_nu(f_mn, 1, 2);
+    f_mu_nu_site(f_mn, 1, 2);
     FORALLSITES(i,s){
         scalar_mult_su3_matrix( ((su3_matrix *)F_PT(s,f_mn)), Clov_c,
 	    ((su3_matrix *)F_PT(s,f_mn)) );
@@ -134,7 +134,7 @@ if(this_node==0)printf("entered clover setup with term=%e\n",Clov_c);
 	}
     }
 
-    f_mu_nu(f_mn, 0, 3);
+    f_mu_nu_site(f_mn, 0, 3);
     FORALLSITES(i,s){
         scalar_mult_su3_matrix( ((su3_matrix *)F_PT(s,f_mn)), Clov_c,
 	    ((su3_matrix *)F_PT(s,f_mn)) );
@@ -151,7 +151,7 @@ if(this_node==0)printf("entered clover setup with term=%e\n",Clov_c);
 	}
     }
 
-    f_mu_nu(f_mn, 0, 2);
+    f_mu_nu_site(f_mn, 0, 2);
     FORALLSITES(i,s){
         scalar_mult_su3_matrix( ((su3_matrix *)F_PT(s,f_mn)), Clov_c,
 	    ((su3_matrix *)F_PT(s,f_mn)) );
@@ -169,7 +169,7 @@ if(this_node==0)printf("entered clover setup with term=%e\n",Clov_c);
 	}
     }
 
-    f_mu_nu(f_mn, 1, 3);
+    f_mu_nu_site(f_mn, 1, 3);
     FORALLSITES(i,s){
         scalar_mult_su3_matrix( ((su3_matrix *)F_PT(s,f_mn)), Clov_c,
 	    ((su3_matrix *)F_PT(s,f_mn)) );

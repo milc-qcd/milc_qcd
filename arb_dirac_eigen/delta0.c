@@ -38,7 +38,7 @@ void delta0(field_offset src,field_offset dest,  int isign)
 /* multiply the clover term  */
 
 	if(clover_term != 0.0){
-        mult_ldu1(src,F_OFFSET(htmp[1]),
+        mult_ldu1_site(src,F_OFFSET(htmp[1]),
                 F_OFFSET(clov), F_OFFSET(clov_diag), EVENANDODD);
 	 FORALLSITES(i,s) {
 			scalar_mult_add_wvec( ((wilson_vector *)F_PT(s,dest)),

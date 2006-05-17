@@ -10,7 +10,7 @@
 
 #include "arb_dirac_inv_includes.h"
 
-void f_mu_nu(field_offset f_mn, int mu, int nu) 
+void f_mu_nu_site(field_offset f_mn, int mu, int nu) 
 {
 register int i;
 register site *s;
@@ -107,6 +107,6 @@ int disp[4];	/* displacement vector for general gather */
 	scalar_mult_su3_matrix( &tmat4, 0.125, ((su3_matrix *)F_PT(s,f_mn)) );
     }
 
-} /* f_mu_nu */
+} /* f_mu_nu_site */
 
 
