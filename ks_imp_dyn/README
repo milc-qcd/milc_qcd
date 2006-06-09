@@ -1,1 +1,114 @@
-See ../ks_imp_dyn1/README
+This is the basic improved Kogut Susskind molecular dynamics code.
+
+It supports any number of flavors of up to two distinct quark masses.
+It supports a variety of staggered fermion and gauge actions including
+the old unimproved KS action.
+
+Like the older ks_dynamical application, these codes can be compiled
+to use the R algorithm, the ``phi'' algorithm, or the hybrid Monte
+Carlo algorithm.  
+
+The executables come in two variants.  For quark actions that connect
+even lattice sites to arbitrary odd lattice sites (such as the
+Bielefeld P4 action), the even-odd versions, whose names end in
+``_eo'' (e.g. ``su3_rmd_eo'') must be used.  For quark actions that
+connect a site only to its nearest neighbors and
+third-nearest-neighbors along the lattice axes (the Naik term), the
+``_fn'' (for ``fat+Naik'') variants can be used.  (You can have
+arbitrary-length paths connecting the points -- the crucial thing is
+where the paths end.)  The ``_fn'' variants are much faster, because
+they precompute the sum of all the gauge paths to each of the sixteen
+points to which dslash connects each site, while the more general
+``_eo'' variants recompute the path sums every time.  Also, for the
+``Asq'' and ``Asqtad'' action Kostas Orginos has written optimized
+routines to precompute the fat links and the fermion force.
+
+For the phi and HMC algorithms, you must have four flavors of each
+mass.  Clearly this isn't the physically interesting case, but
+verifying that the energy change in a trajectory is proportional to
+the square of the step size is about the best test we know for
+debugging the code.  Every time you change the action you should do
+this.
+
+The quark action is specified in a file "quark_action.h", which is
+included in "quark_stuff.c".  Currently the directory contains include
+files for several actions, and your favorite one can simply be copied
+into "quark_action.h".  Or, you can invent your own action by
+modifying the files.
+
+Quark actions include:
+
+onelink_action.h
+   The conventional Kogut-Susskind action.  Connects only to nearest
+neighbor points with the single link path.
+
+naik_action.h
+   Include the Naik, or third nearest neighbor term, as well as the
+one-link term.
+
+p4_action.h
+   The Bielefeld P4 action, in a variant where both "L-shaped" paths
+and the "zig-zag" paths are used with equal weights.  If we ever
+really want to use this, we should probably just use the "zig-zag"
+path.
+
+onefat_action.h
+   The one link term plus the simplest (three link staple) fattening
+
+onefatnaik_action.h
+   The same, plus the Naik term.
+
+fat5_action.h
+   One link plus three link and five link fattening terms.  This one
+reduces couplings to all momentum-pi gluons by a factor of seven.
+(The best you can do with five links.)
+
+fat7_action.h
+   One link plus three, five and seven link fattening terms.  This one
+sets couplings to all momentum-pi  gluons to zero.
+
+asq_action.h
+   Eliminates all (tree level) couplings to momentum pi gluons, plus
+Naik term for rotational invariance, plus the Lepage term to maintain
+proper behavior for small momentum.  Eliminates all tree level order
+a^2 errors.
+
+asqtad_action.h
+   The same, with tadpole improved coefficients.
+
+Any of the above actions can be tadpole improved by including
+
+#define TADPOLE_IMPROVE /* use tadpole improvement in quark action */}
+
+in the action file.  This weights each N link path by
+   u_0^{-(N-1)}
+
+People intending to invent their own actions are advised to read the long
+comment on sign conventions at the bottom of "quark_stuff.c".
+
+The gauge action is selected in the same way, by modifying the file
+"gauge_action.h".  The most important of the gauge actions already in
+the directory are "plaquette_action.h" (obvious) and
+"symanzik_1loop_action.h", which is the commonly used one-loop tadpole
+improved action using the plaquette, the six link rectangle, and the
+six-link ``+X+Y+Z-X-Y-Z'' loop.
+
+For the ``Asqtad'' action optimized routines have been written for the
+fermion force and fat link computations, written by Kostas Orginos.
+These take advantage of the fact the three, five and seven-link paths
+can be constructed by successive applications of an operation that
+averages a link with three link paths. They are turned on by defining
+"ASQTAD_OPTIMIZED_FATTENING" and/or "ASQ_OPTIMIZED_FORCE" in
+"quark_action.h".
+
+Other macros:
+
+-DONEMASS specifies only one distinct mass
+-DDBLSTORE_FN -DFN_GATHER13 are optimizing choices for the inverter
+-DNPBP_REPS  -DDM_DU0 -DCHEM_POT control f_meas.c
+-DD_CHEM_POT for thermodynamic calculation of derivatives of the 
+   EOS with respect to chemical potential
+
+
+
+
