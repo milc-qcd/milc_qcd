@@ -128,7 +128,7 @@ CLOVER_DYNAMICAL =          \
  clover_dynamical/*.h            \
  clover_dynamical/Make*          \
  clover_dynamical/in.sample*     \
- clover_dynamical/out.errtol*     \
+# clover_dynamical/out.errtol*     \
  clover_dynamical/out.sample*
 
 CLOVER_HYBRIDS =            \
@@ -136,7 +136,7 @@ CLOVER_HYBRIDS =            \
  clover_hybrids/*.h              \
  clover_hybrids/Make*            \
  clover_hybrids/in.sample*       \
- clover_hybrids/out.errtol*     \
+# clover_hybrids/out.errtol*     \
  clover_hybrids/out.sample*
 
 CLOVER_INVERT =            \
@@ -158,7 +158,7 @@ H_DIBARYON =            \
  h_dibaryon/*.h              \
  h_dibaryon/Make*            \
  h_dibaryon/in.sample*       \
- h_dibaryon/out.errtol*     \
+# h_dibaryon/out.errtol*     \
  h_dibaryon/out.sample*
 
 HEAVY        =   \
