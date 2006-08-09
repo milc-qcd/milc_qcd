@@ -1,0 +1,58 @@
+# Makefile for testing code by comparing test output with sample output
+# For ks_imp_utilities
+
+#------------------------------------------------------------
+# Examples:
+
+#    make -f Make_test check
+# or, for a specific project or projects
+#    make -f Make_test "PROJS=su3_rmd" check
+
+# Edit the Makefile for the appropriate architecture and the file
+# See ../Make_test_template to select the appropriate LAUNCH.
+
+LAUNCH = 
+LAUNCH2 = 
+
+# Results are in the files out.test.diff.*
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = \
+  su3_leapfrog.sample_1 \
+  su3_omelyan_rhmc.sample_2
+
+PATTERNS = WARMUPS RUNNING
+
+out.test.${PROJ}: in.sample.${PROJ}
+	${LAUNCH} ./${PROJ2} ${LAUNCH2} < in.sample.${PROJ} > out.test.${PROJ}
+
+out.test.diff.${PROJ}: out.test${CUSTOM}.${PROJ} out.sample${CUSTOM}.${PROJ}
+	../headtail.pl ${PATTERNS} < out.test${CUSTOM}.${PROJ} > \
+	   out.test.${PROJ}.tmp
+	../headtail.pl ${PATTERNS} < out.sample${CUSTOM}.${PROJ} > \
+	   out.sample.${PROJ}.tmp
+	../diffn3.pl out.test.${PROJ}.tmp out.sample.${PROJ}.tmp \
+	   out.errtol${CUSTOM}.${PROJ} > out.test.diff.${PROJ}
+#	   /bin/rm out.test.${PROJ}.tmp out.sample.${PROJ}.tmp
+
+su3_leapfrog.sample_1: rationals.sample_1.h
+	cp rationals.sample_1.h rationals.h
+	${MAKE} su3_leapfrog "PRECISION=1"	
+	${MAKE} -f Make_test out.test.diff.su3_leapfrog.sample_1 "PROJ=su3_leapfrog.sample_1" "PROJ2=su3_leapfrog"
+su3_omelyan_rhmc.sample_2: rationals.sample_2.h
+	cp rationals.sample_2.h rationals.h
+	${MAKE} su3_omelyan_rhmc "PRECISION=2"	
+	${MAKE} -f Make_test out.test.diff.su3_omelyan_rhmc.sample_2 "PROJ=su3_omelyan_rhmc.sample_2" "PROJ2=su3_omelyan_rhmc"
+
+test: su3_leapfrog.sample_1 su3_omelyan_rhmc.sample_2
+
+check: test
+
+clean:
+	for proj in ${PROJS};\
+	do\
+	  /bin/rm out.test.$$proj.tmp out.sample.$$proj.tmp;\
+	  /bin/rm out.test.diff.$$proj out.test.$$proj; \
+	done

@@ -1,0 +1,244 @@
+SU3 with improved KS action
+Microcanonical simulation with refreshing
+MIMD version 7 $Name:  $
+Machine = Scalar processor, with 1 nodes
+Rational function hybrid Monte Carlo algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors1 2
+nflavors2 1
+nx 6
+ny 6
+nz 6
+nt 6
+iseed 3546789
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 6 x 6 x 6 x 6
+Mallocing 3.1 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+quarks1 orders: (md,gr,fa) = 8, 12, 12
+quarks2 orders: (md,gr,fa) = 0, 0, 0
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 6.5
+mass1 0.01
+mass2 0.05
+u0 0.862
+microcanonical_time_step 0.01
+steps_per_trajectory 12
+max_cg_iterations 1750
+error_per_site 2e-06
+error_for_propagator 1e-06
+reload_serial ../binary_samples/lat.sample.l6666b650m010m050
+forget 
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l6666b650m010m050
+Time stamp Mon Aug  7 14:22:30 2006
+Checksums a76176b8 5eb657fc OK
+Time to reload gauge configuration = 2.268971e-03
+CHECK PLAQ: 1.6582650740453551e+00 1.6398905968468851e+00
+Unitarity checked.  Max deviation 7.05e-08
+Time to check unitarity = 1.124035e-03
+Unitarity checked.  Max deviation 2.00e-16
+Time to check unitarity = 1.065079e-03
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.355018e-02     12
+                    2 0      -8.663653e-03     16
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -5.607564e-02     8
+                    2      -8.411346e-02     48
+                    3      2.830030e-02     192
+                    4      -6.347828e-03     384
+                    5      -1.132012e-01     48
+WARMUPS COMPLETED
+Omelyan integration, steps= 12 eps= 1.000000e-02 lambda= 8.000000e-01
+GRSOURCE: sum = 1.9350216672e+03
+GRSOURCE: sum = 1.9758965992e+03
+PLAQUETTE ACTION: -2.778366e+04
+ACTION: g,h,f = 1.67770842632224e+04  -4.07208643541772e+00  3.91091826640430e+03  2.06839304431912e+04
+DG = 1.677708e+04, DH = -4.072086e+00, DF = 3.910918e+03, D = 2.068393e+04
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+PLAQUETTE ACTION: -2.772675e+04
+ACTION: g,h,f = 1.68345159645494e+04  -5.57641020054451e+01  3.90518224445804e+03  2.06839341070020e+04
+DG = 5.743170e+01, DH = -5.169202e+01, DF = -5.736022e+00, D = 3.663811e-03
+ACCEPT: delta S = 3.663811e-03
+PLAQ:	1.652549	1.638851
+P_LOOP:	2.126842e-01	-5.125560e-02
+G_LOOP:  0  0  4   	1.638252e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.659308e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.629074e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.660086e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.638384e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.649095e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	9.272507e-01	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	8.989518e-01	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	8.802905e-01	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	9.104859e-01	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	9.445751e-01	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	8.877281e-01	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	9.229770e-01	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	9.454480e-01	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.244866e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	8.930467e-01	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	8.954597e-01	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	8.926963e-01	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	9.114815e-01	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	9.759796e-01	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	9.284357e-01	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	9.538873e-01	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	9.152377e-01	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	9.281436e-01	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	9.559003e-01	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	9.414645e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	9.489143e-01	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	8.955626e-01	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	9.269671e-01	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	9.304366e-01	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	9.376921e-01	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	9.334117e-01	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	9.288827e-01	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	9.512630e-01	( 1 5 4 6 2 3  )
+GACTION: 5.995198e+00
+PBP: mass 1.000000e-02     2.712360e-02  7.442138e-03  -7.689536e-03  -7.689648e-03 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.496205e+00 ( 1 of 1 )
+PBP: mass 5.000000e-02     6.669870e-02  1.074144e-01  -1.363514e-02  -1.363514e-02 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.483514e+00 ( 1 of 1 )
+Omelyan integration, steps= 12 eps= 1.000000e-02 lambda= 8.000000e-01
+GRSOURCE: sum = 1.9624636693e+03
+GRSOURCE: sum = 1.9445971547e+03
+PLAQUETTE ACTION: -2.772675e+04
+ACTION: g,h,f = 1.68345159645494e+04  1.65705317452225e+02  3.90706082402904e+03  2.09072821060307e+04
+DG = 0.000000e+00, DH = 2.214694e+02, DF = 1.878580e+00, D = 2.233480e+02
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 8
+STARTING fn_fermion_force_rhmc() nterms = 0
+PLAQUETTE ACTION: -2.761574e+04
+ACTION: g,h,f = 1.69304211252881e+04  8.61176107250773e+01  3.89074941577841e+03  2.09072881517916e+04
+DG = 9.590516e+01, DH = -7.958771e+01, DF = -1.631141e+01, D = 6.045761e-03
+ACCEPT: delta S = 6.045761e-03
+PLAQ:	1.647485	1.630736
+P_LOOP:	1.904729e-01	-4.746452e-02
+G_LOOP:  0  0  4   	1.638342e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.660304e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.618165e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.643810e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.625065e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.648978e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	9.308243e-01	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	9.077301e-01	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	8.861656e-01	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	9.026999e-01	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	9.131549e-01	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	8.838884e-01	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	9.248529e-01	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	9.265543e-01	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.140170e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	8.842249e-01	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	8.851445e-01	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	9.037121e-01	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	9.243686e-01	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	9.633249e-01	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	9.249247e-01	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	9.543852e-01	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	9.053124e-01	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	9.450065e-01	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	9.377535e-01	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	9.491545e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	9.375232e-01	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	8.861496e-01	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	9.105332e-01	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	9.123140e-01	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	9.291538e-01	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	9.322691e-01	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	9.027056e-01	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	9.409326e-01	( 1 5 4 6 2 3  )
+GACTION: 6.029352e+00
+PBP: mass 1.000000e-02     2.333577e-02  1.371965e-02  -1.410175e-02  -1.410180e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.470904e+00 ( 1 of 1 )
+PBP: mass 5.000000e-02     8.099304e-02  1.073272e-01  -1.739179e-02  -1.739073e-02 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.518255e+00 ( 1 of 1 )
+RUNNING COMPLETED
+average cg iters for step= 0.000000e+00
+Time = 7.790387e+01 seconds
+total_iters = 4138
+
+
+get_i: EOF on STDIN.
+exit: Mon Aug  7 14:33:00 2006
+

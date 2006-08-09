@@ -1,0 +1,176 @@
+WARMUPS COMPLETED
+Omelyan integration, steps= 0 eps= 2e-18 lambda= 2e-18
+GRSOURCE: sum = 4e-15
+GRSOURCE: sum = 4e-15
+PLAQUETTE ACTION: 6e-14
+ACTION: g,h,f = 3e-14 3e-13 2e-11 4e-14
+DG = 3e-14 DH = 8e-18 DF = 8e-15 D = 4e-14
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+PLAQUETTE ACTION: 6e-14
+ACTION: g,h,f = 3e-14 2e-12 8e-15 4e-14
+DG = 1e-16 DH = 1e-16 DF = 1e-17 D = 2e-18
+ACCEPT: delta S = 2e-18
+PLAQ: 3e-18 3e-18
+P_LOOP: 2e-18 2e-18
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+GACTION: 1e-17
+PBP: mass 2e-18 2e-18 2e-18 2e-18 2e-18 ( 0 of 0 )
+FACTION: mass = 2e-18 3e-18 ( 0 of 0 )
+PBP: mass 2e-18 2e-18 2e-18 2e-18 2e-18 ( 0 of 0 )
+FACTION: mass = 2e-18 3e-18 ( 0 of 0 )
+Omelyan integration, steps= 0 eps= 2e-18 lambda= 2e-18
+GRSOURCE: sum = 4e-15
+GRSOURCE: sum = 4e-15
+PLAQUETTE ACTION: 6e-14
+ACTION: g,h,f = 3e-14 3e-16 8e-15 2e-10
+DG = 0.000000e+00, DH = 4e-16 DF = 4e-18 D = 4e-16
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+update_h_rhmc: alg_flag=0
+STARTING fn_fermion_force_rhmc() nterms = 0
+STARTING fn_fermion_force_rhmc() nterms = 0
+PLAQUETTE ACTION: 6e-14
+ACTION: g,h,f = 3e-14 6e-13 8e-15 4e-14
+DG = 2e-16 DH = 2e-16 DF = 3e-17 D = 2e-18
+ACCEPT: delta S = 2e-18
+PLAQ: 3e-18 3e-18
+P_LOOP: 2e-18 2e-18
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-18 ( 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-18 ( 0 0 0 0 0 0 )
+GACTION: 1e-17
+PBP: mass 2e-18 2e-18 2e-18 2e-18 2e-18 ( 0 of 0 )
+FACTION: mass = 2e-18 3e-18 ( 0 of 0 )
+PBP: mass 2e-18 2e-18 2e-18 2e-18 2e-18 ( 0 of 0 )
+FACTION: mass = 2e-18 3e-18 ( 0 of 0 )
+RUNNING COMPLETED
