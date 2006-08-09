@@ -104,11 +104,80 @@ int ks_invert( /* Return value is number of iterations taken */
     void *dmp                 /* Passthrough Dirac matrix parameters */
     );
 
-int ks_multicg(	/* Return value is number of iterations taken */
+typedef int (*ks_multicg_t)(	
+			/* Return value is number of iterations taken */
+    field_offset, 	/* source vector (type su3_vector) */
+    su3_vector ** ,	/* solution vectors */
+    Real *,	        /* the offsets */
+    int,	        /* number of offsets */
+    int,		/* maximal number of CG interations */
+    Real,	        /* desired residue squared */
+    int,		/* parity to be worked on */
+    Real *	        /* final residue squared */
+    );
+
+int ks_multicg_offset(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *offsets,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    );
+
+int ks_multicg_mass(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     Real *masses,	/* the masses */
     int num_masses,	/* number of masses */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    );
+
+/* In ks_multicg_rhmc.c */
+
+int ks_multicg_hybrid(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *offsets,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    );
+
+int ks_multicg_reverse(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *masses,	/* the masses */
+    int num_masses,	/* number of masses */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    );
+
+int ks_multicg_fake(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *offsets,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    );
+
+int ks_multicg_revhyb(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *offsets,	/* the offsets */
+    int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
     int parity,		/* parity to be worked on */
@@ -195,6 +264,19 @@ void scalar_mult_add_lathwvec(half_wilson_vector *dest,
 void mult_su3_fieldlink_lathwvec( su3_matrix *link,
 				  half_wilson_vector **src_pt, 
 				  half_wilson_vector *dest);
+#ifndef VECLENGTH
+#define VECLENGTH 1
+#endif
+
+typedef struct { su3_vector v[VECLENGTH]; } veclist;
+void mult_adj_su3_fieldlink_latveclist( su3_matrix *link,
+               veclist **src_pt, veclist *dest, int listlength );
+void mult_su3_sitelink_latveclist( int dir, 
+	 veclist **src_pt, veclist *dest, int listlength );
+void scalar_mult_add_latveclist_proj(anti_hermitmat *mom,
+           veclist *back, veclist *forw, Real *coeff, int listlength );
+void scalar_mult_add_latveclist( veclist *dest,
+            veclist *src, Real *s, int listlength );
 
 /* flavor_ops.c */
 void sym_shift(int dir, field_offset src,field_offset dest) ;
@@ -257,9 +339,11 @@ void make_path_table();
 int get_num_q_paths();
 Q_path *get_q_paths();
 Real *get_quark_path_coeff();
-void eo_fermion_force( Real eps, int nflavors, field_offset x_off );
-void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
-	int nflav2, field_offset x2_off  );
+void eo_fermion_force( Real eps, Real weight, field_offset x_off );
+void eo_fermion_force_two( Real eps, Real weight1, Real weight2,
+			   field_offset x1_off, field_offset x2_off );
+void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
+			     int nterms );
 void load_longlinks();
 void load_fatlinks();
 void free_longlinks();
