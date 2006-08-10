@@ -331,10 +331,10 @@ int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
 int reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
 			      int spin, int color, wilson_vector *dest, 
 			      int timing);
-void save_wprop_sc_from_site( int flag, w_prop_file *wpf, 
+int save_wprop_sc_from_site( int flag, w_prop_file *wpf, 
 			      int spin, int color, field_offset src, 
 			      int timing);
-void save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
+int save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
 			      int spin, int color, wilson_vector *src, 
 			      int timing);
 int reload_wprop_to_site( int flag, char *filename,
@@ -342,9 +342,9 @@ int reload_wprop_to_site( int flag, char *filename,
 int reload_wprop_to_field( int flag, char *filename,
 			  wilson_propagator *dest, int timing);
 int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[]);
-void save_wprop_from_site( int flag, char *filename, char *recxml,
+int save_wprop_from_site( int flag, char *filename, char *recxml,
 			   field_offset src, int timing);
-void save_wprop_from_field( int flag, char *filename, char *recxml,
+int save_wprop_from_field( int flag, char *filename, char *recxml,
 			   wilson_propagator *src, int timing);
 int ask_starting_wprop( int prompt, int *flag, char *filename );
 int ask_ending_wprop( int prompt, int *flag, char *filename );
