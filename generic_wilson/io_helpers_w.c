@@ -841,7 +841,7 @@ int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[])
    SAVE_SERIAL_SCIDAC, SAVE_PARALLEL_SCIDAC, SAVE_PARTITION_SCIDAC,
    SAVE_MULTFILE_SCIDAC
 */
-void save_wprop_from_field( int flag, char *filename, char *recxml,
+int save_wprop_from_field( int flag, char *filename, char *recxml,
 			     wilson_propagator *src, int timing)
 {
   double dtime;
@@ -1019,6 +1019,7 @@ void save_wprop_from_field( int flag, char *filename, char *recxml,
       if(flag != FORGET)
 	node0_printf("Time to save wprop = %e\n",dtime);
     }
+  return status;
 
 } /* save_wprop_from_field */
 /*---------------------------------------------------------------*/
