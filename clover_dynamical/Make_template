@@ -44,10 +44,7 @@ MY_HEADERS = \
   cl_dyn_includes.h \
   ${ADDHEADERS}
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
-
-# Choose one of the lattice layout algorithms:
-LAYOUT = layout_hyper
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 # All required object files
 # Basic set from current directory
@@ -66,45 +63,74 @@ MY_OBJECTS =         \
   grsource.o         \
   f_measure_cl.o     \
   gauge_info.o
+
 # Basic set from generic directory
 G_OBJECTS =          \
-  d_plaq4.o          \
-  ${LAYOUT}.o        \
-  ${IO_LAT_REAL}     \
-  io_helpers.o       \
   check_unitarity.o  \
-  reunitarize2.o     \
+  d_linktrsum.o      \
+  d_plaq4.o          \
+  io_helpers.o       \
+  io_lat4.o          \
+  io_lat_utils.o     \
   make_lattice.o     \
   ploop_dist.o       \
   ranmom.o           \
-  ranstuff.o
+  ranstuff.o         \
+  reunitarize2.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += io_scidac.o
+endif
+
 # Basic set from generic_wilson directory
 G_WILSON_OBJECTS =   \
   boundary_flip.o    \
   wilson_invert.o    \
   dslash_w.o         
+
 # Basic set from generic_clover directory
 G_CLOVER_OBJECTS =   \
   d_congrad2_cl.o    \
   d_cgilu_cl_lean.o  \
   f_mu_nu.o          \
-  make_clov.o
+  make_clov2.o
 
-# To these we add project-specific extra objects and machine-dependent objects
+# Objects depending on architecture and software package 
+
+# Selection of layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o # Required
+  else
+    LAYOUT = layout_hyper_prime.o # Choices possible here
+  endif
+endif
+
+# EDRAM allocation for QCDOC
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+# Generic QOP objects
+ifeq ($(strip ${HAVEQOP}),true)
+  ADD_OBJECTS += ${GENERICQOP}
+endif
+
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_WILSON_OBJECTS} \
-  ${G_CLOVER_OBJECTS} ${EXTRA_OBJECTS} ${MACHINE_DEP}
+  ${G_CLOVER_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
-QCDLIB = ${LIBDIR}/su3.a ${LIBDIR}/complex.a
+QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 
 # Default rule for C compilation
-.c.o:
-	${CC} -c ${CFLAGS} $<
-
-# All make files used in this compilation
-ALL_MAKES = Make_template ../generic/Make_template \
-  ../generic_wilson/Make_template ../generic_clover/Make_template \
-  ${MAKEFILE} ../include
+.c.o: ; ${CC} -c ${CFLAGS} $<
 
 # To force a full remake when changing targets
 LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
@@ -114,10 +140,40 @@ ${LASTMAKE}: ${ALL_MAKES}
 	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 
-# All objects should depend on these
-ALL_DEPEND = ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
+# All make files used in this compilation
+ALL_MAKES = \
+  Make_template \
+  ${MAKEFILE} \
+  ../Make_template_qop \
+  ../Make_template_scidac \
+  ../generic/Make_template \
+  ../generic_wilson/Make_template \
+  ../generic_clover/Make_template \
 
-${OBJECTS}: ${ALL_DEPEND}
+# To force a remake when changing any make file, header, or target
+${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
+endif
+
+ifeq ($(strip ${HAVEQMP}),true)
+  DHAVE_QMP = -DHAVE_QMP
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DHAVE_QIO = -DHAVE_QIO
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  DHAVE_QOP = -DHAVE_QOP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 # User compiler macro options
 # BI specifies biconjugate gradient inversions
@@ -195,10 +251,10 @@ include ../generic_clover/Make_template
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
 	cd ${LIBDIR} ;\
-	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" all
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
 
-localmake: ${OBJECTS} ${QCDLIB}
-	${LD} ${LDFLAGS} -o ${MYTARGET} \
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
 	${OBJECTS} ${QCDLIB} ${ILIB} -lm
 	touch localmake
 
