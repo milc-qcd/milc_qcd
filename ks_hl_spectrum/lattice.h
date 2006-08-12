@@ -103,6 +103,8 @@ EXTERN	double kappa,source_r0,kap[MAX_KAP],resid[MAX_KAP];
 EXTERN	double clov_c,u0;
 EXTERN	int num_kap;		/* max number of kappa's <= MAX_KAP */
 EXTERN	char startfile[MAXFILENAME], savefile[MAXFILENAME];
+EXTERN  double g_ssplaq, g_stplaq;
+EXTERN  double_complex linktrsum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char savefile_w[MAX_KAP][MAXFILENAME], 
   startfile_w[MAX_KAP][MAXFILENAME];

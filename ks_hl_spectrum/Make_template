@@ -40,18 +40,19 @@ MY_OBJECTS = \
   twopt.o \
 
 # Basic set from generic directory
-G_OBJECTS0 =          \
+G_OBJECTS0 =         \
   check_unitarity.o  \
-  d_plaq4.o           \
+  d_plaq4.o          \
+  d_linktrsum.o      \
   gaugefix2.o        \
   io_detect.o        \
   io_helpers.o       \
   io_helpers_w.o     \
   io_lat4.o          \
-  io_lat_utils.o          \
+  io_lat_utils.o     \
   io_prop_w.o        \
   make_lattice.o     \
-  ranstuff.o \
+  ranstuff.o         \
   reunitarize2.o     \
   restrict_fourier.o
 
@@ -80,6 +81,7 @@ endif
 
 G_KS_OBJECTS0 = \
   d_congrad5.o \
+  d_congrad_opt.o \
   rephase.o  \
   io_helpers_ks.o \
   io_prop_ks_fm.o   \
