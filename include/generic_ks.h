@@ -116,6 +116,8 @@ typedef int (*ks_multicg_t)(
     Real *	        /* final residue squared */
     );
 
+ks_multicg_t ks_multicg_init();
+
 int ks_multicg_offset(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
