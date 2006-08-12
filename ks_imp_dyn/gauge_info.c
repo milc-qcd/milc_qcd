@@ -206,6 +206,18 @@ char *create_QCDML(){
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.tadpole.u0","%f",
 			 (char *)&u0,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.ssplaq","%f",
+			 (char *)&g_ssplaq,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.stplaq","%f",
+			 (char *)&g_stplaq,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.linktr.real","%f",
+			 (char *)&(linktrsum.real),0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.linktr.imag","%f",
+			 (char *)&(linktrsum.imag),0,0);
   
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"quark.description","%s",
