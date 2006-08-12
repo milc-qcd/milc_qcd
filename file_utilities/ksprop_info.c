@@ -23,6 +23,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #define MAX_XML 2049
 
 /*---------------------------------------------------------------------------*/

@@ -68,7 +68,7 @@ void write_appl_w_prop_info(FILE *fp)
 
 /* Temporary until we can create XML */
 /* TO DO: Proviso for a number of quark action paths different from 6 */
-char *create_w_XML()
+char *create_w_QCDML()
 {
   char *xml;
 
@@ -78,6 +78,6 @@ char *create_w_XML()
 }
 
 
-void free_w_XML(char *xml){
+void free_w_QCDML(char *xml){
   if(xml != NULL)free(xml);
 }
