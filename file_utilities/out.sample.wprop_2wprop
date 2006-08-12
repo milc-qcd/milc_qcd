@@ -6,7 +6,7 @@ Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 ON EACH NODE 4 x 4 x 4 x 2
 Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_milc.test.l4448.ll
-Reading serially as a MILC Wilson prop file
+Reading as a Fermilab Wilson prop file
 quark.t[0].checksum  "7e685bd9 759261a0"
 quark.t[1].checksum  "458d636c 7fde95"
 quark.t[2].checksum  "b5a45a07 719a0afd"
@@ -37,7 +37,7 @@ Dimensions 4 4 4 8
 LAYOUT = Hypercubes, options = EVENFIRST,
 ON EACH NODE 4 x 4 x 4 x 2
 Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_scidac2.test.l4448.ll
-Reading serially as a MILC Wilson prop file
+Reading as a Fermilab Wilson prop file
 quark.t[0].checksum  "7e685bd9 759261a0"
 quark.t[1].checksum  "458d636c 7fde95"
 quark.t[2].checksum  "b5a45a07 719a0afd"
