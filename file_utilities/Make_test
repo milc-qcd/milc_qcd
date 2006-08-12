@@ -15,8 +15,8 @@
 # For comparing test output with sample output
 
 PROJS = \
-  ksprop_to_ksprop \
-  wprop_to_wprop
+  ksprop_2ksprop \
+  wprop_2wprop
 
 MACROLIST = ""
 
