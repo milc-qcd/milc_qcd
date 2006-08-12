@@ -30,7 +30,7 @@ MAKEFILE = Makefile
 # 3. Precision 
 
 # 1 = single precision; 2 = double
-PRECISION = 2
+PRECISION = 1
 #----------------------------------------------------------------------
 # 4. Compiler
 # Choices include mpicc cc gcc pgcc g++
@@ -45,7 +45,7 @@ CXX = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-g++
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc
-OPT              = -g
+OPT              = -O3
 
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -170,7 +170,7 @@ LD               = ${CC}
 
 #----------------------------------------------------------------------
 # 13. Extra libraries
-LIBADD =
+LIBADD = ${HOME}/scidac-sun/qla/lib/libqla_f3.a
 
 #----------------------------------------------------------------------
 # 14. Inlining choices
@@ -194,7 +194,7 @@ INLINEOPT = -DC_INLINE # -DSSE_INLINE
 #----------------------------------------------------------------------
 # 15. Other miscellaneous macros you want for all of your compilations
 
-CODETYPE =# -DQDP_PROFILE
+CODETYPE = -DDBLSTORE_FN # -DQDP_PROFILE
 # Choices include -DPREFETCH (not recommended)
 
 #----------------------------------------------------------------------
