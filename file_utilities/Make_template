@@ -10,8 +10,25 @@
 #             performs checksums (V5 format only) and a unitarity check
 #	"make check_prop" reads a propagator file and performs
 #             checksums (V5 format only)
-#       "make ckpt1_to_v5" converts checkpoint1 gauge configuration
-#             format to V5 format. 
+#	"make diff_colormatrix" compares two color matrix files.
+#             Requires enough RAM to hold both files.
+#	"make diff_ksprop" compares two KS propagator files.
+#	      Requires enough RAM to hold both files.
+#	"make diff_ksvector" Same as above, but for KS vector files.
+#	"make diff_wprop" Same as above, but for Wilson propagator files.
+#	"make lattice_2scidac" converts a lattice to SciDAC format.
+#             Requires enough RAM to hold the entire lattice.
+#	"make ksprop_2ksprop" converts among KS propagator formats.
+#	      Requires enough RAM to hold the entire file.
+#	"make wprop_2wprop" converts among W propagator formats.
+#	      Requires enough RAM to hold the entire file.
+#       "make ckpt1_2v5" converts checkpoint1 gauge configuration
+#             format to V5 format. Requires enough RAM to hold entire lattice.
+#	"make v5_2scidac" converts from MILC v5 format to SciDAC.
+#	      Lean memory conversion.
+#	"make scidac_2v5" converts from SciDAC to MILC v5 format.
+#	      Lean memory conversion.
+#
 
 MYINCLUDEDIR = .
 INCLUDEDIR = ../include
@@ -150,39 +167,39 @@ diff_wprop::
 	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o \
 	gauge_info_dummy.o d_plaq4.o io_lat4.o"
 
-lattice_to_scidac::
+lattice_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= lattice_to_scidac" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  lattice_to_scidac.o \
 	check_unitarity.o gauge_info_dummy.o d_plaq4.o io_lat4.o"
 
-ksprop_to_ksprop::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= ksprop_to_ksprop" \
+ksprop_2ksprop::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  ksprop_to_ksprop.o io_helpers_ks.o \
 	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o \
 	gauge_info_dummy.o d_plaq4.o io_lat4.o"
 
-wprop_to_wprop::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= wprop_to_wprop" \
+wprop_2wprop::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  wprop_to_wprop.o io_helpers_w.o canopy2weyl_rot.o \
 	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o \
 	gauge_info_dummy.o d_plaq4.o io_lat4.o"
 
-ckpt1_to_v5::
+ckpt1_2v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= ckpt1_to_v5" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  ckpt1_to_v5.o \
 	check_unitarity.o gauge_info.o d_plaq4.o io_lat4.o"
 
-v5_to_scidac::
+v5_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= v5_to_scidac" \
 	"DEFINES= -DNOLINKS" \
 	"EXTRA_OBJECTS=  v5_to_scidac.o \
 	gauge_info_dummy.o"
 
-scidac_to_v5::
+scidac_2v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= scidac_to_v5" \
 	"DEFINES= -DNOLINKS" \
 	"EXTRA_OBJECTS=  scidac_to_v5.o \
