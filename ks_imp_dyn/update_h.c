@@ -24,15 +24,15 @@ void update_h( Real eps ){
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
 #ifdef ONEMASS
-    eo_fermion_force( eps, nflavors, F_OFFSET(xxx) );
+    eo_fermion_force( eps, ((Real)nflavors)/4., F_OFFSET(xxx) );
 #else
 /**
-    eo_fermion_force( eps, nflavors1, F_OFFSET(xxx1) );
-    eo_fermion_force( eps, nflavors2, F_OFFSET(xxx2) );
+    eo_fermion_force( eps, ((Real)nflavors1)/4., F_OFFSET(xxx1) );
+    eo_fermion_force( eps, ((Real)nflavors2)/4., F_OFFSET(xxx2) );
 **/
 /**/
-    eo_fermion_force_3f( eps, nflavors1, F_OFFSET(xxx1),
-      nflavors2, F_OFFSET(xxx2) );
+    eo_fermion_force_two( eps, ((Real)nflavors1)/4., 
+      ((Real)nflavors2)/4., F_OFFSET(xxx1), F_OFFSET(xxx2) );
 /**/
 #endif
 } /* update_h */
