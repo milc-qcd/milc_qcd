@@ -55,8 +55,9 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
     }
   }
 
-  eo_fermion_force( eps, nflavors, src );
-  /** eo_fermion_force_3f( eps/2, nflavors, src, nflavors, src ); **/
+  eo_fermion_force( eps, ((Real)nflavors)/4., src );
+  /** eo_fermion_force_two( eps/2, ((Real)nflavors)/4., 
+      src, ((Real)nflavors)/4., src ); **/
 
   /* If the answer file is given, read it for comparison */
   if(ansflag == RELOAD_SERIAL){
@@ -105,11 +106,21 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   if(srcflag == SAVE_SERIAL)
     save_ks_vector_scidac_from_site(srcfile, "source color vector field", 
 			  QIO_SINGLEFILE, QIO_SERIAL, src, 1);
+  else if(srcflag == SAVE_PARTITION_SCIDAC)
+    save_ks_vector_scidac_from_site(srcfile, "source color vector field",
+                                    QIO_PARTFILE, QIO_SERIAL, src, 1);
   
   if(ansflag == SAVE_SERIAL){
     filexml = create_QCDML();
     save_color_matrix_scidac_from_site(ansfile, filexml, 
        recxml, QIO_SINGLEFILE,  F_OFFSET(ansmom[0]), 4);
+    free_QCDML(filexml);
+  }
+  else if(ansflag == SAVE_PARTITION_SCIDAC){
+    node0_printf("Saving the momentum matrix\n");
+    filexml = create_QCDML();
+    save_color_matrix_scidac_from_site(ansfile, filexml, 
+       recxml, QIO_PARTFILE,  F_OFFSET(ansmom[0]), 4);
     free_QCDML(filexml);
   }
 #endif

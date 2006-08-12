@@ -20,6 +20,7 @@ Record inf
 Checksums d2f7866d 0
 Time to reload gauge configuration = 1
 CHECK PLAQ: 3e-07 8e-07
+CHECK LINKTR: 3e-07 8e-07
 Unitarity checked. Max deviation 2e-09
 Time to check unitarity = 1
 Symanzik 0 + 0 + 0 action
@@ -58,6 +59,7 @@ Checksums 0 adc0f9ee
 Computing the fermion force
 Saved KS matrix serially to binary file colormatrix.mom.test.l8
 Checksums 2e+03 8e+03
+Done checking fermion force
 
 
 get_f: EOF on STDIN.

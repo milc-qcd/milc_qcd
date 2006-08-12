@@ -44,11 +44,13 @@ int main( int argc, char **argv ){
     
     check_fermion_force( srcfile, srcflag, F_OFFSET(xxx), 
 			 ansfile, ansflag, mass);
+    node0_printf("Done checking fermion force\n");
 #endif
     
     /* save lattice if requested */
     if( saveflag != FORGET ){
       rephase( OFF );
+      node0_printf("Saving the lattice\n");
       save_lattice( saveflag, savefile, NULL );
       rephase( ON );
     }
@@ -58,6 +60,7 @@ int main( int argc, char **argv ){
     if (savelongflag != FORGET ){
 #ifdef HAVE_QIO
       filexml = create_QCDML();
+      node0_printf("Saving the long links\n");
       save_color_matrix_scidac_from_field( savelongfile, filexml, 
 			  "Long links", QIO_SINGLEFILE, t_longlink, 4);
       free_QCDML(filexml);
@@ -70,6 +73,7 @@ int main( int argc, char **argv ){
     if (savefatflag != FORGET ){
 #ifdef HAVE_QIO
       filexml = create_QCDML();
+      node0_printf("Saving the fat links\n");
       save_color_matrix_scidac_from_field( savefatfile, filexml, 
 		  "Fat links", QIO_SINGLEFILE, t_fatlink, 4);
       free_QCDML(filexml);

@@ -21,7 +21,8 @@ Record info
 Checksums d2f7866d 0
 Time to reload gauge configuration = 1
 CHECK PLAQ: 3e-07 8e-07
-Unitarity checked. Max deviation 2e-09
+CHECK LINKTR: 3e-07 8e-07
+Reunitarized for double precision. Max deviation 4.23e-08 changed to 5.55e-16
 Time to check unitarity = 1
 Symanzik 0 + 0 + 0 action
 loop coefficients: nloop rep loop_coeff multiplicity
@@ -78,7 +79,8 @@ reload_serial_ks_vector ../binary_samples/ksvector.src.sample.l8
 save_serial_ks_vector ksvector.ans.Minv.test.l8
 invert M
 CHECK PLAQ: 3e-07 8e-07
-Unitarity checked. Max deviation 2e-09
+CHECK LINKTR: 3e-07 8e-07
+Reunitarized for double precision. Max deviation 5.55e-16 changed to 4.44e-16
 Time to check unitarity = 1
 Symanzik 2e-09 + 2e-09 + 2e-09 action
 loop coefficients: nloop rep loop_coeff multiplicity
