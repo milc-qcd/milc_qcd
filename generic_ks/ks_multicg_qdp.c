@@ -1,4 +1,4 @@
-/******* ks_multicg.c - multi-mass CG for SU3/fermions ****/
+/******* ks_multicg_qdp.c - multi-mass CG for SU3/fermions ****/
 /* MIMD version 7 */
 
 /* Multi-mass CG inverter for staggered fermions */
@@ -46,7 +46,7 @@ setup_congrad(void)
 }
 
 int
-ks_multicg_qdp(	/* Return value is number of iterations taken */
+ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
 	       QDP_ColorVector *src,	/* source vector (type su3_vector) */
 	       QDP_ColorVector **dest,	/* solution vectors */
 	       QLA_Real *masses,	/* the masses */
@@ -276,7 +276,7 @@ ks_multicg_qdp(	/* Return value is number of iterations taken */
 }
 
 int
-ks_multicg(	/* Return value is number of iterations taken */
+ks_multicg_mass(	/* Return value is number of iterations taken */
 	   field_offset f_src,	/* source vector (type su3_vector) */
 	   su3_vector **psim,	/* solution vectors */
 	   Real *masses,	/* the masses */
@@ -310,8 +310,8 @@ ks_multicg(	/* Return value is number of iterations taken */
   }
   qrsqmin = (QLA_Real) rsqmin;
 
-  iteration = ks_multicg_qdp(src, dest, qmasses, num_masses, niter, qrsqmin,
-			     q_parity, &qfinal_rsq_ptr);
+  iteration = ks_multicg_mass_qdp(src, dest, qmasses, num_masses, niter, 
+				  qrsqmin, q_parity, &qfinal_rsq_ptr);
   *final_rsq_ptr = (Real) qfinal_rsq_ptr;
 
   for(i=0; i<num_masses; i++) {

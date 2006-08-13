@@ -1,34 +1,29 @@
-/******* ks_multicg.c - multi-mass CG for SU3/fermions ****/
+/******* ks_multicg_qop.c - multi-mass CG for SU3/fermions ****/
 /* MIMD version 7 */
 
-/* Multi-mass CG inverter for staggered fermions */
+/* This is the MILC wrapper for the SciDAC Level 3 QOP inverter */
 
-/* Based on B. Jegerlehner, hep-lat/9612014.
-   See also A. Frommer, S. G\"usken, T. Lippert, B. N\"ockel,"
-   K. Schilling, Int. J. Mod. Phys. C6 (1995) 627. 
+/* 6/2006 C. DeTar Created */
 
-   This version is based on d_congrad5_fn.c and d_congrad5_eo.c 
+/*
+ * $Log: ks_multicg_qop.c,v $
+ * Revision 1.1  2006/08/13 15:01:50  detar
+ * Realign procedures to accommodate ks_imp_rhmc code
+ * Add Level 3 wrappers and MILC dummy Level 3 implementation
+ *
+ */
 
-   For "fat link actions", ie when FN is defined, this version
-   assumes connection to nearest neighbor points is stored in fatlink.
-   For actions with a Naik term, it assumes the connection to third
-   nearest neighbors is in longlink.
-
-   6/06 C. DeTar Allow calling with offsets instead of masses
-   6/06 C. DeTar Not finished with "finished"
-   8/12 C. DeTar added macros for selecting the multicg inverter option
-*/
-
-
-#include "generic_ks_includes.h"	/* definitions files and prototypes */
-#include "../include/dslash_ks_redefine.h"
-
+#include "generic_ks_includes.h"
 #include "../include/loopend.h"
+#include <qop.h>
 
-static su3_vector *ttt,*cg_p;
-static su3_vector *resid;
-static su3_vector *t_dest;
-static int first_multicongrad = 1;
+int ks_congrad_qop_site2field(int niter, Real rsqmin, 
+			      Real *masses[], int nmass[], 
+			      field_offset milc_srcs[], 
+			      su3_vector **milc_sols[],
+			      int nsrc, Real* final_rsq_ptr, int milc_parity );
+
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/Attic/ks_multicg_qop.c,v 1.1 2006/08/13 15:01:50 detar Exp $";
 
 /* Set the KS multicg inverter flavor depending on the macro KS_MULTICG */
 
@@ -63,9 +58,12 @@ ks_multicg_t ks_multicg_init(){
 #undef REVERSE
 #undef REVHYB
 
+/* Standard MILC interface for the Asqtad multimass inverter 
+   single source, multiple masses.  Uses the prevailing precision */
+
 int ks_multicg_mass(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
+    su3_vector **psim,	/* solution vectors (preallocated) */
     Real *masses,	/* the masses */
     int num_masses,	/* number of masses */
     int niter,		/* maximal number of CG interations */
@@ -74,21 +72,65 @@ int ks_multicg_mass(	/* Return value is number of iterations taken */
     Real *final_rsq_ptr	/* final residue squared */
     )
 {
-  int i;
-  int status;
-  Real *offsets;
 
-  offsets = (Real *)malloc(sizeof(Real)*num_masses);
-  if(offsets == NULL){
-    printf("ks_multicg_mass: No room for offsets\n");
+  int iterations_used;
+  Real *masses2[1];
+  int nmass[1], nsrc;
+  field_offset milc_srcs[1];
+  su3_vector **milc_sols[1];
+
+  /* Set up general source and solution pointers for one mass, one source */
+  nsrc = 1;
+  milc_srcs[0] = src;
+
+  nmass[0] = num_masses;
+  masses2[0] = masses;
+
+  milc_sols[0] =  psim;
+
+  iterations_used = ks_congrad_qop_site2field( niter, rsqmin, 
+					       masses2, nmass, milc_srcs,
+					       milc_sols, nsrc, final_rsq_ptr,
+					       parity );
+
+  total_iters += iterations_used;
+  return( iterations_used );
+}
+
+
+/* Offsets are 4 * mass * mass and must be positive */
+int ks_multicg_offset(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *offsets,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    )
+{
+  int i;
+  Real *masses;
+  int status;
+  int num_masses = num_offsets;
+
+  masses = (Real *)malloc(sizeof(Real)*num_offsets);
+  if(masses == NULL){
+    printf("ks_multicg_mass: No room for masses\n");
     terminate(1);
   }
-  for(i = 0; i < num_masses; i++){
-    offsets[i] = 4.0*masses[i]*masses[i];
+  for(i = 0; i < num_offsets; i++){
+    if(offsets[i] < 0){
+      printf("ks_multicg_mass(%d): called with negative offset %e\n",
+		   this_node,offsets[i]);
+      terminate(1);
+    }
+    masses[i] = sqrt(offsets[i]/4.0);
   }
-  status = ks_multicg_offset(src, psim, offsets, num_masses, niter, rsqmin,
-			     parity, final_rsq_ptr);
-  free(offsets);
+  status = ks_multicg_mass(src, psim, masses, num_masses, niter, rsqmin,
+			   parity, final_rsq_ptr);
+  free(masses);
   return status;
 }
 
@@ -147,6 +189,3 @@ int ks_multicg_hybrid(	/* Return value is number of iterations taken */
     }
     return(iters);
 }
-
-
-
