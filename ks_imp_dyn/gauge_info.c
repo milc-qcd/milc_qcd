@@ -49,7 +49,12 @@ void write_appl_gauge_info(FILE *fp)
   write_gauge_info_item(fp,"gauge.nreps","%d",(char *)&gauge_action_nreps,0,0);
   write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
   write_gauge_info_item(fp,"gauge.tadpole.u0","%f",(char *)&u0,0,0);
-
+  write_gauge_info_item(fp,"gauge.ssplaq","%f",(char *)&g_ssplaq,0,0);
+  write_gauge_info_item(fp,"gauge.stplaq","%f",(char *)&g_stplaq,0,0);
+  write_gauge_info_item(fp,"gauge.linktr.real","%f",
+			(char *)&(linktrsum.real),0,0);
+  write_gauge_info_item(fp,"gauge.linktr.imag","%f",
+			(char *)&(linktrsum.imag),0,0);
   write_gauge_info_item(fp,"quark.description","%s",quark_action_description,0,0);
 #ifdef ONEMASS
   write_gauge_info_item(fp,"quark.flavors","%d",(char *)&nflavors,0,0);

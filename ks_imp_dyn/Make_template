@@ -1,6 +1,5 @@
 #  Kogut-Susskind fermions with improved actions
 #  MIMD version 7
-#  "ks_imp3", started 1/22/99, streamline ks_imp2
 #
 #  Generic make-include file for ks_imp_dyn
 #  Use -DONEMASS to build for a single degenerate quark mass
@@ -54,7 +53,7 @@ MY_OBJECTS= \
   update_h.o \
   update_u.o
 
-G_OBJECTS0 = \
+G_OBJECTS = \
   check_unitarity.o \
   d_linktrsum.o \
   d_plaq4.o \
@@ -72,15 +71,13 @@ G_OBJECTS0 = \
   reunitarize2.o
 
 ifeq ($(strip ${QCDOC}),true)
-  G_OBJECTS1 = ${G_OBJECTS0} ploop2.o
+  G_OBJECTS += ploop2.o
 else
-  G_OBJECTS1 = ${G_OBJECTS0} ploop3.o
+  G_OBJECTS += ploop3.o
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS = ${G_OBJECTS1} io_scidac.o
-else
-  G_OBJECTS = ${G_OBJECTS1}
+  G_OBJECTS += io_scidac.o
 endif
 
 G_KS_OBJECTS = \
@@ -198,8 +195,7 @@ LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
 
 ${LASTMAKE}:
-	-/bin/rm -f .lastmake.*
-	/bin/rm -f .lastmake.* quark_action.h gauge_action.h
+	-/bin/rm -f .lastmake.* quark_action.h gauge_action.h
 	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 
