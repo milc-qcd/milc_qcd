@@ -35,12 +35,15 @@ ALL_APPS = \
   clover_invert \
   dense_static_su3 \
   file_utilities \
+  gluon_prop \
   h_dibaryon \
   heavy \
   hqet_heavy_to_light \
   hvy_qpot \
   ks_eigen \
+  ks_hl_spectrum \
   ks_imp_dyn \
+  ks_imp_rhmc \
   ks_imp_utilities \
   ks_imp_invert_multi \
   propagating_form_factor \
@@ -62,6 +65,7 @@ clover_dynamical:  	MAKE_generic_wilson MAKE_generic_clover
 clover_hybrids:  	MAKE_generic_wilson MAKE_generic_clover
 clover_invert:  	MAKE_generic_wilson MAKE_generic_clover
 dense_static_su3:  	MAKE_generic_ks 
+gluon_prop:	        MAKE_generic_ks
 h_dibaryon:  		MAKE_generic_wilson MAKE_generic_clover
 heavy:  		MAKE_generic_wilson 
 hqet_heavy_to_light:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_form
@@ -71,6 +75,7 @@ ks_hl_spectrum:	        MAKE_generic_ks MAKE_generic_wilson
 ks_imp_dyn:		MAKE_generic_ks 
 ks_imp_utilities:	MAKE_generic_ks 
 ks_imp_invert_multi:	MAKE_generic_ks 
+ks_imp_rhmc:		MAKE_generic_ks
 propagating_form_factor:  MAKE_generic_wilson MAKE_generic_clover  MAKE_generic_form
 pure_gauge: 		MAKE_generic_pg
 schroed_cl_inv:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_schroed
