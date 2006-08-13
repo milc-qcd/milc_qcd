@@ -115,6 +115,9 @@ int32type bsd_sum (char *data,int32type total_bytes);
 /* check_unitarity.c */
 Real check_unitarity( void );
 
+/* d_linktrsum */
+void d_linktrsum(double_complex *linktrsum);
+
 /* d_plaq?.c */
 void d_plaquette(double *ss_plaq,double *st_plaq);
 
@@ -243,6 +246,10 @@ su3_vector *create_raw_V_from_field(su3_vector *x, int milc_parity);
 void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
 			  int milc_parity);
 void destroy_raw_V(su3_vector *rawsu3vec);
+void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
+			  int milc_parity);
+void unload_raw_V_to_field(su3_vector *vec, su3_vector *rawsu3vec,
+			   int milc_parity);
 #endif
 
 #ifdef HAVE_QDP
