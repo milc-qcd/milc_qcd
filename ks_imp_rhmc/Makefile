@@ -45,7 +45,7 @@ CXX = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-g++
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc
-OPT              = -O3
+OPT              = -g -Wall
 
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -117,7 +117,7 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 # Edit these "wants"
 
 # Choose "true" or blank. Does not imply any other SciDAC package
-WANTQOP =
+WANTQOP = 
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
 WANTQDP = 
@@ -144,6 +144,13 @@ QLA = ${SCIDAC}/qla
 #QOP = /host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05
 QOP = ${SCIDAC}/qop
 
+# Make_template_qop defines these macros:
+# HAVEQOP
+# LIBQOP INCQOP
+# INCDEPQOP LIBDEPQOP
+
+include ../Make_template_qop
+
 # Make_template_scidac defines these macros:
 # HAVEQDP HAVEQIO HAVEQMP (Says what we are compiling with)
 # LIBSCIDAC INCSCIDAC (The -L and -I compiler and linker lists)
@@ -160,7 +167,6 @@ LD               = ${CC}
 #LDFLAGS = -Xlinker   # QCDOC
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
-LDFLAGS = -O3 -g
 
 #----------------------------------------------------------------------
 # 13. Extra libraries
