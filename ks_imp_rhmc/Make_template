@@ -41,7 +41,7 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 MY_OBJECTS= \
   control.o \
   fermion_force_fn_rhmc.o \
-  fermion_force_asqtad3_rhmc2.o \
+  fermion_force_asqtad3_rhmc.o \
   gauge_info.o \
   setup.o \
   update_h_rhmc.o \

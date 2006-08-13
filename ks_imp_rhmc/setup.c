@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.3  2006/08/13 15:16:06  detar
+//  Train error files.  Trivia.
+//
 //  Revision 1.2  2006/08/13 04:02:32  detar
 //  Switch to function pointer for selecting multicg inverter species
 //
@@ -54,7 +57,7 @@ setup()
 {
   int initial_set();
   void make_3n_gathers();
-  int i, prompt;
+  int prompt;
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();

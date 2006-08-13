@@ -25,7 +25,7 @@ PROJS = \
 
 PATTERNS = WARMUPS RUNNING
 
-out.test.${PROJ}: in.sample.${PROJ}
+out.test.${PROJ}: ${PROJ2} in.sample.${PROJ}
 	${LAUNCH} ./${PROJ2} ${LAUNCH2} < in.sample.${PROJ} > out.test.${PROJ}
 
 out.test.diff.${PROJ}: out.test${CUSTOM}.${PROJ} out.sample${CUSTOM}.${PROJ}
