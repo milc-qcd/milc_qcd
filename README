@@ -14,11 +14,11 @@ answering questions and fixing bugs.  We will be very grateful for
 reports of problems and suggestions for improvements.  These may be
 sent to 
 
-   doug@klingon.physics.arizona.edu 
+   detar@physics.utah.edu.
 
       or 
 
-   detar@physics.utah.edu.
+   doug@klingon.physics.arizona.edu 
 
 
 Target architectures:
@@ -31,27 +31,27 @@ contact us directly.
 
 Currently code is supposed to run on:
 1. Any scalar machine ("vanilla" version)
-2. Linux switched clusters via MPI
+2. Linux/Unix switched clusters via MPI
 3. MPP GigE mesh architectures
 4. QCDOC
 
 Overview of the code:
 
 Each "application", or major variant of the code, has its own
-directory.  For example, the ks_imp_dyn directory, an applications
-directory, contains code for simulating full QCD in the staggered
-fermion scheme.  The compilation requires code from the "libraries",
-"generic", and "generic_ks" directories, as well as the "ks_dynamical"
-directory itself.  All applications share the "libraries" directory
-containing low-level stuff, and the "generic" directory containing
-high level stuff that is more or less independent of the physics.  The
-various staggered fermion applications share the "generic_ks"
-directory.  Examples of "generic" code are the random number routines,
-the lattice layout routines, routines to evaluate the plaquette or
-Polyakov loop, etc.  Of the shared code, only the libraries must be
-built separately before building any application code.  Code in the
-various generic directories is compiled automatically as needed, and
-should not be compiled separately.
+directory.  For example, the ks_imp_dyn applications directory,
+contains code for simulating full QCD in the staggered fermion scheme.
+The compilation requires code from the "libraries", "generic", and
+"generic_ks" directories, as well as the "ks_dynamical" directory
+itself.  All applications share the "libraries" directory containing
+low-level stuff, and the "generic" directory containing high level
+stuff that is more or less independent of the physics.  The various
+staggered fermion applications share the "generic_ks" directory.
+Examples of "generic" code are the random number routines, the lattice
+layout routines, routines to evaluate the plaquette or Polyakov loop,
+etc.  Of the shared code, only the libraries must be built separately
+before building any application code.  Code in the various generic
+directories is compiled automatically as needed, and should not be
+compiled separately.
 
 doc:  More detailed documentation of the code
 
@@ -118,7 +118,9 @@ How to build the code:
 1. Start with the particular application on a particular machine and
    edit the Makefile according to instructions there.
 
-3. Select a particular target by consulting the Make_template file
+2. Edit the libraries/Make_vanilla make file as needed.
+
+3. Select a particular make target by consulting the Make_template file
    in the desired applications directory.
 
 4. Sample input and output files are provided for each target.
