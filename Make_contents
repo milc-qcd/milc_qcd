@@ -48,7 +48,10 @@ FILE_UTILITIES =     \
  file_utilities/*.h       \
  file_utilities/in.sample.* \
  file_utilities/out.errtol.* \
- file_utilities/out.sample.*
+ file_utilities/out.sample.* \
+ ksprop_scidac?.test.l4448.ll \
+ wprop_scidac?.test.l4448.ll
+ 
 
 BINARY_SAMPLES =      \
  binary_samples/colormatrix.*sample* \
