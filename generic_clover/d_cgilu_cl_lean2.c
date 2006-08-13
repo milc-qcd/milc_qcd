@@ -94,7 +94,7 @@ int cgilu_cl(            /* Return value is number of iterations taken */
     }
   
   /* Compute R_e and R_o */
-  make_clov_site(CKU0);
+  make_clov(CKU0);
 
   /* Invert R_o only, leaving R_e on even sites and 1/R_o on odd sites 
      in "clov" and "clov_diag" */

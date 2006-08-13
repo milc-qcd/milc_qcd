@@ -1,4 +1,4 @@
-/******************* make_clov.c **************************************/
+/******************* make_clov2.c **************************************/
 
 /* MIMD version 7 */
 /* version of 1/4/95 by UMH */
@@ -12,6 +12,12 @@
 #define LOOPEND
 #include "../include/loopend.h"
 
+/******************* global_clov *********************************/
+/* The global clover term.  Used when we are working with only one
+   clover term at a time */
+
+static clover *global_clov;
+
 /******************* create_clov ***************************************/
 /* Allocate space for a clover term */
 
@@ -22,7 +28,7 @@ clover *create_clov(void){
   my_clov->clov      = (triangular *)malloc(sites_on_node*sizeof(triangular));
   my_clov->clov_diag = (diagonal *)malloc(sites_on_node*sizeof(diagonal));
 
-  if(my_clov->clov_pt == NULL || my_clov->clov_diag ==NULL){
+  if(my_clov->clov == NULL || my_clov->clov_diag ==NULL){
     printf("create_clov(%d): malloc failed\n",this_node);
     free(my_clov);
     return NULL;
@@ -146,19 +152,6 @@ void compute_clov(clover *my_clov, Real Clov_c)
    [ 10 11 12 | 13 14  ]      [    - c(f_02 - f_13)  |		           ]
    
    */
-
-    clov = (triangular *)malloc(sites_on_node*sizeof(triangular));
-    if(clov == NULL)
-      {
-	printf("%s(%d):can't malloc clov\n",myname,this_node);
-        terminate(1);
-      }
-    clov_diag = (diagonal *)malloc(sites_on_node*sizeof(diagonal));
-    if(clov_diag == NULL)
-      {
-	printf("%s(%d) can't malloc clov_diag\n",myname,this_node);
-        terminate(1);
-      }
 
     f_mu_nu(f_mn, 0, 1);
     FORALLSITESDOMAIN(i,s){
@@ -554,14 +547,15 @@ void tr_sigma_ldu_mu_nu_site( field_offset mat, int mu, int nu )
 /* triang, diag are input & contain the color-dirac matrix
    mat is output: the resulting su3_matrix  */
 {
-  triangular *clov = &(global_clov.clov);
-  diagonal *clov_diag = &(global_clov.clov_diag);
+  triangular *clov = global_clov->clov;
+  diagonal *clov_diag = global_clov->clov_diag;
   register site *s;
   register int mm, nn;  /* dummy directions */
   register Real pm;
   register int i,j,k,jk,jk2,kj;
   Real rtmp;
   complex ctmp,ctmp1;
+  char myname[] = "tr_sigma_ldu_mu_nu_site";
   
     /* take care of the case mu > nu by flipping them and mult. by -1 */
     if( mu < nu ) {
@@ -571,7 +565,7 @@ void tr_sigma_ldu_mu_nu_site( field_offset mat, int mu, int nu )
 	mm = nu; nn = mu; pm = -1.0;
     }
     else
-	printf("BAD CALL by tr_sigma_ldu_mu_nu: mu=%d, nu=%d\n",mu,nu);
+	printf("BAD CALL by %s: mu=%d, nu=%d\n",myname,mu,nu);
 
 switch(mm) {
     case(XUP):
@@ -643,7 +637,7 @@ switch(mm) {
 	}
 	break;
 	default:
-	   printf("BAD CALL in tr_sigma_ldu_mu_nu: mu=%d, nu=%d\n",mu,nu);
+	   printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
     }
     break;
     case(YUP):
@@ -686,7 +680,7 @@ switch(mm) {
 	}
 	break;
 	default:
-	   printf("BAD CALL in tr_sigma_ldu_mu_nu: mu=%d, nu=%d\n",mu,nu);
+	   printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
     }
     break;
     case(ZUP):
@@ -722,11 +716,11 @@ switch(mm) {
 	}
 	break;
 	default:
-	   printf("BAD CALL in tr_sigma_ldu_mu_nu: mu=%d, nu=%d\n",mu,nu);
+	   printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
     }
     break;
     default:
-	printf("BAD CALL in tr_sigma_ldu_mu_nu: mu=%d, nu=%d\n",mu,nu);
+	printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
 }
 
 /* multiply by pm = +/- 1  */
@@ -750,12 +744,6 @@ void free_this_clov(clover *my_clov)
 
 } /* free_this_clov */
 
-
-/******************* global_clov *********************************/
-/* The global clover term.  Used when we are working with only one
-   clover term at a time */
-
-clover *global_clov;
 
 /******************* make_clov ***************************************/
 /* For making only the global clover term */
@@ -792,8 +780,8 @@ void mult_ldu_site(
 /******************* mult_ldu_field ***********************************/
 /* For multiplying only by the global clover term */
 void mult_ldu_field(
-  field_offset src,   /* type wilson_vector RECAST AS wilson_block_vector */
-  field_offset dest,  /* type wilson_vector RECAST AS wilson_block_vector */
+  wilson_vector *src,
+  wilson_vector *dest,
   int parity
   )
 {
