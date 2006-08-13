@@ -10,8 +10,8 @@
 #define P3mu         hwvec[3]
 #define Popmu        hwvec[4]
 #define Pmumumu      hwvec[4]
-void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off, 
-			  int nflav2, field_offset x2_off ) {
+void eo_fermion_force_two( Real eps, Real res1, Real res2,
+			   field_offset x1_off, field_offset x2_off ) {
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* 4/15/99 combine force from two different mass quarks, (eg 2+1flavors) */
@@ -35,7 +35,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 #endif
 
   /* Path coefficients times fermion epsilon */
-  ferm_epsilon = 2.0*(nflav1/4.0)*eps;
+  ferm_epsilon = 2.0*res1*eps;
   OneLink[0] = act_path_coeff[0]*ferm_epsilon;
   Naik[0]    = act_path_coeff[1]*ferm_epsilon; mNaik[0]    = -Naik[0];
   ThreeSt[0] = act_path_coeff[2]*ferm_epsilon; mThreeSt[0] = -ThreeSt[0];
@@ -43,7 +43,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   SevenSt[0] = act_path_coeff[4]*ferm_epsilon; mSevenSt[0] = -SevenSt[0];
   Lepage[0]  = act_path_coeff[5]*ferm_epsilon; mLepage[0]  = -Lepage[0];
 
-  ferm_epsilon = 2.0*(nflav2/4.0)*eps;
+  ferm_epsilon = 2.0*res2*eps;
   OneLink[1] = act_path_coeff[0]*ferm_epsilon;
   Naik[1]    = act_path_coeff[1]*ferm_epsilon; mNaik[1]    = -Naik[1];
   ThreeSt[1] = act_path_coeff[2]*ferm_epsilon; mThreeSt[1] = -ThreeSt[1];
@@ -243,7 +243,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   node0_printf("FFTIME:  %e\n",dtime);
   /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force_3f(version 6) */
+} /* eo_fermion_force_two(version 6) */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     
