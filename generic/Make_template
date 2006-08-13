@@ -19,6 +19,7 @@ G_ALL = \
  com_vanilla.o \
  d_plaq2.o \
  d_plaq4.o \
+ d_linktrsum.o \
  field_strength.o \
  gaugefix.o \
  gaugefix2.o \
@@ -38,7 +39,6 @@ G_ALL = \
  io_piofs.o \
  io_romio.o \
  io_scidac.o \
- layout_hyper.o \
  layout_hyper_prime.o \
  layout_hyper_2or3.o \
  layout_timeslices.o \
@@ -104,6 +104,8 @@ d_plaq2.o: ../generic/d_plaq2.c
 	${CC} -c ${CFLAGS} $<
 d_plaq4.o: ../generic/d_plaq4.c
 	${CC} -c ${CFLAGS} $<
+d_linktrsum.o: ../generic/d_linktrsum.c
+	${CC} -c ${CFLAGS} $<
 field_strength.o: ../generic/field_strength.c
 	${CC} -c ${CFLAGS} $<
 gaugefix.o: ../generic/gaugefix.c
@@ -144,8 +146,6 @@ io_piofs.o: ../generic/io_piofs.c
 io_romio.o: ../generic/io_romio.c
 	${CC} -c ${CFLAGS} $<
 io_scidac.o: ../generic/io_scidac.c
-	${CC} -c ${CFLAGS} $<
-layout_hyper.o: ../generic/layout_hyper.c
 	${CC} -c ${CFLAGS} $<
 layout_hyper_prime.o: ../generic/layout_hyper_prime.c
 	${CC} -c ${CFLAGS} $<

@@ -27,11 +27,14 @@ static file_type gauge_list[N_GAUGE_TYPES] =
 gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     double dtime;
     gauge_file *gf;
-    double ssplaq, stplaq;
     int do_scidac = 0;
 
-    dtime = -dclock();
+#ifndef NOLINKS
+    d_plaquette(&g_ssplaq,&g_stplaq);
+    d_linktrsum(&linktrsum);
+#endif
 
+    dtime = -dclock();
     switch( flag ){
         case FORGET:
             gf = NULL;
@@ -125,14 +128,13 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     dtime += dclock();
     if(flag != FORGET)
       node0_printf("Time to save = %e\n",dtime);
-#ifndef NOLINKS
-    d_plaquette(&ssplaq,&stplaq);
-#endif
 #if (PRECISION==1)
-    node0_printf("CHECK PLAQ: %e %e\n",ssplaq,stplaq);
+    node0_printf("CHECK PLAQ: %e %e\n",g_ssplaq,g_stplaq);
+    node0_printf("CHECK LINKTR: %e %e\n",linktrsum.real,linktrsum.imag);
 #else
     /* Double precision */
-    node0_printf("CHECK PLAQ: %.16e %.16e\n",ssplaq,stplaq);
+    node0_printf("CHECK PLAQ: %.16e %.16e\n",g_ssplaq,g_stplaq);
+    node0_printf("CHECK LINKTR: %.16e %.16e\n",linktrsum.real,linktrsum.imag);
 #endif
     return gf;
 }
@@ -147,7 +149,6 @@ void coldlat();
 gauge_file *reload_lattice( int flag, char *filename){
     double dtime;
     gauge_file *gf;
-    double ssplaq, stplaq;
     Real max_deviation, max_deviation2;
 
     dtime = -dclock();
@@ -179,14 +180,17 @@ gauge_file *reload_lattice( int flag, char *filename){
     set_boundary_fields();
 #endif
 #ifndef NOLINKS
-    d_plaquette(&ssplaq,&stplaq);
+    d_plaquette(&g_ssplaq,&g_stplaq);
+    d_linktrsum(&linktrsum);
 #endif
     if(this_node==0){
 #if (PRECISION==1)
-        printf("CHECK PLAQ: %e %e\n",ssplaq,stplaq);fflush(stdout);
+      printf("CHECK PLAQ: %e %e\n",g_ssplaq,g_stplaq);fflush(stdout);
+      printf("CHECK LINKTR: %e %e\n",linktrsum.real,linktrsum.imag);
 #else
-	/* Double precision */
-	node0_printf("CHECK PLAQ: %.16e %.16e\n",ssplaq,stplaq);fflush(stdout);
+      /* Double precision */
+      printf("CHECK PLAQ: %.16e %.16e\n",g_ssplaq,g_stplaq);fflush(stdout);
+      printf("CHECK LINKTR: %.16e %.16e\n",linktrsum.real,linktrsum.imag);
 #endif
     }
     dtime = -dclock();

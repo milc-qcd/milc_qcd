@@ -28,6 +28,7 @@ QOP_evenodd_t milc2qop_parity(int milc_parity){
     printf("qop_parity: Bad MILC parity %d\n", milc_parity);
     terminate(1);
   }
+  return -999;
 }
 
 int qop2milc_parity(QOP_evenodd_t qop_parity){
@@ -39,6 +40,7 @@ int qop2milc_parity(QOP_evenodd_t qop_parity){
     printf("milc_parity: Bad QOP parity %d\n", qop_parity);
     terminate(1);
   }
+  return -999;
 }
 
 /* Initialize QOP */
@@ -229,14 +231,14 @@ su3_vector *create_raw_V_from_site(field_offset x, int milc_parity){
 
   rawsu3vec = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
   if(rawsu3vec == NULL){
-    printf("create_raw_V_from_site_link: No room for raw vector\n");
+    printf("create_raw_V_from_site: No room for raw vector\n");
     return NULL;
   }
   
   FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
-      printf("create_raw_V_from_site_link: incompatible layout\n");
+      printf("create_raw_V_from_site: incompatible layout\n");
       return NULL;
     }
     j = QOP_node_index_raw_V(coords, milc2qop_parity(milc_parity));
@@ -248,7 +250,35 @@ su3_vector *create_raw_V_from_site(field_offset x, int milc_parity){
   return rawsu3vec;
 }
 
-/* Map raw force to MILC site structure mom */
+/* Map MILC color vector field to raw order */
+su3_vector *create_raw_V_from_field(su3_vector *x, int milc_parity){
+  int coords[4];
+  int i,j,dir;
+  site *s;
+  su3_vector *rawsu3vec = NULL;
+
+  rawsu3vec = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+  if(rawsu3vec == NULL){
+    printf("create_raw_V_from_field: No room for raw vector\n");
+    return NULL;
+  }
+  
+  FORSOMEPARITY(i,s,milc_parity){
+    site_coords(coords,s);
+    if(QOP_node_number_raw(coords) != this_node){
+      printf("create_raw_V_from_field: incompatible layout\n");
+      return NULL;
+    }
+    j = QOP_node_index_raw_V(coords, milc2qop_parity(milc_parity));
+    FORALLUPDIR(dir){
+      memcpy(rawsu3vec + j, x + i, sizeof(su3_vector));
+    }
+  }
+
+  return rawsu3vec;
+}
+
+/* Map raw su3_vector field to MILC site structure */
 void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
 			  int milc_parity){
   int coords[4];
@@ -264,6 +294,27 @@ void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
     j = QOP_node_index_raw_V(coords, milc2qop_parity(milc_parity));
     FORALLUPDIR(dir){
       memcpy((void *)F_PT(s,vec), rawsu3vec + j, sizeof(su3_vector));
+    }
+  }
+}
+
+
+/* Map raw su3_vector field to MILC field */
+void unload_raw_V_to_field(su3_vector *vec, su3_vector *rawsu3vec,
+			  int milc_parity){
+  int coords[4];
+  int i,j,dir;
+  site *s;
+
+  FORSOMEPARITY(i,s,milc_parity){
+    site_coords(coords,s);
+    if(QOP_node_number_raw(coords) != this_node){
+      printf("unload_raw_V_to_field: incompatible layout\n");
+      terminate(1);
+    }
+    j = QOP_node_index_raw_V(coords, milc2qop_parity(milc_parity));
+    FORALLUPDIR(dir){
+      memcpy(vec + i, rawsu3vec + j, sizeof(su3_vector));
     }
   }
 }
