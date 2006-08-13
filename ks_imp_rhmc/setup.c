@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.2  2006/08/13 04:02:32  detar
+//  Switch to function pointer for selecting multicg inverter species
+//
 //  Revision 1.1  2006/08/09 04:22:19  detar
 //  Adding Doug's code to repository
 //
@@ -45,13 +48,6 @@ void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
 params par_buf;
-
-// Define function pointer for multicg inverter
-// See ks_multicg_rhmc.c
-// Choices: ks_multicg_offset, ks_multicg_fake, ks_multicg_hybrid, 
-// ks_multicg_reverse, ks_multicg_revhyb
-
-ks_multicg_t ks_multicg =  ks_multicg_hybrid;
 
 int
 setup()
@@ -114,6 +110,10 @@ setup()
     shiftbck[i] = QDP_backward;
   }
 #endif
+
+  /* Select the ks_multicg inverter */
+  ks_multicg =  ks_multicg_init();
+  if(ks_multicg == NULL)terminate(1);
 
   node0_printf("Finished setup\n"); fflush(stdout);
   return( prompt );
