@@ -33,27 +33,6 @@ static su3_vector *resid;
 static su3_vector *t_dest;
 static int first_multicongrad = 1;
 
-// mock up multicg by repeated calls to ordinary cg
-int ks_multicg_fake(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *offsets,	/* the offsets */
-    int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
-    )
-{
-    int i,j,iters; site *s;
-    iters=0;
-    for(i=0;i<num_offsets;i++){
-       iters += ks_congrad( src, F_OFFSET(xxx1), 0.5*sqrt(offsets[i]), niter, rsqmin, parity, final_rsq_ptr );
-       FORALLSITES(j,s){ psim[i][j] = s->xxx1; }
-    }
-    return(iters);
-} // END fake multicg
-
 
 //#ifdef NOTDEFINED
 int ks_multicg_reverse(	/* Return value is number of iterations taken */
@@ -410,28 +389,6 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 }
 //#endif //NOTDEFINED
 
-// Do a multimass CG followed by calls to individual CG's
-// to finish off.
-int ks_multicg_hybrid(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *offsets,	/* the offsets */
-    int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
-    )
-{
-    int i,j,iters; site *s;
-    ks_multicg_offset( src, psim, offsets, num_offsets, niter, rsqmin, parity, final_rsq_ptr);
-    for(i=0;i<num_offsets;i++){
-       FORSOMEPARITY(j,s,parity){ s->xxx1 = psim[i][j]; } END_LOOP
-       iters += ks_congrad( src, F_OFFSET(xxx1), 0.5*sqrt(offsets[i]), niter/5, rsqmin, parity, final_rsq_ptr );
-       FORSOMEPARITY(j,s,parity){ psim[i][j] = s->xxx1; } END_LOOP
-    }
-    return(iters);
-}
 int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
