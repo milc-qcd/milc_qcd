@@ -100,8 +100,8 @@ int fpi_2( Real *masses, int nmasses, Real tol){
 
 	/* compute M^-1 * quark_source */
 
-	cgn += ks_multicg( F_OFFSET(quark_source), quark_props, masses, nmasses,
-	   niter, rsqprop, EVENANDODD, &finalrsq);
+	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+			nmasses, niter, rsqprop, EVENANDODD, &finalrsq);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
 	    dslash_field( quark_props[j], temp_prop, EVENANDODD );
@@ -149,8 +149,8 @@ int fpi_2( Real *masses, int nmasses, Real tol){
 	}
 
 	/* compute M^-1 * quark_source */
-	cgn += ks_multicg( F_OFFSET(quark_source), quark_props, masses, nmasses,
-	   niter, rsqprop, EVENANDODD, &finalrsq);
+	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+			nmasses, niter, rsqprop, EVENANDODD, &finalrsq);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
 	    dslash_field( quark_props[j], temp_prop, EVENANDODD );

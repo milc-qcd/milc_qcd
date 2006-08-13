@@ -128,7 +128,7 @@ if( t_source%2 != 0 ){node0_printf("Even sources only!\n"); terminate(0);}
 	}
 
 	/* compute M^-1 * quark_source */
-	cgn += ks_multicg( F_OFFSET(quark_source), quark_props, masses, nmasses,
+	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, nmasses,
 	   niter, rsqprop, EVEN, &finalrsq);
 	/* Multiply by Madjoint. Note this assumes source on even sites only */
 	/****** NEW CODE **/

@@ -49,7 +49,7 @@ int multimass_inverter( params_mminv *mminv){
   register site* s;
   register complex cc,czero;
   int x_source, y_source, z_source, t_source;
-  int sourcevec,color;	/* color for source */
+  int color;	/* color for source */
   int src_count; /* number of source time slices used */
   Real finalrsq;
   su3_vector **quark_props, **quark_props_color;
@@ -58,7 +58,6 @@ int multimass_inverter( params_mminv *mminv){
   su3_vector *wall_sink_m1,*wall_sink_m2; 
   char kssavefile_tmp[MAXFILENAME],extension[48];
   int len1,len2;
-  ks_prop_file *kspf; /* structure for opening ks prop file */
   char recxml[MAX_RECXML];
 
   cgn=0; /* number of CG iterations */
@@ -120,7 +119,7 @@ int multimass_inverter( params_mminv *mminv){
 
 		/* must use the correct block of quark_props */
 		quark_props_color = &(quark_props[nmasses*color]);
-	cgn += ks_multicg( F_OFFSET(quark_source), quark_props_color, masses, nmasses,
+	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props_color, masses, nmasses,
 	   niter, mminv->rsqprop, EVEN, &finalrsq);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
