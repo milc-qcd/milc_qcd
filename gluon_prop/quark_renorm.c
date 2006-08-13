@@ -115,30 +115,30 @@ char filename[50];
 	    if( multiflag == 0){
 		for(j_mass=0; j_mass<num_mass; j_mass++){
 		    FORALLSITES(i,s){
-			clearvec( &(s->xxx));
+			clearvec( &(s->xxx1));
 		    }
 
 		    if(parity == 0){
-			/* do a C.G. (source in phi, result in xxx) */
-			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx),
+			/* do a C.G. (source in phi, result in xxx1) */
+			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 				mass[j_mass], niter, rsqprop, EVEN, &finalrsq);
 			/* Multiply by -Madjoint */
-			dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
+			dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD);
 			mass_x2 = 2.*mass[j_mass];
 			FOREVENSITES(i,s){
-			    scalar_mult_su3_vector( &(s->xxx), -mass_x2,
+			    scalar_mult_su3_vector( &(s->xxx1), -mass_x2,
 						    &(s->ttt));
 			}
 		    }
 		    else{
-			/* do a C.G. (source in phi, result in xxx) */
-			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx),
+			/* do a C.G. (source in phi, result in xxx1) */
+			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 				mass[j_mass], niter, rsqprop, ODD, &finalrsq);
 			/* Multiply by -Madjoint */
-			dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVEN);
+			dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), EVEN);
 			mass_x2 = 2.*mass[j_mass];
 			FORODDSITES(i,s){
-			    scalar_mult_su3_vector( &(s->xxx), -mass_x2,
+			    scalar_mult_su3_vector( &(s->xxx1), -mass_x2,
 						    &(s->ttt));
 			}
 		    }
@@ -150,7 +150,7 @@ char filename[50];
 
 		    /* Fourier transform and save */
 		    restrict_fourier(F_OFFSET(ttt), F_OFFSET(cg_p),
-				     F_OFFSET(xxx), sizeof(su3_vector),
+				     F_OFFSET(xxx1), sizeof(su3_vector),
 				     FORWARDS);
 		    write_mom_ksprop(fp_mom_ks[j_mass], xi, j, F_OFFSET(ttt));
 		}
@@ -158,17 +158,17 @@ char filename[50];
 	    else{
 		if(parity == 0){
 		    /* do a multi-cg */
-		    cgn += ks_multicg( F_OFFSET(phi), psim, mass, num_mass,
+		    cgn += ks_multicg_mass( F_OFFSET(phi), psim, mass, num_mass,
 				       niter, rsqprop, EVEN, &finalrsq);
 		    /* Multiply by -Madjoint */
 		    for(j_mass=0; j_mass<num_mass; j_mass++){
 			FORALLSITES(i,s){
-			    su3vec_copy( &(psim[j_mass][i]), &(s->xxx));
+			    su3vec_copy( &(psim[j_mass][i]), &(s->xxx1));
 			}
-			dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
+			dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD);
 			mass_x2 = 2.*mass[j_mass];
 			FOREVENSITES(i,s){
-			    scalar_mult_su3_vector( &(s->xxx), -mass_x2,
+			    scalar_mult_su3_vector( &(s->xxx1), -mass_x2,
 						    &(s->ttt));
 			}
 
@@ -179,24 +179,24 @@ char filename[50];
 
 			/* Fourier transform and save */
 			restrict_fourier(F_OFFSET(ttt), F_OFFSET(cg_p),
-					 F_OFFSET(xxx), sizeof(su3_vector),
+					 F_OFFSET(xxx1), sizeof(su3_vector),
 					 FORWARDS);
 			write_mom_ksprop(fp_mom_ks[j_mass], xi, j, F_OFFSET(ttt));
 		    }
 		}
 		else{
 		    /* do a multi-cg */
-		    cgn += ks_multicg( F_OFFSET(phi), psim, mass, num_mass,
+		    cgn += ks_multicg_mass( F_OFFSET(phi), psim, mass, num_mass,
 				       niter, rsqprop, ODD, &finalrsq);
 		    /* Multiply by -Madjoint */
 		    for(j_mass=0; j_mass<num_mass; j_mass++){
 			FORALLSITES(i,s){
-			    su3vec_copy( &(psim[j_mass][i]), &(s->xxx));
+			    su3vec_copy( &(psim[j_mass][i]), &(s->xxx1));
 			}
-			dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVEN);
+			dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), EVEN);
 			mass_x2 = 2.*mass[j_mass];
 			FORODDSITES(i,s){
-			    scalar_mult_su3_vector( &(s->xxx), -mass_x2,
+			    scalar_mult_su3_vector( &(s->xxx1), -mass_x2,
 						    &(s->ttt));
 			}
 
@@ -207,7 +207,7 @@ char filename[50];
 
 			/* Fourier transform and save */
 			restrict_fourier(F_OFFSET(ttt), F_OFFSET(cg_p),
-					 F_OFFSET(xxx), sizeof(su3_vector),
+					 F_OFFSET(xxx1), sizeof(su3_vector),
 					 FORWARDS);
 			write_mom_ksprop(fp_mom_ks[j_mass], xi, j, F_OFFSET(ttt));
 		    }
@@ -243,7 +243,7 @@ char filename[50];
 		j = num_mass - j_mass;
 	    }
 	    restrict_fourier(F_OFFSET(trace_prop[j_mass]), F_OFFSET(ttt),
-			     F_OFFSET(xxx), j*sizeof(complex), FORWARDS);
+			     F_OFFSET(xxx1), j*sizeof(complex), FORWARDS);
 	}
 
 	for(j_mass=0; j_mass<num_mass; j_mass++){
