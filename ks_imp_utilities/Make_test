@@ -62,3 +62,6 @@ compare_clean:
 	-/bin/rm ksvector.test.compare colormatrix.test.compare ${KSFILES} ${FFFILES}
 
 clean: test_clean compare_clean
+
+check: test
+

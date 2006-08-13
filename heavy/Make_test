@@ -52,3 +52,7 @@ out.test.meson.${PROJ}: ${TESTOUTLIST}
 	done
 	echo "END_ALL" >> $@
 	-/bin/rm -f ${TESTOUTLIST}
+
+check: test
+
+clean: test_clean

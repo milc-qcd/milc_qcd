@@ -28,3 +28,7 @@ PATTERNS = SMEARING RUNNING
 TOL = 1e-4
 
 include ../Make_test_template
+
+check: test
+
+clean: test_clean

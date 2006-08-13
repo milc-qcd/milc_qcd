@@ -29,3 +29,6 @@ TOL = 1e-5
 
 include ../Make_test_template
 
+check: test
+
+clean: test_clean

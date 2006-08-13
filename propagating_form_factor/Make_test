@@ -66,5 +66,6 @@ out.test.2pt3pt.cl_bicg_prop_form.x: ${CL_BICG_CORRLIST}
 	echo "END_ALL" >> $@
 	-/bin/rm -f ${CL_BICG_CORRLIST} out.test.${PROJ}
 
+check: test
 
-
+clean: test_clean

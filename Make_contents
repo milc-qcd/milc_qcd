@@ -407,8 +407,9 @@ INST =                \
 
 KS =                  \
  ${GENERIC_KS}        \
- ${KS_IMP_DYN}	   \
- ${KS_IMP_RHMC}	   \
+ ${GLUON_PROP}        \
+ ${KS_IMP_DYN}	      \
+ ${KS_IMP_RHMC}	      \
  ${KS_IMP_UTILITIES}  \
  ${KS_IMP_INVERT_MULTI}
 

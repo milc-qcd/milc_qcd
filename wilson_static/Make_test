@@ -97,5 +97,6 @@ test:
 	make -f Make_${ARCH} su3_static_cg
 	make -f Make_test out.test.diff.matrix.su3_static_cg
 
+check: test
 
-
+clean: test_clean
