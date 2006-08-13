@@ -32,9 +32,6 @@
 
 //#include "../include/loopend.h"
 
-// Pointer to variable multicg inverter, defined in setup.c
-extern ks_multicg_t ks_multicg;
-
 int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
