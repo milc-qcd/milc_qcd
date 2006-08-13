@@ -81,7 +81,7 @@ void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph)
 /*----------------------------------------------------------------------*/
 /* Open, write, and close the ASCII info file */
 
-void *open_write_ks_fmprop_info_file(ks_prop_file *pf)
+void open_write_ks_fmprop_info_file(ks_prop_file *pf)
 {
   FILE *info_fp;
   char info_filename[FILENAME_MAX];
@@ -112,7 +112,7 @@ void *open_write_ks_fmprop_info_file(ks_prop_file *pf)
   fflush(stdout);
 }
   
-void *close_write_ks_fmprop_info_file(ks_prop_file *pf)
+void close_write_ks_fmprop_info_file(ks_prop_file *pf)
 {
   FILE *info_fp = pf->info_fp;
 
