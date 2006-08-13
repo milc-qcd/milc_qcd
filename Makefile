@@ -133,7 +133,7 @@ WANTQMP = true
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ${HOME}/scidac
+SCIDAC = ${HOME}/scidac-sun
 QIOSNG = $(SCIDAC)/qio-single
 QIOPAR = $(SCIDAC)/qio
 # Parallel version
@@ -172,7 +172,7 @@ LD               = ${CC}
 
 #----------------------------------------------------------------------
 # 13. Extra libraries
-LIBADD =
+LIBADD = ${HOME}/scidac-sun/qla/lib/libqla_f3.a
 
 #----------------------------------------------------------------------
 # 14. Inlining choices
@@ -196,7 +196,7 @@ INLINEOPT = -DC_INLINE # -DSSE_INLINE
 #----------------------------------------------------------------------
 # 15. Other miscellaneous macros you want for all of your compilations
 
-CODETYPE =# -DQDP_PROFILE
+CODETYPE = -DDBLSTORE_FN # -DQDP_PROFILE
 # Choices include -DPREFETCH (not recommended)
 
 #----------------------------------------------------------------------

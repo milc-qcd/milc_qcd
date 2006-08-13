@@ -3,7 +3,7 @@
 # 7/13/05 C. DeTar
 
 #  Change these names to suit
-VER = 7.1.12
+VER = 7.2.0
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -148,6 +148,15 @@ CLOVER_INVERT =            \
  clover_invert/out.errtol*     \
  clover_invert/out.sample*
 
+GLUON_PROP =                 \
+ gluon_prop/GF_555_6.1       \
+ gluon_prop/*.c              \
+ gluon_prop/*.h              \
+ gluon_prop/Make*            \
+ gluon_prop/in.sample*       \
+ gluon_prop/out.errtol*      \
+ gluon_prop/out.sample*
+
 DENSE_STATIC_SU3 =           \
  dense_static_su3/*.c             \
  dense_static_su3/*.h             \
@@ -225,6 +234,16 @@ KS_IMP_DYN =           \
  ks_imp_dyn/in.time*        \
  ks_imp_dyn/out.errtol*     \
  ks_imp_dyn/out.sample*
+
+KS_IMP_RHMC =           \
+ ks_imp_rhmc/README*         \
+ ks_imp_rhmc/*.c             \
+ ks_imp_rhmc/*.h             \
+ ks_imp_rhmc/Make*           \
+ ks_imp_rhmc/in.sample*      \
+ ks_imp_rhmc/out.errtol*     \
+ ks_imp_rhmc/out.sample*     \
+ ks_imp_rhmc/remez-milc
 
 KS_IMP_UTILITIES =           \
  ks_imp_utilities/*.c             \
@@ -389,6 +408,7 @@ INST =                \
 KS =                  \
  ${GENERIC_KS}        \
  ${KS_IMP_DYN}	   \
+ ${KS_IMP_RHMC}	   \
  ${KS_IMP_UTILITIES}  \
  ${KS_IMP_INVERT_MULTI}
 
