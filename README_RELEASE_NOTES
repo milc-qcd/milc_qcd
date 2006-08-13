@@ -1,16 +1,23 @@
-This is a work in progress.
+This is MILC Version 7 code
 
-This is the beginning of version 7 of the MILC code.
+Gradually version 6 code is being ported to it and new modules have
+been added.
 
-So far it contains only the following applications:
+So only the following applications have been tested:
 
-file-utilities
+clover_dynamical
+clover_invert
+file_utilities
+gluon_prop
+ks_hl_spectrum
 ks_imp_dyn
-ks_imp_utilities
+ks_imp_rhmc
 ks_imp_invert_multi
+ks_imp_utilities
 ks_hl_spectrum
 
-Build the code with GNU make.
+Build the code with GNU make.  See the README file in this directory
+for general instructions.
 
 Here are the new features so far:
 
@@ -85,5 +92,17 @@ Here are the new features so far:
 
 27. Add clover_invert to Version 7.
 
+For version 7.2.0
+
+28. Port clover_dynamical to Version 7
+
+29. Add RHMC code and rearrange multicg and multi fermion force procedures
+
+30. Add Level 3 wrappers for Level 3 multicg and multi fermion force
+
+31. Begin adding plaquette and link trace to file metadata.
+
+32. Add Urs's gluon_prop
+
 C. DeTar, Utah
-20 February 2006
+13 August 2006
