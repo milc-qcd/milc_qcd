@@ -5,7 +5,8 @@
 
  * This version implements the QOP API with the standard MILC algorithm
  * It is intended for comparing results with other QOP routines.
- * It is based on d_congrad5_fn.c
+ * It is based only on d_congrad5_fn.c
+ * At present it does not use the multicg inverter when it might.
 
  */
 
@@ -52,12 +53,13 @@ static int first_congrad = 1;
 
 /*  MILC imitation of Asqtad Level 3 inverter */
 
-QOP_status_t QOP_asqtad_invert(QOP_FermionLinksAsqtad *links,
-			       QOP_invert_arg_t *inv_arg, 
-			       QOP_resid_arg_t *res_arg, 
-			       Real mass,
-			       QOP_ColorVector *dest_pt,
-			       QOP_ColorVector *src_pt)
+void QOP_asqtad_invert(QOP_info_t *info,
+		       QOP_FermionLinksAsqtad *links,
+		       QOP_invert_arg_t *inv_arg, 
+		       QOP_resid_arg_t *res_arg, 
+		       Real mass,
+		       QOP_ColorVector *dest_pt,
+		       QOP_ColorVector *src_pt)
 {
   register int i;
   register site *s;
@@ -72,9 +74,7 @@ QOP_status_t QOP_asqtad_invert(QOP_FermionLinksAsqtad *links,
   msg_tag * tags1[16], *tags2[16];	/* tags for gathers to parity and opposite */
   int special_started;	/* 1 if dslash_fn_field_special has been called */
   QOP_evenodd_t qop_parity = inv_arg->evenodd;
-  int parity = qop2milc_parity(qop_parity);
-
-  /* parity requested */
+  int parity = qop2milc_parity(qop_parity);   /* parity requested */
   Real rsqmin         = res_arg->rsqmin;
   int niter           = inv_arg->max_iter;
   int max_restart     = inv_arg->restart;
@@ -86,13 +86,8 @@ QOP_status_t QOP_asqtad_invert(QOP_FermionLinksAsqtad *links,
   
   /* Timing */
   
-  double dtimec = 0;
-  double nflop;
-  
-  /* debug */
-  dtimec = -dclock(); 
-  
-  nflop = 1187;
+  double dtimec = -dclock();;
+  double nflop = 1187;
   
   /* Parity consistency is required */
   if(src_pt->evenodd != dest_pt->evenodd ||
@@ -204,18 +199,18 @@ start:
 
 	    /* Save diagnostics */
             res_arg->final_rsq=(Real)rsq;
-	    res_arg->final_iter = iteration;
-	    inv_arg->final_iter += iteration;
+	    res_arg->final_iter += iteration;
 	    final_flop = (double)(nflop*volume*iteration)/(double)numnodes();
-	    inv_arg->final_flop += final_flop;
+	    info->final_flop += final_flop;
 	    dtimec += dclock();
-	    inv_arg->final_sec  += dtimec;
+	    info->final_sec  += dtimec;
 #ifdef CGTIME
 	    node0_printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 			 dtimec,iteration,final_flop/(1.0e6*dtimec) );
 	    fflush(stdout);
 #endif
-	    return QOP_SUCCESS;
+	    info->status = QOP_SUCCESS;
+	    return;
         }
 
 #ifdef CG_DEBUG
@@ -317,18 +312,19 @@ start:
 
 	    /* Save diagnostics */
             res_arg->final_rsq  = (Real)rsq;
-	    inv_arg->final_iter += iteration;
+	    res_arg->final_iter += iteration;
 	    final_flop = (double)(nflop*volume*iteration)/(double)numnodes();
-	    inv_arg->final_flop += final_flop;
+	    info->final_flop += final_flop;
 	    dtimec += dclock();
-	    inv_arg->final_sec  += dtimec;
+	    info->final_sec  += dtimec;
 #ifdef CGTIME
 	    node0_printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 			 dtimec,iteration,final_flop/(1.0e6*dtimec) );
 	    fflush(stdout);
 #endif
 
-	    return QOP_SUCCESS;
+	    info->status = QOP_SUCCESS;
+	    return;
         }
 
 	b = (Real)rsq/oldrsq;
@@ -371,44 +367,16 @@ start:
     /* Save diagnostics */
 
     res_arg->final_rsq  =(Real)rsq;
-    inv_arg->final_iter += iteration;
+    res_arg->final_iter += iteration;
     final_flop = (double)(nflop*volume*iteration)/(double)numnodes();
-    inv_arg->final_flop += final_flop;
+    info->final_flop += final_flop;
     dtimec += dclock();
-    inv_arg->final_sec  += dtimec;
+    info->final_sec  += dtimec;
 #ifdef CGTIME
     node0_printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 		 dtimec,iteration,final_flop/(1.0e6*dtimec) );
     fflush(stdout);
 #endif
-    return QOP_FAIL;
+    info->status = QOP_FAIL;
 }
 
-/* Just do repeated single inversions */
-QOP_status_t QOP_asqtad_invert_multi(QOP_FermionLinksAsqtad *links,
-				     QOP_invert_arg_t *inv_arg,
-				     QOP_resid_arg_t **res_arg[],
-				     Real *masses[], int nmass[],
-				     QOP_ColorVector **dest_pt[],
-				     QOP_ColorVector *src_pt[],
-				     int nsrc){
-  int isrc, imass;
-  QOP_status_t status;
-  Real cum_sec = 0;
-  Real cum_flop = 0;
-  int cum_iter = 0;
-
-  for(isrc = 0; isrc < nsrc; isrc++){
-    for(imass = 0; imass < nmass[isrc]; imass++){
-
-      /* Do the inversion */
-      status = QOP_asqtad_invert(links, inv_arg, res_arg[isrc][imass],
-				 masses[isrc][imass],
-				 dest_pt[isrc][imass], src_pt[isrc]);
-      if(status != QOP_SUCCESS)break;
-    }
-    if(status != QOP_SUCCESS)break;
-  }
-
-  return status;
-}

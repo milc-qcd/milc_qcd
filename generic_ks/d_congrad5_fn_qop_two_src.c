@@ -51,10 +51,10 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   milc_sols[0] = milc_sols0;
   milc_sols[1] = milc_sols1;
 
-  iterations_used = ks_congrad_qop( niter, rsqmin, 
-				    masses, nmass, milc_srcs,
-				    milc_sols, nsrc, final_rsq_ptr,
-				    milc_parity );
+  iterations_used = ks_congrad_qop_site2site( niter, rsqmin, 
+					      masses, nmass, milc_srcs,
+					      milc_sols, nsrc, final_rsq_ptr,
+					      milc_parity );
 
   total_iters += iterations_used;
   return( iterations_used );
