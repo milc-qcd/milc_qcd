@@ -47,6 +47,12 @@ int ks_congrad_qop(int niter, Real rsqmin,
 		   field_offset milc_srcs[], field_offset *milc_sols[],
 		   int nsrc, Real* final_rsq_ptr, int milc_parity );
 
+int ks_congrad_qop_site2field(int niter, Real rsqmin, 
+			      Real *masses[], int nmass[], 
+			      field_offset milc_srcs[], 
+			      su3_vector **milc_sols[],
+			      int nsrc, Real* final_rsq_ptr, int milc_parity );
+
 int ks_congrad( field_offset src, field_offset dest, Real mass,
      int niter, Real rsqmin, int parity, Real *rsq );
 
@@ -341,9 +347,9 @@ void make_path_table();
 int get_num_q_paths();
 Q_path *get_q_paths();
 Real *get_quark_path_coeff();
-void eo_fermion_force( Real eps, Real weight, field_offset x_off );
-void eo_fermion_force_two( Real eps, Real weight1, Real weight2,
-			   field_offset x1_off, field_offset x2_off );
+void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off );
+void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
+				field_offset x1_off, field_offset x2_off );
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
 			     int nterms );
 void load_longlinks();
