@@ -266,7 +266,7 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
 
   free(zeta_i);       zeta_i = NULL;
   free(zeta_ip1);     zeta_ip1 = NULL;
-  free(zeta_im1);     zetz_im1 = NULL;
+  free(zeta_im1);     zeta_im1 = NULL;
   free(beta_i);       beta_i = NULL;
   free(beta_im1);     beta_im1 = NULL;
   free(alpha);        alpha = NULL;
