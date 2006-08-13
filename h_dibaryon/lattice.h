@@ -96,6 +96,8 @@ EXTERN	int num_kap_heavy;	/* number of heavy kappas <= MAX_KAP */
 EXTERN	int num_kap_light;	/* number of light kappas <= MAX_KAP */
 EXTERN  int nr_forw_back;       /* NR source forw (1) backw (2) both (3) */
 EXTERN	char startfile[MAXFILENAME], savefile[MAXFILENAME];
+EXTERN  double g_ssplaq, g_stplaq;
+EXTERN  double_complex linktrsum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char savefile_w[MAX_KAP][MAXFILENAME], startfile_w[MAX_KAP][MAXFILENAME];
 EXTERN  char scratchstem_w[MAXFILENAME];

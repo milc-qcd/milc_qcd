@@ -124,6 +124,8 @@ EXTERN	Real clov_c,u0;
 EXTERN  Real byterevReal;  /* flag to bytereverse lattice */
 
 EXTERN	char startfile[MAXFILENAME] ; /*** file containing the gauge configurations ***/
+EXTERN  double g_ssplaq, g_stplaq;
+EXTERN  double_complex linktrsum;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN  int fixflag;  /* gauge fix: COULOMB_GAUGE_FIX, NO_GAUGE_FIX */
 
