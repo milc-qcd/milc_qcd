@@ -154,13 +154,21 @@ else
 endif
 
 # Selection of the multimass inverter
-ifeq ($(strip ${HAVEQDP}),true)
-  QDP_OBJECTS = stuff_qdp.o
-  INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
-  MULTI_INV_FN = ks_multicg_qdp.o
-else
+ifeq ($(strip ${HAVEQOP}),true)
+# Standard QOP interface
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
-  MULTI_INV_FN = ks_multicg.o
+  MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop.o
+  # The implementation of the interface (if not packaged)
+  MULTI_INV_FN += ${ASQMULTICGQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    QDP_OBJECTS = stuff_qdp.o
+    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
+    MULTI_INV_FN = ks_multicg_qdp.o
+  else
+    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
+    MULTI_INV_FN = ks_multicg.o ks_multicg_offset.o
+  endif
 endif
 
 # EDRAM allocation for QCDOC
