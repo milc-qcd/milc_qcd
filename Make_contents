@@ -49,8 +49,8 @@ FILE_UTILITIES =     \
  file_utilities/in.sample.* \
  file_utilities/out.errtol.* \
  file_utilities/out.sample.* \
- ksprop_scidac?.test.l4448.ll \
- wprop_scidac?.test.l4448.ll
+ file_utilities/ksprop_scidac?.test.l4448.ll \
+ file_utilities/wprop_scidac?.test.l4448.ll
  
 
 BINARY_SAMPLES =      \
@@ -131,7 +131,7 @@ CLOVER_DYNAMICAL =          \
  clover_dynamical/*.h            \
  clover_dynamical/Make*          \
  clover_dynamical/in.sample*     \
-# clover_dynamical/out.errtol*     \
+ clover_dynamical/out.errtol*     \
  clover_dynamical/out.sample*
 
 CLOVER_HYBRIDS =            \

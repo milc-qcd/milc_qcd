@@ -172,7 +172,7 @@ LD               = ${CC}
 
 #----------------------------------------------------------------------
 # 13. Extra libraries
-LIBADD = ${HOME}/scidac-sun/qla/lib/libqla_f3.a
+LIBADD = ${QLA}/lib/libqla_f3.a
 
 #----------------------------------------------------------------------
 # 14. Inlining choices
