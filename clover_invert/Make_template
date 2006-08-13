@@ -45,6 +45,7 @@ MY_OBJECTS =         \
 # Basic set from generic directory
 G_OBJECTS =          \
   check_unitarity.o  \
+  d_linktrsum.o      \
   d_plaq4.o          \
   gaugefix2.o        \
   io_detect.o        \
@@ -135,13 +136,6 @@ ALL_MAKES = \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
-# Common compiler macros
-
-# Optional DEFINES for timing:
-# -DIOTIME for I/O timing
-# -DPRTIME for propagator timing
-# -DCGTIME for cg timing and iterations
-
 ifeq ($(strip ${QCDOC}),true)
   DQCDOC = -DQCDOC
 endif
@@ -165,7 +159,6 @@ endif
 DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 ##### Targets:
-# Note: we prefer double precison version of inverters {for global sums}
 
 # Choices for clover inverter are
 # d_bicgilu_cl_lean3.o 
@@ -173,6 +166,13 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 # d_dgilu_cl_lean.o 
 # d_hopilu_cl_lean2.o 
 # d_mrilu_cl_lean.o
+
+# Common compiler macros
+
+# Optional DEFINES for timing:
+# -DIOTIME for I/O timing
+# -DPRTIME for propagator timing
+# -DCGTIME for cg timing and iterations
 
 su3_clov_cg::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
