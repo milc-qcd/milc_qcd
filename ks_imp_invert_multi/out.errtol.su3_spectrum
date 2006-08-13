@@ -78,13 +78,25 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 ENDPROP
 multimass_inverter(): source time = 0
 Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 3e-06 frac. = 8e-05
 Inversion checked, frac. error = 7e-05
+Flagged comparisons = 0
+Max err. = 1e-05 frac. = 0.0002
 Inversion checked, frac. error = 3e-05
+Flagged comparisons = 0
+Max err. = 3e-06 frac. = 7e-05
 Inversion checked, frac. error = 0.0001
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 0.0004
 Inversion checked, frac. error = 2e-05
+Flagged comparisons = 0
+Max err. = 5e-06 frac. = 0.0001
 Inversion checked, frac. error = 7e-05
-Wrote KS prop file ks.test.l4448_m0.0500_nt0 time stamp XXX XXX 100 100 1000
-Wrote KS prop file ks.test.l4448_m0.0200_nt0 time stamp XXX XXX 100 100 1000
+Flagged comparisons = 0
+Max err. = 2e-05 frac. = 0.0004
+Wrote KS prop file XXX time stamp XXX XXX 100 100 1000
+Wrote KS prop file XXX time stamp XXX XXX 100 100 1000
 STARTPROP
 MASSES: 0 0
 SOURCE: POINT

@@ -18,11 +18,10 @@
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 
 int main( int argc, char **argv ){
-  int meascount,traj_done;
+  int meascount;
   int prompt;
-  int s_iters,avspect_iters;
+  int avspect_iters;
   double dtime, fixtime, dclock();
-  ks_prop_file *kspf;
   
   initialize_machine(argc,argv);
 #ifdef HAVE_QDP

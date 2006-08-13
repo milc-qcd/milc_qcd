@@ -66,7 +66,7 @@ typedef struct {
  	su3_vector phi;		/* Gaussian random source vector */
  	su3_vector resid;	/* conjugate gradient residual vector */
  	su3_vector cg_p;	/* conjugate gradient change vector */
- 	su3_vector xxx;		/* solution vector = Kinverse * phi */
+ 	su3_vector xxx1;	/* solution vector = Kinverse * phi */
  	su3_vector ttt;		/* temporary vector, for K*ppp */
  	su3_vector g_rand;	/* Gaussian random vector*/
 	/* Use trick of combining xxx=D^adj D)^(-1) on even sites with
@@ -119,6 +119,8 @@ EXTERN  int fixflag;  /* gauge fix: COULOMB_GAUGE_FIX, NO_GAUGE_FIX */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
 			   SAVE_CHECKPOINT */
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  double g_ssplaq, g_stplaq;
+EXTERN  double_complex linktrsum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  int kssaveflag; /* save KS propagator or not */
 	/* forget_ks, save_ks_ascii, save_ks_serial, save_ks_serial_fm, save_ks_serial_tslice */

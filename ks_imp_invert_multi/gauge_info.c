@@ -24,6 +24,7 @@
 
 #include "ks_imp_includes.h"
 #include <quark_action.h>
+#include <string.h>
 /*---------------------------------------------------------------------------*/
 /* This routine writes the ASCII info file.  It is called from one of
    the lattice output routines in io_lat4.c.*/

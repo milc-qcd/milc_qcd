@@ -41,7 +41,7 @@ void make_3n_gathers();
 params par_buf;
 
 int  setup()   {
-    int i, prompt;
+    int prompt;
 
 	/* print banner, get volume, seed */
     prompt=initial_set();
