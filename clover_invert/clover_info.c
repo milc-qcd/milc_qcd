@@ -166,10 +166,11 @@ char *create_w_QCDML(){
 				  "%s",sums,0,0);
 	}
     }
-  else
+  else {
     bytes = strlen(info);
-  sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.fix.description","%s",
-			  "No gauge fixing",0,0);
+    sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.fix.description","%s",
+			    "No gauge fixing",0,0);
+  }
   bytes = strlen(info);
   sprint_w_prop_info_item(info+bytes, max-bytes,"quark.description","%s",
 			  "Clover",0,0);
