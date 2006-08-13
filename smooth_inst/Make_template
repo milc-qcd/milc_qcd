@@ -50,6 +50,7 @@ MY_OBJECTS= \
 G_OBJECTS = \
  check_unitarity.o \
  d_plaq4.o \
+  d_linktrsum.o \
  io_helpers.o \
  ${IO_LAT_REAL} \
  make_lattice.o \

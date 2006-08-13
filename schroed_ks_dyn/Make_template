@@ -68,6 +68,7 @@ G_OBJECTS =          \
   make_lattice.o     \
   plaquette4.o       \
   d_plaq2.o          \
+  d_linktrsum.o \
   ranstuff.o         \
   ranmom.o           \
   reunitarize2.o

@@ -90,6 +90,8 @@ EXTERN	int niter, num_src, r0;
 EXTERN	Real smear_fac;
 EXTERN	Real mass, rsqmin;
 EXTERN	char startfile[MAXFILENAME], savefile[MAXFILENAME];
+EXTERN  double g_ssplaq, g_stplaq;
+EXTERN  double_complex linktrsum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN	int saveflag;	/* do with lattice: 1=save; */

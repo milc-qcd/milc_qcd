@@ -1,7 +1,7 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice_w.h ********************************/
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.2 2005/07/14 02:45:03 detar Exp $   **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.3 2006/08/13 19:53:52 detar Exp $   **/
 /* include file for MIMD heavy-light, version 4
    This file defines global scalars and the fields in the lattice. */
 
@@ -109,6 +109,8 @@ EXTERN  int end_kap,end_spin,end_color; /******end values of
 EXTERN	int niter,nrestart,nhop,flag;
 EXTERN	Real rsqmin,rsqprop,beta,kappa_c,width;
 EXTERN	char startfile[MAXFILENAME],savefile_w[MAX_NKAP][MAXFILENAME];
+EXTERN  double g_ssplaq, g_stplaq;
+EXTERN  double_complex linktrsum;
 EXTERN  char startfile_w[MAX_NKAP][MAXFILENAME],savefile_m[MAX_NKAP][MAXFILENAME];
 EXTERN  char savefile[MAXFILENAME];  /** ending gauge file name ***/
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/

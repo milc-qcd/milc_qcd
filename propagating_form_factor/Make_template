@@ -110,6 +110,7 @@ G_OBJECTS = \
         ${LAYOUT}.o\
         bsd_sum.o\
         check_unitarity.o\
+  d_linktrsum.o \
 	d_plaq4.o \
 	io_helpers.o\
 	io_helpers_w.o\

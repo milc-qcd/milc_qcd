@@ -57,6 +57,7 @@ G_OBJECTS =          \
   ${IO_LAT_REAL}     \
   make_lattice.o     \
   plaquette4.o       \
+  d_linktrsum.o \
   d_plaq4.o
 # Basic set from generic_wilson directory
 G_WILSON_OBJECTS =   \

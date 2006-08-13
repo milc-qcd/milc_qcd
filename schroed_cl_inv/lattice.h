@@ -79,6 +79,8 @@ EXTERN	int num_kap;		/* max number of kappa's <= MAX_KAP */
 EXTERN	int bc_flag;		/* flag for gauge field bc */
 EXTERN	Real ferm_phases[3];	/* fermion phase factors */
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
+EXTERN  double g_ssplaq, g_stplaq;
+EXTERN  double_complex linktrsum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;		/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN	int total_iters;
