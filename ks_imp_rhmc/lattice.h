@@ -16,6 +16,7 @@
 
 #include "defines.h"
 #include "../include/generic_quark_types.h"
+#include "../include/generic_ks.h" /* For ks_multicg_t */
 #include "../include/random.h"    /* For double_prn */
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
@@ -154,6 +155,8 @@ EXTERN gauge_file *startlat_p;
    generator state */
 EXTERN double_prn node_prn ;
 
+/* Pointer to the multicg inverter we select */
+EXTERN ks_multicg_t ks_multicg;
 
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
