@@ -22,8 +22,8 @@
 
 /*
  * 10/01/02, flopcount for ASQ_OPTIMIZED - C. DeTar
- * Fermion force: 253935 for eo_fermion_force()
- * Fermion force: 433968 for eo_fermion_force_3f()
+ * Fermion force: 253935 for eo_fermion_force_oneterm()
+ * Fermion force: 433968 for eo_fermion_force_twoterms()
  */
 
 /**#define FFTIME**/
@@ -48,11 +48,12 @@
    x_off, and dslash_site(x_off,x_off,ODD) has been run. (fills in x_off_odd) */
 /* SEE LONG COMMENTS AT END */
 
-void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
+void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off ){
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
+  /* For example weight = nflavors/4 */
   register int i,dir,lastdir,ipath,ilink;
   register site *s;
   int length;
@@ -71,7 +72,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
 #ifdef FFTIME
 dtime=-dclock();
 #endif
-  ferm_epsilon = 2.0*(nflavors/4.0)*eps;
+  ferm_epsilon = 2.0*weight*eps;
   hw_tmp0 = (half_wilson_vector *)
     malloc(sites_on_node*sizeof(half_wilson_vector) );
   hw_tmp1 = (half_wilson_vector *)
@@ -176,19 +177,20 @@ node0_printf("FFTIME:  time = %e (1 mass) mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force(version 7) */
+} /* eo_fermion_force_oneterm (version 7) */
 
 /**********************************************************************/
 /*   Version for two sets of flavors with distinct masses             */
 /**********************************************************************/
 
-void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
-  int nflav2, field_offset x2_off ){
+void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, field_offset x1_off,
+  field_offset x2_off ){
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* 4/14/99 combine force from two different mass quarks, (eg 2+1flavors) */
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
+  /* For example weight1 = nflavor1/4; weight2 = nflavor2/4 */
   register int i,dir,lastdir,ipath,ilink;
   register site *s;
   int length;
@@ -206,8 +208,8 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 #ifdef FFTIME
 dtime=-dclock();
 #endif
-  ferm_epsilon1 = 2.0*(nflav1/4.0)*eps;
-  ferm_epsilon2 = 2.0*(nflav2/4.0)*eps;
+  ferm_epsilon1 = 2.0*weight1*eps;
+  ferm_epsilon2 = 2.0*weight2*eps;
   w_tmp0 = (wilson_vector *)
     malloc(sites_on_node*sizeof(wilson_vector) );
   w_tmp1 = (wilson_vector *)
@@ -324,7 +326,7 @@ node0_printf("FFTIME:  time = %e (2 mass) mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force_3f(version 7) */
+} /* eo_fermion_force_twoterms (version 7) */
 
 /* LONG COMMENTS
    Here we have combined "xxx", (offset "x_off")  which is

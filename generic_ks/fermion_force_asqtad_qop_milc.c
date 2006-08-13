@@ -36,8 +36,8 @@
 
 /*
  * 10/01/02, flopcount for ASQ_OPTIMIZED - C. DeTar
- * Fermion force: 253935 for eo_fermion_force()
- * Fermion force: 433968 for eo_fermion_force_3f()
+ * Fermion force: 253935 for QOP_asqtad_force()
+ * Fermion force: 433968 for QOP_asqtad_force_two()
  */
 
 /**#define FFTIME**/
@@ -45,6 +45,7 @@
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/qop_milc.h"
+#include <string.h>
 
 void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
 				      half_wilson_vector **src_pt, 
@@ -115,10 +116,11 @@ static su3_vector *temp_x;
 #define P3mu         tempvec[3]
 #define Popmu        tempvec[4]
 #define Pmumumu      tempvec[4]
-QOP_status_t QOP_asqtad_force(QOP_GaugeField *gauge,
-			      QOP_Force *force,
-			      QOP_asqtad_coeffs_t *coeffs, Real eps,
-			      QOP_ColorVector *in_pt){
+void QOP_asqtad_force(QOP_info_t *info,
+		      QOP_GaugeField *gauge,
+		      QOP_Force *force,
+		      QOP_asqtad_coeffs_t *coeffs, Real eps,
+		      QOP_ColorVector *in_pt){
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
@@ -133,12 +135,11 @@ QOP_status_t QOP_asqtad_force(QOP_GaugeField *gauge,
   su3_vector *temp_x ;
   int dir;
 
-#ifdef FFTIME
-  int nflop = 253935;
-  double dtime;
+  /* Timing */
 
-  dtime=-dclock();
-#endif
+  Real final_flop;
+  Real nflop = 253935;
+  double dtime = -dclock();
   
   /* Parity requirements */
   if(gauge->evenodd != QOP_EVENODD ||
@@ -305,14 +306,17 @@ QOP_status_t QOP_asqtad_force(QOP_GaugeField *gauge,
   for(mu=0;mu<8;mu++)
     free(tempvec[mu]) ;
 
-#ifdef FFTIME
+  final_flop = (Real)nflop*volume/numnodes();
   dtime += dclock();
-node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
-	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
-/**printf("TLENGTH: %d\n",tlength);**/
- return QOP_SUCCESS; 
+#ifdef FFTIME
+  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+	       final_flop/(1.0e6*dtime) );
 #endif
-} /* eo_fermion_force(version 7) */
+
+ info->final_sec = dtime; 
+ info->final_flop = final_flop;
+ info->status = QOP_SUCCESS; 
+} /* QOP_asqtad_force(version 7) */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     
@@ -335,10 +339,11 @@ static su3_matrix *tmpmom[4];
 static su3_vector *temp_x1;
 static su3_vector *temp_x2;
 
-QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
-				    QOP_Force *force,
-				    QOP_asqtad_coeffs_t *coef, Real eps[],
-				    QOP_ColorVector *in_pt[], int nsrc){
+void QOP_asqtad_force_multi(QOP_info_t *info,
+			    QOP_GaugeField *gauge,
+			    QOP_Force *force,
+			    QOP_asqtad_coeffs_t *coef, Real eps[],
+			    QOP_ColorVector *in_pt[], int nsrc){
 
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
@@ -365,16 +370,11 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
   half_wilson_vector *hw[8];
   int isrc;
 
-#ifdef FFSTIME
-  double time;
-#endif
+  /* Timing */
 
-#ifdef FFTIME
-  int nflop = 433968;
-  double dtime;
-
-  dtime=-dclock();
-#endif
+  Real final_flop;
+  double dtime = -dclock();
+  Real nflop = 433968;
 
   if(nsrc != 2){
     printf("QOP_asqtad_force_multi: This implementation doesn't do %d sources\n",nsrc);
@@ -411,7 +411,7 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
     pt = (half_wilson_vector *)
       special_alloc(sites_on_node*sizeof(half_wilson_vector));
     if(pt == NULL){
-      printf("eo_fermion_force_3f: No room for hw\n");
+      printf("QOP_asqtad_force_multi: No room for hw\n");
       terminate(1);
     }
     hw[mu] = pt;
@@ -420,14 +420,14 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
   Pmu = 
     (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
   if(Pmu == NULL){
-    printf("eo_fermion_force_3f: No room for Pmu\n");
+    printf("QOP_asqtad_force_multi: No room for Pmu\n");
     terminate(1);
   }
   
   Pmumu = 
     (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
   if(Pmumu == NULL){
-    printf("eo_fermion_force_3f: No room for Pmumu\n");
+    printf("QOP_asqtad_force_multi: No room for Pmumu\n");
     terminate(1);
   }
   
@@ -436,13 +436,13 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
     P3[mu]=
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(P3[mu] == NULL){
-      printf("eo_fermion_force_3f: No room for P3\n");
+      printf("QOP_asqtad_fermion_force: No room for P3\n");
       terminate(1);
     }
     P5[mu]=
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(P5[mu] == NULL){
-      printf("eo_fermion_force_3f: No room for P5\n");
+      printf("QOP_asqtad_fermion_force: No room for P5\n");
       terminate(1);
     }
   }
@@ -455,7 +455,7 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
     su3_matrix *pt;
     pt = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
     if(pt == NULL){
-      printf("eo_fermion_force_3f: No room for backwardlink\n");
+      printf("QOP_asqtad_fermion_force: No room for backwardlink\n");
       terminate(1);
     }
     backwardlink[dir] = pt;
@@ -498,7 +498,7 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
     temp_hw[mu] = 
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(temp_hw[mu] == NULL){
-      printf("eo_fermion_force_3f: No room for temp_hw\n");
+      printf("QOP_asqtad_fermion_force: No room for temp_hw\n");
       terminate(1);
     }
   }
@@ -746,16 +746,17 @@ QOP_status_t QOP_asqtad_force_multi(QOP_GaugeField *gauge,
   for(mu = 0; mu < 8; mu++)
     if(mt[mu] != NULL)cleanup_gather(mt[mu]);
   
-#ifdef FFTIME
+  final_flop = (Real)nflop*volume/numnodes();
   dtime += dclock();
+#ifdef FFTIME
 node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
-  /**printf("TLENGTH: %d\n",tlength);**/
- return QOP_SUCCESS; 
 #endif
 
-
-} /* eo_fermion_force_3f */
+ info->final_sec = dtime; 
+ info->final_flop = final_flop;
+ info->status = QOP_SUCCESS; 
+} /* QOP_asqtad_force_multi */
 
 /*   Covariant shift of the src fermion field in the direction dir  *
  *  by one unit. The result is stored in dest.                       */ 

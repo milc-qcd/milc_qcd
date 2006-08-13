@@ -1,4 +1,4 @@
-/****** fermion_force_asqtad.c  -- ******************/
+/****** fermion_force_asqtad3.c  -- ******************/
 /* MIMD version 7 */
 /* fermion force optimized for the Asqtad action
  * Uses restart-gathers and a bit more memory for better performance
@@ -20,6 +20,7 @@
  *                Worked with pointers where possible to avoid copying.
  * C.D. 6/04 Corrected memory leak
  * C.D. 3/05 Separated from quark_stuff4.c
+ * D.T. 12/05 First try at RHMC version
  *
  * In this directory, assume all paths connect even to odd sites, etc.
  * Tabulate "backwards" paths (e.g. "XDOWN" is backward path to "XUP")
@@ -30,15 +31,15 @@
 
 /*
  * 10/01/02, flopcount for ASQ_OPTIMIZED - C. DeTar
- * Fermion force: 253935 for eo_fermion_force()
- * Fermion force: 433968 for eo_fermion_force_3f()
+ * Fermion force: 253935 for eo_fermion_force_oneterm()
+ * Fermion force: 433968 for eo_fermion_force_twoterms()
  */
 
 /**#define FFTIME**/
 /**#define FFSTIME**/
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
-
+#include <string.h>
 
 /* This routine is valid only for Asqtad, so requires the FN flag */
 #ifndef FN
@@ -63,6 +64,13 @@ void side_link_3f_force(int mu, int nu, Real coeff[2],
 			half_wilson_vector *Path_nu, 
 			half_wilson_vector *Path_mu, 
 			half_wilson_vector *Path_numu) ;
+void u_shift_veclist_fermion(veclist *src, veclist *dest, 
+	     int dir, msg_tag **mtag, veclist *tmpvec, int listlength );
+void add_3f_force_to_mom_list(veclist *back,
+	 veclist *forw, int dir, Real coeff[2], int listlength ) ;
+void side_link_3f_force_list(int mu, int nu, Real *coeff, 
+	veclist *Path, veclist *Path_nu, 
+	veclist *Path_mu, veclist *Path_numu, int listlength ) ;
 
 #ifdef QCDOC
 #define special_alloc qcdoc_alloc
@@ -92,11 +100,12 @@ void side_link_3f_force(int mu, int nu, Real coeff[2],
 #define P3mu         tempvec[3]
 #define Popmu        tempvec[4]
 #define Pmumumu      tempvec[4]
-void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
+void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off ){
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
+  /* For example weight = nflavors/4 */
   register int i ;
   register site *s;
   int mu,nu,rho,sig ;
@@ -113,7 +122,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
 
   dtime=-dclock();
 #endif
-  ferm_epsilon = 2.0*(nflavors/4.0)*eps;
+  ferm_epsilon = 2.0*weight*eps;
   
   /* Load path coefficients from table */
   act_path_coeff = get_quark_path_coeff();
@@ -273,7 +282,7 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force(version 7) */
+} /* eo_fermion_force_oneterm (version 7) */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     
@@ -294,13 +303,14 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 su3_matrix *backwardlink[4];
 anti_hermitmat *tempmom[4];
 
-void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off, 
-			  int nflav2, field_offset x2_off ) {
+void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
+			  field_offset x1_off, field_offset x2_off ) {
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* 4/15/99 combine force from two different mass quarks, (eg 2+1flavors) */
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
+  /* For example weight1 = nflavor1/4; weight2 = nflavor2/4 */
   int i;
   site *s;
   int mu,nu,rho,sig;
@@ -338,7 +348,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     pt = (half_wilson_vector *)
       special_alloc(sites_on_node*sizeof(half_wilson_vector));
     if(pt == NULL){
-      printf("eo_fermion_force_3f: No room for hw\n");
+      printf("eo_fermion_force_twoterms: No room for hw\n");
       terminate(1);
     }
     hw[mu] = pt;
@@ -347,14 +357,14 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   Pmu = 
     (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
   if(Pmu == NULL){
-    printf("eo_fermion_force_3f: No room for Pmu\n");
+    printf("eo_fermion_force_twoterms: No room for Pmu\n");
     terminate(1);
   }
   
   Pmumu = 
     (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
   if(Pmumu == NULL){
-    printf("eo_fermion_force_3f: No room for Pmumu\n");
+    printf("eo_fermion_force_twoterms: No room for Pmumu\n");
     terminate(1);
   }
   
@@ -363,13 +373,13 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     P3[mu]=
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(P3[mu] == NULL){
-      printf("eo_fermion_force_3f: No room for P3\n");
+      printf("eo_fermion_force_twoterms: No room for P3\n");
       terminate(1);
     }
     P5[mu]=
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(P5[mu] == NULL){
-      printf("eo_fermion_force_3f: No room for P5\n");
+      printf("eo_fermion_force_twoterms: No room for P5\n");
       terminate(1);
     }
   }
@@ -382,7 +392,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     su3_matrix *pt;
     pt = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
     if(pt == NULL){
-      printf("eo_fermion_force_3f: No room for backwardlink\n");
+      printf("eo_fermion_force_twoterms: No room for backwardlink\n");
       terminate(1);
     }
     backwardlink[dir] = pt;
@@ -406,7 +416,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     anti_hermitmat *pt;
     pt = (anti_hermitmat *)malloc(sites_on_node*sizeof(anti_hermitmat));
     if(pt == NULL){
-      printf("eo_fermion_force_3f: No room for tempmom\n");
+      printf("eo_fermion_force_twoterms: No room for tempmom\n");
       terminate(1);
     }
     tempmom[dir] = pt;
@@ -421,7 +431,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   act_path_coeff = get_quark_path_coeff();
 
   /* Path coefficients times fermion epsilon */
-  ferm_epsilon = 2.0*(nflav1/4.0)*eps;
+  ferm_epsilon = 2.0*weight1*eps;
   OneLink[0] = act_path_coeff[0]*ferm_epsilon;
   Naik[0]    = act_path_coeff[1]*ferm_epsilon; mNaik[0]    = -Naik[0];
   ThreeSt[0] = act_path_coeff[2]*ferm_epsilon; mThreeSt[0] = -ThreeSt[0];
@@ -429,7 +439,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   SevenSt[0] = act_path_coeff[4]*ferm_epsilon; mSevenSt[0] = -SevenSt[0];
   Lepage[0]  = act_path_coeff[5]*ferm_epsilon; mLepage[0]  = -Lepage[0];
 
-  ferm_epsilon = 2.0*(nflav2/4.0)*eps;
+  ferm_epsilon = 2.0*weight2*eps;
   OneLink[1] = act_path_coeff[0]*ferm_epsilon;
   Naik[1]    = act_path_coeff[1]*ferm_epsilon; mNaik[1]    = -Naik[1];
   ThreeSt[1] = act_path_coeff[2]*ferm_epsilon; mThreeSt[1] = -ThreeSt[1];
@@ -444,7 +454,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     temp_hw[mu] = 
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(temp_hw[mu] == NULL){
-      printf("eo_fermion_force_3f: No room for temp_hw\n");
+      printf("eo_fermion_force_twoterms: No room for temp_hw\n");
       terminate(1);
     }
   }
@@ -709,7 +719,427 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 #endif
 
 
-} /* eo_fermion_force_3f */
+} /* eo_fermion_force_twoterms */
+
+/**********************************************************************/
+/*   Version for arbitrary number of terms in the action	      */
+/**********************************************************************/
+
+su3_matrix *backwardlink[4];
+anti_hermitmat *tempmom[4];
+
+void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, int nterms ) {
+  // note CG_solution and Dslash * solution are combined in "*xxx"
+  // New version 1/21/99.  Use forward part of Dslash to get force
+  // see long comment at end
+  // For each link we need x_off transported from both ends of path.
+  // xxx[n][site] is the n'th inverse solution at location index "site"
+  //
+  // combine an arbitrary number of force terms, with weights "residues[j]"
+  int i,j;
+  site *s;
+  int mu,nu,rho,sig;
+  int dir;
+  Real *coeff,ferm_epsilon;
+  Real *OneLink, *Lepage, *Naik, *FiveSt, *ThreeSt, *SevenSt;
+  Real *mNaik, *mLepage, *mFiveSt, *mThreeSt, *mSevenSt;
+  veclist *Pnumu, *Prhonumu, *P7, *P7rho, *P5nu, *P3mu, *P5sig, *Popmu;
+  veclist *Pmu, *Pmumu, *Pmumumu;
+  veclist *P3[8], *P5[8];
+  veclist *temp_x;
+  veclist *vl[8], *temp_vl[8];
+  msg_tag *mt[8];
+  msg_tag *mtag[4];
+  Real *act_path_coeff;
+
+#ifdef FFSTIME
+  double time;
+#endif
+
+#ifdef FFTIME
+  int nflop;
+  double dtime;
+
+  nflop = 216984*nterms;
+  dtime=-dclock();
+#endif
+
+  /* Check consistency */
+  if(nterms >= VECLENGTH){
+    node0_printf("eo_fermion_force_multi: nterms = %d exceeds VECLENGTH = %d\n",
+		 nterms,VECLENGTH);
+    terminate(1);
+  }
+
+  /* Allocate temporary hw vector */
+  for(mu = 0; mu < 8; mu++){
+    veclist *pt;
+    pt = (veclist *) special_alloc(sites_on_node*sizeof(veclist));
+    if(pt == NULL){
+      printf("eo_fermion_force_multi: No room for pt\n");
+      terminate(1);
+    }
+    vl[mu] = pt;
+  }
+
+  Pmu = (veclist *)special_alloc(sites_on_node*sizeof(veclist));
+  if(Pmu == NULL){
+    printf("eo_fermion_force_multi: No room for Pmu\n");
+    terminate(1);
+  }
+  
+  Pmumu = (veclist *)special_alloc(sites_on_node*sizeof(veclist));
+  if(Pmumu == NULL){
+    printf("eo_fermion_force_multi: No room for Pmumu\n");
+    terminate(1);
+  }
+  
+  /* Allocate temporary vectors */
+  for(mu=0; mu<8; mu++) {
+    P3[mu]= (veclist *)malloc(sites_on_node*sizeof(veclist));
+    if(P3[mu] == NULL){
+      printf("eo_fermion_force_multi: No room for P3\n");
+      terminate(1);
+    }
+    P5[mu]= (veclist *)malloc(sites_on_node*sizeof(veclist));
+    if(P5[mu] == NULL){
+      printf("eo_fermion_force_multi: No room for P5\n");
+      terminate(1);
+    }
+  }
+
+  /* Initialize message pointers */
+  for(mu = 0; mu < 8; mu++)mt[mu] = NULL;
+
+  /* Double store backward gauge links */
+  FORALLUPDIR(dir){
+    su3_matrix *pt;
+    pt = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+    if(pt == NULL){
+      printf("eo_fermion_force_multi: No room for backwardlink\n");
+      terminate(1);
+    }
+    backwardlink[dir] = pt;
+  }
+  
+  /* Gather backward links */
+  FORALLUPDIR(dir){
+    mtag[dir] = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix), 
+			      OPP_DIR(dir), EVENANDODD, gen_pt[dir] );
+  }
+  FORALLUPDIR(dir){
+    wait_gather(mtag[dir]);
+    FORALLSITES(i,s){
+      backwardlink[dir][i] = *((su3_matrix *)gen_pt[dir][i]);
+    }
+    cleanup_gather(mtag[dir]);
+  }
+  
+  /* Copy gauge momenta */
+  FORALLUPDIR(dir){
+    anti_hermitmat *pt;
+    pt = (anti_hermitmat *)malloc(sites_on_node*sizeof(anti_hermitmat));
+    if(pt == NULL){
+      printf("eo_fermion_force_multi: No room for tempmom\n");
+      terminate(1);
+    }
+    tempmom[dir] = pt;
+  }
+  FORALLUPDIR(dir){
+    FORALLSITES(i,s){
+      tempmom[dir][i] = s->mom[dir];
+    }
+  }
+  
+  /* Load path coefficients from table */
+  act_path_coeff = get_quark_path_coeff();
+
+  /* Path coefficients times fermion epsilon */
+  coeff = (Real *)malloc( nterms*sizeof(Real) );
+  OneLink = (Real *)malloc( nterms*sizeof(Real) );
+  Naik = (Real *)malloc( nterms*sizeof(Real) ); mNaik = (Real *)malloc( nterms*sizeof(Real) );
+  ThreeSt = (Real *)malloc( nterms*sizeof(Real) ); mThreeSt = (Real *)malloc( nterms*sizeof(Real) );
+  FiveSt = (Real *)malloc( nterms*sizeof(Real) ); mFiveSt = (Real *)malloc( nterms*sizeof(Real) );
+  SevenSt = (Real *)malloc( nterms*sizeof(Real) ); mSevenSt = (Real *)malloc( nterms*sizeof(Real) );
+  Lepage = (Real *)malloc( nterms*sizeof(Real) ); mLepage = (Real *)malloc( nterms*sizeof(Real) );
+  for( j=0; j<nterms;j++ ){
+    ferm_epsilon = 2.0*residues[j]*eps;
+    OneLink[j] = act_path_coeff[0]*ferm_epsilon;
+    Naik[j]    = act_path_coeff[1]*ferm_epsilon; mNaik[j]    = -Naik[j];
+    ThreeSt[j] = act_path_coeff[2]*ferm_epsilon; mThreeSt[j] = -ThreeSt[j];
+    FiveSt[j]  = act_path_coeff[3]*ferm_epsilon; mFiveSt[j]  = -FiveSt[j];
+    SevenSt[j] = act_path_coeff[4]*ferm_epsilon; mSevenSt[j] = -SevenSt[j];
+    Lepage[j]  = act_path_coeff[5]*ferm_epsilon; mLepage[j]  = -Lepage[j];
+  }
+
+  /* *************************************** */
+
+  /* Allocate temporary vectors */
+
+  for(mu = 0; mu < 8; mu++){
+    temp_vl[mu] = 
+      (veclist *)malloc(sites_on_node*sizeof(veclist));
+    if(temp_vl[mu] == NULL){
+      printf("eo_fermion_force_multi: No room for temp_vl\n");
+      terminate(1);
+    }
+  }
+
+  /* copy x_off to a temporary vector */
+  temp_x= 
+    (veclist *)malloc(sites_on_node*sizeof(veclist));
+  FORALLSITES(i,s) {
+      for( j=0; j<nterms; j++ ){
+         temp_x[i].v[j] = xxx[j][i];
+      }
+    }
+
+  for(mu=0; mu<8; mu++)
+    {
+      u_shift_veclist_fermion( temp_x, Pmu, OPP_DIR(mu), 
+	 &mt[OPP_DIR(mu)],  temp_vl[OPP_DIR(mu)], nterms );
+
+      for(sig=0; sig<8; sig++) if( (sig!=mu)&&(sig!=OPP_DIR(mu)) )
+	{
+	  u_shift_veclist_fermion( Pmu, P3[sig], sig, &mt[sig],  temp_vl[sig], nterms );
+
+	  if(GOES_FORWARDS(sig))
+	    {
+	      /* Add the force F_sig[x+mu]:         x--+             *
+	       *                                   |   |             *
+	       *                                   o   o             *
+	       * the 1 link in the path: - (numbering starts form 0) */
+	      add_3f_force_to_mom_list( P3[sig], Pmu, sig, mThreeSt, nterms );
+	    }
+	}
+      for(nu=0; nu<8; nu++) if( (nu!=mu)&&(nu!=OPP_DIR(mu)) )
+	{
+	  Pnumu = vl[OPP_DIR(nu)];
+	  u_shift_veclist_fermion( Pmu, Pnumu, OPP_DIR(nu), &mt[OPP_DIR(nu)], 
+	     temp_vl[OPP_DIR(nu)], nterms );
+	  for(sig=0; sig<8; sig++) if( (sig!=mu)&&(sig!=OPP_DIR(mu)) &&
+				       (sig!=nu)&&(sig!=OPP_DIR(nu)) )
+	    {
+	      u_shift_veclist_fermion( Pnumu, P5[sig], sig, &mt[sig], 
+			  temp_vl[sig], nterms );
+
+	      if(GOES_FORWARDS(sig))
+		{
+		  /* Add the force F_sig[x+mu+nu]:      x--+             *
+		   *                                   |   |             *
+		   *                                   o   o             *
+		   * the 2 link in the path: + (numbering starts form 0) */
+		  add_3f_force_to_mom_list( P5[sig], Pnumu, sig, FiveSt, nterms );
+		}
+	    }
+	  for(rho=0; rho<8; rho++) if( (rho!=mu)&&(rho!=OPP_DIR(mu)) &&
+				       (rho!=nu)&&(rho!=OPP_DIR(nu)) )
+	    {
+	      Prhonumu = vl[OPP_DIR(rho)];
+	      u_shift_veclist_fermion( Pnumu, Prhonumu, OPP_DIR(rho), 
+		 &mt[OPP_DIR(rho)],  temp_vl[OPP_DIR(rho)], nterms );
+	      for(sig=0; sig<8; sig++) if( (sig!=mu )&&(sig!=OPP_DIR(mu )) &&
+					   (sig!=nu )&&(sig!=OPP_DIR(nu )) &&
+					   (sig!=rho)&&(sig!=OPP_DIR(rho)) )
+		{
+		  /* Length 7 paths */
+		  P7 = vl[sig];
+		  u_shift_veclist_fermion( Prhonumu, P7, sig, &mt[sig], 
+		      temp_vl[sig], nterms );
+		  if(GOES_FORWARDS(sig))
+		    {
+		      /* Add the force F_sig[x+mu+nu+rho]:  x--+             *
+		       *                                   |   |             *
+		       *                                   o   o             *
+		       * the 3 link in the path: - (numbering starts form 0) */
+		      add_3f_force_to_mom_list( P7, Prhonumu, sig, mSevenSt, nterms );
+		    }
+		  /* Add the force F_rho the 2(4) link in the path: +     */
+		  P7rho = vl[rho];
+		  u_shift_veclist_fermion( P7, P7rho, rho, &mt[rho], 
+			     temp_vl[rho], nterms );
+		  side_link_3f_force_list( rho, sig, SevenSt, Pnumu, P7, Prhonumu, P7rho, nterms );
+
+		  /* Add the P7rho vector to P5 */
+		  for( j=0; j<nterms; j++ ){
+		     if(FiveSt[j] != 0.0)coeff[j] = SevenSt[j]/FiveSt[j];
+		     else coeff[j] = 0.0;
+		  }
+#ifdef FFSTIME
+	time = -dclock();
+#endif
+		  FORALLSITES(i,s) {
+		     for( j=0; j< nterms; j++ ){
+		      scalar_mult_add_su3_vector(&(P5[sig][i].v[j]),
+			   &(P7rho[i].v[j]),coeff[j], &(P5[sig][i].v[j]));
+		     }
+		   }
+#ifdef FFSTIME
+      time += dclock();
+      node0_printf("FFSHIFT time4 = %e\n",time);
+#endif
+		} /* sig */
+	    } /* rho */
+	  for(sig=0; sig<8; sig++) if( (sig!=mu)&&(sig!=OPP_DIR(mu)) &&
+				       (sig!=nu)&&(sig!=OPP_DIR(nu)) )
+	    {
+	      /* Length 5 paths */
+	      /* Add the force F_nu the 1(3) link in the path: -     */
+	      P5nu = vl[nu];
+	      u_shift_veclist_fermion( P5[sig], P5nu, nu, &mt[nu], temp_vl[nu], nterms );
+	      side_link_3f_force_list(nu, sig, mFiveSt, Pmu, P5[sig], Pnumu, P5nu, nterms );
+	      /* Add the P5nu vector to P3 */
+	      for( j=0; j<nterms; j++ ){
+	         if(ThreeSt[j] != 0.0)coeff[j] = FiveSt[j]/ThreeSt[j]; 
+	         else coeff[j] = 0.0;
+	      }
+#ifdef FFSTIME
+	time = -dclock();
+#endif
+	      scalar_mult_add_latveclist( P3[sig], P5nu, coeff, nterms);
+#ifdef FFSTIME
+	      time += dclock();
+	      node0_printf("FFSHIFT time4 = %e\n",time);
+#endif
+	    } /* sig */
+	} /* nu */
+
+      /* Now the Lepage term... It is the same as 5-link paths with
+	 nu=mu and FiveSt=Lepage. */
+      u_shift_veclist_fermion( Pmu, Pmumu, OPP_DIR(mu), 
+		 &mt[OPP_DIR(mu)], temp_vl[OPP_DIR(mu)], nterms );
+
+      for(sig=0; sig<8; sig++) if( (sig!=mu)&&(sig!=OPP_DIR(mu)) )
+	{
+	  P5sig = vl[sig];
+	  u_shift_veclist_fermion( Pmumu, P5sig, sig, &mt[sig], 
+		 temp_vl[sig], nterms );
+	  if(GOES_FORWARDS(sig))
+	    {
+	      /* Add the force F_sig[x+mu+nu]:      x--+             *
+	       *                                   |   |             *
+	       *                                   o   o             *
+	       * the 2 link in the path: + (numbering starts form 0) */
+	      add_3f_force_to_mom_list( P5sig, Pmumu, sig, Lepage, nterms );
+	    }
+	  /* Add the force F_nu the 1(3) link in the path: -     */
+	  P5nu = vl[mu];
+	  u_shift_veclist_fermion( P5sig, P5nu, mu, &mt[mu], temp_vl[mu], nterms );
+	  side_link_3f_force_list(mu, sig, mLepage, Pmu, P5sig, Pmumu, P5nu, nterms );
+	  /* Add the P5nu vector to P3 */
+	  for( j=0; j<nterms; j++ ){
+	     if(ThreeSt[j] != 0.0)coeff[j] = Lepage[j]/ThreeSt[j];
+	     else coeff[j] = 0.0;
+	  }
+#ifdef FFSTIME
+	  time = -dclock();
+#endif
+#if 0
+	  FORALLSITES(i,s)
+	    {
+	      scalar_mult_add_su3_vector(&(P3[sig][i].h[0]),
+					 &(P5nu[i].h[0]),coeff[0],
+					 &(P3[sig][i].h[0]));
+	      scalar_mult_add_su3_vector(&(P3[sig][i].h[1]),
+					 &(P5nu[i].h[1]),coeff[1],
+					 &(P3[sig][i].h[1]));
+	    }
+#else
+	  scalar_mult_add_latveclist( P3[sig], P5nu, coeff, nterms );
+#endif
+#ifdef FFSTIME
+	      time += dclock();
+	      node0_printf("FFSHIFT time4 = %e\n",time);
+#endif
+
+	  /* Length 3 paths (Not the Naik term) */
+	  /* Add the force F_mu the 0(2) link in the path: +     */
+	  if(GOES_FORWARDS(mu)) 
+	    P3mu = vl[mu];  /* OK to clobber P5nu */
+	    u_shift_veclist_fermion( P3[sig], P3mu, mu, &mt[mu], temp_vl[mu], nterms );
+	    /* The above shift is not needed if mu is backwards */
+	  side_link_3f_force_list(mu, sig, ThreeSt, temp_x, P3[sig], Pmu, P3mu, nterms );
+	}
+
+      /* Finally the OneLink and the Naik term */
+      if(GOES_BACKWARDS(mu))/* Do only the forward terms in the Dslash */
+	{
+	  /* Because I have shifted with OPP_DIR(mu) Pmu is a forward *
+	   * shift.                                                   */
+	  /* The one link */
+	  add_3f_force_to_mom_list( Pmu, temp_x, OPP_DIR(mu), OneLink, nterms );
+	  /* For the same reason Pmumu is the forward double link */
+
+	  /* Popmu is a backward shift */
+	  Popmu = vl[mu]; /* OK to clobber P3mu */
+	  u_shift_veclist_fermion( temp_x, Popmu, mu, &mt[mu], temp_vl[mu], nterms );
+	  /* The Naik */
+	  /* link no 1: - */
+	  add_3f_force_to_mom_list( Pmumu, Popmu, OPP_DIR(mu), mNaik, nterms );
+	  /* Pmumumu can overwrite Popmu which is no longer needed */
+	  Pmumumu = vl[OPP_DIR(mu)];
+	  u_shift_veclist_fermion( Pmumu, Pmumumu, OPP_DIR(mu), 
+		&mt[OPP_DIR(mu)], temp_vl[OPP_DIR(mu)], nterms );
+	  /* link no 0: + */
+	  add_3f_force_to_mom_list( Pmumumu, temp_x, OPP_DIR(mu), Naik, nterms );
+	}
+      else /* The rest of the Naik terms */
+	{
+	  Popmu = vl[mu]; /* OK to clobber P3mu */
+	  u_shift_veclist_fermion( temp_x, Popmu, mu, &mt[mu], temp_vl[mu], nterms );
+	  /* link no 2: + */
+	  /* Pmumu is double backward shift */
+	  add_3f_force_to_mom_list( Popmu, Pmumu, mu, Naik, nterms );
+	}
+      /* Here we have to do together the Naik term and the one link term */
+    }/* mu */
+
+  /* Repack momenta */
+
+  FORALLUPDIR(dir){
+    FORALLSITES(i,s){
+      s->mom[dir] = tempmom[dir][i];
+    }
+  }
+
+  /* Free temporary vectors */
+  free(temp_x) ;
+  special_free(Pmu) ;
+  special_free(Pmumu) ;
+
+  for(mu=0; mu<8; mu++) {
+    free(P3[mu]);
+    free(P5[mu]);
+    special_free(vl[mu]);
+    free(temp_vl[mu]);
+  }
+
+  FORALLUPDIR(dir){
+    free(backwardlink[dir]);
+    free(tempmom[dir]);
+  }
+
+  free(coeff);
+  free(OneLink);
+  free(ThreeSt); free(mThreeSt);
+  free(FiveSt); free(mFiveSt);
+  free(SevenSt); free(mSevenSt);
+  free(Lepage); free(mLepage);
+
+  /* Cleanup gathers */
+  for(mu = 0; mu < 8; mu++)
+    if(mt[mu] != NULL)cleanup_gather(mt[mu]);
+  
+#ifdef FFTIME
+  dtime += dclock();
+node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  /**printf("TLENGTH: %d\n",tlength);**/
+#endif
+
+
+} /* eo_fermion_force_multi */
+// END DEVELOPMENT CODE
 
 /*   Covariant shift of the src fermion field in the direction dir  *
  *  by one unit. The result is stored in dest.                       */ 
@@ -807,6 +1237,65 @@ void u_shift_hw_fermion(half_wilson_vector *src,
 #endif
 }
 
+void u_shift_veclist_fermion(veclist *src, veclist *dest, 
+	int dir, msg_tag **mtag, veclist *tmpvec, int listlength ) {
+  site *s ;
+  int i ;
+
+#ifdef FFSTIME
+  double time0, time1;
+  time1 = -dclock();
+#endif
+  /* Copy source to temporary vector */
+  memcpy( (char *)tmpvec, (char *)src, 
+	 sites_on_node*sizeof(veclist) );
+
+  if(*mtag == NULL)
+    *mtag = start_gather_field(tmpvec, sizeof(veclist), 
+			       dir, EVENANDODD, gen_pt[dir]);
+  else
+    restart_gather_field(tmpvec, sizeof(veclist), 
+			 dir, EVENANDODD, gen_pt[dir], *mtag);
+  wait_gather(*mtag);
+
+#ifdef FFSTIME
+  time0 = -dclock();
+  time1 -= time0;
+#endif
+
+  if(GOES_FORWARDS(dir)) /* forward shift */
+    {
+#if 0
+      FORALLSITES(i,s)
+	mult_su3_mat_hwvec( &(s->link[dir]), 
+			    (half_wilson_vector *)gen_pt[dir][i], 
+			    dest + i );
+#else
+      mult_su3_sitelink_latveclist(dir, (veclist **)gen_pt[dir], dest, listlength );
+#endif
+    }
+  else /* backward shift */
+    {
+#if 0
+      FORALLSITES(i,s)
+	mult_adj_su3_mat_hwvec( backwardlink[OPP_DIR(dir)] + i, 
+				(half_wilson_vector *)gen_pt[dir][i], 
+				dest + i );
+#else
+     // mult_adj_su3_fieldlink_lathwvec( backwardlink[OPP_DIR(dir)],
+				       //(half_wilson_vector **)gen_pt[dir],
+				       //dest);
+      mult_adj_su3_fieldlink_latveclist( backwardlink[OPP_DIR(dir)],
+	(veclist **)gen_pt[dir], dest, listlength );
+#endif
+    }
+
+#ifdef FFSTIME
+  time0 += dclock();
+  node0_printf("FFSHIFT time0 = %e\nFFSHIFT time1 = %e\n",time0,time1);
+#endif
+}
+
 /* Add in contribution to the force */
 /* Put antihermitian traceless part into momentum */
 void add_force_to_mom(su3_vector *back,su3_vector *forw,int dir,Real coeff) {
@@ -876,6 +1365,50 @@ void add_3f_force_to_mom(half_wilson_vector *back,
   time += dclock();
   node0_printf("FFSHIFT time2 = %e\n", time);
 #endif
+}
+
+void add_3f_force_to_mom_list(veclist *back,
+	veclist *forw, int dir, Real *coeff, int listlength ) {
+  register site *s ;
+  register int i,j ;  
+  Real *my_coeff, *tmp_coeff;
+  int mydir;
+  su3_matrix tmat, *tmat2;
+#ifdef FFSTIME
+  double time;
+  time = -dclock();
+#endif
+
+  my_coeff = (Real *)malloc(listlength*sizeof(Real) );
+  tmp_coeff = (Real *)malloc(listlength*sizeof(Real) );
+  if(GOES_BACKWARDS(dir)) {
+    mydir = OPP_DIR(dir); for( j=0; j<listlength; j++ ){my_coeff[j] = -coeff[j];}
+  }
+  else {
+    mydir = dir; for( j=0; j<listlength; j++ ){my_coeff[j] = coeff[j];}
+  }
+#if 0
+  FORALLSITES(i,s){
+    if(s->parity==ODD)
+      {	tmp_coeff[0] = -my_coeff[0] ; tmp_coeff[1] = -my_coeff[1] ; }
+    else
+      { tmp_coeff[0] = my_coeff[0] ; tmp_coeff[1] = my_coeff[1] ; }
+    tmat2 = tempmom[mydir] + i;
+    su3_projector(&(back[i].h[0]), &(forw[i].h[0]), &tmat);
+    scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[0], tmat2 );
+    su3_projector(&(back[i].h[1]), &(forw[i].h[1]), &tmat);
+    scalar_mult_add_su3_matrix(tmat2, &tmat,  tmp_coeff[1], tmat2 );
+  }
+#else
+  scalar_mult_add_latveclist_proj( tempmom[mydir], back,
+	forw, my_coeff, listlength );
+#endif
+
+#ifdef FFSTIME
+  time += dclock();
+  node0_printf("FFSHIFT time2 = %e\n", time);
+#endif
+  free(my_coeff); free(tmp_coeff);
 }
 
 /*  This routine is needed in order to add the force on the side link *
@@ -951,6 +1484,45 @@ void side_link_3f_force(int mu, int nu, Real coeff[2],
       else
 	add_3f_force_to_mom(Path_mu, Path_nu, OPP_DIR(mu), coeff) ;
     }
+}
+
+void side_link_3f_force_list(int mu, int nu, Real *coeff, 
+	veclist *Path, veclist *Path_nu, veclist *Path_mu, veclist *Path_numu,
+	int listlength ) {
+
+  Real *m_coeff;
+  int j;
+
+  m_coeff = (Real *)malloc( listlength*sizeof(Real) );
+  for( j=0; j<listlength; j++){
+     m_coeff[j] = -coeff[j] ;
+  }
+
+  if(GOES_FORWARDS(mu))
+    {
+      /*                    nu           * 
+       * Add the force :  +----+         *
+       *               mu |    |         *
+       *                  x    (x)       *
+       *                  o    o         */
+      if(GOES_FORWARDS(nu))
+	add_3f_force_to_mom_list( Path_numu, Path, mu, coeff, listlength ) ;
+      else
+	add_3f_force_to_mom_list( Path, Path_numu,OPP_DIR(mu),m_coeff, listlength);/* ? extra - */
+    }
+  else /*GOES_BACKWARDS(mu)*/
+    {
+      /* Add the force :  o    o         *
+       *               mu |    |         *
+       *                  x    (x)       *
+       *                  +----+         *
+       *                    nu           */ 
+      if(GOES_FORWARDS(nu))
+	add_3f_force_to_mom_list( Path_nu, Path_mu, mu, m_coeff, listlength) ; /* ? extra - */
+      else
+	add_3f_force_to_mom_list( Path_mu, Path_nu, OPP_DIR(mu), coeff, listlength) ;
+    }
+    free(m_coeff);
 }
 
 /* LONG COMMENTS

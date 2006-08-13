@@ -6,6 +6,10 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.10  2006/08/13 15:02:32  detar
+ * Realign procedures to accommodate ks_imp_rhmc code
+ * Add Level 3 wrappers and MILC dummy Level 3 implementation for multiple source
+ *
  * Revision 1.9  2006/03/11 04:24:22  detar
  * Change to conform to current Level 3 interface for QOP_asqtad_force_multi
  *
@@ -29,7 +33,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.9 2006/03/11 04:24:22 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.10 2006/08/13 15:02:32 detar Exp $";
 
 void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
@@ -70,7 +74,7 @@ void unload_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
   QOP_destroy_F (*mom);      *mom = NULL;
 }
 
-void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, int nflavors)
+void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, Real weight)
 {
   Real *act_path_coeff;
   Real ferm_epsilon;
@@ -78,7 +82,7 @@ void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, int nflavors)
   /* Load path coefficients from table */
   act_path_coeff = get_quark_path_coeff();
 
-  ferm_epsilon = 2.0*(nflavors/4.0);
+  ferm_epsilon = 2.0*weight;
   
   /* Path coefficients times fermion epsilon */
 
@@ -90,9 +94,11 @@ void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, int nflavors)
   c->lepage       = act_path_coeff[5]*ferm_epsilon ;
 }
 
-/* Generic MILC interface for the single-species Asqtad fermion force routine */
-void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
+/* Standard MILC interface for the single-species Asqtad fermion force routine */
+void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
 {
+
+  /* For example weight = nflavors/4 */
 
   su3_matrix **rawlinks;
   su3_matrix **rawmom;
@@ -103,6 +109,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
   QOP_ColorVector *vecx;
   
   QOP_asqtad_coeffs_t coeff;
+  QOP_info_t info;
 
 #ifdef FFTIME
   int nflop = 253935;
@@ -113,7 +120,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
-    printf("eo_fermion_force: Error initializing QOP\n");
+    printf("eo_fermion_force_oneterm: Error initializing QOP\n");
     terminate(1);
   }
 
@@ -126,10 +133,10 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off )
   vecx = QOP_create_V_from_raw((Real *)rawvecx,QOP_EVENODD);
 
   /* Load coefficients */
-  load_qop_asqtad_coeffs(&coeff, nflavors);
+  load_qop_asqtad_coeffs(&coeff, weight);
 
   /* Compute fermion force */
-  QOP_asqtad_force(links, mom, &coeff, eps, vecx);
+  QOP_asqtad_force(&info, links, mom, &coeff, eps, vecx);
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
@@ -147,10 +154,11 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 #endif
 }
 
-/* Generic MILC interface for the two-species Asqtad fermion force routine */
-void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off, 
-			  int nflav2, field_offset x2_off ) {
+/* Standard MILC interface for the two-species Asqtad fermion force routine */
+void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
+			   field_offset x1_off, field_offset x2_off ) {
 
+  /* For example weight1 = nflavor1/4; weight2 = nflavor2/4 */
   su3_matrix **rawlinks;
   su3_matrix **rawmom;
   su3_vector *rawvecx[2];
@@ -160,8 +168,8 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   QOP_ColorVector *vecx[2];
   
   QOP_asqtad_coeffs_t coeff;
-  int i;
   Real epsv[2];
+  QOP_info_t info;
 
 #ifdef FFTIME
   int nflop = 433968;
@@ -172,7 +180,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
-    printf("eo_fermion_force: Error initializing QOP\n");
+    printf("eo_fermion_force_twoterms: Error initializing QOP\n");
     terminate(1);
   }
 
@@ -190,11 +198,11 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   vecx[1] = QOP_create_V_from_raw((Real *)rawvecx[1],QOP_EVENODD);
 
   /* Load coefficients */
-  epsv[0] = eps*nflav1/4.0;  epsv[1] = eps*nflav2/4.0;
+  epsv[0] = eps*weight1;  epsv[1] = eps*weight2;
   load_qop_asqtad_coeffs(&coeff, 4.0);
 
   /* Compute fermion force */
-  QOP_asqtad_force_multi(links, mom, &coeff, epsv, vecx, 2);
+  QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, 2);
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
@@ -214,3 +222,80 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
 #endif
 }
 
+/* Standard MILC interface for multiple terms in the action */
+
+void eo_fermion_force_multi( Real eps, Real *residues, 
+			     su3_vector **xxx, int nterms ) {
+  su3_matrix **rawlinks;
+  su3_matrix **rawmom;
+  su3_vector *rawvecx;
+
+  QOP_GaugeField *links;
+  QOP_Force *mom;
+  QOP_ColorVector **vecx;
+  
+  QOP_asqtad_coeffs_t coeff;
+  int i;
+  Real *epsv;
+  QOP_info_t info;
+
+#ifdef FFTIME
+  int nflop = 433968;
+  double dtime;
+
+  dtime=-dclock();
+#endif
+
+  /* Initialize QOP */
+  if(initialize_qop() != QOP_SUCCESS){
+    printf("eo_fermion_force_multi: Error initializing QOP\n");
+    terminate(1);
+  }
+
+  /* Load gauge links and momentum */
+  load_links_and_mom_site( &links, &mom, &rawlinks, &rawmom );
+
+  /* Make space for QOP vector pointers */
+  vecx = (QOP_ColorVector **)malloc(sizeof(QOP_ColorVector *)*nterms);
+  if(vecx == NULL){
+    printf("eo_fermion_force_multi: no room for vecx pointers\n");
+    terminate(1);
+  }
+
+  /* Copy color vectors from field to raw and then to QOP format */
+  for(i = 0; i < nterms; i++){
+    rawvecx = create_raw_V_from_field(xxx[i], EVENANDODD);
+    if(rawvecx == NULL)terminate(1);
+    vecx[i] = QOP_create_V_from_raw((Real *)rawvecx,QOP_EVENODD);
+    destroy_raw_V(rawvecx); rawvecx = NULL;
+  }
+
+  free(rawvecx);
+
+  /* Make space for weights */
+  epsv = (Real *)malloc(sizeof(Real)*nterms);
+  /* Load coefficients */
+  for(i = 0; i < nterms; i++) epsv[i] = eps*residues[i];
+  load_qop_asqtad_coeffs(&coeff, 4.0);
+
+  /* Compute fermion force */
+
+  QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, nterms);
+
+  /* Unload momentum and destroy storage for momentum and links */
+  unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
+
+  /* Free QOP source vectors */
+  for(i = 0; i < nterms; i++){
+    QOP_destroy_V(vecx[i]);  vecx[i] = NULL;
+  }
+
+  free(epsv);
+
+#ifdef FFTIME
+  dtime += dclock();
+  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+#endif
+
+}

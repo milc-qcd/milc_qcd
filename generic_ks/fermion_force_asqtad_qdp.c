@@ -30,8 +30,8 @@
 
 /*
  * 10/01/02, flopcount for ASQ_OPTIMIZED - C. DeTar
- * Fermion force: 253935 for eo_fermion_force()
- * Fermion force: 433968 for eo_fermion_force_3f()
+ * Fermion force: 253935 for eo_fermion_force_oneterm()
+ * Fermion force: 433968 for eo_fermion_force_twoterms()
  */
 
 /**#define FFTIME**/
@@ -188,11 +188,12 @@ static QDP_HalfFermion *hw_qdp[8];
 #define P3mu         tempvec[3]
 #define Popmu        tempvec[4]
 #define Pmumumu      tempvec[4]
-void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
+void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off ){
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
+  /* For example weight = nflavors/4 */
   register int i ;
   register site *s;
   int mu,nu,rho,sig ;
@@ -209,7 +210,7 @@ void eo_fermion_force( Real eps, int nflavors, field_offset x_off ){
 
   dtime=-dclock();
 #endif
-  ferm_epsilon = 2.0*(nflavors/4.0)*eps;
+  ferm_epsilon = 2.0*weight*eps;
   
   /* Load path coefficients from table */
   act_path_coeff = get_quark_path_coeff();
@@ -367,7 +368,7 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
-} /* eo_fermion_force(version 7) */
+} /* eo_fermion_force_oneterm (version 7) */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     
@@ -385,13 +386,14 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 /*   Version for two sets of flavors with distinct masses             */
 /**********************************************************************/
 
-void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off, 
-			  int nflav2, field_offset x2_off ) {
+void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
+			   field_offset x1_off, field_offset x2_off ) {
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* 4/15/99 combine force from two different mass quarks, (eg 2+1flavors) */
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
+  /* For example weight1 = nflavor1/4; weight2 = nflavor2/4 */
   int i;
   site *s;
   int mu,nu,rho,sig;
@@ -423,7 +425,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     su3_matrix *pt;
     pt = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
     if(pt == NULL){
-      printf("eo_fermion_force_3f: No room for backwardlink\n");
+      printf("eo_fermion_force_3f_twoterms: No room for backwardlink\n");
       terminate(1);
     }
     backwardlink[dir] = pt;
@@ -459,7 +461,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
     su3_matrix *pt;
     pt = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
     if(pt == NULL){
-      printf("eo_fermion_force_3f: No room for tempmom\n");
+      printf("eo_fermion_force_3f_twoterms: No room for tempmom\n");
       terminate(1);
     }
     tempmom[dir] = pt;
@@ -475,7 +477,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   /* Load path coefficients from table */
   act_path_coeff = get_quark_path_coeff();
 
-  ferm_epsilon = 2.0*(nflav1/4.0)*eps;
+  ferm_epsilon = 2.0*weight1*eps;
   OneLink[0] = act_path_coeff[0]*ferm_epsilon;
   Naik[0]    = act_path_coeff[1]*ferm_epsilon; mNaik[0]    = -Naik[0];
   ThreeSt[0] = act_path_coeff[2]*ferm_epsilon; mThreeSt[0] = -ThreeSt[0];
@@ -483,7 +485,7 @@ void eo_fermion_force_3f( Real eps, int nflav1, field_offset x1_off,
   SevenSt[0] = act_path_coeff[4]*ferm_epsilon; mSevenSt[0] = -SevenSt[0];
   Lepage[0]  = act_path_coeff[5]*ferm_epsilon; mLepage[0]  = -Lepage[0];
 
-  ferm_epsilon = 2.0*(nflav2/4.0)*eps;
+  ferm_epsilon = 2.0*weight2*eps;
   OneLink[1] = act_path_coeff[0]*ferm_epsilon;
   Naik[1]    = act_path_coeff[1]*ferm_epsilon; mNaik[1]    = -Naik[1];
   ThreeSt[1] = act_path_coeff[2]*ferm_epsilon; mThreeSt[1] = -ThreeSt[1];
@@ -750,7 +752,7 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 #endif
 
 
-} /* eo_fermion_force_3f */
+} /* eo_fermion_force_twoterms */
 #undef Pmu          
 #undef Pnumu        
 #undef Prhonumu     
