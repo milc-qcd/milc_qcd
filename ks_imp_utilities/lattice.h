@@ -146,6 +146,10 @@ EXTERN char ** gen_pt[N_POINTERS];
 /* field major storage DON't FORGET to MALLOC somewhere */
 EXTERN su3_matrix *t_longlink;
 EXTERN su3_matrix *t_fatlink;
+#ifdef DBLSTORE_FN
+EXTERN su3_matrix *t_longbacklink;
+EXTERN su3_matrix *t_fatbacklink;
+#endif
 
 #ifdef HAVE_QDP
 #include <qdp.h>

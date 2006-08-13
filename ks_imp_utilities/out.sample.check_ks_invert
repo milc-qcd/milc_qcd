@@ -9,6 +9,7 @@ nz 8
 nt 8
 iseed 6823045
 LAYOUT = Hypercubes, options = EVENFIRST,
+ON EACH NODE 8 x 8 x 8 x 8
 Mallocing 8.2 MBytes per node for lattice
 Made lattice
 Made nn gathers
@@ -36,7 +37,7 @@ Record info
 "Dummy user record XML for lattice field"
 Checksums d2f7866d 5f48ca3e
 Time to reload gauge configuration = 2.377003e-02
-CHECK PLAQ: 2.620398e+00 2.621447e+00
+CHECK PLAQ: 2.6203978710714737e+00 2.6214473754080179e+00
 CHECK LINKTR: 2.8951765559213527e+00 -2.0951840825345069e-06
 Reunitarized for double precision. Max deviation 4.23e-08 changed to 5.55e-16
 Time to check unitarity = 9.270055e-03
