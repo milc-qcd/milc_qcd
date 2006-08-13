@@ -40,7 +40,8 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 MY_OBJECTS= \
   control.o \
-  fermion_force_asqtad3_rhmc.o \
+  fermion_force_fn_rhmc.o \
+  fermion_force_asqtad3_rhmc2.o \
   gauge_info.o \
   setup.o \
   update_h_rhmc.o \
@@ -48,7 +49,7 @@ MY_OBJECTS= \
   ks_multicg_rhmc.o \
   grsource_rhmc.o 
 
-G_OBJECTS0 = \
+G_OBJECTS = \
   check_unitarity.o \
   d_linktrsum.o \
   d_plaq4.o \
@@ -67,15 +68,13 @@ G_OBJECTS0 = \
   ks_ratinv.o 
 
 ifeq ($(strip ${QCDOC}),true)
-  G_OBJECTS1 = ${G_OBJECTS0} ploop2.o
+  G_OBJECTS += ploop2.o
 else
-  G_OBJECTS1 = ${G_OBJECTS0} ploop3.o
+  G_OBJECTS += ploop3.o
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS = ${G_OBJECTS1} io_scidac.o
-else
-  G_OBJECTS = ${G_OBJECTS1}
+  G_OBJECTS += io_scidac.o
 endif
 
 G_KS_OBJECTS = \
@@ -101,7 +100,7 @@ SPECTRUM_OBJECTS = \
 
 # Objects depending on architecture and software package 
 
-# Layout
+# Selection of layout
 ifeq ($(strip ${QCDOC}),true)
   LAYOUT = layout_qcdoc.o # Required
 else
@@ -112,12 +111,16 @@ else
   endif
 endif
 
-# Choose a non-QDP FN dslash (dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o )
+# Selection of a non-QDP FN Dslash 
+# Choices are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
 DSLASH_FN = dslash_fn_dblstore.o
 
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
+# Standard QOP interface
   CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o d_congrad_opt.o
+#  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
+  CONGRAD_FN += ${ASQINVERTQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
     CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o d_congrad_opt.o
@@ -128,29 +131,54 @@ else
   endif
 endif
 
+# Selection of the fermion force algorithm
+ifeq ($(strip ${HAVEQOP}),true)
+  # Standard QOP interface
+  ASQFORCE = fermion_force_asqtad_qop.o	ff_opt.o
+# The implementation of the interface (if not packaged)
+  ASQFORCE += ${ASQFORCEQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+# Choose (fermion_force_asqtad_qdp.o )
+#    ASQFORCE = fermion_force_asqtad_qdp.o BUGGY DON'T USE!
+    ASQFORCE = fermion_force_asqtad3.o ff_opt.o
+  else
+# Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
+# or  fermion_force_asqtad3.o + ff_opt.o
+    ASQFORCE = fermion_force_asqtad3.o ff_opt.o
+  endif
+endif
+
+# Selection of the multimass inverter
+ifeq ($(strip ${HAVEQOP}),true)
+# Standard QOP interface
+  INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
+  MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop.o
+  # The implementation of the interface (if not packaged)
+  MULTI_INV_FN += ${ASQMULTICGQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    QDP_OBJECTS = stuff_qdp.o
+    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
+    MULTI_INV_FN = ks_multicg_qdp.o
+  else
+    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
+    MULTI_INV_FN = ks_multicg.o ks_multicg_offset.o
+  endif
+endif
+
+# EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o
 endif
 
-ifeq ($(strip ${HAVEQDP}),true)
-  QDP_OBJECTS = stuff_qdp.o
-  INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
-  MULTI_INV_FN = ks_multicg_qdp.o
-# Choose (fermion_force_asqtad_qdp.o )
-  ASQFORCE = fermion_force_asqtad_qdp.o
-else
-  INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
-  MULTI_INV_FN = ks_multicg.o
-# Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
-  ASQFORCE = fermion_force_fn_rhmc.o ff_opt_rhmc.o
-#  ASQFORCE = fermion_force_asqtad3_rhmc.o ff_opt_rhmc.o
-endif
-
-INV_EO_OBJECTS = d_congrad5_eo.o dslash_eo.o
-MULTI_INV_EO = ks_multicg.o
-
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
+
+# Generic QOP objects
+ifeq ($(strip ${HAVEQOP}),true)
+  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o 
+endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
   ${ADD_OBJECTS} ${EXTRA_OBJECTS}
@@ -175,6 +203,7 @@ ${LASTMAKE}:
 ALL_MAKES = \
    Make_template \
    ${MAKEFILE} \
+   ../Make_template_qop \
    ../Make_template_scidac \
    ../generic/Make_template \
    ../generic_ks/Make_template
@@ -214,6 +243,9 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 # Optional DEFINES for quark number susceptibility
 # -DCHEM_POT
 
+# Optional DEFINES for derivatives wrto chem pot
+# -DD_CHEM_POT
+
 ifeq ($(strip ${QCDOC}),true)
   DQCDOC = -DQCDOC
 endif
@@ -239,84 +271,84 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 ##### Targets:
 #		("FN" = "fat+Naik")
 
-#	-DNPBP_REPS=10" \
+#	-DNPBP_REPS" \
 # 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
 #       -DONEMASS
-#	-DQIO_TRELEASE=2.0
+#	-DKS_MULTICG=(OFFSET, HYBRID, FAKE, REVERSE, REVHYB)
 
 su3_leapfrog::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4" \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_leapfrog.o"
 
 su3_omelyan::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4" \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan.o"
 
 su3_4mn4fp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4" \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_4mn4fp.o"
 
 su3_4mn5fv::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 " \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_4mn5fv.o"
 
 su3_omelyan_2g1f::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 " \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan_2g1f.o"
 
 su3_omelyan_2eps::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 " \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan_2eps_b.o"
 
 su3_omelyan_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DHMC" \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan.o"
 
 su3_omelyan_rhmc_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DHMC -DDM_DU0 -DNPBP_REPS=10" \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC -DDM_DU0 -DNPBP_REPS=10" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan.o"
 
 su3_4mn4fp_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DHMC" \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_4mn4fp.o"
 
 su3_4mn5fv_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DHMC" \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_4mn5fv.o"
 
 su3_fourstep::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4" \
+	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_fourstep.o"
