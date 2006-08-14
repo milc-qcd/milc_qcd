@@ -22,7 +22,7 @@ Checksums d2f7866d 0
 Time to reload gauge configuration = 1
 CHECK PLAQ: 3e-07 8e-07
 CHECK LINKTR: 9e-07 8e-07
-XXX XXX XXX XXX 8e-08 deviation 4.23e-08 changed to 5.55e-16
+XXX XXX XXX XXX XXX deviation 4.23e-08 changed to 5.55e-16
 Time to check unitarity = 1
 Symanzik 0 + 0 + 0 action
 loop coefficients: nloop rep loop_coeff multiplicity
@@ -64,7 +64,7 @@ Inversion checked, frac. error = 6e-07
 Flagged comparisons = 0
 Max err. = 1e-4 frac. = 1e-6
 Saved KS vector serially to binary file ksvector.ans.MdaggerMinv.test.l8
-Checksums 4e+04 2e+02
+Checksums XXX XXX
 
 
 mass 0
@@ -80,7 +80,7 @@ save_serial_ks_vector ksvector.ans.Minv.test.l8
 invert M
 CHECK PLAQ: 3e-07 8e-07
 CHECK LINKTR: 9e-07 8e-07
-XXX XXX XXX XXX 8e-08 deviation 5.55e-16 changed to 4.44e-16
+XXX XXX XXX XXX XXX deviation 5.55e-16 changed to 4.44e-16
 Time to check unitarity = 1
 Symanzik 2e-09 + 2e-09 + 2e-09 action
 loop coefficients: nloop rep loop_coeff multiplicity
@@ -122,7 +122,7 @@ Inversion checked, frac. error = 4e-05
 Flagged comparisons = 0
 Max err. = 1e-2 frac. = 0.0002
 Saved KS vector serially to binary file ksvector.ans.Minv.test.l8
-Checksums XXX XXX
+Checksums XXX 1e+01
 
 
 get_f: EOF on STDIN.
