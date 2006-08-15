@@ -160,3 +160,14 @@ C. DeTar, Utah
 detar@physics.utah.edu
 Feb 22, 2005
 
+----------------------------------------------------------------------
+Version 7 of the MILC code
+
+The nasm2c.pl file has support for register clobber lists, provided by
+Jordan Soyke, July 26, 2006.
+
+C. DeTar, Utah
+detar@physics.utah.edu
+Aug 15, 2006
+
+

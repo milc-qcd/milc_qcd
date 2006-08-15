@@ -1,207 +1,258 @@
 ;
-; mult_su3_an( su3_matrix *a, su3_matrix *b, su3_matrix *c)
+; mult_su3_an( su3_matrix *a, su3_matrix *b, su3_matrix *c )
 ;
+; Opteron SSE code for 3x3 CGEMM
+; C <- (A^H)B
+; 
+; Steve Whalen
+; Cray, Inc.
+
+	bits		64
 
 global mult_su3_an
 mult_su3_an:
-	push		ebp
-	mov		ebp,esp
-	push		eax
-	push		ebx
-	push		ecx
-	mov		eax,[ebp+8]			; su3_matrix *a
-	mov		ebx,[ebp+12]			; su3_vector *b
-	mov		ecx,[ebp+16]			; su3_vector *c
 
-	; bring in "half wilson vector" (first two columns)
-	movlps		xmm0,[ebx]			;			<(bb)->e[0][0]>
-	movlps		xmm1,[ebx+24]			;			<(bb)->e[1][0]>
-	movlps		xmm2,[ebx+48]			;			<(bb)->e[2][0]>
-	movhps		xmm0,[ebx+8]			; b[1]1 b[0]1		<(bb)->e[0][1]>
-	movhps		xmm1,[ebx+32]			; b[1]2 b[0]2		<(bb)->e[1][1]>
-	movhps		xmm2,[ebx+56]			; b[1]3 b[0]3		<(bb)->e[2][1]>
+	;; first row, columns 1 and 2
 
-	; multiply vectors by real components of a
-	movss		xmm3,[eax]			; a(1,1)		<(aa)->e[0][0].real>
-	movss		xmm6,[eax+24]			; a(1,2)		<(aa)->e[1][0].real>
-	movss		xmm4,[eax+8]			; a(2,1)		<(aa)->e[0][1].real>
-	movss		xmm7,[eax+56]			; a(2,3)		<(aa)->e[2][1].real>
-	movss		xmm5,[eax+16]			; a(3,1)		<(aa)->e[0][2].real>
-	shufps		xmm3,xmm3,0x00
-	shufps		xmm6,xmm6,0x00
-	shufps		xmm4,xmm4,0x00
-	mulps		xmm3,xmm0
-	shufps		xmm7,xmm7,0x00
-	mulps		xmm6,xmm1
-	shufps		xmm5,xmm5,0x00
-	mulps		xmm4,xmm0
-	addps		xmm3,xmm6
-	mulps		xmm7,xmm2
-	mulps		xmm5,xmm0
-	addps		xmm4,xmm7
-	movss		xmm6,[eax+40]			; a(3,2)		<(aa)->e[1][2].real>
-	movss		xmm7,[eax+48]			; a(1,3)		<(aa)->e[2][0].real>
-	shufps		xmm6,xmm6,0x00
-	shufps		xmm7,xmm7,0x00
-	mulps		xmm6,xmm1
-	mulps		xmm7,xmm2
-	addps		xmm5,xmm6
-	addps		xmm3,xmm7
-	movss		xmm6,[eax+32]			; a(2,2)		<(aa)->e[1][1].real>
-	movss		xmm7,[eax+64]			; a(3,3)		<(aa)->e[2][2].real>
-	shufps		xmm6,xmm6,0x00
-	shufps		xmm7,xmm7,0x00
-	mulps		xmm6,xmm1
-	mulps		xmm7,xmm2
-	addps		xmm4,xmm6
-	addps		xmm5,xmm7
-	
-	; multiply vectors by imaginary components of a
-	movss		xmm6,[eax+4]			; a(1,1)		<(aa)->e[0][0].imag>
-	movss		xmm7,[eax+36]			; a(2,2)		<(aa)->e[1][1].imag>
-	shufps		xmm0,xmm0,0xb1
-	shufps		xmm1,xmm1,0xb1
-	shufps		xmm2,xmm2,0xb1
-	shufps		xmm6,xmm6,0x00
-	shufps		xmm7,xmm7,0x00
-	xorps		xmm0,[negate]			;			<_sse_sgn24>
-	xorps		xmm1,[negate]			;			<_sse_sgn24>
-	xorps		xmm2,[negate]			;			<_sse_sgn24>
-	mulps		xmm6,xmm0
-	mulps		xmm7,xmm1
-	addps		xmm3,xmm6
-	addps		xmm4,xmm7
-	movss		xmm6,[eax+68]			; a(3,3)		<(aa)->e[2][2].imag>
-	movss		xmm7,[eax+12]			; a(2,1)		<(aa)->e[0][1].imag>
-	shufps		xmm6,xmm6,0x00
-	shufps		xmm7,xmm7,0x00
-	mulps		xmm6,xmm2
-	mulps		xmm7,xmm0
-	addps		xmm5,xmm6
-	addps		xmm4,xmm7
-	movss		xmm6,[eax+28]			; a(1,2)		<(aa)->e[1][0].imag>
-	movss		xmm7,[eax+20]			; a(3,1)		<(aa)->e[0][2].imag>
-	shufps		xmm6,xmm6,0x00
-	shufps		xmm7,xmm7,0x00
-	mulps		xmm6,xmm1
-	mulps		xmm7,xmm0
-	addps		xmm3,xmm6
-	addps		xmm5,xmm7
-	movss		xmm0,[eax+52]			; a(1,3)		<(aa)->e[2][0].imag>
-	movss		xmm6,[eax+44]			; a(3,2)		<(aa)->e[1][2].imag>
-	movss		xmm7,[eax+60]			; a(2,3)		<(aa)->e[2][1].imag>
-	shufps		xmm0,xmm0,0x00
-	shufps		xmm6,xmm6,0x00
-	shufps		xmm7,xmm7,0x00
-	mulps		xmm0,xmm2
-	mulps		xmm6,xmm1
-	mulps		xmm7,xmm2
-	addps		xmm3,xmm0
-	addps		xmm5,xmm6
-	addps		xmm4,xmm7
+	; real part of a
+	movlps		xmm7,[rdi]		;               a00.i  a00.r	<(aa)->e[0][0]>
+	movaps		xmm0,xmm7
+	unpcklps	xmm0,xmm0		; a00.i  a00.i  a00.r  a00.r
+	movhlps		xmm3,xmm0		;               a00.i  a00.i
+	movlhps		xmm0,xmm0		; a00.r  a00.r  a00.r  a00.r
+	movhps		xmm7,[rdi+24]		; a10.i  a10.r			<(aa)->e[1][0]>
+	movaps		xmm1,xmm7
+	unpckhps	xmm1,xmm1		; a10.i  a10.i  a10.r  a10.r
+	movhlps		xmm4,xmm1		;               a10.i  a10.i
+	movlhps		xmm1,xmm1		; a10.r  a10.r  a10.r  a10.r
+	movlps		xmm10,[rdi+48]		;               a20.i  a20.r	<(aa)->e[2][0]>
+	movaps		xmm2,xmm10
+	unpcklps	xmm2,xmm2		; a20.i  a20.i  a20.r  a20.r
+	movhlps		xmm5,xmm2		;               a20.i  a20.i
+	movlhps		xmm2,xmm2		; a20.r  a20.r  a20.r  a20.r
 
-	; move results into output
-	movlps		[ecx],xmm3			;			<(cc)->e[0][0]>
-	movlps		[ecx+24],xmm4			;			<(cc)->e[1][0]>
-	movlps		[ecx+48],xmm5			;			<(cc)->e[2][0]>
-	movhps		[ecx+8],xmm3			;			<(cc)->e[0][1]>
-	movhps		[ecx+32],xmm4			;			<(cc)->e[1][1]>
-	movhps		[ecx+56],xmm5			;			<(cc)->e[2][1]>
+	movlps		xmm12,[rsi]		;               b00.i  b00.r	<(bb)->e[0][0]>
+	movhps		xmm12,[rsi+8]		; b01.i  b01.r			<(bb)->e[0][1]>
+	mulps		xmm0,xmm12
+	movlps		xmm13,[rsi+24]		;               b10.i  b10.r	<(bb)->e[1][0]>
+	movhps		xmm13,[rsi+32]		; b11.i  b11.r			<(bb)->e[1][1]>
+	mulps		xmm1,xmm13
 
-	;  Now handle 3rd column
-	movlps		xmm0,[ebx+16]			; x,x,b0i,b0r		<(bb)->e[0][2]>
-	movlps		xmm1,[ebx+40]			; x,x,b1i,b1r		<(bb)->e[1][2]>
-	movlps		xmm2,[ebx+64]			; x,x,b2i,b2r		<(bb)->e[2][2]>
-	shufps		xmm0,xmm0,0x44			; b0i,b0r,b0i,b0r
-	shufps		xmm1,xmm1,0x44			; b1i,b1r,b1i,b1r
-	shufps		xmm2,xmm2,0x44			; b2i,b2r,b2i,b2r
+	addps		xmm0,xmm1
+	movlps		xmm14,[rsi+48]		;               b20.i  b20.r	<(bb)->e[2][0]>
+	movhps		xmm14,[rsi+56]		; b21.i  b21.r			<(bb)->e[2][1]>
+	mulps		xmm2,xmm14
+	addps		xmm0,xmm2
 
-	; bring in real components of first two rows of matrix a
-	movss		xmm3,[eax]			; x,x,x,c00r		<(aa)->e[0][0].real>
-	movss		xmm7,[eax+8]			; x,x,x,c10r		<(aa)->e[0][1].real>
-	shufps		xmm3,xmm7,0x00			; c10r,c10r,c00r,c00r
-	movss		xmm4,[eax+24]			; x,x,x,c01r		<(aa)->e[1][0].real>
-	movss		xmm7,[eax+32]			; x,x,x,c11r		<(aa)->e[1][1].real>
-	shufps		xmm4,xmm7,0x00			; c11r,c11r,c01r,c01r
-	mulps		xmm3,xmm0
-	mulps		xmm4,xmm1
+	; imaginary part of a
+	movlhps		xmm3,xmm3		; a00.i  a00.i  a00.i  a00.i
+	movlhps		xmm4,xmm4		; a10.i  a10.i  a10.i  a10.i
+	movlhps		xmm5,xmm5		; a20.i  a20.i  a20.i  a20.i
+	mulps		xmm3,xmm12
+	mulps		xmm4,xmm13
+	mulps		xmm5,xmm14
 	addps		xmm3,xmm4
-	movss		xmm5,[eax+48]			; x,x,x,c02r		<(aa)->e[2][0].real>
-	movss		xmm7,[eax+56]			; x,x,x,c12r		<(aa)->e[2][1].real>
-	shufps		xmm5,xmm7,0x00			; c12r,c12r,c02r,c02r
-	mulps		xmm5,xmm2
 	addps		xmm3,xmm5
+	shufps		xmm3,xmm3,0xb1
+	xorps		xmm3,[negate]		; <_sse_sgn24>
+	addps		xmm0,xmm3
+	movlps		[rdx],xmm0		; <(cc)->e[0][0]>
+	movhps		[rdx+8],xmm0		; <(cc)->e[0][1]>
 
-	; special handling of the 3rd row of matrix a
-	shufps		xmm1,xmm0,0x44			; b0i,b0r,b1i,b1r
-	movss		xmm7,[eax+16]			; x,x,x,c20r		<(aa)->e[0][2].real>
-	movss		xmm6,[eax+40]			; x,x,x,c21r		<(aa)->e[1][2].real>
-	shufps		xmm6,xmm7,0x00			; c20r,c20r,c21r,c21r
-	mulps		xmm6,xmm1
+        ;; second row, columns 1 and 2
 
-	; shuffle b vector for imaginary components of matrix a
-	shufps		xmm0,xmm0,0xB1			; b0r,b0i,b0r,b0i
-	xorps		xmm0,[negate]			; b0r,-b0i,b0r,-b0i	<_sse_sgn24>
-	shufps		xmm1,xmm1,0x11			; b1r,b1i,b1r,b1i
-	xorps		xmm1,[negate]			; b1r,-b1i,b1r,-b1i	<_sse_sgn24>
-	shufps		xmm2,xmm2,0xB1			; b2r,b2i,b2r,b2i
-	xorps		xmm2,[negate]			; b2r,-b2i,b2r,-b2i	<_sse_sgn24>
+        ; real part of a
+	movlps		xmm8,[rdi+8]		;               a01.i  a01.r	<(aa)->e[0][1]>
+        movaps          xmm1,xmm8
+	unpcklps	xmm1,xmm1		; a01.i  a01.i  a01.r  a01.r
+	movhlps		xmm4,xmm1		;               a01.i  a01.i
+	movlhps		xmm1,xmm1		; a01.r  a01.r  a01.r  a01.r
+	movhps		xmm8,[rdi+32]		; a11.i  a11.r			<(aa)->e[1][1]>
+        movaps          xmm2,xmm8
+	unpckhps	xmm2,xmm2		; a11.i  a11.i  a11.r  a11.r
+	movhlps		xmm5,xmm2		;               a11.i  a11.i
+	movlhps		xmm2,xmm2		; a11.r  a11.r  a11.r  a11.r
+	movhps		xmm10,[rdi+56]		; a21.i  a21.r			<(aa)->e[2][1]>
+	movaps		xmm3,xmm10
+	unpckhps	xmm3,xmm3		; a21.i  a21.i  a21.r  a21.r
+	movhlps		xmm6,xmm3		;               a21.i  a21.i
+	movlhps		xmm3,xmm3		; a21.r  a21.r  a21.r  a21.r
 
-	; bring in imaginary components of first two rows of matrix b
-	movss		xmm4,[eax+4]			; x,x,x,c00i		<(aa)->e[0][0].imag>
-	movss		xmm7,[eax+12]			; x,x,x,c10i		<(aa)->e[0][1].imag>
-	shufps		xmm4,xmm7,0x00			; c10i,c10i,c00i,c00i
-	mulps		xmm4,xmm0
-	addps		xmm3,xmm4
-	movss		xmm5,[eax+28]			; x,x,x,c01i		<(aa)->e[1][0].imag>
-	movss		xmm7,[eax+36]			; x,x,x,c11i		<(aa)->e[1][1].imag>
-	shufps		xmm5,xmm7,0x00			; c11i,c11i,c01i,c01i
-	mulps		xmm5,xmm1
-	addps		xmm3,xmm5
-	movss		xmm5,[eax+52]			; x,x,x,c02i		<(aa)->e[2][0].imag>
-	movss		xmm7,[eax+60]			; x,x,x,c12i		<(aa)->e[2][1].imag>
-	shufps		xmm5,xmm7,0x00			; c12i,c12i,c02i,c02i
-	mulps		xmm5,xmm2
-	addps		xmm3,xmm5			; d1i,d1r,d0i,d0r
-	movlps		[ecx+16],xmm3			; store result		<(cc)->e[0][2]>
-	movhps		[ecx+40],xmm3			;			<(cc)->e[1][2]>
+        mulps           xmm1,xmm12
+        mulps           xmm2,xmm13
+	mulps		xmm3,xmm14
+        addps           xmm1,xmm2
+        addps           xmm1,xmm3
 
-	; more special handling of the 3rd row of matrix a
-	shufps		xmm1,xmm0,0x44			; b0r,-b0i,b1r,-b1i
-	movss		xmm7,[eax+20]			; x,x,x,c20i		<(aa)->e[0][2].imag>
-	movss		xmm5,[eax+44]			; x,x,x,c21i		<(aa)->e[1][2].imag>
-	shufps		xmm5,xmm7,0x00			; c20i,c20i,c21i,c21i
-	mulps		xmm5,xmm1
-	addps		xmm6,xmm5
-	shufps		xmm2,xmm2,0xB4			; -b2i,b2r,b2r,-b2i
-	xorps		xmm2,[neg2]			; b2i,b2r,b2r,-b2i	<_sse_sgn3>
-	movlps		xmm7,[eax+64]			; x,x,c22i,c22r		<(aa)->e[2][2]>
-	shufps		xmm7,xmm7,0x05			; c22r,c22r,c22i,c22i
-	mulps		xmm7,xmm2
-	addps		xmm6,xmm7
-	movaps		xmm7,xmm6
-	shufps		xmm7,xmm7,0xEE
-	addps		xmm6,xmm7
-	movlps		[ecx+64],xmm6			;			<(cc)->e[2][2]>
+        ; imaginary part of a
+        movlhps		xmm4,xmm4		; a01.i  a01.i  a01.i  a01.i
+        movlhps		xmm5,xmm5		; a11.i  a11.i  a11.i  a11.i
+	movlhps		xmm6,xmm6		; a21.i  a21.i  a21.i  a21.i
+        mulps           xmm4,xmm12
+        mulps           xmm5,xmm13
+	mulps		xmm6,xmm14
+        addps           xmm4,xmm5
+        addps           xmm4,xmm6
+        shufps          xmm4,xmm4,0xb1
+        xorps           xmm4,[negate]		; <_sse_sgn24>
+        addps           xmm1,xmm4
+	movlps		[rdx+24],xmm1		; <(cc)->e[1][0]>
+	movhps		[rdx+32],xmm1		; <(cc)->e[1][1]>
 
+	;; third column, rows 1 and 2
+	;; think of this as in the third row of (B^T)(A^T)
+
+	; transpose a
+	movaps		xmm5,xmm7		;   *      *    a00.i  a00.r
+	movlhps		xmm5,xmm8		; a01.i  a01.r
+	movhlps		xmm8,xmm7		; a11.i  a11.r  a01.i  a01.r
+  	; xmm10 already contains a20 and a21
+	; xmm7 can now be modified
+
+        ; real part of b
+	movlps		xmm15,[rsi+16]		;               b02.i  b02.r	<(bb)->e[0][2]>
+        movaps          xmm2,xmm15
+	unpcklps	xmm2,xmm2		; b02.i  b02.i  b02.r  b02.r
+	movhlps		xmm6,xmm2		;               b02.i  b02.i
+	movlhps		xmm2,xmm2		; b02.r  b02.r  b02.r  b02.r
+	movhps		xmm15,[rsi+40]		; b12.i  b12.r			<(bb)->e[1][2]>
+        movaps          xmm3,xmm15
+	unpckhps	xmm3,xmm3		; b12.i  b12.i  b12.r  b12.r
+	movhlps		xmm7,xmm3		;               b12.i  b12.i
+	movlhps		xmm3,xmm3		; b12.r  b12.r  b12.r  b12.r
+	movhps		xmm11,[rsi+64]		; b22.i  b22.r			<(bb)->e[2][2]>
+        movaps          xmm4,xmm11
+	unpckhps	xmm4,xmm4		; b22.i  b22.i  b22.r  b22.r
+	movhlps		xmm9,xmm4		;               b22.i  b22.i
+	movlhps		xmm4,xmm4		; b22.r  b22.r  b22.r  b22.r
+
+        mulps           xmm2,xmm5
+        mulps           xmm3,xmm8
+        mulps           xmm4,xmm10
+        addps           xmm2,xmm3
+        addps           xmm2,xmm4
+
+        ; imaginary part of b
+        movlhps		xmm6,xmm6		; b02.i  b02.i  b02.i  b02.i
+        movlhps		xmm7,xmm7		; b12.i  b12.i  b12.i  b12.i
+        movlhps		xmm9,xmm9		; b22.i  b22.i  b22.i  b22.i
+        mulps           xmm6,xmm5
+        mulps           xmm7,xmm8
+	; xmm8 can now be modified
+        mulps           xmm9,xmm10
+	; xmm10 can now be modified
+        addps           xmm6,xmm7
+        addps           xmm6,xmm9
+        xorps           xmm2,[negate]		; <_sse_sgn24>
+        shufps          xmm6,xmm6,0xb1
+	addps           xmm2,xmm6
+	movlps		[rdx+16],xmm2		; <(cc)->e[0][2]>
+	movhps		[rdx+40],xmm2		; <(cc)->e[1][2]>
+
+
+	; recap: we are done with registers xmm7, xmm8, xmm10
+	; xmm0, xmm1, xmm2 contain the first two rows of the result:
+	;
+	;      0    1    2
+	;   [ --------  --- ]
+	; 0 [ | xmm0 |  |x| ]
+	;   [ --------  |m| ]
+	;   [ --------  |m| ]
+	; 1 [ | xmm1 |  |2| ]
+	;   [ --------  --- ]
 	
+        ;; third row, columns 1 and 2
+
+        ; real part of a
+	movlps		xmm3,[rdi+16]		;               a02.i  a02.r	<(aa)->e[0][2]>
+	unpcklps	xmm3,xmm3		; a02.i  a02.i  a02.r  a02.r
+	movhlps		xmm6,xmm3		;               a02.i  a02.i
+	movlhps		xmm3,xmm3		; a02.r  a02.r  a02.r  a02.r
+	movhps		xmm4,[rdi+40]		; a12.i  a12.r			<(aa)->e[1][2]>
+	unpckhps	xmm4,xmm4		; a12.i  a12.i  a12.r  a12.r
+	movhlps		xmm7,xmm4		;               a12.i  a12.i
+	movlhps		xmm4,xmm4		; a12.r  a12.r  a12.r  a12.r
+	movlps		xmm11,[rdi+64]		;               a22.i  a22.r	<(aa)->e[2][2]>
+        movaps          xmm5,xmm11
+	unpcklps	xmm5,xmm5		; a22.i  a22.i  a22.r  a22.r
+	movhlps		xmm10,xmm5		;               a22.i  a22.i
+	movlhps		xmm5,xmm5		; a22.r  a22.r  a22.r  a22.r
+
+	; save some values for later
+	movaps		xmm9,xmm3
+	movlhps		xmm9,xmm4
+
+        mulps           xmm3,xmm12
+	mulps           xmm4,xmm13
+        mulps           xmm5,xmm14
+        addps           xmm3,xmm4
+        addps           xmm3,xmm5
+
+        ; imaginary part of a
+        movlhps		xmm6,xmm6		; a02.i  a02.i  a02.i  a02.i
+        movlhps		xmm7,xmm7		; a12.i  a12.i  a12.i  a12.i
+        movlhps		xmm10,xmm10		; a22.i  a22.i  a22.i  a22.i
+        mulps           xmm12,xmm6
+        mulps           xmm13,xmm7
+        mulps           xmm14,xmm10
+        addps           xmm12,xmm13
+        addps           xmm12,xmm14
+        shufps          xmm12,xmm12,0xb1
+        xorps           xmm12,[negate]		; <_sse_sgn24>
+        addps           xmm3,xmm12
+	movlps		[rdx+48],xmm3		; <(cc)->e[2][0]>
+	movhps		[rdx+56],xmm3		; <(cc)->e[2][1]>
+
+	; We are now done with registers xmm8, xmm10, xmm12, xmm13, xmm14.
+	; xmm0, xmm1, xmm2, xmm3 contain all but the last component of the result:
+	;
+	;      0    1    2
+	;   [ --------  --- ]
+	; 0 [ | xmm0 |  |x| ]
+	;   [ --------  |m| ]
+	;   [ --------  |m| ]
+	; 1 [ | xmm1 |  |2| ]
+	;   [ --------  --- ]
+	;   [ --------      ]
+	; 2 [ | xmm3 |      ]
+	;   [ --------      ]
+	
+	; third row, third column
+	movlhps		xmm6,xmm7		; a12.i  a12.i  a02.i  a02.i
+	mulps		xmm9,xmm15
+	mulps		xmm6,xmm15
+	shufps		xmm6,xmm6,0xb1
+	xorps		xmm6,[negate]		; <_sse_sgn24>
+	addps		xmm9,xmm6
+	; xmm9 now contains a02*b02 and a12*b12
+
+	movaps		xmm8,xmm11		; b22.i  b22.r  a22.i  a22.r
+	unpcklps	xmm8,xmm8		; a22.i  a22.i  a22.r  a22.r
+	movhlps		xmm11,xmm11		; b22.i  b22.r  b22.i  b22.r
+	mulps		xmm11,xmm8
+	shufps		xmm11,xmm11,0xb4
+	xorps		xmm11,[neg4]		; <_sse_sgn4>
+	addps		xmm9,xmm11
+
+	; need to add high bits to low bits in xmm9
+	movhlps		xmm5,xmm9
+	addps		xmm9,xmm5
+	movlps		[rdx+64],xmm9		; <(cc)->e[2][2]>
+
+	; Done!
+
 	; *******************************************************************	
 
-here:	pop	ecx
-	pop	ebx
-	pop	eax
-	mov	esp,ebp
-	pop	ebp
-	ret
+here:	ret
 	
 	align		16
 negate:	dd		0x00000000
 	dd		0x80000000
 	dd		0x00000000
 	dd		0x80000000
-	
-        align           16
-neg2:   dd              0x00000000
-        dd              0x00000000
-        dd              0x80000000
-        dd              0x00000000
+
+	align		16
+neg4:	dd		0x00000000
+	dd		0x00000000
+	dd		0x00000000
+	dd		0x80000000
