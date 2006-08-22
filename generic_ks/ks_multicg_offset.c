@@ -30,6 +30,37 @@ static su3_vector *resid;
 static su3_vector *t_dest;
 static int first_multicongrad = 1;
 
+/* Interface for calls with a list of masses */ 
+
+int ks_multicg_mass(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *masses,	/* the masses */
+    int num_masses,	/* number of masses */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    )
+{
+  int i;
+  int status;
+  Real *offsets;
+
+  offsets = (Real *)malloc(sizeof(Real)*num_masses);
+  if(offsets == NULL){
+    printf("ks_multicg_mass: No room for offsets\n");
+    terminate(1);
+  }
+  for(i = 0; i < num_masses; i++){
+    offsets[i] = 4.0*masses[i]*masses[i];
+  }
+  status = ks_multicg_offset(src, psim, offsets, num_masses, niter, rsqmin,
+			     parity, final_rsq_ptr);
+  free(offsets);
+  return status;
+}
+
 /* Interface for call with offsets = 4 * mass * mass */
 
 int ks_multicg_offset(	/* Return value is number of iterations taken */

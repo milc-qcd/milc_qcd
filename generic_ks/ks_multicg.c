@@ -63,35 +63,6 @@ ks_multicg_t ks_multicg_init(){
 #undef REVERSE
 #undef REVHYB
 
-int ks_multicg_mass(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *masses,	/* the masses */
-    int num_masses,	/* number of masses */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
-    )
-{
-  int i;
-  int status;
-  Real *offsets;
-
-  offsets = (Real *)malloc(sizeof(Real)*num_masses);
-  if(offsets == NULL){
-    printf("ks_multicg_mass: No room for offsets\n");
-    terminate(1);
-  }
-  for(i = 0; i < num_masses; i++){
-    offsets[i] = 4.0*masses[i]*masses[i];
-  }
-  status = ks_multicg_offset(src, psim, offsets, num_masses, niter, rsqmin,
-			     parity, final_rsq_ptr);
-  free(offsets);
-  return status;
-}
-
 // mock up multicg by repeated calls to ordinary cg
 int ks_multicg_fake(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
