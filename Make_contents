@@ -246,7 +246,11 @@ KS_IMP_RHMC =           \
  ks_imp_rhmc/in.sample*      \
  ks_imp_rhmc/out.errtol*     \
  ks_imp_rhmc/out.sample*     \
- ks_imp_rhmc/remez-milc
+ ks_imp_rhmc/remez-milc/README* \
+ ks_imp_rhmc/remez-milc/*.C     \
+ ks_imp_rhmc/remez-milc/*.h     \
+ ks_imp_rhmc/remez-milc/Make*
+
 
 KS_IMP_UTILITIES =           \
  ks_imp_utilities/*.c             \
@@ -369,6 +373,7 @@ BASIC =               \
  ${INCLUDE}           \
  ${LIBRARIES}         \
  ${SSE}               \
+ ${SSE_OPTERON}       \
  ${SSE2}            
 
 SSE =               \
@@ -377,6 +382,13 @@ SSE =               \
  sse/include/Makefile    \
  sse/nas/*.s             \
  sse/bin/*.pl
+
+SSE_OPTERON =                    \
+ sse_opteron/README_SSE          \
+ sse_opteron/include/*.h         \
+ sse_opteron/include/Makefile    \
+ sse_opteron/nas/*.s             \
+ sse_opteron/bin/*.pl
 
 SSE2 =              \
  sse2/README_SSE         \

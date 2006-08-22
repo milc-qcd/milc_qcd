@@ -139,10 +139,12 @@ symanzik_sl32 \
 smooth_inst : ${INST_TAR}
 	tar -xf ${INST_TAR} $@
 
-generic_ks \
 dense_static_su3 \
+generic_ks \
+gluon_prop \
 ks_eigen \
 ks_imp_dyn \
+ks_imp_rhmc \
 ks_imp_utilities \
 ks_imp_invert_multi \
 string_break \
