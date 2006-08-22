@@ -7,6 +7,11 @@
 
 /*
  * $Log: ks_multicg_offset_qop.c,v $
+ * Revision 1.2  2006/08/22 21:16:40  detar
+ * Move functionality from ks_multicg_qop.c to ks_multicg_offset_qop.c
+ * Remove extraneous globals from ks_multicg_offset.c
+ * Remove make rule for ks_multicg_qop.c from Make_template
+ *
  * Revision 1.1  2006/08/13 15:01:50  detar
  * Realign procedures to accommodate ks_imp_rhmc code
  * Add Level 3 wrappers and MILC dummy Level 3 implementation
@@ -17,7 +22,7 @@
 #include "../include/loopend.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop.c,v 1.1 2006/08/13 15:01:50 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop.c,v 1.2 2006/08/22 21:16:40 detar Exp $";
 
 /* Standard MILC interface for the Asqtad multimass inverter 
    single source, multiple masses.  Uses the prevailing precision */
@@ -80,6 +85,46 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 
   free(masses);
   return iterations_used;
+}
+
+
+/* Standard MILC interface for the Asqtad multimass inverter 
+   single source, multiple masses.  Uses the prevailing precision */
+
+int ks_multicg_mass(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors (preallocated) */
+    Real *masses,	/* the masses */
+    int num_masses,	/* number of masses */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    )
+{
+
+  int iterations_used;
+  Real *masses2[1];
+  int nmass[1], nsrc;
+  field_offset milc_srcs[1];
+  su3_vector **milc_sols[1];
+
+  /* Set up general source and solution pointers for one mass, one source */
+  nsrc = 1;
+  milc_srcs[0] = src;
+
+  nmass[0] = num_masses;
+  masses2[0] = masses;
+
+  milc_sols[0] =  psim;
+
+  iterations_used = ks_congrad_qop_site2field( niter, rsqmin, 
+					       masses2, nmass, milc_srcs,
+					       milc_sols, nsrc, final_rsq_ptr,
+					       parity );
+
+  total_iters += iterations_used;
+  return( iterations_used );
 }
 
 

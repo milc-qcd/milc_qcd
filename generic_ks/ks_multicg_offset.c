@@ -16,7 +16,6 @@
 
    6/06 C. DeTar Allow calling with offsets instead of masses
    6/06 C. DeTar Not finished with "finished"
-   8/12 C. DeTar added macros for selecting the multicg inverter option
 */
 
 

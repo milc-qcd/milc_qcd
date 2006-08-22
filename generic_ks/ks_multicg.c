@@ -1,34 +1,14 @@
 /******* ks_multicg.c - multi-mass CG for SU3/fermions ****/
 /* MIMD version 7 */
 
-/* Multi-mass CG inverter for staggered fermions */
+/* Wrappers for multi-mass CG inverter for staggered fermions
 
-/* Based on B. Jegerlehner, hep-lat/9612014.
-   See also A. Frommer, S. G\"usken, T. Lippert, B. N\"ockel,"
-   K. Schilling, Int. J. Mod. Phys. C6 (1995) 627. 
-
-   This version is based on d_congrad5_fn.c and d_congrad5_eo.c 
-
-   For "fat link actions", ie when FN is defined, this version
-   assumes connection to nearest neighbor points is stored in fatlink.
-   For actions with a Naik term, it assumes the connection to third
-   nearest neighbors is in longlink.
-
-   6/06 C. DeTar Allow calling with offsets instead of masses
-   6/06 C. DeTar Not finished with "finished"
    8/12 C. DeTar added macros for selecting the multicg inverter option
 */
 
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
-#include "../include/dslash_ks_redefine.h"
-
 #include "../include/loopend.h"
-
-static su3_vector *ttt,*cg_p;
-static su3_vector *resid;
-static su3_vector *t_dest;
-static int first_multicongrad = 1;
 
 /* Set the KS multicg inverter flavor depending on the macro KS_MULTICG */
 

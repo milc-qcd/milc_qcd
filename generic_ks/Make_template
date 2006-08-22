@@ -184,8 +184,6 @@ ks_multicg_offset.o: ../generic_ks/ks_multicg_offset.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset_qop.o: ../generic_ks/ks_multicg_offset_qop.c
 	${CC} -c ${CFLAGS} $<
-ks_multicg_qop.o: ../generic_ks/ks_multicg_qop.c
-	${CC} -c ${CFLAGS} $<
 ks_multicg_qop_milc.o: ../generic_ks/ks_multicg_qop_milc.c
 	${CC} -c ${CFLAGS} $<
 mat_invert.o: ../generic_ks/mat_invert.c
