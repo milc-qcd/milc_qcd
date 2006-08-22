@@ -1,0 +1,113 @@
+This file was updated 8/20/06.   The code is evolving rapidly at this
+time, so it probably won't be valid much past 8/21/06
+
+This directory contains code for generating lattices using rational function
+approximations for the fermion determinants.  You can compile either the
+RHMC algorithm (Rational Hybrid Monte Carlo) or the "phi" algorithm", where
+the difference is that the RHMC includes a Metropolis accept/reject step
+at the end of each trajectory.
+
+There are four possible targets for "make":
+su3_leapfrog
+su3_omelyan
+su3_leapfrog_rhmc
+su3_omelyan_rhmc
+ plus a few more being tested
+
+These implement the leapfrog integration algorithm or the Omelyan integration
+algorithm, and with the _rhmc accept or reject the trajectory.  (Without the
+"_rhmc" the code still reports the change in action at the end of the trajectory.)
+
+The Omelyan integrator stepsize is normalized so that there is one force
+computation in each step of size "epsilon".  This differs by a factor of two from
+the normalization in Takaiishi and deForcrand, but makes algorithm comparison
+more sensible.   In particular, when lambda=1, it reduces to the leapfrog
+algorithm.
+
+The "phi" algorithms should work in single precision, but I recommend double
+precision for the "rhmc" algorithms on larger lattices.
+
+The code allows one or two rational function approximations.  For example,
+you may want to use two separate rational function approximations for
+det(M_light)^(-1/2) and det(M_strange)^(-1/4).   Alternatively (and probably
+better) you may just want a single rational function approximation for
+ det(M_light)^(-1/2)*det(M_strange)^(-1/4)
+
+At the moment, the rational function approximations are in the include
+file "rationals.h".   This has the disadvantage that you have to recompile
+the code to run at a different quark mass.  We intend to change this in
+the near future to have the code read a data file with these approximations.
+
+To run the code, use the same input file as for our traditional su3_hmc.
+MAKE SURE that the masses, and numbers of flavors are the same as you
+used in preparing "rationals.h"!!  At the moment, NO CHECKING IS DONE
+FOR THIS.
+
+You need three (or six) rational function approximations.
+For the fermion force in the updating, you need an approximation for
+1/(powers of determinants).   For example, for a determinant for
+two light quarks, det(m)^(-2/4).
+For the heatbath updating of the phi field, you need
+ (powers of determinants)^(1/2)
+For the computation of the fermion action, you need
+ (powers of determinants)^(-1/2)
+
+To generate rational function approximations, use a modified version of
+Mike Clark's code (requires the gnu multiple precision library)
+
+At the moment, this code can handle a product of up to four powers of
+determinants with different masses (just in case you want to put in dynamical
+charm and isospin breaking at the same time).
+
+./remez-milc/poly4 n1 m1  n2 m2   n3 m3  n4 m4  md_order action_order \
+  min_eig max_eig digits
+where n1=number of flavors of first type quarks
+      m1=mass of first type quark
+      next 6 arguments are for the other three quark types
+      md_order = order of approximation for molecular dynamics integration
+      action_order = order of approximation for action evaluation
+      min_eig = minimum eigenvalue of (D_slash)^2.  Zero doesn't work, but 1e-15 does.
+      max_eig = maximum eigenvalue of (D_slash)^2.  Actually, the maximum you ever
+	expect to encounter is OK, and for equilibrated lattices with u_0 tuned
+        correctly, 90 seems to work.
+      digits is precision used internally.  Use lots (50 or so).
+
+an example may be useful.   For two degenerate quarks with mass 0.005:
+  ./remez-milc/poly4   2 .005    0 .99    0 .99    0 .99   \
+	8 10   1e-15  90   50
+will generate the rational function approximation to
+   (M^dagger M + 4*.005^2)^(-1/2) for the molecular dynamics
+   (M^dagger M + 4*.005^2)^(+1/4) for heat bath fermion update.
+   (M^dagger M + 4*.005^2)^(+1/4) for fermion action computation.
+The output format is more or less what is needed for the "rationals.h"
+include file
+
+For a second example, to make a single rational function approximation including
+two light quarks (mass .005) and one strange quark (mass .05), use
+  ./remez-milc/poly4   2 .005    1 .05    0 .99    0 .99   \
+	8 10   1e-15  90   50
+this will generate the rational function approximation to
+   (M^dagger M + 4*.005^2)^(-1/2) * (M^dagger M + 4*.05^2)^(-1/4)
+
+At this moment the output from poly4 is almost, but not exactly, in the form
+required for the include file.  You will have to take the three lines that define
+the orders of the approximations and put them outside the "#ifdef CONTROL"
+in the include file, and change the "_X" to "_1" or "_2", depending on
+whether this is the first or second factor in your fermion weight.
+
+Put these approximations into an include file "rationals.h".
+See for example ks_imp_rhmc/rationals_f21b650m050m100.h for a 2+1 flavor example
+or rationals_b676m005m050_80.h for an example where only one rational function
+is used.
+Note that all the arrays are "order+1" elements long.  The zero element of
+the "residues", or "A" array is the constant, and the zero element of
+the "roots" or "B" array is ignored.
+When using only one rational function, note that the arrays for the second
+one are just set to trivial values (but you have to do this)
+ALL SORTS OF MYSTERIOUS THINGS GO WRONG IF YOU HAVE MISTAKES IN THIS FILE.
+
+Recompile your code when you change this file!!   
+
+(*) a special case is 4 flavors, where the expansion of
+(M^dagger M + 4m^2) ^ (-nf/4) is trivial
+Use A = {0.0,1.0}, B={0.0,4*m^2}
