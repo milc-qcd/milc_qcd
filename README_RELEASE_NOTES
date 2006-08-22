@@ -3,7 +3,7 @@ This is MILC Version 7 code
 Gradually version 6 code is being ported to it and new modules have
 been added.
 
-So only the following applications have been tested:
+So far only the following applications have been tested:
 
 clover_dynamical
 clover_invert
@@ -100,7 +100,7 @@ For version 7.2.0
 
 30. Add Level 3 wrappers for Level 3 multicg and multi fermion force
 
-31. Begin adding plaquette and link trace to file metadata.
+31. Begin adding plaquette and link trace to MILC file metadata.
 
 32. Add Urs's gluon_prop
 
