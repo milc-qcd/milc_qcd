@@ -190,8 +190,23 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
       zeta_ip1[j] = zeta_i[j] * zeta_im1[j] * beta_im1[j_low];
       c1 = beta_i[j_low] * alpha[j_low] * (zeta_im1[j]-zeta_i[j]);
       c2 = zeta_im1[j] * beta_im1[j_low] * (1.0+shifts[j]*beta_i[j_low]);
-      zeta_ip1[j] /= c1 + c2;
-      beta_i[j] = beta_i[j_low] * zeta_ip1[j] / zeta_i[j];
+      /*THISBLOWSUP
+	/** zeta_ip1[j] /= c1 + c2;
+	beta_i[j] = beta_i[j_low] * zeta_ip1[j] / zeta_i[j];**/
+
+      /*TRYTHIS*/
+      if( c1+c2 != 0.0 )
+	zeta_ip1[j] /= c1 + c2; 
+      else {
+	zeta_ip1[j] = 0.0;
+      }
+      if( zeta_i[j] != 0.0){
+	beta_i[j] = beta_i[j_low] * zeta_ip1[j] / zeta_i[j];
+      } else  {
+	zeta_ip1[j] = 0.0;
+	beta_i[j] = 0.0;
+      }	
+
     }
 
     /* dest <- dest + beta*cg_p */
@@ -234,8 +249,17 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
     alpha[j_low] = rsq / oldrsq;
 
     for(j=0;j<num_masses;j++) if(j!=j_low){
+      /*THISBLOWSUP
       alpha[j] = alpha[j_low] * zeta_ip1[j] * beta_i[j] /
 	(zeta_i[j] * beta_i[j_low]);
+      */
+      /*TRYTHIS*/
+      if( zeta_i[j] * beta_i[j_low] != 0.0)
+	alpha[j] = alpha[j_low] * zeta_ip1[j] * beta_i[j] /
+	  (zeta_i[j] * beta_i[j_low]);
+      else {
+	alpha[j] = 0.0;
+      }
     }
 
     /* cg_p  <- resid + alpha*cg_p */
@@ -254,7 +278,7 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
 
   } while( iteration < niter );
 
-  node0_printf("CG not converged after %d iterations, res. = %e wanted %e\n",
+  node0_printf("ks_multicg_mass_qdp: CG not converged after %d iterations, res. = %e wanted %e\n",
 	       iteration, rsq, rsqstop);
   fflush(stdout);
 
@@ -305,7 +329,6 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
   qmasses = (QLA_Real *) malloc(num_masses*sizeof(QLA_Real));
   for(i=0; i<num_masses; i++) {
     dest[i] = QDP_create_V();
-    set_V_from_temp(dest[i], psim[i]);
     qmasses[i] = (QLA_Real) masses[i];
   }
   qrsqmin = (QLA_Real) rsqmin;
@@ -324,3 +347,43 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
 
   return(iteration);
 }
+
+/* Just a wrapper for ks_multicg_mass */
+/* Offsets are 4 * mass * mass and must be positive */
+int ks_multicg_offset(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *offsets,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    )
+{
+  int i;
+  Real *masses;
+  int status;
+  int num_masses = num_offsets;
+
+  if( num_offsets==0 )return(0);
+
+  masses = (Real *)malloc(sizeof(Real)*num_offsets);
+  if(masses == NULL){
+    printf("ks_multicg_mass: No room for masses\n");
+    terminate(1);
+  }
+  for(i = 0; i < num_offsets; i++){
+    if(offsets[i] < 0){
+      printf("ks_multicg_offset(%d): called with negative offset %e\n",
+		   this_node,offsets[i]);
+      terminate(1);
+    }
+    masses[i] = sqrt(offsets[i]/4.0);
+  }
+  status = ks_multicg_mass(src, psim, masses, num_masses, niter, rsqmin,
+			   parity, final_rsq_ptr);
+  free(masses);
+  return status;
+}
+
