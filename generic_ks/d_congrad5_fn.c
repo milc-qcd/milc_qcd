@@ -318,7 +318,7 @@ fflush(stdout);}
       special_started = 0;
     }
     node0_printf(
-        "CG not converged after %d iterations, res. = %e wanted %e\n",
+        "ks_congrad: CG not converged after %d iterations, res. = %e wanted %e\n",
         iteration,rsq,rsqstop);
     fflush(stdout);
     cleanup_dslash_temps();
