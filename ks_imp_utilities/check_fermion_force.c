@@ -31,14 +31,15 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   /* Make a random source in xxx if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
     restore_ks_vector_scidac_to_site (srcfile, src, QIO_SERIAL, 1);
+    fflush(stdout);
   }
   else {
     /* generate g_rand random; phi = Mdagger g_rand */
-    grsource_imp( src, mass, EVENANDODD );
     node0_printf("Generating a random source\n");
+    grsource_imp( src, mass, EVENANDODD );
   }
       
-  node0_printf("Computing the fermion force\n");
+  node0_printf("Computing the fermion force\n"); fflush(stdout);
   
   /* Just to be safe, clear the answer */
   FORALLSITES(i,s){
@@ -62,7 +63,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   /* If the answer file is given, read it for comparison */
   if(ansflag == RELOAD_SERIAL){
     restore_color_matrix_scidac_to_site(ansfile, F_OFFSET(ansmom[0]), 4);
-    node0_printf("Checking the answer\n");
+    node0_printf("Checking the answer\n"); fflush(stdout);
   }
 
   /* Unpack the answer and compare if possible */

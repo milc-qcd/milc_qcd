@@ -53,6 +53,7 @@ G_OBJECTS =          \
   io_lat4.o          \
   io_lat_utils.o     \
   make_lattice.o     \
+  remap_stdio_from_args.o \
   reunitarize2.o     \
   restrict_fourier.o
 

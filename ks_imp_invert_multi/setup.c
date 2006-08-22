@@ -42,6 +42,7 @@ params par_buf;
 
 int  setup()   {
     int prompt;
+    int i;
 
 	/* print banner, get volume, seed */
     prompt=initial_set();

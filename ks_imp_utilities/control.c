@@ -84,7 +84,7 @@ int main( int argc, char **argv ){
 #endif
     
   }
-  printf("RUNNING COMPLETED\n");
+  node0_printf("RUNNING COMPLETED\n");
   return 0;
 }
 

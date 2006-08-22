@@ -76,6 +76,7 @@ G_OBJECTS =          \
   ploop_dist.o       \
   ranmom.o           \
   ranstuff.o         \
+  remap_stdio_from_args.o \
   reunitarize2.o
 
 ifeq ($(strip ${HAVEQIO}),true)

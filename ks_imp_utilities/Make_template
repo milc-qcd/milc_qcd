@@ -117,7 +117,7 @@ ifeq ($(strip ${HAVEQOP}),true)
 else
   ifeq ($(strip ${HAVEQDP}),true)
 # Choose (fermion_force_asqtad_qdp.o )
-    ASQFORCE = fermion_force_asqtad_qdp.o
+    ASQFORCE = fermion_force_asqtad3.o ff_opt.o
   else
 # Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
 # or  fermion_force_asqtad3.o + ff_opt.o

@@ -122,7 +122,7 @@ Inversion checked, frac. error = 4e-05
 Flagged comparisons = 0
 Max err. = 1e-2 frac. = 0.0002
 Saved KS vector serially to binary file ksvector.ans.Minv.test.l8
-Checksums XXX 1e+01
+Checksums XXX XXX
 
 
 get_f: EOF on STDIN.
