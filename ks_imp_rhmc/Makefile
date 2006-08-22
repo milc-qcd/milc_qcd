@@ -45,7 +45,7 @@ CXX = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-g++
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc
-g
+
 OPT              = -O3 -Wall
 
 #----------------------------------------------------------------------
@@ -121,13 +121,13 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 WANTQOP = true
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
-WANTQDP = 
+WANTQDP = true
 
 # Choose "true" or "". Implies HAVEQMP.
-WANTQIO = 
+WANTQIO = true
 
 # Choose "true" or "".
-WANTQMP = 
+WANTQMP = true
 
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"

@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.4  2006/08/22 19:32:22  detar
+//  Upgrade to QDP and train error tolerance file
+//
 //  Revision 1.3  2006/08/13 15:16:06  detar
 //  Train error files.  Trivia.
 //
@@ -58,6 +61,7 @@ setup()
   int initial_set();
   void make_3n_gathers();
   int prompt;
+  int i;
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();
