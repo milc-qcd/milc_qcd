@@ -133,7 +133,7 @@ WANTQMP = true
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ${HOME}/scidac-sun
+SCIDAC = ${HOME}/scidac
 QIOSNG = $(SCIDAC)/qio-single
 QIOPAR = $(SCIDAC)/qio
 # Parallel version
@@ -177,11 +177,18 @@ LIBADD = ${QLA}/lib/libqla_f3.a
 #----------------------------------------------------------------------
 # 14. Inlining choices
 
+# USE INLINE SSE WITH EXTREME CAUTION!  IT MAY GIVE WRONG RESULTS.
+
 # SSE ASM and explicit C inlining is available for some of the library
 # functions.
 
 # Use SSE for P3 or P4 or Athlon Thunderbird and compilers, such
 # as gcc that accept ASM macros
+
+# There is also a littel-tested alternate single precision SSE package in the
+# directory sse_opteron.  To use it, you need to rename the
+# sse directory to sse_p4 (or something) and then rename the
+# sse_opteron directory to "sse".
 
 # While both SSE and C inline macros can be invoked by changing
 # the function call to the macro name, with SSE_INLINE or C_INLINE
