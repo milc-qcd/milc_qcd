@@ -52,7 +52,7 @@ Flagged comparisons = 0
 Max err. = 2e-05 frac. = 2e-05
 Inversion checked, frac. error = 2e-05
 Flagged comparisons = 0
-Max err. = 2e-05 frac. = 4e-05
+Max err. = 7e-05 frac. = 0.0002
 spectrum_hybrids(): source time = 0
 Inversion checked, frac. error = 2e-05
 Flagged comparisons = 0
