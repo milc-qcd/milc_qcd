@@ -66,9 +66,9 @@ G_OBJECTS = \
   make_lattice.o \
   path_product.o \
   ranmom.o \
-  ranstuff.o \
   remap_stdio_from_args.o \
-  reunitarize2.o
+  reunitarize2.o \
+  ranstuff.o
 
 ifeq ($(strip ${QCDOC}),true)
   G_OBJECTS += ploop2.o
