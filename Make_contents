@@ -38,12 +38,12 @@ LIBRARIES =        \
  libraries/*.t3d        \
  libraries/*.t3e        \
  libraries/*.alpha      \
- libraries/Make*        \
+ libraries/Make_*        \
  libraries/README*      \
  libraries/include/*.h
 
 FILE_UTILITIES =     \
- file_utilities/Make*     \
+ file_utilities/Make_*     \
  file_utilities/*.c       \
  file_utilities/*.h       \
  file_utilities/in.sample.* \
@@ -64,17 +64,17 @@ BINARY_SAMPLES =      \
  binary_samples/smear*.sample.*
 
 INCLUDE =        \
- include/Make*        \
+ include/Make_*        \
  include/*.h
 
 GENERIC =        \
- generic/Make*        \
+ generic/Make_*        \
  generic/*.c          \
  generic/*.h          \
  generic/imp_actions/*.h
 
 GENERIC_KS =     \
- generic_ks/Make*     \
+ generic_ks/Make_*     \
  generic_ks/*.c       \
  generic_ks/*.cc      \
  generic_ks/*.h       \
@@ -82,29 +82,29 @@ GENERIC_KS =     \
  generic_ks/imp_actions/*.h
 
 GENERIC_PG =     \
- generic_pg/Make*     \
+ generic_pg/Make_*     \
  generic_pg/*.c       \
  generic_pg/*.h
 
 GENERIC_SCHROED =         \
- generic_schroed/Make*         \
+ generic_schroed/Make_*         \
  generic_schroed/*.c           \
  generic_schroed/*.h
 
 GENERIC_WILSON =     \
- generic_wilson/Make*     \
+ generic_wilson/Make_*     \
  generic_wilson/*.c       \
  generic_wilson/*.h
 
 GENERIC_CLOVER =          \
- generic_clover/Make*     \
+ generic_clover/Make_*     \
  generic_clover/*.c       \
  generic_clover/*.h       \
  generic_clover/utilities/Make*  \
  generic_clover/utilities/*.c
 
 GENERIC_FORM =     \
- generic_form/Make*     \
+ generic_form/Make_*     \
  generic_form/*.c       \
  generic_form/*.h
 
@@ -112,7 +112,7 @@ ARB_DIRAC_EIGEN =          \
  arb_dirac_eigen/README         \
  arb_dirac_eigen/*.c            \
  arb_dirac_eigen/*.h            \
- arb_dirac_eigen/Make*          \
+ arb_dirac_eigen/Make_*          \
  arb_dirac_eigen/in.sample*     \
  arb_dirac_eigen/out.errtol*     \
  arb_dirac_eigen/out.sample*
@@ -121,7 +121,7 @@ ARB_DIRAC_INVERT =          \
  arb_dirac_invert/README         \
  arb_dirac_invert/*.c            \
  arb_dirac_invert/*.h            \
- arb_dirac_invert/Make*          \
+ arb_dirac_invert/Make_*          \
  arb_dirac_invert/in.sample*     \
  arb_dirac_invert/out.errtol*     \
  arb_dirac_invert/out.sample*
@@ -129,7 +129,7 @@ ARB_DIRAC_INVERT =          \
 CLOVER_DYNAMICAL =          \
  clover_dynamical/*.c            \
  clover_dynamical/*.h            \
- clover_dynamical/Make*          \
+ clover_dynamical/Make_*          \
  clover_dynamical/in.sample*     \
  clover_dynamical/out.errtol*     \
  clover_dynamical/out.sample*
@@ -137,15 +137,14 @@ CLOVER_DYNAMICAL =          \
 CLOVER_HYBRIDS =            \
  clover_hybrids/*.c              \
  clover_hybrids/*.h              \
- clover_hybrids/Make*            \
+ clover_hybrids/Make_*            \
  clover_hybrids/in.sample*       \
-# clover_hybrids/out.errtol*     \
  clover_hybrids/out.sample*
 
 CLOVER_INVERT =            \
  clover_invert/*.c              \
  clover_invert/*.h              \
- clover_invert/Make*            \
+ clover_invert/Make_*            \
  clover_invert/in.sample*       \
  clover_invert/in.time*         \
  clover_invert/out.errtol*     \
@@ -155,7 +154,7 @@ GLUON_PROP =                 \
  gluon_prop/GF_555_6.1       \
  gluon_prop/*.c              \
  gluon_prop/*.h              \
- gluon_prop/Make*            \
+ gluon_prop/Make_*            \
  gluon_prop/in.sample*       \
  gluon_prop/out.errtol*      \
  gluon_prop/out.sample*
@@ -163,18 +162,18 @@ GLUON_PROP =                 \
 DENSE_STATIC_SU3 =           \
  dense_static_su3/*.c             \
  dense_static_su3/*.h             \
- dense_static_su3/Make*     
+ dense_static_su3/Make_*     
 
 H_DIBARYON =            \
  h_dibaryon/*.c              \
  h_dibaryon/*.h              \
- h_dibaryon/Make*            \
+ h_dibaryon/Make_*            \
  h_dibaryon/in.sample*       \
 # h_dibaryon/out.errtol*     \
  h_dibaryon/out.sample*
 
 HEAVY        =   \
- heavy/Make*          \
+ heavy/Make_*          \
  heavy/*.c            \
  heavy/*.h            \
  heavy/in.sample*     \
@@ -188,14 +187,14 @@ HEAVY        =   \
 HQET_HEAVY_TO_LIGHT =          \
  hqet_heavy_to_light/*.c            \
  hqet_heavy_to_light/*.h            \
- hqet_heavy_to_light/Make*          \
+ hqet_heavy_to_light/Make_*          \
  hqet_heavy_to_light/in.sample*     \
  hqet_heavy_to_light/out.errtol*     \
  hqet_heavy_to_light/out.sample*
 
 HVY_QPOT     =   \
  hvy_qpot/README      \
- hvy_qpot/Make*       \
+ hvy_qpot/Make_*       \
  hvy_qpot/*.c         \
  hvy_qpot/*.h         \
  hvy_qpot/in.sample.* \
@@ -205,7 +204,7 @@ HVY_QPOT     =   \
 KS_DYNAMICAL =          \
  ks_dynamical/*.c            \
  ks_dynamical/*.h            \
- ks_dynamical/Make*          \
+ ks_dynamical/Make_*          \
  ks_dynamical/in.sample*     \
  ks_dynamical/in.time*       \
  ks_dynamical/out.errtol*     \
@@ -215,7 +214,7 @@ KS_EIGEN =          \
  ks_eigen/README*        \
  ks_eigen/*.c            \
  ks_eigen/*.h            \
- ks_eigen/Make*          \
+ ks_eigen/Make_*          \
  ks_eigen/in.sample*     \
  ks_eigen/out.errtol*     \
  ks_eigen/out.sample*
@@ -223,7 +222,7 @@ KS_EIGEN =          \
 KS_HL_SPECTRUM =    \
  ks_hl_spectrum/*.c            \
  ks_hl_spectrum/*.h            \
- ks_hl_spectrum/Make*          \
+ ks_hl_spectrum/Make_*          \
  ks_hl_spectrum/in.sample*     \
  ks_hl_spectrum/out.errtol*     \
  ks_hl_spectrum/out.sample*
@@ -232,7 +231,7 @@ KS_IMP_DYN =           \
  ks_imp_dyn/README          \
  ks_imp_dyn/*.c             \
  ks_imp_dyn/*.h             \
- ks_imp_dyn/Make*           \
+ ks_imp_dyn/Make_*           \
  ks_imp_dyn/in.sample*      \
  ks_imp_dyn/in.time*        \
  ks_imp_dyn/out.errtol*     \
@@ -242,20 +241,20 @@ KS_IMP_RHMC =           \
  ks_imp_rhmc/README*         \
  ks_imp_rhmc/*.c             \
  ks_imp_rhmc/*.h             \
- ks_imp_rhmc/Make*           \
+ ks_imp_rhmc/Make_*           \
  ks_imp_rhmc/in.sample*      \
  ks_imp_rhmc/out.errtol*     \
  ks_imp_rhmc/out.sample*     \
  ks_imp_rhmc/remez-milc/README* \
  ks_imp_rhmc/remez-milc/*.C     \
  ks_imp_rhmc/remez-milc/*.h     \
- ks_imp_rhmc/remez-milc/Make*
+ ks_imp_rhmc/remez-milc/Make_*
 
 
 KS_IMP_UTILITIES =           \
  ks_imp_utilities/*.c             \
  ks_imp_utilities/*.h             \
- ks_imp_utilities/Make*           \
+ ks_imp_utilities/Make_*           \
  ks_imp_utilities/in.sample*      \
  ks_imp_utilities/out.errtol*     \
  ks_imp_utilities/out.sample*
@@ -263,7 +262,7 @@ KS_IMP_UTILITIES =           \
 KS_IMP_INVERT_MULTI =           \
  ks_imp_invert_multi/*.c             \
  ks_imp_invert_multi/*.h             \
- ks_imp_invert_multi/Make*           \
+ ks_imp_invert_multi/Make_*           \
  ks_imp_invert_multi/in.sample*      \
  ks_imp_invert_multi/out.errtol*     \
  ks_imp_invert_multi/out.sample*
@@ -271,7 +270,7 @@ KS_IMP_INVERT_MULTI =           \
 PROPAGATING_FORM_FACTOR =          \
  propagating_form_factor/*.c            \
  propagating_form_factor/*.h            \
- propagating_form_factor/Make*          \
+ propagating_form_factor/Make_*          \
  propagating_form_factor/in.sample*     \
  propagating_form_factor/out.errtol*    \     \
  propagating_form_factor/out.sample*    \
@@ -284,7 +283,7 @@ PROPAGATING_FORM_FACTOR =          \
 PURE_GAUGE =          \
  pure_gauge/*.c            \
  pure_gauge/*.h            \
- pure_gauge/Make*          \
+ pure_gauge/Make_*          \
  pure_gauge/in.sample*     \
  pure_gauge/out.errtol*     \
  pure_gauge/out.sample*
@@ -292,7 +291,7 @@ PURE_GAUGE =          \
 SCHROED_CL_INV =          \
  schroed_cl_inv/*.c            \
  schroed_cl_inv/*.h            \
- schroed_cl_inv/Make*          \
+ schroed_cl_inv/Make_*          \
  schroed_cl_inv/in.sample*     \
  schroed_cl_inv/out.errtol*     \
  schroed_cl_inv/out.sample*
@@ -300,7 +299,7 @@ SCHROED_CL_INV =          \
 SCHROED_KS_DYN =          \
  schroed_ks_dyn/*.c            \
  schroed_ks_dyn/*.h            \
- schroed_ks_dyn/Make*          \
+ schroed_ks_dyn/Make_*          \
  schroed_ks_dyn/in.sample*     \
  schroed_ks_dyn/out.errtol*     \
  schroed_ks_dyn/out.sample*
@@ -308,7 +307,7 @@ SCHROED_KS_DYN =          \
 SCHROED_PG =          \
  schroed_pg/*.c            \
  schroed_pg/*.h            \
- schroed_pg/Make*          \
+ schroed_pg/Make_*          \
  schroed_pg/in.sample*     \
  schroed_pg/out.errtol*     \
  schroed_pg/out.sample*
@@ -318,7 +317,7 @@ SMOOTH_INST =         \
  smooth_inst/*.c           \
  smooth_inst/*.c.unused    \
  smooth_inst/*.h           \
- smooth_inst/Make*         \
+ smooth_inst/Make_*         \
  smooth_inst/in.sample*    \
  smooth_inst/out.errtol*   \     \
  smooth_inst/out.sample*   \
@@ -328,7 +327,7 @@ SMOOTH_INST =         \
 STRING_BREAK =          \
  string_break/*.c            \
  string_break/*.h            \
- string_break/Make*          \
+ string_break/Make_*          \
  string_break/in.sample*     \
  string_break/out.errtol*     \
  string_break/out.sample*
@@ -336,7 +335,7 @@ STRING_BREAK =          \
 SYMANZIK_SL32 =         \
  symanzik_sl32/*.c           \
  symanzik_sl32/*.h           \
- symanzik_sl32/Make*         \
+ symanzik_sl32/Make_*         \
  symanzik_sl32/in.sample*    \
  symanzik_sl32/out.errtol*     \
  symanzik_sl32/out.sample*
@@ -344,13 +343,13 @@ SYMANZIK_SL32 =         \
 WILSON_DYNAMICAL =          \
  wilson_dynamical/*.c            \
  wilson_dynamical/*.h            \
- wilson_dynamical/Make*         \
+ wilson_dynamical/Make_*         \
  wilson_dynamical/in.sample*     \
  wilson_dynamical/out.errtol*     \
  wilson_dynamical/out.sample*
 
 WILSON_STATIC        =   \
- wilson_static/Make*          \
+ wilson_static/Make_*          \
  wilson_static/*.c            \
  wilson_static/*.h            \
  wilson_static/in.sample*     \
