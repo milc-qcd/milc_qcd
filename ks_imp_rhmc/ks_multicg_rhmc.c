@@ -30,7 +30,6 @@
 
 static su3_vector *ttt,*cg_p;
 static su3_vector *resid;
-static su3_vector *t_dest;
 static int first_multicongrad = 1;
 
 
@@ -62,7 +61,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     Real *shifts, mass_low, msq_xm4;
     double *zeta_i, *zeta_im1, *zeta_ip1;
     double *beta_i, *beta_im1, *alpha;
-    su3_vector **pm;	/* vectors not involved in gathers */
+    // su3_vector **pm;	/* vectors not involved in gathers */
 
     // Switch indices
     su3_vector **psim_rev; su3_vector *psim_space;

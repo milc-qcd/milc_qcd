@@ -56,19 +56,17 @@ void fn_fermion_force_rhmc( Real eps, Real *residues, su3_vector **multi_x, int 
   register int i,dir,lastdir,ipath,ilink;
   register site *s;
   int length;
-  int nflop = 0;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
   int num_q_paths = get_num_q_paths();
   Q_path *q_paths = get_q_paths();
-  Real residue;
-  msg_tag *mtag0,*mtag1;
+  msg_tag *mtag1;
   su3_matrix *mat_outerprod,*mat_tmp0,*mat_tmp1,*tmp_matpt;
   int netbackdir, last_netbackdir;
 
 #ifdef FFTIME
+  int nflop = 0;
   double dtime;
-  nflop=0; //FIXXME
 #endif
 node0_printf("STARTING fn_fermion_force_rhmc() nterms = %d\n",nterms);
   if( nterms==0 )return;
@@ -215,13 +213,11 @@ void fn_fermion_force_rhmc_reverse( Real eps, Real *residues, su3_vector **multi
   register int i,j,dir,lastdir,ipath,ilink;
   register site *s;
   int length;
-  int nflop = 0;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
   int num_q_paths = get_num_q_paths();
   Q_path *q_paths = get_q_paths();
-  Real residue;
-  msg_tag *mtag0,*mtag1;
+  msg_tag *mtag1;
   su3_matrix *mat_outerprod,*mat_tmp0,*mat_tmp1,*tmp_matpt;
   su3_matrix *mat_opm1; // "Outer Product at Minus One from end of path"
   int netbackdir, last_netbackdir;	// backwards direction for entire path
@@ -229,8 +225,8 @@ void fn_fermion_force_rhmc_reverse( Real eps, Real *residues, su3_vector **multi
   su3_vector *multi_x_rev;
 
 #ifdef FFTIME
+  int nflop = 0;
   double dtime;
-  nflop=0; //FIXXME
 #endif
 node0_printf("STARTING fn_fermion_force_rhmc_reverse() nterms = %d\n",nterms);
   if( nterms==0 )return;
@@ -401,19 +397,17 @@ void fn_fermion_force_rhmc_june05( Real eps, Real *residues, su3_vector **multi_
   register int i,dir,lastdir,ipath,ilink;
   register site *s;
   int length;
-  int nflop = 0;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
   int num_q_paths = get_num_q_paths();
   Q_path *q_paths = get_q_paths();
-  Real residue;
-  msg_tag *mtag0,*mtag1;
+  msg_tag *mtag1;
   su3_matrix *mat_outerprod,*mat_tmp0,*mat_tmp1,*tmp_matpt;
   int netbackdir, last_netbackdir;
 
 #ifdef FFTIME
+  int nflop = 0;
   double dtime;
-  nflop=0; //FIXXME
 #endif
 node0_printf("STARTING fn_fermion_force_rhmc() nterms = %d\n",nterms);
   if( nterms==0 )return;
@@ -550,7 +544,7 @@ node0_printf("STARTING fn_fermion_force_rhmc() nterms = %d\n",nterms);
 
 
 int find_backwards_gather( Q_path *path ){
-    int disp[4], i,j;
+    int disp[4], i;
     /* compute total displacement of path */
     for(i=XUP;i<=TUP;i++)disp[i]=0;
     for( i=0; i<path->length; i++){
@@ -607,6 +601,7 @@ int sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths ){
 	} //dir0
     }
     if( num_new!=npaths){ node0_printf("OOPS: path table error\n"); exit(0); }
+    return 0;
 }
 
 /* LONG COMMENTS

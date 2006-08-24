@@ -49,7 +49,6 @@ j=1;
 
 //while( j<= order-VECLENGTH+1 ){
 while( j<= stoporder-VECLENGTH+1 ){
-  int jj;
   eo_fermion_force_multi( eps, &(residues[j]), multi_x+j-1, VECLENGTH ); //TRY_ONE
   //fn_fermion_force_rhmc( eps, &(residues[j]), multi_x+j-1, VECLENGTH ); //TRY_ONE
   j+=VECLENGTH;

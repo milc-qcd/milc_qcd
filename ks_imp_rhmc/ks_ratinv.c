@@ -69,5 +69,5 @@ int ks_rateval(
         scalar_mult_add_su3_vector( &(dest[i]), &(psim[j-1][i]), residues[j], &(dest[i]) );
       }
    }
-
+   return 0;
 }
