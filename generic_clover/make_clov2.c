@@ -550,8 +550,8 @@ void tr_sigma_ldu_mu_nu_site( field_offset mat, int mu, int nu )
   triangular *clov = global_clov->clov;
   diagonal *clov_diag = global_clov->clov_diag;
   register site *s;
-  register int mm, nn;  /* dummy directions */
-  register Real pm;
+  register int mm = 0, nn = 0;  /* dummy directions */
+  register Real pm = 0;
   register int i,j,k,jk,jk2,kj;
   Real rtmp;
   complex ctmp,ctmp1;
