@@ -368,7 +368,7 @@ int i,j,k;
 int ispinp1, ispinp2;
 int si_1,si_2,si_3,sf_1,sf_2,sf_3,ci_1,ci_2,ci_3,cf_1,cf_2,cf_3;
 int  chi_i, chi_f, eps_f, eps_i;
-Real factor, iso_fac;
+Real factor, iso_fac = 0;
 
 int  baryons;
 

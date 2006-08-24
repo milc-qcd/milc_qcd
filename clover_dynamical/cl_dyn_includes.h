@@ -37,7 +37,7 @@ void udadu_mu_nu( field_offset lsrc, field_offset rsrc, field_offset mat,
 		 int mu, int nu, int parity );
 void udadu_mat_mu_nu( field_offset matsrc, field_offset matdest, 
 		     int mu, int nu );
-void grsource();
+void grsource_w();
 void gauge_field_copy(field_offset src,field_offset dest);
 void update_u(Real eps);
 void update_h(Real eps);

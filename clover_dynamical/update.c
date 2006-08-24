@@ -26,11 +26,15 @@ void predict_next_psi(Real *oldtime,Real *newtime,Real *nexttime);
 int update()  {
 int step, iters=0;
 Real final_rsq;
-Real cg_time,old_cg_time,next_cg_time; /* simulation time for last two CG's */
+Real cg_time; /* simulation time for last two CG's */
+#ifdef PHI_ALGORITHM
+ Real old_cg_time,next_cg_time;
+ double starttrlogA, endtrlogA;
+#endif
 Real CKU0 = kappa*clov_c/(u0*u0*u0);
-double starttrlogA, endtrlogA, junktrlogA;
+double junktrlogA;
 #ifdef HMC_ALGORITHM
-double startaction,endaction,change;
+double startaction = 0, endaction, change;
 Real xrandom;
 #endif
 

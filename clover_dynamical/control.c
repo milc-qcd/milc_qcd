@@ -25,7 +25,10 @@ int main(int argc, char *argv[])  {
 int meascount,todo;
 int prompt;
 double dssplaq,dstplaq;
-int m_iters,s_iters,spect_iters,avm_iters,avs_iters,avspect_iters;
+int m_iters,s_iters,avm_iters,avs_iters,avspect_iters;
+#ifdef SPECTRUM
+int spect_iters;
+#endif
 complex plp;
 double dtime;
 

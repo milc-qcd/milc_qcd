@@ -16,12 +16,10 @@ BOTCH: s_props needs LU
 int s_props_cl( ) {
 register site *st;
 register int i,spin,iters;
-Real final_rsq,*piprop,*aprop;
+Real *piprop,*aprop;
 register Real theta;
 complex cc;
 wilson_vector tvec;
-Real CKU0 = kappa*clov_c/(u0*u0*u0);
-double junk;
 
 
     iters=0;

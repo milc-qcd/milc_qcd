@@ -24,7 +24,7 @@
 void udadu_mu_nu( field_offset lsrc, field_offset rsrc, field_offset mat, 
 		 int mu, int nu, int parity )
 {
-register int i, otherparity;
+register int i, otherparity = 0;
 int disp[4];
 register site *s;
 msg_tag *tag[8];
