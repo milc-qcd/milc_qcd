@@ -71,11 +71,11 @@ out.test.${PROJ}: ${PROJ} in.sample.${PROJ}
 	${LAUNCH} ./${PROJ} ${LAUNCH2} < in.sample.${PROJ} > out.test.${PROJ}
 
 out.test.diff.${PROJ}: out.test${CUSTOM}.${PROJ} out.sample${CUSTOM}.${PROJ}
-	../headtail.pl ${PATTERNS} < out.test${CUSTOM}.${PROJ} > \
+	perl ../headtail.pl ${PATTERNS} < out.test${CUSTOM}.${PROJ} > \
 	   out.test.${PROJ}.tmp
-	../headtail.pl ${PATTERNS} < out.sample${CUSTOM}.${PROJ} > \
+	perl ../headtail.pl ${PATTERNS} < out.sample${CUSTOM}.${PROJ} > \
 	   out.sample.${PROJ}.tmp
-	../diffn3.pl out.test.${PROJ}.tmp out.sample.${PROJ}.tmp \
+	perl ../diffn3.pl out.test.${PROJ}.tmp out.sample.${PROJ}.tmp \
 	   out.errtol${CUSTOM}.${PROJ} > out.test.diff.${PROJ}
 #	   /bin/rm out.test.${PROJ}.tmp out.sample.${PROJ}.tmp
 
