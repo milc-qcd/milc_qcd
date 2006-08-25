@@ -35,7 +35,7 @@ PRECISION = 1
 #----------------------------------------------------------------------
 # 4. Compiler
 # Choices include mpicc cc gcc pgcc g++
-CC = gcc
+CC = g++
 
 #CC = /usr/local/mpich/bin/mpicc -cc=${GCC_DIR}/bin/gcc  # FNAL
 #CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
@@ -46,7 +46,8 @@ CXX = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-g++
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc
-OPT              = -O3
+
+OPT              = -O3 -Wall
 
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -125,10 +126,10 @@ WANTQOP =
 WANTQDP =
 
 # Choose "true" or "". Implies HAVEQMP.
-WANTQIO = true
+WANTQIO = 
 
 # Choose "true" or "".
-WANTQMP = true
+WANTQMP = 
 
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
@@ -172,7 +173,8 @@ LD               = ${CC}
 
 #----------------------------------------------------------------------
 # 13. Extra libraries
-LIBADD = ${QLA}/lib/libqla_f3.a
+#LIBADD = ${QLA}/lib/libqla_f3.a
+LIBADD =
 
 #----------------------------------------------------------------------
 # 14. Inlining choices
@@ -185,7 +187,7 @@ LIBADD = ${QLA}/lib/libqla_f3.a
 # Use SSE for P3 or P4 or Athlon Thunderbird and compilers, such
 # as gcc that accept ASM macros
 
-# There is also a littel-tested alternate single precision SSE package in the
+# There is also a little-tested alternate single precision SSE package in the
 # directory sse_opteron.  To use it, you need to rename the
 # sse directory to sse_p4 (or something) and then rename the
 # sse_opteron directory to "sse".
@@ -203,7 +205,7 @@ INLINEOPT = -DC_INLINE # -DSSE_INLINE
 #----------------------------------------------------------------------
 # 15. Other miscellaneous macros you want for all of your compilations
 
-CODETYPE = -DDBLSTORE_FN # -DQDP_PROFILE
+CODETYPE = # -DQDP_PROFILE
 # Choices include -DPREFETCH (not recommended)
 
 #----------------------------------------------------------------------
