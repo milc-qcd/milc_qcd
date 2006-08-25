@@ -182,11 +182,6 @@ void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator)
 		    {0,0,1}}; //2
 
 
-
-  int p_100[3][3] = {{-1,0,0},  //0
-		    {0,-1,0},  //1
-		    {0,0,-1}}; //2
-
   int p110[9][3] = {{1,1,0},  //0
 		    {1,0,1},  //1
 		    {1,0,-1}, //2

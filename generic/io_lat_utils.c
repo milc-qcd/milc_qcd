@@ -479,7 +479,7 @@ int sprint_gauge_info_item(
 {
 
   int i,k,n;
-  int bytes;
+  size_t bytes;
   char *data;
   float tt;
 
@@ -1235,7 +1235,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
   int byterevflag;
   char myname[] = "read_gauge_hdr";
   int i;
-  QCDheader *hdr;
+  QCDheader *hdr = NULL;
   int dims[4];
   int ARCHYES=0;
   u_int32type chksum;

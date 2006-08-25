@@ -32,7 +32,7 @@ void project_su3(
    Real z;
    su3_matrix action;
    su2_matrix h;
-   Real conver, old_tr, new_tr;
+   Real conver, old_tr = 0, new_tr;
 
    if(tol > 0)
      old_tr = realtrace_su3(w,q)/3.0;

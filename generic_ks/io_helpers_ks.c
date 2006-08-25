@@ -137,7 +137,7 @@ int reload_ksprop_to_site( int flag, char *filename,
   /* 0 normal exit value
      1 read error */
 
-  double dtime;
+  double dtime = 0;
   int i,status,color;
   field_offset destc;
   int file_type;
@@ -204,7 +204,7 @@ int reload_ksprop_to_field( int flag, char *filename,
   /* 0 normal exit value
      1 read error */
 
-  double dtime;
+  double dtime = 0;
   int i,status,color;
   int file_type;
   site *s;
@@ -298,7 +298,7 @@ int read_lat_dim_ksprop(char *filename, int file_type, int *ndim, int dims[])
 void save_ksprop_from_site( int flag, char *filename, char *recxml, 
 		  field_offset src, int timing)
 {
-  double dtime;
+  double dtime = 0;
   int color;
   field_offset srcc;
   ks_prop_file *kspf;
@@ -385,7 +385,7 @@ void save_ksprop_from_site( int flag, char *filename, char *recxml,
 void save_ksprop_from_field( int flag, char *filename, char *recxml, 
 		  su3_vector *src, int timing)
 {
-  double dtime;
+  double dtime = 0;
   int color;
   ks_prop_file *kspf;
   

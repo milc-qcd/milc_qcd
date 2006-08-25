@@ -28,7 +28,9 @@ int main(int argc, char *argv[])
   Real avm_iters,avs_iters;
   
   double starttime,endtime;
+#ifdef IOTIME
   double dtime;
+#endif
   
   int MinCG,MaxCG;
   Real RsdCG;

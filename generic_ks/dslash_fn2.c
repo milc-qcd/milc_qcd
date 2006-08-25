@@ -85,7 +85,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start ){
     register int i;
     register site *s;
-    register int dir,otherparity;
+    register int dir,otherparity = 0;
     register su3_matrix *fat4, *long4;
 
     if(!valid_longlinks)load_longlinks();
@@ -262,7 +262,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			       int parity, msg_tag **tag, int start ){
   register int i;
   register site *s;
-  register int dir,otherparity;
+  register int dir,otherparity=0;
   register su3_matrix *fat4, *long4;
   
   /* allocate temporary work space only if not already allocated */
@@ -608,7 +608,7 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity ) {
 void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity ) {
    register int i;
    register site *s;
-   register int dir,otherparity;
+   register int dir,otherparity=0;
    msg_tag *tag[16];
    su3_vector *tempvec[4], *templongvec[4], *templongv1 ;
    register su3_matrix *fat4, *long4;

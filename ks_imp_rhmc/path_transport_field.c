@@ -24,7 +24,7 @@ void path_transport_field( su3_vector *src, su3_vector *dest, int parity,
     int j;
     su3_vector *tmp_src,*tmp_dest,*tmp_work; /*source, dest and workspace*/
     su3_vector *tmp_pt; /* scratch */
-    int tmp_parity, tmp_otherparity; /* parity for this step */
+    int tmp_parity=0, tmp_otherparity=0; /* parity for this step */
 
   if( length > 0 ){
     tmp_src = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
@@ -120,7 +120,7 @@ void path_transport_connection( su3_matrix *src, su3_matrix *dest, int parity,
     int j;
     su3_matrix *tmp_src,*tmp_dest,*tmp_work; /*source, dest and workspace*/
     su3_matrix *tmp_pt; /* scratch */
-    int tmp_parity, tmp_otherparity; /* parity for this step */
+    int tmp_parity=0, tmp_otherparity=0; /* parity for this step */
 
   if( length > 0 ){
     tmp_src = (su3_matrix *)malloc( sites_on_node*sizeof(su3_matrix) );
@@ -208,7 +208,7 @@ void path_transport_hwv_field( half_wilson_vector *src, half_wilson_vector * des
     int j;
     half_wilson_vector *tmp_src,*tmp_dest,*tmp_work; /*source, dest and workspace*/
     half_wilson_vector *tmp_pt; /* scratch */
-    int tmp_parity, tmp_otherparity; /* parity for this step */
+    int tmp_parity=0, tmp_otherparity=0; /* parity for this step */
 
   if( length > 0 ){
     tmp_src = (half_wilson_vector *)malloc(

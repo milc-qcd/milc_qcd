@@ -17,7 +17,7 @@ void monte(int NumStp)
 int NumTrj,Nhit, index1, ina, inb,ii;
 int parity;
 Real xr1,xr2,xr3,xr4;
-Real a0,a1,a2,a3;
+Real a0=0,a1,a2,a3;
 Real v0,v1,v2,v3, vsq;
 Real h0,h1,h2,h3;
 Real r,r2,rho,z;

@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.5  2006/08/25 04:55:41  detar
+//  Groom to remove declarations of unused variables and do strict initialization
+//
 //  Revision 1.4  2006/05/17 17:31:53  detar
 //  Add links to Ludmila's chemical potential code.
 //  Add npbp_reps to the su3_rmd_eos and su3_rmd_mu_eos sample inputs
@@ -52,7 +55,10 @@ setup()
 {
   int initial_set();
   void make_3n_gathers();
-  int i, prompt;
+#ifdef HACE_QDP
+  int i;
+#endif
+  int prompt;
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();
@@ -201,8 +207,10 @@ readin(int prompt)
   
   int status;
   Real x;
+#ifdef SPECTRUM
   int i;
   char request_buf[MAX_SPECTRUM_REQUEST];
+#endif
   
   /* On node zero, read parameters and send to all other nodes */
   if(this_node==0) {
@@ -372,7 +380,9 @@ void
 make_3n_gathers()
 {
   int i;
+#ifdef HAVE_QDP
   int disp[4]={0,0,0,0};
+#endif
   
   for(i=XUP; i<=TUP; i++) {
     make_gather(third_neighbor, &i, WANT_INVERSE,

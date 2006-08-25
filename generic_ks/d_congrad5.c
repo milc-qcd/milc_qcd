@@ -55,8 +55,8 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
   Real msq_x4;	/* 4*mass*mass */
   double source_norm;	/* squared magnitude of source vector */
   double rsqstop;	/* stopping residual normalized by source norm */
-  int l_parity;	/* parity we are currently doing */
-  int l_otherparity;	/* the other parity */
+  int l_parity=0;	/* parity we are currently doing */
+  int l_otherparity=0;	/* the other parity */
   msg_tag * tags1[8], *tags2[8];	/* tags for gathers to parity and opposite */
   int special_started;	/* 1 if dslash_site_special has been called */
 
@@ -301,7 +301,9 @@ register int i;
 register site *s;
 register int dir,otherparity;
 msg_tag *tag[8];
+#ifdef INLINE
 register su3_vector *a,*b1,*b2,*b3,*b4;
+#endif
 
     switch(parity){
 	case EVEN:	otherparity=ODD; break;
@@ -453,8 +455,10 @@ void dslash_site_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start ){
 register int i;
 register site *s;
-register int dir,otherparity;
+register int dir,otherparity=0;
+#ifdef INLINE
 register su3_vector *a,*b1,*b2,*b3,*b4;
+#endif
 
 #ifdef DSLASHTIMES
 double dtime0,dtime1,dtime2,dtime3,dtime4,dtime5,dtime6,dclock();

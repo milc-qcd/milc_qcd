@@ -53,8 +53,8 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     double c1, c2, rsq, oldrsq, pkp;		/* pkp = cg_p.K.cg_p */
     double source_norm;	/* squared magnitude of source vector */
     double rsqstop;	/* stopping residual normalized by source norm */
-    int l_parity;	/* parity we are currently doing */
-    int l_otherparity;	/* the other parity */
+    int l_parity=0;	/* parity we are currently doing */
+    int l_otherparity=0; /* the other parity */
     msg_tag *tags1[16], *tags2[16];	/* tags for gathers to parity and opposite */
     int special_started;	/* 1 if dslash_special has been called */
     int j, j_low;
@@ -399,7 +399,7 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     Real *final_rsq_ptr	/* final residue squared */
     )
 {
-    int i,j,iters; site *s;
+    int i,j,iters=0; site *s;
     ks_multicg_reverse( src, psim, offsets, num_offsets, niter, rsqmin, parity, final_rsq_ptr);
     for(i=0;i<num_offsets;i++){
        FORSOMEPARITY(j,s,parity){ s->xxx1 = psim[i][j]; } END_LOOP

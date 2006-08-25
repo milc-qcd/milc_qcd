@@ -73,14 +73,12 @@ int spectrum_singlets( Real mass, Real tol, field_offset temp_offset ){
      return C.G. iteration number */
 
   int cgn;
-  register int i,j,dir;
+  register int i,j;
   register site* s;
   register complex cc,czero;
   register int t_source;
   int sourcevec,color;	/* color for source */
-  int src_count; /* number of source time slices used */
-  Real x,finalrsq;
-  su3_vector *temp_prop;
+  Real x;
   complex **props;	/* arrays of propagators */
   complex cc1,cc2,cc3,cc4,cc5;
   su3_matrix *smearlink;
@@ -356,7 +354,6 @@ void mult_eta_l(su3_vector *src, su3_vector *dest, su3_vector *temp, su3_matrix 
 void mult_eta_nl(su3_vector *src, su3_vector *dest, su3_vector *temp ) {
   register int i;
   register site *s;
-  int c ;
   //NOT WRITTEN YET, set to zero
   FORALLSITES(i,s) clearvec( &(dest[i]) );
 }

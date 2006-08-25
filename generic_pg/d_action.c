@@ -10,7 +10,9 @@
 double d_action(){
 double ssplaq,stplaq,g_action,h_action;
 double hmom_action();
+#ifdef SCHROED_FUN
 Real fs,ft;
+#endif
     d_plaquette(&ssplaq,&stplaq);
 #ifdef SCHROED_FUN
     fs = beta*(Real)(nx*ny*nz*(nt-1));

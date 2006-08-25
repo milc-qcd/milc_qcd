@@ -74,7 +74,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start ){
     register int i;
     register site *s;
-    register int dir,otherparity;
+    register int dir,otherparity=0;
     register su3_matrix *fat4, *long4;
 
     if(!valid_longlinks)load_longlinks();

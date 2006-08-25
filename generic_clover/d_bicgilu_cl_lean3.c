@@ -81,7 +81,8 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   Real RsdCG = qic->resid;  /* desired residual - 
 				 normalized as sqrt(r*r)/sqrt(src_e*src_e */
   int flag = qic->start_flag;   /* 0: use a zero initial guess; 1: use dest */
-  wilson_vector *tmp,*my_mp,*rv,*sss,*r,*p,*ttt,*t_dest;
+  wilson_vector *tmp=NULL,*my_mp=NULL,*rv=NULL,*sss=NULL,*r=NULL,
+    *p=NULL,*ttt=NULL,*t_dest=NULL;
   int static first_congrad = 1;
 
   dirac_clover_param *dcp 

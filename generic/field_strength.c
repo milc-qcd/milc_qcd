@@ -55,7 +55,7 @@ void make_field_strength(
 				  for the resulting field strength */
   )
 {
-  register int i,component,dir0,dir1;
+  register int i,component,dir0=-99,dir1=-99;
   register site *s;
   int j;
   su3_matrix tmat1,tmat2;

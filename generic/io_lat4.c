@@ -153,18 +153,18 @@ void w_serial(gauge_file *gf)
 {
   /* gf  = file descriptor as opened by w_serial_i */
 
-  FILE *fp;
-  gauge_header *gh;
+  FILE *fp = NULL;
+  gauge_header *gh = NULL;
   u_int32type *val;
   int rank29,rank31;
-  fsu3_matrix *lbuf;
+  fsu3_matrix *lbuf = NULL;
   fsu3_matrix tbuf[4];
   int buf_length;
   register int i,j,k;
   off_t offset;             /* File stream pointer */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
-  off_t checksum_offset;    /* Location of checksum */
+  off_t checksum_offset = 0; /* Location of checksum */
   off_t gauge_check_size;   /* Size of checksum record */
 
   int currentnode,newnode;
@@ -327,23 +327,23 @@ void r_serial(gauge_file *gf)
   char *filename;
   int byterevflag;
 
-  off_t offset ;            /* File stream pointer */
+  off_t offset = 0 ;        /* File stream pointer */
   off_t gauge_check_size;   /* Size of gauge configuration checksum record */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
-  off_t checksum_offset;    /* Where we put the checksum */
+  off_t checksum_offset = 0; /* Where we put the checksum */
   int rcv_rank, rcv_coords;
   int destnode;
   int k;
   int x,y,z,t;
-  int buf_length,where_in_buf;
+  int buf_length = 0, where_in_buf = 0;
   gauge_check test_gc;
   u_int32type *val;
   int rank29,rank31;
-  fsu3_matrix *lbuf;
+  fsu3_matrix *lbuf = NULL;
   fsu3_matrix tmpsu3[4];
   char myname[] = "r_serial";
-  int idest;
+  int idest = 0;
 
   fp = gf->fp;
   gh = gf->header;
@@ -554,8 +554,8 @@ void r_serial_arch(gauge_file *gf)
   char myname[] = "r_serial_arch";
 
   int mu,a,b,p;
-  float *uin, *q;
-  int big_end;
+  float *uin = NULL, *q;
+  int big_end = 0;
   float U[4][18];
   u_int32type chksum;
   
@@ -1328,7 +1328,7 @@ void r_parallel(gauge_file *gf)
 gauge_file *restore_ascii(char *filename) {
   gauge_header *gh;
   gauge_file *gf;
-  FILE *fp;
+  FILE *fp = NULL;
   int destnode;
   int version_number,i,j,x,y,z,t,dir;
   fsu3_matrix lbuf[4];
@@ -1463,7 +1463,7 @@ gauge_file *restore_ascii(char *filename) {
 /* Save a lattice in ASCII format serially (node 0 only) */
 
 gauge_file *save_ascii(char *filename) {
-  FILE *fp;
+  FILE *fp = NULL;
   int currentnode,newnode;
   int i,j,x,y,z,t,dir;
   fsu3_matrix lbuf[4];
@@ -1685,16 +1685,16 @@ gauge_file *save_serial_archive(char *filename) {
   gauge_file *gf;
   gauge_header *gh;
 
-  FILE *outfile;
+  FILE *outfile = NULL;
   site *s;
   u_int32type chksum, utmp, *p32;
   char sums[30];
-  OUTPUT_TYPE *uout;
+  OUTPUT_TYPE *uout = NULL;
   int big_end_p; 
   double ssplaq, stplaq, avgtrace, avgplaq;
   float tmpflt;
   double trace;
-  int mu,a,b,vol3,tslice;
+  int mu,a,b,vol3=0,tslice;
 
   /* Check which end is up */
   big_end_p = big_endian();

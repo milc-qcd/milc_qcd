@@ -61,8 +61,8 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
   Real msq_x4;	/* 4*mass*mass */
   double source_norm;	/* squared magnitude of source vector */
   double rsqstop;	/* stopping residual normalized by source norm */
-  int l_parity;	/* parity we are currently doing */
-  int l_otherparity;	/* the other parity */
+  int l_parity=0;	/* parity we are currently doing */
+  int l_otherparity=0;	/* the other parity */
   msg_tag * tags1[16], *tags2[16];	/* tags for gathers to parity and opposite */
   int special_started;	/* 1 if dslash_fn_field_special has been called */
 

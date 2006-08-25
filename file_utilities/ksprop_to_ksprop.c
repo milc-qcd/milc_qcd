@@ -26,7 +26,6 @@
 #include "../include/generic.h"
 #include "../include/generic_ks.h"
 #include "../include/io_lat.h"
-#include <qio.h>
 
 #define MAX_RECXML 512
 
@@ -38,7 +37,7 @@ static file_type ksprop_list[N_KSPROP_TYPES] =
 
 /*----------------------------------------------------------------------*/
 void make_lattice(){
-register int i,j;               /* scratch */
+register int i;               /* scratch */
 int x,y,z,t;            /* coordinates */
     /* allocate space for lattice, fill in parity, coordinates and index.  */
     lattice = (site *)malloc( sites_on_node * sizeof(site) );
@@ -143,10 +142,9 @@ int main(int argc, char *argv[])
 
   int file_type;
   char recxml[MAX_RECXML];
-  int i,prompt;
+  int prompt;
   int dims[4],ndim;
   su3_vector *ksprop;
-  int status;
 
   initialize_machine(argc,argv);
 #ifdef HAVE_QDP

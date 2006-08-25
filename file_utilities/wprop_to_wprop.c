@@ -26,7 +26,6 @@
 #include "../include/generic.h"
 #include "../include/generic_wilson.h"
 #include "../include/io_lat.h"
-#include <qio.h>
 
 #define MAX_RECXML 512
 
@@ -39,7 +38,7 @@ static file_type w_prop_list[N_WPROP_TYPES] =
 
 /*----------------------------------------------------------------------*/
 void make_lattice(){
-register int i,j;               /* scratch */
+register int i;               /* scratch */
 int x,y,z,t;            /* coordinates */
     /* allocate space for lattice, fill in parity, coordinates and index.  */
     lattice = (site *)malloc( sites_on_node * sizeof(site) );
@@ -147,7 +146,6 @@ int main(int argc, char *argv[])
   int dims[4],ndim;
   int prompt;
   wilson_propagator *wprop;
-  int status;
 
   initialize_machine(argc,argv);
 #ifdef HAVE_QDP

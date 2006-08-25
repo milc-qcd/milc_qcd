@@ -225,8 +225,8 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
     register Real eb3;
     register anti_hermitmat* momentum;
     su3_matrix *staple, *tempmat1;
-    int nflop = 153004;  /* For Symanzik1 action */
 #ifdef GFTIME
+    int nflop = 153004;  /* For Symanzik1 action */
     double dtime;
 #endif
     int j,k;

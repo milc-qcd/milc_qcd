@@ -23,10 +23,11 @@
 
 int update()  {
 int step, iters=0;
-Real final_rsq;
 double startaction,endaction,d_action();
+#ifdef HMC
 Real xrandom;
-int i,j; site *s;
+#endif
+int i;
 su3_vector *multi_x[MAX_RAT_ORDER];
 su3_vector *sumvec;
 int alg_flag; 

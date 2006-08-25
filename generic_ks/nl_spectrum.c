@@ -46,7 +46,7 @@ void accum_delta_prop(int i,int c[3], field_offset tempmat1)
      /* as specified by the color vector c                            */
      /* Result is put in tempmat1 */
 {
-  int j,dir;
+  int j=-1,dir;
   su3_matrix *af, *ab;
   register su3_matrix *tmp1;
   

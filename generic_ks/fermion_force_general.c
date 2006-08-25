@@ -54,16 +54,16 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off ){
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
   /* For example weight = nflavors/4 */
-  register int i,dir,lastdir,ipath,ilink;
+  register int i,dir,lastdir=-99,ipath,ilink;
   register site *s;
   int length;
-  int nflop = 0;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
   int num_q_paths = get_num_q_paths();
   Q_path *q_paths = get_q_paths();
 
 #ifdef FFTIME
+  int nflop = 0;
   double dtime;
 #endif
   msg_tag *mtag0;
@@ -191,13 +191,13 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, field_offs
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
   /* For example weight1 = nflavor1/4; weight2 = nflavor2/4 */
-  register int i,dir,lastdir,ipath,ilink;
+  register int i,dir,lastdir=-99,ipath,ilink;
   register site *s;
   int length;
-  int nflop = 0;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon1, ferm_epsilon2, coeff1, coeff2;
 #ifdef FFTIME
+  int nflop = 0;
   double dtime;
 #endif
   msg_tag *mtag0;

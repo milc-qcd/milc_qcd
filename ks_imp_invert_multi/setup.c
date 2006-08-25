@@ -42,7 +42,6 @@ params par_buf;
 
 int  setup()   {
     int prompt;
-    int i;
 
 	/* print banner, get volume, seed */
     prompt=initial_set();
@@ -312,7 +311,9 @@ int readin(int prompt) {
  */
 void make_3n_gathers(){
    int i;
+#ifdef HAVE_QDP
    int disp[4]={0,0,0,0};
+#endif
  
    for(i=XUP;i<=TUP;i++) {
       make_gather(third_neighbor,&i,WANT_INVERSE,

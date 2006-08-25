@@ -259,7 +259,7 @@ void path_transport( field_offset src, field_offset dest, int parity,
     int j;
     su3_vector *tmp_src,*tmp_dest,*tmp_work; /*source, dest and workspace*/
     su3_vector *tmp_pt; /* scratch */
-    int tmp_parity, tmp_otherparity; /* parity for this step */
+    int tmp_parity=0, tmp_otherparity=0; /* parity for this step */
 
   if( length > 0 ){
     tmp_src = (su3_vector *)special_alloc( sites_on_node*sizeof(su3_vector) );
@@ -344,7 +344,7 @@ void path_transport_hwv( field_offset src, field_offset dest, int parity,
     int j;
     half_wilson_vector *tmp_src,*tmp_dest,*tmp_work; /*source, dest and workspace*/
     half_wilson_vector *tmp_pt; /* scratch */
-    int tmp_parity, tmp_otherparity; /* parity for this step */
+    int tmp_parity=0, tmp_otherparity=0; /* parity for this step */
 
   if( length > 0 ){
     tmp_src = (half_wilson_vector *)special_alloc(
@@ -443,7 +443,6 @@ void load_longlinks() {
   register site *s;
   int ipath,dir;
   int disp[4];
-  int nflop = 1804;
 #ifdef DBLSTORE_FN
   msg_tag *tag[4];
 #endif
@@ -451,9 +450,11 @@ void load_longlinks() {
   su3_matrix *staple, *tempmat1;
 
 #ifdef LLTIME
-double dtime;
-dtime=-dclock();
+  int nflop = 1804;
+  double dtime;
+  dtime=-dclock();
 #endif
+
   if( phases_in != 1){
     node0_printf("BOTCH: load_longlinks needs phases in\n");
     terminate(0);
@@ -584,8 +585,11 @@ void load_fatlinks() {
 
 #ifdef ASQ_OPTIMIZED_FATTENING
   int  nu,rho,sig ;
-  Real one_link,one_link2; /* needed to fix the problem with the Lepage
+  Real one_link; /* needed to fix the problem with the Lepage
 		       term */
+#ifdef DM_DU0
+  Real one_link2; 
+#endif
 #else
   int ipath;
   int disp[4];

@@ -243,7 +243,7 @@ ks_prop_file *w_serial_ks_fm_i(char *filename)
   /* Only node 0 opens the file filename */
   /* Returns a file structure describing the opened file */
 
-  FILE *fp;
+  FILE *fp = NULL;
   ks_prop_file *kspf;
   ks_prop_header *ksph;
 
@@ -301,11 +301,11 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
   /* kspf  = file descriptor as opened by w_serial_w_i 
      src_site[3]   = field offset of an array of three su3_vector types  */
 
-  FILE *fp;
+  FILE *fp = NULL;
   ks_prop_header *ksph;
   u_int32type *val;
-  int rank29,rank31;
-  fsu3_matrix *pbuf;
+  int rank29 = 0,rank31 = 0;
+  fsu3_matrix *pbuf = NULL;
   int fseek_return;  /* added by S.G. for large file debugging */
   struct {
     fsu3_matrix ksv;
@@ -541,12 +541,12 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 
   /* Returns byterevflag  = 0 or 1 */
 
-  FILE *fp;
+  FILE *fp = NULL;
   ks_prop_header *ksph;
   int32type tmp;
   int32type elements_per_site, size_of_element;
   int j;
-  int byterevflag;
+  int byterevflag = 0;
   char myname[] = "read_ks_fmprop_hdr";
 
   fp = kspf->fp;
@@ -703,7 +703,7 @@ ks_prop_file *r_serial_ks_fm_i(char *filename)
 
   ks_prop_header *ksph;
   ks_prop_file *kspf;
-  FILE *fp;
+  FILE *fp = NULL;
   int byterevflag;
 
   /* All nodes set up a propagator file and propagator header
@@ -765,7 +765,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
   /* 0 is normal exit code
      1 for seek, read error, or missing data error */
 
-  FILE *fp;
+  FILE *fp = NULL;
   ks_prop_header *ksph;
   char *filename;
   int byterevflag,a,b;
@@ -776,13 +776,13 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
 
   int rcv_rank, rcv_coords;
   int destnode;
-  int i,k,x,y,z,t;
+  int i = 0,k,x,y,z,t;
   int status;
-  int buf_length, where_in_buf;
+  int buf_length = 0, where_in_buf = 0;
   ks_prop_check test_kspc;
   u_int32type *val;
-  int rank29,rank31;
-  fsu3_vector *pbuf;
+  int rank29 = 0,rank31 = 0;
+  fsu3_vector *pbuf = NULL;
   su3_vector *dest;
 
   struct {

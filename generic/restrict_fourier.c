@@ -281,7 +281,7 @@ void restrict_fourier(
   /* local variables */
   register complex *space_pt,*src_pt;
   register complex cc2;
-  register int mask,level,i,j,n,power,dir;
+  register int mask,level,i,j,n=0,power,dir;
   register site *s;
   register Real theta_0;
   complex *phase;	/* array of phase factors */

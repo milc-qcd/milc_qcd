@@ -29,7 +29,9 @@ void f_meas_imp( field_offset phi_off, field_offset xxx_off, Real mass ){
     register site *st;
     double rfaction;
     double_complex pbp_e, pbp_o;
+#ifdef NPBP_REPS
     double pbp_pbp;
+#endif
     complex cc;
 
 #ifdef DM_DU0

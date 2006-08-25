@@ -17,7 +17,7 @@ void eo_fermion_force_rhmc( int alg_flag, Real eps, int order, Real mass, Real *
     Real final_rsq;
     int i,j;
     site *s;
-    int stoporder;
+    int stoporder = 0;
 
     if( alg_flag==0 ){
 	stoporder=order;

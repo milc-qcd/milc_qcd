@@ -26,18 +26,18 @@ register site *s;
 int j, cgn;
 Real mass_x2, finalrsq;
 Real pix, piy, piz, pit;
-Real sin_pmu, q_mu, prop_a, prop_b, z_fac, m_func, ftmp;
+Real sin_pmu, q_mu, prop_a, prop_b, z_fac, m_func, ftmp = 0;
 Real r1, r2, r3;
 int pmu, px, py, pz, pt;
 int pxn, pyn, pzn, ptn;
-int currentnode,newnode;
+int currentnode;
 int j1, jm2, k, dirs[4];
 msg_tag *mtag[2];
 int j_mass;
-su3_vector **psim;
+su3_vector **psim = NULL;
 int xi, j2, j3, j4, parity;
 
-int status, multiflag;
+int multiflag;
 FILE *fp_mom_ks[MAX_NUM_MASS];	/* for writing mom propagator files */
 char filename[50];
 
@@ -768,7 +768,7 @@ void write_mom_ksprop(FILE *fp, int xi, int color, field_offset src){
 int i,j,x,y,z,t;
 int currentnode,newnode;
 int buf_length;
-su3_vector *pbuf;
+su3_vector *pbuf = NULL;
 
 struct {
   su3_vector ksv;

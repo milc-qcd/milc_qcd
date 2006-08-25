@@ -83,6 +83,7 @@ enum source_type {
   POINT = 1, GAUSSIAN, CUTOFF_GAUSSIAN,
   POINT_WEYL, CUTOFF_GAUSSIAN_WEYL } ;
 
+
 /* w_source.c */
 void w_source(field_offset src,wilson_quark_source *wqs);
 void w_sink(field_offset snk,wilson_quark_source *wqs);

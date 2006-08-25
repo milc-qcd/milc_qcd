@@ -334,7 +334,7 @@ int sprint_w_prop_info_item(
 {
 
   int i,k,n;
-  int bytes;
+  size_t bytes;
   char *data;
   float tt;
 
@@ -649,11 +649,11 @@ void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src_site,
   /* wpf  = file descriptor as opened by w_serial_w_i 
      src  = field offset for propagator Wilson vector (type wilson_vector)  */
 
-  FILE *fp;
+  FILE *fp = NULL;
   w_prop_header *wph;
   u_int32type *val;
   int rank29,rank31;
-  fwilson_vector *lbuf;
+  fwilson_vector *lbuf = NULL;
   wilson_vector *src;
   int fseek_return;  /* added by S.G. for large file debugging */
   struct {
@@ -667,12 +667,12 @@ void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src_site,
   off_t w_prop_size;        /* Size of propagator blocks for all nodes */
   off_t w_prop_check_size;  /* Size of propagator checksum record */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
-  off_t head_size;          /* Size of header plus coordinate list */
-  off_t body_size ;         /* Size of propagator blocks for all nodes 
+  off_t head_size = 0;      /* Size of header plus coordinate list */
+  off_t body_size = 0;      /* Size of propagator blocks for all nodes 
 			      plus checksum record */
   int currentnode,newnode;
   int x,y,z,t;
-  int spinindex;
+  int spinindex = 0;
 
   if(this_node==0)
     {
@@ -1459,7 +1459,7 @@ int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset dest_site,
   w_prop_header *wph;
   char *filename;
   int byterevflag;
-  int spinindex;            /* Counts spin records in file   -
+  int spinindex = 0;        /* Counts spin records in file   -
 			       wph->spins[spinindex] = spin */
 
   off_t offset ;            /* File stream pointer */
@@ -1467,18 +1467,18 @@ int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset dest_site,
   off_t w_prop_check_size;  /* Size of propagator checksum record */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
-  off_t body_size ;         /* Size of propagator blocks for all nodes 
+  off_t body_size = 0 ;     /* Size of propagator blocks for all nodes 
 			      plus checksum record */
   int rcv_rank, rcv_coords;
   int destnode;
   int i,k,x,y,z,t;
   int status;
-  int buf_length,where_in_buf;
+  int buf_length = 0,where_in_buf = 0;
   w_prop_check test_wpc;
   u_int32type *val;
   int rank29,rank31;
-  fwilson_vector *lbuf;
-  wilson_vector *dest;
+  fwilson_vector *lbuf = NULL;
+  wilson_vector *dest = NULL;
 
   struct {
     fwilson_vector wv;

@@ -67,7 +67,6 @@ void setup_tmp_links(){
 }
 
 void cleanup_tmp_links(){
-  register int i ;
   if(!tmp_links_not_set)
       free(t_links) ; 
   tmp_links_not_set=1 ;
@@ -78,7 +77,7 @@ half_wilson_vector hwvx,hwvy,hwvz,hwvt;
 
 register int i;
 register site *s;
-register int dir,otherparity;
+register int dir,otherparity=0;
 msg_tag *tag[8];
 
     switch(parity) {
@@ -189,7 +188,7 @@ half_wilson_vector hwvx,hwvy,hwvz,hwvt;
 
 register int i;
 register site *s;
-register int dir,otherparity;
+register int dir,otherparity=0;
 
     switch(parity) {
 	case EVEN:      otherparity=ODD; break;
@@ -290,7 +289,7 @@ half_wilson_vector hwvx,hwvy,hwvz,hwvt;
 
 register int i;
 register site *s;
-register int dir,otherparity;
+register int dir,otherparity=0;
 msg_tag *tag[8];
 su3_matrix *linkx,*linky,*linkz,*linkt;
 
@@ -406,7 +405,7 @@ half_wilson_vector hwvx,hwvy,hwvz,hwvt;
 
 register int i;
 register site *s;
-register int dir,otherparity;
+register int dir,otherparity=0;
 su3_matrix *linkx,*linky,*linkz,*linkt;
   /* allocate temporary work space only if not already allocated */
   /* The calling program must clean up this space */

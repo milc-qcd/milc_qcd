@@ -103,11 +103,8 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
   register int i,j;
   register site* s;
   register complex cc;
-  register Real phase;
-  Real finalrsq;
   register int t_source;
   int dir;	/* direction in lattice */
-  int spin;	/* spin for source */
   int color;	/* color for source */
   int src_count; /* number of source time slices used */
   complex **props;	/* arrays of propagators */
@@ -364,7 +361,6 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
 void mult_zero_pm( field_offset src, field_offset dest ){
     register int dir,i;
     register site *s;
-    su3_vector tvec;
 
 if(this_node==0)printf("OOPS, mult_zero_pm NOT WRITTEN\n");
 exit(0);
@@ -391,7 +387,6 @@ exit(0);
 void mult_zero_mm( field_offset src, field_offset dest ){
     register int dir,i;
     register site *s;
-    su3_vector tvec;
 
 if(this_node==0)printf("OOPS, mult_zero_mm NOT WRITTEN\n");
 exit(0);
@@ -422,8 +417,6 @@ void mult_1mp0( int pdir, field_offset src, field_offset dest ){
     /* use cg_p and ttt as temporary storage */
     register int dir,i;
     register site *s;
-    Real x;
-    su3_vector tvec1,tvec2;
 
     /* set destination to zero */
     FORALLSITES(i,s){
@@ -459,8 +452,6 @@ void mult_1mps( int pdir, field_offset src, field_offset dest ){
     /* use cg_p and ttt as temporary storage */
     register int dir,i;
     register site *s;
-    Real x;
-    su3_vector tvec1,tvec2;
 
     /* set destination to zero */
     FORALLSITES(i,s){
@@ -490,8 +481,6 @@ void mult_1mps_rev( int pdir, field_offset src, field_offset dest ){
     /* use cg_p and ttt as temporary storage */
     register int dir,i;
     register site *s;
-    Real x;
-    su3_vector tvec1,tvec2;
 
     /* set destination to zero */
     FORALLSITES(i,s){
@@ -519,9 +508,8 @@ void mult_1mps_rev( int pdir, field_offset src, field_offset dest ){
    "pdir" is the polarization direction of the meson */
 void mult_1mpE( int pdir, field_offset src, field_offset dest ){
     /* use cg_p as temporary storage */
-    register int dir,i;
+    register int i;
     register site *s;
-    su3_vector tvec1;
 
     /* Multiply by pdir component of electric field, 
     multiply by gamma_0 and gamma_five (for antiquark propagator ) */
@@ -543,9 +531,8 @@ void mult_1mpE( int pdir, field_offset src, field_offset dest ){
    "pdir" is the polarization direction of the meson */
 void mult_qqqq1mp0( int src_t, int pdir, field_offset src, field_offset dest,
     field_offset work, field_offset temp, Real mass ){
-    register int dir,i;
+    register int i;
     register site *s;
-    su3_vector tvec1;
     /* use "work" and "temp" as temporary storage */
 if(this_node==0)printf("OOPS, mult_qqqq1mp0 NOT WRITTEN\n");
 exit(0);
@@ -572,9 +559,6 @@ exit(0);
    "pdir" is the polarization direction of the meson */
 void mult_one_mm( int pdir, field_offset src, field_offset dest ){
     /* use cg_p as temporary storage */
-    register int dir,i;
-    register site *s;
-    su3_vector tvec1,tvec2;
 
     /* multiply by magnetic field.  (-1)^(x+y+z+t) for antiquark cancels
 	(-1)^(x+y+z+t) in pion operator. */
@@ -622,7 +606,6 @@ void mult_zero_mp( field_offset src, field_offset dest ){
     /* use cg_p as temporary storage */
     register int i,j,k,in;
     register site *s;
-    su3_vector tvec;
     register Real x;
 
     /* set destination to zero */
@@ -655,7 +638,7 @@ void mult_by_field_strength( int dir1, int dir2,
 
     register site *s;
     register int i;
-    int fs_dir;	/* index in field strength tensor, FS_XY to FS_ZT */
+    int fs_dir=-99;	/* index in field strength tensor, FS_XY to FS_ZT */
     Real sign;	/* minus one if indices in "wrong" order */
 
     /* figure out what fs_dir is */

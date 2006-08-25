@@ -22,10 +22,10 @@ int read_w_fm_prop_hdr(w_prop_file *wpf)
   w_prop_header *wph = wpf->header;
   int *dims = wph->dims;
 
-  int32type   tmp, magic_number,elements_per_site; 
+  int32type   tmp, elements_per_site; 
   int32type   size_of_element, order; 
   int32type   t_stamp;
-  int byterevflag;
+  int byterevflag = 0;
   char myname[] = "read_w_fm_prop_hdr";
 
   if( sizeof(float) != sizeof(int32type)) {
@@ -148,7 +148,7 @@ void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site,
 {
   int rcv_rank, rcv_coords, status;
   int destnode;
-  int x,y,z,t,i, byterevflag, c0,s0,c1,s1,a;
+  int x,y,z,t,i=0, byterevflag, c0,s0,c1,s1,a;
   struct {
     fwilson_matrix q;
     char pad[PAD_SEND_BUF];    /* Introduced because some switches
@@ -156,12 +156,12 @@ void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site,
 				  are longer */
   } msg;
 
-  int buf_length, where_in_buf;
-  fwilson_matrix *pbuff;
+  int buf_length=0, where_in_buf=0;
+  fwilson_matrix *pbuff=NULL;
   wilson_propagator *qp;
   w_prop_check test_wpc;
   u_int32type *val;
-  int rank29,rank31;
+  int rank29=0,rank31=0;
   int k;
 
   byterevflag = wpf->byterevflag;

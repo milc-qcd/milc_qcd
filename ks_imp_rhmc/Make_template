@@ -278,77 +278,77 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 su3_leapfrog::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_leapfrog.o"
 
 su3_omelyan::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan.o"
 
 su3_4mn4fp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_4mn4fp.o"
 
 su3_4mn5fv::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_4mn5fv.o"
 
 su3_omelyan_2g1f::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan_2g1f.o"
 
 su3_omelyan_2eps::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan_2eps_b.o"
 
 su3_omelyan_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan.o"
 
 su3_omelyan_rhmc_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC -DDM_DU0 -DNPBP_REPS=10" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC -DDM_DU0 -DNPBP_REPS=10" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan.o"
 
 su3_4mn4fp_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_4mn4fp.o"
 
 su3_4mn5fv_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_4mn5fv.o"
 
 su3_fourstep::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_fourstep.o"

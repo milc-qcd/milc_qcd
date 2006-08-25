@@ -562,7 +562,6 @@ void mult_a1( int pdir,  field_offset src, field_offset dest ){
 	for antiquark */
     register int i;
     register site *s;
-    su3_vector tvec;
 if(this_node==0)printf("OOPS, mult_a1 NOT WRITTEN\n");
 exit(0);
     FORALLSITES(i,s){
@@ -574,7 +573,6 @@ void mult_b1( int pdir,  field_offset src, field_offset dest ){
    /* operator is gamma_pdir, gamma_0, (-1)^(x+y+z+t), another (-1)^(x+y+z+t) for antiquark */
     register int i;
     register site *s;
-    su3_vector tvec;
 if(this_node==0)printf("OOPS, mult_b1 NOT WRITTEN\n");
 exit(0);
     FORALLSITES(i,s){

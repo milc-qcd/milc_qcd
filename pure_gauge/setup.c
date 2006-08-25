@@ -83,8 +83,11 @@ int readin(int prompt) {
 /* read in parameters for su3 monte carlo       */
 /* argument "prompt" is 1 if prompts are to be given for input */
 
-int status,status2;
+int status;
+#ifdef ORA_ALGORITHM
+ int status2;
 char savebuf[128];
+#endif
 
     /* On node zero, read parameters and send to all other nodes */
     if(this_node==0){

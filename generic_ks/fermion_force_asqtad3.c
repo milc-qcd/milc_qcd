@@ -319,7 +319,7 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   Real OneLink[2], Lepage[2], Naik[2], FiveSt[2], ThreeSt[2], SevenSt[2];
   Real mNaik[2], mLepage[2], mFiveSt[2], mThreeSt[2], mSevenSt[2];
   half_wilson_vector *Pnumu, *Prhonumu, *P7, *P7rho, *P5nu, 
-    *P3mu, *P5sig, *Popmu, *Pmumumu;
+    *P3mu = NULL, *P5sig, *Popmu, *Pmumumu;
   half_wilson_vector *P3[8];
   half_wilson_vector *P5[8];
   half_wilson_vector *temp_x;
@@ -725,9 +725,6 @@ node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 /*   Version for arbitrary number of terms in the action	      */
 /**********************************************************************/
 
-su3_matrix *backwardlink[4];
-anti_hermitmat *tempmom[4];
-
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, int nterms ) {
   // note CG_solution and Dslash * solution are combined in "*xxx"
   // New version 1/21/99.  Use forward part of Dslash to get force
@@ -743,7 +740,7 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, int nte
   Real *coeff,ferm_epsilon;
   Real *OneLink, *Lepage, *Naik, *FiveSt, *ThreeSt, *SevenSt;
   Real *mNaik, *mLepage, *mFiveSt, *mThreeSt, *mSevenSt;
-  veclist *Pnumu, *Prhonumu, *P7, *P7rho, *P5nu, *P3mu, *P5sig, *Popmu;
+  veclist *Pnumu, *Prhonumu, *P7, *P7rho, *P5nu, *P3mu = NULL, *P5sig, *Popmu;
   veclist *Pmu, *Pmumu, *Pmumumu;
   veclist *P3[8], *P5[8];
   veclist *temp_x;
@@ -1181,8 +1178,10 @@ void u_shift_hw_fermion(half_wilson_vector *src,
 			half_wilson_vector *dest, 
 			int dir, msg_tag **mtag, 
 			half_wilson_vector *tmpvec) {
+#if 0
   site *s ;
   int i ;
+#endif
 
 #ifdef FFSTIME
   double time0, time1;
@@ -1239,8 +1238,10 @@ void u_shift_hw_fermion(half_wilson_vector *src,
 
 void u_shift_veclist_fermion(veclist *src, veclist *dest, 
 	int dir, msg_tag **mtag, veclist *tmpvec, int listlength ) {
+#if 0
   site *s ;
   int i ;
+#endif
 
 #ifdef FFSTIME
   double time0, time1;
@@ -1331,11 +1332,14 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom, half_wilson_vector *back
 void add_3f_force_to_mom(half_wilson_vector *back,
 			 half_wilson_vector *forw, 
 			 int dir, Real coeff[2]) {
+#if 0
   register site *s ;
   register int i ;  
-  Real my_coeff[2], tmp_coeff[2] ;
-  int mydir;
+  Real tmp_coeff[2] ;
   su3_matrix tmat, *tmat2;
+#endif
+  Real my_coeff[2] ;
+  int mydir;
 #ifdef FFSTIME
   double time;
   time = -dclock();
@@ -1369,18 +1373,20 @@ void add_3f_force_to_mom(half_wilson_vector *back,
 
 void add_3f_force_to_mom_list(veclist *back,
 	veclist *forw, int dir, Real *coeff, int listlength ) {
+#if 0
   register site *s ;
-  register int i,j ;  
-  Real *my_coeff, *tmp_coeff;
-  int mydir;
+  register int i;
   su3_matrix tmat, *tmat2;
+  Real *tmp_coeff = (Real *)malloc(listlength*sizeof(Real) );
+#endif
+  int j ;  
+  Real *my_coeff = (Real *)malloc(listlength*sizeof(Real) );
+  int mydir;
 #ifdef FFSTIME
   double time;
   time = -dclock();
 #endif
 
-  my_coeff = (Real *)malloc(listlength*sizeof(Real) );
-  tmp_coeff = (Real *)malloc(listlength*sizeof(Real) );
   if(GOES_BACKWARDS(dir)) {
     mydir = OPP_DIR(dir); for( j=0; j<listlength; j++ ){my_coeff[j] = -coeff[j];}
   }
@@ -1408,7 +1414,10 @@ void add_3f_force_to_mom_list(veclist *back,
   time += dclock();
   node0_printf("FFSHIFT time2 = %e\n", time);
 #endif
-  free(my_coeff); free(tmp_coeff);
+  free(my_coeff); 
+#if 0
+  free(tmp_coeff);
+#endif
 }
 
 /*  This routine is needed in order to add the force on the side link *

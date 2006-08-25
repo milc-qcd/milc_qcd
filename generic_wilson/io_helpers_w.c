@@ -107,7 +107,7 @@ int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
   /* 0 normal exit value
      1 read error */
 
-  double dtime;
+  double dtime = 0;
   int i,status;
   site *s;
 
@@ -168,7 +168,7 @@ int reload_wprop_to_site( int flag, char *filename,
   /* 0 normal exit value
      1 read error */
   
-  double dtime;
+  double dtime = 0;
   int i,status;
   site *s;
   wilson_propagator *wp;
@@ -178,7 +178,7 @@ int reload_wprop_to_site( int flag, char *filename,
   field_offset destc;
 #endif
   int file_type;
-  w_prop_file *wpf;
+  w_prop_file *wpf = NULL;
   
   if(timing)dtime = -dclock();
   status = 0;
@@ -341,7 +341,7 @@ int reload_wprop_to_field( int flag, char *filename,
   /* 0 normal exit value
      1 read error */
   
-  double dtime;
+  double dtime = 0;
   int i,status;
   site *s;
   wilson_propagator *wp;
@@ -554,7 +554,7 @@ int reload_wprop_to_field( int flag, char *filename,
 int save_wprop_sc_from_site( int flag, w_prop_file *wpf, 
 		      int spin, int color, field_offset src, int timing)
 {
-  double dtime;
+  double dtime = 0;
   int status;
   
   if(timing)dtime = -dclock();
@@ -608,7 +608,7 @@ int save_wprop_sc_from_site( int flag, w_prop_file *wpf,
 int save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
 		      int spin, int color, wilson_vector *src, int timing)
 {
-  double dtime;
+  double dtime = 0;
   int status;
   
   if(timing)dtime = -dclock();
@@ -661,7 +661,7 @@ int save_wprop_sc_from_field( int flag, w_prop_file *wpf,
 int save_wprop_from_site( int flag, char *filename, char *recxml,
 			    field_offset src, int timing)
 {
-  double dtime;
+  double dtime = 0;
   int spin, color;
   w_prop_file *wpf;
   field_offset srccs;
@@ -844,7 +844,7 @@ int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[])
 int save_wprop_from_field( int flag, char *filename, char *recxml,
 			     wilson_propagator *src, int timing)
 {
-  double dtime;
+  double dtime = 0;
   int spin, color;
   w_prop_file *wpf;
   wilson_vector *srccs;

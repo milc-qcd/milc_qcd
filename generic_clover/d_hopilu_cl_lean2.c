@@ -63,7 +63,6 @@ int hopilu_cl(           /* Return value is number of iterations taken */
   int MaxHOP = qic->max;      /* maximum number of iterations */
   Real RsdHOP = qic->resid;  /* desired residual - 
 				 normalized as sqrt(r*r)/sqrt(src_e*src_e */
-  int flag = qic->start_flag;   /* ignored - no guessing with hopping expansion! */
   field_offset tmp = qic->wv1;   /* size of wilson_vector */
   field_offset mp = qic->wv2;    /* size of wilson_vector */
   /* End of unpacking required members of structures */
@@ -83,7 +82,9 @@ int hopilu_cl(           /* Return value is number of iterations taken */
   register Real Ksq = Kappa*Kappa;
   register field_offset r;
   Real CKU0 = Kappa*Clov_c/(U0*U0*U0);
+#ifdef CGTIME
   double dtime;
+#endif
   msg_tag *tage[8],*tago[8];
   int is_startedo, is_startede;
   

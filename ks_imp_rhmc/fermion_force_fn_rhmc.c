@@ -53,7 +53,7 @@ void fn_fermion_force_rhmc( Real eps, Real *residues, su3_vector **multi_x, int 
   /* see long comment at end */
   /* For each link we need multi_x transported from both ends of path. */
   int term;
-  register int i,dir,lastdir,ipath,ilink;
+  register int i,dir,lastdir=-99,ipath,ilink;
   register site *s;
   int length;
   su3_matrix tmat,tmat2;
@@ -210,7 +210,7 @@ void fn_fermion_force_rhmc_reverse( Real eps, Real *residues, su3_vector **multi
   /* see long comment at end */
   /* For each link we need multi_x transported from both ends of path. */
   int term;
-  register int i,j,dir,lastdir,ipath,ilink;
+  register int i,j,dir,lastdir=-99,ipath,ilink;
   register site *s;
   int length;
   su3_matrix tmat,tmat2;
@@ -394,7 +394,7 @@ void fn_fermion_force_rhmc_june05( Real eps, Real *residues, su3_vector **multi_
   /* see long comment at end */
   /* For each link we need multi_x transported from both ends of path. */
   int term;
-  register int i,dir,lastdir,ipath,ilink;
+  register int i,dir,lastdir=-99,ipath,ilink;
   register site *s;
   int length;
   su3_matrix tmat,tmat2;

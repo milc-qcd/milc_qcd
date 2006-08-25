@@ -36,11 +36,10 @@ int spectrum_fzw( Real vmass, field_offset temp1, field_offset temp2 ){
   Real    vmass_x2, finalrsq;
   register double  tt, cc, c1;
   register int Sign,sign,icol,cgn, x,y,z,t, t_src, t_off, xs, ys, zs;
-  register site *s;
+  register site *s = NULL;
   complex  CCC;
   int      i, I, N , nsrc, *SCT;
   int      mysource_start,mysource_inc,myn_sources;
-  double   dtime;
     
   vmass_x2 = 2.0*vmass;
   cgn     = 0;

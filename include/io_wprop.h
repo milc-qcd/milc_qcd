@@ -245,26 +245,26 @@ void r_ascii_w_f(w_prop_file *wpf);
 
 w_prop_file *r_serial_w_i(char *filename);
 int r_serial_w_to_site(w_prop_file *wpf, int spin, int color, 
-		       field_offset src);
+		       field_offset dest_site);
 int r_serial_w_to_field(w_prop_file *wpf, int spin, int color, 
-			wilson_vector *src);
+			wilson_vector *dest_field);
 void r_serial_w_f(w_prop_file *wpf);
 
 w_prop_file *r_parallel_w_i(char *filename);
 void r_parallel_w_o(w_prop_file *wpf);
 int r_parallel_w_to_site(w_prop_file *wpf, int spin, int color, 
-			 field_offset src);
+			 field_offset dest_site);
 int r_parallel_w_to_field(w_prop_file *wpf, int spin, int color, 
-			  wilson_vector *src);
+			  wilson_vector *dest_field);
 void r_parallel_w_c(w_prop_file *wpf);
 void r_parallel_w_f(w_prop_file *wpf);
 
 w_prop_file *r_multidump_w_i(char *filename);
 void r_multidump_w_o(w_prop_file *wpf);
 int r_multidump_w_to_site(w_prop_file *wpf, int spin, int color, 
-			  field_offset src);
+			  field_offset dest_site);
 int r_multidump_w_to_field(w_prop_file *wpf, int spin, int color, 
-			   wilson_vector *src);
+			   wilson_vector *dest_field);
 void r_multidump_w_c(w_prop_file *wpf);
 void r_multidump_w_f(w_prop_file *wpf);
 
@@ -277,35 +277,35 @@ void w_ascii_w_f(w_prop_file *wpf);
 
 w_prop_file *w_serial_w_i(char *filename);
 void w_serial_w_from_site(w_prop_file *wpf, int spin, int color, 
-			  field_offset src);
+			  field_offset src_site);
 void w_serial_w_from_field(w_prop_file *wpf, int spin, int color, 
-			   wilson_vector *src);
+			   wilson_vector *src_field);
 void w_serial_w_f(w_prop_file *wpf);
 
 w_prop_file *w_parallel_w_i(char *filename);
 void w_parallel_w_o(w_prop_file *wpf);
 void w_parallel_w_from_site(w_prop_file *wpf, int spin, int color, 
-			    field_offset src);
+			    field_offset src_site);
 void w_parallel_w_from_field(w_prop_file *wpf, int spin, int color, 
-			     wilson_vector *src);
+			     wilson_vector *src_field);
 void w_parallel_w_c(w_prop_file *wpf);
 void w_parallel_w_f(w_prop_file *wpf);
 
 w_prop_file *w_checkpoint_w_i(char *filename);
 void w_checkpoint_w_o(w_prop_file *wpf);
 void w_checkpoint_w_from_site(w_prop_file *wpf, int spin, int color, 
-			      field_offset src);
+			      field_offset src_site);
 void w_checkpoint_w_from_field(w_prop_file *wpf, int spin, int color, 
-			       wilson_vector *src);
+			       wilson_vector *src_field);
 void w_checkpoint_w_c(w_prop_file *wpf);
 void w_checkpoint_w_f(w_prop_file *wpf);
 
 w_prop_file *w_multidump_w_i(char *filename);
 void w_multidump_w_o(w_prop_file *wpf);
 void w_multidump_w_from_site(w_prop_file *wpf, int spin, int color, 
-			     field_offset src);
+			     field_offset src_site);
 void w_multidump_w_from_field(w_prop_file *wpf, int spin, int color, 
-			      wilson_vector *src);
+			      wilson_vector *src_field);
 void w_multidump_w_c(w_prop_file *wpf);
 void w_multidump_w_f(w_prop_file *wpf);
 
@@ -317,6 +317,18 @@ int write_w_prop_info_item( FILE *fpout,    /* ascii file pointer */
 		       int count,       /* number of data items if > 1 */
 		       int stride);     /* byte stride of data if
                                            count > 1 */
+int sprint_w_prop_info_item( 
+  char *string,    /* character string */
+  size_t nstring,     /* string length */			    
+  char *keyword,   /* keyword */
+  char *fmt,       /* output format -
+		      must use s, d, e, f, or g */
+  char *src,       /* address of starting data
+		      floating point data must be
+		      of type (Real) */
+  int count,       /* number of data items if > 1 */
+  int stride);     /* byte stride of data if
+		      count > 1 */
 /**********************************************************************/
 /* In clover_info.c or wilson_info.c (application dependent) */
 void write_appl_w_prop_info(FILE *fp);

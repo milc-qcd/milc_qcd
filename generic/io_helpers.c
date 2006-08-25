@@ -12,22 +12,21 @@
 #include <qio.h>
 #endif
 
-static file_type gauge_list[N_GAUGE_TYPES] =
+/**static file_type gauge_list[N_GAUGE_TYPES] =
   { {FILE_TYPE_GAUGE_V1,      GAUGE_VERSION_NUMBER_V1},
     {FILE_TYPE_GAUGE_V5,      GAUGE_VERSION_NUMBER},
     {FILE_TYPE_GAUGE_1996,    GAUGE_VERSION_NUMBER_1996},
     {FILE_TYPE_GAUGE_FNAL,    GAUGE_VERSION_NUMBER_FNAL},
     {FILE_TYPE_GAUGE_ARCHIVE, GAUGE_VERSION_NUMBER_ARCHIVE},
     {FILE_TYPE_GAUGE_SCIDAC,  LIME_MAGIC_NO}
-  };
+    };**/
 
 /* save a lattice in any of the formats:
     SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_CHECKPOINT
 */
 gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     double dtime;
-    gauge_file *gf;
-    int do_scidac = 0;
+    gauge_file *gf = NULL;
 
 #ifndef NOLINKS
     d_plaquette(&g_ssplaq,&g_stplaq);
@@ -148,8 +147,11 @@ void coldlat();
 
 gauge_file *reload_lattice( int flag, char *filename){
     double dtime;
-    gauge_file *gf;
-    Real max_deviation, max_deviation2;
+    gauge_file *gf = NULL;
+    Real max_deviation;
+#if PRECISION == 2
+    Real max_deviation2;
+#endif
 
     dtime = -dclock();
     switch(flag){

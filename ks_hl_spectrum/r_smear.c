@@ -10,16 +10,16 @@
 
 void get_smearings_bi_serial(char *filename)
 {
-  FILE *fp;
+  FILE *fp = NULL;
   int destnode;
-  int x,y,z,t,i, byterevflag;
+  int x,y,z,t,i, byterevflag = 0;
   double_complex dw_smear;
   fcomplex fw_smear;
   complex w_smear;
   int32type tmp, magic_number,elements_per_site; 
   int32type  size_of_element, order, dim[4]; 
   int32type  t_stamp;
-  int precision;
+  int precision = 0;
   size_t nread;
 
   /*READING FILE HEADER*/

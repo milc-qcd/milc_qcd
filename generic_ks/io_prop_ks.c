@@ -420,11 +420,11 @@ void w_serial_ks(ks_prop_file *kspf, int color, field_offset src_site,
   /* kspf  = file descriptor as opened by w_serial_w_i 
      src   = field offset for propagator su3 vector (type su3_vector)  */
 
-  FILE *fp;
+  FILE *fp = NULL;
   ks_prop_header *ksph;
   u_int32type *val;
   int rank29,rank31;
-  fsu3_vector *pbuf;
+  fsu3_vector *pbuf = NULL;
   int fseek_return;  /* added by S.G. for large file debugging */
   struct {
     fsu3_vector ksv;
@@ -435,11 +435,11 @@ void w_serial_ks(ks_prop_file *kspf, int color, field_offset src_site,
 
   register int i,j,k;
   off_t offset;             /* File stream pointer */
-  off_t ks_prop_size;        /* Size of propagator blocks for all nodes */
-  off_t ks_prop_check_size;  /* Size of propagator checksum record */
+  off_t ks_prop_size;       /* Size of propagator blocks for all nodes */
+  off_t ks_prop_check_size; /* Size of propagator checksum record */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
-  off_t head_size;          /* Size of header plus coordinate list */
-  off_t body_size ;         /* Size of propagator blocks for all nodes 
+  off_t head_size = 0;      /* Size of header plus coordinate list */
+  off_t body_size = 0;      /* Size of propagator blocks for all nodes 
 			      plus checksum record */
   int currentnode,newnode;
   int x,y,z,t;
@@ -658,7 +658,7 @@ int read_ks_prop_hdr(ks_prop_file *kspf, int parallel)
   ks_prop_header *ksph;
   int32type tmp;
   int j;
-  int byterevflag;
+  int byterevflag = 0;
   char myname[] = "read_ks_prop_hdr";
 
   fp = kspf->fp;
@@ -834,20 +834,20 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
   off_t ks_prop_size;       /* Size of propagator blocks for all nodes */
   off_t ks_prop_check_size; /* Size of propagator checksum record */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
-  off_t head_size;          /* Size of header plus coordinate list */
-  off_t body_size ;         /* Size of propagator blocks for all nodes 
+  off_t head_size = 0;      /* Size of header plus coordinate list */
+  off_t body_size = 0;      /* Size of propagator blocks for all nodes 
 			      plus checksum record */
   int rcv_rank, rcv_coords;
   int destnode;
   int k,x,y,z,t;
   int status;
-  int buf_length, where_in_buf;
+  int buf_length = 0, where_in_buf = 0;
   ks_prop_check test_kspc;
   u_int32type *val;
   int rank29,rank31;
-  fsu3_vector *pbuf;
+  fsu3_vector *pbuf = NULL;
   su3_vector *dest;
-  int idest;
+  int idest = 0;
 
   struct {
     fsu3_vector ksv;
@@ -1496,7 +1496,7 @@ void w_serial_ksprop_tt( char *filename, field_offset prop)
 {
 
   char myname[] = "w_serial_ksprop_tt";
-  FILE *fp;
+  FILE *fp = NULL;
   ks_prop_file *kspf;
   ks_prop_header *ksph;
 
@@ -1665,7 +1665,7 @@ void w_ascii_ksprop_tt( char *filename, field_offset prop)
 {
 
   char myname[] = "w_ascii_ksprop_tt";
-  FILE *fp;
+  FILE *fp = NULL;
   ks_prop_file *kspf;
   ks_prop_header *ksph;
 
@@ -1802,7 +1802,7 @@ ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop )
 
   ks_prop_header *ph;
   ks_prop_file *pf;
-  FILE *fp;
+  FILE *fp = NULL;
   int destnode;
   int version_number,i,a,b,x,y,z,t;
   fsu3_matrix pbuf;
@@ -1959,7 +1959,7 @@ ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop)
 
   ks_prop_header *ph;
   ks_prop_file *pf;
-  FILE *fp;
+  FILE *fp = NULL;
   int currentnode, newnode;
   int i,a,b,x,y,z,t;
   fsu3_matrix pbuf;

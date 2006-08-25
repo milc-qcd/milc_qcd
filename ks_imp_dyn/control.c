@@ -21,10 +21,8 @@ EXTERN gauge_header start_lat_hdr;	/* Input gauge field header */
 int
 main( int argc, char **argv )
 {
-  int i;
   int meascount,traj_done;
   int prompt;
-  Real ssplaq,stplaq;
   int s_iters, avs_iters, avspect_iters, avbcorr_iters;
   double dtime, dclock();
   

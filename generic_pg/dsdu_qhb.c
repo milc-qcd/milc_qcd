@@ -12,7 +12,7 @@
 
 void dsdu_qhb(int dir1,int parity)
 {
-register int i,dir2,otherparity;
+register int i,dir2,otherparity=0;
 register site *st;
 msg_tag *tag0,*tag1,*tag2,*tag3;
 int start;

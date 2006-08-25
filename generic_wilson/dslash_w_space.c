@@ -198,7 +198,7 @@ half_wilson_vector hwvx,hwvy,hwvz;
 
 register int i;
 register site *s;
-register int dir,otherparity;
+register int dir,otherparity=0;
 msg_tag *tag[8];
 
     switch(parity) {

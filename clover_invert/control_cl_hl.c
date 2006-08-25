@@ -25,8 +25,10 @@ int main(int argc,char *argv[])
   int prompt;
   Real avm_iters,avs_iters;
   
-  double starttime,endtime,dtime;
-  
+  double starttime,endtime;
+#ifdef IOTIME
+  double dtime;
+#endif
   int MinCG,MaxCG;
   Real RsdCG;
   
@@ -284,17 +286,17 @@ int main(int argc,char *argv[])
 	    if(scratchflag == SAVE_CHECKPOINT)
 	      {
 		w_checkpoint_w_o(fp_scr[k]);
-		w_checkpoint_w(fp_scr[k],spin,color,F_OFFSET(psi));
+		w_checkpoint_w_from_site(fp_scr[k],spin,color,F_OFFSET(psi));
 		w_checkpoint_w_c(fp_scr[k]);
 	      }
 	    else if(scratchflag == SAVE_MULTIDUMP)
 	      {
 		w_multidump_w_o(fp_scr[k]);
-		w_multidump_w(fp_scr[k],spin,color,F_OFFSET(psi));
+		w_multidump_w_from_site(fp_scr[k],spin,color,F_OFFSET(psi));
 		w_multidump_w_c(fp_scr[k]);
 	      }
 	    else
-	      w_serial_w(fp_scr[k],spin,color,F_OFFSET(psi));
+	      w_serial_w_from_site(fp_scr[k],spin,color,F_OFFSET(psi));
 #ifdef IOTIME
 	    dtime += dclock();
 	    if(this_node==0) 
@@ -349,13 +351,13 @@ int main(int argc,char *argv[])
 #endif
 	for(color=0;color<3;color++) for(spin=0;spin<4;spin++){
 	  if(scratchflag == SAVE_CHECKPOINT)
-	    r_parallel_w(fp_scr[k], spin, color,
+	    r_parallel_w_to_site(fp_scr[k], spin, color,
 			 F_OFFSET(quark_propagator.c[color].d[spin])); 
 	  else if(scratchflag == SAVE_MULTIDUMP)
-	    r_multidump_w(fp_scr[k], spin, color,
+	    r_multidump_w_to_site(fp_scr[k], spin, color,
 			 F_OFFSET(quark_propagator.c[color].d[spin])); 
 	  else
-	    r_serial_w(fp_scr[k], spin, color,
+	    r_serial_w_to_site(fp_scr[k], spin, color,
 		       F_OFFSET(quark_propagator.c[color].d[spin])); 
 	}
 	
@@ -452,13 +454,13 @@ int main(int argc,char *argv[])
 #endif
 	  for(color=0;color<3;color++) for(spin=0;spin<4;spin++){
 	    if(scratchflag == SAVE_CHECKPOINT)
-	      r_parallel_w(fp_scr[j], spin, color,
+	      r_parallel_w_to_site(fp_scr[j], spin, color,
 			   F_OFFSET(quark_prop2.c[color].d[spin])); 
 	    else if(scratchflag == SAVE_MULTIDUMP)
-	      r_multidump_w(fp_scr[j], spin, color,
+	      r_multidump_w_to_site(fp_scr[j], spin, color,
 			   F_OFFSET(quark_prop2.c[color].d[spin])); 
 	    else
-	      r_serial_w(fp_scr[j], spin, color,
+	      r_serial_w_to_site(fp_scr[j], spin, color,
 			   F_OFFSET(quark_prop2.c[color].d[spin])); 
 	  }
 #ifdef IOTIME
@@ -638,13 +640,13 @@ int main(int argc,char *argv[])
 #endif
 	for(color=0;color<3;color++) for(spin=0;spin<4;spin++){
 	  if(scratchflag == SAVE_CHECKPOINT)
-	    w_checkpoint_w(fp_scr[k], spin, color,
+	    w_checkpoint_w_from_site(fp_scr[k], spin, color,
 			   F_OFFSET(quark_propagator.c[color].d[spin])); 
 	  else if(scratchflag == SAVE_MULTIDUMP)
-	    w_multidump_w(fp_scr[k], spin, color,
+	    w_multidump_w_from_site(fp_scr[k], spin, color,
 			   F_OFFSET(quark_propagator.c[color].d[spin])); 
 	  else
-	    w_serial_w(fp_scr[k], spin, color,
+	    w_serial_w_from_site(fp_scr[k], spin, color,
 			   F_OFFSET(quark_propagator.c[color].d[spin])); 
 	}
 	
@@ -683,13 +685,13 @@ int main(int argc,char *argv[])
 #endif
 	for(color=0;color<3;color++) for(spin=0;spin<4;spin++){
 	  if(scratchflag == SAVE_CHECKPOINT)
-	    r_parallel_w(fp_scr[k], spin, color,
+	    r_parallel_w_to_site(fp_scr[k], spin, color,
 			 F_OFFSET(quark_propagator.c[color].d[spin])); 
 	  else if(scratchflag == SAVE_MULTIDUMP)
-	    r_multidump_w(fp_scr[k], spin, color,
+	    r_multidump_w_to_site(fp_scr[k], spin, color,
 			 F_OFFSET(quark_propagator.c[color].d[spin])); 
 	  else
-	    r_serial_w(fp_scr[k], spin, color,
+	    r_serial_w_to_site(fp_scr[k], spin, color,
 			 F_OFFSET(quark_propagator.c[color].d[spin])); 
 	}
 	
@@ -746,13 +748,13 @@ int main(int argc,char *argv[])
 	  for(color=0;color<3;color++){
 	    for(spin=0;spin<4;spin++){
 	      if(scratchflag == SAVE_CHECKPOINT)
-		r_parallel_w(fp_scr[j], spin, color,
+		r_parallel_w_to_site(fp_scr[j], spin, color,
 			     F_OFFSET(quark_prop2.c[color].d[spin])); 
 	      else if(scratchflag == SAVE_MULTIDUMP)
-		r_multidump_w(fp_scr[j], spin, color,
+		r_multidump_w_to_site(fp_scr[j], spin, color,
 			     F_OFFSET(quark_prop2.c[color].d[spin])); 
 	      else
-		r_serial_w(fp_scr[j], spin, color,
+		r_serial_w_to_site(fp_scr[j], spin, color,
 			   F_OFFSET(quark_prop2.c[color].d[spin])); 
 	      
 	    }	      

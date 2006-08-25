@@ -30,7 +30,7 @@ for( i=0,  s=lattice ; i<loopend; i++,s++ )
 void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
     register int i;
     register site *s;
-    msg_tag *mtag0;
+    msg_tag *mtag0 = NULL;
     su3_matrix *tempmat2t, *tempmat3t;
     int j;
     /* a forward step leaves the answer in gen_pt[0], which points into

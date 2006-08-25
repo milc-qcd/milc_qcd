@@ -1,31 +1,31 @@
 CHECK PLAQ: 3e-06 3e-06
 CHECK LINKTR: 4e-06 2e-06
 XXX XXX XXX XXX 2e-06 XXX XXX XXX XXX XXX
-Time to check unitarity = 0.003
+Time to check unitarity = 0.02
 "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
 path coefficients: npath path_coeff multiplicity
 0 2e-06 0
 0 2e-06 2e-08
 0 2e-06 0
 0 2e-06 0
-0 2e-06 0
+0 2e-06 2e-09
 0 2e-06 0
 START_QUARK_PROP
 mass_no 0 mass 2e-06
 2e-06 2e-06 2e-06 2e-06 6e-07
 2e-06 2e-06 2e-06 2e-06 2e-07
-2e-06 2e-06 2e-06 2e-06 2e-07
+2e-06 2e-06 2e-06 2e-06 4e-07
 END_QUARK_PROP
 START_QUARK_PROP
 mass_no 0 mass 2e-06
 2e-06 2e-06 2e-06 2e-06 6e-07
-2e-06 2e-06 2e-06 4e-06 2e-07
+2e-06 2e-06 2e-06 4e-06 6e-07
 2e-06 2e-06 2e-06 6e-06 6e-07
 END_QUARK_PROP
 START_QUARK_PROP
 mass_no 0 mass 2e-06
-3e-06 2e-06 2e-06 2e-06 2e-07
-2e-06 2e-06 4e-06 2e-06 2e-07
-2e-06 2e-06 6e-06 2e-06 6e-07
+3e-06 2e-06 2e-06 2e-06 1e-06
+2e-06 2e-06 4e-06 4e-06 8e-07
+2e-06 2e-06 6e-06 6e-06 6e-07
 END_QUARK_PROP
 RUNNING COMPLETED

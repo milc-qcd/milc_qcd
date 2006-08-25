@@ -43,9 +43,8 @@ old_a=g_action+h_action+f_action;
 double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
 register int i;
 register site *s;
-register complex cc;
 Real final_rsq;
-double sum,phisum1,phisum2;
+double sum;
     sum=0.0;
     ks_ratinv( F_OFFSET(phi1), multi_x, mass1, B_FA_1, ACTION_ORDER_1, niter, rsqmin, EVEN, &final_rsq );
     ks_rateval( sumvec, F_OFFSET(phi1), multi_x, A_FA_1, ACTION_ORDER_1, EVEN );

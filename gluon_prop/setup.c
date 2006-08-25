@@ -12,7 +12,10 @@ int  setup()   {
 int initial_set();
 void make_3n_gathers();
 void periodic_bc();
-int i, prompt;
+#ifdef HAVE_QDP
+ int i;
+#endif
+ int prompt;
 
         /* print banner, get volume, nflavors, seed */
     prompt=initial_set();
@@ -289,7 +292,9 @@ char savebuf[128];
 */
 void make_3n_gathers(){
    int i;
+#ifdef HADE_QDP
    int disp[4]={0,0,0,0};
+#endif
    void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
  
    for(i=XUP;i<=TUP;i++) {

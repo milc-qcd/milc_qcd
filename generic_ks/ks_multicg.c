@@ -83,7 +83,7 @@ int ks_multicg_hybrid(	/* Return value is number of iterations taken */
     Real *final_rsq_ptr	/* final residue squared */
     )
 {
-    int i,j,iters; site *s;
+    int i,j,iters=0; site *s;
 #ifdef ONEMASS
     field_offset tmp = F_OFFSET(xxx);
 #else

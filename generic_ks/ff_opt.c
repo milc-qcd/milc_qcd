@@ -6,13 +6,18 @@
 #define GOES_BACKWARDS(dir) (dir>TUP)
 #ifdef QCDOC
 #ifdef XLC
+#define CACHE_TOUCH
 #define cache_touch(A) __dcbt(A)
 #else
+#define CACHE_TOUCH
 #define cache_touch(A) asm ( "dcbt %0 , %1" : : "r" (0)  , "r" (A) )
 #endif
 #else
+#undef CACHE_TOUCH
 #define cache_touch(A)
 #endif
+
+/*#define FF_DEBUG*/
 
 void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
 				      half_wilson_vector **src_pt, 
@@ -29,13 +34,15 @@ void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
       i < sites_on_node; 
       i++, b++, c++, a++)
     {
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	su3_matrix *an = a + 1;
 
 	cache_touch(&(an->e[0][0].real));
 	cache_touch(&(an->e[1][1].real));
       }
-#if 0
+#endif
+#ifdef FF_DEBUG
       mult_adj_su3_mat_hwvec( a, *b, c );
 #else
       a0r=a->e[0][0].real;      a0i=a->e[0][0].imag;
@@ -69,6 +76,7 @@ void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
       a2r=a->e[2][2].real;      a2i=a->e[2][2].imag;
       b2r=(*b)->h[0].c[2].real; b2i=(*b)->h[0].c[2].imag;
       
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	su3_matrix *an = a + 1;
 	half_wilson_vector **bn = b + 1;
@@ -77,6 +85,7 @@ void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
 	cache_touch(&((*bn)->h[0].c[0].real));
 	cache_touch(&((*bn)->h[1].c[0].real));
       }
+#endif
       c->h[0].c[2].real = a0r*b0r + a0i*b0i + a1r*b1r 
 	+ a1i*b1i + a2r*b2r + a2i*b2i;
       c->h[0].c[2].imag = a0r*b0i - a0i*b0r + a1r*b1i 
@@ -101,11 +110,13 @@ void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
       a2r=a->e[2][1].real;      a2i=a->e[2][1].imag;
       b2r=(*b)->h[1].c[2].real; b2i=(*b)->h[1].c[2].imag;
       
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	half_wilson_vector **bn = b + 1;
 
 	cache_touch(&((*bn)->h[1].c[2].imag));
       }
+#endif
       c->h[1].c[1].real = a0r*b0r + a0i*b0i + a1r*b1r 
 	+ a1i*b1i + a2r*b2r + a2i*b2i;
       c->h[1].c[1].imag = a0r*b0i - a0i*b0r + a1r*b1i 
@@ -145,6 +156,7 @@ void mult_su3_sitelink_lathwvec( int dir,
     {
       a = &(s->link[dir]);
 
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	site *sn = s + 1;
 	su3_matrix *an = &(sn->link[dir]);
@@ -154,7 +166,8 @@ void mult_su3_sitelink_lathwvec( int dir,
 	cache_touch(&(an->e[1][1].real));
 	cache_touch(&(an->e[2][2].real));
       }
-#if 0
+#endif
+#ifdef FF_DEBUG
       mult_su3_mat_hwvec( a, *b, c );
 #else
 
@@ -194,6 +207,7 @@ void mult_su3_sitelink_lathwvec( int dir,
       c->h[0].c[2].imag = a0r*b0i + a0i*b0r + a1r*b1i 
 	+ a1i*b1r + a2r*b2i + a2i*b2r;
       
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	site *sn = s + 1;
 	su3_matrix *an = &(sn->link[dir]);
@@ -202,6 +216,7 @@ void mult_su3_sitelink_lathwvec( int dir,
 	cache_touch(&((*bn)->h[0].c[0].real));
 	cache_touch(&((*bn)->h[1].c[0].real));
       }
+#endif
 
       a0r=a->e[0][0].real;       a0i=a->e[0][0].imag;
       b0r=(*b)->h[1].c[0].real;  b0i=(*b)->h[1].c[0].imag;
@@ -256,6 +271,7 @@ void mult_su3_fieldlink_lathwvec( su3_matrix *link,
       i < sites_on_node; 
       i++, b++, c++, a++)
     {
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	su3_matrix *an = a + 1;
 	half_wilson_vector **bn = b + 1;
@@ -264,7 +280,8 @@ void mult_su3_fieldlink_lathwvec( su3_matrix *link,
 	cache_touch(&(an->e[1][1].real));
 	cache_touch(&(an->e[2][2].real));
       }
-#if 0
+#endif
+#ifdef FF_DEBUG
       mult_su3_mat_hwvec( a, *b, c );
 #else
 
@@ -304,6 +321,7 @@ void mult_su3_fieldlink_lathwvec( su3_matrix *link,
       c->h[0].c[2].imag = a0r*b0i + a0i*b0r + a1r*b1i 
 	+ a1i*b1r + a2r*b2i + a2i*b2r;
       
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	su3_matrix *an = a + 1;
 	half_wilson_vector **bn = b + 1;
@@ -311,6 +329,7 @@ void mult_su3_fieldlink_lathwvec( su3_matrix *link,
 	cache_touch(&((*bn)->h[0].c[0].real));
 	cache_touch(&((*bn)->h[1].c[0].real));
       }
+#endif
 
       a0r=a->e[0][0].real;       a0i=a->e[0][0].imag;
       b0r=(*b)->h[1].c[0].real;  b0i=(*b)->h[1].c[0].imag;
@@ -355,10 +374,12 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom,
 				   half_wilson_vector *back, 
 				   half_wilson_vector *forw, Real coeff[2])
 {
-  int i,j,k;
+  int i;
   site *s;
   Real tmp_coeff[2], tmp_coeffd2[2];
+#ifdef FF_DEBUG
   su3_matrix tmat, tmat2;
+#endif
   anti_hermitmat *a;
   half_wilson_vector *b, *f;
   Real tmp0,tmp1;
@@ -376,13 +397,15 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom,
     tmp_coeffd2[0] = tmp_coeff[0]/2;
     tmp_coeffd2[1] = tmp_coeff[1]/2;
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       anti_hermitmat *an = a + 1;
       
       cache_touch(&(an->m01.real));
     }
+#endif
 
-#if 0
+#ifdef FF_DEBUG
     uncompress_anti_hermitian( a, &tmat2);
     su3_projector(&(b->h[0]), &(f->h[0]), &tmat);
     scalar_mult_add_su3_matrix(&tmat2, &tmat, tmp_coeff[0], &tmat2 );
@@ -415,11 +438,13 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom,
     tmp += (tmp0 + tmp1)*tmp_coeffd2[1];
     a->m01.real += tmp;
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       anti_hermitmat *an = a + 1;
       
       cache_touch(&(an->m22im));
     }
+#endif
 
     tmp1 = b->h[0].c[0].real * f->h[0].c[1].imag;
     tmp0 = b->h[0].c[0].imag * f->h[0].c[1].real;
@@ -450,11 +475,13 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom,
     a->m02.imag += tmp;
     
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       half_wilson_vector *bn = b + 1;
       
       cache_touch(&(bn->h[0].c[0].real));
     }
+#endif
 
     /* k = 1 */
 
@@ -480,11 +507,13 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom,
     tmp0 = b->h[0].c[1].imag * f->h[0].c[1].real;
     tmp = (tmp0 - tmp1)*tmp_coeff[0];
     
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       half_wilson_vector *bn = b + 1;
       
       cache_touch(&(bn->h[1].c[2].imag));
     }
+#endif
 
     tmp1 = b->h[1].c[1].real * f->h[1].c[1].imag;
     tmp0 = b->h[1].c[1].imag * f->h[1].c[1].real;
@@ -512,11 +541,13 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom,
     a->m12.imag += tmp;
     
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       half_wilson_vector *fn = f + 1;
       
       cache_touch(&(fn->h[0].c[0].real));
     }
+#endif
 
     /* k = 2 */
 
@@ -548,11 +579,13 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom,
     tmp += (tmp0 + tmp1)*tmp_coeffd2[1];
     a->m12.real -= tmp;
     
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       half_wilson_vector *fn = f + 1;
       
       cache_touch(&(fn->h[1].c[2].imag));
     }
+#endif
 
     tmp1 = b->h[0].c[2].real * f->h[0].c[1].imag;
     tmp0 = b->h[0].c[2].imag * f->h[0].c[1].real;
@@ -587,10 +620,12 @@ void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom,
 					  half_wilson_vector *forw, 
 					  Real coeff[2])
 {
-  int i,j,k;
+  int i;
   site *s;
   Real tmp_coeff[2], tmp_coeffd2[2];
+#ifdef FF_DEBUG
   su3_matrix tmat;
+#endif
   su3_matrix *a;
   half_wilson_vector *b, *f;
   Real tmp0,tmp1;
@@ -608,13 +643,15 @@ void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom,
     tmp_coeffd2[0] = tmp_coeff[0]/2;
     tmp_coeffd2[1] = tmp_coeff[1]/2;
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       su3_matrix *an = a + 1;
       
       cache_touch(&(an->e[0][1].real));
     }
+#endif
 
-#if 0
+#ifdef FF_DEBUG
     su3_projector(&(b->h[0]), &(f->h[0]), a);
     scalar_mult_add_su3_matrix(a, &tmat, tmp_coeff[0], a );
     su3_projector(&(b->h[1]), &(f->h[1]), &tmat);
@@ -645,11 +682,13 @@ void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom,
     a->e[0][1].real += tmp;
     a->e[1][0].real -= tmp;
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       su3_matrix *an = a + 1;
       
       cache_touch(&(an->e[2][2].imag));
     }
+#endif
 
     tmp1 = b->h[0].c[0].real * f->h[0].c[1].imag;
     tmp0 = b->h[0].c[0].imag * f->h[0].c[1].real;
@@ -683,11 +722,13 @@ void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom,
     a->e[2][0].imag += tmp;
     
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       half_wilson_vector *bn = b + 1;
       
       cache_touch(&(bn->h[0].c[0].real));
     }
+#endif
 
     /* k = 1 */
 
@@ -716,11 +757,13 @@ void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom,
     tmp0 = b->h[0].c[1].imag * f->h[0].c[1].real;
     tmp = (tmp0 - tmp1)*tmp_coeff[0];
     
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       half_wilson_vector *bn = b + 1;
       
       cache_touch(&(bn->h[1].c[2].imag));
     }
+#endif
 
     tmp1 = b->h[1].c[1].real * f->h[1].c[1].imag;
     tmp0 = b->h[1].c[1].imag * f->h[1].c[1].real;
@@ -749,11 +792,13 @@ void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom,
     a->e[2][1].imag += tmp;
     
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       half_wilson_vector *fn = f + 1;
       
       cache_touch(&(fn->h[0].c[0].real));
     }
+#endif
 
     /* k = 2 */
 
@@ -788,11 +833,13 @@ void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom,
     a->e[1][2].real -= tmp;
     a->e[2][1].real += tmp;
     
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       half_wilson_vector *fn = f + 1;
       
       cache_touch(&(fn->h[1].c[2].imag));
     }
+#endif
 
     tmp1 = b->h[0].c[2].real * f->h[0].c[1].imag;
     tmp0 = b->h[0].c[2].imag * f->h[0].c[1].real;
@@ -829,6 +876,7 @@ void scalar_mult_add_lathwvec(half_wilson_vector *dest,
       i < sites_on_node; 
       i++, a++, b++)
     {
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	half_wilson_vector *bn = b + 1;
 	half_wilson_vector *an = a + 1;
@@ -836,7 +884,8 @@ void scalar_mult_add_lathwvec(half_wilson_vector *dest,
 	cache_touch(&(an->h[0].c[0].real));
 	cache_touch(&(an->h[1].c[2].imag));
       }
-#if 0
+#endif
+#ifdef FF_DEBUG
       scalar_mult_add_su3_vector(&(a->h[0]), &(b->h[0]), s[0],
 				 &(a->h[0]));
       scalar_mult_add_su3_vector(&(a->h[1]), &(b->h[1]), s[1],
@@ -850,6 +899,7 @@ void scalar_mult_add_lathwvec(half_wilson_vector *dest,
       a->h[0].c[2].real = a->h[0].c[2].real + s[0]*b->h[0].c[2].real;
       a->h[0].c[2].imag = a->h[0].c[2].imag + s[0]*b->h[0].c[2].imag;
       
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	half_wilson_vector *bn = b + 1;
 	half_wilson_vector *an = a + 1;
@@ -857,6 +907,7 @@ void scalar_mult_add_lathwvec(half_wilson_vector *dest,
 	cache_touch(&(bn->h[0].c[0].real));
 	cache_touch(&(bn->h[1].c[2].imag));
       }
+#endif
       
       a->h[1].c[0].real = a->h[1].c[0].real + s[0]*b->h[1].c[0].real;
       a->h[1].c[0].imag = a->h[1].c[0].imag + s[0]*b->h[1].c[0].imag;
@@ -882,13 +933,15 @@ void mult_adj_su3_fieldlink_latveclist( su3_matrix *link,
 
 	for(i = 0, a = link, b = src_pt, c = dest; i < sites_on_node; 
 			i++, b++, c++, a++){
+#ifdef CACHE_TOUCH
 	    if(i < sites_on_node - 1){
 		su3_matrix *an = a + 1;
 
 		cache_touch(&(an->e[0][0].real));
 		cache_touch(&(an->e[1][1].real));
 	    }
-#if 0
+#endif
+#ifdef FF_DEBUG
 		mult_adj_su3_mat_hwvec( a, *b, c );
 #else
 	    for( j=0; j<listlength; j++ ) {
@@ -923,6 +976,7 @@ void mult_adj_su3_fieldlink_latveclist( su3_matrix *link,
 		a2r=a->e[2][2].real;      a2i=a->e[2][2].imag;
 		b2r=(*b)->v[j].c[2].real; b2i=(*b)->v[j].c[2].imag;
 
+#ifdef CACHE_TOUCH
 		if(i < sites_on_node - 1){
 			su3_matrix *an = a + 1;
 			veclist **bn = b + 1;
@@ -930,6 +984,7 @@ void mult_adj_su3_fieldlink_latveclist( su3_matrix *link,
 			cache_touch(&(an->e[2][2].real));
 			cache_touch(&((*bn)->v[j].c[0].real));
 		}
+#endif
 		c->v[j].c[2].real = a0r*b0r + a0i*b0i + a1r*b1r 
 			+ a1i*b1i + a2r*b2r + a2i*b2i;
 		c->v[j].c[2].imag = a0r*b0i - a0i*b0r + a1r*b1i 
@@ -955,6 +1010,7 @@ void mult_su3_sitelink_latveclist( int dir,
       i < sites_on_node; i++, s++, b++, c++) {
           a = &(s->link[dir]);
     
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	    site *sn = s + 1;
 	    su3_matrix *an = &(sn->link[dir]);
@@ -964,7 +1020,8 @@ void mult_su3_sitelink_latveclist( int dir,
 	    cache_touch(&(an->e[1][1].real));
 	    cache_touch(&(an->e[2][2].real));
       }
-#if 0
+#endif
+#ifdef FF_DEBUG
           mult_su3_mat_hwvec( a, *b, c );
 #else
     
@@ -1005,12 +1062,14 @@ void mult_su3_sitelink_latveclist( int dir,
           c->v[j].c[2].imag = a0r*b0i + a0i*b0r + a1r*b1i 
 	  + a1i*b1r + a2r*b2i + a2i*b2r;
           
+#ifdef CACHE_TOUCH
           if(i < sites_on_node - 1){
 		site *sn = s + 1;
 		su3_matrix *an = &(sn->link[dir]);
 		veclist **bn = b + 1;
 		cache_touch(&((*bn)->v[j].c[0].real));
           }
+#endif
 
 #endif
         } //vector list loop
@@ -1020,10 +1079,12 @@ void mult_su3_sitelink_latveclist( int dir,
 
 void scalar_mult_add_latveclist_proj(anti_hermitmat *mom, 
 	veclist *back, veclist *forw, Real *coeff, int listlength ) {
-  int i,j,k,n;
+  int i,n;
   site *s;
   Real *tmp_coeff, *tmp_coeffd2;
+#ifdef FF_DEBUG
   su3_matrix tmat, tmat2;
+#endif
   anti_hermitmat *a;
   veclist *b, *f;
   Real tmp0,tmp1,tmp2,tmp3;
@@ -1041,12 +1102,14 @@ void scalar_mult_add_latveclist_proj(anti_hermitmat *mom,
 
     for( n=0; n<listlength; n++ ) tmp_coeffd2[n] = tmp_coeff[n]/2.0;
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       anti_hermitmat *an = a + 1;
       cache_touch(&(an->m01.real));
     }
+#endif
 
-#if 0
+#ifdef FF_DEBUG
     uncompress_anti_hermitian( a, &tmat2);
     su3_projector(&(b->v[0]), &(f->v[0]), &tmat);
     scalar_mult_add_su3_matrix(&tmat2, &tmat, tmp_coeff[0], &tmat2 );
@@ -1093,12 +1156,14 @@ void scalar_mult_add_latveclist_proj(anti_hermitmat *mom,
     a->m02.imag += tmp3;
     
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       anti_hermitmat *an = a + 1;
       veclist *bn = b + 1;
       cache_touch(&(an->m22im));
       cache_touch(&(bn->v[0].c[0].real));
     }
+#endif
 
     /* k = 1 */
 
@@ -1136,6 +1201,7 @@ void scalar_mult_add_latveclist_proj(anti_hermitmat *mom,
     a->m12.imag += tmp3;
     
 
+#ifdef CACHE_TOUCH
     if(i < sites_on_node - 1){
       veclist *bn = b + 1;
       veclist *fn = f + 1;
@@ -1146,6 +1212,7 @@ void scalar_mult_add_latveclist_proj(anti_hermitmat *mom,
       veclist *fn = f + 1;
       cache_touch(&(fn->v[1].c[2].imag));
     }
+#endif
 
     /* k = 2 */
 
@@ -1200,13 +1267,15 @@ void scalar_mult_add_latveclist(veclist *dest,
 
   for(i = 0, a = dest, b = src; i < sites_on_node; 
       i++, a++, b++) { // site loop
+#ifdef CACHE_TOUCH
       if(i < sites_on_node - 1){
 	veclist *bn = b + 1;
 	veclist *an = a + 1;
 
 	cache_touch(&(an->v[0].c[0].real));
       }
-#if 0
+#endif
+#ifdef FF_DEBUG
       scalar_mult_add_su3_vector(&(a->v[0]), &(b->v[0]), s[0],
 				 &(a->v[0]));
       scalar_mult_add_su3_vector(&(a->v[1]), &(b->v[1]), s[1],
