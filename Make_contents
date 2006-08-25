@@ -43,7 +43,7 @@ LIBRARIES =        \
  libraries/include/*.h
 
 FILE_UTILITIES =     \
- file_utilities/Make_*     \
+ file_utilities/Make*     \
  file_utilities/*.c       \
  file_utilities/*.h       \
  file_utilities/in.sample.* \
@@ -254,7 +254,7 @@ KS_IMP_RHMC =           \
 KS_IMP_UTILITIES =           \
  ks_imp_utilities/*.c             \
  ks_imp_utilities/*.h             \
- ks_imp_utilities/Make_*           \
+ ks_imp_utilities/Make*           \
  ks_imp_utilities/in.sample*      \
  ks_imp_utilities/out.errtol*     \
  ks_imp_utilities/out.sample*
