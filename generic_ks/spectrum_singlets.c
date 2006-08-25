@@ -57,7 +57,7 @@ void mult_spin_vector_smear(int mu, su3_vector *src, su3_vector *dest, su3_matri
 void mult_spin_tensor_smear(int mu, int nu, su3_vector *src, su3_vector *dest, su3_matrix *smearlink );
 void mult_spin_pseudovector_smear(int mu, su3_vector *src, su3_vector *dest, su3_matrix *smearlink );
 void mult_spin_pseudoscalar_smear(su3_vector *src, su3_vector *dest, su3_matrix *smearlink );
-void rephase_smear( );
+void rephase_smear(su3_matrix *smearlink );
 
 su3_vector *temp, *R, *R1,*R2,*R3, *X,*X_sigma,*X_eta_l,*X_eta_nl;
 
@@ -367,12 +367,12 @@ static su3_matrix *smear_links()
 
   rephase(OFF);
   if(this_node==0)printf("SMEARING IS ON, level %d\n",SMEAR);
-  smearlink = malloc(sites_on_node*4*sizeof(su3_matrix));
+  smearlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
   if(smearlink == NULL){
     printf("spectrum_singlets: No room for smeared links\n");
     terminate(1);
   }
-  smearlink0 = malloc(sites_on_node*4*sizeof(su3_matrix));
+  smearlink0 = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
   if(smearlink0 == NULL){
     printf("spectrum_singlets: No room for smeared links\n");
     terminate(1);
