@@ -35,7 +35,7 @@ PRECISION = 1
 #----------------------------------------------------------------------
 # 4. Compiler
 # Choices include mpicc cc gcc pgcc g++
-CC = g++
+CC = gcc
 
 #CC = /usr/local/mpich/bin/mpicc -cc=${GCC_DIR}/bin/gcc  # FNAL
 #CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
