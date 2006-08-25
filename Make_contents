@@ -248,7 +248,7 @@ KS_IMP_RHMC =           \
  ks_imp_rhmc/remez-milc/README* \
  ks_imp_rhmc/remez-milc/*.C     \
  ks_imp_rhmc/remez-milc/*.h     \
- ks_imp_rhmc/remez-milc/Make_*
+ ks_imp_rhmc/remez-milc/Make*
 
 
 KS_IMP_UTILITIES =           \
