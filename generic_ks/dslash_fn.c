@@ -461,7 +461,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity ) {
    register int i;
    register site *s;
-   register int dir,otherparity;
+   register int dir,otherparity=0;
    register su3_matrix *fat4, *long4;
    msg_tag *tag[16];
 
@@ -620,7 +620,7 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity ) {
 void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity ) {
    register int i;
    register site *s;
-   register int dir,otherparity;
+   register int dir,otherparity=0;
    msg_tag *tag[16];
    su3_vector *tempvec[4], *templongvec[4], *templongv1 ;
    register su3_matrix *fat4, *long4;
