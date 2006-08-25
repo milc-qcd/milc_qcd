@@ -27,7 +27,7 @@ MAKEFILE = Make_vanilla
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
 # 1. Compiler
-CC               = g++    # ( cc89 gcc xlc gcc pgcc cl g++ )
+CC               = gcc    # ( cc89 gcc xlc gcc pgcc cl g++ )
 #CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
 
 #----------------------------------------------------------------------
