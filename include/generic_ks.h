@@ -195,6 +195,11 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
 /* d_congrad5_fn_qop.c */
 void initialize_congrad( void );
 void finalize_congrad( void );
+int ks_congrad_qop_site2site(int niter, Real rsqmin, 
+			     Real *masses[], int nmass[], 
+			     field_offset milc_srcs[], 
+			     field_offset *milc_sols[],
+			     int nsrc, Real* final_rsq_ptr, int milc_parity );
 
 /* dslash_fn_qop_milc.c */
 void cleanup_gathers_qop_milc(msg_tag *tags1[], msg_tag *tags2[]);
@@ -217,7 +222,10 @@ void scalar_mult_add_latvec(field_offset src1, field_offset src2,
 			    Real scalar, field_offset dest, int parity);
 void scalar2_mult_add_su3_vector(su3_vector *a, Real s1, su3_vector *b, 
 				 Real s2, su3_vector *c);
-
+void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom, 
+					  half_wilson_vector *back, 
+					  half_wilson_vector *forw, 
+					  Real coeff[2]);
 void scalar2_mult_add_latvec(field_offset src1,Real scalar1,
 			     field_offset src2,Real scalar2,
 			     field_offset dest,int parity);
