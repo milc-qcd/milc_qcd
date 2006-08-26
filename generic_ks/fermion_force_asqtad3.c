@@ -762,7 +762,7 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, int nte
 #endif
 
   /* Check consistency */
-  if(nterms >= VECLENGTH){
+  if(nterms > VECLENGTH){
     node0_printf("eo_fermion_force_multi: nterms = %d exceeds VECLENGTH = %d\n",
 		 nterms,VECLENGTH);
     terminate(1);
