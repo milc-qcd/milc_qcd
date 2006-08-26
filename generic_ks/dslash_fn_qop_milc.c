@@ -89,7 +89,7 @@ void dslash_fn_qop_milc_field_special(su3_matrix *fatlinks,
 				      int parity, msg_tag **tag, int start ){
   register int i;
   register site *s;
-  register int dir,otherparity;
+  register int dir,otherparity=0;
   register su3_matrix *fat, *lng;
   
   /* allocate temporary work space only if not already allocated */
