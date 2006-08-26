@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.11  2006/08/26 15:35:35  detar
+ * Fix nterms assertion.
+ *
  * Revision 1.10  2006/08/13 15:02:32  detar
  * Realign procedures to accommodate ks_imp_rhmc code
  * Add Level 3 wrappers and MILC dummy Level 3 implementation for multiple source
@@ -33,7 +36,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.10 2006/08/13 15:02:32 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.11 2006/08/26 15:35:35 detar Exp $";
 
 void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
@@ -199,7 +202,7 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
   /* Load coefficients */
   epsv[0] = eps*weight1;  epsv[1] = eps*weight2;
-  load_qop_asqtad_coeffs(&coeff, 4.0);
+  load_qop_asqtad_coeffs(&coeff, 1.);
 
   /* Compute fermion force */
   QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, 2);
@@ -228,7 +231,7 @@ void eo_fermion_force_multi( Real eps, Real *residues,
 			     su3_vector **xxx, int nterms ) {
   su3_matrix **rawlinks;
   su3_matrix **rawmom;
-  su3_vector *rawvecx;
+  su3_vector *rawvecx = NULL;
 
   QOP_GaugeField *links;
   QOP_Force *mom;
