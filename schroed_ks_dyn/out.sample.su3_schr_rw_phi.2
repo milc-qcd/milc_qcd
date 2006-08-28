@@ -1,0 +1,51 @@
+SU3 Schroedinger functional with Kogut-Susskind fermions
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+PHI algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 4
+nx 4
+ny 4
+nz 4
+nt 5
+iseed 8352
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.4 MBytes per node for lattice
+
+
+warms 0
+trajecs 5
+beta 6
+mass 0
+gamma 0.05
+bc_flag 1
+microcanonical_time_step 0.05
+steps_per_trajectory 10
+max_cg_iterations 100
+error_per_site 1e-05
+fresh 
+forget 
+unit gauge configuration loaded
+Boundary values set
+CHECK PLAQ: 3.000000e+00 2.817523e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 1.000000e-02
+WARMUPS COMPLETED
+GMES 2.975685e+01 1.881268e+00 1.180000e+02 2.166729e+00 2.067147e+00
+FMES 2.522163e-02 0.000000e+00 8.545725e-01 -6.894113e-01 1.461403e+00
+GMES 1.906016e+01 1.800203e+00 1.610000e+02 1.953360e+00 1.908576e+00
+FMES 4.349628e-02 0.000000e+00 6.959497e-01 -7.004531e-01 1.398654e+00
+GMES 2.241287e+01 1.718254e+00 1.020000e+02 1.930127e+00 1.839378e+00
+FMES -1.785654e-02 0.000000e+00 7.760693e-01 -7.982520e-01 1.585412e+00
+GMES 1.308734e+01 1.755047e+00 1.680000e+02 1.895721e+00 1.849949e+00
+FMES -2.765526e-02 0.000000e+00 8.643614e-01 -7.910203e-01 1.618711e+00
+GMES 1.844714e+01 1.755367e+00 1.050000e+02 1.929406e+00 1.853641e+00
+FMES -3.596726e-02 0.000000e+00 7.369520e-01 -7.676787e-01 1.519994e+00
+RUNNING COMPLETED
+average cg iters for step= 1.106000e+02
+average cg iters for measurement= 1.308000e+02
+Time = 2.854000e+01 seconds
+total_iters = 6208
+
+

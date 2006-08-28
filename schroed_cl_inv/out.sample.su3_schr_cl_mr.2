@@ -1,0 +1,232 @@
+SU3 Wilson valence fermion Schroedinger functional
+MIMD version 4
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+number_of_kappas 2
+bc_flag 2
+num_smear 5
+alpha 0.45
+kappa 0.12
+kappa 0.125
+clov_c 1
+ferm_phases[0] 1
+ferm_phases[1] 1
+ferm_phases[2] 1
+max_cg_iterations 100
+max_cg_restarts 2
+error_for_propagator 1e-06
+error_for_propagator 1e-06
+reload_serial lat.sample.5p7
+Reading with byte reversal
+Restored binary gauge configuration serially from file lat.sample.5p7
+Time stamp Wed Aug 25 08:30:50 1999
+read_checksum: Checksum violation. Computed 2d35e65e 6b6a98c6.  Read 2e218ab1 2d188e6b.
+Time to reload gauge configuration = 2.000000e-02
+Boundary values set
+CHECK PLAQ: 1.704563e+00 1.749539e+00
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 1.000000e-02
+Fermion phases set
+END OF HEADER
+At smearing 1 plaq: 2.456309e+00 2.449989e+00
+At smearing 2 plaq: 2.725446e+00 2.706472e+00
+At smearing 3 plaq: 2.842101e+00 2.821899e+00
+At smearing 4 plaq: 2.899984e+00 2.880914e+00
+At smearing 5 plaq: 2.932069e+00 2.914233e+00
+SMEARING COMPLETED
+num_kap = 2
+Kappa=1.200000e-01 residue=1.000000e-06
+color=0 spin=0
+MRILU: size_r= 8.63e-07 iters= 53
+ OK converged size_r= 8.6e-07 iters= 53
+size_r= 8.633992e-07, iters= 5.300000e+01
+color=0 spin=1
+MRILU: size_r= 8.61e-07 iters= 52
+ OK converged size_r= 8.6e-07 iters= 52
+size_r= 8.612651e-07, iters= 5.200000e+01
+color=0 spin=0
+MRILU: size_r= 9.65e-07 iters= 49
+ OK converged size_r= 9.7e-07 iters= 49
+size_r= 9.652232e-07, iters= 4.900000e+01
+color=0 spin=1
+MRILU: size_r= 8.72e-07 iters= 49
+ OK converged size_r= 8.7e-07 iters= 49
+size_r= 8.721557e-07, iters= 4.900000e+01
+color=1 spin=0
+MRILU: size_r= 9.11e-07 iters= 51
+ OK converged size_r= 9.1e-07 iters= 51
+size_r= 9.112049e-07, iters= 5.100000e+01
+color=1 spin=1
+MRILU: size_r= 9.35e-07 iters= 50
+ OK converged size_r= 9.4e-07 iters= 50
+size_r= 9.353098e-07, iters= 5.000000e+01
+color=1 spin=0
+MRILU: size_r= 9.59e-07 iters= 47
+ OK converged size_r= 9.6e-07 iters= 47
+size_r= 9.586201e-07, iters= 4.700000e+01
+color=1 spin=1
+MRILU: size_r= 8.77e-07 iters= 46
+ OK converged size_r= 8.8e-07 iters= 46
+size_r= 8.768991e-07, iters= 4.600000e+01
+color=2 spin=0
+MRILU: size_r= 8.43e-07 iters= 51
+ OK converged size_r= 8.4e-07 iters= 51
+size_r= 8.425873e-07, iters= 5.100000e+01
+color=2 spin=1
+MRILU: size_r= 7.94e-07 iters= 48
+ OK converged size_r= 7.9e-07 iters= 48
+size_r= 7.943075e-07, iters= 4.800000e+01
+color=2 spin=0
+MRILU: size_r= 8.65e-07 iters= 45
+ OK converged size_r= 8.7e-07 iters= 45
+size_r= 8.650666e-07, iters= 4.500000e+01
+color=2 spin=1
+MRILU: size_r= 9.44e-07 iters= 45
+ OK converged size_r= 9.4e-07 iters= 45
+size_r= 9.439548e-07, iters= 4.500000e+01
+Kappa=1.250000e-01 residue=1.000000e-06
+color=0 spin=0
+MRILU: size_r= 1.10e-06 iters= 100
+MRILU: size_r= 8.80e-07 iters= 2
+ OK converged size_r= 8.8e-07 iters= 102
+size_r= 8.802946e-07, iters= 1.020000e+02
+color=0 spin=1
+MRILU: size_r= 9.70e-07 iters= 98
+ OK converged size_r= 9.7e-07 iters= 98
+size_r= 9.695942e-07, iters= 9.800000e+01
+color=0 spin=0
+MRILU: size_r= 8.90e-07 iters= 92
+ OK converged size_r= 8.9e-07 iters= 92
+size_r= 8.899545e-07, iters= 9.200000e+01
+color=0 spin=1
+MRILU: size_r= 9.52e-07 iters= 90
+ OK converged size_r= 9.5e-07 iters= 90
+size_r= 9.518196e-07, iters= 9.000000e+01
+color=1 spin=0
+MRILU: size_r= 9.03e-07 iters= 98
+ OK converged size_r= 9e-07 iters= 98
+size_r= 9.030071e-07, iters= 9.800000e+01
+color=1 spin=1
+MRILU: size_r= 9.52e-07 iters= 95
+ OK converged size_r= 9.5e-07 iters= 95
+size_r= 9.524429e-07, iters= 9.500000e+01
+color=1 spin=0
+MRILU: size_r= 9.19e-07 iters= 89
+ OK converged size_r= 9.2e-07 iters= 89
+size_r= 9.187838e-07, iters= 8.900000e+01
+color=1 spin=1
+MRILU: size_r= 9.87e-07 iters= 80
+ OK converged size_r= 9.9e-07 iters= 80
+size_r= 9.865458e-07, iters= 8.000000e+01
+color=2 spin=0
+MRILU: size_r= 8.93e-07 iters= 97
+ OK converged size_r= 8.9e-07 iters= 97
+size_r= 8.926623e-07, iters= 9.700000e+01
+color=2 spin=1
+MRILU: size_r= 9.96e-07 iters= 87
+ OK converged size_r= 1e-06 iters= 87
+size_r= 9.958965e-07, iters= 8.700000e+01
+color=2 spin=0
+MRILU: size_r= 9.42e-07 iters= 83
+ OK converged size_r= 9.4e-07 iters= 83
+size_r= 9.415734e-07, iters= 8.300000e+01
+color=2 spin=1
+MRILU: size_r= 9.25e-07 iters= 83
+ OK converged size_r= 9.2e-07 iters= 83
+size_r= 9.248700e-07, iters= 8.300000e+01
+FORW_PION 0 0  0.000000e+00 0.000000e+00
+FORW_PION 0 1  1.762536e+00 0.000000e+00
+FORW_PION 0 2  7.415174e-01 0.000000e+00
+FORW_PION 0 3  3.550605e-01 0.000000e+00
+FORW_PION 0 4  1.713619e-01 0.000000e+00
+FORW_PION 0 5  6.692275e-02 0.000000e+00
+FORW_PION 0 6  2.091701e-02 0.000000e+00
+FORW_PION 0 7  5.157440e-03 0.000000e+00
+FORW_PION 1 0  0.000000e+00 0.000000e+00
+FORW_PION 1 1  2.530630e+00 0.000000e+00
+FORW_PION 1 2  1.219166e+00 0.000000e+00
+FORW_PION 1 3  7.329608e-01 0.000000e+00
+FORW_PION 1 4  4.282937e-01 0.000000e+00
+FORW_PION 1 5  1.873724e-01 0.000000e+00
+FORW_PION 1 6  6.369210e-02 0.000000e+00
+FORW_PION 1 7  1.679589e-02 0.000000e+00
+FORW_PS505 0 0  -0.000000e+00 -0.000000e+00
+FORW_PS505 0 1  -7.541789e-01 7.275958e-12
+FORW_PS505 0 2  -3.633150e-01 -1.546141e-11
+FORW_PS505 0 3  -1.748467e-01 7.776180e-11
+FORW_PS505 0 4  -7.124071e-02 1.693934e-11
+FORW_PS505 0 5  -2.527062e-02 3.694822e-12
+FORW_PS505 0 6  -7.399849e-03 -2.955858e-12
+FORW_PS505 0 7  -2.683168e-03 9.237056e-13
+FORW_PS505 1 0  -0.000000e+00 -0.000000e+00
+FORW_PS505 1 1  -2.375424e-01 -3.128662e-10
+FORW_PS505 1 2  -1.850343e-01 9.094947e-11
+FORW_PS505 1 3  -1.257701e-01 -8.185452e-11
+FORW_PS505 1 4  -6.162883e-02 5.684342e-12
+FORW_PS505 1 5  -3.040384e-02 -2.000888e-11
+FORW_PS505 1 6  -1.156418e-02 2.955858e-12
+FORW_PS505 1 7  -7.278747e-03 -5.059064e-12
+BACKW_PION 0 0  0.000000e+00 0.000000e+00
+BACKW_PION 0 1  1.118531e+00 0.000000e+00
+BACKW_PION 0 2  3.245512e-01 0.000000e+00
+BACKW_PION 0 3  9.494247e-02 0.000000e+00
+BACKW_PION 0 4  2.952377e-02 0.000000e+00
+BACKW_PION 0 5  1.165577e-02 0.000000e+00
+BACKW_PION 0 6  5.381346e-03 0.000000e+00
+BACKW_PION 0 7  2.617680e-03 0.000000e+00
+BACKW_PION 1 0  0.000000e+00 0.000000e+00
+BACKW_PION 1 1  1.427166e+00 0.000000e+00
+BACKW_PION 1 2  4.775533e-01 0.000000e+00
+BACKW_PION 1 3  1.565605e-01 0.000000e+00
+BACKW_PION 1 4  5.282160e-02 0.000000e+00
+BACKW_PION 1 5  2.397793e-02 0.000000e+00
+BACKW_PION 1 6  1.348537e-02 0.000000e+00
+BACKW_PION 1 7  8.109394e-03 0.000000e+00
+BACKW_PS505 0 0  0.000000e+00 0.000000e+00
+BACKW_PS505 0 1  -4.116882e-01 -1.346052e-10
+BACKW_PS505 0 2  -1.219987e-01 5.150014e-11
+BACKW_PS505 0 3  -3.533615e-02 -5.343281e-12
+BACKW_PS505 0 4  -1.390255e-02 1.961098e-12
+BACKW_PS505 0 5  -6.746626e-03 -1.051603e-12
+BACKW_PS505 0 6  -3.588582e-03 -4.085621e-13
+BACKW_PS505 0 7  -2.156951e-03 4.973799e-14
+BACKW_PS505 1 0  0.000000e+00 0.000000e+00
+BACKW_PS505 1 1  -2.353189e-01 -2.255547e-10
+BACKW_PS505 1 2  -7.601567e-02 9.003998e-11
+BACKW_PS505 1 3  -2.129841e-02 1.841727e-11
+BACKW_PS505 1 4  -1.217516e-02 -1.892886e-11
+BACKW_PS505 1 5  -9.096731e-03 5.755396e-12
+BACKW_PS505 1 6  -7.250840e-03 6.394885e-13
+BACKW_PS505 1 7  -6.391819e-03 -1.577405e-12
+ZV_f_1 0  2.211754e-03
+ZV_f_V 0 0  0.000000e+00 0.000000e+00
+ZV_f_V 0 1  1.806884e-03 2.233544e-06
+ZV_f_V 0 2  1.823214e-03 1.002459e-07
+ZV_f_V 0 3  1.821004e-03 -6.176674e-06
+ZV_f_V 0 4  1.765522e-03 -8.966197e-06
+ZV_f_V 0 5  1.699612e-03 -1.454273e-05
+ZV_f_V 0 6  1.635159e-03 -8.352111e-07
+ZV_f_V 0 7  1.604961e-03 -6.964277e-06
+ZV_f_1 1  6.764174e-03
+ZV_f_V 1 0  0.000000e+00 0.000000e+00
+ZV_f_V 1 1  6.431908e-03 7.937822e-06
+ZV_f_V 1 2  6.514261e-03 -3.072517e-06
+ZV_f_V 1 3  6.522378e-03 -2.851634e-05
+ZV_f_V 1 4  6.286767e-03 -3.223194e-05
+ZV_f_V 1 5  6.017522e-03 -6.239185e-05
+ZV_f_V 1 6  5.721501e-03 -3.030878e-06
+ZV_f_V 1 7  5.620181e-03 -1.866616e-05
+RUNNING COMPLETED
+total cg iters for measurement= 1.680000e+03
+cg iters for measurement= 7.000000e+01
+Time = 8.715000e+01 seconds
+total_iters = 0
+
+

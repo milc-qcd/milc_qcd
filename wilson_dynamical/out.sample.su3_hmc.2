@@ -1,0 +1,52 @@
+SU3 with Wilson fermions
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+Hybrid Monte Carlo algorithm
+PHI algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 2
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.46
+kappa 0.111
+microcanonical_time_step 0.02
+steps_per_trajectory 5
+max_cg_iterations 100
+error_per_site 1e-05
+error_for_propagator 1e-05
+gauge configuration to be saved in lat.sample
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 1.000000e-02
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+WARMUPS COMPLETED
+ACCEPT: delta S = -8.384189e-01
+F2MES 1.184386e+01 -1.304802e-01 -1.134135e+00 2.363523e-02 1.196188e+01 -1.495686e-01 -2.956949e-07
+GMES 2.853794e+00 1.523491e-03 1.600000e+01 2.852669e+00 2.848922e+00
+ACCEPT: delta S = -6.181588e-01
+F2MES 1.144469e+01 1.017012e-01 -8.931650e-01 -3.591846e-01 1.166344e+01 1.592550e-01 -1.066772e-06
+GMES 2.710892e+00 -2.644610e-03 1.600000e+01 2.728163e+00 2.731602e+00
+RUNNING COMPLETED
+average cg iters for step= 9.500000e+00
+average cg iters for measurement= 1.600000e+01
+Time = 3.360000e+00 seconds
+total_iters = 128
+Saved gauge configuration in parallel to binary file lat.sample
+Time stamp Thu Oct 16 13:36:03 1997
+Checksums 250fda66 1828ce3d
+Wrote info file lat.sample.info
+Time to save = 4.000000e-02
+CHECK PLAQ: 2.728163e+00 2.731602e+00
+
+
