@@ -1,0 +1,74 @@
+SU3 with Kogut-Susskind fermions
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+R algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 4
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.6
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site 0.0001
+error_for_propagator 0.0001
+gauge configuration to be saved in lat.sample
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked
+Time to check unitarity = 0.000000e+00
+WARMUPS COMPLETED
+GMES 1.893434e+00 4.791559e-02 3.300000e+01 2.091085e+00 2.083070e+00
+FMES 3.505176e-02 3.117323e-03 1.081791e+00 -6.244286e-01 1.477889e+00
+GMES 1.446010e+00 3.774448e-02 4.600000e+01 1.927740e+00 1.900057e+00
+FMES -2.050502e-02 5.879402e-02 1.134744e+00 -6.349022e-01 1.519520e+00
+RUNNING COMPLETED
+average cg iters for step= 3.000000e+01
+average cg iters for measurement= 3.950000e+01
+Time = 7.580000e+00 seconds
+total_iters = 1283
+Saved gauge configuration serially to binary file lat.sample
+Time stamp Sat Oct 18 10:36:48 1997
+Checksums be6863e7 2177dad8
+Wrote info file lat.sample.info
+Time to save = 1.000000e-02
+CHECK PLAQ: 1.927740e+00 1.900057e+00
+
+
+warms 0
+trajecs 1
+traj_between_meas 1
+beta 5.6
+mass 0.01
+microcanonical_time_step 0.02
+steps_per_trajectory 0
+max_cg_iterations 100
+error_per_site 0.0001
+error_for_propagator 0.0001
+Restored binary gauge configuration serially from file lat.sample
+Checksums be6863e7 2177dad8 OK
+Time to reload gauge configuration = 1.000000e-02
+CHECK PLAQ: 1.927740e+00 1.900057e+00
+Unitarity checked
+Time to check unitarity = 1.000000e-02
+WARMUPS COMPLETED
+GMES 1.446010e+00 3.774448e-02 4.700000e+01 1.927740e+00 1.900057e+00
+FMES -7.584003e-02 1.205087e-01 1.046338e+00 -6.985745e-01 1.570272e+00
+RUNNING COMPLETED
+average cg iters for step= -9.900000e+01
+average cg iters for measurement= 4.700000e+01
+Time = 1.600000e-01 seconds
+total_iters = 1330
+
+

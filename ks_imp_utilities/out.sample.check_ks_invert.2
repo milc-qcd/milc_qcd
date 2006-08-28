@@ -1,0 +1,146 @@
+SU3 with improved KS action
+Inversion checking
+MIMD version 6
+Machine = QMP (portable), with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 6823045
+LAYOUT = Hypercubes, options = EVENFIRST,
+ON EACH NODE 8 x 8 x 8 x 8
+Mallocing 8.2 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+BEGIN
+
+
+mass 0.1
+u0 0.502
+max_cg_iterations 300
+error_for_propagator 1e-09
+reload_serial ../binary_samples/lat.sample.l8
+forget 
+forget 
+forget 
+reload_serial_ks_vector ../binary_samples/ksvector.src.sample.l8
+save_serial_ks_vector ksvector.ans.MdaggerMinv.test.l8
+invert MdaggerM
+read_gauge_hdr: Reading as a SciDAC formatted file
+Restoring binary SciDAC file ../binary_samples/lat.sample.l8
+File info 
+"Dummy user file XML"
+Record info 
+"Dummy user record XML for lattice field"
+Checksums d2f7866d 5f48ca3e
+Time to reload gauge configuration = 2.377003e-02
+CHECK PLAQ: 2.6203978710714737e+00 2.6214473754080179e+00
+CHECK LINKTR: 2.8951765559213527e+00 -2.0951840825345069e-06
+Reunitarized for double precision. Max deviation 4.23e-08 changed to 5.55e-16
+Time to check unitarity = 9.270055e-03
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -2.840603e-01     12
+                    2 0      -1.185492e-01     16
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -1.653413e-01     8
+                    2      -2.480119e-01     48
+                    3      2.460397e-01     192
+                    4      -1.627221e-01     384
+                    5      -9.841587e-01     48
+Restoring binary SciDAC file ../binary_samples/ksvector.src.sample.l8
+File info 
+"
+Derived MILC KS field
+gauge.filename ../binary_samples/lat.sample.l8
+layout.boundary_conditions space: periodic time: antiperiodic
+asqtad.u0 0.50200
+asqtad.path_coeff[0] 6.250000e-01
+asqtad.path_coeff[1] -1.653413e-01
+asqtad.path_coeff[2] -2.480119e-01
+asqtad.path_coeff[3] 2.460397e-01
+asqtad.path_coeff[4] -1.627221e-01
+asqtad.path_coeff[5] -9.841587e-01
+asqtad_arg.sign MILC-convention
+inv_arg.mass 0.1
+inv_arg.rsqprop 1.000000e-18
+"
+Record info 
+"source color vector field"
+Checksums 18c175b6 adc0f9ee
+Doing the inversion
+Inversion required 61 iters resid 2.745685e-12
+Checking the inversion
+Inversion checked, frac. error = 8.997865e-10
+Flagged comparisons = 0
+Max err. = 3.438522e-05 frac. = 8.375591e-07
+Saved KS vector serially to binary file ksvector.ans.MdaggerMinv.test.l8
+Checksums 19251ec7 98f4fe35
+
+
+mass 0.1
+u0 0.502
+max_cg_iterations 300
+error_for_propagator 1e-09
+continue 
+forget 
+forget 
+forget 
+reload_serial_ks_vector ../binary_samples/ksvector.src.sample.l8
+save_serial_ks_vector ksvector.ans.Minv.test.l8
+invert M
+CHECK PLAQ: 2.620398e+00 2.621447e+00
+CHECK LINKTR: 2.8951765562146652e+00 -2.0951612615265774e-06
+Reunitarized for double precision. Max deviation 5.55e-16 changed to 4.44e-16
+Time to check unitarity = 9.276912e-03
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -2.840603e-01     12
+                    2 0      -1.185492e-01     16
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -1.653413e-01     8
+                    2      -2.480119e-01     48
+                    3      2.460397e-01     192
+                    4      -1.627221e-01     384
+                    5      -9.841587e-01     48
+Restoring binary SciDAC file ../binary_samples/ksvector.src.sample.l8
+File info 
+"
+Derived MILC KS field
+gauge.filename ../binary_samples/lat.sample.l8
+layout.boundary_conditions space: periodic time: antiperiodic
+asqtad.u0 0.50200
+asqtad.path_coeff[0] 6.250000e-01
+asqtad.path_coeff[1] -1.653413e-01
+asqtad.path_coeff[2] -2.480119e-01
+asqtad.path_coeff[3] 2.460397e-01
+asqtad.path_coeff[4] -1.627221e-01
+asqtad.path_coeff[5] -9.841587e-01
+asqtad_arg.sign MILC-convention
+inv_arg.mass 0.1
+inv_arg.rsqprop 1.000000e-18
+"
+Record info 
+"source color vector field"
+Checksums 18c175b6 adc0f9ee
+Doing the inversion
+Inversion required 57 iters
+Checking the inversion
+Inversion checked, frac. error = 6.533136e-08
+Flagged comparisons = 0
+Max err. = 8.511958e-07 frac. = 2.073353e-08
+Saved KS vector serially to binary file ksvector.ans.Minv.test.l8
+Checksums f769c39b aa3f5f77
+
+
+get_f: EOF on STDIN.
+RUNNING COMPLETED

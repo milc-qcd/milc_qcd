@@ -1,0 +1,278 @@
+SU3 with improved KS action
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+Multimass inverter
+type 0 for no prompts  or 1 for prompts
+nflavors1 2
+nflavors2 1
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 1234
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 1.2 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+beta 5.6
+mass1 0.02
+mass2 0.05
+u0 1
+max_cg_iterations 1000
+error_for_propagator 1e-08
+source_start 0
+source_inc 2
+n_sources 1
+nmasses 2
+mass 0.05
+mass 0.02
+reload_serial ../binary_samples/lat.sample.l4448.gf
+no_gauge_fix
+forget 
+save_ks_serial_fm ks.test.l4448
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4448.gf
+Time stamp Wed Oct 10 14:39:47 2001
+Checksums 92a1404 1416736 OK
+Time to reload gauge configuration = 1.126218e-02
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+Unitarity checked.  Max deviation 9.20e-08
+Time to check unitarity = 3.623962e-03
+Symanzik 1x1 + 1x2 + 1x1x1 action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -5.000000e-02     12
+                    2 0      0.000000e+00     16
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
+PLAQ:	1.723748	1.690586
+P_LOOP:	2.299696e-03	1.676328e-03
+G_LOOP:  0  0  4   	1.716946e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.770409e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.701733e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.683890e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.705660e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.664365e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.069251e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.123611e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.045094e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.046345e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.037378e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.064420e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.153890e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.011118e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.928986e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.040221e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.033176e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	9.896121e-01	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.031102e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.026178e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.066602e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.026590e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.063255e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.019152e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.036908e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.109303e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	9.949194e-01	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.019257e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.056416e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.037027e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	9.939058e-01	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.028141e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	9.942737e-01	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.027284e+00	( 1 5 4 6 2 3  )
+GACTION: 6.587348e+00
+COULOMB GAUGE FIXING SKIPPED.
+fpi_2(): source time = 0, num_sourcevecs = 3
+Inversion checked, frac. error = 1.608117e-05
+Flagged comparisons = 0
+Max err. = 3.120171e-05 frac. = 4.412588e-05
+Inversion checked, frac. error = 7.002483e-05
+Flagged comparisons = 0
+Max err. = 1.494930e-04 frac. = 2.114150e-04
+Inversion checked, frac. error = 1.182601e-05
+Flagged comparisons = 0
+Max err. = 2.417845e-05 frac. = 3.419349e-05
+Inversion checked, frac. error = 4.847001e-05
+Flagged comparisons = 0
+Max err. = 1.323897e-04 frac. = 1.872273e-04
+Inversion checked, frac. error = 1.605596e-05
+Flagged comparisons = 0
+Max err. = 2.845267e-05 frac. = 4.023815e-05
+Inversion checked, frac. error = 7.223412e-05
+Flagged comparisons = 0
+Max err. = 1.646062e-04 frac. = 2.327883e-04
+Inversion checked, frac. error = 3.620700e-05
+Flagged comparisons = 0
+Max err. = 7.504803e-05 frac. = 1.061339e-04
+Inversion checked, frac. error = 1.365480e-04
+Flagged comparisons = 0
+Max err. = 2.721340e-04 frac. = 3.848556e-04
+Inversion checked, frac. error = 4.131792e-05
+Flagged comparisons = 0
+Max err. = 8.715794e-05 frac. = 1.232599e-04
+Inversion checked, frac. error = 1.454984e-04
+Flagged comparisons = 0
+Max err. = 2.734971e-04 frac. = 3.867832e-04
+Inversion checked, frac. error = 3.424595e-05
+Flagged comparisons = 0
+Max err. = 7.512105e-05 frac. = 1.062372e-04
+Inversion checked, frac. error = 1.169595e-04
+Flagged comparisons = 0
+Max err. = 2.242892e-04 frac. = 3.171928e-04
+STARTPROP
+MASSES:  5.00000e-02   5.00000e-02
+SOURCE: RANDOM_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 1.418823e-02 0.000000e+00 5.198277e-02 0.000000e+00
+1 5.823878e-03 0.000000e+00 3.188024e-02 0.000000e+00
+2 4.865011e-03 0.000000e+00 3.352891e-02 0.000000e+00
+3 3.605528e-03 0.000000e+00 1.928011e-02 0.000000e+00
+4 2.462559e-03 0.000000e+00 1.751386e-02 0.000000e+00
+5 2.934694e-03 0.000000e+00 1.380064e-02 0.000000e+00
+6 3.800207e-03 0.000000e+00 2.646698e-02 0.000000e+00
+7 6.313200e-03 0.000000e+00 2.175288e-02 0.000000e+00
+ENDPROP
+STARTPROP
+MASSES:  5.00000e-02   5.00000e-02
+SOURCE: FULL_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 4.577375e-02 0.000000e+00 9.238832e-01 0.000000e+00
+1 2.886340e-02 0.000000e+00 6.376116e-01 0.000000e+00
+2 3.004875e-02 0.000000e+00 5.100347e-01 0.000000e+00
+3 2.538912e-02 0.000000e+00 3.339844e-01 0.000000e+00
+4 2.059722e-02 0.000000e+00 3.420858e-01 0.000000e+00
+5 1.653082e-02 0.000000e+00 2.813877e-01 0.000000e+00
+6 2.295957e-02 0.000000e+00 4.378203e-01 0.000000e+00
+7 2.835590e-02 0.000000e+00 5.882326e-01 0.000000e+00
+ENDPROP
+STARTPROP
+MASSES:  5.00000e-02   2.00000e-02
+SOURCE: RANDOM_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 1.668181e-02 -6.640412e-04 7.746486e-02 -3.612106e-03
+1 8.239177e-03 -1.346425e-04 4.747980e-02 4.142414e-03
+2 8.300110e-03 -1.877053e-04 6.283608e-02 1.168205e-03
+3 6.019308e-03 -1.949267e-04 2.829187e-02 -2.643864e-03
+4 4.329649e-03 -3.962365e-04 3.224831e-02 -4.982248e-03
+5 4.691484e-03 -3.715476e-04 1.639408e-02 -2.591346e-03
+6 6.057178e-03 -7.244678e-04 4.690315e-02 -1.292469e-02
+7 8.979558e-03 -8.641809e-04 2.388427e-02 2.144504e-03
+ENDPROP
+STARTPROP
+MASSES:  5.00000e-02   2.00000e-02
+SOURCE: FULL_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 5.876900e-02 -3.098954e-03 1.067396e+00 -5.911546e-02
+1 4.140500e-02 -1.546334e-03 7.748384e-01 4.776829e-02
+2 4.412903e-02 -3.435149e-03 6.683241e-01 -1.425225e-02
+3 4.048168e-02 -3.868352e-03 4.870529e-01 -3.682661e-02
+4 3.242973e-02 -2.861514e-03 4.639013e-01 -5.991026e-02
+5 2.597720e-02 -4.707710e-03 3.636834e-01 -8.620173e-02
+6 3.375060e-02 -2.754747e-03 5.697782e-01 -6.697727e-02
+7 4.097837e-02 -7.384069e-03 6.798465e-01 -1.594285e-01
+ENDPROP
+STARTPROP
+MASSES:  2.00000e-02   2.00000e-02
+SOURCE: RANDOM_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2.268138e-02 0.000000e+00 1.423259e-01 0.000000e+00
+1 1.413428e-02 0.000000e+00 8.225710e-02 0.000000e+00
+2 1.667343e-02 0.000000e+00 1.409973e-01 0.000000e+00
+3 1.231051e-02 0.000000e+00 5.602094e-02 0.000000e+00
+4 9.281831e-03 0.000000e+00 7.374253e-02 0.000000e+00
+5 9.138694e-03 0.000000e+00 2.722778e-02 0.000000e+00
+6 1.172794e-02 0.000000e+00 1.071123e-01 0.000000e+00
+7 1.561262e-02 0.000000e+00 4.331380e-02 0.000000e+00
+ENDPROP
+STARTPROP
+MASSES:  2.00000e-02   2.00000e-02
+SOURCE: FULL_WALL
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 8.902637e-02 0.000000e+00 1.316861e+00 0.000000e+00
+1 7.358023e-02 0.000000e+00 1.076282e+00 0.000000e+00
+2 7.997642e-02 0.000000e+00 9.641530e-01 0.000000e+00
+3 7.854312e-02 0.000000e+00 8.239828e-01 0.000000e+00
+4 5.999163e-02 0.000000e+00 6.811307e-01 0.000000e+00
+5 5.164261e-02 0.000000e+00 5.671867e-01 0.000000e+00
+6 5.917766e-02 0.000000e+00 7.964906e-01 0.000000e+00
+7 7.448775e-02 0.000000e+00 9.427907e-01 0.000000e+00
+ENDPROP
+multimass_inverter(): source time = 0 x,y,z = 0 0 0
+Inversion checked, frac. error = 1.092776e-05
+Flagged comparisons = 0
+Max err. = 1.688522e-06 frac. = 3.820689e-05
+Inversion checked, frac. error = 3.446058e-05
+Flagged comparisons = 0
+Max err. = 4.830624e-06 frac. = 1.093046e-04
+Inversion checked, frac. error = 1.313269e-05
+Flagged comparisons = 0
+Max err. = 1.654545e-06 frac. = 3.743808e-05
+Inversion checked, frac. error = 5.566304e-05
+Flagged comparisons = 0
+Max err. = 8.940358e-06 frac. = 2.022972e-04
+Inversion checked, frac. error = 1.101933e-05
+Flagged comparisons = 0
+Max err. = 2.503443e-06 frac. = 5.664644e-05
+Inversion checked, frac. error = 3.590937e-05
+Flagged comparisons = 0
+Max err. = 7.956541e-06 frac. = 1.800360e-04
+Wrote KS prop file ks.test.l4448_m0.0500_nt0 time stamp Thu Mar 17 20:55:51 2005
+Wrote KS prop file ks.test.l4448_m0.0200_nt0 time stamp Thu Mar 17 20:55:51 2005
+STARTPROP
+MASSES:  5.00000e-02   5.00000e-02
+SOURCE: POINT
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 1.625387e-04 0.000000e+00 5.074738e-04 0.000000e+00
+1 6.800315e-05 0.000000e+00 4.787412e-04 0.000000e+00
+2 5.443691e-05 0.000000e+00 3.300112e-04 0.000000e+00
+3 4.866242e-05 0.000000e+00 2.985563e-04 0.000000e+00
+4 3.013178e-05 0.000000e+00 2.065497e-04 0.000000e+00
+5 3.061998e-05 0.000000e+00 9.998826e-05 0.000000e+00
+6 3.360325e-05 0.000000e+00 2.348314e-04 0.000000e+00
+7 6.561268e-05 0.000000e+00 1.769089e-04 0.000000e+00
+ENDPROP
+STARTPROP
+MASSES:  5.00000e-02   2.00000e-02
+SOURCE: POINT
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 1.744698e-04 3.489431e-06 6.581690e-04 -4.448797e-05
+1 8.567660e-05 3.058560e-06 7.864760e-04 1.494686e-05
+2 7.456696e-05 2.348340e-06 5.727554e-04 -2.659306e-05
+3 7.041393e-05 -2.429135e-06 5.440298e-04 -4.937522e-06
+4 4.376730e-05 4.591822e-09 2.788879e-04 -5.178898e-05
+5 4.253766e-05 -4.105864e-06 1.806172e-04 -1.138752e-05
+6 4.481468e-05 1.142958e-06 3.390825e-04 -5.213959e-05
+7 8.247388e-05 -3.508881e-06 3.156126e-04 -2.939336e-05
+ENDPROP
+STARTPROP
+MASSES:  2.00000e-02   2.00000e-02
+SOURCE: POINT
+SINKS: POINT_KAON_5 WALL_KAON_5
+0 2.067628e-04 0.000000e+00 9.783027e-04 0.000000e+00
+1 1.290468e-04 0.000000e+00 1.449846e-03 0.000000e+00
+2 1.238269e-04 0.000000e+00 1.124981e-03 0.000000e+00
+3 1.207359e-04 0.000000e+00 1.093046e-03 0.000000e+00
+4 7.608763e-05 0.000000e+00 4.780718e-04 0.000000e+00
+5 7.394877e-05 0.000000e+00 4.258034e-04 0.000000e+00
+6 7.557789e-05 0.000000e+00 5.837813e-04 0.000000e+00
+7 1.255139e-04 0.000000e+00 7.109592e-04 0.000000e+00
+ENDPROP
+RUNNING COMPLETED
+average cg iters for spectrum = 2.004000e+03
+Time = 3.090968e+01 seconds
+total_iters = 3342
+
+
+get_f: EOF on STDIN while expecting beta.
+exit: Thu Mar 17 20:55:51 2005
+

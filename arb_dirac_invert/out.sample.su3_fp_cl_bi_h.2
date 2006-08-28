@@ -1,0 +1,386 @@
+SU3 Hypercubic valence fermions
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 1.6 MBytes per node for lattice
+
+
+number_of_masses 1
+m0 0.11
+max_cg_iterations 108
+max_cg_restarts 1
+error_for_propagator 1e-09
+gaussian
+r0 2
+reload_serial ../binary_samples/lat.sample.l4444
+no_gauge_fix
+forget 
+fresh_prop 
+forget_prop 
+serial_scratch_prop stem
+Reading with byte reversal
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4444
+Time stamp Thu Feb 12 13:40:21 1998
+Checksums 2352c05 d137321d OK
+Time to reload gauge configuration = 6.197929e-03
+CHECK PLAQ: 1.794675e+00 1.774426e+00
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 1.805067e-03
+COULOMB GAUGE FIXING SKIPPED.
+END OF HEADER
+pure APE blocking with alpha  3.000000e-01 N 3
+mass= 0.11 r0= 2 residue= 1e-09
+lambda[0] = 4.110000e+00
+lambda[1] = -5.000000e-01
+lambda[2] = 0.000000e+00
+lambda[3] = 0.000000e+00
+lambda[4] = 0.000000e+00
+rho[1] = -5.000000e-01
+rho[2] = 0.000000e+00
+rho[3] = 0.000000e+00
+rho[4] = 0.000000e+00
+boosting clover term by 1.000000e+00 to 5.000000e-01
+clover normalization 5.000000e-01
+entered clover setup with term=5.000000e-01
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 1.253153e+00, rvr 8.204642e-02, -1.359234e-02
+BiCongrad: iter 10, rsq 3.866760e-02, rvr 6.120892e-02, -1.122301e-02
+BiCongrad: iter 15, rsq 9.071617e-03, rvr -2.869944e-02, -1.962736e-02
+BiCongrad: iter 20, rsq 2.274411e-03, rvr -1.954540e-04, -9.647804e-03
+BiCongrad: iter 25, rsq 6.503343e-05, rvr -5.293914e-05, -4.732666e-04
+BiCongrad: iter 30, rsq 2.051269e-05, rvr -7.561208e-05, -1.989556e-05
+BiCongrad: iter 35, rsq 2.931243e-07, rvr -4.121801e-06, 3.275694e-06
+BiCongrad: iter 40, rsq 1.047225e-07, rvr -1.956690e-06, 1.122518e-06
+BiCongrad: iter 45, rsq 1.346771e-08, rvr -1.872691e-07, -5.033036e-07
+BiCongrad: iter 50, rsq 5.041903e-10, rvr 1.239523e-07, -1.423225e-07
+BiCongrad: iter 55, rsq 1.509427e-11, rvr -8.397083e-08, 7.300333e-08
+BiCongrad: iter 60, rsq 5.431180e-13, rvr -1.524080e-09, 9.997424e-10
+BiCongrad: iter 65, rsq 1.596657e-13, rvr 3.251505e-09, 3.538308e-09
+BiCongrad: iter 70, rsq 3.833153e-15, rvr 2.682631e-10, 2.669305e-11
+BiCongrad: iter 75, rsq 2.664330e-17, rvr -1.150845e-11, -2.044104e-11
+bicgstab: iter 80, rsq 6.84541e-18
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 7.705836e-01, rvr 1.520498e-01, 8.782945e-03
+BiCongrad: iter 10, rsq 3.807585e-02, rvr -4.196260e-03, -6.243441e-04
+BiCongrad: iter 15, rsq 4.427215e-03, rvr -5.092827e-02, -4.880156e-03
+BiCongrad: iter 20, rsq 1.354300e-04, rvr -2.308102e-03, 3.168414e-04
+BiCongrad: iter 25, rsq 2.038801e-05, rvr -1.092529e-04, -4.616833e-04
+BiCongrad: iter 30, rsq 3.100240e-06, rvr 1.135621e-05, 1.278232e-05
+BiCongrad: iter 35, rsq 2.240774e-06, rvr 7.767615e-05, -3.092763e-05
+BiCongrad: iter 40, rsq 2.968828e-07, rvr 3.881719e-06, -4.187357e-06
+BiCongrad: iter 45, rsq 2.503204e-09, rvr 3.158653e-07, 8.387264e-08
+BiCongrad: iter 50, rsq 7.279995e-10, rvr 3.072543e-07, -7.110209e-08
+BiCongrad: iter 55, rsq 1.062432e-10, rvr -1.657518e-07, 2.985313e-08
+BiCongrad: iter 60, rsq 1.072575e-11, rvr 3.612085e-08, -8.675122e-09
+BiCongrad: iter 65, rsq 7.452674e-15, rvr -5.469663e-10, -4.730400e-10
+BiCongrad: iter 70, rsq 4.846709e-16, rvr 3.268094e-10, 1.966383e-10
+BiCongrad: iter 75, rsq 9.009388e-17, rvr 3.990718e-11, 1.404710e-10
+BiCongrad: iter 80, rsq 1.287064e-17, rvr -9.029288e-12, 4.793446e-11
+bicgstab: iter 81, rsq 1.28706e-17
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 6.723786e-01, rvr 1.874487e-01, 3.166765e-03
+BiCongrad: iter 10, rsq 6.663369e-02, rvr -2.029750e-02, 1.077972e-02
+BiCongrad: iter 15, rsq 6.729132e-03, rvr -2.102379e-02, -2.017700e-03
+BiCongrad: iter 20, rsq 2.153228e-04, rvr -1.632718e-03, 5.260095e-04
+BiCongrad: iter 25, rsq 4.560623e-05, rvr 2.116193e-04, 3.202878e-04
+BiCongrad: iter 30, rsq 9.072812e-06, rvr 3.189077e-06, 6.282296e-05
+BiCongrad: iter 35, rsq 1.225951e-06, rvr -2.193886e-05, 2.796851e-05
+BiCongrad: iter 40, rsq 9.322795e-08, rvr 3.729442e-06, 2.889660e-06
+BiCongrad: iter 45, rsq 3.186311e-08, rvr 2.072627e-06, 2.319430e-06
+BiCongrad: iter 50, rsq 2.699078e-09, rvr 1.291023e-06, 5.337195e-06
+BiCongrad: iter 55, rsq 3.342980e-12, rvr 1.664070e-09, -5.643276e-09
+BiCongrad: iter 60, rsq 2.369163e-13, rvr 6.140554e-09, 7.461846e-09
+BiCongrad: iter 65, rsq 8.848692e-14, rvr 2.021702e-11, 9.670059e-10
+BiCongrad: iter 70, rsq 3.235459e-14, rvr 1.589736e-09, 1.454550e-09
+BiCongrad: iter 75, rsq 1.306510e-15, rvr 1.392190e-10, -2.687021e-10
+BiCongrad: iter 80, rsq 1.244394e-16, rvr 4.030811e-11, -1.118239e-10
+BiCongrad: iter 85, rsq 2.117589e-16, rvr -8.603735e-11, 4.296063e-11
+bicgstab: iter 90, rsq 3.8347e-18
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 1.360674e+00, rvr 2.872020e-02, -2.403930e-02
+BiCongrad: iter 10, rsq 7.966180e-02, rvr 7.189644e-02, 4.295000e-02
+BiCongrad: iter 15, rsq 7.227466e-03, rvr -3.097636e-02, 2.768489e-03
+BiCongrad: iter 20, rsq 5.164559e-04, rvr -2.874009e-03, 2.619406e-04
+BiCongrad: iter 25, rsq 2.014586e-04, rvr -2.417085e-03, 8.188994e-04
+BiCongrad: iter 30, rsq 5.527562e-06, rvr 8.676685e-05, -4.654648e-05
+BiCongrad: iter 35, rsq 5.840994e-07, rvr -4.314193e-05, 6.739369e-05
+BiCongrad: iter 40, rsq 2.982242e-08, rvr -3.795894e-06, -5.544171e-07
+BiCongrad: iter 45, rsq 4.573356e-10, rvr -1.654800e-06, 3.246096e-07
+BiCongrad: iter 50, rsq 7.902366e-11, rvr -1.714435e-07, 1.905193e-07
+BiCongrad: iter 55, rsq 5.349280e-11, rvr -2.100619e-08, -3.040748e-08
+BiCongrad: iter 60, rsq 1.791039e-12, rvr -8.994547e-09, -1.411512e-08
+BiCongrad: iter 65, rsq 2.159295e-14, rvr -1.544648e-10, -5.943260e-10
+BiCongrad: iter 70, rsq 2.312582e-15, rvr -1.453646e-09, -3.117491e-10
+BiCongrad: iter 75, rsq 6.440739e-16, rvr -1.400955e-10, -4.051615e-11
+BiCongrad: iter 80, rsq 6.783874e-17, rvr 8.835951e-11, -1.590116e-11
+bicgstab: iter 83, rsq 1.06739e-17
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 1.028215e+00, rvr 1.142837e-01, 3.394134e-03
+BiCongrad: iter 10, rsq 1.811106e-01, rvr 1.580667e-01, 1.651551e-02
+BiCongrad: iter 15, rsq 3.770436e-03, rvr -1.722405e-02, 1.439748e-04
+BiCongrad: iter 20, rsq 2.347803e-04, rvr -2.612705e-03, 1.629117e-04
+BiCongrad: iter 25, rsq 7.498161e-04, rvr 3.881595e-03, -2.400235e-03
+BiCongrad: iter 30, rsq 2.697023e-06, rvr 1.481293e-04, 3.827272e-05
+BiCongrad: iter 35, rsq 3.878909e-07, rvr -1.028490e-05, 1.530698e-05
+BiCongrad: iter 40, rsq 1.396367e-07, rvr -4.041496e-06, 1.275393e-07
+BiCongrad: iter 45, rsq 1.486919e-09, rvr -3.224889e-07, 4.814093e-07
+BiCongrad: iter 50, rsq 4.394541e-11, rvr -2.571938e-08, 5.981617e-09
+BiCongrad: iter 55, rsq 1.155956e-11, rvr -2.483778e-09, 9.381676e-09
+BiCongrad: iter 60, rsq 2.007330e-11, rvr -1.522343e-08, -5.995701e-08
+BiCongrad: iter 65, rsq 5.067835e-13, rvr 1.400538e-09, -3.359416e-09
+BiCongrad: iter 70, rsq 5.509894e-14, rvr -3.140091e-10, 1.601198e-10
+BiCongrad: iter 75, rsq 1.969049e-15, rvr -9.115633e-11, 1.729468e-12
+BiCongrad: iter 80, rsq 1.464631e-16, rvr 1.013346e-11, 1.404626e-11
+bicgstab: iter 84, rsq 1.13532e-17
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 1.711875e+00, rvr 5.628553e-02, -2.311901e-02
+BiCongrad: iter 10, rsq 1.461367e-01, rvr 1.564981e-01, 3.941663e-02
+BiCongrad: iter 15, rsq 5.572196e-03, rvr -3.200748e-02, 3.607032e-03
+BiCongrad: iter 20, rsq 2.211481e-04, rvr -2.678320e-03, 5.490000e-04
+BiCongrad: iter 25, rsq 3.463590e-05, rvr 2.442654e-04, 8.770593e-05
+BiCongrad: iter 30, rsq 9.611977e-07, rvr -5.512659e-06, 1.378482e-05
+BiCongrad: iter 35, rsq 1.146781e-07, rvr -6.018155e-06, -2.415641e-06
+BiCongrad: iter 40, rsq 2.830803e-08, rvr 3.198250e-06, -3.104842e-06
+BiCongrad: iter 45, rsq 1.200383e-09, rvr 1.238243e-06, 5.705779e-07
+BiCongrad: iter 50, rsq 1.153282e-10, rvr -2.805453e-07, 5.480038e-07
+BiCongrad: iter 55, rsq 3.060848e-11, rvr 9.284681e-08, -3.612933e-08
+BiCongrad: iter 60, rsq 9.067023e-13, rvr -9.042442e-09, 1.197386e-08
+BiCongrad: iter 65, rsq 1.397134e-13, rvr 2.455988e-09, -4.072863e-11
+BiCongrad: iter 70, rsq 3.220738e-14, rvr 2.749096e-10, 5.738017e-11
+BiCongrad: iter 75, rsq 8.294528e-16, rvr -2.732638e-11, -2.650350e-11
+BiCongrad: iter 80, rsq 4.065455e-17, rvr 1.489769e-12, -1.172492e-11
+bicgstab: iter 82, rsq 1.11875e-17
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 1.374065e+00, rvr 6.983259e-02, -3.964886e-03
+BiCongrad: iter 10, rsq 5.799758e-01, rvr 2.837088e-01, 2.473595e-02
+BiCongrad: iter 15, rsq 3.670874e-03, rvr -2.022932e-02, 7.343121e-04
+BiCongrad: iter 20, rsq 4.434362e-04, rvr -4.457506e-03, 3.137473e-04
+BiCongrad: iter 25, rsq 3.272779e-05, rvr 1.678735e-04, -2.653788e-05
+BiCongrad: iter 30, rsq 1.953858e-06, rvr -2.717866e-06, -4.603501e-05
+BiCongrad: iter 35, rsq 1.291866e-07, rvr 1.247981e-05, 4.529677e-06
+BiCongrad: iter 40, rsq 1.372448e-08, rvr 2.411841e-06, 5.938640e-08
+BiCongrad: iter 45, rsq 3.408624e-09, rvr 6.313521e-07, -9.474712e-07
+BiCongrad: iter 50, rsq 9.734112e-10, rvr 7.058789e-07, -3.714438e-07
+BiCongrad: iter 55, rsq 7.875382e-11, rvr -4.345010e-08, 4.236719e-08
+BiCongrad: iter 60, rsq 1.048247e-12, rvr -1.163974e-08, 6.227587e-09
+BiCongrad: iter 65, rsq 4.450623e-13, rvr 2.044447e-09, 2.706719e-09
+BiCongrad: iter 70, rsq 5.017548e-14, rvr 1.164179e-09, -1.146434e-09
+BiCongrad: iter 75, rsq 8.833718e-15, rvr -1.104172e-09, -4.008865e-10
+BiCongrad: iter 80, rsq 2.332002e-16, rvr 8.209901e-11, -1.040096e-10
+bicgstab: iter 82, rsq 1.26896e-17
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 1.117782e+00, rvr 9.468773e-02, -1.127218e-02
+BiCongrad: iter 10, rsq 3.825980e-01, rvr 1.648562e-01, 1.541475e-01
+BiCongrad: iter 15, rsq 5.213720e-03, rvr -8.351463e-02, -1.732632e-02
+BiCongrad: iter 20, rsq 2.187353e-04, rvr -3.143120e-03, 5.563834e-04
+BiCongrad: iter 25, rsq 3.361284e-05, rvr -2.481190e-04, -1.987817e-04
+BiCongrad: iter 30, rsq 1.924657e-06, rvr 1.008164e-04, 3.076852e-05
+BiCongrad: iter 35, rsq 7.116982e-07, rvr -1.850649e-05, -5.741153e-05
+BiCongrad: iter 40, rsq 2.916608e-06, rvr -1.376922e-04, 3.581191e-04
+BiCongrad: iter 45, rsq 6.410363e-10, rvr -2.264432e-06, -6.877077e-07
+BiCongrad: iter 50, rsq 7.386873e-11, rvr 5.119913e-08, 1.383012e-09
+BiCongrad: iter 55, rsq 4.308760e-10, rvr -2.364269e-07, 5.533213e-07
+BiCongrad: iter 60, rsq 4.116400e-13, rvr -5.208229e-09, -5.283431e-10
+BiCongrad: iter 65, rsq 2.450614e-14, rvr -1.700610e-09, -9.264692e-10
+BiCongrad: iter 70, rsq 7.385380e-15, rvr 1.839269e-09, -5.950929e-10
+BiCongrad: iter 75, rsq 6.094871e-17, rvr -8.058586e-11, -3.259879e-11
+BiCongrad: iter 80, rsq 2.338565e-17, rvr -2.503099e-11, -6.360170e-12
+bicgstab: iter 84, rsq 1.41539e-18
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 2.276241e+00, rvr -9.025171e-02, -1.607017e-02
+BiCongrad: iter 10, rsq 4.697683e-02, rvr -3.026628e-02, 2.955239e-02
+BiCongrad: iter 15, rsq 6.032806e-03, rvr -9.140243e-03, 5.570302e-03
+BiCongrad: iter 20, rsq 4.164014e-04, rvr -5.708715e-03, 9.626712e-04
+BiCongrad: iter 25, rsq 5.296147e-05, rvr -5.872287e-04, 1.160614e-04
+BiCongrad: iter 30, rsq 1.638285e-06, rvr -4.662477e-06, 7.730980e-06
+BiCongrad: iter 35, rsq 4.692066e-06, rvr -1.563341e-06, -7.442385e-06
+BiCongrad: iter 40, rsq 1.706791e-06, rvr -1.010051e-05, -6.744406e-06
+BiCongrad: iter 45, rsq 1.467081e-08, rvr -4.277071e-06, -2.151624e-06
+BiCongrad: iter 50, rsq 8.361165e-10, rvr 1.220521e-06, -6.730066e-08
+BiCongrad: iter 55, rsq 3.827509e-12, rvr 2.815208e-08, -6.030748e-08
+BiCongrad: iter 60, rsq 1.111851e-13, rvr 1.032836e-08, 5.226421e-09
+BiCongrad: iter 65, rsq 1.345233e-14, rvr -5.175359e-10, -1.439292e-09
+BiCongrad: iter 70, rsq 1.252397e-15, rvr 1.176511e-10, 1.054249e-10
+BiCongrad: iter 75, rsq 1.681161e-16, rvr -1.900794e-11, 9.773607e-11
+BiCongrad: iter 80, rsq 1.028220e-17, rvr -1.382073e-12, 3.744120e-11
+bicgstab: iter 81, rsq 1.02822e-17
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 1.700955e+00, rvr -2.469581e-02, 4.033228e-02
+BiCongrad: iter 10, rsq 5.921653e-02, rvr -3.325191e-02, -1.280972e-05
+BiCongrad: iter 15, rsq 4.235374e-03, rvr -2.172025e-02, 3.747467e-03
+BiCongrad: iter 20, rsq 3.294287e-04, rvr -3.229661e-03, 5.716738e-04
+BiCongrad: iter 25, rsq 1.383488e-04, rvr 8.383030e-06, 2.081237e-05
+BiCongrad: iter 30, rsq 4.375560e-05, rvr -5.137221e-05, 8.332673e-05
+BiCongrad: iter 35, rsq 1.143237e-07, rvr 8.592495e-06, -1.089682e-05
+BiCongrad: iter 40, rsq 4.070513e-07, rvr 1.333992e-05, 1.930698e-07
+BiCongrad: iter 45, rsq 1.630106e-09, rvr -1.025892e-06, 1.613954e-06
+BiCongrad: iter 50, rsq 8.431897e-11, rvr 1.187875e-07, -1.042382e-07
+BiCongrad: iter 55, rsq 8.308503e-11, rvr -9.723271e-08, 4.391403e-08
+BiCongrad: iter 60, rsq 6.352846e-13, rvr 2.319342e-08, 2.317994e-08
+BiCongrad: iter 65, rsq 7.928033e-14, rvr -5.738856e-09, -3.284193e-09
+BiCongrad: iter 70, rsq 1.102017e-14, rvr -4.171447e-10, 3.778347e-10
+BiCongrad: iter 75, rsq 3.137066e-16, rvr 3.825572e-10, 1.220227e-10
+BiCongrad: iter 80, rsq 1.553168e-17, rvr 1.282625e-11, 7.494222e-12
+bicgstab: iter 82, rsq 5.98856e-18
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 5.028352e+00, rvr -2.187295e-01, 9.360464e-02
+BiCongrad: iter 10, rsq 4.636561e-02, rvr -6.795544e-03, 8.233749e-03
+BiCongrad: iter 15, rsq 4.747212e-03, rvr -2.640354e-02, -5.661048e-03
+BiCongrad: iter 20, rsq 1.192052e-03, rvr -5.298957e-03, -8.336482e-03
+BiCongrad: iter 25, rsq 3.462531e-05, rvr -4.697203e-04, -9.014186e-05
+BiCongrad: iter 30, rsq 9.633884e-06, rvr 2.081701e-05, -3.690560e-05
+BiCongrad: iter 35, rsq 3.415287e-06, rvr -1.686124e-05, -4.049502e-05
+BiCongrad: iter 40, rsq 5.263920e-07, rvr -2.158625e-05, 2.772051e-05
+BiCongrad: iter 45, rsq 7.841985e-10, rvr -8.792274e-07, -1.123210e-07
+BiCongrad: iter 50, rsq 8.962904e-11, rvr -7.864409e-08, -1.527009e-07
+BiCongrad: iter 55, rsq 8.041252e-12, rvr 8.974600e-08, 8.790867e-08
+BiCongrad: iter 60, rsq 1.504739e-12, rvr 1.036522e-08, 3.286051e-09
+BiCongrad: iter 65, rsq 9.599081e-14, rvr 4.301295e-09, -6.790223e-09
+BiCongrad: iter 70, rsq 1.038849e-14, rvr 2.374624e-09, 1.084956e-09
+BiCongrad: iter 75, rsq 9.456728e-15, rvr 8.481298e-10, -1.156004e-09
+BiCongrad: iter 80, rsq 2.106238e-16, rvr -3.120721e-11, -1.290342e-10
+bicgstab: iter 82, rsq 1.04474e-17
+psi_0=0
+bicgstab: source_norm = 1.295133e+01
+BiCongrad: iter 5, rsq 1.133425e+00, rvr 5.740103e-02, -2.632839e-02
+BiCongrad: iter 10, rsq 5.408868e-02, rvr 5.036635e-02, 3.877595e-02
+BiCongrad: iter 15, rsq 5.462166e-03, rvr -2.982059e-02, 3.945947e-03
+BiCongrad: iter 20, rsq 2.195752e-04, rvr -2.944284e-03, -4.844682e-04
+BiCongrad: iter 25, rsq 2.899501e-05, rvr -1.546980e-04, 2.012079e-05
+BiCongrad: iter 30, rsq 3.382793e-04, rvr -4.943648e-05, -1.291927e-03
+BiCongrad: iter 35, rsq 3.536492e-07, rvr 1.443584e-05, -1.910586e-05
+BiCongrad: iter 40, rsq 2.732457e-08, rvr -1.064776e-05, 1.214675e-06
+BiCongrad: iter 45, rsq 1.469177e-09, rvr -2.876568e-06, 7.075159e-07
+BiCongrad: iter 50, rsq 1.414604e-10, rvr -4.240688e-08, -2.179673e-07
+BiCongrad: iter 55, rsq 1.697446e-11, rvr -9.669165e-08, -1.432910e-07
+BiCongrad: iter 60, rsq 2.750699e-12, rvr -1.508522e-08, 4.520533e-08
+BiCongrad: iter 65, rsq 4.327919e-13, rvr 7.980619e-09, 3.059295e-09
+BiCongrad: iter 70, rsq 5.102319e-14, rvr -2.495383e-10, -5.037611e-10
+BiCongrad: iter 75, rsq 3.314091e-15, rvr 1.325196e-10, -4.648574e-10
+BiCongrad: iter 80, rsq 4.492338e-17, rvr -1.448280e-11, -2.863247e-11
+bicgstab: iter 83, rsq 8.62228e-18
+BEGIN PROPAGATORS
+Time for diagonal baryons 1.295710e+00
+Time for diagonal mesons 6.924561e+00
+POINTPION 0 0  1.458715e+02 1.939418e+01 -3.363166e+00 4.396594e+00 1.458157e+00
+POINTPION 0 1  6.251048e+01 2.812749e+00 -3.941575e-01 2.638394e-01 -6.018367e-02
+POINTPION 0 2  5.460587e+01 1.343212e+00 -2.802202e-01 1.781391e-01 4.193538e-02
+POINTPION 0 3  6.268071e+01 2.246726e+00 -8.648238e-01 3.599276e-01 2.163953e-01
+SMEARPION 0 0  6.785732e+04 2.472821e+03 2.573838e+02 1.303656e+02 1.504266e+01
+SMEARPION 0 1  2.497935e+04 3.228681e+02 -3.278347e+01 -1.458699e+00 -6.328087e-01
+SMEARPION 0 2  2.227680e+04 1.920022e+02 -3.474426e+01 -1.567502e+00 1.797052e+00
+SMEARPION 0 3  2.671663e+04 1.877236e+02 9.389072e+01 1.275553e+01 3.263163e+00
+POINTPS505 0 0  4.738967e-02 -6.163735e-01 -1.030162e-01 -2.772871e-01 -9.109777e-02
+POINTPS505 0 1  2.195425e+01 2.679259e+00 -3.826427e-02 3.766140e-01 7.160600e-02
+POINTPS505 0 2  -3.341058e-01 1.443014e-01 1.455191e-01 6.179303e-02 7.381501e-02
+POINTPS505 0 3  -2.377447e+01 -2.227288e+00 7.141908e-01 -2.299960e-01 -5.159131e-02
+SMEARPS505 0 0  3.903115e+02 -4.916951e+01 -1.498140e+01 -6.511371e+00 8.350221e-01
+SMEARPS505 0 1  9.160894e+03 2.705670e+02 -3.693853e+00 4.119610e+00 7.197142e-02
+SMEARPS505 0 2  -1.695721e+02 2.683329e+01 -5.278613e-01 8.771721e-01 5.500503e-01
+SMEARPS505 0 3  -1.081906e+04 -2.126566e+02 -5.268432e+01 -8.305068e+00 -1.806163e+00
+POINTPS055 0 0  1.323314e+00 -1.387434e+00 -7.149699e-01 -4.539616e-01 -1.980843e-01
+POINTPS055 0 1  2.185895e+01 2.364924e+00 -1.389169e-01 9.952518e-02 -1.564659e-01
+POINTPS055 0 2  -1.873410e+00 1.308191e-01 1.374816e-01 -1.279345e-01 -6.449590e-02
+POINTPS055 0 3  -2.251262e+01 -2.340795e+00 3.879369e-01 -3.633217e-01 -1.346026e-01
+SMEARPS055 0 0  8.404857e+02 -1.254573e+02 2.451289e+00 -8.412190e+00 3.243250e-01
+SMEARPS055 0 1  8.684352e+03 2.442039e+02 -3.070070e+00 -3.622297e-01 -7.135615e-01
+SMEARPS055 0 2  -9.646249e+02 2.448537e+01 -1.622699e+00 -1.581509e+00 7.741791e-02
+SMEARPS055 0 3  -9.803066e+03 -2.177111e+02 -4.292305e+01 -9.720865e+00 -1.323113e+00
+POINTPS0505 0 0  1.056408e+02 1.855226e+01 -1.845969e+00 4.321734e+00 1.345473e+00
+POINTPS0505 0 1  3.298857e+01 2.790058e+00 7.594802e-02 3.086586e-01 1.559256e-01
+POINTPS0505 0 2  3.100138e+01 1.639306e+00 -4.451045e-02 1.471477e-01 6.689243e-04
+POINTPS0505 0 3  3.451993e+01 2.201005e+00 -5.239201e-01 2.331500e-01 8.055852e-02
+SMEARPS0505 0 0  5.384936e+04 2.385269e+03 2.448816e+02 1.273062e+02 1.243127e+01
+SMEARPS0505 0 1  1.402359e+04 2.956760e+02 -1.318162e+01 2.355910e+00 -5.224705e-01
+SMEARPS0505 0 2  1.322912e+04 2.057654e+02 -1.532687e+01 -2.565039e+00 1.940823e-01
+SMEARPS0505 0 3  1.566395e+04 2.069778e+02 6.632561e+01 8.799533e+00 1.702955e+00
+POINTRHO33 0 0  1.248354e+02 1.847839e+01 -2.977736e+00 4.174548e+00 1.353137e+00
+POINTRHO33 0 1  4.652379e+01 2.501060e+00 -2.908991e-01 2.633702e-01 4.139088e-02
+POINTRHO33 0 2  4.143208e+01 1.245151e+00 -2.020484e-01 1.477577e-01 6.249503e-02
+POINTRHO33 0 3  4.730091e+01 1.876094e+00 -7.333719e-01 2.677171e-01 1.445312e-01
+SMEARRHO33 0 0  6.104129e+04 2.389940e+03 2.495648e+02 1.259358e+02 1.385168e+01
+SMEARRHO33 0 1  1.954018e+04 2.841709e+02 -2.242043e+01 -9.764618e-03 -4.465701e-01
+SMEARRHO33 0 2  1.766144e+04 1.801593e+02 -2.875519e+01 -2.123715e+00 1.393017e+00
+SMEARRHO33 0 3  2.112628e+04 1.672851e+02 7.793470e+01 9.976810e+00 2.295878e+00
+POINTRHO0303 0 0  1.127887e+02 1.826619e+01 -2.486483e+00 4.142094e+00 1.319485e+00
+POINTRHO0303 0 1  3.797966e+01 2.497988e+00 -1.609101e-01 2.609446e-01 1.067923e-01
+POINTRHO0303 0 2  3.467295e+01 1.340545e+00 -1.244512e-01 1.248862e-01 4.834038e-02
+POINTRHO0303 0 3  3.912928e+01 1.908058e+00 -6.251450e-01 2.230080e-01 1.094664e-01
+SMEARRHO0303 0 0  5.683409e+04 2.367054e+03 2.451268e+02 1.245888e+02 1.307453e+01
+SMEARRHO0303 0 1  1.630541e+04 2.757777e+02 -1.724397e+01 7.639713e-01 -3.963400e-01
+SMEARRHO0303 0 2  1.499765e+04 1.835621e+02 -2.258231e+01 -2.578100e+00 8.467172e-01
+SMEARRHO0303 0 3  1.785569e+04 1.771273e+02 6.960804e+01 8.451430e+00 1.805526e+00
+POINTSCALAR 0 0  1.068154e+02 1.899038e+01 -1.983917e+00 4.175254e+00 1.324764e+00
+POINTSCALAR 0 1  2.467297e+01 2.222713e+00 1.938255e-01 1.036764e-01 2.309790e-01
+POINTSCALAR 0 2  2.603550e+01 1.787807e+00 9.809672e-03 2.027620e-01 1.759019e-01
+POINTSCALAR 0 3  2.496612e+01 1.126458e+00 -3.557633e-01 4.402832e-02 1.065848e-01
+SMEARSCALAR 0 0  5.379834e+04 2.414467e+03 2.461550e+02 1.243695e+02 1.267587e+01
+SMEARSCALAR 0 1  1.042552e+04 2.326532e+02 -1.857063e+01 1.475331e+00 2.455673e-01
+SMEARSCALAR 0 2  1.103840e+04 2.100591e+02 -1.950422e+01 1.958567e+00 1.296659e+00
+SMEARSCALAR 0 3  1.122699e+04 1.090766e+02 4.443478e+01 2.695751e+00 1.654305e+00
+POINTSCALA0 0 0  1.289546e+02 1.886554e+01 -3.100142e+00 4.345345e+00 1.404999e+00
+POINTSCALA0 0 1  3.841042e+01 1.652521e+00 -1.708222e-01 2.402844e-01 1.474663e-01
+POINTSCALA0 0 2  3.864080e+01 1.395210e+00 -8.084474e-02 1.641315e-01 1.002467e-01
+POINTSCALA0 0 3  3.829845e+01 9.053317e-01 -3.505216e-01 7.475594e-02 1.295640e-01
+SMEARSCALA0 0 0  6.167426e+04 2.417875e+03 2.482416e+02 1.294091e+02 1.395683e+01
+SMEARSCALA0 0 1  1.619934e+04 2.039207e+02 -2.043649e+01 1.282951e+00 7.934074e-01
+SMEARSCALA0 0 2  1.651255e+04 1.827648e+02 -2.382540e+01 1.274054e+00 1.683844e+00
+SMEARSCALA0 0 3  1.714039e+04 9.082114e+01 4.999345e+01 5.893900e+00 2.334681e+00
+POINTPV35 0 0  -1.099917e+02 -1.838669e+01 2.491733e+00 -4.073548e+00 -1.311272e+00
+POINTPV35 0 1  -2.654449e+01 -1.750845e+00 2.479413e-02 -1.445130e-01 -2.240944e-01
+POINTPV35 0 2  -2.798366e+01 -1.492775e+00 4.236358e-02 -1.721915e-01 -1.908858e-01
+POINTPV35 0 3  -2.701852e+01 -8.150830e-01 3.405044e-01 -3.995651e-02 -1.089326e-01
+SMEARPV35 0 0  -5.540632e+04 -2.368682e+03 -2.434317e+02 -1.235325e+02 -1.302878e+01
+SMEARPV35 0 1  -1.167139e+04 -1.964434e+02 1.802499e+01 -1.877869e+00 -6.681607e-01
+SMEARPV35 0 2  -1.225239e+04 -1.899037e+02 2.281101e+01 -1.615651e+00 -1.512740e+00
+SMEARPV35 0 3  -1.250884e+04 -8.017413e+01 -4.188287e+01 -2.748842e+00 -1.745300e+00
+POINTB12 0 0  -1.166763e+02 -1.831085e+01 2.868219e+00 -4.112873e+00 -1.334469e+00
+POINTB12 0 1  -3.048253e+01 -1.560659e+00 1.328167e-01 -1.723778e-01 -1.940021e-01
+POINTB12 0 2  -3.160354e+01 -1.355152e+00 7.341395e-02 -1.596550e-01 -1.744139e-01
+POINTB12 0 3  -3.089079e+01 -7.300460e-01 3.351474e-01 -3.841517e-02 -1.053263e-01
+SMEARB12 0 0  -5.778095e+04 -2.366363e+03 -2.442422e+02 -1.250887e+02 -1.339550e+01
+SMEARB12 0 1  -1.336571e+04 -1.863901e+02 1.808714e+01 -1.820694e+00 -8.358097e-01
+SMEARB12 0 2  -1.387444e+04 -1.800931e+02 2.432475e+01 -1.300571e+00 -1.743031e+00
+SMEARB12 0 3  -1.426764e+04 -7.392796e+01 -4.382533e+01 -3.548403e+00 -1.960498e+00
+POINTPROTON 0 0  2.153774e+00 4.717319e-01 -4.496317e-02 1.337801e-01 4.752224e-02
+POINTPROTON 0 1  4.530737e-01 3.926866e-02 -3.374426e-03 4.745555e-03 8.074145e-04
+POINTPROTON 0 2  3.674921e-01 1.903690e-02 -2.533164e-03 2.044619e-03 1.012975e-03
+POINTPROTON 0 3  4.593566e-01 2.955103e-02 -1.058446e-02 3.907042e-03 1.886241e-03
+POINTP0ROTON0 0 0  1.761188e+00 4.319786e-01 -1.679403e-02 1.266054e-01 4.716811e-02
+POINTP0ROTON0 0 1  3.059665e-01 3.474239e-02 7.592136e-04 4.309324e-03 1.734419e-03
+POINTP0ROTON0 0 2  2.591408e-01 1.786748e-02 -7.613959e-04 1.660407e-03 8.517090e-04
+POINTP0ROTON0 0 3  3.188002e-01 2.564846e-02 -7.686724e-03 2.779779e-03 1.033638e-03
+POINTDELTA 0 0  1.562682e+00 3.579031e-01 -2.728142e-02 1.024622e-01 3.874913e-02
+POINTDELTA 0 1  3.158211e-01 3.139326e-02 -1.247385e-03 3.882285e-03 1.043763e-03
+POINTDELTA 0 2  2.529041e-01 1.368931e-02 -1.483807e-03 1.463394e-03 8.877979e-04
+POINTDELTA 0 3  3.324064e-01 2.397484e-02 -8.144474e-03 3.286676e-03 1.885142e-03
+POINTD0ELTA0 0 0  1.477241e+00 3.486658e-01 -2.199111e-02 1.003477e-01 3.571319e-02
+POINTD0ELTA0 0 1  2.846157e-01 2.967443e-02 -9.861317e-04 3.690625e-03 1.094821e-03
+POINTD0ELTA0 0 2  2.262495e-01 1.365617e-02 -8.102623e-04 1.359314e-03 6.541928e-04
+POINTD0ELTA0 0 3  2.925355e-01 2.218035e-02 -7.385219e-03 2.942463e-03 1.119003e-03
+RUNNING COMPLETED
+total cg iters for measurement= 9.940000e+02
+cg iters for measurement= 8.283333e+01
+Time = 5.932818e+01 seconds
+total_iters = 994
+
+
+get_i: EOF on STDIN while expecting number_of_masses.
+exit: Tue Sep 16 22:22:12 2003
+
