@@ -1,0 +1,29 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+ 
+number_of_heavy_kappas 1
+kappa_heavy 0.1
+number_of_light_kappas 1
+kappa_light 0.11
+clov_c 1.1
+u0 0.9
+nr_forward_backward
+q_source_time 0
+max_cg_iterations 100
+max_cg_restarts 10
+error_for_propagator .00001
+error_for_propagator .000005
+gaussian
+r0 1.0
+r0 1.5
+reload_serial ../binary_samples/lat.sample.l4448
+coulomb_gauge_fix
+forget
+fresh_wprop
+fresh_wprop
+forget_wprop
+forget_wprop
+serial_scratch_wprop scratchprop

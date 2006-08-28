@@ -1,0 +1,16 @@
+prompt 0
+
+reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+save_serial_ksprop ksprop_milc.test.l4448.ll
+
+reload_serial_ksprop ksprop_milc.test.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac1.test.l4448.ll
+
+reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac2.test.l4448.ll
+
+reload_serial_ksprop ksprop_milc.test.l4448.ll
+save_serial_ksprop ksprop_fm.test.l4448.ll
+
+reload_serial_ksprop ksprop_fm.test.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac3.test.l4448.ll

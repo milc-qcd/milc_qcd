@@ -1,0 +1,32 @@
+0
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 200
+beta 5.5
+verbose_flag 1
+kappa 0.120
+clov_c 1.4
+u0 1.2
+source_start 0
+source_inc 1
+n_sources 2
+space_simple_weight  1.0
+space_norm_factor    0.25
+time_simple_weight   1.0
+time_norm_factor     0.175
+smearing_level   2
+max_cg_iterations 200
+error_for_propagator  0.00007
+reload_serial ../binary_samples/lat.sample.l4448.gf
+no_gauge_fix
+local_quark_src
+periodic_everywhere
+start_of_operators
+oper_PION_SOURCE
+oper_RHO_SOURCE
+oper_A1P_SOURCE
+oper_ONEMP_SOURCE
+oper_QQQQ_SOURCE
+end_operators

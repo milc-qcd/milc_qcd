@@ -1,0 +1,42 @@
+    prompt 0
+    nx 4
+    ny 4
+    nz 4
+    nt 8
+
+   
+   nkap 1
+   start_spin 0
+   start_color 0
+   start_kap 0 
+   end_spin 3
+   end_color 2
+   end_kap 0 
+   beta 5.7
+   kappa 0.120
+   approx_kappa_c 0.125
+   max_iterations  200
+   max_restarts 24
+   error_for_propagator 5.0e-7
+   flag 0
+   number_hopping_steps 20
+   point_weyl
+   width^(-2) 0.0
+   source_x 0
+   source_y 0
+   source_z 0
+   source_t 0
+   wall_cutoff 2
+   wall_separation 2
+   no_extra_sink
+   reload_serial ../binary_samples/lat.sample.l4448
+   coulomb_gauge_fix
+   forget
+   no_smearing_func 2
+   vary_file bin.test.matrix.su3_static_cg
+   smear_func local
+   smear_func expon 0.3 end_param
+   smear_meson_out smear_meson.test
+   fresh_wprop
+   forget_wprop
+   save_binary meson.test
