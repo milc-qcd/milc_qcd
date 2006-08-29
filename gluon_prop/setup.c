@@ -292,7 +292,7 @@ char savebuf[128];
 */
 void make_3n_gathers(){
    int i;
-#ifdef HADE_QDP
+#ifdef HAVE_QDP
    int disp[4]={0,0,0,0};
 #endif
    void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);

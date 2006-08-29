@@ -72,6 +72,9 @@ typedef struct {
 	su3_matrix staple;
 #endif
 
+        /* temporary matrix   (Note: mom is used in map_milc_to_qop.c) */
+        /* We really need to get rid of these */
+        su3_matrix mom[4];
 	/* temporary matrices */
 	su3_matrix tempmat1, tempmat2;
 #ifdef GLUON_PROP
