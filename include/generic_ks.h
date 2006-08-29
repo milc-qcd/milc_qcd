@@ -229,25 +229,6 @@ void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom,
 void scalar2_mult_add_latvec(field_offset src1,Real scalar1,
 			     field_offset src2,Real scalar2,
 			     field_offset dest,int parity);
-#ifdef HAVE_QOP
-#include <qop.h>
-
-#ifdef HAVE_QDP
-/* d_congrad5_fn_qopqdp.c */
-void set_M_from_strided_parity_temp(QDP_ColorMatrix *dest, su3_matrix *src,
-				    int stride, int parity);
-void set_V_from_parity_field(QDP_ColorVector *dest, field_offset src,
-			     int parity);
-void set_parity_field_from_V(field_offset dest, QDP_ColorVector *src,
-			     int parity);
-int ks_congrad_qopqdp( QDP_ColorVector *qop_src, QDP_ColorVector *qop_sol,
-		       QDP_ColorMatrix *qop_fat_links[4], 
-		       QDP_ColorMatrix *qop_long_links[4],
-		       QOP_invert_arg* qop_invert_arg, Real* final_rsq_ptr );
-#endif
-
-#endif
-
 /* eigen_stuff.c */
 int Rayleigh_min(su3_vector *vec,su3_vector **eigVec,Real Tolerance, 
 		 Real RelTol,int Nvecs,int MaxIter,int Restart,int parity);
