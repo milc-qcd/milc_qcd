@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.12  2006/08/29 15:07:08  detar
+ * Correct the weights for multi fermion force.  Prepare for QOPQDP.
+ *
  * Revision 1.11  2006/08/26 15:35:35  detar
  * Fix nterms assertion.
  *
@@ -36,7 +39,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.11 2006/08/26 15:35:35 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.12 2006/08/29 15:07:08 detar Exp $";
 
 void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
@@ -279,7 +282,7 @@ void eo_fermion_force_multi( Real eps, Real *residues,
   epsv = (Real *)malloc(sizeof(Real)*nterms);
   /* Load coefficients */
   for(i = 0; i < nterms; i++) epsv[i] = eps*residues[i];
-  load_qop_asqtad_coeffs(&coeff, 4.0);
+  load_qop_asqtad_coeffs(&coeff, 1.0);
 
   /* Compute fermion force */
 

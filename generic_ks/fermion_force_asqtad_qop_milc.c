@@ -47,18 +47,6 @@
 #include "../include/qop_milc.h"
 #include <string.h>
 
-void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
-				      half_wilson_vector **src_pt, 
-				      half_wilson_vector *dest);
-void mult_su3_sitelink_lathwvec( int dir, 
-				 half_wilson_vector **src_pt, 
-				 half_wilson_vector *dest);
-void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom, 
-				   half_wilson_vector *back, 
-				   half_wilson_vector *forw, Real coeff[2]);
-void scalar_mult_add_lathwvec(half_wilson_vector *dest, 
-			      half_wilson_vector *src, Real s[2]);
-
 /* This routine is valid only for Asqtad, so requires the FN flag */
 #ifndef FN
 BOMB THE COMPILE
@@ -331,7 +319,7 @@ void QOP_asqtad_force(QOP_info_t *info,
 #undef Pmumumu      
 
 /**********************************************************************/
-/*   Version for two sets of flavors with distinct masses             */
+/*   Version for multiple sources                                     */
 /**********************************************************************/
 
 static su3_matrix *backwardlink[4];
@@ -358,7 +346,7 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
   Real OneLink[2], Lepage[2], Naik[2], FiveSt[2], ThreeSt[2], SevenSt[2];
   Real mNaik[2], mLepage[2], mFiveSt[2], mThreeSt[2], mSevenSt[2];
   half_wilson_vector *Pnumu, *Prhonumu, *P7, *P7rho, *P5nu, 
-    *P3mu, *P5sig, *Popmu, *Pmumumu;
+    *P3mu=NULL, *P5sig, *Popmu, *Pmumumu;
   half_wilson_vector *P3[8];
   half_wilson_vector *P5[8];
   half_wilson_vector *temp_x;
@@ -375,11 +363,7 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
   Real final_flop;
   double dtime = -dclock();
   Real nflop = 433968;
-
-  if(nsrc != 2){
-    printf("QOP_asqtad_force_multi: This implementation doesn't do %d sources\n",nsrc);
-    terminate(1);
-  }
+  QOP_info_t info_one;
 
   /* Parity requirements */
   for(isrc = 0; isrc < nsrc; isrc++){
@@ -397,6 +381,27 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
 	     gauge->evenodd, force->evenodd);
       terminate(1);
     }
+
+  /* If not two sources, just do single source repeatedly */
+
+  if(nsrc != 2){
+    /* Initialize status */
+    info->final_sec = 0;
+    info->final_flop = 0;
+
+    for(isrc = 0; isrc < nsrc; isrc++){
+      QOP_asqtad_force(&info_one, gauge, force, coef, eps[isrc], in_pt[isrc]);
+
+      /* Accumulate status */
+      info->final_sec += info_one.final_sec;
+      info->final_flop += info_one.final_flop;
+      info->status = info_one.status;
+      if(info->status != QOP_SUCCESS)break;
+    }
+    return;
+  }
+
+  /* Two-source version from here on */
 
   FORALLUPDIR(dir){
     forwardlink[dir] = gauge->g + dir*sites_on_node;
@@ -792,14 +797,19 @@ void u_shift_fermion(su3_vector *src, su3_vector *dest, int dir ) {
     }
 }
 
+/*#define FN_DEBUG */
+
 /*  Covariant shift of the src half wilson fermion field in the *
  *  direction dir by one unit.  The result is stored in dest.  */
 void u_shift_hw_fermion(half_wilson_vector *src, 
 			half_wilson_vector *dest, 
 			int dir, msg_tag **mtag, 
 			half_wilson_vector *tmpvec) {
+
+#ifdef FN_DEBUG
   site *s ;
   int i ;
+#endif
 
 #ifdef FFSTIME
   double time0, time1;
@@ -824,7 +834,7 @@ void u_shift_hw_fermion(half_wilson_vector *src,
 
   if(GOES_FORWARDS(dir)) /* forward shift */
     {
-#if 0
+#ifdef FN_DEBUG
       FORALLSITES(i,s)
 	mult_su3_mat_hwvec( forwardlink[dir]+i, 
 			    (half_wilson_vector *)gen_pt[dir][i], 
@@ -837,7 +847,7 @@ void u_shift_hw_fermion(half_wilson_vector *src,
     }
   else /* backward shift */
     {
-#if 0
+#ifdef FN_DEBUG
       FORALLSITES(i,s)
 	mult_adj_su3_mat_hwvec( backwardlink[OPP_DIR(dir)] + i, 
 				(half_wilson_vector *)gen_pt[dir][i], 
@@ -891,11 +901,14 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom, half_wilson_vector *back
 void add_3f_force_to_mom(half_wilson_vector *back,
 			 half_wilson_vector *forw, 
 			 int dir, Real coeff[2]) {
+#ifdef FN_DEBUG
   register site *s ;
   register int i ;  
-  Real my_coeff[2], tmp_coeff[2] ;
-  int mydir;
+  Real tmp_coeff[2] ;
   su3_matrix tmat, *tmat2;
+#endif
+  Real my_coeff[2];
+  int mydir;
 #ifdef FFSTIME
   double time;
   time = -dclock();
@@ -905,7 +918,7 @@ void add_3f_force_to_mom(half_wilson_vector *back,
     {mydir = OPP_DIR(dir); my_coeff[0] = -coeff[0]; my_coeff[1] = -coeff[1];}
   else
     {mydir = dir; my_coeff[0] = coeff[0]; my_coeff[1] = coeff[1]; }
-#if 0
+#ifdef FN_DEBUG
   FORALLSITES(i,s){
     if(s->parity==ODD)
       {	tmp_coeff[0] = -my_coeff[0] ; tmp_coeff[1] = -my_coeff[1] ; }
