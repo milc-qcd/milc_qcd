@@ -5,7 +5,7 @@
  */
 
 // TEMP: define NEWFORCE, REVFORCE, or nothing
-#define NEWFORCE
+/*#define NEWFORCE*/
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
