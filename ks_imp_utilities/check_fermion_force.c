@@ -56,9 +56,9 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
     }
   }
 
-  eo_fermion_force_oneterm( eps, ((Real)nflavors)/4., src );
-  /** eo_fermion_force_twoterms( eps/2, ((Real)nflavors)/4., 
-      src, ((Real)nflavors)/4., src ); **/
+  /** eo_fermion_force_oneterm( eps, ((Real)nflavors)/4., src );**/
+  eo_fermion_force_twoterms( eps/2, 0.5*((Real)nflavors)/4., 
+       1.5*((Real)nflavors)/4., src, src );
 
   /* If the answer file is given, read it for comparison */
   if(ansflag == RELOAD_SERIAL){

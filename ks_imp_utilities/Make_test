@@ -20,10 +20,9 @@ PROJS = \
   check_ks_invert \
   check_fermion_force
 
-MACROLIST = ""
+PRECLIST = 2
 
 PATTERNS = BEGIN RUNNING
-MAKEMACROS = "PRECISION=2"
 
 include ../Make_test_template
 
