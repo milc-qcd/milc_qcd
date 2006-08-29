@@ -105,7 +105,7 @@ DSLASH_FN = dslash_fn.o  # Or dslash_fn2.o
 
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
-# Standard QOP interface
+# Interface to access QOP
   CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o d_congrad_opt.o
 #  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
   CONGRAD_FN += ${ASQINVERTQOP}
@@ -121,7 +121,7 @@ endif
 
 # Selection of the fermion force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
-# Standard QOP interface
+# Interface to access QOP
   ASQFORCE = fermion_force_asqtad_qop.o
   # The implementation of the interface (if not packaged)
   ASQFORCE += ${ASQFORCEQOP}
@@ -139,11 +139,9 @@ endif
 
 # Selection of the multimass inverter
 ifeq ($(strip ${HAVEQOP}),true)
-# Standard QOP interface
+# Interface to access QOP
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
   MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop.o
-  # The implementation of the interface (if not packaged)
-  MULTI_INV_FN += ${ASQMULTICGQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
     QDP_OBJECTS = stuff_qdp.o
