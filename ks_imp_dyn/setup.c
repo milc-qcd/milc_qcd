@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.6  2006/09/01 03:58:08  detar
+//  Updating error tolerances and fiducial samples.  Removing junk files.
+//
 //  Revision 1.5  2006/08/25 04:55:41  detar
 //  Groom to remove declarations of unused variables and do strict initialization
 //
@@ -55,7 +58,7 @@ setup()
 {
   int initial_set();
   void make_3n_gathers();
-#ifdef HACE_QDP
+#ifdef HAVE_QDP
   int i;
 #endif
   int prompt;
