@@ -22,7 +22,7 @@
 
 PROJS = su3_eigen_asqtad
 
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = BEGIN RUNNING
 TOL = 1e-4

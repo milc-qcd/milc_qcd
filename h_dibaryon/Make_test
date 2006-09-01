@@ -22,7 +22,7 @@
 
 PROJS = su3_Hcl_bi su3_Hcl_cg
 
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = F_NRNUC RUNNING
 TOL = 1e-4

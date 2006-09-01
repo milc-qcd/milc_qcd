@@ -1,29 +1,28 @@
 # Makefile for testing code by comparing test output with sample output
-# For ks_hl_spectrum
+# For gluon_prop
 
 #------------------------------------------------------------
 # Examples:
 
-#    make -f Make_test test
+#    make -f Make_test check
 # or, for a specific project or projects
-#    make -f Make_test "PROJS=su3_rmd" test
+#    make -f Make_test "PROJS=su3_rmd" check
 
-# For tests on other platforms, first edit the file ../Make_test_template
-# to select the appropriate LAUNCH.
+# Edit the Makefile for the appropriate architecture and the file
+# ../Make_test_template to select the appropriate LAUNCH.
 
-# Results are in the files out.test.diff.* 
+# Results are in the files out.test.diff.*
 #------------------------------------------------------------
 
 # For comparing test output with sample output
 
 PROJS = \
-  ks_hl_spectrum
-
-PATTERNS = BEGIN RUNNING
-
-ADDMACRO = "WANTQIO=true"
+   su3_asqtad_quark_prop\
+   su3_asqtad_renorm
 
 PRECLIST = 1 2
+
+PATTERNS = "CHECK PLAQ" RUNNING
 
 include ../Make_test_template
 

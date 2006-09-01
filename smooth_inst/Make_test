@@ -21,7 +21,7 @@
 # For comparing test output with sample output
 
 PROJS = su3_ape su3_fat su3_hyp
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = CHECK RUNNING
 TOL = 1e-4

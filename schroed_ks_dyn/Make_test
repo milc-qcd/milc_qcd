@@ -23,7 +23,7 @@
 PROJS = su3_schr_rmd su3_schr_phi su3_schr_hmc \
    su3_schr_sw_hmc su3_schr_rmd_ph su3_schr_rw_rmd 
 
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = WARMUPS RUNNING
 TOL = 1e-5

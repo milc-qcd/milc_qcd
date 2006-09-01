@@ -22,7 +22,7 @@
 
 PROJS = su3_str_brk
 
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = SMEARING RUNNING
 TOL = 1e-4

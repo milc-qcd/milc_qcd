@@ -22,7 +22,7 @@
 
 PROJS = su3_clov_cg su3_clov_bi su3_clov_hop su3_clhl_cg su3_clhl_bi su3_clhl_hop
 
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = POINTPION RUNNING
 TOL = 1e-4

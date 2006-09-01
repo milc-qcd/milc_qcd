@@ -22,7 +22,7 @@
 
 PROJS = su3_hev_mr su3_hev_cg
 
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = BEGIN_ALL END_ALL
 TOL = 1e-5

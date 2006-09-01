@@ -30,9 +30,7 @@ PROJS = \
   su3_rmd_plaq_fat7naik1 \
   su3_rmd_naive
 
-MACROLIST = \
-  "PRECISION=1" \
-  "PRECISION=2"
+PRECLIST = 1 2
 
 PATTERNS = WARMUPS RUNNING
 

@@ -22,7 +22,7 @@
 
 PROJS = su3_schr_cl_cg su3_schr_cl_bi su3_schr_cl_mr
 
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = FORW_PION RUNNING
 TOL = 1e-5

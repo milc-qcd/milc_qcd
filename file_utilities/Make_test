@@ -18,10 +18,10 @@ PROJS = \
   ksprop_2ksprop \
   wprop_2wprop
 
-MACROLIST = ""
+ADDMACRO = "WANTQIO=true"
+PRECLIST = 1
 
 PATTERNS = BEGIN RUNNING
-MAKEMACROS = "PRECISION=1"
 
 include ../Make_test_template
 

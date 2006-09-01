@@ -22,7 +22,7 @@
 
 PROJS = su3_arb_cg_eig
 
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = END RUNNING
 TOL = 5e-5

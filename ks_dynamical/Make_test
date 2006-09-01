@@ -23,7 +23,7 @@
 PROJS = su3_rmd su3_phi su3_hmc su3_rmd_spectrum su3_rmd_nlspec \
 	su3_rmd_screen su3_rmd_screenfunc
 
-MACROLIST = ""
+PRECLIST = 1
 
 PATTERNS = WARMUPS RUNNING
 TOL = 1e-5
