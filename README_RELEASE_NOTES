@@ -19,7 +19,51 @@ ks_hl_spectrum
 Build the code with GNU make.  See the README file in this directory
 for general instructions.
 
-Here are the new features so far:
+Here are highlights of the new features:
+
+For version 7.2.1
+
+  Support QOP/QDP package
+ 
+  Make sample files precision-specific
+
+For version 7.2.0.1
+
+  Correct the weights for QOP_asqtad_force_multi in fermion_force_asqtad_qop.c
+  Restore clobbered sse directory.
+
+For version 7.2.0
+
+  Port clover_dynamical to Version 7
+ 
+  Add RHMC code and rearrange multicg and multi fermion force procedures
+ 
+  Add Level 3 wrappers for Level 3 multicg and multi fermion force
+ 
+  Begin adding plaquette and link trace to MILC file metadata.
+ 
+  Add Urs's gluon_prop
+
+For version 7.1.12
+
+  Fix Level 3 fermion force coef usage
+
+  Support new level 3 interface for asqtad_invert and asqtad_force
+
+  Add clover_invert to Version 7.
+
+For version 7.1.11
+
+  Support new Level 3 API for Asqtad fermion force and inverter
+    Support for QOP/QDP awaits upgrade.
+
+  Change write_ksprop_info_item to use fwrite instead of fprintf
+
+  Add MILC imitations of Level 3 force and inverter for testing
+
+  Make dummy QCDML be legitimate XML
+
+For previous versions 7
 
  1. Unified Makefile replaces Make_vanilla Make_linux_mpi, etc.
     See various macros in Makefile, including MPP.
@@ -79,30 +123,6 @@ Here are the new features so far:
 
 21. Add C versions of MILC QOP wrappers.  Make wrappers support QOP/QDP.
 
-22. Support new Level 3 API for Asqtad fermion force and inverter
-    Support for QOP/QDP awaits upgrade.
-
-23. Change write_ksprop_info_item to use fwrite instead of fprintf
-
-24. Add MILC imitations of Level 3 force and inverter for testing
-
-25. Make dummy QCDML be legitimate XML
-
-26. Support new level 3 interface for asqtad_invert and asqtad_force
-
-27. Add clover_invert to Version 7.
-
-For version 7.2.0
-
-28. Port clover_dynamical to Version 7
-
-29. Add RHMC code and rearrange multicg and multi fermion force procedures
-
-30. Add Level 3 wrappers for Level 3 multicg and multi fermion force
-
-31. Begin adding plaquette and link trace to MILC file metadata.
-
-32. Add Urs's gluon_prop
 
 C. DeTar, Utah
-13 August 2006
+31 August 2006

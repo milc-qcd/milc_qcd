@@ -119,17 +119,22 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 
 # Edit these "wants"
 
-# Choose "true" or blank. Does not imply any other SciDAC package
-WANTQOP =
+# Choose the QOP package.  
+# Choices are 
+#    QCDOC for Level 3 QCDCOC
+#    QDP   for Level 3 QOPQDP
+#    MILC (nonoptimized MILC implementation for testing)
+#    blank if you don't want QOP
+WANTQOP = QDP
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
 WANTQDP =
 
 # Choose "true" or "". Implies HAVEQMP.
-WANTQIO = 
+WANTQIO = true
 
 # Choose "true" or "".
-WANTQMP = 
+WANTQMP = true
 
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
@@ -144,13 +149,14 @@ QMPSNG = ${SCIDAC}/qmp-single
 QDP = ${SCIDAC}/qdp
 QLA = ${SCIDAC}/qla
 # Level 3
-#QOP = /host/cdetar/qop/asqtad-2.6.0-CJ-8-16-05
 QOP = ${SCIDAC}/qop
+QOPQDP = ${SCIDAC}/qopqdp
 
 # Make_template_qop defines these macros:
 # HAVEQOP
 # LIBQOP INCQOP
 # INCDEPQOP LIBDEPQOP
+# GENERICQOP ASQINVERTQOP ASQFORCEQOP
 
 include ../Make_template_qop
 

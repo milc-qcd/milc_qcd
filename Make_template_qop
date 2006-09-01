@@ -10,52 +10,81 @@
 # Requires input macros
 # WANTQOP                 User requests (true or otherwise)
 
-HAVEQOP = ${WANTQOP}
-
 # Nothing needs to be defined here if we don't want QOP
-ifeq ($(strip ${HAVEQOP}),true)
 
-  # Temporary paths for QCDOC.
-  QCDOCQOP=/qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/
-  # We always need the qop.h header
-  QOPINCDIR = ${QOP}/include
-  # In case QOP is packaged we need the path
-  QOPLIBDIR = ${QOP}/lib
-  
-  ifeq ($(strip ${QCDOC}),true)
-  # QCDOC temporary paths
-  # We always need the qop.h header
+@echo WANTQOP = ${WANTQOP}
+ifneq ($(strip ${WANTQOP}),)
+  HAVEQOP = true
+  WANTQDP = true
+
+  ifeq ($(strip ${WANTQOP}),QCDOC)
+
+    # QCDOC package
+
+    # Temporary paths for QCDOC.
+    QCDOCQOP=/qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/
+    # QCDOC temporary paths
+    # We always need the qop.h header
     QOPINCDIR = ${QCDOCQOP}/include
-  # In case QOP is packaged we need the path
+    # In case QOP is packaged we need the path
     QOPLIBDIR = ${QCDOCQOP}/build
     ifeq ($(strip ${PRECISION}),1)
       IQOP = -I${QOPINCDIR}
       LQOP = -L${QOPLIBDIR} -lasqd_s
     else
+      # For IQOP we use our own include
+      # because the current definition in
+      # /qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/include pulls in
+      # lots of extraneous stuff
       IQOP = -I${QOP}/include/
       LQOP = -L${QOPLIBDIR} -lasqd
     endif
     LIBDEPQOP = ${QOPLIBDIR}
     INCDEPQOP = ${QOPINCDIR}
+
   else
-    IQOP = -I${QOPINCDIR}
-    INCDEPQOP = ${QOPINCDIR}
-  # Non-packaged QOP objects
-  
-  # MILC implementation 
-  # General
-    GENERICQOP = qop_milc.o 
-  # Conjugate gradient
-    ASQINVERTQOP += d_congrad5_fn_qop_milc.o dslash_fn_qop_milc.o
-  # Fermion force
-    ASQFORCEQOP += fermion_force_asqtad_qop_milc.o ff_opt.o
-    ASQMULTICGQOP = ks_multicg_qop_milc.o
+
+    ifeq ($(strip ${WANTQOP}),QDP)
+
+      # QOPQDP package
+
+      # We always need the qop.h header
+      QOPINCDIR = ${QOPQDP}/include
+      # Path to the qopqdp library
+      QOPLIBDIR = ${QOPQDP}/lib
+
+      IQOP = -I${QOPINCDIR}
+      INCDEPQOP = ${QOPINCDIR}
+      LQOP = -L${QOPLIBDIR} -lqopqdp
+
+    else
+
+      # Default: MILC nonoptimized routines.  They are non-packaged.
+
+      # We always need the qop.h header
+      QOPINCDIR = ${QOP}/include
+    
+      IQOP = -I${QOPINCDIR}
+      INCDEPQOP = ${QOPINCDIR}
+
+      # General requirement
+      GENERICQOP = qop_milc.o 
+      # Conjugate gradient
+      ASQINVERTQOP = d_congrad5_fn_qop_milc.o dslash_fn_qop_milc.o
+      ASQINVERTQOP += ks_multicg_qop_milc.o
+      # Fermion force
+      ASQFORCEQOP = fermion_force_asqtad_qop_milc.o ff_opt.o
+    endif
   endif
   
-  ifeq ($(strip ${HAVEQOP}),true)
+  ifneq ($(strip ${WANTQOP}),)
     LIBQOP = ${LQOP}
     INCQOP = ${IQOP}
   endif
+
+else
+
+  HAVEQOP = 
 
 endif  # if HAVEQOP
 
