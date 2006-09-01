@@ -42,3 +42,45 @@ void write_appl_gauge_info(FILE *fp)
 			"\"One plaquette gauge action.\"",0,0);
   write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
 }
+
+#define INFOSTRING_MAX 2048
+
+char *create_QCDML(){
+
+  size_t bytes = 0;
+  char *info = (char *)malloc(INFOSTRING_MAX);
+  size_t max = INFOSTRING_MAX;
+  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
+  char end[] = "</info>";
+
+  snprintf(info+bytes, max-bytes,"%s",begin);
+  bytes = strlen(info);
+
+  sprint_gauge_info_item(info+bytes, max-bytes,"action.description","%s",
+			"\"Pure gauge\"",0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.description","%s",
+			"\"One plaquette gauge action.\"",0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.beta11","%f",
+			 (char *)&beta,0,0);
+
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.ssplaq","%f",
+			 (char *)&g_ssplaq,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.stplaq","%f",
+			 (char *)&g_stplaq,0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.linktr.real","%f",
+			 (char *)&(linktrsum.real),0,0);
+  bytes = strlen(info);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.linktr.imag","%f",
+			 (char *)&(linktrsum.imag),0,0);
+  bytes = strlen(info);
+  snprintf(info+bytes, max-bytes,"%s",end);
+  return info;
+}
+
+void free_QCDML(char *info){
+  if(info != NULL)free(info);
+}

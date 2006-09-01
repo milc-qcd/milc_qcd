@@ -56,6 +56,10 @@ G_OBJECTS =          \
   reunitarize2.o     \
   ranstuff.o
 
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += io_scidac.o
+endif
+
 # Basic set from generic_pg directory
 G_PG_OBJECTS =
 

@@ -38,13 +38,11 @@ typedef struct {
 #ifdef HMC_ALGORITHM
  	su3_matrix old_link[4];
 	/* For accept/reject */
+#endif
 	/* antihermitian momentum matrices in each direction */
  	anti_hermitmat mom[4];
-#endif
 #ifdef RMD_ALGORITHM
 
-	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
 	/* temporary matrices */
 	su3_matrix tempmat2;
 #else
