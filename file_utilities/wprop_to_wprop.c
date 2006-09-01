@@ -26,6 +26,7 @@
 #include "../include/generic.h"
 #include "../include/generic_wilson.h"
 #include "../include/io_lat.h"
+#include <qio.h>
 
 #define MAX_RECXML 512
 
