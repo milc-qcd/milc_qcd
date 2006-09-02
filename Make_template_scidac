@@ -52,9 +52,10 @@ QDPLIBDIR = ${QDP}/lib
 
 # Allow for QCDOC nonstandard for now
 ifeq ($(strip ${QCDOC}),true)
-  IQMP = -I${QOS}/quser/include
+  QMPINCDIR = ${QOS}/quser/include
+  IQMP = -I${QMPINCDIR}
   QMPLIBDIR = ${QOS}/quser/gcc-lib-user
-  LQMP = -L${QOS}/quser/gcc-lib-user -lqmp
+  LQMP = -L${QMPLIBDIR} -lqmp
 else
   IQMP = -I${QMPINCDIR}
   QMPLIBDIR = ${QMP}/lib
