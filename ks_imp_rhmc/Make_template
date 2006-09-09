@@ -79,6 +79,7 @@ endif
 
 G_KS_OBJECTS = \
   f_meas.o \
+  fermion_links_fn.o \
   mat_invert.o \
   quark_stuff.o \
   path_transport_field.o \
@@ -209,9 +210,10 @@ ALL_MAKES = \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
-quark_stuff.o: quark_action.h 
+fermion_links_fn.o: quark_action.h 
 gauge_stuff.o: gauge_action.h 
 gauge_info.o:  quark_action.h
+quark_stuff.o: quark_action.h 
 
 # Directories where we store the improved action headers
 QUARKIMP = ../generic_ks/imp_actions

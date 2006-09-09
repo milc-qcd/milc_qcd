@@ -60,6 +60,7 @@ G_OBJECTS = \
   ranstuff.o
 
 G_KS_OBJECTS= \
+  fermion_links_fn.o \
   flavor_ops.o \
   quark_stuff.o \
   rephase.o
@@ -92,6 +93,7 @@ QUARKIMP = ../generic_ks/imp_actions
 quark_action.h: ${QUARKIMP}/${QUARK}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
+fermion_links_fn.o: quark_action.h 
 quark_stuff.o: quark_action.h 
 
 
