@@ -15,7 +15,6 @@
 @echo WANTQOP = ${WANTQOP}
 ifneq ($(strip ${WANTQOP}),)
   HAVEQOP = true
-  WANTQDP = true
 
   ifeq ($(strip ${WANTQOP}),QCDOC)
 
@@ -45,6 +44,8 @@ ifneq ($(strip ${WANTQOP}),)
   else
 
     ifeq ($(strip ${WANTQOP}),QDP)
+      # Requires QDP whether or not the user requested it
+      WANTQDP = true
 
       # QOPQDP package
 
