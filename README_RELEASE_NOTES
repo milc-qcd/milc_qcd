@@ -23,7 +23,9 @@ Here are highlights of the new features:
 
 For version 7.2.1
 
-  Support QOP/QDP package
+  Start supporting the QOP/QDP package
+  Split out fermion_links_fn from quark_stuff but no QOP support
+    for fat and long link generation, yet.
  
   Make sample files precision-specific
 
@@ -125,4 +127,4 @@ For previous versions 7
 
 
 C. DeTar, Utah
-31 August 2006
+9 September 2006
