@@ -246,6 +246,14 @@ int fpi_2( /* Return value is number of C.G. iterations taken */
   Real tol        /* tolerance for inverter check. */
   );
 
+/* fermion_force_asqtad*.c */
+void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off );
+void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
+				field_offset x1_off, field_offset x2_off );
+void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
+			     int nterms );
+
+
 /* ff_opt.c */
 void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
 				      half_wilson_vector **src_pt, 
@@ -336,11 +344,6 @@ void make_path_table();
 int get_num_q_paths();
 Q_path *get_q_paths();
 Real *get_quark_path_coeff();
-void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off );
-void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
-				field_offset x1_off, field_offset x2_off );
-void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
-			     int nterms );
 void load_longlinks();
 void load_fatlinks();
 void free_longlinks();
