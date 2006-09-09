@@ -8,6 +8,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop.c,v $
+ * Revision 1.12  2006/09/09 20:12:50  detar
+ * Fix qop_invert_arg and split out fermion_links_fn.c from quark_stuff.c
+ *
  * Revision 1.11  2006/08/13 15:07:24  detar
  * Adjust entry points for RHMC code and Level 3 multicg wrappers
  *
@@ -34,7 +37,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.11 2006/08/13 15:07:24 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.12 2006/09/09 20:12:50 detar Exp $";
 
 /* Load QOP_FermionLinksAsqtad object from MILC fat and long links */
 static void load_fermion_links_asqtad( QOP_FermionLinksAsqtad** qop_links )
@@ -140,8 +143,8 @@ static void set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg,
 					   int max_iters, 
 					   int max_restart, int milc_parity )
 {
-  qop_invert_arg->max_iter   = max_iters;
-  qop_invert_arg->restart    = max_restart;
+  qop_invert_arg->max_iter   = max_restart*max_iters;
+  qop_invert_arg->restart    = max_iters;
   qop_invert_arg->evenodd    = milc2qop_parity(milc_parity);
 }
 
@@ -186,6 +189,7 @@ static int ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 #ifdef CGTIME
       if(nsrc > 1 || nmass[isrc] > 1)
 	printf("CONGRAD5(src %d,mass %d): iters = %d resid = %e\n",
+	       isrc, imass,
 	       qop_resid_arg[isrc][imass]->final_iter,
 	       qop_resid_arg[isrc][imass]->final_rsq);
 #endif
