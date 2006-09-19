@@ -176,7 +176,7 @@ ifeq ($(strip ${QCDOC}),true)
 endif
 
 # The only choice for inverters and Dslash for EO actions
-INV_EO_OBJECTS = d_congrad5_eo.o dslash_eo.o
+INV_EO_OBJECTS = d_congrad5_eo.o d_congrad_opt.o dslash_eo.o
 MULTI_INV_EO = ks_multicg.o
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
@@ -356,7 +356,16 @@ su3_rmd_naive::
 	"DEFINES= -DEO  -DONEMASS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
-	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} fermion_force_general.o update_onemass.o d_congrad_opt.o"
+	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} fermion_force_general.o \
+	update_onemass.o d_congrad_opt.o"
+
+su3_hmc_eo_symzk1_p4::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DEO -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = p4_action.h" \
+	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} d_congrad5_two_src.o \
+	 fermion_force_general.o d_action.o update.o"
 
 # The following target is a superset of su3_spectrum
 
@@ -399,7 +408,6 @@ su3_spectrum1::
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
 	${MULTI_INV_FN} ${SPECTRUM_OBJECTS} update_onemass.o"
 
-
 # The following stanzas illustrate how to create targets for alternative
 # choices of quark and gauge actions
 
@@ -408,7 +416,7 @@ su3_rmd_eo_symzk1_fat7tad::
 	"DEFINES= -DEO " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
-	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} \
+	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} d_congrad5_two_src.o \
 	fermion_force_general.o update.o"
 
 su3_rmd_plaq_fat7naik::
@@ -440,8 +448,8 @@ su3_rmd_eo_symzk1_p4::
 	"DEFINES= -DEO " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
-	 fermion_force_general.o"
+	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} d_congrad5_two_src.o \
+	 fermion_force_general.o d_action.o update.o"
 
 clean:
 	-/bin/rm -f *.o
