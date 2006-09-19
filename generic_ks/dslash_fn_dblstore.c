@@ -468,7 +468,7 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity ) {
     /* Start 3-neighbour gathers from negative directions */
     for( dir=X3UP; dir <= T3UP; dir++){
 	tag[OPP_3_DIR(dir)] 
-           = start_gather( F_OFFSET(templongvec[INDEX_3RD(dir)]),
+           = start_gather_site( F_OFFSET(templongvec[INDEX_3RD(dir)]),
 			   sizeof(su3_vector), OPP_3_DIR( dir), parity,
 			   gen_pt[OPP_3_DIR(dir)] );
     }
