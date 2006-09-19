@@ -21,6 +21,11 @@ for general instructions.
 
 Here are highlights of the new features:
 
+For version 7.2.2
+
+  Upgrade RHMC code to do concurrent EOS calculations
+  Fix p4 capability in ks_imp_dyn.
+
 For version 7.2.1
 
   Start supporting the QOP/QDP package
