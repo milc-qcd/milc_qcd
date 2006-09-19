@@ -73,6 +73,18 @@ typedef struct {
 	/* Use trick of combining xxx=D^adj D)^(-1) on even sites with
 	   Dslash times this on odd sites when computing fermion force */
 	
+#ifdef SPECTRUM
+        su3_matrix tempmat1,staple;
+	su3_vector propmat[3];	/* For three source colors */
+	su3_vector propmat2[3];	/* nl_spectrum() */
+	su3_matrix tempmat2;
+	/* for spectrum_imp() */
+	/**su3_vector quark_source, quark_prop, anti_prop;**/
+#define quark_source propmat2[0]
+#define quark_prop propmat2[1]
+#define anti_prop propmat2[2]
+#endif
+
 	/* temporary vectors and matrices */
 	su3_vector tempvec[4];	/* One for each direction */
 #ifdef FN
@@ -111,6 +123,7 @@ EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,propinterval;
+EXTERN  int npbp_reps_in;
 EXTERN	int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 EXTERN	Real epsilon;
 EXTERN  Real beta,u0;

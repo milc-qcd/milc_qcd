@@ -327,7 +327,8 @@ su3_omelyan_rhmc::
 
 su3_omelyan_rhmc_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC -DDM_DU0 -DNPBP_REPS=10" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 \
+	-DKS_MULTICG=HYBRID -DHMC -DDM_DU0 -DNPBP_REPS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan.o"

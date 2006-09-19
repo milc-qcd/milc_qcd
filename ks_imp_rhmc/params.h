@@ -29,6 +29,7 @@ typedef struct {
 #endif
 	Real u0; /* tadpole parameter */
 	int niter; 	/* maximum number of c.g. iterations */
+        int npbp_reps_in;   /* Number of random sources */
 	Real rsqmin,rsqprop;  /* for deciding on convergence */
 	Real epsilon;	/* time step */
         char spectrum_request[MAX_SPECTRUM_REQUEST];   /* request list for spectral measurements */

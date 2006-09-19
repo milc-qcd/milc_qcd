@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.6  2006/09/19 03:06:58  detar
+//  Upgrade for concurrent EOS calculations
+//
 //  Revision 1.5  2006/08/24 04:29:02  detar
 //  Remove or protect unused variable declarations.
 //  Remove unwanted Makefile
@@ -234,6 +237,11 @@ readin(int prompt)
     IF_OK status += get_f(prompt,"error_for_propagator", &x );
     IF_OK par_buf.rsqprop = x*x;
     
+#ifdef NPBP_REPS
+    /* number of random sources npbp_reps */
+    IF_OK status += get_i(prompt,"npbp_reps", &par_buf.npbp_reps_in );
+#endif
+    
 #ifdef SPECTRUM
     /* request list for spectral measurments */
     /* prepend and append a comma for ease in parsing */
@@ -296,6 +304,7 @@ readin(int prompt)
   steps = par_buf.steps;
   propinterval = par_buf.propinterval;
   niter = par_buf.niter;
+  npbp_reps_in = par_buf.npbp_reps_in;
   rsqmin = par_buf.rsqmin;
   rsqprop = par_buf.rsqprop;
   epsilon = par_buf.epsilon;
