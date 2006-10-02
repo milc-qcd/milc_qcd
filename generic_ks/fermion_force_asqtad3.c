@@ -761,13 +761,6 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, int nte
   dtime=-dclock();
 #endif
 
-  /* Check consistency */
-  if(nterms > VECLENGTH){
-    node0_printf("eo_fermion_force_multi: nterms = %d exceeds VECLENGTH = %d\n",
-		 nterms,VECLENGTH);
-    terminate(1);
-  }
-
   /* Allocate temporary hw vector */
   for(mu = 0; mu < 8; mu++){
     veclist *pt;
