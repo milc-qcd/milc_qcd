@@ -118,9 +118,12 @@ gaugeConfigurationMetadata *createGaugeMD ( )
   snprintf(string,MAX_STRING,"%d",niter);
   parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
 		       "max_cg_iterations", string );
-  snprintf(string,MAX_STRING,"%.2e",sqrt(rsqmin));
+  snprintf(string,MAX_STRING,"%.2e",sqrt(md_rsqmin));
   parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
-		       "error_per_site", string );
+		       "mol_dyn_error_per_site", string );
+  snprintf(string,MAX_STRING,"%.2e",sqrt(ac_rsqmin));
+  parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
+		       "action_error_per_site", string );
   snprintf(string,MAX_STRING,"%.2e",sqrt(rsqprop));
   parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
 		       "error_for_propagator", string );

@@ -38,7 +38,7 @@ Real final_rsq;
     if( !valid_longlinks )load_longlinks();
     if( !valid_fatlinks )load_fatlinks();
 #endif
-    ks_ratinv( F_OFFSET(g_rand), multi_x, mass, roots, order, niter, rsqmin, parity, &final_rsq );
+    ks_ratinv( F_OFFSET(g_rand), multi_x, mass, roots, order, niter, ac_rsqmin, parity, &final_rsq );
     ks_rateval( sumvec, F_OFFSET(g_rand), multi_x, residues, order, parity );
     FORSOMEPARITY(i,s,parity){ *(su3_vector *)F_PT(s,dest) = sumvec[i]; }
 }/* grsource_rhmc */

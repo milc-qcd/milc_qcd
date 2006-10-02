@@ -46,13 +46,13 @@ register site *s;
 Real final_rsq;
 double sum;
     sum=0.0;
-    ks_ratinv( F_OFFSET(phi1), multi_x, mass1, B_FA_1, ACTION_ORDER_1, niter, rsqmin, EVEN, &final_rsq );
+    ks_ratinv( F_OFFSET(phi1), multi_x, mass1, B_FA_1, ACTION_ORDER_1, niter, ac_rsqmin, EVEN, &final_rsq );
     ks_rateval( sumvec, F_OFFSET(phi1), multi_x, A_FA_1, ACTION_ORDER_1, EVEN );
     FOREVENSITES(i,s){ /* phi is defined on even sites only */
         sum += magsq_su3vec( &(sumvec[i]) );
     }
 
-    ks_ratinv( F_OFFSET(phi2), multi_x, mass2, B_FA_2, ACTION_ORDER_2, niter, rsqmin, EVEN, &final_rsq );
+    ks_ratinv( F_OFFSET(phi2), multi_x, mass2, B_FA_2, ACTION_ORDER_2, niter, ac_rsqmin, EVEN, &final_rsq );
     ks_rateval( sumvec, F_OFFSET(phi2), multi_x, A_FA_2, ACTION_ORDER_2, EVEN );
     FOREVENSITES(i,s){ /* phi is defined on even sites only */
         sum += magsq_su3vec( &(sumvec[i]) );

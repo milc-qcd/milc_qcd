@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.7  2006/10/02 04:13:50  detar
+//  Distinguish inverter residuals for molecular dynamics and action
+//
 //  Revision 1.6  2006/09/19 03:06:58  detar
 //  Upgrade for concurrent EOS calculations
 //
@@ -228,9 +231,12 @@ readin(int prompt)
     /* maximum no. of conjugate gradient iterations */
     IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
     
-    /* error per site for conjugate gradient */
-    IF_OK status += get_f(prompt,"error_per_site", &x );
-    IF_OK par_buf.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
+    /* error per site for conjugate gradient in molecular dynamics */
+    IF_OK status += get_f(prompt,"mol_dyn_error_per_site", &x );
+    IF_OK par_buf.md_rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
+    /* error per site for conjugate gradient in accept/reject and action computation */
+    IF_OK status += get_f(prompt,"action_error_per_site", &x );
+    IF_OK par_buf.ac_rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
     /* New conjugate gradient normalizes rsqmin by norm of source */
     
     /* error for propagator conjugate gradient */
@@ -305,7 +311,8 @@ readin(int prompt)
   propinterval = par_buf.propinterval;
   niter = par_buf.niter;
   npbp_reps_in = par_buf.npbp_reps_in;
-  rsqmin = par_buf.rsqmin;
+  md_rsqmin = par_buf.md_rsqmin;
+  ac_rsqmin = par_buf.ac_rsqmin;
   rsqprop = par_buf.rsqprop;
   epsilon = par_buf.epsilon;
   beta = par_buf.beta;

@@ -33,7 +33,6 @@
 
 int update()  {
 int step, iters=0;
-Real final_rsq;
 double startaction,endaction,d_action();
 Real xrandom;
 int i,j; site *s;

@@ -128,7 +128,7 @@ EXTERN	int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 EXTERN	Real epsilon;
 EXTERN  Real beta,u0;
 EXTERN  Real mass1,mass2;
-EXTERN	Real rsqmin,rsqprop;
+EXTERN	Real md_rsqmin,ac_rsqmin,rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
