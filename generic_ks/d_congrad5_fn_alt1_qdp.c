@@ -255,7 +255,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
 #endif
   } else {
     if(QDP_this_node==0) {
-      printf("CG not converged after %d iterations, res. = %e wanted %e\n",
+      printf("ks_congrad_qdp: CG not converged after %d iterations, res. = %e wanted %e\n",
 	     iteration, rsq, rsqstop);
       fflush(stdout);
     }

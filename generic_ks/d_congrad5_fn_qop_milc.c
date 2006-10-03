@@ -358,7 +358,7 @@ start:
     }
 
     node0_printf(
-        "CG not converged after %d iterations, res. = %e wanted %e\n",
+        "QOP_asqtad_invert: CG not converged after %d iterations, res. = %e wanted %e\n",
         iteration,rsq,rsqstop);
     fflush(stdout);
     cleanup_dslash_qop_milc_temps();

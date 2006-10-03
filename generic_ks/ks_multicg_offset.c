@@ -372,7 +372,7 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     } while( iteration < niter );
 
     node0_printf(
-	"CG not converged after %d iterations, res. = %e wanted %e\n",
+	"ks_multicg_offset: CG not converged after %d iterations, res. = %e wanted %e\n",
 	iteration, rsq, rsqstop);
     fflush(stdout);
 
