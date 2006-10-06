@@ -35,7 +35,7 @@ ifneq ($(strip ${WANTQOP}),)
       # because the current definition in
       # /qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/include pulls in
       # lots of extraneous stuff
-      IQOP = -I${QOP}/include/
+      IQOP = -I$(strip ${QOP})/include/
       LQOP = -L${QOPLIBDIR} -lasqd
     endif
     LIBDEPQOP = ${QOPLIBDIR}
@@ -50,9 +50,9 @@ ifneq ($(strip ${WANTQOP}),)
       # QOPQDP package
 
       # We always need the qop.h header
-      QOPINCDIR = ${QOPQDP}/include
+      QOPINCDIR = $(strip ${QOPQDP})/include
       # Path to the qopqdp library
-      QOPLIBDIR = ${QOPQDP}/lib
+      QOPLIBDIR = $(strip ${QOPQDP})/lib
 
       IQOP = -I${QOPINCDIR}
       INCDEPQOP = ${QOPINCDIR}
@@ -63,7 +63,7 @@ ifneq ($(strip ${WANTQOP}),)
       # Default: MILC nonoptimized routines.  They are non-packaged.
 
       # We always need the qop.h header
-      QOPINCDIR = ${QOP}/include
+      QOPINCDIR = $(strip ${QOP})/include
     
       IQOP = -I${QOPINCDIR}
       INCDEPQOP = ${QOPINCDIR}

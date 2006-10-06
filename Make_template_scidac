@@ -39,26 +39,26 @@ else
    QIO = ${QIOSNG}
 endif
 
-QMPINCDIR = ${QMP}/include
+QMPINCDIR = $(strip ${QMP})/include
 
-QIOINCDIR = ${QIO}/include
-QIOLIBDIR = ${QIO}/lib
+QIOINCDIR = $(strip ${QIO})/include
+QIOLIBDIR = $(strip ${QIO})/lib
 
-QLAINCDIR = ${QLA}/include
-QLALIBDIR = ${QLA}/lib
+QLAINCDIR = $(strip ${QLA})/include
+QLALIBDIR = $(strip ${QLA})/lib
 
-QDPINCDIR = ${QDP}/include
-QDPLIBDIR = ${QDP}/lib
+QDPINCDIR = $(strip ${QDP})/include
+QDPLIBDIR = $(strip ${QDP})/lib
 
 # Allow for QCDOC nonstandard for now
 ifeq ($(strip ${QCDOC}),true)
-  QMPINCDIR = ${QOS}/quser/include
+  QMPINCDIR = $(strip ${QOS})/quser/include
   IQMP = -I${QMPINCDIR}
-  QMPLIBDIR = ${QOS}/quser/gcc-lib-user
+  QMPLIBDIR = $(strip ${QOS})/quser/gcc-lib-user
   LQMP = -L${QMPLIBDIR} -lqmp
 else
   IQMP = -I${QMPINCDIR}
-  QMPLIBDIR = ${QMP}/lib
+  QMPLIBDIR = $(strip ${QMP})/lib
   LQMP = -L${QMPLIBDIR} -lqmp
 endif
 
@@ -66,11 +66,13 @@ IQIO = -I${QIOINCDIR}
 LQIO = -L${QIOLIBDIR} -lqio -llime 
 
 IQLA = -I${QLAINCDIR}
-LQLA = -L${QLA}/lib -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
+LQLA = -L$(strip ${QLA})/lib \
+          -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
           -lqla_dq3 -lqla_q3 -lqla_d -lqla_dq -lqla_q -lqla_random
 
-IQDP = -I${QDP}/include
-LQDP = -L${QDP}/lib -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
+IQDP = -I$(strip ${QDP})/include
+LQDP = -L$(strip ${QDP})/lib \
+          -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
 
 ifeq ($(strip ${HAVEQMP}),true)
   LIBQMP = ${LQMP}
@@ -97,3 +99,4 @@ LIBSCIDAC = ${LIBQOP} ${LIBQDP} ${LIBQIO} ${LIBQMP}
 INCSCIDAC = ${INCQOP} ${INCQDP} ${INCQIO} ${INCQMP} 
 SCIDAC_LIBRARIES = ${LIBDEPQDP} ${LIBDEPQIO} ${LIBDEPQMP} ${LIBDEPQOP}
 SCIDAC_HEADERS = ${INCDEPQDP} ${INCDEPQIO} ${INCDEPQMP} ${INCDEPQOP}
+
