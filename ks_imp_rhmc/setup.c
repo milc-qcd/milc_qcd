@@ -14,6 +14,11 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.8  2006/10/09 03:44:04  detar
+//  Move fermion_force_fn to generic_ks/fermion_force_fn_multi.c
+//  and path_transport_field to generic/path_transport.c
+//  Change ks_multicg selection method to a set_opts call.
+//
 //  Revision 1.7  2006/10/02 04:13:50  detar
 //  Distinguish inverter residuals for molecular dynamics and action
 //
@@ -48,6 +53,7 @@
 #define IF_OK if(status==0)
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "quark_action.h"
 
 EXTERN gauge_header start_lat_hdr;
 gauge_file *gf;
@@ -130,9 +136,46 @@ setup()
   }
 #endif
 
-  /* Select the ks_multicg inverter */
-  ks_multicg =  ks_multicg_init();
-  if(ks_multicg == NULL)terminate(1);
+#if (KS_MULTICG == OFFSET)
+  if(ks_multicg_set_opt("OFFSET") != 0)terminate(1);
+#elif (KS_MULTICG == HYBRID)
+  if(ks_multicg_set_opt("HYBRID") != 0)terminate(1);
+#elif (KS_MULTICG == FAKE)
+  if(ks_multicg_set_opt("FAKE") != 0)terminate(1);
+#elif (KS_MULTICG == REVERSE)
+  if(ks_multicg_set_opt("REVERSE") != 0)terminate(1);
+#elif (KS_MULTICG == REVHYB)
+  if(ks_multicg_set_opt("REVHYB") != 0)terminate(1);
+#else
+  if(ks_multicg_set_opt("HYBRID") != 0)terminate(1);  /* Default */
+#endif
+
+  /* Select the multi fermion force routine */
+#define ASVEC 0
+#define FNMATREV  1
+#define FNMAT  2
+ /* Optimization choices are currently set by the KS_MULTIFF compiler macro.
+  * We also require the defines above
+  *
+  * 1.  -DKS_MULTIFF=FNMAT      (default)
+  * 2.  -DKS_MULTIFF=FNMATREV
+  * 3.  -DKS_MULTIFF=ASVEC
+  *
+  */
+#if ( KS_MULTIFF == ASVEC )
+#ifdef ASQ_ACTION
+  /* This option works only for the Asqtad action */
+  if(eo_fermion_force_set_opt("ASVEC") != 0)terminate(1);
+#else
+BOMB THE COMPILE
+#endif
+#elif ( KS_MULTIFF ==  FNMATREV )
+  if(eo_fermion_force_set_opt("FNMATREV") != 0)terminate(1);
+#elif ( KS_MULTIFF ==  FNMAT )
+  if(eo_fermion_force_set_opt("FNMAT") != 0)terminate(1);
+#else
+  if(eo_fermion_force_set_opt("FNMAT" ) != 0)terminate(1); /* Default */
+#endif
 
   node0_printf("Finished setup\n"); fflush(stdout);
   return( prompt );

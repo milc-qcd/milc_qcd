@@ -40,7 +40,6 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 MY_OBJECTS= \
   control.o \
-  fermion_force_fn_rhmc.o \
   fermion_force_asqtad3_rhmc.o \
   gauge_info.o \
   setup.o \
@@ -141,12 +140,11 @@ ifeq ($(strip ${HAVEQOP}),true)
 else
   ifeq ($(strip ${HAVEQDP}),true)
 # Choose (fermion_force_asqtad_qdp.o )
-#    ASQFORCE = fermion_force_asqtad_qdp.o BUGGY DON'T USE!
-    ASQFORCE = fermion_force_asqtad3.o ff_opt.o
+    ASQFORCE = fermion_force_asqtad3.o fermion_force_fn_multi.o ff_opt.o
   else
 # Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
 # or  fermion_force_asqtad3.o + ff_opt.o
-    ASQFORCE = fermion_force_asqtad3.o ff_opt.o
+    ASQFORCE = fermion_force_asqtad3.o fermion_force_fn_multi.o ff_opt.o
   endif
 endif
 
@@ -320,7 +318,8 @@ su3_omelyan_2eps::
 
 su3_omelyan_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
+	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID \
+	-DKS_MULTIFF=ASVEC -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan.o"

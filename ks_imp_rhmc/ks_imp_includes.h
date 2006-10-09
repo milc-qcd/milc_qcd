@@ -49,8 +49,6 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec );
 void ranmom();
 
 // RHMC algorithm stuff
-void path_transport_field( su3_vector * src, su3_vector * dest, int parity, int *dir, int length );
-void path_transport_connection( su3_matrix * src, su3_matrix * dest, int parity, int *dir, int length );
 void grsource_imp_rhmc( field_offset dest, Real mass, Real *residues, Real *roots,
   int order, int parity, su3_vector **mult_x, su3_vector *sumvec );
 void eo_fermion_force_rhmc( int alg_flag, Real eps, int order, Real mass, Real *residues,
@@ -61,8 +59,7 @@ void eo_fermion_force_rhmc_oneterm( Real eps, Real residue, field_offset x_off )
 void eo_fermion_force_rhmc_twoterms( Real eps, Real residue1, Real residue2,
 	field_offset x1_off, field_offset x2_off );
 void eo_fermion_force_rhmc_int( Real eps, Real *residues, su3_vector **xxx, int nterms );
-void fn_fermion_force_rhmc( Real eps, Real *residues, su3_vector **xxx, int nterms );
-void fn_fermion_force_rhmc_reverse( Real eps, Real *residues, su3_vector **xxx, int nterms );
+
 int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,   /* source vector (type su3_vector) */
     su3_vector **psim,  /* solution vectors */
