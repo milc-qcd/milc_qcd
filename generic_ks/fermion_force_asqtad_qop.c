@@ -6,6 +6,10 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.13  2006/10/09 03:51:06  detar
+ * Collect multi-source fermion force routines in a single file.
+ * Move procedures from ks_imp_rhmc/path_transport_field to path_transport.c
+ *
  * Revision 1.12  2006/08/29 15:07:08  detar
  * Correct the weights for multi fermion force.  Prepare for QOPQDP.
  *
@@ -38,8 +42,9 @@
 
 #include "generic_ks_includes.h"
 #include <qop.h>
+#include <string.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.12 2006/08/29 15:07:08 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.13 2006/10/09 03:51:06 detar Exp $";
 
 void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
@@ -227,6 +232,27 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
 #endif
 }
+
+
+/* Set optimization choice */
+/* (For the moment we have only one choice, namely Asqtad!) */ 
+enum ks_multiff_opt_t { KS_MULTIFF_ASVEC, KS_MULTIFF_FNMATREV, KS_MULTIFF_FNMAT };
+static enum ks_multiff_opt_t ks_multiff_opt = KS_MULTIFF_FNMAT;   /* Default */
+
+/* returns 1 for error and 0 for success */
+
+int eo_fermion_force_set_opt(char opt_string[]){
+  if(strcmp(opt_string,"ASVEC") == 0)
+    ks_multiff_opt = KS_MULTIFF_ASVEC;
+  else{
+    printf("eo_fermion_force_set_opt: Unrecognized type %s\n",opt_string);
+    printf("Currently QOP supports only the ASVEC option\n");
+    return 1;
+  }
+  /*printf("eo_fermion_force set ks_multiff_opt to %d\n",ks_multiff_opt);*/
+  return 0;
+}
+
 
 /* Standard MILC interface for multiple terms in the action */
 

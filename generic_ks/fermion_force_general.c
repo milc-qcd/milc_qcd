@@ -88,7 +88,7 @@ dtime=-dclock();
     /* path transport x_off and Dslash*x_off from far end.  Sometimes
 	we need them at the start point of the path, and sometimes
 	one link into the path - an optimization for later */
-    path_transport( x_off, F_OFFSET(tempvec[0]),
+    path_transport_site( x_off, F_OFFSET(tempvec[0]),
       EVENANDODD, q_paths[ipath].dir, length );
     /* use tempvec[1] for transport from starting end */
     FORALLSITES(i,s){
@@ -227,14 +227,14 @@ dtime=-dclock();
 	we need them at the start point of the path, and sometimes
 	one link into the path - an optimization for later */
     /**
-    path_transport( x1_off, F_OFFSET(tempvec[0]),
+    path_transport_site( x1_off, F_OFFSET(tempvec[0]),
       EVENANDODD, q_paths[ipath].dir, length );
-    path_transport( x2_off, F_OFFSET(tempvec[1]),
+    path_transport_site( x2_off, F_OFFSET(tempvec[1]),
       EVENANDODD, q_paths[ipath].dir, length );
     **/
 /** WARNING!! Assumes xxx1 and xxx2 contiguous **/
 if( x2_off-x1_off != sizeof(su3_vector) ){node0_printf("BOTCH\n"); exit(0);}
-    path_transport_hwv( x1_off, F_OFFSET(tempvec[0]),
+    path_transport_hwv_site( x1_off, F_OFFSET(tempvec[0]),
       EVENANDODD, q_paths[ipath].dir, length );
     /* use tempvec[2] for transport from starting end */
     FORALLSITES(i,s){

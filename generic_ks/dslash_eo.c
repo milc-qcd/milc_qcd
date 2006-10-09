@@ -36,7 +36,7 @@ void dslash_eo_site( field_offset src, field_offset dest, int parity ) {
   FORSOMEPARITY(i,s,parity){ clearvec( (su3_vector *)F_PT(s,dest) ); }
   
   for( ipath=0; ipath<num_q_paths; ipath++ ){  /* loop over paths */
-    path_transport( src, F_OFFSET(tempvec[0]), parity,
+    path_transport_site( src, F_OFFSET(tempvec[0]), parity,
 		    q_paths[ipath].dir, q_paths[ipath].length );
     x=q_paths[ipath].coeff;
     FORSOMEPARITY(i,s,parity){

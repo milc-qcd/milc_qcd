@@ -11,7 +11,6 @@
 G_KS_ALL = \
   d_congrad5.cppacs.o \
   d_congrad5.o \
-  d_congrad5_hl.o \
   d_congrad5_eo.o \
   d_congrad5_fn.o \
   d_congrad5_fn_fewsums.o \
@@ -20,8 +19,9 @@ G_KS_ALL = \
   d_congrad5_fn_qop_two_src.o \
   d_congrad5_fn_qopdp.o \
   d_congrad5_fn_qopqdp_two_src.o \
-  d_congrad5_two_src.o \
   d_congrad5_fn_two_src2.o \
+  d_congrad5_hl.o \
+  d_congrad5_two_src.o \
   d_congrad6.o \
   d_congrad_opt.o \
   dslash_eo.o \
@@ -31,13 +31,14 @@ G_KS_ALL = \
   dslash_fn_multi.o \
   dslash_fn_qop_milc.o \
   eigen_stuff.o \
+  f_meas.o \
   fermion_force_asqtad3.o \
-  fermion_force_asqtad_qop_milc.o \
   fermion_force_asqtad_qop.o \
+  fermion_force_asqtad_qop_milc.o \
+  fermion_force_fn_multi.o \
   fermion_links_fn.o \
   ff_opt.o \
   flavor_ops.o \
-  f_meas.o \
   fpi_2.o \
   grsource.o \
   io_helpers_ks.o \
@@ -54,6 +55,7 @@ G_KS_ALL = \
   mu.c \
   mu_fast.c \
   multimass_inverter.o \
+  path_transport_field.o \
   nl_spectrum.o \
   quark_stuff.o \
   quark_stuff4.o \
@@ -67,8 +69,8 @@ G_KS_ALL = \
   spectrum_mom.o \
   spectrum_multimom.o \
   spectrum_nd.o \
-  spectrum_pt.o \
   spectrum_nlpi2.o \
+  spectrum_pt.o \
   spectrum_singlets.o
 
 # Must match our headers in generic_ks_includes.h
@@ -144,6 +146,8 @@ fermion_force_asqtad_qop.o: ../generic_ks/fermion_force_asqtad_qop.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop_milc.o: ../generic_ks/fermion_force_asqtad_qop_milc.c
 	${CC} -c ${CFLAGS} $<
+fermion_force_fn_multi.o: ../generic_ks/fermion_force_fn_multi.c
+	${CC} -c ${CFLAGS} $<
 fermion_force_general.o: ../generic_ks/fermion_force_general.c
 	${CC} -c ${CFLAGS} $<
 f_meas.o: ../generic_ks/f_meas.c
@@ -189,6 +193,8 @@ mu_fast.o: ../generic_ks/mu_fast.c
 multimass_inverter.o: ../generic_ks/multimass_inverter.c
 	${CC} -c ${CFLAGS} $<
 nl_spectrum.o: ../generic_ks/nl_spectrum.c
+	${CC} -c ${CFLAGS} $<
+path_transport.o: ../generic_ks/path_transport.c
 	${CC} -c ${CFLAGS} $<
 quark_stuff.o: ../generic_ks/quark_stuff.c
 	${CC} -c ${CFLAGS} $<

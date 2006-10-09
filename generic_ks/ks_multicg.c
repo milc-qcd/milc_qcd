@@ -12,36 +12,67 @@
 
 /* Set the KS multicg inverter flavor depending on the macro KS_MULTICG */
 
-#define OFFSET  0
-#define HYBRID  1
-#define FAKE    2
-#define REVERSE 3
-#define REVHYB  4
+enum ks_multicg_opt_t { KS_MULTICG_OFFSET, KS_MULTICG_HYBRID, KS_MULTICG_FAKE, 
+			KS_MULTICG_REVERSE, KS_MULTICG_REVHYB };
+static enum ks_multicg_opt_t ks_multicg_opt = KS_MULTICG_HYBRID;   /* Default */
 
-ks_multicg_t ks_multicg_init(){
-#if (KS_MULTICG == OFFSET)
-  return ks_multicg_offset;
-#elif (KS_MULTICG == HYBRID)
-  return ks_multicg_hybrid;
-#elif (KS_MULTICG == FAKE)
-  return ks_multicg_fake;
-#elif (KS_MULTICG == REVERSE)
-  return ks_multicg_reverse;
-#elif (KS_MULTICG == REVHYB)
-  return ks_multicg_revhyb;
-#elif defined(KS_MULTICG)
-  node0_print ("ks_multicg_init: unknown or missing KS_MULTICG macro\n");
-  return NULL;
-#else
-  return ks_multicg_offset; /* Default when KS_MULTICG is not defined */
-#endif
+/**********************************************************************/
+/*   Set optimization choice                                          */
+/**********************************************************************/
+/* returns 1 for error and 0 for success */
+
+int ks_multicg_set_opt(char opt_string[]){
+  if(strcmp(opt_string,"OFFSET") == 0)
+    ks_multicg_opt = KS_MULTICG_OFFSET;
+  else if(strcmp(opt_string,"HYBRID") == 0)
+    ks_multicg_opt = KS_MULTICG_HYBRID;
+  else if(strcmp(opt_string,"FAKE") == 0)
+    ks_multicg_opt = KS_MULTICG_FAKE;
+  else if(strcmp(opt_string,"REVERSE") == 0)
+    ks_multicg_opt = KS_MULTICG_REVERSE;
+  else if(strcmp(opt_string,"REVHYB") == 0)
+    ks_multicg_opt = KS_MULTICG_REVHYB;
+  else{
+    printf("ks_multicg_set_opt: Unrecognized type %s\n",opt_string);
+    return 1;
+  }
+  /*printf("ks_multicg_set_opt: set opt to %d\n",ks_multicg_opt);*/
+  return 0;
 }
 
-#undef OFFSET
-#undef HYBRID
-#undef FAKE  
-#undef REVERSE
-#undef REVHYB
+/**********************************************************************/
+/*   Wrapper for the multimass inverter with multiple sources         */
+/**********************************************************************/
+int ks_multicg(	        /* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *offsets,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    )
+{
+
+  if(ks_multicg_opt == KS_MULTICG_OFFSET)
+    return ks_multicg_offset( src, psim, offsets, num_offsets, 
+			      niter, rsqmin, parity, final_rsq_ptr);
+  else if(ks_multicg_opt == KS_MULTICG_HYBRID)
+    return ks_multicg_hybrid( src, psim, offsets, num_offsets, 
+			      niter, rsqmin, parity, final_rsq_ptr);
+  else if(ks_multicg_opt == KS_MULTICG_FAKE)
+    return ks_multicg_fake( src, psim, offsets, num_offsets, 
+			      niter, rsqmin, parity, final_rsq_ptr);
+  else if(ks_multicg_opt == KS_MULTICG_REVERSE)
+    return ks_multicg_reverse( src, psim, offsets, num_offsets, 
+			      niter, rsqmin, parity, final_rsq_ptr);
+  else if(ks_multicg_opt == KS_MULTICG_REVHYB)
+    return ks_multicg_revhyb( src, psim, offsets, num_offsets, 
+			      niter, rsqmin, parity, final_rsq_ptr);
+  else
+    return 0;
+}
 
 // mock up multicg by repeated calls to ordinary cg
 int ks_multicg_fake(	/* Return value is number of iterations taken */

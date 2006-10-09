@@ -319,7 +319,7 @@ void QOP_asqtad_force(QOP_info_t *info,
 #undef Pmumumu      
 
 /**********************************************************************/
-/*   Version for multiple sources                                     */
+/*   Version for multiple sources - Asqtad only                       */
 /**********************************************************************/
 
 static su3_matrix *backwardlink[4];
