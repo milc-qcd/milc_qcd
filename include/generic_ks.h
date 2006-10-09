@@ -110,19 +110,25 @@ int ks_invert( /* Return value is number of iterations taken */
     void *dmp                 /* Passthrough Dirac matrix parameters */
     );
 
-typedef int (*ks_multicg_t)(	
-			/* Return value is number of iterations taken */
-    field_offset, 	/* source vector (type su3_vector) */
-    su3_vector ** ,	/* solution vectors */
-    Real *,	        /* the offsets */
-    int,	        /* number of offsets */
-    int,		/* maximal number of CG interations */
-    Real,	        /* desired residue squared */
-    int,		/* parity to be worked on */
-    Real *	        /* final residue squared */
-    );
+/* in ks_multicg.c */
+#define OFFSET  0
+#define HYBRID  1
+#define FAKE    2
+#define REVERSE 3
+#define REVHYB  4
 
-ks_multicg_t ks_multicg_init();
+int ks_multicg_set_opt(char opt_string[]);
+
+int ks_multicg(	        /* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *offsets,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    );
 
 int ks_multicg_offset(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
@@ -145,8 +151,6 @@ int ks_multicg_mass(	/* Return value is number of iterations taken */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     );
-
-/* In ks_multicg_rhmc.c */
 
 int ks_multicg_hybrid(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
@@ -250,9 +254,18 @@ int fpi_2( /* Return value is number of C.G. iterations taken */
 void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off );
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 				field_offset x1_off, field_offset x2_off );
+
+
+/* fermion_force_fn_multi.c */
+
+int eo_fermion_force_set_opt(char opt_string[]);
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
 			     int nterms );
-
+void eo_fermion_force_asqtad_block( Real eps, Real *residues, su3_vector **xxx, int nterms, int veclength );
+void eo_fermion_force_asqtad_multi( Real eps, Real *residues, su3_vector **xxx, int nterms );
+void fn_fermion_force_multi( Real eps, Real *residues, su3_vector **multi_x, int nterms );
+void fn_fermion_force_multi_reverse( Real eps, Real *residues, su3_vector **multi_x, int nterms );
+void fn_fermion_force_multi_june05( Real eps, Real *residues, su3_vector **multi_x, int nterms );
 
 /* ff_opt.c */
 void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
@@ -339,6 +352,19 @@ int multimass_inverter( params_mminv *mminv);
 int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 		 field_offset tempmat1, field_offset tempmat2);
 
+/* path_transport.c */
+void path_transport_site( field_offset src, field_offset dest, int parity,
+			  int *dir, int length );
+void path_transport_field( su3_vector * src, su3_vector * dest, int parity, 
+			   int *dir, int length );
+void path_transport_hwv_site( field_offset src, field_offset dest, int parity,
+			      int *dir, int length );
+void path_transport_hwv_field( half_wilson_vector *src, 
+			       half_wilson_vector * dest, int parity,
+			       int *dir, int length );
+void path_transport_connection( su3_matrix * src, su3_matrix * dest, int parity, int *dir, int length );
+
+
 /* quark_stuff.c */
 void make_path_table();
 int get_num_q_paths();
@@ -348,10 +374,6 @@ void load_longlinks();
 void load_fatlinks();
 void free_longlinks();
 void free_fatlinks();
-void path_transport( field_offset src, field_offset dest, int parity,
-    int *dir, int length );
-void path_transport_hwv( field_offset src, field_offset dest, int parity,
-    int *dir, int length );
 
 /* spectrum.c */
 int spectrum();
