@@ -19,6 +19,7 @@
 #define TADPOLE_IMPROVE	/* use tadpole improvement in quark action */
 #define ASQ_OPTIMIZED_FATTENING
 #define ASQ_OPTIMIZED_FORCE
+#define ASQ_ACTION
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },	/* Naik */

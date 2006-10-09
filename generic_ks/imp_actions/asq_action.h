@@ -16,6 +16,7 @@
 #define MAX_BASIC_PATHS 6
 #define MAX_LENGTH 7
 #define MAX_NUM 688
+#define ASQ_ACTION
 
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */
