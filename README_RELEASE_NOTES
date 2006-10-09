@@ -25,6 +25,7 @@ For version 7.2.2
 
   Upgrade RHMC code to do concurrent EOS calculations
   Fix p4 capability in ks_imp_dyn.
+  Distinguish inverter residuals for mol dyn and action.
 
 For version 7.2.1
 
