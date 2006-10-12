@@ -81,22 +81,32 @@ void site_coords(int coords[4],site *s){
   coords[3] = s->t;
 }
 
-/* Map MILC links to raw order */
-su3_matrix **create_raw_G_from_site_links(int milc_parity){
-  int coords[4];
-  int i,j,dir;
-  site *s;
+/* Create empty raw links */
+
+su3_matrix **create_raw_G(void){
   su3_matrix **rawlinks = NULL;
 
   rawlinks = (su3_matrix **)malloc(4*sizeof(su3_matrix *));
   FORALLUPDIR(dir){
     rawlinks[dir] = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
     if(rawlinks[dir] == NULL){
-      printf("create_raw_G_from_site_link: No room for rawlinks\n");
+      printf("create_raw_G: No room for rawlinks\n");
       return NULL;
     }
   }
-  
+  return rawlinks;
+}
+
+/* Map MILC links to raw order */
+su3_matrix **create_raw_G_from_site_links(int milc_parity){
+  int coords[4];
+  int i,j,dir;
+  site *s;
+  su3_matrix **rawlinks;
+
+  rawlinks = create_raw_G();
+  if(rawlinks == NULL)return NULL;
+
   FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
     if(QOP_node_number_raw(coords) != this_node){
@@ -120,14 +130,8 @@ su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links,
   site *s;
   su3_matrix **rawlinks = NULL;
 
-  rawlinks = (su3_matrix **)malloc(4*sizeof(su3_matrix *));
-  FORALLUPDIR(dir){
-    rawlinks[dir] = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
-    if(rawlinks[dir] == NULL){
-      printf("create_raw_G_from_field: No room for rawlinks\n");
-      return NULL;
-    }
-  }
+  rawlinks = create_raw_G();
+  if(rawlinks == NULL)return NULL;
   
   FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
@@ -144,6 +148,27 @@ su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links,
   return rawlinks;
 }
 
+/* The target field has all four directions grouped for each site */
+
+void unload_raw_G_to_field(su3_matrix *rawfield, 
+			   su3_matrix *rawlinks[], int milc_parity){
+  int coords[4];
+  int i,j,dir;
+  site *s;
+  su3_matrix tmat;
+
+  FORSOMEPARITY(i,s,milc_parity){
+    site_coords(coords,s);
+    if(QOP_node_number_raw(coords) != this_node){
+      printf("unload_raw_G_to_field: incompatible layout\n");
+      terminate(1);
+    }
+    j = QOP_node_index_raw_F(coords, milc2qop_parity(milc_parity));
+    FORALLUPDIR(dir){
+      memcpy(rawfield + 4*i + dir, rawfield[dir] + j, sizeof(su3_matrix));
+    }
+  }
+}
 
 void destroy_raw_G(su3_matrix *rawlinks[]){
   int dir;
@@ -156,22 +181,32 @@ void destroy_raw_G(su3_matrix *rawlinks[]){
   free(rawlinks);
 }
 
-/* Map MILC momentum to raw order */
-su3_matrix **create_raw_F_from_site_mom(int milc_parity){
-  int coords[4];
-  int i,j,dir;
-  site *s;
+/* Create empty force field */
+
+su3_matrix **create_raw_F(void){
   su3_matrix **rawforce = NULL;
-  su3_matrix tmat;
 
   rawforce = (su3_matrix **)malloc(4*sizeof(su3_matrix *));
   FORALLUPDIR(dir){
     rawforce[dir] = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
     if(rawforce[dir] == NULL){
-      printf("create_raw_F_from_site_mom: No room for rawforce\n");
+      printf("create_raw_F: No room for rawforce\n");
       return NULL;
     }
   }
+  return rawforce;
+}
+
+/* Map MILC momentum to raw order */
+su3_matrix **create_raw_F_from_site_mom(int milc_parity){
+  int coords[4];
+  int i,j,dir;
+  site *s;
+  su3_matrix **rawforce;
+  su3_matrix tmat;
+
+  rawforce = create_raw_F();
+  if(rawforce == NULL)return NULL;
   
   FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
@@ -222,18 +257,28 @@ void destroy_raw_F(su3_matrix *rawforce[]){
   free(rawforce);
 }
 
+/* Create empty color vector field */
+
+su3_matrix **create_raw_V(void){
+  su3_vector *rawsu3vec = NULL;
+
+  rawsu3vec = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+  if(rawsu3vec == NULL){
+    printf("create_raw_V: No room for raw vector\n");
+    return NULL;
+  }
+  return rawsu3vec;
+}
+
 /* Map MILC site color vector to raw order */
 su3_vector *create_raw_V_from_site(field_offset x, int milc_parity){
   int coords[4];
   int i,j,dir;
   site *s;
-  su3_vector *rawsu3vec = NULL;
+  su3_vector *rawsu3vec;
 
-  rawsu3vec = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-  if(rawsu3vec == NULL){
-    printf("create_raw_V_from_site: No room for raw vector\n");
-    return NULL;
-  }
+  rawsu3vec = create_raw_V();
+  if(rawsu3vec == NULL)return NULL;
   
   FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
@@ -255,13 +300,10 @@ su3_vector *create_raw_V_from_field(su3_vector *x, int milc_parity){
   int coords[4];
   int i,j,dir;
   site *s;
-  su3_vector *rawsu3vec = NULL;
+  su3_vector *rawsu3vec;
 
-  rawsu3vec = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-  if(rawsu3vec == NULL){
-    printf("create_raw_V_from_field: No room for raw vector\n");
-    return NULL;
-  }
+  rawsu3vec = create_raw_V();
+  if(rawsu3vec == NULL)return NULL;
   
   FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
