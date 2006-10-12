@@ -9,6 +9,7 @@
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/loopend.h"
+#include <string.h>
 
 /* Set the KS multicg inverter flavor depending on the macro KS_MULTICG */
 
