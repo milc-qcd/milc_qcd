@@ -6,6 +6,10 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.14  2006/10/12 03:45:16  detar
+ * Move load_qop_asqtad_coeffs to (new) load_qop_asqtad_coeffs.c to
+ * prepare for QOP link fattening.
+ *
  * Revision 1.13  2006/10/09 03:51:06  detar
  * Collect multi-source fermion force routines in a single file.
  * Move procedures from ks_imp_rhmc/path_transport_field to path_transport.c
@@ -44,7 +48,7 @@
 #include <qop.h>
 #include <string.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.13 2006/10/09 03:51:06 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.14 2006/10/12 03:45:16 detar Exp $";
 
 void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
@@ -83,26 +87,6 @@ void unload_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
 
   destroy_raw_F (*rawmom);   *rawmom = NULL;
   QOP_destroy_F (*mom);      *mom = NULL;
-}
-
-void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, Real weight)
-{
-  Real *act_path_coeff;
-  Real ferm_epsilon;
-
-  /* Load path coefficients from table */
-  act_path_coeff = get_quark_path_coeff();
-
-  ferm_epsilon = 2.0*weight;
-  
-  /* Path coefficients times fermion epsilon */
-
-  c->one_link     = act_path_coeff[0]*ferm_epsilon ; 
-  c->naik         = act_path_coeff[1]*ferm_epsilon ;
-  c->three_staple = act_path_coeff[2]*ferm_epsilon ;
-  c->five_staple  = act_path_coeff[3]*ferm_epsilon ;
-  c->seven_staple = act_path_coeff[4]*ferm_epsilon ;
-  c->lepage       = act_path_coeff[5]*ferm_epsilon ;
 }
 
 /* Standard MILC interface for the single-species Asqtad fermion force routine */
