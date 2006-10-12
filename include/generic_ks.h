@@ -15,6 +15,9 @@
 #ifdef HAVE_QDP
 #include <qdp.h>
 #endif
+#ifdef HAVE_QOP
+#include <qop.h>
+#endif
 
 /* Structure specifying each rotation and reflection of each kind of
 	path.  */
@@ -197,6 +200,9 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     );
 
 /* d_congrad5_fn_qop.c */
+#ifdef HAVE_QOP
+void create_qop_asqtad_fermion_links( QOP_FermionLinksAsqtad** qop_links );
+#endif
 void initialize_congrad( void );
 void finalize_congrad( void );
 int ks_congrad_qop_site2site(int niter, Real rsqmin, 
@@ -363,7 +369,7 @@ void path_transport_hwv_field( half_wilson_vector *src,
 			       half_wilson_vector * dest, int parity,
 			       int *dir, int length );
 void path_transport_connection( su3_matrix * src, su3_matrix * dest, int parity, int *dir, int length );
-
+void link_transport_connection( su3_matrix * src, su3_matrix * dest, su3_matrix * work, int dir );
 
 /* quark_stuff.c */
 void make_path_table();
@@ -421,4 +427,9 @@ int ks_multicg_qdp(QDP_ColorVector *src, QDP_ColorVector **dest,
 		   QLA_Real *final_rsq_ptr);
 
 #endif /* HAVE_QDP */
+
+#ifdef HAVE_QOP
+void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, Real weight);
+#endif
+
 #endif /* _GENERIC_KS_H */

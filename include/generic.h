@@ -252,13 +252,16 @@ void qfree(void *);
 QOP_evenodd_t milc2qop_parity(int milc_parity);
 int qop2milc_parity(QOP_evenodd_t qop_parity);
 QOP_status_t initialize_qop();
+su3_matrix **create_raw_G(void);
 su3_matrix **create_raw_G_from_site_links(int milc_parity);
 su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links,
 					   int milc_parity);
 void destroy_raw_G(su3_matrix *rawlinks[]);
+su3_matrix **create_raw_F(void);
 su3_matrix **create_raw_F_from_site_mom(int milc_parity);
 void unload_raw_F_to_site_mom(su3_matrix *rawforce[],int milc_parity);
 void destroy_raw_F(su3_matrix *rawforce[]);
+su3_matrix **create_raw_V(void);
 su3_vector *create_raw_V_from_site(field_offset x, int milc_parity);
 su3_vector *create_raw_V_from_field(su3_vector *x, int milc_parity);
 void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
