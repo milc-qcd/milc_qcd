@@ -8,6 +8,10 @@
 
 /*
  * $Log: d_congrad5_fn_qop.c,v $
+ * Revision 1.13  2006/10/12 03:43:58  detar
+ * Move load_fermion_links_asqtad to (new) fermion_links_asqtad_qop.c
+ * to prepare for level 3 link fattening
+ *
  * Revision 1.12  2006/09/09 20:12:50  detar
  * Fix qop_invert_arg and split out fermion_links_fn.c from quark_stuff.c
  *
@@ -37,37 +41,8 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.12 2006/09/09 20:12:50 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.13 2006/10/12 03:43:58 detar Exp $";
 
-/* Load QOP_FermionLinksAsqtad object from MILC fat and long links */
-static void load_fermion_links_asqtad( QOP_FermionLinksAsqtad** qop_links )
-{
-  su3_matrix **raw_fat_links, **raw_long_links;
-
-  /* Map fat and long links to raw format */
-
-  raw_fat_links  = create_raw_G_from_field_links(t_fatlink,EVENANDODD);
-  if(raw_fat_links == NULL)terminate(1);
-  raw_long_links = create_raw_G_from_field_links(t_longlink,EVENANDODD);
-  if(raw_long_links == NULL)terminate(1);
-
-#if 0
-  // Release for memory savings.  Links are recomputed later.
-  free_fatlinks();
-  free_longlinks();
-  valid_fatlinks = 0;
-  valid_longlinks = 0;
-#endif
-
-  /* Map raw to QOP format */
-
-  *qop_links = QOP_asqtad_create_L_from_raw((Real **)raw_fat_links, 
-					    (Real **)raw_long_links,
-					    QOP_EVENODD);
-  destroy_raw_G(raw_fat_links);   raw_fat_links = NULL;
-  destroy_raw_G(raw_long_links);  raw_long_links = NULL;
-  return;
-}
 
 /* Map color vector field from site structure to QOP field */
 
@@ -231,11 +206,6 @@ int ks_congrad_qop_site2site(int niter, Real rsqmin,
     terminate(1);
   }
 
-  /* Create fat and long links if necessary */
-
-  if( valid_fatlinks  != 1 ) load_fatlinks();
-  if( valid_longlinks != 1 ) load_longlinks();
-
 #ifdef CGTIME
   dtimec = -dclock(); 
 #endif
@@ -245,6 +215,10 @@ int ks_congrad_qop_site2site(int niter, Real rsqmin,
     printf("ks_congrad_qop: Error initializing QOP\n");
     terminate(1);
   }
+
+  /* Map MILC fat and long links to QOP links object */
+
+  create_qop_asqtad_fermion_links( &qop_links );
 
   /* Set qop_invert_arg and qop_resid_arg */
   set_qop_invert_arg( & qop_invert_arg, niter, 
@@ -268,10 +242,6 @@ int ks_congrad_qop_site2site(int niter, Real rsqmin,
     }
   }
   
-  /* Map MILC fat and long links to QOP links object */
-
-  load_fermion_links_asqtad( &qop_links );
-
   /* Pointers for solution vectors */
   for(isrc = 0; isrc < nsrc; isrc++){
     qop_sol[isrc] = 
@@ -363,11 +333,6 @@ int ks_congrad_qop_site2field(int niter, Real rsqmin,
     terminate(1);
   }
 
-  /* Create fat and long links if necessary */
-
-  if( valid_fatlinks  != 1 ) load_fatlinks();
-  if( valid_longlinks != 1 ) load_longlinks();
-
 #ifdef CGTIME
   dtimec = -dclock(); 
 #endif
@@ -377,6 +342,10 @@ int ks_congrad_qop_site2field(int niter, Real rsqmin,
     printf("ks_congrad_qop: Error initializing QOP\n");
     terminate(1);
   }
+
+  /* Map MILC fat and long links to QOP links object */
+
+  create_qop_asqtad_fermion_links( &qop_links );
 
   /* Set qop_invert_arg and qop_resid_arg */
   set_qop_invert_arg( & qop_invert_arg, niter, 
@@ -400,10 +369,6 @@ int ks_congrad_qop_site2field(int niter, Real rsqmin,
     }
   }
   
-  /* Map MILC fat and long links to QOP links object */
-
-  load_fermion_links_asqtad( &qop_links );
-
   /* Pointers for solution vectors */
   for(isrc = 0; isrc < nsrc; isrc++){
     qop_sol[isrc] = 
