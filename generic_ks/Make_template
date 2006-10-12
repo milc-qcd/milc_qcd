@@ -36,6 +36,7 @@ G_KS_ALL = \
   fermion_force_asqtad_qop.o \
   fermion_force_asqtad_qop_milc.o \
   fermion_force_fn_multi.o \
+  fermion_links_asqtad_qop.o \
   fermion_links_fn.o \
   ff_opt.o \
   flavor_ops.o \
@@ -51,11 +52,12 @@ G_KS_ALL = \
   ks_multicg_offset.o \
   ks_multicg_offset_qop.o \
   ks_multicg_qop_milc.o \
+  load_qop_asqtad_coeffs.o \
   mat_invert.o \
   mu.c \
   mu_fast.c \
   multimass_inverter.o \
-  path_transport_field.o \
+  path_transport.o \
   nl_spectrum.o \
   quark_stuff.o \
   quark_stuff4.o \
@@ -156,6 +158,8 @@ fpi_2.o: ../generic_ks/fpi_2.c
 	${CC} -c ${CFLAGS} $<
 flavor_ops.o: ../generic_ks/flavor_ops.c
 	${CC} -c ${CFLAGS} $<
+fermion_links_asqtad_qop.o: ../generic_ks/fermion_links_asqtad_qop.c
+	${CC} -c ${CFLAGS} $<
 fermion_links_fn.o: ../generic_ks/fermion_links_fn.c
 	${CC} -c ${CFLAGS} $<
 ff_opt.o: ../generic_ks/ff_opt.c
@@ -183,6 +187,8 @@ ks_multicg_offset.o: ../generic_ks/ks_multicg_offset.c
 ks_multicg_offset_qop.o: ../generic_ks/ks_multicg_offset_qop.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_qop_milc.o: ../generic_ks/ks_multicg_qop_milc.c
+	${CC} -c ${CFLAGS} $<
+load_qop_asqtad_coeffs.o: ../generic_ks/load_qop_asqtad_coeffs.c
 	${CC} -c ${CFLAGS} $<
 mat_invert.o: ../generic_ks/mat_invert.c
 	${CC} -c ${CFLAGS} $<
