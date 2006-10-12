@@ -1,11 +1,18 @@
 /****** path_transport.c  -- ******************/
 /* MIMD version 7 */
 
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "generic_ks_includes.h"	/* definitions files and prototypes */
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
 
+#ifdef QCDOC
+#define special_alloc qcdoc_alloc
+#define special_free qfree
+#else
+#define special_alloc malloc
+#define special_free free
+#endif
 
 /********************************************************************/
 /* parallel transport a vector to the current site along a path.
@@ -193,6 +200,39 @@ void path_transport_connection( su3_matrix *src, su3_matrix *dest, int parity,
     }
   }
 } /* path_transport_connection */
+
+// special case to transport a "connection" by one link, does both parities
+void link_transport_connection( su3_matrix *src, su3_matrix *dest,
+  su3_matrix *work, int dir ){
+    register int i;
+    register site *s;
+    msg_tag *mtag0;
+
+    if( GOES_FORWARDS(dir) ) {
+	mtag0 = start_gather_field( src, sizeof(su3_matrix),
+	    dir, EVENANDODD, gen_pt[0] );
+	wait_gather(mtag0);
+	FORALLSITES(i,s){
+	    mult_su3_nn( &(s->link[dir]), (su3_matrix *)(gen_pt[0][i]),
+		&(dest[i]) );
+	}
+	cleanup_gather(mtag0);
+    }
+
+    else{ /* GOES_BACKWARDS(dir) */
+	FORALLSITES(i,s){
+	    mult_su3_an( &(s->link[OPP_DIR(dir)]),
+		&(src[i]), &(work[i]) );
+	}
+	mtag0 = start_gather_field( work, sizeof(su3_matrix),
+	    dir, EVENANDODD, gen_pt[0] );
+	wait_gather(mtag0);
+	FORALLSITES(i,s){
+	    dest[i] = *(su3_matrix *)gen_pt[0][i];
+	}
+	cleanup_gather(mtag0);
+    }
+} /* link_transport_connection */
 
 
 
