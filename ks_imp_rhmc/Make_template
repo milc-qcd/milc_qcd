@@ -81,7 +81,7 @@ G_KS_OBJECTS = \
   fermion_links_fn.o \
   mat_invert.o \
   quark_stuff.o \
-  path_transport_field.o \
+  path_transport.o \
   rephase.o
 
 SPECTRUM_OBJECTS = \
@@ -134,7 +134,7 @@ endif
 # Selection of the fermion force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
   # Interface to access QOP
-  ASQFORCE = fermion_force_asqtad_qop.o
+  ASQFORCE = fermion_force_asqtad_qop.o load_qop_asqtad_coeffs.o
 # The implementation of the interface (if not packaged)
   ASQFORCE += ${ASQFORCEQOP}
 else
@@ -319,7 +319,7 @@ su3_omelyan_2eps::
 su3_omelyan_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID \
-	-DKS_MULTIFF=ASVEC -DHMC" \
+	-DKS_MULTIFF=FNMAT -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} d_action_rhmc.o update_rhmc_omelyan.o"

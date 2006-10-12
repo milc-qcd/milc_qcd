@@ -123,7 +123,7 @@ endif
 # Selection of the fermion force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  ASQFORCE = fermion_force_asqtad_qop.o
+  ASQFORCE = fermion_force_asqtad_qop.o load_qop_asqtad_coeffs.o
   # The implementation of the interface (if not packaged)
   ASQFORCE += ${ASQFORCEQOP}
 else

@@ -55,10 +55,6 @@ void eo_fermion_force_rhmc( int alg_flag, Real eps, int order, Real mass, Real *
   Real *roots, su3_vector **multi_x, field_offset phi_off );
 void eo_fermion_force_rhmc_reverse( int alg_flag, Real eps, int order, Real mass, Real *residues,
   Real *roots, su3_vector **multi_x, field_offset phi_off );
-void eo_fermion_force_rhmc_oneterm( Real eps, Real residue, field_offset x_off );
-void eo_fermion_force_rhmc_twoterms( Real eps, Real residue1, Real residue2,
-	field_offset x1_off, field_offset x2_off );
-void eo_fermion_force_rhmc_int( Real eps, Real *residues, su3_vector **xxx, int nterms );
 
 int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,   /* source vector (type su3_vector) */
