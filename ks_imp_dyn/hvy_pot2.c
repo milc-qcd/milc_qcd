@@ -28,7 +28,6 @@ void hvy_pot( field_offset links ) {
 
     node0_printf("hvy_pot(): MAX_T = %d, MAX_X = %d\n",MAX_T,MAX_X);
 
-    if( !valid_fatlinks )load_fatlinks();
     rephase( OFF );
 
     /* Use tempmat1 to construct t-direction path from each point */

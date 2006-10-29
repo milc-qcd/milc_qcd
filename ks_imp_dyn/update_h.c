@@ -12,8 +12,7 @@
 
 void update_h( Real eps ){
 #ifdef FN
-    free_longlinks();
-    free_fatlinks();
+    free_fn_links();
 #endif
     /* gauge field force */
     rephase(OFF);

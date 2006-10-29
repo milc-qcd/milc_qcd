@@ -82,9 +82,9 @@ endif
 
 G_KS_OBJECTS = \
   f_meas.o \
-  fermion_links_fn.o \
   grsource_imp.o \
   mat_invert.o \
+  path_transport.o \
   quark_stuff.o \
   rephase.o
 
@@ -120,6 +120,40 @@ endif
 # Choices are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
 DSLASH_FN = dslash_fn2.o
 
+# Selection of the fermion links algorithm
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+# We don't have fermion_links_asqtad_dmdu0_qop.o yet
+  FLINKS_FN = fermion_links_asqtad_qop.o
+  FLINKS_FN_DMDU0 = fermion_links_asqtad_dmdu0_qop.o
+  FLINKS_FN += ${FLINKS_FNQOP}
+  FLINKS_FN_DMDU0 += ${FNLINKS_FN_DMDU0QOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+#   These routines are not available, yet
+    FLINKS_FN = fermion_links_asqtad_qdp.o
+    FLINKS_FN_DMDU0 = fermion_links_asqtad_qdp_dmdu0.o
+  else
+    FLINKS_FN = fermion_links_fn.o
+    FLINKS_FN_DMDU0 = fermion_links_fn_dmdu0.o
+  endif
+endif
+
+# Selection of the gauge force algorithm
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+# We don't have fermion_links_asqtad_dmdu0_qop.o yet
+  SYMZK1FORCE = gauge_force_symzk1_qop.o
+  SYMZK1FORCE += ${SYMZK1FORCEQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+#   These routines are not available, yet
+    SYMZK1FORCE = gauge_force_symzk1_qdp.o
+  else
+    SYMZK1FORCE = gauge_force_imp.o
+  endif
+endif
+
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
@@ -139,13 +173,12 @@ endif
 # Selection of the fermion force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  ASQFORCE = fermion_force_asqtad_qop.o load_qop_asqtad_coeffs.o
+  ASQFORCE = fermion_force_asqtad_qop.o
 # The implementation of the interface (if not packaged)
   ASQFORCE += ${ASQFORCEQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
 # Choose (fermion_force_asqtad_qdp.o )
-#    ASQFORCE = fermion_force_asqtad_qdp.o
     ASQFORCE = fermion_force_asqtad3.o ff_opt.o
   else
 # Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
@@ -163,21 +196,28 @@ else
   ifeq ($(strip ${HAVEQDP}),true)
     QDP_OBJECTS = stuff_qdp.o
     INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
-    MULTI_INV_FN = ks_multicg_qdp.o
+    MULTI_INV_FN = ks_multicg.o ks_multicg_qdp.o
   else
     INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
     MULTI_INV_FN = ks_multicg.o ks_multicg_offset.o
   endif
 endif
 
+# The only choice for generic gauge actions
+IMPGAUGEFORCE= gauge_force_imp.o
+
+# The only choice for inverters and Dslash for EO actions
+INV_EO_OBJECTS = d_congrad5_eo.o d_congrad_opt.o dslash_eo.o
+MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
+
+# For EO actions we don't precompute the fat links for Dslash at the moment
+FN_OBJECTS = ${FLINKS_FN} ${INV_FN_OBJECTS}
+EO_OBJECTS = ${INV_EO_OBJECTS}
+
 # EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o
 endif
-
-# The only choice for inverters and Dslash for EO actions
-INV_EO_OBJECTS = d_congrad5_eo.o d_congrad_opt.o dslash_eo.o
-MULTI_INV_EO = ks_multicg.o
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
@@ -288,49 +328,53 @@ su3_rmd::
 	"DEFINES= -DFN -DCOM_CRC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update.o"
 
 su3_rmd1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN  -DONEMASS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update_onemass.o"
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update_onemass.o"
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update.o \
+	${FLINKS_FN_DMDU0}"
 
 su3_rmd_eos1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS -DONEMASS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update_onemass.o"
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update_onemass.o \
+	${FLINKS_FN_DMDU0}"
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN  -DNPBP_REPS -DCHEM_POT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} update.o"
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update.o"
 
 su3_rmd_mu_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DDM_DU0 -DNPBP_REPS -DD_CHEM_POT" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS=  ${INV_FN_OBJECTS} ${ASQFORCE} update.o mu_fast.o"
+	"EXTRA_OBJECTS=  ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
+	update.o mu_fast.o ${FLINKS_FN_DMDU0}"
 
 su3_rmd_dblstore_gath13_fewsums::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN  -DDBLSTORE_FN -DFN_GATHER13" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${ASQFORCE} d_congrad5_two_src.o d_congrad_opt.o \
+	"EXTRA_OBJECTS= ${FLINKS_FN} ${ASQFORCE} ${SYMZK1FORCE} \
+	d_congrad5_two_src.o d_congrad_opt.o \
 	d_congrad5_fn_fewsums.o dslash_fn_dblstore.o update.o"
 
 su3_hmc::
@@ -339,7 +383,7 @@ su3_hmc::
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
 	d_action.o update.o"
 
 su3_hmc1::
@@ -348,7 +392,7 @@ su3_hmc1::
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
 	d_action.o update_onemass.o"
 
 su3_rmd_naive::
@@ -356,15 +400,16 @@ su3_rmd_naive::
 	"DEFINES= -DEO  -DONEMASS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
-	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} fermion_force_general.o \
-	update_onemass.o d_congrad_opt.o"
+	"EXTRA_OBJECTS= ${EO_OBJECTS} ${IMPGAUGEFORCE} \
+	fermion_force_general.o \
+	update_onemass.o"
 
 su3_hmc_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DEO -DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
-	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} d_congrad5_two_src.o \
+	"EXTRA_OBJECTS= ${EO_OBJECTS} ${SYMZK1FORCE} d_congrad5_two_src.o \
 	 fermion_force_general.o d_action.o update.o"
 
 # The following target is a superset of su3_spectrum
@@ -374,7 +419,7 @@ su3_hybrids::
 	"DEFINES= -DFN 	-DSPECTRUM -DHYBRIDS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
 	${MULTI_INV_FN} \
 	field_strength.o spectrum_hybrids5.o update.o \
 	${SPECTRUM_OBJECTS}"
@@ -384,7 +429,7 @@ su3_hybrids1::
 	"DEFINES= -DFN 	-DSPECTRUM -DHYBRIDS -DONEMASS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
 	${MULTI_INV_FN} \
 	field_strength.o spectrum_hybrids5.o update_onemass.o \
 	${SPECTRUM_OBJECTS}"
@@ -396,7 +441,7 @@ su3_spectrum::
 	"DEFINES= -DFN 	-DSPECTRUM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
 	${MULTI_INV_FN} ${SPECTRUM_OBJECTS} update.o"
 
 
@@ -405,7 +450,7 @@ su3_spectrum1::
 	"DEFINES= -DFN 	-DSPECTRUM -DONEMASS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${ASQFORCE} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
 	${MULTI_INV_FN} ${SPECTRUM_OBJECTS} update_onemass.o"
 
 # The following stanzas illustrate how to create targets for alternative
@@ -416,7 +461,7 @@ su3_rmd_eo_symzk1_fat7tad::
 	"DEFINES= -DEO " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
-	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} d_congrad5_two_src.o \
+	"EXTRA_OBJECTS= ${EO_OBJECTS} ${SYMZK1FORCE} d_congrad5_two_src.o \
 	fermion_force_general.o update.o"
 
 su3_rmd_plaq_fat7naik::
@@ -424,7 +469,7 @@ su3_rmd_plaq_fat7naik::
 	"DEFINES= -DFN " \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${IMPGAUGEFORCE} \
 	fermion_force_general.o update.o"
 
 su3_rmd_plaq_fat7naik1::
@@ -432,7 +477,7 @@ su3_rmd_plaq_fat7naik1::
 	"DEFINES= -DFN  -DONEMASS" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${IMPGAUGEFORCE} \
 	fermion_force_general.o update_onemass.o"
 
 su3_rmd_symzk1_naik::
@@ -440,7 +485,7 @@ su3_rmd_symzk1_naik::
 	"DEFINES= -DFN " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = naik_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${SYMZK1FORCE} \
 	fermion_force_general.o"
 
 su3_rmd_eo_symzk1_p4::
@@ -448,7 +493,7 @@ su3_rmd_eo_symzk1_p4::
 	"DEFINES= -DEO " \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
-	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} d_congrad5_two_src.o \
+	"EXTRA_OBJECTS= ${EO_OBJECTS} ${SYMZK1FORCE} d_congrad5_two_src.o \
 	 fermion_force_general.o d_action.o update.o"
 
 clean:

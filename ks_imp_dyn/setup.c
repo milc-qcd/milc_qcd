@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.7  2006/10/29 02:38:39  detar
+//  Add access to QOP link fattening and gauge force. Add new test target.
+//
 //  Revision 1.6  2006/09/01 03:58:08  detar
 //  Updating error tolerances and fiducial samples.  Removing junk files.
 //
@@ -147,12 +150,12 @@ initial_set()
 #ifdef SPECTRUM
     printf("With spectrum measurements\n");
 #endif
-    status=get_prompt(&prompt);
+    status=get_prompt(stdin, &prompt);
 #ifdef ONEMASS
-    IF_OK status += get_i(prompt,"nflavors", &par_buf.nflavors );
+    IF_OK status += get_i(stdin, prompt,"nflavors", &par_buf.nflavors );
 #else
-    IF_OK status += get_i(prompt,"nflavors1", &par_buf.nflavors1 );
-    IF_OK status += get_i(prompt,"nflavors2", &par_buf.nflavors2 );
+    IF_OK status += get_i(stdin, prompt,"nflavors1", &par_buf.nflavors1 );
+    IF_OK status += get_i(stdin, prompt,"nflavors2", &par_buf.nflavors2 );
 #endif
 #ifdef PHI_ALGORITHM
 #ifdef ONEMASS
@@ -167,11 +170,11 @@ initial_set()
     }
 #endif
 #endif
-    IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(prompt,"nt", &par_buf.nt );
-    IF_OK status += get_i(prompt,"iseed", &par_buf.iseed );
+    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
     
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -222,81 +225,81 @@ readin(int prompt)
     status=0;
     
     /* warms, trajecs */
-    IF_OK status += get_i(prompt,"warms", &par_buf.warms );
-    IF_OK status += get_i(prompt,"trajecs", &par_buf.trajecs );
+    IF_OK status += get_i(stdin, prompt,"warms", &par_buf.warms );
+    IF_OK status += get_i(stdin, prompt,"trajecs", &par_buf.trajecs );
     
     /* trajectories between propagator measurements */
     IF_OK status += 
-      get_i(prompt,"traj_between_meas", &par_buf.propinterval );
+      get_i(stdin, prompt,"traj_between_meas", &par_buf.propinterval );
     
     /* get couplings and broadcast to nodes	*/
     /* beta, mass1, mass2 or mass */
-    IF_OK status += get_f(prompt,"beta", &par_buf.beta );
+    IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
 #ifdef ONEMASS
-    IF_OK status += get_f(prompt,"mass", &par_buf.mass );
+    IF_OK status += get_f(stdin, prompt,"mass", &par_buf.mass );
 #else
-    IF_OK status += get_f(prompt,"mass1", &par_buf.mass1 );
-    IF_OK status += get_f(prompt,"mass2", &par_buf.mass2 );
+    IF_OK status += get_f(stdin, prompt,"mass1", &par_buf.mass1 );
+    IF_OK status += get_f(stdin, prompt,"mass2", &par_buf.mass2 );
 #endif
-    IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
     
     /* microcanonical time step */
     IF_OK status += 
-      get_f(prompt,"microcanonical_time_step", &par_buf.epsilon );
+      get_f(stdin, prompt,"microcanonical_time_step", &par_buf.epsilon );
     
     /*microcanonical steps per trajectory */
-    IF_OK status += get_i(prompt,"steps_per_trajectory", &par_buf.steps );
+    IF_OK status += get_i(stdin, prompt,"steps_per_trajectory", &par_buf.steps );
     
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
+    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
     
     /* error per site for conjugate gradient */
-    IF_OK status += get_f(prompt,"error_per_site", &x );
+    IF_OK status += get_f(stdin, prompt,"error_per_site", &x );
     IF_OK par_buf.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
     /* New conjugate gradient normalizes rsqmin by norm of source */
     
     /* error for propagator conjugate gradient */
-    IF_OK status += get_f(prompt,"error_for_propagator", &x );
+    IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
     IF_OK par_buf.rsqprop = x*x;
     
 #ifdef NPBP_REPS
     /* number of random sources npbp_reps */
-    IF_OK status += get_i(prompt,"npbp_reps", &par_buf.npbp_reps_in );
+    IF_OK status += get_i(stdin, prompt,"npbp_reps", &par_buf.npbp_reps_in );
 #endif
     
 #ifdef SPECTRUM
     /* request list for spectral measurments */
     /* prepend and append a comma for ease in parsing */
-    IF_OK status += get_s(prompt,"spectrum_request", request_buf );
+    IF_OK status += get_s(stdin, prompt,"spectrum_request", request_buf );
     IF_OK strcpy(par_buf.spectrum_request,",");
     IF_OK strcat(par_buf.spectrum_request,request_buf);
     IF_OK strcat(par_buf.spectrum_request,",");
     
     /* source time slice and increment */
-    IF_OK status += get_i(prompt,"source_start", &par_buf.source_start );
-    IF_OK status += get_i(prompt,"source_inc", &par_buf.source_inc );
-    IF_OK status += get_i(prompt,"n_sources", &par_buf.n_sources );
+    IF_OK status += get_i(stdin, prompt,"source_start", &par_buf.source_start );
+    IF_OK status += get_i(stdin, prompt,"source_inc", &par_buf.source_inc );
+    IF_OK status += get_i(stdin, prompt,"n_sources", &par_buf.n_sources );
     
     /* Additional parameters for spectrum_multimom */
     if(strstr(par_buf.spectrum_request,",spectrum_multimom,") != NULL){
-      IF_OK status += get_i(prompt,"spectrum_multimom_nmasses",
+      IF_OK status += get_i(stdin, prompt,"spectrum_multimom_nmasses",
 			    &par_buf.spectrum_multimom_nmasses );
-      IF_OK status += get_f(prompt,"spectrum_multimom_low_mass",
+      IF_OK status += get_f(stdin, prompt,"spectrum_multimom_low_mass",
 			    &par_buf.spectrum_multimom_low_mass );
-      IF_OK status += get_f(prompt,"spectrum_multimom_mass_step",
+      IF_OK status += get_f(stdin, prompt,"spectrum_multimom_mass_step",
 			    &par_buf.spectrum_multimom_mass_step );
     }
     /* Additional parameters for fpi */
     par_buf.fpi_nmasses = 0;
     if(strstr(par_buf.spectrum_request,",fpi,") != NULL){
-      IF_OK status += get_i(prompt,"fpi_nmasses",
+      IF_OK status += get_i(stdin, prompt,"fpi_nmasses",
 			    &par_buf.fpi_nmasses );
       if(par_buf.fpi_nmasses > MAX_FPI_NMASSES){
 	printf("Maximum of %d exceeded.\n",MAX_FPI_NMASSES);
 	terminate(1);
       }
       for(i = 0; i < par_buf.fpi_nmasses; i++){
-	IF_OK status += get_f(prompt,"fpi_mass",
+	IF_OK status += get_f(stdin, prompt,"fpi_mass",
 			      &par_buf.fpi_mass[i]);
       }
     }
@@ -304,13 +307,13 @@ readin(int prompt)
 #endif /*SPECTRUM*/
     
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 					  par_buf.startfile );
     
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 					par_buf.savefile );
-    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				  par_buf.stringLFN );
     
     if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
@@ -363,7 +366,8 @@ readin(int prompt)
   }
   startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
-  valid_fatlinks = valid_longlinks = 0;
+  valid_fn_links = 0;
+  valid_fn_links_dmdu0 = 0;
   phases_in = OFF;
   rephase( ON );
   

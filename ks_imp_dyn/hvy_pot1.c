@@ -26,7 +26,6 @@ void hvy_pot( field_offset links ) {
     msg_tag *mtag0;
     field_offset oldmat, newmat, tt;
 
-    if( !valid_fatlinks )load_fatlinks();
     rephase( OFF );
 
     /* Use tempmat1 to construct t-direction path from each point */

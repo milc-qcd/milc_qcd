@@ -23,6 +23,7 @@ PROJS = \
   su3_rmd_mu_eos \
   su3_spectrum \
   su3_hybrids \
+  su3_hmc_eo_symzk1_p4 \
   su3_rmd_dblstore_gath13_fewsums \
   su3_rmd_plaq_fat7naik \
   su3_rmd1 \

@@ -88,7 +88,8 @@ main( int argc, char **argv )
 		 NULL_FP,NULL_FP,
 		 0,NULL,NULL,0,NULL,NULL);
 	rephase( ON );
-	valid_fatlinks = valid_longlinks = 0;
+	valid_fn_links = 0;
+	valid_fn_links_dmdu0 = 0;
 	
 	if(strstr(spectrum_request,",spectrum,") != NULL){
 #ifdef ONEMASS
@@ -186,9 +187,6 @@ main( int argc, char **argv )
 	  avspect_iters += spectrum_hybrids( mass2, F_OFFSET(phi1), 2e-3 );
 #endif
 	}
-#endif
-#ifdef FN
-	if( !valid_fatlinks )load_fatlinks();
 #endif
 	if(strstr(spectrum_request,",hvy_pot,") != NULL){
 	  rephase( OFF );

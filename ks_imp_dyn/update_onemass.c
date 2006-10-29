@@ -114,7 +114,8 @@ checkmul();**/
 	if(steps > 0)
 	    gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-	valid_longlinks=valid_fatlinks=0;
+	valid_fn_links = 0;
+	valid_fn_links_dmdu0 = 0;
 #endif
 	node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
     }
