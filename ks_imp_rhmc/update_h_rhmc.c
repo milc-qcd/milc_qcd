@@ -11,48 +11,45 @@
 * MIMD version 7 */
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
-#include "rationals.h"
 
 void update_h_rhmc( int alg_flag, Real eps, su3_vector **multi_x ){
+  int iphi;
 #ifdef FN
-    free_longlinks();
-    free_fatlinks();
+  free_fn_links();
 #endif
-    node0_printf("update_h_rhmc: alg_flag=%d\n",alg_flag);
-    /* gauge field force */
-    rephase(OFF);
-    imp_gauge_force(eps,F_OFFSET(mom));
-    rephase(ON);
-    /* fermionic force */
-
-    eo_fermion_force_rhmc( alg_flag, eps, MOLDYN_ORDER_1, mass1, A_MD_1,
-         B_MD_1, multi_x, F_OFFSET(phi1) );
-    eo_fermion_force_rhmc( alg_flag, eps, MOLDYN_ORDER_2, mass2, A_MD_2,
-	 B_MD_2, multi_x, F_OFFSET(phi2) );
-
+  node0_printf("update_h_rhmc: alg_flag=%d\n",alg_flag);
+  /* gauge field force */
+  rephase(OFF);
+  imp_gauge_force(eps,F_OFFSET(mom));
+  rephase(ON);
+  /* fermionic force */
+  
+  for(iphi = 0; iphi < nphi; iphi++){
+    eo_fermion_force_rhmc( alg_flag, eps, &rparam[iphi].MD, 
+			   multi_x, F_OFFSET(phi[iphi]) );
+  }
 } /* update_h_rhmc */
 
 // gauge and fermion force parts separately, for algorithms that use
 // different time steps for them
 void update_h_gauge( int alg_flag, Real eps ){
-    node0_printf("update_h_gauge: alg_flag=%d\n",alg_flag);
-    /* gauge field force */
-    rephase(OFF);
-    imp_gauge_force(eps,F_OFFSET(mom));
-    rephase(ON);
+  node0_printf("update_h_gauge: alg_flag=%d\n",alg_flag);
+  /* gauge field force */
+  rephase(OFF);
+  imp_gauge_force(eps,F_OFFSET(mom));
+  rephase(ON);
 } /* update_h_gauge */
 
 void update_h_fermion( int alg_flag, Real eps, su3_vector **multi_x ){
+  int iphi;
 #ifdef FN
-    free_longlinks();
-    free_fatlinks();
+  free_fn_links();
 #endif
-    node0_printf("update_h_fermion: alg_flag=%d\n",alg_flag);
-    /* fermionic force */
-
-    eo_fermion_force_rhmc( alg_flag, eps, MOLDYN_ORDER_1, mass1, A_MD_1,
-         B_MD_1, multi_x, F_OFFSET(phi1) );
-    eo_fermion_force_rhmc( alg_flag, eps, MOLDYN_ORDER_2, mass2, A_MD_2,
-	 B_MD_2, multi_x, F_OFFSET(phi2) );
-
+  node0_printf("update_h_fermion: alg_flag=%d\n",alg_flag);
+  /* fermionic force */
+  
+  for(iphi = 0; iphi < nphi; iphi++){
+    eo_fermion_force_rhmc( alg_flag, eps, &(rparam[iphi].MD), 
+			   multi_x, F_OFFSET(phi[iphi]) );
+  }
 } /* update_h_fermion */

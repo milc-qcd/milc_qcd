@@ -35,7 +35,6 @@
 int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
-    Real mass,		/* quark mass */
     Real *roots,	/* the roots */
     int order,		/* order of rational function approx */
     int niter,		/* maximal number of CG interations */

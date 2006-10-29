@@ -7,7 +7,7 @@
 
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
-#include "rationals.h"
+/* For information */
 #define NULL_FP -1
 
 EXTERN gauge_header start_lat_hdr;	/* Input gauge field header */
@@ -30,8 +30,6 @@ main( int argc, char **argv )
   g_sync();
   /* set up */
   prompt = setup();
-  node0_printf("quarks1 orders: (md,gr,fa) = %d, %d, %d\n",MOLDYN_ORDER_1,GRSOURCE_ORDER_1,ACTION_ORDER_1);
-  node0_printf("quarks2 orders: (md,gr,fa) = %d, %d, %d\n",MOLDYN_ORDER_2,GRSOURCE_ORDER_2,ACTION_ORDER_2);
 
   /* loop over input sets */
   while( readin(prompt) == 0) {
@@ -61,9 +59,6 @@ main( int argc, char **argv )
 	rephase(ON);
 	f_meas_imp( F_OFFSET(phi1), F_OFFSET(xxx1), mass1 );
 	f_meas_imp( F_OFFSET(phi2), F_OFFSET(xxx2), mass2 );
-#ifdef FN
-	if( !valid_fatlinks )load_fatlinks();
-#endif
 	avs_iters += s_iters;
 	++meascount;
 	fflush(stdout);

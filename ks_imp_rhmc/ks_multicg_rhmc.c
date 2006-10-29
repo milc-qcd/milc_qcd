@@ -132,8 +132,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     iteration = 0;
 
 #ifdef FN
-    if (!valid_longlinks) load_longlinks();
-    if (!valid_fatlinks) load_fatlinks();
+    if( !(valid_fn_links==1))  load_fn_links();
 #endif
 
 #define PAD 0
@@ -400,11 +399,13 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     )
 {
     int i,j,iters=0; site *s;
-    ks_multicg_reverse( src, psim, offsets, num_offsets, niter, rsqmin, parity, final_rsq_ptr);
+    ks_multicg_reverse( src, psim, offsets, num_offsets, niter, 
+			rsqmin, parity, final_rsq_ptr);
     for(i=0;i<num_offsets;i++){
-       FORSOMEPARITY(j,s,parity){ s->xxx1 = psim[i][j]; } END_LOOP
-       iters += ks_congrad( src, F_OFFSET(xxx1), 0.5*sqrt(offsets[i]), niter/5, rsqmin, parity, final_rsq_ptr );
-       FORSOMEPARITY(j,s,parity){ psim[i][j] = s->xxx1; } END_LOOP
+      FORSOMEPARITY(j,s,parity){ s->xxx1 = psim[i][j]; } END_LOOP
+       iters += ks_congrad( src, F_OFFSET(xxx1), 0.5*sqrt(offsets[i]), 
+			    niter/5, rsqmin, parity, final_rsq_ptr );
+      FORSOMEPARITY(j,s,parity){ psim[i][j] = s->xxx1; } END_LOOP
     }
     return(iters);
 }

@@ -12,6 +12,7 @@
 #include "../include/complex.h"
 #include "../include/su3.h"
 #include "lattice.h"
+#include "params_rhmc.h"
 #include "../include/macros.h"
 #include "../include/comdefs.h"
 #include "../include/io_lat.h"
@@ -49,17 +50,14 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec );
 void ranmom();
 
 // RHMC algorithm stuff
-void grsource_imp_rhmc( field_offset dest, Real mass, Real *residues, Real *roots,
-  int order, int parity, su3_vector **mult_x, su3_vector *sumvec );
-void eo_fermion_force_rhmc( int alg_flag, Real eps, int order, Real mass, Real *residues,
-  Real *roots, su3_vector **multi_x, field_offset phi_off );
-void eo_fermion_force_rhmc_reverse( int alg_flag, Real eps, int order, Real mass, Real *residues,
-  Real *roots, su3_vector **multi_x, field_offset phi_off );
+void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
+			int parity, su3_vector **multi_x, su3_vector *sumvec );
+void eo_fermion_force_rhmc( int alg_flag, Real eps, params_ratfunc *rf, 
+			    su3_vector **multi_x, field_offset phi_off );
 
 int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,   /* source vector (type su3_vector) */
     su3_vector **psim,  /* solution vectors */
-    Real mass,          /* quark mass */
     Real *roots,        /* the roots */
     int order,          /* order of rational function approx */
     int niter,          /* maximal number of CG interations */
@@ -76,6 +74,7 @@ int ks_rateval(
     int parity          /* parity to be worked on */
     );
 
+params_rhmc *load_rhmc_params(char filename[], int prompt, int nphi);
 
 void hvy_pot( field_offset links );
 void f_measure( field_offset phi_off, field_offset xxx_off, Real mass );

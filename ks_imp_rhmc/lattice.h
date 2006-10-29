@@ -61,8 +61,9 @@ typedef struct {
  	Real phase[4];
 
 	/* 3 element complex vectors */
- 	su3_vector phi1;	/* Gaussian random source vector, mass1 */
- 	su3_vector phi2;	/* Gaussian random source vector, mass2 */
+ 	su3_vector phi[NPHI];	/* Gaussian random source, each pseudoferm */
+ 	su3_vector phi1;	/* Gaussian random source, each pseudoferm */
+ 	su3_vector phi2;	/* Gaussian random source, each pseudoferm */
  	su3_vector xxx1;	/* solution vector = Kinverse * phi, mass1 */
  	su3_vector xxx2;	/* solution vector = Kinverse * phi, mass2 */
  	su3_vector resid;	/* conjugate gradient residual vector */
@@ -132,6 +133,7 @@ EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
 			   SAVE_CHECKPOINT */
+EXTERN	char rparamfile[MAXFILENAME];
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
@@ -156,10 +158,10 @@ EXTERN	int even_sites_on_node;	/* number of even sites on this node */
 EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
+EXTERN  int max_rat_order;      /* Maximum number of solution vectors needed */
 
 /* Flags to help us remember what we are doing */
-EXTERN int valid_longlinks;
-EXTERN int valid_fatlinks;
+EXTERN int valid_fn_links, valid_fn_links_dmdu0;
 
 EXTERN gauge_file *startlat_p;
 
@@ -193,5 +195,10 @@ EXTERN QDP_Shift neighbor3[4];
 EXTERN QDP_Shift shiftdirs[8];
 EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];
 #endif
+
+#include "params_rhmc.h"
+EXTERN int nphi;
+EXTERN int max_rat_order;
+EXTERN params_rhmc *rparam;
 
 #endif /* _LATTICE_H */

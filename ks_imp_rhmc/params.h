@@ -41,6 +41,8 @@ typedef struct {
         Real fpi_mass[MAX_FPI_NMASSES];
 	int startflag;  /* what to do for beginning lattice */
 	int saveflag;   /* what to do with lattice at end */
+        int nphi; /* Number of pseudofermion fields */
+        char rparamfile[MAXFILENAME];
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
