@@ -79,13 +79,13 @@ int prompt,status;
 	printf("MIMD version 6\n");
 	printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 
-	status=get_prompt(&prompt);
+	status=get_prompt(stdin, &prompt);
 
-	IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-	IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-	IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-	IF_OK status += get_i(prompt,"nt", &par_buf.nt );
-	IF_OK status += get_i(prompt,"iseed", &par_buf.iseed );
+	IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
+	IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
+	IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
+	IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+	IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
 
 	if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
     } /* end if(mynode()==0) */
@@ -125,30 +125,30 @@ int readin(int prompt) {
     
 	/* get couplings and broadcast to nodes	*/
 	/* beta, mass */
-	IF_OK status += get_f(prompt,"mass", &par_buf.mass );
-	IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
+	IF_OK status += get_f(stdin, prompt,"mass", &par_buf.mass );
+	IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
 
 	/* maximum no. of conjugate gradient iterations */
-	IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
+	IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
     
 	/* error per site for conjugate gradient */
-	IF_OK status += get_f(prompt,"error_per_site", &x );
+	IF_OK status += get_f(stdin, prompt,"error_per_site", &x );
 	IF_OK par_buf.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
 	    /* New conjugate gradient normalizes rsqmin by norm of source */
     
 	/* error for propagator conjugate gradient */
-	IF_OK status += get_f(prompt,"error_for_propagator", &x );
+	IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
 	IF_OK par_buf.rsqprop = x*x;
-	IF_OK status += get_i(prompt,"Number_of_eigenvals", &par_buf.Nvecs );
-	IF_OK status += get_i(prompt,"Max_Rayleigh_iters", &par_buf.MaxIter );
-	IF_OK status += get_i(prompt,"Restart_Rayleigh", &par_buf.Restart );
-	IF_OK status += get_i(prompt,"Kalkreuter_iters", &par_buf.Kiters );
-	IF_OK status += get_f(prompt,"eigenval_tolerance", 
+	IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &par_buf.Nvecs );
+	IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &par_buf.MaxIter );
+	IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &par_buf.Restart );
+	IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &par_buf.Kiters );
+	IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", 
 			      &par_buf.eigenval_tol );
-	IF_OK status += get_f(prompt,"error_decrease", &par_buf.error_decr);
+	IF_OK status += get_f(stdin, prompt,"error_decrease", &par_buf.error_decr);
 
         /* find out what kind of starting lattice to use */
-	IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
+	IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 	    par_buf.startfile );
 
 	if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;

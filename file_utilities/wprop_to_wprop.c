@@ -64,7 +64,7 @@ void free_lattice()
 }
 /*----------------------------------------------------------------------*/
 
-int get_prompt( int *prompt ){
+int get_prompt(stdin,  int *prompt ){
     char initial_prompt[80];
     int status;
 
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
   number_of_nodes = numnodes();
 
   if(this_node == 0){
-    if(get_prompt(&prompt) != 0) par_buf.stopflag = 1;
+    if(get_prompt(stdin, &prompt) != 0) par_buf.stopflag = 1;
     else par_buf.stopflag = 0;
   }
   

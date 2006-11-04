@@ -100,12 +100,12 @@ initial_set()
     printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 
-    status=get_prompt(&prompt);
-    IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(prompt,"nt", &par_buf.nt );
-    IF_OK status += get_i(prompt,"iseed", &par_buf.iseed );
+    status=get_prompt(stdin, &prompt);
+    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
 
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -147,32 +147,32 @@ readin(int prompt)
 
     /* get couplings and broadcast to nodes	*/
     /* beta, mass1, mass2 */
-    IF_OK status += get_f(prompt,"mass", &par_buf.mass );
-    IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin, prompt,"mass", &par_buf.mass );
+    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
 
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
+    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
 
     /* error for propagator conjugate gradient */
-    IF_OK status += get_f(prompt,"error_for_propagator", &x );
+    IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
     IF_OK par_buf.rsqprop = x*x;
 
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 					  par_buf.startfile );
 
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 					par_buf.savefile );
-    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				  par_buf.stringLFN );
 
     /* find out what to do with longlinks at end */
-    IF_OK status += ask_ending_lattice( prompt, &(par_buf.savelongflag),
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.savelongflag),
 					par_buf.savelongfile );
 
     /* find out what to do with fatlinks at end */
-    IF_OK status += ask_ending_lattice( prompt, &(par_buf.savefatflag),
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.savefatflag),
 					par_buf.savefatfile );
 
     /* find out what kind of color vector source to use */
@@ -190,7 +190,7 @@ readin(int prompt)
 
 #ifdef CHECK_INVERT
     /* find out which inversion to check */
-    IF_OK status += get_s( prompt, "invert", invert_string);
+    IF_OK status += get_s(stdin,  prompt, "invert", invert_string);
     if(status == 0){
       if(strcmp(invert_string,"M")==0)
 	par_buf.inverttype = INVERT_M;
@@ -236,7 +236,8 @@ readin(int prompt)
   }
   startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
-  valid_fatlinks = valid_longlinks = 0;
+  valid_fn_links = 0;
+  valid_fn_links_dmdu0 = 0;
   phases_in = OFF;
   rephase( ON );
 

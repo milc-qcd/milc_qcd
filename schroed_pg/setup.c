@@ -48,12 +48,12 @@ int prompt,status;
 #ifdef ORA_ALGORITHM
         printf("Overrelaxed/quasi-heat bath algorithm\n");
 #endif
-        status=get_prompt(&prompt);
-	IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-	IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-	IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-	IF_OK status += get_i(prompt,"nt", &par_buf.nt );
-	IF_OK status += get_i(prompt,"iseed", &par_buf.iseed );
+        status=get_prompt(stdin, &prompt);
+	IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
+	IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
+	IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
+	IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+	IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
 
 	if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
     } /* end if(mynode()==0) */
@@ -90,41 +90,41 @@ int status;
 	status=0;
     
 	/* warms, trajecs */
-	IF_OK status += get_i(prompt,"warms", &par_buf.warms );
-	IF_OK status += get_i(prompt,"trajecs", &par_buf.trajecs );
+	IF_OK status += get_i(stdin, prompt,"warms", &par_buf.warms );
+	IF_OK status += get_i(stdin, prompt,"trajecs", &par_buf.trajecs );
     
 	/* trajectories between propagator measurements */
 	IF_OK status += 
-	    get_i(prompt,"traj_between_meas", &par_buf.propinterval );
+	    get_i(stdin, prompt,"traj_between_meas", &par_buf.propinterval );
     
 	/* get couplings and broadcast to nodes	*/
 	/* beta */
-	IF_OK status += get_f(prompt,"beta", &par_buf.beta );
+	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
 
 	/* boundary condition flag */
-	IF_OK status += get_i(prompt,"bc_flag", &par_buf.bc_flag );
+	IF_OK status += get_i(stdin, prompt,"bc_flag", &par_buf.bc_flag );
 
 #if ( defined HMC_ALGORITHM || defined RMD_ALGORITHM )
         /* microcanonical time step */
 	IF_OK status +=
-            get_f(prompt,"microcanonical_time_step", &par_buf.epsilon );
+            get_f(stdin, prompt,"microcanonical_time_step", &par_buf.epsilon );
 #endif  
         /*microcanonical steps per trajectory */
-	IF_OK status += get_i(prompt,"steps_per_trajectory", &par_buf.steps );
+	IF_OK status += get_i(stdin, prompt,"steps_per_trajectory", &par_buf.steps );
     
 #ifdef ORA_ALGORITHM
         /*qhb steps per trajectory */
-	IF_OK status += get_i(prompt,"qhb_steps", &par_buf.stepsQ );
+	IF_OK status += get_i(stdin, prompt,"qhb_steps", &par_buf.stepsQ );
 #endif   
 
         /* find out what kind of starting lattice to use */
-	IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
+	IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 	    par_buf.startfile );
 
         /* find out what to do with lattice at end */
-	IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+	IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 	    par_buf.savefile );
-	IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+	IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				      par_buf.stringLFN );
  
         /* send parameter structure */

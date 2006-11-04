@@ -103,7 +103,8 @@ int main(int argc, char *argv[])  {
 #ifdef QUARK_PROP
 	/* Now compute the quark propagator */
 #ifdef FN
-	valid_fatlinks = valid_longlinks = 0;
+	valid_fn_links = 0;
+	valid_fn_links_dmdu0 = 0;
 #endif
 #ifdef QUARK_RENORM
 	cg_iter = quark_renorm();

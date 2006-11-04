@@ -48,7 +48,7 @@ int prompt,status;
 	printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 	time_stamp("start");
 
-	status=get_prompt(&prompt);
+	status=get_prompt(stdin, &prompt);
 
 	IF_OK status += get_i(prompt,"nx", &par_buf.nx );
 	IF_OK status += get_i(prompt,"ny", &par_buf.ny );
@@ -96,13 +96,13 @@ int readin(int prompt) {
     
 	/* get couplings and broadcast to nodes	*/
 	/* beta, kappa */
-	IF_OK status += get_f(prompt,"beta", &par_buf.beta );
+	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
 	IF_OK status += get_i(prompt,"verbose_flag", &par_buf.verbose_flag );
-	IF_OK status += get_f(prompt,"kappa", &par_buf.kappa );
+	IF_OK status += get_f(stdin, prompt,"kappa", &par_buf.kappa );
 
 	/* Clover coefficient, u0 */
-	IF_OK status += get_f(prompt,"clov_c", &par_buf.clov_c );
-	IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
+	IF_OK status += get_f(stdin, prompt,"clov_c", &par_buf.clov_c );
+	IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
 
 
 	/* source time slice and increment */
@@ -113,10 +113,10 @@ int readin(int prompt) {
 
 	/*** parameters controlling the smearing of the links ***/
 #ifdef SMEAR
-	IF_OK status += get_f(prompt,"space_simple_weight",&par_buf.space_simple_weight);
-	IF_OK status += get_f(prompt,"space_norm_factor",&par_buf.space_norm_factor);
-	IF_OK status += get_f(prompt,"time_simple_weight",&par_buf.time_simple_weight);
-	IF_OK status += get_f(prompt,"time_norm_factor",&par_buf.time_norm_factor);
+	IF_OK status += get_f(stdin, prompt,"space_simple_weight",&par_buf.space_simple_weight);
+	IF_OK status += get_f(stdin, prompt,"space_norm_factor",&par_buf.space_norm_factor);
+	IF_OK status += get_f(stdin, prompt,"time_simple_weight",&par_buf.time_simple_weight);
+	IF_OK status += get_f(stdin, prompt,"time_norm_factor",&par_buf.time_norm_factor);
 	IF_OK status += get_i(prompt,"smearing_level",&par_buf.smearing_level);
 #else
       smearing_level = 0   ;
@@ -126,11 +126,11 @@ int readin(int prompt) {
 	IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
     
 	/* error for propagator conjugate gradient */
-	IF_OK status += get_f(prompt,"error_for_propagator", &x );
+	IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
 	IF_OK par_buf.rsqprop = x*x;
     
         /* find out what kind of starting lattice to use */
-	IF_OK ask_starting_lattice( prompt, &(par_buf.startflag),
+	IF_OK ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 	    par_buf.startfile );
 
 	/*** gauge fixing yes or no choice *******/

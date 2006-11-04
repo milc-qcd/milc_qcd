@@ -112,10 +112,10 @@ congrad_w(int niter, Real rsqmin, Real *final_rsq_ptr)
   setup_cg();
 
   for(i=0; i<4; i++) {
-    set_M_from_field(gaugelink[i], F_OFFSET(link[i]));
+    set_M_from_site(gaugelink[i], F_OFFSET(link[i]));
   }
-  set_D_from_field(psi, F_OFFSET(psi));
-  set_D_from_field(chi, F_OFFSET(chi));
+  set_D_from_site(psi, F_OFFSET(psi));
+  set_D_from_site(chi, F_OFFSET(chi));
 
 #ifdef PRESHIFT_LINKS
   {
@@ -247,7 +247,7 @@ congrad_w(int niter, Real rsqmin, Real *final_rsq_ptr)
 	       (double)6480*iteration*even_sites_on_node/(dtime*1e6));
       //(double)5616*iteration*even_sites_on_node/(dtime*1e6));
 #endif
-      set_field_from_D(F_OFFSET(psi), psi);
+      set_site_from_D(F_OFFSET(psi), psi);
       return (iteration);
     }
 
@@ -256,7 +256,7 @@ congrad_w(int niter, Real rsqmin, Real *final_rsq_ptr)
 
   } while( iteration%niter != 0);
 
-  set_field_from_D(F_OFFSET(psi), psi);
+  set_site_from_D(F_OFFSET(psi), psi);
 
   if( iteration < 3*niter ) goto start;
   *final_rsq_ptr= (Real)rsq;

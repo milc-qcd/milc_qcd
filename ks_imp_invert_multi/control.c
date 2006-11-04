@@ -27,6 +27,9 @@ int main( int argc, char **argv ){
 #ifdef HAVE_QDP
   QDP_initialize(argc, argv);
 #endif
+  /* Remap standard I/O */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
+  
   g_sync();
   /* set up */
   prompt = setup();
@@ -61,7 +64,8 @@ int main( int argc, char **argv ){
     rephase( ON );
     
 #ifdef FN
-    valid_fatlinks = valid_longlinks = 0;
+    valid_fn_links = 0;
+    valid_fn_links_dmdu0 = 0;
 #endif
 #ifdef FPI
     avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3 );

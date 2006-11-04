@@ -48,7 +48,7 @@ int initial_set(){
     printf("MIMD version 6\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     
-    status = get_prompt( &prompt );
+    status = get_prompt(stdin,  &prompt );
     
     IF_OK status += get_i(prompt,"nx", &par_buf.nx );
     IF_OK status += get_i(prompt,"ny", &par_buf.ny );
@@ -112,7 +112,7 @@ int readin(int prompt) {
     }
     
     for(i=0;i<par_buf.num_masses;i++){
-      IF_OK status += get_f(prompt,"m0", &par_buf.mass[i] );
+      IF_OK status += get_f(stdin, prompt,"m0", &par_buf.mass[i] );
     }
 
     
@@ -124,7 +124,7 @@ int readin(int prompt) {
     
     /* error for propagator conjugate gradient */
     for(i=0;i<par_buf.num_masses;i++){
-      IF_OK status += get_f(prompt,"error_for_propagator", &par_buf.resid[i] );
+      IF_OK status += get_f(stdin, prompt,"error_for_propagator", &par_buf.resid[i] );
     }
     
     /* Get source type */
@@ -134,7 +134,7 @@ int readin(int prompt) {
     IF_OK if (prompt!=0)
       printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
     for(i=0;i<par_buf.num_masses;i++){
-      IF_OK status += get_f(prompt,"r0", &par_buf.wqs[i].r0 );
+      IF_OK status += get_f(stdin, prompt,"r0", &par_buf.wqs[i].r0 );
 	/* (Same source type for each spectator) */
 	IF_OK par_buf.wqs[i].type = wallflag;
 	IF_OK strcpy(par_buf.wqs[i].descrp,descrp);
@@ -151,9 +151,9 @@ int readin(int prompt) {
         IF_OK status += get_i(prompt,"Max_Rayleigh_iters", &par_buf.MaxIter );
         IF_OK status += get_i(prompt,"Restart_Rayleigh", &par_buf.Restart );
         IF_OK status += get_i(prompt,"Kalkreuter_iters", &par_buf.Kiters );
-        IF_OK status += get_f(prompt,"eigenval_tolerance",
+        IF_OK status += get_f(stdin, prompt,"eigenval_tolerance",
                               &par_buf.eigenval_tol );
-        IF_OK status += get_f(prompt,"error_decrseace", &par_buf.error_decr);
+        IF_OK status += get_f(stdin, prompt,"error_decrseace", &par_buf.error_decr);
     Nvecs = par_buf.Nvecs ;
     MaxIter = par_buf.MaxIter ;
     Restart = par_buf.Restart ;
@@ -163,7 +163,7 @@ int readin(int prompt) {
 #endif
     
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice( prompt, &par_buf.startflag,
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &par_buf.startflag,
 	par_buf.startfile );
 
     IF_OK if (prompt!=0) 
@@ -183,9 +183,9 @@ int readin(int prompt) {
     }
     
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 			     par_buf.savefile );
-    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				  par_buf.stringLFN );
     
     /* find out starting propagator */

@@ -40,12 +40,12 @@ int initial_set(){
     printf("MIMD version 4\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     
-    status=get_prompt(&prompt);
+    status=get_prompt(stdin, &prompt);
   
-    IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
 
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -82,20 +82,20 @@ int readin(int prompt) {
     status=0;
 
     /* Number of kappas */
-    IF_OK status += get_i(prompt,"number_of_kappas", &par_buf.num_kap );
+    IF_OK status += get_i(stdin, prompt,"number_of_kappas", &par_buf.num_kap );
     if( par_buf.num_kap>MAX_KAP ){
       printf("num_kap = %d must be <= %d!\n", par_buf.num_kap, MAX_KAP);
       status++;
     }
 
     /* boundary condition flag */
-    IF_OK status += get_i(prompt, "bc_flag", &par_buf.bc_flag);
+    IF_OK status += get_i(stdin, prompt, "bc_flag", &par_buf.bc_flag);
 
     /* Number of APE smearings */
-    IF_OK status += get_i(prompt, "num_smear", &par_buf.num_smear);
+    IF_OK status += get_i(stdin, prompt, "num_smear", &par_buf.num_smear);
 
     /* APE smearing parameter (Boulder convention) */
-    IF_OK status += get_f(prompt, "alpha", &par_buf.alpha);
+    IF_OK status += get_f(stdin, prompt, "alpha", &par_buf.alpha);
 
     /* To be save initialize the following to zero */
     for(i=0;i<MAX_KAP;i++){
@@ -104,30 +104,30 @@ int readin(int prompt) {
     }
 
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(prompt,"kappa", &par_buf.kap[i] );
+      IF_OK status += get_f(stdin, prompt,"kappa", &par_buf.kap[i] );
     }
 
     /* Clover coefficient */
-    IF_OK status += get_f(prompt,"clov_c", &par_buf.clov_c );
+    IF_OK status += get_f(stdin, prompt,"clov_c", &par_buf.clov_c );
 
     /* fermion phase factors */
-    IF_OK status += get_f(prompt,"ferm_phases[0]", &par_buf.ferm_phas[0] );
-    IF_OK status += get_f(prompt,"ferm_phases[1]", &par_buf.ferm_phas[1] );
-    IF_OK status += get_f(prompt,"ferm_phases[2]", &par_buf.ferm_phas[2] );
+    IF_OK status += get_f(stdin, prompt,"ferm_phases[0]", &par_buf.ferm_phas[0] );
+    IF_OK status += get_f(stdin, prompt,"ferm_phases[1]", &par_buf.ferm_phas[1] );
+    IF_OK status += get_f(stdin, prompt,"ferm_phases[2]", &par_buf.ferm_phas[2] );
 
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
+    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
 
     /* maximum no. of conjugate gradient restarts */
-    IF_OK status += get_i(prompt,"max_cg_restarts", &par_buf.nrestart );
+    IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.nrestart );
 
     /* error for propagator conjugate gradient */
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(prompt,"error_for_propagator", &par_buf.resid[i] );
+      IF_OK status += get_f(stdin, prompt,"error_for_propagator", &par_buf.resid[i] );
     }
 
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice( prompt, &par_buf.startflag,
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &par_buf.startflag,
 	par_buf.startfile );
 
     /* send parameter structure */

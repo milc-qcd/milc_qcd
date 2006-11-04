@@ -1,7 +1,7 @@
 /******** setup_hqet_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.2 2005/03/25 17:30:58 detar Exp $   ****/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.3 2006/11/04 23:51:38 detar Exp $   ****/
 /* MIMD code version 4 */
 
 #include "hqet_light_includes.h"
@@ -64,11 +64,11 @@ int initial_set()
 
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     
-    status=get_prompt(&prompt);
-    IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(prompt,"nt", &par_buf.nt );
+    status=get_prompt(stdin, &prompt);
+    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
 
     if(par_buf.nt%2 !=0) 
     {
@@ -140,18 +140,18 @@ int readin(int prompt)
       printf("\n\n");
       status=0;
       
-      IF_OK status += get_i(prompt,"verbose_flag",&par_buf.verbose_flag);
+      IF_OK status += get_i(stdin, prompt,"verbose_flag",&par_buf.verbose_flag);
 #ifdef BICG_CLOVER  
       /* Clover coefficient, u0 */
-      IF_OK status += get_f(prompt,"clov_c",&par_buf.clov_c);
-      IF_OK status += get_f(prompt,"u0",&par_buf.u0);
+      IF_OK status += get_f(stdin, prompt,"clov_c",&par_buf.clov_c);
+      IF_OK status += get_f(stdin, prompt,"u0",&par_buf.u0);
 #endif
       
       /* find out what kind of starting lattice to use */
-      IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
+      IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 					    par_buf.startfile );
       
-      IF_OK status += get_i(prompt,"nkap_spectator",&par_buf.no_spectator);
+      IF_OK status += get_i(stdin, prompt,"nkap_spectator",&par_buf.no_spectator);
       if(par_buf.no_spectator  >MAX_KAPPA) 
 	{
 	  printf("no_spectator = %d  cannot be larger than MAX_KAPPA =%d!!! \n",
@@ -160,12 +160,12 @@ int readin(int prompt)
 	}
       
       /* maximum no. of spectator conjugate gradient iterations */
-      IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter_spectator );
+      IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter_spectator );
       
       /* maximum no. of spectator conjugate gradient restarts */
-      IF_OK status += get_i(prompt,"max_cg_restarts", &par_buf.nrestart_spectator );
+      IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.nrestart_spectator );
       
-      IF_OK status += get_f(prompt,"error_for_propagator", 
+      IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			    &par_buf.resid_spectator );
       
       /* Get source type */
@@ -176,7 +176,7 @@ int readin(int prompt)
       IF_OK {
 	for(i=0;i< par_buf.no_spectator  ;i++) 
 	  { 
-	    IF_OK status += get_f(prompt,"kappa_spectator",
+	    IF_OK status += get_f(stdin, prompt,"kappa_spectator",
 				  &par_buf.kappa_spectator[i]);
 	  }
 	
@@ -190,7 +190,7 @@ int readin(int prompt)
 	printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
 
       for(i=0;i<par_buf.no_spectator;i++){
-	IF_OK status += get_f(prompt,"r0", &par_buf.wqs_spectator[i].r0 );
+	IF_OK status += get_f(stdin, prompt,"r0", &par_buf.wqs_spectator[i].r0 );
 	/* (Same source type for each spectator) */
 	IF_OK par_buf.wqs_spectator[i].type = wallflag;
 	IF_OK strcpy(par_buf.wqs_spectator[i].descrp,descrp);
@@ -213,7 +213,7 @@ int readin(int prompt)
       }
       
       
-      IF_OK status += get_i(prompt,"nkap_light_zonked",
+      IF_OK status += get_i(stdin, prompt,"nkap_light_zonked",
 			    &par_buf.no_zonked_light);
       if(par_buf.no_zonked_light  >MAX_KAPPA) 
 	{
@@ -223,12 +223,12 @@ int readin(int prompt)
 	}
       
       /* maximum no. of zonked conjugate gradient iterations */
-      IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter_zonked );
+      IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter_zonked );
       
       /* maximum no. of zonked conjugate gradient restarts */
-      IF_OK status += get_i(prompt,"max_cg_restarts", &par_buf.nrestart_zonked );
+      IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.nrestart_zonked );
       
-      IF_OK status += get_f(prompt,"error_for_propagator", 
+      IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			    &par_buf.resid_zonked );
       
       /* Get source type */
@@ -239,7 +239,7 @@ int readin(int prompt)
       IF_OK {
 	for(i=0;i< par_buf.no_zonked_light  ;i++) 
 	  { 
-	    IF_OK status += get_f( prompt,"kappa_zonked_light",
+	    IF_OK status += get_f(stdin,  prompt,"kappa_zonked_light",
 				  &par_buf.kappa_zonked_light[i] );
 	  }
       }
@@ -252,7 +252,7 @@ int readin(int prompt)
 	printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
 
       for(i=0;i<par_buf.no_zonked_light;i++){
-	IF_OK status += get_f(prompt,"r0", &par_buf.wqs_zonked_light[i].r0 );
+	IF_OK status += get_f(stdin, prompt,"r0", &par_buf.wqs_zonked_light[i].r0 );
 	/* (Same wallflag for each zonked_light) */
 	IF_OK par_buf.wqs_zonked_light[i].type = wallflag;
 	IF_OK strcpy(par_buf.wqs_zonked_light[i].descrp,descrp);
@@ -280,7 +280,7 @@ int readin(int prompt)
 	(( The filename is local to this routine ))
 	***/
       
-      IF_OK status += get_s(prompt,"vel_file",velfile);
+      IF_OK status += get_s(stdin, prompt,"vel_file",velfile);
       
       
       /** end of the read of the file name to read the velocities ***/
@@ -297,7 +297,7 @@ int readin(int prompt)
 	(( The filename is local to this routine ))
 	***/
 
-      IF_OK status += get_s(prompt,"mom_file",momfile);
+      IF_OK status += get_s(stdin, prompt,"mom_file",momfile);
       
       /** end of the read of the file name to read the momentum ***/
       IF_OK
@@ -310,20 +310,20 @@ int readin(int prompt)
 	factors to
 	***/
       
-      IF_OK status += get_s(prompt,"heavy_light_out",par_buf.heavy_light_out);
+      IF_OK status += get_s(stdin, prompt,"heavy_light_out",par_buf.heavy_light_out);
       
       /** 
 	load in the name of the file to save the  two point functions to
 	***/
     
-      IF_OK status += get_s(prompt,"twopt_out",par_buf.twopt_out);
+      IF_OK status += get_s(stdin, prompt,"twopt_out",par_buf.twopt_out);
       
       /** 
 	load in the name of the file to save the sequential two point
 	functions to
 	***/
     
-      IF_OK status += get_s(prompt,"seq_out",par_buf.seq_out);
+      IF_OK status += get_s(stdin, prompt,"seq_out",par_buf.seq_out);
 
       if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
     } /* end if(this_node==0) */

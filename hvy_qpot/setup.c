@@ -41,11 +41,11 @@ int initial_set(){
         printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 	time_stamp("start");
 
-        status=get_prompt(&prompt);
-        IF_OK status += get_i(prompt,"nx",&par_buf.nx);
-        IF_OK status += get_i(prompt,"ny",&par_buf.ny);
-        IF_OK status += get_i(prompt,"nz",&par_buf.nz);
-        IF_OK status += get_i(prompt,"nt",&par_buf.nt);
+        status=get_prompt(stdin, &prompt);
+        IF_OK status += get_i(stdin, prompt,"nx",&par_buf.nx);
+        IF_OK status += get_i(stdin, prompt,"ny",&par_buf.ny);
+        IF_OK status += get_i(stdin, prompt,"nz",&par_buf.nz);
+        IF_OK status += get_i(stdin, prompt,"nt",&par_buf.nt);
 
 	if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
     } /* end if(mynode()==0) */
@@ -84,27 +84,27 @@ double dtime;
 	status = 0;
     
 	/* smearing iterations and factor */
-	IF_OK status += get_i(prompt,"no_smear_level", 
+	IF_OK status += get_i(stdin, prompt,"no_smear_level", 
 			      &par_buf.no_smear_level);
-	IF_OK status += get_i(prompt,"smear_num[0]",&par_buf.smear_num[0]);
-	IF_OK status += get_i(prompt,"smear_num[1]",&par_buf.smear_num[1]);
-	IF_OK status += get_i(prompt,"smear_num[2]",&par_buf.smear_num[2]);
-	IF_OK status += get_i(prompt,"smear_num[3]",&par_buf.smear_num[3]);
-	IF_OK status += get_i(prompt,"smear_num[4]",&par_buf.smear_num[4]);
+	IF_OK status += get_i(stdin, prompt,"smear_num[0]",&par_buf.smear_num[0]);
+	IF_OK status += get_i(stdin, prompt,"smear_num[1]",&par_buf.smear_num[1]);
+	IF_OK status += get_i(stdin, prompt,"smear_num[2]",&par_buf.smear_num[2]);
+	IF_OK status += get_i(stdin, prompt,"smear_num[3]",&par_buf.smear_num[3]);
+	IF_OK status += get_i(stdin, prompt,"smear_num[4]",&par_buf.smear_num[4]);
 
-	IF_OK status += get_f(prompt,"smear_fac",&par_buf.smear_fac);
+	IF_OK status += get_f(stdin, prompt,"smear_fac",&par_buf.smear_fac);
 
 	/* off_axis_flag : do off-axis Wilson loops? */
-	IF_OK status += get_i(prompt,"off_axis_flag",&par_buf.off_axis_flag);
+	IF_OK status += get_i(stdin, prompt,"off_axis_flag",&par_buf.off_axis_flag);
     
 	/* find out what kind of starting lattice to use */
-	IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
+	IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 	    par_buf.startfile );
 
 	/* find out what to do with lattice at end */
-	IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+	IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 	    par_buf.savefile );
-	IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+	IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				      par_buf.stringLFN );
 
 	if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;

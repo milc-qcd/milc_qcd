@@ -1,6 +1,6 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.3 2005/07/14 02:45:03 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.4 2006/11/04 23:53:46 detar Exp $  ***/
 /* MIMD version 6 */
 #define IF_OK if(status==0)
 
@@ -47,12 +47,12 @@ int initial_set()
     printf("Machine = %s, with %d nodes\n", machine_type(), numnodes());
     time_stamp("start");
 
-    status = get_prompt(&prompt);
+    status = get_prompt(stdin, &prompt);
 
-    IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
     
 
 
@@ -114,7 +114,7 @@ int readin(int prompt)
 
     /* get number of values of kappa to be run */
 
-    IF_OK status +=get_i(prompt, "nkap",&par_buf.nkap );
+    IF_OK status +=get_i(stdin, prompt, "nkap",&par_buf.nkap );
     if (par_buf.nkap > MAX_NKAP)
     {
       printf("nkap cannot be larger than MAX_NKAP!!! \n");
@@ -124,41 +124,41 @@ int readin(int prompt)
      * get the start and end values of spin, color and kappa in their loops 
      */
 
-     IF_OK status += get_i(prompt, "start_spin",&par_buf.start_spin);
-     IF_OK status += get_i(prompt, "start_color",&par_buf.start_color);
-     IF_OK status += get_i(prompt, "start_kap",&par_buf.start_kap);
-     IF_OK status += get_i(prompt, "end_spin",&par_buf.end_spin);
-     IF_OK status += get_i(prompt, "end_color",&par_buf.end_color);
-     IF_OK status += get_i(prompt, "end_kap",&par_buf.end_kap);
+     IF_OK status += get_i(stdin, prompt, "start_spin",&par_buf.start_spin);
+     IF_OK status += get_i(stdin, prompt, "start_color",&par_buf.start_color);
+     IF_OK status += get_i(stdin, prompt, "start_kap",&par_buf.start_kap);
+     IF_OK status += get_i(stdin, prompt, "end_spin",&par_buf.end_spin);
+     IF_OK status += get_i(stdin, prompt, "end_color",&par_buf.end_color);
+     IF_OK status += get_i(stdin, prompt, "end_kap",&par_buf.end_kap);
 
 
     /* get couplings and broadcast to nodes	 */
     /* beta, kappa */
-    IF_OK status +=get_f(prompt, "beta",&par_buf.beta);
+    IF_OK status +=get_f(stdin, prompt, "beta",&par_buf.beta);
 
     for (i = 0; i < par_buf.nkap; i++)
     {
-      IF_OK status +=get_f(prompt, "kappa",&par_buf.cappa[i] ) ;
+      IF_OK status +=get_f(stdin, prompt, "kappa",&par_buf.cappa[i] ) ;
     }
-    IF_OK status +=get_f(prompt, "approx_kappa_c",&par_buf.kappa_c );
+    IF_OK status +=get_f(stdin, prompt, "approx_kappa_c",&par_buf.kappa_c );
 
 
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status +=get_i(prompt, "max_iterations",&par_buf.niter );
+    IF_OK status +=get_i(stdin, prompt, "max_iterations",&par_buf.niter );
 
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status +=get_i(prompt, "max_restarts",&par_buf.nrestart );
+    IF_OK status +=get_i(stdin, prompt, "max_restarts",&par_buf.nrestart );
 
     /* error for propagator minimal residue */
-    IF_OK status +=get_f(prompt, "error_for_propagator",&x);
+    IF_OK status +=get_f(stdin, prompt, "error_for_propagator",&x);
     par_buf.rsqprop = x * x;
 
     /* flag is 1 to start with psi !=0, 0 if psi=0 */
     IF_OK printf("flag = 1 to start with non-zero light quark prop, 0 if psi=0\n");
-    IF_OK status += get_i(prompt, "flag",&par_buf.flag );
+    IF_OK status += get_i(stdin, prompt, "flag",&par_buf.flag );
 
     /* number of hopping parameter steps */
-    IF_OK status += get_i(prompt, "number_hopping_steps",&par_buf.nhop );
+    IF_OK status += get_i(stdin, prompt, "number_hopping_steps",&par_buf.nhop );
 
     /* Source type */
     IF_OK 
@@ -176,7 +176,7 @@ int readin(int prompt)
 
     /* width: psi=exp(-width^(-2)*r*r) */
     IF_OK  printf("width^(-2): source=exp(-width^(-2)*r*r)\n");
-    IF_OK status += get_f(prompt, "width^(-2)",&width );
+    IF_OK status += get_f(stdin, prompt, "width^(-2)",&width );
     IF_OK {
       par_buf.wqs.r0 = 0;
       if(width != 0)par_buf.wqs.r0 = sqrt(1./width);
@@ -187,10 +187,10 @@ int readin(int prompt)
     }
 
     /* get source points (if wall, these are center of wall) and check range */
-    IF_OK status += get_i(prompt, "source_x",&par_buf.wqs.x0 );
-    IF_OK status += get_i(prompt, "source_y",&par_buf.wqs.y0 );
-    IF_OK status += get_i(prompt, "source_z",&par_buf.wqs.z0 );
-    IF_OK status += get_i(prompt, "source_t",&par_buf.wqs.t0 );
+    IF_OK status += get_i(stdin, prompt, "source_x",&par_buf.wqs.x0 );
+    IF_OK status += get_i(stdin, prompt, "source_y",&par_buf.wqs.y0 );
+    IF_OK status += get_i(stdin, prompt, "source_z",&par_buf.wqs.z0 );
+    IF_OK status += get_i(stdin, prompt, "source_t",&par_buf.wqs.t0 );
 
     IF_OK 
     {
@@ -229,9 +229,9 @@ int readin(int prompt)
      * get wall_cutoff and wall_separation and check that latter is
      * reasonable 
      */
-    IF_OK status += get_i(prompt, "wall_cutoff",&par_buf.wqs.wall_cutoff );
+    IF_OK status += get_i(stdin, prompt, "wall_cutoff",&par_buf.wqs.wall_cutoff );
 
-    IF_OK status += get_i(prompt, "wall_separation",&par_buf.wall_separation );
+    IF_OK status += get_i(stdin, prompt, "wall_separation",&par_buf.wall_separation );
     if (((par_buf.wqs.type == CUTOFF_GAUSSIAN_WEYL) ||
 	 (par_buf.wqs.type == CUTOFF_GAUSSIAN))
 	&& (nx % par_buf.wall_separation != 0 ||
@@ -283,7 +283,7 @@ int readin(int prompt)
     } /*** end of the IF_OK condition ****/
 
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice( prompt, &par_buf.startflag,
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &par_buf.startflag,
 					 par_buf.startfile );
 
 
@@ -304,14 +304,14 @@ int readin(int prompt)
     }
     
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 			     par_buf.savefile );
-    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 			     par_buf.stringLFN );
 
     /*** load in information for static variational calculation *****/
     /* The number of smearing functions to use ***/
-    IF_OK get_i(prompt, "no_smearing_func",&par_buf.nosmear );
+    IF_OK get_i(stdin, prompt, "no_smearing_func",&par_buf.nosmear );
     
     IF_OK {
       if( nosmear > MAX_SMEAR ) 

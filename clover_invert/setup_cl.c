@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.5  2006/11/04 23:50:03  detar
+//  Add file pointer to io_helpers utilities.
+//
 //  Revision 1.4  2006/02/20 23:47:19  detar
 //  Update to version 7 and add hopping parameter inversion option
 //
@@ -51,7 +54,7 @@ int initial_set(){
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     time_stamp("start");
     
-    status = get_prompt( &prompt );
+    status = get_prompt(stdin,  &prompt );
     
     IF_OK status += get_i(prompt,"nx", &par_buf.nx );
     IF_OK status += get_i(prompt,"ny", &par_buf.ny );
@@ -109,12 +112,12 @@ int readin(int prompt) {
     }
     
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(prompt,"kappa", &par_buf.kap[i] );
+      IF_OK status += get_f(stdin, prompt,"kappa", &par_buf.kap[i] );
     }
     
     /* Clover coefficient, u0 */
-    IF_OK status += get_f(prompt,"clov_c", &par_buf.clov_c );
-    IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin, prompt,"clov_c", &par_buf.clov_c );
+    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
     
     /* maximum no. of conjugate gradient iterations */
     IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
@@ -124,7 +127,7 @@ int readin(int prompt) {
     
     /* error for propagator conjugate gradient */
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(prompt,"error_for_propagator", &par_buf.resid[i] );
+      IF_OK status += get_f(stdin, prompt,"error_for_propagator", &par_buf.resid[i] );
     }
     
     /* Get source type */
@@ -134,7 +137,7 @@ int readin(int prompt) {
     IF_OK if (prompt!=0) 
       printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(prompt,"r0", &par_buf.wqs[i].r0 );
+      IF_OK status += get_f(stdin, prompt,"r0", &par_buf.wqs[i].r0 );
 	/* (Same source type for each spectator) */
 	IF_OK par_buf.wqs[i].type = wallflag;
 	IF_OK strcpy(par_buf.wqs[i].descrp,descrp);
@@ -148,7 +151,7 @@ int readin(int prompt) {
     }
     
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice( prompt, &par_buf.startflag,
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &par_buf.startflag,
 	par_buf.startfile );
 
     IF_OK if (prompt!=0) 
@@ -168,9 +171,9 @@ int readin(int prompt) {
     }
     
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 			     par_buf.savefile );
-    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				  par_buf.stringLFN );
     
     /* find out starting propagator */

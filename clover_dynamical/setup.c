@@ -58,7 +58,7 @@ int initial_set(){
 #endif
     time_stamp("start");
 
-    status = get_prompt( &prompt );
+    status = get_prompt(stdin,  &prompt );
 
     IF_OK status += get_i(prompt,"nflavors", &par_buf.nflavors );
 #ifdef PHI_ALGORITHM
@@ -124,15 +124,15 @@ int readin(int prompt) {
     
     /* get couplings and broadcast to nodes	*/
     /* beta, kappa */
-    IF_OK status += get_f(prompt,"beta", &par_buf.beta);
-    IF_OK status += get_f(prompt,"kappa", &par_buf.kappa);
+    IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta);
+    IF_OK status += get_f(stdin, prompt,"kappa", &par_buf.kappa);
     
     /* Clover coefficient, u0 */
-    IF_OK status += get_f(prompt,"clov_c", &par_buf.clov_c );
-    IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin, prompt,"clov_c", &par_buf.clov_c );
+    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
 
     /* microcanonical time step */
-    IF_OK status += get_f(prompt,"microcanonical_time_step", &par_buf.epsilon );
+    IF_OK status += get_f(stdin, prompt,"microcanonical_time_step", &par_buf.epsilon );
     
     /*microcanonical steps per trajectory */
     IF_OK status += get_i(prompt,"steps_per_trajectory", &par_buf.steps);
@@ -145,24 +145,24 @@ int readin(int prompt) {
     
     /* error per site for conjugate gradient */
     IF_OK {
-      status += get_f(prompt,"error_per_site", &x );
+      status += get_f(stdin, prompt,"error_per_site", &x );
       par_buf.rsqmin = x*x;
     }
 
     /* error for propagator conjugate gradient */
     IF_OK {
-      status += get_f(prompt,"error_for_propagator", &x );
+      status += get_f(stdin, prompt,"error_for_propagator", &x );
       par_buf.rsqprop = x*x;
     }
     
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice( prompt, &par_buf.startflag,
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &par_buf.startflag,
 	par_buf.startfile );
 
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 			     par_buf.savefile );
-    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				  par_buf.stringLFN );
     
     if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
