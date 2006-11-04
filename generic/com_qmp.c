@@ -306,7 +306,7 @@ initialize_machine(int argc, char **argv)
   }
 #else
   if(sizeof(unsigned int)!=4) {
-    printf("node %i: SHORT_IS_32BIT is not set but sizeof(unsigned int)=%lu\n",
+    printf("node %i: SHORT_IS_32BIT is not set but sizeof(unsigned int)=%d\n",
 	   mynode(), sizeof(unsigned int));
     terminate(1);
   }
@@ -1648,8 +1648,8 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
 void
 wait_gather(msg_tag *mtag)
 {
-  int i;
 #ifdef COM_CRC
+  int i;
   int fail = 0;
 #endif
 
@@ -2993,7 +2993,7 @@ local uLongf crc_table[256] = {
 /* =========================================================================
  * This function can be used by asm versions of crc32()
  */
-static uLongf *get_crc_table()
+uLongf *get_crc_table()
 {
 #ifdef DYNAMIC_CRC_TABLE
   if (crc_table_empty) make_crc_table();
