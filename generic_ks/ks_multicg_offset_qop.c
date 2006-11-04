@@ -7,6 +7,11 @@
 
 /*
  * $Log: ks_multicg_offset_qop.c,v $
+ * Revision 1.3  2006/11/04 23:41:21  detar
+ * Add QOP and QDP support for FN fermion links
+ * Create QDP version of fermion_links_fn_multi
+ * Add nrestart parameter for ks_congrad
+ *
  * Revision 1.2  2006/08/22 21:16:40  detar
  * Move functionality from ks_multicg_qop.c to ks_multicg_offset_qop.c
  * Remove extraneous globals from ks_multicg_offset.c
@@ -22,7 +27,7 @@
 #include "../include/loopend.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop.c,v 1.2 2006/08/22 21:16:40 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop.c,v 1.3 2006/11/04 23:41:21 detar Exp $";
 
 /* Standard MILC interface for the Asqtad multimass inverter 
    single source, multiple masses.  Uses the prevailing precision */
@@ -43,6 +48,7 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
   int i,j;
   Real *masses;
   int iterations_used;
+  int nrestart = 1;
   Real *masses2[1];
   int nmass[1], nsrc;
   field_offset milc_srcs[1];
@@ -78,7 +84,7 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
   /* Just set pointer for source 1 array of solutions */
   milc_sols[0] =  psim;
 
-  iterations_used = ks_congrad_qop_site2field( niter, rsqmin, 
+  iterations_used = ks_congrad_qop_site2field( niter, nrestart, rsqmin, 
 					       masses2, nmass, milc_srcs,
 					       milc_sols, nsrc, final_rsq_ptr,
 					       parity );
@@ -104,6 +110,7 @@ int ks_multicg_mass(	/* Return value is number of iterations taken */
 {
 
   int iterations_used;
+  int nrestart = 1;
   Real *masses2[1];
   int nmass[1], nsrc;
   field_offset milc_srcs[1];
@@ -118,7 +125,7 @@ int ks_multicg_mass(	/* Return value is number of iterations taken */
 
   milc_sols[0] =  psim;
 
-  iterations_used = ks_congrad_qop_site2field( niter, rsqmin, 
+  iterations_used = ks_congrad_qop_site2field( niter, nrestart, rsqmin, 
 					       masses2, nmass, milc_srcs,
 					       milc_sols, nsrc, final_rsq_ptr,
 					       parity );

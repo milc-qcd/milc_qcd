@@ -33,11 +33,17 @@ G_KS_ALL = \
   eigen_stuff.o \
   f_meas.o \
   fermion_force_asqtad3.o \
+  fermion_force_asqtad_qdp.o \
   fermion_force_asqtad_qop.o \
   fermion_force_asqtad_qop_milc.o \
   fermion_force_fn_multi.o \
+  fermion_force_fn_multi_qdp.o \
+  fermion_links_asqtad_qdp.o \
   fermion_links_asqtad_qop.o \
+  fermion_links_fn_qop_milc.o \
   fermion_links_fn.o \
+  fermion_links_fn_dmdu0.o \
+  fermion_links_helpers.o \
   ff_opt.o \
   flavor_ops.o \
   fpi_2.o \
@@ -144,11 +150,15 @@ eigen_stuff.o: ../generic_ks/eigen_stuff.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad3.o: ../generic_ks/fermion_force_asqtad3.c
 	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_qdp.o: ../generic_ks/fermion_force_asqtad_qdp.c
+	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop.o: ../generic_ks/fermion_force_asqtad_qop.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop_milc.o: ../generic_ks/fermion_force_asqtad_qop_milc.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_fn_multi.o: ../generic_ks/fermion_force_fn_multi.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_fn_multi_qdp.o: ../generic_ks/fermion_force_fn_multi_qdp.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_general.o: ../generic_ks/fermion_force_general.c
 	${CC} -c ${CFLAGS} $<
@@ -158,9 +168,17 @@ fpi_2.o: ../generic_ks/fpi_2.c
 	${CC} -c ${CFLAGS} $<
 flavor_ops.o: ../generic_ks/flavor_ops.c
 	${CC} -c ${CFLAGS} $<
+fermion_links_asqtad_qdp.o: ../generic_ks/fermion_links_asqtad_qdp.c
+	${CC} -c ${CFLAGS} $<
 fermion_links_asqtad_qop.o: ../generic_ks/fermion_links_asqtad_qop.c
 	${CC} -c ${CFLAGS} $<
+fermion_links_fn_qop_milc.o: ../generic_ks/fermion_links_fn_qop_milc.c
+	${CC} -c ${CFLAGS} $<
 fermion_links_fn.o: ../generic_ks/fermion_links_fn.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_fn_dmdu0.o: ../generic_ks/fermion_links_fn_dmdu0.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_helpers.o: ../generic_ks/fermion_links_helpers.c
 	${CC} -c ${CFLAGS} $<
 ff_opt.o: ../generic_ks/ff_opt.c
 	${CC} -c ${CFLAGS} $<

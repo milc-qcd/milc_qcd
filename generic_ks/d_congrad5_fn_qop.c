@@ -8,6 +8,11 @@
 
 /*
  * $Log: d_congrad5_fn_qop.c,v $
+ * Revision 1.14  2006/11/04 23:41:14  detar
+ * Add QOP and QDP support for FN fermion links
+ * Create QDP version of fermion_links_fn_multi
+ * Add nrestart parameter for ks_congrad
+ *
  * Revision 1.13  2006/10/12 03:43:58  detar
  * Move load_fermion_links_asqtad to (new) fermion_links_asqtad_qop.c
  * to prepare for level 3 link fattening
@@ -41,7 +46,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.13 2006/10/12 03:43:58 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.14 2006/11/04 23:41:14 detar Exp $";
 
 
 /* Map color vector field from site structure to QOP field */
@@ -178,7 +183,7 @@ static int ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 /* Map MILC fields to QOP format and call generic QOP driver */
 /* This version is for site sources and site sinks */
 
-int ks_congrad_qop_site2site(int niter, Real rsqmin, 
+int ks_congrad_qop_site2site(int niter, int nrestart, Real rsqmin, 
 			     Real *masses[], int nmass[], 
 			     field_offset milc_srcs[], 
 			     field_offset *milc_sols[],
@@ -191,7 +196,7 @@ int ks_congrad_qop_site2site(int niter, Real rsqmin,
   QOP_info_t info;
   QOP_resid_arg_t  **qop_resid_arg[MAXSRC];
   int iterations_used = 0;
-  int max_restart = 5;              /* Hard wired at the moment */
+  int max_restart = nrestart;
 
 #ifdef CGTIME
   
@@ -221,8 +226,7 @@ int ks_congrad_qop_site2site(int niter, Real rsqmin,
   create_qop_asqtad_fermion_links( &qop_links );
 
   /* Set qop_invert_arg and qop_resid_arg */
-  set_qop_invert_arg( & qop_invert_arg, niter, 
-				 max_restart, milc_parity );
+  set_qop_invert_arg( & qop_invert_arg, niter, max_restart, milc_parity );
   /* Pointers for residual errors */
   for(isrc = 0; isrc < nsrc; isrc++){
     qop_resid_arg[isrc] = 
@@ -305,7 +309,7 @@ int ks_congrad_qop_site2site(int niter, Real rsqmin,
 /* Map MILC fields to QOP format and call generic QOP driver */
 /* This version is for site sources and field sinks */
 
-int ks_congrad_qop_site2field(int niter, Real rsqmin, 
+int ks_congrad_qop_site2field(int niter, int nrestart, Real rsqmin, 
 			      Real *masses[], int nmass[], 
 			      field_offset milc_srcs[], 
 			      su3_vector **milc_sols[],
@@ -318,7 +322,7 @@ int ks_congrad_qop_site2field(int niter, Real rsqmin,
   QOP_info_t info;
   QOP_resid_arg_t  **qop_resid_arg[MAXSRC];
   int iterations_used = 0;
-  int max_restart = 5;              /* Hard wired at the moment */
+  int max_restart = nrestart;
 
 #ifdef CGTIME
   
@@ -431,7 +435,8 @@ int ks_congrad_qop_site2field(int niter, Real rsqmin,
 /* Standard MILC interface for the Asqtad inverter */
 
 int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
-	        int niter, Real rsqmin, int milc_parity, Real* final_rsq_ptr )
+	        int niter, int nrestart, Real rsqmin, int milc_parity, 
+		Real* final_rsq_ptr )
 {
   int iterations_used;
   static Real t_mass;
@@ -450,7 +455,7 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
   milc_sols0[0] = milc_sol;
   milc_sols[0] =  milc_sols0;
 
-  iterations_used = ks_congrad_qop_site2site( niter, rsqmin, 
+  iterations_used = ks_congrad_qop_site2site( niter, nrestart, rsqmin, 
 					      masses, nmass, milc_srcs,
 					      milc_sols, nsrc, final_rsq_ptr,
 					      milc_parity );

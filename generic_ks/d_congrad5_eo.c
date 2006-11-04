@@ -36,7 +36,7 @@ void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]);
 #include "../include/loopend.h"
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
-    int niter, Real rsqmin, int parity, Real *final_rsq_ptr ){
+    int niter, int nrestart, Real rsqmin, int parity, Real *final_rsq_ptr ){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
@@ -208,7 +208,7 @@ fflush(stdout);}
 
     } while( iteration%niter != 0);
 
-    if( iteration < 5*niter ){
+    if( iteration < nrestart*niter ){
 	/**node0_printf("try again goto start\n");**/
 	 goto start;
     }

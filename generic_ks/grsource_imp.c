@@ -26,8 +26,7 @@ register site *s;
         }
     }
 #ifdef FN
-    if( !valid_longlinks )load_longlinks();
-    if( !valid_fatlinks )load_fatlinks();
+    if( !(valid_fn_links==1))  load_fn_links();
 #endif
     dslash_site( F_OFFSET(g_rand), dest, parity);
     scalar_mult_latvec( dest, -1.0, dest, parity );

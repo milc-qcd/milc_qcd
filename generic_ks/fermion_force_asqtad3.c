@@ -10,9 +10,6 @@
  * K.O. 4/99 Optimized force for Asq action
  * S.G. 7/01, modified to use t_longlink and t_fatlink
  * C.D. 10/02, consolidated quark_stuff.c and quark_stuff_tmp.c
- * T.B. 11/01, Added d(M)/d(u0) dependencies for equation of state calc's with
- *             Asqtad action - ATTN: site structure needs 'dfatlink_du0' in
- *             addition to 'fatlink': #define DM_DU0
  *
  * J.O. 3/04 Rearranged loops for optimization
  * J.O. C.D. 3/04 Copied forward links for optimization and 
@@ -117,6 +114,8 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off ){
 #endif
   ferm_epsilon = 2.0*weight*eps;
   
+  /*  node0_printf("STARTING fn_fermion_force_oneterm() nterms = 1\n");*/
+
   /* Load path coefficients from table */
   act_path_coeff = get_quark_path_coeff();
 
@@ -334,6 +333,8 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
   dtime=-dclock();
 #endif
+
+  /*  node0_printf("STARTING fn_fermion_force_twoterms() nterms = 2\n");*/
 
   /* Allocate temporary hw vector */
   for(mu = 0; mu < 8; mu++){

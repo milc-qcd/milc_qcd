@@ -95,7 +95,7 @@ unset_congrad(void)
 
 int
 ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
-	       int niter, QLA_Real rsqmin, QDP_Subset parity,
+	       int niter, int nrestart, QLA_Real rsqmin, QDP_Subset parity,
 	       QLA_Real *final_rsq_ptr)
 {
   QLA_Real a,b;		 /* Sugar's a,b,resid**2,last resid*2 */
@@ -130,10 +130,9 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   msq_x4 = 4.0*mass*mass;
   iteration = 0;
 
-  if (!valid_fatlinks) load_fatlinks();
-  if (!valid_longlinks) load_longlinks();
-  set4_M_from_temp(fatlinks, t_fatlink);
-  set4_M_from_temp(longlinks, t_longlink);
+  if( !(valid_fn_links==1))  load_fn_links();
+  set4_M_from_field(fatlinks, t_fatlink);
+  set4_M_from_field(longlinks, t_longlink);
 
   //#if 0
   {
@@ -241,7 +240,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
       }
     }
 
-  } while( (rsq>rsqstop) && (iteration<5*niter) );
+  } while( (rsq>rsqstop) && (iteration<nrestart*niter) );
 
   if( rsq <= rsqstop ) {
 #ifdef CGTIME
@@ -269,7 +268,8 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
 
 int
 ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
-	   int niter, Real rsqmin, int parity, Real *final_rsq_ptr)
+  int niter, int nrestart, Real rsqmin, int parity, 
+  Real *final_rsq_ptr)
 {
   QLA_Real qmass, qrsqmin, qfinal_rsq_ptr;
   QDP_ColorVector *src, *dest;
@@ -287,16 +287,16 @@ ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
   src = QDP_create_V();
   dest = QDP_create_V();
 
-  set_V_from_field(src, f_src);
-  set_V_from_field(dest, f_dest);
+  set_V_from_site(src, f_src);
+  set_V_from_site(dest, f_dest);
 
   qmass = (QLA_Real) mass;
   qrsqmin = (QLA_Real) rsqmin;
-  iteration = ks_congrad_qdp(src, dest, qmass, niter, qrsqmin, q_parity,
-			     &qfinal_rsq_ptr);
+  iteration = ks_congrad_qdp(src, dest, qmass, niter, nrestart, 
+    qrsqmin, q_parity, &qfinal_rsq_ptr);
   *final_rsq_ptr = (Real) qfinal_rsq_ptr;
 
-  set_field_from_V(f_dest, dest);
+  set_site_from_V(f_dest, dest);
 
   QDP_destroy_V(dest); dest = NULL;
   QDP_destroy_V(src);  src  = NULL;

@@ -14,6 +14,7 @@
    in "dest".  "resid" is the residual vector, and "cg_p" and "ttt" are
    working vectors for the conjugate gradient.
    niter = maximum number of iterations.
+   nrestart = number of restarts
    rsqmin = desired rsq, quit when we reach rsq <= rsqmin*source_norm.
 	This is different than our old definition of the stopping
 	criterion.  To convert an old stopping residual to the new
@@ -44,7 +45,8 @@ su3_vector *t_dest;
 static int first_congrad = 1;
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
-    int niter, Real rsqmin, int parity, Real *final_rsq_ptr ){
+		int niter, int nrestart, Real rsqmin, 
+		int parity, Real *final_rsq_ptr ){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
@@ -83,8 +85,7 @@ if(parity==EVENANDODD)nflop *=2;
 	msq_x4 = 4.0*mass*mass;
         iteration = 0;
 
-        if (!valid_longlinks) load_longlinks();
-        if (!valid_fatlinks) load_fatlinks();
+	if( !(valid_fn_links==1))  load_fn_links();
 	/* now we can allocate temporary variables and copy then */
 	/* PAD may be used to avoid cache trashing */
 #define PAD 0
@@ -292,7 +293,7 @@ fflush(stdout);}
 
     } while( iteration%niter != 0);
 
-    if( iteration < 5*niter ){
+    if( iteration < nrestart*niter ){
 #ifdef CG_DEBUG
 	node0_printf("try again goto start\n");
 #endif

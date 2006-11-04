@@ -133,7 +133,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
 #define NHIT 0
 #endif
 
-  valid_longlinks = 0; /* smeared links overwrite longlinks */
+  valid_fn_links = 0; /* smeared links overwrite longlinks */
   rephase(OFF);
   if(this_node==0)printf("SMEARING IS ON, level %d\n",SMEAR);
   if(SMEAR>=1){

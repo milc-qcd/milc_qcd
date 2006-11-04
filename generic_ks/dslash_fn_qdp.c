@@ -205,12 +205,12 @@ dslash_fn_site(field_offset src, field_offset dest, int parity)
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
-  set_V_from_field(qsrc, src);
-  set_V_from_field(qdest, dest);
-  set4_M_from_temp(fatlinks, t_fatlink);
-  set4_M_from_temp(longlinks, t_longlink);
+  set_V_from_site(qsrc, src);
+  set_V_from_site(qdest, dest);
+  set4_M_from_field(fatlinks, t_fatlink);
+  set4_M_from_field(longlinks, t_longlink);
   dslash_qdp_fn(qsrc, qdest, subset);
-  set_field_from_V(dest, qdest);
+  set_site_from_V(dest, qdest);
 }
 
 /* Special dslash for use by congrad.  Uses restart_gather_site() when
@@ -228,14 +228,14 @@ dslash_fn_site_special(field_offset src, field_offset dest,
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
-  set_V_from_field(qsrc, src);
-  set_V_from_field(qdest, dest);
+  set_V_from_site(qsrc, src);
+  set_V_from_site(qdest, dest);
   if(start) {
-    set4_M_from_temp(fatlinks, t_fatlink);
-    set4_M_from_temp(longlinks, t_longlink);
+    set4_M_from_field(fatlinks, t_fatlink);
+    set4_M_from_field(longlinks, t_longlink);
   }
   dslash_qdp_fn(qsrc, qdest, subset);
-  set_field_from_V(dest, qdest);
+  set_site_from_V(dest, qdest);
 }
 
 void
@@ -247,12 +247,12 @@ dslash_fn_field(su3_vector *src, su3_vector *dest, int parity)
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
-  set_V_from_temp(qsrc, src);
-  set_V_from_temp(qdest, dest);
-  set4_M_from_temp(fatlinks, t_fatlink);
-  set4_M_from_temp(longlinks, t_longlink);
+  set_V_from_field(qsrc, src);
+  set_V_from_field(qdest, dest);
+  set4_M_from_field(fatlinks, t_fatlink);
+  set4_M_from_field(longlinks, t_longlink);
   dslash_qdp_fn(qsrc, qdest, subset);
-  set_temp_from_V(dest, qdest);
+  set_site_from_V(dest, qdest);
 }
 
 /* Special dslash for use by congrad.  Uses restart_gather_field() when
@@ -270,14 +270,14 @@ dslash_fn_field_special(su3_vector *src, su3_vector *dest,
   if(parity==EVEN) qparity = QDP_even;
   else if(parity==ODD) qparity = QDP_odd;
   else qparity = QDP_all;
-  set_V_from_temp(qsrc, src);
-  set_V_from_temp(qdest, dest);
+  set_V_from_field(qsrc, src);
+  set_V_from_field(qdest, dest);
   if(start) {
-    set4_M_from_temp(fatlinks, t_fatlink);
-    set4_M_from_temp(longlinks, t_longlink);
+    set4_M_from_field(fatlinks, t_fatlink);
+    set4_M_from_field(longlinks, t_longlink);
   }
   dslash_qdp_fn(qsrc, qdest, qparity);
-  set_temp_from_V(dest, qdest);
+  set_site_from_V(dest, qdest);
 }
 
 #endif

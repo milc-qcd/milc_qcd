@@ -21,6 +21,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     Real mass1,
     Real mass2,
     int niter,		        /* maximal number of CG interations */
+    int nrestart,               /* maximal number of CG restarts */
     Real rsqmin,	        /* desired residue squared */
     int milc_parity,		/* parity to be worked on */
     Real  *final_rsq_ptr 	/* final residue squared */
@@ -51,7 +52,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   milc_sols[0] = milc_sols0;
   milc_sols[1] = milc_sols1;
 
-  iterations_used = ks_congrad_qop_site2site( niter, rsqmin, 
+  iterations_used = ks_congrad_qop_site2site( niter, nrestart, rsqmin, 
 					      masses, nmass, milc_srcs,
 					      milc_sols, nsrc, final_rsq_ptr,
 					      milc_parity );

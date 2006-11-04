@@ -7,9 +7,6 @@
 * K.O. 4/99 Optimized force for Asq action
 * S.G. 7/01, modified to use t_longlink and t_fatlink
 * C.D. 10/02, consolidated quark_stuff.c and quark_stuff_tmp.c
-* T.B. 11/01, Added d(M)/d(u0) dependencies for equation of state calc's with
-*             Asqtad action - ATTN: site structure needs 'dfatlink_du0' in
-*             addition to 'fatlink': #define DM_DU0
 *
 * C.D. 3/05 Separated from quark_stuff.c
 

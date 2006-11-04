@@ -154,8 +154,7 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     iteration = 0;
 
 #ifdef FN
-    if (!valid_longlinks) load_longlinks();
-    if (!valid_fatlinks) load_fatlinks();
+    if( !(valid_fn_links==1))  load_fn_links();
 #endif
 
 #define PAD 0

@@ -114,12 +114,12 @@ int spectrum_fzw( Real vmass, field_offset temp1, field_offset temp2 ){
       /* do a C.G. (source in temp1, result in temp2) */
       if( (t_src + xs + ys + zs)%2 == 0 ) {     
            cgn +=  ks_congrad(temp1, temp2,vmass,
-                              niter,rsqprop,EVEN, &finalrsq);
+                              niter,nrestart,rsqprop,EVEN, &finalrsq);
            dslash_site( temp2, F_OFFSET(ttt), ODD);
            scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt), EVEN);
       }else {      
            cgn +=  ks_congrad(temp1, temp2,vmass,
-                                niter,rsqprop, ODD, &finalrsq);
+                                niter,nrestart,rsqprop, ODD, &finalrsq);
            dslash_site( temp2, F_OFFSET(ttt), EVEN);
            scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt), ODD);
        }	  

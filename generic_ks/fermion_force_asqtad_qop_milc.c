@@ -15,9 +15,6 @@
  * K.O. 4/99 Optimized force for Asq action
  * S.G. 7/01, modified to use t_longlink and t_fatlink
  * C.D. 10/02, consolidated quark_stuff.c and quark_stuff_tmp.c
- * T.B. 11/01, Added d(M)/d(u0) dependencies for equation of state calc's with
- *             Asqtad action - ATTN: site structure needs 'dfatlink_du0' in
- *             addition to 'fatlink': #define DM_DU0
  *
  * J.O. 3/04 Rearranged loops for optimization
  * J.O. C.D. 3/04 Copied forward links for optimization and 
@@ -120,7 +117,6 @@ void QOP_asqtad_force(QOP_info_t *info,
   Real coeff;
   Real OneLink, Lepage, Naik, FiveSt, ThreeSt, SevenSt ;
   su3_vector *tempvec[8] ;
-  su3_vector *temp_x ;
   int dir;
 
   /* Timing */
@@ -128,6 +124,8 @@ void QOP_asqtad_force(QOP_info_t *info,
   Real final_flop;
   Real nflop = 253935;
   double dtime = -dclock();
+
+  info->status = QOP_FAIL; 
   
   /* Parity requirements */
   if(gauge->evenodd != QOP_EVENODD ||
@@ -137,7 +135,7 @@ void QOP_asqtad_force(QOP_info_t *info,
     {
       printf("QOP_asqtad_force: Bad parity src %d gauge %d force %d\n",
 	     in_pt->evenodd, gauge->evenodd, force->evenodd);
-      terminate(1);
+      return;
     }
 
   /* Map field pointers to local static pointers */
@@ -370,7 +368,7 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
     if(in_pt[isrc]->evenodd != QOP_EVENODD){
       printf("QOP_asqtad_force_multi: Bad parity in_pt[%d] %d\n",
 	     isrc, in_pt[isrc]->evenodd);
-      terminate(1);
+      return;
     }
   }
   if(gauge->evenodd != QOP_EVENODD ||
@@ -379,7 +377,7 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
     {
       printf("QOP_asqtad_force_multi: Bad parity gauge %d force %d\n",
 	     gauge->evenodd, force->evenodd);
-      terminate(1);
+      return;
     }
 
   /* If not two sources, just do single source repeatedly */
@@ -417,7 +415,7 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
       special_alloc(sites_on_node*sizeof(half_wilson_vector));
     if(pt == NULL){
       printf("QOP_asqtad_force_multi: No room for hw\n");
-      terminate(1);
+      return;
     }
     hw[mu] = pt;
   }
@@ -426,14 +424,14 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
     (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
   if(Pmu == NULL){
     printf("QOP_asqtad_force_multi: No room for Pmu\n");
-    terminate(1);
+    return;
   }
   
   Pmumu = 
     (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
   if(Pmumu == NULL){
     printf("QOP_asqtad_force_multi: No room for Pmumu\n");
-    terminate(1);
+    return;
   }
   
   /* Allocate temporary vectors */
@@ -442,13 +440,13 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(P3[mu] == NULL){
       printf("QOP_asqtad_fermion_force: No room for P3\n");
-      terminate(1);
+      return;
     }
     P5[mu]=
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(P5[mu] == NULL){
       printf("QOP_asqtad_fermion_force: No room for P5\n");
-      terminate(1);
+      return;
     }
   }
 
@@ -461,7 +459,7 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
     pt = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
     if(pt == NULL){
       printf("QOP_asqtad_fermion_force: No room for backwardlink\n");
-      terminate(1);
+      return;
     }
     backwardlink[dir] = pt;
   }
@@ -504,7 +502,7 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(temp_hw[mu] == NULL){
       printf("QOP_asqtad_fermion_force: No room for temp_hw\n");
-      terminate(1);
+      return;
     }
   }
 

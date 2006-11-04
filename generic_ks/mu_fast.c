@@ -983,8 +983,7 @@ void Deriv_O6(field_offset phi_off, field_offset xxx_off, field_offset xxx1_off,
   int jpbp_reps;
 
 #ifdef FN
-  if(!(valid_longlinks==1)) load_longlinks();
-  if(!(valid_fatlinks==1)) load_fatlinks();
+  if( !(valid_fn_links==1))  load_fn_links();
 #endif
   
   for(jpbp_reps = 0; jpbp_reps < npbp_reps; jpbp_reps++)

@@ -64,8 +64,10 @@ BOMB THE COMPILE
     int jpbp_reps;
 
 #ifdef FN
-    if(!(valid_longlinks==1)) load_longlinks();
-    if(!(valid_fatlinks==1)) load_fatlinks();
+    if( !(valid_fn_links==1))  load_fn_links();
+#ifdef DM_DU0
+    if( !(valid_fn_links_dmdu0==1))  load_fn_links_dmdu0();
+#endif
 #endif
 
     for(jpbp_reps = 0; jpbp_reps < npbp_reps; jpbp_reps++){

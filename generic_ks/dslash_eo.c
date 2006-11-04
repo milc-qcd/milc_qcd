@@ -11,7 +11,7 @@
 
    Use dslash_fn for actions that involve only +X and +X+X+X
    couplings.
-
+*/
 /* C. DeTar 3/05 Code split from quark_stuff?.c */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */

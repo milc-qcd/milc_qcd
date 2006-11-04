@@ -121,10 +121,10 @@ void fn_fermion_force_multi( Real eps, Real *residues, su3_vector **multi_x, int
 //int tempflops = 0; //TEMP
 
 #ifdef FFTIME
-  int nflop = 1007064 + 720*nterms; // Asqtad action 10/5/06 version of code;
+  int nflop = 966456 + 1440*nterms; // Asqtad action 11/3/06 version of code;
   double dtime;
 #endif
-  node0_printf("STARTING fn_fermion_force_multi() nterms = %d\n",nterms);
+  /* node0_printf("STARTING fn_fermion_force_multi() nterms = %d\n",nterms); */
   if( nterms==0 )return;
 
   for(i=0;i<=MAX_PATH_LENGTH;i++){
@@ -186,11 +186,11 @@ void fn_fermion_force_multi( Real eps, Real *residues, su3_vector **multi_x, int
 	    su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
 	    scalar_mult_add_su3_matrix( &oprod_along_path[0][i], &tmat, residues[term], &oprod_along_path[0][i] );
           }
-//tempflops+=54;
-//tempflops+=36;
           cleanup_gather(mtag[k]);
 	  k=1-k; // swap 0 and 1
         } /* end loop over terms in rational function expansion */
+//tempflops+=54*nterms;
+//tempflops+=36*nterms;
     }
 
     /* path transport the outer product, or projection matrix, of multi_x[term]
@@ -218,7 +218,7 @@ void fn_fermion_force_multi( Real eps, Real *residues, su3_vector **multi_x, int
     for(ilink=j;ilink>=k;ilink--){
       link_transport_connection( oprod_along_path[length-ilink-1],
       oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  );
-//tempflops+=66;
+//tempflops+=9*22;
     }
 
    /* maintain an array of transports "to this point" along the path.
@@ -246,14 +246,15 @@ void fn_fermion_force_multi( Real eps, Real *residues, su3_vector **multi_x, int
         dir = OPP_DIR(this_path->dir[ilink]);
         link_transport_connection( mats_along_path[ilink],
         mats_along_path[ilink+1], mat_tmp0, dir  );
-//tempflops+=66;
+//tempflops+=9*22;
       }
     } // end loop over links
 
     /* A path has (length+1) points, counting the ends.  At first
 	 point, no "down" direction links have their momenta "at this
 	 point". At last, no "up" ... */
-    for( ilink=0; ilink<=length; ilink++ ){
+    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
+    for( ilink=0; ilink<=k; ilink++ ){
       if(ilink<length)dir = this_path->dir[ilink];
       else dir=NODIR;
       coeff = ferm_epsilon*this_path->coeff;
@@ -265,7 +266,7 @@ void fn_fermion_force_multi( Real eps, Real *residues, su3_vector **multi_x, int
       else if( ilink>0) FORALLSITES(i,s){
         mult_su3_na( &(oprod_along_path[length-ilink][i]),  &(mats_along_path[ilink][i]), &(mat_tmp0[i]) );
       }
-//if(ilink>0)tempflops+=66;
+//if(ilink>0)tempflops+=9*22;
 
       /* add in contribution to the force */
       /* Put antihermitian traceless part into momentum */
@@ -354,10 +355,10 @@ void fn_fermion_force_multi_reverse( Real eps, Real *residues, su3_vector **mult
 //int tempflops = 0; //TEMP
 
 #ifdef FFTIME
-  int nflop = 1007064 + 720*nterms; // Asqtad action 10/5/06 version of code;
+  int nflop = 966456 + 1440*nterms; // Asqtad action 11/3/06 version of code;
   double dtime;
 #endif
-node0_printf("STARTING fn_fermion_force_multi_reverse() nterms = %d\n",nterms);
+  /* node0_printf("STARTING fn_fermion_force_multi_reverse() nterms = %d\n",nterms); */
   if( nterms==0 )return;
 
   multi_x_rev = (su3_vector *)special_alloc( nterms*sites_on_node*sizeof(su3_vector) );
@@ -454,7 +455,7 @@ node0_printf("STARTING fn_fermion_force_multi_reverse() nterms = %d\n",nterms);
     for(ilink=j;ilink>=k;ilink--){
       link_transport_connection( oprod_along_path[length-ilink-1],
       oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  );
-//tempflops+=66;
+//tempflops+=9*22;
     }
 
    /* maintain an array of transports "to this point" along the path.
@@ -482,14 +483,15 @@ node0_printf("STARTING fn_fermion_force_multi_reverse() nterms = %d\n",nterms);
         dir = OPP_DIR(this_path->dir[ilink]);
         link_transport_connection( mats_along_path[ilink],
         mats_along_path[ilink+1], mat_tmp0, dir  );
-//tempflops+=66;
+//tempflops+=9*22;
       }
     } // end loop over links
 
     /* A path has (length+1) points, counting the ends.  At first
 	 point, no "down" direction links have their momenta "at this
 	 point". At last, no "up" ... */
-    for( ilink=0; ilink<=length; ilink++ ){
+    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
+    for( ilink=0; ilink<=k; ilink++ ){
       if(ilink<length)dir = this_path->dir[ilink];
       else dir=NODIR;
       coeff = ferm_epsilon*this_path->coeff;
@@ -501,7 +503,7 @@ node0_printf("STARTING fn_fermion_force_multi_reverse() nterms = %d\n",nterms);
       else if( ilink>0) FORALLSITES(i,s){
         mult_su3_na( &(oprod_along_path[length-ilink][i]),  &(mats_along_path[ilink][i]), &(mat_tmp0[i]) );
       }
-//if(ilink>0)tempflops+=66;
+//if(ilink>0)tempflops+=9*22;
 
       /* add in contribution to the force */
       /* Put antihermitian traceless part into momentum */
@@ -589,7 +591,7 @@ void fn_fermion_force_multi_june05( Real eps, Real *residues, su3_vector **multi
   int nflop = 0;
   double dtime;
 #endif
-node0_printf("STARTING fn_fermion_force_multi() nterms = %d\n",nterms);
+  /*node0_printf("STARTING fn_fermion_force_multi() nterms = %d\n",nterms); */
   if( nterms==0 )return;
 
   mat_outerprod = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
@@ -875,7 +877,7 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues, su3_vector **xxx, 
   dtime=-dclock();
 #endif
 
-node0_printf("STARTING eo_fermion_force_asqtad_multi() nterms = %d\n",nterms);
+  /*node0_printf("STARTING eo_fermion_force_asqtad_multi() nterms = %d\n",nterms);*/
   if( nterms==0 )return;
 
   if(nterms > VECLENGTH){

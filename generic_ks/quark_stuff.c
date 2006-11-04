@@ -1,35 +1,34 @@
 /****** quark_stuff.c  -- ******************/
 /* MIMD version 7 */
-/* quark action stuff for improved action
-* D.T. 1/28/98, starting from gauge_stuff.c
-* K.O. 3/99 Added optimized fattening for Asq actions
-* D.T. 4/99 Combine force calculations for both mass quarks
-* K.O. 4/99 Optimized force for Asq action
-* S.G. 7/01, modified to use t_longlink and t_fatlink
-* C.D. 10/02, consolidated quark_stuff.c and quark_stuff_tmp.c
-* T.B. 11/01, Added d(M)/d(u0) dependencies for equation of state calc's with
-*             Asqtad action - ATTN: site structure needs 'dfatlink_du0' in
-*             addition to 'fatlink': #define DM_DU0
-*
-* J.O. 3/04 Rearranged loops for optimization
-* J.O. C.D. 3/04 Copied forward links for optimization and 
-*                kept mtags open for restart_gather_site
-*                Worked with pointers where possible to avoid copying.
-* C.D. 3/05 Moved fermion force and dslash_eo to separate files.
-
-* This code combines quark_stuff.c and quark_stuff_tmp.c
-
-* In this directory, assume all paths connect even to odd sites, etc.
-* Tabulate "backwards" paths (e.g. "XDOWN" is backward path to "XUP")
-* as separate parity transforms of the fundamental paths.  They will
-* generally need a negative sign in Dslash.  See bottom for a long
-* comment on sign conventions.
+/* Construct path tables and action coefficients for improved quark actions
+ * (Formerly a catch-all file for improved quark action utilities)
+ *
+ * D.T. 1/28/98, starting from gauge_stuff.c
+ * K.O. 3/99 Added optimized fattening for Asq actions
+ * D.T. 4/99 Combine force calculations for both mass quarks
+ * K.O. 4/99 Optimized force for Asq action
+ * S.G. 7/01, modified to use t_longlink and t_fatlink
+ * C.D. 10/02, consolidated quark_stuff.c and quark_stuff_tmp.c
+ * T.B. 11/01, Added d(M)/d(u0) dependencies for equation of state calc's with
+ *             Asqtad action - ATTN: site structure needs 'dfatlink_du0' in
+ *             addition to 'fatlink': #define DM_DU0
+ *
+ * J.O. 3/04 Rearranged loops for optimization
+ * J.O. C.D. 3/04 Copied forward links for optimization and 
+ *                kept mtags open for restart_gather_site
+ *                Worked with pointers where possible to avoid copying.
+ * C.D. 3/05 Moved fermion force and dslash_eo to separate files.
+ * C.D. 10/06 Moved compute_gen_staple to fermion_links_fn.c
+ 
+ * This code combines quark_stuff.c and quark_stuff_tmp.c
+ 
+ * In this directory, assume all paths connect even to odd sites, etc.
+ * Tabulate "backwards" paths (e.g. "XDOWN" is backward path to "XUP")
+ * as separate parity transforms of the fundamental paths.  They will
+ * generally need a negative sign in Dslash.  See bottom for a long
+ * comment on sign conventions.
 */
 
-/*
- * 10/01/02, flopcount for ASQ_OPTIMIZED_FATTENING - C. DeTar
- * Fatlinks:       61632 for load_fatlinks
- */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 
@@ -55,24 +54,6 @@
 
 void printpath( int *path, int length );
 
-#ifdef DM_DU0
-
-#ifndef TADPOLE_IMPROVE
-BOMB THE COMPILE
-#endif
-
-void compute_gen_staple_site(su3_matrix *staple, int mu, int nu,
-			     field_offset link, Real coef, Real coef2 ) ;
-void compute_gen_staple_field(su3_matrix *staple, int mu, int nu, 
-			      su3_matrix *link, Real coef, Real coef2);
-#else /* not DM_DU0 */
-void compute_gen_staple_site(su3_matrix *staple, int mu, int nu,
-			     field_offset link, Real coef ) ;
-void compute_gen_staple_field(su3_matrix *staple, int mu, int nu, 
-			      su3_matrix *link, Real coef);
-#endif
-
-
 int path_num[MAX_BASIC_PATHS];	/* number of rotations/reflections for each 
 					kind */
 static Real act_path_coeff[MAX_BASIC_PATHS]; /* actual path coefficient     *
@@ -83,13 +64,18 @@ static Real act_path_coeff[MAX_BASIC_PATHS]; /* actual path coefficient     *
                                                * tadpole improvement is      *
                                                * specified                   */
 #ifdef DM_DU0
-static Real act_path_coeff2[MAX_BASIC_PATHS]; /* coefficient for
-						  d(Dslash)/d(u0) */
+#ifndef TADPOLE_IMPROVE
+BOMB THE COMPILE
+#endif
+
+static Real act_path_coeff_dmdu0[MAX_BASIC_PATHS]; /* coefficient for
+						      d(Dslash)/d(u0) */
 #endif
 
 /* Array of structures, for each rotation and reflection of each kind of
 	path.  */
 static Q_path q_paths[MAX_NUM];
+static Q_path q_paths_dmdu0[MAX_NUM];
 static int num_q_paths;	/* number of paths in dslash */
 int num_basic_paths;	/* number of paths before rotation/reflection */
 
@@ -110,7 +96,7 @@ void make_path_table() {
     /**int path_ind[MAX_BASIC_PATHS][MAX_LENGTH];**/
     /* table of coefficients in action, for each path */
 
-    node0_printf("%s\n",quark_action_description);
+    node0_printf("%s\n",QUARK_ACTION_DESCRIPTION);
     num_q_paths = 0;
     num_basic_paths = 0;
     if(MAX_LENGTH > MAX_PATH_LENGTH){
@@ -128,7 +114,7 @@ void make_path_table() {
 #endif
 	act_path_coeff[j] = this_coeff ;
 #ifdef DM_DU0
-	act_path_coeff2[j] = this_coeff*(1-path_length_in[j])/u0;
+	act_path_coeff_dmdu0[j] = this_coeff*(1-path_length_in[j])/u0;
 #endif
 	i = add_basic_path( path_ind[j], path_length_in[j],
 	    this_coeff );
@@ -146,6 +132,10 @@ Q_path *get_q_paths(){
   return q_paths;
 }
 
+Q_path *get_q_paths_dmdu0(){
+  return q_paths_dmdu0;
+}
+
 
 /* Accessor for quark action information */
 Real *get_quark_path_coeff(){
@@ -154,8 +144,8 @@ Real *get_quark_path_coeff(){
 
 #ifdef DM_DU0
 /* Accessor for quark action information */
-Real *get_quark_path_coeff2(){
-  return act_path_coeff2;
+Real *get_quark_path_coeff_dmdu0(){
+  return act_path_coeff_dmdu0;
 }
 #endif
 
@@ -210,21 +200,31 @@ int add_basic_path( int *basic_vec, int length, Real coeff ) {
 		exit(0);
 	      }
 	      q_paths[num_q_paths].length=length;
-	      for(j=0;j<MAX_LENGTH;j++) q_paths[num_q_paths].dir[j]=vec[j];
+#ifdef DM_DU0
+	      q_paths_dmdu0[num_q_paths].length=length;
+#endif
+	      for(j=0;j<MAX_LENGTH;j++) {
+		q_paths[num_q_paths].dir[j]=vec[j];
+#ifdef DM_DU0
+		q_paths_dmdu0[num_q_paths].dir[j]=vec[j];
+#endif
+	      }
 		/* remember to copy NODIR's, or comparison will get confused */
 	      if(ir[0]==0){
 		q_paths[num_q_paths].coeff =  coeff;
-#ifdef DM_DU0
-		q_paths[num_q_paths].coeff2 = coeff*(1-length)/u0;
-#endif
 		q_paths[num_q_paths].forwback =  +1;
+#ifdef DM_DU0
+		q_paths_dmdu0[num_q_paths].coeff = coeff*(1-length)/u0;
+		q_paths_dmdu0[num_q_paths].forwback =  +1;
+#endif
 	      }
 	      else{
 		q_paths[num_q_paths].coeff = -coeff;
-#ifdef DM_DU0
-		q_paths[num_q_paths].coeff2 = -coeff*(1-length)/u0;
-#endif
 		q_paths[num_q_paths].forwback = -1;
+#ifdef DM_DU0
+		q_paths_dmdu0[num_q_paths].coeff = -coeff*(1-length)/u0;
+		q_paths_dmdu0[num_q_paths].forwback = -1;
+#endif
 	      }
 	      num_q_paths++;
 	      path_num++;
@@ -247,234 +247,5 @@ int is_path_equal( int *path1, int* path2, int length ){
    for(i=0;i<length;i++)if(path1[i]!=path2[i])return(0);
    return(1);
 }
-
-
-#ifdef  ASQ_OPTIMIZED_FATTENING   /* Asqtad action only, "_fn" executables */
-#ifndef FN
-BOMB THE COMPILE
-#endif
-#ifdef DM_DU0
-void compute_gen_staple_site(su3_matrix *staple, int mu, int nu, 
-			field_offset link, Real coef, Real coef2) {
-#else
-void compute_gen_staple_site(su3_matrix *staple, int mu, int nu, 
-			field_offset link, Real coef) {
-#endif
-  su3_matrix tmat1,tmat2;
-  msg_tag *mtag0,*mtag1;
-  su3_matrix *tempmat ;
-  register site *s ;
-  register int i ;
-  register su3_matrix *fat1;
-#ifdef DM_DU0
-  register su3_matrix *fat2;
-#endif
-
-  /* Computes the staple :
-                   mu
-                +-------+
-          nu	|	|
-		|	|
-		X	X
-    Where the mu link can be any su3_matrix. The result is saved in staple.
-    if staple==NULL then the result is not saved.
-    It also adds the computed staple to the fatlink[mu] with weight coef.
-  */
-
-  /* Upper staple */
-  mtag0 = start_gather_site( link, sizeof(su3_matrix), nu, EVENANDODD, gen_pt[0] );
-  mtag1 = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix), mu, 
-			EVENANDODD, gen_pt[1] );
-  wait_gather(mtag0);
-  wait_gather(mtag1);
-  
-  if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
-      mult_su3_na( (su3_matrix *)gen_pt[0][i],
-		   (su3_matrix *)gen_pt[1][i], &tmat1 );
-      mult_su3_nn( &(s->link[nu]), &tmat1, &staple[i] );
-    }
-  }
-  else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
-      mult_su3_na( (su3_matrix *)gen_pt[0][i],
-		   (su3_matrix *)gen_pt[1][i], &tmat1 );
-      mult_su3_nn( &(s->link[nu]), &tmat1, &tmat2 );
-      fat1 = &(t_fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix(fat1, &tmat2, coef,
-				 fat1) ;
-#ifdef DM_DU0
-      fat2 = &(t_dfatlink_du0[4*i+mu]);
-      scalar_mult_add_su3_matrix(fat2, &tmat2, coef2,
-				 fat2) ;
-#endif
-    }
-  }
-  cleanup_gather(mtag0);
-  cleanup_gather(mtag1);
-
-  /* lower staple */
-  tempmat = (su3_matrix *)special_alloc( sites_on_node*sizeof(su3_matrix) );
-  mtag0 = start_gather_site( F_OFFSET(link[nu]),
-			sizeof(su3_matrix), mu, EVENANDODD, gen_pt[0] );
-  wait_gather(mtag0);
-  FORALLSITES(i,s){
-    mult_su3_an( &(s->link[nu]),(su3_matrix *)F_PT(s,link), &tmat1 );
-    mult_su3_nn( &(tmat1),(su3_matrix *)gen_pt[0][i], &(tempmat[i]) );
-  }
-  cleanup_gather(mtag0);
-  mtag0 = start_gather_field( tempmat, sizeof(su3_matrix),
-				  OPP_DIR(nu), EVENANDODD, gen_pt[0] );
-  wait_gather(mtag0);
-
-  if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
-      add_su3_matrix( &staple[i],(su3_matrix *)gen_pt[0][i], 
-		      &staple[i] );
-      fat1 = &(t_fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat1,
-				 &staple[i], coef, 
-				 fat1 );
-#ifdef DM_DU0
-      fat2 = &(t_dfatlink_du0[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat2,
-				 &staple[i], coef2, 
-				 fat2 );
-#endif
-    }
-  }
-  else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
-      fat1 = &(t_fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat1,
-				 (su3_matrix *)gen_pt[0][i], coef, 
-				 fat1 );
-#ifdef DM_DU0
-      fat2 = &(t_dfatlink_du0[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat2,
-				 (su3_matrix *)gen_pt[0][i], coef2, 
-				 fat2 );
-#endif
-    }
-  }
-
-  free(tempmat);
-  cleanup_gather(mtag0);
-} /* compute_gen_staple_site */
-#endif  /* ASQ_OPTIMIZED_FATTENING   */
-
-#ifdef  ASQ_OPTIMIZED_FATTENING   /* Asqtad action only, "_fn" executables */
-#ifndef FN
-BOMB THE COMPILE
-#endif
-#ifdef DM_DU0
-void compute_gen_staple_field(su3_matrix *staple, int mu, int nu, 
-			su3_matrix *link, Real coef, Real coef2) {
-#else
-void compute_gen_staple_field(su3_matrix *staple, int mu, int nu, 
-			su3_matrix *link, Real coef) {
-#endif
-  su3_matrix tmat1,tmat2;
-  msg_tag *mtag0,*mtag1;
-  su3_matrix *tempmat ;
-  register site *s ;
-  register int i ;
-  register su3_matrix *fat1;
-#ifdef DM_DU0
-  register su3_matrix *fat2;
-#endif
-
-  /* Computes the staple :
-                   mu
-                +-------+
-          nu	|	|
-		|	|
-		X	X
-    Where the mu link can be any su3_matrix. The result is saved in staple.
-    if staple==NULL then the result is not saved.
-    It also adds the computed staple to the fatlink[mu] with weight coef.
-  */
-
-  /* Upper staple */
-  mtag0 = start_gather_field( link, sizeof(su3_matrix), nu, EVENANDODD, gen_pt[0] );
-  mtag1 = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix), mu, 
-			EVENANDODD, gen_pt[1] );
-  wait_gather(mtag0);
-  wait_gather(mtag1);
-  
-  if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
-      mult_su3_na( (su3_matrix *)gen_pt[0][i],
-		   (su3_matrix *)gen_pt[1][i], &tmat1 );
-      mult_su3_nn( &(s->link[nu]), &tmat1, &staple[i] );
-    }
-  }
-  else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
-      mult_su3_na( (su3_matrix *)gen_pt[0][i],
-		   (su3_matrix *)gen_pt[1][i], &tmat1 );
-      mult_su3_nn( &(s->link[nu]), &tmat1, &tmat2 );
-      fat1 = &(t_fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix(fat1, &tmat2, coef,
-				 fat1) ;
-#ifdef DM_DU0
-      fat2 = &(t_dfatlink_du0[4*i+mu]);
-      scalar_mult_add_su3_matrix(fat2, &tmat2, coef2,
-				 fat2) ;
-#endif
-    }
-  }
-  cleanup_gather(mtag0);
-  cleanup_gather(mtag1);
-
-  /* lower staple */
-  tempmat = (su3_matrix *)special_alloc( sites_on_node*sizeof(su3_matrix) );
-  mtag0 = start_gather_site( F_OFFSET(link[nu]),
-			sizeof(su3_matrix), mu, EVENANDODD, gen_pt[0] );
-  wait_gather(mtag0);
-  FORALLSITES(i,s){
-    mult_su3_an( &(s->link[nu]),&link[i], &tmat1 );
-    mult_su3_nn( &(tmat1),(su3_matrix *)gen_pt[0][i], &(tempmat[i]) );
-  }
-  cleanup_gather(mtag0);
-  mtag0 = start_gather_field( tempmat, sizeof(su3_matrix),
-				  OPP_DIR(nu), EVENANDODD, gen_pt[0] );
-  wait_gather(mtag0);
-
-  if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
-      add_su3_matrix( &staple[i],(su3_matrix *)gen_pt[0][i], 
-		      &staple[i] );
-      fat1 = &(t_fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat1,
-				 &staple[i], coef, 
-				 fat1 );
-#ifdef DM_DU0
-      fat2 = &(t_dfatlink_du0[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat2,
-				 &staple[i], coef2, 
-				 fat2 );
-#endif
-    }
-  }
-  else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
-      fat1 = &(t_fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat1,
-				 (su3_matrix *)gen_pt[0][i], coef, 
-				 fat1 );
-#ifdef DM_DU0
-      fat2 = &(t_dfatlink_du0[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat2,
-				 (su3_matrix *)gen_pt[0][i], coef2, 
-				 fat2 );
-#endif
-    }
-  }
-
-  free(tempmat);
-  cleanup_gather(mtag0);
-} /* compute_gen_staple_field */
-#endif  /* ASQ_OPTIMIZED_FATTENING   */
 
 /* quark_stuff.c */

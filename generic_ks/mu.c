@@ -770,8 +770,7 @@ void M_derivatives(field_offset phi_off, field_offset xxx_off, field_offset xxx1
   int jpbp_reps;
 
 #ifdef FN
-  if(!(valid_longlinks==1)) load_longlinks(); 
-  if(!(valid_fatlinks==1)) load_fatlinks(); 
+  if( !(valid_fn_links==1))  load_fn_links();
 #endif
 
   //  node0_printf("fatlink %e %e\n", lattice[0].fatlink[3].e[1][0].real, lattice[0].fatlink[3].e[1][0].imag);

@@ -12,6 +12,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     Real mass1,
     Real mass2,
     int niter,		/* maximal number of CG interations */
+    int nrestart,       /* maximum number of restarts */
     Real rsqmin,	/* desired residue squared */
     int parity,		/* parity to be worked on */
     Real  *final_rsq_ptr 	/* final residue squared */
@@ -20,9 +21,9 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
 
   int myiters = 0;
 
-  myiters += ks_congrad( src1, dest1, mass1, niter, rsqmin, parity, 
+  myiters += ks_congrad( src1, dest1, mass1, niter, nrestart, rsqmin, parity, 
 			 final_rsq_ptr );
-  myiters += ks_congrad( src2, dest2, mass2, niter, rsqmin, parity, 
+  myiters += ks_congrad( src2, dest2, mass2, niter, nrestart, rsqmin, parity, 
 			 final_rsq_ptr );
 
   return myiters;

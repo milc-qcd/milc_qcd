@@ -294,7 +294,7 @@ int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 	  
 	  /* do a C.G.: source tempvec1, result tempvec2 */
 	  cgn += ks_congrad( tempvec1, tempvec2, vmass,
-	    niter,rsqprop,EVEN,&finalrsq);
+	    niter,nrestart,rsqprop,EVEN,&finalrsq);
 	  /* Multiply by -Madjoint */
 	  dslash_site( tempvec2, tempvec2, ODD);
 	  scalar_mult_latvec( tempvec2, -vmass_x2, tempvec2, EVEN);
@@ -323,7 +323,7 @@ int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 	  
 	  /* do a C.G.: source tempvec1, result tempvec2 */
 	  cgn += ks_congrad( tempvec1, tempvec2, vmass,
-	    niter,rsqprop,ODD,&finalrsq);
+	    niter,nrestart,rsqprop,ODD,&finalrsq);
 	  /* Multiply by -Madjoint */
 	  dslash_site( tempvec2, tempvec2, EVEN);
 	  scalar_mult_latvec( tempvec2, -vmass_x2, tempvec2, ODD);

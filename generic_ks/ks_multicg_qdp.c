@@ -120,11 +120,10 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
   if(!congrad_setup) setup_congrad();
 
 #ifdef FN
-  if (!valid_longlinks) load_longlinks();
-  if (!valid_fatlinks) load_fatlinks();
+  if( !(valid_fn_links==1))  load_fn_links();
 #endif
-  set4_M_from_temp(fatlinks, t_fatlink);
-  set4_M_from_temp(longlinks, t_longlink);
+  set4_M_from_field(fatlinks, t_fatlink);
+  set4_M_from_field(longlinks, t_longlink);
   {
     QDP_ColorMatrix *tcm;
     int i;
@@ -142,7 +141,7 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
 #endif
 
   /* initialization process */
- start:
+  /* start: */
 
   QDP_r_eq_norm2_V(&source_norm, src, q_parity);
   QDP_V_eq_V(resid, src, q_parity);
@@ -190,7 +189,7 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
       zeta_ip1[j] = zeta_i[j] * zeta_im1[j] * beta_im1[j_low];
       c1 = beta_i[j_low] * alpha[j_low] * (zeta_im1[j]-zeta_i[j]);
       c2 = zeta_im1[j] * beta_im1[j_low] * (1.0+shifts[j]*beta_i[j_low]);
-      /*THISBLOWSUP
+      /*THISBLOWSUP*/
 	/** zeta_ip1[j] /= c1 + c2;
 	beta_i[j] = beta_i[j_low] * zeta_ip1[j] / zeta_i[j];**/
 
@@ -323,7 +322,7 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
   }
 
   src = QDP_create_V();
-  set_V_from_field(src, f_src);
+  set_V_from_site(src, f_src);
 
   dest = (QDP_ColorVector **) malloc(num_masses*sizeof(QDP_ColorVector *));
   qmasses = (QLA_Real *) malloc(num_masses*sizeof(QLA_Real));
@@ -338,7 +337,7 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
   *final_rsq_ptr = (Real) qfinal_rsq_ptr;
 
   for(i=0; i<num_masses; i++) {
-    set_temp_from_V(psim[i], dest[i]);
+    set_field_from_V(psim[i], dest[i]);
     QDP_destroy_V(dest[i]);
   }
   free(qmasses);      qmasses = NULL;

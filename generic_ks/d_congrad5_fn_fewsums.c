@@ -49,7 +49,7 @@ su3_vector *t_dest;
 int first_congrad = 1;
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
-    int niter, Real rsqmin, int parity, Real *final_rsq_ptr ){
+    int niter, int nrestart, Real rsqmin, int parity, Real *final_rsq_ptr ){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
@@ -93,8 +93,7 @@ if(parity==EVENANDODD)nflop *=2;
 	msq_x4 = 4.0*mass*mass;
         iteration = 0;
 
-        if (!valid_longlinks) load_longlinks();
-        if (!valid_fatlinks) load_fatlinks();
+	if( !(valid_fn_links==1))  load_fn_links();
 	/* now we can allocate temporary variables and copy then */
 	/* PAD may be used to avoid cache trashing */
 #define PAD 0
@@ -330,7 +329,7 @@ fflush(stdout);}
 
     } while( iteration%niter != 0);
 
-    if( iteration < 5*niter ){
+    if( iteration < nrestart*niter ){
 #ifdef CG_DEBUG
 	node0_printf("try again goto start\n");
 #endif

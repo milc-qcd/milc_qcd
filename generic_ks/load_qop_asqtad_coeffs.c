@@ -8,13 +8,10 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, Real weight)
+void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, Real weight,
+			    Real *act_path_coeff)
 {
-  Real *act_path_coeff;
   Real ferm_epsilon;
-
-  /* Load path coefficients from table */
-  act_path_coeff = get_quark_path_coeff();
 
   ferm_epsilon = 2.0*weight;
   

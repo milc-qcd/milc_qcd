@@ -56,8 +56,7 @@ dslash_fn_site( field_offset src, field_offset dest, int parity )
   register su3_matrix *fat4, *long4;
   msg_tag *mtag_up, *mtag_dn;
 
-  if(!valid_longlinks) load_longlinks();
-  if(!valid_fatlinks) load_fatlinks();
+  if( !(valid_fn_links==1))  load_fn_links();
   switch(parity){
     case EVEN:	otherparity = ODD; break;
     case ODD :	otherparity = EVEN; break;
@@ -206,8 +205,7 @@ dslash_fn_site_special( field_offset src, field_offset dest,
   register int dir,otherparity;
   register su3_matrix *fat4, *long4;
 
-  if(!valid_longlinks) load_longlinks();
-  if(!valid_fatlinks) load_fatlinks();
+  if(!valid_fn_links) load_fn_links();
   switch(parity) {
     case EVEN:	otherparity = ODD; break;
     case ODD:	otherparity = EVEN; break;
@@ -369,8 +367,7 @@ dslash_fn_field( su3_vector *src, su3_vector *dest, int parity )
     }
   templongv1=(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-  if(!valid_longlinks) load_longlinks();
-  if(!valid_fatlinks) load_fatlinks();
+  if(!valid_fn_links) load_fn_links();
   switch(parity)
     {
       case EVEN:	otherparity = ODD; break;
@@ -547,8 +544,7 @@ dslash_fn_field_special(su3_vector *src, su3_vector *dest,
     }
   
   /* load fatlinks and longlinks */
-  if(!valid_longlinks) load_longlinks();
-  if(!valid_fatlinks) load_fatlinks();
+  if(!valid_fn_links) load_fn_links();
 
   switch(parity)
     {
@@ -718,8 +714,8 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity ) {
    register su3_matrix *fat4, *long4;
    msg_tag *tag[16];
 
-    if(!valid_longlinks)load_longlinks();
-    if(!valid_fatlinks)load_fatlinks();
+    if(!valid_fn_links)load_fn_links();
+    if(!valid_fn_links_dmdu0)load_fn_links_dmdu0();
     switch(parity){
 	case EVEN:	otherparity=ODD; break;
 	case ODD:	otherparity=EVEN; break;
@@ -885,8 +881,8 @@ void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity ) {
      }
    templongv1=(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-   if(!valid_longlinks)load_longlinks();
-   if(!valid_fatlinks)load_fatlinks();
+   if(!valid_fn_links)load_fn_links();
+   if(!valid_fn_links_dmdu0)load_fn_links_dmdu0();
    switch(parity)
      {
      case EVEN:	otherparity=ODD; break;

@@ -6,6 +6,11 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.15  2006/11/04 23:41:17  detar
+ * Add QOP and QDP support for FN fermion links
+ * Create QDP version of fermion_links_fn_multi
+ * Add nrestart parameter for ks_congrad
+ *
  * Revision 1.14  2006/10/12 03:45:16  detar
  * Move load_qop_asqtad_coeffs to (new) load_qop_asqtad_coeffs.c to
  * prepare for QOP link fattening.
@@ -48,46 +53,7 @@
 #include <qop.h>
 #include <string.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.14 2006/10/12 03:45:16 detar Exp $";
-
-void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
-			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
-{
-
-  /* Copy gauge links from site structure to raw and then to QOP format */
-  
-  *rawlinks = create_raw_G_from_site_links(EVENANDODD);
-  if(*rawlinks == NULL)terminate(1);
-  
-  *links = QOP_create_G_from_raw((Real **)(*rawlinks),QOP_EVENODD);
-
-  /* Copy momentum from site structure to raw and then to QOP format */
-
-  *rawmom = create_raw_F_from_site_mom(EVENANDODD);
-  if(*rawmom == NULL)terminate(1);
-
-  *mom = QOP_create_F_from_raw((Real **)(*rawmom),QOP_EVENODD);
-  
-}
-
-void unload_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
-			       su3_matrix ***rawlinks, su3_matrix ***rawmom)
-{
-
-  /* Destroy gauge links and QOP links */
-
-  destroy_raw_G (*rawlinks);   *rawlinks = NULL;
-  QOP_destroy_G (*links);      *links = NULL;
-
-  /* Copy momentum from QOP format to raw and then to site structure */
-
-  QOP_extract_F_to_raw((Real **)(*rawmom), *mom, QOP_EVENODD);
-
-  unload_raw_F_to_site_mom(*rawmom, EVENANDODD);
-
-  destroy_raw_F (*rawmom);   *rawmom = NULL;
-  QOP_destroy_F (*mom);      *mom = NULL;
-}
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.15 2006/11/04 23:41:17 detar Exp $";
 
 /* Standard MILC interface for the single-species Asqtad fermion force routine */
 void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
@@ -128,7 +94,7 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
   vecx = QOP_create_V_from_raw((Real *)rawvecx,QOP_EVENODD);
 
   /* Load coefficients */
-  load_qop_asqtad_coeffs(&coeff, weight);
+  load_qop_asqtad_coeffs(&coeff, weight, get_quark_path_coeff());
 
   /* Compute fermion force */
   QOP_asqtad_force(&info, links, mom, &coeff, eps, vecx);
@@ -194,7 +160,7 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
   /* Load coefficients */
   epsv[0] = eps*weight1;  epsv[1] = eps*weight2;
-  load_qop_asqtad_coeffs(&coeff, 1.);
+  load_qop_asqtad_coeffs(&coeff, 1., get_quark_path_coeff());
 
   /* Compute fermion force */
   QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, 2);
@@ -292,7 +258,7 @@ void eo_fermion_force_multi( Real eps, Real *residues,
   epsv = (Real *)malloc(sizeof(Real)*nterms);
   /* Load coefficients */
   for(i = 0; i < nterms; i++) epsv[i] = eps*residues[i];
-  load_qop_asqtad_coeffs(&coeff, 1.0);
+  load_qop_asqtad_coeffs(&coeff, 1., get_quark_path_coeff());
 
   /* Compute fermion force */
 
