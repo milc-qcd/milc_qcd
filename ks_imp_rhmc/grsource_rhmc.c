@@ -14,7 +14,8 @@
 // residues, roots and order define rational function approximation for
  // x^(nf/8)
 void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
-			int parity, su3_vector **multi_x, su3_vector *sumvec )
+			int parity, su3_vector **multi_x, su3_vector *sumvec,
+			Real my_rsqmin, int my_niter)
 {
   register int i,j;
   register site *s;
@@ -41,7 +42,8 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
 #ifdef FN
   if( !(valid_fn_links==1))  load_fn_links();
 #endif
-  ks_ratinv( F_OFFSET(g_rand), multi_x, roots, order, niter, ac_rsqmin, parity, &final_rsq );
+  ks_ratinv( F_OFFSET(g_rand), multi_x, roots, order, my_niter, 
+	     my_rsqmin, parity, &final_rsq );
   ks_rateval( sumvec, F_OFFSET(g_rand), multi_x, residues, order, parity );
   FORSOMEPARITY(i,s,parity){ *(su3_vector *)F_PT(s,dest) = sumvec[i]; }
 }/* grsource_rhmc */

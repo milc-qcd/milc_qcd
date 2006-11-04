@@ -51,9 +51,11 @@ void ranmom();
 
 // RHMC algorithm stuff
 void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
-			int parity, su3_vector **multi_x, su3_vector *sumvec );
+			int parity, su3_vector **multi_x, su3_vector *sumvec,
+			Real my_rsqmin, int my_niter);
 void eo_fermion_force_rhmc( int alg_flag, Real eps, params_ratfunc *rf, 
-			    su3_vector **multi_x, field_offset phi_off );
+			    su3_vector **multi_x, field_offset phi_off,
+			    Real my_rsqmin, int niter);
 
 int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,   /* source vector (type su3_vector) */
@@ -74,7 +76,7 @@ int ks_rateval(
     int parity          /* parity to be worked on */
     );
 
-params_rhmc *load_rhmc_params(char filename[], int prompt, int nphi);
+params_rhmc *load_rhmc_params(char filename[], int n_pseudo);
 
 void hvy_pot( field_offset links );
 void f_measure( field_offset phi_off, field_offset xxx_off, Real mass );

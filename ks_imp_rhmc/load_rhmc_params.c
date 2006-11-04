@@ -7,12 +7,13 @@
 #include "ks_imp_includes.h"
 #define IF_OK if(status==0)
 
-static int read_broadcast_ratfunc(FILE *fp, int prompt, 
+static int read_broadcast_ratfunc(FILE *fp, 
 				  char tag[], params_ratfunc *rf)
 {
   int status = 0;
   Real fstatus = 0;
   int i;
+  int prompt = 0;  /* We don't use prompts for this file */
   char prompt_order[16];
   char prompt_res[16];
   char prompt_pole[16];
@@ -88,14 +89,15 @@ static int read_broadcast_ratfunc(FILE *fp, int prompt,
 /* Returns an array of rhmc parameter structures, one for each
    pseudofermion field and the number of such structures */
    
-params_rhmc *load_rhmc_params(char filename[], int prompt, int nphi)
+params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
 {
   FILE *fp = NULL;
   char myname[] = "load_rhmc_params";
   int status = 0;
+  int prompt = 0;   /* We don't do prompting for these parameters */
   Real fstatus = 0;
   int i;
-  int my_nphi, precision;
+  int my_n_pseudo, precision;
   params_rhmc *p;
   
   /* Node zero starts reading */
@@ -107,10 +109,10 @@ params_rhmc *load_rhmc_params(char filename[], int prompt, int nphi)
     }
     
     /* Read the number of pseudofermion fields and check */
-    my_nphi = 0;
-    IF_OK status += get_i(fp,prompt,"nphi",&my_nphi);
-    if(my_nphi != nphi){
-      printf("%s: Wrong value of nphi.  Expected %d\n",myname,nphi);
+    my_n_pseudo = 0;
+    IF_OK status += get_i(fp,prompt,"n_pseudo",&my_n_pseudo);
+    if(my_n_pseudo != n_pseudo){
+      printf("%s: Wrong value of n_pseudo.  Expected %d\n",myname,n_pseudo);
       status += 1;
     }
   }
@@ -120,7 +122,7 @@ params_rhmc *load_rhmc_params(char filename[], int prompt, int nphi)
   if(status > 0)return NULL;
   
   /* Make space for the parameters */
-  p = (params_rhmc *)malloc(my_nphi*sizeof(params_rhmc));
+  p = (params_rhmc *)malloc(my_n_pseudo*sizeof(params_rhmc));
   if(p == NULL){
     status = 1;
   }
@@ -132,13 +134,13 @@ params_rhmc *load_rhmc_params(char filename[], int prompt, int nphi)
 
   /* Read rational function parameters for each pseudofermion field */
   
-  for(i = 0; i < my_nphi; i++){
+  for(i = 0; i < my_n_pseudo; i++){
     node0_printf("Loading rational function parameters for phi field %d\n",i);
     /* The precision is only informational */
     IF_OK status += get_i(fp,prompt,"precision",&precision);
-    IF_OK status += read_broadcast_ratfunc(fp,prompt,"MD",&p[i].MD);
-    IF_OK status += read_broadcast_ratfunc(fp,prompt,"GR",&p[i].GR);
-    IF_OK status += read_broadcast_ratfunc(fp,prompt,"FA",&p[i].FA);
+    IF_OK status += read_broadcast_ratfunc(fp,"MD",&p[i].MD);
+    IF_OK status += read_broadcast_ratfunc(fp,"GR",&p[i].GR);
+    IF_OK status += read_broadcast_ratfunc(fp,"FA",&p[i].FA);
   }
 
   /* Poll nodes for any errors */

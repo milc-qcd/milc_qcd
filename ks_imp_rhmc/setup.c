@@ -14,6 +14,11 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.10  2006/11/04 23:35:14  detar
+//  Add separate CG control for MD, FA, GR
+//  Add nrestart parameter
+//  Remove some debugging lines from sample output files and errtol files
+//
 //  Revision 1.9  2006/10/29 02:35:54  detar
 //  Abandon rationals.h and load parameters from file instead.
 //
@@ -81,6 +86,9 @@ setup()
   int initial_set();
   void make_3n_gathers();
   int prompt;
+#ifdef HAVE_QDP
+  int i;
+#endif
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();
@@ -265,14 +273,6 @@ readin(int prompt)
     IF_OK status += get_f(stdin, prompt,"mass2", &par_buf.mass2 );
     IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
 
-    /* Number of pseudofermions */
-    IF_OK status += get_i(stdin, prompt,"nphi", &par_buf.nphi );
-    if(nphi > NPHI){
-      printf("Error:  Too many pseudofermion fields.  Recompile. Current max is %d\n"
-	     ,NPHI);
-      terminate(1);
-    }
-
     /* microcanonical time step */
     IF_OK status += 
       get_f(stdin, prompt,"microcanonical_time_step", &par_buf.epsilon );
@@ -280,20 +280,46 @@ readin(int prompt)
     /*microcanonical steps per trajectory */
     IF_OK status += get_i(stdin, prompt,"steps_per_trajectory", &par_buf.steps );
     
-    /* maximum no. of conjugate gradient iterations */
-    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
-    
-    /* error per site for conjugate gradient in molecular dynamics */
-    IF_OK status += get_f(stdin, prompt,"mol_dyn_error_per_site", &x );
-    IF_OK par_buf.md_rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
-    /* error per site for conjugate gradient in accept/reject and action computation */
-    IF_OK status += get_f(stdin, prompt,"action_error_per_site", &x );
-    IF_OK par_buf.ac_rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
-    /* New conjugate gradient normalizes rsqmin by norm of source */
+    /* Number of pseudofermions */
+    IF_OK status += get_i(stdin, prompt,"n_pseudo", &par_buf.n_pseudo );
+    if(n_pseudo > N_PSEUDO){
+      printf("Error:  Too many pseudofermion fields.  Recompile. Current max is %d\n"
+	     ,N_PSEUDO);
+      terminate(1);
+    }
+
+    /* Data for each pseudofermion */
+
+    for(i = 0; i < par_buf.n_pseudo; i++){
+      Real tmp[3]; int itmp[3];
+
+      /* Residuals for multicg solves */
+      IF_OK status += get_vf(stdin, prompt,"cgresid_md_fa_gr", tmp, 3 );
+      /* rsqmin is r**2 in conjugate gradient */
+      IF_OK {
+	par_buf.rsqmin_md[i] = tmp[0]*tmp[0];
+	par_buf.rsqmin_fa[i] = tmp[1]*tmp[1];
+	par_buf.rsqmin_gr[i] = tmp[2]*tmp[2];
+      }
+
+      /* Max CG iterations for multicg solves */
+      IF_OK status += get_vi(stdin, prompt, "max_multicg_md_fa_gr", itmp, 3);
+      IF_OK {
+	par_buf.niter_md[i] = itmp[0];
+	par_buf.niter_fa[i] = itmp[1];
+	par_buf.niter_gr[i] = itmp[2];
+      }
+    }
     
     /* error for propagator conjugate gradient */
     IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
     IF_OK par_buf.rsqprop = x*x;
+    
+    /* maximum no. of conjugate gradient iterations for propagator
+       etc. and maximum no. of restarts */
+    IF_OK status += get_i(stdin, prompt,"max_cg_prop", &par_buf.niter );
+    IF_OK status += get_i(stdin, prompt,"max_cg_prop_restarts", 
+			  &par_buf.nrestart );
     
 #ifdef NPBP_REPS
     /* number of random sources npbp_reps */
@@ -366,16 +392,25 @@ readin(int prompt)
   steps = par_buf.steps;
   propinterval = par_buf.propinterval;
   niter = par_buf.niter;
+  nrestart = par_buf.nrestart;
+  n_pseudo = par_buf.n_pseudo;
+  for(i = 0; i< n_pseudo; i++){
+    niter_md[i] = par_buf.niter_md[i];
+    niter_fa[i] = par_buf.niter_fa[i];
+    niter_gr[i] = par_buf.niter_gr[i];
+
+    rsqmin_md[i] = par_buf.rsqmin_md[i];
+    rsqmin_fa[i] = par_buf.rsqmin_fa[i];
+    rsqmin_gr[i] = par_buf.rsqmin_gr[i];
+  }
   npbp_reps_in = par_buf.npbp_reps_in;
-  md_rsqmin = par_buf.md_rsqmin;
-  ac_rsqmin = par_buf.ac_rsqmin;
   rsqprop = par_buf.rsqprop;
   epsilon = par_buf.epsilon;
   beta = par_buf.beta;
   mass1 = par_buf.mass1;
   mass2 = par_buf.mass2;
   u0 = par_buf.u0;
-  nphi = par_buf.nphi;
+  n_pseudo = par_buf.n_pseudo;
   startflag = par_buf.startflag;
   saveflag = par_buf.saveflag;
   strcpy(rparamfile,par_buf.rparamfile);
@@ -384,12 +419,12 @@ readin(int prompt)
   strcpy(stringLFN, par_buf.stringLFN);
   
   /* Load rational function parameters */
-  rparam = load_rhmc_params(rparamfile, prompt, nphi);  
+  rparam = load_rhmc_params(rparamfile, n_pseudo);  
   if(rparam == NULL)terminate(1);
 
   /* Determine the maximum rational fcn order */
   max_rat_order = 0;
-  for(i = 0; i < nphi; i++){
+  for(i = 0; i < n_pseudo; i++){
     if(rparam[i].MD.order > max_rat_order)max_rat_order = rparam[i].MD.order;
     if(rparam[i].GR.order > max_rat_order)max_rat_order = rparam[i].GR.order;
     if(rparam[i].FA.order > max_rat_order)max_rat_order = rparam[i].FA.order;

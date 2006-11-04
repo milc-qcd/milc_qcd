@@ -62,9 +62,9 @@ int update()  {
   ranmom();
   
   /* generate a pseudofermion configuration only at start*/
-  for(iphi = 0; iphi < nphi; iphi++){
+  for(iphi = 0; iphi < n_pseudo; iphi++){
     grsource_imp_rhmc( F_OFFSET(phi[iphi]), &(rparam[iphi].GR), EVEN,
-		       multi_x,sumvec);
+		       multi_x,sumvec, rsqmin_gr[iphi], niter_gr[iphi]);
   }
   
   /* find action */

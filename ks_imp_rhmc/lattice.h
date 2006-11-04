@@ -61,7 +61,7 @@ typedef struct {
  	Real phase[4];
 
 	/* 3 element complex vectors */
- 	su3_vector phi[NPHI];	/* Gaussian random source, each pseudoferm */
+ 	su3_vector phi[N_PSEUDO]; /* Gaussian random source, each pseudoferm */
  	su3_vector phi1;	/* Gaussian random source, each pseudoferm */
  	su3_vector phi2;	/* Gaussian random source, each pseudoferm */
  	su3_vector xxx1;	/* solution vector = Kinverse * phi, mass1 */
@@ -122,13 +122,15 @@ typedef struct {
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
-EXTERN	int warms,trajecs,steps,niter,propinterval;
+EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
+EXTERN  int niter_md[N_PSEUDO], niter_fa[N_PSEUDO], niter_gr[N_PSEUDO];
 EXTERN  int npbp_reps_in;
 EXTERN	int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 EXTERN	Real epsilon;
 EXTERN  Real beta,u0;
 EXTERN  Real mass1,mass2;
-EXTERN	Real md_rsqmin,ac_rsqmin,rsqprop;
+EXTERN	Real rsqmin_md[N_PSEUDO], rsqmin_fa[N_PSEUDO], rsqmin_gr[N_PSEUDO];
+EXTERN  Real rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
@@ -197,7 +199,7 @@ EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];
 #endif
 
 #include "params_rhmc.h"
-EXTERN int nphi;
+EXTERN int n_pseudo;
 EXTERN int max_rat_order;
 EXTERN params_rhmc *rparam;
 

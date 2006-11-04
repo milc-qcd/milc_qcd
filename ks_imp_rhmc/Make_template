@@ -117,31 +117,24 @@ DSLASH_FN = dslash_fn_dblstore.o
 # Selection of the fermion links algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-# We don't have fermion_links_asqtad_dmdu0_qop.o yet
   FLINKS_FN = fermion_links_asqtad_qop.o
-  FLINKS_FN_DMDU0 = fermion_links_asqtad_dmdu0_qop.o
   FLINKS_FN += ${FLINKS_FNQOP}
-  FLINKS_FN_DMDU0 += ${FNLINKS_FN_DMDU0QOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-#   These routines are not available, yet
     FLINKS_FN = fermion_links_asqtad_qdp.o
-    FLINKS_FN_DMDU0 = fermion_links_asqtad_qdp_dmdu0.o
   else
     FLINKS_FN = fermion_links_fn.o
-    FLINKS_FN_DMDU0 = fermion_links_fn_dmdu0.o
   endif
 endif
+FLINKS_FN += fermion_links_helpers.o
 
 # Selection of the gauge force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-# We don't have fermion_links_asqtad_dmdu0_qop.o yet
   SYMZK1FORCE = gauge_force_symzk1_qop.o
   SYMZK1FORCE += ${SYMZK1FORCEQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-#   These routines are not available, yet
     SYMZK1FORCE = gauge_force_symzk1_qdp.o
   else
     SYMZK1FORCE = gauge_force_imp.o
@@ -173,7 +166,7 @@ ifeq ($(strip ${HAVEQOP}),true)
 else
   ifeq ($(strip ${HAVEQDP}),true)
 # Choose (fermion_force_asqtad_qdp.o )
-    ASQFORCE = fermion_force_asqtad3.o fermion_force_fn_multi.o ff_opt.o
+    ASQFORCE = fermion_force_asqtad_qdp.o fermion_force_fn_multi_qdp.o ff_opt.o
   else
 # Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
 # or  fermion_force_asqtad3.o + ff_opt.o
@@ -366,7 +359,7 @@ su3_omelyan_2eps::
 su3_omelyan_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=8 -DKS_MULTICG=HYBRID \
-	-DKS_MULTIFF=FNMAT -DHMC" \
+	-DKS_MULTIFF=ASVEC -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \

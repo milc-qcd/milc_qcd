@@ -17,23 +17,24 @@ void update_h_rhmc( int alg_flag, Real eps, su3_vector **multi_x ){
 #ifdef FN
   free_fn_links();
 #endif
-  node0_printf("update_h_rhmc: alg_flag=%d\n",alg_flag);
+  /*  node0_printf("update_h_rhmc: alg_flag=%d\n",alg_flag); */
   /* gauge field force */
   rephase(OFF);
   imp_gauge_force(eps,F_OFFSET(mom));
   rephase(ON);
   /* fermionic force */
   
-  for(iphi = 0; iphi < nphi; iphi++){
+  for(iphi = 0; iphi < n_pseudo; iphi++){
     eo_fermion_force_rhmc( alg_flag, eps, &rparam[iphi].MD, 
-			   multi_x, F_OFFSET(phi[iphi]) );
+			   multi_x, F_OFFSET(phi[iphi]), 
+			   rsqmin_md[iphi], niter_md[iphi] );
   }
 } /* update_h_rhmc */
 
 // gauge and fermion force parts separately, for algorithms that use
 // different time steps for them
 void update_h_gauge( int alg_flag, Real eps ){
-  node0_printf("update_h_gauge: alg_flag=%d\n",alg_flag);
+  /* node0_printf("update_h_gauge: alg_flag=%d\n",alg_flag);*/
   /* gauge field force */
   rephase(OFF);
   imp_gauge_force(eps,F_OFFSET(mom));
@@ -45,11 +46,12 @@ void update_h_fermion( int alg_flag, Real eps, su3_vector **multi_x ){
 #ifdef FN
   free_fn_links();
 #endif
-  node0_printf("update_h_fermion: alg_flag=%d\n",alg_flag);
+  /*node0_printf("update_h_fermion: alg_flag=%d\n",alg_flag); */
   /* fermionic force */
   
-  for(iphi = 0; iphi < nphi; iphi++){
-    eo_fermion_force_rhmc( alg_flag, eps, &(rparam[iphi].MD), 
-			   multi_x, F_OFFSET(phi[iphi]) );
+  for(iphi = 0; iphi < n_pseudo; iphi++){
+    eo_fermion_force_rhmc( alg_flag, eps, &rparam[iphi].MD, 
+			   multi_x, F_OFFSET(phi[iphi]),
+			   rsqmin_md[iphi], niter_md[iphi]);
   }
 } /* update_h_fermion */

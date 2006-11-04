@@ -29,8 +29,11 @@ typedef struct {
 #endif
 	Real u0; /* tadpole parameter */
 	int niter; 	/* maximum number of c.g. iterations */
+        int nrestart;   /* maximum number of c.g. restarts */
+        int niter_md[N_PSEUDO], niter_fa[N_PSEUDO], niter_gr[N_PSEUDO];
         int npbp_reps_in;   /* Number of random sources */
-	Real md_rsqmin,ac_rsqmin,rsqprop;  /* for deciding on convergence */
+        Real rsqmin_md[N_PSEUDO], rsqmin_fa[N_PSEUDO], rsqmin_gr[N_PSEUDO];
+	Real rsqprop;  /* for deciding on convergence */
 	Real epsilon;	/* time step */
         char spectrum_request[MAX_SPECTRUM_REQUEST];   /* request list for spectral measurements */
         int source_start, source_inc, n_sources; /* source time and increment */
@@ -41,7 +44,7 @@ typedef struct {
         Real fpi_mass[MAX_FPI_NMASSES];
 	int startflag;  /* what to do for beginning lattice */
 	int saveflag;   /* what to do with lattice at end */
-        int nphi; /* Number of pseudofermion fields */
+        int n_pseudo; /* Number of pseudofermion fields */
         char rparamfile[MAXFILENAME];
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/

@@ -51,7 +51,7 @@ void write_appl_gauge_info(FILE *fp)
   write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
   write_gauge_info_item(fp,"gauge.tadpole.u0","%f",(char *)&u0,0,0);
 
-  write_gauge_info_item(fp,"quark.description","%s",quark_action_description,0,0);
+  write_gauge_info_item(fp,"quark.description","%s",QUARK_ACTION_DESCRIPTION,0,0);
 #ifdef ONEMASS
   write_gauge_info_item(fp,"quark.flavors","%d",(char *)&nflavors,0,0);
   write_gauge_info_item(fp,"quark.mass","%f",(char *)&mass,0,0);
@@ -208,7 +208,7 @@ char *create_QCDML(){
   
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"quark.description","%s",
-			 quark_action_description,0,0);
+			 QUARK_ACTION_DESCRIPTION,0,0);
   bytes = strlen(info);
 #ifdef ONEMASS
   sprint_gauge_info_item(info+bytes, max-bytes,"quark.flavors","%d",

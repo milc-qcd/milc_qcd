@@ -22,6 +22,6 @@
 
 #define MAX_FPI_NMASSES 32
 #define MAX_SPECTRUM_REQUEST 512
-#define NPHI 2
+#define N_PSEUDO 2
 
 #endif /* _DEFINES_H */

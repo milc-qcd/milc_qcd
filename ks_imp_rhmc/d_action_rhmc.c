@@ -46,9 +46,10 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
   double sum;
   int iphi; 
   sum=0.0;
-  for(iphi = 0; iphi < nphi; iphi++){
+  for(iphi = 0; iphi < n_pseudo; iphi++){
     ks_ratinv( F_OFFSET(phi[iphi]), multi_x, rparam[iphi].FA.pole, 
-	       rparam[iphi].FA.order, niter, ac_rsqmin, EVEN, &final_rsq );
+	       rparam[iphi].FA.order, niter_fa[iphi], rsqmin_fa[iphi], 
+	       EVEN, &final_rsq );
     ks_rateval( sumvec, F_OFFSET(phi[iphi]), multi_x, 
 		rparam[iphi].FA.res, rparam[iphi].FA.order, EVEN );
     FOREVENSITES(i,s){ /* phi is defined on even sites only */
@@ -65,7 +66,7 @@ double hmom_action() {
   register int i,dir;
   register site *s;
   double sum;
-  
+
   sum=0.0;
   FORALLSITES(i,s){
     for(dir=XUP;dir<=TUP;dir++){
