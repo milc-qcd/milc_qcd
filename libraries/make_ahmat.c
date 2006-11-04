@@ -13,7 +13,7 @@ void make_anti_hermitian( su3_matrix *m3, anti_hermitmat *ah3 ) {
 Real temp;
 	
 	temp =
-	    (m3->e[0][0].imag + m3->e[1][1].imag + m3->e[2][2].imag)*0.33333333;
+	    (m3->e[0][0].imag + m3->e[1][1].imag + m3->e[2][2].imag)*0.33333333333333333;
 	ah3->m00im = m3->e[0][0].imag - temp;
 	ah3->m11im = m3->e[1][1].imag - temp;
 	ah3->m22im = m3->e[2][2].imag - temp;
@@ -33,7 +33,7 @@ Real temp,temp2;
 	temp =
 	    (m3->e[0][0].imag + m3->e[1][1].imag);
 	temp2 = temp + m3->e[2][2].imag;
-	temp = temp2*0.33333333;
+	temp = temp2*0.333333333333333333;
 	ah3->m00im = m3->e[0][0].imag - temp;
 	ah3->m11im = m3->e[1][1].imag - temp;
 	ah3->m22im = m3->e[2][2].imag - temp;
