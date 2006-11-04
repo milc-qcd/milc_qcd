@@ -15,7 +15,9 @@
 #ifdef FN
 BOMB THE COMPILE p4 is not a "FAT" action
 #endif
+#define QUARK_ACTION_DESCRIPTION "\"Bielefeld P4, 1+3 paths\""
 
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR },
     { XUP, YUP, YUP },
@@ -30,9 +32,6 @@ BOMB THE COMPILE p4 is not a "FAT" action
        1.0/72.0,    /* three link "YYX" */
        -1.0/72.0    /* three link "YXY", sign from crossing plaq. */
     };
-    static char quark_action_description[] =
-       "\"Bielefeld P4, 1+3 paths\"";
 
-
-
+#endif
 #endif /* _P4_ACTION_H */

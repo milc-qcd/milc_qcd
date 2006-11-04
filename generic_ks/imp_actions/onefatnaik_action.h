@@ -13,7 +13,8 @@
 #define MAX_LENGTH 3
 #define MAX_NUM 64
 
-
+#define QUARK_ACTION_DESCRIPTION "\"one-link + Naik + staple(fat) action\""
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR },
     { XUP, XUP, XUP },
@@ -26,6 +27,5 @@
        -(9.0/8.0)/27.0,     /* three link (Naik) */
        -(9.0/8.0)/8.0      /* staple(fat) */
     };
-    static char quark_action_description[] =
-      "\"one-link + Naik + staple(fat) action\"";
+#endif
 #endif /* _ONEFATNAIK_ACTION_H */

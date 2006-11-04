@@ -12,7 +12,9 @@
 #define MAX_BASIC_PATHS 1
 #define MAX_LENGTH 1
 #define MAX_NUM 8
+#define QUARK_ACTION_DESCRIPTION "\"Single link action\""
 
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP }
     };
@@ -21,6 +23,5 @@
     static Real path_coeff[MAX_BASIC_PATHS] = {
         1.0	/* one link */
     };
-    static char quark_action_description[] =
-      "\"Single link action\"" ;
+#endif
 #endif /* _ONELINK_ACTION_H */

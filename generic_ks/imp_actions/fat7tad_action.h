@@ -14,7 +14,8 @@
 #define MAX_LENGTH 7
 #define MAX_NUM 632
 #define TADPOLE_IMPROVE	/* use tadpole improvement in quark action */
-
+#define QUARK_ACTION_DESCRIPTION "\"Fat-7: seven link paths, couplings(pi)=0, tadpole weights\""
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },
     { YUP, XUP, YDOWN, NODIR, NODIR, NODIR, NODIR },
@@ -29,7 +30,7 @@
        ( 1.0/8.0)*0.25*0.5,         /* displace link in two directions */
        (-1.0/8.0)*0.125*(1.0/6.0),  /* displace link in three directions */
     };
-    static char quark_action_description[] =
-	"\"Fat-7: seven link paths, couplings(pi)=0, tadpole weights\"";
 
+
+#endif
 #endif /* _FAT7TAD_ACTION_H */

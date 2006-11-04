@@ -17,7 +17,8 @@
 #define MAX_LENGTH 7
 #define MAX_NUM 688
 #define ASQ_ACTION
-
+#define QUARK_ACTION_DESCRIPTION "\"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors\""
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },	/* Naik */
@@ -37,7 +38,7 @@
        (-1.0/8.0)*0.125*(1.0/6.0),  /* displace link in three directions */
        (-1.0/16 ),                  /* Correct O(a^2) errors */
     };
-    static char quark_action_description[] =
-	"\"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors\"";
 
+
+#endif
 #endif /* _ASQ_ACTION_H */

@@ -16,7 +16,8 @@
 #define ALPHA 0.5
 #define FUDGE (1.0/(1+ALPHA*ALPHA))
 
-
+#define QUARK_ACTION_DESCRIPTION "\"one-link + staple(fat) action (first order unitarized)\""
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR },
     { YUP, XUP, YDOWN, NODIR, NODIR },
@@ -31,6 +32,6 @@
 		/* minus sign for backwards, and one for enclosing
 		   plaquette */
     };
-    static char quark_action_description[] =
-      "\"one-link + staple(fat) action (first order unitarized)\"";
+
+#endif
 #endif /* _OF_U_ACTION_H */

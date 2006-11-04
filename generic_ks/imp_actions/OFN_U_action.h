@@ -13,8 +13,8 @@
 #define MAX_BASIC_PATHS 4
 #define MAX_LENGTH 5
 #define MAX_NUM 112	/* 8 + 8 + 48 + 48 */
-
-
+#define QUARK_ACTION_DESCRIPTION "\"one-link + Naik + staple(fat) action (first order unitarized)\""
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR },
     { XUP, XUP, XUP, NODIR, NODIR },
@@ -31,6 +31,6 @@
 		/* minus sign for backwards, and one for enclosing
 		   plaquette */
     };
-    static char quark_action_description[] =
-      "\"one-link + Naik + staple(fat) action (first order unitarized)\"";
+
+#endif
 #endif /* _OFN_U_ACTION_H */

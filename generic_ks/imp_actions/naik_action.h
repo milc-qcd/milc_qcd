@@ -12,7 +12,8 @@
 #define MAX_BASIC_PATHS 2
 #define MAX_LENGTH 3
 #define MAX_NUM 16
-
+#define QUARK_ACTION_DESCRIPTION "\"The Naik action\""
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR },	/* One Link */
     { XUP, XUP  , XUP   }	/* Naik */
@@ -24,6 +25,6 @@
 	                           /*One link is 1 + 1/8 for Naik */
        (-1.0/24.0)	           /* Naik */
     };
-    static char quark_action_description[] =
-	"\"The Naik action\"";
+
+#endif
 #endif /* _NAIK_ACTION_H */

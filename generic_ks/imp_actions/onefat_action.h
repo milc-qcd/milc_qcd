@@ -14,7 +14,8 @@
 #define MAX_NUM 56
 #define ALPHA 0.25
 
-
+#define QUARK_ACTION_DESCRIPTION "\"one-link + staple(fat) action\""
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR },
     { YUP, XUP, YDOWN }
@@ -25,6 +26,6 @@
         1.0/(1.0+6.0*ALPHA),	/* one link */
        - ALPHA/(1.0+6.0*ALPHA)     /* staple(fat) */
     };
-    static char quark_action_description[] =
-      "\"one-link + staple(fat) action\"";
+
+#endif
 #endif /* _ONEFAT_ACTION_H */

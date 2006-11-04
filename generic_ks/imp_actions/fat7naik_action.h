@@ -14,7 +14,8 @@
 #define MAX_BASIC_PATHS 5
 #define MAX_LENGTH 7
 #define MAX_NUM 688
-
+#define QUARK_ACTION_DESCRIPTION "\"Fat7-Naik: couplings(pi)=0 plus Naik term\""
+#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },	/* Naik */
@@ -32,6 +33,6 @@
        ( 1.0/8.0)*0.25*0.5,         /* displace link in two directions */
        (-1.0/8.0)*0.125*(1.0/6.0)  /* displace link in three directions */
     };
-    static char quark_action_description[] =
-	"\"Fat7-Naik: couplings(pi)=0 plus Naik term\"";
+
+#endif
 #endif /* _FAT7NAIK_ACTION_H */
