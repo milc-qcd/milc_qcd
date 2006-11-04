@@ -179,7 +179,6 @@ LD               = ${CC}
 
 #----------------------------------------------------------------------
 # 13. Extra libraries
-#LIBADD = ${QLA}/lib/libqla_f3.a
 LIBADD =
 
 #----------------------------------------------------------------------
@@ -198,15 +197,22 @@ LIBADD =
 # sse directory to sse_p4 (or something) and then rename the
 # sse_opteron directory to "sse".
 
-# While both SSE and C inline macros can be invoked by changing
-# the function call to the macro name, with SSE_INLINE or C_INLINE
-# these macros are automatically invoked where available
+# Both SSE and C inline macros can be invoked selectively by defining
+# SSE_INLINE and C_INLINE and changing the function call to the macro
+# name.
+
+# To invoke the inline macros globally (where available) without
+# changing the code, define, instead, SSE_GLOBAL_INLINE or
+# C_GLOBAL_INLINE.
+
+# You may use SSE and C inlining at the same time.  The SSE version
+# takes precedence when both are available.
 
 # See also the libraries Make_SSE_nasm for building non-inline SSE
 # Some compilers don't like -DSSE_INLINE with the debugging -g option.
 
 # Choose nothing, C_INLINE or SSE_INLINE, or both
-INLINEOPT = -DC_INLINE # -DSSE_INLINE
+INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE -DC_INLINE
 
 #----------------------------------------------------------------------
 # 15. Other miscellaneous macros you want for all of your compilations

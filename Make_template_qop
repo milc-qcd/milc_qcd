@@ -16,6 +16,9 @@
 ifneq ($(strip ${WANTQOP}),)
   HAVEQOP = true
 
+  # Fermion links
+  FLINKS_FNQOP = load_qop_asqtad_coeffs.o
+
   ifeq ($(strip ${WANTQOP}),QCDOC)
 
     # QCDOC package
@@ -69,7 +72,11 @@ ifneq ($(strip ${WANTQOP}),)
       INCDEPQOP = ${QOPINCDIR}
 
       # General requirement
-      GENERICQOP = qop_milc.o 
+      GENERICQOP = qop_milc.o
+      # Gauge force
+      SYMZK1FORCEQOP = gauge_force_symzk1_qop_milc.o
+      # Fermion links
+      FLINKS_FNQOP += fermion_links_fn_qop_milc.o
       # Conjugate gradient
       ASQINVERTQOP = d_congrad5_fn_qop_milc.o dslash_fn_qop_milc.o
       ASQINVERTQOP += ks_multicg_qop_milc.o
