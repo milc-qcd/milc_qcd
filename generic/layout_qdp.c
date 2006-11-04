@@ -21,7 +21,7 @@
 #include <qdp.h>
 #include <qmp.h>
 
-static int* dim_mach;
+static const int* dim_mach;
 
 void
 setup_layout(void)
@@ -85,10 +85,10 @@ size_t num_sites(int node) {
     return( sites_on_node );
 }
 
-int *get_logical_dimensions(){
+const int *get_logical_dimensions(){
   return dim_mach;
 }
 
-int *get_logical_coordinate(){
+const int *get_logical_coordinate(){
   return QMP_get_logical_coordinates();
 }

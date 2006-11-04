@@ -23,6 +23,10 @@ G_ALL = \
  field_strength.o \
  gaugefix.o \
  gaugefix2.o \
+ gauge_force_imp.o \
+ gauge_force_symzk1_qdp.o \
+ gauge_force_symzk1_qop.o \
+ gauge_force_symzk1_qop_milc.o \
  gauge_stuff.o \
  glueball_op.o \
  hvy_pot.o \
@@ -111,6 +115,14 @@ field_strength.o: ../generic/field_strength.c
 gaugefix.o: ../generic/gaugefix.c
 	${CC} -c ${CFLAGS} $<
 gaugefix2.o: ../generic/gaugefix2.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_imp.o: ../generic/gauge_force_imp.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_symzk1_qdp.o: ../generic/gauge_force_symzk1_qdp.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_symzk1_qop.o: ../generic/gauge_force_symzk1_qop.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_symzk1_qop_milc.o: ../generic/gauge_force_symzk1_qop_milc.c
 	${CC} -c ${CFLAGS} $<
 gauge_stuff.o: ../generic/gauge_stuff.c
 	${CC} -c ${CFLAGS} $<

@@ -229,6 +229,23 @@ void QOP_extract_F_to_raw(Real *dest[], QOP_Force *src, QOP_evenodd_t qop_parity
   }
 }
 
+void QOP_asqtad_extract_L_to_raw(Real *fatlinks[], Real *longlinks[],
+				 QOP_FermionLinksAsqtad *src,
+				 QOP_evenodd_t evenodd){
+  QOP_extract_G_to_raw(fatlinks, src->fat, evenodd);
+  QOP_extract_G_to_raw(longlinks, src->lng, evenodd);
+}
+
+void QOP_asqtad_convert_L_to_raw(Real ***fatlinks, Real ***longlinks,
+				 QOP_FermionLinksAsqtad *src,
+				 QOP_evenodd_t evenodd){
+  *fatlinks = (Real **)create_raw_G();
+  *longlinks = (Real **)create_raw_G();
+  QOP_extract_G_to_raw(*fatlinks, src->fat, evenodd);
+  QOP_extract_G_to_raw(*longlinks, src->lng, evenodd);
+}
+
+
 void QOP_destroy_V(QOP_ColorVector *field){
   if(field == NULL)return;
   if(field->v != NULL)free(field->v);

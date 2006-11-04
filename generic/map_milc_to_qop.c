@@ -85,6 +85,7 @@ void site_coords(int coords[4],site *s){
 
 su3_matrix **create_raw_G(void){
   su3_matrix **rawlinks = NULL;
+  int dir;
 
   rawlinks = (su3_matrix **)malloc(4*sizeof(su3_matrix *));
   FORALLUPDIR(dir){
@@ -155,7 +156,6 @@ void unload_raw_G_to_field(su3_matrix *rawfield,
   int coords[4];
   int i,j,dir;
   site *s;
-  su3_matrix tmat;
 
   FORSOMEPARITY(i,s,milc_parity){
     site_coords(coords,s);
@@ -165,7 +165,7 @@ void unload_raw_G_to_field(su3_matrix *rawfield,
     }
     j = QOP_node_index_raw_F(coords, milc2qop_parity(milc_parity));
     FORALLUPDIR(dir){
-      memcpy(rawfield + 4*i + dir, rawfield[dir] + j, sizeof(su3_matrix));
+      memcpy(rawfield + 4*i + dir, rawlinks[dir] + j, sizeof(su3_matrix));
     }
   }
 }
@@ -185,6 +185,7 @@ void destroy_raw_G(su3_matrix *rawlinks[]){
 
 su3_matrix **create_raw_F(void){
   su3_matrix **rawforce = NULL;
+  int dir;
 
   rawforce = (su3_matrix **)malloc(4*sizeof(su3_matrix *));
   FORALLUPDIR(dir){
@@ -259,7 +260,7 @@ void destroy_raw_F(su3_matrix *rawforce[]){
 
 /* Create empty color vector field */
 
-su3_matrix **create_raw_V(void){
+su3_vector *create_raw_V(void){
   su3_vector *rawsu3vec = NULL;
 
   rawsu3vec = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
@@ -368,4 +369,43 @@ void destroy_raw_V(su3_vector *rawsu3vec){
     free(rawsu3vec);
 }
 
+
+void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
+			     su3_matrix ***rawlinks, su3_matrix ***rawmom)
+{
+
+  /* Copy gauge links from site structure to raw and then to QOP format */
+  
+  *rawlinks = create_raw_G_from_site_links(EVENANDODD);
+  if(*rawlinks == NULL)terminate(1);
+  
+  *links = QOP_create_G_from_raw((Real **)(*rawlinks),QOP_EVENODD);
+
+  /* Copy momentum from site structure to raw and then to QOP format */
+
+  *rawmom = create_raw_F_from_site_mom(EVENANDODD);
+  if(*rawmom == NULL)terminate(1);
+
+  *mom = QOP_create_F_from_raw((Real **)(*rawmom),QOP_EVENODD);
+  
+}
+
+void unload_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
+			       su3_matrix ***rawlinks, su3_matrix ***rawmom)
+{
+
+  /* Destroy gauge links and QOP links */
+
+  destroy_raw_G (*rawlinks);   *rawlinks = NULL;
+  QOP_destroy_G (*links);      *links = NULL;
+
+  /* Copy momentum from QOP format to raw and then to site structure */
+
+  QOP_extract_F_to_raw((Real **)(*rawmom), *mom, QOP_EVENODD);
+
+  unload_raw_F_to_site_mom(*rawmom, EVENANDODD);
+
+  destroy_raw_F (*rawmom);   *rawmom = NULL;
+  QOP_destroy_F (*mom);      *mom = NULL;
+}
 
