@@ -190,13 +190,13 @@ size_t num_sites(int node) {
     return( sites_on_node );
 }
 
-int *get_logical_dimensions(){
+const int *get_logical_dimensions(){
   return nsquares;
 }
 
 /* Coordinates simulate a mesh architecture and must correspond
    to the node_number result */
 
-int *get_logical_coordinate(){
+const int *get_logical_coordinate(){
   return machine_coordinates;
 }
