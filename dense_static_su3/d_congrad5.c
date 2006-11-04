@@ -36,7 +36,8 @@ int dtimem_iters;
 
 
 #ifndef VU
-int congrad( int niter, Real rsqmin, int parity, Real *final_rsq_ptr ){
+int congrad( int niter, int nrestart, Real rsqmin, int parity, 
+	     Real *final_rsq_ptr ){
 register int i;
 register site *s;
 int iteration;	/* counter for iterations */
@@ -245,7 +246,7 @@ fflush(stdout);}
 
     } while( iteration%niter != 0);
 
-    if( iteration < 5*niter ){
+    if( iteration < nrestart*niter ){
 	/**if(this_node==0)printf("tryagain goto start\n");**/
 	 goto start;
     }

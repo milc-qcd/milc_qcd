@@ -39,7 +39,7 @@ int prompt,status;
         printf("Dense \"almost quenched\" SU(3)\n");
         printf("Overrelaxed/Metropolis algorithm\n");
 	time_stamp("start");
-        status=get_prompt(&prompt);
+        status=get_prompt(stdin, &prompt);
 	IF_OK status += get_i(prompt,"nx", &par_buf.nx );
 	IF_OK status += get_i(prompt,"ny", &par_buf.ny );
 	IF_OK status += get_i(prompt,"nz", &par_buf.nz );
@@ -91,10 +91,10 @@ char savebuf[128];
     
 	/* get couplings and broadcast to nodes	*/
 	/* beta, mass */
-	IF_OK status += get_f(prompt,"beta", &par_buf.beta );
+	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
 
         /* get and broadcast C */
-	IF_OK status += get_f(prompt,"C", &par_buf.C );
+	IF_OK status += get_f(stdin, prompt,"C", &par_buf.C );
 
         /* overrelaxed steps per trajectory */
 	IF_OK status += get_i(prompt,"overrelax_steps", &par_buf.steps_over );
@@ -103,7 +103,7 @@ char savebuf[128];
 	IF_OK status += get_i(prompt,"update_steps", &par_buf.steps_update );
     
 	/* find out what kind of starting lattice to use */
-	IF_OK ask_starting_lattice( prompt, &(par_buf.startflag),
+	IF_OK ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 	    par_buf.startfile );
  
 #ifdef ORA_ALGORITHM
@@ -125,9 +125,9 @@ char savebuf[128];
 #endif
  
 	/* find out what to do with lattice at end */
-	IF_OK ask_ending_lattice( prompt, &(par_buf.saveflag),
+	IF_OK ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 	    par_buf.savefile );
-	IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+	IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				      par_buf.stringLFN );
 
 	if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
