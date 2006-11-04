@@ -131,21 +131,21 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   
   
 #ifdef CHECK_TRACE
-  set_field_from_V(F_OFFSET(ttt),src);
+  set_site_from_V(F_OFFSET(ttt),src);
 #else
   /* Do phi_s = (M^\dagger M)^{-1} src */
-  iter=ks_congrad_qdp(src, phi_s, qmass, niter, qrsqmin, 
+  iter=ks_congrad_qdp(src, phi_s, qmass, niter, 5, qrsqmin, 
 		      QDP_all, &qfinal_rsq);
   /* Then do dest = M^\dagger phi_s */
-  set_field_from_V(F_OFFSET(ttt),phi_s);
+  set_site_from_V(F_OFFSET(ttt),phi_s);
 #endif 
   
   dslash_fn_site( F_OFFSET(ttt), F_OFFSET(phi2), EVENANDODD);
   
 #ifdef CHECK_TRACE
-  set_V_from_field(dest,F_OFFSET(phi2));
+  set_V_from_site(dest,F_OFFSET(phi2));
 #else
-  set_V_from_field(phi_d,F_OFFSET(phi2));
+  set_V_from_site(phi_d,F_OFFSET(phi2));
   qmass2 = 2.0*qmass;
   QDP_V_eq_r_times_V_minus_V(dest, &qmass2, phi_s, phi_d, QDP_all);
 #endif
@@ -159,8 +159,8 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   clear_latvec(F_OFFSET(phi2) , EVENANDODD );
   clear_latvec(F_OFFSET(ttt) , EVENANDODD );
   
-  set_field_from_V(F_OFFSET(phi2),dest);
-  set_field_from_V(F_OFFSET(ttt),src);
+  set_site_from_V(F_OFFSET(phi2),dest);
+  set_site_from_V(F_OFFSET(ttt),src);
   fprintf(stderr,"Check inversion for QDP\n");
   check_invert( F_OFFSET(phi2), F_OFFSET(ttt), mass, tol);
   
@@ -171,14 +171,14 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   clear_latvec(F_OFFSET(phi2) , EVENANDODD );
   clear_latvec(F_OFFSET(ttt) , EVENANDODD );
   
-  set_field_from_V(F_OFFSET(ttt),src);
+  set_site_from_V(F_OFFSET(ttt),src);
   ks_congrad(F_OFFSET(ttt),F_OFFSET(cg_p),mass,niter,rsqprop,EVENANDODD,&final_rsq );
   
   dslash_site( F_OFFSET(cg_p), F_OFFSET(phi2), EVENANDODD);
   scalar_mult_add_latvec( F_OFFSET(phi2),F_OFFSET(cg_p),-2.0*mass,F_OFFSET(phi2), EVENANDODD);
   
   scalar_mult_latvec( F_OFFSET(phi2), -1.0, F_OFFSET(phi2), EVENANDODD );
-  set_V_from_field(phi_check,F_OFFSET(phi2));
+  set_V_from_site(phi_check,F_OFFSET(phi2));
   
   //fprintf(stderr,"MILC\n");
   //QDP_V_eq_func(phi_check,print_cv,QDP_all);
@@ -276,9 +276,9 @@ QDP_ColorVector *dest,*phi_s,*phi_check,*phi_check1,*phi_d;
 
   iter=ks_congrad_qdp(src, phi_s, qmass, niter, qrsqmin, QDP_all,&qfinal_rsq);
   
-  set_field_from_V(F_OFFSET(ttt),phi_s);
+  set_site_from_V(F_OFFSET(ttt),phi_s);
   dslash_site( F_OFFSET(ttt), F_OFFSET(phi2), EVENANDODD);
-  set_V_from_field(phi_d,F_OFFSET(phi2));
+  set_V_from_site(phi_d,F_OFFSET(phi2));
 
   qmass2 = 2.0*qmass;
   QDP_V_eq_r_times_V_minus_V(dest, &qmass2, phi_s, phi_d,QDP_all);
@@ -286,8 +286,8 @@ QDP_ColorVector *dest,*phi_s,*phi_check,*phi_check1,*phi_d;
   clear_latvec(F_OFFSET(phi2) , EVENANDODD );
   clear_latvec(F_OFFSET(ttt) , EVENANDODD );
 
-  set_field_from_V(F_OFFSET(phi2),dest);
-  set_field_from_V(F_OFFSET(ttt),src);
+  set_site_from_V(F_OFFSET(phi2),dest);
+  set_site_from_V(F_OFFSET(ttt),src);
   fprintf(stderr,"Check inversion for QDP entire field\n");
   check_invert( F_OFFSET(phi2), F_OFFSET(ttt), mass, tol);
 

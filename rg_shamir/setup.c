@@ -116,13 +116,13 @@ initial_set()
     printf("RG_Shamir for KS action\n");
     printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
-    status=get_prompt(&prompt);
-    IF_OK status += get_i(prompt,"nflavors", &par_buf.nflavors );
-    IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(prompt,"nt", &par_buf.nt );
-    IF_OK status += get_i(prompt,"iseed", &par_buf.iseed );
+    status=get_prompt(stdin, &prompt);
+    IF_OK status += get_i(stdin, prompt,"nflavors", &par_buf.nflavors );
+    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
     
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -164,36 +164,36 @@ readin(int prompt)
     status=0;
     
     /* get mass and tadpole */
-    IF_OK status += get_f(prompt,"mass", &par_buf.mass );
-    IF_OK status += get_f(prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin, prompt,"mass", &par_buf.mass );
+    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
 
     /* get number of RG blocking steps, counting the
        staggered to Wilson as the first step */
     
-    IF_OK status += get_i(prompt,"nrg", &par_buf.nrg );
+    IF_OK status += get_i(stdin, prompt,"nrg", &par_buf.nrg );
     if(nrg > NRG){
       printf("Too many nrg steps.  Recompile with NRG >= %d\n",nrg);
       status = 1;
     }
 
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
+    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
     
     /* error for propagator conjugate gradient */
-    IF_OK status += get_f(prompt,"error_for_propagator", &x );
+    IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
     IF_OK par_buf.rsqprop = x*x;
     
     
     /* find out what kind of starting lattice to use */
-    IF_OK status += ask_starting_lattice( prompt, &(par_buf.startflag),
+    IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 					  par_buf.startfile );
     
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_lattice( prompt, &(par_buf.saveflag),
+    IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
 					par_buf.savefile );
-    IF_OK status += ask_ildg_LFN( prompt, par_buf.saveflag,
+    IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				  par_buf.stringLFN );
-    IF_OK status += get_s(prompt,"save_blocked_prop",par_buf.propfile);
+    IF_OK status += get_s(stdin, prompt,"save_blocked_prop",par_buf.propfile);
     
     if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(this_node==0) */
@@ -221,7 +221,8 @@ readin(int prompt)
   }
   startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
-  valid_fatlinks = valid_longlinks = 0;
+  valid_fn_links = 0;
+  valid_fn_links_dmdu0 = 0;
   phases_in = OFF;
   rephase( ON );
   

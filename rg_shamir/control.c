@@ -104,8 +104,6 @@ main( int argc, char **argv )
   node0_printf("wils-wils completed\n");
   fflush(stdout);
  
- // valid_fatlinks = valid_longlinks = 0;
-
 /* Check with a random source */
 /*
   li = QDP_create_I();

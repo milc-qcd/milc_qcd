@@ -128,8 +128,7 @@ EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
 /* Flags to help us remember what we are doing */
-EXTERN int valid_longlinks;
-EXTERN int valid_fatlinks;
+EXTERN int valid_fn_links, valid_fn_links_dmdu0;
 
 EXTERN gauge_file *startlat_p;
 

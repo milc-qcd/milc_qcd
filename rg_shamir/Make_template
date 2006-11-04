@@ -192,8 +192,6 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 # -DNPBP_REPS Number of repeated evaluations of stochastic 
 #       psi-bar-psi
 
-# Optional DEFINES for EOS
-# -DDM_DU0 for calculating deriv of action wrto u0
 
 # Optional DEFINES for quark number susceptibility
 # -DCHEM_POT
