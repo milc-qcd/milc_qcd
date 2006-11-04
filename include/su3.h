@@ -478,27 +478,35 @@ void byterevn64(int32type w[], int n);
 /* We have optional SSE and C inline macros for selected library
    routines */
 
-/* All macros are defined and available for selective inlining.
-   To invoke them selectively, it is necessary to replace the function
-   call with the appropriate macro */
+/* All macros are defined and available for selective inlining.  To
+   invoke them selectively, define the macro SSE_INLINE and then
+   modify the code by replacing the function call with the appropriate
+   macro */
 
 /* Inlining can also be implemented globally without requiring any
    changes in the code.  SSE macros are inlined globally by defining
-   SSE_INLINE.  C macros are similarly inlined with C_INLINE */
+   SSE_GLOBAL_INLINE.  */
+
+/* C macros are similarly inlined selectively with C_INLINE and
+   globally with C_GLOBAL_INLINE */
 
 /* SSE macros for selected library functions are available in single
    and double precision */
 
+#if defined SSE_INLINE || defined SSE_GLOBAL_INLINE
 #if (PRECISION==1)
 #include "../sse/include/inline_sse.h"
 #else
 #include "../sse2/include/inline_sse.h"
 #endif
+#endif
 
 /* C macros are similarly available for selected library functions in
    both precisions */
 
+#if defined C_INLINE || defined C_GLOBAL_INLINE
 #include "../libraries/include/inline_C.h"
+#endif
 
 /* The following definitions cause the macros to be invoked globally
    if SSE_INLINE and/or C_INLINE is defined.  Note that in each stanza
@@ -507,7 +515,7 @@ void byterevn64(int32type w[], int n);
 
 /* Note that SSE takes precedence over C */
 
-#if defined SSE_INLINE
+#if defined SSE_GLOBAL_INLINE
 
 /********************************************************************/
 /* Our available single-precision SSE macros */
@@ -554,9 +562,9 @@ void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 /********************************************************************/
 
 #endif // PRECISION
-#endif // SSE_INLINE
+#endif // SSE_GLOBAL_INLINE
 
-#if defined C_INLINE
+#if defined C_GLOBAL_INLINE
 
 /********************************************************************/
 /* Our available C-inline macros */
@@ -627,7 +635,7 @@ void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 
 /********************************************************************/
 
-#endif // C_INLINE
+#endif // C_GLOBAL_INLINE
 
 /********************************************************************/
 /* Use standard prototypes if macros are not defined */

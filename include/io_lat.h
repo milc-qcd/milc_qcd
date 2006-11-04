@@ -341,22 +341,6 @@ gauge_file *save_old_binary(char *filename, Real c1, Real c2);
 void write_appl_gauge_info(FILE *fp);
 
 /**********************************************************************/
-/* Prototypes for io_helpers.c */
-gauge_file *save_lattice( int flag, char *filename, char *stringLFN );
-gauge_file *reload_lattice( int flag, char *filename);
-int ask_starting_lattice( int prompt, int *flag, char *filename );
-int ask_ending_lattice( int prompt, int *flag, char *filename );
-int ask_ildg_LFN(int prompt, int flag, char *stringLFN);
-void coldlat();
-void funnylat();
-int get_f( int prompt, char *variable_name_string, Real *value );
-int get_i( int prompt, char *variable_name_string, int *value );
-int get_vi( int prompt, char *variable_name_string, int *value, int nvalues );
-int get_s( int prompt, char *variable_name_string, char *value );
-int get_prompt( int *value );
-
-
-/**********************************************************************/
 /* Prototypes for io_scidac routines */
 gauge_file *save_serial_scidac(char *filename);
 gauge_file *save_parallel_scidac(char *filename);

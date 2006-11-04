@@ -25,14 +25,22 @@
 typedef struct {
   int dir[MAX_PATH_LENGTH];	/* directions in path */
   int length;		/* length of path */
-  Real coeff;	/* coefficient, including minus sign if backwards */
-#ifdef DM_DU0
-  Real coeff2;	/* coefficient for d(Dslash)/d(u0) */
-#endif
+  Real coeff;	        /* coefficient, including minus sign if backwards */
   Real forwback;	/* +1 if in forward Dslash, -1 if in backward */
 } Q_path;
 
-int congrad( int niter, Real rsqmin, int parity, Real *rsq );
+#ifdef HAVE_QDP
+typedef struct {
+  QLA_Real one_link     ; 
+  QLA_Real naik         ;
+  QLA_Real three_staple ;
+  QLA_Real five_staple  ;
+  QLA_Real seven_staple ;
+  QLA_Real lepage       ;
+} asqtad_path_coeff;
+#endif
+
+int congrad( int niter, int nrestart, Real rsqmin, int parity, Real *rsq );
 void copy_latvec(field_offset src, field_offset dest, int parity);
 void dslash_site( field_offset src, field_offset dest, int parity );
 void dslash_site_special( field_offset src, field_offset dest,
@@ -45,19 +53,19 @@ void rephase( int flag );
 void prefetch_vector( su3_vector * );
 void prefetch_matrix( su3_matrix * );
 
-int ks_congrad_qop(int niter, Real rsqmin, 
+int ks_congrad_qop(int niter, int nrestart, Real rsqmin, 
 		   Real *masses[], int nmass[], 
 		   field_offset milc_srcs[], field_offset *milc_sols[],
 		   int nsrc, Real* final_rsq_ptr, int milc_parity );
 
-int ks_congrad_qop_site2field(int niter, Real rsqmin, 
+int ks_congrad_qop_site2field(int niter, int nrestart, Real rsqmin, 
 			      Real *masses[], int nmass[], 
 			      field_offset milc_srcs[], 
 			      su3_vector **milc_sols[],
 			      int nsrc, Real* final_rsq_ptr, int milc_parity );
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
-     int niter, Real rsqmin, int parity, Real *rsq );
+		int niter, int nrestart, Real rsqmin, int parity, Real *rsq );
 
 int ks_congrad_two_src(	/* Return value is number of iterations taken */
     field_offset src1,    /* source vector (type su3_vector) */
@@ -67,6 +75,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     Real mass1,
     Real mass2,
     int niter,		/* maximal number of CG interations */
+    int nrestart,       /* maximum number of restarts */
     Real rsqmin,	/* desired residue squared */
     int parity,		/* parity to be worked on */
     Real  *final_rsq_ptr 	/* final residue squared */
@@ -205,7 +214,7 @@ void create_qop_asqtad_fermion_links( QOP_FermionLinksAsqtad** qop_links );
 #endif
 void initialize_congrad( void );
 void finalize_congrad( void );
-int ks_congrad_qop_site2site(int niter, Real rsqmin, 
+int ks_congrad_qop_site2site(int niter, int nrestart, Real rsqmin, 
 			     Real *masses[], int nmass[], 
 			     field_offset milc_srcs[], 
 			     field_offset *milc_sols[],
@@ -261,7 +270,6 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off );
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 				field_offset x1_off, field_offset x2_off );
 
-
 /* fermion_force_fn_multi.c */
 
 int eo_fermion_force_set_opt(char opt_string[]);
@@ -272,6 +280,16 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues, su3_vector **xxx, 
 void fn_fermion_force_multi( Real eps, Real *residues, su3_vector **multi_x, int nterms );
 void fn_fermion_force_multi_reverse( Real eps, Real *residues, su3_vector **multi_x, int nterms );
 void fn_fermion_force_multi_june05( Real eps, Real *residues, su3_vector **multi_x, int nterms );
+
+/* fermion_links_fn.c */
+void load_fn_links();
+void load_fn_links_dmdu0();
+
+/* fermion_links_helpers.c */
+void load_longbacklinks(su3_matrix **t_lbl, su3_matrix *t_ll);
+void load_fatbacklinks(su3_matrix **t_fbl, su3_matrix *t_fl);
+void free_fn_links();
+void free_fn_links_dmdu0();
 
 /* ff_opt.c */
 void mult_adj_su3_fieldlink_lathwvec( su3_matrix *link,
@@ -375,11 +393,9 @@ void link_transport_connection( su3_matrix * src, su3_matrix * dest, su3_matrix 
 void make_path_table();
 int get_num_q_paths();
 Q_path *get_q_paths();
+Q_path *get_q_paths_dmdu0();
 Real *get_quark_path_coeff();
-void load_longlinks();
-void load_fatlinks();
-void free_longlinks();
-void free_fatlinks();
+Real *get_quark_path_coeff_dmdu0();
 
 /* spectrum.c */
 int spectrum();
@@ -418,8 +434,12 @@ void dslash_qdp_fn_special(QDP_ColorVector *src, QDP_ColorVector *dest,
 			   QDP_Subset parity, QDP_ColorVector *temp[]);
 void dslash_qdp_fn_special2(QDP_ColorVector *src, QDP_ColorVector *dest,
 			    QDP_Subset parity, QDP_ColorVector *temp[]);
+void 
+fn_fermion_force_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[], 
+		      asqtad_path_coeff *coeffs, QDP_ColorVector *in_pt[], 
+		      Real eps[], int nsrc );
 int ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
-		   int niter, QLA_Real rsqmin, QDP_Subset parity,
+		   int niter, int nrestart, QLA_Real rsqmin, QDP_Subset parity,
 		   QLA_Real *final_rsq_ptr);
 int ks_multicg_qdp(QDP_ColorVector *src, QDP_ColorVector **dest,
 		   QLA_Real *masses, int num_masses, int niter,
@@ -429,7 +449,8 @@ int ks_multicg_qdp(QDP_ColorVector *src, QDP_ColorVector **dest,
 #endif /* HAVE_QDP */
 
 #ifdef HAVE_QOP
-void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, Real weight);
+void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, Real weight,
+			    Real *act_path_coeff);
 #endif
 
 #endif /* _GENERIC_KS_H */

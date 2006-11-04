@@ -15,11 +15,13 @@
    For io_prop_w.c, see io_wprop.h
 */
 
+#include <stdio.h>
 #include "../include/int32type.h"
 #include "../include/complex.h"
 #include "../include/macros.h"
 #include "../include/random.h"
 #include "../include/file_types.h"
+#include "../include/io_lat.h"
 
 /* ape_smear.c */
 void ape_smear_field(
@@ -154,11 +156,20 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
 	      int nantiherm, field_offset antiherm_offset[], 
 	      int antiherm_parity[] );
 
+/* gauge_force_imp.c and gauge_force_symzk1_qop.c */
+void imp_gauge_force( Real eps, field_offset mom_off );
+
 /* gauge_stuff.c */
 double imp_gauge_action();
-void imp_gauge_force( Real eps, field_offset mom_off );
 void make_loop_table();
 void dsdu_qhb_subl(int dir, int subl);
+int get_max_length();
+int get_nloop();
+int get_nreps();
+int *get_loop_length();
+int *get_loop_num();
+int ***get_loop_table();
+Real **get_loop_coeff();
 
 /* glueball_op.c */
 void make_glueball_ops();
@@ -170,13 +181,30 @@ void hvy_pot( field_offset links );
 /* io_detect.c */
 int io_detect(char *filename, file_type ft[], int ntypes);
 
+/* io_helpers.c */
+gauge_file *save_lattice( int flag, char *filename, char *stringLFN );
+gauge_file *reload_lattice( int flag, char *filename);
+int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename );
+int ask_ending_lattice( FILE *fp, int prompt, int *flag, char *filename );
+int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN);
+void coldlat();
+void funnylat();
+int get_f( FILE *fp, int prompt, char *variable_name_string, Real *value );
+int get_i( FILE *fp, int prompt, char *variable_name_string, int *value );
+int get_vi( FILE *fp, int prompt, char *variable_name_string, 
+	    int *value, int nvalues );
+int get_vf( FILE *fp, int prompt, char *variable_name_string, 
+	    Real *value, int nvalues );
+int get_s( FILE *fp, int prompt, char *variable_name_string, char *value );
+int get_prompt( FILE *fp, int *value );
+
 /* layout_*.c */
 void setup_layout( void );
 int node_number(int x,int y,int z,int t);
 int node_index(int x,int y,int z,int t);
 size_t num_sites(int node);
-int *get_logical_dimensions();
-int *get_logical_coordinate();
+const int *get_logical_dimensions();
+const int *get_logical_coordinate();
 
 /* make_lattice.c */
 void make_lattice();
@@ -256,12 +284,14 @@ su3_matrix **create_raw_G(void);
 su3_matrix **create_raw_G_from_site_links(int milc_parity);
 su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links,
 					   int milc_parity);
+void unload_raw_G_to_field(su3_matrix *rawfield, 
+			   su3_matrix *rawlinks[], int milc_parity);
 void destroy_raw_G(su3_matrix *rawlinks[]);
 su3_matrix **create_raw_F(void);
 su3_matrix **create_raw_F_from_site_mom(int milc_parity);
 void unload_raw_F_to_site_mom(su3_matrix *rawforce[],int milc_parity);
 void destroy_raw_F(su3_matrix *rawforce[]);
-su3_matrix **create_raw_V(void);
+su3_vector *create_raw_V(void);
 su3_vector *create_raw_V_from_site(field_offset x, int milc_parity);
 su3_vector *create_raw_V_from_field(su3_vector *x, int milc_parity);
 void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
@@ -271,30 +301,38 @@ void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
 			  int milc_parity);
 void unload_raw_V_to_field(su3_vector *vec, su3_vector *rawsu3vec,
 			   int milc_parity);
+void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
+			     su3_matrix ***rawlinks, su3_matrix ***rawmom);
+void unload_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
+			       su3_matrix ***rawlinks, su3_matrix ***rawmom);
+
 #endif
 
 #ifdef HAVE_QDP
 #include <qdp.h>
 
-void set_V_from_field(QDP_ColorVector *dest, field_offset src);
-void set_H_from_field(QDP_HalfFermion *dest, field_offset src);
-void set_D_from_field(QDP_DiracFermion *dest, field_offset src);
-void set_M_from_field(QDP_ColorMatrix *dest, field_offset src);
+void set_V_from_site(QDP_ColorVector *dest, field_offset src);
+void set_H_from_site(QDP_HalfFermion *dest, field_offset src);
+void set_D_from_site(QDP_DiracFermion *dest, field_offset src);
+void set_M_from_site(QDP_ColorMatrix *dest, field_offset src);
+void set4_M_from_site(QDP_ColorMatrix *dest[], field_offset src);
 
-void set_field_from_V(field_offset dest, QDP_ColorVector *src);
-void set_field_from_H(field_offset dest, QDP_HalfFermion *src);
-void set_field_from_D(field_offset dest, QDP_DiracFermion *src);
-void set_field_from_M(field_offset dest, QDP_ColorMatrix *src);
+void set_site_from_V(field_offset dest, QDP_ColorVector *src);
+void set_site_from_H(field_offset dest, QDP_HalfFermion *src);
+void set_site_from_D(field_offset dest, QDP_DiracFermion *src);
+void set_site_from_M(field_offset dest, QDP_ColorMatrix *src);
 
-void set_V_from_temp(QDP_ColorVector *dest, su3_vector *src);
-void set_H_from_temp(QDP_HalfFermion *dest, half_wilson_vector *src);
-void set_M_from_temp(QDP_ColorMatrix *dest, su3_matrix *src);
+void set_V_from_field(QDP_ColorVector *dest, su3_vector *src);
+void set_H_from_field(QDP_HalfFermion *dest, half_wilson_vector *src);
+void set_M_from_field(QDP_ColorMatrix *dest, su3_matrix *src);
 
-void set_temp_from_V(su3_vector *dest, QDP_ColorVector *src);
-void set_temp_from_M(su3_matrix *dest, QDP_ColorMatrix *src);
+void set_field_from_V(su3_vector *dest, QDP_ColorVector *src);
+void set_field_from_M(su3_matrix *dest, QDP_ColorMatrix *src);
 
-void set4_V_from_temp(QDP_ColorVector *dest[], su3_vector *src);
-void set4_M_from_temp(QDP_ColorMatrix *dest[], su3_matrix *src);
+void set4_field_from_M(su3_matrix *dest, QDP_ColorMatrix *src[]);
+
+void set4_V_from_field(QDP_ColorVector *dest[], su3_vector *src);
+void set4_M_from_field(QDP_ColorMatrix *dest[], su3_matrix *src);
 #endif
 
 #endif	/* _GENERIC_H */
