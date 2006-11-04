@@ -217,13 +217,13 @@ gauge_file *reload_lattice( int flag, char *filename){
 /* find out what kind of starting lattice to use, and lattice name if
    necessary.  This routine is only called by node 0.
 */
-int ask_starting_lattice( int prompt, int *flag, char *filename ){
+int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
     char savebuf[256];
     int status;
 
     if (prompt!=0) printf(
         "enter 'continue', 'fresh', 'reload_ascii', 'reload_serial', or 'reload_parallel'\n");
-    status=scanf("%s",savebuf);
+    status=fscanf(fp,"%s",savebuf);
     if (status == EOF){
       printf("ask_starting_lattice: EOF on STDIN.\n");
       return(1);
@@ -259,7 +259,7 @@ int ask_starting_lattice( int prompt, int *flag, char *filename ){
     /*read name of file and load it */
     if( *flag != FRESH && *flag != CONTINUE ){
         if(prompt!=0)printf("enter name of file containing lattice\n");
-        status=scanf("%s",filename);
+        status=fscanf(fp,"%s",filename);
         if(status !=1) {
 	    printf("\nask_starting_lattice: ERROR IN INPUT: error reading file name\n"); return(1);
         }
@@ -271,13 +271,13 @@ int ask_starting_lattice( int prompt, int *flag, char *filename ){
 /* find out what do to with lattice at end, and lattice name if
    necessary.  This routine is only called by node 0.
 */
-int ask_ending_lattice( int prompt, int *flag, char *filename ){
+int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
     char savebuf[256];
     int status;
 
     if (prompt!=0) printf(
         "'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partition_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_partition_ildg', or 'save_multifile_ildg'\n");
-    status=scanf("%s",savebuf);
+    status=fscanf(fp,"%s",savebuf);
     if(status !=1) {
         printf("\nask_ending_lattice: ERROR IN INPUT: error reading ending lattice command\n");
         return(1);
@@ -376,7 +376,7 @@ int ask_ending_lattice( int prompt, int *flag, char *filename ){
 
     if( *flag != FORGET ){
         if(prompt!=0)printf("enter filename\n");
-        status=scanf("%s",filename);
+        status=fscanf(fp,"%s",filename);
         if(status !=1){
     	    printf("\nask_ending_lattice: ERROR IN INPUT: error reading filename\n"); return(1);
         }
@@ -386,7 +386,7 @@ int ask_ending_lattice( int prompt, int *flag, char *filename ){
     return 0;
 }
 
-int ask_ildg_LFN(int prompt, int flag, char *stringLFN){
+int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
   int status = 0;
 
   /* For ILDG output formats we require a logical file name next */
@@ -394,7 +394,7 @@ int ask_ildg_LFN(int prompt, int flag, char *stringLFN){
       flag == SAVE_PARALLEL_ILDG ||
       flag == SAVE_PARTITION_ILDG ||
       flag == SAVE_MULTIFILE_ILDG ){
-    status = get_s(prompt, "ILDG_LFN", stringLFN);
+    status = get_s(fp, prompt, "ILDG_LFN", stringLFN);
   }
   else
     stringLFN[0] = '\0';
@@ -453,7 +453,7 @@ prompt is zero, it will require that variable_name_string precede the
 input value.  get_i gets an integer.
 get_i and get_f return the values, and exit on error */
 
-int get_f( int prompt, char *variable_name_string, Real *value ){
+int get_f( FILE *fp, int prompt, char *variable_name_string, Real *value ){
     int s;
     char checkname[80];
 
@@ -461,7 +461,7 @@ int get_f( int prompt, char *variable_name_string, Real *value ){
 	s = 0;
 	while(s != 1){
 	  printf("enter %s ",variable_name_string);
-	  scanf("%s",checkname);
+	  fscanf(fp,"%s",checkname);
 #if PRECISION == 1
 	  s=sscanf(checkname,"%e",value);
 #else
@@ -474,7 +474,7 @@ int get_f( int prompt, char *variable_name_string, Real *value ){
 	}
     }
     else  {
-      s = scanf("%s",checkname);
+      s = fscanf(fp,"%s",checkname);
       if (s == EOF){
 	printf("get_f: EOF on STDIN.\n");
 	return(1);
@@ -492,9 +492,9 @@ int get_f( int prompt, char *variable_name_string, Real *value ){
       printf("%s ",variable_name_string);
 	  
 #if PRECISION == 1
-      s = scanf("%e",value);
+      s = fscanf(fp,"%e",value);
 #else
-      s = scanf("%le",value);
+      s = fscanf(fp,"%le",value);
 #endif
       if (s == EOF){
 	printf("\nget_f: Expecting value for %s but found EOF.\n",
@@ -512,7 +512,7 @@ int get_f( int prompt, char *variable_name_string, Real *value ){
     return(0);
 }
 
-int get_i( int prompt, char *variable_name_string, int *value ){
+int get_i( FILE *fp, int prompt, char *variable_name_string, int *value ){
     int s;
     char checkname[80];
 
@@ -520,7 +520,7 @@ int get_i( int prompt, char *variable_name_string, int *value ){
       s = 0;
       while(s != 1){
     	printf("enter %s ",variable_name_string);
-	scanf("%s",checkname);
+	fscanf(fp,"%s",checkname);
     	s=sscanf(checkname,"%d",value);
     	if (s == 1)
 	  printf("%s %d\n",variable_name_string,*value);
@@ -529,7 +529,7 @@ int get_i( int prompt, char *variable_name_string, int *value ){
       }
     }
     else  {
-      s = scanf("%s",checkname);
+      s = fscanf(fp,"%s",checkname);
       if (s == EOF){
 	printf("get_i: EOF on STDIN.\n");
 	return(1);
@@ -546,7 +546,7 @@ int get_i( int prompt, char *variable_name_string, int *value ){
 
       printf("%s ",variable_name_string);
 	  
-      s = scanf("%d",value);
+      s = fscanf(fp,"%d",value);
       if (s == EOF){
 	printf("\nget_i: Expecting value for %s but found EOF.\n",
 	       variable_name_string);
@@ -566,7 +566,7 @@ int get_i( int prompt, char *variable_name_string, int *value ){
 
 /* Read a single word as a string */
 
-int get_s( int prompt, char *variable_name_string, char *value ){
+int get_s( FILE *fp, int prompt, char *variable_name_string, char *value ){
     int s;
     char checkname[80];
 
@@ -574,7 +574,7 @@ int get_s( int prompt, char *variable_name_string, char *value ){
       s = 0;
       while(s != 1){
     	printf("enter %s ",variable_name_string);
-    	s=scanf("%s",value);
+    	s=fscanf(fp,"%s",value);
     	if(s == 1)
 	  printf("%s %s\n",variable_name_string,value);
 	else
@@ -582,7 +582,7 @@ int get_s( int prompt, char *variable_name_string, char *value ){
 	}
     }
     else  {
-      s = scanf("%s",checkname);
+      s = fscanf(fp,"%s",checkname);
       if (s == EOF){
 	printf("get_s: EOF on STDIN.\n");
 	return(1);
@@ -599,7 +599,7 @@ int get_s( int prompt, char *variable_name_string, char *value ){
 
       printf("%s ",variable_name_string);
 	  
-      s = scanf("%s",value);
+      s = fscanf(fp,"%s",value);
       if (s == EOF){
 	printf("\nget_s: Expecting value for %s but found EOF.\n",
 	       variable_name_string);
@@ -616,7 +616,8 @@ int get_s( int prompt, char *variable_name_string, char *value ){
 }
 
 /* Read a vector of integers */
-int get_vi( int prompt, char *variable_name_string, int *value, int nvalues ){
+int get_vi( FILE* fp, int prompt, char *variable_name_string, 
+	    int *value, int nvalues ){
     int s;
     int i;
     char checkname[80];
@@ -625,16 +626,21 @@ int get_vi( int prompt, char *variable_name_string, int *value, int nvalues ){
       s = 0;
       while(s != 1){
     	printf("enter %s with %d values",variable_name_string, nvalues);
-	scanf("%s",checkname);
-    	s=sscanf(checkname,"%d",value);
-    	if (s == 1)
-	  printf("%s %d\n",variable_name_string,*value);
-	else
-	  printf("Data format error.\n");
+	for(i = 0; i < nvalues; i++){
+	  printf("[%d] ",i);
+	  fscanf(fp,"%s",checkname);
+	  s=sscanf(checkname,"%d",value);
+	  if (s == 1)
+	    printf("%s %d\n",variable_name_string,*value);
+	  else{
+	    printf("Data format error.\n");
+	    return 1;
+	  }
+	}
       }
     }
     else  {
-      s = scanf("%s",checkname);
+      s = fscanf(fp,"%s",checkname);
       if (s == EOF){
 	printf("get_vi: EOF on STDIN.\n");
 	return(1);
@@ -653,7 +659,7 @@ int get_vi( int prompt, char *variable_name_string, int *value, int nvalues ){
 	  
       for(i = 0; i < nvalues; i++){
 	
-	s = scanf("%d",value + i);
+	s = fscanf(fp,"%d",value + i);
 	if (s == EOF){
 	  printf("\nget_vi: Expecting value for %s but found EOF.\n",
 		 variable_name_string);
@@ -673,23 +679,94 @@ int get_vi( int prompt, char *variable_name_string, int *value, int nvalues ){
 
 }
 
+/* Read a vector of reals */
+int get_vf( FILE* fp, int prompt, char *variable_name_string, 
+	    Real *value, int nvalues ){
+    int s;
+    int i;
+    char checkname[80];
+
+    if(prompt)  {
+      s = 0;
+      while(s != 1){
+    	printf("enter %s with %d values",variable_name_string, nvalues);
+	for(i = 0; i < nvalues; i++){
+	  printf("[%d] ",i);
+	  fscanf(fp,"%s",checkname);
+#if PRECISION == 1
+	  s=sscanf(checkname,"%e",value+i);
+#else
+	  s=sscanf(checkname,"%le",value+i);
+#endif
+	  if (s == 1)
+	    printf("%s %f\n",variable_name_string,*(value+i));
+	  else{
+	    printf("Data format error.\n");
+	    return 1;
+	  }
+	}
+      }
+    }
+    else  {
+      s = fscanf(fp,"%s",checkname);
+      if (s == EOF){
+	printf("get_vf: EOF on STDIN.\n");
+	return(1);
+      }
+      else if(s==0){
+	printf("\nget_vf: Format error looking for %s\n",variable_name_string);
+	return(1);
+      }
+      else if(strcmp(checkname,variable_name_string) != 0){
+	printf("\nget_vf: ERROR IN INPUT: expected %s but found %s\n",
+	       variable_name_string,checkname);
+	return(1);
+      }
+
+      printf("%s ",variable_name_string);
+	  
+      for(i = 0; i < nvalues; i++){
+#if PRECISION == 1
+	s = fscanf(fp,"%e",value + i);
+#else
+	s = fscanf(fp,"%le",value + i);
+#endif
+	if (s == EOF){
+	  printf("\nget_vf: Expecting value for %s but found EOF.\n",
+		 variable_name_string);
+	  return(1);
+	}
+	else if(s==0){
+	  printf("\nget_vf: Format error reading value for %s\n",
+		 variable_name_string);
+	  return(1);
+	}
+	printf("%f ",value[i]);
+      }
+      printf("\n");
+    }
+    
+    return(0);
+
+}
+
 /* get_prompt gets the initial value of prompt */
 /* 0 for reading from file, 1 prompts for input from terminal */
 /* should be called only by node 0 */
 /* return 0 if sucessful, 1 if failure */
-int get_prompt( int *prompt ){
+int get_prompt( FILE *fp, int *prompt ){
     char initial_prompt[80];
     int status;
 
     *prompt = -1;
     printf( "type 0 for no prompts  or 1 for prompts\n");
-    status = scanf("%s",initial_prompt);
+    status = fscanf(fp, "%s",initial_prompt);
     if(status != 1){
       printf("\nget_prompt: Can't read stdin\n");
       terminate(1);
     }
     if(strcmp(initial_prompt,"prompt") == 0)  {
-       scanf("%d",prompt);
+       fscanf(fp, "%d",prompt);
     }
     else if(strcmp(initial_prompt,"0") == 0) *prompt=0;
     else if(strcmp(initial_prompt,"1") == 0) *prompt=1;
