@@ -14,6 +14,10 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.8  2006/11/04 23:37:43  detar
+//  Add CG nrestart parameter
+//  Remove unwanted debugging lines from output samples
+//
 //  Revision 1.7  2006/10/29 02:38:39  detar
 //  Add access to QOP link fattening and gauge force. Add new test target.
 //
@@ -253,6 +257,9 @@ readin(int prompt)
     /* maximum no. of conjugate gradient iterations */
     IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
     
+    /* maximum no. of conjugate gradient restarts */
+    IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.nrestart );
+    
     /* error per site for conjugate gradient */
     IF_OK status += get_f(stdin, prompt,"error_per_site", &x );
     IF_OK par_buf.rsqmin = x*x;   /* rsqmin is r**2 in conjugate gradient */
@@ -329,6 +336,7 @@ readin(int prompt)
   steps = par_buf.steps;
   propinterval = par_buf.propinterval;
   niter = par_buf.niter;
+  nrestart = par_buf.nrestart;
   npbp_reps_in = par_buf.npbp_reps_in;
   rsqmin = par_buf.rsqmin;
   rsqprop = par_buf.rsqprop;

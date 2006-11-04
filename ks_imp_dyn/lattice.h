@@ -137,7 +137,7 @@ typedef struct {
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
-EXTERN	int warms,trajecs,steps,niter,propinterval;
+EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int npbp_reps_in;
 #ifdef ONEMASS
 EXTERN  int nflavors;

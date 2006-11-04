@@ -54,9 +54,9 @@ Real xrandom;
         if(step==1){
             /* do conjugate gradient to get (Madj M)inverse * phi */
 	    iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-		 niter, rsqmin, EVEN, &final_rsq );
+		 niter, nrestart, rsqmin, EVEN, &final_rsq );
 	    iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-		niter, rsqmin, EVEN, &final_rsq );
+		niter, nrestart, rsqmin, EVEN, &final_rsq );
 
      	    startaction=d_action();
             /* copy link field to old_link */
@@ -87,13 +87,13 @@ Real xrandom;
         /* do conjugate gradient to get (Madj M)inverse * phi */
 #if 0
      	iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-	    niter, rsqmin, EVEN, &final_rsq );
+	    niter, nrestart, rsqmin, EVEN, &final_rsq );
      	iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-	    niter, rsqmin, EVEN, &final_rsq );
+	    niter, nrestart, rsqmin, EVEN, &final_rsq );
 #else
 	iters += ks_congrad_two_src( F_OFFSET(phi1), F_OFFSET(phi2),
 				     F_OFFSET(xxx1), F_OFFSET(xxx2),
-				     mass1, mass2, niter, rsqmin, 
+				     mass1, mass2, niter, nrestart, rsqmin, 
 				     EVEN, &final_rsq);
 #endif
 	dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD );
@@ -138,9 +138,9 @@ Real xrandom;
     /* find action */
     /* do conjugate gradient to get (Madj M)inverse * phi */
     iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-	 niter, rsqmin, EVEN, &final_rsq );
+	 niter, nrestart, rsqmin, EVEN, &final_rsq );
     iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-	 niter, rsqmin, EVEN, &final_rsq );
+	 niter, nrestart, rsqmin, EVEN, &final_rsq );
     endaction=d_action();
     /* decide whether to accept, if not, copy old link field back */
     /* careful - must generate only one random number for whole lattice */

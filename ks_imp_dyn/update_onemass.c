@@ -35,7 +35,7 @@ Real xrandom;
 
 /*DEBUG*/
 /**grsource_imp(F_OFFSET(phi), mass, EVENANDODD);
-ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,niter,rsqmin,EVENANDODD,&final_rsq);
+ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,niter,nrestart,rsqmin,EVENANDODD,&final_rsq);
 checkmul();**/
 /*ENDDEBUG*/
 
@@ -52,7 +52,7 @@ checkmul();**/
         if(step==1){
             /* do conjugate gradient to get (Madj M)inverse * phi */
 	    iters += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx), mass, 
-				 niter, rsqmin, EVEN, &final_rsq );
+				 niter, nrestart, rsqmin, EVEN, &final_rsq );
 	    cg_time = 0.0;
 
      	    startaction=d_action();
@@ -81,7 +81,7 @@ checkmul();**/
 
         /* do conjugate gradient to get (Madj M)inverse * phi */
      	iters += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx), mass, 
-			     niter, rsqmin, EVEN, &final_rsq );
+			     niter, nrestart, rsqmin, EVEN, &final_rsq );
 	dslash_site( F_OFFSET(xxx), F_OFFSET(xxx), ODD );
 	cg_time = ((Real)step - 0.5)*epsilon;
 	/* now update H by full time interval */
@@ -103,7 +103,7 @@ checkmul();**/
     next_cg_time = steps*epsilon;
     predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
     iters += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx), mass,
-			 niter, rsqmin, EVEN, &final_rsq );
+			 niter, nrestart, rsqmin, EVEN, &final_rsq );
     cg_time = steps*epsilon;
     endaction=d_action();
     /* decide whether to accept, if not, copy old link field back */
