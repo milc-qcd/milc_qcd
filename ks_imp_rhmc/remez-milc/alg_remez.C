@@ -28,8 +28,8 @@ AlgRemez::AlgRemez(double lower, double upper, long precision)
   apend = upper;
   apwidt = apend - apstrt;
 
-  printf("//Approximation bounds are [%e,%e]\n", (double)apstrt,(double)apend);
-  printf("//Precision of arithmetic is %d\n", precision);
+  fprintf(stderr,"//Approximation bounds are [%e,%e]\n", (double)apstrt,(double)apend);
+  fprintf(stderr,"//Precision of arithmetic is %d\n", precision);
 
   alloc = 0;
   n = 0;
@@ -129,21 +129,21 @@ double AlgRemez::generateApprox(int num_degree, int den_degree,
 {
   if( a_len > 0 )
   {
-    printf( "PROBLEM: %s: %i\n", __FILE__, __LINE__ );
-    printf( "a_len = %i\n", a_len );
+    fprintf(stderr, "PROBLEM: %s: %i\n", __FILE__, __LINE__ );
+    fprintf(stderr, "a_len = %i\n", a_len );
     exit( 1 );
   }
 
   char *fname = "generateApprox(int, unsigned long, unsigned long)";
 
-  printf("//Degree of the approximation is (%d,%d)\n", num_degree, den_degree);
-  printf("//Approximating the function (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d)\n", m1, pnum1, pden1, m2, pnum2, pden2, m3, pnum3, pden3, m4, pnum4, pden4);
+  fprintf(stderr,"//Degree of the approximation is (%d,%d)\n", num_degree, den_degree);
+  fprintf(stderr,"//Approximating the function (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d)\n", m1, pnum1, pden1, m2, pnum2, pden2, m3, pnum3, pden3, m4, pnum4, pden4);
 
   // Reallocate arrays, since degree has changed
   if (num_degree != n || den_degree != d) allocate(num_degree,den_degree);
 
   if (a_len > SUM_MAX) {
-    printf("//Error: a_length > SUM_MAX");
+    fprintf(stderr,"//Error: a_length > SUM_MAX");
     exit(0);
   }
 
@@ -181,12 +181,12 @@ double AlgRemez::generateApprox(int num_degree, int den_degree,
   while (spread > tolerance) { //iterate until convergance
 
     if (iter++%1000==0) 
-      printf("//Iteration %d, spread %e delta %e\n", 
+      fprintf(stderr,"//Iteration %d, spread %e delta %e\n", 
 	     iter-1,(double)spread,(double)delta);
 
     equations();
     if (delta < tolerance) {
-      printf("Delta too small, try increasing precision\n");
+      fprintf(stderr,"Delta too small, try increasing precision\n");
       exit(0);
     }
 
@@ -196,11 +196,11 @@ double AlgRemez::generateApprox(int num_degree, int den_degree,
 
   int sign;
   double error = (double)getErr(mm[0],&sign);
-  printf("//Converged at %d iterations, error = %e\n",iter,error);
+  fprintf(stderr,"//Converged at %d iterations, error = %e\n",iter,error);
 
   // Once the approximation has been generated, calculate the roots
   if(!root()) {
-    printf("Root finding failed\n");
+    fprintf(stderr,"Root finding failed\n");
   } else {
     foundRoots = 1;
   }
@@ -215,17 +215,17 @@ double AlgRemez::generateApprox(int num_degree, int den_degree,
 int AlgRemez::getPFE(double *Res, double *Pole, double *Norm) {
 
   if (n!=d) {
-    printf("Cannot handle case: Numerator degree neq Denominator degree\n");
+    fprintf(stderr,"Cannot handle case: Numerator degree neq Denominator degree\n");
     return 0;
   }
 
   if (!alloc) {
-    printf("Approximation not yet generated\n");
+    fprintf(stderr,"Approximation not yet generated\n");
     return 0;
   }
 
   if (!foundRoots) {
-    printf("Roots not found, so PFE cannot be taken\n");
+    fprintf(stderr,"Roots not found, so PFE cannot be taken\n");
     return 0;
   }
 
@@ -254,17 +254,17 @@ int AlgRemez::getPFE(double *Res, double *Pole, double *Norm) {
 int AlgRemez::getIPFE(double *Res, double *Pole, double *Norm) {
 
   if (n!=d) {
-    printf("Cannot handle case: Numerator degree neq Denominator degree\n");
+    fprintf(stderr,"Cannot handle case: Numerator degree neq Denominator degree\n");
     return 0;
   }
 
   if (!alloc) {
-    printf("Approximation not yet generated\n");
+    fprintf(stderr,"Approximation not yet generated\n");
     return 0;
   }
 
   if (!foundRoots) {
-    printf("Roots not found, so PFE cannot be taken\n");
+    fprintf(stderr,"Roots not found, so PFE cannot be taken\n");
     return 0;
   }
 
@@ -446,7 +446,7 @@ void AlgRemez::equations(void) {
 
   // Solve the simultaneous linear equations.
   if (simq(AA, BB, param, neq)) {
-    printf("simq failed\n");
+    fprintf(stderr,"simq failed\n");
     exit(0);
   }
 
@@ -591,7 +591,7 @@ bigfloat AlgRemez::func(const bigfloat x) {
 
   if (a_length > 0) {
 
-    printf( "PROBLEM: %s: %i\n", __FILE__, __LINE__ );
+    fprintf(stderr, "PROBLEM: %s: %i\n", __FILE__, __LINE__ );
     exit( 1 );
 
     bigfloat sum = 0l;
@@ -629,7 +629,7 @@ int AlgRemez::simq(bigfloat A[], bigfloat B[], bigfloat X[], int n) {
       ++ij;
     }
     if (rownrm == (bigfloat)0l) {
-      printf("simq rownrm=0\n");
+      fprintf(stderr,"simq rownrm=0\n");
       delete [] IPS;
       return(1);
     }
@@ -651,7 +651,7 @@ int AlgRemez::simq(bigfloat A[], bigfloat B[], bigfloat X[], int n) {
     }
 
     if (big == (bigfloat)0l) {
-      printf("simq big=0\n");
+      fprintf(stderr,"simq big=0\n");
       delete [] IPS;
       return(2);
     }
@@ -680,7 +680,7 @@ int AlgRemez::simq(bigfloat A[], bigfloat B[], bigfloat X[], int n) {
   }
   kpn = n * IPS[n-1] + n - 1;	// last element of IPS[n] th row
   if (A[kpn] == (bigfloat)0l) {
-    printf("simq A[kpn]=0\n");
+    fprintf(stderr,"simq A[kpn]=0\n");
     delete [] IPS;
     return(3);
   }
@@ -730,13 +730,13 @@ int AlgRemez::root() {
 
   // First find the numerator roots
   for (i=0; i<=n; i++) poly[i] = param[i];
-  //for (i=0; i<=n; i++) printf("%d %e\n", i, (double)poly[i]);
+  //for (i=0; i<=n; i++) fprintf(stderr,"%d %e\n", i, (double)poly[i]);
 
   for (i=n-1; i>=0; i--) {
     roots[i] = rtnewt(poly,i+1,lower,upper,tol);
-    //printf("root[%d] = %e\n", i, (double)roots[i]);
+    //fprintf(stderr,"root[%d] = %e\n", i, (double)roots[i]);
     if (roots[i] == 0.0) {
-      printf("Failure to converge on root %d/%d\n", i+1, n);
+      fprintf(stderr,"Failure to converge on root %d/%d\n", i+1, n);
       return 0;
     }
     poly[0] = -poly[0]/roots[i];
@@ -746,13 +746,13 @@ int AlgRemez::root() {
  // Now find the denominator roots
   poly[d] = 1l;
   for (i=0; i<d; i++) poly[i] = param[n+1+i];
-  //for (i=0; i<=d; i++) printf("%d %e\n", i, (double)poly[i]);
+  //for (i=0; i<=d; i++) fprintf(stderr,"%d %e\n", i, (double)poly[i]);
 
   for (i=d-1; i>=0; i--) {
     poles[i]=rtnewt(poly,i+1,lower,upper,tol);
-    //printf("pole[%d] = %e\n", i, (double)poles[i]);
+    //fprintf(stderr,"pole[%d] = %e\n", i, (double)poles[i]);
     if (poles[i] == 0.0) {
-      printf("Failure to converge on pole %d/%d\n", i+1, d);
+      fprintf(stderr,"Failure to converge on pole %d/%d\n", i+1, d);
       return 0;
     }
     poly[0] = -poly[0]/poles[i];
@@ -760,9 +760,9 @@ int AlgRemez::root() {
   }
 
   norm = param[n];
-  //printf("Normalisation constant is %e\n",(double)norm);
-  //for (i=0; i<n; i++) printf("%ld root = %e\n",i,(double)roots[i]);
-  //for (i=0; i<d; i++) printf("%ld pole = %e\n",i,(double)poles[i]);
+  //fprintf(stderr,"Normalisation constant is %e\n",(double)norm);
+  //for (i=0; i<n; i++) fprintf(stderr,"%ld root = %e\n",i,(double)roots[i]);
+  //for (i=0; i<d; i++) fprintf(stderr,"%ld pole = %e\n",i,(double)poles[i]);
 
   delete [] poly;
 
@@ -805,10 +805,10 @@ bigfloat AlgRemez::rtnewt(bigfloat *poly, long i, bigfloat x1,
     dx = f/df;
     rtn -= dx;
     //if ((x1-rtn)*(rtn-x2) < (bigfloat)0.0)
-    //printf("Jumped out of brackets in rtnewt\n");
+    //fprintf(stderr,"Jumped out of brackets in rtnewt\n");
     if (abs_bf(dx) < xacc) return rtn;
   }
-  printf("Maximum number of iterations exceeded in rtnewt\n");
+  fprintf(stderr,"Maximum number of iterations exceeded in rtnewt\n");
   return 0.0;
 }
 
@@ -875,7 +875,7 @@ void AlgRemez::pfe(bigfloat *res, bigfloat *poles, bigfloat norm) {
       res[small] = res[j];
       res[j] = temp;
     }
-    //printf("Residue = %e, Pole = %e\n", (double)res[j], (double)poles[j]);
+    //fprintf(stderr,"Residue = %e, Pole = %e\n", (double)res[j], (double)poles[j]);
   }
 
   delete [] numerator;
