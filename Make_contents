@@ -16,6 +16,7 @@ THIS_DIR =         \
  README                 \
  README_RELEASE_NOTES   \
  cc.pl                  \
+ compare.sh             \
  diffn.pl               \
  diffn3.pl              \
  seterrfile.pl          \

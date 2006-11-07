@@ -16,7 +16,7 @@ outerrt=out.errtol.$target
 outtesttmp=$outtest.tmp
 outsamptmp=$outsamp.tmp
 
-../headtail.pl $PAT1 $PAT2 < $outtest > $outtesttmp
-../headtail.pl $PAT1 $PAT2 < $outsamp > $outsamptmp
-../seterrfile.pl $outtesttmp $outsamptmp $tol > $outerrt
+perl ../headtail.pl $PAT1 $PAT2 < $outtest > $outtesttmp
+perl ../headtail.pl $PAT1 $PAT2 < $outsamp > $outsamptmp
+perl ../seterrfile.pl $outtesttmp $outsamptmp $tol > $outerrt
 
