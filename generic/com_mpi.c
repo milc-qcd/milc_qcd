@@ -278,13 +278,13 @@ initialize_machine(int argc, char **argv)
   /* check if 32 bit int is set correctly */
 #ifdef SHORT_IS_32BIT
   if(sizeof(unsigned short)!=4) {
-    printf("node %i: SHORT_IS_32BIT is set but sizeof(unsigned short)=%i\n",
+    printf("node %d: SHORT_IS_32BIT is set but sizeof(unsigned short)=%d\n",
 	   mynode(), sizeof(unsigned short));
     terminate(1);
   }
 #else
   if(sizeof(unsigned int)!=4) {
-    printf("node %i: SHORT_IS_32BIT is not set but sizeof(unsigned int)=%i\n",
+    printf("node %d: SHORT_IS_32BIT is not set but sizeof(unsigned int)=%d\n",
 	   mynode(), sizeof(unsigned int));
     terminate(1);
   }
