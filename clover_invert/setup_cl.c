@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.7  2006/11/07 05:28:10  detar
+//  Train error files
+//
 //  Revision 1.6  2006/11/07 02:30:53  detar
 //  Fix some omissions to complete the previous update.
 //
@@ -115,12 +118,12 @@ int readin(int prompt) {
     }
     
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(stdin,stdin, prompt,"kappa", &par_buf.kap[i] );
+      IF_OK status += get_f(stdin, prompt,"kappa", &par_buf.kap[i] );
     }
     
     /* Clover coefficient, u0 */
-    IF_OK status += get_f(stdin,stdin, prompt,"clov_c", &par_buf.clov_c );
-    IF_OK status += get_f(stdin,stdin, prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin, prompt,"clov_c", &par_buf.clov_c );
+    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
     
     /* maximum no. of conjugate gradient iterations */
     IF_OK status += get_i(stdin,prompt,"max_cg_iterations", &par_buf.niter );
@@ -130,7 +133,7 @@ int readin(int prompt) {
     
     /* error for propagator conjugate gradient */
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(stdin,stdin, prompt,"error_for_propagator", &par_buf.resid[i] );
+      IF_OK status += get_f(stdin, prompt,"error_for_propagator", &par_buf.resid[i] );
     }
     
     /* Get source type */
@@ -140,7 +143,7 @@ int readin(int prompt) {
     IF_OK if (prompt!=0) 
       printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(stdin,stdin, prompt,"r0", &par_buf.wqs[i].r0 );
+      IF_OK status += get_f(stdin, prompt,"r0", &par_buf.wqs[i].r0 );
 	/* (Same source type for each spectator) */
 	IF_OK par_buf.wqs[i].type = wallflag;
 	IF_OK strcpy(par_buf.wqs[i].descrp,descrp);
