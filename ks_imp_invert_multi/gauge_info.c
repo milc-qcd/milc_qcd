@@ -23,6 +23,7 @@
    */
 
 #include "ks_imp_includes.h"
+#define IMP_QUARK_ACTION_INFO_ONLY
 #include <quark_action.h>
 #include <string.h>
 /*---------------------------------------------------------------------------*/
@@ -52,7 +53,7 @@ void write_appl_gauge_info(FILE *fp)
   write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
   write_gauge_info_item(fp,"gauge.tadpole.u0","%f",(char *)&u0,0,0);
 
-  write_gauge_info_item(fp,"quark.description","%s",quark_action_description,0,0);
+  write_gauge_info_item(fp,"quark.description","%s",QUARK_ACTION_DESCRIPTION,0,0);
   write_gauge_info_item(fp,"quark.flavors1","%d",(char *)&nflavors1,0,0);
   write_gauge_info_item(fp,"quark.flavors2","%d",(char *)&nflavors2,0,0);
   write_gauge_info_item(fp,"quark.mass1","%f",(char *)&mass1,0,0);

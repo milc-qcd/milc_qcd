@@ -15,7 +15,7 @@ typedef struct {
     /*  REPEATING BLOCK */
 	Real beta,mass1,mass2; /* gauge coupling, quark masses */
 	Real u0; /* tadpole parameter */
-	int niter; 	/* maximum number of c.g. iterations */
+	int niter,nrestart; 	/* maximum number of c.g. iterations */
 	Real rsqmin,rsqprop;  /* for deciding on convergence */
         int source_start, source_inc, n_sources; /* source time and increment */
 	int fpi_nmasses;

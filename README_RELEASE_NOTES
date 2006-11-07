@@ -21,6 +21,19 @@ for general instructions.
 
 Here are highlights of the new features:
 
+For version 7.3.0
+
+  Nearly complete QOP and QDP support for all major components of
+  Asqtad molecular dynamics, including Doug's new multi fermion force.
+  Reworked RHMC parameter input and Remez parameter output.
+  Added support for more than two pseudofermion fields in RHMC
+  Support different CG residuals for RHMC MD, FA, GR.
+  Changed inline global make macros to C_GLOBAL_INLINE and
+  SSE_GLOBAL_INLINE.
+  Added file pointer to get_i, get_f, etc.
+  Added nrestart to KS CG routines throughout.
+  (These last changes affect most application subdirectories.)
+
 For version 7.2.2
 
   Upgrade RHMC code to do concurrent EOS calculations

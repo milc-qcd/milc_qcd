@@ -21,6 +21,7 @@ typedef struct {
 	int r0;		/* size of "fuzzy" source/sink */
 	int num_src;	/* number of Gaussian random sources */
 	int niter;	/* maximum number of c.g. iterations */
+	int nrestart;	/* maximum number of c.g. restarts */
 	Real rsqmin;	/* for deciding on convergence */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/

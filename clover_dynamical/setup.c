@@ -60,7 +60,7 @@ int initial_set(){
 
     status = get_prompt(stdin,  &prompt );
 
-    IF_OK status += get_i(prompt,"nflavors", &par_buf.nflavors );
+    IF_OK status += get_i(stdin, prompt,"nflavors", &par_buf.nflavors );
 #ifdef PHI_ALGORITHM
     IF_OK if(par_buf.nflavors != 2){
 	    printf("Dummy! Use phi algorithm only for two flavors\n");
@@ -68,12 +68,12 @@ int initial_set(){
 	}
 #endif
 
-    IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
+    IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
+    IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
+    IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
 
-    IF_OK status += get_i(prompt,"iseed", &par_buf.iseed );
+    IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
 
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -115,43 +115,43 @@ int readin(int prompt) {
     status = 0;
     
     /* warms, trajecs */
-    IF_OK status += get_i(prompt,"warms", &par_buf.warms);
-    IF_OK status += get_i(prompt,"trajecs", &par_buf.trajecs);
+    IF_OK status += get_i(stdin, prompt,"warms", &par_buf.warms);
+    IF_OK status += get_i(stdin, prompt,"trajecs", &par_buf.trajecs);
     
     /* trajectories between propagator measurements */
-    IF_OK status += get_i(prompt,"traj_between_meas", 
+    IF_OK status += get_i(stdin, prompt,"traj_between_meas", 
 			  &par_buf.propinterval);
     
     /* get couplings and broadcast to nodes	*/
     /* beta, kappa */
-    IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta);
-    IF_OK status += get_f(stdin, prompt,"kappa", &par_buf.kappa);
+    IF_OK status += get_f( stdin, prompt,"beta", &par_buf.beta);
+    IF_OK status += get_f( stdin, prompt,"kappa", &par_buf.kappa);
     
     /* Clover coefficient, u0 */
-    IF_OK status += get_f(stdin, prompt,"clov_c", &par_buf.clov_c );
-    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f( stdin, prompt,"clov_c", &par_buf.clov_c );
+    IF_OK status += get_f( stdin, prompt,"u0", &par_buf.u0 );
 
     /* microcanonical time step */
-    IF_OK status += get_f(stdin, prompt,"microcanonical_time_step", &par_buf.epsilon );
+    IF_OK status += get_f( stdin, prompt,"microcanonical_time_step", &par_buf.epsilon );
     
     /*microcanonical steps per trajectory */
-    IF_OK status += get_i(prompt,"steps_per_trajectory", &par_buf.steps);
+    IF_OK status += get_i(stdin, prompt,"steps_per_trajectory", &par_buf.steps);
 
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter);
+    IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter);
 
     /* maximum no. of conjugate gradient restarts */
-    IF_OK status += get_i(prompt,"max_cg_restarts", &par_buf.nrestart );
+    IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.nrestart );
     
     /* error per site for conjugate gradient */
     IF_OK {
-      status += get_f(stdin, prompt,"error_per_site", &x );
+      status += get_f( stdin, prompt,"error_per_site", &x );
       par_buf.rsqmin = x*x;
     }
 
     /* error for propagator conjugate gradient */
     IF_OK {
-      status += get_f(stdin, prompt,"error_for_propagator", &x );
+      status += get_f( stdin, prompt,"error_for_propagator", &x );
       par_buf.rsqprop = x*x;
     }
     

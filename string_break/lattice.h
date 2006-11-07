@@ -86,7 +86,7 @@ EXTERN	int iseed;		/* random number seed */
 #define MAX_LEVEL 5	/* maximal number of smearing levels */
 EXTERN	int no_smear_level, smear_num[MAX_LEVEL], off_axis_flag;
 EXTERN  int tot_smear;  /* running total of smearing steps for lattice */
-EXTERN	int niter, num_src, r0;
+EXTERN	int niter, nrestart, num_src, r0;
 EXTERN	Real smear_fac;
 EXTERN	Real mass, rsqmin;
 EXTERN	char startfile[MAXFILENAME], savefile[MAXFILENAME];

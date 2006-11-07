@@ -96,6 +96,7 @@ EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int niter;
+EXTERN	int nrestart;
 EXTERN  Real beta;
 EXTERN  Real mass,u0;
 EXTERN	Real rsqprop;

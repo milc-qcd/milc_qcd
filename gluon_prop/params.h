@@ -20,6 +20,7 @@ typedef struct {
 	Real mass[MAX_NUM_MASS];	/* quark mass */
 	Real u0;	/* tadpole parameter */
 	int niter;	/* maximum number of c.g. iterations */
+	int nrestart;	/* maximum number of c.g. restart */
 	Real rsqprop;	/* for deciding on convergence */
 	int run_CG_flag[MAX_NUM_MASS];	/* Do inversion or not */
 	int ksstartflag[MAX_NUM_MASS];	/* what to do for beginning propagators */

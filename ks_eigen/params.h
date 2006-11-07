@@ -11,6 +11,7 @@ typedef struct {
 	Real mass; /* gauge coupling, quark mass */
 	Real u0; /* tadpole parameter */
 	int niter; 	/* maximum number of c.g. iterations */
+	int nrestart; 	/* maximum number of c.g. restarts */
 	Real rsqmin,rsqprop;  /* for deciding on convergence */
         int Nvecs ; /* number of eigenvectors */
         Real eigenval_tol ; /* Tolerance for the eigenvalue computation */

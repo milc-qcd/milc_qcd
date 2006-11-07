@@ -106,7 +106,7 @@ typedef struct {
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
-EXTERN	int warms,trajecs,steps,niter,propinterval;
+EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 EXTERN	Real epsilon;
 EXTERN  Real beta,mass1,mass2,u0;

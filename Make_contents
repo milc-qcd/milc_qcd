@@ -245,9 +245,12 @@ KS_IMP_RHMC =           \
  ks_imp_rhmc/in.sample*      \
  ks_imp_rhmc/out.errtol*     \
  ks_imp_rhmc/out.sample*     \
+ ks_imp_rhmc/rationals.sample* \
  ks_imp_rhmc/remez-milc/README* \
  ks_imp_rhmc/remez-milc/*.C     \
  ks_imp_rhmc/remez-milc/*.h     \
+ ks_imp_rhmc/remez-milc/in.sample* \
+ ks_imp_rhmc/remez-milc/rationals.sample* \
  ks_imp_rhmc/remez-milc/Make*
 
 

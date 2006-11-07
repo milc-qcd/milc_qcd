@@ -140,6 +140,9 @@ Real x;
 
 	/* maximum no. of conjugate gradient iterations */
 	IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
+    
+	/* maximum no. of conjugate gradient restarts */
+	IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.nrestart );
 
 	/* error per site for conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_per_site", &x );
@@ -171,6 +174,7 @@ Real x;
     startflag = par_buf.startflag;
     saveflag = par_buf.saveflag;
     niter = par_buf.niter;
+    nrestart = par_buf.nrestart;
     rsqmin = par_buf.rsqmin;
     epsilon = par_buf.epsilon;
 #ifdef SEXT_WEIN

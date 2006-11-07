@@ -1,3 +1,13 @@
+11/04/2006  C DeTar
+
+The target poly4 has been modified so it takes parameters on stdin and
+creates a parameter file in a format suitable for input to the MILC
+RHMC code.
+
+See sample input files in.sample_1 and in.sample_2.
+
+
+Older notes:
 
 Now call it like this.
 

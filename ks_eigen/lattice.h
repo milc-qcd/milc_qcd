@@ -117,7 +117,7 @@ typedef struct {
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
-EXTERN	int niter,nflavors;
+EXTERN	int niter,nrestart,nflavors;
 EXTERN  Real mass,u0;
 EXTERN	Real rsqmin,rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,

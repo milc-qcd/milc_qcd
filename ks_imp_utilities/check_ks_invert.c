@@ -80,7 +80,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
     else {
       /* Compute (M^dagger M)^-1 phi */
       iters = ks_congrad( src, ans, mass,
-			  niter, rsqprop, EVENANDODD, &final_rsq);
+			  niter, nrestart, rsqprop, EVENANDODD, &final_rsq);
       node0_printf("Inversion required %d iters resid %e\n",iters,final_rsq);
     }
   }

@@ -76,6 +76,19 @@ else
   endif
 endif
 
+# Selection of the gauge force algorithm
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+  SYMZK1FORCE = gauge_force_symzk1_qop.o
+  SYMZK1FORCE += ${SYMZK1FORCEQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    SYMZK1FORCE = gauge_force_symzk1_qdp.o
+  else
+    SYMZK1FORCE = gauge_force_imp.o
+  endif
+endif
+
 # EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o
@@ -104,7 +117,7 @@ LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
 
 ${LASTMAKE}:
-	-/bin/rm -f .lastmake.* quark_action.h gauge_action.h
+	-/bin/rm -f .lastmake.* gauge_action.h
 	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 

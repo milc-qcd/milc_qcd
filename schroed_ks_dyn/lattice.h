@@ -76,7 +76,7 @@ typedef struct {
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
-EXTERN	int warms,trajecs,steps,niter,nflavors;
+EXTERN	int warms,trajecs,steps,niter,nrestart,nflavors;
 EXTERN	int bc_flag;		/* flag for gauge field bc */
 EXTERN	Real rsqmin,beta,mass;
 EXTERN	Real epsilon;

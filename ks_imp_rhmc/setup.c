@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.11  2006/11/07 02:30:58  detar
+//  Fix some omissions to complete the previous update.
+//
 //  Revision 1.10  2006/11/04 23:35:14  detar
 //  Add separate CG control for MD, FA, GR
 //  Add nrestart parameter
@@ -429,7 +432,7 @@ readin(int prompt)
     if(rparam[i].GR.order > max_rat_order)max_rat_order = rparam[i].GR.order;
     if(rparam[i].FA.order > max_rat_order)max_rat_order = rparam[i].FA.order;
   }
-  printf("maximum rational func order is %d\n",max_rat_order);
+  node0_printf("Maximum rational func order is %d\n",max_rat_order);
 
   /* Do whatever is needed to get lattice */
   if( startflag == CONTINUE ){

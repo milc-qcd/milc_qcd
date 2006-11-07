@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.6  2006/11/07 02:30:53  detar
+//  Fix some omissions to complete the previous update.
+//
 //  Revision 1.5  2006/11/04 23:50:03  detar
 //  Add file pointer to io_helpers utilities.
 //
@@ -56,10 +59,10 @@ int initial_set(){
     
     status = get_prompt(stdin,  &prompt );
     
-    IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-    IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-    IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-    IF_OK status += get_i(prompt,"nt", &par_buf.nt );
+    IF_OK status += get_i(stdin,prompt,"nx", &par_buf.nx );
+    IF_OK status += get_i(stdin,prompt,"ny", &par_buf.ny );
+    IF_OK status += get_i(stdin,prompt,"nz", &par_buf.nz );
+    IF_OK status += get_i(stdin,prompt,"nt", &par_buf.nt );
     
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -99,7 +102,7 @@ int readin(int prompt) {
     status=0;
     
     /* Number of kappas */
-    IF_OK status += get_i(prompt,"number_of_kappas", &par_buf.num_kap );
+    IF_OK status += get_i(stdin,prompt,"number_of_kappas", &par_buf.num_kap );
     if( par_buf.num_kap>MAX_KAP ){
       printf("num_kap = %d must be <= %d!\n", par_buf.num_kap, MAX_KAP);
       status++;
@@ -112,22 +115,22 @@ int readin(int prompt) {
     }
     
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(stdin, prompt,"kappa", &par_buf.kap[i] );
+      IF_OK status += get_f(stdin,stdin, prompt,"kappa", &par_buf.kap[i] );
     }
     
     /* Clover coefficient, u0 */
-    IF_OK status += get_f(stdin, prompt,"clov_c", &par_buf.clov_c );
-    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+    IF_OK status += get_f(stdin,stdin, prompt,"clov_c", &par_buf.clov_c );
+    IF_OK status += get_f(stdin,stdin, prompt,"u0", &par_buf.u0 );
     
     /* maximum no. of conjugate gradient iterations */
-    IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
+    IF_OK status += get_i(stdin,prompt,"max_cg_iterations", &par_buf.niter );
     
     /* maximum no. of conjugate gradient restarts */
-    IF_OK status += get_i(prompt,"max_cg_restarts", &par_buf.nrestart );
+    IF_OK status += get_i(stdin,prompt,"max_cg_restarts", &par_buf.nrestart );
     
     /* error for propagator conjugate gradient */
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(stdin, prompt,"error_for_propagator", &par_buf.resid[i] );
+      IF_OK status += get_f(stdin,stdin, prompt,"error_for_propagator", &par_buf.resid[i] );
     }
     
     /* Get source type */
@@ -137,7 +140,7 @@ int readin(int prompt) {
     IF_OK if (prompt!=0) 
       printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(stdin, prompt,"r0", &par_buf.wqs[i].r0 );
+      IF_OK status += get_f(stdin,stdin, prompt,"r0", &par_buf.wqs[i].r0 );
 	/* (Same source type for each spectator) */
 	IF_OK par_buf.wqs[i].type = wallflag;
 	IF_OK strcpy(par_buf.wqs[i].descrp,descrp);

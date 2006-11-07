@@ -52,7 +52,7 @@ MY_OBJECTS =         \
   gauge_info.o
 
 # Basic set from generic directory
-G_OBJECTS0 =          \
+G_OBJECTS =          \
   d_plaq4.o          \
   d_linktrsum.o      \
   io_lat4.o          \
@@ -67,8 +67,7 @@ G_OBJECTS0 =          \
   path_product.o
 
 # Basic set from generic directory
-QUARK_OBJECTS0 = \
-  fermion_links_fn.o
+QUARK_OBJECTS = \
   io_helpers_ks.o \
   io_prop_ks.o \
   io_prop_ks_fm.o \
@@ -77,17 +76,14 @@ QUARK_OBJECTS0 = \
   quark_stuff.o
 
 ifeq ($(strip ${QCDOC}),true)
-  G_OBJECTS1 = ${G_OBJECTS0} ploop2.o
+  G_OBJECTS += ploop2.o
 else
-  G_OBJECTS1 = ${G_OBJECTS0} ploop3.o
+  G_OBJECTS += ploop3.o
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS = ${G_OBJECTS1} io_scidac.o
-  QUARK_OBJECTS = ${QUARK_OBJECTS0} io_scidac_ks.o
-else
-  G_OBJECTS = ${G_OBJECTS1}
-  QUARK_OBJECTS = ${QUARK_OBJECTS0}
+  G_OBJECTS += io_scidac.o
+  QUARK_OBJECTS += io_scidac_ks.o
 endif
 
 # Objects depending on architecture and software package
@@ -107,6 +103,20 @@ endif
 # Choices are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
 DSLASH_FN = dslash_fn2.o
 
+# Selection of the fermion links algorithm
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+  FLINKS_FN = fermion_links_asqtad_qop.o
+  FLINKS_FN += ${FLINKS_FNQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    FLINKS_FN = fermion_links_asqtad_qdp.o
+  else
+    FLINKS_FN = fermion_links_fn.o
+  endif
+endif
+FLINKS_FN += fermion_links_helpers.o
+
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
@@ -124,23 +134,33 @@ else
 endif
 
 # Selection of the multimass inverter
-ifeq ($(strip ${HAVEQDP}),true)
-  QDP_OBJECTS = stuff_qdp.o
-  INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o
-  MULTI_INV_FN = ks_multicg_qdp.o
-else
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
-  MULTI_INV_FN = ks_multicg.o ks_multicg_offset.o
-endif
-
-# EDRAM allocation for QCDOC
-ifeq ($(strip ${QCDOC}),true)
-  QCDOC_OBJECTS = qcdoc_alloc.o
+  MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop.o
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    QDP_OBJECTS = stuff_qdp.o
+    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
+    MULTI_INV_FN = ks_multicg.o ks_multicg_qdp.o
+  else
+    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
+    MULTI_INV_FN = ks_multicg.o ks_multicg_offset.o
+  endif
 endif
 
 # The only choice for inverters and Dslash for EO actions
 INV_EO_OBJECTS = d_congrad5_eo.o dslash_eo.o
 MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
+
+# For EO actions we don't precompute the fat links for Dslash at the moment
+FN_OBJECTS = ${FLINKS_FN} ${INV_FN_OBJECTS}
+EO_OBJECTS = ${INV_EO_OBJECTS}
+
+# EDRAM allocation for QCDOC
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
@@ -234,35 +254,35 @@ su3_ks_quark_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DQUARK_PROP -DGFIX" \
 	"QUARK = onelink_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} \
 	${QUARK_OBJECTS} quark_prop.o gaugefix2.o gaugefixfft.o"
 
 su3_fn_quark_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DQUARK_PROP -DGFIX -DNAIK" \
 	"QUARK = naik_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} \
 	${QUARK_OBJECTS} quark_prop.o gaugefix2.o gaugefixfft.o"
 
 su3_p4_quark_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DEO -DQUARK_PROP -DGFIX" \
 	"QUARK = p4_action.h" \
-	"EXTRA_OBJECTS= ${INV_EO_OBJECTS} ${MULTI_INV_EO} \
+	"EXTRA_OBJECTS= ${EO_OBJECTS} ${MULTI_INV_EO} \
 	${QUARK_OBJECTS} quark_prop.o gaugefix2.o gaugefixfft.o"
 
 su3_asqtad_quark_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DQUARK_PROP -DGFIX -DNAIK" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} \
 	${QUARK_OBJECTS} quark_prop.o gaugefix2.o gaugefixfft.o"
 
 su3_asqtad_renorm::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DQUARK_PROP -DQUARK_RENORM -DGFIX -DNAIK" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${INV_FN_OBJECTS} ${MULTI_INV_FN} \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} \
 	${QUARK_OBJECTS} quark_renorm.o gaugefix2.o gaugefixfft.o"
 
 clean:

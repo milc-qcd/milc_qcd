@@ -18,6 +18,7 @@ typedef struct {
 	int saveflag;   /* what to do with lattice at end */
 	Real beta,mass; /* gauge coupling, quark mass */
 	int niter; 	/* maximum number of c.g. iterations */
+	int nrestart; 	/* maximum number of c.g. restarts */
 	int bc_flag; 	/* gauge boundary condition flag */
 	Real rsqmin;	/* for deciding on convergence */
 	Real epsilon;	/* time step */

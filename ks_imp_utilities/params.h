@@ -14,6 +14,7 @@ typedef struct {
   Real mass; /* gauge coupling, quark masses */
   Real u0; /* tadpole parameter */
   int niter; 	/* maximum number of c.g. iterations */
+  int nrestart;	/* maximum number of c.g. restarts */
   Real rsqprop;  /* for deciding on convergence */
   int startflag;  /* what to do for beginning lattice */
   int saveflag;   /* what to do with lattice at end */

@@ -4,6 +4,7 @@ BEGIN
 mass 0
 u0 0
 max_cg_iterations 0 0.05 0.05
+max_cg_restarts 0
 error_for_propagator 0
 reload_serial ../binary_samples/lat.sample.l8
 forget 0.02 0.02
@@ -58,18 +59,19 @@ Record info
 "source color vector field"
 Checksums XXX XXX
 Doing the inversion
-Inversion required 0 iters resid 2e-09
+Inversion required 2 iters resid 2e-09
 Checking the inversion
 Inversion checked, frac. error = 6e-07
 Flagged comparisons = 0
 Max err. = 1e-4 frac. = 1e-6
 Saved KS vector serially to binary file ksvector.ans.MdaggerMinv.test.l8
-Checksums XXX XXX
+Checksums 4e+04 2e+02
 
 
 mass 0
 u0 0
 max_cg_iterations 0
+max_cg_restarts 0
 error_for_propagator 2e-09
 continue
 forget

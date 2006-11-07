@@ -151,6 +151,8 @@ char savebuf[128];
 
 	/* maximum no. of conjugate gradient iterations */
 	IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
+	/* maximum no. of conjugate gradient restarts */
+	IF_OK status += get_i(stdin, prompt,"max_cg_restarts", &par_buf.nrestart );
 
 	/* error for propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
@@ -261,6 +263,7 @@ char savebuf[128];
     }
     u0 = par_buf.u0;
     niter = par_buf.niter;
+    nrestart = par_buf.nrestart;
     rsqprop = par_buf.rsqprop;
 #endif
     strcpy(startfile,par_buf.startfile);

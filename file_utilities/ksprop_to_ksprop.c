@@ -63,19 +63,19 @@ void free_lattice()
 }
 /*----------------------------------------------------------------------*/
 
-int get_prompt(stdin,  int *prompt ){
+int get_prompt(FILE *fp, int *prompt ){
     char initial_prompt[80];
     int status;
 
     *prompt = -1;
     printf( "type 0 for no prompts  or 1 for prompts\n");
-    status = scanf("%s",initial_prompt);
+    status = fscanf(fp, "%s",initial_prompt);
     if(status != 1){
       printf("\nget_prompt: Can't read stdin\n");
       terminate(1);
     }
     if(strcmp(initial_prompt,"prompt") == 0)  {
-       scanf("%d",prompt);
+       fscanf(fp, "%d",prompt);
     }
     else if(strcmp(initial_prompt,"0") == 0) *prompt=0;
     else if(strcmp(initial_prompt,"1") == 0) *prompt=1;

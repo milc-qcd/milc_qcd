@@ -105,6 +105,7 @@ EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int niter;		/* max number of CG iterations */
+EXTERN	int nrestart;		/* max number of CG restarts */
 EXTERN	int num_mass;		/* number of masses */
 EXTERN	Real beta,quarkmass,u0;
 EXTERN	Real mass[MAX_NUM_MASS];

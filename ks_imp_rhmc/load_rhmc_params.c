@@ -83,6 +83,9 @@ static int read_broadcast_ratfunc(FILE *fp,
   }
   broadcast_bytes((char *)rf->res,sizeof(Real)*(rf->order+1));
   broadcast_bytes((char *)rf->pole,sizeof(Real)*(rf->order+1));
+
+  /* Final status check */
+  broadcast_bytes((char *)&status, sizeof(int));
   return status;
 }
 
@@ -134,10 +137,11 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
 
   /* Read rational function parameters for each pseudofermion field */
   
-  for(i = 0; i < my_n_pseudo; i++){
+  for(i = 0; i < n_pseudo; i++){
     node0_printf("Loading rational function parameters for phi field %d\n",i);
     /* The precision is only informational */
-    IF_OK status += get_i(fp,prompt,"precision",&precision);
+    if(mynode() == 0)
+      IF_OK status += get_i(fp,prompt,"precision",&precision);
     IF_OK status += read_broadcast_ratfunc(fp,"MD",&p[i].MD);
     IF_OK status += read_broadcast_ratfunc(fp,"GR",&p[i].GR);
     IF_OK status += read_broadcast_ratfunc(fp,"FA",&p[i].FA);

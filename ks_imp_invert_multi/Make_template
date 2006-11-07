@@ -105,22 +105,16 @@ DSLASH_FN = dslash_fn.o  # Or dslash_fn2.o
 # Selection of the fermion links algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-# We don't have fermion_links_asqtad_dmdu0_qop.o yet
   FLINKS_FN = fermion_links_asqtad_qop.o
-  FLINKS_FN_DMDU0 = fermion_links_asqtad_dmdu0_qop.o
   FLINKS_FN += ${FLINKS_FNQOP}
-  FLINKS_FN_DMDU0 += ${FNLINKS_FN_DMDU0QOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-#   These routines are not available, yet
     FLINKS_FN = fermion_links_asqtad_qdp.o
-    FLINKS_FN_DMDU0 = fermion_links_asqtad_qdp_dmdu0.o
   else
     FLINKS_FN = fermion_links_fn.o
-    FLINKS_FN_DMDU0 = fermion_links_fn_dmdu0.o
   endif
 endif
-
+FLINKS_FN += fermion_links_helpers.o
 
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
@@ -141,7 +135,7 @@ endif
 # Selection of the fermion force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  ASQFORCE = fermion_force_asqtad_qop.o load_qop_asqtad_coeffs.o
+  ASQFORCE = fermion_force_asqtad_qop.o
 # The implementation of the interface (if not packaged)
   ASQFORCE += ${ASQFORCEQOP}
 else
