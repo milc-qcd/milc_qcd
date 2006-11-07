@@ -125,7 +125,7 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
   if(status > 0)return NULL;
   
   /* Make space for the parameters */
-  p = (params_rhmc *)malloc(my_n_pseudo*sizeof(params_rhmc));
+  p = (params_rhmc *)malloc(n_pseudo*sizeof(params_rhmc));
   if(p == NULL){
     status = 1;
   }
