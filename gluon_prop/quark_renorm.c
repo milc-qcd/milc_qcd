@@ -121,7 +121,8 @@ char filename[50];
 		    if(parity == 0){
 			/* do a C.G. (source in phi, result in xxx1) */
 			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
-				mass[j_mass], niter, rsqprop, EVEN, &finalrsq);
+					   mass[j_mass], niter, nrestart, 
+					   rsqprop,  EVEN, &finalrsq);
 			/* Multiply by -Madjoint */
 			dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD);
 			mass_x2 = 2.*mass[j_mass];
@@ -133,7 +134,8 @@ char filename[50];
 		    else{
 			/* do a C.G. (source in phi, result in xxx1) */
 			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
-				mass[j_mass], niter, rsqprop, ODD, &finalrsq);
+					   mass[j_mass], niter, nrestart, 
+					   rsqprop, ODD, &finalrsq);
 			/* Multiply by -Madjoint */
 			dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), EVEN);
 			mass_x2 = 2.*mass[j_mass];
