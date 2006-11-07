@@ -257,7 +257,8 @@ void load_fn_links(){
 #ifdef DM_DU0
 /* Wrappers for MILC call to QOP */
 void load_fn_links_dmdu0(){
-  load_asqtad_links(0, &t_dfatlink_du0, NULL, get_quark_path_coeff_dmdu0());
+  su3_matrix *null = NULL;
+  load_asqtad_links(0, &t_dfatlink_du0, &null, get_quark_path_coeff_dmdu0());
 }
 #endif
 
