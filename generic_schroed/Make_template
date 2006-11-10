@@ -26,7 +26,7 @@ G_SCHROD_HEADERS = \
 G_SCHROED_ALL_DEPEND = \
   ../generic_schroed/generic_schroed_includes.h \
   ../generic_schroed/Make_template \
-  ../include
+  ../include \
   ${LASTMAKE} \
   ${G_SCHROED_HEADERS}
 

@@ -59,7 +59,7 @@ void g_complexsum(complex *cpt);
 void g_veccomplexsum(complex *cpt, int ncomplex);
 void g_dcomplexsum(double_complex *cpt);
 void g_vecdcomplexsum(double_complex *cpt, int ncomplex);
-void g_wvectosumReal(wilson_vector *wvpt);
+void g_wvectorsumfloat(wilson_vector *wvpt);
 void g_xor32(u_int32type *pt );
 void g_floatmax(Real *fpt);
 void g_doublemax(double *dpt);

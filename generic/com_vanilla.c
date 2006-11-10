@@ -41,7 +41,7 @@
                            over all nodes.
    g_dcomplexsum()       sums a double precision complex number over all nodes.
    g_vecdcomplexsum()    sums a vector of double_complex over all nodes 
-   g_wvectosumReal()        sums a single precision wilson vector over all nodes.
+   g_wvectorsumfloat()   sums a single precision wilson vector over all nodes.
    g_xor32()             finds global exclusive or of 32-bit word
    g_floatmax()          finds maximum Realing point number over all nodes.
    g_doublemax()         finds maximum double over all nodes.
@@ -294,7 +294,7 @@ g_vecdcomplexsum(double_complex *cpt, int ncomplex)
 **  Sum wilson_vector over all nodes
 */
 void
-g_wvectosumReal(wilson_vector *wvpt)
+g_wvectorsumfloat(wilson_vector *wvpt)
 {
 }
 
