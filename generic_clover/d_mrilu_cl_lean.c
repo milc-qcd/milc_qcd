@@ -63,9 +63,6 @@
 
 #include "generic_clover_includes.h"
 
-/*#define CGTIME */
-double dtime;
-
 int mrilu_cl(		/* Return value is number of iterations taken */
     field_offset src,	/* type wilson_vector (source vector - OVERWRITTEN!)*/
     field_offset dest,	/* type wilson_vector (answer and initial guess )*/
@@ -100,8 +97,9 @@ int mrilu_cl(		/* Return value is number of iterations taken */
   register Real MKsq = -Kappa*Kappa;
   register field_offset r;
   Real CKU0 = Kappa*Clov_c/(U0*U0*U0);
+#ifdef CGTIME
   double dtime;
-
+#endif
     if(even_sites_on_node!=odd_sites_on_node){
       printf("Need same number of even and odd sites on each node\n");
       terminate(1);
