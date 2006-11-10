@@ -30,7 +30,7 @@ void dslash_w_site(field_offset src, field_offset dest, int isign, int parity)
 {
   half_wilson_vector hwv;
   
-  register int i,end;
+  register int i;
   register site *s;
   register int dir,otherparity;
   msg_tag *tag[2];
@@ -180,7 +180,7 @@ void dslash_w_site_special(field_offset src,field_offset dest,
 {
   half_wilson_vector hwv;
   
-  register int i,end;
+  register int i;
   register site *s;
   register int dir,otherparity;
   
