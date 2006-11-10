@@ -57,7 +57,7 @@ set4_##T##_from_site(QDP_##TYPE *dest[], field_offset src) \
   for(dir=0; dir<4; dir++) { \
     temp = QDP_expose_##T (dest[dir]); \
     FORALLSITES(i,s) { \
-      memcpy((void *)&temp[i], (void *)F_PT(s,src)+dir*sizeof(MILCTYPE), sizeof(QLA_##TYPE)); \
+      memcpy((void *)&temp[i], (char *)F_PT(s,src)+dir*sizeof(MILCTYPE), sizeof(QLA_##TYPE)); \
     } \
     QDP_reset_##T (dest[dir]); \
   } \
