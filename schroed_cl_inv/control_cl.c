@@ -49,6 +49,11 @@ complex *f_V[MAX_KAP];
 Real f_1[MAX_KAP];
 
     initialize_machine(argc,argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
+  /* Remap standard I/O */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
     g_sync();
     /* set up */

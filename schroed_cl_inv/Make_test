@@ -22,10 +22,9 @@
 
 PROJS = su3_schr_cl_cg su3_schr_cl_bi su3_schr_cl_mr
 
-PRECLIST = 1
+PRECLIST = 1 2
 
 PATTERNS = FORW_PION RUNNING
-TOL = 1e-5
 
 include ../Make_test_template
 
