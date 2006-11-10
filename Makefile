@@ -125,16 +125,16 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 #    QDP   for Level 3 QOPQDP
 #    MILC (nonoptimized MILC implementation for testing)
 #    blank if you don't want QOP
-WANTQOP = QDP
+WANTQOP = 
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
-WANTQDP = true
+WANTQDP = 
 
 # Choose "true" or "". Implies HAVEQMP.
-WANTQIO = true
+WANTQIO = 
 
 # Choose "true" or "".
-WANTQMP = true
+WANTQMP = 
 
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
