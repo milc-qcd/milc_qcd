@@ -30,6 +30,8 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
 
   QOP_gauge_coeffs_t coeff;
   QOP_info_t info;
+  double remaptime = -dclock();
+  double dtime = remaptime;
 
   //printf("Begin wrapper\n");
   /* Initialize QOP */
@@ -61,18 +63,23 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
     QDP_reset_M(mom->force[0]);
   }
 #endif
+  remaptime += dclock();
+  dtime = -dclock();
   /* Compute fermion force */
   QOP_symanzik_1loop_gauge_force(&info, links, mom, &coeff, eps*beta);
+  dtime += dclock();
+  remaptime -= dclock();
   //       printf("After calling QOP force status is %d\n",info.status);
   if(info.status != QOP_SUCCESS){
     terminate(1);
   }
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
-
+  remaptime += dclock();
 #ifdef GFTIME
   node0_printf("GFTIME:  time = %e mflops = %e\n",dtime,
 	       info.final_flop/(1e6*info.final_sec) );
+  node0_printf("GFREMAP:  time = %e\n",remaptime);
 #endif
   //   printf("imp_gauge_force: using my QOP version\n");	
 } /* imp_gauge_force.c */

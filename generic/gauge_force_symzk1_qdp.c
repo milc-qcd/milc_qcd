@@ -28,9 +28,7 @@ imp_gauge_force_qdp(QDP_ColorMatrix *flinks[], QDP_ColorMatrix *force[],
   int mu, nu, sig;
   double dtime;
   Real eb3 = -eps*beta/3.0;
-#ifdef GFTIME
   int nflop = 96720;
-#endif
 
   int j[3][2] = {{1,2},
                  {0,2},
@@ -272,6 +270,7 @@ imp_gauge_force( Real eps, field_offset mom_off ){
   QLA_ColorMatrix *temp;
   QDP_ColorMatrix *gf[4];
   QDP_ColorMatrix *force[4];
+  double remaptime = -dclock();
 
   /* Allocate space for gauge field and force */
   FORALLUPDIR(dir){
@@ -298,8 +297,12 @@ imp_gauge_force( Real eps, field_offset mom_off ){
   coeff[1] = loop_coeff[1][0]; /* rect */
   coeff[2] = loop_coeff[2][0]; /* pgm */
 
+  remaptime += dclock();
+
   /* Evaluate the gauge force */
   imp_gauge_force_qdp(gf, force, coeff, eps);
+
+  remaptime -= dclock();
 
   /* Map the force back to MILC */
   /* It requires a special conversion to the antihermitian type */
@@ -318,6 +321,11 @@ imp_gauge_force( Real eps, field_offset mom_off ){
     QDP_destroy_M(gf[dir]);
     QDP_destroy_M(force[dir]);
   }
+
+  remaptime += dclock();
+#ifdef GFTIME
+  node0_printf("GFREMAP:  time = %e\n",remaptime);
+#endif
 }
 
 
