@@ -171,11 +171,8 @@ ifeq ($(strip ${HAVEQOP}),true)
   ASQFORCE += ${ASQFORCEQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-# Choose (fermion_force_asqtad_qdp.o )
-    ASQFORCE = fermion_force_asqtad3.o ff_opt.o
+    ASQFORCE = fermion_force_asqtad_qdp.o
   else
-# Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
-# or  fermion_force_asqtad3.o + ff_opt.o
     ASQFORCE = fermion_force_asqtad3.o ff_opt.o
   endif
 endif
@@ -362,7 +359,7 @@ su3_rmd_mu_eos::
 
 su3_rmd_dblstore_gath13_fewsums::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DDBLSTORE_FN -DFN_GATHER13" \
+	"DEFINES= -DFN  -DDBLSTORE_FN -DFN_GATHER13 -DFEWSUMS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FLINKS_FN} ${ASQFORCE} ${SYMZK1FORCE} \
