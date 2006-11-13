@@ -64,10 +64,10 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   int iteration;	 /* counter for iterations */
 
 /* Timing */
-#ifdef CGTIME
   double dtimec;
-  double nflop;
-  nflop = 1187;
+  double remaptime;
+#ifdef CGTIME
+  double nflop = 1187;
   if(parity==QDP_all) nflop *= 2;
 #endif
 
@@ -87,6 +87,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   iteration = 0;
 
   if( !(valid_fn_links==1))  load_fn_links();
+  remaptime = -dclock();
   set4_M_from_field(fatlinks, t_fatlink);
   set4_M_from_field(longlinks, t_longlink);
 
@@ -101,9 +102,8 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
     QDP_destroy_M(tcm); tcm = NULL;
   }
 
-#ifdef CGTIME
+  remaptime += dclock();
   dtimec = -dclock(); 
-#endif
 
   /* initialization process */
   do {
@@ -169,12 +169,13 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   } while( (rsq>rsqstop) && (iteration<nrestart*niter) );
 
   if( rsq <= rsqstop ) {
-#ifdef CGTIME
     dtimec += dclock();
+#ifdef CGTIME
     if(QDP_this_node==0) {
       printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 	     dtimec, iteration,
 	     (double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
+      node0_printf("CGREMAP:  time = %e\n",remaptime);
       fflush(stdout);
     }
 #endif
@@ -198,6 +199,7 @@ ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
   QLA_Real qmass, qrsqmin, qfinal_rsq_ptr;
   QDP_ColorVector *src, *dest;
   QDP_Subset q_parity;
+  double remaptime;
   int iteration;
 
   switch(parity) {
@@ -206,6 +208,7 @@ ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
   default:     q_parity = QDP_all;  break;
   }
 
+  remaptime = -dclock();
   src = QDP_create_V();
   dest = QDP_create_V();
 
@@ -214,14 +217,21 @@ ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
 
   qmass = (QLA_Real) mass;
   qrsqmin = (QLA_Real) rsqmin;
+  remaptime += dclock();
   iteration = ks_congrad_qdp(src, dest, qmass, niter, nrestart, qrsqmin, 
 			     q_parity, &qfinal_rsq_ptr);
+  remaptime -= dclock();
   *final_rsq_ptr = (Real) qfinal_rsq_ptr;
 
   set_site_from_V(f_dest, dest);
 
   QDP_destroy_V(dest); dest = NULL;
   QDP_destroy_V(src);  src = NULL;
+  remaptime += dclock();
+
+#ifdef CGTIME
+  node0_printf("CGREMAP:  time = %e\n",remaptime);
+#endif
 
   return(iteration);
 }

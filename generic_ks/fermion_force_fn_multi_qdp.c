@@ -186,7 +186,6 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
   QDP_ColorVector *vec_tmp[2];
   int netbackdir, last_netbackdir;	// backwards direction for entire path
   //int tempflops = 0; //TEMP
-  double dtime;
   // Quark paths sorted by net displacement and last directions
   static Q_path *q_paths_sorted = NULL; 
   // table of net path displacements (backwards from usual convention)
@@ -196,6 +195,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
 #ifdef FFTIME
   int nflop = 966456 + 1440*nterms; // Asqtad action 10/5/06 version of code;
 #endif
+  double dtime;
 
   /* node0_printf("STARTING fn_fermion_force_multi_qdp() nterms = %d\n",nterms);*/
   if( nterms==0 )return;
@@ -417,6 +417,7 @@ void fn_fermion_force_multi( Real eps, Real residues[],
   QDP_ColorMatrix *force[4];
   QDP_ColorVector **x;
   QLA_Real *res;
+  double remaptime = -dclock();
 
   /* Allocate space for gauge field and force */
   FORALLUPDIR(dir){
@@ -450,7 +451,9 @@ void fn_fermion_force_multi( Real eps, Real residues[],
     res[i] = residues[i];
 
   /* Evaluate the fermion force */
+  remaptime += dclock();
   fn_fermion_force_multi_qdp(force, gf, eps, res, x, nterms);
+  remaptime -= dclock();
   
   /* Map the force back to MILC */
   /* It requires a special conversion to the antihermitian type */
@@ -471,6 +474,10 @@ void fn_fermion_force_multi( Real eps, Real residues[],
   for(i = 0; i <= nterms; i++)
     QDP_destroy_V(x[i]);
   free(res);
+  remaptime += dclock();
+#ifdef FFTIME
+  node0_printf("FFREMAP:  time = %e\n",remaptime);
+#endif
 }
 
 /**********************************************************************/
@@ -520,13 +527,7 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
 
   asqtad_path_coeff c;
   Real *act_path_coeff = get_quark_path_coeff();
-
-#ifdef FFTIME
-  int nflop = 433968;
-  double dtime;
-
-  dtime=-dclock();
-#endif
+  double remaptime = -dclock();
 
   /* Create QDP fields for fat links, long links, and temp for gauge field */
   FORALLUPDIR(dir){
@@ -567,7 +568,9 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
   c.lepage       = act_path_coeff[5];
 
   /* Compute fermion force */
+  remaptime += dclock();
   fn_fermion_force_qdp ( force, gf, &c, vecx, epswt, nsrc);
+  remaptime -= dclock();
 
   /* Map the force back to MILC */
   /* It requires a special conversion to the antihermitian type */
@@ -590,10 +593,9 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
   free(vecx);
   free(epswt);
 
+  remaptime += dclock();
 #ifdef FFTIME
-  dtime += dclock();
-node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
-	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 }
 

@@ -8,6 +8,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop.c,v $
+ * Revision 1.15  2006/11/13 03:05:26  detar
+ * Add timing for remapping and make separate from timing for computation.
+ *
  * Revision 1.14  2006/11/04 23:41:14  detar
  * Add QOP and QDP support for FN fermion links
  * Create QDP version of fermion_links_fn_multi
@@ -46,7 +49,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.14 2006/11/04 23:41:14 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop.c,v 1.15 2006/11/13 03:05:26 detar Exp $";
 
 
 /* Map color vector field from site structure to QOP field */
@@ -198,22 +201,17 @@ int ks_congrad_qop_site2site(int niter, int nrestart, Real rsqmin,
   int iterations_used = 0;
   int max_restart = nrestart;
 
-#ifdef CGTIME
-  
   double dtimec;
+  double remaptime;
+#ifdef CGTIME
   double nflop = 1187;
   if( milc_parity == EVENANDODD ) nflop *= 2;
-  
 #endif
 
   if(nsrc > MAXSRC){
     printf("ks_congrad_qop: too many sources\n");
     terminate(1);
   }
-
-#ifdef CGTIME
-  dtimec = -dclock(); 
-#endif
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
@@ -223,7 +221,9 @@ int ks_congrad_qop_site2site(int niter, int nrestart, Real rsqmin,
 
   /* Map MILC fat and long links to QOP links object */
 
-  create_qop_asqtad_fermion_links( &qop_links );
+  qop_links = create_qop_asqtad_fermion_links( );
+
+  remaptime = -dclock(); 
 
   /* Set qop_invert_arg and qop_resid_arg */
   set_qop_invert_arg( & qop_invert_arg, niter, max_restart, milc_parity );
@@ -267,8 +267,12 @@ int ks_congrad_qop_site2site(int niter, int nrestart, Real rsqmin,
   
   /* Call QOP inverter */
 
+  remaptime += dclock();
+  dtimec = -dclock();
   iterations_used = ks_congrad_qop_generic( qop_links, &info, &qop_invert_arg, 
     qop_resid_arg, masses, nmass, qop_sol, qop_src, nsrc, final_rsq_ptr );
+  dtimec += dclock();
+  remaptime -= dclock();
   
   /* Map qop solutions to MILC site structure   */
 
@@ -294,12 +298,13 @@ int ks_congrad_qop_site2site(int niter, int nrestart, Real rsqmin,
     qop_resid_arg[isrc] = NULL;
   }
 
+  remaptime += dclock();
 #ifdef CGTIME
   {
-    dtimec += dclock();
-    node0_printf("CONGRAD5(total): time = %e iters = %d mflops = %e\n",
+    node0_printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 		 dtimec,iterations_used,
 		 info.final_flop/(1.0e6*dtimec) );
+    node0_printf("CGREMAP:  time = %e\n",remaptime);
     fflush(stdout);
   }
 #endif
@@ -323,23 +328,17 @@ int ks_congrad_qop_site2field(int niter, int nrestart, Real rsqmin,
   QOP_resid_arg_t  **qop_resid_arg[MAXSRC];
   int iterations_used = 0;
   int max_restart = nrestart;
-
-#ifdef CGTIME
-  
   double dtimec;
+  double remaptime;
+#ifdef CGTIME
   double nflop = 1187;
   if( milc_parity == EVENANDODD ) nflop *= 2;
-  
 #endif
 
   if(nsrc > MAXSRC){
     printf("ks_congrad_qop: too many sources\n");
     terminate(1);
   }
-
-#ifdef CGTIME
-  dtimec = -dclock(); 
-#endif
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
@@ -349,7 +348,9 @@ int ks_congrad_qop_site2field(int niter, int nrestart, Real rsqmin,
 
   /* Map MILC fat and long links to QOP links object */
 
-  create_qop_asqtad_fermion_links( &qop_links );
+  qop_links = create_qop_asqtad_fermion_links();
+
+  remaptime = -dclock(); 
 
   /* Set qop_invert_arg and qop_resid_arg */
   set_qop_invert_arg( & qop_invert_arg, niter, 
@@ -393,8 +394,11 @@ int ks_congrad_qop_site2field(int niter, int nrestart, Real rsqmin,
   }
   
   /* Call QOP inverter */
+  dtimec = -dclock();
   iterations_used = ks_congrad_qop_generic( qop_links, &info, &qop_invert_arg, 
     qop_resid_arg, masses, nmass, qop_sol, qop_src, nsrc, final_rsq_ptr );
+  dtimec += dclock();
+  remaptime -= dtimec;
   
   /* Map qop solutions to MILC field   */
 
@@ -420,12 +424,14 @@ int ks_congrad_qop_site2field(int niter, int nrestart, Real rsqmin,
     qop_resid_arg[isrc] = NULL;
   }
 
+  remaptime += dclock();
+
 #ifdef CGTIME
   {
-    dtimec += dclock();
-    node0_printf("CONGRAD5(total): time = %e iters = %d mflops = %e\n",
+    node0_printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 		 dtimec,iterations_used,
 		 info.final_flop/(1.0e6*dtimec) );
+    node0_printf("CGREMAP:  time = %e\n",remaptime);
     fflush(stdout);
   }
 #endif

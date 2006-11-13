@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.16  2006/11/13 03:05:26  detar
+ * Add timing for remapping and make separate from timing for computation.
+ *
  * Revision 1.15  2006/11/04 23:41:17  detar
  * Add QOP and QDP support for FN fermion links
  * Create QDP version of fermion_links_fn_multi
@@ -53,7 +56,7 @@
 #include <qop.h>
 #include <string.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.15 2006/11/04 23:41:17 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.16 2006/11/13 03:05:26 detar Exp $";
 
 /* Standard MILC interface for the single-species Asqtad fermion force routine */
 void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
@@ -74,10 +77,9 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
 
 #ifdef FFTIME
   int nflop = 253935;
-  double dtime;
-
-  dtime=-dclock();
 #endif
+  double dtime;
+  double remaptime = -dclock();
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
@@ -97,7 +99,10 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
   load_qop_asqtad_coeffs(&coeff, weight, get_quark_path_coeff());
 
   /* Compute fermion force */
+  dtime = -dclock();
   QOP_asqtad_force(&info, links, mom, &coeff, eps, vecx);
+  dtime += dclock();
+  remaptime -= dtime;
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
@@ -108,10 +113,11 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
   /* Free raw source vector */
   destroy_raw_V(rawvecx); rawvecx = NULL;
 
+  remaptime += dclock();
 #ifdef FFTIME
-  dtime += dclock();
-node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
-	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 }
 
@@ -134,10 +140,9 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
 #ifdef FFTIME
   int nflop = 433968;
-  double dtime;
-
-  dtime=-dclock();
 #endif
+  double dtime;
+  double remaptime = -dclock();
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
@@ -163,7 +168,10 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   load_qop_asqtad_coeffs(&coeff, 1., get_quark_path_coeff());
 
   /* Compute fermion force */
+  dtime = -dclock();
   QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, 2);
+  dtime += dclock();
+  remaptime -= dtime;
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
@@ -176,18 +184,20 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   destroy_raw_V(rawvecx[0]); rawvecx[0] = NULL;
   destroy_raw_V(rawvecx[1]); rawvecx[1] = NULL;
 
+  remaptime += dclock();
 #ifdef FFTIME
-  dtime += dclock();
   node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 }
 
 
 /* Set optimization choice */
 /* (For the moment we have only one choice, namely Asqtad!) */ 
-enum ks_multiff_opt_t { KS_MULTIFF_ASVEC, KS_MULTIFF_FNMATREV, KS_MULTIFF_FNMAT };
-static enum ks_multiff_opt_t ks_multiff_opt = KS_MULTIFF_FNMAT;   /* Default */
+enum ks_multiff_opt_t { KS_MULTIFF_ASVEC, KS_MULTIFF_FNMATREV, 
+			KS_MULTIFF_FNMAT };
+static enum ks_multiff_opt_t ks_multiff_opt = KS_MULTIFF_ASVEC;  /* Default */
 
 /* returns 1 for error and 0 for success */
 
@@ -220,17 +230,17 @@ void eo_fermion_force_multi( Real eps, Real *residues,
   int i;
   Real *epsv;
   QOP_info_t info;
+  char myname[] = "eo_fermion_force_multi";
 
 #ifdef FFTIME
   int nflop = 433968;
-  double dtime;
-
-  dtime=-dclock();
 #endif
+  double dtime;
+  double remaptime = -dclock();
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
-    printf("eo_fermion_force_multi: Error initializing QOP\n");
+    printf("%s(%d): Error initializing QOP\n",myname,this_node);
     terminate(1);
   }
 
@@ -240,7 +250,7 @@ void eo_fermion_force_multi( Real eps, Real *residues,
   /* Make space for QOP vector pointers */
   vecx = (QOP_ColorVector **)malloc(sizeof(QOP_ColorVector *)*nterms);
   if(vecx == NULL){
-    printf("eo_fermion_force_multi: no room for vecx pointers\n");
+    printf("%s(%d): no room for vecx pointers\n",myname,this_node);
     terminate(1);
   }
 
@@ -261,8 +271,10 @@ void eo_fermion_force_multi( Real eps, Real *residues,
   load_qop_asqtad_coeffs(&coeff, 1., get_quark_path_coeff());
 
   /* Compute fermion force */
-
+  dtime = -dclock();
   QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, nterms);
+  dtime += dclock();
+  remaptime -= dtime;
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
@@ -274,10 +286,11 @@ void eo_fermion_force_multi( Real eps, Real *residues,
 
   free(epsv);
 
+  remaptime += dclock();
 #ifdef FFTIME
-  dtime += dclock();
   node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
 	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 
 }

@@ -110,9 +110,12 @@ fn_fermion_force_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
   int i, dir;
   int mu, nu, rho, sig;
 
+#ifdef FFTIME
   double nflop1 = 253935;
   double nflop2 = 433968;
   double nflop = nflop1 + (nflop2-nflop1)*(nsrc-1);
+#endif
+  double dtime = -dclock();
 
   for(i=0; i<nsrc; i++) {
     xin[i] = in_pt[i];
@@ -462,6 +465,13 @@ fn_fermion_force_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
   for(i=4; i<8; i++) {
     QDP_destroy_M(fblink[i]);
   }
+  dtime += dclock();
+
+#ifdef FFTIME
+  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+	       nflop*volume/(1e6*dtime*numnodes()) );
+#endif
+
 }
 
 #undef Pmu          
@@ -494,12 +504,7 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
   asqtad_path_coeff c;
   Real *act_path_coeff = get_quark_path_coeff();
 
-#ifdef FFTIME
-  int nflop = 253935;
-  double dtime;
-
-  dtime=-dclock();
-#endif
+  double remaptime = -dclock();
 
   /* Create QDP fields for fat links, long links, and temp for gauge field */
   FORALLUPDIR(dir){
@@ -534,7 +539,9 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
   c.lepage       = act_path_coeff[5];
 
   /* Compute fermion force */
+  remaptime += dclock();
   fn_fermion_force_qdp ( force, gf, &c, &vecx, &epswt, 1);
+  remaptime -= dclock();
 
   /* Map the force back to MILC */
   /* It requires a special conversion to the antihermitian type */
@@ -554,10 +561,9 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
   }
   QDP_destroy_V(vecx);
 
+  remaptime += dclock();
 #ifdef FFTIME
-  dtime += dclock();
-node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
-	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 }
 
@@ -578,13 +584,7 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
   asqtad_path_coeff c;
   Real *act_path_coeff = get_quark_path_coeff();
-
-#ifdef FFTIME
-  int nflop = 433968;
-  double dtime;
-
-  dtime=-dclock();
-#endif
+  double remaptime = -dclock();
 
   /* Create QDP fields for fat links, long links, and temp for gauge field */
   FORALLUPDIR(dir){
@@ -622,7 +622,9 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   c.lepage       = act_path_coeff[5];
 
   /* Compute fermion force */
+  remaptime += dclock();
   fn_fermion_force_qdp ( force, gf, &c, vecx, epswt, 2);
+  remaptime -= dclock();
 
   /* Map the force back to MILC */
   /* It requires a special conversion to the antihermitian type */
@@ -643,10 +645,9 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   QDP_destroy_V(vecx[0]);
   QDP_destroy_V(vecx[1]);
 
+  remaptime += dclock();
 #ifdef FFTIME
-  dtime += dclock();
-node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
-	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 }
 

@@ -176,6 +176,7 @@ void load_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
   QDP_ColorMatrix *ll[4];
   QDP_ColorMatrix *gf[4];
   int dir;
+  double remaptime = -dclock();
   char myname[] = "load_asqtad_links";
   
   asqtad_path_coeff c;
@@ -204,7 +205,9 @@ void load_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
   c.lepage       = act_path_coeff[5];
 
   /* Compute fat and long links as QDP fields */
+  remaptime += dclock();
   create_fn_links_qdp(fl, ll, gf, &c);
+  remaptime -= dclock();
 
   /* Clean up */
   FORALLUPDIR(dir){
@@ -241,6 +244,11 @@ void load_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
   }
   
   valid_fn_links = 1;
+
+  remaptime += dclock();
+#ifdef LLTIME
+  node0_printf("LLREMAP:  time = %e\n",remaptime);
+#endif
 }
 
 
