@@ -31,7 +31,7 @@
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/prefetch.h"
 #define FETCH_UP 1
-/**#define CG_DEBUG**/
+/**#define CG_DEBUG **/
 
 
 void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]); /* dslash_fn_field.c */
@@ -275,7 +275,8 @@ start:
 #endif
 #ifdef CGTIME
  dtimec += dclock();
-if(this_node==0){printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
+if(this_node==0){
+printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
 fflush(stdout);}
 #endif

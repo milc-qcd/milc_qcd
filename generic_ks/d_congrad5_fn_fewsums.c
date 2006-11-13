@@ -13,12 +13,14 @@
 
 /* Jim Hetrick, Kari Rummukainen, Doug Toussaint, Steven Gottlieb */
 /* 10/02/01 C. DeTar Consolidated with tmp version */
+/* 11/11/06 C. DeTar Merged with d_congrad5_fn.c using ifdef FEWSUMS */
 
 /* This version looks at the initial vector every "niter" passes */
 /* The source vector is in "src", and the initial guess and answer
    in "dest".  "resid" is the residual vector, and "cg_p" and "ttt" are
    working vectors for the conjugate gradient.
    niter = maximum number of iterations.
+   nrestart = number of restarts
    rsqmin = desired rsq, quit when we reach rsq <= rsqmin*source_norm.
 	This is different than our old definition of the stopping
 	criterion.  To convert an old stopping residual to the new
@@ -46,39 +48,36 @@ void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]); /* dslash_fn_field.c */
 su3_vector *ttt,*cg_p;
 su3_vector *resid;
 su3_vector *t_dest;
-int first_congrad = 1;
+static int first_congrad = 1;
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
-    int niter, int nrestart, Real rsqmin, int parity, Real *final_rsq_ptr ){
+		int niter, int nrestart, Real rsqmin, 
+		int parity, Real *final_rsq_ptr ){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
   Real a,b;	/* Sugar's a,b */
-  double true_rsq,rsq,oldrsq; /* rsq = |resid|, true_rsq = rsq from actual
-				 summation of resid */
-  double pkp;		/* pkp = cg_p.K.cg_p */
+#ifdef FEWSUMS
+  double true_rsq; /* true_rsq = rsq from actual summation of resid */
   double c_tr,c_tt,tempsum[4];	/* Re<resid|ttt>, <ttt|ttt> */
+#endif
+  double rsq,oldrsq,pkp;	/* resid**2,last resid*2,pkp = cg_p.K.cg_p */
   Real msq_x4;	/* 4*mass*mass */
   double source_norm;	/* squared magnitude of source vector */
   double rsqstop;	/* stopping residual normalized by source norm */
-  int l_parity=0;	/* parity we are currently doing */
-  int l_otherparity=0;	/* the other parity */
+  int l_parity = 0;	/* parity we are currently doing */
+  int l_otherparity = 0; /* the other parity */
   msg_tag * tags1[16], *tags2[16];	/* tags for gathers to parity and opposite */
   int special_started;	/* 1 if dslash_fn_field_special has been called */
 
 /* Timing */
 
-#ifdef CGTIME
-double dtimed,dtimec;
+double dtimec;
 double reduce_time; /*TEST*/
-#endif
 double nflop;
 
-/* debug */
-#ifdef CGTIME
  dtimec = -dclock(); 
  reduce_time = 0.0; /*TEST*/
-#endif
 
 nflop = 1187;
 if(parity==EVENANDODD)nflop *=2;
@@ -106,9 +105,7 @@ if(parity==EVENANDODD)nflop *=2;
 	  first_congrad = 0;
  	}
 
-#ifdef CGTIME
  dtimec = -dclock(); 
-#endif
 
 	/* now we copy dest to temporaries */
   FORALLSITES(i,s) {
@@ -155,20 +152,20 @@ start:
 	  source_norm += (double)magsq_su3vec( (su3_vector *)F_PT(s,src) );
 	  rsq += (double)magsq_su3vec( &resid[i] );
 	} END_LOOP
-#ifdef CGTIME
 reduce_time -= dclock();
-#endif
+#ifdef FEWSUMS
 	true_rsq = rsq; /* not yet summed over nodes */
 	tempsum[0] = source_norm; tempsum[1] = rsq;
         g_vecdoublesum( tempsum, 2 );
 	source_norm = tempsum[0]; rsq = tempsum[1];
-#ifdef CGTIME
-reduce_time += dclock();
+#else
+	g_doublesum( &source_norm );
+        g_doublesum( &rsq );
 #endif
+reduce_time += dclock();
 #ifdef CG_DEBUG
 	if(this_node==0)printf("CONGRAD: start rsq = %.10e\n",rsq);
 #endif
-	/**if(this_node==0)printf("CONGRAD: start rsq = %.10e\n",rsq);**/
         iteration++ ;  /* iteration counts number of multiplications
                            by M_adjoint*M */
 	total_iters++;
@@ -191,6 +188,8 @@ reduce_time += dclock();
 #ifdef CG_DEBUG
 	    node0_printf("instant return\n"); fflush(stdout);
 #endif
+	    cleanup_dslash_temps();
+	    free(ttt); free(cg_p); free(resid); free(t_dest); first_congrad = 1;
              return (iteration);
         }
 #ifdef CG_DEBUG
@@ -212,7 +211,11 @@ reduce_time += dclock();
            cg_p <- resid + b*cg_p
         */
     do{
+#ifdef FEWSUMS
         oldrsq = true_rsq;	/* not yet summed over nodes */
+#else
+        oldrsq = rsq;
+#endif
         pkp = 0.0;
 	/* sum of neighbors */
 
@@ -229,7 +232,10 @@ reduce_time += dclock();
 	/* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
 	/* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */
 	/* pkp  <- cg_p.(ttt - msq*cg_p) */
-	pkp = 0.0; c_tr=0.0; c_tt=0.0;
+	pkp = 0.0;
+#ifdef FEWSUMS
+	c_tr=0.0; c_tt=0.0;
+#endif
 	FORSOMEPARITY(i,s,l_parity){
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VV( &ttt[i+FETCH_UP], &cg_p[i+FETCH_UP] );
@@ -237,19 +243,21 @@ reduce_time += dclock();
 	  scalar_mult_add_su3_vector( &ttt[i], &cg_p[i], -msq_x4,
 				      &ttt[i] );
 	  pkp += (double)su3_rdot( &cg_p[i], &ttt[i] );
+#ifdef FEWSUMS
 	  c_tr += (double)su3_rdot( &ttt[i], &resid[i] );
 	  c_tt += (double)su3_rdot( &ttt[i], &ttt[i] );
-	} END_LOOP
-#ifdef CGTIME
-reduce_time -= dclock();
 #endif
+	} END_LOOP
+reduce_time -= dclock();
+#ifdef FEWSUMS
 	/* finally sum oldrsq over nodes, also other sums */
 	tempsum[0] = pkp; tempsum[1] = c_tr; tempsum[2] = c_tt; tempsum[3] = oldrsq;
 	g_vecdoublesum( tempsum, 4 );
 	pkp = tempsum[0]; c_tr = tempsum[1]; c_tt = tempsum[2]; oldrsq = tempsum[3];
-#ifdef CGTIME
-reduce_time += dclock();
+#else
+	g_doublesum( &pkp );
 #endif
+reduce_time += dclock();
 	iteration++;
 	total_iters++;
 
@@ -257,7 +265,11 @@ reduce_time += dclock();
 
 	/* dest <- dest - a*cg_p */
 	/* resid <- resid - a*ttt */
+#ifdef FEWSUMS
 	true_rsq=0.0;
+#else
+	rsq=0.0;
+#endif
 	FORSOMEPARITY(i,s,l_parity){
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VVVV( &t_dest[i+FETCH_UP], 
@@ -267,8 +279,13 @@ reduce_time += dclock();
 	  }
 	  scalar_mult_add_su3_vector( &t_dest[i], &cg_p[i], a, &t_dest[i] );
 	  scalar_mult_add_su3_vector( &resid[i], &ttt[i], a, &resid[i]);
+#ifdef FEWSUMS
 	  true_rsq += (double)magsq_su3vec( &resid[i] );
+#else
+	  rsq += (double)magsq_su3vec( &resid[i] );
+#endif
 	} END_LOOP
+#ifdef FEWSUMS
 	/**printf("XXX:  node %d\t%e\t%e\t%e\n",this_node,oldrsq,c_tr,c_tt);**/
 	rsq = oldrsq + 2.0*a*c_tr + a*a*c_tt; /*TEST - should equal true_rsq */
 	/**c_tt = true_rsq;**/ /* TEMP for test */
@@ -276,7 +293,14 @@ reduce_time += dclock();
 	/**node0_printf("RSQTEST: %e\t%e\t%e\n",rsq,c_tt,rsq-c_tt);**/
 	/**if(mynode()==0){printf("iter=%d, rsq= %e, pkp=%e\n",
 	   iteration,(double)rsq,(double)pkp);fflush(stdout);}**/
-	
+#else
+	g_doublesum(&rsq);
+#ifdef CG_DEBUG
+	if(mynode()==0){printf("iter=%d, rsq= %e, pkp=%e\n",
+	   iteration,(double)rsq,(double)pkp);fflush(stdout);}
+#endif
+#endif	
+
         if( rsq <= rsqstop ){
 	  /* copy t_dest back to site structure */
           FORSOMEPARITY(i,s,l_parity){
@@ -301,8 +325,8 @@ reduce_time += dclock();
 #ifdef CG_DEBUG
 	    node0_printf("normal return\n"); fflush(stdout);
 #endif
-#ifdef CGTIME
  dtimec += dclock();
+#ifdef CGTIME
 if(this_node==0){
 printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
 dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
@@ -317,6 +341,8 @@ reduce_time,iteration,reduce_time/iteration );
 //}
 fflush(stdout);}
 #endif
+	    cleanup_dslash_temps();
+	    free(ttt); free(cg_p); free(resid); free(t_dest); first_congrad = 1;
              return (iteration);
         }
 
@@ -358,5 +384,7 @@ fflush(stdout);}
         "ks_congrad: CG not converged after %d iterations, res. = %e wanted %e\n",
         iteration,rsq,rsqstop);
     fflush(stdout);
+    cleanup_dslash_temps();
+    free(ttt); free(cg_p); free(resid); free(t_dest); first_congrad = 1;
     return(iteration);
 }
