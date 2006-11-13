@@ -59,6 +59,10 @@ OPT              = -O3 -Wall
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
 #OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
 #OCFLAGS =  -march=pentium4 -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/24/04
+
+#------------------------ BlueGene -----------------------------------
+# OCFLAGS = -qarch=440d -qtune=440
+
 #-------------- Intel icc/ecc -----------------------------------
 #OCFLAGS = -tpp2 -static
 
@@ -215,10 +219,105 @@ LIBADD =
 INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE -DC_INLINE
 
 #----------------------------------------------------------------------
-# 15. Other miscellaneous macros you want for all of your compilations
+# 15. Miscellaneous macros for performance control and metric
 
-CODETYPE = # -DQDP_PROFILE
-# Choices include -DPREFETCH (not recommended)
+#     Define them with a -D prefix.
+
+#------------------------------
+# Print timing statistics.
+
+# Use any combination of these
+# CGTIME CG Solver
+# FFTIME Fermion force
+# LLTIME Link fattening
+# GFTIME Gauge forde
+
+CTIME =#
+
+#------------------------------
+# Profiling
+
+# QDP_PROFILE         Generates a report for all QDP routines
+
+CPROF =#
+
+#------------------------------
+# Layout
+
+# These are currently selected only by editing Make_template.
+#  Choices
+#    layout_hyper_prime.o          Standard hypercubic
+#    layout_timeslices.o           Puts full timeslices on each node.
+#    layout_squares.o              Puts 2D slices on each node.
+#    layout_hyper_tstretch.o       Rarely used.  Fewer timeslices on last node.
+#                                  In case node no is incommensurate with nt
+#    layout_timeslices_2.o         Untested.  Supposedly more forgiving.
+
+#------------------------------
+# Improved staggered CG inverter and Dslash
+
+#  Note, some options still require editing Make_template
+#  Choices 
+#   dslash_fn.o                   Overlaps computation with backward gathers.
+#   dslash_fn2.o                  Does all gathers before computation
+#                                   but has fewer FORALLSITES loops
+#   dslash_fn_dblstore.o          Double store version of dslash_fn.o
+#                                   Supports GATHER13
+
+# DBLSTORE_FN  Copies backward links.  Requires more memory.
+#              You must also call for dslash_fn_dblstore.o for now.
+# GATHER13     Combine third and next neighbor gathers in Dslash.
+#              For now, works only with dslash_fn_dblstore.o
+# FEWSUMS      Fewer CG reductions
+
+KSCGSTORE =#
+
+#------------------------------
+# Staggered fermion force routines
+
+# These are currently selected only by editing Make_template
+
+# Choices
+#  fermion_force_asqtad3.o   Optimized for the Asqtad action
+#  fermion_force_general.o   Takes any quark action
+
+#------------------------------
+# Prefetching
+
+# PREFETCH (Not working yet)
+
+CPREFETCH = #
+
+#------------------------------
+# Multimass improved KS CG solvers
+
+# KS_MULTICG=OFFSET  The basic multicg solver.
+# KS_MULTICG=HYBRID  Solve with multicg and polish off with single mass CG.
+# KS_MULTICG=FAKE    Iterate the single mass solver.
+# KS_MULTICG=REVERSE Iterate in reverse order
+# KS_MULTICG=REVHYB  Same as HYBRID but with vectors in reverse order.
+
+KSCGMULTI =#
+
+#------------------------------
+# Multifermion force routines
+
+# KSMULTIFF=FNMAT    Construct matrix parallel transporters
+#                    and use with sum of outer products of sources 
+# KSMULTIFF=FNMATREV Older version of FNMAT.  Traverses path
+#                    in reverse order
+# KSMULTIFF=ASVEC    Use improved Asqtad, parallel transporting
+#                    groups of source vectors.  See VECLENGTH.
+# VECLENGTH=n        Number of source vectors to process in one group.
+#                    Applies only to the ASVEC option
+
+KSFFMULTI =#
+
+#------------------------------
+# Summary
+
+CODETYPE = ${CTIME} ${CPROF} ${KSCGSTORE} ${CPREFETCH} ${KSCGMULTI}\
+ ${KSFFMULTI}
 
 #----------------------------------------------------------------------
 # 16. Choose MILC library make file in libraries directory.  
