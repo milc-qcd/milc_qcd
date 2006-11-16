@@ -302,7 +302,7 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 # Named RHMD target -- sample file provided
 su3_leapfrog::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN" \
+	"DEFINES= -DFN -DINT_ALG=INT_LEAPFROG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
@@ -311,7 +311,7 @@ su3_leapfrog::
 # Named RHMC target -- sample file provided
 su3_omelyan_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHMC" \
+	"DEFINES= -DFN -DHMC -DINT_ALG=INT_OMELYAN" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
