@@ -52,9 +52,9 @@ G_OBJECTS =          \
   io_helpers.o       \
   ${IO_LAT_REAL}     \
   make_lattice.o     \
+  nersc_cksum.o \
   plaquette4.o       \
   d_plaq2.o          \
-  d_linktrsum.o \
   ranstuff.o         \
   reunitarize2.o
 # Basic set from generic_pg directory

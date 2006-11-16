@@ -59,12 +59,12 @@ G_OBJECTS =          \
   ${IO_LAT_REAL}     \
   io_helpers.o       \
   make_lattice.o     \
+  nersc_cksum.o \
   path_product.o     \
   plaquette4.o       \
   check_unitarity.o  \
   reunitarize2.o     \
   d_plaq2.o          \
-  d_linktrsum.o \
   ploop2.o           \
   ranstuff.o
 

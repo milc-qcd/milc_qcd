@@ -81,13 +81,13 @@ G_OBJECTS =          \
 	${LAYOUT}.o \
 	check_unitarity.o  \
 	d_plaq4.o \
-	d_linktrsum.o \
 	gaugefix2.o \
 	io_helpers.o \
 	io_helpers_w.o \
 	${IO_LAT_REAL} \
 	${IO_PROP_REAL}  \
         make_lattice.o \
+	nersc_cksum.o \
 	restrict_fourier.o \
 	reunitarize2.o
 

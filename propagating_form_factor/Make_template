@@ -110,13 +110,13 @@ G_OBJECTS = \
         ${LAYOUT}.o\
         bsd_sum.o\
         check_unitarity.o\
-  d_linktrsum.o \
 	d_plaq4.o \
 	io_helpers.o\
 	io_helpers_w.o\
         ${IO_LAT_REAL} \
 	${IO_PROP_REAL} \
 	make_lattice.o\
+        nersc_cksum.o \
         restrict_fourier.o
 
 G_CLOVER_OBJECTS = \
