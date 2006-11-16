@@ -54,7 +54,6 @@ MY_OBJECTS= \
 G_OBJECTS0 = \
   ape_smear.o \
   check_unitarity.o \
-  d_linktrsum.o \
   d_plaq4.o \
   gaugefix2.o \
   gauge_stuff.o \
@@ -63,6 +62,7 @@ G_OBJECTS0 = \
   io_lat4.o \
   io_lat_utils.o \
   make_lattice.o \
+  nersc_cksum.o \
   path_product.o \
   ranmom.o \
   ranstuff.o \
