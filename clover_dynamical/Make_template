@@ -67,12 +67,12 @@ MY_OBJECTS =         \
 # Basic set from generic directory
 G_OBJECTS =          \
   check_unitarity.o  \
-  d_linktrsum.o      \
   d_plaq4.o          \
   io_helpers.o       \
   io_lat4.o          \
   io_lat_utils.o     \
   make_lattice.o     \
+  nersc_cksum.o \
   ploop_dist.o       \
   ranmom.o           \
   ranstuff.o         \

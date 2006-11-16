@@ -23,6 +23,7 @@ EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
+EXTERN  u_int32type nersc_checksum;
 #define N_POINTERS 8	/* Number of generic pointers */
 EXTERN char ** gen_pt[N_POINTERS];
 /* Further source description */

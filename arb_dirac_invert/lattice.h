@@ -100,6 +100,7 @@ EXTERN  Real m0,lambda[5],rho[5];
 EXTERN  char startfile[MAXFILENAME], savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
+EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char savefile_w[MAX_MASSES][MAXFILENAME],
              startfile_w[MAX_MASSES][MAXFILENAME];
