@@ -38,6 +38,9 @@ int main(int argc,char *argv[])
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
+  /* Remap standard I/O */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
+
   g_sync();
   prompt = setup(); 
   setup_restrict_fourier(key, dummy);
