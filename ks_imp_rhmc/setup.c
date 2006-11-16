@@ -14,6 +14,13 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.12  2006/11/16 06:07:50  detar
+//  Moved optimization selections to Makefile
+//  Put rational function parameters in preamble of input file
+//  Recreated fiducial output files and remade errtol files
+//  Remade rationals.sample files
+//  Removed obsolete files
+//
 //  Revision 1.11  2006/11/07 02:30:58  detar
 //  Fix some omissions to complete the previous update.
 //
@@ -198,7 +205,7 @@ BOMB THE COMPILE
 int 
 initial_set()
 {
-  int prompt,status;
+  int prompt,status,i;
   /* On node zero, read lattice size, seed, nflavors1, nflavors2,
      nflavors, and send to others */
   if(mynode()==0){
@@ -216,6 +223,16 @@ initial_set()
     IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
     IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
     IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
+    /* Number of pseudofermions */
+    IF_OK status += get_i(stdin, prompt,"n_pseudo", &par_buf.n_pseudo );
+    if(n_pseudo > N_PSEUDO){
+      printf("Error:  Too many pseudofermion fields.  Recompile. Current max is %d\n"
+	     ,N_PSEUDO);
+      terminate(1);
+    }
+    /* get name of file containing rational function parameters */
+    IF_OK status += get_s(stdin, prompt, "load_rhmc_params", 
+			  par_buf.rparamfile);
     
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -226,18 +243,35 @@ initial_set()
   if( par_buf.stopflag != 0 )
     normal_exit(0);
   
-  nx=par_buf.nx;
-  ny=par_buf.ny;
-  nz=par_buf.nz;
-  nt=par_buf.nt;
-  iseed=par_buf.iseed;
-  nflavors1=par_buf.nflavors1;
-  nflavors2=par_buf.nflavors2;
+  nx        = par_buf.nx;
+  ny        = par_buf.ny;
+  nz        = par_buf.nz;
+  nt        = par_buf.nt;
+  iseed     = par_buf.iseed;
+  nflavors1 = par_buf.nflavors1;
+  nflavors2 = par_buf.nflavors2;
+  n_pseudo  = par_buf.n_pseudo;
+  strcpy(rparamfile,par_buf.rparamfile);
   
   this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;
+
+  /* Load rational function parameters */
+  rparam = load_rhmc_params(rparamfile, n_pseudo);  
+  if(rparam == NULL)terminate(1);
+
+  /* Determine the maximum rational fcn order */
+  max_rat_order = 0;
+  for(i = 0; i < n_pseudo; i++){
+    if(rparam[i].MD.order > max_rat_order)max_rat_order = rparam[i].MD.order;
+    if(rparam[i].GR.order > max_rat_order)max_rat_order = rparam[i].GR.order;
+    if(rparam[i].FA.order > max_rat_order)max_rat_order = rparam[i].FA.order;
+  }
+  node0_printf("Maximum rational func order is %d\n",max_rat_order);
+
+
   return(prompt);
 }
 
@@ -283,14 +317,6 @@ readin(int prompt)
     /*microcanonical steps per trajectory */
     IF_OK status += get_i(stdin, prompt,"steps_per_trajectory", &par_buf.steps );
     
-    /* Number of pseudofermions */
-    IF_OK status += get_i(stdin, prompt,"n_pseudo", &par_buf.n_pseudo );
-    if(n_pseudo > N_PSEUDO){
-      printf("Error:  Too many pseudofermion fields.  Recompile. Current max is %d\n"
-	     ,N_PSEUDO);
-      terminate(1);
-    }
-
     /* Data for each pseudofermion */
 
     for(i = 0; i < par_buf.n_pseudo; i++){
@@ -368,10 +394,6 @@ readin(int prompt)
     
 #endif /*SPECTRUM*/
 
-    /* get name of file containing rational function parameters */
-    IF_OK status += get_s(stdin, prompt, "load_rhmc_params", 
-			  par_buf.rparamfile);
-    
     /* find out what kind of starting lattice to use */
     IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 					  par_buf.startfile );
@@ -396,7 +418,6 @@ readin(int prompt)
   propinterval = par_buf.propinterval;
   niter = par_buf.niter;
   nrestart = par_buf.nrestart;
-  n_pseudo = par_buf.n_pseudo;
   for(i = 0; i< n_pseudo; i++){
     niter_md[i] = par_buf.niter_md[i];
     niter_fa[i] = par_buf.niter_fa[i];
@@ -416,24 +437,10 @@ readin(int prompt)
   n_pseudo = par_buf.n_pseudo;
   startflag = par_buf.startflag;
   saveflag = par_buf.saveflag;
-  strcpy(rparamfile,par_buf.rparamfile);
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);
   strcpy(stringLFN, par_buf.stringLFN);
   
-  /* Load rational function parameters */
-  rparam = load_rhmc_params(rparamfile, n_pseudo);  
-  if(rparam == NULL)terminate(1);
-
-  /* Determine the maximum rational fcn order */
-  max_rat_order = 0;
-  for(i = 0; i < n_pseudo; i++){
-    if(rparam[i].MD.order > max_rat_order)max_rat_order = rparam[i].MD.order;
-    if(rparam[i].GR.order > max_rat_order)max_rat_order = rparam[i].GR.order;
-    if(rparam[i].FA.order > max_rat_order)max_rat_order = rparam[i].FA.order;
-  }
-  node0_printf("Maximum rational func order is %d\n",max_rat_order);
-
   /* Do whatever is needed to get lattice */
   if( startflag == CONTINUE ){
     rephase( OFF );

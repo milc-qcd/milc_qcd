@@ -32,30 +32,37 @@
 #define dslash_field dslash_eo_field
 #endif
 
-/* prototypes for functions in high level code */
+/* prototypes for functions in this directory */
+
+/* setup.c */
 int setup();
 int readin(int prompt);
+
+/* update_rhmc.c */
+
+enum int_alg_t { INT_LEAPFROG, INT_OMELYAN, INT_2EPS_3TO1, INT_2EPS_2TO1, 
+		 INT_2G1F, INT_4MN4FP, INT_4MN5FV, INT_FOURSTEP, INT_PLAY };
 int update();
-void make_path_table();
-void update_h( Real eps );
+
+/* update_h_rhmc.c */
+
 void update_h_rhmc( int algorithm_flag, Real eps, su3_vector **multi_x );
 void update_h_gauge( int algorithm_flag, Real eps );
 void update_h_fermion( int algorithm_flag, Real eps, su3_vector **multi_x );
 void update_u( Real eps );
-void gauge_force( Real eps );
-double d_action_rhmc(su3_vector **multi_x, su3_vector *sumvec );
-double imp_gauge_action( );
-double hmom_action( );
-double fermion_action( su3_vector **multi_x, su3_vector *sumvec );
-void ranmom();
 
-// RHMC algorithm stuff
+/* grsource_rhmc.c */
+
 void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
 			int parity, su3_vector **multi_x, su3_vector *sumvec,
 			Real my_rsqmin, int my_niter);
+
+/* fermion_force_asqtad3_rhmc.c */
+
 void eo_fermion_force_rhmc( int alg_flag, Real eps, params_ratfunc *rf, 
 			    su3_vector **multi_x, field_offset phi_off,
 			    Real my_rsqmin, int niter);
+/* ks_ratinv.c */
 
 int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,   /* source vector (type su3_vector) */
@@ -67,6 +74,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     int parity,         /* parity to be worked on */
     Real *final_rsq_ptr /* final residue squared */
     );
+
 int ks_rateval(
     su3_vector *dest,   /* answer vector */
     field_offset src,   /* source vector (for a_0 term) */
@@ -76,30 +84,13 @@ int ks_rateval(
     int parity          /* parity to be worked on */
     );
 
+/* load_rhmc_params */
+
 params_rhmc *load_rhmc_params(char filename[], int n_pseudo);
 
-void hvy_pot( field_offset links );
-void f_measure( field_offset phi_off, field_offset xxx_off, Real mass );
-void g_measure( void );
+/* d_action_rhmc.c */
+double d_action_rhmc(su3_vector **multi_x, su3_vector *sumvec );
 void gauge_field_copy(field_offset src,field_offset dest);
-void clear_latvec(field_offset v,int parity);
-void copy_latvec(field_offset src,field_offset dest,int parity);
-void scalar_mult_add_latvec(field_offset src1,field_offset src2,
-			     Real scalar,field_offset dest,int parity);
-void scalar2_mult_add_su3_vector(su3_vector *a, Real s1, su3_vector *b, 
-				 Real s2, su3_vector *c);
-void scalar2_mult_add_latvec(field_offset src1,Real scalar1,
-			     field_offset src2,Real scalar2,
-			     field_offset dest,int parity);
-void scalar_mult_latvec(field_offset src,Real scalar,
-			field_offset dest,int parity);
-
-void dslash_eo( field_offset src, field_offset dest, int parity );
-void dslash_eo_special( field_offset src, field_offset dest,
-    int parity, msg_tag **tag, int start );
-void checkmul_imp( field_offset src, Real mass );
-
-void rephase( int flag );
-void sym_shift(int dir, field_offset src,field_offset dest);
-void zeta_shift(int n, int *d, field_offset src, field_offset dest );
+double fermion_action( su3_vector **multi_x, su3_vector *sumvec );
+double hmom_action( );
 

@@ -1,4 +1,4 @@
-/*************** d_action.c ****************************************/
+/*************** d_action_rhmc.c ****************************************/
 /* MIMD version 7 */
 
 /* Measure total action, as needed by the hybrid Monte Carlo algorithm.  */

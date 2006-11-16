@@ -11,7 +11,6 @@ static int read_broadcast_ratfunc(FILE *fp,
 				  char tag[], params_ratfunc *rf)
 {
   int status = 0;
-  Real fstatus = 0;
   int i;
   int prompt = 0;  /* We don't use prompts for this file */
   char prompt_order[16];
@@ -65,12 +64,12 @@ static int read_broadcast_ratfunc(FILE *fp,
   /* All nodes create storage for the A and B arrays */
   /* NB: the dimension is one more than the order */
   rf->res = (Real *)malloc(sizeof(Real)*(rf->order+1));
-  if(rf->res == NULL)fstatus = 1;
+  if(rf->res == NULL)status = 1;
   rf->pole = (Real *)malloc(sizeof(Real)*(rf->order+1));
-  if(rf->pole == NULL)fstatus = 1;
+  if(rf->pole == NULL)status = 1;
   /* Poll status and bail if any node failed */
-  g_floatsum(&fstatus);
-  if(fstatus != 0)return 1;
+  g_intsum(&status);
+  if(status != 0)return 1;
   
   /* Node 0 reads values and broadcasts them */
   if(mynode()==0){
@@ -98,9 +97,8 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
   char myname[] = "load_rhmc_params";
   int status = 0;
   int prompt = 0;   /* We don't do prompting for these parameters */
-  Real fstatus = 0;
   int i;
-  int my_n_pseudo, precision;
+  int my_n_pseudo;
   params_rhmc *p;
   
   /* Node zero starts reading */
@@ -131,28 +129,23 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
   }
   
   /* Poll nodes for any errors and bail if so */
-  fstatus += status;
-  g_floatsum(&fstatus);  /* We don't have an intsum */
-  if(fstatus != 0)return NULL;
+  g_intsum(&status);  /* We don't have an intsum */
+  if(status != 0)return NULL;
 
   /* Read rational function parameters for each pseudofermion field */
   
   for(i = 0; i < n_pseudo; i++){
     node0_printf("Loading rational function parameters for phi field %d\n",i);
-    /* The precision is only informational */
-    if(mynode() == 0)
-      IF_OK status += get_i(fp,prompt,"precision",&precision);
     IF_OK status += read_broadcast_ratfunc(fp,"MD",&p[i].MD);
     IF_OK status += read_broadcast_ratfunc(fp,"GR",&p[i].GR);
     IF_OK status += read_broadcast_ratfunc(fp,"FA",&p[i].FA);
   }
 
   /* Poll nodes for any errors */
-  fstatus += status;
-  g_floatsum(&fstatus);  /* We don't have an intsum */
+  g_intsum(&status);  /* We don't have an intsum */
   
   /* Bail out here if there is a problem */
-  if(fstatus != 0)return NULL;
+  if(status != 0)return NULL;
 
   return p;
 }

@@ -32,24 +32,24 @@ MY_HEADERS = \
   params.h \
   params_rhmc.h \
   defines.h \
-  ks_imp_includes.h \
-  rhmc_ks.h
+  ks_imp_includes.h
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 MY_OBJECTS= \
   control.o \
+  d_action_rhmc.o \
   fermion_force_asqtad3_rhmc.o \
   gauge_info.o \
   load_rhmc_params.o \
   setup.o \
   update_h_rhmc.o \
   update_u.o \
+  update_rhmc.o \
   grsource_rhmc.o 
 
 G_OBJECTS = \
   check_unitarity.o \
-  d_linktrsum.o \
   d_plaq4.o \
   gaugefix2.o \
   gauge_stuff.o \
@@ -59,6 +59,7 @@ G_OBJECTS = \
   io_lat4.o \
   io_lat_utils.o \
   make_lattice.o \
+  nersc_cksum.o \
   path_product.o \
   ranmom.o \
   ranstuff.o \
@@ -165,11 +166,8 @@ ifeq ($(strip ${HAVEQOP}),true)
   ASQFORCE += ${ASQFORCEQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-# Choose (fermion_force_asqtad_qdp.o )
     ASQFORCE = fermion_force_asqtad_qdp.o fermion_force_fn_multi_qdp.o ff_opt.o
   else
-# Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
-# or  fermion_force_asqtad3.o + ff_opt.o
     ASQFORCE = fermion_force_asqtad3.o fermion_force_fn_multi.o ff_opt.o
   endif
 endif
@@ -258,12 +256,6 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 
 
 ########################################################
-# Optional DEFINES for timing:
-# -DCGTIME for cg timing and iterations
-# -DGFTIME for gauge force timing
-# -DFFTIME for fermion force timing
-# -DLLTIME for long link timing
-
 # Optional DEFINES for pbp estimates
 # -DNPBP_REPS Number of repeated evaluations of stochastic 
 #       psi-bar-psi
@@ -307,96 +299,50 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 #       -DONEMASS
 #	-DKS_MULTICG=(OFFSET, HYBRID, FAKE, REVERSE, REVHYB)
 
+# Named RHMD target -- sample file provided
 su3_leapfrog::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=8 -DKS_MULTICG=HYBRID \
-	-DKS_MULTIFF=FNMAT -DHMC" \
+	"DEFINES= -DFN" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_leapfrog.o"
+	${SYMZK1FORCE} "
 
-su3_omelyan::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
-	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_omelyan.o"
-
-su3_4mn4fp::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
-	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_4mn4fp.o"
-
-su3_4mn5fv::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
-	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_4mn5fv.o"
-
-su3_omelyan_2g1f::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
-	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_omelyan_2g1f.o"
-
-su3_omelyan_2eps::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID " \
-	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_omelyan_2eps_b.o"
-
+# Named RHMC target -- sample file provided
 su3_omelyan_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=8 -DKS_MULTICG=HYBRID \
-	-DKS_MULTIFF=FNMAT -DHMC" \
+	"DEFINES= -DFN -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_omelyan.o"
+	${SYMZK1FORCE} "
 
-su3_omelyan_rhmc_eos::
+# Generic RHMD target -- set options in Makefile
+su3_rhmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 \
-	-DKS_MULTICG=HYBRID -DHMC -DDM_DU0 -DNPBP_REPS" \
+	"DEFINES= -DFN" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_omelyan.o"
+	${SYMZK1FORCE} "
 
-su3_4mn4fp_rhmc::
+# Generic RHMC target -- set options in Makefile
+su3_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
+	"DEFINES= -DFN -DHMC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_4mn4fp.o"
+	${SYMZK1FORCE} "
 
-su3_4mn5fv_rhmc::
+# Generic RHMC EOS target -- set options in Makefile
+su3_rhmc_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID -DHMC" \
+	"DEFINES= -DFN -DHMC -DDM_DU0 -DNPBP_REPS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_4mn5fv.o"
-
-su3_fourstep::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDBLSTORE_FN -DVECLENGTH=4 -DKS_MULTICG=HYBRID" \
-	"GAUGE = symanzik_1loop_action.h" \
-	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
-	${SYMZK1FORCE} d_action_rhmc.o update_rhmc_fourstep.o"
+	${SYMZK1FORCE} "
 
 clean:
 	-/bin/rm -f *.o
