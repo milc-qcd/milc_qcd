@@ -86,9 +86,10 @@ OPT              = -O3 -Wall
 #OCFLAGS= ${CARCH} -Q=500 -qmaxmem=-1 -bmaxdata:0x40000000 -bmaxstack:0x8000000
 
 #----------------------------------------------------------------------
-# 7. Choose large file support
-#CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE64 # Large files gcc only
-CLFS = # Not researched for others
+# 7. Choose large file support.
+
+CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE64 # Large files gcc only
+#CLFS = # Not researched for others
 #CLFS = -D_LARGE_FILES   # AIX
 
 #----------------------------------------------------------------------
