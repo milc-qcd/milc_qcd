@@ -667,7 +667,7 @@ int save_wprop_from_site( int flag, char *filename, char *recxml,
   field_offset srccs;
 #ifdef HAVE_QIO
   field_offset srcc;
-  int volfmt;
+  int volfmt = QIO_SINGLEFILE;
 #endif
   int status;
 
@@ -849,7 +849,7 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
   w_prop_file *wpf;
   wilson_vector *srccs;
 #ifdef HAVE_QIO
-  int volfmt;
+  int volfmt = QIO_SINGLEFILE;
 #endif
   int status;
   site *s;
