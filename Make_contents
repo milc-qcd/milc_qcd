@@ -3,7 +3,7 @@
 # 7/13/05 C. DeTar
 
 #  Change these names to suit
-VER = 7.3.0
+VER = 7.3.1
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -431,11 +431,14 @@ KS =                  \
  ${KS_IMP_UTILITIES}  \
  ${KS_IMP_INVERT_MULTI}
 
-SF =                  \
- ${GENERIC_SCHROED}   \
- ${SCHROED_CL_INV}    \
- ${SCHROED_KS_DYN}    \
- ${SCHROED_PG}
+# SF =                  \
+#  ${GENERIC_SCHROED}   \
+#  ${SCHROED_CL_INV}    \
+#  ${SCHROED_KS_DYN}    \
+#  ${SCHROED_PG}
+SF =                 \
+  ${GENERIC_SCHROED} \
+  ${SCHROED_CL_INV}
 
 WILSON =              \
  ${GENERIC_WILSON}
@@ -459,6 +462,7 @@ TAR =          \
  ${CLOVER_TAR} \
  ${FORM_TAR}   \
  ${KS_TAR}     \
+ ${SF_TAR}     \
  ${WILSON_TAR}
 
 # Contents of the whole ball of wax

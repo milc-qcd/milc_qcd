@@ -14,12 +14,21 @@ ks_imp_dyn
 ks_imp_rhmc
 ks_imp_invert_multi
 ks_imp_utilities
-ks_hl_spectrum
+pure_gauge
+schroed_cl_inv
 
 Build the code with GNU make.  See the README file in this directory
 for general instructions.
 
 Here are highlights of the new features:
+
+For version 7.3.1
+
+  Polished the parameter input format for the RHMC.
+  Now allow comment lines beginning with # in parameter input.
+  Added NERSC checksum to link trace.
+  Added more precise timing to the QOP and QDP modules
+  including remapping times.
 
 For version 7.3.0
 

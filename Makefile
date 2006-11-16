@@ -225,6 +225,7 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE -DC_INLINE
 
 #------------------------------
 # Print timing statistics.
+# Applications: many
 
 # Use any combination of these
 # CGTIME CG Solver
@@ -236,13 +237,24 @@ CTIME =#
 
 #------------------------------
 # Profiling
+# Applications:  QDP
 
 # QDP_PROFILE         Generates a report for all QDP routines
 
 CPROF =#
 
 #------------------------------
+# Debugging
+# Applications:  all
+
+# CHECK_MALLOC        Report malloc/free activity.
+#                     Process output using check_malloc.pl
+
+CDEBUG =#
+
+#------------------------------
 # Layout
+# Applications: all
 
 # These are currently selected only by editing Make_template.
 #  Choices
@@ -255,6 +267,7 @@ CPROF =#
 
 #------------------------------
 # Improved staggered CG inverter and Dslash
+# Applications: ks_imp_dyn ks_imp_rhmc ks_imp_invert_multi ks_hl_spectrum
 
 #  Note, some options still require editing Make_template
 #  Choices 
@@ -264,16 +277,17 @@ CPROF =#
 #   dslash_fn_dblstore.o          Double store version of dslash_fn.o
 #                                   Supports GATHER13
 
-# DBLSTORE_FN  Copies backward links.  Requires more memory.
-#              You must also call for dslash_fn_dblstore.o for now.
-# GATHER13     Combine third and next neighbor gathers in Dslash.
-#              For now, works only with dslash_fn_dblstore.o
-# FEWSUMS      Fewer CG reductions
+# DBLSTORE_FN    Copies backward links.  Requires more memory.
+#                You must also call for dslash_fn_dblstore.o for now.
+# D_FN_GATHER13  Combine third and next neighbor gathers in Dslash.
+#                For now, works only with dslash_fn_dblstore.o
+# FEWSUMS        Fewer CG reduction calls
 
 KSCGSTORE =#
 
 #------------------------------
 # Staggered fermion force routines
+# Applications: ks_imp_dyn ks_imp_rhmc
 
 # These are currently selected only by editing Make_template
 
@@ -283,6 +297,7 @@ KSCGSTORE =#
 
 #------------------------------
 # Prefetching
+# Applications: all
 
 # PREFETCH (Not working yet)
 
@@ -290,7 +305,9 @@ CPREFETCH = #
 
 #------------------------------
 # Multimass improved KS CG solvers
+# Applications: ks_imp_rhmc ks_imp_invert_multi
 
+# Choices
 # KS_MULTICG=OFFSET  The basic multicg solver.
 # KS_MULTICG=HYBRID  Solve with multicg and polish off with single mass CG.
 # KS_MULTICG=FAKE    Iterate the single mass solver.
@@ -301,23 +318,45 @@ KSCGMULTI =#
 
 #------------------------------
 # Multifermion force routines
+# Applications: ks_imp_rhmc
 
-# KSMULTIFF=FNMAT    Construct matrix parallel transporters
-#                    and use with sum of outer products of sources 
-# KSMULTIFF=FNMATREV Older version of FNMAT.  Traverses path
-#                    in reverse order
-# KSMULTIFF=ASVEC    Use improved Asqtad, parallel transporting
-#                    groups of source vectors.  See VECLENGTH.
+# Choices
+# KS_MULTIFF=FNMAT    Construct matrix parallel transporters
+#                     and use with sum of outer products of sources 
+# KS_MULTIFF=FNMATREV Older version of FNMAT.  Traverses path
+#                     in reverse order
+# KS_MULTIFF=ASVEC    Use improved Asqtad, parallel transporting
+#                     groups of source vectors.  See VECLENGTH.
+
+# Additional options
 # VECLENGTH=n        Number of source vectors to process in one group.
 #                    Applies only to the ASVEC option
 
 KSFFMULTI =#
 
 #------------------------------
+# RHMC molecular dynamics algorithm
+# Applications: ks_imp_rhmc
+
+# Choices
+
+# INT_ALG=INT_LEAPFROG
+# INT_ALG=INT_OMELYAN
+# INT_ALG=INT_2EPS_3TO1
+# INT_ALG=INT_2EPS_2TO1
+# INT_ALG=INT_2G1F
+# INT_ALG=INT_4MN4FP
+# INT_ALG=INT_4MN5FV
+# INT_ALG=INT_FOURSTEP
+# INT_ALG=INT_PLAY
+
+KSRHMCINT =#
+
+#------------------------------
 # Summary
 
-CODETYPE = ${CTIME} ${CPROF} ${KSCGSTORE} ${CPREFETCH} ${KSCGMULTI}\
- ${KSFFMULTI}
+CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${KSCGSTORE} ${CPREFETCH} ${KSCGMULTI}\
+ ${KSFFMULTI} ${KSRHMCINT}
 
 #----------------------------------------------------------------------
 # 16. Choose MILC library make file in libraries directory.  

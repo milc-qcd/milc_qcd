@@ -16,23 +16,13 @@
 #DIRS = \
 #  arb_dirac_eigen \
 #  arb_dirac_invert \
-#  clover_dynamical \
 #  clover_hybrids \
-#  clover_invert \
-#  file_utilities \
 #  h_dibaryon \
 #  heavy \
 #  hqet_heavy_to_light \
 #  hvy_qpot \
 #  ks_eigen \
-#  ks_hl_spectrum \
-#  ks_imp_dyn \
-#  ks_imp_rhmc \
-#  ks_imp_invert_multi \
-#  ks_imp_utilities \
 #  propagating_form_factor \
-#  pure_gauge \
-#  schroed_cl_inv \
 #  schroed_ks_dyn \
 #  schroed_pg \
 #  smooth_inst \
@@ -51,7 +41,8 @@ DIRS = \
    ks_imp_rhmc \
    ks_imp_invert_multi \
    ks_imp_utilities \
-   pure_gauge
+   pure_gauge \
+   schroed_cl_inv
 
 all:
 	for dir in ${DIRS};\
