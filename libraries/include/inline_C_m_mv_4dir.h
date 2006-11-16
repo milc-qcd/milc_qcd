@@ -21,6 +21,7 @@
     case(1): b=(bb1); break; \
     case(2): b=(bb2); break; \
     case(3): b=(bb3); break; \
+    default: b=NULL; \
   } \
   br=b->c[0].real;    bi=b->c[0].imag; \
   a0=mat->e[0][0].real; \
