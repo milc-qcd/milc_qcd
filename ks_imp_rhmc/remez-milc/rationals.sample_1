@@ -1,7 +1,17 @@
 n_pseudo 2
 
-precision 65
 
+
+
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (4,4)
+# Approximating the function (x+4*0.010000^2)^(2/4) (x+4*0.050000^2)^(-2/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Converged at 9507 iterations, error = 1.384796e-06
+
+
+# Rational function for MD
 y_MD -2 2 0 0
 z_MD 4 4 4 4
 m_MD 0.010000 0.050000 1.000000 1.000000
@@ -19,6 +29,19 @@ pole_MD 9.1988737187440712e-04
 pole_MD 2.6122268196463183e-03
 pole_MD 6.6966517287829659e-03
 
+# CHECK: f(1.000000e-15) = 4.999993e+00 = 5.000000e+00?
+
+
+
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (6,6)
+# Approximating the function (x+4*0.010000^2)^(2/8) (x+4*0.050000^2)^(-2/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Converged at 7122 iterations, error = 1.279208e-09
+
+
+# Rational function for GR
 y_GR 2 -2 0 0
 z_GR 8 8 8 8
 m_GR 0.010000 0.050000 1.000000 1.000000
@@ -40,6 +63,10 @@ pole_GR 3.1609298697618791e-03
 pole_GR 6.0591633587739170e-03
 pole_GR 9.2041295998850949e-03
 
+# CHECK: f(1.000000e-15) = 4.472136e-01 = 4.472136e-01?
+
+
+# Rational function for FA
 y_FA -2 2 0 0
 z_FA 8 8 8 8
 m_FA 0.010000 0.050000 1.000000 1.000000
@@ -61,8 +88,19 @@ pole_FA 2.6373623879382994e-03
 pole_FA 5.2307615518001850e-03
 pole_FA 8.5453352067564187e-03
 
-precision 65
+# CHECK: f(1.000000e-15) = 2.236068e+00 = 2.236068e+00?
 
+
+
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (6,6)
+# Approximating the function (x+4*0.050000^2)^(3/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Converged at 337 iterations, error = 6.040516e-05
+
+
+# Rational function for MD
 y_MD -3 0 0 0
 z_MD 4 4 4 4
 m_MD 0.050000 1.000000 1.000000 1.000000
@@ -84,6 +122,19 @@ pole_MD 1.2064028470198347e+00
 pole_MD 7.8144931675995775e+00
 pole_MD 6.2571222838716828e+01
 
+# CHECK: f(1.000000e-15) = 3.162087e+01 = 3.162278e+01?
+
+
+
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (8,8)
+# Approximating the function (x+4*0.050000^2)^(3/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Converged at 454 iterations, error = 2.674513e-06
+
+
+# Rational function for GR
 y_GR 3 0 0 0
 z_GR 8 8 8 8
 m_GR 0.050000 1.000000 1.000000 1.000000
@@ -109,6 +160,10 @@ pole_GR 1.0588849834697589e+01
 pole_GR 5.1215275203934681e+01
 pole_GR 5.3595695231128923e+02
 
+# CHECK: f(1.000000e-15) = 1.778284e-01 = 1.778279e-01?
+
+
+# Rational function for FA
 y_FA -3 0 0 0
 z_FA 8 8 8 8
 m_FA 0.050000 1.000000 1.000000 1.000000
@@ -134,3 +189,4 @@ pole_FA 6.1323178474404925e+00
 pole_FA 2.7462784127293482e+01
 pole_FA 1.7974412777526393e+02
 
+# CHECK: f(1.000000e-15) = 5.623398e+00 = 5.623413e+00?

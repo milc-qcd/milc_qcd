@@ -63,6 +63,7 @@ int main (int argc, char* argv[]) {
 
   for(iphi=0; iphi<n_pseudo; iphi++){
     // Set the exponents and masses
+    fprintf(stderr,"For pseudofermion %d\n",iphi);
     scanf("%d",&y1);
     scanf("%le",&m1);
     scanf("%d",&y2);
@@ -83,9 +84,6 @@ int main (int argc, char* argv[]) {
     // Set the precision of the arithmetic
     scanf("%d",&precision);
 
-    // Output precision
-    printf("precision %d\n\n",precision);
-    
     // For the MD term we need only the inverse
     work( y1,4,m1,  y2,4,m2,  y3,4,m3,  y4,4,m4, order1, 
 	  lambda_low, lambda_high, precision, "OMIT", "MD" );
@@ -104,11 +102,10 @@ void print_check_ratfunc(int y1,int y2,int y3,int y4,
 
   if( strcmp(tag,"OMIT") == 0 )return;
 
+  printf("\n\n# Rational function for %s\n",tag);
   printf("y_%s %d %d %d %d\n", tag, y1, y2, y3, y4);
   printf("z_%s %d %d %d %d\n", tag, z1, z2, z3, z4);
   printf("m_%s %f %f %f %f\n", tag, m1, m2, m3, m4);
-  fprintf(stderr,"\n//Approximation to f(x) = (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d)\n// (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d)",
-	  m1, y1, z1, m2, y2, z2, m3, y3, z3, m4, y4, z4);
   printf("order_%s %d\n",tag,order);
   printf("\n");
   printf("res_%s %18.16e\n", tag, norm);
@@ -127,7 +124,13 @@ void print_check_ratfunc(int y1,int y2,int y3,int y4,
   for ( x = lambda_low, sum=norm, ii = 0; ii < order; ii++) {
     sum += res[ii]/(x+pole[ii]);
   }
-  fprintf(stderr,"//CHECK: f(%e) = %e\n",x,sum);
+  
+  double f1 = pow(x+4*m1*m1,((double)y1)/z1);
+  double f2 = pow(x+4*m2*m2,((double)y2)/z2);
+  double f3 = pow(x+4*m2*m3,((double)y3)/z3);
+  double f4 = pow(x+4*m2*m4,((double)y4)/z4);
+
+  printf("# CHECK: f(%e) = %e = %e?\n",x,sum,f1*f2*f3*f4);
 }
 
 int work(int y1,int z1, double m1,  
@@ -156,6 +159,9 @@ int work(int y1,int z1, double m1,
   AlgRemez remez(lambda_low,lambda_high,precision);
 
   // Generate the required approximation
+  fprintf(stderr,
+	  "Generating a (%d,%d) rational function using %d digit precision.\n",
+	  order,order,precision);
   error = remez.generateApprox(order,order,y1,z1,m1,y2,z2,m2,
 			       y3,z3,m3,y4,z4,m4);
 

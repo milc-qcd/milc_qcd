@@ -28,8 +28,10 @@ AlgRemez::AlgRemez(double lower, double upper, long precision)
   apend = upper;
   apwidt = apend - apstrt;
 
-  fprintf(stderr,"//Approximation bounds are [%e,%e]\n", (double)apstrt,(double)apend);
-  fprintf(stderr,"//Precision of arithmetic is %d\n", precision);
+  printf("\n\n\n# New rational function\n");
+  printf("# Approximation bounds are [%e,%e]\n", 
+	 (double)apstrt,(double)apend);
+  printf("# Precision of arithmetic is %d\n", precision);
 
   alloc = 0;
   n = 0;
@@ -136,8 +138,8 @@ double AlgRemez::generateApprox(int num_degree, int den_degree,
 
   char *fname = "generateApprox(int, unsigned long, unsigned long)";
 
-  fprintf(stderr,"//Degree of the approximation is (%d,%d)\n", num_degree, den_degree);
-  fprintf(stderr,"//Approximating the function (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d)\n", m1, pnum1, pden1, m2, pnum2, pden2, m3, pnum3, pden3, m4, pnum4, pden4);
+  printf("# Degree of the approximation is (%d,%d)\n", num_degree, den_degree);
+  printf("# Approximating the function (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d) (x+4*%f^2)^(%d/%d)\n", m1, pnum1, pden1, m2, pnum2, pden2, m3, pnum3, pden3, m4, pnum4, pden4);
 
   // Reallocate arrays, since degree has changed
   if (num_degree != n || den_degree != d) allocate(num_degree,den_degree);
@@ -180,9 +182,10 @@ double AlgRemez::generateApprox(int num_degree, int den_degree,
 
   while (spread > tolerance) { //iterate until convergance
 
-    if (iter++%1000==0) 
-      fprintf(stderr,"//Iteration %d, spread %e delta %e\n", 
+    if (iter++%1000==0) {
+      fprintf(stderr,"Iteration %d, spread %e delta %e\n", 
 	     iter-1,(double)spread,(double)delta);
+    }
 
     equations();
     if (delta < tolerance) {
@@ -196,7 +199,8 @@ double AlgRemez::generateApprox(int num_degree, int den_degree,
 
   int sign;
   double error = (double)getErr(mm[0],&sign);
-  fprintf(stderr,"//Converged at %d iterations, error = %e\n",iter,error);
+  printf("# Converged at %d iterations, error = %e\n",iter,error);
+  fprintf(stderr,"Converged at %d iterations, error = %e\n",iter,error);
 
   // Once the approximation has been generated, calculate the roots
   if(!root()) {
