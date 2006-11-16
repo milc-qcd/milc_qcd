@@ -54,11 +54,11 @@ MY_OBJECTS =         \
 # Basic set from generic directory
 G_OBJECTS =          \
   d_plaq4.o          \
-  d_linktrsum.o      \
   io_lat4.o          \
   io_helpers.o       \
   check_unitarity.o  \
   make_lattice.o     \
+  nersc_cksum.o \
   reunitarize2.o     \
   restrict_fourier.o \
   io_detect.o        \
