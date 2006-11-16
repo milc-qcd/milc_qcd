@@ -37,7 +37,6 @@ MY_OBJECTS= \
 
 G_OBJECTS0 = \
   check_unitarity.o \
-  d_linktrsum.o \
   d_plaq4.o \
   gauge_stuff.o \
   io_detect.o \
@@ -45,6 +44,7 @@ G_OBJECTS0 = \
   io_lat4.o \
   io_lat_utils.o \
   make_lattice.o \
+  nersc_cksum.o \
   path_product.o \
   ranstuff.o \
   remap_stdio_from_args.o \
@@ -130,11 +130,8 @@ ifeq ($(strip ${HAVEQOP}),true)
   ASQFORCE += ${ASQFORCEQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-# Choose (fermion_force_asqtad_qdp.o )
     ASQFORCE = fermion_force_asqtad_qdp.o fermion_force_fn_multi_qdp.o ff_opt.o
   else
-# Choose (fermion_force_asqtad.o fermion_force_asqtad2.o )
-# or  fermion_force_asqtad3.o + ff_opt.o
     ASQFORCE = fermion_force_asqtad3.o fermion_force_fn_multi.o ff_opt.o
   endif
 endif
