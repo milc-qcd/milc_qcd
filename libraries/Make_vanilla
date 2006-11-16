@@ -41,6 +41,9 @@ OPT              = -O3    # ( -g -O, etc )
 
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -fprefetch-loop-arrays # QCDOC
 #OCFLAGS =  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
+#------------------------ BlueGene -----------------------------------
+# OCFLAGS = -qarch=440d -qtune=440
+
 #-------------- Intel icc/ecc -----------------------------------
 #OCFLAGS = -tpp2 -static
 

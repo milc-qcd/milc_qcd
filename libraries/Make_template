@@ -8,10 +8,14 @@
 	${CC} -c ${CFLAGS} $*.c
 
 # List of headers currently used by some or all library routines
+# or by inheritance from their header files
 HEADERS = \
   ../include/config.h \
   ../include/complex.h \
   ../include/dirs.h \
+  ../include/random.h \
+  ../include/int32type.h \
+  ../include/precision.h \
   ../include/su3.h
 
 # To force a full remake when switching or updating Makefiles and precision
