@@ -227,6 +227,22 @@ g_sync(void)
 }
 
 /*
+**  Sum signed integer over all nodes
+*/
+void
+g_intsum(int *ipt)
+{
+}
+
+/*
+**  Sum unsigned 32-bit integer type
+*/
+void
+g_uint32sum(u_int32type *pt)
+{
+}
+
+/*
 **  Sum Real over all nodes
 */
 void

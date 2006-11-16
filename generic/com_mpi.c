@@ -373,6 +373,35 @@ g_sync(void)
 }
 
 /*
+**  Sum signed integer over all nodes
+*/
+void
+g_intsum(int *ipt)
+{
+  int work;
+  MPI_Allreduce( ipt, &work, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
+  *ipt = work;
+}
+
+/*
+**  Sum unsigned 32-bit integer type
+*/
+void
+g_uint32sum(u_int32type *pt)
+{
+  u_int32type work;
+#ifdef SHORT_IS_32BIT
+  MPI_Allreduce( pt, &work, 1, MPI_UNSIGNED_SHORT, 
+		 MPI_SUM, MPI_COMM_WORLD );
+#else
+  MPI_Allreduce( pt, &work, 1, MPI_UNSIGNED, 
+		 MPI_SUM, MPI_COMM_WORLD );
+#endif
+  *pt = work;
+}
+
+
+/*
 **  Sum generic floating type over all nodes
 */
 void

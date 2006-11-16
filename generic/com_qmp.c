@@ -300,13 +300,13 @@ initialize_machine(int argc, char **argv)
   /* check if 32 bit int is set correctly */
 #ifdef SHORT_IS_32BIT
   if(sizeof(unsigned short)!=4) {
-    printf("node %i: SHORT_IS_32BIT is set but sizeof(unsigned short)=%d\n",
+    printf("node %d: SHORT_IS_32BIT is set but sizeof(unsigned short)=%d\n",
 	   mynode(), sizeof(unsigned short));
     terminate(1);
   }
 #else
   if(sizeof(unsigned int)!=4) {
-    printf("node %i: SHORT_IS_32BIT is not set but sizeof(unsigned int)=%d\n",
+    printf("node %d: SHORT_IS_32BIT is not set but sizeof(unsigned int)=%d\n",
 	   mynode(), sizeof(unsigned int));
     terminate(1);
   }
@@ -388,6 +388,32 @@ g_sync(void)
 {
   QMP_barrier();
 }
+
+
+/*
+**  Sum signed integer over all nodes
+*/
+void
+g_intsum(int *ipt)
+{
+  QMP_sum_int(ipt);
+}
+
+/*
+**  Sum unsigned 32-bit integer type
+*/
+/* Binary operation */
+static void 
+sum_u32(void *inout, void *in ){
+  *(u_int32type *)inout += *(u_int32type *)in;
+}
+
+void
+g_uint32sum(u_int32type *pt)
+{
+  QMP_binary_reduction(pt, sizeof(u_int32type), sum_u32);
+}
+
 
 /*
 **  Sum float over all nodes
