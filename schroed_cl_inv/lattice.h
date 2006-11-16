@@ -81,6 +81,7 @@ EXTERN	Real ferm_phases[3];	/* fermion phase factors */
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
+EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;		/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN	int total_iters;

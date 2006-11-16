@@ -121,6 +121,7 @@ EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
+EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  int kssaveflag; /* save KS propagator or not */
 	/* forget_ks, save_ks_ascii, save_ks_serial, save_ks_serial_fm, save_ks_serial_tslice */

@@ -30,6 +30,7 @@
 #include <qio.h>
 #endif
 
+/* This is dangerous.  It assumes off_t = long for this compilation */
 #ifndef HAVE_FSEEKO
 #define fseeko fseek
 #endif
@@ -1687,13 +1688,12 @@ gauge_file *save_serial_archive(char *filename) {
 
   FILE *outfile = NULL;
   site *s;
-  u_int32type chksum, utmp, *p32;
+  u_int32type chksum;
   char sums[30];
   OUTPUT_TYPE *uout = NULL;
   int big_end_p; 
   double ssplaq, stplaq, avgtrace, avgplaq;
-  float tmpflt;
-  double trace;
+  double_complex linktrsum;
   int mu,a,b,vol3=0,tslice;
 
   /* Check which end is up */
@@ -1707,36 +1707,9 @@ gauge_file *save_serial_archive(char *filename) {
   /* Compute plaquette, trace and checksum */
   d_plaquette(&ssplaq, &stplaq);
   avgplaq = (ssplaq+stplaq)/6.0;
-  trace = 0.0;
-  chksum = 0;
-  FORALLSITES(i,s) {
-    for(mu=0; mu<4; ++mu) {
-      trace += (trace_su3(&(s->link[mu]))).real;
-      for(a=0; a<2; a++) for(b=0; b<3; b++) {
-	tmpflt = s->link[mu].e[a][b].real;
-	p32 = (u_int32type *) &tmpflt;
-	chksum += *p32;
-	tmpflt = s->link[mu].e[a][b].imag;
-	p32 = (u_int32type *) &tmpflt;
-	chksum += *p32;
-      }
-    }
-  }
-  g_doublesum( &trace);
-  avgtrace = trace/(double)(volume*12);
-
-  /* All nodes send their checksum to node 0 */
-  for(j=1; j<numnodes(); j++){
-    if(this_node == 0)send_field((char *)lbuf,4,j);
-    if(this_node == j){
-      get_field((char *)lbuf,4,0);
-      send_integer(0, (int *)&chksum);
-    }
-    if(this_node == 0){
-      receive_integer(j, (int *)&utmp);
-      chksum += utmp;
-    }
-  }
+  d_linktrsum(&linktrsum);
+  avgtrace = linktrsum.real/3.0;
+  chksum = nersc_cksum();
 
   /* node 0 does all the writing */
   if(this_node==0){

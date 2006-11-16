@@ -111,6 +111,7 @@ EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
+EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char propfile[MAXFILENAME];   /* For blocked propagator */
 EXTERN	int total_iters;

@@ -28,7 +28,9 @@ imp_gauge_force_qdp(QDP_ColorMatrix *flinks[], QDP_ColorMatrix *force[],
   int mu, nu, sig;
   double dtime;
   Real eb3 = -eps*beta/3.0;
+#ifdef GFTIME
   int nflop = 96720;
+#endif
 
   int j[3][2] = {{1,2},
                  {0,2},

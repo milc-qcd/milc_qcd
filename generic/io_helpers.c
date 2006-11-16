@@ -31,6 +31,7 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
 #ifndef NOLINKS
     d_plaquette(&g_ssplaq,&g_stplaq);
     d_linktrsum(&linktrsum);
+    nersc_checksum = nersc_cksum();
 #endif
 
     dtime = -dclock();
@@ -129,11 +130,13 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
       node0_printf("Time to save = %e\n",dtime);
 #if (PRECISION==1)
     node0_printf("CHECK PLAQ: %e %e\n",g_ssplaq,g_stplaq);
-    node0_printf("CHECK LINKTR: %e %e\n",linktrsum.real,linktrsum.imag);
+    node0_printf("CHECK NERSC LINKTR: %e CKSUM: %x\n",
+		 linktrsum.real/3.,nersc_checksum);
 #else
     /* Double precision */
     node0_printf("CHECK PLAQ: %.16e %.16e\n",g_ssplaq,g_stplaq);
-    node0_printf("CHECK LINKTR: %.16e %.16e\n",linktrsum.real,linktrsum.imag);
+    node0_printf("CHECK NERSC LINKTR: %.16e CKSUM: %x\n",
+		 linktrsum.real/3.,nersc_checksum);
 #endif
     return gf;
 }
@@ -184,15 +187,20 @@ gauge_file *reload_lattice( int flag, char *filename){
 #ifndef NOLINKS
     d_plaquette(&g_ssplaq,&g_stplaq);
     d_linktrsum(&linktrsum);
+    nersc_checksum = nersc_cksum();
 #endif
     if(this_node==0){
 #if (PRECISION==1)
-      printf("CHECK PLAQ: %e %e\n",g_ssplaq,g_stplaq);fflush(stdout);
-      printf("CHECK LINKTR: %e %e\n",linktrsum.real,linktrsum.imag);
+    node0_printf("CHECK PLAQ: %e %e\n",g_ssplaq,g_stplaq);
+    node0_printf("CHECK NERSC LINKTR: %e CKSUM: %x\n",
+		 linktrsum.real/3.,nersc_checksum);
+    fflush(stdout);
 #else
-      /* Double precision */
-      printf("CHECK PLAQ: %.16e %.16e\n",g_ssplaq,g_stplaq);fflush(stdout);
-      printf("CHECK LINKTR: %.16e %.16e\n",linktrsum.real,linktrsum.imag);
+    /* Double precision */
+    node0_printf("CHECK PLAQ: %.16e %.16e\n",g_ssplaq,g_stplaq);
+    node0_printf("CHECK NERSC LINKTR: %.16e CKSUM: %x\n",
+		 linktrsum.real/3.,nersc_checksum);
+    fflush(stdout);
 #endif
     }
     dtime = -dclock();

@@ -19,7 +19,6 @@ G_ALL = \
  com_vanilla.o \
  d_plaq2.o \
  d_plaq4.o \
- d_linktrsum.o \
  field_strength.o \
  gaugefix.o \
  gaugefix2.o \
@@ -51,6 +50,7 @@ G_ALL = \
  layout_qcdoc.o \
  map_milc_to_qop.o \
  make_lattice.o \
+ nersc_cksum.o \
  path_product.o \
  plaquette3.o \
  plaquette4.o \
@@ -174,6 +174,8 @@ layout_qcdoc.o: ../generic/layout_qcdoc.c
 make_lattice.o: ../generic/make_lattice.c
 	${CC} -c ${CFLAGS} $<
 map_milc_to_qop.o: ../generic/map_milc_to_qop.c
+	${CC} -c ${CFLAGS} $<
+nersc_cksum.o: ../generic/nersc_cksum.c
 	${CC} -c ${CFLAGS} $<
 path_product.o: ../generic/path_product.c
 	${CC} -c ${CFLAGS} $<

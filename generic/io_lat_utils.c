@@ -405,7 +405,7 @@ void swrite_gauge_hdr(FILE *fp, gauge_header *gh)
 int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
 		       char *keyword,   /* keyword */
 		       char *fmt,       /* output format -
-					      must use s, d, e, f, or g */
+					      must use s, d, e, f, lu, or g */
 		       char *src,       /* address of starting data
 					   floating point data must be
 					   of type (Real) */
@@ -444,6 +444,8 @@ int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
 	fprintf(fpout,fmt,data);
       else if(strstr(fmt,"d") != NULL)
 	fprintf(fpout,fmt,*(int *)data);
+      else if(strstr(fmt,"lu") != NULL)
+	fprintf(fpout,fmt,*(unsigned long *)data);
       else if(strstr(fmt,"e") != NULL || 
 	      strstr(fmt,"f") != NULL || 
 	      strstr(fmt,"g") != NULL)
@@ -521,6 +523,11 @@ int sprint_gauge_info_item(
       }
       else if(strstr(fmt,"d") != NULL){
 	snprintf(string+bytes,nstring-bytes,fmt,*(int *)data);
+	bytes = strlen(string);
+	if(bytes >= nstring)return 1;
+      }
+      else if(strstr(fmt,"lu") != NULL){
+	snprintf(string+bytes,nstring-bytes,fmt,*(unsigned long *)data);
 	bytes = strlen(string);
 	if(bytes >= nstring)return 1;
       }
