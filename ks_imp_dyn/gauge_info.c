@@ -39,6 +39,10 @@ void write_appl_gauge_info(FILE *fp)
      the required magic number, time stamp, and lattice
      dimensions have already been written */
 
+  Real myssplaq = g_ssplaq;  /* Precision conversion */
+  Real mystplaq = g_stplaq;  /* Precision conversion */
+  Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
+
   /* The rest are optional */
 
   write_gauge_info_item(fp,"action.description","%s",
@@ -50,12 +54,12 @@ void write_appl_gauge_info(FILE *fp)
   write_gauge_info_item(fp,"gauge.nreps","%d",(char *)&gauge_action_nreps,0,0);
   write_gauge_info_item(fp,"gauge.beta11","%f",(char *)&beta,0,0);
   write_gauge_info_item(fp,"gauge.tadpole.u0","%f",(char *)&u0,0,0);
-  write_gauge_info_item(fp,"gauge.ssplaq","%f",(char *)&g_ssplaq,0,0);
-  write_gauge_info_item(fp,"gauge.stplaq","%f",(char *)&g_stplaq,0,0);
-  write_gauge_info_item(fp,"gauge.linktr.real","%f",
-			(char *)&(linktrsum.real),0,0);
-  write_gauge_info_item(fp,"gauge.linktr.imag","%f",
-			(char *)&(linktrsum.imag),0,0);
+  write_gauge_info_item(fp,"gauge.ssplaq","%f",(char *)&myssplaq,0,0);
+  write_gauge_info_item(fp,"gauge.stplaq","%f",(char *)&mystplaq,0,0);
+  write_gauge_info_item(fp,"gauge.nersc_linktr","%e",
+			(char *)&(nersc_linktr),0,0);
+  write_gauge_info_item(fp,"gauge.nersc_checksum","%lu",
+			(char *)&(nersc_checksum),0,0);
   write_gauge_info_item(fp,"quark.description","%s",QUARK_ACTION_DESCRIPTION,0,0);
 #ifdef ONEMASS
   write_gauge_info_item(fp,"quark.flavors","%d",(char *)&nflavors,0,0);
@@ -191,6 +195,10 @@ char *create_QCDML(){
   size_t max = INFOSTRING_MAX;
   char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
   char end[] = "</info>";
+  Real myssplaq = g_ssplaq;  /* Precision conversion */
+  Real mystplaq = g_stplaq;  /* Precision conversion */
+  Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
+
 
   snprintf(info+bytes, max-bytes,"%s",begin);
   bytes = strlen(info);
@@ -214,16 +222,16 @@ char *create_QCDML(){
 			 (char *)&u0,0,0);
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.ssplaq","%f",
-			 (char *)&g_ssplaq,0,0);
+			 (char *)&myssplaq,0,0);
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.stplaq","%f",
-			 (char *)&g_stplaq,0,0);
+			 (char *)&mystplaq,0,0);
   bytes = strlen(info);
-  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.linktr.real","%f",
-			 (char *)&(linktrsum.real),0,0);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.nersc_linktr","%e",
+			 (char *)&nersc_linktr,0,0);
   bytes = strlen(info);
-  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.linktr.imag","%f",
-			 (char *)&(linktrsum.imag),0,0);
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.nersc_checksum","%lu",
+			 (char *)&nersc_checksum,0,0);
   
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"quark.description","%s",

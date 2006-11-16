@@ -55,7 +55,6 @@ MY_OBJECTS= \
 
 G_OBJECTS = \
   check_unitarity.o \
-  d_linktrsum.o \
   d_plaq4.o \
   gaugefix2.o \
   gauge_stuff.o \
@@ -64,6 +63,7 @@ G_OBJECTS = \
   io_lat4.o \
   io_lat_utils.o \
   make_lattice.o \
+  nersc_cksum.o \
   path_product.o \
   ranmom.o \
   remap_stdio_from_args.o \
@@ -359,7 +359,7 @@ su3_rmd_mu_eos::
 
 su3_rmd_dblstore_gath13_fewsums::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DDBLSTORE_FN -DFN_GATHER13 -DFEWSUMS" \
+	"DEFINES= -DFN  -DDBLSTORE_FN -DD_FN_GATHER13 -DFEWSUMS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FLINKS_FN} ${ASQFORCE} ${SYMZK1FORCE} \
