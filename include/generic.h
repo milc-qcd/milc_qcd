@@ -161,6 +161,7 @@ void imp_gauge_force( Real eps, field_offset mom_off );
 
 /* gauge_stuff.c */
 double imp_gauge_action();
+void g_measure();
 void make_loop_table();
 void dsdu_qhb_subl(int dir, int subl);
 int get_max_length();
@@ -209,6 +210,9 @@ const int *get_logical_coordinate();
 /* make_lattice.c */
 void make_lattice();
 void free_lattice();
+
+/* nersc_cksum.c */
+u_int32type nersc_cksum( void );
 
 /* make_global_fields.c */
 void make_global_fields();

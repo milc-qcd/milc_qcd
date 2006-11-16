@@ -51,6 +51,8 @@ char *machine_type(void);
 int mynode(void);
 int numnodes(void);
 void g_sync(void);
+void g_intsum(int *ipt);
+void g_uint32sum(u_int32type *pt);
 void g_floatsum(Real *fpt);
 void g_vecfloatsum(Real *fpt, int nReals);
 void g_doublesum(double *dpt);

@@ -210,7 +210,7 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
 
 /* d_congrad5_fn_qop.c */
 #ifdef HAVE_QOP
-void create_qop_asqtad_fermion_links( QOP_FermionLinksAsqtad** qop_links );
+QOP_FermionLinksAsqtad *create_qop_asqtad_fermion_links( void );
 #endif
 void initialize_congrad( void );
 void finalize_congrad( void );
@@ -342,6 +342,7 @@ void grsource(int parity);
 /* grsource_imp.c */
 void grsource_imp( field_offset dest, Real mass, int parity);
 void grsource_plain( field_offset dest, int parity );
+void checkmul_imp( field_offset src, Real mass );
 
 /* jacobi.c */
 #include "../include/jacobi.h"
