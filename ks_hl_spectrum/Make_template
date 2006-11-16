@@ -43,7 +43,6 @@ MY_OBJECTS = \
 G_OBJECTS0 =         \
   check_unitarity.o  \
   d_plaq4.o          \
-  d_linktrsum.o      \
   gaugefix2.o        \
   io_detect.o        \
   io_helpers.o       \
@@ -52,7 +51,9 @@ G_OBJECTS0 =         \
   io_lat_utils.o     \
   io_prop_w.o        \
   make_lattice.o     \
+  nersc_cksum.o \
   ranstuff.o         \
+  remap_stdio_from_args.o \
   reunitarize2.o     \
   restrict_fourier.o
 

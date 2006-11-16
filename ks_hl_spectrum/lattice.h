@@ -105,6 +105,7 @@ EXTERN	int num_kap;		/* max number of kappa's <= MAX_KAP */
 EXTERN	char startfile[MAXFILENAME], savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
+EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char savefile_w[MAX_KAP][MAXFILENAME], 
   startfile_w[MAX_KAP][MAXFILENAME];
