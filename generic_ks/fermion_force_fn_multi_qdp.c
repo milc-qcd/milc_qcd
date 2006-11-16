@@ -41,11 +41,12 @@ int eo_fermion_force_set_opt(char opt_string[]){
   else if(strcmp(opt_string,"FNMAT") == 0)
     ks_multiff_opt = KS_MULTIFF_FNMAT;
   else{
-    printf("eo_fermion_force_set_opt: Unrecognized type %s\n",opt_string);
-    printf("Choices are ASVEC, FNMAT\n");
+    node0_printf("eo_fermion_force_set_opt: Unrecognized type %s\n",
+		 opt_string);
+    node0_printf("Choices are ASVEC, FNMAT\n");
     return 1;
   }
-  printf("eo_fermion_force_set_opt: set opt to %s = %d\n",opt_string,
+  node0_printf("eo_fermion_force_set_opt: set opt to %s = %d\n",opt_string,
 	 ks_multiff_opt);
   return 0;
 }

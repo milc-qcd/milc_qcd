@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.17  2006/11/16 04:17:53  detar
+ * Fix printf -> node0_printf to avoid duplicate messages.
+ *
  * Revision 1.16  2006/11/13 03:05:26  detar
  * Add timing for remapping and make separate from timing for computation.
  *
@@ -56,7 +59,7 @@
 #include <qop.h>
 #include <string.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.16 2006/11/13 03:05:26 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.17 2006/11/16 04:17:53 detar Exp $";
 
 /* Standard MILC interface for the single-species Asqtad fermion force routine */
 void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
@@ -83,7 +86,7 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
-    printf("eo_fermion_force_oneterm: Error initializing QOP\n");
+    node0_printf("eo_fermion_force_oneterm: Error initializing QOP\n");
     terminate(1);
   }
 
