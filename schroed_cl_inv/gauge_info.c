@@ -34,3 +34,14 @@ void write_appl_gauge_info(FILE *fp)
   /* Note: this application does not write gauge field configurations! */
 
 }
+
+#define INFOSTRING_MAX 2048
+/* For now we simply use the MILC info */
+char *create_QCDML(){
+  char *info = NULL;
+  return info;
+}
+
+void free_QCDML(char *info){
+  if(info != NULL)free(info);
+}
