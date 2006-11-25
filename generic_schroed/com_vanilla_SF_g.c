@@ -94,7 +94,7 @@
 
 /**********************************************************************/
 /* Machine initialization */
-void initialize_machine(int argc, char **argv){}
+void initialize_machine(int *argc, char ***argv){}
 
 
 /**********************************************************************/

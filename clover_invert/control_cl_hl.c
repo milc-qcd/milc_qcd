@@ -65,7 +65,7 @@ int main(int argc,char *argv[])
   w_prop_file *fp_scr[MAX_KAP];
   char scratch_file[MAX_KAP][MAXFILENAME];
   
-  initialize_machine(argc,argv);
+  initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif

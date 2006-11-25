@@ -27,7 +27,12 @@ Real f_action;			/* fermionic action */
 int m_iters,s_iters,avm_iters,avs_iters;
 double dtime;
 
- initialize_machine(argc,argv);
+ initialize_machine(&argc,&argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
+  /* Remap standard I/O */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
  g_sync();
     /* set up */
     prompt = setup();

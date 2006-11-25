@@ -266,12 +266,12 @@ static int mem_flags=(QMP_MEM_COMMS);
 **  Machine initialization
 */
 void
-initialize_machine(int argc, char **argv)
+initialize_machine(int *argc, char ***argv)
 {
   QMP_status_t i;
   QMP_thread_level_t provide;
 
-  i = QMP_init_msg_passing(&argc, &argv, QMP_THREAD_SINGLE, &provide);
+  i = QMP_init_msg_passing(argc, argv, QMP_THREAD_SINGLE, &provide);
   if(i!=0) {
     printf("%s\n", QMP_error_string(i));
     printf("com_qmp: Initialize QMP failed.\n");

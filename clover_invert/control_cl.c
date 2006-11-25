@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   w_prop_file *fp_in_w[MAX_KAP];        /* For propagator files */
   w_prop_file *fp_out_w[MAX_KAP];       /* For propagator files */
   
-  initialize_machine(argc,argv);
+  initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif

@@ -102,10 +102,12 @@ int main(int argc, char *argv[])
   ksvector_file1 = argv[1];
   ksvector_file2 = argv[2];
 
-  initialize_machine(argc,argv);
+  initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
+  /* Remap standard I/O */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();

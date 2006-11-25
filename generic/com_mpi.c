@@ -261,13 +261,13 @@ err_func(MPI_Comm *comm, int *stat, ...)
 **  Machine initialization
 */
 void
-initialize_machine(int argc, char **argv)
+initialize_machine(int *argc, char ***argv)
 {
   int i, flag, *tag_ub;
   MPI_Comm comm;
   MPI_Errhandler errhandler;
 
-  flag = MPI_Init(&argc, &argv);
+  flag = MPI_Init(argc, argv);
   comm = MPI_COMM_WORLD;
   if(flag) err_func(&comm, &flag);
   flag = MPI_Errhandler_create(err_func, &errhandler);

@@ -105,10 +105,12 @@ int main(int argc, char *argv[])
   if(this_node == 0)printf("Converting file %s to SciDAC file %s\n",
 			   filename_milc, filename_scidac);
 
-  initialize_machine(argc,argv);
+  initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
+  /* Remap standard I/O */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();

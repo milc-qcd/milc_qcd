@@ -146,7 +146,7 @@ static int n_gathers, gather_array_len;
 **  Machine initialization
 */
 void
-initialize_machine(int argc, char **argv)
+initialize_machine(int *argc, char ***argv)
 {
   /* check if 32 bit int is set correctly */
 #ifdef SHORT_IS_32BIT

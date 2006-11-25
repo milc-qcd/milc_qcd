@@ -29,8 +29,10 @@ int disp_iters;
 complex plp;
 double dtime;
 
- initialize_machine(argc,argv);
- QDP_initialize(argc, argv);
+  initialize_machine(&argc,&argv);
+  QDP_initialize(&argc, &argv);
+  /* Remap standard I/O */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
  g_sync();
     /* set up */
     prompt = setup();

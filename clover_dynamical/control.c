@@ -32,7 +32,7 @@ int spect_iters;
 complex plp;
 double dtime;
 
- initialize_machine(argc,argv);
+ initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif

@@ -68,7 +68,12 @@ Real hax_prop[MAX_MASSES][MAX_P][MAX_NT];
 w_prop_file *fp_in_w[MAX_MASSES];        /* For propagator files */
 w_prop_file *fp_out_w[MAX_MASSES];       /* For propagator files */
 
-    initialize_machine(argc,argv);
+    initialize_machine(&argc,&argv);
+#ifdef HAVE_QDP
+  QDP_initialize(&argc, &argv);
+#endif
+  /* Remap standard I/O */
+  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
     g_sync();
     /* set up */

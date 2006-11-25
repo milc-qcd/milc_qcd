@@ -48,7 +48,7 @@ complex *pmes_prop_b[MAX_KAP][MAX_PROP];
 complex *f_V[MAX_KAP];
 Real f_1[MAX_KAP];
 
-    initialize_machine(argc,argv);
+    initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
