@@ -11,14 +11,34 @@
 *									*
 */
 /* SU(3) */
+
 typedef struct { fcomplex e[3][3]; } fsu3_matrix;
-typedef struct { dcomplex e[3][3]; } dsu3_matrix;
-typedef struct { complex e[3][3]; } su3_matrix;
 typedef struct { fcomplex c[3]; } fsu3_vector;
+typedef struct { 
+  fcomplex m01,m02,m12; 
+  float m00im,m11im,m22im; 
+  float space; } fanti_hermitmat;
+
+typedef struct { dcomplex e[3][3]; } dsu3_matrix;
 typedef struct { dcomplex c[3]; } dsu3_vector;
-typedef struct { complex c[3]; } su3_vector;
-typedef struct
-  { complex m01,m02,m12; Real m00im,m11im,m22im; Real space; } anti_hermitmat;
+typedef struct { 
+  dcomplex m01,m02,m12; 
+  double m00im,m11im,m22im; 
+  double space; } danti_hermitmat;
+
+#if (PRECISION==1)
+
+#define su3_matrix      fsu3_matrix
+#define su3_vector      fsu3_vector
+#define anti_hermitmat  fanti_hermitmat
+
+#else
+
+#define su3_matrix      dsu3_matrix
+#define su3_vector      dsu3_vector
+#define anti_hermitmat  danti_hermitmat
+
+#endif
 
 /* SU(2) */
 typedef struct { complex e[2][2]; } su2_matrix;
@@ -47,13 +67,6 @@ typedef struct { complex e[2][2]; } su2_matrix;
    "1" refers to the source, "2" to the sink.
 */
 
-typedef struct { su3_vector d[4]; } wilson_vector;
-typedef struct { su3_vector h[2]; } half_wilson_vector;
-typedef struct { wilson_vector c[3]; } color_wilson_vector;
-typedef struct { wilson_vector d[4]; } spin_wilson_vector;
-typedef struct { color_wilson_vector d[4]; } wilson_matrix;
-typedef struct { spin_wilson_vector c[3]; } wilson_propagator;
-
 typedef struct { fsu3_vector d[4]; } fwilson_vector;
 typedef struct { fsu3_vector h[2]; } fhalf_wilson_vector;
 typedef struct { fwilson_vector c[3]; } fcolor_wilson_vector;
@@ -67,6 +80,26 @@ typedef struct { dwilson_vector c[3]; } dcolor_wilson_vector;
 typedef struct { dwilson_vector d[4]; } dspin_wilson_vector;
 typedef struct { dcolor_wilson_vector d[4]; } dwilson_matrix;
 typedef struct { dspin_wilson_vector c[3]; } dwilson_propagator;
+
+#if (PRECISION==1)
+
+#define wilson_vector       fwilson_vector
+#define half_wilson_vector  fhalf_wilson_vector
+#define color_wilson_vector fcolor_wilson_vector
+#define spin_wilson_vector  fspin_wilson_vector
+#define wilson_matrix       fwilson_matrix
+#define wilson_propagator   fwilson_propagator
+
+#else
+
+#define wilson_vector       dwilson_vector
+#define half_wilson_vector  dhalf_wilson_vector
+#define color_wilson_vector dcolor_wilson_vector
+#define spin_wilson_vector  dspin_wilson_vector
+#define wilson_matrix       dwilson_matrix
+#define wilson_propagator   dwilson_propagator
+
+#endif
 
 #define GAMMAFIVE -1    /* some integer which is not a direction */
 #define PLUS 1          /* flags for selecting M or M_adjoint */

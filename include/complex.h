@@ -70,11 +70,6 @@
 #define csqrt csqrt_single
 
 /* generic precision complex number definition */
-typedef struct {
-   Real real;		   
-   Real imag;
-} complex;
-
 /* specific for float complex */
 typedef struct {   
   float real;	   
@@ -86,6 +81,12 @@ typedef struct {
    double real;
    double imag;
 } double_complex;
+
+#if (PRECISION==1)
+#define complex fcomplex
+#else
+#define complex dcomplex
+#endif
 
 /* Alternative name for double complex */
 typedef double_complex dcomplex;
