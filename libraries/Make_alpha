@@ -20,46 +20,46 @@ CC = cc	#most
 
 #install .alpha (assembler code) in the suffixes list
 .SUFFIXES:
-.SUFFIXES: .o .alpha .c .y .l .s
+.SUFFIXES: .1o .alpha .c .y .l .s
 
-.c.o:
-	$(CC) $(CFLAGS) -c $*.c
+.c.1o:
+	$(CC) $(CFLAGS) -c $*.c -o $*.1o
 
 # compile alpha assembly language routines 
-.alpha.o:
+.alpha.1o:
 	cp $*.alpha $*.s
 	cc -O -DFAST -DPROTO -float -c $*.s
 	rm $*.s
 
 #Assembler language routines
-m_mat_nn.o: m_mat_nn.alpha
-m_mat_an.o: m_mat_an.alpha
-m_mat_na.o: m_mat_na.alpha
-addmat.o: addmat.alpha
-s_m_a_mat.o: s_m_a_mat.alpha
+m_mat_nn.1o: m_mat_nn.alpha
+m_mat_an.1o: m_mat_an.alpha
+m_mat_na.1o: m_mat_na.alpha
+addmat.1o: addmat.alpha
+s_m_a_mat.1o: s_m_a_mat.alpha
 
-m_matvec.o: m_matvec.alpha
-m_amatvec.o: m_amatvec.alpha
-m_amv_4dir.o: m_amv_4dir.alpha
-m_mv_s_4dir.o: m_mv_s_4dir.alpha
-s_m_a_vec.o: s_m_a_vec.alpha
-su3_rdot.o: su3_rdot.alpha
-msq_su3vec.o: msq_su3vec.alpha
-sub4vecs.o: sub4vecs.alpha
+m_matvec.1o: m_matvec.alpha
+m_amatvec.1o: m_amatvec.alpha
+m_amv_4dir.1o: m_amv_4dir.alpha
+m_mv_s_4dir.1o: m_mv_s_4dir.alpha
+s_m_a_vec.1o: s_m_a_vec.alpha
+su3_rdot.1o: su3_rdot.alpha
+msq_su3vec.1o: msq_su3vec.alpha
+sub4vecs.1o: sub4vecs.alpha
 
-cs_m_a_wvec.o: cs_m_a_wvec.alpha
-m_amat_hwvec.o: m_amat_hwvec.alpha
-m_mat_hwvec.o: m_mat_hwvec.alpha
-msq_wvec.o: msq_wvec.alpha
-wvec_dot.o: wvec_dot.alpha
-grow4wvecs.o: grow4wvecs.alpha
-wp_grow.o: wp_grow.alpha
-wp_grow_a.o: wp_grow_a.alpha
-wp_shrink.o: wp_shrink.alpha
-wp_shrink4.o: wp_shrink4.alpha
+cs_m_a_wvec.1o: cs_m_a_wvec.alpha
+m_amat_hwvec.1o: m_amat_hwvec.alpha
+m_mat_hwvec.1o: m_mat_hwvec.alpha
+msq_wvec.1o: msq_wvec.alpha
+wvec_dot.1o: wvec_dot.alpha
+grow4wvecs.1o: grow4wvecs.alpha
+wp_grow.1o: wp_grow.alpha
+wp_grow_a.1o: wp_grow_a.alpha
+wp_shrink.1o: wp_shrink.alpha
+wp_shrink4.1o: wp_shrink4.alpha
 
 # Prefetch - taken from T3E code
-prefetch.o: prefetch32.alpha
+prefetch.1o: prefetch32.alpha
 	cp prefetch32.alpha prefetch.s
 	cc -O -DFAST -DPROTO -float -c prefetch.s
 	-/bin/rm prefetch.s

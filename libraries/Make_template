@@ -4,8 +4,12 @@
 #  It is intended to be an include file for other Makefiles.
 #  Don't use it by itself!
 
-.c.o:
-	${CC} -c ${CFLAGS} $*.c
+.SUFFIXES: .1o .2o
+
+.c.1o:
+	${CC} -c ${CFLAGS} -DPRECISION=1 $*.c -o $*.1o
+.c.2o:
+	${CC} -c ${CFLAGS} -DPRECISION=2 $*.c -o $*.2o
 
 # List of headers currently used by some or all library routines
 # or by inheritance from their header files
@@ -18,63 +22,101 @@ HEADERS = \
   ../include/precision.h \
   ../include/su3.h
 
-# To force a full remake when switching or updating Makefiles and precision
-LASTMAKE = .lastmake.${PRECISION}.${MAKEFILE}
+# To force a full remake when switching or updating Makefiles
+LASTMAKE = .lastmake.${MAKEFILE}
 
-ALL_MAKES = ${MAKEFILE} Make_template ../include
+ALLMAKES = ${MAKEFILE} Make_template
 
 ${LASTMAKE}: ${ALL_MAKES}
 	-/bin/rm -f .lastmake.*
 	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 
-COMPLEXOBJS = cadd.o cdiv.o ce_itheta.o cexp.o clog.o cmplx.o cmul.o \
-	conjg.o csqrt.o csub.o dcadd.o dcdiv.o dce_itheta.o \
-	dcexp.o dclog.o dcmplx.o dcmul.o dconjg.o dcsqrt.o dcsub.o 
+COMPLEXOBJS1 = cadd.1o cdiv.1o ce_itheta.1o cexp.1o clog.1o cmplx.1o cmul.1o \
+	conjg.1o csqrt.1o csub.1o dcadd.1o dcdiv.1o dce_itheta.1o \
+	dcexp.1o dclog.1o dcmplx.1o dcmul.1o dconjg.1o dcsqrt.1o dcsub.1o 
 
-${COMPLEXOBJS} : ${HEADERS} ${ALLMAKES} ${LASTMAKE}
+COMPLEXOBJS2 = cadd.2o cdiv.2o ce_itheta.2o cexp.2o clog.2o cmplx.2o cmul.2o \
+	conjg.2o csqrt.2o csub.2o dcadd.2o dcdiv.2o dce_itheta.2o \
+	dcexp.2o dclog.2o dcmplx.2o dcmul.2o dconjg.2o dcsqrt.2o dcsub.2o 
 
-complex.${PRECISION}.a: ${COMPLEXOBJS}
-	${AR} rcs $@ ${COMPLEXOBJS}
+${COMPLEXOBJS1} : ${HEADERS} ${ALLMAKES} ${LASTMAKE}
+${COMPLEXOBJS2} : ${HEADERS} ${ALLMAKES} ${LASTMAKE}
 
-SU3OBJS = addmat.o addvec.o cmp_ahmat.o cs_m_a_vec.o cs_m_a_mat.o cs_m_s_vec.o \
-	cs_m_vec.o det_su3.o clear_mat.o dumpmat.o dumpvec.o clearvec.o \
-	m_amatvec_s.o m_amatvec.o m_amatvec_ns.o m_mat_an.o \
-	m_mat_na.o m_mat_nn.o m_matvec.o m_matvec_ns.o m_matvec_s.o \
-	make_ahmat.o rand_ahmat.o realtr.o complextr.o s_m_a_hwvec_proj.o \
-	s_m_a_mat.o s_m_a_vec.o s_m_s_mat.o s_m_s_vec.o s_m_sum_vec.o \
-	s_m_vec.o s_m_mat.o cs_m_mat.o cs_m_s_mat.o \
-	su3_adjoint.o su3_dot.o su3_rdot.o su3_proj.o su3mat_copy.o \
-	su3vec_copy.o \
-	submat.o subvec.o trace_su3.o uncmp_ahmat.o \
-	msq_su3vec.o sub4vecs.o m_amv_4dir.o m_amv_4vec.o \
-	m_mv_s_4dir.o flush_to_zero.o \
-	l_su2_hit_n.o r_su2_hit_a.o dumpsu2.o \
-	m_su2_mat_vec_n.o m_su2_mat_vec_a.o \
-	gaussrand.o byterevn.o prefetch.o
+complex.1.a: ${COMPLEXOBJS1}
+	${AR} rcs $@ ${COMPLEXOBJS1}
 
-WILSON_OBJS = wp_shrink.o wp_grow.o wp_grow_a.o dump_wvec.o clear_wvec.o \
-	su3_proj_w.o copy_wvec.o add_wvec.o sub_wvec.o s_m_wvec.o \
-	s_m_hwvec.o msq_wvec.o wvec_dot.o wvec2_dot.o wvec_rdot.o \
-	s_m_a_wvec.o s_m_atm_wvec.o mb_gamma.o mb_gamma_l.o mb_gamma_r.o \
-	mswvb_gamma_l.o mswvb_gamma_r.o \
-	cs_m_wvec.o cs_m_a_wvec.o cs_m_a_wvec2.o \
-	m_mat_wvec.o m_mat_hwvec.o m_amat_wvec.o m_amat_hwvec.o \
-	grow4wvecs.o wp_shrink4.o
+complex.2.a: ${COMPLEXOBJS2}
+	${AR} rcs $@ ${COMPLEXOBJS2}
 
-${SU3OBJS} ${WILSON_OBJS} : ${HEADERS} ${MAKEFILE} ${LASTMAKE}
+SU3OBJS1 = addmat.1o addvec.1o cmp_ahmat.1o cs_m_a_vec.1o cs_m_a_mat.1o \
+	cs_m_s_vec.1o cs_m_vec.1o det_su3.1o clear_mat.1o dumpmat.1o \
+	dumpvec.1o clearvec.1o m_amatvec_s.1o m_amatvec.1o m_amatvec_ns.1o \
+	m_mat_an.1o m_mat_na.1o m_mat_nn.1o m_matvec.1o m_matvec_ns.1o \
+	m_matvec_s.1o make_ahmat.1o rand_ahmat.1o realtr.1o complextr.1o \
+	s_m_a_hwvec_proj.1o s_m_a_mat.1o s_m_a_vec.1o s_m_s_mat.1o \
+	s_m_s_vec.1o s_m_sum_vec.1o s_m_vec.1o s_m_mat.1o cs_m_mat.1o \
+	cs_m_s_mat.1o su3_adjoint.1o su3_dot.1o su3_rdot.1o su3_proj.1o \
+	su3mat_copy.1o submat.1o subvec.1o trace_su3.1o uncmp_ahmat.1o \
+	msq_su3vec.1o sub4vecs.1o m_amv_4dir.1o m_amv_4vec.1o \
+	m_mv_s_4dir.1o flush_to_zero.1o \
+	l_su2_hit_n.1o r_su2_hit_a.1o dumpsu2.1o \
+	m_su2_mat_vec_n.1o m_su2_mat_vec_a.1o \
+	gaussrand.1o byterevn.1o prefetch.1o
+
+SU3OBJS2 = addmat.2o addvec.2o cmp_ahmat.2o cs_m_a_vec.2o cs_m_a_mat.2o \
+	cs_m_s_vec.2o cs_m_vec.2o det_su3.2o clear_mat.2o dumpmat.2o \
+	dumpvec.2o clearvec.2o m_amatvec_s.2o m_amatvec.2o m_amatvec_ns.2o \
+	m_mat_an.2o m_mat_na.2o m_mat_nn.2o m_matvec.2o m_matvec_ns.2o \
+	m_matvec_s.2o make_ahmat.2o rand_ahmat.2o realtr.2o complextr.2o \
+	s_m_a_hwvec_proj.2o s_m_a_mat.2o s_m_a_vec.2o s_m_s_mat.2o \
+	s_m_s_vec.2o s_m_sum_vec.2o s_m_vec.2o s_m_mat.2o cs_m_mat.2o \
+	cs_m_s_mat.2o su3_adjoint.2o su3_dot.2o su3_rdot.2o su3_proj.2o \
+	su3mat_copy.2o submat.2o subvec.2o trace_su3.2o uncmp_ahmat.2o \
+	msq_su3vec.2o sub4vecs.2o m_amv_4dir.2o m_amv_4vec.2o \
+	m_mv_s_4dir.2o flush_to_zero.2o \
+	l_su2_hit_n.2o r_su2_hit_a.2o dumpsu2.2o \
+	m_su2_mat_vec_n.2o m_su2_mat_vec_a.2o \
+	gaussrand.2o byterevn.2o prefetch.2o
+
+WILSON_OBJS1 = wp_shrink.1o wp_grow.1o wp_grow_a.1o dump_wvec.1o \
+	clear_wvec.1o su3_proj_w.1o copy_wvec.1o add_wvec.1o sub_wvec.1o \
+	s_m_wvec.1o s_m_hwvec.1o msq_wvec.1o wvec_dot.1o wvec2_dot.1o \
+	wvec_rdot.1o s_m_a_wvec.1o s_m_atm_wvec.1o mb_gamma.1o mb_gamma_l.1o \
+	mb_gamma_r.1o mswvb_gamma_l.1o mswvb_gamma_r.1o \
+	cs_m_wvec.1o cs_m_a_wvec.1o cs_m_a_wvec2.1o \
+	m_mat_wvec.1o m_mat_hwvec.1o m_amat_wvec.1o m_amat_hwvec.1o \
+	grow4wvecs.1o wp_shrink4.1o
+
+WILSON_OBJS2 = wp_shrink.2o wp_grow.2o wp_grow_a.2o dump_wvec.2o \
+	clear_wvec.2o su3_proj_w.2o copy_wvec.2o add_wvec.2o sub_wvec.2o \
+	s_m_wvec.2o s_m_hwvec.2o msq_wvec.2o wvec_dot.2o wvec2_dot.2o \
+	wvec_rdot.2o s_m_a_wvec.2o s_m_atm_wvec.2o mb_gamma.2o mb_gamma_l.2o \
+	mb_gamma_r.2o mswvb_gamma_l.2o mswvb_gamma_r.2o \
+	cs_m_wvec.2o cs_m_a_wvec.2o cs_m_a_wvec2.2o \
+	m_mat_wvec.2o m_mat_hwvec.2o m_amat_wvec.2o m_amat_hwvec.2o \
+	grow4wvecs.2o wp_shrink4.2o
+
+${SU3OBJS1} ${WILSON_OBJS1} : ${HEADERS} ${ALLMAKES} ${LASTMAKE}
+${SU3OBJS2} ${WILSON_OBJS2} : ${HEADERS} ${ALLMAKES} ${LASTMAKE}
 
 # Special header dependencies
 byterevn.o : ../include/int32type.h
-gaussrand.o : ../include/random.h
+gaussrand.1o : ../include/random.h
+gaussrand.2o : ../include/random.h
 
-su3.${PRECISION}.a::	 ${SU3OBJS}
-	${AR} rcs $@ ${SU3OBJS}
-su3.${PRECISION}.a::	 ${WILSON_OBJS}
-	${AR} rcs $@ ${WILSON_OBJS}
+su3.1.a::	 ${SU3OBJS1}
+	${AR} rcs $@ ${SU3OBJS1}
+su3.1.a::	 ${WILSON_OBJS1}
+	${AR} rcs $@ ${WILSON_OBJS1}
+
+su3.2.a::	 ${SU3OBJS2}
+	${AR} rcs $@ ${SU3OBJS2}
+su3.2.a::	 ${WILSON_OBJS2}
+	${AR} rcs $@ ${WILSON_OBJS2}
 
 
-LIBRARIES = complex.${PRECISION}.a su3.${PRECISION}.a
+LIBRARIES = complex.1.a su3.1.a complex.2.a su3.2.a
 
 all: checkcc ${LIBRARIES} 
 

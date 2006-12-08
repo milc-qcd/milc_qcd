@@ -22,7 +22,7 @@ MAKEFILE = Make_SSE_nasm
 CARCH=
 CARCH= -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586
 
-CODETYPE         = -DFAST  -DPRECISION=${PRECISION} # usually unchanged
+CODETYPE         = -DFAST  # usually unchanged
 
 CFLAGS = -O ${CARCH} -Wall ${CODETYPE}
 
@@ -32,48 +32,69 @@ CC = gcc
 ASM = nasm
 ASMFLAGS = -f elf
 
-ifeq (${PRECISION},1)
-   NASM_SOURCE = ../sse/nas
-else
-   NASM_SOURCE = ../sse2/nas
-endif
+NASM_SOURCE1 = ../sse/nas
+NASM_SOURCE2 = ../sse2/nas
 
 # The list below should conform to the routines in the libraries
 
-# The first set is available only in double precision
+# The first set is available only in single precision
 
-ifeq (${PRECISION},1)
-addvec.o: ${NASM_SOURCE}/sse_addvec.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_addvec.s
-sub4vecs.o: ${NASM_SOURCE}/sse_sub4vecs.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_sub4vecs.s
-s_m_a_vec.o: ${NASM_SOURCE}/sse_s_m_a_vec.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_s_m_a_vec.s
-s_m_a_mat.o: ${NASM_SOURCE}/sse_s_m_a_mat.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_s_m_a_mat.s
-endif
+addvec.1o: ${NASM_SOURCE}/sse_addvec.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_addvec.s
+sub4vecs.1o: ${NASM_SOURCE}/sse_sub4vecs.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_sub4vecs.s
+s_m_a_vec.1o: ${NASM_SOURCE}/sse_s_m_a_vec.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_s_m_a_vec.s
+s_m_a_mat.1o: ${NASM_SOURCE}/sse_s_m_a_mat.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_s_m_a_mat.s
 
-m_amat_hwvec.o: ${NASM_SOURCE}/sse_m_amat_hwvec.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_amat_hwvec.s
-m_amatvec.o: ${NASM_SOURCE}/sse_m_amatvec.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_amatvec.s
-m_amv_4dir.o: ${NASM_SOURCE}/sse_m_amv_4dir.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_amv_4dir.s
-m_amv_4vec.o: ${NASM_SOURCE}/sse_m_amv_4vec.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_amv_4vec.s
-m_mat_an.o: ${NASM_SOURCE}/sse_m_mat_an.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mat_an.s
-m_mat_hwvec.o: ${NASM_SOURCE}/sse_m_mat_hwvec.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mat_hwvec.s
-m_mat_na.o: ${NASM_SOURCE}/sse_m_mat_na.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mat_na.s
-m_mat_nn.o: ${NASM_SOURCE}/sse_m_mat_nn.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mat_nn.s
-m_matvec.o: ${NASM_SOURCE}/sse_m_matvec.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_matvec.s
-m_mv_s_4dir.o: ${NASM_SOURCE}/sse_m_mv_s_4dir.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_m_mv_s_4dir.s
-su3_proj.o: ${NASM_SOURCE}/sse_su3_proj.s
-	${ASM} ${ASMFLAGS} -o $*.o ${NASM_SOURCE}/sse_su3_proj.s
+# The second set is available in both precisions
+
+m_amat_hwvec.1o: ${NASM_SOURCE}/sse_m_amat_hwvec.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_amat_hwvec.s
+m_amatvec.1o: ${NASM_SOURCE}/sse_m_amatvec.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_amatvec.s
+m_amv_4dir.1o: ${NASM_SOURCE}/sse_m_amv_4dir.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_amv_4dir.s
+m_amv_4vec.1o: ${NASM_SOURCE}/sse_m_amv_4vec.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_amv_4vec.s
+m_mat_an.1o: ${NASM_SOURCE}/sse_m_mat_an.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_mat_an.s
+m_mat_hwvec.1o: ${NASM_SOURCE}/sse_m_mat_hwvec.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_mat_hwvec.s
+m_mat_na.1o: ${NASM_SOURCE}/sse_m_mat_na.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_mat_na.s
+m_mat_nn.1o: ${NASM_SOURCE}/sse_m_mat_nn.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_mat_nn.s
+m_matvec.1o: ${NASM_SOURCE}/sse_m_matvec.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_matvec.s
+m_mv_s_4dir.1o: ${NASM_SOURCE}/sse_m_mv_s_4dir.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_m_mv_s_4dir.s
+su3_proj.1o: ${NASM_SOURCE}/sse_su3_proj.s
+	${ASM} ${ASMFLAGS} -o $*.1o ${NASM_SOURCE}/sse_su3_proj.s
+
+
+m_amat_hwvec.2o: ${NASM_SOURCE}/sse_m_amat_hwvec.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_amat_hwvec.s
+m_amatvec.2o: ${NASM_SOURCE}/sse_m_amatvec.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_amatvec.s
+m_amv_4dir.2o: ${NASM_SOURCE}/sse_m_amv_4dir.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_amv_4dir.s
+m_amv_4vec.2o: ${NASM_SOURCE}/sse_m_amv_4vec.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_amv_4vec.s
+m_mat_an.2o: ${NASM_SOURCE}/sse_m_mat_an.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_mat_an.s
+m_mat_hwvec.2o: ${NASM_SOURCE}/sse_m_mat_hwvec.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_mat_hwvec.s
+m_mat_na.2o: ${NASM_SOURCE}/sse_m_mat_na.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_mat_na.s
+m_mat_nn.2o: ${NASM_SOURCE}/sse_m_mat_nn.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_mat_nn.s
+m_matvec.2o: ${NASM_SOURCE}/sse_m_matvec.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_matvec.s
+m_mv_s_4dir.2o: ${NASM_SOURCE}/sse_m_mv_s_4dir.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_m_mv_s_4dir.s
+su3_proj.2o: ${NASM_SOURCE}/sse_su3_proj.s
+	${ASM} ${ASMFLAGS} -o $*.2o ${NASM_SOURCE}/sse_su3_proj.s
 
 include Make_template

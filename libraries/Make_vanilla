@@ -74,7 +74,7 @@ OPT              = -O3    # ( -g -O, etc )
 
 #----------------------------------------------------------------------
 # 4. Code alternatives 
-CODETYPE         = -DFAST  -DPRECISION=${PRECISION} # usually unchanged
+CODETYPE         = -DFAST  # usually unchanged
 
 #----------------------------------------------------------------------
 # 5. Choose archiver to match compiler for the QCDOC

@@ -16,39 +16,39 @@ CC = cc
 
 #install .t3e (assembler code) in the suffixes list
 .SUFFIXES:
-.SUFFIXES: .o .t3e .c .y .l .s
+.SUFFIXES: .1o .t3e .c .y .l .s
 
 # compile t3e assembly language routines
-.t3e.o:
-	cam -C cray-t3e -P -o $*.o $*.t3e 
+.t3e.1o:
+	cam -C cray-t3e -P -o $*.1o $*.t3e 
 
 #Assembler routines
-m_mat_nn.o: m_mat_nn.t3e
-m_mat_an.o: m_mat_an.t3e
-m_mat_na.o: m_mat_na.t3e
-addmat.o: addmat.t3e
-s_m_a_mat.o: s_m_a_mat.t3e
+m_mat_nn.1o: m_mat_nn.t3e
+m_mat_an.1o: m_mat_an.t3e
+m_mat_na.1o: m_mat_na.t3e
+addmat.1o: addmat.t3e
+s_m_a_mat.1o: s_m_a_mat.t3e
 
-m_amv_4dir.o: m_amv_4dir.t3e
-m_amv_4dir_2.o: m_amv_4dir_2.t3e
-m_mv_s_4dir.o: m_mv_s_4dir.t3e
-s_m_a_vec.o: s_m_a_vec.t3e
-su3_rdot.o: su3_rdot.t3e
-msq_su3vec.o: msq_su3vec.t3e
-sub4vecs.o: sub4vecs.t3e
+m_amv_4dir.1o: m_amv_4dir.t3e
+m_amv_4dir_2.1o: m_amv_4dir_2.t3e
+m_mv_s_4dir.1o: m_mv_s_4dir.t3e
+s_m_a_vec.1o: s_m_a_vec.t3e
+su3_rdot.1o: su3_rdot.t3e
+msq_su3vec.1o: msq_su3vec.t3e
+sub4vecs.1o: sub4vecs.t3e
 
-cs_m_a_wvec.o: cs_m_a_wvec.t3e
-m_amat_hwvec.o: m_amat_hwvec.t3e
-m_mat_hwvec.o: m_mat_hwvec.t3e
-grow4wvecs.o: grow4wvecs.t3e
-wp_grow.o: wp_grow.t3e
-wp_grow_a.o: wp_grow_a.t3e
-wp_shrink.o: wp_shrink.t3e
-wp_shrink4.o: wp_shrink4.t3e
+cs_m_a_wvec.1o: cs_m_a_wvec.t3e
+m_amat_hwvec.1o: m_amat_hwvec.t3e
+m_mat_hwvec.1o: m_mat_hwvec.t3e
+grow4wvecs.1o: grow4wvecs.t3e
+wp_grow.1o: wp_grow.t3e
+wp_grow_a.1o: wp_grow_a.t3e
+wp_shrink.1o: wp_shrink.t3e
+wp_shrink4.1o: wp_shrink4.t3e
 
 # Prefetch
-prefetch.o:prefetch32.t3e
-	cam -C cray-t3e -P -o prefetch.o prefetch32.t3e
+prefetch.1o:prefetch32.t3e
+	cam -C cray-t3e -P -o prefetch.1o prefetch32.t3e
 
 include Make_template
 
