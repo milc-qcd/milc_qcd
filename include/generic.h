@@ -18,12 +18,14 @@
 #include <stdio.h>
 #include "../include/int32type.h"
 #include "../include/complex.h"
+#include "../include/su3.h"
 #include "../include/macros.h"
 #include "../include/random.h"
 #include "../include/file_types.h"
 #include "../include/io_lat.h"
 
 /* ape_smear.c */
+
 void ape_smear_field(
   su3_matrix *src,       /* Gauge field input unsmeared */
   su3_matrix *dest,      /* Gauge field output smeared */
@@ -84,47 +86,6 @@ void ape_smear(
 			     as a prescribed number of hits. */ 
   );
 
-void ape_smear_dir(
-  field_offset src,       /* field offset for su3_matrix[4] type 
-			     input unsmeared links */
-  int dir1,               /* link direction to smear */
-  field_offset dest,      /* field offset for su3_matrix type 
-			     pointing to a specific direction 
-			     output smeared links */
-  Real staple_weight,    /* single staple weight */
-  Real link_u0,          /* single link weight - used in normalization
-                             if SU(3) projection is turned off */
-  int space_only,         /* = 1 (true) smear space-like links with
- 			          only spacelike staples 
-			     = 0 (false) smear all links with
-			     all staples */
-  int nhits,              /* reproject onto SU(3): number of 
-			     SU(2) hits. 0 for no reprojection */
-  Real tol               /* tolerance for SU(3) projection.
-			     If nonzero, treat nhits as a maximum
-			     number of hits.  If zero, treat nhits
-			     as a prescribed number of hits. */ 
-  );
-
-void ape_smear(
-  field_offset src,       /* field offset for su3_matrix type 
-			     input unsmeared links */
-  field_offset dest,      /* field offset for su3_matrix type 
-			     output smeared links */
-  Real staple_weight,    /* single staple weight */
-  Real link_u0,          /* single link weight - used in normalization
-                             if SU(3) projection is turned off */
-  int space_only,         /* = 1 (true) smear space-like links with
- 			          only spacelike staples 
-			     = 0 (false) smear all links with
-			     all staples */
-  int nhits,              /* reproject onto SU(3): number of 
-			     SU(2) hits. 0 for no reprojection */
-  Real tol               /* tolerance for SU(3) projection.
-			     If nonzero, treat nhits as a maximum
-			     number of hits.  If zero, treat nhits
-			     as a prescribed number of hits. */ 
-  );
 
 /* ax_gauge.c */
 void ax_gauge();
@@ -273,70 +234,12 @@ void restrict_fourier(
 void reunitarize( void );
 int reunit_su3(su3_matrix *c);
 
+/* show_generic_opts.c */
+void show_generic_opts( void );
+
 #ifdef QCDOC
 void *qcdoc_alloc(size_t nbytes);
 void qfree(void *);
-#endif
-
-/* map_milc_to_qop.c */
-#ifdef HAVE_QOP
-#include <qop.h>
-QOP_evenodd_t milc2qop_parity(int milc_parity);
-int qop2milc_parity(QOP_evenodd_t qop_parity);
-QOP_status_t initialize_qop();
-su3_matrix **create_raw_G(void);
-su3_matrix **create_raw_G_from_site_links(int milc_parity);
-su3_matrix **create_raw_G_from_field_links(su3_matrix *t_links,
-					   int milc_parity);
-void unload_raw_G_to_field(su3_matrix *rawfield, 
-			   su3_matrix *rawlinks[], int milc_parity);
-void destroy_raw_G(su3_matrix *rawlinks[]);
-su3_matrix **create_raw_F(void);
-su3_matrix **create_raw_F_from_site_mom(int milc_parity);
-void unload_raw_F_to_site_mom(su3_matrix *rawforce[],int milc_parity);
-void destroy_raw_F(su3_matrix *rawforce[]);
-su3_vector *create_raw_V(void);
-su3_vector *create_raw_V_from_site(field_offset x, int milc_parity);
-su3_vector *create_raw_V_from_field(su3_vector *x, int milc_parity);
-void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
-			  int milc_parity);
-void destroy_raw_V(su3_vector *rawsu3vec);
-void unload_raw_V_to_site(field_offset vec, su3_vector *rawsu3vec,
-			  int milc_parity);
-void unload_raw_V_to_field(su3_vector *vec, su3_vector *rawsu3vec,
-			   int milc_parity);
-void load_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
-			     su3_matrix ***rawlinks, su3_matrix ***rawmom);
-void unload_links_and_mom_site(QOP_GaugeField **links, QOP_Force **mom,
-			       su3_matrix ***rawlinks, su3_matrix ***rawmom);
-
-#endif
-
-#ifdef HAVE_QDP
-#include <qdp.h>
-
-void set_V_from_site(QDP_ColorVector *dest, field_offset src);
-void set_H_from_site(QDP_HalfFermion *dest, field_offset src);
-void set_D_from_site(QDP_DiracFermion *dest, field_offset src);
-void set_M_from_site(QDP_ColorMatrix *dest, field_offset src);
-void set4_M_from_site(QDP_ColorMatrix *dest[], field_offset src);
-
-void set_site_from_V(field_offset dest, QDP_ColorVector *src);
-void set_site_from_H(field_offset dest, QDP_HalfFermion *src);
-void set_site_from_D(field_offset dest, QDP_DiracFermion *src);
-void set_site_from_M(field_offset dest, QDP_ColorMatrix *src);
-
-void set_V_from_field(QDP_ColorVector *dest, su3_vector *src);
-void set_H_from_field(QDP_HalfFermion *dest, half_wilson_vector *src);
-void set_M_from_field(QDP_ColorMatrix *dest, su3_matrix *src);
-
-void set_field_from_V(su3_vector *dest, QDP_ColorVector *src);
-void set_field_from_M(su3_matrix *dest, QDP_ColorMatrix *src);
-
-void set4_field_from_M(su3_matrix *dest, QDP_ColorMatrix *src[]);
-
-void set4_V_from_field(QDP_ColorVector *dest[], su3_vector *src);
-void set4_M_from_field(QDP_ColorMatrix *dest[], su3_matrix *src);
 #endif
 
 #endif	/* _GENERIC_H */

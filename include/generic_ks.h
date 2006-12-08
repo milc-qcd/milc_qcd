@@ -12,12 +12,6 @@
 #include "../include/su3.h"
 #include "../include/generic_quark_types.h"
 #include "../include/comdefs.h"
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
-#ifdef HAVE_QOP
-#include <qop.h>
-#endif
 
 /* Structure specifying each rotation and reflection of each kind of
 	path.  */
@@ -29,16 +23,6 @@ typedef struct {
   Real forwback;	/* +1 if in forward Dslash, -1 if in backward */
 } Q_path;
 
-#ifdef HAVE_QDP
-typedef struct {
-  QLA_Real one_link     ; 
-  QLA_Real naik         ;
-  QLA_Real three_staple ;
-  QLA_Real five_staple  ;
-  QLA_Real seven_staple ;
-  QLA_Real lepage       ;
-} asqtad_path_coeff;
-#endif
 
 int congrad( int niter, int nrestart, Real rsqmin, int parity, Real *rsq );
 void copy_latvec(field_offset src, field_offset dest, int parity);
@@ -53,19 +37,9 @@ void rephase( int flag );
 void prefetch_vector( su3_vector * );
 void prefetch_matrix( su3_matrix * );
 
-int ks_congrad_qop(int niter, int nrestart, Real rsqmin, 
-		   Real *masses[], int nmass[], 
-		   field_offset milc_srcs[], field_offset *milc_sols[],
-		   int nsrc, Real* final_rsq_ptr, int milc_parity );
-
-int ks_congrad_qop_site2field(int niter, int nrestart, Real rsqmin, 
-			      Real *masses[], int nmass[], 
-			      field_offset milc_srcs[], 
-			      su3_vector **milc_sols[],
-			      int nsrc, Real* final_rsq_ptr, int milc_parity );
-
 int ks_congrad( field_offset src, field_offset dest, Real mass,
-		int niter, int nrestart, Real rsqmin, int parity, Real *rsq );
+		int niter, int nrestart, Real rsqmin, int prec, 
+		int parity, Real *rsq );
 
 int ks_congrad_two_src(	/* Return value is number of iterations taken */
     field_offset src1,    /* source vector (type su3_vector) */
@@ -77,6 +51,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     int niter,		/* maximal number of CG interations */
     int nrestart,       /* maximum number of restarts */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* internal precision for the inversion */
     int parity,		/* parity to be worked on */
     Real  *final_rsq_ptr 	/* final residue squared */
     );
@@ -123,13 +98,8 @@ int ks_invert( /* Return value is number of iterations taken */
     );
 
 /* in ks_multicg.c */
-#define OFFSET  0
-#define HYBRID  1
-#define FAKE    2
-#define REVERSE 3
-#define REVHYB  4
-
-int ks_multicg_set_opt(char opt_string[]);
+enum ks_multicg_opt_t {OFFSET, HYBRID, FAKE, REVERSE, REVHYB};
+const char *ks_multicg_opt_chr( void );
 
 int ks_multicg(	        /* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
@@ -138,6 +108,19 @@ int ks_multicg(	        /* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr	/* final residue squared */
+    );
+
+int ks_multicg_p(       /* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *offsets,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     );
@@ -149,6 +132,7 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     );
@@ -160,6 +144,7 @@ int ks_multicg_mass(	/* Return value is number of iterations taken */
     int num_masses,	/* number of masses */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     );
@@ -171,6 +156,7 @@ int ks_multicg_hybrid(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     );
@@ -182,6 +168,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     int num_masses,	/* number of masses */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     );
@@ -193,6 +180,7 @@ int ks_multicg_fake(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     );
@@ -204,31 +192,10 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     );
-
-/* d_congrad5_fn_qop.c */
-#ifdef HAVE_QOP
-QOP_FermionLinksAsqtad *create_qop_asqtad_fermion_links( void );
-#endif
-void initialize_congrad( void );
-void finalize_congrad( void );
-int ks_congrad_qop_site2site(int niter, int nrestart, Real rsqmin, 
-			     Real *masses[], int nmass[], 
-			     field_offset milc_srcs[], 
-			     field_offset *milc_sols[],
-			     int nsrc, Real* final_rsq_ptr, int milc_parity );
-
-/* dslash_fn_qop_milc.c */
-void cleanup_gathers_qop_milc(msg_tag *tags1[], msg_tag *tags2[]);
-void cleanup_dslash_qop_milc_temps();
-void dslash_fn_qop_milc( su3_matrix *fatlinks, su3_matrix *longlinks,
-			 su3_vector *src, su3_vector *dest, int parity );
-void dslash_fn_qop_milc_field_special(su3_matrix *fatlinks, 
-				      su3_matrix *longlinks,
-				      su3_vector *src, su3_vector *dest,
-				      int parity, msg_tag **tag, int start );
 
 
 /* d_congrad_opt.c */
@@ -272,6 +239,10 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
 /* fermion_force_fn_multi.c */
 
+enum ks_multiff_opt_t {ASVEC, FNMAT, FNMATREV};
+  
+const char *ks_multiff_opt_chr( void );
+
 int eo_fermion_force_set_opt(char opt_string[]);
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
 			     int nterms );
@@ -284,6 +255,7 @@ void fn_fermion_force_multi_june05( Real eps, Real *residues, su3_vector **multi
 /* fermion_links_fn.c */
 void load_fn_links();
 void load_fn_links_dmdu0();
+void invalidate_fn_links();
 
 /* fermion_links_helpers.c */
 void load_longbacklinks(su3_matrix **t_lbl, su3_matrix *t_ll);
@@ -307,7 +279,7 @@ void mult_su3_fieldlink_lathwvec( su3_matrix *link,
 				  half_wilson_vector **src_pt, 
 				  half_wilson_vector *dest);
 #ifndef VECLENGTH
-#define VECLENGTH 1
+#define VECLENGTH 4
 #endif
 
 typedef struct { su3_vector v[VECLENGTH]; } veclist;
@@ -398,6 +370,9 @@ Q_path *get_q_paths_dmdu0();
 Real *get_quark_path_coeff();
 Real *get_quark_path_coeff_dmdu0();
 
+/* show_generic_ks_opts.c */
+void show_generic_ks_opts( void );
+
 /* spectrum.c */
 int spectrum();
 
@@ -427,31 +402,5 @@ void mult_rhos( int fdir,  field_offset src, field_offset dest ) ;
 /* spectrum_singlets */
 int spectrum_singlets( Real mass, Real tol, field_offset temp_offset );
 
-#ifdef HAVE_QDP
-
-void dslash_qdp_fn(QDP_ColorVector *src, QDP_ColorVector *dest,
-		   QDP_Subset parity);
-void dslash_qdp_fn_special(QDP_ColorVector *src, QDP_ColorVector *dest,
-			   QDP_Subset parity, QDP_ColorVector *temp[]);
-void dslash_qdp_fn_special2(QDP_ColorVector *src, QDP_ColorVector *dest,
-			    QDP_Subset parity, QDP_ColorVector *temp[]);
-void 
-fn_fermion_force_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[], 
-		      asqtad_path_coeff *coeffs, QDP_ColorVector *in_pt[], 
-		      Real eps[], int nsrc );
-int ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
-		   int niter, int nrestart, QLA_Real rsqmin, QDP_Subset parity,
-		   QLA_Real *final_rsq_ptr);
-int ks_multicg_qdp(QDP_ColorVector *src, QDP_ColorVector **dest,
-		   QLA_Real *masses, int num_masses, int niter,
-		   QLA_Real rsqmin, QDP_Subset parity,
-		   QLA_Real *final_rsq_ptr);
-
-#endif /* HAVE_QDP */
-
-#ifdef HAVE_QOP
-void load_qop_asqtad_coeffs(QOP_asqtad_coeffs_t *c, Real weight,
-			    Real *act_path_coeff);
-#endif
 
 #endif /* _GENERIC_KS_H */
