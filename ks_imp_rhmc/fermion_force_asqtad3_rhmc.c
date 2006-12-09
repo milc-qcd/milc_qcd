@@ -9,7 +9,7 @@
 
 void eo_fermion_force_rhmc( int alg_flag, Real eps, params_ratfunc *rf, 
 			    su3_vector **multi_x, field_offset phi_off,
-			    Real my_rsqmin, int my_niter ){
+			    Real my_rsqmin, int my_niter, int my_prec ){
     // alg_flag passes info for integration algorithms that work differently
     // at different time steps
 
@@ -34,7 +34,7 @@ void eo_fermion_force_rhmc( int alg_flag, Real eps, params_ratfunc *rf,
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
     ks_ratinv( phi_off, multi_x, roots, order, my_niter,
-	       my_rsqmin, EVEN, &final_rsq );
+	       my_rsqmin, my_prec, EVEN, &final_rsq );
 
     for(j=0;j<stoporder;j++){ dslash_field( multi_x[j], multi_x[j],  ODD ); }
 

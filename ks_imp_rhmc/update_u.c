@@ -63,8 +63,7 @@ gf_av=gf_max=0.0;
 	}
     }
 #ifdef FN
-    valid_fn_links = 0;
-    valid_fn_links_dmdu0 = 0;
+  invalidate_fn_links();
 #endif
 /**dtime += dclock();
 node0_printf("LINK_UPDATE: time = %e  mflops = %e\n",

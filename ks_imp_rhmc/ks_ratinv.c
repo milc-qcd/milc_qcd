@@ -39,6 +39,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     int order,		/* order of rational function approx */
     int my_niter,	/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precicion */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
@@ -47,7 +48,8 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     // in rational function expansion is just the constant term
     // It's "order" instead of "order-1" because order is order of expansion, arrays
     // have order+1 elements 
-    return (ks_multicg( src, psim, roots+1, order, my_niter, rsqmin, parity, final_rsq_ptr ) );
+  return (ks_multicg( src, psim, roots+1, order, my_niter, rsqmin, 
+		      prec, parity, final_rsq_ptr ) );
 }
 
 /* evaluate the rational function approximation after all the

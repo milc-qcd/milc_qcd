@@ -69,11 +69,6 @@ setup()
   phaseset();
 
 #ifdef HAVE_QDP
-  for(i=0; i<8; i++) {
-    implinks[i] = QDP_create_M();
-  }
-  fatlinks = implinks;
-  longlinks = implinks + 4;
   for(i=0; i<4; ++i) {
     shiftdirs[i] = QDP_neighbor[i];
     shiftdirs[i+4] = neighbor3[i];
@@ -239,9 +234,10 @@ readin(int prompt)
     rephase( OFF );
   }
   startlat_p = reload_lattice( startflag, startfile );
+#ifdef FN
+  invalidate_fn_links();
+#endif
   /* if a lattice was read in, put in KS phases and AP boundary condition */
-  valid_fn_links = 0;
-  valid_fn_links_dmdu0 = 0;
   phases_in = OFF;
   rephase( ON );
 

@@ -117,9 +117,10 @@ ifeq ($(strip ${QCDOC}),true)
 endif
 
 ifeq ($(strip ${HAVEQDP}),true)
-  QDP_OBJECTS = stuff_qdp.o
-  INV_FN_OBJECTS = d_congrad5_fn_qdp.o ${DSLASH_FN} dslash_fn_qdp.o 
-  MULTI_INV_FN = ks_multicg_qdp.o
+  QDP_OBJECTS = map_milc_to_qdp.o
+  INV_FN_OBJECTS = d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o \
+ ${DSLASH_FN} dslash_fn_qdp_D.o dslash_fn_qdp_F.o 
+  MULTI_INV_FN = ks_multicg_offset_qdp_D.o ks_multicg_offset_qdp_F.o
 # Choose (fermion_force_asqtad_qdp.o )
   ASQFORCE = fermion_force_asqtad_qdp.o
 else

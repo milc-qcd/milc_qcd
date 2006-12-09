@@ -130,7 +130,8 @@ int update()  {
   // NOTE used to clear xxx here.  May want to clear all solutions for reversibility
   for(iphi = 0; iphi < n_pseudo; iphi++){
     grsource_imp_rhmc( F_OFFSET(phi[iphi]), &(rparam[iphi].GR), EVEN,
-		       multi_x,sumvec, rsqmin_gr[iphi], niter_gr[iphi]);
+		       multi_x,sumvec, rsqmin_gr[iphi], niter_gr[iphi],
+		       prec_gr[iphi]);
   }
 
   /* find action */
@@ -208,16 +209,19 @@ int update()  {
      	    update_u(0.5*epsilon*lambda);
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( alg_flag, epsilon,  &rparam[1].MD,
-                 multi_x, F_OFFSET(phi[1]), rsqmin_md[1], niter_md[1] );
+				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
+				   niter_md[1], prec_md[1] );
      	    update_u(epsilon*( 1.0 + 0.5*(1-lambda) )); // to time = (3/2)*epsilon
             eo_fermion_force_rhmc( alg_flag, 3.0*epsilon,  &rparam[0].MD,
-                 multi_x, F_OFFSET(phi[0]), rsqmin_md[0], niter_md[0] );
+				   multi_x, F_OFFSET(phi[0]), rsqmin_md[0], 
+				   niter_md[0], prec_md[0] );
 
      	    update_u(epsilon*( 0.5*(1.0-lambda) ));
 
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( alg_flag, epsilon,  &rparam[1].MD,
-                 multi_x, F_OFFSET(phi[1]), rsqmin_md[1], niter_md[1] );
+				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
+				   niter_md[1], prec_md[1] );
 
     	    update_u(0.5*epsilon*lambda);
 
@@ -226,13 +230,15 @@ int update()  {
 
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( alg_flag, epsilon,  &rparam[1].MD,
-                 multi_x, F_OFFSET(phi[1]), rsqmin_md[1], niter_md[1] );
+				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
+				   niter_md[1], prec_md[1] );
 
      	    update_u(epsilon*(2.0-lambda));
 
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( alg_flag, epsilon,  &rparam[1].MD,
-                 multi_x, F_OFFSET(phi[1]), rsqmin_md[1], niter_md[1] );
+				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
+				   niter_md[1], prec_md[1] );
 
     	    update_u(0.5*epsilon*lambda);
 
@@ -241,18 +247,21 @@ int update()  {
 
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( alg_flag, epsilon,  &rparam[1].MD,
-                 multi_x, F_OFFSET(phi[1]), rsqmin_md[1], niter_md[1] );
+				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
+				   niter_md[1], prec_md[1] );
 
      	    update_u(epsilon*(  0.5*(1.0-lambda) )); // to time 2*epsilon + epsilon/2
 
             eo_fermion_force_rhmc( alg_flag, 3.0*epsilon,  &rparam[0].MD,
-                 multi_x, F_OFFSET(phi[0]), rsqmin_md[0], niter_md[0] );
+				   multi_x, F_OFFSET(phi[0]), rsqmin_md[0], 
+				   niter_md[0], prec_md[0] );
 
      	    update_u(epsilon*( 1.0 + 0.5*(1.0-lambda) ));
 
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( alg_flag, epsilon,  &rparam[1].MD,
-                 multi_x, F_OFFSET(phi[1]), rsqmin_md[1], niter_md[1] );
+				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
+				   niter_md[1], prec_md[1] );
 
     	    update_u(0.5*epsilon*lambda);
 
@@ -280,8 +289,7 @@ int update()  {
     if(steps > 0)
       gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-    valid_fn_links = 0;
-    valid_fn_links_dmdu0 = 0;
+    invalidate_fn_links();
 #endif
     node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
   }
@@ -300,3 +308,38 @@ int update()  {
   else return(-99);
 }
 
+/**********************************************************************/
+/*   Accessor for string describing the option                        */
+/**********************************************************************/
+const char *ks_int_alg_opt_chr( void )
+{
+  switch(INT_ALG){
+  case INT_LEAPFROG:
+    return "INT_LEAPFROG";
+    break;
+  case INT_OMELYAN:
+    return "INT_OMELYAN";
+    break;
+  case INT_2G1F:
+    return "INT_2G1F";
+    break;
+  case INT_2EPS_3TO1:
+    return "INT_2EPS_3TO1";
+    break;
+  case INT_4MN4FP:
+    return "INT_4MN4FP";
+    break;
+  case INT_4MN5FV:
+    return "INT_4MN5FV";
+    break;
+  case INT_FOURSTEP:
+    return "INT_FOURSTEP";
+    break;
+  case INT_PLAY:
+    return "INT_PLAY";
+    break;
+  default:
+    return "UNKNOWN";
+  }
+  return NULL;
+}

@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.13  2006/12/09 14:10:57  detar
+//  Add mixed precision capability for QDP and QOP inverters
+//
 //  Revision 1.12  2006/11/16 06:07:50  detar
 //  Moved optimization selections to Makefile
 //  Put rational function parameters in preamble of input file
@@ -73,6 +76,7 @@
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #define IMP_QUARK_ACTION_INFO_ONLY
 #include "quark_action.h"
+#include "lattice_qdp.h"
 
 EXTERN gauge_header start_lat_hdr;
 gauge_file *gf;
@@ -126,7 +130,6 @@ setup()
     terminate(1);
   }
 #endif
-
   node0_printf("Made lattice\n"); fflush(stdout);
   /* set up neighbor pointers and comlink structures
      code for this routine is in com_machine.c  */
@@ -140,11 +143,6 @@ setup()
   phaseset();
   
 #ifdef HAVE_QDP
-  for(i=0; i<8; i++) {
-    implinks[i] = QDP_create_M();
-  }
-  fatlinks = implinks;
-  longlinks = implinks + 4;
   for(i=0; i<4; ++i) {
     shiftdirs[i] = QDP_neighbor[i];
     shiftdirs[i+4] = neighbor3[i];
@@ -153,47 +151,6 @@ setup()
     shiftfwd[i] = QDP_forward;
     shiftbck[i] = QDP_backward;
   }
-#endif
-
-#if (KS_MULTICG == OFFSET)
-  if(ks_multicg_set_opt("OFFSET") != 0)terminate(1);
-#elif (KS_MULTICG == HYBRID)
-  if(ks_multicg_set_opt("HYBRID") != 0)terminate(1);
-#elif (KS_MULTICG == FAKE)
-  if(ks_multicg_set_opt("FAKE") != 0)terminate(1);
-#elif (KS_MULTICG == REVERSE)
-  if(ks_multicg_set_opt("REVERSE") != 0)terminate(1);
-#elif (KS_MULTICG == REVHYB)
-  if(ks_multicg_set_opt("REVHYB") != 0)terminate(1);
-#else
-  if(ks_multicg_set_opt("HYBRID") != 0)terminate(1);  /* Default */
-#endif
-
-  /* Select the multi fermion force routine */
-#define ASVEC 0
-#define FNMATREV  1
-#define FNMAT  2
- /* Optimization choices are currently set by the KS_MULTIFF compiler macro.
-  * We also require the defines above
-  *
-  * 1.  -DKS_MULTIFF=FNMAT      (default)
-  * 2.  -DKS_MULTIFF=FNMATREV
-  * 3.  -DKS_MULTIFF=ASVEC
-  *
-  */
-#if ( KS_MULTIFF == ASVEC )
-#ifdef ASQ_ACTION
-  /* This option works only for the Asqtad action */
-  if(eo_fermion_force_set_opt("ASVEC") != 0)terminate(1);
-#else
-BOMB THE COMPILE
-#endif
-#elif ( KS_MULTIFF ==  FNMATREV )
-  if(eo_fermion_force_set_opt("FNMATREV") != 0)terminate(1);
-#elif ( KS_MULTIFF ==  FNMAT )
-  if(eo_fermion_force_set_opt("FNMAT") != 0)terminate(1);
-#else
-  if(eo_fermion_force_set_opt("FNMAT" ) != 0)terminate(1); /* Default */
 #endif
 
   node0_printf("Finished setup\n"); fflush(stdout);
@@ -215,6 +172,13 @@ initial_set()
     printf("MIMD version 7 $Name:  $\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     printf("Rational function hybrid Monte Carlo algorithm\n");
+    /* Print list of options selected */
+    node0_printf("Options selected...\n");
+    show_generic_opts();
+    show_generic_ks_opts();
+#ifdef INT_ALG
+    node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
+#endif
     status=get_prompt(stdin, &prompt);
     IF_OK status += get_i(stdin, prompt,"nflavors1", &par_buf.nflavors1 );
     IF_OK status += get_i(stdin, prompt,"nflavors2", &par_buf.nflavors2 );
@@ -338,6 +302,14 @@ readin(int prompt)
 	par_buf.niter_fa[i] = itmp[1];
 	par_buf.niter_gr[i] = itmp[2];
       }
+
+      /* Precision for multicg solves */
+      IF_OK status += get_vi(stdin, prompt, "cgprec_md_fa_gr", itmp, 3);
+      IF_OK {
+	par_buf.prec_md[i] = itmp[0];
+	par_buf.prec_fa[i] = itmp[1];
+	par_buf.prec_gr[i] = itmp[2];
+      }
     }
     
     /* error for propagator conjugate gradient */
@@ -426,6 +398,10 @@ readin(int prompt)
     rsqmin_md[i] = par_buf.rsqmin_md[i];
     rsqmin_fa[i] = par_buf.rsqmin_fa[i];
     rsqmin_gr[i] = par_buf.rsqmin_gr[i];
+
+    prec_md[i] = par_buf.prec_md[i];
+    prec_fa[i] = par_buf.prec_fa[i];
+    prec_gr[i] = par_buf.prec_gr[i];
   }
   npbp_reps_in = par_buf.npbp_reps_in;
   rsqprop = par_buf.rsqprop;
@@ -447,8 +423,9 @@ readin(int prompt)
   }
   startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
-  valid_fn_links = 0;
-  valid_fn_links_dmdu0 = 0;
+#ifdef FN
+  invalidate_fn_links();
+#endif
   phases_in = OFF;
   rephase( ON );
   

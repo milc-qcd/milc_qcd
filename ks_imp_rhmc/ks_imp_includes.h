@@ -19,9 +19,6 @@
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
 #include "../include/dirs.h"
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 
 #ifdef FN
 #define dslash_site dslash_fn_site
@@ -43,6 +40,7 @@ int readin(int prompt);
 enum int_alg_t { INT_LEAPFROG, INT_OMELYAN, INT_2EPS_3TO1, INT_2EPS_2TO1, 
 		 INT_2G1F, INT_4MN4FP, INT_4MN5FV, INT_FOURSTEP, INT_PLAY };
 int update();
+const char *ks_int_alg_opt_chr( void );
 
 /* update_h_rhmc.c */
 
@@ -55,13 +53,13 @@ void update_u( Real eps );
 
 void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
 			int parity, su3_vector **multi_x, su3_vector *sumvec,
-			Real my_rsqmin, int my_niter);
+			Real my_rsqmin, int my_niter, int my_prec);
 
 /* fermion_force_asqtad3_rhmc.c */
 
 void eo_fermion_force_rhmc( int alg_flag, Real eps, params_ratfunc *rf, 
 			    su3_vector **multi_x, field_offset phi_off,
-			    Real my_rsqmin, int niter);
+			    Real my_rsqmin, int niter, int my_prec);
 /* ks_ratinv.c */
 
 int ks_ratinv(	/* Return value is number of iterations taken */
@@ -71,6 +69,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     int order,          /* order of rational function approx */
     int niter,          /* maximal number of CG interations */
     Real rsqmin,        /* desired residue squared */
+    int prec,           /* desired intermediate precicion */
     int parity,         /* parity to be worked on */
     Real *final_rsq_ptr /* final residue squared */
     );

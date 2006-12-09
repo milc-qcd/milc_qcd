@@ -146,9 +146,6 @@ EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
-/* Flags to help us remember what we are doing */
-EXTERN int valid_fn_links, valid_fn_links_dmdu0;
-
 EXTERN gauge_file *startlat_p;
 
 /* Each node maintains a structure with the pseudorandom number
@@ -176,7 +173,6 @@ EXTERN su3_matrix *t_fatbacklink;
 #ifdef HAVE_QDP
 #include <qdp.h>
 
-EXTERN QDP_ColorMatrix **fatlinks, **longlinks, *implinks[8];
 EXTERN QDP_Shift neighbor3[4];
 EXTERN QDP_Shift shiftdirs[8];
 EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];

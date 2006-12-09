@@ -62,9 +62,9 @@ scalar_mult_add_su3_matrix(link,&temp1,t2,&temp2);
 	}
     }
 #ifdef FN
-    valid_fn_links = 0;
-    valid_fn_links_dmdu0 = 0;
+    invalidate_fn_links();
 #endif
+
 /**dtime += dclock();
 node0_printf("LINK_UPDATE: time = %e  mflops = %e\n",
 dtime, (double)(5616.0*volume/(1.0e6*dtime*numnodes())) );**/

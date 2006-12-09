@@ -31,6 +31,7 @@ typedef struct {
 	int niter; 	/* maximum number of c.g. iterations */
         int nrestart;   /* maximum number of c.g. restarts */
         int niter_md[N_PSEUDO], niter_fa[N_PSEUDO], niter_gr[N_PSEUDO];
+        int prec_md[N_PSEUDO], prec_fa[N_PSEUDO], prec_gr[N_PSEUDO];
         int npbp_reps_in;   /* Number of random sources */
         Real rsqmin_md[N_PSEUDO], rsqmin_fa[N_PSEUDO], rsqmin_gr[N_PSEUDO];
 	Real rsqprop;  /* for deciding on convergence */

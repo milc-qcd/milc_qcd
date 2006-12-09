@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.9  2006/12/09 14:10:26  detar
+//  Add mixed precision capability for QDP and QOP inverters
+//
 //  Revision 1.8  2006/11/04 23:37:43  detar
 //  Add CG nrestart parameter
 //  Remove unwanted debugging lines from output samples
@@ -43,6 +46,7 @@
 #define IF_OK if(status==0)
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "lattice_qdp.h"
 
 EXTERN gauge_header start_lat_hdr;
 gauge_file *gf;
@@ -110,11 +114,6 @@ setup()
   phaseset();
   
 #ifdef HAVE_QDP
-  for(i=0; i<8; i++) {
-    implinks[i] = QDP_create_M();
-  }
-  fatlinks = implinks;
-  longlinks = implinks + 4;
   for(i=0; i<4; ++i) {
     shiftdirs[i] = QDP_neighbor[i];
     shiftdirs[i+4] = neighbor3[i];
@@ -374,8 +373,9 @@ readin(int prompt)
   }
   startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
-  valid_fn_links = 0;
-  valid_fn_links_dmdu0 = 0;
+#ifdef FN
+  invalidate_fn_links();
+#endif
   phases_in = OFF;
   rephase( ON );
   

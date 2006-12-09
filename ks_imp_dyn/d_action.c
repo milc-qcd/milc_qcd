@@ -113,6 +113,7 @@ register site *s;
 	    dest2 += sizeof(su3_matrix);
 	}
     }
-    valid_fn_links = 0;
-    valid_fn_links_dmdu0 = 0;
+#ifdef FN
+    invalidate_fn_links();
+#endif
 }

@@ -134,8 +134,13 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   set_site_from_V(F_OFFSET(ttt),src);
 #else
   /* Do phi_s = (M^\dagger M)^{-1} src */
-  iter=ks_congrad_qdp(src, phi_s, qmass, niter, 5, qrsqmin, 
-		      QDP_all, &qfinal_rsq);
+#if ( QDP_Precision == 'F' )
+  iter=ks_congrad_qdp_F(src, phi_s, qmass, niter, 5, qrsqmin,
+			QDP_all, &qfinal_rsq);
+#else
+  iter=ks_congrad_qdp_D(src, phi_s, qmass, niter, 5, qrsqmin,
+			QDP_all, &qfinal_rsq);
+#endif
   /* Then do dest = M^\dagger phi_s */
   set_site_from_V(F_OFFSET(ttt),phi_s);
 #endif 
@@ -172,7 +177,8 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   clear_latvec(F_OFFSET(ttt) , EVENANDODD );
   
   set_site_from_V(F_OFFSET(ttt),src);
-  ks_congrad(F_OFFSET(ttt),F_OFFSET(cg_p),mass,niter,rsqprop,EVENANDODD,&final_rsq );
+  ks_congrad(F_OFFSET(ttt),F_OFFSET(cg_p),mass,niter,rsqprop,PRECISION,
+	     EVENANDODD,&final_rsq );
   
   dslash_site( F_OFFSET(cg_p), F_OFFSET(phi2), EVENANDODD);
   scalar_mult_add_latvec( F_OFFSET(phi2),F_OFFSET(cg_p),-2.0*mass,F_OFFSET(phi2), EVENANDODD);
@@ -274,7 +280,13 @@ QDP_ColorVector *dest,*phi_s,*phi_check,*phi_check1,*phi_d;
   qmass = (QLA_Real) mass;
   qrsqmin = (QLA_Real) rsqprop;
 
-  iter=ks_congrad_qdp(src, phi_s, qmass, niter, qrsqmin, QDP_all,&qfinal_rsq);
+#if ( QDP_Precision == 'F' )
+  iter=ks_congrad_qdp_F(src, phi_s, qmass, niter, qrsqmin,
+		      QDP_all,&qfinal_rsq);
+#else
+  iter=ks_congrad_qdp_D(src, phi_s, qmass, niter, qrsqmin,
+		      QDP_all,&qfinal_rsq);
+#endif
   
   set_site_from_V(F_OFFSET(ttt),phi_s);
   dslash_site( F_OFFSET(ttt), F_OFFSET(phi2), EVENANDODD);

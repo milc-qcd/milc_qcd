@@ -27,7 +27,7 @@ void update_h_rhmc( int alg_flag, Real eps, su3_vector **multi_x ){
   for(iphi = 0; iphi < n_pseudo; iphi++){
     eo_fermion_force_rhmc( alg_flag, eps, &rparam[iphi].MD, 
 			   multi_x, F_OFFSET(phi[iphi]), 
-			   rsqmin_md[iphi], niter_md[iphi] );
+			   rsqmin_md[iphi], niter_md[iphi], prec_md[iphi] );
   }
 } /* update_h_rhmc */
 
@@ -52,6 +52,6 @@ void update_h_fermion( int alg_flag, Real eps, su3_vector **multi_x ){
   for(iphi = 0; iphi < n_pseudo; iphi++){
     eo_fermion_force_rhmc( alg_flag, eps, &rparam[iphi].MD, 
 			   multi_x, F_OFFSET(phi[iphi]),
-			   rsqmin_md[iphi], niter_md[iphi]);
+			   rsqmin_md[iphi], niter_md[iphi], prec_md[iphi]);
   }
 } /* update_h_fermion */

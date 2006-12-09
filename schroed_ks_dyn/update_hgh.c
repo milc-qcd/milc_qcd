@@ -57,7 +57,7 @@ Real xrandom;
 
 	    /* do conjugate gradient to get (Madj M)inverse * phi */
 	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter,rsqmin,EVEN,&final_rsq);
+				   niter, rsqmin, PRECISION, EVEN, &final_rsq);
 	    cg_time = 0.0;
 	}
 #ifdef HMC_ALGORITHM
@@ -117,7 +117,7 @@ Real xrandom;
 	next_cg_time = step*epsilon;
 	predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter,rsqmin,EVEN,&final_rsq);
+				   niter, rsqmin, PRECISION, EVEN, &final_rsq);
 	cg_time = step*epsilon;
 
 	if( step < steps ){

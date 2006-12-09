@@ -123,7 +123,8 @@ DSLASH_FN = dslash_fn2.o
 # Selection of the fermion links algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  FLINKS_FN = fermion_links_asqtad_qop.o
+  FLINKS_FN = fermion_links_asqtad_qop.o fermion_links_asqtad_qop_D.o \
+     fermion_links_asqtad_qop_F.o
   FLINKS_FN += ${FLINKS_FNQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
@@ -150,12 +151,14 @@ endif
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o d_congrad_opt.o
+  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
+     d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o d_congrad_opt.o
 #  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
   CONGRAD_FN += ${ASQINVERTQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o d_congrad_opt.o
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
+       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
   else
     # Choose a non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
     # or d_congrad5_fn_fewsums.o)
@@ -181,12 +184,15 @@ endif
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
-  MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop.o
+  MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop.o \
+    ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    QDP_OBJECTS = stuff_qdp.o
-    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
-    MULTI_INV_FN = ks_multicg.o ks_multicg_qdp.o
+    QDP_OBJECTS = map_milc_to_qdp_D.o map_milc_to_qdp_F.o
+    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp_D.o \
+      dslash_fn_qdp_F.o 
+    MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qdp_D.o \
+      ks_multicg_offset_qdp_F.o
   else
     INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
     MULTI_INV_FN = ks_multicg.o ks_multicg_offset.o
@@ -214,7 +220,7 @@ ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
 
 # Generic QOP objects
 ifeq ($(strip ${HAVEQOP}),true)
-  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o 
+  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o milc_to_qop_utilities.o
 endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \

@@ -2,6 +2,8 @@
 /* MIMD version 7 */
 
 /* Multi-mass CG inverter for staggered fermions */
+/* OBSOLETE!! CD 11/2006 */
+
 /* Inverts M^dagger*M+offset for an array of offsets
    For "ordinary" use (not RHMC) offset = 4*mass^2
    Note difference between "offsets", the arguments, and "shifts", which
@@ -41,6 +43,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
@@ -130,10 +133,6 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 
 
     iteration = 0;
-
-#ifdef FN
-    if( !(valid_fn_links==1))  load_fn_links();
-#endif
 
 #define PAD 0
     /* now we can allocate temporary variables and copy then */
@@ -394,17 +393,19 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
 {
     int i,j,iters=0; site *s;
     ks_multicg_reverse( src, psim, offsets, num_offsets, niter, 
-			rsqmin, parity, final_rsq_ptr);
+			rsqmin, parity, final_rsq_ptr,prec);
     for(i=0;i<num_offsets;i++){
       FORSOMEPARITY(j,s,parity){ s->xxx1 = psim[i][j]; } END_LOOP
        iters += ks_congrad( src, F_OFFSET(xxx1), 0.5*sqrt(offsets[i]), 
-			    niter/5, rsqmin, parity, final_rsq_ptr );
+			    niter/5, rsqmin, prec, 
+			    parity, final_rsq_ptr, prec );
       FORSOMEPARITY(j,s,parity){ psim[i][j] = s->xxx1; } END_LOOP
     }
     return(iters);

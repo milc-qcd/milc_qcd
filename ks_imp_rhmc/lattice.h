@@ -19,9 +19,6 @@
 #include "../include/random.h"    /* For double_prn */
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 
 /* Begin definition of site structure */
 
@@ -124,6 +121,7 @@ EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int niter_md[N_PSEUDO], niter_fa[N_PSEUDO], niter_gr[N_PSEUDO];
+EXTERN  int prec_md[N_PSEUDO], prec_fa[N_PSEUDO], prec_gr[N_PSEUDO];
 EXTERN  int npbp_reps_in;
 EXTERN	int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 EXTERN	Real epsilon;
@@ -161,10 +159,6 @@ EXTERN	int even_sites_on_node;	/* number of even sites on this node */
 EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
-EXTERN  int max_rat_order;      /* Maximum number of solution vectors needed */
-
-/* Flags to help us remember what we are doing */
-EXTERN int valid_fn_links, valid_fn_links_dmdu0;
 
 EXTERN gauge_file *startlat_p;
 
@@ -190,13 +184,6 @@ EXTERN su3_matrix *t_fatbacklink;
 #endif
 #ifdef DM_DU0
 EXTERN su3_matrix *t_dfatlink_du0;
-#endif
-
-#ifdef HAVE_QDP
-EXTERN QDP_ColorMatrix **fatlinks, **longlinks, *implinks[8];
-EXTERN QDP_Shift neighbor3[4];
-EXTERN QDP_Shift shiftdirs[8];
-EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];
 #endif
 
 #include "params_rhmc.h"
