@@ -22,6 +22,16 @@ for general instructions.
 
 Here are highlights of the new features:
 
+For version 7.3.2
+
+  Mixed precision for QOP and QDP inverters, dslash, and supporting
+  fermion links.
+  Made multicg option choice available to applications other than RHMC.
+  Changed initialize_machine to take pointers to argc and **argv.
+  Print list of selected options during setup.
+  Segregate inclusion of SciDAC headers for faster compilation times
+  Libraries make builds both precisions.
+
 For version 7.3.1
 
   Polished the parameter input format for the RHMC.
