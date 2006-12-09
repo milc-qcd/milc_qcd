@@ -49,6 +49,7 @@ G_ALL = \
  layout_hyper_sl32.o \
  layout_qcdoc.o \
  map_milc_to_qop.o \
+ milc_to_qop_utilities.o \
  make_lattice.o \
  nersc_cksum.o \
  path_product.o \
@@ -61,12 +62,15 @@ G_ALL = \
  project_su3_hit.o \
  qcdoc_alloc.o \
  qop_milc.o \
+ qop_milc_D.o \
+ qop_milc_F.o \
  rand_gauge.o \
  ranmom.o \
  ranstuff.o \
  remap_stdio_from_args.o \
  restrict_fourier.o \
- reunitarize2.o
+ reunitarize2.o \
+ show_generic_opts.o
 
 # Must match our headers in generic_includes.h
 G_HEADERS = \
@@ -76,6 +80,8 @@ G_HEADERS = \
   ../include/macros.h \
   ../include/comdefs.h \
   ../include/generic.h \
+  ../include/generic_qdp.h \
+  ../include/generic_qop.h \
   ../include/generic_schroed.h \
   ../include/int32type.h \
   ../include/io_scidac.h \
@@ -175,6 +181,8 @@ make_lattice.o: ../generic/make_lattice.c
 	${CC} -c ${CFLAGS} $<
 map_milc_to_qop.o: ../generic/map_milc_to_qop.c
 	${CC} -c ${CFLAGS} $<
+milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
+	${CC} -c ${CFLAGS} $<
 nersc_cksum.o: ../generic/nersc_cksum.c
 	${CC} -c ${CFLAGS} $<
 path_product.o: ../generic/path_product.c
@@ -197,6 +205,10 @@ qcdoc_alloc.o: ../generic/qcdoc_alloc.c
 	${CC} -c ${CFLAGS} $<
 qop_milc.o: ../generic/qop_milc.c
 	${CC} -c ${CFLAGS} $<
+qop_milc_D.o: ../generic/qop_milc_D.c ../generic/qop_milc_P.c
+	${CC} -c ${CFLAGS} $<
+qop_milc_F.o: ../generic/qop_milc_F.c ../generic/qop_milc_D.c
+	${CC} -c ${CFLAGS} $<
 rand_gauge.o: ../generic/rand_gauge.c
 	${CC} -c ${CFLAGS} $<
 ranmom.o: ../generic/ranmom.c
@@ -209,12 +221,15 @@ restrict_fourier.o: ../generic/restrict_fourier.c
 	${CC} -c ${CFLAGS} $<
 reunitarize2.o: ../generic/reunitarize2.c
 	${CC} -c ${CFLAGS} $<
+show_generic_opts.o: ../generic/show_generic_opts.c
+	${CC} -c ${CFLAGS} $<
 
 ifeq ($(strip ${HAVEQDP}),true)
 
 G_ALL_QDP = \
  layout_qdp.o \
- stuff_qdp.o
+ map_milc_to_qdp_F.o \
+ map_milc_to_qdp_D.o
 
 G_HEADERS_QDP = \
   $(QDP)/include/qdp.h
@@ -227,7 +242,9 @@ ${G_ALL_QDP} : ${G_ALL_DEPEND_QDP}
 
 layout_qdp.o: ../generic/layout_qdp.c
 	${CC} -c ${CFLAGS} $<
-stuff_qdp.o: ../generic/stuff_qdp.c
+map_milc_to_qdp_F.o: ../generic/map_milc_to_qdp_F.c ../generic/map_milc_to_qdp_P.c ../generic/map_milc_to_qdp_Fd.c
+	${CC} -c ${CFLAGS} $<
+map_milc_to_qdp_D.o: ../generic/map_milc_to_qdp_D.c ../generic/map_milc_to_qdp_P.c ../generic/map_milc_to_qdp_Df.c
 	${CC} -c ${CFLAGS} $<
 
 endif

@@ -1,13 +1,23 @@
-#include <string.h>
+/********************  map_milc_to_qdp_P.c ***************************/
+/* MILC Version 7 */
+
+/* C-code include file for map_milc_to_qdp_F.c and map_milc_to_qdp_D.c */
+/* Defines precision-specific mappings between MILC and QDP for the
+   case that the precisions of both are equal  */
+
+/* 12/01/06 C. DeTar adapted from stuff_qdp.c */
+
 #include <qdp.h>
+#include "../include/generic_qdp.h"
+#include <string.h>
 #include "lattice.h"
 #include "../include/macros.h"
 #include "../include/complex.h"
 #include "../include/su3.h"
 
-#define make_set_qdp_from_site(T, TYPE, MILCTYPE) \
+#define make_set_qdp_from_site(P, T, TYPE, MILCTYPE) \
 void \
-set_##T##_from_site(QDP_##TYPE *dest, field_offset src) \
+set_##P##_##T##_from_site(QDP_##TYPE *dest, field_offset src) \
 { \
   int i; \
   site *s; \
@@ -19,9 +29,9 @@ set_##T##_from_site(QDP_##TYPE *dest, field_offset src) \
   QDP_reset_##T (dest); \
 }
 
-#define make_set_site_from_qdp(T, TYPE, MILCTYPE) \
+#define make_set_site_from_qdp(P, T, TYPE, MILCTYPE) \
 void \
-set_site_from_##T(field_offset dest, QDP_##TYPE *src) \
+set_site_from_##P##_##T(field_offset dest, QDP_##TYPE *src) \
 { \
   int i; \
   site *s; \
@@ -33,9 +43,9 @@ set_site_from_##T(field_offset dest, QDP_##TYPE *src) \
   QDP_reset_##T (src); \
 }
 
-#define make_set_qdp_from_field(T, TYPE, MILCTYPE) \
+#define make_set_qdp_from_field(P, T, TYPE, MILCTYPE) \
 void \
-set_##T##_from_field(QDP_##TYPE *dest, MILCTYPE *src) \
+set_##P##_##T##_from_field(QDP_##TYPE *dest, MILCTYPE *src) \
 { \
   int i; \
   site *s; \
@@ -47,9 +57,9 @@ set_##T##_from_field(QDP_##TYPE *dest, MILCTYPE *src) \
   QDP_reset_##T (dest); \
 }
 
-#define make_set4_qdp_from_site(T, TYPE, MILCTYPE) \
+#define make_set4_qdp_from_site(P, T, TYPE, MILCTYPE) \
 void \
-set4_##T##_from_site(QDP_##TYPE *dest[], field_offset src) \
+set4_##P##_##T##_from_site(QDP_##TYPE *dest[], field_offset src) \
 { \
   int i, dir; \
   site *s; \
@@ -63,9 +73,9 @@ set4_##T##_from_site(QDP_##TYPE *dest[], field_offset src) \
   } \
 }
 
-#define make_set_field_from_qdp(T, TYPE, MILCTYPE) \
+#define make_set_field_from_qdp(P, T, TYPE, MILCTYPE) \
 void \
-set_field_from_##T(MILCTYPE *dest, QDP_##TYPE *src) \
+set_field_from_##P##_##T(MILCTYPE *dest, QDP_##TYPE *src) \
 { \
   int i; \
   site *s; \
@@ -77,9 +87,9 @@ set_field_from_##T(MILCTYPE *dest, QDP_##TYPE *src) \
   QDP_reset_##T (src); \
 }
 
-#define make_set4_qdp_from_field(T, TYPE, MILCTYPE) \
+#define make_set4_qdp_from_field(P, T, TYPE, MILCTYPE) \
 void \
-set4_##T##_from_field(QDP_##TYPE *dest[], MILCTYPE *src) \
+set4_##P##_##T##_from_field(QDP_##TYPE *dest[], MILCTYPE *src) \
 { \
   int i, dir; \
   site *s; \
@@ -93,9 +103,9 @@ set4_##T##_from_field(QDP_##TYPE *dest[], MILCTYPE *src) \
   } \
 }
 
-#define make_set4_field_from_qdp(T, TYPE, MILCTYPE) \
+#define make_set4_field_from_qdp(P, T, TYPE, MILCTYPE) \
 void \
-set4_field_from_##T(MILCTYPE *dest, QDP_##TYPE *src[]) \
+set4_field_from_##P##_##T(MILCTYPE *dest, QDP_##TYPE *src[]) \
 { \
   int i, dir; \
   site *s; \
@@ -108,14 +118,6 @@ set4_field_from_##T(MILCTYPE *dest, QDP_##TYPE *src[]) \
     QDP_reset_##T (src[dir]); \
   } \
 }
-
-#define copy_types(macro) \
-macro(I, Int, int); \
-macro(R, Real, Real); \
-macro(V, ColorVector, su3_vector); \
-macro(H, HalfFermion, half_wilson_vector); \
-macro(D, DiracFermion, wilson_vector); \
-macro(M, ColorMatrix, su3_matrix);
 
 copy_types(make_set_qdp_from_site);
 
@@ -131,3 +133,4 @@ copy_types(make_set4_qdp_from_field);
 
 copy_types(make_set4_qdp_from_site);
 
+/* map_milc_to_qdp_P.c */
