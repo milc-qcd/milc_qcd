@@ -245,6 +245,12 @@ CTIME =#
 CPROF =#
 
 #------------------------------
+# Troubleshooting
+# Applications: All
+
+# COM_CRC            Message passing test.  Checksums on all gathers.
+
+#------------------------------
 # Debugging
 # Applications:  all
 
@@ -340,6 +346,7 @@ KSFFMULTI =#
 # Applications: ks_imp_rhmc
 
 # Choices
+# (Not needed if the make target has a preset value in Make_template)
 
 # INT_ALG=INT_LEAPFROG
 # INT_ALG=INT_OMELYAN
@@ -400,7 +407,8 @@ PREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC}
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
-	${PREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DEFINES} ${DARCH}
+	${PREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DEFINES} ${DARCH} \
+	${IMPI}
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
 
