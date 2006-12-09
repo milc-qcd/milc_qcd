@@ -54,7 +54,8 @@ MY_OBJECTS=
 # Basic set from generic directory
 G_OBJECTS1 = \
   io_detect.o \
-  io_lat_utils.o
+  io_lat_utils.o \
+  nersc_cksum.o
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS = ${G_OBJECTS1} io_scidac.o
