@@ -66,9 +66,9 @@ int main( int argc, char **argv ){
           	   F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
 			 0,NULL,NULL,0,NULL,NULL);
                 rephase( ON );
-		valid_fn_links = 0;
-		valid_fn_links_dmdu0 = 0;
-
+#ifdef FN
+		invalidate_fn_links();
+#endif
 		if(strstr(spectrum_request,",spectrum,") != NULL){
 		  avspect_iters += spectrum2(mass,F_OFFSET(phi),F_OFFSET(xxx));
 		}

@@ -7,6 +7,8 @@
 
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "lattice_qdp.h"
+
 /* For information */
 #define NULL_FP -1
 

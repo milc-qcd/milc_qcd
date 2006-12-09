@@ -14,7 +14,12 @@
 
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "lattice_qdp.h"
 #define NULL_FP -1
+#ifdef HAVE_QIO
+#include <qio.h>
+#include "../include/io_scidac.h"
+#endif
 
 EXTERN gauge_header start_lat_hdr;	/* Input gauge field header */
 
@@ -36,6 +41,11 @@ main( int argc, char **argv )
   g_sync();
   /* set up */
   prompt = setup();
+
+//  restore_random_state_scidac_to_site("randsave", F_OFFSET(site_prn));
+//  restore_color_vector_scidac_to_site("xxx1save", F_OFFSET(xxx1),1);
+//  restore_color_vector_scidac_to_site("xxx2save", F_OFFSET(xxx2),1);
+
   /* loop over input sets */
   while( readin(prompt) == 0) {
     
@@ -88,8 +98,9 @@ main( int argc, char **argv )
 		 NULL_FP,NULL_FP,
 		 0,NULL,NULL,0,NULL,NULL);
 	rephase( ON );
-	valid_fn_links = 0;
-	valid_fn_links_dmdu0 = 0;
+#ifdef FN
+	invalidate_fn_links();
+#endif
 	
 	if(strstr(spectrum_request,",spectrum,") != NULL){
 #ifdef ONEMASS
@@ -222,6 +233,14 @@ main( int argc, char **argv )
       rephase( OFF );
       save_lattice( saveflag, savefile, stringLFN );
       rephase( ON );
+#ifdef HAVE_QIO
+//       save_random_state_scidac_from_site("randsave", "Dummy file XML",
+//        "Random number state", QIO_SINGLEFILE, F_OFFSET(site_prn));
+//       save_color_vector_scidac_from_site("xxx1save", "Dummy file XML",
+//        "xxx vector", QIO_SINGLEFILE, F_OFFSET(xxx1),1);
+//       save_color_vector_scidac_from_site("xxx2save", "Dummy file XML",
+//        "xxx vector", QIO_SINGLEFILE, F_OFFSET(xxx2),1);
+#endif
     }
   }
 #ifdef HAVE_QDP

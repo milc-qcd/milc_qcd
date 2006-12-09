@@ -64,9 +64,9 @@ int main( int argc, char **argv ){
     rephase( ON );
     
 #ifdef FN
-    valid_fn_links = 0;
-    valid_fn_links_dmdu0 = 0;
+    invalidate_fn_links();
 #endif
+
 #ifdef FPI
     avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3 );
 #endif

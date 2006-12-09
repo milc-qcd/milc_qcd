@@ -66,7 +66,7 @@ double dtime;
 		grsource(EVEN);
                 /* do conjugate gradient to get (Madj M)inverse * phi  */
 		m_iters=ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter,rsqmin,EVEN,&rsq);
+				   niter, rsqmin, PRECISION, EVEN, &rsq);
 
 	        /* call plaquette measuring process */
 		d_plaquette(&ssplaq,&stplaq);

@@ -72,7 +72,7 @@ double dtime;
 	    grsource(EVEN);
 	    /* do conjugate gradient to get (Madj M)inverse * phi  */
 	    m_iters=ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter,rsqmin,EVEN,&rsq);
+				   niter, rsqmin, PRECISION, EVEN,&rsq);
 
 	    /* call Psi-bar-Psi and fermion energy/pressure measurement */
 	    /* it also measures the pseudofermionic action 		*/

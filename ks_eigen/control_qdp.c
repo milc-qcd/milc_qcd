@@ -79,8 +79,9 @@ main(int argc, char *argv[])
     for(i=0; i<Nvecs; i++) free(eigVec[i]);
     free(eigVec);
     free(eigVal);
-    valid_fn_links = 0;
-    valid_fn_links_dmdu0 = 0;
+#ifdef FN
+    invalidate_fn_links();
+#endif
     fflush(stdout);
 
     node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
