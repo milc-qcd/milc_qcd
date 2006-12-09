@@ -9,6 +9,7 @@
 * C.D. Moved to separate file 10/06  */
 
 #include "generic_includes.h"	/* definitions files and prototypes */
+#include "../include/generic_qop.h"
 #include <qop.h>
 
 void load_qop_imp_gauge_coeffs(QOP_gauge_coeffs_t *c)
@@ -31,7 +32,6 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
   QOP_gauge_coeffs_t coeff;
   QOP_info_t info;
   double remaptime = -dclock();
-  double dtime = remaptime;
 
   //printf("Begin wrapper\n");
   /* Initialize QOP */
@@ -64,10 +64,8 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
   }
 #endif
   remaptime += dclock();
-  dtime = -dclock();
   /* Compute fermion force */
   QOP_symanzik_1loop_gauge_force(&info, links, mom, &coeff, eps*beta);
-  dtime += dclock();
   remaptime -= dclock();
   //       printf("After calling QOP force status is %d\n",info.status);
   if(info.status != QOP_SUCCESS){
@@ -77,7 +75,7 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
   remaptime += dclock();
 #ifdef GFTIME
-  node0_printf("GFTIME:  time = %e mflops = %e\n",dtime,
+  node0_printf("GFTIME:  time = %e mflops = %e\n",info.final_sec,
 	       info.final_flop/(1e6*info.final_sec) );
   node0_printf("GFREMAP:  time = %e\n",remaptime);
 #endif
