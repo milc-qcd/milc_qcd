@@ -21,9 +21,6 @@
 #include "../include/generic_ks.h"
 #include "../include/generic_wilson.h"
 #include "../include/dirs.h"
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 
 /* prototypes for functions in high level code */
 
