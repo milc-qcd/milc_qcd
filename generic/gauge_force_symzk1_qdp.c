@@ -5,6 +5,7 @@
 /* 10/06  CD standalone QDP */
 
 #include "generic_includes.h"
+#include "../include/generic_qdp.h"
 #include <qdp.h>
 
 static QDP_ColorMatrix *fblink[8];
