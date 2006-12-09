@@ -17,7 +17,7 @@ ifneq ($(strip ${WANTQOP}),)
   HAVEQOP = true
 
   # Fermion links
-  FLINKS_FNQOP = load_qop_asqtad_coeffs.o
+  FLINKS_FNQOP = load_qop_asqtad_coeffs_D.o load_qop_asqtad_coeffs_F.o
 
   ifeq ($(strip ${WANTQOP}),QCDOC)
 
@@ -72,14 +72,16 @@ ifneq ($(strip ${WANTQOP}),)
       INCDEPQOP = ${QOPINCDIR}
 
       # General requirement
-      GENERICQOP = qop_milc.o
+      GENERICQOP = qop_milc.o qop_milc_D.o qop_milc_F.o
       # Gauge force
       SYMZK1FORCEQOP = gauge_force_symzk1_qop_milc.o
       # Fermion links
-      FLINKS_FNQOP += fermion_links_fn_qop_milc.o
+      FLINKS_FNQOP += fermion_links_fn_qop_milc_D.o \
+        fermion_links_fn_qop_milc_F.o
       # Conjugate gradient
-      ASQINVERTQOP = d_congrad5_fn_qop_milc.o dslash_fn_qop_milc.o
-      ASQINVERTQOP += ks_multicg_qop_milc.o
+      ASQINVERTQOP = d_congrad5_fn_qop_milc_D.o d_congrad5_fn_qop_milc_F.o \
+         dslash_fn_qop_milc_D.o dslash_fn_qop_milc_F.o
+      ASQINVERTQOP += ks_multicg_qop_milc_D.o ks_multicg_qop_milc_F.o
       # Fermion force
       ASQFORCEQOP = fermion_force_asqtad_qop_milc.o ff_opt.o
     endif
