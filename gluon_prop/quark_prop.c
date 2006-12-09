@@ -144,7 +144,7 @@ char recxml[MAX_RECXML];
 		    /* do a C.G. (source in phi, result in xxx1) */
 		    cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 				       mass[j_mass], niter, nrestart, 
-				       rsqprop, EVEN, &finalrsq);
+				       rsqprop, PRECISION, EVEN, &finalrsq);
 		    /* Multiply by -Madjoint */
 		    dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD);
 		    mass_x2 = 2.*mass[j_mass];

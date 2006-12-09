@@ -517,7 +517,8 @@ int sngl_trace(Real *bb0s11)
 	 give a comparably stringent stopping criterion 
 	 throughout */
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter,rsqprop/(mass*mass),EVEN,&finalrsq);
+			    niter, rsqprop/(mass*mass), PRECISION, 
+			    EVEN,&finalrsq);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: ss1 cgn %d\n",this_cgn);
       /* Multiply by -Madjoint */
@@ -552,7 +553,8 @@ int sngl_trace(Real *bb0s11)
 
       /* do a C.G. (source in phi, result in xxx) now ODD source*/
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter,rsqprop/(mass*mass),ODD,&finalrsq);
+			    niter, rsqprop/(mass*mass), PRECISION, 
+			    ODD, &finalrsq);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: ss1: cgn %d\n",this_cgn);
       /* Multiply by -Madjoint */
@@ -840,7 +842,7 @@ int bar_corr()
       /* Invert on even sites only */
       /* -x_e = -(4m^2a^2 - D_eo D_oe)^(-1) phi_e' */
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter,rsqprop,EVEN,&finalrsq);
+			    niter, rsqprop, PRECISION, EVEN, &finalrsq);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: pbp irand %2d cgn %d\n",irand,this_cgn);
       /* Even sites are now OK, except for a minus sign */
@@ -978,7 +980,7 @@ int bar_corr()
       /* Invert on even sites only */
       /* -x_e = -(4m^2a^2 - D_eo D_oe)^(-1) phi_e' */
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter,rsqprop,EVEN,&finalrsq);
+			    niter, rsqprop, PRECISION, EVEN, &finalrsq);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: bdens irand %2d cgn %d\n",irand,this_cgn);
       /* Even sites are now OK, except for a minus sign */

@@ -40,6 +40,8 @@ int xi, j2, j3, j4, parity;
 int multiflag;
 FILE *fp_mom_ks[MAX_NUM_MASS];	/* for writing mom propagator files */
 char filename[50];
+ int prec = PRECISION;   /* Make internal precision for CG the same as
+			    the prevailing precision */
 
     pix = 2.*PI / (Real)nx;
     piy = 2.*PI / (Real)ny;
@@ -122,7 +124,8 @@ char filename[50];
 			/* do a C.G. (source in phi, result in xxx1) */
 			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 					   mass[j_mass], niter, nrestart, 
-					   rsqprop,  EVEN, &finalrsq);
+					   rsqprop,  PRECISION, 
+					   EVEN, &finalrsq);
 			/* Multiply by -Madjoint */
 			dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD);
 			mass_x2 = 2.*mass[j_mass];
@@ -135,7 +138,7 @@ char filename[50];
 			/* do a C.G. (source in phi, result in xxx1) */
 			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 					   mass[j_mass], niter, nrestart, 
-					   rsqprop, ODD, &finalrsq);
+					   rsqprop, PRECISION, ODD, &finalrsq);
 			/* Multiply by -Madjoint */
 			dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), EVEN);
 			mass_x2 = 2.*mass[j_mass];
@@ -161,7 +164,7 @@ char filename[50];
 		if(parity == 0){
 		    /* do a multi-cg */
 		    cgn += ks_multicg_mass( F_OFFSET(phi), psim, mass, num_mass,
-				       niter, rsqprop, EVEN, &finalrsq);
+				       niter, rsqprop, prec, EVEN, &finalrsq);
 		    /* Multiply by -Madjoint */
 		    for(j_mass=0; j_mass<num_mass; j_mass++){
 			FORALLSITES(i,s){
@@ -189,7 +192,7 @@ char filename[50];
 		else{
 		    /* do a multi-cg */
 		    cgn += ks_multicg_mass( F_OFFSET(phi), psim, mass, num_mass,
-				       niter, rsqprop, ODD, &finalrsq);
+				       niter, rsqprop, prec, ODD, &finalrsq);
 		    /* Multiply by -Madjoint */
 		    for(j_mass=0; j_mass<num_mass; j_mass++){
 			FORALLSITES(i,s){

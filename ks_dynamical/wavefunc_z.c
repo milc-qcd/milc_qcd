@@ -89,7 +89,7 @@ void permute_combine(field_offset src,field_offset space,int size,int dir);
         }
         /* do a C.G. (source in phi, result in xxx) */
         cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			 niter,rsqprop,EVEN,&finalrsq);
+			 niter, rsqprop, PRECISION, EVEN, &finalrsq);
         /* Multiply by -Madjoint, result in propmat[color] */
         dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[color]), ODD);
         scalar_mult_latvec( F_OFFSET(xxx), (Real)(-2.0*mass),

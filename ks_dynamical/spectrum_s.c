@@ -45,7 +45,7 @@ int spectrum() /* return the C.G. iteration number */
       scalar_mult_latvec( F_OFFSET(ttt), -mass_x2, F_OFFSET(phi), EVEN);
       /* do a C.G. */
       cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter,rsqprop,EVENANDODD,&finalrsq);
+			niter, rsqprop, PRECISION, EVENANDODD, &finalrsq);
       
       /* fill the hadron matrix */
       copy_latvec( F_OFFSET(xxx), F_OFFSET(propmat[icol]), EVENANDODD);

@@ -45,11 +45,6 @@ void periodic_bc();
     periodic_bc();
 
 #ifdef HAVE_QDP
-    for(i=0; i<8; i++) {
-        implinks[i] = QDP_create_M();
-    }
-    fatlinks = implinks;
-    longlinks = implinks + 4;
     for(i=0; i<4; ++i) {
         shiftdirs[i] = QDP_neighbor[i];
         shiftdirs[i+4] = neighbor3[i];

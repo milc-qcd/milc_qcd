@@ -112,7 +112,7 @@ int ks_multicg_offset_D(/* Return value is number of iterations taken */
 int ks_multicg_mass_F(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors (preallocated) */
-    float *masses,	/* the masses */
+    Real *masses,	/* the masses */
     int num_masses,	/* number of masses */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
@@ -123,7 +123,7 @@ int ks_multicg_mass_F(	/* Return value is number of iterations taken */
 int ks_multicg_mass_D(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors (preallocated) */
-    double *masses,	/* the masses */
+    Real *masses,	/* the masses */
     int num_masses,	/* number of masses */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */

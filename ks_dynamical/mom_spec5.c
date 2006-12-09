@@ -94,7 +94,7 @@ int mom_spec() /* return the C.G. iteration number */
          }
          /* do a C.G. */
          cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			   niter,rsqprop,EVEN,&finalrsq);
+			   niter, rsqprop, PRECISION, EVEN, &finalrsq);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, even site source -> propmat[0] */
          dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[0]), ODD);
@@ -122,7 +122,7 @@ int mom_spec() /* return the C.G. iteration number */
          }
          /* do a C.G. */
          cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			   niter,rsqprop,EVEN,&finalrsq);
+			   niter, rsqprop, PRECISION, EVEN, &finalrsq);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, even site nonzero mom. source -> propmat[1]*/
          dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[1]), ODD);
@@ -149,7 +149,7 @@ int mom_spec() /* return the C.G. iteration number */
          }
          /* do a C.G. */
          cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			   niter,rsqprop,ODD,&finalrsq);
+			   niter, rsqprop, PRECISION, ODD, &finalrsq);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, odd site source -> ttt */
          dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVEN);
