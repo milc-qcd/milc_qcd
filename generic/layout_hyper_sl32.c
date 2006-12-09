@@ -1,8 +1,12 @@
 /******** layout_hyper_sl32.c *********/
 /* MIMD version 7 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
+/* NOT IN THE CURRENT TEST STREAM.  USE WITH CAUTION! */
 
 /* Version for 32 sublattices, for extended actions */
+/* Sites are distributed in the same way as the hypercubic layout but
+   on each node the site order is based on 32 colors instead of just
+   even/odd */
 
 /* This version divides the lattice by factors of two in any of the
    four directions.  It prefers to divide the longest dimensions,
@@ -14,6 +18,7 @@
    of nodes, which is a power of two.
 
    3/29/00 EVENFIRST is the rule now. CD.
+   11/16/06 Upgraded to layout_hyper_prime algorithm. CD.
 */
 
 /*
@@ -25,6 +30,8 @@
    node_number(x,y,z,t) returns the node number on which a site lives.
    node_index(x,y,z,t) returns the index of the site on the node - ie the
      site is lattice[node_index(x,y,z,t)].
+   get_logical_dimensions() returns the machine dimensions
+   get_logical_coordinates() returns the mesh coordinates of this node
    These routines will change as we change our minds about how to distribute
      sites among the nodes.  Hopefully the setup routines will work for any
      consistent choices. (ie node_index should return a different value for
@@ -35,8 +42,12 @@
 #include <qmp.h>
 #endif
 
-int squaresize[4];	/* dimensions of hypercubes */
-int nsquares[4];	/* number of hypercubes in each direction */
+static int squaresize[4];	/* dimensions of hypercubes */
+static int nsquares[4];	/* number of hypercubes in each direction */
+static int machine_coordinates[4]; /* logical machine coordinates */ 
+
+int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
+# define MAXPRIMES ( sizeof(prime) / sizeof(int) )
 
 #ifdef HAVE_QMP
 static void setup_qmp_grid(){
@@ -52,8 +63,8 @@ static void setup_qmp_grid(){
     printf("\n");
   }
 
-  ndim2 = QMP_get_allocated_number_of_dimensions();
-  nsquares2 = QMP_get_allocated_dimensions();
+  ndim2 = QMP_get_logical_number_of_dimensions();
+  nsquares2 = QMP_get_logical_dimensions();
   for(i=0; i<ndim; i++) {
     if(i<ndim2) nsquares[i] = nsquares2[i];
     else nsquares[i] = 1;
@@ -84,11 +95,15 @@ static void setup_hyper_prime(){
   
   i = 1;	/* current number of hypercubes */
   while(i<numnodes()){
+    /* figure out which prime to divide by starting with largest */
+    k = MAXPRIMES-1;
+    while( (numnodes()/i)%prime[k] != 0 && k>0 ) --k;
     /* figure out which direction to divide */
     
-    /* find largest dimension of h-cubes divisible by 4 */
+    /* find largest even dimension of h-cubes */
     for(j=1,dir=XUP;dir<=TUP;dir++)
-      if( squaresize[dir]>j && squaresize[dir]%4==0 ) j=squaresize[dir];
+      if( squaresize[dir]>j && squaresize[dir]%prime[k]==0 )
+	j=squaresize[dir];
     
     /* if one direction with largest dimension has already been
        divided, divide it again.  Otherwise divide first direction
@@ -97,22 +112,23 @@ static void setup_hyper_prime(){
       if( squaresize[dir]==j && nsquares[dir]>1 )break;
     if( dir > TUP)for(dir=XUP;dir<=TUP;dir++)
       if( squaresize[dir]==j )break;
-    /* This can fail if I run out of factors of 2 in the dimensions */
+    /* This can fail if I run out of prime factors in the dimensions */
     if(dir > TUP){
       if(mynode()==0)
-	printf("LAYOUT: Can't lay out this lattice, not enough factors of 2\n");
+	printf("LAYOUT: Can't lay out this lattice, not enough factors of %d\n"
+	       ,prime[k]);
       terminate(1);
     }
     
     /* do the surgery */
-    i*=2; squaresize[dir] /= 2; nsquares[dir] *= 2;
+    i*=prime[k]; squaresize[dir] /= prime[k]; nsquares[dir] *= prime[k];
   }
-  
 }
 
 void setup_layout(){
+  int k = mynode();
 
-  if(mynode()==0)
+  if(k == 0)
     printf("LAYOUT = Hypercubes, options = ");
 
 #ifdef HAVE_QMP
@@ -124,6 +140,16 @@ void setup_layout(){
   setup_hyper_prime();
 #endif
 
+  /* Compute machine coordinates */
+  machine_coordinates[XUP] = k % squaresize[XUP];
+  k /= squaresize[XUP];
+  machine_coordinates[YUP] = k % squaresize[YUP];
+  k /= squaresize[YUP];
+  machine_coordinates[ZUP] = k % squaresize[ZUP];
+  k /= squaresize[ZUP];
+  machine_coordinates[TUP] = k % squaresize[TUP];
+
+  /* Number of sites on node */
   sites_on_node =
     squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
   /* Need number of sites per hypercube divisible by 32 */
@@ -161,4 +187,12 @@ register int i,xr,yr,zr,tr,k;
 
 size_t num_sites(int node) {
     return( sites_on_node );
+}
+
+const int *get_logical_dimensions(){
+  return nsquares;
+}
+
+const int *get_logical_coordinate(){
+  return machine_coordinates;
 }

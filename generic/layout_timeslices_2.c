@@ -1,6 +1,7 @@
 /******** layout_timeslices_2.c *********/
 /* MIMD version 7 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
+/* NOT IN THE CURRENT TEST STREAM.  USE WITH CAUTION! */
 
 /* This version puts entire timeslices on nodes, if it can. It
    requires that nt, the time extent, is a multiple of the number of
@@ -11,6 +12,7 @@
    Created May 28, 1998 S. Gottlieb
 
    3/29/00 EVENFIRST is the rule now. CD.
+   11/16/06 Added get_logical_dimensions and get_logical_coordinates
 */
 
 /*
@@ -32,9 +34,11 @@
 #include <qio.h>
 #endif
 
-int ntslices;		/* number of timeslices per node */
-int nzslices;		/* number of z values per node */
-int zcuts;		/* number of times we must cut in z-direction, i.e,
+static int nsquares[4];	           /* number of hypercubes in each direction */
+static int machine_coordinates[4]; /* logical machine coordinates */ 
+static int ntslices;		/* number of timeslices per node */
+static int nzslices;		/* number of z values per node */
+static int zcuts;	/* number of times we must cut in z-direction, i.e,
 							zcuts*nzslices=nz */
 
 void setup_layout(){
@@ -65,7 +69,7 @@ void setup_layout(){
     	nzslices = nz;
     }
     else {
-	ntslizes = 1;
+	ntslices = 1;
 	zcuts = numnodes()/nt;
 	nzslices = nz/zcuts;
     }
@@ -80,7 +84,18 @@ if( mynode()==0)
   printf("ON EACH NODE %d x %d x %d x %d\n",nx,ny,nzslices,ntslices);
 if( mynode()==0 && sites_on_node%2 != 0)
 	printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
-    even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+   even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+
+    /* Define geometry in case someone asks */
+
+    nsquares[XUP] = nsquares[YUP] = 1;
+    nsquares[ZUP] = zcuts;
+    nsquares[TUP] = numnodes()/zcuts;
+
+    machine_coordinates[XUP] = 0;
+    machine_coordinates[YUP] = 0;
+    machine_coordinatss[ZUP] = mynode() % nzcuts;
+    machine_coordinatss[TUP] = mynode()/zcuts;
 }
 
 int node_number(int x, int y, int z, int t) {
@@ -106,4 +121,10 @@ size_t num_sites(int node) {
     return( sites_on_node );
 }
 
+const int *get_logical_dimensions(){
+  return nsquares;
+}
 
+const int *get_logical_coordinate(){
+  return machine_coordinates;
+}

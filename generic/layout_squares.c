@@ -12,6 +12,7 @@
    by the number of nodes, a power of two.
 
    3/29/00 EVENFIRST is the rule now. CD.
+   11/16/06 Added get_logical_dimensions and get_logical_coordinates
 */
 
 /*
@@ -21,6 +22,8 @@
    node_number(x,y,z,t) returns the node number on which a site lives.
    node_index(x,y,z,t) returns the index of the site on the node - ie the
      site is lattice[node_index(x,y,z,t)].
+   get_logical_dimensions() returns the machine dimensions
+   get_logical_coordinates() returns the mesh coordinates of this node
    These routines will change as we change our minds about how to distribute
      sites among the nodes.  Hopefully the setup routines will work for any
      consistent choices. (ie node_index should return a different value for
@@ -31,11 +34,13 @@
 #include <qio.h>
 #endif
 
-int dirs[4];	/* list of directions, longest first */
-int dims[4];	/* lattice dimensions, in order X,Y,Z,T */
-int nsites_per;	/* number of sites per plane */
-int xsquaresize,ysquaresize;	/* dimensions of rectangle */
-int nxsquares,nysquares;	/* number of rectangles in each direction */
+static int dirs[4];	/* list of directions, longest first */
+static int dims[4];	/* lattice dimensions, in order X,Y,Z,T */
+static int nsites_per;	/* number of sites per plane */
+static int xsquaresize,ysquaresize;	/* dimensions of rectangle */
+static int nxsquares,nysquares;	/* number of rectangles in each direction */
+static int nsquares[4];	           /* number of hypercubes in each direction */
+static int machine_coordinates[4]; /* logical machine coordinates */ 
 
 void setup_layout(){
 register int i,j,k;
@@ -108,6 +113,18 @@ if( mynode()==0)
 if( mynode()==0 && sites_on_node%2 != 0)
 	printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
     even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+
+    /* Define geometry in case someone asks */
+
+    nsquares[dirs[XUP]] = nxsquares;
+    nsquares[dirs[YUP]] = nysquares;;
+    nsquares[dirs[ZUP]] = 1;
+    nsquares[dirs[TUP]] = 1;
+
+    machine_coordinates[dirs[XUP]] = mynode() % nxsquares;
+    machine_coordinates[dirs[YUP]] = mynode()/nxsquares;
+    machine_coordinatss[dirs[ZUP]] = 0;
+    machine_coordinatss[dirs[TUP]] = 0;
 }
 
 int node_number(int x,int y,int z,int t) {
@@ -138,4 +155,11 @@ int coords[4];
 
 size_t num_sites(int node) {
     return( nsites_per*xsquaresize*ysquaresize );
+}
+const int *get_logical_dimensions(){
+  return nsquares;
+}
+
+const int *get_logical_coordinate(){
+  return machine_coordinates;
 }

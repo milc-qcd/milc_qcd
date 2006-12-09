@@ -1,6 +1,7 @@
 /******** layout_hyper_tstretch.c *********/
 /* MIMD version 7 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
+/* NOT IN THE CURRENT TEST STREAM.  USE WITH CAUTION! */
 
 /* This version divides the lattice by factors of prime numbers in any of the
    four directions.  It prefers to divide the longest dimensions,
