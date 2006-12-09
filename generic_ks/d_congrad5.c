@@ -45,8 +45,10 @@ int dtimem_iters;
 /* #define DSLASHTIME */
 /* #define DSLASHTIMES */
 
+/* prec argument is ignored */
 int ks_congrad( field_offset src, field_offset dest, Real mass,
-    int niter, int nrestart, Real rsqmin, int parity, Real *final_rsq_ptr ){
+		int niter, int nrestart, Real rsqmin, int prec,
+		int parity, Real *final_rsq_ptr ){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
@@ -244,7 +246,7 @@ fflush(stdout);}
 	    /**if(this_node==0)printf("normal return\n"); fflush(stdout);**/
 #ifdef CGTIME
  dtimec += dclock();
-if(this_node==0){printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
+if(this_node==0){printf("CONGRAD5: (naive) time = %e iters = %d mflops = %e\n",
 dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
 fflush(stdout);}
 #endif

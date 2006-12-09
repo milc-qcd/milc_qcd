@@ -77,7 +77,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
     register int dir,otherparity=0;
     register su3_matrix *fat4, *long4;
 
-    if( !(valid_fn_links==1))  load_fn_links();
+    load_fn_links();
     switch(parity){
 	case EVEN:	otherparity=ODD; break;
 	case ODD:	otherparity=EVEN; break;
@@ -221,7 +221,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 #endif
 
   /* load fatlinks and longlinks */
-  if( !(valid_fn_links==1))  load_fn_links();
+  load_fn_links();
 
   switch(parity)
     {
@@ -423,8 +423,8 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity ) {
    register su3_matrix *fat4, *long4;
    msg_tag *tag[16];
 
-   if( !(valid_fn_links==1))  load_fn_links();
-   if( !(valid_fn_links_dmdu0==1))  load_fn_links_dmdu0();
+   load_fn_links();
+   load_fn_links_dmdu0();
     switch(parity){
 	case EVEN:	otherparity=ODD; break;
 	case ODD:	otherparity=EVEN; break;
@@ -550,8 +550,8 @@ void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity ) {
      }
    templongv1=(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-   if( !(valid_fn_links==1))  load_fn_links();
-   if( !(valid_fn_links_dmdu0==1))  load_fn_links_dmdu0();
+   load_fn_links();
+   load_fn_links_dmdu0();
    switch(parity)
      {
      case EVEN:	otherparity=ODD; break;

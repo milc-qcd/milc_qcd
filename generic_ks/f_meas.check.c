@@ -63,10 +63,8 @@ BOMB THE COMPILE
 #endif
     int jpbp_reps;
 
-#ifdef FN
-    if( !(valid_fn_links==1))  load_fn_links();
-#ifdef DM_DU0
-    if( !(valid_fn_links_dmdu0==1))  load_fn_links_dmdu0();
+    load_fn_links();
+    load_fn_links_dmdu0();
 #endif
 #endif
 

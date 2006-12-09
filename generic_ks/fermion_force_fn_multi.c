@@ -18,15 +18,9 @@
  */
 
 
-/**#define FFTIME**/
-/**#define FFSTIME**/
-
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include <string.h>
 
-enum ks_multiff_opt_t { KS_MULTIFF_ASVEC, KS_MULTIFF_FNMATREV, 
-			KS_MULTIFF_FNMAT };
-static enum ks_multiff_opt_t ks_multiff_opt = KS_MULTIFF_FNMAT;   /* Default */
 
 /* All routines in this file require the FN flag */
 #ifndef FN
@@ -45,41 +39,46 @@ BOMB THE COMPILE
 #endif
 
 /**********************************************************************/
-/*   Set optimization choice                                          */
-/**********************************************************************/
-/* returns 1 for error and 0 for success */
-
-int eo_fermion_force_set_opt(char opt_string[]){
-  if(strcmp(opt_string,"ASVEC") == 0)
-    ks_multiff_opt = KS_MULTIFF_ASVEC;
-  else if(strcmp(opt_string,"FNMATREV") == 0)
-    ks_multiff_opt = KS_MULTIFF_FNMATREV;
-  else if(strcmp(opt_string,"FNMAT") == 0)
-    ks_multiff_opt = KS_MULTIFF_FNMAT;
-  else{
-    node0_printf("eo_fermion_force_set_opt: Unrecognized type %s\n",
-		 opt_string);
-    node0_printf("Choices are ASVEC, FNMAT, and FNMATREV\n");
-    return 1;
-  }
-  node0_printf("eo_fermion_force_set_opt: set opt to %s = %d\n",opt_string,
-	 ks_multiff_opt);
-  return 0;
-}
-
-/**********************************************************************/
 /*   Wrapper for fermion force routines with multiple sources         */
 /**********************************************************************/
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, int nterms ) {
 
-  if(ks_multiff_opt == KS_MULTIFF_ASVEC)
+
+  switch(KS_MULTIFF){
+  case ASVEC:
     eo_fermion_force_asqtad_block( eps, residues, xxx, nterms, VECLENGTH );
-  else if(ks_multiff_opt == KS_MULTIFF_FNMATREV)
+    break;
+  case FNMATREV:
     fn_fermion_force_multi_reverse( eps, residues, xxx, nterms );
-  else
+    break;
+  case FNMAT:
     fn_fermion_force_multi( eps, residues, xxx, nterms );
+    break;
+  default:
+    fn_fermion_force_multi( eps, residues, xxx, nterms );
+  }
 }
 
+/**********************************************************************/
+/*   Accessor for string describing the option                        */
+/**********************************************************************/
+const char *ks_multiff_opt_chr( void )
+{
+  switch(KS_MULTIFF){
+  case ASVEC:
+    return "ASVEC";
+    break;
+  case FNMATREV:
+    return "FNMATREV";
+    break;
+  case FNMAT:
+    return "FNMAT";
+    break;
+  default:
+    return "FNMAT";
+  }
+  return NULL;
+}
 /**********************************************************************/
 /*   General FN Version for "nterms" sources                          */
 /**********************************************************************/
@@ -322,7 +321,7 @@ void fn_fermion_force_multi( Real eps, Real *residues, su3_vector **multi_x, int
   }
 #ifdef FFTIME
   dtime += dclock();
-  node0_printf("FFTIME:  time = %e (%d terms) mflops = %e\n",dtime,nterms,
+  node0_printf("FFTIME:  time = %e (FNMAT) terms = %d mflops = %e\n",dtime,nterms,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 #endif
 //printf("FF flops = %d\n",tempflops);
@@ -560,7 +559,7 @@ void fn_fermion_force_multi_reverse( Real eps, Real *residues, su3_vector **mult
   }
 #ifdef FFTIME
   dtime += dclock();
-  node0_printf("FFTIME:  time = %e (%d terms) mflops = %e\n",dtime,nterms,
+  node0_printf("FFTIME:  time = %e (FNMATREV) terms = %d mflops = %e\n",dtime,nterms,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 #endif
 //printf("FF flops = %d\n",tempflops);
@@ -721,7 +720,7 @@ void fn_fermion_force_multi_june05( Real eps, Real *residues, su3_vector **multi
   free( mat_outerprod ); free( mat_tmp0 ); free( mat_tmp1 );
 #ifdef FFTIME
   dtime += dclock();
-  node0_printf("FFTIME:  time = %e (%d terms) mflops = %e\n",dtime,nterms,
+  node0_printf("FFTIME:  time = %e (JUN05) terms = %d mflops = %e\n",dtime,nterms,
 	     (Real)nflop*volume*nterms/(1e6*dtime*numnodes()) );
 #endif
 }
@@ -1248,14 +1247,13 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues, su3_vector **xxx, 
   
 #ifdef FFTIME
   dtime += dclock();
-node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
-	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
+node0_printf("FFTIME:  time = %e (ASVEC) terms = %d mflops = %e\n",dtime,
+	     nterms,(Real)nflop*volume/(1e6*dtime*numnodes()) );
   /**printf("TLENGTH: %d\n",tlength);**/
 #endif
 
 
 } /* eo_fermion_force_asqtad_multi */
-// END DEVELOPMENT CODE
 
 
 void u_shift_veclist_fermion(veclist *src, veclist *dest, 

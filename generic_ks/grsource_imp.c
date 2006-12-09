@@ -25,9 +25,6 @@ register site *s;
 #endif
         }
     }
-#ifdef FN
-    if( !(valid_fn_links==1))  load_fn_links();
-#endif
     dslash_site( F_OFFSET(g_rand), dest, parity);
     scalar_mult_latvec( dest, -1.0, dest, parity );
     scalar_mult_add_latvec( dest, F_OFFSET(g_rand), 2.0*mass,

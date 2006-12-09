@@ -26,6 +26,10 @@ static void compute_gen_staple_site(su3_matrix *staple, int mu, int nu,
 static void compute_gen_staple_field(su3_matrix *staple, int mu, int nu, 
 		      su3_matrix *link, su3_matrix *fatlink, Real coef);
 #endif
+
+static int valid_fn_links = 0;
+static int valid_fn_links_dmdu0 = 0;
+
 /********************************************************************/
 /* Sum over paths connecting to nearest neighbor point (fat link) and to third
    nearest neighbor (longlinks) */
@@ -273,6 +277,8 @@ dtime += dclock();
    t_longbacklink */
 void load_fn_links(){
 
+  if(valid_fn_links == 1)return;
+
   load_fatlinks(&t_fatlink, get_quark_path_coeff(), get_q_paths());
   load_longlinks(&t_longlink);
 
@@ -286,11 +292,21 @@ void load_fn_links(){
 
 #ifdef DM_DU0
 void load_fn_links_dmdu0(){
+  if(valid_fn_links_dmdu0 == 1)return;
+
   load_fatlinks(&t_dfatlink_du0, get_quark_path_coeff_dmdu0(), 
 		get_q_paths_dmdu0());
   valid_fn_links_dmdu0 = 1;
 }
 #endif
+
+void
+invalidate_fn_links( void )
+{
+  valid_fn_links = 0;
+  valid_fn_links_dmdu0 = 0;
+}
+
 
 #ifdef  ASQ_OPTIMIZED_FATTENING   /* Asqtad action only, "_fn" executables */
 #ifndef FN

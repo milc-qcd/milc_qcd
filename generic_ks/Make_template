@@ -15,7 +15,10 @@ G_KS_ALL = \
   d_congrad5_fn.o \
   d_congrad5_fn_fewsums.o \
   d_congrad5_fn_qop.o \
-  d_congrad5_fn_qop_milc.o \
+  d_congrad5_fn_qop_D.o \
+  d_congrad5_fn_qop_F.o \
+  d_congrad5_fn_qop_milc_D.o \
+  d_congrad5_fn_qop_milc_F.o \
   d_congrad5_fn_qop_two_src.o \
   d_congrad5_fn_qopdp.o \
   d_congrad5_fn_qopqdp_two_src.o \
@@ -29,7 +32,8 @@ G_KS_ALL = \
   dslash_fn2.o \
   dslash_fn_dblstore.o \
   dslash_fn_multi.o \
-  dslash_fn_qop_milc.o \
+  dslash_fn_qop_milc_D.o \
+  dslash_fn_qop_milc_F.o \
   eigen_stuff.o \
   f_meas.o \
   fermion_force_asqtad3.o \
@@ -40,7 +44,10 @@ G_KS_ALL = \
   fermion_force_fn_multi_qdp.o \
   fermion_links_asqtad_qdp.o \
   fermion_links_asqtad_qop.o \
-  fermion_links_fn_qop_milc.o \
+  fermion_links_asqtad_qop_D.o \
+  fermion_links_asqtad_qop_F.o \
+  fermion_links_fn_qop_milc_D.o \
+  fermion_links_fn_qop_milc_F.o \
   fermion_links_fn.o \
   fermion_links_fn_dmdu0.o \
   fermion_links_helpers.o \
@@ -57,8 +64,12 @@ G_KS_ALL = \
   ks_multicg.o \
   ks_multicg_offset.o \
   ks_multicg_offset_qop.o \
-  ks_multicg_qop_milc.o \
-  load_qop_asqtad_coeffs.o \
+  ks_multicg_offset_qop_D.o \
+  ks_multicg_offset_qop_F.o \
+  ks_multicg_qop_milc_D.o \
+  ks_multicg_qop_milc_F.o \
+  load_qop_asqtad_coeffs_D.o \
+  load_qop_asqtad_coeffs_F.o \
   mat_invert.o \
   mu.c \
   mu_fast.c \
@@ -69,6 +80,7 @@ G_KS_ALL = \
   quark_stuff4.o \
   quark_stuff5.o \
   quark_stuff6.o \
+  show_generic_ks_opts.o \
   smear_links.o \
   spectrum.o \
   spectrum2.o \
@@ -93,6 +105,8 @@ G_KS_HEADERS = \
   ../include/generic.h \
   ../include/generic_quark_types.h \
   ../include/generic_ks.h \
+  ../include/generic_ks_qdp.h \
+  ../include/generic_ks_qop.h \
   ../include/io_scidac_ks.h
 
 G_KS_ALL_DEPEND = \
@@ -116,7 +130,13 @@ d_congrad5_fn.o: ../generic_ks/d_congrad5_fn.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop.o: ../generic_ks/d_congrad5_fn_qop.c
 	${CC} -c ${CFLAGS} $<
-d_congrad5_fn_qop_milc.o: ../generic_ks/d_congrad5_fn_qop_milc.c
+d_congrad5_fn_qop_D.o: ../generic_ks/d_congrad5_fn_qop_D.c ../generic_ks/d_congrad5_fn_qop_P.c 
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_qop_F.o: ../generic_ks/d_congrad5_fn_qop_F.c ../generic_ks/d_congrad5_fn_qop_P.c
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_qop_milc_D.o: ../generic_ks/d_congrad5_fn_qop_milc_D.c ../generic_ks/d_congrad5_fn_qop_milc_P.c
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_qop_milc_F.o: ../generic_ks/d_congrad5_fn_qop_milc_F.c ../generic_ks/d_congrad5_fn_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop_two_src.o: ../generic_ks/d_congrad5_fn_qop_two_src.c
 	${CC} -c ${CFLAGS} $<
@@ -144,7 +164,9 @@ dslash_fn_dblstore.o: ../generic_ks/dslash_fn_dblstore.c
 	${CC} -c ${CFLAGS} $<
 dslash_fn_multi.o: ../generic_ks/dslash_fn_multi.c
 	${CC} -c ${CFLAGS} $<
-dslash_fn_qop_milc.o: ../generic_ks/dslash_fn_qop_milc.c
+dslash_fn_qop_milc_D.o: ../generic_ks/dslash_fn_qop_milc_D.c ../generic_ks/dslash_fn_qop_milc_P.c
+	${CC} -c ${CFLAGS} $<
+dslash_fn_qop_milc_F.o: ../generic_ks/dslash_fn_qop_milc_F.c ../generic_ks/dslash_fn_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff.o: ../generic_ks/eigen_stuff.c
 	${CC} -c ${CFLAGS} $<
@@ -172,7 +194,13 @@ fermion_links_asqtad_qdp.o: ../generic_ks/fermion_links_asqtad_qdp.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_asqtad_qop.o: ../generic_ks/fermion_links_asqtad_qop.c
 	${CC} -c ${CFLAGS} $<
-fermion_links_fn_qop_milc.o: ../generic_ks/fermion_links_fn_qop_milc.c
+fermion_links_asqtad_qop_D.o: ../generic_ks/fermion_links_asqtad_qop_D.c  ../generic_ks/fermion_links_asqtad_qop_P.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_asqtad_qop_F.o: ../generic_ks/fermion_links_asqtad_qop_F.c  ../generic_ks/fermion_links_asqtad_qop_P.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_fn_qop_milc_D.o: ../generic_ks/fermion_links_fn_qop_milc_D.c ../generic_ks/fermion_links_fn_qop_milc_P.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_fn_qop_milc_F.o: ../generic_ks/fermion_links_fn_qop_milc_F.c ../generic_ks/fermion_links_fn_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_fn.o: ../generic_ks/fermion_links_fn.c
 	${CC} -c ${CFLAGS} $<
@@ -204,9 +232,17 @@ ks_multicg_offset.o: ../generic_ks/ks_multicg_offset.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset_qop.o: ../generic_ks/ks_multicg_offset_qop.c
 	${CC} -c ${CFLAGS} $<
-ks_multicg_qop_milc.o: ../generic_ks/ks_multicg_qop_milc.c
+ks_multicg_offset_qop_D.o: ../generic_ks/ks_multicg_offset_qop_D.c  ../generic_ks/ks_multicg_offset_qop_P.c
 	${CC} -c ${CFLAGS} $<
-load_qop_asqtad_coeffs.o: ../generic_ks/load_qop_asqtad_coeffs.c
+ks_multicg_offset_qop_F.o: ../generic_ks/ks_multicg_offset_qop_F.c ../generic_ks/ks_multicg_offset_qop_P.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_qop_milc_D.o: ../generic_ks/ks_multicg_qop_milc_D.c ../generic_ks/ks_multicg_qop_milc_P.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_qop_milc_F.o: ../generic_ks/ks_multicg_qop_milc_F.c ../generic_ks/ks_multicg_qop_milc_P.c
+	${CC} -c ${CFLAGS} $<
+load_qop_asqtad_coeffs_D.o: ../generic_ks/load_qop_asqtad_coeffs_D.c ../generic_ks/load_qop_asqtad_coeffs_P.c
+	${CC} -c ${CFLAGS} $<
+load_qop_asqtad_coeffs_F.o: ../generic_ks/load_qop_asqtad_coeffs_F.c ../generic_ks/load_qop_asqtad_coeffs_P.c
 	${CC} -c ${CFLAGS} $<
 mat_invert.o: ../generic_ks/mat_invert.c
 	${CC} -c ${CFLAGS} $<
@@ -229,6 +265,8 @@ quark_stuff5.o: ../generic_ks/quark_stuff5.c
 quark_stuff6.o: ../generic_ks/quark_stuff6.c
 	${CC} -c ${CFLAGS} $<
 rephase.o: ../generic_ks/rephase.c
+	${CC} -c ${CFLAGS} $<
+show_generic_ks_opts.o: ../generic_ks/show_generic_ks_opts.c
 	${CC} -c ${CFLAGS} $<
 smear_links.o: ../generic_ks/smear_links.c
 	${CC} -c ${CFLAGS} $<
@@ -257,8 +295,13 @@ ifeq ($(strip ${HAVEQDP}),true)
 
 G_KS_ALL_QDP = \
   d_congrad5_fn_qdp.o \
-  dslash_fn_qdp.o \
-  ks_multicg_qdp.o
+  d_congrad5_fn_qdp_D.o \
+  d_congrad5_fn_qdp_F.o \
+  dslash_fn_qdp_D.o \
+  dslash_fn_qdp_F.o \
+  ks_multicg_offset_qdp.o \
+  ks_multicg_offset_qdp_D.o \
+  ks_multicg_offset_qdp_F.o
 
 G_KS_HEADERS_QDP = \
   $(QDP)/include/qdp.h
@@ -271,9 +314,19 @@ ${G_KS_ALL_QDP} : ${G_KS_ALL_DEPEND_QDP}
 
 d_congrad5_fn_qdp.o: ../generic_ks/d_congrad5_fn_qdp.c
 	${CC} -c ${CFLAGS} $<
-dslash_fn_qdp.o: ../generic_ks/dslash_fn_qdp.c
+d_congrad5_fn_qdp_D.o: ../generic_ks/d_congrad5_fn_qdp_D.c ../generic_ks/d_congrad5_fn_qdp_P.c
 	${CC} -c ${CFLAGS} $<
-ks_multicg_qdp.o: ../generic_ks/ks_multicg_qdp.c
+d_congrad5_fn_qdp_F.o: ../generic_ks/d_congrad5_fn_qdp_F.c ../generic_ks/d_congrad5_fn_qdp_P.c
+	${CC} -c ${CFLAGS} $<
+dslash_fn_qdp_D.o: ../generic_ks/dslash_fn_qdp_D.c  ../generic_ks/dslash_fn_qdp_P.c
+	${CC} -c ${CFLAGS} $<
+dslash_fn_qdp_F.o: ../generic_ks/dslash_fn_qdp_F.c  ../generic_ks/dslash_fn_qdp_P.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_qdp.o: ../generic_ks/ks_multicg_offset_qdp.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_qdp_D.o: ../generic_ks/ks_multicg_offset_qdp_D.c ../generic_ks/ks_multicg_offset_qdp_P.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_qdp_F.o: ../generic_ks/ks_multicg_offset_qdp_F.c ../generic_ks/ks_multicg_offset_qdp_P.c
 	${CC} -c ${CFLAGS} $<
 
 endif

@@ -1,4 +1,7 @@
+/* NOT MAINTAINED! */
 #include "generic_ks_includes.h"
+#include "../include/generic_qdp.h"
+#include <lattice_qdp.h>
 #include "mvmult.c"
 
 static int dslash_setup=0;
@@ -250,6 +253,7 @@ dslash_fn_special(field_offset src, field_offset dest,
   QDP_Subset subset;
   //printf("dslash_fn_sp %i\n", parity);
   //setup_dslash();
+  load_fn_links();
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
@@ -273,6 +277,7 @@ dslash_fn_on_temp(su3_vector *src, su3_vector *dest, int parity)
   QDP_Subset subset;
   //printf("dslash_fn_t %i\n", parity);
   //setup_dslash();
+  load_fn_links();
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
@@ -300,6 +305,7 @@ dslash_fn_field_special(su3_vector *src, su3_vector *dest,
   QDP_Subset qparity;
   //printf("dslash_fn_t_sp %i\n", parity);
   //setup_dslash();
+  load_fn_links();
   if(parity==EVEN) qparity = QDP_even;
   else if(parity==ODD) qparity = QDP_odd;
   else qparity = QDP_all;

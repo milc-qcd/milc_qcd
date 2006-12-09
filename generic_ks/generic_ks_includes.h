@@ -20,7 +20,4 @@
 #include "../include/generic_ks.h"
 #include "../include/dirs.h"
 #include "../include/io_ksprop.h"
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 #include "../include/check_malloc.h"

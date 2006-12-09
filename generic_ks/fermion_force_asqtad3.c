@@ -32,9 +32,6 @@
  * Fermion force: 433968 for eo_fermion_force_twoterms()
  */
 
-/**#define FFTIME**/
-/**#define FFSTIME**/
-
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include <string.h>
 
@@ -270,7 +267,7 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off ){
 
 #ifdef FFTIME
   dtime += dclock();
-node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+node0_printf("FFTIME:  time = %e (asqtad3) terms = 1 mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 /**printf("TLENGTH: %d\n",tlength);**/
 #endif
@@ -707,7 +704,7 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   
 #ifdef FFTIME
   dtime += dclock();
-node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+node0_printf("FFTIME:  time = %e (asqtad3) terms = 2 mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
   /**printf("TLENGTH: %d\n",tlength);**/
 #endif

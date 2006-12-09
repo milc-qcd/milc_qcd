@@ -23,8 +23,6 @@
  * Fermion force: 433968 for eo_fermion_force_twoterms()
  */
 
-/**#define FFTIME**/
-/**#define FFSTIME**/
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 

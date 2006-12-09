@@ -37,6 +37,7 @@ int ks_multicg_mass(	/* Return value is number of iterations taken */
     int num_masses,	/* number of masses */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* internal precision for inversion (ignored) */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
@@ -54,7 +55,7 @@ int ks_multicg_mass(	/* Return value is number of iterations taken */
     offsets[i] = 4.0*masses[i]*masses[i];
   }
   status = ks_multicg_offset(src, psim, offsets, num_masses, niter, rsqmin,
-			     parity, final_rsq_ptr);
+			     prec, parity, final_rsq_ptr);
   free(offsets);
   return status;
 }
@@ -68,6 +69,7 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* internal precision for inversion (ignored) */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
@@ -152,10 +154,6 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 
 
     iteration = 0;
-
-#ifdef FN
-    if( !(valid_fn_links==1))  load_fn_links();
-#endif
 
 #define PAD 0
     /* now we can allocate temporary variables and copy then */
@@ -323,8 +321,8 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 #ifdef CGTIME
 	    dtimec += dclock();
 	    if(this_node==0){
-	      printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
-		     dtimec,iteration,
+	      printf("CONGRAD5: time = %e (multicg_offset) iters = %d  masses = %d mflops = %e\n",
+		     dtimec,iteration,num_offsets,
 		     (double)(nflop)*volume*
 		     iteration/(1.0e6*dtimec*numnodes()));
 		fflush(stdout);}

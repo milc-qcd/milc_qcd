@@ -5,6 +5,7 @@
 
 /* Jim Hetrick, Kari Rummukainen, Doug Toussaint, Steven Gottlieb */
 /* 10/02/01 C. DeTar Consolidated with tmp version */
+/* 12/2006 C. D. NEEDS UPDATING IF WE ARE GOING TO USE IT */
 
 /* This version looks at the initial vector every "niter" passes */
 /* The source vector is in "src", and the initial guess and answer
@@ -26,6 +27,8 @@
 */
 //#define _GNU_SOURCE
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
+#include "../include/generic_qdp.h"
+#include <lattice_qdp.h>
 //#include <stdio.h>
 //#include <sys/types.h>
 //#include <unistd.h>
@@ -137,7 +140,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   msq_x4 = 4.0*mass*mass;
   iteration = 0;
 
-  if( !(valid_fn_links==1))  load_fn_links();
+  load_fn_links();
   set4_M_from_field(fatlinks, t_fatlink);
   set4_M_from_field(longlinks, t_longlink);
 
@@ -285,7 +288,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
 #ifdef CGTIME
     dtimec += dclock();
     if(QDP_this_node==0) {
-      printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
+      printf("CONGRAD5: time = %e (fn_1sum_qdp) iters = %d mflops = %e\n",
 	     dtimec, iteration,
 	     (double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
       fflush(stdout);
@@ -305,9 +308,10 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   return(iteration);
 }
 
+/* prec argument is ignored */
 int
 ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
-	   int niter, int nrestart, Real rsqmin, int parity, 
+	   int niter, int nrestart, Real rsqmin, int prec, int parity, 
            Real *final_rsq_ptr)
 {
   QLA_Real qmass, qrsqmin, qfinal_rsq_ptr;

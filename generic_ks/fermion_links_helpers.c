@@ -116,8 +116,7 @@ free_fn_links(){
   free_t_links(&t_fatbacklink);
   free_t_links(&t_longbacklink);
 #endif
-
-  valid_fn_links = 0;
+  invalidate_fn_links();
 }
 
 #ifdef DM_DU0
@@ -125,7 +124,7 @@ free_fn_links(){
 
 void free_fn_links_dmdu0(){
   free_t_links(&t_dfatlink_du0);
-  valid_fn_links_dmdu0 = 0;
+  invalidate_fn_links();
 }
 #endif
 

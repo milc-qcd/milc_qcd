@@ -44,8 +44,9 @@ su3_vector *resid;
 su3_vector *t_dest;
 static int first_congrad = 1;
 
+/* prec argument is ignored */
 int ks_congrad( field_offset src, field_offset dest, Real mass,
-		int niter, int nrestart, Real rsqmin, 
+		int niter, int nrestart, Real rsqmin, int prec,
 		int parity, Real *final_rsq_ptr ){
   register int i;
   register site *s;
@@ -67,6 +68,9 @@ double dtimed,dtimec;
 #endif
 double nflop;
 
+ load_fn_links();  /* Do this here so the link build time is not
+		      counted in the CG time */
+
 /* debug */
 #ifdef CGTIME
  dtimec = -dclock(); 
@@ -85,7 +89,6 @@ if(parity==EVENANDODD)nflop *=2;
 	msq_x4 = 4.0*mass*mass;
         iteration = 0;
 
-	if( !(valid_fn_links==1))  load_fn_links();
 	/* now we can allocate temporary variables and copy then */
 	/* PAD may be used to avoid cache trashing */
 #define PAD 0
@@ -276,7 +279,7 @@ start:
 #ifdef CGTIME
  dtimec += dclock();
 if(this_node==0){
-printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
+printf("CONGRAD5: time = %e (fn) iters = %d mflops = %e\n",
 dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
 fflush(stdout);}
 #endif

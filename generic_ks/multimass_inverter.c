@@ -59,7 +59,8 @@ int multimass_inverter( params_mminv *mminv){
   char kssavefile_tmp[MAXFILENAME],extension[48];
   int len1,len2;
   char recxml[MAX_RECXML];
-
+  int prec = PRECISION; /* Make CG precision the same as the
+			   prevailing precision */
   cgn=0; /* number of CG iterations */
   czero.real = czero.imag = 0.0;
 
@@ -119,8 +120,9 @@ int multimass_inverter( params_mminv *mminv){
 
 		/* must use the correct block of quark_props */
 		quark_props_color = &(quark_props[nmasses*color]);
-	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props_color, masses, nmasses,
-	   niter, mminv->rsqprop, EVEN, &finalrsq);
+	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props_color, 
+				masses, nmasses, niter, mminv->rsqprop, 
+				prec, EVEN, &finalrsq);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
 	    dslash_field( quark_props_color[j], temp_prop, ODD);

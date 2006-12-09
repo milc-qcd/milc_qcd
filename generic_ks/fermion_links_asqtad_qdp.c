@@ -6,22 +6,20 @@
  *
  * load_fn_links
  * load_fn_links_dmdu0
- * free_fn_links
+ * invalidate_fn_links
  *
  * takes gauge field from site structure "links"
  * Puts result in global t_fatlinks, t_longlinks 
  * If DBLSTORE_FN is defined, also puts result in global t_fatbacklinks
  * and t_longbacklinks
  *
- * free_fn_links
- * free_fn_links_dmdu0
- *
- * deletes the global fields
  */
 /* J. Osborn 2005 */
 /* CD 10/06 Wrapped for QDP */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
+#include "../include/generic_qdp.h"
+#include "../include/generic_ks_qdp.h"
 
 #ifdef QCDOC
 #define special_alloc qcdoc_alloc
@@ -35,6 +33,9 @@ static void
 compute_gen_staple(QDP_ColorMatrix *staple, int mu, int nu,
 		   QDP_ColorMatrix *link, double dcoef,
 		   QDP_ColorMatrix *gauge[], QDP_ColorMatrix *fl[]);
+
+static int valid_fn_links = 0;
+static int valid_fn_links_dmdu0 = 0;
 
 static void 
 create_fn_links_qdp(QDP_ColorMatrix *fl[], QDP_ColorMatrix *ll[],
@@ -252,8 +253,10 @@ void load_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
 }
 
 
-/* Wrappers for MILC call to QOP */
+/* Wrappers for MILC call to QDP */
 void load_fn_links(){
+
+  if(valid_fn_links == 1)return;
   load_asqtad_links(1, &t_fatlink, &t_longlink, get_quark_path_coeff());
 
 #ifdef DBLSTORE_FN
@@ -263,11 +266,19 @@ void load_fn_links(){
 }
 
 #ifdef DM_DU0
-/* Wrappers for MILC call to QOP */
+/* Wrappers for MILC call to QDP */
 void load_fn_links_dmdu0(){
   su3_matrix *null = NULL;
+
+  if(valid_fn_links_dmdu0 == 1)return;
   load_asqtad_links(0, &t_dfatlink_du0, &null, get_quark_path_coeff_dmdu0());
 }
 #endif
 
+void
+invalidate_fn_links( void )
+{
+  valid_fn_links = 0;
+  valid_fn_links_dmdu0 = 0;
+}
 

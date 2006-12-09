@@ -75,6 +75,8 @@ int spectrum_multimom( Real dyn_mass, Real low_mass, Real mass_inc, int nmasses,
   Real finalrsq;
   su3_vector **quark_props;
   complex **props;	/* arrays of propagators */
+  int prec = PRECISION;  /* make CG precision the same as the
+			    prevailing precision */
 
   cgn=0; /* number of CG iterations */
 
@@ -128,8 +130,9 @@ if( t_source%2 != 0 ){node0_printf("Even sources only!\n"); terminate(0);}
 	}
 
 	/* compute M^-1 * quark_source */
-	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, nmasses,
-	   niter, rsqprop, EVEN, &finalrsq);
+	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+				nmasses, niter, rsqprop, prec, EVEN, 
+				&finalrsq);
 	/* Multiply by Madjoint. Note this assumes source on even sites only */
 	/****** NEW CODE **/
 	for(j=0;j<nmasses;j++){

@@ -64,9 +64,9 @@ BOMB THE COMPILE
     int jpbp_reps;
 
 #ifdef FN
-    if( !(valid_fn_links==1))  load_fn_links();
+    load_fn_links();
 #ifdef DM_DU0
-    if( !(valid_fn_links_dmdu0==1))  load_fn_links_dmdu0();
+    load_fn_links_dmdu0();
 #endif
 #endif
 
@@ -79,6 +79,7 @@ BOMB THE COMPILE
       grsource_imp( phi_off, mass, EVENANDODD );
       /* phi_off = M g_rand (still) */
       /* xxx_off = M^{-1} g_rand */
+      //      clear_latvec(xxx_off,EVENANDODD);
       mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass );
       
 #ifdef DM_DU0

@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.18  2006/12/09 13:52:39  detar
+ * Add mixed precision capability for KS inverter in QOP and QDP
+ *
  * Revision 1.17  2006/11/16 04:17:53  detar
  * Fix printf -> node0_printf to avoid duplicate messages.
  *
@@ -55,13 +58,27 @@
  *
  */
 
+#if (QOP_Precision==1)
+#define LOAD_QOP_ASQTAD_COEFFS load_qop_F_asqtad_coeffs
+#else
+#define LOAD_QOP_ASQTAD_COEFFS load_qop_D_asqtad_coeffs
+#endif
+
 #include "generic_ks_includes.h"
-#include <qop.h>
-#include <string.h>
+#include "../include/generic_qop.h"
+#include "../include/generic_ks_qop.h"
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.17 2006/11/16 04:17:53 detar Exp $";
+/* Set default if undeclared */
+#ifndef KS_MULTIFF
+#define KS_MULTIFF FNMAT
+#endif
 
-/* Standard MILC interface for the single-species Asqtad fermion force routine */
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.18 2006/12/09 13:52:39 detar Exp $";
+
+/**********************************************************************/
+/* Standard MILC interface for the single-species Asqtad fermion force
+   routine */
+/**********************************************************************/
 void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
 {
 
@@ -99,7 +116,7 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
   vecx = QOP_create_V_from_raw((Real *)rawvecx,QOP_EVENODD);
 
   /* Load coefficients */
-  load_qop_asqtad_coeffs(&coeff, weight, get_quark_path_coeff());
+  LOAD_QOP_ASQTAD_COEFFS(&coeff, weight, get_quark_path_coeff());
 
   /* Compute fermion force */
   dtime = -dclock();
@@ -118,13 +135,16 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
 
   remaptime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+  node0_printf("FFTIME:  time = %e (qop) terms = 1 mflops = %e\n",dtime,
 	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
   node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 }
 
-/* Standard MILC interface for the two-species Asqtad fermion force routine */
+/**********************************************************************/
+/* Standard MILC interface for the two-species Asqtad fermion force
+   routine */
+/**********************************************************************/
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
 			   field_offset x1_off, field_offset x2_off ) {
 
@@ -168,7 +188,7 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
   /* Load coefficients */
   epsv[0] = eps*weight1;  epsv[1] = eps*weight2;
-  load_qop_asqtad_coeffs(&coeff, 1., get_quark_path_coeff());
+  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., get_quark_path_coeff());
 
   /* Compute fermion force */
   dtime = -dclock();
@@ -189,38 +209,19 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
   remaptime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+  node0_printf("FFTIME:  time = %e (qop) terms = 2 mflops = %e\n",dtime,
 	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
   node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 }
 
 
-/* Set optimization choice */
-/* (For the moment we have only one choice, namely Asqtad!) */ 
-enum ks_multiff_opt_t { KS_MULTIFF_ASVEC, KS_MULTIFF_FNMATREV, 
-			KS_MULTIFF_FNMAT };
-static enum ks_multiff_opt_t ks_multiff_opt = KS_MULTIFF_ASVEC;  /* Default */
+/**********************************************************************/
+/*   Version for asqtad.  Parallel transport nterms source vectors    */
+/**********************************************************************/
 
-/* returns 1 for error and 0 for success */
-
-int eo_fermion_force_set_opt(char opt_string[]){
-  if(strcmp(opt_string,"ASVEC") == 0)
-    ks_multiff_opt = KS_MULTIFF_ASVEC;
-  else{
-    printf("eo_fermion_force_set_opt: Unrecognized type %s\n",opt_string);
-    printf("Currently QOP supports only the ASVEC option\n");
-    return 1;
-  }
-  /*printf("eo_fermion_force set ks_multiff_opt to %d\n",ks_multiff_opt);*/
-  return 0;
-}
-
-
-/* Standard MILC interface for multiple terms in the action */
-
-void eo_fermion_force_multi( Real eps, Real *residues, 
-			     su3_vector **xxx, int nterms ) {
+void eo_fermion_force_asqtad_multi( Real eps, Real *residues, 
+    su3_vector **xxx, int nterms ) {
   su3_matrix **rawlinks;
   su3_matrix **rawmom;
   su3_vector *rawvecx = NULL;
@@ -233,7 +234,7 @@ void eo_fermion_force_multi( Real eps, Real *residues,
   int i;
   Real *epsv;
   QOP_info_t info;
-  char myname[] = "eo_fermion_force_multi";
+  char myname[] = "eo_fermion_force_asqtad_multi";
 
 #ifdef FFTIME
   int nflop = 433968;
@@ -271,7 +272,7 @@ void eo_fermion_force_multi( Real eps, Real *residues,
   epsv = (Real *)malloc(sizeof(Real)*nterms);
   /* Load coefficients */
   for(i = 0; i < nterms; i++) epsv[i] = eps*residues[i];
-  load_qop_asqtad_coeffs(&coeff, 1., get_quark_path_coeff());
+  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., get_quark_path_coeff());
 
   /* Compute fermion force */
   dtime = -dclock();
@@ -291,9 +292,80 @@ void eo_fermion_force_multi( Real eps, Real *residues,
 
   remaptime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
-	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFTIME:  time = %e (qop ASVEC) terms = %d mflops = %e\n",dtime,
+	       nterms, (Real)nflop*volume/(1e6*dtime*numnodes()) );
   node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 
 }
+
+/**********************************************************************/
+/*   Parallel transport vectors in blocks of veclength. Asqtad only   */
+/**********************************************************************/
+/* Requires the xxx1 and xxx2 terms in the site structure */
+
+void eo_fermion_force_asqtad_block( Real eps, Real *residues, 
+	    su3_vector **xxx, int nterms, int veclength ) {
+
+  int i,j;
+  site *s;
+
+  /* First do blocks of size veclength */
+  for( j = 0;  j <= nterms-veclength; j += veclength )
+    eo_fermion_force_asqtad_multi( eps, &(residues[j]), xxx+j, veclength );
+  
+  /* Continue with pairs if needed */
+  for( ; j <= nterms-2 ; j+=2 ){
+    FORALLSITES(i,s){
+      s->xxx1 = xxx[j  ][i] ;
+      s->xxx2 = xxx[j+1][i] ;
+    }
+    eo_fermion_force_twoterms( eps, residues[j], residues[j+1],
+			       F_OFFSET(xxx1), F_OFFSET(xxx2) );
+  }
+
+  /* Finish with a single if needed */
+  for( ; j <= nterms-1; j++ ){
+    FORALLSITES(i,s){ s->xxx1 = xxx[j][i] ; }
+    eo_fermion_force_oneterm( eps, residues[j], F_OFFSET(xxx1) );
+  }
+}
+
+/**********************************************************************/
+/*   Standard MILC interface for fermion force with multiple sources  */
+/**********************************************************************/
+void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
+			     int nterms ) {
+
+  int veclength;
+#ifdef VECLENGTH
+  veclength = VECLENGTH;
+#else
+  veclength = 4;
+#endif
+
+  switch(KS_MULTIFF){
+  case ASVEC:
+    /* The only choice now */
+    eo_fermion_force_asqtad_block( eps, residues, xxx, nterms, veclength );
+    break;
+  default:
+    eo_fermion_force_asqtad_block( eps, residues, xxx, nterms, veclength );
+  }
+}
+
+/**********************************************************************/
+/*   Accessor for string describing the option                        */
+/**********************************************************************/
+const char *ks_multiff_opt_chr( void )
+{
+  switch(KS_MULTIFF){
+  case ASVEC:
+    return "ASVEC";
+    break;
+  default:
+    return "ASVEC (only choice for QOP)";
+  }
+  return NULL;
+}
+

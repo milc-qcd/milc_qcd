@@ -8,6 +8,9 @@
  */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
+#include "../include/generic_qdp.h"
+#include "../include/generic_ks_qdp.h"
+#include <lattice_qdp.h>
 #include <string.h>
 
 static int net_back_dirs[16] = { XDOWN, YDOWN, ZDOWN, TDOWN, 
@@ -26,30 +29,6 @@ static int net_back_dirs[16] = { XDOWN, YDOWN, ZDOWN, TDOWN,
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
 
-enum ks_multiff_opt_t { KS_MULTIFF_ASVEC, KS_MULTIFF_FNMATREV, 
-			KS_MULTIFF_FNMAT };
-static enum ks_multiff_opt_t ks_multiff_opt = KS_MULTIFF_FNMAT;   /* Default */
-
-/**********************************************************************/
-/*   Set optimization choice                                          */
-/**********************************************************************/
-/* returns 1 for error and 0 for success */
-
-int eo_fermion_force_set_opt(char opt_string[]){
-  if(strcmp(opt_string,"ASVEC") == 0)
-    ks_multiff_opt = KS_MULTIFF_ASVEC;
-  else if(strcmp(opt_string,"FNMAT") == 0)
-    ks_multiff_opt = KS_MULTIFF_FNMAT;
-  else{
-    node0_printf("eo_fermion_force_set_opt: Unrecognized type %s\n",
-		 opt_string);
-    node0_printf("Choices are ASVEC, FNMAT\n");
-    return 1;
-  }
-  node0_printf("eo_fermion_force_set_opt: set opt to %s = %d\n",opt_string,
-	 ks_multiff_opt);
-  return 0;
-}
 
 /**********************************************************************/
 /*   Utilities                                                        */
@@ -79,18 +58,22 @@ QDP_ShiftDir fndir(int netdir){
 /* special case to transport a "connection" by one link, does both parities */
 void 
 link_transport_connection_qdp( QDP_ColorMatrix *dest, QDP_ColorMatrix *src,
-			       QDP_ColorMatrix *gf[4],
-			       QDP_ColorMatrix *work, int dir ){
+			       QDP_ColorMatrix *gf[4], QDP_ColorMatrix *work,
+                               QDP_ColorMatrix *st[8], int dir ){
   if( GOES_FORWARDS(dir) ) {
-    QDP_M_eq_M_times_sM(dest, gf[dir], src, 
-			QDP_neighbor[dir], QDP_forward, QDP_all);
+    QDP_M_eq_M(work, src, QDP_all);
+    QDP_M_eq_sM(st[dir], work, QDP_neighbor[dir], QDP_forward, QDP_all);
+    QDP_M_eq_M_times_M(dest, gf[dir], st[dir], QDP_all);
+    QDP_discard_M(st[dir]);
   }
   else { /* GOES_BACKWARDS(dir) */
     QDP_M_eq_Ma_times_M(work, gf[OPP_DIR(dir)], src, QDP_all);
-    QDP_M_eq_sM(dest, work, QDP_neighbor[OPP_DIR(dir)], QDP_backward, QDP_all);
+    QDP_M_eq_sM(st[dir], work, QDP_neighbor[OPP_DIR(dir)], 
+		QDP_backward,QDP_all);
+    QDP_M_eq_M(dest, st[dir], QDP_all);
+    QDP_discard_M(st[dir]);
   }
 } /* link_transport_connection_qdp */
-
 
 int 
 find_backwards_gather( Q_path *path ){
@@ -180,7 +163,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
   Q_path *q_paths = get_q_paths();
   Q_path *this_path;	// pointer to current path
   Q_path *last_path;	// pointer to previous path
-  QDP_ColorMatrix *mat_tmp0;
+  QDP_ColorMatrix *mat_tmp0, *stmp[8];
   QDP_ColorMatrix *oprod_along_path[MAX_PATH_LENGTH+1];
   QDP_ColorMatrix *mats_along_path[MAX_PATH_LENGTH+1];
   QDP_ColorMatrix *force_accum[4];  // accumulate force
@@ -215,6 +198,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
      force_accum[i] = QDP_create_M();
   }
   mat_tmp0   = QDP_create_M();
+  for(i=0; i<8; i++) stmp[i] = QDP_create_M();
   tmat       = QDP_create_M();
   vec_tmp[0] = QDP_create_V();
   vec_tmp[1] = QDP_create_V();
@@ -271,6 +255,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
 		      fnshift(netbackdir), fndir(netbackdir), QDP_all);
 	}
 	QDP_M_eq_V_times_Va(tmat, x[term], vec_tmp[k], QDP_all);
+	QDP_discard_V(vec_tmp[k]);
 	QDP_M_peq_r_times_M(oprod_along_path[0], &res[term], tmat, QDP_all);
 	k=1-k; // swap 0 and 1
       } /* end loop over terms in rational function expansion */
@@ -304,8 +289,8 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
     
     for(ilink=j;ilink>=k;ilink--){
       link_transport_connection_qdp( oprod_along_path[length-ilink], 
-				     oprod_along_path[length-ilink-1], 
-				     gf, mat_tmp0, this_path->dir[ilink]  );
+				     oprod_along_path[length-ilink-1], gf,
+                                     mat_tmp0, stmp, this_path->dir[ilink] );
       //tempflops+=9*22;
     }
 
@@ -324,6 +309,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
 	  QDP_M_eq_sM(tmat, gf[dir], QDP_neighbor[dir],
 		      QDP_backward, QDP_all);
 	  QDP_M_eq_Ma(mats_along_path[1], tmat, QDP_all);
+	  QDP_discard_M(tmat);
 	}
 	else{
 	  QDP_M_eq_M(mats_along_path[1], gf[OPP_DIR(dir)], QDP_all); 
@@ -333,7 +319,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
         dir = OPP_DIR(this_path->dir[ilink]);
         link_transport_connection_qdp( mats_along_path[ilink+1], 
 				       mats_along_path[ilink], gf,
-				       mat_tmp0, dir  );
+				       mat_tmp0, stmp, dir );
 	//tempflops+=9*22;
       }
     } // end loop over links
@@ -348,11 +334,13 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
       coeff = ferm_epsilon*this_path->coeff;
       if( (ilink%2)==1 )coeff = -coeff;
       
-      if(ilink==0 && GOES_FORWARDS(dir) )
+      if(ilink==0 && GOES_FORWARDS(dir) ) {
 	QDP_M_eq_M(mat_tmp0, oprod_along_path[length],QDP_all); 
-      else if( ilink>0)
+      } 
+      else if( ilink>0) {
 	QDP_M_eq_M_times_Ma(mat_tmp0, oprod_along_path[length-ilink],  
 			    mats_along_path[ilink], QDP_all);
+      }
       //if(ilink>0)tempflops+=9*22;
 
       /* add in contribution to the force */
@@ -386,6 +374,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
   QDP_destroy_V( vec_tmp[0] );
   QDP_destroy_V( vec_tmp[1] );
   QDP_destroy_M( mat_tmp0 );
+  for(i=0; i<8; i++) QDP_destroy_M(stmp[i]);
   QDP_destroy_M( tmat );
   for(i=0;i<=MAX_PATH_LENGTH;i++){
      QDP_destroy_M( oprod_along_path[i] );
@@ -398,7 +387,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
   }
   dtime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e (%d terms) mflops = %e\n",dtime,nterms,
+  node0_printf("FFTIME:  time = %e (FNMAT) terms = %d mflops = %e\n",dtime,nterms,
 	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
 #endif
   //printf("FF flops = %d\n",tempflops);
@@ -604,11 +593,35 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
 /*   Wrapper for fermion force routines with multiple sources         */
 /**********************************************************************/
 void eo_fermion_force_multi( Real eps, Real *residues, 
-			     su3_vector **xxx, int nterms ) {
-
-  if(ks_multiff_opt == KS_MULTIFF_ASVEC)
+			     su3_vector **xxx, int nterms ) 
+{
+  switch(KS_MULTIFF){
+  case ASVEC:
     eo_fermion_force_asqtad_block( eps, residues, xxx, nterms, VECLENGTH );
-  else
+    break;
+  case FNMAT:
     fn_fermion_force_multi( eps, residues, xxx, nterms );
+    break;
+  default:
+    fn_fermion_force_multi( eps, residues, xxx, nterms );
+  }
+}
+
+/**********************************************************************/
+/*   Accessor for string describing the option                        */
+/**********************************************************************/
+const char *ks_multiff_opt_chr( void )
+{
+  switch(KS_MULTIFF){
+  case ASVEC:
+    return "ASVEC";
+    break;
+  case FNMAT:
+    return "FNMAT";
+    break;
+  default:
+    return "FNMAT (default choice)";
+  }
+  return NULL;
 }
 

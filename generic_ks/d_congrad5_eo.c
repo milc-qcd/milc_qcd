@@ -35,8 +35,10 @@ void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]);
 #define LOOPEND
 #include "../include/loopend.h"
 
+/* prec argument is ignored */
 int ks_congrad( field_offset src, field_offset dest, Real mass,
-    int niter, int nrestart, Real rsqmin, int parity, Real *final_rsq_ptr ){
+		int niter, int nrestart, Real rsqmin, int prec,
+		int parity, Real *final_rsq_ptr ){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
@@ -194,7 +196,7 @@ start:
 	    /**node0_printf("normal return\n"); fflush(stdout);**/
 #ifdef CGTIME
  dtimec += dclock();
-if(this_node==0){printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
+if(this_node==0){printf("CONGRAD5: time = %e (eo) iters = %d mflops = %e\n",
 dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
 fflush(stdout);}
 #endif

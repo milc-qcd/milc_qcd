@@ -37,9 +37,6 @@
  * Fermion force: 433968 for QOP_asqtad_force_two()
  */
 
-/**#define FFTIME**/
-/**#define FFSTIME**/
-
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/qop_milc.h"
 #include <string.h>
@@ -295,7 +292,7 @@ void QOP_asqtad_force(QOP_info_t *info,
   final_flop = (Real)nflop*volume/numnodes();
   dtime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
+  node0_printf("FFTIME:  time = %e (qop_milc) terms = 1 mflops = %e\n",dtime,
 	       final_flop/(1.0e6*dtime) );
 #endif
 
@@ -752,8 +749,8 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
   final_flop = (Real)nflop*volume/numnodes();
   dtime += dclock();
 #ifdef FFTIME
-node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
-	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
+node0_printf("FFTIME:  time = %e (qop_milc) terms = %d mflops = %e\n",dtime,
+	     nsrc, (Real)nflop*volume/(1e6*dtime*numnodes()) );
 #endif
 
  info->final_sec = dtime; 

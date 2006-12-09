@@ -13,66 +13,75 @@
 
 /* Set the KS multicg inverter flavor depending on the macro KS_MULTICG */
 
-enum ks_multicg_opt_t { KS_MULTICG_OFFSET, KS_MULTICG_HYBRID, KS_MULTICG_FAKE, 
-			KS_MULTICG_REVERSE, KS_MULTICG_REVHYB };
-static enum ks_multicg_opt_t ks_multicg_opt = KS_MULTICG_HYBRID;   /* Default */
-
-/**********************************************************************/
-/*   Set optimization choice                                          */
-/**********************************************************************/
-/* returns 1 for error and 0 for success */
-
-int ks_multicg_set_opt(char opt_string[]){
-  if(strcmp(opt_string,"OFFSET") == 0)
-    ks_multicg_opt = KS_MULTICG_OFFSET;
-  else if(strcmp(opt_string,"HYBRID") == 0)
-    ks_multicg_opt = KS_MULTICG_HYBRID;
-  else if(strcmp(opt_string,"FAKE") == 0)
-    ks_multicg_opt = KS_MULTICG_FAKE;
-  else if(strcmp(opt_string,"REVERSE") == 0)
-    ks_multicg_opt = KS_MULTICG_REVERSE;
-  else if(strcmp(opt_string,"REVHYB") == 0)
-    ks_multicg_opt = KS_MULTICG_REVHYB;
-  else{
-    printf("ks_multicg_set_opt: Unrecognized type %s\n",opt_string);
-    return 1;
-  }
-  /*printf("ks_multicg_set_opt: set opt to %d\n",ks_multicg_opt);*/
-  return 0;
-}
-
 /**********************************************************************/
 /*   Wrapper for the multimass inverter with multiple masses          */
 /**********************************************************************/
-int ks_multicg(	        /* Return value is number of iterations taken */
+int ks_multicg(         /* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     Real *offsets,	/* the offsets */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
 {
 
-  if(ks_multicg_opt == KS_MULTICG_OFFSET)
+  switch(KS_MULTICG){
+  case OFFSET:
     return ks_multicg_offset( src, psim, offsets, num_offsets, 
-			      niter, rsqmin, parity, final_rsq_ptr);
-  else if(ks_multicg_opt == KS_MULTICG_HYBRID)
+			      niter, rsqmin, prec, parity, final_rsq_ptr);
+    break;
+  case HYBRID:
     return ks_multicg_hybrid( src, psim, offsets, num_offsets, 
-			      niter, rsqmin, parity, final_rsq_ptr);
-  else if(ks_multicg_opt == KS_MULTICG_FAKE)
+			      niter, rsqmin, prec, parity, final_rsq_ptr);
+    break;
+  case FAKE:
     return ks_multicg_fake( src, psim, offsets, num_offsets, 
-			      niter, rsqmin, parity, final_rsq_ptr);
-  else if(ks_multicg_opt == KS_MULTICG_REVERSE)
+			    niter, rsqmin, prec, parity, final_rsq_ptr);
+    break;
+  case REVERSE:
     return ks_multicg_reverse( src, psim, offsets, num_offsets, 
-			      niter, rsqmin, parity, final_rsq_ptr);
-  else if(ks_multicg_opt == KS_MULTICG_REVHYB)
+			       niter, rsqmin, prec, parity, final_rsq_ptr);
+    break;
+  case REVHYB:
     return ks_multicg_revhyb( src, psim, offsets, num_offsets, 
-			      niter, rsqmin, parity, final_rsq_ptr);
-  else
-    return 0;
+			      niter, rsqmin, prec, parity, final_rsq_ptr);
+    break;
+  default:
+    return ks_multicg_hybrid( src, psim, offsets, num_offsets, 
+			      niter, rsqmin, prec, parity, final_rsq_ptr);
+  }
+  return 0;
+}
+
+/**********************************************************************/
+/*   Accessor for string describing the option                        */
+/**********************************************************************/
+const char *ks_multicg_opt_chr( void )
+{
+  switch(KS_MULTICG){
+  case OFFSET:
+    return "OFFSET";
+    break;
+  case HYBRID:
+    return "HYBRID";
+    break;
+  case FAKE:
+    return "FAKE";
+    break;
+  case REVERSE:
+    return "REVERSE";
+    break;
+  case REVHYB:
+    return "REVHYB";
+    break;
+  default:
+    return "HYBRID";
+  }
+  return NULL;
 }
 
 // mock up multicg by repeated calls to ordinary cg
@@ -83,6 +92,7 @@ int ks_multicg_fake(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* desired internal precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
@@ -97,7 +107,7 @@ int ks_multicg_fake(	/* Return value is number of iterations taken */
     iters=0;
     for(i=0;i<num_offsets;i++){
       iters += ks_congrad( src, tmp, 0.5*sqrt(offsets[i]), niter, 5, 
-			   rsqmin, parity, final_rsq_ptr );
+			   rsqmin, prec, parity, final_rsq_ptr );
        FORALLSITES(j,s){ psim[i][j] = *((su3_vector *)F_PT(s,tmp)); }
     }
     return(iters);
@@ -112,6 +122,7 @@ int ks_multicg_hybrid(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* internal precision for inversion */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
@@ -123,12 +134,12 @@ int ks_multicg_hybrid(	/* Return value is number of iterations taken */
     field_offset tmp = F_OFFSET(xxx1);
 #endif
 
-    ks_multicg_offset( src, psim, offsets, num_offsets, niter, rsqmin, parity, final_rsq_ptr);
+    ks_multicg_offset( src, psim, offsets, num_offsets, niter, rsqmin, prec, parity, final_rsq_ptr);
     for(i=0;i<num_offsets;i++){
-       FORSOMEPARITY(j,s,parity){ *((su3_vector *)F_PT(s,tmp)) = psim[i][j]; } END_LOOP
-										 iters += ks_congrad( src, tmp, 0.5*sqrt(offsets[i]), niter/5, 5, 
-                      rsqmin, parity, final_rsq_ptr );
-       FORSOMEPARITY(j,s,parity){ psim[i][j] = *((su3_vector *)F_PT(s,tmp)); } END_LOOP
+      FORSOMEPARITY(j,s,parity){ *((su3_vector *)F_PT(s,tmp)) = psim[i][j]; } END_LOOP;
+      iters += ks_congrad( src, tmp, 0.5*sqrt(offsets[i]), niter/5, 5,
+			   rsqmin, prec, parity, final_rsq_ptr );
+      FORSOMEPARITY(j,s,parity){ psim[i][j] = *((su3_vector *)F_PT(s,tmp)); } END_LOOP;
     }
     return(iters);
 }
@@ -141,6 +152,11 @@ static su3_vector *ttt,*cg_p;
 static su3_vector *resid;
 static int first_multicongrad = 1;
 
+/* This choice is currently not supported in QDP or QOP.  Perhaps it
+   can be rewritten so it just rearranges the masses and calls the
+   standard multimass inverter.  Since it is not supported in QDP or
+   QOP, the precision argument "prec" has not effect. */
+
 int ks_multicg_reverse(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
@@ -148,6 +164,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* internal precision for inversion (ignored) */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
@@ -176,7 +193,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 
 /* Timing */
 #ifdef CGTIME
-    double dtimed,dtimec;
+    double dtimec;
 #endif
     double nflop;
     if( num_offsets==0 )return(0);
@@ -239,7 +256,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     iteration = 0;
 
 #ifdef FN
-    if( !(valid_fn_links==1))  load_fn_links();
+    load_fn_links();
 #endif
 
 #define PAD 0
@@ -277,7 +294,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 		clearvec(&(psim_rev[i][j]));
 		su3vec_copy(&(resid[i]), &(pm_rev[i][j]));
 	    }
-	} END_LOOP
+	} END_LOOP;
 	g_doublesum( &source_norm );
 	rsq = source_norm;
 
@@ -319,7 +336,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 	FORSOMEPARITY(i,s,l_parity){
 	    scalar_mult_add_su3_vector( &(ttt[i]), &(cg_p[i]), msq_xm4, &(ttt[i]) );
 	    pkp += (double)su3_rdot( &(cg_p[i]), &(ttt[i]) );
-	} END_LOOP
+	} END_LOOP;
 	g_doublesum( &pkp );
 	iteration++;
 	total_iters++;
@@ -358,7 +375,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 		scalar_mult_add_su3_vector( &(psim_rev[i][j]),
 		    &(pm_rev[i][j]), (Real)beta_i[j], &(psim_rev[i][j]));
 	    }
-	} END_LOOP
+	} END_LOOP;
 
 	/* resid <- resid + beta*ttt */
 	rsq = 0.0;
@@ -366,7 +383,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 	    scalar_mult_add_su3_vector( &(resid[i]), &(ttt[i]),
 		(Real)beta_i[j_low], &(resid[i]));
 	    rsq += (double)magsq_su3vec( &(resid[i]) );
-	} END_LOOP
+	} END_LOOP;
 	g_doublesum(&rsq);
 
 	if( rsq <= rsqstop ){
@@ -407,8 +424,8 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 #ifdef CGTIME
 	    dtimec += dclock();
 	    if(this_node==0){
-	      printf("CONGRAD5: time = %e iters = %d mflops = %e\n",
-		     dtimec,iteration,
+	      printf("CONGRAD5: time = %e (multicg_rev) iters = %d masses = %d mflops = %e\n",
+		     dtimec,iteration,num_offsets,
 		     (double)(nflop)*volume*
 		     iteration/(1.0e6*dtimec*numnodes()));
 		fflush(stdout);}
@@ -439,7 +456,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 		scalar_mult_add_su3_vector( &(ttt[i]), &(pm_rev[i][j]),
 		    (Real)alpha[j], &(pm_rev[i][j]));
 	    }
-	} END_LOOP
+	} END_LOOP;
 
 	/* scroll the scalars */
 	for(j=0;j<num_offsets_now;j++){
@@ -494,6 +511,10 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 }
 //#endif //NOTDEFINED
 
+/* This choice is currently not supported in QDP or QOP so the
+   precision argument "prec" can affect only the cleanup
+   inversions, if at all. */
+
 int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
@@ -501,6 +522,7 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     int num_offsets,	/* number of offsets */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
+    int prec,           /* internal precision for inversion (ignored mostly) */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr	/* final residue squared */
     )
@@ -512,11 +534,15 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     field_offset tmp = F_OFFSET(xxx1);
 #endif
 
-    ks_multicg_reverse( src, psim, offsets, num_offsets, niter, rsqmin, parity, final_rsq_ptr);
+    ks_multicg_reverse( src, psim, offsets, num_offsets, niter, rsqmin, 
+			prec, parity, final_rsq_ptr);
     for(i=0;i<num_offsets;i++){
-       FORSOMEPARITY(j,s,parity){ *((su3_vector *)F_PT(s,tmp)) = psim[i][j]; } END_LOOP
-										 iters += ks_congrad( src, tmp, 0.5*sqrt(offsets[i]), niter/5, 5, rsqmin, parity, final_rsq_ptr );
-       FORSOMEPARITY(j,s,parity){ psim[i][j] = *((su3_vector *)F_PT(s,tmp)); } END_LOOP
+      FORSOMEPARITY(j,s,parity){ *((su3_vector *)F_PT(s,tmp)) = psim[i][j]; } 
+      END_LOOP;
+      iters += ks_congrad( src, tmp, 0.5*sqrt(offsets[i]), niter/5, 5,
+			   rsqmin, prec, parity, final_rsq_ptr );
+      FORSOMEPARITY(j,s,parity){ psim[i][j] = *((su3_vector *)F_PT(s,tmp)); } 
+      END_LOOP;
     }
     return(iters);
 }

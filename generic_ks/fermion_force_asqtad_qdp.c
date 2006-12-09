@@ -35,6 +35,8 @@
  */
 
 #include "generic_ks_includes.h"
+#include "../include/generic_qdp.h"
+#include "../include/generic_ks_qdp.h"
 #include <string.h>
 
 #define FF_trace(...)
@@ -468,8 +470,8 @@ fn_fermion_force_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
   dtime += dclock();
 
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e mflops = %e\n",dtime,
-	       nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFTIME:  time = %e (qdp ASVEC) terms = %d mflops = %e\n",dtime,
+	       nsrc,nflop*volume/(1e6*dtime*numnodes()) );
 #endif
 
 }
