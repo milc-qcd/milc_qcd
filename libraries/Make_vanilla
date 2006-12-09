@@ -27,12 +27,12 @@ MAKEFILE = Make_vanilla
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
 # 1. Compiler
-CC               = gcc    # ( cc89 gcc xlc gcc pgcc cl g++ )
+CC               = gcc # ( cc89 gcc xlc gcc pgcc cl g++ )
 #CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
 
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
-OPT              = -O3    # ( -g -O, etc )
+OPT              = -O3 # ( -g -O, etc )
 
 #----------------------------------------------------------------------
 # 3. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -74,7 +74,7 @@ OPT              = -O3    # ( -g -O, etc )
 
 #----------------------------------------------------------------------
 # 4. Code alternatives 
-CODETYPE         = -DFAST  # usually unchanged
+CODETYPE         = -DFAST # usually unchanged
 
 #----------------------------------------------------------------------
 # 5. Choose archiver to match compiler for the QCDOC
