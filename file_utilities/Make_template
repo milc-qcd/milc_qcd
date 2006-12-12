@@ -55,7 +55,6 @@ MY_OBJECTS=
 G_OBJECTS = \
   io_detect.o \
   io_lat_utils.o \
-  nersc_cksum.o \
   remap_stdio_from_args.o
 
 ifeq ($(strip ${HAVEQIO}),true)
@@ -134,12 +133,12 @@ check_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_prop" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  check_prop.o io_prop_w.o wilson_info_dummy.o \
-	gauge_info_dummy.o d_plaq4.o io_lat4.o"
+	gauge_info_dummy.o d_plaq4.o io_lat4.o  nersc_cksum.o"
 
 check_gauge::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_gauge" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS= check_gauge.o \
+	"EXTRA_OBJECTS= check_gauge.o nersc_cksum.o \
 	check_unitarity.o gauge_info_dummy.o d_plaq4.o io_lat4.o"
 
 diff_colormatrix::
@@ -170,7 +169,7 @@ diff_wprop::
 lattice_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= lattice_to_scidac" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS=  lattice_to_scidac.o \
+	"EXTRA_OBJECTS=  lattice_to_scidac.o nersc_cksum.o \
 	check_unitarity.o gauge_info_dummy.o d_plaq4.o io_lat4.o"
 
 ksprop_2ksprop::
@@ -178,19 +177,19 @@ ksprop_2ksprop::
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  ksprop_to_ksprop.o io_helpers_ks.o \
 	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o \
-	gauge_info_dummy.o d_plaq4.o io_lat4.o"
+	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o"
 
 wprop_2wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  wprop_to_wprop.o io_helpers_w.o canopy2weyl_rot.o \
 	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o \
-	gauge_info_dummy.o d_plaq4.o io_lat4.o"
+	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o"
 
 ckpt1_2v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= ckpt1_to_v5" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS=  ckpt1_to_v5.o \
+	"EXTRA_OBJECTS=  ckpt1_to_v5.o  nersc_cksum.o \
 	check_unitarity.o gauge_info.o d_plaq4.o io_lat4.o"
 
 v5_2scidac::

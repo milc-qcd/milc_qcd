@@ -27,6 +27,7 @@
 #include "../include/io_lat.h"
 #include "../include/io_wprop.h"
 #include "../include/generic.h"
+#include "../include/dirs.h"
 
 #define PARALLEL 1
 #define SERIAL 0

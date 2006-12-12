@@ -1,5 +1,5 @@
 /*********************** gauge_info.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* For pure_gauge */
 
@@ -54,19 +54,31 @@ void write_appl_gauge_info(FILE *fp)
 }
 
 #define INFOSTRING_MAX 2048
-
+/* Follow USQCD style for record XML */
 char *create_QCDML(){
 
   size_t bytes = 0;
   char *info = (char *)malloc(INFOSTRING_MAX);
   size_t max = INFOSTRING_MAX;
-  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
-  char end[] = "</info>";
+  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><usqcdInfo><version>1.0</version>";
+  char begin_info[] = "<info>";
+  char end_info[] = "</info>";
+  char end[] = "</usqcdInfo>";
   Real myssplaq = g_ssplaq;  /* Precision conversion */
   Real mystplaq = g_stplaq;  /* Precision conversion */
   Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
 
+
   snprintf(info+bytes, max-bytes,"%s",begin);
+  bytes = strlen(info);
+
+  snprintf(info+bytes, max-bytes,"<plaq>%e</plaq>",(myssplaq+mystplaq)/6.);
+  bytes = strlen(info);
+
+  snprintf(info+bytes, max-bytes,"<linktr>%e</linktr>",nersc_linktr);
+  bytes = strlen(info);
+
+  snprintf(info+bytes, max-bytes,"%s",begin_info);
   bytes = strlen(info);
 
   sprint_gauge_info_item(info+bytes, max-bytes,"action.description","%s",
@@ -90,6 +102,9 @@ char *create_QCDML(){
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.nersc_checksum","%lu",
 			 (char *)&nersc_checksum,0,0);
+  bytes = strlen(info);
+  snprintf(info+bytes, max-bytes,"%s",end_info);
+
   bytes = strlen(info);
   snprintf(info+bytes, max-bytes,"%s",end);
   return info;

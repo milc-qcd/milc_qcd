@@ -7,7 +7,7 @@
 
 /* Usage ...
 
-   lattice_to_scidac [--ildg] milc_file scidac_file
+   v5_to_scidac [--ildg] milc_file scidac_file
    [LFN string]
 
    The LFN string is used as the logical file name for ILDG usage.
@@ -67,17 +67,40 @@ void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc);
 gauge_file *r_serial_i(char *filename);
 void r_serial_f(gauge_file *gf);
 
+/*--------------------------------------------------------------------*/
+/* Parse MILC info line for a desired value */
+void read_info_val(char tag[], float *val, int *found, char *line)
+{
+
+  if(strstr(line,tag) == NULL)return;
+  /* Support two line formats */
+  if(strstr(line,"=") == NULL)
+    {
+      /* TAG value */
+      if(sscanf(line,"%*s %f",val) == 1)*found = 1;
+    }
+  else
+    {
+      /* TAG = value */
+      if(sscanf(line,"%*s %*s %f",val) == 1)*found = 1;
+    }
+}
+
 /*----------------------------------------------------------------------*/
 /* Read the lattice info file if it exists and put its contents in "buf"
    with tags suitable for the user record XML */
 int read_info(char *buf, char *latfilename, int maxlength){
   char infofilename[MAX_INFO_FILENAME];
   FILE *infofp;
-  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
-  char end[] = "</info>";
+  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><usqcdInfo><version>1.0</version>";
+  char begin_info[] = "<info>";
+  char end_info[] = "</info>";
+  char end[] = "</usqcdInfo>";
   char missing[] = "missing";
   char infoline[MAX_INFO_LINE];
   int length = 0;
+  int foundssplaq = 0, foundstplaq = 0, foundlinktr = 0;
+  float ssplaq, stplaq, linktr;
 
   /* Construct file name */
   if(strlen(latfilename) + 5 >= MAX_INFO_FILENAME){
@@ -87,10 +110,15 @@ int read_info(char *buf, char *latfilename, int maxlength){
   strcpy(infofilename,latfilename);
   strcat(infofilename,".info");
 
-  /* Start the buffer */
+  /* Start the USQCD info */
   length += strlen(begin);
   if(length < maxlength)
     strcpy(buf, begin);
+
+  /* Start the (MILC) info tag */
+  length += strlen(begin_info);
+  if(length < maxlength)
+    strcat(buf, begin_info);
 
   /* Look for info file in directory */
   infofp = fopen(infofilename,"r");
@@ -107,6 +135,10 @@ int read_info(char *buf, char *latfilename, int maxlength){
       length += strlen(infoline);
       if(length < maxlength)
 	strcat(buf, infoline);
+      /* Look for needed metadata */
+      read_info_val("gauge.ssplaq", &ssplaq, &foundssplaq, infoline);
+      read_info_val("gauge.stplaq", &stplaq, &foundstplaq, infoline);
+      read_info_val("gauge.nersc_linktr", &linktr, &foundlinktr, infoline);
     }
   }
   else{
@@ -115,7 +147,29 @@ int read_info(char *buf, char *latfilename, int maxlength){
 	strcat(buf, missing);
   }
 
-  /* Finish the buffer */
+  /* Finish the MILC info */
+  length += strlen(end_info);
+  if(length < maxlength)
+    strcat(buf, end_info);
+
+  printf("found ss %d st %d tr %d\n",foundssplaq,foundstplaq,foundlinktr);
+
+  /* Append the USQCD tags and values if we have them */
+  if(foundssplaq && foundstplaq)
+    {
+      snprintf(buf+length, maxlength-length, 
+	       "<plaq>%e</plaq>",(ssplaq+stplaq)/6.);
+      length = strlen(buf);
+    }
+
+  if(foundlinktr)
+    {
+      snprintf(buf+length, maxlength-length, 
+	       "<linktr>%e</linktr>",linktr);
+      length = strlen(buf);
+    }
+
+  /* Finish the USQCD info */
   length += strlen(end);
   if(length < maxlength)
     strcat(buf, end);
@@ -436,8 +490,6 @@ int main(int argc, char *argv[])
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
-  /* Remap standard I/O */
-  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();

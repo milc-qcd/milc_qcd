@@ -28,6 +28,7 @@
 #include "../include/macros.h"
 #include "../include/io_lat.h"
 #include "../include/io_wprop.h"
+#include <string.h>
 #include <lattice.h>
 #include <qio.h>
 

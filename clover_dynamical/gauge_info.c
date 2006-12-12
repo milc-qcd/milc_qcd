@@ -1,5 +1,5 @@
 /*********************** gauge_info.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* For clover_dynamical */
 
@@ -62,14 +62,19 @@ void write_appl_gauge_info(FILE *fp)
 }
 
 #define INFOSTRING_MAX 2048
-/* For now we simply use the MILC info */
+/* Follow USQCD style for record XML */
 char *create_QCDML(){
 
   size_t bytes = 0;
   char *info = (char *)malloc(INFOSTRING_MAX);
   size_t max = INFOSTRING_MAX;
-  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
-  char end[] = "</info>";
+  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><usqcdInfo><version>1.0</version>";
+  char begin_info[] = "<info>";
+  char end_info[] = "</info>";
+  char end[] = "</usqcdInfo>";
+  Real myssplaq = g_ssplaq;  /* Precision conversion */
+  Real mystplaq = g_stplaq;  /* Precision conversion */
+  Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
   Real gauge_fix_tol = GAUGE_FIX_TOL;
   char sums[20];
 
@@ -103,9 +108,10 @@ char *create_QCDML(){
 			     "%g", (char *)&gauge_fix_tol,0,0);
     }
 
+  snprintf(info+bytes, max-bytes,"%s",end_info);
   bytes = strlen(info);
-  snprintf(info+bytes, max-bytes,"%s",end);
 
+  snprintf(info+bytes, max-bytes,"%s",end);
   return info;
 }
 
