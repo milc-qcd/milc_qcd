@@ -115,10 +115,18 @@ su3.2.a::	 ${SU3OBJS2}
 su3.2.a::	 ${WILSON_OBJS2}
 	${AR} rcs $@ ${WILSON_OBJS2}
 
+LIBRARIES1 = complex.1.a su3.1.a
+LIBRARIES2 = complex.2.a su3.2.a
 
-LIBRARIES = complex.1.a su3.1.a complex.2.a su3.2.a
+ifeq ($(strip ${PRECISION}),1)
 
-all: checkcc ${LIBRARIES} 
+all: checkcc ${LIBRARIES1}
+
+else
+
+all: checkcc ${LIBRARIES2}
+
+endif
 
 checkcc:
 	@echo ================================================================
