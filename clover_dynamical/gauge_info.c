@@ -81,6 +81,15 @@ char *create_QCDML(){
   snprintf(info+bytes, max-bytes,"%s",begin);
   bytes = strlen(info);
 
+  snprintf(info+bytes, max-bytes,"<plaq>%e</plaq>",(myssplaq+mystplaq)/6.);
+  bytes = strlen(info);
+
+  snprintf(info+bytes, max-bytes,"<linktr>%e</linktr>",nersc_linktr);
+  bytes = strlen(info);
+
+  snprintf(info+bytes, max-bytes,"%s",begin_info);
+  bytes = strlen(info);
+
   /* The rest are optional */
   if(startlat_p != NULL)
     {
