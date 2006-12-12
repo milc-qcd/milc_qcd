@@ -157,8 +157,11 @@ ifeq ($(strip ${HAVEQOP}),true)
   CONGRAD_FN += ${ASQINVERTQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
-       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
+#    Here you may use the fn_qdp set or the fn_1sum_qdp set
+#    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
+#       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_1sum_qdp.o \
+       d_congrad5_fn_1sum_qdp_D.o d_congrad5_fn_1sum_qdp_F.o d_congrad_opt.o
   else
     # Choose a non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
     # or d_congrad5_fn_fewsums.o)
@@ -191,8 +194,8 @@ else
     QDP_OBJECTS = map_milc_to_qdp_D.o map_milc_to_qdp_F.o
     INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp_D.o \
       dslash_fn_qdp_F.o 
-    MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qdp_D.o \
-      ks_multicg_offset_qdp_F.o
+    MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qdp.o \
+      ks_multicg_offset_qdp_D.o ks_multicg_offset_qdp_F.o
   else
     INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
     MULTI_INV_FN = ks_multicg.o ks_multicg_offset.o
@@ -269,26 +272,6 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 	/bin/cp ${GAUGEIMP}/${GAUGE} gauge_action.h
 
 
-########################################################
-# Optional DEFINES for timing:
-# -DCGTIME for cg timing and iterations
-# -DGFTIME for gauge force timing
-# -DFFTIME for fermion force timing
-# -DLLTIME for long link timing
-
-# Optional DEFINES for pbp estimates
-# -DNPBP_REPS Number of repeated evaluations of stochastic 
-#       psi-bar-psi
-
-# Optional DEFINES for EOS
-# -DDM_DU0 for calculating deriv of action wrto u0
-
-# Optional DEFINES for quark number susceptibility
-# -DCHEM_POT
-
-# Optional DEFINES for derivatives wrto chem pot
-# -DD_CHEM_POT
-
 ifeq ($(strip ${QCDOC}),true)
   DQCDOC = -DQCDOC
 endif
@@ -311,13 +294,26 @@ endif
 
 DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
-##### Targets:
-#		("FN" = "fat+Naik")
+########################################################
+# Optional DEFINES for targets
 
-#	-DNPBP_REPS" \
-# 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
-#       -DONEMASS
-#       -DCOM_CRC
+# -DFN          identifies fat-Naik-like actions with only next and 3rd
+#               next neighbor linkage
+
+# -DONEMASS     only one fermion species (formerly ks_imp_dyn1)
+# 
+# -DNPBP_REPS   adds an extra line to parameter input for specifying
+#               the number of random sources in f_meas.c
+
+# -DDM_DU0      (for EOS) calculate quantities involving the deriv of
+#               action wrto u0
+
+# -DCHEM_POT    compute quantities needed for quark number susceptibility
+
+# -DD_CHEM_POT  compute quantities needed for nonzero chemical potential
+
+
+##### Targets: 
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \

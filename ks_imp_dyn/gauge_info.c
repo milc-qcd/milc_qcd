@@ -187,20 +187,31 @@ void free_QCDML(char *qcdml){
 
 #else
 #define INFOSTRING_MAX 2048
-/* For now we simply use the MILC info */
+/* Follow USQCD style for record XML */
 char *create_QCDML(){
 
   size_t bytes = 0;
   char *info = (char *)malloc(INFOSTRING_MAX);
   size_t max = INFOSTRING_MAX;
-  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
-  char end[] = "</info>";
+  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><usqcdInfo><version>1.0</version>";
+  char begin_info[] = "<info>";
+  char end_info[] = "</info>";
+  char end[] = "</usqcdInfo>";
   Real myssplaq = g_ssplaq;  /* Precision conversion */
   Real mystplaq = g_stplaq;  /* Precision conversion */
   Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
 
 
   snprintf(info+bytes, max-bytes,"%s",begin);
+  bytes = strlen(info);
+
+  snprintf(info+bytes, max-bytes,"<plaq>%e</plaq>",(myssplaq+mystplaq)/6.);
+  bytes = strlen(info);
+
+  snprintf(info+bytes, max-bytes,"<linktr>%e</linktr>",nersc_linktr);
+  bytes = strlen(info);
+
+  snprintf(info+bytes, max-bytes,"%s",begin_info);
   bytes = strlen(info);
 
   sprint_gauge_info_item(info+bytes, max-bytes,"action.description","%s",
@@ -258,6 +269,10 @@ char *create_QCDML(){
 			 (char *)&mass2,0,0);
   bytes = strlen(info);
 #endif  
+
+  snprintf(info+bytes, max-bytes,"%s",end_info);
+  bytes = strlen(info);
+
   snprintf(info+bytes, max-bytes,"%s",end);
   return info;
 }
