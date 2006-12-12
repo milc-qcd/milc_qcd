@@ -20,6 +20,7 @@
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include <string.h>
+#include <lattice_qdp.h>
 
 EXTERN gauge_header start_lat_hdr;
 gauge_file *gf;

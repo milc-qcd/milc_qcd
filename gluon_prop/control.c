@@ -9,6 +9,7 @@
 
 #define CONTROL
 #include "gluon_prop_includes.h"
+#include "lattice_qdp.h"
 #define NULL_FP -1
 
 int main(int argc, char *argv[])  {

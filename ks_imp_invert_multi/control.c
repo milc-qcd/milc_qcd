@@ -14,6 +14,7 @@
 
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "lattice_qdp.h"
 
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 

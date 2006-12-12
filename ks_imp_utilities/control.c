@@ -11,6 +11,7 @@
 #ifdef HAVE_QIO
 #include <qio.h>
 #endif
+#include "lattice_qdp.h"
 
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 

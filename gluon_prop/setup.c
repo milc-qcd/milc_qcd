@@ -3,6 +3,7 @@
 #define IF_OK if(status==0)
 
 #include "gluon_prop_includes.h"
+#include <lattice_qdp.h>
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
