@@ -1,7 +1,7 @@
 #  Kogut-Susskind fermions with improved actions
 #  MIMD version 7
 #
-#  Generic make-include file for ks_imp_rhmc AND ks_imp_rhmc codes
+#  Generic make-include file for ks_imp_rhmc codes
 #  Use -DONEMASS to build for a single degenerate quark mass
 #  Otherwise the build assumes two quark masses.
 #
@@ -171,7 +171,7 @@ ifeq ($(strip ${HAVEQOP}),true)
   ASQFORCE += ${ASQFORCEQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    ASQFORCE = fermion_force_asqtad_qdp.o fermion_force_fn_multi_qdp.o ff_opt.o
+    ASQFORCE = fermion_force_asqtad_qdp.o fermion_force_fn_multi_qdp.o
   else
     ASQFORCE = fermion_force_asqtad3.o fermion_force_fn_multi.o ff_opt.o
   endif
@@ -198,7 +198,7 @@ endif
 
 # The only choice for inverters and Dslash for EO actions
 INV_EO_OBJECTS = d_congrad5_eo.o d_congrad_opt.o dslash_eo.o
-MULTI_INV_EO = ks_multicg.o
+MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
 
 # For EO actions we don't precompute the fat links for Dslash at the moment
 FN_OBJECTS = ${FLINKS_FN} ${INV_FN_OBJECTS}
@@ -263,20 +263,6 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 	/bin/cp ${GAUGEIMP}/${GAUGE} gauge_action.h
 
 
-########################################################
-# Optional DEFINES for pbp estimates
-# -DNPBP_REPS Number of repeated evaluations of stochastic 
-#       psi-bar-psi
-
-# Optional DEFINES for EOS
-# -DDM_DU0 for calculating deriv of action wrto u0
-
-# Optional DEFINES for quark number susceptibility
-# -DCHEM_POT
-
-# Optional DEFINES for derivatives wrto chem pot
-# -DD_CHEM_POT
-
 ifeq ($(strip ${QCDOC}),true)
   DQCDOC = -DQCDOC
 endif
@@ -299,15 +285,26 @@ endif
 
 DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
+########################################################
+# Optional DEFINES for targets
+
+# -DFN          identifies fat-Naik-like actions with only next and 3rd
+#               next neighbor linkage
+
+# -DONEMASS     only one fermion species (formerly ks_imp_dyn1)
+# 
+# -DNPBP_REPS   adds an extra line to parameter input for specifying
+#               the number of random sources in f_meas.c
+
+# -DDM_DU0      (for EOS) calculate quantities involving the deriv of
+#               action wrto u0
+
+# -DCHEM_POT    compute quantities needed for quark number susceptibility
+
+# -DD_CHEM_POT  compute quantities needed for nonzero chemical potential
+
 ##### Targets:
-#		("FN" = "fat+Naik")
-
-#	-DNPBP_REPS" \
-# 	-DCGTIME -DFFTIME -DGFTIME -DLLTIME" \
-#       -DONEMASS
-#	-DKS_MULTICG=(OFFSET, HYBRID, FAKE, REVERSE, REVHYB)
-
-# Named RHMD target -- sample file provided
+# Named RHMD targets -- sample files provided
 su3_leapfrog::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DINT_ALG=INT_LEAPFROG" \
@@ -316,7 +313,6 @@ su3_leapfrog::
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
 	${SYMZK1FORCE} "
 
-# Named RHMC target -- sample file provided
 su3_omelyan_rhmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DHMC -DINT_ALG=INT_OMELYAN" \
@@ -325,7 +321,8 @@ su3_omelyan_rhmc::
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
 	${SYMZK1FORCE} "
 
-# Generic RHMD target -- set options in Makefile
+######################################################################
+# Generic RHMD targets -- set further options in Makefile
 su3_rhmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN" \
@@ -347,6 +344,24 @@ su3_rhmc::
 su3_rhmc_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DHMC -DDM_DU0 -DNPBP_REPS" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
+	${SYMZK1FORCE} "
+
+# Generic RHMC susceptibility target -- set options in Makefile
+su3_rhmc_susc::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHMC -DCHEM_POT -DNPBP_REPS" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
+	${SYMZK1FORCE} "
+
+# Generic RHMC EOS and susceptibility target -- set options in Makefile
+su3_rhmc_susc::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHMC -DCHEM_POT -DDM_DU0 -DNPBP_REPS" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \

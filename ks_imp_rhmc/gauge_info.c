@@ -190,7 +190,7 @@ void free_QCDML(char *qcdml){
 
 #else
 #define INFOSTRING_MAX 2048
-/* For now we simply use the MILC info */
+/* Follow USQCD style for record XML */
 char *create_QCDML(){
 
   size_t bytes = 0;
