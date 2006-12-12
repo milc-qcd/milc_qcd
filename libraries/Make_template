@@ -57,8 +57,8 @@ SU3OBJS1 = addmat.1o addvec.1o cmp_ahmat.1o cs_m_a_vec.1o cs_m_a_mat.1o \
 	s_m_a_hwvec_proj.1o s_m_a_mat.1o s_m_a_vec.1o s_m_s_mat.1o \
 	s_m_s_vec.1o s_m_sum_vec.1o s_m_vec.1o s_m_mat.1o cs_m_mat.1o \
 	cs_m_s_mat.1o su3_adjoint.1o su3_dot.1o su3_rdot.1o su3_proj.1o \
-	su3mat_copy.1o submat.1o subvec.1o trace_su3.1o uncmp_ahmat.1o \
-	msq_su3vec.1o sub4vecs.1o m_amv_4dir.1o m_amv_4vec.1o \
+	su3mat_copy.1o su3vec_copy.1o submat.1o subvec.1o trace_su3.1o \
+	uncmp_ahmat.1o msq_su3vec.1o sub4vecs.1o m_amv_4dir.1o m_amv_4vec.1o \
 	m_mv_s_4dir.1o flush_to_zero.1o \
 	l_su2_hit_n.1o r_su2_hit_a.1o dumpsu2.1o \
 	m_su2_mat_vec_n.1o m_su2_mat_vec_a.1o \
@@ -72,8 +72,8 @@ SU3OBJS2 = addmat.2o addvec.2o cmp_ahmat.2o cs_m_a_vec.2o cs_m_a_mat.2o \
 	s_m_a_hwvec_proj.2o s_m_a_mat.2o s_m_a_vec.2o s_m_s_mat.2o \
 	s_m_s_vec.2o s_m_sum_vec.2o s_m_vec.2o s_m_mat.2o cs_m_mat.2o \
 	cs_m_s_mat.2o su3_adjoint.2o su3_dot.2o su3_rdot.2o su3_proj.2o \
-	su3mat_copy.2o submat.2o subvec.2o trace_su3.2o uncmp_ahmat.2o \
-	msq_su3vec.2o sub4vecs.2o m_amv_4dir.2o m_amv_4vec.2o \
+	su3mat_copy.2o su3vec_copy.2o submat.2o subvec.2o trace_su3.2o \
+	uncmp_ahmat.2o msq_su3vec.2o sub4vecs.2o m_amv_4dir.2o m_amv_4vec.2o \
 	m_mv_s_4dir.2o flush_to_zero.2o \
 	l_su2_hit_n.2o r_su2_hit_a.2o dumpsu2.2o \
 	m_su2_mat_vec_n.2o m_su2_mat_vec_a.2o \
