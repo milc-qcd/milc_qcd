@@ -52,15 +52,14 @@ MY_OBJECTS=
 
 
 # Basic set from generic directory
-G_OBJECTS1 = \
+G_OBJECTS = \
   io_detect.o \
   io_lat_utils.o \
-  nersc_cksum.o
+  nersc_cksum.o \
+  remap_stdio_from_args.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS = ${G_OBJECTS1} io_scidac.o
-else
-  G_OBJECTS = ${G_OBJECTS1}
+  G_OBJECTS += io_scidac.o
 endif
 
 # Basic set from generic KS directory
