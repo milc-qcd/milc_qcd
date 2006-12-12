@@ -22,6 +22,7 @@ INLINE_HEADERS = \
 
 MY_HEADERS = \
   lattice.h \
+  lattice_qdp.h \
   params.h \
   defines.h \
   RG_Shamir_includes.h \
@@ -105,12 +106,26 @@ else
   endif
 endif
 
-# Choose non-QDP FN dslash (dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o )
+# Selection of a non-QDP FN Dslash 
+# Choices are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
 DSLASH_FN = dslash_fn2.o
 
-# Choose non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
-# or d_congrad5_fn_fewsums.o)
-CONGRAD_FN = d_congrad5_fn.o d_congrad_opt.o
+# Selection of the conjugate gradient algorithm
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+  CONGRAD_FN = d_congrad5_fn_qop.o \
+     d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o d_congrad_opt.o
+  CONGRAD_FN += ${ASQINVERTQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    CONGRAD_FN = d_congrad5_fn_qdp.o \
+       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
+  else
+    # Choose a non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
+    # or d_congrad5_fn_fewsums.o)
+    CONGRAD_FN = d_congrad5_fn.o d_congrad_opt.o
+  endif
+endif
 
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o

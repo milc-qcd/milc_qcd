@@ -155,10 +155,5 @@ EXTERN su3_matrix *t_fatbacklink;
 EXTERN su3_matrix *t_dfatlink_du0;
 #endif
 
-#ifdef HAVE_QDP
-EXTERN QDP_Shift neighbor3[4];
-EXTERN QDP_Shift shiftdirs[8];
-EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];
-#endif
 #define smear_fac 2.5
 #endif /* _LATTICE_H */
