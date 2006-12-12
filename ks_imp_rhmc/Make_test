@@ -20,47 +20,15 @@ LAUNCH2 =
 # For comparing test output with sample output
 
 PROJS = \
-  su3_leapfrog.sample_1 \
-  su3_omelyan_rhmc.sample_2
+  su3_leapfrog \
+  su3_omelyan_rhmc
+
+PRECLIST = 1 2
 
 PATTERNS = WARMUPS RUNNING
 
-out.test.${PROJ}.${PREC}: ${PROJ2} in.sample.${PROJ}.${PREC}
-	${LAUNCH} ./${PROJ2} ${LAUNCH2} < \
-	  in.sample.${PROJ}.${PREC} > \
-	  out.test.${PROJ}.${PREC}
-
-out.test.diff.${PROJ}.${PREC}: out.test${CUSTOM}.${PROJ}.${PREC} \
-	out.sample${CUSTOM}.${PROJ}.${PREC}
-	perl ../headtail.pl ${PATTERNS} < \
-	   out.test${CUSTOM}.${PROJ}.${PREC} > \
-	   out.test.${PROJ}.${PREC}.tmp
-	perl ../headtail.pl ${PATTERNS} < \
-	   out.sample${CUSTOM}.${PROJ}.${PREC} > \
-	   out.sample.${PROJ}.${PREC}.tmp
-	perl ../diffn3.pl out.test.${PROJ}.${PREC}.tmp \
-	   out.sample.${PROJ}.${PREC}.tmp \
-	   out.errtol${CUSTOM}.${PROJ}.${PREC} > \
-	   out.test.diff.${PROJ}.${PREC}
-#	   /bin/rm out.test.${PROJ}.${PREC}.tmp \
-#	   out.sample.${PROJ}.${PREC}.tmp
-
-su3_leapfrog.sample_1: rationals.sample_1.h
-	cp rationals.sample_1.h rationals.h
-	${MAKE} su3_leapfrog "PRECISION=1" "KSRHMCINT=-DINT_ALG=INT_LEAPFROG"
-	${MAKE} -f Make_test out.test.diff.su3_leapfrog.sample_1.1 "PROJ=su3_leapfrog.sample_1" "PROJ2=su3_leapfrog" "PREC=1"
-su3_omelyan_rhmc.sample_2: rationals.sample_2.h
-	cp rationals.sample_2.h rationals.h
-	${MAKE} su3_omelyan_rhmc "PRECISION=2" "KSRHMCINT=-DINT_ALG=INT_OMELYAN"
-	${MAKE} -f Make_test out.test.diff.su3_omelyan_rhmc.sample_2.2 "PROJ=su3_omelyan_rhmc.sample_2" "PROJ2=su3_omelyan_rhmc" "PREC=2"
-
-test: su3_leapfrog.sample_1 su3_omelyan_rhmc.sample_2
+include ../Make_test_template
 
 check: test
 
-clean:
-	for proj in ${PROJS};\
-	do\
-	  /bin/rm out.test.$$proj.$$prec.tmp out.sample.$$proj.$$prec.tmp.?;\
-	  /bin/rm out.test.diff.$$proj out.test.$$proj.?; \
-	done
+clean: test_clean
