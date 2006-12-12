@@ -306,7 +306,6 @@ QOP_FermionLinksAsqtad *
   return lqop;
 }
 
-#ifdef  ASQ_OPTIMIZED_FATTENING   /* Asqtad action only, "_fn" executables */
 #ifndef FN
 BOMB THE COMPILE
 #endif
@@ -400,7 +399,6 @@ static void compute_gen_staple_field_qop_milc(su3_matrix *staple,
   free(tempmat);
   cleanup_gather(mtag0);
 } /* compute_gen_staple_field_qop_milc */
-#endif  /* ASQ_OPTIMIZED_FATTENING   */
 
 /* LOOPEND is required now -CD */
 #undef FORALLSITES

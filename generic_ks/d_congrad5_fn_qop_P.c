@@ -40,6 +40,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop_P.c,v $
+ * Revision 1.2  2006/12/12 18:07:15  detar
+ * Correct mixed precision features.  Add 1sum variant of the QDP inverter.
+ *
  * Revision 1.1  2006/12/09 13:52:38  detar
  * Add mixed precision capability for KS inverter in QOP and QDP
  *
@@ -91,7 +94,7 @@ static const char *qop_prec[2] = {"F", "D"};
 
 /*#define CGDEBUG*/
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.1 2006/12/09 13:52:38 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.2 2006/12/12 18:07:15 detar Exp $";
 
 
 /* Load inversion args for Level 3 inverter */
@@ -107,20 +110,60 @@ set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg,
 }
 
 
-static void 
-set_qop_resid_arg( QOP_resid_arg_t *qop_resid_arg,
-		   Real min_resid_sq )
+static QOP_resid_arg_t ***
+create_qop_resid_arg( int nsrc, int nmass[], Real min_resid_sq )
 {
-  qop_resid_arg->rsqmin   = min_resid_sq;
+  QOP_resid_arg_t ***res_arg;
+  char myname[] = "create_qop_resid_arg";
+  int isrc,imass;
+
+  /* Pointers for residual errors */
+  res_arg = (QOP_resid_arg_t ***)malloc(sizeof(QOP_resid_arg_t **)*nsrc);
+  if(res_arg == NULL){
+    printf("%s(%d): Can't allocate res_arg*\n",myname,this_node);
+    terminate(1);
+  }
+  for(isrc = 0; isrc < nsrc; isrc++){
+    res_arg[isrc] = 
+      (QOP_resid_arg_t **)malloc(sizeof(QOP_resid_arg_t *)*nmass[isrc]);
+    if(res_arg[isrc] == NULL){
+      printf("%s(%d): Can't allocate res_arg*\n",myname,this_node);
+      terminate(1);
+    }
+    for(imass = 0; imass < nmass[isrc]; imass++){
+      res_arg[isrc][imass] = 
+	(QOP_resid_arg_t *)malloc(sizeof(QOP_resid_arg_t ));
+      if(res_arg[isrc][imass] == NULL){
+	printf("%s(%d): Can't allocate res_arg\n",myname,this_node);
+	terminate(1);
+      }
+      /* For now the residuals are the same for all sources and masses */
+      res_arg[isrc][imass]->rsqmin = min_resid_sq;
+    }
+  }
+  return res_arg;
+}
+
+static void
+destroy_qop_resid_arg(QOP_resid_arg_t ***res_arg, int nsrc, int nmass[])
+{
+  int isrc, imass;
+
+  for(isrc = 0; isrc < nsrc; isrc++){
+    for(imass = 0; imass < nmass[isrc]; imass++){
+      free(res_arg[isrc][imass]);
+    }
+    free(res_arg[isrc]);
+  }
+  free(res_arg);
 }
 
 /* General MILC wrapper for Level 3 inverter */
 
 static int 
 ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links, 
-			QOP_info_t *info,
-			QOP_invert_arg_t *qop_invert_arg, 
-			QOP_resid_arg_t **qop_resid_arg[], 
+			QOP_invert_arg_t *qop_invert_arg,
+			QOP_resid_arg_t  ***qop_resid_arg,
 			MASSREAL *masses[], int nmass[], 
 			QOP_ColorVector **qop_sol[], 
 			QOP_ColorVector* qop_src[], 
@@ -129,15 +172,16 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 {
   int isrc, imass;
   int iters;
+  QOP_info_t info;
   
   if(nsrc == 1 && nmass[0] == 1)
-    QOP_asqtad_invert( info, qop_links, qop_invert_arg, qop_resid_arg[0][0],
+    QOP_asqtad_invert( &info, qop_links, qop_invert_arg, qop_resid_arg[0][0],
 		       masses[0][0], qop_sol[0][0], qop_src[0] );
   else
-    QOP_asqtad_invert_multi( info, qop_links, qop_invert_arg, qop_resid_arg,
+    QOP_asqtad_invert_multi( &info, qop_links, qop_invert_arg, qop_resid_arg,
 			     masses, nmass, qop_sol, qop_src, nsrc );
 
-  /* For now we return the largest value */
+  /* For now we return the largest value and total iterations */
   *final_rsq_ptr = 0;
   iters = 0;
   for(isrc = 0; isrc < nsrc; isrc++)
@@ -153,6 +197,16 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 	       qop_resid_arg[isrc][imass]->final_rsq);
 #endif
     }
+
+#ifdef CGTIME
+  node0_printf("CONGRAD5: time = %e (fn_qop %s) ",
+	       info.final_sec,qop_prec[QOP_Precision-1]);
+  for(isrc = 0; isrc < nsrc; isrc++)
+    node0_printf("nmass[%d] = %d iters = %d ",
+		 isrc,nmass[isrc],qop_resid_arg[isrc][0]->final_iter);
+  node0_printf("mflops = %e\n", info.final_flop/(1.0e6*info.final_sec) );
+  fflush(stdout);
+#endif
 
   return iters;
 }
@@ -172,18 +226,10 @@ KS_CONGRAD_QOP_SITE2SITE(int niter, int nrestart, Real rsqmin,
   int isrc, imass;
   QOP_FermionLinksAsqtad *qop_links;
   QOP_ColorVector **qop_sol[MAXSRC], *qop_src[MAXSRC];
-  QOP_invert_arg_t qop_invert_arg;
-  QOP_info_t info;
-  QOP_resid_arg_t  **qop_resid_arg[MAXSRC];
   int iterations_used = 0;
-  int max_restart = nrestart;
-
-  double dtimec;
+  QOP_invert_arg_t qop_invert_arg;
+  QOP_resid_arg_t  ***qop_resid_arg;
   double remaptime;
-#ifdef CGTIME
-  double nflop = 1187;
-  if( milc_parity == EVENANDODD ) nflop *= 2;
-#endif
 
   if(nsrc > MAXSRC){
     printf("ks_congrad_qop_site2site: too many sources\n");
@@ -200,29 +246,15 @@ KS_CONGRAD_QOP_SITE2SITE(int niter, int nrestart, Real rsqmin,
 
   qop_links = CREATE_QOP_ASQTAD_FERMION_LINKS( );
 
+  /* Set qop_invert_arg */
+  set_qop_invert_arg( & qop_invert_arg, niter, 
+		      nrestart, milc_parity );
+  
+  /* Pointers for residual errors */
+  qop_resid_arg = create_qop_resid_arg( nsrc, nmass, rsqmin );
+
   remaptime = -dclock(); 
 
-  /* Set qop_invert_arg and qop_resid_arg */
-  set_qop_invert_arg( & qop_invert_arg, niter, max_restart, milc_parity );
-  /* Pointers for residual errors */
-  for(isrc = 0; isrc < nsrc; isrc++){
-    qop_resid_arg[isrc] = 
-      (QOP_resid_arg_t **)malloc(sizeof(QOP_resid_arg_t *)*nmass[isrc]);
-    if(qop_resid_arg[isrc] == NULL){
-      printf("ks_congrad_qop_site2site: Can't allocate qop_resid_arg_t*\n");
-      terminate(1);
-    }
-    /* For now the residuals the same for all sources and masses */
-    for(imass = 0; imass < nmass[isrc]; imass++){
-      qop_resid_arg[isrc][imass] = (QOP_resid_arg_t *)malloc(sizeof(QOP_resid_arg_t ));
-      if(qop_resid_arg[isrc][imass] == NULL){
-	printf("ks_congrad_qop_site2site: Can't allocate qop_resid_arg_t\n");
-	terminate(1);
-      }
-      set_qop_resid_arg( qop_resid_arg[isrc][imass], rsqmin );
-    }
-  }
-  
   /* Pointers for solution vectors */
   for(isrc = 0; isrc < nsrc; isrc++){
     qop_sol[isrc] = 
@@ -245,10 +277,8 @@ KS_CONGRAD_QOP_SITE2SITE(int niter, int nrestart, Real rsqmin,
   /* Call QOP inverter */
 
   remaptime += dclock();
-  dtimec = -dclock();
-  iterations_used = ks_congrad_qop_generic( qop_links, &info, &qop_invert_arg, 
+  iterations_used = ks_congrad_qop_generic( qop_links, &qop_invert_arg,
     qop_resid_arg, masses, nmass, qop_sol, qop_src, nsrc, final_rsq_ptr );
-  dtimec += dclock();
   remaptime -= dclock();
   
   /* Map qop solutions to MILC site structure   */
@@ -260,8 +290,6 @@ KS_CONGRAD_QOP_SITE2SITE(int niter, int nrestart, Real rsqmin,
 
   /* Free QOP fields  */
 
-  //  QOP_asqtad_destroy_L(qop_links);
-  //  qop_links  = NULL;
   for(isrc = 0; isrc < nsrc; isrc++){
     QOP_destroy_V(qop_src[isrc]);    
     qop_src[isrc] = NULL;
@@ -269,22 +297,18 @@ KS_CONGRAD_QOP_SITE2SITE(int niter, int nrestart, Real rsqmin,
       QOP_destroy_V(qop_sol[isrc][imass]);     
       free(qop_sol[isrc]);
       qop_sol[isrc] = NULL;
-      free(qop_resid_arg[isrc][imass]);
     }
-    free(qop_resid_arg[isrc]);
-    qop_resid_arg[isrc] = NULL;
   }
 
   remaptime += dclock();
 #ifdef CGTIME
-  {
-    node0_printf("CONGRAD5: time = %e (fn_qop %s) masses0 = %d iters = %d mflops = %e\n",
-		 dtimec,qop_prec[QOP_Precision-1],nmass[0],iterations_used,
-		 info.final_flop/(1.0e6*dtimec) );
+#ifdef REMAP
     node0_printf("CGREMAP:  time = %e\n",remaptime);
-    fflush(stdout);
-  }
 #endif
+#endif
+  destroy_qop_resid_arg(qop_resid_arg, nsrc, nmass);
+  qop_resid_arg = NULL;
+
   return iterations_used;
 }
 
@@ -300,17 +324,10 @@ int KS_CONGRAD_QOP_SITE2FIELD(int niter, int nrestart, Real rsqmin,
   int isrc, imass;
   QOP_FermionLinksAsqtad *qop_links;
   QOP_ColorVector **qop_sol[MAXSRC], *qop_src[MAXSRC];
-  QOP_invert_arg_t qop_invert_arg;
-  QOP_info_t info;
-  QOP_resid_arg_t  **qop_resid_arg[MAXSRC];
   int iterations_used = 0;
-  int max_restart = nrestart;
-  double dtimec;
   double remaptime;
-#ifdef CGTIME
-  double nflop = 1187;
-  if( milc_parity == EVENANDODD ) nflop *= 2;
-#endif
+  QOP_resid_arg_t  ***qop_resid_arg;
+  QOP_invert_arg_t qop_invert_arg;
 
   if(nsrc > MAXSRC){
     printf("ks_congrad_qop_site2field: too many sources\n");
@@ -327,30 +344,15 @@ int KS_CONGRAD_QOP_SITE2FIELD(int niter, int nrestart, Real rsqmin,
 
   qop_links = CREATE_QOP_ASQTAD_FERMION_LINKS();
 
+  /* Set qop_invert_arg */
+  set_qop_invert_arg( & qop_invert_arg, niter, 
+		      nrestart, milc_parity );
+
+  /* Pointers for residual errors */
+  qop_resid_arg = create_qop_resid_arg( nsrc, nmass, rsqmin );
+
   remaptime = -dclock(); 
 
-  /* Set qop_invert_arg and qop_resid_arg */
-  set_qop_invert_arg( & qop_invert_arg, niter, 
-				 max_restart, milc_parity );
-  /* Pointers for residual errors */
-  for(isrc = 0; isrc < nsrc; isrc++){
-    qop_resid_arg[isrc] = 
-      (QOP_resid_arg_t **)malloc(sizeof(QOP_resid_arg_t *)*nmass[isrc]);
-    if(qop_resid_arg[isrc] == NULL){
-      printf("ks_congrad_qop_site2field: Can't allocate qop_resid_arg_t*\n");
-      terminate(1);
-    }
-    /* For now the residuals the same for all sources and masses */
-    for(imass = 0; imass < nmass[isrc]; imass++){
-      qop_resid_arg[isrc][imass] = (QOP_resid_arg_t *)malloc(sizeof(QOP_resid_arg_t ));
-      if(qop_resid_arg[isrc][imass] == NULL){
-	printf("ks_congrad_qop_site2field: Can't allocate qop_resid_arg_t\n");
-	terminate(1);
-      }
-      set_qop_resid_arg( qop_resid_arg[isrc][imass], rsqmin );
-    }
-  }
-  
   /* Pointers for solution vectors */
   for(isrc = 0; isrc < nsrc; isrc++){
     qop_sol[isrc] = 
@@ -371,11 +373,11 @@ int KS_CONGRAD_QOP_SITE2FIELD(int niter, int nrestart, Real rsqmin,
   }
   
   /* Call QOP inverter */
-  dtimec = -dclock();
-  iterations_used = ks_congrad_qop_generic( qop_links, &info, &qop_invert_arg, 
-    qop_resid_arg, masses, nmass, qop_sol, qop_src, nsrc, final_rsq_ptr );
-  dtimec += dclock();
-  remaptime -= dtimec;
+
+  remaptime += dclock();
+  iterations_used = ks_congrad_qop_generic( qop_links, &qop_invert_arg,
+     qop_resid_arg, masses, nmass, qop_sol, qop_src, nsrc, final_rsq_ptr );
+  remaptime -= dclock();
   
   /* Map qop solutions to MILC field   */
 
@@ -386,32 +388,27 @@ int KS_CONGRAD_QOP_SITE2FIELD(int niter, int nrestart, Real rsqmin,
 
   /* Free QOP fields  */
 
-  //  QOP_asqtad_destroy_L(qop_links);
-  //  qop_links  = NULL;
   for(isrc = 0; isrc < nsrc; isrc++){
     QOP_destroy_V(qop_src[isrc]);    
     qop_src[isrc] = NULL;
     for(imass = 0; imass < nmass[isrc]; imass++){
       QOP_destroy_V(qop_sol[isrc][imass]);     
-      free(qop_resid_arg[isrc][imass]);
     }
     free(qop_sol[isrc]);
     qop_sol[isrc] = NULL;
-    free(qop_resid_arg[isrc]);
-    qop_resid_arg[isrc] = NULL;
   }
 
   remaptime += dclock();
 
 #ifdef CGTIME
-  {
-    node0_printf("CONGRAD5: time = %e (fn_qop %s) masses0 = %d iters = %d mflops = %e\n",
-		 dtimec,qop_prec[QOP_Precision-1],nmass[0],iterations_used,
-		 info.final_flop/(1.0e6*dtimec) );
+#ifdef REMAP
     node0_printf("CGREMAP:  time = %e\n",remaptime);
-    fflush(stdout);
-  }
 #endif
+#endif
+
+  destroy_qop_resid_arg(qop_resid_arg, nsrc, nmass);
+  qop_resid_arg = NULL;
+
   return iterations_used;
 }
 

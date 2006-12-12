@@ -294,6 +294,9 @@ spectrum_singlets.o: ../generic_ks/spectrum_singlets.c
 ifeq ($(strip ${HAVEQDP}),true)
 
 G_KS_ALL_QDP = \
+  d_congrad5_fn_1sum_qdp.o \
+  d_congrad5_fn_1sum_qdp_D.o \
+  d_congrad5_fn_1sum_qdp_F.o \
   d_congrad5_fn_qdp.o \
   d_congrad5_fn_qdp_D.o \
   d_congrad5_fn_qdp_F.o \
@@ -312,6 +315,12 @@ G_KS_ALL_DEPEND_QDP = \
 
 ${G_KS_ALL_QDP} : ${G_KS_ALL_DEPEND_QDP}
 
+d_congrad5_fn_1sum_qdp.o: ../generic_ks/d_congrad5_fn_1sum_qdp.c
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_1sum_qdp_D.o: ../generic_ks/d_congrad5_fn_1sum_qdp_D.c ../generic_ks/d_congrad5_fn_1sum_qdp_P.c
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_1sum_qdp_F.o: ../generic_ks/d_congrad5_fn_1sum_qdp_F.c ../generic_ks/d_congrad5_fn_1sum_qdp_P.c
+	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qdp.o: ../generic_ks/d_congrad5_fn_qdp.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qdp_D.o: ../generic_ks/d_congrad5_fn_qdp_D.c ../generic_ks/d_congrad5_fn_qdp_P.c

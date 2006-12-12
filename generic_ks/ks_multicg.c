@@ -12,6 +12,11 @@
 #include <string.h>
 
 /* Set the KS multicg inverter flavor depending on the macro KS_MULTICG */
+/* Defaults to hybrid */
+
+#ifndef KS_MULTICG
+#define KS_MULTICG HYBRID
+#endif
 
 /**********************************************************************/
 /*   Wrapper for the multimass inverter with multiple masses          */

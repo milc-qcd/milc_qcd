@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.19  2006/12/12 18:07:16  detar
+ * Correct mixed precision features.  Add 1sum variant of the QDP inverter.
+ *
  * Revision 1.18  2006/12/09 13:52:39  detar
  * Add mixed precision capability for KS inverter in QOP and QDP
  *
@@ -73,7 +76,7 @@
 #define KS_MULTIFF FNMAT
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.18 2006/12/09 13:52:39 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.19 2006/12/12 18:07:16 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
@@ -314,6 +317,7 @@ void eo_fermion_force_asqtad_block( Real eps, Real *residues,
   for( j = 0;  j <= nterms-veclength; j += veclength )
     eo_fermion_force_asqtad_multi( eps, &(residues[j]), xxx+j, veclength );
   
+#ifndef ONEMASS
   /* Continue with pairs if needed */
   for( ; j <= nterms-2 ; j+=2 ){
     FORALLSITES(i,s){
@@ -329,6 +333,15 @@ void eo_fermion_force_asqtad_block( Real eps, Real *residues,
     FORALLSITES(i,s){ s->xxx1 = xxx[j][i] ; }
     eo_fermion_force_oneterm( eps, residues[j], F_OFFSET(xxx1) );
   }
+#else
+  /* Thrown in just to make it compile.  Probably never used. */
+  /* Finish with a single if needed */
+  for( ; j <= nterms-1; j++ ){
+    FORALLSITES(i,s){ s->xxx = xxx[j][i] ; }
+    eo_fermion_force_oneterm( eps, residues[j], F_OFFSET(xxx) );
+  }
+#endif
+
 }
 
 /**********************************************************************/

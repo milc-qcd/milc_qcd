@@ -141,7 +141,7 @@ node0_printf("LLTIME(long): time =  %e (Naik) mflops = %e\n",dtime,
 /* KS phases and APBC must be in the links. See long comment at 
    end of fermion_force_general.c */
 static void load_fatlinks(su3_matrix **t_fl, Real *act_path_coeff,
-			  Q_path *qpaths){
+			  Q_path *q_paths){
   register int i;
   register site *s;
   int dir;

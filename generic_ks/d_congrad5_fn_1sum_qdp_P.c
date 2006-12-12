@@ -1,4 +1,4 @@
-/******* d_congrad5_fn_qdp.c - conjugate gradient for SU3/fermions ****/
+/******* d_congrad5_fn_1sum_qdp_P.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 7 */
 
 /* This is the MILC standalone Level 2 QDP inverter for FN KS actions */
@@ -71,7 +71,7 @@
 #include <lattice_qdp.h>
 
 static int congrad_setup=0;
-static QDP_ColorVector *ttt, *tttt, *resid, *cg_p;
+static QDP_ColorVector *ttt, *tttt, *resid, *cg_p, *mmp;
 static QDP_ColorVector *temp1[16], *temp2[16];
 extern QDP_ColorMatrix *BCKLINK[8];
 extern QDP_ColorMatrix **FATLINKS, **LONGLINKS, *IMPLINKS[8];
@@ -89,6 +89,7 @@ setup_congrad(void)
   tttt = QDP_create_V();
   resid = QDP_create_V();
   cg_p = QDP_create_V();
+  mmp = QDP_create_V();
   for(i=0; i<16; i++) {
     temp1[i] = QDP_create_V();
     temp2[i] = QDP_create_V();
@@ -106,8 +107,11 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   QLA_Real msq_x4;	 /* 4*mass*mass */
   QLA_Real source_norm;	 /* squared magnitude of source vector */
   QLA_Real rsqstop;	 /* stopping residual normalized by source norm */
+  QLA_Real rv[2];
+  QDP_ColorVector *vv[2];
+  QDP_Subset sv[2];
   QDP_Subset q_parity, q_otherparity;
-  int iteration;	 /* counter for iterations */
+  int iteration, first;	 /* counter for iterations */
 
 /* Timing */
   double dtimec;
@@ -151,65 +155,100 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   remaptime += dclock();
   dtimec = -dclock(); 
 
-  /* initialization process */
-  do {
-    /* ttt <-  (-1)*M_adjoint*M*dest
-       resid,cg_p <- src + ttt
-       rsq = |resid|^2
-       source_norm = |src|^2
-    */
+  vv[0] = resid;
+  vv[1] = tttt;
+  sv[0] = QDP_even;
+  sv[1] = QDP_odd;
 
-    QDP_V_eq_V(cg_p, dest, q_parity);
-    DSLASH_QDP_FN_SPECIAL2(cg_p, tttt, q_otherparity, temp1);
+  /* source_norm = |src|^2 */
+  QDP_r_eq_norm2_V(&source_norm, src, q_parity);
+  rsqstop = rsqmin * source_norm;
+
+  do {
+    /* initialization process
+       ttt <- (-1)*M_adjoint*M*dest
+       resid <- src + ttt
+       rsq = |resid|^2              */
+
+    QDP_V_eq_V(resid, dest, q_parity);
+
+    DSLASH_QDP_FN_SPECIAL2(resid, tttt, q_otherparity, temp1);
     DSLASH_QDP_FN_SPECIAL2(tttt, ttt, q_parity, temp2);
+    QDP_V_meq_r_times_V(ttt, &msq_x4, resid, q_parity);
     iteration++;    /* iteration counts multiplications by M_adjoint*M */
 
-    /* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
-    QDP_V_meq_r_times_V(ttt, &msq_x4, dest, q_parity);
     QDP_V_eq_V_plus_V(resid, src, ttt, q_parity);
-    QDP_r_eq_norm2_V(&source_norm, src, q_parity);
     QDP_r_eq_norm2_V(&rsq, resid, q_parity);
-    oldrsq = rsq;
-    QDP_V_eq_zero(cg_p, q_parity);
-    rsqstop = rsqmin * source_norm;
 
-    /* main loop - do until convergence or time to restart */
-    /*
-      oldrsq <- rsq
-      ttt <- (-1)*M_adjoint*M*cg_p
-      pkp <- (-1)*cg_p.M_adjoint*M.cg_p
-      a <- -rsq/pkp
-      dest <- dest + a*cg_p
-      resid <- resid + a*ttt
-      rsq <- |resid|^2
-      b <- rsq/oldrsq
-      cg_p <- resid + b*cg_p
-    */
+    if(rsq>rsqstop) {
 
-    while( (rsq>rsqstop) && (iteration%niter!=0) ) {
-      b = rsq / oldrsq;
-      /* cg_p  <- resid + b*cg_p */
-      QDP_V_eq_r_times_V_plus_V(cg_p, &b, cg_p, resid, q_parity);
+      QDP_V_eq_V(cg_p, resid, q_parity);
 
-      oldrsq = rsq;
+      /* main loop - do until convergence or time to restart */
+      /*
+	oldrsq <- rsq
+	ttt <- (-1)*M_adjoint*M*cg_p
+	pkp <- (-1)*cg_p.M_adjoint*M.cg_p
+	a <- -rsq/pkp
+	dest <- dest + a*cg_p
+	resid <- resid + a*ttt
+	rsq <- |resid|^2
+	b <- rsq/oldrsq
+	cg_p <- resid + b*cg_p
+      */
+      //print_mem();
+      first = 1;
+      while(1) {
+	oldrsq = rsq;
 
-      DSLASH_QDP_FN_SPECIAL2(cg_p, tttt, q_otherparity, temp1);
-      DSLASH_QDP_FN_SPECIAL2(tttt, ttt, q_parity, temp2);
-      iteration++;
+	DSLASH_QDP_FN_SPECIAL2(resid, tttt, q_otherparity, temp1);
+	DSLASH_QDP_FN_SPECIAL2(tttt, ttt, q_parity, temp2);
+	QDP_V_meq_r_times_V(ttt, &msq_x4, resid, q_parity);
+	iteration++;
 
-      /* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
-      /* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */
-      /* pkp  <- cg_p.(ttt - msq*cg_p) */
-      QDP_V_meq_r_times_V(ttt, &msq_x4, cg_p, q_parity);
-      QDP_r_eq_re_V_dot_V(&pkp, cg_p, ttt, q_parity);
+	/* pkp <- cg_p . ttt */
+	//QDP_r_eq_re_V_dot_V(&pkp, cg_p, ttt, q_parity);
 
-      a = - rsq / pkp;
+	QDP_r_eq_norm2_V(&rsq, resid, q_parity);
+	QDP_r_eq_norm2_V(&pkp, tttt, q_otherparity);
 
-      /* dest <- dest - a*cg_p */
-      /* resid <- resid - a*ttt */
-      QDP_V_peq_r_times_V(dest, &a, cg_p, q_parity);
-      QDP_V_peq_r_times_V(resid, &a, ttt, q_parity);
-      QDP_r_eq_norm2_V(&rsq, resid, q_parity);
+	//QDP_r_veq_norm2_V_multi(rv, vv, sv, 2);
+	//rsq = rv[0];
+	//pkp = rv[1];
+
+	pkp = -pkp - msq_x4*rsq;
+	if(first) {
+	  first = 0;
+	  b = 0;
+	} else {
+	  b = rsq/oldrsq;
+	  pkp += rsq*b/a;
+	}
+	a = - rsq / pkp;
+
+	//a = rsq / pkp;
+
+	/* p = b*p + r */
+	/* result += a*p */
+	/* MMp = b*MMp + MMr */
+	/* r += a*MMp */
+	QDP_V_eq_r_times_V_plus_V(cg_p, &b, cg_p, resid, q_parity);
+	QDP_V_peq_r_times_V(dest, &a, cg_p, q_parity);
+	QDP_V_eq_r_times_V_plus_V(mmp, &b, mmp, ttt, q_parity);
+	QDP_V_peq_r_times_V(resid, &a, mmp, q_parity);
+
+	/* dest <- dest - a*cg_p */
+	/* resid <- resid - a*ttt */
+	//QDP_V_meq_r_times_V(dest, &a, cg_p, q_parity);
+	//QDP_V_meq_r_times_V(resid, &a, ttt, q_parity);
+	//QDP_r_eq_norm2_V(&rsq, resid, q_parity);
+
+	if( (rsq<rsqstop) || (iteration%niter==0) ) break;
+
+	//b = rsq / oldrsq;
+	/* cg_p  <- resid + b*cg_p */
+	//QDP_V_eq_r_times_V_plus_V(cg_p, &b, cg_p, resid, q_parity);
+      }
     }
 
   } while( (rsq>rsqstop) && (iteration<nrestart*niter) );
@@ -218,10 +257,12 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
     dtimec += dclock();
 #ifdef CGTIME
     if(QDP_this_node==0) {
-      printf("CONGRAD5: time = %e (fn_qdp %c) iters = %d mflops = %e\n",
+      printf("CONGRAD5: time = %e (fn_1sum_qdp %c) iters = %d mflops = %e\n",
 	     dtimec, QDP_Precision, iteration,
 	     (double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
+#ifdef REMAP
       node0_printf("CGREMAP:  time = %e\n",remaptime);
+#endif
       fflush(stdout);
     }
 #endif

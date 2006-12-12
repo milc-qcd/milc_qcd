@@ -1,7 +1,7 @@
 /******* d_congrad5_fn_qdp.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 7 */
 
-/* This is the MILC wrapper for the SciDAC Level 3 QOP inverter */
+/* This is the MILC wrapper for the SciDAC QDP inverter */
 /* It invokes an inverter with the appropriate precision */
 
 #include "generic_ks_includes.h"
