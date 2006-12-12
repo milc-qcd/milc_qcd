@@ -40,11 +40,11 @@ nersc_cksum( void ) {
       for(a=0; a<2; a++) for(b=0; b<3; b++) {
 	tmp.flt = s->link[mu].e[a][b].real;
 	p32 = tmp.p32;
-	if(!big_end)byterevn((int32type *)&p32,1);
+	// if(!big_end)byterevn((int32type *)&p32,1);
 	chksum += p32;
 	tmp.flt = s->link[mu].e[a][b].imag;
 	p32 = tmp.p32;
-	if(!big_end)byterevn((int32type *)&p32,1);
+	// if(!big_end)byterevn((int32type *)&p32,1);
 	chksum += p32;
       }
     }
