@@ -4,6 +4,11 @@
 
 #  seterr.sh PAT1 PAT2 target tol
 
+if [ $# -lt 4 ] 
+then
+  echo "Usage $0 PAT1 PAT2 target tol"
+  exit
+fi
 
 PAT1=$1
 PAT2=$2
