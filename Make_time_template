@@ -20,38 +20,31 @@
 # Scalar machine
 LAUNCH =
 LAUNCH2 = 
-ARCH = vanilla
 
 # SGI Origin
 #LAUNCH = mpirun -np 16
 #LAUNCH2 = 
-#ARCH = origin_mpi
 
 # Linux MPICH
 #LAUNCH = /uufs/icebox/sys/pkg/mpich/1.2.1/bin/mpirun -np 16 -machinefile $$PBS_NODEFILE
 #LAUNCH2 = 
-#ARCH = linux_mpi
 
 # Linux VMI
 #LAUNCH = /usr/local/bin/vmi-launch -ncpus 8 --
 #LAUNCH2 = 
-#ARCH = linux_mpi
 
 # Compaq Alpha cluster (tcsini)
 #LAUNCH = prun -N $$RMS_NODES -n $$RMS_PROCS # (tcsini)
 #LAUNCH = prun -p test -B 1 -N 1 -n 4  (CHPC sierra cluster - private node sierra1)
 #LAUNCH2 =
-#ARCH = tcs_mpi
 
 # SP
 #LAUNCH = poe 
 #LAUNCH2 = -nodes 1 -tasks_per_node 4 -rmpool 1
-#ARCH = sp_mpi
 
 # T3E
 #LAUNCH = mpprun -n 4
 #LAUNCH2 = 
-#ARCH = t3e_mpi
 
 out.time.${PROJ}: ${PROJ} in.time.${PROJ}
 	${LAUNCH} ./${PROJ} ${LAUNCH2} < in.time.${PROJ} > out.time.${PROJ}
@@ -59,8 +52,7 @@ out.time.${PROJ}: ${PROJ} in.time.${PROJ}
 time:
 	for proj in ${PROJS};\
 	do\
-     	     cp -p ../Make_${ARCH} .;\
-	     ${MAKE} -f Make_${ARCH} $$proj;\
+	     ${MAKE} $$proj;\
 	     ${MAKE} -f Make_time "PROJ=$$proj" out.time.$$proj;\
 	     /bin/rm -f $$proj;\
 	     /bin/rm -f localmake*;\
