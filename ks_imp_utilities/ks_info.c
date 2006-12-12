@@ -9,7 +9,7 @@
 #include "ks_imp_includes.h"
 #include <quark_action.h>
 #define MAX_XML 2049
-static Real act_path_coeff[MAX_BASIC_PATHS]; /* actual path coefficient     *
+static Real act_path_coeff[MAX_BASIC_PATHS]; /* actual path coefficient     */
 
 /* Temporary until we can create XML */
 /* TO DO: Proviso for a number of quark action paths different from 6 */

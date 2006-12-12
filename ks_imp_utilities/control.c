@@ -42,6 +42,9 @@ int main( int argc, char **argv ){
 		     F_OFFSET(g_rand), mass);
     
 #else
+#ifndef HAVE_QIO
+BOMB Checking the fermion force requires QIO compilation
+#endif
     
     check_fermion_force( srcfile, srcflag, F_OFFSET(xxx), 
 			 ansfile, ansflag, mass);

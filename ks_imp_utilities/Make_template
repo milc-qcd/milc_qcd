@@ -22,6 +22,7 @@ INLINE_HEADERS = \
 
 MY_HEADERS = \
   lattice.h \
+  lattice_qdp.h \
   params.h \
   defines.h \
   ks_imp_includes.h
@@ -66,6 +67,7 @@ G_KS_OBJECTS0 = \
   f_meas.o \
   grsource_imp.o \
   mat_invert.o \
+  path_transport.o \
   quark_stuff.o \
   rephase.o
 
@@ -95,11 +97,12 @@ DSLASH_FN = dslash_fn2.o  # Or dslash_fn.o
 # Selection of the fermion links algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  FLINKS_FN = fermion_links_asqtad_qop_D.o fermion_links_asqtad_qop_F.o
+  FLINKS_FN = fermion_links_asqtad_qop.o fermion_links_asqtad_qop_D.o \
+     fermion_links_asqtad_qop_F.o
   FLINKS_FN += ${FLINKS_FNQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    FLINKS_FN = fermion_links_asqtad_qdp_D.o fermion_links_asqtad_qdp_F.o
+    FLINKS_FN = fermion_links_asqtad_qdp.o
   else
     FLINKS_FN = fermion_links_fn.o
   endif
@@ -109,14 +112,14 @@ FLINKS_FN += fermion_links_helpers.o
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  CONGRAD_FN = d_congrad5_fn_qop_two_src_D.o d_congrad5_fn_qop_two_src_D.o \
+  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
      d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o d_congrad_opt.o
 #  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
   CONGRAD_FN += ${ASQINVERTQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp_D.o \
-      d_congrad5_fn_qdp_F.o d_congrad_opt.o
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
+       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
   else
     # Choose a non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
     # or d_congrad5_fn_fewsums.o)
@@ -132,7 +135,7 @@ ifeq ($(strip ${HAVEQOP}),true)
   ASQFORCE += ${ASQFORCEQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    ASQFORCE = fermion_force_asqtad_qdp.o fermion_force_fn_multi_qdp.o ff_opt.o
+    ASQFORCE = fermion_force_asqtad_qdp.o fermion_force_fn_multi_qdp.o
   else
     ASQFORCE = fermion_force_asqtad3.o fermion_force_fn_multi.o ff_opt.o
   endif
@@ -142,15 +145,15 @@ endif
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
-  MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop_D.o \
-    ks_multicg_offset_qop_F.o
+  MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop.o \
+    ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    QDP_OBJECTS = map_milc_to_qdp.o
+    QDP_OBJECTS = map_milc_to_qdp_D.o map_milc_to_qdp_F.o
     INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp_D.o \
       dslash_fn_qdp_F.o 
-    MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qdp_D.o \
-     ks_multicg_offset_qdp_F.o
+    MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qdp.o \
+      ks_multicg_offset_qdp_D.o ks_multicg_offset_qdp_F.o
   else
     INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
     MULTI_INV_FN = ks_multicg.o ks_multicg_offset.o
@@ -159,7 +162,7 @@ endif
 
 # The only choice for inverters and Dslash for EO actions
 INV_EO_OBJECTS = d_congrad5_eo.o d_congrad_opt.o dslash_eo.o
-MULTI_INV_EO = ks_multicg.o
+MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
 
 # For EO actions we don't precompute the fat links for Dslash at the moment
 FN_OBJECTS = ${FLINKS_FN} ${INV_FN_OBJECTS}
@@ -175,7 +178,7 @@ ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
 
 # Generic QOP objects
 ifeq ($(strip ${HAVEQOP}),true)
-  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o
+  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o milc_to_qop_utilities.o
 endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
@@ -224,13 +227,6 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 	/bin/cp ${GAUGEIMP}/${GAUGE} gauge_action.h
 
 
-########################################################
-# Optional DEFINES for timing:
-# -DCGTIME for cg timing and iterations
-# -DGFTIME for gauge force timing
-# -DFFTIME for fermion force timing
-# -DLLTIME for long link timing
-
 ifeq ($(strip ${QCDOC}),true)
   DQCDOC = -DQCDOC
 endif
@@ -253,8 +249,11 @@ endif
 
 DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
-##### Targets:
-#		("FN" = "fat+Naik")
+########################################################
+# Optional DEFINES for targets
+
+# -DFN          identifies fat-Naik-like actions with only next and 3rd
+#               next neighbor linkage
 
 check_ks_invert::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -266,8 +265,7 @@ check_ks_invert::
 
 check_fermion_force::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DFERMION_FORCE \
-	-DHAVE_QIO" \
+	"DEFINES= -DFN -DFERMION_FORCE" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS=  ${FN_OBJECTS} ${ASQFORCE} check_fermion_force.o"

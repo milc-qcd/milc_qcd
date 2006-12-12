@@ -63,6 +63,8 @@ typedef struct {
  	su3_vector resid;	/* conjugate gradient residual vector */
  	su3_vector cg_p;	/* conjugate gradient change vector */
  	su3_vector xxx;	        /* solution vector = Kinverse * phi */
+ 	su3_vector xxx1;        /* solution vector = Kinverse * phi */
+ 	su3_vector xxx2;        /* solution vector = Kinverse * phi */
  	su3_vector ttt;		/* temporary vector, for K*ppp */
  	su3_vector g_rand;	/* Gaussian random vector*/
 	/* Use trick of combining xxx=D^adj D)^(-1) on even sites with
@@ -147,16 +149,6 @@ EXTERN su3_matrix *t_fatlink;
 #ifdef DBLSTORE_FN
 EXTERN su3_matrix *t_longbacklink;
 EXTERN su3_matrix *t_fatbacklink;
-#endif
-
-#ifdef HAVE_QDP
-#include <qdp.h>
-
-EXTERN QDP_ColorMatrix **fatlinks, **longlinks, *implinks[8];
-EXTERN QDP_Shift neighbor3[4];
-EXTERN QDP_Shift shiftdirs[8];
-EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];
-
 #endif
 
 #endif /* _LATTICE_H */
