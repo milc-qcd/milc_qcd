@@ -411,104 +411,6 @@ int read_S_to_site(QIO_Reader *infile, field_offset dest)
   return 0;
 }
 
-/* Factory function for moving color vectors from site structure to
-   single precision output */
-void vget_F3_V_from_site(char *buf, size_t index, int count, void *arg)
-{
-  int dir;
-  int i;
-  /* Assume output lattice is single precision */
-  fsu3_vector *dest = (fsu3_vector *)buf;
-  /* arg contains pointer to field offset value */
-  field_offset src = *((field_offset *)arg);
-  site *s = &lattice[index];
-  /* Source can be any precision */
-  su3_vector *src_vec = (su3_vector *)F_PT(s,src);
-
-  /* Copy, changing precision, if necessary */
-  for(dir = 0; dir < count; dir++)
-    for(i = 0; i < 3; i++){
-      dest[dir].c[i].real = src_vec[dir].c[i].real;
-      dest[dir].c[i].imag = src_vec[dir].c[i].imag;
-    }
-}
-
-/* Write a set of color vectors from the site structure */
-int write_F3_V_from_site(QIO_Writer *outfile, char *xml_write_lattice,
-	       field_offset src, int count){
-  QIO_String *xml_record_out;
-  int status;
-  QIO_RecordInfo *rec_info;
-  /* We assume output precision is single */
-  char qdptype[] = "QDP_F3_ColorVector";
-  char prec[] = "F";
-  int datum_size = sizeof(fsu3_vector);
-  int word_size = sizeof(float);
-
-  /* Create the record info for the field */
-  rec_info = QIO_create_record_info(QIO_FIELD, qdptype, prec, 3,
-				    0, datum_size, count);
-  /* Create the record XML for the field */
-  xml_record_out = QIO_string_create();
-  QIO_string_set(xml_record_out,xml_write_lattice);
-
-  /* Write the record for the field */
-  status = QIO_write(outfile, rec_info, xml_record_out, vget_F3_V_from_site, 
-		     count*datum_size, word_size, (void *)&src);
- if(status != QIO_SUCCESS)return 1;
-
-  QIO_destroy_record_info(rec_info);
-  QIO_string_destroy(xml_record_out);
-
-  return 0;
-}
-
-/* Factory function for moving single precision color vector from input
-   to site structure */
-void vput_F3_V_to_site(char *buf, size_t index, int count, void *arg)
-{
-  int dir;
-  int i;
-  /* Assume input lattice is single precision, 3 colors */
-  fsu3_vector *src = (fsu3_vector *)buf;
-  field_offset dest = *((field_offset *)arg);
-  site *s = &lattice[index];
-  /* Destination can be any precision */
-  su3_vector *dest_vec = (su3_vector *)F_PT(s,dest);
-  
-  /* Copy, changing precision, if necessary */
-  for (dir=0;dir<count;dir++)
-    for(i = 0; i < 3; i++){
-      dest_vec[dir].c[i].real = src[dir].c[i].real;
-      dest_vec[dir].c[i].imag = src[dir].c[i].imag;
-    }
-}
-
-/* Read a set of color vectors */
-int read_F3_V_to_site(QIO_Reader *infile, field_offset dest, int count)
-{
-  QIO_String *xml_record_in;
-  QIO_RecordInfo rec_info;
-  int status;
-  /* We assume input precision is single */
-  int datum_size = sizeof(fsu3_vector);
-  int word_size = sizeof(float);
-  
-  /* Read the field record */
-  xml_record_in = QIO_string_create();
-  status = QIO_read(infile, &rec_info, xml_record_in, 
-		    vput_F3_V_to_site, datum_size*count, word_size, (void *)&dest);
-  node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in));
-  if(status != QIO_SUCCESS)return 1;
-
-  node0_printf("Checksums %x %x\n",
-	       QIO_get_reader_last_checksuma(infile),
-	       QIO_get_reader_last_checksumb(infile));
-
-  QIO_string_destroy(xml_record_in);
-  return 0;
-}
-
 /********************************************************************/
 
 #ifdef NOLINKS
@@ -788,33 +690,10 @@ void save_color_matrix_scidac_from_site(char *filename, char *filexml,
   close_output(outfile);
 }
 
-/* Read color vectors in SciDAC format */
-void restore_color_vector_scidac_to_site(char *filename, 
-					 field_offset dest, int count){
-  QIO_Layout layout;
-  QIO_Reader *infile;
-  int status;
 
-  QIO_verbose(QIO_VERB_OFF);
-
-  /* Build the layout structure */
-  build_qio_layout(&layout);
-
-  /* Open file for reading */
-  infile = open_scidac_input(filename, &layout, QIO_SERIAL);
-  if(infile == NULL)terminate(1);
-
-  /* Read the lattice field */
-  status = read_F3_V_to_site(infile, dest, count);
-  if(status)terminate(1);
-
-  close_input(infile);
-}
-
-/* Write a set of color vectors in SciDAC format, taking data from the site
-   structure */
-void save_color_vector_scidac_from_site(char *filename, char *filexml, 
-      char *recxml, int volfmt,  field_offset src, int count)
+/* Save a color matrix. */
+void save_color_matrix_scidac_from_field(char *filename,
+        char *filexml, char *recxml, int volfmt, su3_matrix *src, int count)
 {
   QIO_Layout layout;
   QIO_Writer *outfile;
@@ -827,34 +706,33 @@ void save_color_vector_scidac_from_site(char *filename, char *filexml,
 
   /* Open file for writing */
   outfile = open_scidac_output(filename, volfmt, QIO_SERIAL,
-			       QIO_ILDGNO, NULL, &layout, filexml);
+                               QIO_ILDGNO, NULL, &layout, filexml);
   if(outfile == NULL)terminate(1);
 
   /* Write the lattice field */
-  status = write_F3_V_from_site(outfile, recxml, src, count);
+  status = write_F3_M_from_field(outfile, recxml, src, count);
   if(status)terminate(1);
-  
+
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
-    node0_printf("Saved KS vector serially to binary file %s\n",
-		 filename);
+    node0_printf("Saved KS matrix serially to binary file %s\n",
+                 filename);
   }
   else if(volfmt == QIO_MULTIFILE){
-    node0_printf("Saved KS vector as multifile to binary file %s\n",
-	   filename);
+    node0_printf("Saved KS matrix as multifile to binary file %s\n",
+           filename);
   }
   else if(volfmt == QIO_PARTFILE){
-    node0_printf("Saved KS vector in partition format to binary file %s\n",
-	   filename);
+    node0_printf("Saved KS matrix in partition format to binary file %s\n",
+           filename);
   }
 
   node0_printf("Checksums %x %x\n",
-	       QIO_get_writer_last_checksuma(outfile),
-	       QIO_get_writer_last_checksumb(outfile));
+               QIO_get_writer_last_checksuma(outfile),
+               QIO_get_writer_last_checksumb(outfile));
 
   close_output(outfile);
 }
-
 
 /* Read random number state in SciDAC format (SITERAND case only) */
 void restore_random_state_scidac_to_site(char *filename, field_offset dest){
