@@ -76,6 +76,7 @@ void dslash_fn_qop_milc_field_special_D(su3_matrix *fatlinks,
 QOP_FermionLinksAsqtad *create_qop_F_asqtad_fermion_links( void );
 void destroy_qop_F_asqtad_fermion_links( void );
 void load_fn_links_F(void);
+void load_fn_links_dmdu0_F(void);
 void invalidate_fn_links_F(void);
 
 /* fermion_links_asqtad_qop_D.c */
@@ -83,6 +84,7 @@ void invalidate_fn_links_F(void);
 QOP_FermionLinksAsqtad *create_qop_D_asqtad_fermion_links( void );
 void destroy_qop_D_asqtad_fermion_links( void );
 void load_fn_links_D(void);
+void load_fn_links_dmdu0_D(void);
 void invalidate_fn_links_D(void);
 
 /* ks_multicg_offset_qop.c */

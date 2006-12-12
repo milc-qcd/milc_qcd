@@ -36,12 +36,6 @@ void restore_color_matrix_scidac_to_site(char *filename,
 					field_offset dest, int count);
 void restore_color_matrix_scidac_to_field(char *filename, 
 					su3_matrix *dest, int count);
-
-void save_color_vector_scidac_from_site(char *filename, char *filexml, 
-		char *recxml, int volfmt,  field_offset src, int count);
-void restore_color_vector_scidac_to_site(char *filename, 
-				 field_offset dest, int count);
-
 void save_random_state_scidac_from_site(char *filename, 
 		char *filexml, char *recxml, int volfmt, field_offset src);
 void restore_random_state_scidac_to_site(char *filename, field_offset dest);
