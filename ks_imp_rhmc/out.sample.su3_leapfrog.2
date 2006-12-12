@@ -3,6 +3,14 @@ Microcanonical simulation with refreshing
 MIMD version 7 $Name:  $
 Machine = QMP (portable), with 1 nodes
 Rational function hybrid Monte Carlo algorithm
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+KS_MULTICG=HYBRID
+KS_MULTIFF=ASVEC (only choice for QOP)
+VECLENGTH=4
+INT_ALG=INT_LEAPFROG
 type 0 for no prompts  or 1 for prompts
 nflavors1 2
 nflavors2 1
@@ -12,7 +20,7 @@ nz 6
 nt 6
 iseed 3546789
 n_pseudo 2
-load_rhmc_params rationals.sample_1
+load_rhmc_params rationals.sample.su3_leapfrog
 n_pseudo 2
 Loading rational function parameters for phi field 0
 # New rational function
@@ -153,7 +161,7 @@ pole_GR 0.0427872
 pole_GR 0.157019
 pole_GR 0.620401
 pole_GR 2.51658
-pole_GR 10.5889
+pole_GR 10.5888
 pole_GR 51.2153
 pole_GR 535.957
 # CHECK: f(1.000000e-15) = 1.778284e-01 = 1.778279e-01?
@@ -184,13 +192,12 @@ pole_FA 6.13232
 pole_FA 27.4628
 pole_FA 179.744
 Maximum rational func order is 8
-LAYOUT = Hypercubes, options = hyper_prime,
+LAYOUT = Hypercubes, options = QDP
 ON EACH NODE 6 x 6 x 6 x 6
-Mallocing 1.6 MBytes per node for lattice
+Mallocing 3.2 MBytes per node for lattice
 Made lattice
 Made nn gathers
 Made 3nn gathers
-eo_fermion_force_set_opt: set opt to FNMAT = 2
 Finished setup
 
 
@@ -205,10 +212,10 @@ microcanonical_time_step 0.01
 steps_per_trajectory 12
 cgresid_md_fa_gr 2e-06 2e-06 2e-06 
 max_multicg_md_fa_gr 1750 1750 1750 
-cgprec_md_fa_gr 1 1 1
+cgprec_md_fa_gr 1 2 2 
 cgresid_md_fa_gr 2e-06 2e-06 2e-06 
 max_multicg_md_fa_gr 1750 1750 1750 
-cgprec_md_fa_gr 1 1 1
+cgprec_md_fa_gr 1 2 2 
 error_for_propagator 1e-06
 max_cg_prop 500
 max_cg_prop_restarts 5
@@ -217,46 +224,46 @@ forget
 Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l6666b650m010m050
 Time stamp Mon Aug  7 14:22:30 2006
 Checksums a76176b8 5eb657fc OK
-Time to reload gauge configuration = 1.197481e-02
-CHECK PLAQ: 1.658265e+00 1.639891e+00
-CHECK LINKTR: 2.255325e-01 -1.173331e-03
-Unitarity checked.  Max deviation 1.19e-07
-Time to check unitarity = 4.033089e-03
+Time to reload gauge configuration = 1.607490e-02
+CHECK PLAQ: 1.6582650740453551e+00 1.6398905968468851e+00
+CHECK NERSC LINKTR: 7.5177486227968465e-02 CKSUM: b59b771d
+Reunitarized for double precision. Max deviation 7.05e-08 changed to 4.44e-16
+Time to check unitarity = 1.305604e-02
 Symanzik 1x1 + 1x2 + 1x1x1 action
 loop coefficients: nloop rep loop_coeff  multiplicity
                     0 0      1.000000e+00     6
                     1 0      -7.355018e-02     12
-                    2 0      -8.663654e-03     16
+                    2 0      -8.663653e-03     16
 "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
 path coefficients: npath  path_coeff  multiplicity
                     0      6.250000e-01     8
                     1      -5.607564e-02     8
                     2      -8.411346e-02     48
                     3      2.830030e-02     192
-                    4      -6.347829e-03     384
+                    4      -6.347828e-03     384
                     5      -1.132012e-01     48
 WARMUPS COMPLETED
 Leapfrog integration, steps= 12 eps= 1.000000e-02
-GRSOURCE: sum = 1.9350216565e+03
-GRSOURCE: sum = 1.9758965980e+03
+GRSOURCE: sum = 1.9350216672e+03
+GRSOURCE: sum = 1.9758965992e+03
 PLAQUETTE ACTION: -2.778366e+04
-ACTION: g,h,f = 1.67770842255353e+04  -4.07219550013542e+00  3.91091809490323e+03  2.06839301249384e+04
-DG = 1.677708e+04, DH = -4.072196e+00, DF = 3.910918e+03, D = 2.068393e+04
+ACTION: g,h,f = 1.67770842632224e+04  -4.07208643541755e+00  3.91091826639972e+03  2.06839304431867e+04
+DG = 1.677708e+04, DH = -4.072086e+00, DF = 3.910918e+03, D = 2.068393e+04
 PLAQUETTE ACTION: -2.776246e+04
-ACTION: g,h,f = 1.67980974195958e+04  -1.87272666245699e+01  3.90456184393167e+03  2.06839319969029e+04
-DG = 2.101319e+01, DH = -1.465507e+01, DF = -6.356251e+00, D = 1.871965e-03
+ACTION: g,h,f = 1.67980975321103e+04  -1.87271296363503e+01  3.90456206023088e+03  2.06839324627048e+04
+DG = 2.101327e+01, DH = -1.465504e+01, DF = -6.356206e+00, D = 2.019518e-03
 PLAQUETTE ACTION: -2.774445e+04
-ACTION: g,h,f = 1.68166137097733e+04  -3.09496034830809e+01  3.89827078184485e+03  2.06839348881351e+04
-DG = 1.851629e+01, DH = -1.222234e+01, DF = -6.291062e+00, D = 2.891232e-03
+ACTION: g,h,f = 1.68166137151882e+04  -3.09493918584810e+01  3.89827101201745e+03  2.06839353353472e+04
+DG = 1.851618e+01, DH = -1.222226e+01, DF = -6.291048e+00, D = 2.872642e-03
 PLAQUETTE ACTION: -2.773045e+04
-ACTION: g,h,f = 1.68313978163592e+04  -4.08186608254910e+01  3.89335862258077e+03  2.06839377781145e+04
-DG = 1.478411e+01, DH = -9.869057e+00, DF = -4.912159e+00, D = 2.889979e-03
+ACTION: g,h,f = 1.68313979071527e+04  -4.08184527359664e+01  3.89335882349425e+03  2.06839382779110e+04
+DG = 1.478419e+01, DH = -9.869061e+00, DF = -4.912189e+00, D = 2.942564e-03
 PLAQUETTE ACTION: -2.773045e+04
-ACTION: g,h,f = 1.68313978163592e+04  -4.08186608254910e+01  3.89335862258077e+03  2.06839377781145e+04
+ACTION: g,h,f = 1.68313979071527e+04  -4.08184527359664e+01  3.89335882349425e+03  2.06839382779110e+04
 DG = 0.000000e+00, DH = 0.000000e+00, DF = 0.000000e+00, D = 0.000000e+00
-CHECK: delta S = 7.653176e-03
+CHECK: delta S = 7.834724e-03
 PLAQ:	1.652660	1.639179
-P_LOOP:	2.133435e-01	-5.114451e-02
+P_LOOP:	2.133435e-01	-5.114452e-02
 G_LOOP:  0  0  4   	1.638601e+00	( 0 1 7 6  )
 G_LOOP:  0  1  4   	1.659374e+00	( 0 2 7 5  )
 G_LOOP:  0  2  4   	1.629639e+00	( 0 3 7 4  )
@@ -269,7 +276,7 @@ G_LOOP:  1  2  6   	8.805274e-01	( 0 0 3 7 7 4  )
 G_LOOP:  1  3  6   	9.110477e-01	( 1 1 0 6 6 7  )
 G_LOOP:  1  4  6   	9.442560e-01	( 1 1 2 6 6 5  )
 G_LOOP:  1  5  6   	8.883507e-01	( 1 1 3 6 6 4  )
-G_LOOP:  1  6  6   	9.232709e-01	( 2 2 0 5 5 7  )
+G_LOOP:  1  6  6   	9.232708e-01	( 2 2 0 5 5 7  )
 G_LOOP:  1  7  6   	9.454951e-01	( 2 2 1 5 5 6  )
 G_LOOP:  1  8  6   	9.237798e-01	( 2 2 3 5 5 4  )
 G_LOOP:  1  9  6   	8.934847e-01	( 3 3 0 4 4 7  )
@@ -292,31 +299,31 @@ G_LOOP:  2  13  6   	9.338547e-01	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	9.290688e-01	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	9.511047e-01	( 1 5 4 6 2 3  )
 GACTION: 5.994088e+00
-PBP: mass 1.000000e-02     2.757411e-02  6.869639e-03  -7.401404e-03  -7.400418e-03 ( 1 of 1 )
+PBP: mass 1.000000e-02     2.757416e-02  6.870783e-03  -7.401425e-03  -7.401398e-03 ( 1 of 1 )
 FACTION: mass = 1.000000e-02,  1.496215e+00 ( 1 of 1 )
-PBP: mass 5.000000e-02     6.652410e-02  1.069589e-01  -1.412723e-02  -1.412702e-02 ( 1 of 1 )
+PBP: mass 5.000000e-02     6.652411e-02  1.069590e-01  -1.412724e-02  -1.412721e-02 ( 1 of 1 )
 FACTION: mass = 5.000000e-02,  1.483528e+00 ( 1 of 1 )
 Leapfrog integration, steps= 12 eps= 1.000000e-02
-GRSOURCE: sum = 1.9624636671e+03
-GRSOURCE: sum = 1.9445971629e+03
+GRSOURCE: sum = 1.9624636693e+03
+GRSOURCE: sum = 1.9445971547e+03
 PLAQUETTE ACTION: -2.773045e+04
-ACTION: g,h,f = 1.68313978163592e+04  1.65705207079649e+02  3.90706144909561e+03  2.09041644725345e+04
-DG = 0.000000e+00, DH = 2.065239e+02, DF = 1.370283e+01, D = 2.202267e+02
+ACTION: g,h,f = 1.68313979071527e+04  1.65705317452225e+02  3.90706082402657e+03  2.09041640486315e+04
+DG = 0.000000e+00, DH = 2.065238e+02, DF = 1.370200e+01, D = 2.202258e+02
 PLAQUETTE ACTION: -2.769361e+04
-ACTION: g,h,f = 1.68629846670649e+04  1.31929982483387e+02  3.90923432238400e+03  2.09041489719323e+04
-DG = 3.158685e+01, DH = -3.377522e+01, DF = 2.172873e+00, D = -1.550060e-02
+ACTION: g,h,f = 1.68629848345974e+04  1.31929996705023e+02  3.90923373665831e+03  2.09041485679608e+04
+DG = 3.158693e+01, DH = -3.377532e+01, DF = 2.172913e+00, D = -1.548067e-02
 PLAQUETTE ACTION: -2.765510e+04
-ACTION: g,h,f = 1.68962021490658e+04  9.95495170503855e+01  3.90838967485726e+03  2.09041413409734e+04
-DG = 3.321748e+01, DH = -3.238047e+01, DF = -8.446475e-01, D = -7.630959e-03
+ACTION: g,h,f = 1.68962022933137e+04  9.95494439506163e+01  3.90838902252561e+03  2.09041407597899e+04
+DG = 3.321746e+01, DH = -3.238055e+01, DF = -8.447141e-01, D = -7.808171e-03
 PLAQUETTE ACTION: -2.761864e+04
-ACTION: g,h,f = 1.69277609678873e+04  7.07436815053225e+01  3.90563535717130e+03  2.09041400065639e+04
-DG = 3.155882e+01, DH = -2.880584e+01, DF = -2.754318e+00, D = -1.334410e-03
+ACTION: g,h,f = 1.69277610860680e+04  7.07434392423682e+01  3.90563479063006e+03  2.09041393159404e+04
+DG = 3.155879e+01, DH = -2.880600e+01, DF = -2.754232e+00, D = -1.443850e-03
 PLAQUETTE ACTION: -2.761864e+04
-ACTION: g,h,f = 1.69277609678873e+04  7.07436815053225e+01  3.90563535717130e+03  2.09041400065639e+04
+ACTION: g,h,f = 1.69277610860680e+04  7.07434392423682e+01  3.90563479063006e+03  2.09041393159404e+04
 DG = 0.000000e+00, DH = 0.000000e+00, DF = 0.000000e+00, D = 0.000000e+00
-CHECK: delta S = -2.446597e-02
+CHECK: delta S = -2.473269e-02
 PLAQ:	1.647506	1.631060
-P_LOOP:	1.920486e-01	-4.797337e-02
+P_LOOP:	1.920486e-01	-4.797331e-02
 G_LOOP:  0  0  4   	1.638299e+00	( 0 1 7 6  )
 G_LOOP:  0  1  4   	1.660251e+00	( 0 2 7 5  )
 G_LOOP:  0  2  4   	1.618784e+00	( 0 3 7 4  )
@@ -334,15 +341,15 @@ G_LOOP:  1  7  6   	9.267746e-01	( 2 2 1 5 5 6  )
 G_LOOP:  1  8  6   	9.130576e-01	( 2 2 3 5 5 4  )
 G_LOOP:  1  9  6   	8.844846e-01	( 3 3 0 4 4 7  )
 G_LOOP:  1  10  6   	8.856635e-01	( 3 3 1 4 4 6  )
-G_LOOP:  1  11  6   	9.040105e-01	( 3 3 2 4 4 5  )
+G_LOOP:  1  11  6   	9.040104e-01	( 3 3 2 4 4 5  )
 G_LOOP:  2  0  6   	9.238262e-01	( 0 1 2 7 6 5  )
 G_LOOP:  2  1  6   	9.630851e-01	( 0 1 5 7 6 2  )
-G_LOOP:  2  2  6   	9.240137e-01	( 0 6 2 7 1 5  )
+G_LOOP:  2  2  6   	9.240138e-01	( 0 6 2 7 1 5  )
 G_LOOP:  2  3  6   	9.550340e-01	( 0 6 5 7 1 2  )
 G_LOOP:  2  4  6   	9.055123e-01	( 0 1 3 7 6 4  )
 G_LOOP:  2  5  6   	9.460382e-01	( 0 1 4 7 6 3  )
 G_LOOP:  2  6  6   	9.384173e-01	( 0 6 3 7 1 4  )
-G_LOOP:  2  7  6   	9.494583e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  7  6   	9.494582e-01	( 0 6 4 7 1 3  )
 G_LOOP:  2  8  6   	9.370472e-01	( 0 2 3 7 5 4  )
 G_LOOP:  2  9  6   	8.866024e-01	( 0 2 4 7 5 3  )
 G_LOOP:  2  10  6   	9.112203e-01	( 0 5 3 7 2 4  )
@@ -352,16 +359,16 @@ G_LOOP:  2  13  6   	9.317874e-01	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	9.026102e-01	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	9.410013e-01	( 1 5 4 6 2 3  )
 GACTION: 6.028405e+00
-PBP: mass 1.000000e-02     2.329723e-02  1.370832e-02  -1.270321e-02  -1.270275e-02 ( 1 of 1 )
+PBP: mass 1.000000e-02     2.329727e-02  1.370774e-02  -1.270319e-02  -1.270316e-02 ( 1 of 1 )
 FACTION: mass = 1.000000e-02,  1.470904e+00 ( 1 of 1 )
-PBP: mass 5.000000e-02     8.138437e-02  1.062996e-01  -1.791254e-02  -1.791169e-02 ( 1 of 1 )
+PBP: mass 5.000000e-02     8.138480e-02  1.062993e-01  -1.791242e-02  -1.791245e-02 ( 1 of 1 )
 FACTION: mass = 5.000000e-02,  1.518326e+00 ( 1 of 1 )
 RUNNING COMPLETED
 average cg iters for step= 0.000000e+00
-Time = 3.557120e+02 seconds
-total_iters = 9323
+Time = 5.245213e+02 seconds
+total_iters = 1084
 
 
 get_i(0): EOF on input.
-exit: Sun Nov 12 20:31:17 2006
+exit: Mon Dec 11 14:01:54 2006
 
