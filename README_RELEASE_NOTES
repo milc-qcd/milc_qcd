@@ -27,7 +27,8 @@ For version 7.3.2
   Mixed precision for QOP and QDP inverters, dslash, and supporting
   fermion links.
   Made multicg option choice available to applications other than RHMC.
-  Changed initialize_machine to take pointers to argc and **argv.
+  "initialize_machine" takes pointers to argc and **argv.
+  Support USQCD metadata in SciDAC file output
   Print list of selected options during setup.
   Segregate inclusion of SciDAC headers for faster compilation times
   Libraries make builds both precisions.
