@@ -403,7 +403,7 @@ SSE2 =              \
 PG =          \
  ${GENERIC_PG}        \
  ${PURE_GAUGE}        \
- ${HVY_QPOT}
+# ${HVY_QPOT}
 
 CLOVER =              \
  ${GENERIC_CLOVER}    \
