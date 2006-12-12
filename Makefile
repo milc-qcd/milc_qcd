@@ -232,9 +232,9 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE -DC_INLINE
 # CGTIME CG Solver
 # FFTIME Fermion force
 # LLTIME Link fattening
-# GFTIME Gauge forde
+# GFTIME Gauge force
 
-CTIME =#
+CTIME =# -DCGTIME -DFFTIME -DLLTIME -DGFTIME
 
 #------------------------------
 # Profiling
@@ -290,7 +290,7 @@ CDEBUG =#
 #                For now, works only with dslash_fn_dblstore.o
 # FEWSUMS        Fewer CG reduction calls
 
-KSCGSTORE =#
+KSCGSTORE =# -DDBLSTORE_FN -DD_FN_GATHER13
 
 #------------------------------
 # Staggered fermion force routines
@@ -321,7 +321,7 @@ CPREFETCH = #
 # KS_MULTICG=REVERSE Iterate in reverse order
 # KS_MULTICG=REVHYB  Same as HYBRID but with vectors in reverse order.
 
-KSCGMULTI =#
+KSCGMULTI# = -DKS_MULTICG=HYBRID
 
 #------------------------------
 # Multifermion force routines
@@ -339,7 +339,8 @@ KSCGMULTI =#
 # VECLENGTH=n        Number of source vectors to process in one group.
 #                    Applies only to the ASVEC option
 
-KSFFMULTI =#
+KSFFMULTI# = -DKS_MULTIFF=FNMAT
+
 
 #------------------------------
 # RHMC molecular dynamics algorithm
