@@ -462,7 +462,7 @@ TAR =          \
  ${CLOVER_TAR} \
  ${FORM_TAR}   \
  ${KS_TAR}     \
- ${PURE_GAUGE_TAR} \ 
+ ${PURE_GAUGE_TAR} \
  ${SF_TAR}     \
  ${WILSON_TAR}
 
