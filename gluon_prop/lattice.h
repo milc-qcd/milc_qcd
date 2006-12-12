@@ -9,9 +9,6 @@
 #include "../include/generic_quark_types.h"
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "../include/io_lat.h"	/* For gauge_file */
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 
 /* Begin definition of site structure */
 
@@ -164,11 +161,6 @@ EXTERN su3_matrix *t_longbacklink;
 EXTERN su3_matrix *t_fatbacklink;
 #endif
 
-#ifdef HAVE_QDP
-EXTERN QDP_Shift neighbor3[4];
-EXTERN QDP_Shift shiftdirs[8];
-EXTERN QDP_ShiftDir shiftfwd[8], shiftbck[8];
-#endif
 #endif
 
 

@@ -38,6 +38,7 @@ INLINE_HEADERS = \
 
 MY_HEADERS = \
   lattice.h \
+  lattice_qdp.h \
   params.h \
   defines.h \
   gluon_prop_includes.h
@@ -53,10 +54,10 @@ MY_OBJECTS =         \
 
 # Basic set from generic directory
 G_OBJECTS =          \
+  check_unitarity.o  \
   d_plaq4.o          \
   io_lat4.o          \
   io_helpers.o       \
-  check_unitarity.o  \
   make_lattice.o     \
   nersc_cksum.o \
   reunitarize2.o     \
@@ -66,7 +67,7 @@ G_OBJECTS =          \
   remap_stdio_from_args.o \
   path_product.o
 
-# Basic set from generic directory
+# Basic set from generic_ks directory
 QUARK_OBJECTS = \
   io_helpers_ks.o \
   io_prop_ks.o \
@@ -106,7 +107,8 @@ DSLASH_FN = dslash_fn2.o
 # Selection of the fermion links algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  FLINKS_FN = fermion_links_asqtad_qop.o
+  FLINKS_FN = fermion_links_asqtad_qop.o fermion_links_asqtad_qop_D.o \
+     fermion_links_asqtad_qop_F.o
   FLINKS_FN += ${FLINKS_FNQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
@@ -120,16 +122,18 @@ FLINKS_FN += fermion_links_helpers.o
 # Selection of the conjugate gradient algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o d_congrad_opt.o
+  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
+     d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o d_congrad_opt.o
 #  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
   CONGRAD_FN += ${ASQINVERTQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o d_congrad_opt.o
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
+       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
   else
     # Choose a non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
     # or d_congrad5_fn_fewsums.o)
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_fewsums.o d_congrad_opt.o
   endif
 endif
 
@@ -137,12 +141,15 @@ endif
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
   INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
-  MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop.o
+  MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qop.o \
+    ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    QDP_OBJECTS = stuff_qdp.o
-    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp.o 
-    MULTI_INV_FN = ks_multicg.o ks_multicg_qdp.o
+    QDP_OBJECTS = map_milc_to_qdp_D.o map_milc_to_qdp_F.o
+    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp_D.o \
+      dslash_fn_qdp_F.o 
+    MULTI_INV_FN = ks_multicg.o ks_multicg_offset_qdp.o \
+      ks_multicg_offset_qdp_D.o ks_multicg_offset_qdp_F.o
   else
     INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
     MULTI_INV_FN = ks_multicg.o ks_multicg_offset.o
@@ -150,7 +157,7 @@ else
 endif
 
 # The only choice for inverters and Dslash for EO actions
-INV_EO_OBJECTS = d_congrad5_eo.o dslash_eo.o
+INV_EO_OBJECTS = d_congrad5_eo.o d_congrad_opt.o dslash_eo.o
 MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
 
 # For EO actions we don't precompute the fat links for Dslash at the moment
@@ -167,14 +174,14 @@ ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
 
 # Generic QOP objects
 ifeq ($(strip ${HAVEQOP}),true)
-  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o
+  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o milc_to_qop_utilities.o
 endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a
-                                                                                
+
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 
 # Default rule for C compilation
@@ -184,7 +191,7 @@ LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
 
 ${LASTMAKE}:
-	/bin/rm -f .lastmake.* quark_action.h
+	-/bin/rm -f .lastmake.* quark_action.h
 	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 
@@ -198,7 +205,7 @@ ALL_MAKES = \
    ../generic_ks/Make_template
 
 # To force a remake when changing any make file, header, or target
-${OBJECTS}: ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
 fermion_links_fn.o: quark_action.h
 quark_stuff.o: quark_action.h

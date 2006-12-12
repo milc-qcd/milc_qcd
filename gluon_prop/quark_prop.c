@@ -177,7 +177,7 @@ char recxml[MAX_RECXML];
 	else{
 	    /* do a multi-cg */
 	    cgn += ks_multicg_mass( F_OFFSET(phi), psim, mass, num_mass,
-			       niter, rsqprop, EVEN, &finalrsq);
+			       niter, rsqprop, PRECISION, EVEN, &finalrsq);
 	    /* Multiply by -Madjoint */
 	    for(j_mass=0; j_mass<num_mass; j_mass++){
 		FORALLSITES(i,s){

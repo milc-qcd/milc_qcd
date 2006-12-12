@@ -1,6 +1,8 @@
 SU3 quark propagator
 MIMD version 6
 Machine = Scalar processor, with 1 nodes
+MIMD version 7 $Name:  $
+Machine = QMP (portable), with 1 nodes
 start: Wed Apr 26 22:03:41 2006
 
 type 0 for no prompts  or 1 for prompts
@@ -9,7 +11,12 @@ ny 6
 nz 6
 nt 6
 LAYOUT = Hypercubes, options = EVENFIRST,
+ON EACH NODE 6 x 6 x 6 x 6
 Mallocing 2.2 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
 
 
 beta 5.55
@@ -19,6 +26,7 @@ mass 0.075
 mass 0.05
 u0 0.8
 max_cg_iterations 500
+max_cg_restarts 5
 error_for_propagator 1e-05
 reload_serial GF_555_6.1
 NOT fixing the gauge
@@ -29,10 +37,10 @@ fresh_ks
 Inversion to be done
 Inversion to be done
 Inversion to be done
-forget_ks 
-forget_ks 
-forget_ks 
-reading as archive format with byte reversal
+forget_ksprop 
+forget_ksprop 
+forget_ksprop 
+reading as archive format
 reading Archive header:
 HDR_VERSION = 1.0
 DATATYPE = 4D_SU3_GAUGE
@@ -56,7 +64,7 @@ Restored archive gauge configuration serially from file GF_555_6.1
 Archive style checksum = bcf2ae1f OK
 Time to reload gauge configuration = 5.523913e-03
 CHECK PLAQ: 1.514915e+00 1.495560e+00
-CHECK LINKTR: 2.196857e+00 2.549374e-03
+CHECK NERSC LINKTR: 7.322858e-01 CKSUM: bcf2ae1f
 Unitarity checked.  Max deviation 6.62e-07
 Time to check unitarity = 2.371048e-03
 "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
