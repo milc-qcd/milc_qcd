@@ -359,7 +359,7 @@ su3_rhmc_susc::
 	${SYMZK1FORCE} "
 
 # Generic RHMC EOS and susceptibility target -- set options in Makefile
-su3_rhmc_susc::
+su3_rhmc_susc_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DHMC -DCHEM_POT -DDM_DU0 -DNPBP_REPS" \
 	"GAUGE = symanzik_1loop_action.h" \
