@@ -7,6 +7,7 @@
 /* CD 7/14/01 allow for multiple stochastic estimators NPBP_REPS */
 /* DT 12/97 */
 /* Kogut-Susskind fermions  -- this version for "fat plus Naik"
+   or general "even plus odd" quark actions.
 */
 
 /* Measure fermionic observables:
@@ -19,7 +20,6 @@
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 
-
 void f_meas_imp( field_offset phi_off, field_offset xxx_off, Real mass ){
     Real r_psi_bar_psi_even, i_psi_bar_psi_even;
     Real  r_psi_bar_psi_odd, i_psi_bar_psi_odd;
@@ -29,7 +29,9 @@ void f_meas_imp( field_offset phi_off, field_offset xxx_off, Real mass ){
     register site *st;
     double rfaction;
     double_complex pbp_e, pbp_o;
+#ifdef NPBP_REPS
     double pbp_pbp;
+#endif
     complex cc;
 
 #ifdef DM_DU0
@@ -38,7 +40,7 @@ void f_meas_imp( field_offset phi_off, field_offset xxx_off, Real mass ){
     /* check */ double r_gb_M_g_e, r_gb_M_g_o;
 #endif
 
-#ifdef IM_CHEM_POT
+#ifdef CHEM_POT
 #ifndef FN		/* FN is assumed for quark number susc. */
 BOMB THE COMPILE
 #endif
@@ -58,12 +60,16 @@ BOMB THE COMPILE
 #ifdef NPBP_REPS
     int npbp_reps = npbp_reps_in;  /* Number of repetitions of stochastic
                                    estimate */
+    int prec = prec_pbp;  /* Precision of the inversion */
 #else
-    int npbp_reps = 1;
+    int npbp_reps = 1;   /* Default values */
+    int prec = PRECISION;
 #endif
     int jpbp_reps;
 
+#ifdef FN
     load_fn_links();
+#ifdef DM_DU0
     load_fn_links_dmdu0();
 #endif
 #endif
@@ -77,7 +83,8 @@ BOMB THE COMPILE
       grsource_imp( phi_off, mass, EVENANDODD );
       /* phi_off = M g_rand (still) */
       /* xxx_off = M^{-1} g_rand */
-      mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass );
+      //      clear_latvec(xxx_off,EVENANDODD);
+      mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, prec );
       
 #ifdef DM_DU0
       r_pb_dMdu_p_even = r_pb_dMdu_p_odd = (double)0.0;
@@ -88,7 +95,7 @@ BOMB THE COMPILE
       /* check */ ddslash_fn_du0_site (F_OFFSET(g_rand), F_OFFSET(dM_check), EVENANDODD );
 #endif
 
-#ifdef IM_CHEM_POT
+#ifdef CHEM_POT
       pb_dMdmu_p_e = pb_dMdmu_p_o = dcmplx((double)0.0,(double)0.0);
       pb_d2Mdmu2_p_e = pb_d2Mdmu2_p_o = dcmplx((double)0.0,(double)0.0);
 
@@ -125,6 +132,7 @@ BOMB THE COMPILE
       /* Wait gathers from negative t-direction */
       wait_gather(tag2);
       wait_gather(tag3);
+#endif
 
       /* fermion action = phi.xxx */
       /* psi-bar-psi on even sites = g_rand.xxx */
@@ -144,7 +152,7 @@ BOMB THE COMPILE
 	/* check */ r_gb_M_g_e += cc.real;
 #endif
 
-#ifdef IM_CHEM_POT
+#ifdef CHEM_POT
 	cc = su3_dot( &(st->g_rand), &(st->tempvec[0]) );
 	CSUM(pb_dMdmu_p_e, cc);
 	CSUM(pb_d2Mdmu2_p_e, cc);
@@ -184,7 +192,7 @@ BOMB THE COMPILE
 	/* check */ r_gb_M_g_o += cc.real;
 #endif
 
-#ifdef IM_CHEM_POT
+#ifdef CHEM_POT
 	cc = su3_dot( &(st->g_rand), &(st->tempvec[0]) );
 	CSUM(pb_dMdmu_p_o, cc);
 	CSUM(pb_d2Mdmu2_p_o, cc);
@@ -246,7 +254,7 @@ BOMB THE COMPILE
       node0_printf("FACTION: mass = %e,  %e ( %d of %d )\n", mass,
 		   r_ferm_action, jpbp_reps+1, npbp_reps);
 
-#ifdef IM_CHEM_POT
+#ifdef CHEM_POT
       /* free up the buffers */
       cleanup_gather(tag0);
       cleanup_gather(tag1);
@@ -292,7 +300,7 @@ BOMB THE COMPILE
 		   pbp_pbp, jpbp_reps+1, npbp_reps);
 #endif
 
-#ifdef IM_CHEM_POT
+#ifdef CHEM_POT
       mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass );
 
       /* Start gathers from positive t-direction */

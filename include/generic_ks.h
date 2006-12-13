@@ -321,11 +321,11 @@ void checkmul_imp( field_offset src, Real mass );
 
 /* mat_invert.c */
 int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
-		   Real mass );
+		   Real mass, int prec );
 int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
-		   Real mass );
+		   Real mass, int prec );
 void check_invert( field_offset src, field_offset dest, Real mass,
-		   Real tol);
+		   Real tol );
 
 /* mu.c and mu_fast.c */
 void M_derivatives(field_offset phi_off, field_offset xxx_off, field_offset xxx1_off, Real mass);

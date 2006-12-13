@@ -33,6 +33,7 @@ typedef struct {
         int niter_md[N_PSEUDO], niter_fa[N_PSEUDO], niter_gr[N_PSEUDO];
         int prec_md[N_PSEUDO], prec_fa[N_PSEUDO], prec_gr[N_PSEUDO];
         int npbp_reps_in;   /* Number of random sources */
+        int prec_pbp;       /* Precision of pbp measurements */
         Real rsqmin_md[N_PSEUDO], rsqmin_fa[N_PSEUDO], rsqmin_gr[N_PSEUDO];
 	Real rsqprop;  /* for deciding on convergence */
 	Real epsilon;	/* time step */

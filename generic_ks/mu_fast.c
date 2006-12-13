@@ -204,7 +204,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     /* Make random source, and do inversion */
     grsource_imp( phi_off, mass, EVENANDODD );
     initialize(xxx_off);
-    mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass ); //common starting vector M^-1* R in xxx_off
+    //common starting vector M^-1* R in xxx_off
+    mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, PRECISION ); 
     tmp = trace(F_OFFSET(g_rand), xxx_off);
     node0_printf ("trM_inv: mass %e,  R: %e  Im: %e ( %d of %d )\n", mass,
                     tmp.real, tmp.imag, jpbp_reps+1, npbp_reps);
@@ -223,7 +224,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[0][1] = tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_su3_vector((su3_vector *)F_PT(st, xxx1_off), -1, &(st->deriv[0]));    
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv)); // result in dM_M_inv
@@ -232,7 +234,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[1][1] = -tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_su3_vector((su3_vector *)F_PT(st, xxx1_off), 2.0, &(st->deriv[1]));
  
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
@@ -244,7 +247,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
      //          derivatives[2][0], derivatives[2][1], jpbp_reps+1, npbp_reps);
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv 
+    // M^-1 * dM_M_inv 
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_su3_vector((su3_vector *)F_PT(st, xxx1_off), -6, &(st->deriv[2]));
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));   
@@ -253,7 +257,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[3][1] = -6*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv 
+    // M^-1 * dM_M_inv 
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_su3_vector((su3_vector *)F_PT(st, xxx1_off), 24, &(st->deriv[3]));
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
@@ -262,7 +267,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[4][1] = 24*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_su3_vector((su3_vector *)F_PT(st, xxx1_off), -120, &(st->deriv[4]));
     
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
@@ -271,7 +277,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[5][1] = -120*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_su3_vector((su3_vector *)F_PT(st, xxx1_off), 720, &(st->deriv[5]));
 
       //derivatives starting with d2M/dmu2
@@ -282,7 +289,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[1][1] += tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv 
+    // M^-1 * dM_M_inv 
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[1]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -1.0, &(st->deriv[1]));
 
@@ -294,7 +302,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
       //         derivatives[2][0], derivatives[2][1], jpbp_reps+1, npbp_reps);
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[2]), (su3_vector *)F_PT(st, xxx1_off),
                                                   3, &(st->deriv[2]));
  
@@ -304,7 +313,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[3][1] += 12*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv 
+    // M^-1 * dM_M_inv 
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[3]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -12, &(st->deriv[3]));
 
@@ -316,7 +326,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[4][1] += -60*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                                   60, &(st->deriv[4]));
 
@@ -326,21 +337,24 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[5][1] += 360*tmp.imag;          
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -360, &(st->deriv[5]));
     //derivatives starting with d2M/dmu2 M_inv d2M/dmu2
 
    dnM_dmun_R(2, xxx_off, F_OFFSET(dM_M_inv)); // dM/dmu * starting vector
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv 
+    // M^-1 * dM_M_inv 
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     tmp = trace(F_OFFSET(g_rand), F_OFFSET(dM_M_inv));
     derivatives[3][0] += -3*tmp.real;
     derivatives[3][1] += -3*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv 
+    // M^-1 * dM_M_inv 
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[3]), (su3_vector *)F_PT(st, xxx1_off),
                                                   6, &(st->deriv[3]));
 
@@ -350,7 +364,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[4][1] += 30*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv 
+    // M^-1 * dM_M_inv 
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -30, &(st->deriv[4]));
 
@@ -360,7 +375,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[5][1] += -180*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                                   180, &(st->deriv[5]));
 
@@ -369,18 +385,21 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
    dnM_dmun_R(2, xxx_off, F_OFFSET(dM_M_inv)); // dM/dmu * starting vector
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     tmp = trace(F_OFFSET(g_rand), F_OFFSET(dM_M_inv));
     derivatives[5][0] += 30*tmp.real;
     derivatives[5][1] += 30*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -90, &(st->deriv[5]));
 
@@ -390,15 +409,18 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
    dnM_dmun_R(2, xxx_off, F_OFFSET(dM_M_inv)); // dM/dmu * starting vector
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -30, &(st->deriv[4]));
 
@@ -408,7 +430,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[5][1] += -90*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                                   180, &(st->deriv[5]));
 
@@ -422,7 +445,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
        //node0_printf("TR_d3trlnM_dmu3 term 1: mass %e,  R: %e  Im: %e ( %d of %d )\n", mass,
          //      derivatives[2][0], derivatives[2][1], jpbp_reps+1, npbp_reps);
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[2]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -1, &(st->deriv[2]));
 
@@ -432,7 +456,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[3][1] += -4*tmp.imag;
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[3]), (su3_vector *)F_PT(st, xxx1_off),
                                                   4, &(st->deriv[3]));
 
@@ -442,7 +467,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[4][1] += 20*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -20, &(st->deriv[4]));
 
@@ -452,7 +478,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[5][1] += -120*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                                   120, &(st->deriv[5]));
 
@@ -461,14 +488,16 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
    dnM_dmun_R(3, xxx_off, F_OFFSET(dM_M_inv)); // dM/dmu * starting vector
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     tmp = trace(F_OFFSET(g_rand), F_OFFSET(dM_M_inv));
     derivatives[4][0] += -10*tmp.real;
     derivatives[4][1] += -10*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                                   10, &(st->deriv[4]));
   
@@ -478,7 +507,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[5][1] += 60*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -60, &(st->deriv[5]));
 
@@ -488,14 +518,16 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
    dnM_dmun_R(3, xxx_off, F_OFFSET(dM_M_inv)); // dM/dmu * starting vector
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(3, xxx1_off, F_OFFSET(dM_M_inv));
     tmp = trace(F_OFFSET(g_rand), F_OFFSET(dM_M_inv));
     derivatives[5][0] += -10*tmp.real;
     derivatives[5][1] += -10*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                                   20, &(st->deriv[5]));
 
@@ -506,18 +538,20 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
    dnM_dmun_R(3, xxx_off, F_OFFSET(dM_M_inv)); // dM/dmu * starting vector
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass );
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     tmp = trace(F_OFFSET(g_rand), F_OFFSET(dM_M_inv));
     derivatives[5][0] += 60*tmp.real;
     derivatives[5][1] += 60*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass );
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -60, &(st->deriv[5]));
 
@@ -530,7 +564,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[3][1] += tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[3]), (su3_vector *)F_PT(st, xxx1_off),
                                              -1, &(st->deriv[3]));
 
@@ -541,7 +576,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              5, &(st->deriv[4]));
 
@@ -551,7 +587,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[5][1] += 30*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -30, &(st->deriv[5]));
 
@@ -560,14 +597,16 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
    dnM_dmun_R(4, xxx_off, F_OFFSET(dM_M_inv)); // dM/dmu * starting vector
     
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     tmp = trace(F_OFFSET(g_rand), F_OFFSET(dM_M_inv));
     derivatives[5][0] += -15*tmp.real;
     derivatives[5][1] += -15*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              15, &(st->deriv[5]));
 
@@ -579,7 +618,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[4][1] += tmp.imag;
 
     initialize(xxx1_off );
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              -1, &(st->deriv[4]));
 
@@ -589,7 +629,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[5][1] += -6*tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              6, &(st->deriv[5]));
 
@@ -601,7 +642,8 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
     derivatives[5][1] += tmp.imag;
 
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -1, &(st->deriv[5]));
 
@@ -609,28 +651,33 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));  
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv    
+    // M^-1 * dM_M_inv    
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[2]), (su3_vector *)F_PT(st, xxx1_off),
                                              3, &(st->deriv[2]));
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[3]), (su3_vector *)F_PT(st, xxx1_off),
                                              -12, &(st->deriv[3]));
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              60, &(st->deriv[4]));
 
   dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -360, &(st->deriv[5]));
 
@@ -638,27 +685,32 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[3]), (su3_vector *)F_PT(st, xxx1_off),
                                              -12, &(st->deriv[3]));
 
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              60, &(st->deriv[4]));
 
 
   dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -360, &(st->deriv[5]));
 
@@ -666,22 +718,26 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(3, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[3]), (su3_vector *)F_PT(st, xxx1_off),
                                              4, &(st->deriv[3]));
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              -20, &(st->deriv[4]));
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              120, &(st->deriv[5]));
 
@@ -689,16 +745,19 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(4, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              5, &(st->deriv[4]));
 
   dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -30, &(st->deriv[5]));
 
@@ -706,16 +765,19 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
    dnM_dmun_R(2, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(3, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              10, &(st->deriv[4]));
 
   dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -60, &(st->deriv[5]));
 
@@ -723,18 +785,22 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              -30, &(st->deriv[4]));
  dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              180, &(st->deriv[5]));
 
@@ -742,19 +808,23 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(3, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              -20, &(st->deriv[4]));
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              120, &(st->deriv[5]));
 
@@ -762,22 +832,27 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[4]), (su3_vector *)F_PT(st, xxx1_off),
                                              60, &(st->deriv[4]));
 
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -360, &(st->deriv[5]));
 
@@ -785,123 +860,152 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx_off, phi_off, mass, PRECISION);
 
    dnM_dmun_R(5, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              6 , &(st->deriv[5]));
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(4, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -30 , &(st->deriv[5]));
 
    dnM_dmun_R(2, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(3, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -60 , &(st->deriv[5]));
 
    dnM_dmun_R(3, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -60 , &(st->deriv[5]));
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(3, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              120 , &(st->deriv[5]));
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              180 , &(st->deriv[5]));
 
    dnM_dmun_R(2, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              180 , &(st->deriv[5]));
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -360 , &(st->deriv[5]));
 
 
     initialize(xxx_off);
-    mat_invert_uml(  F_OFFSET(g_rand), xxx_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(g_rand), xxx_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx_off);
-    mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass, PRECISION);
 
   dnM_dmun_R(4, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              15 , &(st->deriv[5]));
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(3, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              -60 , &(st->deriv[5]));
 
    dnM_dmun_R(1, xxx_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv
+    // M^-1 * dM_M_inv
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
    dnM_dmun_R(2, xxx1_off, F_OFFSET(dM_M_inv));
     initialize(xxx1_off);
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass ); // M^-1 * dM_M_inv   dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
+    // M^-1 * dM_M_inv   dnM_dmun_R(1, xxx1_off, F_OFFSET(dM_M_inv));
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION );
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                              180 , &(st->deriv[5]));
 

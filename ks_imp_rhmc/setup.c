@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.14  2006/12/13 18:41:40  detar
+//  Add precision arg to mat_invert_uml and mat_invert_cg
+//
 //  Revision 1.13  2006/12/09 14:10:57  detar
 //  Add mixed precision capability for QDP and QOP inverters
 //
@@ -323,8 +326,9 @@ readin(int prompt)
 			  &par_buf.nrestart );
     
 #ifdef NPBP_REPS
-    /* number of random sources npbp_reps */
+    /* number of random sources npbp_reps and precision for inversions */
     IF_OK status += get_i(stdin, prompt,"npbp_reps", &par_buf.npbp_reps_in );
+    IF_OK status += get_i(stdin, prompt,"prec_pbp", &par_buf.prec_pbp );
 #endif
     
 #ifdef SPECTRUM
@@ -404,6 +408,7 @@ readin(int prompt)
     prec_gr[i] = par_buf.prec_gr[i];
   }
   npbp_reps_in = par_buf.npbp_reps_in;
+  prec_pbp = par_buf.prec_pbp;
   rsqprop = par_buf.rsqprop;
   epsilon = par_buf.epsilon;
   beta = par_buf.beta;

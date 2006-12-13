@@ -73,8 +73,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
     clear_latvec( ans, EVENANDODD );
     if(inverttype == INVERT_M){
       /* Compute M^-1 phi */
-      iters = mat_invert_uml( src, 
-			      ans, tmp, mass);
+      iters = mat_invert_uml( src, ans, tmp, mass, PRECISION );
       node0_printf("Inversion required %d iters\n",iters);
     }
     else {

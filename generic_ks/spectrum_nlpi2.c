@@ -118,7 +118,7 @@ Real tol ){
 
         /* compute M^-1 * quark_source, M^-1 * antiquark_source */
         cgn += mat_invert( F_OFFSET(quark_source), F_OFFSET(quark_prop), 
-			   temp, qmass);
+			   temp, qmass, PRECISION );
 	/*if(t_source==0)test_converge(t_source);*/ /*TEMP*/
 	/* TEMP: test inversion, */
 	check_invert( F_OFFSET(quark_prop), F_OFFSET(quark_source), qmass,
@@ -135,7 +135,7 @@ Real tol ){
 	FORALLSITES(i,s){ add_su3_vector( &(s->g_rand), &(s->anti_prop),
 	    &(s->g_rand) ); }
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass );
+			   temp, amass, PRECISION );
 
         /* Loop over all desired sink operators */
         /*tie propagators together at sink end to project out desired mesons */
@@ -187,7 +187,7 @@ Real tol ){
 	FORALLSITES(i,s){ add_su3_vector( &(s->g_rand), &(s->anti_prop),
 	    &(s->g_rand) ); }
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass );
+			   temp, amass, PRECISION );
 
         mult_pion05( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){

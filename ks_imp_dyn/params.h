@@ -31,6 +31,7 @@ typedef struct {
 	int niter; 	/* maximum number of c.g. iterations */
         int nrestart;   /* maximum number of c.g. restarts */
         int npbp_reps_in;   /* Number of random sources */
+        int prec_pbp;       /* Precision of pbp measurements */
 	Real rsqmin,rsqprop;  /* for deciding on convergence */
 	Real epsilon;	/* time step */
         char spectrum_request[MAX_SPECTRUM_REQUEST];   /* request list for spectral measurements */

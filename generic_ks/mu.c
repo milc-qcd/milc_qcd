@@ -221,13 +221,13 @@ double_complex tr_dnMdmun_term (int n[6], field_offset g_rand, field_offset phi_
       //  node0_printf("FINISHED MULTIPLICATION val =%e %e\n", lattice[0].dM_M_inv.c[0].real, lattice[0].dM_M_inv.c[0].imag);      
       if( (j+1 < 6 ) && (n[j+1]>0)){
         initialize(xxx1_off);
-	mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass );
+	mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
       }
       else
       {
         if (flag==1) {
          initialize(xxx1_off);
-         mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass );
+         mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
          if (u>-1) dn_dMdu_dmun (u, xxx1_off);     
         }
       }
@@ -655,7 +655,7 @@ return(trace);
 void TR_M_inv_dMdu_deriv(field_offset g_rand, field_offset phi_off, field_offset xxx_off,
                          field_offset xxx1_off, Real mass, int jpbp_reps, int npbp_reps)
 {
- //mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass); //xxx_off =M_inv*R
+ //mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, PRECISION); //xxx_off =M_inv*R
  double_complex tmp, temp[7][7];
 
  dn_dMdu_dmun (0, xxx_off );
@@ -784,7 +784,7 @@ void M_derivatives(field_offset phi_off, field_offset xxx_off, field_offset xxx1
 
     //node0_printf("Before FIRST INVERSION g_rand =%e\n", lattice[1].g_rand.c[0].imag);
     initialize(xxx_off);
-    mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass);
+    mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, PRECISION);
 
     //node0_printf("FINISHED FIRST INVERSION xxx1 =%e\n", lattice[1].xxx1.c[0].imag);
     //node0_printf("FINISHED FIRST INVERSION g_rand =%e\n", lattice[1].g_rand.c[0].imag);
@@ -802,7 +802,7 @@ void M_derivatives(field_offset phi_off, field_offset xxx_off, field_offset xxx1
 
     TR_M_inv_dMdu_deriv(F_OFFSET(g_rand), phi_off, xxx_off,  xxx1_off,  mass, jpbp_reps, npbp_reps); 
 
-   //mat_invert_uml( xxx_off, xxx1_off, phi_off, mass);
+   //mat_invert_uml( xxx_off, xxx1_off, phi_off, mass, PRECISION);
     d1trM_inv_dmu1(F_OFFSET(g_rand), phi_off, xxx_off, xxx1_off, mass, jpbp_reps, npbp_reps, -1);
     d2trM_inv_dmu2(F_OFFSET(g_rand), phi_off, xxx_off, xxx1_off, mass, jpbp_reps, npbp_reps, -1);
     d3trM_inv_dmu3(F_OFFSET(g_rand), phi_off, xxx_off, xxx1_off, mass, jpbp_reps, npbp_reps, -1);

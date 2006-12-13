@@ -135,6 +135,7 @@ EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int npbp_reps_in;
+EXTERN  int prec_pbp;  /* Precisiong of pbp measurements */
 #ifdef ONEMASS
 EXTERN  int nflavors;
 #else

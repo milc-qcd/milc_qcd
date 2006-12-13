@@ -123,6 +123,7 @@ EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int niter_md[N_PSEUDO], niter_fa[N_PSEUDO], niter_gr[N_PSEUDO];
 EXTERN  int prec_md[N_PSEUDO], prec_fa[N_PSEUDO], prec_gr[N_PSEUDO];
 EXTERN  int npbp_reps_in;
+EXTERN  int prec_pbp;  /* Precisiong of pbp measurements */
 EXTERN	int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 EXTERN	Real epsilon;
 EXTERN  Real beta,u0;

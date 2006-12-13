@@ -349,6 +349,15 @@ su3_rhmc_eos::
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
 	${SYMZK1FORCE} "
 
+# Generic RHMC EOS target -- set options in Makefile
+su3_rhmd_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DDM_DU0 -DNPBP_REPS" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = asqtad_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} ${ASQFORCE} \
+	${SYMZK1FORCE} "
+
 # Generic RHMC susceptibility target -- set options in Makefile
 su3_rhmc_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \

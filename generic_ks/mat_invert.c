@@ -14,12 +14,12 @@
 /* Compute M^-1 * phi, answer in dest
   Uses phi, ttt, resid, xxx, and cg_p as workspace */
 int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
-		   Real mass ){
+		   Real mass, int prec ){
     int cgn;
     Real finalrsq;
     clear_latvec( dest, EVENANDODD );
     cgn = ks_congrad( src, dest, mass,
-        niter, nrestart, rsqprop, PRECISION, EVENANDODD, &finalrsq);
+        niter, nrestart, rsqprop, prec, EVENANDODD, &finalrsq);
     /* Multiply by Madjoint */
     dslash_site( dest, F_OFFSET(ttt), EVENANDODD);
     scalar_mult_add_latvec( F_OFFSET(ttt), dest,
@@ -53,7 +53,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 */
          
 int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
-		   Real mass ){
+		   Real mass, int prec ){
     int cgn;
     Real finalrsq;
     register int i;
@@ -69,7 +69,7 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
     scalar_mult_latvec( temp, -1.0, temp, EVEN);
     /* invert with M_adj M even */
     cgn = ks_congrad( temp, dest, mass, niter, nrestart, rsqprop,
-		      PRECISION, EVEN, &finalrsq );
+		      prec, EVEN, &finalrsq );
     /* multiply by (1/2m)L, does nothing to even sites */
     /* fix up odd sites , 1/2m (Dslash_oe*dest_e + phi_odd) */
     dslash_site( dest, F_OFFSET(ttt), ODD );

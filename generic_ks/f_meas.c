@@ -58,8 +58,10 @@ BOMB THE COMPILE
 #ifdef NPBP_REPS
     int npbp_reps = npbp_reps_in;  /* Number of repetitions of stochastic
                                    estimate */
+    int prec = prec_pbp;  /* Precision of the inversion */
 #else
-    int npbp_reps = 1;
+    int npbp_reps = 1;   /* Default values */
+    int prec = PRECISION;
 #endif
     int jpbp_reps;
 
@@ -79,8 +81,8 @@ BOMB THE COMPILE
       grsource_imp( phi_off, mass, EVENANDODD );
       /* phi_off = M g_rand (still) */
       /* xxx_off = M^{-1} g_rand */
-      //      clear_latvec(xxx_off,EVENANDODD);
-      mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass );
+      clear_latvec(xxx_off,EVENANDODD);
+      mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, prec );
       
 #ifdef DM_DU0
       r_pb_dMdu_p_even = r_pb_dMdu_p_odd = (double)0.0;
@@ -263,7 +265,7 @@ BOMB THE COMPILE
       FORALLSITES(i,st){
 	su3vec_copy( (su3_vector *)F_PT(st,xxx_off), &(st->M_inv) );
       }
-      mat_invert_uml( F_OFFSET(M_inv), xxx_off, phi_off, mass );
+      mat_invert_uml( F_OFFSET(M_inv), xxx_off, phi_off, mass, prec );
       FORALLSITES(i,st){
 	cc = su3_dot( &(st->g_rand), (su3_vector *)F_PT(st,xxx_off) );
 	pbp_pbp += cc.real;
@@ -275,7 +277,7 @@ BOMB THE COMPILE
 #endif
 
 #ifdef CHEM_POT
-      mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass );
+      mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass, prec );
 
       /* Start gathers from positive t-direction */
       tag0 = start_gather_site( xxx_off, sizeof(su3_vector), TUP,
