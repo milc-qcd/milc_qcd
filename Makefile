@@ -321,7 +321,7 @@ CPREFETCH = #
 # KS_MULTICG=REVERSE Iterate in reverse order
 # KS_MULTICG=REVHYB  Same as HYBRID but with vectors in reverse order.
 
-KSCGMULTI# = -DKS_MULTICG=HYBRID
+KSCGMULTI =# -DKS_MULTICG=HYBRID
 
 #------------------------------
 # Multifermion force routines
@@ -339,7 +339,7 @@ KSCGMULTI# = -DKS_MULTICG=HYBRID
 # VECLENGTH=n        Number of source vectors to process in one group.
 #                    Applies only to the ASVEC option
 
-KSFFMULTI# = -DKS_MULTIFF=FNMAT
+KSFFMULTI =# -DKS_MULTIFF=FNMAT
 
 
 #------------------------------
