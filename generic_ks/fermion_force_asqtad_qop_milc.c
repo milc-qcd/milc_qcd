@@ -79,6 +79,15 @@ static su3_matrix *backwardlink[4];
 static su3_vector *temp_x;
 
 /**********************************************************************/
+/*   Dummy - has no effect                                            */
+/**********************************************************************/
+QOP_status_t QOP_asqtad_force_set_opts(QOP_opt_t opts[], int nopts)
+{
+  return QOP_SUCCESS;
+}
+
+
+/**********************************************************************/
 /*   Version for a single set of degenerate flavors                   */
 /**********************************************************************/
 

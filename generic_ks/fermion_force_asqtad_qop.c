@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.20  2006/12/15 02:46:16  detar
+ * Support Ludmila's addition of Doug's FNMAT fermion force to QOP
+ *
  * Revision 1.19  2006/12/12 18:07:16  detar
  * Correct mixed precision features.  Add 1sum variant of the QDP inverter.
  *
@@ -76,7 +79,7 @@
 #define KS_MULTIFF FNMAT
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.19 2006/12/12 18:07:16 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.20 2006/12/15 02:46:16 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
@@ -163,6 +166,7 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   QOP_asqtad_coeffs_t coeff;
   Real epsv[2];
   QOP_info_t info;
+  QOP_opt_t qop_ff_opt = {.tag = "st"};
 
 #ifdef FFTIME
   int nflop = 433968;
@@ -195,6 +199,8 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
   /* Compute fermion force */
   dtime = -dclock();
+  qop_ff_opt.value = 0;  /* ASVEC method is appropriate for 2 sources */
+  QOP_asqtad_force_set_opts(&qop_ff_opt, 1);
   QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, 2);
   dtime += dclock();
   remaptime -= dtime;
@@ -356,14 +362,18 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
 #else
   veclength = 4;
 #endif
+  QOP_opt_t qop_ff_opt = {.tag = "st"};
 
   switch(KS_MULTIFF){
   case ASVEC:
-    /* The only choice now */
+    qop_ff_opt.value = 0;
+    QOP_asqtad_force_set_opts(&qop_ff_opt, 1);
     eo_fermion_force_asqtad_block( eps, residues, xxx, nterms, veclength );
     break;
-  default:
-    eo_fermion_force_asqtad_block( eps, residues, xxx, nterms, veclength );
+  default:  /* FNMAT */
+    qop_ff_opt.value = 1;
+    QOP_asqtad_force_set_opts(&qop_ff_opt, 1);
+    eo_fermion_force_asqtad_multi( eps, residues, xxx, nterms );
   }
 }
 
@@ -377,7 +387,7 @@ const char *ks_multiff_opt_chr( void )
     return "ASVEC";
     break;
   default:
-    return "ASVEC (only choice for QOP)";
+    return "FNMAT";
   }
   return NULL;
 }
