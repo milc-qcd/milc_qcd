@@ -26,12 +26,15 @@ For version 7.3.2
 
   Mixed precision for QOP and QDP inverters, dslash, and supporting
   fermion links.
+  Introduced precision selection "prec_pbp" for f_meas.c inversions.
   Made multicg option choice available to applications other than RHMC.
-  "initialize_machine" takes pointers to argc and **argv.
+  Support qopqdp-0.7.7 includes FNMAT version of multi fermion force
+  "initialize_machine" now takes pointers to argc and **argv.
   Support USQCD metadata in SciDAC file output
   Print list of selected options during setup.
   Segregate inclusion of SciDAC headers for faster compilation times
-  Libraries make builds both precisions.
+  Libraries "make" builds both precisions independently.
+  Make reporting of remapping time optional with macro REMAP.
 
 For version 7.3.1
 

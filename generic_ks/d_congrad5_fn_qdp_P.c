@@ -221,7 +221,9 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
       printf("CONGRAD5: time = %e (fn_qdp %c) iters = %d mflops = %e\n",
 	     dtimec, QDP_Precision, iteration,
 	     (double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
+#ifdef REMAP
       node0_printf("CGREMAP:  time = %e\n",remaptime);
+#endif
       fflush(stdout);
     }
 #endif
@@ -276,7 +278,9 @@ KS_CONGRAD_MILC2QDP(field_offset f_src, field_offset f_dest, Real mass,
   remaptime += dclock();
 
 #ifdef CGTIME
+#ifdef REMAP
   node0_printf("CGREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 
   return(iteration);

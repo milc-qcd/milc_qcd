@@ -466,7 +466,9 @@ void fn_fermion_force_multi( Real eps, Real residues[],
   free(res);
   remaptime += dclock();
 #ifdef FFTIME
+#ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 }
 
@@ -585,7 +587,9 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
 
   remaptime += dclock();
 #ifdef FFTIME
+#ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 }
 

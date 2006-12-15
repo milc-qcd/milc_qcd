@@ -234,7 +234,9 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE -DC_INLINE
 # LLTIME Link fattening
 # GFTIME Gauge force
 
-CTIME =# -DCGTIME -DFFTIME -DLLTIME -DGFTIME
+# REMAP  report remapping time for QDP, QOP in conjunction with above
+
+CTIME =# -DCGTIME -DFFTIME -DLLTIME -DGFTIME -DREMAP
 
 #------------------------------
 # Profiling

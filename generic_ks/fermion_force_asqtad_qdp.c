@@ -565,7 +565,9 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
 
   remaptime += dclock();
 #ifdef FFTIME
+#ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 }
 
@@ -649,7 +651,9 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
   remaptime += dclock();
 #ifdef FFTIME
+#ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 }
 

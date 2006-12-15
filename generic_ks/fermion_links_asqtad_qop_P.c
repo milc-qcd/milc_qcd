@@ -159,7 +159,9 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
 
   remaptime += dclock();
 #ifdef LLTIME
+#ifdef REMAP
   node0_printf("LLREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 
   return qop_l;

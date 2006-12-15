@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.21  2006/12/15 02:58:10  detar
+ * Make reporting of remapping time optional through a REMAP macro.
+ *
  * Revision 1.20  2006/12/15 02:46:16  detar
  * Support Ludmila's addition of Doug's FNMAT fermion force to QOP
  *
@@ -79,7 +82,7 @@
 #define KS_MULTIFF FNMAT
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.20 2006/12/15 02:46:16 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.21 2006/12/15 02:58:10 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
@@ -143,7 +146,9 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
 #ifdef FFTIME
   node0_printf("FFTIME:  time = %e (qop) terms = 1 mflops = %e\n",dtime,
 	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+#ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 }
 
@@ -220,7 +225,9 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 #ifdef FFTIME
   node0_printf("FFTIME:  time = %e (qop) terms = 2 mflops = %e\n",dtime,
 	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+#ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 }
 
@@ -303,7 +310,9 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
 #ifdef FFTIME
   node0_printf("FFTIME:  time = %e (qop ASVEC) terms = %d mflops = %e\n",dtime,
 	       nterms, (Real)nflop*volume/(1e6*dtime*numnodes()) );
+#ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 
 }

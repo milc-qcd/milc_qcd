@@ -77,7 +77,9 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
 #ifdef GFTIME
   node0_printf("GFTIME:  time = %e mflops = %e\n",info.final_sec,
 	       info.final_flop/(1e6*info.final_sec) );
+#ifdef REMAP
   node0_printf("GFREMAP:  time = %e\n",remaptime);
+#endif
 #endif
   //   printf("imp_gauge_force: using my QOP version\n");	
 } /* imp_gauge_force.c */

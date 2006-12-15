@@ -317,7 +317,9 @@ KS_CONGRAD_MILC2QDP(field_offset f_src, field_offset f_dest, Real mass,
   remaptime += dclock();
 
 #ifdef CGTIME
+#ifdef REMAP
   node0_printf("CGREMAP:  time = %e\n",remaptime);
+#endif
 #endif
 
   return(iteration);
