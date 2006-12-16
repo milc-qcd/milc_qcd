@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.22  2006/12/16 13:48:45  detar
+ * Mixed precision support in QOP MILC.  Support QOP QDP FNMAT
+ *
  * Revision 1.21  2006/12/15 02:58:10  detar
  * Make reporting of remapping time optional through a REMAP macro.
  *
@@ -82,7 +85,7 @@
 #define KS_MULTIFF FNMAT
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.21 2006/12/15 02:58:10 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.22 2006/12/16 13:48:45 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
@@ -371,17 +374,24 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
 #else
   veclength = 4;
 #endif
-  QOP_opt_t qop_ff_opt = {.tag = "st"};
+  /* Set default method to FNMAT. Set vector length for ASVEC, if
+     requested */
+  QOP_opt_t qop_ff_opt[2] = {
+    {.tag = "fnmat_src_min",.value=4},
+    {.tag = "veclength",.value=veclength}
+  };
 
   switch(KS_MULTIFF){
   case ASVEC:
-    qop_ff_opt.value = 0;
-    QOP_asqtad_force_set_opts(&qop_ff_opt, 1);
+    qop_ff_opt[0].value = nterms + 1;  /* set high threshold for FNMAT */
+    if(QOP_asqtad_force_set_opts(qop_ff_opt, 2) != QOP_SUCCESS)
+      node0_printf("eo_fermion_force_multi: error setting QOP options\n");
     eo_fermion_force_asqtad_block( eps, residues, xxx, nterms, veclength );
     break;
   default:  /* FNMAT */
-    qop_ff_opt.value = 1;
-    QOP_asqtad_force_set_opts(&qop_ff_opt, 1);
+    qop_ff_opt[0].value = 4; /* set sensible threshold for FNMAT */
+    if(QOP_asqtad_force_set_opts(qop_ff_opt, 2) != QOP_SUCCESS)
+      node0_printf("eo_fermion_force_multi: error setting QOP options\n");
     eo_fermion_force_asqtad_multi( eps, residues, xxx, nterms );
   }
 }

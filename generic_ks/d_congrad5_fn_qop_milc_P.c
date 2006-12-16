@@ -99,10 +99,20 @@ void QOP_asqtad_invert(QOP_info_t *info,
   MYREAL rsqmin         = res_arg->rsqmin;
   int niter           = inv_arg->max_iter;
   int max_restart     = inv_arg->restart;
-  su3_vector *srcp = src_pt->v;
-  su3_vector *solp = dest_pt->v;
-  su3_matrix *fatlinks = links->fat->g;
-  su3_matrix *longlinks = links->lng->g;
+
+  /* Convert specific QOP precision to prevailing MILC precision */
+#if ( QOP_Precision == 1 )
+  su3_vector *srcp = create_latvec_from_qop_milc_F(src_pt->v);
+  su3_vector *solp = create_latvec_from_qop_milc_F(dest_pt->v);
+  su3_matrix *fatlinks = create_links_from_qop_milc_F(links->fat->g);
+  su3_matrix *longlinks = create_links_from_qop_milc_F(links->lng->g);
+#else
+  su3_vector *srcp = create_latvec_from_qop_milc_D(src_pt->v);
+  su3_vector *solp = create_latvec_from_qop_milc_D(dest_pt->v);
+  su3_matrix *fatlinks = create_links_from_qop_milc_D(links->fat->g);
+  su3_matrix *longlinks = create_links_from_qop_milc_D(links->lng->g);
+#endif
+
   MYREAL final_flop;
   char *qop_prec[2] = { "F", "D" };
   
@@ -231,6 +241,20 @@ start:
 			 dtimec,iteration,final_flop/(1.0e6*dtimec) );
 	    fflush(stdout);
 #endif
+    /* Copy the solution back and free memory */
+#if ( QOP_Precision == 1 )
+	    copy_latvec_to_qop_milc_F(dest_pt->v, solp);
+	    destroy_latvec_from_qop_milc_F(srcp);
+	    destroy_latvec_from_qop_milc_F(solp);
+	    destroy_links_from_qop_milc_F(fatlinks);
+	    destroy_links_from_qop_milc_F(longlinks);
+#else
+	    copy_latvec_to_qop_milc_D(dest_pt->v, solp);
+	    destroy_latvec_from_qop_milc_D(srcp);
+	    destroy_latvec_from_qop_milc_D(solp);
+	    destroy_links_from_qop_milc_D(fatlinks);
+	    destroy_links_from_qop_milc_D(longlinks);
+#endif
 	    info->status = QOP_SUCCESS;
 	    return;
         }
@@ -345,6 +369,20 @@ start:
 	    fflush(stdout);
 #endif
 
+    /* Copy the solution and free memory */
+#if ( QOP_Precision == 1 )
+	    copy_latvec_to_qop_milc_F(dest_pt->v, solp);
+	    destroy_latvec_from_qop_milc_F(srcp);
+	    destroy_latvec_from_qop_milc_F(solp);
+	    destroy_links_from_qop_milc_F(fatlinks);
+	    destroy_links_from_qop_milc_F(longlinks);
+#else
+	    copy_latvec_to_qop_milc_D(dest_pt->v, solp);
+	    destroy_latvec_from_qop_milc_D(srcp);
+	    destroy_latvec_from_qop_milc_D(solp);
+	    destroy_links_from_qop_milc_D(fatlinks);
+	    destroy_links_from_qop_milc_D(longlinks);
+#endif
 	    info->status = QOP_SUCCESS;
 	    return;
         }
@@ -385,6 +423,21 @@ start:
     fflush(stdout);
     CLEANUP_DSLASH_QOP_MILC_TEMPS();
     free(ttt); free(cg_p); free(resid); first_congrad = 1;
+
+    /* Copy the solution and free memory */
+#if ( QOP_Precision == 1 )
+    copy_latvec_to_qop_milc_F(dest_pt->v, solp);
+    destroy_latvec_from_qop_milc_F(srcp);
+    destroy_latvec_from_qop_milc_F(solp);
+    destroy_links_from_qop_milc_F(fatlinks);
+    destroy_links_from_qop_milc_F(longlinks);
+#else
+    copy_latvec_to_qop_milc_D(dest_pt->v, solp);
+    destroy_latvec_from_qop_milc_D(srcp);
+    destroy_latvec_from_qop_milc_D(solp);
+    destroy_links_from_qop_milc_D(fatlinks);
+    destroy_links_from_qop_milc_D(longlinks);
+#endif
 
     /* Save diagnostics */
 

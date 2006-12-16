@@ -170,7 +170,12 @@ static su3_matrix *create_fatlinks_qop_milc(QOP_info_t *info,
   int  nu,rho,sig ;
   Real one_link; /* needed to fix the problem with the Lepage
 		       term */
-  su3_matrix *links = gauge->g;
+  /* Convert specific QOP precision to prevailing MILC precision */
+#if ( QOP_Precision == 1 )
+  su3_matrix *links = create_links_from_qop_milc_F(gauge->g);
+#else
+  su3_matrix *links = create_links_from_qop_milc_D(gauge->g);
+#endif
   Real cf;
 
   int nflop = 61632;
@@ -264,6 +269,12 @@ dtime += dclock();
  info->final_sec = dtime;
  info->final_flop = ((double)nflop*volume)/numnodes();
  info->status = QOP_SUCCESS;
+
+#if ( QOP_Precision == 1 )
+  destroy_links_from_qop_milc_F(links);
+#else
+  destroy_links_from_qop_milc_D(links);
+#endif
 
  return t_fl;
 }  /* load_fatlinks_qop_milc() */
@@ -415,7 +426,11 @@ void path_product_qop_milc( const int *dir, const int length,
     register site *s;
     msg_tag *mtag0 = NULL;
     su3_matrix *tempmat2t, *tempmat3t;
-    su3_matrix *links = gauge->g;
+#if ( QOP_Precision == 1 )
+    su3_matrix *links = create_links_from_qop_milc_F(gauge->g);
+#else
+    su3_matrix *links = create_links_from_qop_milc_D(gauge->g);
+#endif
     int j;
     /* a forward step leaves the answer in gen_pt[0], which points into
 	link, tempmat1 or tempmat2, and backwards step in tempmat1 or tempmat2,
