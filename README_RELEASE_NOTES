@@ -3,7 +3,7 @@ This is MILC Version 7 code
 Gradually version 6 code is being ported to it and new modules have
 been added.
 
-So far only the following applications have been tested:
+So far the following applications have been tested:
 
 clover_dynamical
 clover_invert
@@ -20,15 +20,15 @@ schroed_cl_inv
 Build the code with GNU make.  See the README file in this directory
 for general instructions.
 
-Here are highlights of the new features:
+Here are highlights of the changes:
 
-For version 7.3.2
+For version 7.4.0
 
   Mixed precision for QOP and QDP inverters, dslash, and supporting
   fermion links.
   Introduced precision selection "prec_pbp" for f_meas.c inversions.
   Made multicg option choice available to applications other than RHMC.
-  Support qopqdp-0.7.7 includes FNMAT version of multi fermion force
+  Support qopqdp-0.7.7 including FNMAT version of multi fermion force
   "initialize_machine" now takes pointers to argc and **argv.
   Support USQCD metadata in SciDAC file output
   Print list of selected options during setup.

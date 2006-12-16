@@ -1,9 +1,9 @@
 # This file is for inclusion in Make_tar and Make_unpack_*
 # It is not intended to be run stand-alone
-# 7/13/05 C. DeTar
+# 12/16/06 C. DeTar
 
 #  Change these names to suit
-VER = 7.3.2
+VER = 7.4.0
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
