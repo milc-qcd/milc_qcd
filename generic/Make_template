@@ -64,6 +64,7 @@ G_ALL = \
  qop_milc.o \
  qop_milc_D.o \
  qop_milc_F.o \
+ qop_milc_utilities.o \
  rand_gauge.o \
  ranmom.o \
  ranstuff.o \
@@ -208,6 +209,8 @@ qop_milc.o: ../generic/qop_milc.c
 qop_milc_D.o: ../generic/qop_milc_D.c ../generic/qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
 qop_milc_F.o: ../generic/qop_milc_F.c ../generic/qop_milc_D.c
+	${CC} -c ${CFLAGS} $<
+qop_milc_utilities.o: ../generic/qop_milc_utilities.c
 	${CC} -c ${CFLAGS} $<
 rand_gauge.o: ../generic/rand_gauge.c
 	${CC} -c ${CFLAGS} $<

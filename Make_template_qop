@@ -72,7 +72,7 @@ ifneq ($(strip ${WANTQOP}),)
       INCDEPQOP = ${QOPINCDIR}
 
       # General requirement
-      GENERICQOP = qop_milc.o qop_milc_D.o qop_milc_F.o
+      GENERICQOP = qop_milc.o qop_milc_D.o qop_milc_F.o qop_milc_utilities.o
       # Gauge force
       SYMZK1FORCEQOP = gauge_force_symzk1_qop_milc.o
       # Fermion links

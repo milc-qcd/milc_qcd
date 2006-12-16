@@ -4,8 +4,14 @@
 
 #if ( QOP_Precision == 1 )
 #define MYREAL float
+#define MYSU3_VECTOR fsu3_vector
+#define MYSU3_MATRIX fsu3_matrix
+#define MYWILSON_VECTOR fwilson_vector
 #else
 #define MYREAL double
+#define MYSU3_VECTOR dsu3_vector
+#define MYSU3_MATRIX dsu3_matrix
+#define MYWILSON_VECTOR dwilson_vector
 #endif
 
 #include "generic_includes.h"
@@ -17,7 +23,7 @@
 extern int qop_is_initialized;
 
 QOP_ColorVector *QOP_create_V_from_raw(MYREAL *src, QOP_evenodd_t qop_parity){
-  su3_vector *v;
+  MYSU3_VECTOR *v;
   char myname[] = "QOP_create_V_from_raw";
   QOP_ColorVector *qopv;
 
@@ -26,13 +32,13 @@ QOP_ColorVector *QOP_create_V_from_raw(MYREAL *src, QOP_evenodd_t qop_parity){
     return NULL;
   }
 
-  v = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+  v = (MYSU3_VECTOR *)malloc(sites_on_node*sizeof(MYSU3_VECTOR));
   if(v == NULL){
     printf("%s: No room\n",myname);
     return NULL;
   }
 
-  memcpy(v, src, sites_on_node*sizeof(su3_vector));
+  memcpy(v, src, sites_on_node*sizeof(MYSU3_VECTOR));
   
   qopv = (QOP_ColorVector *)malloc(sizeof(QOP_ColorVector));
   if(qopv == NULL){
@@ -46,7 +52,7 @@ QOP_ColorVector *QOP_create_V_from_raw(MYREAL *src, QOP_evenodd_t qop_parity){
 }
 
 QOP_DiracFermion *QOP_create_D_from_raw(MYREAL *src, QOP_evenodd_t qop_parity){
-  wilson_vector *d;
+  MYWILSON_VECTOR *d;
   char myname[] = "QOP_create_D_from_raw";
   QOP_DiracFermion *qopd;
 
@@ -55,13 +61,13 @@ QOP_DiracFermion *QOP_create_D_from_raw(MYREAL *src, QOP_evenodd_t qop_parity){
     return NULL;
   }
 
-  d = (wilson_vector *)malloc(sites_on_node*sizeof(wilson_vector));
+  d = (MYWILSON_VECTOR *)malloc(sites_on_node*sizeof(MYWILSON_VECTOR));
   if(d == NULL){
     printf("%s: No room\n",myname);
     return NULL;
   }
   
-  memcpy(d, src, sites_on_node*sizeof(wilson_vector));
+  memcpy(d, src, sites_on_node*sizeof(MYWILSON_VECTOR));
 
   qopd = (QOP_DiracFermion *)malloc(sizeof(QOP_DiracFermion));
   if(qopd == NULL){
@@ -76,7 +82,7 @@ QOP_DiracFermion *QOP_create_D_from_raw(MYREAL *src, QOP_evenodd_t qop_parity){
 
 
 QOP_GaugeField *QOP_create_G_from_raw(MYREAL *src[], QOP_evenodd_t qop_parity){
-  su3_matrix *g;
+  MYSU3_MATRIX *g;
   char myname[] = "QOP_create_G_from_raw";
   QOP_GaugeField *qopg;
   int dir;
@@ -86,14 +92,14 @@ QOP_GaugeField *QOP_create_G_from_raw(MYREAL *src[], QOP_evenodd_t qop_parity){
     return NULL;
   }
 
-  g = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix)*4);
+  g = (MYSU3_MATRIX *)malloc(sites_on_node*sizeof(MYSU3_MATRIX)*4);
   if(g == NULL){
     printf("%s: No room\n",myname);
     return NULL;
   }
   
   FORALLUPDIR(dir){
-    memcpy(g+dir*sites_on_node, src[dir], sites_on_node*sizeof(su3_matrix));
+    memcpy(g+dir*sites_on_node, src[dir], sites_on_node*sizeof(MYSU3_MATRIX));
   }
 
   qopg = (QOP_GaugeField *)malloc(sizeof(QOP_GaugeField));
@@ -109,7 +115,7 @@ QOP_GaugeField *QOP_create_G_from_raw(MYREAL *src[], QOP_evenodd_t qop_parity){
 
 
 QOP_Force *QOP_create_F_from_raw(MYREAL *src[], QOP_evenodd_t qop_parity){
-  su3_matrix *f;
+  MYSU3_MATRIX *f;
   char myname[] = "QOP_create_F_from_raw";
   QOP_Force *qopf;
   int dir;
@@ -119,14 +125,14 @@ QOP_Force *QOP_create_F_from_raw(MYREAL *src[], QOP_evenodd_t qop_parity){
     return NULL;
   }
 
-  f = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix)*4);
+  f = (MYSU3_MATRIX *)malloc(sites_on_node*sizeof(MYSU3_MATRIX)*4);
   if(f == NULL){
     printf("%s: No room\n",myname);
     return NULL;
   }
   
   FORALLUPDIR(dir){
-    memcpy(f+dir*sites_on_node, src[dir], sites_on_node*sizeof(su3_matrix));
+    memcpy(f+dir*sites_on_node, src[dir], sites_on_node*sizeof(MYSU3_MATRIX));
   }
 
   qopf = (QOP_Force *)malloc(sizeof(QOP_Force));
@@ -167,18 +173,18 @@ QOP_FermionLinksAsqtad *QOP_asqtad_create_L_from_raw(MYREAL *fatlinks[],
 
 
 void QOP_extract_V_to_raw(MYREAL *dest, QOP_ColorVector *src, QOP_evenodd_t qop_parity){
-  memcpy(dest, src->v, sites_on_node*sizeof(su3_vector));
+  memcpy(dest, src->v, sites_on_node*sizeof(MYSU3_VECTOR));
 }
 
 void QOP_extract_D_to_raw(MYREAL *dest, QOP_DiracFermion *src, QOP_evenodd_t qop_parity){
-  memcpy(dest, src->d, sites_on_node*sizeof(wilson_vector));
+  memcpy(dest, src->d, sites_on_node*sizeof(MYWILSON_VECTOR));
 }
 
 void QOP_extract_G_to_raw(MYREAL *dest[], QOP_GaugeField *src, QOP_evenodd_t qop_parity){
   int dir;
   FORALLUPDIR(dir){
     memcpy(dest[dir], src->g+dir*sites_on_node, 
-	   sites_on_node*sizeof(su3_matrix));
+	   sites_on_node*sizeof(MYSU3_MATRIX));
   }
 }
 
@@ -186,7 +192,7 @@ void QOP_extract_F_to_raw(MYREAL *dest[], QOP_Force *src, QOP_evenodd_t qop_pari
   int dir;
   FORALLUPDIR(dir){
     memcpy(dest[dir], src->f+dir*sites_on_node, 
-	   sites_on_node*sizeof(su3_matrix));
+	   sites_on_node*sizeof(MYSU3_MATRIX));
   }
 }
 
