@@ -90,6 +90,60 @@ create_qop_asqtad_L_from_G(Real *act_path_coeff,
   return qop_l;
 }
 
+#ifdef HAVE_NO_CREATE_L_FROM_G
+
+/*********************************************************************/
+/* Create QOP and MILC fat links from MILC gauge field               */
+/*********************************************************************/
+static QOP_FermionLinksAsqtad *
+create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
+		    Real *act_path_coeff) {
+
+  double remaptime;
+  MYSU3_MATRIX **fatlinks;
+  MYSU3_MATRIX **longlinks;
+  QOP_FermionLinksAsqtad *qop_l;
+  char myname[] = "create_asqtad_links";
+
+  if( phases_in != 1){
+    node0_printf("create_asqtad_links: BOTCH: needs phases in\n");
+    terminate(1);
+  }
+
+  /* Initialize QOP */
+  if(initialize_qop() != QOP_SUCCESS){
+    printf("%s(%d): Error initializing QOP\n",myname,this_node);
+    terminate(1);
+  }
+
+  /* Use MILC link fattening routine */
+  load_fatlinks(&t_fatlink, get_quark_path_coeff(), get_q_paths());
+  load_longlinks(&t_longlink);
+
+  *t_fl = t_fatlink;   /* Identity copy */
+  *t_ll = t_longlink;  /* Identity copy */
+
+  /* Map to raw field including possible change of precision */
+  remaptime = -dclock();
+  fatlinks  = create_raw4_G_from_field(*t_fl, EVENANDODD);
+  longlinks = create_raw4_G_from_field(*t_ll, EVENANDODD);
+  remaptime += dclock();
+
+  /* Create QOP link object from raw fields */
+  qop_l = QOP_asqtad_create_L_from_raw(fatlinks, longlinks, QOP_EVENODD);
+
+  destroy_raw4_G(fatlinks);
+  destroy_raw4_G(longlinks);
+#ifdef LLTIME
+#ifdef REMAP
+  node0_printf("LLREMAP:  time = %e\n",remaptime);
+#endif
+#endif
+
+  return qop_l;
+}
+
+#else
 
 /*********************************************************************/
 /* Create QOP and MILC fat links from MILC gauge field               */
@@ -166,6 +220,8 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
 
   return qop_l;
 }
+
+#endif
 
 /*********************************************************************/
 /* Create fat and long links and qop_links                           */
