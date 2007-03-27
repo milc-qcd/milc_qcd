@@ -25,6 +25,9 @@ main( int argc, char **argv )
   initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
+#ifndef QDP_PROFILE
+  QDP_profcontrol(0);
+#endif
 #endif
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
