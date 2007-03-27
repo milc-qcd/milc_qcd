@@ -115,10 +115,6 @@
 #include "../include/io_wprop.h"
 #include "../include/file_types.h"
 
-#ifndef HAVE_FSEEKO
-#define fseeko fseek
-#endif
-
 #define PARALLEL 1
 #define SERIAL 0
 
@@ -179,7 +175,7 @@ void pwrite_w_prop_hdr(FILE *fp, w_prop_header *wph)
 	 word boundaries, so the whole is not the sum of
 	 its parts.  For portability, we have to do it piecemeal. */
 
-      /** if( fwrite(&wph,sizeof(wph),1,fp) !=
+      /** if( g_write(&wph,sizeof(wph),1,fp) !=
 	 sizeof(wph)) **/
 
   int i;
@@ -421,7 +417,7 @@ int write_w_prop_info_file(w_prop_file *wpf)
 
   /* Open header file */
   
-  if((info_fp = fopen(info_filename,"w")) == NULL)
+  if((info_fp = g_open(info_filename,"w")) == NULL)
     {
       printf("write_w_prop_info_file: Can't open ascii info file %s\n",info_filename);
       return 1;
@@ -440,7 +436,7 @@ int write_w_prop_info_file(w_prop_file *wpf)
   /* Write optional information - this routine supplied by application */
   write_appl_w_prop_info(info_fp);
 
-  fclose(info_fp);
+  g_close(info_fp);
 
 /*  printf("Wrote propagator info file %s\n",info_filename); */
 
@@ -583,7 +579,7 @@ w_prop_file *w_serial_w_i(char *filename)
 
   if(this_node == 0)
     {
-      fp = fopen(filename, "wb");
+      fp = g_open(filename, "wb");
       if(fp == NULL)
 	{
 	  printf("w_serial_w_i: Node %d can't open file %s, error %d\n",
@@ -719,11 +715,11 @@ void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src_site,
       offset = head_size + body_size*(spinindex*3 + color)
            + w_prop_check_size;
 
-      fseek_return=fseeko(fp,offset,SEEK_SET);
+      fseek_return=g_seek(fp,offset,SEEK_SET);
       /* printf("w_serial_w: Node %d fseek_return = %d\n",this_node,fseek_return); */
       if( fseek_return < 0 ) 
 	{
-	  printf("w_serial_w: Node %d fseeko %lld failed error %d file %s\n",
+	  printf("w_serial_w: Node %d g_seek %lld failed error %d file %s\n",
 		 this_node,(long long)offset,errno,wpf->filename);
 	  fflush(stdout);terminate(1);
 	}
@@ -793,7 +789,7 @@ void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src_site,
 	    {
 	      /* write out buffer */
 	      
-	      if( (int)fwrite(lbuf,sizeof(fwilson_vector),buf_length,fp) 
+	      if( (int)g_write(lbuf,sizeof(fwilson_vector),buf_length,fp) 
 		  != buf_length)
 		{
 		  printf("w_serial_w: Node %d propagator write error %d file %s\n",
@@ -841,9 +837,9 @@ void w_serial_w(w_prop_file *wpf, int spin, int color, field_offset src_site,
       /* Record PRECEDES the propagator data for a given spin and color */
       
       offset = head_size + body_size*(spinindex*3 + color);
-      if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,offset,SEEK_SET) < 0 ) 
 	{
-	  printf("w_serial_w: Node %d fseeko %lld failed error %d file %s\n",
+	  printf("w_serial_w: Node %d g_seek %lld failed error %d file %s\n",
 		 this_node,(long long)offset,errno,wpf->filename);
 	  fflush(stdout);terminate(1);   
 	}
@@ -892,7 +888,7 @@ void w_serial_w_f(w_prop_file *wpf)
       printf("Wrote prop file %s time stamp %s\n",wpf->filename,
 	     (wpf->header)->time_stamp);
 
-      if(wpf->fp != NULL)fclose(wpf->fp);
+      if(wpf->fp != NULL)g_close(wpf->fp);
     }
 
   /* Free header and file structures */
@@ -939,7 +935,7 @@ void read_site_list_w(int parallel, w_prop_file *wpf)
             }
 	  else
  	    {
-	      if((int)fread(wpf->rank2rcv,sizeof(int32type),volume,wpf->fp) 
+	      if((int)g_read(wpf->rank2rcv,sizeof(int32type),volume,wpf->fp) 
 		 != volume )
 		{
 		  printf("read_site_list_w: Node %d site list read error %d\n",
@@ -1406,7 +1402,7 @@ w_prop_file *r_serial_w_i(char *filename)
 
   if(this_node==0)
     {
-      fp = fopen(filename, "rb");
+      fp = g_open(filename, "rb");
       if(fp == NULL)
 	{
 	  printf("r_serial_w_i: Node %d can't open file %s, error %d\n",
@@ -1548,9 +1544,9 @@ int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset dest_site,
       
       /* Position file pointer for reading check record */
       
-      if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,offset,SEEK_SET) < 0 ) 
 	{
-	  printf("%s: Node %d fseeko %lld failed error %d file %s\n",
+	  printf("%s: Node %d g_seek %lld failed error %d file %s\n",
 		 myname,this_node,(long long)offset,errno,filename);
 	  fflush(stdout);
 	  status = 1;
@@ -1630,7 +1626,7 @@ int r_serial_w(w_prop_file *wpf, int spin, int color, field_offset dest_site,
 	    if(buf_length > MAX_BUF_LENGTH)buf_length = MAX_BUF_LENGTH;
 	    /* then do read */
 	    
-	    if( (int)fread(lbuf,sizeof(fwilson_vector),buf_length,fp) 
+	    if( (int)g_read(lbuf,sizeof(fwilson_vector),buf_length,fp) 
 		!= buf_length)
 	      {
 		if(status == 0)
@@ -1793,7 +1789,7 @@ void r_serial_w_f(w_prop_file *wpf)
       if(wpf->parallel == PARALLEL)
 	printf("r_serial_w_f: Attempting serial close on parallel file \n");
       
-      if(wpf->fp != NULL)fclose(wpf->fp);
+      if(wpf->fp != NULL)g_close(wpf->fp);
 /*      printf("Closed prop file %s\n",wpf->filename);*/
       fflush(stdout);
     }
@@ -3008,7 +3004,7 @@ w_prop_file *w_ascii_w_i(char *filename)
   if(this_node==0){
     /* Set up w_prop file and w_prop header structures and load header values */
 
-    fp = fopen(filename,"w");
+    fp = g_open(filename,"w");
     if(fp==NULL){
       printf("Can't open file %s, error %d\n",filename,errno);terminate(1);
     }
@@ -3124,7 +3120,7 @@ void w_ascii_w_f(w_prop_file *wpf)
   if(this_node==0)
     {
       fflush(wpf->fp);
-      if(wpf->fp != NULL)fclose(wpf->fp);
+      if(wpf->fp != NULL)g_close(wpf->fp);
       printf("Wrote prop file %s time stamp %s\n",wpf->filename,
 	     (wpf->header)->time_stamp);
     }
@@ -3163,7 +3159,7 @@ w_prop_file *r_ascii_w_i(char *filename)
 
   if(this_node==0)
     {
-      fp = fopen(filename,"r");
+      fp = g_open(filename,"r");
       if(fp==NULL)
 	{
 	  printf("r_ascii_w_i: Node %d can't open file %s, error %d\n",
@@ -3330,7 +3326,7 @@ void r_ascii_w_f(w_prop_file *wpf)
   if(this_node==0)
     {
 /*      printf("Closed ASCII prop file  %s\n",wpf->filename);*/
-      fclose(fp);
+      g_close(fp);
       wpf->fp = NULL;
       fflush(stdout);
     }
@@ -3373,7 +3369,7 @@ w_prop_file *w_multidump_w_i(char *filename)
   
   /* All nodes open a separate serial file */
 
-  fp = fopen(multidump_filename, "wb");
+  fp = g_open(multidump_filename, "wb");
 
   if(fp == NULL)
     {
@@ -3443,9 +3439,9 @@ void w_multidump_w(w_prop_file *wpf, int spin, int color,
   body_size = w_prop_size + w_prop_check_size;
   offset = body_size*(spin*3 + color);
 
-  if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+  if( g_seek(fp,offset,SEEK_SET) < 0 ) 
     {
-      printf("%s: Node %d fseeko %lld failed error %d file %s\n",
+      printf("%s: Node %d g_seek %lld failed error %d file %s\n",
 	     myname,this_node,(long long)offset,errno,wpf->filename);
       fflush(stdout);
       terminate(1);
@@ -3483,7 +3479,7 @@ void w_multidump_w(w_prop_file *wpf, int spin, int color,
       {
 	/* write out buffer */
 	
-	if( (int)fwrite(lbuf,sizeof(wilson_vector),buf_length,fp) 
+	if( (int)g_write(lbuf,sizeof(wilson_vector),buf_length,fp) 
 	    != buf_length)
 	  {
 	    printf("%s: Node %d propagator write error %d file %s\n",
@@ -3546,7 +3542,7 @@ void w_multidump_w_o(w_prop_file *wpf)
 {
   /* Reopen previously opened file, specified by wpf, for multidump writing */
 
-  wpf->fp = fopen(wpf->filename, "rb+");  /* Binary write and update */
+  wpf->fp = g_open(wpf->filename, "rb+");  /* Binary write and update */
 
   if(wpf->fp == NULL)
     {
@@ -3565,8 +3561,8 @@ void w_multidump_w_o(w_prop_file *wpf)
 void w_multidump_w_c(w_prop_file *wpf)
 {
   /* Close file temporarily -- releases only the system FILE structure */
-  g_sync();
-  if(wpf->fp != NULL)fclose(wpf->fp);
+  // g_sync();
+  if(wpf->fp != NULL)g_close(wpf->fp);
   wpf->fp = NULL;
   /*if(this_node==0)printf("Closed dump file %s temporarily\n",wpf->filename);*/
 } /* w_multidump_w_c */
@@ -3608,7 +3604,7 @@ w_prop_file *r_multidump_w_i(char *filename)
   
   /* All nodes open a separate serial file */
 
-  fp = fopen(multidump_filename, "rb");
+  fp = g_open(multidump_filename, "rb");
 
   if(fp == NULL)
     {
@@ -3686,9 +3682,9 @@ int r_multidump_w(w_prop_file *wpf, int spin, int color,
   offset = body_size*(spin*3 + color);
 
   xstatus = 0.;
-  if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+  if( g_seek(fp,offset,SEEK_SET) < 0 ) 
     {
-      printf("%s: Node %d fseeko %lld failed error %d file %s\n",
+      printf("%s: Node %d g_seek %lld failed error %d file %s\n",
 	     myname,this_node,(long long)offset,errno,filename);
       fflush(stdout);
       xstatus = 1.;
@@ -3722,7 +3718,7 @@ int r_multidump_w(w_prop_file *wpf, int spin, int color,
 	/* then do read */
 	/* each node reads its sites */
 	
-	if( (int)fread(lbuf,buf_length*sizeof(wilson_vector),1,fp) != 1)
+	if( (int)g_read(lbuf,buf_length*sizeof(wilson_vector),1,fp) != 1)
 	  {
 	    if(xstatus == 0.)
 	      printf("%s: node %d propagator read error %d file %s\n",
@@ -3863,7 +3859,7 @@ void r_multidump_w_o(w_prop_file *wpf)
 {
   /* Reopen previously opened file, specified by wpf, for multidump reading */
   
-  wpf->fp = fopen(wpf->filename, "rb");  /* Binary read */
+  wpf->fp = g_open(wpf->filename, "rb");  /* Binary read */
   
   if(wpf->fp == NULL)
     {
@@ -3884,7 +3880,7 @@ void r_multidump_w_c(w_prop_file *wpf)
 {
   /* Close dump file temporarily -- releases only the system FILE structure */
   g_sync();
-  if(wpf->fp != NULL)fclose(wpf->fp);
+  if(wpf->fp != NULL)g_close(wpf->fp);
   wpf->fp = NULL;
   /*if(this_node==0)printf("Closed dump prop file %s temporarily\n",wpf->filename);*/
 } /* r_multidump_w_c */

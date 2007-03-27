@@ -24,10 +24,6 @@
 #include "../include/io_lat.h" /* for utilities like get_f ,etc */
 #include "../include/io_ksprop.h"
 
-#ifndef HAVE_FSEEKO
-#define fseeko fseek
-#endif
-
 #define PARALLEL 1
 #define SERIAL 0
 
@@ -347,11 +343,11 @@ void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site,
       
       offset = head_size;
 
-      fseek_return=fseeko(fp,offset,SEEK_SET);
+      fseek_return=g_seek(fp,offset,SEEK_SET);
       /* printf("w_serial_ks: Node %d fseek_return = %d\n",this_node,fseek_return); */
       if( fseek_return < 0 ) 
 	{
-	  printf("w_serial_ks: Node %d fseeko %lld failed error %d file %s\n",
+	  printf("w_serial_ks: Node %d g_seek %lld failed error %d file %s\n",
 		 this_node, (long long)offset, errno, kspf->filename);
 	  fflush(stdout); terminate(1);
 	}
@@ -826,9 +822,9 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
       
       /* Position file pointer for reading check record */
 
-      if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,offset,SEEK_SET) < 0 ) 
 	{
-	  printf("%s: Node %d fseeko %lld failed error %d file %s\n",
+	  printf("%s: Node %d g_seek %lld failed error %d file %s\n",
 		 myname,this_node,(long long)offset,errno,filename);
 	  fflush(stdout);
 	  status = 1;

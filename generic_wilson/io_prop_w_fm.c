@@ -121,7 +121,7 @@ w_prop_file *r_serial_w_fm_i(char *filename)
   wph = wpf->header;
 
   if(this_node==0){
-    wpf->fp = fopen(filename,"rb");
+    wpf->fp = g_open(filename,"rb");
     if(wpf->fp==NULL){
       printf("Can't open propagator file %s, error %d\n",filename,errno);
       terminate(1);
@@ -219,7 +219,7 @@ void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site,
 	    buf_length = volume - rcv_rank;
 	    if(buf_length > MAX_BUF_LENGTH) buf_length = MAX_BUF_LENGTH;
 	    /* then do read */
-	    a=(int)fread(pbuff,sizeof(fwilson_matrix),buf_length,wpf->fp);
+	    a=(int)g_read(pbuff,sizeof(fwilson_matrix),buf_length,wpf->fp);
 	    
 	    if( a  != buf_length)
 	      {
@@ -326,7 +326,7 @@ void r_serial_w_fm_f(w_prop_file *wpf)
   g_sync();
   if(this_node==0)
     {
-      if(wpf->fp != NULL)fclose(wpf->fp);
+      if(wpf->fp != NULL)g_close(wpf->fp);
       fflush(stdout);
     }
   
