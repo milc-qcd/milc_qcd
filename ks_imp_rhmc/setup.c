@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.15  2007/03/27 20:48:54  detar
+//  Fix n_pseudo check.
+//
 //  Revision 1.14  2006/12/13 18:41:40  detar
 //  Add precision arg to mat_invert_uml and mat_invert_cg
 //
@@ -192,7 +195,7 @@ initial_set()
     IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
     /* Number of pseudofermions */
     IF_OK status += get_i(stdin, prompt,"n_pseudo", &par_buf.n_pseudo );
-    if(n_pseudo > N_PSEUDO){
+    if(par_buf.n_pseudo > N_PSEUDO){
       printf("Error:  Too many pseudofermion fields.  Recompile. Current max is %d\n"
 	     ,N_PSEUDO);
       terminate(1);
