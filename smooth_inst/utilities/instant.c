@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
       printf("Enter lattice dimensions           ");
       scanf("%d %d %d %d", &dim[0], &dim[1], &dim[2], &dim[3]);
       printf("Enter instanton radius             ");
-      scanf("%lfHELP", &rho);
+      scanf("%lf", &rho);
    }
 
    /* open output file */
