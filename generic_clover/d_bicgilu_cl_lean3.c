@@ -67,6 +67,7 @@
 #include "generic_clover_includes.h"
 
 /*#define CGTIME */
+/*#define CGDEBUG*/
 
 int bicgilu_cl(          /* Return value is number of iterations taken */
     field_offset src,    /* type wilson_vector (source vector - OVERWRITTEN!)*/
@@ -166,8 +167,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   g_doublesum(&rsq);
   size_src = (Real)sqrt(rsq);
   
-  /** if(this_node==0)printf("beginning inversion--size_src=%e\n",
-      (double)size_src); **/
+#ifdef CGDEBUG
+  node0_printf("beginning inversion--size_src=%e\n",
+	       (double)size_src); fflush(stdout);
+#endif
   
   /* r and p overwrite the source (bad for
      dynamical fermions but good for quenched calcs) */
@@ -186,7 +189,9 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   
   /* code if you want to start with dest=0... */
   if(flag == 0) {
-    /** if(this_node==0)printf("dest_0=0\n"); **/
+#ifdef CGDEBUG
+    node0_printf("dest_0=0\n");fflush(stdout);
+#endif
     FOREVENSITESDOMAIN(i,s) {
       clear_wvec( &(t_dest[i]) );
     }
@@ -194,7 +199,9 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   /* code if you want to start dest with some particular starting value... */
   /* r=src[1]-[L^(-1)*M*U^(-1)]*dest */
   if(flag != 0) {
-    /** if(this_node==0)    printf("dest_0  !=0\n"); **/
+#ifdef CGDEBUG
+    node0_printf("dest_0  !=0\n"); fflush(stdout);
+#endif
     /* we use my_mp temporarily to construct r */
     mult_ldu_field(t_dest, tmp, EVEN);
     dslash_w_field_special(t_dest, my_mp, PLUS, ODD, tago, is_startedo);
@@ -217,8 +224,10 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
   g_doublesum(&rsq);
   qic->size_r = (Real)sqrt(rsq)/size_src;
   rvr = dcmplx(rsq,(double)0.0);
-  /** if(this_node==0)    printf("beginning inversion--size_r=%e\n",
-      (double)(qic->size_r)); **/
+#ifdef CGDEBUG
+  node0_printf("beginning inversion--size_r=%e\n",
+	       (double)(qic->size_r));fflush(stdout);
+#endif
   
   for( N_iter = 0; N_iter < MinCG || (N_iter < MaxCG && RsdCG  < qic->size_r); 
       N_iter = N_iter + 1) {
@@ -299,9 +308,11 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     }
     
     qic->size_r = (Real)sqrt(rsq)/size_src;
-    /** if(this_node==0){printf("iteration= %d, residue= %e\n",N_iter,
-	(double)(qic->size_r));fflush(stdout); **/
   }
+#ifdef CGDEBUG
+  node0_printf("iteration= %d, residue= %e\n",N_iter,
+	       (double)(qic->size_r));fflush(stdout);
+#endif
 #ifdef CGTIME
   dtime += dclock();
 #endif
@@ -317,9 +328,11 @@ int bicgilu_cl(          /* Return value is number of iterations taken */
     fflush(stdout);
   }
   
-  /** if( (qic->size_r) > RsdCG ) {
-    if(this_node==0){printf(" BiCG_ILU: Not Converged\n");fflush(stdout);}
-    } **/
+#ifdef CGDEBUG
+  if( qic->size_r > RsdCG ) {
+    node0_printf(" BiCG_ILU: Not Converged\n");fflush(stdout);
+  }
+#endif
   
   /* dest = R^(-1)*dest  */
   dslash_w_field_special(t_dest, my_mp, PLUS, ODD, tago, is_startedo);
