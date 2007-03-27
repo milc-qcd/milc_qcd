@@ -23,15 +23,16 @@ int qio_node_index(const int x[]){
 }
 
 void qio_get_coords(int x[], int node, int index){
-  if(node != this_node){
-    printf("qio_get_coords: bad node number %d != this_node %d\n",
-	   node,this_node);
-    terminate(1);
+  /* For this node we have a table */
+  if(node == this_node){
+    x[0] = lattice[index].x;
+    x[1] = lattice[index].y;
+    x[2] = lattice[index].z;
+    x[3] = lattice[index].t;
   }
-  x[0] = lattice[index].x;
-  x[1] = lattice[index].y;
-  x[2] = lattice[index].z;
-  x[3] = lattice[index].t;
+  /* For other nodes we require the layout function */
+  else
+    get_coords( x, node, index );
 }
 
 int qio_num_sites(int node){
