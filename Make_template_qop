@@ -16,7 +16,7 @@
 ifneq ($(strip ${WANTQOP}),)
   HAVEQOP = true
 
-  # Fermion links
+  # Fermion links support
   FLINKS_FNQOP = load_qop_asqtad_coeffs_D.o load_qop_asqtad_coeffs_F.o
 
   ifeq ($(strip ${WANTQOP}),QCDOC)
@@ -25,22 +25,31 @@ ifneq ($(strip ${WANTQOP}),)
 
     # Temporary paths for QCDOC.
     QCDOCQOP=/qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/
-    # QCDOC temporary paths
-    # We always need the qop.h header
-    QOPINCDIR = ${QCDOCQOP}/include
-    # In case QOP is packaged we need the path
+
+    # For qop.h we use our own include
+    # because the current definition in
+    # /qcdoc/sfw/SciDAC/Asqtad_L3/v1.1/include pulls in
+    # lots of extraneous stuff.  We hope it is compatible!
+    QOPINCDIR = $(strip ${QOP})/include
+
+    # These are needed for the MILC utilities
+    GENERICQOP = qop_milc.o qop_milc_D.o qop_milc_F.o qop_milc_utilities.o
+
+    # Gauge force (not in QCDOC: use standard MILC version)
+    SYMZK1FORCEQOP = gauge_force_imp.o
+
+    # Fermion links (not in QCDOC: use standard MILC version)
+    FLINKS_FNQOP += fermion_links_fn.o
+
+    # For the QCDOC fermion force and inverter we need the lib path
     QOPLIBDIR = ${QCDOCQOP}/build
-    ifeq ($(strip ${PRECISION}),1)
-      IQOP = -I${QOPINCDIR}
-      LQOP = -L${QOPLIBDIR} -lasqd_s
-    else
-      # For IQOP we use our own include
-      # because the current definition in
-      # /qcdoc/sfw/SciDAC/Asqtad_L3/v1.0/include pulls in
-      # lots of extraneous stuff
-      IQOP = -I$(strip ${QOP})/include/
-      LQOP = -L${QOPLIBDIR} -lasqd
-    endif
+
+    # Compiler include path and linker lib path for QOP package
+    IQOP = -I${QOPINCDIR}
+    LQOP = -L${QOPLIBDIR} -lasqd -lasqd_s
+    CQOP = -DHAVE_NO_CREATE_L_FROM_G
+
+    # For "make" dependencies
     LIBDEPQOP = ${QOPLIBDIR}
     INCDEPQOP = ${QOPINCDIR}
 
