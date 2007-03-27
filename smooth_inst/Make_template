@@ -32,11 +32,18 @@ MY_HEADERS = \
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
 
-# Choose one of the lattice layout algorithms:
-LAYOUT = layout_hyper
+# Selection of layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o # Required
+  else
+    LAYOUT = layout_hyper_prime.o # Choices possible here
+  endif
+endif
 
 MY_OBJECTS= \
- ${LAYOUT}.o \
  char_num.o \
  control.o \
  gauge_info.o \
@@ -51,15 +58,21 @@ G_OBJECTS = \
  check_unitarity.o \
  d_plaq4.o \
  io_helpers.o \
- ${IO_LAT_REAL} \
+ io_lat4.o \
+ io_lat_utils.o \
  make_lattice.o \
  nersc_cksum.o \
+ remap_stdio_from_args.o \
  reunitarize2.o
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS}  ${EXTRA_OBJECTS} ${MACHINE_DEP}
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${LAYOUT} \
+  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
-QCDLIB = ${LIBDIR}/su3.a ${LIBDIR}/complex.a
+QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
 
 .c.o: ; ${CC} -c ${CFLAGS} $*.c
 
@@ -111,10 +124,10 @@ include ../generic/Make_template
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
 	cd ${LIBDIR} ;\
-	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" all
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
 
-localmake: ${OBJECTS} ${QCDLIB}
-	${LD} ${LDFLAGS} -o ${MYTARGET} \
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
 	${OBJECTS} ${QCDLIB} ${ILIB} -lm
 	touch localmake
 
