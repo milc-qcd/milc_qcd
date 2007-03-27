@@ -6,6 +6,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.23  2007/03/27 20:59:25  detar
+ * Support qopqdp-0.7.7 and later.  Take timing from qopqdp.
+ *
  * Revision 1.22  2006/12/16 13:48:45  detar
  * Mixed precision support in QOP MILC.  Support QOP QDP FNMAT
  *
@@ -85,7 +88,7 @@
 #define KS_MULTIFF FNMAT
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.22 2006/12/16 13:48:45 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.23 2007/03/27 20:59:25 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
@@ -107,11 +110,12 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
   QOP_asqtad_coeffs_t coeff;
   QOP_info_t info;
 
-#ifdef FFTIME
-  int nflop = 253935;
-#endif
-  double dtime;
   double remaptime = -dclock();
+
+  QOP_opt_t qop_ff_opt[2] = {
+    {.tag = "fnmat_src_min",.value=4},
+    {.tag = "veclength",.value=4}
+  };
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
@@ -131,10 +135,10 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
   LOAD_QOP_ASQTAD_COEFFS(&coeff, weight, get_quark_path_coeff());
 
   /* Compute fermion force */
-  dtime = -dclock();
+  remaptime += dclock();
+  QOP_asqtad_force_set_opts(qop_ff_opt, 2);
   QOP_asqtad_force(&info, links, mom, &coeff, eps, vecx);
-  dtime += dclock();
-  remaptime -= dtime;
+  remaptime -= dclock();
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
@@ -147,8 +151,8 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off )
 
   remaptime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e (qop) terms = 1 mflops = %e\n",dtime,
-	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFTIME:  time = %e (qop) terms = 1 mflops = %e\n",
+	       info.final_sec, (Real)info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
@@ -174,12 +178,11 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   QOP_asqtad_coeffs_t coeff;
   Real epsv[2];
   QOP_info_t info;
-  QOP_opt_t qop_ff_opt = {.tag = "st"};
+  QOP_opt_t qop_ff_opt[2] = {
+    {.tag = "fnmat_src_min",.value=4},
+    {.tag = "veclength",.value=4}
+  };
 
-#ifdef FFTIME
-  int nflop = 433968;
-#endif
-  double dtime;
   double remaptime = -dclock();
 
   /* Initialize QOP */
@@ -206,12 +209,10 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., get_quark_path_coeff());
 
   /* Compute fermion force */
-  dtime = -dclock();
-  qop_ff_opt.value = 0;  /* ASVEC method is appropriate for 2 sources */
-  QOP_asqtad_force_set_opts(&qop_ff_opt, 1);
+  remaptime += dclock();
+  QOP_asqtad_force_set_opts(qop_ff_opt, 2);
   QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, 2);
-  dtime += dclock();
-  remaptime -= dtime;
+  remaptime -= dclock();
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
@@ -226,8 +227,8 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
   remaptime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e (qop) terms = 2 mflops = %e\n",dtime,
-	       (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFTIME:  time = %e (qop) terms = 2 mflops = %e\n",
+	       info.final_sec, (Real)info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
@@ -255,10 +256,6 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
   QOP_info_t info;
   char myname[] = "eo_fermion_force_asqtad_multi";
 
-#ifdef FFTIME
-  int nflop = 433968;
-#endif
-  double dtime;
   double remaptime = -dclock();
 
   /* Initialize QOP */
@@ -294,10 +291,9 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
   LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., get_quark_path_coeff());
 
   /* Compute fermion force */
-  dtime = -dclock();
+  remaptime += dclock();
   QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, nterms);
-  dtime += dclock();
-  remaptime -= dtime;
+  remaptime -= dclock();
 
   /* Unload momentum and destroy storage for momentum and links */
   unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
@@ -311,8 +307,8 @@ void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
 
   remaptime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e (qop ASVEC) terms = %d mflops = %e\n",dtime,
-	       nterms, (Real)nflop*volume/(1e6*dtime*numnodes()) );
+  node0_printf("FFTIME:  time = %e (qop) terms = %d mflops = %e\n",
+	       info.final_sec, nterms, info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
