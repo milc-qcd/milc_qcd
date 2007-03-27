@@ -56,3 +56,4 @@ Real myrand(double_prn *prn_pt) {
     prn_pt->ic_state = s;
     return( prn_pt->scale*(t ^ ((s>>8)&0xffffff)) );
 }
+
