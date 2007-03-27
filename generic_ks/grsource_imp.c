@@ -29,7 +29,28 @@ register site *s;
     scalar_mult_latvec( dest, -1.0, dest, parity );
     scalar_mult_add_latvec( dest, F_OFFSET(g_rand), 2.0*mass,
 	dest, parity );
-}/* grsource */
+}/* grsource_imp */
+
+
+void z2rsource_imp( field_offset dest, Real mass, int parity) {
+register int i,j;
+register site *s;
+    FORALLSITES(i,s){
+        for(j=0;j<3;j++){
+#ifdef SITERAND
+            s->g_rand.c[j].real = z2_rand_no(&(s->site_prn));
+            s->g_rand.c[j].imag = z2_rand_no(&(s->site_prn));
+#else
+            s->g_rand.c[j].real = z2_rand_no(&node_prn);
+            s->g_rand.c[j].imag = z2_rand_no(&node_prn);
+#endif
+        }
+    }
+    dslash_site( F_OFFSET(g_rand), dest, parity);
+    scalar_mult_latvec( dest, -1.0, dest, parity );
+    scalar_mult_add_latvec( dest, F_OFFSET(g_rand), 2.0*mass,
+	dest, parity );
+}/* z2rsource_imp */
 
 
 /* construct a plain gaussian random vector in the site structure  */
@@ -52,6 +73,28 @@ void grsource_plain( field_offset dest, int parity ) {
     }
   }    
 }/* grsource */
+
+
+/* construct a plain Z(2) random vector in the site structure  */
+/* "parity" is EVEN, ODD, or EVENANDODD. */
+
+void z2rsource_plain( field_offset dest, int parity ) {
+  int i,j;
+  site *s;
+  su3_vector *rand;
+  FORSOMEPARITY(i,s,parity){
+    for(j=0;j<3;j++){
+#ifdef SITERAND
+      rand = (su3_vector *)F_PT(s,dest);
+            rand->c[j].real = z2_rand_no(&(s->site_prn));
+            rand->c[j].imag = z2_rand_no(&(s->site_prn));
+#else
+            rand->c[j].real = z2_rand_no(&node_prn);
+            rand->c[j].imag = z2_rand_no(&node_prn);
+#endif
+    }
+  }    
+}/* z2rsource_plain */
 
 
 /* Check congrad by multiplying src by M, compare result to g_rand */
