@@ -135,8 +135,9 @@ FLINKS_FN += fermion_links_helpers.o
 # Selection of the gauge force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  SYMZK1FORCE = gauge_force_symzk1_qop.o
-  SYMZK1FORCE += ${SYMZK1FORCEQOP}
+#  SYMZK1FORCE = gauge_force_symzk1_qop.o
+#  SYMZK1FORCE += ${SYMZK1FORCEQOP}
+    SYMZK1FORCE = gauge_force_imp.o
 else
   ifeq ($(strip ${HAVEQDP}),true)
     SYMZK1FORCE = gauge_force_symzk1_qdp.o
@@ -368,6 +369,7 @@ su3_rhmc_susc::
 	${SYMZK1FORCE} "
 
 # Generic RHMC EOS and susceptibility target -- set options in Makefile
+#	-DZ2RSOURCE
 su3_rhmc_susc_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DHMC -DCHEM_POT -DDM_DU0 -DNPBP_REPS" \
