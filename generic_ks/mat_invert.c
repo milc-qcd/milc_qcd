@@ -13,11 +13,11 @@
 
 /* Compute M^-1 * phi, answer in dest
   Uses phi, ttt, resid, xxx, and cg_p as workspace */
-int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
+int mat_invert_cg_old( field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec ){
     int cgn;
     Real finalrsq;
-    clear_latvec( dest, EVENANDODD );
+    //    clear_latvec( dest, EVENANDODD );
     cgn = ks_congrad( src, dest, mass,
         niter, nrestart, rsqprop, prec, EVENANDODD, &finalrsq);
     /* Multiply by Madjoint */
@@ -25,6 +25,42 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
     scalar_mult_add_latvec( F_OFFSET(ttt), dest,
        -2.0*mass, F_OFFSET(ttt), EVENANDODD);
     scalar_mult_latvec( F_OFFSET(ttt), -1.0, dest, EVENANDODD );
+    return(cgn);
+}
+
+
+/* Compute M^-1 * phi, answer in dest
+  Uses phi, ttt, resid, xxx, and cg_p as workspace */
+int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
+		   Real mass, int prec ){
+    int cgn;
+    Real finalrsq;
+    //    clear_latvec( dest, EVENANDODD );
+    /* Multiply SOURCE by Madjoint */
+    dslash_site( src, F_OFFSET(ttt), EVENANDODD);
+    scalar_mult_add_latvec( F_OFFSET(ttt), src,
+       -2.0*mass, F_OFFSET(ttt), EVENANDODD);
+    scalar_mult_latvec( F_OFFSET(ttt), -1.0, F_OFFSET(ttt), EVENANDODD );
+    cgn = ks_congrad( F_OFFSET(ttt), dest, mass,
+        niter, nrestart, rsqprop, prec, EVENANDODD, &finalrsq);
+    return(cgn);
+}
+
+
+/* Compute M^-1 * phi, answer in dest
+  Uses phi, ttt, resid, xxx, and cg_p as workspace */
+int mat_invert_cg_odd( field_offset src, field_offset dest, field_offset temp,
+		   Real mass, int prec ){
+    int cgn;
+    Real finalrsq;
+    //    clear_latvec( dest, EVENANDODD );
+    /* Multiply SOURCE by Madjoint ODD sites only */
+    dslash_site( src, F_OFFSET(ttt), ODD);
+    scalar_mult_add_latvec( F_OFFSET(ttt), src,
+       -2.0*mass, F_OFFSET(ttt), ODD);
+    scalar_mult_latvec( F_OFFSET(ttt), -1.0, F_OFFSET(ttt), ODD );
+    cgn = ks_congrad( F_OFFSET(ttt), dest, mass,
+        niter, nrestart, rsqprop, prec, ODD, &finalrsq);
     return(cgn);
 }
 
@@ -52,8 +88,8 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 		= L  -(1/2m)(congrad) U phi
 */
          
-int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
-		   Real mass, int prec ){
+int mat_invert_uml_old(field_offset src, field_offset dest, field_offset temp,
+		       Real mass, int prec ){
     int cgn;
     Real finalrsq;
     register int i;
@@ -79,6 +115,52 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 	scalar_mult_su3_vector( (su3_vector *)F_PT(s,dest), 1.0/(2.0*mass),
 	    (su3_vector *)F_PT(s,dest) );
     }
+    return(cgn);
+}
+
+/* This algorithm solves even sites, reconstructs odd and then polishes
+   to compensate for loss of significance in the reconstruction
+
+   The original uml routine is renamed mat_invert_uml_old above.
+
+   C DeTar 1/2007  */
+
+int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
+		   Real mass, int prec ){
+    int cgn;
+    Real finalrsq;
+    register int i;
+    register site *s;
+
+    if( src==temp ){
+	printf("BOTCH\n"); exit(0);
+    }
+    /* "Precondition" both even and odd sites */
+    /* temp <- M_adj * src */
+    dslash_site( src, F_OFFSET(ttt), EVENANDODD);
+    scalar_mult_add_latvec( F_OFFSET(ttt), src,
+       -2.0*mass, temp, EVENANDODD);
+    scalar_mult_latvec( temp, -1.0, temp, EVENANDODD);
+
+    /* dest_e <- (M_adj M)^-1 temp_e  (even sites only) */
+    cgn = ks_congrad( temp, dest, mass, niter, nrestart, rsqprop,
+		      prec, EVEN, &finalrsq );
+
+    /* reconstruct odd site solution */
+    /* dest_o <-  1/2m (Dslash_oe*dest_e + src_o) */
+    dslash_site( dest, F_OFFSET(ttt), ODD );
+    FORODDSITES(i,s){
+	sub_su3_vector( (su3_vector *)F_PT(s,src), &(s->ttt), 
+	    (su3_vector *)F_PT(s,dest) );
+	scalar_mult_su3_vector( (su3_vector *)F_PT(s,dest), 1.0/(2.0*mass),
+	    (su3_vector *)F_PT(s,dest) );
+    }
+
+    /* Polish off odd sites to correct for possible roundoff error */
+    /* dest_o <- (M_adj M)^-1 temp_o  (odd sites only) */
+    cgn = ks_congrad( temp, dest, mass,
+        niter, nrestart, rsqprop, prec, ODD, &finalrsq);
+
     return(cgn);
 }
 
