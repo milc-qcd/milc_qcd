@@ -141,13 +141,13 @@ void setup_layout(){
 #endif
 
   /* Compute machine coordinates */
-  machine_coordinates[XUP] = k % squaresize[XUP];
-  k /= squaresize[XUP];
-  machine_coordinates[YUP] = k % squaresize[YUP];
-  k /= squaresize[YUP];
-  machine_coordinates[ZUP] = k % squaresize[ZUP];
-  k /= squaresize[ZUP];
-  machine_coordinates[TUP] = k % squaresize[TUP];
+  machine_coordinates[XUP] = k % nsquares[XUP];
+  k /= nsquares[XUP];
+  machine_coordinates[YUP] = k % nsquares[YUP];
+  k /= nsquares[YUP];
+  machine_coordinates[ZUP] = k % nsquares[ZUP];
+  k /= nsquares[ZUP];
+  machine_coordinates[TUP] = k % nsquares[TUP];
 
   /* Number of sites on node */
   sites_on_node =

@@ -141,13 +141,13 @@ void setup_layout(){
 #endif
   
   /* Compute machine coordinates */
-  machine_coordinates[XUP] = k % squaresize[XUP];
-  k /= squaresize[XUP];
-  machine_coordinates[YUP] = k % squaresize[YUP];
-  k /= squaresize[YUP];
-  machine_coordinates[ZUP] = k % squaresize[ZUP];
-  k /= squaresize[ZUP];
-  machine_coordinates[TUP] = k % squaresize[TUP];
+  machine_coordinates[XUP] = k % nsquares[XUP];
+  k /= nsquares[XUP];
+  machine_coordinates[YUP] = k % nsquares[YUP];
+  k /= nsquares[YUP];
+  machine_coordinates[ZUP] = k % nsquares[ZUP];
+  k /= nsquares[ZUP];
+  machine_coordinates[TUP] = k % nsquares[TUP];
 
   /* Number of sites on node */
   sites_on_node =
@@ -200,3 +200,76 @@ const int *get_logical_dimensions(){
 const int *get_logical_coordinate(){
   return machine_coordinates;
 }
+
+/* Map node number and index to coordinates  */
+void get_coords(int coords[], int node, int index){
+  int mc[4];
+  int ir;
+  int eo;
+  int k = node;
+
+  /* Compute machine coordinates for node */
+  mc[XUP] = k % nsquares[XUP];
+  k /= nsquares[XUP];
+  mc[YUP] = k % nsquares[YUP];
+  k /= nsquares[YUP];
+  mc[ZUP] = k % nsquares[ZUP];
+  k /= nsquares[ZUP];
+  mc[TUP] = k % nsquares[TUP];
+
+  /* Lexicographic index on node rounded to even */
+  ir = 2*index;
+  if(ir >= sites_on_node){
+    ir -= sites_on_node;
+    eo = 1;
+  }
+  else
+    eo = 0;
+
+  /* Convert to coordinates - result is two-fold ambiguous */
+  coords[XUP] = ir % squaresize[XUP];
+  ir /= squaresize[XUP];
+  coords[YUP] = ir % squaresize[YUP];
+  ir /= squaresize[YUP];
+  coords[ZUP] = ir % squaresize[ZUP];
+  ir /= squaresize[ZUP];
+  coords[TUP] = ir % squaresize[TUP];
+
+  /* Adjust coordinate according to parity (assumes even sites_on_node) */
+  if( (coords[XUP] + coords[YUP] + coords[ZUP] + coords[TUP]) % 2 != eo){
+    coords[XUP]++;
+    if(coords[XUP] >= squaresize[XUP]){
+      coords[XUP] -= squaresize[XUP];
+      coords[YUP]++;
+      if(coords[YUP] >= squaresize[YUP]){
+	coords[YUP] -= squaresize[YUP];
+	coords[ZUP]++;
+	if(coords[ZUP] >= squaresize[ZUP]){
+	  coords[ZUP] -= squaresize[ZUP];
+	  coords[TUP]++;
+	}
+      }
+    }
+  }
+
+  /* Add offset for hypercube */
+  coords[XUP] += mc[XUP]*squaresize[XUP];
+  coords[YUP] += mc[YUP]*squaresize[YUP];
+  coords[ZUP] += mc[ZUP]*squaresize[ZUP];
+  coords[TUP] += mc[TUP]*squaresize[TUP];
+
+  /* Consistency checks for debugging */
+  if((k = node_number(coords[0], coords[1], coords[2], coords[3])) 
+     != node){
+    printf("get_coords: coords %d %d %d %d for node %d map to wrong node %d\n",
+	   coords[0], coords[1], coords[2], coords[3], node, k);
+    terminate(1);
+  }
+  if((k = node_index(coords[0], coords[1], coords[2], coords[3]))
+      != index){
+    printf("get_coords: coords %d %d %d %d for index %d map to wrong index %d\n",
+	   coords[0], coords[1], coords[2], coords[3], index, k);
+    terminate(1);
+  }
+}
+
