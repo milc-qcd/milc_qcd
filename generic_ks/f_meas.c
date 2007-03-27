@@ -78,7 +78,11 @@ BOMB THE COMPILE
       
       /* Make random source, and do inversion */
       /* generate g_rand random; phi_off = M g_rand */
+#ifndef Z2RSOURCE
       grsource_imp( phi_off, mass, EVENANDODD );
+#else
+      z2rsource_imp( phi_off, mass, EVENANDODD );
+#endif
       /* phi_off = M g_rand (still) */
       /* xxx_off = M^{-1} g_rand */
       clear_latvec(xxx_off,EVENANDODD);
@@ -265,6 +269,7 @@ BOMB THE COMPILE
       FORALLSITES(i,st){
 	su3vec_copy( (su3_vector *)F_PT(st,xxx_off), &(st->M_inv) );
       }
+      clear_latvec(xxx_off,EVENANDODD);
       mat_invert_uml( F_OFFSET(M_inv), xxx_off, phi_off, mass, prec );
       FORALLSITES(i,st){
 	cc = su3_dot( &(st->g_rand), (su3_vector *)F_PT(st,xxx_off) );
@@ -277,6 +282,7 @@ BOMB THE COMPILE
 #endif
 
 #ifdef CHEM_POT
+      clear_latvec(xxx_off,EVENANDODD);
       mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass, prec );
 
       /* Start gathers from positive t-direction */
