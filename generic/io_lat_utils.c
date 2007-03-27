@@ -31,10 +31,6 @@
 #include <qio.h>
 #endif
 
-#ifndef HAVE_FSEEKO
-#define fseeko fseek
-#endif
-
 #define EPS 1e-6
 
 #define PARALLEL 1   /* Must evaluate to true */
@@ -258,7 +254,7 @@ void d2f_4mat(su3_matrix *a, fsu3_matrix *b){
 /*---------------------------------------------------------------------------*/
 void swrite_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
 {
-  if(fwrite(src,size,1,fp) != 1)
+  if(g_write(src,size,1,fp) != 1)
     {
       printf("%s: Node %d %s write error %d\n",
 	    myname,this_node,descrip,errno);
@@ -287,10 +283,11 @@ void pswrite_data(int parallel, FILE* fp, void *src, size_t size,
 /*---------------------------------------------------------------------------*/
 int sread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
 {
-  if(fread(src,size,1,fp) != 1)
+  if(g_read(src,size,1,fp) != 1)
     {
-      printf("%s: Node %d %s read error %d\n",
-	    myname,this_node,descrip,errno);
+      int errsv = errno;
+      printf("%s: Node %d %s read error %d %s\n",
+	    myname,this_node,descrip,errsv,strerror(errsv));
       fflush(stdout);
       return 1;
     }
@@ -301,8 +298,9 @@ int pread_data(FILE* fp, void *src, size_t size, char *myname, char *descrip)
 {
   if(g_read(src,size,1,fp) != 1)
     {
-      printf("%s: Node %d %s read error %d\n",
-	    myname,this_node,descrip,errno);
+      int errsv = errno;
+      printf("%s: Node %d %s read error %d %s\n",
+	    myname,this_node,descrip,errsv,strerror(errsv));
       fflush(stdout);
       return 1;
     }
@@ -573,7 +571,7 @@ void write_gauge_info_file(gauge_file *gf)
 
   /* Open header file */
   
-  if((info_fp = fopen(info_filename,"w")) == NULL)
+  if((info_fp = g_open(info_filename,"w")) == NULL)
     {
       printf("write_gauge_info_file: Can't open ascii info file %s\n",info_filename);
       return;
@@ -592,7 +590,7 @@ void write_gauge_info_file(gauge_file *gf)
 
   write_appl_gauge_info(info_fp);
 
-  fclose(info_fp);
+  g_close(info_fp);
 
   printf("Wrote info file %s\n",info_filename);
 
@@ -789,17 +787,19 @@ void read_site_list(int parallel,gauge_file *gf)
 	    {
 	      if((int)g_read(gf->rank2rcv,sizeof(int32type),volume,gf->fp) != volume )
 		{
-		  printf("read_site_list: Node %d site list read error %d\n",
-			 this_node,errno);
+		  int errsv = errno;
+		  printf("read_site_list: Node %d site list read error %d %s\n",
+			 this_node,errsv,strerror(errsv));
 		  terminate(1);	
 		}
 	    }
 	  else
 	    {
-	      if((int)fread(gf->rank2rcv,sizeof(int32type),volume,gf->fp) != volume )
+	      if((int)g_read(gf->rank2rcv,sizeof(int32type),volume,gf->fp) != volume )
 		{
-		  printf("read_site_list: Node %d site list read error %d\n",
-			 this_node,errno);
+		  int errsv = errno;
+		  printf("read_site_list: Node %d site list read error %d %s\n",
+			 this_node,errno,strerror(errsv));
 		  terminate(1);	
 		}
 	    }
@@ -1629,7 +1629,7 @@ void w_serial_f(gauge_file *gf)
       if(gf->parallel)
 	printf("w_serial_f: Attempting serial close on parallel file \n");
 
-      fclose(gf->fp);
+      g_close(gf->fp);
     }
 
   /* Node 0 writes ascii info file */
@@ -1666,7 +1666,7 @@ gauge_file *r_serial_i(char *filename)
 
   if(this_node==0)
     {
-      fp = fopen(filename, "rb");
+      fp = g_open(filename, "rb");
       if(fp == NULL)
 	{
 	  /* If this is a partition format SciDAC file the node 0 name
@@ -1677,7 +1677,7 @@ gauge_file *r_serial_i(char *filename)
 	  editfilename[504] = '\0';  /* Just in case of truncation */
 	  strcat(editfilename,".vol0000");
 	  printf("r_serial_i: Trying SciDAC partition volume %s\n",editfilename);
-	  fp = fopen(editfilename, "rb");
+	  fp = g_open(editfilename, "rb");
 	  if(fp == NULL)
 	    {
 	      printf("r_serial_i: Node %d can't open file %s, error %d\n",
@@ -1727,7 +1727,7 @@ void r_serial_f(gauge_file *gf)
       if(gf->parallel)
 	printf("r_serial_f: Attempting serial close on parallel file \n");
 
-      fclose(gf->fp);
+      g_close(gf->fp);
     }
   
   if(gf->rank2rcv != NULL)free(gf->rank2rcv);

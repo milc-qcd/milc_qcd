@@ -23,7 +23,11 @@ FILE *g_open(const char *filename, const char *mode)
 
 int g_seek(FILE *stream, off_t offset, int whence)
 {
+#if HAVE_FSEEKO
   return fseeko(stream,offset,whence);
+#else
+  return fseek(stream,(long)offset,whence);
+#endif
 }
 
 size_t g_write(const void *ptr, size_t size, size_t nmemb,FILE *stream)

@@ -30,6 +30,7 @@ G_ALL = \
  glueball_op.o \
  hvy_pot.o \
  io_ansi.o \
+ io_dcap.o \
  io_detect.o \
  io_helpers.o \
  io_helpers_nocheck.o \
@@ -138,6 +139,8 @@ glueball_op.o: ../generic/glueball_op.c
 hvy_pot.o: ../generic/hvy_pot.c
 	${CC} -c ${CFLAGS} $<
 io_ansi.o: ../generic/io_ansi.c
+	${CC} -c ${CFLAGS} $<
+io_dcap.o: ../generic/io_dcap.c
 	${CC} -c ${CFLAGS} $<
 io_detect.o: ../include/file_types.h
 io_detect.o: ../generic/io_detect.c

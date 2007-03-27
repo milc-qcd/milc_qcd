@@ -19,21 +19,21 @@ int io_detect(char *filename, file_type ft[], int ntypes){
 
   /* Node 0 reads and checks */
   if(this_node == 0){
-    fp = fopen(filename,"rb");
+    fp = g_open(filename,"rb");
     if(fp == NULL){
       /* Special provision for partition or multifile format.  Try
 	 adding the extension to the filename */
       strncpy(editfilename,filename,504);
       editfilename[504] = '\0';  /* Just in case of truncation */
       strcat(editfilename,".vol0000");
-      fp = fopen(filename,"rb");
+      fp = g_open(filename,"rb");
     }
 
     if(fp == NULL)status = -2;
     else
       {
-	words = fread(&magic_no, sizeof(int32type), 1, fp);
-	fclose(fp);
+	words = g_read(&magic_no, sizeof(int32type), 1, fp);
+	g_close(fp);
 
 	if(words != 1)status = -3;
 	else

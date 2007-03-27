@@ -30,11 +30,6 @@
 #include <qio.h>
 #endif
 
-/* This is dangerous.  It assumes off_t = long for this compilation */
-#ifndef HAVE_FSEEKO
-#define fseeko fseek
-#endif
-
 #define EPS 1e-6
 
 #define PARALLEL 1   /* Must evaluate to true */
@@ -198,9 +193,9 @@ void w_serial_old(gauge_file *gf)
       
       offset = head_size + gauge_check_size;
 
-      if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,offset,SEEK_SET) < 0 ) 
 	{
-	  printf("w_serial: Node %d fseeko %lld failed error %d file %s\n",
+	  printf("w_serial: Node %d g_seek %lld failed error %d file %s\n",
 		 this_node,(long long)offset,errno,gf->filename);
 	  fflush(stdout);terminate(1);
 	}
@@ -270,7 +265,7 @@ void w_serial_old(gauge_file *gf)
 	    {
 	      /* write out buffer */
 	      
-	      if( (int)fwrite(lbuf,4*sizeof(fsu3_matrix),buf_length,fp) != buf_length)
+	      if( (int)g_write(lbuf,4*sizeof(fsu3_matrix),buf_length,fp) != buf_length)
 		{
 		  printf("w_serial: Node %d gauge configuration write error %d file %s\n",
 			 this_node,errno,gf->filename); 
@@ -304,9 +299,9 @@ void w_serial_old(gauge_file *gf)
       
       /* Write checksum */
       /* Position file pointer */
-      if( fseeko(fp,checksum_offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,checksum_offset,SEEK_SET) < 0 ) 
 	{
-	  printf("w_serial: Node %d fseeko %lld failed error %d file %s\n",
+	  printf("w_serial: Node %d g_seek %lld failed error %d file %s\n",
 		 this_node,(long long)checksum_offset,errno,gf->filename);
 	  fflush(stdout);terminate(1);
 	}
@@ -323,7 +318,7 @@ static void flush_lbuf_to_file(gauge_file *gf, fsu3_matrix *lbuf,
   FILE *fp = gf->fp;
 
   if(*buf_length <= 0)return;
-  if( (int)fwrite(lbuf,4*sizeof(fsu3_matrix),*buf_length,fp) != 
+  if( (int)g_write(lbuf,4*sizeof(fsu3_matrix),*buf_length,fp) != 
       *buf_length)
     {
       printf("w_serial: Node %d gauge configuration write error %d file %s\n",
@@ -439,9 +434,9 @@ void w_serial(gauge_file *gf)
       
       offset = head_size + gauge_check_size;
 
-      if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,offset,SEEK_SET) < 0 ) 
 	{
-	  printf("w_serial: Node %d fseeko %lld failed error %d file %s\n",
+	  printf("w_serial: Node %d g_seek %lld failed error %d file %s\n",
 		 this_node,(long long)offset,errno,gf->filename);
 	  fflush(stdout);terminate(1);
 	}
@@ -526,9 +521,9 @@ void w_serial(gauge_file *gf)
       
       /* Write checksum */
       /* Position file pointer */
-      if( fseeko(fp,checksum_offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,checksum_offset,SEEK_SET) < 0 ) 
 	{
-	  printf("w_serial: Node %d fseeko %lld failed error %d file %s\n",
+	  printf("w_serial: Node %d g_seek %lld failed error %d file %s\n",
 		 this_node,(long long)checksum_offset,errno,gf->filename);
 	  fflush(stdout);terminate(1);
 	}
@@ -610,9 +605,9 @@ void r_serial(gauge_file *gf)
       
       offset = head_size;
 
-      if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,offset,SEEK_SET) < 0 ) 
 	{
-	  printf("%s: Node 0 fseeko %lld failed error %d file %s\n",
+	  printf("%s: Node 0 g_seek %lld failed error %d file %s\n",
 		 myname,(long long)offset,errno,filename);
 	  fflush(stdout);terminate(1);   
 	}
@@ -663,7 +658,7 @@ void r_serial(gauge_file *gf)
 	    if(buf_length > MAX_BUF_LENGTH)buf_length = MAX_BUF_LENGTH;
 	    /* then do read */
 	    
-	    if( (int)fread(lbuf,4*sizeof(fsu3_matrix),buf_length,fp) 
+	    if( (int)g_read(lbuf,4*sizeof(fsu3_matrix),buf_length,fp) 
 		!= buf_length)
 	      {
 		printf("%s: node %d gauge configuration read error %d file %s\n",
@@ -740,9 +735,9 @@ void r_serial(gauge_file *gf)
       if(gh->magic_number == GAUGE_VERSION_NUMBER)
 	{
 	  printf("Time stamp %s\n",gh->time_stamp);
-	  if( fseeko(fp,checksum_offset,SEEK_SET) < 0 ) 
+	  if( g_seek(fp,checksum_offset,SEEK_SET) < 0 ) 
 	    {
-	      printf("%s: Node 0 fseeko %lld failed error %d file %s\n",
+	      printf("%s: Node 0 g_seek %lld failed error %d file %s\n",
 		    myname,(long long)offset,errno,filename);
 	      fflush(stdout);terminate(1);   
 	    }
@@ -833,7 +828,7 @@ void r_serial_arch(gauge_file *gf)
       destnode=node_number(x,y,z,t);
       
       if(this_node==0){
-	if( (int)fread(uin,48*sizeof(float),1,fp) != 1)
+	if( (int)g_read(uin,48*sizeof(float),1,fp) != 1)
 	  {
 	    printf("%s: node %d gauge configuration read error %d file %s\n",
 		   myname,this_node,errno,filename); 
@@ -1673,7 +1668,7 @@ gauge_file *restore_ascii(char *filename) {
     printf("Restored gauge configuration from ascii file  %s\n",
 	   filename);
     printf("Time stamp %s\n",gh->time_stamp);
-    fclose(fp);
+    g_close(fp);
     gf->fp = NULL;
     fflush(stdout);
   }
@@ -1770,7 +1765,7 @@ gauge_file *save_ascii(char *filename) {
     printf("Saved gauge configuration to ascii file %s\n",
 	   gf->filename);
     printf("Time stamp %s\n",gh->time_stamp);
-    fclose(fp);
+    g_close(fp);
     fflush(stdout);
     }
   return gf;
@@ -2036,14 +2031,14 @@ gauge_file *save_serial_archive(char *filename) {
 
     if(this_node==0){
       if (!big_end_p) byterevn((int32type *)uout,48*vol3);
-      if(fwrite(uout,48*vol3*sizeof(OUTPUT_TYPE),1,outfile) != 1)
-	printf("fwrite bombed...\n");
+      if(g_write(uout,48*vol3*sizeof(OUTPUT_TYPE),1,outfile) != 1)
+	printf("g_write bombed...\n");
       fflush(outfile);
     }
   }
 
   if(this_node==0){
-    fclose(outfile);
+    g_close(outfile);
     printf("Wrote archive gauge file %s\n",filename);
     free(uout);
   }

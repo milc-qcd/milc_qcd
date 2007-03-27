@@ -89,7 +89,7 @@ int g_seek(FILE *stream, off_t offset, int whence)
   int fd;
   fd = *((int *)stream);
 
-  return lseek(fd, (off_t)offset, whence );
+  return (int)lseek(fd, (off_t)offset, whence );
 }
 
 size_t g_write(const void *ptr, size_t size, size_t nmemb,FILE *stream)
