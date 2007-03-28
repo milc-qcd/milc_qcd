@@ -127,8 +127,8 @@ void print_check_ratfunc(int y1,int y2,int y3,int y4,
   
   double f1 = pow(x+4*m1*m1,((double)y1)/z1);
   double f2 = pow(x+4*m2*m2,((double)y2)/z2);
-  double f3 = pow(x+4*m2*m3,((double)y3)/z3);
-  double f4 = pow(x+4*m2*m4,((double)y4)/z4);
+  double f3 = pow(x+4*m3*m3,((double)y3)/z3);
+  double f4 = pow(x+4*m4*m4,((double)y4)/z4);
 
   printf("# CHECK: f(%e) = %e = %e?\n",x,sum,f1*f2*f3*f4);
 }
