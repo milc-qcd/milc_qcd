@@ -1,3 +1,4 @@
+OBSOLETE!  See update_rhmc.c
 /********** update.c ****************************************************/
 /* MIMD version 7 */
 
@@ -28,11 +29,9 @@ int update()  {
   int i;
   su3_vector **multi_x;
   su3_vector *sumvec;
-  int alg_flag; 
   int iphi;
 
   node0_printf("Leapfrog integration, steps= %d eps= %e\n",steps,epsilon);
-  alg_flag = 0; //default - fermion force with multiplier = 1
   
   /* allocate space for multimass solution vectors */
 
@@ -69,15 +68,11 @@ int update()  {
   /* do "steps" microcanonical steps"  */
   for(step=1; step <= steps; step++){
     
-    // alg_flag= -N skips some force terms, alg_flag= +N does them with 3X weight
-    //if(step%3==2) alg_flag= +2;
-    //else	      alg_flag= -2;
-    
     /* update U's to middle of interval */
     update_u(0.5*epsilon);
     
     /* now update H by full time interval */
-    update_h_rhmc( alg_flag, epsilon, multi_x);
+    update_h_rhmc( epsilon, multi_x);
     
     /* update U's by half time step to get to even time */
     update_u(epsilon*0.5);

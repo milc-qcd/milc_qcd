@@ -1,3 +1,4 @@
+OBSOLETE!  See update_rhmc.c
 /********** update_rhmc_omelyan.c ******************************************/
 /* MIMD version 7 */
 
@@ -36,7 +37,6 @@ int update()  {
   int i;
   su3_vector **multi_x;
   su3_vector *sumvec;
-  int alg_flag; 
   Real lambda;
   int iphi;
   
@@ -46,7 +46,6 @@ int update()  {
     node0_printf("BONEHEAD! need even number of steps\n");
     exit(0);
   }
-  alg_flag = 0; //default - fermion force with multiplier = 1
   
   /* allocate space for multimass solution vectors */
   multi_x = (su3_vector **)malloc(max_rat_order*sizeof(su3_vector *));
@@ -75,15 +74,11 @@ int update()  {
   /* do "steps" microcanonical steps (one "step" = one force evaluation)"  */
   for(step=2; step <= steps; step+=2){
     
-    // alg_flag= -N skips some force terms, alg_flag= +N does them with 3X weight
-    //if(step%6==4) alg_flag= +2;
-    //else	      alg_flag= -2;
-    
     /* update U's and H's - see header comment */
     update_u(0.5*epsilon*lambda);
-    update_h_rhmc( alg_flag, epsilon, multi_x);
+    update_h_rhmc( epsilon, multi_x);
     update_u(epsilon*(2.0-lambda));
-    update_h_rhmc( alg_flag, epsilon, multi_x);
+    update_h_rhmc( epsilon, multi_x);
     update_u(0.5*epsilon*lambda);
     
     /* reunitarize the gauge field */

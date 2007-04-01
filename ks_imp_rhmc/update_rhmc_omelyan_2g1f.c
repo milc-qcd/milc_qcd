@@ -1,3 +1,4 @@
+OBSOLETE!! multi_x is no longer sized correctly for more than one pseudofermion
 /********** update_omelyan.c ****************************************************/
 /* MIMD version 7 */
 
@@ -40,7 +41,6 @@ int update()  {
   int i,j; site *s;
   su3_vector *multi_x[MAX_RAT_ORDER];
   su3_vector *sumvec;
-  int alg_flag; 
   Real alpha,beta;
   int iphi;
   
@@ -52,7 +52,6 @@ int update()  {
     node0_printf("BONEHEAD! need even number of steps\n");
     exit(0);
   }
-  alg_flag = 0; //default - fermion force with multiplier = 1
   
   /* allocate space for multimass solution vectors */
   for(i=0;i<MAX_RAT_ORDER;i++) multi_x[i]=(su3_vector *)malloc( sizeof(su3_vector)*sites_on_node );
@@ -75,24 +74,20 @@ int update()  {
   /* do "steps" microcanonical steps (one "step" = one force evaluation)"  */
   for(step=2; step <= steps; step+=2){
     
-    // alg_flag= -N skips some force terms, alg_flag= +N does them with 3X weight
-    //if(step%6==4) alg_flag= +2;
-    //else	      alg_flag= -2;
-    
     /* update U's and H's - see header comment */
     update_u( epsilon*( (0.25-0.5*alpha) ) );
-    update_h_gauge( alg_flag, 0.5*epsilon);
+    update_h_gauge( 0.5*epsilon);
     update_u( epsilon*( (0.5-beta)-(0.25-0.5*alpha) ) );
-    update_h_fermion( alg_flag, epsilon, multi_x);
+    update_h_fermion( epsilon, multi_x);
     update_u( epsilon*( (0.75+0.5*alpha)-(0.5-beta) ) );
-    update_h_gauge( alg_flag, 0.5*epsilon);
+    update_h_gauge( 0.5*epsilon);
     
     update_u( epsilon*( (1.25-0.5*alpha)-(0.75+0.5*alpha) ) );
-    update_h_gauge( alg_flag, 0.5*epsilon);
+    update_h_gauge( 0.5*epsilon);
     update_u( epsilon*( (1.5+beta)-(1.25-0.5*alpha) ) );
-    update_h_fermion( alg_flag, epsilon, multi_x);
+    update_h_fermion( epsilon, multi_x);
     update_u( epsilon*( (1.75+0.5*alpha)-(1.5+beta) ) );
-    update_h_gauge( alg_flag, 0.5*epsilon);
+    update_h_gauge( 0.5*epsilon);
     update_u( epsilon*( (2.0)-(1.75+0.5*alpha) ) );
     
     /* reunitarize the gauge field */
