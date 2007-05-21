@@ -125,8 +125,7 @@ w_prop_file *fp_out_w[MAX_MASSES];       /* For propagator files */
 #ifdef IOTIME
 	    dtime = -dclock();
 #endif
-	    gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL,
-		     F_OFFSET(mp),F_OFFSET(chi),0,NULL,NULL,0,NULL,NULL);
+	    gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
 #ifdef IOTIME
 	    dtime += dclock();
 	    if(this_node==0)printf("Time to gauge fix = %e\n",dtime);
@@ -370,9 +369,8 @@ printf("warning: no fattening of links\n");
 		CONJG(s->chi.d[spin].c[color], s->chi.d[spin].c[color]);
 	    }
 	    /* Use htmp[0].d[0].c[0] for scratch space */
-	    restrict_fourier(F_OFFSET(chi.d[spin].c[color]),
-		F_OFFSET(mp.d[spin].c[color]),
-		F_OFFSET(htmp[0].d[0].c[0]), sizeof(complex), FORWARDS);
+	    restrict_fourier_site(F_OFFSET(chi.d[spin].c[color]),
+				  sizeof(complex), FORWARDS);
 	    FORALLSITES(i,s){
 		CONJG(s->chi.d[spin].c[color], s->chi.d[spin].c[color]);
 	    }
@@ -388,9 +386,8 @@ printf("warning: no fattening of links\n");
 	      for(spinindex=0;spinindex<n_spins;spinindex++){
 		spin = spins[spinindex];
 		/* Use psi as a second working space */
-		restrict_fourier(F_OFFSET(extra_propagator.d[spin]),
-		    F_OFFSET(mp), F_OFFSET(psi),
-		    sizeof(wilson_vector), FORWARDS);
+		restrict_fourier_site(F_OFFSET(extra_propagator.d[spin]),
+				      sizeof(wilson_vector), FORWARDS);
 	      }
 
 	spin=0;color=0;
@@ -417,8 +414,7 @@ factor */
 	      for(spinindex=0;spinindex<n_spins;spinindex++){
 		spin = spins[spinindex];
 		/* Use psi as a second working space */
-		restrict_fourier(F_OFFSET(extra_propagator.d[spin]),
-		    F_OFFSET(mp), F_OFFSET(psi),
+		restrict_fourier_site(F_OFFSET(extra_propagator.d[spin]),
 		    sizeof(wilson_vector), BACKWARDS);
 	      }
 		FORALLSITES(i,s)for(si=0;si<4;si++)

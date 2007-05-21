@@ -126,8 +126,7 @@ w_prop_file *fp_out_w[MAX_MASSES];       /* For propagator files */
 #ifdef IOTIME
 	    dtime = -dclock();
 #endif
-	    gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL,
-		     F_OFFSET(mp),F_OFFSET(chi),0,NULL,NULL,0,NULL,NULL);
+	    gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
 #ifdef IOTIME
 	    dtime += dclock();
 	    if(this_node==0)printf("Time to gauge fix = %e\n",dtime);

@@ -1,7 +1,7 @@
 /*********************** gauge_info.c *************************/
 /* MIMD version 6 */
 
-/* For wilson_invert */
+/* For arb_dirac_invert */
 
 /* Application-dependent routine for writing gauge info file */
 /* This file is an ASCII companion to the gauge configuration file
