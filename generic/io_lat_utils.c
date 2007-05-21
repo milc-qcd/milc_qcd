@@ -190,7 +190,7 @@ QCDheader * qcdhdr_get_hdr(FILE *in)
 
     /* Overwrite space with a terminating null */
     *q = '\0';
-    len = (int) q - (int) line;
+    len = (int)( q -  line );
 
     /* allocate space and copy the token in to it */
     p = (char *)malloc(len+1);
@@ -1319,8 +1319,8 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 	  printf("%s: Unrecognized magic number in gauge configuration file header.\n",myname);
 	  printf("Expected %x but read %x\n",
 		 GAUGE_VERSION_NUMBER,tmp);
-	  printf("Expected %s but read %s\n",
-		 (char *)GAUGE_VERSION_NUMBER,(char *)tmp);
+	  printf("Expected %lu but read %lu\n",
+		 (unsigned long)GAUGE_VERSION_NUMBER,(unsigned long)tmp);
 	  terminate(1);
 	}
       return byterevflag;

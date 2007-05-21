@@ -285,7 +285,7 @@ initialize_machine(int *argc, char ***argv)
 #else
   if(sizeof(unsigned int)!=4) {
     printf("node %d: SHORT_IS_32BIT is not set but sizeof(unsigned int)=%d\n",
-	   mynode(), sizeof(unsigned int));
+	   mynode(), (int)sizeof(unsigned int));
     terminate(1);
   }
 #endif
