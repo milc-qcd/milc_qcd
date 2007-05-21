@@ -3,6 +3,7 @@
 /* MIMD version 7 */
 /* version of 1/4/95 by UMH */
 /* 1/21/00 combined with Schroedinger functional version - UMH */
+/* 4/24/07 Treat Clov_c = 0 case trivially, so we can do Wilson this way */
 
 /* Prepare the "clover" term */
 
@@ -21,47 +22,57 @@ static clover *global_clov;
 /******************* create_clov ***************************************/
 /* Allocate space for a clover term */
 
-clover *create_clov(void){
-
+clover *create_clov(Real Clov_c){
+  
   clover *my_clov = (clover *)malloc(sizeof(clover));
-
-  my_clov->clov      = (triangular *)malloc(sites_on_node*sizeof(triangular));
-  my_clov->clov_diag = (diagonal *)malloc(sites_on_node*sizeof(diagonal));
-
-  if(my_clov->clov == NULL || my_clov->clov_diag ==NULL){
-    printf("create_clov(%d): malloc failed\n",this_node);
-    free(my_clov);
-    return NULL;
+  
+  my_clov->Clov_c    = Clov_c;
+  if(Clov_c == 0){
+    my_clov->clov      = NULL;
+    my_clov->clov_diag = NULL;
   }
-  else 
-    return my_clov;
+  else {
+    my_clov->clov      = (triangular *)malloc(sites_on_node*sizeof(triangular));
+    my_clov->clov_diag = (diagonal *)malloc(sites_on_node*sizeof(diagonal));
+    
+    if(my_clov->clov == NULL || my_clov->clov_diag ==NULL){
+      printf("create_clov(%d): malloc failed\n",this_node);
+      free(my_clov);
+      return NULL;
+    }
+  }
+  return my_clov;
 }
 
 
 /******************* compute_clov ***************************************/
 /* Computes the clover field */
 
-void compute_clov(clover *my_clov, Real Clov_c)
+void compute_clov(clover *my_clov)
 {
-
+  
   triangular *clov = my_clov->clov;
   diagonal *clov_diag = my_clov->clov_diag;
+  Real Clov_c = my_clov->Clov_c;
   register int i;
   register site *s;
   
   register int j,k,jk,jk2;
   register complex ctmp;
   su3_matrix *f_mn;
-  char myname[] = "make_clov";
-
+  char myname[] = "compute_clov";
+  
+  /* Don't allocate or compute if trivial */
+  if(Clov_c == 0)return;
+  
   f_mn = (su3_matrix *)malloc(sizeof(su3_matrix)*sites_on_node);
   if(f_mn == NULL){
     printf("%s(%d): Can't malloc f_mn\n",myname,this_node);
     terminate(1);
   }
-
-
-
+  
+  
+  
 /* The clover term
 *                                         ( X | 0 )
 * sum_{mu<nu} sigma_{mu,nu} F_{mu,nu} = ( ----- )
@@ -153,144 +164,144 @@ void compute_clov(clover *my_clov, Real Clov_c)
    
    */
 
-    f_mu_nu(f_mn, 0, 1);
+  f_mu_nu(f_mn, 0, 1);
+  FORALLSITESDOMAIN(i,s){
+    scalar_mult_su3_matrix( f_mn+i, Clov_c,
+			    (f_mn+i) );
+  }
+  jk=0;
+  for(j=0;j<3;j++){
     FORALLSITESDOMAIN(i,s){
-        scalar_mult_su3_matrix( f_mn+i, Clov_c,
-	    (f_mn+i) );
+      clov_diag[i].di[0][j] = 1.0 -
+	(f_mn+i)->e[j][j].imag;
+      clov_diag[i].di[0][j+3] = 1.0 +
+	(f_mn+i)->e[j][j].imag;
+      clov_diag[i].di[1][j] = 1.0 -
+	(f_mn+i)->e[j][j].imag;
+      clov_diag[i].di[1][j+3] = 1.0 +
+	(f_mn+i)->e[j][j].imag;
     }
-    jk=0;
-    for(j=0;j<3;j++){
-	FORALLSITESDOMAIN(i,s){
-	    clov_diag[i].di[0][j] = 1.0 -
-		(f_mn+i)->e[j][j].imag;
-	    clov_diag[i].di[0][j+3] = 1.0 +
-		(f_mn+i)->e[j][j].imag;
-	    clov_diag[i].di[1][j] = 1.0 -
-		(f_mn+i)->e[j][j].imag;
-	    clov_diag[i].di[1][j+3] = 1.0 +
-		(f_mn+i)->e[j][j].imag;
-	}
-	jk2=(j+3)*(j+2)/2+3;
-	for(k=0;k<j;k++){
-	    FORALLSITESDOMAIN(i,s){
-		TIMESPLUSI( (f_mn+i)->e[j][k],
+    jk2=(j+3)*(j+2)/2+3;
+    for(k=0;k<j;k++){
+      FORALLSITESDOMAIN(i,s){
+	TIMESPLUSI( (f_mn+i)->e[j][k],
 		    clov[i].tr[0][jk]);
-		TIMESMINUSI( (f_mn+i)->e[j][k],
-		    clov[i].tr[0][jk2]);
-		TIMESPLUSI( (f_mn+i)->e[j][k],
+	TIMESMINUSI( (f_mn+i)->e[j][k],
+		     clov[i].tr[0][jk2]);
+	TIMESPLUSI( (f_mn+i)->e[j][k],
 		    clov[i].tr[1][jk]);
-		TIMESMINUSI( (f_mn+i)->e[j][k],
-		    clov[i].tr[1][jk2]);
-	    }
-	    jk++;
-	    jk2++;
-	}
+	TIMESMINUSI( (f_mn+i)->e[j][k],
+		     clov[i].tr[1][jk2]);
+      }
+      jk++;
+      jk2++;
     }
-
-    f_mu_nu(f_mn, 2, 3);
+  }
+  
+  f_mu_nu(f_mn, 2, 3);
+  FORALLSITESDOMAIN(i,s){
+    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
+			    (f_mn+i) );
+  }
+  jk=0;
+  for(j=0;j<3;j++){
     FORALLSITESDOMAIN(i,s){
-        scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-	    (f_mn+i) );
+      clov_diag[i].di[0][j] +=
+	(f_mn+i)->e[j][j].imag;
+      clov_diag[i].di[0][j+3] -=
+	(f_mn+i)->e[j][j].imag;
+      clov_diag[i].di[1][j] -=
+	(f_mn+i)->e[j][j].imag;
+      clov_diag[i].di[1][j+3] +=
+	(f_mn+i)->e[j][j].imag;
     }
-    jk=0;
-    for(j=0;j<3;j++){
-	FORALLSITESDOMAIN(i,s){
-	    clov_diag[i].di[0][j] +=
-		(f_mn+i)->e[j][j].imag;
-	    clov_diag[i].di[0][j+3] -=
-		(f_mn+i)->e[j][j].imag;
-	    clov_diag[i].di[1][j] -=
-		(f_mn+i)->e[j][j].imag;
-	    clov_diag[i].di[1][j+3] +=
-		(f_mn+i)->e[j][j].imag;
-	}
-	jk2=(j+3)*(j+2)/2+3;
-	for(k=0;k<j;k++){
-	    FORALLSITESDOMAIN(i,s){
-		TIMESMINUSI( (f_mn+i)->e[j][k], ctmp);
-		CADD( clov[i].tr[0][jk], ctmp, clov[i].tr[0][jk]);
-		CSUB( clov[i].tr[0][jk2], ctmp, clov[i].tr[0][jk2]);
-		CSUB( clov[i].tr[1][jk], ctmp, clov[i].tr[1][jk]);
-		CADD( clov[i].tr[1][jk2], ctmp, clov[i].tr[1][jk2]);
-	    }
-	    jk++;
-	    jk2++;
-	}
+    jk2=(j+3)*(j+2)/2+3;
+    for(k=0;k<j;k++){
+      FORALLSITESDOMAIN(i,s){
+	TIMESMINUSI( (f_mn+i)->e[j][k], ctmp);
+	CADD( clov[i].tr[0][jk], ctmp, clov[i].tr[0][jk]);
+	CSUB( clov[i].tr[0][jk2], ctmp, clov[i].tr[0][jk2]);
+	CSUB( clov[i].tr[1][jk], ctmp, clov[i].tr[1][jk]);
+	CADD( clov[i].tr[1][jk2], ctmp, clov[i].tr[1][jk2]);
+      }
+      jk++;
+      jk2++;
     }
-
-    f_mu_nu(f_mn, 1, 2);
-    FORALLSITESDOMAIN(i,s){
-        scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-	    (f_mn+i) );
-    }
-    for(j=0;j<3;j++){
-	jk=(j+3)*(j+2)/2;
-	for(k=0;k<3;k++){
-	    FORALLSITESDOMAIN(i,s){
-		TIMESPLUSI( (f_mn+i)->e[j][k],
+  }
+  
+  f_mu_nu(f_mn, 1, 2);
+  FORALLSITESDOMAIN(i,s){
+    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
+			    (f_mn+i) );
+  }
+  for(j=0;j<3;j++){
+    jk=(j+3)*(j+2)/2;
+    for(k=0;k<3;k++){
+      FORALLSITESDOMAIN(i,s){
+	TIMESPLUSI( (f_mn+i)->e[j][k],
 		    clov[i].tr[0][jk]);
-		TIMESPLUSI( (f_mn+i)->e[j][k],
+	TIMESPLUSI( (f_mn+i)->e[j][k],
 		    clov[i].tr[1][jk]);
-	    }
-	    jk++;
-	}
+      }
+      jk++;
     }
-
-    f_mu_nu(f_mn, 0, 3);
-    FORALLSITESDOMAIN(i,s){
-        scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-	    (f_mn+i) );
+  }
+  
+  f_mu_nu(f_mn, 0, 3);
+  FORALLSITESDOMAIN(i,s){
+    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
+			    (f_mn+i) );
+  }
+  for(j=0;j<3;j++){
+    jk=(j+3)*(j+2)/2;
+    for(k=0;k<3;k++){
+      FORALLSITESDOMAIN(i,s){
+	TIMESMINUSI( (f_mn+i)->e[j][k], ctmp);
+	CADD( clov[i].tr[0][jk], ctmp, clov[i].tr[0][jk]);
+	CSUB( clov[i].tr[1][jk], ctmp, clov[i].tr[1][jk]);
+      }
+      jk++;
     }
-    for(j=0;j<3;j++){
-	jk=(j+3)*(j+2)/2;
-	for(k=0;k<3;k++){
-	    FORALLSITESDOMAIN(i,s){
-		TIMESMINUSI( (f_mn+i)->e[j][k], ctmp);
-		CADD( clov[i].tr[0][jk], ctmp, clov[i].tr[0][jk]);
-		CSUB( clov[i].tr[1][jk], ctmp, clov[i].tr[1][jk]);
-	    }
-	    jk++;
-	}
+  }
+  
+  f_mu_nu(f_mn, 0, 2);
+  FORALLSITESDOMAIN(i,s){
+    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
+			    (f_mn+i) );
+  }
+  for(j=0;j<3;j++){
+    jk=(j+3)*(j+2)/2;
+    for(k=0;k<3;k++){
+      FORALLSITESDOMAIN(i,s){
+	CSUB( clov[i].tr[0][jk],
+	      (f_mn+i)->e[j][k], clov[i].tr[0][jk]);
+	CSUB( clov[i].tr[1][jk],
+	      (f_mn+i)->e[j][k], clov[i].tr[1][jk]);
+      }
+      jk++;
     }
-
-    f_mu_nu(f_mn, 0, 2);
-    FORALLSITESDOMAIN(i,s){
-        scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-	    (f_mn+i) );
+  }
+  
+  f_mu_nu(f_mn, 1, 3);
+  FORALLSITESDOMAIN(i,s){
+    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
+			    (f_mn+i) );
+  }
+  for(j=0;j<3;j++){
+    jk=(j+3)*(j+2)/2;
+    for(k=0;k<3;k++){
+      FORALLSITESDOMAIN(i,s){
+	CSUB( clov[i].tr[0][jk],
+	      (f_mn+i)->e[j][k], clov[i].tr[0][jk]);
+	CADD( clov[i].tr[1][jk],
+	      (f_mn+i)->e[j][k], clov[i].tr[1][jk]);
+      }
+      jk++;
     }
-    for(j=0;j<3;j++){
-	jk=(j+3)*(j+2)/2;
-	for(k=0;k<3;k++){
-	    FORALLSITESDOMAIN(i,s){
-		CSUB( clov[i].tr[0][jk],
-		    (f_mn+i)->e[j][k], clov[i].tr[0][jk]);
-		CSUB( clov[i].tr[1][jk],
-		    (f_mn+i)->e[j][k], clov[i].tr[1][jk]);
-	    }
-	    jk++;
-	}
-    }
-
-    f_mu_nu(f_mn, 1, 3);
-    FORALLSITESDOMAIN(i,s){
-        scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-	    (f_mn+i) );
-    }
-    for(j=0;j<3;j++){
-	jk=(j+3)*(j+2)/2;
-	for(k=0;k<3;k++){
-	    FORALLSITESDOMAIN(i,s){
-		CSUB( clov[i].tr[0][jk],
-		    (f_mn+i)->e[j][k], clov[i].tr[0][jk]);
-		CADD( clov[i].tr[1][jk],
-		    (f_mn+i)->e[j][k], clov[i].tr[1][jk]);
-	    }
-	    jk++;
-	}
-    }
-
-    free(f_mn);
-
+  }
+  
+  free(f_mn);
+  
 } /* compute_clov */
 
 /******************* compute_clovinv ***********************************/
@@ -306,9 +317,10 @@ void compute_clov(clover *my_clov, Real Clov_c)
 /* (tr log needed for clover_dynamical) */
 
 double compute_clovinv(clover *my_clov, int parity) {
-
+  
   triangular *clov = my_clov->clov;
   diagonal *clov_diag = my_clov->clov_diag;
+  Real Clov_c = my_clov->Clov_c;
   register int i;
   register site *s;
   
@@ -317,80 +329,82 @@ double compute_clovinv(clover *my_clov, int parity) {
   complex v1[6],ctmp,sum;
   double trlogA;
   
-    /* Take the inverse on the odd sublattice for each of the 2 blocks */
-    trlogA = (double)0.0;
-    FORSOMEPARITYDOMAIN(i,s,parity)for(b=0;b<2;b++){
-
-	/* Cholesky decompose. This can be done in place, except that
-	   we will need a temporary diagonal.
-	   Uses algorithm 4.2.2 of "Matrix Computations" by Gene H. Golub
-	   and Charles F. Van Loan (John Hopkins, 1989) */
-	for(j=0;j<6;j++){
-
-	    clov_diag[i].di[b][j] = sqrt((double)(clov_diag[i].di[b][j]));
-	    f_diag[j] = 1.0 / (clov_diag[i].di[b][j]);
-	    for(k=j+1;k<6;k++){
-		kj=k*(k-1)/2+j;
-		CMULREAL(clov[i].tr[b][kj], f_diag[j], clov[i].tr[b][kj]);
-	    }
-
-	    for(k=j+1;k<6;k++){
-		kj=k*(k-1)/2+j;
-		CMUL_J(clov[i].tr[b][kj], clov[i].tr[b][kj], ctmp);
-		clov_diag[i].di[b][k] -= ctmp.real;
-		for(l=k+1;l<6;l++){
-		    lj=l*(l-1)/2+j;
-		    lk=l*(l-1)/2+k;
-		    CMUL_J(clov[i].tr[b][lj], clov[i].tr[b][kj], ctmp);
-		    CSUB(clov[i].tr[b][lk], ctmp, clov[i].tr[b][lk]);
-		}
-	    }
+  if(Clov_c == 0)return 0;
+  
+  /* Take the inverse on the odd sublattice for each of the 2 blocks */
+  trlogA = (double)0.0;
+  FORSOMEPARITYDOMAIN(i,s,parity)for(b=0;b<2;b++){
+    
+    /* Cholesky decompose. This can be done in place, except that
+       we will need a temporary diagonal.
+       Uses algorithm 4.2.2 of "Matrix Computations" by Gene H. Golub
+       and Charles F. Van Loan (John Hopkins, 1989) */
+    for(j=0;j<6;j++){
+      
+      clov_diag[i].di[b][j] = sqrt((double)(clov_diag[i].di[b][j]));
+      f_diag[j] = 1.0 / (clov_diag[i].di[b][j]);
+      for(k=j+1;k<6;k++){
+	kj=k*(k-1)/2+j;
+	CMULREAL(clov[i].tr[b][kj], f_diag[j], clov[i].tr[b][kj]);
+      }
+      
+      for(k=j+1;k<6;k++){
+	kj=k*(k-1)/2+j;
+	CMUL_J(clov[i].tr[b][kj], clov[i].tr[b][kj], ctmp);
+	clov_diag[i].di[b][k] -= ctmp.real;
+	for(l=k+1;l<6;l++){
+	  lj=l*(l-1)/2+j;
+	  lk=l*(l-1)/2+k;
+	  CMUL_J(clov[i].tr[b][lj], clov[i].tr[b][kj], ctmp);
+	  CSUB(clov[i].tr[b][lk], ctmp, clov[i].tr[b][lk]);
 	}
-
-	/* Accumulate trlogA */
-	for(j=0;j<6;j++) 
-	    trlogA += (double)2.0 * log((double)(clov_diag[i].di[b][j]));
-
-	/* Now use forward and backward substitution to construct inverse */
-	for(k=0;k<6;k++){
-	    for(l=0;l<k;l++) v1[l] = cmplx(0.0, 0.0);
-
-	    /* Forward substitute */
-	    v1[k] = cmplx(f_diag[k], 0.0);
-	    for(l=k+1;l<6;l++){
-		sum = cmplx(0.0, 0.0);
-		for(j=k;j<l;j++){
-		    lj=l*(l-1)/2+j;		    
-		    CMUL(clov[i].tr[b][lj], v1[j], ctmp);
-		    CSUB(sum, ctmp, sum);
-		}
-		CMULREAL(sum, f_diag[l], v1[l]);
-	    }
-
-	    /* Backward substitute */
-	    CMULREAL(v1[5], f_diag[5], v1[5]);
-	    for(l=4;l>=k;l--){
-		sum = v1[l];
-		for(j=l+1;j<6;j++){
-		    jl=j*(j-1)/2+l;
-		    CMULJ_(clov[i].tr[b][jl], v1[j], ctmp);
-		    CSUB(sum, ctmp, sum);
-		}
-		CMULREAL(sum, f_diag[l], v1[l]);
-	    }
-
-	    /* Overwrite column k */
-	    clov_diag[i].di[b][k] = v1[k].real;
-	    for(l=k+1;l<6;l++){
-		lk=l*(l-1)/2+k;
-		clov[i].tr[b][lk] = v1[l];
-	    }
+      }
+    }
+    
+    /* Accumulate trlogA */
+    for(j=0;j<6;j++) 
+      trlogA += (double)2.0 * log((double)(clov_diag[i].di[b][j]));
+    
+    /* Now use forward and backward substitution to construct inverse */
+    for(k=0;k<6;k++){
+      for(l=0;l<k;l++) v1[l] = cmplx(0.0, 0.0);
+      
+      /* Forward substitute */
+      v1[k] = cmplx(f_diag[k], 0.0);
+      for(l=k+1;l<6;l++){
+	sum = cmplx(0.0, 0.0);
+	for(j=k;j<l;j++){
+	  lj=l*(l-1)/2+j;		    
+	  CMUL(clov[i].tr[b][lj], v1[j], ctmp);
+	  CSUB(sum, ctmp, sum);
 	}
-    } END_LOOP
-
-    g_doublesum( &trlogA );
-    return(trlogA);
-
+	CMULREAL(sum, f_diag[l], v1[l]);
+      }
+      
+      /* Backward substitute */
+      CMULREAL(v1[5], f_diag[5], v1[5]);
+      for(l=4;l>=k;l--){
+	sum = v1[l];
+	for(j=l+1;j<6;j++){
+	  jl=j*(j-1)/2+l;
+	  CMULJ_(clov[i].tr[b][jl], v1[j], ctmp);
+	  CSUB(sum, ctmp, sum);
+	}
+	CMULREAL(sum, f_diag[l], v1[l]);
+      }
+      
+      /* Overwrite column k */
+      clov_diag[i].di[b][k] = v1[k].real;
+      for(l=k+1;l<6;l++){
+	lk=l*(l-1)/2+k;
+	clov[i].tr[b][lk] = v1[l];
+      }
+    }
+  } END_LOOP
+      
+      g_doublesum( &trlogA );
+  return(trlogA);
+  
 } /* compute_clovinv */
 
 /******************* mult_this_ldu_site *********************************/
@@ -538,17 +552,13 @@ and sigma(nu,mu) = -sigma(mu,nu), and sums over the dirac indices.
 */
 
 
-#define XUP 0
-#define YUP 1
-#define ZUP 2
-#define TUP 3
-
 void tr_sigma_ldu_mu_nu_site( field_offset mat, int mu, int nu )
 /* triang, diag are input & contain the color-dirac matrix
    mat is output: the resulting su3_matrix  */
 {
   triangular *clov = global_clov->clov;
   diagonal *clov_diag = global_clov->clov_diag;
+  Real Clov_c = global_clov->Clov_c;
   register site *s;
   register int mm = 0, nn = 0;  /* dummy directions */
   register Real pm = 0;
@@ -556,181 +566,188 @@ void tr_sigma_ldu_mu_nu_site( field_offset mat, int mu, int nu )
   Real rtmp;
   complex ctmp,ctmp1;
   char myname[] = "tr_sigma_ldu_mu_nu_site";
+
+  if(Clov_c == 0){
+    FORODDSITESDOMAIN(i,s) {
+      clear_su3mat((su3_matrix *)F_PT(s,mat));
+    }
+    return;
+  }
   
-    /* take care of the case mu > nu by flipping them and mult. by -1 */
-    if( mu < nu ) {
-	mm = mu; nn = nu; pm = 1.0;
-    }
-    else if( mu > nu) {
-	mm = nu; nn = mu; pm = -1.0;
-    }
-    else
-	printf("BAD CALL by %s: mu=%d, nu=%d\n",myname,mu,nu);
-
-switch(mm) {
-    case(XUP):
+  /* take care of the case mu > nu by flipping them and mult. by -1 */
+  if( mu < nu ) {
+    mm = mu; nn = nu; pm = 1.0;
+  }
+  else if( mu > nu) {
+    mm = nu; nn = mu; pm = -1.0;
+  }
+  else
+    printf("BAD CALL by %s: mu=%d, nu=%d\n",myname,mu,nu);
+  
+  switch(mm) {
+  case(XUP):
     switch(nn) {
-	case(YUP):
-	FORODDSITESDOMAIN(i,s) {
-	    /* diagonal part */
-	    for(j=0;j<3;j++) {
-		rtmp = clov_diag[i].di[0][j+3]
-		    - clov_diag[i].di[0][j];
-		rtmp -= clov_diag[i].di[1][j];
-		rtmp += clov_diag[i].di[1][j+3];
-		((su3_matrix *)F_PT(s,mat))->e[j][j].real = 0.0;
-		((su3_matrix *)F_PT(s,mat))->e[j][j].imag = rtmp;
-	    }
-	    /* triangular part */
-	    jk = 0;
-	    for(j=1;j<3;j++) {
-		jk2 = (j+3)*(j+2)/2 + 3;
-		for(k=0;k<j;k++) {
-		    CSUB( clov[i].tr[0][jk2],
-			clov[i].tr[0][jk], ctmp );
-		    CSUB( ctmp, clov[i].tr[1][jk],
-			ctmp );
-		    CADD( ctmp, clov[i].tr[1][jk2],
-			ctmp );
-		    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[j][k] );
-		    CONJG( ctmp, ctmp);
-		    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[k][j] );
-		    jk++; jk2++;
-		}
-	    }
-	}
-	break;
-	case(ZUP):
-	FORODDSITESDOMAIN(i,s) {
-	    for(j=0;j<3;j++) {
-		jk = (j+3)*(j+2)/2;
-		for(k=0;k<3;k++) {
-		    kj = (k+3)*(k+2)/2 + j;
-		    CONJG( clov[i].tr[0][kj], ctmp);
-		    CSUB( ctmp, clov[i].tr[0][jk],				ctmp );
-		    CONJG( clov[i].tr[1][kj], ctmp1);
-		    CADD( ctmp, ctmp1, ctmp);
-		    CSUB( ctmp, clov[i].tr[1][jk],
-			((su3_matrix *)F_PT(s,mat))->e[j][k] );
-		    jk++;
-		}
-	    }
-	}
-	break;
-	case(TUP):
-	FORODDSITESDOMAIN(i,s) {
-	    for(j=0;j<3;j++) {
-		jk = (j+3)*(j+2)/2;
-		for(k=0;k<3;k++) {
-		    kj = (k+3)*(k+2)/2 + j;
-		    CONJG( clov[i].tr[0][kj], ctmp);
-		    CADD( ctmp, clov[i].tr[0][jk],
-			ctmp );
-		    CONJG( clov[i].tr[1][kj], ctmp1);
-		    CSUB( ctmp, ctmp1, ctmp);
-		    CSUB( ctmp, clov[i].tr[1][jk],
-			ctmp );
-		    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[j][k] );
-		    jk++;
-		}
-	    }
-	}
-	break;
-	default:
-	   printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
-    }
-    break;
     case(YUP):
-    switch(nn) {
-	case(ZUP):
-	FORODDSITESDOMAIN(i,s) {
-	    for(j=0;j<3;j++) {
-		jk = (j+3)*(j+2)/2;
-		for(k=0;k<3;k++) {
-		    kj = (k+3)*(k+2)/2 + j;
-		    CONJG( clov[i].tr[0][kj], ctmp);
-		    CADD( ctmp, clov[i].tr[0][jk],
-			ctmp );
-		    CONJG( clov[i].tr[1][kj], ctmp1);
-		    CADD( ctmp, ctmp1, ctmp);
-		    CADD( ctmp, clov[i].tr[1][jk],
-			ctmp );
-		    TIMESMINUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[j][k] );
-		    jk++;
-		}
-	    }
+      FORODDSITESDOMAIN(i,s) {
+	/* diagonal part */
+	for(j=0;j<3;j++) {
+	  rtmp = clov_diag[i].di[0][j+3]
+	    - clov_diag[i].di[0][j];
+	  rtmp -= clov_diag[i].di[1][j];
+	  rtmp += clov_diag[i].di[1][j+3];
+	  ((su3_matrix *)F_PT(s,mat))->e[j][j].real = 0.0;
+	  ((su3_matrix *)F_PT(s,mat))->e[j][j].imag = rtmp;
 	}
-	break;
-	case(TUP):
-	FORODDSITESDOMAIN(i,s) {
-	    for(j=0;j<3;j++) {
-		jk = (j+3)*(j+2)/2;
-		for(k=0;k<3;k++) {
-		    kj = (k+3)*(k+2)/2 + j;
-		    CONJG( clov[i].tr[0][kj], ctmp);
-		    CSUB( ctmp, clov[i].tr[0][jk],
-			ctmp );
-		    CONJG( clov[i].tr[1][kj], ctmp1);
-		    CSUB( ctmp, ctmp1, ctmp);
-		    CADD( ctmp, clov[i].tr[1][jk],
-			((su3_matrix *)F_PT(s,mat))->e[j][k] );
-		    jk++;
-		}
-	    }
+	/* triangular part */
+	jk = 0;
+	for(j=1;j<3;j++) {
+	  jk2 = (j+3)*(j+2)/2 + 3;
+	  for(k=0;k<j;k++) {
+	    CSUB( clov[i].tr[0][jk2],
+		  clov[i].tr[0][jk], ctmp );
+	    CSUB( ctmp, clov[i].tr[1][jk],
+		  ctmp );
+	    CADD( ctmp, clov[i].tr[1][jk2],
+		  ctmp );
+	    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[j][k] );
+	    CONJG( ctmp, ctmp);
+	    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[k][j] );
+	    jk++; jk2++;
+	  }
 	}
-	break;
-	default:
-	   printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
-    }
-    break;
+      }
+      break;
     case(ZUP):
-    switch(nn) {
-	case(TUP):
-	FORODDSITESDOMAIN(i,s) {
-	    /* diagonal part */
-	    for(j=0;j<3;j++) {
-		rtmp = clov_diag[i].di[0][j]
-		    - clov_diag[i].di[0][j+3];
-		rtmp -= clov_diag[i].di[1][j];
-		rtmp += clov_diag[i].di[1][j+3];
-		((su3_matrix *)F_PT(s,mat))->e[j][j].real = 0.0;
-		((su3_matrix *)F_PT(s,mat))->e[j][j].imag = rtmp;
-	    }
-	    /* triangular part */
-	    jk = 0;
-	    for(j=1;j<3;j++) {
-		jk2 = (j+3)*(j+2)/2 + 3;
-		for(k=0;k<j;k++) {
-		    CSUB( clov[i].tr[0][jk],
-			clov[i].tr[0][jk2], ctmp );
-		    CSUB( ctmp, clov[i].tr[1][jk],
-			ctmp );
-		    CADD( ctmp, clov[i].tr[1][jk2],
-			ctmp );
-		    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[j][k] );
-		    CONJG( ctmp, ctmp);
-		    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[k][j] );
-		    jk++; jk2++;
-		}
-	    }
+      FORODDSITESDOMAIN(i,s) {
+	for(j=0;j<3;j++) {
+	  jk = (j+3)*(j+2)/2;
+	  for(k=0;k<3;k++) {
+	    kj = (k+3)*(k+2)/2 + j;
+	    CONJG( clov[i].tr[0][kj], ctmp);
+	    CSUB( ctmp, clov[i].tr[0][jk],				ctmp );
+	    CONJG( clov[i].tr[1][kj], ctmp1);
+	    CADD( ctmp, ctmp1, ctmp);
+	    CSUB( ctmp, clov[i].tr[1][jk],
+		  ((su3_matrix *)F_PT(s,mat))->e[j][k] );
+	    jk++;
+	  }
 	}
-	break;
-	default:
-	   printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
+      }
+      break;
+    case(TUP):
+      FORODDSITESDOMAIN(i,s) {
+	for(j=0;j<3;j++) {
+	  jk = (j+3)*(j+2)/2;
+	  for(k=0;k<3;k++) {
+	    kj = (k+3)*(k+2)/2 + j;
+	    CONJG( clov[i].tr[0][kj], ctmp);
+	    CADD( ctmp, clov[i].tr[0][jk],
+		  ctmp );
+	    CONJG( clov[i].tr[1][kj], ctmp1);
+	    CSUB( ctmp, ctmp1, ctmp);
+	    CSUB( ctmp, clov[i].tr[1][jk],
+		  ctmp );
+	    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[j][k] );
+	    jk++;
+	  }
+	}
+      }
+      break;
+    default:
+      printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
     }
     break;
+  case(YUP):
+    switch(nn) {
+    case(ZUP):
+      FORODDSITESDOMAIN(i,s) {
+	for(j=0;j<3;j++) {
+	  jk = (j+3)*(j+2)/2;
+	  for(k=0;k<3;k++) {
+	    kj = (k+3)*(k+2)/2 + j;
+	    CONJG( clov[i].tr[0][kj], ctmp);
+	    CADD( ctmp, clov[i].tr[0][jk],
+		  ctmp );
+	    CONJG( clov[i].tr[1][kj], ctmp1);
+	    CADD( ctmp, ctmp1, ctmp);
+	    CADD( ctmp, clov[i].tr[1][jk],
+		  ctmp );
+	    TIMESMINUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[j][k] );
+	    jk++;
+	  }
+	}
+      }
+      break;
+    case(TUP):
+      FORODDSITESDOMAIN(i,s) {
+	for(j=0;j<3;j++) {
+	  jk = (j+3)*(j+2)/2;
+	  for(k=0;k<3;k++) {
+	    kj = (k+3)*(k+2)/2 + j;
+	    CONJG( clov[i].tr[0][kj], ctmp);
+	    CSUB( ctmp, clov[i].tr[0][jk],
+		  ctmp );
+	    CONJG( clov[i].tr[1][kj], ctmp1);
+	    CSUB( ctmp, ctmp1, ctmp);
+	    CADD( ctmp, clov[i].tr[1][jk],
+		  ((su3_matrix *)F_PT(s,mat))->e[j][k] );
+	    jk++;
+	  }
+	}
+      }
+      break;
     default:
-	printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
-}
-
-/* multiply by pm = +/- 1  */
-FORODDSITESDOMAIN(i,s) {
+      printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
+    }
+    break;
+  case(ZUP):
+    switch(nn) {
+    case(TUP):
+      FORODDSITESDOMAIN(i,s) {
+	/* diagonal part */
+	for(j=0;j<3;j++) {
+	  rtmp = clov_diag[i].di[0][j]
+	    - clov_diag[i].di[0][j+3];
+	  rtmp -= clov_diag[i].di[1][j];
+	  rtmp += clov_diag[i].di[1][j+3];
+	  ((su3_matrix *)F_PT(s,mat))->e[j][j].real = 0.0;
+	  ((su3_matrix *)F_PT(s,mat))->e[j][j].imag = rtmp;
+	}
+	/* triangular part */
+	jk = 0;
+	for(j=1;j<3;j++) {
+	  jk2 = (j+3)*(j+2)/2 + 3;
+	  for(k=0;k<j;k++) {
+	    CSUB( clov[i].tr[0][jk],
+		  clov[i].tr[0][jk2], ctmp );
+	    CSUB( ctmp, clov[i].tr[1][jk],
+		  ctmp );
+	    CADD( ctmp, clov[i].tr[1][jk2],
+		  ctmp );
+	    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[j][k] );
+	    CONJG( ctmp, ctmp);
+	    TIMESPLUSI( ctmp, ((su3_matrix *)F_PT(s,mat))->e[k][j] );
+	    jk++; jk2++;
+	  }
+	}
+      }
+      break;
+    default:
+      printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
+    }
+    break;
+  default:
+    printf("BAD CALL in %s: mu=%d, nu=%d\n",myname,mu,nu);
+  }
+  
+  /* multiply by pm = +/- 1  */
+  FORODDSITESDOMAIN(i,s) {
     for(j=0;j<3;j++) for(k=0;k<3;k++)
-	CMULREAL( ((su3_matrix *)F_PT(s,mat))->e[j][k], pm,
-	    ((su3_matrix *)F_PT(s,mat))->e[j][k] );
-}
-
-} /* tr_sigma_ldu */
+      CMULREAL( ((su3_matrix *)F_PT(s,mat))->e[j][k], pm,
+		((su3_matrix *)F_PT(s,mat))->e[j][k] );
+  }
+  
+} /* tr_sigma_ldu_mu_nu_site */
 
 
 /******************* free_this_clov *********************************/
@@ -738,8 +755,8 @@ FORODDSITESDOMAIN(i,s) {
 void free_this_clov(clover *my_clov)
 {
   
-  free(my_clov->clov);
-  free(my_clov->clov_diag);
+  if(my_clov->clov != NULL)free(my_clov->clov);
+  if(my_clov->clov_diag != NULL)free(my_clov->clov_diag);
   free(my_clov);
 
 } /* free_this_clov */
@@ -750,11 +767,11 @@ void free_this_clov(clover *my_clov)
 
 void make_clov(Real Clov_c)
 {
-  global_clov = create_clov();
+  global_clov = create_clov(Clov_c);
   if(global_clov == NULL)
     terminate(1);
-
-  compute_clov(global_clov, Clov_c);
+  
+  compute_clov(global_clov);
 }
 
 /******************* make_clovinv ***********************************/
@@ -765,7 +782,29 @@ double make_clovinv(int parity)
   return compute_clovinv(global_clov, parity);
 }
 
-
+/******************* copy_site ***********************************/
+static void copy_site(
+  field_offset src,   /* type wilson_vector RECAST AS wilson_block_vector */
+  field_offset dest,  /* type wilson_vector RECAST AS wilson_block_vector */
+  int parity
+  )
+{
+  int i;
+  site *s;
+  FORSOMEPARITYDOMAIN(i,s,parity){
+    copy_wvec( (wilson_vector *)F_PT(s,src), (wilson_vector *)F_PT(s,dest) );
+  } END_LOOP
+}
+/******************* copy_field ***********************************/
+static void copy_field( wilson_vector *src, wilson_vector *dest,
+			int parity )
+{
+  int i;
+  site *s;
+  FORSOMEPARITYDOMAIN(i,s,parity){
+    dest[i] = src[i];
+  } END_LOOP
+}
 /******************* mult_ldu_site ***********************************/
 /* For multiplying only by the global clover term */
 void mult_ldu_site(
@@ -774,7 +813,10 @@ void mult_ldu_site(
   int parity
   )
 {
-  mult_this_ldu_site(global_clov, src, dest, parity);
+  if(global_clov->Clov_c == 0)
+    copy_site(src, dest, parity);
+  else
+    mult_this_ldu_site(global_clov, src, dest, parity);
 }
 
 /******************* mult_ldu_field ***********************************/
@@ -785,7 +827,10 @@ void mult_ldu_field(
   int parity
   )
 {
-  mult_this_ldu_field(global_clov, src, dest, parity);
+  if(global_clov->Clov_c == 0)
+    copy_field(src, dest, parity);
+  else
+    mult_this_ldu_field(global_clov, src, dest, parity);
 }
 
 /******************* free_clov ***************************************/

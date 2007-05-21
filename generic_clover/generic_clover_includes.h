@@ -18,3 +18,4 @@
 #include "../include/generic_wilson.h"
 #include "../include/generic_clover.h"
 #include <lattice.h>
+#include "../include/check_malloc.h"

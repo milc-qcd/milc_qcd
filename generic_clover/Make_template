@@ -9,14 +9,15 @@
 #  The paths are relative to the application directory.
 
 G_CLOVER_ALL = \
-    d_bicgilu_cl_lean.o \
-    d_bicgilu_cl_lean2.o \
-    d_bicgilu_cl_lean3.o \
-    d_cgilu_cl_lean.o \
-    d_cgilu_cl_lean2.o \
-    d_hopilu_cl_lean.o \
-    d_hopilu_cl_lean2.o \
-    d_mrilu_cl_lean.o \
+    cl_solver_utilites.o \
+    d_bicgilu_cl.o \
+    d_bicgilu_cl_qop.o \
+    d_bicgilu_cl_qop_D.o \
+    d_bicgilu_cl_qop_F.o \
+    d_cgilu_cl.o \
+    d_congrad2_cl.o \
+    d_hopilu_cl.o \
+    d_mrilu_cl.o \
     f_mu_nu.o \
     make_clov2.o
 
@@ -42,26 +43,26 @@ G_CLOVER_ALL_DEPEND = \
 
 ${G_CLOVER_ALL} : ${G_CLOVER_ALL_DEPEND}
 
-d_bicgilu_cl_lean.o: ../generic_clover/d_bicgilu_cl_lean.c
-	${CC} -c ${CFLAGS}  ../generic_clover/d_bicgilu_cl_lean.c 
-d_bicgilu_cl_lean2.o: ../generic_clover/d_bicgilu_cl_lean2.c
-	${CC} -c ${CFLAGS}  ../generic_clover/d_bicgilu_cl_lean2.c 
-d_bicgilu_cl_lean3.o: ../generic_clover/d_bicgilu_cl_lean3.c
-	${CC} -c ${CFLAGS}  ../generic_clover/d_bicgilu_cl_lean3.c 
-d_cgilu_cl_lean.o: ../generic_clover/d_cgilu_cl_lean.c
-	${CC} -c ${CFLAGS}  ../generic_clover/d_cgilu_cl_lean.c 
-d_cgilu_cl_lean2.o: ../generic_clover/d_cgilu_cl_lean2.c
-	${CC} -c ${CFLAGS}  ../generic_clover/d_cgilu_cl_lean2.c 
-d_mrilu_cl_lean.o: ../generic_clover/d_mrilu_cl_lean.c
-	${CC} -c ${CFLAGS}  ../generic_clover/d_mrilu_cl_lean.c 
-d_hopilu_cl_lean.o: ../generic_clover/d_hopilu_cl_lean.c
-	${CC} -c ${CFLAGS}  ../generic_clover/d_hopilu_cl_lean.c 
-d_hopilu_cl_lean2.o: ../generic_clover/d_hopilu_cl_lean2.c
-	${CC} -c ${CFLAGS}  ../generic_clover/d_hopilu_cl_lean2.c 
-f_mu_nu.o: ../generic_clover/f_mu_nu.c
-	${CC} -c ${CFLAGS}  ../generic_clover/f_mu_nu.c 
-make_clov2.o: ../generic_clover/make_clov2.c
-	${CC} -c ${CFLAGS}  ../generic_clover/make_clov2.c 
+cl_solver_utilities.o: ../generic_clover/cl_solver_utilities.c
+	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl.o: ../generic_clover/d_bicgilu_cl.c
+	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_qop.o: ../generic_clover/d_bicgilu_cl_qop.c
+	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_qop_D.o: ../generic_clover/d_bicgilu_cl_qop_D.c ../generic_clover/d_bicgilu_cl_qop_P.c
+	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_qop_F.o: ../generic_clover/d_bicgilu_cl_qop_F.c ../generic_clover/d_bicgilu_cl_qop_P.c
+	${CC} -c ${CFLAGS} $<
+d_cgilu_cl.o: ../generic_clover/d_cgilu_cl.c
+	${CC} -c ${CFLAGS} $<
 d_congrad2_cl.o: ../generic_clover/d_congrad2_cl.c
-	${CC} -c ${CFLAGS}  ../generic_clover/d_congrad2_cl.c 
+	${CC} -c ${CFLAGS} $<
+d_mrilu_cl.o: ../generic_clover/d_mrilu_cl.c
+	${CC} -c ${CFLAGS} $<
+d_hopilu_cl.o: ../generic_clover/d_hopilu_cl.c
+	${CC} -c ${CFLAGS} $<
+f_mu_nu.o: ../generic_clover/f_mu_nu.c
+	${CC} -c ${CFLAGS} $<
+make_clov2.o: ../generic_clover/make_clov2.c
+	${CC} -c ${CFLAGS} $<
 
