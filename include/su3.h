@@ -101,6 +101,9 @@ typedef struct { dspin_wilson_vector c[3]; } dwilson_propagator;
 
 #endif
 
+/* For some Wilson spectroscopy */
+typedef spin_wilson_vector ** wilson_prop_field;
+
 #define GAMMAFIVE -1    /* some integer which is not a direction */
 #define PLUS 1          /* flags for selecting M or M_adjoint */
 #define MINUS -1
@@ -401,6 +404,8 @@ typedef struct { dspin_wilson_vector c[3]; } dwilson_propagator;
 *
 * Real gaussian_rand_no( double_prn *prn_pt )
 *	file "gaussrand.c"
+* Real z2_rand_no( double_prn *prn_pt );
+*	file "z2rand.c"
 * void byterevn(int32type w[], int n)
 * void byterevn64(int32type w[], int n)
 *
@@ -499,6 +504,7 @@ void copy_wvec( wilson_vector *src, wilson_vector *dest );
 void dump_wilson_vec( wilson_vector *src );
 
 Real gaussian_rand_no( double_prn *prn_pt );
+Real z2_rand_no( double_prn *prn_pt );
 #include "../include/int32type.h"
 void byterevn(int32type w[], int n);
 void byterevn64(int32type w[], int n);
@@ -589,8 +595,6 @@ void byterevn64(int32type w[], int n);
 #define mult_su3_mat_hwvec(...) _inline_sse_mult_su3_mat_hwvec(__VA_ARGS__)
 #define mult_su3_mat_vec_sum_4dir(...) _inline_sse_mult_su3_mat_vec_sum_4dir(__VA_ARGS__)
 #define su3_projector(...) _inline_sse_su3_projector(__VA_ARGS__)
-void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
-	su3_vector *b3, su3_vector *b4 );
 
 /********************************************************************/
 
@@ -660,6 +664,10 @@ void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 
 #ifndef sub_su3_vector
 #define sub_su3_vector(...) _inline_C_sub_su3_vector(__VA_ARGS__)
+#endif
+
+#ifndef sub_four_su3vecs
+#define sub_four_su3vecs(...) _inline_C_sub_four_su3vecs(__VA_ARGS__)
 #endif
 
 #ifndef wp_shrink_4dir
