@@ -273,7 +273,10 @@ int write_w_prop_info_item( FILE *fpout,    /* ascii file pointer */
 
   for(i=0;strlen(w_prop_info_keyword[i])>0 &&
       strcmp(w_prop_info_keyword[i],keyword) != 0; i++);
-  if(strlen(w_prop_info_keyword[i])==0)
+  /* Make exception for FNAL format timeslice checksum 
+     since there are too many to list */
+  if(strstr(keyword,"quark.t") == NULL &&
+     strlen(w_prop_info_keyword[i])==0)
     printf("write_w_prop_info_item: WARNING: keyword %s not in table\n",
 	    keyword);
 
@@ -532,6 +535,7 @@ w_prop_file *setup_output_w_prop_file()
     {
       time(&time_stamp);
       strcpy(wph->time_stamp,ctime(&time_stamp));
+      wph->t_stamp = time_stamp;
 
       /* For aesthetic reasons, don't leave trailing junk bytes here to be
 	 written to the file */
@@ -604,6 +608,7 @@ w_prop_file *w_serial_w_i(char *filename)
   wpf->byterevflag    = 0;            /* Not used for writing */
   wpf->rank2rcv       = NULL;         /* Not used for writing */
   wpf->parallel       = SERIAL;
+  wpf->prop           = NULL;
 
   /* Node 0 writes ascii info file */
 
@@ -1423,7 +1428,11 @@ w_prop_file *r_serial_w_i(char *filename)
       
   broadcast_bytes((char *)&byterevflag,sizeof(byterevflag));
   wpf->byterevflag = byterevflag;
-  
+
+  /* Assign other default values to file structure */
+  wpf->rank2rcv       = NULL;
+  wpf->prop           = NULL;
+
   /* Node 0 broadcasts the header structure to all nodes */
   
   broadcast_bytes((char *)wph,sizeof(w_prop_header));

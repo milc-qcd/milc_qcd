@@ -29,14 +29,48 @@ static file_type w_prop_list[N_WPROP_TYPES] =
 
 w_prop_file *r_open_wprop(int flag, char *filename)
 {
-  w_prop_file *wpf;
+  w_prop_file *wpf = NULL;
+  int file_type;
+  wilson_propagator *wp;
 
   switch(flag){
   case RELOAD_ASCII:
     wpf = r_ascii_w_i(filename);
     break;
   case RELOAD_SERIAL:
-    wpf = r_serial_w_i(filename);
+
+    /* Sniff out the file type */
+    file_type = io_detect(filename, w_prop_list, N_WPROP_TYPES);
+
+    if(file_type < 0){
+      node0_printf("r_open_wprop: Can't read file %s\n", filename);
+      return NULL;
+    }
+    /* If it is an FNAL propagator file, special treatment */
+    else if(file_type == FILE_TYPE_W_FMPROP){
+      /* There are two types of Fermilab propagator files.
+	 One is sorted by source color and spin, so the site
+	 datum is a Dirac vector.  The other has the full propagator
+	 on each site. */
+      wpf = r_serial_w_fm_i(filename);
+      wpf->prop = (wilson_propagator *)
+	malloc(sites_on_node*sizeof(wilson_propagator));
+      wp = wpf->prop;
+      if(wp == NULL){
+	printf("Can't malloc for full input propagator\n");
+	terminate(1);
+      }
+      /* For either format we read the entire file */
+      r_serial_w_fm_to_field(wpf, wp);
+
+      /* Convert from FNAL to MILC */
+      convert_wprop_fnal_to_milc_field(wp);
+    }
+    /* Otherwise, just open the file */
+    else {
+      wpf = r_serial_w_i(filename);
+    }
+    wpf->file_type = file_type;
     break;
   case RELOAD_PARALLEL:
     wpf = r_parallel_w_i(filename);
@@ -63,6 +97,7 @@ w_prop_file *r_open_wprop(int flag, char *filename)
 w_prop_file *w_open_wprop(int flag, char *filename)
 {
   w_prop_file *wpf;
+  wilson_propagator *wp;
   
   switch(flag){
   case SAVE_ASCII:
@@ -71,6 +106,30 @@ w_prop_file *w_open_wprop(int flag, char *filename)
 
   case SAVE_SERIAL:
     wpf = w_serial_w_i(filename);
+    break;
+
+  case SAVE_SERIAL_FM:
+    wpf = w_serial_w_fm_i(filename);
+    /* Allocate space for the entire propagator */
+    wpf->prop = (wilson_propagator *)
+      malloc(sites_on_node*sizeof(wilson_propagator));
+    wp = wpf->prop;
+    if(wp == NULL){
+      printf("Can't malloc for full output propagator\n");
+      terminate(1);
+    }
+    break;
+
+  case SAVE_SERIAL_FM_SC:
+    wpf = w_serial_w_fm_sc_i(filename);
+    /* Allocate space for the entire propagator */
+    wpf->prop = (wilson_propagator *)
+      malloc(sites_on_node*sizeof(wilson_propagator));
+    wp = wpf->prop;
+    if(wp == NULL){
+      printf("Can't malloc for full output propagator\n");
+      terminate(1);
+    }
     break;
 
   case SAVE_PARALLEL:
@@ -110,6 +169,9 @@ int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
   double dtime = 0;
   int i,status;
   site *s;
+  wilson_propagator *wp;
+  wilson_vector *wv;
+  int s0, c0;
 
   if(timing)dtime = -dclock();
   status = 0;
@@ -124,7 +186,23 @@ int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
     status = r_ascii_w(wpf,spin,color,dest);
     break;
   case RELOAD_SERIAL:
-    status = r_serial_w_to_site(wpf,spin,color,dest); 
+    wp = wpf->prop;
+    /* Special treatment for FNAL formatted file */
+    if(wpf->file_type == FILE_TYPE_W_FMPROP){
+    /* Copy input Wilson vector for this color and spin from buffer */
+      FORALLSITES(i,s){
+	wv = (wilson_vector *)F_PT(s,dest);
+	for(s0=0;s0<4;s0++)for(c0=0;c0<3;c0++)
+	  {
+	    wv->d[s0].c[c0].real = wp[i].c[color].d[spin].d[s0].c[c0].real;
+	    wv->d[s0].c[c0].imag = wp[i].c[color].d[spin].d[s0].c[c0].imag;
+	  }
+      }
+      status = 0;
+    }
+    else {
+      status = r_serial_w_to_site(wpf,spin,color,dest); 
+    }
     break;
   case RELOAD_PARALLEL:
     /* Reopen, read, and close temporarily */
@@ -154,6 +232,85 @@ int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
   return status;
 
 } /* reload_wprop_sc_to_site */
+
+/*---------------------------------------------------------------*/
+/* reload a propagator for a single source color and spin in MILC
+   format, or cold propagator, or keep current propagator: FRESH,
+   CONTINUE, RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL,
+   RELOAD_MULTIDUMP
+   */
+int reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
+		       int spin, int color, wilson_vector *dest, int timing)
+{
+  /* 0 normal exit value
+     1 read error */
+
+  double dtime = 0;
+  int i,status;
+  site *s;
+  wilson_propagator *wp;
+  wilson_vector *wv;
+  int s0, c0;
+
+  if(timing)dtime = -dclock();
+  status = 0;
+  switch(flag){
+  case CONTINUE:  /* do nothing */
+    break;
+  case FRESH:     /* zero initial guess */
+    FORALLSITES(i,s)clear_wvec( &(dest[i]) );
+    break;
+  case RELOAD_ASCII:
+    node0_printf("Reloading ASCII to temp wprop not supported\n");
+    terminate(1);
+    break;
+  case RELOAD_SERIAL:
+    wp = wpf->prop;
+    /* Special treatment for FNAL formatted file */
+    if(wpf->file_type == FILE_TYPE_W_FMPROP){
+    /* Copy input Wilson vector for this color and spin from buffer */
+      FORALLSITES(i,s){
+	wv = dest + i;
+	for(s0=0;s0<4;s0++)for(c0=0;c0<3;c0++)
+	  {
+	    wv->d[s0].c[c0].real = wp[i].c[color].d[spin].d[s0].c[c0].real;
+	    wv->d[s0].c[c0].imag = wp[i].c[color].d[spin].d[s0].c[c0].imag;
+	  }
+      }
+      status = 0;
+    }
+    else {
+      status = r_serial_w_to_field(wpf,spin,color,dest); 
+    }
+    break;
+  case RELOAD_PARALLEL:
+    /* Reopen, read, and close temporarily */
+    r_parallel_w_o(wpf);
+    status = r_parallel_w_to_field(wpf,spin,color,dest);
+    r_parallel_w_c(wpf);
+    break;
+  case RELOAD_MULTIDUMP:
+    /* Reopen, read, and close temporarily */
+    r_multidump_w_o(wpf);
+    status = r_multidump_w_to_field(wpf,spin,color,dest);
+    r_multidump_w_c(wpf);
+    break;
+  default:
+    node0_printf("reload_wprop_sc_to_field: Unrecognized reload flag.\n");
+    terminate(1);
+  }
+  
+  if(timing)
+    {
+      dtime += dclock();
+      if(flag != FRESH && flag != CONTINUE)
+	node0_printf("Time to reload wprop spin %d color %d %e\n",
+		     spin,color,dtime);
+    }
+
+  return status;
+
+} /* reload_wprop_sc_to_field */
 
 /*---------------------------------------------------------------*/
 /* reload a full propagator (all source colors and spins) in any of
@@ -252,7 +409,7 @@ int reload_wprop_to_site( int flag, char *filename,
     
     else if(file_type == FILE_TYPE_W_FMPROP){
       node0_printf("Reading as a Fermilab Wilson prop file\n");
-      /* FNAL format has a full propagator in one record */
+      /*Read the entire file */
       r_prop_w_fm_to_site( filename, dest );
       convert_wprop_fnal_to_milc_site( dest );
     }
@@ -410,7 +567,7 @@ int reload_wprop_to_field( int flag, char *filename,
 	    }
 	  
 	  r_serial_w_f(wpf);
-	  free(destcs);
+	  free(destcs); destcs = NULL;
 	}
 	else {
 	  node0_printf("Reading in parallel as a MILC Wilson prop file\n");
@@ -437,13 +594,12 @@ int reload_wprop_to_field( int flag, char *filename,
 	    }
 	  
 	  r_parallel_w_f(wpf);
-	  free(destcs);
+	  free(destcs); destcs = NULL;
 	}
       }
     
     else if(file_type == FILE_TYPE_W_FMPROP){
       node0_printf("Reading as a Fermilab Wilson prop file\n");
-      /* FNAL format has a full propagator in one record */
       r_prop_w_fm_to_field( filename, dest );
       convert_wprop_fnal_to_milc_field( dest );
     }
@@ -486,7 +642,7 @@ int reload_wprop_to_field( int flag, char *filename,
 	      }
 	    }
 	  }
-	free(destcs);
+	free(destcs); destcs = NULL;
 	QIO_close_read(infile);
 #else
 	node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
@@ -523,7 +679,7 @@ int reload_wprop_to_field( int flag, char *filename,
 	  }
 	}
       }
-    free(destcs);
+    free(destcs); destcs = NULL;
     r_multidump_w_f(wpf);
 
     if(status == 0)
@@ -556,6 +712,10 @@ int save_wprop_sc_from_site( int flag, w_prop_file *wpf,
 {
   double dtime = 0;
   int status;
+  int i; site *s;
+  wilson_propagator *wp;
+  wilson_vector *wv;
+  int s0, c0;
   
   if(timing)dtime = -dclock();
   status = 0;
@@ -568,6 +728,23 @@ int save_wprop_sc_from_site( int flag, w_prop_file *wpf,
     break;
   case SAVE_SERIAL:
     w_serial_w_from_site(wpf,spin,color,src);
+    break;
+  case SAVE_SERIAL_FM:
+  case SAVE_SERIAL_FM_SC:
+    wp = wpf->prop;
+    if(wp == NULL){
+      printf("save_wprop_sc_from_site: Propagator field not allocated\n");
+      terminate(1);
+    }
+    /* Add output Wilson vector to propagator buffer */
+    FORALLSITES(i,s){
+      wv = (wilson_vector *)F_PT(s,src);
+      for(s0=0;s0<4;s0++)for(c0=0;c0<3;c0++)
+	{
+	  wp[i].c[color].d[spin].d[s0].c[c0].real = wv->d[s0].c[c0].real;
+	  wp[i].c[color].d[spin].d[s0].c[c0].imag = wv->d[s0].c[c0].imag;
+	}
+    }
     break;
   case SAVE_PARALLEL:
     w_parallel_w_o(wpf);
@@ -610,6 +787,10 @@ int save_wprop_sc_from_field( int flag, w_prop_file *wpf,
 {
   double dtime = 0;
   int status;
+  int i; site *s;
+  wilson_propagator *wp;
+  wilson_vector *wv;
+  int s0, c0;
   
   if(timing)dtime = -dclock();
   status = 0;
@@ -622,6 +803,23 @@ int save_wprop_sc_from_field( int flag, w_prop_file *wpf,
     break;
   case SAVE_SERIAL:
     w_serial_w_from_field(wpf,spin,color,src);
+    break;
+  case SAVE_SERIAL_FM:
+  case SAVE_SERIAL_FM_SC:
+    wp = wpf->prop;
+    if(wp == NULL){
+      printf("save_wprop_sc_from_field: Propagator field not allocated\n");
+      terminate(1);
+    }
+    /* Add output Wilson vector to propagator buffer */
+    FORALLSITES(i,s){
+      wv = src + i;
+      for(s0=0;s0<4;s0++)for(c0=0;c0<3;c0++)
+	{
+	  wp[i].c[color].d[spin].d[s0].c[c0].real = wv->d[s0].c[c0].real;
+	  wp[i].c[color].d[spin].d[s0].c[c0].imag = wv->d[s0].c[c0].imag;
+	}
+    }
     break;
   case SAVE_PARALLEL:
     w_parallel_w_o(wpf);
@@ -664,7 +862,10 @@ int save_wprop_from_site( int flag, char *filename, char *recxml,
   double dtime = 0;
   int spin, color;
   w_prop_file *wpf;
+  wilson_propagator *wp;
   field_offset srccs;
+  int i;
+  site *s;
 #ifdef HAVE_QIO
   field_offset srcc;
   int volfmt = QIO_SINGLEFILE;
@@ -703,6 +904,34 @@ int save_wprop_from_site( int flag, char *filename, char *recxml,
       node0_printf("Saved wprop serially to file %s\n",filename);
     break;
 
+  case SAVE_SERIAL_FM:
+  case SAVE_SERIAL_FM_SC:
+    wpf->prop = (wilson_propagator *)malloc(sites_on_node*
+					    sizeof(wilson_propagator));
+    wp = wpf->prop;
+    if(wp == NULL){
+      node0_printf("Can't malloc space to save propagator\n");
+      status = 1;
+      break;
+    }
+    
+    /* Copy full propagator to buffer */
+    FORALLSITES(i,s){
+      wp[i] = *((wilson_propagator *)F_PT(s,src));
+    }
+
+    /* Convert to FNAL spin conventions */
+    convert_wprop_milc_to_fnal_field(wp);
+
+    /* Write the converted propagator */
+    
+    if(flag == SAVE_SERIAL_FM)
+      wpf = w_serial_w_fm_i(filename);
+    else
+      wpf = w_serial_w_fm_sc_i(filename);
+    w_serial_w_fm_from_field(wpf, wp);
+    w_serial_w_fm_f(wpf);
+    break;
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:
   case SAVE_PARTITION_SCIDAC:
@@ -846,8 +1075,9 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
 {
   double dtime = 0;
   int spin, color;
-  w_prop_file *wpf;
+  w_prop_file *wpf = NULL;
   wilson_vector *srccs;
+  wilson_propagator *wp;
 #ifdef HAVE_QIO
   int volfmt = QIO_SINGLEFILE;
 #endif
@@ -882,12 +1112,39 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
 	}
 	w_serial_w_from_field(wpf,spin,color,srccs);
       }
-    free(srccs);
+    free(srccs); srccs = NULL;
     w_serial_w_f(wpf);
     if(status == 0)
       node0_printf("Saved wprop serially to file %s\n",filename);
     break;
 
+  case SAVE_SERIAL_FM:
+  case SAVE_SERIAL_FM_SC:
+    wpf->prop = (wilson_propagator *)malloc(sites_on_node*
+					    sizeof(wilson_propagator));
+    wp = wpf->prop;
+    if(wp == NULL){
+      node0_printf("Can't malloc space to save propagator\n");
+      status = 1;
+      break;
+    }
+    
+    /* Copy full propagator to buffer */
+    FORALLSITES(i,s){
+      wp[i] = src[i];
+    }
+
+    /* Convert to FNAL spin conventions */
+    convert_wprop_milc_to_fnal_field(wp);
+
+    /* Write the converted propagator */
+    if(flag == SAVE_SERIAL_FM)
+      wpf = w_serial_w_fm_i(filename);
+    else
+      wpf = w_serial_w_fm_sc_i(filename);
+    w_serial_w_fm_from_field(wpf, wp);
+    w_serial_w_fm_f(wpf);
+    break;
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:
   case SAVE_PARTITION_SCIDAC:
@@ -934,7 +1191,7 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
 	}
       close_output(outfile);
     }
-    free(srccs);
+    free(srccs); srccs = NULL;
 #else
     node0_printf("To write a SciDAC file requires QIO compilation\n");
 #endif
@@ -960,7 +1217,7 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
 	w_parallel_w_from_field(wpf,spin,color,srccs);
       }
     w_parallel_w_f(wpf);
-    free(srccs);
+    free(srccs); srccs = NULL;
     if(status == 0)
       node0_printf("Saved wprop in parallel to file %s\n",filename);
     break;
@@ -981,7 +1238,7 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
 	}
 	w_checkpoint_w_from_field(wpf,spin,color,srccs);
       }
-    free(srccs);
+    free(srccs); srccs = NULL;
     w_checkpoint_w_f(wpf);
     if(status == 0)
       node0_printf("Saved wprop in checkpoint format to file %s\n",filename);
@@ -1003,7 +1260,7 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
 	}
 	w_multidump_w_from_field(wpf,spin,color,srccs);
       }
-    free(srccs);
+    free(srccs); srccs = NULL;
     w_multidump_w_f(wpf);
     if(status == 0)
       node0_printf("Saved wprop in multidump format to file %s\n",filename);
@@ -1031,6 +1288,8 @@ void r_close_wprop(int flag, w_prop_file *wpf)
     r_ascii_w_f(wpf);
     break;
   case RELOAD_SERIAL:
+    if(wpf->prop != NULL)
+      free(wpf->prop); wpf->prop = NULL;
     r_serial_w_f(wpf);
     break;
   case RELOAD_PARALLEL:
@@ -1043,12 +1302,26 @@ void r_close_wprop(int flag, w_prop_file *wpf)
 /*---------------------------------------------------------------*/
 void w_close_wprop(int flag, w_prop_file *wpf)
 {
+  wilson_propagator *wp;
+
   switch(flag){
   case SAVE_ASCII:
     w_ascii_w_f(wpf);
     break;
   case SAVE_SERIAL:
     w_serial_w_f(wpf); 
+    break;
+  case SAVE_SERIAL_FM:
+  case SAVE_SERIAL_FM_SC:
+    /* Dump accumulated propagator and free memory */
+    wp = wpf->prop;
+    if(wp != NULL){
+      /* Convert from MILC to FNAL */
+      convert_wprop_milc_to_fnal_field(wp);
+      w_serial_w_fm_from_field(wpf, wp);
+      free(wp);  wp = NULL;
+    }
+    w_serial_w_fm_f(wpf); 
     break;
   case SAVE_PARALLEL:
     w_parallel_w_f(wpf); 
@@ -1070,8 +1343,12 @@ int ask_starting_wprop( int prompt, int *flag, char *filename ){
   char savebuf[256];
   int status;
   
-  if (prompt!=0) 
-    printf("loading wilson propagator:\n enter 'fresh_wprop','continue_wprop', 'reload_ascii_wprop', 'reload_serial_wprop', 'reload_parallel_wprop', or 'reload_multidump_wprop'\n");
+  if (prompt!=0) {
+    printf("loading wilson propagator:\n enter 'fresh_wprop', ");
+    printf("'continue_wprop', 'reload_ascii_wprop', ");
+    printf("'reload_serial_wprop', 'reload_parallel_wprop', ");
+    printf("or 'reload_multidump_wprop'\n");
+  }
   status=scanf("%s",savebuf);
   if (status == EOF){
     printf("ask_starting_wprop: EOF on STDIN.\n");
@@ -1128,18 +1405,25 @@ int ask_ending_wprop( int prompt, int *flag, char *filename ){
   char savebuf[256];
   int status;
   
-  if (prompt!=0) 
-    printf("save wilson propagator:\n enter 'forget_wprop', 'save_ascii_wprop', 'save_serial_wprop' , 'save_serial_scidac_wprop', 'save_parallel_scidac_wprop', 'save_partfile_scidac_wprop', 'save_multfile_scidac_wprop', 'save_parallel_wprop', 'save_multidump_wprop', or 'save_checkpoint_wprop'\n");
+  if (prompt!=0) {
+    printf("save wilson propagator:\n enter ");
+    printf("'forget_wprop', 'save_ascii_wprop', 'save_serial_wprop', ");
+    printf("'save_serial_fm_wprop', 'save_serial_fm_sc_wprop', ");
+    printf("'save_serial_scidac_wprop', 'save_parallel_scidac_wprop', ");
+    printf("'save_partfile_scidac_wprop', 'save_multfile_scidac_wprop', ");
+    printf("'save_parallel_wprop', 'save_multidump_wprop', ");
+    printf("or 'save_checkpoint_wprop'\n");
+  }
   status=scanf("%s",savebuf);
-    if (status == EOF){
-      printf("ask_starting_wprop: EOF on STDIN.\n");
-      return(1);
-    }
-    if(status !=1) {
-        printf("\nask_ending_wprop: ERROR IN INPUT: Can't read ending wprop command\n");
-        return(1);
-    }
-
+  if (status == EOF){
+    printf("ask_starting_wprop: EOF on STDIN.\n");
+    return(1);
+  }
+  if(status !=1) {
+    printf("\nask_ending_wprop: ERROR IN INPUT: Can't read ending wprop command\n");
+    return(1);
+  }
+  
   printf("%s ",savebuf);
   if(strcmp("save_ascii_wprop",savebuf) == 0 )  {
     *flag=SAVE_ASCII;
@@ -1155,6 +1439,12 @@ int ask_ending_wprop( int prompt, int *flag, char *filename ){
   }
   else if(strcmp("save_checkpoint_wprop",savebuf) == 0 ) {
     *flag=SAVE_CHECKPOINT;
+  }
+  else if(strcmp("save_serial_fm_wprop",savebuf) == 0 ) {
+    *flag=SAVE_SERIAL_FM;
+  }
+  else if(strcmp("save_serial_fm_sc_wprop",savebuf) == 0 ) {
+    *flag=SAVE_SERIAL_FM_SC;
   }
   else if(strcmp("save_serial_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_SERIAL_SCIDAC;
