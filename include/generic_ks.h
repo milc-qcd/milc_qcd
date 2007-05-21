@@ -29,6 +29,9 @@ void copy_latvec(field_offset src, field_offset dest, int parity);
 void dslash_site( field_offset src, field_offset dest, int parity );
 void dslash_site_special( field_offset src, field_offset dest,
     int parity, msg_tag **tag, int start );
+void dslash_field( su3_vector *src, su3_vector *dest, int parity );
+void dslash_field_special( su3_vector *src, su3_vector *dest,
+    int parity, msg_tag **tag, int start );
 
 void checkmul();
 void phaseset();
@@ -40,6 +43,13 @@ void prefetch_matrix( su3_matrix * );
 int ks_congrad( field_offset src, field_offset dest, Real mass,
 		int niter, int nrestart, Real rsqmin, int prec, 
 		int parity, Real *rsq );
+
+int ks_congrad_field( su3_vector *src, su3_vector *dest, 
+		      quark_invert_control *qic, Real mass);
+
+int ks_congrad_site( field_offset src, field_offset dest, 
+		     quark_invert_control *qic, Real mass);
+
 
 int ks_congrad_two_src(	/* Return value is number of iterations taken */
     field_offset src1,    /* source vector (type su3_vector) */
@@ -233,9 +243,17 @@ int fpi_2( /* Return value is number of C.G. iterations taken */
   );
 
 /* fermion_force_asqtad*.c */
-void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off );
+void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
+			       int prec );
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
-				field_offset x1_off, field_offset x2_off );
+				field_offset x1_off, field_offset x2_off,
+				int prec );
+void fermion_force_asqtad_block( Real eps, Real *residues, 
+		 su3_vector **xxx, int nterms, int veclength, int prec );
+void fermion_force_asqtad_multi( Real eps, Real *residues, 
+		    su3_vector **xxx, int nterms, int prec );
+void eo_fermion_force_multi( Real eps, Real *residues, 
+			     su3_vector **xxx, int nterms, int prec ) ;
 
 /* fermion_force_fn_multi.c */
 
@@ -245,12 +263,12 @@ const char *ks_multiff_opt_chr( void );
 
 int eo_fermion_force_set_opt(char opt_string[]);
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
-			     int nterms );
-void eo_fermion_force_asqtad_block( Real eps, Real *residues, su3_vector **xxx, int nterms, int veclength );
-void eo_fermion_force_asqtad_multi( Real eps, Real *residues, su3_vector **xxx, int nterms );
-void fn_fermion_force_multi( Real eps, Real *residues, su3_vector **multi_x, int nterms );
-void fn_fermion_force_multi_reverse( Real eps, Real *residues, su3_vector **multi_x, int nterms );
-void fn_fermion_force_multi_june05( Real eps, Real *residues, su3_vector **multi_x, int nterms );
+			     int nterms, int prec );
+void fermion_force_asqtad_block( Real eps, Real *residues, su3_vector **xxx, int nterms, int veclength, int prec );
+void fermion_force_asqtad_multi( Real eps, Real *residues, su3_vector **xxx, int nterms, int prec );
+void fermion_force_fn_multi( Real eps, Real *residues, su3_vector **multi_x, int nterms, int prec );
+void fermion_force_fn_multi_reverse( Real eps, Real *residues, su3_vector **multi_x, int nterms );
+void fermion_force_fn_multi_june05( Real eps, Real *residues, su3_vector **multi_x, int nterms );
 
 /* fermion_links_fn.c */
 void load_fn_links();
@@ -258,6 +276,9 @@ void load_fn_links_dmdu0();
 void invalidate_fn_links();
 
 /* fermion_links_helpers.c */
+void load_longlinks(su3_matrix **t_ll);
+void load_fatlinks(su3_matrix **t_fl, Real *act_path_coeff,
+		   Q_path *q_paths);
 void load_longbacklinks(su3_matrix **t_lbl, su3_matrix *t_ll);
 void load_fatbacklinks(su3_matrix **t_fbl, su3_matrix *t_fl);
 void free_fn_links();
@@ -314,6 +335,7 @@ void grsource(int parity);
 /* grsource_imp.c */
 void grsource_imp( field_offset dest, Real mass, int parity);
 void grsource_plain( field_offset dest, int parity );
+void z2rsource_plain( field_offset dest, int parity );
 void checkmul_imp( field_offset src, Real mass );
 
 /* jacobi.c */
