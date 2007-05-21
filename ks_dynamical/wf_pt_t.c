@@ -29,8 +29,7 @@ int wf_pt_t() /* return the C.G. iteration number */
   if( nt > TMAX && this_node==0){printf("nt TOO BIG!\n"); terminate(0);}
   /* Fix TUP Coulomb gauge - gauge links only*/
   rephase( OFF );
-  gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-      F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),0,NULL,NULL,0,NULL,NULL);
+  gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
   rephase( ON );
   
   mass_x2 = 2.0*mass;

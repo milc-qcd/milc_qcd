@@ -27,24 +27,7 @@ LIBDIR = ../libraries
 
 # To force a remake when changing headers
 
-GLOBAL_HEADERS = \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/complex.h \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/su3.h \
-  ${INCLUDEDIR}/comdefs.h \
-  ${INCLUDEDIR}/macros.h \
-  ${INCLUDEDIR}/generic.h \
-  ${INCLUDEDIR}/generic_ks.h \
-  ${INCLUDEDIR}/io_lat.h \
-  ${INCLUDEDIR}/loopend.h
-
-MY_HEADERS = \
-  lattice.h \
-  params.h \
-  defines.h \
-  ks_dyn_includes.h \
-  ${ADDHEADERS}
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
 

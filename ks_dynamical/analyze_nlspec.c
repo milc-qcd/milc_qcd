@@ -37,8 +37,7 @@ void analyze(int meascount)
   source_start = 0;
   /* Fix TUP Coulomb gauge - gauge links only*/
   rephase( OFF );
-  gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-	   F_OFFSET(tempmat1), F_OFFSET(tempmat2),0,NULL,NULL,0,NULL,NULL);
+  gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
   rephase( ON );
   spect_iters += nl_spectrum( mass, F_OFFSET(phi), F_OFFSET(xxx), 
 			      F_OFFSET(tempmat1), F_OFFSET(tempmat2));

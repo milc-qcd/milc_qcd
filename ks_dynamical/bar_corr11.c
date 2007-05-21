@@ -774,17 +774,13 @@ int bar_corr()
   /* Do Fourier transform of plp values */
   /* Uses TEMP1 and TEMP2 for working space */
 
-  restrict_fourier( F_OFFSET(PLPRE), 
-	  F_OFFSET(TEMP1), F_OFFSET(TEMP2), sizeof(complex), FORWARDS);
+  restrict_fourier_site( F_OFFSET(PLPRE), sizeof(complex), FORWARDS);
 
-  restrict_fourier( F_OFFSET(PLPIM), 
-	  F_OFFSET(TEMP1), F_OFFSET(TEMP2), sizeof(complex), FORWARDS);
+  restrict_fourier_site( F_OFFSET(PLPIM), sizeof(complex), FORWARDS);
 	  
-  restrict_fourier( F_OFFSET(FLPRE), 
-	  F_OFFSET(TEMP1), F_OFFSET(TEMP2), sizeof(complex), FORWARDS);
+  restrict_fourier_site( F_OFFSET(FLPRE), sizeof(complex), FORWARDS);
 
-  restrict_fourier( F_OFFSET(FLPIM), 
-	  F_OFFSET(TEMP1), F_OFFSET(TEMP2), sizeof(complex), FORWARDS);
+  restrict_fourier_site( F_OFFSET(FLPIM), sizeof(complex), FORWARDS);
 	  
   /* Compute ploop - ploop correlations */
 
@@ -879,8 +875,7 @@ int bar_corr()
 	}
 
       /* Do Fourier transform on time slice t0p1 */
-      restrict_fourier( F_OFFSET(PBP), 
-	      F_OFFSET(TEMP1), F_OFFSET(TEMP2), sizeof(complex), FORWARDS);
+      restrict_fourier_site( F_OFFSET(PBP), sizeof(complex), FORWARDS);
 
       /* Debug */
       if(node_number(0,0,0,t0p1) == mynode())
@@ -1029,8 +1024,7 @@ int bar_corr()
       /* If conserving memory were not an object, then we could wait
 	 and do the FT on the entire set at once outside the nbrand loop */
       
-      restrict_fourier(F_OFFSET(bdens[nbrand]), 
-		  F_OFFSET(TEMP1), F_OFFSET(TEMP2), sizeof(complex), FORWARDS);
+      restrict_fourier_site(F_OFFSET(bdens[nbrand]), sizeof(complex), FORWARDS);
 
       nrand = irand + 1;
       if((nrand % NRAND) == 0)
@@ -1129,9 +1123,7 @@ int bar_corr()
      since they have yet to be computed in "sngl_trace" below */
   
 
-  restrict_fourier(F_OFFSET(avg[0]), 
-		   F_OFFSET(gath1[0]), F_OFFSET(gath2[0]), 
-		   NBPAVRG*sizeof(complex), BACKWARDS);
+  restrict_fourier_site(F_OFFSET(avg[0]), NBPAVRG*sizeof(complex), BACKWARDS);
   
   g_sync();
 

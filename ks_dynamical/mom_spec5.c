@@ -45,8 +45,7 @@ int mom_spec() /* return the C.G. iteration number */
 
   /* Fix TUP Coulomb gauge - gauge links only*/
   rephase( OFF );
-  gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-      F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),0,NULL,NULL,0,NULL,NULL);
+  gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
   rephase( ON );
 
   /* Allocate array for hadron propagators. */

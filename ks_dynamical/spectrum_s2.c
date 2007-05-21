@@ -21,8 +21,7 @@ int spectrum() /* return the C.G. iteration number */
 
   /* Fix ZUP Coulomb gauge - gauge links only*/
   rephase( OFF );
-  gaugefix(ZUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-	   F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),0,NULL,NULL,0,NULL,NULL);
+  gaugefix(ZUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
   rephase( ON );
   
   mass_x2 = 2.*mass;

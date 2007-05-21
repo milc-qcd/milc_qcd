@@ -252,8 +252,7 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
 
   /* Fix TUP Coulomb gauge - gauge links only*/
   rephase( OFF );
-  gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-	   F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),0,NULL,NULL,0,NULL,NULL);
+  gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
   rephase( ON );
 #ifdef FN
   invalidate_fn_links();
