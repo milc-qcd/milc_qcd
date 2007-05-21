@@ -31,7 +31,7 @@ int initial_set()
 
     printf("type 0 for no prompts, 1 for prompts or 2 for list of prompts\n");
 	 
-    status = get_prompt(&prompt);
+    status = get_prompt(stdin, &prompt);
     if (status != 0)
     {
       printf("error in input: initial prompt\n");
@@ -39,24 +39,24 @@ int initial_set()
     }
     IF_OK 
     {
-      status += get_i(prompt, "nt",&nt);
+      status += get_i(stdin, prompt, "nt",&nt);
       printf("number of time slices = %d\n", nt);
     }
 
     IF_OK 
     {
-      status += get_i(prompt, "source_t",&source_t );
+      status += get_i(stdin, prompt, "source_t",&source_t );
       printf("source time slice = %d\n", source_t);
     }
 
     /* get couplings */
     /* beta, kappa */
-    IF_OK status += get_f(prompt, "beta",&beta );
-    IF_OK status += get_f(prompt, "kappa",&kappa );
-    IF_OK status += get_f(prompt, "approx_kappa_c",&kappa_c );
+    IF_OK status += get_f(stdin, prompt, "beta",&beta );
+    IF_OK status += get_f(stdin, prompt, "kappa",&kappa );
+    IF_OK status += get_f(stdin, prompt, "approx_kappa_c",&kappa_c );
 
     /* number of hopping parameter steps */
-    IF_OK status += get_i(prompt, "number_hopping_steps",&nhop);
+    IF_OK status += get_i(stdin, prompt, "number_hopping_steps",&nhop);
 
 
     IF_OK 
@@ -167,7 +167,7 @@ int initial_set()
      * sums 
      */
     IF_OK printf("writeflag=0 for final result only, 1 for partial sums\n");
-    IF_OK status += get_i(prompt, "writeflag",&writeflag);
+    IF_OK status += get_i(stdin, prompt, "writeflag",&writeflag);
     IF_OK
     {
       if (writeflag == WRITELAST)
@@ -206,7 +206,7 @@ int readin(int prompt)
     printf("\n\n");
 
     /* get next kappa_h 	 */
-    status = get_f(prompt, "kappa_h",&kappa_h);
+    status = get_f(stdin, prompt, "kappa_h",&kappa_h);
     if (kappa_h < -0.0001 || status != 0)
       return 1;			/* stop for negative kappas */
     if (fabs(kappa_h - kappa) < EPS)

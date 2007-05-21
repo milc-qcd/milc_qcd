@@ -4,9 +4,7 @@
 /* routines for  meson hopping expansion ascii  input */
 
 #include "w_sum_includes.h"
-
-
-extern int errno;
+#include <errno.h>
 
 /* read ascii meson propagators */
 /*
@@ -59,7 +57,11 @@ FILE *(r_ascii_m_i(char *filenam, int i1, int *file_hops))
       printf("Incorrect lattice nt %d\n", t);
       terminate(1);
     }
-    if ((fscanf(fp, "%leHELP%leHELP%d", &x1, &x2, &i_in)) != 3)
+#if PRECISION == 1
+    if ((fscanf(fp, "%e %e %d", &x1, &x2, &i_in)) != 3)
+#else
+    if ((fscanf(fp, "%le %le %d", &x1, &x2, &i_in)) != 3)
+#endif
     {
       printf("Error in reading meson header\n");
       terminate(1);
@@ -74,7 +76,11 @@ FILE *(r_ascii_m_i(char *filenam, int i1, int *file_hops))
     {
       printf("Warning: file has %d props, prog wants %d\n", i_in, i1);
     }
-    if ((fscanf(fp, "%leHELP%d", &x1, &i_in)) != 2)
+#if PRECISION == 1
+    if ((fscanf(fp, "%e %d", &x1, &i_in)) != 2)
+#else
+    if ((fscanf(fp, "%le %d", &x1, &i_in)) != 2)
+#endif
     {
       printf("Error in reading meson header\n");
       terminate(1);
@@ -84,7 +90,11 @@ FILE *(r_ascii_m_i(char *filenam, int i1, int *file_hops))
       printf("Error in reading meson header\n");
       terminate(1);
     }
-    if ((fscanf(fp, "%leHELP", &x1)) != 1)
+#if PRECISION == 1
+    if ((fscanf(fp, "%e", &x1)) != 1)
+#else
+    if ((fscanf(fp, "%le", &x1)) != 1)
+#endif
     {
       printf("Error in reading meson header\n");
       terminate(1);

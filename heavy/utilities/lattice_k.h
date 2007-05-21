@@ -37,7 +37,8 @@ typedef struct
 
 /* Definition of globals */
 
-enum io_options { RELOAD_ASCII = 90 , RELOAD_BINARY  } ; 
+/*enum io_options { RELOAD_ASCII = 90 , RELOAD_BINARY  } ; */
+#define RELOAD_BINARY 90
 
 /* The following are global scalars */
 EXTERN  int nx,ny,nz,nt;  /* lattice dimensions */

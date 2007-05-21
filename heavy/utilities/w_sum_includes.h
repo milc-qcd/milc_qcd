@@ -10,6 +10,7 @@
 #include "../../include/complex.h"
 #include "../../include/su3.h"
 #include "../../include/macros.h"
+#include "../../include/generic.h"
 #include "lattice_k.h"
 #include "../../include/io_lat.h"
 

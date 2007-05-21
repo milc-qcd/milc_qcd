@@ -7,8 +7,7 @@
  */
 
 #include "w_sum_includes.h"
-
-extern int errno;
+#include <errno.h>
 
 /* write ascii meson propagators */
 /*

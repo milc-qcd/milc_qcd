@@ -6,8 +6,8 @@
 #include "w_sum_includes.h"
 #include "../../include/int32type.h"
 #include <fcntl.h>  /** raw UNIX calls **/
+#include <errno.h>
 
-extern int errno;
 static int sixtyfourbits;
 static int byterevflag;
 

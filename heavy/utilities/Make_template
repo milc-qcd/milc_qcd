@@ -45,21 +45,26 @@ OBJECTS=  \
 
 
 #Libraries for complex numbers and su3 functions
-QCDLIB = ${LIBDIR}/su3.a ${LIBDIR}/complex.a 
+QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
 
-.c.o:
-	${CC} -c ${CFLAGS}  $*.c
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
+
+.c.o: ; ${CC} -c ${CFLAGS} $<
 
 # To force a full remake when changing targets
 LASTMAKE = .lastmake.${MAKEFILE}.${MYTARGET}
 
-${LASTMAKE}:
+${LASTMAKE}: ${ALL_MAKES}
 	touch .lastmake.humor_irix; /bin/rm -f .lastmake.*
-	make -f ${MAKEFILE} clean
+	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 
 # To force a remake when changing make files
-ALL_MAKES = Make_template ${MAKEFILE}
+ALL_MAKES = \
+  Make_template \
+  ${MAKEFILE} \
+  ../../Make_template_qop \
+  ../../Make_template_scidac
 
 ${OBJECTS} ${EXTRA_OBJECTS} : ${HEADERS} ${EXTRA_HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
