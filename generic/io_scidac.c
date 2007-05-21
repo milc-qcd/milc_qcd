@@ -240,6 +240,104 @@ int write_F3_M_from_field(QIO_Writer *outfile, char *xml_write_lattice,
   return 0;
 }
 
+/* Factory function for moving a real array field from site structure to
+   single precision output */
+
+void vget_F_R_from_site(char *buf, size_t index, int count, void *arg)
+{
+  int dir;
+  /* Assume output field is single precision */
+  float *dest = (float *)buf;
+  /* arg contains pointer to field offset value */
+  field_offset src_off = *((field_offset *)arg);
+  site *s = &lattice[index];
+  /* Source is in the prevailing precision */
+  Real *src_val = (Real *)F_PT(s,src_off);
+
+  /* Copy, changing precision, if necessary */
+
+  for(dir = 0; dir < count; dir++)
+    *(dest + dir) = *(src_val + dir);
+
+}
+
+/* Factory function for moving a real array field from a flat array to
+   single precision output */
+
+void vget_F_R_from_field(char *buf, size_t index, int count, void *arg)
+{
+  int dir;
+  /* Assume output lattice is single precision */
+  float *dest = (float *)buf;
+  /* arg contains pointer to the temp real array */
+  Real *src = (Real *)arg;
+  /* Source can be any precision */
+  Real *src_val = src + index * count;
+
+  /* Copy, changing precision, if necessary */
+  for(dir = 0; dir < count; dir++)
+    *(dest + dir) = *(src_val + dir);
+}
+
+int write_F_R_from_site(QIO_Writer *outfile, char *xml_write_lattice,
+	       field_offset src, int count){
+  QIO_String *xml_record_out;
+  int status;
+  QIO_RecordInfo *rec_info;
+  /* We assume output precision is single */
+  char qdptype[] = "QDP_F_Real";
+  char prec[] = "F";
+  int datum_size = sizeof(float);
+  int word_size = sizeof(float);
+
+  /* Create the record info for the field */
+  rec_info = QIO_create_record_info(QIO_FIELD, qdptype, prec, 0,
+				    0, datum_size, count);
+  /* Create the record XML for the field */
+  xml_record_out = QIO_string_create();
+  QIO_string_set(xml_record_out,xml_write_lattice);
+
+  /* Write the record for the field */
+  status = QIO_write(outfile, rec_info, xml_record_out, vget_F_R_from_site, 
+		     count*datum_size, word_size, (void *)&src);
+ if(status != QIO_SUCCESS)return 1;
+
+  QIO_destroy_record_info(rec_info);
+  QIO_string_destroy(xml_record_out);
+
+  return 0;
+}
+
+int write_F_R_from_field(QIO_Writer *outfile, char *xml_write_field,
+			 Real *src, int count){
+  QIO_String *xml_record_out;
+  int status;
+  QIO_RecordInfo *rec_info;
+  /* We assume output precision is single */
+  char qdptype[] = "QDP_F_Real";
+  char prec[] = "F";
+  int datum_size = sizeof(float);
+  int word_size = sizeof(float);
+
+  /* Create the record info for the field */
+  rec_info = QIO_create_record_info(QIO_FIELD, qdptype, prec, 0,
+				    0, datum_size, count);
+  /* Create the record XML for the field */
+  xml_record_out = QIO_string_create();
+  QIO_string_set(xml_record_out,xml_write_field);
+
+  /* Write the record for the field */
+  status = QIO_write(outfile, rec_info, xml_record_out, 
+		     vget_F_R_from_field, count*datum_size, word_size, 
+		     (void *)src);
+  if(status != QIO_SUCCESS)return 1;
+
+  QIO_destroy_record_info(rec_info);
+  QIO_string_destroy(xml_record_out);
+
+  return 0;
+}
+
 /* Factory function for moving random generator state from site structure to
    output */
 void vget_S_from_site(char *buf, size_t index, int count, void *arg)
@@ -401,6 +499,90 @@ int read_S_to_site(QIO_Reader *infile, field_offset dest)
   xml_record_in = QIO_string_create();
   status = QIO_read(infile, &rec_info, xml_record_in, 
 		    vput_S_to_site, datum_size*count, word_size, (void *)&dest);
+  node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in));
+  if(status != QIO_SUCCESS)return 1;
+
+  node0_printf("Checksums %x %x\n",
+	       QIO_get_reader_last_checksuma(infile),
+	       QIO_get_reader_last_checksumb(infile));
+
+  QIO_string_destroy(xml_record_in);
+  return 0;
+}
+
+/* Factory function for moving single precision real field from input
+   to site structure */
+void vput_F_R_to_site(char *buf, size_t index, int count, void *arg)
+{
+  int dir;
+  /* Assume input lattice is single precision, 3 colors */
+  float *src = (float *)buf;
+  field_offset dest = *((field_offset *)arg);
+  site *s = &lattice[index];
+  /* Destination can be any precision */
+  Real *dest_val = (Real *)F_PT(s,dest);
+  
+  /* Copy, changing precision, if necessary */
+  for (dir=0;dir<count;dir++)
+    *(dest_val + dir) = *(src + dir);
+}
+
+/* Factory function for moving single precision real field from input
+   to field */
+void vput_F_R_to_field(char *buf, size_t index, int count, void *arg)
+{
+  int dir;
+  /* Assume input lattice is single precision, 3 colors */
+  float *src = (float *)buf;
+  Real *dest = (Real *)arg;
+  /* Destination can be any precision */
+  Real *dest_val = dest + index * count;
+  
+  /* Copy, changing precision, if necessary */
+  for (dir=0;dir<count;dir++)
+    *(dest_val + dir) = *(src + dir);
+}
+
+/* Read a real field */
+int read_F_R_to_site(QIO_Reader *infile, field_offset dest, int count)
+{
+  QIO_String *xml_record_in;
+  QIO_RecordInfo rec_info;
+  int status;
+  /* We assume input precision is single */
+  int datum_size = sizeof(float);
+  int word_size = sizeof(float);
+  
+  /* Read the field record */
+  xml_record_in = QIO_string_create();
+  status = QIO_read(infile, &rec_info, xml_record_in, 
+		    vput_F_R_to_site, datum_size*count, word_size, (void *)&dest);
+  node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in));
+  if(status != QIO_SUCCESS)return 1;
+
+  node0_printf("Checksums %x %x\n",
+	       QIO_get_reader_last_checksuma(infile),
+	       QIO_get_reader_last_checksumb(infile));
+
+  QIO_string_destroy(xml_record_in);
+  return 0;
+}
+
+/* Read a real field */
+int read_F_R_to_field(QIO_Reader *infile, Real *dest, int count)
+{
+  QIO_String *xml_record_in;
+  QIO_RecordInfo rec_info;
+  int status;
+  /* We assume input precision is single */
+  int datum_size = sizeof(float);
+  int word_size = sizeof(float);
+  
+  /* Read the field record */
+  xml_record_in = QIO_string_create();
+  status = QIO_read(infile, &rec_info, xml_record_in, 
+		    vput_F_R_to_field, datum_size*count, word_size, 
+		    (void *)dest);
   node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in));
   if(status != QIO_SUCCESS)return 1;
 
@@ -809,5 +991,144 @@ void save_random_state_scidac_from_site(char *filename,
 
   close_output(outfile);
 }
+
+/* Restore a real field */
+
+void restore_real_scidac_to_field(char *filename, Real *dest, int count){
+  QIO_Layout layout;
+  QIO_Reader *infile;
+  int status;
+
+  QIO_verbose(QIO_VERB_OFF);
+
+  /* Build the layout structure */
+  build_qio_layout(&layout);
+
+  /* Open file for reading */
+  infile = open_scidac_input(filename, &layout, QIO_SERIAL);
+  if(infile == NULL)terminate(1);
+
+  /* Read the lattice field */
+  status = read_F_R_to_field(infile, dest, count);
+  if(status)terminate(1);
+
+  close_input(infile);
+}
+
+
+/* Restore a real field */
+
+void restore_real_scidac_to_site(char *filename, field_offset dest, int count)
+{
+  QIO_Layout layout;
+  QIO_Reader *infile;
+  int status;
+
+  QIO_verbose(QIO_VERB_OFF);
+
+  /* Build the layout structure */
+  build_qio_layout(&layout);
+
+  /* Open file for reading */
+  infile = open_scidac_input(filename, &layout, QIO_SERIAL);
+  if(infile == NULL)terminate(1);
+
+  /* Read the lattice field */
+  status = read_F_R_to_site(infile, dest, count);
+  if(status)terminate(1);
+
+  close_input(infile);
+}
+
+
+/* Save a real field */
+
+void save_real_scidac_from_field(char *filename, 
+        char *filexml, char *recxml, int volfmt, Real *src, int count)
+{
+  QIO_Layout layout;
+  QIO_Writer *outfile;
+  int status;
+
+  QIO_verbose(QIO_VERB_OFF);
+
+  /* Build the layout structure */
+  build_qio_layout(&layout);
+
+  /* Open file for writing */
+  outfile = open_scidac_output(filename, volfmt, QIO_SERIAL,
+			       QIO_ILDGNO, NULL, &layout, filexml);
+  if(outfile == NULL)terminate(1);
+
+  /* Write the lattice field */
+  status = write_F_R_from_field(outfile, recxml, src, count);
+  if(status)terminate(1);
+  
+  /* Write information */
+  if(volfmt == QIO_SINGLEFILE){
+    node0_printf("Saved real field serially to binary file %s\n",
+		 filename);
+  }
+  else if(volfmt == QIO_MULTIFILE){
+    node0_printf("Saved real field in multifile format to binary file %s\n",
+	   filename);
+  }
+  else if(volfmt == QIO_PARTFILE){
+    node0_printf("Saved real field in partition format to binary file %s\n",
+	   filename);
+  }
+
+  node0_printf("Checksums %x %x\n",
+	       QIO_get_writer_last_checksuma(outfile),
+	       QIO_get_writer_last_checksumb(outfile));
+
+  close_output(outfile);
+}
+
+
+/* Save a real field */
+
+void save_real_scidac_from_site(char *filename, 
+  char *filexml, char *recxml, int volfmt, field_offset src, int count)
+{
+  QIO_Layout layout;
+  QIO_Writer *outfile;
+  int status;
+
+  QIO_verbose(QIO_VERB_OFF);
+
+  /* Build the layout structure */
+  build_qio_layout(&layout);
+
+  /* Open file for writing */
+  outfile = open_scidac_output(filename, volfmt, QIO_SERIAL,
+			       QIO_ILDGNO, NULL, &layout, filexml);
+  if(outfile == NULL)terminate(1);
+
+  /* Write the lattice field */
+  status = write_F_R_from_site(outfile, recxml, src, count);
+  if(status)terminate(1);
+  
+  /* Write information */
+  if(volfmt == QIO_SINGLEFILE){
+    node0_printf("Saved real field serially to binary file %s\n",
+		 filename);
+  }
+  else if(volfmt == QIO_MULTIFILE){
+    node0_printf("Saved real field in multifile format to binary file %s\n",
+	   filename);
+  }
+  else if(volfmt == QIO_PARTFILE){
+    node0_printf("Saved real field in partition format to binary file %s\n",
+	   filename);
+  }
+
+  node0_printf("Checksums %x %x\n",
+	       QIO_get_writer_last_checksuma(outfile),
+	       QIO_get_writer_last_checksumb(outfile));
+
+  close_output(outfile);
+}
+
 
 
