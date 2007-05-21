@@ -6,20 +6,21 @@
 
 /* Structure defining quark inversion parameters for most inverters */
 typedef struct {
-  int min;            /* minimum number of iterations */
+  int prec;           /* precision of the inversion 1 = single; 2 = double */
+  int min;            /* minimum number of iterations (being phased out) */
   int max;            /* maximum number of iterations per restart */
   int nrestart;       /* maximum restarts */
   int parity;         /* EVEN, ODD, or EVENANDODD (for some inverters) */
   int start_flag;     /* 0: use a zero initial guess; 1: use dest */
   int nsrc;           /* Number of source vectors */
-  Real resid;        /* desired residual - 
-			 normalized as sqrt(r*r)/sqrt(src_e*src_e */
-  Real size_r;       /* resulting residual */
+  Real resid;         /* desired residual - 
+			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
+  Real relresid;      /* desired relative residual */
+  Real final_rsq;     /* Final true (absolute) residual */
+  Real final_relrsq;  /* Final relative residual */
+  Real size_r;        /* resulting cumulative residual */
+  Real size_relr;     /* resulting cumulative relative residual */
   int converged;      /* returned 0 if not converged; 1 if converged */
-  field_offset wv1;   /* ugly wilson_vector temporary */
-  field_offset wv2;   /* ugly wilson_vector temporary */
-  field_offset wv3;   /* ugly wilson_vector temporary */
-  field_offset wv4;   /* ugly wilson_vector temporary */
                       /* Add further parameters as needed...  */
 } quark_invert_control;
 
@@ -48,14 +49,16 @@ typedef struct {
 /* Add other members to suit the generic_wilson code 
    that builds the source.  Ignore the members you don't need. */
 typedef struct {
-  int color;          /* source color required */
-  int spin;           /* source spin required */
   int type;           /* source type for most source builders */
   char descrp[30];    /* alpha description for most */
+  int color;          /* source color */
+  int spin;           /* source spin  */
   int wall_cutoff;    /* half size of box for w_source_h */
   int parity;         /* even or odd sites for w_source_h */
-  Real r0;           /* source size for w_source */
+  Real r0;            /* source size for gaussian, width for gauge invt  */
+  int iters;          /* iterations for gauge invariant source */
   int x0,y0,z0,t0;    /* source coordinates for most */ 
+  char source_file[MAXFILENAME]; /* file name for some sources */
   int src_pointer ;   /* smearing function (for the moment, only
 		         clover_finite_p_vary/create_wilson_source.c) */
 } wilson_quark_source;
