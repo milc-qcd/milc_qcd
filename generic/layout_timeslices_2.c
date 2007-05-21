@@ -94,8 +94,8 @@ if( mynode()==0 && sites_on_node%2 != 0)
 
     machine_coordinates[XUP] = 0;
     machine_coordinates[YUP] = 0;
-    machine_coordinatss[ZUP] = mynode() % nzcuts;
-    machine_coordinatss[TUP] = mynode()/zcuts;
+    machine_coordinates[ZUP] = mynode() % nzcuts;
+    machine_coordinates[TUP] = mynode()/zcuts;
 }
 
 int node_number(int x, int y, int z, int t) {
