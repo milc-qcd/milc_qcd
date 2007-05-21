@@ -178,8 +178,7 @@ int main(int argc,char *argv[])
 	  if(this_node == 0) 
 	    printf("Fixing to Coulomb gauge\n");
 	  STARTIOTIME;
-	  gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL,
-		   F_OFFSET(mp),F_OFFSET(chi),0,NULL,NULL,0,NULL,NULL);
+	  gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
 	  STOPIOTIME("gauge fix");
 	}
       else
@@ -282,6 +281,7 @@ int main(int argc,char *argv[])
 	   else MinCG = 0;
 
 	    /* Load inversion control structure */
+	    qic.prec = PRECISION;
 	    qic.min = MinCG;
 	    qic.max = MaxCG;
 	    qic.nrestart = nrestart;
@@ -294,27 +294,17 @@ int main(int argc,char *argv[])
 	    dcp.U0 = u0;
 
 #ifdef BI
-	    /* Load temporaries specific to inverter */
-	    qic.wv1 = F_OFFSET(tmp);
-	    qic.wv2 = F_OFFSET(mp);
-	    qic.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-	    qic.wv4 = F_OFFSET(sss);
-
 	    /* compute the propagator.  Result in psi. */
 	    avs_iters 
-	      = (Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
+	      = (Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
 					  w_source,&wqs[k],
-					  bicgilu_cl,&qic,(void *)&dcp);
+					  bicgilu_cl_site,&qic,(void *)&dcp);
 #else
-	    /* Load temporaries specific to inverter */
-	    qic.wv1 = F_OFFSET(tmp);
-	    qic.wv2 = F_OFFSET(mp);
-	    
 	    /* compute the propagator.  Result in psi. */
 	    avs_iters = 
-	      (Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
+	      (Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
 					w_source,&wqs[k],
-					cgilu_cl,&qic,(void *)&dcp);
+					cgilu_cl_site,&qic,(void *)&dcp);
 #endif
 	    avm_iters += avs_iters;
 	    
@@ -478,7 +468,7 @@ int main(int argc,char *argv[])
 		  if(pmes_prop_done[j][k] == 0) {
 		    STARTPRTIME;
 		    for(color=0;color<3;color++){
-		      w_meson(F_OFFSET(quark_propagator.c[color]),
+		      w_meson_site(F_OFFSET(quark_propagator.c[color]),
 			      F_OFFSET(quark_prop2.c[color]), pmes_prop[j][k]);
 		    }
 		    pmes_prop_done[j][k] = 1;
