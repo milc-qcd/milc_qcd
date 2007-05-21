@@ -37,8 +37,20 @@ void restore_color_matrix_scidac_to_site(char *filename,
 void restore_color_matrix_scidac_to_field(char *filename, 
 					su3_matrix *dest, int count);
 void save_random_state_scidac_from_site(char *filename, 
-		char *filexml, char *recxml, int volfmt, field_offset src);
+	char *filexml, char *recxml, int volfmt, field_offset src);
+
 void restore_random_state_scidac_to_site(char *filename, field_offset dest);
+
+void save_real_scidac_from_field(char *filename, 
+    char *filexml, char *recxml, int volfmt, Real *src, int count);
+
+void save_real_scidac_from_site(char *filename, 
+    char *filexml, char *recxml, int volfmt, field_offset src, int count);
+
+void restore_real_scidac_to_field(char *filename, Real *dest, int count);
+
+void restore_real_scidac_to_site(char *filename, field_offset dest, int count);
+
 /**********************************************************************/
 /* In gauge_info.c (application dependent) */
 
