@@ -5,6 +5,14 @@
    CD 10/15/06 Moved dm_du0 stuff to fermion_links_fn_dmdu0.c
 */
 
+/* External entry points
+
+   load_fn_links
+   load_fn_links_dmdu0 (ifdef DM_DU0)
+   invalidate_fn_links
+
+ */
+
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #define IMP_QUARK_ACTION_INFO_ONLY
 #include <quark_action.h>
@@ -18,13 +26,6 @@
 #else
 #define special_alloc malloc
 #define special_free free
-#endif
-
-#ifdef  ASQ_OPTIMIZED_FATTENING   /* Asqtad action only, "_fn" executables */
-static void compute_gen_staple_site(su3_matrix *staple, int mu, int nu,
-		     field_offset link, su3_matrix *fatlink, Real coef ) ;
-static void compute_gen_staple_field(su3_matrix *staple, int mu, int nu, 
-		      su3_matrix *link, su3_matrix *fatlink, Real coef);
 #endif
 
 static int valid_fn_links = 0;
@@ -81,180 +82,3 @@ invalidate_fn_links( void )
 }
 
 
-#ifdef  ASQ_OPTIMIZED_FATTENING   /* Asqtad action only, "_fn" executables */
-#ifndef FN
-BOMB THE COMPILE
-#endif
-static void compute_gen_staple_site(su3_matrix *staple, int mu, int nu, 
-		     field_offset link, su3_matrix* fatlink, Real coef) {
-  su3_matrix tmat1,tmat2;
-  msg_tag *mtag0,*mtag1;
-  su3_matrix *tempmat = NULL;
-  register site *s ;
-  register int i ;
-  register su3_matrix *fat1;
-
-  /* Computes the staple :
-                   mu
-                +-------+
-          nu	|	|
-		|	|
-		X	X
-    Where the mu link can be any su3_matrix. The result is saved in staple.
-    if staple==NULL then the result is not saved.
-    It also adds the computed staple to the fatlink[mu] with weight coef.
-  */
-
-  /* Upper staple */
-  mtag0 = start_gather_site( link, sizeof(su3_matrix), nu, EVENANDODD, gen_pt[0] );
-  mtag1 = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix), mu, 
-			EVENANDODD, gen_pt[1] );
-  wait_gather(mtag0);
-  wait_gather(mtag1);
-  
-  if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
-      mult_su3_na( (su3_matrix *)gen_pt[0][i],
-		   (su3_matrix *)gen_pt[1][i], &tmat1 );
-      mult_su3_nn( &(s->link[nu]), &tmat1, &staple[i] );
-    }
-  }
-  else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
-      mult_su3_na( (su3_matrix *)gen_pt[0][i],
-		   (su3_matrix *)gen_pt[1][i], &tmat1 );
-      mult_su3_nn( &(s->link[nu]), &tmat1, &tmat2 );
-      fat1 = &(fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix(fat1, &tmat2, coef,
-				 fat1) ;
-    }
-  }
-  cleanup_gather(mtag0);
-  cleanup_gather(mtag1);
-
-  /* lower staple */
-  tempmat = (su3_matrix *)special_alloc( sites_on_node*sizeof(su3_matrix) );
-  mtag0 = start_gather_site( F_OFFSET(link[nu]),
-			sizeof(su3_matrix), mu, EVENANDODD, gen_pt[0] );
-  wait_gather(mtag0);
-  FORALLSITES(i,s){
-    mult_su3_an( &(s->link[nu]),(su3_matrix *)F_PT(s,link), &tmat1 );
-    mult_su3_nn( &(tmat1),(su3_matrix *)gen_pt[0][i], &(tempmat[i]) );
-  }
-  cleanup_gather(mtag0);
-  mtag0 = start_gather_field( tempmat, sizeof(su3_matrix),
-				  OPP_DIR(nu), EVENANDODD, gen_pt[0] );
-  wait_gather(mtag0);
-
-  if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
-      add_su3_matrix( &staple[i],(su3_matrix *)gen_pt[0][i], 
-		      &staple[i] );
-      fat1 = &(fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat1,
-				 &staple[i], coef, 
-				 fat1 );
-    }
-  }
-  else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
-      fat1 = &(fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat1,
-				 (su3_matrix *)gen_pt[0][i], coef, 
-				 fat1 );
-    }
-  }
-
-  free(tempmat); tempmat = NULL;
-  cleanup_gather(mtag0);
-} /* compute_gen_staple_site */
-#endif  /* ASQ_OPTIMIZED_FATTENING   */
-
-#ifdef  ASQ_OPTIMIZED_FATTENING   /* Asqtad action only, "_fn" executables */
-#ifndef FN
-BOMB THE COMPILE
-#endif
-static void compute_gen_staple_field(su3_matrix *staple, int mu, int nu, 
-		      su3_matrix *link, su3_matrix *fatlink, Real coef) {
-  su3_matrix tmat1,tmat2;
-  msg_tag *mtag0,*mtag1;
-  su3_matrix *tempmat = NULL;
-  register site *s ;
-  register int i ;
-  register su3_matrix *fat1;
-
-  /* Computes the staple :
-                   mu
-                +-------+
-          nu	|	|
-		|	|
-		X	X
-    Where the mu link can be any su3_matrix. The result is saved in staple.
-    if staple==NULL then the result is not saved.
-    It also adds the computed staple to fatlink[mu] with weight coef.
-  */
-
-  /* Upper staple */
-  mtag0 = start_gather_field( link, sizeof(su3_matrix), nu, EVENANDODD, gen_pt[0] );
-  mtag1 = start_gather_site( F_OFFSET(link[nu]), sizeof(su3_matrix), mu, 
-			EVENANDODD, gen_pt[1] );
-  wait_gather(mtag0);
-  wait_gather(mtag1);
-  
-  if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
-      mult_su3_na( (su3_matrix *)gen_pt[0][i],
-		   (su3_matrix *)gen_pt[1][i], &tmat1 );
-      mult_su3_nn( &(s->link[nu]), &tmat1, &staple[i] );
-    }
-  }
-  else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
-      mult_su3_na( (su3_matrix *)gen_pt[0][i],
-		   (su3_matrix *)gen_pt[1][i], &tmat1 );
-      mult_su3_nn( &(s->link[nu]), &tmat1, &tmat2 );
-      fat1 = &(fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix(fat1, &tmat2, coef,
-				 fat1) ;
-    }
-  }
-  cleanup_gather(mtag0);
-  cleanup_gather(mtag1);
-
-  /* lower staple */
-  tempmat = (su3_matrix *)special_alloc( sites_on_node*sizeof(su3_matrix) );
-  mtag0 = start_gather_site( F_OFFSET(link[nu]),
-			sizeof(su3_matrix), mu, EVENANDODD, gen_pt[0] );
-  wait_gather(mtag0);
-  FORALLSITES(i,s){
-    mult_su3_an( &(s->link[nu]),&link[i], &tmat1 );
-    mult_su3_nn( &(tmat1),(su3_matrix *)gen_pt[0][i], &(tempmat[i]) );
-  }
-  cleanup_gather(mtag0);
-  mtag0 = start_gather_field( tempmat, sizeof(su3_matrix),
-				  OPP_DIR(nu), EVENANDODD, gen_pt[0] );
-  wait_gather(mtag0);
-
-  if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
-      add_su3_matrix( &staple[i],(su3_matrix *)gen_pt[0][i], 
-		      &staple[i] );
-      fat1 = &(fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat1,
-				 &staple[i], coef, 
-				 fat1 );
-    }
-  }
-  else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
-      fat1 = &(fatlink[4*i+mu]);
-      scalar_mult_add_su3_matrix( fat1,
-				 (su3_matrix *)gen_pt[0][i], coef, 
-				 fat1 );
-    }
-  }
-
-  special_free(tempmat); tempmat = NULL;
-  cleanup_gather(mtag0);
-} /* compute_gen_staple_field */
-#endif  /* ASQ_OPTIMIZED_FATTENING   */

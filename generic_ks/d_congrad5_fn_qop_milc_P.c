@@ -114,7 +114,9 @@ void QOP_asqtad_invert(QOP_info_t *info,
 #endif
 
   MYREAL final_flop;
+#ifdef CGTIME
   char *qop_prec[2] = { "F", "D" };
+#endif
   
   /* Timing */
   

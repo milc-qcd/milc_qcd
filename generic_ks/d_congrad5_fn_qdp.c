@@ -8,23 +8,72 @@
 #include "../include/generic_qdp.h"
 #include "../include/generic_ks_qdp.h"
 
-/* Standard MILC interface for the Asqtad inverter */
+/* New API for site arguments */
+
+int 
+ks_congrad_site( field_offset milc_src, field_offset milc_sol, 
+		 quark_invert_control *qic, Real mass )
+{
+  int iterations_used;
+
+  if(qic->prec == 1)
+    iterations_used = 
+      ks_congrad_milc2qdp_F( milc_src, milc_sol, qic, mass );
+  else
+    iterations_used = 
+      ks_congrad_milc2qdp_D( milc_src, milc_sol, qic, mass );
+  
+  total_iters += iterations_used;
+  return iterations_used;
+}
+
+/* New API for field arguments */
+
+int 
+ks_congrad_field( su3_vector *milc_src, su3_vector *milc_sol, 
+		  quark_invert_control *qic, Real mass )
+{
+  int iterations_used;
+
+  if(qic->prec == 1)
+    iterations_used = 
+      ks_congrad_milcfield2qdp_F( milc_src, milc_sol, qic, mass );
+  else
+    iterations_used = 
+      ks_congrad_milcfield2qdp_D( milc_src, milc_sol, qic, mass );
+  
+  total_iters += iterations_used;
+  return iterations_used;
+}
+
+
+/* Traditional MILC API for site arguments and no relative residual test */
 
 int
 ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
-	   int niter, int nrestart, Real rsqmin, int prec, int parity, 
+	   int niter, int nrestart, Real rsqmin, int prec, int milc_parity, 
 	   Real *final_rsq_ptr)
 {
   int iteration;
+  quark_invert_control qic;
+
+  /* Pack structure */
+  qic.prec      = prec;
+  qic.parity    = milc_parity;
+  qic.max       = niter;
+  qic.nrestart  = nrestart;
+  qic.resid     = rsqmin;
+  qic.relresid  = 0;     /* Suppresses this test */
 
   if(prec == 1)
     iteration = 
-      ks_congrad_milc2qdp_F(f_src, f_dest, mass, niter, nrestart, 
-			    rsqmin, parity, final_rsq_ptr);
+      ks_congrad_milc2qdp_F(f_src, f_dest, &qic, mass );
   else
     iteration = 
-      ks_congrad_milc2qdp_D(f_src, f_dest, mass, niter, nrestart, 
-			    rsqmin, parity, final_rsq_ptr);
+      ks_congrad_milc2qdp_D(f_src, f_dest, &qic, mass );
   
+  *final_rsq_ptr = qic.final_rsq;
+  total_iters += iteration;
   return iteration;
 }
+

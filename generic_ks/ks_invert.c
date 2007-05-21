@@ -54,4 +54,4 @@ int ks_invert( /* Return value is number of iterations taken */
   
   qic->min = Minsav;
   return tot_iters;
-} /* wilson_invert.c */
+} /* ks_invert.c */

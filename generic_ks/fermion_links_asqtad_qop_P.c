@@ -23,25 +23,27 @@
 
 #if ( QOP_Precision == 1 )
 
-#define MYREAL float
-#define MYSU3_MATRIX fsu3_matrix
 #define LOAD_QOP_ASQTAD_COEFFS load_qop_F_asqtad_coeffs
 #define LOAD_FN_LINKS load_fn_links_F
 #define LOAD_FN_LINKS_DMDU0 load_fn_links_dmdu0_F
+#define CREATE_L_FROM_FIELDS create_F_L_from_fields
+#define CREATE_L_FROM_SITE_GAUGE create_F_L_from_site_gauge
 #define CREATE_QOP_ASQTAD_FERMION_LINKS create_qop_F_asqtad_fermion_links
 #define DESTROY_QOP_ASQTAD_FERMION_LINKS destroy_qop_F_asqtad_fermion_links
 #define INVALIDATE_FN_LINKS invalidate_fn_links_F
+#define UNLOAD_L_TO_FIELDS unload_F_L_to_fields
 
 #else
 
-#define MYREAL double
-#define MYSU3_MATRIX dsu3_matrix
 #define LOAD_QOP_ASQTAD_COEFFS load_qop_D_asqtad_coeffs
 #define LOAD_FN_LINKS load_fn_links_D
 #define LOAD_FN_LINKS_DMDU0 load_fn_links_dmdu0_D
+#define CREATE_L_FROM_FIELDS create_D_L_from_fields
+#define CREATE_L_FROM_SITE_GAUGE create_D_L_from_site_gauge
 #define CREATE_QOP_ASQTAD_FERMION_LINKS create_qop_D_asqtad_fermion_links
 #define DESTROY_QOP_ASQTAD_FERMION_LINKS destroy_qop_D_asqtad_fermion_links
 #define INVALIDATE_FN_LINKS invalidate_fn_links_D
+#define UNLOAD_L_TO_FIELDS unload_D_L_to_fields
 
 #endif
 
@@ -61,47 +63,16 @@ static QOP_FermionLinksAsqtad *qop_links = NULL;
 static int valid_fn_links = 0;
 static int valid_fn_links_dmdu0 = 0;
 
-/*********************************************************************/
-/* Create QOP links from QOP gauge field                             */
-/*********************************************************************/
-static QOP_FermionLinksAsqtad *
-create_qop_asqtad_L_from_G(Real *act_path_coeff,
-			   QOP_GaugeField *links)
-{
-  QOP_info_t info;
-  QOP_asqtad_coeffs_t coeffs;
-#ifdef LLTIME
-  double nflopfl = 61632;
-  double nflopll = 1804;
-  double nflop = nflopfl + nflopll;
-#endif
-  double dtime = -dclock();
-  QOP_FermionLinksAsqtad *qop_l;
-
-  LOAD_QOP_ASQTAD_COEFFS(&coeffs, 0.5, act_path_coeff);
-
-  qop_l = QOP_asqtad_create_L_from_G(&info, &coeffs, links);
-
-  dtime += dclock();
-#ifdef LLTIME
-  node0_printf("LLTIME(total): time = %e (Asqtad opt) mflops = %e\n",dtime,
-         (Real)nflop*volume/(1e6*dtime*numnodes()) );
-#endif
-  return qop_l;
-}
-
 #ifdef HAVE_NO_CREATE_L_FROM_G
 
-/*********************************************************************/
-/* Create QOP and MILC fat links from MILC gauge field               */
-/*********************************************************************/
+/***********************************************************************/
+/* Create QOP and MILC fat links from MILC gauge field using MILC code */
+/***********************************************************************/
 static QOP_FermionLinksAsqtad *
 create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
 		    Real *act_path_coeff) {
 
   double remaptime;
-  MYSU3_MATRIX **fatlinks;
-  MYSU3_MATRIX **longlinks;
   QOP_FermionLinksAsqtad *qop_l;
   char myname[] = "create_asqtad_links";
 
@@ -116,24 +87,19 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
     terminate(1);
   }
 
-  /* Use MILC link fattening routine */
+  /* Use MILC link fattening routines */
   load_fatlinks(&t_fatlink, get_quark_path_coeff(), get_q_paths());
   load_longlinks(&t_longlink);
 
   *t_fl = t_fatlink;   /* Identity copy */
   *t_ll = t_longlink;  /* Identity copy */
 
-  /* Map to raw field including possible change of precision */
+  /* Map to MILC fat and long links to QOP including possible change
+     of precision */
   remaptime = -dclock();
-  fatlinks  = create_raw4_G_from_field(*t_fl, EVENANDODD);
-  longlinks = create_raw4_G_from_field(*t_ll, EVENANDODD);
+  qop_l = CREATE_L_FROM_FIELDS(*t_fl, *t_ll, EVENANDODD);
   remaptime += dclock();
 
-  /* Create QOP link object from raw fields */
-  qop_l = QOP_asqtad_create_L_from_raw(fatlinks, longlinks, QOP_EVENODD);
-
-  destroy_raw4_G(fatlinks);
-  destroy_raw4_G(longlinks);
 #ifdef LLTIME
 #ifdef REMAP
   node0_printf("LLREMAP:  time = %e\n",remaptime);
@@ -145,20 +111,26 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
 
 #else
 
-/*********************************************************************/
-/* Create QOP and MILC fat links from MILC gauge field               */
-/*********************************************************************/
+/**********************************************************************/
+/* Create QOP and MILC fat links from MILC gauge field using QOP code */
+/**********************************************************************/
 static QOP_FermionLinksAsqtad *
 create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
 		    Real *act_path_coeff) {
 
-  QOP_GaugeField *links;
-  MYSU3_MATRIX **fatlinks;
-  MYSU3_MATRIX **longlinks;
-  MYSU3_MATRIX **raw_gauge_links;
-  double remaptime = -dclock();
-  QOP_FermionLinksAsqtad *qop_l;
   char myname[] = "create_asqtad_links";
+  QOP_FermionLinksAsqtad *qop_l;
+  QOP_info_t info;
+  QOP_asqtad_coeffs_t coeffs;
+#ifdef LLTIME
+  double nflopfl = 61632;
+  double nflopll = 1804;
+  double nflop = nflopfl + nflopll;
+#endif
+  double dtime;
+  double remaptime = -dclock();
+
+  LOAD_QOP_ASQTAD_COEFFS(&coeffs, 0.5, act_path_coeff);
 
   if( phases_in != 1){
     node0_printf("load_fermion_links_fn: BOTCH: needs phases in\n");
@@ -171,21 +143,12 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
     terminate(1);
   }
 
-  fatlinks = create_raw4_G();
-  if(fatlinks == NULL)terminate(1);
-
-  longlinks = create_raw4_G();
-  if(longlinks == NULL)terminate(1);
-
-  raw_gauge_links = create_raw4_G_from_site(F_OFFSET(link),EVENANDODD);
-  links = QOP_create_G_from_raw((MYREAL **)(raw_gauge_links),QOP_EVENODD);
-  destroy_raw4_G(raw_gauge_links);   raw_gauge_links = NULL;
-
   remaptime += dclock();
-  qop_l = create_qop_asqtad_L_from_G(act_path_coeff, links);
+  dtime  = -dclock();
+  qop_l = CREATE_L_FROM_SITE_GAUGE( &info, &coeffs, F_OFFSET(link), 
+					EVENANDODD );
+  dtime += dclock();
   remaptime -= dclock();
-  QOP_asqtad_extract_L_to_raw((MYREAL **)fatlinks, (MYREAL **)longlinks, 
-			      qop_l, QOP_EVENODD);
 
   /* Allocate space for t_fl if NULL */
   if(*t_fl == NULL){
@@ -195,7 +158,7 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
       terminate(1);
     }
   }
-  
+
   /* Allocate space for t_ll if NULL and we are doing both fat and long */
   if(*t_ll == NULL && both){
     *t_ll = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
@@ -204,14 +167,16 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
       terminate(1);
     }
   }
-  
-  unload_raw4_G_to_field(*t_fl,  fatlinks,  EVENANDODD);
-  if(both)unload_raw4_G_to_field(*t_ll, longlinks, EVENANDODD);
-  destroy_raw4_G(fatlinks);
-  destroy_raw4_G(longlinks);
-  QOP_destroy_G(links);
+
+  UNLOAD_L_TO_FIELDS( *t_fl, *t_ll, qop_l, EVENANDODD );
 
   remaptime += dclock();
+
+#ifdef LLTIME
+  node0_printf("LLTIME(total): time = %e (Asqtad opt) mflops = %e\n",dtime,
+         (Real)nflop*volume/(1e6*dtime*numnodes()) );
+#endif
+
 #ifdef LLTIME
 #ifdef REMAP
   node0_printf("LLREMAP:  time = %e\n",remaptime);

@@ -6,6 +6,7 @@
 /* 4/03/00 Modified calling sequence to permit general src dest
    and changed name from congrad to ks_congrad CD */
 /* 9/30/01 standardized prefetching CD */
+/* 5/6/07   C. DeTar True residual stopping criterion now. */
 
 /* Traditional algorithm: */
 /* The dslash_site code in this version overlaps computation and gathers
@@ -18,629 +19,426 @@
    working vectors for the conjugate gradient.
    niter = maximum number of iterations.
    rsqmin = desired rsq, quit when we reach rsq <= rsqmin*source_norm.
-	This is different than our old definition of the stopping
-	criterion.  To convert an old stopping residual to the new
-	one, multiply the old one by sqrt( (2/3)/(8+2*m) )
-        This is because the source is obtained from
-        a random vector with average squared magnitude 3 on each site.
-        Then, on 1/2 the sites, we gather and sum the eight neighboring
-        random vectors and add 2*m times the local vector.
-            source = M_adjoint*R, on even sites
-   reinitialize after niters iterations and try once more.
-   parity=EVEN = do only even sites, parity=ODD = do odd sites,
-   parity=EVENANDODD = do all sites
-*/
 
+   reinitialize after niters iterations and try once more.
+*/
 #include "generic_ks_includes.h"
-#define LOOPEND
-#include "../include/loopend.h"
 #include "../include/prefetch.h"
 #define FETCH_UP 1
 
-/* Timing */
-/*#define CGTIME*/
-/*#define M4TIME*/
-double dtimem;
-int dtimem_iters;
-/* #define DSLASHTIME */
-/* #define DSLASHTIMES */
+#ifdef CGTIME
+static const char *prec_label[2] = {"F", "D"};
+#endif
 
-/* prec argument is ignored */
-int ks_congrad( field_offset src, field_offset dest, Real mass,
-		int niter, int nrestart, Real rsqmin, int prec,
-		int parity, Real *final_rsq_ptr ){
+/*#define CG_DEBUG*/
+
+#define LOOPEND
+#include "../include/loopend.h"
+
+/* The Fermilab relative residue */
+
+static Real 
+relative_residue(su3_vector *p, su3_vector *q, int parity)
+{
+  double residue, num, den;
+  int i;
+  site *s;
+  
+  residue = 0;
+  FORSOMEPARITY(i,s,parity){
+    num = (double)magsq_su3vec( &(p[i]) );
+    den = (double)magsq_su3vec( &(q[i]) );
+    residue += (den==0) ? 1.0 : (num/den);
+  } END_LOOP
+
+  g_doublesum(&residue);
+
+  if(parity == EVENANDODD)
+    return sqrt(residue/volume);
+  else
+    return sqrt(2*residue/volume);
+}
+
+static int
+ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest, 
+		   quark_invert_control *qic, Real mass){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
-  Real a,b;	/* Sugar's a,b */
-  double rsq,oldrsq,pkp;	/* resid**2,last resid*2,pkp = cg_p.K.cg_p */
+  Real a,b;           	/* Sugar's a,b */
+#ifdef FEWSUMS
+  double actual_rsq;      /* rsq from actual summation of resid */
+  double c_tr,c_tt,tempsum[4];	/* Re<resid|ttt>, <ttt|ttt> */
+#endif
+  double rsq = 0,relrsq = 0; /* resid**2, rel resid*2 */
+  double oldrsq,pkp;	/*last resid*2,pkp = cg_p.K.cg_p */
   Real msq_x4;	/* 4*mass*mass */
   double source_norm;	/* squared magnitude of source vector */
-  double rsqstop;	/* stopping residual normalized by source norm */
-  int l_parity=0;	/* parity we are currently doing */
-  int l_otherparity=0;	/* the other parity */
-  msg_tag * tags1[8], *tags2[8];	/* tags for gathers to parity and opposite */
-  int special_started;	/* 1 if dslash_site_special has been called */
+  int otherparity = 0; /* the other parity */
+  msg_tag * tags1[8], *tags2[8]; /* tags for gathers to parity and opposite */
+  int special_started = 0; /* 1 if dslash_fn_field_special has been called */
+  int nrestart;  /* Restart counter */
+  su3_vector *ttt, *cg_p, *resid;
+  char myname[] = "ks_congrad_parity";
 
-/* Timing */
+  /* Unpack structure */
+  int niter        = qic->max;      /* maximum number of iters per restart */
+  int max_restarts = qic->nrestart; /* maximum restarts */
+  Real rsqmin      = qic->resid;    /* desired residual - 
+			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
+  Real relrsqmin   = qic->relresid; /* desired relative residual (FNAL)*/
+  int parity     = qic->parity;   /* EVEN, ODD */
 
-#ifdef CGTIME
-double dtimed,dtimec;
+  int max_cg = max_restarts*niter; /* Maximum number of iterations */
+
+  msq_x4 = 4.0*mass*mass;
+
+  switch(parity){
+  case(EVEN): otherparity=ODD; break;
+  case(ODD):  otherparity=EVEN; break;
+  }
+
+  /* Allocate temporary variables */
+  /* PAD may be used to avoid cache trashing */
+#define PAD 0
+  ttt = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+  cg_p = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+  resid = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+
+  if(ttt == NULL || cg_p == NULL || resid == NULL){
+    printf("%s(%d): No room for temporaries\n",myname,this_node);
+  }
+
+  /* Source norm */
+  source_norm = 0.0;
+  FORSOMEPARITY(i,s,parity){
+    source_norm += (double)magsq_su3vec( &t_src[i] );
+  } END_LOOP
+  g_doublesum( &source_norm );
+#ifdef CG_DEBUG
+  node0_printf("congrad: source_norm = %e\n", (double)source_norm);
 #endif
-double nflop;
-dtimem=0.0;
-dtimem_iters=0;
 
-/* debug */
-#ifdef CGTIME
- dtimec = -dclock(); 
-#endif
+  /* Start CG iterations */
+  
+  nrestart = 0;
+  iteration = 0;
+  qic->size_r = 0;
+  qic->size_relr = 0;
 
-nflop = 606;
-if(parity==EVENANDODD)nflop *=2;
+  while(1) {
+    /* Check for completion */
+    if( ( iteration % niter == 0 ) || 
+	( ( rsqmin    <= 0 || rsqmin    > qic->size_r   ) &&
+	  ( relrsqmin <= 0 || relrsqmin > qic->size_relr) ) ) 
+      {
 	
-	special_started=0;
-	/* if we want both parities, we will do even first. */
-	switch(parity){
-	    case(EVEN): l_parity=EVEN; l_otherparity=ODD; break;
-	    case(ODD):  l_parity=ODD; l_otherparity=EVEN; break;
-	    case(EVENANDODD):  l_parity=EVEN; l_otherparity=ODD; break;
-	}
-	msq_x4 = 4.0*mass*mass;
-	iteration = 0;
+	/* (re)initialization process */
+	
+	/* Compute true residual and relative residual */
 
-	/* initialization process */
-start:
-	/**if(this_node==0)printf("CONGRAD: start, parity = %d\n",parity);**/
-        /* ttt <-  (-1)*M_adjoint*M*dest
-           resid,cg_p <- src + ttt
-           rsq = |resid|^2
-           source_norm = |src|^2
-        */
-	if(special_started==1){	/* clean up gathers */
-	    for(i=XUP;i<=TUP;i++){
-		cleanup_gather( tags1[i] );
-		cleanup_gather( tags1[OPP_DIR(i)] );
-		cleanup_gather( tags2[i] );
-		cleanup_gather( tags2[OPP_DIR(i)] );
-	    }
-	    special_started=0;
-	}
-	/**if(this_node==0)if(iteration>1)printf("CONGRAD: start rsq = %.10e\n",rsq);**/
-        rsq = source_norm = 0.0;
-	dslash_site( dest, F_OFFSET(ttt),l_otherparity);
-	dslash_site(F_OFFSET(ttt),F_OFFSET(ttt),l_parity);
+	/* ttt <-  (-1)*M_adjoint*M*dest
+	   resid,cg_p <- src + ttt
+	   rsq = |resid|^2
+	   source_norm = |src|^2
+	*/
+        if(special_started==1) {        /* clean up gathers */
+            cleanup_gathers(tags1,tags2);
+            special_started=0;
+        }
+	rsq = 0.0;
+	dslash_field(t_dest, ttt, otherparity);
+	dslash_field(ttt, ttt, parity);
 	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
-	FORSOMEPARITYDOMAIN(i,s,l_parity){
-	    scalar_mult_add_su3_vector( &(s->ttt), (su3_vector *)F_PT(s,dest),
-					-msq_x4, &(s->ttt) );
-	    add_su3_vector( (su3_vector *)F_PT(s,src), 
-			    &(s->ttt), &(s->resid) );
-		/* remember ttt contains -M_adjoint*M*src */
-	    s->cg_p = s->resid;
-	    source_norm += (double)magsq_su3vec( (su3_vector *)F_PT(s,src) );
-            rsq += (double)magsq_su3vec( &(s->resid) );
+	FORSOMEPARITYDOMAIN(i,s,parity){
+	  if( i < loopend-FETCH_UP ){
+	    prefetch_VVVV( &ttt[i+FETCH_UP], 
+			   &t_dest[i+FETCH_UP],
+			   &t_src[i+FETCH_UP],
+			   &resid[i+FETCH_UP]);
+	  }
+	  scalar_mult_add_su3_vector( &ttt[i], &t_dest[i], -msq_x4, &ttt[i] );
+	  add_su3_vector( &t_src[i], &ttt[i], &resid[i] );
+	  /* remember ttt contains -M_adjoint*M*src */
+	  cg_p[i] = resid[i];
+	  rsq += (double)magsq_su3vec( &resid[i] );
 	} END_LOOP
-	g_doublesum( &source_norm );
+#ifdef FEWSUMS
+	actual_rsq = rsq; /* not yet summed over nodes */
+#endif
         g_doublesum( &rsq );
-	/**if(this_node==0)if(iteration>1)printf("CONGRAD: start rsq = %.10e\n",rsq);**/
-        iteration++ ;  /* iteration counts number of multiplications
-                           by M_adjoint*M */
-	total_iters++;
-	rsqstop = rsqmin * source_norm;
-	/**if(this_node==0)printf("congrad: source_norm = %e\n",
-	   (double)source_norm);**/
-        if( rsq <= rsqstop ){
-    	    /* if parity==EVENANDODD, set up to do odd sites and go back */
-            if(parity == EVENANDODD) {
-		l_parity=ODD; l_otherparity=EVEN;
-		parity=EVEN;	/* so we won't loop endlessly */
-		iteration = 0;
-		/**if(this_node==0)printf("instant goto start\n"); **/
-		goto start;
-	    }
-            *final_rsq_ptr=(Real)rsq;
-	    /**if(this_node==0)printf("instant return\n"); fflush(stdout);**/
-             return (iteration);
-        }
-	/**pkp=0.0;
-	if(mynode()==0)printf("iter=%d, rsq= %e, pkp=%e\n",
-	iteration,(double)rsq,(double)pkp);**/
 
-    /* main loop - do until convergence or time to restart */
-        /*
-           oldrsq <- rsq
-           ttt <- (-1)*M_adjoint*M*cg_p
-           pkp <- (-1)*cg_p.M_adjoint*M.cg_p
-           a <- -rsq/pkp
-           dest <- dest + a*cg_p
-           resid <- resid + a*ttt
-           rsq <- |resid|^2
-           b <- rsq/oldrsq
-           cg_p <- resid + b*cg_p
-        */
-    do{
-        oldrsq = rsq;
-        pkp = 0.0;
-	/* sum of neighbors */
-#ifdef DSLASHTIME
-dtimed = -dclock();
-#endif
+	if(relrsqmin > 0)
+	  relrsq = relative_residue(resid, t_dest, parity);
 
-	if(special_started==0){
-	    /**printf("CONGRAD%: calling dslash_site_special - start\n");**/
-	    dslash_site_special(F_OFFSET(cg_p),F_OFFSET(ttt),l_otherparity, tags2,1);
-	    dslash_site_special(F_OFFSET(ttt),F_OFFSET(ttt),l_parity,tags1,1);
-	    special_started=1;
-	}
-	else {
-	    /**printf("CONGRAD%: calling dslash_site_special - restart\n");**/
-	    dslash_site_special(F_OFFSET(cg_p),F_OFFSET(ttt),l_otherparity,tags2,0);
-	    dslash_site_special(F_OFFSET(ttt),F_OFFSET(ttt),l_parity,tags1,0);
-	}
+	qic->final_rsq    = (Real)rsq/source_norm;
+	qic->final_relrsq = (Real)relrsq;
 
-#ifdef DSLASHTIME
- dtimed += dclock();
-if(this_node==0){printf("DSLASH: time = %e iters = %d mflops = %e\n",
-dtimed,iteration , (double)(570.0*volume/(1.0e6*dtimed*numnodes())) );
-fflush(stdout);} 
-#endif
 
-	/* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
-	/* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */
-	/* pkp  <- cg_p.(ttt - msq*cg_p) */
-	pkp = 0.0;
-	FORSOMEPARITYDOMAIN(i,s,l_parity){
-	  if(i < loopend-FETCH_UP){
-	    prefetch_VV( &((s+FETCH_UP)->ttt),
-			 &((s+FETCH_UP)->cg_p) );
-	  }
-	    scalar_mult_add_su3_vector( &(s->ttt), &(s->cg_p), -msq_x4,
-		&(s->ttt) );
-	    pkp += (double)su3_rdot( &(s->cg_p), &(s->ttt) );
-	} END_LOOP
-	g_doublesum( &pkp );
-	iteration++;
+	iteration++ ;  /* iteration counts number of multiplications
+			  by M_adjoint*M */
 	total_iters++;
 
-	a = (Real)(-rsq/pkp);
-
-	/* dest <- dest - a*cg_p */
-	/* resid <- resid - a*ttt */
-	rsq=0.0;
-	FORSOMEPARITYDOMAIN(i,s,l_parity){
-	  if(i < loopend-FETCH_UP){
-	    prefetch_VVVV( (su3_vector *)F_PT(s+FETCH_UP,dest),
-			   &((s+FETCH_UP)->cg_p),
-			   &((s+FETCH_UP)->resid), 
-			   &((s+FETCH_UP)->ttt) );
-	  }
-	    scalar_mult_add_su3_vector( (su3_vector *)F_PT(s,dest), 
-					&(s->cg_p), a, 
-					(su3_vector *)F_PT(s,dest) );
-	    scalar_mult_add_su3_vector( &(s->resid), &(s->ttt), a, &(s->resid));
-	    rsq += (double)magsq_su3vec( &(s->resid) );
-	} END_LOOP
-	g_doublesum(&rsq);
-	/**if(mynode()==0)printf("iter=%d, rsq= %e, pkp=%e\n",
-	   iteration,(double)rsq,(double)pkp);**/
-
-        if( rsq <= rsqstop ){
-    	    /* if parity==EVENANDODD, set up to do odd sites and go back */
-            if(parity == EVENANDODD) {
-		l_parity=ODD; l_otherparity=EVEN;
-		parity=EVEN;	/* so we won't loop endlessly */
-		iteration = 0;
-		/**if(this_node==0)printf("normal goto start\n"); **/
-		goto start;
-	    }
-            *final_rsq_ptr=(Real)rsq;
-	    if(special_started==1){	/* clean up gathers */
-		for(i=XUP;i<=TUP;i++){
-		    cleanup_gather( tags1[i] );
-		    cleanup_gather( tags1[OPP_DIR(i)] );
-		    cleanup_gather( tags2[i] );
-		    cleanup_gather( tags2[OPP_DIR(i)] );
-		}
-	    }
-	    /**if(this_node==0)printf("normal return\n"); fflush(stdout);**/
-#ifdef CGTIME
- dtimec += dclock();
-if(this_node==0){printf("CONGRAD5: (naive) time = %e iters = %d mflops = %e\n",
-dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
-fflush(stdout);}
+#ifdef CG_DEBUG
+	if(this_node==0)printf("CONGRAD: (re)start rsq = %.10e relrsq %.10e\n",
+			       qic->final_rsq, qic->final_relrsq);
 #endif
-#ifdef M4TIME
-if(this_node==0){printf("M4: time = %e iters = %d mflops = %e\n",
-dtimem,dtimem_iters,(double)(264*(volume/2)*dtimem_iters/(1.0e6*dtimem*numnodes())) );
-fflush(stdout);}
+	/* Quit when true residual and true relative residual are within
+	   tolerance or when we exhaust iterations or restarts */
+	
+	if( iteration >= max_cg || 
+	    nrestart  >= max_restarts ||
+	    ( ( rsqmin    <= 0 || rsqmin    > qic->final_rsq   ) &&
+	      ( relrsqmin <= 0 || relrsqmin > qic->final_relrsq) ) ) break;
+	
+	nrestart++;
+      }
+
+    /*
+      oldrsq <- rsq
+      ttt <- (-1)*M_adjoint*M*cg_p
+      pkp <- (-1)*cg_p.M_adjoint*M.cg_p
+      a <- -rsq/pkp
+      dest <- dest + a*cg_p
+      resid <- resid + a*ttt
+      rsq <- |resid|^2
+      b <- rsq/oldrsq
+      cg_p <- resid + b*cg_p
+    */
+
+#ifdef FEWSUMS
+    oldrsq = actual_rsq;	/* not yet summed over nodes */
+#else
+    oldrsq = rsq;
 #endif
-             return (iteration);
-        }
+    pkp = 0.0;
 
-	b = (Real)(rsq/oldrsq);
-	/* cg_p  <- resid + b*cg_p */
-	scalar_mult_add_latvec( F_OFFSET(resid), F_OFFSET(cg_p),
-	    b, F_OFFSET(cg_p), l_parity);
-
-    } while( iteration%niter != 0);
-
-    if( iteration < nrestart*niter ){
-	/**if(this_node==0)printf("tryagain goto start\n");**/
-	 goto start;
+    if(special_started==0){
+      dslash_field_special( cg_p, ttt, otherparity, tags2, 1 );
+      dslash_field_special( ttt, ttt, parity, tags1, 1);
+      special_started=1;
+    }
+    else {
+      dslash_field_special( cg_p, ttt, otherparity, tags2, 0 );
+      dslash_field_special( ttt, ttt, parity, tags1, 0);
     }
 
-    /* if parity==EVENANDODD, set up to do odd sites and go back */
-    if(parity == EVENANDODD) {
-	l_parity=ODD; l_otherparity=EVEN;
-	parity=EVEN;	/* so we won't loop endlessly */
-	iteration = 0;
-	goto start;
-    }
+    /* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
+    /* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */
+    /* pkp  <- cg_p.(ttt - msq*cg_p) */
+    pkp = 0.0;
+#ifdef FEWSUMS
+    c_tr=0.0; c_tt=0.0;
+#endif
+    FORSOMEPARITYDOMAIN(i,s,parity){
+      if( i < loopend-FETCH_UP ){
+	prefetch_VV( &ttt[i+FETCH_UP], &cg_p[i+FETCH_UP] );
+      }
+      scalar_mult_add_su3_vector( &ttt[i], &cg_p[i], -msq_x4,
+				  &ttt[i] );
+      pkp += (double)su3_rdot( &cg_p[i], &ttt[i] );
+#ifdef FEWSUMS
+      c_tr += (double)su3_rdot( &ttt[i], &resid[i] );
+      c_tt += (double)su3_rdot( &ttt[i], &ttt[i] );
+#endif
+    } END_LOOP
+#ifdef FEWSUMS
+    /* finally sum oldrsq over nodes, also other sums */
+    tempsum[0] = pkp; tempsum[1] = c_tr; 
+    tempsum[2] = c_tt; tempsum[3] = oldrsq;
+    g_vecdoublesum( tempsum, 4 );
+    pkp = tempsum[0]; c_tr = tempsum[1]; 
+    c_tt = tempsum[2]; oldrsq = tempsum[3];
+#else
+    g_doublesum( &pkp );
+#endif
+    iteration++;
+    total_iters++;
+    
+    a = (Real) (-rsq/pkp);
+    
+    /* dest <- dest - a*cg_p */
+    /* resid <- resid - a*ttt */
+#ifdef FEWSUMS
+    actual_rsq=0.0;
+#else
+    rsq=0.0;
+#endif
+    FORSOMEPARITYDOMAIN(i,s,parity){
+      if( i < loopend-FETCH_UP ){
+	prefetch_VVVV( &t_dest[i+FETCH_UP], 
+		       &cg_p[i+FETCH_UP], 
+		       &resid[i+FETCH_UP], 
+		       &ttt[i+FETCH_UP] );
+      }
+      scalar_mult_add_su3_vector( &t_dest[i], &cg_p[i], a, &t_dest[i] );
+      scalar_mult_add_su3_vector( &resid[i], &ttt[i], a, &resid[i]);
+#ifdef FEWSUMS
+      actual_rsq += (double)magsq_su3vec( &resid[i] );
+#else
+      rsq += (double)magsq_su3vec( &resid[i] );
+#endif
+    } END_LOOP
+#ifdef FEWSUMS
+    /**printf("XXX:  node %d\t%e\t%e\t%e\n",this_node,oldrsq,c_tr,c_tt);**/
+    rsq = oldrsq + 2.0*a*c_tr + a*a*c_tt; /*TEST - should equal actual_rsq */
+    /**c_tt = actual_rsq;**/ /* TEMP for test */
+    /**g_doublesum(&c_tt);**/ /* TEMP true value for rsq */
+    /**node0_printf("RSQTEST: %e\t%e\t%e\n",rsq,c_tt,rsq-c_tt);**/
+#else
+    g_doublesum(&rsq);
+#endif	
 
-    *final_rsq_ptr=(Real)rsq;
-    if(special_started==1){	/* clean up gathers */
-	for(i=XUP;i<=TUP;i++){
-	    cleanup_gather( tags1[i] );
-	    cleanup_gather( tags1[OPP_DIR(i)] );
-	    cleanup_gather( tags2[i] );
-	    cleanup_gather( tags2[OPP_DIR(i)] );
-	}
-    }
-    if(this_node==0)printf(
-        "ks_congrad: CG not converged after %d iterations, res. = %e wanted %e\n",
-        iteration,rsq,rsqstop);
+    if(relrsqmin > 0)
+      relrsq = relative_residue(resid, t_dest, parity);
+    
+    qic->size_r    = (Real)rsq/source_norm;
+    qic->size_relr = (Real)relrsq;
+
+#ifdef CG_DEBUG
+    if(mynode()==0){printf("iter=%d, rsq/src= %e, relrsq= %e, pkp=%e\n",
+			   iteration,(double)qic->size_r,
+			   (double)qic->size_relr,
+			   (double)pkp);fflush(stdout);}
+#endif
+    
+    b = (Real)rsq/oldrsq;
+    /* cg_p  <- resid + b*cg_p */
+    FORSOMEPARITY(i,s,parity){
+      scalar_mult_add_su3_vector( &resid[i],
+				  &cg_p[i] , b , &cg_p[i]);
+    } END_LOOP
+  }
+
+  if(nrestart == max_restarts || iteration == max_cg){
+    node0_printf("ks_congrad: CG not converged after %d iterations, \n",
+		 iteration);
+    node0_printf("rsq. = %e wanted %e relrsq = %e wanted %e\n",
+		 qic->final_rsq,rsqmin,qic->final_relrsq,relrsqmin);
     fflush(stdout);
-    return(iteration);
+  }
+
+  if(special_started==1) {
+    cleanup_gathers(tags1,tags2);
+    special_started = 0;
+  }
+  cleanup_dslash_temps();
+
+  free(ttt); free(cg_p); free(resid);
+  return iteration;
 }
 
 
-/* D_slash routine - sets dest. on each site equal to sum of
-   sources parallel transported to site, with minus sign for transport
-   from negative directions */
-void dslash_site( field_offset src, field_offset dest, int parity ){
-register int i;
-register site *s;
-register int dir,otherparity;
-msg_tag *tag[8];
-#ifdef INLINE
-register su3_vector *a,*b1,*b2,*b3,*b4;
+/* API for field arguments */
+
+int ks_congrad_field( su3_vector *src, su3_vector *dest, 
+		      quark_invert_control *qic, Real mass)
+{
+  int iters = 0;
+  double dtimec;
+  double nflop = 606;
+
+  if(qic->parity==EVENANDODD)nflop *=2;
+
+  dtimec = -dclock(); 
+
+  if(qic->parity == EVEN || qic->parity == EVENANDODD){
+    iters += ks_congrad_parity(src, dest, qic, mass);
+  }
+  else if(qic->parity == ODD || qic->parity == EVENANDODD){
+    iters += ks_congrad_parity(src, dest, qic, mass);
+  }
+
+  dtimec += dclock();
+#ifdef CGTIME
+  if(this_node==0){
+    printf("CONGRAD5: time = %e (fn %s) iters = %d mflops = %e\n",
+	   dtimec, prec_label[PRECISION-1], iters, 
+	   (double)(nflop*volume*iters/(1.0e6*dtimec*numnodes())) );
+    fflush(stdout);}
 #endif
 
-    switch(parity){
-	case EVEN:	otherparity=ODD; break;
-	case ODD:	otherparity=EVEN; break;
-	case EVENANDODD:	otherparity=EVENANDODD; break;
-    }
-
-    /* Start gathers from positive directions */
-    for(dir=XUP; dir<=TUP; dir++){
-	tag[dir] = start_gather_site( src, sizeof(su3_vector), dir, parity,
-	    gen_pt[dir] );
-    }
-
-#ifdef M4TIME
-dtimem -= dclock();
-#endif
-    /* Multiply by adjoint matrix at other sites */
-    FORSOMEPARITYDOMAIN(i,s,otherparity){
-      if(i < loopend-FETCH_UP){
-        prefetch_4MV4V( &((s+FETCH_UP)->link[XUP]),
-			(su3_vector *)F_PT((s+FETCH_UP),src),
-			(s+FETCH_UP)->tempvec);
-      }
-	mult_adj_su3_mat_vec_4dir( s->link,
-	    (su3_vector *)F_PT(s,src), s->tempvec );
-    } END_LOOP
-#ifdef M4TIME
-dtimem += dclock();
-if(otherparity==EVENANDODD)dtimem_iters +=2; else dtimem_iters++;
-#endif
-
-    /* Start gathers from negative directions */
-    for( dir=XUP; dir <= TUP; dir++){
-	tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
-	    sizeof(su3_vector), OPP_DIR( dir), parity,
-	    gen_pt[OPP_DIR(dir)] );
-    }
-
-    /* Wait gathers from positive directions, multiply by matrix and
-	accumulate */
-    /*----------------- (departure from d_congrad2.c) ------------*/
-    for(dir=XUP; dir<=TUP; dir++){
-	wait_gather(tag[dir]);
-    }
-    /*------------------------------------------------------------*/
-#ifdef SCHROED_FUN
-    FORSOMEPARITY(i,s,parity) if(s->t > 0){
-      if( i < loopend-FETCH_UP ){
-	prefetch_V((su3_vector *)F_PT(s+FETCH_UP,dest));
-	prefetch_4MVVVV(&((s+FETCH_UP)->link[XUP]),
-			(su3_vector *)gen_pt[XUP][i+FETCH_UP],
-			(su3_vector *)gen_pt[YUP][i+FETCH_UP],
-			(su3_vector *)gen_pt[ZUP][i+FETCH_UP],
-			(su3_vector *)gen_pt[TUP][i+FETCH_UP] );
-      }
-      /* Don't include last time-link in computation */
-      if(s->t == (nt-1)){
-	    mult_su3_mat_vec( &(s->link[XUP]),
-		(su3_vector *)(gen_pt[XUP][i]), (su3_vector *)F_PT(s,dest));
-	    for(dir=YUP; dir<TUP; dir++){
-		mult_su3_mat_vec_sum( &(s->link[dir]),
-		    (su3_vector *)(gen_pt[dir][i]), (su3_vector *)F_PT(s,dest));
-	    }
-	}
-	else{
-#else
-    FORSOMEPARITY(i,s,parity){
-      if( i < loopend-FETCH_UP ){
-	prefetch_V((su3_vector *)F_PT(s+FETCH_UP,dest));
-	prefetch_4MVVVV(&((s+FETCH_UP)->link[XUP]),
-			(su3_vector *)gen_pt[XUP][i+FETCH_UP],
-			(su3_vector *)gen_pt[YUP][i+FETCH_UP],
-			(su3_vector *)gen_pt[ZUP][i+FETCH_UP],
-			(su3_vector *)gen_pt[TUP][i+FETCH_UP] );
-      }
-#endif
-      mult_su3_mat_vec_sum_4dir( s->link,
-          (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
-          (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
-          (su3_vector *)F_PT(s,dest));
-    /*------------------------------------------------------------*/
-#ifdef SCHROED_FUN
-	}
-#endif
-    } END_LOOP
-
-    /*------------------------------------------------------------*/
-    /* Wait gathers from negative directions, accumulate (negative) */
-    for(dir=XUP; dir<=TUP; dir++){
-	wait_gather(tag[OPP_DIR(dir)]);
-    }
-    FORSOMEPARITYDOMAIN(i,s,parity){
-
-        if( i < loopend-FETCH_UP ){
-	  prefetch_VVVV( 
-			(su3_vector *)gen_pt[XDOWN][i+FETCH_UP],
-			(su3_vector *)gen_pt[YDOWN][i+FETCH_UP],
-			(su3_vector *)gen_pt[ZDOWN][i+FETCH_UP],
-			(su3_vector *)gen_pt[TDOWN][i+FETCH_UP] );
-	}
-#ifndef INLINE
-      sub_four_su3_vecs( (su3_vector *)F_PT(s,dest),
-	    (su3_vector *)(gen_pt[XDOWN][i]),
-	    (su3_vector *)(gen_pt[YDOWN][i]),
-	    (su3_vector *)(gen_pt[ZDOWN][i]),
-	    (su3_vector *)(gen_pt[TDOWN][i]) );
-
-#else
-
-      /* Inline version */
-      a =  (su3_vector *)F_PT(s,dest);
-      b1 = (su3_vector *)(gen_pt[XDOWN][i]);
-      b2 = (su3_vector *)(gen_pt[YDOWN][i]);
-      b3 = (su3_vector *)(gen_pt[ZDOWN][i]);
-      b4 = (su3_vector *)(gen_pt[TDOWN][i]);
-
-      CSUB(a->c[0], b1->c[0], a->c[0]);
-      CSUB(a->c[1], b1->c[1], a->c[1]);
-      CSUB(a->c[2], b1->c[2], a->c[2]);
-      
-      CSUB(a->c[0], b2->c[0], a->c[0]);
-      CSUB(a->c[1], b2->c[1], a->c[1]);
-      CSUB(a->c[2], b2->c[2], a->c[2]);
-      
-      CSUB(a->c[0], b3->c[0], a->c[0]);
-      CSUB(a->c[1], b3->c[1], a->c[1]);
-      CSUB(a->c[2], b3->c[2], a->c[2]);
-      
-      CSUB(a->c[0], b4->c[0], a->c[0]);
-      CSUB(a->c[1], b4->c[1], a->c[1]);
-      CSUB(a->c[2], b4->c[2], a->c[2]);
-#endif
-    } END_LOOP
-
-    /*------------------------------------------------------------*/
-    /* free up the buffers */
-    for(dir=XUP; dir<=TUP; dir++){
-	cleanup_gather(tag[dir]);
-	cleanup_gather(tag[OPP_DIR(dir)]);
-    }
+  return iters;
 }
 
-/* Special dslash_site for use by congrad.  Uses restart_gather_site() when
-  possible. Last argument is an array of message tags, to be set
-  if this is the first use, otherwise reused. If start=1,use
-  start_gather_site, otherwise use restart_gather_site. 
-  The calling program must clean up the gathers! */
-void dslash_site_special( field_offset src, field_offset dest,
-    int parity, msg_tag **tag, int start ){
-register int i;
-register site *s;
-register int dir,otherparity=0;
-#ifdef INLINE
-register su3_vector *a,*b1,*b2,*b3,*b4;
+/* New API for site arguments */
+
+int ks_congrad_site( field_offset src, field_offset dest, 
+		     quark_invert_control *qic, Real mass )
+{
+  int i;
+  site *s;
+  int iters = 0;
+  su3_vector *t_src, *t_dest;
+  double dtimec;
+  double nflop = 606;
+
+  if(qic->parity==EVENANDODD)nflop *=2;
+
+  dtimec = -dclock(); 
+
+  /* Map src and dest from site to field of correct precision */
+  
+  t_src  = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
+  t_dest = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
+  if(t_src == NULL || t_dest == NULL){
+    printf("ks_congrad_site(%d): No room for temporaries\n",this_node);
+    terminate(1);
+  }
+
+  FORALLSITES(i,s){
+    t_src[i]  = *((su3_vector *)F_PT(s,src) );
+    t_dest[i] = *((su3_vector *)F_PT(s,dest));
+  }
+
+  if(qic->parity == EVEN || qic->parity == EVENANDODD){
+    iters += ks_congrad_parity(t_src, t_dest, qic, mass );
+  }
+  else if(qic->parity == ODD || qic->parity == EVENANDODD){
+    iters += ks_congrad_parity(t_src, t_dest, qic, mass );
+  }
+
+  /* Map solution to site structure */
+
+  FORALLSITES(i,s){
+    *((su3_vector *)F_PT(s,dest)) = t_dest[i];
+  }
+
+  free(t_src); free(t_dest);
+
+  dtimec += dclock();
+#ifdef CGTIME
+  if(this_node==0){
+    printf("CONGRAD5: time = %e (fn %s) iters = %d mflops = %e\n",
+	   dtimec, prec_label[PRECISION-1], iters, 
+	   (double)(nflop*volume*iters/(1.0e6*dtimec*numnodes())) );
+    fflush(stdout);}
 #endif
 
-#ifdef DSLASHTIMES
-double dtime0,dtime1,dtime2,dtime3,dtime4,dtime5,dtime6,dclock();
-#endif
-    switch(parity){
-	case EVEN:	otherparity=ODD; break;
-	case ODD:	otherparity=EVEN; break;
-	case EVENANDODD:	otherparity=EVENANDODD; break;
-    }
+  return iters;
+}
 
-#ifdef DSLASHTIMES
- dtime0 = -dclock(); 
-#endif
+/* Traditional MILC API for site arguments and no relative residual test */
 
-    /* Start gathers from positive directions */
-    for(dir=XUP; dir<=TUP; dir++){
-/**printf("dslash_site_special: up gathers, start=%d\n",start);**/
-	if(start==1) tag[dir] = start_gather_site( src, sizeof(su3_vector),
-	    dir, parity, gen_pt[dir] );
-	else restart_gather_site( src, sizeof(su3_vector),
-	    dir, parity, gen_pt[dir] , tag[dir] );
-    }
+int ks_congrad( field_offset src, field_offset dest, Real mass,
+		int niter, int nrestart, Real rsqmin, int prec,
+		int parity, Real *final_rsq ){
+  int iters;
+  quark_invert_control qic;
 
-#ifdef DSLASHTIMES
-    dtime1 = -dclock(); 
-    dtime0 -= dtime1;
-#endif
+  /* Pack structure */
+  qic.prec      = prec;  /* Currently ignored */
+  qic.parity    = parity;
+  qic.max       = niter;
+  qic.nrestart  = nrestart;
+  qic.resid     = rsqmin;
+  qic.relresid  = 0;     /* Suppresses this test */
 
+  /* Solve the system */
+  iters = ks_congrad_site( src, dest, &qic, mass );
 
-#ifdef M4TIME
-dtimem -= dclock();
-#endif
-    /* Multiply by adjoint matrix at other sites */
-    FORSOMEPARITYDOMAIN(i,s,otherparity){
-      if( i < loopend-FETCH_UP ){
-	prefetch_4MV4V( &((s+FETCH_UP)->link[XUP]),
-			(su3_vector *)F_PT((s+FETCH_UP),src),
-			(s+FETCH_UP)->tempvec);
-      }
-	mult_adj_su3_mat_vec_4dir( s->link,
-	    (su3_vector *)F_PT(s,src), s->tempvec );
-    } END_LOOP
+  /* Unpack the results */
+  *final_rsq    = qic.final_rsq;
 
-#ifdef M4TIME
-dtimem += dclock();
-if(otherparity==EVENANDODD)dtimem_iters +=2; else dtimem_iters++;
-#endif
-
-#ifdef DSLASHTIMES
-    dtime2 = -dclock();
-    dtime1 -= dtime2;
-#endif
-
-
-    /* Start gathers from negative directions */
-    for( dir=XUP; dir <= TUP; dir++){
-/**printf("dslash_site_special: down gathers, start=%d\n",start);**/
-	if (start==1) tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
-	    sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
-	else restart_gather_site( F_OFFSET(tempvec[dir]), sizeof(su3_vector),
-	    OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] , tag[OPP_DIR(dir)] );
-    }
-
-
-#ifdef DSLASHTIMES
-   dtime3 = -dclock(); 
-   dtime2 -= dtime3;
-#endif
-
-    /* Wait gathers from positive directions, multiply by matrix and
-	accumulate */
-    for(dir=XUP; dir<=TUP; dir++){
-	wait_gather(tag[dir]);
-    }
-
-    /*------------------------------------------------------------*/
-#ifdef DSLASHTIMES
-    dtime4 = -dclock(); 
-    dtime3 -= dtime4;
-#endif
-
-    /*------------------------------------------------------------*/
-#ifdef SCHROED_FUN
-    FORSOMEPARITY(i,s,parity) if(s->t > 0){
-	if(s->t == (nt-1)){
-	    mult_su3_mat_vec( &(s->link[XUP]),
-		(su3_vector *)(gen_pt[XUP][i]), (su3_vector *)F_PT(s,dest));
-	    for(dir=YUP; dir<TUP; dir++){
-		mult_su3_mat_vec_sum( &(s->link[dir]),
-		    (su3_vector *)(gen_pt[dir][i]), (su3_vector *)F_PT(s,dest));
-	    }
-	}
-	else{
-#else
-    FORSOMEPARITY(i,s,parity){
-      if( i < loopend-FETCH_UP ){
-	prefetch_4MVVVV(&((s+FETCH_UP)->link[XUP]), 
-			(su3_vector *)gen_pt[XUP][i+FETCH_UP],
-			(su3_vector *)gen_pt[YUP][i+FETCH_UP],
-			(su3_vector *)gen_pt[ZUP][i+FETCH_UP],
-			(su3_vector *)gen_pt[TUP][i+FETCH_UP] );
-      }
-#endif
-      mult_su3_mat_vec_sum_4dir( s->link,
-	(su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
-	(su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
-	(su3_vector *)F_PT(s,dest));
-    /*------------------------------------------------------------*/
-#ifdef SCHROED_FUN
-	}
-#endif
-    } END_LOOP
-
-    /*------------------------------------------------------------*/
-#ifdef DSLASHTIMES
-    dtime5 = -dclock();
-    dtime4 -= dtime5;
-#endif
-
-    /* Wait gathers from negative directions, accumulate (negative) */
-    for(dir=XUP; dir<=TUP; dir++){
-	wait_gather(tag[OPP_DIR(dir)]);
-    }
-
-#ifdef DSLASHTIMES
-    dtime6 = -dclock();
-    dtime5 -= dtime6;
-#endif
-
-
-    FORSOMEPARITYDOMAIN(i,s,parity){
-	if( i < loopend-FETCH_UP ){
-	    prefetch_VVVV( 
-			  (su3_vector *)gen_pt[XDOWN][i+FETCH_UP],
-			  (su3_vector *)gen_pt[YDOWN][i+FETCH_UP],
-			  (su3_vector *)gen_pt[ZDOWN][i+FETCH_UP],
-			  (su3_vector *)gen_pt[TDOWN][i+FETCH_UP] );
-	}
-
-#ifndef INLINE
-
-      sub_four_su3_vecs( (su3_vector *)F_PT(s,dest),
-	    (su3_vector *)(gen_pt[XDOWN][i]),
-	    (su3_vector *)(gen_pt[YDOWN][i]),
-	    (su3_vector *)(gen_pt[ZDOWN][i]),
-	    (su3_vector *)(gen_pt[TDOWN][i]) ); 
-#else
-
-      /* Inline version */
-      a =  (su3_vector *)F_PT(s,dest);
-      b1 = (su3_vector *)(gen_pt[XDOWN][i]);
-      b2 = (su3_vector *)(gen_pt[YDOWN][i]);
-      b3 = (su3_vector *)(gen_pt[ZDOWN][i]);
-      b4 = (su3_vector *)(gen_pt[TDOWN][i]);
-
-      CSUB(a->c[0], b1->c[0], a->c[0]);
-      CSUB(a->c[1], b1->c[1], a->c[1]);
-      CSUB(a->c[2], b1->c[2], a->c[2]);
-      
-      CSUB(a->c[0], b2->c[0], a->c[0]);
-      CSUB(a->c[1], b2->c[1], a->c[1]);
-      CSUB(a->c[2], b2->c[2], a->c[2]);
-      
-      CSUB(a->c[0], b3->c[0], a->c[0]);
-      CSUB(a->c[1], b3->c[1], a->c[1]);
-      CSUB(a->c[2], b3->c[2], a->c[2]);
-      
-      CSUB(a->c[0], b4->c[0], a->c[0]);
-      CSUB(a->c[1], b4->c[1], a->c[1]);
-      CSUB(a->c[2], b4->c[2], a->c[2]);
-#endif
-    /*------------------------------------------------------------*/
-    } END_LOOP
-
-#ifdef DSLASHTIMES
-    dtime6 +=dclock();
-    if(this_node==0){printf("DSLASHTIMES = %e %e %e %e %e %e %e\n",
-dtime0,dtime1,dtime2,dtime3,dtime4,dtime5,dtime6);
-fflush(stdout);} 
-#endif
-
-} /* d_congrad5.c */
-
+  return iters;
+}

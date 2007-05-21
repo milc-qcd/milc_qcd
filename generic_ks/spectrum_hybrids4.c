@@ -1302,8 +1302,7 @@ s = &(lattice[1]);
     }
 
    rephase( OFF );
-   gaugefix(XUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-       F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
+   gaugefix_combo(XUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
        nvector,vector_offset,vector_parity,
        nantiherm,antiherm_offset,antiherm_parity);
 #ifdef APE_PROJECT

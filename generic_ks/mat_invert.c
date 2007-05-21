@@ -34,15 +34,22 @@ int mat_invert_cg_old( field_offset src, field_offset dest, field_offset temp,
 int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec ){
     int cgn;
-    Real finalrsq;
+    quark_invert_control qic;
+
+    qic.prec       = prec;
+    qic.max        = niter;
+    qic.nrestart   = nrestart;
+    qic.resid      = rsqprop;
+    qic.relresid   = 0;
+    qic.parity     = EVENANDODD;
+
     //    clear_latvec( dest, EVENANDODD );
     /* Multiply SOURCE by Madjoint */
     dslash_site( src, F_OFFSET(ttt), EVENANDODD);
     scalar_mult_add_latvec( F_OFFSET(ttt), src,
        -2.0*mass, F_OFFSET(ttt), EVENANDODD);
     scalar_mult_latvec( F_OFFSET(ttt), -1.0, F_OFFSET(ttt), EVENANDODD );
-    cgn = ks_congrad( F_OFFSET(ttt), dest, mass,
-        niter, nrestart, rsqprop, prec, EVENANDODD, &finalrsq);
+    cgn = ks_congrad_site( F_OFFSET(ttt), dest, &qic, mass );
     return(cgn);
 }
 
@@ -52,15 +59,22 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 int mat_invert_cg_odd( field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec ){
     int cgn;
-    Real finalrsq;
+    quark_invert_control qic;
+
+    qic.prec       = prec;
+    qic.max        = niter;
+    qic.nrestart   = nrestart;
+    qic.resid      = rsqprop;
+    qic.relresid   = 0;
+    qic.parity     = ODD;
+
     //    clear_latvec( dest, EVENANDODD );
     /* Multiply SOURCE by Madjoint ODD sites only */
     dslash_site( src, F_OFFSET(ttt), ODD);
     scalar_mult_add_latvec( F_OFFSET(ttt), src,
        -2.0*mass, F_OFFSET(ttt), ODD);
     scalar_mult_latvec( F_OFFSET(ttt), -1.0, F_OFFSET(ttt), ODD );
-    cgn = ks_congrad( F_OFFSET(ttt), dest, mass,
-        niter, nrestart, rsqprop, prec, ODD, &finalrsq);
+    cgn = ks_congrad_site( F_OFFSET(ttt), dest, &qic, mass);
     return(cgn);
 }
 
@@ -128,9 +142,15 @@ int mat_invert_uml_old(field_offset src, field_offset dest, field_offset temp,
 int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec ){
     int cgn;
-    Real finalrsq;
     register int i;
     register site *s;
+    quark_invert_control qic;
+
+    qic.prec       = prec;
+    qic.max        = niter;
+    qic.nrestart   = nrestart;
+    qic.resid      = rsqprop;
+    qic.relresid   = 0;
 
     if( src==temp ){
 	printf("BOTCH\n"); exit(0);
@@ -143,8 +163,8 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
     scalar_mult_latvec( temp, -1.0, temp, EVENANDODD);
 
     /* dest_e <- (M_adj M)^-1 temp_e  (even sites only) */
-    cgn = ks_congrad( temp, dest, mass, niter, nrestart, rsqprop,
-		      prec, EVEN, &finalrsq );
+    qic.parity     = EVEN;
+    cgn = ks_congrad_site( temp, dest, &qic, mass );
 
     /* reconstruct odd site solution */
     /* dest_o <-  1/2m (Dslash_oe*dest_e + src_o) */
@@ -158,8 +178,8 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 
     /* Polish off odd sites to correct for possible roundoff error */
     /* dest_o <- (M_adj M)^-1 temp_o  (odd sites only) */
-    cgn = ks_congrad( temp, dest, mass,
-        niter, nrestart, rsqprop, prec, ODD, &finalrsq);
+    qic.parity = ODD;
+    cgn = ks_congrad_site( temp, dest, &qic, mass );
 
     return(cgn);
 }

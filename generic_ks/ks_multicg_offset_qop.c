@@ -28,12 +28,20 @@ ks_multicg_offset(	/* Return value is number of iterations taken */
    Real *final_rsq_ptr	/* final residue squared */
    )
 {
+  quark_invert_control qic;
+
+  /* Pack structure */
+  qic.prec      = prec;
+  qic.parity    = parity;
+  qic.max       = niter;
+  qic.nrestart  = nrestart;
+  qic.resid     = rsqmin;
+  qic.relresid  = 0;     /* Suppresses this test */
+
   if(prec == 1)
-    return ks_multicg_offset_F(src, psim, offsets, num_offsets, niter, 
-			       rsqmin, parity, final_rsq_ptr);
+    return ks_multicg_offset_F(src, psim, offsets, num_offsets, &qic);
   else
-    return ks_multicg_offset_D(src, psim, offsets, num_offsets, niter, 
-			       rsqmin, parity, final_rsq_ptr);
+    return ks_multicg_offset_D(src, psim, offsets, num_offsets, &qic);
 }
 
 /* Standard MILC interface for the Asqtad multimass inverter 
@@ -52,12 +60,20 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
     Real *final_rsq_ptr	/* final residue squared */
 			)
 {
+  quark_invert_control qic;
+
+  /* Pack structure */
+  qic.prec      = prec;
+  qic.parity    = parity;
+  qic.max       = niter;
+  qic.nrestart  = nrestart;
+  qic.resid     = rsqmin;
+  qic.relresid  = 0;     /* Suppresses this test */
+
   if(prec == 1)
-    return ks_multicg_mass_F(src, psim, masses, num_masses, niter, 
-			     rsqmin, parity, final_rsq_ptr);
+    return ks_multicg_mass_F(src, psim, masses, num_masses, &qic );
   else
-    return ks_multicg_mass_D(src, psim, masses, num_masses, niter, 
-			     rsqmin, parity, final_rsq_ptr);
+    return ks_multicg_mass_D(src, psim, masses, num_masses, &qic );
 }
 
 

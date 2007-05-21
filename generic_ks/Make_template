@@ -13,6 +13,7 @@ G_KS_ALL = \
   d_congrad5.o \
   d_congrad5_eo.o \
   d_congrad5_fn.o \
+  d_congrad5_fn.old.o \
   d_congrad5_fn_fewsums.o \
   d_congrad5_fn_qop.o \
   d_congrad5_fn_qop_D.o \
@@ -27,6 +28,7 @@ G_KS_ALL = \
   d_congrad5_two_src.o \
   d_congrad6.o \
   d_congrad_opt.o \
+  dslash.o \
   dslash_eo.o \
   dslash_fn.o \
   dslash_fn2.o \
@@ -36,12 +38,20 @@ G_KS_ALL = \
   dslash_fn_qop_milc_F.o \
   eigen_stuff.o \
   f_meas.o \
-  fermion_force_asqtad3.o \
+  fermion_force_asqtad.o \
   fermion_force_asqtad_qdp.o \
+  fermion_force_asqtad_qdp_D.o \
+  fermion_force_asqtad_qdp_F.o \
   fermion_force_asqtad_qop.o \
+  fermion_force_asqtad_qop_D.o \
+  fermion_force_asqtad_qop_F.o \
   fermion_force_asqtad_qop_milc.o \
+  fermion_force_asqtad_qop_milc_D.o \
+  fermion_force_asqtad_qop_milc_F.o \
   fermion_force_fn_multi.o \
   fermion_force_fn_multi_qdp.o \
+  fermion_force_general.o \
+  fermion_force_multi.o \
   fermion_links_asqtad_qdp.o \
   fermion_links_asqtad_qop.o \
   fermion_links_asqtad_qop_D.o \
@@ -128,6 +138,8 @@ d_congrad5_eo.o: ../generic_ks/d_congrad5_eo.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn.o: ../generic_ks/d_congrad5_fn.c
 	${CC} -c ${CFLAGS} $<
+d_congrad5_fn.old.o: ../generic_ks/d_congrad5_fn.old.c
+	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop.o: ../generic_ks/d_congrad5_fn_qop.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop_D.o: ../generic_ks/d_congrad5_fn_qop_D.c ../generic_ks/d_congrad5_fn_qop_P.c 
@@ -154,6 +166,8 @@ d_congrad6.o: ../generic_ks/d_congrad6.c
 	${CC} -c ${CFLAGS} $<
 d_congrad_opt.o: ../generic_ks/d_congrad_opt.c
 	${CC} -c ${CFLAGS} $<
+dslash.o: ../generic_ks/dslash.c
+	${CC} -c ${CFLAGS} $<
 dslash_eo.o: ../generic_ks/dslash_eo.c
 	${CC} -c ${CFLAGS} $<
 dslash_fn.o: ../generic_ks/dslash_fn.c
@@ -170,19 +184,37 @@ dslash_fn_qop_milc_F.o: ../generic_ks/dslash_fn_qop_milc_F.c ../generic_ks/dslas
 	${CC} -c ${CFLAGS} $<
 eigen_stuff.o: ../generic_ks/eigen_stuff.c
 	${CC} -c ${CFLAGS} $<
-fermion_force_asqtad3.o: ../generic_ks/fermion_force_asqtad3.c
+fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qdp.o: ../generic_ks/fermion_force_asqtad_qdp.c
 	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_qdp_D.o: ../generic_ks/fermion_force_asqtad_qdp_D.c ../generic_ks/fermion_force_asqtad_qdp_P.c 
+fermion_force_asqtad_qdp_D.o: ../generic_ks/fermion_force_asqtad_qdp_D.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_qdp_F.o: ../generic_ks/fermion_force_asqtad_qdp_F.c ../generic_ks/fermion_force_asqtad_qdp_P.c 
+fermion_force_asqtad_qdp_F.o: ../generic_ks/fermion_force_asqtad_qdp_F.c
+	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop.o: ../generic_ks/fermion_force_asqtad_qop.c
 	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_qop_F.o: ../generic_ks/fermion_force_asqtad_qop_F.c ../generic_ks/fermion_force_asqtad_qop_P.c 
+fermion_force_asqtad_qop_F.o: ../generic_ks/fermion_force_asqtad_qop_F.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_qop_D.o: ../generic_ks/fermion_force_asqtad_qop_D.c ../generic_ks/fermion_force_asqtad_qop_P.c 
+fermion_force_asqtad_qop_D.o: ../generic_ks/fermion_force_asqtad_qop_D.c
+	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qop_milc.o: ../generic_ks/fermion_force_asqtad_qop_milc.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_qop_milc_D.o: ../generic_ks/fermion_force_asqtad_qop_milc_D.c ../generic_ks/fermion_force_asqtad_qop_milc_P.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_asqtad_qop_milc_F.o: ../generic_ks/fermion_force_asqtad_qop_milc_F.c  ../generic_ks/fermion_force_asqtad_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_fn_multi.o: ../generic_ks/fermion_force_fn_multi.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_fn_multi_qdp.o: ../generic_ks/fermion_force_fn_multi_qdp.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_general.o: ../generic_ks/fermion_force_general.c
+	${CC} -c ${CFLAGS} $<
+fermion_force_multi.o: ../generic_ks/fermion_force_multi.c
 	${CC} -c ${CFLAGS} $<
 f_meas.o: ../generic_ks/f_meas.c
 	${CC} -c ${CFLAGS} $<

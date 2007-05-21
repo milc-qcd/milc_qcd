@@ -15,18 +15,15 @@
 /* The standard MILC interface for two sources */
 
 
-int ks_congrad_two_src_F(	/* Return value is number of iterations taken */
+static int 
+ks_congrad_two_src_F(	/* Return value is number of iterations taken */
     field_offset milc_src1,     /* source vector (type su3_vector) */
     field_offset milc_src2,
     field_offset milc_sol1,	/* solution vectors */
     field_offset milc_sol2,
+    quark_invert_control *qic,
     Real mass1,
-    Real mass2,
-    int niter,		        /* maximal number of CG interations */
-    int nrestart,               /* maximal number of CG restarts */
-    Real rsqmin,	        /* desired residue squared */
-    int milc_parity,		/* parity to be worked on */
-    Real  *final_rsq_ptr 	/* final residue squared */
+    Real mass2
     )
 {
   int iterations_used;
@@ -55,25 +52,20 @@ int ks_congrad_two_src_F(	/* Return value is number of iterations taken */
   milc_sols[1] = milc_sols1;
 
   iterations_used = 
-    ks_congrad_qop_F_site2site( niter, nrestart, rsqmin, 
-				masses, nmass, milc_srcs,
-				milc_sols, nsrc, final_rsq_ptr,
-				milc_parity );
+    ks_congrad_qop_F_site2site( qic, masses, nmass, milc_srcs,
+				milc_sols, nsrc );
   return iterations_used;
 }
 
-int ks_congrad_two_src_D(	/* Return value is number of iterations taken */
+static int 
+ks_congrad_two_src_D(	/* Return value is number of iterations taken */
     field_offset milc_src1,     /* source vector (type su3_vector) */
     field_offset milc_src2,
     field_offset milc_sol1,	/* solution vectors */
     field_offset milc_sol2,
+    quark_invert_control *qic,
     double mass1,
-    double mass2,
-    int niter,		        /* maximal number of CG interations */
-    int nrestart,               /* maximal number of CG restarts */
-    double rsqmin,	        /* desired residue squared */
-    int milc_parity,		/* parity to be worked on */
-    Real  *final_rsq_ptr 	/* final residue squared */
+    double mass2
     )
 {
   int iterations_used;
@@ -102,14 +94,13 @@ int ks_congrad_two_src_D(	/* Return value is number of iterations taken */
   milc_sols[1] = milc_sols1;
 
   iterations_used = 
-    ks_congrad_qop_D_site2site( niter, nrestart, rsqmin, 
-				masses, nmass, milc_srcs,
-				milc_sols, nsrc, final_rsq_ptr,
-				milc_parity );
+    ks_congrad_qop_D_site2site( qic, masses, nmass, milc_srcs,
+				milc_sols, nsrc );
   return iterations_used;
 }
 
-int ks_congrad_two_src(	/* Return value is number of iterations taken */
+int 
+ks_congrad_two_src(	/* Return value is number of iterations taken */
     field_offset milc_src1,     /* source vector (type su3_vector) */
     field_offset milc_src2,
     field_offset milc_sol1,	/* solution vectors */
@@ -121,22 +112,29 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     Real rsqmin,	        /* desired residue squared */
     int prec,                   /* internal precision for the inversion */
     int milc_parity,		/* parity to be worked on */
-    Real  *final_rsq_ptr 	/* final residue squared */
+    Real  *final_rsq     	/* final residue squared */
     )
 {
   int iterations_used;
+  quark_invert_control qic;
+
+  qic.prec      = prec;  
+  qic.parity    = milc_parity;
+  qic.max       = niter;
+  qic.nrestart  = nrestart;
+  qic.resid     = rsqmin;
+  qic.relresid  = 0;     /* Suppresses this test */
 
   if(prec == 1)
     iterations_used = 
       ks_congrad_two_src_F( milc_src1, milc_src2, milc_sol1, milc_sol2, 
-			    mass1, mass2, niter, nrestart, rsqmin, 
-			    milc_parity, final_rsq_ptr);
+			    &qic, mass1, mass2 );
   else
     iterations_used = 
       ks_congrad_two_src_D( milc_src1, milc_src2, milc_sol1, milc_sol2, 
-			    mass1, mass2, niter, nrestart, rsqmin, 
-			    milc_parity, final_rsq_ptr);
+			    &qic, mass1, mass2 );
 
+  *final_rsq    = qic.final_rsq;
   total_iters += iterations_used;
   return iterations_used;
 }

@@ -92,6 +92,10 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     double *beta_i, *beta_im1, *alpha;
     su3_vector **pm;	/* vectors not involved in gathers */
     int *finished;      /* if converged */
+#ifdef CGTIME
+    static const char *milc_prec[2] = {"F", "D"};
+#endif
+
 
 /* Timing */
 
@@ -321,8 +325,8 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 #ifdef CGTIME
 	    dtimec += dclock();
 	    if(this_node==0){
-	      printf("CONGRAD5: time = %e (multicg_offset) iters = %d  masses = %d mflops = %e\n",
-		     dtimec,iteration,num_offsets,
+	      printf("CONGRAD5: time = %e (multicg_offset %s) masses = %d iters = %d mflops = %e\n",
+		     dtimec,milc_prec[PRECISION-1],num_offsets,iteration,
 		     (double)(nflop)*volume*
 		     iteration/(1.0e6*dtimec*numnodes()));
 		fflush(stdout);}

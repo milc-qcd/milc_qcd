@@ -17,6 +17,7 @@
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/generic_qop.h"
+#include "../include/generic_qopmilc.h"
 #include "../include/generic_ks_qop.h"
 #include "../include/qop_milc.h"
 #define IMP_QUARK_ACTION_INFO_ONLY
@@ -657,6 +658,13 @@ void path_product_qop_milc( const int *dir, const int length,
     }
     free(tempmat3t);
     free(tempmat2t);
+
+#if ( QOP_Precision == 1 )
+    destroy_links_from_qop_milc_F(links);
+#else
+    destroy_links_from_qop_milc_D(links);
+#endif
+
 } /* path_product_qop_milc */
 
 

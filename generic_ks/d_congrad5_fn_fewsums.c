@@ -1,5 +1,6 @@
 /******* d_congrad5_fn_fewsums.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 7 */
+/* OBSOLETE! See d_congrad5_fn.c 5/7/07 C. DeTar */
 
 /* TEST VERSION  4/18/03, TIMING FOR GLOBAL REDUCTIONS */
 /* REDUCE NUMBER OF GLOBAL SUMS */
@@ -49,6 +50,10 @@ su3_vector *ttt,*cg_p;
 su3_vector *resid;
 su3_vector *t_dest;
 static int first_congrad = 1;
+
+#ifdef CGTIME
+static const char *milc_prec[2] = {"F", "D"};
+#endif
 
 /* prec argument is ignored */
 int ks_congrad( field_offset src, field_offset dest, Real mass,
@@ -330,11 +335,12 @@ reduce_time += dclock();
 #endif
  dtimec += dclock();
 #ifdef CGTIME
-if(this_node==0){
-printf("CONGRAD5: time = %e (fn_fewsums) iters = %d mflops = %e\n",
-dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
-printf("TESTCONG: reduce_time = %e iters = %d time/iter = %e\n",
-reduce_time,iteration,reduce_time/iteration );
+ if(this_node==0){
+   printf("CONGRAD5: time = %e (fn_fewsums %s) masses = 1 iters = %d mflops = %e\n",
+	  dtimec,milc_prec[PRECISION-1], iteration,
+	  (double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
+   printf("TESTCONG: reduce_time = %e iters = %d time/iter = %e\n",
+	  reduce_time,iteration,reduce_time/iteration );
 //{ /* time stamp for NERSC performance studies */
 //      time_t time_now;
 //      char time_out[26];

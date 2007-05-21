@@ -551,7 +551,7 @@ void derivatives (field_offset phi_off, field_offset xxx_off, field_offset xxx1_
 
     initialize(xxx1_off);
     // M^-1 * dM_M_inv
-    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass );
+    mat_invert_uml(  F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
     FORALLSITES(i,st) scalar_mult_add_su3_vector(&(st->deriv[5]), (su3_vector *)F_PT(st, xxx1_off),
                                                   -60, &(st->deriv[5]));
 

@@ -16,6 +16,17 @@
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 
+/* Temporary work space for dslash_eo_field */ 
+static su3_vector *temp ;
+/* Flag indicating if temp is allocated               */
+static int temp_not_allocated=1 ;
+
+void cleanup_dslash_temps(){
+  if(!temp_not_allocated)
+      free(temp) ; 
+  temp_not_allocated=1 ;
+}
+
 void dslash_eo_site( field_offset src, field_offset dest, int parity ) {
   register int i;
   register site *s;
@@ -45,4 +56,40 @@ void dslash_eo_site( field_offset src, field_offset dest, int parity ) {
     }
   }   /* ipath */
 } /* dslash_eo_site */
+
+void dslash_eo_field( su3_vector *src, su3_vector *dest, int parity ) {
+  register int i;
+  register site *s;
+  register int ipath,otherparity;
+  register Real x; /* coefficient of path */
+  int num_q_paths = get_num_q_paths();
+  Q_path *q_paths = get_q_paths();
+  
+  /* allocate temporary work space only if not already allocated */
+  if(temp_not_allocated)
+    {
+      temp =(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+    }
+  
+  switch(parity){
+  case EVEN:	otherparity=ODD; break;
+  case ODD:	otherparity=EVEN; break;
+  case EVENANDODD:	otherparity=EVENANDODD; break;
+  }
+  
+  /* Parallel transport by all the paths in the action.  
+     Multiply by coefficient in table
+  */
+  FORSOMEPARITY(i,s,parity){ clearvec( &(dest[i]) ); }
+  
+  for( ipath=0; ipath<num_q_paths; ipath++ ){  /* loop over paths */
+    path_transport_field( src, temp, parity,
+		    q_paths[ipath].dir, q_paths[ipath].length );
+    x=q_paths[ipath].coeff;
+    FORSOMEPARITY(i,s,parity){
+      scalar_mult_add_su3_vector(  &(dest[i]), &(temp[i]), x, &(dest[i]) );
+    }
+  }   /* ipath */
+} /* dslash_eo_field */
+
 

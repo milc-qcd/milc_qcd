@@ -10,6 +10,7 @@
 /* Entry points (must be redefined to precision-specific names)
 
    KS_CONGRAD_QDP
+   KS_CONGRAD_MILCFIELD2QDP
    KS_CONGRAD_MILC2QDP
 
 */
@@ -42,6 +43,7 @@
 #if ( QDP_Precision == 'F' )
 
 #define KS_CONGRAD_QDP       ks_congrad_qdp_F
+#define KS_CONGRAD_MILCFIELD2QDP  ks_congrad_milcfield2qdp_F
 #define KS_CONGRAD_MILC2QDP  ks_congrad_milc2qdp_F
 #define SETUP_DSLASH         setup_dslash_F
 #define DSLASH_QDP_FN_SPECIAL2 dslash_qdp_F_fn_special2
@@ -54,6 +56,7 @@
 #else
 
 #define KS_CONGRAD_QDP       ks_congrad_qdp_D
+#define KS_CONGRAD_MILCFIELD2QDP  ks_congrad_milcfield2qdp_D
 #define KS_CONGRAD_MILC2QDP  ks_congrad_milc2qdp_D
 #define SETUP_DSLASH         setup_dslash_D
 #define DSLASH_QDP_FN_SPECIAL2 dslash_qdp_D_fn_special2
@@ -97,9 +100,8 @@ setup_congrad(void)
 }
 
 int
-KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
-	       int niter, int nrestart, QLA_Real rsqmin, QDP_Subset parity,
-	       QLA_Real *final_rsq_ptr)
+KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest, 
+	       quark_invert_control *qic, QLA_Real mass )
 {
   QLA_Real a,b;		 /* Sugar's a,b,resid**2,last resid*2 */
   QLA_Real rsq,oldrsq,pkp; /* pkp = cg_p.K.cg_p */
@@ -108,21 +110,24 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   QLA_Real rsqstop;	 /* stopping residual normalized by source norm */
   QDP_Subset q_parity, q_otherparity;
   int iteration;	 /* counter for iterations */
+  int niter = qic->max;
+  int nrestart = qic->nrestart;
+  QLA_Real rsqmin = qic->resid;
 
 /* Timing */
   double dtimec;
   double remaptime;
 #ifdef CGTIME
   double nflop = 1187;
-  if(parity==QDP_all) nflop *= 2;
+  if(qic->parity==EVENANDODD) nflop *= 2;
 #endif
 
   setup_congrad();
 
-  if(parity==QDP_odd) {
+  if(qic->parity==ODD) {
     q_parity = QDP_odd;
     q_otherparity = QDP_even;
-  } else if(parity==QDP_even) {
+  } else if(qic->parity==EVEN) {
     q_parity = QDP_even;
     q_otherparity = QDP_odd;
   } else {
@@ -234,27 +239,59 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
       fflush(stdout);
     }
   }
-  *final_rsq_ptr = rsq;
+  qic->final_rsq = rsq;
   total_iters += iteration;
   return(iteration);
 }
 
+/* For field-based src and dest */
+
 int
-KS_CONGRAD_MILC2QDP(field_offset f_src, field_offset f_dest, Real mass,
-		    int niter, int nrestart, Real rsqmin, int parity, 
-		    Real *final_rsq_ptr)
+KS_CONGRAD_MILCFIELD2QDP(su3_vector *f_src, su3_vector *f_dest, 
+			 quark_invert_control *qic, Real mass )
 {
-  QLA_Real qmass, qrsqmin, qfinal_rsq_ptr;
+  QLA_Real qmass;
   QDP_ColorVector *src, *dest;
-  QDP_Subset q_parity;
   double remaptime;
   int iteration;
 
-  switch(parity) {
-  case(EVEN):  q_parity = QDP_even; break;
-  case(ODD):   q_parity = QDP_odd;  break;
-  default:     q_parity = QDP_all;  break;
-  }
+  remaptime = -dclock();
+  src = QDP_create_V();
+  dest = QDP_create_V();
+
+  set_V_from_field(src, f_src);
+  set_V_from_field(dest, f_dest);
+
+  qmass = (QLA_Real) mass;
+  remaptime += dclock();
+  iteration = KS_CONGRAD_QDP(src, dest, qic, qmass );
+  remaptime -= dclock();
+
+  set_field_from_V(f_dest, dest);
+
+  QDP_destroy_V(dest); dest = NULL;
+  QDP_destroy_V(src);  src = NULL;
+  remaptime += dclock();
+
+#ifdef CGTIME
+#ifdef REMAP
+  node0_printf("CGREMAP:  time = %e\n",remaptime);
+#endif
+#endif
+
+  return(iteration);
+}
+
+/* For site-based src and dest */
+
+int
+KS_CONGRAD_MILC2QDP(field_offset f_src, field_offset f_dest, 
+		    quark_invert_control *qic, Real mass )
+{
+  QLA_Real qmass;
+  QDP_ColorVector *src, *dest;
+  double remaptime;
+  int iteration;
 
   remaptime = -dclock();
   src = QDP_create_V();
@@ -264,12 +301,9 @@ KS_CONGRAD_MILC2QDP(field_offset f_src, field_offset f_dest, Real mass,
   set_V_from_site(dest, f_dest);
 
   qmass = (QLA_Real) mass;
-  qrsqmin = (QLA_Real) rsqmin;
   remaptime += dclock();
-  iteration = KS_CONGRAD_QDP(src, dest, qmass, niter, nrestart, qrsqmin, 
-			     q_parity, &qfinal_rsq_ptr);
+  iteration = KS_CONGRAD_QDP(src, dest, qic, qmass );
   remaptime -= dclock();
-  *final_rsq_ptr = (Real) qfinal_rsq_ptr;
 
   set_site_from_V(f_dest, dest);
 
@@ -285,3 +319,4 @@ KS_CONGRAD_MILC2QDP(field_offset f_src, field_offset f_dest, Real mass,
 
   return(iteration);
 }
+
