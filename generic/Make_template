@@ -49,7 +49,8 @@ G_ALL = \
  layout_squares.o \
  layout_hyper_sl32.o \
  layout_qcdoc.o \
- map_milc_to_qop.o \
+ map_milc_to_qopmilc.o \
+ map_milc_to_qopqdp.o \
  milc_to_qop_utilities.o \
  make_lattice.o \
  nersc_cksum.o \
@@ -183,7 +184,9 @@ layout_qcdoc.o: ../generic/layout_qcdoc.c
 	${CC} -c ${CFLAGS} $<
 make_lattice.o: ../generic/make_lattice.c
 	${CC} -c ${CFLAGS} $<
-map_milc_to_qop.o: ../generic/map_milc_to_qop.c
+map_milc_to_qopmilc.o: ../generic/map_milc_to_qopmilc.c ../generic/map_milc_to_qop_all.c
+	${CC} -c ${CFLAGS} $<
+map_milc_to_qopqdp.o: ../generic/map_milc_to_qopqdp.c ../generic/map_milc_to_qop_all.c
 	${CC} -c ${CFLAGS} $<
 milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
 	${CC} -c ${CFLAGS} $<

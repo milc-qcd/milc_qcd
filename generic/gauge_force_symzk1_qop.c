@@ -23,9 +23,6 @@ void load_qop_imp_gauge_coeffs(QOP_gauge_coeffs_t *c)
 
 void imp_gauge_force( Real eps, field_offset mom_off ){
 
-  su3_matrix **rawlinks;
-  su3_matrix **rawmom;
-
   QOP_GaugeField *links;
   QOP_Force *mom;
 
@@ -43,8 +40,9 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
   //QDP_Subset site0 = site0_array[0];
 
  /* Load gauge links and momentum */
-  load_links_and_mom_site( &links, &mom, &rawlinks, &rawmom );
-  //	printf("Links and mom loaded\n");
+  links = create_G_from_site4(F_OFFSET(link), EVENANDODD);
+  mom   = create_F_from_site4(F_OFFSET(mom), EVENANDODD);
+
   /* Load coefficients */
   load_qop_imp_gauge_coeffs(&coeff);
   //	printf("Before calling QOP force\n");
@@ -71,8 +69,9 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
   if(info.status != QOP_SUCCESS){
     terminate(1);
   }
-  /* Unload momentum and destroy storage for momentum and links */
-  unload_links_and_mom_site(  &links, &mom, &rawlinks, &rawmom );
+  /* Unload momentum */
+  unload_F_to_site4( F_OFFSET(mom), mom, EVENANDODD );
+
   remaptime += dclock();
 #ifdef GFTIME
   node0_printf("GFTIME:  time = %e mflops = %e\n",info.final_sec,

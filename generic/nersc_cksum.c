@@ -13,6 +13,7 @@
 
 #include "generic_includes.h"
 
+/**
 static int 
 my_big_endian() {
   union  {
@@ -22,6 +23,7 @@ my_big_endian() {
   u.l = 1;
   return (u.c[sizeof (long) - 1] == 1);
 }
+**/
 
 u_int32type 
 nersc_cksum( void ) {
@@ -32,7 +34,6 @@ nersc_cksum( void ) {
     float       flt;
     u_int32type p32;
   } tmp;
-  int big_end = my_big_endian();
   u_int32type p32;
 
   FORALLSITES(i,s) {
@@ -40,11 +41,9 @@ nersc_cksum( void ) {
       for(a=0; a<2; a++) for(b=0; b<3; b++) {
 	tmp.flt = s->link[mu].e[a][b].real;
 	p32 = tmp.p32;
-	// if(!big_end)byterevn((int32type *)&p32,1);
 	chksum += p32;
 	tmp.flt = s->link[mu].e[a][b].imag;
 	p32 = tmp.p32;
-	// if(!big_end)byterevn((int32type *)&p32,1);
 	chksum += p32;
       }
     }

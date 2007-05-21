@@ -157,7 +157,6 @@ create_links_from_qop_milc_F(fsu3_matrix *src)
 
 void
 destroy_links_from_qop_milc_F(su3_matrix *g){
-  return;
 }
 
 su3_matrix *
@@ -221,7 +220,6 @@ create_links_from_qop_milc_D(dsu3_matrix *src)
 
 void
 destroy_links_from_qop_milc_D(su3_matrix *g){
-  return;
 }
 
 

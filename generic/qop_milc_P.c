@@ -16,6 +16,7 @@
 
 #include "generic_includes.h"
 #include "../include/generic_qop.h"
+#include "../include/generic_qopmilc.h"
 #include "../include/qop_milc.h"
 #include <string.h>
 #include <stdlib.h>
