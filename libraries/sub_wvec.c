@@ -2,7 +2,7 @@
 *
 *void sub_wilson_vector(wilson_vector *src1,*src2,*dest)
 *  sub two Wilson vectors
-* dest  <-  src1 + src2
+* dest  <-  src1 - src2
 */
 #include "../include/config.h"
 #include "../include/complex.h"
