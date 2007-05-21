@@ -97,7 +97,8 @@ void twopt_sequential_corr(complex *corr, field_offset hqet_prop,
       **/
     sgn = 1  ;
   
-    restrict_fourier(F_OFFSET(quark_sequential.d[spin]), F_OFFSET(fft_one), F_OFFSET(fft_two), sizeof(wilson_vector), sgn);
+    restrict_fourier_site(F_OFFSET(quark_sequential.d[spin]),
+			  sizeof(wilson_vector), sgn);
 		   
 		   
     FORALLSITES(i,s) 
@@ -120,7 +121,8 @@ void twopt_sequential_corr(complex *corr, field_offset hqet_prop,
 
 
     sgn = -1 ;
-    restrict_fourier( F_OFFSET(quark_sequential.d[spin]) , F_OFFSET(fft_one), F_OFFSET(fft_two), sizeof(wilson_vector), sgn); 
+    restrict_fourier_site( F_OFFSET(quark_sequential.d[spin]), 
+			   sizeof(wilson_vector), sgn); 
 
   } /*** end of the loop over spin *****/
 

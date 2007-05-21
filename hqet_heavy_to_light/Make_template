@@ -21,19 +21,8 @@ INCLUDEDIR = ../include
 LIBDIR = ../libraries
 
 # To force a remake when changing headers
-GLOBAL_HEADERS = \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/complex.h \
-  ${INCLUDEDIR}/su3.h \
-  ${INCLUDEDIR}/comdefs.h \
-  ${INCLUDEDIR}/macros.h \
-  ${INCLUDEDIR}/generic.h \
-  ${INCLUDEDIR}/generic_clover.h \
-  ${INCLUDEDIR}/generic_wilson.h \
-  ${INCLUDEDIR}/generic_wilson.h \
-  ${INCLUDEDIR}/loopend.h \
-  ${INCLUDEDIR}/io_lat.h \
-  ../generic_form/gammatypes.h
+
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 MY_HEADERS = \
   lattice.h \
@@ -123,7 +112,7 @@ G_CLOVER_OBJECTS = \
 	make_clov.o
 
 G_CLOVER_INVERTERS = \
-  	d_bicgilu_cl_lean.o
+  	d_bicgilu_cl.o
 
 G_FORM_OBJECTS = \
         flip_source_rep.o\

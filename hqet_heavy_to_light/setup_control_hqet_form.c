@@ -50,8 +50,8 @@ void setup_control_hqet_form(void)
   **/
 
   sgn = -1  ;
-  restrict_fourier(F_OFFSET(seq_smear_func_fft[ 0 ]) , F_OFFSET(seq_smear_fft1[0]) , 
-		   F_OFFSET(seq_smear_fft2[0]  ), novel*sizeof(complex), sgn);
+  restrict_fourier_site(F_OFFSET(seq_smear_func_fft[ 0 ]),
+			novel*sizeof(complex), sgn);
 
 
 

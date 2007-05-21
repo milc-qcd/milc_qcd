@@ -134,6 +134,7 @@ void calc_hqet_light_form(void)
 	    else MinCG = 0;
 
 	    /* Load inversion control structure */
+	    qic_spectator.prec = PRECISION;
 	    qic_spectator.min = MinCG;
 	    qic_spectator.max = niter_spectator;
 	    qic_spectator.nrestart = nrestart_spectator;
@@ -141,32 +142,23 @@ void calc_hqet_light_form(void)
 	    qic_spectator.start_flag = restart_flag_spectate;
 
 #ifdef BICG_CLOVER
-	    /* Load temporaries specific to inverter */
-	    qic_spectator.wv1 = F_OFFSET(tmp);
-	    qic_spectator.wv2 = F_OFFSET(mp);
-	    qic_spectator.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-	    qic_spectator.wv4 = F_OFFSET(sss);
-	    
 	    /* Load Dirac matrix parameters */
 	    dcp.Kappa = kappa_spectator[k_spectator];
 	    dcp.Clov_c = clov_c;
 	    dcp.U0 = u0;
 
 	    rv  = F_OFFSET(tmpb);
-	    wilson_invert_lean(F_OFFSET(chi), F_OFFSET(quark_spectate.d[spin]),
+	    wilson_invert_site_wqs(F_OFFSET(chi), F_OFFSET(quark_spectate.d[spin]),
 			       w_source,&wqs_spectator[k_spectator],
-			       bicgilu_cl,&qic_spectator,(void *)&dcp);
+			       bicgilu_cl_site,&qic_spectator,(void *)&dcp);
 
 #else
-	    /* Load temporaries specific to inverter */
-	    qic_spectator.wv2 = F_OFFSET(mp);  /* Don't need wv1 */
-	    
 	    /* Load Dirac matrix parameters */
 	    dwp.Kappa = kappa_spectator[k_spectator];
 	
-	    wilson_invert_lean(F_OFFSET(chi), F_OFFSET(quark_spectate.d[spin]),
+	    wilson_invert_site_wqs(F_OFFSET(chi), F_OFFSET(quark_spectate.d[spin]),
 			       w_source,&wqs_spectator[k_spectator],
-			       mrilu_w_or,&qic_spectator,(void *)&dwp);
+			       mrilu_w_site,&qic_spectator,(void *)&dwp);
 #endif
 
 	    IF_MASTER printf("------> starting to load light zonked quark k = %f <-----\n",kappa_zonked_light[k_spectator]);
@@ -195,6 +187,7 @@ void calc_hqet_light_form(void)
 	    else MinCG = 0;
 
 	    /* Load inversion control structure */
+	    qic_zonked_light.prec = PRECISION;
 	    qic_zonked_light.min = MinCG;
 	    qic_zonked_light.max = niter_zonked;
 	    qic_zonked_light.nrestart = nrestart_zonked;
@@ -202,31 +195,22 @@ void calc_hqet_light_form(void)
 	    qic_zonked_light.start_flag = startflag_zonked[k_zonked_light];
 
 #ifdef BICG_CLOVER
-	    /* Load temporaries specific to inverter */
-	    qic_zonked_light.wv1 = F_OFFSET(tmp);
-	    qic_zonked_light.wv2 = F_OFFSET(mp);
-	    qic_zonked_light.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-	    qic_zonked_light.wv4 = F_OFFSET(sss);
-	    
 	    /* Load Dirac matrix parameters */
 	    dcp.Kappa = kappa_zonked_light[k_zonked_light];
 	    dcp.Clov_c = clov_c;
 	    dcp.U0 = u0;
 	    
-	    wilson_invert_lean(F_OFFSET(chi), F_OFFSET(quark_zonked.d[spin]),
+	    wilson_invert_site_wqs(F_OFFSET(chi), F_OFFSET(quark_zonked.d[spin]),
 			       w_source,&wqs_zonked_light[k_zonked_light],
-			       bicgilu_cl,&qic_zonked_light,(void *)&dcp);
+			       bicgilu_cl_site,&qic_zonked_light,(void *)&dcp);
 
 #else
-	    /* Load temporaries specific to inverter */
-	    qic_zonked_light.wv2 = F_OFFSET(mp);  /* Don't need wv1 */
-	    
 	    /* Load Dirac matrix parameters */
 	    dwp.Kappa = kappa_zonked_light[k_zonked_light];
 	    
-	    wilson_invert_lean(F_OFFSET(chi), F_OFFSET(quark_zonked.d[spin]),
+	    wilson_invert_site_wqs(F_OFFSET(chi), F_OFFSET(quark_zonked.d[spin]),
 			       w_source,&wqs_zonked_light[k_zonked_light],
-			       mrilu_w_or,&qic_zonked_light,(void *)&dwp);
+			       mrilu_w_site,&qic_zonked_light,(void *)&dwp);
 			  
 #endif
 	  }  /*** end the loop over the spin ****/
