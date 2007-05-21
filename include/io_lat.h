@@ -12,28 +12,29 @@
 
 /* Definitions of restore and save lattice flags used in io_helpers.c */
 /* Some are also used for Wilson propagators */
-#define CONTINUE 10
-#define FRESH    11
-#define RELOAD_ASCII  12
-#define RELOAD_SERIAL  13
-#define RELOAD_MULTIDUMP 18
-#define RELOAD_PARALLEL  19
-#define FORGET 40
-#define SAVE_ASCII 41
-#define SAVE_SERIAL 42
-#define SAVE_CHECKPOINT 43
-#define SAVE_SERIAL_FM 44
-#define SAVE_SERIAL_ILDG 45
-#define SAVE_PARALLEL_ILDG 46
-#define SAVE_MULTIFILE_ILDG 47
-#define SAVE_PARTITION_ILDG 48
-#define SAVE_SERIAL_SCIDAC 49
-#define SAVE_PARALLEL_SCIDAC 50
-#define SAVE_MULTIFILE_SCIDAC 51
-#define SAVE_PARTITION_SCIDAC 52
-#define SAVE_PARALLEL 53
-#define SAVE_MULTIDUMP 54
-#define SAVE_SERIAL_ARCHIVE 55
+#define CONTINUE                10
+#define FRESH                   11
+#define RELOAD_ASCII            12
+#define RELOAD_SERIAL           13
+#define RELOAD_MULTIDUMP        18
+#define RELOAD_PARALLEL         19
+#define FORGET                  40
+#define SAVE_ASCII              41
+#define SAVE_SERIAL             42
+#define SAVE_CHECKPOINT         43
+#define SAVE_SERIAL_FM          44
+#define SAVE_SERIAL_FM_SC       45
+#define SAVE_SERIAL_ILDG        46
+#define SAVE_PARALLEL_ILDG      47
+#define SAVE_MULTIFILE_ILDG     48
+#define SAVE_PARTITION_ILDG     49
+#define SAVE_SERIAL_SCIDAC      50
+#define SAVE_PARALLEL_SCIDAC    51
+#define SAVE_MULTIFILE_SCIDAC   52
+#define SAVE_PARTITION_SCIDAC   53
+#define SAVE_PARALLEL           54
+#define SAVE_MULTIDUMP          55
+#define SAVE_SERIAL_ARCHIVE     56
 
 /* For KS propagators */
 #define SAVE_SERIAL_TSLICE 932
