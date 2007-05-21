@@ -32,6 +32,9 @@
      site is lattice[node_index(x,y,z,t)].
    get_logical_dimensions() returns the machine dimensions
    get_logical_coordinates() returns the mesh coordinates of this node
+   get_coords() returns the coordinates for a given node and index
+       (the inverse of node_number + node_index)
+   io_node(node) maps nodes to their I/O node (for I/O partitions)
    These routines will change as we change our minds about how to distribute
      sites among the nodes.  Hopefully the setup routines will work for any
      consistent choices. (ie node_index should return a different value for
@@ -49,7 +52,53 @@ static int machine_coordinates[4]; /* logical machine coordinates */
 int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
 # define MAXPRIMES ( sizeof(prime) / sizeof(int) )
 
+/*------------------------------------------------------------------*/
+/* Convert rank to coordinates */
+static void lex_coords(int coords[], const int dim, const int size[], 
+	   const size_t rank)
+{
+  int d;
+  size_t r = rank;
+
+  for(d = 0; d < dim; d++){
+    coords[d] = r % size[d];
+    r /= size[d];
+  }
+}
+
+#ifdef FIX_IONODE_GEOM
+
+/*------------------------------------------------------------------*/
+/* Convert coordinate to linear lexicographic rank (inverse of
+   lex_coords) */
+
+static size_t lex_rank(const int coords[], int dim, int size[])
+{
+  int d;
+  size_t rank = coords[dim-1];
+
+  for(d = dim-2; d >= 0; d--){
+    rank = rank * size[d] + coords[d];
+  }
+  return rank;
+}
+
+#endif
+
 #ifdef HAVE_QMP
+
+/*--------------------------------------------------------------------*/
+/* Sets the QMP logical topology if we need one */
+static void set_qmp_layout_grid(int *geom, int n){
+  if(geom == NULL)return;
+  if(QMP_declare_logical_topology(geom, n) != QMP_SUCCESS){
+    node0_printf("setup_layout: QMP_declare_logical_topology failed on %d %d %d %d \n",
+		 geom[0], geom[1], geom[2], geom[3] );
+    terminate(1);
+  }
+}
+
+/*--------------------------------------------------------------------*/
 static void setup_qmp_grid(){
   int ndim = 4;
   int len[4];
@@ -63,8 +112,19 @@ static void setup_qmp_grid(){
     printf("\n");
   }
 
+  ndim2 = QMP_get_allocated_number_of_dimensions();
+  nsquares2 = QMP_get_allocated_dimensions();
+
+#ifdef FIX_NODE_GEOM
+  /* Do we need to declare the topology? */
+  if(QMP_logical_topology_is_declared() == QMP_FALSE){
+    set_qmp_layout_grid(node_geometry, 4);
+  }
+#endif
+
   ndim2 = QMP_get_logical_number_of_dimensions();
   nsquares2 = QMP_get_logical_dimensions();
+
   for(i=0; i<ndim; i++) {
     if(i<ndim2) nsquares[i] = nsquares2[i];
     else nsquares[i] = 1;
@@ -80,6 +140,7 @@ static void setup_qmp_grid(){
 }
 #endif
 
+/*--------------------------------------------------------------------*/
 static void setup_hyper_prime(){
   int i,j,k,dir;
 
@@ -125,29 +186,121 @@ static void setup_hyper_prime(){
   }
 }
 
+/*--------------------------------------------------------------------*/
+
+void setup_fixed_geom(int *geom, int n){
+  int i;
+  int node_count;
+  int len[4];
+  int status;
+
+  len[0] = nx; len[1] = ny; len[2] = nz; len[3] = nt;
+
+  node_count = 1;
+  status = 0;
+  for(i = 0; i < 4; i++){
+    nsquares[i] = geom[i];
+    node_count *= geom[i];
+    if(len[i] % nsquares[i] != 0)status++;
+    squaresize[i] = len[i]/nsquares[i];
+  }
+
+  if(node_count != numnodes()){
+    node0_printf("/nsetup_fixed_geom: Requested geometry %d %d %d %d ",
+		 geom[0], geom[1], geom[2], geom[3]);
+    node0_printf("does not match number of nodes %d\n",numnodes());
+    terminate(1);
+  }
+
+  if(status){
+    node0_printf("setup_fixed_geom: Requested geometry %d %d %d %d ",
+		 geom[0], geom[1], geom[2], geom[3]);
+    node0_printf("is not commensurate with the lattice dims %d %d %d %d\n",
+		 nx, ny, nz, nt);
+    terminate(1);
+  }
+}
+
+#ifdef FIX_IONODE_GEOM
+
+static int io_node_coords[4];
+static int nodes_per_ionode[4];
+
+/*------------------------------------------------------------------*/
+/* Initialize io_node function */
+
+
+static void init_io_node(){
+  int i;
+  int status = 0;
+
+  /* Compute the number of nodes per I/O node along each direction */
+  for(i = 0; i < 4; i++){
+    if(nsquares[i] % ionode_geometry[i] != 0)status++;
+    nodes_per_ionode[i] = nsquares[i]/ionode_geometry[i];
+  }
+  
+  if(status){
+    node0_printf("init_io_node: ionode geometry %d %d %d %d \n",
+		 ionode_geometry[0], ionode_geometry[1],
+		 ionode_geometry[2], ionode_geometry[3]);
+    node0_printf("is incommensurate with node geometry %d %d %d %d\n",
+		 nsquares[0], nsquares[1], nsquares[3], nsquares[3]);
+    terminate(1);
+  }
+}
+#endif
+
+/*------------------------------------------------------------------*/
+/* Initialization entry point */
+
 void setup_layout(){
   int k = mynode();
+#ifdef FIX_NODE_GEOM
+  int *geom = node_geometry;
+#else
+  int *geom = NULL;
+#endif
 
   if(k == 0)
     printf("LAYOUT = Hypercubes, options = ");
 
 #ifdef HAVE_QMP
-  if(QMP_get_msg_passing_type()==QMP_GRID)
+  /* QMP treatment */
+  /* Is there already a grid? 
+     This could be a grid architecture with a preset dimension or
+     a geometry could have been set by the -qmp-geom command line arg. 
+     In either case we have a nonzero allocated number of dimensions. 
+*/
+  if(QMP_get_allocated_number_of_dimensions() == 0)
+    /* Set the geometry if requested */
+    set_qmp_layout_grid(geom, 4);
+
+  /* Has a grid been set up now? */
+  if(QMP_get_msg_passing_type() == QMP_GRID)
     setup_qmp_grid();
+  else if(geom != NULL)
+    setup_fixed_geom(geom, 4);
   else
     setup_hyper_prime();
+
 #else
-  setup_hyper_prime();
+
+  /* Non QMP treatment */
+  if(geom != NULL)
+    setup_fixed_geom(geom, 4);
+  else
+    setup_hyper_prime();
+
+#endif
+
+#ifdef FIX_IONODE_GEOM
+  /* Initialize I/O node function */
+  init_io_node();
 #endif
   
-  /* Compute machine coordinates */
-  machine_coordinates[XUP] = k % nsquares[XUP];
-  k /= nsquares[XUP];
-  machine_coordinates[YUP] = k % nsquares[YUP];
-  k /= nsquares[YUP];
-  machine_coordinates[ZUP] = k % nsquares[ZUP];
-  k /= nsquares[ZUP];
-  machine_coordinates[TUP] = k % nsquares[TUP];
+  /* Compute machine coordinates for this node */
+  lex_coords(machine_coordinates, 4, nsquares, k);
 
   /* Number of sites on node */
   sites_on_node =
@@ -165,6 +318,7 @@ void setup_layout(){
   even_sites_on_node = odd_sites_on_node = sites_on_node/2;
 }
 
+/*------------------------------------------------------------------*/
 int node_number(int x, int y, int z, int t) {
 register int i;
     x /= squaresize[XUP]; y /= squaresize[YUP];
@@ -173,6 +327,7 @@ register int i;
     return( i );
 }
 
+/*------------------------------------------------------------------*/
 int node_index(int x, int y, int z, int t) {
 register int i,xr,yr,zr,tr;
     xr = x%squaresize[XUP]; yr = y%squaresize[YUP];
@@ -186,21 +341,24 @@ register int i,xr,yr,zr,tr;
     }
 }
 
+/*------------------------------------------------------------------*/
 size_t num_sites(int node) {
     return( sites_on_node );
 }
 
+/*------------------------------------------------------------------*/
 const int *get_logical_dimensions(){
   return nsquares;
 }
 
+/*------------------------------------------------------------------*/
 /* Coordinates simulate a mesh architecture and must correspond
    to the node_number result */
-
 const int *get_logical_coordinate(){
   return machine_coordinates;
 }
 
+/*------------------------------------------------------------------*/
 /* Map node number and index to coordinates  */
 void get_coords(int coords[], int node, int index){
   int mc[4];
@@ -209,13 +367,7 @@ void get_coords(int coords[], int node, int index){
   int k = node;
 
   /* Compute machine coordinates for node */
-  mc[XUP] = k % nsquares[XUP];
-  k /= nsquares[XUP];
-  mc[YUP] = k % nsquares[YUP];
-  k /= nsquares[YUP];
-  mc[ZUP] = k % nsquares[ZUP];
-  k /= nsquares[ZUP];
-  mc[TUP] = k % nsquares[TUP];
+  lex_coords(mc, 4, nsquares, k);
 
   /* Lexicographic index on node rounded to even */
   ir = 2*index;
@@ -227,13 +379,7 @@ void get_coords(int coords[], int node, int index){
     eo = 0;
 
   /* Convert to coordinates - result is two-fold ambiguous */
-  coords[XUP] = ir % squaresize[XUP];
-  ir /= squaresize[XUP];
-  coords[YUP] = ir % squaresize[YUP];
-  ir /= squaresize[YUP];
-  coords[ZUP] = ir % squaresize[ZUP];
-  ir /= squaresize[ZUP];
-  coords[TUP] = ir % squaresize[TUP];
+  lex_coords(coords, 4, squaresize, ir);
 
   /* Adjust coordinate according to parity (assumes even sites_on_node) */
   if( (coords[XUP] + coords[YUP] + coords[ZUP] + coords[TUP]) % 2 != eo){
@@ -273,3 +419,36 @@ void get_coords(int coords[], int node, int index){
   }
 }
 
+/* io_node(node) maps a node to its I/O node.  The nodes are placed on
+   a node lattice with dimensions nsquares.  The I/O partitions are
+   hypercubes of the node lattice.  The dimensions of the hypercube are
+   given by nodes_per_ionode.  The I/O node is at the origin of that
+   hypercube. */
+
+#ifdef FIX_IONODE_GEOM
+
+/*------------------------------------------------------------------*/
+/* Map any node to its I/O node */
+int io_node(int node){
+  int i,j,k; 
+
+  /* Get the machine coordinates for the specified node */
+  lex_coords(io_node_coords, 4, nsquares, node);
+
+  /* Round the node coordinates down to get the io_node coordinate */
+  for(i = 0; i < 4; i++)
+    io_node_coords[i] = nodes_per_ionode[i] * 
+      (io_node_coords[i]/nodes_per_ionode[i]);
+  
+  /* Return the linearized machine coordinates of the I/O node */
+  return (int)lex_rank(io_node_coords, 4, nsquares);
+}
+
+#else
+
+/*------------------------------------------------------------------*/
+/* If we don't have I/O partitions, each node does its own I/O */
+int io_node(int node){
+  return node;
+}
+#endif
