@@ -1,3 +1,8 @@
+/***************** control_hl_spectrum.c ***********************************/
+
+/* Main procedure for heavy-light mesons */
+/* MIMD version 7 */
+
 #define CONTROL
 #include "ks_hl_spectrum_includes.h"
 #include <string.h>
@@ -117,9 +122,8 @@ int main(int argc,char *argv[])
         smeared heavy quark propagators*/
       
       for(color=0;color<3;color++)for(spin=0;spin<4;spin++){
-	restrict_fourier(F_OFFSET(quark_propagator.c[color].d[spin]),
-			 F_OFFSET(mp), F_OFFSET(tmp),
-			 sizeof(wilson_vector), FORWARDS);
+	restrict_fourier_site(F_OFFSET(quark_propagator.c[color].d[spin]),
+			      sizeof(wilson_vector), FORWARDS);
       }
       
       for(ns=0; ns<num_smear;ns++){
@@ -128,9 +132,8 @@ int main(int argc,char *argv[])
 	
 	get_smearings_bi_serial(smearfile[ns]);
 	
-	restrict_fourier(F_OFFSET(w),
-			 F_OFFSET(w1), F_OFFSET(w2),
-			 sizeof(complex), FORWARDS);
+	restrict_fourier_site(F_OFFSET(w),
+			      sizeof(complex), FORWARDS);
 	
 	
 	FORALLSITES(i,s){
@@ -148,9 +151,8 @@ int main(int argc,char *argv[])
 	}
 	
 	for(color=0;color<3;color++)for(spin=0;spin<4;spin++){
-	  restrict_fourier(F_OFFSET(quark_propagator_copy.c[color].d[spin]),
-			   F_OFFSET(mp), F_OFFSET(tmp),
-			   sizeof(wilson_vector), BACKWARDS);
+	  restrict_fourier_site(F_OFFSET(quark_propagator_copy.c[color].d[spin]),
+				sizeof(wilson_vector), BACKWARDS);
 	}	
 	
 	FORALLSITES(i,s)

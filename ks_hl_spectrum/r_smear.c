@@ -130,9 +130,12 @@ void get_smearings_bi_serial(char *filename)
 	  }
 
 	if(precision == 1){
-	  if(byterevflag)
-	    byterevn((int32type *)&fw_smear, 
-		     sizeof(complex)/sizeof(int32type));
+	  if(byterevflag){
+	    byterevn((int32type *)&fw_smear.real, 
+		     sizeof(fw_smear.real)/sizeof(int32type));
+	    byterevn((int32type *)&fw_smear.imag, 
+		     sizeof(fw_smear.imag)/sizeof(int32type));
+	  }
 	  w_smear.real = fw_smear.real;
 	  w_smear.imag = fw_smear.imag;
 	}

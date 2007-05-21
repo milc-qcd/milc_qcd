@@ -12,7 +12,7 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = ${INCLUDEDIR}
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 INLINE_HEADERS = \
   ../sse/include/ \
@@ -40,7 +40,7 @@ MY_OBJECTS = \
   twopt.o \
 
 # Basic set from generic directory
-G_OBJECTS0 =         \
+G_OBJECTS =         \
   check_unitarity.o  \
   d_plaq4.o          \
   gaugefix2.o        \
@@ -49,7 +49,6 @@ G_OBJECTS0 =         \
   io_helpers_w.o     \
   io_lat4.o          \
   io_lat_utils.o     \
-  io_prop_w.o        \
   make_lattice.o     \
   nersc_cksum.o \
   ranstuff.o         \
@@ -58,40 +57,36 @@ G_OBJECTS0 =         \
   restrict_fourier.o
 
 ifeq ($(strip ${QCDOC}),true)
-  G_OBJECTS1 = ${G_OBJECTS0} ploop2.o
+  G_OBJECTS += ploop2.o
 else
-  G_OBJECTS1 = ${G_OBJECTS0} ploop3.o
+  G_OBJECTS += ploop3.o
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS = ${G_OBJECTS1} io_scidac.o
-else
-  G_OBJECTS = ${G_OBJECTS1}
+  G_OBJECTS += io_scidac.o
 endif
 
-G_WILSON_OBJECTS0 =    \
+G_WILSON_OBJECTS =    \
   dslash_w_space.o     \
+  io_prop_w.o        \
   io_prop_w_fm.o       \
-  wilson_invert_lean.o 
+  wilson_invert.o 
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_WILSON_OBJECTS = ${G_WILSON_OBJECTS0} io_scidac_w.o
-else
-  G_WILSON_OBJECTS = ${G_WILSON_OBJECTS0}
+  G_WILSON_OBJECTS += io_scidac_w.o
 endif
 
-G_KS_OBJECTS0 = \
+G_KS_OBJECTS = \
   d_congrad5.o \
   d_congrad_opt.o \
+  dslash.o \
   rephase.o  \
   io_helpers_ks.o \
   io_prop_ks_fm.o   \
   io_prop_ks.o
  
 ifeq ($(strip ${HAVEQIO}),true)
-  G_KS_OBJECTS = ${G_KS_OBJECTS0} io_scidac_ks.o
-else
-  G_KS_OBJECTS = ${G_KS_OBJECTS0}
+  G_KS_OBJECTS += io_scidac_ks.o
 endif
 
 # Objects depending on architecture and software package 
