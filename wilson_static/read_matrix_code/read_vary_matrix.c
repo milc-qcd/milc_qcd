@@ -1,4 +1,4 @@
-/*   $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/read_matrix_code/read_vary_matrix.c,v 1.1 2005/02/23 00:06:12 detar Exp $
+/*   $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/read_matrix_code/read_vary_matrix.c,v 1.2 2007/05/21 04:56:17 detar Exp $
  *  This is a acalar utility program to read the 
  *  static variational matrix from disk and
  *  print it to the screen --- this is useful for
@@ -15,6 +15,7 @@
 #include <math.h>
 #include <string.h>
 #include "../../include/int32type.h"
+#include "../../include/precision.h"
 
 void dump_vary(Real *vary_matrix,int nt, int nosmear);
 void byte_rev_array(int32type buf[], int words) ;
