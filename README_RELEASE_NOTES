@@ -9,6 +9,7 @@ clover_dynamical
 clover_invert
 file_utilities
 gluon_prop
+heafy
 ks_hl_spectrum
 ks_imp_dyn
 ks_imp_rhmc
@@ -16,6 +17,8 @@ ks_imp_invert_multi
 ks_imp_utilities
 pure_gauge
 schroed_cl_inv
+smooth_inst
+wilson_static
 
 Build the code with GNU make.  See the README file in this directory
 for general instructions.
@@ -24,18 +27,22 @@ Here are highlights of the changes:
 
 For version 7.5.0
 
-  Mixed precision for QOP and QDP Asqtad fermion force (single & multi source)
+  Precision selection for QOP and QDP Asqtad fermion force 
+     (single & multisource)
   Change to true residual stopping condition in single mass staggered
-  and clover inverters.  Prepare for supporting FNAL relative residual.
+     and clover inverters.  Prepare for supporting FNAL relative residual.
   Support for fixed mesh layouts (e.g. BG/L and QCDOC)
   Support a variety of FNAL Wilson sources and propagator formats.
+  Support for USQCD/SciDAC gauge file format in some applications.
   Dcache I/O support (FNAL)
   Drop site structure temps from gaugefix args.
   Drop site structure args from restrict_fourier args
+  New interface for clover inverters.
   Z2 random number support in f_meas
   Support qopqdp-0.7.7 and later for fermion force.
-  Odd-even KS matrix inversion now does odd-site polish
+  EVENANDODD KS matrix inversion now does odd-site polish
   Support for QCDOC multi Asqtad force and multi Asqtad inverter
+  A few more less-used version 6 apps upgraded to version 7.
 
 For version 7.4.0
 
