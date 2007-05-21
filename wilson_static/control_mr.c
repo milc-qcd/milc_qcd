@@ -1,5 +1,5 @@
 /***************** control_mr.c *****************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*  set tabstop=2   for easy reading of this file */
 
 /* Main procedure for quenched heavy-light
@@ -18,7 +18,7 @@
   code, it shoule only be used for one kappa value at one time.
 
 */
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
  * Background gauge field is supplied, assumed to be in coulomb gauge 
@@ -27,7 +27,7 @@
 #define CONTROL
 
 #include "w_static_includes.h"
-
+#include "lattice_qdp.h"
 
 
 
@@ -44,6 +44,7 @@ int main(int argc, char **argv)
   int spin, color, nk;		/******/
   int max_prop;
 
+  int cl_cg = CL_CG;
   double ssplaq, stplaq;
 
 
@@ -92,8 +93,7 @@ int main(int argc, char **argv)
 	printf("Fixing to Coulomb gauge\n");
       g_time = -dclock();
 
-      gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL,
-	       F_OFFSET(mp),F_OFFSET(chi),0,NULL,NULL,0,NULL,NULL);
+      gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
 
       g_time += dclock();
       if(this_node==0)printf("Time to gauge fix = %e\n",g_time);
@@ -271,25 +271,30 @@ int main(int argc, char **argv)
 	  /* Load Dirac matrix parameters */
 	  dwp.Kappa = kappa;
 	  
-#ifdef CG
-	  /* Load temporaries specific to inverter */
-	  qic.wv2 = F_OFFSET(mp);
-
-	  /* compute the propagator.  Result in psi. */
-	  avm_iters[nk] += 
-	    (Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
-				      w_source_h,&wqs,
-				      cgilu_w,&qic,(void *)&dwp);
-#else
-	  /* Load temporaries specific to inverter */
-	  qic.wv2 = F_OFFSET(mp);
+	  switch (cl_cg) {
+	  case CG:
+	    /* Load temporaries specific to inverter */
+	    
+	    /* compute the propagator.  Result in psi. */
+	    avm_iters[nk] += 
+	      (Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
+					   w_source_h,&wqs,
+					   cgilu_w_site,&qic,(void *)&dwp);
+	    break;
+	  case MR:
+	    /* Load temporaries specific to inverter */
+	    
+	    /* compute the propagator.  Result in psi. */
+	    avm_iters[nk] += 
+	      (Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
+					   w_source_h,&wqs,
+					   mrilu_w_site,&qic,(void *)&dwp);
+		break;
+	      default:
+		node0_printf("main(%d): Inverter choice %d not supported\n",
+			     this_node,cl_cg);
+	  }
 	  
-	  /* compute the propagator.  Result in psi. */
-	  avm_iters[nk] += 
-	    (Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
-				      w_source_h,&wqs,
-				      mrilu_w_or,&qic,(void *)&dwp);
-#endif
 	  /* save psi if requested */
 	  save_wprop_sc_from_site( saveflag_w[nk],fp_out_w[nk],
 			  spin,color,F_OFFSET(psi),1);

@@ -1,5 +1,5 @@
 /**************************** calc_smear_meson.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  *  This file contains the function that calculates the 
  *  smeared meson operators used as buikding blocks in the

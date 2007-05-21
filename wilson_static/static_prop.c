@@ -1,7 +1,7 @@
 /****************** static_prop.c ************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
-  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/static_prop.c,v 1.2 2005/03/31 00:02:07 detar Exp $
+  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/static_prop.c,v 1.3 2007/05/21 04:56:04 detar Exp $
   Calculate the Wilson lines required for the static
   quark propgator -- this  is used for the 2-pt function.
  
@@ -16,7 +16,7 @@
 
 #include "w_static_includes.h"
 
-static char rcs_id[] = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/static_prop.c,v 1.2 2005/03/31 00:02:07 detar Exp $" ;
+static char rcs_id[] = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/static_prop.c,v 1.3 2007/05/21 04:56:04 detar Exp $" ;
 
 
 /*  
@@ -30,7 +30,7 @@ static char rcs_id[] = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/
 
 void static_prop() 
 {
-  register int i,j,t;
+  register int i;
   register site *st;
   msg_tag *tag;
   int tloop ;
@@ -116,7 +116,7 @@ void static_prop()
 
 
 void static_prop_bparam() {
-  register int i,j,t;
+  register int i;
   register site *st;
   msg_tag *tag;
   int tloop ;

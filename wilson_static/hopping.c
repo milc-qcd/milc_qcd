@@ -1,12 +1,12 @@
 /******* hopping.c - hopping parameter expansion for heavy quarks */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* (Identical to heavy/hopping.c) */
 /*
  * Assumes EVENFIRST and same number of even and odd sites on each node. 
    3/29/00 EVENFIRST is the rule now. CD.
  */
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
  * The source vector is in the wilson vector field with offset "src", which

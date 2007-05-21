@@ -1,10 +1,11 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.4 2006/11/04 23:53:46 detar Exp $  ***/
-/* MIMD version 6 */
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.5 2007/05/21 04:56:03 detar Exp $  ***/
+/* MIMD version 7 */
 #define IF_OK if(status==0)
 
 #include "w_static_includes.h"
+#include "lattice_qdp.h"
 #include <string.h>
 
 
@@ -18,6 +19,9 @@ int initial_set();
 int setup_h()
 {
   int prompt;
+#ifdef HAVE_QDP
+  int i;
+#endif
 
   /* print banner, get volume */
   prompt = initial_set();
@@ -28,6 +32,17 @@ int setup_h()
   /* set up nearest neighbor gathers */
   make_nn_gathers();
 
+#ifdef HAVE_QDP
+  for(i=0; i<4; ++i) {
+    shiftdirs[i] = QDP_neighbor[i];
+  }
+  for(i=0; i<4; ++i) {
+    shiftfwd[i] = QDP_forward;
+    shiftbck[i] = QDP_backward;
+  }
+#endif
+
+  node0_printf("Finished setup\n"); fflush(stdout);
   return (prompt);
 }
 
@@ -43,7 +58,7 @@ int initial_set()
     /* print banner */
     printf("SU3 Wilson valence fermions;  heavy-light static\n");
     printf("Static variational smearing and B_B parameters correlators\n");
-    printf("MIMD version 6\n");
+    printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n", machine_type(), numnodes());
     time_stamp("start");
 
@@ -102,9 +117,6 @@ int readin(int prompt)
   Real x = 0.;
   char savebuf[80];
   Real width;
-  int ismear ;
-  double ts,te ;
-  double dtime ;
   
   /* On node zero, read parameters and send to all other nodes */
   if (this_node == 0)

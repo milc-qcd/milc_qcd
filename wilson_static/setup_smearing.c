@@ -1,5 +1,5 @@
 /*********************** setup_smearing.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  **   Load in the parameters for the smaearing functions from
  **   standard input, and create the smearing function
@@ -161,7 +161,7 @@ void read_twoS_params(Real *decay, Real *A, char savebuf[]  )
   if( scanf("%f",decay) != 1 )
 #else
   if( scanf("%lf",decay) != 1 )
-#endinf
+#endif
   {
     printf("ERROR:: The decay parameter for the 2S smearing function is required \n");
     terminate(1); 

@@ -1,5 +1,5 @@
 /********************** bparam_smear_routines.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  *  A collection of routines to smear the light quark 
  *  propagator in the way required for the B parameter

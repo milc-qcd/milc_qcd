@@ -8,7 +8,7 @@
   (note that -Mx,2,15 or -Mx,2,13 are removed) 
   *****************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
  * computes & writes out meson propagator channels at each order in the

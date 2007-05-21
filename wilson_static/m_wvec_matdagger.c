@@ -1,5 +1,5 @@
 /**************** m_wvec_matdagger.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  *  out_vec = in_vec * (m)^{dagger}
  *
@@ -13,7 +13,7 @@
 void mult_wilson_vec_matdag(wilson_vector *out_vec,
 			    wilson_vector *in_vec, su3_matrix *m)
 {
-  int ispin,i,j,k ;
+  int ispin,i,k ;
   complex z ;
 
   for(ispin = 0 ; ispin < 4 ; ++ ispin)

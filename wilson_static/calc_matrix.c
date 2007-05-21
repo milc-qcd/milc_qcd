@@ -1,5 +1,5 @@
 /********************** calc_matrix.c *********************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  *  This function calculates the static-light smearing matrix.
  *  WARNING::: this routine overwrites the gauge configuration to save
@@ -146,7 +146,7 @@ void contract_a_src(Real *vary_matrix, int block_end, int block_smear[4] )
 
 
   /* FFT the smeared Wilson line, stored in a block structure ***/
-  restrict_fourier(F_OFFSET(smear_w_line) , F_OFFSET(fftwork), F_OFFSET(link), 4*sizeof(su3_matrix), 1);
+  restrict_fourier_site(F_OFFSET(smear_w_line), 4*sizeof(su3_matrix), 1);
   
   for( block_pt = 0 ; block_pt < block_end ; ++block_pt)
   {
@@ -160,7 +160,7 @@ void contract_a_src(Real *vary_matrix, int block_end, int block_smear[4] )
   }  /*** end of the loop over the block ***/
 	
   /* FFT the convolution back to real space ****/
-  restrict_fourier(F_OFFSET(chi) , F_OFFSET(psi), F_OFFSET(mp), sizeof(wilson_vector), -1);
+  restrict_fourier_site(F_OFFSET(chi), sizeof(wilson_vector), -1);
 
   for( block_pt = 0 ; block_pt < block_end ; ++block_pt)
   {

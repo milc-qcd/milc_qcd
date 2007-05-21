@@ -1,5 +1,5 @@
 /******************** loadup_stripquark.c ******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  *  Routines to use the spin-colour source component
  *  of the quark propagator, in a wilson_vector data

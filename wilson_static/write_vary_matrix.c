@@ -1,5 +1,5 @@
 /*********************** write_vary_matrix.c ***********************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*  This routine writes the variational matrix 
  *  out to a binary disk file.
  *  
@@ -11,7 +11,7 @@
  *
  */
 
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/write_vary_matrix.c,v 1.1 2005/02/23 00:06:11 detar Exp $   ***/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/write_vary_matrix.c,v 1.2 2007/05/21 04:56:08 detar Exp $   ***/
 
 #include "w_static_includes.h"
 

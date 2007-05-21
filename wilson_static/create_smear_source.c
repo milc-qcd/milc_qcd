@@ -1,5 +1,5 @@
 /**************************** create_smear_source.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  *  This file contains a number of routines to calculate
  *  the smearing wave functions.
@@ -92,9 +92,7 @@ void create_expon_oper(int which_smear,   Real decay , char filename[])
 {
   int i ;
   register site *s;
-  int pt ;
   Real rad ;
-  Real src_local ;
 
 
   /*** create the source ********/
@@ -126,7 +124,6 @@ void create_expon_oper(int which_smear,   Real decay , char filename[])
 
 void create_2S_polyexpon_oper(int which_smear, Real decay, Real A, char filename[])
 {
-  int pt ;
   Real rad ;
   int i ;
   register site *s;

@@ -1,4 +1,4 @@
-/*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/debug_static.c,v 1.1 2005/02/23 00:06:10 detar Exp $
+/*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/debug_static.c,v 1.2 2007/05/21 04:56:00 detar Exp $
  *  This file contains a number of functions, thought
  *  to be useful to help debug the static code.
  *
@@ -53,8 +53,7 @@ void dump_time_gauge()
 {
   int i ;
   register site *s;
-  Real g_re, g_im ;
-  int ic, jc ;
+  int ic ;
   int dir  ; 
 
 
@@ -135,7 +134,6 @@ void test_gauge_config()
 {
   int i ;
   register site *s;
-  Real g_re, g_im ;
   int ic, jc ;
 
 
@@ -269,7 +267,6 @@ void dump_psi_smear()
   int i ;
   register site *s;
   Real g_re, g_im ;
-  Real g_s_re, g_s_im ;
   int ic, ispin ;
   /***********************************************************/
 
@@ -454,7 +451,6 @@ void dump_smear_func()
   register site *s;
   int spt ;
   Real s_re,s_im ;
-  Real s_fft_re,s_fft_im ;
   /***********-----------*************************/
 
 
@@ -714,10 +710,7 @@ void dump_smearedmeson(complex *data)
 void time_gauge_write()
 {
   char file_one[] = "/pfs/mcneile/unit_one" ;
-  char file_two[] = "/pfs/mcneile/unit_two" ;
   /** dummmy paramters used in the gauge configuration write *****/
-  Real c1 = 10 ; 
-  Real c2 = 20 ;
   /** timing information *******/
   Real ts , te ;
 

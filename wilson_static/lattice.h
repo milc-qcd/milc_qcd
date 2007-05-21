@@ -1,7 +1,7 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice_w.h ********************************/
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.4 2006/11/16 21:20:18 detar Exp $   **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.5 2007/05/21 04:56:01 detar Exp $   **/
 /* include file for MIMD heavy-light, version 4
    This file defines global scalars and the fields in the lattice. */
 
@@ -41,9 +41,9 @@ typedef struct {
  	wilson_vector mp;		/* another CG vector
 --- used as a temp vector for mrilu and jacobi */
 
+#define MAXHTMP 8
 	/* wilson half vector (temporary used in dslash) */
-	/*LEAN*half_wilson_vector htmp[8];**/
-	half_wilson_vector htmp[2];
+	half_wilson_vector htmp[MAXHTMP];
 
         su3_matrix staple;   /* so we can calculate the plaquette */
 

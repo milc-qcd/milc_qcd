@@ -1,5 +1,5 @@
 /**************************** util_vary.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
  * Some useful general purpose routines for the
  * static - B parameter calculation.

@@ -1,4 +1,4 @@
-/*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/fft_su3_matrix.c,v 1.1 2005/02/23 00:06:10 detar Exp $
+/*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/fft_su3_matrix.c,v 1.2 2007/05/21 04:56:00 detar Exp $
  *  A collection of routines to FFT su3 matrix
  *  objecs, such as the Wilson line, or the quark propagator
  *  which has had its spin indices stripped off.
@@ -14,14 +14,6 @@
 
 #include "w_static_includes.h"
 #define restrict rstrict /* C-90 T3D cludge */
-
-/* functions required in this file ****/
-void setup_restrict_fourier(int *key, int *restrict ) ;
-
-void restrict_fourier(field_offset src,field_offset space,field_offset space2,
-int size,int isign) ;
-
-
 
 /*
  *  FFT the smeared Wilson line from position
@@ -39,7 +31,7 @@ void fft_smeared_wline()
 {
   int sgn = 1 ;
 
-  restrict_fourier(F_OFFSET(smear_w_line) , F_OFFSET(su3fftwk1), F_OFFSET(su3fftwk2), sizeof(su3_matrix), sgn);
+  restrict_fourier_site(F_OFFSET(smear_w_line), sizeof(su3_matrix), sgn);
 
 }
 
@@ -62,7 +54,7 @@ void fft_negmom_quark()
 {
   int sgn = -1 ;
 
-  restrict_fourier(F_OFFSET(strip_quark) , F_OFFSET(su3fftwk1), F_OFFSET(su3fftwk2), sizeof(su3_matrix), sgn);
+  restrict_fourier_site(F_OFFSET(strip_quark), sizeof(su3_matrix), sgn);
 
 
 }

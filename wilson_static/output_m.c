@@ -1,12 +1,11 @@
 /*********************** output_m.c *************************/
 /* (Identical to heavy/output_m.c) */
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* routines for  meson hopping expansion ascii  output. */
 
 #include "w_static_includes.h"
-
-extern int errno;
+#include <errno.h>
 
 /* write ascii meson propagators */
 /*

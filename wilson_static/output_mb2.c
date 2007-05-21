@@ -1,13 +1,12 @@
 /*********************** output_mb2.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* (Identical to heavy/output_mb2.c) */
 
 /* routines for  meson hopping expansion binary  input/output. */
 
 #include "w_static_includes.h"
 #include <fcntl.h>  /** raw UNIX calls **/
-
-extern int errno;
+#include <errno.h>
 
 /* write binary meson propagators */
 /*
@@ -29,7 +28,7 @@ extern int errno;
 /* this subroutine opens the file for writing */
 int w_binary_m_i(char *filenam, int i1)
 {
-  int i, fp;
+  int fp;
   int32type dims[4];
   int32type i_out;
 

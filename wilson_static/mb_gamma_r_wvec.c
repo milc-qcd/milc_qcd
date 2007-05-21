@@ -1,5 +1,5 @@
 /************* mb_gamma_r_wvec.c  (in su3.a) **************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* 
   Multiply a Wilson vector (thought of as a row vector)
    by a gamma matrix acting on the right 

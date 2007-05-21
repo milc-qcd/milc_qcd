@@ -3,7 +3,7 @@
 /* (Identical to heavy/light_meson.c) */
 
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
  * spin, color are just passed through to w_meson_hop to write in output file  
