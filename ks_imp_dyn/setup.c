@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.11  2007/05/21 14:32:59  detar
+//  Support fixed geometry, FF precision selection, new gauge_fix arg list.
+//
 //  Revision 1.10  2006/12/13 18:41:39  detar
 //  Add precision arg to mat_invert_uml and mat_invert_cg
 //
@@ -180,6 +183,14 @@ initial_set()
     IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
     IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
     IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+#ifdef FIX_NODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "node_geometry", 
+			   par_buf.compute_geom, 4);
+#ifdef FIX_IONODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
+			   par_buf.compute_geom, 4);
+#endif
+#endif
     IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
     
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
@@ -195,6 +206,14 @@ initial_set()
   ny=par_buf.ny;
   nz=par_buf.nz;
   nt=par_buf.nt;
+#ifdef FIX_NODE_GEOM
+  for(i = 0; i < 4; i++)
+    node_geometry[i] = par_buf.node_geometry[i]
+#ifdef FIX_IONODE_GEOM
+  for(i = 0; i < 4; i++)
+    ionode_geometry[i] = par_buf.ionode_geometry[i]
+#endif
+#endif
   iseed=par_buf.iseed;
 #ifdef ONEMASS
   nflavors=par_buf.nflavors;

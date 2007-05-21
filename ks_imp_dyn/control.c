@@ -15,7 +15,6 @@
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include "lattice_qdp.h"
-#define NULL_FP -1
 #ifdef HAVE_QIO
 #include <qio.h>
 #include "../include/io_scidac.h"
@@ -94,9 +93,7 @@ main( int argc, char **argv )
 #ifdef SPECTRUM 
 	/* Fix TUP Coulomb gauge - gauge links only*/
 	rephase( OFF );
-	gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-		 NULL_FP,NULL_FP,
-		 0,NULL,NULL,0,NULL,NULL);
+	gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
 	rephase( ON );
 #ifdef FN
 	invalidate_fn_links();

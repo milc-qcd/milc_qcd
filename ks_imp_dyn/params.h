@@ -9,6 +9,19 @@ typedef struct {
 	int stopflag;   /* 1 if it is time to stop */
     /* INITIALIZATION PARAMETERS */
 	int nx,ny,nz,nt;  /* lattice dimensions */
+#ifdef FIX_NODE_GEOM
+  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
+			    hypercubes) for the compute nodes in each
+			    coordinate direction.  Must be divisors of
+			    the lattice dimension */
+#ifdef FIX_IONODE_GEOM
+  int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
+			     partitions in each coordinate direction,
+			     one I/O node for each square.  The I/O
+			     node is at the origin of the square.
+			     Must be divisors of the node_geometry. */
+#endif
+#endif
 	int iseed;	/* for random numbers */
 #ifdef ONEMASS
 	int nflavors;	/* the number of flavors */

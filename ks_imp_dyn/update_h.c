@@ -11,6 +11,7 @@
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
 void update_h( Real eps ){
+  int ff_prec = PRECISION;  /* Just use prevailing precision for now */
 #ifdef FN
     free_fn_links();
 #endif
@@ -23,15 +24,18 @@ void update_h( Real eps ){
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
 #ifdef ONEMASS
-    eo_fermion_force_oneterm( eps, ((Real)nflavors)/4., F_OFFSET(xxx) );
+    eo_fermion_force_oneterm( eps, ((Real)nflavors)/4., F_OFFSET(xxx),
+			      ff_prec );
 #else
 /**
-    eo_fermion_force_oneterm( eps, ((Real)nflavors1)/4., F_OFFSET(xxx1) );
-    eo_fermion_force_oneterm( eps, ((Real)nflavors2)/4., F_OFFSET(xxx2) );
+   eo_fermion_force_oneterm( eps, ((Real)nflavors1)/4., F_OFFSET(xxx1),
+        ff_prec );
+    eo_fermion_force_oneterm( eps, ((Real)nflavors2)/4., F_OFFSET(xxx2),
+        ff_prec );
 **/
 /**/
     eo_fermion_force_twoterms( eps, ((Real)nflavors1)/4., 
-      ((Real)nflavors2)/4., F_OFFSET(xxx1), F_OFFSET(xxx2) );
+      ((Real)nflavors2)/4., F_OFFSET(xxx1), F_OFFSET(xxx2), ff_prec );
 /**/
 #endif
 } /* update_h */

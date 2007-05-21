@@ -31,7 +31,7 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = ${INCLUDEDIR}
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 INLINE_HEADERS = \
   ../sse/include/ \
@@ -157,29 +157,32 @@ ifeq ($(strip ${HAVEQOP}),true)
   CONGRAD_FN += ${ASQINVERTQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o d_congrad_opt.o
 #    Here you may use the fn_qdp set or the fn_1sum_qdp set
-#    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
-#       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_1sum_qdp.o \
-       d_congrad5_fn_1sum_qdp_D.o d_congrad5_fn_1sum_qdp_F.o d_congrad_opt.o
+#    CONGRAD_FN += d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o 
+    CONGRAD_FN += d_congrad5_fn_1sum_qdp_D.o d_congrad5_fn_1sum_qdp_F.o
   else
-    # Choose a non_QDP FN conjugate gradient algorithm (d_congrad5_fn.o
-    # or d_congrad5_fn_fewsums.o)
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_fewsums.o d_congrad_opt.o
+    # Choose a non_QDP FN conjugate gradient algorithm
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
   endif
 endif
 
 # Selection of the fermion force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  ASQFORCE = fermion_force_asqtad_qop.o
+  ASQFORCE = fermion_force_asqtad_qop.o fermion_force_asqtad_qop_F.o \
+     fermion_force_asqtad_qop_D.o
 # The implementation of the interface (if not packaged)
   ASQFORCE += ${ASQFORCEQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    ASQFORCE = fermion_force_asqtad_qdp.o
+    ASQFORCE = fermion_force_asqtad_qdp.o fermion_force_asqtad_qdp_D.o \
+	fermion_force_asqtad_qdp_F.o fermion_force_fn_multi_qdp.o
   else
-    ASQFORCE = fermion_force_asqtad3.o ff_opt.o
+    # For more general FN actions, try fermion_force_general.o +
+    #	fermion_force_fn_multi.o + fermion_force_multi.o
+    ASQFORCE = fermion_force_asqtad.o fermion_force_multi.o \
+	fermion_force_fn_multi.o ff_opt.o
   endif
 endif
 
@@ -366,7 +369,7 @@ su3_rmd_dblstore_gath13_fewsums::
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FLINKS_FN} ${ASQFORCE} ${SYMZK1FORCE} \
 	d_congrad5_two_src.o d_congrad_opt.o \
-	d_congrad5_fn_fewsums.o dslash_fn_dblstore.o update.o"
+	d_congrad5_fn.o dslash_fn_dblstore.o update.o"
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
