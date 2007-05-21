@@ -1,10 +1,18 @@
 /**************** fermion_force_fn_qdp.c ******************************/
 /* MIMD version 7 */
-/* General force for any FN-type action.
+/* General force for any FN-type action.  Compile with
+ * fermion_force_general.c to cover all cases of one, two, and N terms.
+
  * Optimized to transport only one set of SU(3) matrices.
  * D.T. 12/05 Version  3. created for improved fermion RHMC.
  * C.D. 10/06 Converted to QDP (original code in fermion_force_fn_multi.c)
  *      Added multi vector version.	
+ */
+
+/* External entry points
+
+   fermion_force_fn_multi
+
  */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
@@ -41,14 +49,14 @@ static int net_back_dirs[16] = { XDOWN, YDOWN, ZDOWN, TDOWN,
    X3UP, Y3UP, Z3UP, T3UP, T3DOWN, Z3DOWN, Y3DOWN, X3DOWN
 */
 
-QDP_Shift fnshift(int netdir){
+static QDP_Shift fnshift(int netdir){
   if      (netdir <  4) return shiftdirs[netdir];
   else if (netdir <  8) return shiftdirs[7-netdir];
   else if (netdir < 12) return shiftdirs[netdir-4];
   else                  return shiftdirs[19-netdir];
 }
 
-QDP_ShiftDir fndir(int netdir){
+static QDP_ShiftDir fndir(int netdir){
   if      (netdir <  4) return QDP_forward;
   else if (netdir <  8) return QDP_backward;
   else if (netdir < 12) return QDP_forward;
@@ -56,7 +64,7 @@ QDP_ShiftDir fndir(int netdir){
 }
 
 /* special case to transport a "connection" by one link, does both parities */
-void 
+static void 
 link_transport_connection_qdp( QDP_ColorMatrix *dest, QDP_ColorMatrix *src,
 			       QDP_ColorMatrix *gf[4], QDP_ColorMatrix *work,
                                QDP_ColorMatrix *st[8], int dir ){
@@ -75,7 +83,7 @@ link_transport_connection_qdp( QDP_ColorMatrix *dest, QDP_ColorMatrix *src,
   }
 } /* link_transport_connection_qdp */
 
-int 
+static int 
 find_backwards_gather( Q_path *path ){
   int disp[4], i;
   /* compute total displacement of path */
@@ -114,7 +122,7 @@ find_backwards_gather( Q_path *path ){
 // path.  Below that, sort by direction of first link 
 // Below that, sort by direction of second link - note special case of
 // one link paths
-int 
+static int 
 sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths ){
   int netdir,dir0,dir1,dir1tmp,thislength,num_new,i,j;
   
@@ -145,7 +153,7 @@ sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths ){
 /**********************************************************************/
 /*   General QDP FN Version for "nterms" sources                      */
 /**********************************************************************/
-void 
+static void 
 fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[], 
 			    Real eps, QLA_Real *res, 
 			    QDP_ColorVector *x[], int nterms ){
@@ -397,8 +405,11 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
 /**********************************************************************/
 /*   General FN Version for "nterms" sources                          */
 /**********************************************************************/
-void fn_fermion_force_multi( Real eps, Real residues[], 
-			     su3_vector **multi_x, int nterms ){
+void fermion_force_fn_multi( Real eps, Real residues[], 
+			     su3_vector **multi_x, int nterms,
+			     int prec )
+{
+  /* prec is ignored for now */
   int i,dir;
   site *s;
   su3_matrix tmat;
@@ -416,8 +427,8 @@ void fn_fermion_force_multi( Real eps, Real residues[],
   }
   
   /* Allocate space for multisource vector */
-  x = (QDP_ColorVector **)malloc((nterms+1)*sizeof(QDP_ColorVector *));
-  for(i = 0; i <= nterms; i++){
+  x = (QDP_ColorVector **)malloc(nterms*sizeof(QDP_ColorVector *));
+  for(i = 0; i < nterms; i++){
     x[i] = QDP_create_V();
     set_V_from_field(x[i], multi_x[i]);
   }
@@ -436,8 +447,8 @@ void fn_fermion_force_multi( Real eps, Real residues[],
   }
 
   /* Map the residues */
-  res = (QLA_Real *)malloc((nterms+1)*sizeof(QLA_Real));
-  for(i = 0; i <= nterms; i++)
+  res = (QLA_Real *)malloc(nterms*sizeof(QLA_Real));
+  for(i = 0; i < nterms; i++)
     res[i] = residues[i];
 
   /* Evaluate the fermion force */
@@ -461,7 +472,7 @@ void fn_fermion_force_multi( Real eps, Real residues[],
     QDP_destroy_M(gf[dir]);
     QDP_destroy_M(force[dir]);
   }
-  for(i = 0; i <= nterms; i++)
+  for(i = 0; i < nterms; i++)
     QDP_destroy_V(x[i]);
   free(res);
   remaptime += dclock();
@@ -470,162 +481,5 @@ void fn_fermion_force_multi( Real eps, Real residues[],
   node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
 #endif
-}
-
-/**********************************************************************/
-/*   Parallel transport vectors in blocks of veclength. Asqtad only   */
-/**********************************************************************/
-/* Requires the xxx1 and xxx2 terms in the site structure */
-
-void eo_fermion_force_asqtad_block( Real eps, Real *residues, 
-	    su3_vector **xxx, int nterms, int veclength ) {
-
-  int i,j;
-  site *s;
-
-  /* First do blocks of size veclength */
-  for( j = 0;  j <= nterms-veclength; j += veclength )
-    eo_fermion_force_asqtad_multi( eps, &(residues[j]), xxx+j, veclength );
-  
-  /* Continue with pairs if needed */
-  for( ; j <= nterms-2 ; j+=2 ){
-    FORALLSITES(i,s){
-      s->xxx1 = xxx[j  ][i] ;
-      s->xxx2 = xxx[j+1][i] ;
-    }
-    eo_fermion_force_twoterms( eps, residues[j], residues[j+1],
-			       F_OFFSET(xxx1), F_OFFSET(xxx2) );
-  }
-
-  /* Finish with a single if needed */
-  for( ; j <= nterms-1; j++ ){
-    FORALLSITES(i,s){ s->xxx1 = xxx[j][i] ; }
-    eo_fermion_force_oneterm( eps, residues[j], F_OFFSET(xxx1) );
-  }
-}
-
-
-void eo_fermion_force_asqtad_multi( Real eps, Real *residues,
-				    su3_vector *xxx[], int nsrc) 
-{
-  int i,dir;
-  site *s;
-  su3_matrix tmat;
-  su3_matrix *temp;
-  QDP_ColorMatrix *gf[4];
-  QDP_ColorMatrix *force[4];
-  QDP_ColorVector **vecx;
-  Real *epswt;
-
-  asqtad_path_coeff c;
-  Real *act_path_coeff = get_quark_path_coeff();
-  double remaptime = -dclock();
-
-  /* Create QDP fields for fat links, long links, and temp for gauge field */
-  FORALLUPDIR(dir){
-    gf[dir] = QDP_create_M();
-    force[dir] = QDP_create_M();
-  }
-
-  /* Map source vector */
-  vecx = (QDP_ColorVector **)malloc(nsrc*sizeof(QDP_ColorVector *));
-  for(i=0;i<nsrc;i++){
-    vecx[i] = QDP_create_V();
-    set_V_from_field(vecx[i], xxx[i]);
-  }
-
-  /* Map gauge links to QDP */
-  set4_M_from_site(gf, F_OFFSET(link));
-
-  /* The force requires a special conversion from the antihermit type */
-  FORALLUPDIR(dir){
-    temp = (su3_matrix *)QDP_expose_M (force[dir]);
-    FORALLSITES(i,s) {
-      uncompress_anti_hermitian( &(s->mom[dir]), &tmat );
-      memcpy((void *)&temp[i], (void *)&tmat, sizeof(QLA_ColorMatrix));
-    }
-    QDP_reset_M (force[dir]);
-  }
-
-  /* Load Asqtad path coefficients from table */
-  epswt = (Real *)malloc(nsrc*sizeof(Real));
-  for(i=0;i<nsrc;i++)
-    epswt[i] = 2.0*residues[i]*eps;
-
-  c.one_link     = act_path_coeff[0]; 
-  c.naik         = act_path_coeff[1];
-  c.three_staple = act_path_coeff[2];
-  c.five_staple  = act_path_coeff[3];
-  c.seven_staple = act_path_coeff[4];
-  c.lepage       = act_path_coeff[5];
-
-  /* Compute fermion force */
-  remaptime += dclock();
-  fn_fermion_force_qdp ( force, gf, &c, vecx, epswt, nsrc);
-  remaptime -= dclock();
-
-  /* Map the force back to MILC */
-  /* It requires a special conversion to the antihermitian type */
-  FORALLUPDIR(dir){
-    temp = (su3_matrix *)QDP_expose_M (force[dir]);
-    FORALLSITES(i,s) {
-      memcpy((void *)&tmat, (void *)&temp[i], sizeof(su3_matrix));
-      make_anti_hermitian( &tmat, &(s->mom[dir])); 
-    }
-    QDP_reset_M (force[dir]);
-  }
-  
-  /* Clean up */
-  FORALLUPDIR(dir){
-    QDP_destroy_M(gf[dir]);
-    QDP_destroy_M(force[dir]);
-  }
-  for(i=0;i<nsrc;i++)
-    QDP_destroy_V(vecx[i]);
-  free(vecx);
-  free(epswt);
-
-  remaptime += dclock();
-#ifdef FFTIME
-#ifdef REMAP
-  node0_printf("FFREMAP:  time = %e\n",remaptime);
-#endif
-#endif
-}
-
-/**********************************************************************/
-/*   Wrapper for fermion force routines with multiple sources         */
-/**********************************************************************/
-void eo_fermion_force_multi( Real eps, Real *residues, 
-			     su3_vector **xxx, int nterms ) 
-{
-  switch(KS_MULTIFF){
-  case ASVEC:
-    eo_fermion_force_asqtad_block( eps, residues, xxx, nterms, VECLENGTH );
-    break;
-  case FNMAT:
-    fn_fermion_force_multi( eps, residues, xxx, nterms );
-    break;
-  default:
-    fn_fermion_force_multi( eps, residues, xxx, nterms );
-  }
-}
-
-/**********************************************************************/
-/*   Accessor for string describing the option                        */
-/**********************************************************************/
-const char *ks_multiff_opt_chr( void )
-{
-  switch(KS_MULTIFF){
-  case ASVEC:
-    return "ASVEC";
-    break;
-  case FNMAT:
-    return "FNMAT";
-    break;
-  default:
-    return "FNMAT (default choice)";
-  }
-  return NULL;
 }
 

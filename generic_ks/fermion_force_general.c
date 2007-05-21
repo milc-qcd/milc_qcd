@@ -43,7 +43,9 @@
    x_off, and dslash_site(x_off,x_off,ODD) has been run. (fills in x_off_odd) */
 /* SEE LONG COMMENTS AT END */
 
-void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off ){
+void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
+			       int prec ){
+  /* Ignore prec for now */
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
@@ -178,8 +180,10 @@ node0_printf("FFTIME:  time = %e (1 mass) mflops = %e\n",dtime,
 /*   Version for two sets of flavors with distinct masses             */
 /**********************************************************************/
 
-void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, field_offset x1_off,
-  field_offset x2_off ){
+void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
+				field_offset x1_off, field_offset x2_off,
+				int prec){
+  /* Ignore prec for now */
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* 4/14/99 combine force from two different mass quarks, (eg 2+1flavors) */
