@@ -92,3 +92,8 @@ const int *get_logical_dimensions(){
 const int *get_logical_coordinate(){
   return QMP_get_logical_coordinates();
 }
+
+/* Map node number and index to coordinates  */
+void get_coords(int coords[], int node, int index){
+  QDP_get_coords(coords, node, index);
+}

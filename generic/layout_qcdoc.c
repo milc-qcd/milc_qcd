@@ -1,4 +1,4 @@
-/******** layout_qcdocsim.c *********/
+/******** layout_qcdoc.c *********/
 /* MIMD version 7 */
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
 
@@ -44,8 +44,6 @@ static int sub_lattice_volume = -1;
 
 void setup_layout( void )
 {
-  int number_logical_dimensions = -1;
-  const int* p_logical_dimensions = NULL;
   const int *p_machine_dimensions = NULL;
   int number_machine_dimensions = -1;
 
@@ -188,10 +186,83 @@ size_t num_sites( int node )
   return( sites_on_node );
 }
 
-int *get_logical_dimensions(){
+const int *get_logical_dimensions(){
   return machine_dimensions;
 }
 
-int *get_logical_coordinate(){
+const int *get_logical_coordinate(){
   return QMP_get_logical_coordinates();
 }
+
+/* Map node number and index to coordinates  */
+void get_coords(int coords[], int node, int index){
+  int mc[4];
+  int ir;
+  int eo;
+  int k = node;
+
+  /* Compute machine coordinates for node */
+  mc[0] = k % machine_dimensions[0];
+  k /= machine_dimensions[0];
+  mc[1] = k % machine_dimensions[1];
+  k /= machine_dimensions[1];
+  mc[2] = k % machine_dimensions[2];
+  k /= machine_dimensions[2];
+  mc[3] = k % machine_dimensions[3];
+
+  /* Lexicographic index on node rounded to even */
+  ir = 2*index;
+  if(ir >= sites_on_node){
+    ir -= sites_on_node;
+    eo = 1;
+  }
+  else
+    eo = 0;
+
+  /* Convert to coordinates - result is two-fold ambiguous */
+  coords[0] = ir % sub_lattice_dimensions[0];
+  ir /= sub_lattice_dimensions[0];
+  coords[1] = ir % sub_lattice_dimensions[1];
+  ir /= sub_lattice_dimensions[1];
+  coords[2] = ir % sub_lattice_dimensions[2];
+  ir /= sub_lattice_dimensions[2];
+  coords[3] = ir % sub_lattice_dimensions[3];
+
+  /* Adjust coordinate according to parity (assumes even sites_on_node) */
+  if( (coords[0] + coords[1] + coords[2] + coords[3]) % 2 != eo){
+    coords[0]++;
+    if(coords[0] >= sub_lattice_dimensions[0]){
+      coords[0] -= sub_lattice_dimensions[0];
+      coords[1]++;
+      if(coords[1] >= sub_lattice_dimensions[1]){
+	coords[1] -= sub_lattice_dimensions[1];
+	coords[2]++;
+	if(coords[2] >= sub_lattice_dimensions[2]){
+	  coords[2] -= sub_lattice_dimensions[2];
+	  coords[3]++;
+	}
+      }
+    }
+  }
+
+  /* Add offset for hypercube */
+  coords[0] += mc[0]*sub_lattice_dimensions[0];
+  coords[1] += mc[1]*sub_lattice_dimensions[1];
+  coords[2] += mc[2]*sub_lattice_dimensions[2];
+  coords[3] += mc[3]*sub_lattice_dimensions[3];
+
+  /* Consistency checks for debugging */
+  if((k = node_number(coords[0], coords[1], coords[2], coords[3])) 
+     != node){
+    printf("get_coords: coords %d %d %d %d for node %d map to wrong node %d\n",
+	   coords[0], coords[1], coords[2], coords[3], node, k);
+    terminate(1);
+  }
+  if((k = node_index(coords[0], coords[1], coords[2], coords[3]))
+      != index){
+    printf("get_coords: coords %d %d %d %d for index %d map to wrong index %d\n",
+	   coords[0], coords[1], coords[2], coords[3], index, k);
+    terminate(1);
+  }
+}
+
