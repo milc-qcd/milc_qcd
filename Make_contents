@@ -3,7 +3,7 @@
 # 12/16/06 C. DeTar
 
 #  Change these names to suit
-VER = 7.4.0
+VER = 7.5.0
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -16,6 +16,7 @@ THIS_DIR =         \
  README                 \
  README_RELEASE_NOTES   \
  cc.pl                  \
+ check_malloc.pl        \
  compare.sh             \
  diffn.pl               \
  diffn3.pl              \
@@ -178,7 +179,7 @@ HEAVY        =   \
  heavy/*.c            \
  heavy/*.h            \
  heavy/in.sample*     \
- heavy/out.errtol*    \     \
+ heavy/out.errtol*    \
  heavy/out.sample*    \
  heavy/utilities/*.c  \
  heavy/utilities/*.h  \
@@ -323,7 +324,7 @@ SMOOTH_INST =         \
  smooth_inst/*.h           \
  smooth_inst/Make_*         \
  smooth_inst/in.sample*    \
- smooth_inst/out.errtol*   \     \
+ smooth_inst/out.errtol*   \
  smooth_inst/out.sample*   \
  smooth_inst/utilities/*.c \
  smooth_inst/utilities/Make_utilities
@@ -352,12 +353,14 @@ WILSON_DYNAMICAL =          \
  wilson_dynamical/out.errtol*     \
  wilson_dynamical/out.sample*
 
+
+
 WILSON_STATIC        =   \
  wilson_static/Make_*          \
  wilson_static/*.c            \
  wilson_static/*.h            \
  wilson_static/in.sample*     \
- wilson_static/out.errtol*    \     \
+ wilson_static/out.errtol*    \
  wilson_static/out.sample*    \
  wilson_static/read_matrix_code/Make* \
  wilson_static/read_matrix_code/*.c \
@@ -441,7 +444,9 @@ SF =                 \
   ${SCHROED_CL_INV}
 
 WILSON =              \
- ${GENERIC_WILSON}
+ ${GENERIC_WILSON} \
+ ${HEAVY}  \
+ ${WILSON_STATIC}
 
 # The names of the component tar files
 
@@ -462,6 +467,7 @@ TAR =          \
  ${CLOVER_TAR} \
  ${FORM_TAR}   \
  ${KS_TAR}     \
+ ${INST_TAR}    \
  ${PURE_GAUGE_TAR} \
  ${SF_TAR}     \
  ${WILSON_TAR}

@@ -22,6 +22,21 @@ for general instructions.
 
 Here are highlights of the changes:
 
+For version 7.5.0
+
+  Mixed precision for QOP and QDP Asqtad fermion force (single & multi source)
+  Change to true residual stopping condition in single mass staggered
+  and clover inverters.  Prepare for supporting FNAL relative residual.
+  Support for fixed mesh layouts (e.g. BG/L and QCDOC)
+  Support a variety of FNAL Wilson sources and propagator formats.
+  Dcache I/O support (FNAL)
+  Drop site structure temps from gaugefix args.
+  Drop site structure args from restrict_fourier args
+  Z2 random number support in f_meas
+  Support qopqdp-0.7.7 and later for fermion force.
+  Odd-even KS matrix inversion now does odd-site polish
+  Support for QCDOC multi Asqtad force and multi Asqtad inverter
+
 For version 7.4.0
 
   Mixed precision for QOP and QDP inverters, dslash, and supporting

@@ -18,31 +18,31 @@
 #  arb_dirac_invert \
 #  clover_hybrids \
 #  h_dibaryon \
-#  heavy \
 #  hqet_heavy_to_light \
 #  hvy_qpot \
 #  ks_eigen \
 #  propagating_form_factor \
 #  schroed_ks_dyn \
 #  schroed_pg \
-#  smooth_inst \
 #  string_break \
 #  symanzik_sl32 \
 #  wilson_dynamical \
-#  wilson_static
 
 DIRS = \
    clover_dynamical \
    clover_invert \
    file_utilities \
    gluon_prop \
+   heavy \
    ks_hl_spectrum \
    ks_imp_dyn \
    ks_imp_rhmc \
    ks_imp_invert_multi \
    ks_imp_utilities \
    pure_gauge \
-   schroed_cl_inv
+   schroed_cl_inv \
+   smooth_inst \
+   wilson_static
 
 all:
 	for dir in ${DIRS};\

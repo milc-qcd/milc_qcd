@@ -35,19 +35,21 @@ PRECISION = 1
 #----------------------------------------------------------------------
 # 4. Compiler
 # Choices include mpicc cc gcc pgcc g++
-CC = gcc
 
-#CC = /usr/local/mpich/bin/mpicc -cc=${GCC_DIR}/bin/gcc  # FNAL
-#CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
+ifeq ($(strip ${MPP}),true)
+  CC = /usr/local/mvapich/bin/mpicc
+else
+  CC = gcc
+endif
 
-# C++ compiler (needed only for QCDOC Level 3 wrapper)
-CXX = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-g++
+#CC = /usr/local/mvapich/bin/mpicc  # FNAL
+#CC = powerpc-gnu-elf-gcc           # QCDOC
 
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc
 
-OPT              = -O3 -Wall
+OPT              = -O3
 
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
@@ -59,6 +61,9 @@ OPT              = -O3 -Wall
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
 #OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
 #OCFLAGS =  -march=pentium4 -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/24/04
+
+#DCACHE = /usr/local/develop/dcache
+#OCFLAGS = -I${DCACHE}/include
 
 #------------------------ BlueGene -----------------------------------
 # OCFLAGS = -qarch=440d -qtune=440
@@ -88,7 +93,7 @@ OPT              = -O3 -Wall
 #----------------------------------------------------------------------
 # 7. Choose large file support.
 
-CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE64 # Large files gcc only
+CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE # Large files gcc only
 #CLFS = # Not researched for others
 #CLFS = -D_LARGE_FILES   # AIX
 
@@ -117,7 +122,7 @@ CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE64 # Large files gcc only
 # 9. I/O routines
 # Both io_nonansi and io_ansi should work on a scalar machine
 # Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
-MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
+MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 #----------------------------------------------------------------------
 # 10. QDP/C options
@@ -126,7 +131,7 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o)
 
 # Choose the QOP package.  
 # Choices are 
-#    QCDOC for Level 3 QCDCOC
+#    QCDOC for Level 3 QCDOC
 #    QDP   for Level 3 QOPQDP
 #    MILC (nonoptimized MILC implementation for testing)
 #    blank if you don't want QOP
@@ -154,8 +159,8 @@ QMPSNG = ${SCIDAC}/qmp-single
 QDP = ${SCIDAC}/qdp
 QLA = ${SCIDAC}/qla
 # Level 3
-QOP = ${SCIDAC}/qop
 QOPQDP = ${SCIDAC}/qopqdp
+QOP = ${QOPQDP}
 
 # Make_template_qop defines these macros:
 # HAVEQOP
@@ -182,6 +187,8 @@ LD               = ${CC}
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
 
+#LDFLAGS = -L${DCACHE}/lib -Wl,--rpath,${DCACHE}/lib -ldcap
+#LDFLAGS = -L${DCACHE}/lib64 -Wl,--rpath,${DCACHE}/lib64 -ldcap
 #----------------------------------------------------------------------
 # 13. Extra libraries
 LIBADD =
@@ -216,7 +223,8 @@ LIBADD =
 # See also the libraries Make_SSE_nasm for building non-inline SSE
 # Some compilers don't like -DSSE_INLINE with the debugging -g option.
 
-# Choose nothing, C_INLINE or SSE_INLINE, or both
+# Choose nothing or
+#  [ C_INLINE | C_GLOBAL_INLINE ] [ SSE_INLINE | SSE_GLOBAL_INLINE ]
 INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE -DC_INLINE
 
 #----------------------------------------------------------------------
@@ -275,6 +283,34 @@ CDEBUG =#
 #    layout_timeslices_2.o         Untested.  Supposedly more forgiving.
 
 #------------------------------
+# Compute node grid layout
+
+#     layout_hyper_prime views the machine as a grid and selects a layout
+#     that distributes the lattice uniformly across the nodes and
+#     minimizes the surface to volume ratio.  On fixed grid machines
+#     such as the IBM Bluegene it may be better to control the
+#     geometry.  In that case some of our applications support
+#     the compiler macro FIX_NODE_GEOM.  You must then provide
+#     and extra list of dimensions in the parameter input file.
+#     See e.g. ks_imp_rhmc.
+
+CGEOM =#-DFIX_NODE_GEOM
+
+#------------------------------
+# I/O node grid layout
+
+#     For some applications and architectures it is more efficient to
+#     split large files and have a subset of processors handle the I/O.
+#     We define the I/O node partitions by hypercubes in the same manner 
+#     as the compute node geometry above.  The I/O node geometry must
+#     be commensurate with the compute node geometry.
+#     For applications that support it, the I/O node geometry is specified
+#     by the macro FIX_IONODE_GEOM.  Then the parameter input file
+#     includes a list of dimensions.
+
+CGEOM +=# -DFIX_IONODE_GEOM
+
+#------------------------------
 # Improved staggered CG inverter and Dslash
 # Applications: ks_imp_dyn ks_imp_rhmc ks_imp_invert_multi ks_hl_spectrum
 
@@ -292,7 +328,7 @@ CDEBUG =#
 #                For now, works only with dslash_fn_dblstore.o
 # FEWSUMS        Fewer CG reduction calls
 
-KSCGSTORE =# -DDBLSTORE_FN -DD_FN_GATHER13
+KSCGSTORE = -DDBLSTORE_FN -DD_FN_GATHER13 -DFEWSUMS
 
 #------------------------------
 # Staggered fermion force routines
@@ -301,7 +337,7 @@ KSCGSTORE =# -DDBLSTORE_FN -DD_FN_GATHER13
 # These are currently selected only by editing Make_template
 
 # Choices
-#  fermion_force_asqtad3.o   Optimized for the Asqtad action
+#  fermion_force_asqtad.o    Optimized for the Asqtad action
 #  fermion_force_general.o   Takes any quark action
 
 #------------------------------
@@ -356,6 +392,7 @@ KSFFMULTI =# -DKS_MULTIFF=FNMAT
 # INT_ALG=INT_2EPS_3TO1
 # INT_ALG=INT_2EPS_2TO1
 # INT_ALG=INT_2G1F
+# INT_ALG=INT_3G1F
 # INT_ALG=INT_4MN4FP
 # INT_ALG=INT_4MN5FV
 # INT_ALG=INT_FOURSTEP
@@ -364,10 +401,22 @@ KSFFMULTI =# -DKS_MULTIFF=FNMAT
 KSRHMCINT =#
 
 #------------------------------
+# Clover inverter choice
+# Applications: clover_invert
+#
+
+# CL_CG=BICG  Biconjugate gradient
+# CL_CG=CG    Standard CG
+# CL_CG=MR    Minimum residue
+# CL_CG=HOP   Hopping
+
+CLCG =# -DCL_CG=BICG 
+
+#------------------------------
 # Summary
 
-CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${KSCGSTORE} ${CPREFETCH} ${KSCGMULTI}\
- ${KSFFMULTI} ${KSRHMCINT}
+CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${CGEOM} ${KSCGSTORE} ${CPREFETCH} \
+ ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${CLCG} ${CQOP}
 
 #----------------------------------------------------------------------
 # 16. Choose MILC library make file in libraries directory.  
