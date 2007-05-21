@@ -37,17 +37,54 @@ void fn_fermion_force_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
 		      asqtad_path_coeff *coeffs, QDP_ColorVector *in_pt[], 
 		      Real eps[], int nsrc );
 
-int ks_congrad_milc2qdp_F(field_offset f_src, field_offset f_dest, Real mass,
-			  int niter, int nrestart, Real rsqmin, int parity, 
-			  Real *final_rsq_ptr);
+int ks_congrad_milcfield2qdp_F(su3_vector *f_src, su3_vector *f_dest, 
+			       quark_invert_control *qic, Real mass );
 
-int ks_congrad_milc2qdp_D(field_offset f_src, field_offset f_dest, Real mass,
-			  int niter, int nrestart, Real rsqmin, int parity, 
-			  Real *final_rsq_ptr);
+int ks_congrad_milcfield2qdp_D(su3_vector *f_src, su3_vector *f_dest, 
+			       quark_invert_control *qic, Real mass );
+
+int ks_congrad_milc2qdp_F(field_offset f_src, field_offset f_dest, 
+			  quark_invert_control *qic, Real mass );
+
+int ks_congrad_milc2qdp_D(field_offset f_src, field_offset f_dest, 
+			  quark_invert_control *qic, Real mass );
 
 int ks_congrad_qdp_F(QDP_ColorVector *src, QDP_ColorVector *dest, 
-		     QLA_Real mass, int niter, int nrestart, QLA_Real rsqmin, 
-		     QDP_Subset parity, QLA_Real *final_rsq_ptr);
+		     quark_invert_control *qic, QLA_Real mass);
+
+int ks_congrad_qdp_D(QDP_ColorVector *src, QDP_ColorVector *dest, 
+		     quark_invert_control *qic, QLA_Real mass);
+
+/* fermion_force_asqtad_qdp_D.c */
+
+void fermion_force_asqtad_qdp_D( QDP_D3_ColorMatrix *force[], 
+				 QDP_D3_ColorMatrix *gf[], 
+				 asqtad_path_coeff *coeffs, 
+				 QDP_D3_ColorVector *in_pt[], 
+				 double eps[], int nsrc );
+void eo_fermion_force_oneterm_D( Real eps, Real weight, field_offset x_off );
+void eo_fermion_force_twoterms_D( Real eps, Real weight1, Real weight2, 
+				  field_offset x1_off, field_offset x2_off );
+void fermion_force_asqtad_multi_D( Real eps, Real *residues,
+				   su3_vector *xxx[], int nsrc);
+void fermion_force_asqtad_block_D( Real eps, Real *residues, 
+		      su3_vector **xxx, int nterms, int veclength );
+
+
+/* fermion_force_asqtad_qdp_F.c */
+
+void fermion_force_asqtad_qdp_F( QDP_F3_ColorMatrix *force[], 
+				 QDP_F3_ColorMatrix *gf[], 
+				 asqtad_path_coeff *coeffs, 
+				 QDP_F3_ColorVector *in_pt[], 
+				 float eps[], int nsrc );
+void eo_fermion_force_oneterm_F( Real eps, Real weight, field_offset x_off );
+void eo_fermion_force_twoterms_F( Real eps, Real weight1, Real weight2, 
+				  field_offset x1_off, field_offset x2_off );
+void fermion_force_asqtad_multi_F( Real eps, Real *residues,
+				   su3_vector *xxx[], int nsrc);
+void fermion_force_asqtad_block_F( Real eps, Real *residues, 
+		      su3_vector **xxx, int nterms, int veclength );
 
 
 /* ks_multicg_offset_qdp.c */
