@@ -39,8 +39,7 @@ initialize_machine(&argc,&argv);
         dtime = -dclock();
  
 	/* Debug */
-	/**gaugefix(8,(Real)1.5,500,1e-7,
-	   F_OFFSET(staple),F_OFFSET(diag),0,NULL,NULL,0,NULL,NULL);**/
+	/**gaugefix(8,(Real)1.5,500,1e-7); **/
 
 	/* fix to axial gauge */
 	if( startflag != CONTINUE){
