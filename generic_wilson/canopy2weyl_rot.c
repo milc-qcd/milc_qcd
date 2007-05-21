@@ -1,6 +1,22 @@
+/********************* canopy2weyl_rot.c *********************************/
+/* MIMD version 7 */
+
+/* Convert propagator matrix between gamma matrix conventions 
+   for MILC (DeGrand-Rossi), FNAL, and Weyl  */
+
 #include "generic_wilson_includes.h"
 
 //V G V+
+
+/* 
+     V  = 
+           0  1  0 -i
+          -1  0  i  0
+           0  1  0  i
+          -1  0 -i  0
+
+*/
+
 /* Convert a single propagator */
 void canopy2weyl(wilson_propagator *src, wilson_propagator *dest)
 {
@@ -188,6 +204,85 @@ void weyl2canopy(wilson_propagator *src, wilson_propagator *dest)
     }
 }
 
+void bj_to_w_rot(wilson_propagator *src, wilson_propagator *dest)
+{
+  int s0,s1,c0,c1;
+  wilson_propagator qtmp;
+  
+  for(c0=0;c0<3;c0++)for(c1=0;c1<3;c1++)
+    {
+      for(s0=0;s0<4;s0++){
+	qtmp.c[c0].d[0].d[s0].c[c1].real =
+	  (src->c[c0].d[1].d[s0].c[c1].imag-
+	   src->c[c0].d[3].d[s0].c[c1].imag);
+	
+	qtmp.c[c0].d[0].d[s0].c[c1].imag =
+	  (-src->c[c0].d[1].d[s0].c[c1].real+
+	   src->c[c0].d[3].d[s0].c[c1].real);
+	
+	qtmp.c[c0].d[1].d[s0].c[c1].real =
+	  -src->c[c0].d[0].d[s0].c[c1].imag+
+	  src->c[c0].d[2].d[s0].c[c1].imag;
+	
+	qtmp.c[c0].d[1].d[s0].c[c1].imag =
+	  src->c[c0].d[0].d[s0].c[c1].real-
+	  src->c[c0].d[2].d[s0].c[c1].real;
+	
+	qtmp.c[c0].d[2].d[s0].c[c1].real =
+	  src->c[c0].d[1].d[s0].c[c1].imag+
+	  src->c[c0].d[3].d[s0].c[c1].imag;
+	
+	qtmp.c[c0].d[2].d[s0].c[c1].imag =
+	  -src->c[c0].d[1].d[s0].c[c1].real-
+	  src->c[c0].d[3].d[s0].c[c1].real;
+	
+	
+	qtmp.c[c0].d[3].d[s0].c[c1].real =
+	  -src->c[c0].d[0].d[s0].c[c1].imag-
+	  src->c[c0].d[2].d[s0].c[c1].imag;
+	
+	qtmp.c[c0].d[3].d[s0].c[c1].imag =
+	  src->c[c0].d[0].d[s0].c[c1].real+
+	  src->c[c0].d[2].d[s0].c[c1].real;
+      }
+      
+      for(s0=0;s0<4;s0++){
+	dest->c[c0].d[s0].d[0].c[c1].real =
+	  0.5*(-qtmp.c[c0].d[s0].d[1].c[c1].imag+
+	       qtmp.c[c0].d[s0].d[3].c[c1].imag);
+	
+	dest->c[c0].d[s0].d[0].c[c1].imag =
+	  0.5*( qtmp.c[c0].d[s0].d[1].c[c1].real-
+		qtmp.c[c0].d[s0].d[3].c[c1].real);
+	
+	dest->c[c0].d[s0].d[1].c[c1].real =
+	  0.5*(qtmp.c[c0].d[s0].d[0].c[c1].imag-
+	       qtmp.c[c0].d[s0].d[2].c[c1].imag);
+	
+	dest->c[c0].d[s0].d[1].c[c1].imag =
+	  0.5*(-qtmp.c[c0].d[s0].d[0].c[c1].real+
+	       qtmp.c[c0].d[s0].d[2].c[c1].real);
+	
+	dest->c[c0].d[s0].d[2].c[c1].real =
+	  0.5*(-qtmp.c[c0].d[s0].d[1].c[c1].imag-
+	       qtmp.c[c0].d[s0].d[3].c[c1].imag);
+	
+	dest->c[c0].d[s0].d[2].c[c1].imag =
+	  0.5*(qtmp.c[c0].d[s0].d[1].c[c1].real+
+	       qtmp.c[c0].d[s0].d[3].c[c1].real);
+	
+	dest->c[c0].d[s0].d[3].c[c1].real =
+	  0.5*(qtmp.c[c0].d[s0].d[0].c[c1].imag+
+	       qtmp.c[c0].d[s0].d[2].c[c1].imag);
+	
+	dest->c[c0].d[s0].d[3].c[c1].imag =
+	  0.5*(-qtmp.c[c0].d[s0].d[0].c[c1].real-
+	       qtmp.c[c0].d[s0].d[2].c[c1].real);
+      }
+    }
+}
+
+
 void weyl2canopy_site(field_offset src, field_offset dest)
 {
   int i; site *s;
@@ -222,7 +317,7 @@ void convert_wprop_fnal_to_milc_site(field_offset wprop)
   spin_wilson_vector tmp;
   wilson_propagator *w;
 
-  /* Rotate FNAL to Milc format  V g0 G g0 V^+ */
+  /* Rotate FNAL to MILC format  V g0 G g0 V^+ */
   
   FORALLSITES(i,s)
     {	 
@@ -246,7 +341,7 @@ void convert_wprop_fnal_to_milc_field(wilson_propagator *wprop)
   spin_wilson_vector tmp;
   wilson_propagator *w;
 
-  /* Rotate FNAL to Milc format  V g0 G g0 V^+ */
+  /* Rotate FNAL to MILC format  V g0 G g0 V^+ */
   
   FORALLSITES(i,s)
     {	 
@@ -271,7 +366,7 @@ void convert_wprop_milc_to_fnal_site(field_offset wprop)
   wilson_propagator *w;
 
 
-  /* Rotate FNAL to MILC format  V g0 G g0 V^+ */
+  /* Rotate MILC to FNAL format  g0 V^+ G V g0 */
   
   weyl2canopy_site( wprop, wprop);
 
@@ -295,7 +390,7 @@ void convert_wprop_milc_to_fnal_field(wilson_propagator *wprop)
   spin_wilson_vector tmp;
   wilson_propagator *w;
 
-  /* Rotate FNAL to MILC format  V g0 G g0 V^+ */
+  /* Rotate MILC to FNAL format  g0 V^+ G V g0 */
   
   weyl2canopy_field( wprop, wprop);
 
@@ -309,3 +404,4 @@ void convert_wprop_milc_to_fnal_field(wilson_propagator *wprop)
     }
 }
 
+/* canopy2weyl_rot.c */
