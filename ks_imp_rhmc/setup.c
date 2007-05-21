@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.16  2007/05/21 04:23:32  detar
+//  Add Precision selection for fermion force in QOP and QDP
+//
 //  Revision 1.15  2007/03/27 20:48:54  detar
 //  Fix n_pseudo check.
 //
@@ -100,10 +103,11 @@ void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 #include "params.h"
 params par_buf;
 
+int initial_set();
+
 int
 setup()
 {
-  int initial_set();
   void make_3n_gathers();
   int prompt;
 #ifdef HAVE_QDP
@@ -192,6 +196,14 @@ initial_set()
     IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
     IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
     IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+#ifdef FIX_NODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "node_geometry", 
+			   par_buf.node_geometry, 4);
+#ifdef FIX_IONODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
+			   par_buf.ionode_geometry, 4);
+#endif
+#endif
     IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
     /* Number of pseudofermions */
     IF_OK status += get_i(stdin, prompt,"n_pseudo", &par_buf.n_pseudo );
@@ -217,6 +229,14 @@ initial_set()
   ny        = par_buf.ny;
   nz        = par_buf.nz;
   nt        = par_buf.nt;
+#ifdef FIX_NODE_GEOM
+  for(i = 0; i < 4; i++)
+    node_geometry[i] = par_buf.node_geometry[i];
+#ifdef FIX_IONODE_GEOM
+  for(i = 0; i < 4; i++)
+    ionode_geometry[i] = par_buf.ionode_geometry[i];
+#endif
+#endif
   iseed     = par_buf.iseed;
   nflavors1 = par_buf.nflavors1;
   nflavors2 = par_buf.nflavors2;
@@ -317,7 +337,10 @@ readin(int prompt)
 	par_buf.prec_gr[i] = itmp[2];
       }
     }
-    
+
+    /* Precision for fermion force calculation */
+    IF_OK status = get_i(stdin, prompt, "prec_ff", &par_buf.prec_ff);
+
     /* error for propagator conjugate gradient */
     IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
     IF_OK par_buf.rsqprop = x*x;
@@ -409,7 +432,9 @@ readin(int prompt)
     prec_md[i] = par_buf.prec_md[i];
     prec_fa[i] = par_buf.prec_fa[i];
     prec_gr[i] = par_buf.prec_gr[i];
+
   }
+  prec_ff = par_buf.prec_ff;
   npbp_reps_in = par_buf.npbp_reps_in;
   prec_pbp = par_buf.prec_pbp;
   rsqprop = par_buf.rsqprop;

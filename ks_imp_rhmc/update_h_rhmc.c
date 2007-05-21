@@ -13,7 +13,6 @@
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
 void update_h_rhmc( Real eps, su3_vector **multi_x ){
-  int iphi;
 #ifdef FN
   free_fn_links();
 #endif
@@ -66,7 +65,7 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
   /*node0_printf("update_h_fermion:\n"); */
   /* fermionic force */
     Real final_rsq;
-    int i,j;
+    int j;
     int order,totalorder,tmporder;
     Real *residues,*allresidues;
     Real *roots;
@@ -94,7 +93,7 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
 
     tmporder += order;
   }
-  eo_fermion_force_multi( eps, allresidues, multi_x, totalorder );
+  eo_fermion_force_multi( eps, allresidues, multi_x, totalorder, prec_ff );
   free(allresidues);
 } /* update_h_fermion */
 

@@ -25,6 +25,9 @@
 #include "ks_imp_includes.h"
 #define IMP_QUARK_ACTION_INFO_ONLY
 #include <quark_action.h>
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
 
 /*---------------------------------------------------------------------------*/
 /* This routine writes the ASCII info file.  It is called from one of
@@ -72,150 +75,45 @@ void write_appl_gauge_info(FILE *fp)
 #endif
 }
 
-#if 0
-/*----------------------------------------------------------------------*/
-/* This section constructs the QCDML string for a gauge configuration */
-#include <gaugeConfigMetadata.h>
-#define MAX_STRING 512
-
-/* Fill a gauge configuration structure */
-gaugeConfigurationMetadata *createGaugeMD ( )
-{
-  static gaugeConfigurationMetadata gaugeConfiguration;
-  char string[MAX_STRING+1];  /* Temporary string */
-
-  /* initialize the metadata */
-  gaugeConfiguration.management.revisions = 0;
-  /* We can't know the crcCheckSum until the file is written
-     so this field has to be supplied later */
-  gaugeConfiguration.management.crcCheckSum = 0;
-  gaugeConfigurationHistoryInit (
-		   &gaugeConfiguration.management.archiveHistory );
-  /* TO DO: Fill in name of collaborator, his/her institution, and date */
-  gaugeConfigurationHistoryPushBack (
-		   &gaugeConfiguration.management.archiveHistory,
-		   0,                           // revision
-		   "generate",                  // action
-		   "MILC Collaborator", "Some lab", // actor
-		   "2003-12-11T10:25:52Z"       // date
-		   );
-
-  /* TO DO: Fill in node names somehow */
-  gaugeConfiguration.implementation.machine.name =
-    "lqcd.fnal.gov::qcd0203+qcd0204+qcd0208+qcd0201";
-  /* TO DO: Fill in location of machine somehow */
-  gaugeConfiguration.implementation.machine.institution =
-    "Fermilab";
-  /* TO DO: Fill in machine type */
-  gaugeConfiguration.implementation.machine.machineType =
-    "cluster::P4E+infiniband";
-
-  /* TO DO: Fill in code name */
-  gaugeConfiguration.implementation.code.name = "milc::su3_rmd_symzk1_asqtad";
-  /* TO DO: Fill in code version and date */
-  gaugeConfiguration.implementation.code.version = "6.22.1-SSE3";
-  gaugeConfiguration.implementation.code.date = "2003-11-22";
-
-  parametersInit     ( &gaugeConfiguration.algorithm.parameters );
-
-  /* TO DO: Check on gauge couplings and u0 */
-  snprintf(string,MAX_STRING,"%f",epsilon);
-  parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
-		       "microcanonical_time_step", string );
-  snprintf(string,MAX_STRING,"%d",steps);
-  parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
-		       "steps_per_trajectory", string );
-  snprintf(string,MAX_STRING,"%d",niter);
-  parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
-		       "max_cg_iterations", string );
-  snprintf(string,MAX_STRING,"%.2e",sqrt(md_rsqmin));
-  parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
-		       "mol_dyn_error_per_site", string );
-  snprintf(string,MAX_STRING,"%.2e",sqrt(ac_rsqmin));
-  parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
-		       "action_error_per_site", string );
-  snprintf(string,MAX_STRING,"%.2e",sqrt(rsqprop));
-  parametersPushBack ( &gaugeConfiguration.algorithm.parameters,
-		       "error_for_propagator", string );
-
-  gaugeConfiguration.precision = "single";
-
-  /* TO DO: Need encoding for series */
-  gaugeConfiguration.markovStep.markovChainURI =
-    "http://qcdgrid.fnal.gov/milc/l2896f21b709m0062m031/coulomb";
-
-  /* TO DO: Need series name */
-  gaugeConfiguration.markovStep.series = 0;
-
-  /* TO DO: Need sequence number */
-  gaugeConfiguration.markovStep.update = 20986;
-
-  gaugeConfiguration.markovStep.avePlaquette = 1.7845913;
-  gaugeConfiguration.markovStep.dataLFN = "LQCD001A00BFF32";
-
-  return &gaugeConfiguration;
+/* Print string formatting with digits based on intended precision */
+void print_prec(char string[], size_t n, Real value, int prec){
+  if(prec == 1){
+    snprintf(string,n,"%.6e",value);  /* single precision */
+  }
+  else
+    snprintf(string,n,"%.15e",value); /* double precision */
 }
 
-String *createGaugeQCDML ( gaugeConfigurationMetadata *gaugeConfiguration )
-{
-  size_t size = 4000;
-  String* st = new_String ( size, "\n####### String ############\n" );
-  outStream* os = new_outStreamString ( st );
-
-  gaugeConfigurationMetadataEncode ( os, "gaugeConfiguration",
-				     gaugeConfiguration );
-
-  delete_outStream ( os );
-}
-
-void destroyGaugeQCDML(String *st){
-  delete_String ( st );
-}
-
-
-#endif
-
-#if 0
-/* Eventually we should create files with the proper QCDML */
-char *create_QCDML(){
-  char dummy[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Dummy QCDML</title>";
-  char *qcdml = (char *)malloc(sizeof(dummy)+1);
-  strcpy(qcdml, dummy);
-  return qcdml;
-}
-
-void free_QCDML(char *qcdml){
-  if(qcdml != NULL)free(qcdml);
-}
-
-#else
-#define INFOSTRING_MAX 2048
-/* Follow USQCD style for record XML */
-char *create_QCDML(){
+#define INFOSTRING_MAX 4096
+char *create_MILC_info(){
 
   size_t bytes = 0;
   char *info = (char *)malloc(INFOSTRING_MAX);
   size_t max = INFOSTRING_MAX;
-  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><usqcdInfo><version>1.0</version>";
-  char begin_info[] = "<info>";
-  char end_info[] = "</info>";
-  char end[] = "</usqcdInfo>";
+  //  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><usqcdInfo><version>1.0</version>";
+  //  char begin_info[] = "<info>";
+  //  char end_info[] = "</info>";
+  //  char end[] = "</usqcdInfo>";
+  // char valstring[32];
   Real myssplaq = g_ssplaq;  /* Precision conversion */
   Real mystplaq = g_stplaq;  /* Precision conversion */
   Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
 
 
-  snprintf(info+bytes, max-bytes,"%s",begin);
-  bytes = strlen(info);
+  //  snprintf(info+bytes, max-bytes,"%s",begin);
+  //  bytes = strlen(info);
 
-  snprintf(info+bytes, max-bytes,"<plaq>%e</plaq>",(myssplaq+mystplaq)/6.);
-  bytes = strlen(info);
+  // /* Currently we generate only single precision files */
+  // print_prec(valstring, 32, (myssplaq+mystplaq)/6., 1);
+  //  snprintf(info+bytes, max-bytes,"<plaq>%s</plaq>",valstring);
+  //  bytes = strlen(info);
 
-  snprintf(info+bytes, max-bytes,"<linktr>%e</linktr>",nersc_linktr);
-  bytes = strlen(info);
+  //  print_prec(valstring, 32, nersc_linktr, 1);
+  //  snprintf(info+bytes, max-bytes,"<linktr>%s</linktr>",valstring);
+  //  bytes = strlen(info);
 
-  snprintf(info+bytes, max-bytes,"%s",begin_info);
-  bytes = strlen(info);
+  //  snprintf(info+bytes, max-bytes,"%s",begin_info);
+  //  bytes = strlen(info);
 
   sprint_gauge_info_item(info+bytes, max-bytes,"action.description","%s",
 			"\"Gauge plus fermion (improved)\"",0,0);
@@ -273,15 +171,53 @@ char *create_QCDML(){
   bytes = strlen(info);
 #endif  
 
-  snprintf(info+bytes, max-bytes,"%s",end_info);
-  bytes = strlen(info);
+  //  snprintf(info+bytes, max-bytes,"%s",end_info);
+  //  bytes = strlen(info);
 
-  snprintf(info+bytes, max-bytes,"%s",end);
+  //  snprintf(info+bytes, max-bytes,"%s",end);
+
   return info;
 }
 
+void destroy_MILC_info(char *info){
+  if(info != NULL)
+    free(info);
+}
+
+
+#ifdef HAVE_QIO
+static QIO_String *xml_record;
+
+/* Follow USQCD style for record XML */
+
+char *create_QCDML(){
+  QIO_USQCDLatticeInfo *record_info;
+  char *milc_info;
+  char plaqstring[32];
+  char linktrstring[32];
+  
+  /* Build the components of the USQCD info string */
+  print_prec(plaqstring, 32, (g_ssplaq+g_stplaq)/6., 1);
+  print_prec(linktrstring, 32, linktrsum.real/3., 1);
+  milc_info = create_MILC_info();  /* The MILC info data as a string */
+
+  /* Stuff the data structure */
+  record_info = QIO_create_usqcd_lattice_info(plaqstring, linktrstring, 
+					      milc_info);
+
+  destroy_MILC_info(milc_info);
+
+  /* Convert the data structure to a QIO character string */
+  xml_record = QIO_string_create();
+  QIO_encode_usqcd_lattice_info(xml_record, record_info);
+  QIO_destroy_usqcd_lattice_info(record_info);
+
+  /* Return a pointer to the actual character string */
+  return QIO_string_ptr(xml_record);
+}
+
 void free_QCDML(char *info){
-  if(info != NULL)free(info);
+  QIO_string_destroy(xml_record);
 }
 
 #endif

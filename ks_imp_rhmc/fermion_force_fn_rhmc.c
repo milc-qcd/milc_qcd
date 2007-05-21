@@ -1,4 +1,5 @@
 /****** fermion_force_fn_rhmc.c -- ******************/
+/* OBSOLETE - CD */
 /* MIMD version 7 */
 /* Fermion force for a general quark action.  Not optimized.
 * D.T. 1/28/98, starting from gauge_stuff.c

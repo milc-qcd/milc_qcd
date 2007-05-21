@@ -26,6 +26,7 @@
 #include "../include/random.h"   /* For double_prn */
 
 /* The lattice is an array of sites.  */
+#define MOM_SITE   /* If there is a mom member of the site struct */
 typedef struct {
     /* The first part is standard to all programs */
 	/* coordinates of this site */
@@ -118,12 +119,26 @@ typedef struct {
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+#ifdef FIX_NODE_GEOM
+EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
+			    hypercubes) for the compute nodes in each
+			    coordinate direction.  Must be divisors of
+			    the lattice dimensions */
+#ifdef FIX_IONODE_GEOM
+EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
+			     partitions in each coordinate direction,
+			     one I/O node for each square.  The I/O
+			     node is at the origin of the square.
+			     Must be divisors of the node_geometry. */
+#endif
+#endif
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int niter_md[N_PSEUDO], niter_fa[N_PSEUDO], niter_gr[N_PSEUDO];
 EXTERN  int prec_md[N_PSEUDO], prec_fa[N_PSEUDO], prec_gr[N_PSEUDO];
 EXTERN  int npbp_reps_in;
-EXTERN  int prec_pbp;  /* Precisiong of pbp measurements */
+EXTERN  int prec_ff;
+EXTERN  int prec_pbp;  /* Precision of pbp measurements */
 EXTERN	int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 EXTERN	Real epsilon;
 EXTERN  Real beta,u0;

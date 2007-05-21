@@ -60,7 +60,8 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
 
 void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf, 
 			    su3_vector **multi_x, field_offset phi_off,
-			    Real my_rsqmin, int niter, int my_prec);
+			    Real my_rsqmin, int niter, int cg_prec,
+			    int ff_prec );
 /* ks_ratinv.c */
 
 int ks_ratinv(	/* Return value is number of iterations taken */
