@@ -8,6 +8,7 @@
 #include "../include/macros.h"
 #include "../include/file_types.h"
 #include <stdio.h>
+#include <time.h>
 
 #ifdef CONTROL
 #define EXTERN 
@@ -51,6 +52,7 @@ typedef struct {
 					check consistency between the
 					ASCII header file and the
 					lattice file */
+  time_t t_stamp;
   int32type dims[4];                    /* Full lattice dimensions */
   int32type header_bytes;               /* NOT WRITTEN TO THE FILE but
 					 helpful for finding the data */
@@ -66,6 +68,7 @@ typedef struct {
 
   int32type n_spins;                    /* Number of source spins in this file */
   int32type spins[MAX_SOURCE_SPINS];    /* List of source spin indices in file */
+  int32type elements_per_site;     /* For Fermilab propagator files */
 
 } w_prop_header;
 
@@ -110,11 +113,31 @@ char *w_prop_info_keyword[] = {
       "gauge.fix.filename",
       "gauge.fix.time_stamp",
       "gauge.fix.checksums",
+      "header.time_stamp",
+      "header.size_of_element",
+      "header.elements_per_site",
+      "header.dim[0]",
+      "header.dim[1]",
+      "header.dim[2]",
+      "header.dim[3]",
+      "header.site_order",
       "quark.description",
       "quark.kappa",
       "quark.clover.clov_c",
       "quark.clover.u0",
       "quark.boundary_condition",
+      "record[0].checksum",
+      "record[1].checksum",
+      "record[2].checksum",
+      "record[3].checksum",
+      "record[4].checksum",
+      "record[5].checksum",
+      "record[6].checksum",
+      "record[7].checksum",
+      "record[8].checksum",
+      "record[9].checksum",
+      "record[10].checksum",
+      "record[11].checksum",
       "source.description",
       "source.size",
       "source.x",
@@ -227,16 +250,25 @@ EXTERN struct {
 typedef struct {
   FILE *         fp;            /* File pointer */
   w_prop_header* header;        /* Pointer to header for file */
-  char *         filename;       /* Pointer to file name string */
+  char *         filename;      /* Pointer to file name string */
   int            byterevflag;   /* Byte reverse flag - used only for reading */
-  int32type *       rank2rcv;      /* File site list - used only for 
+  int32type *    rank2rcv;      /* File site list - used only for 
 				   serial reading */ 
   int            parallel;      /* 0 if file was opened for serial reading
 				   1 if opened for parallel reading */
   w_prop_check   check;         /* Current checksum, spin, color indices */
+  wilson_propagator *prop;      /* If we have to read the data in one lump*/
+  int            file_type;     /* File format */
+  FILE *         info_fp;       /* File pointer for info file */
 } w_prop_file;
 
 /**********************************************************************/
+/* Declarations for I/O routines in io_source_w_fm.c */
+void r_source_w_fm_to_site(char *filename, field_offset dest_site,
+			   int spin, int color, int t0, int sourcetype);
+void r_source_w_fm_to_field(char *filename, wilson_vector *dest_field,
+			    int spin, int color, int t0, int sourcetype);
+
 /* Declarations for I/O routines in io_prop_w.c */
 
 w_prop_file *r_ascii_w_i(char *filename);
@@ -269,6 +301,7 @@ void r_multidump_w_c(w_prop_file *wpf);
 void r_multidump_w_f(w_prop_file *wpf);
 
 w_prop_file *setup_input_w_prop_file(char *filename);
+w_prop_file *setup_output_w_prop_file();
 
 w_prop_file *w_ascii_w_i(char *filename);
 void w_ascii_w(w_prop_file *wpf, int spin, int color, 
@@ -365,10 +398,19 @@ void w_close_wprop(int flag, w_prop_file *wpf);
 
 /* Prototpyes for io_prop_w_fm.c */
 w_prop_file *r_serial_w_fm_i(char *filename);
+w_prop_file *r_serial_w_fm_sc_i(char *filename);
 void r_serial_w_fm(w_prop_file *wpf, field_offset dest_site, 
 		   wilson_propagator *dest_field);
+void r_serial_w_fm_to_field(w_prop_file *wpf, wilson_propagator *dest_field);
+void r_serial_w_fm_to_site(w_prop_file *wpf, field_offset dest_site);
 void r_serial_w_fm_f(w_prop_file *wpf);
 void r_prop_w_fm_to_site(char *filename, field_offset dest);
 void r_prop_w_fm_to_field(char *filename, wilson_propagator *dest);
+
+w_prop_file *w_serial_w_fm_i(char *filename);
+w_prop_file *w_serial_w_fm_sc_i(char *filename);
+void w_serial_w_fm_from_field(w_prop_file *wpf, wilson_propagator *src_field);
+void w_serial_w_fm_from_site(w_prop_file *wpf, field_offset src_site);
+void w_serial_w_fm_f(w_prop_file *wpf);
 
 #endif /* _IO_WB_H */
