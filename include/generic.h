@@ -111,11 +111,14 @@ void make_field_strength(
   );
 
 /* gaugefix.c and gaugefix2.c */
-void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
-	      Real gauge_fix_tol, field_offset diffmat, field_offset sumvec,
-	      int nvector, field_offset vector_offset[], int vector_parity[],
-	      int nantiherm, field_offset antiherm_offset[], 
-	      int antiherm_parity[] );
+void gaugefix( int gauge_dir, Real relax_boost, int max_gauge_iter,
+	       Real gauge_fix_tol );
+
+void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
+		    Real gauge_fix_tol, int nvector, 
+		    field_offset vector_offset[], int vector_parity[],
+		    int nantiherm, field_offset antiherm_offset[], 
+		    int antiherm_parity[] );
 
 /* gauge_force_imp.c and gauge_force_symzk1_qop.c */
 void imp_gauge_force( Real eps, field_offset mom_off );
@@ -167,6 +170,7 @@ int node_index(int x,int y,int z,int t);
 size_t num_sites(int node);
 const int *get_logical_dimensions();
 const int *get_logical_coordinate();
+void get_coords(int coords[], int node, int index);
 
 /* make_lattice.c */
 void make_lattice();
@@ -219,11 +223,16 @@ Real myrand(double_prn *prn_pt);
 
 /* restrict_fourier.c */
 void setup_restrict_fourier( int *key, int *slice);
-void restrict_fourier( 
+void restrict_fourier_site( 
      field_offset src,	 /* src is field to be transformed */
-     field_offset space, /* space is working space, same size as src */
-     field_offset space2,/* space2 is working space, same size as src */
-                         /* space2 is needed only for non power of 2 */
+     int size,		 /* Size of field in bytes.  The field must
+			    consist of size/sizeof(complex) consecutive
+			    complex numbers.  For example, an su3_vector
+			    is 3 complex numbers. */
+     int isign);	 /* 1 for x -> k, -1 for k -> x */
+
+void restrict_fourier_field( 
+     complex *src,       /* src is field to be transformed */
      int size,		 /* Size of field in bytes.  The field must
 			    consist of size/sizeof(complex) consecutive
 			    complex numbers.  For example, an su3_vector
