@@ -31,7 +31,7 @@
 
 /* Define if you have the <ieeefp.h> header file. */
 /* Systems that don't: T3E UNICOS, Exemplar, Linux gcc, SP AIX, HP/Compaq True64 */
-#define HAVE_IEEEFP_H 1
+#undef HAVE_IEEEFP_H
 
 /* Define if you have the <unistd.h> header file. */
 /* Systems that don't: NT */
