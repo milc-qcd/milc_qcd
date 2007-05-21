@@ -16,17 +16,7 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/complex.h \
-  ${INCLUDEDIR}/su3.h \
-  ${INCLUDEDIR}/comdefs.h \
-  ${INCLUDEDIR}/macros.h \
-  ${INCLUDEDIR}/cubic_group.h \
-  ${INCLUDEDIR}/generic.h \
-  ${INCLUDEDIR}/generic_pg.h \
-  ${INCLUDEDIR}/io_lat.h \
-  ${INCLUDEDIR}/loopend.h
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 MY_HEADERS = \
   lattice.h \
@@ -99,7 +89,7 @@ ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
 
 # Generic QOP objects
 ifeq ($(strip ${HAVEQOP}),true)
-  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o milc_to_qop_utilities.o
+  ADD_OBJECTS += ${GENERICQOP}
 endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_PG_OBJECTS} ${LAYOUT} \

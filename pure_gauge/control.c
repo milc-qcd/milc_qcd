@@ -1,5 +1,5 @@
 /************************ control.c ******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Main procedure for pure gauge SU3 */
 
 /* This version combines code for the refreshed molecular dynamics
@@ -88,14 +88,12 @@ if(this_node==0)printf("Fat Polyakov loop parameter %f\n",ALPHA_FUZZ);
 #ifdef ORA_ALGORITHM
        /* gaugefix if requested */
        if( fixflag == COULOMB_GAUGE_FIX){
-           gaugefix(TUP,(Real)1.8,600,(Real)GAUGE_FIX_TOL,
-		    F_OFFSET(staple),F_OFFSET(tempvec),0,NULL,NULL,0,NULL,NULL);
+	 gaugefix(TUP,(Real)1.8,600,(Real)GAUGE_FIX_TOL);
            if(this_node==0)printf("FIXED TO COULOMB GAUGE\n");
            fflush(stdout);
        }
        else if( fixflag == LANDAU_GAUGE_FIX){
-           gaugefix(8,(Real)1.8,600,(Real)GAUGE_FIX_TOL,
-		    F_OFFSET(staple),F_OFFSET(tempvec),0,NULL,NULL,0,NULL,NULL);
+	 gaugefix(8,(Real)1.8,600,(Real)GAUGE_FIX_TOL);
            if(this_node==0)printf("FIXED TO LANDAU GAUGE\n");
            fflush(stdout);
        }
