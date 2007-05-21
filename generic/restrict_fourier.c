@@ -49,6 +49,8 @@ void setup_restrict_fourier( int *key, int *slice){
      "slice" is a four component array.  Not used unless key[dir]=2. */
   register int dir,i,j;
   int arg[2];
+  char myname[] = "setup_restrict_fourier";
+
   void bitrev_map(int x,int y,int z,int t,int *key,int fb,
 		  int *xp,int *yp,int *zp,int *tp);
   void butterfly_map(int x,int y,int z,int t,int *arg,int fb,
@@ -76,7 +78,7 @@ void setup_restrict_fourier( int *key, int *slice){
       logdim[dir]=j;
       butterfly_dir[dir] = (int *)malloc( j*sizeof(int) );
       if(butterfly_dir[dir]==NULL){
-	printf("restrict_fourier: NODE %d: no room for butterfly_dir\n",
+	printf("%s(%d): no room for butterfly_dir\n",myname,
 	       this_node);
 	terminate(1);
       }
@@ -267,11 +269,8 @@ void pcyclic_map( int x,int y,int z,int t,int *arg,int fb,
    Modified to incoporate possible restriction on coordinate
    and to handle a residual factor p that is not a power of 2
    */
-void restrict_fourier(
-     field_offset src,	 /* src is field to be transformed */
-     field_offset space, /* space is working space, same size as src */
-     field_offset space2,/* space2 is working space, same size as src */
-                         /* space2 is needed only for non power of 2 */
+void restrict_fourier_field(
+     complex *src,	 /* src is field to be transformed */
      int size,		 /* Size of field in bytes.  The field must
 			    consist of size/sizeof(complex) consecutive
 			    complex numbers.  For example, an su3_vector
@@ -290,8 +289,14 @@ void restrict_fourier(
   int x,y,z,t;
   int ndivp,nmodp,ncycmodp,dimdirdivp;
   int jcycle;
-  
+  complex *space,*space2;
+  char myname[] = "restrict_fourier_field";
+
   ncomp = size/sizeof(complex);
+
+  space  = (complex *)malloc(sizeof(complex)*ncomp*sites_on_node);
+  space2 = (complex *)malloc(sizeof(complex)*ncomp*sites_on_node);
+
   /* Danielson-Lanczos section for factor of 2 levels */
   /* loop over all directions, and if we are supposed to transform in
      that direction, do it */
@@ -302,7 +307,7 @@ void restrict_fourier(
     /* Make an array of phase factors */
     phase = (complex *)malloc( (dim[dir]/2)*sizeof(complex) );
     if(phase == NULL){
-            printf("restrict_fourier: NODE %d: no room for 2's phase\n",
+      printf("%s(%d): no room for 2's phase\n",myname,
 		   this_node);
             terminate(1);
 	  }      
@@ -313,7 +318,7 @@ void restrict_fourier(
 	 coordinate you are combining with */
       
       /* Get the site at other end of butterfly */
-      tag = start_gather_site( src, size,
+      tag = start_gather_field( src, size,
 			 butterfly_dir[dir][level], EVENANDODD, gen_pt[0]);
       wait_gather(tag);
       
@@ -324,7 +329,7 @@ void restrict_fourier(
 	    if( node_number(x,y,z,t) != mynode() )continue;
 	    i = node_index(x,y,z,t);
 	    s = &lattice[i];
-	    memcpy( F_PT(s,space), gen_pt[0][i], size );
+	    memcpy( space+i*ncomp, gen_pt[0][i], size );
 	  }
       cleanup_gather(tag);
 
@@ -348,8 +353,8 @@ void restrict_fourier(
 	    else if(dir==TUP)n = s->t;
 	    /* Reduction of coordinate index */
 	    ndivp = n/pfactor[dir];
-	    src_pt = (complex *)F_PT(s,src);	/* pointer to source */
-	    space_pt = (complex *)F_PT(s,space);	/* pointer to partner */
+	    src_pt = src + i*ncomp;	/* pointer to source */
+	    space_pt = space + i*ncomp;	/* pointer to partner */
 	    
 	    /* If this is the "top" site in the butterfly, just
 	       add in the partner.  If it is the "bottom" site,
@@ -385,7 +390,7 @@ void restrict_fourier(
   } /* for loop on direction */
 
   /* Bit reverse */
-  tag = start_gather_site( src, size, bitrev_dir,
+  tag = start_gather_field( src, size, bitrev_dir,
 		     EVENANDODD, gen_pt[0]);
   wait_gather(tag);
   
@@ -397,7 +402,7 @@ void restrict_fourier(
 	i = node_index(x,y,z,t);
 	s = &lattice[i];
 	
-	memcpy( F_PT(s,space), gen_pt[0][i], size );
+	memcpy( space + i*ncomp, gen_pt[0][i], size );
       }
 
   cleanup_gather(tag);
@@ -411,7 +416,7 @@ void restrict_fourier(
 	    if( node_number(x,y,z,t) != mynode() )continue;
 	    i = node_index(x,y,z,t);
 	    s = &lattice[i];
-	    memcpy( F_PT(s,src), F_PT(s,space), size );
+	    memcpy( src + i*ncomp, space + i*ncomp, size );
 	  }
 
   /* Debug */
@@ -434,7 +439,7 @@ void restrict_fourier(
   FORALLUPDIR(dir)if((logdim[dir] != -1)&&(pfactor[dir] != 1)){
 
     /* Start asynchronous cyclic gather from "space"*/
-    tag = start_gather_site( space, size, pcyclic_dir[dir],
+    tag = start_gather_field( space, size, pcyclic_dir[dir],
 		       EVENANDODD, gen_pt[0]);
 
     /* The fundamental angle, others are multiples of this */
@@ -442,10 +447,10 @@ void restrict_fourier(
     /* Make an array of phase factors */
     phase = (complex *)malloc( dim[dir]*sizeof(complex) );
     if(phase == NULL){
-            printf("restrict_fourier: NODE %d: no room for odd phase\n",
-		   this_node);
-            terminate(1);
-	  }      
+      printf("%s(%d): no room for odd phase\n",myname,
+	     this_node);
+      terminate(1);
+    }      
     for(i=0;i<dim[dir];i++)phase[i]=ce_itheta( i*theta_0 );
 
     /* Initialize by multiplying by appropriate phase factor */
@@ -464,8 +469,8 @@ void restrict_fourier(
 	  else if(dir==TUP)n = s->t;
 
 	  ndivp = n/pfactor[dir]; nmodp = n % pfactor[dir];
-	  src_pt = (complex *)F_PT(s,src);	/* pointer to source */
-	  space_pt = (complex *)F_PT(s,space);	/* pointer to partner */
+	  src_pt = src + i*ncomp;	/* pointer to source */
+	  space_pt = space + i*ncomp;	/* pointer to partner */
 	  power = (nmodp * dim[dir]/pfactor[dir] + ndivp)*nmodp;
 	  power %= dim[dir];
 	  for(j=0;j<ncomp;j++){	/* loop over complex numbers */
@@ -488,7 +493,7 @@ void restrict_fourier(
 		  if( node_number(x,y,z,t) != mynode() )continue;
 		  i = node_index(x,y,z,t);
 		  s = &lattice[i];
-		  memcpy( F_PT(s,space2), gen_pt[0][i], size );
+		  memcpy( space2 + i*ncomp, gen_pt[0][i], size );
 		}
 	cleanup_gather(tag);
 	
@@ -501,12 +506,12 @@ void restrict_fourier(
 		  if( node_number(x,y,z,t) != mynode() )continue;
 		  i = node_index(x,y,z,t);
 		  s = &lattice[i];
-		  memcpy( F_PT(s,space), F_PT(s,space2), size );
+		  memcpy( space + i*ncomp, space2 + i*ncomp, size );
 		}
 
 	/* Start next asynchronous cyclic gather from "space" if needed */
 	if(pfactor[dir]-jcycle>1)
-	  tag = start_gather_site( space, size, pcyclic_dir[dir],
+	  tag = start_gather_field( space, size, pcyclic_dir[dir],
 			     EVENANDODD, gen_pt[0]);
 
 	/* Accumulate result from "space" to "src" */
@@ -529,8 +534,8 @@ void restrict_fourier(
 		  ndivp = n/pfactor[dir]; nmodp = n % pfactor[dir];
 		  /* j-Cyclic transform on coordinate */
 		  ncycmodp = (n + jcycle) % pfactor[dir];
-		  src_pt = (complex *)F_PT(s,src);	/* pointer to source */
-		  space_pt = (complex *)F_PT(s,space);	/* pointer to partner */
+		  src_pt = src + i*ncomp;	/* pointer to source */
+		  space_pt = space + i*ncomp;	/* pointer to partner */
 		  power = (nmodp * dim[dir]/pfactor[dir] + ndivp)*ncycmodp;
 		  power %= dim[dir];
 		  for(j=0;j<ncomp;j++){	/* loop over complex numbers */
@@ -551,7 +556,7 @@ void restrict_fourier(
 	      if( node_number(x,y,z,t) != mynode() )continue;
 	      i = node_index(x,y,z,t);
 	      s = &lattice[i];
-	      memcpy( F_PT(s,space), F_PT(s,src), size );
+	      memcpy( space + i*ncomp, src + i*ncomp, size );
 	    }
 
   } /* loop over directions for cyclic base p transform */
@@ -566,7 +571,7 @@ void restrict_fourier(
       if( node_number(x,y,z,t) != mynode() )continue;
       i = node_index(x,y,z,t);
       s = &lattice[i];
-      src_pt = (complex *)F_PT(s,src);
+      src_pt = src + i*ncomp;
       printf("BPB%d %d %d %d %d %f %f\n",this_node,x,y,z,t,
 	     src_pt[0].real,src_pt[0].imag);
       fflush(stdout);
@@ -577,7 +582,7 @@ void restrict_fourier(
   /* Do p base analog of bit-reverse transform */
   if(notbase2)
     {
-	tag = start_gather_site( src, size, pbaserev_dir,
+	tag = start_gather_field( src, size, pbaserev_dir,
 			   EVENANDODD, gen_pt[0]);
 	wait_gather(tag);
 
@@ -591,7 +596,7 @@ void restrict_fourier(
 		  if( node_number(x,y,z,t) != mynode() )continue;
 		  i = node_index(x,y,z,t);
 		  s = &lattice[i];
-		  memcpy( F_PT(s,space), gen_pt[0][i], size );
+		  memcpy( space + i*ncomp, gen_pt[0][i], size );
 		}
 	
 	cleanup_gather(tag);
@@ -607,10 +612,46 @@ void restrict_fourier(
 		  i = node_index(x,y,z,t);
 		  s = &lattice[i];
 		  
-		  memcpy( F_PT(s,src), F_PT(s,space), size );
+		  memcpy( src + i*ncomp, space + i*ncomp, size );
 		}
       } /* If not base 2 */
+
+  free(space); free(space2);
   
   /* Final result is in "src" */
 }
 
+void restrict_fourier_site(
+     field_offset src,	 /* src is field to be transformed */
+     int size,		 /* Size of field in bytes.  The field must
+			    consist of size/sizeof(complex) consecutive
+			    complex numbers.  For example, an su3_vector
+			    is 3 complex numbers. */
+     int isign)		 /* 1 for x -> k, -1 for k -> x */
+{
+  int i;
+  site *s;
+  complex *t_src;
+  int ncomp = size/sizeof(complex);
+
+  t_src  = (complex *) malloc(sites_on_node*size);
+
+  if(t_src == NULL){
+    printf("restrict_fourier_site(%d): Can't allocate src\n",this_node);
+    terminate(1);
+  }
+
+  /* copy src to temporary */
+  FORALLSITES(i,s) {
+    memcpy( t_src + i*ncomp, F_PT(s,src), size );
+  }
+
+  restrict_fourier_field( t_src, size, isign);
+
+  /* copy src back */
+  FORALLSITES(i,s) {
+    memcpy( F_PT(s,src), t_src + i*ncomp, size );
+  }
+
+  free(t_src);
+}
