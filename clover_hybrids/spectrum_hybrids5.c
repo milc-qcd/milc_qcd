@@ -1531,7 +1531,7 @@ s = &(lattice[1]);
 	printf("BEFORE: %d %d %d %d dir= %d  Det = %f  %f\n",
 	s->x,s->y,s->z,s->t,fs_dir,cc.real,cc.imag);
     }
-    gaugefix(XUP,(Real)1.8,500,GAUGE_FIX_TOL,0,NULL,NULL,0,NULL,NULL);
+    gaugefix(XUP,(Real)1.8,500,GAUGE_FIX_TOL);
     smear_links(F_OFFSET(link[0]), F_OFFSET(smearlink[0]));
 #ifdef SMEAR
     make_field_strength(F_OFFSET(smearlink[0]), F_OFFSET(field_strength[0]));

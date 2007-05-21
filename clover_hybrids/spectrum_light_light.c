@@ -11,18 +11,6 @@
 
 #include "cl_hyb_includes.h"
 
-/***  function prototypes ****/
-
-void w_meson(field_offset src1,field_offset src2,complex *prop[10]) ;
-
-
-void w_baryon(field_offset src1,field_offset src2,field_offset src3,
-	      complex *prop[4])   ;
-
-
-/*** END of function prototypes ****/
-
-
 /**
 
 
@@ -74,7 +62,7 @@ void light_meson_spectrum(int t_source)
     for(color = 0 ; color < 3 ; ++color)
     {
 
-      w_meson(F_OFFSET(quark_store.c[color]),
+      w_meson_site(F_OFFSET(quark_store.c[color]),
 	      F_OFFSET(quark_store.c[color]),pmes_prop);
 
     } /*** end the loop over colour ***/

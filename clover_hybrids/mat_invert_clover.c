@@ -17,13 +17,12 @@ int mat_invert( field_offset src, field_offset dest ){
   }
 
   /* Load inversion control structure */
+  qic.prec = PRECISION;
   qic.min = 0;
   qic.max = niter;
   qic.nrestart = 5;
   qic.resid = rsqprop;
   qic.start_flag = 0;
-  qic.wv1 = F_OFFSET(tmp);
-  qic.wv2 = F_OFFSET(mp);
 
   /* Load Dirac matrix parameters */
   dcp.Kappa = kappa;
@@ -31,18 +30,14 @@ int mat_invert( field_offset src, field_offset dest ){
   dcp.U0 = u0;
   
 #ifdef BI
-  /* Load temporaries specific to inverter */
-  qic.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-  qic.wv4 = F_OFFSET(sss);
-  
   iters = 
-    wilson_invert(F_OFFSET(chi),dest,F_OFFSET(quark_save),
-			      bicgilu_cl,&qic,(void *)&dcp);
+    wilson_invert_site(F_OFFSET(chi),dest
+		       bicgilu_cl_site,&qic,(void *)&dcp);
 #else
   
   iters = 
-    wilson_invert(F_OFFSET(chi),dest,F_OFFSET(quark_save),
-			      cgilu_cl,&qic,(void *)&dcp);
+    wilson_invert_site(F_OFFSET(chi),dest,
+		       cgilu_cl_site,&qic,(void *)&dcp);
 #endif
   return(iters);
 }

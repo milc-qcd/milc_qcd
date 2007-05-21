@@ -44,10 +44,7 @@ int main(int argc,char *argv[]){
 
 	  g_time = -dclock();
 
-	  gaugefix(TUP,(Real)1.8,500,GAUGE_FIX_TOL,
-		   F_OFFSET(mp),F_OFFSET(chi),
-		   0,NULL,NULL,0,NULL,NULL); 
-
+	  gaugefix(TUP,(Real)1.8,500,GAUGE_FIX_TOL);
 
 
 	  g_time += dclock();

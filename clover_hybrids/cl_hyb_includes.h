@@ -42,6 +42,7 @@ int spectrum_pwave();
 int initial_set() ;
 
 int mat_invert( field_offset src, field_offset dest );
+void copy_site_wilson_vector(field_offset src, field_offset dest);
 
 /**
  **        end of the function prototypes

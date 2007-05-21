@@ -86,27 +86,18 @@ No compile.  Requires LU
 
   /* Load inversion control structure */
   qic.start_flag = 0;   /* Use zero initial guess for psi */
+  qic.prec = PRECISION;
  
   /* Load Dirac matrix parameters */
   
 #ifdef BI
-  /* Load temporaries specific to inverter */
-  qic.wv1 = F_OFFSET(tmp);
-  qic.wv2 = F_OFFSET(mp);
-  qic.wv3 = F_OFFSET(tmpb);
-  qic.wv4 = F_OFFSET(sss);
-  
   iters = 
-    wilson_invert(F_OFFSET(chi),F_OFFSET(psi),F_OFFSET(quark_save),
-		  bicgilu_cl,&qic,(void *)&dcp);
+    wilson_invert_site(F_OFFSET(chi),F_OFFSET(psi),
+		       bicgilu_cl_site,&qic,(void *)&dcp);
 #else
-  /* Load temporaries specific to inverter */
-  qic.wv1 = F_OFFSET(tmp);
-  qic.wv2 = F_OFFSET(mp);
-  
   iters = 
-    wilson_invert(F_OFFSET(chi),F_OFFSET(psi),F_OFFSET(quark_save),
-		  cgilu_cl,&qic,(void *)&dcp);
+    wilson_invert_site(F_OFFSET(chi),F_OFFSET(psi),
+		       cgilu_cl_site,&qic,(void *)&dcp);
 #endif
 
 /*Temporary*/
