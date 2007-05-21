@@ -16,10 +16,8 @@
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 
 int main( int argc, char **argv ){
-  int i;
   int prompt;
   char *filexml;
-  double dtime, dclock();
   
   initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP

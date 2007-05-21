@@ -18,7 +18,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   site *s;
   Real eps = 1.;
   int nflavors = 4;
-  su3_matrix tmat, diffmat, tnorm;
+  su3_matrix tmat, diffmat;
   char *filexml;
   char recxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test fermion force field</title>";
 #if (PRECISION == 1)
@@ -26,6 +26,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
 #else
   Real tol = 1e-5;
 #endif
+  int ff_prec = PRECISION;  /* Just use prevailing precision for now */
   
 
   /* Make a random source in xxx if we don't reload it */
@@ -56,9 +57,9 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
     }
   }
 
-  eo_fermion_force_oneterm( eps, ((Real)nflavors)/4., src );
+  eo_fermion_force_oneterm( eps, ((Real)nflavors)/4., src, ff_prec );
   /**eo_fermion_force_twoterms( eps/2, 0.5*((Real)nflavors)/4., 
-     1.5*((Real)nflavors)/4., src, src );**/
+     1.5*((Real)nflavors)/4., src, src, ff_prec );**/
 
   /* If the answer file is given, read it for comparison */
   if(ansflag == RELOAD_SERIAL){

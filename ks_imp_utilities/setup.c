@@ -34,7 +34,10 @@ int
 setup()
 {
   int initial_set();
-  int i, prompt;
+#ifdef HAVE_QDP
+  int i;
+#endif
+  int prompt;
 
   /* print banner, get volume, nflavors1,nflavors2, seed */
   prompt = initial_set();
@@ -132,8 +135,9 @@ readin(int prompt)
 
   int status;
   Real x;
-  int i;
+#ifdef CHECK_INVERT
   char invert_string[16];
+#endif
 
   /* On node zero, read parameters and send to all other nodes */
   if(this_node==0) {
