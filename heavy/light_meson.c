@@ -2,7 +2,7 @@
              propagators from the light quark with a given spin-color source */
 
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
  * spin, color are just passed through to w_meson_hop to write in output file  

@@ -1,5 +1,5 @@
 /******** setup_mr.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 #define IF_OK if(status==0)
 
 #include "w_heavy_includes.h"
@@ -40,7 +40,7 @@ int initial_set()
   {
     /* print banner */
     printf("SU3 Wilson valence fermions;  heavy-light w/ hopping\n");
-    printf("MIMD version 6\n");
+    printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n", machine_type(), numnodes());
     time_stamp("start");
 

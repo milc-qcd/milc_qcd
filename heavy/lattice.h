@@ -41,8 +41,8 @@ typedef struct {
 --- used as a temp vector for mrilu and jacobi */
 
 	/* wilson half vector (temporary used in dslash) */
-	/*LEAN*half_wilson_vector htmp[8];**/
-	half_wilson_vector htmp[2];
+#define MAXHTMP 8
+	half_wilson_vector htmp[MAXHTMP];
 
         su3_matrix staple;   /* so we can calculate the plaquette */
 
@@ -99,6 +99,7 @@ EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN	int startflag_w[MAX_NKAP]; /* beginning wilson: START_ASCII, START_BINARY */
 EXTERN	int saveflag_w[MAX_NKAP];	/* save lattice: SAVE_ASCII, SAVE_BINARY */
 EXTERN	int saveflag_m;	/* save meson props: SAVE_ASCII, SAVE_BINARY */
+EXTERN	int total_iters;
 EXTERN  int wall_separation;
 EXTERN  int source_parity;
 EXTERN  int nchannels;  /* = NCHANNELS +2 if extra_sink chosen */

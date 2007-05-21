@@ -16,6 +16,7 @@
 #include "../include/io_lat.h"
 #include "../include/io_wprop.h"
 #include "../include/generic.h"
+#include "../include/generic_clover.h"
 #include "../include/generic_wilson.h"
 #include "../include/int32type.h"
 #include "../include/dirs.h"

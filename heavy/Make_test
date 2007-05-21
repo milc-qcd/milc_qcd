@@ -31,20 +31,20 @@ CUSTOM = .meson
 
 include ../Make_test_template
 
-# Change according to in.sample.su3_sum
+# Change according to in.sample.su3_sum.${PREC}
 OUTSTEM = out.meson.120
 TESTOUTLIST = ${OUTSTEM}.static ${OUTSTEM}.100 ${OUTSTEM}.120
 OUTBIN = meson.120 meson.140
 
 utilities/su3_sum:
-	cd utilities; make -f Make_vanilla su3_sum ; cd ..
+	cd utilities; ${MAKE} -f Makefile su3_sum ; cd ..
 
-${TESTOUTLIST}: utilities/su3_sum in.sample.su3_sum out.test.${PROJ} ${OUTBIN}
-	utilities/su3_sum < in.sample.su3_sum > out.test.su3_sum
+${TESTOUTLIST}: utilities/su3_sum in.sample.su3_sum.${PREC} out.test.${PROJ}.${PREC} ${OUTBIN}
+	utilities/su3_sum < in.sample.su3_sum.${PREC} > out.test.su3_sum.${PREC}
 	rm -f ${OUTBIN}
 
-out.test.meson.${PROJ}: ${TESTOUTLIST}
-	echo "BEGIN_ALL" > out.test.meson.${PROJ}
+out.test.meson.${PROJ}.${PREC}: ${TESTOUTLIST}
+	echo "BEGIN_ALL" > out.test.meson.${PROJ}.${PREC}
 	for file in ${TESTOUTLIST};\
 	do\
 	   echo $$file >> $@;\

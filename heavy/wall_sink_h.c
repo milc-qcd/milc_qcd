@@ -1,6 +1,6 @@
 /************************** wall_sink_h.c *****************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* CB wrote this */
 /* 11/25/97 modifications for version 5 CD */

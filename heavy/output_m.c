@@ -1,11 +1,10 @@
 /*********************** output_m.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* routines for  meson hopping expansion ascii  output. */
 
 #include "w_heavy_includes.h"
-
-extern int errno;
+#include <errno.h>
 
 /* write ascii meson propagators */
 /*
@@ -31,7 +30,7 @@ FILE *(w_ascii_m_i(char *filenam, int i1))
       printf("Can't open file %s, error %d\n", filenam, errno);
       terminate(1);
     }
-    if ((fprintf(fp, "%d\n", VERSION_NUMBER)) == EOF)
+    if ((fprintf(fp, "%d\n", (int)VERSION_NUMBER)) == EOF)
     {
       printf("Error in writing meson propagator header\n");
       terminate(1);

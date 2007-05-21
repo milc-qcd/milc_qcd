@@ -4,7 +4,7 @@
    3/29/00 EVENFIRST is the rule now. CD.
  */
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
  * The source vector is in the wilson vector field with offset "src", which
