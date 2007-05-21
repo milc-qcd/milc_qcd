@@ -9,11 +9,12 @@
 /* C. DeTar 10-11-97 converted to generic */
 /* C. DeTar 12-26-97 added automatic reunitarization */
 /* C. DeTar 11-24-98 remove superfluous references to p2 (was for ks phases) */
+/* C. DeTar  4-26-07 allocate and use local temporaries as a rule now. */
 
 /* Prototype...
 
    void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
-	      Real gauge_fix_tol, field_offset diffmat, field_offset sumvec,
+	      Real gauge_fix_tol, 
 	      int nvector, field_offset vector_offset[], int vector_parity[],
 	      int nantiherm, field_offset antiherm_offset[], 
 	      int antiherm_parity[] )
@@ -47,7 +48,6 @@
 
    rephase( OFF );
    gaugefix(YUP,(Real)1.8,500,(Real)2.0e-6,
-       F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
        nvector,vector_offset,vector_parity,
        nantiherm,antiherm_offset,antiherm_parity);
    rephase( ON );
@@ -78,7 +78,6 @@
 
 static su3_matrix *diffmatp;               /* malloced diffmat pointer */
 static su3_vector *sumvecp;                /* malloced sumvec pointer */
-field_offset diffmat_offset,sumvec_offset;  /* field offsets */
 
 void accum_gauge_hit(int gauge_dir,int parity)
 {
@@ -97,14 +96,8 @@ void accum_gauge_hit(int gauge_dir,int parity)
 
   FORSOMEPARITY(i,s,parity)
     {
-      if(diffmat_offset >= 0)
-	clear_su3mat((su3_matrix *)F_PT(s,diffmat_offset));
-      else
-	clear_su3mat(&diffmatp[i]);
-      if(sumvec_offset >= 0)
-	clearvec((su3_vector *)F_PT(s,sumvec_offset));
-      else
-	clearvec(&sumvecp[i]);
+      clear_su3mat(&diffmatp[i]);
+      clearvec(&sumvecp[i]);
     }
   
   /* Subtract upward link contributions */
@@ -115,21 +108,8 @@ void accum_gauge_hit(int gauge_dir,int parity)
 	{
 	  /* Upward link matrix */
 	  m1 = &(s->link[dir]);
-	  if(diffmat_offset >= 0)
-	    sub_su3_matrix((su3_matrix *)F_PT(s,diffmat_offset), 
-			   m1, (su3_matrix *)F_PT(s,diffmat_offset)); 
-	  else
-	    sub_su3_matrix( &diffmatp[i], m1, &diffmatp[i]); 
-
-	  if(sumvec_offset >= 0)
-	    {
-	      for(j=0;j<3;j++)CSUM( ((su3_vector *)F_PT(s,sumvec_offset))->c[j],
-				    m1->e[j][j]);
-	    }
-	  else
-	    {
-	      for(j=0;j<3;j++)CSUM( sumvecp[i].c[j],m1->e[j][j]);
-	    }
+	  sub_su3_matrix( &diffmatp[i], m1, &diffmatp[i]); 
+	  for(j=0;j<3;j++)CSUM( sumvecp[i].c[j],m1->e[j][j]);
 	}
     }
 
@@ -141,24 +121,8 @@ void accum_gauge_hit(int gauge_dir,int parity)
 	{
 	  /* Downward link matrix */
 	  m2 = (su3_matrix *)gen_pt[dir][i];
-
-	  if(diffmat_offset >= 0){
-	    add_su3_matrix((su3_matrix *)F_PT(s,diffmat_offset), m2, 
-			   (su3_matrix *)F_PT(s,diffmat_offset));
-	  }
-	  else{
-	    add_su3_matrix( &diffmatp[i], m2, &diffmatp[i]);
-	  }
-	    
-	  if(sumvec_offset >= 0)
-	    {
-	      for(j=0;j<3;j++)CSUM( ((su3_vector *)F_PT(s,sumvec_offset))->c[j],
-				    m2->e[j][j]);
-	    }
-	  else
-	    {
-	      for(j=0;j<3;j++)CSUM( sumvecp[i].c[j], m2->e[j][j]);
-	    }
+	  add_su3_matrix( &diffmatp[i], m2, &diffmatp[i]);
+	  for(j=0;j<3;j++)CSUM( sumvecp[i].c[j], m2->e[j][j]);
 
 	  /* Add diagonal elements to sumvec  */
 	}
@@ -193,33 +157,11 @@ void do_hit(int gauge_dir, int parity, int p, int q, Real relax_boost,
       /* a0 = Sum dir Tr Re 1       * (downlink dir + link dir) */
       /* aj = Sum dir Tr Im sigma j * (downlink dir - link dir)  j = 1,2, 3 */
       /*   where 1, sigma j are unit and Pauli matrices on the p,q subspace */
- /*     
-      a0 =  s->sumvec.c[p].real + s->sumvec.c[q].real;
-      a1 =  s->diffmat.e[q][p].imag + s->diffmat.e[p][q].imag;
-      a2 = -s->diffmat.e[q][p].real + s->diffmat.e[p][q].real;
-      a3 =  s->diffmat.e[p][p].imag - s->diffmat.e[q][q].imag;
-*/  
-      if(sumvec_offset >= 0)
-	a0 =     ((su3_vector *)F_PT(s,sumvec_offset))->c[p].real +
-	  ((su3_vector *)F_PT(s,sumvec_offset))->c[q].real;
-      else
-	a0 =     sumvecp[i].c[p].real +  sumvecp[i].c[q].real;
-	
-      if(diffmat_offset >= 0)
-	{
-	  a1 =     ((su3_matrix *)F_PT(s,diffmat_offset))->e[q][p].imag +
-	    ((su3_matrix *)F_PT(s,diffmat_offset))->e[p][q].imag;
-	  a2 =    -((su3_matrix *)F_PT(s,diffmat_offset))->e[q][p].real +
-	    ((su3_matrix *)F_PT(s,diffmat_offset))->e[p][q].real;
-	  a3 =     ((su3_matrix *)F_PT(s,diffmat_offset))->e[p][p].imag -
-	    ((su3_matrix *)F_PT(s,diffmat_offset))->e[q][q].imag;
-	}
-      else
-	{
-	  a1 =     diffmatp[i].e[q][p].imag + diffmatp[i].e[p][q].imag;
-	  a2 =    -diffmatp[i].e[q][p].real + diffmatp[i].e[p][q].real;
-	  a3 =     diffmatp[i].e[p][p].imag - diffmatp[i].e[q][q].imag;
-	}
+
+      a0 =     sumvecp[i].c[p].real +  sumvecp[i].c[q].real;
+      a1 =     diffmatp[i].e[q][p].imag + diffmatp[i].e[p][q].imag;
+      a2 =    -diffmatp[i].e[q][p].real + diffmatp[i].e[p][q].real;
+      a3 =     diffmatp[i].e[p][p].imag - diffmatp[i].e[q][q].imag;
 
       /* Over-relaxation boost */
 
@@ -395,10 +337,7 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 
 	  FORSOMEPARITY(i,s,parity)
 	    {
-	      if(diffmat_offset >= 0)
-		su3mat_copy((su3_matrix *)(gen_pt[dir][i]),(su3_matrix *)F_PT(s,diffmat_offset));
-	      else
-		su3mat_copy((su3_matrix *)(gen_pt[dir][i]), &diffmatp[i]);
+	      su3mat_copy((su3_matrix *)(gen_pt[dir][i]), &diffmatp[i]);
 	    }
 	  
 	  /* Now we are finished with gen_pt[dir] */
@@ -409,12 +348,8 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 	  g_sync();
 
 	  /* Gather diffmat onto sites of opposite parity */
-	  if(diffmat_offset >= 0)
-	    mtag[dir] = start_gather_site( diffmat_offset, sizeof(su3_matrix),
-				      dir, OPP_PAR(parity), gen_pt[dir] );
-	  else
-	    mtag[dir] = start_gather_field( diffmatp, sizeof(su3_matrix),
-				      dir, OPP_PAR(parity), gen_pt[dir] );
+	  mtag[dir] = start_gather_field( diffmatp, sizeof(su3_matrix),
+					  dir, OPP_PAR(parity), gen_pt[dir] );
 
 	  wait_gather(mtag[dir]);
 
@@ -429,38 +364,30 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
     }
 } /* gaugefixstep */
 
-void gaugefixscratch(field_offset diffmat, field_offset sumvec)
+void gaugefixscratch(void)
 {
-  diffmat_offset = diffmat;
-  diffmatp = NULL;
-  if(diffmat_offset < 0)
+  diffmatp = (su3_matrix *)malloc(sizeof(su3_matrix)*sites_on_node);
+  if(diffmatp == NULL)
     {
-      diffmatp = (su3_matrix *)malloc(sizeof(su3_matrix)*sites_on_node);
-      if(diffmatp == NULL)
-	{
-	  node0_printf("gaugefix: Can't malloc diffmat\n");
-	  fflush(stdout);terminate(1);
-	}
+      node0_printf("gaugefix: Can't malloc diffmat\n");
+      fflush(stdout);terminate(1);
     }
 
-  sumvec_offset = sumvec;
-  sumvecp = NULL;
-  if(sumvec_offset < 0)
+  sumvecp = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
+  if(sumvecp == NULL)
     {
-      sumvecp = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
-      if(sumvecp == NULL)
-	{
-	  node0_printf("gaugefix: Can't malloc sumvec\n");
-	  fflush(stdout);terminate(1);
-	}
+      node0_printf("gaugefix: Can't malloc sumvec\n");
+      fflush(stdout);terminate(1);
     }
 } /* gaugefixscratch */
 
-void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
-	      Real gauge_fix_tol, field_offset diffmat, field_offset sumvec,
-	      int nvector, field_offset vector_offset[], int vector_parity[],
-	      int nantiherm, field_offset antiherm_offset[], 
-	      int antiherm_parity[] )
+/* Fix gauge field and specified vectors and momenta */
+
+void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
+		    Real gauge_fix_tol, int nvector, 
+		    field_offset vector_offset[], int vector_parity[],
+		    int nantiherm, field_offset antiherm_offset[], 
+		    int antiherm_parity[] )
 {
   int gauge_iter;
   double current_av, old_av = 0, del_av = 0;
@@ -475,7 +402,7 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
     
 
   /* Set up work space */
-  gaugefixscratch(diffmat,sumvec);
+  gaugefixscratch();
 
   /* Do at most max_gauge_iter iterations, but stop after the second step if */
   /* the change in the avg gauge fixing action is smaller than gauge_fix_tol */
@@ -506,10 +433,19 @@ void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
     reunitarize();
 
   /* Free workspace */
-  if(diffmat_offset < 0)free(diffmatp);
-  if(sumvec_offset < 0)free(sumvecp);
+  free(diffmatp);
+  free(sumvecp);
   
   if(this_node==0)
     printf("GFIX: Ended at step %d. Av gf action %.8e, delta %.3e\n",
 	   gauge_iter,(double)current_av,(double)del_av);
+}
+
+/* Abbreviated form for fixing only gauge field */
+
+void gaugefix(int gauge_dir,Real relax_boost,int max_gauge_iter,
+	      Real gauge_fix_tol )
+{
+  gaugefix_combo(gauge_dir, relax_boost, max_gauge_iter, gauge_fix_tol,
+		 0,NULL,NULL,0,NULL,NULL);
 }
