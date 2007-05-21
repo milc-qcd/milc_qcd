@@ -16,7 +16,7 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = ${INCLUDEDIR}
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 INLINE_HEADERS = \
   ../sse/include/ \
@@ -62,12 +62,15 @@ endif
 
 # Basic set from generic_wilson directory
 G_WILSON_OBJECTS =   \
-  dslash_lean.o      \
+  dslash_lean2.o     \
+  gauss_smear_w.o    \
+  io_source_w_fm.o   \
   meson_cont.o       \
-  wilson_invert_lean.o
+  wilson_invert.o
 
 # Basic set from generic_clover directory
 G_CLOVER_OBJECTS =   \
+  canopy2weyl_rot.o \
   f_mu_nu.o          \
   make_clov2.o
 
@@ -88,6 +91,22 @@ else
   endif
 endif
 
+# Selection of the fermion links algorithm (i.e. clover term)
+FLINKS_WILSON = ${FLINKS_WILSONQOP}
+
+# Selection of the conjugate gradient algorithm
+# There is currently no QOP support for Schroedinger boundary
+# conditions.
+
+CONGRAD_CL = \
+      cl_solver_utilities.o \
+      d_cgilu_cl.o     \
+      d_hopilu_cl.o    \
+      d_mrilu_cl.o     \
+      d_bicgilu_cl.o
+
+CL_OBJECTS = ${FLINKS_WILSON} ${CONGRAD_CL}
+
 # EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o
@@ -103,7 +122,7 @@ endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_WILSON_OBJECTS} \
   ${G_CLOVER_OBJECTS} ${G_SCHROED_OBJECTS} ${LAYOUT} \
-  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+  ${CL_OBJECTS} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
@@ -166,18 +185,15 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 su3_schr_cl_cg::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= " \
-	"EXTRA_OBJECTS= d_cgilu_cl_lean.o"
+	"DEFINES= -DCL_CG=CG" 
 
 su3_schr_cl_bi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DBI" \
-	"EXTRA_OBJECTS= d_bicgilu_cl_lean.o"
+	"DEFINES= -DCL_CG=BICG" \
 
 su3_schr_cl_mr::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DMR" \
-	"EXTRA_OBJECTS= d_mrilu_cl_lean.o"
+	"DEFINES= -DCL_CG=MR"
 
 clean:
 	-/bin/rm -f *.o

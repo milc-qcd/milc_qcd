@@ -66,6 +66,7 @@ void load_in_zonked_light(int color, int k_zonked_light)
     else MinCG = 0;
 
     /* Load inversion control structure */
+    qic_zonked_light.prec = PRECISION;
     qic_zonked_light.min = MinCG;
     qic_zonked_light.max = niter_zonked_light;
     qic_zonked_light.nrestart = nrestart_zonked_light;
@@ -73,30 +74,21 @@ void load_in_zonked_light(int color, int k_zonked_light)
     qic_zonked_light.start_flag = startflag_zonked_light[k_zonked_light];
 
 #ifdef CLOVER
-    /* Load temporaries specific to inverter */
-    qic_zonked_light.wv1 = F_OFFSET(tmp);
-    qic_zonked_light.wv2 = F_OFFSET(mp);
-    qic_zonked_light.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-    qic_zonked_light.wv4 = F_OFFSET(sss);
-
     /* Load Dirac matrix parameters */
     dcp.Kappa = kappa_zonked_light[k_zonked_light];
     dcp.Clov_c = clov_c;
     dcp.U0 = u0;
 
-    wilson_invert_lean(F_OFFSET(chi), F_OFFSET(quark_zonked.d[spin]),
+    wilson_invert_site_wqs(F_OFFSET(chi), F_OFFSET(quark_zonked.d[spin]),
 		       w_source,&wqs_zonked_light[k_zonked_light],
-		       bicgilu_cl,&qic_zonked_light,(void *)&dcp);
+		       bicgilu_cl_site,&qic_zonked_light,(void *)&dcp);
 #else
-    /* Load temporaries specific to inverter */
-    qic_zonked_light.wv2 = F_OFFSET(mp);  /* Don't need wv1 */
-
     /* Load Dirac matrix parameters */
     dwp.Kappa = kappa_zonked_light[k_zonked_light];
 
-    wilson_invert_lean(F_OFFSET(chi), F_OFFSET(quark_zonked.d[spin]),
+    wilson_invert_site_wqs(F_OFFSET(chi), F_OFFSET(quark_zonked.d[spin]),
 		       w_source,&wqs_zonked_light[k_zonked_light],
-		       mrilu_w_or,&qic_zonked_light,(void *)&dwp);
+		       mrilu_w_site,&qic_zonked_light,(void *)&dwp);
 
 #endif
 
@@ -149,6 +141,7 @@ void load_in_zonked_light2(int color, int spin, int k_zonked_light,
   else MinCG = 0;
   
   /* Load inversion control structure */
+  qic_zonked_light.prec = PRECISION;
   qic_zonked_light.min = MinCG;
   qic_zonked_light.max = niter_zonked_light;
   qic_zonked_light.nrestart = nrestart_zonked_light;
@@ -156,30 +149,21 @@ void load_in_zonked_light2(int color, int spin, int k_zonked_light,
   qic_zonked_light.start_flag = startflag_zonked_light[k_zonked_light];
   
 #ifdef CLOVER
-  /* Load temporaries specific to inverter */
-  qic_zonked_light.wv1 = F_OFFSET(tmp);
-  qic_zonked_light.wv2 = F_OFFSET(mp);
-  qic_zonked_light.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-  qic_zonked_light.wv4 = F_OFFSET(sss);
-  
   /* Load Dirac matrix parameters */
   dcp.Kappa = kappa_zonked_light[k_zonked_light];
   dcp.Clov_c = clov_c;
   dcp.U0 = u0;
   
-  wilson_invert_lean(F_OFFSET(chi), dest,
+  wilson_invert_site_wqs(F_OFFSET(chi), dest,
 		     w_source,&wqs_zonked_light[k_zonked_light],
-		     bicgilu_cl,&qic_zonked_light,(void *)&dcp);
+		     bicgilu_cl_site,&qic_zonked_light,(void *)&dcp);
 #else
-  /* Load temporaries specific to inverter */
-  qic_zonked_light.wv2 = F_OFFSET(mp);  /* Don't need wv1 */
-  
   /* Load Dirac matrix parameters */
   dwp.Kappa = kappa_zonked_light[k_zonked_light];
   
-  wilson_invert_lean(F_OFFSET(chi), dest,
+  wilson_invert_site_wqs(F_OFFSET(chi), dest,
 		     w_source,&wqs_zonked_light[k_zonked_light],
-		     mrilu_w_or,&qic_zonked_light,(void *)&dwp);
+		     mrilu_w_site,&qic_zonked_light,(void *)&dwp);
   
 #endif
   
@@ -274,6 +258,7 @@ void generate_heavy_zonked(int color, int spin,
   MinCG = nt;
   
   /* Load inversion control structure */
+  qic_zonked_heavy.prec = PRECISION;
   qic_zonked_heavy.min = MinCG;
   qic_zonked_heavy.max = niter_zonked_heavy;
   qic_zonked_heavy.nrestart = nrestart_zonked_heavy;
@@ -281,12 +266,6 @@ void generate_heavy_zonked(int color, int spin,
   qic_zonked_heavy.start_flag = START_ZERO_GUESS;
   
 #ifdef CLOVER
-  /* Load temporaries specific to inverter */
-  qic_zonked_heavy.wv1 = F_OFFSET(tmp);
-  qic_zonked_heavy.wv2 = F_OFFSET(mp);
-  qic_zonked_heavy.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-  qic_zonked_heavy.wv4 = F_OFFSET(sss);   /* Called rv in bicg */
-  
   /* Load Dirac matrix parameters */
   dcp.Kappa = Kappa;
   dcp.Clov_c = clov_c;
@@ -296,14 +275,12 @@ void generate_heavy_zonked(int color, int spin,
   if(inverter_type == HOPILU)
     {
       qic_zonked_heavy.nrestart = 1;   /* No restarts with hopping inverter */
-      wilson_invert(F_OFFSET(psi), dest,
-		    F_OFFSET(src_store),
-		    hopilu_cl,&qic_zonked_heavy,(void *)&dcp);
+      wilson_invert_site(F_OFFSET(psi), dest,
+			 hopilu_cl_site,&qic_zonked_heavy,(void *)&dcp);
     }
   else if(inverter_type == BICGILU)
-    wilson_invert(F_OFFSET(psi), dest,
-		  F_OFFSET(src_store),
-		  bicgilu_cl,&qic_zonked_heavy,(void *)&dcp);
+    wilson_invert_site(F_OFFSET(psi), dest,
+		       bicgilu_cl_site,&qic_zonked_heavy,(void *)&dcp);
   else
     {
       printf("generate_heavy_zonked: ERROR inverter type %d unknown\n",
@@ -312,15 +289,11 @@ void generate_heavy_zonked(int color, int spin,
     }
   
 #else
-  /* Load temporaries specific to inverter */
-  qic_zonked_heavy.wv2 = F_OFFSET(mp); /* Don't need wv1 */
-  
   /* Load Dirac matrix parameters */
   dwp.Kappa = Kappa;
   
-  wilson_invert(F_OFFSET(psi), dest,
-		F_OFFSET(src_store),
-		mrilu_w_or,&qic_zonked_heavy,(void *)&dwp);
+  wilson_invert_site(F_OFFSET(psi), dest,
+		     mrilu_w_site,&qic_zonked_heavy,(void *)&dwp);
 #endif
   /*** store the quark propagator to disk ****/
 

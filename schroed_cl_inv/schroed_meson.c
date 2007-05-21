@@ -1,5 +1,5 @@
 /*********** schroed_meson.c *************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UMH April 96 */
 
 #include "schroed_cl_includes.h"
@@ -22,7 +22,7 @@ int n_in,n_out;
     n_in=1;n_out=1;
     gamma_in[0]= GAMMAFIVE;
     gamma_out[0]= GAMMAFIVE;
-    meson_cont(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[0]);
+    meson_cont_site(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[0]);
 
 
     /* PS505 */
@@ -30,7 +30,7 @@ int n_in,n_out;
     gamma_in[0]= GAMMAFIVE;
     gamma_out[0]= TUP;
     gamma_out[1]= GAMMAFIVE;
-    meson_cont(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[1]);
+    meson_cont_site(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[1]);
 
 
     if(max_prop == 2) return;
@@ -38,21 +38,21 @@ int n_in,n_out;
     n_in=1;n_out=1;
     gamma_in[0]= ZUP;
     gamma_out[0]= ZUP;
-    meson_cont(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[2]);
+    meson_cont_site(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[2]);
 
     gamma_in[0]= XUP;
     gamma_out[0]= XUP;
-    meson_cont(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[2]);
+    meson_cont_site(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[2]);
 
     gamma_in[0]= YUP;
     gamma_out[0]= YUP;
-    meson_cont(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[2]);
+    meson_cont_site(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[2]);
 
 
     if(max_prop == 3) return;
     /* SCALAR */
     n_in=0;n_out=0;
-    meson_cont(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[3]);
+    meson_cont_site(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[3]);
 
 
     if(max_prop == 4) return;
@@ -62,21 +62,21 @@ int n_in,n_out;
     gamma_in[1]= ZUP;
     gamma_out[0]= ZUP;
     gamma_out[1]= GAMMAFIVE;
-    meson_cont(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[4]);
+    meson_cont_site(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[4]);
 
     gamma_in[1]= XUP;
     gamma_out[0]= XUP;
-    meson_cont(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[4]);
+    meson_cont_site(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[4]);
 
     gamma_in[1]= YUP;
     gamma_out[0]= YUP;
-    meson_cont(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[4]);
+    meson_cont_site(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[4]);
 
 } /* w_meson */
 
 /************************** w_source.c *****************************/
 
-void w_source(field_offset src, wilson_quark_source *wqs)
+void w_source_site(field_offset src, wilson_quark_source *wqs)
 {
   register int i,j;
   register site *s; 

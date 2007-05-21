@@ -142,6 +142,7 @@ void load_in_spectator(int color, int spin, int k_spectator,
   else MinCG = 0;
   
   /* Load inversion control structure */
+  qic_spectator.prec = PRECISION;
   qic_spectator.min = MinCG;
   qic_spectator.max = niter_spectator;
   qic_spectator.nrestart = nrestart_spectator;
@@ -149,31 +150,22 @@ void load_in_spectator(int color, int spin, int k_spectator,
   qic_spectator.start_flag = restart_flag_spectator;
   
 #ifdef CLOVER
-  /* Load temporaries specific to inverter */
-  qic_spectator.wv1 = F_OFFSET(tmp);
-  qic_spectator.wv2 = F_OFFSET(mp);
-  qic_spectator.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-  qic_spectator.wv4 = F_OFFSET(sss);
-  
   /* Load Dirac matrix parameters */
   dcp.Kappa = kappa_spectator[k_spectator];
   dcp.Clov_c = clov_c;
   dcp.U0 = u0;
   
-  wilson_invert_lean(F_OFFSET(chi), dest,
+  wilson_invert_site_wqs(F_OFFSET(chi), dest,
 		     w_source,&wqs_spectator[k_spectator],
-		     bicgilu_cl,&qic_spectator,(void *)&dcp);
+		     bicgilu_cl_site,&qic_spectator,(void *)&dcp);
   
 #else
-  /* Load temporaries specific to inverter */
-  qic_spectator.wv2 = F_OFFSET(mp);  /* Don't need wv1 */
-  
   /* Load Dirac matrix parameters */
   dwp.Kappa = kappa_spectator[k_spectator];
   
-  wilson_invert_lean(F_OFFSET(chi), dest,
+  wilson_invert_site_wqs(F_OFFSET(chi), dest,
 		     w_source,&wqs_spectator[k_spectator],
-		     mrilu_w_or,&qic_spectator,(void *)&dwp);
+		     mrilu_w_site,&qic_spectator,(void *)&dwp);
 #endif
 
   /*** close the spectator light quark file *****/

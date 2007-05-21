@@ -1,7 +1,7 @@
 /***************** control_cl.c *****************************************/
 
 /* Main procedure for quenched SU3 clover fermions 			*/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* This version computes propagators for clover fermions on a
  supplied background field config with Schroedinger functional boundary
@@ -22,8 +22,10 @@ Real avm_iters,avs_iters;
 
 double starttime,endtime;
 
-int MinCG,MaxCG;
+int MaxCG;
 Real RsdCG;
+
+int cl_cg = CL_CG;
 
 register int i;
 register site *s;
@@ -136,18 +138,16 @@ Real f_1[MAX_KAP];
 		    if(k==0){
 			flag = 0;      /* Saves one multiplication in cgilu */
 			FORALLSITES(i,s)clear_wvec( &(s->psi));
-			MinCG = nt/2;
 		    }
 		    else{
 			flag = 1;
 			FORALLSITES(i,s)
 			    copy_wvec(&(s->forw_quark_prop.c[color].d[spin]),
 				&(s->psi));
-			MinCG = 0;
 		    }
 
 		    /* Load inversion control structure */
-		    qic.min = MinCG;
+		    qic.prec = PRECISION;
 		    qic.max = MaxCG;
 		    qic.nrestart = nrestart;
 		    qic.resid = RsdCG;
@@ -158,44 +158,36 @@ Real f_1[MAX_KAP];
 		    dcp.Clov_c = clov_c;
 		    dcp.U0 = 1.0;
 
-#ifdef BI
-		    /* Load temporaries specific to inverter */
-		    qic.wv1 = F_OFFSET(tmp);
-		    qic.wv2 = F_OFFSET(mp);
-		    qic.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-		    qic.wv4 = F_OFFSET(sss);
-            
+	    switch (cl_cg) {
+	      case BICG:
 		    /* compute the propagator.  Result in psi. */
             
 		    avs_iters = 
-			(Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source,&wqs[k],
-						  bicgilu_cl,&qic,(void *)&dcp);
-#else
-#ifdef MR
-		    /* Load temporaries specific to inverter */
-		    qic.wv1 = F_OFFSET(tmp);
-		    qic.wv2 = F_OFFSET(mp);
-            
+			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
+						  w_source_site,&wqs[k],
+						  bicgilu_cl_site,&qic,(void *)&dcp);
+		    break;
+	      case MR:
 		    /* compute the propagator.  Result in psi. */
             
 		    avs_iters = 
-			(Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source,&wqs[k],
-						  mrilu_cl,&qic,(void *)&dcp);
-#else
-		    /* Load temporaries specific to inverter */
-		    qic.wv1 = F_OFFSET(tmp);
-		    qic.wv2 = F_OFFSET(mp);
-            
+			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
+						  w_source_site,&wqs[k],
+						  mrilu_cl_site,&qic,(void *)&dcp);
+		    break;
 		    /* compute the propagator.  Result in psi. */
+	    case CG:
             
 		    avs_iters = 
-			(Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source,&wqs[k],
-						  cgilu_cl,&qic,(void *)&dcp);
-#endif
-#endif
+			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
+						  w_source_site,&wqs[k],
+						  cgilu_cl_site,&qic,(void *)&dcp);
+		    break;
+	    default:
+	      node0_printf("main(%d): Inverter choice %d not supported\n",
+			   this_node,cl_cg);
+	      }
+
 		    avm_iters += avs_iters;
 		    node0_printf("size_r= %e, iters= %e\n",
 			(double)(qic.size_r), (double)avs_iters);
@@ -231,18 +223,15 @@ Real f_1[MAX_KAP];
 		    if(k==0){
 			flag = 0;      /* Saves one multiplication in cgilu */
 			FORALLSITES(i,s)clear_wvec( &(s->psi));
-			MinCG = nt/2;
 		    }
 		    else{
 			flag = 1;
 			FORALLSITES(i,s)
 			    copy_wvec(&(s->backw_quark_prop.c[color].d[spin]),
 				&(s->psi));
-			MinCG = 0;
 		    }
 
 		    /* Load inversion control structure */
-		    qic.min = MinCG;
 		    qic.max = MaxCG;
 		    qic.nrestart = nrestart;
 		    qic.resid = RsdCG;
@@ -253,44 +242,35 @@ Real f_1[MAX_KAP];
 		    dcp.Clov_c = clov_c;
 		    dcp.U0 = 1.0;
 
-#ifdef BI
-		    /* Load temporaries specific to inverter */
-		    qic.wv1 = F_OFFSET(tmp);
-		    qic.wv2 = F_OFFSET(mp);
-		    qic.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-		    qic.wv4 = F_OFFSET(sss);
-            
+	    switch (cl_cg) {
+	      case BICG:
 		    /* compute the propagator.  Result in psi. */
             
 		    avs_iters = 
-			(Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source,&wqs[k],
-						  bicgilu_cl,&qic,(void *)&dcp);
-#else
-#ifdef MR
-		    /* Load temporaries specific to inverter */
-		    qic.wv1 = F_OFFSET(tmp);
-		    qic.wv2 = F_OFFSET(mp);
-            
+			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
+						  w_source_site,&wqs[k],
+						  bicgilu_cl_site,&qic,(void *)&dcp);
+		    break;
+	      case MR:
 		    /* compute the propagator.  Result in psi. */
             
 		    avs_iters = 
-			(Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source,&wqs[k],
-						  mrilu_cl,&qic,(void *)&dcp);
-#else
-		    /* Load temporaries specific to inverter */
-		    qic.wv1 = F_OFFSET(tmp);
-		    qic.wv2 = F_OFFSET(mp);
-            
+			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
+						  w_source_site,&wqs[k],
+						  mrilu_cl_site,&qic,(void *)&dcp);
+		break;
+	    case CG:
 		    /* compute the propagator.  Result in psi. */
             
 		    avs_iters = 
-			(Real)wilson_invert_lean(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source,&wqs[k],
-						  cgilu_cl,&qic,(void *)&dcp);
-#endif
-#endif
+			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
+						  w_source_site,&wqs[k],
+						  cgilu_cl_site,&qic,(void *)&dcp);
+		    break;
+	    default:
+	      node0_printf("main(%d): Inverter choice %d not supported\n",
+			   this_node,cl_cg);
+	      }
 		    avm_iters += avs_iters;
 		    node0_printf("size_r= %e, iters= %e\n",
 			(double)(qic.size_r), (double)avs_iters);

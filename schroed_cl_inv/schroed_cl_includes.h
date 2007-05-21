@@ -19,6 +19,7 @@
 #include "../include/generic_clover.h"
 #include "../include/generic_schroed.h"
 #include "../include/dirs.h"
+#include "../include/check_malloc.h"
 
 /* prototypes for functions in high level code */
 int setup_cl();

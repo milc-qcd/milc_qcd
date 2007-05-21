@@ -11,9 +11,6 @@
 #include "debug_form.h"
 #endif
 
-/* functions required in this file ****/
-void setup_restrict_fourier(int *key, int * ) ;
-
 
 /*
  *  Set up the FFT routines, for a three dimensional

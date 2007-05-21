@@ -1,6 +1,6 @@
 /******************* ape_smear_SF.c ****************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This version uses gathers to get the neighbors */
 /* For Schroedinger functional - special b.c. */
 /* version of 8/24/99 by UMH */

@@ -88,6 +88,7 @@ void sequential_source(
   MinMR = nt;
 
   /* Load inversion control structure */
+  qic_sequential.prec = PRECISION;
   qic_sequential.min = MinMR;
   qic_sequential.max = MaxMR;
   qic_sequential.nrestart = nrestart;
@@ -95,12 +96,6 @@ void sequential_source(
   qic_sequential.start_flag = START_NONZERO_GUESS;
   
 #ifdef CLOVER
-  /* Load temporaries specific to inverter */
-  qic_sequential.wv1 = F_OFFSET(tmp);
-  qic_sequential.wv2 = F_OFFSET(mp);
-  qic_sequential.wv3 = F_OFFSET(tmpb);  /* Called rv in bicg */
-  qic_sequential.wv4 = F_OFFSET(sss);
-  
   /* Load Dirac matrix parameters */
   dcp.Kappa = Kappa;
   dcp.Clov_c = clov_c;
@@ -110,12 +105,12 @@ void sequential_source(
   if(inverter_type == HOPILU)
     {
       qic_sequential.nrestart = 1;   /* No restarts with hopping inverter */
-      wilson_invert(work, ans,F_OFFSET(src_store),
-		    hopilu_cl,&qic_sequential,(void *)&dcp);
+      wilson_invert_site(work, ans,
+			 hopilu_cl_site,&qic_sequential,(void *)&dcp);
     }
   else if(inverter_type == BICGILU)
-    wilson_invert(work, ans,F_OFFSET(src_store),
-		  bicgilu_cl,&qic_sequential,(void *)&dcp);
+    wilson_invert_site(work, ans
+		       bicgilu_cl_site,&qic_sequential,(void *)&dcp);
   else
     {
       printf("sequential_source: ERROR inverter type %d unknown\n",
@@ -124,14 +119,11 @@ void sequential_source(
     }
 
 #else
-  /* Load temporaries specific to inverter */
-  qic_sequential.wv2 = F_OFFSET(mp); /* Don't need wv1 */
-  
   /* Load Dirac matrix parameters */
   dwp.Kappa = Kappa;
 
-  wilson_invert(work, ans,F_OFFSET(src_store),
-		mrilu_w_or,&qic_sequential,(void *)&dwp);
+  wilson_invert_site(work, ans,
+		     mrilu_w_site,&qic_sequential,(void *)&dwp);
 #endif
 			    
   /*

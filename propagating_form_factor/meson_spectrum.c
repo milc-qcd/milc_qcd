@@ -80,7 +80,7 @@ void meson_spectrum(field_offset quark,int t_source, int ikap, int num_kap, int 
 
   if( what_to_do == CALCULATE_SPECTRUM  )
   {
-    d_w_meson(quark, quark, pmes_prop[ikap]);
+    w_meson_site(quark, quark, pmes_prop[ikap]);
     return ; 
   }
 

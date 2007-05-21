@@ -1,5 +1,5 @@
 /*********************** gauge_info.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* For schroed_cl_inv */
 

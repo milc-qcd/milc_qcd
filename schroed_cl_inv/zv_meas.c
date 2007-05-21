@@ -1,5 +1,5 @@
 /************************** zv_meas.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* UMH August 99 */
 
 #include "schroed_cl_includes.h"

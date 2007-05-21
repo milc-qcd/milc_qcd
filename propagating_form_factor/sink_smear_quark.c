@@ -77,7 +77,7 @@ void sink_smear_light_quark(field_offset quark,
 
 
   /** FFT back to real space **/
-  restrict_fourier(quark ,fft_work_a, fft_work_b, sizeof(wilson_vector), 1); 
+  restrict_fourier_site(quark, sizeof(wilson_vector), 1); 
 
   /*** The 1 in the restrict_fourier routine corresponds to the 
        phase factor of exp( -i p x )
@@ -195,7 +195,7 @@ void sink_smear_light_pos_quark(field_offset quark,
     This corresponds to the negative sign in restrict_fourier.
    *****/
 
-  restrict_fourier(quark ,fft_work_a, fft_work_b, sizeof(wilson_vector), -1); 
+  restrict_fourier_site(quark, sizeof(wilson_vector), -1); 
 
   /** multiply the quark propagator by the smearing function in momentum space ****/
   FORALLSITES(i,s)
@@ -210,7 +210,7 @@ void sink_smear_light_pos_quark(field_offset quark,
 
 
   /** FFT the convolution back to real space **/
-  restrict_fourier(quark ,fft_work_a, fft_work_b, sizeof(wilson_vector), 1); 
+  restrict_fourier_site(quark, sizeof(wilson_vector), 1); 
 
   /*** The 1 in the restrict_fourier routine corresponds to the 
        phase factor of exp( -i p x )
@@ -281,7 +281,7 @@ void sink_smear_light_pos_quark_large(field_offset quark,
     This corresponds to the negative sign in restrict_fourier.
    *****/
 
-  restrict_fourier(quark ,fft_work_a, fft_work_b, sizeof(spin_wilson_vector), -1); 
+  restrict_fourier_site(quark, sizeof(spin_wilson_vector), -1); 
 
   /** multiply the quark propagator by the smearing function in momentum space ****/
   FORALLSITES(i,s)
@@ -295,7 +295,7 @@ void sink_smear_light_pos_quark_large(field_offset quark,
 
 
   /** FFT the convolution back to real space **/
-  restrict_fourier(quark ,fft_work_a, fft_work_b, sizeof(spin_wilson_vector), 1); 
+  restrict_fourier_site(quark, sizeof(spin_wilson_vector), 1); 
 
   /*** The 1 in the restrict_fourier routine corresponds to the 
        phase factor of exp( -i p x )

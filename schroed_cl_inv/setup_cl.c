@@ -1,5 +1,5 @@
 /******** setup_cl.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 #define IF_OK if(status==0)
 
 /* Modifications ...

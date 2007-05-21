@@ -48,9 +48,8 @@ void setup_control_form()
       s->heavy_smear_func_mom[0] = s->heavy_smear_func[0]; 
     }
 
-  restrict_fourier(F_OFFSET(heavy_smear_func_mom[0]), 
-		   F_OFFSET(quark_sequential) , 
-		   F_OFFSET(quark_rot), sizeof(complex), 1);
+  restrict_fourier_site(F_OFFSET(heavy_smear_func_mom[0]), 
+			sizeof(complex), 1);
 
 
   for(i=0 ; i < no_p_values ; ++i)
@@ -65,8 +64,8 @@ void setup_control_form()
 
   /*** Fourier transform the smearing functions ***/
 
-  restrict_fourier(F_OFFSET(seq_smear_func[0]) , F_OFFSET(quark_sequential), 
-		   F_OFFSET(quark_rot),no_p_values*sizeof(complex), 1);
+  restrict_fourier_site(F_OFFSET(seq_smear_func[0]),
+			no_p_values*sizeof(complex), 1);
 
   /*** Zero the primary quark propagators ***/
 
