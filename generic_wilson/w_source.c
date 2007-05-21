@@ -6,9 +6,10 @@
 /* Initialize a source for the inverter */
 
 #include "generic_wilson_includes.h"
+#include "../include/io_wprop.h"
 #include <string.h>
 
-void w_source(field_offset src,wilson_quark_source *wqs)
+void w_source_field(wilson_vector *src, wilson_quark_source *wqs)
 {
   /* src has size wilson_vector */
   register int i;
@@ -16,21 +17,25 @@ void w_source(field_offset src,wilson_quark_source *wqs)
   
   short my_x,my_y,my_z;
   Real rx,ry,rz,radius2;
-  int color, spin, source_type;
-  int x0, y0, z0, t0;
-  Real r0;
-  
+
   /* Unpack structure */
-  x0 = wqs->x0; y0 = wqs->y0; z0 = wqs->z0; t0 = wqs->t0;
-  color = wqs->color; spin = wqs->spin;
-  source_type = wqs->type;
-  r0 = wqs->r0;
+  int color         = wqs->color;
+  int spin          = wqs->spin;
+  int source_type   = wqs->type;
+  int x0            = wqs->x0; 
+  int y0            = wqs->y0; 
+  int z0            = wqs->z0; 
+  int t0            = wqs->t0;
+  Real r0           = wqs->r0;
+  int iters         = wqs->iters;
+  char *source_file = wqs->source_file;
+  
   
 /*printf("WSOURCE: source = %d\n",source_type); */
 	
     /* zero src to be safe */
     FORALLSITES(i,s) {
-	clear_wvec((wilson_vector *)F_PT(s,src)); 
+	clear_wvec( src+i ); 
     }
 
     if(source_type == POINT) {
@@ -39,8 +44,7 @@ void w_source(field_offset src,wilson_quark_source *wqs)
 
 	if(node_number(x0,y0,z0,t0) == mynode()){
 	    i = node_index(x0,y0,z0,t0);
-	    ((wilson_vector *)F_PT(&(lattice[i]),src))->
-		d[spin].c[color].real = 1.0;
+	    src[i].d[spin].c[color].real = 1.0;
 	}
     }
     else if(source_type == GAUSSIAN) {
@@ -59,24 +63,64 @@ void w_source(field_offset src,wilson_quark_source *wqs)
 	    radius2 = rx*rx + ry*ry + rz*rz;
 	    radius2 /= (r0*r0);
 
-	    ((wilson_vector *)F_PT(s,src))->d[spin].c[color].real = 
-		(Real)exp((double)(- radius2));
+	    src[i].d[spin].c[color].real = (Real)exp((double)(- radius2));
 	}
       }
-  else {
-    node0_printf("w_source: Unrecognized source type %d\n",source_type);
+    else if(source_type == COVARIANT_GAUSSIAN){
+      /* Set delta function source */
+      FORALLSITES(i,s){
+	clear_wvec( src + i );
+      }
+      if(node_number(x0,y0,z0,t0) == this_node){
+	i = node_index(x0,y0,z0,t0);
+	src[i].d[spin].c[color].real = 1.;
+      }
+      gauss_smear_field(src, r0, iters, t0);
+    }
+    else if(source_type == COMPLEX_FIELD){
+      r_source_w_fm_to_field(source_file, src, spin, color, t0, source_type);
+    }
+    else if(source_type == DIRAC_FIELD){
+      r_source_w_fm_to_field(source_file, src, spin, color, t0, source_type);
+    }
+    else {
+      node0_printf("w_source: Unrecognized source type %d\n",source_type);
+      terminate(1);
+  }
+} /* w_source_field */
+
+void w_source_site(field_offset src, wilson_quark_source *wqs)
+{
+  int i;
+  site *s;
+  wilson_vector *t_src;
+
+#define PAD 0
+  t_src  = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
+  
+  if(t_src == NULL){
+    printf("w_source_site(%d): Can't allocate t_src\n",this_node);
     terminate(1);
   }
-    
+  
+  w_source_field(t_src, wqs);
 
-} /* w_source */
+  /* copy src back */
+  FORALLSITES(i,s) {
+    *(wilson_vector *)F_PT(s,src) = t_src[i];
+  }
+
+  free(t_src);
+
+} /* w_source_site */
+
 
 /* 
    Initialize a sink for the inverter, using a wilson vector as the
    storage container .
  */
 
-void w_sink(field_offset snk,wilson_quark_source *wqs)
+void w_sink_field(wilson_vector *snk,wilson_quark_source *wqs)
 {
   register int i;
   register site *s; 
@@ -103,8 +147,7 @@ void w_sink(field_offset snk,wilson_quark_source *wqs)
 	for(t0=0;t0<nt;t0++){
 	    if(node_number(x0,y0,z0,t0) == mynode()){
 		i = node_index(x0,y0,z0,t0);
-		((wilson_vector *)F_PT(&(lattice[i]),snk))->
-		    d[spin].c[color].real = 1.0;
+		snk[i].d[spin].c[color].real = 1.0;
 	    }
 	}
     }
@@ -123,17 +166,39 @@ void w_sink(field_offset snk,wilson_quark_source *wqs)
 	    radius2 = rx*rx + ry*ry + rz*rz;
 	    radius2 /= (r0*r0);
 
-	    ((wilson_vector *)F_PT(s,snk))->d[spin].c[color].real = 
-		(Real)exp((double)(- radius2));
+	    snk[i].d[spin].c[color].real = 
+	      (Real)exp((double)(- radius2));
 	}
     }
 
-} /* w_sink */
+} /* w_sink_field */
 
 
 
+void w_sink_site(field_offset snk, wilson_quark_source *wqs)
+{
+  int i;
+  site *s;
+  wilson_vector *t_snk;
 
+#define PAD 0
+  t_snk  = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
+  
+  if(t_snk == NULL){
+    printf("w_sink_site(%d): Can't allocate t_snk\n",this_node);
+    terminate(1);
+  }
+  
+  w_sink_field(t_snk, wqs);
 
+  /* copy snk back */
+  FORALLSITES(i,s) {
+    *(wilson_vector *)F_PT(s,snk) = t_snk[i];
+  }
+
+  free(t_snk);
+
+} /* w_sink_site */
 
 /* 
    Initialize a sink for the inverter, using a wilson number as the
@@ -208,7 +273,7 @@ int ask_quark_source( int prompt, int *source_type, char *descrp)
   int status;
 
   if (prompt!=0)
-    printf("enter 'point', or 'gaussian' for source type\n");
+    printf("enter 'point', 'gaussian', 'covariant_gaussian', 'complex_field', 'dirac_field' for source type\n");
   status = scanf("%s",savebuf);
   if(status !=1) {
     printf("ask_quark_source: ERROR IN INPUT: source type command\n");
@@ -222,11 +287,25 @@ int ask_quark_source( int prompt, int *source_type, char *descrp)
     *source_type = GAUSSIAN;
     strcpy(descrp,"gaussian");
   }
+  else if(strcmp("covariant_gaussian",savebuf) == 0 ) {
+    *source_type = COVARIANT_GAUSSIAN;
+    strcpy(descrp,"covariant_gaussian");
+  }
+  else if(strcmp("complex_field",savebuf) == 0 ) {
+    *source_type = COMPLEX_FIELD;
+    strcpy(descrp,"complex_field");
+  }
+  else if(strcmp("dirac_field",savebuf) == 0 ) {
+    *source_type = DIRAC_FIELD;
+    strcpy(descrp,"dirac_field");
+  }
   else{
-    printf("ask_source: ERROR IN INPUT: source command is invalid\n"); 
+    printf("ask_source: ERROR IN INPUT: source command %s is invalid\n",
+	   savebuf); 
     return 1;
   }
 
   printf("%s\n",savebuf);
   return 0;
 } /* ask_quark_source */
+

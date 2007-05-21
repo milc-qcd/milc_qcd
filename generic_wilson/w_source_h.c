@@ -164,7 +164,7 @@ int ask_quark_source( int prompt, int *source_type, char *descrp)
   int status;
   
   if (prompt!=0)
-    printf("enter 'point', or 'gaussian' for source type\n");
+    printf("enter 'point', 'cutoff_gaussian', 'point_weyl', 'cutoff_gaussian_weyl' for source type\n");
   status = scanf("%s",savebuf);
   if(status !=1) {
     printf("ask_quark_source: ERROR IN INPUT: source type command\n");
