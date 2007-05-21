@@ -1,5 +1,5 @@
 /****** update_h_cl.c  -- update the momentum matrices ******************/
-/* MIMD version 6.  April 1995 MBW */
+/* MIMD version 7.  April 1995 MBW */
 /* Clover fermions */
 
 #include "cl_dyn_includes.h"

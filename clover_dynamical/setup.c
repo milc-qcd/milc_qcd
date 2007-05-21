@@ -1,5 +1,5 @@
 /******** setup.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Version for dynamical clover fermions with Symanzik/tadople
 	improved gauge field	*/
 
@@ -9,6 +9,7 @@
 */
 
 #include "cl_dyn_includes.h"
+#include "lattice_qdp.h"
 #include <string.h>
 int initial_set();
 #define IF_OK if(status==0)
@@ -19,6 +20,9 @@ params par_buf;
 
 int setup()   {
   int prompt;
+#ifdef HAVE_QDP
+  int i;
+#endif
 
   /* print banner, get volume, nflavors, seed */
   prompt=initial_set();
@@ -30,6 +34,16 @@ int setup()   {
   make_lattice();
   /* set up neighbor pointers and comlink structures */
   make_nn_gathers();
+
+#ifdef HAVE_QDP
+  for(i=0; i<4; ++i) {
+    shiftdirs[i] = QDP_neighbor[i];
+  }
+  for(i=0; i<4; ++i) {
+    shiftfwd[i] = QDP_forward;
+    shiftbck[i] = QDP_backward;
+  }
+#endif
 
   return(prompt);
 }
@@ -43,7 +57,7 @@ int initial_set(){
     /* print banner */
     printf("SU3 with Clover fermions\n");
     printf("Microcanonical simulation with refreshing\n");
-    printf("MIMD version 6\n");
+    printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 #ifdef HMC_ALGORITHM
     printf("Hybrid Monte Carlo algorithm\n");

@@ -1,7 +1,7 @@
 /******** control.c ********/
 /* Main procedure for SU3 with dynamical clover fermions 
    and Symanzik/Tadpole improved gauge action	*/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications
    1996 Created by Matt Wingate
@@ -20,6 +20,7 @@
 #define CONTROL
 
 #include "cl_dyn_includes.h"
+#include "lattice_qdp.h"
 
 int main(int argc, char *argv[])  {
 int meascount,todo;
@@ -105,18 +106,14 @@ double dtime;
 	      fixflag = NO_GAUGE_FIX;
 #ifdef SPECTRUM 
 #ifdef SCREEN 
-		gaugefix(ZUP,(Real)1.5,500,(Real)GAUGE_FIX_TOL,
-			 F_OFFSET(staple),F_OFFSET(tempmat1),
-			 0,NULL,NULL,0,NULL,NULL);
+	      gaugefix(ZUP,(Real)1.5,500,(Real)GAUGE_FIX_TOL);
 		fixflag = COULOMB_GAUGE_FIX;
 		boundary_flip(MINUS);
 		spect_iters = s_props_cl();
 		avspect_iters += spect_iters;
 		boundary_flip(PLUS);
 #else	/* spectrum in time direction */
-		gaugefix(TUP,(Real)1.5,500,(Real)GAUGE_FIX_TOL,
-			 F_OFFSET(staple),F_OFFSET(tempmat1),
-			 0,NULL,NULL,0,NULL,NULL);
+		gaugefix(TUP,(Real)1.5,500,(Real)GAUGE_FIX_TOL);
 		fixflag = COULOMB_GAUGE_FIX;
 /* commented 15 OCT 95, MBW....we'll use periodic b.c. for spect. */
 /*		boundary_flip(MINUS); */

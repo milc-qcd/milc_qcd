@@ -1,5 +1,5 @@
 /************************** gauge_action.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*  uses staple.e[0][0] to accumulate, and ordinary gathers*/
 
 #include "cl_dyn_includes.h"

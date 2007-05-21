@@ -1,6 +1,6 @@
 /******************* udadu_mu_nu.c ****************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This version uses gathers to get the neighbors */
 /* version of April 1995 by MBW */
 

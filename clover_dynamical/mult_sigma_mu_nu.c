@@ -1,5 +1,5 @@
 /******** mult_sigma_mu_nu.c *************/
-/* MIMD version 6,  March 95 */
+/* MIMD version 7,  March 95 */
 /* Left multiplies a wilson_vector by sigma_mu_nu = gamma_mu gamma_nu where
 
 sigma(XUP,YUP)		sigma(XUP,ZUP)		sigma(XUP,TUP)

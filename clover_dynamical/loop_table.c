@@ -1,5 +1,5 @@
 /************************** loop_table.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* WE NEED TO NORMALIZE THIS PROCEDURE WITH generic/gauge_stuff.c -CD! */
 
 #include "cl_dyn_includes.h"

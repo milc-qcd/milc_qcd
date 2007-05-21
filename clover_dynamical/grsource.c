@@ -1,5 +1,5 @@
 /************************ grsource_cl.c *****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Clover fermions */
 
 #include "cl_dyn_includes.h"

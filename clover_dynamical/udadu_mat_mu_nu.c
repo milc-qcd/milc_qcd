@@ -1,6 +1,6 @@
 /******************* udadu_mat_mu_nu.c ****************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* version of May 1995 by MBW */
 /* calculates udadu_mu_nu and multiplies by an su3_matrix
    for the Tr_{dirac} \sigma_mu_nu A_odd^{-1} U dA_odd/dU term of

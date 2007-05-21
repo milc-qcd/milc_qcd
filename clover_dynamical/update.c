@@ -1,5 +1,5 @@
 /********** update.c *** for clover fermions *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
  Update lattice.

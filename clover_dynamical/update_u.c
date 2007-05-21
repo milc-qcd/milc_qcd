@@ -1,5 +1,5 @@
 /*************** update_u.c ************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Same as wilson_dynamical/update_u.c */
 
 /* update the link matrices					*
