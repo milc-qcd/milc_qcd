@@ -178,8 +178,8 @@ int err;
 
     /* Fourier transform d_mu A_mu(x) */
     g_sync();
-    restrict_fourier( diffmat_of, fftmat1_of, fftmat2_of,
-		      sizeof(su3_matrix), FORWARDS);
+    restrict_fourier_site( diffmat_of,
+			   sizeof(su3_matrix), FORWARDS);
 
     /* Multiply with (accel_param * p_rat / fft_vol) */
     ftmp1 = accel_param / (Real)fft_vol;
@@ -191,8 +191,8 @@ int err;
 
     /* Fourier transform back */
     g_sync();
-    restrict_fourier( diffmat_of, fftmat1_of, fftmat2_of, 
-                      sizeof(su3_matrix), BACKWARDS);
+    restrict_fourier_site( diffmat_of, 
+			   sizeof(su3_matrix), BACKWARDS);
 
     /* Now exponentiate, using 6-th order expansion */
     FORALLSITES(i,s){

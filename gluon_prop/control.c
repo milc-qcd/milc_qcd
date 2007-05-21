@@ -38,7 +38,6 @@ int main(int argc, char *argv[])  {
     key[YUP] = 1;
     key[ZUP] = 1;
     key[TUP] = 1;
-/*    setup_restrict_fourier(key, restrict); */
 
     /* loop over input sets */
     while( readin(prompt) == 0){
@@ -53,9 +52,7 @@ int main(int argc, char *argv[])  {
 		first_set = 0;
 	    }
 #ifdef GFIX
-	    gaugefix(TUP, (Real)1.8, 500, (Real)1.e-7,
-		     F_OFFSET(tempmat1), F_OFFSET(tempvec[0]),
-		     0, NULL, NULL, 0, NULL, NULL);
+	    gaugefix(TUP, (Real)1.8, 500, (Real)1.e-7);
 	    gaugefixfft(TUP, (Real)(-0.10), 1750, (Real)GAUGE_FIX_TOL,
 			F_OFFSET(staple), F_OFFSET(tempmat1),
 			F_OFFSET(tempmat2), 0, NULL, NULL, 0, NULL, NULL);
@@ -77,9 +74,7 @@ int main(int argc, char *argv[])  {
 		first_set = 0;
 	    }
 #ifdef GFIX
-	    gaugefix(8, (Real)1.8, 500, (Real)1.e-7,
-		     F_OFFSET(tempmat1), F_OFFSET(tempvec[0]),
-		     0, NULL, NULL, 0, NULL, NULL);
+	    gaugefix(8, (Real)1.8, 500, (Real)1.e-7);
 	    gaugefixfft(8, (Real)(-0.08), 1750, (Real)GAUGE_FIX_TOL,
 			F_OFFSET(staple), F_OFFSET(tempmat1),
 			F_OFFSET(tempmat2), 0, NULL, NULL, 0, NULL, NULL);

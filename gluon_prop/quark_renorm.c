@@ -154,9 +154,8 @@ char filename[50];
 		    }
 
 		    /* Fourier transform and save */
-		    restrict_fourier(F_OFFSET(ttt), F_OFFSET(cg_p),
-				     F_OFFSET(xxx1), sizeof(su3_vector),
-				     FORWARDS);
+		    restrict_fourier_site(F_OFFSET(ttt), sizeof(su3_vector),
+					  FORWARDS);
 		    write_mom_ksprop(fp_mom_ks[j_mass], xi, j, F_OFFSET(ttt));
 		}
 	    }
@@ -183,9 +182,9 @@ char filename[50];
 			}
 
 			/* Fourier transform and save */
-			restrict_fourier(F_OFFSET(ttt), F_OFFSET(cg_p),
-					 F_OFFSET(xxx1), sizeof(su3_vector),
-					 FORWARDS);
+			restrict_fourier_site(F_OFFSET(ttt), 
+					      sizeof(su3_vector),
+					      FORWARDS);
 			write_mom_ksprop(fp_mom_ks[j_mass], xi, j, F_OFFSET(ttt));
 		    }
 		}
@@ -211,9 +210,9 @@ char filename[50];
 			}
 
 			/* Fourier transform and save */
-			restrict_fourier(F_OFFSET(ttt), F_OFFSET(cg_p),
-					 F_OFFSET(xxx1), sizeof(su3_vector),
-					 FORWARDS);
+			restrict_fourier_site(F_OFFSET(ttt),
+					      sizeof(su3_vector),
+					      FORWARDS);
 			write_mom_ksprop(fp_mom_ks[j_mass], xi, j, F_OFFSET(ttt));
 		    }
 		} /* source parity */
@@ -247,8 +246,8 @@ char filename[50];
 	    else{
 		j = num_mass - j_mass;
 	    }
-	    restrict_fourier(F_OFFSET(trace_prop[j_mass]), F_OFFSET(ttt),
-			     F_OFFSET(xxx1), j*sizeof(complex), FORWARDS);
+	    restrict_fourier_site(F_OFFSET(trace_prop[j_mass]),
+				  j*sizeof(complex), FORWARDS);
 	}
 
 	for(j_mass=0; j_mass<num_mass; j_mass++){

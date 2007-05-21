@@ -41,9 +41,8 @@ int currentnode,newnode;
 
 	g_sync();
 	/* Now Fourier transform */
-	restrict_fourier(F_OFFSET(a_mu[dir]), F_OFFSET(tempmat1),
-			 F_OFFSET(tempmat2),
-			 sizeof(su3_matrix), FORWARDS);
+	restrict_fourier_site(F_OFFSET(a_mu[dir]),
+			      sizeof(su3_matrix), FORWARDS);
     }
     g_doublesum( &trace);
     trace /= (double)(12*volume);

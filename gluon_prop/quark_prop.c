@@ -26,7 +26,7 @@ Real sin_pmu, q_mu, prop_a, prop_b, z_fac, m_func, ftmp;
 Real r1, r2, r3;
 int pmu, px, py, pz, pt;
 int pxn, pyn, pzn, ptn;
-int currentnode,newnode;
+int currentnode;
 int j1, jm2, k, dirs[4];
 msg_tag *mtag[2];
 int j_mass;
@@ -238,8 +238,8 @@ char recxml[MAX_RECXML];
 	else{
 	    j = num_mass - j_mass;
 	}
-	restrict_fourier(F_OFFSET(trace_prop[j_mass]), F_OFFSET(ttt),
-			 F_OFFSET(xxx1), j*sizeof(complex), FORWARDS);
+	restrict_fourier_site(F_OFFSET(trace_prop[j_mass]),
+			      j*sizeof(complex), FORWARDS);
     }
 
     for(j_mass=0; j_mass<num_mass; j_mass++){
