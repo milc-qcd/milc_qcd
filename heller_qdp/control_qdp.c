@@ -62,9 +62,7 @@ int main( int argc, char **argv ){
 		f_meas_imp(F_OFFSET(phi),F_OFFSET(xxx),mass);
 #ifdef SPECTRUM 
                 rephase( OFF );
-                gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL,
-          	   F_OFFSET(tempmat1),F_OFFSET(tempvec[0]),
-			 0,NULL,NULL,0,NULL,NULL);
+                gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
                 rephase( ON );
 #ifdef FN
 		invalidate_fn_links();
