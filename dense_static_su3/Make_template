@@ -15,15 +15,7 @@ LIBDIR = ../libraries
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/complex.a ${LIBDIR}/su3.a
 
-GLOBAL_HEADERS = \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/complex.h \
-  ${INCLUDEDIR}/su3.h \
-  ${INCLUDEDIR}/comdefs.h \
-  ${INCLUDEDIR}/macros.h \
-  ${INCLUDEDIR}/generic.h \
-  ${INCLUDEDIR}/loopend.h \
-  ${INCLUDEDIR}/io_lat.h
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 MY_HEADERS = \
   lattice.h \
