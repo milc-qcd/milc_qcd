@@ -116,6 +116,7 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   Real final_rsq; 
   QDP_ColorVector *phi_s,*phi_d;
   QDP_ColorVector *phi_check,*phi_check1;
+  quark_invert_control qic;
   
   clear_latvec(F_OFFSET(phi2) , EVENANDODD );
   clear_latvec(F_OFFSET(ttt) , EVENANDODD );
@@ -134,12 +135,18 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   set_site_from_V(F_OFFSET(ttt),src);
 #else
   /* Do phi_s = (M^\dagger M)^{-1} src */
+  /* Pack structure */
+  qic.parity    = EVENANDODD;
+  qic.max       = niter;
+  qic.nrestart  = 5;
+  qic.resid     = qrsqmin;
+  qic.relresid  = 0;     /* Suppresses this test */
 #if ( QDP_Precision == 'F' )
-  iter=ks_congrad_qdp_F(src, phi_s, qmass, niter, 5, qrsqmin,
-			QDP_all, &qfinal_rsq);
+  qic.prec      = 1;
+  iter=ks_congrad_qdp_F(src, phi_s, &qic, qmass);
 #else
-  iter=ks_congrad_qdp_D(src, phi_s, qmass, niter, 5, qrsqmin,
-			QDP_all, &qfinal_rsq);
+  qic.prec      = 2;
+  iter=ks_congrad_qdp_D(src, phi_s, &qic, qmass);
 #endif
   /* Then do dest = M^\dagger phi_s */
   set_site_from_V(F_OFFSET(ttt),phi_s);
@@ -261,6 +268,7 @@ void RG_check_inversion(QDP_ColorVector *src,QDP_ColorVector *chi[RG_Ncn])
 int i,iter;
 QLA_Real qmass,qmass2,qrsqmin,qfinal_rsq;
 QDP_ColorVector *dest,*phi_s,*phi_check,*phi_check1,*phi_d;
+ quark_invert_control qic;
 
   clear_latvec(F_OFFSET(phi2) , EVENANDODD );
   clear_latvec(F_OFFSET(ttt) , EVENANDODD );
@@ -280,12 +288,18 @@ QDP_ColorVector *dest,*phi_s,*phi_check,*phi_check1,*phi_d;
   qmass = (QLA_Real) mass;
   qrsqmin = (QLA_Real) rsqprop;
 
+  /* Pack structure */
+  qic.parity    = EVENANDODD;
+  qic.max       = niter;
+  qic.nrestart  = 5;
+  qic.resid     = qrsqmin;
+  qic.relresid  = 0;     /* Suppresses this test */
 #if ( QDP_Precision == 'F' )
-  iter=ks_congrad_qdp_F(src, phi_s, qmass, niter, qrsqmin,
-		      QDP_all,&qfinal_rsq);
+  qic.prec      = 1;
+  iter=ks_congrad_qdp_F(src, phi_s, &qic, qmass );
 #else
-  iter=ks_congrad_qdp_D(src, phi_s, qmass, niter, qrsqmin,
-		      QDP_all,&qfinal_rsq);
+  qic.prec      = 2;
+  iter=ks_congrad_qdp_D(src, phi_s, &qic, qmass );
 #endif
   
   set_site_from_V(F_OFFSET(ttt),phi_s);

@@ -57,8 +57,7 @@ void RG_setup(QDP_Sub_Block QDP_block[NRG+1],
 #ifdef FIX_GAUGE
   node0_printf("Fix the gauge\n"); fflush(stdout);
   /* Lorentz gauge */
-  gaugefix(8,(float)1.8,600,(float)GAUGE_FIX_TOL,
-	   F_OFFSET(stapleg),F_OFFSET(tempvecg),0,NULL,NULL,0,NULL,NULL);
+  gaugefix(8,(float)1.8,600,(float)GAUGE_FIX_TOL);
 #endif
   
 

@@ -68,8 +68,7 @@ double dtime;
 #ifdef SPECTRUM 
 #ifdef SCREEN 
 		boundary_flip(PLUS);
-		gaugefix(ZUP,(Real)1.5,100,(Real)GAUGE_FIX_TOL,
-			 F_OFFSET(mp),F_OFFSET(ttt),0,NULL,NULL,0,NULL,NULL);
+		gaugefix(ZUP,(Real)1.5,100,(Real)GAUGE_FIX_TOL);
 		boundary_flip(MINUS);
 		spect_iters = s_props();
 		avspect_iters += spect_iters;
@@ -78,16 +77,14 @@ double dtime;
 #ifdef QUARK
 		boundary_flip(PLUS);
 		/* Lorentz gauge*/
-		gaugefix(8,(Real)1.5,100,(Real)GAUGE_FIX_TOL,
-			 F_OFFSET(mp),F_OFFSET(ttt),0,NULL,NULL,0,NULL,NULL);
+		gaugefix(8,(Real)1.5,100,(Real)GAUGE_FIX_TOL);
 		boundary_flip(MINUS);
                 disp_iters = quark();
                 avspect_iters += disp_iters;
 #endif /* ifdef QUARK */
 #else	/* spectrum in time direction */
 		boundary_flip(PLUS);
-		gaugefix(TUP,(Real)1.5,100,(Real)GAUGE_FIX_TOL,
-			 F_OFFSET(mp),F_OFFSET(ttt),0,NULL,NULL,0,NULL,NULL);
+		gaugefix(TUP,(Real)1.5,100,(Real)GAUGE_FIX_TOL);
 		boundary_flip(MINUS);
 		spect_iters = t_props();
 		avspect_iters += spect_iters;

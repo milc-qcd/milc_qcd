@@ -22,6 +22,7 @@
 int setup();
 int readin(int prompt);
 Real action();
+int congrad_w(int niter,Real rsqmin,Real *final_rsq_ptr);
 double d_action();
 void gauge_field_copy(field_offset src,field_offset dest);
 int congrad(int niter,Real rsqmin,Real *final_rsq_ptr);
