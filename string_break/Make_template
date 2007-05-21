@@ -16,16 +16,7 @@ LIBDIR = ../libraries
 
 # To force a remake when changing headers
 
-GLOBAL_HEADERS = \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/complex.h \
-  ${INCLUDEDIR}/su3.h \
-  ${INCLUDEDIR}/comdefs.h \
-  ${INCLUDEDIR}/macros.h \
-  ${INCLUDEDIR}/generic.h \
-  ${INCLUDEDIR}/generic_ks.h \
-  ${INCLUDEDIR}/loopend.h \
-  ${INCLUDEDIR}/io_lat.h
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 MY_HEADERS = \
   lattice.h \
@@ -63,9 +54,10 @@ MY_OBJECTS = \
 G_OBJECTS = \
   $(LAYOUT).o \
   ape_smear.o \
-  d_congrad5.o \
   ax_gauge.o \
   check_unitarity.o \
+  d_congrad5.o \
+  dslash.o \
   d_plaq4.o \
   io_helpers.o \
   ${IO_LAT_REAL} \

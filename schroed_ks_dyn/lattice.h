@@ -16,6 +16,7 @@
 #include "../include/random.h"	/* For double_prn */
 
 /* The lattice is an array of sites.  */
+#define MOM_SITE   /* If there is a mom member of the site struct */
 typedef struct {
     /* The first part is standard to all programs */
 	/* coordinates of this site */

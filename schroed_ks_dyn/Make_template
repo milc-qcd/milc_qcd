@@ -27,16 +27,7 @@ LIBDIR = ../libraries
 
 # To force a remake when changing headers
 
-GLOBAL_HEADERS = \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/complex.h \
-  ${INCLUDEDIR}/su3.h \
-  ${INCLUDEDIR}/comdefs.h \
-  ${INCLUDEDIR}/macros.h \
-  ${INCLUDEDIR}/generic.h \
-  ${INCLUDEDIR}/generic_schroed.h \
-  ${INCLUDEDIR}/loopend.h \
-  ${INCLUDEDIR}/io_lat.h
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 MY_HEADERS = \
   lattice.h \
@@ -75,7 +66,9 @@ G_OBJECTS =          \
 # Basic set from generic_ks directory
 G_KS_OBJECTS = \
   grsource.o \
-  d_congrad5.o
+  d_congrad5.o \
+  dslash.o
+
 # Basic set from generic_schroed directory
 G_SCHROED_OBJECTS =  \
   coupling.o         \
