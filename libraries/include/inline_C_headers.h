@@ -13,4 +13,5 @@
 #include "inline_C_su3_proj.h"
 #include "inline_C_su3_rdot.h"
 #include "inline_C_subvec.h"
+#include "inline_C_sub4vecs.h"
 #include "inline_C_wp_shrink4.h"
