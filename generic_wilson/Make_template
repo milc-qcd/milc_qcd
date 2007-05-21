@@ -9,35 +9,27 @@
 #  The paths are relative to the application directory.
 
 G_WILSON_ALL =  \
+    baryon_cont.o \
     bj_to_weyl.o \
     boundary_flip.o \
     canopy2weyl_rot.o \
-    copy_site_wilson_vector.o \
-    d_bicgilu_w_lean.o \
-    d_bicgilu_w_lean2.o \
-    d_cgilu_w_lean.o \
-    d_cgilu_w_lean2.o \
-    d_congrad2.o \
     d_w_meson.o \
-    dslash_lean.o \
     dslash_lean2.o \
     dslash_lean_forwards.o \
     dslash_w_space.o \
-    dslash_w.o \
-    dslash_w3.o \
+    gauss_smear_w.o \
     io_helpers_w.o \
     io_scidac_w.o \
+    io_source_w_fm.o \
     io_prop_w.o \
     meson_cont.o \
-    mrilu_w_or.o \
     io_prop_w_fm.o \
     w_baryon.o \
     w_baryon_hl.o \
     w_meson.o \
     w_source.o \
     w_source_h.o \
-    wilson_invert.o \
-    wilson_invert_lean.o
+    wilson_invert.o
 
 # Must list our headers in generic_wilson_includes.h
 G_WILSON_HEADERS = \
@@ -60,27 +52,15 @@ G_WILSON_ALL_DEPEND = \
 
 ${G_WILSON_ALL}: ${G_WILSON_ALL_DEPEND}
 
+baryon_cont.o: ../generic_wilson/baryon_cont.c
+	${CC} -c ${CFLAGS} $<
 bj_to_weyl.o: ../generic_wilson/bj_to_weyl.c
 	${CC} -c ${CFLAGS} $<
 boundary_flip.o: ../generic_wilson/boundary_flip.c
 	${CC} -c ${CFLAGS} $<
 canopy2weyl_rot.o: ../generic_wilson/canopy2weyl_rot.c
 	${CC} -c ${CFLAGS} $<
-copy_site_wilson_vector.o: ../generic_wilson/copy_site_wilson_vector.c
-	${CC} -c ${CFLAGS} $<
-d_bicgilu_w_lean.o: ../generic_wilson/d_bicgilu_w_lean.c
-	${CC} -c ${CFLAGS} $<
-d_bicgilu_w_lean2.o: ../generic_wilson/d_bicgilu_w_lean2.c
-	${CC} -c ${CFLAGS} $<
-d_cgilu_w_lean.o: ../generic_wilson/d_cgilu_w_lean.c
-	${CC} -c ${CFLAGS} $<
-d_cgilu_w_lean2.o: ../generic_wilson/d_cgilu_w_lean2.c
-	${CC} -c ${CFLAGS} $<
-d_congrad2.o: ../generic_wilson/d_congrad2.c
-	${CC} -c ${CFLAGS} $<
 d_w_meson.o: ../generic_wilson/d_w_meson.c
-	${CC} -c ${CFLAGS} $<
-dslash_lean.o: ../generic_wilson/dslash_lean.c
 	${CC} -c ${CFLAGS} $<
 dslash_lean2.o: ../generic_wilson/dslash_lean2.c
 	${CC} -c ${CFLAGS} $<
@@ -88,14 +68,16 @@ dslash_lean_forwards.o: ../generic_wilson/dslash_lean_forwards.c
 	${CC} -c ${CFLAGS} $<
 dslash_w_space.o: ../generic_wilson/dslash_w_space.c
 	${CC} -c ${CFLAGS} $<
-dslash_w.o: ../generic_wilson/dslash_w.c
-	${CC} -c ${CFLAGS} $<
 dslash_w3.o: ../generic_wilson/dslash_w3.c
+	${CC} -c ${CFLAGS} $<
+gauss_smear_w.o: ../generic_wilson/gauss_smear_w.c
 	${CC} -c ${CFLAGS} $<
 io_helpers_w.o: ../include/io_lat.h ../include/io_wprop.h
 io_helpers_w.o: ../generic_wilson/io_helpers_w.c
 	${CC} -c ${CFLAGS} $<
 io_scidac_w.o: ../generic_wilson/io_scidac_w.c
+	${CC} -c ${CFLAGS} $<
+io_source_w_fm.o: ../generic_wilson/io_source_w_fm.c
 	${CC} -c ${CFLAGS} $<
 io_prop_w.o: ../include/io_lat.h ../include/io_wprop.h
 io_prop_w.o: ../generic_wilson/io_prop_w.c
@@ -103,8 +85,6 @@ io_prop_w.o: ../generic_wilson/io_prop_w.c
 io_prop_w_fm.o: ../generic_wilson/io_prop_w_fm.c
 	${CC} -c ${CFLAGS} $<
 meson_cont.o: ../generic_wilson/meson_cont.c
-	${CC} -c ${CFLAGS} $<
-mrilu_w_or.o: ../generic_wilson/mrilu_w_or.c
 	${CC} -c ${CFLAGS} $<
 w_baryon.o: ../generic_wilson/w_baryon.c
 	${CC} -c ${CFLAGS} $<
@@ -117,8 +97,6 @@ w_source.o: ../generic_wilson/w_source.c
 w_source_h.o: ../generic_wilson/w_source_h.c
 	${CC} -c ${CFLAGS} $<
 wilson_invert.o: ../generic_wilson/wilson_invert.c
-	${CC} -c ${CFLAGS} $<
-wilson_invert_lean.o: ../generic_wilson/wilson_invert_lean.c
 	${CC} -c ${CFLAGS} $<
 
 

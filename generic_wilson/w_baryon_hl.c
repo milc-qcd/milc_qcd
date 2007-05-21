@@ -1,5 +1,7 @@
 /********** w_baryon_hl.c *************/
 /* MIMD version 7 */
+
+/* CD  April 07 switched from field_offset to wilson_prop_field  */
 /* UMH April 96 */
 
 /* Heavy-light baryon spectrum for Wilson hadrons */
@@ -37,19 +39,14 @@
 #define Nc 3
 #define Ns 4
 
-void w_baryon_hl(field_offset src1,field_offset src2,
-		 field_offset src3, complex *prop[6]) 
-/* srci's are type wilson_propagator */
+void w_baryon_hl(wilson_prop_field src1, wilson_prop_field src2,
+		 wilson_prop_field src3, complex *prop[6]) 
 {
 
 int i,j,k,t;
 
 int eps[3][3][3], chi_b[4][4];
 complex *prop_tmp, *prop_l;
-void baryon_cont1(field_offset src1, field_offset src2, field_offset src3, 
-		  int chi_b[4][4], int eps[3][3][3], complex *propb);
-void baryon_cont2(field_offset src1, field_offset src2, field_offset src3, 
-		  int chi_b[4][4], int eps[3][3][3], complex *propb);
 
     prop_tmp = (complex *)malloc(nt*sizeof(complex));
     prop_l = (complex *)malloc(nt*sizeof(complex));

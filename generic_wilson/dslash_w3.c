@@ -1,15 +1,20 @@
-/*************  dslash_w_site.c *******************************/
+/*************  dslash_w3.c ************************************/
 /* MIMD version 7 */
+/* This version includes gathers from temp */
 
 /* 9/06/03 added gathers from temp - CD */
+/* 7/18/01 added dslash_w_site_special - CD */
 
 /*
-	dslash_w_site(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
-Compute SUM_dirs ( 
+  dslash_w_site(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
+  Compute SUM_dirs ( 
     ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
   + ( 1 - isign*gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
 )
 
+  Note that isign = -1 is more conventionally used in the lattice
+  community, but we use isign = +1 for our Wilson fermion operator.
+  
 */
 
 #include "generic_wilson_includes.h"
@@ -191,9 +196,10 @@ register site *s;
 register int dir,otherparity=0;
 
     switch(parity) {
-	case EVEN:      otherparity=ODD; break;
-	case ODD:       otherparity=EVEN; break;
-	case EVENANDODD:        otherparity=EVENANDODD; break;
+    case EVEN:      otherparity=ODD; break;
+    case ODD:       otherparity=EVEN; break;
+    default: /* EVENANDODD */
+      otherparity=EVENANDODD; break;
     }
 
 #ifdef MAXHTMP

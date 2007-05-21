@@ -10,7 +10,7 @@
 /*
   dslash_w_site(F_OFFSET(psi),F_OFFSET(mp),isign,l_parity);
   Compute SUM_dirs ( 
-  ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
+    ( 1 + isign*gamma[dir] ) * U(x,dir) * src(x+dir)
   + ( 1 - isign*gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
   )
   With U = exp(iA) the operation in the continuum limit is
@@ -55,12 +55,16 @@ void cleanup_dslash_temps(){
   temp_not_allocated=1 ;
 }
 
+/* This version doesn't use tmp gauge links, but we need the stub */
+void cleanup_tmp_links(){
+}
 
-void dslash_w(field_offset src, field_offset dest, int isign, int parity)
+
+void dslash_w_site(field_offset src, field_offset dest, int isign, int parity)
 {
   half_wilson_vector hwv;
   
-  register int i,end;
+  register int i;
   register site *s;
   register int dir,otherparity;
   msg_tag *tag[2];
@@ -68,7 +72,8 @@ void dslash_w(field_offset src, field_offset dest, int isign, int parity)
   switch(parity) {
   case EVEN:      otherparity=ODD; break;
   case ODD:       otherparity=EVEN; break;
-  case EVENANDODD:        otherparity=EVENANDODD; break;
+  default:  /* EVENANDODD */
+    otherparity=EVENANDODD; break;
   }
   
 #ifdef MAXHTMP
@@ -205,31 +210,32 @@ void dslash_w(field_offset src, field_offset dest, int isign, int parity)
   The calling program must clean up the gathers! */
 /*********************************************************************/
 
-void dslash_w_special(field_offset src,field_offset dest,
+void dslash_w_site_special(field_offset src,field_offset dest,
   int isign,int parity,msg_tag **tag,int is_started)
 {
   half_wilson_vector hwv;
   
-  register int i,end;
+  register int i;
   register site *s;
   register int dir,otherparity;
   
   switch(parity) {
   case EVEN:      otherparity=ODD; break;
   case ODD:       otherparity=EVEN; break;
-  case EVENANDODD:        otherparity=EVENANDODD; break;
+  default:   /* EVENANDODD */
+    otherparity=EVENANDODD; break;
   }
   
 #ifdef MAXHTMP
     /* NOTE: We should be defining MAXHTMP in all applications using
-       dslash and dslash_w */
+       dslash_w_site */
     if(MAXHTMP < 2){
-      printf("dslash_w_special: MAXHTMP must be 2 or more!\n");
+      printf("dslash_w_site_special: MAXHTMP must be 2 or more!\n");
       terminate(1);
     }
 #endif
     if(N_POINTERS < 8){
-      printf("dslash_w_special: N_POINTERS must be 8 or more!\n");
+      printf("dslash_w_site_special: N_POINTERS must be 8 or more!\n");
       terminate(1);
      }
 
@@ -350,9 +356,9 @@ void dslash_w_field( wilson_vector *src, wilson_vector *dest, int isign, int par
 {
   half_wilson_vector hwv;
   
-  register int i,j,end;
+  register int i;
   register site *s;
-  register int dir,otherparity;
+  register int dir,otherparity=0;
   msg_tag *tag[2];
   
   /* The calling program must clean up the temps! */
@@ -493,9 +499,9 @@ void dslash_w_field_special(wilson_vector *src, wilson_vector *dest,
 {
   half_wilson_vector hwv;
   
-  register int i,j,end;
+  register int i;
   register site *s;
-  register int dir,otherparity;
+  register int dir,otherparity=0;
   
   /* allocate temporary work space only if not already allocated */
   /* The calling program must clean up this space */

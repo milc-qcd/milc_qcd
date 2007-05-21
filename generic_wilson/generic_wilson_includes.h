@@ -17,3 +17,4 @@
 #include "../include/generic_quark_types.h"
 #include "../include/generic_wilson.h"
 #include <lattice.h>
+#include "../include/check_malloc.h"
