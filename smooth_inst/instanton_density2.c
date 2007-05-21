@@ -1,5 +1,5 @@
 /************************** instanton_density2.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Formerly named set_of_paths.c */
 /* This version computes the charge on subsets of timeslices */
 

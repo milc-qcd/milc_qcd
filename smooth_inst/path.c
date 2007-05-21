@@ -1,5 +1,5 @@
 /************************** path.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* An arbitrary path walker */
 /*  uses tempmat1.e[0][0] to accumulate, and ordinary gathers*/
 

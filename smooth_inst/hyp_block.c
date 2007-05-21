@@ -3,7 +3,7 @@
 /* A. Hasenfratz */
 /* commented by F. Knechtli - February 2001 */
 
-/* Version 6 port
+/* Version 7 port
    Modified to do only one sweep and replace original links
    with result, followed by reunitarization
    Changed entry name from "ape_block_det" to 

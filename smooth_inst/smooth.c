@@ -1,5 +1,5 @@
 /********** smooth.c ****************************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Based on update.c */
 
 /*

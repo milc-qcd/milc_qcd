@@ -1,5 +1,5 @@
 /************************** char_num.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 #include "smooth_inst_includes.h"
 

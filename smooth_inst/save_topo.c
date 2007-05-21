@@ -1,5 +1,5 @@
 /*********************** save_topo.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* routine for FFdual output. */
 /* This works for both Intel and Ncube, but other machines may need
@@ -12,7 +12,6 @@ void save_topo(char *filenam)
    FILE *fp;
    int currentnode,newnode;
    int i,x,y,z,t;
-   int k;
    Real lbuf;
   /* Hack to distinguish single and double precision files */
    int32type topo_magic_number = TOPO_VERSION_NUMBER ;

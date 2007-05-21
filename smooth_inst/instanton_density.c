@@ -1,5 +1,5 @@
 /************************** instanton_density.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Formerly named set_of_paths.c */
 
 #include "smooth_inst_includes.h"

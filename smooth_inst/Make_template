@@ -14,15 +14,12 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = \
-  ${INCLUDEDIR}/config.h \
-  ${INCLUDEDIR}/complex.h \
-  ${INCLUDEDIR}/su3.h \
-  ${INCLUDEDIR}/comdefs.h \
-  ${INCLUDEDIR}/macros.h \
-  ${INCLUDEDIR}/generic.h \
-  ${INCLUDEDIR}/loopend.h \
-  ${INCLUDEDIR}/io_lat.h
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
+
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
 
 MY_HEADERS = \
   lattice.h \
@@ -30,18 +27,7 @@ MY_HEADERS = \
   defines.h \
   smooth_inst_includes.h
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
-
-# Selection of layout
-ifeq ($(strip ${QCDOC}),true)
-  LAYOUT = layout_qcdoc.o # Required
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
-  else
-    LAYOUT = layout_hyper_prime.o # Choices possible here
-  endif
-endif
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 MY_OBJECTS= \
  char_num.o \
@@ -65,6 +51,23 @@ G_OBJECTS = \
  remap_stdio_from_args.o \
  reunitarize2.o
 
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += io_scidac.o
+endif
+
+# Objects depending on architecture and software package 
+
+# Selection of layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o # Required
+  else
+    LAYOUT = layout_hyper_prime.o # Choices possible here
+  endif
+endif
+
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
 
@@ -74,7 +77,11 @@ OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${LAYOUT} \
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
 
-.c.o: ; ${CC} -c ${CFLAGS} $*.c
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
+
+
+# Default rule for C compilation
+.c.o: ; ${CC} -c ${CFLAGS}  $*.c 
 
 # To force a full remake when changing targets
 LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
@@ -89,6 +96,28 @@ ALL_MAKES = Make_template ../generic/Make_template \
   ${MAKEFILE} ../include
 
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
+endif
+
+ifeq ($(strip ${HAVEQMP}),true)
+  DHAVE_QMP = -DHAVE_QMP
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DHAVE_QIO = -DHAVE_QIO
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  DHAVE_QOP = -DHAVE_QOP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 ##### Targets:
 

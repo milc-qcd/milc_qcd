@@ -1,5 +1,5 @@
 /************************ control.c ******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Main procedure for smoothing SU(3) instantons */
 /* 2/19/98 if continuing from prev lattice, 
            allow total_sweeps to accumulate CD */
@@ -10,7 +10,7 @@
 
 #include "smooth_inst_includes.h"
 
-int main(const int argc, char *argv[])
+int main(int argc, char *argv[])
 {
    int meascount;
    int todo;
@@ -82,9 +82,7 @@ int main(const int argc, char *argv[])
          {
             printf("Fixing to Coulomb gauge\n");
          }
-         gaugefix(TUP, (Real)1.5, 500, GAUGE_FIX_TOL,
-                  -1, F_OFFSET(tempmat1),
-                  0, NULL, NULL, 0, NULL, NULL);
+         gaugefix(TUP, (Real)1.5, 500, GAUGE_FIX_TOL);
       }
       else if (this_node == 0)
       {

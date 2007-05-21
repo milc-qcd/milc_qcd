@@ -1,5 +1,5 @@
 /************************** make_loop_table.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* WE NEED TO NORMALIZE THIS PROCEDURE WITH generic/gauge_stuff.o -CD! */
 
 #include "smooth_inst_includes.h"
