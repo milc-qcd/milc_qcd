@@ -21,16 +21,24 @@
 #include "../include/comdefs.h"
 #include <time.h>
 #include <string.h>
+#include <math.h>
 #include "../include/file_types.h"
 #include "../include/io_ksprop.h"
 #include "../include/generic.h"
 #include "../include/generic_ks.h"
 #include "../include/io_lat.h"
+#include "../include/io_scidac.h"
+#include "../include/io_scidac_ks.h"
+
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
+
 #include <qio.h>
 
 /*----------------------------------------------------------------------*/
 void make_lattice(){
-register int i,j;               /* scratch */
+register int i;               /* scratch */
 int x,y,z,t;            /* coordinates */
     /* allocate space for lattice, fill in parity, coordinates and index.  */
     lattice = (site *)malloc( sites_on_node * sizeof(site) );
@@ -85,8 +93,7 @@ params par_buf;
 int main(int argc, char *argv[])
 {
 
-  int file_type1, file_type2;
-  int i,prompt,color;
+  int i;
   site *s;
   int dims[4],ndim;
   Real norm2,maxnorm2,avnorm2;
@@ -106,8 +113,6 @@ int main(int argc, char *argv[])
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
-  /* Remap standard I/O */
-  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();

@@ -21,11 +21,17 @@
 #include "../include/comdefs.h"
 #include <time.h>
 #include <string.h>
+#include <math.h>
 #include "../include/file_types.h"
 #include "../include/io_wprop.h"
 #include "../include/generic.h"
 #include "../include/generic_wilson.h"
 #include "../include/io_lat.h"
+
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
+
 #include <qio.h>
 
 static file_type w_prop_list[N_WPROP_TYPES] =
@@ -37,7 +43,7 @@ static file_type w_prop_list[N_WPROP_TYPES] =
 
 /*----------------------------------------------------------------------*/
 void make_lattice(){
-register int i,j;               /* scratch */
+register int i;               /* scratch */
 int x,y,z,t;            /* coordinates */
     /* allocate space for lattice, fill in parity, coordinates and index.  */
     lattice = (site *)malloc( sites_on_node * sizeof(site) );
@@ -113,8 +119,6 @@ int main(int argc, char *argv[])
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
-  /* Remap standard I/O */
-  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();

@@ -29,6 +29,11 @@
 #include "../include/io_wprop.h"
 #include "../include/generic.h"
 #include "../include/io_scidac.h"
+
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
+
 #include <qio.h>
 
 #define LATDIM 4
@@ -141,9 +146,9 @@ void w_serial_start_lattice(gauge_file *gf, w_serial_site_writer *state)
   
   offset = head_size + gauge_check_size;
   
-  if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+  if( g_seek(fp,offset,SEEK_SET) < 0 ) 
     {
-      printf("w_serial: Node %d fseeko %lld failed error %d file %s\n",
+      printf("w_serial: Node %d g_seek %lld failed error %d file %s\n",
 	     this_node,(long long)offset,errno,gf->filename);
       fflush(stdout);terminate(1);
     }
@@ -240,9 +245,9 @@ void w_serial_finish_lattice(w_serial_site_writer *state)
   
   /* Write checksum */
   /* Position file pointer */
-  if( fseeko(fp,checksum_offset,SEEK_SET) < 0 ) 
+  if( g_seek(fp,checksum_offset,SEEK_SET) < 0 ) 
     {
-      printf("w_serial: Node %d fseeko %lld failed error %d file %s\n",
+      printf("w_serial: Node %d g_seek %lld failed error %d file %s\n",
 	     this_node,(long long)checksum_offset,errno,gf->filename);
       fflush(stdout);terminate(1);
     }

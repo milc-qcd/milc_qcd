@@ -34,6 +34,11 @@
 #include "../include/io_wprop.h"
 #include "../include/generic.h"
 #include "../include/io_scidac.h"
+
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
+
 #include <qio.h>
 #include <dml.h>
 
@@ -290,9 +295,9 @@ void r_serial_start_lattice(gauge_file *gf, r_serial_site_reader *state)
   
   offset = head_size;
   
-  if( fseeko(fp,offset,SEEK_SET) < 0 ) 
+  if( g_seek(fp,offset,SEEK_SET) < 0 ) 
     {
-      printf("%s: Node 0 fseeko %lld failed error %d file %s\n",
+      printf("%s: Node 0 g_seek %lld failed error %d file %s\n",
 	     myname,(long long)offset,errno,gf->filename);
       fflush(stdout);terminate(1);   
     }
@@ -411,9 +416,9 @@ void r_serial_finish_lattice(r_serial_site_reader *state)
   if(gh->magic_number == GAUGE_VERSION_NUMBER)
     {
       printf("Time stamp %s\n",gh->time_stamp);
-      if( fseeko(fp,checksum_offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,checksum_offset,SEEK_SET) < 0 ) 
 	{
-	  printf("%s: Node 0 fseeko %lld failed error %d file %s\n",
+	  printf("%s: Node 0 g_seek %lld failed error %d file %s\n",
 		 myname,(long long)checksum_offset,errno,gf->filename);
 	  fflush(stdout);terminate(1);   
 	}

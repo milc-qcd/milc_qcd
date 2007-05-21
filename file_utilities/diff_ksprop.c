@@ -27,6 +27,9 @@
 #include "../include/generic.h"
 #include "../include/generic_ks.h"
 #include "../include/io_lat.h"
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
 #include <qio.h>
 
 static file_type ksprop_list[N_KSPROP_TYPES] =
@@ -37,7 +40,7 @@ static file_type ksprop_list[N_KSPROP_TYPES] =
 
 /*----------------------------------------------------------------------*/
 void make_lattice(){
-register int i,j;               /* scratch */
+register int i;               /* scratch */
 int x,y,z,t;            /* coordinates */
     /* allocate space for lattice, fill in parity, coordinates and index.  */
     lattice = (site *)malloc( sites_on_node * sizeof(site) );
@@ -93,7 +96,7 @@ int main(int argc, char *argv[])
 {
 
   int file_type1, file_type2;
-  int i,prompt,color;
+  int i,color;
   site *s;
   int dims[4],ndim;
   Real norm2,maxnorm2,avnorm2;
@@ -113,8 +116,6 @@ int main(int argc, char *argv[])
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
-  /* Remap standard I/O */
-  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();

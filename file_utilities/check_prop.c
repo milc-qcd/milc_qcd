@@ -2,7 +2,7 @@
 /* MIMD version 7 */
 /* Read propagator check checksums (used in version 5) */
 
-/* MIMD version 6 */
+
 /* C. DeTar 10/30/97 */
 
 /* Usage ...

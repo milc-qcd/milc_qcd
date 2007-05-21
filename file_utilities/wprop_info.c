@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include "lattice.h"
 #include "../include/io_wprop.h"
+#include <string.h>
 #define MAX_XML 2049
 
 /*---------------------------------------------------------------------------*/

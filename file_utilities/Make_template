@@ -35,7 +35,7 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = ${INCLUDEDIR}
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 INLINE_HEADERS = \
   ../sse/include/ \
@@ -165,7 +165,7 @@ diff_wprop::
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  diff_wprop.o io_helpers_w.o canopy2weyl_rot.o \
 	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o \
-	gauge_info_dummy.o d_plaq4.o io_lat4.o"
+	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o"
 
 lattice_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= lattice_to_scidac" \
@@ -204,6 +204,11 @@ scidac_2v5::
 	"DEFINES= -DNOLINKS" \
 	"EXTRA_OBJECTS=  scidac_to_v5.o \
 	gauge_info_scidac.o"
+
+# Remember to compile the next one in MPP mode!
+get_qmp_node_number: get_qmp_node_number.o
+	${LD} get_qmp_node_number.o ${LDFLAGS} -o $@ ${ILIB} -lm
+
 
 clean:
 	-/bin/rm -f *.o

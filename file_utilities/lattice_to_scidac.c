@@ -27,6 +27,11 @@
 #include "../include/io_lat.h"
 #include "../include/io_wprop.h"
 #include "../include/generic.h"
+
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
+
 #include <qio.h>
 
 #define PARALLEL 1

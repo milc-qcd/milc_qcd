@@ -26,6 +26,11 @@
 #include "../include/generic.h"
 #include "../include/generic_ks.h"
 #include "../include/io_lat.h"
+
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
+
 #include <qio.h>
 
 #define MAX_RECXML 512

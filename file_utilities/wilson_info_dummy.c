@@ -1,5 +1,5 @@
 /*********************** wilson_info_dummy.c *************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* For utilities */
 

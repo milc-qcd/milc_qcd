@@ -3,7 +3,6 @@
 /* Read gauge configuration, check checksums (in version 5),
    and unitarity */
 
-/* MIMD version 6 */
 /* C. DeTar 10/30/97 */
 
 /* Usage ...
@@ -172,9 +171,9 @@ void r_check(gauge_file *gf, float *max_deviation)
       
       offset = head_size;
 
-      if( fseek(fp,offset,SEEK_SET) < 0 ) 
+      if( g_seek(fp,offset,SEEK_SET) < 0 ) 
 	{
-	  printf("%s: Node 0 fseek %ld failed error %d file %s\n",
+	  printf("%s: Node 0 g_seek %ld failed error %d file %s\n",
 		 myname,(long)offset,errno,filename);
 	  fflush(stdout);terminate(1);   
 	}
@@ -226,7 +225,7 @@ void r_check(gauge_file *gf, float *max_deviation)
 	    if(buf_length > MAX_BUF_LENGTH)buf_length = MAX_BUF_LENGTH;
 	    /* then do read */
 	    
-	    if( (int)fread(lbuf,4*sizeof(su3_matrix),buf_length,fp) != buf_length)
+	    if( (int)g_read(lbuf,4*sizeof(su3_matrix),buf_length,fp) != buf_length)
 	      {
 		printf("%s: node %d gauge configuration read error %d file %s\n",
 		       myname,this_node,errno,filename); 
@@ -297,9 +296,9 @@ void r_check(gauge_file *gf, float *max_deviation)
 	     filename);
       if(gh->magic_number == GAUGE_VERSION_NUMBER)
 	{
-	  if( fseek(fp,checksum_offset,SEEK_SET) < 0 ) 
+	  if( g_seek(fp,checksum_offset,SEEK_SET) < 0 ) 
 	    {
-	      printf("%s: Node 0 fseek %ld failed error %d file %s\n",
+	      printf("%s: Node 0 g_seek %ld failed error %d file %s\n",
 		    myname,(long)offset,errno,filename);
 	      fflush(stdout);terminate(1);   
 	    }
@@ -395,7 +394,7 @@ void r_check_arch(gauge_file *gf)
       destnode=node_number(x,y,z,t);
       
       if(this_node==0){
-	if( (int)fread(uin,48*sizeof(float),1,fp) != 1)
+	if( (int)g_read(uin,48*sizeof(float),1,fp) != 1)
 	  {
 	    printf("%s: node %d gauge configuration read error %d file %s\n",
 		   myname,this_node,errno,filename); 
