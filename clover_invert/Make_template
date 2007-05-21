@@ -7,9 +7,16 @@
 #  It is intended to be an include file for other Makefiles.
 #  Don't use it by itself!
 #
-#	"su3_clov_cg" flavor-diagonal mesons and baryons
+#  Select the inverter algorithm in the Makefile
+#
+#	"su3_clov" flavor-diagonal mesons and baryons with
+#          bi-conjugate gradient inverter
 #	"su3_clov_bi" flavor-diagonal mesons and baryons with
 #          bi-conjugate gradient inverter
+#	"su3_clov_mr" flavor-diagonal mesons and baryons with
+#          minimum residue gradient inverter
+#	"su3_clov_hop" flavor-diagonal mesons and baryons with
+#          propagator solution using hopping parameter expansion
 #	"su3_clhl_cg" flavor-diagonal and off-diagonal mesons and baryons
 #	"su3_clhl_bi" flavor-diagonal and off-diagonal mesons and baryons
 #          with bi-conjugate gradient inverter
@@ -19,7 +26,7 @@ INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
 
-GLOBAL_HEADERS = ${INCLUDEDIR}
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
 INLINE_HEADERS = \
   ../sse/include/ \
@@ -30,8 +37,7 @@ MY_HEADERS = \
   lattice.h \
   params.h \
   defines.h \
-  cl_inv_includes.h \
-  ${ADDHEADERS}
+  cl_inv_includes.h
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
@@ -39,8 +45,10 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 # Basic set from current directory
 MY_OBJECTS =         \
   clover_info.o      \
+  dirac_utilities.o  \
   gauge_info.o       \
-  setup_cl.o
+  setup_cl.o         \
+  spectrum_cl.o
 
 # Basic set from generic directory
 G_OBJECTS =          \
@@ -63,20 +71,23 @@ endif
 
 # Basic set from generic_wilson directory
 G_WILSON_OBJECTS =   \
+  baryon_cont.o      \
   canopy2weyl_rot.o  \
   dslash_w3.o        \
+  gauss_smear_w.o    \
   io_helpers_w.o     \
   io_prop_w.o        \
   io_prop_w_fm.o     \
+  io_source_w_fm.o   \
   meson_cont.o       \
   w_baryon.o         \
-  wilson_invert_lean.o \
+  wilson_invert.o    \
   w_meson.o          \
   w_source.o
 
 # Basic set from generic_clover directory
 G_CLOVER_OBJECTS =   \
-  f_mu_nu.o          \
+  f_mu_nu.o        \
   make_clov2.o
 
 # Objects depending on architecture and software package 
@@ -92,6 +103,36 @@ else
   endif
 endif
 
+# Selection of the fermion links algorithm
+FLINKS_WILSON = ${FLINKS_WILSONQOP}
+
+# Selection of the conjugate gradient algorithm
+# The following inverters are not supported in QOP
+# so we use the plain MILC version:
+CONGRAD_CL = \
+      cl_solver_utilities.o \
+      d_cgilu_cl.o     \
+      d_hopilu_cl.o    \
+      d_mrilu_cl.o
+# The bicgilu inverter is supported, so select it
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+  CONGRAD_CL += d_bicgilu_cl_qop.o \
+     d_bicgilu_cl_qop_D.o d_bicgilu_cl_qop_F.o
+  CONGRAD_CL += ${WILSONINVERTQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+# We don't have a working standalone QDP version of the bicgilu inverter
+# so we use the plain MILC code version
+    CONGRAD_CL += d_bicgilu_cl.o
+  else
+# Plain MILC inverter
+    CONGRAD_CL += d_bicgilu_cl.o
+  endif
+endif
+
+CL_OBJECTS = ${FLINKS_WILSON} ${CONGRAD_CL}
+
 # EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o
@@ -106,7 +147,7 @@ ifeq ($(strip ${HAVEQOP}),true)
 endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_WILSON_OBJECTS} \
-  ${G_CLOVER_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+  ${G_CLOVER_OBJECTS} ${LAYOUT} ${CL_OBJECTS} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
@@ -161,13 +202,6 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 ##### Targets:
 
-# Choices for clover inverter are
-# d_bicgilu_cl_lean3.o 
-# d_cgilu_cl_lean2.o 
-# d_dgilu_cl_lean.o 
-# d_hopilu_cl_lean2.o 
-# d_mrilu_cl_lean.o
-
 # Common compiler macros
 
 # Optional DEFINES for timing:
@@ -175,43 +209,45 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 # -DPRTIME for propagator timing
 # -DCGTIME for cg timing and iterations
 
-su3_clov_cg::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= " \
-	"EXTRA_OBJECTS= control_cl.o d_cgilu_cl_lean2.o "
-
 su3_clov_bi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DIOTIME -DPRTIME -DBI -DCGTIME " \
-	"ADDHEADERS = addsite_clov_bi.h " \
-	"EXTRA_OBJECTS= control_cl.o d_bicgilu_cl_lean3.o "
+	"DEFINES= -DIOTIME -DPRTIME -DCL_CG=BICG " \
+	"EXTRA_OBJECTS= control_cl.o"
 
 su3_clov_hop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DIOTIME -DPRTIME -DHOP -DCGTIME " \
-	"EXTRA_OBJECTS= control_cl.o d_hopilu_cl_lean2.o "
+	"DEFINES= -DIOTIME -DPRTIME -DCL_CG=HOP " \
+	"EXTRA_OBJECTS= control_cl.o"
+
+su3_clov_mr::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DIOTIME -DPRTIME -DCL_CG=MR " \
+	"EXTRA_OBJECTS= control_cl.o"
+
+su3_clov_cg::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DIOTIME -DPRTIME -DCL_CG=CG " \
+	"EXTRA_OBJECTS= control_cl.o"
 
 su3_clhl_cg::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DHL" \
-	"ADDHEADERS = addsite_clhl_cg.h " \
-	"EXTRA_OBJECTS= control_cl_hl.o d_cgilu_cl_lean.o w_baryon_hl.o "
+	"DEFINES= -DCL_CG=CG -DHL" \
+	"EXTRA_OBJECTS= control_cl_hl.o spectrum_cl_hl.o w_baryon_hl.o "
 
 su3_clhl_bi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DBI -DHL" \
-	"ADDHEADERS = addsite_clhl_bi.h " \
-	"EXTRA_OBJECTS= control_cl_hl.o d_bicgilu_cl_lean.o w_baryon_hl.o "
+	"DEFINES= -DCL_CG=BICG -DHL" \
+	"EXTRA_OBJECTS= control_cl_hl.o spectrum_cl_hl.o w_baryon_hl.o "
 
 su3_clhl_hop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DHOP -DHL" \
-	"EXTRA_OBJECTS= control_cl_hl.o d_hopilu_cl_lean2.o w_baryon_hl.o "
+	"DEFINES= -DCL_CG=HOP -DHL" \
+	"EXTRA_OBJECTS= control_cl_hl.o spectrum_cl_hl.o w_baryon_hl.o "
 
 su3_clhl_hop_multi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DHOP -DHL" \
-	"EXTRA_OBJECTS= control_cl_hl_multi.o d_hopilu_cl_lean2.o w_baryon_hl.o "
+	"DEFINES= -DCL_CG=HOP -DHL" \
+	"EXTRA_OBJECTS= control_cl_hl_multi.o spectrum_cl_hl.o w_baryon_hl.o "
 
 clean:
 	-/bin/rm -f *.o

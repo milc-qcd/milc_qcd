@@ -20,7 +20,10 @@ typedef struct {
 	Real clov_c,u0;	/* clover coefficient, <Tr(U_p)>^{1/4} */
 	Real kap[MAX_KAP];	/* kappa values for multiple propagators */
 	Real resid[MAX_KAP];	/* residue for invertion convergence */
-	wilson_quark_source wqs[MAX_KAP];  /* source parameters */
+	Real relresid[MAX_KAP];	/* relative residue for invertion convergence */
+        char spectrum_request[MAX_SPECTRUM_REQUEST];   /* request list for spectral measurements */
+        Real sink_r0;  /* smearing for sink if requested */
+	wilson_quark_source wqs;  /* source parameters */
 	int niter; 	/* maximum number of c.g. iterations */
 	int nrestart; 	/* maximum number of c.g. restarts */
 	char startfile[MAXFILENAME];

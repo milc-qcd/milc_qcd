@@ -43,9 +43,9 @@ void build_w_prop_hdr(w_prop_header *wph)
 
   /* Copy from values preset in lattice_cl.h */
 
-  wph->n_spins  = n_spins;
-  for(i=0;i<n_spins;i++)
-    wph->spins[i] = spins[i];
+  wph->n_spins  = 4;
+  for(i=0;i<4;i++)
+    wph->spins[i] = i;
 
 } /* build_w_prop_hdr */
 
@@ -57,6 +57,8 @@ void write_appl_w_prop_info(FILE *fp)
 {
   char sums[20];
   Real gauge_fix_tol = GAUGE_FIX_TOL;
+  int n_spins = 4;
+  int spins[4] = {0,1,2,3};
 
   /* Note that the file has already been opened and
      the required magic number, time stamp, and lattice
@@ -126,6 +128,8 @@ char *create_w_QCDML(){
   char end[] = "</info>";
   char sums[20];
   Real gauge_fix_tol = GAUGE_FIX_TOL;
+  int n_spins = 4;
+  int spins[4] = {0,1,2,3};
   
   snprintf(info+bytes, max-bytes,"%s",begin);
   bytes = strlen(info);

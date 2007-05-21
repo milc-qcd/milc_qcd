@@ -11,13 +11,17 @@ u0 1.0
 max_cg_iterations 100
 max_cg_restarts 10
 error_for_propagator .00001
+rel_error_for_propagator .00001
+spectrum_request spectrum,sink_smear
 gaussian
+origin 0 0 0 0
 r0 1.5
+sink_r0 1.5
 reload_serial ../binary_samples/lat.sample.l4444
 coulomb_gauge_fix
 save_serial lat.test.gf
 fresh_wprop
-save_serial_wprop prop.test
+save_serial_fm_sc_wprop prop.test
 serial_scratch_wprop prop.test.scratch
 
 number_of_kappas 1
@@ -27,8 +31,12 @@ u0 1.0
 max_cg_iterations 100
 max_cg_restarts 10
 error_for_propagator .00001
+rel_error_for_propagator .00001
+spectrum_request spectrum,sink_smear
 gaussian
+origin 0 0 0 0
 r0 1.5
+sink_r0 1.5
 reload_serial lat.test.gf
 no_gauge_fix
 forget

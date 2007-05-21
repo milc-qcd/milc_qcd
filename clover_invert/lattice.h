@@ -35,40 +35,9 @@ typedef struct {
 
 	/* wilson complex vectors */
 #ifndef MULTI
- 	wilson_vector psi;	/* solution vector */
- 	wilson_vector chi;	/* source vector */
 #endif
- /* 	wilson_vector p; conjugate gradient change vector:
-				overwrites half the source */
- 	wilson_vector mp;	/* another CG vector */
-	wilson_vector tmp;	/* another temporary CG vector */
- /*	wilson_vector r; residue: overwrites half the source */
-	/* wilson half vector (temporary used in dslash_w_site) */
-	half_wilson_vector htmp[MAXHTMP];
-
-	/* storage for one quark_propagator, for four source spins, three source colors */
-	wilson_propagator quark_propagator;
-
-	/* Storage for 1/3 quark_propagator, for "rotation" */
-	spin_wilson_vector rot_propagator;
-
-  /* extra site members for bicongrad and nondegenerate (HL) cases */
-#ifdef BI
-
-#ifdef HL
-#include "addsite_clhl_bi.h"
-#else
-#include "addsite_clov_bi.h"
-#endif
-
-#else
-
-#ifdef HL
-#include "addsite_clhl_cg.h"
-#endif
-
-#endif
-
+        /* wilson half vector (temporary used in dslash_w_site) */
+        half_wilson_vector htmp[MAXHTMP];
 } site;
 
 /* End definition of site structure */
@@ -85,9 +54,9 @@ typedef struct {
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
-EXTERN	int niter,nrestart,wallflag;
+EXTERN	int niter,nrestart;
 #define MAX_KAP 6
-EXTERN	Real kappa,source_r0,kap[MAX_KAP],resid[MAX_KAP];
+EXTERN	Real kappa,source_r0,kap[MAX_KAP],resid[MAX_KAP],relresid[MAX_KAP];
 EXTERN	Real clov_c,u0;
 EXTERN	int num_kap;		/* max number of kappa's <= MAX_KAP */
 EXTERN	char startfile[MAXFILENAME], savefile[MAXFILENAME];
@@ -107,17 +76,8 @@ EXTERN	int startflag_w[MAX_KAP];  /* beginning wilson:
 EXTERN	int saveflag_w[MAX_KAP];   /* save propagator: SAVE_ASCII, SAVE_BINARY
 				   SAVE_PARALLEL */
 EXTERN	int total_iters;
-
-/* Further source description */
-#ifdef CONTROL
-int n_spins = 4;                /* Number of spins generated */
-int source_loc[4] = {0,0,0,0};  /* Source location */
-int spins[4] = {0,1,2,3};       /* List of spins generated */
-#else
-extern int n_spins;
-extern int source_loc[4];
-extern int spins[4];
-#endif
+EXTERN  char spectrum_request[MAX_SPECTRUM_REQUEST]; /* request list for spectral measurements */
+EXTERN  Real sink_r0;
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
@@ -127,7 +87,7 @@ EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
-EXTERN wilson_quark_source wqs[MAX_KAP];
+EXTERN wilson_quark_source wqs;
 EXTERN wilson_quark_source wqstmp;  /* Temporary */
 
 EXTERN quark_invert_control qic;

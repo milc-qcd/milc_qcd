@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.8  2007/05/21 04:38:11  detar
+//  Reorganize spectrum computation, add QOP support, systematize inverter selection, add relative residue, add new source options
+//
 //  Revision 1.7  2006/11/07 05:28:10  detar
 //  Train error files
 //
@@ -95,8 +98,12 @@ int readin(int prompt) {
   int status,status2;
   char savebuf[128];
   char save_w[128];
-  int i;
-  char descrp[30];
+  int i, source_type;
+  Real source_r0 = 0;
+  int source_loc[4] = { 0,0,0,0 };
+  int source_iters = 0;
+  char source_file[MAXFILENAME] = "";
+  char request_buf[MAX_SPECTRUM_REQUEST];
 
   /* On node zero, read parameters and send to all other nodes */
   if(this_node==0){
@@ -115,6 +122,7 @@ int readin(int prompt) {
     for(i=0;i<MAX_KAP;i++){
       kap[i] = 0.0;
       resid[i] = 0.0;
+      relresid[i] = 0.0;
     }
     
     for(i=0;i<par_buf.num_kap;i++){
@@ -133,29 +141,66 @@ int readin(int prompt) {
     
     /* error for propagator conjugate gradient */
     for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(stdin, prompt,"error_for_propagator", &par_buf.resid[i] );
+      IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
+			    &par_buf.resid[i] );
+      IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
+			    &par_buf.relresid[i] );
     }
+    
+    /* request list for spectral measurments */
+    /* prepend and append a comma for ease in parsing */
+    IF_OK status += get_s(stdin, prompt,"spectrum_request", request_buf );
+    IF_OK strcpy(par_buf.spectrum_request,",");
+    IF_OK strcat(par_buf.spectrum_request,request_buf);
+    IF_OK strcat(par_buf.spectrum_request,",");
     
     /* Get source type */
-    IF_OK status += ask_quark_source(prompt,&wallflag,descrp);
+    IF_OK status += ask_quark_source(prompt,&source_type,
+				     par_buf.wqs.descrp);
+    IF_OK par_buf.wqs.type  = source_type;
 
-    /* width: psi=exp(-(r/r0)^2) */
-    IF_OK if (prompt!=0) 
-      printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
-    for(i=0;i<par_buf.num_kap;i++){
-      IF_OK status += get_f(stdin, prompt,"r0", &par_buf.wqs[i].r0 );
-	/* (Same source type for each spectator) */
-	IF_OK par_buf.wqs[i].type = wallflag;
-	IF_OK strcpy(par_buf.wqs[i].descrp,descrp);
-	/* (Hardwired source location for each spectator) */
-	IF_OK {
-	  par_buf.wqs[i].x0 = source_loc[0];
-	  par_buf.wqs[i].y0 = source_loc[1];
-	  par_buf.wqs[i].z0 = source_loc[2];
-	  par_buf.wqs[i].t0 = source_loc[3];
-	}
+    IF_OK {
+      if ( source_type == GAUSSIAN ){
+	IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+	/* width: psi=exp(-(r/r0)^2) */
+	IF_OK status += get_f(stdin, prompt,"r0", &source_r0 );
+      }
+      else if ( source_type == POINT ){
+	IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+      }
+      else if ( source_type == COVARIANT_GAUSSIAN ){
+	IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+	IF_OK status += get_f(stdin, prompt, "r0", &source_r0);
+	IF_OK status += get_i(stdin, prompt, "source_iters", &source_iters);
+      }
+      else if ( source_type == COMPLEX_FIELD ){
+	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
+	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+      }
+      else if ( source_type == DIRAC_FIELD ){
+	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
+	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+      }
+      else {
+	printf("Source type not supported in this application\n");
+	status++;
+      }
     }
+
+    par_buf.wqs.r0    = source_r0;
+    par_buf.wqs.x0    = source_loc[0];
+    par_buf.wqs.y0    = source_loc[1];
+    par_buf.wqs.z0    = source_loc[2];
+    par_buf.wqs.t0    = source_loc[3];
+    par_buf.wqs.iters = source_iters;
+    strcpy(par_buf.wqs.source_file,source_file);
     
+    /* Additional parameters for spectrum_multimom */
+    if(strstr(par_buf.spectrum_request,",sink_smear,") != NULL){
+      IF_OK status += get_f(stdin, prompt,"sink_r0",
+			    &par_buf.sink_r0 );
+    }
+
     /* find out what kind of starting lattice to use */
     IF_OK status += ask_starting_lattice(stdin,  prompt, &par_buf.startflag,
 	par_buf.startfile );
@@ -240,11 +285,14 @@ int readin(int prompt) {
   num_kap = par_buf.num_kap;
   clov_c = par_buf.clov_c;
   u0 = par_buf.u0;
+  strcpy(spectrum_request,par_buf.spectrum_request);
+  sink_r0 = par_buf.sink_r0;
   for(i=0;i<par_buf.num_kap;i++){
     kap[i] = par_buf.kap[i];
     resid[i] = par_buf.resid[i];
-    wqs[i] = par_buf.wqs[i];
+    relresid[i] = par_buf.relresid[i];
   }
+  wqs = par_buf.wqs;
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);
   for(i=0;i<par_buf.num_kap;i++){
