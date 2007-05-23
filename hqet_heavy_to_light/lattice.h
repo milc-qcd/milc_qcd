@@ -10,6 +10,7 @@
    */
 
 #include "defines.h"
+#include "../include/generic_wilson.h" 
 #include "../include/generic_quark_types.h"
 #include "../include/random.h"
 #include "../include/macros.h"

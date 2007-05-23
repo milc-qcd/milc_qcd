@@ -44,25 +44,6 @@ typedef struct {
   Real mass;
 } dirac_ks_param;
 
-/* Structure defining Wilson (or clover) quark source */
-/* There must be a color and spin member */
-/* Add other members to suit the generic_wilson code 
-   that builds the source.  Ignore the members you don't need. */
-typedef struct {
-  int type;           /* source type for most source builders */
-  char descrp[30];    /* alpha description for most */
-  int color;          /* source color */
-  int spin;           /* source spin  */
-  int wall_cutoff;    /* half size of box for w_source_h */
-  int parity;         /* even or odd sites for w_source_h */
-  Real r0;            /* source size for gaussian, width for gauge invt  */
-  int iters;          /* iterations for gauge invariant source */
-  int x0,y0,z0,t0;    /* source coordinates for most */ 
-  char source_file[MAXFILENAME]; /* file name for some sources */
-  int src_pointer ;   /* smearing function (for the moment, only
-		         clover_finite_p_vary/create_wilson_source.c) */
-} wilson_quark_source;
-
 #endif /* _GENERIC_QUARK_TYPES_H */
 
 

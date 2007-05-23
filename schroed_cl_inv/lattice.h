@@ -6,6 +6,7 @@
    This file defines global scalars and the fields in the lattice. */
 
 #include "defines.h"
+#include "../include/generic_wilson.h" 
 #include "../include/generic_quark_types.h"
 #include "../include/macros.h"	/* For MAXFILENAME, EVENFIRST */
 #include "../include/random.h"	/* For double_prn */

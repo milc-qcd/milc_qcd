@@ -8,6 +8,7 @@
 /** version 4 ==> version 5 port by mcneile ***/
 
 #include "defines.h"
+#include "../include/generic_wilson.h" 
 #include "../include/generic_quark_types.h" /* For wilson_quark_source */
 #include "../include/random.h"  /* For double_prn */
 #include "../include/io_lat.h"    /* For gauge_file */

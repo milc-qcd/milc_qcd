@@ -16,12 +16,36 @@
 /* For various inversion routines.  Not used sytematically yet. CD */
 enum guess_params { START_ZERO_GUESS = 0 ,  START_NONZERO_GUESS } ;  
 
+#define ALL_T_SLICES -1
+
+/* Structure defining Wilson (or clover) quark source */
+/* There must be a color and spin member */
+/* Add other members to suit the generic_wilson code 
+   that builds the source.  Ignore the members you don't need. */
+typedef struct {
+  int type;           /* source type for most source builders */
+  char descrp[30];    /* alpha description for most */
+  int color;          /* source color */
+  int spin;           /* source spin  */
+  int wall_cutoff;    /* half size of box for w_source_h */
+  int parity;         /* even or odd sites for w_source_h */
+  Real r0;            /* source size for gaussian, width for gauge invt  */
+  int iters;          /* iterations for gauge invariant source */
+  int x0,y0,z0,t0;    /* source coordinates for most */ 
+  char source_file[MAXFILENAME]; /* file name for some sources */
+  complex *c_src_ptr; /* Pointer for complex field storage */
+  wilson_vector *wv_src_ptr; /* Pointer for wilson vector field storage */
+  int src_pointer ;   /* smearing function (for the moment, only
+		         clover_finite_p_vary/create_wilson_source.c) */
+} wilson_quark_source;
+
 /* For quark source routines */
 /* The Weyl representation types are included for w_source_h */
 enum source_type { 
   POINT = 1, GAUSSIAN, CUTOFF_GAUSSIAN,
   POINT_WEYL, CUTOFF_GAUSSIAN_WEYL, COVARIANT_GAUSSIAN,
-  COMPLEX_FIELD, DIRAC_FIELD } ;
+  COMPLEX_FIELD_FILE, DIRAC_FIELD_FILE, COMPLEX_FIELD_STORE,
+  DIRAC_FIELD_STORE } ;
 
 /* baryon_cont.c */
 

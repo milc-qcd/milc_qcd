@@ -1,13 +1,14 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice_w.h ********************************/
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.5 2007/05/21 04:56:01 detar Exp $   **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.6 2007/05/23 02:52:08 detar Exp $   **/
 /* include file for MIMD heavy-light, version 4
    This file defines global scalars and the fields in the lattice. */
 
 /** version 4 ==> version 5 port by DeTar ***/
 
 #include "defines.h"
+#include "../include/generic_wilson.h" 
 #include "../include/generic_quark_types.h"  /* For wilson_quark_source */
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/random.h"    /* For double_prn */
