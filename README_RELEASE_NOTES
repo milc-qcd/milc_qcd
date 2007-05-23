@@ -9,7 +9,7 @@ clover_dynamical
 clover_invert
 file_utilities
 gluon_prop
-heafy
+heavy
 ks_hl_spectrum
 ks_imp_dyn
 ks_imp_rhmc
@@ -24,6 +24,11 @@ Build the code with GNU make.  See the README file in this directory
 for general instructions.
 
 Here are highlights of the changes:
+
+For version 7.5.1
+
+  Fix bugs in io_source_w_fm.c and in io_helpers_w.c.
+  Add capability.of reading a sink smearing function.
 
 For version 7.5.0
 
