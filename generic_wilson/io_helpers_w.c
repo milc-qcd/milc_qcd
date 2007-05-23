@@ -906,6 +906,11 @@ int save_wprop_from_site( int flag, char *filename, char *recxml,
 
   case SAVE_SERIAL_FM:
   case SAVE_SERIAL_FM_SC:
+    if(flag == SAVE_SERIAL_FM)
+      wpf = w_serial_w_fm_i(filename);
+    else
+      wpf = w_serial_w_fm_sc_i(filename);
+
     wpf->prop = (wilson_propagator *)malloc(sites_on_node*
 					    sizeof(wilson_propagator));
     wp = wpf->prop;
@@ -925,10 +930,6 @@ int save_wprop_from_site( int flag, char *filename, char *recxml,
 
     /* Write the converted propagator */
     
-    if(flag == SAVE_SERIAL_FM)
-      wpf = w_serial_w_fm_i(filename);
-    else
-      wpf = w_serial_w_fm_sc_i(filename);
     w_serial_w_fm_from_field(wpf, wp);
     w_serial_w_fm_f(wpf);
     break;
@@ -1120,6 +1121,10 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
 
   case SAVE_SERIAL_FM:
   case SAVE_SERIAL_FM_SC:
+    if(flag == SAVE_SERIAL_FM)
+      wpf = w_serial_w_fm_i(filename);
+    else
+      wpf = w_serial_w_fm_sc_i(filename);
     wpf->prop = (wilson_propagator *)malloc(sites_on_node*
 					    sizeof(wilson_propagator));
     wp = wpf->prop;
@@ -1138,10 +1143,6 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
     convert_wprop_milc_to_fnal_field(wp);
 
     /* Write the converted propagator */
-    if(flag == SAVE_SERIAL_FM)
-      wpf = w_serial_w_fm_i(filename);
-    else
-      wpf = w_serial_w_fm_sc_i(filename);
     w_serial_w_fm_from_field(wpf, wp);
     w_serial_w_fm_f(wpf);
     break;

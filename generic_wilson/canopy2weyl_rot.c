@@ -206,7 +206,7 @@ void weyl2canopy(wilson_propagator *src, wilson_propagator *dest)
 
 void bj_to_w_rot(wilson_propagator *src, wilson_propagator *dest)
 {
-  int s0,s1,c0,c1;
+  int s0,c0,c1;
   wilson_propagator qtmp;
   
   for(c0=0;c0<3;c0++)for(c1=0;c1<3;c1++)

@@ -17,18 +17,21 @@ void w_source_field(wilson_vector *src, wilson_quark_source *wqs)
   
   short my_x,my_y,my_z;
   Real rx,ry,rz,radius2;
+  int s0,c0;
 
   /* Unpack structure */
-  int color         = wqs->color;
-  int spin          = wqs->spin;
-  int source_type   = wqs->type;
-  int x0            = wqs->x0; 
-  int y0            = wqs->y0; 
-  int z0            = wqs->z0; 
-  int t0            = wqs->t0;
-  Real r0           = wqs->r0;
-  int iters         = wqs->iters;
-  char *source_file = wqs->source_file;
+  int color                 = wqs->color;
+  int spin                  = wqs->spin;
+  int source_type           = wqs->type;
+  int x0                    = wqs->x0; 
+  int y0                    = wqs->y0; 
+  int z0                    = wqs->z0; 
+  int t0                    = wqs->t0;
+  Real r0                   = wqs->r0;
+  int iters                 = wqs->iters;
+  char *source_file         = wqs->source_file;
+  complex *c_src_ptr        = wqs->c_src_ptr;
+  wilson_vector *wv_src_ptr = wqs->wv_src_ptr;
   
   
 /*printf("WSOURCE: source = %d\n",source_type); */
@@ -77,11 +80,37 @@ void w_source_field(wilson_vector *src, wilson_quark_source *wqs)
       }
       gauss_smear_field(src, r0, iters, t0);
     }
-    else if(source_type == COMPLEX_FIELD){
+    else if(source_type == COMPLEX_FIELD_FILE){
+      /* Load to the specified spin, color and timeslice */
       r_source_w_fm_to_field(source_file, src, spin, color, t0, source_type);
     }
-    else if(source_type == DIRAC_FIELD){
+    else if(source_type == DIRAC_FIELD_FILE){
+      /* Ignore spin, color and load the whole wilson vector from the file */
       r_source_w_fm_to_field(source_file, src, spin, color, t0, source_type);
+    }
+    else if(source_type == COMPLEX_FIELD_STORE){
+      if(c_src_ptr == NULL){
+	printf("w_source: Can't copy from null field\n");
+	terminate(1);
+      }
+      /* Load to the specified spin, color and timeslice */
+      FORALLSITES(i,s){
+	if(t0 == ALL_T_SLICES || s->t == t0)
+	  src[i].d[spin].c[color] = c_src_ptr[i];
+      }
+    }
+    else if(source_type == DIRAC_FIELD_STORE){
+      if(wv_src_ptr == NULL){
+	printf("w_source: Can't copy from null field\n");
+	terminate(1);
+      }
+      /* Ignore spin, color and load the whole wilson vector from storage */
+      FORALLSITES(i,s){
+	if(t0 == ALL_T_SLICES || s->t == t0)
+	  for(s0=0;s0<4;s0++)
+	    for(c0=0;c0<3;c0++)
+	      src[i].d[s0].c[c0] = wv_src_ptr[i].d[s0].c[c0];
+      }
     }
     else {
       node0_printf("w_source: Unrecognized source type %d\n",source_type);
@@ -125,20 +154,19 @@ void w_sink_field(wilson_vector *snk,wilson_quark_source *wqs)
   register int i;
   register site *s; 
   
-  int my_x,my_y,my_z,t0;
+  int my_x,my_y,my_z;
   Real rx,ry,rz,radius2;
-  int color, spin, sink_type;
-  int x0, y0, z0;
-  Real r0;
   
-/*printf("WSINK: sink = %d\n",sink); */
-	
-
   /* Unpack structure.  We don't use member t0 here. */
-  x0 = wqs->x0; y0 = wqs->y0; z0 = wqs->z0;
-  color = wqs->color; spin = wqs->spin;
-  sink_type = wqs->type;
-  r0 = wqs->r0;
+  int color         = wqs->color;
+  int spin          = wqs->spin;
+  int sink_type     = wqs->type;
+  int x0            = wqs->x0; 
+  int y0            = wqs->y0; 
+  int z0            = wqs->z0; 
+  int t0            = wqs->t0;
+  Real r0           = wqs->r0;
+  char *source_file = wqs->source_file;
 
     if(sink_type == POINT) {
 	/* load 1.0 into sink at cooordinates given by sink_coord */
@@ -170,11 +198,21 @@ void w_sink_field(wilson_vector *snk,wilson_quark_source *wqs)
 	      (Real)exp((double)(- radius2));
 	}
     }
-
+    else if(sink_type == COMPLEX_FIELD_FILE){
+      r_source_w_fm_to_field(source_file, snk, spin, color, t0, sink_type);
+    }
+    else if(sink_type == DIRAC_FIELD_FILE){
+      r_source_w_fm_to_field(source_file, snk, spin, color, t0, sink_type);
+    }
+    else {
+      node0_printf("w_sink_field: Unrecognized sink type %d\n",sink_type);
+      terminate(1);
+    }
+    
 } /* w_sink_field */
 
 
-
+/* snk must be type wilson_vector */
 void w_sink_site(field_offset snk, wilson_quark_source *wqs)
 {
   int i;
@@ -267,6 +305,7 @@ void w_sink_scalar(field_offset snk,wilson_quark_source *wqs)
 } /* w_sink_scalar */
 
 
+/* (Also serves as ask_quark_sink) */
 int ask_quark_source( int prompt, int *source_type, char *descrp)
 {
   char savebuf[256];
@@ -292,11 +331,11 @@ int ask_quark_source( int prompt, int *source_type, char *descrp)
     strcpy(descrp,"covariant_gaussian");
   }
   else if(strcmp("complex_field",savebuf) == 0 ) {
-    *source_type = COMPLEX_FIELD;
+    *source_type = COMPLEX_FIELD_FILE;
     strcpy(descrp,"complex_field");
   }
   else if(strcmp("dirac_field",savebuf) == 0 ) {
-    *source_type = DIRAC_FIELD;
+    *source_type = DIRAC_FIELD_FILE;
     strcpy(descrp,"dirac_field");
   }
   else{
