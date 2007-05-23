@@ -156,9 +156,6 @@ int main(int argc, char *argv[])
 		flag = 0;
 	      }
 
-	    /* Conjugate gradient inversion uses site structure
-	       temporaries "tmpb", "chi" */
-
 	    /* Complete the source structure */
 	    wqs.color = color;
 	    wqs.spin = spin;

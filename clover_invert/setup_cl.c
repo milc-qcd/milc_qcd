@@ -11,6 +11,10 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.9  2007/05/23 02:51:09  detar
+//  Support sink wave functions in io_source_w
+//  Move wilson_quark_source to generic_wilson.h
+//
 //  Revision 1.8  2007/05/21 04:38:11  detar
 //  Reorganize spectrum computation, add QOP support, systematize inverter selection, add relative residue, add new source options
 //
@@ -173,11 +177,11 @@ int readin(int prompt) {
 	IF_OK status += get_f(stdin, prompt, "r0", &source_r0);
 	IF_OK status += get_i(stdin, prompt, "source_iters", &source_iters);
       }
-      else if ( source_type == COMPLEX_FIELD ){
+      else if ( source_type == COMPLEX_FIELD_FILE ){
 	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
 	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
       }
-      else if ( source_type == DIRAC_FIELD ){
+      else if ( source_type == DIRAC_FIELD_FILE ){
 	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
 	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
       }

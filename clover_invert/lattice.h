@@ -11,7 +11,7 @@
 */
 
 #include "defines.h"
-#include "../include/generic_quark_types.h"
+#include "../include/wilson_generic.h"
 #include "../include/random.h"   /* For double_prn */
 #include "../include/macros.h"   /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */

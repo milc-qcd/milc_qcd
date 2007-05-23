@@ -8,6 +8,7 @@
 #include "defines.h"
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
+#include "../include/generic_wilson.h" 
 
 /* does NOT use generic_clover routines! */
 typedef struct { complex tr[2][15]; } triangular;
