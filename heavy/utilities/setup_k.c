@@ -3,6 +3,7 @@
 #define IF_OK if(status==0)
 
 #include "w_sum_includes.h"
+#include <string.h>
 
 int setup_k()
 {

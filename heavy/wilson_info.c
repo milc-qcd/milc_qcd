@@ -23,6 +23,7 @@
    write_appl_w_prop_info  Writes supplementary information to the info file */
 
 #include "w_heavy_includes.h"
+#include <string.h>
 
 /*---------------------------------------------------------------------------*/
 
