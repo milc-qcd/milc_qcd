@@ -118,28 +118,26 @@ endif
 
 # Selection of a non-QDP FN Dslash 
 # Choices are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
-DSLASH_FN = dslash_fn2.o
+DSLASH_FN = dslash_fn_dblstore.o
 
 # Selection of the fermion links algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  FLINKS_FN = fermion_links_asqtad_qop.o fermion_links_asqtad_qop_D.o \
-     fermion_links_asqtad_qop_F.o
-  FLINKS_FN += ${FLINKS_FNQOP}
+  FLINKS_FN = ${FLINKS_FNQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    FLINKS_FN = fermion_links_asqtad_qdp.o
+    FLINKS_FN = fermion_links_asqtad_qdp.o fermion_links_helpers.o
   else
-    FLINKS_FN = fermion_links_fn.o
+    FLINKS_FN = fermion_links_fn.o fermion_links_helpers.o
   endif
 endif
-FLINKS_FN += fermion_links_helpers.o
 
 # Selection of the gauge force algorithm
 ifeq ($(strip ${HAVEQOP}),true)
 # Interface to access QOP
-  SYMZK1FORCE = gauge_force_symzk1_qop.o
-  SYMZK1FORCE += ${SYMZK1FORCEQOP}
+#  SYMZK1FORCE = gauge_force_symzk1_qop.o
+#  SYMZK1FORCE += ${SYMZK1FORCEQOP}
+    SYMZK1FORCE = gauge_force_imp.o
 else
   ifeq ($(strip ${HAVEQDP}),true)
     SYMZK1FORCE = gauge_force_symzk1_qdp.o
@@ -157,10 +155,11 @@ ifeq ($(strip ${HAVEQOP}),true)
   CONGRAD_FN += ${ASQINVERTQOP}
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o d_congrad_opt.o
 #    Here you may use the fn_qdp set or the fn_1sum_qdp set
-#    CONGRAD_FN += d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o 
-    CONGRAD_FN += d_congrad5_fn_1sum_qdp_D.o d_congrad5_fn_1sum_qdp_F.o
+#    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
+#       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
+       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
   else
     # Choose a non_QDP FN conjugate gradient algorithm
     CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
@@ -226,7 +225,7 @@ ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
 
 # Generic QOP objects
 ifeq ($(strip ${HAVEQOP}),true)
-  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o milc_to_qop_utilities.o
+  ADD_OBJECTS += ${GENERICQOP}
 endif
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
