@@ -91,7 +91,8 @@ int wilson_invert_field_wqs( /* Return value is number of iterations taken */
 	printf(" OK converged size_r= %.2g rel = %.2g iters= %d\n",
 	       qic->size_r, qic->size_relr, tot_iters);
     }
-  
+
+  free(src);
   return tot_iters;
 } /* wilson_invert_field_wqs */
 
