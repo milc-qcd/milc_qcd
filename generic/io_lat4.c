@@ -479,8 +479,8 @@ void w_serial(gauge_file *gf)
 	}
 	/* Node 0 sends a few bytes to newnode as a clear to send signal */
 	if(newnode != currentnode){
-	  if( this_node==0 && newnode!=0 )send_field((char *)tbuf,4,newnode);
-	  if( this_node==newnode && newnode!=0 )get_field((char *)tbuf,4,0);
+	  if( this_node==0 && newnode!=0 )send_field((char *)tbuf,8,newnode);
+	  if( this_node==newnode && newnode!=0 )get_field((char *)tbuf,8,0);
 	  currentnode=newnode;
 	}
       } /* currentnode != newnode */
