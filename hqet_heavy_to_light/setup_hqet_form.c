@@ -1,7 +1,7 @@
 /******** setup_hqet_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.3 2006/11/04 23:51:38 detar Exp $   ****/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.4 2007/06/01 22:59:11 detar Exp $   ****/
 /* MIMD code version 4 */
 
 #include "hqet_light_includes.h"
@@ -169,7 +169,7 @@ int readin(int prompt)
 			    &par_buf.resid_spectator );
       
       /* Get source type */
-      IF_OK status += ask_quark_source(prompt,&wallflag,descrp);
+      IF_OK status += ask_quark_source( stdin, prompt, &wallflag, descrp);
       
       /*** Load in the SPECTATOR kappa values ****/
       /**** MORE WORK :: this loop should count the kappa values ***/
@@ -206,7 +206,7 @@ int readin(int prompt)
       IF_OK {
 	for(i=0;i< par_buf.no_spectator ;i++)
 	  {
-	    IF_OK status += ask_starting_wprop( prompt,
+	    IF_OK status += ask_starting_wprop(stdin, prompt,
 					       &par_buf.startflag_spectator[i],
 					       par_buf.qfile_spectator[i] );
 	  }
@@ -232,7 +232,7 @@ int readin(int prompt)
 			    &par_buf.resid_zonked );
       
       /* Get source type */
-      IF_OK status += ask_quark_source(prompt,&wallflag,descrp);
+      IF_OK status += ask_quark_source( stdin, prompt, &wallflag, descrp);
 
       /*** Load in the zonked light kappa values ****/
       /**** MORE WORK :: this loop should count the kappa values ***/
@@ -268,7 +268,7 @@ int readin(int prompt)
       IF_OK {
 	for(i=0;i< par_buf.no_zonked_light ;i++)
 	  {    	
-	    IF_OK status += ask_starting_wprop(prompt,
+	    IF_OK status += ask_starting_wprop(stdin, prompt,
 					      &par_buf.startflag_zonked[i],
 					      par_buf.qfile_zonked[i]);
 	  }

@@ -155,7 +155,8 @@ int readin(int prompt)
 
     /* Source type */
     IF_OK 
-      status += ask_quark_source(prompt,&par_buf.wqs.type,par_buf.wqs.descrp);
+      status += ask_quark_source( stdin, prompt, &par_buf.wqs.type,
+				  par_buf.wqs.descrp);
 
     IF_OK if(par_buf.wqs.type != POINT_WEYL 
        && par_buf.wqs.type != CUTOFF_GAUSSIAN_WEYL)
@@ -299,11 +300,11 @@ int readin(int prompt)
     for (i = 0; i < par_buf.nkap; i++)
     {
 
-      IF_OK status += ask_starting_wprop( prompt,&par_buf.startflag_w[i],
-				      par_buf.startfile_w[i]);
+      IF_OK status += ask_starting_wprop(stdin, prompt,&par_buf.startflag_w[i],
+					 par_buf.startfile_w[i]);
 
-      IF_OK status += ask_ending_wprop( prompt,&par_buf.saveflag_w[i],
-				      par_buf.savefile_w[i]);
+      IF_OK status += ask_ending_wprop(stdin, prompt,&par_buf.saveflag_w[i],
+				       par_buf.savefile_w[i]);
 
       IF_OK 
       {

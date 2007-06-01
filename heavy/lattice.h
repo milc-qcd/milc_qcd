@@ -2,7 +2,7 @@
 #define _LATTICE_H
 /****************************** lattice_w.h ********************************/
 
-/* include file for MIMD version 6
+/* include file for MIMD version 7
    This file defines global scalars and the fields in the lattice. */
 
 /** version 4 ==> version 5 port by mcneile ***/

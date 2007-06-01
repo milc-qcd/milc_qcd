@@ -128,7 +128,7 @@ int readin(int prompt) {
     }
     
     /* Get source type */
-    IF_OK status += ask_quark_source(prompt,&wallflag,descrp);
+    IF_OK status += ask_quark_source(stdin,prompt,&wallflag,descrp);
     
     /* width: psi=exp(-(r/r0)^2) */
     IF_OK if (prompt!=0)
@@ -175,12 +175,12 @@ int readin(int prompt) {
     
     /* find out starting propagator */
     IF_OK for(i=0;i<par_buf.num_masses;i++)
-      status += ask_starting_wprop( prompt,&par_buf.startflag_w[i],
+      status += ask_starting_wprop( stdin, prompt,&par_buf.startflag_w[i],
 			par_buf.startfile_w[i]);
     
     /* what to do with computed propagator */
     IF_OK for(i=0;i<par_buf.num_masses;i++)
-      status += ask_ending_wprop( prompt,&par_buf.saveflag_w[i],
+      status += ask_ending_wprop( stdin, prompt,&par_buf.saveflag_w[i],
 		      par_buf.savefile_w[i]);
     IF_OK if(prompt!=0)
       printf("propagator scratch file:\n enter 'serial_scratch_wprop' or 'parallel_scratch_wprop'\n");
