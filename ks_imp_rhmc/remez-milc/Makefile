@@ -1,11 +1,13 @@
 CC = gcc
 CXX = g++
-LDFLAGS =  -L$(HOME)/gmp/lib -lmpfr -lgmp 
+LDFLAGS = -L$(HOME)/gmp/lib -lmpfr -lgmp -Wl,--rpath,/usr/local/lib64
 
 INCLIST = -I$(HOME)/gmp/include
 
+OBJS = alg_remez.o poly4.o main.o poly4_sqrt.o
+
 CFLAGS=  -O3
-CXXFLAGS=  -O3 -g
+CXXFLAGS=  -O3
 DFLAGS +=  -DGMP
 
 #  targets
@@ -22,8 +24,10 @@ poly4_sqrt:	poly4_sqrt.o alg_remez.o
 .SUFFIXES:
 .SUFFIXES:  .o .C .c
 
-$(BIN):  $(OBJS) 
+$(BIN):  $(OBJS)
 	$(CXX) $(OBJS) $(LDFLAGS) -o $(BIN)
+
+${OBJS}: Makefile
 
 .c.o:
 	$(CC) -o $@ $(CFLAGS) $(DFLAGS) -c $(INCLIST) $<
