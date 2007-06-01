@@ -1,7 +1,7 @@
 /************************ generic_clover_includes.h *********************
 *									*
 *  This header is included in all codes in this directory               *
-*  MIMD version 6 							*
+*  MIMD version 7 							*
 *									*
 */
 #include "../include/config.h"  /* Keep this first */
