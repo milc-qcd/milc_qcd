@@ -13,10 +13,10 @@ G_WILSON_ALL =  \
     bj_to_weyl.o \
     boundary_flip.o \
     canopy2weyl_rot.o \
-    d_w_meson.o \
     dslash_lean2.o \
     dslash_lean_forwards.o \
     dslash_w_space.o \
+    gammas.o \
     gauss_smear_w.o \
     io_helpers_w.o \
     io_scidac_w.o \
@@ -27,6 +27,7 @@ G_WILSON_ALL =  \
     w_baryon.o \
     w_baryon_hl.o \
     w_meson.o \
+    w_meson_mom.o \
     w_source.o \
     w_source_h.o \
     wilson_invert.o
@@ -60,8 +61,6 @@ boundary_flip.o: ../generic_wilson/boundary_flip.c
 	${CC} -c ${CFLAGS} $<
 canopy2weyl_rot.o: ../generic_wilson/canopy2weyl_rot.c
 	${CC} -c ${CFLAGS} $<
-d_w_meson.o: ../generic_wilson/d_w_meson.c
-	${CC} -c ${CFLAGS} $<
 dslash_lean2.o: ../generic_wilson/dslash_lean2.c
 	${CC} -c ${CFLAGS} $<
 dslash_lean_forwards.o: ../generic_wilson/dslash_lean_forwards.c
@@ -69,6 +68,8 @@ dslash_lean_forwards.o: ../generic_wilson/dslash_lean_forwards.c
 dslash_w_space.o: ../generic_wilson/dslash_w_space.c
 	${CC} -c ${CFLAGS} $<
 dslash_w3.o: ../generic_wilson/dslash_w3.c
+	${CC} -c ${CFLAGS} $<
+gammas.o: ../generic_wilson/gammas.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_w.o: ../generic_wilson/gauss_smear_w.c
 	${CC} -c ${CFLAGS} $<
@@ -91,6 +92,8 @@ w_baryon.o: ../generic_wilson/w_baryon.c
 w_baryon_hl.o: ../generic_wilson/w_baryon_hl.c
 	${CC} -c ${CFLAGS} $<
 w_meson.o: ../generic_wilson/w_meson.c
+	${CC} -c ${CFLAGS} $<
+w_meson_mom.o: ../generic_wilson/w_meson_mom.c
 	${CC} -c ${CFLAGS} $<
 w_source.o: ../generic_wilson/w_source.c
 	${CC} -c ${CFLAGS} $<

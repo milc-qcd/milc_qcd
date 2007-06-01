@@ -420,16 +420,19 @@ int reload_wprop_to_site( int flag, char *filename,
 	/* In this format we have three records, one for each
 	   source color.  So one spin_wilson_vector field per record */
 	QIO_Layout layout;
+	QIO_Filesystem fs;
 	QIO_Reader *infile;
 	
 	build_qio_layout(&layout);
+	build_qio_filesystem(&fs);
+
 	if(flag == RELOAD_SERIAL){
 	  node0_printf("Reading serially as a SciDAC Wilson prop file\n");
-	  infile = open_scidac_input(filename, &layout, QIO_SERIAL);
+	  infile = open_scidac_input(filename, &layout, &fs, QIO_SERIAL);
 	}
 	else{
 	  node0_printf("Reading in parallel as a SciDAC Wilson prop file\n");
-	  infile = open_scidac_input(filename, &layout, QIO_PARALLEL);
+	  infile = open_scidac_input(filename, &layout, &fs, QIO_PARALLEL);
 	}
 
 	if(infile == NULL)return 1;
@@ -610,16 +613,18 @@ int reload_wprop_to_field( int flag, char *filename,
 	/* In this format we have three records, one for each
 	   source color.  So one spin_wilson_vector field per record */
 	QIO_Layout layout;
+	QIO_Filesystem fs;
 	QIO_Reader *infile;
 
 	build_qio_layout(&layout);
+	build_qio_filesystem(&fs);
 	if(flag == RELOAD_SERIAL){
 	  node0_printf("Reading serially as a SciDAC Wilson prop file\n");
-	  infile = open_scidac_input(filename, &layout, QIO_SERIAL);
+	  infile = open_scidac_input(filename, &layout, &fs, QIO_SERIAL);
 	}
 	else{
 	  node0_printf("Reading in parallel as a SciDAC Wilson prop file\n");
-	  infile = open_scidac_input(filename, &layout, QIO_PARALLEL);
+	  infile = open_scidac_input(filename, &layout, &fs, QIO_PARALLEL);
 	}
 
 	if(infile == NULL)return 1;
@@ -940,9 +945,11 @@ int save_wprop_from_site( int flag, char *filename, char *recxml,
 #ifdef HAVE_QIO
     {
       QIO_Layout layout;
+      QIO_Filesystem fs;
       QIO_Writer *outfile;
 
       build_qio_layout(&layout);
+      build_qio_filesystem(&fs);
       /* In this format we have three records, one for each
 	 source color.  So one spin_wilson_vector field per record */
       if(flag == SAVE_SERIAL_SCIDAC)volfmt = QIO_SINGLEFILE;
@@ -951,13 +958,15 @@ int save_wprop_from_site( int flag, char *filename, char *recxml,
       else if(flag == SAVE_MULTIFILE_SCIDAC)volfmt = QIO_MULTIFILE;
 
       build_qio_layout(&layout);
+      build_qio_filesystem(&fs);
       if(flag == SAVE_PARALLEL_SCIDAC)
 	outfile = open_scidac_output(filename, volfmt, QIO_PARALLEL, 
-				     QIO_ILDGNO, NULL, &layout, 
+				     QIO_ILDGNO, NULL, &layout, &fs,
 				     "MILC Wilson propagator");
       else
 	outfile = open_scidac_output(filename, volfmt, QIO_SERIAL, QIO_ILDGNO,
-				     NULL, &layout, "MILC Wilson propagator");
+				     NULL, &layout, &fs, 
+				     "MILC Wilson propagator");
 
       if(outfile == NULL)break;
 
@@ -1153,9 +1162,11 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
 #ifdef HAVE_QIO
     {
       QIO_Layout layout;
+      QIO_Filesystem fs;
       QIO_Writer *outfile;
 
       build_qio_layout(&layout);
+      build_qio_filesystem(&fs);
       /* In this format we have three records, one for each
 	 source color.  So one spin_wilson_vector field per record */
       if(flag == SAVE_SERIAL_SCIDAC)volfmt = QIO_SINGLEFILE;
@@ -1164,13 +1175,14 @@ int save_wprop_from_field( int flag, char *filename, char *recxml,
       else if(flag == SAVE_MULTIFILE_SCIDAC)volfmt = QIO_MULTIFILE;
 
       build_qio_layout(&layout);
+      build_qio_filesystem(&fs);
       if(flag == SAVE_PARALLEL_SCIDAC)
 	outfile = open_scidac_output(filename, volfmt, QIO_PARALLEL, 
-				     QIO_ILDGNO, NULL, &layout, 
+				     QIO_ILDGNO, NULL, &layout, &fs,
 				     "MILC Wilson propagator");
       else
 	outfile = open_scidac_output(filename, volfmt, QIO_SERIAL, 
-				     QIO_ILDGNO, NULL, &layout, 
+				     QIO_ILDGNO, NULL, &layout, &fs,
 				     "MILC Wilson propagator");
       if(outfile == NULL)break;
 
@@ -1340,9 +1352,10 @@ void w_close_wprop(int flag, w_prop_file *wpf)
    and propagator name if necessary.  This routine is only 
    called by node 0.
    */
-int ask_starting_wprop( int prompt, int *flag, char *filename ){
-  char savebuf[256];
+int ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename ){
+  char *savebuf;
   int status;
+  char myname[] = "ask_starting_wprop";
   
   if (prompt!=0) {
     printf("loading wilson propagator:\n enter 'fresh_wprop', ");
@@ -1350,15 +1363,9 @@ int ask_starting_wprop( int prompt, int *flag, char *filename ){
     printf("'reload_serial_wprop', 'reload_parallel_wprop', ");
     printf("or 'reload_multidump_wprop'\n");
   }
-  status=scanf("%s",savebuf);
-  if (status == EOF){
-    printf("ask_starting_wprop: EOF on STDIN.\n");
-    return(1);
-  }
-  if(status !=1) {
-        printf("\nask_starting_wprop: ERROR IN INPUT: can't read starting wprop command\n");
-    return(1);
-  }
+
+  savebuf = get_next_tag(fp, "read wprop command", myname);
+  if (savebuf == NULL)return 1;
 
   printf("%s ",savebuf);
   if(strcmp("fresh_wprop",savebuf) == 0 ){
@@ -1390,7 +1397,8 @@ int ask_starting_wprop( int prompt, int *flag, char *filename ){
     if(prompt!=0)printf("enter name of file containing props\n");
     status=scanf("%s",filename);
     if(status !=1) {
-      printf("\nask_starting wprop: ERROR IN INPUT: Can't read file name.\n");
+      printf("\n%s(%d): ERROR IN INPUT: Can't read file name.\n",
+	     myname, this_node);
       return(1);
     }
     printf("%s\n",filename);
@@ -1402,9 +1410,10 @@ int ask_starting_wprop( int prompt, int *flag, char *filename ){
 /* find out what do to with propagator at end, and propagator name if
    necessary.  This routine is only called by node 0.
    */
-int ask_ending_wprop( int prompt, int *flag, char *filename ){
-  char savebuf[256];
+int ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
+  char *savebuf;
   int status;
+  char myname[] = "ask_ending_wprop";
   
   if (prompt!=0) {
     printf("save wilson propagator:\n enter ");
@@ -1415,16 +1424,10 @@ int ask_ending_wprop( int prompt, int *flag, char *filename ){
     printf("'save_parallel_wprop', 'save_multidump_wprop', ");
     printf("or 'save_checkpoint_wprop'\n");
   }
-  status=scanf("%s",savebuf);
-  if (status == EOF){
-    printf("ask_starting_wprop: EOF on STDIN.\n");
-    return(1);
-  }
-  if(status !=1) {
-    printf("\nask_ending_wprop: ERROR IN INPUT: Can't read ending wprop command\n");
-    return(1);
-  }
-  
+
+  savebuf = get_next_tag(fp, "write wprop command", myname);
+  if (savebuf == NULL)return 1;
+
   printf("%s ",savebuf);
   if(strcmp("save_ascii_wprop",savebuf) == 0 )  {
     *flag=SAVE_ASCII;
@@ -1472,7 +1475,9 @@ int ask_ending_wprop( int prompt, int *flag, char *filename ){
     if(prompt!=0)printf("enter filename\n");
     status=scanf("%s",filename);
     if(status !=1){
-      printf("\nask_ending_wprop. ERROR IN INPUT. Can't read filename\n"); return(1);
+      printf("\n%s(%d). ERROR IN INPUT. Can't read filename\n",
+	     myname, this_node); 
+      return(1);
     }
     printf("%s\n",filename);
   }

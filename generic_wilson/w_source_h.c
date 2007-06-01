@@ -158,18 +158,18 @@ void w_source_h(field_offset src,wilson_quark_source *wqs)
   
 } /* w_source_h */
 
-int ask_quark_source( int prompt, int *source_type, char *descrp)
+int ask_quark_source( FILE *fp, int prompt, int *source_type, char *descrp)
 {
-  char savebuf[256];
+  char *savebuf;
   int status;
   
   if (prompt!=0)
     printf("enter 'point', 'cutoff_gaussian', 'point_weyl', 'cutoff_gaussian_weyl' for source type\n");
-  status = scanf("%s",savebuf);
-  if(status !=1) {
-    printf("ask_quark_source: ERROR IN INPUT: source type command\n");
-    return 1;
-  }
+
+  savebuf = get_next_tag(fp, "quark source command", myname);
+  if (savebuf == NULL)return 1;
+
+  printf("%s ",savebuf);
   if(strcmp("point",savebuf) == 0 ){
     *source_type = POINT;
     strcpy(descrp,"point");
@@ -187,7 +187,8 @@ int ask_quark_source( int prompt, int *source_type, char *descrp)
     strcpy(descrp,"cutoff_gaussian_weyl");
   }
   else{
-    printf("ask_source: ERROR IN INPUT: source command is invalid\n"); 
+    printf("%s(%d): ERROR IN INPUT: source command is invalid\n",
+	   myname, this_node); 
     return 1;
   }
 

@@ -305,19 +305,17 @@ void w_sink_scalar(field_offset snk,wilson_quark_source *wqs)
 } /* w_sink_scalar */
 
 
-/* (Also serves as ask_quark_sink) */
-int ask_quark_source( int prompt, int *source_type, char *descrp)
+int ask_quark_source( FILE *fp, int prompt, int *source_type, char *descrp)
 {
-  char savebuf[256];
-  int status;
+  char *savebuf;
+  char myname[] = "ask_quark_source";
 
   if (prompt!=0)
     printf("enter 'point', 'gaussian', 'covariant_gaussian', 'complex_field', 'dirac_field' for source type\n");
-  status = scanf("%s",savebuf);
-  if(status !=1) {
-    printf("ask_quark_source: ERROR IN INPUT: source type command\n");
-    return 1;
-  }
+
+  savebuf = get_next_tag(fp, "quark source command", myname);
+  if (savebuf == NULL)return 1;
+
   if(strcmp("point",savebuf) == 0 ){
     *source_type = POINT;
     strcpy(descrp,"point");
@@ -347,4 +345,100 @@ int ask_quark_source( int prompt, int *source_type, char *descrp)
   printf("%s\n",savebuf);
   return 0;
 } /* ask_quark_source */
+
+#define IF_OK if(status==0)
+
+int get_quark_source(FILE *fp, int prompt, wilson_quark_source *wqs){
+
+  Real source_r0 = 0;
+  int  source_type;
+  int  source_loc[4] = { 0,0,0,0 };
+  int  source_iters = 0;
+  char source_file[MAXFILENAME] = "";
+  int  status = 0;
+
+  /* Get antiquark source type */
+  IF_OK status += ask_quark_source(fp, prompt,&source_type,
+				   wqs->descrp);
+  IF_OK wqs->type  = source_type;
+  
+  IF_OK {
+    if ( source_type == GAUSSIAN ){
+      IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+      /* width: psi=exp(-(r/r0)^2) */
+	IF_OK status += get_f(stdin, prompt,"r0", &source_r0 );
+      }
+      else if ( source_type == POINT ){
+	IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+      }
+      else if ( source_type == COVARIANT_GAUSSIAN ){
+	IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+	IF_OK status += get_f(stdin, prompt, "r0", &source_r0);
+	IF_OK status += get_i(stdin, prompt, "source_iters", &source_iters);
+      }
+      else if ( source_type == COMPLEX_FIELD_FILE ){
+	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
+	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+      }
+      else if ( source_type == DIRAC_FIELD_FILE ){
+	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
+	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+      }
+      else {
+	printf("Source type not supported in this application\n");
+	status++;
+      }
+    }
+    
+    wqs->r0    = source_r0;
+    wqs->x0    = source_loc[0];
+    wqs->y0    = source_loc[1];
+    wqs->z0    = source_loc[2];
+    wqs->t0    = source_loc[3];
+    wqs->iters = source_iters;
+    strcpy(wqs->source_file,source_file);
+
+    return status;
+} /* get_quark_source */
+
+int get_quark_sink(FILE *fp, int prompt, wilson_quark_source *wqs){
+
+  Real sink_r0 = 0;
+  int  sink_type;
+  int  sink_loc[3] = { 0,0,0 };
+  char sink_file[MAXFILENAME] = "";
+  int  status = 0;
+
+  /* Get antiquark source type */
+  IF_OK status += ask_quark_source(fp, prompt,&sink_type,
+				   wqs->descrp);
+  IF_OK wqs->type  = sink_type;
+  
+  IF_OK {
+    if ( sink_type == GAUSSIAN ){
+      IF_OK status += get_vi(stdin, prompt, "origin", sink_loc, 3);
+      /* width: psi=exp(-(r/r0)^2) */
+	IF_OK status += get_f(stdin, prompt,"r0", &sink_r0 );
+      }
+      else if ( sink_type == POINT ){
+	IF_OK status += get_vi(stdin, prompt, "origin", sink_loc, 3);
+      }
+      else if ( sink_type == COMPLEX_FIELD_FILE ){
+	IF_OK status += get_s(stdin, prompt, "load_source", sink_file);
+      }
+      else {
+	printf("Sink type not supported in this application\n");
+	status++;
+      }
+    }
+    
+    wqs->r0    = sink_r0;
+    wqs->x0    = sink_loc[0];
+    wqs->y0    = sink_loc[1];
+    wqs->z0    = sink_loc[2];
+    wqs->t0    = ALL_T_SLICES;
+    strcpy(wqs->source_file,sink_file);
+
+    return status;
+} /* get_quark_sink */
 
