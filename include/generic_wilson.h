@@ -8,10 +8,11 @@
 *									*
 */
 
-#include "../include/su3.h"
 #include "../include/comdefs.h"
-#include "../include/macros.h"
+#include "../include/gammatypes.h"
 #include "../include/generic_quark_types.h"
+#include "../include/macros.h"
+#include "../include/su3.h"
 
 /* For various inversion routines.  Not used sytematically yet. CD */
 enum guess_params { START_ZERO_GUESS = 0 ,  START_NONZERO_GUESS } ;  
@@ -70,6 +71,14 @@ void convert_wprop_fnal_to_milc_field(wilson_propagator *wprop);
 void convert_wprop_milc_to_fnal_site(field_offset wprop);
 void convert_wprop_milc_to_fnal_field(wilson_propagator *wprop);
 
+/* gammas.c */
+void mult_sw_by_gamma_l(spin_wilson_vector * src,spin_wilson_vector * dest, int dir);
+
+void mult_sw_by_gamma_r(spin_wilson_vector * src,spin_wilson_vector * dest, int dir);
+gamma_matrix_t gamma_mat(enum gammatype i);
+int gamma_index(char *label);
+
+
 /* gauss_smear_w.c */
 void gauss_smear_field(wilson_vector *src, Real width, int iters, int t0);
 void gauss_smear_site(field_offset src, Real width, int iters, int t0);
@@ -83,12 +92,14 @@ void meson_cont_field(spin_wilson_vector *src1, spin_wilson_vector *src2,
 		complex *prop);
 
 /* w_source.c */
+int ask_quark_source( FILE *fp, int prompt, int *type, char *descrp );
+int get_quark_source( FILE *fp, int prompt, wilson_quark_source *wqs );
+int get_quark_sink( FILE *fp, int prompt, wilson_quark_source *wqs );
 void w_source_site(field_offset src,wilson_quark_source *wqs);
 void w_source_field(wilson_vector *src,wilson_quark_source *wqs);
 void w_sink_site(field_offset snk, wilson_quark_source *wqs);
 void w_sink_field(wilson_vector *snk, wilson_quark_source *wqs);
 void w_sink_scalar(field_offset snk,wilson_quark_source *wqs);
-int ask_quark_source( int prompt, int *type, char *descrp );
 
 /* w_source_h.c (also has an ask_quark_source) */
 Real *make_template(Real gamma, int cutoff);
@@ -159,6 +170,22 @@ int wilson_invert_field_wqs( /* Return value is number of iterations taken */
 void w_meson_site(field_offset src1,field_offset src2,complex *prop[10]);
 void w_meson_field(spin_wilson_vector *src1, spin_wilson_vector *src2,
 		   complex *prop[10]);
+
+/* w_meson_mom.c */
+void meson_cont_mom(
+  complex ***prop,        /* where result is stored */
+  spin_wilson_vector *src1, /* quark propagator */
+  spin_wilson_vector *src2, /* quark propagator */
+  int no_q_momenta,       /* number of q values */
+  int q_momstore[][3],   /* q values themselves */
+  int no_gamma_corr,     /* number of meson types */
+  int meson_index[],     /* where in prop the propagator is accumulated */
+  
+  int gin[],              /* Gamma matrix type for source */
+  int gout[],             /* Gamma matrix type for sink */
+  complex meson_phase[]   /* phase factor to apply to correlator */
+		    );
+complex decode_phase(char *label);
 
 /* w_baryon.c */
 void w_baryon(wilson_prop_field src1,wilson_prop_field src2,

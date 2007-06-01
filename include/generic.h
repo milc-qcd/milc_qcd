@@ -154,16 +154,20 @@ int ask_ending_lattice( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN);
 void coldlat();
 void funnylat();
+int get_check_tag(FILE *fp, char *tag, char *myname);
 int get_f( FILE *fp, int prompt, char *variable_name_string, Real *value );
 int get_i( FILE *fp, int prompt, char *variable_name_string, int *value );
+char *get_next_tag(FILE *fp, char *tag, char *myname);
 int get_vi( FILE *fp, int prompt, char *variable_name_string, 
 	    int *value, int nvalues );
 int get_vf( FILE *fp, int prompt, char *variable_name_string, 
 	    Real *value, int nvalues );
 int get_s( FILE *fp, int prompt, char *variable_name_string, char *value );
+int get_sn( FILE *fp, int prompt, char *variable_name_string, char *value );
 int get_prompt( FILE *fp, int *value );
 
 /* layout_*.c */
+int io_node(const int node);
 void setup_layout( void );
 int node_number(int x,int y,int z,int t);
 int node_index(int x,int y,int z,int t);
