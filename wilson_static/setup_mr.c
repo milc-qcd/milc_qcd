@@ -1,6 +1,6 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.5 2007/05/21 04:56:03 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.6 2007/06/01 23:04:42 detar Exp $  ***/
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
@@ -174,7 +174,8 @@ int readin(int prompt)
 
     /* Source type */
     IF_OK 
-      status += ask_quark_source(prompt,&par_buf.wqs.type,par_buf.wqs.descrp);
+      status += ask_quark_source(stdin, prompt, 
+				 &par_buf.wqs.type,par_buf.wqs.descrp);
 
     IF_OK if(par_buf.wqs.type != POINT_WEYL 
        && par_buf.wqs.type != CUTOFF_GAUSSIAN_WEYL)
@@ -427,11 +428,12 @@ int readin(int prompt)
     for (i = 0; i < par_buf.nkap; i++)
     {
 
-      IF_OK status += ask_starting_wprop( prompt,&par_buf.startflag_w[i],
-				      par_buf.startfile_w[i]);
+      IF_OK status += ask_starting_wprop( stdin, prompt,
+					  &par_buf.startflag_w[i],
+					  par_buf.startfile_w[i]);
 
-      IF_OK status += ask_ending_wprop( prompt,&par_buf.saveflag_w[i],
-				      par_buf.savefile_w[i]);
+      IF_OK status += ask_ending_wprop( stdin, prompt,&par_buf.saveflag_w[i],
+					par_buf.savefile_w[i]);
 
       IF_OK 
       {

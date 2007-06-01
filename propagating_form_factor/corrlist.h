@@ -5,6 +5,12 @@
 /* Two-point correlators computed in this code */
 /* First gamma is sink.  Second is source.  */
 
+typedef struct {
+  int gin;         /* Source gamma matrix */
+  int gout;        /* Sink gamma matrix */
+  int oper;        /* Operator identification */
+} gamma_corr;
+
 #define MAX_TWOPT 13
 static gamma_corr two_pt[MAX_TWOPT] = {
  { G5,   G5,   G5_G5     },

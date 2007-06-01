@@ -1,7 +1,7 @@
 /******** setup_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.3 2006/11/04 23:52:23 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.4 2007/06/01 23:04:03 detar Exp $  ***/
 /* MIMD code version 4 */
 
 #include "prop_form_includes.h"
@@ -256,7 +256,7 @@ int readin(int prompt)
       }
       
       /* Get source type */
-      IF_OK status += ask_quark_source(prompt,&wallflag,descrp);
+      IF_OK status += ask_quark_source( stdin, prompt, &wallflag,descrp);
       
       /* Load in the source widths and names of the files for the
        *   spectator propagators */
@@ -283,7 +283,7 @@ int readin(int prompt)
       IF_OK {
 	for(i=0;i< par_buf.no_spectator ;i++)
 	  {
-	    IF_OK status += ask_starting_wprop(prompt,
+	    IF_OK status += ask_starting_wprop(stdin, prompt,
 					      &par_buf.startflag_spectator[i],
 					      par_buf.qfile_spectator[i]);
 	  } /****** end of loop over spectator kappa values ******/
@@ -329,7 +329,7 @@ int readin(int prompt)
       }
 
       /* Get source type */
-      IF_OK status += ask_quark_source(prompt,&wallflag,descrp);
+      IF_OK status += ask_quark_source( stdin, prompt, &wallflag, descrp);
 
       /* Load in the source widths and names of the files for the
        *   zonked propagators */
@@ -346,7 +346,7 @@ int readin(int prompt)
       IF_OK {
 	for(i=0;i< par_buf.no_zonked_light ;i++)
 	  {
-	    IF_OK status += ask_starting_wprop(prompt,
+	    IF_OK status += ask_starting_wprop(stdin, prompt,
 				       &par_buf.startflag_zonked_light[i],
 				       par_buf.qfile_zonked_light[i]);
 
@@ -358,7 +358,7 @@ int readin(int prompt)
       }
 
       /*** load the save flag for zonked light sink-smeared quarks ***/
-      IF_OK status += ask_ending_wprop(prompt,
+      IF_OK status += ask_ending_wprop(stdin, prompt,
 				       &par_buf.saveflag_zonked_light_ssink,
 				       par_buf.qfile_suffix_zonked_light);
 	
@@ -403,7 +403,7 @@ int readin(int prompt)
       }
       
       /* Get source type for heavy_zonked quark */
-      IF_OK status += ask_quark_source(prompt,&wallflag,descrp);
+      IF_OK status += ask_quark_source( stdin, prompt, &wallflag, descrp);
 
       /* Load in the source widths for the heavy zonked propagators */
       
@@ -429,14 +429,14 @@ int readin(int prompt)
       IF_OK {
 	for(i=0;i< par_buf.no_zonked_heavy ;i++)
 	  {
-	    IF_OK status += ask_ending_wprop(prompt,
+	    IF_OK status += ask_ending_wprop(stdin, prompt,
 				    &par_buf.saveflag_zonked_heavy[i],
 				    par_buf.qfile_zonked_heavy[i]);
 	  }
       }
 
       /*** load the save flag for zonked heavy sink-smeared quarks ***/
-      IF_OK status += ask_ending_wprop(prompt,
+      IF_OK status += ask_ending_wprop(stdin, prompt,
 			       &par_buf.saveflag_zonked_heavy_ssink,
 			       par_buf.qfile_suffix_zonked_heavy);
 	

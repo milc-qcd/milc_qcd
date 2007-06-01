@@ -1,7 +1,7 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice.h ********************************/
-/* include file for MIMD version 6
+/* include file for MIMD version 7
    This file defines global scalars and the fields in the lattice. */
 
 #include "defines.h"
