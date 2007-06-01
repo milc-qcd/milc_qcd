@@ -25,6 +25,13 @@
 
 /* Local types */
 
+
+typedef struct {
+  int gin;         /* Source gamma matrix */
+  int gout;        /* Sink gamma matrix */
+  int oper;        /* Operator identification */
+} gamma_corr;
+
 /* Plan Dirac matrix */
 
 typedef struct {
