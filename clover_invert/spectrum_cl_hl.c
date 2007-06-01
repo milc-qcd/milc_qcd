@@ -172,6 +172,7 @@ void spectrum_cl_hl_offdiag_rot_meson(wilson_prop_field qp1,
 void spectrum_cl_hl_offdiag_smeared_meson(wilson_prop_field qp1, 
 					  wilson_prop_field qp2, 
 					  int j, int k){
+  /* Both props are FT'd and qp2 has already been smeared */
   spectrum_cl_hl_offdiag_gen_meson(qp1, qp2, smes_prop_hl[j][k]);
 }
 

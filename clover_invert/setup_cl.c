@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.10  2007/06/01 22:57:25  detar
+//  Upgrade prompts for lattice and prop file names
+//
 //  Revision 1.9  2007/05/23 02:51:09  detar
 //  Support sink wave functions in io_source_w
 //  Move wilson_quark_source to generic_wilson.h
@@ -159,7 +162,7 @@ int readin(int prompt) {
     IF_OK strcat(par_buf.spectrum_request,",");
     
     /* Get source type */
-    IF_OK status += ask_quark_source(prompt,&source_type,
+    IF_OK status += ask_quark_source(stdin,prompt,&source_type,
 				     par_buf.wqs.descrp);
     IF_OK par_buf.wqs.type  = source_type;
 
@@ -233,12 +236,12 @@ int readin(int prompt) {
     
     /* find out starting propagator */
     IF_OK for(i=0;i<par_buf.num_kap;i++)
-      status += ask_starting_wprop( prompt,&par_buf.startflag_w[i],
+      status += ask_starting_wprop( stdin, prompt,&par_buf.startflag_w[i],
 			par_buf.startfile_w[i]);
     
     /* what to do with computed propagator */
     IF_OK for(i=0;i<par_buf.num_kap;i++)
-      status += ask_ending_wprop( prompt,&par_buf.saveflag_w[i],
+      status += ask_ending_wprop( stdin, prompt,&par_buf.saveflag_w[i],
 		      par_buf.savefile_w[i]);
     
     IF_OK if(prompt!=0) 

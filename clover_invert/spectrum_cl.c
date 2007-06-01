@@ -3,6 +3,20 @@
 /* Diagonal clover spectrum procedures */
 /* MIMD version 7 */
 
+/* These procedures compute the zero momentum meson correlators for a
+   "point" sink, rotated sink, and "smeared" sink and the zero
+   momentum baryon correlators for a point sink.  Here point means
+   both quark and antiquark (or three quarks) are tied together at the
+   same sink point.  
+   
+   "Smeared" means the sink quark fields are convoluted with a
+   specified function before tying them together and projecting to
+   zero momentum.  NOTE: THIS IS NOT THE SAME AS SMEARING WITH A SINK
+   WAVE FUNCTION IN THE RELATIVE COORDINATE, except when the smearing
+   function is Gaussian and the width is adjusted appropriately.
+
+*/
+
 #include "cl_inv_includes.h"
 #include <string.h>
 
@@ -115,6 +129,7 @@ void sink_smear_prop(wilson_prop_field qp){
   /* fft quark_propagator (in place) */
   for(color = 0; color < 3; color++){
     qps = extract_swv_from_wp(qp, color);
+    /* qps points into qp, so qp is changed here */
     restrict_fourier_field((complex *)qps, sizeof(spin_wilson_vector), 
 			   FORWARDS);
   }
@@ -139,24 +154,22 @@ void sink_smear_prop(wilson_prop_field qp){
   /* We want chi(-k)* -- the complex conjugate of FFT of the
      complex conjugate of the quark sink. */
   FORALLSITES(i,s){
-    CONJG(chi[i].d[spin].c[color], chi_cs[i]);
+    chi_cs[i] = chi[i].d[spin].c[color];
   }
 
   dtime = start_timing();
   restrict_fourier_field(chi_cs, sizeof(complex), FORWARDS);
-  FORALLSITES(i,s){
-    CONJG(chi_cs[i], chi_cs[i]);
-  }
   
   /* Now multiply quark by sink wave function */
-  FORALLSITES(i,s)
-    for(ci=0;ci<3;ci++)
+  for(ci=0;ci<3;ci++){
+    FORALLSITES(i,s)
       for(si=0;si<4;si++)
 	for(sf=0;sf<4;sf++)for(cf=0;cf<3;cf++){
-	  CMUL(qp[ci][i].d[si].d[sf].c[cf],
-	       chi_cs[i],
-	       qp[ci][i].d[si].d[sf].c[cf]);
-	}
+	    CMUL(qp[ci][i].d[si].d[sf].c[cf],
+		 chi_cs[i],
+		 qp[ci][i].d[si].d[sf].c[cf]);
+	  }
+  }
   
   print_timing(dtime, "FFT of chi and multiply");
 

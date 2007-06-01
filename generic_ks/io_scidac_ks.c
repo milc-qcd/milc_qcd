@@ -213,6 +213,7 @@ void save_ks_vector_scidac_from_site(char *filename, char *recxml,
 			  int volfmt, int serpar, field_offset src, int count)
 {
   QIO_Layout layout;
+  QIO_Filesystem fs;
   QIO_Writer *outfile;
   int status;
   char *filexml;
@@ -225,9 +226,12 @@ void save_ks_vector_scidac_from_site(char *filename, char *recxml,
   /* Create the file metadata */
   filexml = create_ks_XML();
 
+  /* Define the I/O nodes */
+  build_qio_filesystem(&fs);
+
   /* Open file for writing */
   outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
-			       NULL, &layout, filexml);
+			       NULL, &layout, &fs, filexml);
   if(outfile == NULL)terminate(1);
 
 
@@ -263,6 +267,7 @@ void save_ks_vector_scidac_from_field(char *filename, char *recxml,
     int volfmt, int serpar, su3_vector *src, int count)
 {
   QIO_Layout layout;
+  QIO_Filesystem fs;
   QIO_Writer *outfile;
   int status;
   char *filexml;
@@ -275,9 +280,12 @@ void save_ks_vector_scidac_from_field(char *filename, char *recxml,
   /* Create the file metadata */
   filexml = create_ks_XML();
 
+  /* Define the I/O nodes */
+  build_qio_filesystem(&fs);
+
   /* Open file for writing */
   outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
-			       NULL, &layout, filexml);
+			       NULL, &layout, &fs, filexml);
   if(outfile == NULL)terminate(1);
 
 
@@ -314,6 +322,7 @@ void save_ks_vector_scidac_from_field(char *filename, char *recxml,
 void restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
 					     int serpar, int count){
   QIO_Layout layout;
+  QIO_Filesystem fs;
   QIO_Reader *infile;
   int status;
 
@@ -322,8 +331,11 @@ void restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
   /* Build the layout structure */
   build_qio_layout(&layout);
 
+  /* Define the I/O nodes */
+  build_qio_filesystem(&fs);
+
   /* Open file for reading */
-  infile = open_scidac_input(filename, &layout, serpar);
+  infile = open_scidac_input(filename, &layout, &fs, serpar);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one color vector */
@@ -340,6 +352,7 @@ void restore_ks_vector_scidac_to_site(char *filename, field_offset dest,
 void restore_ks_vector_scidac_to_field(char *filename, 
 			      su3_vector *dest, int serpar, int count){
   QIO_Layout layout;
+  QIO_Filesystem fs;
   QIO_Reader *infile;
   int status;
 
@@ -348,8 +361,11 @@ void restore_ks_vector_scidac_to_field(char *filename,
   /* Build the layout structure */
   build_qio_layout(&layout);
 
+  /* Define the I/O nodes */
+  build_qio_filesystem(&fs);
+
   /* Open file for reading */
-  infile = open_scidac_input(filename, &layout, serpar);
+  infile = open_scidac_input(filename, &layout, &fs, serpar);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: one color vector */

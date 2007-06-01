@@ -128,10 +128,10 @@ int readin(int prompt)
 
   if(this_node==0) {
 
-    IF_OK status += ask_starting_wprop( prompt, &(par_buf.startflag),
+    IF_OK status += ask_starting_wprop( stdin, prompt, &(par_buf.startflag),
 					par_buf.startfile );
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_wprop( prompt, &(par_buf.saveflag),
+    IF_OK status += ask_ending_wprop( stdin, prompt, &(par_buf.saveflag),
 				      par_buf.savefile );
     if(status > 0)par_buf.stopflag = 1; else par_buf.stopflag = 0;
   }
