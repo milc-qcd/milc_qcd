@@ -59,9 +59,15 @@ void build_qio_layout(QIO_Layout *layout){
   layout->number_of_nodes = number_of_nodes;
 }
 
+void build_qio_filesystem(QIO_Filesystem *fs){
+  fs->my_io_node = io_node;
+  fs->master_io_node = NULL;  /* Defaults to node 0 */
+}
+
 QIO_Writer *open_scidac_output(char *filename, int volfmt, 
 			       int serpar, int ildgstyle, 
 			       char *stringLFN, QIO_Layout *layout,
+			       QIO_Filesystem *fs,
 			       char *xml_write_file){
   QIO_String *xml_file_out;
   QIO_Writer *outfile;
@@ -86,7 +92,7 @@ QIO_Writer *open_scidac_output(char *filename, int volfmt,
 #ifdef QIO_TRELEASE
   QIO_set_trelease(0,QIO_TRELEASE);
 #endif
-  outfile = QIO_open_write(xml_file_out, filename, volfmt, layout, &oflag);
+  outfile = QIO_open_write(xml_file_out, filename, volfmt, layout, fs, &oflag);
   if(outfile == NULL){
     printf("open_scidac_output(%d): QIO_open_write returned NULL\n",this_node);
     return NULL;
@@ -96,7 +102,7 @@ QIO_Writer *open_scidac_output(char *filename, int volfmt,
 }
 
 QIO_Reader *open_scidac_input(char *filename, QIO_Layout *layout, 
-			      int serpar){
+			      QIO_Filesystem *fs, int serpar){
   QIO_String *xml_file_in;
   QIO_Reader *infile;
   QIO_Iflag iflag;
@@ -113,7 +119,7 @@ QIO_Reader *open_scidac_input(char *filename, QIO_Layout *layout,
 #ifdef QIO_TRELEASE
   QIO_set_trelease(0,QIO_TRELEASE);
 #endif
-  infile = QIO_open_read(xml_file_in, filename, layout, &iflag);
+  infile = QIO_open_read(xml_file_in, filename, layout, fs, &iflag);
   if(infile == NULL){
     printf("%s(%d): QIO_open_read returns NULL.\n",myname,this_node);
     return NULL;
@@ -609,6 +615,7 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
 gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
 			char *stringLFN){
   QIO_Layout layout;
+  QIO_Filesystem fs;
   QIO_Writer *outfile;
   int status;
   field_offset src = F_OFFSET(link[0]);
@@ -621,12 +628,15 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
   /* Build the layout structure */
   build_qio_layout(&layout);
 
+  /* Define the I/O system */
+  build_qio_filesystem(&fs);
+
   /* Make a dummy gauge file structure for MILC use */
   gf = setup_output_gauge_file();
 
   /* Open file for writing */
   outfile = open_scidac_output(filename, volfmt, serpar, ildgstyle, 
-			stringLFN, &layout,default_file_xml);
+			       stringLFN, &layout, &fs, default_file_xml);
   if(outfile == NULL)terminate(1);
 
   /* Create the QCDML string for this configuration */
@@ -669,6 +679,7 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
 int read_lat_dim_scidac(char *filename, int *ndim, int dims[])
 {
   QIO_Layout layout;
+  QIO_Filesystem fs;
   int i;
   int *latsize;
   QIO_Reader *infile;
@@ -681,8 +692,11 @@ int read_lat_dim_scidac(char *filename, int *ndim, int dims[])
   /* Forces discovery */
   layout.latdim = 0;
 
+  /* Set the file system parameters */
+  build_qio_filesystem(&fs);
+
   /* Get lattice dimensions from file */
-  infile = open_scidac_input(filename, &layout, QIO_SERIAL);
+  infile = open_scidac_input(filename, &layout, &fs, QIO_SERIAL);
   if(!infile)return 1;
 
   *ndim = QIO_get_reader_latdim(infile);
@@ -742,6 +756,7 @@ gauge_file *restore_scidac(char *filename, int serpar){
 #else
 gauge_file *restore_scidac(char *filename, int serpar){
   QIO_Layout layout;
+  QIO_Filesystem fs;
   QIO_Reader *infile;
   int status;
   field_offset dest = F_OFFSET(link[0]);
@@ -752,6 +767,9 @@ gauge_file *restore_scidac(char *filename, int serpar){
   /* Build the layout structure */
   build_qio_layout(&layout);
 
+  /* Define the I/O nodes */
+  build_qio_filesystem(&fs);
+
   /* Make a dummy gauge file structure for MILC use */
   gf = setup_input_gauge_file(filename);
 
@@ -759,7 +777,7 @@ gauge_file *restore_scidac(char *filename, int serpar){
   gf->filename = filename;
 
   /* Open file for reading */
-  infile = open_scidac_input(filename, &layout, serpar);
+  infile = open_scidac_input(filename, &layout, &fs, serpar);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field */

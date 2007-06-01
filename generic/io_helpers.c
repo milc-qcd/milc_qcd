@@ -222,176 +222,240 @@ gauge_file *reload_lattice( int flag, char *filename){
     return gf;
 }
 
+/* Get next tag, but skip past end of line if we encounter # for comments */
+#define MAX_TAG 512
+char *get_next_tag(FILE *fp, char *tag, char *myname){
+  static char line[MAX_TAG];
+  int s;
+
+  while(1){
+    s = fscanf(fp, "%s",line);
+    if (s == EOF){
+      printf("%s(%d) EOF on input.\n",myname,this_node);
+      return NULL;
+    }
+    if(s == 0){
+      printf("%s(%d) Error reading %s\n",myname,this_node,tag);
+      return NULL;
+    }
+    /* Provide for comment lines with # before "prompt" */
+    if(strchr(line,'#')==NULL)break;
+    else{
+      printf("%s",line);
+      if(fgets(line,MAX_TAG,fp)==NULL){
+	printf("%s(%d) EOF on input.\n",myname,this_node);
+	return NULL;
+      }
+      printf("%s",line);
+    }
+  }
+  return line;
+}
+
+/* Read and echo the next tag.  Echo any intervening comments */
+/* Comments begin with # and apply to the rest of the line */
+/* Verify that the input tag agrees with the expected tag */
+
+int get_check_tag(FILE *fp, char *tag, char *myname){
+  char *checktag;
+  
+  checktag = get_next_tag(fp, tag, myname);
+  if(checktag == NULL)return 1;
+  
+  if(strcmp(checktag,tag) != 0){
+    printf("\n%s: ERROR IN INPUT: expected %s but found %s\n",
+	   myname,tag,checktag);
+    return 1;
+  }
+  printf("%s ",tag);
+  return 0;
+}
+
+/* Check return value of scanf */
+static int check_read(int s, char *myname, char *tag){
+
+  if (s == EOF){
+    printf("\n%s: Expecting value for %s but found EOF.\n",
+	   myname,tag);
+    return 1;
+  }
+  else if(s == 0){
+    printf("\n%s: Format error reading value for %s\n",
+	   myname,tag);
+    return 1;
+  }
+  else
+    return 0;
+}
+
+
 /* find out what kind of starting lattice to use, and lattice name if
    necessary.  This routine is only called by node 0.
 */
 int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
-    char savebuf[256];
-    int status;
-
-    if (prompt!=0) printf(
-        "enter 'continue', 'fresh', 'reload_ascii', 'reload_serial', or 'reload_parallel'\n");
-    status=fscanf(fp,"%s",savebuf);
-    if (status == EOF){
-      printf("ask_starting_lattice: EOF on STDIN.\n");
+  char *savebuf;
+  int status;
+  char myname[] = "ask_starting_lattice";
+  
+  if (prompt!=0) printf(
+			"enter 'continue', 'fresh', 'reload_ascii', 'reload_serial', or 'reload_parallel'\n");
+  
+  savebuf = get_next_tag(fp, "read lattice command", myname);
+  if (savebuf == NULL)return 1;
+  
+  printf("%s",savebuf);
+  if(strcmp("fresh",savebuf) == 0 ){
+    *flag = FRESH;
+    printf("\n");
+  }
+  else if(strcmp("continue",savebuf) == 0 ) {
+    *flag = CONTINUE;
+    printf("\n");
+  }
+  else if(strcmp("reload_ascii",savebuf) == 0 ) {
+    *flag = RELOAD_ASCII;
+  }
+  else if(strcmp("reload_serial",savebuf) == 0 ) {
+    *flag = RELOAD_SERIAL;
+  }
+  else if(strcmp("reload_parallel",savebuf) == 0 ) {
+    *flag = RELOAD_PARALLEL;
+  }
+  else{
+    printf(" is not a valid starting lattice command. INPUT ERROR.\n"); 
+    return 1;
+  }
+  
+  /*read name of file and load it */
+  if( *flag != FRESH && *flag != CONTINUE ){
+    if(prompt!=0)printf("enter name of file containing lattice\n");
+    status=fscanf(fp,"%s",filename);
+    if(status !=1) {
+      printf("\n%s(%d): ERROR IN INPUT: error reading file name\n",
+	     myname, this_node); 
       return 1;
     }
-    if(status !=1) {
-        printf("\nask_starting_lattice: ERROR IN INPUT: can't read starting lattice command\n");
-        return 1;
-    }
-
-    printf("%s ",savebuf);
-    if(strcmp("fresh",savebuf) == 0 ){
-       *flag = FRESH;
-    printf("\n");
-    }
-    else if(strcmp("continue",savebuf) == 0 ) {
-        *flag = CONTINUE;
-	printf("\n");
-    }
-    else if(strcmp("reload_ascii",savebuf) == 0 ) {
-       *flag = RELOAD_ASCII;
-    }
-    else if(strcmp("reload_serial",savebuf) == 0 ) {
-       *flag = RELOAD_SERIAL;
-    }
-    else if(strcmp("reload_parallel",savebuf) == 0 ) {
-       *flag = RELOAD_PARALLEL;
-    }
-    else{
-    	printf(" is not a valid starting lattice command. INPUT ERROR.\n"); 
-	return 1;
-    }
-
-    /*read name of file and load it */
-    if( *flag != FRESH && *flag != CONTINUE ){
-        if(prompt!=0)printf("enter name of file containing lattice\n");
-        status=fscanf(fp,"%s",filename);
-        if(status !=1) {
-	    printf("\nask_starting_lattice: ERROR IN INPUT: error reading file name\n"); return 1;
-        }
-	printf("%s\n",filename);
-    }
-    return 0;
+    printf("%s\n",filename);
+  }
+  return 0;
 }
 
 /* find out what do to with lattice at end, and lattice name if
    necessary.  This routine is only called by node 0.
 */
 int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
-    char savebuf[256];
-    int status;
+  char *savebuf;
+  int status;
+  char myname[] = "ask_ending_lattice";
+  
+  if (prompt!=0) printf(
+			"'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partition_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_partition_ildg', or 'save_multifile_ildg'\n");
+  
+  savebuf = get_next_tag(fp, "save lattice command", myname);
+  if (savebuf == NULL)return 1;
 
-    if (prompt!=0) printf(
-        "'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partition_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_partition_ildg', or 'save_multifile_ildg'\n");
-    status=fscanf(fp,"%s",savebuf);
-    if(status !=1) {
-        printf("\nask_ending_lattice: ERROR IN INPUT: error reading ending lattice command\n");
-        return 1;
-    }
-    printf("%s ",savebuf);
-    if(strcmp("save_ascii",savebuf) == 0 )  {
-        *flag=SAVE_ASCII;
-    }
-    else if(strcmp("save_serial",savebuf) == 0 ) {
-        *flag=SAVE_SERIAL;
-    }
-    else if(strcmp("save_parallel",savebuf) == 0 ) {
-      *flag=SAVE_PARALLEL;
-    }
-    else if(strcmp("save_checkpoint",savebuf) == 0 ) {
-        *flag=SAVE_CHECKPOINT;
-    }
-    else if(strcmp("save_serial_fm",savebuf) == 0 ) {
-        *flag=SAVE_SERIAL_FM;
-    }
-    else if(strcmp("save_serial_scidac",savebuf) == 0 ) {
+  printf("%s ",savebuf);
+  if(strcmp("save_ascii",savebuf) == 0 )  {
+    *flag=SAVE_ASCII;
+  }
+  else if(strcmp("save_serial",savebuf) == 0 ) {
+    *flag=SAVE_SERIAL;
+  }
+  else if(strcmp("save_parallel",savebuf) == 0 ) {
+    *flag=SAVE_PARALLEL;
+  }
+  else if(strcmp("save_checkpoint",savebuf) == 0 ) {
+    *flag=SAVE_CHECKPOINT;
+  }
+  else if(strcmp("save_serial_fm",savebuf) == 0 ) {
+    *flag=SAVE_SERIAL_FM;
+  }
+  else if(strcmp("save_serial_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-        *flag=SAVE_SERIAL_SCIDAC;
+    *flag=SAVE_SERIAL_SCIDAC;
 #else
-	node0_printf("requires QIO compilation!\n");
-	terminate(1);
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
 #endif
-    }
-    else if(strcmp("save_parallel_scidac",savebuf) == 0 ) {
+  }
+  else if(strcmp("save_parallel_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-        *flag=SAVE_PARALLEL_SCIDAC;
+    *flag=SAVE_PARALLEL_SCIDAC;
 #else
-	node0_printf("requires QIO compilation!\n");
-	terminate(1);
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
 #endif
-    }
-    else if(strcmp("save_multifile_scidac",savebuf) == 0 ) {
+  }
+  else if(strcmp("save_multifile_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-        *flag=SAVE_MULTIFILE_SCIDAC;
+    *flag=SAVE_MULTIFILE_SCIDAC;
 #else
-	node0_printf("requires QIO compilation!\n");
-	terminate(1);
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
 #endif
-    }
-    else if(strcmp("save_partition_scidac",savebuf) == 0 ) {
+  }
+  else if(strcmp("save_partition_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-        *flag=SAVE_PARTITION_SCIDAC;
+    *flag=SAVE_PARTITION_SCIDAC;
 #else
-	node0_printf("requires QIO compilation!\n");
-	terminate(1);
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
 #endif
-    }
-    else if(strcmp("save_serial_archive",savebuf) == 0 ) {
-        *flag=SAVE_SERIAL_ARCHIVE;
-    }
-    else if(strcmp("save_serial_ildg",savebuf) == 0 ) {
+  }
+  else if(strcmp("save_serial_archive",savebuf) == 0 ) {
+    *flag=SAVE_SERIAL_ARCHIVE;
+  }
+  else if(strcmp("save_serial_ildg",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-        *flag=SAVE_SERIAL_ILDG;
+    *flag=SAVE_SERIAL_ILDG;
 #else
-	node0_printf("requires QIO compilation!\n");
-	terminate(1);
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
 #endif
-    }
-    else if(strcmp("save_parallel_ildg",savebuf) == 0 ) {
+  }
+  else if(strcmp("save_parallel_ildg",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-        *flag=SAVE_PARALLEL_ILDG;
+    *flag=SAVE_PARALLEL_ILDG;
 #else
-	node0_printf("requires QIO compilation!\n");
-	terminate(1);
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
 #endif
-    }
-    else if(strcmp("save_partition_ildg",savebuf) == 0 ) {
+  }
+  else if(strcmp("save_partition_ildg",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-        *flag=SAVE_PARTITION_ILDG;
+    *flag=SAVE_PARTITION_ILDG;
 #else
-	node0_printf("requires QIO compilation!\n");
-	terminate(1);
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
 #endif
-    }
-    else if(strcmp("save_multifile_ildg",savebuf) == 0 ) {
+  }
+  else if(strcmp("save_multifile_ildg",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-        *flag=SAVE_MULTIFILE_ILDG;
+    *flag=SAVE_MULTIFILE_ILDG;
 #else
-	node0_printf("requires QIO compilation!\n");
-	terminate(1);
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
 #endif
+  }
+  else if(strcmp("forget",savebuf) == 0 ) {
+    *flag=FORGET;
+    printf("\n");
+  }
+  else {
+    printf("is not a save lattice command. INPUT ERROR\n");
+    return 1;
+  }
+  
+  if( *flag != FORGET ){
+    if(prompt!=0)printf("enter filename\n");
+    status=fscanf(fp,"%s",filename);
+    if(status !=1){
+      printf("\nask_ending_lattice: ERROR IN INPUT: error reading filename\n"); return 1;
     }
-    else if(strcmp("forget",savebuf) == 0 ) {
-        *flag=FORGET;
-	printf("\n");
-    }
-    else {
-      printf("is not a save lattice command. INPUT ERROR\n");
-      return 1;
-    }
-
-    if( *flag != FORGET ){
-        if(prompt!=0)printf("enter filename\n");
-        status=fscanf(fp,"%s",filename);
-        if(status !=1){
-    	    printf("\nask_ending_lattice: ERROR IN INPUT: error reading filename\n"); return 1;
-        }
-	printf("%s\n",filename);
-
-    }
-    return 0;
+    printf("%s\n",filename);
+    
+  }
+  return 0;
 }
 
 int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
@@ -454,62 +518,6 @@ void funnylat()  {
     }
 }
 
-/* Read and echo the next tag.  Echo any intervening comments */
-/* Comments begin with # and apply to the rest of the line */
-/* Verify that the input tag agrees with the expected tag */
-
-static int get_tag(FILE *fp, char *tag, char *myname){
-  static char checktag[80];
-  char line[512];
-  int s;
-
-  while(1){
-    s = fscanf(fp,"%s",checktag);
-    if (s == EOF){
-      printf("%s(%d): EOF on input.\n",myname,this_node);
-      return 1;
-    }
-    if(s == 0){
-      printf("%s(%d) Error reading %s\n",myname,this_node,tag);
-      return 1;
-    }
-    if(strchr(checktag,'#')!=NULL){
-      printf("%s",checktag);
-      if(fgets(line,512,fp)==NULL){
-	printf("%s(%d) EOF on input.\n",myname,this_node);
-	return 1;
-      }
-      printf("%s",line);
-    }
-    else{
-      if(strcmp(checktag,tag) != 0){
-	printf("\n%s: ERROR IN INPUT: expected %s but found %s\n",
-	       myname,tag,checktag);
-	return 1;
-      }
-      printf("%s ",tag);
-      return 0;
-    }
-  }
-}
-
-/* Check return value of scanf */
-static int check_read(int s, char *myname, char *tag){
-
-  if (s == EOF){
-    printf("\n%s: Expecting value for %s but found EOF.\n",
-	   myname,tag);
-    return 1;
-  }
-  else if(s == 0){
-    printf("\n%s: Format error reading value for %s\n",
-	   myname,tag);
-    return 1;
-  }
-  else
-    return 0;
-}
-
 /* get_f is used to get a floating point number.  If prompt is non-zero,
 it will prompt for the input value with the variable_name_string.  If
 prompt is zero, it will require that variable_name_string precede the
@@ -537,7 +545,7 @@ int get_f( FILE *fp, int prompt, char *tag, Real *value ){
 	}
     }
     else  {
-      if(get_tag(fp, tag, myname) == 1)return 1;
+      if(get_check_tag(fp, tag, myname) == 1)return 1;
 	  
 #if PRECISION == 1
       s = fscanf(fp,"%e",value);
@@ -568,7 +576,7 @@ int get_i( FILE *fp, int prompt, char *tag, int *value ){
       }
     }
     else  {
-      if(get_tag(fp, tag, myname) == 1)return 1;
+      if(get_check_tag(fp, tag, myname) == 1)return 1;
 	  
       s = fscanf(fp,"%d",value);
       if(check_read(s,myname,tag) == 1)return 1;
@@ -579,11 +587,11 @@ int get_i( FILE *fp, int prompt, char *tag, int *value ){
 
 }
 
-/* Read a single word as a string */
+/* Read a single word as a string without printing an end-of-line  */
 
-int get_s( FILE *fp, int prompt, char *tag, char *value ){
+int get_sn( FILE *fp, int prompt, char *tag, char *value ){
     int s;
-    char myname[] = "get_s";
+    char myname[] = "get_sn";
 
     if(prompt)  {
       s = 0;
@@ -592,17 +600,27 @@ int get_s( FILE *fp, int prompt, char *tag, char *value ){
     	s=fscanf(fp,"%s",value);
 	if(s==EOF)return 1;
 	if(s==0)printf("Data format error.\n");
-	else printf("%s %s\n",tag,value);
+	else printf("%s %s",tag,value);
       }
     }
     else  {
-      if(get_tag(fp, tag, myname) == 1)return 1;
+      if(get_check_tag(fp, tag, myname) == 1)return 1;
 
       s = fscanf(fp,"%s",value);
       if(check_read(s,myname,tag) == 1)return 1;
-      printf("%s\n",value);
+      printf("%s",value);
     }
     return 0;
+}
+
+/* Read a single word as a string */
+
+int get_s( FILE *fp, int prompt, char *tag, char *value ){
+    int s;
+
+    s = get_sn(fp, prompt, tag, value);
+    printf("\n");
+    return s;
 }
 
 /* Read a vector of integers */
@@ -625,7 +643,7 @@ int get_vi( FILE* fp, int prompt, char *tag,
       }
     }
     else  {
-      if(get_tag(fp, tag, myname) == 1)return 1;
+      if(get_check_tag(fp, tag, myname) == 1)return 1;
 	  
       for(i = 0; i < nvalues; i++){
 	s = fscanf(fp,"%d",value + i);
@@ -663,7 +681,7 @@ int get_vf( FILE* fp, int prompt, char *tag,
       }
     }
     else  {
-      if(get_tag(fp, tag, myname) == 1)return 1;
+      if(get_check_tag(fp, tag, myname) == 1)return 1;
 	  
       for(i = 0; i < nvalues; i++){
 #if PRECISION == 1
