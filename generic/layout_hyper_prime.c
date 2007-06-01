@@ -429,7 +429,7 @@ void get_coords(int coords[], int node, int index){
 
 /*------------------------------------------------------------------*/
 /* Map any node to its I/O node */
-int io_node(int node){
+int io_node(const int node){
   int i,j,k; 
 
   /* Get the machine coordinates for the specified node */
