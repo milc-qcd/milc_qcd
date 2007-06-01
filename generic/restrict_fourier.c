@@ -40,6 +40,15 @@ int dmin[4],dmax[4];    /* Restrictions on range of FT */
 int pfactor[4];         /* Residual prime factor p */
 int notbase2;           /* True if we need to do a base p != 2 transform */
   
+void bitrev_map(int x,int y,int z,int t,int *key,int fb,
+		int *xp,int *yp,int *zp,int *tp);
+void butterfly_map(int x,int y,int z,int t,int *arg,int fb,
+		   int *xp,int *yp,int *zp,int *tp);
+void pbaserev_map( int x,int y,int z,int t,int *key,int fb,
+		   int *xp,int *yp,int *zp,int *tp);
+void pcyclic_map( int x,int y,int z,int t,int *arg,int fb,
+		  int *xp,int *yp,int *zp,int *tp);
+
 void setup_restrict_fourier( int *key, int *slice){
   /* "key" is a four component array.  If a component is 1, the Fourier
      transform is done in that direction, if it is 0 that direction is
@@ -50,15 +59,6 @@ void setup_restrict_fourier( int *key, int *slice){
   register int dir,i,j;
   int arg[2];
   char myname[] = "setup_restrict_fourier";
-
-  void bitrev_map(int x,int y,int z,int t,int *key,int fb,
-		  int *xp,int *yp,int *zp,int *tp);
-  void butterfly_map(int x,int y,int z,int t,int *arg,int fb,
-		     int *xp,int *yp,int *zp,int *tp);
-  void pbaserev_map( int x,int y,int z,int t,int *key,int fb,
-		  int *xp,int *yp,int *zp,int *tp);
-  void pcyclic_map( int x,int y,int z,int t,int *arg,int fb,
-		   int *xp,int *yp,int *zp,int *tp);
 
   /* Initialize limits on coordinate range of FT */
   dmin[XUP] = dmin[YUP] = dmin[ZUP] = dmin[TUP] = 0;
