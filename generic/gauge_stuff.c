@@ -368,6 +368,10 @@ void printpath( int *path, int length ){
    2/17/98  ANSI prototyping U.M.H.
    */
 #include <assert.h>
+
+/* NOTE: the staple is returned in the site strcture for use in monte
+   and relax in symanzik_sl32! */
+
 void dsdu_qhb_subl(int dir, int subl)
 {
 register site *st;
@@ -375,7 +379,7 @@ register int i;
 int iloop, ln, k, j;
 int dirs[MAX_LENGTH], length;
 int path_dir[MAX_LENGTH], path_length;
-su3_matrix tmat1, *tempmat1, *staple;
+su3_matrix tmat1, *tempmat1;
 int fsubl;
 
  assert(NREPS==1);   /* This procedure designed only for NREPS = 1 */
@@ -386,14 +390,8 @@ int fsubl;
    terminate(1);
  }
 
- staple = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
- if(staple == NULL){
-   printf("imp_gauge_force: Can't malloc temporary\n");
-   terminate(1);
- }
- 
     FORSOMESUBLATTICE(i,st,subl) {
-	clear_su3mat(&staple[i]);
+	clear_su3mat(&(st->staple));
     }
 
     for(iloop=0;iloop<NLOOP;iloop++){
@@ -432,15 +430,14 @@ int fsubl;
 		   So now take adjoint */
 		FORSOMESUBLATTICE(i,st,subl) {
 		    su3_adjoint( &tempmat1[i], &tmat1 );
-		    scalar_mult_add_su3_matrix(&staple[i], &tmat1,
-			loop_coeff[iloop][0], &staple[i]) );
+		    scalar_mult_add_su3_matrix(&(st->staple), &tmat1,
+			loop_coeff[iloop][0], &(st->staple) );
 		}
 	    } /* k (location in path) */
 	} /* ln */
     } /* iloop */
 
     free(tempmat1);
-    free(staple);
     g_sync();
 
 } /* dsdu_qhb */
