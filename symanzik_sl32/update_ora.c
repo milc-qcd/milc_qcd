@@ -1,5 +1,5 @@
 /********** update_ora.c ****************************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
  Update lattice with microcanonical overrelaxed algorithm

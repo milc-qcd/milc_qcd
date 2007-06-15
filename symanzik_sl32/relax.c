@@ -2,7 +2,7 @@
 /* Microcanonical overrelaxation by doing successive SU(2) gauge hits */
 /* This is a version for extended actions where 32 sublattices are
    needed to make the links independent. */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* U.M. Heller August 1997 */
 
 /* Modifications:

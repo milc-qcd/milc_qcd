@@ -1,5 +1,5 @@
 /******** setup.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Version for Symanzik improved type pure gauge actions */
 #define IF_OK if(status==0)
 
@@ -55,7 +55,7 @@ int prompt,status;
 	    }**/
 	/* Test is done by assertion in dsdu_qhb_subl */
 #endif
-	printf("MIMD version 6\n");
+	printf("MIMD version 7\n");
 	printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 
 	status = get_prompt(stdin, &prompt);

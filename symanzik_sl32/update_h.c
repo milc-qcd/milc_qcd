@@ -1,5 +1,5 @@
 /****** update_h.c  -- update the momentum matrices ******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Modifications:
    2/17/98  ANSI prototyping,

@@ -42,7 +42,7 @@ typedef struct {
 	anti_hermitmat mom[4];
 #endif
 	/* temporary matrices */
-	su3_matrix tempmat1,tempmat2,staple;
+	su3_matrix staple;
 
 } site;
 
@@ -76,6 +76,8 @@ EXTERN	int total_iters;
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
 EXTERN	int sites_on_node;		/* number of sites on this node */
+EXTERN	int even_sites_on_node;	/* number of even sites on this node */
+EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int subl_sites_on_node;	/* number of sites on sublattice on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */

@@ -1,5 +1,5 @@
 /************************ control.c ******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Main procedure for pure gauge SU3 */
 
 /* This version contains code for the hybrid Monte Carlo algorithm,
@@ -15,7 +15,6 @@
    */
 
 #define CONTROL
-
 #include "symanzik_sl32_includes.h"
 
 int main(int argc, char *argv[]){
@@ -125,5 +124,9 @@ int key[4];
 	  save_lattice( saveflag, savefile, stringLFN );
 	}
     }
+#ifdef HAVE_QDP
+    QDP_finalize();
+#endif
+    normal_exit(0);
     return 0;
 }

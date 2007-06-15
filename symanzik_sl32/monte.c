@@ -2,7 +2,7 @@
 /* Kennedy-Pendleton quasi heat bath on SU(2) subgroups */
 /* This is a version for extended actions where 32 sublattices are
    needed to make the links independent. */
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* U.M. Heller August 1997 */
 
 /* Modifications:
@@ -25,7 +25,6 @@ Real h0, h1, h2, h3;
 Real r, r2, rho, z;
 Real al, d, xl, xd;
 int  k, kp, cr, nacd, test;
-Real avekp, avecr;
 Real pi2, b3;
 register int dir, i;
 register site *st;
