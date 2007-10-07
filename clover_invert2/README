@@ -1,0 +1,253 @@
+lover_invert2
+
+C. DeTar 6/2/2007
+
+Code for generating clover propagators and contracting "meson" and
+baryon two point functions.  Propagators can be generated from any
+time slice with several choices of sources.  Mesons can be constructed
+from any pair of propagators.  Mesons are defined by the source and
+sink gamma matrices.  Any pair of gamma matrices is allowed.  Fermilab
+rotations are supported for point sinks.  Sink "relative" wave
+functions are supported. Baryons are less general.  Baryons in the low
+lying octet and decuplet can be constructed from any two quarks, but
+the propagators are for only point source and sink.
+
+Sample input parameter file
+
+The file begins with the standard MILC stanza defining the lattice
+dimensions.
+
+  prompt 0
+  nx 4
+  ny 4
+  nz 4
+  nt 4
+  
+The gauge field options come next. (Parameter file comment lines are
+optional and begin with "#".)
+ 
+  # Gauge field description
+  
+  reload_serial ../binary_samples/lat.sample.l4444
+  coulomb_gauge_fix
+  forget
+
+The code understands MILC, FNAL, NERSC, and SciDAC lattice file
+formats.  Gauge fixing options are coulomb_gauge_fix and no_gauge_fix.
+The "forget" indicates no output lattice file is to be written.  Some
+other options are "save_serial" "save_serial_fm",
+"save_serial_scidac", "save_partition_scidac", "save_parallel_scidac"
+followed by the file name, as in
+  
+                save_serial lat.file
+
+The next stanza specifies the stopping conditions for the inverter.
+
+  # Inversion control
+  
+  max_cg_iterations 100          # Number of iterations before forcing restart
+  max_cg_restarts 10             # Max number of restarts
+  error_for_propagator 1e-6      # Absolute error
+  rel_error_for_propagator 1e-6  # FNAL relative error
+
+The absolute error refers to the ratio of the L2 residual norm and the
+L2 source norm.  The relative error refers to the FNAL definition.
+When both are nonzero, both conditions must be satisfied for
+convergence.  Setting one of them to zero suppresses that condition.
+  
+The next series of stanzas specifies the quarks involved in the mesons.
+
+  # Description of quarks
+  
+  number_of_quarks 2
+  
+  # quark 0
+
+Parameters for the first quark
+
+  kappa 0.1
+  clov_c 1.2    # In MILC convention the clover coeff is clov_c/u0^3
+  u0 1.0
+
+The next line specifies whether the code should read the propagator
+file with or without checking it against the gauge field and source.
+
+  check yes
+
+Choices are "yes" and "no".
+  
+Propagator files for this quark
+
+  fresh_wprop
+  save_serial_fm_sc_wprop prop.test1
+
+The code recognizes both FNAL formats and the MILC propagator formats.
+The line "fresh_wprop" starts from a zero guess.  To read a propagator
+file, use
+
+           reload_serial_wprop filename
+
+For the archival FNAL format, use save_serial_fm_wprop.  Eventually,
+we will support save_serial_scidac_wprop and
+save_partfile_scidac_wprop.  Currently those commands generate a
+nonstandard SciDAC format.
+  
+The next stanza specifies the source for the first quark.
+
+  # source 
+  
+  gaussian
+  origin 0 0 0 0     # x y z t
+  r0 1.5             # exp[-(r/r0)^2]
+
+Options here are "point", "covariant_gaussian", "complex_field", and
+"dirac_field".  Each has its own stanza format.  Here are examples of
+each
+
+              point
+              origin 0 0 0 0
+
+              complex_field  (or dirac_field)
+              t0 0       # time slice
+              load_source  sourcefile
+
+              covariant_gaussian
+              origin 0 0 0 0
+              r0 1.5
+              source_iters 10
+
+FNAL rotation parameter for this quark
+
+  # d1
+
+  d1 0.1
+
+Do the same for the remaining quarks.
+  
+  # quark 1
+  
+  kappa 0.1
+  clov_c 1.2
+  u0 1.0
+  check yes
+  
+  fresh_wprop
+  save_serial_fm_sc_wprop prop.test2
+  
+  # source
+  
+  gaussian
+  origin 0 0 0 0
+  r0 1.5
+
+  # d1
+ 
+  d1 0.1
+
+The next stanzas describe the two-point functions to be computed.
+First we specify which pairings of quarks are needed.
+  
+  # Description of mesons
+  
+  number_of_pairings 2
+  
+  # pair 1
+  
+  pair 0 0
+
+Count quarks from 0.  This line specifies that we want to combine the
+first quark mentioned above with itself (as an antiquark in the meson)
+or to combine three of the first quark as a baryon.
+  
+The next line specifies the hadron propagators to be constructed.
+
+  spectrum_request point,3drotated,baryon
+
+This is a comma-separated list with NO spaces.  Choices are "point"
+for mesons with a point sink, "rotated" for mesons with a point
+rotated sink, "smeared" for a specified sink meson wave function,
+"baryon" for baryon propagators.
+
+When a "3drotated" correlator is requested, the next line should
+specify the rotation parameter "d1" as follows:
+
+d1 0.1
+
+We repeat for each desired pairing of quarks.
+  
+  # pair 2
+  
+  pair 0 1
+  
+  spectrum_request point,smeared
+
+When a "smeared" meson is specified, the code expects a sink
+description to follow.  Please note that sink smearing means
+introducing a wave function in the relative coordinate of the quark
+and antiquark.  This code does do not currently support the other type
+of smearing in which the quark and antiquark propagators are
+separately smeared, but if that is required, it is easy to add it to
+the code.
+
+  # sink
+  
+  gaussian
+  origin 0 0 0
+  r0 1.5
+  wave_func_label gaussian1.5    # label identifying the sink
+
+The sink specification is nearly the same as the source, except there
+are more limited options and we also require a label to identify the
+sinnk.  The covariant gaussian and Dirac wave functions didn't seem to
+make sense, so they were dropped.  Since the specification applies to
+all time slices, the time coordinate is not given.
+
+The next stanza specifies the source and sink gamma matrices to be
+applied in the meson contraction.  It also gives a label to each meson
+and specifies a phase factor to multiply the correlator.
+  
+  # Meson labels, gamma matrices and correlator phase factor
+  
+  number_of_mesons 17
+  
+  meson_source_sink PION G5 G5     1
+  meson_source_sink PS505 G5T G5   1
+  meson_source_sink PS0505 G5T G5T -1
+  meson_source_sink RHO GX GX      1
+  meson_source_sink RHO GY GY      1
+  meson_source_sink RHO GZ GZ      1
+  meson_source_sink RHO0 GXT GXT	 1
+  meson_source_sink RHO0 GYT GYT	 1
+  meson_source_sink RHO0 GZT GZT	 1
+  meson_source_sink SCALAR G1 G1   1
+  meson_source_sink SCAL0 GT GT    1
+  meson_source_sink PV G5X G5X   	 1
+  meson_source_sink PV G5Y G5Y   	 1
+  meson_source_sink PV G5Z G5Z   	 1
+  meson_source_sink B GXY GXY      -1
+  meson_source_sink B GYZ GYZ      -1
+  meson_source_sink B GZX GZX      -1
+
+In each line the first field is the meson label, the second two
+specify the source and sink gamma matrices and the last specifies the
+phase.  When a label is repeated, as we did in four cases, the
+correlators are averaged.  The gamma matrix notation is
+straightforward.  The 16 choices are
+
+   GX, GY, GZ, GT, G5, GYZ, GZX, GXY, GXT, GYT, GZT,  G5X, G5Y, G5Z, G5T, G1
+
+where G1 is the identity.
+
+The phase factor is limited to "1", "i", "-1", "-i".
+
+The final stanza specifies the meson momentum labels and components.
+  
+  # Meson momenta
+  
+  number_of_meson_momenta 4
+  
+  momentum p000 0 0 0     # kx ky kz
+  momentum p100 1 0 0
+  momentum p100 0 1 0
+  momentum p100 0 0 1
+  
