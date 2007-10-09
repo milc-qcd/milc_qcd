@@ -1,4 +1,4 @@
-/*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/debug_static.c,v 1.2 2007/05/21 04:56:00 detar Exp $
+/*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/debug_static.c,v 1.3 2007/10/09 21:02:32 detar Exp $
  *  This file contains a number of functions, thought
  *  to be useful to help debug the static code.
  *

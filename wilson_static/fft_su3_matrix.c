@@ -1,4 +1,4 @@
-/*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/fft_su3_matrix.c,v 1.2 2007/05/21 04:56:00 detar Exp $
+/*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/fft_su3_matrix.c,v 1.3 2007/10/09 21:02:32 detar Exp $
  *  A collection of routines to FFT su3 matrix
  *  objecs, such as the Wilson line, or the quark propagator
  *  which has had its spin indices stripped off.

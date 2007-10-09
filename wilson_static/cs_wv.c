@@ -1,7 +1,7 @@
 /**************************** cs_wv.c ****************************/
 /* MIMD version 7 */
 /*
-*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/cs_wv.c,v 1.2 2007/05/21 04:56:00 detar Exp $
+*  $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/cs_wv.c,v 1.3 2007/10/09 21:02:32 detar Exp $
 *
 *  Overwrite the a wilson vector with the wilso vector
 *  times a complex scalar
