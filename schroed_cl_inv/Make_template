@@ -57,7 +57,7 @@ G_OBJECTS =          \
   reunitarize2.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_w.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
 endif
 
 # Basic set from generic_wilson directory

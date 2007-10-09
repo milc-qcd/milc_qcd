@@ -1,4 +1,4 @@
-/*   $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/read_matrix_code/read_vary_matrix.c,v 1.2 2007/05/21 04:56:17 detar Exp $
+/*   $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/read_matrix_code/read_vary_matrix.c,v 1.3 2007/10/09 21:02:55 detar Exp $
  *  This is a acalar utility program to read the 
  *  static variational matrix from disk and
  *  print it to the screen --- this is useful for

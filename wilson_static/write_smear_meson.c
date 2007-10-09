@@ -12,7 +12,7 @@
  *
  */
 
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/write_smear_meson.c,v 1.2 2007/05/21 04:56:08 detar Exp $  **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/write_smear_meson.c,v 1.3 2007/10/09 21:02:32 detar Exp $  **/
 
 #include "w_static_includes.h"
 

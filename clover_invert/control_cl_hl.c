@@ -121,7 +121,8 @@ int main(int argc, char *argv[])
 #endif
 	wqstmp = wqs;  /* For clover_info.c */
 	fp_in_w[k]  = r_open_wprop(startflag_w[k], startfile_w[k]);
-	fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k] );
+	fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k],
+				   wqs.type);
 #ifdef IOTIME
 	dtime += dclock();
 	if(startflag_w[k] != FRESH)
@@ -174,12 +175,12 @@ int main(int argc, char *argv[])
 	      flag = 1;      
 	    
 	    /* load psi if requested */
-	    status = reload_wprop_sc_to_field( startflag_w[k], fp_in_w[k], 
+	    status = reload_wprop_sc_to_field( startflag_w[k], fp_in_w[k], &wqs,
 					       spin, color, psi, iotime);
 	    if(status != 0)
 	      {
 		node0_printf("control_cl_hl: Recovering from error by resetting initial guess to zero\n");
-		reload_wprop_sc_to_field( FRESH, fp_in_w[k], 
+		reload_wprop_sc_to_field( FRESH, fp_in_w[k], &wqs,
 					  spin, color, psi,0);
 		flag = 0;
 	      }
@@ -266,8 +267,8 @@ int main(int argc, char *argv[])
 #endif
 	    
 	    /* save psi if requested */
-	    save_wprop_sc_from_field( saveflag_w[k],fp_out_w[k],
-				      spin,color,psi,iotime);
+	    save_wprop_sc_from_field( saveflag_w[k],fp_out_w[k], &wqs,
+				      spin,color,psi,"", iotime);
 	    
 	  } /* source spins */
 	} /* source colors */

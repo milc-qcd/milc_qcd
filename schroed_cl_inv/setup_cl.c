@@ -158,6 +158,9 @@ int readin(int prompt) {
   strcpy(startfile,par_buf.startfile);
 
   for(i=0;i<par_buf.num_kap;i++){
+    wqs[i].c_src = NULL;
+    wqs[i].wv_src = NULL;
+    wqs[i].type = 0;
     wqs[i].x0 = 0;
     wqs[i].y0 = 0;
     wqs[i].z0 = 0;

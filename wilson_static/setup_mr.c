@@ -1,6 +1,6 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.6 2007/06/01 23:04:42 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.7 2007/10/09 21:02:32 detar Exp $  ***/
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
@@ -507,6 +507,8 @@ int readin(int prompt)
     nhop = par_buf.nhop;
     flag = par_buf.flag;
     wqs = par_buf.wqs;
+    init_wqs(&wqs);
+    wqs.type = par_buf.wqs.type;
     source_parity = par_buf.source_parity;
     rsqmin = par_buf.rsqmin;
     rsqprop = par_buf.rsqprop;

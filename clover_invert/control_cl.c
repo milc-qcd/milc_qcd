@@ -123,7 +123,8 @@ int main(int argc, char *argv[])
 	if(startflag_w[k] != FRESH)
 	node0_printf("Time to open prop = %e\n",dtime);
 #endif
-	fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k] );
+	fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k],
+				   wqs.type);
 	
 	
 	/* Loop over source spins */
@@ -146,12 +147,12 @@ int main(int argc, char *argv[])
 	    
 	    /* load psi if requested */
 	    status = reload_wprop_sc_to_field( startflag_w[k], fp_in_w[k], 
-				   spin, color, psi, iotime);
+				       &wqs, spin, color, psi, iotime);
 
 	    if(status != 0)
 	      {
 		node0_printf("control_cl: Recovering from error by resetting initial guess to zero\n");
-		reload_wprop_sc_to_field( FRESH, fp_in_w[k], 
+		reload_wprop_sc_to_field( FRESH, fp_in_w[k], &wqs,
 			       spin, color, psi, 0);
 		flag = 0;
 	      }
@@ -211,8 +212,8 @@ int main(int argc, char *argv[])
 	    copy_wp_from_wv(quark_propagator, psi, color, spin);
 	    
 	    /* save psi if requested */
-	    save_wprop_sc_from_field( saveflag_w[k],fp_out_w[k],
-			     spin,color,psi,iotime);
+	    save_wprop_sc_from_field( saveflag_w[k],fp_out_w[k], &wqs,
+			     spin,color,psi,"Fill in record info here",iotime);
 	  } /* source spins */
 	} /* source colors */
 	

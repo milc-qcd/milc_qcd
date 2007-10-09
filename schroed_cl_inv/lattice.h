@@ -98,9 +98,7 @@ EXTERN	int even_sites_on_node;	/* number of even sites on this node */
 EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
-
-EXTERN	wilson_quark_source wqs[MAX_KAP];
-
+EXTERN wilson_quark_source wqs[MAX_KAP];
 EXTERN	quark_invert_control qic;
 EXTERN	dirac_clover_param dcp;
 

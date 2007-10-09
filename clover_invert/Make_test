@@ -2,18 +2,18 @@
 # For clover_invert
 
 #------------------------------------------------------------
-# Examples for vanilla tests:
+# Examples for tests:
 
-#    make -f Make_test "ARCH=vanilla" test
+#    make -f Make_test check
 # or, for a specific project or projects
-#    make -f Make_test "ARCH=vanilla" "PROJS=su3_rmd" test
+#    make -f Make_test "PROJS=su3_clov" check
 
-# For tests on the SP, do the same, but use "ARCH=sp_mpi" with
-# the appropriate MP_PROCS environment variable set.
 
-# For tests on other platforms, first edit the file ../Make_test_template
-# to select the appropriate LAUNCH and ARCH.  Then run
-# commands as above, but without the command line "ARCH=..." definition.
+# Edit the Makefile for the appropriate architecture and the file
+# See ../Make_test_template to select the appropriate LAUNCH.
+
+LAUNCH = 
+LAUNCH2 = 
 
 # Results are in the files out.test.diff.* 
 #------------------------------------------------------------

@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.11  2007/10/09 21:10:05  detar
+//  Support new wprop options
+//
 //  Revision 1.10  2007/06/01 22:57:25  detar
 //  Upgrade prompts for lattice and prop file names
 //
@@ -300,6 +303,8 @@ int readin(int prompt) {
     relresid[i] = par_buf.relresid[i];
   }
   wqs = par_buf.wqs;
+  init_wqs(&wqs);
+  wqs.type = par_buf.wqs.type;
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);
   for(i=0;i<par_buf.num_kap;i++){

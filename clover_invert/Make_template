@@ -1,5 +1,5 @@
 #  Clover inverter with spectroscopy
-#  MIMD version 6
+#  MIMD version 7
 
 #  Generic make-include file for clover_invert codes
 #  For BOTH flavor-diagonal and mixed flavor {heavy-light} codes
@@ -47,6 +47,7 @@ MY_OBJECTS =         \
   clover_info.o      \
   dirac_utilities.o  \
   gauge_info.o       \
+  ksprop_info.o      \
   setup_cl.o         \
   spectrum_cl.o
 
@@ -66,7 +67,17 @@ G_OBJECTS =          \
   restrict_fourier.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_w.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
+endif
+
+# Set from generic_ks directory
+G_KS_OBJECTS =      \
+  io_helpers_ks.o   \
+  io_prop_ks.o      \
+  io_prop_ks_fm.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_KS_OBJECTS += io_scidac_ks.o
 endif
 
 # Basic set from generic_wilson directory
@@ -74,12 +85,14 @@ G_WILSON_OBJECTS =   \
   baryon_cont.o      \
   canopy2weyl_rot.o  \
   dslash_w3.o        \
+  gammas.o           \
   gauss_smear_w.o    \
   io_helpers_w.o     \
   io_prop_w.o        \
   io_prop_w_fm.o     \
   io_source_w_fm.o   \
   meson_cont.o       \
+  staggered2naive.o  \
   w_baryon.o         \
   wilson_invert.o    \
   w_meson.o          \
@@ -146,7 +159,7 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_WILSON_OBJECTS} \
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_WILSON_OBJECTS} \
   ${G_CLOVER_OBJECTS} ${LAYOUT} ${CL_OBJECTS} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
@@ -172,6 +185,7 @@ ALL_MAKES = \
   ../Make_template_qop \
   ../Make_template_scidac \
   ../generic/Make_template \
+  ../generic_ks/Make_template \
   ../generic_wilson/Make_template \
   ../generic_clover/Make_template \
 
@@ -254,6 +268,9 @@ clean:
 
 # Rules for generic routines
 include ../generic/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_ks/Make_template
 
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template
