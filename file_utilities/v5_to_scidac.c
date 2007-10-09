@@ -55,6 +55,7 @@
 #define NATURAL_ORDER 0
 
 #define MAX_BUF_LENGTH 4096
+#define MAX_STRING 32
 
 typedef struct {
   gauge_file *gf;
@@ -91,39 +92,61 @@ void read_info_val(char tag[], float *val, int *found, char *line)
     }
 }
 
+/*--------------------------------------------------------------------*/
+/* Parse MILC info line for a desired value */
+void read_info_valstring(char tag[], char *valstring, int *found, char *line)
+{
+
+  if(strstr(line,tag) == NULL)return;
+  /* Support two line formats */
+  if(strstr(line,"=") == NULL)
+    {
+      /* TAG value */
+      if(sscanf(line,"%*s %s",valstring) == 1)*found = 1;
+    }
+  else
+    {
+      /* TAG = value */
+      if(sscanf(line,"%*s %*s %s",valstring) == 1)*found = 1;
+    }
+}
+
+/*----------------------------------------------------------------------*/
+/* Print string formatting with digits based on intended precision */
+void print_prec(char string[], size_t n, Real value, int prec){
+  if(prec == 1){
+    snprintf(string,n,"%.6e",value);  /* single precision */
+  }
+  else
+    snprintf(string,n,"%.15e",value); /* double precision */
+}
+
+static QIO_String *xml_record;
+
 /*----------------------------------------------------------------------*/
 /* Read the lattice info file if it exists and put its contents in "buf"
    with tags suitable for the user record XML */
-int read_info(char *buf, char *latfilename, int maxlength){
+QIO_String *create_recxml(char *latfilename){
+  char buf[MAX_RECXML_LENGTH];
+  int maxlength = MAX_RECXML_LENGTH;
   char infofilename[MAX_INFO_FILENAME];
   FILE *infofp;
-  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><usqcdInfo><version>1.0</version>";
-  char begin_info[] = "<info>";
-  char end_info[] = "</info>";
-  char end[] = "</usqcdInfo>";
+  QIO_USQCDLatticeInfo *record_info;
   char missing[] = "missing";
   char infoline[MAX_INFO_LINE];
   int length = 0;
   int foundssplaq = 0, foundstplaq = 0, foundlinktr = 0;
-  float ssplaq, stplaq, linktr;
+  float ssplaq = 0, stplaq = 0;
+  char plaqstring[MAX_STRING];
+  char linktrstring[MAX_STRING];
 
   /* Construct file name */
   if(strlen(latfilename) + 5 >= MAX_INFO_FILENAME){
     fprintf(stderr,"Not enough room for info filename\n");
-    return 1;
+    return NULL;
   }
   strcpy(infofilename,latfilename);
   strcat(infofilename,".info");
-
-  /* Start the USQCD info */
-  length += strlen(begin);
-  if(length < maxlength)
-    strcpy(buf, begin);
-
-  /* Start the (MILC) info tag */
-  length += strlen(begin_info);
-  if(length < maxlength)
-    strcat(buf, begin_info);
 
   /* Look for info file in directory */
   infofp = fopen(infofilename,"r");
@@ -143,7 +166,8 @@ int read_info(char *buf, char *latfilename, int maxlength){
       /* Look for needed metadata */
       read_info_val("gauge.ssplaq", &ssplaq, &foundssplaq, infoline);
       read_info_val("gauge.stplaq", &stplaq, &foundstplaq, infoline);
-      read_info_val("gauge.nersc_linktr", &linktr, &foundlinktr, infoline);
+      read_info_valstring("gauge.nersc_linktr", linktrstring, 
+			  &foundlinktr, infoline);
     }
   }
   else{
@@ -152,38 +176,24 @@ int read_info(char *buf, char *latfilename, int maxlength){
 	strcat(buf, missing);
   }
 
-  /* Finish the MILC info */
-  length += strlen(end_info);
-  if(length < maxlength)
-    strcat(buf, end_info);
+  if(length >= maxlength){
+    fprintf(stderr,"Not enough room for the info file data\n");
+    return NULL;
+  }
 
   printf("found ss %d st %d tr %d\n",foundssplaq,foundstplaq,foundlinktr);
 
   /* Append the USQCD tags and values if we have them */
   if(foundssplaq && foundstplaq)
-    {
-      snprintf(buf+length, maxlength-length, 
-	       "<plaq>%e</plaq>",(ssplaq+stplaq)/6.);
-      length = strlen(buf);
-    }
+    print_prec(plaqstring, 32, (ssplaq+stplaq)/6., 1);
 
-  if(foundlinktr)
-    {
-      snprintf(buf+length, maxlength-length, 
-	       "<linktr>%e</linktr>",linktr);
-      length = strlen(buf);
-    }
+  record_info = QIO_create_usqcd_lattice_info(plaqstring, linktrstring, buf);
 
-  /* Finish the USQCD info */
-  length += strlen(end);
-  if(length < maxlength)
-    strcat(buf, end);
-
-  if(length >= maxlength){
-    fprintf(stderr,"Not enough room for the info file data\n");
-    return 1;
-  }
-  return 0;
+  xml_record = QIO_string_create();
+  QIO_encode_usqcd_lattice_info(xml_record, record_info);
+  QIO_destroy_usqcd_lattice_info(record_info);
+  
+  return xml_record;
 }
 
 /*----------------------------------------------------------------------*/
@@ -439,6 +449,7 @@ int main(int argc, char *argv[])
   char *filename_milc,*filename_scidac;
   QIO_Layout layout;
   QIO_Writer *outfile;
+  QIO_Filesystem fs;
   QIO_RecordInfo *rec_info;
   int status;
   int ildgstyle;
@@ -450,8 +461,8 @@ int main(int argc, char *argv[])
   r_serial_site_reader state;
   QIO_String *xml_record_out;
   char ildg_lfn[MAX_ILDGLFN];
-  char recxml[MAX_RECXML_LENGTH];
-  char filexml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>MILC ILDG archival gauge configuration</title>";
+  QIO_String *filexml;
+  char default_file_xml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>MILC ILDG archival gauge configuration</title>";
 
   if(argc < 3 || 
      (argc < 4 && argv[1][0] == '-') || 
@@ -483,8 +494,8 @@ int main(int argc, char *argv[])
     }
   }
 
-  if(read_info(recxml, filename_milc, MAX_RECXML_LENGTH) != 0)return 1;
-
+  xml_record_out = create_recxml(filename_milc);
+  if(xml_record_out == NULL)return 1;
 
   if(this_node == 0)printf("Converting MILC v5 file %s to SciDAC file %s\n",
 			   filename_milc, filename_scidac);
@@ -536,10 +547,14 @@ int main(int argc, char *argv[])
   gf = r_serial_i(filename_milc);
 
   /* Open the SciDAC file for writing */
+  build_qio_filesystem(&fs);
+  filexml = QIO_string_create();
+  QIO_string_set(filexml, default_file_xml);
   outfile = open_scidac_output(filename_scidac, QIO_SINGLEFILE,
 			       QIO_SERIAL, ildgstyle, ildg_lfn, &layout,
-			       filexml);
+			       &fs, filexml);
   if(outfile == NULL)terminate(1);
+  QIO_string_destroy(filexml);
 
   /* Initialize reading the MILC lattice data */
   r_serial_start_lattice(gf, &state);
@@ -547,9 +562,8 @@ int main(int argc, char *argv[])
   /* Write the SciDAC record. The factory function reads the
      site links from the MILC file */
 
-  xml_record_out = QIO_string_create();
-  QIO_string_set(xml_record_out, recxml);
-  rec_info = QIO_create_record_info(QIO_FIELD, "QDP_F3_ColorMatrix", "F", 
+  rec_info = QIO_create_record_info(QIO_FIELD, NULL, NULL, 0,
+				    "USQCD_F3_ColorMatrix", "F", 
 				    3, 0, datum_size, 4);
   status = QIO_write(outfile, rec_info, xml_record_out,
 		     r_serial_site_links, datum_size*count, word_size, 

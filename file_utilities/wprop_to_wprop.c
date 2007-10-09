@@ -26,6 +26,12 @@
 #include "../include/generic.h"
 #include "../include/generic_wilson.h"
 #include "../include/io_lat.h"
+#ifdef HAVE_QIO
+#include "../include/io_scidac.h"
+#include "../include/io_scidac_w.h"
+#include <qio.h>
+#endif
+#include "../include/io_ksprop.h"
 
 #ifdef HAVE_QDP
 #include <qdp.h>
@@ -38,8 +44,8 @@
 static file_type w_prop_list[N_WPROP_TYPES] =
   { {FILE_TYPE_W_PROP,       W_PROP_VERSION_NUMBER},
     {FILE_TYPE_W_PROP_1996,  W_PROP_VERSION_NUMBER_1996},
-    {FILE_TYPE_W_FMPROP,     W_FMPROP_VERSION_NUMBER},
-    {FILE_TYPE_W_QIOPROP,    LIME_MAGIC_NO}
+    {FILE_TYPE_FM,           IO_UNI_MAGIC},
+    {FILE_TYPE_LIME,         LIME_MAGIC_NO}
   };
 
 /*----------------------------------------------------------------------*/
@@ -69,29 +75,29 @@ void free_lattice()
 }
 /*----------------------------------------------------------------------*/
 
-int get_prompt(FILE *fp,  int *prompt ){
-    char initial_prompt[80];
-    int status;
-
-    *prompt = -1;
-    printf( "type 0 for no prompts  or 1 for prompts\n");
-    status = fscanf(fp, "%s",initial_prompt);
-    if(status != 1){
-      printf("\nget_prompt: Can't read stdin\n");
-      terminate(1);
-    }
-    if(strcmp(initial_prompt,"prompt") == 0)  {
-       fscanf(fp, "%d",prompt);
-    }
-    else if(strcmp(initial_prompt,"0") == 0) *prompt=0;
-    else if(strcmp(initial_prompt,"1") == 0) *prompt=1;
-
-    if( *prompt==0 || *prompt==1 )return(0);
-    else{
-        printf("\nget_prompt: ERROR IN INPUT: initial prompt\n");
-        return(1);
-    }
-}
+// int get_prompt(FILE *fp,  int *prompt ){
+//     char initial_prompt[80];
+//     int status;
+// 
+//     *prompt = -1;
+//     printf( "type 0 for no prompts  or 1 for prompts\n");
+//     status = fscanf(fp, "%s",initial_prompt);
+//     if(status != 1){
+//       printf("\nget_prompt: Can't read stdin\n");
+//       terminate(1);
+//     }
+//     if(strcmp(initial_prompt,"prompt") == 0)  {
+//        fscanf(fp, "%d",prompt);
+//     }
+//     else if(strcmp(initial_prompt,"0") == 0) *prompt=0;
+//     else if(strcmp(initial_prompt,"1") == 0) *prompt=1;
+// 
+//     if( *prompt==0 || *prompt==1 )return(0);
+//     else{
+//         printf("\nget_prompt: ERROR IN INPUT: initial prompt\n");
+//         return(1);
+//     }
+// }
 
 /*----------------------------------------------------------------------*/
 
@@ -180,6 +186,22 @@ int main(int argc, char *argv[])
     {
       /* Sniff out the input file type */
       file_type = io_detect(par_buf.startfile, w_prop_list, N_WPROP_TYPES);
+
+      /* For FNAL types we need to look farther to distinguish Wilson
+	 prop files from KS prop files  */
+      if(file_type == FILE_TYPE_FM)
+	file_type = io_detect_fm(par_buf.startfile);
+
+      /* For QIO(LIME) types, same thing */
+      if(file_type == FILE_TYPE_LIME){
+#ifdef HAVE_QIO
+	file_type = io_detect_w_usqcd(par_buf.startfile);
+#else
+	node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
+	return NULL;
+#endif
+      }
+	
       if(file_type < 0){
 	node0_printf("Can't determine Wilson prop file type %s\n", par_buf.startfile);
 	normal_exit(1);
