@@ -14,7 +14,8 @@
 
 void update_h_rhmc( Real eps, su3_vector **multi_x ){
 #ifdef FN
-  free_fn_links();
+  free_fn_links(&fn_links);
+  free_fn_links(&fn_links_dmdu0);
 #endif
   /*  node0_printf("update_h_rhmc:\n"); */
   /* gauge field force */
@@ -60,7 +61,8 @@ void update_h_gauge( Real eps ){
 void update_h_fermion( Real eps, su3_vector **multi_x ){
   int iphi;
 #ifdef FN
-  free_fn_links();
+  free_fn_links(&fn_links);
+  free_fn_links(&fn_links_dmdu0);
 #endif
   /*node0_printf("update_h_fermion:\n"); */
   /* fermionic force */
@@ -86,7 +88,8 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
 	       rsqmin_md[iphi], prec_md[iphi], EVEN, &final_rsq );
 
     for(j=0;j<order;j++){
-	dslash_field( multi_x[tmporder+j], multi_x[tmporder+j],  ODD );
+	dslash_field( multi_x[tmporder+j], multi_x[tmporder+j],  ODD,
+		      &fn_links, &ks_act_paths);
 	allresidues[tmporder+j] = residues[j+1];
 	// remember that residues[0] is constant, no force contribution.
     }

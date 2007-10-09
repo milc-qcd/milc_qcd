@@ -16,6 +16,7 @@
 
 #include "defines.h"
 #include "../include/generic_quark_types.h"
+#include "../include/generic_ks.h" /* For fn_links_t and ks_action_paths */
 #include "../include/random.h"    /* For double_prn */
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
@@ -191,16 +192,11 @@ EXTERN site *lattice;
 #define N_POINTERS 16
 EXTERN char ** gen_pt[N_POINTERS];
 
-/* field major storage DON't FORGET to MALLOC somewhere */
-EXTERN su3_matrix *t_longlink;
-EXTERN su3_matrix *t_fatlink;
-#ifdef DBLSTORE_FN
-EXTERN su3_matrix *t_longbacklink;
-EXTERN su3_matrix *t_fatbacklink;
-#endif
-#ifdef DM_DU0
-EXTERN su3_matrix *t_dfatlink_du0;
-#endif
+/* Storage for definition of the quark action */
+EXTERN fn_links_t        fn_links;
+EXTERN ks_action_paths ks_act_paths;
+EXTERN fn_links_t        fn_links_dmdu0;
+EXTERN ks_action_paths ks_act_paths_dmdu0;
 
 #include "params_rhmc.h"
 EXTERN int n_pseudo;

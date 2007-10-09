@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.17  2007/10/09 19:51:02  detar
+//  Add fn_links_t and ks_action_paths structures and pass them as params
+//
 //  Revision 1.16  2007/05/21 04:23:32  detar
 //  Add Precision selection for fermion force in QOP and QDP
 //
@@ -122,25 +125,13 @@ setup()
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
+  node0_printf("Made lattice\n"); fflush(stdout);
 
   /* Mark t_longlink and t_fatlink as unallocated */
-  t_longlink = NULL;  
-  t_fatlink = NULL;
-  
-#ifdef DBLSTORE_FN
-  t_longbacklink = NULL;
-  t_fatbacklink = NULL;
-#endif
-
+  init_fn_links(&fn_links);
 #ifdef DM_DU0
-  /* Allocate space for u0 derivative of temp fatlinks */
-  t_dfatlink_du0 = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
-  if(t_dfatlink_du0==NULL){
-    printf("NODE %d: no room for t_dfatlink\n",this_node);
-    terminate(1);
-  }
+  init_fn_links(&fn_links_dmdu0);
 #endif
-  node0_printf("Made lattice\n"); fflush(stdout);
   /* set up neighbor pointers and comlink structures
      code for this routine is in com_machine.c  */
   make_nn_gathers();
@@ -457,7 +448,8 @@ readin(int prompt)
   startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
 #ifdef FN
-  invalidate_fn_links();
+  invalidate_fn_links(&fn_links);
+  invalidate_fn_links(&fn_links_dmdu0);
 #endif
   phases_in = OFF;
   rephase( ON );
@@ -465,7 +457,7 @@ readin(int prompt)
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
   /* make table of coefficients and permutations of paths in quark action */
-  make_path_table();
+  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
   
   return(0);
 }

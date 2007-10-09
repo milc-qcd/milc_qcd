@@ -101,7 +101,8 @@ int update()  {
     if(steps > 0)
       gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-    invalidate_fn_links();
+    invalidate_fn_links(&fn_links);
+    invalidate_fn_links(&fn_links_dmdu0);
 #endif
     node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
   }

@@ -27,7 +27,8 @@ void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf,
     ks_ratinv( phi_off, multi_x, roots, order, my_niter,
 	       my_rsqmin, cg_prec, EVEN, &final_rsq );
 
-    for(j=0;j<order;j++){ dslash_field( multi_x[j], multi_x[j],  ODD ); }
+    for(j=0;j<order;j++){ dslash_field( multi_x[j], multi_x[j],  ODD,
+					&fn_links, &ks_act_paths); }
 
     eo_fermion_force_multi( eps, &(residues[1]), multi_x, order, ff_prec );
 }

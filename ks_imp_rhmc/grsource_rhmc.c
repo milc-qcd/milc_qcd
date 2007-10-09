@@ -1,11 +1,9 @@
 /************************ grsource_rhmc.c *****************************/
 /* MIMD version 7 */
 /* Kogut-Susskind fermions  -- this version for "fat plus Naik"
-   or general "even plus odd" quark actions.  Assumes "dslash" has
-   been defined to be the appropriate "dslash_fn" or "dslash_eo"
+   or general "even plus odd" quark actions.
 */
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
-#include "../include/dslash_ks_redefine.h"
 
 /* construct a gaussian random vector, g_rand, and phi=M(dagger)*M)^(nf/8)*g_rand  */
 /* "parity" is EVEN, ODD, or EVENANDODD.  The parity is the parity at

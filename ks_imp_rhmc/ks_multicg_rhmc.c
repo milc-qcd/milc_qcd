@@ -191,17 +191,23 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 
 #ifdef FN
 	if(special_started==0){
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1 );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1 );
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1,
+				      &fn_links, &ks_act_paths);
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1,
+				     &fn_links, &ks_act_paths);
 	    special_started = 1;
 	}
 	else {
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0 );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0 );
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0,
+				     &fn_links, &ks_act_paths);
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0,
+				     &fn_links, &ks_act_paths);
 	}
 #else
-	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity);
-	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity);
+	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
+		     &fn_links, &ks_act_paths);
+	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
+		     &fn_links, &ks_act_paths);
 #endif
 
 	/* finish computation of (-1)*M_adjoint*m*p and (-1)*p*M_adjoint*M*p */
