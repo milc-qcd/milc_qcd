@@ -28,38 +28,6 @@ static su3_vector *ttt,*cg_p;
 static su3_vector *resid;
 static int first_multicongrad = 1;
 
-/* Interface for calls with a list of masses */ 
-
-int ks_multicg_mass(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *masses,	/* the masses */
-    int num_masses,	/* number of masses */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* internal precision for inversion (ignored) */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
-    )
-{
-  int i;
-  int status;
-  Real *offsets;
-
-  offsets = (Real *)malloc(sizeof(Real)*num_masses);
-  if(offsets == NULL){
-    printf("ks_multicg_mass: No room for offsets\n");
-    terminate(1);
-  }
-  for(i = 0; i < num_masses; i++){
-    offsets[i] = 4.0*masses[i]*masses[i];
-  }
-  status = ks_multicg_offset(src, psim, offsets, num_masses, niter, rsqmin,
-			     prec, parity, final_rsq_ptr);
-  free(offsets);
-  return status;
-}
-
 /* Interface for call with offsets = 4 * mass * mass */
 
 int ks_multicg_offset(	/* Return value is number of iterations taken */
@@ -71,7 +39,9 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* internal precision for inversion (ignored) */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real *final_rsq_ptr,/* final residue squared */
+    fn_links_t *fn,       /* Storage for fat and Naik links */
+    ks_action_paths *ap /* Definition of action */
     )
 {
     /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
@@ -216,17 +186,19 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 
 #ifdef FN
 	if(special_started==0){
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1 );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1 );
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 
+				     1, fn, ap );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1, fn, ap );
 	    special_started = 1;
 	}
 	else {
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0 );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0 );
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 
+				     0, fn, ap );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn, ap );
 	}
 #else
-	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity);
-	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity);
+	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity, fn, ap);
+	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity, fn, ap);
 #endif
 
 	/* finish computation of (-1)*M_adjoint*m*p and (-1)*p*M_adjoint*M*p */

@@ -199,7 +199,7 @@ ks_prop_file *setup_output_ks_fmprop_file()
 
   /* Load header values */
 
-  ph->magic_number = KSFMPROP_VERSION_NUMBER;
+  ph->magic_number = IO_UNI_MAGIC;
 
   ph->dims[0] = nx;
   ph->dims[1] = ny;
@@ -555,12 +555,12 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 
   tmp = ksph->magic_number;
   
-  if(ksph->magic_number == KSFMPROP_VERSION_NUMBER) 
+  if(ksph->magic_number == IO_UNI_MAGIC) 
     byterevflag=0;
   else 
     {
       byterevn((int32type *)&ksph->magic_number,1);
-      if(ksph->magic_number == KSFMPROP_VERSION_NUMBER) 
+      if(ksph->magic_number == IO_UNI_MAGIC) 
 	{
 	  byterevflag=1; 
 	  /** printf("Reading with byte reversal\n"); **/
@@ -580,7 +580,7 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 	  printf("%s: Unrecognized magic number in prop file header.\n",
 		 myname);
 	  printf("Expected %x but read %x\n",
-		 KSFMPROP_VERSION_NUMBER,tmp);
+		 IO_UNI_MAGIC,tmp);
 	  terminate(1);
 	}
     }
@@ -992,7 +992,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
       /* Verify checksum */
       /* Checksums not implemented until version 5 */
 
-      if(ksph->magic_number == KSFMPROP_VERSION_NUMBER)
+      if(ksph->magic_number == IO_UNI_MAGIC)
 	{
 	  /*if(kspf->check.sum29 != test_kspc.sum29 ||
 	    kspf->check.sum31 != test_kspc.sum31)

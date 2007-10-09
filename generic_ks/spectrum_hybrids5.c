@@ -86,7 +86,8 @@ void mult_1mps( int pdir, field_offset src, field_offset dest );
 void mult_1mps_rev( int pdir, field_offset src, field_offset dest );
 void mult_1mpE( int pdir, field_offset src, field_offset dest );
 void mult_qqqq1mp0( int src_t, int pdir, field_offset src, field_offset dest,
-   field_offset work, field_offset temp, Real mass );
+		    field_offset work, field_offset temp, Real mass,
+		    fn_links_t *fn, ks_action_paths *ap);
    /* non-exotic hybrids*/
 void mult_zero_mp( field_offset src, field_offset dest );
 void mult_one_mm( int pdir, field_offset src, field_offset dest );
@@ -96,7 +97,8 @@ void mult_by_field_strength( int dir1, int dir2,
     field_offset src, field_offset dest );
 int test_converge(int t_source);
 
-int spectrum_hybrids( Real mass, field_offset temp, Real tol )
+int spectrum_hybrids( Real mass, field_offset temp, Real tol,
+		      fn_links_t *fn, ks_action_paths *ap )
 { /* return the C.G. iteration number */
 
   int cgn;
@@ -135,7 +137,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
 
 #ifdef FN
   /* smeared links overwrite longlinks */
-  invalidate_fn_links();
+  invalidate_fn_links(&fn_links);
 #endif
   rephase(OFF);
   if(this_node==0)printf("SMEARING IS ON, level %d\n",SMEAR);
@@ -183,10 +185,11 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
 
         /* compute M^-1 * quark_source */
         cgn += mat_invert( F_OFFSET(quark_source), F_OFFSET(quark_prop),
-	    temp, mass, PRECISION );
+			   temp, mass, PRECISION, fn, ap );
 	/*if(t_source==0)test_converge(t_source);*/ /*TEMP*/
 	/* TEMP: test inversion, */
-	check_invert( F_OFFSET(quark_prop), F_OFFSET(quark_source), mass, tol );
+	check_invert( F_OFFSET(quark_prop), F_OFFSET(quark_source), mass, tol,
+		      fn, ap);
 
         /* Begin with the pion source and sink operator */
         /* Use mat_invert to construct anti_prop */
@@ -200,7 +203,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
         /* Now the 0+-_0+- propagator */
         mult_zero_pm( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+			   temp, mass, PRECISION, fn, ap );
         mult_zero_pm( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -213,7 +216,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
         /* Now do the 1-+_1-+ source.  For the moment, Z component only */
         mult_1mp0( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+			   temp, mass, PRECISION, fn, ap );
         mult_1mp0( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -226,7 +229,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
         /* Now do the 1-+_1-+ source.  For the moment, Z component only */
         mult_1mps( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+			   temp, mass, PRECISION, fn, ap );
         mult_1mps( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 /**mult_1mps_rev( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );**/
         FORALLSITES(i,s){
@@ -239,7 +242,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
         /* Now the 1-+2_1+-2 source.  For the moment, Z component only */
         mult_1mpE( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+			   temp, mass, PRECISION, fn, ap );
         mult_1mpE( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -255,9 +258,10 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
 #ifdef QQQQ_SOURCE
         /* Now the 4-quark (a1-pi) source.  For the moment, Z component only */
         mult_qqqq1mp0( t_source,  ZUP,
-	    F_OFFSET(quark_source), F_OFFSET(g_rand), F_OFFSET(anti_prop), F_OFFSET(phi1), mass1 );
+		       F_OFFSET(quark_source), F_OFFSET(g_rand), 
+		       F_OFFSET(anti_prop), F_OFFSET(phi1), mass1, fn, ap );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-	    temp, mass, PRECISION );
+			   temp, mass, PRECISION, fn, ap );
 
         mult_1mpE( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
@@ -533,7 +537,8 @@ void mult_1mpE( int pdir, field_offset src, field_offset dest ){
    "src_t" is the operator time slice
    "pdir" is the polarization direction of the meson */
 void mult_qqqq1mp0( int src_t, int pdir, field_offset src, field_offset dest,
-    field_offset work, field_offset temp, Real mass ){
+		    field_offset work, field_offset temp, Real mass,
+		    fn_links_t *fn, ks_action_paths *ap){
     register int i;
     register site *s;
     /* use "work" and "temp" as temporary storage */
@@ -547,7 +552,7 @@ exit(0);
     FORALLSITES(i,s){
 	/* two (-1)^(x+y+z+t)'s = 1 */
     }
-    mat_invert( dest, work, temp, mass, PRECISION );
+    mat_invert( dest, work, temp, mass, PRECISION, fn, ap );
     FORALLSITES(i,s){
 	if(s->t== src_t ){
 	    /* really three (-1)^(x+y+z+t)'s - both propagators have one end here */

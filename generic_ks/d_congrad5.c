@@ -332,7 +332,8 @@ ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest,
 /* API for field arguments */
 
 int ks_congrad_field( su3_vector *src, su3_vector *dest, 
-		      quark_invert_control *qic, Real mass)
+		      quark_invert_control *qic, Real mass,
+		      fn_links_t *fn, ks_action_paths *ap)
 {
   int iters = 0;
   double dtimec;
@@ -345,14 +346,14 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
   if(qic->parity == EVEN || qic->parity == EVENANDODD){
     iters += ks_congrad_parity(src, dest, qic, mass);
   }
-  else if(qic->parity == ODD || qic->parity == EVENANDODD){
+  if(qic->parity == ODD || qic->parity == EVENANDODD){
     iters += ks_congrad_parity(src, dest, qic, mass);
   }
 
   dtimec += dclock();
 #ifdef CGTIME
   if(this_node==0){
-    printf("CONGRAD5: time = %e (fn %s) iters = %d mflops = %e\n",
+    printf("CONGRAD5: time = %e (naive %s) masses = 1 iters = %d mflops = %e\n",
 	   dtimec, prec_label[PRECISION-1], iters, 
 	   (double)(nflop*volume*iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
@@ -364,7 +365,8 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
 /* New API for site arguments */
 
 int ks_congrad_site( field_offset src, field_offset dest, 
-		     quark_invert_control *qic, Real mass )
+		     quark_invert_control *qic, Real mass,
+		     fn_links_t *fn, ks_action_paths *ap)
 {
   int i;
   site *s;
@@ -409,7 +411,7 @@ int ks_congrad_site( field_offset src, field_offset dest,
   dtimec += dclock();
 #ifdef CGTIME
   if(this_node==0){
-    printf("CONGRAD5: time = %e (fn %s) iters = %d mflops = %e\n",
+    printf("CONGRAD5: time = %e (naive %s) masses = 1 iters = %d mflops = %e\n",
 	   dtimec, prec_label[PRECISION-1], iters, 
 	   (double)(nflop*volume*iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
@@ -419,10 +421,12 @@ int ks_congrad_site( field_offset src, field_offset dest,
 }
 
 /* Traditional MILC API for site arguments and no relative residual test */
+/* The fn and ap args are ignored, since this file does naive staggered. */
 
 int ks_congrad( field_offset src, field_offset dest, Real mass,
 		int niter, int nrestart, Real rsqmin, int prec,
-		int parity, Real *final_rsq ){
+		int parity, Real *final_rsq,
+		fn_links_t *fn, ks_action_paths *ap){
   int iters;
   quark_invert_control qic;
 
@@ -435,7 +439,7 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
   qic.relresid  = 0;     /* Suppresses this test */
 
   /* Solve the system */
-  iters = ks_congrad_site( src, dest, &qic, mass );
+  iters = ks_congrad_site( src, dest, &qic, mass, fn, ap );
 
   /* Unpack the results */
   *final_rsq    = qic.final_rsq;

@@ -14,14 +14,14 @@
 /* Compute M^-1 * phi, answer in dest
   Uses phi, ttt, resid, xxx, and cg_p as workspace */
 int mat_invert_cg_old( field_offset src, field_offset dest, field_offset temp,
-		   Real mass, int prec ){
+		   Real mass, int prec,fn_links_t *fn, ks_action_paths *ap  ){
     int cgn;
     Real finalrsq;
     //    clear_latvec( dest, EVENANDODD );
     cgn = ks_congrad( src, dest, mass,
-        niter, nrestart, rsqprop, prec, EVENANDODD, &finalrsq);
+        niter, nrestart, rsqprop, prec, EVENANDODD, &finalrsq, fn, ap);
     /* Multiply by Madjoint */
-    dslash_site( dest, F_OFFSET(ttt), EVENANDODD);
+    dslash_site( dest, F_OFFSET(ttt), EVENANDODD, fn, ap);
     scalar_mult_add_latvec( F_OFFSET(ttt), dest,
        -2.0*mass, F_OFFSET(ttt), EVENANDODD);
     scalar_mult_latvec( F_OFFSET(ttt), -1.0, dest, EVENANDODD );
@@ -32,7 +32,7 @@ int mat_invert_cg_old( field_offset src, field_offset dest, field_offset temp,
 /* Compute M^-1 * phi, answer in dest
   Uses phi, ttt, resid, xxx, and cg_p as workspace */
 int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
-		   Real mass, int prec ){
+		   Real mass, int prec, fn_links_t *fn, ks_action_paths *ap ){
     int cgn;
     quark_invert_control qic;
 
@@ -45,11 +45,11 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 
     //    clear_latvec( dest, EVENANDODD );
     /* Multiply SOURCE by Madjoint */
-    dslash_site( src, F_OFFSET(ttt), EVENANDODD);
+    dslash_site( src, F_OFFSET(ttt), EVENANDODD, fn, ap );
     scalar_mult_add_latvec( F_OFFSET(ttt), src,
        -2.0*mass, F_OFFSET(ttt), EVENANDODD);
     scalar_mult_latvec( F_OFFSET(ttt), -1.0, F_OFFSET(ttt), EVENANDODD );
-    cgn = ks_congrad_site( F_OFFSET(ttt), dest, &qic, mass );
+    cgn = ks_congrad_site( F_OFFSET(ttt), dest, &qic, mass, fn, ap );
     return(cgn);
 }
 
@@ -57,7 +57,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 /* Compute M^-1 * phi, answer in dest
   Uses phi, ttt, resid, xxx, and cg_p as workspace */
 int mat_invert_cg_odd( field_offset src, field_offset dest, field_offset temp,
-		   Real mass, int prec ){
+		   Real mass, int prec, fn_links_t *fn, ks_action_paths *ap ){
     int cgn;
     quark_invert_control qic;
 
@@ -70,11 +70,11 @@ int mat_invert_cg_odd( field_offset src, field_offset dest, field_offset temp,
 
     //    clear_latvec( dest, EVENANDODD );
     /* Multiply SOURCE by Madjoint ODD sites only */
-    dslash_site( src, F_OFFSET(ttt), ODD);
+    dslash_site( src, F_OFFSET(ttt), ODD, fn, ap);
     scalar_mult_add_latvec( F_OFFSET(ttt), src,
        -2.0*mass, F_OFFSET(ttt), ODD);
     scalar_mult_latvec( F_OFFSET(ttt), -1.0, F_OFFSET(ttt), ODD );
-    cgn = ks_congrad_site( F_OFFSET(ttt), dest, &qic, mass);
+    cgn = ks_congrad_site( F_OFFSET(ttt), dest, &qic, mass, fn, ap);
     return(cgn);
 }
 
@@ -103,7 +103,8 @@ int mat_invert_cg_odd( field_offset src, field_offset dest, field_offset temp,
 */
          
 int mat_invert_uml_old(field_offset src, field_offset dest, field_offset temp,
-		       Real mass, int prec ){
+		       Real mass, int prec, fn_links_t *fn, ks_action_paths *ap )
+{
     int cgn;
     Real finalrsq;
     register int i;
@@ -113,16 +114,16 @@ int mat_invert_uml_old(field_offset src, field_offset dest, field_offset temp,
 	printf("BOTCH\n"); exit(0);
     }
     /* multiply by U - even sites only */
-    dslash_site( src, F_OFFSET(ttt), EVEN);
+    dslash_site( src, F_OFFSET(ttt), EVEN, fn, ap);
     scalar_mult_add_latvec( F_OFFSET(ttt), src,
        -2.0*mass, temp, EVEN);
     scalar_mult_latvec( temp, -1.0, temp, EVEN);
     /* invert with M_adj M even */
     cgn = ks_congrad( temp, dest, mass, niter, nrestart, rsqprop,
-		      prec, EVEN, &finalrsq );
+		      prec, EVEN, &finalrsq, fn, ap );
     /* multiply by (1/2m)L, does nothing to even sites */
     /* fix up odd sites , 1/2m (Dslash_oe*dest_e + phi_odd) */
-    dslash_site( dest, F_OFFSET(ttt), ODD );
+    dslash_site( dest, F_OFFSET(ttt), ODD, fn, ap );
     FORODDSITES(i,s){
 	sub_su3_vector( (su3_vector *)F_PT(s,src), &(s->ttt), 
 	    (su3_vector *)F_PT(s,dest) );
@@ -140,7 +141,7 @@ int mat_invert_uml_old(field_offset src, field_offset dest, field_offset temp,
    C DeTar 1/2007  */
 
 int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
-		   Real mass, int prec ){
+		   Real mass, int prec, fn_links_t *fn, ks_action_paths *ap ){
     int cgn;
     register int i;
     register site *s;
@@ -157,18 +158,18 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
     }
     /* "Precondition" both even and odd sites */
     /* temp <- M_adj * src */
-    dslash_site( src, F_OFFSET(ttt), EVENANDODD);
+    dslash_site( src, F_OFFSET(ttt), EVENANDODD, fn, ap);
     scalar_mult_add_latvec( F_OFFSET(ttt), src,
        -2.0*mass, temp, EVENANDODD);
     scalar_mult_latvec( temp, -1.0, temp, EVENANDODD);
 
     /* dest_e <- (M_adj M)^-1 temp_e  (even sites only) */
     qic.parity     = EVEN;
-    cgn = ks_congrad_site( temp, dest, &qic, mass );
+    cgn = ks_congrad_site( temp, dest, &qic, mass, fn, ap );
 
     /* reconstruct odd site solution */
     /* dest_o <-  1/2m (Dslash_oe*dest_e + src_o) */
-    dslash_site( dest, F_OFFSET(ttt), ODD );
+    dslash_site( dest, F_OFFSET(ttt), ODD, fn, ap );
     FORODDSITES(i,s){
 	sub_su3_vector( (su3_vector *)F_PT(s,src), &(s->ttt), 
 	    (su3_vector *)F_PT(s,dest) );
@@ -179,19 +180,19 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
     /* Polish off odd sites to correct for possible roundoff error */
     /* dest_o <- (M_adj M)^-1 temp_o  (odd sites only) */
     qic.parity = ODD;
-    cgn = ks_congrad_site( temp, dest, &qic, mass );
+    cgn = ks_congrad_site( temp, dest, &qic, mass, fn, ap );
 
     return(cgn);
 }
 
 /* FOR TESTING: multiply src by matrix and check against dest */
 void check_invert( field_offset src, field_offset dest, Real mass,
-		   Real tol){
+		   Real tol, fn_links_t *fn, ks_action_paths *ap){
     register int i,k,flag;
     register site *s;
     Real r_diff, i_diff;
     double sum,sum2,dflag,dmaxerr,derr;
-    dslash_site( src, F_OFFSET(cg_p), EVENANDODD);
+    dslash_site( src, F_OFFSET(cg_p), EVENANDODD, fn, ap);
     FORALLSITES(i,s){
 	scalar_mult_add_su3_vector( &(s->cg_p), (su3_vector *)F_PT(s,src),
 	    +2.0*mass, &(s->cg_p) );

@@ -45,6 +45,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop_P.c,v $
+ * Revision 1.4  2007/10/09 20:10:14  detar
+ * Add fn_links_t and ks_action_paths structures and pass them as params
+ *
  * Revision 1.3  2007/05/21 05:06:48  detar
  * Change stopping condition to true residual.
  *
@@ -102,7 +105,7 @@ static const char *qop_prec[2] = {"F", "D"};
 
 /*#define CGDEBUG*/
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.3 2007/05/21 05:06:48 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.4 2007/10/09 20:10:14 detar Exp $";
 
 
 /* Load inversion args for Level 3 inverter */
@@ -111,6 +114,7 @@ static void
 set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg, 
 		    quark_invert_control *qic )
 {
+  qic->nrestart = 10;
   qop_invert_arg->max_iter     = qic->nrestart * qic->max;
   qop_invert_arg->restart      = qic->max;
   qop_invert_arg->max_restarts = qic->nrestart;
@@ -191,15 +195,27 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 
   /* For now we return the largest value and total iterations */
   qic->final_rsq = 0;
+  qic->converged = 1;
   iters = 0;
   for(isrc = 0; isrc < nsrc; isrc++)
     for(imass = 0; imass < nmass[isrc]; imass++){
+      if(this_node == 0){
+	if(qic->resid < qop_resid_arg[isrc][imass]->final_rsq){
+	  qic->converged = 0;
+	  printf("ks_congrad_qop_generic: NOT CONVERGED (src %d, mass %d),\n",
+		 isrc, imass);
+	  printf("after %d iters (max iters %d max %d restarts) rsq. = %e wanted %e\n",
+		 qop_resid_arg[isrc][imass]->final_iter,
+		 qic->max, qic->nrestart,
+		 qop_resid_arg[isrc][imass]->final_rsq,qic->resid);
+	}
+      }
       if(qic->final_rsq < qop_resid_arg[isrc][imass]->final_rsq)
 	qic->final_rsq = qop_resid_arg[isrc][imass]->final_rsq;
       iters += qop_resid_arg[isrc][imass]->final_iter;
 #ifdef CGDEBUG
       if(nsrc > 1 || nmass[isrc] > 1)
-	node0_printf("CONGRAD5(src %d,mass %d): iters = %d resid = %e\n",
+	node0_printf("CONGRAD5(src %d, mass %d): iters = %d resid = %e\n",
 	       isrc, imass,
 	       qop_resid_arg[isrc][imass]->final_iter,
 	       qop_resid_arg[isrc][imass]->final_rsq);
@@ -228,7 +244,8 @@ int
 KS_CONGRAD_QOP_SITE2SITE(quark_invert_control *qic,
 			 MASSREAL *masses[], int nmass[], 
 			 field_offset milc_srcs[], 
-			 field_offset *milc_sols[], int nsrc )
+			 field_offset *milc_sols[], int nsrc,
+			 fn_links_t *fn, ks_action_paths *ap)
 {
   int isrc, imass;
   QOP_FermionLinksAsqtad *qop_links;
@@ -251,7 +268,7 @@ KS_CONGRAD_QOP_SITE2SITE(quark_invert_control *qic,
 
   /* Map MILC fat and long links to QOP links object */
 
-  qop_links = CREATE_QOP_ASQTAD_FERMION_LINKS( );
+  qop_links = CREATE_QOP_ASQTAD_FERMION_LINKS(fn,ap);
 
   /* Set qop_invert_arg */
   set_qop_invert_arg( &qop_invert_arg, qic );
@@ -324,7 +341,8 @@ KS_CONGRAD_QOP_SITE2SITE(quark_invert_control *qic,
 int KS_CONGRAD_QOP_SITE2FIELD(quark_invert_control *qic,
 			      MASSREAL *masses[], int nmass[], 
 			      field_offset milc_srcs[], 
-			      su3_vector **milc_sols[], int nsrc )
+			      su3_vector **milc_sols[], int nsrc,
+			      fn_links_t *fn, ks_action_paths *ap )
 {
   int isrc, imass;
   QOP_FermionLinksAsqtad *qop_links;
@@ -347,7 +365,7 @@ int KS_CONGRAD_QOP_SITE2FIELD(quark_invert_control *qic,
 
   /* Map MILC fat and long links to QOP links object */
 
-  qop_links = CREATE_QOP_ASQTAD_FERMION_LINKS();
+  qop_links = CREATE_QOP_ASQTAD_FERMION_LINKS(fn, ap);
 
   /* Set qop_invert_arg */
   set_qop_invert_arg( & qop_invert_arg, qic );
@@ -423,7 +441,8 @@ int KS_CONGRAD_QOP_SITE2FIELD(quark_invert_control *qic,
 int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
 			       MASSREAL *masses[], int nmass[], 
 			       su3_vector *milc_srcs[], 
-			       su3_vector **milc_sols[], int nsrc )
+			       su3_vector **milc_sols[], int nsrc,
+			       fn_links_t *fn, ks_action_paths *ap )
 {
   int isrc, imass;
   QOP_FermionLinksAsqtad *qop_links;
@@ -446,7 +465,7 @@ int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
 
   /* Map MILC fat and long links to QOP links object */
 
-  qop_links = CREATE_QOP_ASQTAD_FERMION_LINKS();
+  qop_links = CREATE_QOP_ASQTAD_FERMION_LINKS(fn, ap);
 
   /* Set qop_invert_arg */
   set_qop_invert_arg( & qop_invert_arg, qic );
@@ -518,7 +537,8 @@ int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
 
 int 
 KS_CONGRAD_MILCFIELD2QOP( su3_vector *milc_src, su3_vector *milc_sol, 
-			  quark_invert_control *qic, Real mass )
+			  quark_invert_control *qic, Real mass,
+			  fn_links_t *fn, ks_action_paths *ap )
 {
   int iterations_used;
   static MASSREAL t_mass;
@@ -539,14 +559,15 @@ KS_CONGRAD_MILCFIELD2QOP( su3_vector *milc_src, su3_vector *milc_sol,
 
   iterations_used = 
     KS_CONGRAD_QOP_FIELD2FIELD( qic, masses, nmass, milc_srcs,
-				milc_sols, nsrc );
+				milc_sols, nsrc, fn, ap );
   
   return  iterations_used;
 }
 
 int 
 KS_CONGRAD_MILC2QOP( field_offset milc_src, field_offset milc_sol, 
-		     quark_invert_control *qic, Real mass )
+		     quark_invert_control *qic, Real mass,
+		     fn_links_t *fn, ks_action_paths *ap )
 {
   int iterations_used;
   static MASSREAL t_mass;
@@ -567,7 +588,7 @@ KS_CONGRAD_MILC2QOP( field_offset milc_src, field_offset milc_sol,
 
   iterations_used = 
     KS_CONGRAD_QOP_SITE2SITE( qic, masses, nmass, milc_srcs,
-			      milc_sols, nsrc );
+			      milc_sols, nsrc, fn, ap );
   
   return  iterations_used;
 }

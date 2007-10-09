@@ -4,6 +4,10 @@
 /* Note: This is an include file for dslash_fn_qdp_F.c and
    dslash_fn_qdp_D.c so any edits must be consistent with this purpose */
 
+/* WARNING: The FATLINKS and LONGLINKS here appear to require
+   a call to ks_congrad_qdp for initialization, which makes it
+   misleading to think this dslash can be used independently. */
+
 /* 12/07/06 C. DeTar */
 
 #if ( QDP_Precision == 'F' )
@@ -238,19 +242,20 @@ cleanup_dslash_temps(void)
 }
 
 void
-dslash_fn_site(field_offset src, field_offset dest, int parity)
+dslash_fn_site(field_offset src, field_offset dest, int parity, fn_links_t *fn,
+	       ks_action_paths *ap)
 {
   QDP_Subset subset;
   //printf("dslash_fn %i\n", parity);
   if(!dslash_setup) SETUP_DSLASH();
-  load_fn_links();
+  load_fn_links(fn, ap);
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
   set_V_from_site(qsrc, src);
   set_V_from_site(qdest, dest);
-  set4_M_from_field(FATLINKS, t_fatlink);
-  set4_M_from_field(LONGLINKS, t_longlink);
+  set4_M_from_field(FATLINKS, fn->fat);
+  set4_M_from_field(LONGLINKS, fn->long);
   dslash_qdp_fn(qsrc, qdest, subset);
   set_site_from_V(dest, qdest);
 }
@@ -262,39 +267,41 @@ dslash_fn_site(field_offset src, field_offset dest, int parity)
    The calling program must clean up the gathers! */
 void
 dslash_fn_site_special(field_offset src, field_offset dest,
-		  int parity, msg_tag **tag, int start)
+		       int parity, msg_tag **tag, int start,
+		       fn_links_t *fn, ks_action_paths *ap)
 {
   QDP_Subset subset;
   //printf("dslash_fn_sp %i\n", parity);
   if(!dslash_setup) SETUP_DSLASH();
-  load_fn_links();
+  load_fn_links(fn, ap);
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
   set_V_from_site(qsrc, src);
   set_V_from_site(qdest, dest);
   if(start) {
-    set4_M_from_field(FATLINKS, t_fatlink);
-    set4_M_from_field(LONGLINKS, t_longlink);
+    set4_M_from_field(FATLINKS, fn->fat);
+    set4_M_from_field(LONGLINKS, fn->long);
   }
   dslash_qdp_fn(qsrc, qdest, subset);
   set_site_from_V(dest, qdest);
 }
 
 void
-dslash_fn_field(su3_vector *src, su3_vector *dest, int parity)
+dslash_fn_field(su3_vector *src, su3_vector *dest, int parity,
+		fn_links_t *fn, ks_action_paths *ap)
 {
   QDP_Subset subset;
   //printf("dslash_fn_t %i\n", parity);
   if(!dslash_setup) SETUP_DSLASH();
-  load_fn_links();
+  load_fn_links(fn, ap);
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
   set_V_from_field(qsrc, src);
   set_V_from_field(qdest, dest);
-  set4_M_from_field(FATLINKS, t_fatlink);
-  set4_M_from_field(LONGLINKS, t_longlink);
+  set4_M_from_field(FATLINKS, fn->fat);
+  set4_M_from_field(LONGLINKS, fn->long);
   dslash_qdp_fn(qsrc, qdest, subset);
   set_site_from_V(dest, qdest);
 }
@@ -306,20 +313,21 @@ dslash_fn_field(su3_vector *src, su3_vector *dest, int parity)
    The calling program must clean up the gathers and temps! */
 void
 dslash_fn_field_special(su3_vector *src, su3_vector *dest,
-			  int parity, msg_tag **tag, int start)
+			int parity, msg_tag **tag, int start,
+			fn_links_t *fn, ks_action_paths *ap)
 {
   QDP_Subset qparity;
   //printf("dslash_fn_t_sp %i\n", parity);
   if(!dslash_setup) SETUP_DSLASH();
-  load_fn_links();
+  load_fn_links(fn, ap);
   if(parity==EVEN) qparity = QDP_even;
   else if(parity==ODD) qparity = QDP_odd;
   else qparity = QDP_all;
   set_V_from_field(qsrc, src);
   set_V_from_field(qdest, dest);
   if(start) {
-    set4_M_from_field(FATLINKS, t_fatlink);
-    set4_M_from_field(LONGLINKS, t_longlink);
+    set4_M_from_field(FATLINKS, fn->fat);
+    set4_M_from_field(LONGLINKS, fn->long);
   }
   dslash_qdp_fn(qsrc, qdest, qparity);
   set_site_from_V(dest, qdest);

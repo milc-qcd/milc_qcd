@@ -36,7 +36,9 @@ enum prop_name {
 
 int test_converge(int t_source);
 
-int fpi_2( Real *masses, int nmasses, Real tol){
+int fpi_2( Real *masses, int nmasses, Real tol,
+	   fn_links_t *fn, ks_action_paths *ap)
+{
   /* arguments are array of masses, number of masses,
      tolerance for inverter check.
      return C.G. iteration number */
@@ -102,10 +104,10 @@ int fpi_2( Real *masses, int nmasses, Real tol){
 
 	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, PRECISION, 
-				EVENANDODD, &finalrsq);
+				EVENANDODD, &finalrsq, fn, ap);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
-	    dslash_field( quark_props[j], temp_prop, EVENANDODD );
+	    dslash_field( quark_props[j], temp_prop, EVENANDODD, fn, ap );
 	    FORALLSITES(i,s){
 		scalar_mult_su3_vector( &(quark_props[j][i]), 2.0*masses[j], &(quark_props[j][i]) );
 		scalar_mult_add_su3_vector( &(quark_props[j][i]), &(temp_prop[i]), -1.0,
@@ -113,7 +115,8 @@ int fpi_2( Real *masses, int nmasses, Real tol){
 	    }
 
 	    FORALLSITES(i,s) s->ttt = quark_props[j][i];
-	    check_invert( F_OFFSET(ttt), F_OFFSET(quark_source), masses[j], tol );
+	    check_invert( F_OFFSET(ttt), F_OFFSET(quark_source), masses[j], 
+			  tol, fn, ap );
 	} /* j=masses */
 
 	/* 0-+ (kaon) propagators */
@@ -152,10 +155,10 @@ int fpi_2( Real *masses, int nmasses, Real tol){
 	/* compute M^-1 * quark_source */
 	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, PRECISION, 
-				EVENANDODD, &finalrsq);
+				EVENANDODD, &finalrsq, fn, ap);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
-	    dslash_field( quark_props[j], temp_prop, EVENANDODD );
+	    dslash_field( quark_props[j], temp_prop, EVENANDODD, fn, ap );
 	    FORALLSITES(i,s){
 		scalar_mult_su3_vector( &(quark_props[j][i]), 2.0*masses[j], &(quark_props[j][i]) );
 		scalar_mult_add_su3_vector( &(quark_props[j][i]), &(temp_prop[i]), -1.0,
@@ -163,7 +166,8 @@ int fpi_2( Real *masses, int nmasses, Real tol){
 	    }
 
 	    FORALLSITES(i,s) s->ttt = quark_props[j][i];
-	    check_invert( F_OFFSET(ttt), F_OFFSET(quark_source), masses[j], tol );
+	    check_invert( F_OFFSET(ttt), F_OFFSET(quark_source), masses[j], 
+			  tol, fn, ap );
 	} /* j=masses */
 
 	/* 0-+ (kaon) propagators */

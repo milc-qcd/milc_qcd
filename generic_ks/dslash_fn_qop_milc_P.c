@@ -77,7 +77,8 @@ void CLEANUP_DSLASH_QOP_MILC_TEMPS(){
 
 
 void DSLASH_FN_QOP_MILC( su3_matrix *fatlinks, su3_matrix *longlinks,
-			 su3_vector *src, su3_vector *dest, int parity ) {
+			 su3_vector *src, su3_vector *dest, int parity)
+{
    register int dir;
    msg_tag *tag[16];
 
@@ -104,7 +105,8 @@ void DSLASH_FN_QOP_MILC( su3_matrix *fatlinks, su3_matrix *longlinks,
 void DSLASH_FN_QOP_MILC_FIELD_SPECIAL(su3_matrix *fatlinks, 
 				      su3_matrix *longlinks,
 				      su3_vector *src, su3_vector *dest,
-				      int parity, msg_tag **tag, int start ){
+				      int parity, msg_tag **tag, int start)
+{
   register int i;
   register site *s;
   register int dir,otherparity=0;

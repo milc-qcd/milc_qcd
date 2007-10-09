@@ -3,6 +3,8 @@
 /* Routines used by all of the fermion_links*.c files */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
+#define IMP_QUARK_ACTION_INFO_ONLY
+#include <quark_action.h>
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
@@ -21,17 +23,18 @@ compute_gen_staple_field(su3_matrix *staple, int mu, int nu,
 			 su3_matrix *link, su3_matrix *fatlink, Real coef);
 
 static void 
-compute_gen_staple_field(su3_matrix *staple, int mu, int nu, 
-			 su3_matrix *link, su3_matrix *fatlink, Real coef);
+compute_gen_staple_site(su3_matrix *staple, int mu, int nu, 
+			field_offset link, su3_matrix* fatlink, Real coef);
 #endif
 
-void load_longlinks(su3_matrix **t_ll) {
+void load_longlinks(fn_links_t *fn, ks_action_paths *ap) {
+  su3_matrix **t_ll = &fn->lng;
   register int i;
   register site *s;
   int ipath,dir;
   int disp[4];
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
   register su3_matrix *long1;
   su3_matrix *staple = NULL, *tempmat1 = NULL;
   char myname[] = "load_longlinks";
@@ -120,8 +123,8 @@ node0_printf("LLTIME(long): time =  %e (Naik) mflops = %e\n",dtime,
 
 /* KS phases and APBC must be in the links. See long comment at 
    end of fermion_force_general.c */
-void load_fatlinks(su3_matrix **t_fl, Real *act_path_coeff,
-			  Q_path *q_paths){
+void load_fatlinks(fn_links_t *fn, ks_action_paths *ap){
+  su3_matrix **t_fl = &fn->fat;
   register int i;
   register site *s;
   int dir;
@@ -132,10 +135,18 @@ void load_fatlinks(su3_matrix **t_fl, Real *act_path_coeff,
 #ifdef ASQ_OPTIMIZED_FATTENING
   int  nu,rho,sig ;
   Real one_link;
+  Real *act_path_coeff = ap->act_path_coeff;
+#ifdef LLTIME
+  char method[] = "Asqtad opt";
+#endif
 #else
   int ipath;
   int disp[4];
-  int num_q_paths = get_num_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
+#ifdef LLTIME
+  char method[] = "FN nonopt";
+#endif
 #endif
 
 #ifdef LLTIME
@@ -247,7 +258,7 @@ printf("\n");**/
  special_free(tempmat1); tempmat1 = NULL;
 #ifdef LLTIME
 dtime += dclock();
- node0_printf("LLTIME(Fat): time = %e (Asqtad opt) mflops = %e\n",dtime,
+ node0_printf("LLTIME(Fat): time = %e (%s) mflops = %e\n",dtime,method,
 	      (Real)nflop*volume/(1e6*dtime*numnodes()) );
 #endif
 }  /* load_fatlinks() */
@@ -438,7 +449,9 @@ compute_gen_staple_field(su3_matrix *staple, int mu, int nu,
 
 /* Move up the backward longlinks.  Result in t_lbl */
 void 
-load_longbacklinks(su3_matrix **t_lbl, su3_matrix *t_ll){
+load_longbacklinks(fn_links_t *fn){
+  su3_matrix **t_lbl = &fn->lngback;
+  su3_matrix *t_ll = fn->lng;
   register int i;
   register site *s;
   int dir;
@@ -481,7 +494,9 @@ load_longbacklinks(su3_matrix **t_lbl, su3_matrix *t_ll){
 
 /* Move up the backward fatlinks.  Result in t_fbl */
 void 
-load_fatbacklinks(su3_matrix **t_fbl, su3_matrix *t_fl){
+load_fatbacklinks(fn_links_t *fn){
+  su3_matrix **t_fbl = &fn->fatback;
+  su3_matrix *t_fl = fn->fat;
   register int i;
   register site *s;
   int dir;
@@ -530,22 +545,22 @@ free_t_links(su3_matrix **t_l){
 
 /* Wrappers for MILC call to QOP */
 void 
-free_fn_links(){
-  free_t_links(&t_fatlink);
-  free_t_links(&t_longlink);
+free_fn_links(fn_links_t *fn){
+  free_t_links(&fn->fat);
+  free_t_links(&fn->lng);
 #ifdef DBLSTORE_FN
-  free_t_links(&t_fatbacklink);
-  free_t_links(&t_longbacklink);
+  free_t_links(&fn->fatback);
+  free_t_links(&fn->lngback);
 #endif
-  invalidate_fn_links();
+  invalidate_fn_links(fn);
 }
 
 #ifdef DM_DU0
 /* Routines for dDslash/du0 */
 
-void free_fn_links_dmdu0(){
-  free_t_links(&t_dfatlink_du0);
-  invalidate_fn_links();
+void free_fn_links_dmdu0(fn_links_t *fn){
+  free_t_links(&fn->fat);
+  invalidate_fn_links(fn);
 }
 #endif
 

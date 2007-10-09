@@ -79,10 +79,8 @@ static QDP_ColorVector *temp1[16], *temp2[16];
 extern QDP_ColorMatrix *BCKLINK[8];
 extern QDP_ColorMatrix **FATLINKS, **LONGLINKS, *IMPLINKS[8];
 
-void SETUP_DSLASH(void);
-
 static void
-setup_congrad(void)
+setup_congrad()
 {
   int i;
 
@@ -101,7 +99,8 @@ setup_congrad(void)
 
 int
 KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest, 
-	       quark_invert_control *qic, QLA_Real mass )
+	       quark_invert_control *qic, QLA_Real mass,
+	       fn_links_t *fn, ks_action_paths *ap)
 {
   QLA_Real a,b;		 /* Sugar's a,b,resid**2,last resid*2 */
   QLA_Real rsq,oldrsq,pkp; /* pkp = cg_p.K.cg_p */
@@ -113,6 +112,8 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest,
   int niter = qic->max;
   int nrestart = qic->nrestart;
   QLA_Real rsqmin = qic->resid;
+  su3_matrix *t_fatlink;
+  su3_matrix *t_longlink;
 
 /* Timing */
   double dtimec;
@@ -137,7 +138,10 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest,
   msq_x4 = 4.0*mass*mass;
   iteration = 0;
 
-  load_fn_links();
+  load_fn_links(fn, ap);
+  t_longlink = fn->lng;
+  t_fatlink = fn->fat;
+
   remaptime = -dclock();
   set4_M_from_field(FATLINKS, t_fatlink);
   set4_M_from_field(LONGLINKS, t_longlink);
@@ -223,7 +227,7 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest,
     dtimec += dclock();
 #ifdef CGTIME
     if(QDP_this_node==0) {
-      printf("CONGRAD5: time = %e (fn_qdp %c) iters = %d mflops = %e\n",
+      printf("CONGRAD5: time = %e (fn_qdp %c) masses = 1 iters = %d mflops = %e\n",
 	     dtimec, QDP_Precision, iteration,
 	     (double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
 #ifdef REMAP
@@ -248,7 +252,8 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest,
 
 int
 KS_CONGRAD_MILCFIELD2QDP(su3_vector *f_src, su3_vector *f_dest, 
-			 quark_invert_control *qic, Real mass )
+			 quark_invert_control *qic, Real mass,
+			 fn_links_t *fn, ks_action_paths *ap )
 {
   QLA_Real qmass;
   QDP_ColorVector *src, *dest;
@@ -264,7 +269,7 @@ KS_CONGRAD_MILCFIELD2QDP(su3_vector *f_src, su3_vector *f_dest,
 
   qmass = (QLA_Real) mass;
   remaptime += dclock();
-  iteration = KS_CONGRAD_QDP(src, dest, qic, qmass );
+  iteration = KS_CONGRAD_QDP(src, dest, qic, qmass, fn, ap );
   remaptime -= dclock();
 
   set_field_from_V(f_dest, dest);
@@ -286,7 +291,8 @@ KS_CONGRAD_MILCFIELD2QDP(su3_vector *f_src, su3_vector *f_dest,
 
 int
 KS_CONGRAD_MILC2QDP(field_offset f_src, field_offset f_dest, 
-		    quark_invert_control *qic, Real mass )
+		    quark_invert_control *qic, Real mass,
+		    fn_links_t *fn, ks_action_paths *ap )
 {
   QLA_Real qmass;
   QDP_ColorVector *src, *dest;
@@ -302,7 +308,7 @@ KS_CONGRAD_MILC2QDP(field_offset f_src, field_offset f_dest,
 
   qmass = (QLA_Real) mass;
   remaptime += dclock();
-  iteration = KS_CONGRAD_QDP(src, dest, qic, qmass );
+  iteration = KS_CONGRAD_QDP(src, dest, qic, qmass, fn, ap );
   remaptime -= dclock();
 
   set_site_from_V(f_dest, dest);

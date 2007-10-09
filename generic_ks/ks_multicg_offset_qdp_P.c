@@ -86,7 +86,9 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
 	       int niter,		/* maximal number of CG interations */
 	       QLA_Real rsqmin,	        /* desired residue squared */
 	       QDP_Subset parity,	/* parity to be worked on */
-	       QLA_Real *final_rsq_ptr	/* final residue squared */
+	       QLA_Real *final_rsq_ptr, /* final residue squared */
+	       fn_links_t *fn,          /* Storage for fat and Naik links */
+	       ks_action_paths *ap      /* Definition of action */
 	       )
 {
   /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
@@ -152,10 +154,10 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
   if(!congrad_setup) setup_congrad();
 
 #ifdef FN
-  load_fn_links();
+  load_fn_links(fn, ap);
 #endif
-  set4_M_from_field(FATLINKS, t_fatlink);
-  set4_M_from_field(LONGLINKS, t_longlink);
+  set4_M_from_field(FATLINKS, fn->fat);
+  set4_M_from_field(LONGLINKS, fn->lng);
   {
     QDP_ColorMatrix *tcm;
     int i;
@@ -340,7 +342,9 @@ KS_MULTICG_MASS(	/* Return value is number of iterations taken */
 	   int niter,		/* maximal number of CG interations */
 	   Real rsqmin,	/* desired residue squared */
 	   int parity,		/* parity to be worked on */
-	   Real *final_rsq_ptr	/* final residue squared */
+	   Real *final_rsq_ptr,	/* final residue squared */
+	   fn_links_t *fn,      /* Storage for fat and Naik links */
+	   ks_action_paths *ap  /* Definition of action */
 	   )
 {
   QLA_Real qrsqmin, qfinal_rsq_ptr, *qmasses;
@@ -366,7 +370,7 @@ KS_MULTICG_MASS(	/* Return value is number of iterations taken */
   qrsqmin = (QLA_Real) rsqmin;
 
   iteration = ks_multicg_mass_qdp(src, dest, qmasses, num_masses, niter, 
-				  qrsqmin, q_parity, &qfinal_rsq_ptr);
+				  qrsqmin, q_parity, &qfinal_rsq_ptr, fn, ap);
   *final_rsq_ptr = (Real) qfinal_rsq_ptr;
 
   for(i=0; i<num_masses; i++) {
@@ -390,7 +394,9 @@ int KS_MULTICG_OFFSET(	/* Return value is number of iterations taken */
     int niter,		/* maximal number of CG interations */
     Real rsqmin,	/* desired residue squared */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real *final_rsq_ptr,/* final residue squared */
+    fn_links_t *fn,     /* Storage for fat and Naik links */
+    ks_action_paths *ap /* Definition of action */
     )
 {
   int i;
@@ -415,7 +421,7 @@ int KS_MULTICG_OFFSET(	/* Return value is number of iterations taken */
     masses[i] = sqrt(offsets[i]/4.0);
   }
   status = KS_MULTICG_MASS(src, psim, masses, num_masses, niter, rsqmin,
-			   parity, final_rsq_ptr);
+			   parity, final_rsq_ptr, fn, ap);
   free(masses);
   return status;
 }

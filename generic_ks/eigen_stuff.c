@@ -87,7 +87,9 @@ static int dslash_start = 1 ; /* 1 means start dslash */
 /* The Matrix_Vec_mult and cleanup_Matrix() WITHOUT using dslash_special */
 /************************************************************************/
 
-void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity){  
+void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
+		     fn_links_t *fn, ks_action_paths *ap )
+{  
   register site *s;
   register  int i;
   int otherparity;
@@ -111,8 +113,8 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity){
     terminate(1) ;
   }
 
-  dslash_fn_field(src , temp, otherparity) ; 
-  dslash_fn_field(temp, res , parity     ) ;
+  dslash_fn_field(src , temp, otherparity, fn, ap) ; 
+  dslash_fn_field(temp, res , parity     , fn, ap) ;
   FORSOMEPARITY(i,s,parity){ 
     scalar_mult_su3_vector( &(res[i]), -1.0, &(res[i])) ;
   } 
@@ -128,7 +130,8 @@ void cleanup_Matrix(){
 #else
 /*****************************************************************************/
 /* The Matrix_Vec_mult and cleanup_Matrix() using dslash_special */
-void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity){
+void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
+		     fn_links_t *fn, ks_action_paths *ap ){
   
   register site *s;
   register  int i;
@@ -161,8 +164,10 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity){
     terminate(1) ;
   }
   
-  dslash_fn_field_special(src , temp, otherparity, tags1, dslash_start) ;
-  dslash_fn_field_special(temp, res , parity     , tags2, dslash_start) ;
+  dslash_fn_field_special(src , temp, otherparity, tags1, dslash_start,
+			  fn, ap) ;
+  dslash_fn_field_special(temp, res , parity     , tags2, dslash_start,
+			  fn, ap) ;
   
   FORSOMEPARITY(i,s,parity){ 
     scalar_mult_su3_vector( &(res[i]), -1.0, &(res[i])) ;
@@ -371,7 +376,7 @@ void normalize(su3_vector *vec,int parity){
 /*****************************************************************************/
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
 		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
-		 int parity){
+		 int parity, fn_links_t *fn, ks_action_paths *ap){
 
   int iter ;
   double beta, cos_theta, sin_theta ;
@@ -392,7 +397,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
   old_quot = 1.0e+16 ;
   project_out(vec, eigVec, Nvecs, parity);
   normalize(vec,parity) ; 
-  Matrix_Vec_mult(vec,Mvec,parity) ;
+  Matrix_Vec_mult(vec,Mvec,parity, fn, ap) ;
   project_out(Mvec, eigVec, Nvecs, parity);
   
   /* Compute the quotient quot=vev*M*vec */
@@ -420,7 +425,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 	 ( ((iter<MaxIter)&&(g_norm/start_g_norm>RelTol)) || (iter<MINITER) ) 
 	 ){
     iter++ ;
-    Matrix_Vec_mult(P,MP,parity) ;
+    Matrix_Vec_mult(P,MP,parity, fn, ap) ;
     dot_product(vec, MP, &cc, parity) ;
     real_vecMp = cc.real ;
     dot_product(P, MP, &cc, parity) ;
@@ -448,7 +453,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
       /* Project vec on the orthogonal complement of eigVec */
       project_out(vec, eigVec, Nvecs, parity);
       normalize(vec,parity) ;
-      Matrix_Vec_mult(vec,Mvec,parity);
+      Matrix_Vec_mult(vec,Mvec,parity, fn, ap);
       /* Recompute the quotient */
       dot_product(vec, Mvec, &cc, parity) ;
       /* quot is real since M is hermitian. quot = vec*M*vec */
@@ -515,7 +520,8 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 /*****************************************************************************/
 /* Returns the projected matrix A and the error of each eigenvector */
 void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
-		    double *err, int *converged, int parity){
+		    double *err, int *converged, int parity,
+		    fn_links_t *fn, ks_action_paths *ap){
   int i,j,Nvecs ;
   su3_vector *grad ;
   double_complex cc,Aij,Aji ;
@@ -523,7 +529,7 @@ void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
   Nvecs = A->N ;
   grad = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
   for(i=0;i<Nvecs;i++){
-    if(converged[i]==0) Matrix_Vec_mult(eigVec[i],MeigVec[i],parity) ;
+    if(converged[i]==0) Matrix_Vec_mult(eigVec[i],MeigVec[i],parity, fn, ap) ;
     dot_product(MeigVec[i], eigVec[i], &cc, parity) ;
     A->M[i][i].real = cc.real ; A->M[i][i].imag = 0.0 ;
     copy_Vector(MeigVec[i], grad) ;
@@ -584,7 +590,8 @@ void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
 /*****************************************************************************/
 int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int Kiters, int parity){
+	       int Restart, int Kiters, int parity,
+	       fn_links_t *fn, ks_action_paths *ap ){
 
   int total_iters=0 ;
   int j,k;
@@ -639,7 +646,7 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 	converged[j] = 0 ;
 	copy_Vector(eigVec[j],vec) ;
 	total_iters += Rayleigh_min(vec, eigVec, ToleranceG, RelTol,
-				    j, MaxIter , Restart, parity) ;
+				    j, MaxIter , Restart, parity, fn, ap) ;
 	/* Copy only wanted parity (UMH) */
 	/** copy_Vector(vec,eigVec[j]) ; **/
 	FORSOMEPARITY(i,s,parity){
@@ -652,7 +659,7 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
     /* if you didn't act on eigVec[i] last time, converged[i]=1,
        and  MeigVec hasn't changed, so don't compute it */
-    constructArray(eigVec, MeigVec, &Array, grad, converged, parity) ;
+    constructArray(eigVec, MeigVec, &Array, grad, converged, parity, fn, ap) ;
 
 #ifdef DEBUG
     node0_printf("Eigenvalues before diagonalization\n");

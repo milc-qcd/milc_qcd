@@ -61,10 +61,12 @@ void cleanup_dslash_temps(){
    from negative directions.  Use "fatlinks" for one link transport,
    "longlinks" for three link transport. */
 
-void dslash_fn_site( field_offset src, field_offset dest, int parity ) {
+void dslash_fn_site( field_offset src, field_offset dest, int parity,
+		     fn_links_t *fn, ks_action_paths *ap )
+{
   msg_tag *tag[16];
   
-  dslash_fn_site_special(src, dest, parity, tag, 1 );
+  dslash_fn_site_special(src, dest, parity, tag, 1, fn, ap );
   cleanup_one_gather_set(tag);
 }
 
@@ -74,13 +76,18 @@ void dslash_fn_site( field_offset src, field_offset dest, int parity ) {
   start_gather_site, otherwise use restart_gather_site. 
   The calling program must clean up the gathers! */
 void dslash_fn_site_special( field_offset src, field_offset dest,
-			     int parity, msg_tag **tag, int start ){
+			     int parity, msg_tag **tag, int start,
+			     fn_links_t *fn, ks_action_paths *ap){
   register int i;
   register site *s;
   register int dir,otherparity=0;
   register su3_matrix *fat4, *long4;
+  su3_matrix *t_fatlink;
+  su3_matrix *t_longlink;
   
-  load_fn_links();
+  load_fn_links(fn, ap);
+  t_longlink = fn->lng;
+  t_fatlink = fn->fat;
 
   switch(parity){
   case EVEN:	otherparity=ODD; break;
@@ -233,10 +240,11 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
       
 }
 
-void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity ) {
+void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
+		      fn_links_t *fn, ks_action_paths *ap) {
   msg_tag *tag[16];
     
-   dslash_fn_field_special(src, dest, parity, tag, 1 );
+   dslash_fn_field_special(src, dest, parity, tag, 1, fn, ap );
    cleanup_one_gather_set(tag);
 }
 
@@ -246,11 +254,14 @@ void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity ) {
   start_gather_field, otherwise use restart_gather_field. 
   The calling program must clean up the gathers and temps! */
 void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
-			       int parity, msg_tag **tag, int start ){
+			     int parity, msg_tag **tag, int start,
+			     fn_links_t *fn, ks_action_paths *ap){
   register int i;
   register site *s;
   register int dir,otherparity=0;
   register su3_matrix *fat4, *long4;
+  su3_matrix *t_fatlink;
+  su3_matrix *t_longlink;
   
   /* allocate temporary work space only if not already allocated */
   if(temp_not_allocated)
@@ -265,6 +276,8 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
   
   /* load fatlinks and longlinks */
   load_fn_links();
+  t_longflink = fn->lng;
+  t_fatlink = fn->fat;
 
   switch(parity)
     {
@@ -438,15 +451,22 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
    sources parallel transported to site, with minus sign for transport
    from negative directions.  Use "fatlinks" for one link transport,
    "longlinks" for three link transport. */
-void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity ) {
+void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity,
+			  fn_links_t *fn, ks_action_paths *ap,
+			  fn_links_t *fn_dmdu0, ks_action_paths *ap_dmdu0) {
    register int i;
    register site *s;
    register int dir,otherparity=0;
    register su3_matrix *fat4, *long4;
    msg_tag *tag[16];
+   su3_matrix *t_dfatlink_du0;
+   su3_matrix *t_longlink;
 
-   load_fn_links();
-   load_fn_links_dmdu0();
+   load_fn_links(fn, ap);
+   t_longlink = fn->lng;
+   load_fn_links_dmdu0(fn_dmdu0, ap_dmdu0);
+   t_dfatlink_du0 = fn_dmdu0->fat;
+
     switch(parity){
 	case EVEN:	otherparity=ODD; break;
 	case ODD:	otherparity=EVEN; break;
@@ -597,13 +617,17 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity ) {
 } /* end ddslash_fn_du0_site */
 
 
-void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity ) {
+void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity,
+			   fn_links_t *fn, ks_action_paths *ap,
+			   fn_links_t *fn_dmdu0, ks_action_paths *ap_dmdu0) {
    register int i;
    register site *s;
    register int dir,otherparity=0;
    msg_tag *tag[16];
    su3_vector *tempvec[4], *templongvec[4], *templongv1 ;
    register su3_matrix *fat4, *long4;
+   su3_matrix *t_dfatlink_du0;
+   su3_matrix *t_longlink;
     
    for( dir=XUP; dir<=TUP; dir++ )
      {
@@ -612,8 +636,11 @@ void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity ) {
      }
    templongv1=(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-   load_fn_links();
-   load_fn_links_dmdu0();
+   load_fn_links(fn, ap);
+   t_longlink = fn->lng;
+   load_fn_links_dmdu0(fn_dmdu0, ap_dmdu0);
+   t_dfatlink_du0 = fn_dmdu0->fat;
+
    switch(parity)
      {
      case EVEN:	otherparity=ODD; break;

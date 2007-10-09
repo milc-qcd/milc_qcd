@@ -248,7 +248,7 @@ fflush(stdout);}
 	    /**if(this_node==0)printf("normal return\n"); fflush(stdout);**/
 #ifdef CGTIME
  dtimec += dclock();
-if(this_node==0){printf("CONGRAD5: time = %e (d_congrad6) iters = %d mflops = %e\n",
+if(this_node==0){printf("CONGRAD5: time = %e (naive) masses = 1 iters = %d mflops = %e\n",
 dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
 fflush(stdout);}
 #endif

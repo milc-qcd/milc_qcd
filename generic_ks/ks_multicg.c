@@ -21,6 +21,43 @@
 /**********************************************************************/
 /*   Wrapper for the multimass inverter with multiple masses          */
 /**********************************************************************/
+
+int ks_multicg_mass(	/* Return value is number of iterations taken */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *masses,	/* the masses */
+    int num_masses,	/* number of masses */
+    int niter,		/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
+    int prec,           /* internal precision for inversion (ignored) */
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr, /* final residue squared */
+    fn_links_t *fn,       /* Storage for fat and Naik links */
+    ks_action_paths *ap /* Definition of action */
+    )
+{
+  int i;
+  int status;
+  Real *offsets;
+
+  offsets = (Real *)malloc(sizeof(Real)*num_masses);
+  if(offsets == NULL){
+    printf("ks_multicg_mass: No room for offsets\n");
+    terminate(1);
+  }
+  for(i = 0; i < num_masses; i++){
+    offsets[i] = 4.0*masses[i]*masses[i];
+  }
+  status = ks_multicg(src, psim, offsets, num_masses, niter, rsqmin,
+		      prec, parity, final_rsq_ptr, fn, ap);
+  free(offsets);
+  return status;
+}
+
+
+/**********************************************************************/
+/*   Wrapper for the multimass inverter with multiple offsets         */
+/**********************************************************************/
 int ks_multicg(         /* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
@@ -30,34 +67,42 @@ int ks_multicg(         /* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real  *final_rsq_ptr, 	/* final residue squared */
+    fn_links_t *fn,       /* Storage for fermion links */
+    ks_action_paths *ap /* Definition of action paths */
     )
 {
 
   switch(KS_MULTICG){
   case OFFSET:
     return ks_multicg_offset( src, psim, offsets, num_offsets, 
-			      niter, rsqmin, prec, parity, final_rsq_ptr);
+			      niter, rsqmin, prec, parity, final_rsq_ptr,
+			      fn, ap);
     break;
   case HYBRID:
     return ks_multicg_hybrid( src, psim, offsets, num_offsets, 
-			      niter, rsqmin, prec, parity, final_rsq_ptr);
+			      niter, rsqmin, prec, parity, final_rsq_ptr,
+			      fn, ap);
     break;
   case FAKE:
     return ks_multicg_fake( src, psim, offsets, num_offsets, 
-			    niter, rsqmin, prec, parity, final_rsq_ptr);
+			    niter, rsqmin, prec, parity, final_rsq_ptr,
+			    fn, ap);
     break;
   case REVERSE:
     return ks_multicg_reverse( src, psim, offsets, num_offsets, 
-			       niter, rsqmin, prec, parity, final_rsq_ptr);
+			       niter, rsqmin, prec, parity, final_rsq_ptr,
+			       fn, ap);
     break;
   case REVHYB:
     return ks_multicg_revhyb( src, psim, offsets, num_offsets, 
-			      niter, rsqmin, prec, parity, final_rsq_ptr);
+			      niter, rsqmin, prec, parity, final_rsq_ptr,
+			      fn, ap);
     break;
   default:
     return ks_multicg_hybrid( src, psim, offsets, num_offsets, 
-			      niter, rsqmin, prec, parity, final_rsq_ptr);
+			      niter, rsqmin, prec, parity, final_rsq_ptr,
+			      fn, ap);
   }
   return 0;
 }
@@ -99,7 +144,9 @@ int ks_multicg_fake(	/* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* desired internal precision */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real  *final_rsq_ptr, 	/* final residue squared */
+    fn_links_t *fn,       /* Storage for fermion links */
+    ks_action_paths *ap /* Definition of action paths */
     )
 {
     int i,j,iters; site *s;
@@ -112,7 +159,7 @@ int ks_multicg_fake(	/* Return value is number of iterations taken */
     iters=0;
     for(i=0;i<num_offsets;i++){
       iters += ks_congrad( src, tmp, 0.5*sqrt(offsets[i]), niter, 5, 
-			   rsqmin, prec, parity, final_rsq_ptr );
+			   rsqmin, prec, parity, final_rsq_ptr, fn, ap );
        FORALLSITES(j,s){ psim[i][j] = *((su3_vector *)F_PT(s,tmp)); }
     }
     return(iters);
@@ -129,7 +176,9 @@ int ks_multicg_hybrid(	/* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* internal precision for inversion */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real  *final_rsq_ptr, 	/* final residue squared */
+    fn_links_t *fn,       /* Storage for fermion links */
+    ks_action_paths *ap /* Definition of action paths */
     )
 {
     int i,j,iters=0; site *s;
@@ -139,11 +188,12 @@ int ks_multicg_hybrid(	/* Return value is number of iterations taken */
     field_offset tmp = F_OFFSET(xxx1);
 #endif
 
-    ks_multicg_offset( src, psim, offsets, num_offsets, niter, rsqmin, prec, parity, final_rsq_ptr);
+    ks_multicg_offset( src, psim, offsets, num_offsets, niter, rsqmin, prec, 
+		       parity, final_rsq_ptr, fn, ap);
     for(i=0;i<num_offsets;i++){
       FORSOMEPARITY(j,s,parity){ *((su3_vector *)F_PT(s,tmp)) = psim[i][j]; } END_LOOP;
       iters += ks_congrad( src, tmp, 0.5*sqrt(offsets[i]), niter/5, 5,
-			   rsqmin, prec, parity, final_rsq_ptr );
+			   rsqmin, prec, parity, final_rsq_ptr, fn, ap );
       FORSOMEPARITY(j,s,parity){ psim[i][j] = *((su3_vector *)F_PT(s,tmp)); } END_LOOP;
     }
     return(iters);
@@ -171,7 +221,9 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* internal precision for inversion (ignored) */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real  *final_rsq_ptr, 	/* final residue squared */
+    fn_links_t *fn,       /* Storage for fermion links */
+    ks_action_paths *ap /* Definition of action paths */
     )
 {
     /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
@@ -261,7 +313,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     iteration = 0;
 
 #ifdef FN
-    load_fn_links();
+    load_fn_links(fn, ap);
 #endif
 
 #define PAD 0
@@ -321,17 +373,19 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 
 #ifdef FN
 	if(special_started==0){
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1 );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1 );
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1, 
+				     fn, ap );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1, fn, ap );
 	    special_started = 1;
 	}
 	else {
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0 );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0 );
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0, 
+				     fn, ap);
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn, ap );
 	}
 #else
-	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity);
-	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity);
+	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity, fn, ap);
+	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity, fn, ap);
 #endif
 
 	/* finish computation of (-1)*M_adjoint*m*p and (-1)*p*M_adjoint*M*p */
@@ -529,7 +583,9 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* internal precision for inversion (ignored mostly) */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real  *final_rsq_ptr, 	/* final residue squared */
+    fn_links_t *fn,       /* Storage for fermion links */
+    ks_action_paths *ap /* Definition of action paths */
     )
 {
     int i,j,iters=0; site *s;
@@ -540,12 +596,12 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
 #endif
 
     ks_multicg_reverse( src, psim, offsets, num_offsets, niter, rsqmin, 
-			prec, parity, final_rsq_ptr);
+			prec, parity, final_rsq_ptr, fn, ap);
     for(i=0;i<num_offsets;i++){
       FORSOMEPARITY(j,s,parity){ *((su3_vector *)F_PT(s,tmp)) = psim[i][j]; } 
       END_LOOP;
       iters += ks_congrad( src, tmp, 0.5*sqrt(offsets[i]), niter/5, 5,
-			   rsqmin, prec, parity, final_rsq_ptr );
+			   rsqmin, prec, parity, final_rsq_ptr, fn, ap );
       FORSOMEPARITY(j,s,parity){ psim[i][j] = *((su3_vector *)F_PT(s,tmp)); } 
       END_LOOP;
     }

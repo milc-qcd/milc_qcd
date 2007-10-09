@@ -30,7 +30,8 @@
 #include "generic_ks_includes.h"
 #include "../include/dslash_ks_redefine.h"
 
-int spectrum2( Real vmass, field_offset temp1, field_offset temp2 ){ 
+int spectrum2( Real vmass, field_offset temp1, field_offset temp2,
+	       fn_links_t *fn, ks_action_paths *ap){ 
   /* return the C.G. iteration number */
   double *pi_ps_prop,*pi_sc_prop,*rho_pv_prop,*rho_vt_prop,*barprop;
   Real vmass_x2;
@@ -86,9 +87,10 @@ int spectrum2( Real vmass, field_offset temp1, field_offset temp2 ){
 	      /* do a C.G. (source in temp1, result in temp2) */
 	      if(t_source%2 == 0) {
 		cgn += ks_congrad( temp1, temp2, vmass,
-		    niter, nrestart, rsqprop, PRECISION, EVEN, &finalrsq);
+				   niter, nrestart, rsqprop, PRECISION, 
+				   EVEN, &finalrsq, fn, ap);
 	          /* Multiply by -Madjoint */
-	          dslash_site( temp2, F_OFFSET(ttt), ODD);
+	          dslash_site( temp2, F_OFFSET(ttt), ODD, fn, ap);
 	          scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt),
 			EVEN);
 /**copy_latvec( temp1, F_OFFSET(g_rand), EVENANDODD );
@@ -97,9 +99,10 @@ checkmul();**/
 	      }
 	      else {
 		cgn += ks_congrad( temp1, temp2, vmass,
-		    niter, nrestart, rsqprop, PRECISION, ODD, &finalrsq);
+				   niter, nrestart, rsqprop, PRECISION, 
+				   ODD, &finalrsq, fn, ap);
 	          /* Multiply by -Madjoint */
-	          dslash_site( temp2, F_OFFSET(ttt), EVEN);
+	          dslash_site( temp2, F_OFFSET(ttt), EVEN, fn, ap);
 	          scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt),
 			ODD);
 	      }

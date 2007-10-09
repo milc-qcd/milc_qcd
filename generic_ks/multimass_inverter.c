@@ -36,7 +36,9 @@ void d2f_vector(su3_vector *, fsu3_vector *);
 int test_converge(int t_source);
 #define MAX_RECXML 65
 
-int multimass_inverter( params_mminv *mminv){
+int multimass_inverter( params_mminv *mminv, fn_links_t *fn, 
+			ks_action_paths *ap)
+{
   /* arguments are array of masses, number of masses,
      tolerance for inverter check.
      return C.G. iteration number */
@@ -122,10 +124,10 @@ int multimass_inverter( params_mminv *mminv){
 		quark_props_color = &(quark_props[nmasses*color]);
 	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props_color, 
 				masses, nmasses, niter, mminv->rsqprop, 
-				prec, EVEN, &finalrsq);
+				prec, EVEN, &finalrsq, fn, ap);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
-	    dslash_field( quark_props_color[j], temp_prop, ODD);
+	    dslash_field( quark_props_color[j], temp_prop, ODD, fn, ap);
 	    FOREVENSITES(i,s)
 		scalar_mult_su3_vector( &(quark_props_color[j][i]), 
 				2.0*masses[j], &(quark_props_color[j][i]) );

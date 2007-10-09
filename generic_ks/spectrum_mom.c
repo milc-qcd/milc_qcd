@@ -87,7 +87,9 @@ void mult_rho2_mom( int fb, int pdir, int px, int py, int pz,
      field_offset src, field_offset dest );
 int test_converge(int t_source);
 
-int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
+int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol,
+		  fn_links_t *fn, ks_action_paths *ap)
+{
   /* arguments are quark and antiquark masses, return C.G. iteration number */
 
   int cgn;
@@ -127,11 +129,11 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 
 	/* compute M^-1 * quark_source */
 	cgn += mat_invert( F_OFFSET(quark_source), F_OFFSET(quark_prop), 
-			   temp, qmass, PRECISION );
+			   temp, qmass, PRECISION, fn, ap );
 	/*if(t_source==0)test_converge(t_source);*/ /*TEMP*/
 	/* TEMP: test inversion, */
 	check_invert( F_OFFSET(quark_prop), F_OFFSET(quark_source), qmass,
-		      tol);
+		      tol, fn, ap);
 
 	/* Begin with the pion source and sink operator */
 	/* Use mat_invert to construct anti_prop */
@@ -143,7 +145,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	/* 0-+ (pion) PROPAGATORS ***************************************/
 	mult_pi_mom( FORWARDS,0,0,0, F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_pi_mom( FORWARDS,0,0,0, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -155,7 +157,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	/* now the pion source at momentum 001 */
 	mult_pi_mom( FORWARDS,0,0,1, F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_pi_mom( FORWARDS,0,0,1, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -167,7 +169,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	/* now the pion source at momentum 011 */
 	mult_pi_mom( FORWARDS,0,1,1, F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_pi_mom( FORWARDS,0,1,1, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -179,7 +181,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	/* now the pion source at momentum 111 */
 	mult_pi_mom( FORWARDS,1,1,1, F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_pi_mom( FORWARDS,1,1,1, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -191,7 +193,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	/* now the pion source at momentum 002 */
 	mult_pi_mom( FORWARDS,0,0,2, F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_pi_mom( FORWARDS,0,0,2, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -203,7 +205,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	/* now the pion source at momentum 022 */
 	mult_pi_mom( FORWARDS,0,2,2, F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_pi_mom( FORWARDS,0,2,2, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -215,7 +217,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	/* now the pion source at momentum 222 */
 	mult_pi_mom( FORWARDS,2,2,2, F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_pi_mom( FORWARDS,2,2,2, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -227,7 +229,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	/* now the pion2 source */
 	mult_pi2_mom( FORWARDS,0,0,0,F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_pi2_mom( FORWARDS,0,0,0, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -239,7 +241,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	/* now the pion2 source at momentum 001 */
 	mult_pi2_mom( FORWARDS,0,0,1,F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_pi2_mom( FORWARDS,0,0,1, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -254,7 +256,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	mult_rho_mom( FORWARDS,ZUP,0,0,0,
 	    F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_rho_mom( FORWARDS,ZUP,0,0,0,
 	    F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
@@ -267,7 +269,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	mult_rho_mom( FORWARDS, ZUP, 0,0,1,
 	    F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_rho_mom( FORWARDS, ZUP, 0,0,1,
 	    F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
@@ -280,7 +282,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	mult_rho_mom( FORWARDS, ZUP, 0,1,0,
 	    F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_rho_mom( FORWARDS, ZUP, 0,1,0,
 	     F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
@@ -293,7 +295,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	mult_rho_mom( FORWARDS, ZUP, 0,1,1,
 	     F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_rho_mom( FORWARDS, ZUP, 0,1,1,
 	     F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
@@ -306,7 +308,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	mult_rho_mom( FORWARDS, ZUP, 1,1,0,
 	    F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_rho_mom( FORWARDS, ZUP, 1,1,0,
 	    F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
@@ -320,7 +322,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	mult_rho2_mom( FORWARDS, ZUP, 0,0,0,
 	    F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_rho2_mom( FORWARDS, ZUP, 0,0,0,
 	    F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 	FORALLSITES(i,s){
@@ -333,7 +335,7 @@ int spectrum_mom( Real qmass, Real amass, field_offset temp, Real tol){
 	mult_rho2_mom( FORWARDS, ZUP, 0,0,1,
 	    F_OFFSET(quark_source), F_OFFSET(g_rand));
 	cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 	mult_rho2_mom( FORWARDS, ZUP, 0,0,1,
 	    F_OFFSET(quark_prop), F_OFFSET(g_rand));
 	FORALLSITES(i,s){

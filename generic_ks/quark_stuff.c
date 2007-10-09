@@ -77,7 +77,7 @@ static Real act_path_coeff_dmdu0[MAX_BASIC_PATHS]; /* coefficient for
 static Q_path q_paths[MAX_NUM];
 static Q_path q_paths_dmdu0[MAX_NUM];
 static int num_q_paths;	/* number of paths in dslash */
-int num_basic_paths;	/* number of paths before rotation/reflection */
+static int num_basic_paths;	/* number of paths before rotation/reflection */
 
 int is_path_equal( int *path1, int* path2, int length );
 int add_basic_path( int *vec, int length, Real coeff );
@@ -85,7 +85,7 @@ int add_basic_path( int *vec, int length, Real coeff );
 /********************************************************************/
 /* Make table of paths in action */
 /********************************************************************/
-void make_path_table() {
+void make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0) {
 
     int i,j;
 #ifdef TADPOLE_IMPROVE
@@ -121,6 +121,14 @@ void make_path_table() {
 	node0_printf("                    %d      %e     %d\n",
 	    j,this_coeff,i);
     }
+    ap->num_q_paths = num_q_paths;
+    ap->q_paths = q_paths;
+    ap->act_path_coeff = act_path_coeff;
+#ifdef DM_DU0
+    ap_dmdu0->num_q_paths = num_q_paths;
+    ap_dmdu0->q_paths = q_paths;
+    ap_dmdu0->act_path_coeff = act_path_coeff_dmdu0;
+#endif
 }
 
 /* Accessors for path table */

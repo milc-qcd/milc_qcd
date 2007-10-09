@@ -11,7 +11,8 @@
 /* "parity" is EVEN, ODD, or EVENANDODD.  The parity is the parity at
     which phi is computed.  g_rand must always be computed at all sites. */
 
-void grsource_imp( field_offset dest, Real mass, int parity) {
+void grsource_imp( field_offset dest, Real mass, int parity,
+		   fn_links_t *fn, ks_action_paths *ap ) {
 register int i,j;
 register site *s;
     FORALLSITES(i,s){
@@ -25,14 +26,15 @@ register site *s;
 #endif
         }
     }
-    dslash_site( F_OFFSET(g_rand), dest, parity);
+    dslash_site( F_OFFSET(g_rand), dest, parity, fn, ap);
     scalar_mult_latvec( dest, -1.0, dest, parity );
     scalar_mult_add_latvec( dest, F_OFFSET(g_rand), 2.0*mass,
 	dest, parity );
 }/* grsource_imp */
 
 
-void z2rsource_imp( field_offset dest, Real mass, int parity) {
+void z2rsource_imp( field_offset dest, Real mass, int parity,
+		    fn_links_t *fn, ks_action_paths *ap ) {
 register int i,j;
 register site *s;
     FORALLSITES(i,s){
@@ -46,7 +48,7 @@ register site *s;
 #endif
         }
     }
-    dslash_site( F_OFFSET(g_rand), dest, parity);
+    dslash_site( F_OFFSET(g_rand), dest, parity, fn, ap);
     scalar_mult_latvec( dest, -1.0, dest, parity );
     scalar_mult_add_latvec( dest, F_OFFSET(g_rand), 2.0*mass,
 	dest, parity );
@@ -100,10 +102,12 @@ void z2rsource_plain( field_offset dest, int parity ) {
 /* Check congrad by multiplying src by M, compare result to g_rand */
 /* Before calling checkmul() you should call grsource(EVENANDODD) and
    congrad(...,EVENANDODD) */
-void checkmul_imp( field_offset src, Real mass ) {
+void checkmul_imp( field_offset src, Real mass,
+		   fn_links_t *fn, ks_action_paths *ap )
+{
 register int i,j;
 register site *s;
-    dslash_site( src, F_OFFSET(ttt), EVENANDODD);
+    dslash_site( src, F_OFFSET(ttt), EVENANDODD, fn, ap);
     scalar_mult_add_latvec( F_OFFSET(ttt), src, 2.0*mass,
 	F_OFFSET(ttt), EVENANDODD );
     FORALLSITES(i,s){

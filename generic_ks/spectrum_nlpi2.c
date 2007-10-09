@@ -76,7 +76,7 @@ void mult_b1( int pdir,  field_offset src, field_offset dest ) ;
 int test_converge(int t_source);
 
 int spectrum_nlpi2( Real qmass, Real amass, field_offset temp, 
-Real tol ){
+		    Real tol, fn_links_t *fn, ks_action_paths *ap ){
   /* arguments are quark and antiquark masses, return C.G. iteration number */
 
   int cgn;
@@ -118,11 +118,11 @@ Real tol ){
 
         /* compute M^-1 * quark_source, M^-1 * antiquark_source */
         cgn += mat_invert( F_OFFSET(quark_source), F_OFFSET(quark_prop), 
-			   temp, qmass, PRECISION );
+			   temp, qmass, PRECISION, fn, ap );
 	/*if(t_source==0)test_converge(t_source);*/ /*TEMP*/
 	/* TEMP: test inversion, */
 	check_invert( F_OFFSET(quark_prop), F_OFFSET(quark_source), qmass,
-		      tol);
+		      tol, fn, ap);
 
 	/* make antiquark source by summing over desired operators
 	   times quark source */
@@ -135,7 +135,7 @@ Real tol ){
 	FORALLSITES(i,s){ add_su3_vector( &(s->g_rand), &(s->anti_prop),
 	    &(s->g_rand) ); }
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 
         /* Loop over all desired sink operators */
         /*tie propagators together at sink end to project out desired mesons */
@@ -187,7 +187,7 @@ Real tol ){
 	FORALLSITES(i,s){ add_su3_vector( &(s->g_rand), &(s->anti_prop),
 	    &(s->g_rand) ); }
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop), 
-			   temp, amass, PRECISION );
+			   temp, amass, PRECISION, fn, ap );
 
         mult_pion05( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){

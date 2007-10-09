@@ -23,7 +23,9 @@ ks_congrad_two_src_F(	/* Return value is number of iterations taken */
     field_offset milc_sol2,
     quark_invert_control *qic,
     Real mass1,
-    Real mass2
+    Real mass2,
+    fn_links_t *fn, 
+    ks_action_paths *ap
     )
 {
   int iterations_used;
@@ -53,7 +55,7 @@ ks_congrad_two_src_F(	/* Return value is number of iterations taken */
 
   iterations_used = 
     ks_congrad_qop_F_site2site( qic, masses, nmass, milc_srcs,
-				milc_sols, nsrc );
+				milc_sols, nsrc, fn, ap );
   return iterations_used;
 }
 
@@ -65,7 +67,9 @@ ks_congrad_two_src_D(	/* Return value is number of iterations taken */
     field_offset milc_sol2,
     quark_invert_control *qic,
     double mass1,
-    double mass2
+    double mass2,
+    fn_links_t *fn, 
+    ks_action_paths *ap
     )
 {
   int iterations_used;
@@ -95,7 +99,7 @@ ks_congrad_two_src_D(	/* Return value is number of iterations taken */
 
   iterations_used = 
     ks_congrad_qop_D_site2site( qic, masses, nmass, milc_srcs,
-				milc_sols, nsrc );
+				milc_sols, nsrc, fn, ap );
   return iterations_used;
 }
 
@@ -112,7 +116,9 @@ ks_congrad_two_src(	/* Return value is number of iterations taken */
     Real rsqmin,	        /* desired residue squared */
     int prec,                   /* internal precision for the inversion */
     int milc_parity,		/* parity to be worked on */
-    Real  *final_rsq     	/* final residue squared */
+    Real  *final_rsq,     	/* final residue squared */
+    fn_links_t *fn,             /* Storage for fermion links */
+    ks_action_paths *ap         /* Definition of action paths */
     )
 {
   int iterations_used;
@@ -128,11 +134,11 @@ ks_congrad_two_src(	/* Return value is number of iterations taken */
   if(prec == 1)
     iterations_used = 
       ks_congrad_two_src_F( milc_src1, milc_src2, milc_sol1, milc_sol2, 
-			    &qic, mass1, mass2 );
+			    &qic, mass1, mass2, fn, ap );
   else
     iterations_used = 
       ks_congrad_two_src_D( milc_src1, milc_src2, milc_sol1, milc_sol2, 
-			    &qic, mass1, mass2 );
+			    &qic, mass1, mass2, fn, ap );
 
   *final_rsq    = qic.final_rsq;
   total_iters += iterations_used;

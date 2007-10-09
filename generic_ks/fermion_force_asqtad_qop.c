@@ -18,6 +18,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.25  2007/10/09 20:10:14  detar
+ * Add fn_links_t and ks_action_paths structures and pass them as params
+ *
  * Revision 1.24  2007/05/21 05:06:18  detar
  * Support precision selection for fermion force.  Systematize calling.
  *
@@ -97,7 +100,7 @@
 #define KS_MULTIFF FNMAT
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.24 2007/05/21 05:06:18 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.25 2007/10/09 20:10:14 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force

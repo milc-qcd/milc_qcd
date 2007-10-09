@@ -7,6 +7,7 @@
 
 /* External entry points
 
+   init_fn_links
    load_fn_links
    load_fn_links_dmdu0 (ifdef DM_DU0)
    invalidate_fn_links
@@ -28,9 +29,6 @@
 #define special_free free
 #endif
 
-static int valid_fn_links = 0;
-static int valid_fn_links_dmdu0 = 0;
-
 /********************************************************************/
 /* Sum over paths connecting to nearest neighbor point (fat link) and to third
    nearest neighbor (longlinks) */
@@ -49,36 +47,45 @@ static int valid_fn_links_dmdu0 = 0;
 
 /* Load fat links into t_fatlink, t_longlink and t_fatbacklink,
    t_longbacklink */
-void load_fn_links(){
 
-  if(valid_fn_links == 1)return;
+//&t_fatlink, get_quark_path_coeff(), get_q_paths());
 
-  load_fatlinks(&t_fatlink, get_quark_path_coeff(), get_q_paths());
-  load_longlinks(&t_longlink);
+void load_fn_links(fn_links_t *fn, ks_action_paths *ap){
+
+  if(fn->valid == 1)return;
+
+  load_fatlinks(fn, ap);
+  load_longlinks(fn, ap);
 
 #ifdef DBLSTORE_FN
-  load_fatbacklinks(&t_fatbacklink, t_fatlink);
-  load_longbacklinks(&t_longbacklink, t_longlink);
+  load_fatbacklinks(fn);
+  load_longbacklinks(fn);
 #endif
 
-  valid_fn_links = 1;
+  fn->valid = 1;
 }
 
-#ifdef DM_DU0
-void load_fn_links_dmdu0(){
-  if(valid_fn_links_dmdu0 == 1)return;
+//&t_dfatlink_du0, get_quark_path_coeff_dmdu0(), get_q_paths_dmdu0());
 
-  load_fatlinks(&t_dfatlink_du0, get_quark_path_coeff_dmdu0(), 
-		get_q_paths_dmdu0());
-  valid_fn_links_dmdu0 = 1;
+#ifdef DM_DU0
+void load_fn_links_dmdu0(fn_links_t *fn, ks_action_paths *ap){
+  if(fn->valid == 1)return;
+
+  load_fatlinks(fn, ap);
+  fn->valid = 1;
 }
 #endif
 
 void
-invalidate_fn_links( void )
+invalidate_fn_links(fn_links_t *fn)
 {
-  valid_fn_links = 0;
-  valid_fn_links_dmdu0 = 0;
+  fn->valid = 0;
 }
 
-
+void init_fn_links(fn_links_t *fn){
+  fn->valid = 0;
+  fn->fat = NULL;
+  fn->lng = NULL;
+  fn->fatback = NULL;
+  fn->lngback = NULL;
+}

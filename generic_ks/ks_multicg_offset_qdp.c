@@ -25,38 +25,44 @@ ks_multicg_offset(	/* Return value is number of iterations taken */
    Real rsqmin,	        /* desired residue squared */
    int prec,            /* internal precision for inversion */
    int parity,		/* parity to be worked on */
-   Real *final_rsq_ptr	/* final residue squared */
+   Real *final_rsq_ptr,	/* final residue squared */
+   fn_links_t *fn,      /* Storage for fat and Naik links */
+   ks_action_paths *ap  /* Definition of action */
    )
 {
   if(prec == 1)
     return ks_multicg_offset_F(src, psim, offsets, num_offsets, niter, 
-			       rsqmin, parity, final_rsq_ptr);
+			       rsqmin, parity, final_rsq_ptr, fn, ap);
   else
     return ks_multicg_offset_D(src, psim, offsets, num_offsets, niter, 
-			       rsqmin, parity, final_rsq_ptr);
+			       rsqmin, parity, final_rsq_ptr, fn, ap);
 }
 
+#if 0
 /* Standard MILC interface for the Asqtad multimass inverter 
    single source, multiple masses.  Uses the prevailing MILC precision */
 
 int
-ks_multicg_mass(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors (preallocated) */
-    Real *masses,	/* the masses */
-    int num_masses,	/* number of masses */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* internal precision for inversion */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+ks_multicg_mass(	 /* Return value is number of iterations taken */
+    field_offset src,	 /* source vector (type su3_vector) */
+    su3_vector **psim,	 /* solution vectors (preallocated) */
+    Real *masses,	 /* the masses */
+    int num_masses,	 /* number of masses */
+    int niter,		 /* maximal number of CG interations */
+    Real rsqmin,	 /* desired residue squared */
+    int prec,            /* internal precision for inversion */
+    int parity,		 /* parity to be worked on */
+    Real *final_rsq_ptr, /* final residue squared */
+    fn_links_t *fn,      /* Storage for fat and Naik links */
+    ks_action_paths *ap  /* Definition of action */
 			)
 {
   if(prec == 1)
     return ks_multicg_mass_F(src, psim, masses, num_masses, niter, 
-			     rsqmin, parity, final_rsq_ptr);
+			     rsqmin, parity, final_rsq_ptr, fn, ap);
   else
     return ks_multicg_mass_D(src, psim, masses, num_masses, niter, 
-			     rsqmin, parity, final_rsq_ptr);
+			     rsqmin, parity, final_rsq_ptr, fn, ap);
 }
 
+#endif

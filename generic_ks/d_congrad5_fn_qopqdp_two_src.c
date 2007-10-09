@@ -28,7 +28,9 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     int prec,                   /* internal precision for the inversion 
 				   (ignored) */
     int milc_parity,		/* parity to be worked on */
-    Real  *final_rsq_ptr 	/* final residue squared */
+    Real  *final_rsq_ptr, 	/* final residue squared */
+    fn_links_t *fn,       /* Storage for fermion links */
+    ks_action_paths *ap /* Definition of action paths */
     )
 {
 #ifdef CGTIME
@@ -41,6 +43,8 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   double dtimec;
   double nflop = 1187;
   QOP_invert_arg qop_invert_arg;
+  su3_matrix *t_fatlink;
+  su3_matrix *t_longlink;
 
   if( milc_parity == EVENANDODD ) nflop *= 2;
   
@@ -50,7 +54,9 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   // load fat and long links                           //
   ///////////////////////////////////////////////////////
   
-  load_fn_links();
+  load_fn_links(fn, ap);
+  t_fatlink = fn->fat;
+  t_longlink = fn->lng;
   
 #ifdef CGTIME
   dtimec = -dclock(); 
@@ -78,8 +84,8 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
 
   // Freeing memory is not necessary, but done for memory savings.
   // Links must be recomputed later.
-  free_fn_links();
-  invalidate_fn_links();
+  free_fn_links(fn);
+  invalidate_fn_links(fn);
   
   ///////////////////////////////////////////////////////
   // set qop_invert_arg                                //
@@ -109,7 +115,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     dtimec += dclock();
     if( this_node == 0 )
       {
-	printf("CONGRAD5(total): time = %e (qopqdp_two_src) iters = %d mflops = %e\n", 
+	printf("CONGRAD5(total): time = %e (qopqdp_two_src) masses = 1 iters = %d mflops = %e\n", 
 	       dtimec, iterations_used,
 	       (double)( nflop * volume * iterations_used / ( 1.0e6 * dtimec * numnodes() ) ) );
 	fflush(stdout);
@@ -167,7 +173,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     dtimec += dclock();
     if( this_node == 0 )
     {
-      printf("CONGRAD5(total): time = %e (qopqdp_two_src) iters = %d mflops = %e\n", 
+      printf("CONGRAD5(total): time = %e (qopqdp_two_src) masses = 1 iters = %d mflops = %e\n", 
 	     dtimec, iterations_used,
         (double)( nflop * volume * iterations_used / 
 		  ( 1.0e6 * dtimec * numnodes() ) ) );

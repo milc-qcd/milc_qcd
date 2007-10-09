@@ -239,7 +239,7 @@ start:
 	    dtimec += dclock();
 	    info->final_sec  += dtimec;
 #ifdef CGTIME
-	    node0_printf("CONGRAD5: time = %e (fn_qop_milc) iters = %d mflops = %e\n",
+	    node0_printf("CONGRAD5: time = %e (fn_qop_milc) masses = 1 iters = %d mflops = %e\n",
 			 dtimec,iteration,final_flop/(1.0e6*dtimec) );
 	    fflush(stdout);
 #endif
@@ -366,7 +366,7 @@ start:
 	    dtimec += dclock();
 	    info->final_sec  += dtimec;
 #ifdef CGTIME
-	    node0_printf("CONGRAD5: time = %e (fn_qop_milc) iters = %d mflops = %e\n",
+	    node0_printf("CONGRAD5: time = %e (fn_qop_milc) masses = 1 iters = %d mflops = %e\n",
 			 dtimec,iteration,final_flop/(1.0e6*dtimec) );
 	    fflush(stdout);
 #endif
@@ -450,7 +450,7 @@ start:
     dtimec += dclock();
     info->final_sec  += dtimec;
 #ifdef CGTIME
-    node0_printf("CONGRAD5: time = %e (qop_milc %s) iters = %d mflops = %e\n",
+    node0_printf("CONGRAD5: time = %e (qop_milc %s) masses = 1 iters = %d mflops = %e\n",
 		 dtimec,qop_prec[QOP_Precision-1],
 		 iteration,final_flop/(1.0e6*dtimec) );
     fflush(stdout);

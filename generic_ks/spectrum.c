@@ -13,7 +13,8 @@
 
 #include "generic_ks_includes.h"
 
-int spectrum() /* return the C.G. iteration number */
+/* return the C.G. iteration number */
+int spectrum(fn_links_t *fn, ks_action_paths *ap) 
 {
   Real pi_ps_prop,pi_sc_prop,rho_pv_prop,rho_vt_prop,barprop;
   Real mass_x2;
@@ -62,9 +63,9 @@ int spectrum() /* return the C.G. iteration number */
 	      /* do a C.G. (source in phi, result in xxx) */
 	      cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 				niter, nrestart, rsqprop, PRECISION, 
-				EVEN, &finalrsq);
+				EVEN, &finalrsq, fn, ap);
 	      /* Multiply by -Madjoint */
-	      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
+	      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn, ap);
 	      scalar_mult_latvec( F_OFFSET(xxx), -mass_x2, F_OFFSET(ttt), EVEN);
 
 	      

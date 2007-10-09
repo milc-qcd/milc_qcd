@@ -287,7 +287,7 @@ if(parity==EVENANDODD)dtime4_iters += 2; else dtime4_iters += 1;
 	    /**if(this_node==0)printf("normal return\n"); fflush(stdout);**/
 #ifdef CGTIME
  dtimec += dclock();
-if(this_node==0){printf("CONGRAD5: time = %e (cppacs) iters = %d mflops = %e\n",
+if(this_node==0){printf("CONGRAD5: time = %e (cppacs) masses = 1 iters = %d mflops = %e\n",
 dtimec,iteration,(double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
 fflush(stdout);}
 #endif

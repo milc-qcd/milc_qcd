@@ -4,14 +4,14 @@
  *
  * Entry points
  *
+ * init_fn_links
  * load_fn_links
  * load_fn_links_dmdu0
  * invalidate_fn_links
  *
  * takes gauge field from site structure "links"
- * Puts result in global t_fatlinks, t_longlinks 
- * If DBLSTORE_FN is defined, also puts result in global t_fatbacklinks
- * and t_longbacklinks
+ * If DBLSTORE_FN is defined, also sets double-stored links in the fn_links
+ * parameter
  *
  */
 /* J. Osborn 2005 */
@@ -33,9 +33,6 @@ static void
 compute_gen_staple(QDP_ColorMatrix *staple, int mu, int nu,
 		   QDP_ColorMatrix *link, double dcoef,
 		   QDP_ColorMatrix *gauge[], QDP_ColorMatrix *fl[]);
-
-static int valid_fn_links = 0;
-static int valid_fn_links_dmdu0 = 0;
 
 static void 
 create_fn_links_qdp(QDP_ColorMatrix *fl[], QDP_ColorMatrix *ll[],
@@ -170,8 +167,11 @@ compute_gen_staple(QDP_ColorMatrix *staple, int mu, int nu,
   QDP_destroy_M(tempmat);
 } /* compute_gen_staple */
 
-void load_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
-		       Real *act_path_coeff) {
+void load_asqtad_links(int both, fn_links_t *fn, ks_action_paths *ap) {
+
+  su3_matrix **t_fl = &fn->fat;
+  su3_matrix **t_ll = &fn->lng;
+  Real *act_path_coeff = ap->act_path_coeff;
 
   QDP_ColorMatrix *fl[4];
   QDP_ColorMatrix *ll[4];
@@ -244,7 +244,7 @@ void load_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
     QDP_destroy_M(ll[dir]);
   }
   
-  valid_fn_links = 1;
+  fn->valid = 1;
 
   remaptime += dclock();
 #ifdef LLTIME
@@ -256,31 +256,38 @@ void load_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
 
 
 /* Wrappers for MILC call to QDP */
-void load_fn_links(){
+void load_fn_links(fn_links_t *fn, ks_action_paths *ap){
 
-  if(valid_fn_links == 1)return;
-  load_asqtad_links(1, &t_fatlink, &t_longlink, get_quark_path_coeff());
+  if(fn->valid == 1)return;
+  load_asqtad_links(1, fn, ap);
 
 #ifdef DBLSTORE_FN
-  load_fatbacklinks(&t_fatbacklink, t_fatlink);
-  load_longbacklinks(&t_longbacklink, t_longlink);
+  load_fatbacklinks(fn);
+  load_longbacklinks(fn);
 #endif
 }
 
 #ifdef DM_DU0
 /* Wrappers for MILC call to QDP */
-void load_fn_links_dmdu0(){
+void load_fn_links_dmdu0(fn_links_t *fn, ks_action_paths *ap){
   su3_matrix *null = NULL;
 
-  if(valid_fn_links_dmdu0 == 1)return;
-  load_asqtad_links(0, &t_dfatlink_du0, &null, get_quark_path_coeff_dmdu0());
+  if(fn->valid == 1)return;
+  load_asqtad_links(0, fn, ap);
 }
 #endif
 
 void
-invalidate_fn_links( void )
+invalidate_fn_links(fn_links_t *fn)
 {
-  valid_fn_links = 0;
-  valid_fn_links_dmdu0 = 0;
+  fn->valid = 0;
 }
 
+void 
+init_fn_links(fn_links_t *fn){
+  fn->valid = 0;
+  fn->fat = NULL;
+  fn->lng = NULL;
+  fn->fatback = NULL;
+  fn->lngback = NULL;
+}

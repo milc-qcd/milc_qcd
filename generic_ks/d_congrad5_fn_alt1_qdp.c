@@ -249,7 +249,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
 #ifdef CGTIME
     dtimec += dclock();
     if(QDP_this_node==0) {
-      printf("CONGRAD5: time = %e (fn_alt1_qdp) iters = %d mflops = %e\n",
+      printf("CONGRAD5: time = %e (fn_alt1_qdp) masses = 1 iters = %d mflops = %e\n",
 	     dtimec, iteration,
 	     (double)(nflop*volume*iteration/(1.0e6*dtimec*numnodes())) );
       fflush(stdout);

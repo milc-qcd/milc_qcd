@@ -58,7 +58,8 @@ void set_parity_site_from_V(field_offset dest, QDP_ColorVector *src,
 /* (prec argument is ignored) */
 int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
 	        int niter, int nrestart, Real rsqmin, int prec, 
-		int milc_parity, Real* final_rsq_ptr )
+		int milc_parity, Real* final_rsq_ptr,
+		fn_links_t *fn, ks_action_paths *ap)
 {
   QDP_ColorMatrix *qop_fat_links[4];
   QDP_ColorMatrix *qop_long_links[4];
@@ -66,6 +67,8 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
   QDP_ColorVector *qop_sol;
   QOP_invert_arg qop_invert_arg;
   int iterations_used;
+  su3_matrix *t_fatlink;
+  su3_matrix *t_longlink;
 
   //printf( "MILC: ks_congrad called in FILE %s at LINE %i\n", __FILE__, __LINE__ );  fflush( NULL );
   //printf( "MILC: level 3 conjugate gradient being used\n" );
@@ -82,7 +85,9 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
   // load fat and long links                           //
   ///////////////////////////////////////////////////////
 
-  load_fn_links();
+  load_fn_links(fn, ap);
+  t_fatlink = fn->fat;
+  t_longlink = fn->lng;
 
 #ifdef CGTIME
   dtimec = -dclock(); 
@@ -109,8 +114,8 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
   set_V_from_parity_site(qop_sol, milc_sol1, milc_parity);
 
   // For memory savings.  Links may need to be recomputed later.
-  free_fn_links();
-  invalidate_fn_links();
+  free_fn_links(fn);
+  invalidate_fn_links(fn);
 
   ///////////////////////////////////////////////////////
   // set qop_invert_arg                                //
@@ -148,7 +153,7 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
     dtimec += dclock();
     if( this_node == 0 )
     {
-      printf("CONGRAD5(total): time = %e (fn_qopqdp) iters = %d mflops = %e\n", 
+      printf("CONGRAD5(total): time = %e (fn_qopqdp) masses = 1 iters = %d mflops = %e\n", 
 	     dtimec, iterations_used,
         (double)( nflop * volume * iterations_used / 
 		  ( 1.0e6 * dtimec * numnodes() ) ) );
@@ -219,7 +224,7 @@ int ks_congrad_qopqdp( QDP_ColorVector *qop_src, QDP_ColorVector *qop_sol,
     dtimec += dclock();
     if( this_node == 0 )
       {
-	printf("CONGRAD5(level 3 only): time = %e (fn_qopqdp) iters = %d mflops = %e\n", 
+	printf("CONGRAD5(level 3 only): time = %e (fn_qopqdp) masses = 1 iters = %d mflops = %e\n", 
 	       dtimec, iterations_used,
 	       (double)( nflop * volume * iterations_used / 
 			 ( 1.0e6 * dtimec * numnodes() ) ) );

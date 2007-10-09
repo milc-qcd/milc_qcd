@@ -43,7 +43,9 @@ void pbp(field_offset xxx_off, Real mass){
 } 
 
 // result ends up in dM_M_inv
-void dn_dMdu_dmun (int n, field_offset xxx_off)
+void dn_dMdu_dmun (int n, field_offset xxx_off,
+		   fn_links_t *fn, ks_action_paths *ap,
+		   fn_links_t *fn_dmdu0, ks_action_paths *ap_dmdu0)
 {
   site *st;
   int i,j;
@@ -51,7 +53,15 @@ void dn_dMdu_dmun (int n, field_offset xxx_off)
   double m, m3;
   double_complex trace;
   complex cc;
+  su3_matrix *t_fatlink;
+  su3_matrix *t_longlink;
+  su3_matrix *t_dfatlink_du0;
 
+  load_fn_links(fn, ap);
+  t_fatlink = fn->fat;
+  t_longlink = fn->lng;
+  load_fn_links(fn_dmdu0, ap_dmdu0);
+  t_dfatlink_du0 = fn_dmdu0->fat;
 
   trace.real = 0.0;
   trace.imag = 0.0;
@@ -115,7 +125,8 @@ void dn_dMdu_dmun (int n, field_offset xxx_off)
       cleanup_gather(tag3);
    } //closes if n>0
    else {
-         ddslash_fn_du0_site( xxx_off, F_OFFSET(dMdu_x), EVENANDODD );
+         ddslash_fn_du0_site( xxx_off, F_OFFSET(dMdu_x), EVENANDODD,
+			      fn_dmdu0, ap_dmdu0);
        }
  }
 
@@ -221,14 +232,16 @@ double_complex tr_dnMdmun_term (int n[6], field_offset g_rand, field_offset phi_
       //  node0_printf("FINISHED MULTIPLICATION val =%e %e\n", lattice[0].dM_M_inv.c[0].real, lattice[0].dM_M_inv.c[0].imag);      
       if( (j+1 < 6 ) && (n[j+1]>0)){
         initialize(xxx1_off);
-	mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
+	mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION,
+			fn, ap);
       }
       else
       {
         if (flag==1) {
          initialize(xxx1_off);
-         mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION);
-         if (u>-1) dn_dMdu_dmun (u, xxx1_off);     
+         mat_invert_uml( F_OFFSET(dM_M_inv), xxx1_off, phi_off, mass, PRECISION,
+			 fn, ap);
+         if (u>-1) dn_dMdu_dmun (u, xxx1_off, fn, ap, fn_dmdu0, ap_dmdu0);     
         }
       }
       //node0_printf("FINISHED INVERSION val =%e %e \n", lattice[0].xxx2.c[0].real, lattice[0].xxx2.c[0].imag);
@@ -655,10 +668,10 @@ return(trace);
 void TR_M_inv_dMdu_deriv(field_offset g_rand, field_offset phi_off, field_offset xxx_off,
                          field_offset xxx1_off, Real mass, int jpbp_reps, int npbp_reps)
 {
- //mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, PRECISION); //xxx_off =M_inv*R
+ //mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, PRECISION,  fn, ap); //xxx_off =M_inv*R
  double_complex tmp, temp[7][7];
 
- dn_dMdu_dmun (0, xxx_off );
+ dn_dMdu_dmun (0, xxx_off, fn, ap, fn_dmdu0, ap_dmdu0 );
  temp[0][0]=trace(0);
  temp[1][0]=d1trM_inv_dmu1(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps, 0);
  temp[2][0]=d2trM_inv_dmu2(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps, 0);
@@ -668,7 +681,7 @@ void TR_M_inv_dMdu_deriv(field_offset g_rand, field_offset phi_off, field_offset
  temp[6][0]=d6trM_inv_dmu6(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps, 0);
 
 
- dn_dMdu_dmun (1, xxx_off ); // result is in dM_M_inv
+ dn_dMdu_dmun (1, xxx_off, fn, ap, fn_dmdu0, ap_dmdu0 ); // result is in dM_M_inv
  temp[0][1]=trace(1);
 
  temp[1][1]=d1trM_inv_dmu1(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps,1);
@@ -678,7 +691,7 @@ void TR_M_inv_dMdu_deriv(field_offset g_rand, field_offset phi_off, field_offset
  temp[5][1]=d5trM_inv_dmu5(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps,1);
 
 
- dn_dMdu_dmun (2, xxx_off ); // result is in dM_M_inv
+ dn_dMdu_dmun (2, xxx_off, fn, ap, fn_dmdu0, ap_dmdu0 ); // result is in dM_M_inv
  temp[0][2]=trace(2);
 
  temp[1][2]=d1trM_inv_dmu1(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps,2);
@@ -687,7 +700,7 @@ void TR_M_inv_dMdu_deriv(field_offset g_rand, field_offset phi_off, field_offset
  temp[4][2]=d4trM_inv_dmu4(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps,2);
 
 
- dn_dMdu_dmun (3, xxx_off ); //. result is in dM_M_inv
+ dn_dMdu_dmun (3, xxx_off, fn, ap, fn_dmdu0, ap_dmdu0 ); //. result is in dM_M_inv
  temp[0][3]=trace(3);
 
  temp[1][3]=d1trM_inv_dmu1(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps,3);
@@ -695,19 +708,19 @@ void TR_M_inv_dMdu_deriv(field_offset g_rand, field_offset phi_off, field_offset
  temp[3][3]=d3trM_inv_dmu3(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps,3);
 
 
- dn_dMdu_dmun (4, xxx_off ); //. result is in dM_M_inv
+ dn_dMdu_dmun (4, xxx_off, fn, ap, fn_dmdu0, ap_dmdu0 ); //. result is in dM_M_inv
  temp[0][4]=trace(4);
 
  temp[1][4]=d1trM_inv_dmu1(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps,4);
  temp[2][4]=d2trM_inv_dmu2(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps,4);
 
- dn_dMdu_dmun (5, xxx_off ); //
+ dn_dMdu_dmun (5, xxx_off, fn, ap, fn_dmdu0, ap_dmdu0 ); //
  temp[0][5]=trace(5);
 
  temp[1][5]=d1trM_inv_dmu1(F_OFFSET(g_rand), phi_off, xxx_off         , xxx1_off, mass, jpbp_reps, npbp_reps,5);
 
 
- dn_dMdu_dmun (6, xxx_off ); 
+ dn_dMdu_dmun (6, xxx_off, fn, ap, fn_dmdu0, ap_dmdu0 ); 
  temp[0][6]=trace(6);
 
 
@@ -753,7 +766,10 @@ void TR_M_inv_dMdu_deriv(field_offset g_rand, field_offset phi_off, field_offset
 }
 
 
-void M_derivatives(field_offset phi_off, field_offset xxx_off, field_offset xxx1_off, Real mass)
+void M_derivatives(field_offset phi_off, field_offset xxx_off, 
+		   field_offset xxx1_off, Real mass,
+		   fn_links_t *fn, ks_action_paths *ap,
+		   fn_links_t *fn_dmdu0, ks_action_paths *ap_dmdu0)
 {
 #ifndef FN              /* FN is assumed for quark number susc. */
   node0_printf("Problem with FN definition\n");
@@ -769,9 +785,8 @@ void M_derivatives(field_offset phi_off, field_offset xxx_off, field_offset xxx1
 
   int jpbp_reps;
 
-#ifdef FN
-  load_fn_links();
-#endif
+  load_fn_links(fn, ap);
+  load_fn_links_dmdu0(fn_dmdu0, ap_dmdu0);
 
   //  node0_printf("fatlink %e %e\n", lattice[0].fatlink[3].e[1][0].real, lattice[0].fatlink[3].e[1][0].imag);
   //node0_printf("longlink %e %e\n", lattice[0].longlink[3].e[1][0].real, lattice[0].longlink[3].e[1][0].imag); 
@@ -784,7 +799,9 @@ void M_derivatives(field_offset phi_off, field_offset xxx_off, field_offset xxx1
 
     //node0_printf("Before FIRST INVERSION g_rand =%e\n", lattice[1].g_rand.c[0].imag);
     initialize(xxx_off);
-    mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, PRECISION);
+    mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, PRECISION,
+		    fn, ap,
+		    fn, ap);
 
     //node0_printf("FINISHED FIRST INVERSION xxx1 =%e\n", lattice[1].xxx1.c[0].imag);
     //node0_printf("FINISHED FIRST INVERSION g_rand =%e\n", lattice[1].g_rand.c[0].imag);
@@ -802,7 +819,7 @@ void M_derivatives(field_offset phi_off, field_offset xxx_off, field_offset xxx1
 
     TR_M_inv_dMdu_deriv(F_OFFSET(g_rand), phi_off, xxx_off,  xxx1_off,  mass, jpbp_reps, npbp_reps); 
 
-   //mat_invert_uml( xxx_off, xxx1_off, phi_off, mass, PRECISION);
+   //mat_invert_uml( xxx_off, xxx1_off, phi_off, mass, PRECISION, fn, ap);
     d1trM_inv_dmu1(F_OFFSET(g_rand), phi_off, xxx_off, xxx1_off, mass, jpbp_reps, npbp_reps, -1);
     d2trM_inv_dmu2(F_OFFSET(g_rand), phi_off, xxx_off, xxx1_off, mass, jpbp_reps, npbp_reps, -1);
     d3trM_inv_dmu3(F_OFFSET(g_rand), phi_off, xxx_off, xxx1_off, mass, jpbp_reps, npbp_reps, -1);

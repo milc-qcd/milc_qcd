@@ -25,7 +25,9 @@ ks_multicg_offset(	/* Return value is number of iterations taken */
    Real rsqmin,	        /* desired residue squared */
    int prec,            /* internal precision for inversion */
    int parity,		/* parity to be worked on */
-   Real *final_rsq_ptr	/* final residue squared */
+   Real *final_rsq_ptr,/* final residue squared */
+   fn_links_t *fn,       /* Storage for fat and Naik links */
+   ks_action_paths *ap /* Definition of action */
    )
 {
   quark_invert_control qic;
@@ -39,11 +41,12 @@ ks_multicg_offset(	/* Return value is number of iterations taken */
   qic.relresid  = 0;     /* Suppresses this test */
 
   if(prec == 1)
-    return ks_multicg_offset_F(src, psim, offsets, num_offsets, &qic);
+    return ks_multicg_offset_F(src, psim, offsets, num_offsets, &qic, fn, ap);
   else
-    return ks_multicg_offset_D(src, psim, offsets, num_offsets, &qic);
+    return ks_multicg_offset_D(src, psim, offsets, num_offsets, &qic, fn, ap);
 }
 
+#if 0
 /* Standard MILC interface for the Asqtad multimass inverter 
    single source, multiple masses.  Uses the prevailing MILC precision */
 
@@ -57,7 +60,9 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* internal precision for inversion */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real *final_rsq_ptr,/* final residue squared */
+    fn_links_t *fn,       /* Storage for fat and Naik links */
+    ks_action_paths *ap /* Definition of action */
 			)
 {
   quark_invert_control qic;
@@ -71,9 +76,10 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
   qic.relresid  = 0;     /* Suppresses this test */
 
   if(prec == 1)
-    return ks_multicg_mass_F(src, psim, masses, num_masses, &qic );
+    return ks_multicg_mass_F(src, psim, masses, num_masses, &qic, fn, ap );
   else
-    return ks_multicg_mass_D(src, psim, masses, num_masses, &qic );
+    return ks_multicg_mass_D(src, psim, masses, num_masses, &qic, fn, ap );
 }
 
 
+#endif

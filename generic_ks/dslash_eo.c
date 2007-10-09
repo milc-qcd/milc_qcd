@@ -27,13 +27,15 @@ void cleanup_dslash_temps(){
   temp_not_allocated=1 ;
 }
 
-void dslash_eo_site( field_offset src, field_offset dest, int parity ) {
+void dslash_eo_site( field_offset src, field_offset dest, int parity,
+		     fn_links_t *fn, ks_action_paths *ap )
+{
   register int i;
   register site *s;
   register int ipath,otherparity;
   register Real x; /* coefficient of path */
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
   
   switch(parity){
   case EVEN:	otherparity=ODD; break;
@@ -57,13 +59,15 @@ void dslash_eo_site( field_offset src, field_offset dest, int parity ) {
   }   /* ipath */
 } /* dslash_eo_site */
 
-void dslash_eo_field( su3_vector *src, su3_vector *dest, int parity ) {
+void dslash_eo_field( su3_vector *src, su3_vector *dest, int parity,
+		      fn_links_t *fn, ks_action_paths *ap )
+{
   register int i;
   register site *s;
   register int ipath,otherparity;
   register Real x; /* coefficient of path */
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
   
   /* allocate temporary work space only if not already allocated */
   if(temp_not_allocated)

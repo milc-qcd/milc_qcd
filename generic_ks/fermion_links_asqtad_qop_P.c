@@ -19,7 +19,7 @@
 
 */
 
-/* Redefinitions according to selected preicsion */
+/* Redefinitions according to selected precision */
 
 #if ( QOP_Precision == 1 )
 
@@ -32,6 +32,8 @@
 #define DESTROY_QOP_ASQTAD_FERMION_LINKS destroy_qop_F_asqtad_fermion_links
 #define INVALIDATE_FN_LINKS invalidate_fn_links_F
 #define UNLOAD_L_TO_FIELDS unload_F_L_to_fields
+#define CREATE_RAW4_G_FROM_SITE create_raw4_F_G_from_site
+#define DESTROY_RAW4_G destroy_raw4_F_G
 
 #else
 
@@ -44,6 +46,8 @@
 #define DESTROY_QOP_ASQTAD_FERMION_LINKS destroy_qop_D_asqtad_fermion_links
 #define INVALIDATE_FN_LINKS invalidate_fn_links_D
 #define UNLOAD_L_TO_FIELDS unload_D_L_to_fields
+#define CREATE_RAW4_G_FROM_SITE create_raw4_D_G_from_site
+#define DESTROY_RAW4_G destroy_raw4_D_G
 
 #endif
 
@@ -60,17 +64,27 @@
 #endif
 
 static QOP_FermionLinksAsqtad *qop_links = NULL;
-static int valid_fn_links = 0;
-static int valid_fn_links_dmdu0 = 0;
 
 #ifdef HAVE_NO_CREATE_L_FROM_G
 
 /***********************************************************************/
 /* Create QOP and MILC fat links from MILC gauge field using MILC code */
 /***********************************************************************/
+
+/* The fat and long links are created in BOTH the structure fn and in
+   the global object qop_links. In the structure fn the links are
+   created in the prevailing precision.  In qop_links they are created
+   in the precision defined by QOP_Precision.
+
+   We have two ways to create the fat and long links, depending on the
+   level of QOP support.  If QOP is able to create its links from our
+   gauge field, we ask it to create them and then unload them into fn.
+   If QOP can't, then we use our own fattening routines to create them
+   in fn and then pack them from there into the QOP link object. */
+   
 static QOP_FermionLinksAsqtad *
-create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
-		    Real *act_path_coeff) {
+create_asqtad_links(int both, fn_links_t *fn, ks_action_paths *ap) {
+  Real *act_path_coeff = ap->act_path_coeff;
 
   double remaptime;
   QOP_FermionLinksAsqtad *qop_l;
@@ -88,16 +102,13 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
   }
 
   /* Use MILC link fattening routines */
-  load_fatlinks(&t_fatlink, get_quark_path_coeff(), get_q_paths());
-  load_longlinks(&t_longlink);
-
-  *t_fl = t_fatlink;   /* Identity copy */
-  *t_ll = t_longlink;  /* Identity copy */
+  load_fatlinks(fn, ap);
+  load_longlinks(fn, ap);
 
   /* Map to MILC fat and long links to QOP including possible change
      of precision */
   remaptime = -dclock();
-  qop_l = CREATE_L_FROM_FIELDS(*t_fl, *t_ll, EVENANDODD);
+  qop_l = CREATE_L_FROM_FIELDS(fn->fat, fn->lng, EVENANDODD);
   remaptime += dclock();
 
 #ifdef LLTIME
@@ -114,10 +125,29 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
 /**********************************************************************/
 /* Create QOP and MILC fat links from MILC gauge field using QOP code */
 /**********************************************************************/
-static QOP_FermionLinksAsqtad *
-create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
-		    Real *act_path_coeff) {
 
+static QOP_FermionLinksAsqtad *
+CREATE_L_FROM_SITE_GAUGE( QOP_info_t *info,
+    QOP_asqtad_coeffs_t *coeffs, field_offset src, int parity)
+{
+  su3_matrix **raw;
+  QOP_FermionLinksAsqtad *qop;
+  QOP_GaugeField *gauge;
+  raw = CREATE_RAW4_G_FROM_SITE(src, parity);
+  if(raw == NULL)terminate(1);
+  gauge = QOP_create_G_from_raw((Real **)raw, milc2qop_parity(parity));
+  DESTROY_RAW4_G(raw); raw = NULL;
+  qop = QOP_asqtad_create_L_from_G(info, coeffs, gauge);
+  QOP_destroy_G(gauge); gauge = NULL;
+  return qop;
+}
+
+static QOP_FermionLinksAsqtad *
+create_asqtad_links(int both, fn_links_t *fn, ks_action_paths *ap) {
+
+  Real *act_path_coeff = ap->act_path_coeff;
+  su3_matrix **t_fl = &fn->fat;
+  su3_matrix **t_ll = &fn->lng;
   char myname[] = "create_asqtad_links";
   QOP_FermionLinksAsqtad *qop_l;
   QOP_info_t info;
@@ -192,33 +222,32 @@ create_asqtad_links(int both, su3_matrix **t_fl, su3_matrix **t_ll,
 /* Create fat and long links and qop_links                           */
 /*********************************************************************/
 /* Wrappers for MILC call to QOP */
+  // &t_fatlink, get_quark_path_coeff(), get_q_paths());
 void 
-LOAD_FN_LINKS( void ){
-  if(valid_fn_links == 1)return;
+LOAD_FN_LINKS( fn_links_t *fn, ks_action_paths *ap ){
+  if(fn->valid == 1)return;
   if(qop_links != NULL)
-    QOP_asqtad_destroy_L(qop_links);
-  qop_links = create_asqtad_links(1, &t_fatlink, &t_longlink, 
-				get_quark_path_coeff());
+    DESTROY_QOP_ASQTAD_FERMION_LINKS();
+  qop_links = create_asqtad_links(1, fn, ap);
 
 #ifdef DBLSTORE_FN
-  load_fatbacklinks(&t_fatbacklink, t_fatlink);
-  load_longbacklinks(&t_longbacklink, t_longlink);
+  load_fatbacklinks(fn);
+  load_longbacklinks(fn);
 #endif
-  valid_fn_links = 1;
+  fn->valid = 1;
 }
 
 #ifdef DM_DU0
 /* Wrappers for MILC call to QOP */
-void LOAD_FN_LINKS_DMDU0( void ){
-  su3_matrix *null = NULL;
+void LOAD_FN_LINKS_DMDU0( fn_links_t *fn, ks_action_paths *ap ){
   QOP_FermionLinksAsqtad *qop_l;
 
-  if(valid_fn_links_dmdu0 == 1)return;
-  qop_l = create_asqtad_links(0, &t_dfatlink_du0, &null, 
-			      get_quark_path_coeff_dmdu0());
+  if(fn->valid == 1)return;
+  qop_l = create_asqtad_links(0, fn, ap);
+
   /* We don't use the QOP version of links based on dMdu0*/
   QOP_asqtad_destroy_L(qop_l);
-  valid_fn_links_dmdu0 = 1;
+  fn->valid = 1;
 }
 #endif
 
@@ -226,14 +255,14 @@ void LOAD_FN_LINKS_DMDU0( void ){
 /* Create QOP_FermionLinksAsqtad object from MILC fat and long links */
 /*********************************************************************/
 QOP_FermionLinksAsqtad *
-CREATE_QOP_ASQTAD_FERMION_LINKS( void )
+CREATE_QOP_ASQTAD_FERMION_LINKS( fn_links_t *fn, ks_action_paths *ap )
 {
   /* If qop_links are unavailable, we have to rebuild them */
   /* They are restored only when we rebuild fat and long links */
   if(qop_links == NULL) 
-    INVALIDATE_FN_LINKS();
+    INVALIDATE_FN_LINKS(fn);
   /* Create fat and long links if necessary */
-  LOAD_FN_LINKS();
+  LOAD_FN_LINKS(fn, ap);
   return qop_links;
 }
 
@@ -245,8 +274,11 @@ DESTROY_QOP_ASQTAD_FERMION_LINKS( void )
 }
 
 void
-INVALIDATE_FN_LINKS( void )
+INVALIDATE_FN_LINKS( fn_links_t *fn )
 {
-  valid_fn_links = 0;
-  valid_fn_links_dmdu0 = 0;
+  fn->valid = 0;
+  /* Necessary, since fn->valid does not distinguish QOP_Precision,
+     but qop_links does. */
+  if(qop_links != NULL)
+    DESTROY_QOP_ASQTAD_FERMION_LINKS();
 }
