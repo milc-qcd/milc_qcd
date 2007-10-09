@@ -8,6 +8,9 @@ void make_loop_table2(void)
 {
    void char_num(int dig[13], int chr[2], int *ch, const int length);
 
+   /* Paths and coefficients after DeGrand, Hasenfratz, Kovacs,
+      hep-lat/9705009 */
+
    static int inst_ind[nist][max_inst_length] =
    {
       {0,1,2,6,7,3,0,4,7,5,0,0,0,0,0,0},

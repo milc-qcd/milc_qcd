@@ -52,7 +52,7 @@ G_OBJECTS = \
  reunitarize2.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o
 endif
 
 # Objects depending on architecture and software package 
