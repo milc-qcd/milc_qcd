@@ -68,7 +68,8 @@ G_OBJECTS = \
   ranmom.o \
   remap_stdio_from_args.o \
   reunitarize2.o \
-  ranstuff.o
+  ranstuff.o \
+  show_generic_opts.o
 
 ifeq ($(strip ${QCDOC}),true)
   G_OBJECTS += ploop2.o
@@ -77,7 +78,7 @@ else
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o
 endif
 
 G_KS_OBJECTS = \
@@ -86,6 +87,7 @@ G_KS_OBJECTS = \
   mat_invert.o \
   path_transport.o \
   quark_stuff.o \
+  show_generic_ks_opts.o \
   rephase.o
 
 SPECTRUM_OBJECTS = \
@@ -319,7 +321,7 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DCOM_CRC" \
+	"DEFINES= -DFN" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update.o"
@@ -409,7 +411,8 @@ su3_hmc_eo_symzk1_p4::
 
 su3_hybrids::
 	make -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN 	-DSPECTRUM -DHYBRIDS" \
+	"DEFINES= -DFN 	-DSPECTRUM -DHYBRIDS \
+	-DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
@@ -419,7 +422,8 @@ su3_hybrids::
 
 su3_hybrids1::
 	make -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN 	-DSPECTRUM -DHYBRIDS -DONEMASS" \
+	"DEFINES= -DFN 	-DSPECTRUM -DHYBRIDS -DONEMASS \
+	-DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
@@ -431,7 +435,7 @@ su3_hybrids1::
 
 su3_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN 	-DSPECTRUM" \
+	"DEFINES= -DFN 	-DSPECTRUM -DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
@@ -440,7 +444,8 @@ su3_spectrum::
 
 su3_spectrum1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN 	-DSPECTRUM -DONEMASS" \
+	"DEFINES= -DFN 	-DSPECTRUM -DONEMASS \
+	-DKS_MULTICG=HYBRID" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
