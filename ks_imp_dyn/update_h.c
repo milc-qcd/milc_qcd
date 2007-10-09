@@ -13,7 +13,8 @@
 void update_h( Real eps ){
   int ff_prec = PRECISION;  /* Just use prevailing precision for now */
 #ifdef FN
-    free_fn_links();
+    free_fn_links(&fn_links);
+    free_fn_links(&fn_links_dmdu0);
 #endif
     /* gauge field force */
     rephase(OFF);

@@ -44,7 +44,10 @@ checkmul();**/
  
 #ifdef PHI_ALGORITHM
         /* generate a pseudofermion configuration only at start*/
-     	if(step==1){grsource_imp(F_OFFSET(phi), mass, EVEN); old_cg_time = cg_time = -1.0e6;}
+      if(step==1){
+	grsource_imp(F_OFFSET(phi), mass, EVEN, &fn_links, &ks_act_paths); 
+	old_cg_time = cg_time = -1.0e6;
+      }
 
 #ifdef HMC_ALGORITHM
         /* find action */
@@ -52,7 +55,8 @@ checkmul();**/
         if(step==1){
             /* do conjugate gradient to get (Madj M)inverse * phi */
 	    iters += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx), mass, 
-				 niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq );
+				 niter, nrestart, rsqmin, PRECISION, 
+				 EVEN, &final_rsq, &fn_links, &ks_act_paths );
 	    cg_time = 0.0;
 
      	    startaction=d_action();
@@ -73,7 +77,9 @@ checkmul();**/
        	update_u(epsilon*(0.5-nflavors/8.0));
 
         /* generate a pseudofermion configuration */
-     	grsource_imp(F_OFFSET(phi), mass, EVEN); cg_time = -1.0e6;
+     	grsource_imp(F_OFFSET(phi), mass, EVEN,
+		     &fn_links, &ks_act_paths); 
+	cg_time = -1.0e6;
 
 	/* update U's to middle of interval */
      	update_u(epsilon*nflavors/8.0);
@@ -82,8 +88,9 @@ checkmul();**/
         /* do conjugate gradient to get (Madj M)inverse * phi */
      	iters += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx), mass, 
 			     niter, nrestart, rsqmin, PRECISION, 
-			     EVEN, &final_rsq );
-	dslash_site( F_OFFSET(xxx), F_OFFSET(xxx), ODD );
+			     EVEN, &final_rsq, &fn_links, &ks_act_paths );
+	dslash_site( F_OFFSET(xxx), F_OFFSET(xxx), ODD,
+		     &fn_links, &ks_act_paths);
 	cg_time = ((Real)step - 0.5)*epsilon;
 	/* now update H by full time interval */
     	update_h(epsilon);
@@ -116,7 +123,8 @@ checkmul();**/
 	if(steps > 0)
 	    gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-	invalidate_fn_links();
+	invalidate_fn_links(&fn_links);
+	invalidate_fn_links(&fn_links_dmdu0);
 #endif
 	node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
     }

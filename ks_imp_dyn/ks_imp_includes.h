@@ -58,11 +58,6 @@ void scalar2_mult_add_latvec(field_offset src1,Real scalar1,
 void scalar_mult_latvec(field_offset src,Real scalar,
 			field_offset dest,int parity);
 
-void dslash_eo( field_offset src, field_offset dest, int parity );
-void dslash_eo_special( field_offset src, field_offset dest,
-    int parity, msg_tag **tag, int start );
-void checkmul_imp( field_offset src, Real mass );
-
 void rephase( int flag );
 void sym_shift(int dir, field_offset src,field_offset dest);
 void zeta_shift(int n, int *d, field_offset src, field_offset dest );

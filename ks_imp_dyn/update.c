@@ -43,9 +43,11 @@ Real xrandom;
 	   with a new random phi field. */
      	if(step==1){
 	    clear_latvec( F_OFFSET(xxx1), EVENANDODD );
-	    grsource_imp( F_OFFSET(phi1), mass1, EVEN);
+	    grsource_imp( F_OFFSET(phi1), mass1, EVEN, 
+			  &fn_links, &ks_act_paths);
 	    clear_latvec( F_OFFSET(xxx2), EVENANDODD );
-	    grsource_imp( F_OFFSET(phi2), mass2, EVEN);
+	    grsource_imp( F_OFFSET(phi2), mass2, EVEN,
+			  &fn_links, &ks_act_paths);
 	}
 
 #ifdef HMC_ALGORITHM
@@ -54,9 +56,11 @@ Real xrandom;
         if(step==1){
             /* do conjugate gradient to get (Madj M)inverse * phi */
 	    iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-		 niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq );
+				 niter, nrestart, rsqmin, PRECISION, EVEN, 
+				 &final_rsq, &fn_links, &ks_act_paths);
 	    iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-		niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq );
+				 niter, nrestart, rsqmin, PRECISION, EVEN, 
+				 &final_rsq, &fn_links, &ks_act_paths );
 
      	    startaction=d_action();
             /* copy link field to old_link */
@@ -74,11 +78,11 @@ Real xrandom;
 
        	update_u(epsilon*(0.5-nflavors1/8.0));
 	clear_latvec( F_OFFSET(xxx1), EVENANDODD );
-     	grsource_imp( F_OFFSET(phi1), mass1, EVEN);
+     	grsource_imp( F_OFFSET(phi1), mass1, EVEN, &fn_links, &ks_act_paths);
 
        	update_u(epsilon*((nflavors1-nflavors2)/8.0));
 	clear_latvec( F_OFFSET(xxx2), EVENANDODD );
-     	grsource_imp( F_OFFSET(phi2), mass2, EVEN);
+     	grsource_imp( F_OFFSET(phi2), mass2, EVEN, &fn_links, &ks_act_paths);
 
 	/* update U's to middle of interval */
      	update_u(epsilon*nflavors2/8.0);
@@ -94,10 +98,13 @@ Real xrandom;
 	iters += ks_congrad_two_src( F_OFFSET(phi1), F_OFFSET(phi2),
 				     F_OFFSET(xxx1), F_OFFSET(xxx2),
 				     mass1, mass2, niter, nrestart, rsqmin, 
-				     PRECISION, EVEN, &final_rsq);
+				     PRECISION, EVEN, &final_rsq,
+				     &fn_links, &ks_act_paths);
 #endif
-	dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD );
-	dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD );
+	dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD,
+		     &fn_links, &ks_act_paths);
+	dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD,
+		     &fn_links, &ks_act_paths);
 	/* now update H by full time interval */
     	update_h(epsilon);
 
@@ -138,9 +145,11 @@ Real xrandom;
     /* find action */
     /* do conjugate gradient to get (Madj M)inverse * phi */
     iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-	 niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq );
+			 niter, nrestart, rsqmin, PRECISION, EVEN, 
+			 &final_rsq, &fn_links, &ks_act_paths );
     iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-	 niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq );
+			 niter, nrestart, rsqmin, PRECISION, EVEN, 
+			 &final_rsq, &fn_links, &ks_act_paths );
     endaction=d_action();
     /* decide whether to accept, if not, copy old link field back */
     /* careful - must generate only one random number for whole lattice */
@@ -150,7 +159,8 @@ Real xrandom;
 	if(steps > 0)
 	    gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-	invalidate_fn_links();
+	invalidate_fn_links(&fn_links);
+	invalidate_fn_links(&fn_links_dmdu0);
 #endif
 	node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
     }

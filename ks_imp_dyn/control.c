@@ -74,19 +74,30 @@ main( int argc, char **argv )
 
 	/* Measure pbp, etc */
 #ifdef ONEMASS
-	f_meas_imp(F_OFFSET(phi),F_OFFSET(xxx),mass);
+	f_meas_imp(F_OFFSET(phi),F_OFFSET(xxx),mass, &fn_links, &ks_act_paths,
+		   &fn_links_dmdu0, &ks_act_paths_dmdu0);
 #else
-	f_meas_imp( F_OFFSET(phi1), F_OFFSET(xxx1), mass1 );
-	f_meas_imp( F_OFFSET(phi2), F_OFFSET(xxx2), mass2 );
+	f_meas_imp( F_OFFSET(phi1), F_OFFSET(xxx1), mass1, 
+		    &fn_links, &ks_act_paths,
+		    &fn_links_dmdu0, &ks_act_paths_dmdu0);
+	f_meas_imp( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
+		    &fn_links, &ks_act_paths,
+		    &fn_links_dmdu0, &ks_act_paths_dmdu0);
 #endif
 
 	/* Measure derivatives wrto chemical potential */
 #ifdef D_CHEM_POT
 #ifdef ONEMASS
-	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass );
+	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass,
+		  &fn_links, &ks_act_paths,
+		  &fn_links_dmdu0, &ks_act_paths_dmdu0);
 #else
-	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass1 );
-	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass2 );
+	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass1,
+		  &fn_links, &ks_act_paths,
+		  &fn_links_dmdu0, &ks_act_paths_dmdu0);
+	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass2,
+		  &fn_links, &ks_act_paths,
+		  &fn_links_dmdu0, &ks_act_paths_dmdu0);
 #endif
 #endif
 
@@ -96,47 +107,58 @@ main( int argc, char **argv )
 	gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
 	rephase( ON );
 #ifdef FN
-	invalidate_fn_links();
+	invalidate_fn_links(&fn_links);
+	invalidate_fn_links(&fn_links_dmdu0);
 #endif
 	
 	if(strstr(spectrum_request,",spectrum,") != NULL){
 #ifdef ONEMASS
-	  avspect_iters += spectrum2(mass,F_OFFSET(phi),F_OFFSET(xxx));
+	  avspect_iters += spectrum2(mass,F_OFFSET(phi),F_OFFSET(xxx),
+				     &fn_links, &ks_act_paths);
 #else
 	  avspect_iters += spectrum2( mass1, F_OFFSET(phi1),
-				      F_OFFSET(xxx1));
+				      F_OFFSET(xxx1), 
+				      &fn_links, &ks_act_paths);
 	  avspect_iters += spectrum2( mass2, F_OFFSET(phi1),
-				      F_OFFSET(xxx1));
+				      F_OFFSET(xxx1),
+				      &fn_links, &ks_act_paths);
 #endif
 	}
 	
 	if(strstr(spectrum_request,",spectrum_point,") != NULL){
 #ifdef ONEMASS
-	  avspect_iters += spectrum_fzw(mass,F_OFFSET(phi),F_OFFSET(xxx));
+	  avspect_iters += spectrum_fzw(mass,F_OFFSET(phi),F_OFFSET(xxx),
+					&fn_links, &ks_act_paths);
 #else
 	  avspect_iters += spectrum_fzw( mass1, F_OFFSET(phi1),
-				      F_OFFSET(xxx1));
+					 F_OFFSET(xxx1),
+					 &fn_links, &ks_act_paths);
 	  avspect_iters += spectrum_fzw( mass2, F_OFFSET(phi1),
-				      F_OFFSET(xxx1));
+					 F_OFFSET(xxx1),
+					 &fn_links, &ks_act_paths);
 #endif
 	}
 	
 	if(strstr(spectrum_request,",nl_spectrum,") != NULL){
 #ifdef ONEMASS
 	  avspect_iters += nl_spectrum(mass,F_OFFSET(phi),F_OFFSET(xxx),
-				       F_OFFSET(tempmat1),F_OFFSET(staple));
+				       F_OFFSET(tempmat1),F_OFFSET(staple),
+				       &fn_links, &ks_act_paths);
 #else
 	  avspect_iters += nl_spectrum( mass1, F_OFFSET(phi1), 
-		F_OFFSET(xxx1), F_OFFSET(tempmat1),F_OFFSET(staple));
+		F_OFFSET(xxx1), F_OFFSET(tempmat1),F_OFFSET(staple),
+					&fn_links, &ks_act_paths);
 #endif
 	}
 	
 	if(strstr(spectrum_request,",spectrum_mom,") != NULL){
 #ifdef ONEMASS
-	  avspect_iters += spectrum_mom(mass,mass,F_OFFSET(phi),5e-3);
+	  avspect_iters += spectrum_mom(mass,mass,F_OFFSET(phi),5e-3,
+					&fn_links, &ks_act_paths);
 #else
 	  avspect_iters += spectrum_mom( mass1, mass1, 
-					 F_OFFSET(phi1), 1e-1 );
+					 F_OFFSET(phi1), 1e-1,
+					 &fn_links, &ks_act_paths);
 #endif
 	}
 	
@@ -146,53 +168,67 @@ main( int argc, char **argv )
 					     spectrum_multimom_low_mass,
 					     spectrum_multimom_mass_step,
 					     spectrum_multimom_nmasses,
-					     5e-3);
+					     5e-3,
+					     &fn_links, &ks_act_paths);
 #else
 	  avspect_iters += spectrum_multimom(mass1,
 					     spectrum_multimom_low_mass,
 					     spectrum_multimom_mass_step,
 					     spectrum_multimom_nmasses,
-					     5e-3);
+					     5e-3,
+					     &fn_links, &ks_act_paths);
+
 #endif
 	}
 	
 #ifndef ONEMASS
 	if(strstr(spectrum_request,",spectrum_nd,") != NULL){
-	  avspect_iters += spectrum_nd( mass1, mass2, 1e-1 );
+	  avspect_iters += spectrum_nd( mass1, mass2, 1e-1,
+					&fn_links, &ks_act_paths);
 	}
 #endif
 	if(strstr(spectrum_request,",spectrum_nlpi2,") != NULL){
 #ifdef ONEMASS
-	  avspect_iters += spectrum_nlpi2(mass,mass,F_OFFSET(phi),5e-3);
+	  avspect_iters += spectrum_nlpi2(mass,mass,F_OFFSET(phi),5e-3,
+					  &fn_links, &ks_act_paths);
 #else
 	  avspect_iters += spectrum_nlpi2( mass1, mass1, 
-					   F_OFFSET(phi1),1e-1);
+					   F_OFFSET(phi1),1e-1,
+					   &fn_links, &ks_act_paths);
 	  avspect_iters += spectrum_nlpi2( mass2, mass2, 
-					   F_OFFSET(phi1),1e-1);
+					   F_OFFSET(phi1),1e-1,
+					   &fn_links, &ks_act_paths);
 #endif
 	}
 	
 	if(strstr(spectrum_request,",spectrum_singlets,") != NULL){
 #ifdef ONEMASS
-	  avspect_iters += spectrum_singlets(mass, 5e-3, F_OFFSET(phi));
+	  avspect_iters += spectrum_singlets(mass, 5e-3, F_OFFSET(phi),
+					     &fn_links, &ks_act_paths);
 #else
-	  avspect_iters += spectrum_singlets(mass1, 5e-3, F_OFFSET(phi1));
-	  avspect_iters += spectrum_singlets(mass2, 5e-3, F_OFFSET(phi1));
+	  avspect_iters += spectrum_singlets(mass1, 5e-3, F_OFFSET(phi1),
+					     &fn_links, &ks_act_paths);
+	  avspect_iters += spectrum_singlets(mass2, 5e-3, F_OFFSET(phi1),
+					     &fn_links, &ks_act_paths);
 #endif
 	}
 
 	if(strstr(spectrum_request,",fpi,") != NULL)
 	  {
-	    avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3 );
+	    avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3,
+				    &fn_links, &ks_act_paths);
 	  }
 	
 #ifdef HYBRIDS
 	if(strstr(spectrum_request,",spectrum_hybrids,") != NULL){
 #ifdef ONEMASS
-	  avspect_iters += spectrum_hybrids( mass,F_OFFSET(phi),1e-1);
+	  avspect_iters += spectrum_hybrids( mass,F_OFFSET(phi),1e-1,
+					     &fn_links, &ks_act_paths);
 #else
-	  avspect_iters += spectrum_hybrids( mass1, F_OFFSET(phi1), 5e-3 );
-	  avspect_iters += spectrum_hybrids( mass2, F_OFFSET(phi1), 2e-3 );
+	  avspect_iters += spectrum_hybrids( mass1, F_OFFSET(phi1), 5e-3,
+					     &fn_links, &ks_act_paths);
+	  avspect_iters += spectrum_hybrids( mass2, F_OFFSET(phi1), 2e-3,
+					     &fn_links, &ks_act_paths);
 #endif
 	}
 #endif

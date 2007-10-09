@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.12  2007/10/09 20:01:07  detar
+//  Add fn_links_t and ks_action_paths structures and pass them as params
+//
 //  Revision 1.11  2007/05/21 14:32:59  detar
 //  Support fixed geometry, FF precision selection, new gauge_fix arg list.
 //
@@ -88,23 +91,12 @@ setup()
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
-
-  /* Mark t_longlink and t_fatlink as unallocated */
-  t_longlink = NULL;  
-  t_fatlink = NULL;
-  
-#ifdef DBLSTORE_FN
-  t_longbacklink = NULL;
-  t_fatbacklink = NULL;
-#endif
-
+  /* Set pointers to NULL */
+#ifdef FN  
+  init_fn_links(&fn_links);
 #ifdef DM_DU0
-  /* Allocate space for u0 derivative of temp fatlinks */
-  t_dfatlink_du0 = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
-  if(t_dfatlink_du0==NULL){
-    printf("NODE %d: no room for t_dfatlink\n",this_node);
-    terminate(1);
-  }
+  init_fn_links(&fn_links_dmdu0);
+#endif
 #endif
 
   node0_printf("Made lattice\n"); fflush(stdout);
@@ -158,6 +150,13 @@ initial_set()
 #endif
 #ifdef SPECTRUM
     printf("With spectrum measurements\n");
+#endif
+    /* Print list of options selected */
+    node0_printf("Options selected...\n");
+    show_generic_opts();
+    show_generic_ks_opts();
+#ifdef INT_ALG
+    node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
 #endif
     status=get_prompt(stdin, &prompt);
 #ifdef ONEMASS
@@ -396,9 +395,11 @@ readin(int prompt)
     rephase( OFF );
   }
   startlat_p = reload_lattice( startflag, startfile );
-  /* if a lattice was read in, put in KS phases and AP boundary condition */
 #ifdef FN
-  invalidate_fn_links();
+  invalidate_fn_links(&fn_links);
+#ifdef DM_DU0
+  invalidate_fn_links(&fn_links_dmdu0);
+#endif
 #endif
   phases_in = OFF;
   rephase( ON );
@@ -406,7 +407,7 @@ readin(int prompt)
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
   /* make table of coefficients and permutations of paths in quark action */
-  make_path_table();
+  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
   
   return(0);
 }

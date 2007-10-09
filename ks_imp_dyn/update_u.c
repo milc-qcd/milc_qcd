@@ -62,7 +62,8 @@ scalar_mult_add_su3_matrix(link,&temp1,t2,&temp2);
 	}
     }
 #ifdef FN
-    invalidate_fn_links();
+    invalidate_fn_links(&fn_links);
+    invalidate_fn_links(&fn_links_dmdu0);
 #endif
 
 /**dtime += dclock();
