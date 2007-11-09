@@ -38,7 +38,8 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* desired intermediate precicion */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real *final_rsq_ptr,/* final residue squared */
+    ferm_links_t *fn      /* Fermion links */
     )
 {
     // Just a multimass inversion.  start at roots[1] because first term
@@ -46,7 +47,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     // It's "order" instead of "order-1" because order is order of expansion, arrays
     // have order+1 elements 
   return ks_multicg( src, psim, roots+1, order, my_niter, rsqmin, 
-		      prec, parity, final_rsq_ptr, &fn_links, &ks_act_paths );
+		      prec, parity, final_rsq_ptr, fn );
 }
 
 /* evaluate the rational function approximation after all the

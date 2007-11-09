@@ -14,8 +14,11 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.18  2007/11/09 16:06:28  detar
+//  Pull FN link calculation out of inverter.
+//
 //  Revision 1.17  2007/10/09 19:51:02  detar
-//  Add fn_links_t and ks_action_paths structures and pass them as params
+//  Add ferm_links_t and ks_action_paths structures and pass them as params
 //
 //  Revision 1.16  2007/05/21 04:23:32  detar
 //  Add Precision selection for fermion force in QOP and QDP
@@ -128,9 +131,9 @@ setup()
   node0_printf("Made lattice\n"); fflush(stdout);
 
   /* Mark t_longlink and t_fatlink as unallocated */
-  init_fn_links(&fn_links);
+  init_ferm_links(&fn_links);
 #ifdef DM_DU0
-  init_fn_links(&fn_links_dmdu0);
+  init_ferm_links(&fn_links_dmdu0);
 #endif
   /* set up neighbor pointers and comlink structures
      code for this routine is in com_machine.c  */
@@ -448,8 +451,8 @@ readin(int prompt)
   startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
 #ifdef FN
-  invalidate_fn_links(&fn_links);
-  invalidate_fn_links(&fn_links_dmdu0);
+  invalidate_ferm_links(&fn_links);
+  invalidate_ferm_links(&fn_links_dmdu0);
 #endif
   phases_in = OFF;
   rephase( ON );

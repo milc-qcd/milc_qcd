@@ -46,10 +46,11 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
   double sum;
   int iphi; 
   sum=0.0;
+  load_ferm_links(&fn_links, &ks_act_paths);
   for(iphi = 0; iphi < n_pseudo; iphi++){
     ks_ratinv( F_OFFSET(phi[iphi]), multi_x, rparam[iphi].FA.pole, 
 	       rparam[iphi].FA.order, niter_fa[iphi], rsqmin_fa[iphi], 
-	       prec_fa[iphi], EVEN, &final_rsq );
+	       prec_fa[iphi], EVEN, &final_rsq, &fn_links );
     ks_rateval( sumvec, F_OFFSET(phi[iphi]), multi_x, 
 		rparam[iphi].FA.res, rparam[iphi].FA.order, EVEN );
     FOREVENSITES(i,s){ /* phi is defined on even sites only */
@@ -107,7 +108,7 @@ void gauge_field_copy(field_offset src,field_offset dest){
     }
   }
 #ifdef FN
-  invalidate_fn_links(&fn_links);
-  invalidate_fn_links(&fn_links_dmdu0);
+  free_fn_links(&fn_links);
+  free_fn_links(&fn_links_dmdu0);
 #endif
 }

@@ -37,7 +37,8 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   else {
     /* generate g_rand random; phi = Mdagger g_rand */
     node0_printf("Generating a random source\n");
-    grsource_imp( src, mass, EVENANDODD );
+    load_ferm_links(&fn_links, &ks_act_paths);
+    grsource_imp( src, mass, EVENANDODD, &fn_links);
   }
       
   node0_printf("Computing the fermion force\n"); fflush(stdout);

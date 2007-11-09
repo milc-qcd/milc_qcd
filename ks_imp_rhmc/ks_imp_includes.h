@@ -54,7 +54,8 @@ void update_u( Real eps );
 
 void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
 			int parity, su3_vector **multi_x, su3_vector *sumvec,
-			Real my_rsqmin, int my_niter, int my_prec);
+			Real my_rsqmin, int my_niter, int my_prec,
+			ferm_links_t *fn);
 
 /* fermion_force_asqtad3_rhmc.c */
 
@@ -73,7 +74,8 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     Real rsqmin,        /* desired residue squared */
     int prec,           /* desired intermediate precicion */
     int parity,         /* parity to be worked on */
-    Real *final_rsq_ptr /* final residue squared */
+    Real *final_rsq_ptr, /* final residue squared */
+    ferm_links_t *fn      /* Fermion links */
     );
 
 int ks_rateval(

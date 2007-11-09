@@ -64,7 +64,7 @@ BOMB Checking the fermion force requires QIO compilation
       filexml = create_QCDML();
       node0_printf("Saving the long links\n");
       save_color_matrix_scidac_from_field( savelongfile, filexml, 
-			  "Long links", QIO_SINGLEFILE, t_longlink, 4);
+			  "Long links", QIO_SINGLEFILE, fn_links.lng, 4);
       free_QCDML(filexml);
 #else
       printf("ERROR: Can't save the longlinks.  Recompile with QIO\n");
@@ -77,7 +77,7 @@ BOMB Checking the fermion force requires QIO compilation
       filexml = create_QCDML();
       node0_printf("Saving the fat links\n");
       save_color_matrix_scidac_from_field( savefatfile, filexml, 
-		  "Fat links", QIO_SINGLEFILE, t_fatlink, 4);
+		  "Fat links", QIO_SINGLEFILE, fn_links.fat, 4);
       free_QCDML(filexml);
 #else
       printf("ERROR: Can't save the fatlinks.  Recompile with QIO\n");

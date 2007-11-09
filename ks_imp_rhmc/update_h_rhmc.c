@@ -75,6 +75,7 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
   for(totalorder=0,iphi = 0; iphi < n_pseudo; iphi++)totalorder+=rparam[iphi].MD.order;
   allresidues = (Real *)malloc(totalorder*sizeof(Real));
 
+  load_ferm_links(&fn_links, &ks_act_paths);
   for(tmporder=0,iphi = 0; iphi < n_pseudo; iphi++){
     order = rparam[iphi].MD.order;
     residues = rparam[iphi].MD.res;
@@ -85,11 +86,11 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
     ks_ratinv( F_OFFSET(phi[iphi]), &(multi_x[tmporder]), roots, order, niter_md[iphi],
-	       rsqmin_md[iphi], prec_md[iphi], EVEN, &final_rsq );
+	       rsqmin_md[iphi], prec_md[iphi], EVEN, &final_rsq, &fn_links );
 
     for(j=0;j<order;j++){
 	dslash_field( multi_x[tmporder+j], multi_x[tmporder+j],  ODD,
-		      &fn_links, &ks_act_paths);
+		      &fn_links);
 	allresidues[tmporder+j] = residues[j+1];
 	// remember that residues[0] is constant, no force contribution.
     }

@@ -24,11 +24,11 @@ void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf,
     // Then compute M*xxx in temporary vector xxx_odd 
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
+    load_ferm_links(&fn_links, &ks_act_paths);
     ks_ratinv( phi_off, multi_x, roots, order, my_niter,
-	       my_rsqmin, cg_prec, EVEN, &final_rsq );
+	       my_rsqmin, cg_prec, EVEN, &final_rsq, &fn_links );
 
-    for(j=0;j<order;j++){ dslash_field( multi_x[j], multi_x[j],  ODD,
-					&fn_links, &ks_act_paths); }
+    for(j=0;j<order;j++){ dslash_field( multi_x[j], multi_x[j],  ODD,			&fn_links); }
 
     eo_fermion_force_multi( eps, &(residues[1]), multi_x, order, ff_prec );
 }

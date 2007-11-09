@@ -45,7 +45,8 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real *final_rsq_ptr,/* final residue squared */
+    ferm_links_t *fn      /* Storage for fat and Naik links */
     )
 {
     /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
@@ -192,22 +193,18 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
 #ifdef FN
 	if(special_started==0){
 	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1,
-				      &fn_links, &ks_act_paths);
+				      fn);
 	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1,
-				     &fn_links, &ks_act_paths);
+				     fn);
 	    special_started = 1;
 	}
 	else {
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0,
-				     &fn_links, &ks_act_paths);
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0,
-				     &fn_links, &ks_act_paths);
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0, fn);
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn );
 	}
 #else
-	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity,
-		     &fn_links, &ks_act_paths);
-	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity,
-		     &fn_links, &ks_act_paths);
+	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity, fn );
+	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity, fn);
 #endif
 
 	/* finish computation of (-1)*M_adjoint*m*p and (-1)*p*M_adjoint*M*p */
@@ -401,17 +398,18 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     Real rsqmin,	/* desired residue squared */
     int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+    Real *final_rsq_ptr,/* final residue squared */
+    ferm_links_t *fn      /* Storage for fat and Naik links */
     )
 {
     int i,j,iters=0; site *s;
     ks_multicg_reverse( src, psim, offsets, num_offsets, niter, 
-			rsqmin, parity, final_rsq_ptr,prec);
+			rsqmin, prec, parity, final_rsq_ptr, fn);
     for(i=0;i<num_offsets;i++){
       FORSOMEPARITY(j,s,parity){ s->xxx1 = psim[i][j]; } END_LOOP
        iters += ks_congrad( src, F_OFFSET(xxx1), 0.5*sqrt(offsets[i]), 
 			    niter/5, rsqmin, prec, 
-			    parity, final_rsq_ptr, prec );
+			    parity, final_rsq_ptr, fn );
       FORSOMEPARITY(j,s,parity){ psim[i][j] = s->xxx1; } END_LOOP
     }
     return(iters);

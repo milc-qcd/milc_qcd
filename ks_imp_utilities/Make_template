@@ -58,7 +58,7 @@ else
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS = ${G_OBJECTS1} io_scidac.o
+  G_OBJECTS = ${G_OBJECTS1} io_scidac.o io_scidac_types.o
 else
   G_OBJECTS = ${G_OBJECTS1}
 endif

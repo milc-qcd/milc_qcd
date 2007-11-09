@@ -62,12 +62,18 @@ main( int argc, char **argv )
 	rephase(OFF);
 	g_measure( );
 	rephase(ON);
+
+	/* Load fat and long links for fermion measurements */
+	load_ferm_links(&fn_links, &ks_act_paths);
+#ifdef DM_DU0
+	load_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
+#endif
+
+	/* Do some fermion measurements */
 	f_meas_imp( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-		    &fn_links, &ks_act_paths, 
-		    &fn_links_dmdu0, &ks_act_paths_dmdu0);
+		    &fn_links, &fn_links_dmdu0);
 	f_meas_imp( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-		    &fn_links, &ks_act_paths,
-		    &fn_links_dmdu0, &ks_act_paths_dmdu0);
+		    &fn_links, &fn_links_dmdu0);
 	avs_iters += s_iters;
 	++meascount;
 	fflush(stdout);

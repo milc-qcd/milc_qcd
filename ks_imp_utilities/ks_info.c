@@ -7,6 +7,7 @@
    propagator and source files */
 
 #include "ks_imp_includes.h"
+#define IMP_QUARK_ACTION_INFO_ONLY
 #include <quark_action.h>
 #define MAX_XML 2049
 

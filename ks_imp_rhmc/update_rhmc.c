@@ -169,10 +169,11 @@ int update()  {
   
   /* generate a pseudofermion configuration only at start*/
   // NOTE used to clear xxx here.  May want to clear all solutions for reversibility
+  load_ferm_links(&fn_links, &ks_act_paths);
   for(iphi = 0; iphi < n_pseudo; iphi++){
     grsource_imp_rhmc( F_OFFSET(phi[iphi]), &(rparam[iphi].GR), EVEN,
 		       multi_x,sumvec, rsqmin_gr[iphi], niter_gr[iphi],
-		       prec_gr[iphi]);
+		       prec_gr[iphi], &fn_links);
   }
 
   /* find action */
@@ -355,8 +356,8 @@ int update()  {
     if(steps > 0)
       gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-    invalidate_fn_links(&fn_links);
-    invalidate_fn_links(&fn_links_dmdu0);
+    free_fn_links(&fn_links);
+    free_fn_links(&fn_links_dmdu0);
 #endif
     node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
   }

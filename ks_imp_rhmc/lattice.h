@@ -16,7 +16,7 @@
 
 #include "defines.h"
 #include "../include/generic_quark_types.h"
-#include "../include/generic_ks.h" /* For fn_links_t and ks_action_paths */
+#include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 #include "../include/random.h"    /* For double_prn */
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
@@ -49,8 +49,10 @@ typedef struct {
 	/* gauge field */
 	su3_matrix link[4];	/* the fundamental field */
 
+#ifdef HMC
  	su3_matrix old_link[4];
 	/* For accept/reject */
+#endif
 
 	/* antihermitian momentum matrices in each direction */
  	anti_hermitmat mom[4];
@@ -193,9 +195,9 @@ EXTERN site *lattice;
 EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
-EXTERN fn_links_t        fn_links;
+EXTERN ferm_links_t        fn_links;
 EXTERN ks_action_paths ks_act_paths;
-EXTERN fn_links_t        fn_links_dmdu0;
+EXTERN ferm_links_t        fn_links_dmdu0;
 EXTERN ks_action_paths ks_act_paths_dmdu0;
 
 #include "params_rhmc.h"

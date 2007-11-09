@@ -46,7 +46,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
 		      field_offset tmp, Real mass);
 void check_invert2( field_offset src, field_offset dest, 
 		    field_offset temp, Real mass,
-		    Real tol, int parity);
+		    Real tol, int parity, ferm_links_t *fn);
 
 char *create_QCDML();
 void free_QCDML(char *qcdml);

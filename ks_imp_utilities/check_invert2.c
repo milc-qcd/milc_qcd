@@ -6,7 +6,8 @@
 /* FOR TESTING: multiply src by Mdagger M and check against dest */
 void check_invert2( field_offset src, field_offset dest, 
 		    field_offset temp, Real mass,
-		    Real tol, int parity){
+		    Real tol, int parity,
+		    ferm_links_t *fn){
   register int i,k,flag;
   register site *s;
   Real r_diff, i_diff;
@@ -19,8 +20,8 @@ void check_invert2( field_offset src, field_offset dest,
   case EVENANDODD: otherparity=EVENANDODD; break;
   }
 					     
-  dslash_site( src, temp, otherparity);
-  dslash_site( temp, F_OFFSET(cg_p), parity);
+  dslash_site( src, temp, otherparity, &fn_links);
+  dslash_site( temp, F_OFFSET(cg_p), parity, fn);
 
   FORSOMEPARITY(i,s,parity){
     scalar_mult_su3_vector( &(s->cg_p), -1.0, &(s->cg_p));
