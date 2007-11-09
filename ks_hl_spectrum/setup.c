@@ -42,6 +42,7 @@ int initial_set(){
     IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
     IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
     IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+    IF_OK status += get_s(stdin, prompt,"job_id",par_buf.job_id);
     
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -56,6 +57,7 @@ int initial_set(){
   ny=par_buf.ny;
   nz=par_buf.nz;
   nt=par_buf.nt;
+  strcpy(job_id,par_buf.job_id);
   
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -110,17 +112,38 @@ int readin(int prompt)  {
       IF_OK status += ask_starting_wprop(stdin, prompt, 
 					 &par_buf.startflag_w[i], 
 					 par_buf.startfile_w[i]);
-      IF_OK status += get_f(stdin, prompt,"kappa", &par_buf.kap[i] );       
+      /* Save the string to create the FNAL file name */
+      IF_OK status += get_s(stdin, prompt,"kappa", par_buf.kap_label[i] );
+      IF_OK par_buf.kap[i] = atof(par_buf.kap_label[i]);
+      IF_OK status += get_s(stdin, prompt,"source_label", 
+			    par_buf.src_label_w[i] );       
       IF_OK status += get_f(stdin, prompt,"d1", &par_buf.d1[i] );
     }
     
     IF_OK status += get_i(stdin, prompt,"number_of_smearings", &par_buf.num_smear );
-    for(i=0;i<par_buf.num_smear;i++)
+    /* We always have a point sink */
+    par_buf.num_smear++;
+    strcpy(par_buf.sink_label[0],"d");
+    par_buf.smearfile[0][0] = '\0';
+
+    for(i=1;i<par_buf.num_smear;i++){
+      IF_OK status += get_s(stdin, prompt,"sink_label", par_buf.sink_label[i] );       
       IF_OK status += get_s(stdin, prompt,"smear_func_file", par_buf.smearfile[i]);
-    IF_OK status += ask_starting_ksprop (prompt, 
+    }
+
+    IF_OK status += ask_starting_ksprop (stdin, prompt, 
 					 &par_buf.ks_prop_startflag,
 					 par_buf.start_ks_prop_file);
+    IF_OK status += get_s(stdin, prompt,"mass", 
+			  par_buf.mass_label );       
+    IF_OK par_buf.mass = atof(par_buf.mass_label);
+    /* What file for the resulting correlators? */
+    
+    IF_OK status += ask_corr_file( stdin, prompt, &par_buf.saveflag_c,
+				   par_buf.savefile_c);
+
     if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
+
   } /* end if(this_node==0) */
   
   /* Node 0 broadcasts parameter buffer to all other nodes */
@@ -130,8 +153,6 @@ int readin(int prompt)  {
   
   startflag = par_buf.startflag;
   saveflag = par_buf.saveflag;
-  
-  
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);
   strcpy(stringLFN, par_buf.stringLFN);
@@ -139,14 +160,22 @@ int readin(int prompt)  {
   for(i=0;i<par_buf.num_kap;i++){
     kap[i] = par_buf.kap[i]; 
     d1[i] = par_buf.d1[i];
+    strcpy(kap_label[i],par_buf.kap_label[i]);
     strcpy(startfile_w[i],par_buf.startfile_w[i]);
     strcpy(savefile_w[i],par_buf.savefile_w[i]);
+    strcpy(src_label_w[i],par_buf.src_label_w[i]);
     startflag_w[i] = par_buf.startflag_w[i];
   }
-  for(i=0;i<par_buf.num_smear;i++)
+  strcpy(savefile_c,par_buf.savefile_c);
+  saveflag_c = par_buf.saveflag_c;
+  for(i=0;i<par_buf.num_smear;i++){
+    strcpy(sink_label[i], par_buf.sink_label[i]);
     strcpy(smearfile[i],par_buf.smearfile[i]);
+  }
   strcpy(ensemble_id,par_buf.ensemble_id);
   strcpy(start_ks_prop_file, par_buf.start_ks_prop_file); 
+  mass = par_buf.mass;
+  strcpy(mass_label, par_buf.mass_label);
   ks_prop_startflag = par_buf.ks_prop_startflag;
   sequence_number = par_buf.sequence_number;
   num_smear = par_buf.num_smear;

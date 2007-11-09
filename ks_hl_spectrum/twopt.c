@@ -1,4 +1,10 @@
+/***************** twopt.c ********************************************/
+
+/* Computes meson propagators from specified quark propagators */
+/* MIMD version 7 */
+
 #include "ks_hl_spectrum_includes.h"
+#include <time.h>
 
 #define GAMMAFIVE -1
 #define eve  0
@@ -10,7 +16,8 @@
    where q is a staggered propagator and Q_HL could be the heavy quark,
    at a given space-time point */
 
-complex  KS_2pt_trace(su3_matrix * antiquark, wilson_propagator * quark, 
+static complex  
+KS_2pt_trace(su3_matrix * antiquark, wilson_propagator * quark, 
 		      int * g_snk, int n_snk, int *g_src, int n_src, int *p, site *s)
 {
   int t;
@@ -100,8 +107,9 @@ complex  KS_2pt_trace(su3_matrix * antiquark, wilson_propagator * quark,
 /* Summation on spatial slice. Caution: elements of prop are not set initially to zero here! 
    In prop averages of propagators are accumulated!  */
 
-void KS_2pt_func(field_offset snk, field_offset src, int *g_snk, int n_snk,
-		 int *g_src, int n_src, int *p, complex *prop, int parity)
+static void 
+KS_2pt_func(field_offset snk, field_offset src, int *g_snk, int n_snk,
+	    int *g_src, int n_src, int *p, complex *prop, int parity)
 {
   int i, t, my_x,my_y,my_z;
   site *s;
@@ -167,7 +175,8 @@ void KS_2pt_func(field_offset snk, field_offset src, int *g_snk, int n_snk,
 
 /* Caution: elements of propagator are not set initially to zero here! */
 
-void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator)
+static void 
+All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator)
 {
 
   int i;
@@ -827,7 +836,279 @@ void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator)
      g_src[1] = XUP;
      KS_2pt_func(snk, src,g_snk, n_snk, g_src, n_src, p000, propagator[34], eve);
 
-     //print to file ?
 
+}
 
+/*--------------------------------------------------------------------*/
+
+static char *get_utc_datetime(void)
+{
+  time_t time_stamp;
+  struct tm *gmtime_stamp;
+  char time_string[64];
+
+  time(&time_stamp);
+  gmtime_stamp = gmtime(&time_stamp);
+  strncpy(time_string,asctime(gmtime_stamp),64);
+  
+  /* Remove trailing end-of-line character */
+  if(time_string[strlen(time_string) - 1] == '\n')
+    time_string[strlen(time_string) - 1] = '\0';
+  return time_string;
+}
+
+/*--------------------------------------------------------------------*/
+FILE* 
+open_fnal_meson_file(char filename[]){
+  FILE *fp;
+
+  /* Create the FNAL file only for rotated meson.  Only node 0
+     writes. */
+  if(this_node != 0 || saveflag_c == FORGET)
+    return NULL;
+
+  fp = fopen(filename,"w");
+  if(fp == NULL){
+    printf("print_open_fnal_meson_file: ERROR. Can't open %s\n",
+	   filename);
+    return NULL;
+  }
+  fprintf(fp,"# meta-data\n");
+  fprintf(fp,"header.date      \"%s UTC\"\n",get_utc_datetime());
+  fprintf(fp,"header.lattice   %d,%d,%d,%d\n", nx, ny, nz, nt);
+  fprintf(fp,"header.job_id    %s\n", job_id);
+  return fp;
+}
+
+/*--------------------------------------------------------------------*/
+static void 
+print_start_fnal_meson_group(FILE *fp, char sink[])
+{
+  fprintf(fp,"# %s\n",sink);
+}
+
+/*--------------------------------------------------------------------*/
+static void 
+print_start_fnal_meson_prop(FILE *fp, char kind[], 
+			    char sink_label[], 
+			    char src_label_w[],
+			    char kap_label[], char mass_label[]){
+  if(this_node != 0 || saveflag_c == FORGET)return;
+  char gamma_kind[16];
+  char mom_kind[16];
+
+  /* Parse the "kind" string*/
+  sscanf(kind,"%s %s",gamma_kind,mom_kind);
+
+  fprintf(fp,"# %s_%s_%s_k%s_m%s_%s\n",
+	  gamma_kind, sink_label, src_label_w, kap_label, 
+	  mass_label, mom_kind);
+}
+		       
+/*--------------------------------------------------------------------*/
+static void 
+print_fnal_meson_prop(FILE *fp, int t, complex c)
+{
+  if(this_node != 0 || saveflag_c == FORGET)return;
+  fprintf(fp, "%d\t%e\t%e\n", t, (double)c.real, (double)c.imag);
+}
+
+/*--------------------------------------------------------------------*/
+/* Does nothing for now */
+static void 
+print_end_fnal_meson_prop(FILE *fp){
+  if(this_node != 0 || saveflag_c == FORGET)return;
+}
+
+/*--------------------------------------------------------------------*/
+void 
+close_fnal_meson_file(FILE *fp){
+  if(this_node != 0 || saveflag_c == FORGET)return;
+  fclose(fp);
+}
+
+/*--------------------------------------------------------------------*/
+static void
+clear_mes_prop(complex **prop, int nmes, int ntime){
+  int m, t;
+
+  for(m = 0; m < nmes; m++)for(t = 0; t < nt; t++){
+      prop[m][t].real = 0.0; prop[m][t].imag = 0.0;
+    }
+}
+
+/*--------------------------------------------------------------------*/
+static complex **
+create_mes_prop(int nmes, int ntime){
+  complex **prop;
+  int m, t;
+
+  prop = (complex **)malloc(nmes*sizeof(complex *));
+  if(prop == NULL)return prop;
+
+  for(m = 0; m < nmes; m++){
+    prop[m] = (complex *)malloc(ntime*sizeof(complex));
+    if(prop[m] == NULL)return NULL;
+  }
+
+  clear_mes_prop(prop, nmes, ntime);
+
+  return prop;
+}
+
+/*--------------------------------------------------------------------*/
+
+static void 
+destroy_mes_prop(complex **prop, int nmes){
+  int m;
+
+  if(prop == NULL)return;
+
+  for(m = 0; m < nmes; m++)
+    if(prop[m] != NULL) free(prop[m]);
+
+  free(prop);
+}
+
+/*--------------------------------------------------------------------*/
+static void
+print_hl_rot(FILE *corr_fp, complex **prop_rot, int k)
+{
+  int i, t;
+
+  char *trace_kind_rot[35] = {
+    "P5_P5 p000","P5_P5 p100", "P5_P5 p110","P5_P5 p111", "P5_P5 p200",
+    "P5_P5 p210","P5_P5 p211", "P5_P5 p220","P5_P5 p300", "P5_P5 p221",
+    "P5_P5 p400","A4_P5 p000", "A4_P5 p100","A4_P5 p110", "A4_P5 p111",
+    "A4_P5 p200","A1_P5 p100", "A1_P5 p110","A1_P5 p111", "A1_P5 p200",
+    "P5_A1 p100","V1_V1 p000", "V1_V1 p100","V1_V1 p110", "V1_V1 p111",
+    "V1_V1 p200","V1_V1 p210", "V1_V1 p211","V1_V1 p220", "V1_V1 p300",
+    "V1_V1 p221","V1_V1 p400", "S_S p000"  ,"A1_A1 p000", "T23_T23 p000"
+  }; 
+
+  int do_fnal_print[35] = {0,0,0,0,0,
+			   0,0,0,0,0,
+			   0,1,1,1,1,
+			   1,1,1,1,1,
+			   0,0,0,0,0,
+			   0,0,0,0,0,
+			   0,0,0,0,0};
+
+  node0_printf("BEGIN\n");
+      
+  print_start_fnal_meson_group(corr_fp,"rotated-sinks");
+
+  for(i=0;i<35;i++)
+    {
+      if(do_fnal_print[i])
+	print_start_fnal_meson_prop(corr_fp, trace_kind_rot[i], 
+				    "d",
+				    src_label_w[k], kap_label[k], 
+				    mass_label);
+      
+      if(this_node==0) printf("\n\nTr %d, %s_k_%f\n_________________________________\n",
+			      i, trace_kind_rot[i],kap[k]);
+      for(t=0;t<nt;t++)
+	{
+	  g_floatsum( &(prop_rot[i][t].real) );
+	  g_floatsum( &(prop_rot[i][t].imag) );
+	  if(this_node==0){
+	    if(do_fnal_print[i])
+	      print_fnal_meson_prop(corr_fp, t, prop_rot[i][t]);
+	    printf("%d %e %e\n", t,
+		   prop_rot[i][t].real, prop_rot[i][t].imag);
+	  }
+	}
+      if(do_fnal_print[i])
+	print_end_fnal_meson_prop(corr_fp);
+    }
+  
+  clear_mes_prop(prop_rot, 35, nt);
+
+}
+
+/*--------------------------------------------------------------------*/
+static void
+print_hl_smear(FILE *corr_fp, complex **prop_smear, int k, int ns)
+{
+  int i, t;
+  double space_vol = (double)(nx*ny*nz);
+
+  char *trace_kind_smear[35] = {
+    "pi p000",   "pi p100",    "pi p110",   "pi p111",    "pi p200",
+    "pi p210",   "pi p211",    "pi p220",   "pi p300",    "pi p221",
+    "pi p400",   "A4_P5 p000", "A4_P5 p100","A4_P5 p110", "A4_P5 p111",
+    "A4_P5 p200","A1_P5 p100", "A1_P5 p110","A1_P5 p111", "A1_P5 p200",
+    "P5_A1 p100","ro_1 p000",  "ro_1 p100", "ro_1 p110",  "ro_1 p111",
+    "ro_1 p200", "ro_1 p210",  "ro_1 p211", "ro_1 p220",  "ro_1 p300",
+    "ro_1 p221", "ro_1 p400",  "S_S p000",  "A1_A1 p000", "T23_T23 p000"
+  }; 
+
+  int do_fnal_print[35] = {1,1,1,1,1,
+			   1,1,1,1,1,
+			   1,0,0,0,0,
+			   0,0,0,0,0,
+			   0,1,1,1,1,
+			   1,1,1,1,1,
+			   1,1,0,0,0};
+
+  print_start_fnal_meson_group(corr_fp,"smeared-sinks");
+
+  for(i=0;i<35;i++){
+    if(do_fnal_print[i])
+      print_start_fnal_meson_prop(corr_fp, trace_kind_smear[i], 
+				  sink_label[ns],
+				  src_label_w[k], kap_label[k], mass_label);
+      
+    if(this_node==0) printf("\n\nSMEAR_#%d, %s_k_%f\n_________________________________\n", 
+			    ns, trace_kind_smear[i],kap[k]);
+    for(t=0;t<nt;t++)
+      {
+	g_floatsum( &prop_smear[i][t].real );
+	g_floatsum( &prop_smear[i][t].imag );
+	if(this_node==0){
+	  if(do_fnal_print[i])
+	    print_fnal_meson_prop(corr_fp, t, prop_smear[i][t]);
+	  printf("%d %e %e\n", t,
+		 prop_smear[i][t].real/space_vol, 
+		 prop_smear[i][t].imag/space_vol);
+	}
+      }
+    if(do_fnal_print[i])
+      print_end_fnal_meson_prop(corr_fp);
+  }
+
+  clear_mes_prop(prop_smear, 35, nt);
+
+}
+
+/*--------------------------------------------------------------------*/
+void
+spectrum_hl_rot(FILE *corr_fp, field_offset snk, field_offset src, int k)
+{
+  complex **prop_rot;
+  int num_prop, t;
+
+  prop_rot = create_mes_prop(35, nt);
+
+  All_KS_hl_prop(snk, src, prop_rot);
+  print_hl_rot(corr_fp, prop_rot, k);
+
+  destroy_mes_prop(prop_rot, 35);
+}
+
+/*--------------------------------------------------------------------*/
+void
+spectrum_hl_smear(FILE *corr_fp, field_offset snk, field_offset src, 
+		  int k, int ns)
+{
+  complex **prop_smear;
+  int num_prop, t;
+
+  prop_smear = create_mes_prop(35, nt);
+  
+  All_KS_hl_prop(snk, src, prop_smear);
+  print_hl_smear(corr_fp, prop_smear, k, ns);
+
+  destroy_mes_prop(prop_smear, 35);
 }

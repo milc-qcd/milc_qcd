@@ -6,18 +6,13 @@ typedef struct {
         int stopflag;	/* 1 if it is time to stop */
    /* INITIALIZATION PARAMETERS */
 	int nx,ny,nz,nt;  /* lattice dimensions */
+        char job_id[MAXFILENAME];
 
    /*  REPEATING BLOCK */
-  //	int warms;	/* the number of warmup trajectories */
-  //	int trajecs;	/* the number of real trajectories */
-  //	int steps;	/* number of steps for updating */
-  //	int propinterval;     /* number of trajectories between measurements */
 	int startflag;  /* what to do for beginning lattice */
 	int saveflag;   /* what to do with lattice at end */
-  //	double beta,mass; /* gauge coupling, quark mass */
 	int niter; 	/* maximum number of c.g. iterations */
 	double rsqmin,rsqprop;  /* for deciding on convergence */
-  //	double epsilon;	/* time step */
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 	char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
         char ensemble_id[MAXFILENAME];
@@ -25,15 +20,22 @@ typedef struct {
 
 	char startfile_w[MAX_KAP][MAXFILENAME];
 	int startflag_w[MAX_KAP];
+        char src_label_w[MAX_KAP][16];
 	char savefile_w[MAX_KAP][MAXFILENAME];
 	int saveflag_w[MAX_KAP];
+        char savefile_c[MAXFILENAME];
+        int saveflag_c;
 
         char smearfile[MAX_KAP][MAXFILENAME];
+        char sink_label[MAX_KAP][16];
         char start_ks_prop_file[MAXFILENAME];
         int ks_prop_startflag;
+        Real mass;
+        char mass_label[32];
         int num_kap;	/* number of kappa's */
         int num_smear; /* number of smearings */
         Real kap[MAX_KAP];	/* kappa values for multiple propagators */	
+        char kap_label[MAX_KAP][32];
         Real d1[MAX_KAP];   /*rotation parameter*/
 }  params;
 

@@ -46,7 +46,6 @@ G_OBJECTS =         \
   gaugefix2.o        \
   io_detect.o        \
   io_helpers.o       \
-  io_helpers_w.o     \
   io_lat4.o          \
   io_lat_utils.o     \
   make_lattice.o     \
@@ -63,13 +62,19 @@ else
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o
 endif
 
 G_WILSON_OBJECTS =    \
-  dslash_w_space.o     \
-  io_prop_w.o        \
-  io_prop_w_fm.o       \
+  dslash_w_space.o    \
+  gammas.o            \
+  gauss_smear_w.o     \
+  io_helpers_w.o      \
+  io_prop_w.o         \
+  io_prop_w_fm.o      \
+  io_source_w_fm.o    \
+  staggered2naive.o   \
+  w_source.o          \
   wilson_invert.o 
 
 ifeq ($(strip ${HAVEQIO}),true)

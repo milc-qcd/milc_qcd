@@ -27,9 +27,10 @@
 int  setup();
 int readin(int prompt);
 void rotate_w_quark(field_offset src, field_offset dest, Real d1);
-complex  KS_2pt_trace(su3_matrix * antiquark, wilson_propagator * quark, 
-		      int * g_snk, int n_snk, int *g_src, int n_src, int *p, site *s);
-void KS_2pt_func(field_offset snk, field_offset src, int *g_snk, int n_snk,
-		 int *g_src, int n_src, int *p, complex *prop, int parity);
-void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator);
+//void All_KS_hl_prop(field_offset snk, field_offset src, complex **propagator);
+FILE* open_fnal_meson_file(char filename[]);
+void close_fnal_meson_file(FILE *fp);
+void spectrum_hl_rot(FILE *fp, field_offset snk, field_offset src, int k);
+void spectrum_hl_smear(FILE *fp, field_offset snk, field_offset src, 
+		       int k, int ns);
 void get_smearings_bi_serial(char *filename);

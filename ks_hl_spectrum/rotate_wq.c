@@ -35,9 +35,9 @@ void rotate_w_quark(field_offset src, field_offset dest, Real d1)
       }
     
     /* Do Wilson Dslash_w_3D on the psi field */
-    dslash_w_3D(F_OFFSET(psi), F_OFFSET(mp), PLUS,  EVENANDODD);
+    dslash_w_3D_site(F_OFFSET(psi), F_OFFSET(mp), PLUS,  EVENANDODD);
  
-    dslash_w_3D(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
+    dslash_w_3D_site(F_OFFSET(psi), F_OFFSET(tmp), MINUS, EVENANDODD);
    
     /* From subtraction we get 2*Dslash_W_3D */
     

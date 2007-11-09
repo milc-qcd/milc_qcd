@@ -97,28 +97,36 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
+EXTERN  char job_id[MAXFILENAME];
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int nrestart,wallflag;
 #define MAX_KAP 6
 EXTERN	double kappa,source_r0,kap[MAX_KAP],resid[MAX_KAP];
+EXTERN  char kap_label[MAX_KAP][32];
 EXTERN	double clov_c,u0;
 EXTERN	int num_kap;		/* max number of kappa's <= MAX_KAP */
-EXTERN	char startfile[MAXFILENAME], savefile[MAXFILENAME];
+EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
+			   RELOAD_CHECKPOINT, FRESH */
+EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
+			   SAVE_CHECKPOINT */
+EXTERN  int fixflag;  /* gauge fix: COULOMB_GAUGE_FIX, NO_GAUGE_FIX */
+EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
-EXTERN  char savefile_w[MAX_KAP][MAXFILENAME], 
-  startfile_w[MAX_KAP][MAXFILENAME];
+EXTERN  char savefile_w[MAX_KAP][MAXFILENAME];
+EXTERN  char startfile_w[MAX_KAP][MAXFILENAME];
+EXTERN  char src_label_w[MAX_KAP][16];
+EXTERN  char savefile_c[MAXFILENAME];
 EXTERN  char start_ks_prop_file[MAXFILENAME];
+EXTERN  char sink_label[MAX_KAP][16];
 EXTERN  char scratchstem_w[MAXFILENAME];
 EXTERN  int scratchflag;        /* scratch file mode: SAVE_SERIAL, SAVE_CHECKPOINT */
-EXTERN	int startflag;		/* beginning lattice: CONTINUE, RELOAD, FRESH */
-EXTERN  int fixflag;  /* gauge fix: COULOMB_GAUGE_FIX, NO_GAUGE_FIX */
-EXTERN	int saveflag;		/* save lattice: SAVE_ASCII, SAVE_BINARY */
 EXTERN	int startflag_w[MAX_KAP];  /* beginning wilson: 
 			   RELOAD_ASCII, RELOAD_BINARY, RELOAD_PARALLEL */
 EXTERN	int saveflag_w[MAX_KAP];   /* save propagator: SAVE_ASCII, SAVE_BINARY*/
+EXTERN	int saveflag_c;   /* save propagator: SAVE_ASCII, SAVE_BINARY*/
 EXTERN  int ks_prop_startflag;
 
 EXTERN  char smearfile[MAX_KAP][MAXFILENAME];
@@ -169,6 +177,7 @@ EXTERN	int iseed;
 
 EXTERN  int num_smear;
 EXTERN	double rsqmin,rsqprop,beta,mass;
+EXTERN  char mass_label[32];
 EXTERN	int warms,trajecs,steps,niter,propinterval,nflavors;
 EXTERN	double epsilon;
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
