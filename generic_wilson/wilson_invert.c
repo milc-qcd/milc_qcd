@@ -42,12 +42,13 @@ int wilson_invert_field( /* Return value is number of iterations taken */
   /* Report inversion status */
   if(this_node==0)
     {
-      if(qic->size_r > qic->resid)
-	printf(" NOT converged size_r= %.2g iters= %d\n",
-	       qic->size_r, tot_iters);
+      if((qic->resid > 0 && qic->size_r > qic->resid )||
+	 (qic->relresid > 0 && qic->size_relr > qic->relresid))
+	printf(" NOT converged size_r= %.2g rel = %.2g iters= %d\n",
+	       qic->size_r, qic->size_relr, tot_iters);
       else
-	printf(" OK converged size_r= %.2g iters= %d\n",
-	       qic->size_r, tot_iters);
+	printf(" OK converged size_r= %.2g rel = %.2g iters= %d\n",
+	       qic->size_r, qic->size_relr, tot_iters);
     }
   
   return tot_iters;
@@ -84,7 +85,8 @@ int wilson_invert_field_wqs( /* Return value is number of iterations taken */
 
   if(this_node==0)
     {
-      if(qic->size_r > qic->resid)
+      if((qic->resid > 0 && qic->size_r > qic->resid )||
+	 (qic->relresid > 0 && qic->size_relr > qic->relresid))
 	printf(" NOT converged size_r= %.2g rel = %.2g iters= %d\n",
 	       qic->size_r, qic->size_relr, tot_iters);
       else
@@ -115,12 +117,13 @@ int wilson_invert_site( /* Return value is number of iterations taken */
   /* Report inversion status */
   if(this_node==0)
     {
-      if(qic->size_r > qic->resid)
-	printf(" NOT converged size_r= %.2g iters= %d\n",
-	       qic->size_r, tot_iters);
+      if((qic->resid > 0 && qic->size_r > qic->resid )||
+	 (qic->relresid > 0 && qic->size_relr > qic->relresid))
+	printf(" NOT converged size_r= %.2g rel = %.2g iters= %d\n",
+	       qic->size_r, qic->size_relr, tot_iters);
       else
-	printf(" OK converged size_r= %.2g iters= %d\n",
-	       qic->size_r, tot_iters);
+	printf(" OK converged size_r= %.2g rel= %.2g iters= %d\n",
+	       qic->size_r, qic->size_relr, tot_iters);
     }
   
   return tot_iters;
@@ -148,7 +151,8 @@ int wilson_invert_site_wqs( /* Return value is number of iterations taken */
   /* Do the inversion */
   tot_iters = invert_func_site(src,dest,qic,dmp);
 
-  if(qic->size_r > qic->resid)
+  if((qic->resid > 0 && qic->size_r > qic->resid )||
+     (qic->relresid > 0 && qic->size_relr > qic->relresid))
     printf(" NOT converged size_r= %.2g rel = %.2g iters= %d\n",
 	   qic->size_r, qic->size_relr, tot_iters);
   else
