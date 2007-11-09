@@ -188,6 +188,6 @@ node0_printf("GFTIME:   time = %e (Symanzik1) mflops = %e\n",dtime,
 #endif
  free(path_dir);
  free(dirs);
- free(staple); 
- free(tempmat1); 
+ special_free(staple); 
+ special_free(tempmat1); 
 } /* imp_gauge_force.c */

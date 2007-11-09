@@ -275,7 +275,7 @@ double imp_gauge_action() {
     } /* iloop */
 
     g_doublesum( &g_action );
-    free(tempmat1);
+    special_free(tempmat1);
     return( g_action );
 } /* imp_gauge_action */
 
@@ -348,7 +348,7 @@ void g_measure( ){
     /**node0_printf("CHECK:   %e   %e\n",total_action,imp_gauge_action() );**/
 
     if(this_node==0)fflush(stdout);
-    free(tempmat1);
+    special_free(tempmat1);
 }
 
 void printpath( int *path, int length ){
@@ -437,7 +437,7 @@ int fsubl;
 	} /* ln */
     } /* iloop */
 
-    free(tempmat1);
+    special_free(tempmat1);
     g_sync();
 
 } /* dsdu_qhb */

@@ -232,8 +232,8 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
       else{
       }
     }
-    free(tempmat3t);
-    free(tempmat2t);
+    special_free(tempmat3t);
+    special_free(tempmat2t);
 } /* path */
 
 #ifdef N_SUBL32
