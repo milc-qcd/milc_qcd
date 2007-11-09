@@ -405,3 +405,83 @@ void convert_wprop_milc_to_fnal_field(wilson_propagator *wprop)
 }
 
 /* canopy2weyl_rot.c */
+
+/*********************************************************************/
+/* Notes
+
+The MILC Dslash operator is defined as:
+
+Dslash * src(x) =   sum_dir=0^3 { 
+    ( 1 + gamma[dir] ) * U(x,dir) * src(x+dir)
+  + ( 1 - gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir) 
+}
+
+where the gamma[dir] are the MILC (Weyl-Degrand-Rossi) gamma matrices.
+
+The Dslash operator in the massive fermion paper,
+Phys.Rev.D55:3933-3957,1997, uses the opposite sign convention for
+gamma in Dslash:
+
+Dslash * src(x) =  sum_dir=0^3 { 
+    ( 1 - gamma[dir] ) * U(x,dir) * src(x+dir)
+  + ( 1 + gamma[dir] ) * U_adj(x-dir,dir) * src(x-dir)
+}
+
+So the transformation of the propagators has to take into account both
+the change of basis and the sign flip.
+
+First, let's see how we convert from the canopy gamma matrices to the
+MILC ones.  We do this:
+
+      gamma_m = V gamma_c Vdag
+
+where
+
+      [  0  1  0 -i ]
+  V = [ -1  0  i  0 ] * 1/sqrt(2)
+      [  0  1  0  i ]
+      [ -1  0 -i  0 ]
+
+(As I understand it, the DeGrand-Rossi minus sign for gamma_MILC[2] is
+ also used in canopy.  In any case this transformation reproduces 
+ that sign.)
+
+When we import an FNAL clover propagator, we do a transformation to
+put it into the MILC basis.  To use matrix multiplication notation, we
+need to take the transpose of the propagator matrix to put the sink
+index first.  Then the propagator matrix S satisfies the Dirac
+equation as in
+
+    D transp(S) = I
+
+in either basis. So let's start from the canopy Dirac equation with the
+FNAL propagator Sc:
+
+    Dc transp(Sc) = I
+
+and flip the sign of the gamma matrix to prepare the MILC convention
+
+   gamma^5_c Dc_flip gamma^5_c^dag transp(Sc) = I
+
+where gamma^5_c is the canopy gamma^5.  But
+
+   Dc_flip = Vdag Dm V
+
+where Dm is the MILC Dirac matrix.  A little algebra then gives
+
+   Dm V gamma^5_c^dag transp(Sc) gamma^5_c Vdag = I
+
+from which we can read off the MILC propagator matrix:
+
+   transp(Sm) = V gamma^5_c^dag transp(Sc) gamma^5_c Vdag
+
+In the MILC code the comments in generic_wilson/canopy2weyl.c say this
+transformation is
+
+   Sm = V gamma^0_m Sc gamma^0_m Vdag
+
+which is, in fact, identical, since
+
+   V^* gamma^5_c = V gamma^0_m
+
+*********************************************************************/
