@@ -22,8 +22,9 @@ G_WILSON_ALL =  \
     io_scidac_w.o \
     io_source_w_fm.o \
     io_prop_w.o \
-    meson_cont.o \
     io_prop_w_fm.o \
+    meson_cont.o \
+    staggered2naive.o \
     w_baryon.o \
     w_baryon_hl.o \
     w_meson.o \
@@ -86,6 +87,8 @@ io_prop_w.o: ../generic_wilson/io_prop_w.c
 io_prop_w_fm.o: ../generic_wilson/io_prop_w_fm.c
 	${CC} -c ${CFLAGS} $<
 meson_cont.o: ../generic_wilson/meson_cont.c
+	${CC} -c ${CFLAGS} $<
+staggered2naive.o: ../generic_wilson/staggered2naive.c
 	${CC} -c ${CFLAGS} $<
 w_baryon.o: ../generic_wilson/w_baryon.c
 	${CC} -c ${CFLAGS} $<
