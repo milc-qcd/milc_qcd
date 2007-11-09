@@ -8,7 +8,7 @@
   for when EDRAM is exceeded.  3/11/04 EBG */
 #include <qmp.h>
 #include <qalloc.h>
-#include "generic_includes.h"
+#include <lattice.h>
 
 void *qcdoc_alloc(size_t nbytes){
 
@@ -16,7 +16,7 @@ void *qcdoc_alloc(size_t nbytes){
   ptr = qalloc(QFAST|QCOMMS,nbytes);
 
   if(ptr==NULL){
-    node0_printf("EDRAM exceeded. now using DDR!!!!!!!!!!!!!\n");
+    if(this_node == 0)printf("EDRAM exceeded. now using DDR!!!!!!!!!!!!!\n");
     fflush(stdout);
     ptr = qalloc( QCOMMS,nbytes);
   }
