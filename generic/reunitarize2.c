@@ -66,10 +66,10 @@ int check_deviation(Real deviation)
   if(max_deviation<deviation) max_deviation=deviation;
   av_deviation += deviation*deviation;
 
-  if (deviation>TOLERANCE){
-    return 1;
+  if (deviation<TOLERANCE){
+    return 0;
   }
-  else return 0;
+  else return 1;
 } /* check_deviation */
 
 void reunit_report_problem_matrix(su3_matrix *mat, int i,int dir)
