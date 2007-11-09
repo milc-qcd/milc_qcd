@@ -24,6 +24,7 @@
 #include "../include/int32type.h"
 #include "../include/su3.h"
 #include "../include/complex.h"
+#include "../include/macros.h"
 
 /* arguments to the make_gather() routine */
 #define FORWARDS         1

@@ -7,6 +7,7 @@
 #include "../include/int32type.h"
 #include "../include/macros.h"
 #include "../include/file_types.h"
+#include "../include/generic_wilson.h"
 #include <stdio.h>
 #include <time.h>
 
@@ -14,6 +15,10 @@
 #define EXTERN 
 #else
 #define EXTERN extern
+#endif
+
+#ifdef HAVE_QIO
+#include <qio.h>
 #endif
 
 /**********************************************************************/
@@ -260,6 +265,10 @@ typedef struct {
   wilson_propagator *prop;      /* If we have to read the data in one lump*/
   int            file_type;     /* File format */
   FILE *         info_fp;       /* File pointer for info file */
+#ifdef HAVE_QIO
+  QIO_Reader     *infile;       /* For QIO reading */
+  QIO_Writer     *outfile;      /* For QIO writing */
+#endif
 } w_prop_file;
 
 /**********************************************************************/
@@ -369,19 +378,20 @@ void write_appl_w_prop_info(FILE *fp);
 /**********************************************************************/
 /* Prototypes for io_helpers_w.c */
 w_prop_file *r_open_wprop(int flag, char *filename);
-w_prop_file *w_open_wprop(int flag, char *filename);
+w_prop_file *w_open_wprop(int flag, char *filename, int source_type);
 int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
 			     int spin, int color, field_offset dest, 
 			     int timing);
-int reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
-			      int spin, int color, wilson_vector *dest, 
-			      int timing);
+int reload_wprop_sc_to_field( int flag, w_prop_file *wpf, 
+			      wilson_quark_source *wqs, int spin, int color, 
+			      wilson_vector *dest, int timing);
 int save_wprop_sc_from_site( int flag, w_prop_file *wpf, 
 			      int spin, int color, field_offset src, 
 			      int timing);
 int save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
+			      wilson_quark_source *wqs,
 			      int spin, int color, wilson_vector *src, 
-			      int timing);
+			      char *recinfo, int timing);
 int reload_wprop_to_site( int flag, char *filename,
 			  field_offset dest, int timing);
 int reload_wprop_to_field( int flag, char *filename,

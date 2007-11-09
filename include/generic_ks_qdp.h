@@ -38,22 +38,28 @@ void fn_fermion_force_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
 		      Real eps[], int nsrc );
 
 int ks_congrad_milcfield2qdp_F(su3_vector *f_src, su3_vector *f_dest, 
-			       quark_invert_control *qic, Real mass );
+			       quark_invert_control *qic, Real mass,
+			       ferm_links_t *fn );
 
 int ks_congrad_milcfield2qdp_D(su3_vector *f_src, su3_vector *f_dest, 
-			       quark_invert_control *qic, Real mass );
+			       quark_invert_control *qic, Real mass,
+			       ferm_links_t *fn );
 
 int ks_congrad_milc2qdp_F(field_offset f_src, field_offset f_dest, 
-			  quark_invert_control *qic, Real mass );
+			  quark_invert_control *qic, Real mass,
+			  ferm_links_t *fn );
 
 int ks_congrad_milc2qdp_D(field_offset f_src, field_offset f_dest, 
-			  quark_invert_control *qic, Real mass );
+			  quark_invert_control *qic, Real mass,
+			  ferm_links_t *fn );
 
 int ks_congrad_qdp_F(QDP_ColorVector *src, QDP_ColorVector *dest, 
-		     quark_invert_control *qic, QLA_Real mass);
+		     quark_invert_control *qic, QLA_Real mass,
+		     ferm_links_t *fn );
 
 int ks_congrad_qdp_D(QDP_ColorVector *src, QDP_ColorVector *dest, 
-		     quark_invert_control *qic, QLA_Real mass);
+		     quark_invert_control *qic, QLA_Real mass,
+		     ferm_links_t *fn );
 
 /* fermion_force_asqtad_qdp_D.c */
 
@@ -89,48 +95,52 @@ void fermion_force_asqtad_block_F( Real eps, Real *residues,
 
 /* ks_multicg_offset_qdp.c */
 
-int ks_multicg_offset_F(/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *offsets,	/* the offsets */
-    int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+int ks_multicg_offset_F( /* Return value is number of iterations taken */
+    field_offset src,	 /* source vector (type su3_vector) */
+    su3_vector **psim,	 /* solution vectors */
+    Real *offsets,	 /* the offsets */
+    int num_offsets,	 /* number of offsets */
+    int niter,		 /* maximal number of CG interations */
+    Real rsqmin,	 /* desired residue squared */
+    int parity,		 /* parity to be worked on */
+    Real *final_rsq_ptr, /* final residue squared */
+    ferm_links_t *fn       /* Storage for fat and Naik links */
 			);
 
-int ks_multicg_offset_D(/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *offsets,	/* the offsets */
-    int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+int ks_multicg_offset_D( /* Return value is number of iterations taken */
+    field_offset src,	 /* source vector (type su3_vector) */
+    su3_vector **psim,	 /* solution vectors */
+    Real *offsets,	 /* the offsets */
+    int num_offsets,	 /* number of offsets */
+    int niter,		 /* maximal number of CG interations */
+    Real rsqmin,	 /* desired residue squared */
+    int parity,		 /* parity to be worked on */
+    Real *final_rsq_ptr, /* final residue squared */
+    ferm_links_t *fn       /* Storage for fat and Naik links */
+			 );
+
+int ks_multicg_mass_F(	 /* Return value is number of iterations taken */
+    field_offset src,	 /* source vector (type su3_vector) */
+    su3_vector **psim,	 /* solution vectors (preallocated) */
+    Real *masses,	 /* the masses */
+    int num_masses,	 /* number of masses */
+    int niter,		 /* maximal number of CG interations */
+    Real rsqmin,	 /* desired residue squared */
+    int parity,		 /* parity to be worked on */
+    Real *final_rsq_ptr, /* final residue squared */
+    ferm_links_t *fn       /* Storage for fat and Naik links */
 			);
 
-int ks_multicg_mass_F(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors (preallocated) */
-    Real *masses,	/* the masses */
-    int num_masses,	/* number of masses */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
-			);
-
-int ks_multicg_mass_D(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors (preallocated) */
-    Real *masses,	/* the masses */
-    int num_masses,	/* number of masses */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr	/* final residue squared */
+int ks_multicg_mass_D(	 /* Return value is number of iterations taken */
+    field_offset src,	 /* source vector (type su3_vector) */
+    su3_vector **psim,	 /* solution vectors (preallocated) */
+    Real *masses,	 /* the masses */
+    int num_masses,	 /* number of masses */
+    int niter,		 /* maximal number of CG interations */
+    Real rsqmin,	 /* desired residue squared */
+    int parity,		 /* parity to be worked on */
+    Real *final_rsq_ptr, /* final residue squared */
+    ferm_links_t *fn       /* Storage for fat and Naik links */
 			);
 
 

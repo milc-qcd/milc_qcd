@@ -145,9 +145,6 @@ void unload_F_F_to_site4(field_offset link, QOP_F3_Force *qop,
 void unload_F_G_to_site4(field_offset link, QOP_F3_GaugeField *qop, 
 			 int parity);
 
-QOP_F3_FermionLinksAsqtad* create_F_L_from_site_gauge( QOP_info_t *info, 
-   QOP_asqtad_coeffs_t *coeffs, field_offset src, int parity);
-
 QOP_F3_FermionLinksAsqtad* create_F_L_from_sites( field_offset fat, 
 			 field_offset lng, int parity);
 
@@ -179,9 +176,6 @@ void unload_D_F_to_site4(field_offset link, QOP_D3_Force *qop,
 			 int parity);
 void unload_D_G_to_site4(field_offset link, QOP_D3_GaugeField *qop,
 			 int parity);
-
-QOP_D3_FermionLinksAsqtad* create_D_L_from_site_gauge( QOP_info_t *info, 
-   QOP_asqtad_coeffs_t *coeffs, field_offset src, int parity);
 
 QOP_D3_FermionLinksAsqtad* create_D_L_from_sites( field_offset fat, 
 			 field_offset lng, int parity);

@@ -12,29 +12,33 @@
 
 /* Definitions of restore and save lattice flags used in io_helpers.c */
 /* Some are also used for Wilson propagators */
-#define CONTINUE                10
-#define FRESH                   11
-#define RELOAD_ASCII            12
-#define RELOAD_SERIAL           13
-#define RELOAD_MULTIDUMP        18
-#define RELOAD_PARALLEL         19
-#define FORGET                  40
-#define SAVE_ASCII              41
-#define SAVE_SERIAL             42
-#define SAVE_CHECKPOINT         43
-#define SAVE_SERIAL_FM          44
-#define SAVE_SERIAL_FM_SC       45
-#define SAVE_SERIAL_ILDG        46
-#define SAVE_PARALLEL_ILDG      47
-#define SAVE_MULTIFILE_ILDG     48
-#define SAVE_PARTITION_ILDG     49
-#define SAVE_SERIAL_SCIDAC      50
-#define SAVE_PARALLEL_SCIDAC    51
-#define SAVE_MULTIFILE_SCIDAC   52
-#define SAVE_PARTITION_SCIDAC   53
-#define SAVE_PARALLEL           54
-#define SAVE_MULTIDUMP          55
-#define SAVE_SERIAL_ARCHIVE     56
+#define CONTINUE                         10
+#define FRESH                            11
+#define RELOAD_ASCII                     12
+#define RELOAD_SERIAL                    13
+#define RELOAD_MULTIDUMP                 18
+#define RELOAD_PARALLEL                  19
+#define FORGET                           40
+#define SAVE_ASCII                       41
+#define SAVE_SERIAL                      42
+#define SAVE_CHECKPOINT                  43
+#define SAVE_SERIAL_FM                   44
+#define SAVE_SERIAL_FM_SC                45
+#define SAVE_SERIAL_ILDG                 46
+#define SAVE_PARALLEL_ILDG               47
+#define SAVE_MULTIFILE_ILDG              48
+#define SAVE_PARTITION_ILDG              49
+#define SAVE_SERIAL_SCIDAC               50
+#define SAVE_PARALLEL_SCIDAC             51
+#define SAVE_MULTIFILE_SCIDAC            52
+#define SAVE_PARTITION_SCIDAC            53
+#define SAVE_PARALLEL                    54
+#define SAVE_MULTIDUMP                   55
+#define SAVE_SERIAL_ARCHIVE              56
+
+/* Format for NERSC archive files */
+#define ARCHIVE_3x2   0
+#define ARCHIVE_3x3   1
 
 /* For KS propagators */
 #define SAVE_SERIAL_TSLICE 932
@@ -286,6 +290,8 @@ typedef struct {
 				   serial reading */ 
   int            parallel;      /* 1 if file was opened in parallel
 				   0 if serial */
+  int            dataformat;    /* 3x3 or 3x2 matrix (archive files only) */
+  int            precision;     /* precision 1 or 2 (archive files for now) */
   gauge_check    check;         /* Checksum */
 } gauge_file;
 
@@ -373,6 +379,7 @@ int qcdhdr_get_int32x(char *s,QCDheader *hdr,u_int32type *q);
 int qcdhdr_get_float(char *s, QCDheader *hdr, Real *q);
 void error_exit(char *s);
 void complete_U(float *u);
+void complete_Ud(double *u);
 QCDheader * qcdhdr_get_hdr(FILE *in);
 void f2d_4mat(fsu3_matrix *a, su3_matrix *b);
 void d2f_4mat(su3_matrix *a, fsu3_matrix *b);

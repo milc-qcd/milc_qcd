@@ -145,6 +145,7 @@ void hvy_pot( field_offset links );
 
 /* io_detect.c */
 int io_detect(char *filename, file_type ft[], int ntypes);
+int io_detect_fm(char *filename);
 
 /* io_helpers.c */
 gauge_file *save_lattice( int flag, char *filename, char *stringLFN );

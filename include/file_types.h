@@ -25,40 +25,48 @@ typedef struct {
 #define GAUGE_VERSION_NUMBER_V1      0xe7da  /* decimal 59354 Versions 1-4 */
 #define GAUGE_VERSION_NUMBER         0x4e87  /* decimal 20103 Versions 5-7 */
 #define GAUGE_VERSION_NUMBER_1996    0xd12a  /* decimal 53546 */
-#define GAUGE_VERSION_NUMBER_FNAL    IO_UNI_MAGIC
 #define GAUGE_VERSION_NUMBER_ARCHIVE 0x42454749  /* 1111836489 decimal */
 
 /* Wilson propagator file types */
 
 #define W_PROP_VERSION_NUMBER        0x31ed /* 12781 decimal Versions 5-7 */
 #define W_PROP_VERSION_NUMBER_1996   0xbca3 /* 48291 decimal */
-#define W_FMPROP_VERSION_NUMBER      IO_UNI_MAGIC
 
 /* KS propagator file types */
 
 #define KSPROP_VERSION_NUMBER_V0     0x38339 /* 230201 decimal ca 2001 */
 #define KSPROP_VERSION_NUMBER        0x5aa9  /* 23209 decimal ca June 2002 */
-#define KSFMPROP_VERSION_NUMBER      IO_UNI_MAGIC
 
 /* Tables */
 
-#define FILE_TYPE_GAUGE_V1       0
-#define FILE_TYPE_GAUGE_V5       1
-#define FILE_TYPE_GAUGE_1996     2
-#define FILE_TYPE_GAUGE_FNAL     3
-#define FILE_TYPE_GAUGE_ARCHIVE  4
-#define FILE_TYPE_GAUGE_SCIDAC   5
-#define N_GAUGE_TYPES            6
+/* Nonspecific types */
 
-#define FILE_TYPE_W_PROP       0
-#define FILE_TYPE_W_PROP_1996  1
-#define FILE_TYPE_W_FMPROP     2
-#define FILE_TYPE_W_QIOPROP    3
-#define N_WPROP_TYPES          4
+#define FILE_TYPE_FM              0
+#define FILE_TYPE_LIME            1
 
-#define FILE_TYPE_KSPROP     0
-#define FILE_TYPE_KSFMPROP   1
-#define FILE_TYPE_KSQIOPROP  2
-#define N_KSPROP_TYPES       3
+#define FILE_TYPE_GAUGE_V1       10
+#define FILE_TYPE_GAUGE_V5       11
+#define FILE_TYPE_GAUGE_1996     12
+#define FILE_TYPE_GAUGE_FNAL     13
+#define FILE_TYPE_GAUGE_ARCHIVE  14
+#define FILE_TYPE_GAUGE_SCIDAC   15
+#define N_GAUGE_TYPES             6
+
+#define FILE_TYPE_W_PROP           20
+#define FILE_TYPE_W_PROP_1996      21
+#define FILE_TYPE_W_FMPROP         22
+#define FILE_TYPE_W_USQCD_C1D12    23
+#define FILE_TYPE_W_USQCD_DD_PAIRS 24
+#define FILE_TYPE_W_USQCD_CD_PAIRS 25   
+#define FILE_TYPE_W_USQCD_LHPC     26   
+#define N_WPROP_TYPES               7
+
+#define FILE_TYPE_KSPROP     30
+#define FILE_TYPE_KSFMPROP   31
+#define FILE_TYPE_KSQIOPROP  32
+#define N_KSPROP_TYPES        3
+
+/* For a Wilson propagator that was read and cached */
+#define FILE_TYPE_W_STORE  30
 
 #endif

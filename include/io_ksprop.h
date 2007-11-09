@@ -162,9 +162,6 @@ int write_ksprop_info_item( FILE *fpout, /* ascii file pointer */
 			    int stride);     /* byte stride of data if
 						count > 1 */
 
-int ask_starting_ksprop( int prompt, int *flag, char *filename );
-int ask_ending_ksprop( int prompt, int *flag, char *filename );
-
 /**********************************************************************/
 /* In ksprop_info.c (application dependent) */
 void write_appl_ksprop_info(FILE *fp);
@@ -245,7 +242,7 @@ void save_ksprop_from_field( int flag, char *filename, char *recxml,
 		  su3_vector *src, int timing);
 int read_lat_dim_ksprop(char *filename, int file_type, int *ndim, int dims[]);
 
-int ask_starting_ksprop( int prompt, int *flag, char *filename );
-int ask_ending_ksprop( int prompt, int *flag, char *filename );
+int ask_starting_ksprop( FILE *fp, int prompt, int *flag, char *filename );
+int ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename );
 
 #endif /* _IO_PROP_KS_H */

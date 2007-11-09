@@ -5,6 +5,7 @@
 */
 
 #include <qop.h>
+#include "../include/generic_ks.h"
 
 /* d_congrad5_fn_qopqdp.c */
 
@@ -16,41 +17,50 @@ void finalize_congrad( void );
 int ks_congrad_qop_F_site2site( quark_invert_control *qic,
 				float *masses[], int nmass[], 
 				field_offset milc_srcs[], 
-				field_offset *milc_sols[], int nsrc );
+				field_offset *milc_sols[], int nsrc,
+				ferm_links_t *fn );
 
 int ks_congrad_qop_F_site2field( quark_invert_control *qic,
 				 float *masses[], int nmass[], 
 				 field_offset milc_srcs[], 
-				 su3_vector **milc_sols[], int nsrc );
+				 su3_vector **milc_sols[], int nsrc,
+				 ferm_links_t *fn );
 
 int ks_congrad_qop_F_field2field( quark_invert_control *qic,
 				  float *masses[], int nmass[], 
 				  su3_vector *milc_srcs[], 
-				  su3_vector **milc_sols[], int nsrc );
+				  su3_vector **milc_sols[], int nsrc,
+				  ferm_links_t *fn );
 
 int ks_congrad_milcfield2qop_F( su3_vector *milc_src, su3_vector *milc_sol, 
-				quark_invert_control *qic, Real mass );
+				quark_invert_control *qic, Real mass,
+				ferm_links_t *fn );
 
 int ks_congrad_milc2qop_F( field_offset milc_src, field_offset milc_sol, 
-			   quark_invert_control *qic, Real mass );
+			   quark_invert_control *qic, Real mass,
+			   ferm_links_t *fn );
 
 /* d_congrad5_fn_qop_D.c */
 
 int ks_congrad_qop_D_site2site( quark_invert_control *qic,
 				double *masses[], int nmass[], 
 				field_offset milc_srcs[], 
-				field_offset *milc_sols[], int nsrc );
+				field_offset *milc_sols[], int nsrc,
+				ferm_links_t *fn );
 
 int ks_congrad_qop_D_site2field( quark_invert_control *qic,
 			      double *masses[], int nmass[], 
 			      field_offset milc_srcs[], 
-			      su3_vector **milc_sols[], int nsrc );
+			      su3_vector **milc_sols[], int nsrc,
+				 ferm_links_t *fn );
 
 int ks_congrad_milcfield2qop_D( su3_vector *milc_src, su3_vector *milc_sol, 
-				quark_invert_control *qic, Real mass );
+				quark_invert_control *qic, Real mass,
+				ferm_links_t *fn );
 
 int ks_congrad_milc2qop_D( field_offset milc_src, field_offset milc_sol, 
-			   quark_invert_control *qic, Real mass );
+			   quark_invert_control *qic, Real mass,
+			   ferm_links_t *fn );
 
 /* dslash_fn_qop_milc_F.c */
 
@@ -97,19 +107,17 @@ void fermion_force_asqtad_block_D( Real eps, Real *residues,
 
 /* fermion_links_asqtad_qop_F.c */
 
-QOP_FermionLinksAsqtad *create_qop_F_asqtad_fermion_links( void );
-void destroy_qop_F_asqtad_fermion_links( void );
-void load_fn_links_F(void);
-void load_fn_links_dmdu0_F(void);
-void invalidate_fn_links_F(void);
+void create_qop_F_asqtad_fermion_links( ferm_links_t *fn );
+void load_ferm_links_F(ferm_links_t *fn, ks_action_paths *ap);
+void load_ferm_links_dmdu0_F(ferm_links_t *fn, ks_action_paths *ap);
+void invalidate_ferm_links_F(ferm_links_t *fn);
 
 /* fermion_links_asqtad_qop_D.c */
 
-QOP_FermionLinksAsqtad *create_qop_D_asqtad_fermion_links( void );
-void destroy_qop_D_asqtad_fermion_links( void );
-void load_fn_links_D(void);
-void load_fn_links_dmdu0_D(void);
-void invalidate_fn_links_D(void);
+void create_qop_D_asqtad_fermion_links( ferm_links_t *fn );
+void load_ferm_links_D(ferm_links_t *fn, ks_action_paths *ap);
+void load_ferm_links_dmdu0_D(ferm_links_t *fn, ks_action_paths *ap);
+void invalidate_ferm_links_D(ferm_links_t *fn);
 
 /* ks_multicg_offset_qop.c */
 
@@ -118,7 +126,8 @@ int ks_multicg_offset_F(       /* Return value is number of iterations taken */
     su3_vector **psim,	       /* solution vectors */
     Real *offsets,	       /* the offsets */
     int num_offsets,	       /* number of offsets */
-    quark_invert_control *qic  /* inversion parameters */
+    quark_invert_control *qic,  /* inversion parameters */
+    ferm_links_t *fn             /* Storage for fat and Naik links */
 			);
 
 int ks_multicg_offset_D(       /* Return value is number of iterations taken */
@@ -126,7 +135,8 @@ int ks_multicg_offset_D(       /* Return value is number of iterations taken */
     su3_vector **psim,	       /* solution vectors */
     Real *offsets,	       /* the offsets */
     int num_offsets,	       /* number of offsets */
-    quark_invert_control *qic  /* inversion parameters */
+    quark_invert_control *qic,  /* inversion parameters */
+    ferm_links_t *fn             /* Storage for fat and Naik links */
 			);
 
 int ks_multicg_mass_F(	      /* Return value is number of iterations taken */
@@ -134,7 +144,8 @@ int ks_multicg_mass_F(	      /* Return value is number of iterations taken */
     su3_vector **psim,	      /* solution vectors (preallocated) */
     Real *masses,	      /* the masses */
     int num_masses,	      /* number of masses */
-    quark_invert_control *qic /* inversion parameters */
+    quark_invert_control *qic,/* inversion parameters */
+    ferm_links_t *fn            /* Storage for fat and Naik links */
 			);
 
 int ks_multicg_mass_D(	      /* Return value is number of iterations taken */
@@ -142,7 +153,8 @@ int ks_multicg_mass_D(	      /* Return value is number of iterations taken */
     su3_vector **psim,	      /* solution vectors (preallocated) */
     Real *masses,	      /* the masses */
     int num_masses,	      /* number of masses */
-    quark_invert_control *qic /* inversion parameters */
+    quark_invert_control *qic,/* inversion parameters */
+    ferm_links_t *fn            /* Storage for fat and Naik links */
 			);
 
 /* load_qop_asqtad_coeffs_F.c */

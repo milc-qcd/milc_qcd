@@ -28,6 +28,21 @@ static void * _malloc_ptr;
     fflush(stdout); \
   free(_ptr); }
 
+#ifdef QCDOC
+
+#define qcdoc_alloc(_size) \
+  (( (_malloc_ptr = qcdoc_alloc(_size)), \
+   (this_node == 0 ? \
+   printf("%x = malloc(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
+   && fflush(stdout) : 0 )), _malloc_ptr)
+
+#define qfree(_ptr) {\
+    node0_printf("free(%x) %s:%d\n",_ptr,__func__,__LINE__); \
+    fflush(stdout); \
+  qfree(_ptr); }
+
+#endif
+
 #endif
 
 #endif
