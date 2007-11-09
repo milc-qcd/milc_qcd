@@ -133,7 +133,7 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   msq_x4 = 4.0*mass*mass;
   iteration = 0;
 
-  load_fn_links();
+  load_ferm_links();
   set4_M_from_field(fatlinks, t_fatlink);
   set4_M_from_field(longlinks, t_longlink);
 

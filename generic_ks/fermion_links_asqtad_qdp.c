@@ -4,10 +4,10 @@
  *
  * Entry points
  *
- * init_fn_links
- * load_fn_links
- * load_fn_links_dmdu0
- * invalidate_fn_links
+ * init_ferm_links
+ * load_ferm_links
+ * load_ferm_links_dmdu0
+ * invalidate_ferm_links
  *
  * takes gauge field from site structure "links"
  * If DBLSTORE_FN is defined, also sets double-stored links in the fn_links
@@ -167,7 +167,7 @@ compute_gen_staple(QDP_ColorMatrix *staple, int mu, int nu,
   QDP_destroy_M(tempmat);
 } /* compute_gen_staple */
 
-void load_asqtad_links(int both, fn_links_t *fn, ks_action_paths *ap) {
+void load_asqtad_links(int both, ferm_links_t *fn, ks_action_paths *ap) {
 
   su3_matrix **t_fl = &fn->fat;
   su3_matrix **t_ll = &fn->lng;
@@ -256,38 +256,48 @@ void load_asqtad_links(int both, fn_links_t *fn, ks_action_paths *ap) {
 
 
 /* Wrappers for MILC call to QDP */
-void load_fn_links(fn_links_t *fn, ks_action_paths *ap){
+void load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
 
   if(fn->valid == 1)return;
+#ifdef FN
   load_asqtad_links(1, fn, ap);
+#endif
+  fn->ap = ap;
 
 #ifdef DBLSTORE_FN
   load_fatbacklinks(fn);
   load_longbacklinks(fn);
 #endif
+
+  fn->valid = 1;
 }
 
 #ifdef DM_DU0
 /* Wrappers for MILC call to QDP */
-void load_fn_links_dmdu0(fn_links_t *fn, ks_action_paths *ap){
+void load_ferm_links_dmdu0(ferm_links_t *fn, ks_action_paths *ap){
   su3_matrix *null = NULL;
 
   if(fn->valid == 1)return;
+#ifdef FN
   load_asqtad_links(0, fn, ap);
+#endif
+  fn->ap = ap;
+  fn->valid = 1;
 }
 #endif
 
 void
-invalidate_fn_links(fn_links_t *fn)
+invalidate_ferm_links(ferm_links_t *fn)
 {
   fn->valid = 0;
 }
 
 void 
-init_fn_links(fn_links_t *fn){
+init_ferm_links(ferm_links_t *fn){
   fn->valid = 0;
   fn->fat = NULL;
   fn->lng = NULL;
   fn->fatback = NULL;
   fn->lngback = NULL;
+  fn->ap = NULL;
 }

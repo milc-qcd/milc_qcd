@@ -40,8 +40,7 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     int prec,           /* internal precision for inversion (ignored) */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr,/* final residue squared */
-    fn_links_t *fn,       /* Storage for fat and Naik links */
-    ks_action_paths *ap /* Definition of action */
+    ferm_links_t *fn    /* Storage for fat and Naik links */
     )
 {
     /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
@@ -187,18 +186,18 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 #ifdef FN
 	if(special_started==0){
 	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 
-				     1, fn, ap );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1, fn, ap );
+				     1, fn );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1, fn );
 	    special_started = 1;
 	}
 	else {
 	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 
-				     0, fn, ap );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn, ap );
+				     0, fn );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn );
 	}
 #else
-	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity, fn, ap);
-	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity, fn, ap);
+	dslash_site( F_OFFSET(cg_p), F_OFFSET(ttt), l_otherparity, fn);
+	dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), l_parity, fn);
 #endif
 
 	/* finish computation of (-1)*M_adjoint*m*p and (-1)*p*M_adjoint*M*p */

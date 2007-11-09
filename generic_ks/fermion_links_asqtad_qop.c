@@ -14,37 +14,42 @@
 /*********************************************************************/
 /* Wrappers for MILC call to QOP */
 void 
-load_fn_links(fn_links_t *fn, ks_action_paths *ap){
+load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
 
   if(PRECISION == 1)
-    load_fn_links_F(fn, ap);
+    load_ferm_links_F(fn, ap);
   else
-    load_fn_links_D(fn, ap);
+    load_ferm_links_D(fn, ap);
 }
 
 #ifdef DM_DU0
 /* Wrappers for MILC call to QOP */
-void load_fn_links_dmdu0(fn_links_t *fn, ks_action_paths *ap){
+void load_ferm_links_dmdu0(ferm_links_t *fn, ks_action_paths *ap){
 
   if(PRECISION == 1)
-    load_fn_links_dmdu0_F(fn, ap);
+    load_ferm_links_dmdu0_F(fn, ap);
   else
-    load_fn_links_dmdu0_D(fn, ap);
+    load_ferm_links_dmdu0_D(fn, ap);
 }
 #endif
 
 void
-invalidate_fn_links(fn_links_t *fn)
+invalidate_ferm_links(ferm_links_t *fn)
 {
   /* We must invalidate for both precisions */
-  invalidate_fn_links_F(fn);
-  invalidate_fn_links_D(fn);
+  invalidate_ferm_links_F(fn);
+  invalidate_ferm_links_D(fn);
 }
 
-void init_fn_links(fn_links_t *fn){
+void init_ferm_links(ferm_links_t *fn){
   fn->valid = 0;
   fn->fat = NULL;
   fn->lng = NULL;
   fn->fatback = NULL;
   fn->lngback = NULL;
+  fn->ap = NULL;
+  fn->valid_qop_F = 0;
+  fn->valid_qop_D = 0;
+  fn->qop_F_l = NULL;
+  fn->qop_D_l = NULL;
 }

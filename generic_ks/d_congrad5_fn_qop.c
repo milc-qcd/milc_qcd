@@ -12,16 +12,16 @@
 
 int ks_congrad_site( field_offset milc_src, field_offset milc_sol, 
 		     quark_invert_control *qic, Real mass,
-		     fn_links_t *fn, ks_action_paths *ap )
+		     ferm_links_t *fn )
 {
   int iterations_used;
 
   if(qic->prec == 1)
     iterations_used = 
-      ks_congrad_milc2qop_F( milc_src, milc_sol, qic, mass, fn, ap );
+      ks_congrad_milc2qop_F( milc_src, milc_sol, qic, mass, fn );
   else
     iterations_used = 
-      ks_congrad_milc2qop_D( milc_src, milc_sol, qic, mass, fn, ap );
+      ks_congrad_milc2qop_D( milc_src, milc_sol, qic, mass, fn );
   
   total_iters += iterations_used;
   return iterations_used;
@@ -31,16 +31,16 @@ int ks_congrad_site( field_offset milc_src, field_offset milc_sol,
 
 int ks_congrad_field( su3_vector *milc_src, su3_vector *milc_sol, 
 		      quark_invert_control *qic, Real mass,
-		     fn_links_t *fn, ks_action_paths *ap )
+		     ferm_links_t *fn )
 {
   int iterations_used;
 
   if(qic->prec == 1)
     iterations_used = 
-      ks_congrad_milcfield2qop_F( milc_src, milc_sol, qic, mass, fn, ap );
+      ks_congrad_milcfield2qop_F( milc_src, milc_sol, qic, mass, fn );
   else
     iterations_used = 
-      ks_congrad_milcfield2qop_D( milc_src, milc_sol, qic, mass, fn, ap );
+      ks_congrad_milcfield2qop_D( milc_src, milc_sol, qic, mass, fn );
   
   total_iters += iterations_used;
   return iterations_used;
@@ -51,7 +51,7 @@ int ks_congrad_field( su3_vector *milc_src, su3_vector *milc_sol,
 int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
 	        int niter, int nrestart, Real rsqmin, int prec, 
 		int milc_parity, Real* final_rsq_ptr,
-		fn_links_t *fn, ks_action_paths *ap )
+		ferm_links_t *fn )
 {
   int iterations_used;
   quark_invert_control qic;
@@ -66,10 +66,10 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
 
   if(prec == 1)
     iterations_used = 
-      ks_congrad_milc2qop_F( milc_src, milc_sol, &qic, mass, fn, ap );
+      ks_congrad_milc2qop_F( milc_src, milc_sol, &qic, mass, fn );
   else
     iterations_used = 
-      ks_congrad_milc2qop_D( milc_src, milc_sol, &qic, mass, fn, ap );
+      ks_congrad_milc2qop_D( milc_src, milc_sol, &qic, mass, fn );
   
   *final_rsq_ptr = qic.final_rsq;
   total_iters += iterations_used;

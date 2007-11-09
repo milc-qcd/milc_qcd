@@ -56,6 +56,7 @@ G_KS_ALL = \
   fermion_links_asqtad_qop.o \
   fermion_links_asqtad_qop_D.o \
   fermion_links_asqtad_qop_F.o \
+  fermion_links_eo.o \
   fermion_links_fn_qop_milc_D.o \
   fermion_links_fn_qop_milc_F.o \
   fermion_links_fn.o \
@@ -229,6 +230,8 @@ fermion_links_asqtad_qop.o: ../generic_ks/fermion_links_asqtad_qop.c
 fermion_links_asqtad_qop_D.o: ../generic_ks/fermion_links_asqtad_qop_D.c  ../generic_ks/fermion_links_asqtad_qop_P.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_asqtad_qop_F.o: ../generic_ks/fermion_links_asqtad_qop_F.c  ../generic_ks/fermion_links_asqtad_qop_P.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_eo.o: ../generic_ks/fermion_links_eo.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_fn_qop_milc_D.o: ../generic_ks/fermion_links_fn_qop_milc_D.c ../generic_ks/fermion_links_fn_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<

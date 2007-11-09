@@ -242,18 +242,20 @@ cleanup_dslash_temps(void)
 }
 
 void
-dslash_fn_site(field_offset src, field_offset dest, int parity, fn_links_t *fn,
-	       ks_action_paths *ap)
+dslash_fn_site(field_offset src, field_offset dest, int parity, ferm_links_t *fn)
 {
   QDP_Subset subset;
   //printf("dslash_fn %i\n", parity);
   if(!dslash_setup) SETUP_DSLASH();
-  load_fn_links(fn, ap);
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
   set_V_from_site(qsrc, src);
   set_V_from_site(qdest, dest);
+  if(!fn->valid){
+    printf("dslash_fn_site: invalid fn links!\n");
+    terminate(1);
+  }
   set4_M_from_field(FATLINKS, fn->fat);
   set4_M_from_field(LONGLINKS, fn->long);
   dslash_qdp_fn(qsrc, qdest, subset);
@@ -268,18 +270,21 @@ dslash_fn_site(field_offset src, field_offset dest, int parity, fn_links_t *fn,
 void
 dslash_fn_site_special(field_offset src, field_offset dest,
 		       int parity, msg_tag **tag, int start,
-		       fn_links_t *fn, ks_action_paths *ap)
+		       ferm_links_t *fn)
 {
   QDP_Subset subset;
   //printf("dslash_fn_sp %i\n", parity);
   if(!dslash_setup) SETUP_DSLASH();
-  load_fn_links(fn, ap);
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
   set_V_from_site(qsrc, src);
   set_V_from_site(qdest, dest);
   if(start) {
+    if(!fn->valid){
+      printf("dslash_fn_site_special: invalid fn links!\n");
+      terminate(1);
+    }
     set4_M_from_field(FATLINKS, fn->fat);
     set4_M_from_field(LONGLINKS, fn->long);
   }
@@ -289,17 +294,20 @@ dslash_fn_site_special(field_offset src, field_offset dest,
 
 void
 dslash_fn_field(su3_vector *src, su3_vector *dest, int parity,
-		fn_links_t *fn, ks_action_paths *ap)
+		ferm_links_t *fn)
 {
   QDP_Subset subset;
   //printf("dslash_fn_t %i\n", parity);
   if(!dslash_setup) SETUP_DSLASH();
-  load_fn_links(fn, ap);
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
   set_V_from_field(qsrc, src);
   set_V_from_field(qdest, dest);
+  if(!fn->valid){
+    printf("dslash_fn_field: invalid fn links!\n");
+    terminate(1);
+  }
   set4_M_from_field(FATLINKS, fn->fat);
   set4_M_from_field(LONGLINKS, fn->long);
   dslash_qdp_fn(qsrc, qdest, subset);
@@ -314,18 +322,21 @@ dslash_fn_field(su3_vector *src, su3_vector *dest, int parity,
 void
 dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			int parity, msg_tag **tag, int start,
-			fn_links_t *fn, ks_action_paths *ap)
+			ferm_links_t *fn)
 {
   QDP_Subset qparity;
   //printf("dslash_fn_t_sp %i\n", parity);
   if(!dslash_setup) SETUP_DSLASH();
-  load_fn_links(fn, ap);
   if(parity==EVEN) qparity = QDP_even;
   else if(parity==ODD) qparity = QDP_odd;
   else qparity = QDP_all;
   set_V_from_field(qsrc, src);
   set_V_from_field(qdest, dest);
   if(start) {
+    if(!fn->valid){
+      printf("dslash_fn_field_special: invalid fn links!\n");
+      terminate(1);
+    }
     set4_M_from_field(FATLINKS, fn->fat);
     set4_M_from_field(LONGLINKS, fn->long);
   }

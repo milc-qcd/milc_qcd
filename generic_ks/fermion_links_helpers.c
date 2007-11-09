@@ -27,7 +27,7 @@ compute_gen_staple_site(su3_matrix *staple, int mu, int nu,
 			field_offset link, su3_matrix* fatlink, Real coef);
 #endif
 
-void load_longlinks(fn_links_t *fn, ks_action_paths *ap) {
+void load_longlinks(ferm_links_t *fn, ks_action_paths *ap) {
   su3_matrix **t_ll = &fn->lng;
   register int i;
   register site *s;
@@ -123,7 +123,7 @@ node0_printf("LLTIME(long): time =  %e (Naik) mflops = %e\n",dtime,
 
 /* KS phases and APBC must be in the links. See long comment at 
    end of fermion_force_general.c */
-void load_fatlinks(fn_links_t *fn, ks_action_paths *ap){
+void load_fatlinks(ferm_links_t *fn, ks_action_paths *ap){
   su3_matrix **t_fl = &fn->fat;
   register int i;
   register site *s;
@@ -351,7 +351,7 @@ compute_gen_staple_site(su3_matrix *staple, int mu, int nu,
     }
   }
 
-  free(tempmat); tempmat = NULL;
+  special_free(tempmat); tempmat = NULL;
   cleanup_gather(mtag0);
 } /* compute_gen_staple_site */
 
@@ -449,7 +449,7 @@ compute_gen_staple_field(su3_matrix *staple, int mu, int nu,
 
 /* Move up the backward longlinks.  Result in t_lbl */
 void 
-load_longbacklinks(fn_links_t *fn){
+load_longbacklinks(ferm_links_t *fn){
   su3_matrix **t_lbl = &fn->lngback;
   su3_matrix *t_ll = fn->lng;
   register int i;
@@ -494,7 +494,7 @@ load_longbacklinks(fn_links_t *fn){
 
 /* Move up the backward fatlinks.  Result in t_fbl */
 void 
-load_fatbacklinks(fn_links_t *fn){
+load_fatbacklinks(ferm_links_t *fn){
   su3_matrix **t_fbl = &fn->fatback;
   su3_matrix *t_fl = fn->fat;
   register int i;
@@ -545,22 +545,22 @@ free_t_links(su3_matrix **t_l){
 
 /* Wrappers for MILC call to QOP */
 void 
-free_fn_links(fn_links_t *fn){
+free_fn_links(ferm_links_t *fn){
   free_t_links(&fn->fat);
   free_t_links(&fn->lng);
 #ifdef DBLSTORE_FN
   free_t_links(&fn->fatback);
   free_t_links(&fn->lngback);
 #endif
-  invalidate_fn_links(fn);
+  invalidate_ferm_links(fn);
 }
 
 #ifdef DM_DU0
 /* Routines for dDslash/du0 */
 
-void free_fn_links_dmdu0(fn_links_t *fn){
+void free_fn_links_dmdu0(ferm_links_t *fn){
   free_t_links(&fn->fat);
-  invalidate_fn_links(fn);
+  invalidate_ferm_links(fn);
 }
 #endif
 

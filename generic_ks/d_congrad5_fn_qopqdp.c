@@ -59,7 +59,7 @@ void set_parity_site_from_V(field_offset dest, QDP_ColorVector *src,
 int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
 	        int niter, int nrestart, Real rsqmin, int prec, 
 		int milc_parity, Real* final_rsq_ptr,
-		fn_links_t *fn, ks_action_paths *ap)
+		ferm_links_t *fn)
 {
   QDP_ColorMatrix *qop_fat_links[4];
   QDP_ColorMatrix *qop_long_links[4];
@@ -85,7 +85,6 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
   // load fat and long links                           //
   ///////////////////////////////////////////////////////
 
-  load_fn_links(fn, ap);
   t_fatlink = fn->fat;
   t_longlink = fn->lng;
 
@@ -115,7 +114,7 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
 
   // For memory savings.  Links may need to be recomputed later.
   free_fn_links(fn);
-  invalidate_fn_links(fn);
+  invalidate_ferm_links(fn);
 
   ///////////////////////////////////////////////////////
   // set qop_invert_arg                                //

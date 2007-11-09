@@ -29,8 +29,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
 				   (ignored) */
     int milc_parity,		/* parity to be worked on */
     Real  *final_rsq_ptr, 	/* final residue squared */
-    fn_links_t *fn,       /* Storage for fermion links */
-    ks_action_paths *ap /* Definition of action paths */
+    ferm_links_t *fn             /* Storage for fermion links */
     )
 {
 #ifdef CGTIME
@@ -54,7 +53,6 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   // load fat and long links                           //
   ///////////////////////////////////////////////////////
   
-  load_fn_links(fn, ap);
   t_fatlink = fn->fat;
   t_longlink = fn->lng;
   
@@ -85,7 +83,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   // Freeing memory is not necessary, but done for memory savings.
   // Links must be recomputed later.
   free_fn_links(fn);
-  invalidate_fn_links(fn);
+  invalidate_ferm_links(fn);
   
   ///////////////////////////////////////////////////////
   // set qop_invert_arg                                //

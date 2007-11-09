@@ -56,7 +56,7 @@ void mult_rho_mom_temp( int fb, int pdir, int px, int py, int pz,
     su3_vector *src, field_offset dest );
 int test_converge(int t_source);
 
-int spectrum_multimom( Real dyn_mass, Real low_mass, Real mass_inc, int nmasses, Real tol, fn_links_t *fn, ks_action_paths *ap){
+int spectrum_multimom( Real dyn_mass, Real low_mass, Real mass_inc, int nmasses, Real tol, ferm_links_t *fn){
   /* arguments are dynamical mass, lowest mass, distance between masses, number of masses,
      tolerance for inverter check.
      return C.G. iteration number */
@@ -130,11 +130,11 @@ if( t_source%2 != 0 ){node0_printf("Even sources only!\n"); terminate(0);}
 	/* compute M^-1 * quark_source */
 	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, prec, EVEN, 
-				&finalrsq, fn, ap);
+				&finalrsq, fn);
 	/* Multiply by Madjoint. Note this assumes source on even sites only */
 	/****** NEW CODE **/
 	for(j=0;j<nmasses;j++){
-	    dslash_field( quark_props[j], quark_props[j], ODD, fn, ap );
+	    dslash_field( quark_props[j], quark_props[j], ODD, fn );
 	    FOREVENSITES(i,s){
 		scalar_mult_su3_vector( &(quark_props[j][i]), 2.0*masses[j], &(quark_props[j][i]) );
 	    }
@@ -144,17 +144,17 @@ if( t_source%2 != 0 ){node0_printf("Even sources only!\n"); terminate(0);}
 
 	    FORALLSITES(i,s) s->ttt = quark_props[j][i];
 	    check_invert( F_OFFSET(ttt), F_OFFSET(quark_source), masses[j],tol,
-			  fn, ap);
+			  fn);
 	} /* j=masses */
 	/**** OLD CODE *
 	for(j=0;j<nmasses;j++){
 	    FOREVENSITES(i,s) s->ttt = quark_props[j][i];
-	    dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), ODD, fn, ap );
+	    dslash_site( F_OFFSET(ttt), F_OFFSET(ttt), ODD, fn );
 	    scalar_mult_latvec( F_OFFSET(ttt),  2.0*masses[j], F_OFFSET(ttt), EVEN );
 	    scalar_mult_latvec( F_OFFSET(ttt), -1.0, F_OFFSET(ttt), ODD );
 	    FORALLSITES(i,s) quark_props[j][i] = s->ttt;
 
-	    check_invert( F_OFFSET(ttt), F_OFFSET(quark_source), masses[j],tol, fn, ap);
+	    check_invert( F_OFFSET(ttt), F_OFFSET(quark_source), masses[j],tol, fn);
 	} ** j=masses **
 	*END OLD CODE **/
 

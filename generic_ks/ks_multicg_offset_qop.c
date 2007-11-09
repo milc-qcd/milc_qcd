@@ -25,9 +25,8 @@ ks_multicg_offset(	/* Return value is number of iterations taken */
    Real rsqmin,	        /* desired residue squared */
    int prec,            /* internal precision for inversion */
    int parity,		/* parity to be worked on */
-   Real *final_rsq_ptr,/* final residue squared */
-   fn_links_t *fn,       /* Storage for fat and Naik links */
-   ks_action_paths *ap /* Definition of action */
+   Real *final_rsq_ptr, /* final residue squared */
+   ferm_links_t *fn       /* Storage for fat and Naik links */
    )
 {
   quark_invert_control qic;
@@ -41,9 +40,9 @@ ks_multicg_offset(	/* Return value is number of iterations taken */
   qic.relresid  = 0;     /* Suppresses this test */
 
   if(prec == 1)
-    return ks_multicg_offset_F(src, psim, offsets, num_offsets, &qic, fn, ap);
+    return ks_multicg_offset_F(src, psim, offsets, num_offsets, &qic, fn);
   else
-    return ks_multicg_offset_D(src, psim, offsets, num_offsets, &qic, fn, ap);
+    return ks_multicg_offset_D(src, psim, offsets, num_offsets, &qic, fn);
 }
 
 #if 0
@@ -61,8 +60,7 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
     int prec,           /* internal precision for inversion */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr,/* final residue squared */
-    fn_links_t *fn,       /* Storage for fat and Naik links */
-    ks_action_paths *ap /* Definition of action */
+    ferm_links_t *fn      /* Storage for fat and Naik links */
 			)
 {
   quark_invert_control qic;
@@ -76,9 +74,9 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
   qic.relresid  = 0;     /* Suppresses this test */
 
   if(prec == 1)
-    return ks_multicg_mass_F(src, psim, masses, num_masses, &qic, fn, ap );
+    return ks_multicg_mass_F(src, psim, masses, num_masses, &qic, fn );
   else
-    return ks_multicg_mass_D(src, psim, masses, num_masses, &qic, fn, ap );
+    return ks_multicg_mass_D(src, psim, masses, num_masses, &qic, fn );
 }
 
 

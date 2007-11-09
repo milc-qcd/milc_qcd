@@ -220,7 +220,7 @@ void nl_meson_prop (int t,double *nlpiprop,double *nlpi2prop,
 
 int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 		 field_offset tempmat1, field_offset tempmat2,
-		 fn_links_t *fn, ks_action_paths *ap) { 
+		 ferm_links_t *fn) { 
   /* return the C.G. iteration number */
   double *piprop,*pi2prop,*rhoprop,*rho2prop,*barprop;
   double *nlpiprop,*nlpi2prop,*ckpiprop,*ckpi2prop;
@@ -295,9 +295,9 @@ int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 	  
 	  /* do a C.G.: source tempvec1, result tempvec2 */
 	  cgn += ks_congrad( tempvec1, tempvec2, vmass,
-	    niter, nrestart, rsqprop, PRECISION, EVEN, &finalrsq, fn, ap);
+	    niter, nrestart, rsqprop, PRECISION, EVEN, &finalrsq, fn);
 	  /* Multiply by -Madjoint */
-	  dslash_site( tempvec2, tempvec2, ODD, fn, ap);
+	  dslash_site( tempvec2, tempvec2, ODD, fn);
 	  scalar_mult_latvec( tempvec2, -vmass_x2, tempvec2, EVEN);
 	  
 	  /* fill the hadron matrix */
@@ -324,9 +324,9 @@ int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 	  
 	  /* do a C.G.: source tempvec1, result tempvec2 */
 	  cgn += ks_congrad( tempvec1, tempvec2, vmass,
-	    niter, nrestart, rsqprop, PRECISION, ODD, &finalrsq, fn, ap);
+	    niter, nrestart, rsqprop, PRECISION, ODD, &finalrsq, fn);
 	  /* Multiply by -Madjoint */
-	  dslash_site( tempvec2, tempvec2, EVEN, fn, ap);
+	  dslash_site( tempvec2, tempvec2, EVEN, fn);
 	  scalar_mult_latvec( tempvec2, -vmass_x2, tempvec2, ODD);
 	  
 	  /* fill the hadron matrix */

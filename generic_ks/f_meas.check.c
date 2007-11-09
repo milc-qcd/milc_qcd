@@ -21,8 +21,7 @@
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 
 void f_meas_imp( field_offset phi_off, field_offset xxx_off, Real mass,
-		 fn_links_t *fn, ks_action_paths *ap,
-		 fn_links_t *fn_dmdu0, ks_action_paths *ap_dmdu0 ){
+		 ferm_links_t *fn, ferm_links_t *fn_dmdu0 ){
     Real r_psi_bar_psi_even, i_psi_bar_psi_even;
     Real  r_psi_bar_psi_odd, i_psi_bar_psi_odd;
     Real r_ferm_action;
@@ -68,12 +67,6 @@ BOMB THE COMPILE
     int prec = PRECISION;
 #endif
     int jpbp_reps;
-
-#ifdef FN
-    load_fn_links(fn, ap);
-#ifdef DM_DU0
-    load_fn_links_dmdu0();
-#endif
 #endif
 
     for(jpbp_reps = 0; jpbp_reps < npbp_reps; jpbp_reps++){
@@ -86,16 +79,16 @@ BOMB THE COMPILE
       /* phi_off = M g_rand (still) */
       /* xxx_off = M^{-1} g_rand */
       //      clear_latvec(xxx_off,EVENANDODD);
-      mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, prec, fn, ap );
+      mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, prec, fn );
       
 #ifdef DM_DU0
       r_pb_dMdu_p_even = r_pb_dMdu_p_odd = (double)0.0;
       /* dMdu_x = dM/du0 M^{-1} g_rand */
       ddslash_fn_du0_site( xxx_off, F_OFFSET(dMdu_x), EVENANDODD, 
-			   fn_dmdu0, ap_dmdu0 );
+			   fn_dmdu0 );
       /* check */ r_gb_dMdu_g_e = r_gb_dMdu_g_o = 0;
       /* check */ r_gb_M_g_e = r_gb_M_g_o = 0;
-      /* check */ ddslash_fn_du0_site (F_OFFSET(g_rand), F_OFFSET(dM_check), EVENANDODD, fn_dmdu0, ap_dmdu0 );
+      /* check */ ddslash_fn_du0_site (F_OFFSET(g_rand), F_OFFSET(dM_check), EVENANDODD, fn_dmdu0 );
 #endif
 
 #ifdef CHEM_POT
@@ -292,7 +285,7 @@ BOMB THE COMPILE
       FORALLSITES(i,st){
 	su3vec_copy( (su3_vector *)F_PT(st,xxx_off), &(st->M_inv) );
       }
-      mat_invert_uml( F_OFFSET(M_inv), xxx_off, phi_off, mass, fn, ap );
+      mat_invert_uml( F_OFFSET(M_inv), xxx_off, phi_off, mass, fn );
       FORALLSITES(i,st){
 	cc = su3_dot( &(st->g_rand), (su3_vector *)F_PT(st,xxx_off) );
 	pbp_pbp += cc.real;
@@ -304,7 +297,7 @@ BOMB THE COMPILE
 #endif
 
 #ifdef CHEM_POT
-      mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass, fn, ap );
+      mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass, fn );
 
       /* Start gathers from positive t-direction */
       tag0 = start_gather_site( xxx_off, sizeof(su3_vector), TUP,

@@ -123,6 +123,29 @@ void QOP_asqtad_invert(QOP_info_t *info,
   double dtimec = -dclock();;
   double nflop = 1187;
   
+#ifndef OLD_QOPQDP_NORM
+  Real xnorm, xnorminv;
+#endif
+
+#ifndef OLD_QOPQDP_NORM
+  /* qopqdp-0.9.0 changed the convention for the inverter.  For this
+     version we simply change the normalization for the cases EVEN and
+     ODD */
+  if(parity==EVENANDODD){
+    printf("QOP_asqtad_invert (MILC): EVENANDODD not supported for now\n");
+    terminate(1);
+  }
+
+#define NORMFACT(a) 4.*(a)*(a)
+
+  /* Change the normalization of the proposed solution vector */
+  xnorm = NORMFACT(mass);
+  xnorminv = 1./xnorm;
+  FORSOMEPARITY(i,s,parity){
+    scalar_mult_su3_vector(solp+i, xnorminv, solp+i);
+  } END_LOOP
+#endif
+
   /* Parity consistency is required */
   if(src_pt->evenodd != dest_pt->evenodd ||
      links->evenodd != QOP_EVENODD       ||
@@ -132,7 +155,6 @@ void QOP_asqtad_invert(QOP_info_t *info,
 	     src_pt->evenodd,dest_pt->evenodd,links->evenodd,qop_parity);
       terminate(1);
     }
-  
 
   if(parity==EVENANDODD)nflop *=2;
 	
@@ -163,7 +185,7 @@ void QOP_asqtad_invert(QOP_info_t *info,
 	/* initialization process */
 start:
 #ifdef CG_DEBUG
-	node0_printf("ks_congrad: start, parity = %d\n",parity);
+	node0_printf("QOP_asqtad_invert: start, parity = %d\n",parity);
 #endif
         /* ttt <-  (-1)*M_adjoint*M*dest
            resid,cg_p <- src + ttt
@@ -244,6 +266,14 @@ start:
 	    fflush(stdout);
 #endif
     /* Copy the solution back and free memory */
+
+#ifndef OLD_QOPQDP_NORM
+	    /* Change the normalization of the solution */
+	    FORSOMEPARITY(i,s,parity){
+	      scalar_mult_su3_vector(solp+i, xnorm, solp+i);
+	    } END_LOOP
+#endif
+
 #if ( QOP_Precision == 1 )
 	    copy_latvec_to_qop_milc_F(dest_pt->v, solp);
 	    destroy_latvec_from_qop_milc_F(srcp);
@@ -371,7 +401,13 @@ start:
 	    fflush(stdout);
 #endif
 
-    /* Copy the solution and free memory */
+#ifndef OLD_QOPQDP_NORM
+	    /* Change the normalization of the solution */
+	    FORSOMEPARITY(i,s,parity){
+	      scalar_mult_su3_vector(solp+i, xnorm, solp+i);
+	    } END_LOOP
+#endif
+	    /* Copy the solution and free memory */
 #if ( QOP_Precision == 1 )
 	    copy_latvec_to_qop_milc_F(dest_pt->v, solp);
 	    destroy_latvec_from_qop_milc_F(srcp);
@@ -426,6 +462,12 @@ start:
     CLEANUP_DSLASH_QOP_MILC_TEMPS();
     free(ttt); free(cg_p); free(resid); first_congrad = 1;
 
+#ifndef OLD_QOPQDP_NORM
+    /* Change the normalization of the solution */
+    FORSOMEPARITY(i,s,parity){
+      scalar_mult_su3_vector(solp+i, xnorm, solp+i);
+    } END_LOOP
+#endif
     /* Copy the solution and free memory */
 #if ( QOP_Precision == 1 )
     copy_latvec_to_qop_milc_F(dest_pt->v, solp);

@@ -7,10 +7,10 @@
 
 /* External entry points
 
-   init_fn_links
-   load_fn_links
-   load_fn_links_dmdu0 (ifdef DM_DU0)
-   invalidate_fn_links
+   init_ferm_links
+   load_ferm_links
+   load_ferm_links_dmdu0 (ifdef DM_DU0)
+   invalidate_ferm_links
 
  */
 
@@ -48,14 +48,16 @@
 /* Load fat links into t_fatlink, t_longlink and t_fatbacklink,
    t_longbacklink */
 
-//&t_fatlink, get_quark_path_coeff(), get_q_paths());
-
-void load_fn_links(fn_links_t *fn, ks_action_paths *ap){
+void load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
 
   if(fn->valid == 1)return;
 
+#ifdef FN
   load_fatlinks(fn, ap);
   load_longlinks(fn, ap);
+#endif
+
+  fn->ap = ap;
 
 #ifdef DBLSTORE_FN
   load_fatbacklinks(fn);
@@ -65,27 +67,31 @@ void load_fn_links(fn_links_t *fn, ks_action_paths *ap){
   fn->valid = 1;
 }
 
-//&t_dfatlink_du0, get_quark_path_coeff_dmdu0(), get_q_paths_dmdu0());
-
 #ifdef DM_DU0
-void load_fn_links_dmdu0(fn_links_t *fn, ks_action_paths *ap){
+void load_ferm_links_dmdu0(ferm_links_t *fn, ks_action_paths *ap){
   if(fn->valid == 1)return;
 
+#ifdef FN
   load_fatlinks(fn, ap);
+#endif
+
+  fn->ap = ap;
   fn->valid = 1;
 }
 #endif
 
 void
-invalidate_fn_links(fn_links_t *fn)
+invalidate_ferm_links(ferm_links_t *fn)
 {
   fn->valid = 0;
 }
 
-void init_fn_links(fn_links_t *fn){
+void 
+init_ferm_links(ferm_links_t *fn){
   fn->valid = 0;
   fn->fat = NULL;
   fn->lng = NULL;
   fn->fatback = NULL;
   fn->lngback = NULL;
+  fn->ap = NULL;
 }

@@ -28,15 +28,15 @@ void cleanup_dslash_temps(){
 }
 
 void dslash_eo_site( field_offset src, field_offset dest, int parity,
-		     fn_links_t *fn, ks_action_paths *ap )
+		     ferm_links_t *fn )
 {
   register int i;
   register site *s;
   register int ipath,otherparity;
   register Real x; /* coefficient of path */
+  ks_action_paths *ap = fn->ap;
   int num_q_paths = ap->num_q_paths;
   Q_path *q_paths = ap->q_paths;
-  
   switch(parity){
   case EVEN:	otherparity=ODD; break;
   case ODD:	otherparity=EVEN; break;
@@ -60,12 +60,13 @@ void dslash_eo_site( field_offset src, field_offset dest, int parity,
 } /* dslash_eo_site */
 
 void dslash_eo_field( su3_vector *src, su3_vector *dest, int parity,
-		      fn_links_t *fn, ks_action_paths *ap )
+		      ferm_links_t *fn )
 {
   register int i;
   register site *s;
   register int ipath,otherparity;
   register Real x; /* coefficient of path */
+  ks_action_paths *ap = fn->ap;
   int num_q_paths = ap->num_q_paths;
   Q_path *q_paths = ap->q_paths;
   

@@ -26,16 +26,15 @@ ks_multicg_offset(	/* Return value is number of iterations taken */
    int prec,            /* internal precision for inversion */
    int parity,		/* parity to be worked on */
    Real *final_rsq_ptr,	/* final residue squared */
-   fn_links_t *fn,      /* Storage for fat and Naik links */
-   ks_action_paths *ap  /* Definition of action */
+   ferm_links_t *fn     /* Storage for fat and Naik links */
    )
 {
   if(prec == 1)
     return ks_multicg_offset_F(src, psim, offsets, num_offsets, niter, 
-			       rsqmin, parity, final_rsq_ptr, fn, ap);
+			       rsqmin, parity, final_rsq_ptr, fn);
   else
     return ks_multicg_offset_D(src, psim, offsets, num_offsets, niter, 
-			       rsqmin, parity, final_rsq_ptr, fn, ap);
+			       rsqmin, parity, final_rsq_ptr, fn);
 }
 
 #if 0
@@ -53,16 +52,15 @@ ks_multicg_mass(	 /* Return value is number of iterations taken */
     int prec,            /* internal precision for inversion */
     int parity,		 /* parity to be worked on */
     Real *final_rsq_ptr, /* final residue squared */
-    fn_links_t *fn,      /* Storage for fat and Naik links */
-    ks_action_paths *ap  /* Definition of action */
+    ferm_links_t *fn     /* Storage for fat and Naik links */
 			)
 {
   if(prec == 1)
     return ks_multicg_mass_F(src, psim, masses, num_masses, niter, 
-			     rsqmin, parity, final_rsq_ptr, fn, ap);
+			     rsqmin, parity, final_rsq_ptr, fn);
   else
     return ks_multicg_mass_D(src, psim, masses, num_masses, niter, 
-			     rsqmin, parity, final_rsq_ptr, fn, ap);
+			     rsqmin, parity, final_rsq_ptr, fn);
 }
 
 #endif

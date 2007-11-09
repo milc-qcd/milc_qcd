@@ -51,8 +51,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     int prec,           /* internal precision for the inversion (ignored) */
     int parity,		/* parity to be worked on */
     Real  *final_rsq_ptr, /* final residue squared */
-    fn_links_t *fn,       /* Storage for fermion links */
-    ks_action_paths *ap /* Definition of action paths */
+    ferm_links_t *fn       /* Storage for fermion links */
     )
 {
     /* Site su3_vector's resid, cg_p and ttt are used as temporaries */
@@ -87,8 +86,6 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
 #endif
     double nflop;
 
-    load_fn_links(fn, ap);  /* Do this here so the link build time is not
-			 counted in the CG time */
 /* debug */
 #ifdef CGTIME
     dtimec = -dclock();   
@@ -140,8 +137,8 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
        }END_LOOP                                                    
       			                                               
 	/*set temp = -D(adj)*D*init_guess. "D" means "D-slash" */              
-	    dslash_fn_field_special(init_guess,temp,l_otherparity,tags2,1,fn,ap);
-	    dslash_fn_field_special(temp,temp,l_parity,tags1,1,fn,ap);
+	    dslash_fn_field_special(init_guess,temp,l_otherparity,tags2,1,fn);
+	    dslash_fn_field_special(temp,temp,l_parity,tags1,1,fn);
 	    cleanup_gathers(tags1,tags2);
                                                                        
 	    source_norm=0.0;    
@@ -196,13 +193,13 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
 	/* sum of neighbors */
 /* We now proceed to calculate pkp which is the name for -cg_p*( D(adj)*D + 4*mass1^2)* cg_p   */
 	if(special_started==0){
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1, fn, ap );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1, fn, ap);
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1, fn );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1, fn );
 	    special_started = 1;
 	}
 	else {
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0, fn, ap );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn, ap );
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0, fn );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn );
 	}
 
 	/* finish computation of (-1)*M_adjoint*m*p and (-1)*p*M_adjoint*M*p */

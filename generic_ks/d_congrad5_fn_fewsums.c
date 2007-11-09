@@ -59,7 +59,7 @@ static const char *milc_prec[2] = {"F", "D"};
 int ks_congrad( field_offset src, field_offset dest, Real mass,
 		int niter, int nrestart, Real rsqmin, int prec,
 		int parity, Real *final_rsq_ptr,
-		fn_links_t *fn, ks_action_paths *ap){
+		ferm_links_t *fn){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
@@ -83,9 +83,6 @@ double dtimec;
 double reduce_time; /*TEST*/
 double nflop;
 
- load_fn_links(fn, ap);  /* Do this here so the link build time is not
-		      counted in the CG time */
- 
  dtimec = -dclock(); 
  reduce_time = 0.0; /*TEST*/
  
@@ -139,8 +136,8 @@ start:
 	if(this_node==0)if(iteration>1)printf("CONGRAD: restart rsq = %.10e\n",rsq);
 #endif
         rsq = source_norm = 0.0;
-	dslash_fn_field_special(t_dest, ttt,l_otherparity,tags2,1,fn,ap);
-	dslash_fn_field_special(ttt,ttt,l_parity,tags1,1,fn,ap);
+	dslash_fn_field_special(t_dest, ttt,l_otherparity,tags2,1,fn);
+	dslash_fn_field_special(ttt,ttt,l_parity,tags1,1,fn);
 	cleanup_gathers(tags1,tags2);
 	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
 	FORSOMEPARITY(i,s,l_parity){
@@ -229,13 +226,13 @@ reduce_time += dclock();
 	/* sum of neighbors */
 
 	if(special_started==0){
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1, fn, ap );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1, fn, ap);
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1, fn );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1, fn);
 	    special_started=1;
 	}
 	else {
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0, fn, ap );
-	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn, ap);
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0, fn );
+	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn);
 	}
 
 	/* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */

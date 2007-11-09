@@ -87,7 +87,7 @@ void mult_1mps_rev( int pdir, field_offset src, field_offset dest );
 void mult_1mpE( int pdir, field_offset src, field_offset dest );
 void mult_qqqq1mp0( int src_t, int pdir, field_offset src, field_offset dest,
 		    field_offset work, field_offset temp, Real mass,
-		    fn_links_t *fn, ks_action_paths *ap);
+		    ferm_links_t *fn);
    /* non-exotic hybrids*/
 void mult_zero_mp( field_offset src, field_offset dest );
 void mult_one_mm( int pdir, field_offset src, field_offset dest );
@@ -97,8 +97,7 @@ void mult_by_field_strength( int dir1, int dir2,
     field_offset src, field_offset dest );
 int test_converge(int t_source);
 
-int spectrum_hybrids( Real mass, field_offset temp, Real tol,
-		      fn_links_t *fn, ks_action_paths *ap )
+int spectrum_hybrids( Real mass, field_offset temp, Real tol, ferm_links_t *fn )
 { /* return the C.G. iteration number */
 
   int cgn;
@@ -135,10 +134,6 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol,
 #define NHIT 0
 #endif
 
-#ifdef FN
-  /* smeared links overwrite longlinks */
-  invalidate_fn_links(&fn_links);
-#endif
   rephase(OFF);
   if(this_node==0)printf("SMEARING IS ON, level %d\n",SMEAR);
   if(SMEAR>=1){
@@ -146,22 +141,22 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol,
 #ifdef APE_PROJECT
     node0_printf( "APE projection is on, NHIT = %d\n",NHIT);
 #endif
-    ape_smear( F_OFFSET(link[0]), F_OFFSET(longlink[0]), staple_weight, u0, 1, 3*NHIT, 0.);
+    ape_smear( F_OFFSET(link[0]), F_OFFSET(tmplink[0]), staple_weight, u0, 1, 3*NHIT, 0.);
   }
   else FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
-    s->longlink[dir] = s->link[dir];
+    s->tmplink[dir] = s->link[dir];
   }
   for(j=2;j<=SMEAR;j++){
     FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
-      s->field_strength[dir] = s->longlink[dir];
+      s->field_strength[dir] = s->tmplink[dir];
     }
     /**    node0_printf( "Smearing: staple_weight = %e\n", staple_weight); **/
 #ifdef APE_PROJECT
     /**    node0_printf( "APE projection is on, NHIT = %d\n",NHIT); **/
 #endif
-    ape_smear( F_OFFSET(field_strength[0]), F_OFFSET(longlink[0]), staple_weight, u0, 1, 3*NHIT, 0.);
+    ape_smear( F_OFFSET(field_strength[0]), F_OFFSET(tmplink[0]), staple_weight, u0, 1, 3*NHIT, 0.);
   }
-  make_field_strength(F_OFFSET(longlink[0]), F_OFFSET(field_strength[0]));
+  make_field_strength(F_OFFSET(tmplink[0]), F_OFFSET(field_strength[0]));
   rephase(ON);
   /**temp_test();**/
 
@@ -185,11 +180,11 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol,
 
         /* compute M^-1 * quark_source */
         cgn += mat_invert( F_OFFSET(quark_source), F_OFFSET(quark_prop),
-			   temp, mass, PRECISION, fn, ap );
+			   temp, mass, PRECISION, fn );
 	/*if(t_source==0)test_converge(t_source);*/ /*TEMP*/
 	/* TEMP: test inversion, */
 	check_invert( F_OFFSET(quark_prop), F_OFFSET(quark_source), mass, tol,
-		      fn, ap);
+		      fn);
 
         /* Begin with the pion source and sink operator */
         /* Use mat_invert to construct anti_prop */
@@ -203,7 +198,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol,
         /* Now the 0+-_0+- propagator */
         mult_zero_pm( F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn, ap );
+			   temp, mass, PRECISION, fn );
         mult_zero_pm( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -216,7 +211,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol,
         /* Now do the 1-+_1-+ source.  For the moment, Z component only */
         mult_1mp0( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn, ap );
+			   temp, mass, PRECISION, fn );
         mult_1mp0( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -229,7 +224,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol,
         /* Now do the 1-+_1-+ source.  For the moment, Z component only */
         mult_1mps( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn, ap );
+			   temp, mass, PRECISION, fn );
         mult_1mps( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
 /**mult_1mps_rev( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );**/
         FORALLSITES(i,s){
@@ -242,7 +237,7 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol,
         /* Now the 1-+2_1+-2 source.  For the moment, Z component only */
         mult_1mpE( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn, ap );
+			   temp, mass, PRECISION, fn );
         mult_1mpE( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
@@ -259,9 +254,9 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol,
         /* Now the 4-quark (a1-pi) source.  For the moment, Z component only */
         mult_qqqq1mp0( t_source,  ZUP,
 		       F_OFFSET(quark_source), F_OFFSET(g_rand), 
-		       F_OFFSET(anti_prop), F_OFFSET(phi1), mass1, fn, ap );
+		       F_OFFSET(anti_prop), F_OFFSET(phi1), mass1, fn );
         cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop),
-			   temp, mass, PRECISION, fn, ap );
+			   temp, mass, PRECISION, fn );
 
         mult_1mpE( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
@@ -538,7 +533,7 @@ void mult_1mpE( int pdir, field_offset src, field_offset dest ){
    "pdir" is the polarization direction of the meson */
 void mult_qqqq1mp0( int src_t, int pdir, field_offset src, field_offset dest,
 		    field_offset work, field_offset temp, Real mass,
-		    fn_links_t *fn, ks_action_paths *ap){
+		    ferm_links_t *fn){
     register int i;
     register site *s;
     /* use "work" and "temp" as temporary storage */
@@ -552,7 +547,7 @@ exit(0);
     FORALLSITES(i,s){
 	/* two (-1)^(x+y+z+t)'s = 1 */
     }
-    mat_invert( dest, work, temp, mass, PRECISION, fn, ap );
+    mat_invert( dest, work, temp, mass, PRECISION, fn );
     FORALLSITES(i,s){
 	if(s->t== src_t ){
 	    /* really three (-1)^(x+y+z+t)'s - both propagators have one end here */
@@ -696,7 +691,7 @@ s = &(lattice[1]);
        EVENANDODD }
 
     for(dir=XUP;dir<=TUP;dir++){
-	cc = det_su3( &(s->longlink[dir]) );
+	cc = det_su3( &(s->tmplink[dir]) );
 	printf("BEFORE: %d %d %d %d dir= %d  Det = %f  %f\n",
 	s->x,s->y,s->z,s->t,dir,cc.real,cc.imag);
     }
@@ -713,11 +708,11 @@ s = &(lattice[1]);
 #ifdef APE_PROJECT
     node0_printf( "APE projection is on, NHIT = %d\n",NHIT);
 #endif
-    ape_smear(F_OFFSET(link[0]), F_OFFSET(longlink[0]), staple_weight, u0, 1, 3*NHIT, 0.);
+    ape_smear(F_OFFSET(link[0]), F_OFFSET(tmplink[0]), staple_weight, u0, 1, 3*NHIT, 0.);
    make_field_strength(F_OFFSET(link[0]), F_OFFSET(field_strength[0]));
    rephase( ON );
     for(dir=XUP;dir<=TUP;dir++){
-	cc = det_su3( &(s->longlink[dir]) );
+	cc = det_su3( &(s->tmplink[dir]) );
 	printf("AFTER: %d %d %d %d dir= %d  Det = %f  %f\n",
 	s->x,s->y,s->z,s->t,dir,cc.real,cc.imag);
     }

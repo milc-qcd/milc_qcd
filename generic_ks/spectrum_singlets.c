@@ -66,7 +66,7 @@ su3_vector *temp, *R, *R1,*R2,*R3, *X,*X_sigma,*X_eta_l,*X_eta_nl;
 #endif
 
 int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
-		       fn_links_t *fn, ks_action_paths *ap){
+		       ferm_links_t *fn){
   /* arguments are mass, tolerance for inverter check,
    * temporary lattice su3_vector.
      return C.G. iteration number */
@@ -138,7 +138,7 @@ int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
 	  else clearvec( &(s->RSRC) );
       }
       cgn += mat_invert( F_OFFSET(RSRC), F_OFFSET(g_rand), temp_offset, 
-			 mass, PRECISION, fn, ap  );
+			 mass, PRECISION, fn  );
       FORALLSITES(i,s){ X[i]=s->g_rand; }
   
       /* disconnected parts (Eqs 24 and 29)  */
@@ -173,7 +173,7 @@ int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
         }
 
         cgn += mat_invert( F_OFFSET(RSRC), F_OFFSET(g_rand), temp_offset, 
-			   mass, PRECISION, fn, ap  );
+			   mass, PRECISION, fn  );
 
         FORALLSITES(i,s){
   	  X_sigma[i]=s->g_rand;
@@ -187,7 +187,7 @@ int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
         }
 
         cgn += mat_invert( F_OFFSET(RSRC), F_OFFSET(g_rand), temp_offset, 
-			   mass, PRECISION, fn, ap );
+			   mass, PRECISION, fn );
 
         FORALLSITES(i,s){
   	  X_eta_l[i]=s->g_rand;
@@ -202,7 +202,7 @@ int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
           //if(s->parity==ODD)scalar_mult_su3_vector( &(s->RSRC), -1.0, &(s->RSRC) );
         //}
         //cgn += mat_invert( F_OFFSET(RSRC), F_OFFSET(g_rand), 
-	//     temp_offset, mass, PRECISION, fn, ap );
+	//     temp_offset, mass, PRECISION, fn );
         //FORALLSITES(i,s){
   	//X_eta_nl[i]=s->g_rand;
           //if(s->parity==ODD)scalar_mult_su3_vector( &(X_eta_nl[i]), -1.0, &(X_eta_nl[i]) );

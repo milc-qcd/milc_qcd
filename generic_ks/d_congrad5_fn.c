@@ -61,7 +61,7 @@ relative_residue(su3_vector *p, su3_vector *q, int parity)
 static int
 ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest, 
 		   quark_invert_control *qic, Real mass,
-		   fn_links_t *fn, ks_action_paths *ap){
+		   ferm_links_t *fn){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
@@ -147,8 +147,8 @@ ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest,
 	    special_started=0;
 	}
 	rsq = 0.0;
-	dslash_fn_field(t_dest, ttt, otherparity, fn, ap);
-	dslash_fn_field(ttt, ttt, parity, fn, ap);
+	dslash_fn_field(t_dest, ttt, otherparity, fn);
+	dslash_fn_field(ttt, ttt, parity, fn);
 	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
 	FORSOMEPARITYDOMAIN(i,s,parity){
 	  if( i < loopend-FETCH_UP ){
@@ -214,13 +214,13 @@ ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest,
     /* sum of neighbors */
     
     if(special_started==0){
-      dslash_fn_field_special( cg_p, ttt, otherparity, tags2, 1, fn, ap );
-      dslash_fn_field_special( ttt, ttt, parity, tags1, 1, fn, ap);
+      dslash_fn_field_special( cg_p, ttt, otherparity, tags2, 1, fn );
+      dslash_fn_field_special( ttt, ttt, parity, tags1, 1, fn);
       special_started=1;
     }
     else {
-      dslash_fn_field_special( cg_p, ttt, otherparity, tags2, 0, fn, ap );
-      dslash_fn_field_special( ttt, ttt, parity, tags1, 0, fn, ap);
+      dslash_fn_field_special( cg_p, ttt, otherparity, tags2, 0, fn );
+      dslash_fn_field_special( ttt, ttt, parity, tags1, 0, fn);
     }
     
     /* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
@@ -331,7 +331,7 @@ ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest,
 
 int ks_congrad_field( su3_vector *src, su3_vector *dest, 
 		      quark_invert_control *qic, Real mass,
-		      fn_links_t *fn, ks_action_paths *ap)
+		      ferm_links_t *fn)
 {
   int iters = 0;
   double dtimec;
@@ -340,17 +340,15 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
 
   if(parity==EVENANDODD)nflop *=2;
 
-  load_fn_links(fn, ap);  /* Do this here so the link build time is not
-		      counted in the CG time */
   dtimec = -dclock(); 
 
   if(parity == EVEN || parity == EVENANDODD){
     qic->parity = EVEN;
-    iters += ks_congrad_parity(src, dest, qic, mass, fn, ap);
+    iters += ks_congrad_parity(src, dest, qic, mass, fn);
   }
   if(parity == ODD || parity == EVENANDODD){
     qic->parity = ODD;
-    iters += ks_congrad_parity(src, dest, qic, mass, fn, ap);
+    iters += ks_congrad_parity(src, dest, qic, mass, fn);
   }
 
   qic->parity = parity;
@@ -371,7 +369,7 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
 
 int ks_congrad_site( field_offset src, field_offset dest, 
 		     quark_invert_control *qic, Real mass,
-		     fn_links_t *fn, ks_action_paths *ap)
+		     ferm_links_t *fn)
 {
   int i;
   site *s;
@@ -383,8 +381,6 @@ int ks_congrad_site( field_offset src, field_offset dest,
 
   if(qic->parity==EVENANDODD)nflop *=2;
 
-  load_fn_links(fn, ap);  /* Do this here so the link build time is not
-		      counted in the CG time */
   dtimec = -dclock(); 
 
   /* Map src and dest from site to field of correct precision */
@@ -403,11 +399,11 @@ int ks_congrad_site( field_offset src, field_offset dest,
 
   if(parity == EVEN || parity == EVENANDODD){
     qic->parity = EVEN;
-    iters += ks_congrad_parity(t_src, t_dest, qic, mass, fn, ap );
+    iters += ks_congrad_parity(t_src, t_dest, qic, mass, fn );
   }
   if(parity == ODD || parity == EVENANDODD){
     qic->parity = ODD;
-    iters += ks_congrad_parity(t_src, t_dest, qic, mass, fn, ap );
+    iters += ks_congrad_parity(t_src, t_dest, qic, mass, fn );
   }
 
   /* Map solution to site structure */
@@ -437,7 +433,7 @@ int ks_congrad_site( field_offset src, field_offset dest,
 int ks_congrad( field_offset src, field_offset dest, Real mass,
 		int niter, int nrestart, Real rsqmin, int prec,
 		int parity, Real *final_rsq,
-		fn_links_t *fn, ks_action_paths *ap){
+		ferm_links_t *fn){
   int iters;
   quark_invert_control qic;
 
@@ -450,7 +446,7 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
   qic.relresid  = 0;     /* Suppresses this test */
 
   /* Solve the system */
-  iters = ks_congrad_site( src, dest, &qic, mass, fn, ap );
+  iters = ks_congrad_site( src, dest, &qic, mass, fn );
 
   /* Unpack the results */
   *final_rsq    = qic.final_rsq;

@@ -23,8 +23,11 @@
 
 /*
  * $Log: ks_multicg_offset_qop_P.c,v $
+ * Revision 1.4  2007/11/09 16:42:41  detar
+ * Pull FN link calculation out of inverters
+ *
  * Revision 1.3  2007/10/09 20:10:14  detar
- * Add fn_links_t and ks_action_paths structures and pass them as params
+ * Add ferm_links_t and ks_action_paths structures and pass them as params
  *
  * Revision 1.2  2007/05/21 05:06:50  detar
  * Change stopping condition to true residual.
@@ -68,7 +71,7 @@
 #include "../include/generic_ks_qop.h"
 #include "../include/loopend.h"
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.3 2007/10/09 20:10:14 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.4 2007/11/09 16:42:41 detar Exp $";
 
 /* Standard MILC interface for the Asqtad multimass inverter 
    single source, multiple masses.  Uses the prevailing precision */
@@ -80,8 +83,7 @@ int KS_MULTICG_OFFSET(	      /* Return value is number of iterations taken */
     Real *offsets,	      /* the offsets */
     int num_offsets,	      /* number of offsets */
     quark_invert_control *qic,/* inversion parameters */
-    fn_links_t *fn,       /* Storage for fat and Naik links */
-    ks_action_paths *ap /* Definition of action */
+    ferm_links_t *fn            /* Storage for fat and Naik links */
     )
 {
   int num_masses = num_offsets;
@@ -125,7 +127,7 @@ int KS_MULTICG_OFFSET(	      /* Return value is number of iterations taken */
   milc_sols[0] =  psim;
   
   iterations_used = KS_CONGRAD_QOP_SITE2FIELD( qic, masses2, nmass, milc_srcs,
-					       milc_sols, nsrc, fn, ap );
+					       milc_sols, nsrc, fn );
   
   free(masses);
   return iterations_used;
@@ -141,8 +143,7 @@ int KS_MULTICG_MASS(	      /* Return value is number of iterations taken */
     Real *masses,	      /* the masses */
     int num_masses,	      /* number of masses */
     quark_invert_control *qic, /* inversion parameters */
-    fn_links_t *fn,            /* Storage for fat and Naik links */
-    ks_action_paths *ap        /* Definition of action */
+    ferm_links_t *fn             /* Storage for fat and Naik links */
     )
 {
   
@@ -166,7 +167,7 @@ int KS_MULTICG_MASS(	      /* Return value is number of iterations taken */
 
   iterations_used = KS_CONGRAD_QOP_SITE2FIELD( qic, masses2, nmass, 
 					       milc_srcs, milc_sols, nsrc,
-					       fn, ap);
+					       fn);
 
   free(masses2[0]);
   total_iters += iterations_used;

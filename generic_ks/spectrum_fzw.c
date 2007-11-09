@@ -26,7 +26,7 @@
 /*                           MAIN PROCEDURE                               */
 /* ---------------------------------------------------------------------- */
 int spectrum_fzw( Real vmass, field_offset temp1, field_offset temp2,
-		  fn_links_t *fn, ks_action_paths *ap){ 
+		  ferm_links_t *fn){ 
   
   double *prop5,   *Prop5; /* Goldstone */
   double *prop000, *prop111, *prop1_11, *prop11_1, *prop1_1_1;
@@ -116,14 +116,14 @@ int spectrum_fzw( Real vmass, field_offset temp1, field_offset temp2,
       if( (t_src + xs + ys + zs)%2 == 0 ) {     
            cgn +=  ks_congrad(temp1, temp2,vmass,
                               niter, nrestart, rsqprop, PRECISION, 
-			      EVEN, &finalrsq, fn, ap);
-           dslash_site( temp2, F_OFFSET(ttt), ODD, fn, ap);
+			      EVEN, &finalrsq, fn);
+           dslash_site( temp2, F_OFFSET(ttt), ODD, fn);
            scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt), EVEN);
       }else {      
            cgn +=  ks_congrad(temp1, temp2,vmass,
 			      niter, nrestart, rsqprop, PRECISION, 
-			      ODD, &finalrsq, fn, ap);
-           dslash_site( temp2, F_OFFSET(ttt), EVEN, fn, ap);
+			      ODD, &finalrsq, fn);
+           dslash_site( temp2, F_OFFSET(ttt), EVEN, fn);
            scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt), ODD);
        }	  
 	    copy_latvec( F_OFFSET(ttt), F_OFFSET(propmat[icol]), EVENANDODD);   

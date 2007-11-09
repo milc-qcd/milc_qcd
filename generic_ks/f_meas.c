@@ -21,8 +21,7 @@
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 
 void f_meas_imp( field_offset phi_off, field_offset xxx_off, Real mass,
-		 fn_links_t *fn, ks_action_paths *ap,
-		 fn_links_t *fn_dmdu0, ks_action_paths *ap_dmdu0){
+		 ferm_links_t *fn, ferm_links_t *fn_dmdu0){
     Real r_psi_bar_psi_even, i_psi_bar_psi_even;
     Real  r_psi_bar_psi_odd, i_psi_bar_psi_odd;
     Real r_ferm_action;
@@ -31,9 +30,8 @@ void f_meas_imp( field_offset phi_off, field_offset xxx_off, Real mass,
     register site *st;
     double rfaction;
     double_complex pbp_e, pbp_o;
-#ifdef FN
     su3_matrix *t_fatlink, *t_longlink;
-#endif
+
 #ifdef NPBP_REPS
     double pbp_pbp;
 #endif
@@ -70,14 +68,8 @@ BOMB THE COMPILE
 #endif
     int jpbp_reps;
 
-#ifdef FN
-    load_fn_links(fn, ap);
     t_fatlink = fn->fat;
     t_longlink = fn->lng;
-#ifdef DM_DU0
-    load_fn_links_dmdu0(fn_dmdu0, ap_dmdu0);
-#endif
-#endif
 
     for(jpbp_reps = 0; jpbp_reps < npbp_reps; jpbp_reps++){
       rfaction = (double)0.0;
@@ -86,20 +78,20 @@ BOMB THE COMPILE
       /* Make random source, and do inversion */
       /* generate g_rand random; phi_off = M g_rand */
 #ifndef Z2RSOURCE
-      grsource_imp( phi_off, mass, EVENANDODD, fn, ap );
+      grsource_imp( phi_off, mass, EVENANDODD, fn );
 #else
-      z2rsource_imp( phi_off, mass, EVENANDODD, fn, ap );
+      z2rsource_imp( phi_off, mass, EVENANDODD, fn );
 #endif
       /* phi_off = M g_rand (still) */
       /* xxx_off = M^{-1} g_rand */
       clear_latvec(xxx_off,EVENANDODD);
-      mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, prec, fn, ap );
+      mat_invert_uml( F_OFFSET(g_rand), xxx_off, phi_off, mass, prec, fn );
       
 #ifdef DM_DU0
       r_pb_dMdu_p_even = r_pb_dMdu_p_odd = (double)0.0;
       /* dMdu_x = dM/du0 M^{-1} g_rand */
       ddslash_fn_du0_site( xxx_off, F_OFFSET(dMdu_x), EVENANDODD, 
-			   fn, ap, fn_dmdu0, ap_dmdu0 );
+			   fn, fn_dmdu0 );
 #endif
 
 #ifdef CHEM_POT
@@ -278,7 +270,7 @@ BOMB THE COMPILE
 	su3vec_copy( (su3_vector *)F_PT(st,xxx_off), &(st->M_inv) );
       }
       clear_latvec(xxx_off,EVENANDODD);
-      mat_invert_uml( F_OFFSET(M_inv), xxx_off, phi_off, mass, prec, fn, ap );
+      mat_invert_uml( F_OFFSET(M_inv), xxx_off, phi_off, mass, prec, fn );
       FORALLSITES(i,st){
 	cc = su3_dot( &(st->g_rand), (su3_vector *)F_PT(st,xxx_off) );
 	pbp_pbp += cc.real;
@@ -291,7 +283,7 @@ BOMB THE COMPILE
 
 #ifdef CHEM_POT
       clear_latvec(xxx_off,EVENANDODD);
-      mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass, prec, fn, ap );
+      mat_invert_uml( F_OFFSET(dM_M_inv), xxx_off, phi_off, mass, prec, fn );
 
       /* Start gathers from positive t-direction */
       tag0 = start_gather_site( xxx_off, sizeof(su3_vector), TUP,

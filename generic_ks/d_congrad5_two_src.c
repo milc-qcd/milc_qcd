@@ -17,17 +17,16 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     int prec,           /* internal precision for the inversion */
     int parity,		/* parity to be worked on */
     Real  *final_rsq_ptr, 	/* final residue squared */
-    fn_links_t *fn,       /* Storage for fermion links */
-    ks_action_paths *ap /* Definition of action paths */
+    ferm_links_t *fn       /* Storage for fermion links */
     )
 {
 
   int myiters = 0;
 
   myiters += ks_congrad( src1, dest1, mass1, niter, nrestart, rsqmin, prec,
-			 parity, final_rsq_ptr, fn, ap );
+			 parity, final_rsq_ptr, fn );
   myiters += ks_congrad( src2, dest2, mass2, niter, nrestart, rsqmin, prec, 
-			 parity, final_rsq_ptr, fn, ap );
+			 parity, final_rsq_ptr, fn );
 
   return myiters;
 }

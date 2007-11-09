@@ -61,8 +61,7 @@ int test_converge( int t_source );
 su3_vector * lightprop[3];
 su3_vector * heavyprop[3];
 
-int spectrum_nd( Real mass1, Real mass2, Real tol, 
-		 fn_links_t *fn, ks_action_paths *ap ){
+int spectrum_nd( Real mass1, Real mass2, Real tol, ferm_links_t *fn ){
   /* arguments are light and heavy quark masses, return C.G. iteration number */
 
   int cgn;
@@ -113,45 +112,45 @@ int spectrum_nd( Real mass1, Real mass2, Real tol,
       if(t_source%2 == 0) {
          cgn += ks_congrad( F_OFFSET(quark_source), F_OFFSET(g_rand),
 			    mass1, niter, nrestart, rsqprop, PRECISION, 
-			    EVEN, &finalrsq, fn, ap);
+			    EVEN, &finalrsq, fn);
          /* Multiply by -Madjoint */
-         dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), ODD, fn, ap);
+         dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), ODD, fn);
          scalar_mult_latvec( F_OFFSET(g_rand), -2.0*mass1, F_OFFSET(quark_prop),EVEN);
       }
       else {
         cgn += ks_congrad( F_OFFSET(quark_source), F_OFFSET(g_rand),
 			   mass1, niter, nrestart, rsqprop, PRECISION, 
-			   ODD, &finalrsq, fn, ap);
+			   ODD, &finalrsq, fn);
           /* Multiply by -Madjoint */
-          dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), EVEN, fn, ap);
+          dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), EVEN, fn);
           scalar_mult_latvec( F_OFFSET(g_rand), -2.0*mass1, F_OFFSET(quark_prop),ODD);
       }
       FORALLSITES(i,s){ lightprop[color][i] = lattice[i].quark_prop; }
 scalar_mult_latvec( F_OFFSET(quark_prop), -1.0, F_OFFSET(g_rand), EVENANDODD );
- check_invert( F_OFFSET(g_rand), F_OFFSET(quark_source), mass1, tol, fn, ap);
+ check_invert( F_OFFSET(g_rand), F_OFFSET(quark_source), mass1, tol, fn);
 
       /* repeat for heavy quark */
       if(t_source%2 == 0) {
          cgn += ks_congrad( F_OFFSET(quark_source), F_OFFSET(g_rand),
 			    mass2, niter, nrestart, rsqprop, PRECISION, 
-			    EVEN, &finalrsq, fn, ap);
+			    EVEN, &finalrsq, fn);
          /* Multiply by -Madjoint */
-         dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), ODD, fn, ap);
+         dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), ODD, fn);
          scalar_mult_latvec( F_OFFSET(g_rand), -2.0*mass2, F_OFFSET(quark_prop),EVEN);
       }
       else {
         cgn += ks_congrad( F_OFFSET(quark_source), F_OFFSET(g_rand),
 			   mass2, niter, nrestart, rsqprop, PRECISION, 
-			   ODD, &finalrsq, fn, ap);
+			   ODD, &finalrsq, fn);
           /* Multiply by -Madjoint */
-          dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), EVEN, fn, ap);
+          dslash_site( F_OFFSET(g_rand), F_OFFSET(quark_prop), EVEN, fn);
           scalar_mult_latvec( F_OFFSET(g_rand), -2.0*mass2, F_OFFSET(quark_prop),ODD);
       }
       FORALLSITES(i,s){ heavyprop[color][i] = lattice[i].quark_prop; }
 
       /* TEMP: test inversion, */
 scalar_mult_latvec( F_OFFSET(quark_prop), -1.0, F_OFFSET(g_rand), EVENANDODD );
- check_invert( F_OFFSET(g_rand), F_OFFSET(quark_source), mass2, tol, fn, ap);
+ check_invert( F_OFFSET(g_rand), F_OFFSET(quark_source), mass2, tol, fn);
     } /* end color loop*/
 
     /* add contributions into propagators */

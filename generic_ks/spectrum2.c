@@ -31,7 +31,7 @@
 #include "../include/dslash_ks_redefine.h"
 
 int spectrum2( Real vmass, field_offset temp1, field_offset temp2,
-	       fn_links_t *fn, ks_action_paths *ap){ 
+	       ferm_links_t *fn){ 
   /* return the C.G. iteration number */
   double *pi_ps_prop,*pi_sc_prop,*rho_pv_prop,*rho_vt_prop,*barprop;
   Real vmass_x2;
@@ -88,9 +88,9 @@ int spectrum2( Real vmass, field_offset temp1, field_offset temp2,
 	      if(t_source%2 == 0) {
 		cgn += ks_congrad( temp1, temp2, vmass,
 				   niter, nrestart, rsqprop, PRECISION, 
-				   EVEN, &finalrsq, fn, ap);
+				   EVEN, &finalrsq, fn);
 	          /* Multiply by -Madjoint */
-	          dslash_site( temp2, F_OFFSET(ttt), ODD, fn, ap);
+	          dslash_site( temp2, F_OFFSET(ttt), ODD, fn);
 	          scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt),
 			EVEN);
 /**copy_latvec( temp1, F_OFFSET(g_rand), EVENANDODD );
@@ -100,9 +100,9 @@ checkmul();**/
 	      else {
 		cgn += ks_congrad( temp1, temp2, vmass,
 				   niter, nrestart, rsqprop, PRECISION, 
-				   ODD, &finalrsq, fn, ap);
+				   ODD, &finalrsq, fn);
 	          /* Multiply by -Madjoint */
-	          dslash_site( temp2, F_OFFSET(ttt), EVEN, fn, ap);
+	          dslash_site( temp2, F_OFFSET(ttt), EVEN, fn);
 	          scalar_mult_latvec( temp2, -vmass_x2, F_OFFSET(ttt),
 			ODD);
 	      }
