@@ -1,5 +1,5 @@
 #  Pure gauge SU3
-#  MIMD version 6
+#  MIMD version 7
 #
 #  Generic make-include file for pure_gauge codes
 #  This template file defines rules and macros common to all architectures
@@ -47,7 +47,7 @@ G_OBJECTS =          \
   ranstuff.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o
 endif
 
 # Basic set from generic_pg directory
