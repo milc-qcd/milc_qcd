@@ -43,6 +43,7 @@ G_ALL = \
  io_piofs.o \
  io_romio.o \
  io_scidac.o \
+ io_scidac_types.o \
  layout_hyper_prime.o \
  layout_hyper_2or3.o \
  layout_timeslices.o \
@@ -169,6 +170,8 @@ io_piofs.o: ../generic/io_piofs.c
 io_romio.o: ../generic/io_romio.c
 	${CC} -c ${CFLAGS} $<
 io_scidac.o: ../generic/io_scidac.c
+	${CC} -c ${CFLAGS} $<
+io_scidac_types.o: ../generic/io_scidac_types.c
 	${CC} -c ${CFLAGS} $<
 layout_hyper_prime.o: ../generic/layout_hyper_prime.c
 	${CC} -c ${CFLAGS} $<
