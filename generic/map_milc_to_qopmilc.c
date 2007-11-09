@@ -384,12 +384,12 @@ make_create_from_field(D, D, QOP_D3_DiracFermion, dwilson_vector, wilson_vector,
 #endif
 
 #ifndef HAVE_NO_CREATE_L_FROM_G
-
-/* Create QOP fermion links from site gauge field */
-
-make_create_L_from_site_gauge(F, QOP_F3_FermionLinksAsqtad, fsu3_matrix, float);
-make_create_L_from_site_gauge(D, QOP_D3_FermionLinksAsqtad, dsu3_matrix, double);
-
+// 
+// /* Create QOP fermion links from site gauge field */
+// 
+// make_create_L_from_site_gauge(F, QOP_F3_FermionLinksAsqtad, fsu3_matrix, float);
+// make_create_L_from_site_gauge(D, QOP_D3_FermionLinksAsqtad, dsu3_matrix, double);
+// 
 #endif
 
 /* Map QOP color vector field to site */
