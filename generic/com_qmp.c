@@ -101,9 +101,9 @@
 */
 
 #include <time.h>
+#include <qmp.h>
 #include "generic_includes.h"
 #include "../include/config.h"
-#include "qmp.h"
 
 #define NOWHERE -1	/* Not an index in array of fields */
 
