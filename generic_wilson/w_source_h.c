@@ -13,6 +13,30 @@
 
 static Real *source_wall_template = NULL;
 
+/* Initialize by calling this function before using wqs */
+void init_wqs(wilson_quark_source *wqs){
+  wqs->type = 0;
+  wqs->c_src = NULL;
+  wqs->wv_src = NULL;
+}
+
+int choose_usqcd_file_type(int source_type){
+  int file_type;
+
+  switch(source_type){
+  case POINT:
+  case CUTOFF_GAUSSIAN:
+    file_type = FILE_TYPE_W_USQCD_C1D12;
+    break;
+  case POINT_WEYL:
+  case CUTOFF_GAUSSIAN_WEYL:
+    file_type = FILE_TYPE_W_USQCD_DD_PAIRS;
+    break;
+  default:
+    file_type = -1;
+  }
+  return file_type;
+}
 /* Make precomputed Gaussian weights */
 
 Real *make_template(Real gamma, int cutoff)  
@@ -161,7 +185,7 @@ void w_source_h(field_offset src,wilson_quark_source *wqs)
 int ask_quark_source( FILE *fp, int prompt, int *source_type, char *descrp)
 {
   char *savebuf;
-  int status;
+  char myname[] = "ask_quark_source";
   
   if (prompt!=0)
     printf("enter 'point', 'cutoff_gaussian', 'point_weyl', 'cutoff_gaussian_weyl' for source type\n");
