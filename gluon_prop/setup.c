@@ -30,12 +30,7 @@ void periodic_bc();
     node0_printf("Made nn gathers\n"); fflush(stdout);
 #ifdef QUARK_PROP
      /* Mark t_longlink and t_fatlink as unallocated */
-     t_longlink = NULL;
-     t_fatlink = NULL;
-#ifdef DBLSTORE_FN
-     t_longbacklink = NULL;
-     t_fatbacklink = NULL;
-#endif
+    init_ferm_links(&fn_links);
         /* set up 3rd nearest neighbor pointers and comlink structures
            code for this routine is below  */
     make_3n_gathers();
@@ -153,6 +148,10 @@ char savebuf[128];
 	/* error for propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
 	IF_OK par_buf.rsqprop = x*x;
+#else
+#ifdef IMP_GFIX
+	IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+#endif
 #endif
 
 	/* find out what kind of starting lattice to use */
@@ -183,6 +182,34 @@ char savebuf[128];
 #ifndef GFIX
 	    if(par_buf.fixflag != NO_GAUGE_FIX) {
 		printf("Gauge fixing not allowed in this version\n");
+		status++;
+	    }
+#endif
+	}
+ 
+	IF_OK if (prompt!=0) printf(
+	    "enter 'no_gauge_fix', 'landau_gauge_fix', or 'coulomb_gauge_fix'\n");
+	IF_OK status2=scanf("%s",savebuf);
+	IF_OK {
+	    if(strcmp("coulomb_gauge_fix",savebuf) == 0 ){
+		par_buf.fixflag_ft = COULOMB_GAUGE_FIX;
+		printf("FFT fixing to coulomb gauge\n");
+	    }
+	    else if(strcmp("landau_gauge_fix",savebuf) == 0 ) {
+		par_buf.fixflag_ft = LANDAU_GAUGE_FIX;
+		printf("FFT fixing to landau gauge\n");
+	    }
+	    else if(strcmp("no_gauge_fix",savebuf) == 0 ) {
+		par_buf.fixflag_ft = NO_GAUGE_FIX;
+		printf("NOT FFT fixing the gauge\n");
+	    }
+	    else{
+		printf("error in input: fixing_command %s is invalid\n",savebuf); 
+		status++;
+	    }
+#ifndef GFIX
+	    if(par_buf.fixflag_ft != NO_GAUGE_FIX) {
+		printf("FFT gauge fixing not allowed in this version\n");
 		status++;
 	    }
 #endif
@@ -245,6 +272,7 @@ char savebuf[128];
 
     startflag = par_buf.startflag;
     fixflag = par_buf.fixflag;
+    fixflag_ft = par_buf.fixflag_ft;
     saveflag = par_buf.saveflag;
     beta = par_buf.beta;
 #ifdef QUARK_PROP
@@ -261,6 +289,10 @@ char savebuf[128];
     niter = par_buf.niter;
     nrestart = par_buf.nrestart;
     rsqprop = par_buf.rsqprop;
+#else
+#ifdef IMP_GFIX
+    u0 = par_buf.u0;
+#endif
 #endif
     strcpy(startfile,par_buf.startfile);
     strcpy(savefile,par_buf.savefile);
@@ -272,7 +304,7 @@ char savebuf[128];
     phases_in = OFF;
 
     /* make table of coefficients and permutations of paths in quark action */
-    make_path_table();
+    make_path_table(&ks_act_paths, NULL);
 #endif
 
     /* For archive writing, for now */

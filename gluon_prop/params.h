@@ -13,6 +13,7 @@ typedef struct {
    /*  REPEATING BLOCK */
 	int startflag;  /* what to do for beginning lattice */
 	int fixflag;    /* whether to gauge fix */
+	int fixflag_ft; /* whether to FFT gauge fix */
 	int saveflag;   /* what to do with lattice at end */
 	Real beta;	/* gauge coupling */
 #ifdef QUARK_PROP
@@ -27,6 +28,10 @@ typedef struct {
 	int kssaveflag[MAX_NUM_MASS];	/* what to do for saving propagators */
 	char ksstartfile[MAX_NUM_MASS][MAXFILENAME];
 	char kssavefile[MAX_NUM_MASS][MAXFILENAME];
+#else
+#ifdef IMP_GFIX
+	Real u0;	/* tadpole parameter */
+#endif
 #endif
 	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 	char stringLFN[MAXFILENAME];	/** ILDG LFN if applicable ***/

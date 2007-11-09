@@ -11,7 +11,7 @@
 #						program without gauge fixing
 #						option
 #	"make su3_gluon_prop_imp"	makes an improved gluon propagator
-#					program without gauge fixing option
+#	"make su3_gluon_prop_imp_nofix"		Dito without gauge fixing
 #	"make su3_ks_quark_prop"	makes the quark propagator program
 #					with standard staggered quarks
 #	"make su3_fn_quark_prop"	makes the quark propagator program
@@ -83,7 +83,7 @@ else
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o
   QUARK_OBJECTS += io_scidac_ks.o
 endif
 
@@ -206,6 +206,7 @@ ALL_MAKES = \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
+fermion_links_helpers.o: quark_action.h
 fermion_links_fn.o: quark_action.h
 quark_stuff.o: quark_action.h
 
@@ -246,7 +247,7 @@ su3_gluon_prop_nogfix::
 	"DEFINES= -DGLUON_PROP" \
 	"EXTRA_OBJECTS= gluon_prop.o"
 
-su3_gluon_prop_imp::
+su3_gluon_prop_imp_nogfix::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DGLUON_PROP" \
 	"EXTRA_OBJECTS= gluon_prop_imp.o"
@@ -255,6 +256,11 @@ su3_gluon_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DGLUON_PROP -DGFIX" \
 	"EXTRA_OBJECTS= gluon_prop.o gaugefix2.o gaugefixfft.o"
+
+su3_gluon_prop_imp::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DGLUON_PROP -DGFIX -DIMP_GFIX" \
+	"EXTRA_OBJECTS= gluon_prop_imp.o gaugefix2.o gaugefixfft.o"
 
 su3_ks_quark_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \

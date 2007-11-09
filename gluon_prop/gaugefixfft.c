@@ -7,8 +7,7 @@
 /* Prototype...
 
    void gaugefixfft(int gauge_dir, Real accel_param, int max_gauge_iter,
-	      Real gauge_fix_tol, field_offset diffmat,
-	      field_offset fftmat1, field_offset fftmat2,
+	      Real gauge_fix_tol,
 	      int nvector, field_offset vector_offset[], int vector_parity[],
 	      int nantiherm, field_offset antiherm_offset[], 
 	      int antiherm_parity[] )
@@ -23,12 +22,10 @@
    See "rephase" in setup.c.
 
    -------------------------------------------------------------------
-   EXAMPLE:  Fixing only the link matrices to Coulomb gauge with scratch
-     space in mp1, mp2 and mp3 (all su3_matrix)
+   EXAMPLE:  Fixing only the link matrices to Coulomb gauge
 
-   gaugefix(TUP,(Real)0.065,500,(Real)1.0e-7,
-	    F_OFFSET(mp1),F_OFFSET(mp2),F_OFFSET(mp3),
-	    0,NULL,NULL,0,NULL,NULL);
+   gaugefixfft(TUP,(Real)0.065,500,(Real)1.0e-7,
+	       0,NULL,NULL,0,NULL,NULL);
 
    -------------------------------------------------------------------
    EXAMPLE:  Fixing Coulomb gauge with respect to the y direction
@@ -46,8 +43,7 @@
        EVENANDODD }
 
    rephase( OFF );
-   gaugefix(YUP,(Real)1.8,500,(Real)2.0e-6,
-       F_OFFSET(tempmat1),F_OFFSET(tempmat2),F_OFFSET(staple),
+   gaugefixfft(YUP,(Real)1.8,500,(Real)2.0e-6,
        nvector,vector_offset,vector_parity,
        nantiherm,antiherm_offset,antiherm_parity);
    rephase( ON );
@@ -62,26 +58,19 @@
    accel_param	   Parameter for Fourier acceleration
    max_gauge_iter  Maximum number of iterations 
    gauge_fix_tol   Stop if change is less than this 
-   diffmat         Scratch space for an su3 matrix
-   fftmat1         Scratch space for an su3 matrix
-   fftmat2         Scratch space for an su3 matrix
-   NOTE: diffmat, fftmat1 and fftmat2 are required, since the FFT
-         routines needs field_offset's. */
+   */
 
 #include "gluon_prop_includes.h"
 #define REUNIT_INTERVAL 20
 
-/* Generic definitions - could be useful elsewhere */
-#define FORALLUPDIRBUT(direction,dir) \
-   for(dir=XUP; dir<= TUP; dir++)if(dir != direction)
-#define FORALLUPDIR(dir) for(dir=XUP; dir<=TUP; dir++)
-
 /* Scratch space */
 
+su3_matrix *diffmatp;	/* malloced diffmat pointer */
+su3_matrix *tmpmat1p;	/* malloced tmpmat1 pointer */
+su3_matrix *tmpmat2p;	/* malloced tmpmat2 pointer */
 Real *p_rat;		/* malloced momentum ratio for Fourier accelaration */
 su3_matrix *gt_matrix;	/* malloced gauge transformation matrix, if
 			   gauge transformation on vectors, etc. are needed */
-field_offset diffmat_of, fftmat1_of, fftmat2_of;	/* field offsets */
 int fft_vol;
 
 /* Prototypes */
@@ -89,8 +78,7 @@ int fft_vol;
 double dmu_amu(int gauge_dir);
 void gf_fft_step(int gauge_dir, double *dmu_amu_norm, Real accel_param,
 		 int save_gt);
-void gaugefixsetup(field_offset diffmat, field_offset fftmat1,
-		   field_offset fftmat2, int gauge_dir, int save_gt);
+void gaugefixsetup(int gauge_dir, int save_gt);
 
 
 double dmu_amu(int gauge_dir)
@@ -100,7 +88,7 @@ double dmu_amu(int gauge_dir)
 
 register int dir, i;
 register site *s;
-msg_tag *mtag[4];
+msg_tag *mtag[6];
 double damu;
 su3_matrix *m1;
 anti_hermitmat ahtmp;
@@ -108,20 +96,19 @@ anti_hermitmat ahtmp;
     /* Start gathers of downward links */
     FORALLUPDIRBUT(gauge_dir,dir){
 	mtag[dir] = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix),
-				  OPP_DIR(dir), EVENANDODD, gen_pt[dir] );
+				       OPP_DIR(dir), EVENANDODD, gen_pt[dir] );
     }
 
     /* Clear diffmat */
     FORALLSITES(i,s){
-	clear_su3mat( (su3_matrix *)F_PT(s,diffmat_of));
+	clear_su3mat(&diffmatp[i]);
     }
   
     /* Add upward link contributions */
     FORALLSITES(i,s)
     {
 	FORALLUPDIRBUT(gauge_dir,dir){
-	    add_su3_matrix( (su3_matrix *)F_PT(s,diffmat_of), &(s->link[dir]),
-			    (su3_matrix *)F_PT(s,diffmat_of)); 
+	    add_su3_matrix( &diffmatp[i], &(s->link[dir]), &diffmatp[i]);
 	}
     }
 
@@ -135,21 +122,71 @@ anti_hermitmat ahtmp;
     damu = 0.0;
     FORALLSITES(i,s)
     {
-	m1 = (su3_matrix *)F_PT(s,diffmat_of);
+	m1 = &diffmatp[i];
 	FORALLUPDIRBUT(gauge_dir,dir){
 	    sub_su3_matrix( m1, (su3_matrix *)gen_pt[dir][i], m1);
 	}
 	make_anti_hermitian( m1, &ahtmp);
 	uncompress_anti_hermitian( &ahtmp, m1);
+#ifndef IMP_GFIX
+	damu += (double)realtrace_su3( m1, m1);
+#endif
+    }
+
+#ifdef IMP_GFIX
+    /* Clear tmpmat1, for the 2-link term */
+    FORALLSITES(i,s){
+	clear_su3mat( &tmpmat1p[i]);
+    }
+
+    FORALLUPDIRBUT(gauge_dir,dir){
+	/* Double link U(mu,x-mu) U(mu,x) */
+	FORALLSITES(i,s)
+	{
+	    mult_su3_nn( (su3_matrix *)gen_pt[dir][i],  &(s->link[dir]),
+			 &tmpmat2p[i]);
+	}
+
+	mtag[4] = start_gather_field( tmpmat2p, sizeof(su3_matrix),
+				     dir, EVENANDODD, gen_pt[4] );
+	mtag[5] = start_gather_field( tmpmat2p, sizeof(su3_matrix),
+				     OPP_DIR(dir), EVENANDODD, gen_pt[5] );
+	wait_gather(mtag[4]);
+	wait_gather(mtag[5]);
+
+	FORALLSITES(i,s)
+	{
+	    add_su3_matrix( &tmpmat1p[i], (su3_matrix *)gen_pt[4][i],
+			    &tmpmat1p[i]);
+	    sub_su3_matrix( &tmpmat1p[i], (su3_matrix *)gen_pt[5][i],
+			    &tmpmat1p[i]);
+	}
+
+	cleanup_gather(mtag[4]);
+	cleanup_gather(mtag[5]);
+    }
+
+    /* Now compute the improved d_mu A_mu, and its norm^2 */
+    ftmp1 = 4.0/3.0;
+    ftmp2 = - 1.0/(12.0*u0);
+    FORALLSITES(i,s)
+    {
+	m1 = &diffmatp[i];
+	scalar_mult_su3_matrix( m1, ftmp1, m1);
+	scalar_mult_add_su3_matrix( m1, &tmpmat1p[i], ftmp2, m1);
+	make_anti_hermitian( m1, &ahtmp);
+	uncompress_anti_hermitian( &ahtmp, m1);
 	damu += (double)realtrace_su3( m1, m1);
     }
-    g_doublesum( &damu);
+#endif
 
     FORALLUPDIRBUT(gauge_dir,dir){
 	cleanup_gather(mtag[dir]);
     }
 
-    /* Normalize, with factor 4 = (Nc^2-1) / 2 */
+    g_doublesum( &damu);
+
+    /* Normalize, with factor "no. of active dirs" * (Nc^2-1) / 2 */
     if (gauge_dir > TUP){
 	damu /= (double)(16*volume);
     }
@@ -173,31 +210,28 @@ su3_matrix *matp1, *matp2, tmat1, tmat2;
 Real ftmp1, ftmp2;
 int err;
 
-    /* Compute d_mu A_mu(x) in diffmat_of and its norm */
+    /* Compute d_mu A_mu(x) in diffmat and its norm */
     *dmu_amu_norm = dmu_amu(gauge_dir);
 
     /* Fourier transform d_mu A_mu(x) */
     g_sync();
-    restrict_fourier_site( diffmat_of,
-			   sizeof(su3_matrix), FORWARDS);
+    restrict_fourier_field((complex *)diffmatp, sizeof(su3_matrix), FORWARDS);
 
     /* Multiply with (accel_param * p_rat / fft_vol) */
     ftmp1 = accel_param / (Real)fft_vol;
     FORALLSITES(i,s){
 	ftmp2 = ftmp1 * p_rat[i];
-	scalar_mult_su3_matrix( (su3_matrix *)F_PT(s,diffmat_of),
-	    ftmp2, (su3_matrix *)F_PT(s,diffmat_of));
+	scalar_mult_su3_matrix( &diffmatp[i], ftmp2, &diffmatp[i]);
     }
 
     /* Fourier transform back */
     g_sync();
-    restrict_fourier_site( diffmat_of, 
-			   sizeof(su3_matrix), BACKWARDS);
+    restrict_fourier_field((complex *)diffmatp, sizeof(su3_matrix), BACKWARDS);
 
     /* Now exponentiate, using 6-th order expansion */
     FORALLSITES(i,s){
-	matp1 = (su3_matrix *)F_PT(s,diffmat_of);
-	matp2 = (su3_matrix *)F_PT(s,fftmat1_of);
+	matp1 = &diffmatp[i];
+	matp2 = &tmpmat1p[i];
 	clear_su3mat( matp2);
 	for(j=0; j<3; j++) matp2->e[j][j].real = 1.0;
 	scalar_mult_add_su3_matrix( matp2, matp1, 0.16666666, &tmat2);
@@ -218,25 +252,24 @@ int err;
 			    this_node, i, err);
     }
 
-    /* The gauge matrices are now in fftmat1_of */
+    /* The gauge matrices are now in tmpmat1p */
     /* Do the gauge transformation of the links */
     g_sync();
     FORALLUPDIR(dir)
-	mtag[dir] = start_gather_site( fftmat1_of, sizeof(su3_matrix),
+	mtag[dir] = start_gather_field( tmpmat1p, sizeof(su3_matrix),
 				  dir, EVENANDODD, gen_pt[dir] );
 
     FORALLUPDIR(dir){
 	/* First multiply with the gauge matrices on site */
 	FORALLSITES(i,s){
-	    mult_su3_nn( (su3_matrix *)F_PT(s,fftmat1_of), &(s->link[dir]),
-		(su3_matrix *)F_PT(s,fftmat2_of));
+	    mult_su3_nn( &tmpmat1p[i], &(s->link[dir]), &tmpmat2p[i]);
 	}
 
 	/* Then multiply with forward gauge matrices */
 	wait_gather(mtag[dir]);
 	FORALLSITES(i,s){
-	    mult_su3_na( (su3_matrix *)F_PT(s,fftmat2_of),
-		(su3_matrix *)gen_pt[dir][i], &(s->link[dir]));
+	    mult_su3_na( &tmpmat2p[i], (su3_matrix *)gen_pt[dir][i],
+			 &(s->link[dir]));
 	}
 	cleanup_gather(mtag[dir]);
     }
@@ -245,7 +278,7 @@ int err;
 	/* Also multiply with existing gauge transfromation matrices */
 	FORALLSITES(i,s){
 	    matp1 = &gt_matrix[i];
-	    mult_su3_nn( (su3_matrix *)F_PT(s,fftmat1_of), matp1, &tmat1);
+	    mult_su3_nn( &tmpmat1p[i], matp1, &tmat1);
 	    su3mat_copy( &tmat1, matp1);
 	}
 
@@ -254,17 +287,28 @@ int err;
 } /* gf_fft_step */
 
 
-void gaugefixsetup(field_offset diffmat, field_offset fftmat1,
-		   field_offset fftmat2, int gauge_dir, int save_gt)
+void gaugefixsetup(int gauge_dir, int save_gt)
 {
 register int dir, i, j, pmu;
 register site *s;
 Real pix, piy, piz, pit;
 Real sin_pmu, sum_p2, sum_p2_max;
 
-    diffmat_of = diffmat;
-    fftmat1_of = fftmat1;
-    fftmat2_of = fftmat2;
+    diffmatp = (su3_matrix *)malloc(sizeof(su3_matrix)*sites_on_node);
+    if(diffmatp == NULL){
+	node0_printf("gaugefix: Can't malloc diffmat\n");
+	fflush(stdout);terminate(1);
+    }
+    tmpmat1p = (su3_matrix *)malloc(sizeof(su3_matrix)*sites_on_node);
+    if(tmpmat1p == NULL){
+	node0_printf("gaugefix: Can't malloc tmpmat1\n");
+	fflush(stdout);terminate(1);
+    }
+    tmpmat2p = (su3_matrix *)malloc(sizeof(su3_matrix)*sites_on_node);
+    if(tmpmat2p == NULL){
+	node0_printf("gaugefix: Can't malloc tmpmat2\n");
+	fflush(stdout);terminate(1);
+    }
 
     fft_vol = 1;
     FORALLUPDIRBUT(gauge_dir,dir){
@@ -404,12 +448,11 @@ Real sin_pmu, sum_p2, sum_p2_max;
  
 } /* gaugefixsetup */
 
-void gaugefixfft(int gauge_dir, Real accel_param, int max_gauge_iter,
-		 Real gauge_fix_tol, field_offset diffmat,
-		 field_offset fftmat1, field_offset fftmat2,
-		 int nvector, field_offset vector_offset[], int vector_parity[],
-		 int nantiherm, field_offset antiherm_offset[], 
-		 int antiherm_parity[] )
+void gaugefixfft_combo(int gauge_dir, Real accel_param, int max_gauge_iter,
+		       Real gauge_fix_tol, int nvector,
+		       field_offset vector_offset[], int vector_parity[],
+		       int nantiherm, field_offset antiherm_offset[], 
+		       int antiherm_parity[] )
 {
 register int i;
 register site *s;
@@ -426,7 +469,7 @@ su3_matrix htmp1, htmp2;
     }
 
     /* Set up work space */
-    gaugefixsetup(diffmat, fftmat1, fftmat2, gauge_dir, save_gt);
+    gaugefixsetup(gauge_dir, save_gt);
 
     /* Do at most max_gauge_iter iterations, but stop after the first step */
     /* if |d_mu A_mu| is smaller than gauge_fix_tol */
@@ -470,10 +513,22 @@ if(gauge_iter==0) node0_printf("Starting |d_mu A_mu| = %e\n", curr_damu);
 
 
     /* Free workspace */
+    free(diffmatp);
+    free(tmpmat1p);
+    free(tmpmat2p);
     free(p_rat);
     if(save_gt == 1) free(gt_matrix);
   
     if(this_node==0)
 	printf("GFIX: Ended at step %d. |d_mu A_mu| = %e\n",
 	       gauge_iter, curr_damu);
+}
+
+/* Abbreviated form for fixing only gauge field */
+
+void gaugefixfft(int gauge_dir, Real accel_param, int max_gauge_iter,
+		 Real gauge_fix_tol)
+{
+    gaugefixfft_combo(gauge_dir, accel_param, max_gauge_iter, gauge_fix_tol,
+		      0,NULL,NULL,0,NULL,NULL);
 }

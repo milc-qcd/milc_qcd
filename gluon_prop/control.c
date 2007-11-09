@@ -45,18 +45,53 @@ int main(int argc, char *argv[])  {
 	dtime = -dclock();
  
 	/* gaugefix if requested */
+#ifdef GFIX
 	if( fixflag == COULOMB_GAUGE_FIX){
+	    if( fixflag_ft == COULOMB_GAUGE_FIX){
+		gaugefix(TUP, (Real)1.8, 500, (Real)GAUGE_FIX_TOL);
+	    }
+	    else{
+		gaugefix(TUP, (Real)1.8, 1000, (Real)1.e-7);
+	    }
+	    if(this_node==0)printf("FIXED TO COULOMB GAUGE\n");
+	    /* call plaquette measuring process */
+	    d_plaquette(&dssplaq,&dstplaq);
+	    if(this_node==0)printf("Gauge fixed PLAQ: %e %e\n",dssplaq,dstplaq);
+	    if(this_node==0){
+		printf("WARNING: minimal Coulomb gauge not implemented!\n");
+		printf("WARNING: Gluon propagator NOT adopded to Coulomb gauge!\n");
+	    }
+	    if( fixflag_ft == LANDAU_GAUGE_FIX && this_node==0)
+		printf("WARNING: Incompatible gauge fixings: Coulomb then Landau!\n");
+	    fflush(stdout);
+	}
+	else if( fixflag == LANDAU_GAUGE_FIX){
+	    if( fixflag_ft == LANDAU_GAUGE_FIX){
+		gaugefix(8, (Real)1.8, 500, (Real)GAUGE_FIX_TOL);
+	    }
+	    else{
+		gaugefix(8, (Real)1.8, 1000, (Real)1.e-7);
+	    }
+	    if(this_node==0)printf("FIXED TO LANDAU GAUGE\n");
+	    /* call plaquette measuring process */
+	    d_plaquette(&dssplaq,&dstplaq);
+	    if(this_node==0)printf("Gauge fixed PLAQ: %e %e\n",dssplaq,dstplaq);
+	    if( fixflag_ft == COULOMB_GAUGE_FIX && this_node==0)
+		printf("WARNING: Incompatible gauge fixings: Landau then Coulomb!\n");
+	    fflush(stdout);
+	}
+#endif
+
+	/* FFT gaugefix if requested */
+	if( fixflag_ft == COULOMB_GAUGE_FIX){
 	    if( first_set == 1){
 		key[TUP] = 0;
 		setup_restrict_fourier(key, restrict);
 		first_set = 0;
 	    }
 #ifdef GFIX
-	    gaugefix(TUP, (Real)1.8, 500, (Real)1.e-7);
-	    gaugefixfft(TUP, (Real)(-0.10), 1750, (Real)GAUGE_FIX_TOL,
-			F_OFFSET(staple), F_OFFSET(tempmat1),
-			F_OFFSET(tempmat2), 0, NULL, NULL, 0, NULL, NULL);
-	    if(this_node==0)printf("FIXED TO COULOMB GAUGE\n");
+	    gaugefixfft(TUP, (Real)(-0.07), 1750, (Real)GAUGE_FIX_TOL);
+	    if(this_node==0)printf("FFT FIXED TO COULOMB GAUGE\n");
 	    /* call plaquette measuring process */
 	    d_plaquette(&dssplaq,&dstplaq);
 	    if(this_node==0)printf("Gauge fixed PLAQ: %e %e\n",dssplaq,dstplaq);
@@ -67,18 +102,15 @@ int main(int argc, char *argv[])  {
 	    fflush(stdout);
 #endif
 	}
-	else if( fixflag == LANDAU_GAUGE_FIX){
+	else if( fixflag_ft == LANDAU_GAUGE_FIX){
 	    if( first_set == 1){
 		key[TUP] = 1;
 		setup_restrict_fourier(key, restrict);
 		first_set = 0;
 	    }
 #ifdef GFIX
-	    gaugefix(8, (Real)1.8, 500, (Real)1.e-7);
-	    gaugefixfft(8, (Real)(-0.08), 1750, (Real)GAUGE_FIX_TOL,
-			F_OFFSET(staple), F_OFFSET(tempmat1),
-			F_OFFSET(tempmat2), 0, NULL, NULL, 0, NULL, NULL);
-	    if(this_node==0)printf("FIXED TO LANDAU GAUGE\n");
+	    gaugefixfft(8, (Real)(-0.07), 1750, (Real)GAUGE_FIX_TOL);
+	    if(this_node==0)printf("FFT FIXED TO LANDAU GAUGE\n");
 	    /* call plaquette measuring process */
 	    d_plaquette(&dssplaq,&dstplaq);
 	    if(this_node==0)printf("Gauge fixed PLAQ: %e %e\n",dssplaq,dstplaq);
@@ -99,7 +131,7 @@ int main(int argc, char *argv[])  {
 #ifdef QUARK_PROP
 	/* Now compute the quark propagator */
 #ifdef FN
-	invalidate_fn_links();
+	invalidate_ferm_links(&fn_links);
 #endif
 #ifdef QUARK_RENORM
 	cg_iter = quark_renorm();

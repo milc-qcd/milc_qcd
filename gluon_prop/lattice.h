@@ -7,6 +7,7 @@
 
 #include "defines.h"
 #include "../include/generic_quark_types.h"
+#include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "../include/io_lat.h"	/* For gauge_file */
 
@@ -114,7 +115,9 @@ EXTERN  u_int32type nersc_checksum;
 EXTERN	char stringLFN[MAXFILENAME];	/** ILDG LFN if applicable **/
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
-EXTERN  int fixflag;	/* gauge fix: COULOMB_GAUGE_FIX, NO_GAUGE_FIX */
+EXTERN  int fixflag;	/* gauge fix: COULOMB_GAUGE_FIX, LANDAU_GAUGE_FIX,
+			   NO_GAUGE_FIX */
+EXTERN  int fixflag_ft;	/* FFT gauge fix: same as above */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
 			   SAVE_CHECKPOINT */
 EXTERN	char ksstartfile[MAX_NUM_MASS][MAXFILENAME];	/* from where to read KS prop */
@@ -153,14 +156,9 @@ EXTERN site *lattice;
 EXTERN char ** gen_pt[N_POINTERS];
 
 #ifdef QUARK_PROP
-/* field major storage DON't FORGET to MALLOC somewhere */
-EXTERN su3_matrix *t_longlink;
-EXTERN su3_matrix *t_fatlink;
-#ifdef DBLSTORE_FN
-EXTERN su3_matrix *t_longbacklink;
-EXTERN su3_matrix *t_fatbacklink;
-#endif
-
+/* Storage for definition of the quark action */
+EXTERN ferm_links_t      fn_links;
+EXTERN ks_action_paths ks_act_paths;
 #endif
 
 

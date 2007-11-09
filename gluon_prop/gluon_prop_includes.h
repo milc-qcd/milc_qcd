@@ -37,11 +37,12 @@ int quark_prop();
 int quark_renorm();
 
 void gaugefixfft(int gauge_dir, Real accel_param, int max_gauge_iter,
-		 Real gauge_fix_tol, field_offset diffmat,
-		 field_offset fftmat1, field_offset fftmat2,
-		 int nvector, field_offset vector_offset[], int vector_parity[],
-		 int nantiherm, field_offset antiherm_offset[], 
-		 int antiherm_parity[] );
+		 Real gauge_fix_tol);
+void gaugefixfft_combo(int gauge_dir, Real accel_param, int max_gauge_iter,
+		       Real gauge_fix_tol, int nvector,
+		       field_offset vector_offset[], int vector_parity[],
+		       int nantiherm, field_offset antiherm_offset[], 
+		       int antiherm_parity[] );
 
 void dslash_eo( field_offset src, field_offset dest, int parity );
 void dslash_eo_special( field_offset src, field_offset dest,
