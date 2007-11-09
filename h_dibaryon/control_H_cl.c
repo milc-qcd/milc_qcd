@@ -206,7 +206,8 @@ int main(int argc,char *argv[])
 	/* open file for kth wilson propagator */
 	
 	fp_in_w[k]  = r_open_wprop(startflag_w[k], startfile_w[k]);
-	fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k] );
+	fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k],
+				   wqs[k].type);
 	
 	/* Open scratch file and write header */
 	sprintf(scratch_file[k],"%s_%02d",scratchstem_w,k);
