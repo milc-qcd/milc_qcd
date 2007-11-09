@@ -24,7 +24,7 @@
 #include <string.h>
 #include "../include/prefetch.h"
 #define FETCH_UP 1
-/*#define INLINE*/
+#define INLINE
 #define loopend sites_on_node   /* No checkerboarding here */
 
 /* Local types */
@@ -263,16 +263,17 @@ void meson_cont_mom(
   spin_wilson_vector *src2, /* quark propagator */
   int no_q_momenta,         /* number of q values */
   int q_momstore[][3],      /* q values themselves */
+  int mom_index[],          /* momentum hash */
   int no_gamma_corr,        /* number of meson types */
-  int meson_index[],        /* where in prop the propagator is accumulated */
+  int meson_index[],        /* meson hash */
   int gin[],                /* Gamma matrix type for source */
   int gout[],               /* Gamma matrix type for sink */
   complex meson_phase[]     /* phase factor to apply to correlator */
 		    )
 {
   char myname[] = "meson_cont_mom";
-  register int i;
-  register site *s; 
+  int i, j;
+  site *s; 
   
   int sf, si;
   int i_gamma_corr,q_pt,t;
@@ -443,8 +444,9 @@ void meson_cont_mom(
 	  {
 	    /* Accumulate in meson_index location */
 	    i = meson_index[i_gamma_corr];
-	    prop[i][q_pt][t].real += tr[q_pt].real;
-	    prop[i][q_pt][t].imag += tr[q_pt].imag;
+	    j = mom_index[q_pt];
+	    prop[i][j][t].real += tr[q_pt].real;
+	    prop[i][j][t].imag += tr[q_pt].imag;
 	  }
       }
     }  /**** end of the loop over gamma table ******/
