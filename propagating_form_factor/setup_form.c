@@ -1,7 +1,7 @@
 /******** setup_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.4 2007/06/01 23:04:03 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.5 2007/11/09 16:03:49 detar Exp $  ***/
 /* MIMD code version 4 */
 
 #include "prop_form_includes.h"
@@ -694,8 +694,14 @@ int readin(int prompt)
 	par_buf.inverter_type_sequential[ ikappa ] ;
 
       wqs_spectator[ ikappa ] = par_buf.wqs_spectator [ ikappa ];
+      init_wqs(&wqs_spectator[ ikappa ]);
+      wqs_spectator[ ikappa ].type = par_buf.wqs_spectator [ ikappa ].type;
       wqs_zonked_light[ ikappa ] = par_buf.wqs_zonked_light[ ikappa ];
+      init_wqs(&wqs_zonked_light[ ikappa ]);
+      wqs_zonked_light[ ikappa ].type = par_buf.wqs_zonked_light[ ikappa ].type;
       wqs_zonked_heavy[ ikappa ] = par_buf.wqs_zonked_heavy[ ikappa ];
+      init_wqs(&wqs_zonked_heavy[ ikappa ]);
+      wqs_zonked_heavy[ ikappa ].type = par_buf.wqs_zonked_heavy[ ikappa ].type;
 
       startflag_spectator[ ikappa ] = par_buf.startflag_spectator[ ikappa ]   ;
       startflag_zonked_light[ ikappa ] =  par_buf.startflag_zonked_light[ ikappa ];

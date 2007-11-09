@@ -311,7 +311,8 @@ void calc_heavy_light_form()
 	 ((saveflag_HL2_GG != FORGET) || (saveflag_LL2_GG != FORGET) ))
 	zonked_light_ssink_fp[k_zonked_light]
 	  = w_open_wprop(saveflag_zonked_light_ssink, 
-			qfile_zonked_light_ssink[k_zonked_light] ); 
+			 qfile_zonked_light_ssink[k_zonked_light],
+			 wqs_zonked_light[k_zonked_light].type); 
     }
 
   /* See if the heavy-heavy correlators need to be computed */
@@ -339,7 +340,8 @@ void calc_heavy_light_form()
       if(!exists_zonked_heavy[k_zonked_heavy])
 	zonked_heavy_fp[k_zonked_heavy] 
 	  = w_open_wprop(saveflag_zonked_heavy[k_zonked_heavy], 
-			qfile_zonked_heavy[k_zonked_heavy] ); 
+			 qfile_zonked_heavy[k_zonked_heavy],
+			 wqs_zonked_heavy[k_zonked_heavy].type); 
 
       /* If it doesn't exist and we need it for the HL2_GG correlator,
          we will write, so open the file for writing */
@@ -349,7 +351,8 @@ void calc_heavy_light_form()
 	 (saveflag_HL2_GG != FORGET))
 	zonked_heavy_ssink_fp[k_zonked_heavy]
 	  = w_open_wprop(saveflag_zonked_heavy_ssink, 
-			qfile_zonked_heavy_ssink[k_zonked_heavy] ); 
+			 qfile_zonked_heavy_ssink[k_zonked_heavy],
+			 wqs_zonked_heavy[k_zonked_heavy].type); 
     }
 
   /* We will compute the heavy_heavy spectrum if any one of the heavy
