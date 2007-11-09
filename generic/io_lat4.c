@@ -222,8 +222,8 @@ void w_serial_old(gauge_file *gf)
       if(newnode != currentnode){	/* switch to another node */
 	/* Node 0 sends a few bytes to newnode to say it's OK to
 	   send */
-	if( this_node==0 && newnode!=0 )send_field((char *)tbuf,4,newnode);
-	if( this_node==newnode && newnode!=0 )get_field((char *)tbuf,4,0);
+	if( this_node==0 && newnode!=0 )send_field((char *)tbuf,32,newnode);
+	if( this_node==newnode && newnode!=0 )get_field((char *)tbuf,32,0);
 	currentnode=newnode;
       }
       
@@ -479,8 +479,8 @@ void w_serial(gauge_file *gf)
 	}
 	/* Node 0 sends a few bytes to newnode as a clear to send signal */
 	if(newnode != currentnode){
-	  if( this_node==0 && newnode!=0 )send_field((char *)tbuf,8,newnode);
-	  if( this_node==newnode && newnode!=0 )get_field((char *)tbuf,8,0);
+	  if( this_node==0 && newnode!=0 )send_field((char *)tbuf,32,newnode);
+	  if( this_node==newnode && newnode!=0 )get_field((char *)tbuf,32,0);
 	  currentnode=newnode;
 	}
       } /* currentnode != newnode */
@@ -768,15 +768,21 @@ void r_serial_arch(gauge_file *gf)
   gauge_check test_gc;
   u_int32type *val;
   int rank29,rank31;
-  fsu3_matrix tmpsu3[4];
+  su3_matrix tmpsu3[4];
+  int dataformat = gf->dataformat;
+  int precision = gf->precision;
   char myname[] = "r_serial_arch";
-
   int mu,a,b,p;
   float *uin = NULL, *q;
+  double *uind = NULL, *qd;
   int big_end = 0;
   float U[4][18];
+  double Ud[4][18];
   u_int32type chksum;
-  
+  int realspersite;
+
+  if(dataformat == ARCHIVE_3x2)realspersite = 48;
+  else realspersite = 72;
   fp = gf->fp;
   gh = gf->header;
   filename = gf->filename;
@@ -791,15 +797,27 @@ void r_serial_arch(gauge_file *gf)
 
       big_end = big_endian();
       /* printf("big_end is %d\n", big_end); */
-      uin = (float *) malloc(nx*ny*nz*48*sizeof(float));
-      if(uin == NULL)
-	{
-	  printf("%s: Node %d can't malloc uin buffer to read timeslice\n",
-		 myname,this_node);
-	  printf("recompile with smaller read buffers: uin\n");
-	  fflush(stdout);
-	  terminate(1);
-	}
+      if(precision == 1){
+	uin = (float *) malloc(nx*ny*nz*realspersite*sizeof(float));
+	if(uin == NULL)
+	  {
+	    printf("%s: Node %d can't malloc uin buffer to read timeslice\n",
+		   myname,this_node);
+	    printf("recompile with smaller read buffer: uin\n");
+	    fflush(stdout);
+	    terminate(1);
+	  }
+      } else {
+	uind = (double *) malloc(nx*ny*nz*realspersite*sizeof(double));
+	if(uind == NULL)
+	  {
+	    printf("%s: Node %d can't malloc uind buffer to read timeslice\n",
+		   myname,this_node);
+	    printf("recompile with smaller read buffers: uin\n");
+	    fflush(stdout);
+	    terminate(1);
+	  }
+      }
     }
 
   /* Initialize checksums */
@@ -828,42 +846,74 @@ void r_serial_arch(gauge_file *gf)
       destnode=node_number(x,y,z,t);
       
       if(this_node==0){
-	if( (int)g_read(uin,48*sizeof(float),1,fp) != 1)
-	  {
-	    printf("%s: node %d gauge configuration read error %d file %s\n",
-		   myname,this_node,errno,filename); 
-	    fflush(stdout); terminate(1);
+	if(precision == 1){
+	  if( (int)g_read(uin,48*sizeof(float),1,fp) != 1)
+	    {
+	      printf("%s: node %d gauge configuration read error %d file %s\n",
+		     myname,this_node,errno,filename); 
+	      fflush(stdout); terminate(1);
+	    }
+	  if (!big_end) byterevn((int32type *)uin,48);
+	  q = uin;
+	  for (mu=0;mu<4;mu++) {
+	    for (p=0;p<realspersite/4;p++) {
+	      chksum += *(u_int32type *) q;
+	      U[mu][p] = (float) *(q++);
+	    }
+	    if(dataformat == ARCHIVE_3x2)
+	      complete_U(U[mu]);
+	    /**
+	       for (p=0;p<18;p++) printf("p=%d, e=%f\n", p, U[mu][p]);
+	    **/
+	    
+	    /* Copy, converting precision if necessary */
+	    for(a=0; a<3; a++) for(b=0; b<3; b++) { 
+	      tmpsu3[mu].e[a][b].real = U[mu][2*(3*a+b)];
+	      /* printf("real: p=%d, mu=%d, e=%f\n", p,mu,U[mu][2*(3*a+b)]); */
+	      tmpsu3[mu].e[a][b].imag = U[mu][2*(3*a+b)+1];
+	      /*printf("imag: p=%d, mu=%d, e=%f\n", p,mu,U[mu][2*(3*a+b)+1]); */
+	    }
 	  }
-
-	if (!big_end) byterevn((int32type *)uin,48);
-	q = uin;
-	for (mu=0;mu<4;mu++) {
-	  for (p=0;p<12;p++) {
-	    chksum += *(u_int32type *) q;
-	    U[mu][p] = (float) *(q++);
-	  }
-	  complete_U(U[mu]);
-	  /**
-	  for (p=0;p<18;p++) printf("p=%d, e=%f\n", p, U[mu][p]);
-	  **/
-		 
-          for(a=0; a<3; a++) for(b=0; b<3; b++) { 
-	    tmpsu3[mu].e[a][b].real = U[mu][2*(3*a+b)];
-     /*	    printf("real: p=%d, mu=%d, e=%f\n", p,mu,U[mu][2*(3*a+b)]); */
-	    tmpsu3[mu].e[a][b].imag = U[mu][2*(3*a+b)+1];
-     /*	    printf("imag: p=%d, mu=%d, e=%f\n", p,mu,U[mu][2*(3*a+b)+1]); */
+	} else { /* precision == 2 */
+	  
+	  if( (int)g_read(uind,realspersite*sizeof(double),1,fp) != 1)
+	    {
+	      printf("%s: node %d gauge configuration read error %d file %s\n",
+		     myname,this_node,errno,filename); 
+	      fflush(stdout); terminate(1);
+	    }
+	  if (!big_end) byterevn64((int32type *)uind,realspersite);
+	  qd = uind;
+	  for (mu=0;mu<4;mu++) {
+	    for (p=0;p<realspersite/4;p++) {
+	      chksum += *(u_int32type *) qd;
+	      chksum += *((u_int32type *) qd + 1);
+	      Ud[mu][p] = (double) *(qd++);
+	    }
+	    if(dataformat == ARCHIVE_3x2)
+	      complete_Ud(Ud[mu]);
+	    /**
+	       for (p=0;p<18;p++) printf("p=%d, e=%f\n", p, Ud[mu][p]);
+	    **/
+	    
+	    /* Copy, converting precision if necessary */
+	    for(a=0; a<3; a++) for(b=0; b<3; b++) { 
+	      tmpsu3[mu].e[a][b].real = Ud[mu][2*(3*a+b)];
+	      /* printf("real: p=%d, mu=%d, e=%f\n", p,mu,Ud[mu][2*(3*a+b)]); */
+	      tmpsu3[mu].e[a][b].imag = Ud[mu][2*(3*a+b)+1];
+	      /*printf("imag: p=%d, mu=%d, e=%f\n", p,mu,Ud[mu][2*(3*a+b)+1]); */
+	    }
 	  } 
 	}
-
-	if(destnode==0){	
-	  /* just copy links */
+	
+	if(destnode==0){	/* just copy links */
 	  i = node_index(x,y,z,t);
      /*   printf("lattice node_index = %d, mu = %d\n", i, mu); */
-	  /* Copy from tmpsu3 to site structure, converting to double */
-	  f2d_4mat(tmpsu3,&lattice[i].link[0]);
+	  /* Copy from tmpsu3 to site structure */
+	  memcpy((void *)lattice[i].link,(void *)tmpsu3,4*sizeof(su3_matrix));
 	} else {		
 	  /* send to correct node */
-	  send_field((char *)tmpsu3, 4*sizeof(fsu3_matrix),destnode);
+	  send_field((char *)tmpsu3, 4*sizeof(su3_matrix),destnode);
 	}
       } 
       /* The node which contains this site reads message */
@@ -871,9 +921,9 @@ void r_serial_arch(gauge_file *gf)
 	/* for all nodes other than node 0 */
 	if(this_node==destnode){
 	  i = node_index(x,y,z,t);
-	  get_field((char *)tmpsu3,4*sizeof(fsu3_matrix),0);
+	  get_field((char *)tmpsu3,4*sizeof(su3_matrix),0);
 	  /* Store in site structure, converting to generic precision */
-	  f2d_4mat(tmpsu3,&lattice[i].link[0]);
+	  memcpy((void *)lattice[i].link,(void *)tmpsu3,4*sizeof(su3_matrix));
 	}
       }
 
@@ -885,7 +935,7 @@ void r_serial_arch(gauge_file *gf)
 	{
 	  /* Accumulate checksums */
 	  for(k = 0, val = (u_int32type *)tmpsu3;
-	      k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); k++, val++)
+	      k < 4*(int)sizeof(su3_matrix)/(int)sizeof(int32type); k++, val++)
    	    {
 	      test_gc.sum29 ^= (*val)<<rank29 | (*val)>>(32-rank29);
 	      test_gc.sum31 ^= (*val)<<rank31 | (*val)>>(32-rank31);
@@ -895,8 +945,8 @@ void r_serial_arch(gauge_file *gf)
 	}
       else
 	{
-	  rank29 += 4*sizeof(fsu3_matrix)/sizeof(int32type);
-	  rank31 += 4*sizeof(fsu3_matrix)/sizeof(int32type);
+	  rank29 += 4*sizeof(su3_matrix)/sizeof(int32type);
+	  rank31 += 4*sizeof(su3_matrix)/sizeof(int32type);
 	  rank29 %= 29;
 	  rank31 %= 31;
 	}
@@ -1729,8 +1779,8 @@ gauge_file *save_ascii(char *filename) {
     if(newnode != currentnode){	/* switch to another node */
       /**g_sync();**/
       /* tell newnode it's OK to send */
-      if( this_node==0 && newnode!=0 )send_field((char *)lbuf,4,newnode);
-      if( this_node==newnode && newnode!=0 )get_field((char *)lbuf,4,0);
+      if( this_node==0 && newnode!=0 )send_field((char *)lbuf,32,newnode);
+      if( this_node==newnode && newnode!=0 )get_field((char *)lbuf,32,0);
       currentnode=newnode;
     }
     
@@ -1986,8 +2036,8 @@ gauge_file *save_serial_archive(char *filename) {
       newnode=node_number(x,y,z,tslice);
       if(newnode != currentnode){ /* switch to another node */
 	/* tell newnode it's OK to send */
-	if( this_node==0 && newnode!=0 )send_field((char *)lbuf,4,newnode);
-	if( this_node==newnode && newnode!=0 )get_field((char *)lbuf,4,0);
+	if( this_node==0 && newnode!=0 )send_field((char *)lbuf,32,newnode);
+	if( this_node==newnode && newnode!=0 )get_field((char *)lbuf,32,0);
 	currentnode=newnode;
       }
 
