@@ -1,7 +1,7 @@
 /******** setup_hqet_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.4 2007/06/01 22:59:11 detar Exp $   ****/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.5 2007/11/09 16:13:14 detar Exp $   ****/
 /* MIMD code version 4 */
 
 #include "hqet_light_includes.h"
@@ -360,7 +360,11 @@ int readin(int prompt)
       kappa_zonked_light[ ikappa ] = par_buf.kappa_zonked_light[ ikappa ] ;
       kappa_spectator[ ikappa ]  =   par_buf.kappa_spectator[ ikappa ] ; 
       wqs_zonked_light[ ikappa ] = par_buf.wqs_zonked_light[ ikappa ];
+      init_wqs(&wqs_zonked_light[ ikappa ]);
+      wqs_zonked_light[ ikappa ].type = par_buf.wqs_zonked_light[ ikappa ].type;
       wqs_spectator[ ikappa ] = par_buf.wqs_spectator [ ikappa ];
+      init_wqs(&wqs_spectator_light[ ikappa ]);
+      wqs_spectator[ ikappa ].type = par_buf.wqs_spectator [ ikappa ].type;
       
       strcpy(qfile_spectator[ikappa] , par_buf.qfile_spectator[ikappa]);
       strcpy(qfile_zonked[ikappa] , par_buf.qfile_zonked[ikappa]);
