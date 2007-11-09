@@ -20,7 +20,7 @@ PROJS = \
   su3_spectrum \
   su3_spectrum_periodic
 
-PRECLIST = 1
+PRECLIST = 1 2
 
 PATTERNS = STARTPROP RUNNING
 

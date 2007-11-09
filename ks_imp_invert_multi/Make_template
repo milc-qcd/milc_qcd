@@ -67,7 +67,7 @@ else
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o
 endif
 
 G_KS_OBJECTS = \

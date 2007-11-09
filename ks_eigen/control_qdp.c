@@ -39,6 +39,7 @@ main(int argc, char *argv[])
 
     /* call fermion_variable measuring routines */
     /* results are printed in output file */
+    /* NOTE: How do we initialize fat and long links in Dslash? */
     f_meas_imp(F_OFFSET(phi), F_OFFSET(xxx), mass);
     eigVal = malloc(Nvecs*sizeof(double));
     eigVec = malloc(Nvecs*sizeof(su3_vector*));
@@ -47,14 +48,15 @@ main(int argc, char *argv[])
 
     total_R_iters += Kalkreuter(eigVec, eigVal, eigenval_tol,
 				error_decr, Nvecs, MaxIter, Restart,
-				Kiters, EVEN);
+				Kiters, EVEN, &fn_links, &ks_act_paths);
     tmp = (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
+    load_ferm_links(&fn_links, &ks_act_paths);
     for(i=0; i<Nvecs; i++) {
       /* Construct to odd part of the vector.                *
        * Note that the true odd part of the eigenvector is   *
        * i/sqrt(eigVal) Dslash Psi. But since I only compute *
        * the chirality the i factor is irrelevant (-i)*i=1!! */
-      dslash_fn_field(eigVec[i], tmp, ODD);
+      dslash_fn_field(eigVec[i], tmp, ODD, &fn_links);
       FORSOMEPARITY(si,s,ODD) {
 	scalar_mult_su3_vector( &(tmp[si]),
 				1.0/sqrt(eigVal[i]),
@@ -80,7 +82,7 @@ main(int argc, char *argv[])
     free(eigVec);
     free(eigVal);
 #ifdef FN
-    invalidate_fn_links();
+    invalidate_ferm_links(&fn_links);
 #endif
     fflush(stdout);
 

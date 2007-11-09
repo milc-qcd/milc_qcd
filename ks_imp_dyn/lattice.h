@@ -48,7 +48,7 @@ typedef struct {
 	/* gauge field */
 	su3_matrix link[4];	/* the fundamental field */
 #if  defined(HYBRIDS)
-	su3_matrix longlink[4];	/* three link straight paths */
+	su3_matrix tmplink[4];	/* three link straight paths */
 #endif
 
 #ifdef HMC_ALGORITHM
@@ -211,9 +211,9 @@ EXTERN site *lattice;
 EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
-EXTERN fn_links_t        fn_links;
+EXTERN ferm_links_t        fn_links;
 EXTERN ks_action_paths ks_act_paths;
-EXTERN fn_links_t        fn_links_dmdu0;
+EXTERN ferm_links_t        fn_links_dmdu0;
 EXTERN ks_action_paths ks_act_paths_dmdu0;
 
 #endif /* _LATTICE_H */

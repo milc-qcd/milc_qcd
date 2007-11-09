@@ -37,6 +37,10 @@ t6 = eps/6.0;
 /** TEMP **
 gf_av=gf_max=0.0;
 **END TEMP**/
+#ifdef FN
+    free_fn_links(&fn_links);
+    free_fn_links(&fn_links_dmdu0);
+#endif
     FORALLSITES(i,s){
 	for(dir=XUP; dir <=TUP; dir++){
 	    uncompress_anti_hermitian( &(s->mom[dir]) , &htemp );
@@ -61,10 +65,6 @@ scalar_mult_add_su3_matrix(link,&temp1,t2,&temp2);
 	    su3mat_copy(&temp2,link);
 	}
     }
-#ifdef FN
-    invalidate_fn_links(&fn_links);
-    invalidate_fn_links(&fn_links_dmdu0);
-#endif
 
 /**dtime += dclock();
 node0_printf("LINK_UPDATE: time = %e  mflops = %e\n",

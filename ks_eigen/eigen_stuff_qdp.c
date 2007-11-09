@@ -59,8 +59,9 @@ Matrix_Vec_mult_qdp(QDP_ColorVector *src, QDP_ColorVector *res,
   else if(subset==QDP_odd) othersubset = QDP_even;
   else othersubset = QDP_all;
 
-  dslash_qdp_fn_special2(src, temp0, othersubset, temp1);
-  dslash_qdp_fn_special2(temp0, res, subset, temp2);
+  load_ferm_links(&fn_links, &ks_act_paths);
+  dslash_qdp_fn_special2(src, temp0, othersubset, temp1, &fn_links);
+  dslash_qdp_fn_special2(temp0, res, subset, temp2, &fn_links);
   QDP_V_eqm_V(res, res, subset);
 
 #ifdef DEBUG
@@ -563,12 +564,15 @@ print_densities_qdp(QDP_ColorVector *src, char *tag, int y, int z, int t,
 int
 Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 	   Real RelTol, int Nvecs, int MaxIter,
-	   int Restart, int Kiters, int parity)
+	   int Restart, int Kiters, int parity,
+	   ferm_links_t *fn)
 {
   //QLA_Real *ev;
   QDP_ColorVector **vec;
   QDP_Subset subset;
   int i, its;
+  su3_matrix *t_fatlink;
+  su3_matrix *t_longlink;
 
 #ifdef DEBUG
   if(QDP_this_node==0) printf("begin Kalkreuter\n");
@@ -577,6 +581,9 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   if(parity==EVEN) subset = QDP_even;
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
+
+  t_longlink = fn->lng;
+  t_fatlink = fn->fat;
 
   set4_M_from_field(fatlinks, t_fatlink);
   set4_M_from_field(longlinks, t_longlink);

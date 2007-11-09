@@ -62,15 +62,14 @@ int main( int argc, char **argv ){
     
     rephase( ON );
     
-#ifdef FN
-    invalidate_fn_links();
-#endif
+    invalidate_ferm_links(&fn_links);
+    load_ferm_links(&fn_links, &ks_act_paths);
 
 #ifdef FPI
-    avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3 );
+    avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3, &fn_links);
 #endif
     mminv.tol = 2e-3;
-    avspect_iters += multimass_inverter(&mminv);
+    avspect_iters += multimass_inverter(&mminv,	&fn_links);
     
     ++meascount;
     fflush(stdout);

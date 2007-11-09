@@ -51,7 +51,8 @@ int  setup()   {
     setup_layout();
 	/* allocate space for lattice, set up coordinate fields */
     make_lattice();
-node0_printf("Made lattice\n"); fflush(stdout);
+    node0_printf("Made lattice\n"); fflush(stdout);
+    init_ferm_links(&fn_links);
 	/* set up neighbor pointers and comlink structures
 	   code for this routine is in com_machine.c  */
     make_nn_gathers();
@@ -188,7 +189,7 @@ int readin(int prompt) {
 
     node0_printf("Calling for path table\n");fflush(stdout);
     /* make table of coefficients and permutations of paths in quark action */
-    make_path_table();
+    make_path_table(&ks_act_paths, NULL);
     node0_printf("Done with path table\n");fflush(stdout);
 
     return(0);

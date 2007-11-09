@@ -14,8 +14,11 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.13  2007/11/09 16:07:39  detar
+//  Pull FN calculation out of inverters
+//
 //  Revision 1.12  2007/10/09 20:01:07  detar
-//  Add fn_links_t and ks_action_paths structures and pass them as params
+//  Add ferm_links_t and ks_action_paths structures and pass them as params
 //
 //  Revision 1.11  2007/05/21 14:32:59  detar
 //  Support fixed geometry, FF precision selection, new gauge_fix arg list.
@@ -93,9 +96,9 @@ setup()
   make_lattice();
   /* Set pointers to NULL */
 #ifdef FN  
-  init_fn_links(&fn_links);
+  init_ferm_links(&fn_links);
 #ifdef DM_DU0
-  init_fn_links(&fn_links_dmdu0);
+  init_ferm_links(&fn_links_dmdu0);
 #endif
 #endif
 
@@ -396,9 +399,9 @@ readin(int prompt)
   }
   startlat_p = reload_lattice( startflag, startfile );
 #ifdef FN
-  invalidate_fn_links(&fn_links);
+  invalidate_ferm_links(&fn_links);
 #ifdef DM_DU0
-  invalidate_fn_links(&fn_links_dmdu0);
+  invalidate_ferm_links(&fn_links_dmdu0);
 #endif
 #endif
   phases_in = OFF;

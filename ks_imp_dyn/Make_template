@@ -215,7 +215,7 @@ MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
 
 # For EO actions we don't precompute the fat links for Dslash at the moment
 FN_OBJECTS = ${FLINKS_FN} ${INV_FN_OBJECTS}
-EO_OBJECTS = ${INV_EO_OBJECTS}
+EO_OBJECTS = fermion_links_eo.o ${INV_EO_OBJECTS}
 
 # EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)
@@ -321,28 +321,28 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 su3_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN" \
+	"DEFINES= -DFN -UKS_MULTICG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update.o"
 
 su3_rmd1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DONEMASS" \
+	"DEFINES= -DFN  -DONEMASS -UKS_MULTICG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update_onemass.o"
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS" \
+	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS -UKS_MULTICG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update.o"
 
 su3_rmd_eos1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS -DONEMASS" \
+	"DEFINES= -DFN  -DDM_DU0 -DNPBP_REPS -DONEMASS -UKS_MULTICG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
@@ -350,14 +350,14 @@ su3_rmd_eos1::
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DNPBP_REPS -DCHEM_POT" \
+	"DEFINES= -DFN  -DNPBP_REPS -DCHEM_POT -UKS_MULTICG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} update.o"
 
 su3_rmd_mu_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDM_DU0 -DNPBP_REPS -DD_CHEM_POT" \
+	"DEFINES= -DFN -DDM_DU0 -DNPBP_REPS -DD_CHEM_POT -UKS_MULTICG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS=  ${FN_OBJECTS} ${ASQFORCE} ${SYMZK1FORCE} \
@@ -365,7 +365,8 @@ su3_rmd_mu_eos::
 
 su3_rmd_dblstore_gath13_fewsums::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DDBLSTORE_FN -DD_FN_GATHER13 -DFEWSUMS" \
+	"DEFINES= -DFN  -DDBLSTORE_FN -DD_FN_GATHER13 -DFEWSUMS \
+	-UKS_MULTICG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FLINKS_FN} ${ASQFORCE} ${SYMZK1FORCE} \
@@ -374,7 +375,7 @@ su3_rmd_dblstore_gath13_fewsums::
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  \
+	"DEFINES= -DFN  -UKS_MULTICG\
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -383,7 +384,7 @@ su3_hmc::
 
 su3_hmc1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DONEMASS \
+	"DEFINES= -DFN  -DONEMASS -UKS_MULTICG\
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -392,7 +393,7 @@ su3_hmc1::
 
 su3_rmd_naive::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO  -DONEMASS" \
+	"DEFINES= -DEO  -DONEMASS -UKS_MULTICG -UKS_MULTIFF" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
 	"EXTRA_OBJECTS= ${EO_OBJECTS} ${IMPGAUGEFORCE} \
@@ -401,7 +402,8 @@ su3_rmd_naive::
 
 su3_hmc_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DEO -DPHI_ALGORITHM -DHMC_ALGORITHM -UKS_MULTICG \
+	-UKS_MULTIFF" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
 	"EXTRA_OBJECTS= ${EO_OBJECTS} ${SYMZK1FORCE} d_congrad5_two_src.o \
@@ -456,7 +458,7 @@ su3_spectrum1::
 
 su3_rmd_eo_symzk1_fat7tad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO " \
+	"DEFINES= -DEO -UKS_MULTICG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = fat7tad_action.h" \
 	"EXTRA_OBJECTS= ${EO_OBJECTS} ${SYMZK1FORCE} d_congrad5_two_src.o \
@@ -464,7 +466,7 @@ su3_rmd_eo_symzk1_fat7tad::
 
 su3_rmd_plaq_fat7naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN " \
+	"DEFINES= -DFN -UKS_MULTICG -UKS_MULTIFF" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${IMPGAUGEFORCE} \
@@ -472,7 +474,7 @@ su3_rmd_plaq_fat7naik::
 
 su3_rmd_plaq_fat7naik1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DONEMASS" \
+	"DEFINES= -DFN  -DONEMASS -UKS_MULTICG -UKS_MULTIFF" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = fat7naik_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${IMPGAUGEFORCE} \
@@ -480,7 +482,7 @@ su3_rmd_plaq_fat7naik1::
 
 su3_rmd_symzk1_naik::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN " \
+	"DEFINES= -DFN -UKS_MULTICG" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = naik_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${SYMZK1FORCE} \
@@ -488,7 +490,7 @@ su3_rmd_symzk1_naik::
 
 su3_rmd_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO " \
+	"DEFINES= -DEO -UKS_MULTICG -UKS_MULTIFF" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
 	"EXTRA_OBJECTS= ${EO_OBJECTS} ${SYMZK1FORCE} d_congrad5_two_src.o \

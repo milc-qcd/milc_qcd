@@ -49,13 +49,14 @@ int main( int argc, char **argv ){
 			       error_decr, Nvecs, MaxIter, Restart, 
 			       Kiters, EVEN) ;
       tmp = (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
+      load_ferm_links(&fn_links, &ks_act_paths);
       for(i=0;i<Nvecs;i++)
 	{ 
 	  /* Construct to odd part of the vector.                 *
 	   * Note that the true odd part of the eigenvector is    *
 	   *  i/sqrt(eigVal) Dslash Psi. But since I only compute *
 	   * the chirality the i factor is irrelevant (-i)*i=1!!  */
-	  dslash_fn_field(eigVec[i], tmp, ODD) ;
+	  dslash_fn_field(eigVec[i], tmp, ODD, &fn_links) ;
 	  FORSOMEPARITY(si,s,ODD){ 
 	    scalar_mult_su3_vector( &(tmp[si]),
 				    1.0/sqrt(eigVal[i]), 
@@ -82,7 +83,7 @@ int main( int argc, char **argv ){
       free(eigVec) ;
       free(eigVal) ;
 #ifdef FN
-      invalidate_fn_links();
+      invalidate_ferm_links(&fn_links);
 #endif
       avs_iters += s_iters;
       ++meascount;

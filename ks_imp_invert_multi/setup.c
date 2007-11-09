@@ -55,20 +55,11 @@ int  setup()   {
     setup_layout();
 	/* allocate space for lattice, set up coordinate fields */
     make_lattice();
-node0_printf("Made lattice\n"); fflush(stdout);
-
-    /* Allocate space for t_longlink and t_fatlink */
-    t_longlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
-    if(t_longlink==NULL){
-      printf("NODE %d: no room for t_longlink\n",this_node);
-      terminate(1);
-    }
-
-    t_fatlink = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
-    if(t_fatlink==NULL){
-      printf("NODE %d: no room for t_fatlink\n",this_node);
-      terminate(1);
-    }
+    node0_printf("Made lattice\n"); fflush(stdout);
+    init_ferm_links(&fn_links);
+#ifdef DM_DU0
+    init_ferm_links(&fn_links_dmdu0);
+#endif
 
 	/* set up neighbor pointers and comlink structures
 	   code for this routine is in com_machine.c  */
@@ -297,7 +288,10 @@ int readin(int prompt) {
     startlat_p = reload_lattice( startflag, startfile );
     /* if a lattice was read in, put in KS phases and AP boundary condition */
 #ifdef FN
-    invalidate_fn_links();
+    invalidate_ferm_links(&fn_links);
+#ifdef DM_DU0
+    invalidate_ferm_links(&fn_links_dmdu0);
+#endif
 #endif
     phases_in = OFF;
     rephase( ON );
@@ -305,7 +299,7 @@ int readin(int prompt) {
     /* make table of coefficients and permutations of loops in gauge action */
     make_loop_table();
     /* make table of coefficients and permutations of paths in quark action */
-    make_path_table();
+    make_path_table(&ks_act_paths, NULL);
 
     return(0);
 }

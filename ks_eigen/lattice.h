@@ -49,11 +49,6 @@ typedef struct {
 /* ------------------------------------------------------------ */
 	/* gauge field */
 	su3_matrix link[4];	/* the fundamental field */
-#ifdef FN
-	su3_matrix longlink[4];	/* three link straight paths */
-	su3_matrix fatlink[4];	/* link plus 3-link staples */
-#endif
-
 #ifdef HMC_ALGORITHM
  	su3_matrix old_link[4];
 	/* For accept/reject */
@@ -160,5 +155,9 @@ EXTERN site *lattice;
 /* Generic pointers, for gather routines */
 #define N_POINTERS 16
 EXTERN char ** gen_pt[N_POINTERS];
+
+/* Storage for definition of the quark action */
+EXTERN ferm_links_t        fn_links;
+EXTERN ks_action_paths ks_act_paths;
 
 #endif /* _LATTICE_H */

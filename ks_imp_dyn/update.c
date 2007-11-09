@@ -42,12 +42,11 @@ Real xrandom;
 	/* also clear xxx, since zero is our best guess for the solution
 	   with a new random phi field. */
      	if(step==1){
+	  load_ferm_links(&fn_links, &ks_act_paths);
 	    clear_latvec( F_OFFSET(xxx1), EVENANDODD );
-	    grsource_imp( F_OFFSET(phi1), mass1, EVEN, 
-			  &fn_links, &ks_act_paths);
+	    grsource_imp( F_OFFSET(phi1), mass1, EVEN, &fn_links);
 	    clear_latvec( F_OFFSET(xxx2), EVENANDODD );
-	    grsource_imp( F_OFFSET(phi2), mass2, EVEN,
-			  &fn_links, &ks_act_paths);
+	    grsource_imp( F_OFFSET(phi2), mass2, EVEN, &fn_links);
 	}
 
 #ifdef HMC_ALGORITHM
@@ -55,12 +54,14 @@ Real xrandom;
         /* do conjugate gradient to get (Madj M)inverse * phi */
         if(step==1){
             /* do conjugate gradient to get (Madj M)inverse * phi */
+	  load_ferm_links(&fn_links, &ks_act_paths);
 	    iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
 				 niter, nrestart, rsqmin, PRECISION, EVEN, 
-				 &final_rsq, &fn_links, &ks_act_paths);
+				 &final_rsq, &fn_links);
+	    load_ferm_links(&fn_links, &ks_act_paths);
 	    iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
 				 niter, nrestart, rsqmin, PRECISION, EVEN, 
-				 &final_rsq, &fn_links, &ks_act_paths );
+				 &final_rsq, &fn_links );
 
      	    startaction=d_action();
             /* copy link field to old_link */
@@ -78,33 +79,34 @@ Real xrandom;
 
        	update_u(epsilon*(0.5-nflavors1/8.0));
 	clear_latvec( F_OFFSET(xxx1), EVENANDODD );
-     	grsource_imp( F_OFFSET(phi1), mass1, EVEN, &fn_links, &ks_act_paths);
+	load_ferm_links(&fn_links, &ks_act_paths);
+     	grsource_imp( F_OFFSET(phi1), mass1, EVEN, &fn_links);
 
        	update_u(epsilon*((nflavors1-nflavors2)/8.0));
 	clear_latvec( F_OFFSET(xxx2), EVENANDODD );
-     	grsource_imp( F_OFFSET(phi2), mass2, EVEN, &fn_links, &ks_act_paths);
+	load_ferm_links(&fn_links, &ks_act_paths);
+     	grsource_imp( F_OFFSET(phi2), mass2, EVEN, &fn_links);
 
 	/* update U's to middle of interval */
      	update_u(epsilon*nflavors2/8.0);
 #endif
 
         /* do conjugate gradient to get (Madj M)inverse * phi */
+	load_ferm_links(&fn_links, &ks_act_paths);
 #if 0
      	iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-	    niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq );
+	    niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq, &fn_links );
      	iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-	    niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq );
+	    niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq, &fn_links );
 #else
 	iters += ks_congrad_two_src( F_OFFSET(phi1), F_OFFSET(phi2),
 				     F_OFFSET(xxx1), F_OFFSET(xxx2),
 				     mass1, mass2, niter, nrestart, rsqmin, 
 				     PRECISION, EVEN, &final_rsq,
-				     &fn_links, &ks_act_paths);
+				     &fn_links);
 #endif
-	dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD,
-		     &fn_links, &ks_act_paths);
-	dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD,
-		     &fn_links, &ks_act_paths);
+	dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD, &fn_links);
+	dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD, &fn_links);
 	/* now update H by full time interval */
     	update_h(epsilon);
 
@@ -144,12 +146,13 @@ Real xrandom;
 #ifdef HMC_ALGORITHM
     /* find action */
     /* do conjugate gradient to get (Madj M)inverse * phi */
+    load_ferm_links(&fn_links, &ks_act_paths);
     iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
 			 niter, nrestart, rsqmin, PRECISION, EVEN, 
-			 &final_rsq, &fn_links, &ks_act_paths );
+			 &final_rsq, &fn_links );
     iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
 			 niter, nrestart, rsqmin, PRECISION, EVEN, 
-			 &final_rsq, &fn_links, &ks_act_paths );
+			 &final_rsq, &fn_links );
     endaction=d_action();
     /* decide whether to accept, if not, copy old link field back */
     /* careful - must generate only one random number for whole lattice */
@@ -159,8 +162,8 @@ Real xrandom;
 	if(steps > 0)
 	    gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-	invalidate_fn_links(&fn_links);
-	invalidate_fn_links(&fn_links_dmdu0);
+	free_fn_links(&fn_links);
+	free_fn_links(&fn_links_dmdu0);
 #endif
 	node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
     }

@@ -221,7 +221,7 @@ int readin(int prompt) {
 
     node0_printf("Calling for path table\n");fflush(stdout);
     /* make table of coefficients and permutations of paths in quark action */
-    make_path_table();
+    make_path_table(&ks_act_paths, NULL);
     node0_printf("Done with path table\n");fflush(stdout);
 
     return(0);

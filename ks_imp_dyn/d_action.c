@@ -114,7 +114,7 @@ register site *s;
 	}
     }
 #ifdef FN
-    invalidate_fn_links(&fn_links);
-    invalidate_fn_links(&fn_links_dmdu0);
+    free_fn_links(&fn_links);
+    free_fn_links(&fn_links_dmdu0);
 #endif
 }
