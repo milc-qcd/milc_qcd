@@ -2,6 +2,7 @@
 /* Main procedure for pure gauge SU2 */
 /* Almost quenched at nonzero density */
 /* MIMD version 4 */
+/* NEEDS UPDATING */
 
 /* We use over-relaxed + Metropolis updatings in this code. */
 
@@ -71,8 +72,9 @@ int main( int argc, char **argv )  {
 	    rsqmin=0.0001*0.0001;
 	    nflavors=1;
             grsource(EVEN);
+	    load_ferm_links(&fn_links, &ks_act_paths);
 	    ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-		       niter, rsqmin, PRECISION, EVEN, &rsq);
+		       niter, rsqmin, PRECISION, EVEN, &rsq, &fn_links);
 	    f_measure();
 	    rephase( OFF );
 #endif

@@ -136,5 +136,9 @@ EXTERN char ** gen_pt[N_POINTERS];
 #define DEBUG_OFF #endif
 */
 
+/* Storage for definition of the quark action */
+EXTERN ferm_links_t        fn_links;
+EXTERN ks_action_paths ks_act_paths;
+
 #endif /* _LATTICE_H */
 
