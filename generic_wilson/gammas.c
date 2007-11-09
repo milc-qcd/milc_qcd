@@ -48,6 +48,14 @@ static void mult_gamma(int phase, gamma_matrix_t *g1, gamma_matrix_t *g2, gamma_
     }
 }
 
+/* For external use */
+/* computes g3 = g1 * g2 */
+void mult_gamma_by_gamma(gamma_matrix_t *g1, gamma_matrix_t *g2, 
+			 gamma_matrix_t *g3)
+{
+  mult_gamma(0, g1, g2, g3);
+}
+
 static void make_gammas(void)
 {
   int r;
@@ -99,24 +107,17 @@ static void make_gammas(void)
 */
 
 
-void mult_sw_by_gamma_l(spin_wilson_vector * src,spin_wilson_vector * dest, int dir)
+void mult_sw_by_gamma_mat_l(spin_wilson_vector * src, 
+			    spin_wilson_vector * dest, 
+			    gamma_matrix_t *gm)
 {
   register int c2,s1,s2,s;	/* column indices, color and spin */
 
   if(gamma_initialized==0)make_gammas();
 
-  /* For compatibility */
-  if(dir == GAMMAFIVE)dir = G5;
-
-  if(dir >= MAXGAMMA)
-    {
-      printf("mult_sw_by_gamma_l: Illegal gamma index %d\n",dir);
-      terminate(1);
-    }
-
   for(s1=0;s1<4;s1++){
-    s = gamma_matrix[dir].row[s1].column;
-    switch (gamma_matrix[dir].row[s1].phase){
+    s = gm->row[s1].column;
+    switch (gm->row[s1].phase){
     case 0:
       for(s2=0;s2<4;s2++)for(c2=0;c2<3;c2++){
 	dest->d[s1].d[s2].c[c2] = src->d[s].d[s2].c[c2];}
@@ -136,6 +137,27 @@ void mult_sw_by_gamma_l(spin_wilson_vector * src,spin_wilson_vector * dest, int 
   }
 }
 
+void mult_sw_by_gamma_l(spin_wilson_vector * src,
+			spin_wilson_vector * dest, int dir)
+{
+  gamma_matrix_t gm;
+
+  if(gamma_initialized==0)make_gammas();
+
+  /* For compatibility */
+  if(dir == GAMMAFIVE)dir = G5;
+
+  if(dir >= MAXGAMMA)
+    {
+      printf("mult_sw_by_gamma_l: Illegal gamma index %d\n",dir);
+      terminate(1);
+    }
+
+  gm = gamma_mat(dir);
+
+  mult_sw_by_gamma_mat_l(src, dest, &gm);
+}
+
 /************* msw_gamma_r.c (in su3.a) **************************/
 
 
@@ -148,23 +170,17 @@ void mult_sw_by_gamma_l(spin_wilson_vector * src,spin_wilson_vector * dest, int 
 	int dir;    dir = XUP, YUP, ZUP, TUP or GAMMAFIVE
 */
 
-void mult_sw_by_gamma_r(spin_wilson_vector * src,spin_wilson_vector * dest, int dir)
+void mult_sw_by_gamma_mat_r(spin_wilson_vector * src,
+			    spin_wilson_vector * dest, 
+			    gamma_matrix_t *gm)
 {
   register int c2,s1,s2,s;	/* column indices, color and spin */
 
   if(gamma_initialized==0)make_gammas();
 
-  /* For compatibility */
-  if(dir == GAMMAFIVE)dir = G5;
-  if(dir >= MAXGAMMA)
-    {
-      printf("mult_sw_by_gamma_r: Illegal gamma index %d\n",dir);
-      terminate(1);
-    }
-
   for(s=0;s<4;s++){
-    s2 = gamma_matrix[dir].row[s].column;
-    switch (gamma_matrix[dir].row[s].phase){
+    s2 = gm->row[s].column;
+    switch (gm->row[s].phase){
     case 0:
       for(s1=0;s1<4;s1++)for(c2=0;c2<3;c2++){
 	dest->d[s1].d[s2].c[c2] = src->d[s1].d[s].c[c2];}
@@ -184,12 +200,77 @@ void mult_sw_by_gamma_r(spin_wilson_vector * src,spin_wilson_vector * dest, int 
   }
 }
 
+void mult_sw_by_gamma_r(spin_wilson_vector * src,
+			spin_wilson_vector * dest, int dir)
+{
+  gamma_matrix_t gm;
+
+  if(gamma_initialized==0)make_gammas();
+
+  /* For compatibility */
+  if(dir == GAMMAFIVE)dir = G5;
+  if(dir >= MAXGAMMA)
+    {
+      printf("mult_sw_by_gamma_r: Illegal gamma index %d\n",dir);
+      terminate(1);
+    }
+
+  gm = gamma_mat(dir);
+
+  mult_sw_by_gamma_mat_r(src, dest, &gm);
+}
+
 /* Accessor */
 
 gamma_matrix_t gamma_mat(enum gammatype i){
   if(gamma_initialized == 0)make_gammas();
 
   return gamma_matrix[i];
+}
+
+/* Adjoint of gamma matrix */
+
+void gamma_adj(gamma_matrix_t *dest, gamma_matrix_t *src){
+  int r, c, p;
+  int conj[4] = { 0, 3, 2, 1 };
+  
+  for(r = 0; r < 4; r++){
+    c = src->row[r].column;
+    p = src->row[r].phase;
+    /* Transpose */
+    dest->row[c].column = r; 
+    /* Complex conjugate */
+    dest->row[c].phase = conj[p];
+  }
+}
+
+/* Transpose of gamma matrix */
+
+void gamma_transp(gamma_matrix_t *dest, gamma_matrix_t *src){
+  int r, c, p;
+  
+  for(r = 0; r < 4; r++){
+    c = src->row[r].column;
+    p = src->row[r].phase;
+    /* Transpose */
+    dest->row[c].column = r; 
+    dest->row[c].phase = p;
+  }
+}
+
+/* Complex conjugate */
+
+void gamma_conj(gamma_matrix_t *dest, gamma_matrix_t *src){
+  int r, c, p;
+  int conj[4] = { 0, 3, 2, 1 };
+  
+  for(r = 0; r < 4; r++){
+    c = src->row[r].column;
+    p = src->row[r].phase;
+    /* Complex conjugate */
+    dest->row[r].column = c;
+    dest->row[r].phase = conj[p];
+  }
 }
 
 /* Map a label to the gamma index */
@@ -201,4 +282,6 @@ int gamma_index(char *label){
   }
   return -1;  /* Error condition */
 }
+
+
 
