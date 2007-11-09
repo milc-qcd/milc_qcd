@@ -13,6 +13,10 @@
 
 int remap_stdio_from_args(int argc, char *argv[]){
   FILE *fp;
+
+#ifdef QCDOC
+  if(mynode() != 0)return 0;  /* Remap only node 0 on the QCDOC */
+#endif
   if(argc > 1){
     fp = freopen(argv[1],"r",stdin);
     if(fp == NULL){
