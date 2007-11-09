@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.2  2007/11/09 16:15:58  detar
+//  Support changes in propagator I/O
+//
 //  Revision 1.1  2007/10/07 20:02:32  detar
 //  Add new application.  Generarlizes clover_invert.
 //
@@ -52,6 +55,7 @@ int initial_set(){
     IF_OK status += get_i(stdin,prompt,"ny", &param.ny );
     IF_OK status += get_i(stdin,prompt,"nz", &param.nz );
     IF_OK status += get_i(stdin,prompt,"nt", &param.nt );
+    IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
     
     if(status>0) param.stopflag=1; else param.stopflag=0;
   } /* end if(mynode()==0) */

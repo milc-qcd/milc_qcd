@@ -232,6 +232,8 @@ int readin(int prompt) {
     mass[i] = par_buf.mass[i];
     resid[i] = par_buf.resid[i];
     wqs[i] = par_buf.wqs[i];
+    init_wqs(&wqs[i]);
+    wqs[i].type = par_buf.wqs[i].type;
   }
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);

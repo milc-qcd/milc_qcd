@@ -123,7 +123,8 @@ boundary_flip(MINUS);
 	  /* open files for wilson propagators */
 	  
 	  fp_in_w[k]  = r_open_wprop(startflag_w[k], startfile_w[k]);
-	  fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k] );
+	  fp_out_w[k] = w_open_wprop(saveflag_w[k],  savefile_w[k],
+				     wqs[k].type);
 
 spin=color=0;
  

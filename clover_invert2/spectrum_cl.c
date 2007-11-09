@@ -18,6 +18,7 @@
 
 #include "cl_inv_includes.h"
 #include <string.h>
+#include <time.h>
 
 #define MAX_BARYON_PROP 4
 static char *bar_kind[MAX_BARYON_PROP] = 
@@ -416,6 +417,24 @@ static void print_start_meson_prop(int pair, int p, int m, char sink[]){
 }
 		       
 /*--------------------------------------------------------------------*/
+
+static char *get_utc_datetime(void)
+{
+  time_t time_stamp;
+  struct tm *gmtime_stamp;
+  static char time_string[64];
+
+  time(&time_stamp);
+  gmtime_stamp = gmtime(&time_stamp);
+  strncpy(time_string,asctime(gmtime_stamp),64);
+  
+  /* Remove trailing end-of-line character */
+  if(time_string[strlen(time_string) - 1] == '\n')
+    time_string[strlen(time_string) - 1] = '\0';
+  return time_string;
+}
+
+/*--------------------------------------------------------------------*/
 static FILE* open_fnal_meson_file(int pair, char sink[]){
   int iq0 = param.qkpair[pair][0];
   int iq1 = param.qkpair[pair][1];
@@ -433,6 +452,8 @@ static FILE* open_fnal_meson_file(int pair, char sink[]){
 	   param.savefile_c[pair]);
     return NULL;
   }
+  fprintf(fp,"# Job ID:               %s\n",param.job_id);
+  fprintf(fp,"# date:                 %s UTC\n",get_utc_datetime());
   fprintf(fp,"# lattice size:         %d x %d x %d x %d\n", nx, ny, nz, nt);
   fprintf(fp,"# spatial volume:       %f\n",((float)nx)*ny*nz);
   fprintf(fp,"# sources: %s %s # sink: %s\n",param.src_wqs[iq0].descrp,
@@ -474,12 +495,12 @@ static void print_end_prop(void){
   node0_printf("ENDPROP\n");
 }
 /*--------------------------------------------------------------------*/
-static void print_end_fnal_prop(FILE *fp, int pair){
+static void print_end_fnal_meson_prop(FILE *fp, int pair){
   if(this_node != 0 || param.saveflag_c[pair] == FORGET)return;
   fprintf(fp, "&\n");
 }
 /*--------------------------------------------------------------------*/
-static void close_fnal_corr_file(FILE *fp, int pair){
+static void close_fnal_meson_file(FILE *fp, int pair){
   if(this_node != 0 || param.saveflag_c[pair] == FORGET)return;
   fclose(fp);
 }
@@ -594,7 +615,7 @@ static void spectrum_cl_print_diag(int pair){
 	  print_fnal_meson_prop(corr_fp, pair, t, prop);
 	}
 	print_end_prop();
-	print_end_fnal_prop(corr_fp, pair);
+	print_end_fnal_meson_prop(corr_fp, pair);
       }
 
       if(param.do_smear_meson_spect[pair]){
@@ -612,7 +633,7 @@ static void spectrum_cl_print_diag(int pair){
 
     } /* mesons and momenta */
   
-  close_fnal_corr_file(corr_fp, pair);
+  close_fnal_meson_file(corr_fp, pair);
   
   /* print baryon propagators */
   if(param.do_baryon_spect[pair]){
@@ -742,7 +763,7 @@ static void spectrum_cl_print_offdiag(int pair){
 	  print_fnal_meson_prop(corr_fp, pair, t, prop);
 	}
 	print_end_prop();
-	print_end_fnal_prop(corr_fp, pair);
+	print_end_fnal_meson_prop(corr_fp, pair);
       }
 
       if(param.do_smear_meson_spect[pair]){
@@ -758,7 +779,7 @@ static void spectrum_cl_print_offdiag(int pair){
       }
     } /* m < num_report */
 
-  close_fnal_corr_file(corr_fp, pair);
+  close_fnal_meson_file(corr_fp, pair);
 
   /* print baryon propagators */
 
@@ -818,46 +839,6 @@ void spectrum_cl_cleanup(int pair){
       }
   }
 }
-
-/*--------------------------------------------------------------------*/
-int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
-
-  char *savebuf;
-  int status;
-  char myname[] = "ask_quark_source";
-
-  if (prompt!=0)
-    printf("'forget_corr', 'save_corr_fnal' for correlator file type\n");
-
-  savebuf = get_next_tag(fp, "output correlator file command", myname);
-  if (savebuf == NULL)return 1;
-
-  printf("%s ",savebuf);
-
-  if(strcmp("forget_corr",savebuf) == 0 ){
-    *flag = FORGET;
-  }
-  else if(strcmp("save_corr_fnal",savebuf) == 0 ) {
-    *flag = SAVE_ASCII;  /* Lazy borrowing of lattice flags! */
-  }
-  else{
-    printf("is not a save correlator command. INPUT ERROR\n");
-    return 1;
-  }
-  
-  if( *flag != FORGET ){
-    if(prompt!=0)printf("enter filename\n");
-    status=fscanf(fp,"%s",filename);
-    if(status !=1){
-      printf("\n%s: ERROR reading filename\n",myname); 
-      return 1;
-    }
-    printf("%s\n",filename);
-  }
-
-  return 0;
-
-} /* ask_corr_file */
 
 /*--------------------------------------------------------------------*/
 void spectrum_cl(wilson_prop_field qp0, wilson_prop_field qp1, int pair)

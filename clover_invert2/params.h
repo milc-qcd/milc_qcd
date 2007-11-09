@@ -20,6 +20,8 @@ typedef struct {
   int stopflag;   /* 1 if it is time to stop */
   /* INITIALIZATION PARAMETERS */
   int nx,ny,nz,nt;	/* lattice dimensions */
+  char job_id[MAXFILENAME]; /* Usually encoded by scripts */
+
   /*  REPEATING BLOCK */
   int startflag;	/* what to do for beginning lattice */
   int fixflag;    /* whether to gauge fix */
