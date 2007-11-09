@@ -144,6 +144,16 @@ void complete_U(float *u) {
 }
 
 
+void complete_Ud(double *u) {
+  u[12] = u[ 2]*u[10] - u[ 4]*u[ 8] - u[ 3]*u[11] + u[ 5]*u[ 9];
+  u[13] = u[ 4]*u[ 9] - u[ 2]*u[11] + u[ 5]*u[ 8] - u[ 3]*u[10];
+  u[14] = u[ 4]*u[ 6] - u[ 0]*u[10] - u[ 5]*u[ 7] + u[ 1]*u[11];
+  u[15] = u[ 0]*u[11] - u[ 4]*u[ 7] + u[ 1]*u[10] - u[ 5]*u[ 6];
+  u[16] = u[ 0]*u[ 8] - u[ 2]*u[ 6] - u[ 1]*u[ 9] + u[ 3]*u[ 7];
+  u[17] = u[ 2]*u[ 7] - u[ 0]*u[ 9] + u[ 3]*u[ 6] - u[ 1]*u[ 8];
+}
+
+
 int big_endian() {
   union  {
     long l;
@@ -1141,7 +1151,7 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
   
   tmp = gh->magic_number;
   
-  if(gh->magic_number == GAUGE_VERSION_NUMBER_FNAL) 
+  if(gh->magic_number == IO_UNI_MAGIC) 
     {
       printf("Reading as FNAL-style gauge field configuration.\n");
       *byterevflag=0;
@@ -1149,7 +1159,7 @@ int read_fnal_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
   else 
     {
       byterevn((int32type *)&gh->magic_number,1);
-      if(gh->magic_number == GAUGE_VERSION_NUMBER_FNAL) 
+      if(gh->magic_number == IO_UNI_MAGIC) 
 	{
 	  *byterevflag=1;
 	  printf("Reading as FNAL-style gauge field configuration with byte reversal\n");
@@ -1246,6 +1256,8 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
   int dims[4];
   int ARCHYES=0;
   u_int32type chksum;
+  char *datatype;
+  char *floatpt;
 
   fp = gf->fp;
   gh = gf->header;
@@ -1360,6 +1372,21 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
       if (qcdhdr_get_int32x("CHECKSUM",hdr,&chksum)==FAILURE)
 	error_exit("CHECKSUM not present");
       gf->check.sum31 = chksum;
+
+      /* Get archive datatype */
+      if (qcdhdr_get_str("DATATYPE",hdr,&datatype)==FAILURE)
+	error_exit("DATATYPE not present");
+      /* Two choices currently */
+      gf->dataformat = ARCHIVE_3x2;
+      if(strcmp(" 4D_SU3_GAUGE_3x3",datatype) == 0)
+	gf->dataformat = ARCHIVE_3x3;
+
+      /* Get archive floating point format */
+      if (qcdhdr_get_str("FLOATING_POINT",hdr,&floatpt)==FAILURE)
+	error_exit("FLOATING_POINT not present");
+      gf->precision = 1;
+      if(strcmp(" IEEE64BIG",floatpt) == 0)
+	 gf->precision = 2;
     }
 
   /* not a archive lattice - read lattice dimensions */
