@@ -465,6 +465,7 @@ w_prop_file *setup_input_w_prop_file(char *filename)
     }
 
   wpf->filename = filename;
+  wpf->fp = NULL;
 
   /* Allocate space for the header */
 
@@ -479,6 +480,8 @@ w_prop_file *setup_input_w_prop_file(char *filename)
     }
 
   wpf->header = wph;
+  wpf->prop           = NULL;
+  wpf->rank2rcv       = NULL;
 
   return wpf;
 } /* setup_input_w_prop_file */
@@ -555,6 +558,9 @@ w_prop_file *setup_output_w_prop_file()
   
   build_w_prop_hdr(wph);
   
+  wpf->prop           = NULL;
+  wpf->rank2rcv       = NULL;
+
   return wpf;
 } /* setup_output_w_prop_file */
 
