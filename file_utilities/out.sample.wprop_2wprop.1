@@ -3,8 +3,8 @@ BEGIN
 reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
 save_serial_wprop wprop_milc.test.l4448.ll
 Dimensions 4 4 4 8
-LAYOUT = Hypercubes, options = EVENFIRST,
-ON EACH NODE 4 x 4 x 4 x 2
+LAYOUT = Hypercubes, options = QDP
+ON EACH NODE 4 x 4 x 4 x 8
 Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_milc.test.l4448.ll
 Reading as a Fermilab Wilson prop file
 quark.t[0].checksum  "7e685bd9 759261a0"
@@ -16,27 +16,35 @@ quark.t[5].checksum  "4720052d 65bfc73d"
 quark.t[6].checksum  "90dc8731 1bcbbc90"
 quark.t[7].checksum  "637519f8 3bf07bbe"
 Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
-Time to reload wprop 1.192491e-02
-Wrote prop file wprop_milc.test.l4448.ll time stamp Sun Mar 27 10:33:45 2005
+Time to reload wprop 3.380060e-03
+Wrote prop file wprop_milc.test.l4448.ll time stamp Tue Oct  9 15:51:43 2007
 Saved wprop serially to file wprop_milc.test.l4448.ll
-Time to save wprop = 4.031979e-01
+Time to save wprop = 5.146980e-03
 reload_serial_wprop wprop_milc.test.l4448.ll
-save_serial_scidac_wprop wprop_scidac1.test.l4448.ll
+save_serial_fm_wprop wprop_fnal1.test.l4448.ll
 Dimensions 4 4 4 8
-LAYOUT = Hypercubes, options = EVENFIRST,
-ON EACH NODE 4 x 4 x 4 x 2
-Converting file wprop_milc.test.l4448.ll to file wprop_scidac1.test.l4448.ll
+LAYOUT = Hypercubes, options = QDP
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file wprop_milc.test.l4448.ll to file wprop_fnal1.test.l4448.ll
 Reading serially as a MILC Wilson prop file
 Read wprop serially from file wprop_milc.test.l4448.ll
-Time to reload wprop 2.005301e-02
-Saved wprop serially to file wprop_scidac1.test.l4448.ll
-Time to save wprop = 1.618541e-01
+Time to reload wprop 4.354000e-03
+quark.t[0].checksum  "3b0da3c2 d209ced2"
+quark.t[1].checksum  "259e6f10 2449b135"
+quark.t[2].checksum  "bf8ae0a5 e16d6614"
+quark.t[3].checksum  "d9a2e218 ad46f27f"
+quark.t[4].checksum  "e31c65f1 c9c6538"
+quark.t[5].checksum  "b6aea00 62ae17fc"
+quark.t[6].checksum  "695e8744 a4001ad9"
+quark.t[7].checksum  "1741f22 5b268ca2"
+Wrote prop file wprop_fnal1.test.l4448.ll time stamp Tue Oct  9 15:51:43 2007
+Time to save wprop = 5.234003e-03
 reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
-save_serial_scidac_wprop wprop_scidac2.test.l4448.ll
+save_serial_fm_wprop wprop_fnal2.test.l4448.ll
 Dimensions 4 4 4 8
-LAYOUT = Hypercubes, options = EVENFIRST,
-ON EACH NODE 4 x 4 x 4 x 2
-Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_scidac2.test.l4448.ll
+LAYOUT = Hypercubes, options = QDP
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_fnal2.test.l4448.ll
 Reading as a Fermilab Wilson prop file
 quark.t[0].checksum  "7e685bd9 759261a0"
 quark.t[1].checksum  "458d636c 7fde95"
@@ -47,31 +55,49 @@ quark.t[5].checksum  "4720052d 65bfc73d"
 quark.t[6].checksum  "90dc8731 1bcbbc90"
 quark.t[7].checksum  "637519f8 3bf07bbe"
 Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
-Time to reload wprop 1.198403e-02
-Saved wprop serially to file wprop_scidac2.test.l4448.ll
-Time to save wprop = 1.625730e-01
+Time to reload wprop 3.472805e-03
+quark.t[0].checksum  "3b0da3c2 d209ced2"
+quark.t[1].checksum  "259e6f10 2449b135"
+quark.t[2].checksum  "bf8ae0a5 e16d6614"
+quark.t[3].checksum  "d9a2e218 ad46f27f"
+quark.t[4].checksum  "e31c65f1 c9c6538"
+quark.t[5].checksum  "b6aea00 62ae17fc"
+quark.t[6].checksum  "695e8744 a4001ad9"
+quark.t[7].checksum  "1741f22 5b268ca2"
+Wrote prop file wprop_fnal2.test.l4448.ll time stamp Tue Oct  9 15:51:43 2007
+Time to save wprop = 5.069017e-03
 reload_serial_wprop wprop_milc.test.l4448.ll
 save_checkpoint_wprop wprop_checkpoint.test.l4448.ll
 Dimensions 4 4 4 8
-LAYOUT = Hypercubes, options = EVENFIRST,
-ON EACH NODE 4 x 4 x 4 x 2
+LAYOUT = Hypercubes, options = QDP
+ON EACH NODE 4 x 4 x 4 x 8
 Converting file wprop_milc.test.l4448.ll to file wprop_checkpoint.test.l4448.ll
 Reading serially as a MILC Wilson prop file
 Read wprop serially from file wprop_milc.test.l4448.ll
-Time to reload wprop 1.637789e-02
-Wrote prop file wprop_checkpoint.test.l4448.ll time stamp Sun Mar 27 10:33:45 2005
+Time to reload wprop 4.899025e-03
+Wrote prop file wprop_checkpoint.test.l4448.ll time stamp Tue Oct  9 15:51:43 2007
 Saved wprop in checkpoint format to file wprop_checkpoint.test.l4448.ll
-Time to save wprop = 3.585530e-01
+Time to save wprop = 3.263950e-03
 reload_serial_wprop wprop_checkpoint.test.l4448.ll
-save_serial_scidac_wprop wprop_scidac3.test.l4448.ll
+save_serial_fm_wprop wprop_fnal3.test.l4448.ll
 Dimensions 4 4 4 8
-LAYOUT = Hypercubes, options = EVENFIRST,
-ON EACH NODE 4 x 4 x 4 x 2
-Converting file wprop_checkpoint.test.l4448.ll to file wprop_scidac3.test.l4448.ll
+LAYOUT = Hypercubes, options = QDP
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file wprop_checkpoint.test.l4448.ll to file wprop_fnal3.test.l4448.ll
 Reading serially as a MILC Wilson prop file
 Read wprop serially from file wprop_checkpoint.test.l4448.ll
-Time to reload wprop 2.003608e-02
-Saved wprop serially to file wprop_scidac3.test.l4448.ll
-Time to save wprop = 1.617519e-01
-ask_starting_wprop: EOF on STDIN.
+Time to reload wprop 4.363060e-03
+quark.t[0].checksum  "3b0da3c2 d209ced2"
+quark.t[1].checksum  "259e6f10 2449b135"
+quark.t[2].checksum  "bf8ae0a5 e16d6614"
+quark.t[3].checksum  "d9a2e218 ad46f27f"
+quark.t[4].checksum  "e31c65f1 c9c6538"
+quark.t[5].checksum  "b6aea00 62ae17fc"
+quark.t[6].checksum  "695e8744 a4001ad9"
+quark.t[7].checksum  "1741f22 5b268ca2"
+Wrote prop file wprop_fnal3.test.l4448.ll time stamp Tue Oct  9 15:51:43 2007
+Time to save wprop = 5.288124e-03
+ask_starting_wprop(0): EOF on input.
 RUNNING COMPLETED
+exit: Tue Oct  9 15:51:43 2007
+

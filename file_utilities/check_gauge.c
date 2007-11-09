@@ -100,6 +100,9 @@ float ck_unitarity(su3_matrix *work,int x, int y, int z, int t)
 
 /* Here only node 0 reads the gauge configuration from a binary file */
 
+void byterevn(int32type w[], int n);
+void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc);
+
 void r_check(gauge_file *gf, float *max_deviation)
 {
   /* gf  = gauge configuration file structure */
@@ -125,8 +128,6 @@ void r_check(gauge_file *gf, float *max_deviation)
   su3_matrix *lbuf;
   su3_matrix work[4];
   float deviation;
-  void byterevn(int32type w[], int n);
-  void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc);
 
   char myname[] = "r_check";
 
@@ -316,7 +317,7 @@ void r_check(gauge_file *gf, float *max_deviation)
 
 /*--------------------------------------------------------------*/
 
-void r_check_arch(gauge_file *gf)
+void r_check_arch(gauge_file *gf, float *max_deviation)
 {
   /* gf  = gauge configuration file structure */
 
@@ -334,15 +335,23 @@ void r_check_arch(gauge_file *gf)
   u_int32type *val;
   int rank29,rank31;
   su3_matrix work[4];
+  float deviation;
   su3_matrix tmpsu3[4];
+  int dataformat = gf->dataformat;
+  int precision = gf->precision;
   char myname[] = "r_check_arch";
-
   int mu,a,b,p;
-  float *uin, *q;
-  int big_end;
+  float *uin = NULL, *q;
+  double *uind = NULL, *qd;
+  int big_end = 0;
   float U[4][18];
+  double Ud[4][18];
   u_int32type chksum;
-  
+  int realspersite;
+
+
+  if(dataformat == ARCHIVE_3x2)realspersite = 48;
+  else realspersite = 72;
   fp = gf->fp;
   gh = gf->header;
   filename = gf->filename;
@@ -357,17 +366,29 @@ void r_check_arch(gauge_file *gf)
 
       big_end = big_endian();
       /* printf("big_end is %d\n", big_end); */
-      uin = (float *) malloc(nx*ny*nz*48*sizeof(float));
-      if(uin == NULL)
-	{
-	  printf("%s: Node %d can't malloc uin buffer to read timeslice\n",
-		 myname,this_node);
-	  printf("recompile with smaller read buffer: uin\n");
-	  fflush(stdout);
-	  terminate(1);
-	}
+      if(precision == 1){
+	uin = (float *) malloc(nx*ny*nz*realspersite*sizeof(float));
+	if(uin == NULL)
+	  {
+	    printf("%s: Node %d can't malloc uin buffer to read timeslice\n",
+		   myname,this_node);
+	    printf("recompile with smaller read buffer: uin\n");
+	    fflush(stdout);
+	    terminate(1);
+	  }
+      } else {
+	uind = (double *) malloc(nx*ny*nz*realspersite*sizeof(double));
+	if(uind == NULL)
+	  {
+	    printf("%s: Node %d can't malloc uind buffer to read timeslice\n",
+		   myname,this_node);
+	    printf("recompile with smaller read buffers: uin\n");
+	    fflush(stdout);
+	    terminate(1);
+	  }
+      }
     }
-
+      
   /* Initialize checksums */
   chksum = 0;
   test_gc.sum29 = 0;
@@ -377,6 +398,7 @@ void r_check_arch(gauge_file *gf)
   /* Here all nodes see the same sequence because we read serially */
   rank29 = 0;
   rank31 = 0;
+  *max_deviation = 0;
 
   g_sync();
 
@@ -394,33 +416,66 @@ void r_check_arch(gauge_file *gf)
       destnode=node_number(x,y,z,t);
       
       if(this_node==0){
-	if( (int)g_read(uin,48*sizeof(float),1,fp) != 1)
-	  {
-	    printf("%s: node %d gauge configuration read error %d file %s\n",
-		   myname,this_node,errno,filename); 
-	    fflush(stdout); terminate(1);
+	if(precision == 1){
+	  if( (int)g_read(uin,48*sizeof(float),1,fp) != 1)
+	    {
+	      printf("%s: node %d gauge configuration read error %d file %s\n",
+		     myname,this_node,errno,filename); 
+	      fflush(stdout); terminate(1);
+	    }
+	  if (!big_end) byterevn((int32type *)uin,48);
+	  q = uin;
+	  for (mu=0;mu<4;mu++) {
+	    for (p=0;p<realspersite/4;p++) {
+	      chksum += *(u_int32type *) q;
+	      U[mu][p] = (float) *(q++);
+	    }
+	    if(dataformat == ARCHIVE_3x2)
+	      complete_U(U[mu]);
+	    /**
+	       for (p=0;p<18;p++) printf("p=%d, e=%f\n", p, U[mu][p]);
+	    **/
+	    
+	    /* Copy, converting precision if necessary */
+	    for(a=0; a<3; a++) for(b=0; b<3; b++) { 
+	      tmpsu3[mu].e[a][b].real = U[mu][2*(3*a+b)];
+	      /* printf("real: p=%d, mu=%d, e=%f\n", p,mu,U[mu][2*(3*a+b)]); */
+	      tmpsu3[mu].e[a][b].imag = U[mu][2*(3*a+b)+1];
+	      /*printf("imag: p=%d, mu=%d, e=%f\n", p,mu,U[mu][2*(3*a+b)+1]); */
+	    } 
 	  }
-
-	if (!big_end) byterevn((int32type *)uin,48);
-	q = uin;
-	for (mu=0;mu<4;mu++) {
-	  for (p=0;p<12;p++) {
-	    chksum += *(u_int32type *) q;
-	    U[mu][p] = (float) *q++;
-	  }
-	  complete_U(U[mu]);
-	  /**
-	  for (p=0;p<18;p++) printf("p=%d, e=%f\n", p, U[mu][p]);
-	  **/
-		 
-          for(a=0; a<3; a++) for(b=0; b<3; b++) { 
-	    tmpsu3[mu].e[a][b].real = U[mu][2*(3*a+b)];
-     /*	    printf("real: p=%d, mu=%d, e=%f\n", p,mu,U[mu][2*(3*a+b)]); */
-	    tmpsu3[mu].e[a][b].imag = U[mu][2*(3*a+b)+1];
-     /*	    printf("imag: p=%d, mu=%d, e=%f\n", p,mu,U[mu][2*(3*a+b)+1]); */
+	} else { /* precision == 2 */
+	  
+	  if( (int)g_read(uind,realspersite*sizeof(double),1,fp) != 1)
+	    {
+	      printf("%s: node %d gauge configuration read error %d file %s\n",
+		     myname,this_node,errno,filename); 
+	      fflush(stdout); terminate(1);
+	    }
+	  if (!big_end) byterevn64((int32type *)uind,realspersite);
+	  qd = uind;
+	  for (mu=0;mu<4;mu++) {
+	    for (p=0;p<realspersite/4;p++) {
+	      chksum += *(u_int32type *) qd;
+	      chksum += *((u_int32type *) qd + 1);
+	      Ud[mu][p] = (double) *(qd++);
+	    }
+	    if(dataformat == ARCHIVE_3x2)
+	      complete_Ud(Ud[mu]);
+	    /**
+	       for (p=0;p<18;p++) printf("p=%d, e=%f\n", p, Ud[mu][p]);
+	    **/
+	    
+	    /* Copy, converting precision if necessary */
+	    for(a=0; a<3; a++) for(b=0; b<3; b++) { 
+	      tmpsu3[mu].e[a][b].real = Ud[mu][2*(3*a+b)];
+	      /* printf("real: p=%d, mu=%d, e=%f\n", p,mu,Ud[mu][2*(3*a+b)]); */
+	      tmpsu3[mu].e[a][b].imag = Ud[mu][2*(3*a+b)+1];
+	      /*printf("imag: p=%d, mu=%d, e=%f\n", p,mu,Ud[mu][2*(3*a+b)+1]); */
+	    }
 	  } 
 	}
-
+	
 	if(destnode==0){	/* just copy links */
 	  i = node_index(x,y,z,t);
      /*   printf("lattice node_index = %d, mu = %d\n", i, mu); */
@@ -451,6 +506,8 @@ void r_check_arch(gauge_file *gf)
 	      rank29++; if(rank29 >= 29)rank29 = 0;
 	      rank31++; if(rank31 >= 31)rank31 = 0;
 	    }
+	  deviation = ck_unitarity(work,x,y,z,t);
+	  if(deviation > *max_deviation)*max_deviation = deviation;
 	}
       else
 	{
@@ -511,8 +568,6 @@ int main(int argc, char *argv[])
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
-  /* Remap standard I/O */
-  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -553,7 +608,10 @@ int main(int argc, char *argv[])
   volume = nx*ny*nz*nt;
 
   if(gh->magic_number == GAUGE_VERSION_NUMBER_ARCHIVE){
-    r_check_arch(gf);
+    r_check_arch(gf,&max_deviation);
+    g_floatmax(&max_deviation);
+    if(this_node==0)
+      printf("Max unitarity deviation = %0.2g\n",max_deviation);
   }
   else{
     r_check(gf,&max_deviation);

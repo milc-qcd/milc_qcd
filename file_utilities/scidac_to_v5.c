@@ -52,6 +52,7 @@ typedef struct {
   int rank29,rank31;
   fsu3_matrix * lbuf;
   off_t checksum_offset;
+  int prec;
 } w_serial_site_writer;
 
 void d2f_4mat(su3_matrix *a, fsu3_matrix *b);
@@ -106,15 +107,18 @@ void setup() {
   make_lattice();
 }
 
+static fsu3_matrix *outputbuf;
+
+
 /*----------------------------------------------------------------------*/
-void w_serial_start_lattice(gauge_file *gf, w_serial_site_writer *state)
+void w_serial_start_lattice(gauge_file *gf, w_serial_site_writer *state,
+			    int input_prec)
 {
   /* gf  = file descriptor as opened by w_serial_i */
   /* state of the writer for a single site */
 
   FILE *fp;
   gauge_header *gh;
-  fsu3_matrix *lbuf;
   off_t offset;             /* File stream pointer */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
   off_t head_size;          /* Size of header plus coordinate list */
@@ -124,10 +128,10 @@ void w_serial_start_lattice(gauge_file *gf, w_serial_site_writer *state)
   if(gf->parallel)
     printf("w_serial_start_lattice: Attempting serial write to parallel file \n");
   
-  lbuf = (fsu3_matrix *)malloc(MAX_BUF_LENGTH*4*sizeof(fsu3_matrix));
-  if(lbuf == NULL)
+  outputbuf = (fsu3_matrix *)malloc(MAX_BUF_LENGTH*4*sizeof(fsu3_matrix));
+  if(outputbuf == NULL)
     {
-      printf("w_serial: Node 0 can't malloc lbuf\n"); 
+      printf("w_serial: Node 0 can't malloc outputbuf\n"); 
       fflush(stdout);terminate(1);
     }
   
@@ -162,9 +166,9 @@ void w_serial_start_lattice(gauge_file *gf, w_serial_site_writer *state)
   state->siterank        = 0;
   state->rank29          = 0;
   state->rank31          = 0;
-  state->lbuf            = lbuf;
+  state->lbuf            = outputbuf;
   state->checksum_offset = checksum_offset;
-
+  state->prec            = input_prec;
 } /* w_serial_start_lattice */
 
 /*----------------------------------------------------------------------*/
@@ -179,6 +183,10 @@ void w_serial_site_links(char *buf, size_t index, int count, void *arg)
   int rank29        = state->rank29;
   int rank31        = state->rank31;
   fsu3_matrix *lbuf = state->lbuf;
+  fsu3_matrix *fbuf;
+  dsu3_matrix *dbuf;
+  int input_prec    = state->prec;
+  int dir,i,j;
 
   FILE *fp = gf->fp;
   u_int32type *val;
@@ -191,8 +199,23 @@ void w_serial_site_links(char *buf, size_t index, int count, void *arg)
   }
 
   /* Copy buf to lbuf, converting precision if necessary */
-  d2f_4mat((su3_matrix *)buf,&lbuf[4*buf_length]);
-      
+  
+  for(dir = 0; dir < 4; dir++){
+    for(i = 0; i < 3; i++)for(j = 0; j < 3; j++)
+      {
+	if(input_prec == 1){
+	  fbuf = (fsu3_matrix *)buf;
+	  lbuf[4*buf_length+dir].e[i][j].real = fbuf[dir].e[i][j].real;
+	  lbuf[4*buf_length+dir].e[i][j].imag = fbuf[dir].e[i][j].imag;
+	} else { /* input_prec == 2 */
+	  dbuf = (dsu3_matrix *)buf;
+	  lbuf[4*buf_length+dir].e[i][j].real = dbuf[dir].e[i][j].real;
+	  lbuf[4*buf_length+dir].e[i][j].imag = dbuf[dir].e[i][j].imag;
+	}
+      }
+  }
+
+
   /* Accumulate checksums - contribution from next site */
   for(k = 0, val = (u_int32type *)&lbuf[4*buf_length]; 
       k < 4*(int)sizeof(fsu3_matrix)/(int)sizeof(int32type); 
@@ -205,7 +228,7 @@ void w_serial_site_links(char *buf, size_t index, int count, void *arg)
     }
   
   buf_length++;
-  
+
   if( (buf_length == MAX_BUF_LENGTH) || (siterank == volume-1))
     {
       /* write out buffer */
@@ -269,12 +292,14 @@ int main(int argc, char *argv[])
   char *filename_milc,*filename_scidac;
   QIO_Layout layout;
   QIO_Reader *infile;
-  QIO_RecordInfo *rec_info, *cmp_info;
+  QIO_RecordInfo rec_info;
+  char *datatype;
   int status;
-  /* We assume input precision is single */
-  int datum_size = sizeof(fsu3_matrix);
+  int datum_size;
+  int input_prec;
   int count = 4;
-  int word_size = sizeof(float);
+  int word_size;
+  int typesize;
   w_serial_site_writer state;
   
   if(argc < 3)
@@ -292,8 +317,6 @@ int main(int argc, char *argv[])
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
 #endif
-  /* Remap standard I/O */
-  if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -324,7 +347,7 @@ int main(int argc, char *argv[])
   build_qio_layout(&layout);
 
   /* Open the SciDAC file for reading */
-  infile = open_scidac_input(filename_scidac, &layout, QIO_SERIAL);
+  infile = open_scidac_input(filename_scidac, &layout, 0, QIO_SERIAL);
   if(infile == NULL)terminate(1);
 
   /* Open the MILC v5 file for writing */
@@ -340,18 +363,34 @@ int main(int argc, char *argv[])
 
   /* Read the SciDAC record header. */
   xml_record_in = QIO_string_create();
-  rec_info = QIO_create_record_info(0, "", "", 0, 0, 0, 0);
-  status = QIO_read_record_info(infile, rec_info, xml_record_in);
+  status = QIO_read_record_info(infile, &rec_info, xml_record_in);
   if(status != QIO_SUCCESS)terminate(1);
   node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in));
 
   /* Make sure this is a lattice field */
-  cmp_info = QIO_create_record_info(QIO_FIELD, "QDP_F3_ColorMatrix", "F", 3,
-				    0, sizeof(fsu3_matrix), 4);
-  if(QIO_compare_record_info(rec_info, cmp_info)) terminate(1);
+  datatype = QIO_get_datatype(&rec_info);
+  typesize = QIO_get_typesize(&rec_info);
+  if(strcmp(datatype, "QDP_F3_ColorMatrix") == 0 ||
+     strcmp(datatype, "USQCD_F3_ColorMatrix") == 0 ||
+     typesize == 72){
+    datum_size = sizeof(fsu3_matrix);  
+    input_prec = 1;
+    word_size = sizeof(float);
+  }
+  else if(strcmp(datatype, "QDP_D3_ColorMatrix") == 0 ||
+	  strcmp(datatype, "USQCD_F3_ColorMatrix") == 0 ||
+	  typesize == 144){
+    datum_size = sizeof(dsu3_matrix);  
+    input_prec = 2;
+    word_size = sizeof(double);
+  }
+  else {
+    printf("Unrecognized datatype %s\n",datatype);
+    terminate(1);
+  }
 
   /* Copy the time stamp from the SciDAC file */
-  strncpy(gh->time_stamp, QIO_get_record_date(rec_info), 
+  strncpy(gh->time_stamp, QIO_get_record_date(&rec_info), 
 	  MAX_TIME_STAMP);
   gh->time_stamp[MAX_TIME_STAMP-1] = '\0';
 
@@ -371,7 +410,7 @@ int main(int argc, char *argv[])
   gf->parallel       = 0;
 
   /* Initialize writing the lattice data */
-  w_serial_start_lattice(gf, &state);
+  w_serial_start_lattice(gf, &state, input_prec);
 
   /* Read the SciDAC record data.  The factory function writes the
      site links to a file. */

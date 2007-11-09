@@ -19,7 +19,7 @@ PROJS = \
   wprop_2wprop
 
 ADDMACRO = "WANTQIO=true"
-PRECLIST = 1
+PRECLIST = 1 2
 
 PATTERNS = BEGIN RUNNING
 
@@ -28,9 +28,9 @@ include ../Make_test_template
 KSFILE1 = ksprop_scidac1.test.l4448.ll
 KSFILE2 = ksprop_scidac2.test.l4448.ll
 KSFILE3 = ksprop_scidac3.test.l4448.ll
-WFILE1 = wprop_scidac1.test.l4448.ll
-WFILE2 = wprop_scidac2.test.l4448.ll
-WFILE3 = wprop_scidac3.test.l4448.ll
+WFILE1 = wprop_fnal1.test.l4448.ll
+WFILE2 = wprop_fnal2.test.l4448.ll
+WFILE3 = wprop_fnal3.test.l4448.ll
 
 KSFILES = ${KSFILE1} ${KSFILE2} ${KSFILE3}
 WFILES  = ${WFILE1} ${WFILE2} ${WFILE3}

@@ -163,9 +163,30 @@ diff_ksvector::
 diff_wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_wprop" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS=  diff_wprop.o io_helpers_w.o canopy2weyl_rot.o \
-	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o \
-	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o"
+	"EXTRA_OBJECTS=  \
+	  canopy2weyl_rot.o \
+	  check_unitarity.o \
+	  d_plaq4.o \
+	  gammas.o \
+	  diff_wprop.o \
+	  gauge_info_dummy.o \
+	  gauss_smear_w.o \
+	  io_helpers.o \
+	  io_helpers_ks.o \
+	  io_helpers_w.o \
+	  io_lat4.o \
+	  io_prop_ks.o \
+	  io_prop_ks_fm.o \
+	  io_prop_w.o \
+	  io_prop_w_fm.o \
+	  io_scidac_ks.o \
+	  io_scidac_w.o \
+	  io_source_w_fm.o \
+	  ksprop_info.o \
+	  nersc_cksum.o \
+	  staggered2naive.o \
+	  w_source.o \
+	  wprop_info.o"
 
 lattice_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= lattice_to_scidac" \
@@ -183,13 +204,31 @@ ksprop_2ksprop::
 wprop_2wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS=  wprop_to_wprop.o io_helpers_w.o \
-	io_helpers_ks.o canopy2weyl_rot.o w_source.o \
-	io_prop_w.o io_prop_w_fm.o io_scidac_w.o wprop_info.o \
-	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o \
-	staggered2naive.o gammas.o io_helpers.o io_prop_ks.o \
-	io_prop_ks_fm.o io_scidac_ks.o gauss_smear_w.o \
-	io_source_w_fm.o ksprop_info.o check_unitarity.o "
+	"EXTRA_OBJECTS=  \
+	  canopy2weyl_rot.o \
+	  check_unitarity.o \
+	  d_plaq4.o \
+	  gammas.o \
+	  gauge_info_dummy.o \
+	  gauss_smear_w.o \
+	  io_helpers.o \
+	  io_helpers_ks.o \
+	  io_helpers_w.o \
+	  io_lat4.o \
+	  io_prop_ks.o \
+	  io_prop_ks_fm.o \
+	  io_prop_w.o \
+	  io_prop_w_fm.o \
+	  io_scidac_ks.o \
+	  io_scidac_w.o \
+	  io_source_w_fm.o \
+	  ksprop_info.o \
+	  nersc_cksum.o \
+	  reunitarize2.o \
+	  staggered2naive.o \
+	  w_source.o \
+	  wprop_info.o \
+	  wprop_to_wprop.o"
 
 ckpt1_2v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= ckpt1_to_v5" \
@@ -204,7 +243,7 @@ v5_2scidac::
 	gauge_info_dummy.o"
 
 scidac_2v5::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= scidac_to_v5" \
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DNOLINKS" \
 	"EXTRA_OBJECTS=  scidac_to_v5.o \
 	gauge_info_scidac.o"

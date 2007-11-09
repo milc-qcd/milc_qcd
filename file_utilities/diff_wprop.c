@@ -23,6 +23,7 @@
 #include <string.h>
 #include <math.h>
 #include "../include/file_types.h"
+#include "../include/io_ksprop.h"
 #include "../include/io_wprop.h"
 #include "../include/generic.h"
 #include "../include/generic_wilson.h"
@@ -37,8 +38,8 @@
 static file_type w_prop_list[N_WPROP_TYPES] =
   { {FILE_TYPE_W_PROP,       W_PROP_VERSION_NUMBER},
     {FILE_TYPE_W_PROP_1996,  W_PROP_VERSION_NUMBER_1996},
-    {FILE_TYPE_W_FMPROP,     W_FMPROP_VERSION_NUMBER},
-    {FILE_TYPE_W_QIOPROP,    LIME_MAGIC_NO}
+    {FILE_TYPE_FM,           IO_UNI_MAGIC},
+    {FILE_TYPE_LIME,         LIME_MAGIC_NO}
   };
 
 /*----------------------------------------------------------------------*/
@@ -130,12 +131,42 @@ int main(int argc, char *argv[])
     return 1;
   }
   
+  /* For FNAL types we need to look farther to distinguish Wilson
+     prop files from KS prop files  */
+  if(file_type1 == FILE_TYPE_FM)
+    file_type1 = io_detect_fm(wprop_file1);
+  
+  /* For QIO(LIME) types, same thing */
+  if(file_type1 == FILE_TYPE_LIME){
+#ifdef HAVE_QIO
+    file_type1 = io_detect_w_usqcd(wprop_file1);
+#else
+    node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
+    return NULL;
+#endif
+  }
+	
   file_type2 = io_detect(wprop_file2, w_prop_list, N_WPROP_TYPES);
   if(file_type2 < 0){
     node0_printf("Can't determine Wilson prop file type %s\n", wprop_file2);
     return 1;
   }
   
+  /* For FNAL types we need to look farther to distinguish Wilson
+     prop files from KS prop files  */
+  if(file_type2 == FILE_TYPE_FM)
+    file_type2 = io_detect_fm(wprop_file2);
+  
+  /* For QIO(LIME) types, same thing */
+  if(file_type2 == FILE_TYPE_LIME){
+#ifdef HAVE_QIO
+    file_type2 = io_detect_w_usqcd(wprop_file2);
+#else
+    node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
+    return NULL;
+#endif
+  }
+	
   /* Get the lattice dimensions from the first input file */
   if(read_lat_dim_wprop(wprop_file1, file_type1, &ndim, dims)!=0){
     terminate(1);
