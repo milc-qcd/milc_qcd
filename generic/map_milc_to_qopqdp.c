@@ -145,8 +145,8 @@ f2p_wvec(wilson_vector *dest, QLA_F3_DiracFermion *src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
-    dest->d[j].c[i].real = QLA_elem_D(*src,i,j).real;
-    dest->d[j].c[i].imag = QLA_elem_D(*src,i,j).imag;
+    dest->d[j].c[i].real = QLA_real(QLA_elem_D(*src,i,j));
+    dest->d[j].c[i].imag = QLA_imag(QLA_elem_D(*src,i,j));
   }
 }
 
@@ -156,8 +156,9 @@ p2f_wvec(QLA_F3_DiracFermion *dest, wilson_vector *src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
-    QLA_elem_D(*dest,i,j).real = src->d[j].c[i].real;
-    QLA_elem_D(*dest,i,j).imag = src->d[j].c[i].imag;
+    QLA_c_eq_r_plus_ir(QLA_elem_D(*dest,i,j),
+			src->d[j].c[i].real,
+			src->d[j].c[i].imag);
   }
 }
 
@@ -166,8 +167,8 @@ d2p_wvec(wilson_vector *dest, QLA_D3_DiracFermion *src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
-    dest->d[j].c[i].real = QLA_elem_D(*src,i,j).real;
-    dest->d[j].c[i].imag = QLA_elem_D(*src,i,j).imag;
+    dest->d[j].c[i].real = QLA_real(QLA_elem_D(*src,i,j));
+    dest->d[j].c[i].imag = QLA_imag(QLA_elem_D(*src,i,j));
   }
 }
 
@@ -176,8 +177,9 @@ p2d_wvec(QLA_D3_DiracFermion *dest, wilson_vector *src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
-    QLA_elem_D(*dest,i,j).real = src->d[j].c[i].real;
-    QLA_elem_D(*dest,i,j).imag = src->d[j].c[i].imag;
+    QLA_c_eq_r_plus_ir(QLA_elem_D(*dest,i,j),
+		       src->d[j].c[i].real,
+		       src->d[j].c[i].imag);
   }
 }
 
@@ -348,12 +350,12 @@ make_create_from_field(D, D, QOP_D3_DiracFermion, QLA_D3_DiracFermion, wilson_ve
 #endif
 
 #ifndef HAVE_NO_CREATE_L_FROM_G
-
-/* Create QOP fermion links from site gauge field */
-
-make_create_L_from_site_gauge(F, QOP_F3_FermionLinksAsqtad, fsu3_matrix, float);
-make_create_L_from_site_gauge(D, QOP_D3_FermionLinksAsqtad, dsu3_matrix, double);
-
+// 
+// /* Create QOP fermion links from site gauge field */
+// 
+// make_create_L_from_site_gauge(F, QOP_F3_FermionLinksAsqtad, fsu3_matrix, float);
+// make_create_L_from_site_gauge(D, QOP_D3_FermionLinksAsqtad, dsu3_matrix, double);
+// 
 #endif
 
 /* Map QOP color vector field to site */
