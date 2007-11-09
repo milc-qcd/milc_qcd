@@ -23,6 +23,37 @@
 
 static const int* dim_mach;
 
+#ifdef FIX_IONODE_GEOM
+
+static void lex_coords(int coords[], const int dim, const int size[], 
+	   const size_t rank)
+{
+  int d;
+  size_t r = rank;
+
+  for(d = 0; d < dim; d++){
+    coords[d] = r % size[d];
+    r /= size[d];
+  }
+}
+
+/*------------------------------------------------------------------*/
+/* Convert coordinate to linear lexicographic rank (inverse of
+   lex_coords) */
+
+static size_t lex_rank(const int coords[], int dim, int size[])
+{
+  int d;
+  size_t rank = coords[dim-1];
+
+  for(d = dim-2; d >= 0; d--){
+    rank = rank * size[d] + coords[d];
+  }
+  return rank;
+}
+
+#endif
+
 void
 setup_layout(void)
 {
@@ -97,3 +128,37 @@ const int *get_logical_coordinate(){
 void get_coords(int coords[], int node, int index){
   QDP_get_coords(coords, node, index);
 }
+
+/* io_node(node) maps a node to its I/O node.  The nodes are placed on
+   a node lattice with dimensions nsquares.  The I/O partitions are
+   hypercubes of the node lattice.  The dimensions of the hypercube are
+   given by nodes_per_ionode.  The I/O node is at the origin of that
+   hypercube. */
+
+#ifdef FIX_IONODE_GEOM
+
+/*------------------------------------------------------------------*/
+/* Map any node to its I/O node */
+int io_node(const int node){
+  int i,j,k; 
+
+  /* Get the machine coordinates for the specified node */
+  lex_coords(io_node_coords, 4, nsquares, node);
+
+  /* Round the node coordinates down to get the io_node coordinate */
+  for(i = 0; i < 4; i++)
+    io_node_coords[i] = nodes_per_ionode[i] * 
+      (io_node_coords[i]/nodes_per_ionode[i]);
+  
+  /* Return the linearized machine coordinates of the I/O node */
+  return (int)lex_rank(io_node_coords, 4, nsquares);
+}
+
+#else
+
+/*------------------------------------------------------------------*/
+/* If we don't have I/O partitions, each node does its own I/O */
+int io_node(int node){
+  return node;
+}
+#endif

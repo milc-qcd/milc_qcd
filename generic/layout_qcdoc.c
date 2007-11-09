@@ -20,13 +20,16 @@
      site is lattice[node_index(x,y,z,t)].
    get_logical_dimensions() returns the machine dimensions
    get_logical_coordinates() returns the mesh coordinates of this node
+   get_coords() returns the coordinates for a given node and index
+       (the inverse of node_number + node_index)
+   io_node(node) maps nodes to their I/O node (for I/O partitions)
    These routines will change as we change our minds about how to distribute
      sites among the nodes.  Hopefully the setup routines will work for any
      consistent choices. (ie node_index should return a different value for
      each site on the node.)
 */
-#include "generic_includes.h"
 #include <qmp.h>
+#include "generic_includes.h"
 
 static int machine_dimensions[ 4 ];  /* DBR: Should this be 4? */
 static int machine_nx = -1;
@@ -41,6 +44,69 @@ static int sub_lattice_nz = -1;
 static int sub_lattice_nt = -1;
 
 static int sub_lattice_volume = -1;
+
+/*------------------------------------------------------------------*/
+/* Convert rank to coordinates */
+static void lex_coords(int coords[], const int dim, const int size[], 
+	   const size_t rank)
+{
+  int d;
+  size_t r = rank;
+
+  for(d = 0; d < dim; d++){
+    coords[d] = r % size[d];
+    r /= size[d];
+  }
+}
+
+#ifdef FIX_IONODE_GEOM
+
+/*------------------------------------------------------------------*/
+/* Convert coordinate to linear lexicographic rank (inverse of
+   lex_coords) */
+
+static size_t lex_rank(const int coords[], int dim, int size[])
+{
+  int d;
+  size_t rank = coords[dim-1];
+
+  for(d = dim-2; d >= 0; d--){
+    rank = rank * size[d] + coords[d];
+  }
+  return rank;
+}
+
+#endif
+
+#ifdef FIX_IONODE_GEOM
+
+static int io_node_coords[4];
+static int nodes_per_ionode[4];
+
+/*------------------------------------------------------------------*/
+/* Initialize io_node function */
+
+
+static void init_io_node(){
+  int i;
+  int status = 0;
+
+  /* Compute the number of nodes per I/O node along each direction */
+  for(i = 0; i < 4; i++){
+    if(machine_dimensions[i] % ionode_geometry[i] != 0)status++;
+    nodes_per_ionode[i] = machine_dimensions[i]/ionode_geometry[i];
+  }
+  
+  if(status){
+    node0_printf("init_io_node: ionode geometry %d %d %d %d \n",
+		 ionode_geometry[0], ionode_geometry[1],
+		 ionode_geometry[2], ionode_geometry[3]);
+    node0_printf("is incommensurate with node geometry %d %d %d %d\n",
+		 machine_dimensions[0], machine_dimensions[1], machine_dimensions[3], machine_dimensions[3]);
+    terminate(1);
+  }
+}
+#endif
 
 void setup_layout( void )
 {
@@ -194,6 +260,7 @@ const int *get_logical_coordinate(){
   return QMP_get_logical_coordinates();
 }
 
+/*------------------------------------------------------------------*/
 /* Map node number and index to coordinates  */
 void get_coords(int coords[], int node, int index){
   int mc[4];
@@ -202,13 +269,7 @@ void get_coords(int coords[], int node, int index){
   int k = node;
 
   /* Compute machine coordinates for node */
-  mc[0] = k % machine_dimensions[0];
-  k /= machine_dimensions[0];
-  mc[1] = k % machine_dimensions[1];
-  k /= machine_dimensions[1];
-  mc[2] = k % machine_dimensions[2];
-  k /= machine_dimensions[2];
-  mc[3] = k % machine_dimensions[3];
+  lex_coords(mc, 4, machine_dimensions, k);
 
   /* Lexicographic index on node rounded to even */
   ir = 2*index;
@@ -220,13 +281,7 @@ void get_coords(int coords[], int node, int index){
     eo = 0;
 
   /* Convert to coordinates - result is two-fold ambiguous */
-  coords[0] = ir % sub_lattice_dimensions[0];
-  ir /= sub_lattice_dimensions[0];
-  coords[1] = ir % sub_lattice_dimensions[1];
-  ir /= sub_lattice_dimensions[1];
-  coords[2] = ir % sub_lattice_dimensions[2];
-  ir /= sub_lattice_dimensions[2];
-  coords[3] = ir % sub_lattice_dimensions[3];
+  lex_coords(coords, 4, sub_lattice_dimensions, ir);
 
   /* Adjust coordinate according to parity (assumes even sites_on_node) */
   if( (coords[0] + coords[1] + coords[2] + coords[3]) % 2 != eo){
@@ -266,3 +321,36 @@ void get_coords(int coords[], int node, int index){
   }
 }
 
+/* io_node(node) maps a node to its I/O node.  The nodes are placed on
+   a node lattice with dimensions machine_dimensions.  The I/O partitions are
+   hypercubes of the node lattice.  The dimensions of the hypercube are
+   given by nodes_per_ionode.  The I/O node is at the origin of that
+   hypercube. */
+
+#ifdef FIX_IONODE_GEOM
+
+/*------------------------------------------------------------------*/
+/* Map any node to its I/O node */
+int io_node(const int node){
+  int i,j,k; 
+
+  /* Get the machine coordinates for the specified node */
+  lex_coords(io_node_coords, 4, machine_dimensions, node);
+
+  /* Round the node coordinates down to get the io_node coordinate */
+  for(i = 0; i < 4; i++)
+    io_node_coords[i] = nodes_per_ionode[i] * 
+      (io_node_coords[i]/nodes_per_ionode[i]);
+  
+  /* Return the linearized machine coordinates of the I/O node */
+  return (int)lex_rank(io_node_coords, 4, machine_dimensions);
+}
+
+#else
+
+/*------------------------------------------------------------------*/
+/* If we don't have I/O partitions, each node does its own I/O */
+int io_node(int node){
+  return node;
+}
+#endif
