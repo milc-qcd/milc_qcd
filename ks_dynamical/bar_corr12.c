@@ -496,15 +496,16 @@ int sngl_trace(bb0s11)
 	 in both congrad calls in this procedure to
 	 give a comparably stringent stopping criterion 
 	 throughout */
+      load_ferm_links(&fn_links, &ks_act_paths);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, rsqprop/(mass*mass), PRECISION, 
-			    EVEN,&finalrsq);
+			    EVEN,&finalrsq, &fn_links);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: ss1 cgn %d\n",this_cgn);
       /* Multiply by -Madjoint */
       /* Notice that this product includes an overall minus sign */
       /* which will be compensated by propmat2 */
-      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
+      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, &fn_links);
       scalar_mult_latvec( F_OFFSET(xxx), -mass_x2, F_OFFSET(ttt), EVEN);
       
       /* Result goes into propmat */
@@ -532,15 +533,16 @@ int sngl_trace(bb0s11)
       g_sync();
 
       /* do a C.G. (source in phi, result in xxx) now ODD source*/
+      load_ferm_links(&fn_links, &ks_act_paths);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, rsqprop/(mass*mass), PRECISION, 
-			    ODD, &finalrsq);
+			    ODD, &finalrsq, &fn_links);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: ss1: cgn %d\n",this_cgn);
       /* Multiply by -Madjoint */
       /* Again this product includes an overall minus sign which 
 	 will cancel the sign in propmat */
-      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVEN);
+      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVEN, &fn_links);
       scalar_mult_latvec( F_OFFSET(xxx), -mass_x2, F_OFFSET(ttt), ODD);
       
       /* This time result goes into propmat2 */
@@ -812,19 +814,22 @@ int bar_corr()
       /* Compute quark propagator from random source with LU preconditioning */
       /* Preconditioning step */
       /* -phi_e' <- -2ma phi_e + Dslash_eo phi_o */
-      dslash_site( F_OFFSET(phi), F_OFFSET(ttt), EVEN);
+      load_ferm_links(&fn_links, &ks_act_paths);
+      dslash_site( F_OFFSET(phi), F_OFFSET(ttt), EVEN, &fn_links);
       scalar_mult_add_latvec( F_OFFSET(ttt), F_OFFSET(phi), 
 			     -mass_x2, F_OFFSET(phi), EVEN);
       /* Invert on even sites only */
       /* -x_e = -(4m^2a^2 - D_eo D_oe)^(-1) phi_e' */
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			    niter, rsqprop, PRECISION, EVEN, &finalrsq);
+			    niter, rsqprop, PRECISION, EVEN, &finalrsq,
+			    &fn_links);
       cgn += this_cgn;
       if(this_node==0)printf("bar_corr: pbp irand %2d cgn %d\n",irand,this_cgn);
       /* Even sites are now OK, except for a minus sign */
       /* Multiply by 1/2ma L for odd sites */
       /* -x_o <- [Dslash_eo (-x_e) + phi_o]/2ma */
-      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD);
+      load_ferm_links(&fn_links, &ks_act_paths);
+      dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, &fn_links);
       FORODDSITES(i,st){
 	add_su3_vector( &(st->ttt), &(st->phi), &(st->xxx));
 	scalar_mult_su3_vector( &(st->xxx), -1./(mass_x2), &(st->xxx));

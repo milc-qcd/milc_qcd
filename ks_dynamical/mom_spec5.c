@@ -92,11 +92,13 @@ int mom_spec() /* return the C.G. iteration number */
 	   }
          }
          /* do a C.G. */
+	 load_ferm_links(&fn_links, &ks_act_paths);
          cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			   niter, rsqprop, PRECISION, EVEN, &finalrsq);
+			   niter, rsqprop, PRECISION, EVEN, &finalrsq,
+			   &fn_links);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, even site source -> propmat[0] */
-         dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[0]), ODD);
+         dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[0]), ODD, &fn_links);
          FOREVENSITES(i,st){
             scalar_mult_su3_vector(&(st->xxx),-mass_x2, &(st->propmat[0]));
          }
@@ -120,11 +122,13 @@ int mom_spec() /* return the C.G. iteration number */
 	   }
          }
          /* do a C.G. */
+	 load_ferm_links(&fn_links, &ks_act_paths);
          cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			   niter, rsqprop, PRECISION, EVEN, &finalrsq);
+			   niter, rsqprop, PRECISION, EVEN, &finalrsq,
+			   &fn_links);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, even site nonzero mom. source -> propmat[1]*/
-         dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[1]), ODD);
+         dslash_site( F_OFFSET(xxx), F_OFFSET(propmat[1]), ODD, &fn_links);
          FOREVENSITES(i,st){
             scalar_mult_su3_vector(&(st->xxx),-mass_x2, &(st->propmat[1]));
          }
@@ -147,11 +151,13 @@ int mom_spec() /* return the C.G. iteration number */
 	   }
          }
          /* do a C.G. */
+	 load_ferm_links(&fn_links, &ks_act_paths);
          cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-			   niter, rsqprop, PRECISION, ODD, &finalrsq);
+			   niter, rsqprop, PRECISION, ODD, &finalrsq,
+			   &fn_links);
          /* Now solution vector is in xxx */
          /* Multiply by -Madjoint, odd site source -> ttt */
-         dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVEN);
+         dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), EVEN, &fn_links);
          FORODDSITES(i,st){
             scalar_mult_su3_vector(&(st->xxx),-mass_x2, &(st->ttt));
          }

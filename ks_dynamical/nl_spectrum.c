@@ -255,7 +255,7 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
   gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
   rephase( ON );
 #ifdef FN
-  invalidate_fn_links();
+  invalidate_ferm_links(&fn_links);
 #endif
 
   /* Unlike spectrum.c, here we calculate only with wall sources */
@@ -289,9 +289,10 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
 	    }
 	  
 	  /* do a C.G. */
-	  cgn += congrad(niter,rsqprop,EVEN,&finalrsq);
+	  load_ferm_links(&fn_links, &ks_act_paths);
+	  cgn += congrad(niter,rsqprop,EVEN,&finalrsq, &fn_links);
 	  /* Multiply by -Madjoint */
-	  dslash_site( temp2, temp2, ODD);
+	  dslash_site( temp2, temp2, ODD, &fn_links);
 	  scalar_mult_latvec( temp2, -vmass_x2, temp2, EVEN);
 	  
 	  /* fill the hadron matrix */
@@ -317,9 +318,10 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
 	    }
 	  
 	  /* do a C.G. */
-	  cgn += congrad(niter,rsqprop,ODD,&finalrsq);
+	  load_ferm_links(&fn_links, &ks_act_paths);
+	  cgn += congrad(niter,rsqprop,ODD,&finalrsq,&fn_links);
 	  /* Multiply by -Madjoint */
-	  dslash_site( temp2, temp2, EVEN);
+	  dslash_site( temp2, temp2, EVEN, &fn_links);
 	  scalar_mult_latvec( temp2, -vmass_x2, temp2, ODD);
 	  
 	  /* fill the hadron matrix */

@@ -14,7 +14,8 @@ Real ff,fermion_force_2( Real eps );
     /* fermionic force */
     /* First compute M*xxx in temporary vector ttt */
 	/* The diagonal term in M doesn't matter */
-    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
+    load_ferm_links(&fn_links, &ks_act_paths);
+    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, &fn_links );
     ff=fermion_force_2(eps);
     return(ff);
 } /* update_h */
