@@ -9,6 +9,92 @@
 #include "../include/io_wprop.h"
 #include <string.h>
 
+/* Utilities */
+
+/* Initialize by calling this function before using wqs */
+void init_wqs(wilson_quark_source *wqs){
+  wqs->type = 0;
+  wqs->c_src = NULL;
+  wqs->wv_src = NULL;
+}
+
+void alloc_wqs_wv_src(wilson_quark_source *wqs)
+{
+  if(wqs->wv_src != NULL){
+    printf("alloc_wqs_wv_src(%d): source is already allocated? \n",this_node);
+    terminate(1);
+  }
+  wqs->wv_src = (wilson_vector *)malloc(sizeof(wilson_vector)*sites_on_node);
+  if(wqs->wv_src == NULL){
+    printf("alloc_wqs_wv_src(%d): No room for source field\n",this_node);
+    terminate(1);
+  }
+  memset(wqs->wv_src, 0, sizeof(wilson_vector)*sites_on_node);
+}
+
+void alloc_wqs_c_src(wilson_quark_source *wqs)
+{
+  if(wqs->c_src != NULL){
+    printf("alloc_wqs_c_src(%d): source is already allocated? \n",this_node);
+    terminate(1);
+  }
+  wqs->c_src = (complex *)malloc(sizeof(complex)*sites_on_node);
+  if(wqs->c_src == NULL){
+    printf("alloc_wqs_c_src(%d): No room for source field\n",this_node);
+    terminate(1);
+  }
+  memset(wqs->c_src, 0, sizeof(complex)*sites_on_node);
+}
+
+/* Must be called to free */
+void reset_wqs(wilson_quark_source *wqs){
+  if(wqs->c_src != NULL){free(wqs->c_src); wqs->c_src = NULL;}
+  if(wqs->wv_src != NULL){free(wqs->wv_src); wqs->wv_src = NULL;}
+}
+
+/* Copy c-source */
+void copy_c_src(complex *dest, wilson_vector *src, int spin, int color){
+  int i; site *s;
+  FORALLSITES(i,s){
+    dest[i] = src[i].d[spin].c[color];
+  }
+}
+
+/* Copy wv-source */
+void copy_wv_src(wilson_vector *dest, wilson_vector *src)
+{
+  int i; site *s;
+  FORALLSITES(i,s){
+    dest[i] = src[i];
+  }
+}
+
+/* Choose the specific USQCD format appropriate to the source type */
+int choose_usqcd_file_type(int source_type){
+  int file_type;
+
+  switch(source_type){
+  case POINT:
+  case GAUSSIAN:
+  case COMPLEX_FIELD_FILE:
+  case COMPLEX_FIELD_STORE:
+    file_type = FILE_TYPE_W_USQCD_C1D12;
+    break;
+  case COVARIANT_GAUSSIAN:
+  case DIRAC_FIELD_FILE:
+  case DIRAC_FIELD_STORE:
+    file_type = FILE_TYPE_W_USQCD_DD_PAIRS;
+    break;
+  default:
+    file_type = -1;
+  }
+  return file_type;
+}
+
+/********************************************************************/
+/* Construct the source field */
+/********************************************************************/
+
 void w_source_field(wilson_vector *src, wilson_quark_source *wqs)
 {
   /* src has size wilson_vector */
@@ -17,8 +103,7 @@ void w_source_field(wilson_vector *src, wilson_quark_source *wqs)
   
   short my_x,my_y,my_z;
   Real rx,ry,rz,radius2;
-  int s0,c0;
-
+  
   /* Unpack structure */
   int color                 = wqs->color;
   int spin                  = wqs->spin;
@@ -30,91 +115,121 @@ void w_source_field(wilson_vector *src, wilson_quark_source *wqs)
   Real r0                   = wqs->r0;
   int iters                 = wqs->iters;
   char *source_file         = wqs->source_file;
-  complex *c_src_ptr        = wqs->c_src_ptr;
-  wilson_vector *wv_src_ptr = wqs->wv_src_ptr;
+  complex *c_src            = wqs->c_src;
+  wilson_vector *wv_src     = wqs->wv_src;
   
   
-/*printf("WSOURCE: source = %d\n",source_type); */
-	
-    /* zero src to be safe */
-    FORALLSITES(i,s) {
-	clear_wvec( src+i ); 
-    }
-
-    if(source_type == POINT) {
-	/* load 1.0 into source at cooordinates given by source_coord */
-	/* initialize src to be a delta function at point x0,y0,z0,t0 */
-
-	if(node_number(x0,y0,z0,t0) == mynode()){
-	    i = node_index(x0,y0,z0,t0);
-	    src[i].d[spin].c[color].real = 1.0;
-	}
-    }
-    else if(source_type == GAUSSIAN) {
-	/* Gaussian trial source centered on  x0,y0,z0,t0 */
-
-	FORALLSITES(i,s) {
-	    if(s->t != t0)continue;	/* only do this if t==t0 */
-
-	    my_x = ((s->x)-x0+nx) % nx;
-	    rx = (my_x < (nx-my_x)) ? (Real) my_x : (Real) (my_x-nx);
-	    my_y = ((s->y)-y0+ny) % ny;
-	    ry = (my_y < (ny-my_y)) ? (Real) my_y : (Real) (my_y-ny);
-	    my_z = ((s->z)-z0+nz) % nz;
-	    rz = (my_z < (nz-my_z)) ? (Real) my_z : (Real) (my_z-nz);
-
-	    radius2 = rx*rx + ry*ry + rz*rz;
-	    radius2 /= (r0*r0);
-
-	    src[i].d[spin].c[color].real = (Real)exp((double)(- radius2));
-	}
-      }
-    else if(source_type == COVARIANT_GAUSSIAN){
-      /* Set delta function source */
-      FORALLSITES(i,s){
-	clear_wvec( src + i );
-      }
-      if(node_number(x0,y0,z0,t0) == this_node){
-	i = node_index(x0,y0,z0,t0);
-	src[i].d[spin].c[color].real = 1.;
-      }
-      gauss_smear_field(src, r0, iters, t0);
-    }
-    else if(source_type == COMPLEX_FIELD_FILE){
-      /* Load to the specified spin, color and timeslice */
-      r_source_w_fm_to_field(source_file, src, spin, color, t0, source_type);
-    }
-    else if(source_type == DIRAC_FIELD_FILE){
-      /* Ignore spin, color and load the whole wilson vector from the file */
-      r_source_w_fm_to_field(source_file, src, spin, color, t0, source_type);
-    }
-    else if(source_type == COMPLEX_FIELD_STORE){
-      if(c_src_ptr == NULL){
-	printf("w_source: Can't copy from null field\n");
-	terminate(1);
-      }
-      /* Load to the specified spin, color and timeslice */
-      FORALLSITES(i,s){
-	if(t0 == ALL_T_SLICES || s->t == t0)
-	  src[i].d[spin].c[color] = c_src_ptr[i];
-      }
-    }
-    else if(source_type == DIRAC_FIELD_STORE){
-      if(wv_src_ptr == NULL){
-	printf("w_source: Can't copy from null field\n");
-	terminate(1);
-      }
-      /* Ignore spin, color and load the whole wilson vector from storage */
-      FORALLSITES(i,s){
-	if(t0 == ALL_T_SLICES || s->t == t0)
-	  for(s0=0;s0<4;s0++)
-	    for(c0=0;c0<3;c0++)
-	      src[i].d[s0].c[c0] = wv_src_ptr[i].d[s0].c[c0];
-      }
-    }
-    else {
-      node0_printf("w_source: Unrecognized source type %d\n",source_type);
+  /* zero src to be safe */
+  FORALLSITES(i,s) {
+    clear_wvec( src+i ); 
+  }
+  
+  /* If we are taking the source from a propagator file, set the
+     appropriate action */
+  if(source_type == PROP_FILE){
+    if(wqs->c_src != NULL && wqs->wv_src == NULL)
+      source_type = COMPLEX_FIELD_STORE;
+    if(wqs->wv_src != NULL && wqs->c_src == NULL)
+      source_type = DIRAC_FIELD_STORE;
+    else{
+      node0_printf("w_source_field: propagator file source ambiguous or missing.\n");
       terminate(1);
+    }
+  }
+
+  /* Unless we are taking the source from storage, clear it before
+     reconstructing it */
+  if(source_type != COMPLEX_FIELD_STORE &&
+     source_type != DIRAC_FIELD_STORE)
+    reset_wqs(wqs);
+  
+  if(source_type == POINT) {
+    /* load 1.0 into source at cooordinates given by source_coord */
+    /* initialize src to be a delta function at point x0,y0,z0,t0 */
+    /* Save a copy of the source in wqs->c_src */
+
+    alloc_wqs_c_src(wqs);
+
+    if(node_number(x0,y0,z0,t0) == mynode()){
+      i = node_index(x0,y0,z0,t0);
+      wqs->c_src[i].real = 1.0;
+      src[i].d[spin].c[color].real = 1.0;
+    }
+  }
+  else if(source_type == GAUSSIAN) {
+    /* Gaussian trial source centered on  x0,y0,z0,t0 */
+    /* Save a copy of the source in wqs->c_src */
+
+    alloc_wqs_c_src(wqs);
+
+    FORALLSITES(i,s) {
+      if(s->t != t0)continue;	/* only do this if t==t0 */
+      
+      my_x = ((s->x)-x0+nx) % nx;
+      rx = (my_x < (nx-my_x)) ? (Real) my_x : (Real) (my_x-nx);
+      my_y = ((s->y)-y0+ny) % ny;
+      ry = (my_y < (ny-my_y)) ? (Real) my_y : (Real) (my_y-ny);
+      my_z = ((s->z)-z0+nz) % nz;
+      rz = (my_z < (nz-my_z)) ? (Real) my_z : (Real) (my_z-nz);
+      
+      radius2 = rx*rx + ry*ry + rz*rz;
+      radius2 /= (r0*r0);
+
+      wqs->c_src[i].real = 
+	src[i].d[spin].c[color].real = (Real)exp((double)(- radius2));
+    }
+  }
+  else if(source_type == COVARIANT_GAUSSIAN){
+    /* Set delta function source */
+    if(node_number(x0,y0,z0,t0) == this_node){
+      i = node_index(x0,y0,z0,t0);
+      src[i].d[spin].c[color].real = 1.;
+    }
+    /* Then smear */
+    gauss_smear_field(src, r0, iters, t0);
+    /* Save a copy */
+    alloc_wqs_wv_src(wqs);
+    copy_wv_src(wqs->wv_src, src);
+  }
+  else if(source_type == COMPLEX_FIELD_FILE){
+    /* Load to the specified spin, color and timeslice */
+    r_source_w_fm_to_field(source_file, src, spin, color, t0, source_type);
+    /* Save a copy */
+    alloc_wqs_c_src(wqs);
+    copy_c_src(wqs->c_src, src, spin, color);
+  }
+  else if(source_type == DIRAC_FIELD_FILE){
+    /* Ignore spin, color and load the whole wilson vector from the file */
+    r_source_w_fm_to_field(source_file, src, spin, color, t0, source_type);
+    /* Save a copy */
+    alloc_wqs_wv_src(wqs);
+    copy_wv_src(wqs->wv_src, src);
+  }
+  else if(source_type == COMPLEX_FIELD_STORE){
+    if(c_src == NULL){
+      printf("w_source: Can't copy from null field\n");
+      terminate(1);
+    }
+    /* Load to the specified spin, color and timeslice */
+    FORALLSITES(i,s){
+      if(t0 == ALL_T_SLICES || s->t == t0)
+	src[i].d[spin].c[color] = c_src[i];
+    }
+  }
+  else if(source_type == DIRAC_FIELD_STORE){
+    if(wv_src == NULL){
+      printf("w_source: Can't copy from null field\n");
+      terminate(1);
+    }
+    /* Ignore spin, color and load the whole wilson vector from storage */
+    FORALLSITES(i,s){
+      if(t0 == ALL_T_SLICES || s->t == t0)
+	src[i] = wv_src[i];
+    }
+  }
+  else {
+    node0_printf("w_source: Unrecognized source type %d\n",source_type);
+    terminate(1);
   }
 } /* w_source_field */
 
@@ -311,7 +426,7 @@ int ask_quark_source( FILE *fp, int prompt, int *source_type, char *descrp)
   char myname[] = "ask_quark_source";
 
   if (prompt!=0)
-    printf("enter 'point', 'gaussian', 'covariant_gaussian', 'complex_field', 'dirac_field' for source type\n");
+    printf("enter 'point', 'gaussian', 'covariant_gaussian', 'complex_field', 'dirac_field', 'prop_file' for source type\n");
 
   savebuf = get_next_tag(fp, "quark source command", myname);
   if (savebuf == NULL)return 1;
@@ -336,27 +451,32 @@ int ask_quark_source( FILE *fp, int prompt, int *source_type, char *descrp)
     *source_type = DIRAC_FIELD_FILE;
     strcpy(descrp,"dirac_field");
   }
+  else if(strcmp("prop_file",savebuf) == 0 ) {
+    *source_type = PROP_FILE;
+    strcpy(descrp,"propagator_file");
+  }
   else{
     printf("ask_source: ERROR IN INPUT: source command %s is invalid\n",
 	   savebuf); 
     return 1;
   }
-
+  
   printf("%s\n",savebuf);
   return 0;
 } /* ask_quark_source */
 
 #define IF_OK if(status==0)
 
+/* Get the additional input parameters needed to specify the source */
 int get_quark_source(FILE *fp, int prompt, wilson_quark_source *wqs){
-
+  
   Real source_r0 = 0;
   int  source_type;
   int  source_loc[4] = { 0,0,0,0 };
   int  source_iters = 0;
   char source_file[MAXFILENAME] = "";
   int  status = 0;
-
+  
   /* Get antiquark source type */
   IF_OK status += ask_quark_source(fp, prompt,&source_type,
 				   wqs->descrp);
@@ -366,39 +486,43 @@ int get_quark_source(FILE *fp, int prompt, wilson_quark_source *wqs){
     if ( source_type == GAUSSIAN ){
       IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
       /* width: psi=exp(-(r/r0)^2) */
-	IF_OK status += get_f(stdin, prompt,"r0", &source_r0 );
-      }
-      else if ( source_type == POINT ){
-	IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
-      }
-      else if ( source_type == COVARIANT_GAUSSIAN ){
-	IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
-	IF_OK status += get_f(stdin, prompt, "r0", &source_r0);
-	IF_OK status += get_i(stdin, prompt, "source_iters", &source_iters);
-      }
-      else if ( source_type == COMPLEX_FIELD_FILE ){
-	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
-	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
-      }
-      else if ( source_type == DIRAC_FIELD_FILE ){
-	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
-	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
-      }
-      else {
-	printf("Source type not supported in this application\n");
-	status++;
-      }
+      IF_OK status += get_f(stdin, prompt,"r0", &source_r0 );
     }
-    
-    wqs->r0    = source_r0;
-    wqs->x0    = source_loc[0];
-    wqs->y0    = source_loc[1];
-    wqs->z0    = source_loc[2];
-    wqs->t0    = source_loc[3];
-    wqs->iters = source_iters;
-    strcpy(wqs->source_file,source_file);
-
-    return status;
+    else if ( source_type == POINT ){
+      IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+    }
+    else if ( source_type == COVARIANT_GAUSSIAN ){
+      IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+      IF_OK status += get_f(stdin, prompt, "r0", &source_r0);
+      IF_OK status += get_i(stdin, prompt, "source_iters", &source_iters);
+    }
+    else if ( source_type == COMPLEX_FIELD_FILE ){
+      IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
+      IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+    }
+    else if ( source_type == DIRAC_FIELD_FILE ){
+      IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
+      IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+    }
+    else if (source_type == PROP_FILE ){
+      /* This information is not taken from the file */
+      IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
+    }
+    else {
+      printf("Source type not supported in this application\n");
+      status++;
+    }
+  }
+  
+  wqs->r0    = source_r0;
+  wqs->x0    = source_loc[0];
+  wqs->y0    = source_loc[1];
+  wqs->z0    = source_loc[2];
+  wqs->t0    = source_loc[3];
+  wqs->iters = source_iters;
+  strcpy(wqs->source_file,source_file);
+  
+  return status;
 } /* get_quark_source */
 
 int get_quark_sink(FILE *fp, int prompt, wilson_quark_source *wqs){
@@ -441,4 +565,5 @@ int get_quark_sink(FILE *fp, int prompt, wilson_quark_source *wqs){
 
     return status;
 } /* get_quark_sink */
+
 
