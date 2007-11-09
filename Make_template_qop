@@ -107,7 +107,7 @@ ifneq ($(strip ${WANTQOP}),)
       FLINKS_FNQOP += fermion_links_fn_qop_milc_D.o \
         fermion_links_fn_qop_milc_F.o fermion_links_helpers.o
 
-      # Wilson fermion links
+      # Wilson fermion links (clover)
       FLINKS_WILSONQOP = fermion_links_wilson_qop_milc_D.o \
         fermion_links_wilson_qop_milc_F.o
 
@@ -135,5 +135,5 @@ else
 
   HAVEQOP = 
 
-endif  # if HAVEQOP
+endif  # if WANTQOP
 

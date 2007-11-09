@@ -1,14 +1,11 @@
-March 28, 2005
+July 13, 2007
 
 List of code projects to be done:
 
-Rename dslash to dslash_site throughout and dslash_on_temp to dslash_field etc.
-
-Standardize lattice I/O.
+Remove nflavors1 and nflavors2 from the RHMC code and do something
+sensible with the species counting -- e.g. a ONEMASS option ?
 
 Fold in Beat Jegerlehner's multimass clover inverter
-
-Add FNAL clover propagator creation
 
 Build FNAL-compatible form factor code.
 
@@ -19,9 +16,4 @@ Continue testing prefetching and layout strategies.
 
 Fix arb_dirac_eigen?  It has not been debugged for parallel running.
 
-Merge clover_invert and wilson_invert with ifdefs where they differ in
-a few places.
-
-Measure momentum dependence of correlators in clover_invert and
-wilson_invert.
 

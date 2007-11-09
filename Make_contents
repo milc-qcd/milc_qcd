@@ -3,7 +3,7 @@
 # 12/16/06 C. DeTar
 
 #  Change these names to suit
-VER = 7.5.0d
+VER = 7.6.0.beta
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -141,46 +141,54 @@ CLOVER_HYBRIDS =            \
  clover_hybrids/in.sample*       \
  clover_hybrids/out.sample*
 
-CLOVER_INVERT =            \
- clover_invert/*.c              \
- clover_invert/*.h              \
- clover_invert/Make_*            \
- clover_invert/in.sample*       \
- clover_invert/in.time*         \
- clover_invert/out.errtol*     \
+CLOVER_INVERT =              \
+ clover_invert/*.c           \
+ clover_invert/*.h           \
+ clover_invert/Make_*        \
+ clover_invert/in.sample*    \
+ clover_invert/in.time*      \
+ clover_invert/out.errtol*   \
  clover_invert/out.sample*
+
+CLOVER_INVERT2 =             \
+ clover_invert2/*.c          \
+ clover_invert2/*.h          \
+ clover_invert2/Make_*       \
+ clover_invert2/in.sample*   \
+ clover_invert2/out.errtol*  \
+ clover_invert2/out.sample*
 
 GLUON_PROP =                 \
  gluon_prop/GF_555_6.1       \
  gluon_prop/*.c              \
  gluon_prop/*.h              \
- gluon_prop/Make_*            \
+ gluon_prop/Make_*           \
  gluon_prop/in.sample*       \
  gluon_prop/out.errtol*      \
  gluon_prop/out.sample*
 
 DENSE_STATIC_SU3 =           \
- dense_static_su3/*.c             \
- dense_static_su3/*.h             \
+ dense_static_su3/*.c        \
+ dense_static_su3/*.h        \
  dense_static_su3/Make_*     
 
-H_DIBARYON =            \
+H_DIBARYON =                 \
  h_dibaryon/*.c              \
  h_dibaryon/*.h              \
- h_dibaryon/Make_*            \
+ h_dibaryon/Make_*           \
  h_dibaryon/in.sample*       \
 # h_dibaryon/out.errtol*     \
  h_dibaryon/out.sample*
 
-HEAVY        =   \
+HEAVY        =         \
  heavy/Make_*          \
- heavy/*.c            \
- heavy/*.h            \
- heavy/in.sample*     \
- heavy/out.errtol*    \
- heavy/out.sample*    \
- heavy/utilities/*.c  \
- heavy/utilities/*.h  \
+ heavy/*.c             \
+ heavy/*.h             \
+ heavy/in.sample*      \
+ heavy/out.errtol*     \
+ heavy/out.sample*     \
+ heavy/utilities/*.c   \
+ heavy/utilities/*.h   \
  heavy/utilities/Make* \
  heavy/utilities/in.sample*
 
@@ -411,6 +419,7 @@ CLOVER =              \
  ${CLOVER_DYNAMICAL}  \
  ${CLOVER_HYBRIDS}    \
  ${CLOVER_INVERT}     \
+ ${CLOVER_INVERT2}    \
  ${H_DIBARYON}
 
 FORM =                \

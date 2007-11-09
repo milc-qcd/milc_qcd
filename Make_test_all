@@ -31,6 +31,7 @@
 DIRS = \
    clover_dynamical \
    clover_invert \
+   clover_invert2 \
    file_utilities \
    gluon_prop \
    heavy \

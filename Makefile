@@ -135,16 +135,24 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 #    QDP   for Level 3 QOPQDP
 #    MILC (nonoptimized MILC implementation for testing)
 #    blank if you don't want QOP
-WANTQOP = 
+
+# Backward compatibility for QOPQDP:
+# As of version qopqdp 0.9.0 the normalization convention for the
+# staggered inverter changed.  If you are using a version of QOPQDP
+# with the old convention, define this macro:
+CQOPQDP_NORM = -DOLD_QOPQDP_NORM
+
+WANTQOP = QDP
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
 WANTQDP = 
 
 # Choose "true" or "". Implies HAVEQMP.
-WANTQIO = 
+WANTQIO = true
 
 # Choose "true" or "".
-WANTQMP = 
+WANTQMP = true
+
 
 #  Edit these locations for the SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
@@ -159,7 +167,7 @@ QMPSNG = ${SCIDAC}/qmp-single
 QDP = ${SCIDAC}/qdp
 QLA = ${SCIDAC}/qla
 # Level 3
-QOPQDP = ${SCIDAC}/qopqdp
+QOPQDP = ${SCIDAC}/qopqdp-single
 QOP = ${QOPQDP}
 
 # Make_template_qop defines these macros:
@@ -359,7 +367,7 @@ CPREFETCH = #
 # KS_MULTICG=REVERSE Iterate in reverse order
 # KS_MULTICG=REVHYB  Same as HYBRID but with vectors in reverse order.
 
-KSCGMULTI =# -DKS_MULTICG=HYBRID
+KSCGMULTI = -DKS_MULTICG=HYBRID
 
 #------------------------------
 # Multifermion force routines
@@ -377,7 +385,7 @@ KSCGMULTI =# -DKS_MULTICG=HYBRID
 # VECLENGTH=n        Number of source vectors to process in one group.
 #                    Applies only to the ASVEC option
 
-KSFFMULTI =# -DKS_MULTIFF=FNMAT
+KSFFMULTI = -DKS_MULTIFF=FNMAT
 
 
 #------------------------------
@@ -416,7 +424,7 @@ CLCG =# -DCL_CG=BICG
 # Summary
 
 CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${CGEOM} ${KSCGSTORE} ${CPREFETCH} \
- ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${CLCG} ${CQOP}
+ ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${CLCG} ${CQOP} ${CQOPQDP_NORM}
 
 #----------------------------------------------------------------------
 # 16. Choose MILC library make file in libraries directory.  

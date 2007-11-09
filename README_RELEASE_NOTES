@@ -25,8 +25,14 @@ for general instructions.
 
 Here are highlights of the changes:
 
-For version 7.5.1a
+For version 7.6.0
 
+  clover_invert2 enlarges the capabilities of clover_invert.
+  Partial support for qopqdp-0.9.0 with a backward compatibility
+     option in Makefile.
+  Partial preparation for HISQ: move calls for fat link creation out of
+     all staggered dslash and congrad.  Changes API for all ks_congrad
+     and dslash calls - hence a new minor version number.
   Fix bugs in io_source_w_fm.c and in io_helpers_w.c.
   Add capability.of reading a sink smearing function.
 

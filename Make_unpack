@@ -33,6 +33,7 @@ ALL_APPS = \
   clover_dynamical \
   clover_hybrids \
   clover_invert \
+  clover_invert2 \
   dense_static_su3 \
   file_utilities \
   gluon_prop \
@@ -63,7 +64,8 @@ arb_dirac_eigen:  	MAKE_generic_wilson
 arb_dirac_invert: 	MAKE_generic_wilson
 clover_dynamical:  	MAKE_generic_wilson MAKE_generic_clover
 clover_hybrids:  	MAKE_generic_wilson MAKE_generic_clover
-clover_invert:  	MAKE_generic_wilson MAKE_generic_clover
+clover_invert:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_ks
+clover_invert2:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_ks
 dense_static_su3:  	MAKE_generic_ks 
 gluon_prop:	        MAKE_generic_ks
 h_dibaryon:  		MAKE_generic_wilson MAKE_generic_clover
@@ -119,6 +121,7 @@ generic_clover \
 clover_dynamical \
 clover_hybrids \
 clover_invert \
+clover_invert2 \
 h_dibaryon \
 : ${CLOVER_TAR}
 	tar -xf ${CLOVER_TAR} $@
