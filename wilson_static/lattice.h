@@ -1,7 +1,7 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice_w.h ********************************/
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.7 2007/10/09 21:02:32 detar Exp $   **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.8 2007/11/09 15:58:09 detar Exp $   **/
 /* include file for MIMD heavy-light, version 4
    This file defines global scalars and the fields in the lattice. */
 
@@ -138,6 +138,7 @@ EXTERN  int nosmear ;  /* The number of smearing functions **/
 EXTERN	char smearfile_in[MAX_SMEAR][MAXFILENAME]; /** the names of the smearing functions ***/
 
 EXTERN	Real smear_code[MAX_SMEAR][5]; /** the code for smearing functions ***/
+EXTERN	int total_iters;
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
