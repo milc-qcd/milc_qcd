@@ -141,7 +141,8 @@ int main(int argc, char **argv)
 	  if ((spin + color) == 0)
 	  {
 	    /*** first pass of the code  **/
-	    fp_out_w[nk] = w_open_wprop(saveflag_w[nk],  savefile_w[nk] );
+	    fp_out_w[nk] = w_open_wprop(saveflag_w[nk],  savefile_w[nk],
+					wqs.type);
 
 	    /* open file for meson output and writet he header */
 	    if (saveflag_m == SAVE_MESON_ASCII)
@@ -165,7 +166,8 @@ int main(int argc, char **argv)
 	  } /*** end of spin =0 && color == 0 **/
 	  else
 	  {
-	    fp_out_w[nk] = w_open_wprop(saveflag_w[nk],  savefile_w[nk] );
+	    fp_out_w[nk] = w_open_wprop(saveflag_w[nk],  savefile_w[nk],
+					wqs.type);
 
 	    /* open file for meson output for appending output*/
 	    if (saveflag_m == SAVE_MESON_ASCII)

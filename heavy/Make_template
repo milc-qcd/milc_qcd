@@ -34,6 +34,7 @@ MY_OBJECTS=  \
    control_mr.o \
    gauge_info.o \
    hopping.o \
+   ksprop_info.o \
    light_meson.o \
    mb_gamma_r_wvec.o \
    output_m.o \
@@ -57,16 +58,28 @@ G_OBJECTS = \
    reunitarize2.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_w.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
+endif
+
+# Set from generic_ks directory
+G_KS_OBJECTS =      \
+  io_helpers_ks.o   \
+  io_prop_ks.o      \
+  io_prop_ks_fm.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_KS_OBJECTS += io_scidac_ks.o
 endif
 
 G_WILSON_OBJECTS = \
    canopy2weyl_rot.o  \
    dslash_w3.o        \
+   gammas.o           \
    io_helpers_w.o     \
    io_prop_w.o        \
    io_prop_w_fm.o     \
    io_source_w_fm.o   \
+   staggered2naive.o  \
    w_source_h.o \
    wilson_invert.o
 
@@ -127,7 +140,7 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_WILSON_OBJECTS} \
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_WILSON_OBJECTS} \
   ${G_CLOVER_OBJECTS} ${LAYOUT} ${CL_OBJECTS} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
@@ -153,6 +166,7 @@ ALL_MAKES = \
   ../Make_template_qop \
   ../Make_template_scidac \
   ../generic/Make_template \
+  ../generic_ks/Make_template \
   ../generic_wilson/Make_template \
   ../generic_clover/Make_template \
 
@@ -201,8 +215,12 @@ clean:
 # Rules for generic routines
 include ../generic/Make_template
 
+
 # Rules for generic routines
 include ../generic_clover/Make_template
+
+# Rules for generic routines
+include ../generic_ks/Make_template
 
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template

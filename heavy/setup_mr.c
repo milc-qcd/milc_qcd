@@ -379,6 +379,8 @@ int readin(int prompt)
     nhop = par_buf.nhop;
     flag = par_buf.flag;
     wqs = par_buf.wqs;
+    init_wqs(&wqs);
+    wqs.type = par_buf.wqs.type;
     source_parity = par_buf.source_parity;
     rsqmin = par_buf.rsqmin;
     rsqprop = par_buf.rsqprop;
