@@ -145,16 +145,9 @@ EXTERN site *lattice;
 #define N_POINTERS 16
 EXTERN char ** gen_pt[N_POINTERS];
 
-/* field major storage DON't FORGET to MALLOC somewhere */
-EXTERN su3_matrix *t_longlink;
-EXTERN su3_matrix *t_fatlink;
-#ifdef DBLSTORE_FN
-EXTERN su3_matrix *t_longbacklink;
-EXTERN su3_matrix *t_fatbacklink;
-#endif
-#ifdef DM_DU0
-EXTERN su3_matrix *t_dfatlink_du0;
-#endif
+/* Storage for definition of the quark action */
+EXTERN ferm_links_t        fn_links;
+EXTERN ks_action_paths ks_act_paths;
 
 #define smear_fac 2.5
 #endif /* _LATTICE_H */

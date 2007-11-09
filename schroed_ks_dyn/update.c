@@ -1,6 +1,6 @@
 /********** update.c ****************************************************/
 /* MIMD version 6 */
-
+/* NOTE: NEEDS UPGRADING TO ASQTAD */
 /*
  Update lattice.
  Improved method for 1-4 flavors:
@@ -45,8 +45,10 @@ Real xrandom;
 	/* do conjugate gradient to get (Madj M)inverse * phi */
 	if(step==1){
 	    /* do conjugate gradient to get (Madj M)inverse * phi */
+	  load_ferm_links(&fn_links, &ks_act_paths);
 	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN,&final_rsq);
+				   niter, rsqmin, PRECISION, EVEN,&final_rsq,
+				fn_links);
 	    cg_time = 0.0;
 	    startaction=d_action();
 	    /* copy link field to old_link */
@@ -73,8 +75,10 @@ Real xrandom;
 #endif
 
 	/* do conjugate gradient to get (Madj M)inverse * phi */
+	  load_ferm_links(&fn_links, &ks_act_paths);
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN, &final_rsq);
+				   niter, rsqmin, PRECISION, EVEN, &final_rsq,
+			    fn_links);
 	cg_time = ((Real)step - 0.5)*epsilon;
 
 	/* now update H by full time interval */
@@ -95,8 +99,10 @@ Real xrandom;
     /* do conjugate gradient to get (Madj M)inverse * phi */
     next_cg_time = steps*epsilon;
     predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
+    load_ferm_links(&fn_links, &ks_act_paths);
     iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN, &final_rsq);
+				   niter, rsqmin, PRECISION, EVEN, &final_rsq,
+			fn_links);
     cg_time = steps*epsilon;
     endaction=d_action();
     change = endaction-startaction;

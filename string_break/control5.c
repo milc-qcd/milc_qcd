@@ -118,16 +118,22 @@ initialize_machine(&argc,&argv);
 		su3mat_copy( &(s->staple), &(s->link[dir]));
 	    }
 
+	    /* NOTE: NEED TO CHANGE THIS TO BUILD ks_act_paths AND
+	       CALL mat_invert_uml INSTEAD OF ks_congrad with EVENANDODD */
+	    load_ferm_links(&fn_links, &ks_act_paths);
 	    for(j=0; j<num_src; j++){
 		/* Put source, m^\dag qprop, in phi, result in xxx */
-		dslash_site( F_OFFSET(qprop[j]), F_OFFSET(phi), EVENANDODD);
+		dslash_fn_site( F_OFFSET(qprop[j]), F_OFFSET(phi), EVENANDODD,
+				fn_links);
 		scalar_mult_latvec( F_OFFSET(phi), -1.0, F_OFFSET(phi),
 		    EVENANDODD);
 		scalar_mult_add_latvec( F_OFFSET(phi), F_OFFSET(qprop[j]),
 		    2.0*mass, F_OFFSET(phi), EVENANDODD);
 		clear_latvec( F_OFFSET(xxx), EVENANDODD);
+		
 		m_iters = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVENANDODD, &rsq);
+				   niter, rsqmin, PRECISION, EVENANDODD, &rsq,
+				   fn_links);
 		avm_iters += m_iters;
 		++meascount;
 		copy_latvec( F_OFFSET(xxx), F_OFFSET(qprop[j]), EVENANDODD);

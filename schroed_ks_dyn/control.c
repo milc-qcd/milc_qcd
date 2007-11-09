@@ -1,7 +1,7 @@
 /************************ control.c ******************************/
 /* MIMD version 6 */
 /* Main procedure for SU3 with dynamical fermions 			*/
-
+/* NEEDS UPGRADING TO ASQTAD */
 /* This version combines code for the PHI algorithm (approriate for 4
    flavors) and the R algorithm for "epsilon squared" updating of 
    1 to 4 flavors.  Compilation should occur with PHI_ALGORITHM defined
@@ -71,8 +71,10 @@ double dtime;
 	    /* generate a pseudofermion configuration */
 	    grsource(EVEN);
 	    /* do conjugate gradient to get (Madj M)inverse * phi  */
+	    load_ferm_links(&fn_links, &ks_act_paths);
 	    m_iters=ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN,&rsq);
+				   niter, rsqmin, PRECISION, EVEN,&rsq,
+			       fn_links);
 
 	    /* call Psi-bar-Psi and fermion energy/pressure measurement */
 	    /* it also measures the pseudofermionic action 		*/

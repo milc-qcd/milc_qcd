@@ -1,6 +1,6 @@
 /********** update_hgh.c *************************************************/
 /* MIMD version 6 */
-
+/* THIS CODE NEEDS UPGRADING NOW */
 /*
  Update lattice.
  Momentum, then gauge, then momentum, ....
@@ -56,8 +56,11 @@ Real xrandom;
 	    old_cg_time = cg_time = -1.0e6;
 
 	    /* do conjugate gradient to get (Madj M)inverse * phi */
+	    /* NOTE: NEED TO UPGRADE TO ASQTAD.  BUILD ks_act_paths, ETC. */
+	    load_ferm_links(&fn_links, &ks_act_paths);
 	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN, &final_rsq);
+				niter, rsqmin, PRECISION, EVEN, &final_rsq,
+				fn_links);
 	    cg_time = 0.0;
 	}
 #ifdef HMC_ALGORITHM
@@ -116,8 +119,10 @@ Real xrandom;
 	/* do conjugate gradient to get (Madj M)inverse * phi */
 	next_cg_time = step*epsilon;
 	predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
+	load_ferm_links(&fn_links, &ks_act_paths);
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN, &final_rsq);
+				   niter, rsqmin, PRECISION, EVEN, &final_rsq,
+			    fn_links);
 	cg_time = step*epsilon;
 
 	if( step < steps ){

@@ -6,6 +6,7 @@
    This file defines global scalars and the fields in the lattice. */
 
 #include "defines.h"
+#include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/random.h"    /* For double_prn */
 #include "../include/io_lat.h"    /* For gauge_file */
@@ -121,5 +122,9 @@ EXTERN site *lattice;
 /* Generic pointers, for gather routines */
 #define N_POINTERS 8
 EXTERN char ** gen_pt[N_POINTERS];
+
+/* Storage for definition of the quark action */
+EXTERN ferm_links_t        fn_links;
+EXTERN ks_action_paths ks_act_paths;
 
 #endif /* _LATTICE_H */

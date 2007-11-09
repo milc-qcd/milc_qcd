@@ -1,5 +1,6 @@
 /****** update_h.c  -- update the momentum matrices ******************/
 /* MIMD version 6 */
+/* THIS CODE NEEDS UPGRADING, NOW */
 
 #include "schroed_ks_includes.h"
 
