@@ -16,7 +16,7 @@
   { {FILE_TYPE_GAUGE_V1,      GAUGE_VERSION_NUMBER_V1},
     {FILE_TYPE_GAUGE_V5,      GAUGE_VERSION_NUMBER},
     {FILE_TYPE_GAUGE_1996,    GAUGE_VERSION_NUMBER_1996},
-    {FILE_TYPE_GAUGE_FNAL,    GAUGE_VERSION_NUMBER_FNAL},
+    {FILE_TYPE_GAUGE_FNAL,    IO_UNI_MAGIC},
     {FILE_TYPE_GAUGE_ARCHIVE, GAUGE_VERSION_NUMBER_ARCHIVE},
     {FILE_TYPE_GAUGE_SCIDAC,  LIME_MAGIC_NO}
     };**/
@@ -231,11 +231,11 @@ char *get_next_tag(FILE *fp, char *tag, char *myname){
   while(1){
     s = fscanf(fp, "%s",line);
     if (s == EOF){
-      printf("%s(%d) EOF on input.\n",myname,this_node);
+      printf("%s(%d): EOF on input.\n",myname,this_node);
       return NULL;
     }
     if(s == 0){
-      printf("%s(%d) Error reading %s\n",myname,this_node,tag);
+      printf("%s(%d): Error reading %s\n",myname,this_node,tag);
       return NULL;
     }
     /* Provide for comment lines with # before "prompt" */
@@ -303,7 +303,7 @@ int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
   savebuf = get_next_tag(fp, "read lattice command", myname);
   if (savebuf == NULL)return 1;
   
-  printf("%s",savebuf);
+  printf("%s ",savebuf);
   if(strcmp("fresh",savebuf) == 0 ){
     *flag = FRESH;
     printf("\n");
@@ -329,7 +329,7 @@ int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
   /*read name of file and load it */
   if( *flag != FRESH && *flag != CONTINUE ){
     if(prompt!=0)printf("enter name of file containing lattice\n");
-    status=fscanf(fp,"%s",filename);
+    status=fscanf(fp," %s",filename);
     if(status !=1) {
       printf("\n%s(%d): ERROR IN INPUT: error reading file name\n",
 	     myname, this_node); 
@@ -457,6 +457,51 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   }
   return 0;
 }
+
+/*--------------------------------------------------------------------*/
+
+/* For FNAL formatted ASCII correlator files */
+
+int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
+
+  char *savebuf;
+  int status;
+  char myname[] = "ask_corr_file";
+
+  if (prompt!=0)
+    printf("'forget_corr', 'save_corr_fnal' for correlator file type\n");
+
+  savebuf = get_next_tag(fp, "output correlator file command", myname);
+  if (savebuf == NULL)return 1;
+
+  printf("%s ",savebuf);
+
+  if(strcmp("forget_corr",savebuf) == 0 ){
+    *flag = FORGET;
+  }
+  else if(strcmp("save_corr_fnal",savebuf) == 0 ) {
+    *flag = SAVE_ASCII;  /* Lazy borrowing of lattice flags! */
+  }
+  else{
+    printf("is not a save correlator command. INPUT ERROR\n");
+    return 1;
+  }
+  
+  if( *flag != FORGET ){
+    if(prompt!=0)printf("enter filename\n");
+    status=fscanf(fp,"%s",filename);
+    if(status !=1){
+      printf("\n%s: ERROR reading filename\n",myname); 
+      return 1;
+    }
+    printf("%s\n",filename);
+  }
+
+  return 0;
+
+} /* ask_corr_file */
+
+/*--------------------------------------------------------------------*/
 
 int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
   int status = 0;
