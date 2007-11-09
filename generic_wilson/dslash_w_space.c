@@ -3,6 +3,35 @@
 
 #include "generic_wilson_includes.h"
 
+/* Temporary work space for dslash_w_field and dslash_w_field_special */ 
+static half_wilson_vector *htmp[8] ;
+
+/* Flag indicating if temp is allocated               */
+static int temp_not_allocated=1 ;
+
+void malloc_dslash_w_3D_temps(){
+  int j;
+
+  if(!temp_not_allocated)return;
+  for( j = 0; j < 8; j++ ){
+    htmp[j] =(half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
+    if(htmp[j] == NULL){
+      printf("node %d can't malloc htmp[%d]\n",this_node,j);
+      terminate(1);
+    }
+  }
+  temp_not_allocated = 0 ;
+}
+
+void cleanup_dslash_w_3D_temps(){
+  register int i ;
+  if(!temp_not_allocated)
+    for(i=0;i<8;i++) {
+      free(htmp[i]) ; 
+    }
+  temp_not_allocated=1 ;
+}
+
 void grow_add_three_wvecs2( wilson_vector *a, half_wilson_vector *b1,
         half_wilson_vector *b2, half_wilson_vector *b3, int sign, int sum ){
   int i;
@@ -193,7 +222,8 @@ Compute SUM_dirs_xyz (
 
 */
 
-void dslash_w_3D( field_offset src, field_offset dest, int isign, int parity) {
+void dslash_w_3D_site( field_offset src, field_offset dest, int isign, 
+		       int parity) {
 half_wilson_vector hwvx,hwvy,hwvz;
 
 register int i;
@@ -220,11 +250,10 @@ msg_tag *tag[8];
       terminate(1);
      }
 
-    //printf("parity %x, otherparity %x\n", parity, otherparity);
+
     /* Take Wilson projection for src displaced in up direction, gather
        it to "our site" */
     FORSOMEPARITY(i,s,otherparity){
-      //printf("i %d, x %d, y %d, z %d, t %d\n",i,s->x,s->y,s->z,s->t);
       wp_shrink_3dir2( (wilson_vector *)F_PT(s,src), &(s->htmp[XUP]),
 	    &(s->htmp[YUP]), &(s->htmp[ZUP]), isign);
       //if(i==259)printf("i = %d, (1+gx)G = %e\n", i, s->htmp[XUP].h[1].c[0].real);
@@ -296,3 +325,94 @@ msg_tag *tag[8];
     }
 
 } /* end (of dslash_w_space() ) */
+
+void dslash_w_3D_field( wilson_vector *src, wilson_vector *dest, 
+			int isign, int parity) {
+half_wilson_vector hwvx,hwvy,hwvz;
+
+register int i;
+register site *s;
+register int dir,otherparity=0;
+msg_tag *tag[8];
+
+  /* The calling program must clean up the temps! */
+  malloc_dslash_w_3D_temps();
+
+    switch(parity) {
+	case EVEN:      otherparity=ODD; break;
+	case ODD:       otherparity=EVEN; break;
+	case EVENANDODD:        otherparity=EVENANDODD; break;
+    }
+
+    if(N_POINTERS < 8){
+      printf("dslash: N_POINTERS must be 8 or more!\n");
+      terminate(1);
+     }
+
+
+    /* Take Wilson projection for src displaced in up direction, gather
+       it to "our site" */
+    FORSOMEPARITY(i,s,otherparity){
+      wp_shrink_3dir2( src+i, htmp[XUP]+i, htmp[YUP]+i, htmp[ZUP]+i, isign);
+    }
+    for( dir=XUP; dir <= ZUP; dir++) {
+	tag[dir]=start_gather_field( htmp[dir], sizeof(half_wilson_vector),
+	    dir, parity, gen_pt[dir] );
+    }
+
+        /* Take Wilson projection for src displaced in down direction,
+        multiply it by adjoint link matrix, gather it "up" */
+    FORSOMEPARITY(i,s,otherparity){
+      wp_shrink_3dir2( src+i, &hwvx, &hwvy, &hwvz,-isign);
+	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, &(htmp[XDOWN][i]));
+	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, &(htmp[YDOWN][i]));
+	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, &(htmp[ZDOWN][i]));
+    }
+
+    for( dir=XUP; dir <= ZUP; dir++) {
+	tag[OPP_DIR(dir)]=start_gather_field(htmp[OPP_DIR(dir)], 
+		sizeof(half_wilson_vector), OPP_DIR(dir),
+		parity, gen_pt[OPP_DIR(dir)] );
+    }
+
+
+	/* Set dest to zero */
+        /* Take Wilson projection for src displaced in up direction, gathered,
+		multiply it by link matrix, expand it, and add.
+		to dest */
+    for( dir=XUP; dir <= ZUP; dir++) {
+	wait_gather(tag[dir]);
+    }
+    FORSOMEPARITY(i,s,parity){
+	mult_su3_mat_hwvec( &(s->link[XUP]), 
+		(half_wilson_vector * )(gen_pt[XUP][i]), &hwvx ); 
+	mult_su3_mat_hwvec( &(s->link[YUP]), 
+		(half_wilson_vector * )(gen_pt[YUP][i]), &hwvy ); 
+	mult_su3_mat_hwvec( &(s->link[ZUP]), 
+		(half_wilson_vector * )(gen_pt[ZUP][i]), &hwvz ); 
+	grow_add_three_wvecs2( dest+i,
+	    &hwvx, &hwvy, &hwvz, isign, 0 ); /* "0" is NOSUM */
+    }
+    for( dir=XUP; dir <= ZUP; dir++) {
+	cleanup_gather(tag[dir]);
+    }
+
+        /* Take Wilson projection for src displaced in down direction,
+        expand it, and add to dest */
+    for( dir=XUP; dir <= ZUP; dir++) {
+	wait_gather(tag[OPP_DIR(dir)]);
+    }
+
+    FORSOMEPARITY(i,s,parity){
+      grow_add_three_wvecs2( dest+i,
+	    (half_wilson_vector *)(gen_pt[XDOWN][i]),
+	    (half_wilson_vector *)(gen_pt[YDOWN][i]),
+	    (half_wilson_vector *)(gen_pt[ZDOWN][i]),
+	    -isign, 1 );	/* "1" SUMs in current dest */
+    }
+    for( dir=XUP; dir <= ZUP; dir++) {
+	cleanup_gather(tag[OPP_DIR(dir)]);
+    }
+
+} /* end (of dslash_w_space() ) */
+
