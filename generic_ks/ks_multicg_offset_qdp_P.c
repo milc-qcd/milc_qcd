@@ -152,8 +152,8 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
 
   if(!congrad_setup) setup_congrad();
 
-  set4_M_from_field(FATLINKS, fn->fat);
-  set4_M_from_field(LONGLINKS, fn->lng);
+  set4_M_from_field(FATLINKS, fn->fat, EVENANDODD);
+  set4_M_from_field(LONGLINKS, fn->lng, EVENANDODD);
   {
     QDP_ColorMatrix *tcm;
     int i;
@@ -354,7 +354,7 @@ KS_MULTICG_MASS(	/* Return value is number of iterations taken */
   }
 
   src = QDP_create_V();
-  set_V_from_site(src, f_src);
+  set_V_from_site(src, f_src, EVENANDODD);
 
   dest = (QDP_ColorVector **) malloc(num_masses*sizeof(QDP_ColorVector *));
   qmasses = (QLA_Real *) malloc(num_masses*sizeof(QLA_Real));
@@ -369,7 +369,7 @@ KS_MULTICG_MASS(	/* Return value is number of iterations taken */
   *final_rsq_ptr = (Real) qfinal_rsq_ptr;
 
   for(i=0; i<num_masses; i++) {
-    set_field_from_V(psim[i], dest[i]);
+    set_field_from_V(psim[i], dest[i], parity);
     QDP_destroy_V(dest[i]);
   }
   free(qmasses);      qmasses = NULL;

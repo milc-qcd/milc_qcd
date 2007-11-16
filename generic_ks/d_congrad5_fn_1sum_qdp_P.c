@@ -148,8 +148,8 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest,
   t_fatlink = fn->fat;
 
   remaptime = -dclock();
-  set4_M_from_field(FATLINKS, t_fatlink);
-  set4_M_from_field(LONGLINKS, t_longlink);
+  set4_M_from_field(FATLINKS, t_fatlink, EVENANDODD);
+  set4_M_from_field(LONGLINKS, t_longlink, EVENANDODD);
 
   {
     QDP_ColorMatrix *tcm;
@@ -299,20 +299,21 @@ KS_CONGRAD_MILCFIELD2QDP(su3_vector *f_src, su3_vector *f_dest,
   QDP_ColorVector *src, *dest;
   double remaptime;
   int iteration;
+  int parity = qic->parity;
 
   remaptime = -dclock();
   src = QDP_create_V();
   dest = QDP_create_V();
 
-  set_V_from_field(src, f_src);
-  set_V_from_field(dest, f_dest);
+  set_V_from_field(src, f_src,EVENANDODD);
+  set_V_from_field(dest, f_dest,EVENANDODD);
 
   qmass = (QLA_Real) mass;
   remaptime += dclock();
   iteration = KS_CONGRAD_QDP(src, dest, qic, qmass, fn );
   remaptime -= dclock();
 
-  set_field_from_V(f_dest, dest);
+  set_field_from_V(f_dest, dest, parity);
 
   QDP_destroy_V(dest); dest = NULL;
   QDP_destroy_V(src);  src = NULL;
@@ -338,20 +339,21 @@ KS_CONGRAD_MILC2QDP(field_offset f_src, field_offset f_dest,
   QDP_ColorVector *src, *dest;
   double remaptime;
   int iteration;
+  int parity = qic->parity;
 
   remaptime = -dclock();
   src = QDP_create_V();
   dest = QDP_create_V();
 
-  set_V_from_site(src, f_src);
-  set_V_from_site(dest, f_dest);
+  set_V_from_site(src, f_src,EVENANDODD);
+  set_V_from_site(dest, f_dest,EVENANDODD);
 
   qmass = (QLA_Real) mass;
   remaptime += dclock();
   iteration = KS_CONGRAD_QDP(src, dest, qic, qmass, fn );
   remaptime -= dclock();
 
-  set_site_from_V(f_dest, dest);
+  set_site_from_V(f_dest, dest, parity);
 
   QDP_destroy_V(dest); dest = NULL;
   QDP_destroy_V(src);  src = NULL;

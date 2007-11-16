@@ -134,8 +134,8 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
   iteration = 0;
 
   load_ferm_links();
-  set4_M_from_field(fatlinks, t_fatlink);
-  set4_M_from_field(longlinks, t_longlink);
+  set4_M_from_field(fatlinks, t_fatlink, EVENANDODD);
+  set4_M_from_field(longlinks, t_longlink, EVENANDODD);
 
   //#if 0
   {
@@ -169,8 +169,8 @@ ks_congrad_qdp(QDP_ColorVector *src, QDP_ColorVector *dest, QLA_Real mass,
     for(i=0; i<8; ++i) {
       implinks[i] = QDP_create_M();
     }
-    set4_M_from_temp(fatlinks, t_fatlink);
-    set4_M_from_temp(longlinks, t_longlink);
+    set4_M_from_temp(fatlinks, t_fatlink, EVENANDODD);
+    set4_M_from_temp(longlinks, t_longlink, EVENANDODD);
   }
   //print_mem();
 #endif
@@ -292,8 +292,8 @@ ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
   src = QDP_create_V();
   dest = QDP_create_V();
 
-  set_V_from_site(src, f_src);
-  set_V_from_site(dest, f_dest);
+  set_V_from_site(src, f_src,EVENANDODD);
+  set_V_from_site(dest, f_dest,EVENANDODD);
 
   qmass = (QLA_Real) mass;
   qrsqmin = (QLA_Real) rsqmin;
@@ -301,7 +301,7 @@ ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
     qrsqmin, q_parity, &qfinal_rsq_ptr);
   *final_rsq_ptr = (Real) qfinal_rsq_ptr;
 
-  set_site_from_V(f_dest, dest);
+  set_site_from_V(f_dest, dest, parity);
 
   QDP_destroy_V(dest); dest = NULL;
   QDP_destroy_V(src);  src  = NULL;

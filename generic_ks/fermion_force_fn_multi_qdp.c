@@ -430,11 +430,11 @@ void fermion_force_fn_multi( Real eps, Real residues[],
   x = (QDP_ColorVector **)malloc(nterms*sizeof(QDP_ColorVector *));
   for(i = 0; i < nterms; i++){
     x[i] = QDP_create_V();
-    set_V_from_field(x[i], multi_x[i]);
+    set_V_from_field(x[i], multi_x[i],EVENANDODD);
   }
 
   /* Map gauge links to QDP */
-  set4_M_from_site(gf, F_OFFSET(link));
+  set4_M_from_site(gf, F_OFFSET(link), EVENANDODD);
 
   /* The force requires a special conversion from the antihermit type */
   FORALLUPDIR(dir){

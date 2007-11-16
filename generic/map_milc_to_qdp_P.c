@@ -17,13 +17,13 @@
 
 #define make_set_qdp_from_site(P, T, TYPE, MILCTYPE) \
 void \
-set_##P##_##T##_from_site(QDP_##TYPE *dest, field_offset src) \
+set_##P##_##T##_from_site(QDP_##TYPE *dest, field_offset src, int parity) \
 { \
   int i; \
   site *s; \
   QLA_##TYPE *temp; \
   temp = QDP_expose_##T (dest); \
-  FORALLSITES(i,s) { \
+  FORSOMEPARITY(i,s,parity) {   \
     memcpy((void *)&temp[i], F_PT(s,src), sizeof(QLA_##TYPE)); \
   } \
   QDP_reset_##T (dest); \
@@ -31,13 +31,13 @@ set_##P##_##T##_from_site(QDP_##TYPE *dest, field_offset src) \
 
 #define make_set_site_from_qdp(P, T, TYPE, MILCTYPE) \
 void \
-set_site_from_##P##_##T(field_offset dest, QDP_##TYPE *src) \
+set_site_from_##P##_##T(field_offset dest, QDP_##TYPE *src, int parity)	\
 { \
   int i; \
   site *s; \
   QLA_##TYPE *temp; \
   temp = QDP_expose_##T (src); \
-  FORALLSITES(i,s) { \
+  FORSOMEPARITY(i,s,parity) {	\
     memcpy(F_PT(s,dest), (void *)&temp[i], sizeof(QLA_##TYPE)); \
   } \
   QDP_reset_##T (src); \
@@ -45,28 +45,28 @@ set_site_from_##P##_##T(field_offset dest, QDP_##TYPE *src) \
 
 #define make_set_qdp_from_field(P, T, TYPE, MILCTYPE) \
 void \
-set_##P##_##T##_from_field(QDP_##TYPE *dest, MILCTYPE *src) \
+set_##P##_##T##_from_field(QDP_##TYPE *dest, MILCTYPE *src, int parity) \
 { \
   int i; \
   site *s; \
   QLA_##TYPE *temp; \
   temp = QDP_expose_##T (dest); \
-  FORALLSITES(i,s) { \
+  FORSOMEPARITY(i,s,parity) {  \
     memcpy((void *)&temp[i], (void *)&src[i], sizeof(QLA_##TYPE)); \
   } \
   QDP_reset_##T (dest); \
 }
 
-#define make_set4_qdp_from_site(P, T, TYPE, MILCTYPE) \
+#define make_set4_qdp_from_site(P, T, TYPE, MILCTYPE)	\
 void \
-set4_##P##_##T##_from_site(QDP_##TYPE *dest[], field_offset src) \
+set4_##P##_##T##_from_site(QDP_##TYPE *dest[], field_offset src, int parity) \
 { \
   int i, dir; \
   site *s; \
   QLA_##TYPE *temp; \
   for(dir=0; dir<4; dir++) { \
     temp = QDP_expose_##T (dest[dir]); \
-    FORALLSITES(i,s) { \
+    FORSOMEPARITY(i,s,parity) {						\
       memcpy((void *)&temp[i], (char *)F_PT(s,src)+dir*sizeof(MILCTYPE), sizeof(QLA_##TYPE)); \
     } \
     QDP_reset_##T (dest[dir]); \
@@ -75,13 +75,13 @@ set4_##P##_##T##_from_site(QDP_##TYPE *dest[], field_offset src) \
 
 #define make_set_field_from_qdp(P, T, TYPE, MILCTYPE) \
 void \
-set_field_from_##P##_##T(MILCTYPE *dest, QDP_##TYPE *src) \
+set_field_from_##P##_##T(MILCTYPE *dest, QDP_##TYPE *src, int parity)	\
 { \
   int i; \
   site *s; \
   QLA_##TYPE *temp; \
   temp = QDP_expose_##T (src); \
-  FORALLSITES(i,s) { \
+  FORSOMEPARITY(i,s,parity) {   \
     memcpy((void *)&dest[i], (void *)&temp[i], sizeof(QLA_##TYPE)); \
   } \
   QDP_reset_##T (src); \
@@ -89,14 +89,14 @@ set_field_from_##P##_##T(MILCTYPE *dest, QDP_##TYPE *src) \
 
 #define make_set4_qdp_from_field(P, T, TYPE, MILCTYPE) \
 void \
-set4_##P##_##T##_from_field(QDP_##TYPE *dest[], MILCTYPE *src) \
+set4_##P##_##T##_from_field(QDP_##TYPE *dest[], MILCTYPE *src, int parity) \
 { \
   int i, dir; \
   site *s; \
   QLA_##TYPE *temp; \
   for(dir=0; dir<4; dir++) { \
     temp = QDP_expose_##T (dest[dir]); \
-    FORALLSITES(i,s) { \
+    FORSOMEPARITY(i,s,parity) {	\
       memcpy((void *)&temp[i], (void *)&src[4*i+dir], sizeof(QLA_##TYPE)); \
     } \
     QDP_reset_##T (dest[dir]); \
@@ -105,14 +105,14 @@ set4_##P##_##T##_from_field(QDP_##TYPE *dest[], MILCTYPE *src) \
 
 #define make_set4_field_from_qdp(P, T, TYPE, MILCTYPE) \
 void \
-set4_field_from_##P##_##T(MILCTYPE *dest, QDP_##TYPE *src[]) \
+set4_field_from_##P##_##T(MILCTYPE *dest, QDP_##TYPE *src[], int parity) \
 { \
   int i, dir; \
   site *s; \
   QLA_##TYPE *temp; \
   for(dir=0; dir<4; dir++) { \
     temp = QDP_expose_##T (src[dir]); \
-    FORALLSITES(i,s) { \
+    FORSOMEPARITY(i,s,parity) { \
       memcpy((void *)&dest[4*i+dir], (void *)&temp[i], sizeof(QLA_##TYPE)); \
     } \
     QDP_reset_##T (src[dir]); \

@@ -23,6 +23,9 @@
 
 /*
  * $Log: ks_multicg_offset_qop_P.c,v $
+ * Revision 1.5  2007/11/16 04:07:15  detar
+ * Add parity to QDP "set" utilities
+ *
  * Revision 1.4  2007/11/09 16:42:41  detar
  * Pull FN link calculation out of inverters
  *
@@ -71,7 +74,7 @@
 #include "../include/generic_ks_qop.h"
 #include "../include/loopend.h"
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.4 2007/11/09 16:42:41 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.5 2007/11/16 04:07:15 detar Exp $";
 
 /* Standard MILC interface for the Asqtad multimass inverter 
    single source, multiple masses.  Uses the prevailing precision */
@@ -88,10 +91,12 @@ int KS_MULTICG_OFFSET(	      /* Return value is number of iterations taken */
 {
   int num_masses = num_offsets;
   int i,j;
+  site *s;
   MYREAL *masses;
   int iterations_used;
   MYREAL *masses2[1];
   int nmass[1], nsrc;
+  int parity = qic->parity;     /* MILC parity */
   field_offset milc_srcs[1];
   su3_vector **milc_sols[1];
   char myname[] = "ks_multicg_offset";
@@ -119,9 +124,11 @@ int KS_MULTICG_OFFSET(	      /* Return value is number of iterations taken */
   masses2[0] = masses;
   
   /* Require zero initial guess for multicg */
-  for(i = 0; i < num_masses; i++)
-    for(j = 0; j < sites_on_node; j++)
-      clearvec(psim[i]+j);
+  for(j = 0; j < num_masses; j++){
+    FORSOMEPARITY(i,s,parity){
+      clearvec(psim[j]+i);
+    }
+  } END_LOOP
   
   /* Just set pointer for source 1 array of solutions */
   milc_sols[0] =  psim;

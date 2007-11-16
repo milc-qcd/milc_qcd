@@ -195,7 +195,7 @@ void load_asqtad_links(int both, ferm_links_t *fn, ks_action_paths *ap) {
   }
 
   /* Map gauge links to QDP */
-  set4_M_from_site(gf, F_OFFSET(link));
+  set4_M_from_site(gf, F_OFFSET(link), EVENANDODD);
 
   /* Load Asqtad path coefficients from table */
   c.one_link     = act_path_coeff[0]; 
@@ -235,8 +235,8 @@ void load_asqtad_links(int both, ferm_links_t *fn, ks_action_paths *ap) {
   }
 
   /* Map QDP fields to MILC order */
-  set4_field_from_M(*t_fl, fl);
-  if(both)set4_field_from_M(*t_ll, ll);
+  set4_field_from_M(*t_fl, fl, EVENANDODD);
+  if(both)set4_field_from_M(*t_ll, ll, EVENANDODD);
 
   /* Clean up */
   FORALLUPDIR(dir){

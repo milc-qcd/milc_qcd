@@ -618,10 +618,10 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off )
 
   /* Map source vector */
   vecx = QDP_create_V();
-  SET_V_FROM_SITE(vecx, x_off);
+  SET_V_FROM_SITE(vecx, x_off,EVENANDODD);
 
   /* Map gauge links to QDP */
-  SET4_M_FROM_SITE(gf, F_OFFSET(link));
+  SET4_M_FROM_SITE(gf, F_OFFSET(link), EVENANDODD);
 
   /* The force requires a special conversion from the antihermit type */
   FORALLUPDIR(dir){
@@ -702,11 +702,11 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
   /* Map source vector */
   vecx[0] = QDP_create_V();
   vecx[1] = QDP_create_V();
-  set_V_from_site(vecx[0], x1_off);
-  set_V_from_site(vecx[1], x2_off);
+  set_V_from_site(vecx[0], x1_off, EVENANDODD);
+  set_V_from_site(vecx[1], x2_off, EVENANDODD);
 
   /* Map gauge links to QDP */
-  set4_M_from_site(gf, F_OFFSET(link));
+  set4_M_from_site(gf, F_OFFSET(link), EVENANDODD);
 
   /* The force requires a special conversion from the antihermit type */
   FORALLUPDIR(dir){
@@ -789,11 +789,11 @@ void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues,
   vecx = (QDP_ColorVector **)malloc(nsrc*sizeof(QDP_ColorVector *));
   for(i=0;i<nsrc;i++){
     vecx[i] = QDP_create_V();
-    SET_V_FROM_FIELD(vecx[i], xxx[i]);
+    SET_V_FROM_FIELD(vecx[i], xxx[i],EVENANDODD);
   }
 
   /* Map gauge links to QDP */
-  SET4_M_FROM_SITE(gf, F_OFFSET(link));
+  SET4_M_FROM_SITE(gf, F_OFFSET(link), EVENANDODD);
 
   /* The force requires a special conversion from the antihermit type */
   FORALLUPDIR(dir){

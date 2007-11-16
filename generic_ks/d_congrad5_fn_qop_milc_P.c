@@ -136,7 +136,7 @@ void QOP_asqtad_invert(QOP_info_t *info,
     terminate(1);
   }
 
-#define NORMFACT(a) 4.*(a)*(a)
+#define NORMFACT(a) 4.*(a)
 
   /* Change the normalization of the proposed solution vector */
   xnorm = NORMFACT(mass);
@@ -254,8 +254,9 @@ start:
 	    free(ttt); free(cg_p); free(resid); first_congrad = 1;
 
 	    /* Save diagnostics */
-            res_arg->final_rsq=(MYREAL)rsq;
+            res_arg->final_rsq=(MYREAL)rsq/source_norm;
 	    res_arg->final_iter = iteration;
+	    res_arg->final_restart = iteration/niter;
 	    final_flop = (double)(nflop*volume*iteration)/(double)numnodes();
 	    info->final_flop += final_flop;
 	    dtimec += dclock();
@@ -389,8 +390,9 @@ start:
 	    free(ttt); free(cg_p); free(resid); first_congrad = 1;
 
 	    /* Save diagnostics */
-            res_arg->final_rsq  = (MYREAL)rsq;
+            res_arg->final_rsq  = (MYREAL)rsq/source_norm;
 	    res_arg->final_iter = iteration;
+	    res_arg->final_restart = iteration/niter;
 	    final_flop = (double)(nflop*volume*iteration)/(double)numnodes();
 	    info->final_flop += final_flop;
 	    dtimec += dclock();
@@ -485,8 +487,9 @@ start:
 
     /* Save diagnostics */
 
-    res_arg->final_rsq  =(MYREAL)rsq;
+    res_arg->final_rsq  =(MYREAL)rsq/source_norm;
     res_arg->final_iter = iteration;
+    res_arg->final_restart = iteration/niter;
     final_flop = (double)(nflop*volume*iteration)/(double)numnodes();
     info->final_flop += final_flop;
     dtimec += dclock();

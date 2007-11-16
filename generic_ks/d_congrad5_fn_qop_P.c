@@ -47,6 +47,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop_P.c,v $
+ * Revision 1.6  2007/11/16 04:07:15  detar
+ * Add parity to QDP "set" utilities
+ *
  * Revision 1.5  2007/11/09 16:42:41  detar
  * Pull FN link calculation out of inverters
  *
@@ -110,7 +113,7 @@ static const char *qop_prec[2] = {"F", "D"};
 
 /*#define CGDEBUG*/
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.5 2007/11/09 16:42:41 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.6 2007/11/16 04:07:15 detar Exp $";
 
 
 /* Load inversion args for Level 3 inverter */
@@ -218,15 +221,14 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
     for(imass = 0; imass < nmass[isrc]; imass++){
       if(this_node == 0){
 	if(qic->resid < qop_resid_arg[isrc][imass]->final_rsq){
-	  /** suppressed until we clear up the normalization conventions
 	  qic->converged = 0;
 	  printf("ks_congrad_qop_generic: NOT CONVERGED (src %d, mass %d),\n",
 		 isrc, imass);
-	  printf("after %d iters (max iters %d max %d restarts) rsq. = %e wanted %e\n",
+	  printf("after %d iters and %d restarts (max iters %d max %d restarts) rsq. = %e wanted %e\n",
 		 qop_resid_arg[isrc][imass]->final_iter,
+		 qop_resid_arg[isrc][imass]->final_restart,
 		 qic->max, qic->nrestart,
 		 qop_resid_arg[isrc][imass]->final_rsq,qic->resid);
-	  **/
 	}
       }
       if(qic->final_rsq < qop_resid_arg[isrc][imass]->final_rsq)
@@ -257,7 +259,7 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 #ifndef OLD_QOPQDP_NORM
 /* Starting with qopqdp-0.9.0 the normalization of the solution is changed */
 
-#define NORMFACT(a) 4.*(a)*(a)
+#define NORMFACT(a) 4.*(a)
 
 static
 void qop_to_milc_normalization_site(field_offset sol, MASSREAL mass,

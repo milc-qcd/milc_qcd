@@ -282,7 +282,7 @@ imp_gauge_force( Real eps, field_offset mom_off ){
   }
 
   /* Map gauge links to QDP */
-  set4_M_from_site(gf, F_OFFSET(link));
+  set4_M_from_site(gf, F_OFFSET(link), EVENANDODD);
 
   /* The force requires a special conversion from the antihermit type */
   FORALLUPDIR(dir){
