@@ -3,7 +3,7 @@
 # 12/16/06 C. DeTar
 
 #  Change these names to suit
-VER = 7.6.0.beta
+VER = 7.6.0
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -157,6 +157,14 @@ CLOVER_INVERT2 =             \
  clover_invert2/in.sample*   \
  clover_invert2/out.errtol*  \
  clover_invert2/out.sample*
+
+PW_NR_MESON =                \
+ pw_nr_meson/*.c             \
+ pw_nr_meson/*.h             \
+ pw_nr_meson/Make_*          \
+ pw_nr_meson/in.sample*      \
+ pw_nr_meson/out.errtol*     \
+ pw_nr_meson/out.sample*
 
 GLUON_PROP =                 \
  gluon_prop/GF_555_6.1       \
@@ -420,7 +428,8 @@ CLOVER =              \
  ${CLOVER_HYBRIDS}    \
  ${CLOVER_INVERT}     \
  ${CLOVER_INVERT2}    \
- ${H_DIBARYON}
+ ${H_DIBARYON}        \
+ ${PW_NR_MESON}
 
 FORM =                \
  ${KS_HL_SPECTRUM} \

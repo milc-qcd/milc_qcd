@@ -16,6 +16,7 @@ ks_imp_rhmc
 ks_imp_invert_multi
 ks_imp_utilities
 pure_gauge
+pw_nr_meson
 schroed_cl_inv
 smooth_inst
 wilson_static
@@ -27,8 +28,11 @@ Here are highlights of the changes:
 
 For version 7.6.0
 
+  pw_nr_meson does P-wave charmonium.
+  Support for FNAL correlator format for ks_hl_spectrum.
+  Support for double-precision NERSC archive lattices.
   clover_invert2 enlarges the capabilities of clover_invert.
-  Partial support for qopqdp-0.9.0 with a backward compatibility
+  Partial support for qopqdp-0.10.1 with a backward compatibility
      option in Makefile.
   Partial preparation for HISQ: move calls for fat link creation out of
      all staggered dslash and congrad.  Changes API for all ks_congrad

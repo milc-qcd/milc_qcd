@@ -87,7 +87,7 @@ out.test.diff.${PROJ}.${PREC}: out.test${CUSTOM}.${PROJ}.${PREC} \
 	   out.sample.${PROJ}.${PREC}.tmp \
 	   out.errtol${CUSTOM}.${PROJ}.${PREC} > \
 	   out.test.diff.${PROJ}.${PREC}
-#	   /bin/rm out.test.${PROJ}.${PREC}.tmp \
+#	   /bin/rm -f out.test.${PROJ}.${PREC}.tmp \
 #	   out.sample.${PROJ}.${PREC}.tmp
 
 .PHONY: test
@@ -109,8 +109,8 @@ test_clean:
 	do\
 	   for proj in ${PROJS};\
 	   do\
-	     /bin/rm out.test.$$proj.$$prec.tmp out.sample.$$proj.$$prec.tmp;\
-	     /bin/rm out.test.diff.$$proj.$$prec out.test.$$proj.$$prec; \
+	     /bin/rm -f out.test.$$proj.$$prec.tmp out.sample.$$proj.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.$$proj.$$prec out.test.$$proj.$$prec; \
 	   done;\
 	done
 

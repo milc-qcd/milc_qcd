@@ -140,18 +140,18 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 # As of version qopqdp 0.9.0 the normalization convention for the
 # staggered inverter changed.  If you are using a version of QOPQDP
 # with the old convention, define this macro:
-CQOPQDP_NORM = -DOLD_QOPQDP_NORM
+CQOPQDP_NORM = #-DOLD_QOPQDP_NORM
 
-WANTQOP = QDP
+WANTQOP = 
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
 WANTQDP = 
 
 # Choose "true" or "". Implies HAVEQMP.
-WANTQIO = true
+WANTQIO = 
 
 # Choose "true" or "".
-WANTQMP = true
+WANTQMP = 
 
 
 #  Edit these locations for the SciDAC packages
@@ -167,7 +167,7 @@ QMPSNG = ${SCIDAC}/qmp-single
 QDP = ${SCIDAC}/qdp
 QLA = ${SCIDAC}/qla
 # Level 3
-QOPQDP = ${SCIDAC}/qopqdp-single
+QOPQDP = ${SCIDAC}/qopqdp
 QOP = ${QOPQDP}
 
 # Make_template_qop defines these macros:
@@ -418,7 +418,7 @@ KSRHMCINT =#
 # CL_CG=MR    Minimum residue
 # CL_CG=HOP   Hopping
 
-CLCG =# -DCL_CG=BICG 
+CLCG = -DCL_CG=BICG 
 
 #------------------------------
 # Summary

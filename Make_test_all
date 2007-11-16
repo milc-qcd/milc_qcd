@@ -41,6 +41,7 @@ DIRS = \
    ks_imp_invert_multi \
    ks_imp_utilities \
    pure_gauge \
+   pw_nr_meson \
    schroed_cl_inv \
    smooth_inst \
    wilson_static
