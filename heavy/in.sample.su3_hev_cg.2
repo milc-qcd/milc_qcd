@@ -1,0 +1,41 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+ 
+
+nkap 2
+start_spin 0
+start_color 0
+start_kap 0
+end_spin 3
+end_color 2
+end_kap 1 
+beta 6.0
+kappa 0.120
+kappa 0.130
+approx_kappa_c 0.170
+max_iterations 50
+max_restarts 24
+error_for_propagator 5.0e-7
+flag 0
+number_hopping_steps 20
+cutoff_gaussian_weyl
+width^(-2) 0.7
+source_x 2
+source_y 2
+source_z 2
+source_t 7
+wall_cutoff 2
+wall_separation 2
+extra_sink
+reload_serial ../binary_samples/lat.sample.l4448
+coulomb_gauge_fix
+forget
+fresh_wprop
+forget_wprop
+save_binary meson.120
+fresh_wprop
+forget_wprop
+save_binary meson.140
