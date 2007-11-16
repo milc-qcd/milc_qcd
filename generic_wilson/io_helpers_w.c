@@ -283,7 +283,7 @@ w_prop_file *r_open_wprop(int flag, char *filename)
 
 w_prop_file *w_open_wprop(int flag, char *filename, int source_type)
 {
-  w_prop_file *wpf;
+  w_prop_file *wpf = NULL;
   wilson_propagator *wp;
 #ifdef HAVE_QIO
   char *fileinfo;
@@ -474,7 +474,7 @@ int reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
   wilson_propagator *wp;
   wilson_vector *wv;
   int s0, c0;
-  int file_type;
+  int file_type = -999;
 
   if(timing)dtime = -dclock();
   status = 0;
