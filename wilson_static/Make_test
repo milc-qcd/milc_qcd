@@ -67,16 +67,16 @@ ${OUTTEST}.su3_static_cg.1: ${READMATRIX} ${BINTEST}.su3_static_cg.1 ${BINTEST}.
 	/bin/rm ${BINTEST}.su3_static_cg.1
 
 out.test.diff.matrix.su3_static_mr.1:  ${OUTTEST}.su3_static_mr.1 ${OUTSAMPLE}.su3_static_mr.1
-	../headtail.pl ${PATTERNS} < ${OUTTEST}.su3_static_mr.1 > out.test.matrix.su3_static_mr.1.tmp
-	../headtail.pl ${PATTERNS} < ${OUTSAMPLE}.su3_static_mr.1 > out.sample.matrix.su3_static_mr.1.tmp
-	../diffn3.pl out.test.matrix.su3_static_mr.1.tmp out.sample.matrix.su3_static_mr.1.tmp out.errtol.matrix.su3_static_mr.1 > \
+	perl ../headtail.pl ${PATTERNS} < ${OUTTEST}.su3_static_mr.1 > out.test.matrix.su3_static_mr.1.tmp
+	perl ../headtail.pl ${PATTERNS} < ${OUTSAMPLE}.su3_static_mr.1 > out.sample.matrix.su3_static_mr.1.tmp
+	perl ../diffn3.pl out.test.matrix.su3_static_mr.1.tmp out.sample.matrix.su3_static_mr.1.tmp out.errtol.matrix.su3_static_mr.1 > \
 	   out.test.diff.matrix.su3_static_mr.1
 #	rm out.test.matrix.su3_static_mr.1.tmp out.sample.matrix.su3_static_mr.1.tmp
 
 out.test.diff.matrix.su3_static_cg.1:  ${OUTTEST}.su3_static_cg.1 ${OUTSAMPLE}.su3_static_cg.1
-	../headtail.pl ${PATTERNS} < ${OUTTEST}.su3_static_cg.1 > out.test.matrix.su3_static_cg.1.tmp
-	../headtail.pl ${PATTERNS} < ${OUTSAMPLE}.su3_static_cg.1 > out.sample.matrix.su3_static_cg.1.tmp
-	../diffn3.pl out.test.matrix.su3_static_cg.1.tmp out.sample.matrix.su3_static_cg.1.tmp out.errtol.matrix.su3_static_cg.1 > \
+	perl ../headtail.pl ${PATTERNS} < ${OUTTEST}.su3_static_cg.1 > out.test.matrix.su3_static_cg.1.tmp
+	perl ../headtail.pl ${PATTERNS} < ${OUTSAMPLE}.su3_static_cg.1 > out.sample.matrix.su3_static_cg.1.tmp
+	perl ../diffn3.pl out.test.matrix.su3_static_cg.1.tmp out.sample.matrix.su3_static_cg.1.tmp out.errtol.matrix.su3_static_cg.1 > \
 	   out.test.diff.matrix.su3_static_cg.1
 #	rm out.test.matrix.su3_static_cg.1.tmp out.sample.matrix.su3_static_cg.1.tmp
 
