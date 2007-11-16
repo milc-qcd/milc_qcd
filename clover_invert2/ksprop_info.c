@@ -1,7 +1,7 @@
 /*********************** ksprop_info.c *************************/
 /* MIMD version 7 */
 
-/* For ks_spect */
+/* For clover_ivnert2 */
 
 /* Application-dependent routine for writing ksprop info file */
 /* This file is an ASCII companion to the KS propagator file
