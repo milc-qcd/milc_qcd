@@ -243,7 +243,7 @@ int readin(int prompt) {
 				      par_buf.stringLFN );
 
         /* find out whether or not to save propagator at end */
-        IF_OK status += ask_ending_ksprop( prompt, &(par_buf.kssaveflag),
+        IF_OK status += ask_ending_ksprop( stdin, prompt, &(par_buf.kssaveflag),
                                            par_buf.kssavefile );
 
 
