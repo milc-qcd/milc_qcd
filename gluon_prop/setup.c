@@ -224,7 +224,7 @@ char savebuf[128];
 #ifdef QUARK_PROP
 	/* find out starting propagator */
 	for(i=0;i<par_buf.num_mass;i++){
-	    IF_OK status += ask_starting_ksprop( prompt,&par_buf.ksstartflag[i],
+	  IF_OK status += ask_starting_ksprop( stdin, prompt,&par_buf.ksstartflag[i],
 				par_buf.ksstartfile[i]);
 	}
 
@@ -256,7 +256,7 @@ char savebuf[128];
 
 	/* what to do with computed propagator */
 	for(i=0;i<par_buf.num_mass;i++){
-	    IF_OK status += ask_ending_ksprop( prompt,&par_buf.kssaveflag[i],
+	  IF_OK status += ask_ending_ksprop( stdin, prompt,&par_buf.kssaveflag[i],
 				par_buf.kssavefile[i]);
 	}
 #endif

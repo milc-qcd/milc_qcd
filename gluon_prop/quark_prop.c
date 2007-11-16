@@ -37,9 +37,6 @@ int status, multiflag;
 int readflag, writeflag;
 char recxml[MAX_RECXML];
 
-/* Create fat and long links */ 
- load_ferm_links(&fn_links, &ks_act_paths);
-
     pix = 2.*PI / (Real)nx;
     piy = 2.*PI / (Real)ny;
     piz = 2.*PI / (Real)nz;
@@ -108,6 +105,9 @@ char recxml[MAX_RECXML];
     }
 
     rephase( ON );	/* Turn staggered phases on */
+
+    /* Create fat and long links */ 
+    load_ferm_links(&fn_links, &ks_act_paths);
 
     for(j=0; j<3; j++){
 
@@ -181,7 +181,6 @@ char recxml[MAX_RECXML];
 	}
 	else{
 	    /* do a multi-cg */
-	  load_ferm_links(&fn_links, &ks_act_paths);
 	    cgn += ks_multicg_mass( F_OFFSET(phi), psim, mass, num_mass,
 			       niter, rsqprop, PRECISION, EVEN, &finalrsq,
 			       &fn_links);

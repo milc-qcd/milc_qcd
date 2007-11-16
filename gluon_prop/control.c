@@ -133,6 +133,7 @@ int main(int argc, char *argv[])  {
 #ifdef FN
 	invalidate_ferm_links(&fn_links);
 #endif
+
 #ifdef QUARK_RENORM
 	cg_iter = quark_renorm();
 #else

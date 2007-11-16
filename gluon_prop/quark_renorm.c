@@ -43,9 +43,6 @@ char filename[50];
  int prec = PRECISION;   /* Make internal precision for CG the same as
 			    the prevailing precision */
 
- /* Create fat and long links */
- load_ferm_links(&fn_links, &ks_act_paths);
-
     pix = 2.*PI / (Real)nx;
     piy = 2.*PI / (Real)ny;
     piz = 2.*PI / (Real)nz;
@@ -78,6 +75,9 @@ char filename[50];
     }
 
     rephase( ON );	/* Turn staggered phases on */
+
+    /* Create fat and long links */
+    load_ferm_links(&fn_links, &ks_act_paths);
 
     /* Loop over the 16 source points */
     for(xi=0; xi<16; xi++){
@@ -140,7 +140,6 @@ char filename[50];
 		    }
 		    else{
 			/* do a C.G. (source in phi, result in xxx1) */
-		      load_ferm_links(&fn_links, &ks_act_paths);
 			cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 					   mass[j_mass], niter, nrestart, 
 					   rsqprop, PRECISION, ODD, &finalrsq,
@@ -171,7 +170,7 @@ char filename[50];
 		    /* do a multi-cg */
 		    cgn += ks_multicg_mass( F_OFFSET(phi), psim, mass, num_mass,
 				       niter, rsqprop, prec, EVEN, &finalrsq,
-				       &fn_links, &ks_act_paths);
+				       &fn_links);
 		    /* Multiply by -Madjoint */
 		    for(j_mass=0; j_mass<num_mass; j_mass++){
 			FORALLSITES(i,s){
@@ -201,7 +200,7 @@ char filename[50];
 		    /* do a multi-cg */
 		    cgn += ks_multicg_mass( F_OFFSET(phi), psim, mass, num_mass,
 				       niter, rsqprop, prec, ODD, &finalrsq,
-				       &fn_links, &ks_act_paths);
+				       &fn_links);
 		    /* Multiply by -Madjoint */
 		    for(j_mass=0; j_mass<num_mass; j_mass++){
 			FORALLSITES(i,s){

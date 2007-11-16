@@ -206,6 +206,9 @@ ALL_MAKES = \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
+ifeq ($(strip ${HAVEQOP}),true)
+  ${FLINKS_FNQOP}: quark_action.h
+endif
 fermion_links_helpers.o: quark_action.h
 fermion_links_fn.o: quark_action.h
 quark_stuff.o: quark_action.h
@@ -214,6 +217,7 @@ quark_stuff.o: quark_action.h
 QUARKIMP = ../generic_ks/imp_actions
 
 quark_action.h: ${QUARKIMP}/${QUARK}
+	@echo Copying quark_action.h from ${QUARKIMP}/${QUARK}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
 ifeq ($(strip ${QCDOC}),true)
