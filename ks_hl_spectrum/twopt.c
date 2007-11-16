@@ -845,7 +845,7 @@ static char *get_utc_datetime(void)
 {
   time_t time_stamp;
   struct tm *gmtime_stamp;
-  char time_string[64];
+  static char time_string[64];
 
   time(&time_stamp);
   gmtime_stamp = gmtime(&time_stamp);
@@ -924,7 +924,7 @@ print_end_fnal_meson_prop(FILE *fp){
 void 
 close_fnal_meson_file(FILE *fp){
   if(this_node != 0 || saveflag_c == FORGET)return;
-  fclose(fp);
+  if(fp != NULL)fclose(fp);
 }
 
 /*--------------------------------------------------------------------*/
@@ -1010,8 +1010,7 @@ print_hl_rot(FILE *corr_fp, complex **prop_rot, int k)
 			      i, trace_kind_rot[i],kap[k]);
       for(t=0;t<nt;t++)
 	{
-	  g_floatsum( &(prop_rot[i][t].real) );
-	  g_floatsum( &(prop_rot[i][t].imag) );
+	  g_complexsum( &prop_rot[i][t] );
 	  if(this_node==0){
 	    if(do_fnal_print[i])
 	      print_fnal_meson_prop(corr_fp, t, prop_rot[i][t]);
@@ -1064,14 +1063,15 @@ print_hl_smear(FILE *corr_fp, complex **prop_smear, int k, int ns)
 			    ns, trace_kind_smear[i],kap[k]);
     for(t=0;t<nt;t++)
       {
-	g_floatsum( &prop_smear[i][t].real );
-	g_floatsum( &prop_smear[i][t].imag );
+	g_complexsum( &prop_smear[i][t] );
+	CDIVREAL(prop_smear[i][t],space_vol,prop_smear[i][t]);
+		  
 	if(this_node==0){
 	  if(do_fnal_print[i])
 	    print_fnal_meson_prop(corr_fp, t, prop_smear[i][t]);
 	  printf("%d %e %e\n", t,
-		 prop_smear[i][t].real/space_vol, 
-		 prop_smear[i][t].imag/space_vol);
+		 prop_smear[i][t].real, 
+		 prop_smear[i][t].imag);
 	}
       }
     if(do_fnal_print[i])

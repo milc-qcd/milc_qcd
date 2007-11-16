@@ -13,6 +13,7 @@ int main(int argc,char *argv[])
 {
   int prompt , k, ns, i;
   site *s;
+  double space_vol;
   
   int t,color,spin, color1, spin1;
   
@@ -89,9 +90,11 @@ int main(int argc,char *argv[])
       }
       
       for(ns=0; ns<num_smear;ns++){
-	
 	if(strcmp(smearfile[ns],"none")==0) continue;
 
+	space_vol = (double)nx*ny*nz;
+
+	/* Either read a smearing file, or take it to be a point sink */
 	if(strlen(smearfile[ns]) != 0){
 
 	   get_smearings_bi_serial(smearfile[ns]);
@@ -105,7 +108,7 @@ int main(int argc,char *argv[])
 	      
 		  pr_tmp = 
 		    s->quark_propagator.c[color].d[spin].d[spin1].c[color1];
-		  
+	  
 		  s->quark_propagator_copy.c[color].d[spin].d[spin1].c[color1].real =
 		    pr_tmp.real * s->w.real - pr_tmp.imag * s->w.imag;
 	      
@@ -113,13 +116,15 @@ int main(int argc,char *argv[])
 		    pr_tmp.real * s->w.imag + pr_tmp.imag * s->w.real;
 		}
 	   }
-	  } else { /* No smearing */
+	  } else { /* Point sink */
 	   FORALLSITES(i,s){
 	     for(color=0;color<3;color++)for(spin=0;spin<4;spin++)
 	      for(color1=0;color1<3;color1++)for(spin1=0;spin1<4;spin1++){
+		  /* keep a consistent normalization */
 		  pr_tmp = 
 		    s->quark_propagator.c[color].d[spin].d[spin1].c[color1];
 		  
+		  CMULREAL(pr_tmp,space_vol,pr_tmp);
 		  s->quark_propagator_copy.c[color].d[spin].d[spin1].c[color1].real =
 		    pr_tmp.real;
 	      
@@ -158,9 +163,10 @@ int main(int argc,char *argv[])
       }/* loop ns*/
       
     }/*loop kappa*/
-  }
 
-  close_fnal_meson_file(corr_fp);
+    close_fnal_meson_file(corr_fp);
+  } /* readin(prompt) == 0 */
+
   node0_printf("\nRUNNING COMPLETED\n"); fflush(stdout);
 
 #ifdef HAVE_QDP

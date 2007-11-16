@@ -2,11 +2,11 @@
 # For ks_hl_spectrum
 
 #------------------------------------------------------------
-# Examples:
+# Examples for tests:
 
-#    make -f Make_test test
+#    make -f Make_test check
 # or, for a specific project or projects
-#    make -f Make_test "PROJS=su3_rmd" test
+#    make -f Make_test "PROJS=su3_rmd" check
 
 # For tests on other platforms, first edit the file ../Make_test_template
 # to select the appropriate LAUNCH.
@@ -27,6 +27,25 @@ PRECLIST = 1 2
 
 include ../Make_test_template
 
-check: test
+fnal_corr:
+in.sample.fnal_corr.${PREC}:
+out.test.fnal_corr.${PREC}:
+	touch out.test.fnal_corr.${PREC}
 
-clean: test_clean
+test_fnal:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} clean;\
+	   ${MAKE} -f Make_test "PROJ=fnal_corr" "PREC=$$prec" "PATTERNS=rotated-sinks END" out.test.diff.fnal_corr.$$prec;\
+	done
+
+test_fnal_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm out.test.fnal_corr.$$prec.tmp out.sample.fnal_corr.$$prec.tmp;\
+	     /bin/rm out.test.diff.fnal_corr.$$prec out.test.fnal_corr.$$prec; \
+	done
+
+check: test test_fnal
+
+clean: test_clean test_fnal_clean
