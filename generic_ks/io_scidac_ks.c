@@ -7,7 +7,11 @@
 */
 
 #include "generic_ks_includes.h"
+#ifndef HAVE_QIO
+REQUIRES QIO
+#else
 #include <qio.h>
+#endif
 #include "../include/io_scidac.h"
 #include "../include/io_scidac_ks.h"
 #include <string.h>
