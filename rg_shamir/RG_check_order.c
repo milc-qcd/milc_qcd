@@ -26,7 +26,7 @@ QLA_Complex one;
   for(i=0; i< RG_Nd; ++i)
    {
     link_qdp[i] = QDP_create_M();
-    set_M_from_site(link_qdp[i],F_OFFSET(link[i]));
+    set_M_from_site(link_qdp[i],F_OFFSET(link[i]),EVENANDODD);
    }
 
   for(j=0; j<nrg; ++j)

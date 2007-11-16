@@ -68,7 +68,7 @@ void RG_setup(QDP_Sub_Block QDP_block[NRG+1],
   for(i=0; i< RG_Nd; ++i)
     {
       link_qdp[i] = QDP_create_M();
-      set_M_from_site(link_qdp[i],F_OFFSET(link[i]));
+      set_M_from_site(link_qdp[i],F_OFFSET(link[i]),EVENANDODD);
     }
 #endif
 

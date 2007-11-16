@@ -518,7 +518,7 @@ measure_chirality_qdp(QDP_ColorVector *src, double *chirality,
   else if(subset==QDP_odd) parity = ODD;
   else parity = EVENANDODD;
 
-  set_site_from_V(F_OFFSET(tempvec[3]), src);
+  set_site_from_V(F_OFFSET(tempvec[3]), src,EVENANDODD);
   mult_spin_pseudoscalar(F_OFFSET(tempvec[3]),F_OFFSET(ttt));
 
   cc = 0.0;
@@ -543,7 +543,7 @@ print_densities_qdp(QDP_ColorVector *src, char *tag, int y, int z, int t,
   else if(subset==QDP_odd) parity = ODD;
   else parity = EVENANDODD;
 
-  set_site_from_V(F_OFFSET(tempvec[3]), src);
+  set_site_from_V(F_OFFSET(tempvec[3]), src,EVENANDODD);
 
   mult_spin_pseudoscalar(F_OFFSET(tempvec[3]),F_OFFSET(ttt));
 
@@ -585,15 +585,15 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   t_longlink = fn->lng;
   t_fatlink = fn->fat;
 
-  set4_M_from_field(fatlinks, t_fatlink);
-  set4_M_from_field(longlinks, t_longlink);
+  set4_M_from_field(fatlinks, t_fatlink, EVENANDODD);
+  set4_M_from_field(longlinks, t_longlink, EVENANDODD);
 
   //ev = malloc(Nvecs*sizeof(QLA_Real));
   vec = malloc(Nvecs*sizeof(QDP_ColorVector *));
   for(i=0; i<Nvecs; i++) {
     vec[i] = QDP_create_V();
     //ev[i] = eigVal[i];
-    set_V_from_field(vec[i], eigVec[i]);
+    set_V_from_field(vec[i], eigVec[i],EVENANDODD);
   }
 
   its = Kalkreuter_qdp(vec, eigVal, Tolerance, RelTol, Nvecs, MaxIter, Restart,
@@ -601,7 +601,7 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   for(i=0; i<Nvecs; i++) {
     //eigVal[i] = ev[i];
-    set_site_from_V(eigVec[i], vec[i]);
+    set_site_from_V(eigVec[i], vec[i],EVENANDODD);
     QDP_destroy_V(vec[i]);
   }
   free(vec);

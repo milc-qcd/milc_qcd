@@ -154,7 +154,7 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
  for(i=0; i< RG_Nd; ++i)
   {
    link_qdp[i] = QDP_create_M();
-   set_M_from_site(link_qdp[i],F_OFFSET(link[i]));
+   set_M_from_site(link_qdp[i],F_OFFSET(link[i]),EVENANDODD);
   }
 
   dssplaq1=plaquette_qdp(link_qdp,s[nrg],0);
@@ -166,7 +166,7 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
    {
     link_qdp_g[i] = QDP_create_M();
     pr_link_g[i] = QDP_create_M();
-    set_M_from_site(link_qdp_g[i],F_OFFSET(link[i]));
+    set_M_from_site(link_qdp_g[i],F_OFFSET(link[i]),EVENANDODD);
    }
  
   dssplaq_g1=plaquette_qdp(link_qdp_g,s[nrg],0);
@@ -190,7 +190,7 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
   {
    pr_link[i] = QDP_create_M();
    link_qdp[i] = QDP_create_M();
-   set_M_from_site(link_qdp[i],F_OFFSET(link[i]));
+   set_M_from_site(link_qdp[i],F_OFFSET(link[i]),EVENANDODD);
   }
 
 
@@ -199,7 +199,7 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
  dssplaq1=plaquette_qdp(pr_link,s[nrg],0);
  smearing();
  for(i=0; i< RG_Nd; ++i)
-  set_M_from_site(pr_link[i],F_OFFSET(link[i]));
+  set_M_from_site(pr_link[i],F_OFFSET(link[i]),EVENANDODD);
  dssplaqn=plaquette_qdp(pr_link,s[nrg],0);
  
  printf("QDP/MILC %e/%e\n",dssplaq1,dssplaqn);
@@ -219,12 +219,12 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
  for(i=0; i< RG_Nd; ++i)
   {
    pr_link[i] = QDP_create_M();
-   set_M_from_site(pr_link[i],F_OFFSET(link[i]));
+   set_M_from_site(pr_link[i],F_OFFSET(link[i]),EVENANDODD);
   }
 
  smearing();
  for(i=0; i< 3; ++i)
-  set_M_from_site(pr_link[i],F_OFFSET(sm_link[i]));
+  set_M_from_site(pr_link[i],F_OFFSET(sm_link[i]),EVENANDODD);
  dssplaq1=plaquette_qdp(pr_link,s[nrg],0);
 
  rand_gauge(F_OFFSET(rgt));
@@ -232,12 +232,12 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
  for(i=0; i< RG_Nd; ++i)
   {
    pr_link_g[i] = QDP_create_M();
-   set_M_from_site(pr_link_g[i],F_OFFSET(link[i]));
+   set_M_from_site(pr_link_g[i],F_OFFSET(link[i]),EVENANDODD);
   }
 
  smearing();
  for(i=0; i< 3; ++i)
-  set_M_from_site(pr_link_g[i],F_OFFSET(sm_link[i]));
+  set_M_from_site(pr_link_g[i],F_OFFSET(sm_link[i]),EVENANDODD);
  dssplaq_g1=plaquette_qdp(pr_link_g,s[nrg],0);
  
  printf("SMEAR-GAUGED TYPE 2 MILC %e/%e\n",dssplaq1,dssplaq_g1);
@@ -260,19 +260,19 @@ int RG_check_smear(QDP_Sub_Block s[NRG+1])
    link_qdp[i] = QDP_create_M();
    pr_link[i] = QDP_create_M();
    pr_link_g[i] = QDP_create_M();
-   set_M_from_site(link_qdp[i],F_OFFSET(link[i]));
+   set_M_from_site(link_qdp[i],F_OFFSET(link[i]),EVENANDODD);
   }
 
  
  RG_smearing(pr_link,link_qdp,s[nrg],1);
  dssplaq1=plaquette_qdp(pr_link,s[nrg],0);
  for(i=0; i< RG_Nd; ++i)
-   set_site_from_M(F_OFFSET(link[i]),pr_link[i]);
+   set_site_from_M(F_OFFSET(link[i]),pr_link[i],EVENANDODD);
 
 
  rand_gauge(F_OFFSET(rgt));
  for(i=0; i< RG_Nd; ++i)
-   set_M_from_site(pr_link_g[i],F_OFFSET(link[i]));
+   set_M_from_site(pr_link_g[i],F_OFFSET(link[i]),EVENANDODD);
  dssplaq_g1=plaquette_qdp(pr_link_g,s[nrg],0);
  
  printf("SMEAR-GAUGED %e/%e\n",dssplaq1,dssplaq_g1);
@@ -294,7 +294,7 @@ printf("Check difference in QDP s(l) = sg(l)\n");
    link_qdp_g[i] = QDP_create_M();
    pr_link[i] = QDP_create_M();
    pr_link_g[i] = QDP_create_M();
-   set_M_from_site(link_qdp[i],F_OFFSET(link[i]));
+   set_M_from_site(link_qdp[i],F_OFFSET(link[i]),EVENANDODD);
   }
 
  
@@ -304,7 +304,7 @@ printf("Check difference in QDP s(l) = sg(l)\n");
 
  rand_gauge(F_OFFSET(rgt));
  for(i=0; i< RG_Nd; ++i)
-   set_M_from_site(link_qdp_g[i],F_OFFSET(link[i]));
+   set_M_from_site(link_qdp_g[i],F_OFFSET(link[i]),EVENANDODD);
 
  RG_smearing(pr_link_g,link_qdp_g,s[nrg],1);
  SQDP_M_eq_M(pr_link_g[3],link_qdp_g[3],s[nrg]);
@@ -333,7 +333,7 @@ printf("Check DeGrand trick\n");
     rg_link[j][i] = QDP_create_M();
    }
    link_qdp[i] = QDP_create_M();
-   set_M_from_site(link_qdp[i],F_OFFSET(link[i]));
+   set_M_from_site(link_qdp[i],F_OFFSET(link[i]),EVENANDODD);
   }
 
 
@@ -346,7 +346,7 @@ printf("Check DeGrand trick\n");
   for(i=0; i< RG_Nd; ++i)
    {
     link_qdp_g[i] = QDP_create_M();
-    set_M_from_site(link_qdp_g[i],F_OFFSET(link[i]));
+    set_M_from_site(link_qdp_g[i],F_OFFSET(link[i]),EVENANDODD);
    }
 
   RG_gauge(rg_link_g,link_qdp_g,s);

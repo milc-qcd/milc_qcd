@@ -64,53 +64,53 @@
 
 /* Mappings for single precision QDP types */
 
-void set_F_V_from_site(QDP_F_ColorVector *dest, field_offset src);
-void set_F_H_from_site(QDP_F_HalfFermion *dest, field_offset src);
-void set_F_D_from_site(QDP_F_DiracFermion *dest, field_offset src);
-void set_F_M_from_site(QDP_F_ColorMatrix *dest, field_offset src);
-void set4_F_M_from_site(QDP_F_ColorMatrix *dest[], field_offset src);
+void set_F_V_from_site(QDP_F_ColorVector *dest, field_offset src, int parity);
+void set_F_H_from_site(QDP_F_HalfFermion *dest, field_offset src, int parity);
+void set_F_D_from_site(QDP_F_DiracFermion *dest, field_offset src, int parity);
+void set_F_M_from_site(QDP_F_ColorMatrix *dest, field_offset src, int parity);
+void set4_F_M_from_site(QDP_F_ColorMatrix *dest[], field_offset src, int parity);
 
-void set_site_from_F_V(field_offset dest, QDP_F_ColorVector *src);
-void set_site_from_F_H(field_offset dest, QDP_F_HalfFermion *src);
-void set_site_from_F_D(field_offset dest, QDP_F_DiracFermion *src);
-void set_site_from_F_M(field_offset dest, QDP_F_ColorMatrix *src);
+void set_site_from_F_V(field_offset dest, QDP_F_ColorVector *src, int parity);
+void set_site_from_F_H(field_offset dest, QDP_F_HalfFermion *src, int parity);
+void set_site_from_F_D(field_offset dest, QDP_F_DiracFermion *src, int parity);
+void set_site_from_F_M(field_offset dest, QDP_F_ColorMatrix *src, int parity);
 
-void set_F_V_from_field(QDP_F_ColorVector *dest, su3_vector *src);
-void set_F_H_from_field(QDP_F_HalfFermion *dest, half_wilson_vector *src);
-void set_F_M_from_field(QDP_F_ColorMatrix *dest, su3_matrix *src);
+void set_F_V_from_field(QDP_F_ColorVector *dest, su3_vector *src, int parity);
+void set_F_H_from_field(QDP_F_HalfFermion *dest, half_wilson_vector *src, int parity);
+void set_F_M_from_field(QDP_F_ColorMatrix *dest, su3_matrix *src, int parity);
 
-void set_field_from_F_V(su3_vector *dest, QDP_F_ColorVector *src);
-void set_field_from_F_M(su3_matrix *dest, QDP_F_ColorMatrix *src);
+void set_field_from_F_V(su3_vector *dest, QDP_F_ColorVector *src, int parity);
+void set_field_from_F_M(su3_matrix *dest, QDP_F_ColorMatrix *src, int parity);
 
-void set4_field_from_F_M(su3_matrix *dest, QDP_F_ColorMatrix *src[]);
+void set4_field_from_F_M(su3_matrix *dest, QDP_F_ColorMatrix *src[], int parity);
 
-void set4_F_V_from_field(QDP_F_ColorVector *dest[], su3_vector *src);
-void set4_F_M_from_field(QDP_F_ColorMatrix *dest[], su3_matrix *src);
+void set4_F_V_from_field(QDP_F_ColorVector *dest[], su3_vector *src, int parity);
+void set4_F_M_from_field(QDP_F_ColorMatrix *dest[], su3_matrix *src, int parity);
 
 /* Mappings for double precision QDP types */
 
-void set_D_V_from_site(QDP_D_ColorVector *dest, field_offset src);
-void set_D_H_from_site(QDP_D_HalfFermion *dest, field_offset src);
-void set_D_D_from_site(QDP_D_DiracFermion *dest, field_offset src);
-void set_D_M_from_site(QDP_D_ColorMatrix *dest, field_offset src);
-void set4_D_M_from_site(QDP_D_ColorMatrix *dest[], field_offset src);
+void set_D_V_from_site(QDP_D_ColorVector *dest, field_offset src, int parity);
+void set_D_H_from_site(QDP_D_HalfFermion *dest, field_offset src, int parity);
+void set_D_D_from_site(QDP_D_DiracFermion *dest, field_offset src, int parity);
+void set_D_M_from_site(QDP_D_ColorMatrix *dest, field_offset src, int parity);
+void set4_D_M_from_site(QDP_D_ColorMatrix *dest[], field_offset src, int parity);
 
-void set_site_from_D_V(field_offset dest, QDP_D_ColorVector *src);
-void set_site_from_D_H(field_offset dest, QDP_D_HalfFermion *src);
-void set_site_from_D_D(field_offset dest, QDP_D_DiracFermion *src);
-void set_site_from_D_M(field_offset dest, QDP_D_ColorMatrix *src);
+void set_site_from_D_V(field_offset dest, QDP_D_ColorVector *src, int parity);
+void set_site_from_D_H(field_offset dest, QDP_D_HalfFermion *src, int parity);
+void set_site_from_D_D(field_offset dest, QDP_D_DiracFermion *src, int parity);
+void set_site_from_D_M(field_offset dest, QDP_D_ColorMatrix *src, int parity);
 
-void set_D_V_from_field(QDP_D_ColorVector *dest, su3_vector *src);
-void set_D_H_from_field(QDP_D_HalfFermion *dest, half_wilson_vector *src);
-void set_D_M_from_field(QDP_D_ColorMatrix *dest, su3_matrix *src);
+void set_D_V_from_field(QDP_D_ColorVector *dest, su3_vector *src, int parity);
+void set_D_H_from_field(QDP_D_HalfFermion *dest, half_wilson_vector *src, int parity);
+void set_D_M_from_field(QDP_D_ColorMatrix *dest, su3_matrix *src, int parity);
 
-void set_field_from_D_V(su3_vector *dest, QDP_D_ColorVector *src);
-void set_field_from_D_M(su3_matrix *dest, QDP_D_ColorMatrix *src);
+void set_field_from_D_V(su3_vector *dest, QDP_D_ColorVector *src, int parity);
+void set_field_from_D_M(su3_matrix *dest, QDP_D_ColorMatrix *src, int parity);
 
-void set4_field_from_D_M(su3_matrix *dest, QDP_D_ColorMatrix *src[]);
+void set4_field_from_D_M(su3_matrix *dest, QDP_D_ColorMatrix *src[], int parity);
 
-void set4_D_V_from_field(QDP_D_ColorVector *dest[], su3_vector *src);
-void set4_D_M_from_field(QDP_D_ColorMatrix *dest[], su3_matrix *src);
+void set4_D_V_from_field(QDP_D_ColorVector *dest[], su3_vector *src, int parity);
+void set4_D_M_from_field(QDP_D_ColorMatrix *dest[], su3_matrix *src, int parity);
 
 #endif /* _GENERIC_QDP_H */
 
