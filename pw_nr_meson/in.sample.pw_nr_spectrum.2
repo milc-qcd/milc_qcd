@@ -1,0 +1,100 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+
+sequence 1
+reload_serial ../binary_samples/lat.sample.l4448
+coulomb_gauge_fix
+forget
+
+max_cg_iterations 100
+max_cg_restarts 10
+error_for_propagator 1e-8
+rel_error_for_propagator 1e-8
+
+kappa   0.124
+clov_c  1.
+u0      0.8
+
+fresh_wprop
+save_serial_wprop test.s_prop
+point
+origin 0 0 0 0
+
+number_of_smearings 1
+
+gaussian
+origin 0 0 0 0
+r0 1
+
+wave_func_label 2P
+
+fresh_wprop
+save_serial_wprop test.px_prop
+fresh_wprop
+save_serial_wprop test.py_prop
+fresh_wprop
+save_serial_wprop test.pz_prop
+
+gaussian
+origin 0 0 0
+r0 1
+
+wave_func_label 2P
+
+save_a0    out.test.a0.2
+save_b1    out.test.b1.2
+save_a1    out.test.a1.2
+save_a2_t2 out.test.a2_t2.2
+save_a2_e  out.test.a2_e.2
+save_a2    out.test.a2.2
+
+sequence 2
+fresh
+no_gauge_fix
+forget
+
+max_cg_iterations 100
+max_cg_restarts 10
+error_for_propagator 1e-8
+rel_error_for_propagator 1e-8
+
+kappa   0.120
+clov_c  1.
+u0      0.8
+
+fresh_wprop
+forget_wprop
+point
+origin 0 0 0 0
+
+number_of_smearings 1
+
+gaussian
+origin 0 0 0 0
+r0 1
+
+wave_func_label 2P
+
+fresh_wprop
+forget_wprop
+fresh_wprop
+forget_wprop
+fresh_wprop
+forget_wprop
+
+gaussian
+origin 0 0 0
+r0 1
+
+wave_func_label 2P
+
+save_a0    out.test.a0.2
+save_b1    out.test.b1.2
+save_a1    out.test.a1.2
+save_a2_t2 out.test.a2_t2.2
+save_a2_e  out.test.a2_e.2
+save_a2    out.test.a2.2
+

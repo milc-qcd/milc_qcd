@@ -1,0 +1,543 @@
+Heavy-Heavy p-wave spectroscopy
+MIMD version 7
+Machine = Scalar processor, with 1 nodes
+start: Sun Nov 11 18:25:43 2007
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.4 MBytes per node for lattice
+sequence 1
+reload_serial ../binary_samples/lat.sample.l4448
+coulomb_gauge_fix
+forget 
+max_cg_iterations 100
+max_cg_restarts 10
+error_for_propagator 1e-08
+rel_error_for_propagator 1e-08
+kappa 0.124
+clov_c 1
+u0 0.8
+fresh_wprop 
+save_serial_wprop test.s_prop
+point
+origin 0 0 0 0 
+number_of_smearings 1
+gaussian
+origin 0 0 0 0 
+r0 1
+wave_func_label 2P
+fresh_wprop 
+save_serial_wprop test.px_prop
+fresh_wprop 
+save_serial_wprop test.py_prop
+fresh_wprop 
+save_serial_wprop test.pz_prop
+gaussian
+origin 0 0 0 
+r0 1
+wave_func_label 2P
+save_a0 out.test.a0.1
+save_b1 out.test.b1.1
+save_a1 out.test.a1.1
+save_a2_t2 out.test.a2_t2.1
+save_a2_e out.test.a2_e.1
+save_a2 out.test.a2.1
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4448
+Time stamp Wed Oct 10 14:27:08 2001
+Checksums 13f3b413 161f7dde OK
+Time to reload gauge configuration = 1.245975e-03
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 8.680820e-04
+Fixing to Coulomb gauge
+GFIX: Ended at step 12. Av gf action 8.62914711e-01, delta 1.729e-06
+Time to gauge fix 4.418898e-02
+ NOT converged size_r= 5.4e-08 rel = 1.2e-07 iters= 66
+ NOT converged size_r= 6.3e-08 rel = 1.2e-07 iters= 57
+ NOT converged size_r= 9.8e-08 rel = 1.2e-07 iters= 71
+ NOT converged size_r= 4.8e-08 rel = 1.2e-07 iters= 61
+ NOT converged size_r= 6.1e-08 rel = 1.1e-07 iters= 63
+ NOT converged size_r= 5.4e-08 rel = 1.1e-07 iters= 62
+ NOT converged size_r= 1.3e-07 rel = 1.3e-07 iters= 70
+ NOT converged size_r= 6.6e-08 rel = 1.1e-07 iters= 66
+ NOT converged size_r= 1.4e-07 rel = 1.2e-07 iters= 68
+ NOT converged size_r= 5.6e-08 rel = 1.2e-07 iters= 68
+ NOT converged size_r= 4.6e-08 rel = 1.1e-07 iters= 61
+ NOT converged size_r= 5.2e-08 rel = 1.2e-07 iters= 66
+Wrote prop file test.s_prop time stamp Sun Nov 11 18:25:55 2007
+Saved wprop serially to file test.s_prop
+Time to save wprop = 6.156921e-03
+Time to Fourier transform antiquark 5.620956e-03
+Time to load smearing 1.459122e-04
+Time to make P-wave source 5.984306e-05
+ NOT converged size_r= 8.7e-08 rel = 1.2e-07 iters= 75
+ NOT converged size_r= 8.3e-08 rel = 1.2e-07 iters= 66
+ NOT converged size_r= 8.5e-08 rel = 1.2e-07 iters= 68
+ NOT converged size_r= 7.9e-08 rel = 1.2e-07 iters= 69
+ NOT converged size_r= 9.4e-08 rel = 1.3e-07 iters= 68
+ NOT converged size_r= 7.9e-08 rel = 1.2e-07 iters= 70
+ NOT converged size_r= 7.2e-08 rel = 1.3e-07 iters= 74
+ NOT converged size_r= 9.3e-08 rel = 1.2e-07 iters= 68
+ NOT converged size_r= 7.6e-08 rel = 1.2e-07 iters= 69
+ NOT converged size_r= 8.8e-08 rel = 1.1e-07 iters= 59
+ NOT converged size_r= 8.9e-08 rel = 1.2e-07 iters= 66
+ NOT converged size_r= 1.1e-07 rel = 1.2e-07 iters= 66
+Wrote prop file test.px_prop time stamp Sun Nov 11 18:26:07 2007
+Saved wprop serially to file test.px_prop
+Time to save wprop = 6.011009e-03
+Time to Fourier transform quark 5.740881e-03
+Time to compute raw meson props 2.148700e-02
+Time to make P-wave source 6.103516e-05
+ NOT converged size_r= 7.9e-08 rel = 1.2e-07 iters= 66
+ NOT converged size_r= 7.7e-08 rel = 1.1e-07 iters= 64
+ NOT converged size_r= 7.5e-08 rel = 1.2e-07 iters= 70
+ NOT converged size_r= 8.3e-08 rel = 1.1e-07 iters= 64
+ NOT converged size_r= 9.3e-08 rel = 1.2e-07 iters= 71
+ NOT converged size_r= 9.2e-08 rel = 1.2e-07 iters= 72
+ NOT converged size_r= 9e-08 rel = 1.2e-07 iters= 68
+ NOT converged size_r= 9.1e-08 rel = 1.2e-07 iters= 66
+ NOT converged size_r= 8e-08 rel = 1.2e-07 iters= 66
+ NOT converged size_r= 9.8e-08 rel = 1.2e-07 iters= 69
+ NOT converged size_r= 8.1e-08 rel = 1.1e-07 iters= 65
+ NOT converged size_r= 8.5e-08 rel = 1.2e-07 iters= 69
+Wrote prop file test.py_prop time stamp Sun Nov 11 18:26:16 2007
+Saved wprop serially to file test.py_prop
+Time to save wprop = 6.125927e-03
+Time to Fourier transform quark 5.793095e-03
+Time to compute raw meson props 2.113605e-02
+Time to make P-wave source 6.008148e-05
+ NOT converged size_r= 7.9e-08 rel = 1.2e-07 iters= 72
+ NOT converged size_r= 7.2e-08 rel = 1.2e-07 iters= 70
+ NOT converged size_r= 7.7e-08 rel = 1.2e-07 iters= 68
+ NOT converged size_r= 7.6e-08 rel = 1.2e-07 iters= 67
+ NOT converged size_r= 6.9e-08 rel = 1.2e-07 iters= 69
+ NOT converged size_r= 8e-08 rel = 1.2e-07 iters= 66
+ NOT converged size_r= 8e-08 rel = 1.2e-07 iters= 67
+ NOT converged size_r= 7.9e-08 rel = 1.3e-07 iters= 70
+ NOT converged size_r= 7.4e-08 rel = 1.2e-07 iters= 70
+ NOT converged size_r= 7.9e-08 rel = 1.2e-07 iters= 68
+ NOT converged size_r= 8.1e-08 rel = 1.2e-07 iters= 69
+ NOT converged size_r= 7.5e-08 rel = 1.2e-07 iters= 67
+Wrote prop file test.pz_prop time stamp Sun Nov 11 18:26:25 2007
+Saved wprop serially to file test.pz_prop
+Time to save wprop = 6.034136e-03
+Time to Fourier transform quark 5.566120e-03
+Time to compute raw meson props 2.212310e-02
+Time to assemble meson props 5.960464e-06
+BEGIN
+
+
+ a0_2P_2P
+_________________________________
+0 1.196498e+03 -4.381876e+00
+1 5.709694e+01 -1.282335e+00
+2 4.414749e+00 -1.773009e-01
+3 5.088230e-01 -8.923641e-02
+4 7.750203e-02 1.646166e-02
+5 4.274290e-01 1.015609e-01
+6 4.451499e+00 1.109127e+00
+7 4.304490e+01 4.683808e+00
+
+
+ b1_x_2P_2P
+_________________________________
+0 4.086989e+02 -2.063580e+00
+1 1.802454e+01 -8.487419e-01
+2 1.309960e+00 -4.690874e-02
+3 1.157456e-01 -4.440077e-02
+4 3.431593e-02 4.569437e-03
+5 1.029863e-01 2.788957e-02
+6 6.807526e-01 3.626074e-01
+7 1.220721e+01 1.434679e+00
+
+
+ b1_y_2P_2P
+_________________________________
+0 4.201850e+02 4.117901e-01
+1 1.910377e+01 -1.144791e+00
+2 1.680519e+00 -1.651275e-01
+3 8.379889e-02 -6.590784e-02
+4 6.971542e-03 -1.225678e-02
+5 1.503208e-01 -4.435663e-02
+6 1.590215e+00 8.468153e-02
+7 1.481699e+01 1.202938e+00
+
+
+ b1_z_2P_2P
+_________________________________
+0 3.886724e+02 2.109790e-01
+1 1.705125e+01 -6.006149e-02
+2 1.032996e+00 4.890366e-03
+3 4.905922e-02 7.094941e-03
+4 1.930183e-02 1.696770e-03
+5 1.148069e-01 7.377301e-02
+6 1.295343e+00 3.024421e-01
+7 1.280038e+01 1.029235e+00
+
+
+ a1_x_2P_2P
+_________________________________
+0 7.966477e+02 1.661156e-01
+1 3.565688e+01 -6.845728e-01
+2 2.734974e+00 -3.539152e-02
+3 1.958354e-01 -2.243690e-02
+4 2.210813e-02 2.108292e-03
+5 1.819796e-01 -1.852974e-02
+6 2.723615e+00 1.467588e-01
+7 2.655445e+01 1.938654e+00
+
+
+ a1_y_2P_2P
+_________________________________
+0 7.938423e+02 -3.129856e+00
+1 3.534435e+01 -7.059731e-01
+2 2.218512e+00 -7.294576e-02
+3 1.991576e-01 -4.167911e-02
+4 2.440001e-02 -1.880846e-02
+5 1.717593e-01 1.163218e-01
+6 2.209810e+00 6.401986e-01
+7 2.591949e+01 2.486859e+00
+
+
+ a1_z_2P_2P
+_________________________________
+0 8.116238e+02 1.937820e-01
+1 3.597896e+01 -1.233463e+00
+2 3.045871e+00 2.379604e-03
+3 2.020104e-01 -7.657151e-02
+4 2.925424e-02 2.123326e-02
+5 2.051294e-01 4.497113e-02
+6 2.176459e+00 6.703668e-01
+7 2.522693e+01 2.786283e+00
+
+
+ a2_t2x_2P_2P
+_________________________________
+0 8.078608e+02 1.542312e-02
+1 3.221917e+01 -1.275010e+00
+2 2.359242e+00 1.302647e-01
+3 8.628434e-02 -6.860206e-03
+4 2.155349e-02 -1.279037e-02
+5 2.863806e-01 7.955459e-03
+6 2.931443e+00 2.631906e-01
+7 2.698858e+01 1.449594e+00
+
+
+ a2_t2y_2P_2P
+_________________________________
+0 7.934287e+02 -2.640222e+00
+1 3.252767e+01 -8.326341e-01
+2 2.388678e+00 -4.302857e-02
+3 1.553857e-01 -5.751020e-02
+4 3.938938e-02 -5.306248e-03
+5 1.224638e-01 1.348975e-01
+6 1.654156e+00 7.878447e-01
+7 2.278958e+01 2.248027e+00
+
+
+ a2_t2z_2P_2P
+_________________________________
+0 8.290173e+02 -2.112496e+00
+1 3.475851e+01 -2.137511e+00
+2 2.540217e+00 -1.696044e-01
+3 1.930759e-01 -9.152402e-02
+4 7.554366e-02 -1.595963e-02
+5 3.024013e-01 -7.255538e-04
+6 2.255818e+00 2.844171e-01
+7 2.681247e+01 2.082735e+00
+
+
+ a2_ex_2P_2P
+_________________________________
+0 8.279215e+02 -1.601437e+00
+1 3.400068e+01 -2.273019e+00
+2 2.551172e+00 -1.859063e-01
+3 1.761311e-01 -6.411214e-02
+4 5.169062e-02 -4.018207e-03
+5 2.604876e-01 3.493390e-02
+6 2.122780e+00 4.927282e-01
+7 2.608656e+01 2.650189e+00
+
+
+ a2_ey_2P_2P
+_________________________________
+0 8.021329e+02 1.676223e-01
+1 3.243326e+01 -1.619460e+00
+2 2.524343e+00 -5.187047e-02
+3 1.457931e-01 -1.959051e-02
+4 1.541961e-02 1.395403e-02
+5 2.416151e-01 8.704179e-03
+6 2.805996e+00 2.302533e-01
+7 2.625012e+01 1.705093e+00
+
+
+RUNNING COMPLETED
+Time = 4.243269e+01 seconds
+total_iters= 3230
+
+
+
+sequence 2
+fresh 
+no_gauge_fix
+forget 
+max_cg_iterations 100
+max_cg_restarts 10
+error_for_propagator 1e-08
+rel_error_for_propagator 1e-08
+kappa 0.12
+clov_c 1
+u0 0.8
+fresh_wprop 
+forget_wprop 
+point
+origin 0 0 0 0 
+number_of_smearings 1
+gaussian
+origin 0 0 0 0 
+r0 1
+wave_func_label 2P
+fresh_wprop 
+forget_wprop 
+fresh_wprop 
+forget_wprop 
+fresh_wprop 
+forget_wprop 
+gaussian
+origin 0 0 0 
+r0 1
+wave_func_label 2P
+save_a0 out.test.a0.1
+save_b1 out.test.b1.1
+save_a1 out.test.a1.1
+save_a2_t2 out.test.a2_t2.1
+save_a2_e out.test.a2_e.1
+save_a2 out.test.a2.1
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 8.020401e-04
+COULOMB GAUGE FIXING SKIPPED.
+ NOT converged size_r= 6.3e-08 rel = 8.2e-08 iters= 59
+ NOT converged size_r= 4.5e-08 rel = 5.5e-08 iters= 51
+ NOT converged size_r= 7e-08 rel = 8.8e-08 iters= 70
+ NOT converged size_r= 5.1e-08 rel = 6.3e-08 iters= 69
+ NOT converged size_r= 6.3e-08 rel = 8.2e-08 iters= 59
+ NOT converged size_r= 4.5e-08 rel = 5.5e-08 iters= 51
+ NOT converged size_r= 7e-08 rel = 8.8e-08 iters= 70
+ NOT converged size_r= 5.1e-08 rel = 6.3e-08 iters= 69
+ NOT converged size_r= 6.3e-08 rel = 8.2e-08 iters= 59
+ NOT converged size_r= 4.5e-08 rel = 5.5e-08 iters= 51
+ NOT converged size_r= 7e-08 rel = 8.8e-08 iters= 70
+ NOT converged size_r= 5.1e-08 rel = 6.3e-08 iters= 69
+Time to Fourier transform antiquark 5.640030e-03
+Time to load smearing 1.358986e-04
+Time to make P-wave source 6.079674e-05
+ NOT converged size_r= 1.8e-08 rel = 4.5e-08 iters= 31
+ NOT converged size_r= 1.7e-08 rel = 5e-08 iters= 29
+ NOT converged size_r= 1.8e-08 rel = 5.1e-08 iters= 27
+ NOT converged size_r= 1.8e-08 rel = 4.4e-08 iters= 26
+ NOT converged size_r= 1.8e-08 rel = 4.5e-08 iters= 31
+ NOT converged size_r= 1.7e-08 rel = 5e-08 iters= 29
+ NOT converged size_r= 1.8e-08 rel = 5.1e-08 iters= 27
+ NOT converged size_r= 1.8e-08 rel = 4.4e-08 iters= 26
+ NOT converged size_r= 1.8e-08 rel = 4.5e-08 iters= 31
+ NOT converged size_r= 1.7e-08 rel = 5e-08 iters= 29
+ NOT converged size_r= 1.8e-08 rel = 5.1e-08 iters= 27
+ NOT converged size_r= 1.8e-08 rel = 4.4e-08 iters= 26
+Time to Fourier transform quark 5.756140e-03
+Time to compute raw meson props 2.231383e-02
+Time to make P-wave source 6.103516e-05
+ NOT converged size_r= 1.8e-08 rel = 5.8e-08 iters= 28
+ NOT converged size_r= 1.6e-08 rel = 4.7e-08 iters= 27
+ NOT converged size_r= 1.7e-08 rel = 4.5e-08 iters= 26
+ NOT converged size_r= 1.7e-08 rel = 4.3e-08 iters= 26
+ NOT converged size_r= 1.8e-08 rel = 5.8e-08 iters= 28
+ NOT converged size_r= 1.6e-08 rel = 4.7e-08 iters= 27
+ NOT converged size_r= 1.7e-08 rel = 4.5e-08 iters= 26
+ NOT converged size_r= 1.7e-08 rel = 4.3e-08 iters= 26
+ NOT converged size_r= 1.8e-08 rel = 5.8e-08 iters= 28
+ NOT converged size_r= 1.6e-08 rel = 4.7e-08 iters= 27
+ NOT converged size_r= 1.7e-08 rel = 4.5e-08 iters= 26
+ NOT converged size_r= 1.7e-08 rel = 4.3e-08 iters= 26
+Time to Fourier transform quark 5.630970e-03
+Time to compute raw meson props 2.240705e-02
+Time to make P-wave source 6.389618e-05
+ NOT converged size_r= 1.4e-08 rel = 4e-08 iters= 30
+ NOT converged size_r= 1.7e-08 rel = 6.1e-08 iters= 33
+ NOT converged size_r= 1.5e-08 rel = 5.5e-08 iters= 34
+ NOT converged size_r= 1.6e-08 rel = 4.7e-08 iters= 29
+ NOT converged size_r= 1.4e-08 rel = 4e-08 iters= 30
+ NOT converged size_r= 1.7e-08 rel = 6.1e-08 iters= 33
+ NOT converged size_r= 1.5e-08 rel = 5.5e-08 iters= 34
+ NOT converged size_r= 1.6e-08 rel = 4.7e-08 iters= 29
+ NOT converged size_r= 1.4e-08 rel = 4e-08 iters= 30
+ NOT converged size_r= 1.7e-08 rel = 6.1e-08 iters= 33
+ NOT converged size_r= 1.5e-08 rel = 5.5e-08 iters= 34
+ NOT converged size_r= 1.6e-08 rel = 4.7e-08 iters= 29
+Time to Fourier transform quark 5.645037e-03
+Time to compute raw meson props 2.190018e-02
+Time to assemble meson props 5.960464e-06
+BEGIN
+
+
+ a0_2P_2P
+_________________________________
+0 1.044199e+03 -9.093095e-05
+1 5.304696e+01 -4.817368e-06
+2 5.775526e+00 -5.079589e-07
+3 6.238241e-01 -4.918105e-08
+4 8.079959e-02 -1.014011e-08
+5 6.238236e-01 -7.366518e-08
+6 5.775526e+00 -5.494776e-07
+7 5.304694e+01 -4.582411e-06
+
+
+ b1_x_2P_2P
+_________________________________
+0 3.480664e+02 -3.041387e-05
+1 1.768232e+01 -1.754959e-06
+2 1.925175e+00 -1.852479e-07
+3 2.079413e-01 -1.891040e-08
+4 2.693318e-02 -3.555069e-09
+5 2.079412e-01 -2.322241e-08
+6 1.925175e+00 -1.780248e-07
+7 1.768232e+01 -1.376025e-06
+
+
+ b1_y_2P_2P
+_________________________________
+0 3.480664e+02 -3.020488e-05
+1 1.768232e+01 -1.668517e-06
+2 1.925175e+00 -1.726602e-07
+3 2.079413e-01 -2.108440e-08
+4 2.693321e-02 -4.504879e-09
+5 2.079412e-01 -1.966330e-08
+6 1.925175e+00 -1.616545e-07
+7 1.768231e+01 -1.514299e-06
+
+
+ b1_z_2P_2P
+_________________________________
+0 3.480666e+02 -3.029650e-05
+1 1.768232e+01 -1.394038e-06
+2 1.925176e+00 -1.502161e-07
+3 2.079415e-01 -9.042955e-09
+4 2.693320e-02 -2.091277e-09
+5 2.079412e-01 -3.081863e-08
+6 1.925176e+00 -2.079011e-07
+7 1.768231e+01 -1.678815e-06
+
+
+ a1_x_2P_2P
+_________________________________
+0 6.961330e+02 -6.051822e-05
+1 3.536464e+01 -3.062143e-06
+2 3.850351e+00 -3.226092e-07
+3 4.158828e-01 -3.017951e-08
+4 5.386642e-02 -6.573276e-09
+5 4.158823e-01 -5.034321e-08
+6 3.850351e+00 -3.685952e-07
+7 3.536462e+01 -3.197776e-06
+
+
+ a1_y_2P_2P
+_________________________________
+0 6.961330e+02 -6.070923e-05
+1 3.536464e+01 -3.149264e-06
+2 3.850351e+00 -3.353184e-07
+3 4.158828e-01 -2.802268e-08
+4 5.386639e-02 -5.650136e-09
+5 4.158824e-01 -5.413036e-08
+6 3.850351e+00 -3.880961e-07
+7 3.536463e+01 -3.055419e-06
+
+
+ a1_z_2P_2P
+_________________________________
+0 6.961328e+02 -6.061875e-05
+1 3.536464e+01 -3.423476e-06
+2 3.850351e+00 -3.581555e-07
+3 4.158826e-01 -4.001663e-08
+4 5.386639e-02 -8.067921e-09
+5 4.158824e-01 -4.289596e-08
+6 3.850351e+00 -3.403668e-07
+7 3.536463e+01 -2.898357e-06
+
+
+ a2_t2x_2P_2P
+_________________________________
+0 6.961330e+02 -6.048453e-05
+1 3.536464e+01 -3.062968e-06
+2 3.850351e+00 -3.231434e-07
+3 4.158828e-01 -3.007522e-08
+4 5.386642e-02 -6.619034e-09
+5 4.158823e-01 -5.062064e-08
+6 3.850351e+00 -3.705160e-07
+7 3.536462e+01 -3.188454e-06
+
+
+ a2_t2y_2P_2P
+_________________________________
+0 6.961330e+02 -6.071151e-05
+1 3.536464e+01 -3.148730e-06
+2 3.850351e+00 -3.356097e-07
+3 4.158828e-01 -2.788404e-08
+4 5.386639e-02 -5.642555e-09
+5 4.158824e-01 -5.395172e-08
+6 3.850351e+00 -3.837557e-07
+7 3.536463e+01 -3.054263e-06
+
+
+ a2_t2z_2P_2P
+_________________________________
+0 6.961328e+02 -6.061875e-05
+1 3.536464e+01 -3.423476e-06
+2 3.850351e+00 -3.576608e-07
+3 4.158826e-01 -3.997297e-08
+4 5.386639e-02 -8.051977e-09
+5 4.158824e-01 -4.287546e-08
+6 3.850351e+00 -3.389919e-07
+7 3.536463e+01 -2.882292e-06
+
+
+ a2_ex_2P_2P
+_________________________________
+0 6.961328e+02 -6.061875e-05
+1 3.536464e+01 -3.423476e-06
+2 3.850351e+00 -3.576608e-07
+3 4.158826e-01 -3.997297e-08
+4 5.386639e-02 -8.051977e-09
+5 4.158824e-01 -4.287546e-08
+6 3.850351e+00 -3.389919e-07
+7 3.536463e+01 -2.882292e-06
+
+
+ a2_ey_2P_2P
+_________________________________
+0 6.961330e+02 -6.048453e-05
+1 3.536464e+01 -3.062968e-06
+2 3.850351e+00 -3.231434e-07
+3 4.158828e-01 -3.007521e-08
+4 5.386642e-02 -6.619035e-09
+5 4.158823e-01 -5.062064e-08
+6 3.850351e+00 -3.705160e-07
+7 3.536462e+01 -3.188454e-06
+
+
+RUNNING COMPLETED
+Time = 1.538974e+01 seconds
+total_iters= 1785
+
+
+
+get_i(0): EOF on input.
+exit: Sun Nov 11 18:26:41 2007
+

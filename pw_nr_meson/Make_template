@@ -1,0 +1,248 @@
+#  P-wave nonrelativistic meson
+#  MIMD version 7
+
+#  Generic make-include file for clover_invert codes
+#  For BOTH flavor-diagonal and mixed flavor {heavy-light} codes
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
+
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  pw_nr_meson_includes.h
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+
+# All required object files
+# Basic set from current directory
+MY_OBJECTS = \
+  clover_info.o \
+  gauge_info.o \
+  ksprop_info.o \
+  make_prop.o \
+  setup.o \
+  smear.o \
+  twopt.o
+
+# Basic set from generic directory
+G_OBJECTS =          \
+  check_unitarity.o  \
+  d_plaq4.o           \
+  gaugefix2.o        \
+  io_detect.o        \
+  io_helpers.o       \
+  io_lat4.o          \
+  io_lat_utils.o     \
+  make_lattice.o     \
+  nersc_cksum.o \
+  ranstuff.o \
+  remap_stdio_from_args.o \
+  reunitarize2.o     \
+  restrict_fourier.o 
+
+# Set from generic_ks directory
+G_KS_OBJECTS =      \
+  io_helpers_ks.o   \
+  io_prop_ks.o      \
+  io_prop_ks_fm.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_KS_OBJECTS += io_scidac_ks.o
+endif
+
+ifeq ($(strip ${QCDOC}),true)
+  G_OBJECTS += ploop2.o
+else
+  G_OBJECTS += ploop3.o
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += io_scidac.o io_scidac_types.o
+endif
+
+G_WILSON_OBJECTS =  \
+  canopy2weyl_rot.o \
+  dslash_w3.o       \
+  gammas.o           \
+  gauss_smear_w.o   \
+  io_helpers_w.o    \
+  io_prop_w.o       \
+  io_prop_w_fm.o    \
+  io_source_w_fm.o  \
+  staggered2naive.o  \
+  w_source.o        \
+  wilson_invert.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_WILSON_OBJECTS += io_scidac_w.o
+endif
+
+# Basic set from generic_clover directory
+G_CLOVER_OBJECTS =   \
+  f_mu_nu.o        \
+  make_clov2.o
+
+# Objects depending on architecture and software package 
+
+# Layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o # Required
+  else
+    LAYOUT = layout_hyper_prime.o # Choices possible here
+  endif
+endif
+
+# Selection of the fermion links algorithm
+FLINKS_WILSON = ${FLINKS_WILSONQOP}
+
+# Selection of the conjugate gradient algorithm
+# The following inverters are not supported in QOP
+# so we use the plain MILC version:
+CONGRAD_CL = \
+      cl_solver_utilities.o \
+      d_cgilu_cl.o     \
+      d_hopilu_cl.o    \
+      d_mrilu_cl.o
+# The bicgilu inverter is supported, so select it
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+  CONGRAD_CL += d_bicgilu_cl_qop.o \
+     d_bicgilu_cl_qop_D.o d_bicgilu_cl_qop_F.o
+  CONGRAD_CL += ${WILSONINVERTQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+# We don't have a working standalone QDP version of the bicgilu inverter
+# so we use the plain MILC code version
+    CONGRAD_CL += d_bicgilu_cl.o
+  else
+# Plain MILC inverter
+    CONGRAD_CL += d_bicgilu_cl.o
+  endif
+endif
+
+CL_OBJECTS = ${FLINKS_WILSON} ${CONGRAD_CL}
+
+# EDRAM allocation for QCDOC
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+# Generic QOP objects
+ifeq ($(strip ${HAVEQOP}),true)
+  ADD_OBJECTS += ${GENERICQOP}
+endif
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_WILSON_OBJECTS} \
+  ${G_CLOVER_OBJECTS} ${LAYOUT} ${CL_OBJECTS} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+
+#Libraries for complex numbers and su3 functions
+QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
+
+# Default rule for C compilation
+.c.o:
+	${CC} -c ${CFLAGS} $<
+
+# All make files used in this compilation
+ALL_MAKES = \
+   Make_template \
+   ${MAKEFILE} \
+   ../Make_template_scidac \
+   ../generic/Make_template \
+   ../generic_ks/Make_template \
+   ../generic_clover/Make_template \
+   ../generic_wilson/Make_template
+
+# Used to force a full remake when changing targets or a make file
+LASTMAKE = .lastmake.${MAKEFILE}.${MYTARGET}
+
+${LASTMAKE}: ${ALL_MAKES}
+	-/bin/rm -f .lastmake.*
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+# All objects should depend on these
+ALL_DEPEND = ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
+
+${OBJECTS}: ${ALL_DEPEND}
+
+# Assorted C code macros 
+
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
+endif
+
+ifeq ($(strip ${HAVEQMP}),true)
+  DHAVE_QMP = -DHAVE_QMP
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DHAVE_QIO = -DHAVE_QIO
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  DHAVE_QOP = -DHAVE_QOP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
+
+
+##### Targets:
+
+pw_nr_spectrum::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= " \
+	"EXTRA_OBJECTS= control.o "
+
+clean:
+	-/bin/rm -f *.o
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_clover/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} ${LDFLAGS} -o ${MYTARGET} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 
