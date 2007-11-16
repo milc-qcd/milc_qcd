@@ -68,29 +68,29 @@ void free_lattice()
 }
 /*----------------------------------------------------------------------*/
 
-int get_prompt(FILE *fp, int *prompt ){
-    char initial_prompt[80];
-    int status;
-
-    *prompt = -1;
-    printf( "type 0 for no prompts  or 1 for prompts\n");
-    status = fscanf(fp, "%s",initial_prompt);
-    if(status != 1){
-      printf("\nget_prompt: Can't read stdin\n");
-      terminate(1);
-    }
-    if(strcmp(initial_prompt,"prompt") == 0)  {
-       fscanf(fp, "%d",prompt);
-    }
-    else if(strcmp(initial_prompt,"0") == 0) *prompt=0;
-    else if(strcmp(initial_prompt,"1") == 0) *prompt=1;
-
-    if( *prompt==0 || *prompt==1 )return(0);
-    else{
-        printf("\nget_prompt: ERROR IN INPUT: initial prompt\n");
-        return(1);
-    }
-}
+// int get_prompt(FILE *fp, int *prompt ){
+//     char initial_prompt[80];
+//     int status;
+// 
+//     *prompt = -1;
+//     printf( "type 0 for no prompts  or 1 for prompts\n");
+//     status = fscanf(fp, "%s",initial_prompt);
+//     if(status != 1){
+//       printf("\nget_prompt: Can't read stdin\n");
+//       terminate(1);
+//     }
+//     if(strcmp(initial_prompt,"prompt") == 0)  {
+//        fscanf(fp, "%d",prompt);
+//     }
+//     else if(strcmp(initial_prompt,"0") == 0) *prompt=0;
+//     else if(strcmp(initial_prompt,"1") == 0) *prompt=1;
+// 
+//     if( *prompt==0 || *prompt==1 )return(0);
+//     else{
+//         printf("\nget_prompt: ERROR IN INPUT: initial prompt\n");
+//         return(1);
+//     }
+// }
 
 /*----------------------------------------------------------------------*/
 
@@ -127,10 +127,10 @@ int readin(int prompt)
 
   if(this_node==0) {
 
-    IF_OK status += ask_starting_ksprop( prompt, &(par_buf.startflag),
+    IF_OK status += ask_starting_ksprop( stdin, prompt, &(par_buf.startflag),
 					 par_buf.startfile );
     /* find out what to do with lattice at end */
-    IF_OK status += ask_ending_ksprop( prompt, &(par_buf.saveflag),
+    IF_OK status += ask_ending_ksprop( stdin, prompt, &(par_buf.saveflag),
 				       par_buf.savefile );
     if(status > 0)par_buf.stopflag = 1; else par_buf.stopflag = 0;
   }

@@ -30,7 +30,11 @@
 #ifdef HAVE_QDP
 #include <qdp.h>
 #endif
+#ifndef HAVE_QIO
+REQUIRES QIO
+#else
 #include <qio.h>
+#endif
 
 static file_type ksprop_list[N_KSPROP_TYPES] =
   { {FILE_TYPE_KSPROP,       KSPROP_VERSION_NUMBER},
