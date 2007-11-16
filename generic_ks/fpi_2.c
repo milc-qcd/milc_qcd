@@ -63,6 +63,7 @@ int fpi_2( Real *masses, int nmasses, Real tol,
   quark_props = (su3_vector **)malloc(nmasses*sizeof(su3_vector *));
   for(i=0; i<nmasses; i++){
       quark_props[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      memset((void *)quark_props[i],'\0',sites_on_node*sizeof(su3_vector));
   }
   temp_prop = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
   wall_sink_m1 = (su3_vector *)malloc(nt*sizeof(su3_vector));
@@ -101,10 +102,12 @@ int fpi_2( Real *masses, int nmasses, Real tol,
 	}
 
 	/* compute M^-1 * quark_source */
-
 	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, PRECISION, 
-				EVENANDODD, &finalrsq, fn);
+				EVEN, &finalrsq, fn);
+	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+				nmasses, niter, rsqprop, PRECISION, 
+				ODD, &finalrsq, fn);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
 	    dslash_field( quark_props[j], temp_prop, EVENANDODD, fn );
@@ -155,7 +158,10 @@ int fpi_2( Real *masses, int nmasses, Real tol,
 	/* compute M^-1 * quark_source */
 	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, PRECISION, 
-				EVENANDODD, &finalrsq, fn);
+				EVEN, &finalrsq, fn);
+	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+				nmasses, niter, rsqprop, PRECISION, 
+				ODD, &finalrsq, fn);
 	/* Multiply by Madjoint */
 	for(j=0;j<nmasses;j++){
 	    dslash_field( quark_props[j], temp_prop, EVENANDODD, fn );
