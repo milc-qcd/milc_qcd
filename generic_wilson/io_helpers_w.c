@@ -135,6 +135,10 @@ w_prop_file *r_open_wprop(int flag, char *filename)
 
     /* Sniff out the file type */
     file_type = io_detect(filename, w_prop_list, N_WPROP_TYPES);
+    if(file_type < 0){
+      printf("Error opening %s\n",filename);
+      terminate(1);
+    }
 
     /* For FNAL types we need to look farther to distinguish Wilson
        prop files from KS prop files  */
