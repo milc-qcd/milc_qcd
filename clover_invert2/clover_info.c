@@ -137,7 +137,6 @@ char *create_w_QCDML(){
   
   if(startlat_p != NULL)
     {
-      bytes = strlen(info);
       sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.filename","%s",
 			      startlat_p->filename,0,0);
       bytes = strlen(info);
