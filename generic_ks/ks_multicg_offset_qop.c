@@ -35,7 +35,7 @@ ks_multicg_offset(	/* Return value is number of iterations taken */
   qic.prec      = prec;
   qic.parity    = parity;
   qic.max       = niter;
-  qic.nrestart  = nrestart;
+  qic.nrestart  = 1;
   qic.resid     = rsqmin;
   qic.relresid  = 0;     /* Suppresses this test */
 
@@ -69,7 +69,7 @@ ks_multicg_mass(	/* Return value is number of iterations taken */
   qic.prec      = prec;
   qic.parity    = parity;
   qic.max       = niter;
-  qic.nrestart  = nrestart;
+  qic.nrestart  = 1;
   qic.resid     = rsqmin;
   qic.relresid  = 0;     /* Suppresses this test */
 

@@ -47,6 +47,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop_P.c,v $
+ * Revision 1.7  2007/11/17 05:16:43  detar
+ * Fix nrestart treatment.
+ *
  * Revision 1.6  2007/11/16 04:07:15  detar
  * Add parity to QDP "set" utilities
  *
@@ -113,7 +116,7 @@ static const char *qop_prec[2] = {"F", "D"};
 
 /*#define CGDEBUG*/
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.6 2007/11/16 04:07:15 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.7 2007/11/17 05:16:43 detar Exp $";
 
 
 /* Load inversion args for Level 3 inverter */
@@ -122,8 +125,7 @@ static void
 set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg, 
 		    quark_invert_control *qic )
 {
-  qic->nrestart = 10;
-  qop_invert_arg->max_iter     = qic->nrestart * qic->max;
+  qop_invert_arg->max_iter     = qic->nrestart * qic->max;  /* QOP convention */
   qop_invert_arg->restart      = qic->max;
   qop_invert_arg->max_restarts = qic->nrestart;
   qop_invert_arg->evenodd      = milc2qop_parity(qic->parity);
