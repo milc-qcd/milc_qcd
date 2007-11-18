@@ -26,6 +26,10 @@ for general instructions.
 
 Here are highlights of the changes:
 
+For version 7.6.0.1
+  Fix nrestart treatment in QOP inverter calls.
+  Minor maintenance.
+
 For version 7.6.0
 
   Adds pw_nr_meson. Does P-wave charmonium.
