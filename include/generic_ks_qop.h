@@ -86,23 +86,33 @@ void dslash_fn_qop_milc_field_special_D(su3_matrix *fatlinks,
 
 /* fermion_force_asqtad_qop_F.c */
 
-void eo_fermion_force_oneterm_F( Real eps, Real weight, field_offset x_off );
+void eo_fermion_force_oneterm_F( Real eps, Real weight, field_offset x_off,
+				 ferm_links_t *fn, ks_action_paths *ap);
 void eo_fermion_force_twoterms_F( Real eps, Real weight1, Real weight2, 
-				  field_offset x1_off, field_offset x2_off );
+				  field_offset x1_off, field_offset x2_off,
+				  ferm_links_t *fn, ks_action_paths *ap);
 void fermion_force_asqtad_multi_F( Real eps, Real *residues, 
-				      su3_vector **xxx, int nterms );
+				   su3_vector **xxx, int nterms,
+				  ferm_links_t *fn, ks_action_paths *ap );
 void fermion_force_asqtad_block_F( Real eps, Real *residues, 
-		      su3_vector **xxx, int nterms, int veclength );
+				   su3_vector **xxx, int nterms, 
+				   int veclength, ferm_links_t *fn, 
+				   ks_action_paths *ap );
 
 /* fermion_force_asqtad_qop_D.c */
 
-void eo_fermion_force_oneterm_D( Real eps, Real weight, field_offset x_off );
+void eo_fermion_force_oneterm_D( Real eps, Real weight, field_offset x_off,
+				  ferm_links_t *fn, ks_action_paths *ap );
 void eo_fermion_force_twoterms_D( Real eps, Real weight1, Real weight2, 
-				  field_offset x1_off, field_offset x2_off );
+				  field_offset x1_off, field_offset x2_off,
+				  ferm_links_t *fn, ks_action_paths *ap );
 void fermion_force_asqtad_multi_D( Real eps, Real *residues, 
-				      su3_vector **xxx, int nterms );
+				   su3_vector **xxx, int nterms,
+				  ferm_links_t *fn, ks_action_paths *ap );
 void fermion_force_asqtad_block_D( Real eps, Real *residues, 
-		      su3_vector **xxx, int nterms, int veclength );
+				   su3_vector **xxx, int nterms, 
+				   int veclength, ferm_links_t *fn, 
+				   ks_action_paths *ap );
 
 
 /* fermion_links_asqtad_qop_F.c */
@@ -110,14 +120,14 @@ void fermion_force_asqtad_block_D( Real eps, Real *residues,
 void create_qop_F_asqtad_fermion_links( ferm_links_t *fn );
 void load_ferm_links_F(ferm_links_t *fn, ks_action_paths *ap);
 void load_ferm_links_dmdu0_F(ferm_links_t *fn, ks_action_paths *ap);
-void invalidate_ferm_links_F(ferm_links_t *fn);
+void invalidate_all_ferm_links_F(ferm_links_t *fn);
 
 /* fermion_links_asqtad_qop_D.c */
 
 void create_qop_D_asqtad_fermion_links( ferm_links_t *fn );
 void load_ferm_links_D(ferm_links_t *fn, ks_action_paths *ap);
 void load_ferm_links_dmdu0_D(ferm_links_t *fn, ks_action_paths *ap);
-void invalidate_ferm_links_D(ferm_links_t *fn);
+void invalidate_all_ferm_links_D(ferm_links_t *fn);
 
 /* ks_multicg_offset_qop.c */
 

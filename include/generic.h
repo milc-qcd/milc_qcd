@@ -189,6 +189,8 @@ void make_global_fields();
 
 /* path_product.c */
 void path_product( const int *dir, const int length, su3_matrix *tempmat1);
+void path_product_fields( su3_matrix *Src[4], const int *dir, 
+			  const int length, su3_matrix *tempmat1);
 void path_prod_subl(const int *dir, const int length, const int subl,
 		    su3_matrix *tempmat1);
 

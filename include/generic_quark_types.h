@@ -21,6 +21,8 @@ typedef struct {
   Real size_r;        /* resulting cumulative residual */
   Real size_relr;     /* resulting cumulative relative residual */
   int converged;      /* returned 0 if not converged; 1 if converged */
+  int  final_iters;
+  int  final_restart;
                       /* Add further parameters as needed...  */
 } quark_invert_control;
 

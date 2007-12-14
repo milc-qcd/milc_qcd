@@ -83,7 +83,7 @@ int main( int argc, char **argv ){
       free(eigVec) ;
       free(eigVal) ;
 #ifdef FN
-      invalidate_ferm_links(&fn_links);
+      invalidate_all_ferm_links(&fn_links);
 #endif
       avs_iters += s_iters;
       ++meascount;

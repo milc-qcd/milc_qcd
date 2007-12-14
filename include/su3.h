@@ -40,6 +40,17 @@ typedef struct {
 
 #endif
 
+/* Used in HISQ codes */
+/* Rank 4 tensor for storing derivatives */
+typedef struct { fcomplex t4[3][3][3][3]; } fsu3_tensor4;
+typedef struct { dcomplex t4[3][3][3][3]; } dsu3_tensor4;
+
+#if (PRECISION==1)
+#define su3_tensor4 fsu3_tensor4
+#else
+#define su3_tensor4 dsu3_tensor4
+#endif
+
 /* SU(2) */
 typedef struct { complex e[2][2]; } su2_matrix;
 
@@ -172,6 +183,8 @@ typedef spin_wilson_vector ** wilson_prop_field;
 * void su3mat_copy( su3_matrix *a, su3_matrix *b )
 *	file "su3mat_copy.c"
 * void dumpmat( su3_matrix *m )
+*       file "dumpmat.c"
+* void dumptensor4( su3_tensor4 *m )
 *       file "dumpmat.c"
 *
 *
@@ -433,6 +446,7 @@ void compress_anti_hermitian( su3_matrix *mat, anti_hermitmat *mat_anti);
 void clear_su3mat( su3_matrix *dest );
 void su3mat_copy( su3_matrix *a, su3_matrix *b );
 void dumpmat( su3_matrix *m );
+void dumptensor4( su3_tensor4 *m );
 
 complex su3_dot( su3_vector *a, su3_vector *b );
 void su3vec_copy( su3_vector *a, su3_vector *b );

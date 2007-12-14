@@ -34,6 +34,9 @@ int read_F3_M_to_field(QIO_Reader *infile, QIO_String *xml_record_in,
 int read_F3_D_to_field(QIO_Reader *infile, QIO_String *xml_record_in, 
       wilson_vector *dest, int count);
 
+int read_D3_M_to_site(QIO_Reader *infile, QIO_String *xml_record_in, 
+      field_offset dest, int count);
+
 QIO_Writer *open_scidac_output(char *filename, int volfmt, 
 			       int serpar, int ildgtype, 
 			       char *stringLFN, QIO_Layout *layout,

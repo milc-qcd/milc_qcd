@@ -255,7 +255,7 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
   gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
   rephase( ON );
 #ifdef FN
-  invalidate_ferm_links(&fn_links);
+  invalidate_all_ferm_links(&fn_links);
 #endif
 
   /* Unlike spectrum.c, here we calculate only with wall sources */
