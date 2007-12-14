@@ -124,15 +124,15 @@ char *create_w_QCDML(){
   size_t bytes = 0;
   char *info = (char *)malloc(INFOSTRING_MAX);
   size_t max = INFOSTRING_MAX;
-  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
-  char end[] = "</info>";
+  //  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
+  //  char end[] = "</info>";
   char sums[20];
   Real gauge_fix_tol = GAUGE_FIX_TOL;
   int n_spins = 4;
   int spins[4] = {0,1,2,3};
   
-  snprintf(info+bytes, max-bytes,"%s",begin);
-  bytes = strlen(info);
+  //  snprintf(info+bytes, max-bytes,"%s",begin);
+  //  bytes = strlen(info);
   
   if(startlat_p != NULL)
     {
@@ -220,8 +220,8 @@ char *create_w_QCDML(){
 			  "%d",(char *)&spins[0],n_spins,
 			  sizeof(int));
   
-  bytes = strlen(info);
-  snprintf(info+bytes, max-bytes,"%s",end);
+  // bytes = strlen(info);
+  //  snprintf(info+bytes, max-bytes,"%s",end);
 
   return info;
 }
