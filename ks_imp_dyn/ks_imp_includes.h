@@ -32,7 +32,6 @@
 int setup();
 int readin(int prompt);
 int update();
-void make_path_table();
 void update_h( Real eps );
 void update_u( Real eps );
 void gauge_force( Real eps );

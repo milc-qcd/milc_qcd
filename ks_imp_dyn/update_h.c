@@ -26,17 +26,19 @@ void update_h( Real eps ){
 	/* The diagonal term in M doesn't matter */
 #ifdef ONEMASS
     eo_fermion_force_oneterm( eps, ((Real)nflavors)/4., F_OFFSET(xxx),
-			      ff_prec );
+			      ff_prec, &fn_links, &ks_act_paths );
 #else
 /**
    eo_fermion_force_oneterm( eps, ((Real)nflavors1)/4., F_OFFSET(xxx1),
-        ff_prec );
+        ff_prec, &fn_links, &ks_act_paths );
     eo_fermion_force_oneterm( eps, ((Real)nflavors2)/4., F_OFFSET(xxx2),
-        ff_prec );
+        ff_prec, &fn_links, &ks_act_paths );
 **/
 /**/
     eo_fermion_force_twoterms( eps, ((Real)nflavors1)/4., 
-      ((Real)nflavors2)/4., F_OFFSET(xxx1), F_OFFSET(xxx2), ff_prec );
+			       ((Real)nflavors2)/4., F_OFFSET(xxx1), 
+			       F_OFFSET(xxx2), ff_prec, &fn_links, 
+			       &ks_act_paths );
 /**/
 #endif
 } /* update_h */

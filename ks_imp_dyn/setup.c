@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.14  2007/12/14 04:51:19  detar
+//  Side effects of adding HISQ code.
+//
 //  Revision 1.13  2007/11/09 16:07:39  detar
 //  Pull FN calculation out of inverters
 //
@@ -219,9 +222,13 @@ initial_set()
   iseed=par_buf.iseed;
 #ifdef ONEMASS
   nflavors=par_buf.nflavors;
+  nlight_flavors = nflavors;  /* In case we need it for the gauge action */
+  dyn_flavors[0] = nflavors;
 #else
   nflavors1=par_buf.nflavors1;
   nflavors2=par_buf.nflavors2;
+  dyn_flavors[0] = nflavors1;
+  dyn_flavors[1] = nflavors2;
 #endif
   
   this_node = mynode();
@@ -369,9 +376,11 @@ readin(int prompt)
   beta = par_buf.beta;
 #ifdef ONEMASS
   mass = par_buf.mass;
+  n_dyn_masses = 1;
 #else
   mass1 = par_buf.mass1;
   mass2 = par_buf.mass2;
+  n_dyn_masses = 2;
 #endif
   u0 = par_buf.u0;
 #ifdef SPECTRUM
@@ -399,9 +408,9 @@ readin(int prompt)
   }
   startlat_p = reload_lattice( startflag, startfile );
 #ifdef FN
-  invalidate_ferm_links(&fn_links);
+  invalidate_all_ferm_links(&fn_links);
 #ifdef DM_DU0
-  invalidate_ferm_links(&fn_links_dmdu0);
+  invalidate_all_ferm_links(&fn_links_dmdu0);
 #endif
 #endif
   phases_in = OFF;
@@ -410,7 +419,9 @@ readin(int prompt)
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
   /* make table of coefficients and permutations of paths in quark action */
-  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
+  init_path_table(&ks_act_paths);
+  init_path_table(&ks_act_paths_dmdu0);
+  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0, 0.);
   
   return(0);
 }

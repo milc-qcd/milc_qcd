@@ -62,7 +62,7 @@ int main( int argc, char **argv ){
     
     rephase( ON );
     
-    invalidate_ferm_links(&fn_links);
+    invalidate_all_ferm_links(&fn_links);
     load_ferm_links(&fn_links, &ks_act_paths);
 
 #ifdef FPI

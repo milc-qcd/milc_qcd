@@ -108,9 +108,9 @@ main( int argc, char **argv )
 	gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
 	rephase( ON );
 #ifdef FN
-	invalidate_ferm_links(&fn_links);
+	invalidate_all_ferm_links(&fn_links);
 #ifdef DM_DU0
-	invalidate_ferm_links(&fn_links_dmdu0);
+	invalidate_all_ferm_links(&fn_links_dmdu0);
 #endif
 #endif
 	/* Load fat and long links for fermion measurements */

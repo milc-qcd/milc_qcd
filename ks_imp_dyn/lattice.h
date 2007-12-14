@@ -151,13 +151,16 @@ EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
 EXTERN  int npbp_reps_in;
 EXTERN  int prec_pbp;  /* Precisiong of pbp measurements */
+EXTERN  int dyn_flavors[MAX_DYN_MASSES]; 
 #ifdef ONEMASS
 EXTERN  int nflavors;
 #else
 EXTERN	int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 #endif
+EXTERN  int nlight_flavors;
 EXTERN	Real epsilon;
 EXTERN  Real beta,u0;
+EXTERN  int n_dyn_masses; // number of dynamical masses
 #ifdef ONEMASS
 EXTERN  Real mass;
 #else
