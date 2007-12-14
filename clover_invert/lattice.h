@@ -34,9 +34,6 @@ typedef struct {
 	/* gauge field */
 	su3_matrix link[4];
 
-	/* wilson complex vectors */
-#ifndef MULTI
-#endif
         /* wilson half vector (temporary used in dslash_w_site) */
         half_wilson_vector htmp[MAXHTMP];
 } site;
