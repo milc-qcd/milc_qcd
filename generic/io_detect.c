@@ -29,7 +29,7 @@ int io_detect(char *filename, file_type ft[], int ntypes){
       strncpy(editfilename,filename,504);
       editfilename[504] = '\0';  /* Just in case of truncation */
       strcat(editfilename,".vol0000");
-      fp = g_open(filename,"rb");
+      fp = g_open(editfilename,"rb");
     }
 
     if(fp == NULL)status = -2;
