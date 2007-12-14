@@ -61,7 +61,13 @@ void make_loop_table() {
     int length,iloop,i,j,chr;
     int vec[MAX_LENGTH];
     int count,flag;
+    int total_dyn_flavors;
     char myname[] = "make_loop_table";
+
+    total_dyn_flavors = 0;
+    for(i = 0; i < n_dyn_masses; i++){
+      total_dyn_flavors += dyn_flavors[i];
+    }
 
     /* Allocate as if loop_table[NLOOP][MAX_NUM][MAX_LENGTH] */
 
@@ -156,6 +162,7 @@ void make_loop_table() {
     } /* end iloop */
 
     /* print out the loop coefficients */
+    node0_printf("gauge_action: total_dyn_flavors = %d\n",total_dyn_flavors);
     node0_printf("loop coefficients: nloop rep loop_coeff  multiplicity\n");
     for(i=0;i<NREPS;i++) for(j=0;j<NLOOP;j++) {
 	node0_printf("                    %d %d      %e     %d\n",
