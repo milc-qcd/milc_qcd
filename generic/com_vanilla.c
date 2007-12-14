@@ -175,6 +175,7 @@ void
 normal_exit(int status)
 {
   time_stamp("exit");
+  fflush(stdout);
   exit(status);
 }
 

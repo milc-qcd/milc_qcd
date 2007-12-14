@@ -315,6 +315,7 @@ normal_exit(int status)
   time_stamp("exit");
   g_sync();
   MPI_Finalize();
+  fflush(stdout);
   exit(status);
 }
 

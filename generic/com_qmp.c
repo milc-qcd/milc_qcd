@@ -337,6 +337,7 @@ normal_exit(int status)
   g_sync();
 
   QMP_finalize_msg_passing();
+  fflush(stdout);
   exit(status);
 }
 
