@@ -15,12 +15,6 @@
     { XUP, YUP, ZUP, XDOWN, YDOWN , ZDOWN},
     };
     static int loop_length_in[NLOOP] = {4,6,6};
-    static int Nf;
-#ifdef ONEMASS
-    Nf = nflavors;
-#else
-    Nf = nflavors1 + nflavors2;
-#endif
 
     for(j=0;j<NLOOP;j++){
 	loop_num[j] = 0;
@@ -35,9 +29,9 @@
        Horgan, QJ Mason, and HD Trottier, hep-lat/0705.4660v2 */
     loop_coeff[0][0]= 1.0;
     loop_coeff[1][0]=  -1.00/(20.0*u0*u0) * 
-      ( 1.00 - (0.6264 - 0.4742*Nf)*log(u0) );
+      ( 1.00 - (0.6264 - 0.4742*total_dyn_flavors)*log(u0) );
     loop_coeff[2][0]=  1.00/(u0*u0) * 
-      (0.04335 - 0.012*Nf) * log(u0); 
+      (0.0433 - 0.012*total_dyn_flavors) * log(u0); 
     strcpy(gauge_action_description,"\"Symanzik 1x1 + 1x2 + 1x1x1 action with quark loops\"");
     node0_printf("Symanzik 1x1 + 1x2 + 1x1x1 action with quark loops\n");
 
