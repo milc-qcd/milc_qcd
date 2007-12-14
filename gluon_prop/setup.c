@@ -304,7 +304,8 @@ char savebuf[128];
     phases_in = OFF;
 
     /* make table of coefficients and permutations of paths in quark action */
-    make_path_table(&ks_act_paths, NULL);
+    init_path_table(&ks_act_paths);
+    make_path_table(&ks_act_paths, NULL, 0.);
 #endif
 
     /* For archive writing, for now */

@@ -131,7 +131,7 @@ int main(int argc, char *argv[])  {
 #ifdef QUARK_PROP
 	/* Now compute the quark propagator */
 #ifdef FN
-	invalidate_ferm_links(&fn_links);
+	invalidate_all_ferm_links(&fn_links);
 #endif
 
 #ifdef QUARK_RENORM
