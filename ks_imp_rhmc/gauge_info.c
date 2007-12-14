@@ -64,15 +64,8 @@ void write_appl_gauge_info(FILE *fp)
   write_gauge_info_item(fp,"gauge.nersc_checksum","%lu",
 			(char *)&(nersc_checksum),0,0);
   write_gauge_info_item(fp,"quark.description","%s",QUARK_ACTION_DESCRIPTION,0,0);
-#ifdef ONEMASS
-  write_gauge_info_item(fp,"quark.flavors","%d",(char *)&nflavors,0,0);
-  write_gauge_info_item(fp,"quark.mass","%f",(char *)&mass,0,0);
-#else
-  write_gauge_info_item(fp,"quark.flavors1","%d",(char *)&nflavors1,0,0);
-  write_gauge_info_item(fp,"quark.flavors2","%d",(char *)&nflavors2,0,0);
-  write_gauge_info_item(fp,"quark.mass1","%f",(char *)&mass1,0,0);
-  write_gauge_info_item(fp,"quark.mass2","%f",(char *)&mass2,0,0);
-#endif
+  write_gauge_info_item(fp,"quark.dyn_flavors","%d",(char *)dyn_flavors,n_dyn_masses,sizeof(int));
+  write_gauge_info_item(fp,"quark.dyn_mass","%f",(char *)dyn_mass,n_dyn_masses,sizeof(Real));
 }
 
 /* Print string formatting with digits based on intended precision */
@@ -98,22 +91,6 @@ char *create_MILC_info(){
   Real myssplaq = g_ssplaq;  /* Precision conversion */
   Real mystplaq = g_stplaq;  /* Precision conversion */
   Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
-
-
-  //  snprintf(info+bytes, max-bytes,"%s",begin);
-  //  bytes = strlen(info);
-
-  // /* Currently we generate only single precision files */
-  // print_prec(valstring, 32, (myssplaq+mystplaq)/6., 1);
-  //  snprintf(info+bytes, max-bytes,"<plaq>%s</plaq>",valstring);
-  //  bytes = strlen(info);
-
-  //  print_prec(valstring, 32, nersc_linktr, 1);
-  //  snprintf(info+bytes, max-bytes,"<linktr>%s</linktr>",valstring);
-  //  bytes = strlen(info);
-
-  //  snprintf(info+bytes, max-bytes,"%s",begin_info);
-  //  bytes = strlen(info);
 
   sprint_gauge_info_item(info+bytes, max-bytes,"action.description","%s",
 			"\"Gauge plus fermion (improved)\"",0,0);
@@ -149,32 +126,12 @@ char *create_MILC_info(){
   sprint_gauge_info_item(info+bytes, max-bytes,"quark.description","%s",
 			 QUARK_ACTION_DESCRIPTION,0,0);
   bytes = strlen(info);
-#ifdef ONEMASS
-  sprint_gauge_info_item(info+bytes, max-bytes,"quark.flavors","%d",
-			 (char *)&nflavors,0,0);
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.dyn_flavors","%d",
+			 (char *)&dyn_flavors,n_dyn_masses,sizeof(int));
   bytes = strlen(info);
-  sprint_gauge_info_item(info+bytes, max-bytes,"quark.mass","%f",
-			 (char *)&mass,0,0);
+  sprint_gauge_info_item(info+bytes, max-bytes,"quark.dyn_masses","%f",
+			 (char *)&dyn_mass,n_dyn_masses,sizeof(Real));
   bytes = strlen(info);
-#else
-  sprint_gauge_info_item(info+bytes, max-bytes,"quark.flavors1","%d",
-			 (char *)&nflavors1,0,0);
-  bytes = strlen(info);
-  sprint_gauge_info_item(info+bytes, max-bytes,"quark.flavors2","%d",
-			 (char *)&nflavors2,0,0);
-  bytes = strlen(info);
-  sprint_gauge_info_item(info+bytes, max-bytes,"quark.mass1","%f",
-			 (char *)&mass1,0,0);
-  bytes = strlen(info);
-  sprint_gauge_info_item(info+bytes, max-bytes,"quark.mass2","%f",
-			 (char *)&mass2,0,0);
-  bytes = strlen(info);
-#endif  
-
-  //  snprintf(info+bytes, max-bytes,"%s",end_info);
-  //  bytes = strlen(info);
-
-  //  snprintf(info+bytes, max-bytes,"%s",end);
 
   return info;
 }

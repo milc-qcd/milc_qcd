@@ -48,7 +48,9 @@ int sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths );
 int find_backwards_gather( Q_path *path );
 int first_force=1;	// 1 if force hasn't been called yet
 
-void fn_fermion_force_rhmc( Real eps, Real *residues, su3_vector **multi_x, int nterms ){
+void fn_fermion_force_rhmc( Real eps, Real *residues, su3_vector **multi_x, 
+			    int nterms, ferm_links_t *fn, ks_action_paths *ap )
+{
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
@@ -205,7 +207,10 @@ node0_printf("STARTING fn_fermion_force_rhmc() nterms = %d\n",nterms);
 
 //version with "X" vectors in "site major" order.  Since "nterms" is variable, use
 // single index array
-void fn_fermion_force_rhmc_reverse( Real eps, Real *residues, su3_vector **multi_x, int nterms ){
+void fn_fermion_force_rhmc_reverse( Real eps, Real *residues, 
+				    su3_vector **multi_x, int nterms,
+				    ferm_links_t *fn, ks_action_paths *ap )
+{
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
@@ -389,7 +394,10 @@ node0_printf("STARTING fn_fermion_force_rhmc_reverse() nterms = %d\n",nterms);
 // OLDER VERSION BEFORE SOME OPTIMIZATIONS.  THIS IS PROBABLY CLEARER AS TO
 // WHAT IS GOING ON
 
-void fn_fermion_force_rhmc_june05( Real eps, Real *residues, su3_vector **multi_x, int nterms ){
+void fn_fermion_force_rhmc_june05( Real eps, Real *residues, 
+				   su3_vector **multi_x, int nterms,
+				   ferm_links_t *fn, ks_action_paths *ap )
+{
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */

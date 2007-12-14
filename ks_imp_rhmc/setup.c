@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.19  2007/12/14 04:51:45  detar
+//  Add HISQ code.
+//
 //  Revision 1.18  2007/11/09 16:06:28  detar
 //  Pull FN link calculation out of inverter.
 //
@@ -110,17 +113,17 @@ void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 params par_buf;
 
 int initial_set();
+void make_3n_gathers();
 
 int
 setup()
 {
-  void make_3n_gathers();
   int prompt;
 #ifdef HAVE_QDP
   int i;
 #endif
   
-  /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
+  /* print banner, get volume, seed */
   prompt = initial_set();
   /* initialize the node random number generator */
   initialize_prn( &node_prn, iseed, volume+mynode() );
@@ -130,13 +133,12 @@ setup()
   make_lattice();
   node0_printf("Made lattice\n"); fflush(stdout);
 
-  /* Mark t_longlink and t_fatlink as unallocated */
+  /* Mark fermion links as unallocated */
   init_ferm_links(&fn_links);
 #ifdef DM_DU0
   init_ferm_links(&fn_links_dmdu0);
 #endif
-  /* set up neighbor pointers and comlink structures
-     code for this routine is in com_machine.c  */
+  /* set up neighbor pointers and comlink structures */
   make_nn_gathers();
   node0_printf("Made nn gathers\n"); fflush(stdout);
   /* set up 3rd nearest neighbor pointers and comlink structures
@@ -167,8 +169,7 @@ int
 initial_set()
 {
   int prompt,status,i;
-  /* On node zero, read lattice size, seed, nflavors1, nflavors2,
-     nflavors, and send to others */
+  /* On node zero, read lattice size, seed, and send to others */
   if(mynode()==0){
     /* print banner */
     printf("SU3 with improved KS action\n");
@@ -184,8 +185,6 @@ initial_set()
     node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
 #endif
     status=get_prompt(stdin, &prompt);
-    IF_OK status += get_i(stdin, prompt,"nflavors1", &par_buf.nflavors1 );
-    IF_OK status += get_i(stdin, prompt,"nflavors2", &par_buf.nflavors2 );
     IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
     IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
     IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
@@ -201,15 +200,23 @@ initial_set()
     IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
     /* Number of pseudofermions */
     IF_OK status += get_i(stdin, prompt,"n_pseudo", &par_buf.n_pseudo );
-    if(par_buf.n_pseudo > N_PSEUDO){
+    if(par_buf.n_pseudo > MAX_N_PSEUDO){
       printf("Error:  Too many pseudofermion fields.  Recompile. Current max is %d\n"
-	     ,N_PSEUDO);
+	     ,MAX_N_PSEUDO);
       terminate(1);
     }
     /* get name of file containing rational function parameters */
     IF_OK status += get_s(stdin, prompt, "load_rhmc_params", 
 			  par_buf.rparamfile);
-    
+    /* beta, quark masses */
+    IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
+
+    IF_OK status += get_i(stdin, prompt,"n_dyn_masses", &par_buf.n_dyn_masses );
+    IF_OK status += get_vf(stdin, prompt, "dyn_mass", par_buf.dyn_mass, par_buf.n_dyn_masses);
+    IF_OK status += get_vi(stdin, prompt, "dyn_flavors", par_buf.dyn_flavors, par_buf.n_dyn_masses);
+
+    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
+
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
   
@@ -232,8 +239,6 @@ initial_set()
 #endif
 #endif
   iseed     = par_buf.iseed;
-  nflavors1 = par_buf.nflavors1;
-  nflavors2 = par_buf.nflavors2;
   n_pseudo  = par_buf.n_pseudo;
   strcpy(rparamfile,par_buf.rparamfile);
   
@@ -255,6 +260,14 @@ initial_set()
   }
   node0_printf("Maximum rational func order is %d\n",max_rat_order);
 
+  beta = par_buf.beta;
+  
+  n_dyn_masses = par_buf.n_dyn_masses;
+  for(i = 0; i < n_dyn_masses; i++){
+    dyn_mass[i] = par_buf.dyn_mass[i];
+    dyn_flavors[i] = par_buf.dyn_flavors[i];
+  }
+  u0 = par_buf.u0;
 
   return(prompt);
 }
@@ -287,13 +300,6 @@ readin(int prompt)
     IF_OK status += 
       get_i(stdin, prompt,"traj_between_meas", &par_buf.propinterval );
     
-    /* get couplings and broadcast to nodes	*/
-    /* beta, mass1, mass2 or mass */
-    IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
-    IF_OK status += get_f(stdin, prompt,"mass1", &par_buf.mass1 );
-    IF_OK status += get_f(stdin, prompt,"mass2", &par_buf.mass2 );
-    IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
-
     /* microcanonical time step */
     IF_OK status += 
       get_f(stdin, prompt,"microcanonical_time_step", &par_buf.epsilon );
@@ -426,18 +432,26 @@ readin(int prompt)
     prec_md[i] = par_buf.prec_md[i];
     prec_fa[i] = par_buf.prec_fa[i];
     prec_gr[i] = par_buf.prec_gr[i];
-
   }
   prec_ff = par_buf.prec_ff;
   npbp_reps_in = par_buf.npbp_reps_in;
   prec_pbp = par_buf.prec_pbp;
   rsqprop = par_buf.rsqprop;
   epsilon = par_buf.epsilon;
-  beta = par_buf.beta;
-  mass1 = par_buf.mass1;
-  mass2 = par_buf.mass2;
-  u0 = par_buf.u0;
   n_pseudo = par_buf.n_pseudo;
+#ifdef SPECTRUM
+  strcpy(spectrum_request,par_buf.spectrum_request);
+  source_start = par_buf.source_start;
+  source_inc = par_buf.source_inc;
+  n_sources = par_buf.n_sources;
+  spectrum_multimom_nmasses = par_buf.spectrum_multimom_nmasses;
+  spectrum_multimom_low_mass = par_buf.spectrum_multimom_low_mass;
+  spectrum_multimom_mass_step = par_buf.spectrum_multimom_mass_step;
+  fpi_nmasses = par_buf.fpi_nmasses;
+  for(i = 0; i < fpi_nmasses; i++){
+    fpi_mass[i] = par_buf.fpi_mass[i];
+  }
+#endif /*SPECTRUM*/
   startflag = par_buf.startflag;
   saveflag = par_buf.saveflag;
   strcpy(startfile,par_buf.startfile);
@@ -451,16 +465,18 @@ readin(int prompt)
   startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
 #ifdef FN
-  invalidate_ferm_links(&fn_links);
-  invalidate_ferm_links(&fn_links_dmdu0);
+  invalidate_all_ferm_links(&fn_links);
+  invalidate_all_ferm_links(&fn_links_dmdu0);
 #endif
   phases_in = OFF;
   rephase( ON );
   
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
-  /* make table of coefficients and permutations of paths in quark action */
-  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
+  /* make tables of coefficients and permutations of paths in quark action */
+  init_path_table(&ks_act_paths);
+  init_path_table(&ks_act_paths_dmdu0);
+  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0, 0.);
   
   return(0);
 }

@@ -277,18 +277,21 @@ int update()  {
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
-				   niter_md[1], prec_md[1], prec_ff );
+				   niter_md[1], prec_md[1], prec_ff,
+				   &fn_links, &ks_act_paths );
      	    update_u(epsilon*( 1.0 + 0.5*(1-lambda) )); // to time = (3/2)*epsilon
             eo_fermion_force_rhmc( 3.0*epsilon,  &rparam[0].MD,
 				   multi_x, F_OFFSET(phi[0]), rsqmin_md[0], 
-				   niter_md[0], prec_md[0], prec_ff );
+				   niter_md[0], prec_md[0], prec_ff,
+				   &fn_links, &ks_act_paths );
 
      	    update_u(epsilon*( 0.5*(1.0-lambda) ));
 
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
-				   niter_md[1], prec_md[1], prec_ff );
+				   niter_md[1], prec_md[1], prec_ff,
+				   &fn_links, &ks_act_paths );
 
     	    update_u(0.5*epsilon*lambda);
 
@@ -298,14 +301,16 @@ int update()  {
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
-				   niter_md[1], prec_md[1], prec_ff );
+				   niter_md[1], prec_md[1], prec_ff,
+				   &fn_links, &ks_act_paths );
 
      	    update_u(epsilon*(2.0-lambda));
 
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
-				   niter_md[1], prec_md[1], prec_ff );
+				   niter_md[1], prec_md[1], prec_ff,
+				   &fn_links, &ks_act_paths );
 
     	    update_u(0.5*epsilon*lambda);
 
@@ -315,20 +320,23 @@ int update()  {
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
-				   niter_md[1], prec_md[1], prec_ff );
+				   niter_md[1], prec_md[1], prec_ff,
+				   &fn_links, &ks_act_paths );
 
      	    update_u(epsilon*(  0.5*(1.0-lambda) )); // to time 2*epsilon + epsilon/2
 
             eo_fermion_force_rhmc( 3.0*epsilon,  &rparam[0].MD,
 				   multi_x, F_OFFSET(phi[0]), rsqmin_md[0], 
-				   niter_md[0], prec_md[0], prec_ff );
+				   niter_md[0], prec_md[0], prec_ff,
+				   &fn_links, &ks_act_paths );
 
      	    update_u(epsilon*( 1.0 + 0.5*(1.0-lambda) ));
 
 	    rephase(OFF); imp_gauge_force(epsilon,F_OFFSET(mom)); rephase(ON);
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
-				   niter_md[1], prec_md[1], prec_ff );
+				   niter_md[1], prec_md[1], prec_ff,
+				   &fn_links, &ks_act_paths );
 
     	    update_u(0.5*epsilon*lambda);
 

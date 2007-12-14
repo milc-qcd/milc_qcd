@@ -62,7 +62,7 @@ typedef struct {
  	Real phase[4];
 
 	/* 3 element complex vectors */
- 	su3_vector phi[N_PSEUDO]; /* Gaussian random source, each pseudoferm */
+ 	su3_vector phi[MAX_N_PSEUDO]; /* Gaussian random source, each pseudoferm */
  	su3_vector phi1;	/* Gaussian random source, each pseudoferm */
  	su3_vector phi2;	/* Gaussian random source, each pseudoferm */
  	su3_vector xxx1;	/* solution vector = Kinverse * phi, mass1 */
@@ -117,7 +117,7 @@ typedef struct {
 
 /* The following are global scalars 
    beta is overall gauge coupling factor
-   mass, mass1 and mass2 are quark masses
+   dyn_flavors are the number of flavors renormalizing the gauge action 
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
@@ -136,17 +136,18 @@ EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
 #endif
 #endif
 EXTERN	int iseed;		/* random number seed */
+EXTERN  Real beta,u0;
+EXTERN  int n_dyn_masses; // number of dynamical masses
+EXTERN  Real dyn_mass[MAX_DYN_MASSES]; 
+EXTERN  int dyn_flavors[MAX_DYN_MASSES]; 
 EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
-EXTERN  int niter_md[N_PSEUDO], niter_fa[N_PSEUDO], niter_gr[N_PSEUDO];
-EXTERN  int prec_md[N_PSEUDO], prec_fa[N_PSEUDO], prec_gr[N_PSEUDO];
+EXTERN  int niter_md[MAX_N_PSEUDO], niter_fa[MAX_N_PSEUDO], niter_gr[MAX_N_PSEUDO];
+EXTERN  int prec_md[MAX_N_PSEUDO], prec_fa[MAX_N_PSEUDO], prec_gr[MAX_N_PSEUDO];
 EXTERN  int npbp_reps_in;
 EXTERN  int prec_ff;
 EXTERN  int prec_pbp;  /* Precision of pbp measurements */
-EXTERN	int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 EXTERN	Real epsilon;
-EXTERN  Real beta,u0;
-EXTERN  Real mass1,mass2;
-EXTERN	Real rsqmin_md[N_PSEUDO], rsqmin_fa[N_PSEUDO], rsqmin_gr[N_PSEUDO];
+EXTERN	Real rsqmin_md[MAX_N_PSEUDO], rsqmin_fa[MAX_N_PSEUDO], rsqmin_gr[MAX_N_PSEUDO];
 EXTERN  Real rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
@@ -159,7 +160,6 @@ EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int total_iters;
-EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
 EXTERN  int source_start, source_inc, n_sources;
         /* source time, increment for it, and number of source slices */
 EXTERN  char spectrum_request[MAX_SPECTRUM_REQUEST]; /* request list for spectral measurements */
@@ -196,13 +196,14 @@ EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
 EXTERN ferm_links_t        fn_links;
-EXTERN ks_action_paths ks_act_paths;
+EXTERN ks_action_paths     ks_act_paths;
 EXTERN ferm_links_t        fn_links_dmdu0;
-EXTERN ks_action_paths ks_act_paths_dmdu0;
+EXTERN ks_action_paths     ks_act_paths_dmdu0;
 
 #include "params_rhmc.h"
 EXTERN int n_pseudo;
 EXTERN int max_rat_order;
 EXTERN params_rhmc *rparam;
+EXTERN int phases_in; /* 1 if KS and BC phases absorbed into matrices in site structure */
 
 #endif /* _LATTICE_H */

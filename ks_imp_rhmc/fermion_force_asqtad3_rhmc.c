@@ -11,7 +11,9 @@
 void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf, 
 			    su3_vector **multi_x, field_offset phi_off,
 			    Real my_rsqmin, int my_niter, int cg_prec,
-			    int ff_prec ){
+			    int ff_prec, ferm_links_t *fn, 
+			    ks_action_paths *ap )
+{
     // at different time steps
 
     Real final_rsq;
@@ -30,6 +32,7 @@ void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf,
 
     for(j=0;j<order;j++){ dslash_field( multi_x[j], multi_x[j],  ODD,			&fn_links); }
 
-    eo_fermion_force_multi( eps, &(residues[1]), multi_x, order, ff_prec );
+    eo_fermion_force_multi( eps, &(residues[1]), multi_x, order, ff_prec,
+			    fn, ap );
 }
 

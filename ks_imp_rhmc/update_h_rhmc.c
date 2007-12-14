@@ -25,11 +25,6 @@ void update_h_rhmc( Real eps, su3_vector **multi_x ){
   /* fermionic force */
   
   update_h_fermion( eps,  multi_x );
-  //for(iphi = 0; iphi < n_pseudo; iphi++){
-    //eo_fermion_force_rhmc( eps, &rparam[iphi].MD, 
-			   //multi_x, F_OFFSET(phi[iphi]), 
-			   //rsqmin_md[iphi], niter_md[iphi], prec_md[iphi] );
-  //}
 } /* update_h_rhmc */
 
 // gauge and fermion force parts separately, for algorithms that use
@@ -42,41 +37,42 @@ void update_h_gauge( Real eps ){
   rephase(ON);
 } /* update_h_gauge */
 
-// void update_h_fermion( Real eps, su3_vector **multi_x ){
-//   int iphi;
-// #ifdef FN
-//   free_fn_links();
-// #endif
-//   /*node0_printf("update_h_fermion:\n"); */
-//   /* fermionic force */
-//   
-//   for(iphi = 0; iphi < n_pseudo; iphi++){
-//     eo_fermion_force_rhmc( eps, &rparam[iphi].MD, 
-// 			   multi_x, F_OFFSET(phi[iphi]),
-// 			   rsqmin_md[iphi], niter_md[iphi], prec_md[iphi]);
-//   }
-// } /* update_h_fermion */
-
-// fermion force update combining all pseudofermions into single force call
+// fermion force update grouping pseudofermions with the same path coeffs
 void update_h_fermion( Real eps, su3_vector **multi_x ){
   int iphi;
-#ifdef FN
-  free_fn_links(&fn_links);
-  free_fn_links(&fn_links_dmdu0);
-#endif
-  /*node0_printf("update_h_fermion:\n"); */
-  /* fermionic force */
-    Real final_rsq;
-    int j;
-    int order,totalorder,tmporder;
-    Real *residues,*allresidues;
-    Real *roots;
+  Real final_rsq;
+  int j;
+  int order, tmporder;
+  int path_coeff_changed;
+  Real *residues,*allresidues;
+  Real *roots;
   
-  for(totalorder=0,iphi = 0; iphi < n_pseudo; iphi++)totalorder+=rparam[iphi].MD.order;
-  allresidues = (Real *)malloc(totalorder*sizeof(Real));
+  for(tmporder=0,iphi = 0; iphi < n_pseudo; iphi++)
+    tmporder+=rparam[iphi].MD.order;
+  allresidues = (Real *)malloc(tmporder*sizeof(Real));
 
   load_ferm_links(&fn_links, &ks_act_paths);
-  for(tmporder=0,iphi = 0; iphi < n_pseudo; iphi++){
+  
+  // Group the fermion force calculation according to sets of like
+  // path coefficients.
+  tmporder = 0;
+  for(iphi = 0; iphi < n_pseudo; iphi++){
+    // Remake the path tables if the coeffs change for this mass
+    path_coeff_changed = make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,
+					 rparam[iphi].naik_term_mass);
+    if(path_coeff_changed){
+      // Invalidate only fat and long links and remake them
+      invalidate_fn_links(&fn_links);
+      load_ferm_links(&fn_links, &ks_act_paths);
+      // Calculate the contribution of the previous set to the fermion force
+      if(tmporder > 0){
+	eo_fermion_force_multi( eps, allresidues, multi_x, 
+				tmporder, prec_ff, &fn_links, 
+				&ks_act_paths );
+	tmporder = 0;
+      }
+    }
+    // Add the current pseudofermion to the current set
     order = rparam[iphi].MD.order;
     residues = rparam[iphi].MD.res;
     roots = rparam[iphi].MD.pole;
@@ -85,8 +81,9 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
     // Then compute M*xxx in temporary vector xxx_odd 
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
-    ks_ratinv( F_OFFSET(phi[iphi]), &(multi_x[tmporder]), roots, order, niter_md[iphi],
-	       rsqmin_md[iphi], prec_md[iphi], EVEN, &final_rsq, &fn_links );
+    ks_ratinv( F_OFFSET(phi[iphi]), multi_x+tmporder, roots, order, 
+	       niter_md[iphi], rsqmin_md[iphi], prec_md[iphi], EVEN, 
+	       &final_rsq, &fn_links );
 
     for(j=0;j<order;j++){
 	dslash_field( multi_x[tmporder+j], multi_x[tmporder+j],  ODD,
@@ -97,7 +94,12 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
 
     tmporder += order;
   }
-  eo_fermion_force_multi( eps, allresidues, multi_x, totalorder, prec_ff );
+
+  // Do the last set
+  if(tmporder > 0)
+    eo_fermion_force_multi( eps, allresidues, multi_x, tmporder, 
+			    prec_ff, &fn_links, &ks_act_paths );
+
   free(allresidues);
 } /* update_h_fermion */
 

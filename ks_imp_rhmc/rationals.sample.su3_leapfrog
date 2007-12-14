@@ -8,6 +8,7 @@ n_pseudo 2
 # Approximating the function (x+4*0.010000^2)^(2/4) (x+4*0.050000^2)^(-2/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
 # Converged at 9507 iterations, error = 1.384796e-06
 
+naik_term_mass 0
 
 # Rational function for MD
 y_MD -2 2 0 0
@@ -96,6 +97,7 @@ pole_FA 8.5453352067564187e-03
 # Iteration 0, spread 1.000000e+37 delta 2.500000e-01
 # Converged at 337 iterations, error = 6.040516e-05
 
+naik_term_mass 0
 
 # Rational function for MD
 y_MD -3 0 0 0

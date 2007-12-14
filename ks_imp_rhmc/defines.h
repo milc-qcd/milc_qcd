@@ -20,8 +20,9 @@
 #define DIR3(dir) ((dir)+8)
 #define FORALL3UPDIR(dir) for(dir=X3UP; dir<=T3UP; dir++)
 
+#define MAX_DYN_MASSES 4
 #define MAX_FPI_NMASSES 32
 #define MAX_SPECTRUM_REQUEST 512
-#define N_PSEUDO 10
+#define MAX_N_PSEUDO 10
 
 #endif /* _DEFINES_H */

@@ -17,7 +17,7 @@ EXTERN gauge_header start_lat_hdr;	/* Input gauge field header */
 int
 main( int argc, char **argv )
 {
-  int meascount,traj_done;
+  int meascount,traj_done,i;
   int prompt;
   int s_iters, avs_iters, avspect_iters, avbcorr_iters;
   double dtime, dclock();
@@ -63,17 +63,106 @@ main( int argc, char **argv )
 	g_measure( );
 	rephase(ON);
 
-	/* Load fat and long links for fermion measurements */
-	load_ferm_links(&fn_links, &ks_act_paths);
+	/* Do some fermion measurements */
+#ifdef SPECTRUM 
+	/* Fix TUP Coulomb gauge - gauge links only*/
+	rephase( OFF );
+	gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
+	rephase( ON );
+
+	invalidate_all_ferm_links(&fn_links);
 #ifdef DM_DU0
-	load_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
+	invalidate_all_ferm_links(&fn_links_dmdu0);
+#endif
 #endif
 
-	/* Do some fermion measurements */
-	f_meas_imp( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-		    &fn_links, &fn_links_dmdu0);
-	f_meas_imp( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-		    &fn_links, &fn_links_dmdu0);
+	for(i=0;i<n_dyn_masses;i++){
+	  // Remake the path table if the fermion coeffs change for this mass
+	  if(make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,dyn_mass[i]))
+	    {
+	      // If they change, invalidate only fat and long links
+	      invalidate_all_ferm_links(&fn_links);
+#ifdef DM_DU0
+	      invalidate_all_ferm_links(&fn_links_dmdu0);
+#endif
+	    }
+	    /* Load fat and long links for fermion measurements if needed */
+	    load_ferm_links(&fn_links, &ks_act_paths);
+#ifdef DM_DU0
+	    load_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
+#endif
+	    
+	    f_meas_imp( F_OFFSET(phi1), F_OFFSET(xxx1), dyn_mass[i],
+			&fn_links, &fn_links_dmdu0);
+	    /* Measure derivatives wrto chemical potential */
+#ifdef D_CHEM_POT
+	    Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), 
+		      dyn_mass[i], &fn_links, &fn_links_dmdu0);
+#endif
+	    
+#ifdef SPECTRUM 
+	    if(strstr(spectrum_request,",spectrum,") != NULL)
+	      avspect_iters += spectrum2( dyn_mass[i], F_OFFSET(phi1),
+					  F_OFFSET(xxx1), &fn_links);
+	    
+	    if(strstr(spectrum_request,",spectrum_point,") != NULL)
+	      avspect_iters += spectrum_fzw( dyn_mass[i], F_OFFSET(phi1),
+					     F_OFFSET(xxx1), &fn_links);
+	    
+	    if(strstr(spectrum_request,",nl_spectrum,") != NULL)
+	      avspect_iters += nl_spectrum( dyn_mass[i], F_OFFSET(phi1), 
+					    F_OFFSET(xxx1), 
+					    F_OFFSET(tempmat1),
+					    F_OFFSET(staple),
+					    &fn_links);
+	    
+	    if(strstr(spectrum_request,",spectrum_mom,") != NULL)
+	      avspect_iters += spectrum_mom( dyn_mass[i], dyn_mass[i], 
+					     F_OFFSET(phi1), 1e-1,
+					     &fn_links);
+	    
+	    // For now we can't do the off-diagonal spectrum if Dirac operators
+            // depend on masses.  We need two propagators
+	    // if(strstr(spectrum_request,",spectrum_multimom,") != NULL)
+	    //     avspect_iters += spectrum_multimom(dyn_mass[i],
+	    //				 spectrum_multimom_low_mass,
+	    //				 spectrum_multimom_mass_step,
+	    //				 spectrum_multimom_nmasses,
+	    //				 5e-3, &fn_links);
+
+	    // For now we can't do the off-diagonal spectrum if Dirac operators
+            // depend on masses.  We need two propagators
+	    //	    if(strstr(spectrum_request,",spectrum_nd,") != NULL){
+	    //	      avspect_iters += spectrum_nd( mass1, mass2, 1e-1,
+	    //					    &fn_links);
+
+	    if(strstr(spectrum_request,",spectrum_nlpi2,") != NULL)
+	      avspect_iters += spectrum_nlpi2( dyn_mass[i], dyn_mass[i],
+					       F_OFFSET(phi1),1e-1,
+					       &fn_links );
+	
+	    if(strstr(spectrum_request,",spectrum_singlets,") != NULL)
+	      avspect_iters += spectrum_singlets(dyn_mass[i], 5e-3, 
+						 F_OFFSET(phi1), &fn_links );
+
+	    // For now we can't do the off-diagonal spectrum if Dirac operators
+            // depend on masses.  We need two propagators
+	    // if(strstr(spectrum_request,",fpi,") != NULL)
+	    // avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3,
+	    //			    &fn_links );
+	
+#ifdef HYBRIDS
+	  if(strstr(spectrum_request,",spectrum_hybrids,") != NULL)
+	    avspect_iters += spectrum_hybrids( dyn_mass[i], F_OFFSET(phi1), 
+					       5e-3, &fn_links);
+#endif
+	  if(strstr(spectrum_request,",hvy_pot,") != NULL){
+	    rephase( OFF );
+	    hvy_pot( F_OFFSET(link[XUP]) );
+	    rephase( ON );
+	  }
+#endif
+	}
 	avs_iters += s_iters;
 	++meascount;
 	fflush(stdout);
