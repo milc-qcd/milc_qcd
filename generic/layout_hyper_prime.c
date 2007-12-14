@@ -115,12 +115,17 @@ static void setup_qmp_grid(){
   ndim2 = QMP_get_allocated_number_of_dimensions();
   nsquares2 = QMP_get_allocated_dimensions();
 
-#ifdef FIX_NODE_GEOM
+  /* In principle, we could now rotate these coordinates */
+  /* Save this for a future upgrade */
+
   /* Do we need to declare the topology? */
   if(QMP_logical_topology_is_declared() == QMP_FALSE){
+#ifdef FIX_NODE_GEOM
     set_qmp_layout_grid(node_geometry, 4);
-  }
+#else
+    set_qmp_layout_grid(nsquares2, ndim2);
 #endif
+  }
 
   ndim2 = QMP_get_logical_number_of_dimensions();
   nsquares2 = QMP_get_logical_dimensions();
