@@ -22,6 +22,21 @@
 
 #include "generic_wilson_includes.h"
 
+/* Report inversion status */
+static void report_status(quark_invert_control *qic){
+
+  if(this_node != 0)return;
+  if((qic->resid > 0 && qic->size_r > qic->resid )||
+     (qic->relresid > 0 && qic->size_relr > qic->relresid))
+    printf(" NOT converged size_r= %.2g rel = %.2g restarts = %d iters= %d\n",
+	   qic->size_r, qic->size_relr, qic->final_restart, 
+	   qic->final_iters );
+  else
+    printf(" OK converged size_r= %.2g rel = %.2g iters= %d\n",
+	   qic->size_r, qic->size_relr, qic->final_restart,
+	   qic->final_iters );
+}
+
 /* Site-structure-based.  Requires source to be created before calling */
 
 int wilson_invert_field( /* Return value is number of iterations taken */
@@ -38,18 +53,8 @@ int wilson_invert_field( /* Return value is number of iterations taken */
 
   /* Do the inversion */
   tot_iters = invert_func_field(src,dest,qic,dmp);
-  
-  /* Report inversion status */
-  if(this_node==0)
-    {
-      if((qic->resid > 0 && qic->size_r > qic->resid )||
-	 (qic->relresid > 0 && qic->size_relr > qic->relresid))
-	printf(" NOT converged size_r= %.2g rel = %.2g iters= %d\n",
-	       qic->size_r, qic->size_relr, tot_iters);
-      else
-	printf(" OK converged size_r= %.2g rel = %.2g iters= %d\n",
-	       qic->size_r, qic->size_relr, tot_iters);
-    }
+
+  report_status(qic);
   
   return tot_iters;
 } /* wilson_invert_field */
@@ -83,16 +88,7 @@ int wilson_invert_field_wqs( /* Return value is number of iterations taken */
   /* Do the inversion */
   tot_iters = invert_func_field(src,dest,qic,dmp);
 
-  if(this_node==0)
-    {
-      if((qic->resid > 0 && qic->size_r > qic->resid )||
-	 (qic->relresid > 0 && qic->size_relr > qic->relresid))
-	printf(" NOT converged size_r= %.2g rel = %.2g iters= %d\n",
-	       qic->size_r, qic->size_relr, tot_iters);
-      else
-	printf(" OK converged size_r= %.2g rel = %.2g iters= %d\n",
-	       qic->size_r, qic->size_relr, tot_iters);
-    }
+  report_status(qic);
 
   free(src);
   return tot_iters;
@@ -114,17 +110,7 @@ int wilson_invert_site( /* Return value is number of iterations taken */
   /* Do the inversion */
   tot_iters = invert_func_site(src,dest,qic,dmp);
   
-  /* Report inversion status */
-  if(this_node==0)
-    {
-      if((qic->resid > 0 && qic->size_r > qic->resid )||
-	 (qic->relresid > 0 && qic->size_relr > qic->relresid))
-	printf(" NOT converged size_r= %.2g rel = %.2g iters= %d\n",
-	       qic->size_r, qic->size_relr, tot_iters);
-      else
-	printf(" OK converged size_r= %.2g rel= %.2g iters= %d\n",
-	       qic->size_r, qic->size_relr, tot_iters);
-    }
+  report_status(qic);
   
   return tot_iters;
 } /* wilson_invert_site */
@@ -151,13 +137,7 @@ int wilson_invert_site_wqs( /* Return value is number of iterations taken */
   /* Do the inversion */
   tot_iters = invert_func_site(src,dest,qic,dmp);
 
-  if((qic->resid > 0 && qic->size_r > qic->resid )||
-     (qic->relresid > 0 && qic->size_relr > qic->relresid))
-    printf(" NOT converged size_r= %.2g rel = %.2g iters= %d\n",
-	   qic->size_r, qic->size_relr, tot_iters);
-  else
-    printf(" OK converged size_r= %.2g rel = %.2g iters= %d\n",
-	   qic->size_r, qic->size_relr, tot_iters);
+  report_status(qic);
   
   return tot_iters;
 } /* wilson_invert_site_wqs */
