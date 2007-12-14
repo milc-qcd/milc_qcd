@@ -20,6 +20,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop_P.c,v $
+ * Revision 1.2  2007/12/14 04:36:31  detar
+ * Major modification to support HISQ.
+ *
  * Revision 1.1  2007/05/21 05:06:20  detar
  * Support precision selection for fermion force.  Systematize calling.
  *
@@ -134,13 +137,14 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop_P.c,v 1.1 2007/05/21 05:06:20 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop_P.c,v 1.2 2007/12/14 04:36:31 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
    routine */
 /**********************************************************************/
-void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off )
+void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off,
+			       ferm_links_t *fn, ks_action_paths *ap)
 {
 
   /* For example weight = nflavors/4 */
@@ -174,7 +178,7 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off )
   vecx = CREATE_V_FROM_SITE(x_off,EVENANDODD);
 
   /* Load coefficients */
-  LOAD_QOP_ASQTAD_COEFFS(&coeff, weight, get_quark_path_coeff());
+  LOAD_QOP_ASQTAD_COEFFS(&coeff, weight, ap->act_path_coeff);
 
   /* Compute fermion force */
   remaptime += dclock();
@@ -205,7 +209,8 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off )
    routine */
 /**********************************************************************/
 void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2, 
-				field_offset x1_off, field_offset x2_off )
+				field_offset x1_off, field_offset x2_off,
+				ferm_links_t *fn, ks_action_paths *ap )
 {
 
   /* For example weight1 = nflavor1/4; weight2 = nflavor2/4 */
@@ -242,7 +247,7 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
 
   /* Load coefficients */
   epsv[0] = eps*weight1;  epsv[1] = eps*weight2;
-  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., get_quark_path_coeff());
+  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., ap->act_path_coeff);
 
   /* Compute fermion force */
   remaptime += dclock();
@@ -275,7 +280,8 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
 /**********************************************************************/
 
 void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues, 
-				    su3_vector **xxx, int nterms ) 
+				 su3_vector **xxx, int nterms,
+				 ferm_links_t *fn, ks_action_paths *ap ) 
 {
 
   QOP_GaugeField *links;
@@ -317,7 +323,7 @@ void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues,
   epsv = (MY_REAL *)malloc(sizeof(MY_REAL)*nterms);
   /* Load coefficients */
   for(i = 0; i < nterms; i++) epsv[i] = eps*residues[i];
-  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., get_quark_path_coeff());
+  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., ap->act_path_coeff);
 
   /* Compute fermion force */
   remaptime += dclock();
@@ -355,14 +361,15 @@ void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues,
 /* Requires the xxx1 and xxx2 terms in the site structure */
 
 void FERMION_FORCE_ASQTAD_BLOCK( Real eps, Real *residues, 
-	    su3_vector **xxx, int nterms, int veclength ) {
+				 su3_vector **xxx, int nterms, int veclength,
+				 ferm_links_t *fn, ks_action_paths *ap ) {
 
   int i,j;
   site *s;
 
   /* First do blocks of size veclength */
   for( j = 0;  j <= nterms-veclength; j += veclength )
-    FERMION_FORCE_ASQTAD_MULTI( eps, &(residues[j]), xxx+j, veclength );
+    FERMION_FORCE_ASQTAD_MULTI( eps, &(residues[j]), xxx+j, veclength, fn, ap );
   
 #ifndef ONEMASS
   /* Continue with pairs if needed */
@@ -372,20 +379,20 @@ void FERMION_FORCE_ASQTAD_BLOCK( Real eps, Real *residues,
       s->xxx2 = xxx[j+1][i] ;
     }
     EO_FERMION_FORCE_TWOTERMS( eps, residues[j], residues[j+1],
-			       F_OFFSET(xxx1), F_OFFSET(xxx2) );
+			       F_OFFSET(xxx1), F_OFFSET(xxx2), fn, ap );
   }
 
   /* Finish with a single if needed */
   for( ; j <= nterms-1; j++ ){
     FORALLSITES(i,s){ s->xxx1 = xxx[j][i] ; }
-    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx1) );
+    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx1), fn, ap );
   }
 #else
   /* Thrown in just to make it compile.  Probably never used. */
   /* Finish with a single if needed */
   for( ; j <= nterms-1; j++ ){
     FORALLSITES(i,s){ s->xxx = xxx[j][i] ; }
-    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx) );
+    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx), fn, ap );
   }
 #endif
 

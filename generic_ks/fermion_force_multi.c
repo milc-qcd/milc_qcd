@@ -27,20 +27,21 @@
 /*   Wrapper for fermion force routines with multiple sources         */
 /**********************************************************************/
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
-			     int nterms, int prec ) {
+			     int nterms, int prec, ferm_links_t *fn,
+			     ks_action_paths *ap ) {
   switch(KS_MULTIFF){
   case ASVEC:
     fermion_force_asqtad_block( eps, residues, xxx, nterms, VECLENGTH, 
-				   prec );
+				prec, fn, ap );
     break;
   case FNMATREV:
-    fermion_force_fn_multi_reverse( eps, residues, xxx, nterms );
+    fermion_force_fn_multi_reverse( eps, residues, xxx, nterms, fn, ap );
     break;
   case FNMAT:
-    fermion_force_fn_multi( eps, residues, xxx, nterms, prec );
+    fermion_force_fn_multi( eps, residues, xxx, nterms, prec, fn, ap );
     break;
   default:
-    fermion_force_fn_multi( eps, residues, xxx, nterms, prec );
+    fermion_force_fn_multi( eps, residues, xxx, nterms, prec, fn, ap );
   }
 }
 

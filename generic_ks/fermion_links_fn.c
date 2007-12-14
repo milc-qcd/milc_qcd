@@ -10,7 +10,7 @@
    init_ferm_links
    load_ferm_links
    load_ferm_links_dmdu0 (ifdef DM_DU0)
-   invalidate_ferm_links
+   invalidate_all_ferm_links
 
  */
 
@@ -81,9 +81,16 @@ void load_ferm_links_dmdu0(ferm_links_t *fn, ks_action_paths *ap){
 #endif
 
 void
-invalidate_ferm_links(ferm_links_t *fn)
+invalidate_all_ferm_links(ferm_links_t *fn)
 {
   fn->valid = 0;
+}
+
+/* For compatibility with fermion_links_hisq.c */
+void
+invalidate_fn_links(ferm_links_t *fn)
+{
+  invalidate_all_ferm_links(fn);
 }
 
 void 

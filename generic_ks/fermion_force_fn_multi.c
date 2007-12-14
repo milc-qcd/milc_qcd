@@ -79,7 +79,8 @@ static int first_force=1;	// 1 if force hasn't been called yet
 
 void 
 fermion_force_fn_multi( Real eps, Real *residues, 
-			su3_vector **multi_x, int nterms, int prec ){
+			su3_vector **multi_x, int nterms, int prec,
+			ferm_links_t *fn, ks_action_paths *ap ){
   /* prec is ignored for now */
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
@@ -91,8 +92,8 @@ fermion_force_fn_multi( Real eps, Real *residues,
   int length,dir,odir;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
   Q_path *this_path;	// pointer to current path
   Q_path *last_path;	// pointer to previous path
   msg_tag *mtag[2];
@@ -315,7 +316,8 @@ fermion_force_fn_multi( Real eps, Real *residues,
 // single index array
 void 
 fermion_force_fn_multi_reverse( Real eps, Real *residues, 
-				su3_vector **multi_x, int nterms ){
+				su3_vector **multi_x, int nterms,
+				ferm_links_t *fn, ks_action_paths *ap ){
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
@@ -326,8 +328,8 @@ fermion_force_fn_multi_reverse( Real eps, Real *residues,
   int length,dir,odir;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
   Q_path *this_path;	// pointer to current path
   Q_path *last_path;	// pointer to previous path
   msg_tag *mtag;
@@ -556,7 +558,8 @@ fermion_force_fn_multi_reverse( Real eps, Real *residues,
 
 void 
 fermion_force_fn_multi_june05( Real eps, Real *residues, 
-			       su3_vector **multi_x, int nterms ){
+			       su3_vector **multi_x, int nterms,
+			       ferm_links_t *fn, ks_action_paths *ap ){
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
@@ -567,8 +570,8 @@ fermion_force_fn_multi_june05( Real eps, Real *residues,
   int length;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
   Q_path *this_path;	// pointer to current path
   msg_tag *mtag1;
   su3_matrix *mat_outerprod,*mat_tmp0,*mat_tmp1,*tmp_matpt;

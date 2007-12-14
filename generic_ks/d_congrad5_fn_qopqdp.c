@@ -114,7 +114,7 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
 
   // For memory savings.  Links may need to be recomputed later.
   free_fn_links(fn);
-  invalidate_ferm_links(fn);
+  invalidate_all_ferm_links(fn);
 
   ///////////////////////////////////////////////////////
   // set qop_invert_arg                                //

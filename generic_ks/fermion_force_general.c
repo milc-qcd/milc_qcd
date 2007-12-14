@@ -44,7 +44,8 @@
 /* SEE LONG COMMENTS AT END */
 
 void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
-			       int prec ){
+			       int prec, ferm_links_t *fn, ks_action_paths *ap)
+{
   /* Ignore prec for now */
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
@@ -56,8 +57,8 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
   int length;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
 
 #ifdef FFTIME
   int nflop = 0;
@@ -182,7 +183,8 @@ node0_printf("FFTIME:  time = %e (1 mass) mflops = %e\n",dtime,
 
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
 				field_offset x1_off, field_offset x2_off,
-				int prec){
+				int prec, ferm_links_t *fn, ks_action_paths *ap)
+{
   /* Ignore prec for now */
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
@@ -201,8 +203,8 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 #endif
   msg_tag *mtag0;
   wilson_vector *w_tmp0,*w_tmp1,*tmp_pt;
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
 
 #ifdef FFTIME
 dtime=-dclock();

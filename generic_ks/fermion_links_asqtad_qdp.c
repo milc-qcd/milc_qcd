@@ -7,7 +7,7 @@
  * init_ferm_links
  * load_ferm_links
  * load_ferm_links_dmdu0
- * invalidate_ferm_links
+ * invalidate_all_ferm_links
  *
  * takes gauge field from site structure "links"
  * If DBLSTORE_FN is defined, also sets double-stored links in the fn_links
@@ -287,7 +287,7 @@ void load_ferm_links_dmdu0(ferm_links_t *fn, ks_action_paths *ap){
 #endif
 
 void
-invalidate_ferm_links(ferm_links_t *fn)
+invalidate_all_ferm_links(ferm_links_t *fn)
 {
   fn->valid = 0;
 }

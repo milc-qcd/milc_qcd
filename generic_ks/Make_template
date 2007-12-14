@@ -51,6 +51,7 @@ G_KS_ALL = \
   fermion_force_fn_multi.o \
   fermion_force_fn_multi_qdp.o \
   fermion_force_general.o \
+  fermion_force_hisq_multi.o \
   fermion_force_multi.o \
   fermion_links_asqtad_qdp.o \
   fermion_links_asqtad_qop.o \
@@ -62,6 +63,8 @@ G_KS_ALL = \
   fermion_links_fn.o \
   fermion_links_fn_dmdu0.o \
   fermion_links_helpers.o \
+  fermion_links_hisq.o \
+  fermion_links_hisq_helpers.o \
   ff_opt.o \
   flavor_ops.o \
   fpi_2.o \
@@ -91,6 +94,7 @@ G_KS_ALL = \
   quark_stuff4.o \
   quark_stuff5.o \
   quark_stuff6.o \
+  quark_stuff_hisq.o \
   show_generic_ks_opts.o \
   smear_links.o \
   spectrum.o \
@@ -102,7 +106,8 @@ G_KS_ALL = \
   spectrum_nd.o \
   spectrum_nlpi2.o \
   spectrum_pt.o \
-  spectrum_singlets.o
+  spectrum_singlets.o \
+  su3_mat_op.o
 
 # Must match our headers in generic_ks_includes.h
 G_KS_HEADERS = \
@@ -215,6 +220,8 @@ fermion_force_fn_multi_qdp.o: ../generic_ks/fermion_force_fn_multi_qdp.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_general.o: ../generic_ks/fermion_force_general.c
 	${CC} -c ${CFLAGS} $<
+fermion_force_hisq_multi.o: ../generic_ks/fermion_force_hisq_multi.c
+	${CC} -c ${CFLAGS} $<
 fermion_force_multi.o: ../generic_ks/fermion_force_multi.c
 	${CC} -c ${CFLAGS} $<
 f_meas.o: ../generic_ks/f_meas.c
@@ -242,6 +249,10 @@ fermion_links_fn.o: ../generic_ks/fermion_links_fn.c
 fermion_links_fn_dmdu0.o: ../generic_ks/fermion_links_fn_dmdu0.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_helpers.o: ../generic_ks/fermion_links_helpers.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_hisq.o: ../generic_ks/fermion_links_hisq.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_hisq_helpers.o: ../generic_ks/fermion_links_hisq_helpers.c
 	${CC} -c ${CFLAGS} $<
 ff_opt.o: ../generic_ks/ff_opt.c
 	${CC} -c ${CFLAGS} $<
@@ -299,6 +310,8 @@ quark_stuff5.o: ../generic_ks/quark_stuff5.c
 	${CC} -c ${CFLAGS} $<
 quark_stuff6.o: ../generic_ks/quark_stuff6.c
 	${CC} -c ${CFLAGS} $<
+quark_stuff_hisq.o: ../generic_ks/quark_stuff_hisq.c
+	${CC} -c ${CFLAGS} $<
 rephase.o: ../generic_ks/rephase.c
 	${CC} -c ${CFLAGS} $<
 show_generic_ks_opts.o: ../generic_ks/show_generic_ks_opts.c
@@ -325,6 +338,8 @@ spectrum_nlpi2.o: ../generic_ks/spectrum_nlpi2.c
 	${CC} -c ${CFLAGS} $<
 spectrum_singlets.o: ../generic_ks/spectrum_singlets.c
 	${CC} -c ${CFLAGS} $<
+su3_mat_op.o: ../generic_ks/su3_mat_op.c
+	${CC} -c ${CFLAGS} $<
 
 ifeq ($(strip ${HAVEQDP}),true)
 
@@ -349,6 +364,7 @@ G_KS_ALL_DEPEND_QDP = \
   ${G_KS_ALL_DEPEND}
 
 ${G_KS_ALL_QDP} : ${G_KS_ALL_DEPEND_QDP}
+su3_mat_op.o: su3_mat_op.h
 
 d_congrad5_fn_1sum_qdp.o: ../generic_ks/d_congrad5_fn_1sum_qdp.c
 	${CC} -c ${CFLAGS} $<

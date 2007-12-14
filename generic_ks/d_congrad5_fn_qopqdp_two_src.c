@@ -83,7 +83,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   // Freeing memory is not necessary, but done for memory savings.
   // Links must be recomputed later.
   free_fn_links(fn);
-  invalidate_ferm_links(fn);
+  invalidate_all_ferm_links(fn);
   
   ///////////////////////////////////////////////////////
   // set qop_invert_arg                                //

@@ -34,11 +34,11 @@ void load_ferm_links_dmdu0(ferm_links_t *fn, ks_action_paths *ap){
 #endif
 
 void
-invalidate_ferm_links(ferm_links_t *fn)
+invalidate_all_ferm_links(ferm_links_t *fn)
 {
   /* We must invalidate for both precisions */
-  invalidate_ferm_links_F(fn);
-  invalidate_ferm_links_D(fn);
+  invalidate_all_ferm_links_F(fn);
+  invalidate_all_ferm_links_D(fn);
 }
 
 void init_ferm_links(ferm_links_t *fn){

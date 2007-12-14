@@ -121,8 +121,9 @@ static QDP_ColorVector **tv;
 
 void 
 FERMION_FORCE_ASQTAD_QDP( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[], 
-		      asqtad_path_coeff *coeffs, QDP_ColorVector *in_pt[], 
-		      MY_REAL eps[], int nsrc ){
+			  asqtad_path_coeff *coeffs, QDP_ColorVector *in_pt[], 
+			  MY_REAL eps[], int nsrc, ferm_links_t *fn,
+			  ks_action_paths *ap ){
 
   MY_REAL coeff[nsrc];
   MY_REAL OneLink[nsrc], Lepage[nsrc], Naik[nsrc], FiveSt[nsrc], ThreeSt[nsrc], SevenSt[nsrc];
@@ -592,7 +593,8 @@ my_make_anti_hermitian( MY_SU3MAT *m3, anti_hermitmat *ah3 ) {
 
 
 /* Standard MILC interface for the single-species Asqtad fermion force routine */
-void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off )
+void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off,
+			       ferm_links_t *fn, ks_action_paths *ap )
 {
   /* For example weight = nflavors/4 */
 
@@ -606,7 +608,7 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off )
   MY_REAL epswt;
 
   asqtad_path_coeff c;
-  Real *act_path_coeff = get_quark_path_coeff();
+  Real *act_path_coeff = ap->act_path_coeff;
 
   double remaptime = -dclock();
 
@@ -644,7 +646,7 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off )
 
   /* Compute fermion force */
   remaptime += dclock();
-  FERMION_FORCE_ASQTAD_QDP ( force, gf, &c, &vecx, &epswt, 1);
+  FERMION_FORCE_ASQTAD_QDP ( force, gf, &c, &vecx, &epswt, 1, fn, ap);
   remaptime -= dclock();
 
   /* Map the force back to MILC */
@@ -675,7 +677,8 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off )
 
 /* Standard MILC interface for the two-species Asqtad fermion force routine */
 void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2, 
-				field_offset x1_off, field_offset x2_off ) 
+				field_offset x1_off, field_offset x2_off,
+				ferm_links_t *fn, ks_action_paths *ap ) 
 {
 
   /* For example weight1 = nflavor1/4; weight2 = nflavor2/4 */
@@ -730,7 +733,7 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
 
   /* Compute fermion force */
   remaptime += dclock();
-  FERMION_FORCE_ASQTAD_QDP ( force, gf, &c, vecx, epswt, 2);
+  FERMION_FORCE_ASQTAD_QDP ( force, gf, &c, vecx, epswt, 2, fn, ap);
   remaptime -= dclock();
 
   /* Map the force back to MILC */
@@ -764,7 +767,8 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
 /* Standard MILC interface for multiple sources                       */
 /**********************************************************************/
 void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues,
-				    su3_vector *xxx[], int nsrc) 
+				 su3_vector *xxx[], int nsrc,
+				 ferm_links_t *fn, ks_action_paths *ap ) 
 {
   int i,dir;
   site *s;
@@ -776,7 +780,7 @@ void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues,
   MY_REAL *epswt;
 
   asqtad_path_coeff c;
-  Real *act_path_coeff = get_quark_path_coeff();
+  Real *act_path_coeff = ap->act_path_coeff;
   double remaptime = -dclock();
 
   /* Create QDP fields for fat links, long links, and temp for gauge field */
@@ -819,7 +823,7 @@ void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues,
 
   /* Compute fermion force */
   remaptime += dclock();
-  FERMION_FORCE_ASQTAD_QDP ( force, gf, &c, vecx, epswt, nsrc);
+  FERMION_FORCE_ASQTAD_QDP ( force, gf, &c, vecx, epswt, nsrc, fn, ap);
   remaptime -= dclock();
 
   /* Map the force back to MILC */
@@ -856,14 +860,16 @@ void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues,
 /*  Requires the xxx1 and xxx2 terms in the site structure */
 
 void FERMION_FORCE_ASQTAD_BLOCK( Real eps, Real *residues, 
-	    su3_vector **xxx, int nterms, int veclength ) {
+				 su3_vector **xxx, int nterms, int veclength,
+				 ferm_links_t *fn, ks_action_paths *ap ) {
 
   int i,j;
   site *s;
 
   /* First do blocks of size veclength */
   for( j = 0;  j <= nterms-veclength; j += veclength )
-    FERMION_FORCE_ASQTAD_MULTI( eps, &(residues[j]), xxx+j, veclength );
+    FERMION_FORCE_ASQTAD_MULTI( eps, &(residues[j]), xxx+j, veclength,
+				fn, ap );
   
 #ifndef ONEMASS
   /* Continue with pairs if needed */
@@ -873,20 +879,20 @@ void FERMION_FORCE_ASQTAD_BLOCK( Real eps, Real *residues,
       s->xxx2 = xxx[j+1][i] ;
     }
     EO_FERMION_FORCE_TWOTERMS( eps, residues[j], residues[j+1],
-			       F_OFFSET(xxx1), F_OFFSET(xxx2) );
+			       F_OFFSET(xxx1), F_OFFSET(xxx2), fn, ap );
   }
 
   /* Finish with a single if needed */
   for( ; j <= nterms-1; j++ ){
     FORALLSITES(i,s){ s->xxx1 = xxx[j][i] ; }
-    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx1) );
+    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx1), fn, ap );
   }
 #else
   /* Thrown in just to make it compile.  Probably never used. */
   /* Finish with a single if needed */
   for( ; j <= nterms-1; j++ ){
     FORALLSITES(i,s){ s->xxx = xxx[j][i] ; }
-    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx) );
+    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx), fn, ap );
   }
 #endif
 }

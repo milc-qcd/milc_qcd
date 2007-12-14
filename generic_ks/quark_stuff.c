@@ -75,23 +75,33 @@ static Real act_path_coeff_dmdu0[MAX_BASIC_PATHS]; /* coefficient for
 /* Array of structures, for each rotation and reflection of each kind of
 	path.  */
 static Q_path q_paths[MAX_NUM];
+#ifdef DM_DU0
 static Q_path q_paths_dmdu0[MAX_NUM];
+#endif
 static int num_q_paths;	/* number of paths in dslash */
 static int num_basic_paths;	/* number of paths before rotation/reflection */
 
-int is_path_equal( int *path1, int* path2, int length );
-int add_basic_path( int *vec, int length, Real coeff );
+static int 
+is_path_equal( int *path1, int* path2, int length );
+static int 
+add_basic_path( int *vec, int length, Real coeff );
 
 /********************************************************************/
 /* Make table of paths in action */
 /********************************************************************/
-void make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0) {
+int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0,
+		    Real mass) {
 
     int i,j;
 #ifdef TADPOLE_IMPROVE
     int k;
 #endif
 
+    // Don't remake the table if already made
+
+    if(ap->constructed)return 0;
+    node0_printf("MAKING PATH TABLES\n");
+  
     /* table of directions, 1 for each kind of path */
     /**int path_ind[MAX_BASIC_PATHS][MAX_LENGTH];**/
     /* table of coefficients in action, for each path */
@@ -129,39 +139,16 @@ void make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0) {
     ap_dmdu0->q_paths = q_paths;
     ap_dmdu0->act_path_coeff = act_path_coeff_dmdu0;
 #endif
+    ap->constructed = 1;
+    return 1;
 }
-
-/* Accessors for path table */
-int get_num_q_paths(){
-  return num_q_paths;
-}
-
-Q_path *get_q_paths(){
-  return q_paths;
-}
-
-Q_path *get_q_paths_dmdu0(){
-  return q_paths_dmdu0;
-}
-
-
-/* Accessor for quark action information */
-Real *get_quark_path_coeff(){
-  return act_path_coeff;
-}
-
-#ifdef DM_DU0
-/* Accessor for quark action information */
-Real *get_quark_path_coeff_dmdu0(){
-  return act_path_coeff_dmdu0;
-}
-#endif
 
 /********************************************************************/
 /* add rotations and reflections of a path to the table.  Return
    multiplicity of paths added */
 /********************************************************************/
-int add_basic_path( int *basic_vec, int length, Real coeff ) {
+static int 
+add_basic_path( int *basic_vec, int length, Real coeff ) {
 
     int perm[8],pp[8],ir[4];
     int j,path_num;
@@ -250,10 +237,19 @@ int add_basic_path( int *basic_vec, int length, Real coeff ) {
 /********************************************************************/
 /* compare two paths, return 1 if equal, else zero */
 /********************************************************************/
-int is_path_equal( int *path1, int* path2, int length ){
+static int 
+is_path_equal( int *path1, int* path2, int length ){
    register int i;
    for(i=0;i<length;i++)if(path1[i]!=path2[i])return(0);
    return(1);
+}
+
+/********************************************************************/
+/* Initialization */
+/********************************************************************/
+void 
+init_path_table(ks_action_paths *ap){
+  ap->constructed = 0;
 }
 
 /* quark_stuff.c */

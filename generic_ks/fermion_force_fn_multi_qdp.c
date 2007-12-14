@@ -156,7 +156,8 @@ sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths ){
 static void 
 fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[], 
 			    Real eps, QLA_Real *res, 
-			    QDP_ColorVector *x[], int nterms ){
+			    QDP_ColorVector *x[], int nterms,
+			    ferm_links_t *fn, ks_action_paths *ap ){
 
   /* note CG_solution and Dslash * solution are combined in "x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
@@ -167,8 +168,8 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
   int length,dir,odir;
   QDP_ColorMatrix *tmat;
   Real ferm_epsilon, coeff;
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
   Q_path *this_path;	// pointer to current path
   Q_path *last_path;	// pointer to previous path
   QDP_ColorMatrix *mat_tmp0, *stmp[8];
@@ -407,7 +408,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
 /**********************************************************************/
 void fermion_force_fn_multi( Real eps, Real residues[], 
 			     su3_vector **multi_x, int nterms,
-			     int prec )
+			     int prec, ferm_links_t *fn, ks_action_paths *ap )
 {
   /* prec is ignored for now */
   int i,dir;
@@ -453,7 +454,7 @@ void fermion_force_fn_multi( Real eps, Real residues[],
 
   /* Evaluate the fermion force */
   remaptime += dclock();
-  fn_fermion_force_multi_qdp(force, gf, eps, res, x, nterms);
+  fn_fermion_force_multi_qdp(force, gf, eps, res, x, nterms, fn, ap);
   remaptime -= dclock();
   
   /* Map the force back to MILC */

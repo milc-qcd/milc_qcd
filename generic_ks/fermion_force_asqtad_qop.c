@@ -18,6 +18,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.27  2007/12/14 04:36:31  detar
+ * Major modification to support HISQ.
+ *
  * Revision 1.26  2007/11/09 16:42:41  detar
  * Pull FN link calculation out of inverters
  *
@@ -103,20 +106,20 @@
 #define KS_MULTIFF FNMAT
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.26 2007/11/09 16:42:41 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.27 2007/12/14 04:36:31 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
    routine */
 /**********************************************************************/
 void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
-			       int prec)
+			       int prec, ferm_links_t *fn, ks_action_paths *ap)
 {
 
   if(prec == 1)
-    eo_fermion_force_oneterm_F( eps, weight, x_off );
+    eo_fermion_force_oneterm_F( eps, weight, x_off, fn, ap );
   else
-    eo_fermion_force_oneterm_D( eps, weight, x_off );
+    eo_fermion_force_oneterm_D( eps, weight, x_off, fn, ap );
 
 }
 
@@ -126,13 +129,16 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
 /**********************************************************************/
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
 				field_offset x1_off, field_offset x2_off,
-				int prec) 
+				int prec, ferm_links_t *fn, 
+				ks_action_paths *ap) 
 {
 
   if(prec == 1)
-    eo_fermion_force_twoterms_F( eps, weight1, weight2, x1_off, x2_off );
+    eo_fermion_force_twoterms_F( eps, weight1, weight2, x1_off, x2_off, 
+				 fn, ap );
   else
-    eo_fermion_force_twoterms_D( eps, weight1, weight2, x1_off, x2_off );
+    eo_fermion_force_twoterms_D( eps, weight1, weight2, x1_off, x2_off,
+				 fn, ap );
 
 }
 
@@ -143,13 +149,14 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
 void 
 fermion_force_asqtad_multi( Real eps, Real *residues, 
- 			 su3_vector **xxx, int nterms, int prec ) 
+			    su3_vector **xxx, int nterms, int prec,
+			    ferm_links_t *fn, ks_action_paths *ap ) 
 {
 
   if(prec == 1)
-    fermion_force_asqtad_multi_F( eps, residues, xxx, nterms );
+    fermion_force_asqtad_multi_F( eps, residues, xxx, nterms, fn, ap );
   else
-    fermion_force_asqtad_multi_D( eps, residues, xxx, nterms );
+    fermion_force_asqtad_multi_D( eps, residues, xxx, nterms, fn, ap );
 
 }
 
@@ -160,12 +167,15 @@ fermion_force_asqtad_multi( Real eps, Real *residues,
 
 void 
 fermion_force_asqtad_block( Real eps, Real *residues, 
-    su3_vector **xxx, int nterms, int veclength, int prec ) {
-
+			    su3_vector **xxx, int nterms, int veclength, 
+			    int prec, ferm_links_t *fn, ks_action_paths *ap) 
+{
   if(prec == 1)
-    fermion_force_asqtad_block_F( eps, residues, xxx, nterms, veclength );
+    fermion_force_asqtad_block_F( eps, residues, xxx, nterms, veclength,
+				  fn, ap);
   else
-    fermion_force_asqtad_block_D( eps, residues, xxx, nterms, veclength );
+    fermion_force_asqtad_block_D( eps, residues, xxx, nterms, veclength,
+				  fn, ap);
 
 }
 
@@ -173,7 +183,8 @@ fermion_force_asqtad_block( Real eps, Real *residues,
 /*   Standard MILC interface for fermion force with multiple sources  */
 /**********************************************************************/
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
-			     int nterms, int prec ) {
+			     int nterms, int prec, ferm_links_t *fn,
+			     ks_action_paths *ap ) {
 
   int veclength;
 #ifdef VECLENGTH
@@ -194,14 +205,14 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
     if(QOP_asqtad_force_set_opts(qop_ff_opt, 2) != QOP_SUCCESS)
       node0_printf("eo_fermion_force_multi: error setting QOP options\n");
     fermion_force_asqtad_block( eps, residues, xxx, nterms, 
-				veclength, prec );
+				veclength, prec, fn, ap );
     break;
   default:  /* FNMAT */
     qop_ff_opt[0].value = 4; /* set sensible threshold for FNMAT */
     if(QOP_asqtad_force_set_opts(qop_ff_opt, 2) != QOP_SUCCESS)
       node0_printf("eo_fermion_force_multi: error setting QOP options\n");
     fermion_force_asqtad_multi( eps, residues, xxx, 
-				nterms, prec );
+				nterms, prec, fn, ap );
   }
 }
 

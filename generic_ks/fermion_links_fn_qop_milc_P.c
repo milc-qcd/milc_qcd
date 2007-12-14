@@ -58,8 +58,8 @@ static su3_matrix *create_longlinks_qop_milc(QOP_info_t *info,
   register site *s;
   int ipath,dir;
   int disp[4];
-  int num_q_paths = get_num_q_paths();
-  Q_path *q_paths = get_q_paths();
+  int num_q_paths = ap->num_q_paths;
+  Q_path *q_paths = ap->q_paths;
   register su3_matrix *long1;
   su3_matrix *staple, *tempmat1;
   int nflop = 1804;

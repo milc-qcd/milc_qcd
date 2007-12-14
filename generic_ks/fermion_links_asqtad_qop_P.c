@@ -14,7 +14,7 @@
    LOAD_FERM_LINKS
    LOAD_FERM_LINKS_DMDU0
    CREATE_QOP_ASQTAD_FERMION_LINKS
-   INVALIDATE_FERM_LINKS
+   INVALIDATE_ALL_FERM_LINKS
 
 */
 
@@ -36,7 +36,7 @@
 #define CREATE_L_FROM_SITE_GAUGE create_F_L_from_site_gauge
 #define CREATE_QOP_ASQTAD_FERMION_LINKS create_qop_F_asqtad_fermion_links
 #define DESTROY_QOP_ASQTAD_FERMION_LINKS destroy_qop_F_asqtad_fermion_links
-#define INVALIDATE_FERM_LINKS invalidate_ferm_links_F
+#define INVALIDATE_ALL_FERM_LINKS invalidate_all_ferm_links_F
 #define UNLOAD_L_TO_FIELDS unload_F_L_to_fields
 #define CREATE_RAW4_G_FROM_SITE create_raw4_F_G_from_site
 #define DESTROY_RAW4_G destroy_raw4_F_G
@@ -55,7 +55,7 @@ static void destroy_qop_F_asqtad_fermion_links( ferm_links_t *fn );
 #define CREATE_L_FROM_SITE_GAUGE create_D_L_from_site_gauge
 #define CREATE_QOP_ASQTAD_FERMION_LINKS create_qop_D_asqtad_fermion_links
 #define DESTROY_QOP_ASQTAD_FERMION_LINKS destroy_qop_D_asqtad_fermion_links
-#define INVALIDATE_FERM_LINKS invalidate_ferm_links_D
+#define INVALIDATE_ALL_FERM_LINKS invalidate_all_ferm_links_D
 #define UNLOAD_L_TO_FIELDS unload_D_L_to_fields
 #define CREATE_RAW4_G_FROM_SITE create_raw4_D_G_from_site
 #define DESTROY_RAW4_G destroy_raw4_D_G
@@ -301,7 +301,7 @@ DESTROY_QOP_ASQTAD_FERMION_LINKS( ferm_links_t *fn )
 }
 
 void
-INVALIDATE_FERM_LINKS( ferm_links_t *fn )
+INVALIDATE_ALL_FERM_LINKS( ferm_links_t *fn )
 {
   fn->valid = 0;
   fn->valid_qop_F = 0;

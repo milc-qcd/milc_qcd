@@ -112,7 +112,8 @@ side_link_3f_force(int mu, int nu, Real coeff[2], half_wilson_vector *Path   ,
 
 static void 
 eo_fermion_force_oneterm_field( Real eps, Real weight, su3_vector *temp_x,
-				int prec )
+				int prec, ferm_links_t *fn, 
+				ks_action_paths *ap )
 {
   /* prec is ignored for now */
   /* note CG_solution and Dslash * solution are combined in "x_off" */
@@ -140,7 +141,7 @@ eo_fermion_force_oneterm_field( Real eps, Real weight, su3_vector *temp_x,
   /*  node0_printf("STARTING fn_fermion_force_oneterm() nterms = 1\n");*/
 
   /* Load path coefficients from table */
-  act_path_coeff = get_quark_path_coeff();
+  act_path_coeff = ap->act_path_coeff;
 
   /* Path coefficients times fermion epsilon */
   OneLink = act_path_coeff[0]*ferm_epsilon ; 
@@ -308,7 +309,7 @@ node0_printf("FFTIME:  time = %e (asqtad3) terms = 1 mflops = %e\n",dtime,
 
 void 
 eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
-			  int prec )
+			  int prec, ferm_links_t *fn, ks_action_paths *ap )
 {
   int i ;
   site *s;
@@ -317,13 +318,13 @@ eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
   /*copy x_off to a temporary vector */
   temp_x = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
   if(temp_x == NULL){
-    printf("eo_fermion_force_twoterms: No room for temporary\n");
+    printf("eo_fermion_force_oneterm: No room for temporary\n");
     terminate(1);
   }
 
   FORALLSITES(i,s) temp_x[i] = *(su3_vector *)F_PT(s,x_off) ;
 
-  eo_fermion_force_oneterm_field(eps, weight, temp_x, prec);
+  eo_fermion_force_oneterm_field(eps, weight, temp_x, prec, fn, ap );
 
   free(temp_x);
 }
@@ -337,7 +338,8 @@ static anti_hermitmat *tempmom[4];
 
 static void 
 eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2, 
-				 half_wilson_vector *temp_x, int prec )
+				 half_wilson_vector *temp_x, int prec,
+				 ferm_links_t *fn, ks_action_paths *ap )
  {
    /* prec is ignored for now */
   /* note CG_solution and Dslash * solution are combined in "x_off" */
@@ -464,7 +466,7 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
   }
   
   /* Load path coefficients from table */
-  act_path_coeff = get_quark_path_coeff();
+  act_path_coeff = ap->act_path_coeff;
 
   /* Path coefficients times fermion epsilon */
   ferm_epsilon = 2.0*weight1*eps;
@@ -749,7 +751,7 @@ node0_printf("FFTIME:  time = %e (asqtad3) terms = 2 mflops = %e\n",dtime,
 void 
 eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
 			   field_offset x1_off, field_offset x2_off,
-			   int prec )
+			   int prec, ferm_links_t *fn, ks_action_paths *ap )
 {
   int i;
   site *s;
@@ -769,7 +771,8 @@ eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
       temp_x[i].h[1] = *(su3_vector *)F_PT(s,x2_off);
     }
   
-  eo_fermion_force_twoterms_field(eps, weight1, weight2, temp_x, prec);
+  eo_fermion_force_twoterms_field(eps, weight1, weight2, temp_x, prec,
+				  fn, ap );
   
   free(temp_x) ;
 }  
@@ -781,7 +784,8 @@ eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 void 
 fermion_force_asqtad_block( Real eps, Real *residues, 
 			    su3_vector **xxx, int nterms, int veclength, 
-			    int prec ) {
+			    int prec, ferm_links_t *fn, ks_action_paths *ap ) 
+{
 
   int i,j;
   site *s;
@@ -789,7 +793,7 @@ fermion_force_asqtad_block( Real eps, Real *residues,
   /* First do blocks of size veclength */
   for( j = 0;  j <= nterms-veclength; j += veclength )
     fermion_force_asqtad_multi( eps, &(residues[j]), xxx+j, veclength,
-				   prec );
+				prec, fn, ap );
   
   /* Continue with pairs if needed */
   if(j <= nterms-2){
@@ -810,14 +814,14 @@ fermion_force_asqtad_block( Real eps, Real *residues,
 	}
       
       eo_fermion_force_twoterms_field( eps, residues[j], residues[j+1],
-				       temp_x, prec );
+				       temp_x, prec, fn, ap );
     }
     free(temp_x);
   }
 
   /* Finish with a single if needed */
   for( ; j <= nterms-1; j++ ){
-    eo_fermion_force_oneterm_field( eps, residues[j], xxx[j], prec );
+    eo_fermion_force_oneterm_field( eps, residues[j], xxx[j], prec, fn, ap );
   }
 }
 
@@ -849,7 +853,8 @@ static anti_hermitmat *tempmom[4];
 
 void 
 fermion_force_asqtad_multi( Real eps, Real *residues, 
-			    su3_vector **xxx, int nterms, int prec ) 
+			    su3_vector **xxx, int nterms, int prec,
+			    ferm_links_t *fn, ks_action_paths *ap ) 
 {
   /* prec is ignored for now */
   // note CG_solution and Dslash * solution are combined in "*xxx"
@@ -978,7 +983,7 @@ fermion_force_asqtad_multi( Real eps, Real *residues,
   }
   
   /* Load path coefficients from table */
-  act_path_coeff = get_quark_path_coeff();
+  act_path_coeff = ap->act_path_coeff;
 
   /* Path coefficients times fermion epsilon */
   coeff = (Real *)malloc( nterms*sizeof(Real) );
