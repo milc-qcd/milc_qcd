@@ -51,30 +51,32 @@ complex.2.a: ${COMPLEXOBJS2}
 
 SU3OBJS1 = addmat.1.o addvec.1.o cmp_ahmat.1.o cs_m_a_vec.1.o cs_m_a_mat.1.o \
 	cs_m_s_vec.1.o cs_m_vec.1.o det_su3.1.o clear_mat.1.o dumpmat.1.o \
-	dumpvec.1.o clearvec.1.o m_amatvec_s.1.o m_amatvec.1.o m_amatvec_ns.1.o \
+	dumptensor4.1.o dumpvec.1.o clearvec.1.o m_amatvec_s.1.o \
+	m_amatvec.1.o m_amatvec_ns.1.o \
 	m_mat_an.1.o m_mat_na.1.o m_mat_nn.1.o m_matvec.1.o m_matvec_ns.1.o \
 	m_matvec_s.1.o make_ahmat.1.o rand_ahmat.1.o realtr.1.o complextr.1.o \
 	s_m_a_hwvec_proj.1.o s_m_a_mat.1.o s_m_a_vec.1.o s_m_s_mat.1.o \
 	s_m_s_vec.1.o s_m_sum_vec.1.o s_m_vec.1.o s_m_mat.1.o cs_m_mat.1.o \
 	cs_m_s_mat.1.o su3_adjoint.1.o su3_dot.1.o su3_rdot.1.o su3_proj.1.o \
 	su3mat_copy.1.o su3vec_copy.1.o submat.1.o subvec.1.o trace_su3.1.o \
-	uncmp_ahmat.1.o msq_su3vec.1.o sub4vecs.1.o m_amv_4dir.1.o m_amv_4vec.1.o \
-	m_mv_s_4dir.1.o flush_to_zero.1.o \
+	uncmp_ahmat.1.o msq_su3vec.1.o sub4vecs.1.o m_amv_4dir.1.o \
+	m_amv_4vec.1.o m_mv_s_4dir.1.o flush_to_zero.1.o \
 	l_su2_hit_n.1.o r_su2_hit_a.1.o dumpsu2.1.o \
 	m_su2_mat_vec_n.1.o m_su2_mat_vec_a.1.o \
 	gaussrand.1.o z2rand.1.o  byterevn.1.o prefetch.1.o
 
 SU3OBJS2 = addmat.2.o addvec.2.o cmp_ahmat.2.o cs_m_a_vec.2.o cs_m_a_mat.2.o \
 	cs_m_s_vec.2.o cs_m_vec.2.o det_su3.2.o clear_mat.2.o dumpmat.2.o \
-	dumpvec.2.o clearvec.2.o m_amatvec_s.2.o m_amatvec.2.o m_amatvec_ns.2.o \
+	dumptensor4.2.o dumpvec.2.o clearvec.2.o m_amatvec_s.2.o \
+	m_amatvec.2.o m_amatvec_ns.2.o \
 	m_mat_an.2.o m_mat_na.2.o m_mat_nn.2.o m_matvec.2.o m_matvec_ns.2.o \
 	m_matvec_s.2.o make_ahmat.2.o rand_ahmat.2.o realtr.2.o complextr.2.o \
 	s_m_a_hwvec_proj.2.o s_m_a_mat.2.o s_m_a_vec.2.o s_m_s_mat.2.o \
 	s_m_s_vec.2.o s_m_sum_vec.2.o s_m_vec.2.o s_m_mat.2.o cs_m_mat.2.o \
 	cs_m_s_mat.2.o su3_adjoint.2.o su3_dot.2.o su3_rdot.2.o su3_proj.2.o \
 	su3mat_copy.2.o su3vec_copy.2.o submat.2.o subvec.2.o trace_su3.2.o \
-	uncmp_ahmat.2.o msq_su3vec.2.o sub4vecs.2.o m_amv_4dir.2.o m_amv_4vec.2.o \
-	m_mv_s_4dir.2.o flush_to_zero.2.o \
+	uncmp_ahmat.2.o msq_su3vec.2.o sub4vecs.2.o m_amv_4dir.2.o \
+	m_amv_4vec.2.o m_mv_s_4dir.2.o flush_to_zero.2.o \
 	l_su2_hit_n.2.o r_su2_hit_a.2.o dumpsu2.2.o \
 	m_su2_mat_vec_n.2.o m_su2_mat_vec_a.2.o \
 	gaussrand.2.o z2rand.2.o byterevn.2.o prefetch.2.o
