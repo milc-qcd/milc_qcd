@@ -56,6 +56,7 @@ int main (int argc, char* argv[]) {
   int precision; // The precision that gmp uses
   double lambda_low, lambda_high; // The bounds of the approximation
   int iphi,n_pseudo;
+  double naik_term_mass;
 
   // Read the number of pseudofermion fields
   scanf("%d",&n_pseudo);
@@ -64,6 +65,8 @@ int main (int argc, char* argv[]) {
   for(iphi=0; iphi<n_pseudo; iphi++){
     // Set the exponents and masses
     fprintf(stderr,"For pseudofermion %d\n",iphi);
+    scanf("%le",&naik_term_mass);
+    printf("naik_term_mass %g\n",naik_term_mass);
     scanf("%d",&y1);
     scanf("%le",&m1);
     scanf("%d",&y2);
