@@ -26,7 +26,13 @@ for general instructions.
 
 Here are highlights of the changes:
 
-For version 7.6.0.1
+For version 7.6.1.devel
+  Add some spectrum calculations to HISQ targets in ks_imp_rhmc
+  Add HISQ fermion code from Doug and Alexei
+  Add link and action coeffs to all fermion_force calls.
+    Remove global accessor calls.
+  Change normalization of point sink props in ks_hl_spectrum
+    fix seg fault, and allow suppression of log correlators
   Fix nrestart treatment in QOP inverter calls.
   Minor maintenance.
 

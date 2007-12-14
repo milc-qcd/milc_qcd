@@ -44,7 +44,6 @@ endif
 
 #CC = /usr/local/mvapich/bin/mpicc  # FNAL
 #CC = powerpc-gnu-elf-gcc           # QCDOC
-
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc

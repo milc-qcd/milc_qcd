@@ -11,7 +11,8 @@
 #define Popmu        hwvec[4]
 #define Pmumumu      hwvec[4]
 void eo_fermion_force_two( Real eps, Real res1, Real res2,
-			   field_offset x1_off, field_offset x2_off ) {
+			   field_offset x1_off, field_offset x2_off,
+			   ferm_links_t *fn, ks_action_paths *ap ) {
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* 4/15/99 combine force from two different mass quarks, (eg 2+1flavors) */

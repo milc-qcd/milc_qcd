@@ -3,7 +3,7 @@
 # 12/16/06 C. DeTar
 
 #  Change these names to suit
-VER = 7.6.0.1
+VER = 7.6.1.devel
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -79,7 +79,8 @@ GENERIC_KS =     \
  generic_ks/*.cc      \
  generic_ks/*.h       \
  generic_ks/imp_actions/README \
- generic_ks/imp_actions/*.h
+ generic_ks/imp_actions/*.h \
+ generic_ks/imp_actions/hisq/*.h
 
 GENERIC_PG =     \
  generic_pg/Make_*     \
