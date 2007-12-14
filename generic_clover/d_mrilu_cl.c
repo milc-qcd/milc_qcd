@@ -279,6 +279,9 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
 #endif
   }
 
+  qic->final_iters = N_iter;
+  qic->final_restart = nrestart;
+
 #ifdef CGTIME
   dtime += dclock();
 #endif
