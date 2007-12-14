@@ -229,7 +229,7 @@ readin(int prompt)
   }
   startlat_p = reload_lattice( startflag, startfile );
 #ifdef FN
-  invalidate_ferm_links(&fn_links);
+  invalidate_all_ferm_links(&fn_links);
 #endif
   /* if a lattice was read in, put in KS phases and AP boundary condition */
   phases_in = OFF;
@@ -238,7 +238,8 @@ readin(int prompt)
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
   /* make table of coefficients and permutations of paths in quark action */
-  make_path_table(&ks_act_paths, NULL);
+  init_path_table(&ks_act_paths);
+  make_path_table(&ks_act_paths, NULL, 0.);
 
   return(0);
 }

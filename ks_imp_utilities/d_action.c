@@ -107,6 +107,6 @@ register site *s;
 	}
     }
 #ifdef FN
-  invalidate_ferm_links(&fn_links);
+  invalidate_all_ferm_links(&fn_links);
 #endif
 }
