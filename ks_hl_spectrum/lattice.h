@@ -176,6 +176,7 @@ EXTERN char ** gen_pt[N_POINTERS];
 EXTERN	int iseed;
 
 EXTERN  int num_smear;
+EXTERN  int log_correlators;
 EXTERN	double rsqmin,rsqprop,beta,mass;
 EXTERN  char mass_label[32];
 EXTERN	int warms,trajecs,steps,niter,propinterval,nflavors;

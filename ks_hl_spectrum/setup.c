@@ -142,6 +142,9 @@ int readin(int prompt)  {
     IF_OK status += ask_corr_file( stdin, prompt, &par_buf.saveflag_c,
 				   par_buf.savefile_c);
 
+    IF_OK status += get_i(stdin, prompt, "log_correlators", 
+			  &par_buf.log_correlators);
+
     if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
 
   } /* end if(this_node==0) */
@@ -179,6 +182,7 @@ int readin(int prompt)  {
   ks_prop_startflag = par_buf.ks_prop_startflag;
   sequence_number = par_buf.sequence_number;
   num_smear = par_buf.num_smear;
+  log_correlators = par_buf.log_correlators;
 
   /* Do whatever is needed to get lattice */
   startlat_p = reload_lattice( startflag, startfile );

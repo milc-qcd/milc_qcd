@@ -884,6 +884,7 @@ open_fnal_meson_file(char filename[]){
 static void 
 print_start_fnal_meson_group(FILE *fp, char sink[])
 {
+  if(this_node != 0 || saveflag_c == FORGET)return;
   fprintf(fp,"# %s\n",sink);
 }
 
@@ -994,7 +995,8 @@ print_hl_rot(FILE *corr_fp, complex **prop_rot, int k)
 			   0,0,0,0,0,
 			   0,0,0,0,0};
 
-  node0_printf("BEGIN\n");
+  if(log_correlators)
+    node0_printf("BEGIN\n");
       
   print_start_fnal_meson_group(corr_fp,"rotated-sinks");
 
@@ -1006,16 +1008,18 @@ print_hl_rot(FILE *corr_fp, complex **prop_rot, int k)
 				    src_label_w[k], kap_label[k], 
 				    mass_label);
       
-      if(this_node==0) printf("\n\nTr %d, %s_k_%f\n_________________________________\n",
-			      i, trace_kind_rot[i],kap[k]);
+      if(log_correlators)
+	node0_printf("\n\nTr %d, %s_k_%f\n_________________________________\n",
+		     i, trace_kind_rot[i],kap[k]);
       for(t=0;t<nt;t++)
 	{
 	  g_complexsum( &prop_rot[i][t] );
 	  if(this_node==0){
 	    if(do_fnal_print[i])
 	      print_fnal_meson_prop(corr_fp, t, prop_rot[i][t]);
-	    printf("%d %e %e\n", t,
-		   prop_rot[i][t].real, prop_rot[i][t].imag);
+	    if(log_correlators)
+	      printf("%d %e %e\n", t,
+		     prop_rot[i][t].real, prop_rot[i][t].imag);
 	  }
 	}
       if(do_fnal_print[i])
@@ -1059,8 +1063,9 @@ print_hl_smear(FILE *corr_fp, complex **prop_smear, int k, int ns)
 				  sink_label[ns],
 				  src_label_w[k], kap_label[k], mass_label);
       
-    if(this_node==0) printf("\n\nSMEAR_#%d, %s_k_%f\n_________________________________\n", 
-			    ns, trace_kind_smear[i],kap[k]);
+    if(log_correlators)
+      node0_printf("\n\nSMEAR_#%d, %s_k_%f\n_________________________________\n", 
+		   ns, trace_kind_smear[i],kap[k]);
     for(t=0;t<nt;t++)
       {
 	g_complexsum( &prop_smear[i][t] );
@@ -1069,9 +1074,10 @@ print_hl_smear(FILE *corr_fp, complex **prop_smear, int k, int ns)
 	if(this_node==0){
 	  if(do_fnal_print[i])
 	    print_fnal_meson_prop(corr_fp, t, prop_smear[i][t]);
-	  printf("%d %e %e\n", t,
-		 prop_smear[i][t].real, 
-		 prop_smear[i][t].imag);
+	  if(log_correlators)
+	    printf("%d %e %e\n", t,
+		   prop_smear[i][t].real, 
+		   prop_smear[i][t].imag);
 	}
       }
     if(do_fnal_print[i])

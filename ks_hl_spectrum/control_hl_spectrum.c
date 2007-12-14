@@ -13,7 +13,7 @@ int main(int argc,char *argv[])
 {
   int prompt , k, ns, i;
   site *s;
-  double space_vol;
+  double inv_space_vol;
   
   int t,color,spin, color1, spin1;
   
@@ -24,12 +24,15 @@ int main(int argc,char *argv[])
   complex pr_tmp; 
   wilson_propagator *qdest;
   wilson_propagator qtemp1;
+
+  wilson_vector *psi = NULL;
+  w_prop_file *wpf;
+  wilson_quark_source wqs;
   
   key[XUP] = 1;
   key[YUP] = 1;
   key[ZUP] = 1;
   key[TUP] = 0;
-
 
   initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
@@ -41,6 +44,19 @@ int main(int argc,char *argv[])
   g_sync();
   prompt = setup(); 
   setup_restrict_fourier(key, dummy);
+
+  psi = (wilson_vector *)
+    malloc(sizeof(wilson_vector)*sites_on_node);
+  
+  if(psi == NULL){
+    printf("No room for temporary\n",this_node);
+    terminate(1);
+  }
+
+  /* Initialize the source type */
+
+  init_wqs(&wqs);
+
   while( readin(prompt) == 0){
     
     
@@ -59,10 +75,21 @@ int main(int argc,char *argv[])
     
     corr_fp = open_fnal_meson_file(savefile_c);
 
+    /* Load Wilson propagator for each kappa */
+
     for(k=0; k<num_kap; k++){
       kappa = kap[k];
-      reload_wprop_to_site(startflag_w[k], startfile_w[k], 
-			   F_OFFSET(quark_propagator),1);
+      wpf = r_open_wprop(startflag_w[k], startfile_w[k]);
+      for(spin=0;spin<4;spin++)
+	for(color=0;color<3;color++){
+	  if(reload_wprop_sc_to_field(startflag_w[k], wpf,
+				      &wqs, spin, color, psi, 1) != 0)
+	    terminate(1);
+	  FORALLSITES(i,s){
+	    copy_wvec(&psi[i],&lattice[i].quark_propagator.c[color].d[spin]);
+	  }
+	}
+      r_close_wprop(startflag_w[k],wpf);
 
       /*******************************************************************/
       /* Rotate the heavy quark */
@@ -92,7 +119,7 @@ int main(int argc,char *argv[])
       for(ns=0; ns<num_smear;ns++){
 	if(strcmp(smearfile[ns],"none")==0) continue;
 
-	space_vol = (double)nx*ny*nz;
+	inv_space_vol = 1./((double)nx*ny*nz);
 
 	/* Either read a smearing file, or take it to be a point sink */
 	if(strlen(smearfile[ns]) != 0){
@@ -105,7 +132,6 @@ int main(int argc,char *argv[])
 	   FORALLSITES(i,s){
 	     for(color=0;color<3;color++)for(spin=0;spin<4;spin++)
 	      for(color1=0;color1<3;color1++)for(spin1=0;spin1<4;spin1++){
-	      
 		  pr_tmp = 
 		    s->quark_propagator.c[color].d[spin].d[spin1].c[color1];
 	  
@@ -120,11 +146,9 @@ int main(int argc,char *argv[])
 	   FORALLSITES(i,s){
 	     for(color=0;color<3;color++)for(spin=0;spin<4;spin++)
 	      for(color1=0;color1<3;color1++)for(spin1=0;spin1<4;spin1++){
-		  /* keep a consistent normalization */
 		  pr_tmp = 
 		    s->quark_propagator.c[color].d[spin].d[spin1].c[color1];
 		  
-		  CMULREAL(pr_tmp,space_vol,pr_tmp);
 		  s->quark_propagator_copy.c[color].d[spin].d[spin1].c[color1].real =
 		    pr_tmp.real;
 	      
@@ -167,6 +191,7 @@ int main(int argc,char *argv[])
     close_fnal_meson_file(corr_fp);
   } /* readin(prompt) == 0 */
 
+  free(psi);
   node0_printf("\nRUNNING COMPLETED\n"); fflush(stdout);
 
 #ifdef HAVE_QDP

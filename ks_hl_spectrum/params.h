@@ -33,6 +33,7 @@ typedef struct {
         Real mass;
         char mass_label[32];
         int num_kap;	/* number of kappa's */
+        int log_correlators;
         int num_smear; /* number of smearings */
         Real kap[MAX_KAP];	/* kappa values for multiple propagators */	
         char kap_label[MAX_KAP][32];
