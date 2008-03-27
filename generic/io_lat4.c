@@ -577,8 +577,6 @@ void r_serial(gauge_file *gf)
       if(gh->magic_number == GAUGE_VERSION_NUMBER)
 	gauge_check_size = sizeof(gf->check.sum29) + 
 	  sizeof(gf->check.sum31);
-      else if(gh->magic_number == GAUGE_VERSION_NUMBER_1996)
-	gauge_check_size =  4;
       else
 	gauge_check_size = 0;
       
@@ -1385,8 +1383,6 @@ void r_parallel(gauge_file *gf)
   if(gh->magic_number == GAUGE_VERSION_NUMBER)
     gauge_check_size = sizeof(gf->check.sum29) + 
       sizeof(gf->check.sum31);
-  else if(gh->magic_number == GAUGE_VERSION_NUMBER_1996)
-    gauge_check_size =  4;
   else
     gauge_check_size = 0;
 
