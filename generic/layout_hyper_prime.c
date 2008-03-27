@@ -89,7 +89,7 @@ static size_t lex_rank(const int coords[], int dim, int size[])
 
 /*--------------------------------------------------------------------*/
 /* Sets the QMP logical topology if we need one */
-static void set_qmp_layout_grid(int *geom, int n){
+static void set_qmp_layout_grid(const int *geom, int n){
   if(geom == NULL)return;
   if(QMP_declare_logical_topology(geom, n) != QMP_SUCCESS){
     node0_printf("setup_layout: QMP_declare_logical_topology failed on %d %d %d %d \n",
@@ -115,17 +115,32 @@ static void setup_qmp_grid(){
   ndim2 = QMP_get_allocated_number_of_dimensions();
   nsquares2 = QMP_get_allocated_dimensions();
 
-  /* In principle, we could now rotate these coordinates */
+  /* If the dimensions are not already allocated, use the
+     node_geometry request.  Otherwise a hardware or command line
+     specification trumps the parameter input. */
+#ifdef FIX_NODE_GEOM
+  if(ndim2 == 0){
+    ndim2 = 4;
+    nsquares2 = node_geometry;
+  }
+  else{
+    node0_printf("setup_qmp_grid: Preallocated machine geometry overrides request\n");
+  }
+#endif
+
+  if(mynode()==0){
+    printf("Using machine geometry: ");
+    for(i=0; i<ndim; i++){
+      printf("%d ",nsquares2[i]);
+      if(i < ndim-1)printf("X ");
+    }
+    printf("\n");
+  }
+
+  /* In principle, we could now rotate coordinate axes */
   /* Save this for a future upgrade */
 
-  /* Do we need to declare the topology? */
-  if(QMP_logical_topology_is_declared() == QMP_FALSE){
-#ifdef FIX_NODE_GEOM
-    set_qmp_layout_grid(node_geometry, 4);
-#else
-    set_qmp_layout_grid(nsquares2, ndim2);
-#endif
-  }
+  set_qmp_layout_grid(nsquares2, ndim2);
 
   ndim2 = QMP_get_logical_number_of_dimensions();
   nsquares2 = QMP_get_logical_dimensions();
@@ -137,7 +152,7 @@ static void setup_qmp_grid(){
 
   for(i=0; i<ndim; i++) {
     if(len[i]%nsquares[i] != 0) {
-      printf("LATTICE SIZE DOESN'T FIT GRID\n");
+      node0_printf("LATTICE SIZE DOESN'T FIT GRID\n");
       QMP_abort(0);
     }
     squaresize[i] = len[i]/nsquares[i];
@@ -273,7 +288,7 @@ void setup_layout(){
 #ifdef HAVE_QMP
   /* QMP treatment */
   /* Is there already a grid? 
-     This could be a grid architecture with a preset dimension or
+     This could be a grid architecture with a preset dimension, or
      a geometry could have been set by the -qmp-geom command line arg. 
      In either case we have a nonzero allocated number of dimensions. 
 */
