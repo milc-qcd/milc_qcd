@@ -1,5 +1,5 @@
 /********************** io_scidac.c **********************************/
-/* MILC/QIO interface.  Produces a ILDG archivable file */
+/* MILC/QIO interface.  Produces an ILDG archivable file */
 /* MIMD version 7 */
 /* CD 11/2004
 */
@@ -64,6 +64,18 @@ void build_qio_filesystem(QIO_Filesystem *fs){
   fs->master_io_node = NULL;  /* Serial I/O uses default: node 0 */
 }
 
+/* Translate QIO status to a MILC convention */
+/* 0 = success
+  -1 = end of file
+   1 = other failure
+*/
+
+int qio_status(int status){
+  if(status == QIO_SUCCESS)return 0;
+  if(status == QIO_EOF)return -1;
+  return 1;
+}
+
 QIO_Writer *open_scidac_output(char *filename, int volfmt, 
 			       int serpar, int ildgstyle, 
 			       char *stringLFN, QIO_Layout *layout,
@@ -103,7 +115,7 @@ QIO_Reader *open_scidac_input_xml(char *filename, QIO_Layout *layout,
 				  QIO_String *xml_file_in){
   QIO_Reader *infile;
   QIO_Iflag iflag;
-  char myname[] = "open_scidac_input";
+  char myname[] = "open_scidac_input_xml";
 
   /* Create the iflag structure */
   iflag.serpar = serpar;
@@ -132,6 +144,8 @@ QIO_Reader *open_scidac_input(char *filename, QIO_Layout *layout,
   xml_file_in = QIO_string_create();
 
   infile = open_scidac_input_xml(filename, layout, fs, serpar, xml_file_in);
+
+  if(infile == NULL)return NULL;
 
   if(this_node==0){
     printf("Restoring binary SciDAC file %s\n",filename);
@@ -688,6 +702,141 @@ void restore_real_scidac_to_field(char *filename, Real *dest, int count){
   QIO_string_destroy(recxml);
 
   close_scidac_input(infile);
+}
+
+/* Write a complex field */
+
+QIO_Writer *w_open_complex_scidac_file(char *filename, char *fileinfo, 
+				       int volfmt, int serpar)
+{
+  QIO_Layout layout;
+  QIO_Filesystem fs;
+  QIO_Writer *outfile;
+  QIO_String *filexml;
+
+  /* Build the layout structure */
+  build_qio_layout(&layout);
+
+  /* Define the I/O nodes */
+  build_qio_filesystem(&fs);
+
+  /* Open file for writing */
+  filexml = QIO_string_create();
+  QIO_string_set(filexml, fileinfo);
+  outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
+			       NULL, &layout, &fs, filexml);
+  QIO_string_destroy(filexml);
+  return outfile;
+}
+
+int save_complex_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
+			int volfmt, complex *src, int count)
+{
+  QIO_String *recxml;
+  int status;
+
+  recxml = QIO_string_create();
+  QIO_string_set(recxml, recinfo);
+  status = write_F_C_from_field(outfile, recxml, src, count);
+  QIO_string_destroy(recxml);
+  if(status)return status;
+  
+  /* Write information */
+  if(volfmt == QIO_SINGLEFILE){
+    node0_printf("Saved complex field serially to binary file %s\n",
+		 filename);
+  }
+  else if(volfmt == QIO_MULTIFILE){
+    node0_printf("Saved complex field as multifile to binary file %s\n",
+	   filename);
+  }
+  else if(volfmt == QIO_PARTFILE){
+    node0_printf("Saved complex field in partition format to binary file %s\n",
+	   filename);
+  }
+
+  node0_printf("Checksums %x %x\n",
+	       QIO_get_writer_last_checksuma(outfile),
+	       QIO_get_writer_last_checksumb(outfile));
+
+  return status;
+}
+
+void w_close_complex_scidac_file(QIO_Writer *outfile)
+{
+  QIO_close_write(outfile);
+}
+
+/* Restore a complex field */
+
+QIO_Reader *r_open_complex_scidac_file_xml(char *filename, int serpar,
+					   QIO_String *xml_file)
+{
+  QIO_Layout layout;
+  QIO_Filesystem fs;
+  QIO_Reader *infile;
+
+  /* Build the layout structure */
+  build_qio_layout(&layout);
+
+  /* Set the file system parameters */
+  build_qio_filesystem(&fs);
+
+  /* Open file for reading */
+  infile = open_scidac_input_xml(filename, &layout, &fs, serpar, xml_file);
+  return infile;
+}
+
+QIO_Reader *r_open_complex_scidac_file(char *filename, int serpar)
+{
+  QIO_Reader *infile;
+  QIO_String *xml_file;
+
+  /* Open file for reading */
+  xml_file = QIO_string_create();
+  infile = r_open_complex_scidac_file_xml(filename, serpar, xml_file);
+  QIO_string_destroy(xml_file);
+  return infile;
+}
+
+/* Restore a complex field */
+
+int read_complex_scidac(QIO_Reader *infile, complex *dest, int count){
+  QIO_String *recxml;
+  int status;
+
+  /* Read the lattice field: "count" complex numbers per site */
+  recxml = QIO_string_create();
+  status = read_F_C_to_field(infile, recxml, dest, count);
+
+  /* Discard for now */
+  QIO_string_destroy(recxml);
+
+  return status;
+}
+
+void r_close_complex_scidac_file(QIO_Reader *infile)
+{
+  close_scidac_input(infile);
+}
+
+/* Restore a complex field */
+
+void restore_complex_scidac_to_field(char *filename, int serpar,
+				     complex *dest, int count){
+  QIO_Reader *infile;
+  int status;
+
+  QIO_verbose(QIO_VERB_OFF);
+
+  infile = r_open_complex_scidac_file(filename, serpar);
+  if(infile == NULL)terminate(1);
+  
+  /* Read the lattice field: "count" complex numbers per site */
+  status = read_complex_scidac(infile, dest, count);
+  if(status)terminate(1);
+
+  r_close_complex_scidac_file(infile);
 }
 
 
