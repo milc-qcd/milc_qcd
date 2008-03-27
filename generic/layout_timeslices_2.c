@@ -24,6 +24,8 @@
    node_number(x,y,z,t) returns the node number on which a site lives.
    node_index(x,y,z,t) returns the index of the site on the node - ie the
      site is lattice[node_index(x,y,z,t)].
+   get_logical_dimensions() returns the machine dimensions
+   get_logical_coordinates() returns the mesh coordinates of this node
    These routines will change as we change our minds about how to distribute
      sites among the nodes.  Hopefully the setup routines will work for any
      consistent choices. (ie node_index should return a different value for

@@ -107,11 +107,11 @@ register int i,j,k;
     }
     sites_on_node = nsites_per*(xsquaresize*ysquaresize);
     even_sites_on_node = odd_sites_on_node = sites_on_node/2;
-if( mynode()==0)
-  printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
-                squaresize[ZUP],squaresize[TUP]);
-if( mynode()==0 && sites_on_node%2 != 0)
-	printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
+    if( mynode()==0)
+      printf("ON EACH NODE %d x %d x %d x %d\n",xsquaresize,ysquaresize,
+	     dims[dirs[ZUP]], dims[dirs[TUP]]);
+    if( mynode()==0 && sites_on_node%2 != 0)
+      printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
     even_sites_on_node = odd_sites_on_node = sites_on_node/2;
 
     /* Define geometry in case someone asks */
@@ -123,8 +123,8 @@ if( mynode()==0 && sites_on_node%2 != 0)
 
     machine_coordinates[dirs[XUP]] = mynode() % nxsquares;
     machine_coordinates[dirs[YUP]] = mynode()/nxsquares;
-    machine_coordinatss[dirs[ZUP]] = 0;
-    machine_coordinatss[dirs[TUP]] = 0;
+    machine_coordinates[dirs[ZUP]] = 0;
+    machine_coordinates[dirs[TUP]] = 0;
 }
 
 int node_number(int x,int y,int z,int t) {

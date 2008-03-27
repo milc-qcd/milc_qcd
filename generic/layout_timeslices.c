@@ -29,7 +29,7 @@
 */
 #include "generic_includes.h"
 #ifdef HAVE_QMP
-#include <qio.h>
+#include <qmp.h>
 #endif
 
 static int nsquares[4];	           /* number of hypercubes in each direction */
