@@ -182,6 +182,8 @@ d2p_mat(su3_matrix *dest, dsu3_matrix *src){
   }
 }
 
+/* Compilation suppressed until we need it */
+#if 0
 static void 
 p2d_mat(dsu3_matrix *dest, su3_matrix *src){
   int i,j;
@@ -191,6 +193,7 @@ p2d_mat(dsu3_matrix *dest, su3_matrix *src){
     dest->e[i][j].imag = src->e[i][j].imag;
   }
 }
+#endif
 
 /* Factory function for moving data from MILC site structure to output
    buffer */
@@ -423,6 +426,7 @@ make_write_all(F, "F", 3, 3, 4, D, "USQCD_F3_DiracFermion", fwilson_vector, wils
 
 make_write_tslice(F, "F",  , 0, 0, R, "QLA_F_Real", float, Real, float);
 make_write_tslice(F, "F",  , 0, 0, C, "QLA_F_Complex", fcomplex, complex, float);
+make_write_tslice(F, "F", 3, 3, 0, V, "USQCD_F3_ColorVector", fsu3_vector, su3_vector, float);
 make_write_tslice(F, "F", 3, 3, 4, D, "USQCD_F3_DiracFermion", fwilson_vector, wilson_vector, float);
 
 /* Read MILC site structure data */
