@@ -112,8 +112,18 @@ int spectrum_nlpi2( Real qmass, Real amass, field_offset temp,
       FORALLSITES(i,s){
 	clearvec( &(s->quark_source) );
 /**if(s->parity==EVEN)**/
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_SPECTRUM_DEBUG_POINT_SOURCE
+    if(i==node_index(0,0,0,t_source)) { /* source at (0,0,0,0) */
+#endif /* HISQ_SPECTRUM_DEBUG_POINT_SOURCE */
+#endif /* MILC_GLOBAL_DEBUG */
 	if(s->t==t_source) 
 	  s->quark_source.c[color].real=1.0; /* Even Wall source */
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_SPECTRUM_DEBUG_POINT_SOURCE
+    }
+#endif /* HISQ_SPECTRUM_DEBUG_POINT_SOURCE */
+#endif /* MILC_GLOBAL_DEBUG */
       }
 
         /* compute M^-1 * quark_source, M^-1 * antiquark_source */

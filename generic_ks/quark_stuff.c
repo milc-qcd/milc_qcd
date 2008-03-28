@@ -100,7 +100,7 @@ int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0,
     // Don't remake the table if already made
 
     if(ap->constructed)return 0;
-    node0_printf("MAKING PATH TABLES\n");
+    // node0_printf("MAKING PATH TABLES\n");
   
     /* table of directions, 1 for each kind of path */
     /**int path_ind[MAX_BASIC_PATHS][MAX_LENGTH];**/

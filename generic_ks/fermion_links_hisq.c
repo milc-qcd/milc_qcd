@@ -4,7 +4,7 @@
 */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
-#define IMP_QUARK_ACTION_INFO_ONLY
+//#define IMP_QUARK_ACTION_INFO_ONLY
 #include <quark_action.h>
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
@@ -40,8 +40,8 @@ int i,j;
 static void  load_U_from_site(ferm_links_t *fn);
 static void  load_V_from_U(ferm_links_t *fn, ks_component_paths *ap1);
 static void  load_Y_from_V(ferm_links_t *fn, int umethod);
-static void  load_W_from_Y(ferm_links_t *fn, int umethod);
-static void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2);
+void  load_W_from_Y(ferm_links_t *fn, int umethod);
+void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2);
 
 /* Make the various fat links.
 	U = copy of links in site structure
@@ -141,21 +141,38 @@ load_V_from_U(ferm_links_t *fn, ks_component_paths *ap1){
   su3_matrix **V_link = hl->V_link;
 
   if(  hl->valid_V_links )return;
-  if( !hl->valid_U_links ){node0_printf("Link validity botched\n"); terminate(0);}
+  if( !hl->valid_U_links ){node0_printf("load_V_from_U: Link validity botched\n"); terminate(0);}
   load_fatlinks_hisq(U_link, ap1, V_link );
   hl->valid_V_links = hl->valid_U_links;
   hl->phases_in_V   = hl->phases_in_U;
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+  int i, idir;
+  site *s;
+  complex cdetV;
+  FORALLSITES(i,s) {
+    for(idir=XUP;idir<=TUP;idir++) {
+      if( lattice[i].on_step_V[idir] < global_current_time_step ) {
+        lattice[i].on_step_V[idir] = global_current_time_step;
+        cdetV = det_su3( &(V_link[idir][i]) );
+        lattice[i].Vdet[idir] = cabs( &cdetV );
+      }
+    }
+  }
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
 }
 
 static void  
 load_Y_from_V(ferm_links_t *fn, int umethod){
   int dir,i; site *s; su3_matrix tmat;
   hisq_links_t *hl = &fn->hl;
+  su3_matrix **U_link = hl->U_link;
   su3_matrix **V_link = hl->V_link;
   su3_matrix **Y_unitlink = hl->Y_unitlink;
 
   if(  hl->valid_Y_links )return;
-  if( !hl->valid_V_links ){node0_printf("Link validity botched\n"); terminate(0);}
+  if( !hl->valid_V_links ){node0_printf("load_Y_from_V: Link validity botched\n"); terminate(0);}
   switch(umethod){
   case UNITARIZE_NONE:
     //node0_printf("WARNING: UNITARIZE_NONE\n");
@@ -229,11 +246,40 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
     custom_rephase( V_link, OFF, &hl->phases_in_V );
     FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
       /* unitarize - project on U(3) */
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+      su3_unitarize_analytic_index( &( V_link[dir][i] ), &tmat, i, dir );
+#else  /* HISQ_REUNITARIZATION_DEBUG */
       su3_unitarize_analytic( &( V_link[dir][i] ), &tmat );
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+#else /* MILC_GLOBAL_DEBUG */
+      su3_unitarize_analytic( &( V_link[dir][i] ), &tmat );
+#endif /* MILC_GLOBAL_DEBUG */
       Y_unitlink[dir][i] = tmat;
     }
     hl->valid_Y_links = hl->valid_V_links;
     hl->phases_in_Y = hl->phases_in_V;
+    /* rephase (in) V_link array */
+    custom_rephase( V_link, ON, &hl->phases_in_V );
+    /* rephase (in) Y_unitlink array */
+    custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+    //printf("UNITARIZATION RESULT\n");
+    //dumpmat( &( V_link[TUP][3] ) );
+    //dumpmat( &( Y_unitlink[TUP][3] ) );
+    break;
+  case UNITARIZE_STOUT:
+    custom_rephase( U_link, OFF, &hl->phases_in_U );
+    custom_rephase( V_link, OFF, &hl->phases_in_V );
+    FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
+      /* unitarize - project on SU(3) with "stout" procedure */
+      stout_smear( &( Y_unitlink[dir][i] ), 
+                   &( V_link[dir][i] ),
+                   &( U_link[dir][i] ) );
+    }
+    hl->valid_Y_links = hl->valid_V_links;
+    hl->phases_in_Y = hl->phases_in_V;
+    /* rephase (in) U_link array */
+    custom_rephase( U_link, ON, &hl->phases_in_U );
     /* rephase (in) V_link array */
     custom_rephase( V_link, ON, &hl->phases_in_V );
     /* rephase (in) Y_unitlink array */
@@ -251,15 +297,16 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
   } /* umethod */
 }
 
-static void  
-load_W_from_Y(ferm_links_t *fn, int umethod){
+void  load_W_from_Y(ferm_links_t *fn, int umethod){
   int dir,i; site *s; su3_matrix tmat;
   hisq_links_t *hl = &fn->hl;
   su3_matrix **W_unitlink = hl->W_unitlink;
   su3_matrix **Y_unitlink = hl->Y_unitlink;
 
   if(  hl->valid_W_links )return;
-  if( !hl->valid_Y_links ){node0_printf("Link validity botched\n"); terminate(0);}
+  if( !hl->valid_Y_links ){node0_printf("load_W_from_Y: Link validity botched\n"); terminate(0);}
+
+#ifndef REUNITARIZE_U3_NOT_SU3
   switch(umethod){
   case UNITARIZE_NONE:
     //node0_printf("WARNING: UNITARIZE_NONE\n");
@@ -327,7 +374,15 @@ load_W_from_Y(ferm_links_t *fn, int umethod){
       FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
 	/* special unitarize - project U(3) on SU(3)
 	   CAREFUL WITH FERMION PHASES! */
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+	su3_spec_unitarize_index( &( Y_unitlink[dir][i] ), &tmat, &cdet, i, dir );
+#else  /* HISQ_REUNITARIZATION_DEBUG */
 	su3_spec_unitarize( &( Y_unitlink[dir][i] ), &tmat, &cdet );
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+#else  /* MILC_GLOBAL_DEBUG */
+	su3_spec_unitarize( &( Y_unitlink[dir][i] ), &tmat, &cdet );
+#endif /* MILC_GLOBAL_DEBUG */
 	W_unitlink[dir][i] = tmat;
       }
       hl->valid_W_links = hl->valid_Y_links;
@@ -336,9 +391,33 @@ load_W_from_Y(ferm_links_t *fn, int umethod){
       custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
       /* rephase (in) W_unitlink array */
       custom_rephase( W_unitlink, ON, &hl->phases_in_W );
+//TEMP TEST
+//{int ii,jj; complex cc; su3_matrix tmat;
+//cc = ce_itheta ( 2.0*3.1415926/3.0 );
+//c_scalar_mult_su3mat( &(hl->W_unitlink[XUP][0]), &cc, &tmat );
+ //hl->W_unitlink[YUP][0] = tmat;
+//printf("ACTION: TEMPTEST  %e  %e\n", cc.real, cc.imag);
+//} //END TEMPTEST
       //printf("SPECIAL UNITARIZATION RESULT (RATIONAL)\n");
       //dumpmat( &( Y_unitlink[TUP][3] ) );
       //dumpmat( &( W_unitlink[TUP][3] ) );
+    }
+    break;
+  case UNITARIZE_STOUT:
+    {
+      //node0_printf("WARNING: SPECIAL UNITARIZE_ROOT is performed\n");
+      /* rephase (out) Y_unitlink array */
+      custom_rephase( Y_unitlink, OFF, &hl->phases_in_Y );
+      FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
+	/* QUICK FIX: copy Y to W */
+        su3mat_copy( &( Y_unitlink[dir][i] ), &( W_unitlink[dir][i] ) );
+      }
+      hl->valid_W_links = hl->valid_Y_links;
+      hl->phases_in_W = hl->phases_in_Y;
+      /* rephase (in) Y_unitlink array */
+      custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+      /* rephase (in) W_unitlink array */
+      custom_rephase( W_unitlink, ON, &hl->phases_in_W );
     }
     break;
   case UNITARIZE_HISQ:
@@ -348,6 +427,14 @@ load_W_from_Y(ferm_links_t *fn, int umethod){
   default:
     node0_printf("Unknown unitarization method\n"); terminate(0);
   }
+#else /* REUNITARIZE_U3_NOT_SU3 */
+  FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
+    /* simply copy Y links to W links */
+    su3mat_copy( &( Y_unitlink[dir][i] ), &( W_unitlink[dir][i] ) );
+  }
+  hl->valid_W_links = hl->valid_Y_links;
+  hl->phases_in_W = hl->phases_in_Y;
+#endif /* REUNITARIZE_U3_NOT_SU3 */
 }
 
 /* Put links in site-major order for dslash */
@@ -363,24 +450,30 @@ reorder_links(su3_matrix *link4, su3_matrix *link[]){
   }
 }
 
-static void  
-load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2){
+void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2){
   hisq_links_t *hl = &fn->hl;
   su3_matrix **W_unitlink = hl->W_unitlink;
   su3_matrix **X_fatlink  = hl->X_fatlink;
   su3_matrix **X_longlink = hl->X_longlink;
 
   if(  hl->valid_X_links )return;
-  if( !hl->valid_W_links ){node0_printf("Link validity botched\n"); terminate(0);}
+  if( !hl->valid_W_links ){node0_printf("load_X_from_W: Link validity botched\n"); terminate(0);}
 
   load_fatlinks_hisq(W_unitlink, ap2, X_fatlink );
   load_longlinks_hisq(W_unitlink, ap2, X_longlink );
+//TEMP TEST
+//{int ii,jj; complex cc; su3_matrix tmat;
+//cc.real = 2.10;  cc.imag=0.00;
+//c_scalar_mult_su3mat( &(hl->X_fatlink[XUP][0]), &cc, &tmat );
+ //hl->X_fatlink[XUP][0] = tmat;
+//printf("ACTION: TEMPTEST  %e  %e\n", cc.real, cc.imag);
+//} //END TEMPTEST
 
   hl->valid_X_links = hl->valid_W_links;
   hl->phases_in_Xfat = hl->phases_in_W;
-  hl->valid_Xfat_mass = 0.0; //TEMPORARY - don't have the correction in yet
+  hl->valid_Xfat_mass = ap2->naik_mass;
   hl->phases_in_Xlong = hl->phases_in_W;
-  hl->valid_Xlong_mass = 0.0; //TEMPORARY - don't have the correction in yet
+  hl->valid_Xlong_mass = ap2->naik_mass;
 
   reorder_links(fn->fat, X_fatlink);
   reorder_links(fn->lng, X_longlink);

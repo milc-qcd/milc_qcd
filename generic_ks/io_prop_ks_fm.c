@@ -193,6 +193,7 @@ ks_prop_file *setup_output_ks_fmprop_file()
   /* Initialize */
   pf->check.sum29 = 0;
   pf->check.sum31 = 0;
+  pf->file_type   = FILE_TYPE_KS_FMPROP;
 
   /* Initialize pointer to info file */
   pf->info_fp = NULL;
@@ -278,7 +279,6 @@ ks_prop_file *w_serial_ks_fm_i(char *filename)
 
   kspf->filename       = filename;
   kspf->byterevflag    = 0;            /* Not used for writing */
-  kspf->rank2rcv       = NULL;         /* Not used for writing */
   kspf->parallel       = SERIAL;
 
   /* Node 0 writes ascii info file */
@@ -294,7 +294,7 @@ ks_prop_file *w_serial_ks_fm_i(char *filename)
 void w_serial_ks_fm(ks_prop_file *kspf, field_offset src_site, 
 		    su3_vector *src_field)
 {
-  /* kspf  = file descriptor as opened by w_serial_w_i 
+  /* kspf  = file descriptor as opened by ks_serial_w_i 
      src_site[3]   = field offset of an array of three su3_vector types  */
 
   FILE *fp = NULL;
@@ -684,6 +684,11 @@ ks_prop_file *setup_input_ks_fmprop_file(char *filename)
   pf->header = ph;
   pf->check.sum29 = 0;
   pf->check.sum31 = 0;
+  pf->file_type   = FILE_TYPE_KS_FMPROP;
+#ifdef HAVE_QIO
+  pf->infile       = NULL;
+  pf->outfile      = NULL;
+#endif
 
   return pf;
 } /* setup_input_ks_fmprop_file*/
@@ -740,14 +745,6 @@ ks_prop_file *r_serial_ks_fm_i(char *filename)
   /* Node 0 broadcasts the header structure to all nodes */
   
   broadcast_bytes((char *)ksph,sizeof(ks_prop_header));
-
-  /* Node 0 reads site list and assigns kspf->rank2rcv */
-
-  /* No need for a read_site_list_w equivalent procedure here
-     since only NATURAL_ORDER is presently supported */
-  /** read_site_list_ks(SERIAL,kspf); **/
-  /*  instead... */
-  kspf->rank2rcv = NULL;
 
   return kspf;
 
@@ -852,13 +849,10 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
   status = 0;
   for(rcv_rank=0; rcv_rank<volume; rcv_rank++)
     {
-      /* If file is in coordinate natural order, receiving coordinate
-         is given by rank Otherwise, it is found in the table */
+      /* File is always in coordinate natural order, so receiving coordinate
+         is given by rank */
       
-      if(kspf->header->order == NATURAL_ORDER)
-	rcv_coords = rcv_rank;
-      else
-	rcv_coords = kspf->rank2rcv[rcv_rank];
+      rcv_coords = rcv_rank;
 
       x = rcv_coords % nx;   rcv_coords /= nx;
       y = rcv_coords % ny;   rcv_coords /= ny;
@@ -1000,7 +994,7 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
 	    printf("%s: Checksum violation file %s\n",
 	    myname, kspf->filename);*/
 
-	  printf("Computed %x %x.  Read %x %x.\n",
+	  printf("Computed checksum %x %x.  Read %x %x.\n",
 		 test_kspc.sum29, test_kspc.sum31,
 		 kspf->check.sum29, kspf->check.sum31);
 	}
@@ -1041,7 +1035,6 @@ void r_serial_ks_fm_f(ks_prop_file *kspf)
       fflush(stdout);
     }
   
-  if(kspf->rank2rcv != NULL) free(kspf->rank2rcv);
   free(kspf->header);
   free(kspf);
   

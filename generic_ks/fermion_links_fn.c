@@ -21,14 +21,6 @@
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
 
-#ifdef QCDOC
-#define special_alloc qcdoc_alloc
-#define special_free qfree
-#else
-#define special_alloc malloc
-#define special_free free
-#endif
-
 /********************************************************************/
 /* Sum over paths connecting to nearest neighbor point (fat link) and to third
    nearest neighbor (longlinks) */

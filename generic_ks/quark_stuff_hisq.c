@@ -102,27 +102,27 @@ int make_path_table(ks_action_paths *ap,
   // if the quark mass has not changed
 
   if(ap->constructed){
-    if(ap->mass == mass || index_naik < 0)return 0;
+    if(ap->p2.naik_mass == mass || index_naik < 0)return 0;
     node0_printf("REMAKING PATH TABLES FOR NEW MASS %g\n",mass);
   }
   else{
     node0_printf("MAKING PATH TABLES\n");
   }
   
-  ap->mass = mass;
+  ap->p2.naik_mass = mass;
 
   // Skip the reconstruction of first path table, which does not depend on
   // the quark mass
   if(!ap->constructed){
     num_q_paths_1 = 
       make_path_table_hisq( QUARK_ACTION_DESCRIPTION_1, quark_action_npaths_1,
-			    MAX_NUM_1, 
-			    path_length_in_1, path_coeff_1, path_ind_1, 
-			    act_path_coeff_1, q_paths_1, 0., -1, -1 );
+	    MAX_NUM_1, path_length_in_1, path_coeff_1, path_ind_1, 
+	    act_path_coeff_1, q_paths_1, 0.0, -1, -1 );
     
     ap->p1.num_q_paths = num_q_paths_1;
     ap->p1.q_paths = q_paths_1;
     ap->p1.act_path_coeff = act_path_coeff_1;
+    ap->p1.naik_mass = 0.0;
 #ifdef DM_DU0
     ap_dmdu0->p1.num_q_paths = num_q_paths_1;
     ap_dmdu0->p1.q_paths = q_paths_1;
@@ -139,6 +139,8 @@ int make_path_table(ks_action_paths *ap,
     node0_printf("Unitarization method = UNITARIZE_RATIONAL\n");
 #elif ( UNITARIZATION_METHOD==UNITARIZE_ANALYTIC )
     node0_printf("Unitarization method = UNITARIZE_ANALYTIC\n");
+#elif ( UNITARIZATION_METHOD==UNITARIZE_STOUT )
+    node0_printf("Unitarization method = UNITARIZE_STOUT\n");
 #else
     node0_printf("Unknown unitarization method\n"); terminate(0);
 #endif
@@ -157,6 +159,7 @@ int make_path_table(ks_action_paths *ap,
   ap->p2.num_q_paths = num_q_paths_2;
   ap->p2.q_paths = q_paths_2;
   ap->p2.act_path_coeff = act_path_coeff_2;
+  ap->p2.naik_mass = mass;
 #ifdef DM_DU0
   ap_dmdu0->p2.num_q_paths = num_q_paths_2;
   ap_dmdu0->p2.q_paths = q_paths_2;
@@ -203,10 +206,12 @@ make_path_table_hisq( char *action_desc, int npaths, int max_paths,
 #endif
     act_coeff[j] = this_coeff ;
     // Apply mass correction to one-link and Naik coefficients
-    if(j == index_onelink)
+    if(j == index_onelink){
       this_coeff += onelink_mass_renorm_fact * naik_term_mass * naik_term_mass;
-    if(j == index_naik)
+    }
+    if(j == index_naik){
       this_coeff += naik_mass_renorm_fact * naik_term_mass * naik_term_mass;
+    }
     i = add_basic_path( this_q_paths, n_q_paths, paths[j],
 			path_length[j], this_coeff, max_paths );
     n_q_paths += i;
@@ -316,7 +321,7 @@ is_path_equal( int *path1, int* path2, int length ){
 /********************************************************************/
 void 
 init_path_table(ks_action_paths *ap){
-  ap->mass = 0;
+  ap->p2.naik_mass = 0;
   ap->constructed = 0;
 }
 

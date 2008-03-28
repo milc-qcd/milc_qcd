@@ -780,7 +780,7 @@ sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths ){
     }
     if( num_new!=npaths){ node0_printf("OOPS: path table error\n"); exit(0); }
     return 0;
-} /* fermion_force_fn_multi_june05 */
+} /* sort_quark_paths */
 
 
 /* LONG COMMENTS

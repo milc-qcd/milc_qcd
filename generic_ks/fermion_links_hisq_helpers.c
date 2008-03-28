@@ -44,6 +44,7 @@ load_longlinks_hisq( su3_matrix *Src[4], ks_component_paths *app,
   Q_path *q_paths      = app->q_paths;
   int num_q_paths      = app->num_q_paths; 
   char myname[] = "load_longlinks_hisq";
+static float OLDCOEFF, COEFF;
 
 #ifdef LLTIME
   int nflop = 0;
@@ -90,12 +91,14 @@ load_longlinks_hisq( su3_matrix *Src[4], ks_component_paths *app,
 	  long1 = &(Dest[dir][i]);
           scalar_mult_add_su3_matrix( long1,
 	    &staple[i], -q_paths[ipath].coeff, long1 );
+COEFF =  -q_paths[ipath].coeff;
+//if(COEFF != OLDCOEFF)node0_printf("LOADLONG: old =%e  new=%e\n",OLDCOEFF,COEFF);
+OLDCOEFF = COEFF;
 		/* minus sign in coeff. because we used backward path*/
 	}
     } /* ipath */
 
   } /* loop over directions */
-
 
   special_free(staple); staple = NULL;
   special_free(tempmat1); tempmat1 = NULL;

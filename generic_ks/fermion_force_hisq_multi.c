@@ -15,12 +15,16 @@
  * D.T.  6/06 Versions 1. and 2. created.
  * CD   10/06 Collected versions in this file.
  * D.T. 6/07 Two levels of smearing
- * A.B. 10/07 unitarization and its derivatives
+ * A.B. 10/07 unitarization and its derivatives,
+ *            "wrapper" that allows arbitraty levels of smearing
+ * A.B. 2/08 combine forces from level 2 smearing and then
+ *           calculate force from reunitarization and level 1 smearing
  *
  */
 
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
+/**#include "su3_mat_op.h"**/
 #include "../include/umethod.h"
 #include <string.h>
 void printpath( int *path, int length );
@@ -43,49 +47,81 @@ BOMB THE COMPILE
 #endif
 
 
+#ifdef MILC_GLOBAL_DEBUG
 // dump matrix on this site/link
 #define AB_OUT_ON_SITE 3
 #define AB_OUT_ON_LINK TUP
+#endif /* MILC_GLOBAL_DEBUG */
 
-//AB block 071015
-// fermion_force_fn_multi() does calculate conjugate (as in previous version)
-#define AB_CHANGED_ASQTAD
-// THESE ROUTINES DO NOT HANDLE NAIK LINKS!!!
-// IT CAN BE FIXED BY INTRODUCING EXTRA univ0 TYPE ROUTINE
 
 // Forward declarations
-// Universal wrapper routine
-static void 
-fn_fermion_force_multi_wrapper( Real eps, Real *residues, 
-				su3_vector **multi_x, int nterms,
-				ferm_links_t *fn, ks_action_paths *ap );
-// Contribution to the force from 0 level of smearing, force contains only |X><Y| terms
-static void 
-fn_fermion_force_multi_univ0( Real eps, Real *residues, 
-			      su3_vector **multi_x, int nterms,
-			      su3_matrix *force_accum[4] );
-// This routine calculates contribution to the force due to i-th level of smearing,
-// as input it uses array of new links and the forth from (i-1)-th level of smearing
-static void 
-fn_fermion_force_multi_universal( Real eps, Real *residues, su3_vector **multi_x, 
-				  int nterms, su3_matrix *force_accum[4], 
-				  su3_matrix *force_accum_old[4], 
-				  su3_matrix **internal_U_link,
-				  int internal_num_q_paths, 
-				  Q_path *internal_q_paths_sorted, 
-				  int *internal_netbackdir_table );
-// Contribution to force due to reunitarization of links: W=V*(V^+*V)^-1/2
-static void 
-fn_fermion_force_multi_reunit( su3_matrix *force_accum[4], 
-			       su3_matrix *force_accum_old[4], 
-			       ferm_links_t *fn, ks_action_paths *ap );
-//End of AB block 071015
 
-// More forward declarations
+#ifndef HISQ_FAST_FORCE02
 static void 
 fn_fermion_force_multi_hisq( Real eps, Real *residues, su3_vector **multi_x, 
 			     int nterms, ferm_links_t *fn, 
 			     ks_action_paths *ap );
+#endif
+
+static void 
+fn_fermion_force_multi_hisq_mx( Real eps, Real *residues, su3_vector **multi_x, 
+			     int nterms, ferm_links_t *fn, 
+			     ks_action_paths *ap );
+
+
+// These routines are intended for test purposes and for additional
+// levels of improvement (in the future). Smearing and reunitarization
+// are split into separate routines. This allows for arbitrary levels of
+// smearing and/or reunitarization.
+
+#ifdef HISQ_FAST_FORCE02
+// EXPERIMENTAL: combine smearing level 2 from different multi_x,
+//               use globals from lattice.h
+// HISQ wrapper routine: contribution to the force due to
+//    0) smearing level 0 (outer product |X><Y|)
+//    1) smearing level 2 + smearing level 2 Naik corrected
+//    2) reunitarization
+//    3) smearing level 1
+static void 
+fn_fermion_force_multi_hisq_wrapper_mx( Real eps, Real *residues,
+                                     su3_vector **multi_x, int nterms,
+                                     ferm_links_t *fn, ks_action_paths *ap );
+#endif
+
+#ifndef HISQ_FAST_FORCE02
+// HISQ wrapper routine: contribution to the force due to
+//    0) smearing level 0 (outer product |X><Y|)
+//    1) smearing level 2
+//    2) reunitarization
+//    3) smearing level 1
+static void 
+fn_fermion_force_multi_hisq_wrapper( Real eps, Real *residues, 
+				     su3_vector **multi_x, int nterms,
+				     ferm_links_t *fn, ks_action_paths *ap );
+#endif
+// Contribution to the force from 0 level of smearing, force contains only |X><Y| terms
+static void 
+fn_fermion_force_multi_hisq_smearing0( Real eps, Real *residues, 
+				       su3_vector **multi_x, int nterms,
+				       su3_matrix *force_accum[4], 
+				       su3_matrix *force_accum_naik[4] );
+// This routine calculates contribution to the force due to i-th level of smearing,
+// as input it uses array of new links and the force from (i-1)-th level of smearing
+static void 
+fn_fermion_force_multi_hisq_smearing( Real eps, Real *residues, su3_vector **multi_x, 
+				      int nterms, su3_matrix *force_accum[4], 
+				      su3_matrix *force_accum_old[4], 
+				      su3_matrix *force_accum_naik_old[4], 
+				      su3_matrix **internal_U_link,
+				      int internal_num_q_paths, 
+				      Q_path *internal_q_paths_sorted, 
+				      int *internal_netbackdir_table );
+// Contribution to the force due to reunitarization of links:
+//   Y=V*(V^+*V)^-1/2, W=Y/(detY)^1/3
+static void 
+fn_fermion_force_multi_hisq_reunit( su3_matrix *force_accum[4], 
+				    su3_matrix *force_accum_old[4], 
+				    ferm_links_t *fn, ks_action_paths *ap );
 
 
 /**********************************************************************/
@@ -99,11 +135,26 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
     node0_printf("FNMATREV isn't implemented\n"); exit(0);
     break;
   case FNMAT:
-    fn_fermion_force_multi_hisq( eps, residues, xxx, nterms, fn, ap ); 
-    //fn_fermion_force_multi_wrapper( eps, residues, xxx, nterms ); //TEMP, DOES NOT HANDLE NAIK!!!
+#ifdef HISQ_FF_MULTI_WRAPPER
+#ifdef HISQ_FAST_FORCE02
+    fn_fermion_force_multi_hisq_wrapper_mx( eps, residues, xxx, nterms, fn, ap );
+#else /* HISQ_FAST_FORCE02 */
+    fn_fermion_force_multi_hisq_wrapper( eps, residues, xxx, nterms, fn, ap );
+#endif /* HISQ_FAST_FORCE02 */
+#else /* HISQ_FF_MULTI_WRAPPER */
+#ifdef HISQ_FAST_FORCE02
+    fn_fermion_force_multi_hisq_mx( eps, residues, xxx, nterms, fn, ap );
+#else /* HISQ_FAST_FORCE02 */
+    fn_fermion_force_multi_hisq( eps, residues, xxx, nterms, fn, ap );
+#endif /* HISQ_FAST_FORCE02 */
+#endif /* HISQ_FF_MULTI_WRAPPER */
     break;
   default:
-    fn_fermion_force_multi_hisq( eps, residues, xxx, nterms, fn, ap ); //TEMP
+#ifdef HISQ_FAST_FORCE02
+    fn_fermion_force_multi_hisq_mx( eps, residues, xxx, nterms, fn, ap );
+#else /* HISQ_FAST_FORCE02 */
+    fn_fermion_force_multi_hisq( eps, residues, xxx, nterms, fn, ap );
+#endif /* HISQ_FAST_FORCE02 */
   }
 }
 
@@ -148,9 +199,6 @@ int *netbackdir_table_2 = NULL; // table of net path displacements (backwards fr
 int net_back_dirs_2[16] = { XDOWN, YDOWN, ZDOWN, TDOWN, XUP, YUP, ZUP, TUP, 
 	X3DOWN, Y3DOWN, Z3DOWN, T3DOWN, X3UP, Y3UP, Z3UP, T3UP };
 
-// For old code
-Q_path *q_paths_sorted = NULL;	// Quark paths sorted by net displacement and last directions
-int *netbackdir_table = NULL; // table of net path displacements (backwards from usual convention)
 // table of gather directions to bring start of path to end, for "FN" = "fat-Naik" actions
 int net_back_dirs[16] = { XDOWN, YDOWN, ZDOWN, TDOWN, XUP, YUP, ZUP, TUP, 
 	X3DOWN, Y3DOWN, Z3DOWN, T3DOWN, X3UP, Y3UP, Z3UP, T3UP };
@@ -162,650 +210,7 @@ int first_force=1;	// 1 if force hasn't been called yet
 
 
 
-//TEMP, AB070910
-//Attempt: a universal force routine to calculate the contribution
-//to the force for any level of smearing iteratively
-// univ0 -- calculate |X><Y| without F, B -- no smearing (or smearing level 0) ??!
-// see fn_fermion_force_multi_universal below!
-static void 
-fn_fermion_force_multi_univ0( Real eps, Real *residues, 
-			      su3_vector **multi_x, int nterms,
-			      su3_matrix *force_accum[4] )
-{
-  /* note CG_solution and Dslash * solution are combined in "multi_x" */
-  /* New version 1/21/99.  Use forward part of Dslash to get force */
-  /* see long comment at end */
-  /* For each link we need multi_x transported from both ends of path. */
-  int term;
-  register int i,k;
-  register site *s;
-  int dir;
-  su3_matrix tmat;
-  Real ferm_epsilon, coeff;
-
-  msg_tag *mtag[2];
-  su3_matrix *mat_tmp0;
-  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1]; // length N path has N+1 sites!!
-
-
-  /* node0_printf("STARTING fn_fermion_force_multi() nterms = %d\n",nterms); */
-  if( nterms==0 )return;
-
-
-  for(i=0;i<=MAX_PATH_LENGTH;i++){
-     oprod_along_path[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
-  }
-  mat_tmp0 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
-  if( mat_tmp0 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
-
-
-  ferm_epsilon = 2.0*eps; // we only do forward paths, gives factor of 2
-
-
-  // clear force accumulators
-  for(dir=XUP;dir<=TUP;dir++)FORALLSITES(i,s)clear_su3mat( &(force_accum[dir][i]) );
-
-  for(dir=XUP;dir<=TUP;dir++){ //AB loop on directions, path table is not needed
-    k=0; // which gather we are using
-//AB        mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
-//AB           netbackdir, EVENANDODD, gen_pt[k] );
-    mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
-      OPP_DIR(dir), EVENANDODD, gen_pt[k] ); //AB netbackdir is just the opposite of dir for 1x1 case
-    FORALLSITES(i,s){
-      clear_su3mat(  &(oprod_along_path[0][i]) ); // actually last site in path
-    }
-    for(term=0;term<nterms;term++){
-      if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
-      sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1-k] );
-      wait_gather(mtag[k]);
-
-      FORALLSITES(i,s){
-        //AB build projector as usual
-        su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
-        //AB multiply by alpha_l in rational function expansion
-        scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, residues[term], &(oprod_along_path[0][i]) );
-      }
-      cleanup_gather(mtag[k]);
-      k=1-k; // swap 0 and 1
-    } /* end loop over terms in rational function expansion */
-
-
-    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], mat_tmp0, dir );
-
-    coeff = 1; //AB fermion_eps is outside this routine in "wrapper" routine
-/*
-    FOREVENSITES(i,s){
-      scalar_mult_add_su3_matrix( &(force_accum[dir][i]), &(oprod_along_path[1][i]),
-                coeff, &(force_accum[dir][i]) );
-    }
-    FORODDSITES(i,s){
-      scalar_mult_add_su3_matrix( &(force_accum[dir][i]), &(oprod_along_path[1][i]),
-                -coeff, &(force_accum[dir][i]) );
-    }
-*/
-    FORALLSITES(i,s){
-      scalar_mult_add_su3_matrix( &(force_accum[dir][i]), &(oprod_along_path[1][i]),
-                coeff, &(force_accum[dir][i]) );
-    }
-
-  } /* end of loop on directions */
-
-	
-  free( mat_tmp0 );
-  for(i=0;i<=MAX_PATH_LENGTH;i++){
-     free( oprod_along_path[i] );
-  }
-}
-
-
-
-
-
-//AB: UNIVERSAL_FORCE
-static void 
-fn_fermion_force_multi_universal( Real eps, Real *residues, su3_vector **multi_x, 
-				  int nterms, su3_matrix *force_accum[4], 
-				  su3_matrix *force_accum_old[4], 
-				  su3_matrix **internal_U_link,
-				  int internal_num_q_paths, 
-				  Q_path *internal_q_paths_sorted, 
-				  int *internal_netbackdir_table )
-{
-  /* note CG_solution and Dslash * solution are combined in "multi_x" */
-  /* New version 1/21/99.  Use forward part of Dslash to get force */
-  /* see long comment at end */
-  /* For each link we need multi_x transported from both ends of path. */
-  register int i,j,k,lastdir=-99,ipath,ilink;
-  register site *s;
-  int length,dir,odir;
-  Real ferm_epsilon, coeff;
-  Q_path *this_path;	// pointer to current path
-  Q_path *last_path;	// pointer to previous path
-  msg_tag *mtag[2];
-  su3_matrix *mat_tmp0;
-  su3_matrix *mat_tmp1;
-  anti_hermitmat *ahmat_tmp;
-  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1]; // length N path has N+1 sites!!
-  su3_matrix *mats_along_path[MAX_PATH_LENGTH+1]; // 
-//  su3_matrix *force_accum[4];  // accumulate force
-//  su3_matrix *force_final[4];  // accumulate force
-  int netbackdir, last_netbackdir;	// backwards direction for entire path
-//int tempflops = 0; //TEMP
-
-  /* node0_printf("STARTING fn_fermion_force_multi() nterms = %d\n",nterms); */
-  if( nterms==0 )return;
-
-  for(i=0;i<=MAX_PATH_LENGTH;i++){
-     oprod_along_path[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
-  }
-  for(i=1;i<=MAX_PATH_LENGTH;i++){ // 0 element is never used (it's unit matrix)
-     mats_along_path[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
-  }
-
-  mat_tmp0 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
-  mat_tmp1 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
-  if( mat_tmp0 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
-  if( mat_tmp1 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
-
-  ahmat_tmp = (anti_hermitmat *) special_alloc(sites_on_node*sizeof(anti_hermitmat) );
-
-	
-  ferm_epsilon = 2.0*eps; // we only do forward paths, gives factor of 2
-
-  // clear force accumulators
-  for(dir=XUP;dir<=TUP;dir++)FORALLSITES(i,s)clear_su3mat( &(force_accum[dir][i]) );
-
-//#ifndef AB_OLD_UNIV
-//for(idir=XUP;idir<=TUP;idir++){ /* loop over link for f(0)_\nu */
-//#endif /* AB_OLD_UNIV */
-
-
-  /* loop over paths, and loop over links in path */
-  last_netbackdir = NODIR;
-  last_path = NULL;
-  for( ipath=0; ipath<internal_num_q_paths; ipath++ ){
-    this_path = &(internal_q_paths_sorted[ipath]);
-    if(this_path->forwback== -1)continue;	/* skip backwards dslash */
-
-    length = this_path->length;
-    // find gather to bring multi_x[term] from "this site" to end of path
-    //netbackdir = find_backwards_gather( &(q_paths_sorted[ipath]) );
-    netbackdir = internal_netbackdir_table[ipath];
-//AB    printf("netbackdir[ipath=%d]=%d\n",ipath,netbackdir);
-
-    // and bring multi_x to end - no gauge transformation !!
-    // resulting outer product matrix has gauge transformation properties of a connection
-    // from start to end of path
-
-
-    /* move f(i-1) force from current site in positive direction,
-       this corresponds to outer product |X><Y| calculated at the endpoint of the path */
-    link_gather_connection_hisq( force_accum_old[OPP_DIR(netbackdir)], 
-				 oprod_along_path[0], NULL, netbackdir );
-
-
-    /* path transport the outer product, or projection matrix, of multi_x[term]
-       (EVEN sites)  and Dslash*multi_x[term] (ODD sites) from far end.
-
-       maintain a matrix of the outer product transported backwards
-	along the path to all sites on the path.
-	If new "net displacement", need to completely recreate it.
-	Otherwise, use as much of the previous path as possible 
-
-	Note this array is indexed backwards - the outer product transported
-	to site number n along the path is in oprod_along_path[length-n].
-	This makes reusing it for later paths easier.
-
-	Sometimes we need this at the start point of the path, and sometimes
-	one link into the path, so don't always have to do the last link. */
-
-    // figure out how much of the outer products along the path must be
-    // recomputed. j is last one needing recomputation. k is first one.
-    j=length-1; // default is recompute all
-//ABopt    if( netbackdir == last_netbackdir )
-//ABopt      while ( j>0 && this_path->dir[j] == last_path->dir[j+last_path->length-length] ) j--;
-    if( GOES_BACKWARDS(this_path->dir[0]) ) k=1; else k=0;
-
-
-    for(ilink=j;ilink>=k;ilink--){
-        link_transport_connection_hisq( oprod_along_path[length-ilink-1], internal_U_link,
-        oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  );
-    }
-
-   /* maintain an array of transports "to this point" along the path.
-	Don't recompute beginning parts of path if same as last path */
-    ilink=0; // first link where new transport is needed
-//ABopt    if( last_path != NULL )while( this_path->dir[ilink] == last_path->dir[ilink] ) ilink++ ;
-    // Sometimes we don't need the matrix for the last link
-    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
-
-    for( ; ilink<k; ilink++ ){
-      if( ilink==0 ){
-        dir = this_path->dir[0];
-          if( GOES_FORWARDS(dir) ){
-            mtag[1] = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix),
-                   OPP_DIR(dir), EVENANDODD, gen_pt[1] );
-            wait_gather(mtag[1]);
-            FORALLSITES(i,s){ su3_adjoint( (su3_matrix *)gen_pt[1][i], &(mats_along_path[1][i]) ); }
-            cleanup_gather(mtag[1]);
-          }
-          else{
-            FORALLSITES(i,s){ mats_along_path[1][i] = s->link[OPP_DIR(dir)]; }
-          }
-      }
-      else { // ilink != 0
-        dir = OPP_DIR(this_path->dir[ilink]);
-        //TEST link_transport_connection( mats_along_path[ilink],
-        //TEST mats_along_path[ilink+1], mat_tmp0, dir  );
-        link_transport_connection_hisq( mats_along_path[ilink], internal_U_link,
-        mats_along_path[ilink+1], mat_tmp0, dir  );
-      }
-    } // end loop over links
-
-
-
-    /* A path has (length+1) points, counting the ends.  At first
-	 point, no "down" direction links have their momenta "at this
-	 point". At last, no "up" ... */
-    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
-    for( ilink=0; ilink<=k; ilink++ ){
-      if(ilink<length)dir = this_path->dir[ilink];
-      else dir=NODIR;
-
-//      coeff = ferm_epsilon*this_path->coeff;
-      coeff = this_path->coeff;
-      if( (ilink%2)==1 )coeff = -coeff;
-
-
-      /* add in contribution to the force */
-
-      if( ilink<length && GOES_FORWARDS(dir) ){
-
-        link_gather_connection_hisq( oprod_along_path[length-ilink-1], 
-				     mat_tmp1, NULL, dir );
-
-        if(ilink==0) FORALLSITES(i,s){
-          mat_tmp0[i] = mat_tmp1[i]; 
-        }
-        else{
-          FORALLSITES(i,s){
-//AB            mult_su3_na( &(mat_tmp1[i]),  &(mats_along_path[ilink][i]), &(mat_tmp0[i]) );
-            mult_su3_na( &( mat_tmp1[i] ),  &( mats_along_path[ilink][i] ), &(mat_tmp0[i]) );
-          }
-        }
-
-/*
-        FOREVENSITES(i,s){
-	    scalar_mult_add_su3_matrix( &(force_accum[dir][i]), &(mat_tmp0[i]),
-                coeff, &(force_accum[dir][i]) );
-	}
-	FORODDSITES(i,s){
-	    scalar_mult_add_su3_matrix( &(force_accum[dir][i]), &(mat_tmp0[i]),
-                -coeff, &(force_accum[dir][i]) );
-        }
-*/
-        FORALLSITES(i,s){
-	    scalar_mult_add_su3_matrix( &(force_accum[dir][i]), &(mat_tmp0[i]),
-                coeff, &(force_accum[dir][i]) );
-	}
-
-      }
-      if( ilink>0 && GOES_BACKWARDS(lastdir) ){
-	odir = OPP_DIR(lastdir);
-        if( ilink==1 )FORALLSITES(i,s){
-          mat_tmp0[i]=oprod_along_path[length-ilink][i];
-          su3_adjoint ( &( mat_tmp0[i] ), &( mat_tmp1[i] ) );
-        }
-        else{
-          link_gather_connection_hisq( mats_along_path[ilink-1], mat_tmp1, 
-				       NULL, odir );
-          FORALLSITES(i,s){
-            mult_su3_na( &( oprod_along_path[length-ilink][i] ), &( mat_tmp1[i] ), &( mat_tmp0[i] ) );
-            su3_adjoint ( &( mat_tmp0[i] ), &( mat_tmp1[i] ) );
-          }
-        }
-
-/*
-        FOREVENSITES(i,s){
-          scalar_mult_add_su3_matrix( &(force_accum[odir][i]), &(mat_tmp1[i]),
-                +coeff, &(force_accum[odir][i]) );
-        }
-        FORODDSITES(i,s){
-          scalar_mult_add_su3_matrix( &(force_accum[odir][i]), &(mat_tmp1[i]),
-                -coeff, &(force_accum[odir][i]) );
-        }
-*/
-        FORALLSITES(i,s){
-          scalar_mult_add_su3_matrix( &(force_accum[odir][i]), &(mat_tmp1[i]),
-                +coeff, &(force_accum[odir][i]) );
-        }
-
-      }
-      lastdir = dir;
-    } /* end loop over links in path */
-  } /* end loop over paths */
-
-//#ifndef AB_OLD_UNIV
-//} /* end loop over link for f(0)_\nu */
-//#endif /* AB_OLD_UNIV */
-
-
-	
-  free( mat_tmp0 );
-  free( mat_tmp1 );
-  free( ahmat_tmp );
-  for(i=0;i<=MAX_PATH_LENGTH;i++){
-     free( oprod_along_path[i] );
-  }
-  for(i=1;i<=MAX_PATH_LENGTH;i++){
-     free( mats_along_path[i] );
-  }
-}
-
-
-//AB TEMP
-// Contribution to force due to reunitarization of links: W=V*(V^+*V)^-1/2
-static void 
-fn_fermion_force_multi_reunit( su3_matrix *force_accum[4], 
-			       su3_matrix *force_accum_old[4], 
-			       ferm_links_t *fn, ks_action_paths *ap )
-{
-  int i, k, l, m, n, dir;
-  register site *s;
-  complex force, ftmp;
-  su3_matrix tmat;
-  su3_tensor4 dwdv, dwdagdv, dwdvre;
-  su3_tensor4 dwdvs, dwdagdvs;
-  su3_matrix **internal_V_link = fn->hl.V_link;
-  su3_matrix **internal_Y_link = fn->hl.Y_unitlink;
-  
-  /* phases out */
-  custom_rephase( internal_V_link, OFF, &fn->hl.phases_in_V );
-  
-  FORALLSITES(i,s){
-    for(dir=XUP;dir<=TUP;dir++){
-      // calculate derivatives
-      if(ap->umethod == UNITARIZE_ROOT )
-	su3_unit_der( &( internal_V_link[dir][i] ), &dwdv, &dwdagdv );
-      else if(ap->umethod == UNITARIZE_RATIONAL )
-	su3_unit_der_rational( &( internal_V_link[dir][i] ), &dwdv, &dwdagdv );
-      else{
-	node0_printf("Unknown unitarization method\n");
-	terminate(1);
-      }
-      
-      /* piece of derivative from projecting U(3) to SU(3) */
-      //      su3_unitarize( &( internal_V_link[dir][i] ), &tmat ); //AB here it is done for the second time!!!
-      su3_adjoint( &( internal_Y_link[dir][i] ), &tmat );
-      su3_unit_der_spec( &( internal_V_link[dir][i] ), &( internal_Y_link[dir][i] ), &tmat,
-                         &dwdv, &dwdagdv, &dwdvs, &dwdagdvs );
-      
-//      su3_spec_unit_der( &( internal_V_link[dir][i] ), &dwdvs, &dwdagdvs ); // SAME??
-
-// this will be used for UNITARIZE_HISQ, later
-//      su3_unit_der_rational( &( internal_V_link[dir][i] ), &dwdv, &dwdagdv );
-
-
-//      su3_unit_der_reim( &( internal_V_link[dir][i] ), &dwdvre, &dwdvim, &dwdagdvre, &dwdagdvim );
-//      su3_unit_der_reim_join( &dwdvre, &dwdvim, &dwdagdvre, &dwdagdvim, &dwdv, &dwdagdv );
-
-      if( (dir==AB_OUT_ON_LINK) && (i==AB_OUT_ON_SITE) && (1==0) ) {
-        printf("TENSOR4 dump\n");
-        dumptensor4( &dwdv );
-        printf("TENSOR4 adjoint dump\n");
-        dumptensor4( &dwdagdv );
-        /* for a unitary matrix dwdagdv should be a direct product of U^+ U^+ */
-        su3_adjoint( &( internal_V_link[dir][i] ), &tmat );
-        for( k=0; k<3; k++) {
-          for( l=0; l<3; l++) {
-            for( m=0; m<3; m++) {
-              for( n=0; n<3; n++) {
-                CMUL( tmat.e[k][m], tmat.e[n][l], dwdvre.t4[k][m][n][l] );
-                dwdvre.t4[k][m][n][l].real /= -2;
-                dwdvre.t4[k][m][n][l].imag /= -2;
-              }
-            }
-          }
-        }
-        printf("TENSOR4 adjoint check dump\n");
-        dumptensor4( &dwdvre );
-      }
-
-
-      // adjoint piece of force from the previous level
-      su3_adjoint( &( force_accum_old[dir][i] ), &tmat );
-
-      // contraction of derivative (rank 4 tensor) with previous force (matrix),
-      // the rule: RESULT_{mn} = TENSOR_{kmnl} * MATRIX_{kl}
-      // TODO: EXPLAIN indexing convention (transposed to Wong, Woloshyn)
-      // TODO: MATCH it to operations in su3_mat_op.c
-      // TODO: this may be separated into a routine (if used not only here!)
-      clear_su3mat( &( force_accum[dir][i] ) );
-      for( m=0; m<3; m++) {
-        for( n=0; n<3; n++) {
-          force.real=0.0;
-          force.imag=0.0;
-          for( k=0; k<3; k++) {
-            for( l=0; l<3; l++) {
-              CMUL( dwdvs.t4[k][m][n][l], force_accum_old[dir][i].e[l][k], ftmp );
-//              CSUM( force, ftmp );
-              CSUM( force_accum[dir][i].e[n][m], ftmp );
-              /* CAREFUL with the adjoint part here! */
-              CMUL( dwdagdvs.t4[k][m][n][l], tmat.e[l][k], ftmp );
-//              CMUL( dwdagdv.t4[k][m][n][l], force_accum_old[dir][i].e[k][l], ftmp );
-//              CSUM( force, ftmp );
-              CSUM( force_accum[dir][i].e[n][m], ftmp );
-            }
-          }
-//          force_accum[dir][i].e[m][n] = force;
-//          force_accum[dir][i].e[m][n] = force_accum_old[dir][i].e[m][n];
-        }
-      }
-if( (dir==AB_OUT_ON_LINK) && (i==AB_OUT_ON_SITE) ) {
-  printf("REUNIT FORCE\n");
-  dumpmat( &(force_accum[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
-}
-    }
-  }
-
-  /* phases in */
-  custom_rephase( internal_V_link, ON, &fn->hl.phases_in_V );
-}
-
-
-
-
-
-//AB WRAPPER_FORCE
-static void 
-fn_fermion_force_multi_wrapper( Real eps, Real *residues, 
-				su3_vector **multi_x, int nterms,
-				ferm_links_t *fn, ks_action_paths *ap)
-{
-  su3_matrix *force_accum_0[4];  // accumulate force, smearing 0
-  su3_matrix *force_accum_1[4];  // accumulate force, smearing 1
-  su3_matrix *force_accum_1u[4];  // accumulate force, reunitarization
-  su3_matrix *force_accum_2[4];  // accumulate force, smearing 2
-  su3_matrix *force_final[4];  // accumulate final force, multiply by time step
-  su3_matrix **U_link = fn->hl.U_link;
-  su3_matrix **W_unitlink = fn->hl.W_unitlink;
-  anti_hermitmat *ahmat_tmp;
-  register site *s;
-  int dir;
-  int i;
-  int ipath;
-
-  int num_q_paths_1 = ap->p1.num_q_paths;
-  Q_path *q_paths_1 = ap->p1.q_paths;
-  int num_q_paths_2 = ap->p2.num_q_paths;
-  Q_path *q_paths_2 = ap->p2.q_paths;
-
-
-  if( first_force==1 ){
-    if( q_paths_sorted_1==NULL ) q_paths_sorted_1 = (Q_path *)malloc( num_q_paths_1*sizeof(Q_path) );
-    if(netbackdir_table_1==NULL ) netbackdir_table_1 = (int *)malloc( num_q_paths_1*sizeof(int) );
-    if( q_paths_sorted_2==NULL ) q_paths_sorted_2 = (Q_path *)malloc( num_q_paths_2*sizeof(Q_path) );
-    if(netbackdir_table_2==NULL ) netbackdir_table_2 = (int *)malloc( num_q_paths_2*sizeof(int) );
-    else{ node0_printf("WARNING: remaking sorted path tables\n"); exit(0); }
-
-// Note change for HISQ - using only one "first_force", so have to allocate
-// all tables here
-    sort_quark_paths( q_paths_1, q_paths_sorted_1, num_q_paths_1, 8 );
-    for( ipath=0; ipath<num_q_paths_1; ipath++ )
-	netbackdir_table_1[ipath] = find_backwards_gather( &(q_paths_sorted_1[ipath]) );
-    sort_quark_paths( q_paths_2, q_paths_sorted_2, num_q_paths_2, 16 );
-    for( ipath=0; ipath<num_q_paths_2; ipath++ )
-	netbackdir_table_2[ipath] = find_backwards_gather( &(q_paths_sorted_2[ipath]) );
-    first_force=0;
-  }
-
-
-  for(i=XUP;i<=TUP;i++){
-     force_accum_0[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
-     force_accum_1[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
-     force_accum_1u[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
-     force_accum_2[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
-     force_final[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
-  }
-  ahmat_tmp = (anti_hermitmat *) special_alloc(sites_on_node*sizeof(anti_hermitmat) );
-
-  printf("UNITARIZATION_METHOD=%d\n",ap->umethod);
-  //AB smearing level 0
-  fn_fermion_force_multi_univ0( eps, residues, multi_x, nterms, force_accum_0 );
-  //AB smearing level 2
-  fn_fermion_force_multi_universal( eps, residues, multi_x, nterms, force_accum_2, force_accum_0,
-     W_unitlink, num_q_paths_2, q_paths_sorted_2, netbackdir_table_2 );
-
-  switch(ap->umethod){
-  case UNITARIZE_NONE:
-    //AB smearing level 1
-    fn_fermion_force_multi_universal( eps, residues, multi_x, nterms, force_accum_1, force_accum_2,
-				      U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 );
-    break;
-  case UNITARIZE_ROOT:
-    printf("UNITARIZE_ROOT call in fermion_force_fn_multi\n");
-    //AB reunitarization
-    fn_fermion_force_multi_reunit( force_accum_1u, force_accum_2, fn, ap );
-    //AB smearing level 1
-    fn_fermion_force_multi_universal( eps, residues, multi_x, nterms, force_accum_1, force_accum_1u,
-				      U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 );
-    break;
-  case UNITARIZE_RATIONAL:
-    // ON THIS LEVEL THIS IS IDENTICAL TO UNITARIZE_ROOT
-    printf("UNITARIZE_RATIONAL call in fermion_force_fn_multi\n");
-    //AB reunitarization
-    fn_fermion_force_multi_reunit( force_accum_1u, force_accum_2, fn, ap );
-    //AB smearing level 1
-    fn_fermion_force_multi_universal( eps, residues, multi_x, nterms, force_accum_1, force_accum_1u,
-				      U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 );
-    break;
-  default:
-    node0_printf("Unknown unitarization method\n");
-    terminate(1);
-  }
-
-
-#ifdef AB_DEBUG
-  fn_fermion_force_multi_univ0( eps, residues, multi_x, nterms, force_accum_0 );
-  fn_fermion_force_multi_reunit( force_accum_1, force_accum_0, fn, ap );
-//  fn_fermion_force_multi_det( force_accum_1, force_accum_0, fn );
-#endif /* AB_DEBUG */
-
-
-//  custom_rephase( U_link, OFF, &fn->hl.phases_in_U );
-
-  //AB contraction with the link in question should be done here,
-  //AB after contributions from all levels of smearing are taken into account
-  for(dir=XUP;dir<=TUP;dir++){
-    FORALLSITES(i,s){
-      mult_su3_nn( &( s->link[dir] ), &( force_accum_1[dir][i] ), &( force_final[dir][i] ) );
-
-//#define ABcheck
-#ifdef ABcheck
-      complex ft1, ft2;
-      su3_matrix tt1, tt2;
-      ft1.real = 0.0;
-      ft1.imag = 0.0;
-      su3mat_copy( &( s->link[dir] ), &tt1 );
-      for( k=0; k<3; k++) {
-        for( l=0; l<3; l++) {
-          CMUL( tt1.e[k][l], force_accum_0[dir][i], ft2 );
-          CSUM( ft1, ft2 );
-        }
-      }
-#endif /* ABcheck */
-
-
-
-#ifdef ABcheck_unit
-// THIS CHECK IS INTENDED TO PERFORM THE SAME OPERATIONS
-// AS CALCULATING THE FORCE FROM UNITARIZATION OF A MATRIX
-// WHICH IS ALREADY UNITARY
-      su3_adjoint( &( force_accum_0[dir][i] ), &( tmp2 ) );
-      mult_su3_an( &( U_link[dir][i] ), &( tmp2 ), &( tmp_su3mat ) );
-      mult_su3_na( &( tmp_su3mat ), &( U_link[dir][i] ), &( tmp2 ) );
-      sub_su3_matrix( &( force_accum_0[dir][i] ), &( tmp2 ), &( tmp_su3mat ) );
-      scalar_mult_su3_matrix( &( tmp_su3mat ), 0.5, &( force_accum_2[dir][i] ) );
-if( (dir==AB_OUT_ON_LINK) && (i==AB_OUT_ON_SITE) ) {
-  printf("WRAPPER Intermediate/Reunit FORCE\n");
-  dumpmat( &(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
-}
-      mult_su3_nn( &( s->link[dir] ), &( force_accum_2[dir][i] ), &( force_final[dir][i] ) );
-#endif /* ABcheck_unit */
-
-    }
-  }
-
-//  custom_rephase( U_link, ON, &fn->hl.phases_in_U );
-
-  //AB multiply by the time step "eps" twice (only forward paths are considered)
-  //AB take into account even/odd parity (it is NOT done in "universal" routine
-  for(dir=XUP;dir<=TUP;dir++){
-/*
-    FORALLSITES(i,s){
-      scalar_mult_su3_matrix( &(force_final[dir][i]), 2.0*eps, &(force_final[dir][i]) );
-    }
-*/
-    FOREVENSITES(i,s){
-      scalar_mult_su3_matrix( &(force_final[dir][i]), 2.0*eps, &(force_final[dir][i]) );
-    }
-    FORODDSITES(i,s){
-      scalar_mult_su3_matrix( &(force_final[dir][i]), -2.0*eps, &(force_final[dir][i]) );
-    }
-  }
-
-  printf("WRAPPER FORCE\n");
-  dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
-  printf("WRAPPER FORCE ANTIHERMITIAN\n");
-  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
-    make_anti_hermitian( &(force_final[dir][i]), &(ahmat_tmp[i]) );
-    uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_final[dir][i]) );
-  }
-  dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
-
-
-  //AB: here TA projection and addition to momenta should be done
-  //AB: once force is calculated correctly
-//  printf("*** Evolve with WRAPPER force ***\n");
-//  for(dir=XUP; dir<=TUP; dir++)FORALLSITES(i,s){
-//     uncompress_anti_hermitian( &(s->mom[dir]), &tmp_su3mat );
-//     add_su3_matrix( &tmp_su3mat, &(force_final[dir][i]), &tmp_su3mat );
-//     make_anti_hermitian( &tmp_su3mat, &(s->mom[dir]) );
-//  }
-
-
-  for(i=XUP;i<=TUP;i++){
-     free( force_accum_0[i] );
-     free( force_accum_1[i] );
-     free( force_accum_1u[i] );
-     free( force_accum_2[i] );
-     free( force_final[i] );
-  }
-  free(ahmat_tmp);
-}
-
-
-
+// rephase link field
 void custom_rephase( su3_matrix **internal_links, int flag, int* status_now ) {
   register int i,j,k,dir;
   register site *s;
@@ -829,7 +234,650 @@ void custom_rephase( su3_matrix **internal_links, int flag, int* status_now ) {
 }
 
 
+
+
+
+
+
 //TEMP
+// Similar to fn_fermion_force_multi_hisq but uses external variables
+// to perform smearing 0 and 2 on all parts of multi_x and then
+// reunitarization and smearing 1 on the combined force
+static void 
+fn_fermion_force_multi_hisq_mx( Real eps, Real *residues, su3_vector **multi_x, 
+			     int nterms, ferm_links_t *fn, ks_action_paths *ap)
+{
+  // note CG_solution and Dslash * solution are combined in "multi_x" 
+  // Use forward part of Dslash to get force 
+  // see long comment at end 
+  // This version is temporary.  For two stage smearing, includes unitarization step
+
+  // ALGORITHM SKETCH:
+  // For each net displacement
+    // compute outer product |X><X|
+    // For each path in smearing 2 with that displacement
+      // parallel transport outer product to each link in path, accumulate for
+      // each link
+    // For each path in smearing 1
+      // parallel transport accumulated outer product from previous step to
+      // each link in path, accumulate new one at each link
+    // add to momentum
+
+  // We need sorted path tables for both smearings
+
+  /* note CG_solution and Dslash * solution are combined in "multi_x" */
+  /* New version 1/21/99.  Use forward part of Dslash to get force */
+  /* see long comment at end */
+  /* For each link we need multi_x transported from both ends of path. */
+  int term;
+  register int i,j,k,lastdir=-99,ipath,ilink;
+  register site *s;
+  int length,dir,odir;
+  su3_matrix tmat,tmat2;
+  Real ferm_epsilon_1, ferm_epsilon_2, coeff;
+  int num_q_paths_1 = ap->p1.num_q_paths;
+  Q_path *q_paths_1 = ap->p1.q_paths;
+  int num_q_paths_2 = ap->p2.num_q_paths;
+  Q_path *q_paths_2 = ap->p2.q_paths;
+  Q_path *this_path;	// pointer to current path
+  Q_path *last_path;	// pointer to previous path
+  msg_tag *mtag[2];
+  su3_matrix *mat_tmp0,*mat_tmp1;
+  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1]; // length N path has N+1 sites!!
+  su3_matrix *mats_along_path[MAX_PATH_LENGTH+1]; // 
+  su3_matrix *force_accum_1[4];  // accumulate force through smearing 1
+  su3_matrix *force_accum_2[4];  // accumulate force through smearing 2 (done first)
+  su3_matrix *force_accum_tmp[4];  // to combine contributions at smearing 2
+  int netbackdir, last_netbackdir;	// backwards direction for entire path
+  su3_matrix **U_link = fn->hl.U_link;
+  su3_matrix **V_link = fn->hl.V_link;
+  su3_matrix **W_unitlink = fn->hl.W_unitlink;
+  su3_matrix **Y_unitlink = fn->hl.Y_unitlink;
+  su3_vector **internal_multi_x;
+  Real *internal_residues;
+
+  su3_tensor4 dydv, dydagdv, dwdv, dwdagdv;
+  su3_matrix force_tmp;
+  int m, n, l;
+  complex force, ftmp;
+  int inaik, n_naik_shift, path_coeff_changed;
+
+#ifdef FFTIME
+  int nflop = 0 + 0*nterms; // HISQ action 10/30/07 version of code;
+  double dtime;
+#endif
+  /* node0_printf("STARTING fn_fermion_force_multi_hisq() nterms = %d\n",nterms); */
+  if( nterms==0 )return;
+
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+     oprod_along_path[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+  for(i=1;i<=MAX_PATH_LENGTH;i++){ // 0 element is never used (it's unit matrix)
+     mats_along_path[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+  for(i=XUP;i<=TUP;i++){
+     force_accum_1[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_2[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_tmp[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+  mat_tmp0 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
+  mat_tmp1 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
+  if( mat_tmp1 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
+
+#ifdef FFTIME
+	dtime=-dclock();
+#endif
+	
+  ferm_epsilon_1 = 2.0*eps; // we only do forward paths, gives factor of 2
+  ferm_epsilon_2 =     1.0; // both forward and backward  CHECK THIS!!
+  if( first_force==1 ){
+    if( q_paths_sorted_1==NULL ) q_paths_sorted_1 = (Q_path *)malloc( num_q_paths_1*sizeof(Q_path) );
+    if(netbackdir_table_1==NULL ) netbackdir_table_1 = (int *)malloc( num_q_paths_1*sizeof(int) );
+    if( q_paths_sorted_2==NULL ) q_paths_sorted_2 = (Q_path *)malloc( num_q_paths_2*sizeof(Q_path) );
+    if(netbackdir_table_2==NULL ) netbackdir_table_2 = (int *)malloc( num_q_paths_2*sizeof(int) );
+    else{ node0_printf("WARNING: remaking sorted path tables\n"); exit(0); }
+    first_force=0;
+  }
+
+  // clear force accumulators
+  for(dir=XUP;dir<=TUP;dir++)FORALLSITES(i,s){
+    clear_su3mat( &(force_accum_1[dir][i]) );
+    clear_su3mat( &(force_accum_2[dir][i]) );
+  }
+
+
+  // loop on different naik masses
+  n_naik_shift = 0;
+  for( inaik=0; inaik<n_naiks; inaik++ ) {
+    // clear temporary force accumulator
+    for(dir=XUP;dir<=TUP;dir++)FORALLSITES(i,s){
+      clear_su3mat( &(force_accum_tmp[dir][i]) );
+    }
+#ifdef MILC_GLOBAL_DEBUG
+    node0_printf("fn_fermion_force_multi_hisq_mx: remake for masses_naik[%d]=%f\n",inaik,masses_naik[inaik]);
+#endif /* MILC_GLOBAL_DEBUG */
+
+
+#ifdef MILC_GLOBAL_DEBUG
+    {
+    double tabletime=-dclock();
+#endif /* MILC_GLOBAL_DEBUG */
+    // Remake the path tables
+    path_coeff_changed = make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,
+                                         masses_naik[inaik]);
+    // Invalidate only fat and long links and remake them
+    invalidate_fn_links(&fn_links);
+    load_ferm_links(&fn_links, &ks_act_paths);
+#ifdef MILC_GLOBAL_DEBUG
+    tabletime+=dclock();
+    node0_printf("fftime: time to make path tables %e\n",tabletime);
+    }
+#endif /* MILC_GLOBAL_DEBUG */
+
+    //TEMP remake sorted tables every time
+    sort_quark_paths( q_paths_2, q_paths_sorted_2, num_q_paths_2, 16 );
+    for( ipath=0; ipath<num_q_paths_2; ipath++ )
+	netbackdir_table_2[ipath] = find_backwards_gather( &(q_paths_sorted_2[ipath]) );
+
+    internal_multi_x = multi_x + n_naik_shift;
+    internal_residues = residues + n_naik_shift;
+
+
+  // BEGIN SMEARING TWO PART
+  /* loop over paths, and loop over links in path */
+  last_netbackdir = NODIR;
+  last_path = NULL;
+  for( ipath=0; ipath<num_q_paths_2; ipath++ ){
+    this_path = &(q_paths_sorted_2[ipath]);
+    if(this_path->forwback== -1)continue;	/* skip backwards dslash - only in smearing two*/
+
+    length = this_path->length;
+    // find gather to bring multi_x[term] from "this site" to end of path
+    netbackdir = netbackdir_table_2[ipath];
+    // and bring multi_x to end - no gauge transformation !!
+    // resulting outer product matrix has gauge transformation properties of a connection
+    // from start to end of path
+    if( netbackdir != last_netbackdir){ // don't need to repeat this if same net disp. as last path
+	k=0; // which gather we are using
+        mtag[k] = start_gather_field( internal_multi_x[0], sizeof(su3_vector),
+           netbackdir, EVENANDODD, gen_pt[k] );
+        FORALLSITES(i,s){
+	  clear_su3mat(  &oprod_along_path[0][i] ); // actually last site in path
+        }
+        for(term=0;term<n_orders_naik[inaik];term++){
+          if(term<n_orders_naik[inaik]-1)mtag[1-k] = start_gather_field( internal_multi_x[term+1],
+		sizeof(su3_vector), netbackdir, EVENANDODD, gen_pt[1-k] );
+          wait_gather(mtag[k]);
+          FORALLSITES(i,s){
+	    su3_projector( &internal_multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
+	    scalar_mult_add_su3_matrix( &oprod_along_path[0][i], &tmat, 
+	         internal_residues[term], &oprod_along_path[0][i] );
+          }
+          cleanup_gather(mtag[k]);
+	  k=1-k; // swap 0 and 1
+        } /* end loop over terms in rational function expansion */
+
+    }
+
+    /* path transport the outer product, or projection matrix, of multi_x[term]
+       (EVEN sites)  and Dslash*multi_x[term] (ODD sites) from far end.
+
+       maintain a matrix of the outer product transported backwards
+	along the path to all sites on the path.
+	If new "net displacement", need to completely recreate it.
+	Otherwise, use as much of the previous path as possible 
+
+	Note this array is indexed backwards - the outer product transported
+	to site number n along the path is in oprod_along_path[length-n].
+	This makes reusing it for later paths easier.
+
+	Sometimes we need this at the start point of the path, and sometimes
+	one link into the path, so don't always have to do the last link. */
+
+    // figure out how much of the outer products along the path must be
+    // recomputed. j is last one needing recomputation. k is first one.
+    j=length-1; // default is recompute all
+    if( netbackdir == last_netbackdir )
+      while ( j>0 && this_path->dir[j] == last_path->dir[j+last_path->length-length] ) j--;
+    if( GOES_BACKWARDS(this_path->dir[0]) ) k=1; else k=0;
+
+    for(ilink=j;ilink>=k;ilink--){
+
+      link_transport_connection_hisq( oprod_along_path[length-ilink-1], W_unitlink,
+      oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  );
+    }
+
+
+   /* maintain an array of transports "to this point" along the path.
+	Don't recompute beginning parts of path if same as last path */
+    ilink=0; // first link where new transport is needed
+    if( last_path != NULL )while( this_path->dir[ilink] == last_path->dir[ilink] ) ilink++ ;
+    // Sometimes we don't need the matrix for the last link
+    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
+
+    for( ; ilink<k; ilink++ ){
+      if( ilink==0 ){
+        dir = this_path->dir[0];
+          if( GOES_FORWARDS(dir) ){
+            mtag[1] = start_gather_field( W_unitlink[dir], sizeof(su3_matrix),
+                   OPP_DIR(dir), EVENANDODD, gen_pt[1] );
+            wait_gather(mtag[1]);
+            FORALLSITES(i,s){ su3_adjoint( (su3_matrix *)gen_pt[1][i], &(mats_along_path[1][i]) ); }
+            cleanup_gather(mtag[1]);
+          }
+          else{
+            FORALLSITES(i,s){ mats_along_path[1][i] = W_unitlink[OPP_DIR(dir)][i]; }
+          }
+      }
+      else { // ilink != 0
+        dir = OPP_DIR(this_path->dir[ilink]);
+        link_transport_connection_hisq( mats_along_path[ilink], W_unitlink,
+        mats_along_path[ilink+1], mat_tmp0, dir  );
+      }
+    } // end loop over links
+
+    /* A path has (length+1) points, counting the ends.  At first
+	 point, no "down" direction links have their momenta "at this
+	 point". At last, no "up" ... */
+    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
+    for( ilink=0; ilink<=k; ilink++ ){
+      if(ilink<length)dir = this_path->dir[ilink];
+      else dir=NODIR;
+      coeff = ferm_epsilon_2*this_path->coeff;
+      if( (ilink%2)==1 )coeff = -coeff;
+
+      /* add in contribution to the force */
+      if( ilink<length && GOES_FORWARDS(dir) ){
+	link_gather_connection_hisq( oprod_along_path[length-ilink-1], 
+				     mat_tmp1, NULL, dir );
+	if ( ilink==0 ){
+	   FORALLSITES(i,s){ mat_tmp0[i] = mat_tmp1[i]; }
+	}
+	else {
+          FORALLSITES(i,s){
+	     mult_su3_na( &(mat_tmp1[i]),  &(mats_along_path[ilink][i]), &(mat_tmp0[i]) );
+          }
+	}
+        FORALLSITES(i,s){
+	    scalar_mult_add_su3_matrix( &(force_accum_tmp[dir][i]), &(mat_tmp0[i]),
+                coeff, &(force_accum_tmp[dir][i]) ); // sign fixed AB 9/20/07
+	}
+      }
+      if( ilink>0 && GOES_BACKWARDS(lastdir) ){
+	odir = OPP_DIR(lastdir);
+        if ( ilink==1 ){
+	    FORALLSITES(i,s){ su3_adjoint( &(oprod_along_path[length-ilink][i]),
+		&( mat_tmp0[i] ) ); }
+	}
+	else {
+	    link_gather_connection_hisq( mats_along_path[ilink-1], mat_tmp1, 
+					 NULL, odir );
+            FORALLSITES(i,s){
+              mult_su3_na( &(mat_tmp1[i]), &(oprod_along_path[length-ilink][i]),  &(mat_tmp0[i]) );
+            }
+	}
+        FORALLSITES(i,s){
+            scalar_mult_add_su3_matrix( &(force_accum_tmp[odir][i]), &(mat_tmp0[i]),
+                +coeff, &(force_accum_tmp[odir][i]) );  // sign fixed AB 9/20/07
+        }
+      }
+
+      lastdir = dir;
+    } /* end loop over links in path */
+    last_netbackdir = netbackdir;
+    last_path = &(q_paths_sorted_2[ipath]);
+  } /* end loop over paths */
+
+  // END SMEARING TWO PART
+
+    for(dir=XUP;dir<=TUP;dir++) {
+      FORALLSITES(i,s) {
+        add_su3_matrix( &( force_accum_2[dir][i] ), &( force_accum_tmp[dir][i] ), &( force_accum_2[dir][i] ) );
+      }
+    }
+    n_naik_shift += n_orders_naik[inaik];
+  } /* end loop over naik masses */
+
+#ifdef FFTIME
+#ifdef MILC_GLOBAL_DEBUG
+  {
+  double tmptime=dtime+dclock();
+  node0_printf("fftime(hisq-smearing1):  time = %e \n",tmptime);
+  }
+#endif /* MILC_GLOBAL_DEBUG */
+#endif
+
+
+
+  // UNITARIZATION PART
+
+  switch(ap->umethod){
+  case UNITARIZE_ROOT:
+  case UNITARIZE_RATIONAL:
+  case UNITARIZE_ANALYTIC:
+
+    // WARNING: custom_rephase IS A QUICK FIX, IT DOES NOT SET ANY GLOBAL VARIABLES!
+    // rephase (out) V, Y
+    custom_rephase( V_link, OFF, &fn->hl.phases_in_V );
+    custom_rephase( Y_unitlink, OFF, &fn->hl.phases_in_Y );
+    
+    FORALLSITES(i,s){
+      for(dir=XUP;dir<=TUP;dir++){
+	// derivatives: dY/dV, dY^+/dV
+	switch (ap->umethod){
+	case UNITARIZE_ROOT:
+	  su3_unit_der( &( V_link[dir][i] ), &dydv, &dydagdv );
+	  break;
+	case UNITARIZE_RATIONAL:
+	  su3_unit_der_rational( &( V_link[dir][i] ), &dydv, &dydagdv );
+	  break;
+	case UNITARIZE_ANALYTIC:
+	  su3_unit_der_analytic( &( V_link[dir][i] ), &dydv, &dydagdv );
+	  break;
+	default:
+	  node0_printf("Unknown unitarization method\n");
+	  terminate(1);
+	}
+	
+#ifndef REUNITARIZE_U3_NOT_SU3
+	// piece of derivative from projecting U(3) to SU(3)
+	su3_adjoint( &( Y_unitlink[dir][i] ), &tmat );
+	su3_unit_der_spec( &( V_link[dir][i] ), 
+			   &( Y_unitlink[dir][i] ), &tmat,
+			   &dydv, &dydagdv, &dwdv, &dwdagdv );
+#else /* REUNITARIZE_U3_NOT_SU3 */
+	su3t4_copy( &dydv, &dwdv );
+	su3t4_copy( &dydagdv, &dwdagdv );
+#endif /* REUNITARIZE_U3_NOT_SU3 */
+	
+	// adjoint piece of the force
+	su3_adjoint( &( force_accum_2[dir][i] ), &tmat );
+
+	/* LONG COMMENT ABOUT INDEXING CONVENTION
+	   f - scalar function, U_{ab} - matrix,
+	   derivative df/dU_{ab} is a matrix with indeces transposed,
+	   i.e. df/dU_{ab}=D_{ba}
+	   In (for example) Wong/Woloshyn notes indeces are NOT transposed,
+	   what is called f_{mn} there should be f_{nm}.
+	   This code stores f_{mn} (as in notes) because this makes handling
+	   smearing part easier (one has several matrix multiplications).
+	   However, for the unitarization part matrix derivative is
+	   constructed as rank 4-tensor, following usual convention:
+	   dV_{kl}/dU_{mn}=T_{knml} (i.e. indeces of the bottom matrix are transposed).
+	   Derivative tensor is then contracted with f_{kl} to get f'_{mn}.
+	   Usual convention: f'_{nm}=T_{knml}f_{kl},
+	   translates into: f'_{mn}=T_{knml}f_{lk} */
+	clear_su3mat( &force_tmp );
+	for( m=0; m<3; m++) {
+	  for( n=0; n<3; n++) {
+	    force.real=0.0;
+	    force.imag=0.0;
+	    for( k=0; k<3; k++) {
+	      for( l=0; l<3; l++) {
+		CMUL( dwdv.t4[k][m][n][l], force_accum_2[dir][i].e[l][k], 
+		      ftmp );
+		CSUM( force_tmp.e[n][m], ftmp );
+		/* CAREFUL: adjoint part here! */
+		CMUL( dwdagdv.t4[k][m][n][l], tmat.e[l][k], ftmp );
+		CSUM( force_tmp.e[n][m], ftmp );
+	      }
+	    }
+	  }
+	}
+	// PUT THE RESULT INTO force_accum_2, THIS MAY NEED CHANGES
+	su3mat_copy( &force_tmp, &( force_accum_2[dir][i] ) );
+      }
+    }
+    
+    // WARNING: custom_rephase IS A QUICK FIX, IT DOES NOT SET ANY GLOBAL VARIABLES!
+    // rephase (in) V, Y
+    custom_rephase( V_link, ON, &fn->hl.phases_in_V );
+    custom_rephase( Y_unitlink, ON, &fn->hl.phases_in_Y );
+    break;
+
+  case UNITARIZE_NONE:
+    //  printf("HISQ: Proceeding with UNITARIZE_NONE\n");
+    break;
+  default:
+    printf("HISQ: Only UNITARIZE_ROOT and UNITARIZE_RATIONAL supported so far\n");
+    printf("HISQ: Proceeding without reunitarization\n");
+  } /* ap->umethod */
+
+#ifdef FFTIME
+#ifdef MILC_GLOBAL_DEBUG
+  {
+  double tmptime=dtime+dclock();
+  node0_printf("fftime(hisq-smearing1+reunitarization):  time = %e \n",tmptime);
+  }
+#endif /* MILC_GLOBAL_DEBUG */
+#endif
+
+
+  //SMEARING ONE PART
+
+  // TEMP remake sorted path table for smearing 1
+  // IN PRINCIPLE, THESE PATHS SHOULD NOT CHANGE
+  sort_quark_paths( q_paths_1, q_paths_sorted_1, num_q_paths_1, 8 );
+  for( ipath=0; ipath<num_q_paths_1; ipath++ )
+	netbackdir_table_1[ipath] = find_backwards_gather( &(q_paths_sorted_1[ipath]) );
+
+
+  // loop over paths, and loop over links in path 
+  // Here each path is one "V link" and each V link should already have a corresponding
+  // force_accum_2 computed
+  last_netbackdir = NODIR;
+  last_path = NULL;
+  for( ipath=0; ipath<num_q_paths_1; ipath++ ){
+    this_path = &(q_paths_sorted_1[ipath]);
+if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
+
+    length = this_path->length;
+    // find gather to bring multi_x[term] from "this site" to end of path
+    netbackdir = netbackdir_table_1[ipath];
+    // and bring force_accum_2 to end - gauge transform one index only!
+    // resulting outer product matrix has gauge transformation properties of a connection
+    // from start to end of path
+// use force_accum_2
+// Note if path goes backwards you may need adjoint.  Have to think about
+// what its gauge transformation properties are
+    if( netbackdir != last_netbackdir){ // don't need to repeat this if same net disp. as last path
+	if( GOES_BACKWARDS(netbackdir) ){
+	   link_gather_connection_hisq( force_accum_2[OPP_DIR(netbackdir)],
+		oprod_along_path[0], NULL, netbackdir );
+	}
+	else {
+	   link_gather_connection_hisq( force_accum_2[netbackdir],
+		oprod_along_path[0], NULL, netbackdir );
+	}
+    }
+
+    /* path transport the outer product force_accum_2(connection) from far end.
+
+       maintain a matrix of the "outer product" transported backwards
+	along the path to all sites on the path.
+	If new "net displacement", need to completely recreate it.
+	Otherwise, use as much of the previous path as possible 
+
+	Note this array is indexed backwards - the outer product transported
+	to site number n along the path is in oprod_along_path[length-n].
+	This makes reusing it for later paths easier.
+
+	Sometimes we need this at the start point of the path, and sometimes
+	one link into the path, so don't always have to do the last link. */
+
+    // figure out how much of the outer products along the path must be
+    // recomputed. j is last one needing recomputation. k is first one.
+    j=length-1; // default is recompute all
+    if( netbackdir == last_netbackdir )
+      while ( j>0 && this_path->dir[j] == last_path->dir[j+last_path->length-length] ) j--;
+    if( GOES_BACKWARDS(this_path->dir[0]) ) k=1; else k=0;
+
+    for(ilink=j;ilink>=k;ilink--){
+      link_transport_connection_hisq( oprod_along_path[length-ilink-1], U_link,
+          oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  );
+    }
+
+   /* maintain an array of transports "to this point" along the path.
+	Don't recompute beginning parts of path if same as last path */
+    ilink=0; // first link where new transport is needed
+    if( last_path != NULL )while( this_path->dir[ilink] == last_path->dir[ilink] ) ilink++ ;
+    // Sometimes we don't need the matrix for the last link
+    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
+
+    for( ; ilink<k; ilink++ ){
+      if( ilink==0 ){
+        dir = this_path->dir[0];
+          if( GOES_FORWARDS(dir) ){
+            mtag[1] = start_gather_field( U_link[dir], sizeof(su3_matrix),
+                   OPP_DIR(dir), EVENANDODD, gen_pt[1] );
+            wait_gather(mtag[1]);
+            FORALLSITES(i,s){ su3_adjoint( (su3_matrix *)gen_pt[1][i], &(mats_along_path[1][i]) ); }
+            cleanup_gather(mtag[1]);
+          }
+          else{
+            FORALLSITES(i,s){ mats_along_path[1][i] = U_link[OPP_DIR(dir)][i]; }
+          }
+      }
+      else { // ilink != 0
+        dir = OPP_DIR(this_path->dir[ilink]);
+        link_transport_connection_hisq( mats_along_path[ilink], U_link,
+        mats_along_path[ilink+1], mat_tmp0, dir  );
+      }
+    } // end loop over links
+
+    /* A path has (length+1) points, counting the ends.  At first
+	 point, no "down" direction links have their momenta "at this
+	 point". At last, no "up" ... */
+    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
+    for( ilink=0; ilink<=k; ilink++ ){
+      if(ilink<length)dir = this_path->dir[ilink];
+      else dir=NODIR;
+      coeff = ferm_epsilon_1*this_path->coeff;
+      if( (ilink%2)==1 )coeff = -coeff;
+
+      if(ilink==0 && GOES_FORWARDS(dir) ) FORALLSITES(i,s){
+	mat_tmp0[i] = oprod_along_path[length][i]; 
+      }
+      else if( ilink>0) FORALLSITES(i,s){
+        mult_su3_na( &(oprod_along_path[length-ilink][i]),  &(mats_along_path[ilink][i]), &(mat_tmp0[i]) );
+      }
+
+      /* add in contribution to the force */
+      if( ilink<length && GOES_FORWARDS(dir) ){
+        FOREVENSITES(i,s){
+	    scalar_mult_add_su3_matrix( &(force_accum_1[dir][i]), &(mat_tmp0[i]),
+                coeff, &(force_accum_1[dir][i]) );
+	}
+	FORODDSITES(i,s){
+	    scalar_mult_add_su3_matrix( &(force_accum_1[dir][i]), &(mat_tmp0[i]),
+                -coeff, &(force_accum_1[dir][i]) );
+        }
+      }
+      if( ilink>0 && GOES_BACKWARDS(lastdir) ){
+	odir = OPP_DIR(lastdir);
+        FOREVENSITES(i,s){
+	    scalar_mult_add_su3_matrix( &(force_accum_1[odir][i]), &(mat_tmp0[i]),
+                -coeff, &(force_accum_1[odir][i]) );
+	}
+        FORODDSITES(i,s){
+	    scalar_mult_add_su3_matrix( &(force_accum_1[odir][i]), &(mat_tmp0[i]),
+                coeff, &(force_accum_1[odir][i]) );
+	}
+      }
+
+      lastdir = dir;
+    } /* end loop over links in path */
+    last_netbackdir = netbackdir;
+    last_path = &(q_paths_sorted_1[ipath]);
+  } /* end loop over paths */
+
+  // END SMEARING ONE PART
+
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+  {
+  anti_hermitmat ahmat_tmp;
+  su3_matrix ff_interm;
+  double icounter=0;
+  double max_force=0;
+  Real force_interm;
+  FORALLSITES(i,s) {
+    for( dir=XUP; dir<=TUP; dir++ ) {
+      if( fabs(s->RoS[dir])>1.0 ) icounter+=1;
+
+      /* find maximum force */
+      make_anti_hermitian( &(force_accum_1[dir][i]), &ahmat_tmp );
+      uncompress_anti_hermitian( &ahmat_tmp, &ff_interm );
+      force_interm = su3_norm_frob( &ff_interm );
+      if( force_interm > max_force ) {
+        max_force=force_interm;
+      }
+    }
+  }
+  g_doublemax( &max_force );
+  g_doublesum( &icounter );
+  node0_printf( "REUNITARIZATION: fabs(RoS) > 1.0 occured on %lf link(s)\n", icounter );
+  node0_printf( "HISQ FORCE: maximum norm is %lf\n", max_force );
+  }
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+#ifdef HISQ_FF_DEBUG
+  {
+  anti_hermitmat ahmat_tmp;
+  printf("HISQ FORCE\n");
+  dumpmat( &(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  printf("HISQ FORCE ANTIHERMITIAN\n");
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    make_anti_hermitian( &(force_accum_1[dir][i]), &ahmat_tmp );
+    uncompress_anti_hermitian( &ahmat_tmp, &(force_accum_1[dir][i]) );
+  }
+  dumpmat( &(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+
+
+  /* Put antihermitian traceless part into momentum */
+  // add force to momentum
+  for(dir=XUP; dir<=TUP; dir++)FORALLSITES(i,s){
+     uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
+     add_su3_matrix( &tmat2, &(force_accum_1[dir][i]), &tmat2 );
+     make_anti_hermitian( &tmat2, &(s->mom[dir]) );
+  }
+	
+//printf("FF flops = %d\n",tempflops);
+  free( mat_tmp0 );
+  free( mat_tmp1 );
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+     free( oprod_along_path[i] );
+  }
+  for(i=1;i<=MAX_PATH_LENGTH;i++){
+     free( mats_along_path[i] );
+  }
+  for(i=XUP;i<=TUP;i++){
+     free( force_accum_1[i] );
+     free( force_accum_2[i] );
+     free( force_accum_tmp[i] );
+  }
+
+
+#ifdef FFTIME
+  dtime += dclock();
+  node0_printf("FFTIME:  time = %e (HISQ) terms = %d mflops = %e\n",dtime,nterms,
+	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
+#endif
+} //fn_fermion_force_multi_hisq_mx
+
+
+
+
+
+
+
+
+
+
+//TEMP
+#ifndef HISQ_FAST_FORCE02
 static void 
 fn_fermion_force_multi_hisq( Real eps, Real *residues, su3_vector **multi_x, 
 			     int nterms, ferm_links_t *fn, ks_action_paths *ap)
@@ -918,17 +966,16 @@ fn_fermion_force_multi_hisq( Real eps, Real *residues, su3_vector **multi_x,
     if( q_paths_sorted_2==NULL ) q_paths_sorted_2 = (Q_path *)malloc( num_q_paths_2*sizeof(Q_path) );
     if(netbackdir_table_2==NULL ) netbackdir_table_2 = (int *)malloc( num_q_paths_2*sizeof(int) );
     else{ node0_printf("WARNING: remaking sorted path tables\n"); exit(0); }
+    first_force=0;
+  }
 
-// Note change for HISQ - using only one "first_force", so have to allocate
-// all tables here
+    //TEMP remake sorted tables every time
     sort_quark_paths( q_paths_1, q_paths_sorted_1, num_q_paths_1, 8 );
     for( ipath=0; ipath<num_q_paths_1; ipath++ )
 	netbackdir_table_1[ipath] = find_backwards_gather( &(q_paths_sorted_1[ipath]) );
     sort_quark_paths( q_paths_2, q_paths_sorted_2, num_q_paths_2, 16 );
     for( ipath=0; ipath<num_q_paths_2; ipath++ )
 	netbackdir_table_2[ipath] = find_backwards_gather( &(q_paths_sorted_2[ipath]) );
-    first_force=0;
-  }
 
   // clear force accumulators
   for(dir=XUP;dir<=TUP;dir++)FORALLSITES(i,s){
@@ -936,7 +983,7 @@ fn_fermion_force_multi_hisq( Real eps, Real *residues, su3_vector **multi_x,
     clear_su3mat( &(force_accum_2[dir][i]) );
   }
 
-  //BEGIN SMEARING TWO PART
+  // BEGIN SMEARING TWO PART
   /* loop over paths, and loop over links in path */
   last_netbackdir = NODIR;
   last_path = NULL;
@@ -1050,20 +1097,14 @@ fn_fermion_force_multi_hisq( Real eps, Real *residues, su3_vector **multi_x,
 	     mult_su3_na( &(mat_tmp1[i]),  &(mats_along_path[ilink][i]), &(mat_tmp0[i]) );
           }
 	}
-        FOREVENSITES(i,s){
+        FORALLSITES(i,s){
 	    scalar_mult_add_su3_matrix( &(force_accum_2[dir][i]), &(mat_tmp0[i]),
-                coeff, &(force_accum_2[dir][i]) );
+                coeff, &(force_accum_2[dir][i]) ); // sign fixed AB 9/20/07
 	}
-	FORODDSITES(i,s){
-	    scalar_mult_add_su3_matrix( &(force_accum_2[dir][i]), &(mat_tmp0[i]),
-                //-coeff, &(force_accum_2[dir][i]) );
-                coeff, &(force_accum_2[dir][i]) ); // Alexei 9/20/07
-        }
       }
       if( ilink>0 && GOES_BACKWARDS(lastdir) ){
 	odir = OPP_DIR(lastdir);
         if ( ilink==1 ){
-	    //FORALLSITES(i,s){ mat_tmp0[i] = oprod_along_path[length-ilink][i]; }
 	    FORALLSITES(i,s){ su3_adjoint( &(oprod_along_path[length-ilink][i]),
 		&( mat_tmp0[i] ) ); }
 	}
@@ -1071,21 +1112,13 @@ fn_fermion_force_multi_hisq( Real eps, Real *residues, su3_vector **multi_x,
 	    link_gather_connection_hisq( mats_along_path[ilink-1], mat_tmp1, 
 					 NULL, odir );
             FORALLSITES(i,s){
-              //mult_su3_na( &(oprod_along_path[length-ilink][i]),  &(mat_tmp1[i]), &(mat_tmp0[i]) );
               mult_su3_na( &(mat_tmp1[i]), &(oprod_along_path[length-ilink][i]),  &(mat_tmp0[i]) );
             }
 	}
-        FOREVENSITES(i,s){
-	    scalar_mult_add_su3_matrix( &(force_accum_2[odir][i]), &(mat_tmp0[i]),
-                //-coeff, &(force_accum_2[odir][i]) );
-                +coeff, &(force_accum_2[odir][i]) );
-	}
-        FORODDSITES(i,s){
-	    scalar_mult_add_su3_matrix( &(force_accum_2[odir][i]), &(mat_tmp0[i]),
-                //coeff, &(force_accum_2[odir][i]) );
-                coeff, &(force_accum_2[odir][i]) ); // Alexei 9/20/07
-                //-coeff, &(force_accum_2[odir][i]) );
-	}
+        FORALLSITES(i,s){
+            scalar_mult_add_su3_matrix( &(force_accum_2[odir][i]), &(mat_tmp0[i]),
+                +coeff, &(force_accum_2[odir][i]) );  // sign fixed AB 9/20/07
+        }
       }
 
       lastdir = dir;
@@ -1096,7 +1129,16 @@ fn_fermion_force_multi_hisq( Real eps, Real *residues, su3_vector **multi_x,
 
   // END SMEARING TWO PART
 
-  //UNITARIZATION PART
+#ifdef FFTIME
+#ifdef MILC_GLOBAL_DEBUG
+  {
+  double tmptime=dtime+dclock();
+  node0_printf("fftime(hisq-smearing1):  time = %e \n",tmptime);
+  }
+#endif /* MILC_GLOBAL_DEBUG */
+#endif
+
+  // UNITARIZATION PART
 
   switch(ap->umethod){
   case UNITARIZE_ROOT:
@@ -1126,15 +1168,20 @@ fn_fermion_force_multi_hisq( Real eps, Real *residues, su3_vector **multi_x,
 	  terminate(1);
 	}
 	
+#ifndef REUNITARIZE_U3_NOT_SU3
 	// piece of derivative from projecting U(3) to SU(3)
 	su3_adjoint( &( Y_unitlink[dir][i] ), &tmat );
 	su3_unit_der_spec( &( V_link[dir][i] ), 
 			   &( Y_unitlink[dir][i] ), &tmat,
 			   &dydv, &dydagdv, &dwdv, &dwdagdv );
+#else /* REUNITARIZE_U3_NOT_SU3 */
+	su3t4_copy( &dydv, &dwdv );
+	su3t4_copy( &dydagdv, &dwdagdv );
+#endif /* REUNITARIZE_U3_NOT_SU3 */
 	
 	// adjoint piece of the force
 	su3_adjoint( &( force_accum_2[dir][i] ), &tmat );
-	
+
 	/* LONG COMMENT ABOUT INDEXING CONVENTION
 	   f - scalar function, U_{ab} - matrix,
 	   derivative df/dU_{ab} is a matrix with indeces transposed,
@@ -1185,7 +1232,14 @@ fn_fermion_force_multi_hisq( Real eps, Real *residues, su3_vector **multi_x,
     printf("HISQ: Proceeding without reunitarization\n");
   } /* ap->umethod */
 
-
+#ifdef FFTIME
+#ifdef MILC_GLOBAL_DEBUG
+  {
+  double tmptime=dtime+dclock();
+  node0_printf("fftime(hisq-smearing1+reunitarization):  time = %e \n",tmptime);
+  }
+#endif /* MILC_GLOBAL_DEBUG */
+#endif
 
   //SMEARING ONE PART
   // loop over paths, and loop over links in path 
@@ -1319,6 +1373,49 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 
   // END SMEARING ONE PART
 
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+  {
+  anti_hermitmat ahmat_tmp;
+  su3_matrix ff_interm;
+  double icounter=0;
+  double max_force=0;
+  Real force_interm;
+  FORALLSITES(i,s) {
+    for( dir=XUP; dir<=TUP; dir++ ) {
+      if( fabs(s->RoS[dir])>1.0 ) icounter+=1;
+
+      /* find maximum force */
+      make_anti_hermitian( &(force_accum_1[dir][i]), &ahmat_tmp );
+      uncompress_anti_hermitian( &ahmat_tmp, &ff_interm );
+      force_interm = su3_norm_frob( &ff_interm );
+      if( force_interm > max_force ) {
+        max_force=force_interm;
+      }
+    }
+  }
+  g_doublemax( &max_force );
+  g_doublesum( &icounter );
+  node0_printf( "REUNITARIZATION: fabs(RoS) > 1.0 occured on %lf link(s)\n", icounter );
+  node0_printf( "HISQ FORCE: maximum norm is %lf\n", max_force );
+  }
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+#ifdef HISQ_FF_DEBUG
+  {
+  anti_hermitmat ahmat_tmp;
+  printf("HISQ FORCE\n");
+  dumpmat( &(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  printf("HISQ FORCE ANTIHERMITIAN\n");
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    make_anti_hermitian( &(force_accum_1[dir][i]), &ahmat_tmp );
+    uncompress_anti_hermitian( &ahmat_tmp, &(force_accum_1[dir][i]) );
+  }
+  dumpmat( &(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+
+
   /* Put antihermitian traceless part into momentum */
   // add force to momentum
   for(dir=XUP; dir<=TUP; dir++)FORALLSITES(i,s){
@@ -1348,6 +1445,831 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 #endif
 } //fn_fermion_force_multi_hisq
+
+#endif /* ifndef HISQ_FAST_FORCE02 */
+
+
+
+
+#ifdef HISQ_FAST_FORCE02
+
+// EXPERIMENTAL: combine smearing level 2 from different multi_x,
+//               use globals from lattice.h
+// HISQ wrapper routine: contribution to the force due to
+//    0) smearing level 0 (outer product |X><Y|)
+//    1) smearing level 2 + smearing level 2 Naik corrected
+//    2) reunitarization
+//    3) smearing level 1
+static void 
+fn_fermion_force_multi_hisq_wrapper_mx( Real eps, Real *residues, 
+				     su3_vector **multi_x, int nterms,
+				     ferm_links_t *fn, ks_action_paths *ap )
+{
+  su3_matrix *force_accum_0[4];  // accumulate force, smearing 0
+  su3_matrix *force_accum_0_naik[4];  // accumulate force, smearing 0, Naik
+  su3_matrix *force_accum_1[4];  // accumulate force, smearing 1
+  su3_matrix *force_accum_1u[4];  // accumulate force, reunitarization
+  su3_matrix *force_accum_2[4];  // accumulate force, smearing 2
+  su3_matrix *force_final[4];  // accumulate final force, multiply by time step
+  su3_matrix **U_link = fn->hl.U_link;
+  su3_matrix **W_unitlink = fn->hl.W_unitlink;
+  su3_matrix tmat2;
+  anti_hermitmat *ahmat_tmp;
+  register site *s;
+  int dir;
+  int i;
+  int ipath;
+  int inaik;
+  int n_naik_shift;
+  int path_coeff_changed;
+
+  node0_printf("Entering fn_fermion_force_multi_hisq_wrapper_mx()\n");
+  for(i=0;i<n_naiks;i++)
+    node0_printf("wrapper_mx: orders[%d]=%d\n",i,n_orders_naik[i]);
+  node0_printf("wrapper_mx: nterms=%d\n",nterms);
+
+  int num_q_paths_1 = ap->p1.num_q_paths;
+  Q_path *q_paths_1 = ap->p1.q_paths;
+  int num_q_paths_2 = ap->p2.num_q_paths;
+  Q_path *q_paths_2 = ap->p2.q_paths;
+
+
+  if( first_force==1 ){
+    if( q_paths_sorted_1==NULL ) q_paths_sorted_1 = (Q_path *)malloc( num_q_paths_1*sizeof(Q_path) );
+    if(netbackdir_table_1==NULL ) netbackdir_table_1 = (int *)malloc( num_q_paths_1*sizeof(int) );
+    if( q_paths_sorted_2==NULL ) q_paths_sorted_2 = (Q_path *)malloc( num_q_paths_2*sizeof(Q_path) );
+    if(netbackdir_table_2==NULL ) netbackdir_table_2 = (int *)malloc( num_q_paths_2*sizeof(int) );
+    else{ node0_printf("WARNING: remaking sorted path tables\n"); exit(0); }
+    first_force=0;
+  }
+
+
+
+  for(i=XUP;i<=TUP;i++){
+     force_accum_0[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_0_naik[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_1[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_1u[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_2[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_final[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+  ahmat_tmp = (anti_hermitmat *) special_alloc(sites_on_node*sizeof(anti_hermitmat) );
+
+  node0_printf("UNITARIZATION_METHOD=%d\n",ap->umethod);
+
+  for(dir=XUP;dir<=TUP;dir++) {
+    FORALLSITES(i,s) {
+      clear_su3mat( &( force_accum_2[dir][i] ) );
+    }
+  }
+
+  // loop on different naik masses
+  n_naik_shift = 0;
+  for( inaik=0; inaik<n_naiks; inaik++ ) {
+#ifdef MILC_GLOBAL_DEBUG
+    node0_printf("wrapper_mx: remake for masses_naik[%d]=%f\n",inaik,masses_naik[inaik]);
+#endif /* MILC_GLOBAL_DEBUG */
+    // Remake the path tables
+    path_coeff_changed = make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,
+                                         masses_naik[inaik]);
+    // Invalidate only fat and long links and remake them
+    invalidate_fn_links(&fn_links);
+    load_ferm_links(&fn_links, &ks_act_paths);
+
+    //TEMP remake sorted tables every time
+    sort_quark_paths( q_paths_1, q_paths_sorted_1, num_q_paths_1, 8 );
+    for( ipath=0; ipath<num_q_paths_1; ipath++ )
+	netbackdir_table_1[ipath] = find_backwards_gather( &(q_paths_sorted_1[ipath]) );
+    sort_quark_paths( q_paths_2, q_paths_sorted_2, num_q_paths_2, 16 );
+    for( ipath=0; ipath<num_q_paths_2; ipath++ )
+	netbackdir_table_2[ipath] = find_backwards_gather( &(q_paths_sorted_2[ipath]) );
+
+    // smearing level 0
+    fn_fermion_force_multi_hisq_smearing0( eps, residues+n_naik_shift, multi_x+n_naik_shift, 
+         n_orders_naik[inaik], force_accum_0, force_accum_0_naik );
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_FF_DEBUG
+  {
+  printf("WRAPPER FORCE EXP level 0\n");
+  dumpmat( &(force_accum_0_naik[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  printf("WRAPPER FORCE ANTIHERMITIAN EXP level 0\n");
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    make_anti_hermitian( &(force_accum_0_naik[dir][i]), &(ahmat_tmp[i]) );
+    uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_accum_1u[dir][i]) );
+  }
+  dumpmat( &(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  su3_matrix su3ab, su3ab2;
+  clear_su3mat( &su3ab );
+  clear_su3mat( &su3ab2 );
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    add_su3_matrix( &su3ab, &(force_accum_0[dir][i]), &su3ab );
+    add_su3_matrix( &su3ab, &(force_accum_0_naik[dir][i]), &su3ab );
+    add_su3_matrix( &su3ab2, &( W_unitlink[dir][i] ), &su3ab2 );
+  }
+  printf("WRAPPER FORCE EXP level 0 GLOBAL SUM\n");
+  dumpmat( &su3ab );
+  printf("WRAPPER FORCE EXP W_unitlink GLOBAL SUM\n");
+  dumpmat( &su3ab2 );
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+    // smearing level 2
+    fn_fermion_force_multi_hisq_smearing( eps, residues+n_naik_shift, multi_x+n_naik_shift, 
+        n_orders_naik[inaik], force_accum_1, force_accum_0, force_accum_0_naik, 
+	W_unitlink, num_q_paths_2, q_paths_sorted_2, netbackdir_table_2 );
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_FF_DEBUG
+  {
+  printf("WRAPPER FORCE EXP level 2\n");
+  dumpmat( &(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  printf("WRAPPER FORCE ANTIHERMITIAN EXP level 2\n");
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    make_anti_hermitian( &(force_accum_1[dir][i]), &(ahmat_tmp[i]) );
+    uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_accum_1u[dir][i]) );
+  }
+  dumpmat( &(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+    for(dir=XUP;dir<=TUP;dir++) {
+      FORALLSITES(i,s) {
+        add_su3_matrix( &( force_accum_2[dir][i] ), &( force_accum_1[dir][i] ), &( force_accum_2[dir][i] ) );
+      }
+    }
+    n_naik_shift += n_orders_naik[inaik];
+  }
+
+
+  switch(ap->umethod){
+  case UNITARIZE_NONE:
+    // smearing level 1
+    fn_fermion_force_multi_hisq_smearing( eps, residues, multi_x, nterms, force_accum_1, force_accum_2, NULL,
+					  U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 );
+    break;
+  case UNITARIZE_ROOT:
+  case UNITARIZE_RATIONAL:
+  case UNITARIZE_ANALYTIC:
+    // reunitarization
+    fn_fermion_force_multi_hisq_reunit( force_accum_1u, force_accum_2, fn, ap );
+    // smearing level 1
+    fn_fermion_force_multi_hisq_smearing( eps, residues, multi_x, nterms, force_accum_1, force_accum_1u, NULL, 
+				     U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 );
+    break;
+  default:
+    node0_printf("Unknown unitarization method\n");
+    terminate(1);
+  }
+
+  // contraction with the link in question should be done here,
+  // after contributions from all levels of smearing are taken into account
+  for(dir=XUP;dir<=TUP;dir++){
+    FORALLSITES(i,s){
+      mult_su3_nn( &( s->link[dir] ), &( force_accum_1[dir][i] ), &( force_final[dir][i] ) );
+    }
+  }
+
+
+  // multiply by the time step "eps" twice (only forward paths are considered)
+  // take into account even/odd parity (it is NOT done in "smearing" routine)
+  for(dir=XUP;dir<=TUP;dir++){
+    FOREVENSITES(i,s){
+      scalar_mult_su3_matrix( &(force_final[dir][i]), 2.0*eps, &(force_final[dir][i]) );
+    }
+    FORODDSITES(i,s){
+      scalar_mult_su3_matrix( &(force_final[dir][i]), -2.0*eps, &(force_final[dir][i]) );
+    }
+  }
+
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_FF_DEBUG
+  {
+  printf("WRAPPER FORCE\n");
+  dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  printf("WRAPPER FORCE ANTIHERMITIAN\n");
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    make_anti_hermitian( &(force_final[dir][i]), &(ahmat_tmp[i]) );
+    uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_final[dir][i]) );
+  }
+  dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+
+  /* Put antihermitian traceless part into momentum */
+  // add force to momentum
+  for(dir=XUP; dir<=TUP; dir++)FORALLSITES(i,s){
+     uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
+     add_su3_matrix( &tmat2, &(force_final[dir][i]), &tmat2 );
+     make_anti_hermitian( &tmat2, &(s->mom[dir]) );
+  }
+
+
+  for(i=XUP;i<=TUP;i++){
+     free( force_accum_0[i] );
+     free( force_accum_0_naik[i] );
+     free( force_accum_1[i] );
+     free( force_accum_1u[i] );
+     free( force_accum_2[i] );
+     free( force_final[i] );
+  }
+  free(ahmat_tmp);
+} //fn_fermion_force_multi_hisq_wrapper_mx
+
+#endif
+
+
+
+
+#ifndef HISQ_FAST_FORCE02
+
+// HISQ wrapper routine: contribution to the force due to
+//    0) smearing level 0 (outer product |X><Y|)
+//    1) smearing level 2
+//    2) reunitarization
+//    3) smearing level 1
+static void 
+fn_fermion_force_multi_hisq_wrapper( Real eps, Real *residues, 
+				     su3_vector **multi_x, int nterms,
+				     ferm_links_t *fn, ks_action_paths *ap )
+{
+  su3_matrix *force_accum_0[4];  // accumulate force, smearing 0
+  su3_matrix *force_accum_0_naik[4];  // accumulate force, smearing 0, Naik
+  su3_matrix *force_accum_1[4];  // accumulate force, smearing 1
+  su3_matrix *force_accum_1u[4];  // accumulate force, reunitarization
+  su3_matrix *force_accum_2[4];  // accumulate force, smearing 2
+  su3_matrix *force_final[4];  // accumulate final force, multiply by time step
+  su3_matrix **U_link = fn->hl.U_link;
+  su3_matrix **W_unitlink = fn->hl.W_unitlink;
+  su3_matrix tmat2;
+  anti_hermitmat *ahmat_tmp;
+  register site *s;
+  int dir;
+  int i;
+  int ipath;
+
+  int num_q_paths_1 = ap->p1.num_q_paths;
+  Q_path *q_paths_1 = ap->p1.q_paths;
+  int num_q_paths_2 = ap->p2.num_q_paths;
+  Q_path *q_paths_2 = ap->p2.q_paths;
+
+
+  if( first_force==1 ){
+    if( q_paths_sorted_1==NULL ) q_paths_sorted_1 = (Q_path *)malloc( num_q_paths_1*sizeof(Q_path) );
+    if(netbackdir_table_1==NULL ) netbackdir_table_1 = (int *)malloc( num_q_paths_1*sizeof(int) );
+    if( q_paths_sorted_2==NULL ) q_paths_sorted_2 = (Q_path *)malloc( num_q_paths_2*sizeof(Q_path) );
+    if(netbackdir_table_2==NULL ) netbackdir_table_2 = (int *)malloc( num_q_paths_2*sizeof(int) );
+    else{ node0_printf("WARNING: remaking sorted path tables\n"); exit(0); }
+    first_force=0;
+  }
+
+    //TEMP remake sorted tables every time
+    sort_quark_paths( q_paths_1, q_paths_sorted_1, num_q_paths_1, 8 );
+    for( ipath=0; ipath<num_q_paths_1; ipath++ )
+	netbackdir_table_1[ipath] = find_backwards_gather( &(q_paths_sorted_1[ipath]) );
+    sort_quark_paths( q_paths_2, q_paths_sorted_2, num_q_paths_2, 16 );
+    for( ipath=0; ipath<num_q_paths_2; ipath++ )
+	netbackdir_table_2[ipath] = find_backwards_gather( &(q_paths_sorted_2[ipath]) );
+
+
+  for(i=XUP;i<=TUP;i++){
+     force_accum_0[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_0_naik[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_1[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_1u[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_accum_2[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+     force_final[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+  ahmat_tmp = (anti_hermitmat *) special_alloc(sites_on_node*sizeof(anti_hermitmat) );
+
+  node0_printf("UNITARIZATION_METHOD=%d\n",ap->umethod);
+  // smearing level 0
+  fn_fermion_force_multi_hisq_smearing0( eps, residues, multi_x, nterms, force_accum_0, force_accum_0_naik );
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_FF_DEBUG
+  {
+  printf("WRAPPER FORCE level 0\n");
+  dumpmat( &(force_accum_0_naik[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  printf("WRAPPER FORCE ANTIHERMITIAN level 0\n");
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    make_anti_hermitian( &(force_accum_0_naik[dir][i]), &(ahmat_tmp[i]) );
+    uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_accum_1u[dir][i]) );
+  }
+  dumpmat( &(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  su3_matrix su3ab, su3ab2;
+  clear_su3mat( &su3ab );
+  clear_su3mat( &su3ab2 );
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    add_su3_matrix( &su3ab, &(force_accum_0[dir][i]), &su3ab );
+    add_su3_matrix( &su3ab, &(force_accum_0_naik[dir][i]), &su3ab );
+    add_su3_matrix( &su3ab2, &( W_unitlink[dir][i] ), &su3ab2 );
+  }
+  printf("WRAPPER FORCE level 0 GLOBAL SUM\n");
+  dumpmat( &su3ab );
+  printf("WRAPPER FORCE W_unitlink GLOBAL SUM\n");
+  dumpmat( &su3ab2 );
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+  // smearing level 2
+  fn_fermion_force_multi_hisq_smearing( eps, residues, multi_x, nterms, 
+	force_accum_2, force_accum_0, force_accum_0_naik, 
+	W_unitlink, num_q_paths_2, q_paths_sorted_2, netbackdir_table_2 );
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_FF_DEBUG
+  {
+  printf("WRAPPER FORCE level 2\n");
+  dumpmat( &(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  printf("WRAPPER FORCE ANTIHERMITIAN level 2\n");
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    make_anti_hermitian( &(force_accum_2[dir][i]), &(ahmat_tmp[i]) );
+    uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_accum_1u[dir][i]) );
+  }
+  dumpmat( &(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+
+  switch(ap->umethod){
+  case UNITARIZE_NONE:
+    // smearing level 1
+    fn_fermion_force_multi_hisq_smearing( eps, residues, multi_x, nterms, force_accum_1, force_accum_2, NULL,
+					  U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 );
+    break;
+  case UNITARIZE_ROOT:
+  case UNITARIZE_RATIONAL:
+  case UNITARIZE_ANALYTIC:
+    // reunitarization
+    fn_fermion_force_multi_hisq_reunit( force_accum_1u, force_accum_2, fn, ap );
+    // smearing level 1
+    fn_fermion_force_multi_hisq_smearing( eps, residues, multi_x, nterms, force_accum_1, force_accum_1u, NULL, 
+				     U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 );
+    break;
+  default:
+    node0_printf("Unknown unitarization method\n");
+    terminate(1);
+  }
+
+  // contraction with the link in question should be done here,
+  // after contributions from all levels of smearing are taken into account
+  for(dir=XUP;dir<=TUP;dir++){
+    FORALLSITES(i,s){
+      mult_su3_nn( &( s->link[dir] ), &( force_accum_1[dir][i] ), &( force_final[dir][i] ) );
+    }
+  }
+
+
+  // multiply by the time step "eps" twice (only forward paths are considered)
+  // take into account even/odd parity (it is NOT done in "smearing" routine)
+  for(dir=XUP;dir<=TUP;dir++){
+    FOREVENSITES(i,s){
+      scalar_mult_su3_matrix( &(force_final[dir][i]), 2.0*eps, &(force_final[dir][i]) );
+    }
+    FORODDSITES(i,s){
+      scalar_mult_su3_matrix( &(force_final[dir][i]), -2.0*eps, &(force_final[dir][i]) );
+    }
+  }
+
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_FF_DEBUG
+  {
+  printf("WRAPPER FORCE\n");
+  dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  printf("WRAPPER FORCE ANTIHERMITIAN\n");
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    make_anti_hermitian( &(force_final[dir][i]), &(ahmat_tmp[i]) );
+    uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_final[dir][i]) );
+  }
+  dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+
+  /* Put antihermitian traceless part into momentum */
+  // add force to momentum
+  for(dir=XUP; dir<=TUP; dir++)FORALLSITES(i,s){
+     uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
+     add_su3_matrix( &tmat2, &(force_final[dir][i]), &tmat2 );
+     make_anti_hermitian( &tmat2, &(s->mom[dir]) );
+  }
+
+
+  for(i=XUP;i<=TUP;i++){
+     free( force_accum_0[i] );
+     free( force_accum_0_naik[i] );
+     free( force_accum_1[i] );
+     free( force_accum_1u[i] );
+     free( force_accum_2[i] );
+     free( force_final[i] );
+  }
+  free(ahmat_tmp);
+} //fn_fermion_force_multi_hisq_wrapper
+
+#endif
+
+// Contribution to the force from 0 level of smearing, force contains only |X><Y| terms
+static void 
+fn_fermion_force_multi_hisq_smearing0( Real eps, Real *residues, 
+				       su3_vector **multi_x, int nterms,
+				       su3_matrix *force_accum[4], su3_matrix *force_accum_naik[4] )
+{
+  /* note CG_solution and Dslash * solution are combined in "multi_x" */
+  /* New version 1/21/99.  Use forward part of Dslash to get force */
+  /* see long comment at end */
+  /* For each link we need multi_x transported from both ends of path. */
+  int term;
+  register int i,k;
+  register site *s;
+  int dir;
+  su3_matrix tmat;
+  Real ferm_epsilon, coeff;
+
+  msg_tag *mtag[2];
+  su3_matrix *mat_tmp0;
+  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1]; // length N path has N+1 sites!!
+
+
+  if( nterms==0 )return;
+
+
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+     oprod_along_path[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+  mat_tmp0 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
+  if( mat_tmp0 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
+
+
+  ferm_epsilon = 2.0*eps; // we only do forward paths, gives factor of 2
+
+
+  // clear force accumulators
+  for(dir=XUP;dir<=TUP;dir++)FORALLSITES(i,s)clear_su3mat( &(force_accum[dir][i]) );
+
+  for(dir=XUP;dir<=TUP;dir++){ //AB loop on directions, path table is not needed
+    k=0; // which gather we are using
+    mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
+      OPP_DIR(dir), EVENANDODD, gen_pt[k] ); //AB netbackdir is just the opposite of dir for 1x1 case
+    FORALLSITES(i,s){
+      clear_su3mat(  &(oprod_along_path[0][i]) ); // actually last site in path
+    }
+    for(term=0;term<nterms;term++){
+      if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
+      sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1-k] );
+      wait_gather(mtag[k]);
+
+      FORALLSITES(i,s){
+        // build projector as usual
+        su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
+        // multiply by alpha_l in rational function expansion
+        scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, residues[term], &(oprod_along_path[0][i]) );
+      }
+      cleanup_gather(mtag[k]);
+      k=1-k; // swap 0 and 1
+    } /* end loop over terms in rational function expansion */
+
+
+    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], mat_tmp0, dir );
+
+    coeff = 1; // fermion_eps is outside this routine in "wrapper" routine
+    FORALLSITES(i,s){
+      scalar_mult_add_su3_matrix( &(force_accum[dir][i]), &(oprod_along_path[1][i]),
+                coeff, &(force_accum[dir][i]) );
+    }
+
+  } /* end of loop on directions */
+
+
+  /* *** Naik part *** */
+  // clear force accumulators
+  for(dir=XUP;dir<=TUP;dir++)FORALLSITES(i,s)clear_su3mat( &(force_accum_naik[dir][i]) );
+
+  for(dir=XUP;dir<=TUP;dir++){ //AB loop on directions, path table is not needed
+    k=0; // which gather we are using
+    mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
+      OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[k] );
+    FORALLSITES(i,s){
+      clear_su3mat(  &(oprod_along_path[0][i]) );
+    }
+    for(term=0;term<nterms;term++){
+      if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
+      sizeof(su3_vector), OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[1-k] );
+      wait_gather(mtag[k]);
+
+      FORALLSITES(i,s){
+        // build projector as usual
+        su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
+        // multiply by alpha_l in rational function expansion
+        scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, residues[term], &(oprod_along_path[0][i]) );
+      }
+      cleanup_gather(mtag[k]);
+      k=1-k; // swap 0 and 1
+    } /* end loop over terms in rational function expansion */
+
+    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], mat_tmp0, DIR3(dir) );
+
+    coeff = 1; // fermion_eps is outside this routine in "wrapper" routine
+    FORALLSITES(i,s){
+      scalar_mult_add_su3_matrix( &(force_accum_naik[dir][i]), &(oprod_along_path[1][i]),
+                coeff, &(force_accum_naik[dir][i]) );
+    }
+
+  } /* end of loop on directions */
+
+
+  free( mat_tmp0 );
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+     free( oprod_along_path[i] );
+  }
+} //fn_fermion_force_multi_hisq_smearing0
+
+// This routine calculates contribution to the force due to i-th level of smearing,
+// as input it uses array of new links and the force from (i-1)-th level of smearing
+static void 
+fn_fermion_force_multi_hisq_smearing( Real eps, Real *residues, su3_vector **multi_x, 
+				      int nterms, su3_matrix *force_accum[4], 
+				      su3_matrix *force_accum_old[4], 
+				      su3_matrix *force_accum_naik_old[4], 
+				      su3_matrix **internal_U_link,
+				      int internal_num_q_paths, 
+				      Q_path *internal_q_paths_sorted, 
+				      int *internal_netbackdir_table )
+{
+  /* note CG_solution and Dslash * solution are combined in "multi_x" */
+  /* New version 1/21/99.  Use forward part of Dslash to get force */
+  /* see long comment at end */
+  /* For each link we need multi_x transported from both ends of path. */
+  register int i,j,k,lastdir=-99,ipath,ilink;
+  register site *s;
+  int length,dir,odir;
+  Real ferm_epsilon, coeff;
+  Q_path *this_path;	// pointer to current path
+  Q_path *last_path;	// pointer to previous path
+  msg_tag *mtag[2];
+  su3_matrix *mat_tmp0;
+  su3_matrix *mat_tmp1;
+  anti_hermitmat *ahmat_tmp;
+  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1]; // length N path has N+1 sites!!
+  su3_matrix *mats_along_path[MAX_PATH_LENGTH+1]; // 
+  int netbackdir, last_netbackdir;	// backwards direction for entire path
+
+  if( nterms==0 )return;
+
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+     oprod_along_path[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+  for(i=1;i<=MAX_PATH_LENGTH;i++){ // 0 element is never used (it's unit matrix)
+     mats_along_path[i] = (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+
+  mat_tmp0 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
+  mat_tmp1 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
+  if( mat_tmp0 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
+  if( mat_tmp1 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
+
+  ahmat_tmp = (anti_hermitmat *) special_alloc(sites_on_node*sizeof(anti_hermitmat) );
+
+	
+  ferm_epsilon = 2.0*eps; // we only do forward paths, gives factor of 2
+
+
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_FF_DEBUG
+  {
+  su3_matrix su3ab, su3ab2;
+  clear_su3mat( &su3ab );
+  clear_su3mat( &su3ab2 );
+  for(dir=XUP; dir<=TUP; dir++) FORALLSITES(i,s){
+    add_su3_matrix( &su3ab, &(force_accum_old[dir][i]), &su3ab );
+    if( NULL!=force_accum_naik_old ) {
+      add_su3_matrix( &su3ab, &(force_accum_naik_old[dir][i]), &su3ab );
+    }
+    add_su3_matrix( &su3ab2, &( internal_U_link[dir][i] ), &su3ab2 );
+  }
+  printf("WRAPPER FORCE smearing input force GLOBAL SUM\n");
+  dumpmat( &su3ab );
+  printf("WRAPPER FORCE smearing input links GLOBAL SUM\n");
+  dumpmat( &su3ab2 );
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+
+
+  // clear force accumulators
+  for(dir=XUP;dir<=TUP;dir++)FORALLSITES(i,s)clear_su3mat( &(force_accum[dir][i]) );
+
+  /* loop over paths, and loop over links in path */
+  last_netbackdir = NODIR;
+  last_path = NULL;
+  for( ipath=0; ipath<internal_num_q_paths; ipath++ ){
+    this_path = &(internal_q_paths_sorted[ipath]);
+    if(this_path->forwback== -1)continue;	/* skip backwards dslash */
+
+    length = this_path->length;
+    netbackdir = internal_netbackdir_table[ipath];
+
+    /* move f(i-1) force from current site in positive direction,
+       this corresponds to outer product |X><Y| calculated at the endpoint of the path */
+    if( netbackdir<8) { // Not a Naik path
+      link_gather_connection_hisq( force_accum_old[OPP_DIR(netbackdir)], 
+				   oprod_along_path[0], NULL, netbackdir );
+    }
+    else { // Naik path
+      if( NULL==force_accum_naik_old ) {
+        node0_printf( "fn_fermion_force_multi_hisq_smearing:  mismatch:\n" );
+        node0_printf( "  force_accum_naik_old is NULL, but path table contains Naik paths(!)\n" );
+        terminate(1);
+      }
+      // CONVERSION FROM 3-LINK DIRECTION TO 1-LINK DIRECTION
+      link_gather_connection_hisq( force_accum_naik_old[OPP_DIR(netbackdir-8)], 
+				   oprod_along_path[0], NULL, netbackdir );
+    }
+
+
+    // figure out how much of the outer products along the path must be
+    // recomputed. j is last one needing recomputation. k is first one.
+    j=length-1; // default is recompute all
+    if( GOES_BACKWARDS(this_path->dir[0]) ) k=1; else k=0;
+
+
+    for(ilink=j;ilink>=k;ilink--){
+        link_transport_connection_hisq( oprod_along_path[length-ilink-1], internal_U_link,
+        oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  );
+    }
+
+   /* maintain an array of transports "to this point" along the path.
+	Don't recompute beginning parts of path if same as last path */
+    ilink=0; // first link where new transport is needed
+    // Sometimes we don't need the matrix for the last link
+    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
+
+    for( ; ilink<k; ilink++ ){
+      if( ilink==0 ){
+        dir = this_path->dir[0];
+          if( GOES_FORWARDS(dir) ){
+            mtag[1] = start_gather_field( internal_U_link[dir], sizeof(su3_matrix),
+                   OPP_DIR(dir), EVENANDODD, gen_pt[1] );
+//            mtag[1] = start_gather_site( F_OFFSET(link[dir]), sizeof(su3_matrix),
+//                   OPP_DIR(dir), EVENANDODD, gen_pt[1] );
+            wait_gather(mtag[1]);
+            FORALLSITES(i,s){ su3_adjoint( (su3_matrix *)gen_pt[1][i], &(mats_along_path[1][i]) ); }
+            cleanup_gather(mtag[1]);
+          }
+          else{
+//            FORALLSITES(i,s){ mats_along_path[1][i] = s->link[OPP_DIR(dir)]; }
+            FORALLSITES(i,s){ mats_along_path[1][i] = internal_U_link[OPP_DIR(dir)][i]; }
+          }
+      }
+      else { // ilink != 0
+        dir = OPP_DIR(this_path->dir[ilink]);
+        link_transport_connection_hisq( mats_along_path[ilink], internal_U_link,
+        mats_along_path[ilink+1], mat_tmp0, dir  );
+      }
+    } // end loop over links
+
+
+
+    /* A path has (length+1) points, counting the ends.  At first
+	 point, no "down" direction links have their momenta "at this
+	 point". At last, no "up" ... */
+    if( GOES_FORWARDS(this_path->dir[length-1]) ) k=length-1; else k=length;
+    for( ilink=0; ilink<=k; ilink++ ){
+      if(ilink<length)dir = this_path->dir[ilink];
+      else dir=NODIR;
+
+      coeff = this_path->coeff;
+      if( (ilink%2)==1 )coeff = -coeff;
+
+      /* add in contribution to the force */
+      if( ilink<length && GOES_FORWARDS(dir) ){
+
+        link_gather_connection_hisq( oprod_along_path[length-ilink-1], 
+				     mat_tmp1, NULL, dir );
+
+        if(ilink==0) FORALLSITES(i,s){
+          mat_tmp0[i] = mat_tmp1[i]; 
+        }
+        else{
+          FORALLSITES(i,s){
+            mult_su3_na( &( mat_tmp1[i] ),  &( mats_along_path[ilink][i] ), &(mat_tmp0[i]) );
+          }
+        }
+        FORALLSITES(i,s){
+	    scalar_mult_add_su3_matrix( &(force_accum[dir][i]), &(mat_tmp0[i]),
+                coeff, &(force_accum[dir][i]) );
+	}
+
+      }
+      if( ilink>0 && GOES_BACKWARDS(lastdir) ){
+	odir = OPP_DIR(lastdir);
+        if( ilink==1 )FORALLSITES(i,s){
+          mat_tmp0[i]=oprod_along_path[length-ilink][i];
+          su3_adjoint ( &( mat_tmp0[i] ), &( mat_tmp1[i] ) );
+        }
+        else{
+          link_gather_connection_hisq( mats_along_path[ilink-1], mat_tmp1, 
+				       NULL, odir );
+          FORALLSITES(i,s){
+            mult_su3_na( &( oprod_along_path[length-ilink][i] ), &( mat_tmp1[i] ), &( mat_tmp0[i] ) );
+            su3_adjoint ( &( mat_tmp0[i] ), &( mat_tmp1[i] ) );
+          }
+        }
+        FORALLSITES(i,s){
+          scalar_mult_add_su3_matrix( &(force_accum[odir][i]), &(mat_tmp1[i]),
+                +coeff, &(force_accum[odir][i]) );
+        }
+
+      }
+      lastdir = dir;
+    } /* end loop over links in path */
+  } /* end loop over paths */
+
+  free( mat_tmp0 );
+  free( mat_tmp1 );
+  free( ahmat_tmp );
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+     free( oprod_along_path[i] );
+  }
+  for(i=1;i<=MAX_PATH_LENGTH;i++){
+     free( mats_along_path[i] );
+  }
+}// fn_fermion_force_multi_hisq_smearing
+
+
+// Contribution to the force due to reunitarization of links:
+//   Y=V*(V^+*V)^-1/2, W=Y/(detY)^1/3
+static void 
+fn_fermion_force_multi_hisq_reunit( su3_matrix *force_accum[4], 
+				    su3_matrix *force_accum_old[4], 
+				    ferm_links_t *fn, ks_action_paths *ap )
+{
+  int i, k, l, m, n, dir;
+  register site *s;
+  complex force, ftmp;
+  su3_matrix tmat;
+  su3_tensor4 dwdv, dwdagdv;
+  su3_tensor4 dwdvs, dwdagdvs;
+  su3_matrix **internal_V_link = fn->hl.V_link;
+  su3_matrix **internal_Y_link = fn->hl.Y_unitlink;
+  
+  /* phases out */
+  custom_rephase( internal_V_link, OFF, &fn->hl.phases_in_V );
+  custom_rephase( internal_Y_link, OFF, &fn->hl.phases_in_Y );
+  
+  FORALLSITES(i,s){
+    for(dir=XUP;dir<=TUP;dir++){
+      // calculate derivatives
+      if(ap->umethod == UNITARIZE_ROOT )
+	su3_unit_der( &( internal_V_link[dir][i] ), &dwdv, &dwdagdv );
+      else if(ap->umethod == UNITARIZE_RATIONAL )
+	su3_unit_der_rational( &( internal_V_link[dir][i] ), &dwdv, &dwdagdv );
+      else if(ap->umethod == UNITARIZE_ANALYTIC )
+	su3_unit_der_analytic( &( internal_V_link[dir][i] ), &dwdv, &dwdagdv );
+      else if(ap->umethod == UNITARIZE_NONE ) {
+	node0_printf("fn_fermion_force_multi_hisq_reunit should not be called for UNITARIZE_NONE\n");
+	terminate(1);
+      }
+      else{
+	node0_printf("Unknown unitarization method\n");
+	terminate(1);
+      }
+
+#ifndef REUNITARIZE_U3_NOT_SU3
+      /* piece of derivative from projecting U(3) to SU(3) */
+      su3_adjoint( &( internal_Y_link[dir][i] ), &tmat );
+      su3_unit_der_spec( &( internal_V_link[dir][i] ), &( internal_Y_link[dir][i] ), &tmat,
+                         &dwdv, &dwdagdv, &dwdvs, &dwdagdvs );
+#else /* REUNITARIZE_U3_NOT_SU3 */
+      su3t4_copy( &dwdv, &dwdvs );
+      su3t4_copy( &dwdagdv, &dwdagdvs );
+#endif /* REUNITARIZE_U3_NOT_SU3 */
+
+      // adjoint piece of force from the previous level
+      su3_adjoint( &( force_accum_old[dir][i] ), &tmat );
+
+      // see LONG COMMENT in fermion_force_fn_multi_hisq
+      clear_su3mat( &( force_accum[dir][i] ) );
+      for( m=0; m<3; m++) {
+        for( n=0; n<3; n++) {
+          force.real=0.0;
+          force.imag=0.0;
+          for( k=0; k<3; k++) {
+            for( l=0; l<3; l++) {
+              CMUL( dwdvs.t4[k][m][n][l], force_accum_old[dir][i].e[l][k], ftmp );
+              CSUM( force_accum[dir][i].e[n][m], ftmp );
+              /* CAREFUL with the adjoint part here! */
+              CMUL( dwdagdvs.t4[k][m][n][l], tmat.e[l][k], ftmp );
+              CSUM( force_accum[dir][i].e[n][m], ftmp );
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* phases in */
+  custom_rephase( internal_V_link, ON, &fn->hl.phases_in_V );
+  custom_rephase( internal_Y_link, ON, &fn->hl.phases_in_Y );
+} // fn_fermion_force_multi_hisq_reunit
+
 
 int 
 find_backwards_gather( Q_path *path )

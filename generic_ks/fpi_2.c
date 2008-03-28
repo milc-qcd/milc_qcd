@@ -33,6 +33,7 @@ enum prop_name {
 
 #include "generic_ks_includes.h"
 #include "../include/dslash_ks_redefine.h"
+#include <string.h>
 
 int test_converge(int t_source);
 

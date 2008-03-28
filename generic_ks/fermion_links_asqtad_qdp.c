@@ -292,6 +292,13 @@ invalidate_all_ferm_links(ferm_links_t *fn)
   fn->valid = 0;
 }
 
+/* For compatibility with fermion_links_hisq.c */
+void
+invalidate_fn_links(ferm_links_t *fn)
+{
+  invalidate_all_ferm_links(fn);
+}
+
 void 
 init_ferm_links(ferm_links_t *fn){
   fn->valid = 0;

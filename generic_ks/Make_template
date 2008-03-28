@@ -37,6 +37,7 @@ G_KS_ALL = \
   dslash_fn_qop_milc_D.o \
   dslash_fn_qop_milc_F.o \
   eigen_stuff.o \
+  eo_fermion_force_rhmc.o \
   f_meas.o \
   fermion_force_asqtad.o \
   fermion_force_asqtad_qdp.o \
@@ -82,6 +83,8 @@ G_KS_ALL = \
   ks_multicg_offset_qop_F.o \
   ks_multicg_qop_milc_D.o \
   ks_multicg_qop_milc_F.o \
+  ks_source.o \
+  ks_utilities.o \
   load_qop_asqtad_coeffs_D.o \
   load_qop_asqtad_coeffs_F.o \
   mat_invert.o \
@@ -190,6 +193,8 @@ dslash_fn_qop_milc_F.o: ../generic_ks/dslash_fn_qop_milc_F.c ../generic_ks/dslas
 	${CC} -c ${CFLAGS} $<
 eigen_stuff.o: ../generic_ks/eigen_stuff.c
 	${CC} -c ${CFLAGS} $<
+eo_fermion_force_rhmc.o: ../generic_ks/eo_fermion_force_rhmc.c
+	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad_qdp.o: ../generic_ks/fermion_force_asqtad_qdp.c
@@ -286,6 +291,10 @@ ks_multicg_qop_milc_D.o: ../generic_ks/ks_multicg_qop_milc_D.c ../generic_ks/ks_
 	${CC} -c ${CFLAGS} $<
 ks_multicg_qop_milc_F.o: ../generic_ks/ks_multicg_qop_milc_F.c ../generic_ks/ks_multicg_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
+ks_source.o: ../generic_ks/ks_source.c
+	${CC} -c ${CFLAGS} $<
+ks_utilities.o: ../generic_ks/ks_utilities.c
+	${CC} -c ${CFLAGS} $<
 load_qop_asqtad_coeffs_D.o: ../generic_ks/load_qop_asqtad_coeffs_D.c ../generic_ks/load_qop_asqtad_coeffs_P.c
 	${CC} -c ${CFLAGS} $<
 load_qop_asqtad_coeffs_F.o: ../generic_ks/load_qop_asqtad_coeffs_F.c ../generic_ks/load_qop_asqtad_coeffs_P.c
@@ -364,7 +373,7 @@ G_KS_ALL_DEPEND_QDP = \
   ${G_KS_ALL_DEPEND}
 
 ${G_KS_ALL_QDP} : ${G_KS_ALL_DEPEND_QDP}
-su3_mat_op.o: su3_mat_op.h
+su3_mat_op.o: ../include/su3_mat_op.h
 
 d_congrad5_fn_1sum_qdp.o: ../generic_ks/d_congrad5_fn_1sum_qdp.c
 	${CC} -c ${CFLAGS} $<

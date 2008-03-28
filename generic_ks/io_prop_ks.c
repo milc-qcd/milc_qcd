@@ -236,6 +236,7 @@ ks_prop_file *setup_input_ksprop_file(char *filename)
     }
 
   pf->filename = filename;
+  pf->fp = NULL;
 
   /* Allocate space for the header */
 
@@ -249,18 +250,25 @@ ks_prop_file *setup_input_ksprop_file(char *filename)
       terminate(1);
     }
 
-  pf->header = ph;
-  pf->check.sum29 = 0;
-  pf->check.sum31 = 0;
+  pf->header       = ph;
+  pf->prop         = NULL;
+  pf->byterevflag  = 0;
+  pf->parallel     = 0;
+  pf->info_fp      = NULL;
+  pf->file_type    = FILE_TYPE_UNKNOWN;
+#ifdef HAVE_QIO
+  pf->infile       = NULL;
+  pf->outfile      = NULL;
+#endif
 
   return pf;
 }
 
 /*----------------------------------------------------------------------*/
 
-/* Set up the output prop file an prop header structure */
+/* Set up the output prop file and prop header structure */
 
-ks_prop_file *setup_output_ksprop_file()
+ks_prop_file *setup_output_ksprop_file(void)
 {
   ks_prop_file *pf;
   ks_prop_header *ph;
@@ -291,6 +299,8 @@ ks_prop_file *setup_output_ksprop_file()
   /* Initialize */
   pf->check.sum29 = 0;
   pf->check.sum31 = 0;
+  pf->prop        = NULL;
+  pf->file_type   = FILE_TYPE_UNKNOWN;
 
   /* Load header values */
 
@@ -372,7 +382,6 @@ ks_prop_file *w_serial_ks_i(char *filename)
 
   kspf->filename       = filename;
   kspf->byterevflag    = 0;            /* Not used for writing */
-  kspf->rank2rcv       = NULL;         /* Not used for writing */
   kspf->parallel       = SERIAL;
 
   /* Node 0 writes ascii info file */
@@ -413,7 +422,7 @@ void write_checksum_ks(int parallel, ks_prop_file *kspf)
 void w_serial_ks(ks_prop_file *kspf, int color, field_offset src_site,
 		 su3_vector *src_field)
 {
-  /* kspf  = file descriptor as opened by w_serial_w_i 
+  /* kspf  = file descriptor as opened by ks_serial_w_i 
      src   = field offset for propagator su3 vector (type su3_vector)  */
 
   FILE *fp = NULL;
@@ -798,15 +807,6 @@ ks_prop_file *r_serial_ks_i(char *filename)
   /* Node 0 broadcasts the header structure to all nodes */
   
   broadcast_bytes((char *)ksph,sizeof(ks_prop_header));
-
-  /* Node 0 reads site list and assigns kspf->rank2rcv */
-
-  /* No need for a read_site_list_w equivalent procedure here
-     since only NATURAL_ORDER is presently supported */
-  /** read_site_list_ks(SERIAL,kspf); **/
-  /*  instead... */
-  kspf->rank2rcv = NULL;
-
   return kspf;
 
 }/* r_serial_ks_i */
@@ -942,13 +942,9 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
   status = 0;
   for(rcv_rank=0; rcv_rank<volume; rcv_rank++)
     {
-      /* If file is in coordinate natural order, receiving coordinate
-         is given by rank Otherwise, it is found in the table */
+      /* If file is always in coordinate natural order */
       
-      if(kspf->header->order == NATURAL_ORDER)
-	rcv_coords = rcv_rank;
-      else
-	rcv_coords = kspf->rank2rcv[rcv_rank];
+      rcv_coords = rcv_rank;
 
       x = rcv_coords % nx;   rcv_coords /= nx;
       y = rcv_coords % ny;   rcv_coords /= ny;
@@ -1056,7 +1052,7 @@ int r_serial_ks(ks_prop_file *kspf, int color, field_offset dest_site,
 	    {
 	      printf("%s: Checksum violation color %d file %s\n",
 		     myname, kspf->check.color, kspf->filename);
-	      printf("Computed %x %x.  Read %x %x.\n",
+	      printf("Computed checksum %x %x.  Read %x %x.\n",
 		     test_kspc.sum29, test_kspc.sum31,
 		     kspf->check.sum29, kspf->check.sum31);
 	    }
@@ -1102,6 +1098,9 @@ void r_serial_ks_f(ks_prop_file *kspf)
 /* Close the file and free associated structures */
 {
   g_sync();
+
+  if(kspf == NULL)return;
+
   if(this_node==0)
     {
       if(kspf->parallel == PARALLEL)
@@ -1112,8 +1111,13 @@ void r_serial_ks_f(ks_prop_file *kspf)
       fflush(stdout);
     }
   
-  if(kspf->rank2rcv != NULL) free(kspf->rank2rcv);
-  free(kspf->header);
+#ifdef HAVE_QIO
+  if(kspf->infile   != NULL){
+    QIO_close_read(kspf->infile);
+  }
+#endif
+  if(kspf->header   != NULL)free(kspf->header);
+  if(kspf->prop     != NULL)free(kspf->prop);
   free(kspf);
   
 } /* r_serial_ks_f */
@@ -1172,7 +1176,6 @@ ks_prop_file *w_ascii_ks_i(char *filename)
   /* Assign remaining values to propagator file structure */
   kspf->parallel = 0;
   kspf->filename       = filename;
-  kspf->rank2rcv       = NULL;         /* Not used for writing */
   kspf->byterevflag    = 0;            /* Not used for writing */
 
   /* Node 0 writes info file */
@@ -1301,7 +1304,6 @@ ks_prop_file *r_ascii_ks_i(char *filename)
   /* File opened for serial reading */
   kspf->parallel = 0;
   kspf->byterevflag = 0;  /* Unused for ASCII */
-  kspf->rank2rcv = NULL;  /* Unused for ASCII */
 
   /* Indicate coordinate natural ordering */
   ksph->order = NATURAL_ORDER;
@@ -1555,7 +1557,6 @@ void w_serial_ksprop_tt( char *filename, field_offset prop)
     
     kspf->filename       = filename;
     kspf->byterevflag    = 0;            /* Not used for writing */
-    kspf->rank2rcv       = NULL;         /* Not used for writing */
     kspf->parallel       = SERIAL;
     
 
@@ -1698,7 +1699,6 @@ void w_ascii_ksprop_tt( char *filename, field_offset prop)
 
     kspf->filename       = filename;
     kspf->byterevflag    = 0;            /* Not used for writing */
-    kspf->rank2rcv       = NULL;         /* Not used for writing */
     kspf->parallel       = SERIAL;
 
     /* Synchronize */  

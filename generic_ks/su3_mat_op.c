@@ -5,18 +5,9 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "../generic_ks/su3_mat_op.h" // AB block
+#include "generic_ks_includes.h"      /* definitions files and prototypes */
+#include "../include/su3_mat_op.h"
 
-// TEMPORARY
-//#include "generic_hisq_includes.h"      /* definitions files and prototypes */
-
-
-/* MILC includes */
-//#include "su3.h"
-
-
-/* Temporary local includes */
-#include "su3_mat_op.h"
 
 
 /* Frobenius (or Hilbert-Schmidt) norm of a matrix A:
@@ -201,9 +192,41 @@ void su3_spec_unitarize( su3_matrix *a, su3_matrix *b, complex *detA ) {
 }
 
 
+/* Special unitarize a unitary matrix:
+   B=A/det(A)^1/3
+   A is a U(3) matrix and B is an SU(3) matrix.
+   This function also returns det(A) */
+void su3_spec_unitarize_index( su3_matrix *a, su3_matrix *b, complex *detA, 
+           int index_site, int index_dir ) {
+  complex s;
+  Real argdet, r;
+
+  (*detA) = det_su3( a );
+
+  /* take third root, choose argument in [-pi/3, pi/3) branch */
+  argdet = carg( detA );
+  r = cabs( detA );
+  r = exp( log(r)/3 );
+  argdet /= 3;
+
+  /* multiply the matrix by inverse root */
+  s.real = cos( argdet ) / r;
+  s.imag = -sin( argdet ) / r;
+  c_scalar_mult_su3mat( a, &s, b );
+#ifdef HISQ_REUNITARIZATION_DEBUG
+   /* store SU(3) matrices */
+  if( lattice[index_site].on_step_W[index_dir] < global_current_time_step ) {
+    lattice[index_site].on_step_W[index_dir] = global_current_time_step;
+    su3mat_copy( &(lattice[index_site].Wlink[index_dir]),
+                 &(lattice[index_site].Wlink_previous[index_dir]) );
+    su3mat_copy( b, &(lattice[index_site].Wlink[index_dir]) );
+  }
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+}
+
+
 /* Derivative of the unitarized matrix with respect to the original:
-   dW/dU and d(W^+)/dU (at fixed U^+ !), where W=U(U^+U)^-1/2
-   EXPLAIN indexing convention!!! */
+   dW/dU and d(W^+)/dU (at fixed U^+ !), where W=U(U^+U)^-1/2 */
 void su3_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu ) {
   su3_matrix up, um, a, b, up12, um12, upu, umu, dw, dwdag;
   int i, j, m, n;
@@ -214,8 +237,7 @@ void su3_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu ) {
   /* loop on components of the original matrix U */
   for( i=0; i<3; i++) {
     for (j=0; j<3; j++) {
-      /* temporary storage
-         THIS CAN BE SPEEDED UP LATER */
+      /* temporary storage */
       su3mat_copy( u, &up );
       su3mat_copy( u, &um );
 
@@ -234,17 +256,11 @@ void su3_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu ) {
       /* ** dW/dU ** */
       /* Upu=Up * (U^+ Up)^-1/2 */
       mult_su3_nn( &up, &up12, &upu );
-//      fprintf( stdout, "upu\n");
-//      dumpmat( &upu );
 
       /* Umu=Um * (U^+ Um)^-1/2 */
       mult_su3_nn( &um, &um12, &umu );
-//      fprintf( stdout, "umu\n");
-//      dumpmat( &umu );
 
       sub_su3_matrix( &upu, &umu, &dw );
-//      fprintf( stdout, "dw\n");
-//      dumpmat( &dw );
 
       /* ** dW^+/dU ** */
       mult_su3_na( &up12, u, &upu );
@@ -267,8 +283,9 @@ void su3_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu ) {
 
 
 /* Derivative of the special unitarized matrix with respect to the original:
-   dW/dU and d(W^+)/dU (at fixed U^+ !), where W=V/det(V)^1/3, V=U(U^+U)^-1/2
-   EXPLAIN indexing convention!!! */
+   dW/dU and d(W^+)/dU (at fixed U^+ !), where W=V/det(V)^1/3, V=U(U^+U)^-1/2.
+   THIS IS LESS STABLE THAN CALCULATING THE DERIVATIVE OF U(3) MATRIX AND
+   THEN USING ANALYTIC EXPRESSION FOR DERIVATIVE OF W=V/det(V)^1/3 */
 void su3_spec_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu ) {
   su3_matrix up, um, a, b, up12, um12, upu, umu, dw, dwdag, upu2, umu2;
   int i, j, m, n;
@@ -280,8 +297,7 @@ void su3_spec_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu )
   /* loop on components of the original matrix U */
   for( i=0; i<3; i++) {
     for (j=0; j<3; j++) {
-      /* temporary storage
-         THIS CAN BE SPEEDED UP LATER */
+      /* temporary storage */
       su3mat_copy( u, &up );
       su3mat_copy( u, &um );
 
@@ -300,20 +316,14 @@ void su3_spec_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu )
       /* ** dW/dU ** */
       /* Upu=Up * (U^+ Up)^-1/2 */
       mult_su3_nn( &up, &up12, &upu2 );
-//      fprintf( stdout, "upu\n");
-//      dumpmat( &upu );
 
       /* Umu=Um * (U^+ Um)^-1/2 */
       mult_su3_nn( &um, &um12, &umu2 );
-//      fprintf( stdout, "umu\n");
-//      dumpmat( &umu );
 
       su3_spec_unitarize( &upu2, &upu, &det );
       su3_spec_unitarize( &umu2, &umu, &det );
 
       sub_su3_matrix( &upu, &umu, &dw );
-//      fprintf( stdout, "dw\n");
-//      dumpmat( &dw );
 
       /* ** dW^+/dU ** */
       mult_su3_na( &up12, u, &upu2 );
@@ -458,8 +468,7 @@ Real su3_t4_norm_frob( su3_tensor4 *a ) {
    U -- original matrix,
    W -- U(3) matrix out of U (could be W=U(U^+U)^-1/2 or Re{Tr{WU^+}}=max,
    V=W/det(W)^1/3
-   W^-1=W^+ is used here(!)
-   EXPLAIN as in Wong, Woloshyn notes!!! */
+   W^-1=W^+ is assumed */
 void su3_unit_der_spec( su3_matrix *u, su3_matrix *w, su3_matrix *wdag, 
                         su3_tensor4 *dwdu, su3_tensor4 *dwdagdu,
                         su3_tensor4 *dvdu, su3_tensor4 *dvdagdu ) {
@@ -584,19 +593,13 @@ void su3_unit_der_reim( su3_matrix *u,
       /* Upu=Up * (Up^+ Up)^-1/2 */
       mult_su3_nn( &upre, &up12re, &upure );
       mult_su3_nn( &upim, &up12im, &upuim );
-//      fprintf( stdout, "upu\n");
-//      dumpmat( &upu );
 
       /* Umu=Um * (Um^+ Um)^-1/2 */
       mult_su3_nn( &umre, &um12re, &umure );
       mult_su3_nn( &umim, &um12im, &umuim );
-//      fprintf( stdout, "umu\n");
-//      dumpmat( &umu );
 
       sub_su3_matrix( &upure, &umure, &dwre );
       sub_su3_matrix( &upuim, &umuim, &dwim );
-//      fprintf( stdout, "dw\n");
-//      dumpmat( &dw );
 
       /* ** dW^+/dU ** */
       mult_su3_na( &up12re, &upre, &upure );
@@ -798,47 +801,6 @@ void su3_unit_der_rational( su3_matrix *V, su3_tensor4 *dwdv, su3_tensor4 *dwdag
             (dwdagdv->t4[p][r][s][q]).real -= ftmp4.real;
             (dwdagdv->t4[p][r][s][q]).imag -= ftmp4.imag;
           }
-//          CMUL( Kl[l-1].e[p][r], Kl[l-1].e[s][q], ftmp );
-//          (B4.t4[p][r][s][q]).real += c_l_SU3_UNIT_RAT[l] * ftmp.real;
-//          (B4.t4[p][r][s][q]).imag += c_l_SU3_UNIT_RAT[l] * ftmp.imag;
-        }
-      }
-    }
-  }
-}
-
-
-
-/* Derivative dW/dY, dW^+/dY, where Y is U(3) matrix,
-   W=Y/(detY)^1/3 */
-void su3_der_detWY( su3_matrix *y, su3_tensor4 *dwdy, su3_tensor4 *dwdagdy ) {
-  int i, j, m, n;
-  su3_matrix ydag;
-  complex temp1, temp2;
-  // TODO: add calculation of the determinant!!!
-
-  su3_adjoint( y, &ydag );
-
-  for( i=0; i<3; i++) {
-    for( j=0; j<3; j++) {
-      for( m=0; m<3; m++) {
-        for( n=0; n<3; n++) {
-          if( (i==m) && (j==n) ) {
-            dwdy->t4[i][m][n][j].real = 1.0;
-          }
-          else {
-            dwdy->t4[i][m][n][j].real = 0.0;
-          }
-          dwdy->t4[i][m][n][j].imag = 0.0;
-          CMUL( y->e[i][j], ydag.e[n][m], temp1 );
-//          dwdy->t4[i][m][n][j].real -= temp1.real/3;
-//          dwdy->t4[i][m][n][j].imag = -temp1.imag/3;
-          CMUL( ydag.e[i][m], ydag.e[n][j], temp1 );
-          CMUL( ydag.e[i][j], ydag.e[n][m], temp2 );
-//          dwdagdy->t4[i][m][n][j].real = -temp1.real/1 - temp2.real/3;
-//          dwdagdy->t4[i][m][n][j].imag = -temp1.imag/1 - temp2.imag/3;
-          dwdagdy->t4[i][m][n][j].real = -temp1.real/1;
-          dwdagdy->t4[i][m][n][j].imag = -temp1.imag/1;
         }
       }
     }
@@ -852,6 +814,7 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
   su3_matrix Q, Q2, Q3, S1, S2;
   Real c0, c1, c2, S, S3, R, R2, CQ3, RoS, theta, theta3, pi23, denom;
   Real g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
+  int i, j;
 
 
   /* Hermitian matrix: Q=V^+ V */
@@ -881,10 +844,9 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
     CQ3 = S*S*S;
     S = sqrt(S);
     S3 = S*S*S;
-//    printf( "S3=%18.12g\n",S3 );
-//    printf( "R=%18.12g\n",R );
     /* treat possible underflow: R/S^3/2>1.0 leads to acos giving NaN */
-    if( R2>CQ3 ) {
+    RoS = R/S3;
+    if( !( fabs(RoS)<1.0 ) ) {
       if( R>0 ) {
         theta = 0.0;
       }
@@ -893,10 +855,18 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
       }
     } 
     else {
-      RoS = R/S3;
       theta = acos( RoS );
-      if(isnan(theta)){printf("Hit NaN in su3_unitarize_analytic()\n"); terminate(0);}
-//    printf( "RoS=%18.12g\n",RoS );
+      if(isnan(theta)){
+        printf("Hit NaN in su3_unitarize_analytic()\n");
+        printf("RoS=%24.18g\n",RoS);
+        printf("Matrix V (row-wise):\n");
+        for( i=0; i<3; i++ ) {
+          for( j=0; j<3; j++ ) {
+            printf( "%24.18g %24.18g\n", V->e[i][j].real, V->e[i][j].imag );
+          }
+        }
+        terminate(0);
+      }
     }
 
     /* eigenvalues of Q */
@@ -943,10 +913,128 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
 }
 
 
+/* Analytic unitarization, Hasenfratz, Hoffmann, Schaefer, JHEP05 (2007) 029 */
+void su3_unitarize_analytic_index( su3_matrix *V, su3_matrix *W, int index_site, int index_dir ) {
+  su3_matrix Q, Q2, Q3, S1, S2;
+  Real c0, c1, c2, S, S3, R, R2, CQ3, RoS, theta, theta3, pi23, denom;
+  Real g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
+  int i, j;
+
+
+  /* Hermitian matrix: Q=V^+ V */
+  mult_su3_an( V, V, &Q );
+
+  /* Q^2 */
+  mult_su3_nn( &Q, &Q, &Q2 );
+
+  /* Q^3 */
+  mult_su3_nn( &Q2, &Q, &Q3 );
+
+  /* (real) traces */
+  c0 = Q.e[0][0].real + Q.e[1][1].real + Q.e[2][2].real;
+  c1 = ( Q2.e[0][0].real + Q2.e[1][1].real + Q2.e[2][2].real ) / 2;
+  c2 = ( Q3.e[0][0].real + Q3.e[1][1].real + Q3.e[2][2].real ) / 3;
+
+  S = c1/3 - c0 * (c0/18);
+  if( fabs(S)<SU3_UNIT_ANALYTIC_EPS ) {
+    /* eigenvalues of Q */
+    g0 = c0/3;
+    g1 = c0/3;
+    g2 = c0/3;
+  }
+  else {
+    R = c2/2 - c0 * (c1/3) + c0 * c0 * (c0/27);
+    R2 = R*R;
+    CQ3 = S*S*S;
+    S = sqrt(S);
+    S3 = S*S*S;
+    /* treat possible underflow: R/S^3/2>1.0 leads to acos giving NaN */
+    RoS = R/S3;
+#ifdef HISQ_REUNITARIZATION_DEBUG
+   /* DEBUG: set internal variable */
+    lattice[index_site].RoS[index_dir]=RoS;
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+    if( !( fabs(RoS)<1.0 ) ) {
+      if( R>0 ) {
+        theta = 0.0;
+      }
+      else {
+        theta = MILC_AB_PI;
+      }
+    } 
+    else {
+      theta = acos( RoS );
+      if(isnan(theta)){
+        printf("Hit NaN in su3_unitarize_analytic()\n");
+        printf("RoS=%24.18g\n",RoS);
+        printf("Matrix V (row-wise):\n");
+        for( i=0; i<3; i++ ) {
+          for( j=0; j<3; j++ ) {
+            printf( "%24.18g %24.18g\n", V->e[i][j].real, V->e[i][j].imag );
+          }
+        }
+        terminate(0);
+      }
+    }
+
+    /* eigenvalues of Q */
+    theta3 = theta/3;
+    pi23 = MILC_AB_TPI / 3;
+    g0 = c0/3 + 2 * S * cos( theta3 );
+    g1 = c0/3 + 2 * S * cos( theta3 + pi23 );
+    g2 = c0/3 + 2 * S * cos( theta3 + 2*pi23 );
+  }
+
+  /* roots of eigenvalues */
+  g0sq = sqrt( g0 );
+  g1sq = sqrt( g1 );
+  g2sq = sqrt( g2 );
+
+  /* symmetric combinations */
+  us = g1sq + g2sq;
+  ws = g1sq * g2sq;
+  vs = g0sq * us + ws;
+  us += g0sq;
+  ws *= g0sq;
+
+  if( ws < SU3_UNIT_ANALYTIC_EPS ) {
+    printf( "WARNING: su3_unitarize_analytic: ws is too small!\n" );
+  }
+
+  denom = ws * ( us*vs - ws );
+
+  /* constants in inverse root expression */
+  f0 = ( us*vs*vs - ws*(us*us+vs) ) / denom;
+  f1 = ( 2*us*vs - ws - us*us*us ) / denom;
+  f2 = us / denom;
+
+  /* assemble inverse root: Q^-1/2 = f0 + f1*Q + f2*Q^2 */
+  scalar_mult_su3_matrix( &Q2, f2, &S1 );
+  scalar_mult_add_su3_matrix( &S1, &Q, f1, &S2 );
+  S2.e[0][0].real += f0;
+  S2.e[1][1].real += f0;
+  S2.e[2][2].real += f0;
+
+  /* W = V*S2 */
+  mult_su3_nn( V, &S2, W );
+
+#ifdef HISQ_REUNITARIZATION_DEBUG
+   /* calculate and store the phase of U(3) matrices */
+  complex detW;
+  detW = det_su3( W );
+  Real argdet = carg( &detW );
+  if( lattice[index_site].on_step_Y[index_dir] < global_current_time_step ) {
+    lattice[index_site].on_step_Y[index_dir] = global_current_time_step;
+    lattice[index_site].phase_Y_previous[index_dir] =
+      lattice[index_site].phase_Y[index_dir]; // previous phase in Y
+    lattice[index_site].phase_Y[index_dir] = argdet; // current phase in Y
+  }
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+}
+
 
 /* Analytic derivative of the unitarized matrix with respect to the original:
-   dW/dV and d(W^+)/dV, where W=V(V^+V)^-1/2
-   EXPLAIN indexing convention!!! */
+   dW/dV and d(W^+)/dV, where W=V(V^+V)^-1/2 */
 void su3_unit_der_analytic( su3_matrix *V, 
                su3_tensor4 *dwdv, su3_tensor4 *dwdagdv ) {
   su3_matrix Q, Q2, Q3, S1, S2, W, Q12;
@@ -990,10 +1078,9 @@ void su3_unit_der_analytic( su3_matrix *V,
     CQ3 = S*S*S;
     S = sqrt(S);
     S3 = S*S*S;
-//    printf( "S3=%18.12g\n",S3 );
-//    printf( "R=%18.12g\n",R );
     /* treat possible underflow: R/S^3/2>1.0 leads to acos giving NaN */
-    if( R2>CQ3 ) {
+    RoS = R/S3;
+    if( !( fabs(RoS)<1.0 ) ) {
       if( R>0 ) {
         theta = 0.0;
       }
@@ -1002,9 +1089,19 @@ void su3_unit_der_analytic( su3_matrix *V,
       }
     }
     else {
-      RoS = R/S3;
       theta = acos( RoS );
-//    printf( "RoS=%18.12g\n",RoS );
+//      if(isnan(theta)){printf("Hit NaN in su3_unit_der_analytic()\n"); terminate(0);}
+      if(isnan(theta)){
+        printf("Hit NaN in su3_unit_der_analytic()\n");
+        printf("RoS=%24.18g\n",RoS);
+        printf("Matrix V (row-wise):\n");
+        for( i=0; i<3; i++ ) {
+          for( j=0; j<3; j++ ) {
+            printf( "%24.18g %24.18g\n", V->e[i][j].real, V->e[i][j].imag );
+          }
+        }
+        terminate(0);
+      }
     }
 
     /* eigenvalues of Q */
@@ -1048,9 +1145,6 @@ void su3_unit_der_analytic( su3_matrix *V,
   /* W = V*Q12 */
   mult_su3_nn( V, &Q12, &W );
 
-//  printf("inside derivative analytic\n");
-//  dumpmat( &W );
-
   denom3 = 2*denom*denom*denom;
 
   /* derivatives of coefficients: B_ij=df_i/dc_j */
@@ -1089,19 +1183,6 @@ void su3_unit_der_analytic( su3_matrix *V,
   b22 = -ws*u4 -v2*u3 +3*vs*ws*u2 -3*w2*us;
   b22 /= denom3;
 
-//  printf("inside derivative analytic\n");
-//  printf("u = %20.12f\n", us);
-//  printf("v = %20.12f\n", vs);
-//  printf("w = %20.12f\n", ws);
-
-//  printf("inside derivative analytic\n");
-//  printf("b00 = %20.12f\n", b00);
-//  printf("b01 = %20.12f\n", b01);
-//  printf("b02 = %20.12f\n", b02);
-//  printf("b11 = %20.12f\n", b11);
-//  printf("b12 = %20.12f\n", b12);
-//  printf("b22 = %20.12f\n", b22);
-
   /* ** create several building blocks for derivative ** */
   mult_su3_nn( V, &Q, &VQ );
   mult_su3_na( &Q, V, &QVd );
@@ -1118,9 +1199,6 @@ void su3_unit_der_analytic( su3_matrix *V,
   scalar_mult_su3_matrix( &QVd, b12, &S1 );
   scalar_mult_add_su3_matrix( &S1, &QQVd, b22, &S2 );
   scalar_mult_add_su3_matrix( &S2, &Vd, b02, &SVd );
-
-//  printf("inside derivative analytic\n");
-//  dumpmat( &PVd );
 
   /* assemble the derivative rank 4 tensor */
   for( i=0; i<3; i++) {
@@ -1164,6 +1242,24 @@ void su3_unit_der_analytic( su3_matrix *V,
           der.imag += f2 * ( ctmp.imag + ctmp2.imag );
           dwdagdv->t4[i][m][n][j].real = der.real;
           dwdagdv->t4[i][m][n][j].imag = der.imag;
+        }
+      }
+    }
+  }
+}
+
+
+
+/* copy rank 4 tensor: a -> b */
+void su3t4_copy( su3_tensor4 *a, su3_tensor4 *b ) {
+  int i, j, k, l;
+
+  for( i=0; i<3; i++ ) {
+    for( j=0; j<3; j++ ) {
+      for( k=0; k<3; k++ ) {
+        for( l=0; l<3; l++ ) {
+          b->t4[i][j][k][l].real = a->t4[i][j][k][l].real;
+          b->t4[i][j][k][l].imag = a->t4[i][j][k][l].imag;
         }
       }
     }

@@ -89,6 +89,8 @@ int multimass_inverter( params_mminv *mminv, ferm_links_t *fn )
   }
 
   /* loop over "source" time slice */
+  /* Initialize for I/O*/
+  init_ksqs(&ksqksource);
   for(src_count=0; src_count<mminv->n_sources; src_count++){
     x_source = mminv->r0[src_count][0];
     y_source = mminv->r0[src_count][1];
@@ -103,6 +105,11 @@ int multimass_inverter( params_mminv *mminv, ferm_links_t *fn )
     }
 
     /* point source at spatial origin */
+    ksqksource.type = POINT;
+    ksqksource.x0 = x_source;
+    ksqksource.y0 = y_source;
+    ksqksource.z0 = z_source;
+    ksqksource.t0 = t_source;
     for(color=0;color<3;color++){
 	    clear_latvec( F_OFFSET(quark_source), EVENANDODD );
 
@@ -187,13 +194,14 @@ int multimass_inverter( params_mminv *mminv, ferm_links_t *fn )
 	  s->propmat[2] = quark_props[j+2*nmasses][i];
         }
         /* save KS propagator if requested */
-	/* Create record XML.  Substitute string until we have XML support */
-	snprintf(recxml,MAX_RECXML,"\nmass %g\nt_source %d\n",masses[j],
-		 t_source);
-	save_ksprop_from_site( kssaveflag, kssavefile_tmp, recxml, 
-			       F_OFFSET(propmat), 0);
+	/* Create record XML.  Use Ersatz string until we have XML support */
+	snprintf(recxml,MAX_RECXML,"\nmass %g\nx_source %d\ny_source %d\nz_source %d\nt_source %d\n",
+		 masses[j], x_source, y_source, z_source, t_source);
+	save_ksprop_from_site3( kssaveflag, kssavefile_tmp, recxml, 
+				&ksqksource, F_OFFSET(propmat), 0);
    } /* end loop on j (masses) */
   } /* end loop on src_count */
+  clear_ksqs(&ksqksource);
 
 
   /* Sum propagator arrays over nodes */

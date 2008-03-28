@@ -213,10 +213,10 @@ int spectrum_hybrids( Real mass, field_offset temp, Real tol )
 /*TEMP**
 { double ssplaq,stplaq;
 d_plaquette(&ssplaq,&stplaq);
-printf("ORIGINAL PLAQ:  %e  %e\n",ssplaq,stplaq);
+node0_printf("ORIGINAL PLAQ:  %e  %e\n",ssplaq,stplaq);
 FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++)s->link[dir] = s->longlink[dir];
 d_plaquette(&ssplaq,&stplaq);
-printf("SMEAR PLAQ:  %e  %e\n",ssplaq,stplaq);
+node0_printf("SMEAR PLAQ:  %e  %e\n",ssplaq,stplaq);
 exit(0);
 }**END TEMP*/
   make_field_strength(F_OFFSET(longlink[0]), F_OFFSET(field_strength[0]));
