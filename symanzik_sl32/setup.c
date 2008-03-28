@@ -172,6 +172,10 @@ int status;
 	/* beta */
 	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
 
+	/* no dynamical masses for pure gauge */
+	n_dyn_masses = 0;
+	dyn_flavors[0] = 0;
+
 	/* u0 */
 	IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
 

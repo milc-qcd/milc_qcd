@@ -11,6 +11,7 @@
    with loops up to side 2 in up to 2 directions.
 */
 
+#define MAX_DYN_MASSES 1
 #define N_SUBL32 0x20
 
 #endif	/* _DEFINES_H */

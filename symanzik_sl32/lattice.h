@@ -63,6 +63,8 @@ EXTERN  int volume;			/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,stepsQ,propinterval;
 EXTERN	Real beta,u0;
+EXTERN  int n_dyn_masses; // number of dynamical masses (zero here)
+EXTERN  int dyn_flavors[MAX_DYN_MASSES]; 
 EXTERN	Real epsilon;
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
