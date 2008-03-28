@@ -48,7 +48,7 @@ void write_appl_ksprop_info(FILE *fp)
 char *create_ks_XML()
 {
   char *xml;
-  Real *act_path_coeff = get_quark_path_coeff();
+  Real *act_path_coeff = ks_act_paths.act_path_coeff;
 #ifdef PERIODICBC
   char bc[] = "periodic";
 #else

@@ -109,9 +109,11 @@ EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,nrestart,propinterval;
+EXTERN  int dyn_flavors[MAX_DYN_MASSES];
 EXTERN  int nflavors1,nflavors2;  /* number of flavors of types 1 and 2 */
 EXTERN	Real epsilon;
 EXTERN  Real beta,mass1,mass2,u0;
+EXTERN  int n_dyn_masses;
 EXTERN  Real propmass;		/* this mass is used for writing propagator
 				   header */
 EXTERN	Real rsqmin,rsqprop;
@@ -126,6 +128,7 @@ EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  int kssaveflag; /* save KS propagator or not */
+EXTERN  ks_quark_source ksqksource;
 	/* forget_ks, save_ks_ascii, save_ks_serial, save_ks_serial_fm, save_ks_serial_tslice */
 	/* FORGET, SAVE_ASCII, SAVE_SERIAL, SAVE_SERIAL_FM, SAVE_SERIAL_TSLICE */
 EXTERN  char kssavefile[MAXFILENAME]; /* where to store KS prop */

@@ -20,5 +20,6 @@
 #define DIR3(dir) ((dir)+8)
 #define FORALL3UPDIR(dir) for(dir=X3UP; dir<=T3UP; dir++)
 
+#define MAX_DYN_MASSES 2
 #define MAX_FPI_NMASSES 32
 #endif /* _DEFINES_H */

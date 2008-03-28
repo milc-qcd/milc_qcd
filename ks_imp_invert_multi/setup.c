@@ -124,6 +124,8 @@ int prompt,status;
     iseed=par_buf.iseed;
     nflavors1=par_buf.nflavors1;
     nflavors2=par_buf.nflavors2;
+    dyn_flavors[0] = nflavors1;
+    dyn_flavors[1] = nflavors2;
     
     this_node = mynode();
     number_of_nodes = numnodes();
@@ -262,6 +264,7 @@ int readin(int prompt) {
     beta = par_buf.beta;
     mass1 = par_buf.mass1;
     mass2 = par_buf.mass2;
+    n_dyn_masses = 2;
     u0 = par_buf.u0;
     source_start = par_buf.source_start;
     source_inc = par_buf.source_inc;

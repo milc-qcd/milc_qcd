@@ -1,0 +1,99 @@
+Explanation of input parameters
+
+ prompt 0
+
+# The flavor counts are irrelevant.  They are only echoed.
+
+ nflavors1 2
+ nflavors2 1
+
+#  Lattice dimensions
+
+ nx 4
+ ny 4
+ nz 4
+ nt 8
+
+#  The fpi calculation includes a random wall source, so we need to seed
+#  the random number generator.  The seed is a 32-bit integer.
+
+ iseed 1234
+
+# The gauge coupling and sea quark masses are irrelevant.  They are only echoed.
+
+ beta 5.6
+ mass1 0.02
+ mass2 0.05
+
+# The tadpole factor
+
+ u0 1.0
+
+# CG parameters
+
+ max_cg_iterations 1000
+ max_cg_restarts 5
+
+
+#  The first stanza applies to the fpi calculation.
+
+#  CG tolerance as |resid|/|src|
+
+ error_for_propagator 1e-8
+
+#  Source time slices start at "source_start" 
+
+ source_start 0
+
+#   and increment by "source_inc" for a total of "n_sources" time
+#  slices.
+
+ source_inc 2
+ n_sources 1
+
+# List of valence masses for the fpi calculation
+
+ nmasses 2
+ mass 0.05
+ mass 0.02
+
+#  The next stanza applies to the "multimass inverter" subroutine that
+#  generates staggered propagators and computes light meson correlators
+#  between point sources and point and wall sinks.
+
+#  The number of sources
+
+ n_sources_mminv 1
+
+#  For each source the location of the point source (x,y,z,t). 
+
+ r0 0 0 0 0
+
+#  The valence masses.
+
+ nmasses_mminv 2
+ mass 0.05
+ mass 0.02
+
+#  The CG stopping condigion for the "multimass" calculation as
+#  |resid|/|src|.
+
+ error_for_propagator_mminv 1e-8
+
+# Starting lattice
+
+ reload_serial ../binary_samples/lat.sample.l4448.gf
+
+# Gauge fixing requirement
+
+ no_gauge_fix
+
+# Finishing lattice
+
+ forget
+
+# The stem for the KS propagator files, one for each source and valence
+# mass.
+
+ save_serial_fm_ksprop ks.test.l4448
+ 
