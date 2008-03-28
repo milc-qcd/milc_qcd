@@ -106,7 +106,7 @@ void cleanup_Matrix()
   if(!dslash_start)
     {
       /* cleanup_gathers(tags1,tags2); 
-	 cleanup_dslash_temps() ; */
+	 cleanup_dslash_wtemps() ; */
       free(temp) ;
     }
   dslash_start = 1 ;
