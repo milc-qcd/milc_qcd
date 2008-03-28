@@ -1,16 +1,12 @@
 #ifndef FILE_TYPES_H
 #define FILE_TYPES_H
 
-/* For tables of supported file types */
-typedef struct {
-  int type;
-  int32type magic_no;
-} file_type;
-
 /* LIME (SCIDAC/QIO)(all files) */
 /* Files may be identified by the record XML containing site data
    sizes and counts */
-#ifndef HAVE_QIO
+#if HAVE_QIO
+#include <qio.h>
+#else
 #define LIME_MAGIC_NO                0x456789ab /* decimal 1164413355
 						   see lime_defs.h */
 #endif
@@ -20,53 +16,68 @@ typedef struct {
    sizes and counts */
 #define IO_UNI_MAGIC                 0x71626434
 
-/* Gauge configuration file types */
+/* Magic numbers for MILC gauge configuration files */
 
 #define GAUGE_VERSION_NUMBER_V1      0xe7da  /* decimal 59354 Versions 1-4 */
 #define GAUGE_VERSION_NUMBER         0x4e87  /* decimal 20103 Versions 5-7 */
 #define GAUGE_VERSION_NUMBER_1996    0xd12a  /* decimal 53546 */
 #define GAUGE_VERSION_NUMBER_ARCHIVE 0x42454749  /* 1111836489 decimal */
 
-/* Wilson propagator file types */
+/* Magic numbers for MILC Wilson propagator file types (deprecated) */
 
 #define W_PROP_VERSION_NUMBER        0x31ed /* 12781 decimal Versions 5-7 */
 #define W_PROP_VERSION_NUMBER_1996   0xbca3 /* 48291 decimal */
 
-/* KS propagator file types */
+/* Magic numbers for MILC KS propagator file types */
 
 #define KSPROP_VERSION_NUMBER_V0     0x38339 /* 230201 decimal ca 2001 */
 #define KSPROP_VERSION_NUMBER        0x5aa9  /* 23209 decimal ca June 2002 */
 
-/* Tables */
+/* Coding for nonspecific types */
 
-/* Nonspecific types */
+#define FILE_TYPE_UNKNOWN        -1
+#define FILE_TYPE_FM              1
+#define FILE_TYPE_LIME            2
 
-#define FILE_TYPE_FM              0
-#define FILE_TYPE_LIME            1
+/* Coding for gauge field types */
 
-#define FILE_TYPE_GAUGE_V1       10
-#define FILE_TYPE_GAUGE_V5       11
-#define FILE_TYPE_GAUGE_1996     12
-#define FILE_TYPE_GAUGE_FNAL     13
-#define FILE_TYPE_GAUGE_ARCHIVE  14
-#define FILE_TYPE_GAUGE_SCIDAC   15
-#define N_GAUGE_TYPES             6
+#define FILE_TYPE_GAUGE_V5       10
+#define FILE_TYPE_GAUGE_FNAL     11
+#define FILE_TYPE_GAUGE_ARCHIVE  12
+#define FILE_TYPE_GAUGE_SCIDAC   13
+#define N_GAUGE_TYPES             4
 
-#define FILE_TYPE_W_PROP           20
-#define FILE_TYPE_W_PROP_1996      21
-#define FILE_TYPE_W_FMPROP         22
-#define FILE_TYPE_W_USQCD_C1D12    23
-#define FILE_TYPE_W_USQCD_DD_PAIRS 24
-#define FILE_TYPE_W_USQCD_CD_PAIRS 25   
-#define FILE_TYPE_W_USQCD_LHPC     26   
-#define N_WPROP_TYPES               7
+/* Coding for Wilson propagator types */
 
-#define FILE_TYPE_KSPROP     30
-#define FILE_TYPE_KSFMPROP   31
-#define FILE_TYPE_KSQIOPROP  32
-#define N_KSPROP_TYPES        3
+#define FILE_TYPE_W_FMPROP         20
+#define FILE_TYPE_W_USQCD_C1D12    21
+#define FILE_TYPE_W_USQCD_DD_PAIRS 22
+#define FILE_TYPE_W_USQCD_CD_PAIRS 23   
+#define FILE_TYPE_W_USQCD_LHPC     24   
+#define N_WPROP_TYPES               5
 
 /* For a Wilson propagator that was read and cached */
-#define FILE_TYPE_W_STORE  30
+#define FILE_TYPE_W_STORE  29
+
+/* Coding for staggered propagator types */
+
+#define FILE_TYPE_KS_PROP           30
+#define FILE_TYPE_KS_FMPROP         31
+#define FILE_TYPE_KS_USQCD_C1V3     32
+#define FILE_TYPE_KS_USQCD_VV_PAIRS 33
+#define FILE_TYPE_KS_USQCD_CV_PAIRS 34
+#define N_KSPROP_TYPES               5
+
+/* For a KS propagator that was read and cached */
+#define FILE_TYPE_KS_STORE  39
+
+/* Table of broad file types distinguishable by their magic numbers */
+/* To distinguish the FNAL and LIME subtypes requires further poking around */
+
+typedef struct {
+  int type;
+  int32type magic_no;
+} file_table;
+
 
 #endif

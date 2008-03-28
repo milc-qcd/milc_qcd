@@ -144,12 +144,14 @@ void measure_glueball_ops();
 void hvy_pot( field_offset links );
 
 /* io_detect.c */
-int io_detect(char *filename, file_type ft[], int ntypes);
+int get_file_type(char *filename);
+int io_detect(char *filename, file_table ft[], int ntypes);
 int io_detect_fm(char *filename);
 
 /* io_helpers.c */
 gauge_file *save_lattice( int flag, char *filename, char *stringLFN );
 gauge_file *reload_lattice( int flag, char *filename);
+int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
 int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ending_lattice( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN);
@@ -166,6 +168,12 @@ int get_vf( FILE *fp, int prompt, char *variable_name_string,
 int get_s( FILE *fp, int prompt, char *variable_name_string, char *value );
 int get_sn( FILE *fp, int prompt, char *variable_name_string, char *value );
 int get_prompt( FILE *fp, int *value );
+
+/* io_source_cmplx_fm.c */
+void r_source_cmplx_fm_to_site(char *filename, field_offset dest_site,
+			       int t0, int source_type);
+void r_source_cmplx_fm_to_field(char *filename, complex *dest_field,
+				int t0, int source_type);
 
 /* layout_*.c */
 int io_node(const int node);
@@ -253,9 +261,24 @@ int reunit_su3(su3_matrix *c);
 /* show_generic_opts.c */
 void show_generic_opts( void );
 
+/* Do Morninstar-Peardon stout smearing to construct unitary W from
+   smeared link V and unsmeared link U */
+void stout_smear(su3_matrix *W, su3_matrix *V, su3_matrix *U);
+
+
 #ifdef QCDOC
 void *qcdoc_alloc(size_t nbytes);
 void qfree(void *);
 #endif
+
+/* For quark source routines - both Wilson and KS */
+/* The Weyl representation types are included for w_source_h */
+enum source_type { 
+  UNKNOWN = 0, POINT, GAUSSIAN, CUTOFF_GAUSSIAN, CORNER_WALL, 
+  EVEN_WALL, EVENANDODD_WALL, RANDOM_VECTOR_WALL,
+  POINT_WEYL, CUTOFF_GAUSSIAN_WEYL, COVARIANT_GAUSSIAN,
+  COMPLEX_FIELD_FILE, COMPLEX_FIELD_FM_FILE, COMPLEX_FIELD_STORE,
+  VECTOR_FIELD_FILE, VECTOR_FIELD_STORE,
+  DIRAC_FIELD_FILE, DIRAC_FIELD_FM_FILE, DIRAC_FIELD_STORE } ;
 
 #endif	/* _GENERIC_H */

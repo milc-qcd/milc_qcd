@@ -44,7 +44,8 @@ typedef struct {
 /* Same for plain KS case */
 typedef struct {
   Real mass;
-} dirac_ks_param;
+  Real u0;
+} ks_param;
 
 #endif /* _GENERIC_QUARK_TYPES_H */
 

@@ -15,6 +15,36 @@
 #ifdef HAVE_QOP
 #include <qop.h>
 #endif
+#ifdef HAVE_QIO
+#include <qio.h>
+#endif
+
+#define ALL_T_SLICES -1
+#define MAXDESCRP 128
+#define MAXSRCLABEL 8
+
+/* Structure defining staggered quark source */
+/* There must be a color member */
+/* Add other members to suit the generic_ks code 
+   that builds the source.  Ignore the members you don't need. */
+typedef struct {
+  int type;           /* source type for most source builders */
+  char descrp[MAXDESCRP]; /* alpha description for most */
+  char label[MAXSRCLABEL]; /* Abbreviation of description */
+  int color;          /* source color */
+  int x0,y0,z0,t0;    /* source coordinates for most */ 
+  char source_file[MAXFILENAME]; /* file name for some sources */
+  int flag;           /* mode of reading or writing for some sources */
+  int file_initialized;  /* has source file been initialized? */
+  int mom[3];         /* momentum insertion for some actions */
+#ifdef HAVE_QIO
+  QIO_Reader *infile;
+  QIO_Writer *outfile;
+#endif
+  complex *c_src;     /* Pointer for complex source field storage */
+  su3_vector *cv_src; /* Pointer for SU3 vector source field storage */
+  int ksource;        /* Counter for a list of sources */
+} ks_quark_source;
 
 /* Structure specifying each rotation and reflection of each kind of
 	path.  */
@@ -34,12 +64,12 @@ typedef struct {
   Real *act_path_coeff;    /* For optimized Asqtad action */
   int num_q_paths;         /* For all actions */
   Q_path *q_paths;         /* For all actions */
+  Real naik_mass;             /* The mass last used in the Naik term */
 } ks_component_paths;
 
 typedef struct {
   ks_component_paths p1, p2;
   int umethod;
-  Real mass;             /* The mass last used in the p2 coefficients */
   int constructed;       /* Boolean */
 } ks_action_paths;
 
@@ -180,11 +210,25 @@ int ks_invert( /* Return value is number of iterations taken */
     field_offset dest,  /* type su3_vector or multi_su3_vector 
 			   (answer and initial guess) */
     int (*invert_func)(field_offset src, field_offset dest,
-			quark_invert_control *qic,
-			void *dmp),
+		       quark_invert_control *qic,
+		       Real mass, ferm_links_t *fn),
     quark_invert_control *qic, /* inverter control */
-    void *dmp                 /* Passthrough Dirac matrix parameters */
+    Real mass,
+    ferm_links_t *fn
     );
+
+int ks_invert_ksqs( /* Return value is number of iterations taken */
+    ks_quark_source *ksqs, /* source parameters */
+    int (*source_func_field)(su3_vector *src, 
+			      ks_quark_source *ksqs),  /* source function */
+    su3_vector *dest,  /* answer and initial guess */
+    int (*invert_func)(su3_vector *src, su3_vector *dest,
+		       quark_invert_control *qic, Real mass, 
+		       ferm_links_t *fn),
+    quark_invert_control *qic, /* inverter control */
+    Real mass,
+    ferm_links_t *fn
+		    );
 
 /* in ks_multicg.c */
 enum ks_multicg_opt_t {OFFSET, HYBRID, FAKE, REVERSE, REVHYB};
@@ -461,13 +505,57 @@ void invalidate_all_ferm_links(ferm_links_t *fn);
 /* jacobi.c */
 #include "../include/jacobi.h"
 
+/* ks_source.c */
+void alloc_ksqs_c_src(ks_quark_source *ksqs);
+void alloc_ksqs_cv_src(ks_quark_source *ksqs);
+void clear_ksqs(ks_quark_source *ksqs);
+int ask_ks_quark_source( FILE *fp, int prompt, int *type, char *descrp );
+int ask_output_ks_quark_source_file( FILE *fp, int prompt, 
+				     int *flag, int *source_type,
+				     int *t0, char *descrp, char *filename);
+int choose_usqcd_ks_file_type(int source_type);
+int get_ks_quark_source( FILE *fp, int prompt, ks_quark_source *ksqs );
+int get_ks_quark_sink( FILE *fp, int prompt, ks_quark_source *ksqs );
+void init_ksqs(ks_quark_source *ksqs);
+int ks_source_site(field_offset src, ks_quark_source *ksqs);
+int ks_source_field(su3_vector *src, ks_quark_source *ksqs);
+void ks_sink_site(field_offset snk, ks_quark_source *ksqs);
+void ks_sink_field(complex *snk, ks_quark_source *ksqs);
+void ks_sink_scalar(field_offset snk, ks_quark_source *ksqs);
+int ks_source_write(su3_vector *src, ks_quark_source *ksqs);
+void r_close_ks_source(ks_quark_source *ksqs);
+void r_open_ks_source(ks_quark_source *ksqs);
+void w_close_ks_source(ks_quark_source *ksqs);
+void w_open_ks_source(ks_quark_source *ksqs, char *fileinfo);
+
+/* ks_utilities.c */
+void clear_v_field(su3_vector *v);
+void clear_ksp_field(ks_prop_field ksp);
+su3_vector *create_v_field(void);
+ks_prop_field create_ksp_field(void);
+void copy_ksp_field(ks_prop_field kspcopy, ks_prop_field ksp);
+su3_vector *create_v_field(void);
+ks_prop_field create_ksp_field_copy(ks_prop_field k);
+void destroy_v_field(su3_vector *v);
+void destroy_ksp_field(ks_prop_field ksp);
+
 /* mat_invert.c */
 int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, ferm_links_t *fn );
+int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
+			quark_invert_control *qic,
+			Real mass, ferm_links_t *fn );
 int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, ferm_links_t *fn );
+int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
+			 quark_invert_control *qic,
+			 Real mass, ferm_links_t *fn );
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol, ferm_links_t *fn );
+void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
+			 Real tol, ferm_links_t *fn);
+void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
+			  Real tol, ferm_links_t *fn);
 
 /* mu.c and mu_fast.c */
 void M_derivatives(field_offset phi_off, field_offset xxx_off, 

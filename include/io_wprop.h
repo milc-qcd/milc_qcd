@@ -22,7 +22,7 @@
 #endif
 
 /**********************************************************************/
-/* Binary lattice formats                                             */
+/* Binary lattice formats  (deprecated)                               */
 /**********************************************************************/
 /* In version 5 we have two binary lattice file formats:
       serial files     Data written in coordinate natural order
@@ -31,11 +31,11 @@
       Further descriptive information is kept in a separate ASCII header
       file.  See below.
 
-      */
+*/
 
 
 /*--------------------------------------------------------------------*/
-/* version 5 binary file format */
+/* version 5 binary file format (deprecated) */
 
 #define MAX_TIME_STAMP 64
 #define MAX_SOURCE_SPINS 4
@@ -144,6 +144,7 @@ char *w_prop_info_keyword[] = {
       "record[10].checksum",
       "record[11].checksum",
       "source.description",
+      "source.filename",
       "source.size",
       "source.x",
       "source.y",
@@ -160,65 +161,6 @@ extern char *w_prop_info_keyword[];
 /* Used to create info file name */
 
 #define ASCII_W_PROP_INFO_EXT ".info"
-
-/**********************************************************************/
-/* 1996 Binary file format follows */
-/* Kept for compatibility */
-
-#define MAX_GAUGE_FIELD_DESCRIPT 200
-#define MAX_GAUGE_FIELD_PARAM 2
-#define MAX_DIRAC_DESCRIPT 200
-#define MAX_DIRAC_PARAM 3
-#define MAX_SOURCE_DESCRIPT 200
-#define MAX_SOURCE_PARAM 2
-#define IDENTITY_MAP -1
-#define NO_MAP -2
-
-/* Begin definition of header stuctures */
-
-/* Note that an effort is made to make all Realing point and integer
-   fields 32 bits long.  However, byte ordering may vary across
-   platforms, and no effort is made in writing the file to produce
-   a standard byte order.  The input routines attempt to compensate
-   for byte reversal automatically, by examining the magic number at
-   the beginning of the file */
-
-/* 1. Header comes first */
-
-typedef struct {
-  int32type magic_number;          /* Identifies file format */
-  int32type dims[4];               /* Full lattice dimensions */
-  int32type header_bytes;          /* Number of bytes for data belonging to
-				   this structure -- NOT necessarily 
-				   the length of this structure! */
-  int32type order;                 /* 0 means no coordinate list is attached
-				   and the values are in coordinate serial order
-				   Nonzero means that a coordinate list is attached,
-				   specifying the order of values */
-  struct {                      /* Gauge field parameters */
-    int32type n_descript;          /* Number of bytes in character string */
-    char   descript[MAX_GAUGE_FIELD_DESCRIPT];  /* Describes gauge field */
-    int32type n_param;             /* Number of gauge field parameters */
-    Real  param[MAX_GAUGE_FIELD_PARAM];        /* GF parameters */
-  } gauge_field;
-  struct {                      /* Dirac operator parameters */
-    int32type n_descript;          /* Number of bytes in character string */
-    char   descript[MAX_DIRAC_DESCRIPT];        /* Describes Dirac operator */
-    int32type n_param;             /* Number of Dirac operator parameters */
-    Real  param[MAX_DIRAC_PARAM];              /* Dirac parameters */
-  } dirac;
-  struct {                      /* Source parameters */
-    int32type n_descript;          /* Number of bytes in character string */
-    char   descript[MAX_SOURCE_DESCRIPT];      /* Describes source */
-    int32type n_param;             /* Number of source parameters */
-    struct {                    /* Source parameters */
-      int32type i1;
-      Real  c1;
-    } param;
-    int32type n_spins;             /* Number of source spins in this file */
-    int32type spins[MAX_SOURCE_SPINS];  /* List of source spin indices in file */
-  } source;
-} w_prop_header_1996 ;
 
 /* 2. Parallel files only:
 
@@ -240,12 +182,6 @@ typedef struct {
 /* 3. Next comes a check structure to introduce the propagator components
       for a given source spin and color and node number. */
 
-EXTERN struct {
-  int32type spin;
-  int32type color;
-  u_int32type checksum;
-} w_prop_check_1996;
-
 /* 4. Finally, the propagator Wilson vectors appear */
 
 /*----------------------------------------------------------------------*/
@@ -257,17 +193,15 @@ typedef struct {
   w_prop_header* header;        /* Pointer to header for file */
   char *         filename;      /* Pointer to file name string */
   int            byterevflag;   /* Byte reverse flag - used only for reading */
-  int32type *    rank2rcv;      /* File site list - used only for 
-				   serial reading */ 
   int            parallel;      /* 0 if file was opened for serial reading
 				   1 if opened for parallel reading */
   w_prop_check   check;         /* Current checksum, spin, color indices */
-  wilson_propagator *prop;      /* If we have to read the data in one lump*/
+  wilson_propagator *prop;      /* Cache for the full propagator if needed */
   int            file_type;     /* File format */
   FILE *         info_fp;       /* File pointer for info file */
 #ifdef HAVE_QIO
-  QIO_Reader     *infile;       /* For QIO reading */
-  QIO_Writer     *outfile;      /* For QIO writing */
+  QIO_Reader *   infile;        /* For QIO reading */
+  QIO_Writer *   outfile;       /* For QIO writing */
 #endif
 } w_prop_file;
 
@@ -311,6 +245,7 @@ void r_multidump_w_f(w_prop_file *wpf);
 
 w_prop_file *setup_input_w_prop_file(char *filename);
 w_prop_file *setup_output_w_prop_file();
+void clear_input_w_prop_file(w_prop_file *wpf);
 
 w_prop_file *w_ascii_w_i(char *filename);
 void w_ascii_w(w_prop_file *wpf, int spin, int color, 
@@ -377,34 +312,41 @@ void write_appl_w_prop_info(FILE *fp);
 
 /**********************************************************************/
 /* Prototypes for io_helpers_w.c */
+
+void interpret_usqcd_w_save_flag(int *volfmt, int *serpar, int flag);
+int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[]);
 w_prop_file *r_open_wprop(int flag, char *filename);
 w_prop_file *w_open_wprop(int flag, char *filename, int source_type);
-int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
-			     int spin, int color, field_offset dest, 
-			     int timing);
 int reload_wprop_sc_to_field( int flag, w_prop_file *wpf, 
 			      wilson_quark_source *wqs, int spin, int color, 
 			      wilson_vector *dest, int timing);
-int save_wprop_sc_from_site( int flag, w_prop_file *wpf, 
-			      int spin, int color, field_offset src, 
-			      int timing);
 int save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
+			      wilson_quark_source *wqs, int spin, int color, 
+			      wilson_vector *src, char *recinfo, int timing);
+int reload_wprop_to_field( int flag, char *filename, wilson_quark_source *wqs,
+			   wilson_propagator *dest, int timing);
+int reload_wprop_to_wp_field( int flag, char *filename, 
 			      wilson_quark_source *wqs,
-			      int spin, int color, wilson_vector *src, 
-			      char *recinfo, int timing);
-int reload_wprop_to_site( int flag, char *filename,
+			      wilson_prop_field dest, int timing);
+int save_wprop_from_field( int flag, char *filename, wilson_quark_source *wqs,
+			   wilson_propagator *src, char *recxml, int timing);
+int save_wprop_from_wp_field( int flag, char *filename, 
+			      wilson_quark_source *wqs,
+			      wilson_prop_field src, char *recxml, int timing);
+int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
+			     wilson_quark_source *wqs, int spin, int color, 
+			     field_offset dest, int timing);
+int save_wprop_sc_from_site( int flag, w_prop_file *wpf, 
+			     wilson_quark_source *wqs, int spin, int color, 
+			     field_offset src, int timing);
+int reload_wprop_to_site( int flag, char *filename, wilson_quark_source *wqs,
 			  field_offset dest, int timing);
-int reload_wprop_to_field( int flag, char *filename,
-			  wilson_propagator *dest, int timing);
-int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[]);
-int save_wprop_from_site( int flag, char *filename, char *recxml,
-			   field_offset src, int timing);
-int save_wprop_from_field( int flag, char *filename, char *recxml,
-			   wilson_propagator *src, int timing);
-int ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename );
-int ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename );
+int save_wprop_from_site( int flag, char *filename, wilson_quark_source *wqs,
+			  field_offset src, char *recxml, int timing);
 void r_close_wprop(int flag, w_prop_file *wpf);
 void w_close_wprop(int flag, w_prop_file *wpf);
+int ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename );
+int ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename );
 
 /* Prototpyes for io_prop_w_fm.c */
 w_prop_file *r_serial_w_fm_i(char *filename);
