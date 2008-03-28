@@ -36,7 +36,7 @@ MY_OBJECTS= \
   ks_info.o \
   setup.o
 
-G_OBJECTS0 = \
+G_OBJECTS = \
   check_unitarity.o \
   d_plaq4.o \
   gauge_stuff.o \
@@ -52,18 +52,16 @@ G_OBJECTS0 = \
   reunitarize2.o
 
 ifeq ($(strip ${QCDOC}),true)
-  G_OBJECTS1 = ${G_OBJECTS0} ploop2.o
+  G_OBJECTS += ploop2.o
 else
-  G_OBJECTS1 = ${G_OBJECTS0} ploop3.o
+  G_OBJECTS += ploop3.o
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS = ${G_OBJECTS1} io_scidac.o io_scidac_types.o
-else
-  G_OBJECTS = ${G_OBJECTS1}
+  G_OBJECTS += io_scidac.o io_scidac_types.o
 endif
 
-G_KS_OBJECTS0 = \
+G_KS_OBJECTS = \
   f_meas.o \
   grsource_imp.o \
   mat_invert.o \
@@ -72,10 +70,16 @@ G_KS_OBJECTS0 = \
   rephase.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_KS_OBJECTS = ${G_KS_OBJECTS0} io_scidac_ks.o
-else
-  G_KS_OBJECTS = ${G_KS_OBJECTS0}
+  G_KS_OBJECTS += io_scidac_ks.o
 endif
+
+G_W_OBJECTS = \
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_W_OBJECTS += io_scidac_w.o
+endif
+
+
 
 # Objects depending on architecture and software package 
 
@@ -183,7 +187,7 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_W_OBJECTS} ${LAYOUT} \
   ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
@@ -208,7 +212,8 @@ ALL_MAKES = \
    ../Make_template_qop \
    ../Make_template_scidac \
    ../generic/Make_template \
-   ../generic_ks/Make_template
+   ../generic_ks/Make_template \
+   ../generic_wilson/Make_template \
 
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
@@ -280,6 +285,9 @@ include ../generic/Make_template
 
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}

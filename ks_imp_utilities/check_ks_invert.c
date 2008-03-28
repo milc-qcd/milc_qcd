@@ -26,6 +26,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   Real tol_MdagM = 1e-7;
 #endif
   int iters = 0;
+  char srcfilexml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>KS Invert Test</title>";
   char srcrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Sample source color vector field</title>";
   char ansMrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test answer = M^-1 source</title>";
   char ansMdMrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test answer = answer = (MdaggerM)^-1 source</title>";
@@ -33,7 +34,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   /* Make a random source in phi if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
 #ifdef HAVE_QIO
-    restore_ks_vector_scidac_to_site (srcfile, src, QIO_SERIAL, 1);
+    restore_ks_vector_scidac_to_site (srcfile, QIO_SERIAL, src, 1);
 #else
     printf("QIO compilation is required for loading source or answer\n");
     terminate(1);
@@ -41,7 +42,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   }
   else if(srcflag == RELOAD_PARALLEL){
 #ifdef HAVE_QIO
-    restore_ks_vector_scidac_to_site (srcfile, src, QIO_PARALLEL, 1);
+    restore_ks_vector_scidac_to_site (srcfile, QIO_PARALLEL, src, 1);
 #else
     printf("QIO compilation is required for loading source or answer\n");
     terminate(1);
@@ -57,7 +58,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   /* Do the inversion if we aren't reloading the answer */
   if(ansflag == RELOAD_SERIAL){
 #ifdef HAVE_QIO
-    restore_ks_vector_scidac_to_site (ansfile, ans, QIO_SERIAL, 1);
+    restore_ks_vector_scidac_to_site (ansfile, QIO_SERIAL, ans, 1);
 #else
     printf("QIO compilation is required for loading source or answer\n");
     terminate(1);
@@ -65,7 +66,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   }
   else if(ansflag == RELOAD_PARALLEL){
 #ifdef HAVE_QIO
-    restore_ks_vector_scidac_to_site (ansfile, ans, QIO_PARALLEL, 1);
+    restore_ks_vector_scidac_to_site (ansfile, QIO_PARALLEL, ans, 1);
 #else
     printf("QIO compilation is required for loading source or answer\n");
     terminate(1);
@@ -103,15 +104,15 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   /* Save source and answer if requested */
 #ifdef HAVE_QIO
   if(srcflag == SAVE_SERIAL)
-    save_ks_vector_scidac_from_site(srcfile, srcrecxml, 
+    save_ks_vector_scidac_from_site(srcfile, srcfilexml, srcrecxml, 
 				    QIO_SINGLEFILE, QIO_SERIAL, src, 1);
   
   if(ansflag == SAVE_SERIAL){
     if(inverttype == INVERT_M)
-      save_ks_vector_scidac_from_site(ansfile, ansMrecxml, 
+      save_ks_vector_scidac_from_site(ansfile, srcfilexml, ansMrecxml, 
 				      QIO_SINGLEFILE, QIO_SERIAL, ans, 1);
     else
-      save_ks_vector_scidac_from_site(ansfile, ansMdMrecxml,
+      save_ks_vector_scidac_from_site(ansfile, srcfilexml, ansMdMrecxml,
 				      QIO_SINGLEFILE, QIO_SERIAL, ans, 1);
   }
 #endif

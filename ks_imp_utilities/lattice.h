@@ -103,6 +103,8 @@ EXTERN	int niter;
 EXTERN	int nrestart;
 EXTERN  Real beta;
 EXTERN  Real mass,u0;
+EXTERN  int dyn_flavors[1]; 
+EXTERN  int n_dyn_masses; // number of dynamical masses
 EXTERN	Real rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */

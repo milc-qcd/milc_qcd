@@ -109,6 +109,7 @@ initial_set()
   nt=par_buf.nt;
   iseed=par_buf.iseed;
 
+  dyn_flavors[0] = 1;
   this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
@@ -135,7 +136,7 @@ readin(int prompt)
     status=0;
 
     /* get couplings and broadcast to nodes	*/
-    /* beta, mass1, mass2 */
+    /* mass, u0 */
     IF_OK status += get_f(stdin, prompt,"mass", &par_buf.mass );
     IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
 
@@ -207,6 +208,7 @@ readin(int prompt)
   nrestart = par_buf.nrestart;
   rsqprop = par_buf.rsqprop;
   mass = par_buf.mass;
+  n_dyn_masses = 1;
   u0 = par_buf.u0;
   startflag = par_buf.startflag;
   saveflag = par_buf.saveflag;

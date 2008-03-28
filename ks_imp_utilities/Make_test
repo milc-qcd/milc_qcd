@@ -22,6 +22,8 @@ PROJS = \
 
 PRECLIST = 2
 
+ADDMACRO = "WANTQIO=true"
+
 PATTERNS = BEGIN RUNNING
 
 include ../Make_test_template

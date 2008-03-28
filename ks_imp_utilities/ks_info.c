@@ -1,7 +1,7 @@
 /*********************** ks_info.c *************************/
 /* MIMD version 7 */
 
-/* For ks_imp_dyn */
+/* For ks_imp_utilities */
 
 /* Application-dependent routine for generating metadata for KS
    propagator and source files */
@@ -16,7 +16,7 @@
 char *create_ks_XML()
 {
   char *xml;
-  Real *act_path_coeff = get_quark_path_coeff();
+  Real *act_path_coeff = ks_act_paths.act_path_coeff;
   
   xml = (char *)malloc(MAX_XML);
   
