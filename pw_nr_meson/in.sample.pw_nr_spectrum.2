@@ -19,28 +19,31 @@ clov_c  1.
 u0      0.8
 
 fresh_wprop
-save_serial_wprop test.s_prop
+save_serial_scidac_wprop test.s_prop
 point
 origin 0 0 0 0
+source_label d
 
 number_of_smearings 1
 
 gaussian
 origin 0 0 0 0
 r0 1
+source_label 1G
 
 wave_func_label 2P
 
 fresh_wprop
-save_serial_wprop test.px_prop
+save_serial_scidac_wprop test.px_prop
 fresh_wprop
-save_serial_wprop test.py_prop
+save_serial_scidac_wprop test.py_prop
 fresh_wprop
-save_serial_wprop test.pz_prop
+save_serial_scidac_wprop test.pz_prop
 
 gaussian
 origin 0 0 0
 r0 1
+sink_label 1G
 
 wave_func_label 2P
 
@@ -69,12 +72,14 @@ fresh_wprop
 forget_wprop
 point
 origin 0 0 0 0
+source_label d
 
 number_of_smearings 1
 
 gaussian
 origin 0 0 0 0
 r0 1
+source_label 1G
 
 wave_func_label 2P
 
@@ -88,6 +93,7 @@ forget_wprop
 gaussian
 origin 0 0 0
 r0 1
+sink_label 1G
 
 wave_func_label 2P
 

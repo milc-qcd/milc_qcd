@@ -138,7 +138,7 @@ int readin(int prompt)  {
 				      par_buf.a_savefile_w);
     
     /* Get antiquark source type */
-    IF_OK status += get_quark_source( stdin, prompt, &par_buf.a_wqs);
+    IF_OK status += get_w_quark_source( stdin, prompt, &par_buf.a_wqs);
     
     /* Number of smearings */
     
@@ -150,7 +150,7 @@ int readin(int prompt)  {
     
     for(j=0; j<par_buf.num_smear;j++){
       /* S-wave part of shell source wave function for the propagator */
-      IF_OK status += get_quark_source( stdin, prompt, 
+      IF_OK status += get_w_quark_source( stdin, prompt, 
 					&par_buf.source_wqs[j] );
       IF_OK status += get_s(stdin, prompt,"wave_func_label", 
 			    par_buf.source_wf_label[j]);
@@ -163,7 +163,7 @@ int readin(int prompt)  {
 					  par_buf.savefile_w[j][i]);
       }
       /* S-wave part of relative smearing wave function for sink */
-      IF_OK status += get_quark_sink( stdin, prompt, &par_buf.sink_wqs[j]);
+      IF_OK status += get_w_quark_sink( stdin, prompt, &par_buf.sink_wqs[j]);
       IF_OK status += get_s(stdin, prompt,"wave_func_label", 
 			    par_buf.sink_wf_label[j]);
     }

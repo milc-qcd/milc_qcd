@@ -11,36 +11,39 @@ forget
 
 max_cg_iterations 100
 max_cg_restarts 10
-error_for_propagator 1e-8
-rel_error_for_propagator 1e-8
+error_for_propagator 1e-6
+rel_error_for_propagator 1e-6
 
 kappa   0.124
 clov_c  1.
 u0      0.8
 
 fresh_wprop
-save_serial_wprop test.s_prop
+save_serial_fm_wprop test.s_prop
 point
 origin 0 0 0 0
+source_label d
 
 number_of_smearings 1
 
 gaussian
 origin 0 0 0 0
 r0 1
+source_label 1G
 
 wave_func_label 2P
 
 fresh_wprop
-save_serial_wprop test.px_prop
+save_serial_fm_wprop test.px_prop
 fresh_wprop
-save_serial_wprop test.py_prop
+save_serial_fm_wprop test.py_prop
 fresh_wprop
-save_serial_wprop test.pz_prop
+save_serial_fm_wprop test.pz_prop
 
 gaussian
 origin 0 0 0
 r0 1
+sink_label 1G
 
 wave_func_label 2P
 
@@ -58,8 +61,8 @@ forget
 
 max_cg_iterations 100
 max_cg_restarts 10
-error_for_propagator 1e-8
-rel_error_for_propagator 1e-8
+error_for_propagator 1e-6
+rel_error_for_propagator 1e-6
 
 kappa   0.120
 clov_c  1.
@@ -69,12 +72,14 @@ fresh_wprop
 forget_wprop
 point
 origin 0 0 0 0
+source_label d
 
 number_of_smearings 1
 
 gaussian
 origin 0 0 0 0
 r0 1
+source_label 1G
 
 wave_func_label 2P
 
@@ -88,6 +93,7 @@ forget_wprop
 gaussian
 origin 0 0 0
 r0 1
+sink_label 1G
 
 wave_func_label 2P
 

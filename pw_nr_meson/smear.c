@@ -106,11 +106,7 @@ void load_smearing(wilson_quark_source source_wqs[],
     source_wqs[k].c_src = phi_src[k];
 
     /* Load sink function */
-    w_sink_field(chi, &sink_wqs[k]);
-
-    /* Save it */
-    copy_swave_to_complex_swave(phi_snk[k], chi, sink_wqs[k].spin,
-				sink_wqs[k].color);
+    w_sink_field(phi_snk[k], &sink_wqs[k]);
 
     /* Switch to taking sink from stored field from now on */
     sink_wqs[k].type = COMPLEX_FIELD_STORE;

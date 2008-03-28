@@ -56,7 +56,7 @@ int get_wprop_to_field(int startflag, char startfile[],
 
   /* Load quark prop in MILC basis */
 
-  reload_wprop_to_field(startflag, startfile, wp, 1);
+  reload_wprop_to_field(startflag, startfile, my_wqs, wp, 1);
 
   /* (Re)construct propagator */
 
@@ -127,7 +127,7 @@ int get_wprop_to_field(int startflag, char startfile[],
 
   /* Save if requested */
 
-  save_wprop_from_field(saveflag, savefile, "dummy recXML", wp, 1);
+  save_wprop_from_field(saveflag, savefile, my_wqs, wp, "dummy recXML", 1);
 
   /* Convert to block Pauli basis */
 
