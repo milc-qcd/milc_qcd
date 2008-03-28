@@ -15,7 +15,7 @@ int main(int argc,char *argv[])
   site *s;
   double inv_space_vol;
   
-  int t,color,spin, color1, spin1;
+  int color,spin, color1, spin1;
   
   int key[4];
   int dummy[4];
@@ -45,16 +45,9 @@ int main(int argc,char *argv[])
   prompt = setup(); 
   setup_restrict_fourier(key, dummy);
 
-  psi = (wilson_vector *)
-    malloc(sizeof(wilson_vector)*sites_on_node);
-  
-  if(psi == NULL){
-    printf("No room for temporary\n",this_node);
-    terminate(1);
-  }
+  psi = create_wv_field();
 
   /* Initialize the source type */
-
   init_wqs(&wqs);
 
   while( readin(prompt) == 0){
@@ -63,8 +56,8 @@ int main(int argc,char *argv[])
     /**************************************************************/
     /*load staggered propagator*/
     
-    reload_ksprop_to_site(ks_prop_startflag, 
-			  start_ks_prop_file, F_OFFSET(prop), 1);
+    reload_ksprop_to_site3(ks_prop_startflag, 
+			   start_ks_prop_file, &ksqs, F_OFFSET(prop), 1);
     
     FORALLSITES(i,s){
       for(color = 0; color < 3; color++)for(k = 0; k < 3; k++)
@@ -191,7 +184,7 @@ int main(int argc,char *argv[])
     close_fnal_meson_file(corr_fp);
   } /* readin(prompt) == 0 */
 
-  free(psi);
+  destroy_wv_field(psi);
   node0_printf("\nRUNNING COMPLETED\n"); fflush(stdout);
 
 #ifdef HAVE_QDP

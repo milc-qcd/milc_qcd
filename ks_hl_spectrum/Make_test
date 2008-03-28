@@ -17,7 +17,8 @@
 # For comparing test output with sample output
 
 PROJS = \
-  ks_hl_spectrum
+  ks_hl_spectrum \
+  ks_hl_baryon
 
 PATTERNS = BEGIN RUNNING
 

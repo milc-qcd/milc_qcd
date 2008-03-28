@@ -6,6 +6,7 @@
    This file defines global scalars and the fields in the lattice. */
 
 #include "defines.h"
+#include "../include/generic_ks.h" 
 #include "../include/generic_wilson.h" 
 #include "../include/generic_quark_types.h"
 #include "../include/random.h"   /* For double_prn */
@@ -23,6 +24,7 @@ typedef struct {
   /* is it even or odd? */
   char parity;
   /* my index in the array */
+
   int index;
   
   /* Now come the physical fields, program dependent */
@@ -56,6 +58,7 @@ typedef struct {
   su3_matrix stag_propagator;
   su3_vector prop[3];
   su3_matrix stag_propagator_copy;  
+
   /* smearing function */
   
   complex w,w1,w2;
@@ -81,7 +84,9 @@ typedef struct {
   su3_vector tempvec[4];	/* One for each direction */
   su3_matrix tempmat1;
   
-  
+  /* for the baryon code */
+  su3_matrix stag_strange_propagator;
+  su3_matrix stag_light_propagator;
 } site;
 
 /* End definition of site structure */
@@ -151,6 +156,7 @@ EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
+EXTERN ks_quark_source ksqs;
 EXTERN wilson_quark_source wqs[MAX_KAP];
 EXTERN wilson_quark_source wqstmp;  /* Temporary */
 
@@ -175,11 +181,27 @@ EXTERN site *lattice;
 EXTERN char ** gen_pt[N_POINTERS];
 EXTERN	int iseed;
 
-EXTERN  int num_smear;
 EXTERN  int log_correlators;
 EXTERN	double rsqmin,rsqprop,beta,mass;
 EXTERN  char mass_label[32];
 EXTERN	int warms,trajecs,steps,niter,propinterval,nflavors;
 EXTERN	double epsilon;
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
+EXTERN  int num_smear;
+
+/* Variables for the baryon code */
+
+#define MAX_STRANGE 4
+#define MAX_LIGHT 4
+
+EXTERN  int num_strange;
+EXTERN  int num_light;
+EXTERN  char start_ks_strange_file[MAX_STRANGE][MAXFILENAME];
+EXTERN  char start_ks_light_file[MAX_LIGHT][MAXFILENAME];
+EXTERN  int start_ks_strange_flag[MAX_STRANGE];
+EXTERN  int start_ks_light_flag[MAX_LIGHT];
+EXTERN  Real m_light[MAX_LIGHT];
+EXTERN  Real m_strange[MAX_LIGHT];
+
+
 #endif /* _LATTICE_H */

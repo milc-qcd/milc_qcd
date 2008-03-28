@@ -942,7 +942,7 @@ clear_mes_prop(complex **prop, int nmes, int ntime){
 static complex **
 create_mes_prop(int nmes, int ntime){
   complex **prop;
-  int m, t;
+  int m;
 
   prop = (complex **)malloc(nmes*sizeof(complex *));
   if(prop == NULL)return prop;
@@ -1093,7 +1093,6 @@ void
 spectrum_hl_rot(FILE *corr_fp, field_offset snk, field_offset src, int k)
 {
   complex **prop_rot;
-  int num_prop, t;
 
   prop_rot = create_mes_prop(35, nt);
 
@@ -1109,7 +1108,6 @@ spectrum_hl_smear(FILE *corr_fp, field_offset snk, field_offset src,
 		  int k, int ns)
 {
   complex **prop_smear;
-  int num_prop, t;
 
   prop_smear = create_mes_prop(35, nt);
   

@@ -1,7 +1,5 @@
 #include "ks_hl_spectrum_includes.h"
 
-//the rotated quark ends up in the quark_propagator_copy!
-
 void rotate_w_quark(field_offset src, field_offset dest, Real d1)
 {
   int spin,color,spin1, color1,i;

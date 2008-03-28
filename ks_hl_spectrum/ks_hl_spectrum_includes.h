@@ -34,3 +34,9 @@ void spectrum_hl_rot(FILE *fp, field_offset snk, field_offset src, int k);
 void spectrum_hl_smear(FILE *fp, field_offset snk, field_offset src, 
 		       int k, int ns);
 void get_smearings_bi_serial(char *filename);
+
+/* For baryon_twopt.c */
+int ks_baryon_2point_Omu_HH(field_offset ks_1, field_offset heavy_quark, double_complex *propagator[4][4][3][3]);
+int ks_baryon_2point_Omu(field_offset ks_1, field_offset ks_2, field_offset heavy_quark, double_complex *propagator[4][4][3][3]);
+int ks_baryon_2point_O5(field_offset ks_1, field_offset ks_2, field_offset heavy_quark, double_complex *propagator[4][4]);
+

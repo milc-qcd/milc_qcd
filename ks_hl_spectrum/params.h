@@ -38,6 +38,16 @@ typedef struct {
         Real kap[MAX_KAP];	/* kappa values for multiple propagators */	
         char kap_label[MAX_KAP][32];
         Real d1[MAX_KAP];   /*rotation parameter*/
+
+  /* For the baryon code */
+        int  start_ks_strange_flag[MAX_STRANGE];
+        char start_ks_strange_file[MAX_STRANGE][MAXFILENAME];
+        int  start_ks_light_flag[MAX_LIGHT];
+        char start_ks_light_file[MAX_LIGHT][MAXFILENAME];
+        Real m_light[MAX_LIGHT];
+        Real m_strange[MAX_LIGHT];
+        int num_light;
+        int num_strange;
 }  params;
 
 #endif /* _PARAMS_H */
