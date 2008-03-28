@@ -1,0 +1,154 @@
+# Makefile for testing code by comparing test output with sample output
+# For pw_nr_spectrum
+
+#------------------------------------------------------------
+# Examples for tests:
+
+#    make -f Make_test check
+# or, for a specific project or projects
+#    make -f Make_test "PROJS=su3_rmd" check
+
+# For tests on other platforms, first edit the file ../Make_test_template
+# to select the appropriate LAUNCH.
+
+# Results are in the files out.test.diff.* 
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = \
+  pw_nr_spectrum
+
+PATTERNS = BEGIN RUNNING
+
+ADDMACRO = CLCG = -DCL_CG=BICG
+
+PRECLIST = 1 2
+
+include ../Make_test_template
+
+
+#---------------------------------------------------------------------
+a0:
+in.sample.a0.${PREC}:
+out.test.a0.${PREC}:
+	touch out.test.a0.${PREC}
+
+a0_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=a0" "PREC=$$prec" "PATTERNS=a0 END" out.test.diff.a0.$$prec;\
+	done
+
+a0_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.a0.$$prec.tmp out.sample.a0.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.a0.$$prec out.test.a0.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+b1:
+in.sample.b1.${PREC}:
+out.test.b1.${PREC}:
+	touch out.test.b1.${PREC}
+
+b1_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=b1" "PREC=$$prec" "PATTERNS=b1 END" out.test.diff.b1.$$prec;\
+	done
+
+b1_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.b1.$$prec.tmp out.sample.b1.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.b1.$$prec out.test.b1.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+a1:
+in.sample.a1.${PREC}:
+out.test.a1.${PREC}:
+	touch out.test.a1.${PREC}
+
+a1_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=a1" "PREC=$$prec" "PATTERNS=a1 END" out.test.diff.a1.$$prec;\
+	done
+
+a1_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.a1.$$prec.tmp out.sample.a1.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.a1.$$prec out.test.a1.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+a2_t2:
+in.sample.a2_t2.${PREC}:
+out.test.a2_t2.${PREC}:
+	touch out.test.a2_t2.${PREC}
+
+a2_t2_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=a2_t2" "PREC=$$prec" "PATTERNS=a2_t2 END" out.test.diff.a2_t2.$$prec;\
+	done
+
+a2_t2_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.a2_t2.$$prec.tmp out.sample.a2_t2.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.a2_t2.$$prec out.test.a2_t2.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+a2_e:
+in.sample.a2_e.${PREC}:
+out.test.a2_e.${PREC}:
+	touch out.test.a2_e.${PREC}
+
+a2_e_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=a2_e" "PREC=$$prec" "PATTERNS=a2_e END" out.test.diff.a2_e.$$prec;\
+	done
+
+a2_e_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.a2_e.$$prec.tmp out.sample.a2_e.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.a2_e.$$prec out.test.a2_e.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+a2:
+in.sample.a2.${PREC}:
+out.test.a2.${PREC}:
+	touch out.test.a2.${PREC}
+
+a2_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=a2" "PREC=$$prec" "PATTERNS=a2 END" out.test.diff.a2.$$prec;\
+	done
+
+a2_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.a2.$$prec.tmp out.sample.a2.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.a2.$$prec out.test.a2.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+
+test_fnal: a0_test b1_test a1_test a2_t2_test a2_e_test a2_test
+
+test_fnal_clean: a0_test_clean b1_test_clean a1_test_clean a2_t2_test_clean a2_e_test_clean a2_test_clean
+
+clean: test_clean test_fnal_clean
+
+check: clean test test_fnal
+
