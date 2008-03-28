@@ -14,7 +14,7 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
     void *dmp            /* parameters defining the Dirac matrix */
     )
 {
-  int iterations_used;
+  int iterations_used = 0;
 
   if(qic->prec == 1)
     iterations_used = 

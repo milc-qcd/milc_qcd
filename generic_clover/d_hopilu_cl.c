@@ -13,7 +13,7 @@
 
 #include "generic_clover_includes.h"
 
-/*#define CGDEBUG*/
+/*#define CG_DEBUG*/
 
 int hopilu_cl_field(     /* Return value is number of iterations taken */
     wilson_vector *src,  /* type wilson_vector (source vector - OVERWRITTEN!)*/
@@ -120,10 +120,15 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
   g_doublesum(&sr);
   size_src = (Real)sqrt(sr);
   
-#ifdef CGDEBUG
+#ifdef CG_DEBUG
   node0_printf("beginning inversion--size_src=%e\n",
 	       (double)size_src); fflush(stdout);
 #endif
+
+  qic->size_r = 0;
+  qic->size_relr = 0;
+  qic->final_rsq = 0;
+  qic->final_relrsq = 0;
 
   /* --------- Beginning of hop iterations --------- */
   
@@ -155,8 +160,10 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
       g_doublesum(&sr);
       qic->size_r = (Real)sqrt(sr)/size_src;
       qic->size_relr = relative_residue(r, dest, EVEN);
-      
-#ifdef CGDEBUG
+      qic->final_rsq = qic->size_r;
+      qic->final_relrsq = qic->size_relr;
+
+#ifdef CG_DEBUG
       node0_printf("iteration= %d, residue= %e, rel residue= %e\n",N_iter,
 		   (double)(qic->size_r), (double)(qic->size_relr));
       fflush(stdout);
@@ -181,22 +188,22 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
   if(this_node==0){
     if(N_iter==0)
       printf("HOPILU: NO iterations taken size_r= %.2e rel %.2e\n",
-	     qic->size_r, qic->size_relr);
+	     qic->final_rsq, qic->final_relrsq);
 #ifdef CGTIME
     else
       printf("CGTIME: time = %.2e (hopilu) size_r= %.2e relr= %.2e iters= %d MF = %.1f\n",
-	     dtime,qic->size_r,qic->size_relr,N_iter,
+	     dtime,qic->final_rsq,qic->final_relrsq,N_iter,
 	     (double)3744*N_iter*even_sites_on_node/(dtime*1e6));
 #endif
     fflush(stdout);
   }
 
-#ifdef CGDEBUG
-  if( (RsdHOP > 0 && qic->size_r > RsdHOP) || 
-      (RRsdHOP > 0 && qic->size_relr > RRsdHOP) )
+#ifdef CG_DEBUG
+  if( (RsdHOP > 0 && qic->final_rsq > RsdHOP) || 
+      (RRsdHOP > 0 && qic->final_relrsq > RRsdHOP) )
     {
       node0_printf(" HOPILU: Not Converged: size_r=%.2e rel %.2e \n",
-		   qic->size_r, qic->size_relr);fflush(stdout);
+		   qic->final_rsq, qic->final_relrsq);fflush(stdout);
     }
 #endif
   
@@ -216,7 +223,7 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
 
   free_clov();
   cleanup_tmp_links();
-  cleanup_dslash_temps();
+  cleanup_dslash_wtemps();
   return(N_iter);
 
 } /* hopilu_cl_field */

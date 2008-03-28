@@ -26,7 +26,7 @@
 #include "../include/generic_qop.h"
 #include "../include/generic_clover_qop.h"
 
-/*#define CGDEBUG*/
+/*#define CG_DEBUG*/
 
 /* Redefinitions according to requested precision */
 
@@ -48,6 +48,9 @@
 
 /*
  * $Log: d_bicgilu_cl_qop_P.c,v $
+ * Revision 1.3  2008/03/28 15:48:09  detar
+ * Report absolute and relative residuals
+ *
  * Revision 1.2  2007/12/14 04:37:48  detar
  * Add final restart member to qic.
  *
@@ -60,7 +63,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.2 2007/12/14 04:37:48 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.3 2008/03/28 15:48:09 detar Exp $";
 
 /********************************************************************/
 /* Load Wilson clover parameters                                    */
@@ -70,6 +73,7 @@ static void
 load_qop_wilson_coeffs(QOP_wilson_coeffs_t *c, Real clov_c)
 {
   c->clov_c       = clov_c;
+  c->aniso        = 0.;
 }
 
 /********************************************************************/
@@ -197,7 +201,7 @@ bicgilu_cl_qop_generic( QOP_FermionLinksWilson *qop_links,
 			QOP_DiracFermion **qop_sol[], 
 			QOP_DiracFermion *qop_src[], 
 			int nsrc,		    
-			int *final_nrestart,
+			int *final_restart,
 			Real *final_rsq_ptr )
 {
   int isrc, ikappa;
@@ -222,7 +226,7 @@ bicgilu_cl_qop_generic( QOP_FermionLinksWilson *qop_links,
       if(*final_restart < qop_resid_arg[isrc][ikappa]->final_restart)
 	*final_restart = qop_resid_arg[isrc][ikappa]->final_restart;
       iters += qop_resid_arg[isrc][ikappa]->final_iter;
-#ifdef CGDEBUG
+#ifdef CG_DEBUG
       if(nsrc > 1 || nkappa[isrc] > 1)
 	node0_printf("CONGRAD5(src %d,kappa %d): iters = %d resid = %e\n",
 	       isrc, ikappa,
@@ -369,7 +373,7 @@ BGCGILU_MILC2QOP( wilson_vector *milc_src, wilson_vector *milc_sol,
   Real Clov_c = dcp->Clov_c;   /* Perturbative clover coeff */
   Real U0 = dcp->U0;           /* Tadpole correction to Clov_c */
   Real clov = Clov_c/(U0*U0*U0); /* Full clover coefficient */
-  Real final_rsq_ptr;           
+  Real final_rsq_val;           
   int final_restart;
 
   /* Set up general source and solution pointers for one mass, one source */
@@ -385,10 +389,14 @@ BGCGILU_MILC2QOP( wilson_vector *milc_src, wilson_vector *milc_sol,
 
   iterations_used = 
     bicgilu_cl_qop( qic, clov, kappas, nkappa, milc_srcs,
-		    milc_sols, nsrc, &final_restart, &final_rsq_ptr,
+		    milc_sols, nsrc, &final_restart, &final_rsq_val,
 		    EVENANDODD );
 
-  qic->size_r = final_rsq_ptr;
+  qic->size_r = 0;  /* We don't see the cumulative resid with QOP*/
   qic->size_relr = 0;
+  qic->final_rsq = final_rsq_val;
+  qic->final_relrsq = 0;
+  qic->final_iters = iterations_used;
+  qic->final_restart = final_restart;
   return  iterations_used;
 }

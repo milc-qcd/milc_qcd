@@ -19,7 +19,7 @@
 
 #include "generic_clover_includes.h"
 
-/*#define CGDEBUG*/
+/*#define CG_DEBUG*/
 
 /* ------------------------------------------------------------
    The matrix to be inverted is written in block even-odd form as
@@ -173,7 +173,7 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
     copy_wvec( &(r[i]), &(src[i]) );
   }
 
-#ifdef CGDEBUG
+#ifdef CG_DEBUG
   node0_printf("beginning inversion--size_src=%e\n",
 	       (double)size_src); fflush(stdout);
 #endif
@@ -195,6 +195,8 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
   N_iter = 0;
   qic->size_r = 0;
   qic->size_relr = 0;
+  qic->final_rsq = 0;
+  qic->final_relrsq = 0;
 
   while(1) {
     if( N_iter % restart == 0 || 
@@ -203,7 +205,7 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
       
       /* --------- if flag == 0 set dest_e = 0 ---------- */
       if(flag == 0) {
-#ifdef CGDEBUG
+#ifdef CG_DEBUG
 	node0_printf("dest_0=0\n");fflush(stdout);
 #endif
 	FOREVENSITESDOMAIN(i,s) {
@@ -247,13 +249,13 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
 	sr += (double)magsq_wvec( &(r[i]) );
       }
       g_doublesum(&sr);
-      qic->size_r = (Real)sqrt(sr)/size_src;
-      qic->size_relr = relative_residue(r, dest, EVEN);
+      qic->final_rsq = (Real)sqrt(sr)/size_src;
+      qic->final_relrsq = relative_residue(r, dest, EVEN);
   
       
-#ifdef CGDEBUG
+#ifdef CG_DEBUG
       node0_printf("start,   true residue= %e, rel residue= %e\n",
-		   (double)(qic->size_r), (double)(qic->size_relr));
+		   (double)(qic->final_rsq), (double)(qic->final_relrsq));
       fflush(stdout);
 #endif
 
@@ -262,8 +264,8 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
 
       if( N_iter >= MaxCG || 
 	  nrestart >= max_restarts ||
-	  ( ( RsdCG  <= 0 || RsdCG  > qic->size_r   ) &&
-	    ( RRsdCG <= 0 || RRsdCG > qic->size_relr) ) ) break;
+	  ( ( RsdCG  <= 0 || RsdCG  > qic->final_rsq   ) &&
+	    ( RRsdCG <= 0 || RRsdCG > qic->final_relrsq) ) ) break;
 
       nrestart++;
 
@@ -361,7 +363,7 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
     qic->size_relr = relative_residue(r, dest, EVEN);
 
     N_iter++;
-#ifdef CGDEBUG
+#ifdef CG_DEBUG
     node0_printf("iteration= %d, residue= %e, rel residue= %e\n",N_iter,
 		 (double)(qic->size_r), (double)(qic->size_relr));
     fflush(stdout);
@@ -380,22 +382,22 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
   if(this_node==0){
     if(N_iter==0)
       printf("CGILU: NO iterations taken size_r= %.2e rel %.2e\n",
-	     qic->size_r, qic->size_relr);
+	     qic->final_rsq, qic->final_relrsq);
 #ifdef CGTIME
     else
       printf("CGTIME: time = %.2e (cgilu) size_r= %.2e relr= %.2e iters= %d MF = %.1f\n",
-	     dtime,qic->size_r,qic->size_relr,N_iter,
+	     dtime,qic->final_rsq,qic->final_relrsq,N_iter,
 	     (double)8064*N_iter*even_sites_on_node/(dtime*1e6));
 #endif
     fflush(stdout);
   }
   
-#ifdef CGDEBUG
-  if( (RsdCG > 0 && qic->size_r > RsdCG) || 
-      (RRsdCG > 0 && qic->size_relr > RRsdCG) )
+#ifdef CG_DEBUG
+  if( (RsdCG > 0 && qic->final_rsq > RsdCG) || 
+      (RRsdCG > 0 && qic->final_relrsq > RRsdCG) )
     {
       node0_printf(" BiCG_ILU: Not Converged: size_r=%.2e rel %.2e \n",
-		   qic->size_r, qic->size_relr);fflush(stdout);
+		   qic->final_rsq, qic->final_relrsq);fflush(stdout);
     }
 #endif
 
@@ -430,7 +432,7 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
   }
   free_clov();
   cleanup_tmp_links();
-  cleanup_dslash_temps();
+  cleanup_dslash_wtemps();
   return(N_iter);
 
 } /* cgilu_cl_field */
