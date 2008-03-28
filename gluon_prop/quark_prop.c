@@ -36,6 +36,9 @@ su3_vector **ksprop;
 int status, multiflag;
 int readflag, writeflag;
 char recxml[MAX_RECXML];
+ks_quark_source ksqs;
+
+    init_ksqs(&ksqs);
 
     pix = 2.*PI / (Real)nx;
     piy = 2.*PI / (Real)ny;
@@ -88,8 +91,8 @@ char recxml[MAX_RECXML];
 	for(j=0; j<num_mass; j++){
 	    if (ksstartflag[j] != FRESH){
 		quarkmass = mass[j];
-		status = reload_ksprop_to_field( ksstartflag[j],
-			 	ksstartfile[j], ksprop[j], 0);
+		status = reload_ksprop_to_field3( ksstartflag[j], 
+			 	ksstartfile[j], &ksqs, ksprop[j], 0);
 		if (status != 0){
 		    if (run_CG_flag[j] != 1){
 			node0_printf("quark_prop:  (fatal) error reading propagator %d\n", j);
@@ -218,8 +221,8 @@ char recxml[MAX_RECXML];
 		quarkmass = mass[j];
 		/* Some arbitrary metadata */
 		snprintf(recxml,MAX_RECXML,"Gauge fixed point prop");
-		save_ksprop_from_field( kssaveflag[j], kssavefile[j],
-				 	recxml, ksprop[j], 0);
+		save_ksprop_from_field3( kssaveflag[j], kssavefile[j],
+					 recxml, &ksqs, ksprop[j], 0);
 	    }
 	}
     }
