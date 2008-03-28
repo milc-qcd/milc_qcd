@@ -36,7 +36,7 @@ void setup_control_form()
   setup_timeslice_fft() ;
 
   /**** inintialize the sink smearing function according to wqs ******/
-  w_sink_scalar(F_OFFSET(heavy_smear_func[0]), &wqs_zonked_heavy[0]  ) ; 
+  w_sink_site(F_OFFSET(heavy_smear_func[0]), &wqs_zonked_heavy[0]  ) ; 
   /** warning this code now assumes that the same smearing functions is 
       used for each quark propagator inverted from the origin. This
       should be explicity checked.

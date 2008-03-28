@@ -1,7 +1,7 @@
 /******** setup_hqet_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.5 2007/11/09 16:13:14 detar Exp $   ****/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.6 2008/03/28 16:18:36 detar Exp $   ****/
 /* MIMD code version 4 */
 
 #include "hqet_light_includes.h"
@@ -169,7 +169,7 @@ int readin(int prompt)
 			    &par_buf.resid_spectator );
       
       /* Get source type */
-      IF_OK status += ask_quark_source( stdin, prompt, &wallflag, descrp);
+      IF_OK status += ask_w_quark_source( stdin, prompt, &wallflag, descrp);
       
       /*** Load in the SPECTATOR kappa values ****/
       /**** MORE WORK :: this loop should count the kappa values ***/
@@ -232,7 +232,7 @@ int readin(int prompt)
 			    &par_buf.resid_zonked );
       
       /* Get source type */
-      IF_OK status += ask_quark_source( stdin, prompt, &wallflag, descrp);
+      IF_OK status += ask_w_quark_source( stdin, prompt, &wallflag, descrp);
 
       /*** Load in the zonked light kappa values ****/
       /**** MORE WORK :: this loop should count the kappa values ***/

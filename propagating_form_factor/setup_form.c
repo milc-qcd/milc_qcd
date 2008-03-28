@@ -1,7 +1,7 @@
 /******** setup_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.5 2007/11/09 16:03:49 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.6 2008/03/28 16:18:25 detar Exp $  ***/
 /* MIMD code version 4 */
 
 #include "prop_form_includes.h"
@@ -256,7 +256,7 @@ int readin(int prompt)
       }
       
       /* Get source type */
-      IF_OK status += ask_quark_source( stdin, prompt, &wallflag,descrp);
+      IF_OK status += ask_w_quark_source( stdin, prompt, &wallflag,descrp);
       
       /* Load in the source widths and names of the files for the
        *   spectator propagators */
@@ -329,7 +329,7 @@ int readin(int prompt)
       }
 
       /* Get source type */
-      IF_OK status += ask_quark_source( stdin, prompt, &wallflag, descrp);
+      IF_OK status += ask_w_quark_source( stdin, prompt, &wallflag, descrp);
 
       /* Load in the source widths and names of the files for the
        *   zonked propagators */
@@ -403,7 +403,7 @@ int readin(int prompt)
       }
       
       /* Get source type for heavy_zonked quark */
-      IF_OK status += ask_quark_source( stdin, prompt, &wallflag, descrp);
+      IF_OK status += ask_w_quark_source( stdin, prompt, &wallflag, descrp);
 
       /* Load in the source widths for the heavy zonked propagators */
       
