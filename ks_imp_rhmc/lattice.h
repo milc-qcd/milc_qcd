@@ -103,6 +103,22 @@ typedef struct {
         su3_vector dM_M_inv;    /* temp vector for dM/dmu M^{-1} g_rand */
         su3_vector deriv[6];
 #endif
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+        /* store information about reunitarization */
+        double RoS[4]; /* R^2/S^3 for cubic equation, normally =<1.0 */
+        int on_step_Y[4]; /* time step on which Y_phases were updated */
+        int on_step_W[4]; /* time step on which W_norms were updated */
+        int on_step_V[4]; /* time step on which V_dets were updated */
+        Real phase_Y[4]; /* current Y matrix phase */
+        Real phase_Y_previous[4]; /* previous Y matrix phase */
+        su3_matrix Wlink[4];
+        su3_matrix Wlink_previous[4];
+        double Vdet[4]; /* abs of determinant of V matrix */
+        double Xdet[4]; /* abs of determinant of X matrix before Naik */
+        double XdetNaik[4]; /* abs of determinant of X matrix before Naik */
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
 } site;
 
 /* End definition of site structure */
@@ -205,5 +221,16 @@ EXTERN int n_pseudo;
 EXTERN int max_rat_order;
 EXTERN params_rhmc *rparam;
 EXTERN int phases_in; /* 1 if KS and BC phases absorbed into matrices in site structure */
+
+#ifdef MILC_GLOBAL_DEBUG
+EXTERN int global_current_time_step;
+#endif /* MILC_GLOBAL_DEBUG */
+
+/* EXPERIMENTAL store the structure of multi_x array */
+EXTERN int n_naiks; // number of psedofermion fields with different Naik corrections
+EXTERN int n_order_naik_total;
+EXTERN int n_pseudo_naik[MAX_N_PSEUDO];
+EXTERN int n_orders_naik[MAX_N_PSEUDO];
+EXTERN Real masses_naik[MAX_N_PSEUDO];
 
 #endif /* _LATTICE_H */

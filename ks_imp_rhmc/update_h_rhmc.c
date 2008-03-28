@@ -39,66 +39,97 @@ void update_h_gauge( Real eps ){
 
 // fermion force update grouping pseudofermions with the same path coeffs
 void update_h_fermion( Real eps, su3_vector **multi_x ){
-  int iphi;
+  int iphi,jphi;
   Real final_rsq;
-  int j;
+  int i,j;
   int order, tmporder;
   int path_coeff_changed;
   Real *residues,*allresidues;
   Real *roots;
-  
-  for(tmporder=0,iphi = 0; iphi < n_pseudo; iphi++)
-    tmporder+=rparam[iphi].MD.order;
-  allresidues = (Real *)malloc(tmporder*sizeof(Real));
 
-  load_ferm_links(&fn_links, &ks_act_paths);
-  
+  //node0_printf("update_h_rhmc: EXPERIMENTAL force call\n");
+  //fflush(stdout);
+
+  /* Algorithm sketch: assemble multi_x with all |X> fields,
+     then call force routine for each part (so far we have to parts:
+     zero correction to Naik and non-zero correction to Naik */
+
+  allresidues = (Real *)malloc(n_order_naik_total*sizeof(Real));
+
   // Group the fermion force calculation according to sets of like
   // path coefficients.
   tmporder = 0;
-  for(iphi = 0; iphi < n_pseudo; iphi++){
-    // Remake the path tables if the coeffs change for this mass
-    path_coeff_changed = make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,
-					 rparam[iphi].naik_term_mass);
-    if(path_coeff_changed){
-      // Invalidate only fat and long links and remake them
-      invalidate_fn_links(&fn_links);
-      load_ferm_links(&fn_links, &ks_act_paths);
-      // Calculate the contribution of the previous set to the fermion force
-      if(tmporder > 0){
-	eo_fermion_force_multi( eps, allresidues, multi_x, 
-				tmporder, prec_ff, &fn_links, 
-				&ks_act_paths );
-	tmporder = 0;
+  iphi = 0;
+  for( i=0; i<n_naiks; i++ ) {
+    for( jphi=0; jphi<n_pseudo_naik[i]; jphi++ ) {
+      // remake path table for each group
+      path_coeff_changed = make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,
+           masses_naik[i]);
+      //node0_printf("UPDATE: path_coeff_changed = %d\n",path_coeff_changed);
+      if(path_coeff_changed){
+        // Invalidate only fat and long links and remake them
+        invalidate_fn_links(&fn_links);
       }
-    }
-    // Add the current pseudofermion to the current set
-    order = rparam[iphi].MD.order;
-    residues = rparam[iphi].MD.res;
-    roots = rparam[iphi].MD.pole;
+      load_ferm_links(&fn_links, &ks_act_paths);
 
-    // Compute ( M^\dagger M)^{-1} in xxx_even
-    // Then compute M*xxx in temporary vector xxx_odd 
-    /* See long comment at end of file */
+      // Add the current pseudofermion to the current set
+      order = rparam[iphi].MD.order;
+      residues = rparam[iphi].MD.res;
+      roots = rparam[iphi].MD.pole;
+
+      // Compute ( M^\dagger M)^{-1} in xxx_even
+      // Then compute M*xxx in temporary vector xxx_odd 
+      /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
-    ks_ratinv( F_OFFSET(phi[iphi]), multi_x+tmporder, roots, order, 
-	       niter_md[iphi], rsqmin_md[iphi], prec_md[iphi], EVEN, 
-	       &final_rsq, &fn_links );
+      ks_ratinv( F_OFFSET(phi[iphi]), multi_x+tmporder, roots, order, 
+	         niter_md[iphi], rsqmin_md[iphi], prec_md[iphi], EVEN, 
+	         &final_rsq, &fn_links );
 
-    for(j=0;j<order;j++){
+      for(j=0;j<order;j++){
 	dslash_field( multi_x[tmporder+j], multi_x[tmporder+j],  ODD,
 		      &fn_links);
 	allresidues[tmporder+j] = residues[j+1];
 	// remember that residues[0] is constant, no force contribution.
-    }
-
+      }
     tmporder += order;
+    iphi++;
+    }
   }
 
-  // Do the last set
-  if(tmporder > 0)
-    eo_fermion_force_multi( eps, allresidues, multi_x, tmporder, 
-			    prec_ff, &fn_links, &ks_act_paths );
+#ifdef MILC_GLOBAL_DEBUG
+  node0_printf("update_h_rhmc: MULTI_X ASSEMBLED\n");fflush(stdout);
+  node0_printf("update_h_rhmc: n_distinct_Naik=%d\n",n_naiks);
+  for(j=0;j<n_naiks;j++)
+    node0_printf("update_h_rhmc: orders[%d]=%d\n",j,n_orders_naik[j]);
+  for(j=0;j<n_naiks;j++)
+    node0_printf("update_h_rhmc: masses_Naik[%d]=%f\n",j,masses_naik[j]);
+  fflush(stdout);
+#endif /* MILC_GLOBAL_DEBUG */
+
+#ifdef HISQ_FAST_FORCE02
+  eo_fermion_force_multi( eps, allresidues, multi_x,
+         n_order_naik_total, prec_ff, &fn_links, &ks_act_paths );
+
+#else /* HISQ_FAST_FORCE02 */
+  /* Once multi_x is prepared, run force routine on its different parts */
+  tmporder = 0;
+  for( i=0; i<n_naiks; i++ ) {
+    path_coeff_changed = make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,
+         masses_naik[i]);
+    //node0_printf("UPDATE2: path_coeff_changed = %d\n",path_coeff_changed);fflush(stdout);
+    if(path_coeff_changed){
+      // Invalidate only fat and long links and remake them
+      invalidate_fn_links(&fn_links);
+    }
+    load_ferm_links(&fn_links, &ks_act_paths);
+
+    eo_fermion_force_multi( eps, allresidues+tmporder, multi_x+tmporder, 
+		n_orders_naik[i], prec_ff, &fn_links, &ks_act_paths );
+    tmporder += n_orders_naik[i];
+  }
+
+
+#endif /* HISQ_FF_CALL_EXP */
 
   free(allresidues);
 } /* update_h_fermion */

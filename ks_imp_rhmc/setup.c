@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.20  2008/03/28 15:20:22  detar
+//  Bazavov changes 3/08.  Debugging and Naik term mass.
+//
 //  Revision 1.19  2007/12/14 04:51:45  detar
 //  Add HISQ code.
 //
@@ -168,7 +171,9 @@ setup()
 int 
 initial_set()
 {
-  int prompt,status,i;
+  int prompt,status,i,tmporder;
+  Real current_naik_mass;
+
   /* On node zero, read lattice size, seed, and send to others */
   if(mynode()==0){
     /* print banner */
@@ -183,6 +188,9 @@ initial_set()
     show_generic_ks_opts();
 #ifdef INT_ALG
     node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
+#endif
+#ifdef MILC_GLOBAL_DEBUG
+    node0_printf("MILC_GLOBAL_DEBUG ***********************\n");
 #endif
     status=get_prompt(stdin, &prompt);
     IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
@@ -259,6 +267,41 @@ initial_set()
     if(rparam[i].FA.order > max_rat_order)max_rat_order = rparam[i].FA.order;
   }
   node0_printf("Maximum rational func order is %d\n",max_rat_order);
+
+
+  /* Determine the number of different Naik masses */
+  current_naik_mass = rparam[0].naik_term_mass;
+  tmporder = 0;
+  n_naiks = 0;
+  n_order_naik_total = 0;
+  for( i=0; i<n_pseudo; i++ ) {
+    if( rparam[i].naik_term_mass != current_naik_mass ) {
+      if( tmporder > 0 ) {
+        n_orders_naik[n_naiks] = tmporder;
+        masses_naik[n_naiks] = current_naik_mass;
+        current_naik_mass = rparam[i].naik_term_mass;
+        n_naiks++;
+        n_order_naik_total += tmporder;
+        tmporder = 0;
+      }
+    }
+    tmporder += rparam[i].MD.order;
+    n_pseudo_naik[n_naiks]++;
+  }
+  if( tmporder > 0 ) {
+    n_orders_naik[n_naiks] = tmporder;
+    masses_naik[n_naiks] = current_naik_mass;
+    n_order_naik_total += tmporder;
+    n_naiks++;
+  }
+  node0_printf("Number of different Naik masses is %d\n",n_naiks);
+  for( i=0; i<n_naiks; i++ )
+    node0_printf("n_pseudo_naik[%d]=%d\n",i,n_pseudo_naik[i]);
+  for( i=0; i<n_naiks; i++ )
+    node0_printf("n_orders_naik[%d]=%d\n",i,n_orders_naik[i]);
+  for( i=0; i<n_naiks; i++ )
+    node0_printf("masses_naik[%d]=%f\n",i,masses_naik[i]);
+  node0_printf("n_order_naik_total %d\n",n_order_naik_total);
 
   beta = par_buf.beta;
   
@@ -457,7 +500,32 @@ readin(int prompt)
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);
   strcpy(stringLFN, par_buf.stringLFN);
-  
+
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+  {
+  int isite, idir;
+  site *s;
+  FORALLSITES(isite,s) {
+    for( idir=XUP;idir<=TUP;idir++ ) {
+      lattice[isite].on_step_Y[idir] = 0;
+      lattice[isite].on_step_W[idir] = 0;
+      lattice[isite].on_step_V[idir] = 0;
+      /* zero out information from previous time step
+         if fresh lattice; keep everything for continuation */
+      if( startflag != CONTINUE ){
+        lattice[isite].phase_Y_previous[idir] = 0.0;
+        lattice[isite].phase_Y[idir] = 0.0;
+        lattice[isite].Vdet[idir] = 0.0;
+        clear_su3mat( &(lattice[isite].Wlink[idir]) );
+        clear_su3mat( &(lattice[isite].Wlink_previous[idir]) );
+      }
+    }
+  }
+  }
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+
   /* Do whatever is needed to get lattice */
   if( startflag == CONTINUE ){
     rephase( OFF );

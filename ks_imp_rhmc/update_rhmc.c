@@ -67,6 +67,7 @@
         one force (should upgrade to Omelyan for each)
 */
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+/**#include "../generic_ks/su3_mat_op.h"**/
 
 #define mat_invert mat_invert_uml
 /**#define mat_invert mat_invert_cg**/
@@ -74,6 +75,9 @@
 int update()  {
   int step, iters=0;
   double startaction,endaction;
+#ifdef MILC_GLOBAL_DEBUG
+  double tempaction;
+#endif
 #ifdef HMC
   Real xrandom;
 #endif
@@ -171,6 +175,11 @@ int update()  {
   // NOTE used to clear xxx here.  May want to clear all solutions for reversibility
   load_ferm_links(&fn_links, &ks_act_paths);
   for(iphi = 0; iphi < n_pseudo; iphi++){
+invalidate_fn_links(&fn_links);
+//fn_links.hl.valid_X_links = 0; // overkill - should do only when coefficients change
+//fn_links.hl.valid_all_links = 0;
+make_path_table(&ks_act_paths, &ks_act_paths_dmdu0, rparam[iphi].naik_term_mass);
+load_ferm_links(&fn_links, &ks_act_paths);
     grsource_imp_rhmc( F_OFFSET(phi[iphi]), &(rparam[iphi].GR), EVEN,
 		       multi_x,sumvec, rsqmin_gr[iphi], niter_gr[iphi],
 		       prec_gr[iphi], &fn_links);
@@ -241,6 +250,10 @@ int update()  {
     case INT_3G1F:
         /* do "steps" microcanonical steps (one "step" = one force evaluation)"  */
         for(step=2; step <= steps; step+=2){
+#ifdef MILC_GLOBAL_DEBUG
+            global_current_time_step = step-1;
+            node0_printf( "Current time step: %d\n", global_current_time_step );
+#endif /* MILC_GLOBAL_DEBUG */
 	    /* update U's and H's - see header comment */
      	    update_u( epsilon*( (1.0/6.0-alpha/3.0) ) );
 	    update_h_gauge( epsilon/3.0);
@@ -254,6 +267,58 @@ int update()  {
      	    update_u( epsilon*( (7.0/6.0+alpha/3.0)-(5.0/6.0-alpha/3.0) ) );
 	    update_h_gauge( epsilon/3.0);
 
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+            {
+            double max_delta_phase = 0.0;
+            double max_delta_norm = 0.0;
+            site *s;
+            int idir;
+            double delta_phase,delta_norm;
+            su3_matrix Wdiff;
+            double min_det_V, max_det_V;
+            double flag_detV=1;
+            FORALLSITES(i,s) {
+              for( idir=XUP;idir<=TUP;idir++ ) {
+                /* phase deviation */
+                delta_phase = fabs( lattice[i].phase_Y[idir] -
+                                    lattice[i].phase_Y_previous[idir] );
+                if( delta_phase > max_delta_phase ) max_delta_phase = delta_phase;
+                /* Wlink norm deviation */
+                sub_su3_matrix( &(lattice[i].Wlink[idir]),
+                                &(lattice[i].Wlink_previous[idir]), &Wdiff );
+                delta_norm = su3_norm_frob( &Wdiff );
+                if( delta_norm > max_delta_norm ) max_delta_norm = delta_norm;
+
+                if( 1==flag_detV ) {
+                  min_det_V = lattice[i].Vdet[idir];
+                  max_det_V = min_det_V;
+                  flag_detV = 0;
+                }
+                else {
+                  if( min_det_V > lattice[i].Vdet[idir] )
+                    min_det_V = lattice[i].Vdet[idir];
+                  if( max_det_V < lattice[i].Vdet[idir] )
+                    max_det_V = lattice[i].Vdet[idir];
+                }
+              }
+            }
+            g_doublemax( &max_delta_phase );
+            g_doublemax( &max_delta_norm );
+            min_det_V = -min_det_V;
+            g_doublemax( &min_det_V );
+            g_doublemax( &max_det_V );
+            min_det_V = -min_det_V;
+            node0_printf("PHASE_Y maximum jump: %28.14g\n", max_delta_phase );
+            node0_printf("NORM_W maximum jump: %28.14g\n", max_delta_norm );
+            node0_printf("DET_V minimum: %28.14g\n", min_det_V);
+            node0_printf("DET_V maximum: %28.14g\n", max_det_V);
+            }
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+            global_current_time_step = step;
+            node0_printf( "Current time step: %d\n", global_current_time_step );
+#endif /* MILC_GLOBAL_DEBUG */
+
      	    update_u( epsilon*( (9.0/6.0-alpha/3.0)-(7.0/6.0+alpha/3.0) ) );
 	    update_h_gauge( epsilon/3.0);
      	    update_u( epsilon*( (1.5+beta)-(9.0/6.0-alpha/3.0) ) );
@@ -266,7 +331,57 @@ int update()  {
 	    rephase( OFF );
             reunitarize();
 	    rephase( ON );
-            /*TEMP - monitor action*/ //if(step%6==0)d_action_rhmc(multi_x,sumvec);
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+            {
+            double max_delta_phase = 0.0;
+            double max_delta_norm = 0.0;
+            site *s;
+            int idir;
+            double delta_phase,delta_norm;
+            su3_matrix Wdiff;
+            double min_det_V, max_det_V;
+            double flag_detV=1;
+            FORALLSITES(i,s) {
+              for( idir=XUP;idir<=TUP;idir++ ) {
+                /* phase deviation */
+                delta_phase = fabs( lattice[i].phase_Y[idir] -
+                                    lattice[i].phase_Y_previous[idir] );
+                if( delta_phase > max_delta_phase ) max_delta_phase = delta_phase;
+                /* Wlink norm deviation */
+                sub_su3_matrix( &(lattice[i].Wlink[idir]),
+                                &(lattice[i].Wlink_previous[idir]), &Wdiff );
+                delta_norm = su3_norm_frob( &Wdiff );
+                if( delta_norm > max_delta_norm ) max_delta_norm = delta_norm;
+
+                if( 1==flag_detV ) {
+                  min_det_V = lattice[i].Vdet[idir];
+                  max_det_V = min_det_V;
+                  flag_detV = 0;
+                }
+                else {
+                  if( min_det_V > lattice[i].Vdet[idir] )
+                    min_det_V = lattice[i].Vdet[idir];
+                  if( max_det_V < lattice[i].Vdet[idir] )
+                    max_det_V = lattice[i].Vdet[idir];
+                }
+              }
+            }
+            g_doublemax( &max_delta_phase );
+            g_doublemax( &max_delta_norm );
+            min_det_V = -min_det_V;
+            g_doublemax( &min_det_V );
+            g_doublemax( &max_det_V );
+            min_det_V = -min_det_V;
+            node0_printf("PHASE_Y maximum jump: %28.14g\n", max_delta_phase );
+            node0_printf("NORM_W maximum jump: %28.14g\n", max_delta_norm );
+            node0_printf("DET_V minimum: %28.14g\n", min_det_V);
+            node0_printf("DET_V maximum: %28.14g\n", max_det_V);
+            }
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+            /*TEMP - monitor action*/ tempaction = d_action_rhmc(multi_x,sumvec);
+            /*TEMP - monitor action*/ node0_printf("DELTA_SO_FAR %e\n",tempaction-startaction);
+#endif /* MILC_GLOBAL_DEBUG */
         }	/* end loop over microcanonical steps */
     break;
     case INT_2EPS_3TO1:

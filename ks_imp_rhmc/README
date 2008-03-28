@@ -52,6 +52,90 @@ For the heatbath updating of the phi field, you need
 For the computation of the fermion action, you need
  (powers of determinants)^(-1/2)
 
+SAMPLE INPUT PARAMETER FILE
+
+# Always 0 for redirected stdin
+prompt 0
+
+# Lattice dimensions
+nx 6
+ny 6
+nz 6
+nt 6
+
+# Random number seed
+iseed 3546789
+
+# Number of pseudofermions -- 
+# must agree with the number in the rational function file
+n_pseudo 1
+
+# specification of the rational function file
+# See below for instructions for generating it
+load_rhmc_params rationals.sample.su3_omelyan_rhmc
+
+# gauge coupling
+beta 6.50
+
+# number of dynamical masses and the list of masses
+n_dyn_masses 2
+dyn_mass 0.01 0.05
+
+# degeneracies of flavors
+dyn_flavors 2 1
+
+# tadpole factor
+u0   0.862
+
+# The lines from here to the end can be repeated.  
+# Here we show only one instance
+
+# warmup sweeps (we usually set it to zero)
+warms 0
+
+# trajectories
+trajecs 2
+
+# interval between measurements
+traj_between_meas 1
+
+# molecular dynamics integration time step
+microcanonical_time_step 0.01
+
+# number of steps
+steps_per_trajectory 12
+
+# conjugate gradient (CG) tolerance for 
+#  md = molecular dynamics evolution
+#  fa = fermion action calculation
+#  gr = pseudofermion Gaussian random source setup
+# precision is measured as |A x - b|/|b| where || is the L2 norm
+cgresid_md_fa_gr .000002 .000002 .000002
+
+# maximum number of iterations for the CG in each instance
+max_multicg_md_fa_gr  1750  1750  1750
+
+# precision of the CG solution for each instance
+cgprec_md_fa_gr  1 2 2
+
+# precision of the fermion force calculation
+prec_ff 1
+
+# CG tolerance, max iterations, and max restarts for various measured quantities
+error_for_propagator .000001
+max_cg_prop 500
+max_cg_prop_restarts 5
+
+# input lattice
+reload_serial ../binary_samples/lat.sample.l6666b650m010m050
+
+# output lattice
+forget
+
+
+
+USING poly4 TO GENERATE THE RATIONAL FUNCTION FILE
+
 To generate rational function approximations, use a modified version of
 Mike Clark's code (requires the gnu multiple precision library)
 
@@ -89,25 +173,9 @@ two light quarks (mass .005) and one strange quark (mass .05), use
 this will generate the rational function approximation to
    (M^dagger M + 4*.005^2)^(-1/2) * (M^dagger M + 4*.05^2)^(-1/4)
 
-At this moment the output from poly4 is almost, but not exactly, in the form
-required for the include file.  You will have to take the three lines that define
-the orders of the approximations and put them outside the "#ifdef CONTROL"
-in the include file, and change the "_X" to "_1" or "_2", depending on
-whether this is the first or second factor in your fermion weight.
-
-Put these approximations into an include file "rationals.h".
-See for example ks_imp_rhmc/rationals_f21b650m050m100.h for a 2+1 flavor example
-or rationals_b676m005m050_80.h for an example where only one rational function
-is used.
-Note that all the arrays are "order+1" elements long.  The zero element of
-the "residues", or "A" array is the constant, and the zero element of
-the "roots" or "B" array is ignored.
-When using only one rational function, note that the arrays for the second
-one are just set to trivial values (but you have to do this)
-ALL SORTS OF MYSTERIOUS THINGS GO WRONG IF YOU HAVE MISTAKES IN THIS FILE.
-
-Recompile your code when you change this file!!   
-
 (*) a special case is 4 flavors, where the expansion of
 (M^dagger M + 4m^2) ^ (-nf/4) is trivial
 Use A = {0.0,1.0}, B={0.0,4*m^2}
+
+The output from poly4 is then an input file for the RHMC code.
+

@@ -9,6 +9,10 @@
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include "lattice_qdp.h"
 
+#ifdef MILC_GLOBAL_DEBUG
+#include "debug.h"
+#endif /* MILC_GLOBAL_DEBUG */
+
 /* For information */
 #define NULL_FP -1
 
@@ -40,6 +44,10 @@ main( int argc, char **argv )
   while( readin(prompt) == 0) {
     
     /* perform warmup trajectories */
+#ifdef MILC_GLOBAL_DEBUG
+    global_current_time_step = 0;
+#endif /* MILC_GLOBAL_DEBUG */
+
     dtime = -dclock();
     for( traj_done=0; traj_done < warms; traj_done++ ){
       update();
@@ -49,11 +57,26 @@ main( int argc, char **argv )
     /* perform measuring trajectories, reunitarizing and measuring 	*/
     meascount=0;		/* number of measurements 		*/
     avspect_iters = avs_iters = avbcorr_iters = 0;
+
     for( traj_done=0; traj_done < trajecs; traj_done++ ){ 
-      
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_REUNITARIZATION_DEBUG
+  {
+  int isite, idir;
+  site *s;
+  FORALLSITES(isite,s) {
+    for( idir=XUP;idir<=TUP;idir++ ) {
+      lattice[isite].on_step_Y[idir] = 0;
+      lattice[isite].on_step_W[idir] = 0;
+      lattice[isite].on_step_V[idir] = 0;
+    }
+  }
+  }
+#endif /* HISQ_REUNITARIZATION_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
       /* do the trajectories */
       s_iters=update();
-      
+
       /* measure every "propinterval" trajectories */
       if( (traj_done%propinterval)==(propinterval-1) ){
 	
@@ -61,8 +84,13 @@ main( int argc, char **argv )
 	/* results are printed in output file */
 	rephase(OFF);
 	g_measure( );
+#ifdef MILC_GLOBAL_DEBUG
+        g_measure_plaq( );
+#ifdef MEASURE_AND_TUNE_HISQ
+        g_measure_tune( );
+#endif /* MEASURE_AND_TUNE_HISQ */
+#endif /* MILC_GLOBAL_DEBUG */
 	rephase(ON);
-
 	/* Do some fermion measurements */
 #ifdef SPECTRUM 
 	/* Fix TUP Coulomb gauge - gauge links only*/
@@ -78,9 +106,12 @@ main( int argc, char **argv )
 
 	for(i=0;i<n_dyn_masses;i++){
 	  // Remake the path table if the fermion coeffs change for this mass
-	  if(make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,dyn_mass[i]))
+// DT IT CAN"T BE RIGHT TO CALL IT WITH dyn_mass
+	  //if(make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,dyn_mass[i]))
+	  if(make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,   0.0/*TEMP*/   ))
 	    {
 	      // If they change, invalidate only fat and long links
+node0_printf("INVALIDATE\n");
 	      invalidate_all_ferm_links(&fn_links);
 #ifdef DM_DU0
 	      invalidate_all_ferm_links(&fn_links_dmdu0);

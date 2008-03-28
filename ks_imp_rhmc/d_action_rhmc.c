@@ -46,8 +46,12 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
   double sum;
   int iphi; 
   sum=0.0;
-  load_ferm_links(&fn_links, &ks_act_paths);
   for(iphi = 0; iphi < n_pseudo; iphi++){
+    //fn_links.hl.valid_X_links = 0; // overkill - should do only when coefficients change
+    //fn_links.hl.valid_all_links = 0;
+    invalidate_fn_links(&fn_links);
+    make_path_table(&ks_act_paths, &ks_act_paths_dmdu0, rparam[iphi].naik_term_mass);
+    load_ferm_links(&fn_links, &ks_act_paths);
     ks_ratinv( F_OFFSET(phi[iphi]), multi_x, rparam[iphi].FA.pole, 
 	       rparam[iphi].FA.order, niter_fa[iphi], rsqmin_fa[iphi], 
 	       prec_fa[iphi], EVEN, &final_rsq, &fn_links );

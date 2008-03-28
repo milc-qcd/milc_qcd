@@ -3,6 +3,9 @@
 *  Include files for Kogut-Susskind dynamical improved action application
 */
 
+#ifndef KS_IMP_INCLUDES_H_
+#define KS_IMP_INCLUDES_H_
+
 /* Include files */
 #include "../include/config.h"  /* Keep this first */
 #include <stdio.h>
@@ -97,4 +100,6 @@ double d_action_rhmc(su3_vector **multi_x, su3_vector *sumvec );
 void gauge_field_copy(field_offset src,field_offset dest);
 double fermion_action( su3_vector **multi_x, su3_vector *sumvec );
 double hmom_action( );
+
+#endif /* KS_IMP_INCLUDES_H_ */
 
