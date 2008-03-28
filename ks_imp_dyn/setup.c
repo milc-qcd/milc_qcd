@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.15  2008/03/28 15:09:19  detar
+//  Fix coding errors for fixed geometry
+//
 //  Revision 1.14  2007/12/14 04:51:19  detar
 //  Side effects of adding HISQ code.
 //
@@ -74,6 +77,7 @@ gauge_file *r_binary_i(char *);
 void r_binary(gauge_file *);
 void r_binary_f(gauge_file *);
 void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
+void make_3n_gathers();
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
@@ -83,7 +87,6 @@ int
 setup()
 {
   int initial_set();
-  void make_3n_gathers();
 #ifdef HAVE_QDP
   int i;
 #endif
@@ -138,6 +141,9 @@ int
 initial_set()
 {
   int prompt,status;
+#ifdef FIX_NODE_GEOM
+  int i;
+#endif
   /* On node zero, read lattice size, seed, nflavors1, nflavors2,
      nflavors, and send to others */
   if(mynode()==0){
@@ -190,10 +196,10 @@ initial_set()
     IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
 #ifdef FIX_NODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "node_geometry", 
-			   par_buf.compute_geom, 4);
+			   par_buf.node_geometry, 4);
 #ifdef FIX_IONODE_GEOM
     IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
-			   par_buf.compute_geom, 4);
+			   par_buf.ionode_geometry, 4);
 #endif
 #endif
     IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
@@ -213,10 +219,10 @@ initial_set()
   nt=par_buf.nt;
 #ifdef FIX_NODE_GEOM
   for(i = 0; i < 4; i++)
-    node_geometry[i] = par_buf.node_geometry[i]
+    node_geometry[i] = par_buf.node_geometry[i];
 #ifdef FIX_IONODE_GEOM
   for(i = 0; i < 4; i++)
-    ionode_geometry[i] = par_buf.ionode_geometry[i]
+    ionode_geometry[i] = par_buf.ionode_geometry[i];
 #endif
 #endif
   iseed=par_buf.iseed;

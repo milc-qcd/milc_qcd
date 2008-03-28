@@ -47,6 +47,7 @@ MY_HEADERS = \
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 MY_OBJECTS= \
+  clover_info.o \
   control.o \
   gauge_info.o \
   setup.o \
@@ -89,6 +90,16 @@ G_KS_OBJECTS = \
   quark_stuff.o \
   show_generic_ks_opts.o \
   rephase.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_KS_OBJECTS += io_scidac_ks.o
+endif
+
+G_WILSON_OBJECTS = 
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_WILSON_OBJECTS += io_scidac_w.o
+endif
 
 SPECTRUM_OBJECTS = \
   ape_smear.o \
@@ -230,8 +241,8 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${LAYOUT} \
-  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_WILSON_OBJECTS} \
+  ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
@@ -255,7 +266,8 @@ ALL_MAKES = \
    ../Make_template_qop \
    ../Make_template_scidac \
    ../generic/Make_template \
-   ../generic_ks/Make_template
+   ../generic_ks/Make_template \
+   ../generic_wilson/Make_template
 
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
@@ -504,6 +516,9 @@ include ../generic/Make_template
 
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
