@@ -21,13 +21,13 @@
 #include "cl_inv_includes.h"
 #include <string.h>
 #ifdef HAVE_QDP
+#include "lattice_qdp.h"
 #include <qdp.h>
 #endif
 
 int main(int argc, char *argv[])
 {
   int prompt;
-  Real avm_iters;
   int i, iq0, iq1;
   double starttime, endtime, dtime;
   wilson_prop_field quark_prop[MAX_QK];
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     
     starttime=dclock();
     
-    avm_iters=0.0;
+    total_iters=0;
     
     /**************************************************************/
     /* Set up gauge field */
@@ -77,14 +77,8 @@ int main(int argc, char *argv[])
 
     for(i=0; i<param.num_qk; i++){
       
-      if(this_node==0)printf("Kappa= %g source %s residue= %g rel= %g\n",
-			     (double)param.dcp[i].Kappa,
-			     param.src_wqs[i].descrp,
-			     (double)param.qic.resid,
-			     (double)param.qic.relresid);
-      
       /**************************************************************/
-      /* Read and/or generate antiquark propagator in Pauli basis */
+      /* Read and/or generate quark propagator */
 
       quark_prop[i] = create_wp_field();
 
@@ -94,15 +88,44 @@ int main(int argc, char *argv[])
       }
       
       
-      total_iters += get_wprop_to_wp_field(param.startflag_w[i], 
-					   param.startfile_w[i], 
-					   param.saveflag_w[i], 
-					   param.savefile_w[i],
-					   quark_prop[i], 
-					   &param.src_wqs[i], &param.qic, 
-					   &param.dcp[i],
-					   param.check[i]);
+      if(param.qk_type[i] == CLOVER_TYPE)
+	{
+	  
+	  if(this_node==0)printf("Kappa= %g source %s residue= %g rel= %g\n",
+				 (double)param.dcp[i].Kappa,
+				 param.src_wqs[i].descrp,
+				 (double)param.qic.resid,
+				 (double)param.qic.relresid);
+	  
+	  total_iters += get_wprop_to_wp_field(param.startflag_w[i], 
+					       param.startfile_w[i], 
+					       param.saveflag_w[i], 
+					       param.savefile_w[i],
+					       quark_prop[i], 
+					       &param.src_wqs[i], &param.qic, 
+					       &param.dcp[i],
+					       param.check[i]);
+	}
 	
+      else /* KS_PROP */
+	{
+
+	  if(this_node==0)printf("Mass= %g source %s residue= %g rel= %g\n",
+				 (double)param.ksp[i].mass,
+				 param.src_ksqs[i].descrp,
+				 (double)param.qic.resid,
+				 (double)param.qic.relresid);
+	  
+	  total_iters += get_ksprop_to_wp_field(param.startflag_ks[i], 
+						param.startfile_ks[i], 
+						param.saveflag_ks[i], 
+						param.savefile_ks[i],
+						quark_prop[i], 
+						&param.src_ksqs[i], &param.qic, 
+						&param.ksp[i],
+						param.check[i]);
+	}
+      
     } /* quarks */
 
     /* Compute the meson propagators */

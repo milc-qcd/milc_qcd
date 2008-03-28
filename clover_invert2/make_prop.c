@@ -22,7 +22,7 @@ int get_wprop_to_wp_field(int startflag, char startfile[],
 
   dst = (wilson_vector *)malloc(sizeof(wilson_vector)*sites_on_node);
   if(dst == NULL){
-    printf("get_wprop_to_field(%d): No room for dst\n",this_node);
+    printf("get_wprop_to_wp_field(%d): No room for dst\n",this_node);
     terminate(1);
   }
 
@@ -35,28 +35,26 @@ int get_wprop_to_wp_field(int startflag, char startfile[],
   fp_out = w_open_wprop(saveflag,  savefile, my_wqs->type);
 
   /* Loop over source colors and spins */
-    for(spin=0;spin<4;spin++)
-      for(color=0;color<3;color++){
+  for(spin=0;spin<4;spin++)
+    for(color=0;color<3;color++){
       
-	status = reload_wprop_sc_to_field(startflag, fp_in, my_wqs, 
-					  spin, color, dst, 1);
+	
+      status = reload_wprop_sc_to_field(startflag, fp_in, my_wqs, 
+					spin, color, dst, 1);
       
       /* (Re)construct propagator */
       
-      if(startflag == FRESH){
-	my_qic->start_flag = START_ZERO_GUESS;
-      } else {
-	my_qic->start_flag = START_NONZERO_GUESS;      
-      }
+      if(startflag == FRESH)my_qic->start_flag = START_ZERO_GUESS;
+      else                  my_qic->start_flag = START_NONZERO_GUESS;      
       
       /* Complete the source structure */
       my_wqs->color = color;
       my_wqs->spin = spin;
       
-      if(check){  /* Provision for suppressing checking */
+      if(check || startflag == FRESH){  /* Provision for suppressing checking */
 	
 	/* solve for dst */
-	
+
 	switch (cl_cg) {
 	case BICG:
 	  avs_iters =
@@ -101,6 +99,96 @@ int get_wprop_to_wp_field(int startflag, char startfile[],
   /* close files for wilson propagators */
   r_close_wprop(startflag, fp_in);
   w_close_wprop(saveflag,  fp_out);
+
+  free(dst);
+
+  return tot_iters;
+}
+
+int get_ksprop_to_wp_field(int startflag, char startfile[], 
+			   int saveflag, char savefile[],
+			   wilson_prop_field wp,
+			   ks_quark_source *my_ksqs,
+			   quark_invert_control *my_qic,
+			   ks_param *my_ksp,
+			   int check)
+{
+  int color;
+  int avs_iters;
+  int tot_iters = 0;
+  int status;
+  int ks_source_r[4];
+  su3_vector *dst;
+  ks_prop_file *fp_in, *fp_out; 
+
+  dst = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
+  if(dst == NULL){
+    printf("get_ksprop_to_wp_field(%d): No room for dst\n",this_node);
+    terminate(1);
+  }
+
+  /* For ksprop_info */
+  ksqstmp = *my_ksqs;
+  ksptmp  = *my_ksp;
+
+  /* Open files for KS propagators, if requested */
+  fp_in  = r_open_ksprop(startflag, startfile);
+  fp_out = w_open_ksprop(saveflag,  savefile, my_ksqs->type);
+
+  /* Loop over source colors */
+  rephase( ON);
+  for(color=0;color<3;color++){
+    
+    /* Read color vector (and source as appropriate) from file */
+    status = reload_ksprop_c_to_field(startflag, fp_in, my_ksqs, 
+				      color, dst, 1);
+    /* (Re)construct propagator */
+    
+    if(startflag == FRESH) my_qic->start_flag = START_ZERO_GUESS;
+    else                   my_qic->start_flag = START_NONZERO_GUESS;      
+    
+    /* Complete the source structure */
+    my_ksqs->color = color;
+    
+    /* Check the solution */
+    if(check || startflag == FRESH){
+      if(make_path_table(&ks_act_paths, NULL, my_ksp->mass))
+	invalidate_all_ferm_links(&fn_links);
+      load_ferm_links(&fn_links, &ks_act_paths);
+
+      /* In most use cases we will be reading a precomputed staggered
+	 propagator, so we use the less optimized mat_invert_cg_field
+	 algorithm, instead of mat_invert_uml_field here to avoid
+	 "reconstructing", and so overwriting the odd-site solution.
+	 This would be a degradation if the propagator was precomputed
+	 in double precision, and we were doing single precision
+	 here. If we start using this code to compute the propagator
+	 from a fresh start, we could make the selection of the
+	 inverter algorithm dependent on the propagator start flag.
+	 FRESH -> uml and otherwise cg. */
+      avs_iters =
+	(Real)ks_invert_ksqs(my_ksqs, ks_source_field, dst,
+			     mat_invert_cg_field,
+			     my_qic, my_ksp->mass, &fn_links);
+    }
+    
+    /* save solution if requested */
+    save_ksprop_c_from_field( saveflag, fp_out, my_ksqs, color, dst, "", 1);
+    
+    /* Convert KS prop to naive prop (su3_vector maps to
+       spin_wilson_vector) for a given source color */
+    ks_source_r[0] = my_ksqs->x0;  ks_source_r[1] = my_ksqs->y0;
+    ks_source_r[2] = my_ksqs->z0;  ks_source_r[3] = my_ksqs->t0;
+    
+    convert_ksprop_to_wprop_swv(wp[color], dst, ks_source_r);
+    
+    tot_iters += avs_iters;
+  } /* source color */
+  rephase( OFF);
+  
+  /* close files for staggered propagators */
+  r_close_ksprop(startflag, fp_in);
+  w_close_ksprop(saveflag,  fp_out);
 
   free(dst);
 

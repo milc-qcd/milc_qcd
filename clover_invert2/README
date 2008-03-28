@@ -1,6 +1,6 @@
-lover_invert2
+clover_invert2
 
-C. DeTar 6/2/2007
+C. DeTar 1/27/2008
 
 Code for generating clover propagators and contracting "meson" and
 baryon two point functions.  Propagators can be generated from any
@@ -21,15 +21,20 @@ dimensions.
   nx 4
   ny 4
   nz 4
-  nt 4
+  nt 8
+
+Next comes the job ID:
+
+  job_id 203696.kaon2.fnal.gov
   
 The gauge field options come next. (Parameter file comment lines are
 optional and begin with "#".)
  
   # Gauge field description
   
-  reload_serial ../binary_samples/lat.sample.l4444
-  coulomb_gauge_fix
+  reload_serial ../binary_samples/lat.sample.l4448.ll
+  u0 1.0
+  no_gauge_fix
   forget
 
 The code understands MILC, FNAL, NERSC, and SciDAC lattice file
@@ -65,9 +70,11 @@ The next series of stanzas specifies the quarks involved in the mesons.
 
 Parameters for the first quark
 
-  kappa 0.1
-  clov_c 1.2    # In MILC convention the clover coeff is clov_c/u0^3
-  u0 1.0
+  quark_type KS
+  mass 0.1
+
+Choices for quark types are "KS" and "clover".  See clover example
+below.
 
 The next line specifies whether the code should read the propagator
 file with or without checking it against the gauge field and source.
@@ -78,67 +85,64 @@ Choices are "yes" and "no".
   
 Propagator files for this quark
 
-  fresh_wprop
-  save_serial_fm_sc_wprop prop.test1
+  reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+  save_serial_scidac_ksprop ksprop.test2
 
-The code recognizes both FNAL formats and the MILC propagator formats.
-The line "fresh_wprop" starts from a zero guess.  To read a propagator
-file, use
+The code recognizes FNAL, MILC, and SciDAC KS formats.
 
-           reload_serial_wprop filename
+The line "fresh_ksprop" instead of "reload..." starts from a zero
+guess.  The line "forget_ksprop" suppresses output.
 
-For the archival FNAL format, use save_serial_fm_wprop.  Eventually,
-we will support save_serial_scidac_wprop and
-save_partfile_scidac_wprop.  Currently those commands generate a
-nonstandard SciDAC format.
-  
 The next stanza specifies the source for the first quark.
 
   # source 
   
-  gaussian
-  origin 0 0 0 0     # x y z t
-  r0 1.5             # exp[-(r/r0)^2]
+  point
+  origin 0 0 0 0
+  source_label d
 
+The source label is available for labeling output correlators.
 Options here are "point", "covariant_gaussian", "complex_field", and
 "dirac_field".  Each has its own stanza format.  Here are examples of
 each
 
-              point
-              origin 0 0 0 0
+              gaussian
+              origin 0 0 0 0     # x y z t
+              r0 1.5             # exp[-(r/r0)^2]
 
               complex_field  (or dirac_field)
               t0 0       # time slice
               load_source  sourcefile
+              momentum 1 0 0   # momentum insertion
 
               covariant_gaussian
               origin 0 0 0 0
               r0 1.5
               source_iters 10
 
-FNAL rotation parameter for this quark
-
-  # d1
-
-  d1 0.1
-
-Do the same for the remaining quarks.
+Here is how we do it for a clover quark
   
   # quark 1
   
-  kappa 0.1
-  clov_c 1.2
-  u0 1.0
-  check yes
-  
+  quark_type clover
+  kappa 0.124
+  clov_c 1.0
+  check no
+
   fresh_wprop
-  save_serial_fm_sc_wprop prop.test2
+  save_serial_scidac_wprop wprop.test1
+  
+For the archival FNAL format, use save_serial_fm_wprop.  For SciDAC
+formats, use save_serial_scidac_wprop and save_partfile_scidac_wprop.
   
   # source
   
   gaussian
   origin 0 0 0 0
   r0 1.5
+  source_label 1S
+
+Clover quarks then require an FNAL rotation parameter:
 
   # d1
  
@@ -153,33 +157,100 @@ First we specify which pairings of quarks are needed.
   
   # pair 1
   
-  pair 0 0
+  pair 0 1
 
 Count quarks from 0.  This line specifies that we want to combine the
-first quark mentioned above with itself (as an antiquark in the meson)
-or to combine three of the first quark as a baryon.
+first quark mentioned above with the second (as an antiquark in the
+meson) or to combine three of the first quark as a baryon.
   
 The next line specifies the hadron propagators to be constructed.
 
-  spectrum_request point,3drotated,baryon
+  spectrum_request 3drotated
 
 This is a comma-separated list with NO spaces.  Choices are "point"
 for mesons with a point sink, "rotated" for mesons with a point
 rotated sink, "smeared" for a specified sink meson wave function,
 "baryon" for baryon propagators.
 
-When a "3drotated" correlator is requested, the next line should
-specify the rotation parameter "d1" as follows:
+Specify the FNAL-format ASCII output file for the correlators
 
-d1 0.1
+  save_corr_fnal out.test.fnal_corr.1
 
-We repeat for each desired pairing of quarks.
+Output is appended to this file.
+
+Here are the correlator specifications that reproduce the
+current two-point functions of the ks_hl_spectrum code.
+
+# correlators for pair 1
+
+number_of_correlators 26
+
+# The fields are as follows:
+
+# labels for gammas and momentum.  All correlators
+#    with the same pair of such labels are averaged
+
+# phase, operator, factor.  These normalize the
+#    correlator.  The phase must be "1" "i" "-1" and "-i".
+#    The operator is "*" or "/".
+#    The factor is any real number.
+#    If the operator is "/", the correlator is 
+#    multiplied by the ratio phase/factor.
+
+# source and sink gammas
+
+# momentum components
+# reflection parity of the momenta
+
+#    The parity labels are "E", "O", "EO" for even, odd, and none.
+#    With E the correlator is calculated with both signs of the
+#    corresponding momentum component and averaged.  So the Fourier
+#    factor for that component is cos(k x).  With O the factor is
+#    i sin(k x).  With EO the factor is the usual exp(i k x).
+#    This way, we don't need to specify reflections of the
+#    momentum components explicitly.
+
+  correlator  A4_P5 p000  i * 1 G5 G5T 0 0 0 E E E
   
-  # pair 2
+  correlator  A4_P5 p100  i * 1 G5 G5T 1 0 0 E E E
+  correlator  A4_P5 p100  i * 1 G5 G5T 0 1 0 E E E
+  correlator  A4_P5 p100  i * 1 G5 G5T 0 0 1 E E E
+  			    
+  correlator  A4_P5 p110  i * 1 G5 G5T 1 1 0 E E E
+  correlator  A4_P5 p110  i * 1 G5 G5T 0 1 1 E E E
+  correlator  A4_P5 p110  i * 1 G5 G5T 1 0 1 E E E
+  			    
+  correlator  A4_P5 p111  i * 1 G5 G5T 1 1 1 E E E
+  			    
+  correlator  A4_P5 p200  i * 1 G5 G5T 2 0 0 E E E
+  correlator  A4_P5 p200  i * 1 G5 G5T 0 2 0 E E E
+  correlator  A4_P5 p200  i * 1 G5 G5T 0 0 2 E E E
+  			    
+  correlator  A1_P5 p100 -1 * 1 G5 G5X 1 0 0 O E E
+  correlator  A1_P5 p100  1 * 1 G5 G5Y 0 1 0 E O E
+  correlator  A1_P5 p100 -1 * 1 G5 G5Z 0 0 1 E E O
+  			    
+  correlator  A1_P5 p110 -1 * 1 G5 G5X 1 1 0 O E E
+  correlator  A1_P5 p110 -1 * 1 G5 G5X 1 0 1 O E E
+  correlator  A1_P5 p110  1 * 1 G5 G5Y 1 1 0 E O E
+  correlator  A1_P5 p110  1 * 1 G5 G5Y 0 1 1 E O E
+  correlator  A1_P5 p110 -1 * 1 G5 G5Z 0 1 1 E E O
+  correlator  A1_P5 p110 -1 * 1 G5 G5Z 1 0 1 E E O
+  			    
+  correlator  A1_P5 p111 -1 * 1 G5 G5X 1 1 1 O E E
+  correlator  A1_P5 p111  1 * 1 G5 G5Y 1 1 1 E O E
+  correlator  A1_P5 p111 -1 * 1 G5 G5Z 1 1 1 E E O
+  			    
+  correlator  A1_P5 p200 -1 * 1 G5 G5X 2 0 0 O E E
+  correlator  A1_P5 p200  1 * 1 G5 G5Y 0 2 0 E O E
+  correlator  A1_P5 p200 -1 * 1 G5 G5Z 0 0 2 E E O
   
-  pair 0 1
-  
+# pair 2
+
+  pair 0 1 
   spectrum_request point,smeared
+
+# smearing for pair 2
 
 When a "smeared" meson is specified, the code expects a sink
 description to follow.  Please note that sink smearing means
@@ -189,65 +260,169 @@ of smearing in which the quark and antiquark propagators are
 separately smeared, but if that is required, it is easy to add it to
 the code.
 
-  # sink
-  
-  gaussian
-  origin 0 0 0
-  r0 1.5
-  wave_func_label gaussian1.5    # label identifying the sink
+  complex_field_fm
+  load_sink ../binary_samples/smear_fm.sample.l4448.ll
+  sink_label 1S
 
 The sink specification is nearly the same as the source, except there
 are more limited options and we also require a label to identify the
-sinnk.  The covariant gaussian and Dirac wave functions didn't seem to
+sink.  The covariant gaussian and Dirac wave functions didn't seem to
 make sense, so they were dropped.  Since the specification applies to
 all time slices, the time coordinate is not given.
 
-The next stanza specifies the source and sink gamma matrices to be
-applied in the meson contraction.  It also gives a label to each meson
-and specifies a phase factor to multiply the correlator.
-  
-  # Meson labels, gamma matrices and correlator phase factor
-  
-  number_of_mesons 17
-  
-  meson_source_sink PION G5 G5     1
-  meson_source_sink PS505 G5T G5   1
-  meson_source_sink PS0505 G5T G5T -1
-  meson_source_sink RHO GX GX      1
-  meson_source_sink RHO GY GY      1
-  meson_source_sink RHO GZ GZ      1
-  meson_source_sink RHO0 GXT GXT	 1
-  meson_source_sink RHO0 GYT GYT	 1
-  meson_source_sink RHO0 GZT GZT	 1
-  meson_source_sink SCALAR G1 G1   1
-  meson_source_sink SCAL0 GT GT    1
-  meson_source_sink PV G5X G5X   	 1
-  meson_source_sink PV G5Y G5Y   	 1
-  meson_source_sink PV G5Z G5Z   	 1
-  meson_source_sink B GXY GXY      -1
-  meson_source_sink B GYZ GYZ      -1
-  meson_source_sink B GZX GZX      -1
+Again, you specify the FNAL output file:
 
-In each line the first field is the meson label, the second two
-specify the source and sink gamma matrices and the last specifies the
-phase.  When a label is repeated, as we did in four cases, the
-correlators are averaged.  The gamma matrix notation is
-straightforward.  The 16 choices are
+  save_corr_fnal out.test.fnal_corr.1
 
-   GX, GY, GZ, GT, G5, GYZ, GZX, GXY, GXT, GYT, GZT,  G5X, G5Y, G5Z, G5T, G1
+If you repeat the file name, the results will be appended.
 
-where G1 is the identity.
+Here are the correlator specifications that reproduce the
+mesons of the ks_hl_spectrum code.
 
-The phase factor is limited to "1", "i", "-1", "-i".
-
-The final stanza specifies the meson momentum labels and components.
-  
-  # Meson momenta
-  
-  number_of_meson_momenta 4
-  
-  momentum p000 0 0 0     # kx ky kz
-  momentum p100 1 0 0
-  momentum p100 0 1 0
-  momentum p100 0 0 1
-  
+correlator  pi    p100  1 * 1 G5 G5 1 0 0 E E E
+correlator  pi    p100  1 * 1 G5 G5 0 1 0 E E E
+correlator  pi    p100  1 * 1 G5 G5 0 0 1 E E E
+			    
+correlator  pi    p110  1 * 1 G5 G5 1 1 0 E E E
+correlator  pi    p110  1 * 1 G5 G5 1 0 1 E E E
+correlator  pi    p110  1 * 1 G5 G5 0 1 1 E E E
+			    
+correlator  pi    p111  1 * 1 G5 G5 1 1 1 E E E
+			    
+correlator  pi    p200  1 * 1 G5 G5 2 0 0 E E E
+correlator  pi    p200  1 * 1 G5 G5 0 2 0 E E E
+correlator  pi    p200  1 * 1 G5 G5 0 0 2 E E E
+			    
+correlator  pi    p210  1 * 1 G5 G5 2 1 0 E E E
+correlator  pi    p210  1 * 1 G5 G5 2 0 1 E E E
+correlator  pi    p210  1 * 1 G5 G5 0 2 1 E E E
+correlator  pi    p210  1 * 1 G5 G5 1 2 0 E E E
+correlator  pi    p210  1 * 1 G5 G5 1 0 2 E E E
+correlator  pi    p210  1 * 1 G5 G5 0 1 2 E E E
+			    
+correlator  pi    p211  1 * 1 G5 G5 2 1 1 E E E
+correlator  pi    p211  1 * 1 G5 G5 1 2 1 E E E
+correlator  pi    p211  1 * 1 G5 G5 1 1 2 E E E
+			    
+correlator  pi    p220  1 * 1 G5 G5 2 2 0 E E E
+correlator  pi    p220  1 * 1 G5 G5 0 2 2 E E E
+correlator  pi    p220  1 * 1 G5 G5 2 0 2 E E E
+			    
+correlator  pi    p300  1 * 1 G5 G5 3 0 0 E E E
+correlator  pi    p300  1 * 1 G5 G5 0 3 0 E E E
+correlator  pi    p300  1 * 1 G5 G5 0 0 3 E E E
+			    
+correlator  pi    p221  1 * 1 G5 G5 2 2 1 E E E
+correlator  pi    p221  1 * 1 G5 G5 2 1 2 E E E
+correlator  pi    p221  1 * 1 G5 G5 1 2 2 E E E
+			    
+correlator  pi    p400  1 * 1 G5 G5 4 0 0 E E E
+correlator  pi    p400  1 * 1 G5 G5 0 4 0 E E E
+correlator  pi    p400  1 * 1 G5 G5 0 0 4 E E E
+			    
+correlator  ro_1  p000  1 * 3 GX GX 0 0 0 E E E
+correlator  ro_1  p000  1 * 3 GY GY 0 0 0 E E E
+correlator  ro_1  p000  1 * 3 GZ GZ 0 0 0 E E E
+			    
+correlator  ro_1  p100  1 * 3 GX GX 1 0 0 E E E
+correlator  ro_1  p100  1 * 3 GX GX 0 1 0 E E E
+correlator  ro_1  p100  1 * 3 GX GX 0 0 1 E E E
+correlator  ro_1  p100  1 * 3 GY GY 1 0 0 E E E
+correlator  ro_1  p100  1 * 3 GY GY 0 1 0 E E E
+correlator  ro_1  p100  1 * 3 GY GY 0 0 1 E E E
+correlator  ro_1  p100  1 * 3 GZ GZ 1 0 0 E E E
+correlator  ro_1  p100  1 * 3 GZ GZ 0 1 0 E E E
+correlator  ro_1  p100  1 * 3 GZ GZ 0 0 1 E E E
+			    
+correlator  ro_1  p110  1 * 3 GX GX 1 1 0 E E E
+correlator  ro_1  p110  1 * 3 GX GX 1 0 1 E E E
+correlator  ro_1  p110  1 * 3 GX GX 0 1 1 E E E
+correlator  ro_1  p110  1 * 3 GY GY 1 1 0 E E E
+correlator  ro_1  p110  1 * 3 GY GY 1 0 1 E E E
+correlator  ro_1  p110  1 * 3 GY GY 0 1 1 E E E
+correlator  ro_1  p110  1 * 3 GZ GZ 1 1 0 E E E
+correlator  ro_1  p110  1 * 3 GZ GZ 1 0 1 E E E
+correlator  ro_1  p110  1 * 3 GZ GZ 0 1 1 E E E
+			    
+correlator  ro_1  p111  1 * 3 GX GX 1 1 1 E E E
+correlator  ro_1  p111  1 * 3 GY GY 1 1 1 E E E
+correlator  ro_1  p111  1 * 3 GZ GZ 1 1 1 E E E
+			    
+correlator  ro_1  p200  1 * 3 GX GX 2 0 0 E E E
+correlator  ro_1  p200  1 * 3 GX GX 0 2 0 E E E
+correlator  ro_1  p200  1 * 3 GX GX 0 0 2 E E E
+correlator  ro_1  p200  1 * 3 GY GY 2 0 0 E E E
+correlator  ro_1  p200  1 * 3 GY GY 0 2 0 E E E
+correlator  ro_1  p200  1 * 3 GY GY 0 0 2 E E E
+correlator  ro_1  p200  1 * 3 GZ GZ 2 0 0 E E E
+correlator  ro_1  p200  1 * 3 GZ GZ 0 2 0 E E E
+correlator  ro_1  p200  1 * 3 GZ GZ 0 0 2 E E E
+			    
+correlator  ro_1  p210  1 * 3 GX GX 2 1 0 E E E
+correlator  ro_1  p210  1 * 3 GX GX 2 0 1 E E E
+correlator  ro_1  p210  1 * 3 GX GX 0 2 1 E E E
+correlator  ro_1  p210  1 * 3 GX GX 1 2 0 E E E
+correlator  ro_1  p210  1 * 3 GX GX 1 0 2 E E E
+correlator  ro_1  p210  1 * 3 GX GX 0 1 2 E E E
+correlator  ro_1  p210  1 * 3 GY GY 2 1 0 E E E
+correlator  ro_1  p210  1 * 3 GY GY 2 0 1 E E E
+correlator  ro_1  p210  1 * 3 GY GY 0 2 1 E E E
+correlator  ro_1  p210  1 * 3 GY GY 1 2 0 E E E
+correlator  ro_1  p210  1 * 3 GY GY 1 0 2 E E E
+correlator  ro_1  p210  1 * 3 GY GY 0 1 2 E E E
+correlator  ro_1  p210  1 * 3 GZ GZ 2 1 0 E E E
+correlator  ro_1  p210  1 * 3 GZ GZ 2 0 1 E E E
+correlator  ro_1  p210  1 * 3 GZ GZ 0 2 1 E E E
+correlator  ro_1  p210  1 * 3 GZ GZ 1 2 0 E E E
+correlator  ro_1  p210  1 * 3 GZ GZ 1 0 2 E E E
+correlator  ro_1  p210  1 * 3 GZ GZ 0 1 2 E E E
+			    
+correlator  ro_1  p211  1 * 3 GX GX 2 1 1 E E E
+correlator  ro_1  p211  1 * 3 GX GX 1 2 1 E E E
+correlator  ro_1  p211  1 * 3 GX GX 1 1 2 E E E
+correlator  ro_1  p211  1 * 3 GY GY 2 1 1 E E E
+correlator  ro_1  p211  1 * 3 GY GY 1 2 1 E E E
+correlator  ro_1  p211  1 * 3 GY GY 1 1 2 E E E
+correlator  ro_1  p211  1 * 3 GZ GZ 2 1 1 E E E
+correlator  ro_1  p211  1 * 3 GZ GZ 1 2 1 E E E
+correlator  ro_1  p211  1 * 3 GZ GZ 1 1 2 E E E
+			    
+correlator  ro_1  p220  1 * 3 GX GX 2 2 0 E E E
+correlator  ro_1  p220  1 * 3 GX GX 2 0 2 E E E
+correlator  ro_1  p220  1 * 3 GX GX 0 2 2 E E E
+correlator  ro_1  p220  1 * 3 GY GY 2 2 0 E E E
+correlator  ro_1  p220  1 * 3 GY GY 2 0 2 E E E
+correlator  ro_1  p220  1 * 3 GY GY 0 2 2 E E E
+correlator  ro_1  p220  1 * 3 GZ GZ 2 2 0 E E E
+correlator  ro_1  p220  1 * 3 GZ GZ 2 0 2 E E E
+correlator  ro_1  p220  1 * 3 GZ GZ 0 2 2 E E E
+			    
+correlator  ro_1  p221  1 * 3 GX GX 2 2 1 E E E
+correlator  ro_1  p221  1 * 3 GX GX 2 1 2 E E E
+correlator  ro_1  p221  1 * 3 GX GX 1 2 2 E E E
+correlator  ro_1  p221  1 * 3 GY GY 2 2 1 E E E
+correlator  ro_1  p221  1 * 3 GY GY 2 1 2 E E E
+correlator  ro_1  p221  1 * 3 GY GY 1 2 2 E E E
+correlator  ro_1  p221  1 * 3 GZ GZ 2 2 1 E E E
+correlator  ro_1  p221  1 * 3 GZ GZ 2 1 2 E E E
+correlator  ro_1  p221  1 * 3 GZ GZ 1 2 2 E E E
+			    
+correlator  ro_1  p300  1 * 3 GX GX 3 0 0 E E E
+correlator  ro_1  p300  1 * 3 GX GX 0 3 0 E E E
+correlator  ro_1  p300  1 * 3 GX GX 0 0 3 E E E
+correlator  ro_1  p300  1 * 3 GY GY 3 0 0 E E E
+correlator  ro_1  p300  1 * 3 GY GY 0 3 0 E E E
+correlator  ro_1  p300  1 * 3 GY GY 0 0 3 E E E
+correlator  ro_1  p300  1 * 3 GZ GZ 3 0 0 E E E
+correlator  ro_1  p300  1 * 3 GZ GZ 0 3 0 E E E
+correlator  ro_1  p300  1 * 3 GZ GZ 0 0 3 E E E
+			    
+correlator  ro_1  p400  1 * 3 GX GX 4 0 0 E E E
+correlator  ro_1  p400  1 * 3 GX GX 0 4 0 E E E
+correlator  ro_1  p400  1 * 3 GX GX 0 0 4 E E E
+correlator  ro_1  p400  1 * 3 GY GY 4 0 0 E E E
+correlator  ro_1  p400  1 * 3 GY GY 0 4 0 E E E
+correlator  ro_1  p400  1 * 3 GY GY 0 0 4 E E E
+correlator  ro_1  p400  1 * 3 GZ GZ 4 0 0 E E E
+correlator  ro_1  p400  1 * 3 GZ GZ 0 4 0 E E E
+correlator  ro_1  p400  1 * 3 GZ GZ 0 0 4 E E E

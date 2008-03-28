@@ -1,20 +1,22 @@
 SU3 clover valence fermions
 MIMD version 7 $Name:  $
 Machine = QMP (portable), with 1 nodes
-start: Sun Oct  7 11:51:28 2007
+start: Tue Feb 12 22:35:00 2008
 
 type 0 for no prompts  or 1 for prompts
 nx 4
 ny 4
 nz 4
 nt 4
+job_id 203696.kaon2.fnal.gov
 LAYOUT = Hypercubes, options = hyper_prime,
 ON EACH NODE 4 x 4 x 4 x 4
-Mallocing 0.3 MBytes per node for lattice
+Mallocing 0.2 MBytes per node for lattice
 
 
 # Gauge field description
 reload_serial ../binary_samples/lat.sample.l4444
+u0 1
 coulomb_gauge_fix
 forget 
 # Inversion control
@@ -25,9 +27,9 @@ rel_error_for_propagator 1e-06
 # Description of quarks
 number_of_quarks 2
 # quark 1
+quark_type clover
 kappa 0.1
 clov_c 1.2
-u0 1
 check yes
 fresh_wprop 
 save_serial_fm_sc_wprop prop.test1
@@ -35,12 +37,13 @@ save_serial_fm_sc_wprop prop.test1
 gaussian
 origin 0 0 0 0 
 r0 1.5
+source_label 1S
 # d1
 d1 0.1
 # quark 2
+quark_type clover
 kappa 0.1
 clov_c 1.2
-u0 1
 check yes
 fresh_wprop 
 save_serial_fm_sc_wprop prop.test2
@@ -48,6 +51,7 @@ save_serial_fm_sc_wprop prop.test2
 gaussian
 origin 0 0 0 0 
 r0 1.5
+source_label 1S
 # d1
 d1 0.1
 # Description of mesons
@@ -56,1456 +60,671 @@ number_of_pairings 2
 pair 0 0 
 spectrum_request point,3drotated,baryon
 save_corr_fnal out.test.fnal_corr.1
+# correlators for pair 1
+number_of_correlators 68
+correlator PION p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  1  0  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  0  1  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  0  0  1  E  E  E
+correlator PS505 p000   1 * 1.000000  G5 G5T  0  0  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  1  0  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  1  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  0  1  E  E  E
+correlator PS0505 p000  -1 * 1.000000 G5T G5T  0  0  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  1  0  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  1  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  0  1  E  E  E
+correlator RHO p000   1 * 1.000000  GX  GX  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  1  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  0  1  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  0  0  1  E  E  E
+correlator RHO p000   1 * 1.000000  GY  GY  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  1  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  0  1  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  0  0  1  E  E  E
+correlator RHO p000   1 * 1.000000  GZ  GZ  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  1  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  1  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  0  1  E  E  E
+correlator RHO0 p000   1 * 1.000000 GXT GXT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  1  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  1  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  0  1  E  E  E
+correlator RHO0 p000   1 * 1.000000 GYT GYT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  1  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  1  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  0  1  E  E  E
+correlator RHO0 p000   1 * 1.000000 GZT GZT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  1  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  1  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  0  1  E  E  E
+correlator SCALAR p000   1 * 1.000000  G1  G1  0  0  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  1  0  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  1  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  0  1  E  E  E
+correlator SCAL0 p000   1 * 1.000000  GT  GT  0  0  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  1  0  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  1  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  0  1  E  E  E
+correlator PV p000   1 * 1.000000 G5X G5X  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  1  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  0  1  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  0  0  1  E  E  E
+correlator PV p000   1 * 1.000000 G5Y G5Y  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  1  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  1  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  0  1  E  E  E
+correlator PV p000   1 * 1.000000 G5Z G5Z  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  1  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  1  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  0  1  E  E  E
+correlator B p000  -1 * 1.000000 GXY GXY  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  1  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  0  1  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  0  0  1  E  E  E
+correlator B p000  -1 * 1.000000 GYZ GYZ  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  1  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  1  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  0  1  E  E  E
+correlator B p000  -1 * 1.000000 GZX GZX  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  1  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  0  1  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  0  0  1  E  E  E
 # pair 2
 pair 0 1 
 spectrum_request point,smeared
-# sink for pair 2
+# smearing for pair 2
 gaussian
 origin 0 0 0 
 r0 1.5
-wave_func_label gaussian
-forget_corr # Meson labels, gamma matrices and correlator phase factor
-number_of_mesons 17
-meson_source_sink PION 	G5	G5	1
-meson_source_sink PS505 	G5	G5T	1
-meson_source_sink PS0505 	G5T	G5T	-1
-meson_source_sink RHO 	GX	GX	1
-meson_source_sink RHO 	GY	GY	1
-meson_source_sink RHO 	GZ	GZ	1
-meson_source_sink RHO0 	GXT	GXT	1
-meson_source_sink RHO0 	GYT	GYT	1
-meson_source_sink RHO0 	GZT	GZT	1
-meson_source_sink SCALAR 	G1	G1	1
-meson_source_sink SCAL0 	GT	GT	1
-meson_source_sink PV 	G5X	G5X	1
-meson_source_sink PV 	G5Y	G5Y	1
-meson_source_sink PV 	G5Z	G5Z	1
-meson_source_sink B 	GXY	GXY	-1
-meson_source_sink B 	GYZ	GYZ	-1
-meson_source_sink B 	GZX	GZX	-1
-# Meson momenta
-number_of_meson_momenta 4
-momentum p000 0 0 0
-momentum p100 1 0 0
-momentum p100 0 1 0
-momentum p100 0 0 1
+sink_label 1S
+forget_corr 
+# correlators for pair 2
+number_of_correlators 68
+correlator PION p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  1  0  0 EO EO EO
+correlator PION p100   1 * 1.000000  G5  G5  0  1  0 EO EO EO
+correlator PION p100   1 * 1.000000  G5  G5  0  0  1 EO EO EO
+correlator PS505 p000   1 * 1.000000  G5 G5T  0  0  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  1  0  0 EO EO EO
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  1  0 EO EO EO
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  0  1 EO EO EO
+correlator PS0505 p000  -1 * 1.000000 G5T G5T  0  0  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  1  0  0 EO EO EO
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  1  0 EO EO EO
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  0  1 EO EO EO
+correlator RHO p000   1 * 1.000000  GX  GX  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  1  0  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GX  GX  0  1  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GX  GX  0  0  1 EO EO EO
+correlator RHO p000   1 * 1.000000  GY  GY  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  1  0  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GY  GY  0  1  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GY  GY  0  0  1 EO EO EO
+correlator RHO p000   1 * 1.000000  GZ  GZ  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  1  0  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  1  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  0  1 EO EO EO
+correlator RHO0 p000   1 * 1.000000 GXT GXT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  1  0  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  1  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  0  1 EO EO EO
+correlator RHO0 p000   1 * 1.000000 GYT GYT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  1  0  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  1  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  0  1 EO EO EO
+correlator RHO0 p000   1 * 1.000000 GZT GZT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  1  0  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  1  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  0  1 EO EO EO
+correlator SCALAR p000   1 * 1.000000  G1  G1  0  0  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  1  0  0 EO EO EO
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  1  0 EO EO EO
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  0  1 EO EO EO
+correlator SCAL0 p000   1 * 1.000000  GT  GT  0  0  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  1  0  0 EO EO EO
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  1  0 EO EO EO
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  0  1 EO EO EO
+correlator PV p000   1 * 1.000000 G5X G5X  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  1  0  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5X G5X  0  1  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5X G5X  0  0  1 EO EO EO
+correlator PV p000   1 * 1.000000 G5Y G5Y  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  1  0  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  1  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  0  1 EO EO EO
+correlator PV p000   1 * 1.000000 G5Z G5Z  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  1  0  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  1  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  0  1 EO EO EO
+correlator B p000  -1 * 1.000000 GXY GXY  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  1  0  0 EO EO EO
+correlator B p100  -1 * 1.000000 GXY GXY  0  1  0 EO EO EO
+correlator B p100  -1 * 1.000000 GXY GXY  0  0  1 EO EO EO
+correlator B p000  -1 * 1.000000 GYZ GYZ  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  1  0  0 EO EO EO
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  1  0 EO EO EO
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  0  1 EO EO EO
+correlator B p000  -1 * 1.000000 GZX GZX  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  1  0  0 EO EO EO
+correlator B p100  -1 * 1.000000 GZX GZX  0  1  0 EO EO EO
+correlator B p100  -1 * 1.000000 GZX GZX  0  0  1 EO EO EO
 Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4444
 Time stamp Thu Feb 12 13:40:21 1998
 Checksums 2352c05 d137321d OK
-Time to reload gauge configuration = 1.477957e-03
-CHECK PLAQ: 1.7946751560761729e+00 1.7744257976067317e+00
-CHECK NERSC LINKTR: 6.4675873741896339e-01 CKSUM: ffc4bb26
-Reunitarized for double precision. Max deviation 2.52e-07 changed to 4.44e-16
-Time to check unitarity = 3.237009e-03
+Time to reload gauge configuration = 9.210110e-04
+CHECK PLAQ: 1.794675e+00 1.774426e+00
+CHECK NERSC LINKTR: 6.467587e-01 CKSUM: ffc4bb26
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 6.320477e-04
+MAKING PATH TABLES
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
 Fixing to Coulomb gauge
-GFIX: Ended at step 13. Av gf action 8.94051297e-01, delta 4.510e-08
-Time to gauge fix 4.724908e-02
+GFIX: Ended at step 13. Av gf action 8.94051313e-01, delta 8.941e-08
+Time to gauge fix 3.597593e-02
 END OF HEADER
 Kappa= 0.1 source gaussian residue= 1e-06 rel= 1e-06
- OK converged size_r= 8.5e-08 rel = 2.1e-07 iters= 8
-Time to save prop spin 0 color 0 = 1.019001e-03
- OK converged size_r= 6.2e-08 rel = 1.5e-07 iters= 8
-Time to save prop spin 0 color 1 = 1.840591e-04
- OK converged size_r= 4.6e-08 rel = 1.1e-07 iters= 8
-Time to save prop spin 0 color 2 = 1.838207e-04
- OK converged size_r= 3.2e-07 rel = 7.8e-07 iters= 7
-Time to save prop spin 1 color 0 = 1.890659e-04
- OK converged size_r= 3.7e-07 rel = 8.5e-07 iters= 7
-Time to save prop spin 1 color 1 = 1.890659e-04
- OK converged size_r= 1.8e-07 rel = 4.5e-07 iters= 8
-Time to save prop spin 1 color 2 = 1.878738e-04
- OK converged size_r= 3.4e-08 rel = 8.2e-08 iters= 8
-Time to save prop spin 2 color 0 = 1.881123e-04
- OK converged size_r= 3.1e-07 rel = 7e-07 iters= 7
-Time to save prop spin 2 color 1 = 1.919270e-04
- OK converged size_r= 5e-08 rel = 1.2e-07 iters= 8
-Time to save prop spin 2 color 2 = 1.909733e-04
- OK converged size_r= 8.7e-08 rel = 2.1e-07 iters= 8
-Time to save prop spin 3 color 0 = 1.919270e-04
- OK converged size_r= 3.7e-07 rel = 9.1e-07 iters= 7
-Time to save prop spin 3 color 1 = 1.890659e-04
- OK converged size_r= 2.9e-07 rel = 6.8e-07 iters= 7
-Time to save prop spin 3 color 2 = 1.969337e-04
-record[0].checksum  "0x7ccd0f52 0x6137f33e" 
-record[1].checksum  "0xc5371e61 0xfe209ae1" 
-record[2].checksum  "0xb49b2fe6 0xa99f651a" 
-record[3].checksum  "0x7a3611e7 0xb03e9d6a" 
-record[4].checksum  "0xca44d5f0 0xb4d2fe84" 
-record[5].checksum  "0xb3542bf4 0xef6b3058" 
-record[6].checksum  "0x271e560d 0xbaf3012a" 
-record[7].checksum  "0x7ba8a071 0x8a475b8" 
-record[8].checksum  "0x168a117d 0x85bb2851" 
-record[9].checksum  "0x86b4ba88 0x20660135" 
-record[10].checksum  "0xce2102ce 0x1d8a7b88" 
-record[11].checksum  "0x9eb309ad 0xa76dc534" 
-Wrote prop file prop.test1 time stamp Sun Oct  7 11:51:28 2007
+ OK converged size_r= 2.2e-07 rel = 2.7e-07 restarts = 1 iters= 8
+Time to save prop spin 0 color 0 = 2.949238e-04
+ OK converged size_r= 1.9e-07 rel = 2.2e-07 restarts = 1 iters= 8
+Time to save prop spin 0 color 1 = 9.298325e-05
+ OK converged size_r= 1.6e-07 rel = 1.9e-07 restarts = 1 iters= 8
+Time to save prop spin 0 color 2 = 9.608269e-05
+ OK converged size_r= 3.7e-07 rel = 7.9e-07 restarts = 1 iters= 7
+Time to save prop spin 1 color 0 = 9.393692e-05
+ OK converged size_r= 4.2e-07 rel = 8.6e-07 restarts = 1 iters= 7
+Time to save prop spin 1 color 1 = 1.039505e-04
+ OK converged size_r= 2.5e-07 rel = 4.7e-07 restarts = 1 iters= 8
+Time to save prop spin 1 color 2 = 9.298325e-05
+ OK converged size_r= 1.8e-07 rel = 1.7e-07 restarts = 1 iters= 8
+Time to save prop spin 2 color 0 = 9.584427e-05
+ OK converged size_r= 3.5e-07 rel = 7.2e-07 restarts = 1 iters= 7
+Time to save prop spin 2 color 1 = 9.679794e-05
+ OK converged size_r= 2.1e-07 rel = 2e-07 restarts = 1 iters= 8
+Time to save prop spin 2 color 2 = 9.799004e-05
+ OK converged size_r= 2.6e-07 rel = 2.7e-07 restarts = 1 iters= 8
+Time to save prop spin 3 color 0 = 9.298325e-05
+ OK converged size_r= 4.1e-07 rel = 9.3e-07 restarts = 1 iters= 7
+Time to save prop spin 3 color 1 = 9.417534e-05
+ OK converged size_r= 3.6e-07 rel = 7e-07 restarts = 1 iters= 7
+Time to save prop spin 3 color 2 = 1.010895e-04
+record[0].checksum  "0x8729ccad 0xf86d93f5" 
+record[1].checksum  "0x7361363e 0x2ecdf6a" 
+record[2].checksum  "0xe94b2646 0xb72599a6" 
+record[3].checksum  "0xf70659 0xe11d111a" 
+record[4].checksum  "0x430f3aa7 0xccaaf4cd" 
+record[5].checksum  "0x21eada91 0x8e0013d7" 
+record[6].checksum  "0xf7df9693 0xe9958f42" 
+record[7].checksum  "0x9b115929 0x3c259b03" 
+record[8].checksum  "0x61cef00d 0x9e3a4f54" 
+record[9].checksum  "0x19828b69 0x4132b7e8" 
+record[10].checksum  "0xc7ece7d6 0x1d8f4299" 
+record[11].checksum  "0x809bb61 0x5cad8581" 
+Wrote prop file prop.test1 time stamp 8
 Kappa= 0.1 source gaussian residue= 1e-06 rel= 1e-06
- OK converged size_r= 8.5e-08 rel = 2.1e-07 iters= 8
-Time to save prop spin 0 color 0 = 8.881092e-04
- OK converged size_r= 6.2e-08 rel = 1.5e-07 iters= 8
-Time to save prop spin 0 color 1 = 1.859665e-04
- OK converged size_r= 4.6e-08 rel = 1.1e-07 iters= 8
-Time to save prop spin 0 color 2 = 1.840591e-04
- OK converged size_r= 3.2e-07 rel = 7.8e-07 iters= 7
-Time to save prop spin 1 color 0 = 1.881123e-04
- OK converged size_r= 3.7e-07 rel = 8.5e-07 iters= 7
-Time to save prop spin 1 color 1 = 1.020432e-04
- OK converged size_r= 1.8e-07 rel = 4.5e-07 iters= 8
-Time to save prop spin 1 color 2 = 8.797646e-05
- OK converged size_r= 3.4e-08 rel = 8.2e-08 iters= 8
-Time to save prop spin 2 color 0 = 8.916855e-05
- OK converged size_r= 3.1e-07 rel = 7e-07 iters= 7
-Time to save prop spin 2 color 1 = 8.988380e-05
- OK converged size_r= 5e-08 rel = 1.2e-07 iters= 8
-Time to save prop spin 2 color 2 = 8.893013e-05
- OK converged size_r= 8.7e-08 rel = 2.1e-07 iters= 8
-Time to save prop spin 3 color 0 = 8.797646e-05
- OK converged size_r= 3.7e-07 rel = 9.1e-07 iters= 7
-Time to save prop spin 3 color 1 = 8.893013e-05
- OK converged size_r= 2.9e-07 rel = 6.8e-07 iters= 7
-Time to save prop spin 3 color 2 = 8.988380e-05
-record[0].checksum  "0x7ccd0f52 0x6137f33e" 
-record[1].checksum  "0xc5371e61 0xfe209ae1" 
-record[2].checksum  "0xb49b2fe6 0xa99f651a" 
-record[3].checksum  "0x7a3611e7 0xb03e9d6a" 
-record[4].checksum  "0xca44d5f0 0xb4d2fe84" 
-record[5].checksum  "0xb3542bf4 0xef6b3058" 
-record[6].checksum  "0x271e560d 0xbaf3012a" 
-record[7].checksum  "0x7ba8a071 0x8a475b8" 
-record[8].checksum  "0x168a117d 0x85bb2851" 
-record[9].checksum  "0x86b4ba88 0x20660135" 
-record[10].checksum  "0xce2102ce 0x1d8a7b88" 
-record[11].checksum  "0x9eb309ad 0xa76dc534" 
-Wrote prop file prop.test2 time stamp Sun Oct  7 11:51:29 2007
+ OK converged size_r= 2.2e-07 rel = 2.7e-07 restarts = 1 iters= 8
+Time to save prop spin 0 color 0 = 2.779961e-04
+ OK converged size_r= 1.9e-07 rel = 2.2e-07 restarts = 1 iters= 8
+Time to save prop spin 0 color 1 = 9.298325e-05
+ OK converged size_r= 1.6e-07 rel = 1.9e-07 restarts = 1 iters= 8
+Time to save prop spin 0 color 2 = 9.202957e-05
+ OK converged size_r= 3.7e-07 rel = 7.9e-07 restarts = 1 iters= 7
+Time to save prop spin 1 color 0 = 1.051426e-04
+ OK converged size_r= 4.2e-07 rel = 8.6e-07 restarts = 1 iters= 7
+Time to save prop spin 1 color 1 = 9.512901e-05
+ OK converged size_r= 2.5e-07 rel = 4.7e-07 restarts = 1 iters= 8
+Time to save prop spin 1 color 2 = 9.298325e-05
+ OK converged size_r= 1.8e-07 rel = 1.7e-07 restarts = 1 iters= 8
+Time to save prop spin 2 color 0 = 9.918213e-05
+ OK converged size_r= 3.5e-07 rel = 7.2e-07 restarts = 1 iters= 7
+Time to save prop spin 2 color 1 = 1.029968e-04
+ OK converged size_r= 2.1e-07 rel = 2e-07 restarts = 1 iters= 8
+Time to save prop spin 2 color 2 = 9.703636e-05
+ OK converged size_r= 2.6e-07 rel = 2.7e-07 restarts = 1 iters= 8
+Time to save prop spin 3 color 0 = 1.039505e-04
+ OK converged size_r= 4.1e-07 rel = 9.3e-07 restarts = 1 iters= 7
+Time to save prop spin 3 color 1 = 9.298325e-05
+ OK converged size_r= 3.6e-07 rel = 7e-07 restarts = 1 iters= 7
+Time to save prop spin 3 color 2 = 9.703636e-05
+record[0].checksum  "0x8729ccad 0xf86d93f5" 
+record[1].checksum  "0x7361363e 0x2ecdf6a" 
+record[2].checksum  "0xe94b2646 0xb72599a6" 
+record[3].checksum  "0xf70659 0xe11d111a" 
+record[4].checksum  "0x430f3aa7 0xccaaf4cd" 
+record[5].checksum  "0x21eada91 0x8e0013d7" 
+record[6].checksum  "0xf7df9693 0xe9958f42" 
+record[7].checksum  "0x9b115929 0x3c259b03" 
+record[8].checksum  "0x61cef00d 0x9e3a4f54" 
+record[9].checksum  "0x19828b69 0x4132b7e8" 
+record[10].checksum  "0xc7ece7d6 0x1d8f4299" 
+record[11].checksum  "0x809bb61 0x5cad8581" 
+Wrote prop file prop.test2 time stamp 8
 Mesons for quarks 0 and 0
-meson_cont_mom(0): time 0.0 sec 201.1 MF
-meson_cont_mom(0): time 0.0 sec 202.6 MF
-meson_cont_mom(0): time 0.0 sec 203.4 MF
-Time for diagonal mesons 1.290600e-01
-meson_cont_mom(0): time 0.0 sec 203.6 MF
-meson_cont_mom(0): time 0.0 sec 201.1 MF
-meson_cont_mom(0): time 0.0 sec 204.0 MF
-meson_cont_mom(0): time 0.0 sec 203.4 MF
-meson_cont_mom(0): time 0.0 sec 199.8 MF
-meson_cont_mom(0): time 0.0 sec 203.4 MF
-meson_cont_mom(0): time 0.0 sec 203.6 MF
-meson_cont_mom(0): time 0.0 sec 203.8 MF
-meson_cont_mom(0): time 0.0 sec 202.0 MF
-Time for diagonal mesons with rotns 4.013028e-01
-Time for diagonal baryons 9.095097e-02
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PION
-0 2.821280e+02 0.000000e+00
-1 1.783301e+01 0.000000e+00
-2 3.974406e+00 0.000000e+00
-3 1.684038e+01 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP PION
-0 -6.661338e-15 -6.569498e-03
-1 -4.180684e-16 1.725675e-02
-2 -6.245005e-17 4.821325e-02
-3 -2.081668e-16 6.519557e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP PION
-0 -6.661338e-15 6.569498e-03
-1 -4.180684e-16 -1.725675e-02
-2 -6.245005e-17 -4.821325e-02
-3 -2.081668e-16 -6.519557e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP PION
-0 2.377350e+03 0.000000e+00
-1 1.712170e+02 0.000000e+00
-2 3.526969e+01 0.000000e+00
-3 1.640429e+02 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED PION
-0 2.836138e+02 0.000000e+00
-1 1.794002e+01 0.000000e+00
-2 3.996449e+00 0.000000e+00
-3 1.694290e+01 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PS505
-0 4.643712e-01 0.000000e+00
-1 1.531080e+01 -1.951564e-18
-2 8.271390e-02 2.168404e-19
-3 -1.456289e+01 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP PS505
-0 5.992301e+00 2.831069e-15
-1 -2.165185e+01 2.875304e-16
-2 -2.538340e-01 1.452831e-17
-3 1.990155e+01 2.046974e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP PS505
-0 5.992301e+00 -2.831069e-15
-1 -2.165185e+01 -2.896988e-16
-2 -2.538340e-01 -1.734723e-17
-3 1.990155e+01 -1.977585e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP PS505
-0 -1.169951e+01 1.110223e-16
-1 -1.192949e+02 0.000000e+00
-2 -8.878960e-01 -6.505213e-19
-3 1.158496e+02 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED PS505
-0 1.574439e-01 6.938894e-20
-1 1.631884e+01 -1.897354e-18
-2 9.485066e-02 2.869070e-19
-3 -1.548556e+01 -1.734723e-19
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PS0505
-0 2.538100e+02 0.000000e+00
-1 1.469504e+01 -8.239937e-18
-2 3.361753e+00 -4.336809e-19
-3 1.403028e+01 1.734723e-18
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP PS0505
-0 -2.963285e+02 9.159340e-16
-1 -2.003978e+01 3.122502e-16
-2 -4.419035e+00 -5.724587e-17
-3 -1.841840e+01 1.561251e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP PS0505
-0 -2.963285e+02 -6.626644e-16
-1 -2.003978e+01 -2.012279e-16
-2 -4.419035e+00 4.943962e-17
-3 -1.841840e+01 -5.551115e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP PS0505
-0 -1.777091e+03 2.220446e-16
-1 -1.065607e+02 1.110223e-16
-2 -2.234707e+01 -5.290907e-17
-3 -1.047136e+02 1.526557e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED PS0505
-0 2.675157e+02 -6.192963e-18
-1 1.563042e+01 -1.094611e-17
-2 3.568738e+00 -2.715926e-19
-3 1.488575e+01 -6.852158e-19
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT RHO
-0 2.678359e+02 2.486437e-17
-1 1.626791e+01 -1.431147e-17
-2 3.620224e+00 -1.048062e-18
-3 1.537598e+01 1.055290e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP RHO
-0 -1.178880e+02 5.244163e-02
-1 -8.095798e+00 -6.262052e-03
-2 -1.780180e+00 2.272259e-02
-3 -7.535919e+00 4.819388e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP RHO
-0 -1.178880e+02 -5.244163e-02
-1 -8.095798e+00 6.262052e-03
-2 -1.780180e+00 -2.272259e-02
-3 -7.535919e+00 -4.819388e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP RHO
-0 8.334926e+02 -3.700743e-17
-1 6.064751e+01 -3.006854e-17
-2 1.257154e+01 5.088522e-17
-3 5.784657e+01 -2.405483e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED RHO
-0 2.742512e+02 2.195003e-17
-1 1.671061e+01 -1.180046e-17
-2 3.717090e+00 -1.522220e-18
-3 1.578893e+01 1.126992e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT RHO0
-0 2.586476e+02 -3.064678e-17
-1 1.526195e+01 1.358867e-17
-2 3.427481e+00 -1.770864e-18
-3 1.447944e+01 -5.782412e-19
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP RHO0
-0 -2.147591e+02 7.061444e-02
-1 -1.453669e+01 -7.322239e-03
-2 -3.175500e+00 5.724089e-03
-3 -1.341287e+01 2.770892e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP RHO0
-0 -2.147591e+02 -7.061444e-02
-1 -1.453669e+01 7.322239e-03
-2 -3.175500e+00 -5.724089e-03
-3 -1.341287e+01 -2.770892e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP RHO0
-0 -5.229925e+02 -1.341519e-15
-1 -2.840801e+01 -2.081668e-16
-2 -5.584285e+00 -3.469447e-18
-3 -2.790047e+01 -4.440892e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED RHO0
-0 2.690586e+02 -3.900237e-17
-1 1.597103e+01 1.277190e-17
-2 3.582766e+00 -1.592332e-18
-3 1.513264e+01 -1.723159e-18
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT SCALAR
-0 2.579199e+02 0.000000e+00
-1 2.702613e+00 0.000000e+00
-2 2.826723e+00 0.000000e+00
-3 2.770274e+00 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP SCALAR
-0 -3.060085e+02 1.193490e-15
-1 -4.886312e+00 -2.740863e-16
-2 -2.210526e+00 -3.642919e-17
-3 -4.044994e+00 1.890849e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP SCALAR
-0 -3.060085e+02 -1.193490e-15
-1 -4.886312e+00 2.740863e-16
-2 -2.210526e+00 3.642919e-17
-3 -4.044994e+00 -1.890849e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP SCALAR
-0 -1.857224e+03 0.000000e+00
-1 -1.083006e+01 0.000000e+00
-2 -1.415217e+01 0.000000e+00
-3 -1.157410e+01 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED SCALAR
-0 2.720596e+02 0.000000e+00
-1 2.940160e+00 0.000000e+00
-2 2.928404e+00 0.000000e+00
-3 2.965290e+00 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT SCAL0
-0 2.770348e+02 -5.551115e-17
-1 3.168393e+00 -1.994932e-17
-2 3.081319e+00 3.035766e-18
-3 3.089726e+00 -2.602085e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP SCAL0
-0 -7.896461e-15 -4.650005e-02
-1 -3.747003e-16 -2.028318e-02
-2 -9.237403e-17 -1.948971e-06
-3 -4.024558e-16 -1.342951e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP SCAL0
-0 -7.188694e-15 4.650005e-02
-1 -2.359224e-16 2.028318e-02
-2 -1.431147e-17 1.948971e-06
-3 -4.128642e-16 1.342951e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP SCAL0
-0 2.272483e+03 2.220446e-16
-1 1.729686e+01 8.456777e-17
-2 1.766797e+01 9.194034e-17
-3 1.775344e+01 -5.065393e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED SCAL0
-0 2.784551e+02 -6.361231e-17
-1 3.179203e+00 -1.924594e-17
-2 3.092361e+00 3.440175e-18
-3 3.100822e+00 -2.763848e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PV
-0 -2.600486e+02 4.625929e-18
-1 -2.745933e+00 -4.915050e-18
-2 -2.831500e+00 1.807004e-20
-3 -2.773785e+00 2.818926e-18
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP PV
-0 2.174348e+02 -9.317462e-02
-1 3.614316e+00 1.870509e-02
-2 1.687569e+00 3.367725e-03
-3 3.000010e+00 7.286169e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP PV
-0 2.174348e+02 9.317462e-02
-1 3.614316e+00 -1.870509e-02
-2 1.687569e+00 -3.367725e-03
-3 3.000010e+00 -7.286169e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP PV
-0 5.477587e+02 1.850372e-15
-1 9.731470e-04 -3.261280e-16
-2 4.332235e+00 -3.469447e-17
-3 7.216377e-01 1.393561e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED PV
-0 -2.705780e+02 -8.673617e-19
-1 -2.926648e+00 -3.022756e-18
-2 -2.913171e+00 7.011174e-19
-3 -2.923335e+00 2.038661e-18
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT B
-0 -2.662550e+02 7.661695e-18
-1 -2.893419e+00 -5.926972e-18
-2 -2.911268e+00 -9.577119e-19
-3 -2.873453e+00 -3.469447e-18
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP B
-0 1.171914e+02 -8.186979e-02
-1 2.044681e+00 2.731949e-02
-2 9.873694e-01 2.316657e-03
-3 1.700353e+00 1.205466e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP B
-0 1.171914e+02 8.186979e-02
-1 2.044681e+00 -2.731949e-02
-2 9.873694e-01 -2.316657e-03
-3 1.700353e+00 -1.205466e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP B
-0 -8.034474e+02 -3.645232e-15
-1 -9.113015e+00 5.088522e-17
-2 -5.847694e+00 1.561251e-17
-3 -8.576083e+00 9.251859e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED B
-0 -2.726167e+02 7.118149e-18
-1 -3.001349e+00 -3.871325e-18
-2 -2.964292e+00 -6.046234e-19
-3 -2.963830e+00 -3.411623e-18
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PION
-0 1.132146e+02 4.619577e-01
-1 5.398233e+00 -4.410503e-02
-2 8.120559e-01 2.832974e-03
-3 4.695981e+00 1.563181e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP PION
-0 -6.846954e+01 -9.515769e-01
-1 -3.513436e+00 -1.449735e-01
-2 -8.064592e-01 9.297773e-03
-3 -2.800563e+00 -2.173356e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP PION
-0 -6.812716e+01 -1.045573e+00
-1 -3.745138e+00 -1.983372e-01
-2 -7.991805e-01 -3.538975e-02
-3 -2.971909e+00 -1.234853e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP PION
-0 6.399599e+02 1.216276e+01
-1 3.660354e+01 -1.967489e+00
-2 6.288816e+00 -2.162069e-01
-3 4.235152e+01 2.325462e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED PION
-0 1.170295e+02 5.194881e-01
-1 5.602575e+00 -3.675194e-02
-2 8.561274e-01 3.350145e-03
-3 4.866762e+00 1.649840e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PS505
-0 2.744614e-01 8.296424e-02
-1 5.058201e+00 1.679979e-02
-2 9.012250e-02 3.906725e-03
-3 -4.308332e+00 -1.551336e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP PS505
-0 4.161012e+00 8.550703e-01
-1 -7.115378e+00 3.561810e-01
-2 -1.640980e-01 8.666180e-02
-3 7.050247e+00 1.473997e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP PS505
-0 4.254258e+00 1.143932e+00
-1 -7.309744e+00 3.406976e-01
-2 -1.705700e-01 8.951562e-02
-3 7.281606e+00 1.854370e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP PS505
-0 -9.497095e+00 -1.422841e+00
-1 -2.324202e+01 1.050385e+00
-2 -1.351032e-01 4.207190e-01
-3 2.808781e+01 -2.733539e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED PS505
-0 5.814400e-02 3.209992e-02
-1 5.404303e+00 3.431095e-05
-2 9.840476e-02 -2.347608e-04
-3 -4.649073e+00 -1.636253e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PS0505
-0 1.066755e+02 3.283248e-02
-1 4.832471e+00 -2.377403e-02
-2 7.374299e-01 7.371866e-03
-3 4.154708e+00 1.397993e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP PS0505
-0 -1.359517e+02 -5.553673e+00
-1 -7.130578e+00 3.511398e-01
-2 -1.460795e+00 4.089299e-02
-3 -7.239016e+00 -2.508054e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP PS0505
-0 -1.355592e+02 -5.830200e+00
-1 -7.328299e+00 3.440258e-01
-2 -1.452412e+00 3.609198e-02
-3 -7.468038e+00 -2.367337e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP PS0505
-0 -4.157663e+02 -9.672159e+00
-1 -2.014502e+01 1.565369e+00
-2 -3.206192e+00 2.551098e-02
-3 -2.581398e+01 3.040232e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED PS0505
-0 1.132034e+02 3.113842e-01
-1 5.181352e+00 -4.017481e-02
-2 8.082562e-01 5.463186e-03
-3 4.506251e+00 1.521778e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT RHO
-0 1.095879e+02 3.548161e-01
-1 5.096865e+00 -2.384834e-02
-2 7.611217e-01 6.387848e-03
-3 4.390678e+00 1.529671e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP RHO
-0 -9.404680e+01 -2.295358e+00
-1 -4.803234e+00 7.494351e-02
-2 -1.030586e+00 2.287493e-02
-3 -4.417365e+00 -2.527553e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP RHO
-0 -9.352139e+01 -2.556687e+00
-1 -5.013447e+00 3.386441e-02
-2 -1.036953e+00 -2.932248e-03
-3 -4.563007e+00 -1.700716e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP RHO
-0 2.696508e+02 8.036001e+00
-1 1.594964e+01 -4.759389e-01
-2 2.878585e+00 -7.628921e-02
-3 1.781605e+01 4.702646e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED RHO
-0 1.144456e+02 4.811397e-01
-1 5.352251e+00 -2.686600e-02
-2 8.146093e-01 5.841600e-03
-3 4.626322e+00 1.638317e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT RHO0
-0 1.074521e+02 2.078572e-01
-1 4.914016e+00 -1.816891e-02
-2 7.375249e-01 7.822754e-03
-3 4.217296e+00 1.476164e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP RHO0
-0 -1.162553e+02 -3.873087e+00
-1 -5.972683e+00 2.300834e-01
-2 -1.240046e+00 3.431399e-02
-3 -5.841960e+00 -2.747331e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP RHO0
-0 -1.157286e+02 -4.198630e+00
-1 -6.176383e+00 2.054060e-01
-2 -1.245194e+00 1.979041e-02
-3 -6.007938e+00 -2.134140e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP RHO0
-0 -7.779570e+01 -1.778972e-01
-1 -2.437021e+00 5.808733e-01
-2 -1.649216e-01 9.000894e-03
-3 -4.165891e+00 3.000966e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED RHO0
-0 1.132031e+02 4.095389e-01
-1 5.216220e+00 -2.869310e-02
-2 7.995528e-01 6.475769e-03
-3 4.510940e+00 1.600076e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT SCALAR
-0 1.083853e+02 -8.566855e-02
-1 4.279694e-01 1.793495e-02
-2 6.116647e-01 2.872785e-02
-3 3.893839e-01 -6.014285e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP SCALAR
-0 -1.394791e+02 -5.319342e+00
-1 -2.935829e+00 -9.031869e-02
-2 -9.813145e-01 -2.890260e-02
-3 -2.625080e+00 -4.957855e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP SCALAR
-0 -1.390929e+02 -5.557624e+00
-1 -2.994883e+00 -1.093613e-01
-2 -9.978558e-01 -4.045596e-02
-3 -2.744491e+00 -5.025095e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP SCALAR
-0 -4.379712e+02 -8.406528e+00
-1 8.566958e-01 2.572398e-01
-2 -1.742927e+00 -5.765199e-02
-3 -1.131574e-01 1.072376e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED SCALAR
-0 1.150759e+02 1.810015e-01
-1 5.767727e-01 2.308773e-02
-2 6.600546e-01 3.042578e-02
-3 5.235524e-01 -3.451524e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT SCAL0
-0 1.112496e+02 5.733595e-01
-1 3.973294e-01 -9.369478e-03
-2 6.215557e-01 2.784570e-02
-3 3.196689e-01 3.719328e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP SCAL0
-0 -6.784857e+01 -1.075126e+00
-1 -2.669962e+00 -2.422554e-01
-2 -7.407588e-01 -4.670994e-02
-3 -2.555994e+00 -6.382836e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP SCAL0
-0 -6.753972e+01 -1.167310e+00
-1 -2.696713e+00 -2.547916e-01
-2 -7.710653e-01 -4.890129e-02
-3 -2.592348e+00 2.093602e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP SCAL0
-0 6.111746e+02 1.387056e+01
-1 4.993557e+00 -2.057775e-01
-2 3.271608e+00 1.921368e-01
-3 5.567940e+00 5.117572e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED SCAL0
-0 1.150163e+02 6.380895e-01
-1 5.346173e-01 2.928086e-03
-2 6.613960e-01 3.035606e-02
-3 4.518574e-01 3.858544e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PV
-0 -1.080163e+02 -1.660994e-01
-1 -4.011315e-01 -1.313570e-02
-2 -6.015045e-01 -2.804599e-02
-3 -3.508392e-01 2.863031e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP PV
-0 1.174158e+02 3.797720e+00
-1 2.860173e+00 1.225453e-01
-2 9.106158e-01 2.743339e-02
-3 2.618685e+00 3.755322e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP PV
-0 1.168786e+02 4.128891e+00
-1 2.900067e+00 1.152124e-01
-2 9.418627e-01 3.504889e-02
-3 2.681381e+00 3.304080e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP PV
-0 8.498465e+01 -1.194105e-01
-1 -3.063844e+00 -2.313708e-01
-2 3.456605e-02 -1.070960e-02
-3 -2.228230e+00 -7.110313e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED PV
-0 -1.138205e+02 -3.643393e-01
-1 -5.470524e-01 -1.922425e-02
-2 -6.477948e-01 -2.961474e-02
-3 -4.847335e-01 1.053741e-02
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT B
-0 -1.089505e+02 -3.866789e-01
-1 -3.907275e-01 -5.573872e-03
-2 -6.045836e-01 -2.763882e-02
-3 -3.284015e-01 -3.114234e-03
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: RIGHT_ROTOP B
-0 9.382379e+01 2.341443e+00
-1 2.777697e+00 1.639626e-01
-2 8.314858e-01 3.550954e-02
-3 2.595590e+00 2.366390e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: LEFT_ROTOP B
-0 9.330387e+01 2.618984e+00
-1 2.813952e+00 1.572812e-01
-2 8.685153e-01 4.026826e-02
-3 2.636097e+00 1.535544e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: BOTH_ROTOP B
-0 -2.604904e+02 -8.475286e+00
-1 -4.385292e+00 -1.392605e-01
-2 -1.604314e+00 -5.688505e-02
-3 -4.023466e+00 -5.344280e-01
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: ROTATED B
-0 -1.137915e+02 -5.159866e-01
-1 -5.332595e-01 -1.369200e-02
-2 -6.480863e-01 -2.956882e-02
-3 -4.617083e-01 -1.320309e-02
-ENDPROP
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.4 MF
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.8 MF
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.7 MF
+Time for diagonal mesons 2.102540e-01
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.6 MF
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.9 MF
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.9 MF
+Time for diagonal mesons with rotns 2.280810e-01
+Time for diagonal baryons 1.307700e-01
 STARTPROP
 SOURCES: gaussian gaussian gaussian
 KAPPAS: 0.1 0.1 0.1
 SINK: POINT PROTON
-0 9.230250e+00 9.897857e-03
-1 1.042629e-01 -6.740350e-04
-2 1.029984e-02 -2.809166e-04
-3 9.333933e-02 -1.564984e-03
-ENDPROP
+0 9.230232e+00 9.897848e-03
+1 1.042630e-01 -6.740351e-04
+2 1.029985e-02 -2.809164e-04
+3 9.333920e-02 -1.564988e-03
 STARTPROP
 SOURCES: gaussian gaussian gaussian
 KAPPAS: 0.1 0.1 0.1
 SINK: POINT PROTON0
-0 8.565690e+00 8.772713e-03
-1 9.347991e-02 -6.941995e-04
-2 9.192188e-03 -2.785258e-04
-3 8.425171e-02 -1.444118e-03
-ENDPROP
+0 8.565674e+00 8.772697e-03
+1 9.347985e-02 -6.942007e-04
+2 9.192187e-03 -2.785257e-04
+3 8.425158e-02 -1.444121e-03
 STARTPROP
 SOURCES: gaussian gaussian gaussian
 KAPPAS: 0.1 0.1 0.1
 SINK: POINT DELTA
-0 7.171661e+00 7.574091e-03
-1 9.592952e-02 1.261076e-05
-2 8.036872e-03 -2.916441e-04
-3 8.660622e-02 -2.219253e-03
-ENDPROP
+0 7.171661e+00 7.574101e-03
+1 9.592961e-02 1.261240e-05
+2 8.036877e-03 -2.916444e-04
+3 8.660624e-02 -2.219254e-03
 STARTPROP
 SOURCES: gaussian gaussian gaussian
 KAPPAS: 0.1 0.1 0.1
 SINK: POINT DELTA0
-0 6.967245e+00 6.783325e-03
-1 9.264273e-02 4.952461e-05
-2 7.697147e-03 -2.959182e-04
-3 8.369799e-02 -2.115585e-03
-ENDPROP
+0 6.967245e+00 6.783321e-03
+1 9.264271e-02 4.952592e-05
+2 7.697152e-03 -2.959183e-04
+3 8.369796e-02 -2.115586e-03
 Mesons for quarks 0 and 1
-meson_cont_mom(0): time 0.0 sec 203.6 MF
-meson_cont_mom(0): time 0.0 sec 200.9 MF
-meson_cont_mom(0): time 0.0 sec 203.4 MF
-Time for offdiag mesons 1.289120e-01
-Time for FFT 7.322073e-03
-Time for FFT of chi and multiply 2.375126e-03
-Time for FFT 7.353067e-03
-meson_cont_mom(0): time 0.0 sec 203.7 MF
-meson_cont_mom(0): time 0.0 sec 200.1 MF
-meson_cont_mom(0): time 0.0 sec 203.4 MF
-Time for offdiag mesons 1.290820e-01
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.6 MF
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.7 MF
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.5 MF
+Time for offdiag mesons 2.103000e-01
+Time for FFT 8.992910e-03
+Time for FFT of chi and multiply 2.544880e-03
+Time for FFT 8.868933e-03
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.7 MF
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.3 MF
+WMTIME: time 7.0e-02 sec 8.59203e+06 flops 122.4 MF
+Time for offdiag mesons 2.105179e-01
 STARTPROP
 MOMENTUM: p000
-KAPPAS: 0.1 0.1
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT PION
 0 2.821280e+02 0.000000e+00
-1 1.783301e+01 0.000000e+00
-2 3.974406e+00 0.000000e+00
+1 1.783302e+01 0.000000e+00
+2 3.974407e+00 0.000000e+00
 3 1.684038e+01 0.000000e+00
 ENDPROP
 STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian PION
-0 3.248960e+03 1.665335e-16
-1 1.935460e+02 6.284036e-16
-2 4.437035e+01 -2.168404e-19
-3 1.798698e+02 2.014448e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PS505
-0 4.643712e-01 0.000000e+00
-1 1.531080e+01 -1.951564e-18
-2 8.271390e-02 2.168404e-19
-3 -1.456289e+01 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian PS505
-0 8.230746e+00 -7.549517e-15
-1 1.798061e+02 3.469447e-17
-2 7.399174e-01 1.647987e-17
-3 -1.674060e+02 3.053113e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PS0505
-0 2.538100e+02 0.000000e+00
-1 1.469504e+01 -8.239937e-18
-2 3.361753e+00 -4.336809e-19
-3 1.403028e+01 1.734723e-18
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian PS0505
-0 3.114285e+03 -1.554312e-15
-1 1.789744e+02 5.412337e-16
-2 4.132152e+01 -1.179612e-16
-3 1.673113e+02 5.551115e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT RHO
-0 2.678359e+02 2.486437e-17
-1 1.626791e+01 -1.431147e-17
-2 3.620224e+00 -1.048062e-18
-3 1.537598e+01 1.055290e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian RHO
-0 3.188027e+03 -1.475671e-15
-1 1.866654e+02 7.170190e-16
-2 4.271643e+01 9.540979e-17
-3 1.737199e+02 -2.451743e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT RHO0
-0 2.586476e+02 -3.064678e-17
-1 1.526195e+01 1.358867e-17
-2 3.427481e+00 -1.770864e-18
-3 1.447944e+01 -5.782412e-19
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian RHO0
-0 3.143985e+03 -1.624858e-16
-1 1.819456e+02 3.038657e-16
-2 4.174948e+01 2.804470e-17
-3 1.696654e+02 9.425331e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT SCALAR
-0 2.579199e+02 0.000000e+00
-1 2.702613e+00 0.000000e+00
-2 2.826723e+00 0.000000e+00
-3 2.770274e+00 0.000000e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian SCALAR
-0 3.127996e+03 -1.437218e-15
-1 3.978366e+01 2.389582e-16
-2 3.880243e+01 8.673617e-18
-3 3.952949e+01 -2.289835e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT SCAL0
-0 2.770348e+02 -5.551115e-17
-1 3.168393e+00 -1.994932e-17
-2 3.081319e+00 3.035766e-18
-3 3.089726e+00 -2.602085e-17
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian SCAL0
-0 3.232306e+03 -1.249001e-15
-1 4.336756e+01 1.491862e-16
-2 4.081425e+01 6.245005e-17
-3 4.201349e+01 -5.828671e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT PV
-0 -2.600486e+02 4.625929e-18
-1 -2.745933e+00 -4.915050e-18
-2 -2.831500e+00 1.807004e-20
-3 -2.773785e+00 2.818926e-18
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian PV
-0 -3.148495e+03 1.258253e-15
-1 -4.044054e+01 -4.972874e-17
-2 -3.914501e+01 -7.054542e-17
-3 -3.996007e+01 2.451743e-16
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: POINT B
-0 -2.662550e+02 7.661695e-18
-1 -2.893419e+00 -5.926972e-18
-2 -2.911268e+00 -9.577119e-19
-3 -2.873453e+00 -3.469447e-18
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian B
-0 -3.182719e+03 8.141636e-16
-1 -4.160994e+01 -3.431861e-16
-2 -3.978720e+01 -8.427865e-17
-3 -4.075550e+01 4.411257e-16
-ENDPROP
-STARTPROP
 MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT PION
-0 1.132146e+02 4.619577e-01
-1 5.398233e+00 -4.410503e-02
-2 8.120559e-01 2.832974e-03
-3 4.695981e+00 1.563181e-01
+0 1.132146e+02 4.619604e-01
+1 5.398234e+00 -4.410491e-02
+2 8.120561e-01 2.832972e-03
+3 4.695982e+00 1.563182e-01
 ENDPROP
 STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian PION
-0 9.559698e+02 1.573677e+00
-1 4.130137e+01 -1.433629e-01
-2 5.892877e+00 1.448913e-01
-3 3.215426e+01 1.898211e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT PS505
-0 2.744614e-01 8.296424e-02
-1 5.058201e+00 1.679979e-02
-2 9.012250e-02 3.906725e-03
+0 4.643702e-01 1.312560e-08
+1 1.531081e+01 1.532385e-09
+2 8.271380e-02 1.627711e-09
+3 -1.456290e+01 -1.393289e-09
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: POINT PS505
+0 2.744612e-01 8.296406e-02
+1 5.058201e+00 1.679994e-02
+2 9.012249e-02 3.906745e-03
 3 -4.308332e+00 -1.551336e-01
 ENDPROP
 STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian PS505
-0 2.177020e+00 -5.505412e-01
-1 4.077864e+01 1.444370e-01
-2 7.556452e-01 3.178060e-01
-3 -3.130528e+01 -2.017884e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT PS0505
-0 1.066755e+02 3.283248e-02
-1 4.832471e+00 -2.377403e-02
-2 7.374299e-01 7.371866e-03
-3 4.154708e+00 1.397993e-01
+0 2.538100e+02 3.073364e-08
+1 1.469504e+01 -7.916242e-09
+2 3.361754e+00 9.313226e-10
+3 1.403028e+01 -4.656613e-09
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
-SINK: gaussian PS0505
-0 9.347562e+02 -2.770724e+00
-1 3.978372e+01 -1.616839e-01
-2 5.779363e+00 1.568610e-01
-3 3.082288e+01 1.892954e+00
+SINK: POINT PS0505
+0 1.066755e+02 3.283413e-02
+1 4.832471e+00 -2.377391e-02
+2 7.374300e-01 7.371841e-03
+3 4.154709e+00 1.397993e-01
 ENDPROP
 STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT RHO
-0 1.095879e+02 3.548161e-01
-1 5.096865e+00 -2.384834e-02
-2 7.611217e-01 6.387848e-03
+0 2.678359e+02 5.044664e-09
+1 1.626792e+01 -2.677552e-09
+2 3.620226e+00 -9.216213e-10
+3 1.537599e+01 4.763327e-09
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: POINT RHO
+0 1.095879e+02 3.548180e-01
+1 5.096866e+00 -2.384828e-02
+2 7.611219e-01 6.387819e-03
 3 4.390678e+00 1.529671e-01
 ENDPROP
 STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
-SOURCES: gaussian gaussian
-SINK: gaussian RHO
-0 9.443459e+02 -2.037459e-02
-1 4.037591e+01 -5.141385e-02
-2 5.739879e+00 1.614309e-01
-3 3.127609e+01 1.908908e+00
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT RHO0
-0 1.074521e+02 2.078572e-01
-1 4.914016e+00 -1.816891e-02
-2 7.375249e-01 7.822754e-03
-3 4.217296e+00 1.476164e-01
+0 2.586476e+02 -2.545615e-08
+1 1.526195e+01 -3.764095e-09
+2 3.427482e+00 4.317068e-10
+3 1.447944e+01 -9.313226e-09
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
-SINK: gaussian RHO0
-0 9.373679e+02 -1.476007e+00
-1 3.988623e+01 -6.046507e-02
-2 5.706949e+00 1.656332e-01
-3 3.084669e+01 1.909477e+00
+SINK: POINT RHO0
+0 1.074521e+02 2.078600e-01
+1 4.914018e+00 -1.816878e-02
+2 7.375249e-01 7.822737e-03
+3 4.217296e+00 1.476163e-01
 ENDPROP
 STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT SCALAR
-0 1.083853e+02 -8.566855e-02
-1 4.279694e-01 1.793495e-02
-2 6.116647e-01 2.872785e-02
-3 3.893839e-01 -6.014285e-02
+0 2.579199e+02 0.000000e+00
+1 2.702614e+00 0.000000e+00
+2 2.826724e+00 0.000000e+00
+3 2.770275e+00 0.000000e+00
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
-SINK: gaussian SCALAR
-0 9.392563e+02 -3.148861e+00
-1 4.188703e+00 -1.233888e-01
-2 5.553134e+00 2.223665e-01
-3 3.253083e+00 -4.129690e-01
+SINK: POINT SCALAR
+0 1.083853e+02 -8.566598e-02
+1 4.279696e-01 1.793500e-02
+2 6.116648e-01 2.872789e-02
+3 3.893839e-01 -6.014287e-02
 ENDPROP
 STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT SCAL0
-0 1.112496e+02 5.733595e-01
-1 3.973294e-01 -9.369478e-03
-2 6.215557e-01 2.784570e-02
-3 3.196689e-01 3.719328e-02
+0 2.770348e+02 1.024455e-08
+1 3.168394e+00 -1.862645e-09
+2 3.081320e+00 -6.402843e-10
+3 3.089728e+00 -1.047738e-09
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
-SINK: gaussian SCAL0
-0 9.509032e+02 1.972990e+00
-1 3.880416e+00 -1.015654e-01
-2 5.523391e+00 1.966019e-01
-3 2.968928e+00 1.172868e-01
+SINK: POINT SCAL0
+0 1.112496e+02 5.733607e-01
+1 3.973296e-01 -9.369479e-03
+2 6.215558e-01 2.784570e-02
+3 3.196688e-01 3.719319e-02
 ENDPROP
 STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT PV
-0 -1.080163e+02 -1.660994e-01
-1 -4.011315e-01 -1.313570e-02
-2 -6.015045e-01 -2.804599e-02
-3 -3.508392e-01 2.863031e-02
+0 -2.600486e+02 2.064432e-08
+1 -2.745934e+00 -6.596868e-10
+2 -2.831501e+00 1.358179e-10
+3 -2.773786e+00 -5.432715e-10
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
-SINK: gaussian PV
-0 -9.387656e+02 1.627782e+00
-1 -3.959182e+00 7.510937e-02
-2 -5.471179e+00 -2.082220e-01
-3 -3.052349e+00 2.352762e-01
+SINK: POINT PV
+0 -1.080163e+02 -1.661021e-01
+1 -4.011317e-01 -1.313570e-02
+2 -6.015046e-01 -2.804599e-02
+3 -3.508391e-01 2.863038e-02
 ENDPROP
 STARTPROP
-MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
 SINK: POINT B
-0 -1.089505e+02 -3.866789e-01
-1 -3.907275e-01 -5.573872e-03
-2 -6.045836e-01 -2.763882e-02
-3 -3.284015e-01 -3.114234e-03
+0 -2.662550e+02 -1.164153e-08
+1 -2.893420e+00 9.313226e-10
+2 -2.911269e+00 -5.481222e-10
+3 -2.873453e+00 -3.143214e-09
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-KAPPAS: 0.1 0.1
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
 SOURCES: gaussian gaussian
-SINK: gaussian B
-0 -9.426273e+02 -7.102903e-02
-1 -3.859064e+00 6.162903e-02
-2 -5.460547e+00 -1.997919e-01
-3 -2.962847e+00 5.584293e-02
+SINK: POINT B
+0 -1.089505e+02 -3.866817e-01
+1 -3.907276e-01 -5.573912e-03
+2 -6.045837e-01 -2.763883e-02
+3 -3.284015e-01 -3.114155e-03
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S PION
+0 3.248960e+03 -3.045425e-07
+1 1.935461e+02 2.838206e-07
+2 4.437037e+01 -8.777715e-08
+3 1.798698e+02 -3.393507e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S PION
+0 9.559698e+02 1.573669e+00
+1 4.130138e+01 -1.433628e-01
+2 5.892879e+00 1.448909e-01
+3 3.215427e+01 1.898210e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S PS505
+0 8.230743e+00 -1.937151e-07
+1 1.798061e+02 2.058223e-07
+2 7.399156e-01 8.840289e-08
+3 -1.674061e+02 5.238689e-08
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S PS505
+0 2.177019e+00 -5.505424e-01
+1 4.077864e+01 1.444360e-01
+2 7.556450e-01 3.178066e-01
+3 -3.130528e+01 -2.017883e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S PS0505
+0 3.114285e+03 -1.341105e-07
+1 1.789744e+02 4.451722e-07
+2 4.132153e+01 -1.005828e-07
+3 1.673113e+02 -1.564622e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S PS0505
+0 9.347562e+02 -2.770731e+00
+1 3.978373e+01 -1.616842e-01
+2 5.779364e+00 1.568605e-01
+3 3.082289e+01 1.892952e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S RHO
+0 3.188026e+03 -1.045565e-06
+1 1.866655e+02 3.178914e-07
+2 4.271644e+01 -5.401671e-08
+3 1.737200e+02 -1.055499e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S RHO
+0 9.443458e+02 -2.037292e-02
+1 4.037592e+01 -5.141351e-02
+2 5.739880e+00 1.614305e-01
+3 3.127610e+01 1.908907e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S RHO0
+0 3.143985e+03 -1.445102e-07
+1 1.819457e+02 1.892913e-07
+2 4.174950e+01 -8.560406e-08
+3 1.696655e+02 -3.143214e-09
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S RHO0
+0 9.373679e+02 -1.476014e+00
+1 3.988623e+01 -6.046528e-02
+2 5.706949e+00 1.656329e-01
+3 3.084670e+01 1.909475e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S SCALAR
+0 3.127996e+03 -3.306195e-07
+1 3.978368e+01 1.426088e-07
+2 3.880244e+01 -6.542541e-08
+3 3.952950e+01 1.639128e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S SCALAR
+0 9.392563e+02 -3.148861e+00
+1 4.188705e+00 -1.233893e-01
+2 5.553135e+00 2.223663e-01
+3 3.253083e+00 -4.129698e-01
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S SCAL0
+0 3.232307e+03 1.415610e-07
+1 4.336757e+01 -8.754432e-08
+2 4.081426e+01 -9.313226e-09
+3 4.201350e+01 1.043081e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S SCAL0
+0 9.509033e+02 1.972981e+00
+1 3.880417e+00 -1.015660e-01
+2 5.523392e+00 1.966016e-01
+3 2.968928e+00 1.172858e-01
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S PV
+0 -3.148495e+03 7.748604e-07
+1 -4.044056e+01 5.525847e-08
+2 -3.914503e+01 9.840975e-08
+3 -3.996008e+01 -1.043081e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S PV
+0 -9.387657e+02 1.627782e+00
+1 -3.959183e+00 7.511009e-02
+2 -5.471179e+00 -2.082216e-01
+3 -3.052348e+00 2.352770e-01
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S B
+0 -3.182719e+03 1.030664e-07
+1 -4.160996e+01 -1.142034e-07
+2 -3.978722e+01 1.008933e-07
+3 -4.075552e+01 8.343098e-09
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[1]=0.1 
+SOURCES: gaussian gaussian
+SINK: 1S B
+0 -9.426275e+02 -7.103618e-02
+1 -3.859065e+00 6.162965e-02
+2 -5.460548e+00 -1.997917e-01
+3 -2.962847e+00 5.584378e-02
 ENDPROP
 RUNNING COMPLETED
-Time = 3.010950e+00 seconds
+Time = 2.472868e+00 seconds
 total_iters = 182
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Sun Oct  7 11:51:31 2007
+exit: Tue Feb 12 22:35:02 2008
 

@@ -17,11 +17,11 @@
 
 # For comparing test output with sample output
 
-PROJS = su3_clov
+PROJS = su3_clov su3_clov2
 
 PRECLIST = 1 2
 
-PATTERNS = POINTPION RUNNING
+PATTERNS = STARTPROP RUNNING
 TOL = 1e-4
 
 include ../Make_test_template
@@ -31,11 +31,23 @@ in.sample.fnal_corr.${PREC}:
 out.test.fnal_corr.${PREC}:
 	touch out.test.fnal_corr.${PREC}
 
+fnal_corr2:
+in.sample.fnal_corr2.${PREC}:
+out.test.fnal_corr2.${PREC}:
+	touch out.test.fnal_corr2.${PREC}
+
 test_fnal:
 	for prec in ${PRECLIST};\
 	do\
 	   ${MAKE} clean;\
-	   ${MAKE} -f Make_test "PROJ=fnal_corr" "PREC=$$prec" "PATTERNS=kappas END" out.test.diff.fnal_corr.$$prec;\
+	   ${MAKE} -f Make_test "PROJ=fnal_corr" "PREC=$$prec" "PATTERNS=operator EOF" out.test.diff.fnal_corr.$$prec;\
+	done
+
+test_fnal2:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} clean;\
+	   ${MAKE} -f Make_test "PROJ=fnal_corr2" "PREC=$$prec" "PATTERNS=operator EOF" out.test.diff.fnal_corr2.$$prec;\
 	done
 
 test_fnal_clean:
@@ -45,7 +57,19 @@ test_fnal_clean:
 	     /bin/rm out.test.diff.fnal_corr.$$prec out.test.fnal_corr.$$prec; \
 	done
 
-check: test test_fnal
+test_fnal_clean2:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm out.test.fnal_corr2.$$prec.tmp out.sample.fnal_corr2.$$prec.tmp;\
+	     /bin/rm out.test.diff.fnal_corr2.$$prec out.test.fnal_corr2.$$prec; \
+	done
 
-clean: test_clean test_fnal_clean
+check:
+	/bin/rm -f out.test.fnal_corr.1;\
+	/bin/rm -f out.test.fnal_corr.2;\
+	/bin/rm -f out.test.fnal_corr2.1;\
+	/bin/rm -f out.test.fnal_corr2.2;\
+	${MAKE} -f Make_test test test_fnal test_fnal2
+
+clean: test_clean test_fnal_clean test_fnal_clean2
 

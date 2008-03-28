@@ -46,7 +46,6 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 MY_OBJECTS =         \
   clover_info.o      \
   control.o          \
-  dirac_utilities.o  \
   gauge_info.o       \
   ksprop_info.o      \
   make_prop.o        \
@@ -62,21 +61,29 @@ G_OBJECTS =          \
   io_helpers.o       \
   io_lat4.o          \
   io_lat_utils.o     \
+  io_source_cmplx_fm.o \
   make_lattice.o     \
   nersc_cksum.o       \
+  path_product.o     \
   remap_stdio_from_args.o \
+  rephase.o          \
   reunitarize2.o     \
   restrict_fourier.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o
 endif
 
 # Set from generic_ks directory
 G_KS_OBJECTS =      \
   io_helpers_ks.o   \
   io_prop_ks.o      \
-  io_prop_ks_fm.o
+  io_prop_ks_fm.o   \
+  ks_source.o       \
+  ks_invert.o       \
+  ks_utilities.o    \
+  mat_invert.o      \
+  quark_stuff.o
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_KS_OBJECTS += io_scidac_ks.o
@@ -86,6 +93,7 @@ endif
 G_WILSON_OBJECTS =   \
   baryon_cont.o      \
   canopy2weyl_rot.o  \
+  dirac_utilities.o  \
   dslash_w_space.o   \
   dslash_w3.o        \
   gammas.o           \
@@ -100,6 +108,10 @@ G_WILSON_OBJECTS =   \
   w_meson_mom.o      \
   w_source.o         \
   wilson_invert.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_WILSON_OBJECTS += io_scidac_w.o
+endif
 
 # Basic set from generic_clover directory
 G_CLOVER_OBJECTS =   \
@@ -119,10 +131,10 @@ else
   endif
 endif
 
-# Selection of the fermion links algorithm
+# Selection of the Wilson fermion links algorithm
 FLINKS_WILSON = ${FLINKS_WILSONQOP}
 
-# Selection of the conjugate gradient algorithm
+# Selection of the clover conjugate gradient algorithm
 # The following inverters are not supported in QOP
 # so we use the plain MILC version:
 CONGRAD_CL = \
@@ -148,6 +160,52 @@ else
 endif
 
 CL_OBJECTS = ${FLINKS_WILSON} ${CONGRAD_CL}
+
+# Selection of a non-QDP FN Dslash 
+# Choices are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
+DSLASH_FN = dslash_fn_dblstore.o
+
+# Selection of the fermion links algorithm
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+  FLINKS_FN = ${FLINKS_FNQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    FLINKS_FN = fermion_links_asqtad_qdp.o fermion_links_helpers.o
+  else
+    FLINKS_FN = fermion_links_fn.o fermion_links_helpers.o
+  endif
+endif
+
+# Selection of the conjugate gradient algorithm
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
+     d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o d_congrad_opt.o
+#  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
+  CONGRAD_FN += ${ASQINVERTQOP}
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+#    Here you may use the fn_qdp set or the fn_1sum_qdp set
+#    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
+#       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
+       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
+  else
+    # Choose a non_QDP FN conjugate gradient algorithm
+    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
+  endif
+endif
+
+INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
+
+# The only choice for inverters and Dslash for EO actions
+INV_EO_OBJECTS = d_congrad5_eo.o d_congrad_opt.o dslash_eo.o
+MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
+
+# For EO actions we don't precompute the fat links for Dslash at the moment
+FN_OBJECTS = ${FLINKS_FN} ${INV_FN_OBJECTS}
+EO_OBJECTS = fermion_links_eo.o ${INV_EO_OBJECTS}
 
 # EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)
@@ -195,6 +253,18 @@ ALL_MAKES = \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
+fermion_links_fn.o: quark_action.h 
+gauge_stuff.o: gauge_action.h 
+gauge_info.o:  quark_action.h
+quark_stuff.o: quark_action.h 
+
+# Directories where we store the improved action headers
+QUARKIMP = ../generic_ks/imp_actions
+
+quark_action.h: ${QUARKIMP}/${QUARK}
+	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
+
+
 ifeq ($(strip ${QCDOC}),true)
   DQCDOC = -DQCDOC
 endif
@@ -228,8 +298,13 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 su3_clov::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DIOTIME -DPRTIME -DCL_CG=BICG " \
-	"EXTRA_OBJECTS= "
+	"QUARK = asqtad_action.h" \
+	"DEFINES= -DFN -DIOTIME -DPRTIME -DCL_CG=BICG " \
+	"EXTRA_OBJECTS= ${FN_OBJECTS}"
+
+# A hack to allow more than one test case
+su3_clov2: su3_clov
+	   mv su3_clov su3_clov2
 
 clean:
 	-/bin/rm -f *.o
@@ -237,7 +312,7 @@ clean:
 # Rules for generic routines
 include ../generic/Make_template
 
-# Rules for generic_wilson routines
+# Rules for generic_ks routines
 include ../generic_ks/Make_template
 
 # Rules for generic_wilson routines

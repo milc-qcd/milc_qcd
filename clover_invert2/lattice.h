@@ -32,8 +32,18 @@ typedef struct {
 	/* gauge field */
 	su3_matrix link[4];
 
+	/* The Kogut-Susskind phases, which have been absorbed into 
+		the matrices.  Also the antiperiodic boundary conditions.  */
+ 	Real phase[4];
+
+  /* NEED TO GET RID OF THE FOLLOWING */
         /* wilson half vector (temporary used in dslash_w_site) */
         half_wilson_vector htmp[MAXHTMP];
+   	su3_vector ttt;
+ 	su3_vector tempvec[4];
+ 	su3_vector templongvec[4];
+ 	su3_vector templongv1;
+ 	su3_vector cg_p;
 } site;
 
 /* End definition of site structure */
@@ -49,12 +59,16 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
+EXTERN  int niter, nrestart;
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN  params param;           /* user input parameters */
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN	int total_iters;
+EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
+EXTERN  Real u0, mass;  /* for Asqtad, etc. fermions only! */
+EXTERN	Real rsqmin,rsqprop; /* for Asqtad, etc. fermions only! */
 
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
@@ -64,7 +78,9 @@ EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
-/* Temporary for clover_info */
+/* Temporary for clover_info and ksprop_info */
+EXTERN ks_quark_source ksqstmp;
+EXTERN ks_param ksptmp;
 EXTERN wilson_quark_source wqstmp;
 EXTERN dirac_clover_param dcptmp;
 EXTERN gauge_file *startlat_p;
@@ -80,8 +96,12 @@ EXTERN site *lattice;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */
-#define N_POINTERS 8	/* Number of generic pointers */
+#define N_POINTERS 16	/* Number of generic pointers */
 /* NEED 8 WHEN GAUGEFIXING */
 EXTERN char ** gen_pt[N_POINTERS];
+
+/* Storage for definition of the quark action */
+EXTERN ferm_links_t        fn_links;
+EXTERN ks_action_paths ks_act_paths;
 
 #endif /* _LATTICE_H */

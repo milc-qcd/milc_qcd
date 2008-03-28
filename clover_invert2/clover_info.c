@@ -123,7 +123,7 @@ void write_appl_w_prop_info(FILE *fp)
 char *create_w_QCDML(){
 
   size_t bytes = 0;
-  char *info = (char *)malloc(INFOSTRING_MAX);
+  char *info;
   size_t max = INFOSTRING_MAX;
   //  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
   //  char end[] = "</info>";
@@ -131,7 +131,8 @@ char *create_w_QCDML(){
   Real gauge_fix_tol = GAUGE_FIX_TOL;
   int n_spins = 4;
   int spins[4] = {0,1,2,3};
-  
+
+  info = (char *)malloc(INFOSTRING_MAX);  
   //  snprintf(info+bytes, max-bytes,"%s",begin);
   //  bytes = strlen(info);
   

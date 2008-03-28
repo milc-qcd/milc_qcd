@@ -8,6 +8,7 @@ job_id 203696.kaon2.fnal.gov
 # Gauge field description
 
 reload_serial ../binary_samples/lat.sample.l4444
+u0 1.0
 coulomb_gauge_fix
 forget
 
@@ -24,9 +25,9 @@ number_of_quarks 2
 
 # quark 1
 
+quark_type clover
 kappa 0.1
 clov_c 1.2
-u0 1.0
 check yes
 
 fresh_wprop
@@ -37,6 +38,7 @@ save_serial_fm_sc_wprop prop.test1
 gaussian
 origin 0 0 0 0
 r0 1.5
+source_label 1S
 
 # d1
 
@@ -44,9 +46,9 @@ d1 0.1
 
 # quark 2
 
+quark_type clover
 kappa 0.1
 clov_c 1.2
-u0 1.0
 check yes
 
 fresh_wprop
@@ -57,6 +59,7 @@ save_serial_fm_sc_wprop prop.test2
 gaussian
 origin 0 0 0 0
 r0 1.5
+source_label 1S
 
 # d1
 
@@ -73,47 +76,230 @@ spectrum_request point,3drotated,baryon
 
 save_corr_fnal out.test.fnal_corr.1
 
+# correlators for pair 1
+
+number_of_correlators 68
+
+correlator PION    p000  1 * 1 G5  G5  0 0 0 E E E
+
+correlator PION    p100  1 * 1 G5  G5  1 0 0 E E E
+correlator PION    p100  1 * 1 G5  G5  0 1 0 E E E
+correlator PION    p100  1 * 1 G5  G5  0 0 1 E E E
+
+correlator PS505   p000  1 * 1 G5  G5T 0 0 0 E E E
+
+correlator PS505   p100  1 * 1 G5  G5T 1 0 0 E E E
+correlator PS505   p100  1 * 1 G5  G5T 0 1 0 E E E
+correlator PS505   p100  1 * 1 G5  G5T 0 0 1 E E E
+
+correlator PS0505  p000 -1 * 1 G5T G5T 0 0 0 E E E
+
+correlator PS0505  p100 -1 * 1 G5T G5T 1 0 0 E E E
+correlator PS0505  p100 -1 * 1 G5T G5T 0 1 0 E E E
+correlator PS0505  p100 -1 * 1 G5T G5T 0 0 1 E E E
+
+correlator RHO     p000  1 * 1 GX  GX  0 0 0 E E E
+
+correlator RHO     p100  1 * 1 GX  GX  1 0 0 E E E
+correlator RHO     p100  1 * 1 GX  GX  0 1 0 E E E
+correlator RHO     p100  1 * 1 GX  GX  0 0 1 E E E
+
+correlator RHO     p000  1 * 1 GY  GY  0 0 0 E E E
+
+correlator RHO     p100  1 * 1 GY  GY  1 0 0 E E E
+correlator RHO     p100  1 * 1 GY  GY  0 1 0 E E E
+correlator RHO     p100  1 * 1 GY  GY  0 0 1 E E E
+
+correlator RHO     p000  1 * 1 GZ  GZ  0 0 0 E E E
+
+correlator RHO     p100  1 * 1 GZ  GZ  1 0 0 E E E
+correlator RHO     p100  1 * 1 GZ  GZ  0 1 0 E E E
+correlator RHO     p100  1 * 1 GZ  GZ  0 0 1 E E E
+
+correlator RHO0    p000  1 * 1 GXT GXT 0 0 0 E E E
+
+correlator RHO0    p100  1 * 1 GXT GXT 1 0 0 E E E
+correlator RHO0    p100  1 * 1 GXT GXT 0 1 0 E E E
+correlator RHO0    p100  1 * 1 GXT GXT 0 0 1 E E E
+
+correlator RHO0    p000  1 * 1 GYT GYT 0 0 0 E E E
+
+correlator RHO0    p100  1 * 1 GYT GYT 1 0 0 E E E
+correlator RHO0    p100  1 * 1 GYT GYT 0 1 0 E E E
+correlator RHO0    p100  1 * 1 GYT GYT 0 0 1 E E E
+
+correlator RHO0    p000  1 * 1 GZT GZT 0 0 0 E E E
+
+correlator RHO0    p100  1 * 1 GZT GZT 1 0 0 E E E
+correlator RHO0    p100  1 * 1 GZT GZT 0 1 0 E E E
+correlator RHO0    p100  1 * 1 GZT GZT 0 0 1 E E E
+
+correlator SCALAR  p000  1 * 1 G1  G1  0 0 0 E E E
+
+correlator SCALAR  p100  1 * 1 G1  G1  1 0 0 E E E
+correlator SCALAR  p100  1 * 1 G1  G1  0 1 0 E E E
+correlator SCALAR  p100  1 * 1 G1  G1  0 0 1 E E E
+
+correlator SCAL0   p000  1 * 1 GT  GT  0 0 0 E E E
+
+correlator SCAL0   p100  1 * 1 GT  GT  1 0 0 E E E
+correlator SCAL0   p100  1 * 1 GT  GT  0 1 0 E E E
+correlator SCAL0   p100  1 * 1 GT  GT  0 0 1 E E E
+
+correlator PV      p000  1 * 1 G5X G5X 0 0 0 E E E
+
+correlator PV      p100  1 * 1 G5X G5X 1 0 0 E E E
+correlator PV      p100  1 * 1 G5X G5X 0 1 0 E E E
+correlator PV      p100  1 * 1 G5X G5X 0 0 1 E E E
+
+correlator PV      p000  1 * 1 G5Y G5Y 0 0 0 E E E
+
+correlator PV      p100  1 * 1 G5Y G5Y 1 0 0 E E E
+correlator PV      p100  1 * 1 G5Y G5Y 0 1 0 E E E
+correlator PV      p100  1 * 1 G5Y G5Y 0 0 1 E E E
+
+correlator PV      p000  1 * 1 G5Z G5Z 0 0 0 E E E
+
+correlator PV      p100  1 * 1 G5Z G5Z 1 0 0 E E E
+correlator PV      p100  1 * 1 G5Z G5Z 0 1 0 E E E
+correlator PV      p100  1 * 1 G5Z G5Z 0 0 1 E E E
+
+correlator B       p000 -1 * 1 GXY GXY 0 0 0 E E E
+
+correlator B       p100 -1 * 1 GXY GXY 1 0 0 E E E
+correlator B       p100 -1 * 1 GXY GXY 0 1 0 E E E
+correlator B       p100 -1 * 1 GXY GXY 0 0 1 E E E
+
+correlator B       p000 -1 * 1 GYZ GYZ 0 0 0 E E E
+
+correlator B       p100 -1 * 1 GYZ GYZ 1 0 0 E E E
+correlator B       p100 -1 * 1 GYZ GYZ 0 1 0 E E E
+correlator B       p100 -1 * 1 GYZ GYZ 0 0 1 E E E
+
+correlator B       p000 -1 * 1 GZX GZX 0 0 0 E E E
+
+correlator B       p100 -1 * 1 GZX GZX 1 0 0 E E E
+correlator B       p100 -1 * 1 GZX GZX 0 1 0 E E E
+correlator B       p100 -1 * 1 GZX GZX 0 0 1 E E E
+
 # pair 2
 
 pair 0 1
 spectrum_request point,smeared
 
-# sink for pair 2
+# smearing for pair 2
 
 gaussian
 origin 0 0 0
 r0 1.5
-wave_func_label gaussian
+sink_label 1S
 
 forget_corr
 
-# Meson labels, gamma matrices and correlator phase factor
+# correlators for pair 2
 
-number_of_mesons 17
+number_of_correlators 68
 
-meson_source_sink PION G5 G5     1
-meson_source_sink PS505 G5 G5T   1
-meson_source_sink PS0505 G5T G5T -1
-meson_source_sink RHO GX GX      1
-meson_source_sink RHO GY GY      1
-meson_source_sink RHO GZ GZ      1
-meson_source_sink RHO0 GXT GXT	 1
-meson_source_sink RHO0 GYT GYT	 1
-meson_source_sink RHO0 GZT GZT	 1
-meson_source_sink SCALAR G1 G1   1
-meson_source_sink SCAL0 GT GT    1
-meson_source_sink PV G5X G5X   	 1
-meson_source_sink PV G5Y G5Y   	 1
-meson_source_sink PV G5Z G5Z   	 1
-meson_source_sink B GXY GXY      -1
-meson_source_sink B GYZ GYZ      -1
-meson_source_sink B GZX GZX      -1
+correlator PION    p000  1 * 1 G5  G5  0 0 0 E E E
 
-# Meson momenta
+correlator PION    p100  1 * 1 G5  G5  1 0 0 EO EO EO
+correlator PION    p100  1 * 1 G5  G5  0 1 0 EO EO EO
+correlator PION    p100  1 * 1 G5  G5  0 0 1 EO EO EO
 
-number_of_meson_momenta 4
+correlator PS505   p000  1 * 1 G5  G5T 0 0 0 E E E
 
-momentum p000 0 0 0
-momentum p100 1 0 0
-momentum p100 0 1 0
-momentum p100 0 0 1
+correlator PS505   p100  1 * 1 G5  G5T 1 0 0 EO EO EO
+correlator PS505   p100  1 * 1 G5  G5T 0 1 0 EO EO EO
+correlator PS505   p100  1 * 1 G5  G5T 0 0 1 EO EO EO
+
+correlator PS0505  p000 -1 * 1 G5T G5T 0 0 0 E E E
+
+correlator PS0505  p100 -1 * 1 G5T G5T 1 0 0 EO EO EO
+correlator PS0505  p100 -1 * 1 G5T G5T 0 1 0 EO EO EO
+correlator PS0505  p100 -1 * 1 G5T G5T 0 0 1 EO EO EO
+
+correlator RHO     p000  1 * 1 GX  GX  0 0 0 E E E
+
+correlator RHO     p100  1 * 1 GX  GX  1 0 0 EO EO EO
+correlator RHO     p100  1 * 1 GX  GX  0 1 0 EO EO EO
+correlator RHO     p100  1 * 1 GX  GX  0 0 1 EO EO EO
+
+correlator RHO     p000  1 * 1 GY  GY  0 0 0 E E E
+
+correlator RHO     p100  1 * 1 GY  GY  1 0 0 EO EO EO
+correlator RHO     p100  1 * 1 GY  GY  0 1 0 EO EO EO
+correlator RHO     p100  1 * 1 GY  GY  0 0 1 EO EO EO
+
+correlator RHO     p000  1 * 1 GZ  GZ  0 0 0 E E E
+
+correlator RHO     p100  1 * 1 GZ  GZ  1 0 0 EO EO EO
+correlator RHO     p100  1 * 1 GZ  GZ  0 1 0 EO EO EO
+correlator RHO     p100  1 * 1 GZ  GZ  0 0 1 EO EO EO
+
+correlator RHO0    p000  1 * 1 GXT GXT 0 0 0 E E E
+
+correlator RHO0    p100  1 * 1 GXT GXT 1 0 0 EO EO EO
+correlator RHO0    p100  1 * 1 GXT GXT 0 1 0 EO EO EO
+correlator RHO0    p100  1 * 1 GXT GXT 0 0 1 EO EO EO
+
+correlator RHO0    p000  1 * 1 GYT GYT 0 0 0 E E E
+
+correlator RHO0    p100  1 * 1 GYT GYT 1 0 0 EO EO EO
+correlator RHO0    p100  1 * 1 GYT GYT 0 1 0 EO EO EO
+correlator RHO0    p100  1 * 1 GYT GYT 0 0 1 EO EO EO
+
+correlator RHO0    p000  1 * 1 GZT GZT 0 0 0 E E E
+
+correlator RHO0    p100  1 * 1 GZT GZT 1 0 0 EO EO EO
+correlator RHO0    p100  1 * 1 GZT GZT 0 1 0 EO EO EO
+correlator RHO0    p100  1 * 1 GZT GZT 0 0 1 EO EO EO
+
+correlator SCALAR  p000  1 * 1 G1  G1  0 0 0 E E E
+
+correlator SCALAR  p100  1 * 1 G1  G1  1 0 0 EO EO EO
+correlator SCALAR  p100  1 * 1 G1  G1  0 1 0 EO EO EO
+correlator SCALAR  p100  1 * 1 G1  G1  0 0 1 EO EO EO
+
+correlator SCAL0   p000  1 * 1 GT  GT  0 0 0 E E E
+
+correlator SCAL0   p100  1 * 1 GT  GT  1 0 0 EO EO EO
+correlator SCAL0   p100  1 * 1 GT  GT  0 1 0 EO EO EO
+correlator SCAL0   p100  1 * 1 GT  GT  0 0 1 EO EO EO
+
+correlator PV      p000  1 * 1 G5X G5X 0 0 0 E E E
+
+correlator PV      p100  1 * 1 G5X G5X 1 0 0 EO EO EO
+correlator PV      p100  1 * 1 G5X G5X 0 1 0 EO EO EO
+correlator PV      p100  1 * 1 G5X G5X 0 0 1 EO EO EO
+
+correlator PV      p000  1 * 1 G5Y G5Y 0 0 0 E E E
+
+correlator PV      p100  1 * 1 G5Y G5Y 1 0 0 EO EO EO
+correlator PV      p100  1 * 1 G5Y G5Y 0 1 0 EO EO EO
+correlator PV      p100  1 * 1 G5Y G5Y 0 0 1 EO EO EO
+
+correlator PV      p000  1 * 1 G5Z G5Z 0 0 0 E E E
+
+correlator PV      p100  1 * 1 G5Z G5Z 1 0 0 EO EO EO
+correlator PV      p100  1 * 1 G5Z G5Z 0 1 0 EO EO EO
+correlator PV      p100  1 * 1 G5Z G5Z 0 0 1 EO EO EO
+
+correlator B       p000 -1 * 1 GXY GXY 0 0 0 E E E
+
+correlator B       p100 -1 * 1 GXY GXY 1 0 0 EO EO EO
+correlator B       p100 -1 * 1 GXY GXY 0 1 0 EO EO EO
+correlator B       p100 -1 * 1 GXY GXY 0 0 1 EO EO EO
+
+correlator B       p000 -1 * 1 GYZ GYZ 0 0 0 E E E
+
+correlator B       p100 -1 * 1 GYZ GYZ 1 0 0 EO EO EO
+correlator B       p100 -1 * 1 GYZ GYZ 0 1 0 EO EO EO
+correlator B       p100 -1 * 1 GYZ GYZ 0 0 1 EO EO EO
+
+correlator B       p000 -1 * 1 GZX GZX 0 0 0 E E E
+
+correlator B       p100 -1 * 1 GZX GZX 1 0 0 EO EO EO
+correlator B       p100 -1 * 1 GZX GZX 0 1 0 EO EO EO
+correlator B       p100 -1 * 1 GZX GZX 0 0 1 EO EO EO
+
+
