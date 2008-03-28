@@ -40,6 +40,9 @@ typedef struct {
 
 #endif
 
+/* For KS spectroscopy */
+typedef su3_vector ** ks_prop_field;
+
 /* Used in HISQ codes */
 /* Rank 4 tensor for storing derivatives */
 typedef struct { fcomplex t4[3][3][3][3]; } fsu3_tensor4;
@@ -112,7 +115,7 @@ typedef struct { dspin_wilson_vector c[3]; } dwilson_propagator;
 
 #endif
 
-/* For some Wilson spectroscopy */
+/* For Wilson spectroscopy */
 typedef spin_wilson_vector ** wilson_prop_field;
 
 #define GAMMAFIVE -1    /* some integer which is not a direction */
