@@ -152,8 +152,10 @@ int main(int argc, char *argv[])
 			   ksvector_file1,ksvector_file2);
   
   /* Read all of both files */
-  restore_ks_vector_scidac_to_field (ksvector_file1, ksvector1, QIO_SERIAL, 1);
-  restore_ks_vector_scidac_to_field (ksvector_file2, ksvector2, QIO_SERIAL, 1);
+  restore_ks_vector_scidac_to_field (ksvector_file1, ksvector1, 
+				     QIO_SERIAL, 1, 1);
+  restore_ks_vector_scidac_to_field (ksvector_file2, ksvector2, 
+				     QIO_SERIAL, 1, 1);
   
   /* Compare data */
   

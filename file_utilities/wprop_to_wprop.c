@@ -41,13 +41,6 @@
 
 #define MAX_RECXML 512
 
-static file_type w_prop_list[N_WPROP_TYPES] =
-  { {FILE_TYPE_W_PROP,       W_PROP_VERSION_NUMBER},
-    {FILE_TYPE_W_PROP_1996,  W_PROP_VERSION_NUMBER_1996},
-    {FILE_TYPE_FM,           IO_UNI_MAGIC},
-    {FILE_TYPE_LIME,         LIME_MAGIC_NO}
-  };
-
 /*----------------------------------------------------------------------*/
 void make_lattice(){
 register int i;               /* scratch */
@@ -158,6 +151,7 @@ int main(int argc, char *argv[])
   int dims[4],ndim;
   int prompt;
   wilson_propagator *wprop;
+  wilson_quark_source wqs;
 
   initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
@@ -169,6 +163,7 @@ int main(int argc, char *argv[])
   this_node = mynode();
   number_of_nodes = numnodes();
 
+  init_wqs(&wqs);
   if(this_node == 0){
     if(get_prompt(stdin, &prompt) != 0) par_buf.stopflag = 1;
     else par_buf.stopflag = 0;
@@ -185,7 +180,7 @@ int main(int argc, char *argv[])
   while(readin(prompt) == 0)
     {
       /* Sniff out the input file type */
-      file_type = io_detect(par_buf.startfile, w_prop_list, N_WPROP_TYPES);
+      file_type = get_file_type(par_buf.startfile);
 
       /* For FNAL types we need to look farther to distinguish Wilson
 	 prop files from KS prop files  */
@@ -235,13 +230,14 @@ int main(int argc, char *argv[])
 			       par_buf.startfile, par_buf.savefile);
       
       /* Read the whole propagator */
-      reload_wprop_to_field(par_buf.startflag, par_buf.startfile, wprop, 1);
+      reload_wprop_to_field(par_buf.startflag, par_buf.startfile, &wqs, 
+			    wprop, 1);
       
       /* Write the whole propagator */
       /* Some arbitrary metadata */
       snprintf(recxml,MAX_RECXML,"Converted from %s",par_buf.startfile);
-      save_wprop_from_field(par_buf.saveflag, par_buf.savefile, recxml, 
-			    wprop, 1);
+      save_wprop_from_field(par_buf.saveflag, par_buf.savefile, &wqs,
+			    wprop, recxml, 1);
 
       free(wprop);
       free_lattice();

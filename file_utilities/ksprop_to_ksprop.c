@@ -26,6 +26,7 @@
 #include "../include/generic.h"
 #include "../include/generic_ks.h"
 #include "../include/io_lat.h"
+#include "../include/file_types.h"
 
 #ifdef HAVE_QDP
 #include <qdp.h>
@@ -34,12 +35,6 @@
 #include <qio.h>
 
 #define MAX_RECXML 512
-
-static file_type ksprop_list[N_KSPROP_TYPES] =
-  { {FILE_TYPE_KSPROP,       KSPROP_VERSION_NUMBER},
-    {FILE_TYPE_KSFMPROP,     IO_UNI_MAGIC},
-    {FILE_TYPE_KSQIOPROP,    LIME_MAGIC_NO}
-  };
 
 /*----------------------------------------------------------------------*/
 void make_lattice(){
@@ -151,6 +146,7 @@ int main(int argc, char *argv[])
   int prompt;
   int dims[4],ndim;
   su3_vector *ksprop;
+  ks_quark_source ksqs;
 
   initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
@@ -162,6 +158,7 @@ int main(int argc, char *argv[])
   this_node = mynode();
   number_of_nodes = numnodes();
 
+  init_ksqs(&ksqs);
   if(this_node == 0){
     if(get_prompt(stdin, &prompt) != 0) par_buf.stopflag = 1;
     else par_buf.stopflag = 0;
@@ -178,7 +175,7 @@ int main(int argc, char *argv[])
   while(readin(prompt) == 0)
     {
       /* Sniff out the input file type */
-      file_type = io_detect(par_buf.startfile, ksprop_list, N_KSPROP_TYPES);
+      file_type = get_file_type(par_buf.startfile);
 
       if(file_type < 0){
 	node0_printf("Can't determine KS prop file type %s\n", par_buf.startfile);
@@ -212,13 +209,14 @@ int main(int argc, char *argv[])
 		   par_buf.startfile, par_buf.savefile);
 
       /* Read the whole file */
-      reload_ksprop_to_field(par_buf.startflag, par_buf.startfile, ksprop, 0);
+      reload_ksprop_to_field3(par_buf.startflag, par_buf.startfile, 
+			      &ksqs, ksprop, 0);
 
       /* Write the whole propagator */
       /* Some arbitrary metadata */
       snprintf(recxml,MAX_RECXML,"Converted from %s",par_buf.startfile);
-      save_ksprop_from_field(par_buf.saveflag, par_buf.savefile, recxml, 
-			     ksprop, 1);
+      save_ksprop_from_field3(par_buf.saveflag, par_buf.savefile, recxml, 
+			      &ksqs,  ksprop, 1);
       free(ksprop);
       free_lattice();
     }

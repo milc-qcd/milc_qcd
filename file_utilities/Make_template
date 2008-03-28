@@ -57,12 +57,19 @@ G_OBJECTS = \
   io_lat_utils.o \
   remap_stdio_from_args.o
 
-ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o
-endif
-
 # Basic set from generic KS directory
 G_KS_OBJECTS = \
+  ks_utilities.o
+
+# Basic set from generic KS directory
+G_W_OBJECTS = \
+  dirac_utilities.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += io_scidac.o io_scidac_types.o
+  G_KS_OBJECTS += io_scidac_ks.o
+  G_W_OBJECTS += io_scidac_w.o
+endif
 
 # Objects depending on architecture and software package 
 
@@ -84,7 +91,7 @@ endif
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} \
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_W_OBJECTS} \
 	${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
@@ -129,6 +136,8 @@ endif
 
 DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 
+# NOTE: check_prop has been discontinued since we dropped support
+# for the MILC format.  It doesn't check SciDAC formatted files, yet.
 check_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_prop" \
 	"DEFINES= " \
@@ -151,14 +160,14 @@ diff_ksprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksprop" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  check_unitarity.o diff_ksprop.o io_helpers.o \
-        io_helpers_ks.o \
-	io_prop_ks.o io_prop_ks_fm.o io_scidac_ks.o ksprop_info.o \
+        io_helpers_ks.o io_source_cmplx_fm.o ks_source.o \
+	io_prop_ks.o io_prop_ks_fm.o ksprop_info.o \
 	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o"
 
 diff_ksvector::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksvector" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS=  diff_ksvector.o io_scidac_ks.o ksprop_info.o \
+	"EXTRA_OBJECTS=  diff_ksvector.o ksprop_info.o \
 	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o"
 
 diff_wprop::
@@ -180,10 +189,10 @@ diff_wprop::
 	  io_prop_ks_fm.o \
 	  io_prop_w.o \
 	  io_prop_w_fm.o \
-	  io_scidac_ks.o \
-	  io_scidac_w.o \
+	  io_source_cmplx_fm.o \
 	  io_source_w_fm.o \
 	  ksprop_info.o \
+	  ks_source.o \
 	  nersc_cksum.o \
 	  staggered2naive.o \
 	  w_source.o \
@@ -207,9 +216,10 @@ ksprop_2ksprop::
           io_lat4.o \
   	  io_prop_ks.o \
           io_prop_ks_fm.o \
-          io_scidac_ks.o \
+	  io_source_cmplx_fm.o \
           ksprop_info.o \
           ksprop_to_ksprop.o \
+	  ks_source.o \
           nersc_cksum.o \
 	  reunitarize2.o"
 
@@ -231,9 +241,9 @@ wprop_2wprop::
 	  io_prop_ks_fm.o \
 	  io_prop_w.o \
 	  io_prop_w_fm.o \
-	  io_scidac_ks.o \
-	  io_scidac_w.o \
+	  io_source_cmplx_fm.o \
 	  io_source_w_fm.o \
+	  ks_source.o \
 	  ksprop_info.o \
 	  nersc_cksum.o \
 	  reunitarize2.o \
@@ -260,9 +270,21 @@ scidac_2v5::
 	"EXTRA_OBJECTS=  scidac_to_v5.o \
 	gauge_info_scidac.o"
 
+
+###################################################
+# Miscellaneous
+###################################################
+# Compute crc32 checksum of a binary record
+crc32: crc32.o
+	${LD} $< ${LDFLAGS} -o $@ ${ILIB} -lm
+
+# Extract the binary payload of a MILC-formatted gauge file
+extract_gauge_v5: extract_gauge_v5.o
+	${LD} $< ${LDFLAGS} -o $@ ${ILIB} -lm
+
 # Remember to compile the next one in MPP mode!
 get_qmp_node_number: get_qmp_node_number.o
-	${LD} get_qmp_node_number.o ${LDFLAGS} -o $@ ${ILIB} -lm
+	${LD} $< ${LDFLAGS} -o $@ ${ILIB} -lm
 
 
 clean:

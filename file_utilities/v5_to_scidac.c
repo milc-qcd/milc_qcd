@@ -351,7 +351,7 @@ void r_serial_site_links(char *buf, size_t index, int count, void *arg)
   t = rcv_coords % nt;
 
   if(node_index(x,y,z,t) != index){
-    printf("%s: expected index %d but got index %d\n",
+    printf("%s: expected index %d but got index %lu\n",
 	   myname,state->siterank,index);
   }
 

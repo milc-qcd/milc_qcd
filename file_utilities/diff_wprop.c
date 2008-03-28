@@ -28,19 +28,15 @@
 #include "../include/generic.h"
 #include "../include/generic_wilson.h"
 #include "../include/io_lat.h"
+#ifdef HAVE_QIO
+#include "../include/io_scidac_w.h"
+#endif
 
 #ifdef HAVE_QDP
 #include <qdp.h>
 #endif
 
 #include <qio.h>
-
-static file_type w_prop_list[N_WPROP_TYPES] =
-  { {FILE_TYPE_W_PROP,       W_PROP_VERSION_NUMBER},
-    {FILE_TYPE_W_PROP_1996,  W_PROP_VERSION_NUMBER_1996},
-    {FILE_TYPE_FM,           IO_UNI_MAGIC},
-    {FILE_TYPE_LIME,         LIME_MAGIC_NO}
-  };
 
 /*----------------------------------------------------------------------*/
 void make_lattice(){
@@ -107,6 +103,7 @@ int main(int argc, char *argv[])
   wilson_vector wdiff;
   wilson_propagator *wprop1, *wprop2;
   char *wprop_file1, *wprop_file2;
+  wilson_quark_source wqs1, wqs2;
 
   if(argc < 3){
     node0_printf("Usage %s <wprop_file1> <wprop_file2>\n", argv[0]);
@@ -125,7 +122,7 @@ int main(int argc, char *argv[])
   number_of_nodes = numnodes();
 
   /* Sniff out the input file types */
-  file_type1 = io_detect(wprop_file1, w_prop_list, N_WPROP_TYPES);
+  file_type1 = get_file_type(wprop_file1);
   if(file_type1 < 0){
     node0_printf("Can't determine Wilson prop file type %s\n", wprop_file1);
     return 1;
@@ -142,11 +139,11 @@ int main(int argc, char *argv[])
     file_type1 = io_detect_w_usqcd(wprop_file1);
 #else
     node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
-    return NULL;
+    return 0;
 #endif
   }
 	
-  file_type2 = io_detect(wprop_file2, w_prop_list, N_WPROP_TYPES);
+  file_type2 = get_file_type(wprop_file2);
   if(file_type2 < 0){
     node0_printf("Can't determine Wilson prop file type %s\n", wprop_file2);
     return 1;
@@ -163,7 +160,7 @@ int main(int argc, char *argv[])
     file_type2 = io_detect_w_usqcd(wprop_file2);
 #else
     node0_printf("This looks like a QIO file, but to read it requires QIO compilation\n");
-    return NULL;
+    return 0;
 #endif
   }
 	
@@ -205,8 +202,8 @@ int main(int argc, char *argv[])
 			   wprop_file1,wprop_file2);
   
   /* Read all of both files */
-  reload_wprop_to_field(RELOAD_SERIAL, wprop_file1, wprop1, 0);
-  reload_wprop_to_field(RELOAD_SERIAL, wprop_file2, wprop2, 0);
+  reload_wprop_to_field(RELOAD_SERIAL, wprop_file1, &wqs1, wprop1, 0);
+  reload_wprop_to_field(RELOAD_SERIAL, wprop_file2, &wqs2, wprop2, 0);
   
   /* Compare data */
   

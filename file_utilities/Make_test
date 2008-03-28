@@ -28,20 +28,21 @@ include ../Make_test_template
 KSFILE1 = ksprop_scidac1.test.l4448.ll
 KSFILE2 = ksprop_scidac2.test.l4448.ll
 KSFILE3 = ksprop_scidac3.test.l4448.ll
+
 WFILE1 = wprop_fnal1.test.l4448.ll
 WFILE2 = wprop_fnal2.test.l4448.ll
 WFILE3 = wprop_fnal3.test.l4448.ll
 
-KSFILES = ${KSFILE1} ${KSFILE2} ${KSFILE3}
-WFILES  = ${WFILE1} ${WFILE2} ${WFILE3}
+KSFILES = ${KSFILE1} ${KSFILE2}
+WFILES  = ${WFILE1} ${WFILE2}
 
 ksprop.test.compare: ${KSFILES}
-	${MAKE} diff_ksprop
+	${MAKE} diff_ksprop ${ADDMACRO}
 	${LAUNCH} ./diff_ksprop ${KSFILE1} ${KSFILE2} > ksprop.test.compare
 	${LAUNCH} ./diff_ksprop ${KSFILE1} ${KSFILE2} >> ksprop.test.compare
 
 wprop.test.compare:  ${WFILES}
-	${MAKE} diff_wprop
+	${MAKE} diff_wprop ${ADDMACRO}
 	${LAUNCH} ./diff_wprop  ${WFILE1}  ${WFILE2} > wprop.test.compare
 	${LAUNCH} ./diff_wprop  ${WFILE1}  ${WFILE2} >> wprop.test.compare
 

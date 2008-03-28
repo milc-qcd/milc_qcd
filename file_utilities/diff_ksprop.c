@@ -36,12 +36,6 @@ REQUIRES QIO
 #include <qio.h>
 #endif
 
-static file_type ksprop_list[N_KSPROP_TYPES] =
-  { {FILE_TYPE_KSPROP,       KSPROP_VERSION_NUMBER},
-    {FILE_TYPE_KSFMPROP,     IO_UNI_MAGIC},
-    {FILE_TYPE_KSQIOPROP,    LIME_MAGIC_NO}
-  };
-
 /*----------------------------------------------------------------------*/
 void make_lattice(){
 register int i;               /* scratch */
@@ -107,6 +101,7 @@ int main(int argc, char *argv[])
   su3_vector ksdiff;
   su3_vector *ksprop1, *ksprop2;
   char *ksprop_file1, *ksprop_file2;
+  ks_quark_source ksqs1, ksqs2;
 
   if(argc < 3){
     node0_printf("Usage %s <ksprop_file1> <ksprop_file2>\n", argv[0]);
@@ -124,14 +119,17 @@ int main(int argc, char *argv[])
   this_node = mynode();
   number_of_nodes = numnodes();
 
+  init_ksqs(&ksqs1);
+  init_ksqs(&ksqs2);
+
   /* Sniff out the input file types */
-  file_type1 = io_detect(ksprop_file1, ksprop_list, N_KSPROP_TYPES);
+  file_type1 = get_file_type(ksprop_file1);
   if(file_type1 < 0){
     node0_printf("Can't determine KS prop file type %s\n", ksprop_file1);
     return 1;
   }
   
-  file_type2 = io_detect(ksprop_file2, ksprop_list, N_KSPROP_TYPES);
+  file_type2 = get_file_type(ksprop_file2);
   if(file_type2 < 0){
     node0_printf("Can't determine KS prop file type %s\n", ksprop_file2);
     return 1;
@@ -172,8 +170,8 @@ int main(int argc, char *argv[])
 			   ksprop_file1,ksprop_file2);
   
   /* Read all of both files */
-  reload_ksprop_to_field(RELOAD_SERIAL, ksprop_file1, ksprop1, 0);
-  reload_ksprop_to_field(RELOAD_SERIAL, ksprop_file2, ksprop2, 0);
+  reload_ksprop_to_field3(RELOAD_SERIAL, ksprop_file1, &ksqs1, ksprop1, 0);
+  reload_ksprop_to_field3(RELOAD_SERIAL, ksprop_file2, &ksqs2, ksprop2, 0);
   
   /* Compare data */
   

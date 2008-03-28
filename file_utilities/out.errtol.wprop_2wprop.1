@@ -1,100 +1,395 @@
 BEGIN
 reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
-save_serial_wprop wprop_milc.test.l4448.ll
+save_serial_scidac_wprop wprop_scidac.test.l4448.ll
 Dimensions 0 0 0 0
-LAYOUT = Hypercubes, options = XXX
-ON EACH NODE 0 x 0 x 0 x 0
-Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_milc.test.l4448.ll
-Reading as a Fermilab Wilson prop file
-quark.t[0].checksum "7e685bd9 0.02
-quark.t[1].checksum "458d636c 1e-07
-quark.t[2].checksum "b5a45a07 1e-05
-quark.t[3].checksum "331f5357 3e-07
-quark.t[4].checksum "d2a13ba2 4e-08
-quark.t[5].checksum "4720052d 1e-06
-quark.t[6].checksum "90dc8731 2e-08
-quark.t[7].checksum "637519f8 6e-08
-Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE XXX x XXX x XXX x XXX
+Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_scidac.test.l4448.ll
+quark.t[0].checksum "7e685bd9 2
+quark.t[1].checksum "458d636c 1e-05
+quark.t[2].checksum "b5a45a07 0.001
+quark.t[3].checksum "331f5357 3e-05
+quark.t[4].checksum "d2a13ba2 4e-06
+quark.t[5].checksum "4720052d 0.0001
+quark.t[6].checksum "90dc8731 2e-06
+quark.t[7].checksum "637519f8 6e-06
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
 Time to reload wprop XXX
-Wrote prop file wprop_milc.test.l4448.ll time stamp XXX XXX XXX XXX XXX
-Saved wprop serially to file wprop_milc.test.l4448.ll
-Time to save wprop = XXX
-reload_serial_wprop wprop_milc.test.l4448.ll
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+reload_serial_wprop wprop_scidac.test.l4448.ll
 save_serial_fm_wprop wprop_fnal1.test.l4448.ll
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+Restoring binary SciDAC file wprop_scidac.test.l4448.ll
+File inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropFile><version>1.0</version><type>USQCD_DiracFermion_ScalarSource_TwelveSink</type><info>Wilson Propagator</info></usqcdPropFile>"
 Dimensions 0 0 0 0
-LAYOUT = Hypercubes, options = QDP
-ON EACH NODE 0 x 0 x 0 x 0
-Converting file wprop_milc.test.l4448.ll to file wprop_fnal1.test.l4448.ll
-Reading serially as a MILC Wilson prop file
-Read wprop serially from file wprop_milc.test.l4448.ll
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE XXX x XXX x XXX x XXX
+Converting file wprop_scidac.test.l4448.ll to file wprop_fnal1.test.l4448.ll
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+Restoring binary SciDAC file wprop_scidac.test.l4448.ll
+File inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropFile><version>1.0</version><type>USQCD_DiracFermion_ScalarSource_TwelveSink</type><info>Wilson Propagator</info></usqcdPropFile>"
+QIO_generic_read_record_data(0): Read field
+Record header: datatype QLA_F_Complex recordtype 0
+precision F colors 0 spins 0 count 0
+Hypercube lower 0 0 0 0
+Hypercube upper 0 0 0 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><info></info></usqcdSourceInfo>"
+Checksums e48cfcef af6761bb
+Read prop source
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>0</spin><color>0</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>1</spin><color>0</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>2</spin><color>0</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>3</spin><color>0</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>0</spin><color>1</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>1</spin><color>1</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>2</spin><color>1</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>3</spin><color>1</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>0</spin><color>2</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>1</spin><color>2</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>2</spin><color>2</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>3</spin><color>2</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
 Time to reload wprop XXX
-quark.t[0].checksum "3b0da3c2 d209ced2"
-quark.t[1].checksum "259e6f10 5e-05
-quark.t[2].checksum "bf8ae0a5 e16d6614"
-quark.t[3].checksum "d9a2e218 ad46f27f"
-quark.t[4].checksum "e31c65f1 c9c6538"
-quark.t[5].checksum "b6aea00 1e-06
-quark.t[6].checksum "695e8744 a4001ad9"
-quark.t[7].checksum "1741f22 1e-07
-Wrote prop file wprop_fnal1.test.l4448.ll time stamp XXX XXX XXX XXX XXX
-Time to save wprop = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+quark.t[0].checksum "9b397f5 dc27112"
+quark.t[1].checksum "9b397f5 dc27112"
+quark.t[2].checksum "9b397f5 dc27112"
+quark.t[3].checksum "9b397f5 dc27112"
+quark.t[4].checksum "9b397f5 dc27112"
+quark.t[5].checksum "9b397f5 dc27112"
+quark.t[6].checksum "9b397f5 dc27112"
+quark.t[7].checksum "9b397f5 dc27112"
+Wrote prop file wprop_fnal1.test.l4448.ll time stamp 0
 reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
 save_serial_fm_wprop wprop_fnal2.test.l4448.ll
 Dimensions 0 0 0 0
-LAYOUT = Hypercubes, options = QDP
-ON EACH NODE 0 x 0 x 0 x 0
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE XXX x XXX x XXX x XXX
 Converting file ../binary_samples/wprop_fm.sample.l4448.ll to file wprop_fnal2.test.l4448.ll
-Reading as a Fermilab Wilson prop file
-quark.t[0].checksum "7e685bd9 0.02
-quark.t[1].checksum "458d636c 1e-07
-quark.t[2].checksum "b5a45a07 1e-05
-quark.t[3].checksum "331f5357 3e-07
-quark.t[4].checksum "d2a13ba2 4e-08
-quark.t[5].checksum "4720052d 1e-06
-quark.t[6].checksum "90dc8731 2e-08
-quark.t[7].checksum "637519f8 6e-08
-Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
+quark.t[0].checksum "7e685bd9 2
+quark.t[1].checksum "458d636c 1e-05
+quark.t[2].checksum "b5a45a07 0.001
+quark.t[3].checksum "331f5357 3e-05
+quark.t[4].checksum "d2a13ba2 4e-06
+quark.t[5].checksum "4720052d 0.0001
+quark.t[6].checksum "90dc8731 2e-06
+quark.t[7].checksum "637519f8 6e-06
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
+Time to reload wprop spin 0 color 0 XXX
 Time to reload wprop XXX
-quark.t[0].checksum "3b0da3c2 d209ced2"
-quark.t[1].checksum "259e6f10 5e-05
-quark.t[2].checksum "bf8ae0a5 e16d6614"
-quark.t[3].checksum "d9a2e218 ad46f27f"
-quark.t[4].checksum "e31c65f1 c9c6538"
-quark.t[5].checksum "b6aea00 1e-06
-quark.t[6].checksum "695e8744 a4001ad9"
-quark.t[7].checksum "1741f22 1e-07
-Wrote prop file wprop_fnal2.test.l4448.ll time stamp XXX XXX XXX XXX XXX
-Time to save wprop = XXX
-reload_serial_wprop wprop_milc.test.l4448.ll
-save_checkpoint_wprop wprop_checkpoint.test.l4448.ll
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+Time to save prop spin 0 color 0 = XXX
+quark.t[0].checksum "9b397f5 dc27112"
+quark.t[1].checksum "9b397f5 dc27112"
+quark.t[2].checksum "9b397f5 dc27112"
+quark.t[3].checksum "9b397f5 dc27112"
+quark.t[4].checksum "9b397f5 dc27112"
+quark.t[5].checksum "9b397f5 dc27112"
+quark.t[6].checksum "9b397f5 dc27112"
+quark.t[7].checksum "9b397f5 dc27112"
+Wrote prop file wprop_fnal2.test.l4448.ll time stamp 0
+reload_serial_wprop wprop_scidac.test.l4448.ll
+save_serial_scidac_wprop wprop_scidac2.test.l4448.ll
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+Restoring binary SciDAC file wprop_scidac.test.l4448.ll
+File inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropFile><version>1.0</version><type>USQCD_DiracFermion_ScalarSource_TwelveSink</type><info>Wilson Propagator</info></usqcdPropFile>"
 Dimensions 0 0 0 0
-LAYOUT = Hypercubes, options = QDP
-ON EACH NODE 0 x 0 x 0 x 0
-Converting file wprop_milc.test.l4448.ll to file wprop_checkpoint.test.l4448.ll
-Reading serially as a MILC Wilson prop file
-Read wprop serially from file wprop_milc.test.l4448.ll
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE XXX x XXX x XXX x XXX
+Converting file wprop_scidac.test.l4448.ll to file wprop_scidac2.test.l4448.ll
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+Restoring binary SciDAC file wprop_scidac.test.l4448.ll
+File inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropFile><version>1.0</version><type>USQCD_DiracFermion_ScalarSource_TwelveSink</type><info>Wilson Propagator</info></usqcdPropFile>"
+QIO_generic_read_record_data(0): Read field
+Record header: datatype QLA_F_Complex recordtype 0
+precision F colors 0 spins 0 count 0
+Hypercube lower 0 0 0 0
+Hypercube upper 0 0 0 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><info></info></usqcdSourceInfo>"
+Checksums e48cfcef af6761bb
+Read prop source
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>0</spin><color>0</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>1</spin><color>0</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>2</spin><color>0</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>3</spin><color>0</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>0</spin><color>1</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>1</spin><color>1</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>2</spin><color>1</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>3</spin><color>1</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>0</spin><color>2</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>1</spin><color>2</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>2</spin><color>2</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
+QIO_generic_read_record_data(0): Read field
+Record header: datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+Record inf
+"<?xml version="1.0" encoding="UTF-8"?><usqcdInfo><version>1.0</version><spin>3</spin><color>2</color><info>Converted from ../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdInfo>"
+Checksums a9e6c90d 8e-06
+Time to reload wprop spin 0 color 0 XXX
 Time to reload wprop XXX
-Wrote prop file wprop_checkpoint.test.l4448.ll time stamp XXX XXX XXX XXX XXX
-Saved wprop in checkpoint format to file wprop_checkpoint.test.l4448.ll
-Time to save wprop = XXX
-reload_serial_wprop wprop_checkpoint.test.l4448.ll
-save_serial_fm_wprop wprop_fnal3.test.l4448.ll
-Dimensions 0 0 0 0
-LAYOUT = Hypercubes, options = QDP
-ON EACH NODE 0 x 0 x 0 x 0
-Converting file wprop_checkpoint.test.l4448.ll to file wprop_fnal3.test.l4448.ll
-Reading serially as a MILC Wilson prop file
-Read wprop serially from file wprop_checkpoint.test.l4448.ll
-Time to reload wprop XXX
-quark.t[0].checksum "3b0da3c2 d209ced2"
-quark.t[1].checksum "259e6f10 5e-05
-quark.t[2].checksum "bf8ae0a5 e16d6614"
-quark.t[3].checksum "d9a2e218 ad46f27f"
-quark.t[4].checksum "e31c65f1 c9c6538"
-quark.t[5].checksum "b6aea00 1e-06
-quark.t[6].checksum "695e8744 a4001ad9"
-quark.t[7].checksum "1741f22 1e-07
-Wrote prop file wprop_fnal3.test.l4448.ll time stamp XXX XXX XXX XXX XXX
-Time to save wprop = XXX
+QIO_generic_open_write(0): Opened wprop_scidac2.test.l4448.ll for writing in singlefile format
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>2</recordtype><spacetime>4</spacetime><hyperlower>0 0 0 0 </hyperlower><hyperupper>3 0 0 0 </hyperupper><datatype>QLA_F_Complex</datatype><precision>F</precision><typesize>8</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype QLA_F_Complex recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums e48cfcef af6761bb
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX 0 UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
+QIO_write_record_info(0): private record XML = "<?xml version="1.0" XXX XXX XXX XXX XXX UTC</date><recordtype>0</recordtype><datatype>USQCD_F3_DiracFermion</datatype><precision>F</precision><colors>3</colors><spins>4</spins><typesize>96</typesize><datacount>1</datacount></scidacRecord>"
+QIO_write(0): Wrote field. datatype USQCD_F3_DiracFermion recordtype 0
+precision F colors 0 spins 0 count 0
+QIO_write(0): checksums a9e6c90d 8e-06
+Time to save prop spin 0 color 0 = XXX
 ask_starting_wprop(0): EOF on input.
 RUNNING COMPLETED

@@ -43,7 +43,7 @@
 
 /*----------------------------------------------------------------------*/
 void make_lattice(){
-register int i,j;               /* scratch */
+register int i;               /* scratch */
 int x,y,z,t;            /* coordinates */
     /* allocate space for lattice, fill in parity, coordinates and index.  */
     lattice = (site *)malloc( sites_on_node * sizeof(site) );
@@ -96,7 +96,7 @@ void setup() {
 void restore_checkpoint1(char *filename,Real *c1,Real *c2)
 {
   int fd;
-  int version_number,j,dir,dims[4];
+  int version_number,dir,dims[4];
   su3_matrix lbuf[4*MAX_BUF_LENGTH];
   int buf_length,num_buffers,where_in_buf;
   register site *s;
@@ -180,7 +180,6 @@ int main(int argc, char *argv[])
 {
 
   gauge_file *gf_v5;
-  gauge_header *gh_v5;
   char *filename_ckpt1,*filename_v5;
   Real c1,c2;
   
