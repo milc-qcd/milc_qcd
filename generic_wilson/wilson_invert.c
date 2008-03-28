@@ -26,14 +26,14 @@
 static void report_status(quark_invert_control *qic){
 
   if(this_node != 0)return;
-  if((qic->resid > 0 && qic->size_r > qic->resid )||
-     (qic->relresid > 0 && qic->size_relr > qic->relresid))
+  if((qic->resid > 0 && qic->final_rsq > qic->resid )||
+     (qic->relresid > 0 && qic->final_relrsq > qic->relresid))
     printf(" NOT converged size_r= %.2g rel = %.2g restarts = %d iters= %d\n",
-	   qic->size_r, qic->size_relr, qic->final_restart, 
+	   qic->final_rsq, qic->final_relrsq, qic->final_restart, 
 	   qic->final_iters );
   else
-    printf(" OK converged size_r= %.2g rel = %.2g iters= %d\n",
-	   qic->size_r, qic->size_relr, qic->final_restart,
+    printf(" OK converged size_r= %.2g rel = %.2g restarts = %d iters= %d\n",
+	   qic->final_rsq, qic->final_relrsq, qic->final_restart, 
 	   qic->final_iters );
 }
 
@@ -63,7 +63,7 @@ int wilson_invert_field( /* Return value is number of iterations taken */
 
 int wilson_invert_field_wqs( /* Return value is number of iterations taken */
     wilson_quark_source *wqs, /* source parameters */
-    void (*source_func_field)(wilson_vector *src, 
+    int (*source_func_field)(wilson_vector *src, 
 			      wilson_quark_source *wqs),  /* source function */
     wilson_vector *dest,  /* type wilson_vector (answer and initial guess) */
     int (*invert_func_field)(wilson_vector *src, wilson_vector *dest,
@@ -83,7 +83,10 @@ int wilson_invert_field_wqs( /* Return value is number of iterations taken */
     printf("wilson_invert_field_wqs(%d): Can't allocate src\n",this_node);
     terminate(1);
   }
-  source_func_field(src,wqs);
+  if(source_func_field(src,wqs)){
+    printf("wilson_invert_field_wqs(%d): error getting source\n",this_node);
+    terminate(1);
+  };
 
   /* Do the inversion */
   tot_iters = invert_func_field(src,dest,qic,dmp);
