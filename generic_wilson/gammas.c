@@ -89,6 +89,67 @@ static void make_gammas(void)
 }
 
 
+/************* mw_gamma.c (in su3.a) **************************/
+/*
+  Multiply a "Wilson vector" by a gamma matrix
+  acting on the row index - equivalently, multiplying on the left
+  usage:  mult_w_by_gamma( src, dest, dir)
+	spin_wilson_vector *src,*dest;
+	int dir;    dir = any of the gamma matrix types in gammatypes.h
+*/
+
+
+void mult_w_by_gamma_mat(wilson_vector * src, 
+			 wilson_vector * dest, 
+			 gamma_matrix_t *gm)
+{
+  register int c2,s2,s;	/* column indices, color and spin */
+
+  if(gamma_initialized==0)make_gammas();
+
+  for(s=0;s<4;s++){
+    s2 = gm->row[s].column;
+    switch (gm->row[s].phase){
+    case 0:
+      for(c2=0;c2<3;c2++){
+	dest->d[s2].c[c2] = src->d[s].c[c2];}
+      break;
+    case 1:
+      for(c2=0;c2<3;c2++){
+	TIMESPLUSI( src->d[s].c[c2], dest->d[s2].c[c2] );}
+      break;
+    case 2:
+      for(c2=0;c2<3;c2++){
+	TIMESMINUSONE( src->d[s].c[c2], dest->d[s2].c[c2] );}
+      break;
+    case 3:
+      for(c2=0;c2<3;c2++){
+	TIMESMINUSI( src->d[s].c[c2], dest->d[s2].c[c2] );}
+    }
+  }
+}
+
+void mult_w_by_gamma(wilson_vector * src,
+		     wilson_vector * dest, int dir)
+{
+  gamma_matrix_t gm;
+
+  if(gamma_initialized==0)make_gammas();
+
+  /* For compatibility */
+  if(dir == GAMMAFIVE)dir = G5;
+
+  if(dir >= MAXGAMMA)
+    {
+      printf("mult_w_by_gamma: Illegal gamma index %d\n",dir);
+      terminate(1);
+    }
+
+  gm = gamma_mat(dir);
+
+  mult_w_by_gamma_mat(src, dest, &gm);
+}
+
 /************* msw_gamma_l.c (in su3.a) **************************/
 /*
   Multiply a "spin Wilson vector" by a gamma matrix
