@@ -693,7 +693,7 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
   MY_REAL epswt[2];
 
   asqtad_path_coeff c;
-  Real *act_path_coeff = get_quark_path_coeff();
+  Real *act_path_coeff = ap->act_path_coeff;
   double remaptime = -dclock();
 
   /* Create QDP fields for fat links, long links, and temp for gauge field */
