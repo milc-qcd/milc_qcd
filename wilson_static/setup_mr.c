@@ -1,6 +1,6 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.7 2007/10/09 21:02:32 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.8 2008/03/28 16:16:47 detar Exp $  ***/
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
@@ -174,7 +174,7 @@ int readin(int prompt)
 
     /* Source type */
     IF_OK 
-      status += ask_quark_source(stdin, prompt, 
+      status += ask_w_quark_source(stdin, prompt, 
 				 &par_buf.wqs.type,par_buf.wqs.descrp);
 
     IF_OK if(par_buf.wqs.type != POINT_WEYL 

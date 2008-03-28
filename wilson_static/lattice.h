@@ -1,7 +1,7 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice_w.h ********************************/
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.8 2007/11/09 15:58:09 detar Exp $   **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.9 2008/03/28 16:16:47 detar Exp $   **/
 /* include file for MIMD heavy-light, version 4
    This file defines global scalars and the fields in the lattice. */
 
@@ -148,7 +148,7 @@ EXTERN  int	odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN  int	number_of_nodes;	/* number of nodes in use */
 EXTERN  int  this_node;		/* node number of this node */
 EXTERN wilson_quark_source wqs;
-EXTERN wilson_quark_source wqstmp;  /* Temporary */
+EXTERN wilson_quark_source wqstmp, wqstmp2;  /* Temporary */
 
 EXTERN quark_invert_control qic;
 EXTERN dirac_wilson_param dwp;
