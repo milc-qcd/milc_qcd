@@ -8,6 +8,8 @@
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #ifdef HAVE_QIO
 #include <qio.h>
+#else
+BOMB THE COMPILE
 #endif
 
 void check_fermion_force( char *srcfile, int srcflag, field_offset src, 
@@ -31,7 +33,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
 
   /* Make a random source in xxx if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
-    restore_ks_vector_scidac_to_site (srcfile, src, QIO_SERIAL, 1);
+    restore_ks_vector_scidac_to_site (srcfile, QIO_SERIAL, src, 1);
     fflush(stdout);
   }
   else {
@@ -108,10 +110,12 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   /* Save source and answer if requested */
 #ifdef HAVE_QIO
   if(srcflag == SAVE_SERIAL)
-    save_ks_vector_scidac_from_site(srcfile, "source color vector field", 
-			  QIO_SINGLEFILE, QIO_SERIAL, src, 1);
+    save_ks_vector_scidac_from_site(srcfile, "check fermion force",
+				    "source color vector field", 
+				    QIO_SINGLEFILE, QIO_SERIAL, src, 1);
   else if(srcflag == SAVE_PARTITION_SCIDAC)
-    save_ks_vector_scidac_from_site(srcfile, "source color vector field",
+    save_ks_vector_scidac_from_site(srcfile, "check fermion force",
+				    "source color vector field",
                                     QIO_PARTFILE, QIO_SERIAL, src, 1);
   
   if(ansflag == SAVE_SERIAL){
