@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.12  2008/03/28 15:37:53  detar
+//  Fix heavy-light code and update sample input
+//
 //  Revision 1.11  2007/10/09 21:10:05  detar
 //  Support new wprop options
 //
@@ -165,8 +168,9 @@ int readin(int prompt) {
     IF_OK strcat(par_buf.spectrum_request,",");
     
     /* Get source type */
-    IF_OK status += ask_quark_source(stdin,prompt,&source_type,
-				     par_buf.wqs.descrp);
+    init_wqs(&par_buf.wqs);
+    IF_OK status += ask_w_quark_source(stdin,prompt,&source_type,
+				       par_buf.wqs.descrp);
     IF_OK par_buf.wqs.type  = source_type;
 
     IF_OK {
@@ -187,7 +191,15 @@ int readin(int prompt) {
 	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
 	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
       }
+      else if ( source_type == COMPLEX_FIELD_FM_FILE ){
+	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
+	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+      }
       else if ( source_type == DIRAC_FIELD_FILE ){
+	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
+	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+      }
+      else if ( source_type == DIRAC_FIELD_FM_FILE ){
 	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
 	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
       }
@@ -254,11 +266,11 @@ int readin(int prompt) {
     IF_OK 
       {
 	if(strcmp("serial_scratch_wprop",save_w) == 0 )
-	  par_buf.scratchflag = SAVE_SERIAL;
+	  par_buf.scratchflag = SAVE_SERIAL_SCIDAC;
 	else if(strcmp("parallel_scratch_wprop",save_w) == 0 )
-	  par_buf.scratchflag = SAVE_CHECKPOINT;
-	else if(strcmp("multidump_scratch_wprop",save_w) == 0 )
-	  par_buf.scratchflag = SAVE_MULTIDUMP;
+	  par_buf.scratchflag = SAVE_PARALLEL_SCIDAC;
+	else if(strcmp("multifile_scratch_wprop",save_w) == 0 )
+	  par_buf.scratchflag = SAVE_MULTIFILE_SCIDAC;
 	else
 	  {
 	    printf("error in input: %s is not a scratch file command\n",save_w);
@@ -303,7 +315,6 @@ int readin(int prompt) {
     relresid[i] = par_buf.relresid[i];
   }
   wqs = par_buf.wqs;
-  init_wqs(&wqs);
   wqs.type = par_buf.wqs.type;
   strcpy(startfile,par_buf.startfile);
   strcpy(savefile,par_buf.savefile);

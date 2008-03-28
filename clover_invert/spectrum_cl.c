@@ -110,17 +110,15 @@ void rotate_prop(spin_wilson_vector *rp, wilson_prop_field qp, int color){
 /*--------------------------------------------------------------------*/
 void sink_smear_prop(wilson_prop_field qp){
 
-  int color, spin;
+  int color;
   int ci,si,sf,cf;
   int i;
   site *s;
   wilson_quark_source sink_wqs;
   complex *chi_cs;
-  wilson_vector *chi;
   spin_wilson_vector *qps;
   double dtime = start_timing();
 
-  chi    = create_wv_field();
   chi_cs = (complex *)malloc(sizeof(complex)*sites_on_node);
 
   /* Now convolute the quark propagator with a Gaussian for
@@ -136,26 +134,17 @@ void sink_smear_prop(wilson_prop_field qp){
 
   print_timing(dtime,"FFT");
 
-  /* Use chi, for spin=color=0 for the sink wave function */
-  FORALLSITES(i,s) clear_wvec( &(chi[i]));
-  
-  spin=0;color=0;
   strcpy(sink_wqs.descrp, "gaussian");
-  sink_wqs.spin   = spin; 
-  sink_wqs.color  = color;
   sink_wqs.type   = GAUSSIAN;
   sink_wqs.r0     = sink_r0;
   sink_wqs.x0     = 0;
   sink_wqs.y0     = 0;
   sink_wqs.z0     = 0;
   sink_wqs.t0     = 0;
-  w_sink_field(chi, &sink_wqs);
+  w_sink_field(chi_cs, &sink_wqs);
   
   /* We want chi(-k)* -- the complex conjugate of FFT of the
      complex conjugate of the quark sink. */
-  FORALLSITES(i,s){
-    chi_cs[i] = chi[i].d[spin].c[color];
-  }
 
   dtime = start_timing();
   restrict_fourier_field(chi_cs, sizeof(complex), FORWARDS);
@@ -179,7 +168,6 @@ void sink_smear_prop(wilson_prop_field qp){
      We do need to divide by an additional (space) volume
      factor, though! */
   
-  destroy_wv_field(chi); 
   free(chi_cs);
 }  
 

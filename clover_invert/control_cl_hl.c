@@ -18,6 +18,10 @@
 #include <qdp.h>
 #endif
 
+#ifndef HAVE_QIO
+MUST COMPILE WITH QIO FOR THE SCRATCH FILE
+#endif
+
 /* Comment these out if you want to suppress detailed timing */
 /*#define IOTIME*/
 /*#define PRTIME*/
@@ -46,12 +50,14 @@ int main(int argc, char *argv[])
   w_prop_file *fp_in_w[MAX_KAP];        /* For reading binary propagator files */
   w_prop_file *fp_out_w[MAX_KAP];       /* For writing binary propagator files */
   w_prop_file *fp_scr[MAX_KAP];
+  wilson_quark_source wqs_scr;  /* scratch file */
   char scratch_file[MAX_KAP][MAXFILENAME];
   
   wilson_vector *psi = NULL;
   wilson_prop_field quark_propagator = NULL;
   wilson_prop_field quark_prop2 = NULL;
   int cg_cl = CL_CG;
+  int source_type;
   
   initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
@@ -131,28 +137,15 @@ int main(int argc, char *argv[])
 	
 	/* Open scratch file and write header */
 	sprintf(scratch_file[k],"%s_%02d",scratchstem_w,k);
-	if(scratchflag == SAVE_CHECKPOINT)
-	  {
-	    fp_scr[k] = w_checkpoint_w_i(scratch_file[k]);
-	    /* Close, temporarily */
-	    w_checkpoint_w_c(fp_scr[k]);
-	  }
-	else if(scratchflag == SAVE_MULTIDUMP)
-	  {
-	    fp_scr[k] = w_multidump_w_i(scratch_file[k]);
-	    /* Close, temporarily */
-	    w_multidump_w_c(fp_scr[k]);
-	  }
-	else
-	  /* If serial, write header and leave it open */
-	  fp_scr[k] = w_serial_w_i(scratch_file[k]);
-	
-	/* Loop over source colors */
-	for(color=0;color<3;color++){
+	source_type = UNKNOWN;
+	fp_scr[k] = w_open_wprop(scratchflag, scratch_file[k], source_type);
+	init_wqs(&wqs_scr);
+
 	  
-	  /* Loop over source spins */
-	  for(spin=0;spin<4;spin++){
-	    
+	/* Loop over source spins */
+	for(spin=0;spin<4;spin++){
+	  /* Loop over source colors */
+	  for(color=0;color<3;color++){
 	    meascount ++;
 	    /*if(this_node==0)printf("color=%d spin=%d\n",color,spin);*/
 	    
@@ -175,8 +168,8 @@ int main(int argc, char *argv[])
 	      flag = 1;      
 	    
 	    /* load psi if requested */
-	    status = reload_wprop_sc_to_field( startflag_w[k], fp_in_w[k], &wqs,
-					       spin, color, psi, iotime);
+	    status = reload_wprop_sc_to_field( startflag_w[k], fp_in_w[k], 
+					       &wqs, spin, color, psi, iotime);
 	    if(status != 0)
 	      {
 		node0_printf("control_cl_hl: Recovering from error by resetting initial guess to zero\n");
@@ -245,20 +238,8 @@ int main(int argc, char *argv[])
 #ifdef IOTIME
 	    dtime = -dclock();
 #endif
-	    if(scratchflag == SAVE_CHECKPOINT)
-	      {
-		w_checkpoint_w_o(fp_scr[k]);
-		w_checkpoint_w_from_field(fp_scr[k],spin,color, psi);
-		w_checkpoint_w_c(fp_scr[k]);
-	      }
-	    else if(scratchflag == SAVE_MULTIDUMP)
-	      {
-		w_multidump_w_o(fp_scr[k]);
-		w_multidump_w_from_field(fp_scr[k],spin,color, psi);
-		w_multidump_w_c(fp_scr[k]);
-	      }
-	    else
-	      w_serial_w_from_field(fp_scr[k],spin,color, psi);
+	    save_wprop_sc_from_field(scratchflag, fp_scr[k], &wqs_scr,
+				     spin, color, psi, "Scratch record", iotime);
 #ifdef IOTIME
 	    dtime += dclock();
 	    if(this_node==0) 
@@ -270,16 +251,11 @@ int main(int argc, char *argv[])
 	    save_wprop_sc_from_field( saveflag_w[k],fp_out_w[k], &wqs,
 				      spin,color,psi,"", iotime);
 	    
-	  } /* source spins */
-	} /* source colors */
+	  } /* source colors */
+	} /* source spins */
 	
 	/* Close and release scratch file */
-	if(scratchflag == SAVE_CHECKPOINT)
-	  w_checkpoint_w_f(fp_scr[k]);
-	else if(scratchflag == SAVE_MULTIDUMP)
-	  w_multidump_w_f(fp_scr[k]);
-	else
-	  w_serial_w_f(fp_scr[k]);
+	w_close_wprop(scratchflag, fp_scr[k]);
 	
 	/*if(this_node==0)printf("Dumped prop to file  %s\n",
 	  scratch_file[k]); */
@@ -303,30 +279,14 @@ int main(int argc, char *argv[])
       for(k=0;k<num_kap;k++){
 	
 	/* Read the propagator from the scratch file */
-	kappa=kap[k];
-	if(scratchflag == SAVE_CHECKPOINT)
-	  fp_scr[k] = r_parallel_w_i(scratch_file[k]);
-	else if(scratchflag == SAVE_MULTIDUMP)
-	  fp_scr[k] = r_multidump_w_i(scratch_file[k]);
-	else
-	  fp_scr[k] = r_serial_w_i(scratch_file[k]);
-	
+
 #ifdef IOTIME
 	dtime = -dclock();
 #endif
-	for(color=0;color<3;color++) for(spin=0;spin<4;spin++){
-	  if(scratchflag == SAVE_CHECKPOINT)
-	    r_parallel_w_to_field(fp_scr[k], spin, color, psi);
-	  
-	  else if(scratchflag == SAVE_MULTIDUMP)
-	    r_multidump_w_to_field(fp_scr[k], spin, color, psi);
-	  
-	  else
-	    r_serial_w_to_field(fp_scr[k], spin, color, psi);
-	  
-	  copy_wp_from_wv(quark_propagator, psi, color, spin);
-	}
-	
+	kappa=kap[k];
+	init_wqs(&wqs_scr);
+	reload_wprop_to_wp_field(scratchflag, scratch_file[k], &wqs_scr,
+				 quark_propagator, iotime);
 #ifdef IOTIME
 	dtime += dclock();
 	if(this_node==0) 
@@ -335,13 +295,6 @@ int main(int argc, char *argv[])
 	    fflush(stdout);
 	  }
 #endif
-	
-	if(scratchflag == SAVE_CHECKPOINT)
-	  r_parallel_w_f(fp_scr[k]); 
-	else if(scratchflag == SAVE_MULTIDUMP)
-	  r_multidump_w_f(fp_scr[k]); 
-	else
-	  r_serial_w_f(fp_scr[k]); 
 	
 	/*if(this_node==0)
 	  printf("Closed scratch file %s\n",scratch_file[k]);
@@ -364,31 +317,9 @@ int main(int argc, char *argv[])
 #endif
 	  /* Read the propagator from the scratch file */
 	  kappa=kap[j];
-	  if(scratchflag == SAVE_CHECKPOINT)
-	    fp_scr[j] = r_parallel_w_i(scratch_file[j]);
-	  else if(scratchflag == SAVE_MULTIDUMP)
-	    fp_scr[j] = r_multidump_w_i(scratch_file[j]);
-	  else
-	    fp_scr[j] = r_serial_w_i(scratch_file[j]);
-	  
- 
-	  for(color=0;color<3;color++) for(spin=0;spin<4;spin++){
-	    if(scratchflag == SAVE_CHECKPOINT)
-	      r_parallel_w_to_field(fp_scr[j], spin, color, psi);
-	    else if(scratchflag == SAVE_MULTIDUMP)
-	      r_multidump_w_to_field(fp_scr[j], spin, color, psi);
-	    else
-	      r_serial_w_to_field(fp_scr[j], spin, color, psi);
-	    
-	    copy_wp_from_wv(quark_prop2, psi, color, spin);
-	  }
-	  if(scratchflag == SAVE_CHECKPOINT)
-	    r_parallel_w_f(fp_scr[j]);
-	  if(scratchflag == SAVE_MULTIDUMP)
-	    r_multidump_w_f(fp_scr[j]);
-	  else
-	    r_serial_w_f(fp_scr[j]);
-	  
+	  init_wqs(&wqs_scr);
+	  reload_wprop_to_wp_field(scratchflag,  scratch_file[j], &wqs_scr,
+				   quark_prop2, iotime);
 #ifdef IOTIME
 	  dtime += dclock();
 	  if(this_node==0) 
@@ -418,32 +349,13 @@ int main(int argc, char *argv[])
 	/* Write the smeared propagator to the scratch file (overwriting)*/
 	
 	kappa=kap[k];
-	if(scratchflag == SAVE_CHECKPOINT)
-	  fp_scr[k] = w_checkpoint_w_i(scratch_file[k]);
-	else if(scratchflag == SAVE_MULTIDUMP)
-	  fp_scr[k] = w_multidump_w_i(scratch_file[k]);
-	else
-	  fp_scr[k] = w_serial_w_i(scratch_file[k]);
-	
+
 #ifdef IOTIME
 	dtime = -dclock();
 #endif
-	for(color=0;color<3;color++) for(spin=0;spin<4;spin++){
-	  copy_wv_from_wp(psi, quark_propagator, color, spin);
-	  if(scratchflag == SAVE_CHECKPOINT)
-	    w_checkpoint_w_from_field(fp_scr[k], spin, color, psi);
-	  else if(scratchflag == SAVE_MULTIDUMP)
-	    w_multidump_w_from_field(fp_scr[k], spin, color, psi);
-	  else
-	    w_serial_w_from_field(fp_scr[k], spin, color, psi);
-	}
-	
-	if(scratchflag == SAVE_CHECKPOINT)
-	  w_checkpoint_w_f(fp_scr[k]);
-	else if(scratchflag == SAVE_MULTIDUMP)
-	  w_multidump_w_f(fp_scr[k]);
-	else
-	  w_serial_w_f(fp_scr[k]);
+	save_wprop_from_wp_field(scratchflag, scratch_file[k], &wqs_scr,
+				 quark_propagator, "Scratch propagator", 
+				 iotime);
 	
 #ifdef IOTIME
 	dtime += dclock();
@@ -464,31 +376,9 @@ int main(int argc, char *argv[])
 #endif
 	  /* Read the propagator from the scratch file */
 	  kappa=kap[k];
-	  if(scratchflag == SAVE_CHECKPOINT)
-	    fp_scr[k] = r_parallel_w_i(scratch_file[k]);
-	  else if(scratchflag == SAVE_MULTIDUMP)
-	    fp_scr[k] = r_multidump_w_i(scratch_file[k]);
-	  else
-	    fp_scr[k] = r_serial_w_i(scratch_file[k]);
-	  
-	  
-	  for(color=0;color<3;color++) for(spin=0;spin<4;spin++){
-	    if(scratchflag == SAVE_CHECKPOINT)
-	      r_parallel_w_to_field(fp_scr[k], spin, color, psi);
-	    else if(scratchflag == SAVE_MULTIDUMP)
-	      r_multidump_w_to_field(fp_scr[k], spin, color, psi);
-	    else
-	      r_serial_w_to_field(fp_scr[k], spin, color, psi);
-	    copy_wp_from_wv( quark_propagator, psi, color, spin);
-	  }
-	  
-	  if(scratchflag == SAVE_CHECKPOINT)
-	    r_parallel_w_f(fp_scr[k]);
-	  else if(scratchflag == SAVE_MULTIDUMP)
-	    r_multidump_w_f(fp_scr[k]);
-	  else
-	    r_serial_w_f(fp_scr[k]);
-	  
+	  init_wqs(&wqs_scr);
+	  reload_wprop_to_wp_field(scratchflag,  scratch_file[k], &wqs_scr,
+				   quark_propagator, iotime);
 #ifdef IOTIME
 	  dtime += dclock();
 	  if(this_node==0) 
@@ -509,36 +399,13 @@ int main(int argc, char *argv[])
 #endif
 	    /* Read the propagator from the scratch file */
 	    kappa=kap[j];
-	    if(scratchflag == SAVE_CHECKPOINT)
-	      fp_scr[j] = r_parallel_w_i(scratch_file[j]);
-	    else if(scratchflag == SAVE_MULTIDUMP)
-	      fp_scr[j] = r_multidump_w_i(scratch_file[j]);
-	    else
-	      fp_scr[j] = r_serial_w_i(scratch_file[j]);
-	    
-	    for(color=0;color<3;color++){
-	      for(spin=0;spin<4;spin++){
-		if(scratchflag == SAVE_CHECKPOINT)
-		  r_parallel_w_to_field(fp_scr[j], spin, color, psi);
-		else if(scratchflag == SAVE_MULTIDUMP)
-		  r_multidump_w_to_field(fp_scr[j], spin, color, psi);
-		else
-		  r_serial_w_to_field(fp_scr[j], spin, color, psi);
-		copy_wp_from_wv(quark_prop2, psi, color, spin);
-	      }
-	    }
+	    init_wqs(&wqs_scr);
+	    reload_wprop_to_wp_field(scratchflag,  scratch_file[j], &wqs_scr,
+				     quark_prop2, iotime);
 	      
 	    /* Compute the spectrum */
 	    spectrum_cl_hl_offdiag_smeared_meson( quark_propagator,
 						  quark_prop2, j, k);
-	    
-	    if(scratchflag == SAVE_CHECKPOINT)
-	      r_parallel_w_f(fp_scr[j]);
-	    else if(scratchflag == SAVE_MULTIDUMP)
-	      r_multidump_w_f(fp_scr[j]);
-	    else
-	      r_serial_w_f(fp_scr[j]);
-	    
 	    
 #ifdef PRTIME
 	    dtime += dclock();
