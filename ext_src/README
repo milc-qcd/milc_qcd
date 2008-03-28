@@ -1,0 +1,121 @@
+ext_src
+
+C. DeTar 2/12/2008
+
+Code for extracting an extended source from a staggered or Dirac
+propagator.  The source is written to a SciDAC formatted file.  An
+input Dirac propagator produces twelve Dirac source records, one for
+each underlying source spin and color.  An input staggered propagator
+produces either twelve naive Dirac source records or three color
+vector field records.  The extended source can be smeared and momentum
+can be inserted.
+
+Sample input parameter file
+
+The file begins with the standard MILC stanza defining the lattice
+dimensions.
+
+  prompt 0
+  nx 4
+  ny 4
+  nz 4
+  nt 8
+
+Next comes the job ID:
+
+  job_id 203696.kaon2.fnal.gov
+
+The next series of stanzas specifies the input propagator files.
+
+  # Description of quarks
+
+The number of propators to process
+
+  number_of_quarks 3
+  
+  # quark 0
+
+Parameters for the first propagator
+  
+  quark_type clover
+
+Choices for quark types are "KS" and "clover".  See clover example
+below.
+
+Propagator files for this quark
+The code recognizes FNAL, MILC, and SciDAC KS formats.
+
+  reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
+  save_serial_scidac_w_source out.test.w_source.1
+
+Time slice to extract for the extended source.
+
+  t0 4
+
+Smearing information for the extended source.
+  
+  # smearing for quark 0
+
+Input smearing file
+
+  complex_field_fm
+  load_sink ../binary_samples/smear_fm.sample.l4448.ll
+
+Smearing momentum
+
+  momentum 1 0 0
+
+Label for smearing
+
+  sink_label 1S
+
+Gamma matrix to be applied to the extended source
+
+  sink_gamma G5
+  
+Stanza for the second propagator
+
+  # quark 1
+  
+  quark_type KS
+  reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+  save_serial_scidac_ks_source out.test.ks_source.1
+  t0 4
+  
+  # smearing for quark 1
+
+Here is how we specify no smearing  
+
+  point
+  origin 0 0 0
+  sink_label d
+  
+Gamma matrix to be applied to the extended source
+
+  sink_gamma G5
+  
+Stanza for the third propagator
+
+  # quark 2
+  
+  quark_type KS
+  reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+
+Specifying a Wilson (Dirac) extended source causes the staggered
+propagator to be converted to naive.  In the staggered to naive
+conversion we assume that the staggered source has support only on
+hypercube corners.
+
+  save_serial_scidac_w_source out.test.ks_source_naive.1
+  t0 4
+  
+  # smearing for quark 2
+  complex_field_fm
+  load_sink ../binary_samples/smear_fm.sample.l4448.ll
+  momentum 0 0 0
+  sink_label 1S
+  
+Gamma matrix to be applied to the extended source
+
+  sink_gamma G5
+  
