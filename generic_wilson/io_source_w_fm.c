@@ -105,7 +105,7 @@ read_w_fm_source_hdr(w_source_file *wsf, int source_type)
     terminate(1);
   }
 
-  if( source_type == COMPLEX_FIELD_FILE ){
+  if( source_type == COMPLEX_FIELD_FM_FILE ){
     if( size_of_element != sizeof(float) ||
 	elements_per_site != 2 /* complex field */)
       {	
@@ -115,7 +115,7 @@ read_w_fm_source_hdr(w_source_file *wsf, int source_type)
 	terminate(1);
       }
   }
-  else if( source_type == DIRAC_FIELD_FILE ){
+  else if( source_type == DIRAC_FIELD_FM_FILE ){
     if( size_of_element != sizeof(float) ||
 	elements_per_site != 24 /* wilson_vector */)
       {	
@@ -198,7 +198,7 @@ r_source_w_fm_i(char *filename, int source_type)
   else wsf->fp = NULL;
 
   /* Make room for the whole Dirac source */
-  if(source_type == DIRAC_FIELD_FILE){
+  if(source_type == DIRAC_FIELD_FM_FILE){
     wsf->source = 
       (wilson_propagator *)malloc(sizeof(wilson_propagator)*sites_on_node);
     if(wsf->source == NULL){
@@ -262,9 +262,9 @@ r_source_w_fm(w_source_file *wsf,
 
   if(this_node == 0)
     {
-      if(source_type == COMPLEX_FIELD_FILE)
+      if(source_type == COMPLEX_FIELD_FM_FILE)
 	cbuff = (fcomplex *)malloc(MAX_BUF_LENGTH*sizeof(fcomplex));
-      else if(source_type == DIRAC_FIELD_FILE)
+      else if(source_type == DIRAC_FIELD_FM_FILE)
 	wbuff = (fwilson_vector *)malloc(MAX_BUF_LENGTH*sizeof(fwilson_vector));
       else {
 	printf("r_source_w_fm: Unknown source type %d\n", source_type);
@@ -283,7 +283,7 @@ r_source_w_fm(w_source_file *wsf,
 
     } /* end of if(this_node == 0)*/
 
-  if(source_type == COMPLEX_FIELD_FILE)
+  if(source_type == COMPLEX_FIELD_FM_FILE)
     nrecord = 1;
   else
     nrecord = 12;
@@ -318,7 +318,7 @@ r_source_w_fm(w_source_file *wsf,
 	      buf_length = vol3 - rcv_rank;
 	      if(buf_length > MAX_BUF_LENGTH) buf_length = MAX_BUF_LENGTH;
 	      /* then do read */
-	      if(source_type == COMPLEX_FIELD_FILE)
+	      if(source_type == COMPLEX_FIELD_FM_FILE)
 		a=(int)g_read(cbuff,sizeof(fcomplex),buf_length,wsf->fp);
 	      else
 		a=(int)g_read(wbuff,sizeof(fwilson_vector),buf_length,wsf->fp);
@@ -335,7 +335,7 @@ r_source_w_fm(w_source_file *wsf,
 	    }  /*** end of the buffer read ****/
 
 	  /* Save data in msg.q for further processing */
-	  if(source_type == COMPLEX_FIELD_FILE)
+	  if(source_type == COMPLEX_FIELD_FM_FILE)
 	    cmsg.q = cbuff[where_in_buf];
 	  else
 	    wmsg.q = wbuff[where_in_buf];
@@ -350,7 +350,7 @@ r_source_w_fm(w_source_file *wsf,
 	    /* node 0 doesn't send to itself */
 	    if(destnode != 0){
 	      /* send to correct node */
-	      if(source_type == COMPLEX_FIELD_FILE)
+	      if(source_type == COMPLEX_FIELD_FM_FILE)
 		send_field((char *)&cmsg, sizeof(cmsg), destnode);
 	      else
 		send_field((char *)&wmsg, sizeof(wmsg), destnode);
@@ -358,7 +358,7 @@ r_source_w_fm(w_source_file *wsf,
 	  } /* if(this_node==0) */
 	  else {	/* for all nodes other than node 0 */
 	    if(this_node==destnode){
-	      if(source_type == COMPLEX_FIELD_FILE)
+	      if(source_type == COMPLEX_FIELD_FM_FILE)
 		get_field((char *)&cmsg, sizeof(cmsg),0);
 	      else
 		get_field((char *)&wmsg, sizeof(wmsg),0);
@@ -372,7 +372,7 @@ r_source_w_fm(w_source_file *wsf,
 	  if(this_node==destnode)
 	    {
 	      if(byterevflag==1){
-		if(source_type == COMPLEX_FIELD_FILE)
+		if(source_type == COMPLEX_FIELD_FM_FILE)
 		  byterevn((int32type *)&cmsg.q, 
 			   sizeof(fcomplex)/sizeof(int32type));
 		else
@@ -389,7 +389,7 @@ r_source_w_fm(w_source_file *wsf,
 		 destination, filling only the designated spin and color
 		 with the field and zero the rest */
 	      
-	      if(source_type == COMPLEX_FIELD_FILE){
+	      if(source_type == COMPLEX_FIELD_FM_FILE){
 		
 		if(dest_site == (field_offset)(-1))
 		  wv = dest_field + i;
@@ -428,7 +428,7 @@ r_source_w_fm(w_source_file *wsf,
   /* Finally for the Dirac source type, convert spin basis from FNAL
      to MILC and then copy the requested MILC spin, color to the user
      Wilson vector */
-  if(source_type == DIRAC_FIELD_FILE){
+  if(source_type == DIRAC_FIELD_FM_FILE){
     convert_wprop_fnal_to_milc_field(wsf->source);
     /* Copy converted source to source field for this spin and color */
     FORALLSITES(i,s){

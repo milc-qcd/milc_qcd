@@ -13,6 +13,7 @@ G_WILSON_ALL =  \
     bj_to_weyl.o \
     boundary_flip.o \
     canopy2weyl_rot.o \
+    dirac_utilities.o \
     dslash_lean2.o \
     dslash_lean_forwards.o \
     dslash_w_space.o \
@@ -61,6 +62,8 @@ bj_to_weyl.o: ../generic_wilson/bj_to_weyl.c
 boundary_flip.o: ../generic_wilson/boundary_flip.c
 	${CC} -c ${CFLAGS} $<
 canopy2weyl_rot.o: ../generic_wilson/canopy2weyl_rot.c
+	${CC} -c ${CFLAGS} $<
+dirac_utilities.o: ../generic_wilson/dirac_utilities.c
 	${CC} -c ${CFLAGS} $<
 dslash_lean2.o: ../generic_wilson/dslash_lean2.c
 	${CC} -c ${CFLAGS} $<

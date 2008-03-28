@@ -234,6 +234,7 @@ w_prop_file *w_serial_w_fm_generic_i(char *filename, int elements_per_site)
   /* Set up w_prop file and w_prop header structures and load header values */
   /* First reuse the MILC procedure */
   wpf = setup_output_w_prop_file();
+  wpf->file_type = FILE_TYPE_W_FMPROP;
   wph = wpf->header;
   
   /* We want the FNAL magic number */
@@ -274,7 +275,6 @@ w_prop_file *w_serial_w_fm_generic_i(char *filename, int elements_per_site)
 
   wpf->filename       = filename;
   wpf->byterevflag    = 0;            /* Not used for writing */
-  wpf->rank2rcv       = NULL;         /* Not used for writing */
   wpf->parallel       = SERIAL;
   wpf->prop           = NULL;
   wpf->info_fp        = NULL;
@@ -733,7 +733,6 @@ w_prop_file *r_serial_w_fm_i(char *filename)
   wpf->byterevflag = byterevflag;
   
   /* Assign other default values to file structure */
-  wpf->rank2rcv       = NULL;
   wpf->prop           = NULL;
   wpf->info_fp        = NULL;
 
