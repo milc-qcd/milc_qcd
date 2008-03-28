@@ -196,7 +196,8 @@ int main(int argc, char **argv)
 	    printf("color=%d spin=%d kappa=%f nk=%d\n", color, spin, (double) kappa, nk);
 
 	  /* load psi if requested */
-	  reload_wprop_sc_to_site(startflag_w[nk], fp_in_w[nk], 
+	  init_wqs(&wqstmp2);
+	  reload_wprop_sc_to_site(startflag_w[nk], fp_in_w[nk], &wqstmp2,
 			    spin, color, F_OFFSET(psi),1);
 
 	  if (nk == 0 || count2 == 1)
@@ -253,7 +254,7 @@ int main(int argc, char **argv)
 	  }
 	    
 	  /* save psi if requested */
-	  save_wprop_sc_from_site( saveflag_w[nk],fp_out_w[nk],
+	  save_wprop_sc_from_site( saveflag_w[nk],fp_out_w[nk],&wqstmp2,
 			  spin,color,F_OFFSET(psi),1);
 
 

@@ -112,7 +112,6 @@ EXTERN  int fixflag;    /* whether to gauge fix **/
 
 
 
-
 /* Some of these global variables are node dependent */
 /* They are set in "make_lattice()" */
 EXTERN  int	sites_on_node;		/* number of sites on this node */
@@ -122,7 +121,7 @@ EXTERN  int	number_of_nodes;	/* number of nodes in use */
 EXTERN  int  this_node;		/* node number of this node */
 
 EXTERN wilson_quark_source wqs;
-EXTERN wilson_quark_source wqstmp;  /* Temporary */
+EXTERN wilson_quark_source wqstmp, wqstmp2;  /* Temporary */
 
 EXTERN quark_invert_control qic;
 EXTERN dirac_wilson_param dwp;

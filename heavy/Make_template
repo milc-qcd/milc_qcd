@@ -52,6 +52,7 @@ G_OBJECTS = \
    io_helpers.o \
    io_lat4.o          \
    io_lat_utils.o     \
+   io_source_cmplx_fm.o \
    make_lattice.o \
    nersc_cksum.o \
    remap_stdio_from_args.o \
@@ -65,7 +66,9 @@ endif
 G_KS_OBJECTS =      \
   io_helpers_ks.o   \
   io_prop_ks.o      \
-  io_prop_ks_fm.o
+  io_prop_ks_fm.o   \
+  ks_utilities.o    \
+  ks_source.o
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_KS_OBJECTS += io_scidac_ks.o
@@ -73,6 +76,7 @@ endif
 
 G_WILSON_OBJECTS = \
    canopy2weyl_rot.o  \
+   dirac_utilities.o  \
    dslash_w3.o        \
    gammas.o           \
    io_helpers_w.o     \
@@ -214,15 +218,8 @@ clean:
 
 # Rules for generic routines
 include ../generic/Make_template
-
-
-# Rules for generic routines
 include ../generic_clover/Make_template
-
-# Rules for generic routines
 include ../generic_ks/Make_template
-
-# Rules for generic_wilson routines
 include ../generic_wilson/Make_template
 
 libmake:

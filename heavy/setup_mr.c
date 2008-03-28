@@ -155,7 +155,7 @@ int readin(int prompt)
 
     /* Source type */
     IF_OK 
-      status += ask_quark_source( stdin, prompt, &par_buf.wqs.type,
+      status += ask_w_quark_source( stdin, prompt, &par_buf.wqs.type,
 				  par_buf.wqs.descrp);
 
     IF_OK if(par_buf.wqs.type != POINT_WEYL 
@@ -378,8 +378,8 @@ int readin(int prompt)
     nrestart = par_buf.nrestart;
     nhop = par_buf.nhop;
     flag = par_buf.flag;
-    wqs = par_buf.wqs;
     init_wqs(&wqs);
+    wqs = par_buf.wqs;
     wqs.type = par_buf.wqs.type;
     source_parity = par_buf.source_parity;
     rsqmin = par_buf.rsqmin;
