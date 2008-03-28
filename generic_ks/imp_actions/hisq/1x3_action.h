@@ -54,6 +54,10 @@
        Clink,        /* one link */
        Cstaple,        /* 3-staple */
     };
+#define INDEX_ONELINK 0
+#define INDEX_NAIK 1
+    static Real onelink_mass_renorm_fact = (1.0/8.0)*(-27.0/40.0);
+    static Real naik_mass_renorm_fact = (-1.0/24.0)*(-27.0/40.0);
 #endif
 
 //FOR THE MOMENT, we keep the old stuff around.  It will be superceded by
@@ -74,5 +78,6 @@
 	Cstaple
     };
 #endif
+
 
 #endif // _1X3_ACTION_H

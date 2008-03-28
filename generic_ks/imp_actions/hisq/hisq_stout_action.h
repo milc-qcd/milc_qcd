@@ -10,7 +10,7 @@
        about signs of coefficients.  See long comment at bottom
        of quark_stuff.c. */
 
-#define HISQ_NAIK_ADJUSTABLE // allow for adjustable epsilon in Naik term
+//#define HISQ_NAIK_ADJUSTABLE // allow for adjustable epsilon in Naik term
   // ONE HAS TO BE CAREFUL: actual correction is eps*naik_term_mass^2
 #define HISQ_NAIK_EPS (-0.675)
 #define MAX_NUM 688  // should be obsolete, for now max of MAX_NUM_[12]
@@ -46,14 +46,15 @@
 //#define UNITARIZATION_METHOD UNITARIZE_NONE
 //#define UNITARIZATION_METHOD UNITARIZE_ROOT
 //#define UNITARIZATION_METHOD UNITARIZE_RATIONAL
-#define UNITARIZATION_METHOD UNITARIZE_ANALYTIC
+//#define UNITARIZATION_METHOD UNITARIZE_ANALYTIC
+#define UNITARIZATION_METHOD UNITARIZE_STOUT
 
 // Smearing for second level
 #define NUM_BASIC_PATHS_2 6
 #define MAX_NUM_2 688
 //#define ASQ_OPTIMIZED_FATTENING_2
 //#define ASQ_OPTIMIZED_FORCE_2
-#define QUARK_ACTION_DESCRIPTION_2 "\"Fat7 + 2xLepage\""
+#define QUARK_ACTION_DESCRIPTION_2 "\"Fat7 + 2xLepage + Stout reunit\""
 #ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind_2[NUM_BASIC_PATHS_2][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
