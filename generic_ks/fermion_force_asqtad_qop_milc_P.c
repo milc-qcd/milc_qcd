@@ -276,6 +276,7 @@ static fsu3_matrix *get_matrix_from_qop(dsu3_matrix *g){
   FORALLSITES(i,s){
     d2f_mat(mat+i, g+i);
   }
+  return mat;
 }
 
 static fsu3_vector *get_vector_from_qop(dsu3_vector *v){
@@ -289,6 +290,7 @@ static fsu3_vector *get_vector_from_qop(dsu3_vector *v){
   FORALLSITES(i,s){
     d2f_vec(vec+i, v+i);
   }
+  return vec;
 }
 
 static void copy_qop_from_matrix(dsu3_matrix *g, fsu3_matrix *mat){
