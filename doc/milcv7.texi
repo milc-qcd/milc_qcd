@@ -1,0 +1,2671 @@
+\input texinfo.tex @c -*- Mode: Texinfo -*-
+@headings doubleafter
+@setfilename milcv7.info
+@settitle The MILC Code (version: 7.6)
+@footnotestyle end
+@c @setchapternewpage off
+
+@ignore
+ c milcv7.texi -- texinfo source for MILC code documentation
+ c Copyright (C) 2008 The MILC Collaboration
+ c Contact: <jhetrick@uop.edu> or <doug@physics.arizona.edu>
+ c
+ c  to compile: texi2dvi milcv6.texi, texi2html milcv6.texi
+ c $Id: milcv7.texi,v 1.1 2008/03/28 15:44:32 detar Exp $
+ c
+ c $Log: milcv7.texi,v $
+ c Revision 1.1  2008/03/28 15:44:32  detar
+ c Upgrade documentation
+ c
+ c Revision 1.1.1.1  2005/02/23 00:04:49  detar
+ c Imported sources
+ c
+@end ignore
+
+@ifinfo
+@node Top, Obtaining the MILC Code, (dir), (dir)
+@top The MILC Code
+@center The MILC Code 
+@center version 7.6
+@sp 1
+@center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
+@center @strong{Tom Burch} (@emph{U. of Utah}) <tburch@@physics.utah.edu>
+@center @strong{Tom DeGrand} (@emph{U. of Colorado}) <degrand@@aurinko.colorado.edu>
+@center @strong{Carleton DeTar} (@emph{U. of Utah}) <detar@@physics.utah.edu>
+@center @strong{Steve Gottlieb} (@emph{Indiana U.}) <sg@@denali.physics.indiana.edu>
+@center @strong{Urs Heller} (@emph{APS}) <heller@@ridge.aps.org,>
+@center @strong{James Hetrick} (@emph{U. of the Pacific}) <jhetrick@@uop.edu>
+@center @strong{Ludmila Levkova} (@emph{U. of Utah}) <ludmila@@physics.utah.edu>
+@center @strong{Craig McNeile} (@emph{Glasgow U.}) <c.mcneile@@physics.gla.ac.uk>
+@center @strong{Kostas Orginos} (@emph{College of William and Mary}) <kostas@@kostas@@jlab.org>
+@center @strong{James Osborn} (@emph{Argonne National Laboratory}) <osborn@@alcf.anl.gov>
+@center @strong{Kari Rummukainen} (@emph{Oulu University}) <kari.rummukainen@@oulu.fi>
+@center @strong{Bob Sugar} (@emph{U.C. Santa Barbara}) <sugar@@sarek.physics.ucsb.edu>
+@center @strong{Doug Toussaint} (@emph{U. of Arizona}) <doug@@klingon.physics.arizona.edu>
+
+The MILC Code is a body of high performance research software written
+in C for doing SU(3) lattice gauge theory on several different (MIMD)
+parallel computers in current use. In scalar mode, it runs on a
+variety of workstations making it extremely versatile for both
+production and exploratory applications. This manual is for the latest
+(7.6) version of the code. Currently supported code runs
+on:
+@itemize @bullet
+@item Scalar machines
+@item Linux+MPI clusters
+@item IBM BG/L BG/P
+@item Cray XT-3
+@item QCDOC
+@end itemize
+This is a @TeX{}info document; an HTML version is accessible at:
+@itemize 
+@item http://www.physics.utah.edu/~detar/milc/
+@end itemize
+
+
+@ignore
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries a copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+@end ignore
+@end ifinfo
+
+@node Top, Obtaining the MILC Code, (dir), (dir)
+@top The MILC Code
+@titlepage
+@center @titlefont{The MILC Code}
+@sp 1
+
+@center version ---7.6---
+@sp 1
+@center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
+@center @strong{Tom Burch} (@emph{U. of Utah}) <tburch@@physics.utah.edu>
+@center @strong{Tom DeGrand} (@emph{U. of Colorado}) <degrand@@aurinko.colorado.edu>
+@center @strong{Carleton DeTar} (@emph{U. of Utah}) <detar@@physics.utah.edu>
+@center @strong{Steve Gottlieb} (@emph{Indiana U.}) <sg@@denali.physics.indiana.edu>
+@center @strong{Urs Heller} (@emph{APS}) <heller@@ridge.aps.org,>
+@center @strong{James Hetrick} (@emph{U. of the Pacific}) <jhetrick@@uop.edu>
+@center @strong{Ludmila Levkova} (@emph{U. of Utah}) <ludmila@@physics.utah.edu>
+@center @strong{Craig McNeile} (@emph{Glasgow U.}) <c.mcneile@@physics.gla.ac.uk>
+@center @strong{Kostas Orginos} (@emph{College of William and Mary}) <kostas@@kostas@@jlab.org>
+@center @strong{James Osborn} (@emph{Argonne National Laboratory}) <osborn@@alcf.anl.gov>
+@center @strong{Kari Rummukainen} (@emph{Oulu University}) <kari.rummukainen@@oulu.fi>
+@center @strong{Bob Sugar} (@emph{U.C. Santa Barbara}) <sugar@@sarek.physics.ucsb.edu>
+@center @strong{Doug Toussaint} (@emph{U. of Arizona}) <doug@@klingon.physics.arizona.edu>
+
+The MILC Code is a body of high performance research software written
+in C for doing SU(3) lattice gauge theory on several different (MIMD)
+parallel computers in current use. In scalar mode, it runs on a
+variety of workstations making it extremely versatile for both
+production and exploratory applications. This manual is for the latest
+(7.6) version of the code. Currently supported code runs
+on:
+@itemize @bullet
+@item Scalar machines
+@item Linux+MPI clusters
+@item IBM BG/L BG/P
+@item Cray XT-3
+@item QCDOC
+@end itemize
+This is a @TeX{}info document; an HTML version is accessible at:
+@itemize 
+@item http://www.physics.utah.edu/~detar/milc/
+@end itemize
+@ifinfo
+This is a @TeX{}info document; an HTML version is accessible at:
+@end ifinfo
+@itemize
+@item http://www.physics.utah.edu/~detar/milc/
+@end itemize
+At present there is no special accommodation for parallel architectures
+with multiple share-memory processors (SMP) on a node.  Each processor
+is treated as though it is a separate node, requiring a communications
+operation to exchange data, regardless of whether data is in commonly
+shared memory or truly off node.  Throughout this documentation ``node''
+is therefore synonymous with ``processor.''
+
+@page
+@vskip 0pt plus 1filll
+@cindex Copyright
+Copyright @copyright{} 2008 by The MILC Collaboration
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+@cindex Last change
+@c ************************** LAST CHANGE *****************************
+@*Last change: [detar:03 18 2008]
+@c ********************************************************************
+@end titlepage
+
+@menu
+* Obtaining the MILC Code::
+* Building the MILC Code::
+* General description::
+* Programming with MILC Code::
+* Writing Your Own Application::
+* Concept Index::
+* Variable Index::
+@end menu
+
+@node Obtaining the MILC Code, Building the MILC Code, Top, Top
+@chapter Obtaining the MILC Code
+@cindex Obtaining the MILC Code
+
+This chapter explains how to get the code, copyright conditions and the
+installation process.
+
+@menu
+* Web sites::
+* Usage conditions::
+* Installing the MILC Code::
+* Portability::
+* SciDAC Support::
+* Supported architectures::
+@end menu
+
+@node Web sites, Usage conditions, Obtaining the MILC Code, Obtaining the MILC Code
+@section Web sites
+@cindex  Web sites
+@cindex MILC Homepage
+
+The most up-to-date information and access to the MILC Code can be found
+
+@itemize @bullet  
+@item via WWW at: 
+@itemize
+@item @kbd{http://physics.utah.edu/~detar/milc/}
+@end itemize
+
+@item via email request to the authors' representatives at: 
+@itemize
+@item @kbd{doug@@klingon.physics.arizona.edu}
+@item @kbd{detar@@physics.utah.edu}
+@end itemize
+@end itemize
+
+@node Usage conditions, Installing the MILC Code, Web sites, Obtaining the MILC Code
+@section Usage conditions
+@cindex Usage conditions
+@cindex Free Software Foundation
+@cindex GNU General Public License
+
+The MILC Code is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation.
+
+@strong{Publications of research work done using this code or
+derivatives of this code should acknowledge its use.} The MILC project
+is supported in part by grants for the US Department of Energy and
+National Science Foundation and we ask that you use (at least) the
+following string in publications which derive results using this
+material: 
+@sp 1
+
+@dfn{This work was in part based on the MILC
+collaboration's public lattice gauge theory code. See
+@strong{http://physics.utah.edu/~detar/milc.html}}
+@sp 1
+
+This software is distributed in the hope that it will be useful, but
+without any warranty; without even the implied warranty of
+merchantability or fitness for a particular purpose. See the GNU
+General Public License for more details, a copy of which License can be
+obtained from
+@example
+Free Software Foundation, Inc., 
+675 Mass Ave, Cambridge, MA 02139, USA.
+@end example
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the
+entire resulting derived work is distributed under the terms of a
+permission notice identical to this one.
+
+@node Installing the MILC Code, Portability, Usage conditions, Obtaining the MILC Code
+@section Installing the MILC Code
+@cindex Installing the MILC Code
+
+The major code sections are currently bundled into several tar files,
+which are, in turn, wrapped into a single compressed tar file.  Start
+unpacking in a clean directory using the command
+@example
+    tar -xzf milc_qcd*.tar.gz
+@end example
+or, if your version of tar doesn't have the @kbd{z} uncompress option,
+use
+@example
+   gzip -dc milc_qcd*.tar.gz | tar -xf -
+@end example
+You should then find a @kbd{README_UNPACK} file or
+@kbd{README_UNPACK_RELEASE} file that explains how to complete the
+unpacking.  The procedure for building the MILC code is explained later
+in this document (@pxref{Building the MILC Code}) or in the @kbd{README}
+file that accompanies the code.
+
+@node Portability, SciDAC Support, Installing the MILC Code, Obtaining the MILC Code
+@section Portability
+@cindex Portability
+@cindex Installing the Code
+
+One of our aims in writing this code was to make it very portable
+across machine architectures and configurations. While the code must
+be compiled with the architecture-specific low-level communication
+files (@pxref{Building the MILC Code}), the application codes contain
+a minimum of architecture-dependent @strong{#ifdef}'s, which now are
+mostly for machine-dependent performance optimizations in the
+conjugate gradient routines, etc, since MPI has become a portable
+standard.
+
+Similarly, with regard to random numbers, care has been taken to ensure
+convenience and reproducibility. With @strong{SITERAND} set
+(@pxref{Random numbers}), the random number generator will produce
+the same sequence for a given seed, across architectures and
+varying the number of nodes.
+
+@node SciDAC Support, Supported architectures, Portability, Obtaining the MILC Code
+@section SciDAC Support
+@cindex SciDAC Support
+
+The software component of the U.S. Department of Energy Lattice QCD
+SciDAC project provides a multilayer interface for lattice gauge
+theory code. It is intended to be portable even to specialized
+platforms, such as the Columbia University QCDOC.  This release of the
+MILC code supports a wide variety of C-language SciDAC modules.  They
+are invoked through compilation macros described below (@pxref{Optional
+Compilation Macros}).
+
+@node Supported architectures,, SciDAC Support,  Obtaining the MILC Code
+@section Supported architectures
+@cindex Supported architectures
+This manual covers @strong{version 7.6} which is currently supposed to
+run on: 
+@sp 1
+@itemize @bullet
+@item Scalar machines
+@item Linux+MPI clusters
+@item IBM BG/L BG/P
+@item Cray XT-3
+@item Columbia University QCDOC
+@end itemize
+
+In addition it has run in the past on
+@itemize @bullet
+@item SGI Origin 2000
+@item IBM SP
+@item NT Clusters
+@item Compaq Alpha Clusters
+@item The Intel iPSC-860
+@item Intel Paragon
+@item PVM (version 3.2)
+@item The Ncube 2
+@item The Thinking Machines CM5
+@item SGI/Cray T3E
+@end itemize
+and many other long gone (but not forgotten) computers.
+
+@cindex Optimized versions
+If you have a machine which is not listed above, or would like specific
+information about a particular workstation, write to
+@kbd{doug@@klingon.physics.arizona.edu}. It is quite possible that code
+for your machine is in developement, or that certain routines for your
+workstation have been optimized.
+
+@cindex bugs reports
+@cindex questions to the authors
+Since this is our working code, it in a continual state of
+development.  We informally support the code as best we can by
+answering questions and fixing bugs.  We will be very grateful for
+reports of problems and suggestions for improvements, which may be
+sent to
+@example
+doug@@klingon.physics.arizona.edu
+detar@@physics.utah.edu
+@end example
+
+@node Building the MILC Code, General description, Obtaining the MILC Code, Top
+@chapter Building the MILC Code
+@cindex Building the code
+
+@cindex Makefiles
+Here are the steps required to build the code.  An explanation follows.
+
+@enumerate
+@item Select the application and target you wish to build
+@item Edit the @file{Makefile} to select compilation options
+@item Edit the @file{libraries/Make_vanilla} make file.
+@item Edit the @file{include/config.h}.
+@item (Optional) Build and install the SciDAC packages.
+@item Run @strong{make} for the appropriate target
+@end enumerate
+
+@enumerate
+@item Select the application and target you wish to build
+
+The physics code is organized in various application directories.
+Within each directory there are various compilation choices
+corresponding to each @strong{make} target.  Further variations are
+controlled by macro definitions in the @file{Makefile}.  So, for
+example, the @strong{pure_gauge} application directory contains code
+for the traditional single-plaquette action.  Choices for
+@strong{make} targets include a hybrid Monte Carlo code and an
+overrelaxed heatbath code.  Among variations in the @file{Makefile}
+are single-processor or multi-processor operation and single or double
+precision computation.
+
+@item Edit the @file{Makefile} to select compilation options
+
+A generic @file{Makefile} is found in the top-level directory.  Copy
+it to the application subdirectory and edit it there.  Comments in the
+file explain the choices.
+
+The scalar workstation code is written in ANSI standard C99.  If your
+compiler is not ANSI compliant, try using the Gnu C compiler gcc
+instead.  The code can also be compiled under C++, but it uses no
+exclusively C++ constructs.
+
+@item Edit the @file{libraries/Make_vanilla} make file.
+
+The MILC code contains a library of single-processor linear algebra
+routines.  (No communication occurs in these routines.)  The library
+is automatically built when you build the application target.
+However, you need to set the compiler and compiler flags in the
+library make file @file{libraries/Make_vanilla}.  It is a good idea to
+verify that the compilation of the libaries is compatible with the
+compilation of the application, for example, by using the same
+underlying compiler for the libraries and the application code.
+
+The library consists of two archived library files, each with a single
+and double-precision version.  The libraries @file{complex.1.a} and
+@file{complex.2.a} do single and double precision complex arithmetic
+and the libraries @file{su3.1.a} and @file{su3.2.a} do a wide variety
+of single and double precison matrix and vector arithmetic.
+
+If you are cross-compiling, i.e. the working processors are of a
+different architecture from the compilation processor, you may also
+need to select the appropriate archiver @strong{ar}.
+
+Many present-day processors have SSE capability offering faster
+floating point arithmetic.  The alternative make file
+@file{Make_SSE_nasm} replaces some of the library routines with their
+SSE variants.  It requires the NASM assembler.  Edit the
+@file{Makefile} in the application directory to use it instead o
+@file{Make_vanilla}.  Modern compilers tend to have built-in SSE
+options for those architectures that support them, so this alternative
+is probably no longer needed.
+
+@item Edit the @file{include/config.h}.
+
+At the moment we do not use autoconf/automake to get information about
+the system environment.  This file deals with variations in the
+operating system.  In most cases it doesn't need to be changed.
+
+@item (Optional) Build and install the SciDAC packages.
+
+If you wish to compile and link against the SciDAC packages, you must
+first build and install them.  The MILC code supports the following
+packages:
+@example
+QMP (message passing)
+QIO (file I/O)
+QLA (linear algebra)
+QDP (data parallel)
+QOPQDP (optimized higher level code, such as inverters)
+@end example
+They are open-source and available from
+@strong{http://usqcd.jlab.org/usqcd-software/}.
+
+@item Run @strong{make} for the appropriate target
+
+The generic @file{Make_template} file in the application directory
+lists a variety of targets followed by a double colon @kbd{::}.
+
+@end enumerate
+
+
+@section Making the Libraries
+@cindex making the libraries
+The libraries are built automatically when you make the application
+target.  However, it is a good idea to verify that the compilation of
+the libaries is compatible with the compilation of the application.
+There are two libraries needed for SU(3) operations.  They come in
+single and double precision versions, indicated by the suffix
+@strong{1} and @strong{2}.
+@itemize @bullet
+@item @strong{complex.1.a} and @strong{complex.2.a}
+contain routines for operations on complex
+numbers. See @file{complex.h} for a summary.
+@item @strong{su3.1.a} and @strong{su3.2.a} 
+contain routines for operations on SU3 matrices,
+three element complex vectors, and Dirac vectors (twelve element complex
+vectors) among others.  See @file{su3.h} for a summary.
+@end itemize
+
+@section Checking the Build
+@cindex checking the build
+
+ Sample input and output files are provided for most make targets.  It
+is a good idea to run the compiled code with the sample input file and
+compare the results with the sample output.  Since comparing a long
+list of numbers is tedious, each application has a facility for
+testing the code and doing the comparison for you. To run this utility
+for target @file{su3_rmd} in single precision on a single processor,
+use the command
+
+@code{ make check "PROJS=su3_rmd" "PRECLIST=1" }
+
+Omitting the @file{PRECLIST} definition results in testing in both
+precisions.  Omitting the @file{PROJS} definition tests all targets in
+the application.  The test consists in most cases of generating a file
+@file{out.test.su3_rmd.n} for @file{n} = 1 or 2 (single or double
+precision) and comparing key sections of the file with the trusted
+output @file{out.sample.su3_rmd.n}.  The comparison checks
+line-by-line the difference of numerical values on a line.  The file
+@file{out.errtol.su3_rmd.n} specifies the tolerated difference.  An
+error message is written if a field is found to differ by more than
+the preset tolerance.  Differences may arise because of round-off or,
+in molecular dynamics updates, a round-off-initiated drift.
+
+If you are testing in parallel mode, edit the file
+@file{Make_test_template} in the top-level directory to get the
+correct job-launching commands.
+
+@node General description, Programming with MILC Code, Building the MILC Code, Top
+@chapter General description
+@cindex General description of the MILC Code
+
+@cindex MILC Collaboration
+@strong{The MILC Code} is a set of codes written in C developed by the MIMD
+Lattice Computation (MILC) collaboration for doing simulations of four
+dimensional SU(3) lattice gauge theory on MIMD parallel machines.
+The MILC Code is publicly available for research purposes. Publications of work
+done using this code or derivatives of this code should acknowledge this
+use. @ref{Usage conditions}.
+
+@menu
+* Directory Layout::
+* Overview of applications::
+* Precision::
+* Optional Compilation Macros::
+@end menu
+
+@node Directory Layout, Overview of applications, General description, General description
+@section Directory Layout
+@cindex Directory Layout
+
+In the top-level directory there are six categories of subdirectories:
+``applications,'' ``generic,'' ``include,'' ``libraries,'' ``doc,''
+and ``file_utilities.''
+
+@cindex libraries
+Each @strong{application}, or major project of a research program, has
+its own directory. Examples of applications are @strong{ks_imp_dyn}
+(dynamical simulations with a variety of staggered fermion actions)
+and @strong{clover_invert2} (clover Dirac operator inversion and
+spectroscopy). All applications share the @strong{libraries} directory
+containing low-level linear algebra routines, the @strong{include}
+directory containing header files shared by all applications, the
+@strong{generic} directory containing high level routines that is more
+or less independent of the physics, and a set of slightly more
+specific @strong{generic_XXX} directories. Examples of
+@strong{generic} code are the random number routines, the layout
+routines for distributing lattice sites across the machine, and
+routines to evaluate the plaquette or Polyakov loop.  The @strong{doc}
+directory contains documentation and the @strong{file_utilities}
+directory contains some code for manipulating files, including a code
+(check_gauge) for doing some consistency checking of a gauge
+configuration file and a code (v5_to_scidac) for converting MILC
+formatted lattices to SciDAC or ILDG format.
+
+Each application usually has several variants that appear as separate
+targets in the make file.  For example, the @strong{ks_imp_dyn}
+application can be compiled for hybrid Monte Carlo updating (su3_hmc)
+or the R algorithm (su3_rmd).  All application directories have
+separate sample input and output files for each target, labelled with
+the name of the target: for example "in.sample.su3_hmc.1", etc., and a
+corresponding output file "out.sample.su3_hmc.1", etc.)  The numbers
+@strong{1} and @strong{2} refer to single and double precision.
+
+You may unpack supporting code only for a specific application or you
+may unpack the entire code.  The entire code consists of at least the
+following directories.  
+(@pxref{Building the MILC Code})
+
+@sp 1
+@center @emph{SUPPORT ROUTINES}
+@table @strong
+@item libraries:
+Single processor linear algebra routines.  After building the code the
+following libraries appear:
+@itemize @bullet
+
+@item complex.1.a and complex.2.a
+
+Library of routines for complex numbers.
+
+@item su3.1.a and su3.2.a
+
+Library of routines for SU(3) matrix and vector operations.
+
+@end itemize
+@item include:
+We list only some of the major headers here.
+
+@itemize @bullet
+
+@item config.h
+
+Specification of processor configuration and operating system environment.
+
+@item complex.h
+
+Header file of definitions and macros for complex numbers.
+
+@item comdefs.h
+
+Header files for communications
+
+@item dirs.h
+
+Defines some standard macros for lattice directions.
+
+@item gammatypes.h
+
+Gamma matrix definitions.
+
+@item generic_XXX.h
+
+Header files and declarations for routines in directory generic_XXX
+
+@item io_ksprop.h
+
+Prototypes and definitions for staggered fermion I/O routines.
+
+@item io_lat.h
+
+Header file for routines for reading and writing lattices (the routines
+are in @kbd{generic})
+
+@item io_scidac.h
+
+Prototypes and definitions for generic SciDAC I/O routines.
+
+@item io_wprop.h
+
+Prototypes and definitions for Dirac fermion I/O routines.
+
+@item macros.h
+
+Definitions required in all applications: field offsets, field pointers,
+looping over variables...
+
+@item prefetch.h prefetch_asm.h
+
+Header files defining subroutine or macro calls for cache preloading.
+
+@item random.h
+
+Definition of structure for random number state.
+
+@item su3.h
+
+Header file of definitions and macros for SU(3) matrix and fermion
+operations.
+
+@end itemize
+@item generic:
+	This directory holds all the communications routines and
+        a few useful routines for generating random numbers and computing
+the plaquette and Polyakov loop.
+
+@item generic_XXX:
+	High level code which several applications directories might use.
+This includes inverters and simple measurement routines, such as for
+spectroscopy.
+  The
+	other directories, which are for real applications,  use
+	the routines in these directories where possible. 
+        Presently ``XXX'' includes 
+   generic_clover, generic_form, generic_ks, generic_pg, generic_schroed, 
+   and generic_wilson.
+
+@end table
+
+@node Overview of applications, Precision, Directory Layout, General description
+@section Overview of Applications
+@cindex Overview of Applications in Release Version
+@table @strong
+@item clover_dynamical:
+	Simulations with dynamical clover fermions.  Variants
+	include the "R", "phi" and hybrid Monte Carlo updating
+	algorithms. 
+
+@item clover_invert and clover_invert2:
+	Inversion of clover fermion matrix (conjugate gradient, MR, and
+        BiCG algorithms) and measurements with
+	clover quarks.  Lattices are supposed to be generated by
+	someone else. 
+
+@item ext_src:
+       Generates an extended source from a staggered or clover
+       propagator.
+
+@item gluon_prop:
+       Gluon and quark propagators.
+
+@item heavy
+      Wilson heavy-light spectroscopy with hopping parameter expansion.
+
+@item ks_hl_spectrum:
+      Heavy-light meson spectroscopy from precomputed lattices.
+
+@item ks_imp_dyn:
+@cindex Asqtad action
+	Simulations with dynamical staggered (Kogut-Susskind) 
+        fermions.  There are a variety of possible actions, including
+        the original unimproved Kogut-Susskind action and the
+        asqtad action.  One may choose a single degenerate mass or two
+        different masses. Make targets
+	include the "R", "phi" and hybrid Monte Carlo updating
+	algorithms.  Measurements of the plaquette, Polyakov loop,
+@tex 
+$<\psi\bar\psi>$ 
+@end tex
+        , and fermion energy and pressure are included.  Optional
+	measurements include the hadron spectrum, screening spectrum,
+	and some wave functions.
+@item ks_imp_rhmc:
+@cindex rational function
+@cindex RHMC
+@cindex HISQ
+        Dynamical RHMC code for staggered fermions.  In addition to
+        a variety of staggered actions, the highly-improved-staggered-quark
+        (HISQ) action is also supported.  A subdirectory @strong{remez-milc}
+        contains a utility for generating parameters of the rational functions
+        needed by the RHMC codes.
+
+@item ks_imp_invert_multi:
+       Generate staggered propagators and compute fpi and spectrum
+       with staggered valence quarks.  Uses the multimass inverter.
+       
+@item ks_imp_utilities:
+      Test code for the staggered fermion force and staggered inverter.
+
+@item pure_gauge:
+	Simulation of the pure gauge theory, using microcanonical overrelaxed
+and quasi-heat bath, or hybrid Monte Carlo algorithms. Not much is
+measured.
+
+@item onium_spectrum:
+       Quarkonium spectrum.
+
+@item pw_nr_meson:
+       P-wave quarkonium spectroscopy.
+
+@item schroed_cl_inv:
+      Schroedinger functional code for clover quarks.
+
+@item smooth_inst:
+      Compute topological charge with smearing.
+
+@item symanzik_sl32
+        Pure gauge Monte Carlo for an arbitrary hypercubic action.
+
+@item wilson_static:
+      Code for calculating meson decay constants with a static
+      clover quark plus a light clover quark.
+@end table
+
+The top level directory contains a @file{README} file with specific information
+on how to @kbd{make} an application code (@pxref{Building the MILC Code}).
+
+@node Precision, , Overview of applications, General description
+@section Precision
+@cindex Precision
+@cindex Compilation Macros
+@cindex Mixed Precision
+
+The MILC code can be compiled in single precision or double precision,
+depending on whether the make macro @strong{PRECISION} is set to
+@strong{1} or @strong{2}.  You do this by editing the
+@strong{Makefile}.  The effect of this setting is global for the
+entire compilation.  All of the MILC floating types are set to either
+single or double precision types.
+
+An exception to the global precision rule is that gauge configuration
+and propagator files are always written in single precision.
+
+For some applications that supporting SciDAC QDP or QOPQDP utilities,
+the code now supports mixed precision computation.  That is, you may
+set a global precision with the @strong{PRECISION} macro, but some
+applications accept a run-time selection that allows some supporting
+calculations to be done with a different precision.  This has proven
+to be efficient for molecular dynamics evolution in which the fermion
+force calculation can be done in single precision, but the gauge field
+updating is then done in double precision.
+
+
+@node Optional Compilation Macros, ,Programming with MILC Code, General description
+@section Optional Compilation Macros
+@cindex Macros, Optional
+@cindex Compilation Macros
+
+
+We list some macros affecting compilation of various sections of the
+code that may be defined by user option.  Most of these macros are
+described with comments in the generic @strong{Makefile}.  
+
+Some application-specific macros are defined in the application file
+@strong{Make_template}. Finally, in the application
+@strong{Make_template} files some choices are exercised by selecting
+one of a few interchangeable object files.  Look for comments in those
+files.
+
+Note that there are both @strong{make} macros and compiler macros in
+this list.  The compiler macros in this list are distinguished by the
+compiler flag @strong{-D}.
+
+@table @strong
+
+@item SciDAC package options
+@itemize @bullet
+
+@item WANTQOP
+@cindex QOP
+    The choices are @strong{QDP} for the optimized (Level 3) QDP/C
+versions of the staggered fermion force and staggered fermion
+inverter, @strong{QCDOC} for the QCDOC versions of these routines,
+@strong{MILC} for ersatz MILC test versions of these routines (not
+recommended for production).
+
+@item WANTQDP
+@cindex QDP
+    The choices are @strong{true} and blank (nothing).  Compiles with
+QDP/C versions of some routines in an effort to obtain better performance.
+
+@item WANTQIO
+@cindex QIO
+    The choices are @strong{true} and blank (nothing).  Enables
+reading and writing of SciDAC (QIO/LIME) formatted files.
+
+@item WANTQMP
+@cindex QMP
+    The choices are @strong{true} and blank (nothing).  Causes
+communication to take place through QMP calls.  Then, depending on
+which QMP library you link with the code, you may get an
+architecture-specific implementation or a generic MPI implementation.
+
+@end itemize
+
+@item Inlining
+@cindex Inlining
+
+    Some of the MILC library routines can be invoked through inline
+C-coded macros.  This method avoids the overhead cost of a procedure
+call, but increases the size of the compiled code somewhat.  It is
+usually a good idea.  Some processors have an SSE instruction set.  In
+the interest of efficient computation on those architectures, some
+library routines are available as inline SSE assembly code.  Inline
+assembly code can be interpreted by some compilers (gcc).  Before
+trying them, you might see whether the chosen compiler doesn't already
+have an option that accesses this instruction set.  Both sets of
+inline macros can be invoked globally in the computation or
+selectively.  ``Globally'' means that every procedure call throughout
+the code is inlined.  ``Selectively'' means only some of the procedure
+calls are inlined.  To obtain the latter result, you have to edit the
+code by hand, changing each selected procedure name to its
+corresponding macro name.
+
+The macros that invoke these inline codes are as follows
+
+@itemize @bullet
+
+@item -DC_GLOBAL_INLINE
+     Invokes C-inline versions of library routines as available.
+
+@item -DSSE_GLOBAL_INLINE
+     Invokes SSE assembly-coded inline versions of library routines as
+available.  Where both C and SSE assembly versions are available, the
+SSE version takes precedence.
+
+@item -DC_INLINE
+     Invoke C-inline versions selectively.  You then must edit the code to 
+get just the routines you want.
+
+@item -DSSE_INLINE
+@cindex SSE
+     Invoke SSE assembly-coded inline versions selectively.  You then must 
+edit the code to get just the routines you want.
+
+@end itemize
+
+@item Timing, profiling, and debugging
+@cindex Timing
+@cindex Profiling
+@cindex Debugging
+
+@itemize @bullet
+
+@item -DCGTIME
+   Print timing information for the conjugate gradient solvers.
+
+@item -DFFTIME
+   Print timing information for the staggered fermion force routines.
+
+@item -DLLTIME
+   Print timing information for the staggered link fattening routines.
+
+@item -DGFTIME
+   Print timing information for the gauge force routines.
+
+@item -DREMAP
+   In some applications it is necessary to remap data in lattice fields
+   because of different layout conventions.  This macro gives code that prints
+   timing information for such remapping.
+
+@item -DQDP_PROFILE
+   Print profiling information for QDP/C routines.
+
+@item -DCOM_CRC
+   Do checksums on all gather operations.  Slows performance somewhat.
+
+@item -DCHECK_MALLOC
+   Mainly for developers for analyzing heap utilization.  In
+conjunction with the script @strong{check_malloc.pl}, checks the
+consistency of all malloc/free activity.  (Produces voluminous
+output.)
+
+@item -DCG_DEBUG
+   Show detailed progress of the conjugate gradient solver.
+
+@end itemize
+
+@item Grid layout
+@cindex Layout
+
+   The layout subroutines normally decide which processor memory gets
+which lattice sites.  The @file{layout_hyper_prime} routine does this
+by dividing the lattice into hypercubes.  This is a natural concept
+for grid-based communication networks, but it is also used in
+switch-based networks.  A few applications in the code now allow you
+to control the geometry by hand with the @strong{FIX_NODE_GEOM} macro.
+If you compile with the SciDAC QMP pacakage in any application, the
+same control is achieved through the @strong{-qmp_geom} command-line
+option.
+
+The SciDAC QIO utilities support parallel I/O through I/O partitions.
+That is, for the purpose of I/O the processors are divided into
+disjoint subsets called I/O partitions.  In each partition there is
+one processor designated for I/O.  It works with its own exclusive
+file and distributes/collects data from sites within its I/O
+partition.  The QIO suite also contains scalar processor code for
+converting files from partitioned format to single-file format and
+back.  A few applications in the code now support this feature,
+enabled through the @strong{FIX_IONODE_GEOM} macro.  The I/O
+partitions are created as hypercubes in the space of nodes
+(processors).  Since the layout of the I/O partitions must be
+commensurate with the hypercubic organization of the processors, we
+require fixing the node geometry with @strong{FIX_NODE_GEOM} when
+using I/O partitions.
+
+@itemize @bullet
+
+@item -DFIX_NODE_GEOM
+
+   For some applications only.  Provide for specifying the x, y, z,
+and t dimensions of the processors, viewing the allocated machine as a
+4D grid of processors.
+   
+@item -DFIX_IONODE_GEOM
+@cindex I/O partitions
+
+   For some applications only.  Provide for specifying the x, y, z,
+and t dimensions of the I/O partitions.
+
+@end itemize
+
+@item Staggered CG inverter and Dslash optimizations
+@cindex Optimization
+
+@itemize @bullet
+
+@item -DDBLSTORE_FN
+
+    Double store backward links to optimize Dslash.  Uses more memory.
+
+@item -DD_FN_GATHER13
+
+    For staggered Fat-Naik actions.  Assume that the next neighbor is
+gathered when the third neighbor is gathered.  This is always the case
+in hypercubic layouts when the local sublattice dimensions are three
+or more.  If the layout is incompatible with this option, the code
+halts.
+
+@item -DFEWSUMS
+
+   Pair up global sums in the conjugate gradient algorithm to save time.
+
+@end itemize
+
+@item Multimass CG solvers
+@cindex Conjugate gradient - multimass
+
+   There are a variety of options for doing multimass CG solves, some
+of them experimental and debugging.  This list will be pruned in future
+versions.
+
+@itemize @bullet
+
+@item -DKS_MULTICG=OFFSET
+
+    Standard multimass solver.
+
+@item -DKS_MULTICG=HYBRID
+
+    Solve with multimass and polish each solution with single-mass CG.
+    Good for reliability.
+
+@item -DKS_MULTICG=REVERSE
+
+    Put masses in reverse order and otherwise use the standard method.
+
+@item -DKS_MULTICG=REVHYB
+
+    Solve in reverse order and then polish.
+
+@item -DKS_MULTICG=FAKE
+
+    Solve by iterating through the single-mass solver.  For debugging.
+
+@end itemize
+
+
+@item Multifermion force routines
+@cindex Fermion force (multiple)
+
+   There are a variety of options for computing the multimass fermion
+force needed for the RHMC algorithm.
+
+@itemize @bullet
+
+@item -DKS_MULTIFF=FNMAT
+
+    First sum the outer products of the sources and work with matrix
+parallel transporters.  This method is generally more efficient.
+
+@item -DKS_MULTIFF=FNMATREV
+
+    Traverses the path in reverse order.
+
+@item -DKS_MULTIFF=ASVEC
+
+    Do parallel transport of the list of source vectors, rather than
+parallel transporting a matrix.  The @strong{-DVECLENGTH=n} macro sets
+the maximum number of source vectors processed at a time.  The fermion
+force routine is then called as many times as needed to process them
+all.
+
+@end itemize
+
+@item RHMC molecular dynamics algorithms
+@cindex RHMC
+
+   These macros control only the RHMC molecular dynamics algorithms.
+They determine the integration algorithm and the relative frequency of
+gauge and fermion field updates.
+
+@itemize @bullet
+
+@item -DINT_ALG=INT_LEAPFROG
+@item -DINT_ALG=INT_LEAPFROG
+@item -DINT_ALG=INT_OMELYAN
+@item -DINT_ALG=INT_2EPS_3TO1
+@item -DINT_ALG=INT_2EPS_2TO1
+@item -DINT_ALG=INT_2G1F
+@item -DINT_ALG=INT_3G1F
+@item -DINT_ALG=INT_4MN4FP
+@item -DINT_ALG=INT_4MN5FV
+@item -DINT_ALG=INT_FOURSTEP
+@item -DINT_ALG=INT_PLAY
+
+@end itemize
+
+
+@item Dirac (clover) inverter choices
+@cindex Dirac inverter
+@cindex Clover inverter
+
+  There are a variety of Dirac (clover) solvers
+
+@itemize @bullet
+
+@item -DCL_CG=BICG  Biconjugate gradient
+@item -DCL_CG=CG    Standard CG
+@item -DCL_CG=MR    Minimum residue
+@item -DCL_CG=HOP   Hopping
+
+@end itemize
+
+@end table
+
+@node Programming with MILC Code, Writing Your Own Application, General description, Top
+@chapter Programming with MILC Code
+@cindex Programming with MILC Code
+
+
+These notes document some of the features of the MILC QCD code.  They
+are intended to help people understand the basic philosophy and
+structure of the code, and to outline how one would modify existing
+applications for a new project.
+
+@menu
+* Header files::
+* Global variables::
+* Lattice storage::
+* Data types::
+* Library routines::
+* Moving around in the lattice::
+* Accessing fields at other sites::
+* Details of gathers and creating new ones::
+* Distributing sites among nodes::
+* Reading and Writing Lattices and Propagators::
+* Random numbers::
+* A Sample Applications Directory::
+* Bugs and features::
+@end menu
+
+@node Header files, Global variables, Programming with MILC Code, Programming with MILC Code
+@section  Header files
+@cindex header files
+
+Various header files define structures, macros, and global
+variables.  The minimal set at the moment is:
+@cindex config.h
+@cindex comdefs.h
+@cindex complex.h
+@cindex defines.h
+@cindex dirs.h
+@cindex io_lat.h
+@cindex lattice.h
+@cindex macros.h
+@cindex params.h
+@cindex su3.h
+
+@table @file
+@item config.h
+specifies processor and operating-system-dependent macros
+
+@item comdefs.h 
+macros and defines for communication routines (@pxref{Library routines}).
+
+@item complex.h	
+declarations for complex arithmetic (@pxref{Library routines}).
+
+@item defines.h
+defines macros specific to an application.  Macros that are
+independent of the site structure can also be defined here.  Compiler
+macros common to all targets are also defined here.
+
+@item dirs.h
+defines macros specifying lattice directions
+
+@item lattice.h
+defines lattice fields and global variables specific to an
+application, found in applications directories
+
+@item macros.h
+miscellaneous macros including loop control
+
+@item params.h
+defines the parameter structure for holding parameter values read from
+standard input, such as the lattice size, number of iterations, etc.
+
+@item su3.h 
+declarations for SU(3) operations, eg. matrix multiply (@pxref{Library
+routines}).
+
+@end table
+
+The @strong{lattice.h} file is special to an application directory.
+It defines the site structure (fields) for the lattice. The files
+@strong{defines.h} and @strong{params.h} are also peculiar to an
+application directory.  The other header files are stored in the
+@strong{include} directory and not changed.
+
+@vindex Include files. 
+
+The local header @strong{defines.h} must be included near the top of the @strong{lattice.h} file.  Other headers, of course, should be
+included to declare data types appearing in the @strong{lattice.h}
+file.
+
+@vindex EXTERN
+@vindex CONTROL
+In C global variables must be defined as ``extern'' in all but one of
+the compilation units.  To make this happen with global variables in
+@strong{lattice.h}, we use the macro prefix @kbd{EXTERN}.  The macro
+is normally defined as "extern", but when the macro @kbd{CONTROL} is
+defined, @kbd{EXTERN} becomes null. The effect is to reserve storage
+in whichever file @kbd{CONTROL} is defined.  We do this typically [qin
+the file containing the @emph{main()} program, which is typically part
+of a file with a name like @kbd{control.c}. (C++ would fix this
+nonsense).
+
+@node Global variables, Lattice storage, Header files, Programming with MILC Code
+@section  Global variables
+@cindex Global variables
+
+@vindex beta
+@vindex epsilon
+@vindex even_sites_on_node
+@vindex fixflag
+@vindex iseed
+@vindex mass
+@vindex nflavors
+@vindex nflavors1, nflavors2
+@vindex number_of_nodes
+@vindex nx,ny,nz,nt
+@vindex odd_sites_on_node
+@vindex saveflag
+@vindex *savefile 
+@vindex saveflag 
+@vindex *startfile
+@vindex sites_on_node
+@vindex startflag
+@vindex steps
+@vindex this_node
+@vindex total_iters 
+@vindex trajecs
+@vindex volume
+@vindex warms
+A number of global variables are typically available.  Most of them are
+declared in @file{lattice.h}. Unless specified, these variables are
+initialized in the function @kbd{initial_set()}.  Most of them take
+values from a parameter input file at run time.
+
+@table @kbd
+@item int nx,ny,nz,nt
+lattice dimensions
+@item int volume
+volume = nx * ny * nz * nt
+@item int iseed
+random number seed
+@end table
+
+Other variables are used to keep track of the relation between sites of the
+lattice and nodes:
+@table @kbd
+@item int this_node
+number of this node
+@item int number_of_nodes
+number of nodes in use
+@item int sites_on_node	
+number of sites on this node. [@emph{This variable is set in:}
+@kbd{setup_layout()}]
+@item int even_sites_on_node
+number of evensites on this node. [@emph{This variable is set in:}
+@kbd{setup_layout()}]
+@item int odd_sites_on_node
+number of odd sites on this node. [@emph{This variable is set in:}
+@kbd{setup_layout()}]
+@end table
+
+
+@cindex @file{setup.c}
+@vindex params
+Other variables are not fundamental to the layout of the
+lattice but vary from application to application. These dynamical
+variables are part of a @kbd{params} struct, defined in the required
+header @cindex params.h, which is passed between nodes by
+@kbd{initial_set()} in @file{setup.c} For example, a pure gauge
+simulation might have a @kbd{params} struct like this:
+@example
+/* structure for passing simulation parameters to each node */
+typedef struct @{
+        int nx,ny,nz,nt;  /* lattice dimensions */
+        int iseed;      /* for random numbers */
+        int warms;      /* the number of warmup trajectories */
+        int trajecs;    /* the number of real trajectories */
+        int steps;      /* number of steps for updating */
+        int stepsQ;     /* number of steps for quasi-heatbath */
+        int propinterval;  /* number of trajectories between measurements */
+        int startflag;  /* what to do for beginning lattice */
+        int fixflag;    /* whether to gauge fix */
+        int saveflag;   /* what to do with lattice at end */
+        float beta;     /* gauge coupling */
+        float epsilon;  /* time step */
+        char startfile[80],savefile[80];
+@} params; 
+@end example
+These run-time variables are usually loaded by a loop over
+@kbd{readin()} defined in @file{setup.c}.
+
+
+@node Lattice storage, Data types, Global variables, Programming with MILC Code
+@section Lattice storage 
+@cindex Lattice storage
+@cindex site
+@vindex site
+@cindex lattice[]
+
+The original MILC code put all of the application variables that live
+on a lattice site in a huge structure called the ``site'' structure.
+The @kbd{lattice} variable was then an array of @kbd{site} objects.
+We call this data structure``site major'' order.  Experience has shown
+that it is usually better for cache coherence to store each lattice
+field in its own separate linear array.  We call this ``field major''
+order.  Thus we are in the process of dismantling the site structure
+in each application.  Eventually all fields will be stored in
+field-major order.  In the transitional phase most utilities in the
+code support both data structures.
+
+The @kbd{site} structure is defined in @file{lattice.h} (@pxref{Header
+files}). Each @emph{node} of the parallel machine has an array of such
+structures called @kbd{lattice}, with as many elements as there are
+sites on the @emph{node}.  In scalar mode there is only one
+@emph{node}.  The @kbd{site} structure looks like this:
+@example
+typedef struct @{
+    /* The first part is standard to all programs */
+        /* coordinates of this site */
+        short x,y,z,t;
+        /* is it even or odd? */
+        char parity;
+        /* my index in the lattice array */
+        int index;
+
+    /* Now come the physical fields, application dependent. We will 
+       add or delete whatever we need. This is just an example. */
+        /* gauge field */
+        su3_matrix link[4];
+
+        /* antihermitian momentum matrices in each direction */
+         anti_hermitmat mom[4];
+
+         su3_vector phi; /* Gaussian random source vector */ 
+@} site; 
+@end example
+
+At run time space for the lattice sites is allocated dynamically,
+typically as an array @kbd{lattice[i]}, each element of which is a site
+structure.  Thus, to refer to the @kbd{phi} field on a particular
+lattice site, site "@kbd{i}" on this node, you say
+@example
+   lattice[i].phi,
+@end example
+and for the real part of color 0
+@example
+   lattice[i].phi.c[0].real,
+@end example
+etc. You usually won't need to know the relation between the index
+@kbd{i} and a the location of a particular site (but see
+ (@pxref{Distributing sites among nodes} for how to figure out
+the index @kbd{i}). 
+
+In general, looping over sites is done using a pointer to the
+ site, and then you would
+refer to the field as:
+@example
+site *s; ...  
+/* s gets set to &(lattice[i]) */ 
+s->phi
+@end example
+
+The coordinate, parity and index fields are used by the gather routines
+and other utility routines, so it is probably a bad idea to alter
+them unless you want to change a lot of things.  Other data can be
+added or deleted with abandon.
+
+The routine @kbd{generic/make_lattice()} is called from @kbd{setup()} to
+allocate the lattice on each node.
+
+@cindex neighbor[]
+In addition to the fields in the @kbd{site} structure, there are two
+sets of vectors whose elements correspond to lattice sites. 
+They are hidden in the communications routines and you are likely never to
+encounter them. These are
+the eight vectors of integers:
+@example
+int *neighbor[MAX_GATHERS]
+@end example
+@kbd{neighbor[XDOWN][i]} is the index of the site in the @strong{XDOWN}
+direction from the i'th site on the
+node, if that site is on the same node. If the neighboring site is on
+another node, this pointer will be @strong{NOT_HERE (= -1)}. These
+vectors are mostly used by the gather routines.
+
+@cindex gen_pt[]
+There are a number of important vectors of pointers used for accessing
+fields at other (usually neighboring) neighboring sites,
+@example
+char **gen_pt[MAX_GATHERS]
+@end example
+These vectors of pointers are declared in @file{lattice.h} and allocated
+in @kbd{generic/make_lattice()}. They are filled by the gather routines,
+@kbd{start_gather()} and @kbd{start_general_gather()}, with pointers to
+the gathered field. @xref{Accessing fields at other sites}.  You use one
+of these pointer vectors for each simultaneous gather you have going.
+
+
+This storage scheme seems to allow the easiest coding, and likely the
+fastest performance.  It certainly makes gathers about as easy as
+possible.  However, it is somewhat wasteful of memory, since all
+fields are statically allocated.  Also, there is no mechanism for
+defining a field on only even or odd sites.
+
+@node Data types, Library routines, Lattice storage, Programming with MILC Code
+@section Data types
+@cindex Data types
+
+Various data structures have been defined for QCD computations, which
+we now list.   You may define new ones if you wish.
+In names of members of structure, we  use the following conventions:
+@table @kbd
+@item c 
+means color, and has an index which takes three values (0,1,2).
+@item d
+means Dirac spin, and its index takes four values (0-3).
+@item e
+means element of a matrix, and has two indices which take three values -
+row and column--(0-2),(0-2)
+@end table
+
+Complex numbers: (in @file{complex.h}).  Since present-day C compilers have
+native complex types these MILC types will be replaced in future code
+with native types.
+@example
+typedef struct @{ /* standard complex number declaration for single- */
+   float real;    /* precision complex numbers */
+   float imag; 
+@} complex;
+
+typedef struct @{ /* standard complex number declaration for double- */
+   double real;   /* precision complex numbers */
+   double imag; 
+@} double_complex;
+@end example
+
+Three component complex vectors, 3x3 complex matrices, and 3x3
+antihermitian matrices stored in triangular (compressed) format.  (in
+@file{su3.h})
+@example
+typedef struct @{ complex e[3][3]; @} su3_matrix; 
+typedef struct @{ complex c[3]; @} su3_vector; 
+typedef struct @{
+  float m00im,m11im,m22im;
+  complex m01,m02,m12; 
+@} anti_hermitmat;
+@end example
+
+Wilson vectors have both Dirac and color indices:
+@example
+  typedef struct @{ su3_vector d[4]; @} wilson_vector;
+@end example
+Projections of Wilson vectors
+@tex
+$(1 \pm \gamma_\mu)\psi$
+@end tex
+@example
+  typedef struct @{ su3_vector h[2]; @} half_wilson_vector;
+@end example
+A definition to be used in the next definition:
+@example
+  typedef struct @{ wilson_vector d[4]; @} spin_wilson_vector;
+@end example
+A four index object --- source spin and color by sink spin and color:
+@example
+  typedef struct @{ spin_wilson_vector c[3]; @} wilson_propagator
+@end example
+
+Examples:
+@example
+su3_vector phi; /* declares a vector */ 
+su3_matrix m1,m2,m3;         /* declares 3x3 complex matrices */ 
+wilson_vector wvec;          /* declares a Wilson quark vector */
+
+phi.c[0].real = 1.0;         /* sets real part of color 0 to 1.0 */ 
+phi.c[1] = cmplx(0.0,0.0);   /* sets color 1 to zero (requires
+                                including "complex.h" */ 
+m1.e[0][0] = cmplx(0,0);     /* refers to 0,0 element */ 
+mult_su3_nn( &m1, &m2, &m3); /* subroutine arguments are usually
+                                addresses of structures */
+wvec.d[2].c[0].imag = 1.0;   /* How to refer to imaginary part of
+                                spin two, color zero. */
+@end example
+
+@node Library routines, Moving around in the lattice, Data types, Programming with MILC Code
+@section Library routines
+@cindex Library routines
+
+@subsection Complex numbers
+@file{complex.h} and @file{complex.a} contain macros and subroutines for
+complex numbers.  For example:
+@example
+complex a,b,c; 
+CMUL(a,b,c); /* macro: c <- a*b */
+@end example
+Note that all the subroutines (@kbd{cmul()}, etc.) take addresses as
+arguments, but the macros generally take the structures themselves.
+These functions have separate versions for single and double precision
+complex numbers.  The macros work with either single or double precison
+(or mixed).  @file{complex.a} contains:
+@example
+complex cmplx(float r, float i);      /* (r,i) */ 
+complex cadd(complex *a, complex *b); /* a + b */ 
+complex cmul(complex *a, complex *b); /* a * b */ 
+complex csub(complex *a, complex *b); /* a - b */ 
+complex cdiv(complex *a, complex *b); /* a / b */ 
+complex conjg(complex *a);            /* conjugate of a */ 
+complex cexp(complex *a);             /* exp(a) */ 
+complex clog(complex *a);             /* ln(a) */ 
+complex csqrt(complex *a);            /* sqrt(a) */
+complex ce_itheta(float theta);       /* exp( i*theta) */
+
+double_complex dcmplx(double r, double i);                  /* (r,i) */ 
+double_complex dcadd(double_complex *a, double_complex *b); /* a + b */ 
+double_complex dcmul(double_complex *a, double_complex *b); /* a * b */ 
+double_complex dcsub(double_complex *a, double_complex *b); /* a - b */ 
+double_complex dcdiv(double_complex *a, double_complex *b); /* a / b */ 
+double_complex dconjg(double_complex *a);          /* conjugate of a */ 
+double_complex dcexp(double_complex *a);                   /* exp(a) */ 
+double_complex dclog(double_complex *a);                    /* ln(a) */ 
+double_complex dcsqrt(double_complex *a);                 /* sqrt(a) */ 
+double_complex dce_itheta(double theta);            /* exp( i*theta) */
+@end example
+and macros:
+@example
+CONJG(a,b)        b = conjg(a)
+CADD(a,b,c)       c = a + b
+CSUM(a,b)         a += b
+CSUB(a,b,c)       c = a - b
+CMUL(a,b,c)       c = a * b
+CDIV(a,b,c)       c = a / b
+CMUL_J(a,b,c)     c = a * conjg(b)
+CMULJ_(a,b,c)     c = conjg(a) * b
+CMULJJ(a,b,c)     c = conjg(a*b)
+CNEGATE(a,b)      b = -a
+CMUL_I(a,b)       b = ia
+CMUL_MINUS_I(a,b) b = -ia
+CMULREAL(a,b,c)   c = ba with b real and a complex
+CDIVREAL(a,b,c)   c = a/b with a complex and b real
+@end example
+
+@subsection SU(3) operations
+@file{su3.h} and @file{su3.a} contain a plethora of
+functions for SU(3) operations.
+For example:
+@example
+void mult_su3_nn(su3_matrix *a, su3_matrix *b, su3_matrix *c); 
+/* matrix multiply, no adjoints
+   *c <- *a * *b (arguments are pointers) */
+
+void mult_su3_mat_vec_sum(su3_matrix *a, su3_vector *b, su3_vector *c);
+/* su3_matrix times su3_vector multiply and add to another su3_vector
+   *c <- *A * *b + *c */
+@end example
+There have come to be a great many of these routines, too many to keep a
+duplicate list of here.  Consult the include file @file{su3.h} for a
+list of prototypes and description of functions. 
+
+@node Moving around in the lattice, Accessing fields at other sites, Library routines, Programming with MILC Code
+@section Moving around in the lattice
+@cindex Moving around in the lattice
+
+@vindex field_offset
+@vindex field_pointer
+@vindex F_OFFSET
+@vindex F_PT
+Various definitions, macros and routines exist for dealing with the
+lattice fields.  
+The definitions and macros (defined in @file{dirs.h}) are:
+@example
+/* Directions, and a macro to give the opposite direction */ 
+/* These must go from 0 to 7 because they will be used to index an
+   array. */ 
+/* Also define NDIRS = number of directions */
+#define XUP 0 
+#define YUP 1 
+#define ZUP 2 
+#define TUP 3 
+#define TDOWN 4 
+#define ZDOWN 5 
+#define YDOWN 6 
+#define XDOWN 7 
+#define OPP_DIR(dir) (7-(dir))  /* Opposite direction */ 
+                                /* for example, OPP_DIR(XUP) is XDOWN */
+/* number of directions */ 
+#define NDIRS 8 
+@end example
+
+The parity of a site is @strong{EVEN} or @strong{ODD}, where
+@strong{EVEN} means (x+y+z+t)%2=0.  Lots of routines take @strong{EVEN},
+@strong{ODD} or @strong{EVENANDODD} as an argument. Specifically (in hex):
+@example
+#define EVEN 0x02 
+#define ODD 0x01 
+#define EVENANDODD 0x03
+@end example
+
+Often we want to use the name of a field as an argument to a routine, as
+in @kbd{dslash(chi,phi)}. Often these fields are members of the structure 
+@kbd{site}, and such variables can't be used directly as arguments
+ in C. Instead, we use a
+ macro to convert the name of a field
+into an integer, and another one to convert this integer back into an
+address at a given site.  A type @kbd{field_offset}, which is secretly
+an integer, is defined to help make the programs clearer.
+
+@strong{F_OFFSET}(@kbd{fieldname}) gives the offset in the site structure of
+the named field. @strong{F_PT}(@kbd{*site}, @kbd{field_offset}) gives the
+address of the field whose offset is @kbd{field_offset} at the site
+@kbd{*site}. An example is certainly in order:
+@example
+int main() @{
+  copy_site( F_OFFSET(phi), F_OFFSET(chi) );
+  /* "phi" and "chi" are names of su3_vector's in site. */ 
+@}
+
+/* Copy an su3_vector field in the site structure over the whole lattice */
+int copy_site(field_offset off1, field_offset off2) @{
+  int i;
+  site *s;
+  su3_vector *v1,*v2;
+
+  for(i=0;i<nsites_on_node;i++) @{ /* loop over sites on node */
+     s = &(lattice[i]); /* pointer to current site */
+     v1 = (su3_vector *)F_PT( s, off1); /* address of first vector */
+     v2 = (su3_vector *)F_PT( s, off2);
+     *v2 = *v1; /* copy the vector at this site */
+  @} 
+@}
+@end example
+
+
+For ANSI prototyping, you must
+ typecast the result of the
+@strong{F_PT} macro to the appropriate pointer type.  (It naturally
+produces a character pointer).  The code for copy_site could be much
+shorter at the expense of clarity.  Here we use a macro to be defined
+below.
+@example
+/* Copy an su3_vector field in the site structure over the whole lattice */
+void copy_site(field_offset off1, field_offset off2) @{
+  int i;
+  site *s;
+  FORALLSITES(i,s) @{
+    *(su3_vector *)F_PT(s,off1) = *(su3_vector *)F_PT(s,off2);
+  @} 
+@}
+@end example
+
+Since we now recommend field-major order for the fields, here is
+the same example, but for the recommended practice:
+@example
+/* Copy an su3_vector field in field-major order over the whole lattice */
+void copy_field(su3_vector vec1[], su3_vector vec2[]) @{
+  int i;
+  site *s;
+  FORALLSITES(i,s) @{
+    vec1[i] = vec2[i];
+  @} 
+@}
+@end example
+
+The following macros are not necessary, but are very useful.  You may
+use them or ignore them as you see fit. Loops over sites are so common
+that we have defined macros for them ( in
+@file{include/macros.h}). These macros use an integer and a site pointer,
+which are available inside the loop.  The site pointer is especially
+useful for accessing fields at the site.
+@example
+/* macros to loop over sites of a given parity, or all sites on a node.
+   Usage:
+        int i;
+        site *s;
+        FOREVENSITES(i,s) @{
+            Commands go here, where s is a pointer to the current
+            site and i is the index of the site on the node.
+            For example, the phi vector at this site is "s->phi".
+        @} */ 
+#define FOREVENSITES(i,s) \
+    for(i=0,s=lattice;i<even_sites_on_node;i++,s++)
+#define FORODDSITES(i,s) \
+    for(i=even_sites_on_node,s= &(lattice[i]);i<sites_on_node;i++,s++)
+#define FORALLSITES(i,s) \
+    for(i=0,s=lattice;i<sites_on_node;i++,s++)
+#define FORSOMEPARITY(i,s,parity) \
+    for( i=((choice)==ODD ? even_sites_on_node : 0 ),  \
+    s= &(lattice[i]); \
+    i< ( (choice)==EVEN ? even_sites_on_node : sites_on_node); \
+    i++,s++)
+@end example
+The first three of these macros loop over even, odd or all sites on the
+node, setting a pointer to the site and the index in the array.  The
+index and pointer are available for use by the commands inside the
+braces.  The last macro takes an additional argument which should be one
+of @strong{EVEN}, @strong{ODD} or @strong{EVENANDODD}, and loops over
+sites of the selected parity.
+
+@node Accessing fields at other sites, Details of gathers and creating new ones, Moving around in the lattice, Programming with MILC Code
+@section Accessing fields at other sites
+@cindex Accessing fields at other sites
+
+In the examples thus far each node fetches and stores field values
+only on its own sites.  To fetch field values at other sites, we use
+gather routines.  These are portable in the sense that they will look
+the same on all the machines on which this code runs, although what is
+inside them is quite different.  All of these routines return pointers
+to fields.  If the fields are on the same node, these are just
+pointers into the lattice, and if the fields are on sites on another
+node some message passing takes place.  Because the communcation
+routines may have to allocate buffers for data, it is necessary to
+free the buffers by calling the appropriate cleanup routine when you
+are finished with the data.  These routines are in @file{com_XXXXX.c},
+where @kbd{XXXXX} is either @kbd{vanilla} for a scalar machine,
+@kbd{mpi} for MPI operation, @kbd{qmp} for QMP support.
+
+The four standard routines for moving field values are
+@kbd{start_gather_site} and @kbd{start_gather_field}, which start the
+data exchange for either data in the site structure or in field-major
+order, @kbd{wait_gather}, which interrupts the processor until the
+data arrives, and @kbd{cleanup_gather}, which frees the memory used by
+the gathered data.  A special @kbd{msg_tag} structure is used to
+identify the gather.  If you are doing more than one gather at a time,
+just use different @kbd{*msg_tags} for each one to keep them straight.
+
+The abstraction used in gathers is that sites fetch data from sites,
+rather than nodes from nodes.  In this way the physical distribution of
+data among the nodes is hidden from the higher level call.  Any
+one-to-one mapping of sites onto sites can be used to define a gather
+operation, but the most common gather fetches data from a neigboring
+site in one of the eight cardinal directions.  The result of a gather is
+presented as a list of pointers.  Generally one of the @kbd{gen_pt[0]},
+etc. arrays is used. (@pxref{Lattice storage}). On each site, or on each
+site of the selected parity, this pointer either points to an on-node
+address when the required data is on-node or points to an address in a
+communications buffer when the required data has been passed from
+another node.
+
+These routines use asynchronous sends and receives when possible, so it
+is possible to start one or more gathers going, and do something else
+while awaiting the data.
+
+Here are the four gather routines:
+
+@example
+/* "start_gather_site()" starts asynchronous sends and receives required
+    to gather neighbors. */
+
+msg_tag * start_gather_site(offset,size,direction,parity,dest);
+  /* arguments */
+  field_offset offset;  /* which field? Some member of structure "site" */
+  int size;            /* size in bytes of the field
+                            (eg. sizeof(su3_vector))*/
+  int direction;       /* direction to gather from. eg XUP */
+  int parity;          /* parity of sites whose neighbors we gather.
+                            one of EVEN, ODD or EVENANDODD. */ 
+  char * dest;         /* one of the vectors of pointers */
+
+
+msg_tag * start_gather_field(void *field,size,direction,parity,dest);
+  /* arguments */
+  void *field;         /* which field? Some member of an array */
+  int size;            /* size in bytes per site of the field
+                            (eg. sizeof(su3_vector))*/
+  int direction;       /* direction to gather from. eg XUP */
+  int parity;          /* parity of sites whose neighbors we gather.
+                            one of EVEN, ODD or EVENANDODD. */ 
+  char * dest;         /* one of the vectors of pointers */
+
+
+/* "wait_gather()" waits for receives to finish, insuring that the
+   data has actually arrived.  The argument is the (msg_tag *) returned
+   by start_gather. */
+
+void wait_gather(msg_tag *mbuf);
+
+
+/* "cleanup_gather()" frees all the buffers that were allocated, WHICH
+    MEANS THAT THE GATHERED DATA MAY SOON DISAPPEAR. */
+
+void cleanup_gather(msg_tag *mbuf);
+@end example
+
+Nearest neighbor gathers are done as follows. In the first example
+we gather @kbd{phi} at all even sites from the neighbors in the
+@strong{XUP} direction.  (@emph{Gathering at @strong{EVEN} sites means
+that @kbd{phi} at odd sites will be made available for computations at
+@strong{EVEN} sites.})
+@example
+msg_tag *tag; 
+site *s; 
+int i;
+su3_vector *phi;
+
+phi = (su3_vector *)malloc(sites_on_node * sizeof(su3_vector);
+
+...
+
+tag = start_gather_field( phi, sizeof(su3_vector), XUP,
+                         EVEN, gen_pt[0] );
+
+/* do other stuff */
+
+wait_gather(tag); 
+/* *(su3_vector *)gen_pt[0][i] now contains the address of the
+    phi vector (or a copy therof) on the neighbor of site i in the
+    XUP direction for all even sites i.  */
+
+FOREVENSITES(i,s) @{ 
+/* do whatever you want with it here.
+   (su3_vector *)(gen_pt[0][i]) is a pointer to phi on
+   the neighbor site. */ 
+@}
+
+cleanup_gather(tag); 
+/* subsequent calls will overwrite the gathered fields. but if you 
+don't clean up, you will eventually run out of space */
+@end example
+
+
+This second example gathers @kbd{phi} from two directions at once:
+@example
+msg_tag *tag0,*tag1; 
+tag0 = start_gather_site( phi, sizeof(su3_vector), XUP,
+                          EVENANDODD, gen_pt[0] ); 
+tag1 = start_gather_site( phi, sizeof(su3_vector), YUP,
+                          EVENANDODD, gen_pt[1] );
+
+/** do other stuff **/
+
+wait_gather(tag0); 
+/* you may now use *(su3_vector *)gen_pt[0][i], the
+   neighbors in the XUP direction. */
+
+wait_gather(tag1); 
+/* you may now use *(su3_vector *)gen_pt[1][i], the
+   neighbors in the YUP direction. */
+
+cleanup_gather(tag0); 
+cleanup_gather(tag1);
+@end example
+
+Of course, you can also simultaneously gather different fields, or
+gather one field to even sites and another field to odd sites.  Just be
+sure to keep your @kbd{msg_tag} pointers straight.  The internal
+workings of these routines are far too horrible to discuss here.
+Consult the source code and comments in @file{com_XXXXX.c} if you must.
+
+Another predefined gather fetches a field at an arbitrary displacement
+from a site.  It uses the family of calls @kbd{start_general_gather_site},
+@kbd{start_general_gather_field},
+@kbd{wait_general_gather}, @kbd{cleanup_general_gather}.  It works like
+the gather described above except that instead of specifying the
+direction you specify a four-component array of integers which is the
+relative displacement of the field to be fetched.  It is a bit slower
+than a gather defined by @kbd{make_gather}, because it is necessary to
+build the neighbor tables with each call to @kbd{start_general_gather}.
+
+Chaos will ensue if you use @kbd{wait_gather()} with a message tag
+returned by @kbd{start_general_gather_XXXX()}, or vice-versa.
+@kbd{start_general_gather_site()} has the following format:
+@example
+/* "start_general_gather_site()" starts asynchronous sends and receives
+    required to gather neighbors. */ 
+msg_tag * start_general_gather_site(offset,size,displacement,parity,dest)
+  /* arguments */
+  field_offset offset; /* which field? Some member of structure site */
+  int size;           /* size in bytes of the field 
+                           (eg. sizeof(su3_vector))*/
+  int *displacement;  /* displacement to gather from,
+                           a four component array */
+  int parity;         /* parity of sites whose neighbors we gather.
+                           one of EVEN, ODD or EVENANDODD. */
+  char ** dest;       /* one of the vectors of pointers */
+
+/* "wait_general_gather()" waits for receives to finish, insuring that
+    the data has actually arrived.  The argument is the (msg_tag *) 
+    returned by start_general_gather. */ 
+void wait_general_gather(msg_tag *mbuf);
+@end example
+
+@kbd{start_general_gather_field()} has the following format:
+@example
+/* "start_general_gather_field()" starts asynchronous sends and receives
+    required to gather neighbors. */ 
+msg_tag * start_general_gather_field(field,size,displacement,parity,dest)
+  /* arguments */
+  void *field;        /* which field? A field in field-major order */
+  int size;           /* size in bytes per site of the field 
+                           (eg. sizeof(su3_vector))*/
+  int *displacement;  /* displacement to gather from,
+                           a four component array */
+  int parity;         /* parity of sites whose neighbors we gather.
+                           one of EVEN, ODD or EVENANDODD. */
+  char ** dest;       /* one of the vectors of pointers */
+
+/* "wait_general_gather()" waits for receives to finish, insuring that
+    the data has actually arrived.  The argument is the (msg_tag *) 
+    returned by start_general_gather. */ 
+void wait_general_gather(msg_tag *mbuf);
+
+/* "cleanup_general_gather()" frees all the buffers that were
+    allocated, @emph{WHICH MEANS THAT THE GATHERED DATA MAY SOON
+    DISAPPEAR.}  */ 
+void cleanup_general_gather(msg_tag *mbuf);
+@end example
+
+This example gathers @kbd{phi} from a site displaced by +1 in the x
+direction and -1 in the y direction.
+@example
+msg_tag *tag; 
+site *s; 
+int i, disp[4];
+
+disp[XUP] = +1; disp[YUP] = -1; disp[ZUP] = disp[TUP] = 0;
+
+tag = start_general_gather_site( F_OFFSET(phi), sizeof(su3_vector), disp,
+                                 EVEN, gen_pt[0] ); /* do other stuff */
+
+wait_general_gather(tag); 
+/* gen_pt[0][i] now contains the address of the phi
+   vector (or a copy therof) on the site displaced from site i
+   by the vector "disp" for all even sites i. */
+
+FOREVENSITES(i,s) @{ 
+/* do whatever you want with it here.
+   (su3_vector *)(gen_pt[0][i]) is a pointer to phi on
+   the other site. */ 
+@}
+
+cleanup_general_gather(tag);
+@end example
+
+Here is an example of a gather from a field in field-major order:
+@example
+  su3_vector *tempvec;
+  msg_tag *tag;
+  tempvec = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
+  ...
+  FORALLSITES(i,s)@{  tempvec[i] = s->grand; @}
+  ...
+  tag=start_gather_field( tempvec, sizeof(su3_vector), dir,EVEN,gen_pt[1] );
+  ...
+  wait_gather(tag);
+  ...
+  cleanup_gather(tag);
+  ...
+  free(tempvec);
+@end example
+
+  At present the code does not support a strided gather from a field
+in field-major order.  This could present a problem.
+For example, the gauge links are typically defined as an array of four
+@kbd{su3_matrices}, and we typically gather only one of them.  This
+won't work with @kbd{start_gather_field}.
+
+  Don't try to implement successive gathers by using
+ @kbd{start_gather_field}
+     to gather the @kbd{gen_pt fields}.  It will gather the pointers, but not
+     what they point to.  This is insidious, because it will work on one
+     node as you are testing it, but fail on multiple nodes.
+
+To set up the data structures required by the gather routines,
+@kbd{make_nn_gathers()} is called in the setup part of the program.
+This must be done @emph{after} the call to @kbd{make_lattice()}.
+
+@node Details of gathers and creating new ones, Distributing sites among nodes, Accessing fields at other sites, Programming with MILC Code
+@section Details of gathers and creating new ones
+@cindex Details of gathers and creating new ones
+
+(You don't need to read this section the first time through.)
+
+The nearest-neighbor and fixed-displacement gathers are always available
+at run time, but a user can make other gathers using the
+@kbd{make_gather} routine.  Examples of such gathers are the bit-reverse
+and butterfly maps used in FFT's.  The only requirement is that the
+gather pattern must correspond to a one-to-one map of sites onto sites.
+@kbd{make_gather} speeds up gathers by preparing tables on each node
+containing information about what sites must be sent to other nodes or
+received from other nodes. The call to this routine is:
+@example
+#include <comdefs.h> 
+int make_gather( function, arg_pointer, inverse, want_even_odd,
+                 parity_conserve )
+  int (*function)();
+  int *arg_pointer;
+  int inverse;
+  int parity_conserve;
+@end example
+
+The @kbd{"function"} argument is a pointer to a function which defines
+the mapping. This function must have the following form:
+@example
+int function( x, y, z, t, arg_pointer, forw_back, xpt, ypt, zpt, tpt)
+  int x,y,z,t;
+  int *arg_pointer;
+  int forw_back;
+  int *xpt,*ypt,*zpt,*tpt;
+@end example
+Here @kbd{x,y,z,t} are the coordinates of the site @emph{RECEIVING} the
+data.  @kbd{arg_pointer} is a pointer to a list of integers, which is
+passed through to the function from the call to @kbd{make_gather()}.
+This provides a mechanism to use the same function for different
+gathers.  For example, in setting up nearest neighbor gathers we would
+want to specify the direction.  See the examples below.
+
+@kbd{forw_back} is either @strong{FORWARDS} or @strong{BACKWARDS}.  If
+it is @strong{FORWARDS}, the function should compute the coordinates of
+the site that sends data to @kbd{x,y,z,t}.  If it is @strong{BACKWARDS},
+the function should compute the coordinates of the site which gets data
+from @kbd{x,y,z,t}.  It is necessary for the function to handle
+@strong{BACKWARDS} correctly even if you don't want to set up the
+inverse gather (see below).  At the moment, only one-to-one (invertible)
+mappings are supported.
+
+@cindex FFT
+@cindex Butterflies (FFT)
+The @kbd{inverse} argument to @kbd{make_gather()} is one of
+@strong{OWN_INVERSE}, @strong{WANT_INVERSE}, or @strong{NO_INVERSE}.  If
+it is @strong{OWN_INVERSE}, the mapping is its own inverse.  In other
+words, if site @kbd{x1,y1,z1,t1} gets data from @kbd{x2,y2,z2,t2} then
+site @kbd{x2,y2,z2,t2} gets data from @kbd{x1,y1,z1,t1}.  Examples of
+mappings which are there own inverse are the butterflies in FFT's.  If
+@kbd{inverse} is @strong{WANT_INVERSE}, then @kbd{make_gather()} will
+make two sets of lists, one for the gather and one for the gather using
+the inverse mapping.  If @kbd{inverse} is @strong{NO_INVERSE}, then
+only one set of tables is made.
+
+The @kbd{want_even_odd} argument is one of @strong{ALLOW_EVEN_ODD} or
+@strong{NO_EVEN_ODD}.  If it is @strong{ALLOW_EVEN_ODD} separate tables
+are made for even and odd sites, so that start gather can be called with
+parity @strong{EVEN}, @strong{ODD} or @strong{EVENANDODD}.  If it is
+@strong{NO_EVEN_ODD}, only one set of tables is made and you can only
+call gathers with parity @strong{EVENANDODD}.
+
+The @kbd{parity_conserve} argument to @kbd{make_gather()} is one of
+@strong{SAME_PARITY}, @strong{SWITCH_PARITY}, or @strong{SCRAMBLE_PARITY}.
+Use @strong{SAME_PARITY} if the gather connects even sites to even sites
+and odd sites to odd sites.  Use @strong{SWITCH_PARITY} if the gather
+connects even sites to odd sites and vice versa.  Use
+@strong{SCRAMBLE_PARITY} if the gather connects some even sites to even
+sites and some even sites to odd sites.  If you have specified
+@strong{NO_EVEN_ODD} for @kbd{want_even_odd}, then the
+@kbd{parity_conserve} argument does nothing.  Otherwise, it is used by
+@kbd{make_gather()} to help avoid making redundant lists.
+
+@kbd{make_gather()} returns an integer, which can then be used as the
+@kbd{direction} argument to @kbd{start_gather()}.  If an inverse
+gather is also requested, its @kbd{direction} will be one more than
+the value returned by @kbd{make_gather()}.  In other words, if
+@kbd{make_gather()} returns 10, then to gather using the inverse mapping
+you would use 11 as the direction argument in start_gather.
+
+Notice that the nearest neighbor gathers do not have their inverse
+directions numbered this convention.  Instead, they are sorted so that
+@strong{OPP_DIR}(@kbd{direction}) gives the gather using the inverse
+mapping.
+
+
+Now for some examples which we hope will clarify all this.
+
+First, suppose we wish to set up nearest neighbor gathers.  (Ordinarily.
+ @kbd{make_comlinks()} already does this for you, but it is a
+good example.)  The function which defines the mapping is basically
+@kbd{neighbor_coords()}, with a wrapper which fixes up the arguments.
+@kbd{arg} should be set to the address of the direction ---
+@strong{XUP}, etc.
+@example
+/* The function which defines the mapping */
+void neighbor_temp(x,y,z,t, arg, forw_back, xpt, ypt, zpt, tpt)
+  int x,y,z,t;
+  int *arg;
+  int forw_back;
+  int *xpt,*ypt,*zpt,*tpt;
+@{
+  register int dir; /* local variable */
+  dir = *arg;
+  if(forw_back==BACKWARDS)dir=OPP_DIR(dir);
+  neighbor_coords(x,y,z,t,dir,xpt,ypt,zpt,tpt);
+@}
+
+/* Code fragment to set up the gathers */
+/* Do this once, in the setup part of the program. */
+int xup_dir, xdown_dir;
+int temp;
+temp = XUP; /* we need the address of XUP */
+xup_dir = make_gather( neighbor_temp, &temp, WANT_INVERSE,
+                       ALLOW_EVEN_ODD, SWITCH_PARITY);
+xdown_dir = xup_dir+1;
+
+/* Now you can start gathers */
+start_gather_field( phi, sizeof(su3_vector), xup_dir, EVEN,
+                    gen_pt[0] );
+/* and use wait_gather, cleanup_gather as always. */
+@end example
+
+Again, once it is set up, it works just as before.  Essentially, you are
+just defining new @kbd{directions}.  Again, @kbd{make_comlinks()} does
+the same thing, except that it arranges the directions so that you can
+just use @strong{XUP}, @strong{XDOWN}, etc. as the @kbd{direction}
+argument to @kbd{start_gather()}.
+
+A second example is for a gather from a general displacement.  You
+might, for example, set up a bunch of these to take care of the link
+gathered from the second mearest neighbor in evaluating the plaquette in
+the pure gauge code.  In this example, the mapping function needs a list
+of four arguments --- the displacement in each of four directions.  Notice
+that for this displacement even sites connect to even sites, etc.
+@example
+/* The function which defines the mapping */
+/* arg is a four element array, with the four displacements */
+void general_displacement(x,y,z,t, arg, forw_back, xpt, ypt, zpt, tpt)
+  int x,y,z,t;
+  int *arg;
+  int forw_back;
+  int *xpt,*ypt,*zpt,*tpt;
+@{
+    if( forw_back==FORWARDS ) @{ /* add displacement */
+       *xpt = (x+nx+arg[0])%nx;
+       *ypt = (y+ny+arg[1])%ny;
+       *zpt = (z+nz+arg[2])%nz;
+       *tpt = (t+nt+arg[3])%nt;
+    @}
+    else @{ /* subtract displacement */
+       *xpt = (x+nx-arg[0])%nx;
+       *ypt = (y+ny-arg[1])%ny;
+       *zpt = (z+nz-arg[2])%nz;
+       *tpt = (t+nt-arg[3])%nt;
+    @}
+@}
+
+/* Code fragment to set up the gathers */
+/* Do this once, in the setup part of the program. */
+/* In this example, I set up to gather from displacement -1 in
+   the x direction and +1 in the y direction */
+int plus_x_minus_y;
+int disp[4];
+disp[0] = -1;
+disp[1] = +1;
+disp[2] = 0;
+disp[3] = 0;
+plus_x_minus_y = make_gather( general_displacement, disp,
+                              NO_INVERSE, ALLOW_EVEN_ODD, SAME_PARITY);
+
+/* Now you can start gathers */
+start_gather_site( F_OFFSET(link[YUP]), sizeof(su3_matrix), plus_x_minus_y,
+                   EVEN, gen_pt[0] );
+/* and use wait_gather, cleanup_gather as always. */
+@end example
+
+Finally, we would set up an FFT butterfly  roughly as
+follows.  Here the function wants two arguments: the direction of the
+butterfly and the level.
+@example
+/* The function which defines the mapping */
+/* arg is a two element array, with the direction and level */
+void butterfly_map(x,y,z,t, arg, forw_back, xpt, ypt, zpt, tpt)
+  int x,y,z,t;
+  int *arg;
+  int forw_back;
+  int *xpt,*ypt,*zpt,*tpt;
+@{
+int direction,level;
+    direction = arg[0];
+    level = arg[1];
+    /* Rest of code goes here */
+@}
+
+/* Code fragment to set up the gathers */
+/* Do this once, in the setup part of the program. */
+int butterfly_dir[5]; /* for nx=16 */
+int args[2];
+args[0]=XUP;
+for( level=1; level<=4; level++ ) @{
+    args[1]=level;
+    butterfly_dir[level] = make_gather( butterfly_map, args,
+       OWN_INVERSE, NO_EVEN_ODD, SCRAMBLE_PARITY);
+@}
+/* similarly for y,z,t directions */
+@end example
+
+@cindex iPSC-860
+@cindex Intel Paragon
+@cindex interupts
+
+@node Distributing sites among nodes, Reading and Writing Lattices and Propagators, Details of gathers and creating new ones, Programming with MILC Code
+@section Distributing sites among nodes
+@cindex Distributing sites among nodes
+
+Four functions are used to determine the distribution of @kbd{sites}
+among the parallel @emph{nodes}.
+
+@kbd{setup_layout()} is called once on each node at initialization time,
+to do any calculation and set up any static variables that the other
+functions may need.  At the time @kbd{setup_layout()} is called the
+global variables @kbd{nx,ny,nz} and @kbd{nt} (the lattice dimensions)
+are set.  
+@sp 1
+
+@kbd{setup_layout()} must initialize the global variables:
+@example
+sites_on_node, 
+even_sites_on_node, 
+odd_sites_on_node.
+@end example
+@sp 1
+
+The following functions are available for node/site reference:
+@table @kbd
+@item size_t num_sites(int node) 
+returns the number of sites on a node
+@item int node_number(int x, int y, int z, int t) 
+returns the node number on which a site lives.
+@item int node_index(int x, int y, int z, int t)
+returns the index of the site on the node.
+@item int io_node(int node)
+returns the I/O node assigned to a node
+@item const int *get_logical_dimensions()
+returns the machine dimensions as an integer array
+@item const int *get_logical_coordinates()
+returns the node coordinates when the machine is viewed as a grid of nodes
+@item void get_coords(int coords[], int node, int index)
+the inverse of node_index and node_number.  Returns coords.
+@end table
+Thus, the site at @kbd{x,y,z,t} is @kbd{lattice[node_index(x,y,z,t)]}.
+
+These functions may be changed, but
+chaos will ensue if they are not consistent. For example, it is a gross
+error for the @kbd{node_index} function to return a value larger than or
+equal to the value returned by @kbd{num_sites} of the appropriate node.
+In fact, @kbd{node_index} must provide a one-to-one mapping of the
+coordinates of the @kbd{sites} on one node to the integers from 0 to
+@kbd{num_sites(node)-1}.
+
+
+A good choice of site distribution on nodes will minimize the amount of
+communication.  These routines are in @file{layout_XXX.c}. There are
+currently several layout strategies to choose from; select one in your
+@file{Makefile} (@pxref{Building the MILC Code}).
+@table @file
+@item  layout_hyper_prime.c
+Divides the lattice up into hypercubes by dividing dimensions by the
+smallest prime factors.  This is pretty much our standard layout these days.
+
+@item  layout_timeslices.c layout_timeslices_2.c
+These routines are now obsolete.  They arranged sites so entire time
+slices appeared on each processor.  This was especially efficient for
+spatial Fourier transforms.  The same effect can now be obtained with
+the @strong{IO_NODE_GEOM} macro or QMP @strong{-qmp_geom} command-line
+option.
+
+@item layout_hyper_sl32.c
+Version for 32 sublattices, for extended actions.
+This version divides the lattice by factors of two in any of the
+   four directions.  It prefers to divide the longest dimensions,
+   which mimimizes the area of the surfaces.  Similarly, it prefers
+   to divide dimensions which have already been divided, thus not
+   introducing more off-node directions.
+ This requires that the lattice volume be divisible by the number
+   of nodes, which is a power of two.
+@end table
+
+Below is a completely simple example, which just deals out the sites
+among nodes like cards in a deck.  It works, but you would really want
+to do much better.
+@example
+int Num_of_nodes; /* static storage used by these routines */
+
+void setup_layout() @{
+  Num_of_nodes = numnodes();
+  sites_on_node = nx*ny*nz*nt/Num_of_nodes;
+  even_sites_on_node = odd_sites_on_node = sites_on_node/2; 
+@}
+
+int node_number(x,y,z,t) 
+int x,y,z,t; 
+@{
+  register int i;
+  i = x+nx*(y+ny*(z+nz*t));
+  return( i%Num_of_nodes ); 
+@}
+
+int node_index(x,y,z,t) 
+int x,y,z,t; 
+@{
+  register int i;
+  i = x+nx*(y+ny*(z+nz*t));
+  return( i/Num_of_nodes ); 
+@}
+
+int num_sites(node) 
+int node; 
+@{ 
+  register int i;
+  i = nx*ny*nz*nt;
+  if( node< i%Num_of_nodes ) return( i/Num_of_nodes+1 );
+  else return( i/Num_of_nodes ); 
+@}
+@end example
+
+@example
+/* utility function for finding coordinates of neighbor */ 
+/* x,y,z,t are the coordinates of some site, and x2p... are
+   pointers.  *x2p... will be set to the coordinates of the
+   neighbor site at direction "dir".
+
+void neighbor_coords( x,y,z,t,dir, x2p,y2p,z2p,t2p)
+  int x,y,z,t,dir; /* coordinates of site, and direction (eg XUP) */
+  int *x2p,*y2p,*z2p,*t2p;
+@end example
+
+@node Reading and Writing Lattices and Propagators, Random numbers, Distributing sites among nodes, Programming with MILC Code
+@section Reading and writing lattices and propagators
+@cindex  Reading and writing lattices and propagators
+
+The MILC code supports a MILC-standard single-precision binary gauge
+configuration (``lattice'') file format.  This format includes a
+companion ASCII metadata ``info'' file with standardized fields to
+describe the parameters that went into creating the configuration.
+The code also reads gauge configurations files in NERSC, ILDG, SciDAC,
+and Fermilab formats and writes files in NERSC, ILDG, and SciDAC
+formats.  For MILC, ILDG, and SciDAC formats, it supports reading and
+writing either serially through node 0 or in parallel to and from a
+single file.  There is also an historic but seldom-used provision for
+reading and writing ASCII gauge configuration files.  Through SciDAC
+QIO the MILC code supports parallel reading and writing of multiple
+partitioned SciDAC file formats.
+
+The MILC code supports the USQCD Dirac and staggered propagator file
+formats through QIO.  It also supports reading and writing two
+standard Fermilab propagator file formats.
+
+Input and output types are set at run time.
+Here is a summary of the I/O choices for gauge configuration files:
+
+@table @kbd
+@item  reload_ascii
+@item   reload_serial 
+   Binary read by node 0.  File format is autodetected.
+@item   reload_parallel
+  Binary read by all nodes.  Only where hardware is available.
+@item   save_ascii
+
+@item   save_serial 
+     Binary through node 0 - standard index order
+@item   save_parallel
+    Binary parallel - standard index order.  Only where hardware is available.
+@item   save_checkpoint 
+    Binary parallel - node dump order
+@item   save_serial_archive
+    NERSC Gauge Connection format.  For the moment a parallel version
+    is not available.
+@item   save_serial_scidac
+@item   save_parallel_scidac
+@item   save_serial_ildg
+    SciDAC single-file format and ILDG-compatible format.
+@item   save_partition_scidac
+@item   save_partition_ildg
+    SciDAC partition file format and ILDG-compatible partition file format.
+@item   save_multifile_scidac
+@item   save_multifile_ildg
+    SciDAC multifile format. (Node dump order, intended for temporary
+    storage, rather than archiving.)
+@end table
+
+For Dirac propagators the old MILC-standard format has been abandoned
+in favor of the USQCD and Fermilab formats.  Here is a summary of
+Dirac propagator I/O choices:
+
+@table @kbd
+@item  reload_ascii_wprop
+@item   reload_serial_wprop 
+   Binary read by node 0.  File format is autodetected.
+@item   reload_parallel_wprop
+  Binary read by all nodes.  Only where hardware is available.
+@item   save_ascii_wprop
+@item   save_serial_scidac_wprop
+     Binary through node 0 - standard index order
+@item   save_parallel_scidac_wprop
+    Binary parallel - standard index order.  Only where hardware is available.
+@item   save_partfile_scidac_wprop
+    Binary parallel with multiple files.
+@item   save_multifile_scidac_wprop
+    Binary parallel with multiple files - node dump order
+@item   save_serial_fm_wprop
+@item   save_serial_fm_sc_wprop
+    Fermilab formats
+@end table
+
+For staggered propagators the code supports a MILC-standard format as
+well as the USQCD formats and the Fermilab format.  Here is a summary
+of Dirac propagator I/O choices:
+
+@table @kbd
+@item  reload_ascii_ksprop
+@item   reload_serial_ksprop 
+   Binary read by node 0.  File format is autodetected.
+@item   reload_parallel_ksprop
+  Binary read by all nodes.  Only where hardware is available.
+@item   save_ascii_ksprop
+@item   save_serial_ksprop
+     Binary through node 0 - standard index order
+@item   save_serial_scidac_ksprop
+    Binary through node 0 - standard index order
+@item   save_parallel_scidac_ksprop
+    Binary parallel - standard index order.  Only where hardware is available.
+@item   save_partfile_scidac_ksprop
+    Binary parallel with multiple files.
+@item   save_multifile_scidac_ksprop
+    Binary parallel with multiple files - node dump order
+@item   save_serial_fm_ksprop
+     Fermilab format.
+@end table
+
+To print out variables for debugging purposes, the library routines
+@kbd{dumpvec}, @kbd{dumpmat} and @kbd{dump_wvec} (for SU(3) vectors,
+SU(3) matrices and Wilson vectors) are quite useful:
+
+@example
+
+          FORALLSITES(i,s) @{
+        if(magsq_wvec(&(s->psi)) > 1.e-10) @{
+        printf("%d %d %d %d\n", s->x, s->y, s->z,s->t);
+        printf("psi\n");
+        dump_wvec(&(s->psi));
+        @}
+    @}
+@end example
+
+
+@node Random numbers, A Sample Applications Directory, Reading and Writing Lattices and Propagators, Programming with MILC Code
+@section Random numbers
+@cindex Random numbers
+
+The random number generator is the exclusive-OR of a 127 bit feedback
+shift register and a 32 bit integer congruence generator.  It is
+supposed to be machine independent.  Each node or site uses a
+different multipler in the congruence generator and different initial
+state in the shift register, so all are generating different sequences
+of numbers.  If @strong{SITERAND} is defined, which has become
+standard practice in our code, each lattice site has its own random
+number generator state.  This takes extra storage, but means that the
+results of the program will be independent of the number of nodes or
+the distribution of the sites among the nodes.  The random number
+routine is @kbd{generic/ranstuff.c}.
+
+
+@node A Sample Applications Directory, Bugs and features, Random numbers, Programming with MILC Code
+@section A Sample Applications Directory
+@cindex A Sample Applications Directory
+
+An example of the files which make up an application are listed here.
+This list depends very much on which application of the program
+(Kogut-Susskind/Wilson?  Thermodynamics/Spectrum?) is being built. The
+listing here is for the pure MILC code (non-SciDAC) compilation of the
+@kbd{su3_spectrum} target for the 2+1 asqtad action in the
+@kbd{ks_imp_dyn} application.
+@table @file
+@item Make_template:
+	Contains instructions for compiling and linking. 
+	Three routines you can make, "su3_rmd", "su3_phi" and "su3_hmc",
+	 are programs for the R algorithm, the phi algorithm, or
+        the hybrid Monte Carlo algorithm. Used with Make_MACHINE, for
+a machine-dependent target.
+@end table
+@sp 1
+
+@strong{SOME HIGH LEVEL ROUTINES:}
+@table @file
+@item control.c
+    main program
+@item d_congrad5_fn.c
+    standard CG solver
+@item d_congrad5_two_src.c
+    CG solver for two source fields
+@item fermion_force_asqtad.c
+    fermion force claculation
+@item fermion_force_fn_multi.c
+    multi-fermion force calculation
+@item fermion_force_multi.c
+    multi-fermion force calculation
+@item fermion_links_fn.c
+    asqtad link fattening
+@item f_meas.c
+    calculate psi-bar-psi and other related quantities
+@item fpi_2.c
+    calculate staggered propagators, fpi, and meson spectrum
+@item gauge_force_imp.c
+    force for an improved gauge action
+@item grsource_imp.c
+    pseudofermion random source
+@item hvy_pot.c
+    heavy quark potential
+@item io_helpers.c
+    top level I/O control
+@item ks_multicg.c
+    multi CG solver
+@item layout_hyper_prime.c
+    distribute sites among the nodes
+@item make_lattice.c
+    allocate the lattice
+@item mat_invert.c
+    wrapper for CG solvers
+@item nl_spectrum.c
+    staggered fermion nonlocal meson spectrum.  Also nucleon and delta.
+@item ploop3.c
+    Polyakov loop calculation
+@item ranmom.c
+    generate Gaussian random momenta for the gauge fields
+@item setup.c
+    interpret parameter input
+@item spectrum2.c
+    conventional staggered meson spectrum
+@item spectrum_fzw.c
+    point-to-point staggered meson spectrum
+@item spectrum_mom.c
+    degenerate-mass meson spectrum with momentum injection
+@item spectrum_multimom.c
+    non-degenerate-mass meson spectrum with momentum injection
+@item spectrum_nd.c
+    non-degenerate-mass meson and baryon spectrum
+@item spectrum_nlpi2.c
+    nonlocal staggered meson spectrum for all tastes.
+@item spectrum_singlets.c
+    singlet meson spectrum (experimental)
+@item update_h.c
+    update the gauge momenta
+@item update.c
+    top-level molecular dynamics
+@item update_u.c
+    update the gauge fields
+@end table
+@sp 1
+
+@strong{HEADERS}
+@table @file
+@item defines.h
+    Required. Local macros common to all targets in an application.
+    SITERAND should be defined here.  Other macros that are independent of
+    the site structure can also be defined here.
+@item gauge_action.h
+    Defines the gauge action
+@item ks_imp_includes.h
+    Function prototypes for all files in the @kbd{ks_imp_dyn} application directory.
+@item lattice.h
+    Required. Defines the site structure and global variables.
+@item lattice_qdp.h
+    Required. Used only for QDP support.
+@item params.h
+    Required. Defines the parameter structure used in @kbd{setup.c} for passing
+    input parameters to the nodes.
+@item quark_action.h
+    Defines the quark action
+@end table
+@sp 1
+
+@strong{LOWER LEVEL ROUTINES}
+@table @file
+@item ape_smear.c
+    APE smearing utility
+@item check_unitarity.c
+    check unitarity of the gauge field
+@item com_mpi.c
+    MPP communications.
+@item d_congrad_opt.c
+    helper routines for the CG solver
+@item d_plaq4.c
+    average plaquette calculation
+@item dslash_fn_dblstore.c
+    dslash with double storing of backward links
+@item fermion_links_helpers.c
+    link fattening utilities
+@item ff_opt.c
+    fermion force utilities
+@item flavor_ops.c
+    nonlocal staggered meson operators
+@item gaugefix2.c
+    gauge fixing
+@item gauge_info.c
+    create metadata for output gauge configuration file
+@item gauge_stuff.c
+    computations in support of the gauge action
+@item io_ansi.c
+    wrapper for ANSI standard binary I/O calls
+@item io_detect.c
+    detect file type
+@item io_lat4.c
+    MILC lattice I/O 
+@item io_lat_utils.c
+    supporting routines for lattice I/O
+@item ks_multicg_offset.c
+    multi CG solver 
+@item nersc_cksum.c
+    compute checksums for NERSC-format gauge configuration files
+@item path_product.c
+    support for the gauge connection over arbitrary paths
+@item path_transport.c
+    support for the gauge connection over arbitrary paths
+@item project_su3_hit.c
+    SU(3) projector for smearing
+@item quark_stuff.c
+    create path tables for staggered actions
+@item ranstuff.c
+    random number generator
+@item remap_stdio_from_args.c
+    switch standard input and output
+@item rephase.c
+    multiply gauge links by staggered fermion phases 
+@item reunitarize2.c
+    reunitarize gauge links
+@item show_generic_ks_opts.c
+    print staggered fermion options
+@item show_generic_opts.c
+    print other options
+@sp 1
+@end table
+@sp 1
+
+@strong{LIBRARIES}
+@table @file
+@item complex.1.a
+	complex number operations.  See section on "Library routines".
+@item su3.1.a
+	3x3 matrix and 3 component vector operations.  See "utility
+	subroutines".
+@end table
+
+
+@node Bugs and features, , A Sample Applications Directory, Programming with MILC Code
+@section Bugs and features
+@cindex Bugs and features
+@cindex doubleword boundaries
+
+
+Some variants of the version 4 MILC code had library routines and
+applications for doing SU(2) gauge theory. This code has not been
+translated into version 7 conventions.
+
+The MILC code is hard-wired for four dimensional simulations.
+Three and five dimensional variants are believed to exist, but are not
+maintained by us.
+
+For some unknown reason, lost in the mists of time,
+ the MILC code uses the opposite convention for the projectors
+@tex
+$$S = \sum_x \bar \psi(x) \psi(x) - \kappa(
+ \sum_\mu \bar \psi(x) (1+\gamma_\mu)U_\mu(x) \psi(x+\mu) +
+ \sum_\mu \bar \psi(x+\mu) (1-\gamma_\mu)U_\mu^\dagger(x) \psi(x)) $$
+@end tex
+rather than the more standard convention
+@tex
+$$ S = \sum_x \bar \psi(x) \psi(x) - \kappa(
+ \sum_\mu \bar \psi(x) (1-\gamma_\mu)U_\mu(x) \psi(x+\mu) ) +
+ \sum_\mu \bar \psi(x+\mu) (1+\gamma_\mu)U_\mu^\dagger(x) \psi(x) ) $$
+@end tex
+Furthermore, the sign convention for 
+@tex $\gamma_2$ 
+@end tex 
+is minus the standard convention.  Thus the MILC spinor fields differ
+from the ``conventional'' ones by a gamma-5 multiplication
+@tex $\psi_{MILC}= \gamma_5 \psi_{usual}$. 
+@end tex
+and a reflection in the x-z plane.
+  MILC uses Weyl-basis (gamma-5 diagonal)
+ Dirac matrices.
+
+@node Writing Your Own Application, Concept Index, Programming with MILC Code, Top
+@chapter Writing Your Own Application
+@cindex Writing Your Own Application
+
+Each application typically uses at least four header files,
+@kbd{APP_includes.h}, @kbd{lattice.h}, @kbd{defines.h} and
+@kbd{params.h}. The first contains definitions of all the routines in
+the application directory; the second contains a list of global macros
+and global definitions and a specification of the @kbd{site} structure
+(all the variables living on the sites of your lattice); the third
+contains local macros common to all targets in an application; and the
+last defines the parameter structure used for passing input parameters
+to the nodes.  The application directory also has its own makefile,
+@kbd{Make_template}, which contains all the (machine-independent)
+dependencies necessary for your applications.
+
+It is customary to put the @kbd{main()} routine in a file which begins with
+the word ``control'' (e.g. @kbd{control_clov_p.c}). Beyond that, you are
+on your own. If you poke around, you may find a routine similar
+to the one you want to write, which you can modify. A typical application
+reads in a lattice 
+reads in some input parameters,
+does things to variables on every site,
+moves information from site to site (@pxref{Accessing fields at other sites})
+and
+writes out a lattice at the end.
+
+One problem is how to read in global parameters (like a coupling
+or the number of iterations of a process). This is done in a file with
+a name similar to @kbd{setup.c}. To read in a global variable and
+broadcast it to all the nodes, you must first edit @kbd{lattice.h}
+adding the variable to the list of globals
+ (in the long set of @kbd{EXTERN}'s
+at the top), and edit the @kbd{params.h} file to
+add it to the @kbd{params} structure. Next, in @kbd{setup.c},
+add a set of lines to prompt for the input,
+and find the place where the @kbd{params} structure is initialized or read.
+Add your variable once to each list, to put it into @kbd{par_buf},
+and then to extract it. Good luck!
+
+@node Concept Index, Variable Index , Writing Your Own Application, Top
+@unnumbered Concept Index
+@printindex cp
+@page
+
+@node Variable Index , , Concept Index, Top
+@unnumbered Variable Index
+@printindex vr
+@page
+@contents
+
+@bye
+
+

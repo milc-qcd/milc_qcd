@@ -1,7 +1,7 @@
 .SUFFIXES: .texi .html .info .dvi .ps
 
 DESTPATH = ${HOME}/public_html/milc
-DELIVERABLES = milcv6.html milcv6_toc.html milcv6.ps
+DELIVERABLES = milcv7.html milcv7_toc.html milcv7.ps
 
 .texi.html::
 	texi2html $*.texi
@@ -12,7 +12,7 @@ DELIVERABLES = milcv6.html milcv6_toc.html milcv6.ps
 .texi.dvi::
 	env TEX= texi2dvi $*.texi
 
-milcv6_toc.html: milcv6.html
+milcv7_toc.html: milcv7.html
 
 all: ${DELIVERABLES} Makefile
 #	/bin/cp -p ${DELIVERABLES} ${DESTPATH}
