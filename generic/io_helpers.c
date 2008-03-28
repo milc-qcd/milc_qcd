@@ -487,7 +487,9 @@ int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
     return 1;
   }
   
-  if( *flag != FORGET ){
+  if( *flag == FORGET )
+    printf("\n");
+  else{
     if(prompt!=0)printf("enter filename\n");
     status=fscanf(fp,"%s",filename);
     if(status !=1){

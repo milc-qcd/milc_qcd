@@ -44,6 +44,7 @@ G_ALL = \
  io_romio.o \
  io_scidac.o \
  io_scidac_types.o \
+ io_source_cmplx_fm.o \
  layout_hyper_prime.o \
  layout_hyper_2or3.o \
  layout_timeslices.o \
@@ -74,7 +75,8 @@ G_ALL = \
  remap_stdio_from_args.o \
  restrict_fourier.o \
  reunitarize2.o \
- show_generic_opts.o
+ show_generic_opts.o \
+ stout_smear.o
 
 # Must match our headers in generic_includes.h
 G_HEADERS = \
@@ -173,6 +175,8 @@ io_scidac.o: ../generic/io_scidac.c
 	${CC} -c ${CFLAGS} $<
 io_scidac_types.o: ../generic/io_scidac_types.c
 	${CC} -c ${CFLAGS} $<
+io_source_cmplx_fm.o: ../generic/io_source_cmplx_fm.c
+	${CC} -c ${CFLAGS} $<
 layout_hyper_prime.o: ../generic/layout_hyper_prime.c
 	${CC} -c ${CFLAGS} $<
 layout_hyper_2or3.o: ../generic/layout_hyper_2or3.c
@@ -234,6 +238,8 @@ restrict_fourier.o: ../generic/restrict_fourier.c
 reunitarize2.o: ../generic/reunitarize2.c
 	${CC} -c ${CFLAGS} $<
 show_generic_opts.o: ../generic/show_generic_opts.c
+	${CC} -c ${CFLAGS} $<
+stout_smear.o: ../generic/stout_smear.c
 	${CC} -c ${CFLAGS} $<
 
 ifeq ($(strip ${HAVEQDP}),true)

@@ -420,25 +420,27 @@ unload_##P##_##T##_to_field( MILC_DSTTYPE *dest, TYPE *qop, int parity){ \
   destroy_raw_##P##_##T(raw); raw = NULL; \
 }
 
-// /* Generate QOP asqtad links from gauge field in site structure */
-// 
-// #define make_create_L_from_site_gauge(P, TYPE, MILCTYPE, MILCFLOAT) \
-// TYPE * \
-// create_##P##_L_from_site_gauge( QOP_info_t *info, \
-//     QOP_asqtad_coeffs_t *coeffs, field_offset src, int parity) \
-// { \
-//   MILCTYPE **raw; \
-//   TYPE *qop; \
-//   QOP_##P##3_GaugeField *gauge; \
-//   raw = create_raw4_##P##_G_from_site(src, parity); \
-//   if(raw == NULL)terminate(1); \
-//   gauge = QOP_##P##3_create_G_from_raw((MILCFLOAT **)raw, \
-// 				  milc2qop_parity(parity)); \
-//   destroy_raw4_##P##_G(raw); raw = NULL; \
-//   qop = QOP_##P##3_asqtad_create_L_from_G(info, coeffs, gauge); \
-//   QOP_##P##3_destroy_G(gauge); gauge = NULL; \
-//   return qop; \
-// }
+#if 0
+/* Generate QOP asqtad links from gauge field in site structure */
+
+#define make_create_L_from_site_gauge(P, TYPE, MILCTYPE, MILCFLOAT) \
+TYPE * \
+create_##P##_L_from_site_gauge( QOP_info_t *info, \
+    QOP_asqtad_coeffs_t *coeffs, field_offset src, int parity) \
+{ \
+  MILCTYPE **raw; \
+  TYPE *qop; \
+  QOP_##P##3_GaugeField *gauge; \
+  raw = create_raw4_##P##_G_from_site(src, parity); \
+  if(raw == NULL)terminate(1); \
+  gauge = QOP_##P##3_create_G_from_raw((MILCFLOAT **)raw, \
+				  milc2qop_parity(parity)); \
+  destroy_raw4_##P##_G(raw); raw = NULL; \
+  qop = QOP_##P##3_asqtad_create_L_from_G(info, coeffs, gauge); \
+  QOP_##P##3_destroy_G(gauge); gauge = NULL; \
+  return qop; \
+}
+#endif
 
 /* Map preconstructed fat and long gauge fields from MILC site to QOP field */
 
