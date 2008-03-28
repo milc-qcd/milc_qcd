@@ -44,7 +44,7 @@ void malloc_dslash_temps(){
   temp_not_allocated = 0 ;
 }
 
-void cleanup_dslash_temps(){
+void cleanup_dslash_wtemps(){
   register int i ;
   if(!temp_not_allocated)
     for(i=0;i<8;i++) {
