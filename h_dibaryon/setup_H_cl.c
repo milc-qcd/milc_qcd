@@ -155,7 +155,7 @@ int readin(int prompt) {
     }
     
     /* Get source type */
-    IF_OK status += ask_quark_source( stdin, prompt, &wallflag, descrp);
+    IF_OK status += ask_w_quark_source( stdin, prompt, &wallflag, descrp);
 
     /* width: psi=exp(-(r/r0)^2) */
     IF_OK if (prompt!=0) 
