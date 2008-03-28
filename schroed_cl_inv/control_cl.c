@@ -164,7 +164,7 @@ Real f_1[MAX_KAP];
             
 		    avs_iters = 
 			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source_site,&wqs[k],
+						  w_source_sf_site,&wqs[k],
 						  bicgilu_cl_site,&qic,(void *)&dcp);
 		    break;
 	      case MR:
@@ -172,7 +172,7 @@ Real f_1[MAX_KAP];
             
 		    avs_iters = 
 			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source_site,&wqs[k],
+						  w_source_sf_site,&wqs[k],
 						  mrilu_cl_site,&qic,(void *)&dcp);
 		    break;
 		    /* compute the propagator.  Result in psi. */
@@ -180,7 +180,7 @@ Real f_1[MAX_KAP];
             
 		    avs_iters = 
 			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source_site,&wqs[k],
+						  w_source_sf_site,&wqs[k],
 						  cgilu_cl_site,&qic,(void *)&dcp);
 		    break;
 	    default:
@@ -248,7 +248,7 @@ Real f_1[MAX_KAP];
             
 		    avs_iters = 
 			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source_site,&wqs[k],
+						  w_source_sf_site,&wqs[k],
 						  bicgilu_cl_site,&qic,(void *)&dcp);
 		    break;
 	      case MR:
@@ -256,7 +256,7 @@ Real f_1[MAX_KAP];
             
 		    avs_iters = 
 			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source_site,&wqs[k],
+						  w_source_sf_site,&wqs[k],
 						  mrilu_cl_site,&qic,(void *)&dcp);
 		break;
 	    case CG:
@@ -264,7 +264,7 @@ Real f_1[MAX_KAP];
             
 		    avs_iters = 
 			(Real)wilson_invert_site_wqs(F_OFFSET(chi),F_OFFSET(psi),
-						  w_source_site,&wqs[k],
+						  w_source_sf_site,&wqs[k],
 						  cgilu_cl_site,&qic,(void *)&dcp);
 		    break;
 	    default:

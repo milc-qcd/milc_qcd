@@ -33,3 +33,5 @@ void ape_smear_SF();
 void zv_meas(field_offset src1, field_offset src2,
 	     Real *f_1, complex *f_V, Real kappa);
 
+void w_source_sf_site(field_offset src, wilson_quark_source *wqs);
+

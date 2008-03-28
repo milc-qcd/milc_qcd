@@ -76,7 +76,7 @@ int n_in,n_out;
 
 /************************** w_source.c *****************************/
 
-void w_source_site(field_offset src, wilson_quark_source *wqs)
+void w_source_sf_site(field_offset src, wilson_quark_source *wqs)
 {
   register int i,j;
   register site *s; 
