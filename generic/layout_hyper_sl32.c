@@ -302,7 +302,7 @@ void setup_layout(){
     set_qmp_layout_grid(geom, 4);
 
   /* Has a grid been set up now? */
-  if(QMP_get_msg_passing_type()==QMP_GRID)
+  if(QMP_get_msg_passing_type() == QMP_GRID)
     setup_qmp_grid();
   else if(geom != NULL)
     setup_fixed_geom(geom, 4);
