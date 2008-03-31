@@ -26,7 +26,16 @@ __asm__ __volatile__ ("movups %0, %%xmm0 \n\t" \
                       "m" ((aa)[0].e[0][0]), \
                       "m" ((aa)[0].e[1][0]), \
                       "m" ((aa)[0].e[2][0]), \
-                      "m" ((aa)[0].e[0][1])); \
+                      "m" ((aa)[0].e[0][1])\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movhps %0, %%xmm3 \n\t" \
                       "movhps %1, %%xmm7 \n\t" \
                       "shufps $0xEE, %%xmm7, %%xmm7 \n\t" \
@@ -48,10 +57,24 @@ __asm__ __volatile__ ("movhps %0, %%xmm3 \n\t" \
                       : \
                       "m" ((aa)[0].e[1][1]), \
                       "m" ((aa)[0].e[2][1]), \
-                      "m" (_sse_sgn24)); \
+                      "m" (_sse_sgn24)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movups %%xmm5, %0 \n\t" \
                       : \
-                      "=m" ((cc)[0].c[0])); \
+                      "=m" ((cc)[0].c[0])\
+                      : \
+                      : \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "movhps %1, %%xmm3 \n\t" \
                       "movhps %2, %%xmm4 \n\t" \
@@ -75,10 +98,23 @@ __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "m" ((aa)[0].e[0][2]), \
                       "m" ((aa)[0].e[1][2]), \
                       "m" ((aa)[0].e[2][2]), \
-                      "m" (_sse_sgn24)); \
+                      "m" (_sse_sgn24)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movhps %%xmm5, %0 \n\t" \
                       : \
-                      "=m" ((cc)[0].c[2])); \
+                      "=m" ((cc)[0].c[2])\
+                      : \
+                      : \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "movhps %1, %%xmm3 \n\t" \
                       "movhps %2, %%xmm4 \n\t" \
@@ -102,7 +138,17 @@ __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "m" ((aa)[1].e[2][0]), \
                       "m" ((aa)[1].e[0][1]), \
                       "m" ((aa)[1].e[1][1]), \
-                      "m" ((aa)[1].e[2][1])); \
+                      "m" ((aa)[1].e[2][1])\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("shufps $0xEE, %%xmm7, %%xmm7 \n\t" \
                       "movaps %%xmm3, %%xmm5 \n\t" \
                       "mulps %%xmm0, %%xmm3 \n\t" \
@@ -120,10 +166,24 @@ __asm__ __volatile__ ("shufps $0xEE, %%xmm7, %%xmm7 \n\t" \
                       "addps %%xmm4, %%xmm5 \n\t" \
                       : \
                       : \
-                      "m" (_sse_sgn24)); \
+                      "m" (_sse_sgn24)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movups %%xmm5, %0 \n\t" \
                       : \
-                      "=m" ((cc)[1].c[0])); \
+                      "=m" ((cc)[1].c[0])\
+                      : \
+                      : \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "movhps %1, %%xmm3 \n\t" \
                       "movhps %2, %%xmm4 \n\t" \
@@ -147,10 +207,23 @@ __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "m" ((aa)[1].e[0][2]), \
                       "m" ((aa)[1].e[1][2]), \
                       "m" ((aa)[1].e[2][2]), \
-                      "m" (_sse_sgn24)); \
+                      "m" (_sse_sgn24)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movhps %%xmm5, %0 \n\t" \
                       : \
-                      "=m" ((cc)[1].c[2])); \
+                      "=m" ((cc)[1].c[2])\
+                      : \
+                      : \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "movhps %1, %%xmm3 \n\t" \
                       "movhps %2, %%xmm4 \n\t" \
@@ -174,7 +247,17 @@ __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "m" ((aa)[2].e[2][0]), \
                       "m" ((aa)[2].e[0][1]), \
                       "m" ((aa)[2].e[1][1]), \
-                      "m" ((aa)[2].e[2][1])); \
+                      "m" ((aa)[2].e[2][1])\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("shufps $0xEE, %%xmm7, %%xmm7 \n\t" \
                       "movaps %%xmm3, %%xmm5 \n\t" \
                       "mulps %%xmm0, %%xmm3 \n\t" \
@@ -192,10 +275,24 @@ __asm__ __volatile__ ("shufps $0xEE, %%xmm7, %%xmm7 \n\t" \
                       "addps %%xmm4, %%xmm5 \n\t" \
                       : \
                       : \
-                      "m" (_sse_sgn24)); \
+                      "m" (_sse_sgn24)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movups %%xmm5, %0 \n\t" \
                       : \
-                      "=m" ((cc)[2].c[0])); \
+                      "=m" ((cc)[2].c[0])\
+                      : \
+                      : \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "movhps %1, %%xmm3 \n\t" \
                       "movhps %2, %%xmm4 \n\t" \
@@ -219,10 +316,23 @@ __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "m" ((aa)[2].e[0][2]), \
                       "m" ((aa)[2].e[1][2]), \
                       "m" ((aa)[2].e[2][2]), \
-                      "m" (_sse_sgn24)); \
+                      "m" (_sse_sgn24)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movhps %%xmm5, %0 \n\t" \
                       : \
-                      "=m" ((cc)[2].c[2])); \
+                      "=m" ((cc)[2].c[2])\
+                      : \
+                      : \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "movhps %1, %%xmm3 \n\t" \
                       "movhps %2, %%xmm4 \n\t" \
@@ -246,7 +356,17 @@ __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "m" ((aa)[3].e[2][0]), \
                       "m" ((aa)[3].e[0][1]), \
                       "m" ((aa)[3].e[1][1]), \
-                      "m" ((aa)[3].e[2][1])); \
+                      "m" ((aa)[3].e[2][1])\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("shufps $0xEE, %%xmm7, %%xmm7 \n\t" \
                       "movaps %%xmm3, %%xmm5 \n\t" \
                       "mulps %%xmm0, %%xmm3 \n\t" \
@@ -264,10 +384,24 @@ __asm__ __volatile__ ("shufps $0xEE, %%xmm7, %%xmm7 \n\t" \
                       "addps %%xmm4, %%xmm5 \n\t" \
                       : \
                       : \
-                      "m" (_sse_sgn24)); \
+                      "m" (_sse_sgn24)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movups %%xmm5, %0 \n\t" \
                       : \
-                      "=m" ((cc)[3].c[0])); \
+                      "=m" ((cc)[3].c[0])\
+                      : \
+                      : \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "movhps %1, %%xmm3 \n\t" \
                       "movhps %2, %%xmm4 \n\t" \
@@ -291,8 +425,21 @@ __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "m" ((aa)[3].e[0][2]), \
                       "m" ((aa)[3].e[1][2]), \
                       "m" ((aa)[3].e[2][2]), \
-                      "m" (_sse_sgn24)); \
+                      "m" (_sse_sgn24)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movhps %%xmm5, %0 \n\t" \
                       : \
-                      "=m" ((cc)[3].c[2])); \
+                      "=m" ((cc)[3].c[2])\
+                      : \
+                      : \
+                      "%xmm5", \
+                      "memory"); \
 }

@@ -13,7 +13,15 @@ __asm__ __volatile__ ("movupd %0, %%xmm0 \n\t" \
                       "m" ((bb0)->c[2]), \
                       "m" (aa[0].e[0][0].real), \
                       "m" (aa[0].e[0][1].real), \
-                      "m" (aa[0].e[1][0].real)); \
+                      "m" (aa[0].e[1][0].real)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "movsd %1, %%xmm5 \n\t" \
                       "unpcklpd %%xmm3, %%xmm3 \n\t" \
@@ -45,7 +53,17 @@ __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "m" (aa[0].e[2][1].real), \
                       "m" (aa[0].e[0][2].real), \
                       "m" (aa[0].e[1][1].real), \
-                      "m" (aa[0].e[2][2].real)); \
+                      "m" (aa[0].e[2][2].real)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
                       "mulpd %%xmm1, %%xmm6 \n\t" \
@@ -74,7 +92,17 @@ __asm__ __volatile__ ("unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "m" (_sse_sgn2), \
                       "m" (_sse_sgn2), \
                       "m" (_sse_sgn2), \
-                      "m" (aa[0].e[2][2].imag)); \
+                      "m" (aa[0].e[2][2].imag)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
@@ -100,7 +128,17 @@ __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "m" (aa[0].e[2][0].imag), \
                       "m" (aa[0].e[0][2].imag), \
                       "m" (aa[0].e[2][1].imag), \
-                      "m" (aa[0].e[1][2].imag)); \
+                      "m" (aa[0].e[1][2].imag)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("unpcklpd %%xmm0, %%xmm0 \n\t" \
                       "unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
@@ -116,7 +154,18 @@ __asm__ __volatile__ ("unpcklpd %%xmm0, %%xmm0 \n\t" \
                       : \
                       "=m" ((cc)->c[0]), \
                       "=m" ((cc)->c[1]), \
-                      "=m" ((cc)->c[2])); \
+                      "=m" ((cc)->c[2])\
+                      : \
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movupd %0, %%xmm0 \n\t" \
                       "movupd %1, %%xmm1 \n\t" \
                       "movupd %2, %%xmm2 \n\t" \
@@ -130,7 +179,15 @@ __asm__ __volatile__ ("movupd %0, %%xmm0 \n\t" \
                       "m" ((bb1)->c[2]), \
                       "m" (aa[1].e[0][0].real), \
                       "m" (aa[1].e[0][1].real), \
-                      "m" (aa[1].e[1][0].real)); \
+                      "m" (aa[1].e[1][0].real)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "movsd %1, %%xmm5 \n\t" \
                       "unpcklpd %%xmm3, %%xmm3 \n\t" \
@@ -162,7 +219,17 @@ __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "m" (aa[1].e[2][1].real), \
                       "m" (aa[1].e[0][2].real), \
                       "m" (aa[1].e[1][1].real), \
-                      "m" (aa[1].e[2][2].real)); \
+                      "m" (aa[1].e[2][2].real)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
                       "mulpd %%xmm1, %%xmm6 \n\t" \
@@ -191,7 +258,17 @@ __asm__ __volatile__ ("unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "m" (_sse_sgn2), \
                       "m" (_sse_sgn2), \
                       "m" (_sse_sgn2), \
-                      "m" (aa[1].e[2][2].imag)); \
+                      "m" (aa[1].e[2][2].imag)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
@@ -217,7 +294,17 @@ __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "m" (aa[1].e[2][0].imag), \
                       "m" (aa[1].e[0][2].imag), \
                       "m" (aa[1].e[2][1].imag), \
-                      "m" (aa[1].e[1][2].imag)); \
+                      "m" (aa[1].e[1][2].imag)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("unpcklpd %%xmm0, %%xmm0 \n\t" \
                       "unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
@@ -237,14 +324,30 @@ __asm__ __volatile__ ("unpcklpd %%xmm0, %%xmm0 \n\t" \
                       : \
                       "m" ((cc)->c[0]), \
                       "m" ((cc)->c[1]), \
-                      "m" ((cc)->c[2])); \
+                      "m" ((cc)->c[2])\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movupd %%xmm3, %0 \n\t" \
                       "movupd %%xmm4, %1 \n\t" \
                       "movupd %%xmm5, %2 \n\t" \
                       : \
                       "=m" ((cc)->c[0]), \
                       "=m" ((cc)->c[1]), \
-                      "=m" ((cc)->c[2])); \
+                      "=m" ((cc)->c[2])\
+                      : \
+                      : \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("movupd %0, %%xmm0 \n\t" \
                       "movupd %1, %%xmm1 \n\t" \
                       "movupd %2, %%xmm2 \n\t" \
@@ -258,7 +361,15 @@ __asm__ __volatile__ ("movupd %0, %%xmm0 \n\t" \
                       "m" ((bb2)->c[2]), \
                       "m" (aa[2].e[0][0].real), \
                       "m" (aa[2].e[0][1].real), \
-                      "m" (aa[2].e[1][0].real)); \
+                      "m" (aa[2].e[1][0].real)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "movsd %1, %%xmm5 \n\t" \
                       "unpcklpd %%xmm3, %%xmm3 \n\t" \
@@ -290,7 +401,17 @@ __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "m" (aa[2].e[2][1].real), \
                       "m" (aa[2].e[0][2].real), \
                       "m" (aa[2].e[1][1].real), \
-                      "m" (aa[2].e[2][2].real)); \
+                      "m" (aa[2].e[2][2].real)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
                       "mulpd %%xmm1, %%xmm6 \n\t" \
@@ -319,7 +440,17 @@ __asm__ __volatile__ ("unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "m" (_sse_sgn2), \
                       "m" (_sse_sgn2), \
                       "m" (_sse_sgn2), \
-                      "m" (aa[2].e[2][2].imag)); \
+                      "m" (aa[2].e[2][2].imag)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
@@ -345,7 +476,17 @@ __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "m" (aa[2].e[2][0].imag), \
                       "m" (aa[2].e[0][2].imag), \
                       "m" (aa[2].e[2][1].imag), \
-                      "m" (aa[2].e[1][2].imag)); \
+                      "m" (aa[2].e[1][2].imag)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("unpcklpd %%xmm0, %%xmm0 \n\t" \
                       "unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
@@ -365,14 +506,30 @@ __asm__ __volatile__ ("unpcklpd %%xmm0, %%xmm0 \n\t" \
                       : \
                       "m" ((cc)->c[0]), \
                       "m" ((cc)->c[1]), \
-                      "m" ((cc)->c[2])); \
+                      "m" ((cc)->c[2])\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movupd %%xmm3, %0 \n\t" \
                       "movupd %%xmm4, %1 \n\t" \
                       "movupd %%xmm5, %2 \n\t" \
                       : \
                       "=m" ((cc)->c[0]), \
                       "=m" ((cc)->c[1]), \
-                      "=m" ((cc)->c[2])); \
+                      "=m" ((cc)->c[2])\
+                      : \
+                      : \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("movupd %0, %%xmm0 \n\t" \
                       "movupd %1, %%xmm1 \n\t" \
                       "movupd %2, %%xmm2 \n\t" \
@@ -386,7 +543,15 @@ __asm__ __volatile__ ("movupd %0, %%xmm0 \n\t" \
                       "m" ((bb3)->c[2]), \
                       "m" (aa[3].e[0][0].real), \
                       "m" (aa[3].e[0][1].real), \
-                      "m" (aa[3].e[1][0].real)); \
+                      "m" (aa[3].e[1][0].real)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "movsd %1, %%xmm5 \n\t" \
                       "unpcklpd %%xmm3, %%xmm3 \n\t" \
@@ -418,7 +583,17 @@ __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "m" (aa[3].e[2][1].real), \
                       "m" (aa[3].e[0][2].real), \
                       "m" (aa[3].e[1][1].real), \
-                      "m" (aa[3].e[2][2].real)); \
+                      "m" (aa[3].e[2][2].real)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
                       "mulpd %%xmm1, %%xmm6 \n\t" \
@@ -447,7 +622,17 @@ __asm__ __volatile__ ("unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "m" (_sse_sgn2), \
                       "m" (_sse_sgn2), \
                       "m" (_sse_sgn2), \
-                      "m" (aa[3].e[2][2].imag)); \
+                      "m" (aa[3].e[2][2].imag)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
@@ -473,7 +658,17 @@ __asm__ __volatile__ ("movsd %0, %%xmm7 \n\t" \
                       "m" (aa[3].e[2][0].imag), \
                       "m" (aa[3].e[0][2].imag), \
                       "m" (aa[3].e[2][1].imag), \
-                      "m" (aa[3].e[1][2].imag)); \
+                      "m" (aa[3].e[1][2].imag)\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("unpcklpd %%xmm0, %%xmm0 \n\t" \
                       "unpcklpd %%xmm6, %%xmm6 \n\t" \
                       "unpcklpd %%xmm7, %%xmm7 \n\t" \
@@ -493,12 +688,28 @@ __asm__ __volatile__ ("unpcklpd %%xmm0, %%xmm0 \n\t" \
                       : \
                       "m" ((cc)->c[0]), \
                       "m" ((cc)->c[1]), \
-                      "m" ((cc)->c[2])); \
+                      "m" ((cc)->c[2])\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "%xmm6", \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("movupd %%xmm3, %0 \n\t" \
                       "movupd %%xmm4, %1 \n\t" \
                       "movupd %%xmm5, %2 \n\t" \
                       : \
                       "=m" ((cc)->c[0]), \
                       "=m" ((cc)->c[1]), \
-                      "=m" ((cc)->c[2])); \
+                      "=m" ((cc)->c[2])\
+                      : \
+                      : \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "%xmm5", \
+                      "memory"); \
 }

@@ -34,7 +34,8 @@ __asm__ __volatile__ ("movlps %0, %%xmm0 \n\t" \
                       "%xmm3", \
                       "%xmm4", \
                       "%xmm5", \
-                      "%xmm6"); \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("unpcklps %%xmm6, %%xmm6 \n\t" \
                       "movaps %%xmm6, %%xmm8 \n\t" \
                       "movhlps %%xmm6, %%xmm7 \n\t" \
@@ -60,7 +61,8 @@ __asm__ __volatile__ ("unpcklps %%xmm6, %%xmm6 \n\t" \
                       "%xmm5", \
                       "%xmm6", \
                       "%xmm7", \
-                      "%xmm8"); \
+                      "%xmm8", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %%xmm2, %0 \n\t" \
                       "movhps %%xmm2, %1 \n\t" \
                       "addps %%xmm5, %%xmm4 \n\t" \
@@ -71,13 +73,15 @@ __asm__ __volatile__ ("movlps %%xmm2, %0 \n\t" \
                       : \
                       "%xmm2", \
                       "%xmm4", \
-                      "%xmm5"); \
+                      "%xmm5", \
+                      "memory"); \
 __asm__ __volatile__ ("xorps %0, %%xmm4 \n\t" \
                       : \
                       : \
                       "m" (_sse_sgn24)\
                       : \
-                      "%xmm4"); \
+                      "%xmm4", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %%xmm4, %0 \n\t" \
                       "movhps %%xmm4, %1 \n\t" \
                       "addps %%xmm7, %%xmm6 \n\t" \
@@ -88,13 +92,15 @@ __asm__ __volatile__ ("movlps %%xmm4, %0 \n\t" \
                       : \
                       "%xmm4", \
                       "%xmm6", \
-                      "%xmm7"); \
+                      "%xmm7", \
+                      "memory"); \
 __asm__ __volatile__ ("xorps %0, %%xmm6 \n\t" \
                       : \
                       : \
                       "m" (_sse_sgn24)\
                       : \
-                      "%xmm6"); \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %%xmm6, %0 \n\t" \
                       "movhps %%xmm6, %1 \n\t" \
                       "movaps %%xmm10, %%xmm1 \n\t" \
@@ -106,7 +112,8 @@ __asm__ __volatile__ ("movlps %%xmm6, %0 \n\t" \
                       : \
                       "%xmm1", \
                       "%xmm10", \
-                      "%xmm6"); \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("xorps %0, %%xmm1 \n\t" \
                       "movlps %1, %%xmm2 \n\t" \
                       "movaps %%xmm2, %%xmm11 \n\t" \
@@ -126,7 +133,8 @@ __asm__ __volatile__ ("xorps %0, %%xmm1 \n\t" \
                       "%xmm10", \
                       "%xmm11", \
                       "%xmm2", \
-                      "%xmm3"); \
+                      "%xmm3", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %%xmm2, %0 \n\t" \
                       "movhps %%xmm2, %1 \n\t" \
                       "movlhps %%xmm11, %%xmm11 \n\t" \
@@ -138,7 +146,8 @@ __asm__ __volatile__ ("movlps %%xmm2, %0 \n\t" \
                       : \
                       "%xmm11", \
                       "%xmm2", \
-                      "%xmm8"); \
+                      "%xmm8", \
+                      "memory"); \
 __asm__ __volatile__ ("xorps %0, %%xmm8 \n\t" \
                       "shufps $0xb4, %%xmm8, %%xmm8 \n\t" \
                       "movhlps %%xmm8, %%xmm5 \n\t" \
@@ -148,11 +157,13 @@ __asm__ __volatile__ ("xorps %0, %%xmm8 \n\t" \
                       "m" (_sse_sgn2)\
                       : \
                       "%xmm5", \
-                      "%xmm8"); \
+                      "%xmm8", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %%xmm8, %0 \n\t" \
                       : \
                       "=m" ((cc)->e[2][2])\
                       : \
                       : \
-                      "%xmm8"); \
+                      "%xmm8", \
+                      "memory"); \
 }

@@ -13,7 +13,8 @@ __asm__ __volatile__ ("movlps %0, %%xmm0 \n\t" \
                       "m" ((bb)->c[1])\
                       : \
                       "%xmm0", \
-                      "%xmm2"); \
+                      "%xmm2", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %%xmm0, %0 \n\t" \
                       "movhps %%xmm0, %1 \n\t" \
                       : \
@@ -21,7 +22,8 @@ __asm__ __volatile__ ("movlps %%xmm0, %0 \n\t" \
                       "=m" ((cc)->c[1])\
                       : \
                       : \
-                      "%xmm0"); \
+                      "%xmm0", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "movlhps %%xmm3, %%xmm3 \n\t" \
                       "movlps %1, %%xmm1 \n\t" \
@@ -33,11 +35,13 @@ __asm__ __volatile__ ("movlps %0, %%xmm3 \n\t" \
                       "m" ((aa)->c[2])\
                       : \
                       "%xmm1", \
-                      "%xmm3"); \
+                      "%xmm3", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %%xmm1, %0 \n\t" \
                       : \
                       "=m" ((cc)->c[2])\
                       : \
                       : \
-                      "%xmm1"); \
+                      "%xmm1", \
+                      "memory"); \
 }

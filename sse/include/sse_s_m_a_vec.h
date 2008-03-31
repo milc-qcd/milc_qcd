@@ -18,10 +18,22 @@ __asm__ __volatile__ ("movss %0, %%xmm4 \n\t" \
                       "m" ((aa)->c[0]), \
                       "m" ((aa)->c[2]), \
                       "m" ((bb)->c[0]), \
-                      "m" ((bb)->c[2])); \
+                      "m" ((bb)->c[2])\
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "%xmm2", \
+                      "%xmm3", \
+                      "%xmm4", \
+                      "memory"); \
 __asm__ __volatile__ ("movups %%xmm0, %0 \n\t" \
                       "movlps %%xmm1, %1 \n\t" \
                       : \
                       "=m" ((dd)->c[0]), \
-                      "=m" ((dd)->c[2])); \
+                      "=m" ((dd)->c[2])\
+                      : \
+                      : \
+                      "%xmm0", \
+                      "%xmm1", \
+                      "memory"); \
 }

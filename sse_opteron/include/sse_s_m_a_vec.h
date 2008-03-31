@@ -26,7 +26,8 @@ __asm__ __volatile__ ("movss %0, %%xmm0 \n\t" \
                       "%xmm3", \
                       "%xmm4", \
                       "%xmm5", \
-                      "%xmm6"); \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("mulpd %%xmm6, %%xmm5 \n\t" \
                       "cvtps2pd %0, %%xmm2 \n\t" \
                       "addpd %%xmm5, %%xmm2 \n\t" \
@@ -43,7 +44,8 @@ __asm__ __volatile__ ("mulpd %%xmm6, %%xmm5 \n\t" \
                       "%xmm3", \
                       "%xmm4", \
                       "%xmm5", \
-                      "%xmm6"); \
+                      "%xmm6", \
+                      "memory"); \
 __asm__ __volatile__ ("movlps %%xmm3, %0 \n\t" \
                       "movlps %%xmm4, %1 \n\t" \
                       "movlps %%xmm5, %2 \n\t" \
@@ -55,5 +57,6 @@ __asm__ __volatile__ ("movlps %%xmm3, %0 \n\t" \
                       : \
                       "%xmm3", \
                       "%xmm4", \
-                      "%xmm5"); \
+                      "%xmm5", \
+                      "memory"); \
 }

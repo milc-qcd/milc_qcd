@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 #
 # nasm2c.pl
 #   Translates a nasm source program into inline gcc assembler.
@@ -195,6 +195,10 @@ sub pr_ops {
 	    if ( %clobber_list > 0 )
 	    {
     		print ", \\\n                      ";
+	    }
+	    else
+            {
+    		print ", \\\n                      \"memory\"";
 	    }
 	}
 	undef %clobber_list;
