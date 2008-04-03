@@ -1,4 +1,4 @@
-July 13, 2007
+March 28, 2008
 
 List of code projects to be done:
 
@@ -16,4 +16,5 @@ Continue testing prefetching and layout strategies.
 
 Fix arb_dirac_eigen?  It has not been debugged for parallel running.
 
+Add QOP support for HISQ.
 

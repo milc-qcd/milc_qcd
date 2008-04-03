@@ -11,12 +11,12 @@ MAKEFILE = Makefile
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
-# 0. Shell (if it really matters)
+# 1. Shell (if it really matters)
 
 #SHELL = /bin/bash
 
 #----------------------------------------------------------------------
-# 1. Architecture
+# 2. Architecture
 
 # Compiling for a parallel machine?  blank for a scalar machine
 #MPP = true
@@ -53,16 +53,13 @@ OPT              = -O3
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
-#OCFLAGS = -Wall # ( -Wall, etc )
+OCFLAGS = -Wall # ( -Wall, etc )
 
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -fprefetch-loop-arrays # QCDOC
 #OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
 #OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
 #OCFLAGS =  -march=pentium4 -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/24/04
-
-#DCACHE = /usr/local/develop/dcache
-#OCFLAGS = -I${DCACHE}/include
 
 #------------------------ BlueGene -----------------------------------
 # OCFLAGS = -qarch=440d -qtune=440
@@ -121,10 +118,26 @@ CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE # Large files gcc only
 # 9. I/O routines
 # Both io_nonansi and io_ansi should work on a scalar machine
 # Solaris 2.6 gave "bad file number" errors with io_ansi.  CD
+
 MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
+# Uncomment if you have and want to support dcache I/O
+# (Forces use of io_dcap.o)
+
+# WANTDCAP = true
+
+# The location of the installed dcap libraries. Uncomment and enter if
+# it is not already defined as a system environment variable.
+
+# DCAP_DIR = /usr/local/develop/dcache
+
+# Choose the appropriate library path according to the addressing
+# size of the machine
+
+# DCAPLIB  = lib64 # (lib64 lib)
+
 #----------------------------------------------------------------------
-# 10. QDP/C options
+# 10. SciDAC package options
 
 # Edit these "wants"
 
@@ -135,13 +148,13 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 #    MILC (nonoptimized MILC implementation for testing)
 #    blank if you don't want QOP
 
+WANTQOP = #QDP (or QCDOC or MILC)
+
 # Backward compatibility for QOPQDP:
 # As of version qopqdp 0.9.0 the normalization convention for the
 # staggered inverter changed.  If you are using a version of QOPQDP
 # with the old convention, define this macro:
 CQOPQDP_NORM = #-DOLD_QOPQDP_NORM
-
-WANTQOP = 
 
 # Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
 WANTQDP = 
@@ -153,20 +166,21 @@ WANTQIO =
 WANTQMP = 
 
 
-#  Edit these locations for the SciDAC packages
+# Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
 SCIDAC = ${HOME}/scidac
-QIOSNG = $(SCIDAC)/qio-single
-QIOPAR = $(SCIDAC)/qio
-# Parallel version
+# Parallel versions
 QMPPAR = ${SCIDAC}/qmp
-# Single processor version
+QIOPAR = $(SCIDAC)/qio
+# Single processor versions
 QMPSNG = ${SCIDAC}/qmp-single
-QDP = ${SCIDAC}/qdp
+QIOSNG = $(SCIDAC)/qio-single
 QLA = ${SCIDAC}/qla
-# Level 3
-QOPQDP = ${SCIDAC}/qopqdp
+# Either version
+QDP = ${SCIDAC}/qdp-single
+QOPQDP = ${SCIDAC}/qopqdp-single
+
 QOP = ${QOPQDP}
 
 # Make_template_qop defines these macros:
@@ -194,8 +208,6 @@ LD               = ${CC}
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
 
-#LDFLAGS = -L${DCACHE}/lib -Wl,--rpath,${DCACHE}/lib -ldcap
-#LDFLAGS = -L${DCACHE}/lib64 -Wl,--rpath,${DCACHE}/lib64 -ldcap
 #----------------------------------------------------------------------
 # 13. Extra libraries
 LIBADD =
@@ -210,11 +222,6 @@ LIBADD =
 
 # Use SSE for P3 or P4 or Athlon Thunderbird and compilers, such
 # as gcc that accept ASM macros
-
-# There is also a little-tested alternate single precision SSE package in the
-# directory sse_opteron.  To use it, you need to rename the
-# sse directory to sse_p4 (or something) and then rename the
-# sse_opteron directory to "sse".
 
 # Both SSE and C inline macros can be invoked selectively by defining
 # SSE_INLINE and C_INLINE and changing the function call to the macro
@@ -232,7 +239,12 @@ LIBADD =
 
 # Choose nothing or
 #  [ C_INLINE | C_GLOBAL_INLINE ] [ SSE_INLINE | SSE_GLOBAL_INLINE ]
-INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE -DC_INLINE
+INLINEOPT = -DC_GLOBAL_INLINE -DSSE_GLOBAL_INLINE #-DC_INLINE
+
+# There are special single-precision macros for the AMD Opteron
+# To get them, uncomment the next line
+
+#INLINEOPT += -DSSEOPTERON
 
 #----------------------------------------------------------------------
 # 15. Miscellaneous macros for performance control and metric
@@ -273,6 +285,9 @@ CPROF =#
 
 # CHECK_MALLOC        Report malloc/free activity.
 #                     Process output using check_malloc.pl
+# CG_DEBUG            Print debugging information for the inverters.
+#
+# MILC_GLOBAL_DEBUG   So far applies only to ks_imp_rhmc HISQ code
 
 CDEBUG =#
 
@@ -417,7 +432,7 @@ KSRHMCINT =#
 # CL_CG=MR    Minimum residue
 # CL_CG=HOP   Hopping
 
-CLCG = -DCL_CG=BICG 
+CLCG = #-DCL_CG=BICG 
 
 #------------------------------
 # Summary
@@ -460,6 +475,12 @@ endif
 
 ifeq ($(strip ${HAVEQOP}),true)
   QOPPREC = -DQOP_Precision=${PRECISION}
+endif
+
+ifeq ($(strip ${WANTDCAP}),true)
+   MACHINE_DEP_IO = io_dcap.o
+   OCFLAGS += -I${DCAP_DIR}/include
+   LDFLAGS += -L${DCAP_DIR}/${DCAPLIB} -Wl,--rpath,${DCAP_DIR}/${DCAPLIB} -ldcap
 endif
 
 CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC}

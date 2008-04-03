@@ -3,7 +3,7 @@
 # 12/16/06 C. DeTar
 
 #  Change these names to suit
-VER = 7.6.1.devel
+VER = 7.6.2.beta
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -159,6 +159,16 @@ CLOVER_INVERT2 =             \
  clover_invert2/out.errtol*  \
  clover_invert2/out.sample*
 
+EXT_SRC =                    \
+ ext_src/*.c                 \
+ ext_src/*.h                 \
+ ext_src/Make_*              \
+ ext_src/get_checksums_ks.sh \
+ ext_src/get_checksums_w.sh  \
+ ext_src/in.sample*          \
+ ext_src/out.errtol*         \
+ ext_src/out.sample*
+
 PW_NR_MESON =                \
  pw_nr_meson/*.c             \
  pw_nr_meson/*.h             \
@@ -280,6 +290,7 @@ KS_IMP_UTILITIES =           \
  ks_imp_utilities/out.sample*
 
 KS_IMP_INVERT_MULTI =           \
+ ks_imp_invert_multi/README         \
  ks_imp_invert_multi/*.c             \
  ks_imp_invert_multi/*.h             \
  ks_imp_invert_multi/Make_*           \
@@ -421,6 +432,7 @@ SSE2 =              \
 PG =          \
  ${GENERIC_PG}        \
  ${PURE_GAUGE}        \
+ ${SYMANZIK_SL32}
 # ${HVY_QPOT}
 
 CLOVER =              \
@@ -429,6 +441,7 @@ CLOVER =              \
  ${CLOVER_HYBRIDS}    \
  ${CLOVER_INVERT}     \
  ${CLOVER_INVERT2}    \
+ ${EXT_SRC}           \
  ${H_DIBARYON}        \
  ${PW_NR_MESON}
 
@@ -437,8 +450,7 @@ FORM =                \
 
 FP =                  \
  ${ARB_DIRAC_INVERT}  \
- ${ARB_DIRAC_EIGEN}   \
- ${SYMANZIK_SL32}
+ ${ARB_DIRAC_EIGEN}
 
 INST =                \
  ${SMOOTH_INST}
@@ -446,6 +458,7 @@ INST =                \
 KS =                  \
  ${GENERIC_KS}        \
  ${GLUON_PROP}        \
+ ${KS_EIGEN}          \
  ${KS_IMP_DYN}	      \
  ${KS_IMP_RHMC}	      \
  ${KS_IMP_UTILITIES}  \

@@ -20,21 +20,21 @@
 #  h_dibaryon \
 #  hqet_heavy_to_light \
 #  hvy_qpot \
-#  ks_eigen \
 #  propagating_form_factor \
 #  schroed_ks_dyn \
 #  schroed_pg \
 #  string_break \
-#  symanzik_sl32 \
 #  wilson_dynamical \
 
 DIRS = \
    clover_dynamical \
    clover_invert \
    clover_invert2 \
+   ext_src \
    file_utilities \
    gluon_prop \
    heavy \
+   ks_eigen \
    ks_hl_spectrum \
    ks_imp_dyn \
    ks_imp_rhmc \
@@ -44,6 +44,7 @@ DIRS = \
    pw_nr_meson \
    schroed_cl_inv \
    smooth_inst \
+   symanzik_sl32 \
    wilson_static
 
 all:

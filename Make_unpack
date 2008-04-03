@@ -1,5 +1,5 @@
 # Makefile for upacking tar files of MILC code
-#  C. DeTar 7/13/05
+#  C. DeTar 3/26/08
 
 # Targets
 #   all    gets all
@@ -35,11 +35,11 @@ ALL_APPS = \
   clover_invert \
   clover_invert2 \
   dense_static_su3 \
+  ext_src \
   file_utilities \
   gluon_prop \
   h_dibaryon \
   heavy \
-  hqet_heavy_to_light \
   hvy_qpot \
   ks_eigen \
   ks_hl_spectrum \
@@ -47,8 +47,8 @@ ALL_APPS = \
   ks_imp_rhmc \
   ks_imp_utilities \
   ks_imp_invert_multi \
-  propagating_form_factor \
   pure_gauge \
+  pw_nr_meson \
   schroed_cl_inv \
   schroed_ks_dyn \
   schroed_pg \
@@ -60,33 +60,34 @@ ALL_APPS = \
 
 ${ALL_APPS}: MAKE_basic
 
-arb_dirac_eigen:  	MAKE_generic_wilson
-arb_dirac_invert: 	MAKE_generic_wilson
-clover_dynamical:  	MAKE_generic_wilson MAKE_generic_clover
-clover_hybrids:  	MAKE_generic_wilson MAKE_generic_clover
-clover_invert:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_ks
-clover_invert2:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_ks
-dense_static_su3:  	MAKE_generic_ks 
-gluon_prop:	        MAKE_generic_ks
-h_dibaryon:  		MAKE_generic_wilson MAKE_generic_clover
-heavy:  		MAKE_generic_wilson 
-hqet_heavy_to_light:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_form
-hvy_qpot: 		
-ks_eigen:		MAKE_generic_ks 
-ks_hl_spectrum:	        MAKE_generic_ks MAKE_generic_wilson
-ks_imp_dyn:		MAKE_generic_ks 
-ks_imp_utilities:	MAKE_generic_ks 
-ks_imp_invert_multi:	MAKE_generic_ks 
-ks_imp_rhmc:		MAKE_generic_ks
-propagating_form_factor:  MAKE_generic_wilson MAKE_generic_clover  MAKE_generic_form
+arb_dirac_eigen:  	MAKE_generic_quark
+arb_dirac_invert: 	MAKE_generic_quark
+clover_dynamical:  	MAKE_generic_quark MAKE_generic_clover
+clover_hybrids:  	MAKE_generic_quark MAKE_generic_clover
+clover_invert:  	MAKE_generic_quark MAKE_generic_clover
+clover_invert2:  	MAKE_generic_quark MAKE_generic_clover
+dense_static_su3:  	MAKE_generic_quark
+ext_src:                MAKE_generic_quark MAKE_generic_clover
+file_utilities:         MAKE_generic_quark
+gluon_prop:	        MAKE_generic_quark
+h_dibaryon:  		MAKE_generic_quark MAKE_generic_clover
+heavy:  		MAKE_generic_quark 
+hvy_qpot:
+ks_eigen:		MAKE_generic_quark 
+ks_hl_spectrum:	        MAKE_generic_quark
+ks_imp_dyn:		MAKE_generic_quark 
+ks_imp_utilities:	MAKE_generic_quark 
+ks_imp_invert_multi:	MAKE_generic_quark 
+ks_imp_rhmc:		MAKE_generic_quark
 pure_gauge: 		MAKE_generic_pg
-schroed_cl_inv:  	MAKE_generic_wilson MAKE_generic_clover MAKE_generic_schroed
-schroed_ks_dyn:  	MAKE_generic_ks MAKE_generic_schroed
+pw_nr_meson:            MAKE_generic_quark MAKE_generic_clover
+schroed_cl_inv:  	MAKE_generic_quark MAKE_generic_clover MAKE_generic_schroed
+schroed_ks_dyn:  	MAKE_generic_quark MAKE_generic_schroed
 schroed_pg:  		MAKE_generic_pg MAKE_generic_schroed
-string_break: 		MAKE_generic_ks
-symanzik_sl32:		
-wilson_dynamical:  	MAKE_generic_wilson
-wilson_static:  	MAKE_generic_wilson
+string_break: 		MAKE_generic_quark
+symanzik_sl32:		MAKE_generic_pg
+wilson_dynamical:  	MAKE_generic_quark
+wilson_static:  	MAKE_generic_quark
 
 # Rules for the generic directories
 
@@ -108,6 +109,8 @@ MAKE_generic_pg:
 MAKE_generic_wilson:
 	tar -xf ${WILSON_TAR} generic_wilson
 
+MAKE_generic_quark: MAKE_generic_ks MAKE_generic_wilson
+
 
 # Rules for specific application directories
 
@@ -127,9 +130,6 @@ h_dibaryon \
 	tar -xf ${CLOVER_TAR} $@
 
 generic_form \
-hqet_heavy_to_light \
-ks_hl_spectrum \
-propagating_form_factor \
 : ${FORM_TAR}
 	tar -xf ${FORM_TAR} $@
 

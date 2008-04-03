@@ -46,16 +46,22 @@ while($line1 = <FILE1>){
     @errs = split(/[ \t\n]+/,$errline);
     $i = 0;
     $same = 1;
-    for(@fields1)
+    @list1 = @fields1;
+    @list2 = @fields2;
+    if($#fields2 > $#fields1){
+	@list1 = @fields2;
+	@list2 = @fields1;
+    }
+    for(@list1)
     {
 	$tol = $errs[$i];
-	$diff = abs($_ - $fields2[$i]);
+	$diff = abs($_ - $list2[$i]);
 	# Allow any difference if errline field is XXX
 	# Otherwise nonumeric or zero fields should match exactly
 	# And nonzero numeric fields should differ by less than the tolerance
 	if( $tol ne "XXX" &&
-	    ((($fields2[$i] + 1e-08 == 1e-08) &&
-	     ($_ ne $fields2[$i])) ||
+	    ((($list2[$i] + 1e-08 == 1e-08) &&
+	     ($_ ne $list2[$i])) ||
 	     $diff > $tol ))
 	{
 	    $same = 0;
