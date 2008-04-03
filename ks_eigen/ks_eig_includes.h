@@ -53,4 +53,7 @@ void cleanup_gathers(msg_tag *t1[16],msg_tag *t2[16]);
 void cleanup_dslash_temps() ;
 
 void rephase( int flag );
+
+void measure_chirality(su3_vector *src, double *chirality, int parity);
+
 EXTERN gauge_file *startlat_p;

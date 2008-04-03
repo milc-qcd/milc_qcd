@@ -19,6 +19,7 @@
 
 #include "defines.h"
 #include "../include/generic_quark_types.h"
+#include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 #include "../include/random.h"
 #include "../include/io_lat.h"    /* For gauge_file */
 
@@ -157,7 +158,7 @@ EXTERN site *lattice;
 EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
-EXTERN ferm_links_t        fn_links;
-EXTERN ks_action_paths ks_act_paths;
+EXTERN ferm_links_t    fn_links, fn_links_dmdu0;
+EXTERN ks_action_paths ks_act_paths,ks_act_paths_dmdu0;
 
 #endif /* _LATTICE_H */

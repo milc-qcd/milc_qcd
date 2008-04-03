@@ -19,6 +19,7 @@
 #define IF_OK if(status==0)
 
 #include "ks_eig_includes.h"	/* definitions files and prototypes */
+#include "lattice_qdp.h"
 #include <string.h>
 
 EXTERN gauge_header start_lat_hdr;
@@ -202,7 +203,6 @@ int readin(int prompt) {
  */
 void make_3n_gathers(){
    int i;
-   void *tt[16];
    void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
  
    for(i=XUP;i<=TUP;i++) {
