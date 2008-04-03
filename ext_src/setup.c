@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.2  2008/04/03 11:43:28  detar
+//  Fix precision bug: If there is a blank after 1 or 2, the libraries get the wrong name.
+//
 //  Revision 1.1  2008/03/28 15:24:10  detar
 //  Add
 //
@@ -28,6 +31,9 @@ int initial_set();
 
 int setup()   {
   int prompt;
+#ifdef HAVE_QDP
+  int i;
+#endif
 
   /* print banner, get volume */
   prompt=initial_set();

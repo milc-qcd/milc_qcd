@@ -551,7 +551,11 @@ void byterevn64(int32type w[], int n);
 
 #if defined SSE_INLINE || defined SSE_GLOBAL_INLINE
 #if (PRECISION==1)
+#ifdef SSEOPTERON
+#include "../sse_opteron/include/inline_sse.h"
+#else
 #include "../sse/include/inline_sse.h"
+#endif
 #else
 #include "../sse2/include/inline_sse.h"
 #endif

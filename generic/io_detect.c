@@ -168,7 +168,7 @@ get_file_type(char *filename)
     if(file_type < 0)
       file_type = io_detect_ks_usqcd(filename);
     if(file_type < 0){
-      node0_printf("%s: Don't recognize QIO subtype %s\n",
+      node0_printf("%s: Don't recognize QIO file type for %s\n",
 		   myname,filename);
       terminate(1);
     }

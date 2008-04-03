@@ -160,7 +160,8 @@ OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_WILSON_OBJECTS} \
   ${G_CLOVER_OBJECTS} ${LAYOUT} ${CL_OBJECTS} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
-QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
+P = $(strip ${PRECISION})
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
 LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 
@@ -179,7 +180,7 @@ ALL_MAKES = \
    ../generic_wilson/Make_template
 
 # Used to force a full remake when changing targets or a make file
-LASTMAKE = .lastmake.${MAKEFILE}.${MYTARGET}
+LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
 
 ${LASTMAKE}: ${ALL_MAKES}
 	-/bin/rm -f .lastmake.*

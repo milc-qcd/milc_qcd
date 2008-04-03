@@ -356,8 +356,9 @@ void scalar2_mult_add_latvec(field_offset src1,Real scalar1,
 			     field_offset src2,Real scalar2,
 			     field_offset dest,int parity);
 /* eigen_stuff.c */
-int Rayleigh_min(su3_vector *vec,su3_vector **eigVec,Real Tolerance, 
-		 Real RelTol,int Nvecs,int MaxIter,int Restart,int parity);
+int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
+		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
+		 int parity, ferm_links_t *fn);
 int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 	       Real RelTol, int Nvecs, int MaxIter, 
 	       int Restart, int iters, int parity,

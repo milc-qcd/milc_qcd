@@ -43,6 +43,12 @@ int readin(int prompt);
 enum int_alg_t { INT_LEAPFROG, INT_OMELYAN, INT_2EPS_3TO1, INT_2EPS_2TO1, 
 		 INT_2G1F, INT_3G1F, INT_4MN4FP, INT_4MN5FV, INT_FOURSTEP, 
 		 INT_PLAY };
+
+/* Set default integration algorithm */
+#ifndef INT_ALG
+#define INT_ALG INT_OMELYAN
+#endif
+
 int update();
 const char *ks_int_alg_opt_chr( void );
 

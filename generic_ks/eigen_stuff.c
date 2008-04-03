@@ -35,8 +35,10 @@
 #include "generic_ks_includes.h"
 #include "../include/jacobi.h"
 #include "../include/dslash_ks_redefine.h"
+#include <string.h>
 
-void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity) ;
+void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
+		     ferm_links_t *fn );
 void cleanup_Matrix() ;
 void measure_chirality(su3_vector *src, double *chirality, int parity) ;
 void print_densities(su3_vector *src, char *tag, int y,int z,int t,int parity);
@@ -63,7 +65,8 @@ void vec_plus_double_vec_mult(su3_vector *vec1, double *a, su3_vector *vec2,
 void normalize(su3_vector *vec,int parity) ;
 void project_out(su3_vector *vec, su3_vector **vector, int Num, int parity);
 void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
-		    double *err, int *converged, int parity) ;
+		    double *err, int *converged, int parity,
+		    ferm_links_t *fn);
 void RotateBasis(su3_vector **eigVec, Matrix *V, int parity) ;
 
 void mult_spin_pseudoscalar(field_offset src, field_offset dest ) ;
@@ -92,7 +95,7 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
 {  
   register site *s;
   register  int i;
-  int otherparity;
+  int otherparity = EVENANDODD;
 
   if(temp == NULL ){
     temp = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
@@ -135,7 +138,7 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
   
   register site *s;
   register  int i;
-  int otherparity;
+  int otherparity = EVENANDODD;
   /* store last source so that we know when to reinitialize the message tags */
   static su3_vector *last_src=NULL ;
 
@@ -592,7 +595,7 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 	       ferm_links_t *fn ){
 
   int total_iters=0 ;
-  int j,k;
+  int j;
   Matrix Array,V ;
   register site *s ;
   register  int i ;
@@ -601,7 +604,7 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   double max_error = 1.0e+10 ;
   double *grad, *err ;
   int iter = 0 ;
-  int *converged, conv_below ;
+  int *converged ;
   Real ToleranceG ;
 #ifdef EIGTIME
   double dtimec;

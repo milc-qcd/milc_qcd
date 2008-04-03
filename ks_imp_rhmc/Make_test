@@ -22,7 +22,10 @@ LAUNCH2 =
 PROJS = \
   su3_leapfrog \
   su3_omelyan_rhmc \
-  su3_rhmc_hisq
+  su3_rhmc_hisq \
+  su3_rhmd_hisq \
+  su3_spectrum_hisq
+  
 
 PRECLIST = 1 2
 

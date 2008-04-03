@@ -60,8 +60,12 @@ void build_qio_layout(QIO_Layout *layout){
 }
 
 void build_qio_filesystem(QIO_Filesystem *fs){
+  fs->number_io_nodes = 0;
+  fs->type = QIO_SINGLE_PATH;
   fs->my_io_node = io_node;   /* Partfile I/O uses io_node from layout*.c */
   fs->master_io_node = NULL;  /* Serial I/O uses default: node 0 */
+  fs->io_node = NULL;
+  fs->node_path = NULL;
 }
 
 /* Translate QIO status to a MILC convention */

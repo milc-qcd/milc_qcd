@@ -188,16 +188,12 @@ QIO_Reader *r_open_ks_vector_scidac_file_xml(char *filename, int serpar,
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
-  QIO_String *xml_file_in;
 
   /* Build the layout structure */
   build_qio_layout(&layout);
 
   /* Define the I/O nodes */
   build_qio_filesystem(&fs);
-
-  /* Allocate for the file XML string */
-  xml_file_in = QIO_string_create();
 
   /* Open file for reading */
   infile = open_scidac_input_xml(filename, &layout, &fs, serpar, xml_file);
@@ -206,10 +202,8 @@ QIO_Reader *r_open_ks_vector_scidac_file_xml(char *filename, int serpar,
 
   if(this_node==0){
     printf("Restoring binary SciDAC file %s\n",filename);
-    printf("File info \n\"%s\"\n",QIO_string_ptr(xml_file_in));
+    printf("File info \n\"%s\"\n",QIO_string_ptr(xml_file));
   }
-
-  QIO_string_destroy(xml_file_in);
 
   return infile;
 }
