@@ -15,6 +15,8 @@
 LAUNCH = 
 LAUNCH2 = 
 
+ADDMACRO = "WANTQIO=true"
+
 # Results are in the files out.test.diff.* 
 #------------------------------------------------------------
 
