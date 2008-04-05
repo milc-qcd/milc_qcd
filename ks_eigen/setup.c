@@ -37,12 +37,43 @@ void r_binary_f(gauge_file *);
 #include "params.h"
 params par_buf;
 
+#ifdef HAVE_QDP
+void
+initial_li(QLA_Int *li, int coords[])
+{
+  int i,t;
+ 
+  t = coords[0];
+  for(i=1; i<4; i++) {
+    t = t*QDP_coord_size(i) + coords[i];
+  }
+  *li = t;
+}
+ 
+void
+make_rand_seed(void)
+{
+  QDP_Int *li;
+
+  rand_state = QDP_create_S();
+  li = QDP_create_I();
+
+  QDP_I_eq_func(li, initial_li, QDP_all);
+  QDP_S_eq_seed_i_I(rand_state, iseed, li, QDP_all);
+
+  QDP_destroy_I(li);
+}
+#endif
+
 int  setup()   {
     int initial_set();
     void make_gen_pt();
     void make_3n_gathers(),
         setup_layout();
     int prompt;
+#ifdef HAVE_QDP
+    int i;
+#endif
 
 	/* print banner, get volume, seed */
     prompt=initial_set();
@@ -64,6 +95,20 @@ node0_printf("Made nn gathers\n"); fflush(stdout);
 node0_printf("Made 3nn gathers\n"); fflush(stdout);
 	/* set up K-S phase vectors, boundary conditions */
     phaseset();
+
+#ifdef HAVE_QDP
+    make_rand_seed();
+node0_printf("Made random seed\n"); fflush(stdout);
+
+  for(i=0; i<4; ++i) {
+    shiftdirs[i] = QDP_neighbor[i];
+    shiftdirs[i+4] = neighbor3[i];
+  }
+  for(i=0; i<8; ++i) {
+    shiftfwd[i] = QDP_forward;
+    shiftbck[i] = QDP_backward;
+  }
+#endif
 
 node0_printf("Finished setup\n"); fflush(stdout);
     return( prompt );
@@ -161,8 +206,7 @@ int readin(int prompt) {
     /* Node 0 broadcasts parameter buffer to all other nodes */
     broadcast_bytes((char *)&par_buf,sizeof(par_buf));
 
-    if( par_buf.stopflag != 0 )
-      normal_exit(0);
+    if( par_buf.stopflag != 0 )return par_buf.stopflag;
 
     niter = par_buf.niter;
     nrestart = par_buf.nrestart;
@@ -201,9 +245,14 @@ int readin(int prompt) {
    make_lattice() and  make_nn_gathers() must be called first, 
    preferably just before calling make_3n_gathers().
  */
+
+void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
+
 void make_3n_gathers(){
    int i;
-   void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
+#ifdef HAVE_QDP
+   int disp[4]={0,0,0,0};
+#endif
  
    for(i=XUP;i<=TUP;i++) {
       make_gather(third_neighbor,&i,WANT_INVERSE,
@@ -214,6 +263,14 @@ void make_3n_gathers(){
        so you can use X3UP, X3DOWN, etc. as argument in calling them. */
 
    sort_eight_gathers(X3UP);
+
+#ifdef HAVE_QDP
+  for(i=0; i<4; i++) {
+    disp[i] = 3;
+    neighbor3[i] = QDP_create_shift(disp);
+    disp[i] = 0;
+  }
+#endif
 }
  
 

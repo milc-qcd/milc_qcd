@@ -168,8 +168,8 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_W_OBJECTS} ${LAYOUT} \
-  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} \
+  ${G_W_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
