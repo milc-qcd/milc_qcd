@@ -34,16 +34,12 @@ int readin(int prompt);
 int update();
 void update_h( Real eps );
 void update_u( Real eps );
-void gauge_force( Real eps );
-double imp_gauge_action( );
 double hmom_action( );
 double fermion_action( );
-void ranmom();
 
 
 void hvy_pot( field_offset links );
 void f_measure( field_offset phi_off, field_offset xxx_off, Real mass );
-void g_measure( void );
 void gauge_field_copy(field_offset src,field_offset dest);
 void clear_latvec(field_offset v,int parity);
 void copy_latvec(field_offset src,field_offset dest,int parity);
