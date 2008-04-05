@@ -1,150 +1,92 @@
-This file was updated 8/20/06.   The code is evolving rapidly at this
-time, so it probably won't be valid much past 8/21/06
-
 This directory contains code for generating lattices using rational function
 approximations for the fermion determinants.  You can compile either the
 RHMC algorithm (Rational Hybrid Monte Carlo) or the "phi" algorithm", where
 the difference is that the RHMC includes a Metropolis accept/reject step
 at the end of each trajectory.
 
-There are four possible targets for "make":
+There are several possible targets for "make", among them are these
+
+su3_rhmc
+su3_rhmd
 su3_leapfrog
-su3_omelyan
-su3_leapfrog_rhmc
 su3_omelyan_rhmc
- plus a few more being tested
+su3_rhmc_hisq
+su3_rhmd_hisq
+su3_spectrum_hisq
 
-These implement the leapfrog integration algorithm or the Omelyan integration
-algorithm, and with the _rhmc accept or reject the trajectory.  (Without the
-"_rhmc" the code still reports the change in action at the end of the trajectory.)
+The others are for testing and development.
 
-The Omelyan integrator stepsize is normalized so that there is one force
-computation in each step of size "epsilon".  This differs by a factor of two from
-the normalization in Takaiishi and deForcrand, but makes algorithm comparison
-more sensible.   In particular, when lambda=1, it reduces to the leapfrog
-algorithm.
+The RHMC codes (and the su3_leapfrog code) implement the Asqtad RHMC
+algorithm (with the accept/reject decision).  The "leapfrog" and
+"omelyan" codes call for the leapfrog or Omelyan integrator,
+respectively.  The su3_rhmc code is generic and expects the
+integration algorithm to be specified in the Makefile as the INT_ALG
+parameter.  The rhmd codes do not reject any trajectories, but they
+still report the change in the action at the end of the trajectory.)
 
-The "phi" algorithms should work in single precision, but I recommend double
-precision for the "rhmc" algorithms on larger lattices.
+The "hisq" codes implement the HISQ action.  Please note that this
+code is still under development, so it is not recommended for
+production.  The su3_spectrum_hisq code does RHMC but builds with
+spectrum measurement procedures and takes extra input parameters to
+specify the spectrum measurement.  The su3_spectrum_hisq code can also
+do updating, and uses the RHMC algorithm.
 
-The code allows one or two rational function approximations.  For example,
-you may want to use two separate rational function approximations for
-det(M_light)^(-1/2) and det(M_strange)^(-1/4).   Alternatively (and probably
-better) you may just want a single rational function approximation for
- det(M_light)^(-1/2)*det(M_strange)^(-1/4)
+The Omelyan integrator stepsize is normalized so that there is one
+force computation in each step of size "epsilon".  This differs by a
+factor of two from the normalization in Takaishi and deForcrand, but
+makes algorithm comparison more sensible.  In particular, when
+lambda=1, it reduces to the leapfrog algorithm.
 
-At the moment, the rational function approximations are in the include
-file "rationals.h".   This has the disadvantage that you have to recompile
-the code to run at a different quark mass.  We intend to change this in
-the near future to have the code read a data file with these approximations.
+The "rhmd" algorithms should work in single precision, but I recommend
+double precision for the "rhmc" algorithms on larger lattices.
 
-To run the code, use the same input file as for our traditional su3_hmc.
-MAKE SURE that the masses, and numbers of flavors are the same as you
-used in preparing "rationals.h"!!  At the moment, NO CHECKING IS DONE
-FOR THIS.
+The code currently allows up to 10 rational function pseudofermion
+fields.  For example, you may want to use two separate rational
+function approximations for det(M_light)^(-1/2) and
+det(M_strange)^(-1/4).  Alternatively (and probably better) you may
+just want a single rational function approximation for
+det(M_light)^(-1/2)*det(M_strange)^(-1/4)
 
-You need three (or six) rational function approximations.
-For the fermion force in the updating, you need an approximation for
-1/(powers of determinants).   For example, for a determinant for
-two light quarks, det(m)^(-2/4).
-For the heatbath updating of the phi field, you need
- (powers of determinants)^(1/2)
-For the computation of the fermion action, you need
- (powers of determinants)^(-1/2)
+The rational function parameters are constructed with the poly4
+utility in the remez-milc subdirectory.  Instructions are given below.
+That file is then specified in the load_rhmc_params line in the input
+parameter file, and it becomes input to the code at run time.
+
+To run the code, use the same input file as for our traditional
+su3_hmc.  MAKE SURE that the masses, and numbers of flavors are
+consistent with the choices you made in preparing the rational
+function parameter file!!  NO CHECKING IS DONE FOR THIS.  The flavor
+numbers are used only in the experimental gauge action
+"symanzik_1loop_nf_action.h".
+
+You need three rational function approximations for each pseudofermion
+field.  For the fermion force in the updating, you need an
+approximation for 1/(powers of determinants).  For example, for a
+determinant for two light quarks, det(m)^(-2/4).  For the heatbath
+updating of the phi field, you need (powers of determinants)^(1/2) For
+the computation of the fermion action, you need (powers of
+determinants)^(-1/2)
 
 SAMPLE INPUT PARAMETER FILE
 
-# Always 0 for redirected stdin
-prompt 0
-
-# Lattice dimensions
-nx 6
-ny 6
-nz 6
-nt 6
-
-# Random number seed
-iseed 3546789
-
-# Number of pseudofermions -- 
-# must agree with the number in the rational function file
-n_pseudo 1
-
-# specification of the rational function file
-# See below for instructions for generating it
-load_rhmc_params rationals.sample.su3_omelyan_rhmc
-
-# gauge coupling
-beta 6.50
-
-# number of dynamical masses and the list of masses
-n_dyn_masses 2
-dyn_mass 0.01 0.05
-
-# degeneracies of flavors
-dyn_flavors 2 1
-
-# tadpole factor
-u0   0.862
-
-# The lines from here to the end can be repeated.  
-# Here we show only one instance
-
-# warmup sweeps (we usually set it to zero)
-warms 0
-
-# trajectories
-trajecs 2
-
-# interval between measurements
-traj_between_meas 1
-
-# molecular dynamics integration time step
-microcanonical_time_step 0.01
-
-# number of steps
-steps_per_trajectory 12
-
-# conjugate gradient (CG) tolerance for 
-#  md = molecular dynamics evolution
-#  fa = fermion action calculation
-#  gr = pseudofermion Gaussian random source setup
-# precision is measured as |A x - b|/|b| where || is the L2 norm
-cgresid_md_fa_gr .000002 .000002 .000002
-
-# maximum number of iterations for the CG in each instance
-max_multicg_md_fa_gr  1750  1750  1750
-
-# precision of the CG solution for each instance
-cgprec_md_fa_gr  1 2 2
-
-# precision of the fermion force calculation
-prec_ff 1
-
-# CG tolerance, max iterations, and max restarts for various measured quantities
-error_for_propagator .000001
-max_cg_prop 500
-max_cg_prop_restarts 5
-
-# input lattice
-reload_serial ../binary_samples/lat.sample.l6666b650m010m050
-
-# output lattice
-forget
-
-
+Please see in.sample.su3_leapfrog.1 for an annotated explanation of
+the input parameters.
 
 USING poly4 TO GENERATE THE RATIONAL FUNCTION FILE
 
 To generate rational function approximations, use a modified version of
 Mike Clark's code (requires the gnu multiple precision library)
 
-At the moment, this code can handle a product of up to four powers of
-determinants with different masses (just in case you want to put in dynamical
-charm and isospin breaking at the same time).
+At the moment, for each pseudofermion field, this code can handle a
+product of up to four powers of determinants with different masses
+(just in case you want to put in dynamical charm and isospin breaking
+at the same time).  The code "poly4" takes a small input parameter
+file that specifies the pseudofermion fields.  See examples in the
+remez-milc directory.  The first line of the file specifies the number
+of such fields.  The remaining lines contain the following parameters:
 
-./remez-milc/poly4 n1 m1  n2 m2   n3 m3  n4 m4  md_order action_order \
-  min_eig max_eig digits
+n1 m1  n2 m2   n3 m3  n4 m4  md_order action_order min_eig max_eig digits
+
 where n1=number of flavors of first type quarks
       m1=mass of first type quark
       next 6 arguments are for the other three quark types
@@ -163,6 +105,7 @@ will generate the rational function approximation to
    (M^dagger M + 4*.005^2)^(-1/2) for the molecular dynamics
    (M^dagger M + 4*.005^2)^(+1/4) for heat bath fermion update.
    (M^dagger M + 4*.005^2)^(+1/4) for fermion action computation.
+
 The output format is more or less what is needed for the "rationals.h"
 include file
 
@@ -179,3 +122,4 @@ Use A = {0.0,1.0}, B={0.0,4*m^2}
 
 The output from poly4 is then an input file for the RHMC code.
 
+-- C. DeTar 04/04/08.
