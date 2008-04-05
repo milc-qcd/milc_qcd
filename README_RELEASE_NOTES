@@ -26,8 +26,9 @@ for general instructions.
 
 Here are highlights of the changes:
 
-For version 7.6.2.develc
+For version 7.6.2
   Add heavy-light-light baryon code from Heechang
+  Add ks_eigen code from version 6
   Add ext_src for generating extended source from propagators
   Add some spectrum calculations to HISQ targets in ks_imp_rhmc
   Add HISQ fermion code from Doug and Alexei
