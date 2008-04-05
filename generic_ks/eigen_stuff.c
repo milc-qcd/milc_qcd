@@ -375,6 +375,11 @@ void normalize(su3_vector *vec,int parity){
 }
 
 /*****************************************************************************/
+/* Run a CG iteration to minimize the Rayleigh-Ritz quotient over the
+   span "eigVec".  The initial vector is "vec".  The CG iteration stops
+   when the tolerance is reached or the norm of the residual drops
+   faster than RelTol, or when the MaxIter and Restart are exhausted. */
+
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
 		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
 		 int parity, ferm_links_t *fn){
@@ -642,6 +647,11 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   while((max_error>Tolerance)&&(iter<Kiters)) {
     iter++ ;
+    /* Run through all current eigenvectors, minimizing the
+       Rayleigh-Ritz quotient in the space spanned by the current
+       eigenvectors.  Replace the eigenvectors with each
+       improvement. Stop improving the eigenvector when it has
+       converged. */
     for(j=0;j<Nvecs;j++){
       if(grad[j]>(ToleranceG)) {
 	converged[j] = 0 ;
@@ -657,6 +667,9 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 	converged[j] = 1;
       }
     }
+
+    /* Diagonalize the operator on the subspace of improved
+       eigenvectors and rotate the eigenvectors to the new basis. */
 
     /* if you didn't act on eigVec[i] last time, converged[i]=1,
        and  MeigVec hasn't changed, so don't compute it */
@@ -789,4 +802,4 @@ void print_densities(su3_vector *src, char *tag, int y,int z,int t,
   }
 
 }
-/*****************************************************************************/
+

@@ -37,6 +37,7 @@ G_KS_ALL = \
   dslash_fn_qop_milc_D.o \
   dslash_fn_qop_milc_F.o \
   eigen_stuff.o \
+  eigen_stuff_qdp.o \
   eo_fermion_force_rhmc.o \
   f_meas.o \
   fermion_force_asqtad.o \
@@ -192,6 +193,8 @@ dslash_fn_qop_milc_D.o: ../generic_ks/dslash_fn_qop_milc_D.c ../generic_ks/dslas
 dslash_fn_qop_milc_F.o: ../generic_ks/dslash_fn_qop_milc_F.c ../generic_ks/dslash_fn_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
 eigen_stuff.o: ../generic_ks/eigen_stuff.c
+	${CC} -c ${CFLAGS} $<
+eigen_stuff_qdp.o: ../generic_ks/eigen_stuff_qdp.c
 	${CC} -c ${CFLAGS} $<
 eo_fermion_force_rhmc.o: ../generic_ks/eo_fermion_force_rhmc.c
 	${CC} -c ${CFLAGS} $<
