@@ -21,6 +21,11 @@
    12/10/00 Fixed so k = MAXPRIMES-1 DT
 */
 
+// $Log: layout_hyper_prime.c,v $
+// Revision 1.14  2008/04/11 15:36:00  detar
+// Allow an odd number of sites per node
+//
+
 /*
    setup_layout() does any initial setup.  When it is called the
      lattice dimensions nx,ny,nz and nt have been set.
@@ -65,6 +70,14 @@ static void lex_coords(int coords[], const int dim, const int size[],
     r /= size[d];
   }
 }
+
+/*------------------------------------------------------------------*/
+/* Parity of the coordinate */
+static int coord_parity(int r[]){
+  return (r[0] + r[1] + r[2] + r[3]) % 2;
+}
+
+/*------------------------------------------------------------------*/
 
 #ifdef FIX_IONODE_GEOM
 
@@ -181,8 +194,8 @@ static void setup_hyper_prime(){
     while( (numnodes()/i)%prime[k] != 0 && k>0 ) --k;
     /* figure out which direction to divide */
     
-    /* find largest even dimension of h-cubes */
-    for(j=1,dir=XUP;dir<=TUP;dir++)
+    /* find largest dimension of h-cubes divisible by prime[k] */
+    for(j=0,dir=XUP;dir<=TUP;dir++)
       if( squaresize[dir]>j && squaresize[dir]%prime[k]==0 )
 	j=squaresize[dir];
     
@@ -325,17 +338,21 @@ void setup_layout(){
   /* Number of sites on node */
   sites_on_node =
     squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
-  /* Need even number of sites per hypercube */
-  if( mynode()==0)if( sites_on_node%2 != 0){
-    printf("SORRY, CAN'T LAY OUT THIS LATTICE\n");
-    terminate(0);
-  }
+
   if( mynode()==0)
     printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
 	   squaresize[ZUP],squaresize[TUP]);
-  if( mynode()==0 && sites_on_node%2 != 0)
-    printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
-  even_sites_on_node = odd_sites_on_node = sites_on_node/2;
+  even_sites_on_node = sites_on_node/2;
+
+  /* Allow an odd number of sites per node
+     With an odd number, the number of even and 
+     odd sites varies with each node...
+     If the machine coordinates are even, we have an extra even site */
+  if( (sites_on_node%2 != 0) && 
+      ( coord_parity(machine_coordinates) == 0))
+    even_sites_on_node++;
+
+  odd_sites_on_node = sites_on_node - even_sites_on_node;
 }
 
 /*------------------------------------------------------------------*/
@@ -380,37 +397,52 @@ const int *get_logical_coordinate(){
 
 /*------------------------------------------------------------------*/
 /* Map node number and index to coordinates  */
+/* (The inverse of node_number and node_index) */
+/* Assumes even sites come first */
 void get_coords(int coords[], int node, int index){
   int mc[4];
   int ir;
-  int eo;
+  int eo, meo, neven, xeo;
   int k = node;
 
-  /* Compute machine coordinates for node */
+  /* mc = the machine coordinates for node k */
   lex_coords(mc, 4, nsquares, k);
 
-  /* Lexicographic index on node rounded to even */
-  ir = 2*index;
-  if(ir >= sites_on_node){
-    ir -= sites_on_node;
-    eo = 1;
-  }
-  else
-    eo = 0;
+  /* meo = the parity of the machine coordinate */
+  meo = coord_parity(mc);
 
-  /* Convert to coordinates - result is two-fold ambiguous */
+  /* neven = the number of even sites on node k */
+  neven = (sites_on_node + 1 - meo)/2;
+  
+  /* ir = the even part of the lexicographic index within the
+     sublattice on node k */
+  if(index < neven){
+    ir = 2*index;
+    xeo = 0;
+  } else {
+    ir = 2*(index - neven);
+    xeo = 1;
+  }
+
+  /* coords = the sublattice coordinate */
   lex_coords(coords, 4, squaresize, ir);
 
-  /* Adjust coordinate according to parity (assumes even sites_on_node) */
-  if( (coords[XUP] + coords[YUP] + coords[ZUP] + coords[TUP]) % 2 != eo){
+  /* Add offset to get full lattice coordinate (still a 2-fold ambiguity) */
+  coords[XUP] += mc[XUP]*squaresize[XUP];
+  coords[YUP] += mc[YUP]*squaresize[YUP];
+  coords[ZUP] += mc[ZUP]*squaresize[ZUP];
+  coords[TUP] += mc[TUP]*squaresize[TUP];
+
+  /* Adjust coordinate according to parity */
+  if( coord_parity(coords) != xeo ){
     coords[XUP]++;
-    if(coords[XUP] >= squaresize[XUP]){
+    if(coords[XUP] >= squaresize[XUP]*(mc[XUP]+1)){
       coords[XUP] -= squaresize[XUP];
       coords[YUP]++;
-      if(coords[YUP] >= squaresize[YUP]){
+      if(coords[YUP] >= squaresize[YUP]*(mc[YUP]+1)){
 	coords[YUP] -= squaresize[YUP];
 	coords[ZUP]++;
-	if(coords[ZUP] >= squaresize[ZUP]){
+	if(coords[ZUP] >= squaresize[ZUP]*(mc[ZUP]+1)){
 	  coords[ZUP] -= squaresize[ZUP];
 	  coords[TUP]++;
 	}
@@ -418,23 +450,17 @@ void get_coords(int coords[], int node, int index){
     }
   }
 
-  /* Add offset for hypercube */
-  coords[XUP] += mc[XUP]*squaresize[XUP];
-  coords[YUP] += mc[YUP]*squaresize[YUP];
-  coords[ZUP] += mc[ZUP]*squaresize[ZUP];
-  coords[TUP] += mc[TUP]*squaresize[TUP];
-
   /* Consistency checks for debugging */
   if((k = node_number(coords[0], coords[1], coords[2], coords[3])) 
      != node){
-    printf("get_coords: coords %d %d %d %d for node %d map to wrong node %d\n",
-	   coords[0], coords[1], coords[2], coords[3], node, k);
+    printf("get_coords: coords %d %d %d %d for node %d index %d map to wrong node %d\n",
+	   coords[0], coords[1], coords[2], coords[3], node, index, k);
     terminate(1);
   }
   if((k = node_index(coords[0], coords[1], coords[2], coords[3]))
       != index){
-    printf("get_coords: coords %d %d %d %d for index %d map to wrong index %d\n",
-	   coords[0], coords[1], coords[2], coords[3], index, k);
+    printf("get_coords: coords %d %d %d %d for node %d index %d map to wrong index %d\n",
+	   coords[0], coords[1], coords[2], coords[3], node, index, k);
     terminate(1);
   }
 }
