@@ -26,6 +26,11 @@
    11/16/06 Upgraded to layout_hyper_prime algorithm. CD.
 */
 
+//  $Log: layout_hyper_sl32.c,v $
+//  Revision 1.12  2008/04/11 15:38:18  detar
+//  Fix get_coords so it is compatible with node_index
+//
+
 /*
    setup_layout() does any initial setup.  When it is called the
      lattice dimensions nx,ny,nz and nt have been set.
