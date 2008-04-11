@@ -50,8 +50,8 @@
 #include <qmp.h>
 #endif
 
-static int squaresize[4];	/* dimensions of hypercubes */
-static int nsquares[4];	/* number of hypercubes in each direction */
+static int squaresize[4];	   /* dimensions of hypercubes */
+static int nsquares[4];	           /* number of hypercubes in each direction */
 static int machine_coordinates[4]; /* logical machine coordinates */ 
 
 int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
@@ -70,6 +70,14 @@ static void lex_coords(int coords[], const int dim, const int size[],
     r /= size[d];
   }
 }
+
+/*------------------------------------------------------------------*/
+/* Parity of the coordinate */
+static int coord_parity(int r[]){
+  return (r[0] + r[1] + r[2] + r[3]) % 2;
+}
+
+/*------------------------------------------------------------------*/
 
 #ifdef FIX_IONODE_GEOM
 
@@ -186,8 +194,8 @@ static void setup_hyper_prime(){
     while( (numnodes()/i)%prime[k] != 0 && k>0 ) --k;
     /* figure out which direction to divide */
     
-    /* find largest even dimension of h-cubes */
-    for(j=1,dir=XUP;dir<=TUP;dir++)
+    /* find largest dimension of h-cubes divisible by prime[k] */
+    for(j=0,dir=XUP;dir<=TUP;dir++)
       if( squaresize[dir]>j && squaresize[dir]%prime[k]==0 )
 	j=squaresize[dir];
     
@@ -330,6 +338,7 @@ void setup_layout(){
   /* Number of sites on node */
   sites_on_node =
     squaresize[XUP]*squaresize[YUP]*squaresize[ZUP]*squaresize[TUP];
+
   /* Need number of sites per hypercube divisible by 32 */
   if( mynode()==0)if( sites_on_node%32 != 0){
     printf("SORRY, CAN'T LAY OUT THIS LATTICE\n");
@@ -339,6 +348,8 @@ void setup_layout(){
   if( mynode()==0)
     printf("ON EACH NODE %d x %d x %d x %d\n",squaresize[XUP],squaresize[YUP],
 	   squaresize[ZUP],squaresize[TUP]);
+
+  /* Actually we have already required sites_on_node to be a multiple of 32 */
   if( mynode()==0 && sites_on_node%2 != 0)
     printf("WATCH OUT FOR EVEN/ODD SITES ON NODE BUG!!!\n");
   even_sites_on_node = odd_sites_on_node = sites_on_node/2;
@@ -356,12 +367,18 @@ register int i;
 /*------------------------------------------------------------------*/
 int node_index(int x, int y, int z, int t) {
 register int i,xr,yr,zr,tr,k;
+    /* Coordinate relative to origin of local hypercube */
     xr = x%squaresize[XUP]; yr = y%squaresize[YUP];
     zr = z%squaresize[ZUP]; tr = t%squaresize[TUP];
+    /* lexicographic index of sublattice within local hypercube */
     i = (xr/2) + (squaresize[XUP]/2)*((yr/2) +
 	(squaresize[YUP]/2)*((zr/2) + (squaresize[ZUP]/2)*(tr/2)));
+    /* lexicographic index within sublattice: k in [0,15] */
     k = (x%2) + 2*(y%2) + 4*(z%2) + 8*(t%2);
+    /* add offset so even sublattices go first and odd last */
+    /* k is the "color" index */
     k += 16*((x/2+y/2+z/2+t/2)%2);
+    /* i/2 to count even sublattices and odd sublattices */
     return( i/2 + k*subl_sites_on_node );
 }
 
@@ -384,46 +401,54 @@ const int *get_logical_coordinate(){
 
 /*------------------------------------------------------------------*/
 /* Map node number and index to coordinates  */
-/* FIX THIS TO CORRESPOND TO node_index !! */
 void get_coords(int coords[], int node, int index){
   int mc[4];
-  int ir;
-  int eo;
+  int ir,kr,d,eo;
   int k = node;
 
   /* Compute machine coordinates for node */
   lex_coords(mc, 4, nsquares, k);
 
-  /* Lexicographic index on node rounded to even */
-  ir = 2*index;
-  if(ir >= sites_on_node){
-    ir -= sites_on_node;
+  /* Lexicographic index of hypercube, rounded to even */
+  ir = 2*(index % subl_sites_on_node);
+  /* "32-color" index */
+  kr = index/subl_sites_on_node;
+
+  if(kr >= 16){
+    kr -= 16;
     eo = 1;
   }
   else
     eo = 0;
 
-  /* Convert to coordinates - result is two-fold ambiguous */
-  lex_coords(coords, 4, squaresize, ir);
+  /* First get sublattice coordinates */
+  for(d = XUP; d <= TUP; d++){
+    coords[d] = ir % (squaresize[d]/2);
+    ir /= (squaresize[d]/2);
+  }
 
-  /* Adjust coordinate according to parity (assumes even sites_on_node) */
+  /* Adjust sublattice coordinates according to its parity */
   if( (coords[XUP] + coords[YUP] + coords[ZUP] + coords[TUP]) % 2 != eo){
     coords[XUP]++;
-    if(coords[XUP] >= squaresize[XUP]){
-      coords[XUP] -= squaresize[XUP];
-      coords[YUP]++;
-      if(coords[YUP] >= squaresize[YUP]){
-	coords[YUP] -= squaresize[YUP];
-	coords[ZUP]++;
-	if(coords[ZUP] >= squaresize[ZUP]){
-	  coords[ZUP] -= squaresize[ZUP];
-	  coords[TUP]++;
+    if(coords[XUP] >= squaresize[XUP]/2){
+      coords[XUP] -= squaresize[XUP]/2; coords[YUP]++;
+      if(coords[YUP] >= squaresize[YUP]/2){
+	coords[YUP] -= squaresize[YUP]/2; coords[ZUP]++;
+	if(coords[ZUP] >= squaresize[ZUP]/2){
+	  coords[ZUP] -= squaresize[ZUP]/2; coords[TUP]++;
 	}
       }
     }
   }
 
-  /* Add offset for hypercube */
+  /* Next convert to the site coordinate relative to the origin of the
+     node hypercube */
+  for(d = XUP; d <= TUP; d++){
+    coords[d] = 2*coords[d] + kr % 2;
+    kr /= 2;
+  }
+
+  /* Finally add offset for node hypercube origin */
   coords[XUP] += mc[XUP]*squaresize[XUP];
   coords[YUP] += mc[YUP]*squaresize[YUP];
   coords[ZUP] += mc[ZUP]*squaresize[ZUP];
@@ -432,14 +457,14 @@ void get_coords(int coords[], int node, int index){
   /* Consistency checks for debugging */
   if((k = node_number(coords[0], coords[1], coords[2], coords[3])) 
      != node){
-    printf("get_coords: coords %d %d %d %d for node %d map to wrong node %d\n",
-	   coords[0], coords[1], coords[2], coords[3], node, k);
+    printf("get_coords: coords %d %d %d %d for node %d index %d map to wrong node %d\n",
+	   coords[0], coords[1], coords[2], coords[3], node, index, k);
     terminate(1);
   }
   if((k = node_index(coords[0], coords[1], coords[2], coords[3]))
       != index){
-    printf("get_coords: coords %d %d %d %d for index %d map to wrong index %d\n",
-	   coords[0], coords[1], coords[2], coords[3], index, k);
+    printf("get_coords: coords %d %d %d %d for node %d index %d map to wrong index %d\n",
+	   coords[0], coords[1], coords[2], coords[3], node, index, k);
     terminate(1);
   }
 }
