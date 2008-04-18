@@ -1,6 +1,5 @@
 /*************************** eigen_stuff_qdp.c  ***************************/
 /* Eigenvalue and Eigevector computation routines.  QDP version.
- * WE ARE MISSING SOME DEFNS, SO THIS WON'T COMPILE */
  * K.O. 8/99 Started.
  * MIMD version 7
  *
@@ -10,17 +9,41 @@
 
 //#define DEBUG
 
-/* This Variable controls the tollerence of the JACOBI iteration */
-#include <float.h>
+
+#include <float.h> /* To control the tolerance of the JACOBI iteration */
+#include <lattice_qdp.h>
+#include "generic_ks_includes.h"
+#include "../include/generic_qdp.h"
+#include "../include/generic_ks_qdp.h"
+#include "../include/jacobi.h"
+
+#if ( QDP_Precision == 'F' )
+
+#define dslash_qdp_fn_special2 dslash_qdp_F_fn_special2
+#define FATLINKS          fatlinks_F
+#define LONGLINKS         longlinks_F
+#define SETUP_DSLASH setup_dslash_F
+
+#else
+
+#define dslash_qdp_fn_special2 dslash_qdp_D_fn_special2
+#define FATLINKS          fatlinks_D
+#define LONGLINKS         longlinks_D
+#define SETUP_DSLASH setup_dslash_D
+
+#endif
+
+extern QDP_ColorMatrix **FATLINKS, **LONGLINKS;
+
 #define JACOBI_TOL FLT_EPSILON
 #define MINITER 5
 
 /*   If you use strict convergence then you stop when g = |M*v - l*v|     *
- *  becomes less than the eigenvalue tolerance. Other wise you stop       *
+ *  becomes less than the eigenvalue tolerance. Otherwise you stop        *
  *  when the estimated error of the eigenvalue gets smaller than          *
  *  the eigenvalue tolerance. The later option takes abvantage of         *
  *  the quadratic convergence of the algorithm. (See Kalkreuter's paper   * 
- *  for details). I prefer the strict convergenve which results some      *
+ *  for details). I prefer the strict convergenve which results in some   *
  *  overkill.                                                             */
 #define STRICT_CONVERGENCE
 
@@ -28,7 +51,6 @@
 #include <string.h>
 #include <qdp_string.h>
 
-extern void setup_dslash(void);
 void GramSchmidt_qdp(QDP_ColorVector **vector, int Num, QDP_Subset subset);
 void normalize_qdp(QDP_ColorVector *vec, QDP_Subset parity);
 void project_out_qdp(QDP_ColorVector *vec, QDP_ColorVector **vector,
@@ -41,7 +63,7 @@ void mult_spin_pseudoscalar_qdp(field_offset src, field_offset dest);
 /* Temporary QDP_ColorVectors used for the squaring */ 
 static QDP_ColorVector *temp0=NULL, *temp1[16], *temp2[16];
 
-/* This routine is the routine that applies the Matrix, whose eigenvalues    *
+/* This is the routine that applies the Matrix, whose eigenvalues            *
  * we want to compute, to a vector. For this specific application it is the  *
  * -D_slash^2 of the KS fermions. We only compute on the "subset" sites.     *
  * Where subset can be EVEN, ODD, or ENENANDODD                              */
@@ -60,8 +82,8 @@ Matrix_Vec_mult_qdp(QDP_ColorVector *src, QDP_ColorVector *res,
   else othersubset = QDP_all;
 
   load_ferm_links(&fn_links, &ks_act_paths);
-  dslash_qdp_fn_special2(src, temp0, othersubset, temp1, &fn_links);
-  dslash_qdp_fn_special2(temp0, res, subset, temp2, &fn_links);
+  dslash_qdp_fn_special2(src, temp0, othersubset, temp1);
+  dslash_qdp_fn_special2(temp0, res, subset, temp2);
   QDP_V_eqm_V(res, res, subset);
 
 #ifdef DEBUG
@@ -75,7 +97,7 @@ prepare_Matrix()
 {
   int i;
 
-  setup_dslash();
+  SETUP_DSLASH();
   temp0 = QDP_create_V();
   for(i=0; i<16; i++) {
     temp1[i] = QDP_create_V();
@@ -460,6 +482,13 @@ Kalkreuter_qdp(QDP_ColorVector **eigVec, double *eigVal, Real Tolerance,
 		   i, eigVal[i], err[i], grad[i]);
   }
 
+  node0_printf("BEGIN RESULTS\n");
+  for(i=0;i<Nvecs;i++){
+    node0_printf("Eigenvalue(%i) = %g +/- %8e\n",
+		 i,eigVal[i],err[i]);
+  }
+
+#if 0
   node0_printf("BEGIN EIGENVALUES\n");
   for(i=0; i<Nvecs; i++) {
     double ev, er;
@@ -477,7 +506,7 @@ Kalkreuter_qdp(QDP_ColorVector **eigVec, double *eigVal, Real Tolerance,
 
     sprintf(evstring, "%i", Nvecs);
     QDP_string_set(md, evstring);
-    qw = QDP_open_write(md, fn, QDP_SINGLEFILE, QDP_SERIAL, QDP_CREATE);
+    qw = QDP_open_write(md, fn, QDP_SINGLEFILE);
 
     for(i=0; i<Nvecs; i++) {
       double ev, er;
@@ -490,6 +519,8 @@ Kalkreuter_qdp(QDP_ColorVector **eigVec, double *eigVal, Real Tolerance,
     QDP_close_write(qw);
     QDP_string_destroy(md);
   }
+
+#endif
 
   /** Deallocate the arrays **/
   deAllocate(&V) ;
@@ -505,7 +536,7 @@ Kalkreuter_qdp(QDP_ColorVector **eigVec, double *eigVal, Real Tolerance,
 }
 
 /*
- *  MILC API wrapper
+ *  Wrapper for the MILC API
  */
 
 int
@@ -532,8 +563,8 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   t_longlink = fn->lng;
   t_fatlink = fn->fat;
 
-  set4_M_from_field(fatlinks, t_fatlink, EVENANDODD);
-  set4_M_from_field(longlinks, t_longlink, EVENANDODD);
+  set4_M_from_field(FATLINKS, t_fatlink, EVENANDODD);
+  set4_M_from_field(LONGLINKS, t_longlink, EVENANDODD);
 
   //ev = malloc(Nvecs*sizeof(QLA_Real));
   vec = malloc(Nvecs*sizeof(QDP_ColorVector *));
@@ -548,7 +579,7 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   for(i=0; i<Nvecs; i++) {
     //eigVal[i] = ev[i];
-    set_site_from_V(eigVec[i], vec[i],EVENANDODD);
+    set_field_from_V(eigVec[i], vec[i],EVENANDODD);
     QDP_destroy_V(vec[i]);
   }
   free(vec);
@@ -559,7 +590,8 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   return its;
 }
 
-/* measures the chiraliry of a normalized fermion state */
+/* measures the chirality of a normalized fermion state */
+/* DOESN'T APPEAR TO BE USED - CD */
 
 void
 measure_chirality_qdp(QDP_ColorVector *src, double *chirality,
@@ -613,61 +645,6 @@ print_densities_qdp(QDP_ColorVector *src, char *tag, int y, int z, int t,
   }
 }
 
-/*
- *  old MILC routines
- */
-
-int
-Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
-	   Real RelTol, int Nvecs, int MaxIter,
-	   int Restart, int Kiters, int parity,
-	   ferm_links_t *fn)
-{
-  //QLA_Real *ev;
-  QDP_ColorVector **vec;
-  QDP_Subset subset;
-  int i, its;
-  su3_matrix *t_fatlink;
-  su3_matrix *t_longlink;
-
-#ifdef DEBUG
-  if(QDP_this_node==0) printf("begin Kalkreuter\n");
-#endif
-
-  if(parity==EVEN) subset = QDP_even;
-  else if(parity==ODD) subset = QDP_odd;
-  else subset = QDP_all;
-
-  t_longlink = fn->lng;
-  t_fatlink = fn->fat;
-
-  set4_M_from_field(fatlinks, t_fatlink, EVENANDODD);
-  set4_M_from_field(longlinks, t_longlink, EVENANDODD);
-
-  //ev = malloc(Nvecs*sizeof(QLA_Real));
-  vec = malloc(Nvecs*sizeof(QDP_ColorVector *));
-  for(i=0; i<Nvecs; i++) {
-    vec[i] = QDP_create_V();
-    //ev[i] = eigVal[i];
-    set_V_from_field(vec[i], eigVec[i],EVENANDODD);
-  }
-
-  its = Kalkreuter_qdp(vec, eigVal, Tolerance, RelTol, Nvecs, MaxIter, Restart,
-		       Kiters, subset);
-
-  for(i=0; i<Nvecs; i++) {
-    //eigVal[i] = ev[i];
-    set_site_from_V(eigVec[i], vec[i],EVENANDODD);
-    QDP_destroy_V(vec[i]);
-  }
-  free(vec);
-  //free(ev);
-#ifdef DEBUG
-  if(QDP_this_node==0) printf("end Kalkreuter\n");
-#endif
-  return its;
-}
-
 /* measures the chiraliry of a normalized fermion state */
 void measure_chirality(su3_vector *src, double *chirality, int parity)
 {
@@ -690,4 +667,4 @@ void measure_chirality(su3_vector *src, double *chirality, int parity)
   *chirality = cc ;
   g_doublesum(chirality);
 
-} /* chirality.c *
+} /* chirality.c */
