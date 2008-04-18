@@ -417,7 +417,7 @@ complex ff(Real theta, char parity, complex tmp)
 
 void meson_cont_mom(
   complex **prop,           /* prop[m][t] is where result is accumulated */
-  spin_wilson_vector *src1, /* quark propagator */
+  spin_wilson_vector *src1, /* quark propagator (to become antiquark) */
   spin_wilson_vector *src2, /* quark propagator */
   int no_q_momenta,         /* no of unique mom/parity values (gt p) */
   int **q_momstore,         /* q_momstore[p] are the momentum components */
