@@ -492,6 +492,9 @@ CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
 
+time:
+	make -f Make_time time
+
 check:
 	make -f Make_test check
 

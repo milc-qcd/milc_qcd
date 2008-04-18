@@ -52,7 +52,7 @@ out.time.${PROJ}: ${PROJ} in.time.${PROJ}
 time:
 	for proj in ${PROJS};\
 	do\
-	     ${MAKE} $$proj;\
+	     ${MAKE} $$proj "CTIME = -DCGTIME -DFFTIME -DLLTIME -DGFTIME -DREMAP" ;\
 	     ${MAKE} -f Make_time "PROJ=$$proj" out.time.$$proj;\
 	     /bin/rm -f $$proj;\
 	     /bin/rm -f localmake*;\
