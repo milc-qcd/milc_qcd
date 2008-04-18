@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.13  2008/04/18 15:14:46  detar
+//  Fix printed comment
+//
 //  Revision 1.12  2008/03/28 15:37:53  detar
 //  Fix heavy-light code and update sample input
 //
@@ -72,7 +75,7 @@ int initial_set(){
   if(mynode()==0){
     /* print banner */
     printf("SU3 Wilson valence fermions\n");
-    printf("MIMD version 7 $Name:  $\n");
+    printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     time_stamp("start");
     
