@@ -1,0 +1,20 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+
+# heavy quark propagators
+number_of_kappas 1
+reload_serial_wprop  ../binary_samples/wprop_fm.sample.l4448.ll
+kappa 0.124
+
+# light quark propagators
+number_of_light 1
+reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+m_light 0.1
+
+# strange quark propagators
+number_of_strange 1
+reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+m_strange 0.1
