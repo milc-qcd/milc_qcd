@@ -587,7 +587,9 @@ reload_wprop_c_to_field( int flag, w_prop_file *wpf,
   site *s;
   wilson_propagator *wp;
   spin_wilson_vector *swv;
+#ifdef HAVE_QIO
   wilson_vector *wv;
+#endif
   int s0, s1;
   int file_type = FILE_TYPE_UNKNOWN;  /* So the compiler doesn't say uninit */
   char myname[] = "reload_wprop_sc_to_field";
@@ -725,7 +727,7 @@ reload_wprop_to_field( int flag, char *filename, wilson_quark_source *wqs,
       for(color=0;color<3;color++){
 	reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, psi, timing);
 	FORALLSITES(i,s){
-	  copy_wvec(&dest[i].c[color].d[spin], psi);
+	  copy_wvec(psi, &dest[i].c[color].d[spin]);
 	}
       }
     }
