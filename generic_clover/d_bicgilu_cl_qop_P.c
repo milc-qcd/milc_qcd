@@ -54,6 +54,9 @@
 
 /*
  * $Log: d_bicgilu_cl_qop_P.c,v $
+ * Revision 1.5  2008/04/18 23:11:54  detar
+ * Remove QOP_verbose setting
+ *
  * Revision 1.4  2008/04/18 15:37:03  detar
  * Support qopqdp-0.11.2
  *
@@ -72,7 +75,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.4 2008/04/18 15:37:03 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.5 2008/04/18 23:11:54 detar Exp $";
 
 /********************************************************************/
 /* Load Wilson clover parameters                                    */
@@ -459,8 +462,6 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
     printf("bicbilu_cl_qop: Error initializing QOP\n");
     terminate(1);
   }
-
-  QOP_verbose(QOP_VERB_MED);
 
   /* Create QOP links object */
 
