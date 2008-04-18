@@ -61,7 +61,6 @@ ifeq ($(strip ${HAVEQIO}),true)
 endif
 
 G_KS_OBJECTS= \
-  eigen_stuff.o \
   f_meas.o \
   flavor_ops.o \
   grsource_imp.o \
@@ -69,6 +68,18 @@ G_KS_OBJECTS= \
   mat_invert.o \
   quark_stuff.o \
   rephase.o
+
+# Selection of eigensolver program
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+  G_KS_OBJECTS += eigen_stuff.o
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    G_KS_OBJECTS += eigen_stuff_qdp.o
+  else
+    G_KS_OBJECTS += eigen_stuff.o
+  endif
+endif
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_KS_OBJECTS += io_scidac_ks.o

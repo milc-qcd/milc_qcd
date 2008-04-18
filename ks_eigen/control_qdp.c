@@ -1,12 +1,12 @@
 /******************** control.c *****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Main procedure for SU3 eigenvalues with improved dynamical fermions */
 
 #define CONTROL
 #include "ks_eig_includes_qdp.h"	/* definitions files and prototypes */
+#include "lattice_qdp.h"
 
 EXTERN gauge_header start_lat_hdr;     /* Input gauge field header */
-extern double dclock(void);
 
 int
 main(int argc, char *argv[])
@@ -24,6 +24,9 @@ main(int argc, char *argv[])
   initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
   QDP_initialize(&argc, &argv);
+#ifndef QDP_PROFILE
+  QDP_profcontrol(0);
+#endif
 #endif
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
