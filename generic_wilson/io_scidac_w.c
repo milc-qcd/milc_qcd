@@ -275,8 +275,6 @@ void restore_w_vector_scidac_to_field(char *filename, int serpar,
   QIO_Reader *infile;
   int status;
 
-  QIO_verbose(QIO_VERB_OFF);
-
   infile = r_open_w_vector_scidac_file(filename, serpar);
   if(infile == NULL)terminate(1);
 
@@ -333,6 +331,8 @@ QIO_Writer *w_open_usqcd_wprop_file(char *filename, int volfmt,
   QIO_String *filexml;
   int usqcd_type = w_prop_milc_to_usqcd(milc_type);
   
+  QIO_verbose(QIO_VERB_OFF);
+
   build_qio_layout(&layout);
   build_qio_filesystem(&fs);
 
@@ -417,6 +417,8 @@ int write_prop_usqcd_sc(QIO_Writer *outfile, wilson_vector *src, int spin,
   QIO_String *recxml;
   int status;
 
+  QIO_verbose(QIO_VERB_OFF);
+
   proprecord_info = QIO_create_usqcd_proprecord_sc_info(spin, color, recinfo);
   recxml = QIO_string_create();
   QIO_encode_usqcd_proprecord_info(recxml, proprecord_info);
@@ -488,6 +490,8 @@ QIO_Reader *r_open_usqcd_wprop_file(char *filename, int serpar){
   QIO_Filesystem fs;
   QIO_Reader *infile;
   QIO_String *filexml;
+
+  QIO_verbose(QIO_VERB_OFF);
 
   filexml = QIO_string_create();
   build_qio_layout(&layout);
