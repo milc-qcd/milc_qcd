@@ -22,6 +22,9 @@
 */
 
 // $Log: layout_hyper_prime.c,v $
+// Revision 1.15  2008/04/18 15:36:46  detar
+// Permit odd number of lattice sites per node
+//
 // Revision 1.14  2008/04/11 15:36:00  detar
 // Allow an odd number of sites per node
 //
@@ -402,7 +405,7 @@ const int *get_logical_coordinate(){
 void get_coords(int coords[], int node, int index){
   int mc[4];
   int ir;
-  int eo, meo, neven, xeo;
+  int meo, neven, xeo;
   int k = node;
 
   /* mc = the machine coordinates for node k */
