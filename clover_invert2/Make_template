@@ -1,7 +1,7 @@
 #  Clover inverter with spectroscopy
 #  MIMD version 7
 
-#  Generic make-include file for clover_invert codes
+#  Generic make-include file for clover_invert2 codes
 #  For BOTH flavor-diagonal and mixed flavor {heavy-light} codes
 #  This template file defines rules and macros common to all architectures
 #  It is intended to be an include file for other Makefiles.
@@ -11,15 +11,6 @@
 #
 #	"su3_clov" flavor-diagonal mesons and baryons with
 #          bi-conjugate gradient inverter
-#	"su3_clov_bi" flavor-diagonal mesons and baryons with
-#          bi-conjugate gradient inverter
-#	"su3_clov_mr" flavor-diagonal mesons and baryons with
-#          minimum residue gradient inverter
-#	"su3_clov_hop" flavor-diagonal mesons and baryons with
-#          propagator solution using hopping parameter expansion
-#	"su3_clhl_cg" flavor-diagonal and off-diagonal mesons and baryons
-#	"su3_clhl_bi" flavor-diagonal and off-diagonal mesons and baryons
-#          with bi-conjugate gradient inverter
 
 MYINCLUDEDIR = .
 INCLUDEDIR = ../include
