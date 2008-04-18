@@ -344,5 +344,9 @@ int gamma_index(char *label){
   return -1;  /* Error condition */
 }
 
+/* Map an index to the label */
 
+char *gamma_label(int index){
+  return gammalabel[index];
+}
 
