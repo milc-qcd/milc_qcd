@@ -40,14 +40,14 @@ test_fnal:
 	for prec in ${PRECLIST};\
 	do\
 	   ${MAKE} clean;\
-	   ${MAKE} -f Make_test "PROJ=fnal_corr" "PREC=$$prec" "PATTERNS=operator EOF" out.test.diff.fnal_corr.$$prec;\
+	   ${MAKE} -f Make_test "PROJ=fnal_corr" "PREC=$$prec" "PATTERNS=--- EOF" out.test.diff.fnal_corr.$$prec;\
 	done
 
 test_fnal2:
 	for prec in ${PRECLIST};\
 	do\
 	   ${MAKE} clean;\
-	   ${MAKE} -f Make_test "PROJ=fnal_corr2" "PREC=$$prec" "PATTERNS=operator EOF" out.test.diff.fnal_corr2.$$prec;\
+	   ${MAKE} -f Make_test "PROJ=fnal_corr2" "PREC=$$prec" "PATTERNS=--- EOF" out.test.diff.fnal_corr2.$$prec;\
 	done
 
 test_fnal_clean:

@@ -40,16 +40,18 @@ typedef struct {
   int startflag_w[MAX_QK];	/* what to do for beginning wilson vector */
   int saveflag_w[MAX_QK];	/* what to do for saving wilson vector */
   dirac_clover_param dcp[MAX_QK];
+  char kappa_label[MAX_QK][32];
   wilson_quark_source src_wqs[MAX_QK];
   int startflag_ks[MAX_QK];	/* what to do for beginning wilson vector */
   int saveflag_ks[MAX_QK];	/* what to do for saving wilson vector */
   ks_param ksp[MAX_QK];
+  char mass_label[MAX_QK][32];
   ks_quark_source src_ksqs[MAX_QK];
   int check[MAX_QK];
   Real d1[MAX_QK];
   int num_pair;
   int qkpair[MAX_PAIR][2];
-  wilson_quark_source snk_wqs[MAX_QK];
+  wilson_quark_source snk_wqs[MAX_PAIR];
   int do_point_meson_spect[MAX_PAIR];
   int do_smear_meson_spect[MAX_PAIR];
   int do_rot_meson_spect[MAX_PAIR];

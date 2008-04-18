@@ -823,7 +823,7 @@ static char *get_utc_datetime(void)
 }
 
 /*--------------------------------------------------------------------*/
-static FILE* open_fnal_meson_file(int pair, char sink[]){
+static FILE* open_fnal_meson_file(int pair, int smear, int rotate){
   int iq0 = param.qkpair[pair][0];
   int iq1 = param.qkpair[pair][1];
   FILE *fp;
@@ -839,34 +839,121 @@ static FILE* open_fnal_meson_file(int pair, char sink[]){
 	   param.savefile_c[pair]);
     return NULL;
   }
-  fprintf(fp,"# Job ID:               %s\n",param.job_id);
-  fprintf(fp,"# date:                 %s UTC\n",get_utc_datetime());
-  fprintf(fp,"# lattice size:         %d x %d x %d x %d\n", nx, ny, nz, nt);
-  fprintf(fp,"# spatial volume:       %f\n",((float)nx)*ny*nz);
-  fprintf(fp,"# sources: %s %s # sink: %s\n",param.src_wqs[iq0].descrp,
-	  param.src_wqs[iq1].descrp,sink);
-  fprintf(fp,"# rotated current: d1[%d]=%f  d1[%d]=%f\n",
-	  iq0, param.d1[iq0], iq1, param.d1[iq1]);
-  fprintf(fp,"# masses: ");
+  fprintf(fp,"---\n");
+  fprintf(fp,"JobID:                  %s\n",param.job_id);
+  fprintf(fp,"date:                   \"%s UTC\"\n",get_utc_datetime());
+  fprintf(fp,"lattice_size:           %d,%d,%d,%d\n", nx, ny, nz, nt);
+  //  fprintf(fp,"spatial volume:        %g\n",((float)nx)*ny*nz);
+
+  if(param.qk_type[iq0] == CLOVER_TYPE){
+    fprintf(fp,"antiquark_source_type:  %s\n",param.src_wqs[iq0].descrp);
+    fprintf(fp,"antiquark_source_label: %s\n",param.src_wqs[iq0].label);
+  }
+  else{ /* KS_TYPE */
+    fprintf(fp,"antiquark_source_type:  %s\n",param.src_ksqs[iq0].descrp);
+    fprintf(fp,"antiquark_source_label: %s\n",param.src_ksqs[iq0].label);
+  }
+  if(param.qk_type[iq1] == CLOVER_TYPE){
+    fprintf(fp,"quark_source_type:      %s\n",param.src_wqs[iq1].descrp);
+    fprintf(fp,"quark_source_label:     %s\n",param.src_wqs[iq1].label);
+  }
+  else { /* KS_TYPE */
+    fprintf(fp,"quark_source_type:      %s\n",param.src_ksqs[iq1].descrp);
+    fprintf(fp,"quark_source_label:     %s\n",param.src_ksqs[iq1].label);
+  }
+
+  if(smear)
+    fprintf(fp,"sink_smear:             %s\n",param.snk_wqs[pair].label);
+  else
+    fprintf(fp,"sink_smear:             local\n");
+
+  if(rotate)
+    fprintf(fp,"rotated_sink_operator:  True\n");
+  else
+    fprintf(fp,"rotated_sink_operator:  False\n");
+
+  fprintf(fp,"antiquark_d1:           \"%f\"\n",param.d1[iq0]);
+  fprintf(fp,"quark_d1:               \"%f\"\n",param.d1[iq1]);
+
   if(param.qk_type[iq0] == CLOVER_TYPE)
-    fprintf(fp,"kappa[%d]=%g ", iq0, param.dcp[iq0].Kappa);
+    fprintf(fp,"antiquark_kappa:        \"%s\"\n",param.kappa_label[iq0]);
   else /* KS_TYPE */
-    fprintf(fp,"mass[%d]=%g ", iq0, param.ksp[iq0].mass);
+    fprintf(fp,"antiquark_mass:         \"%s\"\n",param.mass_label[iq0]);
   if(param.qk_type[iq1] == CLOVER_TYPE)
-    fprintf(fp,"kappa[%d]=%g ", iq1, param.dcp[iq1].Kappa);
+    fprintf(fp,"quark_kappa:            \"%s\"\n",param.kappa_label[iq1]);
   else /* KS_TYPE */
-    fprintf(fp,"mass[%d]=%g ", iq1, param.ksp[iq1].mass);
-  fprintf(fp, "\n");
+    fprintf(fp,"quark_mass:             \"%s\"\n",param.mass_label[iq1]);
+
+  fprintf(fp,"...\n");
   return fp;
 }
 		       
 /*--------------------------------------------------------------------*/
-static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
+static void print_start_fnal_meson_prop(FILE *fp, int pair, int m, int smear,
+					int rotate)
 {
+  int iq0 = param.qkpair[pair][0];
+  int iq1 = param.qkpair[pair][1];
+
   if(this_node != 0 || param.saveflag_c[pair] == FORGET)return;
 
-  fprintf(fp,"# operator %d # element: %s  momentum: %s\n",
-	  m,param.meson_label[pair][m],param.mom_label[pair][m]);
+  fprintf(fp,"---\n");
+  fprintf(fp,"correlator:             %s\n",param.meson_label[pair][m]);
+  fprintf(fp,"momentum:               %s\n",param.mom_label[pair][m]);
+
+//  /* Source labels */
+//  if(param.qk_type[iq0] == CLOVER_TYPE)
+//      fprintf(fp,"antiquark_source:      %s\n",param.src_wqs[iq0].label);
+//  else /* KS_TYPE */
+//      fprintf(fp,"antiquark_source:      %s\n",param.src_ksqs[iq0].label);
+//  if(param.qk_type[iq1] == CLOVER_TYPE)
+//      fprintf(fp,"quark_source:          %s\n",param.src_wqs[iq1].label);
+//  else /* KS_TYPE */
+//      fprintf(fp,"quark_source:          %s\n",param.src_ksqs[iq1].label);
+
+//  if(smear)
+//    fprintf(fp,"sink_smear:            %s\n",param.snk_wqs[pair].label);
+//  else
+//    fprintf(fp,"sink_smear:            local\n");
+
+  fprintf(fp,"gamma_source:           %s\n",gamma_label(param.gam_src[pair][m]));
+  fprintf(fp,"gamma_sink:             %s\n",gamma_label(param.gam_snk[pair][m]));
+
+//  if(rotate)
+//    fprintf(fp,"rotated_sink_operator: True\n");
+//  else
+//    fprintf(fp,"rotated_sink_operator: False\n");
+
+  /* Print label with metadata */
+  /* Correlator key */
+  fprintf(fp,"correlator_key:         %s", param.meson_label[pair][m]);
+
+  /* Source labels */
+  if(param.qk_type[iq0] == CLOVER_TYPE)
+    fprintf(fp,"_%s", param.src_wqs[iq0].label);
+  else /* KS_TYPE */
+    fprintf(fp,"_%s", param.src_ksqs[iq0].label);
+  if(param.qk_type[iq1] == CLOVER_TYPE)
+    fprintf(fp,"_%s", param.src_wqs[iq1].label);
+  else /* KS_TYPE */
+    fprintf(fp,"_%s", param.src_ksqs[iq1].label);
+
+  /* Smearing label if we are smearing */
+  if(smear)
+    fprintf(fp,"_%s",param.snk_wqs[pair].label);
+
+  /* Mass or kappa labels */
+  if(param.qk_type[iq0] == CLOVER_TYPE)
+    fprintf(fp,"_k%s", param.kappa_label[iq0]);
+  else /* KS_TYPE */
+    fprintf(fp,"_m%s", param.mass_label[iq0]);
+  if(param.qk_type[iq1] == CLOVER_TYPE)
+    fprintf(fp,"_k%s", param.kappa_label[iq1]);
+  else /* KS_TYPE */
+    fprintf(fp,"_m%s", param.mass_label[iq1]);
+  fprintf(fp, "_%s\n", param.mom_label[pair][m]);
+
+  fprintf(fp,"...\n");
 }
 		       
 /*--------------------------------------------------------------------*/
@@ -899,7 +986,7 @@ static void print_end_prop(int pair){
 /*--------------------------------------------------------------------*/
 static void print_end_fnal_meson_prop(FILE *fp, int pair){
   if(this_node != 0 || param.saveflag_c[pair] == FORGET)return;
-  fprintf(fp, "&\n");
+  //  fprintf(fp, "&\n");
 }
 /*--------------------------------------------------------------------*/
 static void close_fnal_meson_file(FILE *fp, int pair){
@@ -922,13 +1009,13 @@ static void spectrum_cl_print_diag(int pair){
   
   /* Point sink */
   if(param.do_point_meson_spect[pair]){
-    corr_fp = open_fnal_meson_file(pair, "local sink");
+    corr_fp = open_fnal_meson_file(pair, 0, 0);
     
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
 
       print_start_meson_prop(pair, m, "POINT");
-      print_start_fnal_meson_prop(corr_fp, pair, m);
+      print_start_fnal_meson_prop(corr_fp, pair, m, 0, 0);
       for(t=0; t<nt; t++){
 	prop = pmes_prop[m][t];
 	g_complexsum( &prop );
@@ -945,13 +1032,13 @@ static void spectrum_cl_print_diag(int pair){
   
   /* Rotated sink */
   if(param.do_rot_meson_spect[pair]){
-    corr_fp = open_fnal_meson_file(pair, "point rotated");
+    corr_fp = open_fnal_meson_file(pair, 0, 1);
 
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
 
       print_start_meson_prop(pair, m, "ROTATED");
-      print_start_fnal_meson_prop(corr_fp, pair, m);
+      print_start_fnal_meson_prop(corr_fp, pair, m, 0, 1);
       for(t=0; t<nt; t++){
 	prop = rmes_prop[m][t];
 	g_complexsum( &prop );
@@ -967,13 +1054,13 @@ static void spectrum_cl_print_diag(int pair){
   
   /* Smeared sink */
   if(param.do_smear_meson_spect[pair]){
-    corr_fp = open_fnal_meson_file(pair, "smeared sink");
+    corr_fp = open_fnal_meson_file(pair, 1, 0);
 
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
       
       print_start_meson_prop(pair, m, param.snk_wqs[pair].label);
-      print_start_fnal_meson_prop(corr_fp, pair, m);
+      print_start_fnal_meson_prop(corr_fp, pair, m, 1, 0);
       for(t=0; t<nt; t++){
 	prop = smes_prop[m][t];
 	g_complexsum( &prop );
@@ -1020,14 +1107,14 @@ static void spectrum_cl_print_offdiag(int pair){
 
   /* Point sink */
   if(param.do_point_meson_spect[pair]){
-    corr_fp = open_fnal_meson_file(pair, "local sink");
+    corr_fp = open_fnal_meson_file(pair, 0, 0);
 
     /* print meson propagators */
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
       
       print_start_meson_prop(pair, m, "POINT");
-      print_start_fnal_meson_prop(corr_fp, pair, m);
+      print_start_fnal_meson_prop(corr_fp, pair, m, 0, 0);
       for(t=0; t<nt; t++){
 	prop = pmes_prop[m][t];
 	g_complexsum( &prop );
@@ -1044,13 +1131,13 @@ static void spectrum_cl_print_offdiag(int pair){
     
   /* Rotated sink */
   if(param.do_rot_meson_spect[pair]){
-    corr_fp = open_fnal_meson_file(pair, "rotated sink");
+    corr_fp = open_fnal_meson_file(pair, 0, 1);
 
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
 
       print_start_meson_prop(pair, m, "ROTATED");
-      print_start_fnal_meson_prop(corr_fp, pair, m);
+      print_start_fnal_meson_prop(corr_fp, pair, m, 0, 1);
       for(t=0; t<nt; t++){
 	prop = rmes_prop[m][t];
 	g_complexsum( &prop );
@@ -1066,13 +1153,13 @@ static void spectrum_cl_print_offdiag(int pair){
     
   /* Smeared sink */
   if(param.do_smear_meson_spect[pair]){
-    corr_fp = open_fnal_meson_file(pair, "smeared sink");
+    corr_fp = open_fnal_meson_file(pair, 1, 0);
 
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
 
       print_start_meson_prop(pair, m, param.snk_wqs[pair].label);
-      print_start_fnal_meson_prop(corr_fp, pair, m);
+      print_start_fnal_meson_prop(corr_fp, pair, m, 1, 0);
       for(t=0; t<nt; t++){
 	prop = smes_prop[m][t];
 	g_complexsum( &prop );

@@ -1,223 +1,426 @@
-# operator 0 # element: PION momentum: p000
+---
+JobID: XXX
+date: XXX XXX XXX XXX XXX XXX
+lattice_size: 8e-06
+antiquark_source_type: gaussian
+antiquark_source_label: 2e-06
+quark_source_type: gaussian
+quark_source_label: 2e-06
+sink_smear: local
+rotated_sink_operator: False
+antiquark_d1: "0.100000"
+quark_d1: "0.100000"
+antiquark_kappa: "0.1"
+quark_kappa: "0.1"
+...
+---
+correlator: PION
+momentum: p000
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PION_1S_1S_k0.1_k0.1_p000
+...
 0 0.0006 0.000000e+00
 0 4e-05 0.000000e+00
 0 8e-06 0.000000e+00
 0 3e-05 0.000000e+00
-&
-# operator 0 # element: PION momentum: p100
+---
+correlator: PION
+momentum: p100
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PION_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 0.000000e+00
 0 1e-05 0.000000e+00
 0 2e-06 0.000000e+00
 0 9e-06 0.000000e+00
-&
-# operator 0 # element: PS505 momentum: p000
-0 2e-06 2e-06
+---
+correlator: PS505
+momentum: p000
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PS505_1S_1S_k0.1_k0.1_p000
+...
+0 2e-05 2e-06
 0 3e-05 2e-06
 0 2e-06 2e-06
 0 3e-05 2e-06
-&
-# operator 0 # element: PS505 momentum: p100
-0 2e-06 2e-06
+---
+correlator: PS505
+momentum: p100
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PS505_1S_1S_k0.1_k0.1_p100
+...
+0 5e-06 2e-06
 0 1e-05 2e-06
 0 2e-06 2e-06
 0 9e-06 2e-06
-&
-# operator 0 # element: PS0505 momentum: p000
+---
+correlator: PS0505
+momentum: p000
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: PS0505_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
 0 3e-05 2e-06
 0 7e-06 2e-06
 0 3e-05 2e-06
-&
-# operator 0 # element: PS0505 momentum: p100
+---
+correlator: PS0505
+momentum: p100
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: PS0505_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 1e-05 2e-06
 0 2e-06 2e-06
 0 8e-06 2e-06
-&
-# operator 0 # element: RHO momentum: p000
+---
+correlator: RHO
+momentum: p000
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: RHO_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
 0 3e-05 2e-06
 0 7e-06 2e-06
 0 3e-05 2e-06
-&
-# operator 0 # element: RHO momentum: p100
+---
+correlator: RHO
+momentum: p100
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: RHO_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 1e-05 2e-06
 0 2e-06 2e-06
 0 9e-06 2e-06
-&
-# operator 0 # element: RHO0 momentum: p000
+---
+correlator: RHO0
+momentum: p000
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: RHO0_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
 0 3e-05 2e-06
 0 7e-06 2e-06
 0 3e-05 2e-06
-&
-# operator 0 # element: RHO0 momentum: p100
+---
+correlator: RHO0
+momentum: p100
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: RHO0_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 1e-05 2e-06
 0 2e-06 2e-06
 0 8e-06 2e-06
-&
-# operator 0 # element: SCALAR momentum: p000
+---
+correlator: SCALAR
+momentum: p000
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: SCALAR_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 0.000000e+00
-0 5e-06 0.000000e+00
+0 1e-05 0.000000e+00
 0 6e-06 0.000000e+00
-0 6e-06 0.000000e+00
-&
-# operator 0 # element: SCALAR momentum: p100
+0 8e-06 0.000000e+00
+---
+correlator: SCALAR
+momentum: p100
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: SCALAR_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 0.000000e+00
 0 2e-06 0.000000e+00
 0 2e-06 0.000000e+00
 0 2e-06 0.000000e+00
-&
-# operator 0 # element: SCAL0 momentum: p000
+---
+correlator: SCAL0
+momentum: p000
+gamma_source: GX
+gamma_sink: GX
+correlator_key: SCAL0_1S_1S_k0.1_k0.1_p000
+...
 0 0.0006 2e-06
+0 8e-06 2e-06
 0 6e-06 2e-06
 0 6e-06 2e-06
-0 6e-06 2e-06
-&
-# operator 0 # element: SCAL0 momentum: p100
+---
+correlator: SCAL0
+momentum: p100
+gamma_source: GX
+gamma_sink: GX
+correlator_key: SCAL0_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 2e-06 2e-06
+0 2e-06 XXX
 0 2e-06 2e-06
-0 2e-06 2e-06
-&
-# operator 0 # element: PV momentum: p000
+---
+correlator: PV
+momentum: p000
+gamma_source: GX
+gamma_sink: GX
+correlator_key: PV_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
-0 5e-06 2e-06
+0 1e-05 2e-06
 0 6e-06 2e-06
 0 6e-06 2e-06
-&
-# operator 0 # element: PV momentum: p100
+---
+correlator: PV
+momentum: p100
+gamma_source: GX
+gamma_sink: GX
+correlator_key: PV_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
-&
-# operator 0 # element: B momentum: p000
+---
+correlator: B
+momentum: p000
+gamma_source: GY
+gamma_sink: GY
+correlator_key: B_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
+0 8e-06 2e-06
 0 6e-06 2e-06
 0 6e-06 2e-06
-0 6e-06 2e-06
-&
-# operator 0 # element: B momentum: p100
+---
+correlator: B
+momentum: p100
+gamma_source: GY
+gamma_sink: GY
+correlator_key: B_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
-&
-# Job ID: XXX
-# date: XXX XXX XXX XXX XXX UTC
-# lattice size: 0 x 0 x 0 x 0
-# spatial volume: 0.0001
-# sources: gaussian gaussian # sink: point rotated
-# rotated current: d1[0]=0.100000 d1[0]=0.100000
-# masses: kappa[0]=0.1 kappa[0]=0.1
-# operator 0 # element: PION momentum: p000
+---
+JobID: XXX
+date: XXX XXX XXX XXX XXX XXX
+lattice_size: 8e-06
+antiquark_source_type: gaussian
+antiquark_source_label: 2e-06
+quark_source_type: gaussian
+quark_source_label: 2e-06
+sink_smear: local
+rotated_sink_operator: True
+antiquark_d1: "0.100000"
+quark_d1: "0.100000"
+antiquark_kappa: "0.1"
+quark_kappa: "0.1"
+...
+---
+correlator: PION
+momentum: p000
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PION_1S_1S_k0.1_k0.1_p000
+...
 0 0.0006 0.000000e+00
 0 4e-05 0.000000e+00
 0 8e-06 0.000000e+00
 0 3e-05 0.000000e+00
-&
-# operator 0 # element: PION momentum: p100
+---
+correlator: PION
+momentum: p100
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PION_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 0.000000e+00
 0 1e-05 0.000000e+00
 0 2e-06 0.000000e+00
 0 1e-05 0.000000e+00
-&
-# operator 0 # element: PS505 momentum: p000
-0 2e-06 2e-06
+---
+correlator: PS505
+momentum: p000
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PS505_1S_1S_k0.1_k0.1_p000
+...
+0 2e-05 2e-06
 0 3e-05 2e-06
 0 2e-06 2e-06
 0 3e-05 2e-06
-&
-# operator 0 # element: PS505 momentum: p100
-0 2e-06 2e-06
+---
+correlator: PS505
+momentum: p100
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PS505_1S_1S_k0.1_k0.1_p100
+...
+0 5e-06 2e-06
 0 1e-05 2e-06
 0 2e-06 2e-06
 0 9e-06 2e-06
-&
-# operator 0 # element: PS0505 momentum: p000
+---
+correlator: PS0505
+momentum: p000
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: PS0505_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
 0 3e-05 2e-06
 0 7e-06 2e-06
 0 3e-05 2e-06
-&
-# operator 0 # element: PS0505 momentum: p100
+---
+correlator: PS0505
+momentum: p100
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: PS0505_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 1e-05 2e-06
 0 2e-06 2e-06
 0 9e-06 2e-06
-&
-# operator 0 # element: RHO momentum: p000
+---
+correlator: RHO
+momentum: p000
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: RHO_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
 0 3e-05 2e-06
 0 7e-06 2e-06
 0 3e-05 2e-06
-&
-# operator 0 # element: RHO momentum: p100
+---
+correlator: RHO
+momentum: p100
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: RHO_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 1e-05 2e-06
 0 2e-06 2e-06
 0 9e-06 2e-06
-&
-# operator 0 # element: RHO0 momentum: p000
+---
+correlator: RHO0
+momentum: p000
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: RHO0_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
 0 3e-05 2e-06
 0 7e-06 2e-06
 0 3e-05 2e-06
-&
-# operator 0 # element: RHO0 momentum: p100
+---
+correlator: RHO0
+momentum: p100
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: RHO0_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 1e-05 2e-06
 0 2e-06 2e-06
 0 9e-06 2e-06
-&
-# operator 0 # element: SCALAR momentum: p000
+---
+correlator: SCALAR
+momentum: p000
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: SCALAR_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 0.000000e+00
+0 1e-05 0.000000e+00
 0 6e-06 0.000000e+00
-0 6e-06 0.000000e+00
-0 6e-06 0.000000e+00
-&
-# operator 0 # element: SCALAR momentum: p100
+0 8e-06 0.000000e+00
+---
+correlator: SCALAR
+momentum: p100
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: SCALAR_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 0.000000e+00
 0 2e-06 0.000000e+00
 0 2e-06 0.000000e+00
 0 2e-06 0.000000e+00
-&
-# operator 0 # element: SCAL0 momentum: p000
+---
+correlator: SCAL0
+momentum: p000
+gamma_source: GX
+gamma_sink: GX
+correlator_key: SCAL0_1S_1S_k0.1_k0.1_p000
+...
 0 0.0006 2e-06
+0 8e-06 2e-06
 0 6e-06 2e-06
 0 6e-06 2e-06
-0 6e-06 2e-06
-&
-# operator 0 # element: SCAL0 momentum: p100
+---
+correlator: SCAL0
+momentum: p100
+gamma_source: GX
+gamma_sink: GX
+correlator_key: SCAL0_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
-&
-# operator 0 # element: PV momentum: p000
+---
+correlator: PV
+momentum: p000
+gamma_source: GX
+gamma_sink: GX
+correlator_key: PV_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
+0 8e-06 2e-06
 0 6e-06 2e-06
-0 6e-06 2e-06
-0 6e-06 2e-06
-&
-# operator 0 # element: PV momentum: p100
+0 8e-06 2e-06
+---
+correlator: PV
+momentum: p100
+gamma_source: GX
+gamma_sink: GX
+correlator_key: PV_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
-&
-# operator 0 # element: B momentum: p000
+---
+correlator: B
+momentum: p000
+gamma_source: GY
+gamma_sink: GY
+correlator_key: B_1S_1S_k0.1_k0.1_p000
+...
 0 0.0005 2e-06
+0 8e-06 2e-06
 0 6e-06 2e-06
 0 6e-06 2e-06
-0 6e-06 2e-06
-&
-# operator 0 # element: B momentum: p100
+---
+correlator: B
+momentum: p100
+gamma_source: GY
+gamma_sink: GY
+correlator_key: B_1S_1S_k0.1_k0.1_p100
+...
 0 0.0002 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
 0 2e-06 2e-06
-&

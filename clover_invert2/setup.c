@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.4  2008/04/18 15:12:11  detar
+//  Revise metadata format for correlator files.
+//
 //  Revision 1.3  2008/03/28 15:42:04  detar
 //  Switch to indexing by momentum-operator pair.  Add another test case.
 //
@@ -202,7 +205,8 @@ int readin(int prompt) {
 	}
       }
       if(param.qk_type[i] == CLOVER_TYPE){
-	IF_OK status += get_f(stdin, prompt,"kappa", &param.dcp[i].Kappa );
+	IF_OK status += get_s(stdin, prompt,"kappa", param.kappa_label[i]);
+	IF_OK param.dcp[i].Kappa = atof(param.kappa_label[i]);
 	IF_OK status += get_f(stdin, prompt,"clov_c", &param.dcp[i].Clov_c );
 	param.dcp[i].U0 = param.u0;
 	IF_OK status += get_s(stdin, prompt,"check", savebuf);
@@ -226,7 +230,8 @@ int readin(int prompt) {
 	IF_OK status += get_f( stdin, prompt, "d1", &param.d1[i]);
 
       } else {  /* KS_TYPE */
-	IF_OK status += get_f(stdin, prompt,"mass", &param.ksp[i].mass );
+	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[i] );
+	IF_OK param.ksp[i].mass = atof(param.mass_label[i]);
 	param.ksp[i].u0 = u0;
 	IF_OK status += get_s(stdin, prompt,"check", savebuf);
 	IF_OK {
