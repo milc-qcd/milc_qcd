@@ -116,7 +116,7 @@ void gamma_adj(gamma_matrix_t *dest, gamma_matrix_t *src);
 void gamma_transp(gamma_matrix_t *dest, gamma_matrix_t *src);
 void gamma_conj(gamma_matrix_t *dest, gamma_matrix_t *src);
 int gamma_index(char *label);
-
+char *gamma_label(int index);
 
 /* gauss_smear_w.c */
 void gauss_smear_field(wilson_vector *src, Real width, int iters, int t0);

@@ -2,6 +2,8 @@
 #define _JACOBI_H
 #define DEPS_SCHUR 1.110223e-16
 #define MAX_JACOBI_ITERS 1000
+#include "complex.h"
+
 /* The Schur rotation of a hermitian matrix */
 typedef struct 
 {
