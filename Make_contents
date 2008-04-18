@@ -59,6 +59,7 @@ BINARY_SAMPLES =      \
  binary_samples/lprop.*sample* \
  binary_samples/in.sample.*smear* \
  binary_samples/ksprop*.sample.* \
+ binary_samples/ks.sample.* \
  binary_samples/ksvector.*sample.* \
  binary_samples/wprop*.sample.* \
  binary_samples/smear*.sample.*
