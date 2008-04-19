@@ -4,6 +4,7 @@
 /* MIMD version 7 */
 
 #include "generic_wilson_includes.h"
+#include <string.h>
 
 /*--------------------------------------------------------------------*/
 double start_timing(void){
@@ -43,14 +44,12 @@ spin_wilson_vector *create_swv_field(void){
 
 /*--------------------------------------------------------------------*/
 void clear_swv_field(spin_wilson_vector *swv){
+  memset(swv,'\0',sites_on_node*sizeof(spin_wilson_vector));
+}
 
-  int i, spin;
-  site *s;
-
-  FORALLSITES(i,s){
-    for(spin = 0; spin < 4; spin++)
-      clear_wvec( &swv->d[spin] );
-  }
+/*--------------------------------------------------------------------*/
+void clear_wv_field(wilson_vector *wv){
+  memset(wv,'\0',sites_on_node*sizeof(wilson_vector));
 }
 
 /*--------------------------------------------------------------------*/

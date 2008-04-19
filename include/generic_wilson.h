@@ -82,6 +82,7 @@ double start_timing(void);
 void print_timing(double dtime, char *str);
 void clear_swv_field(spin_wilson_vector *swv);
 void clear_wp_field(wilson_prop_field wp);
+void clear_wv_field(wilson_vector *wv);
 spin_wilson_vector *create_swv_field(void);
 wilson_prop_field create_wp_field(void);
 wilson_vector *create_wv_field(void);
