@@ -16,6 +16,10 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
 {
   int iterations_used = 0;
 
+  /* Set initial guess at solution */
+  if(qic->start_flag == START_ZERO_GUESS)
+    clear_wv_field(dest);
+
   if(qic->prec == 1)
     iterations_used = 
       bicgilu_cl_milc2qop_F( src, dest, qic, dmp );
