@@ -7,9 +7,12 @@ So far the following applications have been tested:
 
 clover_dynamical
 clover_invert
+clover_invert2
+ext_src
 file_utilities
 gluon_prop
 heavy
+ks_eigen
 ks_hl_spectrum
 ks_imp_dyn
 ks_imp_rhmc
@@ -19,6 +22,7 @@ pure_gauge
 pw_nr_meson
 schroed_cl_inv
 smooth_inst
+symanzik_sl32
 wilson_static
 
 Build the code with GNU make.  See the README file in this directory
@@ -27,20 +31,19 @@ for general instructions.
 Here are highlights of the changes:
 
 For version 7.6.2
+
   Revise metadata for FNAL correlator files in clover_invert2
   Add QOP and QDP support for clover inversions.
-  Add heavy-light-light baryon code from Heechang
-  Fix QDP support for ks_eigen.
-  Add ks_eigen code from version 6.
+  Add heavy-light-light baryon code from Heechang Na.
+  Add ks_eigen code from version 6 and fix QDP support.
   Add ext_src for generating extended source from propagators
   Add some spectrum calculations to HISQ targets in ks_imp_rhmc
   Add HISQ fermion code from Doug and Alexei
   Add link and action coeffs to all fermion_force calls.
-    Remove global accessor calls.
+    Remove global accessor calls for these coeffs.
   Change normalization of point sink props in ks_hl_spectrum
-    fix seg fault, and allow suppression of log correlators
+    fix seg fault, and allow suppression of correlators in log file.
   Fix nrestart treatment in QOP inverter calls.
-  Minor maintenance.
 
 For version 7.6.0
 
