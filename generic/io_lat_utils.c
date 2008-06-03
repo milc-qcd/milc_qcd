@@ -1382,11 +1382,11 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
 	gf->dataformat = ARCHIVE_3x3;
 
       /* Get archive floating point format */
-      if (qcdhdr_get_str("FLOATING_POINT",hdr,&floatpt)==FAILURE)
-	error_exit("FLOATING_POINT not present");
       gf->precision = 1;
-      if(strcmp(" IEEE64BIG",floatpt) == 0)
-	 gf->precision = 2;
+      if (qcdhdr_get_str("FLOATING_POINT",hdr,&floatpt)==FAILURE)
+	fprintf(stderr,"FLOATING_POINT not present.  Assuming IEEE32BIG.\n");
+      else if(strcmp(" IEEE64BIG",floatpt) == 0)
+	gf->precision = 2;
     }
 
   /* not a archive lattice - read lattice dimensions */
