@@ -159,11 +159,14 @@ char *gauge_info_keyword[] = {
       "gauge.previous.checksums",
       "gauge.fix.description",
       "gauge.fix.tolerance",
+      "gauge.translate",
       "gauge.smear.description",
       "gauge.smear.steps",
       "gauge.smear.factor",   /* (1-f)*link + f/6*staples */
 
       "quark.description",
+      "quark.dyn_flavors",
+      "quark.dyn_mass",
       "quark.flavors",
       "quark.flavors1",
       "quark.flavors2",
