@@ -1,5 +1,5 @@
 /**************************** spectrum_light_light.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*
        >>>>>  light-light spectrum functions <<<<<
 
@@ -135,10 +135,13 @@ void light_meson_spectrum(int t_source)
 void light_baryon_spectrum(field_offset quark, int t_source)
 {
   static char *bar_kind[4] = {"PROTON","PROTON0","DELTA","DELTA0"};
+  wilson_prop_field wp;
 
   int num_prop ;
   Real  space_vol = (Real)(nx*ny*nz);
   int t ;
+  int c,i;
+  site *s;
 
   complex *bar_prop[4];
   double t_total ; 
@@ -160,8 +163,18 @@ void light_baryon_spectrum(field_offset quark, int t_source)
   }
 
   /*** calculate the baryon spectrum ****/
-  w_baryon(quark,quark, quark, bar_prop );
-	  
+
+  /* Create the appropriate field for w_baryon and copy */
+  wp = create_wp_field();
+  for(c = 0; c < 3; c++){
+    FORALLSITES(i,s){
+      wp[c][i] = ((wilson_propagator *)F_PT(s,quark))->c[c];
+    }
+  }
+
+  w_baryon(wp, wp, wp, bar_prop );
+
+  destroy_wp_field(wp);
 
   /**
       print baryon propagators 

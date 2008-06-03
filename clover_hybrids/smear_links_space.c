@@ -1,5 +1,5 @@
 /************************** smear_links_space.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Doug Toussaint 1/30/96 */
 /* 7/17/96 version4 to smear only in space directions */
 /* 11/16/01 CD changed to call standardized ape_smear_dir */

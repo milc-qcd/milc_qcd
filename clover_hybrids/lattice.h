@@ -51,10 +51,10 @@ typedef struct  {
 	} V;
 
 	/* Wilson complex vectors */
-#define	      g_rand  U.Uvec[0]	/* gaussian random vector */
-#define	      psi  U.Uvec[1]	/* solution vector */
-#define	      chi  U.Uvec[2]	/* source vector */
-#define	      mp   U.Uvec[3]	/* another CG vector */
+#define	      G_RAND  U.Uvec[0]	/* gaussian random vector */
+#define	      PSI  U.Uvec[1]	/* solution vector */
+#define	      CHI  U.Uvec[2]	/* source vector */
+#define	      MP   U.Uvec[3]	/* another CG vector */
 	wilson_vector ttt;	/* internal conjugate gradient vector */
 #define		      vtmp  U.Uvec[4]	/* more cg vectors for bicongrad */
 	wilson_vector sss;	/* more cg vectors for bicongrad */

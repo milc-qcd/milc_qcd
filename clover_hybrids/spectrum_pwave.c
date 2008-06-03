@@ -97,63 +97,63 @@ int spectrum_pwave(){ /* return the C.G. iteration number */
         cgn += mat_invert( F_OFFSET(quark_source), F_OFFSET(quark_prop) );
 
         /* First the a1 operator (1++, epsilon_ijk gamma_j deriv_k ) */
-        mult_a1_P( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
-        cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop) );
-        mult_a1_P( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
+        mult_a1_P( ZUP, F_OFFSET(quark_source), F_OFFSET(G_RAND) );
+        cgn += mat_invert( F_OFFSET(G_RAND), F_OFFSET(anti_prop) );
+        mult_a1_P( ZUP, F_OFFSET(quark_prop), F_OFFSET(G_RAND) );
         FORALLSITES(i,s){
-	    cc = wvec_dot( &(s->anti_prop), &(s->g_rand) );
+	    cc = wvec_dot( &(s->anti_prop), &(s->G_RAND) );
 	    CSUM( prop_a1_P[(s->t+nt-t_source)%nt], cc );
         }
 
         /* Now the 0+- P wave operator */
         /* Source for antiquark propagator - mult_zero_pm_P() includes
 	    gamma matrix for the antiquark propagator */
-        mult_zero_pm_P( F_OFFSET(quark_source), F_OFFSET(g_rand) );
-        cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop) );
-        mult_zero_pm_P( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
+        mult_zero_pm_P( F_OFFSET(quark_source), F_OFFSET(G_RAND) );
+        cgn += mat_invert( F_OFFSET(G_RAND), F_OFFSET(anti_prop) );
+        mult_zero_pm_P( F_OFFSET(quark_prop), F_OFFSET(G_RAND) );
         FORALLSITES(i,s){
-	    cc = wvec_dot( &(s->anti_prop), &(s->g_rand) );
+	    cc = wvec_dot( &(s->anti_prop), &(s->G_RAND) );
 	    CSUM( prop_0pm_P[(s->t+nt-t_source)%nt], cc );
         }
 
         /* Now do the 0-- operator */
         /* Source for antiquark propagator (mult_zero_mm_P includes
 		gamma_5 for antiquark propagator) */
-        mult_zero_mm_P( F_OFFSET(quark_source), F_OFFSET(g_rand) );
-        cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop) );
-        mult_zero_mm_P( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
+        mult_zero_mm_P( F_OFFSET(quark_source), F_OFFSET(G_RAND) );
+        cgn += mat_invert( F_OFFSET(G_RAND), F_OFFSET(anti_prop) );
+        mult_zero_mm_P( F_OFFSET(quark_prop), F_OFFSET(G_RAND) );
         FORALLSITES(i,s){
-	    cc = wvec_dot( &(s->anti_prop), &(s->g_rand) );
+	    cc = wvec_dot( &(s->anti_prop), &(s->G_RAND) );
 	    CSUM( prop_0mm_P[(s->t+nt-t_source)%nt], cc );
         }
 
         /* Now do the 0-+ hybrid operator.  */
         /* Source for antiquark propagator */
-        mult_zero_mp( F_OFFSET(quark_source), F_OFFSET(g_rand) );
-        cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop) );
-        mult_zero_mp( F_OFFSET(quark_prop), F_OFFSET(g_rand) );
+        mult_zero_mp( F_OFFSET(quark_source), F_OFFSET(G_RAND) );
+        cgn += mat_invert( F_OFFSET(G_RAND), F_OFFSET(anti_prop) );
+        mult_zero_mp( F_OFFSET(quark_prop), F_OFFSET(G_RAND) );
         FORALLSITES(i,s){
-	    cc = wvec_dot( &(s->anti_prop), &(s->g_rand) );
+	    cc = wvec_dot( &(s->anti_prop), &(s->G_RAND) );
 	    CSUM( prop_0mp[(s->t+nt-t_source)%nt], cc );
         }
 
         /* Now do the 1-- hybrid operator.  For the moment, Z component only */
         /* Source for antiquark propagator */
-        mult_one_mm( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
-        cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop) );
-        mult_one_mm( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
+        mult_one_mm( ZUP, F_OFFSET(quark_source), F_OFFSET(G_RAND) );
+        cgn += mat_invert( F_OFFSET(G_RAND), F_OFFSET(anti_prop) );
+        mult_one_mm( ZUP, F_OFFSET(quark_prop), F_OFFSET(G_RAND) );
         FORALLSITES(i,s){
-	    cc = wvec_dot( &(s->anti_prop), &(s->g_rand) );
+	    cc = wvec_dot( &(s->anti_prop), &(s->G_RAND) );
 	    CSUM( prop_1mm[(s->t+nt-t_source)%nt], cc );
         }
 
         /* Now do the 1++ hybrid operator.  For the moment, Z component only */
         /* Source for antiquark propagator */
-        mult_one_pp( ZUP, F_OFFSET(quark_source), F_OFFSET(g_rand) );
-        cgn += mat_invert( F_OFFSET(g_rand), F_OFFSET(anti_prop) );
-        mult_one_pp( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
+        mult_one_pp( ZUP, F_OFFSET(quark_source), F_OFFSET(G_RAND) );
+        cgn += mat_invert( F_OFFSET(G_RAND), F_OFFSET(anti_prop) );
+        mult_one_pp( ZUP, F_OFFSET(quark_prop), F_OFFSET(G_RAND) );
         FORALLSITES(i,s){
-	    cc = wvec_dot( &(s->anti_prop), &(s->g_rand) );
+	    cc = wvec_dot( &(s->anti_prop), &(s->G_RAND) );
 	    CSUM( prop_1pp[(s->t+nt-t_source)%nt], cc );
         }
 
@@ -200,7 +200,7 @@ int spectrum_pwave(){ /* return the C.G. iteration number */
 	deriv is forward_deriv - backward_deriv
 	gluon operator is B_i = 1+-,  take dot product 
 	see "sources.tex" for details. */
-    /* Uses mp, vtmp and sss for temporary storage */
+    /* Uses MP, vtmp and sss for temporary storage */
 void mult_zero_pm_P( field_offset src, field_offset dest ){
     register int dir1,dir2,i;
     register site *s;
@@ -236,25 +236,24 @@ void mult_zero_pm_P( field_offset src, field_offset dest ){
 	FORALLSITES(i,s){
 	    mult_mat_wilson_vec( &(s->link[dir2]),
 		(wilson_vector *)gen_pt[0][i], &tvec2 );
-            sub_wilson_vector( &tvec2, (wilson_vector *)gen_pt[1][i], &(s->mp));
+            sub_wilson_vector( &tvec2, (wilson_vector *)gen_pt[1][i], &(s->MP));
 	}
 	cleanup_gather(tag0);
 	cleanup_gather(tag1);
-        mult_by_field_strength( dir1, dir2, F_OFFSET(mp), F_OFFSET(vtmp) );
+        mult_by_field_strength( dir1, dir2, F_OFFSET(MP), F_OFFSET(vtmp) );
 	FORALLSITES(i,s){
 	    add_wilson_vector( F_PT(s,dest), &(s->vtmp), F_PT(s,dest) );
 	}
 
         /* Multiply sss by dir1,dir2 component of magnetic field, */
 	/* keep in temp. vector mp */
-        mult_by_field_strength( dir1, dir2, F_OFFSET(sss), F_OFFSET(mp) );
+        mult_by_field_strength( dir1, dir2, F_OFFSET(sss), F_OFFSET(MP) );
 
-	/* parallel transport mp from positive dir2 direction */
-	/* parallel transport mp from negative dir2 direction */
-        tag0=start_gather_site( F_OFFSET(mp), sizeof(wilson_vector),
+	/* parallel transport MP from positive dir2 direction */
+	/* parallel transport MP from negative dir2 direction */
+        tag0=start_gather_site( F_OFFSET(MP), sizeof(wilson_vector),
             dir2, EVENANDODD, gen_pt[0] );
-	FORALLSITES(i,s){
-	    mult_adj_mat_wilson_vec( &(s->link[dir2]), &(s->mp), &(s->vtmp) );
+	FORALLSITES(i,s){mult_adj_mat_wilson_vec( &(s->link[dir2]), &(s->MP), &(s->vtmp) );
 	}
         tag1=start_gather_site( F_OFFSET(vtmp), sizeof(wilson_vector),
             OPP_DIR(dir2), EVENANDODD, gen_pt[1] );
@@ -316,26 +315,26 @@ void mult_zero_mm_P( field_offset src, field_offset dest ){
 	FORALLSITES(in,s){
 	    mult_mat_wilson_vec( &(s->link[k]),
 		(wilson_vector *)gen_pt[0][in], &tvec2 );
-            sub_wilson_vector( &tvec2, (wilson_vector *)gen_pt[1][in],&(s->mp));
+            sub_wilson_vector( &tvec2, (wilson_vector *)gen_pt[1][in],&(s->MP));
 	}
 	cleanup_gather(tag0);
 	cleanup_gather(tag1);
-        mult_by_field_strength( TUP, i, F_OFFSET(mp), F_OFFSET(vtmp) );
+        mult_by_field_strength( TUP, i, F_OFFSET(MP), F_OFFSET(vtmp) );
 	FORALLSITES(in,s){
 	    scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), &(s->vtmp),
 		sign, (wilson_vector *)F_PT(s,dest) );
 	}
 
         /* Multiply sss by 0,i component of magnetic field, */
-	/* keep in temp. vector mp */
-        mult_by_field_strength( TUP, i, F_OFFSET(sss), F_OFFSET(mp) );
+	/* keep in temp. vector MP */
+        mult_by_field_strength( TUP, i, F_OFFSET(sss), F_OFFSET(MP) );
 
-	/* parallel transport mp from positive k direction */
-	/* parallel transport mp from negative k direction */
-        tag0=start_gather_site( F_OFFSET(mp), sizeof(wilson_vector),
+	/* parallel transport MP from positive k direction */
+	/* parallel transport MP from negative k direction */
+        tag0=start_gather_site( F_OFFSET(MP), sizeof(wilson_vector),
             k, EVENANDODD, gen_pt[0] );
 	FORALLSITES(in,s){
-	    mult_adj_mat_wilson_vec( &(s->link[k]), &(s->mp), &(s->vtmp) );
+	    mult_adj_mat_wilson_vec( &(s->link[k]), &(s->MP), &(s->vtmp) );
 	}
         tag1=start_gather_site( F_OFFSET(vtmp), sizeof(wilson_vector),
             OPP_DIR(k), EVENANDODD, gen_pt[1] );
@@ -377,13 +376,13 @@ void mult_a1_P( int pdir,  field_offset src, field_offset dest ){
            antiquark propagator ) */
         FORALLSITES(i,s){
             mult_by_gamma( (wilson_vector *)F_PT(s,src), &tvec1, j );
-            mult_by_gamma( &tvec1, &(s->mp), GAMMAFIVE );
+            mult_by_gamma( &tvec1, &(s->MP), GAMMAFIVE );
         }
-	/* parallel transport mp from forwards and backwards. */
-        tag0=start_gather_site( F_OFFSET(mp), sizeof(wilson_vector),
+	/* parallel transport MP from forwards and backwards. */
+        tag0=start_gather_site( F_OFFSET(MP), sizeof(wilson_vector),
             k, EVENANDODD, gen_pt[0] );
 	FORALLSITES(i,s){
-	    mult_adj_mat_wilson_vec( &(s->link[k]), &(s->mp), &(s->vtmp) );
+	    mult_adj_mat_wilson_vec( &(s->link[k]), &(s->MP), &(s->vtmp) );
 	}
         tag1=start_gather_site( F_OFFSET(vtmp), sizeof(wilson_vector),
             OPP_DIR(k), EVENANDODD, gen_pt[1] );
@@ -422,7 +421,7 @@ void mult_one_mm( int pdir, field_offset src, field_offset dest ){
     1++ = epsilon_ijk \psibar gamma_j \psi F_{0,k}
    "pdir" is the polarization direction of the meson */
 void mult_one_pp( int pdir, field_offset src, field_offset dest ){
-    /* use mp as temporary storage */
+    /* use MP as temporary storage */
     register int i,j,k;
     register site *s;
     wilson_vector tvec;
@@ -438,9 +437,9 @@ void mult_one_pp( int pdir, field_offset src, field_offset dest ){
 	else if ( j == ((pdir+1)%3) )sign = 1.0;
 	else sign = -1.0;
 
-        mult_by_field_strength( TUP, k, src, F_OFFSET(mp) );
+        mult_by_field_strength( TUP, k, src, F_OFFSET(MP) );
 	FORALLSITES(i,s){
-            mult_by_gamma( &(s->mp), &tvec, j );
+            mult_by_gamma( &(s->MP), &tvec, j );
 	    scalar_mult_add_wvec( (wilson_vector *)F_PT(s,dest), &tvec, sign,
 		(wilson_vector *)F_PT(s,dest) );
 	}
@@ -458,7 +457,7 @@ void mult_one_pp( int pdir, field_offset src, field_offset dest ){
     quark operator is "rho", gluon operator is magnetic field.
     0-+ = epsilon_ijk \psibar gamma_i \psi F_{j,k} */
 void mult_zero_mp( field_offset src, field_offset dest ){
-    /* use mp as temporary storage */
+    /* use MP as temporary storage */
     register int i,j,k,in;
     register site *s;
     wilson_vector tvec;
@@ -473,9 +472,9 @@ void mult_zero_mp( field_offset src, field_offset dest ){
 	/* antisymmetry of epsilon and F_{jk} means no need to sum all terms */
 	j=(i+1)%3; k = (i+2)%3;
 
-        mult_by_field_strength( j, k, src, F_OFFSET(mp) );
+        mult_by_field_strength( j, k, src, F_OFFSET(MP) );
 	FORALLSITES(in,s){
-            mult_by_gamma( &(s->mp), &tvec, i );
+            mult_by_gamma( &(s->MP), &tvec, i );
 	    add_wilson_vector( (wilson_vector *)F_PT(s,dest), &tvec,
 		(wilson_vector *)F_PT(s,dest) );
 	}

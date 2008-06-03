@@ -1,14 +1,17 @@
 /***************** control.c *********************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Main procedure for SU3 wilson spectrum, including hybrids */
 
 #define CONTROL
 #include "cl_hyb_includes.h"
+#ifdef HAVE_QDP
+#include <qdp.h>
+#endif
 
 int main(int argc,char *argv[]){
   int prompt;
 
-  int m_iters,spect_iters;
+  int m_iters = 0,spect_iters = 0;
   double dtime;
   double g_time ; 
   /***  ---------------------------------------- ****/

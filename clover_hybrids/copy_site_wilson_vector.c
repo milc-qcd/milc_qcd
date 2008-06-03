@@ -1,6 +1,6 @@
 /**************************** copy_site_wilson_vector.c ****************************/
 /* MIMD version 7 */
-#include "generic_wilson_includes.h"
+#include "cl_hyb_includes.h"
 
 #ifdef DEBUGDEF
   #include DEBUGDEF

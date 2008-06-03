@@ -1,5 +1,5 @@
 /******** setup.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 #define IF_OK if(status==0)
 
 #include "cl_hyb_includes.h"
@@ -50,11 +50,11 @@ int prompt,status;
 
 	status=get_prompt(stdin, &prompt);
 
-	IF_OK status += get_i(prompt,"nx", &par_buf.nx );
-	IF_OK status += get_i(prompt,"ny", &par_buf.ny );
-	IF_OK status += get_i(prompt,"nz", &par_buf.nz );
-	IF_OK status += get_i(prompt,"nt", &par_buf.nt );
-	IF_OK status += get_i(prompt,"iseed", &par_buf.iseed );
+	IF_OK status += get_i(stdin,prompt,"nx", &par_buf.nx );
+	IF_OK status += get_i(stdin,prompt,"ny", &par_buf.ny );
+	IF_OK status += get_i(stdin,prompt,"nz", &par_buf.nz );
+	IF_OK status += get_i(stdin,prompt,"nt", &par_buf.nt );
+	IF_OK status += get_i(stdin,prompt,"iseed", &par_buf.iseed );
 
 	if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
     } /* end if(mynode()==0) */
@@ -97,7 +97,8 @@ int readin(int prompt) {
 	/* get couplings and broadcast to nodes	*/
 	/* beta, kappa */
 	IF_OK status += get_f(stdin, prompt,"beta", &par_buf.beta );
-	IF_OK status += get_i(prompt,"verbose_flag", &par_buf.verbose_flag );
+	IF_OK status += get_i(stdin, prompt,"verbose_flag", 
+			      &par_buf.verbose_flag );
 	IF_OK status += get_f(stdin, prompt,"kappa", &par_buf.kappa );
 
 	/* Clover coefficient, u0 */
@@ -106,9 +107,10 @@ int readin(int prompt) {
 
 
 	/* source time slice and increment */
-	IF_OK status += get_i(prompt,"source_start",&par_buf.source_start);
-	IF_OK status += get_i(prompt,"source_inc",&par_buf.source_inc);
-	IF_OK status += get_i(prompt,"n_sources",&par_buf.n_sources);
+	IF_OK status += get_i(stdin, prompt,"source_start",
+			      &par_buf.source_start);
+	IF_OK status += get_i(stdin, prompt,"source_inc",&par_buf.source_inc);
+	IF_OK status += get_i(stdin, prompt,"n_sources",&par_buf.n_sources);
 
 
 	/*** parameters controlling the smearing of the links ***/
@@ -117,13 +119,14 @@ int readin(int prompt) {
 	IF_OK status += get_f(stdin, prompt,"space_norm_factor",&par_buf.space_norm_factor);
 	IF_OK status += get_f(stdin, prompt,"time_simple_weight",&par_buf.time_simple_weight);
 	IF_OK status += get_f(stdin, prompt,"time_norm_factor",&par_buf.time_norm_factor);
-	IF_OK status += get_i(prompt,"smearing_level",&par_buf.smearing_level);
+	IF_OK status += get_i(stdin, prompt,"smearing_level",
+			      &par_buf.smearing_level);
 #else
       smearing_level = 0   ;
 #endif
     
 	/* maximum no. of conjugate gradient iterations */
-	IF_OK status += get_i(prompt,"max_cg_iterations", &par_buf.niter );
+      IF_OK status += get_i(stdin, prompt,"max_cg_iterations", &par_buf.niter );
     
 	/* error for propagator conjugate gradient */
 	IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );

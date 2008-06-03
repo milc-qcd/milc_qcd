@@ -1,6 +1,6 @@
 /**************** f_measure_cl.c ***************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Clover fermions: patterned after wilson_dynamical/f_measure3.c */
 /* Measure fermionic observables:
     psi-bar-psi, fermion action, energy and pressure, psi-bar-gamma_5-psi
@@ -64,11 +64,11 @@ int iters;
 FORALLSITES(i,s){
         for(k=0;k<4;k++)for(j=0;j<3;j++){
 #ifdef SITERAND
-            s->g_rand.d[k].c[j].real = gaussian_rand_no(&(s->site_prn));
-            s->g_rand.d[k].c[j].imag = gaussian_rand_no(&(s->site_prn));
+            s->G_RAND.d[k].c[j].real = gaussian_rand_no(&(s->site_prn));
+            s->G_RAND.d[k].c[j].imag = gaussian_rand_no(&(s->site_prn));
 #else							
-            s->g_rand.d[k].c[j].real = gaussian_rand_no(&node_prn);
-            s->g_rand.d[k].c[j].imag = gaussian_rand_no(&node_prn);
+            s->G_RAND.d[k].c[j].real = gaussian_rand_no(&node_prn);
+            s->G_RAND.d[k].c[j].imag = gaussian_rand_no(&node_prn);
 #endif
 	}
     }
@@ -77,9 +77,9 @@ FORALLSITES(i,s){
 No compile.  Requires LU
 #endif /*LU*/
 
-  /* Copy gaussian source to chi */
+  /* Copy gaussian source to CHI */
   FORALLSITES(i,s) {
-  copy_wvec( &(s->g_rand), &(s->chi) );
+  copy_wvec( &(s->G_RAND), &(s->CHI) );
   }
 
   /* take M inverse, result in psi */
@@ -92,27 +92,27 @@ No compile.  Requires LU
   
 #ifdef BI
   iters = 
-    wilson_invert_site(F_OFFSET(chi),F_OFFSET(psi),
+    wilson_invert_site(F_OFFSET(CHI),F_OFFSET(PSI),
 		       bicgilu_cl_site,&qic,(void *)&dcp);
 #else
   iters = 
-    wilson_invert_site(F_OFFSET(chi),F_OFFSET(psi),
+    wilson_invert_site(F_OFFSET(CHI),F_OFFSET(PSI),
 		       cgilu_cl_site,&qic,(void *)&dcp);
 #endif
 
 /*Temporary*/
-/* Multiply by M and see if I get g_rand back */
+/* Multiply by M and see if I get G_RAND back */
 /* use dir as flag*/
 /**
-dslash_w_site( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
-FORALLSITES(i,s)scalar_mult_add_wvec( &(s->psi), &(s->mp), -kappa, &(s->mp) );
+dslash_w_site( F_OFFSET(PSI), F_OFFSET(mp), PLUS, EVENANDODD);
+FORALLSITES(i,s)scalar_mult_add_wvec( &(s->PSI), &(s->MP), -kappa, &(s->MP) );
 FORALLSITES(i,s){
     for(dir=0,j=0;j<4;j++)for(k=0;k<3;k++){
-	if(s->g_rand.d[j].c[k].real - s->mp.d[j].c[k].real > 2e-5 )dir=1;
-	if(s->g_rand.d[j].c[k].imag - s->mp.d[j].c[k].imag > 2e-5 )dir=1;
+	if(s->G_RAND.d[j].c[k].real - s->MP.d[j].c[k].real > 2e-5 )dir=1;
+	if(s->G_RAND.d[j].c[k].imag - s->MP.d[j].c[k].imag > 2e-5 )dir=1;
 	if(dir)printf("%d %d %d  ( %.4e , %.4e )  ( %.4e , %.4e )\n",
-	    i,j,k,s->g_rand.d[j].c[k].real,s->g_rand.d[j].c[k].imag,
-	    s->mp.d[j].c[k].real,s->mp.d[j].c[k].imag);
+	    i,j,k,s->G_RAND.d[j].c[k].real,s->G_RAND.d[j].c[k].imag,
+	    s->MP.d[j].c[k].real,s->MP.d[j].c[k].imag);
     }
 } *End temporary **/
 
@@ -120,26 +120,26 @@ FORALLSITES(i,s){
     pbg5p = cmplx(0.0,0.0);
     faction = dslash_time = dslash_space = 0.0;
 
-    /* psi-bar-psi = g_rand.psi */
-    /* psi-bar-gamma-5 psi = g_rand. gamma-5 psi */
+    /* psi-bar-psi = G_RAND.psi */
+    /* psi-bar-gamma-5 psi = G_RAND. gamma-5 PSI */
     FORALLSITES(i,s){
-        cc = wvec_dot( &(s->g_rand), &(s->psi) );
+        cc = wvec_dot( &(s->G_RAND), &(s->PSI) );
 	CSUM(pbp,cc);
-        mult_by_gamma( &(s->psi),&wv0,  GAMMAFIVE);
-        cc = wvec_dot( &(s->g_rand), &wv0 );
+        mult_by_gamma( &(s->PSI),&wv0,  GAMMAFIVE);
+        cc = wvec_dot( &(s->G_RAND), &wv0 );
 	CSUM(pbg5p,cc);
     }
 
     /* fermion energy and pressure */
     for(dir=XUP;dir<=TUP;dir++){
-	/* multiply g_rand by one component of Dslash_adjoint, result in p.
-	   dot product with psi.
+	/* multiply G_RAND by one component of Dslash_adjoint, result in p.
+	   dot product with PSI.
 	*/
 
-	/* multiply g_rand by one component of Dslash_adjoint, result in p */
+	/* multiply G_RAND by one component of Dslash_adjoint, result in p */
 	FORALLSITES(i,s){
-	    wp_shrink( &(s->g_rand), &(s->htmp[0]), dir, MINUS );
-	    wp_shrink( &(s->g_rand), &hwv1, dir, PLUS );
+	    wp_shrink( &(s->G_RAND), &(s->htmp[0]), dir, MINUS );
+	    wp_shrink( &(s->G_RAND), &hwv1, dir, PLUS );
 	    mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv1, &(s->htmp[1]) );
 	}
 	tag0 = start_gather_site( F_OFFSET(htmp[0]), sizeof(half_wilson_vector),
@@ -158,9 +158,9 @@ FORALLSITES(i,s){
 	cleanup_gather(tag0);
 	cleanup_gather(tag1);
 	
-        /* dot product with psi, result into energy or pressure */
+        /* dot product with PSI, result into energy or pressure */
         FORALLSITES(i,s){
-            cc = wvec_dot( &(s->psi), &(s->tmpb) );
+            cc = wvec_dot( &(s->PSI), &(s->tmpb) );
 	    if(dir==TUP) dslash_time += cc.real;
 	    else  dslash_space += cc.real;
 	}

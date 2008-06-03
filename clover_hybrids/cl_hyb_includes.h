@@ -14,10 +14,11 @@
 #include "../include/dirs.h"
 #include "lattice.h"
 #include "../include/comdefs.h"
-#include "../include/io_lat.h"
 #include "../include/generic.h"
 #include "../include/generic_wilson.h"
 #include "../include/generic_clover.h"
+#include "../include/io_lat.h"
+#include "../include/io_ksprop.h"
 #include "../include/dirs.h"
 
 

@@ -1,5 +1,5 @@
 /************************ mat_invert_clover.c *******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /**   Wrapper for the calculation of clover
  **   action quark propagators
  **   7/11/98 Updated for new v5 inverters CD
@@ -12,8 +12,8 @@ int mat_invert( field_offset src, field_offset dest ){
   register site *s;
   int iters;
 
-  if( src != F_OFFSET(chi) ){
-    FORALLSITES(i,s) s->chi = *(wilson_vector *)F_PT(s,src);
+  if( src != F_OFFSET(CHI) ){
+    FORALLSITES(i,s) s->CHI = *(wilson_vector *)F_PT(s,src);
   }
 
   /* Load inversion control structure */
@@ -31,12 +31,12 @@ int mat_invert( field_offset src, field_offset dest ){
   
 #ifdef BI
   iters = 
-    wilson_invert_site(F_OFFSET(chi),dest
+    wilson_invert_site(F_OFFSET(CHI),dest,
 		       bicgilu_cl_site,&qic,(void *)&dcp);
 #else
   
   iters = 
-    wilson_invert_site(F_OFFSET(chi),dest,
+    wilson_invert_site(F_OFFSET(CHI),dest,
 		       cgilu_cl_site,&qic,(void *)&dcp);
 #endif
   return(iters);
