@@ -845,13 +845,13 @@ void r_serial_arch(gauge_file *gf)
       
       if(this_node==0){
 	if(precision == 1){
-	  if( (int)g_read(uin,48*sizeof(float),1,fp) != 1)
+	  if( (int)g_read(uin,realspersite*sizeof(float),1,fp) != 1)
 	    {
 	      printf("%s: node %d gauge configuration read error %d file %s\n",
 		     myname,this_node,errno,filename); 
 	      fflush(stdout); terminate(1);
 	    }
-	  if (!big_end) byterevn((int32type *)uin,48);
+	  if (!big_end) byterevn((int32type *)uin,realspersite);
 	  q = uin;
 	  for (mu=0;mu<4;mu++) {
 	    for (p=0;p<realspersite/4;p++) {
