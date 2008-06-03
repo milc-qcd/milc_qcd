@@ -274,7 +274,7 @@ void qfree(void *);
 /* For quark source routines - both Wilson and KS */
 /* The Weyl representation types are included for w_source_h */
 enum source_type { 
-  UNKNOWN = 0, POINT, GAUSSIAN, CUTOFF_GAUSSIAN, CORNER_WALL, 
+  UNKNOWN = 0, POINT, GAUSSIAN, ROTATE_3D, CUTOFF_GAUSSIAN, CORNER_WALL, 
   EVEN_WALL, EVENANDODD_WALL, RANDOM_VECTOR_WALL,
   POINT_WEYL, CUTOFF_GAUSSIAN_WEYL, COVARIANT_GAUSSIAN,
   COMPLEX_FIELD_FILE, COMPLEX_FIELD_FM_FILE, COMPLEX_FIELD_STORE,

@@ -37,6 +37,7 @@ typedef struct {
   int wall_cutoff;    /* half size of box for w_source_h */
   int parity;         /* even or odd sites for w_source_h */
   Real r0;            /* source size for gaussian, width for gauge invt  */
+  Real d1;            /* Fermilab 3D rotation parameter */
   int iters;          /* iterations for gauge invariant source */
   int x0,y0,z0,t0;    /* source coordinates for most */ 
   char source_file[MAXFILENAME]; /* file name for some sources */
