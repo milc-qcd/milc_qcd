@@ -690,7 +690,7 @@ void w_serial_w_fm_f(w_prop_file *wpf)
 	printf("w_serial_w_fm_f: Attempting serial close on file opened in parallel \n");
 
       printf("Wrote prop file %s time stamp %s\n",wpf->filename,
-	     (wpf->header)->time_stamp);
+	     wpf->header->time_stamp);
 
       if(wpf->fp != NULL)g_close(wpf->fp);
     }

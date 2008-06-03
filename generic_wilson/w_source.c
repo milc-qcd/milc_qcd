@@ -358,7 +358,7 @@ int w_source_field(wilson_vector *src, wilson_quark_source *wqs)
     rotate_3D_wvec(wqs->wv_src, wqs->d1);
 
     /* Copy to requested location */
-    if(src != NULL)copy_D(wqs->wv_src, src);
+    if(src != NULL)copy_D(src, wqs->wv_src);
   }
   else if(source_type == COVARIANT_GAUSSIAN){
     alloc_wqs_wv_src(wqs);

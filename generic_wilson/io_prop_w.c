@@ -428,6 +428,8 @@ w_prop_file *setup_output_w_prop_file()
 {
   w_prop_file *wpf;
   w_prop_header *wph;
+  time_t time_stamp;
+  int i;
 
   /* Allocate space for a new file structure */
 
@@ -462,6 +464,22 @@ w_prop_file *setup_output_w_prop_file()
   wph->dims[2] = nz;
   wph->dims[3] = nt;
 
+  /* Get date and time stamp. (We use local time on node 0) */
+
+  if(this_node==0)
+    {
+      time(&time_stamp);
+      strcpy(wph->time_stamp,ctime(&time_stamp));
+      /* For aesthetic reasons, don't leave trailing junk bytes here to be
+	 written to the file */
+      for(i = strlen(wph->time_stamp) + 1; i < (int)sizeof(wph->time_stamp); i++)
+	wph->time_stamp[i] = '\0';
+      
+      /* Remove trailing end-of-line character */
+      if(wph->time_stamp[strlen(wph->time_stamp) - 1] == '\n')
+	wph->time_stamp[strlen(wph->time_stamp) - 1] = '\0';
+    }
+  
   /* Broadcast to all nodes */
   broadcast_bytes(wph->time_stamp,sizeof(wph->time_stamp));
 
