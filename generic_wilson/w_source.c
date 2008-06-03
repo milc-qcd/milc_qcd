@@ -114,6 +114,7 @@ int choose_usqcd_w_file_type(int source_type){
   case COMPLEX_FIELD_STORE:
     file_type = FILE_TYPE_W_USQCD_C1D12;
     break;
+  case ROTATE_3D:
   case COVARIANT_GAUSSIAN:
   case DIRAC_FIELD_FILE:
   case DIRAC_FIELD_FM_FILE:
@@ -195,6 +196,36 @@ static int check_color_spin(QIO_String *recxml, int color, int spin){
 }
 
 #endif
+
+/*--------------------------------------------------------------------*/
+/* Do the 3D Fermilab rotation on a Wilson vector field.  That is,
+   compute src <- (1 + a d1 * \gamma * D/2) src where D is a 3D
+   covariant difference normalized to give twice the covariant
+   derivative in the continuum limit. */
+static void rotate_3D_wvec(wilson_vector *src, Real d1)
+{
+  int i;
+  site *s;
+  wilson_vector *mp, *tmp;
+  
+  mp  = create_wv_field();
+  tmp = create_wv_field();
+  
+  /* Do Wilson Dslash on the source field */
+  dslash_w_3D_field(src, mp,  PLUS, EVENANDODD);
+  dslash_w_3D_field(src, tmp, MINUS, EVENANDODD);
+  
+  FORALLSITES(i,s){
+    /* tmp <- mp - tmp = 2*Dslash*src */
+    sub_wilson_vector(mp + i, tmp + i, tmp + i);
+    /* src <- d1/4 * tmp + src */
+    scalar_mult_add_wvec(src + i, tmp + i, d1/4., src + i);
+  }
+
+  cleanup_dslash_w_3D_temps();
+  destroy_wv_field(mp); 
+  destroy_wv_field(tmp);
+}
 
 /********************************************************************/
 /* Construct the source field */
@@ -314,6 +345,20 @@ int w_source_field(wilson_vector *src, wilson_quark_source *wqs)
       if(src != NULL)
 	src[i].d[spin].c[color].real = wqs->c_src[i].real;
     }
+  }
+  else if(source_type == ROTATE_3D){
+    alloc_wqs_wv_src(wqs);
+
+    /* Set delta function source */
+    if(node_number(x0,y0,z0,t0) == this_node){
+      i = node_index(x0,y0,z0,t0);
+      wqs->wv_src[i].d[spin].c[color].real = 1.;
+    }
+    /* Then do 3D rotation */
+    rotate_3D_wvec(wqs->wv_src, wqs->d1);
+
+    /* Copy to requested location */
+    if(src != NULL)copy_D(wqs->wv_src, src);
   }
   else if(source_type == COVARIANT_GAUSSIAN){
     alloc_wqs_wv_src(wqs);
@@ -720,7 +765,7 @@ int ask_w_quark_source( FILE *fp, int prompt, int *source_type, char *descrp)
   char myname[] = "ask_w_quark_source";
 
   if (prompt!=0)
-    printf("enter 'point', 'gaussian', 'covariant_gaussian', 'complex_field', 'complex_field_fm', 'dirac_field', 'dirac_field_fm', 'prop_file' for source type\n");
+    printf("enter 'point', 'rotate_3D', 'gaussian', 'covariant_gaussian', 'complex_field', 'complex_field_fm', 'dirac_field', 'dirac_field_fm' for source type\n");
 
   savebuf = get_next_tag(fp, "quark source command", myname);
   if (savebuf == NULL)return 1;
@@ -728,6 +773,10 @@ int ask_w_quark_source( FILE *fp, int prompt, int *source_type, char *descrp)
   if(strcmp("point",savebuf) == 0 ){
     *source_type = POINT;
     strcpy(descrp,"point");
+  }
+  else if(strcmp("rotate_3D",savebuf) == 0 ){
+    *source_type = ROTATE_3D;
+    strcpy(descrp,"rotate_3D");
   }
   else if(strcmp("gaussian",savebuf) == 0 ) {
     *source_type = GAUSSIAN;
@@ -822,6 +871,7 @@ int ask_output_w_quark_source_file( FILE *fp, int prompt,
 int get_w_quark_source(FILE *fp, int prompt, wilson_quark_source *wqs){
   
   Real source_r0 = 0;
+  Real d1 = 0;
   int  source_type;
   int  source_loc[4] = { 0,0,0,0 };
   int  source_iters = 0;
@@ -842,6 +892,10 @@ int get_w_quark_source(FILE *fp, int prompt, wilson_quark_source *wqs){
     }
     else if ( source_type == POINT ){
       IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+    }
+    else if ( source_type == ROTATE_3D ){
+      IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+      IF_OK status += get_f(stdin, prompt, "d1", &d1);
     }
     else if ( source_type == COVARIANT_GAUSSIAN ){
       IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
@@ -880,6 +934,7 @@ int get_w_quark_source(FILE *fp, int prompt, wilson_quark_source *wqs){
   wqs->z0    = source_loc[2];
   wqs->t0    = source_loc[3];
   wqs->iters = source_iters;
+  wqs->d1    = d1;
   strcpy(wqs->source_file,source_file);
   strncpy(wqs->label,source_label,MAXSRCLABEL);
   

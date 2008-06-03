@@ -131,7 +131,7 @@ int n_in,n_out;
     gamma_out[1]= ZUP;
     meson_cont_field(src1,src2,gamma_in,gamma_out,n_in,n_out,prop[9]);
 
-} /* w_meson_site */
+} /* w_meson_field */
 
 
 
@@ -143,9 +143,9 @@ void w_meson_site(field_offset src1,field_offset src2,complex *prop[10])
   site *s;
 
   t_src1 = (spin_wilson_vector *)
-    malloc(sizeof(spin_wilson_vector *)*sites_on_node);
+    malloc(sizeof(spin_wilson_vector)*sites_on_node);
   t_src2 = (spin_wilson_vector *)
-    malloc(sizeof(spin_wilson_vector *)*sites_on_node);
+    malloc(sizeof(spin_wilson_vector)*sites_on_node);
   if(t_src1 == NULL || t_src2 == NULL){
     printf("meson_cont_site(%d): No room for temporaries\n",this_node);
     terminate(1);
