@@ -558,7 +558,7 @@ w_prop_file *w_ascii_w_i(char *filename)
 /*---------------------------------------------------------------------------*/
 /* Write ASCII propagator */
 
-void w_ascii_w(w_prop_file *wpf,int spin,int color,field_offset src)
+void w_ascii_w(w_prop_file *wpf,int spin,int color, wilson_vector *src)
 {
   FILE *fp;
   int currentnode,newnode;
@@ -595,7 +595,7 @@ void w_ascii_w(w_prop_file *wpf,int spin,int color,field_offset src)
 	  if(currentnode==0)
 	    {
 	      l=node_index(x,y,z,t);
-	      lbuf = *( (wilson_vector *)F_PT( &(lattice[l]), src ) );
+	      lbuf = *( src + l );
 	    }
 	  else
 	    {
@@ -616,7 +616,7 @@ void w_ascii_w(w_prop_file *wpf,int spin,int color,field_offset src)
 	  if(this_node==currentnode)
 	    {
 	      l=node_index(x,y,z,t);
-	      lbuf = *( (wilson_vector *)F_PT( &(lattice[l]), src ) );
+	      lbuf = *( src + l );
 	      send_field((char *)&lbuf,sizeof(wilson_vector),node0);
 	    }
 	}

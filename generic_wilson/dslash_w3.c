@@ -85,20 +85,13 @@ register site *s;
 register int dir,otherparity=0;
 msg_tag *tag[8];
 
+    malloc_dslash_temps();
     switch(parity) {
 	case EVEN:      otherparity=ODD; break;
 	case ODD:       otherparity=EVEN; break;
 	case EVENANDODD:        otherparity=EVENANDODD; break;
     }
 
-#ifdef MAXHTMP
-    /* NOTE: We should be defining MAXHTMP in all applications using
-       dslash and dslash_w_site */
-    if(MAXHTMP < 8){
-      printf("dslash: MAXHTMP must be 8 or more!\n");
-      terminate(1);
-    }
-#endif
     if(N_POINTERS < 8){
       printf("dslash: N_POINTERS must be 8 or more!\n");
       terminate(1);
@@ -108,11 +101,11 @@ msg_tag *tag[8];
     /* Take Wilson projection for src displaced in up direction, gather
        it to "our site" */
     FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir( (wilson_vector *)F_PT(s,src), &(s->htmp[XUP]),
-	    &(s->htmp[YUP]), &(s->htmp[ZUP]), &(s->htmp[TUP]), isign);
+        wp_shrink_4dir( (wilson_vector *)F_PT(s,src), htmp[XUP]+i,
+	    htmp[YUP]+i, htmp[ZUP]+i, htmp[TUP]+i, isign);
     }
     for( dir=XUP; dir <= TUP; dir++) {
-	tag[dir]=start_gather_site( F_OFFSET(htmp[dir]), sizeof(half_wilson_vector),
+	tag[dir]=start_gather_field( htmp[dir], sizeof(half_wilson_vector),
 	    dir, parity, gen_pt[dir] );
     }
 
@@ -121,14 +114,14 @@ msg_tag *tag[8];
     FORSOMEPARITY(i,s,otherparity){
         wp_shrink_4dir( (wilson_vector *)F_PT(s,src),
 	    &hwvx, &hwvy, &hwvz, &hwvt, -isign);
-	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, &(s->htmp[XDOWN]));
-	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, &(s->htmp[YDOWN]));
-	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, &(s->htmp[ZDOWN]));
-	mult_adj_su3_mat_hwvec( &(s->link[TUP]), &hwvt, &(s->htmp[TDOWN]));
+	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, htmp[XDOWN]+i);
+	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, htmp[YDOWN]+i);
+	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, htmp[ZDOWN]+i);
+	mult_adj_su3_mat_hwvec( &(s->link[TUP]), &hwvt, htmp[TDOWN]+i);
     }
 
     for( dir=XUP; dir <= TUP; dir++) {
-	tag[OPP_DIR(dir)]=start_gather_site(F_OFFSET(htmp[OPP_DIR(dir)]), 
+	tag[OPP_DIR(dir)]=start_gather_field(htmp[OPP_DIR(dir)], 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[OPP_DIR(dir)] );
     }
@@ -195,6 +188,8 @@ register int i;
 register site *s;
 register int dir,otherparity=0;
 
+    malloc_dslash_temps();
+
     switch(parity) {
     case EVEN:      otherparity=ODD; break;
     case ODD:       otherparity=EVEN; break;
@@ -202,14 +197,6 @@ register int dir,otherparity=0;
       otherparity=EVENANDODD; break;
     }
 
-#ifdef MAXHTMP
-    /* NOTE: We should be defining MAXHTMP in all applications using
-       dslash and dslash_w_site */
-    if(MAXHTMP < 8){
-      printf("dslash_w_site_special: MAXHTMP must be 8 or more!\n");
-      terminate(1);
-    }
-#endif
     if(N_POINTERS < 8){
       printf("dslash_w_site_special: N_POINTERS must be 8 or more!\n");
       terminate(1);
@@ -219,14 +206,14 @@ register int dir,otherparity=0;
     /* Take Wilson projection for src displaced in up direction, gather
        it to "our site" */
     FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir( (wilson_vector *)F_PT(s,src), &(s->htmp[XUP]),
-	    &(s->htmp[YUP]), &(s->htmp[ZUP]), &(s->htmp[TUP]), isign);
+        wp_shrink_4dir( (wilson_vector *)F_PT(s,src), htmp[XUP]+i,
+	    htmp[YUP]+i, htmp[ZUP]+i, htmp[TUP]+i, isign);
     }
 
     for( dir=XUP; dir <= TUP; dir++) {
-	if(is_started==0)tag[dir]=start_gather_site( F_OFFSET(htmp[dir]),
+	if(is_started==0)tag[dir]=start_gather_field( htmp[dir],
 	    sizeof(half_wilson_vector), dir, parity, gen_pt[dir] );
-	else restart_gather_site( F_OFFSET(htmp[dir]),
+	else restart_gather_field( htmp[dir],
 	    sizeof(half_wilson_vector), dir, parity, gen_pt[dir], 
 			     tag[dir] );
     }
@@ -236,18 +223,18 @@ register int dir,otherparity=0;
     FORSOMEPARITY(i,s,otherparity){
         wp_shrink_4dir( (wilson_vector *)F_PT(s,src),
 	    &hwvx, &hwvy, &hwvz, &hwvt, -isign);
-	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, &(s->htmp[XDOWN]));
-	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, &(s->htmp[YDOWN]));
-	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, &(s->htmp[ZDOWN]));
-	mult_adj_su3_mat_hwvec( &(s->link[TUP]), &hwvt, &(s->htmp[TDOWN]));
+	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, htmp[XDOWN]+i);
+	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, htmp[YDOWN]+i);
+	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, htmp[ZDOWN]+i);
+	mult_adj_su3_mat_hwvec( &(s->link[TUP]), &hwvt, htmp[TDOWN]+i);
     }
 
     for( dir=XUP; dir <= TUP; dir++) {
-	if(is_started==0)tag[OPP_DIR(dir)]=start_gather_site(
-	    F_OFFSET(htmp[OPP_DIR(dir)]), sizeof(half_wilson_vector),
+	if(is_started==0)tag[OPP_DIR(dir)]=start_gather_field(
+	    htmp[OPP_DIR(dir)], sizeof(half_wilson_vector),
 	    OPP_DIR(dir), parity, gen_pt[OPP_DIR(dir)] );
-	else restart_gather_site(
-	    F_OFFSET(htmp[OPP_DIR(dir)]), sizeof(half_wilson_vector),
+	else restart_gather_field(
+	    htmp[OPP_DIR(dir)], sizeof(half_wilson_vector),
 	    OPP_DIR(dir), parity, gen_pt[OPP_DIR(dir)], 
 	    tag[OPP_DIR(dir)] );
     }

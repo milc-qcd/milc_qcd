@@ -178,6 +178,7 @@ ferm_epsilon = nflavors*eps;
     FOREVENSITES(i,st)
         scalar_mult_add_wvec( &(st->tmp), &(st->p), KAP, &(st->p) );
     dslash_w_site( F_OFFSET(p), F_OFFSET(tmp), MINUS, ODD );
+    cleanup_dslash_wtemps();
     mult_ldu_site( F_OFFSET(tmp), F_OFFSET(p), ODD );
 
     /* M = A_even - kappa^2 * Dslash * A_odd^{-1} * Dslash
@@ -188,6 +189,7 @@ ferm_epsilon = nflavors*eps;
 #else
     KAP = -kappa;
     dslash_w_site( F_OFFSET(psi), F_OFFSET(p), PLUS, EVENANDODD );
+    cleanup_dslash_wtemps();
     mult_ldu_site( F_OFFSET(psi), F_OFFSET(tmp), EVENANDODD );
     FORALLSITES(i,st) {
         scalar_mult_add_wvec( &(st->tmp), &(st->p), KAP, &(st->p) );

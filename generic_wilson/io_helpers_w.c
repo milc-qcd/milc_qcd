@@ -227,12 +227,16 @@ w_open_wprop(int flag, char *filename, int source_type)
   int volfmt, serpar, file_type;
 #endif
 
-  if(flag == SAVE_ASCII){
-    wpf = w_ascii_w_i(filename);
-    return wpf;
-  }
-
   switch(flag){
+
+  case FORGET:
+    wpf = NULL;
+    break;
+
+  case SAVE_ASCII:
+    wpf = w_ascii_w_i(filename);
+    break;
+
   case SAVE_SERIAL_FM:
     wpf = w_serial_w_fm_i(filename);
     /* Allocate space for the entire propagator so we can do the spin
@@ -478,8 +482,7 @@ save_wprop_sc_from_field( int flag, w_prop_file *wpf,
   case FORGET:
     break;
   case SAVE_ASCII:
-    node0_printf("Reading to field from ASCII is not supported\n");
-    terminate(1);
+    w_ascii_w(wpf,spin,color,src);
     break;
   case SAVE_SERIAL_FM:
   case SAVE_SERIAL_FM_SC:
@@ -693,6 +696,7 @@ reload_wprop_to_field( int flag, char *filename, wilson_quark_source *wqs,
   char myname[] = "reload_wprop_to_field";
   
   status = 0;
+  if(timing)dtime = -dclock();
   switch(flag){
     
   case CONTINUE:  /* do nothing */
@@ -1076,10 +1080,14 @@ save_wprop_from_site( int flag, char *filename, wilson_quark_source *wqs,
   int spin, color;
   int source_type;
   w_prop_file *wpf;
-  field_offset srccs;
+  wilson_vector *srccs;
+  site *s;
+  int i;
   int status;
 
   status = 0;
+
+  srccs = create_wv_field();
 
   switch(flag){
 
@@ -1090,24 +1098,29 @@ save_wprop_from_site( int flag, char *filename, wilson_quark_source *wqs,
     wpf = w_ascii_w_i(filename);
     for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
       {
-	srccs = src + color*sizeof(spin_wilson_vector) + 
-	  spin*sizeof(wilson_vector);
-	w_ascii_w(wpf,spin,color,srccs);
+	FORALLSITES(i,s){
+	  copy_wvec(&((wilson_propagator *)F_PT(s,src))->c[color].d[spin],
+		    &srccs[i]);
+	  w_ascii_w(wpf,spin,color,srccs);
+	}
       }
     w_ascii_w_f(wpf);
     if(status == 0)
       node0_printf("Saved wprop in ASCII format to file %s\n",filename);
     break;
-
+    
   case SAVE_SERIAL:
   case SAVE_PARALLEL:
     source_type = POINT;  /* For legacy code, this is the most likely choice */
     wpf = w_open_wprop(flag, filename, source_type);
     for(color = 0; color < 3; color++)for(spin = 0; spin < 4; spin++)
       {
-	srccs = src + color*sizeof(spin_wilson_vector) + 
-	  spin*sizeof(wilson_vector);
-	save_wprop_sc_from_site(flag, wpf, wqs, spin, color, srccs, timing);
+	FORALLSITES(i,s){
+	  copy_wvec(&((wilson_propagator *)F_PT(s,src))->c[color].d[spin],
+		    &srccs[i]);
+	  save_wprop_sc_from_field(flag, wpf, wqs, spin, color, srccs, 
+				   recxml, timing);
+	}
       }
     w_close_wprop(flag, wpf);
     if(status == 0)
@@ -1117,6 +1130,8 @@ save_wprop_from_site( int flag, char *filename, wilson_quark_source *wqs,
     node0_printf("save_wprop_from_site: Unrecognized save flag.\n");
     terminate(1);
   }
+
+  destroy_wv_field(srccs);
   
   return status;
 

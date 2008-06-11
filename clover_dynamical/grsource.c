@@ -54,6 +54,7 @@ register site *s;
 #else
     mult_ldu_site( F_OFFSET(g_rand), F_OFFSET(tmp), EVENANDODD );
     dslash_w_site( F_OFFSET(g_rand), F_OFFSET(chi), MINUS, EVENANDODD);
+    cleanup_dslash_wtemps();
     FORALLSITES(i,s){
         scalar_mult_add_wvec( &(s->tmp), &(s->chi), -kappa,
 	    &(s->chi) );

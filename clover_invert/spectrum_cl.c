@@ -102,6 +102,7 @@ void rotate_prop(spin_wilson_vector *rp, wilson_prop_field qp, int color){
     }
   }
     
+  cleanup_dslash_wtemps();
   destroy_wv_field(psi); 
   destroy_wv_field(mp); 
   destroy_wv_field(tmp);

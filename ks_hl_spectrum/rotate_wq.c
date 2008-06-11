@@ -61,7 +61,7 @@ void rotate_w_quark(field_offset src, field_offset dest, Real d1)
 	    qdest->c[color].d[spin1].d[spin].c[color1].imag = qtemp1.c[color].d[spin].d[spin1].c[color1].imag;
 	  }
     }
-
+  cleanup_dslash_w_3D_temps();
 }
 
 

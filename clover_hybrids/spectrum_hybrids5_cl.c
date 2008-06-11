@@ -1492,6 +1492,7 @@ void check_invert_cl( field_offset src, field_offset dest ){
     register int i,j,k,flag;
     register site *s;
     dslash_w_site( src, F_OFFSET(MP), PLUS, EVENANDODD);
+    cleanup_dslash_wtemps();
     FORALLSITES(i,s){
 	scalar_mult_add_wvec( (wilson_vector *)F_PT(s,src),
 	    &(s->MP), -kappa, &(s->MP) );

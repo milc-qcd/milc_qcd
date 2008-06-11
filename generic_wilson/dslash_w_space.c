@@ -237,14 +237,8 @@ msg_tag *tag[8];
 	case EVENANDODD:        otherparity=EVENANDODD; break;
     }
 
-#ifdef MAXHTMP
-    /* NOTE: We should be defining MAXHTMP in all applications using
-       dslash and dslash_w_site */
-    if(MAXHTMP < 8){
-      printf("dslash: MAXHTMP must be 8 or more!\n");
-      terminate(1);
-    }
-#endif
+    malloc_dslash_w_3D_temps();
+
     if(N_POINTERS < 8){
       printf("dslash: N_POINTERS must be 8 or more!\n");
       terminate(1);
@@ -254,12 +248,12 @@ msg_tag *tag[8];
     /* Take Wilson projection for src displaced in up direction, gather
        it to "our site" */
     FORSOMEPARITY(i,s,otherparity){
-      wp_shrink_3dir2( (wilson_vector *)F_PT(s,src), &(s->htmp[XUP]),
-	    &(s->htmp[YUP]), &(s->htmp[ZUP]), isign);
+      wp_shrink_3dir2( (wilson_vector *)F_PT(s,src), htmp[XUP]+i,
+	    htmp[YUP]+i, htmp[ZUP]+i, isign);
       //if(i==259)printf("i = %d, (1+gx)G = %e\n", i, s->htmp[XUP].h[1].c[0].real);
     }
     for( dir=XUP; dir <= ZUP; dir++) {
-	tag[dir]=start_gather_site( F_OFFSET(htmp[dir]), sizeof(half_wilson_vector),
+	tag[dir]=start_gather_field( htmp[dir], sizeof(half_wilson_vector),
 	    dir, parity, gen_pt[dir] );
     }
 
@@ -268,15 +262,15 @@ msg_tag *tag[8];
     FORSOMEPARITY(i,s,otherparity){
       wp_shrink_3dir2( (wilson_vector *)F_PT(s,src),
 		       &hwvx, &hwvy, &hwvz,-isign);
-	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, &(s->htmp[XDOWN]));
-	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, &(s->htmp[YDOWN]));
-	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, &(s->htmp[ZDOWN]));
+	mult_adj_su3_mat_hwvec( &(s->link[XUP]), &hwvx, htmp[XDOWN]+i);
+	mult_adj_su3_mat_hwvec( &(s->link[YUP]), &hwvy, htmp[YDOWN]+i);
+	mult_adj_su3_mat_hwvec( &(s->link[ZUP]), &hwvz, htmp[ZDOWN]+i);
 	//if(i==258)printf("i = %d, U+(1-gx)G = %e\n", i, s->htmp[XDOWN].h[1].c[0].real);
 
     }
 
     for( dir=XUP; dir <= ZUP; dir++) {
-	tag[OPP_DIR(dir)]=start_gather_site(F_OFFSET(htmp[OPP_DIR(dir)]), 
+	tag[OPP_DIR(dir)]=start_gather_field(htmp[OPP_DIR(dir)], 
 		sizeof(half_wilson_vector), OPP_DIR(dir),
 		parity, gen_pt[OPP_DIR(dir)] );
     }

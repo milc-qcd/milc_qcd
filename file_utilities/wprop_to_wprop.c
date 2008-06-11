@@ -1,11 +1,11 @@
-/*************************** wprop_to_scidac.c ************************/
+/*************************** wprop_to_wprop.c ************************/
 /* MIMD version 7 */
 /* Read a Wilson prop, convert to SciDAC format */
 /* C. DeTar 3/25/05 */
 
 /* Usage ...
 
-   wprop_to_scidac milc_file scidac_file
+   wprop_to_wprop < infile
 
 */
 

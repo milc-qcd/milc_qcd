@@ -231,6 +231,7 @@ wprop_2wprop::
 	  canopy2weyl_rot.o \
 	  check_unitarity.o \
 	  d_plaq4.o \
+	  dslash_w_space.o \
 	  gammas.o \
 	  gauge_info_dummy.o \
 	  gauss_smear_w.o \

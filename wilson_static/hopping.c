@@ -198,5 +198,6 @@ void kappa_dslash(field_offset phi, field_offset temp, Real kappa, int parity)
     scalar_mult_wvec((wilson_vector *) F_PT(s, temp),
 		     kappa, (wilson_vector *) F_PT(s, phi));
   }
+  cleanup_dslash_wtemps();
 
 }				/* kappa_dslash  */

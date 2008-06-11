@@ -100,6 +100,7 @@ FORALLSITES(i,s){
     w_meson_cd(F_OFFSET(quark_propagator), F_OFFSET(rotated_propagator),"DSL_");
     w_baryon_cd(F_OFFSET(quark_propagator),F_OFFSET(quark_propagator),
         F_OFFSET(quark_propagator));
+    cleanup_dslash_wtemps();
     return(iters);
 } /* spectrum_cl */
 

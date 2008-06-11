@@ -249,7 +249,7 @@ void clear_input_w_prop_file(w_prop_file *wpf);
 
 w_prop_file *w_ascii_w_i(char *filename);
 void w_ascii_w(w_prop_file *wpf, int spin, int color, 
-			 field_offset src);
+			 wilson_vector *src);
 void w_ascii_w_f(w_prop_file *wpf);
 
 w_prop_file *w_serial_w_i(char *filename);

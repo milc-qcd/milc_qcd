@@ -113,6 +113,7 @@ iteration,(double)rsq,(double)pkp,(double)a );**/
 		cleanup_gather(tag2[OPP_DIR(i)]);
 #endif
 	    }
+            cleanup_dslash_wtemps();
 	    return (iteration);
 	}
 
@@ -188,6 +189,7 @@ iteration,(double)rsq,(double)pkp,(double)a );**/
 dtime += dclock();
 /** UMH if(this_node==0)printf("CONGRAD2: time = %e iters = %d mflops = %e\n",
 dtime,iteration,(double)(2840.0*volume*iteration/(1.0e6*dtime*numnodes())) ); **/
+             cleanup_dslash_wtemps();
 	     return (iteration);
 	}
 
@@ -211,5 +213,6 @@ dtime,iteration,(double)(2840.0*volume*iteration/(1.0e6*dtime*numnodes())) ); **
     if( rsq > rsqstop ){
 	if(this_node==0)printf("No convergence in d_congrad2\n");
     }
+    cleanup_dslash_wtemps();
     return(iteration);
 }
