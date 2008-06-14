@@ -731,7 +731,7 @@ reload_wprop_to_field( int flag, char *filename, wilson_quark_source *wqs,
       for(color=0;color<3;color++){
 	reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, psi, timing);
 	FORALLSITES(i,s){
-	  copy_wvec(psi, &dest[i].c[color].d[spin]);
+	  copy_wvec(&psi[i], &dest[i].c[color].d[spin]);
 	}
       }
     }

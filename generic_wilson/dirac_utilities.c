@@ -163,11 +163,13 @@ void copy_wp_from_wv(wilson_prop_field wp, wilson_vector *wv,
 
 /*--------------------------------------------------------------------*/
 void destroy_swv_field(spin_wilson_vector *swv){
+  if(swv == NULL)return;
   free(swv);
 }
 
 /*--------------------------------------------------------------------*/
 void destroy_wv_field(wilson_vector *wv){
+  if(wv == NULL)return;
   free(wv);
 }
 

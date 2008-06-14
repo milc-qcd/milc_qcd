@@ -53,7 +53,7 @@ void cleanup_dslash_wtemps(){
   temp_not_allocated=1 ;
 }
 
-void setup_tmp_links(){
+static void setup_tmp_links(){
   register int i, dir;
   register site *s;
 

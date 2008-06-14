@@ -49,7 +49,7 @@ cleanup_kg_temps(){
 
 static void 
 klein_gord_field(wilson_vector *psi, wilson_vector *chi, 
-		 Real msq, int t0)
+		 su3_matrix *t_links, Real msq, int t0)
 {
   Real ftmp = 6 + msq;  /* for 3D */
   int i, dir;
@@ -72,10 +72,10 @@ klein_gord_field(wilson_vector *psi, wilson_vector *chi,
   /* prepare parallel transport of psi from down dir */
   FORALLSITES(i,s){
     /* Work only on the specified time slice */
-    if(s->t == t0){
+    if(t0 == ALL_T_SLICES || s->t == t0){
       FORALLUPDIRBUT(TUP,dir){
-	mult_adj_mat_wilson_vec( &(s->link[dir]), &psi[i], 
-				 &wtmp[OPP_DIR(dir)][i]);
+	mult_adj_mat_wilson_vec( t_links +  4*i + dir, psi + i, 
+				 wtmp[OPP_DIR(dir)] + i );
       }
     }
   }
@@ -93,15 +93,15 @@ klein_gord_field(wilson_vector *psi, wilson_vector *chi,
   
   /* chi <- chi - sum_dir U(up,dir) shift(up,dir)(psi) */
   FORALLSITES(i,s){
-    if(s->t == t0){
+    if(t0 == ALL_T_SLICES || s->t == t0){
       FORALLUPDIRBUT(TUP,dir){
-	mult_mat_wilson_vec( &(s->link[dir]),  
+	mult_mat_wilson_vec( t_links + 4*i + dir,  
 			     (wilson_vector * )(gen_pt[dir][i]), 
-			     &wtmp[dir][i] ); 
+			     wtmp[dir] + i ); 
       }
-      sub_wilson_vector( &chi[i], &wtmp[XUP][i], &(chi[i]));
-      sub_wilson_vector( &chi[i], &wtmp[YUP][i], &(chi[i]));
-      sub_wilson_vector( &chi[i], &wtmp[ZUP][i], &(chi[i]));
+      sub_wilson_vector( chi + i, wtmp[XUP] + i, chi + i);
+      sub_wilson_vector( chi + i, wtmp[YUP] + i, chi + i);
+      sub_wilson_vector( chi + i, wtmp[ZUP] + i, chi + i);
     }
   }
   
@@ -115,13 +115,13 @@ klein_gord_field(wilson_vector *psi, wilson_vector *chi,
   
   /* chi <- chi - sum_dir U(down,dir) shift(down,dir)(psi) */
   FORALLSITES(i,s){
-    if(s->t == t0){
-      sub_wilson_vector( &chi[i],
-			 (wilson_vector *)(gen_pt[XDOWN][i]), &(chi[i]));
-      sub_wilson_vector( &chi[i],
-			 (wilson_vector *)(gen_pt[YDOWN][i]), &(chi[i]));
-      sub_wilson_vector( &chi[i],
-			 (wilson_vector *)(gen_pt[ZDOWN][i]), &(chi[i]));
+    if(t0 == ALL_T_SLICES || s->t == t0){
+      sub_wilson_vector( chi + i,
+			 (wilson_vector *)(gen_pt[XDOWN][i]), chi + i);
+      sub_wilson_vector( chi + i,
+			 (wilson_vector *)(gen_pt[YDOWN][i]), chi + i);
+      sub_wilson_vector( chi + i,
+			 (wilson_vector *)(gen_pt[ZDOWN][i]), chi + i);
     }
   }
   
@@ -139,7 +139,8 @@ klein_gord_field(wilson_vector *psi, wilson_vector *chi,
    and Lap_3d is the discrete three dimensional Laplacian
 */
 
-void gauss_smear_field(wilson_vector *src, Real width, int iters, int t0)
+void gauss_smear_field(wilson_vector *src, su3_matrix *t_links,
+		       Real width, int iters, int t0)
 {
   wilson_vector *tmp;
   Real ftmp = -(width*width)/(4*iters);
@@ -161,13 +162,14 @@ void gauss_smear_field(wilson_vector *src, Real width, int iters, int t0)
 	/* tmp = src * ftmp; */
 	scalar_mult_wvec(src+i, ftmp, tmp+i);
       }
-      klein_gord_field(tmp, src, ftmpinv, t0);
+      klein_gord_field(tmp, src, t_links, ftmpinv, t0);
     }
 }
 
 /*------------------------------------------------------------*/
 
-void gauss_smear_site(field_offset src, Real width, int iters, int t0)
+void gauss_smear_site(field_offset src, su3_matrix *t_links, 
+		      Real width, int iters, int t0)
 {
   wilson_vector *srctmp;
   int i;
@@ -185,7 +187,7 @@ void gauss_smear_site(field_offset src, Real width, int iters, int t0)
   }
 
   /* Smear in temporary field */
-  gauss_smear_field(srctmp, width, iters, t0);
+  gauss_smear_field(srctmp, t_links, width, iters, t0);
 
   FORALLSITES(i,s){
     *((wilson_vector *)F_PT(s,src)) = srctmp[i];

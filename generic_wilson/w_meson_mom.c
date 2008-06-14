@@ -1,4 +1,4 @@
-/************* w_meson_finite_mom_lean3.c **************************/
+/************************ w_meson_mom.c *****************************/
 /* MIMD version 7  ***/
 
 /* The optimizations in this version assume that the gamma_corr table
@@ -390,7 +390,7 @@ static double dirac_v_tr_gamma(complex *tr, dirac_matrix_v *src,
 
 /* Calculate FT weight factor */
 
-complex ff(Real theta, char parity, complex tmp)
+static complex ff(Real theta, char parity, complex tmp)
 {
   complex z;
   
@@ -551,7 +551,8 @@ void meson_cont_mom(
       
       if(gsnk >= MAXGAMMA || gsrc >= MAXGAMMA)
 	{
-	  printf("dirac_v_tr_gamma: Illegal gamma index %d or %d\n",gsnk,gsrc);
+	  printf("%s(%d): Illegal gamma index %d or %d\n",
+		 myname, this_node, gsnk, gsrc);
 	  terminate(1);
 	}
 
@@ -648,7 +649,7 @@ void meson_cont_mom(
 	
       flops += (double)sites_on_node*128*num_corr_mom[g];
       
-      /* Complete the propagator by tying in the source gamma.
+      /* Complete the propagator by tying in the sink gamma.
          Then store it */
       
       for(t=0; t < nt; t++)if(nonzero[t]) {

@@ -22,6 +22,7 @@ void init_wqs(wilson_quark_source *wqs){
   wqs->c_src            = NULL;
   wqs->wv_src           = NULL;
   wqs->file_initialized = 0;
+  wqs->d1               = 0.;
 #ifdef HAVEQIO
   wqs->infile           = NULL;
   wqs->outfile          = NULL;
@@ -198,6 +199,31 @@ static int check_color_spin(QIO_String *recxml, int color, int spin){
 #endif
 
 /*--------------------------------------------------------------------*/
+
+static su3_matrix * create_G_from_site(void){
+  register int i, dir;
+  register site *s;
+  static su3_matrix *t_links;
+
+  t_links =(su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
+  if(t_links == NULL){
+      printf("node %d can't malloc t_links\n",this_node);
+      terminate(1);
+  }
+  FORALLSITES(i,s){
+    FORALLUPDIR(dir){
+      t_links[4*i+dir] = lattice[i].link[dir];
+    }
+  }
+  return t_links;
+}
+
+/*--------------------------------------------------------------------*/
+static void destroy_G(su3_matrix *t_links){
+  free(t_links) ; 
+}
+
+/*--------------------------------------------------------------------*/
 /* Do the 3D Fermilab rotation on a Wilson vector field.  That is,
    compute src <- (1 + a d1 * \gamma * D/2) src where D is a 3D
    covariant difference normalized to give twice the covariant
@@ -355,12 +381,15 @@ int w_source_field(wilson_vector *src, wilson_quark_source *wqs)
       wqs->wv_src[i].d[spin].c[color].real = 1.;
     }
     /* Then do 3D rotation */
-    rotate_3D_wvec(wqs->wv_src, wqs->d1);
+    /* The MILC sign convention for gamma matrix in Dslash is
+       opposite FNAL, so we rotate with -d1 */
+    rotate_3D_wvec(wqs->wv_src, -wqs->d1);
 
     /* Copy to requested location */
     if(src != NULL)copy_D(src, wqs->wv_src);
   }
   else if(source_type == COVARIANT_GAUSSIAN){
+    static su3_matrix *t_links;
     alloc_wqs_wv_src(wqs);
 
     /* Set delta function source */
@@ -369,7 +398,9 @@ int w_source_field(wilson_vector *src, wilson_quark_source *wqs)
       wqs->wv_src[i].d[spin].c[color].real = 1.;
     }
     /* Then smear */
-    gauss_smear_field(wqs->wv_src, r0, iters, t0);
+    t_links = create_G_from_site();
+    gauss_smear_field(wqs->wv_src, t_links, r0, iters, t0);
+    destroy_G(t_links);
 
     /* Copy to requested location */
     if(src != NULL)copy_D(src, wqs->wv_src);
@@ -759,6 +790,155 @@ void w_sink_site(field_offset snk, wilson_quark_source *wqs)
 } /* w_sink_site */
 
 
+/*--------------------------------------------------------------------*/
+static void sink_smear_prop(wilson_prop_field wp, wilson_quark_source *wqs){
+  
+  int color;
+  int ci,si,sf,cf;
+  int i;
+  site *s;
+  complex *chi_cs, z;
+  Real x;
+  spin_wilson_vector *wps;
+  double dtime = start_timing();
+  int key[4] = {1,1,1,0};  /* 3D Fourier transform */
+  
+  /* Set up Fourier transform for smearing */
+  setup_restrict_fourier(key, NULL);
+
+  chi_cs = (complex *)malloc(sizeof(complex)*sites_on_node);
+
+  /* Now convolute the quark propagator with a given wave function for
+     the smeared mesons. This is done with FFT's */
+  
+  /* fft quark_propagator (in place) */
+  for(color = 0; color < 3; color++){
+    wps = extract_swv_from_wp(wp, color);
+    /* wps points into wp, so wp is changed here */
+    restrict_fourier_field((complex *)wps, sizeof(spin_wilson_vector), 
+			   FORWARDS);
+  }
+
+  print_timing(dtime,"FFT");
+
+  /* Build sink smearing wave function as a complex field repeated on
+     each time slice */
+  w_sink_field(chi_cs, wqs);
+
+  /* Normalize (for FFT) */
+  x = 1./(((Real)nx)*((Real)ny)*(Real)nz);
+  FORALLSITES(i,s){
+    CMULREAL(chi_cs[i],x,chi_cs[i]);
+  }
+  
+  dtime = start_timing();
+  restrict_fourier_field(chi_cs, sizeof(complex), FORWARDS);
+  
+  /* Now multiply quark by sink wave function */
+  for(ci=0;ci<3;ci++){
+    FORALLSITES(i,s)
+      for(si=0;si<4;si++)
+	for(sf=0;sf<4;sf++)for(cf=0;cf<3;cf++){
+	    z = wp[ci][i].d[si].d[sf].c[cf];
+	    CMUL(z, chi_cs[i], wp[ci][i].d[si].d[sf].c[cf]);
+	  }
+  }
+  
+  print_timing(dtime, "FFT of chi and multiply");
+
+  /* Inverse FFT */
+  dtime = start_timing();
+  /* fft quark_propagator (in place) */
+  for(color = 0; color < 3; color++){
+    wps = extract_swv_from_wp(wp, color);
+    /* wps points into wp, so wp is changed here */
+    restrict_fourier_field((complex *)wps, sizeof(spin_wilson_vector), 
+			   BACKWARDS);
+  }
+  print_timing(dtime,"FFT");
+  free(chi_cs);
+}  
+
+/*--------------------------------------------------------------------*/
+static void rotate_prop_field(wilson_prop_field dst, wilson_prop_field src, 
+			      wilson_quark_source *wqs){
+  
+  int spin, color;
+  int i;
+  site *s;
+  wilson_vector *psi, *mp, *tmp;
+  spin_wilson_vector *rp;
+  /* The MILC sign convention for gamma matrix in Dslash is
+     opposite FNAL, so we rotate with -d1 */
+  Real d1 = -wqs->d1;
+  
+  psi = create_wv_field();
+  mp  = create_wv_field();
+  tmp = create_wv_field();
+
+  for(color = 0; color < 3; color++){
+    rp = dst[color];
+
+    /* Construct propagator for "rotated" fields,
+       psi_rot = Dslash psi, with Dslash the naive operator. */
+    for(spin=0;spin<4;spin++){
+      copy_wv_from_wp(psi, src, color, spin);
+      
+      /* Do Wilson Dslash on the psi field */
+      dslash_w_3D_field(psi, mp,  PLUS, EVENANDODD);
+      dslash_w_3D_field(psi, tmp, MINUS, EVENANDODD);
+      
+      FORALLSITES(i,s){
+	/* From subtraction we get 2*Dslash */
+	sub_wilson_vector(mp + i, tmp + i, &rp[i].d[spin]);
+	/* Apply rotation */
+	scalar_mult_add_wvec(psi + i, &rp[i].d[spin], d1/4., &rp[i].d[spin]);
+      }
+    }
+  }
+    
+  cleanup_dslash_w_3D_temps();
+  destroy_wv_field(psi); 
+  destroy_wv_field(mp); 
+  destroy_wv_field(tmp);
+}
+
+/* 
+   Apply a sink operation to the given propagator.
+ */
+
+wilson_prop_field w_sink_op(wilson_quark_source *wqs, wilson_prop_field src )
+{
+  
+  /* Unpack structure. */
+  int sink_type     = wqs->type;
+  wilson_prop_field dst;
+
+  /* Identity sink operator */
+  if(sink_type == POINT) {
+    dst = create_wp_field_copy(src);
+  }
+  /* Various wave-function-based smearings requiring convolution */
+  else if(sink_type == GAUSSIAN || 
+	  sink_type == COMPLEX_FIELD_FM_FILE ||
+	  sink_type == COMPLEX_FIELD_FILE) {
+    dst = create_wp_field_copy(src);
+    sink_smear_prop(dst, wqs);
+  }
+  /* FNAL 3D rotation */
+  else if(sink_type == ROTATE_3D){
+    dst = create_wp_field();
+    rotate_prop_field(dst, src, wqs);
+  }
+  else{
+    node0_printf("w_sink_op: Unknown sink type %d\n",sink_type);
+    terminate(1);
+  }
+
+  return dst;
+} /* w_sink_op */
+
+
 int ask_w_quark_source( FILE *fp, int prompt, int *source_type, char *descrp)
 {
   char *savebuf;
@@ -944,8 +1124,9 @@ int get_w_quark_source(FILE *fp, int prompt, wilson_quark_source *wqs){
 int get_w_quark_sink(FILE *fp, int prompt, wilson_quark_source *wqs){
 
   Real sink_r0 = 0;
+  Real d1 = 0;
   int  sink_type;
-  int  sink_loc[3] = { 0,0,0 };
+  int  sink_loc[3] = { 0,0,0 };  /* Defaults to zero */
   char sink_file[MAXFILENAME] = "";
   char sink_label[MAXSRCLABEL];
   int  status = 0;
@@ -957,38 +1138,39 @@ int get_w_quark_sink(FILE *fp, int prompt, wilson_quark_source *wqs){
   
   IF_OK {
     if ( sink_type == GAUSSIAN ){
-      IF_OK status += get_vi(stdin, prompt, "origin", sink_loc, 3);
       /* width: psi=exp(-(r/r0)^2) */
-	IF_OK status += get_f(stdin, prompt,"r0", &sink_r0 );
-      }
-      else if ( sink_type == POINT ){
-	IF_OK status += get_vi(stdin, prompt, "origin", sink_loc, 3);
-      }
-      else if ( sink_type == COMPLEX_FIELD_FILE ||
-		sink_type == COMPLEX_FIELD_FM_FILE){
-	IF_OK status += get_s(stdin, prompt, "load_sink", sink_file);
-	IF_OK status += get_vi(stdin, prompt, "momentum", wqs->mom, 3);
-      }
-      else {
-	printf("Sink type not supported in this application\n");
-	status++;
-      }
+      IF_OK status += get_f(stdin, prompt,"r0", &sink_r0 );
     }
+    else if ( sink_type == POINT ){      }
+    else if ( sink_type == ROTATE_3D ){
+      IF_OK status += get_f(stdin, prompt, "d1", &d1);
+    }
+    else if ( sink_type == COMPLEX_FIELD_FILE ||
+	      sink_type == COMPLEX_FIELD_FM_FILE){
+      IF_OK status += get_s(stdin, prompt, "load_sink", sink_file);
+      IF_OK status += get_vi(stdin, prompt, "momentum", wqs->mom, 3);
+    }
+    else {
+      printf("Sink type not supported in this application\n");
+      status++;
+    }
+  }
     
-    IF_OK status += get_s(stdin, prompt, "sink_label", sink_label);
-
-    wqs->r0    = sink_r0;
-    wqs->x0    = sink_loc[0];
-    wqs->y0    = sink_loc[1];
-    wqs->z0    = sink_loc[2];
-    wqs->t0    = ALL_T_SLICES;
-    wqs->spin  = 0;
-    wqs->color = 0;
-    /* For a sink "source_file" is a misnomer */
-    strcpy(wqs->source_file,sink_file);
-    strncpy(wqs->label,sink_label,MAXSRCLABEL);
-
-    return status;
+  IF_OK status += get_s(stdin, prompt, "sink_label", sink_label);
+  
+  wqs->r0    = sink_r0;
+  wqs->x0    = sink_loc[0];
+  wqs->y0    = sink_loc[1];
+  wqs->z0    = sink_loc[2];
+  wqs->t0    = ALL_T_SLICES;
+  wqs->d1    = d1;
+  wqs->spin  = 0;
+  wqs->color = 0;
+  /* For a sink, "source_file" is a misnomer! */
+  strcpy(wqs->source_file,sink_file);
+  strncpy(wqs->label,sink_label,MAXSRCLABEL);
+  
+  return status;
 } /* get_w_quark_sink */
 
 

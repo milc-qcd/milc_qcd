@@ -30,6 +30,7 @@ G_WILSON_ALL =  \
     w_baryon_hl.o \
     w_meson.o \
     w_meson_mom.o \
+    w_meson_open_mom.o \
     w_source.o \
     w_source_h.o \
     wilson_invert.o
@@ -100,6 +101,8 @@ w_baryon_hl.o: ../generic_wilson/w_baryon_hl.c
 w_meson.o: ../generic_wilson/w_meson.c
 	${CC} -c ${CFLAGS} $<
 w_meson_mom.o: ../generic_wilson/w_meson_mom.c
+	${CC} -c ${CFLAGS} $<
+w_meson_open_mom.o: ../generic_wilson/w_meson_open_mom.c
 	${CC} -c ${CFLAGS} $<
 w_source.o: ../generic_wilson/w_source.c
 	${CC} -c ${CFLAGS} $<
