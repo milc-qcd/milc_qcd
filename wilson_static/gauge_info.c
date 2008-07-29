@@ -29,13 +29,11 @@
 /* This routine writes the ASCII info file.  It is called from one of
    the lattice output routines in io_lat4.c.*/
 
-void write_appl_gauge_info(FILE *fp)
 {
   Real gauge_fix_tol = GAUGE_FIX_TOL;
 
-  /* Note that the file has already been opened and
-     the required magic number, time stamp, and lattice
-     dimensions have already been written */
+  /* Write generic information */
+  write_generic_gauge_info(fp, fp, gf);
 
   /* The rest are optional */
   if(fixflag==COULOMB_GAUGE_FIX)

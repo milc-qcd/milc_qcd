@@ -28,13 +28,6 @@
 /* This routine writes the ASCII info file.  It is called from one of
    the lattice output routines in io_lat4.c.*/
 
-void write_appl_gauge_info(FILE *fp)
+void write_appl_gauge_info(FILE *fp, gauge_file *gf)
 {
-
-  /* Note that the file has already been opened and
-     the required magic number, time stamp, and lattice
-     dimensions have already been written */
-
-  /* The rest are optional */
-
 }

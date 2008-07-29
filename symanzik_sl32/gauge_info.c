@@ -30,15 +30,14 @@
 
 extern char gauge_action_description[128]; /* in gauge_stuff.c */
 extern int gauge_action_nloops,gauge_action_nreps;
-void write_appl_gauge_info(FILE *fp)
+void write_appl_gauge_info(FILE *fp, gauge_file *gf)
 {
-  /* Note that the file has already been opened and
-     the required magic number, time stamp, and lattice
-     dimensions have already been written */
-
   Real myssplaq = g_ssplaq;  /* Precision conversion */
   Real mystplaq = g_stplaq;  /* Precision conversion */
   Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
+
+  /* Write generic information */
+  write_generic_gauge_info(fp, gf);
 
   /* The rest are optional */
 
@@ -83,7 +82,7 @@ char *create_MILC_info(){
   Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
 
   sprint_gauge_info_item(info+bytes, max-bytes,"action.description","%s",
-			"\"Gauge plus fermion (improved)\"",0,0);
+			"\"Gauge (improved)\"",0,0);
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.description","%s",
 			gauge_action_description,0,0);

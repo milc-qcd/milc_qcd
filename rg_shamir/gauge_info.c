@@ -31,17 +31,16 @@
 
 extern char gauge_action_description[128]; /* in gauge_stuff.c */
 extern int gauge_action_nloops,gauge_action_nreps;
-void write_appl_gauge_info(FILE *fp)
+void write_appl_gauge_info(FILE *fp, gauge_file *gf)
 {
 
-  /* Note that the file has already been opened and
-     the required magic number, time stamp, and lattice
-     dimensions have already been written */
+  /* Write generic information */
+  write_generic_gauge_info(fp, gf);
 
   /* The rest are optional */
 
   write_gauge_info_item(fp,"action.description","%s",
-			"\"Gauge plus fermion (improved)\"",0,0);
+			"\"Gauge plus fermion\"",0,0);
 
   write_gauge_info_item(fp,"gauge.description","%s",
 			gauge_action_description,0,0);

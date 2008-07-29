@@ -35,21 +35,19 @@
 
 extern char gauge_action_description[128]; /* in gauge_stuff.c */
 extern int gauge_action_nloops,gauge_action_nreps;
-void write_appl_gauge_info(FILE *fp)
+void write_appl_gauge_info(FILE *fp, gauge_file *gf)
 {
-
-  /* Note that the file has already been opened and
-     the required magic number, time stamp, and lattice
-     dimensions have already been written */
-
   Real myssplaq = g_ssplaq;  /* Precision conversion */
   Real mystplaq = g_stplaq;  /* Precision conversion */
   Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
 
+  /* Write generic information */
+  write_generic_gauge_info(fp, gf);
+
   /* The rest are optional */
 
   write_gauge_info_item(fp,"action.description","%s",
-			"\"Gauge plus fermion (improved)\"",0,0);
+			"\"Gauge plus fermion\"",0,0);
 
   write_gauge_info_item(fp,"gauge.description","%s",
 			gauge_action_description,0,0);
@@ -90,33 +88,12 @@ char *create_MILC_info(){
   size_t bytes = 0;
   char *info = (char *)malloc(INFOSTRING_MAX);
   size_t max = INFOSTRING_MAX;
-  //  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><usqcdInfo><version>1.0</version>";
-  //  char begin_info[] = "<info>";
-  //  char end_info[] = "</info>";
-  //  char end[] = "</usqcdInfo>";
-  // char valstring[32];
   Real myssplaq = g_ssplaq;  /* Precision conversion */
   Real mystplaq = g_stplaq;  /* Precision conversion */
   Real nersc_linktr = linktrsum.real/3.;  /* Convention and precision */
 
-
-  //  snprintf(info+bytes, max-bytes,"%s",begin);
-  //  bytes = strlen(info);
-
-  // /* Currently we generate only single precision files */
-  // print_prec(valstring, 32, (myssplaq+mystplaq)/6., 1);
-  //  snprintf(info+bytes, max-bytes,"<plaq>%s</plaq>",valstring);
-  //  bytes = strlen(info);
-
-  //  print_prec(valstring, 32, nersc_linktr, 1);
-  //  snprintf(info+bytes, max-bytes,"<linktr>%s</linktr>",valstring);
-  //  bytes = strlen(info);
-
-  //  snprintf(info+bytes, max-bytes,"%s",begin_info);
-  //  bytes = strlen(info);
-
   sprint_gauge_info_item(info+bytes, max-bytes,"action.description","%s",
-			"\"Gauge plus fermion (improved)\"",0,0);
+			"\"Gauge plus fermion\"",0,0);
   bytes = strlen(info);
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.description","%s",
 			gauge_action_description,0,0);
@@ -170,11 +147,6 @@ char *create_MILC_info(){
 			 (char *)&mass2,0,0);
   bytes = strlen(info);
 #endif  
-
-  //  snprintf(info+bytes, max-bytes,"%s",end_info);
-  //  bytes = strlen(info);
-
-  //  snprintf(info+bytes, max-bytes,"%s",end);
 
   return info;
 }
