@@ -498,7 +498,7 @@ int sprint_gauge_info_item(
   for(i=0;strlen(gauge_info_keyword[i])>0 &&
       strcmp(gauge_info_keyword[i],keyword) != 0; i++);
   if(strlen(gauge_info_keyword[i])==0)
-    printf("write_gauge_info_item: WARNING: keyword %s not in table\n",
+    printf("sprint_gauge_info_item: WARNING: keyword %s not in table\n",
 	    keyword);
 
   /* Write keyword */
@@ -550,7 +550,7 @@ int sprint_gauge_info_item(
 	}
       else
 	{
-	  printf("write_gauge_info_item: Unrecognized data type %s\n",fmt);
+	  printf("sprint_gauge_info_item: Unrecognized data type %s\n",fmt);
 	  return 1;
 	}
     }
@@ -562,16 +562,30 @@ int sprint_gauge_info_item(
 }
 
 /*----------------------------------------------------------------------*/
+/* Write generic information to info file */
+
+void write_generic_gauge_info(FILE *info_fp, gauge_file *gf)
+{
+  char sums[20];
+  gauge_header *gh = gf->header;
+
+  write_gauge_info_item(info_fp,"magic_number","%d",(char *)&gh->magic_number,0,0);
+  write_gauge_info_item(info_fp,"time_stamp","\"%s\"",gh->time_stamp,0,0);
+  sprintf(sums,"%x %x",gf->check.sum29,gf->check.sum31);
+  write_gauge_info_item(info_fp,"checksums","\"%s\"",sums,0,0);
+  write_gauge_info_item(info_fp,"nx","%d",(char *)&nx,0,0);
+  write_gauge_info_item(info_fp,"ny","%d",(char *)&ny,0,0);
+  write_gauge_info_item(info_fp,"nz","%d",(char *)&nz,0,0);
+  write_gauge_info_item(info_fp,"nt","%d",(char *)&nt,0,0);
+}
+
+/*----------------------------------------------------------------------*/
 /* Open, write, and close the ASCII info file */
 
 void write_gauge_info_file(gauge_file *gf)
 {
   FILE *info_fp;
-  gauge_header *gh;
   char info_filename[256];
-  char sums[20];
-
-  gh = gf->header;
 
   /* Construct header file name from lattice file name 
    by adding filename extension to lattice file name */
@@ -587,18 +601,8 @@ void write_gauge_info_file(gauge_file *gf)
       return;
     }
   
-  /* Write required information */
-
-  write_gauge_info_item(info_fp,"magic_number","%d",(char *)&gh->magic_number,0,0);
-  write_gauge_info_item(info_fp,"time_stamp","\"%s\"",gh->time_stamp,0,0);
-  sprintf(sums,"%x %x",gf->check.sum29,gf->check.sum31);
-  write_gauge_info_item(info_fp,"checksums","\"%s\"",sums,0,0);
-  write_gauge_info_item(info_fp,"nx","%d",(char *)&nx,0,0);
-  write_gauge_info_item(info_fp,"ny","%d",(char *)&ny,0,0);
-  write_gauge_info_item(info_fp,"nz","%d",(char *)&nz,0,0);
-  write_gauge_info_item(info_fp,"nt","%d",(char *)&nt,0,0);
-
-  write_appl_gauge_info(info_fp);
+  /* Write application information to info file */
+  write_appl_gauge_info(info_fp, gf);
 
   g_close(info_fp);
 

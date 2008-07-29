@@ -2010,7 +2010,7 @@ gauge_file *save_serial_archive(char *filename) {
     write_gauge_info_item(outfile,"ny","%d",(char *)&ny,0,0);
     write_gauge_info_item(outfile,"nz","%d",(char *)&nz,0,0);
     write_gauge_info_item(outfile,"nt","%d",(char *)&nt,0,0);
-    write_appl_gauge_info(outfile);
+    write_appl_gauge_info(outfile, gf);
     fprintf(outfile,"MILC_INFO = --------END--------\n");
     fprintf(outfile,"END_HEADER\n");
 
