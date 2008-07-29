@@ -348,7 +348,7 @@ gauge_file *save_old_binary(char *filename, Real c1, Real c2);
 
 /**********************************************************************/
 /* In gauge_info.c (application dependent) */
-void write_appl_gauge_info(FILE *fp);
+void write_appl_gauge_info(FILE *fp, gauge_file *gf);
 
 /**********************************************************************/
 /* Prototypes for io_scidac routines */
@@ -423,6 +423,7 @@ int sprint_gauge_info_item(
   int count,       /* number of data items if > 1 */
   int stride);      /* byte stride of data if
 		      count > 1 */
+void write_generic_gauge_info(FILE *fp, gauge_file *gf);
 void write_gauge_info_file(gauge_file *gf);
 gauge_file *setup_input_gauge_file(char *filename);
 gauge_file *setup_output_gauge_file();
