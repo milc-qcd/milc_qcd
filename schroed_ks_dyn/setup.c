@@ -1,5 +1,5 @@
 /******** setup.c *********/
-/* MIMD version 6 */
+/* MIMD version 7 */
 #define IF_OK if(status==0)
 
 #include "schroed_ks_includes.h"
@@ -94,8 +94,11 @@ int readin(int prompt) {
 /* read in parameters for su3 monte carlo	*/
 /* argument "prompt" is 1 if prompts are to be given for input	*/
 
-int status, i;
+int status;
 Real x;
+#ifdef FERM_PHASES
+ int i;
+#endif
 
     /* On node zero, read parameters and send to all other nodes */
     if(this_node==0){
@@ -228,9 +231,11 @@ register int i;
 /* put Kogut-Sussind phase factors into or out of lattice,
    as well as the "fermonion phases", if desired */
 void rephase_sf( int flag ){
-register int i,j,k,dir;
-register site *s;
-register Real ethr,ethi,ddr,ddi;
+  register int i,j,k,dir;
+  register site *s;
+#ifdef FERM_PHASES
+  Real ddr, ddi, ethr, ethi;
+#endif
 
     /* Check to make sure we are going in expected direction */
     if( !( (flag==ON && phases_in==OFF) || (flag==OFF && phases_in==ON) ) ){

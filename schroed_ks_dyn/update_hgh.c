@@ -1,5 +1,5 @@
 /********** update_hgh.c *************************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* THIS CODE NEEDS UPGRADING NOW */
 /*
  Update lattice.
@@ -29,10 +29,11 @@
 #include <ieeefp.h>    /* For "finite" */
 #endif
 
+static void predict_next_xxx(Real *oldtime, Real *newtime, Real *nexttime);
+
 int update()  {
 int step, i_sxw, iters=0;
 Real final_rsq, eps_sxw;
-void predict_next_xxx(Real *oldtime, Real *newtime, Real *nexttime);
 Real cg_time,old_cg_time,next_cg_time;	/* simulation time for last two CG's */
 #ifdef HMC_ALGORITHM
 double startaction,endaction,change;
@@ -59,8 +60,8 @@ Real xrandom;
 	    /* NOTE: NEED TO UPGRADE TO ASQTAD.  BUILD ks_act_paths, ETC. */
 	    load_ferm_links(&fn_links, &ks_act_paths);
 	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				niter, rsqmin, PRECISION, EVEN, &final_rsq,
-				fn_links);
+				niter, nrestart, rsqmin, PRECISION, EVEN, 
+				&final_rsq, &fn_links);
 	    cg_time = 0.0;
 	}
 #ifdef HMC_ALGORITHM
@@ -121,8 +122,8 @@ Real xrandom;
 	predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
 	load_ferm_links(&fn_links, &ks_act_paths);
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN, &final_rsq,
-			    fn_links);
+			    niter, nrestart, rsqmin, PRECISION, EVEN, 
+			    &final_rsq, &fn_links);
 	cg_time = step*epsilon;
 
 	if( step < steps ){
@@ -193,7 +194,7 @@ Real xrandom;
 #ifdef PHI_ALGORITHM
 /* use linear extrapolation to predict next conjugate gradient solution */
 /* only need even sites */
-void predict_next_xxx(Real *oldtime, Real *newtime, Real *nexttime) {
+static void predict_next_xxx(Real *oldtime, Real *newtime, Real *nexttime) {
 register int i;
 register site *s;
 register Real x;

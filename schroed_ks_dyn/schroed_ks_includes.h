@@ -36,18 +36,5 @@ void f_measure(Real *r_psi_bar_psi_even, Real *r_psi_bar_psi_odd,
 	       Real *r_ferm_energy, Real *r_ferm_pressure,
 	       Real *r_ferm_action);
 
-int congrad(int niter, Real rsqmin, int parity, Real *rsq );
-void dslash_site(field_offset src, field_offset dest, int parity );
-void dslash_site_special(field_offset src, field_offset dest,
-		    int parity, msg_tag **tag, int start );
-
-void copy_latvec(field_offset src, field_offset dest, int parity);
-void clear_latvec(field_offset v,int parity);
-void scalar_mult_latvec(field_offset src, Real scalar,
-                        field_offset dest, int parity);
-void scalar_mult_add_latvec(field_offset src1, field_offset src2,
-                            Real scalar, field_offset dest, int parity);
-void grsource(int parity);
-void checkmul();
 void phaseset_sf();
 void rephase_sf(int flag);

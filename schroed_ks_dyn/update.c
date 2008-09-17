@@ -1,5 +1,5 @@
 /********** update.c ****************************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* NOTE: NEEDS UPGRADING TO ASQTAD */
 /*
  Update lattice.
@@ -20,11 +20,17 @@
 #include <ieeefp.h>    /* For "finite" */
 #endif
 
+#ifdef PHI_ALGORITHM
+static void predict_next_xxx(Real *oldtime, Real *newtime, Real *nexttime);
+#endif
+
 int update()  {
 int step, iters=0;
 Real final_rsq;
-void predict_next_xxx(Real *oldtime, Real *newtime, Real *nexttime);
-Real cg_time,old_cg_time,next_cg_time;	/* simulation time for last two CG's */
+Real cg_time;	/* simulation time for last two CG's */
+#ifdef PHI_ALGORITHM
+Real old_cg_time,next_cg_time;	/* simulation time for last two CG's */
+#endif
 #ifdef HMC_ALGORITHM
 double startaction,endaction,change;
 Real xrandom;
@@ -46,9 +52,9 @@ Real xrandom;
 	if(step==1){
 	    /* do conjugate gradient to get (Madj M)inverse * phi */
 	  load_ferm_links(&fn_links, &ks_act_paths);
-	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN,&final_rsq,
-				fn_links);
+	  iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
+			      niter, nrestart, rsqmin, PRECISION, EVEN,
+			      &final_rsq, &fn_links);
 	    cg_time = 0.0;
 	    startaction=d_action();
 	    /* copy link field to old_link */
@@ -75,10 +81,10 @@ Real xrandom;
 #endif
 
 	/* do conjugate gradient to get (Madj M)inverse * phi */
-	  load_ferm_links(&fn_links, &ks_act_paths);
+	load_ferm_links(&fn_links, &ks_act_paths);
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN, &final_rsq,
-			    fn_links);
+			    niter, nrestart, rsqmin, PRECISION, EVEN, 
+			    &final_rsq, &fn_links);
 	cg_time = ((Real)step - 0.5)*epsilon;
 
 	/* now update H by full time interval */
@@ -101,8 +107,8 @@ Real xrandom;
     predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
     load_ferm_links(&fn_links, &ks_act_paths);
     iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
-				   niter, rsqmin, PRECISION, EVEN, &final_rsq,
-			fn_links);
+			niter, nrestart, rsqmin, PRECISION, EVEN, 
+			&final_rsq, &fn_links);
     cg_time = steps*epsilon;
     endaction=d_action();
     change = endaction-startaction;
@@ -145,7 +151,7 @@ Real xrandom;
 #ifdef PHI_ALGORITHM
 /* use linear extrapolation to predict next conjugate gradient solution */
 /* only need even sites */
-void predict_next_xxx(Real *oldtime, Real *newtime, Real *nexttime) {
+static void predict_next_xxx(Real *oldtime, Real *newtime, Real *nexttime) {
 register int i;
 register site *s;
 register Real x;

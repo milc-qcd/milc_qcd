@@ -1,5 +1,5 @@
 /****** update_h.c  -- update the momentum matrices ******************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* THIS CODE NEEDS UPGRADING, NOW */
 
 #include "schroed_ks_includes.h"
@@ -18,7 +18,10 @@ void update_h( Real eps ) {
 void gauge_force( Real eps ) {
 register int i,dir1,dir2;
 register site *st;
-msg_tag *tag0,*tag1,*tag2,*tag3,*tag4;
+msg_tag *tag0,*tag1,*tag2;
+#ifdef REWEIGH
+ msg_tag *tag3,*tag4;
+#endif
 int start;
 su3_matrix tmat1,tmat2;
 register Real eb3;
@@ -236,7 +239,7 @@ su3_matrix temp1,temp2,temp3;
 Real ferm_epsilon;
 
     ferm_epsilon = (nflavors/2.0)*eps;
-    /* For even sites, gather ttt  get first one befor entering loop */
+    /* For even sites, gather ttt  get first one before entering loop */
     tag0 = start_gather_site( F_OFFSET(ttt), sizeof(su3_vector), XUP, EVEN,
 	gen_pt[0] );
 
@@ -278,3 +281,4 @@ Real ferm_epsilon;
 	cleanup_gather(tag1);
     }
 }
+

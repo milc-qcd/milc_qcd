@@ -1,5 +1,5 @@
 #  Schroedinger functional simulation for pure gauge SU3
-#  MIMD version 6
+#  MIMD version 7
 #
 #  Generic make-include file for pure_gauge codes
 #  This template file defines rules and macros common to all architectures
@@ -29,6 +29,11 @@ LIBDIR = ../libraries
 
 GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
+
 MY_HEADERS = \
   lattice.h \
   params.h \
@@ -36,73 +41,147 @@ MY_HEADERS = \
   schroed_ks_includes.h \
   ${ADDHEADERS}
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS}
-
-# Choose one of the lattice layout algorithms:
-LAYOUT = layout_hyper
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 # All required object files
 # Basic set from current directory
 MY_OBJECTS =         \
   control.o          \
+  f_measure.o        \
+  fermion_links_onelink.o \
+  gauge_info.o       \
   setup.o            \
   update_u.o         \
   update_h.o         \
-  f_measure.o        \
-  gauge_info.o
+
 # Basic set from generic directory
 G_OBJECTS =          \
-  ${LAYOUT}.o        \
   check_unitarity.o  \
+  d_plaq4.o          \
   io_helpers.o       \
-  ${IO_LAT_REAL}     \
+  io_lat4.o          \
+  io_lat_utils.o     \
   make_lattice.o     \
   nersc_cksum.o \
   plaquette4.o       \
-  d_plaq2.o          \
   ranstuff.o         \
   ranmom.o           \
+  remap_stdio_from_args.o \
   reunitarize2.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += io_scidac.o io_scidac_types.o
+endif
+
 # Basic set from generic_ks directory
 G_KS_OBJECTS = \
   grsource.o \
   d_congrad5.o \
+  d_congrad_opt.o \
   dslash.o
+
+# Basic set from generic_wilson directory
+G_WILSON_OBJECTS = 
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_WILSON_OBJECTS += io_scidac_w.o
+endif
 
 # Basic set from generic_schroed directory
 G_SCHROED_OBJECTS =  \
   coupling.o         \
   make_schroed_lattice.o
 
-# To these we add project-specific extra objects and machine-dependent objects
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_SCHROED_OBJECTS} \
-  ${EXTRA_OBJECTS} ${MACHINE_DEP}
+# Objects depending on architecture and software package 
+
+# Selection of layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o # Required
+  else
+    LAYOUT = layout_hyper_prime.o # Choices possible here
+  endif
+endif
+
+# EDRAM allocation for QCDOC
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+# Generic QOP objects
+ifeq ($(strip ${HAVEQOP}),true)
+  ADD_OBJECTS += ${GENERICQOP}
+endif
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_WILSON_OBJECTS} \
+  ${G_KS_OBJECTS} ${G_SCHROED_OBJECTS} ${LAYOUT} \
+  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
-QCDLIB = ${LIBDIR}/su3.a ${LIBDIR}/complex.a
+P = $(strip ${PRECISION})
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
+
+#Libraries for complex numbers and su3 functions
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 
 # Default rule for C compilation
-.c.o:
-	${CC} -c ${CFLAGS} $<
-
-# All make files used in this compilation
-ALL_MAKES = Make_template ../generic/Make_template \
-  ../generic_ks/Make_template ../generic_schroed/Make_template \
-  ${MAKEFILE} ../include
+.c.o: ; ${CC} -c ${CFLAGS} $<
 
 # To force a full remake when changing targets
-LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
+LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
 
 ${LASTMAKE}: ${ALL_MAKES}
 	-/bin/rm -f .lastmake.*
 	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 
+# All make files used in this compilation
+ALL_MAKES = \
+  Make_template \
+  ${MAKEFILE} \
+  ../Make_template_qop \
+  ../Make_template_scidac \
+  ../generic/Make_template \
+  ../generic_ks/Make_template \
+  ../generic_schroed/Make_template \
+  ../generic_wilson/Make_template
+
 # All objects should depend on these
 ALL_DEPEND = ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
 
-${OBJECTS}: ${ALL_DEPEND}
+# To force a remake when changing any make file, header, or target
+${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
+endif
+
+ifeq ($(strip ${HAVEQMP}),true)
+  DHAVE_QMP = -DHAVE_QMP
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DHAVE_QIO = -DHAVE_QIO
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  DHAVE_QOP = -DHAVE_QOP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
+
+########################################################
 ##### Targets:
 
 su3_schr_rmd::
@@ -175,16 +254,19 @@ include ../generic/Make_template
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
 
-# Rules for generic_schroed routines
+# Rules for generic_schroed routinesb
 include ../generic_schroed/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
 	cd ${LIBDIR} ;\
-	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" all
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
 
-localmake: ${OBJECTS} ${QCDLIB}
-	${LD} ${LDFLAGS} -o ${MYTARGET} \
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
 	${OBJECTS} ${QCDLIB} ${ILIB} -lm
 	touch localmake
 

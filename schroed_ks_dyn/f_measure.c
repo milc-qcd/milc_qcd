@@ -1,5 +1,5 @@
 /**************** f_measure.c ***************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Measure fermionic observables:
     psi-bar-psi (separately on even and odd sites)

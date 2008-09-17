@@ -1,5 +1,5 @@
 /*************** d_action.c ****************************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /* Measure total action, as needed by the hybrid Monte Carlo algorithm.
    When this routine is called the conjugate gradient should already
@@ -9,10 +9,12 @@
 
 #include "schroed_ks_includes.h"
 
+static double hmom_action();
+static double fermion_action();
+static Real ahmat_mag_sq(anti_hermitmat *pt);
+
 double d_action(){
 double ssplaq,stplaq,g_action,h_action,f_action;
-double hmom_action();
-double fermion_action();
 #ifdef REWEIGH
 double ds_deta,bd_plaq;
 #endif
@@ -37,7 +39,7 @@ Real fs,ft;
 }
 
 /* fermion contribution to the action */
-double fermion_action() {
+static double fermion_action() {
 register int i;
 register site *s;
 register complex cc;
@@ -53,7 +55,7 @@ double sum;
 }
 
 /* gauge momentum contribution to the action */
-double hmom_action() {
+static double hmom_action() {
 register int i,dir;
 register site *s;
 double sum;
@@ -70,7 +72,7 @@ Real ahmat_mag_sq(anti_hermitmat *pt);
 }
 
 /* magnitude squared of an antihermition matrix */
-Real ahmat_mag_sq(anti_hermitmat *pt) {
+static Real ahmat_mag_sq(anti_hermitmat *pt) {
 register Real x,sum;
     x = pt->m00im; sum  = 0.5*x*x;
     x = pt->m11im; sum += 0.5*x*x;
