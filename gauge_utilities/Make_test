@@ -17,22 +17,9 @@
 # For comparing test output with sample output
 
 PROJS = \
-  su3_rmd \
-  su3_rmd_eos \
-  su3_rmd_susc \
-  su3_rmd_mu_eos \
-  su3_spectrum \
-  su3_hybrids \
-  su3_hmc_eo_symzk1_p4 \
-  su3_rmd_dblstore_gath13_fewsums \
-  su3_rmd_plaq_fat7naik \
-  su3_rmd1 \
-  su3_spectrum1 \
-  su3_hybrids1 \
-  su3_rmd_plaq_fat7naik1 \
-  su3_rmd_naive
+  gauge_modify_su3
 
-PRECLIST = 1 2
+PRECLIST = 1
 
 PATTERNS = WARMUPS RUNNING
 
