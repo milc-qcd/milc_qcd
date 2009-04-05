@@ -16,6 +16,16 @@
 #include "generic_includes.h"
 #include <fftw3.h>
 
+#ifdef CHECK_MALLOC
+
+#define fftw_malloc(_size) \
+  (( (_malloc_ptr = fftw_malloc(_size)), \
+   (this_node == 0 ? \
+   printf("%x = fftw_malloc(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
+   && fflush(stdout) : 0 )), _malloc_ptr)
+
+#endif
+
 /* Data structure for the layout */
 
 typedef struct {
@@ -37,14 +47,19 @@ typedef struct {
   int dir;
 } ft_data;
 
+/* List of possible prime factors for dividing the lattice, as in
+ * layout_hyper_prime.c */
+
 static int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 
 		      43, 47, 53};
 # define MAXPRIMES ( sizeof(prime) / sizeof(int) )
 
-/* Table of layout map dirs.  Filled in as they are created */
-/* Index order is x,y,z,t,MILC */
+/* Table of layout map dirs from make_gather.  Filled in as they are created */
+/* remap_dir[i][j] gives the map from layout i to layout j */
+/* Layout index order is x,y,z,t,MILC=layout_*.c */
 
-/* The code must still be changed if you change this */
+/* Even though it looks like you could just change dimensions here, the code
+ * must still be changed below when you change this. */
 #define NDIM 4
 #define MILC_DIR NDIM
 
@@ -148,8 +163,13 @@ static void milc_get_coords(int coords[], int node, int index,
 }
 
 /*----------------------------------------------------------------------*/
-/* Get nsquares and squaresize for FT based on a given FT direction */ 
-/* We want this direction to be completely contained on a single node.
+/* Create the layout for an FFT in the direction ft_dir
+
+   The layout is defined by squaresize, nsquares, and dirp.
+   The first two have the same meaning as in standard MILC layout_*.c.
+   The last is used to permute axes in the lexicographic ordering.
+
+   We want this direction to be completely contained on a single node.
    Also, we want all data to be contiguous for a given value of the
    transform coordinate -- i.e. the transform coordinate should have
    slowest variation.  Since our layout functions make the fourth
@@ -161,7 +181,7 @@ static void milc_get_coords(int coords[], int node, int index,
 
    This algorithm is the same as that of
    layout_hyper_prime:setup_hyper_prime, except that we fix the
-   squaresize for the transform timension and do the divisions on the
+   squaresize for the transform dimension and do the divisions on the
    remaining dimensions.
 */
 
@@ -273,6 +293,7 @@ void make_fftw_plans(int size, ft_data *ftd){
   int nxfm;
   unsigned flags;
   int dir;
+  double dtime = start_timing();
 
   flags = FFTW_ESTIMATE;  /* Could try FFTW_MEASURE */
   rank = 1;
@@ -304,6 +325,8 @@ void make_fftw_plans(int size, ft_data *ftd){
 			   ftd->tmp, onembed, ostride, odist, 
 			   FFTW_BACKWARD, flags);
     }
+
+  print_timing(dtime, "make FFTW plans");
 }
 
 /*----------------------------------------------------------------------*/
@@ -322,6 +345,7 @@ void destroy_fftw_plans(){
 void ft_create_layouts(ft_layout *ftl[], ft_layout **ft_milc, 
 		       int ndim, int dims[], int key[]){
   int dir;
+  int dtime = start_timing();
 
   /* Set up the FT layout structure for each dir needed */
   /* We don't remake the FT layout if it already exists, i.e.  the
@@ -351,6 +375,8 @@ void ft_create_layouts(ft_layout *ftl[], ft_layout **ft_milc,
     (*ft_milc)->get_coords = milc_get_coords;
     (*ft_milc)->nxfm = 0;  /* We don't run transforms with the MILC layout */
   }
+
+  print_timing(dtime, "create FFT layouts");
 }
 
 /*----------------------------------------------------------------------*/
@@ -467,6 +493,7 @@ static void ft_make_map(int dirold, int dir){
 static void ft_make_maps(ft_layout *ftl[], int key[], int ndim){
 
   int dir, dirold;
+  double dtime = start_timing();
 
   dirold = MILC_DIR;  /* Start from MILC layout */
   for(dir = 0; dir < ndim; dir++){
@@ -478,6 +505,8 @@ static void ft_make_maps(ft_layout *ftl[], int key[], int ndim){
   /* End with the MILC layout */
   dir = MILC_DIR;
   ft_make_map(dirold, dir);
+
+  print_timing(dtime, "make FFTW gathers");
 }
 
 /*----------------------------------------------------------------------*/
@@ -549,6 +578,7 @@ ft_data *create_ft_data(complex *src, int size){
   char myname[] = "create_ft_data";
   ft_data *ftd;
   int ncmp;
+  double dtime = start_timing();
 
   ftd = (ft_data *)malloc(sizeof(ft_data));
   if(ftd == NULL){
@@ -557,7 +587,7 @@ ft_data *create_ft_data(complex *src, int size){
   }
 
   ncmp = size/sizeof(complex);
-  ftd->size = size;
+  ftd->size = ncmp*sizeof(fftw_complex);
   ftd->dir = MILC_DIR;
   ftd->data 
     = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*sites_on_node*ncmp);
@@ -571,6 +601,7 @@ ft_data *create_ft_data(complex *src, int size){
   /* Copy data in */
   ft_copy_from_milc(ftd->data, src, size);
 
+  print_timing(dtime, "REMAP FFTW copy MILC");
   return ftd;
 }
 
@@ -593,6 +624,7 @@ static void remap_data(int index, ft_data *ftd){
   msg_tag *mtag;
   char *temp;
   int i;
+  double dtime = start_timing();
 
   temp = (char *)malloc(sites_on_node*ftd->size);
   if(temp==NULL){
@@ -614,12 +646,14 @@ static void remap_data(int index, ft_data *ftd){
   memcpy((char *)ftd->data, temp, sites_on_node*ftd->size);
 
   free(temp);
+
+  print_timing(dtime, "REMAP FFTW remap");
 }
 
 /*----------------------------------------------------------------------*/
 /* Return the next direction for a FT */
 
-static int next_dir(dirold, isign){
+static int next_dir(int dirold, int isign){
   int dir;
 
   if(isign == 1)
@@ -632,7 +666,7 @@ static int next_dir(dirold, isign){
 /*----------------------------------------------------------------------*/
 /* Return the direction of the last FT for the direction isign */
 
-static int last_dir(isign){
+static int last_dir(int isign){
 
   /* The forward map is the reverse of the backward map
      so the last forward direction is the first one in the
@@ -670,14 +704,20 @@ static int remap_data_next(ft_data *ftd, int isign){
 
 void fourier_ftdata( ft_data *ftd, int isign ){
 
+  double dtime = start_timing();
+
   if(isign == 1)
     fftw_execute(fwd_plan[ftd->dir]);
   else
     fftw_execute(bck_plan[ftd->dir]);
 
+  print_timing(dtime, "FFTW transform");
+  dtime = start_timing();
+
   /* Copy the result from "tmp" back to "data" */
 
   memcpy((char *)ftd->data, (char *)ftd->tmp, ftd->size*sites_on_node);
+  print_timing(dtime, "REMAP FFTW copy back");
 }
 
 /*----------------------------------------------------------------------*/
