@@ -72,6 +72,7 @@ G_ALL = \
  rand_gauge.o \
  ranmom.o \
  ranstuff.o \
+ remap_fftw_fourier.o \
  remap_stdio_from_args.o \
  restrict_fourier.o \
  reunitarize2.o \
@@ -230,6 +231,8 @@ rand_gauge.o: ../generic/rand_gauge.c
 ranmom.o: ../generic/ranmom.c
 	${CC} -c ${CFLAGS} $<
 ranstuff.o: ../generic/ranstuff.c
+	${CC} -c ${CFLAGS} $<
+remap_fftw_fourier.o: ../generic/remap_fftw_fourier.c
 	${CC} -c ${CFLAGS} $<
 remap_stdio_from_args.o: ../generic/remap_stdio_from_args.c
 	${CC} -c ${CFLAGS} $<
