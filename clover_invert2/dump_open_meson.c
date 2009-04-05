@@ -161,11 +161,11 @@ static dump_wprop(wilson_propagator *wp, int t){
   for(si = 0; si < 4; si++)
     for(sf = 0; sf < 4; sf++){
       printf("-----------------------------------------------------------\n");
-      printf("spins (%d, %d)\n",si,sf);
+      printf("spins ( %d , %d )\n",si,sf);
       printf("-----------------------------------------------------------\n");
       for(ci=0;ci<3;ci++){
 	for(cf=0;cf<3;cf++)
-	  printf("(%10.3e, %10.3e)  ",
+	  printf("( %10.3e , %10.3e )  ",
 		 wp->c[ci].d[si].d[sf].c[cf].real,
 		 wp->c[ci].d[si].d[sf].c[cf].imag);
 	printf("\n");
@@ -180,17 +180,21 @@ int main(int argc, char *argv[]){
   FILE *corr_fp;
   int t, tselect = -1;
   char *filename;
+  char scanfilename[256];
   wilson_propagator wprop;
 
   /* Process command line args */
+  /* Or take values from stdin */
   if(argc < 2){
-    fprintf(stderr, "Usage %s <filename> <tselect>\n", argv[0]);
-    return 1;
-  }
-  filename = argv[1];
-  
-  if(argc > 2)
+    if(scanf("%s %d",scanfilename,&tselect) != 2){
+      fprintf(stderr, "Usage %s <filename> <tselect>\n", argv[0]);
+      return 1;
+    }
+    filename = scanfilename;
+  } else {
+    filename = argv[1];
     tselect = atoi(argv[2]);
+  }
 
   printf("Will read %s\n", filename);
   if(tselect >= 0)

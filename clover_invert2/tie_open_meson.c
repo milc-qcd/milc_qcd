@@ -603,15 +603,22 @@ int main(int argc, char *argv[]){
   char *gam_snk_lab;
   int gam_snk;
   char *filename;
+  char scanfilename[256];
+  char scangam_snk_lab[8];
   wilson_propagator wprop;
 
   /* Process command line args */
-  if(argc < 3){
-    fprintf(stderr, "Usage %s <filename> <gamma_label>\n", argv[0]);
-    return 1;
+  if(argc < 2){
+    if(scanf("%s %s",scanfilename,scangam_snk_lab) != 2){
+      fprintf(stderr, "Usage %s <filename> <gamma_label>\n", argv[0]);
+      return 1;
+    }
+    filename = scanfilename;
+    gam_snk_lab = scangam_snk_lab;
+  } else {
+    filename = argv[1];
+    gam_snk_lab = argv[2];
   }
-  filename = argv[1];
-  gam_snk_lab = argv[2];
 
   printf("Will read %s\n", filename);
   printf("and tie the correlator with gamma_label %s\n", gam_snk_lab);

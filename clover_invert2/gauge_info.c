@@ -1,7 +1,7 @@
 /*********************** gauge_info.c *************************/
 /* MIMD version 7 */
 
-/* For clover_invert */
+/* For clover_invert2 */
 
 /* Application-dependent routine for writing gauge info file */
 /* This file is an ASCII companion to the gauge configuration file

@@ -303,9 +303,19 @@ su3_clov::
 	"DEFINES= -DFN -DIOTIME -DPRTIME -DCL_CG=BICG" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
-# A hack to allow more than one test case
+# Hacks to allow more than one test case
 su3_clov2: su3_clov
 	   mv su3_clov su3_clov2
+
+su3_clov3: su3_clov
+	   mv su3_clov su3_clov3
+
+# Single-processor utilities
+tie_open_meson:	tie_open_meson.c ${MAKEFILE}
+	gcc tie_open_meson.c -o $@
+
+dump_open_meson: dump_open_meson.c ${MAKEFILE}
+	gcc dump_open_meson.c -o $@
 
 clean:
 	-/bin/rm -f *.o

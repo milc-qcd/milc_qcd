@@ -1,0 +1,151 @@
+SU3 clover valence fermions
+MIMD version 7 $Name:  $
+Machine = QMP (portable), with 1 nodes
+start: Sun Apr  5 15:51:11 2009
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 1.0 MBytes per node for lattice
+
+
+# Gauge field description
+reload_serial ../binary_samples/lat.sample.l4448.ll
+u0 1
+no_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+# Inversion control
+max_cg_iterations 100
+max_cg_restarts 10
+error_for_propagator 1e-06
+rel_error_for_propagator 1e-06
+# Description of quarks
+number_of_propagators 2
+# propagator 0
+propagator_type KS
+mass 0.1
+check no
+reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+forget_ksprop 
+# source
+point
+origin 0 0 0 0 
+source_label d
+# propagator 1
+propagator_type clover
+kappa 0.124
+clov_c 1
+check no
+reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
+forget_wprop 
+# source 
+rotate_3D
+origin 0 0 0 0 
+d1 0.09073
+source_label rot
+number_of_quarks 2
+# point sink staggered
+propagator 0
+point
+sink_label d
+forget_wprop 
+# point sink clover
+propagator 1
+point
+sink_label d
+forget_wprop 
+# Correlators
+# Description of mesons
+number_of_pairings 1
+# pair 0
+# point staggered / source-rotated clover
+pair 0 1 
+spectrum_request open_meson
+save_corr_fnal out.test.open_meson.2
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator Bs p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4448.ll
+Time stamp Wed Oct  6 15:15:02 2004
+Checksums 13a3f454 a37174ec OK
+Time to reload gauge configuration = 1.837015e-03
+CHECK PLAQ: 1.6788352909656483e+00 1.6451928367175011e+00
+CHECK NERSC LINKTR: 6.2131679539094975e-01 CKSUM: d94a8716
+Reunitarized for double precision. Max deviation 5.92e-08 changed to 4.44e-16
+Time to check unitarity = 2.189159e-03
+Time to APE smear 6.158352e-04 sec
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
+COULOMB GAUGE FIXING SKIPPED.
+END OF HEADER
+Mass= 0.1 source point residue= 1e-06 rel= 1e-06
+quark.t[0].checksum  "256fe380 c09de649"
+quark.t[1].checksum  "8ced0a1c 8cba6024"
+quark.t[2].checksum  "2017d4ff 5c84f5a7"
+quark.t[3].checksum  "65b00a8b 91ffd58a"
+quark.t[4].checksum  "2b2f460d f3da5621"
+quark.t[5].checksum  "d23f979 fa0caf1a"
+quark.t[6].checksum  "26f72465 c1afedc7"
+quark.t[7].checksum  "49fda91c 43d489fe"
+Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 49fda91c 43d489fe.  Read 0 0.
+Time to reload ksprop color 0 6.008148e-05
+Time to reload ksprop color 1 3.409386e-05
+Time to reload ksprop color 2 3.194809e-05
+Kappa= 0.124 source rotate_3D residue= 1e-06 rel= 1e-06
+quark.t[0].checksum  "7e685bd9 759261a0"
+quark.t[1].checksum  "458d636c 7fde95"
+quark.t[2].checksum  "b5a45a07 719a0afd"
+quark.t[3].checksum  "331f5357 13ec46ad"
+quark.t[4].checksum  "d2a13ba2 2daf8c59"
+quark.t[5].checksum  "4720052d 65bfc73d"
+quark.t[6].checksum  "90dc8731 1bcbbc90"
+quark.t[7].checksum  "637519f8 3bf07bbe"
+Time to reload wprop spin 0 color 0 2.880096e-04
+Time to reload wprop spin 0 color 1 1.609325e-04
+Time to reload wprop spin 0 color 2 1.811981e-04
+Time to reload wprop spin 1 color 0 1.809597e-04
+Time to reload wprop spin 1 color 1 1.778603e-04
+Time to reload wprop spin 1 color 2 1.809597e-04
+Time to reload wprop spin 2 color 0 1.611710e-04
+Time to reload wprop spin 2 color 1 1.628399e-04
+Time to reload wprop spin 2 color 2 1.640320e-04
+Time to reload wprop spin 3 color 0 1.640320e-04
+Time to reload wprop spin 3 color 1 1.661777e-04
+Time to reload wprop spin 3 color 2 1.740456e-04
+Restored propagator from ../binary_samples/wprop_fm.sample.l4448.ll
+Time to compute propagators 2.118516e-02
+Time to generate sink operator 1.617908e-03
+Time to generate sink operator 3.182173e-03
+destroy prop[0]
+destroy prop[1]
+Mesons for quarks 0 and 1
+WMTIME: time 1.4e-02 sec 1.41107e+06 flops 100.2 MF
+WMTIME: time 1.0e-02 sec 1.41107e+06 flops 137.9 MF
+WMTIME: time 1.0e-02 sec 1.41107e+06 flops 134.8 MF
+Time for open meson 3.505492e-02
+Time for printing correlator 5.249977e-04
+Time to tie hadron correlators 4.730797e-02
+RUNNING COMPLETED
+Time = 7.335615e-02 seconds
+total_iters = 0
+destroy quark[0]
+destroy quark[1]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Sun Apr  5 15:51:11 2009
+
