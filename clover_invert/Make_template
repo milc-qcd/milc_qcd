@@ -52,6 +52,7 @@ MY_OBJECTS =         \
 
 # Basic set from generic directory
 G_OBJECTS =          \
+  ape_smear.o        \
   check_unitarity.o  \
   d_plaq4.o          \
   gaugefix2.o        \
@@ -62,9 +63,10 @@ G_OBJECTS =          \
   io_source_cmplx_fm.o \
   make_lattice.o     \
   nersc_cksum.o \
+  project_su3_hit.o  \
   remap_stdio_from_args.o \
   reunitarize2.o     \
-  restrict_fourier.o
+  remap_fftw_fourier.o
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
@@ -87,6 +89,8 @@ G_WILSON_OBJECTS =   \
   baryon_cont.o      \
   canopy2weyl_rot.o  \
   dirac_utilities.o  \
+  discretize_wf.o    \
+  dslash_w_space.o   \
   dslash_w3.o        \
   gammas.o           \
   gauss_smear_w.o    \
