@@ -48,7 +48,6 @@ p2f_complex(fcomplex *dest, complex *src){
   dest->imag = src->imag;
 }
 
-#if 0
 static void
 d2p_complex(complex *dest, dcomplex *src){
   dest->real = src->real;
@@ -60,7 +59,6 @@ p2d_complex(dcomplex *dest, complex *src){
   dest->real = src->real;
   dest->imag = src->imag;
 }
-#endif
 
 /* Color vector */
 
@@ -84,7 +82,6 @@ p2f_vec(fsu3_vector *dest, su3_vector *src){
   }
 }
 
-#if 0
 static void 
 d2p_vec(su3_vector *dest, dsu3_vector *src){
   int i;
@@ -95,6 +92,7 @@ d2p_vec(su3_vector *dest, dsu3_vector *src){
   }
 }
 
+#if 0
 static void 
 p2d_vec(dsu3_vector *dest, su3_vector *src){
   int i;
@@ -128,7 +126,6 @@ p2f_wvec(fwilson_vector *dest, wilson_vector *src){
   }
 }
 
-#if 0
 static void 
 d2p_wvec(wilson_vector *dest, dwilson_vector *src){
   int i,j;
@@ -148,7 +145,6 @@ p2d_wvec(dwilson_vector *dest, wilson_vector *src){
     dest->d[j].c[i].imag = src->d[j].c[i].imag;
   }
 }
-#endif
 
 /* Color matrix */
 
@@ -284,6 +280,12 @@ make_vput(F, 3, M, fsu3_matrix,    su3_matrix,    f2p_mat);
 
 /* Double precision */
 
+make_vget(D,  , C, dcomplex,       complex,       p2d_complex);
+make_vget(D, 3, D, dwilson_vector, wilson_vector, p2d_wvec);
+
+make_vput(D,  , C, dcomplex,       complex,       d2p_complex);
+make_vput(D, 3, V, dsu3_vector,    su3_vector,    d2p_vec);
+make_vput(D, 3, D, dwilson_vector, wilson_vector, d2p_wvec);
 make_vput(D, 3, M, dsu3_matrix,    su3_matrix,    d2p_mat);
 
 /* Write MILC site structure data */
@@ -418,6 +420,8 @@ int write_##P##C##_##T##_timeslice_from_field(QIO_Writer *outfile, \
   make_write_tslice_from_field(P, PSTRING, C, CVAL, SVAL, T, TYPESTRING, \
  		       FIXTYPE, VARTYPE, MYREAL);
 
+/* Single precision */
+
 make_write_all(F, "F",  , 0, 0, R, "QLA_F_Real", float, Real, float);
 make_write_all(F, "F",  , 0, 0, C, "QLA_F_Complex", fcomplex, complex, float);
 make_write_all(F, "F", 3, 3, 0, V, "USQCD_F3_ColorVector", fsu3_vector, su3_vector, float);
@@ -428,6 +432,15 @@ make_write_tslice(F, "F",  , 0, 0, R, "QLA_F_Real", float, Real, float);
 make_write_tslice(F, "F",  , 0, 0, C, "QLA_F_Complex", fcomplex, complex, float);
 make_write_tslice(F, "F", 3, 3, 0, V, "USQCD_F3_ColorVector", fsu3_vector, su3_vector, float);
 make_write_tslice(F, "F", 3, 3, 4, D, "USQCD_F3_DiracFermion", fwilson_vector, wilson_vector, float);
+
+/* Double precision */
+
+make_write_all(D, "D",  , 0, 0, C, "QLA_D_Complex", dcomplex, complex, double);
+make_write_all(D, "D", 3, 3, 4, D, "USQCD_D3_DiracFermion", dwilson_vector, wilson_vector, double);
+
+make_write_tslice(D, "D",  , 0, 0, C, "QLA_D_Complex", dcomplex, complex, double);
+make_write_tslice(D, "D", 3, 3, 4, D, "USQCD_D3_DiracFermion", dwilson_vector, wilson_vector, double);
+
 
 /* Read MILC site structure data */
 
@@ -491,7 +504,10 @@ make_read(F, 3, M, fsu3_matrix, su3_matrix, float);
 make_read(F, 3, D, fwilson_vector, wilson_vector, float);
 
 /* Double precision */
+make_read(D,  , C, dcomplex, complex, double);
+make_read(D, 3, V, dsu3_vector, su3_vector, double);
 make_read(D, 3, M, dsu3_matrix, su3_matrix, double);
+make_read(D, 3, D, dwilson_vector, wilson_vector, double);
 
 /* Factory function for moving random generator state from site structure to
    output */
