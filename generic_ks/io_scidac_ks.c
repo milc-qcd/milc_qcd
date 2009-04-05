@@ -223,9 +223,21 @@ QIO_Reader *r_open_ks_vector_scidac_file(char *filename, int serpar)
 int read_ks_vector_scidac_xml(QIO_Reader *infile, su3_vector *dest, int count,
 			      QIO_String *recxml)
 {
+  int status, typesize;
+  QIO_RecordInfo recinfo;
+
+  /* Check the record type (double or single precision) */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
 
   /* Read the lattice field: "count" color vectors per site */
-  return read_F3_V_to_field(infile, recxml, dest, count);
+  if(typesize == 6*4)
+    /* Read them as a single precision record */
+    return read_F3_V_to_field(infile, recxml, dest, count);
+  else
+    /* Read them as a double precision record */
+    return read_D3_V_to_field(infile, recxml, dest, count);
 
 }
 
@@ -337,10 +349,21 @@ int read_kspropsource_C_usqcd(QIO_Reader *infile, char *srcinfo, int n,
   QIO_USQCDKSPropSourceInfo propsource_info;
   QIO_String *recxml;
   char *info;
-  int status;
+  int status, typesize;
+  QIO_RecordInfo recinfo;
 
   recxml = QIO_string_create();
-  status = read_F_C_to_field(infile, recxml, dest, 1);
+
+  /* Check the record type (double or single precision) */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+
+  if(typesize == 8)
+    status = read_F_C_to_field(infile, recxml, dest, 1);
+  else
+    status = read_D_C_to_field(infile, recxml, dest, 1);
+
   if(status != QIO_SUCCESS)return status;
 
   status = QIO_decode_usqcd_kspropsource_info(&propsource_info, recxml);
@@ -363,10 +386,23 @@ int read_kspropsource_V_usqcd(QIO_Reader *infile, char *srcinfo, int n,
   QIO_USQCDKSPropSourceInfo propsource_info;
   QIO_String *recxml;
   char *info;
-  int status;
+  int status, typesize;
+  QIO_RecordInfo recinfo;
 
   recxml = QIO_string_create();
-  status = read_F3_V_to_field(infile, recxml, dest, 1);
+
+  /* Check the record type (double or single precision) */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+  
+  if(typesize == 6*4)
+    /* Read as a single precision record */
+    status = read_F3_V_to_field(infile, recxml, dest, 1);
+  else
+    /* Read as a double precision record */
+    status = read_D3_V_to_field(infile, recxml, dest, 1);
+
   if(status != QIO_SUCCESS)return status;
 
   status = QIO_decode_usqcd_kspropsource_info(&propsource_info, recxml);
@@ -537,10 +573,23 @@ int read_ksproprecord_usqcd(QIO_Reader *infile, int *color, su3_vector *dest)
 {
   QIO_USQCDKSPropRecordInfo proprecord_info;
   QIO_String *recxml;
-  int status;
+  int status, typesize;
+  QIO_RecordInfo recinfo;
 
   recxml = QIO_string_create();
-  status = read_F3_V_to_field(infile, recxml, dest, 1);
+
+  /* Check the record type (double or single precision) */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+
+  if(typesize == 6*4)
+    /* Read as a single precision record */
+    status = read_F3_V_to_field(infile, recxml, dest, 1);
+  else
+    /* Read as a double precision record */
+    status = read_D3_V_to_field(infile, recxml, dest, 1);
+
   if(status != QIO_SUCCESS)return status;
 
   status = QIO_decode_usqcd_ksproprecord_info(&proprecord_info, recxml);
