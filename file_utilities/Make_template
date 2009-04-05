@@ -195,6 +195,7 @@ diff_wprop::
 	  ksprop_info.o \
 	  ks_source.o \
 	  nersc_cksum.o \
+	  restrict_fourier.o \
 	  staggered2naive.o \
 	  w_source.o \
 	  wprop_info.o"
@@ -248,6 +249,7 @@ wprop_2wprop::
 	  ks_source.o \
 	  ksprop_info.o \
 	  nersc_cksum.o \
+	  restrict_fourier.o \
 	  reunitarize2.o \
 	  staggered2naive.o \
 	  w_source.o \
