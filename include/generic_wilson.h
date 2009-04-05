@@ -23,6 +23,7 @@ enum guess_params { START_ZERO_GUESS = 0 ,  START_NONZERO_GUESS } ;
 #define ALL_T_SLICES -1
 #define MAXDESCRP 128
 #define MAXSRCLABEL 8
+#define MAXWEIGHTS 5
 
 /* Structure defining Wilson (or clover) quark source */
 /* There must be a color and spin member */
@@ -30,29 +31,34 @@ enum guess_params { START_ZERO_GUESS = 0 ,  START_NONZERO_GUESS } ;
    that builds the source.  Ignore the members you don't need. */
 typedef struct {
   int type;           /* source type for most source builders */
-  char descrp[MAXDESCRP];  /* alpha description for most */
-  char label[MAXSRCLABEL]; /* Abbreviation of description */
   int color;          /* source color */
   int spin;           /* source spin  */
-  int wall_cutoff;    /* half size of box for w_source_h */
-  int parity;         /* even or odd sites for w_source_h */
-  Real r0;            /* source size for gaussian, width for gauge invt  */
+
+  Real a;             /* Lattice spacing for converting wave function file */
+  complex *c_src;     /* Pointer for complex source field storage */
   Real d1;            /* Fermilab 3D rotation parameter */
-  int iters;          /* iterations for gauge invariant source */
-  int x0,y0,z0,t0;    /* source coordinates for most */ 
-  char source_file[MAXFILENAME]; /* file name for some sources */
+  int dir1, dir2;     /* Directions for derivatives */
+  int disp;           /* Stride for derivatives */
+  Real weights[MAXWEIGHTS];  /* Weights for derivatives */
+  char descrp[MAXDESCRP];  /* alpha description for most */
+  int iters;          /* iterations for covariant gaussian source */
+  char label[MAXSRCLABEL]; /* Abbreviation of description */
+  int file_initialized;
   int flag;           /* mode of reading or writing for some sources */
-  int mom[3];         /* insertion momentum for some sources */
 #ifdef HAVE_QIO
   QIO_Reader *infile;
   QIO_Writer *outfile;
 #endif
-  int file_initialized;
-  complex *c_src;     /* Pointer for complex source field storage */
-  wilson_vector *wv_src; /* Pointer for wilson vector source field storage */
   int ksource;        /* Counter for a list of sources */
+  int mom[3];         /* insertion momentum for some sources */
+  int parity;         /* even or odd sites for w_source_h */
+  Real r0;            /* source size for gaussian, width for gauge invt  */
+  char source_file[MAXFILENAME]; /* file name for some sources */
   int src_pointer ;   /* smearing function (for the moment, only
 		         clover_finite_p_vary/create_wilson_source.c) */
+  int wall_cutoff;    /* half size of box for w_source_h */
+  wilson_vector *wv_src; /* Pointer for wilson vector source field storage */
+  int x0,y0,z0,t0;    /* source coordinates for most */ 
 } wilson_quark_source;
 
 /* baryon_cont.c */
@@ -86,10 +92,12 @@ void clear_wp_field(wilson_prop_field wp);
 void clear_wv_field(wilson_vector *wv);
 spin_wilson_vector *create_swv_field(void);
 wilson_prop_field create_wp_field(void);
+void transpose_wp_field(wilson_prop_field wp);
 wilson_vector *create_wv_field(void);
 void copy_wp_from_wv(wilson_prop_field wp, wilson_vector *wv, 
 		     int color, int spin);
 void copy_wp_field(wilson_prop_field wpcopy, wilson_prop_field wp);
+void copy_wv_field(wilson_vector *dst, wilson_vector *src);
 void copy_wv_from_swv(wilson_vector *wv, spin_wilson_vector *swv, int spin);
 void copy_wv_from_wp(wilson_vector *wv, wilson_prop_field wp, 
 		     int color, int spin);
@@ -100,6 +108,10 @@ void destroy_swv_field(spin_wilson_vector *swv);
 void destroy_wv_field(wilson_vector *wv);
 void destroy_wp_field(wilson_prop_field wp);
 spin_wilson_vector *extract_swv_from_wp(wilson_prop_field wp, int color);
+
+/* discretize_wf.c */
+void fnal_wavefunction(complex *wf, int x0, int y0, int z0, int t0, 
+		       Real a, char wf_file[]);
 
 /* gammas.c */
 void mult_w_by_gamma(wilson_vector * src, wilson_vector * dest, int dir);
@@ -121,8 +133,10 @@ int gamma_index(char *label);
 char *gamma_label(int index);
 
 /* gauss_smear_w.c */
-void gauss_smear_field(wilson_vector *src, Real width, int iters, int t0);
-void gauss_smear_site(field_offset src, Real width, int iters, int t0);
+void gauss_smear_field(wilson_vector *src, su3_matrix *t_links,
+		       Real width, int iters, int t0);
+void gauss_smear_site(field_offset src, su3_matrix *t_links,
+		      Real width, int iters, int t0);
 
 /* meson_cont.c */
 void meson_cont_site(field_offset src1,field_offset src2,
@@ -142,6 +156,8 @@ void convert_ksprop_to_wprop_swv(spin_wilson_vector *swv,
 /* w_source.c */
 void alloc_wqs_wv_src(wilson_quark_source *wqs);
 void alloc_wqs_c_src(wilson_quark_source *wqs);
+void ape_smear_3D(Real staple_weight, int iters);
+void destroy_ape_links_3D(void);
 int ask_output_w_quark_source_file( FILE *fp, int prompt, 
 				    int *flag, int *source_type,
 				    int *t0, char *descrp, char *filename);
@@ -151,6 +167,7 @@ void clear_wqs(wilson_quark_source *wqs);
 int get_w_quark_source( FILE *fp, int prompt, wilson_quark_source *wqs );
 int get_w_quark_sink(FILE *fp, int prompt, wilson_quark_source *wqs);
 void init_wqs(wilson_quark_source *wqs);
+void invalidate_ape_links(void);
 void r_close_w_source(wilson_quark_source *wqs);
 void r_open_w_source(wilson_quark_source *wqs);
 void w_close_w_source(wilson_quark_source *wqs);
@@ -158,13 +175,14 @@ void w_open_w_source(wilson_quark_source *wqs, char *fileinfo);
 int w_source_site(field_offset src, wilson_quark_source *wqs);
 int w_source_field(wilson_vector *src, wilson_quark_source *wqs);
 int w_source_write(wilson_vector *src, wilson_quark_source *wqs);
+wilson_prop_field w_sink_op(wilson_quark_source *wqs, wilson_prop_field src );
 void w_sink_site(field_offset snk, wilson_quark_source *wqs);
 void w_sink_field(complex *snk, wilson_quark_source *wqs);
 
 /* w_source_h.c (also has an ask_quark_source) */
 Real *make_template(Real gamma, int cutoff);
 void w_source_h(field_offset src,wilson_quark_source *wqs);
-void free_source_template();
+void free_source_template(void);
 
 void bj_to_weyl( wilson_vector *src, wilson_vector *dest);
 void dslash_w_site(field_offset src,field_offset dest,
@@ -263,15 +281,38 @@ void meson_cont_mom(
   int num_corr_mom[],       /* number of momentum/parity values for each corr */
   int **corr_table,         /* c = corr_table[g][k] correlator index */
   int p_index[],            /* p = p_index[c] is the momentum index */
-  int gin[],                /* gin[c] is the source gamma */
   int gout[],               /* gout[c] is the sink gamma */
+  int gin[],                /* gin[c] is the source gamma */
   int meson_phase[],        /* meson_phase[c] is the correlator phase */
   Real meson_fact[],        /* meson_fact[c] scales the correlator */
-  int corr_index[]          /* m = corr_index[c] is the correlator index */
+  int corr_index[],         /* m = corr_index[c] is the correlator index */
+  int r0[]                  /* spatial origin for defining FT phases */
 		    );
 
 
 int decode_phase(char *label);
+
+/* w_meson_open_mom.c */
+
+void meson_open_mom(
+  wilson_propagator **prop, /* prop[m][t] is where result is accumulated */
+  spin_wilson_vector *src1, /* quark propagator (to become antiquark) */
+  spin_wilson_vector *src2, /* quark propagator */
+  int no_q_momenta,         /* no of unique mom/parity values (gt p) */
+  int **q_momstore,         /* q_momstore[p] are the momentum components */
+  char **q_parity,          /* q_parity[p] the parity of each mom component */
+  int no_gamma_corr,        /* # of gamma src/snk combinations (gt g) */
+  int num_corr_mom[],       /* number of momentum/parity values for each corr */
+  int **corr_table,         /* c = corr_table[g][k] correlator index */
+  int p_index[],            /* p = p_index[c] is the momentum index */
+  int gout[],               /* gout[c] is the sink gamma */
+  int gin[],                /* gin[c] is the source gamma */
+  int meson_phase[],        /* meson_phase[c] is the correlator phase */
+  Real meson_factor[],      /* meson_factor[c] scales the correlator */
+  int corr_index[],         /* m = corr_index[c] is the correlator index */
+  int r0[]                  /* spatial origin for defining FT phases */
+		    );
+
 
 /* w_baryon.c */
 void w_baryon(wilson_prop_field src1,wilson_prop_field src2,
