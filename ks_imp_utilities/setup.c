@@ -254,7 +254,9 @@ void
 make_3n_gathers()
 {
   int i;
+#ifdef HAVE_QDP
   int disp[4]={0,0,0,0};
+#endif
 
   for(i=XUP; i<=TUP; i++) {
     make_gather(third_neighbor, &i, WANT_INVERSE,
