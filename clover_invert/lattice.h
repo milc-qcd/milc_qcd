@@ -52,6 +52,19 @@ typedef struct {
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+#ifdef FIX_NODE_GEOM
+EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
+			    hypercubes) for the compute nodes in each
+			    coordinate direction.  Must be divisors of
+			    the lattice dimensions */
+#ifdef FIX_IONODE_GEOM
+EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
+			     partitions in each coordinate direction,
+			     one I/O node for each square.  The I/O
+			     node is at the origin of the square.
+			     Must be divisors of the node_geometry. */
+#endif
+#endif
 EXTERN	int niter,nrestart;
 #define MAX_KAP 6
 EXTERN	Real kappa,source_r0,kap[MAX_KAP],resid[MAX_KAP],relresid[MAX_KAP];
