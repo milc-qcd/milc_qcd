@@ -785,6 +785,7 @@ reload_wprop_to_wp_field( int flag, char *filename, wilson_quark_source *wqs,
   char myname[] = "reload_wprop_to_field";
   
   status = 0;
+  if(timing)dtime = -dclock();
   switch(flag){
     
   case CONTINUE:  /* do nothing */
@@ -808,7 +809,7 @@ reload_wprop_to_wp_field( int flag, char *filename, wilson_quark_source *wqs,
     for(spin=0;spin<4;spin++){
       /* Loop over source colors */
       for(color=0;color<3;color++){
-	reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, psi, timing);
+	reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, psi, 0);
 	copy_wp_from_wv(dest, psi, color, spin);
       }
     }
@@ -888,26 +889,35 @@ save_wprop_from_wp_field( int flag, char *filename, wilson_quark_source *wqs,
   w_prop_file *wpf;
   wilson_vector *wv;
   int status;
+  double dtime = 0;
   
   status = 0;
+  if(timing)dtime = -dclock();
 
   if(flag == FORGET)return status;
   
   wv = create_wv_field();
   wpf = w_open_wprop(flag, filename, wqs->type);
 
-  for(color = 0; color < 3; color++)
-    for(spin = 0; spin < 4; spin++)
+  for(spin = 0; spin < 4; spin++)
+    for(color = 0; color < 3; color++)
       {
 	copy_wv_from_wp(wv, src, color, spin);
 	if( save_wprop_sc_from_field (flag, wpf, wqs, spin, color, 
-				      wv, recxml, timing) != 0)
+				      wv, recxml, 0) != 0)
 	  status = 1;
       }
 
   w_close_wprop(flag, wpf);
   destroy_wv_field(wv);
 
+  if(timing)
+    {
+      dtime += dclock();
+      if(flag != FORGET)
+	node0_printf("Time to save wprop %e\n",dtime);
+    }
+  
   return status;
 
 } /* save_wprop_from_field */
@@ -1136,6 +1146,27 @@ save_wprop_from_site( int flag, char *filename, wilson_quark_source *wqs,
   return status;
 
 } /* save_wprop_from_site */
+
+/*---------------------------------------------------------------*/
+/* Translate output flag to the appropriate input flag for restoring
+   a propagator that was temporarily written to disk  */
+int
+convert_outflag_to_inflag_wprop(int outflag){
+  switch(outflag){
+  case SAVE_ASCII:
+    return RELOAD_ASCII;
+  case SAVE_SERIAL_FM:
+  case SAVE_SERIAL_FM_SC:                
+  case SAVE_SERIAL_SCIDAC:
+  case SAVE_MULTIFILE_SCIDAC:            
+  case SAVE_PARTITION_SCIDAC:            
+    return RELOAD_SERIAL;
+  case SAVE_PARALLEL_SCIDAC:             
+    return RELOAD_PARALLEL;
+  default:
+    return FRESH;  /* Error return */
+  }
+}
 /*---------------------------------------------------------------*/
 /* find out what kind of starting propagator to use, 
    and propagator name if necessary.  This routine is only 
