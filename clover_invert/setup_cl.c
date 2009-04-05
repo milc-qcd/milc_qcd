@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.14  2009/04/05 16:49:22  detar
+//  Add fixed node geometry and wave function file source
+//
 //  Revision 1.13  2008/04/18 15:14:46  detar
 //  Fix printed comment
 //
@@ -71,6 +74,9 @@ int  setup_cl()   {
 /* SETUP ROUTINES */
 int initial_set(){
   int prompt,status;
+#ifdef FIX_NODE_GEOM
+  int i;
+#endif
   /* On node zero, read lattice size and send to others */
   if(mynode()==0){
     /* print banner */
@@ -85,6 +91,14 @@ int initial_set(){
     IF_OK status += get_i(stdin,prompt,"ny", &par_buf.ny );
     IF_OK status += get_i(stdin,prompt,"nz", &par_buf.nz );
     IF_OK status += get_i(stdin,prompt,"nt", &par_buf.nt );
+#ifdef FIX_NODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "node_geometry", 
+			   par_buf.node_geometry, 4);
+#ifdef FIX_IONODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
+			   par_buf.ionode_geometry, 4);
+#endif
+#endif
     
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -99,6 +113,14 @@ int initial_set(){
   ny=par_buf.ny;
   nz=par_buf.nz;
   nt=par_buf.nt;
+#ifdef FIX_NODE_GEOM
+  for(i = 0; i < 4; i++)
+    node_geometry[i] = par_buf.node_geometry[i];
+#ifdef FIX_IONODE_GEOM
+  for(i = 0; i < 4; i++)
+    ionode_geometry[i] = par_buf.ionode_geometry[i];
+#endif
+#endif
   
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -205,6 +227,12 @@ int readin(int prompt) {
       else if ( source_type == DIRAC_FIELD_FM_FILE ){
 	IF_OK status += get_i(stdin, prompt, "t0", &source_loc[3]);
 	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+      }
+      else if ( source_type == WAVEFUNCTION_FILE ){
+	IF_OK status += get_vi(stdin, prompt, "origin", source_loc, 4);
+	IF_OK status += get_s(stdin, prompt, "load_source", source_file);
+	IF_OK status += get_f(stdin, prompt, "a", &par_buf.wqs.a);
+	IF_OK status += get_vi(stdin, prompt, "momentum", par_buf.wqs.mom, 3);
       }
       else {
 	printf("Source type not supported in this application\n");
