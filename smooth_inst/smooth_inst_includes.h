@@ -17,8 +17,11 @@
 
 int setup(void);
 int readin(const int prompt);
+int initial_set(void);
 void make_loop_table2(void);
 void smooth(void);
 void instanton_density(void);
 void load_fatlinks(void);
 void save_topo(char *filenam);
+void char_num(int dig[13], int chr[2], int *ch, const int length);
+void path(int *dir,int *sign, const int length);

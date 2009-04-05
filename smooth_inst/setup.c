@@ -7,7 +7,6 @@
 #include <string.h>
 
 int ask_ending_topo( int prompt, int *flag, char *filename );
-int initial_set(void);
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"

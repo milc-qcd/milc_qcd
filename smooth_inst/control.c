@@ -9,6 +9,11 @@
 #define CONTROL
 
 #include "smooth_inst_includes.h"
+#include "lattice_qdp.h"
+#ifdef HAVE_QIO
+#include <qio.h>
+#include "../include/io_scidac.h"
+#endif
 
 int main(int argc, char *argv[])
 {

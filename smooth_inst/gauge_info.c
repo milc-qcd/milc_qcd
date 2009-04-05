@@ -24,6 +24,10 @@
 
 #include "smooth_inst_includes.h"
 #include <string.h>
+#ifdef HAVE_QIO
+#include <qio.h>
+#include "../include/io_scidac.h"
+#endif
 
 /*---------------------------------------------------------------------------*/
 /* This routine writes the ASCII info file.  It is called from one of
