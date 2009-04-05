@@ -90,7 +90,10 @@ node0_printf("Finished setup\n"); fflush(stdout);
 
 /* SETUP ROUTINES */
 int initial_set(){
-int prompt,status;
+  int prompt,status;
+#ifdef FIX_NODE_GEOM
+  int i;
+#endif
     /* On node zero, read lattice size, seed, and send to others */
     if(mynode()==0){
 	/* print banner */
@@ -106,8 +109,15 @@ int prompt,status;
 	IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
 	IF_OK status += get_i(stdin, prompt,"nz", &par_buf.nz );
 	IF_OK status += get_i(stdin, prompt,"nt", &par_buf.nt );
+#ifdef FIX_NODE_GEOM
+	IF_OK status += get_vi(stdin, prompt, "node_geometry", 
+			       par_buf.node_geometry, 4);
+#ifdef FIX_IONODE_GEOM
+	IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
+			       par_buf.ionode_geometry, 4);
+#endif
+#endif
 	IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
-
 	if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
     } /* end if(mynode()==0) */
 
@@ -121,6 +131,14 @@ int prompt,status;
     ny=par_buf.ny;
     nz=par_buf.nz;
     nt=par_buf.nt;
+#ifdef FIX_NODE_GEOM
+    for(i = 0; i < 4; i++)
+      node_geometry[i] = par_buf.node_geometry[i];
+#ifdef FIX_IONODE_GEOM
+    for(i = 0; i < 4; i++)
+      ionode_geometry[i] = par_buf.ionode_geometry[i];
+#endif
+#endif
     iseed=par_buf.iseed;
     nflavors1=par_buf.nflavors1;
     nflavors2=par_buf.nflavors2;
