@@ -216,6 +216,7 @@ r_source_cmplx_fm(cmplx_source_file *csf,
   int buf_length=0, where_in_buf=0;
   fcomplex *cbuff=NULL;
   complex *c;
+  fcomplex cfix;
   int vol3 = nx*ny*nz;
   int source_type;
 
@@ -307,10 +308,12 @@ r_source_cmplx_fm(cmplx_source_file *csf,
 	   site structure */
 	
 	if(this_node==destnode)
-	  {
+	{
+	    /* Byte reverse a copy, since we may need to reuse cmsg.q */
+	    cfix = cmsg.q;
 	    if(byterevflag==1){
-	      byterevn((int32type *)&cmsg.q, 
-		       sizeof(fcomplex)/sizeof(int32type));
+		byterevn((int32type *)&cfix, 
+			 sizeof(fcomplex)/sizeof(int32type));
 	    }
 	    
 	    /* Now copy the site data into the destination converting
@@ -319,15 +322,15 @@ r_source_cmplx_fm(cmplx_source_file *csf,
 	    i = node_index(x,y,z,t);
 	    
 	    if(dest_site == (field_offset)(-1))
-	      c = dest_field + i;
+		c = dest_field + i;
 	    else
-	      c = (complex *)F_PT(&lattice[i],dest_site);
+		c = (complex *)F_PT(&lattice[i],dest_site);
 	    
-	    c->real = cmsg.q.real;
-	    c->imag = cmsg.q.imag;
+	    c->real = cfix.real;
+	    c->imag = cfix.imag;
 	    //printf("C %d %d %d %g %g\n", 
 	    //	       x, y, z, cmsg.q.real, cmsg.q.imag);
-	  } /* if this_node == destnode */
+	} /* if this_node == destnode */
       } /* t */
       
       where_in_buf++;
