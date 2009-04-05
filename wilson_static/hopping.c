@@ -47,9 +47,9 @@ void hopping(field_offset src, field_offset temp,
   register int i;
   register site *s;
   Real size_src, size_r;
-  int old_parity, new_parity, channel;
+  int old_parity, new_parity = 0x00, channel;
   double **meson_prop;
-  wilson_vector *light_wall, *heavy_wall;
+  wilson_vector *light_wall = NULL, *heavy_wall = NULL;
 
 
 

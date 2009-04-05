@@ -30,7 +30,7 @@ void w_meson_hop(double *prop[], field_offset heavy_quark, field_offset light_qu
   register int i;
   register site *s;
 
-  int channel, sign53;
+  int channel, sign53 = 0;
   int t, tp, tb, te, cf, sf;
   complex g1, g2;
   int dx, dy, dz, x0, y0, z0, center_parity;

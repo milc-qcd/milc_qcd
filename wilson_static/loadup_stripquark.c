@@ -42,7 +42,7 @@ void buildup_strip(field_offset quark, int colour, int spin)
   int ic;
 
   complex mult_A , mult_B ;
-  int spin_A , spin_B ;
+  int spin_A = -1 , spin_B = -1;
   Real root_two= (Real) sqrt( (double) 2.0 ) ;
   complex z ;
   /*****------------------------------**********************/

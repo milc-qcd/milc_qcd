@@ -27,7 +27,7 @@ void light_meson(field_offset light_quark, int color, int spin,
   double dtime;
   int channel, N_iter;
   double **meson_prop;
-  wilson_vector *light_wall, *heavy_wall;
+  wilson_vector *light_wall = NULL, *heavy_wall = NULL;
 
 
   /* Start Hopping */

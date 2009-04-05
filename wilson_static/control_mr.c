@@ -48,8 +48,8 @@ int main(int argc, char **argv)
   double ssplaq, stplaq;
 
 
-  FILE *fp_m_out;  /*** meson IO stuff **/
-  int fb_m_out;	   /*** meson IO stuff **/
+  FILE *fp_m_out = NULL;  /*** meson IO stuff **/
+  int fb_m_out = 0;	   /*** meson IO stuff **/
 
   w_prop_file *fp_in_w[MAX_NKAP];        /* For propagator files */
   w_prop_file *fp_out_w[MAX_NKAP];       /* For propagator files */
@@ -60,8 +60,8 @@ int main(int argc, char **argv)
   int MinMR;
   
 /*** variables required for the static variational code ***/
-  int nodata  ;
-  complex *meson ;
+  int nodata = 0 ;
+  complex *meson = NULL;
 
 /****** start of the execution of the code ************/
 
