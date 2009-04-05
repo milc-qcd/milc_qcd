@@ -44,6 +44,26 @@ void ape_smear_field(
 			     as a prescribed number of hits. */ 
   );
 
+void ape_smear_field_dir(
+  su3_matrix *src,        /* su3_matrix[4] type 
+			     input unsmeared links */
+  int dir1,               /* link direction to smear */
+  su3_matrix *dest,       /* su3_matrix[4] type smeared links */
+  Real staple_weight,    /* single staple weight */
+  Real link_u0,          /* single link weight - used in normalization
+                             if SU(3) projection is turned off */
+  int space_only,         /* = 1 (true) smear space-like links with
+ 			          only spacelike staples 
+			     = 0 (false) smear all links with
+			     all staples */
+  int nhits,              /* reproject onto SU(3): number of 
+			     SU(2) hits. 0 for no reprojection */
+  Real tol               /* tolerance for SU(3) projection.
+			     If nonzero, treat nhits as a maximum
+			     number of hits.  If zero, treat nhits
+			     as a prescribed number of hits. */ 
+			 );
+
 void ape_smear_dir(
   field_offset src,       /* field offset for su3_matrix[4] type 
 			     input unsmeared links */
@@ -88,7 +108,7 @@ void ape_smear(
 
 
 /* ax_gauge.c */
-void ax_gauge();
+void ax_gauge(void);
 
 /* bsd_sum.c */
 int32type bsd_sum (char *data,int32type total_bytes);
@@ -124,21 +144,21 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 void imp_gauge_force( Real eps, field_offset mom_off );
 
 /* gauge_stuff.c */
-double imp_gauge_action();
-void g_measure();
-void make_loop_table();
+double imp_gauge_action(void);
+void g_measure(void);
+void make_loop_table(void);
 void dsdu_qhb_subl(int dir, int subl);
-int get_max_length();
-int get_nloop();
-int get_nreps();
-int *get_loop_length();
-int *get_loop_num();
-int ***get_loop_table();
-Real **get_loop_coeff();
+int get_max_length(void);
+int get_nloop(void);
+int get_nreps(void);
+int *get_loop_length(void);
+int *get_loop_num(void);
+int ***get_loop_table(void);
+Real **get_loop_coeff(void);
 
 /* glueball_op.c */
-void make_glueball_ops();
-void measure_glueball_ops();
+void make_glueball_ops(void);
+void measure_glueball_ops(void);
 
 /* hvy_pot.c */
 void hvy_pot( field_offset links );
@@ -155,8 +175,8 @@ int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
 int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ending_lattice( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN);
-void coldlat();
-void funnylat();
+void coldlat(void);
+void funnylat(void);
 int get_check_tag(FILE *fp, char *tag, char *myname);
 int get_f( FILE *fp, int prompt, char *variable_name_string, Real *value );
 int get_i( FILE *fp, int prompt, char *variable_name_string, int *value );
@@ -167,6 +187,7 @@ int get_vf( FILE *fp, int prompt, char *variable_name_string,
 	    Real *value, int nvalues );
 int get_s( FILE *fp, int prompt, char *variable_name_string, char *value );
 int get_sn( FILE *fp, int prompt, char *variable_name_string, char *value );
+int get_vs( FILE *fp, int prompt, char *tag, char *value[], int nvalues );
 int get_prompt( FILE *fp, int *value );
 
 /* io_source_cmplx_fm.c */
@@ -181,19 +202,19 @@ void setup_layout( void );
 int node_number(int x,int y,int z,int t);
 int node_index(int x,int y,int z,int t);
 size_t num_sites(int node);
-const int *get_logical_dimensions();
-const int *get_logical_coordinate();
+const int *get_logical_dimensions(void);
+const int *get_logical_coordinate(void);
 void get_coords(int coords[], int node, int index);
 
 /* make_lattice.c */
-void make_lattice();
-void free_lattice();
+void make_lattice(void);
+void free_lattice(void);
 
 /* nersc_cksum.c */
 u_int32type nersc_cksum( void );
 
 /* make_global_fields.c */
-void make_global_fields();
+void make_global_fields(void);
 
 /* path_product.c */
 void path_product( const int *dir, const int length, su3_matrix *tempmat1);
@@ -271,14 +292,38 @@ void *qcdoc_alloc(size_t nbytes);
 void qfree(void *);
 #endif
 
-/* For quark source routines - both Wilson and KS */
+/* For quark source and sink routines - both Wilson and KS */
 /* The Weyl representation types are included for w_source_h */
 enum source_type { 
-  UNKNOWN = 0, POINT, GAUSSIAN, ROTATE_3D, CUTOFF_GAUSSIAN, CORNER_WALL, 
-  EVEN_WALL, EVENANDODD_WALL, RANDOM_VECTOR_WALL,
-  POINT_WEYL, CUTOFF_GAUSSIAN_WEYL, COVARIANT_GAUSSIAN,
-  COMPLEX_FIELD_FILE, COMPLEX_FIELD_FM_FILE, COMPLEX_FIELD_STORE,
-  VECTOR_FIELD_FILE, VECTOR_FIELD_STORE,
-  DIRAC_FIELD_FILE, DIRAC_FIELD_FM_FILE, DIRAC_FIELD_STORE } ;
+  UNKNOWN = 0, 
+  COMPLEX_FIELD_FILE, 
+  COMPLEX_FIELD_FM_FILE, 
+  COMPLEX_FIELD_STORE,
+  CORNER_WALL, 
+  CUTOFF_GAUSSIAN, 
+  CUTOFF_GAUSSIAN_WEYL, 
+  COVARIANT_GAUSSIAN,
+  DERIV1,
+  DERIV2_D,
+  DERIV2_B,
+  DERIV3_A,
+  DIRAC_FIELD_FILE, 
+  DIRAC_FIELD_FM_FILE, 
+  DIRAC_FIELD_STORE,
+  EVEN_WALL, 
+  EVENANDODD_WALL, 
+  FAT_COVARIANT_GAUSSIAN,
+  FAT_COVARIANT_GAUSSIAN_DERIV1,
+  FAT_COVARIANT_GAUSSIAN_DERIV2_D,
+  FAT_COVARIANT_GAUSSIAN_DERIV2_B,
+  GAUSSIAN, 
+  POINT, 
+  POINT_WEYL, 
+  RANDOM_VECTOR_WALL,
+  ROTATE_3D,
+  WAVEFUNCTION_FILE,
+  VECTOR_FIELD_FILE, 
+  VECTOR_FIELD_STORE
+} ;
 
 #endif	/* _GENERIC_H */
