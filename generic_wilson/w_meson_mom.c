@@ -66,21 +66,14 @@ This is a general function that can contract two quark
 propagators together to form a meson correlator.
 
 \sum_{x} exp( i p .x } 
-    trace( \Gamma_out  S_2 \Gamma_in  \gamma_5  S_1^{\dagger} \gamma_5  )
+    trace( \Gamma_in  S_2 \Gamma_out  \gamma_5  S_1^{\dagger} \gamma_5  )
 
    where S_1 and S_2 are quark propagators
 
    Note: the first spin index on the spin_wilson_vector refers to the
    source and the second to the sink.  Thus the trace above is
-   unconventional.  Gamma_out operates on the source and Gamma_in on
-   the sink.  In more conventional notation, where S = < \psi(t) \psibar(0)>
-   we should replace S_1 and S_2 by their transposes.  Then taking the
-   transpose inside the trace gives
-
-    trace( \Gamma_out^T \gamma_5 S_1^\dagger \gamma_5 \Gamma_in^T S_2 )
-
-   where now the first index on S is the sink index and the second the
-   source.
+   unconventional.  Gamma_in operates on the source and Gamma_out on
+   the sink.
 
   Function arguments
 
@@ -94,8 +87,8 @@ propagators together to form a meson correlator.
         num_corr_mom[g] :: number of momentum/parity sets for each g
         corr_table[g] :: list of correlator indices c for gamma pair g
         p_index[c] :: p = p_index[c] is the momentum index for correlator c 
-        gin[c] :: source gamma matrix for correlator c
         gout[c] :: sink gamma matrix for correlator c
+        gin[c] :: source gamma matrix for correlator c
         meson_phase[c] :: phase factor to multiply the correlator before
                           accumulating.  Encoded as in gammatypes.h
         meson_factor[c] :: normalization factor for each correlator c
@@ -426,11 +419,12 @@ void meson_cont_mom(
   int num_corr_mom[],       /* number of momentum/parity values for each corr */
   int **corr_table,         /* c = corr_table[g][k] correlator index */
   int p_index[],            /* p = p_index[c] is the momentum index */
-  int gin[],                /* gin[c] is the source gamma */
   int gout[],               /* gout[c] is the sink gamma */
+  int gin[],                /* gin[c] is the source gamma */
   int meson_phase[],        /* meson_phase[c] is the correlator phase */
   Real meson_factor[],      /* meson_factor[c] scales the correlator */
-  int corr_index[]          /* m = corr_index[c] is the correlator index */
+  int corr_index[],         /* m = corr_index[c] is the correlator index */
+  int r0[]                  /* spatial origin for defining FT phases */
 		    )
 {
   char myname[] = "meson_cont_mom";
@@ -439,7 +433,7 @@ void meson_cont_mom(
   
   int sf, si;
   int g,p,t;
-  int old_gamma_in;
+  int old_gamma_out;
   
   double factx = 2.0*PI/(1.0*nx) ; 
   double facty = 2.0*PI/(1.0*ny) ; 
@@ -457,6 +451,7 @@ void meson_cont_mom(
   complex tr[MAXQ];
   complex tmp;
   complex *ftfact;
+  gamma_matrix_t gm5, gmout, gmoutadj, gm;
   
   /* performance */
   double dtime;
@@ -519,9 +514,9 @@ void meson_cont_mom(
 	tmp.real = 1.;
 	tmp.imag = 0.;
 	
-	tmp = ff(factx*(s->x)*px, ex, tmp);
-	tmp = ff(facty*(s->y)*py, ey, tmp);
-	tmp = ff(factz*(s->z)*pz, ez, tmp);
+	tmp = ff(factx*(s->x-r0[0])*px, ex, tmp);
+	tmp = ff(facty*(s->y-r0[1])*py, ey, tmp);
+	tmp = ff(factz*(s->z-r0[2])*pz, ez, tmp);
 	
 	ftfact[p+no_q_momenta*i] = tmp;
       }
@@ -535,42 +530,48 @@ void meson_cont_mom(
      of requested momenta */
   
   /* To help suppress repetition */
-  old_gamma_in = -999;
+  old_gamma_out = -999;
   
   for(g = 0; g < no_gamma_corr; g++)
     {
 
       /*  All gammas with the same index g must be the same */
       c = corr_table[g][0];  
-      gsnk = gout[c];
       gsrc = gin[c];
+      gsnk = gout[c];
 
       /* For compatibility */
-      if(gsnk == GAMMAFIVE)gout[c] = G5;
       if(gsrc == GAMMAFIVE)gin[c] = G5;
+      if(gsnk == GAMMAFIVE)gout[c] = G5;
       
-      if(gsnk >= MAXGAMMA || gsrc >= MAXGAMMA)
+      if(gsrc >= MAXGAMMA || gsnk >= MAXGAMMA)
 	{
 	  printf("%s(%d): Illegal gamma index %d or %d\n",
-		 myname, this_node, gsnk, gsrc);
+		 myname, this_node, gsrc, gsnk);
 	  terminate(1);
 	}
 
       for(k=0; k<num_corr_mom[g]; k++)
 	{
-	  if(gout[corr_table[g][k]] != gsnk ||
-	     gin[corr_table[g][k]] != gsrc )
+	  if(gin[corr_table[g][k]] != gsrc ||
+	     gout[corr_table[g][k]] != gsnk )
 	    {
 	      printf("meson_cont_mom(%d): bad gamma list\n", this_node);
 	      terminate(1);
 	    }
 	}
       
-      /* Skip reconstruction of "meson" if "in" gamma matrix hasn't changed */
-      if(gsrc != old_gamma_in)
+      /* Skip reconstruction of "meson" if "out" gamma matrix hasn't changed */
+      if(gsnk != old_gamma_out)
 	{
-	  old_gamma_in = gsrc;
+	  old_gamma_out = gsnk;
 
+	  /* Compute gm = \gamma_5 Gamma_out */
+	  gm5  = gamma_mat(G5);
+	  gmout = gamma_mat(gsnk);
+	  gamma_adj(&gmoutadj, &gmout);
+	  mult_gamma_by_gamma(&gm5, &gmoutadj, &gm);
+	    
 	  FORALLSITES(i,s) {
 	    
 	    /* antiquark = gamma_5 adjoint of quark propagator gamma_5 */
@@ -587,28 +588,22 @@ void meson_cont_mom(
 		    &(src2[i].d[2]), &(src2[i].d[3]));
 	    }
 
-	    /* left multiply antiquark by source gamma matrices,
-	       beginning with gamma_5 for quark -> antiquark */
+	    /* antiquark = \gamma_5 S_1 \gamma_5 \Gamma_out^\dagger */
 
 	    mult_sw_by_gamma_l( src1+i, &localmat, G5);    
+	    mult_sw_by_gamma_mat_r( &localmat, &antiquark, &gm);     
 	    
-	    /* right dirac multiplication by gamma-5 
-	       (finishing up antiquark) */
-	    mult_sw_by_gamma_r( &localmat, &antiquark, G5);     
 	    
-	    /* right multiply src2 by Gamma_in.  Result in localmat */
-	    mult_sw_by_gamma_r( src2+i,	&localmat, gsrc);
-	    
-	    /* combine with src2 quark and sew together colors 
-	       and source spins to make meson Dirac matrix 
-	       "meson" is then [S_2 \Gamma_in \gamma_5 S_1^\dagger \gamma_5]
+	    /* combine with src2 quark and sew together sink colors 
+	       and spins to make meson Dirac matrix 
+	       "meson" is then [S_2 \Gamma_out \gamma_5 S_1^\dagger \gamma_5]
 	       and is a Dirac matrix */
 	    
-	    meson[i] = mult_swv_na(&localmat, &antiquark);
+	    meson[i] = mult_swv_na( src2+i, &antiquark);
 	    
 	  } /* end FORALLSITES */
 	  flops += (double)sites_on_node*1536;
-	} /* end if not same Gamma_in */
+	} /* end if not same Gamma_out */
       
       /* Do FT on "meson" for momentum projection - 
 	 Result in meson_q.  We use a dumb FT because there 
@@ -654,7 +649,7 @@ void meson_cont_mom(
       
       for(t=0; t < nt; t++)if(nonzero[t]) {
 	  /* Do final Dirac trace for all sink momenta q */
-	  flops += dirac_v_tr_gamma(tr, &meson_q[t], gsnk,
+	  flops += dirac_v_tr_gamma(tr, &meson_q[t], gsrc,
 				    meson_phase, meson_factor, corr_table[g], 
 				    num_corr_mom[g], p_index);
 	  /* Accumulate in corr_index location */
