@@ -130,7 +130,7 @@ ks_quark_source ksqs;
 
 		if( run_CG_flag[j_mass] == 1 ){
 		    /* Do the inversion */
-		    if( ksstartflag[j] == FRESH ){
+		    if( ksstartflag[j_mass] == FRESH ){
 			FORALLSITES(i,s){
 			    clearvec( &(s->xxx1));
 			}
@@ -166,7 +166,7 @@ ks_quark_source ksqs;
 		    }
 
 		    /* save propagator if requested */
-		    if( kssaveflag[j] != FORGET ){
+		    if( kssaveflag[j_mass] != FORGET ){
 			FORALLSITES(i,s){
 			    su3vec_copy( &(s->ttt), (ksprop[j_mass] + 3*i + j));
 			}
@@ -205,7 +205,7 @@ ks_quark_source ksqs;
 		}
 
 		/* save propagator if requested */
-		if( kssaveflag[j] != FORGET ){
+		if( kssaveflag[j_mass] != FORGET ){
 		    FORALLSITES(i,s){
 			su3vec_copy( &(s->ttt), (ksprop[j_mass] + 3*i + j));
 		    }
