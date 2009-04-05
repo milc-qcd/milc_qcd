@@ -82,6 +82,7 @@ endif
 G_WILSON_OBJECTS =  \
   canopy2weyl_rot.o \
   dirac_utilities.o \
+  discretize_wf.o   \
   dslash_w3.o       \
   dslash_w_space.o  \
   gammas.o          \
