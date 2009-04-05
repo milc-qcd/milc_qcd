@@ -771,6 +771,27 @@ void w_close_complex_scidac_file(QIO_Writer *outfile)
   QIO_close_write(outfile);
 }
 
+/* Save a complex field */
+
+void save_complex_scidac_from_field(char *filename, char *fileinfo,
+				    char *recinfo, int volfmt, int serpar, 
+				    complex *src, int count){
+    QIO_Writer *outfile;
+    int status;
+
+    QIO_verbose(QIO_VERB_OFF);
+
+    outfile = w_open_complex_scidac_file(filename, fileinfo, volfmt, serpar);
+    if(outfile == NULL)terminate(1);
+
+    /* Write the lattice field: "count" complex numbers per site */
+    status = save_complex_scidac(outfile, filename, recinfo,
+				 volfmt, src, count);
+    if(status)terminate(1);
+
+    w_close_complex_scidac_file(outfile);
+}
+
 /* Restore a complex field */
 
 QIO_Reader *r_open_complex_scidac_file_xml(char *filename, int serpar,
