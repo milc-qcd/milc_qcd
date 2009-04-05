@@ -14,16 +14,20 @@
 int remap_stdio_from_args(int argc, char *argv[]){
   FILE *fp;
 
-#ifdef QCDOC
-  if(mynode() != 0)return 0;  /* Remap only node 0 on the QCDOC */
-#endif
-  if(argc > 1){
+  /* stdin is remapped only on node 0 on any machine */
+  if(argc > 1 && mynode() == 0){
     fp = freopen(argv[1],"r",stdin);
     if(fp == NULL){
       node0_printf("Can't open stdin file %s for reading.\n",argv[1]);
       return 1;
     }
   }
+
+#ifdef QCDOC
+  /* stdout and stderr are remapped only on node 0 on the QCDOC */
+  if(mynode() != 0)return 0;
+#endif
+
   if(argc > 2){
     fp = freopen(argv[2],"w",stdout);
     if(fp == NULL){
