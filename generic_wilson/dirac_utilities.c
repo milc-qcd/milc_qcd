@@ -53,6 +53,11 @@ void clear_wv_field(wilson_vector *wv){
 }
 
 /*--------------------------------------------------------------------*/
+void copy_wv_field(wilson_vector *dst, wilson_vector *src){
+  memcpy(dst, src, sites_on_node*sizeof(wilson_vector));
+}
+
+/*--------------------------------------------------------------------*/
 spin_wilson_vector *extract_swv_from_wp(wilson_prop_field wp, int color){
   return wp[color];
 }
@@ -102,6 +107,24 @@ wilson_prop_field create_wp_field_copy(wilson_prop_field w){
   copy_wp_field(wp, w);
 
   return wp;
+}
+
+/*--------------------------------------------------------------------*/
+/* Transpose source and sink color and spin indices in place */
+void transpose_wp_field(wilson_prop_field wp){
+  int c1, c2, s1, s2, i;
+  site *s;
+  spin_wilson_vector swv[3];
+
+    FORALLSITES(i,s){
+      for(c2 = 0; c2 < 3; c2++)
+	swv[c2] = wp[c2][i];
+      for(c2 = 0; c2 < 3; c2++)
+	for(s2 = 0; s2 < 4; s2++)
+	  for(s1 = 0; s1 < 4; s1++)
+	    for(c1 = 0; c1 < 3; c1++)
+	      wp[c1][i].d[s1].d[s2].c[c2] = swv[c2].d[s2].d[s1].c[c1];
+    }
 }
 
 /*--------------------------------------------------------------------*/
