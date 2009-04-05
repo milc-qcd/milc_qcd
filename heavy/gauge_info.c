@@ -23,6 +23,7 @@
    */
 
 #include "w_heavy_includes.h"
+#include <string.h>
 
 /*---------------------------------------------------------------------------*/
 /* This routine writes the ASCII info file.  It is called from one of
