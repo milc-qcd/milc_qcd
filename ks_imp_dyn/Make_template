@@ -388,7 +388,7 @@ su3_rmd_dblstore_gath13_fewsums::
 
 su3_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -UKS_MULTICG\
+	"DEFINES= -DFN  -UKS_MULTICG \
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
