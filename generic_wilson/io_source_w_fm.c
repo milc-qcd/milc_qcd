@@ -251,7 +251,9 @@ r_source_w_fm(w_source_file *wsf,
   int buf_length=0, where_in_buf=0;
   int irecord, nrecord;
   fwilson_vector *wbuff=NULL;
+  fwilson_vector wfix;
   fcomplex *cbuff=NULL;
+  fcomplex cfix;
   wilson_vector *wv;
   wilson_propagator *wp;
   int vol3 = nx*ny*nz;
@@ -370,13 +372,15 @@ r_source_w_fm(w_source_file *wsf,
 	     site structure */
 	  
 	  if(this_node==destnode)
-	    {
-	      if(byterevflag==1){
-		if(source_type == COMPLEX_FIELD_FM_FILE)
-		  byterevn((int32type *)&cmsg.q, 
-			   sizeof(fcomplex)/sizeof(int32type));
-		else
-		  byterevn((int32type *)&wmsg.q, 
+	  {
+	      if(source_type == COMPLEX_FIELD_FM_FILE){
+		  cfix = cmsg.q;
+		  if(byterevflag==1)
+		      byterevn((int32type *)&cfix, 
+			       sizeof(fcomplex)/sizeof(int32type));
+	      } else {
+		  wfix = wmsg.q;
+		  byterevn((int32type *)&wfix, 
 			   sizeof(fwilson_vector)/sizeof(int32type));
 	      }
 	      
@@ -397,8 +401,8 @@ r_source_w_fm(w_source_file *wsf,
 		  wv = (wilson_vector *)F_PT(&lattice[i],dest_site);
 		
 		clear_wvec(wv);
-		wv->d[spin].c[color].real = cmsg.q.real;
-		wv->d[spin].c[color].imag = cmsg.q.imag;
+		wv->d[spin].c[color].real = cfix.real;
+		wv->d[spin].c[color].imag = cfix.imag;
 		//printf("WF %d %d %d %g %g\n", 
 		//	       x, y, z, cmsg.q.real, cmsg.q.imag);
 	      }
@@ -411,8 +415,8 @@ r_source_w_fm(w_source_file *wsf,
 		  {
 		    c0 = irecord % 3;
 		    s0 = irecord / 3;
-		    wp->c[c0].d[s0].d[s1].c[c1].real = wmsg.q.d[s1].c[c1].real;
-		    wp->c[c0].d[s0].d[s1].c[c1].imag = wmsg.q.d[s1].c[c1].imag;
+		    wp->c[c0].d[s0].d[s1].c[c1].real = wfix.d[s1].c[c1].real;
+		    wp->c[c0].d[s0].d[s1].c[c1].imag = wfix.d[s1].c[c1].imag;
 		  }
 	      }
 	    } /* if this_node == destnode */
