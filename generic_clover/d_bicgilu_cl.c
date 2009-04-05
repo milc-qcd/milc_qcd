@@ -72,10 +72,10 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   
   is_startedo = is_startede = 0;
 
-  if(even_sites_on_node!=odd_sites_on_node){
-    printf("Need same number of even and odd sites on each node\n");
-    terminate(1);
-  }
+  //  if(even_sites_on_node!=odd_sites_on_node){
+  //    printf("Need same number of even and odd sites on each node\n");
+  //    terminate(1);
+  //  }
   
   /* Compute R_e and R_o and put in "clov" and "clov_diag" */
   make_clov(CKU0);
@@ -89,12 +89,12 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
 #define PAD 0
     
   tmp    = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
-  mp  = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
+  mp     = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
   rv     = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
   sss    = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
   r      = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
-  p      = r  + even_sites_on_node;
-  ttt    = rv + even_sites_on_node;
+  p      = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
+  ttt    = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
 
   if(tmp == NULL || mp == NULL || mp == NULL || rv == NULL || 
      sss == NULL || r == NULL ){
@@ -374,7 +374,7 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
 
   ilu_xfm_dest(dest, mp, Kappa, &is_startedo, tago);
 
-  free(tmp); free(mp); free(rv); free(sss); free(r);
+  free(tmp); free(mp); free(rv); free(sss); free(r); free(p); free(ttt);
 
   for( i=XUP; i <= TUP; i++) {
     if(is_startedo)cleanup_gather(tago[i]);
