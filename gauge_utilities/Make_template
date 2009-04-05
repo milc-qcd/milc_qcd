@@ -1,0 +1,192 @@
+#  Gauge utilities
+#  MIMD version 7
+#
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#       See examples below for naming and building targets for
+#               other actions
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
+
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  gauge_utilities_includes.h
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+
+MY_OBJECTS= \
+  control.o \
+  gauge_info.o \
+  setup.o \
+  shift_lattice.o
+
+G_OBJECTS = \
+  check_unitarity.o \
+  d_plaq4.o \
+  gaugefix2.o \
+  gauge_stuff.o \
+  io_detect.o \
+  io_helpers.o \
+  io_lat4.o \
+  io_lat_utils.o \
+  make_lattice.o \
+  nersc_cksum.o \
+  path_product.o \
+  remap_stdio_from_args.o \
+  reunitarize2.o \
+  ranstuff.o
+
+ifeq ($(strip ${QCDOC}),true)
+  G_OBJECTS += ploop2.o
+else
+  G_OBJECTS += ploop3.o
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += io_scidac.o io_scidac_types.o
+endif
+
+G_KS_OBJECTS = \
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_KS_OBJECTS += io_scidac_ks.o
+endif
+
+G_W_OBJECTS = \
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_W_OBJECTS += io_scidac_w.o
+endif
+
+# Objects depending on architecture and software package 
+
+# Selection of layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o # Required
+  else
+    LAYOUT = layout_hyper_prime.o # Choices possible here
+  endif
+endif
+
+# EDRAM allocation for QCDOC
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+# Generic QOP objects
+ifeq ($(strip ${HAVEQOP}),true)
+  ADD_OBJECTS += ${GENERICQOP}
+endif
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_W_OBJECTS} ${LAYOUT} \
+  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+
+#Libraries for complex numbers and su3 functions
+QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
+
+# Default rule for C compilation
+.c.o: ; ${CC} -c ${CFLAGS}  $*.c 
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
+
+${LASTMAKE}:
+	-/bin/rm -f .lastmake.* gauge_action.h
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+ALL_MAKES = \
+   Make_template \
+   ${MAKEFILE} \
+   ../Make_template_qop \
+   ../Make_template_scidac \
+   ../generic/Make_template
+
+# To force a remake when changing any make file, header, or target
+${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+gauge_stuff.o: gauge_action.h 
+
+# Directories where we store the improved action headers
+GAUGEIMP = ../generic/imp_actions
+
+gauge_action.h: ${GAUGEIMP}/${GAUGE}
+	/bin/cp ${GAUGEIMP}/${GAUGE} gauge_action.h
+
+
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
+endif
+
+ifeq ($(strip ${HAVEQMP}),true)
+  DHAVE_QMP = -DHAVE_QMP
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DHAVE_QIO = -DHAVE_QIO
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  DHAVE_QOP = -DHAVE_QOP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
+
+########################################################
+##### Targets: 
+
+gauge_modify_su3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"EXTRA_OBJECTS= ${FN_OBJECTS} "
+
+clean:
+	-/bin/rm -f *.o
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 
+
