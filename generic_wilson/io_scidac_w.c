@@ -104,7 +104,12 @@ int save_w_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
 
   recxml = QIO_string_create();
   QIO_string_set(recxml, recinfo);
-  status = write_F3_D_from_field(outfile, recxml, src, count);
+
+  if(PRECISION == 1)
+    status = write_F3_D_from_field(outfile, recxml, src, count);
+  else
+    status = write_D3_D_from_field(outfile, recxml, src, count);
+
   QIO_string_destroy(recxml);
   if(status)return status;
   
@@ -242,8 +247,21 @@ QIO_Reader *r_open_w_vector_scidac_file(char *filename, int serpar)
 int read_w_vector_scidac_xml(QIO_Reader *infile, wilson_vector *dest, 
 			     int count, QIO_String *recxml)
 {
-  /* Read the lattice field: "count" vectors per site */
-  return read_F3_D_to_field(infile, recxml, dest, count);
+  int status, typesize;
+  QIO_RecordInfo recinfo;
+
+  /* Check the record type (double or single precision) */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+
+  /* Read "count" vectors per site.  Each has 12 complex values  */
+  if(typesize == 24*4)
+    /* Read them as a single precision record */
+    return read_F3_D_to_field(infile, recxml, dest, count);
+  else
+    /* Read them as a double precision record */
+    return read_D3_D_to_field(infile, recxml, dest, count);
 
 }
 
@@ -354,7 +372,10 @@ int write_wpropsource_C_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 				  complex *src, int t0){
   int status;
 
-  status = write_F_C_timeslice_from_field(outfile, recxml, src, 1, t0);
+  if(PRECISION == 1)
+    status = write_F_C_timeslice_from_field(outfile, recxml, src, 1, t0);
+  else
+    status = write_D_C_timeslice_from_field(outfile, recxml, src, 1, t0);
   return status;
 }
 
@@ -384,7 +405,10 @@ int write_wpropsource_D_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 				  wilson_vector *src, int t0){
   int status;
 
-  status = write_F3_D_timeslice_from_field(outfile, recxml, src, 1, t0);
+  if(PRECISION == 1)
+    status = write_F3_D_timeslice_from_field(outfile, recxml, src, 1, t0);
+  else
+    status = write_D3_D_timeslice_from_field(outfile, recxml, src, 1, t0);
   return status;
 }
 
@@ -424,7 +448,11 @@ int write_prop_usqcd_sc(QIO_Writer *outfile, wilson_vector *src, int spin,
   QIO_encode_usqcd_proprecord_info(recxml, proprecord_info);
   QIO_destroy_usqcd_proprecord_info(proprecord_info);
 
-  status = write_F3_D_from_field(outfile, recxml, src, 1);
+  if(PRECISION == 1)
+    status = write_F3_D_from_field(outfile, recxml, src, 1);
+  else
+    status = write_D3_D_from_field(outfile, recxml, src, 1);
+
   QIO_string_destroy(recxml);
   return status;
 }
@@ -512,10 +540,21 @@ int read_wpropsource_C_usqcd(QIO_Reader *infile, char *srcinfo, int n,
   QIO_USQCDPropSourceInfo propsource_info;
   QIO_String *recxml;
   char *info;
-  int status;
+  int status, typesize;
+  QIO_RecordInfo recinfo;
 
   recxml = QIO_string_create();
-  status = read_F_C_to_field(infile, recxml, dest, 1);
+
+  /* Check the record type (double or single precision) */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+
+  if(typesize == 8)
+    status = read_F_C_to_field(infile, recxml, dest, 1);
+  else
+    status = read_D_C_to_field(infile, recxml, dest, 1);
+
   if(status != QIO_SUCCESS)return status;
 
   status = QIO_decode_usqcd_propsource_info(&propsource_info, recxml);
@@ -537,10 +576,23 @@ int read_wpropsource_D_usqcd(QIO_Reader *infile, char *srcinfo, int n,
   QIO_USQCDPropSourceInfo propsource_info;
   QIO_String *recxml;
   char *info;
-  int status;
+  int status, typesize;
+  QIO_RecordInfo recinfo;
 
   recxml = QIO_string_create();
-  status = read_F3_D_to_field(infile, recxml, dest, 1);
+
+  /* Check the record type (double or single precision) */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+  
+  if(typesize == 24*4)
+    /* Read as a single precision record */
+    status = read_F3_D_to_field(infile, recxml, dest, 1);
+  else
+    /* Read as a double precision record */
+    status = read_D3_D_to_field(infile, recxml, dest, 1);
+
   if(status != QIO_SUCCESS)return QIO_SUCCESS;
 
   status = QIO_decode_usqcd_propsource_info(&propsource_info, recxml);
@@ -561,10 +613,23 @@ int read_wproprecord_usqcd(QIO_Reader *infile, int *spin, int *color,
 {
   QIO_USQCDPropRecordInfo proprecord_info;
   QIO_String *recxml;
-  int status;
+  int status, typesize;
+  QIO_RecordInfo recinfo;
 
   recxml = QIO_string_create();
-  status = read_F3_D_to_field(infile, recxml, dest, 1);
+
+  /* Check the record type (double or single precision) */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+
+  if(typesize == 24*4)
+    /* Read as a single precision record */
+    status = read_F3_D_to_field(infile, recxml, dest, 1);
+  else
+    /* Read as a double precision record */
+    status = read_D3_D_to_field(infile, recxml, dest, 1);
+
   if(status != QIO_SUCCESS)return status;
 
   status = QIO_decode_usqcd_proprecord_info(&proprecord_info, recxml);
