@@ -28,7 +28,7 @@
 /* This routine writes the ASCII info file.  It is called from one of
    the lattice output routines in io_lat4.c.*/
 
-void write_appl_gauge_info(FILE *fp)
+void write_appl_gauge_info(FILE *fp, gauge_file *gf)
 {
 
   /* Note: this application does not write gauge field configurations! */

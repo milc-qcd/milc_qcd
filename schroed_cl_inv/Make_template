@@ -1,5 +1,5 @@
 #  Clover inverter for Schroedinger Functional
-#  MIMD version 6
+#  MIMD version 7
 
 #  Generic make-include file for clover_invert code in the
 #  Schroedinger functional formalism.
@@ -15,6 +15,8 @@ MYINCLUDEDIR = .
 INCLUDEDIR = ../include
 #Where the complex and su3 libraries are
 LIBDIR = ../libraries
+
+# To force a remake when changing headers
 
 GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
 
@@ -57,7 +59,7 @@ G_OBJECTS =          \
   reunitarize2.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o
 endif
 
 # Basic set from generic_wilson directory
@@ -67,6 +69,10 @@ G_WILSON_OBJECTS =   \
   io_source_w_fm.o   \
   meson_cont.o       \
   wilson_invert.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_WILSON_OBJECTS += io_scidac_w.o
+endif
 
 # Basic set from generic_clover directory
 G_CLOVER_OBJECTS =   \
@@ -150,6 +156,7 @@ ALL_MAKES = \
   ../generic/Make_template \
   ../generic_wilson/Make_template \
   ../generic_clover/Make_template \
+  ../generic_schroed/Make_template
 
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
