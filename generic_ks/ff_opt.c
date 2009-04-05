@@ -389,9 +389,9 @@ void scalar_mult_add_lathwvec_proj(anti_hermitmat *mom,
       i < sites_on_node;
       i++, a++, b++, f++, s++)
   {
-    if(s->parity==ODD)
-      {	tmp_coeff[0] = -coeff[0] ; tmp_coeff[1] = -coeff[1] ; }
-    else
+    if(i >= even_sites_on_node) /* Odd sites */
+      {	tmp_coeff[0] = -coeff[0] ; tmp_coeff[1] = -coeff[1] ; } 
+    else /* Even sites */
       {	tmp_coeff[0] = coeff[0] ;  tmp_coeff[1] = coeff[1] ;  }
 
     tmp_coeffd2[0] = tmp_coeff[0]/2;
@@ -635,9 +635,9 @@ void scalar_mult_add_lathwvec_proj_su3mat(su3_matrix *mom,
       i < sites_on_node;
       i++, a++, b++, f++, s++)
   {
-    if(s->parity==ODD)
+    if(i >= even_sites_on_node) /* Odd sites */
       {	tmp_coeff[0] = -coeff[0] ; tmp_coeff[1] = -coeff[1] ; }
-    else
+    else /* Even sites */
       {	tmp_coeff[0] = coeff[0] ;  tmp_coeff[1] = coeff[1] ;  }
 
     tmp_coeffd2[0] = tmp_coeff[0]/2;
@@ -1095,9 +1095,9 @@ void scalar_mult_add_latveclist_proj(anti_hermitmat *mom,
   for(i = 0, a = mom, b = back, f = forw, s = lattice; 
       i < sites_on_node; i++, a++, b++, f++, s++) { // site loop
 
-    if(s->parity==ODD)
+    if(i >= even_sites_on_node) /* Odd sites */
       for( n=0; n<listlength; n++ )tmp_coeff[n] = -coeff[n];
-    else
+    else /* Even sites */
       for( n=0; n<listlength; n++ )tmp_coeff[n] = coeff[n];
 
     for( n=0; n<listlength; n++ ) tmp_coeffd2[n] = tmp_coeff[n]/2.0;
