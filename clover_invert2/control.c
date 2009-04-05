@@ -15,8 +15,6 @@
    5/29/07 Generalized the algorithm C.D.
  */
 
-/* Comment out if you want to suppress detailed timing */
-
 #define CONTROL
 #include "cl_inv_includes.h"
 #include <string.h>
@@ -28,9 +26,10 @@
 int main(int argc, char *argv[])
 {
   int prompt;
-  int i, iq0, iq1;
+  int i, j, iq0, iq1, oldiq0, oldiq1, oldip0;
   double starttime, endtime, dtime;
-  wilson_prop_field quark_prop[MAX_QK];
+  wilson_prop_field prop[MAX_PROP];
+  wilson_prop_field quark[MAX_QK];
   
   initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
@@ -75,20 +74,21 @@ int main(int argc, char *argv[])
     
     /* Loop over quarks */
 
-    for(i=0; i<param.num_qk; i++){
+    STARTTIME;
+    for(i=0; i<param.num_prop; i++){
       
       /**************************************************************/
       /* Read and/or generate quark propagator */
 
-      quark_prop[i] = create_wp_field();
+      prop[i] = create_wp_field();
 
-      if(quark_prop[i] == NULL){
+      if(prop[i] == NULL){
 	printf("main(%d): No room for prop\n",this_node);
 	terminate(1);
       }
       
       
-      if(param.qk_type[i] == CLOVER_TYPE)
+      if(param.prop_type[i] == CLOVER_TYPE)
 	{
 	  
 	  if(this_node==0)printf("Kappa= %g source %s residue= %g rel= %g\n",
@@ -101,10 +101,18 @@ int main(int argc, char *argv[])
 					       param.startfile_w[i], 
 					       param.saveflag_w[i], 
 					       param.savefile_w[i],
-					       quark_prop[i], 
+					       prop[i], 
 					       &param.src_wqs[i], &param.qic, 
 					       &param.dcp[i],
 					       param.check[i]);
+#ifdef CLOV_LEAN
+	  /* Free clover prop memory if we have saved the prop to disk */
+	  if(param.saveflag_w[i] != FORGET){
+	    destroy_wp_field(prop[i]); prop[i] = NULL;
+	    clear_wqs(&param.src_wqs[i]);
+	    node0_printf("destroy prop[%d]\n",i);
+	  }
+#endif
 	}
 	
       else /* KS_PROP */
@@ -120,16 +128,140 @@ int main(int argc, char *argv[])
 						param.startfile_ks[i], 
 						param.saveflag_ks[i], 
 						param.savefile_ks[i],
-						quark_prop[i], 
+						prop[i], 
 						&param.src_ksqs[i], &param.qic, 
 						&param.ksp[i],
 						param.check[i]);
+#ifdef CLOV_LEAN
+	  /* (We don't free naive prop memory, since we don't save it
+	     as a clover prop in get_ksprop_to_wp_field) */
+#endif
 	}
       
-    } /* quarks */
+    } /* propagators */
+    ENDTIME("compute propagators");
 
+    /*****************************************************************/
+    /* Complete the quark propagators by applying the sink operators
+       to either the raw propagator or by building on an existing quark
+       propagator */
+    
+    oldip0 = -1;
+    oldiq0 = -1;
+    oldiq1 = -1;
+    for(j=0; j<param.num_qk; j++){
+      STARTTIME;
+      i = param.prop_for_qk[j];
+
+      if(param.parent_type[j] == PROP_TYPE){
+#ifdef CLOV_LEAN
+	/* Restore clover prop[i] from file. */
+	/* But first destroy the old one, unless we still need it */
+	if(oldip0 >= 0 && oldip0 != i)
+	  if(param.prop_type[oldip0] == CLOVER_TYPE &&
+	     param.saveflag_w[oldip0] != FORGET){
+	    destroy_wp_field(prop[oldip0]);  prop[oldip0] = NULL;
+	    node0_printf("destroy prop[%d]\n",oldip0);
+	  }
+	
+	/* In this case we won't need any old quarks */
+	if(oldiq0 >= 0)
+	  if(param.saveflag_q[oldiq0] != FORGET){
+	    destroy_wp_field(quark[oldiq0]); quark[oldiq0] = NULL;
+	    node0_printf("destroy quark[%d]\n",oldiq0);
+	  }
+
+	if(oldiq1 >= 0)
+	  if(param.saveflag_q[oldiq1] != FORGET){
+	    destroy_wp_field(quark[oldiq1]); quark[oldiq1] = NULL;
+	    node0_printf("destroy quark[%d]\n",oldiq1);
+	  }
+
+	if(prop[i] == NULL)
+	  prop[i] = reread_wprop_to_wp_field(param.saveflag_w[i], 
+					     param.savefile_w[i]);
+#endif
+	/* Apply sink operator quark[j] <- Op[j] prop[i] */
+	quark[j] = w_sink_op(&param.snk_wqs[j], prop[i]);
+	oldip0 = i;
+	oldiq0 = -1;
+      }
+      else { /* QUARK_TYPE */
+#ifdef CLOV_LEAN
+	/* Restore quark[i] from file */
+	/* But first destroy the old ones, unless we still need one of them */
+
+	/* In this case we won't need the old prop */
+	if(oldip0 >= 0)
+	   if(param.prop_type[oldip0] == CLOVER_TYPE &&
+	      param.saveflag_w[oldip0] != FORGET){
+	     destroy_wp_field(prop[oldip0]); prop[oldip0] = NULL;
+	     node0_printf("destroy prop[%d]\n",oldip0);
+	   }
+
+	if(oldiq0 >= 0 && oldiq0 != i)
+	  if(param.saveflag_q[oldiq0] != FORGET){
+	    destroy_wp_field(quark[oldiq0]); quark[oldiq0] = NULL;
+	    node0_printf("destroy quark[%d]\n",oldiq0);
+	  }
+
+	if(oldiq1 >= 0 && oldiq1 != i)
+	  if(param.saveflag_q[oldiq1] != FORGET){
+	    destroy_wp_field(quark[oldiq1]); quark[oldiq1] = NULL;
+	    node0_printf("destroy quark[%d]\n",oldiq1);
+	  }
+
+	if(quark[i] == NULL)
+	  quark[i] = reread_wprop_to_wp_field(param.saveflag_q[i], 
+					      param.savefile_q[i]);
+	
+#endif
+	/* Apply sink operator quark[j] <- Op[j] quark[i] */
+	quark[j] = w_sink_op(&param.snk_wqs[j], quark[i]);
+	oldip0 = -1;
+	oldiq0 = i;
+      }
+	
+      /* Save the resulting quark[j] if requested */
+      dump_wprop_from_wp_field( param.saveflag_q[j], 
+				param.savefile_q[j], quark[j]);
+      oldiq1 = j;
+      ENDTIME("generate sink operator");
+    }
+#ifdef CLOV_LEAN
+    /* Free remainig memory */
+    if(oldip0 >= 0)
+       if(param.prop_type[oldip0] == CLOVER_TYPE &&
+	  param.saveflag_w[oldip0] != FORGET){
+	 destroy_wp_field(prop[oldip0]); prop[oldip0] = NULL;
+	 node0_printf("destroy prop[%d]\n",oldip0);
+       }
+    
+    if(oldiq0 >= 0)
+      if(param.saveflag_q[oldiq0] != FORGET){
+	destroy_wp_field(quark[oldiq0]); quark[oldiq0] = NULL;
+	node0_printf("destroy quark[%d]\n",oldiq0);
+      }
+    
+    if(oldiq1 >= 0)
+      if(param.saveflag_q[oldiq1] != FORGET){
+	destroy_wp_field(quark[oldiq1]); quark[oldiq1] = NULL;
+	node0_printf("destroy quark[%d]\n",oldiq1);
+      }
+#endif
+
+    /* Now destroy all remaining propagator fields */
+
+    for(i = 0; i < param.num_prop; i++){
+      if(prop[i] != NULL)node0_printf("destroy prop[%d]\n",i);
+      destroy_wp_field(prop[i]);
+      prop[i] = NULL;
+    }
+    
+    /****************************************************************/
     /* Compute the meson propagators */
 
+    STARTTIME;
     for(i = 0; i < param.num_pair; i++){
 
       /* Index for the quarks making up this meson */
@@ -138,8 +270,56 @@ int main(int argc, char *argv[])
 
       node0_printf("Mesons for quarks %d and %d\n",iq0,iq1);
 
-      spectrum_cl(quark_prop[iq0], quark_prop[iq1], i);
+#ifdef CLOV_LEAN
+      /* Restore quarks from file and free old memory */
+      /* We try to reuse props that are already in memory, so we don't
+         destroy them immediately, but wait to see if we need
+         them again for the next pair. */
+      if(i > 0 && oldiq0 != iq0 && oldiq0 != iq1)
+	if(param.saveflag_q[oldiq0] != FORGET){
+	  destroy_wp_field(quark[oldiq0]); quark[oldiq0] = NULL;
+	  node0_printf("destroy quark[%d]\n",oldiq0);
+	}
+      
+      if(i > 0 && oldiq1 != iq0 && oldiq1 != iq1)
+	if(param.saveflag_q[oldiq1] != FORGET){
+	  destroy_wp_field(quark[oldiq1]); quark[oldiq1] = NULL;
+	  node0_printf("destroy quark[%d]\n",oldiq1);
+	}
+
+      if(quark[iq0] == NULL)
+	quark[iq0] = 
+	  reread_wprop_to_wp_field(param.saveflag_q[iq0], 
+				   param.savefile_q[iq0]);
+
+      if(quark[iq1] == NULL){
+	quark[iq1] = 
+	  reread_wprop_to_wp_field(param.saveflag_q[iq1], 
+				   param.savefile_q[iq1]);
+      }
+#endif
+
+      /* Tie together to generate hadron spectrum */
+      spectrum_cl(quark[iq0], quark[iq1], i);
+
+      /* Remember, in case we need to free memory */
+      oldiq0 = iq0;
+      oldiq1 = iq1;
     }
+#ifdef CLOV_LEAN
+    /* Free any remaining quark prop memory */
+    if(quark[oldiq0] != NULL)
+      if(param.saveflag_q[oldiq0] != FORGET){
+	destroy_wp_field(quark[oldiq0]); quark[oldiq0] = NULL;
+	node0_printf("destroy quark[%d]\n",oldiq0);
+      }
+    if(quark[oldiq1] != NULL)
+      if(param.saveflag_q[oldiq1] != FORGET){
+	destroy_wp_field(quark[oldiq1]); quark[oldiq1] = NULL;
+	node0_printf("destroy quark[%d]\n",oldiq1);
+      }
+#endif
+    ENDTIME("tie hadron correlators");
 
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
@@ -148,8 +328,12 @@ int main(int argc, char *argv[])
     node0_printf("total_iters = %d\n",total_iters);
     fflush(stdout);
 
-    for(i = 0; i < param.num_qk; i++)
-      destroy_wp_field(quark_prop[i]);
+    for(i = 0; i < param.num_qk; i++){
+      if(quark[i] != NULL)node0_printf("destroy quark[%d]\n",i);
+      destroy_wp_field(quark[i]); quark[i] = NULL;
+    }
+
+    destroy_ape_links_3D();
   } /* readin(prompt) */
 
   return 0;

@@ -1,16 +1,21 @@
 ---
 JobID:                  203696.kaon2.fnal.gov
-date:                   "Thu Apr 17 04:03:59 2008 UTC"
+date:                   "Fri Aug 15 15:46:37 2008 UTC"
 lattice_size:           4,4,4,8
+antiquark_type:         naive
 antiquark_source_type:  point
 antiquark_source_label: d
+antiquark_sink_type:    point
+antiquark_sink_label:   d
+antiquark_sink_d1:      "0.000000"
+antiquark_mass:         "0.1"
+quark_type:             clover
 quark_source_type:      gaussian
 quark_source_label:     1S
-sink_smear:             local
-rotated_sink_operator:  True
-antiquark_d1:           "0.000000"
-quark_d1:               "0.090730"
-antiquark_mass:         "0.1"
+quark_source_d1:        "0.000000"
+quark_sink_type:        rotate_3D
+quark_sink_label:       rot
+quark_sink_d1:          "0.090730"
 quark_kappa:            "0.124"
 ...
 ---
@@ -18,7 +23,7 @@ correlator:             A4_P5
 momentum:               p000
 gamma_source:           G5
 gamma_sink:             G5T
-correlator_key:         A4_P5_d_1S_m0.1_k0.124_p000
+correlator_key:         A4_P5_d_1S_d_rot_m0.1_k0.124_p000
 ...
 0	4.187017e-03	-1.354166e-03
 1	-9.484240e-03	1.995806e-01
@@ -33,7 +38,7 @@ correlator:             A4_P5
 momentum:               p100
 gamma_source:           G5
 gamma_sink:             G5T
-correlator_key:         A4_P5_d_1S_m0.1_k0.124_p100
+correlator_key:         A4_P5_d_1S_d_rot_m0.1_k0.124_p100
 ...
 0	3.065922e-03	8.289065e-04
 1	-8.275148e-03	1.818169e-01
@@ -48,7 +53,7 @@ correlator:             A4_P5
 momentum:               p110
 gamma_source:           G5
 gamma_sink:             G5T
-correlator_key:         A4_P5_d_1S_m0.1_k0.124_p110
+correlator_key:         A4_P5_d_1S_d_rot_m0.1_k0.124_p110
 ...
 0	1.804799e-03	-1.832389e-04
 1	-8.405521e-03	1.711876e-01
@@ -63,7 +68,7 @@ correlator:             A4_P5
 momentum:               p111
 gamma_source:           G5
 gamma_sink:             G5T
-correlator_key:         A4_P5_d_1S_m0.1_k0.124_p111
+correlator_key:         A4_P5_d_1S_d_rot_m0.1_k0.124_p111
 ...
 0	-8.468308e-06	3.014331e-05
 1	-8.275234e-03	1.644477e-01
@@ -78,7 +83,7 @@ correlator:             A4_P5
 momentum:               p200
 gamma_source:           G5
 gamma_sink:             G5T
-correlator_key:         A4_P5_d_1S_m0.1_k0.124_p200
+correlator_key:         A4_P5_d_1S_d_rot_m0.1_k0.124_p200
 ...
 0	3.797209e-04	3.939005e-04
 1	-9.893569e-03	1.881680e-01
@@ -92,8 +97,8 @@ correlator_key:         A4_P5_d_1S_m0.1_k0.124_p200
 correlator:             A1_P5
 momentum:               p100
 gamma_source:           G5
-gamma_sink:             G5T
-correlator_key:         A1_P5_d_1S_m0.1_k0.124_p100
+gamma_sink:             G5X
+correlator_key:         A1_P5_d_1S_d_rot_m0.1_k0.124_p100
 ...
 0	-1.487317e-02	3.695652e-01
 1	1.446565e-05	5.026702e-03
@@ -107,8 +112,8 @@ correlator_key:         A1_P5_d_1S_m0.1_k0.124_p100
 correlator:             A1_P5
 momentum:               p110
 gamma_source:           G5
-gamma_sink:             G5T
-correlator_key:         A1_P5_d_1S_m0.1_k0.124_p110
+gamma_sink:             G5X
+correlator_key:         A1_P5_d_1S_d_rot_m0.1_k0.124_p110
 ...
 0	-1.377595e-02	3.504413e-01
 1	-1.506575e-04	2.295202e-03
@@ -122,8 +127,8 @@ correlator_key:         A1_P5_d_1S_m0.1_k0.124_p110
 correlator:             A1_P5
 momentum:               p111
 gamma_source:           G5
-gamma_sink:             G5T
-correlator_key:         A1_P5_d_1S_m0.1_k0.124_p111
+gamma_sink:             G5X
+correlator_key:         A1_P5_d_1S_d_rot_m0.1_k0.124_p111
 ...
 0	-1.267022e-02	3.375777e-01
 1	-2.145566e-04	3.545751e-04
@@ -137,8 +142,8 @@ correlator_key:         A1_P5_d_1S_m0.1_k0.124_p111
 correlator:             A1_P5
 momentum:               p200
 gamma_source:           G5
-gamma_sink:             G5T
-correlator_key:         A1_P5_d_1S_m0.1_k0.124_p200
+gamma_sink:             G5X
+correlator_key:         A1_P5_d_1S_d_rot_m0.1_k0.124_p200
 ...
 0	-1.456299e-18	-3.808928e-17
 1	-8.769449e-19	-8.241744e-20
@@ -150,17 +155,22 @@ correlator_key:         A1_P5_d_1S_m0.1_k0.124_p200
 7	8.411899e-19	-3.045410e-19
 ---
 JobID:                  203696.kaon2.fnal.gov
-date:                   "Thu Apr 17 04:04:00 2008 UTC"
+date:                   "Fri Aug 15 15:46:37 2008 UTC"
 lattice_size:           4,4,4,8
+antiquark_type:         naive
 antiquark_source_type:  point
 antiquark_source_label: d
+antiquark_sink_type:    point
+antiquark_sink_label:   d
+antiquark_sink_d1:      "0.000000"
+antiquark_mass:         "0.1"
+quark_type:             clover
 quark_source_type:      gaussian
 quark_source_label:     1S
-sink_smear:             local
-rotated_sink_operator:  False
-antiquark_d1:           "0.000000"
-quark_d1:               "0.090730"
-antiquark_mass:         "0.1"
+quark_source_d1:        "0.000000"
+quark_sink_type:        point
+quark_sink_label:       d
+quark_sink_d1:          "0.000000"
 quark_kappa:            "0.124"
 ...
 ---
@@ -168,7 +178,7 @@ correlator:             pi
 momentum:               p000
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p000
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p000
 ...
 0	2.066385e+00	5.070716e-02
 1	2.682604e-01	1.480088e-02
@@ -183,7 +193,7 @@ correlator:             pi
 momentum:               p100
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p100
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p100
 ...
 0	1.512527e+00	2.831080e-02
 1	2.271343e-01	1.286922e-02
@@ -198,7 +208,7 @@ correlator:             pi
 momentum:               p110
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p110
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p110
 ...
 0	1.047747e+00	1.375065e-02
 1	2.063987e-01	1.216078e-02
@@ -213,7 +223,7 @@ correlator:             pi
 momentum:               p111
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p111
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p111
 ...
 0	6.289329e-01	3.210959e-03
 1	1.961714e-01	1.143871e-02
@@ -228,7 +238,7 @@ correlator:             pi
 momentum:               p200
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p200
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p200
 ...
 0	1.108437e+00	1.315348e-02
 1	2.182039e-01	1.477619e-02
@@ -243,7 +253,7 @@ correlator:             pi
 momentum:               p210
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p210
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p210
 ...
 0	6.536067e-01	-1.651173e-03
 1	2.044645e-01	1.310964e-02
@@ -258,7 +268,7 @@ correlator:             pi
 momentum:               p211
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p211
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p211
 ...
 0	2.390110e-01	-1.231491e-02
 1	2.004999e-01	1.178429e-02
@@ -273,7 +283,7 @@ correlator:             pi
 momentum:               p220
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p220
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p220
 ...
 0	2.451039e-01	-1.839450e-02
 1	2.096529e-01	1.415272e-02
@@ -288,7 +298,7 @@ correlator:             pi
 momentum:               p300
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p300
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p300
 ...
 0	1.512527e+00	2.831080e-02
 1	2.271343e-01	1.286922e-02
@@ -303,7 +313,7 @@ correlator:             pi
 momentum:               p221
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p221
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p221
 ...
 0	-1.719243e-01	-2.940338e-02
 1	2.126690e-01	1.179538e-02
@@ -318,7 +328,7 @@ correlator:             pi
 momentum:               p400
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_m0.1_k0.124_p400
+correlator_key:         pi_d_1S_d_d_m0.1_k0.124_p400
 ...
 0	2.066385e+00	5.070716e-02
 1	2.682604e-01	1.480088e-02
@@ -331,9 +341,9 @@ correlator_key:         pi_d_1S_m0.1_k0.124_p400
 ---
 correlator:             ro_1
 momentum:               p000
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p000
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p000
 ...
 0	3.325310e+00	3.946043e-02
 1	6.546116e-01	4.432857e-02
@@ -346,9 +356,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p000
 ---
 correlator:             ro_1
 momentum:               p100
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p100
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p100
 ...
 0	2.819740e+00	2.500845e-02
 1	6.360634e-01	3.908850e-02
@@ -361,9 +371,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p100
 ---
 correlator:             ro_1
 momentum:               p110
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p110
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p110
 ...
 0	2.334506e+00	1.518638e-02
 1	6.132973e-01	3.610586e-02
@@ -376,9 +386,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p110
 ---
 correlator:             ro_1
 momentum:               p111
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p111
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p111
 ...
 0	1.886799e+00	9.632878e-03
 1	5.885142e-01	3.431613e-02
@@ -391,9 +401,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p111
 ---
 correlator:             ro_1
 momentum:               p200
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p200
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p200
 ...
 0	2.556592e+00	1.391816e-02
 1	6.875662e-01	4.310632e-02
@@ -406,9 +416,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p200
 ---
 correlator:             ro_1
 momentum:               p210
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p210
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p210
 ...
 0	1.994209e+00	-2.743755e-03
 1	6.442678e-01	3.777424e-02
@@ -421,9 +431,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p210
 ---
 correlator:             ro_1
 momentum:               p211
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p211
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p211
 ...
 0	1.525769e+00	-1.087917e-02
 1	6.073985e-01	3.572936e-02
@@ -436,9 +446,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p211
 ---
 correlator:             ro_1
 momentum:               p220
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p220
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p220
 ...
 0	1.590183e+00	-2.522410e-02
 1	6.750208e-01	4.097306e-02
@@ -451,9 +461,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p220
 ---
 correlator:             ro_1
 momentum:               p221
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p221
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p221
 ...
 0	1.135289e+00	-3.270573e-02
 1	6.215980e-01	3.801465e-02
@@ -466,9 +476,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p221
 ---
 correlator:             ro_1
 momentum:               p300
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p300
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p300
 ...
 0	2.819740e+00	2.500845e-02
 1	6.360634e-01	3.908850e-02
@@ -481,9 +491,9 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p300
 ---
 correlator:             ro_1
 momentum:               p400
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_m0.1_k0.124_p400
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p400
 ...
 0	3.325310e+00	3.946043e-02
 1	6.546116e-01	4.432857e-02
@@ -495,17 +505,22 @@ correlator_key:         ro_1_d_1S_m0.1_k0.124_p400
 7	6.481958e-01	-1.024316e-02
 ---
 JobID:                  203696.kaon2.fnal.gov
-date:                   "Thu Apr 17 04:04:00 2008 UTC"
+date:                   "Fri Aug 15 15:46:38 2008 UTC"
 lattice_size:           4,4,4,8
+antiquark_type:         naive
 antiquark_source_type:  point
 antiquark_source_label: d
+antiquark_sink_type:    point
+antiquark_sink_label:   d
+antiquark_sink_d1:      "0.000000"
+antiquark_mass:         "0.1"
+quark_type:             clover
 quark_source_type:      gaussian
 quark_source_label:     1S
-sink_smear:             1S
-rotated_sink_operator:  False
-antiquark_d1:           "0.000000"
-quark_d1:               "0.090730"
-antiquark_mass:         "0.1"
+quark_source_d1:        "0.000000"
+quark_sink_type:        complex_field_fm
+quark_sink_label:       1S
+quark_sink_d1:          "0.000000"
 quark_kappa:            "0.124"
 ...
 ---
@@ -513,7 +528,7 @@ correlator:             pi
 momentum:               p000
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p000
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p000
 ...
 0	2.158900e+00	6.686359e-02
 1	3.610528e-01	2.870698e-02
@@ -528,7 +543,7 @@ correlator:             pi
 momentum:               p100
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p100
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p100
 ...
 0	1.340120e+00	2.802909e-02
 1	2.531549e-01	1.593937e-02
@@ -543,7 +558,7 @@ correlator:             pi
 momentum:               p110
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p110
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p110
 ...
 0	8.480408e-01	9.495316e-03
 1	2.081155e-01	1.075193e-02
@@ -558,7 +573,7 @@ correlator:             pi
 momentum:               p111
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p111
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p111
 ...
 0	4.787791e-01	5.515652e-04
 1	1.855813e-01	4.561141e-03
@@ -573,7 +588,7 @@ correlator:             pi
 momentum:               p200
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p200
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p200
 ...
 0	1.159195e+00	3.062610e-02
 1	2.705634e-01	2.819750e-02
@@ -588,7 +603,7 @@ correlator:             pi
 momentum:               p210
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p210
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p210
 ...
 0	5.876660e-01	-4.615065e-03
 1	2.229053e-01	1.764407e-02
@@ -603,7 +618,7 @@ correlator:             pi
 momentum:               p211
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p211
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p211
 ...
 0	1.928937e-01	-1.741793e-02
 1	2.027453e-01	1.087365e-02
@@ -618,7 +633,7 @@ correlator:             pi
 momentum:               p220
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p220
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p220
 ...
 0	3.134372e-01	-8.930625e-03
 1	2.572055e-01	2.606348e-02
@@ -633,7 +648,7 @@ correlator:             pi
 momentum:               p300
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p300
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p300
 ...
 0	1.340120e+00	2.802909e-02
 1	2.531549e-01	1.593937e-02
@@ -648,7 +663,7 @@ correlator:             pi
 momentum:               p221
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p221
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p221
 ...
 0	-1.289229e-01	-2.805390e-02
 1	2.368935e-01	1.575544e-02
@@ -663,7 +678,7 @@ correlator:             pi
 momentum:               p400
 gamma_source:           G5
 gamma_sink:             G5
-correlator_key:         pi_d_1S_1S_m0.1_k0.124_p400
+correlator_key:         pi_d_1S_d_1S_m0.1_k0.124_p400
 ...
 0	2.158900e+00	6.686359e-02
 1	3.610528e-01	2.870698e-02
@@ -676,9 +691,9 @@ correlator_key:         pi_d_1S_1S_m0.1_k0.124_p400
 ---
 correlator:             ro_1
 momentum:               p000
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p000
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p000
 ...
 0	3.477586e+00	9.187830e-02
 1	8.116902e-01	8.459249e-02
@@ -691,9 +706,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p000
 ---
 correlator:             ro_1
 momentum:               p100
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p100
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p100
 ...
 0	2.515452e+00	1.879896e-02
 1	6.989656e-01	5.122752e-02
@@ -706,9 +721,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p100
 ---
 correlator:             ro_1
 momentum:               p110
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p110
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p110
 ...
 0	1.888975e+00	1.572704e-03
 1	6.189762e-01	3.237751e-02
@@ -721,9 +736,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p110
 ---
 correlator:             ro_1
 momentum:               p111
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p111
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p111
 ...
 0	1.436337e+00	1.654696e-03
 1	5.567439e-01	1.368342e-02
@@ -736,9 +751,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p111
 ---
 correlator:             ro_1
 momentum:               p200
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p200
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p200
 ...
 0	2.785774e+00	4.900234e-02
 1	8.754639e-01	8.083393e-02
@@ -751,9 +766,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p200
 ---
 correlator:             ro_1
 momentum:               p210
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p210
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p210
 ...
 0	1.798863e+00	-4.639878e-03
 1	7.129537e-01	4.933889e-02
@@ -766,9 +781,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p210
 ---
 correlator:             ro_1
 momentum:               p211
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p211
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p211
 ...
 0	1.233828e+00	-2.534054e-02
 1	6.136060e-01	3.249923e-02
@@ -781,9 +796,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p211
 ---
 correlator:             ro_1
 momentum:               p220
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p220
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p220
 ...
 0	1.786628e+00	2.519510e-02
 1	8.551757e-01	7.752501e-02
@@ -796,9 +811,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p220
 ---
 correlator:             ro_1
 momentum:               p221
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p221
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p221
 ...
 0	1.046409e+00	-3.728403e-02
 1	6.827041e-01	5.104359e-02
@@ -811,9 +826,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p221
 ---
 correlator:             ro_1
 momentum:               p300
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p300
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p300
 ...
 0	2.515452e+00	1.879896e-02
 1	6.989656e-01	5.122752e-02
@@ -826,9 +841,9 @@ correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p300
 ---
 correlator:             ro_1
 momentum:               p400
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         ro_1_d_1S_1S_m0.1_k0.124_p400
+gamma_source:           GX
+gamma_sink:             GX
+correlator_key:         ro_1_d_1S_d_1S_m0.1_k0.124_p400
 ...
 0	3.477586e+00	9.187830e-02
 1	8.116902e-01	8.459249e-02

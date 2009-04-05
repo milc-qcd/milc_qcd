@@ -14,17 +14,13 @@ int get_wprop_to_wp_field(int startflag, char startfile[],
 {
   int color, spin;
   int cl_cg = CL_CG;
-  int avs_iters;
+  int avs_iters = 0;
   int tot_iters = 0;
   int status;
   wilson_vector *dst;
   w_prop_file *fp_in, *fp_out; 
 
-  dst = (wilson_vector *)malloc(sizeof(wilson_vector)*sites_on_node);
-  if(dst == NULL){
-    printf("get_wprop_to_wp_field(%d): No room for dst\n",this_node);
-    terminate(1);
-  }
+  dst = create_wv_field();
 
   /* For clover_info */
   wqstmp = *my_wqs;
@@ -98,9 +94,14 @@ int get_wprop_to_wp_field(int startflag, char startfile[],
   
   /* close files for wilson propagators */
   r_close_wprop(startflag, fp_in);
-  w_close_wprop(saveflag,  fp_out);
+  if(startflag != FRESH)
+    node0_printf("Restored propagator from %s\n",startfile);
 
-  free(dst);
+  w_close_wprop(saveflag,  fp_out);
+  if(saveflag != FORGET)
+    node0_printf("Saved propagator to %s\n",savefile);
+
+  destroy_wv_field(dst);
 
   return tot_iters;
 }
@@ -114,7 +115,7 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 			   int check)
 {
   int color;
-  int avs_iters;
+  int avs_iters = 0;
   int tot_iters = 0;
   int status;
   int ks_source_r[4];
@@ -195,3 +196,56 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
   return tot_iters;
 }
 
+/* Dump wilson propagator field to file */
+
+void dump_wprop_from_wp_field(int saveflag, char savefile[], 
+			      wilson_prop_field wp){
+  wilson_quark_source dummy_wqs;
+  
+  /* When we dump a propagator, we don't keep the source information.
+     Normally we want the source information for checking consistency
+     with the Dirac operator we are using, since if we know the
+     source, we can run the propagator through the solver to check it.
+     Here the propagator we are dumping is usually one that has
+     already had sink operators applied to it, so it won't satisfy the
+     Dirac equation, anyway.
+     
+     So we take a default source type "UNKOWN".  A minimal source
+     record is still written to the file, since we don't have any
+     propagator file formats without sources records.  The minimal
+     source record is a null complex field on time slice zero. */
+
+  /* For clover_info.c */
+
+  init_wqs(&dummy_wqs);
+  wqstmp = dummy_wqs;   /* For clover_info.c */
+  save_wprop_from_wp_field(saveflag, savefile, &dummy_wqs, wp, "", 1);
+  clear_wqs(&dummy_wqs); /* Free any allocations */
+}
+
+/* Create a wilson_prop_field and restore it from a dump file */
+
+wilson_prop_field reread_wprop_to_wp_field(int saveflag, char savefile[]){
+  char myname[] = "reread_wprop_to_wp_field";
+  wilson_prop_field wp;
+  wilson_quark_source dummy_wqs;
+  int rereadflag = convert_outflag_to_inflag_wprop(saveflag);
+
+  if(rereadflag == FRESH){
+    printf("%s(%d) Can't reread file %s when saveflag is %d\n",
+	   myname, this_node, savefile, saveflag);
+    terminate(1);
+  }
+
+  wp = create_wp_field();
+  if(wp == NULL){
+    printf("%s(%d): No room for prop\n",myname,this_node);
+    terminate(1);
+  }
+  
+  init_wqs(&dummy_wqs);
+  reload_wprop_to_wp_field(rereadflag, savefile, &dummy_wqs, wp, 1);
+  clear_wqs(&dummy_wqs); /* Free any allocations */
+
+  return wp;
+}

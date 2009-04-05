@@ -1,405 +1,227 @@
 STARTPROP
 SOURCES: gaussian gaussian gaussian
-KAPPAS: 2e-06 2e-06 2e-06
-SINK: POINT PROTON
-0 2e-05 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
+KAPPAS: 0.0002 0.0002 0.0002
+SINKS: point point point PROTON
+0 0.002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
 STARTPROP
 SOURCES: gaussian gaussian gaussian
-KAPPAS: 2e-06 2e-06 2e-06
-SINK: POINT PROTON0
-0 2e-05 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
+KAPPAS: 0.0002 0.0002 0.0002
+SINKS: point point point PROTON0
+0 0.002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
 STARTPROP
 SOURCES: gaussian gaussian gaussian
-KAPPAS: 2e-06 2e-06 2e-06
-SINK: POINT DELTA
-0 1e-05 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
+KAPPAS: 0.0002 0.0002 0.0002
+SINKS: point point point DELTA
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
 STARTPROP
 SOURCES: gaussian gaussian gaussian
-KAPPAS: 2e-06 2e-06 2e-06
-SINK: POINT DELTA0
-0 1e-05 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
+KAPPAS: 0.0002 0.0002 0.0002
+SINKS: point point point DELTA0
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+Time for printing correlator XXX
 Mesons for quarks 0 and 0
-WMTIME: time 0.1 sec 1e+07 flops 1e+03 MF
-WMTIME: time 0.1 sec 1e+07 flops 1e+03 MF
-WMTIME: time 0.1 sec 1e+07 flops 1e+03 MF
-Time for offdiag mesons 0.4
-Time for FFT 0.01
-Time for FFT of chi and multiply 0.004
-Time for FFT 0.01
-WMTIME: time 0.1 sec 1e+07 flops 1e+03 MF
-WMTIME: time 0.1 sec 1e+07 flops 1e+03 MF
-WMTIME: time 0.1 sec 1e+07 flops 1e+03 MF
-Time for offdiag mesons 0.4
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+Time for diagonal mesons XXX
+Time for printing correlator XXX
+Mesons for quarks 0 and 0
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+Time for offdiag mesons XXX
 STARTPROP
 MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT PION
-0 0.0006 0.000000e+00
-0 4e-05 0.000000e+00
-0 8e-06 0.000000e+00
-0 3e-05 0.000000e+00
+SINKS: point gaussian PION
+0 0.6 0.0002
+0 0.04 0.0002
+0 0.009 0.0002
+0 0.04 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT PION
-0 0.0002 6e-06
-0 1e-05 2e-06
-0 2e-06 2e-06
-0 9e-06 2e-06
+SINKS: point gaussian PION
+0 0.2 0.0003
+0 0.008 0.0002
+0 0.001 0.0002
+0 0.006 0.0004
 ENDPROP
 STARTPROP
 MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT PS505
-0 2e-05 2e-06
-0 3e-05 2e-06
-0 2e-06 2e-06
-0 3e-05 2e-06
+SINKS: point gaussian PS505
+0 0.002 0.0002
+0 0.04 0.0002
+0 0.0002 0.0002
+0 0.03 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT PS505
-0 5e-06 2e-06
-0 1e-05 2e-06
-0 2e-06 2e-06
-0 9e-06 2e-06
+SINKS: point gaussian PS505
+0 0.0004 0.0002
+0 0.008 0.0002
+0 0.0002 0.0002
+0 0.006 0.0004
 ENDPROP
 STARTPROP
 MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT PS0505
-0 0.0005 2e-06
-0 3e-05 2e-06
-0 7e-06 2e-06
-0 3e-05 2e-06
+SINKS: point gaussian PS0505
+0 0.6 0.0002
+0 0.04 0.0002
+0 0.008 0.0002
+0 0.03 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT PS0505
-0 0.0002 5e-06
-0 1e-05 2e-06
-0 2e-06 2e-06
-0 8e-06 2e-06
+SINKS: point gaussian PS0505
+0 0.2 0.0006
+0 0.008 0.0002
+0 0.001 0.0002
+0 0.006 0.0004
 ENDPROP
 STARTPROP
 MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT RHO
-0 0.0005 2e-06
-0 3e-05 2e-06
-0 7e-06 2e-06
-0 3e-05 2e-06
+SINKS: point gaussian RHO
+0 0.6 0.0002
+0 0.04 0.0002
+0 0.009 0.0002
+0 0.03 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT RHO
-0 0.0002 6e-06
-0 1e-05 2e-06
-0 2e-06 2e-06
-0 9e-06 2e-06
+SINKS: point gaussian RHO
+0 0.2 0.0002
+0 0.008 0.0002
+0 0.001 0.0002
+0 0.006 0.0004
 ENDPROP
 STARTPROP
 MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT RHO0
-0 0.0005 2e-06
-0 3e-05 2e-06
-0 7e-06 2e-06
-0 3e-05 2e-06
+SINKS: point gaussian RHO0
+0 0.6 0.0002
+0 0.04 0.0002
+0 0.008 0.0002
+0 0.03 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT RHO0
-0 0.0002 1e-05
-0 1e-05 2e-06
-0 2e-06 2e-06
-0 8e-06 2e-06
+SINKS: point gaussian RHO0
+0 0.2 0.0003
+0 0.008 0.0002
+0 0.001 0.0002
+0 0.006 0.0004
 ENDPROP
 STARTPROP
 MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT SCALAR
-0 0.0005 0.000000e+00
-0 1e-05 0.000000e+00
-0 6e-06 0.000000e+00
-0 6e-06 0.000000e+00
+SINKS: point gaussian SCALAR
+0 0.6 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT SCALAR
-0 0.0002 6e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
+SINKS: point gaussian SCALAR
+0 0.2 0.0006
+0 0.0008 0.0002
+0 0.001 0.0002
+0 0.0007 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT SCAL0
-0 0.0006 2e-06
-0 6e-06 2e-06
-0 6e-06 2e-06
-0 6e-06 2e-06
+SINKS: point gaussian SCAL0
+0 0.6 0.0002
+0 0.009 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT SCAL0
-0 0.0002 5e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
+SINKS: point gaussian SCAL0
+0 0.2 0.0004
+0 0.0008 0.0002
+0 0.001 0.0002
+0 0.0006 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT PV
-0 0.0005 2e-06
-0 1e-05 2e-06
-0 6e-06 2e-06
-0 6e-06 2e-06
+SINKS: point gaussian PV
+0 0.6 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT PV
-0 0.0002 5e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
+SINKS: point gaussian PV
+0 0.2 0.0003
+0 0.0008 0.0002
+0 0.001 0.0002
+0 0.0006 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT B
-0 0.0005 2e-06
-0 6e-06 2e-06
-0 6e-06 2e-06
-0 6e-06 2e-06
+SINKS: point gaussian B
+0 0.6 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
 ENDPROP
 STARTPROP
 MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
+MASSES: kappa[0]=0.1 kappa[0]=0.1
 SOURCES: gaussian gaussian
-SINK: POINT B
-0 0.0002 6e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
-0 2e-06 2e-06
+SINKS: point gaussian B
+0 0.2 0.0002
+0 0.0008 0.0002
+0 0.001 0.0002
+0 0.0006 0.0002
 ENDPROP
-STARTPROP
-MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 PION
-0 0.006 2e-06
-0 0.0004 2e-06
-0 9e-05 2e-06
-0 0.0004 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 PION
-0 0.002 2e-05
-0 8e-05 2e-06
-0 1e-05 2e-06
-0 6e-05 4e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 PS505
-0 0.0003 1e-05
-0 0.0004 2e-06
-0 2e-05 2e-06
-0 0.0003 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 PS505
-0 5e-05 7e-06
-0 8e-05 2e-06
-0 2e-06 2e-06
-0 6e-05 4e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 PS0505
-0 0.006 2e-06
-0 0.0004 2e-06
-0 8e-05 2e-06
-0 0.0003 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 PS0505
-0 0.002 8e-05
-0 8e-05 2e-06
-0 1e-05 2e-06
-0 6e-05 4e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 RHO
-0 0.006 2e-06
-0 0.0004 2e-06
-0 9e-05 2e-06
-0 0.0003 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 RHO
-0 0.002 0.0001
-0 8e-05 2e-06
-0 1e-05 2e-06
-0 6e-05 4e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 RHO0
-0 0.006 2e-06
-0 0.0004 2e-06
-0 8e-05 2e-06
-0 0.0003 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 RHO0
-0 0.002 3e-05
-0 8e-05 2e-06
-0 1e-05 2e-06
-0 6e-05 4e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 SCALAR
-0 0.006 2e-06
-0 8e-05 2e-06
-0 8e-05 2e-06
-0 8e-05 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 SCALAR
-0 0.002 3e-05
-0 2e-05 2e-06
-0 1e-05 2e-06
-0 7e-06 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 SCAL0
-0 0.006 2e-06
-0 9e-05 2e-06
-0 8e-05 2e-06
-0 8e-05 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 SCAL0
-0 0.002 4e-05
-0 8e-06 2e-06
-0 1e-05 2e-06
-0 6e-06 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 PV
-0 0.006 2e-06
-0 8e-05 2e-06
-0 8e-05 2e-06
-0 8e-05 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 PV
-0 0.002 5e-05
-0 8e-06 2e-06
-0 1e-05 2e-06
-0 6e-06 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p000
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 B
-0 0.006 2e-06
-0 8e-05 2e-06
-0 8e-05 2e-06
-0 8e-05 2e-06
-ENDPROP
-STARTPROP
-MOMENTUM: p100
-MASSES: kappa[0]=0.1 kappa[1]=0.1
-SOURCES: gaussian gaussian
-SINK: 2e-06 B
-0 0.002 5e-05
-0 8e-06 2e-06
-0 1e-05 2e-06
-0 6e-06 2e-06
-ENDPROP
+Time for printing correlator XXX
+Time to tie hadron correlators XXX
 RUNNING COMPLETED

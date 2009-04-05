@@ -45,6 +45,7 @@ MY_OBJECTS =         \
 
 # Basic set from generic directory
 G_OBJECTS =          \
+  ape_smear.o        \
   check_unitarity.o  \
   d_plaq4.o          \
   gaugefix2.o        \
@@ -56,10 +57,14 @@ G_OBJECTS =          \
   make_lattice.o     \
   nersc_cksum.o       \
   path_product.o     \
+  project_su3_hit.o  \
   remap_stdio_from_args.o \
   rephase.o          \
   reunitarize2.o     \
-  restrict_fourier.o
+  remap_fftw_fourier.o
+
+#  restrict_fourier.o
+
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS += io_scidac.o io_scidac_types.o
@@ -85,6 +90,7 @@ G_WILSON_OBJECTS =   \
   baryon_cont.o      \
   canopy2weyl_rot.o  \
   dirac_utilities.o  \
+  discretize_wf.o    \
   dslash_w_space.o   \
   dslash_w3.o        \
   gammas.o           \
@@ -97,6 +103,7 @@ G_WILSON_OBJECTS =   \
   w_baryon.o         \
   w_baryon_hl.o      \
   w_meson_mom.o      \
+  w_meson_open_mom.o \
   w_source.o         \
   wilson_invert.o
 
@@ -291,7 +298,7 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 su3_clov::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DIOTIME -DPRTIME -DCL_CG=BICG " \
+	"DEFINES= -DFN -DIOTIME -DPRTIME -DCL_CG=BICG" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 # A hack to allow more than one test case

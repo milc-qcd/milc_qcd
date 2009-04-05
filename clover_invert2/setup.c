@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.5  2009/04/05 16:43:07  detar
+//  Utilities for open meson propagators
+//
 //  Revision 1.4  2008/04/18 15:12:11  detar
 //  Revise metadata format for correlator files.
 //
@@ -69,6 +72,9 @@ int setup()   {
 /* SETUP ROUTINES */
 int initial_set(){
   int prompt,status;
+#ifdef FIX_NODE_GEOM
+  int i;
+#endif
   /* On node zero, read lattice size and send to others */
   if(mynode()==0){
     /* print banner */
@@ -83,6 +89,14 @@ int initial_set(){
     IF_OK status += get_i(stdin,prompt,"ny", &param.ny );
     IF_OK status += get_i(stdin,prompt,"nz", &param.nz );
     IF_OK status += get_i(stdin,prompt,"nt", &param.nt );
+#ifdef FIX_NODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "node_geometry", 
+			   param.node_geometry, 4);
+#ifdef FIX_IONODE_GEOM
+    IF_OK status += get_vi(stdin, prompt, "ionode_geometry", 
+			   param.ionode_geometry, 4);
+#endif
+#endif
     IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
     
     if(status>0) param.stopflag=1; else param.stopflag=0;
@@ -99,6 +113,15 @@ int initial_set(){
   nz=param.nz;
   nt=param.nt;
   
+#ifdef FIX_NODE_GEOM
+  for(i = 0; i < 4; i++)
+    node_geometry[i] = param.node_geometry[i];
+#ifdef FIX_IONODE_GEOM
+  for(i = 0; i < 4; i++)
+    ionode_geometry[i] = param.ionode_geometry[i];
+#endif
+#endif
+
   this_node = mynode();
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
@@ -106,7 +129,7 @@ int initial_set(){
 }
 
 /* Forward declarations */
-static int hash_corr_label(char meson_label[MAX_CORR][MAX_CORR_LABEL], 
+static int hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL], 
 			   char mom_label[MAX_CORR][MAX_MOM_LABEL],
 			   char *meson_label_in, char *mom_label_in, int *n);
 char decode_parity(char *parity_label_in);
@@ -158,6 +181,13 @@ int readin(int prompt) {
 			     param.savefile );
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				  param.stringLFN );
+
+    /* APE smearing parameters (if needed) */
+    /* Zero suppresses APE smearing */
+    IF_OK status += get_f(stdin, prompt, "staple_weight", 
+			  &param.staple_weight);
+    IF_OK status += get_i(stdin, prompt, "ape_iter",
+			  &param.ape_iter);
     
     /*------------------------------------------------------------*/
     /* Propagator inversion control                               */
@@ -182,29 +212,30 @@ int readin(int prompt) {
     
 
     /*------------------------------------------------------------*/
-    /* Quarks and their sources                                   */
+    /* Propagators and their sources                              */
     /*------------------------------------------------------------*/
 
-    /* Number of quarks */
-    IF_OK status += get_i(stdin,prompt,"number_of_quarks", &param.num_qk );
-    if( param.num_qk>MAX_QK ){
-      printf("num_qk = %d must be <= %d!\n", param.num_qk, MAX_QK);
+    /* Number of propagators */
+    IF_OK status += get_i(stdin,prompt,"number_of_propagators", 
+			  &param.num_prop );
+    if( param.num_prop>MAX_PROP ){
+      printf("num_prop = %d must be <= %d!\n", param.num_prop, MAX_PROP);
       status++;
     }
 
-    IF_OK for(i = 0; i < param.num_qk; i++){
+    IF_OK for(i = 0; i < param.num_prop; i++){
     
-      /* Quark parameters */
-      IF_OK status += get_s(stdin, prompt,"quark_type", savebuf );
+      /* Propagator parameters */
+      IF_OK status += get_s(stdin, prompt,"propagator_type", savebuf );
       IF_OK {
-	if(strcmp(savebuf,"clover") == 0)param.qk_type[i] = CLOVER_TYPE;
-	else if(strcmp(savebuf,"KS") == 0)param.qk_type[i] = KS_TYPE;
+	if(strcmp(savebuf,"clover") == 0)param.prop_type[i] = CLOVER_TYPE;
+	else if(strcmp(savebuf,"KS") == 0)param.prop_type[i] = KS_TYPE;
 	else {
 	  printf("Unknown quark type %s\n",savebuf);
 	  status++;
 	}
       }
-      if(param.qk_type[i] == CLOVER_TYPE){
+      if(param.prop_type[i] == CLOVER_TYPE){
 	IF_OK status += get_s(stdin, prompt,"kappa", param.kappa_label[i]);
 	IF_OK param.dcp[i].Kappa = atof(param.kappa_label[i]);
 	IF_OK status += get_f(stdin, prompt,"clov_c", &param.dcp[i].Clov_c );
@@ -226,9 +257,6 @@ int readin(int prompt) {
 	IF_OK init_wqs(&param.src_wqs[i]);
 	IF_OK status += get_w_quark_source( stdin, prompt, &param.src_wqs[i]);
 	
-	/* Get rotation parameter */
-	IF_OK status += get_f( stdin, prompt, "d1", &param.d1[i]);
-
       } else {  /* KS_TYPE */
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[i] );
 	IF_OK param.ksp[i].mass = atof(param.mass_label[i]);
@@ -249,11 +277,71 @@ int readin(int prompt) {
 	/* Get source type */
 	IF_OK init_ksqs(&param.src_ksqs[i]);
 	IF_OK status += get_ks_quark_source( stdin, prompt, &param.src_ksqs[i]);
-	/* Trivial rotation parameter */
-	param.d1[i] = 0;
       }
     }
 
+    /*------------------------------------------------------------*/
+    /* Quarks                                                     */
+    /*------------------------------------------------------------*/
+
+    /* Number of quarks */
+    IF_OK status += get_i(stdin,prompt,"number_of_quarks", 
+			  &param.num_qk );
+    if( param.num_qk>MAX_QK ){
+      printf("num_qk = %d must be <= %d!\n", param.num_qk, MAX_QK);
+      status++;
+    }
+
+    IF_OK for(i = 0; i < param.num_qk; i++){
+      char *check_tag;
+      /* Get the propagator that we act on with the sink operator to
+	 form the "quark" field used in the correlator.  It might be a
+	 raw "propagator" or it might be a previously constructed
+	 "quark" field */
+      /* First we look for the type */
+      IF_OK {
+	if(prompt!=0)printf("enter 'propagator' or 'quark'\n");
+	check_tag = get_next_tag(stdin, "propagator or quark", "readin");
+	printf("%s ",check_tag);
+	if(strcmp(check_tag,"propagator") == 0)
+	  param.parent_type[i] = PROP_TYPE;
+	else if(strcmp(check_tag,"quark") == 0)
+	  param.parent_type[i] = QUARK_TYPE;
+	else{
+	  printf("\nError: expected 'propagator' or 'quark'\n");
+	  status++;
+	}
+      }
+      /* Next we get its index */
+      IF_OK {
+	if(prompt!=0)printf("enter the index\n");
+	if(scanf("%d",&param.prop_for_qk[i]) != 1){
+	  printf("\nFormat error reading index\n");
+	  status++;
+	}
+	else{
+	  printf("%d\n",param.prop_for_qk[i]);
+	  if(param.parent_type[i] == PROP_TYPE && 
+	     param.prop_for_qk[i] >= param.num_prop){
+	    printf("Propagator index must be less than %d\n",
+		   param.num_prop);
+	    status++;
+	  }
+	  else if(param.parent_type[i] == QUARK_TYPE && 
+		  param.prop_for_qk[i] >= i){
+	    printf("Quark index must be less than %d here\n",i);
+	    status++;
+	  }
+	}
+      }
+      /* Get sink operator attributes */
+      IF_OK init_wqs(&param.snk_wqs[i]);
+      IF_OK status += get_w_quark_sink( stdin, prompt, &param.snk_wqs[i]);
+      IF_OK status += ask_ending_wprop( stdin, prompt, &param.saveflag_q[i],
+					param.savefile_q[i]);
+	
+    }
+    
     /*------------------------------------------------------------*/
     /* Meson correlators                                          */
     /*------------------------------------------------------------*/
@@ -277,7 +365,7 @@ int readin(int prompt) {
 	for(j = 0; j < 2; j++){
 	  if(param.qkpair[ipair][j] < 0 || param.qkpair[ipair][j] >= param.num_qk){
 	    printf("Quark index %d must be in [0,%d]\n",
-		   param.qkpair[ipair][j],param.num_qk);
+		   param.qkpair[ipair][j],param.num_qk-1);
 	    status++;
 	  }
 	}
@@ -292,34 +380,37 @@ int readin(int prompt) {
       
       /* Parse the spectrum request */
       IF_OK {
-	/* Point sink meson */
-	if(strstr(request_buf,",point,") != NULL)
-	  param.do_point_meson_spect[ipair] = 1;
-	else param.do_point_meson_spect[ipair] = 0;
-	
-	/* Smeared sink meson */
-	if(strstr(request_buf,",smeared,") != NULL)
-	  param.do_smear_meson_spect[ipair] = 1;
-	else param.do_smear_meson_spect[ipair] = 0;
-	
-	/* Rotated point sink meson */
-	if(strstr(request_buf,",3drotated,") != NULL)
-	  param.do_rot_meson_spect[ipair] = 1;
-	else param.do_rot_meson_spect[ipair] = 0;
+	/* Mesons */
+	if(strstr(request_buf,",meson,") != NULL)
+	  param.do_meson_spect[ipair] = 1;
+	else param.do_meson_spect[ipair] = 0;
 	
 	/* Baryons */
 	if(strstr(request_buf,",baryon,") != NULL)
 	  param.do_baryon_spect[ipair] = 1;
 	else param.do_baryon_spect[ipair] = 0;
-      }
-      
-      /* What sink smearing wave function? (Only if smearing) */
-      
-      IF_OK {
-	if(param.do_smear_meson_spect[ipair]){
-	  IF_OK init_wqs(&param.snk_wqs[ipair]);
-	  IF_OK status += get_w_quark_sink( stdin, prompt, 
-					    &param.snk_wqs[ipair]);
+
+	/* Any meson or baryon */
+	param.do_closed_hadron[ipair]  = 
+	  param.do_meson_spect[ipair] |
+	  param.do_baryon_spect[ipair];
+
+	/* Open meson */
+	if(strstr(request_buf,",open_meson,") != NULL)
+	  param.do_open_meson[ipair] = 1;
+	else param.do_open_meson[ipair] = 0;
+
+	/* We need some correlator specification */
+	if(!param.do_open_meson[ipair] && !param.do_closed_hadron[ipair]){
+	  printf("Unrecognized spectrum request\n");
+	  status++;
+	}
+
+	/* But we can't do both closed and open hadrons in the same pairing */
+	if(param.do_open_meson[ipair] && param.do_closed_hadron[ipair]){
+	  printf("Can't combine open_meson with other options ");
+	  printf("in the same pairing\n");
+	  status++;
 	}
       }
       
@@ -327,6 +418,16 @@ int readin(int prompt) {
       
       IF_OK status += ask_corr_file( stdin, prompt, &param.saveflag_c[ipair],
 				     param.savefile_c[ipair]);
+      /* Correlator values are printed with t relative to the t_offset */
+      /* FT phases are computed with x,y,z relative to r_offset */
+      IF_OK {
+	int r[4];
+	status += get_vi(stdin,prompt, "r_offset", r, 4);
+	param.r_offset[ipair][0] = r[0];
+	param.r_offset[ipair][1] = r[1];
+	param.r_offset[ipair][2] = r[2];
+	param.t_offset[ipair]    = r[3];
+      }
       
       /*------------------------------------------------------------*/
       /* Table of correlator combinations actually needed           */
@@ -344,7 +445,7 @@ int readin(int prompt) {
       }
       
       /* Sample format for correlator line:
-	 correlator  A1_P5 p200 -i G5 G5X 2 0 0 E E E */
+	 correlator  A1_P5 p200 -i * 1 G5 G5X 2 0 0 E E E */
       
       param.num_corr_report[ipair] = 0;
       IF_OK for(i = 0; i < param.num_corr[ipair]; i++){
@@ -353,7 +454,7 @@ int readin(int prompt) {
 	  gam_src_lab[MAXGAMMA], gam_snk_lab[MAXGAMMA], phase_lab[4],
 	  factor_op[2], parity_x_in[3], parity_y_in[3], parity_z_in[3];
 	double factor;
-	  
+	
 	IF_OK status += get_sn(stdin, prompt, "correlator", meson_label_in);
 	
 	/* Read the momentum label next */
@@ -376,7 +477,7 @@ int readin(int prompt) {
 	/* phase, op, factor, and gamma matrix specification */
 	IF_OK {
 	  ok = scanf("%s %s %lf %s %s\n",phase_lab,factor_op,&factor,
-		gam_src_lab,gam_snk_lab);
+		     gam_src_lab,gam_snk_lab);
 	  if(ok != 5){
 	    printf("\nError reading phase, factor, and gammas\n");
 	    status++;
@@ -470,6 +571,8 @@ int readin(int prompt) {
 
   /* Do whatever is needed to get lattice */
   startlat_p = reload_lattice( param.startflag, param.startfile );
+  /* Construct APE smeared links */
+  ape_smear_3D( param.staple_weight, param.ape_iter );
 
   /* Initialization for KS operations if needed */
 #ifdef FN
