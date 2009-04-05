@@ -32,6 +32,7 @@ DIRS = \
    clover_invert2 \
    ext_src \
    file_utilities \
+   gauge_utilities \
    gluon_prop \
    heavy \
    ks_eigen \
