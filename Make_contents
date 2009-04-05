@@ -3,7 +3,7 @@
 # 12/16/06 C. DeTar
 
 #  Change these names to suit
-VER = 7.6.2
+VER = 7.6.3
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -51,7 +51,15 @@ FILE_UTILITIES =     \
  file_utilities/in.sample.* \
  file_utilities/out.errtol.* \
  file_utilities/out.sample.*
- 
+
+GAUGE_UTILITIES =      \
+ gauge_utilities/Make*     \
+ gauge_utilities/*.c       \
+ gauge_utilities/*.h       \
+ gauge_utilities/in.sample.* \
+ gauge_utilities/out.errtol.* \
+ gauge_utilities/out.sample.*
+
 
 BINARY_SAMPLES =      \
  binary_samples/colormatrix.*sample* \
@@ -401,6 +409,7 @@ BASIC =               \
  ${THIS_DIR}          \
  ${DOC}               \
  ${FILE_UTILITIES}    \
+ ${GAUGE_UTILITIES}   \
  ${BINARY_SAMPLES}    \
  ${GENERIC}           \
  ${INCLUDE}           \
@@ -468,11 +477,11 @@ KS =                  \
 # SF =                  \
 #  ${GENERIC_SCHROED}   \
 #  ${SCHROED_CL_INV}    \
-#  ${SCHROED_KS_DYN}    \
 #  ${SCHROED_PG}
 SF =                 \
   ${GENERIC_SCHROED} \
-  ${SCHROED_CL_INV}
+  ${SCHROED_CL_INV}  \
+  ${SCHROED_KS_DYN}
 
 WILSON =              \
  ${GENERIC_WILSON} \
