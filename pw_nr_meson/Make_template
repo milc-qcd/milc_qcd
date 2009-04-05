@@ -54,8 +54,13 @@ G_OBJECTS =          \
   project_su3_hit.o  \
   ranstuff.o \
   remap_stdio_from_args.o \
-  reunitarize2.o     \
-  remap_fftw_fourier.o 
+  reunitarize2.o
+
+ifeq ($(strip ${HAVEFFTW}),true)
+  G_OBJECTS += remap_fftw_fourier.o
+else
+  G_OBJECTS += restrict_fourier.o
+endif
 
 # Set from generic_ks directory
 G_KS_OBJECTS =      \

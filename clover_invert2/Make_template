@@ -60,11 +60,13 @@ G_OBJECTS =          \
   project_su3_hit.o  \
   remap_stdio_from_args.o \
   rephase.o          \
-  reunitarize2.o     \
-  remap_fftw_fourier.o
+  reunitarize2.o
 
-#  restrict_fourier.o
-
+ifeq ($(strip ${HAVEFFTW}),true)
+  G_OBJECTS += remap_fftw_fourier.o
+else
+  G_OBJECTS += restrict_fourier.o
+endif
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS += io_scidac.o io_scidac_types.o
