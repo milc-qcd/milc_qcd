@@ -67,7 +67,7 @@ ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest,
   int iteration;	/* counter for iterations */
   Real a,b;           	/* Sugar's a,b */
 #ifdef FEWSUMS
-  double actual_rsq;      /* rsq from actual summation of resid */
+  double actual_rsq= 0;      /* rsq from actual summation of resid */
   double c_tr,c_tt,tempsum[4];	/* Re<resid|ttt>, <ttt|ttt> */
 #endif
   double rsq = 0,relrsq = 0; /* resid**2, rel resid*2 */

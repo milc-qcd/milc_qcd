@@ -266,7 +266,7 @@ void ape_smear_field_dir(
   /* Allocate temporary space for staple calculation */
   temp = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
   if(temp == NULL){
-    printf("ape_smear: No room for temp\n");
+    printf("ape_smear_field_dir: No room for temp\n");
     terminate(1);
   }
   
