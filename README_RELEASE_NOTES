@@ -10,6 +10,7 @@ clover_invert
 clover_invert2
 ext_src
 file_utilities
+gauge_utilities
 gluon_prop
 heavy
 ks_eigen
@@ -29,6 +30,15 @@ Build the code with GNU make.  See the README file in this directory
 for general instructions.
 
 Here are highlights of the changes:
+
+For version 7.6.3
+
+  Further changes in metadata for FNAL correlator files
+  Support open meson correlators for B_K project
+  Add several new clover sources
+  Add FFTW support
+  Add gauge_utilities for translating the gauge field and 
+    standalone gauge fixing
 
 For version 7.6.2
 
