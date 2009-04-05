@@ -54,6 +54,9 @@
 
 /*
  * $Log: d_bicgilu_cl_qop_P.c,v $
+ * Revision 1.6  2009/04/05 18:12:39  detar
+ * Move #if 0
+ *
  * Revision 1.5  2008/04/18 23:11:54  detar
  * Remove QOP_verbose setting
  *
@@ -75,7 +78,9 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.5 2008/04/18 23:11:54 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.6 2009/04/05 18:12:39 detar Exp $";
+
+#if 0
 
 /********************************************************************/
 /* Load Wilson clover parameters                                    */
@@ -89,7 +94,6 @@ load_qop_wilson_coeffs(QOP_wilson_coeffs_t *c, Real clov_c)
 }
 
 
-#if 0
 /* The QOP/QDP routine is not yet available */
 
 /********************************************************************/
