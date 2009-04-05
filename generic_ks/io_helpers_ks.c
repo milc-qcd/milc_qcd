@@ -242,6 +242,11 @@ w_open_ksprop(int flag, char *filename, int source_type)
 #endif
   
   switch(flag){
+
+  case FORGET:
+    kspf = NULL;
+    break;
+
   case SAVE_ASCII:
     kspf = w_ascii_ks_i(filename);
     break;
@@ -878,6 +883,14 @@ ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
   else if(strcmp("save_serial_scidac_ksprop",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_SERIAL_SCIDAC;
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_parallel_scidac_ksprop",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARALLEL_SCIDAC;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);
