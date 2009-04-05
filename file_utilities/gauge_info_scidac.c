@@ -38,10 +38,25 @@ EXTERN QIO_String *xml_record_in;
 /* This routine writes the ASCII info file.  It is called from one of
    the lattice output routines in io_lat4.c.*/
 
-void write_appl_gauge_info(FILE *fp)
+void write_appl_gauge_info(FILE *fp, gauge_file *gf)
 {
-  /* Copy Scidac record metadata to the info file specified by fp */
-  fprintf(fp,"%s\n",QIO_string_ptr(xml_record_in));
+  char *info_string;
+  QIO_USQCDLatticeInfo record_info;
+  int status;
+
+  /* Extract info string from XML */
+  status = QIO_decode_usqcd_lattice_info(&record_info,xml_record_in);
+  if(status == 0)
+    info_string = QIO_get_info(&record_info);
+  else
+    info_string = QIO_string_ptr(xml_record_in);
+  printf("QIO_decode_usqcd_lattice_info returned status %d\n",status);
+
+  /* Write generic information */
+  write_generic_gauge_info(fp, gf);
+
+  /* Copy SciDAC record metadata to the info file specified by fp */
+  fprintf(fp,"%s\n",info_string);
 }
 
 char *create_QCDML(){
