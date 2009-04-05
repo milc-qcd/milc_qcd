@@ -148,6 +148,11 @@ void gauss_smear_field(wilson_vector *src, su3_matrix *t_links,
   int i, j;
   site *s;
 
+  if(t_links == NULL){
+    printf("gauss_smear_field(%d): NULL t_links\n",this_node);
+    terminate(1);
+  }
+
   tmp = (wilson_vector *)malloc(sizeof(wilson_vector)*sites_on_node);
   if(tmp == NULL){
     printf("gauss_smear_site(%d): No room for temporary source\n",this_node);
@@ -164,6 +169,8 @@ void gauss_smear_field(wilson_vector *src, su3_matrix *t_links,
       }
       klein_gord_field(tmp, src, t_links, ftmpinv, t0);
     }
+
+  free(tmp);
 }
 
 /*------------------------------------------------------------*/
