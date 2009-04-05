@@ -1,5 +1,5 @@
 # Makefile for testing code by comparing test output with sample output
-# For clover_invert2
+# For ext_src
 
 #------------------------------------------------------------
 # Examples for tests:

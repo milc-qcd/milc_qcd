@@ -45,6 +45,7 @@ MY_OBJECTS =         \
 
 # Basic set from generic directory
 G_OBJECTS =          \
+  ape_smear.o        \
   check_unitarity.o  \
   d_plaq4.o          \
   io_detect.o        \
@@ -54,6 +55,7 @@ G_OBJECTS =          \
   io_source_cmplx_fm.o \
   make_lattice.o     \
   nersc_cksum.o       \
+  project_su3_hit.o   \
   remap_stdio_from_args.o \
   restrict_fourier.o \
   reunitarize2.o     \
@@ -78,6 +80,8 @@ endif
 G_WILSON_OBJECTS =   \
   canopy2weyl_rot.o  \
   dirac_utilities.o  \
+  discretize_wf.o    \
+  dslash_w_space.o   \
   gammas.o           \
   gauss_smear_w.o    \
   io_helpers_w.o     \
