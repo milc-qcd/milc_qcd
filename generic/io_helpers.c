@@ -146,7 +146,7 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     FRESH, CONTINUE,
     RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL
 */
-void coldlat();
+void coldlat(void);
 
 gauge_file *reload_lattice( int flag, char *filename){
     double dtime;
@@ -241,12 +241,12 @@ char *get_next_tag(FILE *fp, char *tag, char *myname){
     /* Provide for comment lines with # before "prompt" */
     if(strchr(line,'#')==NULL)break;
     else{
-      printf("%s",line);
+      printf("%s",line);  /* Print string with # character*/
       if(fgets(line,MAX_TAG,fp)==NULL){
 	printf("%s(%d) EOF on input.\n",myname,this_node);
 	return NULL;
       }
-      printf("%s",line);
+      printf("%s",line); /* Print rest of line */
     }
   }
   return line;
@@ -520,7 +520,7 @@ int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
   return status;
 }
 
-void coldlat(){
+void coldlat(void){
     /* sets link matrices to unit matrices */
     register int i,j,k,dir;
     register site *sit;
@@ -543,7 +543,7 @@ void coldlat(){
     node0_printf("unit gauge configuration loaded\n");
 }
 
-void funnylat()  {
+void funnylat(void)  {
     /* sets link matrices to funny matrices for debugging */
     register int i,j,k,dir;
     register site *sit;
@@ -743,9 +743,41 @@ int get_vf( FILE* fp, int prompt, char *tag,
     }
     
     return 0;
-
 }
 
+/* Read a vector of strings */
+
+int get_vs( FILE *fp, int prompt, char *tag, char **value, int nvalues ){
+  char myname[] = "get_vs";
+
+  int s, i;
+  
+  if(prompt)  {
+    s = 0;
+    printf("enter %s with %d values", tag, nvalues);
+      for(i = 0; i < nvalues; i++){
+	while(s != 1){
+	  printf("\n[%d] ",i);
+	  s=scanf("%s",value[i]);
+	  if(s==EOF)return 1;
+	  if(s==0)printf("Data format error.\n");
+	  printf("%s %s\n",tag,value[i]);
+	}
+      }
+    } else  {
+    if(get_check_tag(fp, tag, myname) == 1)return 1;
+	  
+    for(i = 0; i < nvalues; i++){
+      s = fscanf(fp,"%s",value[i]);
+      if(check_read(s,myname,tag) == 1)return 1;
+      printf("%s ",value[i]);
+    }
+    printf("\n");
+  }
+  
+  return 0;
+}
+    
 /* get_prompt gets the initial value of prompt */
 /* 0 for reading from file, 1 prompts for input from terminal */
 /* should be called only by node 0 */
