@@ -229,9 +229,11 @@ wprop_2wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  \
+	  ape_smear.o \
 	  canopy2weyl_rot.o \
 	  check_unitarity.o \
 	  d_plaq4.o \
+	  discretize_wf.o \
 	  dslash_w_space.o \
 	  gammas.o \
 	  gauge_info_dummy.o \
@@ -249,6 +251,7 @@ wprop_2wprop::
 	  ks_source.o \
 	  ksprop_info.o \
 	  nersc_cksum.o \
+	  project_su3_hit.o \
 	  restrict_fourier.o \
 	  reunitarize2.o \
 	  staggered2naive.o \

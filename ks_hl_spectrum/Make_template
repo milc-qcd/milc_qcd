@@ -66,7 +66,9 @@ ifeq ($(strip ${HAVEQIO}),true)
 endif
 
 G_WILSON_OBJECTS =    \
+  ape_smear.o         \
   dirac_utilities.o   \
+  discretize_wf.o     \
   dslash_w_space.o    \
   gammas.o            \
   gauss_smear_w.o     \
@@ -74,6 +76,7 @@ G_WILSON_OBJECTS =    \
   io_prop_w.o         \
   io_prop_w_fm.o      \
   io_source_w_fm.o    \
+  project_su3_hit.o   \
   staggered2naive.o   \
   w_source.o          \
   wilson_invert.o 
