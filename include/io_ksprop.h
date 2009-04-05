@@ -212,7 +212,7 @@ ks_prop_file *r_ascii_ks_i(char *filename);
 int r_ascii_ks(ks_prop_file *kspf, int color, field_offset src);
 void r_ascii_ks_f(ks_prop_file *kspf);
 ks_prop_file *setup_input_ksprop_file(char *filename);
-ks_prop_file *setup_output_ksprop_file();
+ks_prop_file *setup_output_ksprop_file(void);
 
 ks_prop_file *w_ascii_ks_i(char *filename);
 void w_ascii_ks(ks_prop_file *kspf, int color, field_offset src);
@@ -228,7 +228,7 @@ ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop);
 
 void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph);
 void write_ks_fmprop_info_file(ks_prop_file *pf);
-ks_prop_file *setup_output_ks_fmprop_file();
+ks_prop_file *setup_output_ks_fmprop_file(void);
 ks_prop_file *w_serial_ks_fm_i(char *filename);
 void w_serial_ks_fm_from_site(ks_prop_file *kspf, field_offset prop);
 void w_serial_ks_fm_from_field(ks_prop_file *kspf, su3_vector *prop);

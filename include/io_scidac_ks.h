@@ -56,7 +56,7 @@ int write_ksprop_usqcd_c(QIO_Writer *outfile, su3_vector *src,
 /**********************************************************************/
 /* In ks_info.c (application dependent) */
 
-char *create_ks_XML();
+char *create_ks_XML(void);
 void free_ks_XML(char *xml);
 
 #endif /* _IO_SCIDAC_KS_H */

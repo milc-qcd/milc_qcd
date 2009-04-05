@@ -308,7 +308,7 @@ EXTERN  int sequence_number;
 /**********************************************************************/
 /* Prototypes for io_lat4.c */
 
-int big_endian();
+int big_endian(void);
 
 void read_lat_dim_gf(char *filename, int *ndim, int dims[]);
 gauge_file *restore_ascii(char *filename);
@@ -426,7 +426,7 @@ int sprint_gauge_info_item(
 void write_generic_gauge_info(FILE *fp, gauge_file *gf);
 void write_gauge_info_file(gauge_file *gf);
 gauge_file *setup_input_gauge_file(char *filename);
-gauge_file *setup_output_gauge_file();
+gauge_file *setup_output_gauge_file(void);
 void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc);
 void write_checksum(int parallel, gauge_file *gf);
 void read_site_list(int parallel,gauge_file *gf);

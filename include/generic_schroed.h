@@ -16,7 +16,7 @@
 void coupling(double *ds_deta, double *bd_plaq);
 
 /* make_schroed_lattice.c */
-void set_boundary_fields();
+void set_boundary_fields(void);
 
 #endif	/* _GENERIC_SCHROED_H */
 

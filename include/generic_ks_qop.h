@@ -65,7 +65,7 @@ int ks_congrad_milc2qop_D( field_offset milc_src, field_offset milc_sol,
 /* dslash_fn_qop_milc_F.c */
 
 void cleanup_gathers_qop_milc_F(msg_tag *tags1[], msg_tag *tags2[]);
-void cleanup_dslash_qop_milc_temps_F();
+void cleanup_dslash_qop_milc_temps_F(void);
 void dslash_fn_qop_milc_F( su3_matrix *fatlinks, su3_matrix *longlinks,
 			 su3_vector *src, su3_vector *dest, int parity );
 void dslash_fn_qop_milc_field_special_F(su3_matrix *fatlinks, 
@@ -76,7 +76,7 @@ void dslash_fn_qop_milc_field_special_F(su3_matrix *fatlinks,
 /* dslash_fn_qop_milc_F.c */
 
 void cleanup_gathers_qop_milc_D(msg_tag *tags1[], msg_tag *tags2[]);
-void cleanup_dslash_qop_milc_temps_D();
+void cleanup_dslash_qop_milc_temps_D(void);
 void dslash_fn_qop_milc_D( su3_matrix *fatlinks, su3_matrix *longlinks,
 			 su3_vector *src, su3_vector *dest, int parity );
 void dslash_fn_qop_milc_field_special_D(su3_matrix *fatlinks, 

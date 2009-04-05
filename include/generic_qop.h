@@ -10,7 +10,7 @@
 /* milc_to_qop_utilities.c */
 QOP_evenodd_t milc2qop_parity(int milc_parity);
 int qop2milc_parity(QOP_evenodd_t qop_parity);
-QOP_status_t initialize_qop();
+QOP_status_t initialize_qop(void);
 
 /* map_milc_to_qop*.c */
 

@@ -10,12 +10,12 @@
 
 #include "../include/macros.h"
 
-int update();
+int update(void);
 void update_h(Real eps);
 void update_u(Real eps);
 void relax(int NumStp);
 void monte(int NumStp);
 void dsdu_qhb(int dir1, int parity);
-double d_action();
+double d_action(void);
 void gauge_field_copy(field_offset src, field_offset dest);
 #endif	/* _GENERIC_PG_H */

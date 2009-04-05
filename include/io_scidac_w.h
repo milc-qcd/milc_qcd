@@ -57,7 +57,7 @@ int write_wpropsource_D_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 /**********************************************************************/
 /* In clover_info.c (application dependent) */
 
-char *create_w_QCDML();
+char *create_w_QCDML(void);
 void free_w_QCDML(char *xml);
 
 #endif /* _IO_SCIDAC_W_H */

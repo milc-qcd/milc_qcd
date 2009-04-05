@@ -244,7 +244,7 @@ void r_multidump_w_c(w_prop_file *wpf);
 void r_multidump_w_f(w_prop_file *wpf);
 
 w_prop_file *setup_input_w_prop_file(char *filename);
-w_prop_file *setup_output_w_prop_file();
+w_prop_file *setup_output_w_prop_file(void);
 void clear_input_w_prop_file(w_prop_file *wpf);
 
 w_prop_file *w_ascii_w_i(char *filename);
@@ -347,6 +347,7 @@ void r_close_wprop(int flag, w_prop_file *wpf);
 void w_close_wprop(int flag, w_prop_file *wpf);
 int ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename );
+int convert_outflag_to_inflag_wprop(int out_flag);
 
 /* Prototpyes for io_prop_w_fm.c */
 w_prop_file *r_serial_w_fm_i(char *filename);

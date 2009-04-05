@@ -98,8 +98,8 @@ void dslash_field( su3_vector *src, su3_vector *dest, int parity );
 void dslash_field_special( su3_vector *src, su3_vector *dest,
     int parity, msg_tag **tag, int start );
 
-void checkmul();
-void phaseset();
+void checkmul(void);
+void phaseset(void);
 void rephase( int flag );
 
 void prefetch_vector( su3_vector * );
@@ -134,7 +134,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     );
 
 void cleanup_gathers(msg_tag *tags1[], msg_tag *tags2[]);
-void cleanup_dslash_temps();
+void cleanup_dslash_temps(void);
 
 void dslash_fn_site( field_offset src, field_offset dest, int parity,
 		     ferm_links_t *fn);
@@ -520,17 +520,17 @@ void link_transport_connection_hisq( su3_matrix * src, su3_matrix **links, su3_m
 void make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0);
 void make_path_tables(ks_action_paths *ap, ks_action_paths *ap_dmdu0,
 		      Real mass);
-int get_num_q_paths();
-int get_num_q_paths_1();
-int get_num_q_paths_2();
-Q_path *get_q_paths();
-Q_path *get_q_paths_1();
-Q_path *get_q_paths_2();
-int get_num_q_paths();
-int get_num_q_paths_1();
-int get_num_q_paths_2();
-Real *get_quark_path_coeff_1();
-Real *get_quark_path_coeff_2();
+int get_num_q_paths(void);
+int get_num_q_paths_1(void);
+int get_num_q_paths_2(void);
+Q_path *get_q_paths(void);
+Q_path *get_q_paths_1(void);
+Q_path *get_q_paths_2(void);
+int get_num_q_paths(void);
+int get_num_q_paths_1(void);
+int get_num_q_paths_2(void);
+Real *get_quark_path_coeff_1(void);
+Real *get_quark_path_coeff_2(void);
 
 /* show_generic_ks_opts.c */
 void show_generic_ks_opts( void );
