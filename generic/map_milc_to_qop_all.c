@@ -384,9 +384,8 @@ unload_##P##_##T##_to_site4(field_offset dest, QOPTYPE *qop, int milc_parity){ \
 
 #define make_unload_to_field4(P, T, QOPTYPE, RAWTYPE, MILC_DSTTYPE, MILCFLOAT) \
 void \
-unload_##P##_##T##_to_field4(MILC_DSTTYPE *dest, int milc_parity){ \
+ unload_##P##_##T##_to_field4(MILC_DSTTYPE *dest, QOPTYPE *qop, int milc_parity){ \
   RAWTYPE **raw; \
-  QOPTYPE *qop; \
   raw = create_raw4_##P##_##T(); \
   if(raw == NULL)terminate(1); \
   QOP_##P##3_extract_##T##_to_raw((MILCFLOAT **)raw, qop, \
