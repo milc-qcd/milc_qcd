@@ -141,43 +141,43 @@ p2d_vec(dsu3_vector *dest, su3_vector *src){
 #endif
 
 static void 
-f2p_wvec(wilson_vector *dest, QLA_F3_DiracFermion *src){
+f2p_wvec(wilson_vector *dest, QOPRAW_F3_DiracFermion *src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
-    dest->d[j].c[i].real = QLA_real(QLA_elem_D(*src,i,j));
-    dest->d[j].c[i].imag = QLA_imag(QLA_elem_D(*src,i,j));
+    dest->d[j].c[i].real = QOPRAW_real(QOPRAW_elem_D(*src,i,j));
+    dest->d[j].c[i].imag = QOPRAW_imag(QOPRAW_elem_D(*src,i,j));
   }
 }
 
 /* Convert (or copy) wilson_vector from prevailing to single precision */
 static void 
-p2f_wvec(QLA_F3_DiracFermion *dest, wilson_vector *src){
+p2f_wvec(QOPRAW_F3_DiracFermion *dest, wilson_vector *src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
-    QLA_c_eq_r_plus_ir(QLA_elem_D(*dest,i,j),
+    QOPRAW_c_eq_r_plus_ir(QOPRAW_elem_D(*dest,i,j),
 			src->d[j].c[i].real,
 			src->d[j].c[i].imag);
   }
 }
 
 static void 
-d2p_wvec(wilson_vector *dest, QLA_D3_DiracFermion *src){
+d2p_wvec(wilson_vector *dest, QOPRAW_D3_DiracFermion *src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
-    dest->d[j].c[i].real = QLA_real(QLA_elem_D(*src,i,j));
-    dest->d[j].c[i].imag = QLA_imag(QLA_elem_D(*src,i,j));
+    dest->d[j].c[i].real = QOPRAW_real(QOPRAW_elem_D(*src,i,j));
+    dest->d[j].c[i].imag = QOPRAW_imag(QOPRAW_elem_D(*src,i,j));
   }
 }
 
 static void 
-p2d_wvec(QLA_D3_DiracFermion *dest, wilson_vector *src){
+p2d_wvec(QOPRAW_D3_DiracFermion *dest, wilson_vector *src){
   int i,j;
   
   for(j = 0; j < 4; j++)for(i = 0; i < 3; i++){
-    QLA_c_eq_r_plus_ir(QLA_elem_D(*dest,i,j),
+    QOPRAW_c_eq_r_plus_ir(QOPRAW_elem_D(*dest,i,j),
 		       src->d[j].c[i].real,
 		       src->d[j].c[i].imag);
   }
@@ -217,11 +217,11 @@ make_destroy_raw(D, V, dsu3_vector);
 
 /* Storage for raw wilson vector field */
 
-make_create_raw(F, D, QLA_F3_DiracFermion);
-make_create_raw(D, D, QLA_D3_DiracFermion);
+make_create_raw(F, D, QOPRAW_F3_DiracFermion);
+make_create_raw(D, D, QOPRAW_D3_DiracFermion);
 
-make_destroy_raw(F, D, QLA_F3_DiracFermion);
-make_destroy_raw(D, D, QLA_D3_DiracFermion);
+make_destroy_raw(F, D, QOPRAW_F3_DiracFermion);
+make_destroy_raw(D, D, QOPRAW_D3_DiracFermion);
 
 /* Map gauge field from site to raw */
 
@@ -255,13 +255,13 @@ make_create_raw_from_field(D, V, dsu3_vector, su3_vector);
 
 /* Map wilson vector from site to raw */
 
-make_create_raw_from_site(F, D, QLA_F3_DiracFermion, wilson_vector);
-make_create_raw_from_site(D, D, QLA_D3_DiracFermion, wilson_vector);
+make_create_raw_from_site(F, D, QOPRAW_F3_DiracFermion, wilson_vector);
+make_create_raw_from_site(D, D, QOPRAW_D3_DiracFermion, wilson_vector);
 
 /* Map wilson vector from field to raw */
 
-make_create_raw_from_field(F, D, QLA_F3_DiracFermion, wilson_vector);
-make_create_raw_from_field(D, D, QLA_D3_DiracFermion, wilson_vector);
+make_create_raw_from_field(F, D, QOPRAW_F3_DiracFermion, wilson_vector);
+make_create_raw_from_field(D, D, QOPRAW_D3_DiracFermion, wilson_vector);
 
 /* Map gauge field from raw to site */
 
@@ -295,13 +295,13 @@ make_unload_raw_to_field(D, V, su3_vector, dsu3_vector);
 
 /* Map wilson vector from raw to site */
 
-make_unload_raw_to_site(F, D, wilson_vector, QLA_F3_DiracFermion);
-make_unload_raw_to_site(D, D, wilson_vector, QLA_D3_DiracFermion);
+make_unload_raw_to_site(F, D, wilson_vector, QOPRAW_F3_DiracFermion);
+make_unload_raw_to_site(D, D, wilson_vector, QOPRAW_D3_DiracFermion);
 
 /* Map wilson vector from raw to field */
 
-make_unload_raw_to_field(F, D, wilson_vector, QLA_F3_DiracFermion);
-make_unload_raw_to_field(D, D, wilson_vector, QLA_D3_DiracFermion);
+make_unload_raw_to_field(F, D, wilson_vector, QOPRAW_F3_DiracFermion);
+make_unload_raw_to_field(D, D, wilson_vector, QOPRAW_D3_DiracFermion);
 
 /********************************************************************/
 /* Procedures involving MILC and QOP fields                         */
@@ -339,13 +339,13 @@ make_create_from_field(D, V, QOP_D3_ColorVector, dsu3_vector, su3_vector, double
 
 /* Map wilson vector from site to QOP */
 
-make_create_from_site(F, D, QOP_F3_DiracFermion, QLA_F3_DiracFermion, float);
-make_create_from_site(D, D, QOP_D3_DiracFermion, QLA_D3_DiracFermion, double);
+make_create_from_site(F, D, QOP_F3_DiracFermion, QOPRAW_F3_DiracFermion, float);
+make_create_from_site(D, D, QOP_D3_DiracFermion, QOPRAW_D3_DiracFermion, double);
 
 /* Map wilson vector from field to QOP */
 
-make_create_from_field(F, D, QOP_F3_DiracFermion, QLA_F3_DiracFermion, wilson_vector, float);
-make_create_from_field(D, D, QOP_D3_DiracFermion, QLA_D3_DiracFermion, wilson_vector, double);
+make_create_from_field(F, D, QOP_F3_DiracFermion, QOPRAW_F3_DiracFermion, wilson_vector, float);
+make_create_from_field(D, D, QOP_D3_DiracFermion, QOPRAW_D3_DiracFermion, wilson_vector, double);
 
 #endif
 
@@ -372,13 +372,13 @@ make_unload_to_field(D, V, QOP_D3_ColorVector, dsu3_vector, su3_vector, double);
 
 /* Map QOP wilson vector field to site */
 
-make_unload_to_site(F, D, QOP_F3_DiracFermion, QLA_F3_DiracFermion, float);
-make_unload_to_site(D, D, QOP_D3_DiracFermion, QLA_D3_DiracFermion, double);
+make_unload_to_site(F, D, QOP_F3_DiracFermion, QOPRAW_F3_DiracFermion, float);
+make_unload_to_site(D, D, QOP_D3_DiracFermion, QOPRAW_D3_DiracFermion, double);
 
 /* Map QOP wilson vector field to field */
 
-make_unload_to_field(F, D, QOP_F3_DiracFermion, QLA_F3_DiracFermion, wilson_vector, float);
-make_unload_to_field(D, D, QOP_D3_DiracFermion, QLA_D3_DiracFermion, wilson_vector, double);
+make_unload_to_field(F, D, QOP_F3_DiracFermion, QOPRAW_F3_DiracFermion, wilson_vector, float);
+make_unload_to_field(D, D, QOP_D3_DiracFermion, QOPRAW_D3_DiracFermion, wilson_vector, double);
 
 #endif
 
