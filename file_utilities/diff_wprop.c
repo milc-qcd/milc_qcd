@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 {
 
   int file_type1, file_type2;
-  int i,prompt,color,spin;
+  int i,color,spin;
   site *s;
   int dims[4],ndim;
   Real norm2,maxnorm2,avnorm2;
