@@ -175,9 +175,12 @@ diff_wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_wprop" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  \
+	  ape_smear.o \
 	  canopy2weyl_rot.o \
 	  check_unitarity.o \
 	  d_plaq4.o \
+	  discretize_wf.o \
+	  dslash_w_space.o \
 	  gammas.o \
 	  diff_wprop.o \
 	  gauge_info_dummy.o \
@@ -195,7 +198,9 @@ diff_wprop::
 	  ksprop_info.o \
 	  ks_source.o \
 	  nersc_cksum.o \
+	  project_su3_hit.o \
 	  restrict_fourier.o \
+	  reunitarize2.o \
 	  staggered2naive.o \
 	  w_source.o \
 	  wprop_info.o"
