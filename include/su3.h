@@ -189,6 +189,8 @@ typedef spin_wilson_vector ** wilson_prop_field;
 *       file "dumpmat.c"
 * void dumptensor4( su3_tensor4 *m )
 *       file "dumpmat.c"
+* void eigen_su3_UdU( su3_matrix *U, Real *g0, Real *g1, Real *g2)
+*       file "eigen_su3_UdU.c"
 *
 *
 * ROUTINES FOR su3_vector OPERATIONS ( 3 COMPONENT COMPLEX )
@@ -450,6 +452,7 @@ void clear_su3mat( su3_matrix *dest );
 void su3mat_copy( su3_matrix *a, su3_matrix *b );
 void dumpmat( su3_matrix *m );
 void dumptensor4( su3_tensor4 *m );
+void eigen_su3_UdU( su3_matrix *U, Real *g0, Real *g1, Real *g2);
 
 complex su3_dot( su3_vector *a, su3_vector *b );
 void su3vec_copy( su3_vector *a, su3_vector *b );
