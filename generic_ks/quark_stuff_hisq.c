@@ -19,6 +19,8 @@
  *                Worked with pointers where possible to avoid copying.
  * C.D. 3/05 Moved fermion force and dslash_eo to separate files.
  * C.D. 10/06 Moved compute_gen_staple to fermion_links_fn.c
+ * A.B. 8/08 Third path table introduced for HISQ to speed up cases
+ *           with non-zero epsilon correction to Naik term
  
  * This code combines quark_stuff.c and quark_stuff_tmp.c
  
@@ -63,6 +65,7 @@ void printpath( int *path, int length );
 
 static Real act_path_coeff_1[NUM_BASIC_PATHS_1];
 static Real act_path_coeff_2[NUM_BASIC_PATHS_2];
+static Real act_path_coeff_3[NUM_BASIC_PATHS_3];
 						/* actual path coefficient     *
                                                * it is equal to path_coeff   *
                                                * if not tadpole improvement  *
@@ -75,8 +78,10 @@ static Real act_path_coeff_2[NUM_BASIC_PATHS_2];
 	path.  */
 static Q_path q_paths_1[MAX_NUM_1];
 static Q_path q_paths_2[MAX_NUM_2];
+static Q_path q_paths_3[MAX_NUM_3];
 static int num_q_paths_1;	/* number of paths in dslash */
 static int num_q_paths_2;	/* number of paths in dslash */
+static int num_q_paths_3;	/* number of paths in dslash */
 
 static int 
 is_path_equal( int *path1, int* path2, int length );
@@ -89,7 +94,7 @@ add_basic_path( Q_path *q_paths, int start_path, int *vec, int length,
 /********************************************************************/
 // Returns 0 if the path table did not change. 1 if it did.
 int make_path_table(ks_action_paths *ap,
-		    ks_action_paths *ap_dmdu0,  Real mass) {
+		    ks_action_paths *ap_dmdu0) {
 
   int index_naik = -1, index_onelink = -1;
   
@@ -98,73 +103,80 @@ int make_path_table(ks_action_paths *ap,
   index_onelink = INDEX_ONELINK;
 #endif
 
-  // Don't remake the table if we aren't adjusting the Naik term or
-  // if the quark mass has not changed
 
-  if(ap->constructed){
-    if(ap->p2.naik_mass == mass || index_naik < 0)return 0;
-    node0_printf("REMAKING PATH TABLES FOR NEW MASS %g\n",mass);
-  }
-  else{
-    node0_printf("MAKING PATH TABLES\n");
-  }
+  if(ap->constructed) return 0;
+
+  node0_printf("MAKING PATH TABLES\n");
   
-  ap->p2.naik_mass = mass;
-
-  // Skip the reconstruction of first path table, which does not depend on
-  // the quark mass
-  if(!ap->constructed){
-    num_q_paths_1 = 
+  num_q_paths_1 = 
       make_path_table_hisq( QUARK_ACTION_DESCRIPTION_1, quark_action_npaths_1,
 	    MAX_NUM_1, path_length_in_1, path_coeff_1, path_ind_1, 
 	    act_path_coeff_1, q_paths_1, 0.0, -1, -1 );
     
-    ap->p1.num_q_paths = num_q_paths_1;
-    ap->p1.q_paths = q_paths_1;
-    ap->p1.act_path_coeff = act_path_coeff_1;
-    ap->p1.naik_mass = 0.0;
+  ap->p1.num_q_paths = num_q_paths_1;
+  ap->p1.q_paths = q_paths_1;
+  ap->p1.act_path_coeff = act_path_coeff_1;
 #ifdef DM_DU0
-    ap_dmdu0->p1.num_q_paths = num_q_paths_1;
-    ap_dmdu0->p1.q_paths = q_paths_1;
-    ap_dmdu0->p1.act_path_coeff = act_path_coeff_dmdu0; // To be completed
+  ap_dmdu0->p1.num_q_paths = num_q_paths_1;
+  ap_dmdu0->p1.q_paths = q_paths_1;
+  ap_dmdu0->p1.act_path_coeff = act_path_coeff_dmdu0; // To be completed
 #endif
     
 #if ( UNITARIZATION_METHOD==UNITARIZE_NONE )
-    node0_printf("Unitarization method = UNITARIZE_NONE\n");
+  node0_printf("Unitarization method = UNITARIZE_NONE\n");
 #elif ( UNITARIZATION_METHOD==UNITARIZE_APE )
-    node0_printf("UNITARIZE_APE: derivative is not ready for this method\n");
+  node0_printf("UNITARIZE_APE: derivative is not ready for this method\n");
 #elif ( UNITARIZATION_METHOD==UNITARIZE_ROOT )
-    node0_printf("Unitarization method = UNITARIZE_ROOT\n");
+  node0_printf("Unitarization method = UNITARIZE_ROOT\n");
 #elif ( UNITARIZATION_METHOD==UNITARIZE_RATIONAL )
-    node0_printf("Unitarization method = UNITARIZE_RATIONAL\n");
+  node0_printf("Unitarization method = UNITARIZE_RATIONAL\n");
 #elif ( UNITARIZATION_METHOD==UNITARIZE_ANALYTIC )
-    node0_printf("Unitarization method = UNITARIZE_ANALYTIC\n");
+  node0_printf("Unitarization method = UNITARIZE_ANALYTIC\n");
 #elif ( UNITARIZATION_METHOD==UNITARIZE_STOUT )
-    node0_printf("Unitarization method = UNITARIZE_STOUT\n");
+  node0_printf("Unitarization method = UNITARIZE_STOUT\n");
 #else
-    node0_printf("Unknown unitarization method\n"); terminate(0);
+  node0_printf("Unknown unitarization method\n"); terminate(0);
 #endif
-    
-    ap->umethod = UNITARIZATION_METHOD;
-    ap_dmdu0->umethod = UNITARIZATION_METHOD;
-  }
+
+#if ( UNITARIZATION_GROUP==UNITARIZE_SU3 )
+  node0_printf("Unitarizaton group = SU(3)\n");
+#elif ( UNITARIZATION_GROUP==UNITARIZE_U3 )
+  node0_printf("Unitarizaton group = U(3)\n");
+#else
+  node0_printf("Unknown unitarization group. Set U(3) or SU(3)\n");
+  terminate(0);
+#endif
+
+  ap->umethod = UNITARIZATION_METHOD;
+  ap_dmdu0->umethod = UNITARIZATION_METHOD;
   
+  ap->ugroup = UNITARIZATION_GROUP;
+
   num_q_paths_2 = 
     make_path_table_hisq( QUARK_ACTION_DESCRIPTION_2, quark_action_npaths_2,
 			  MAX_NUM_2, 
 			  path_length_in_2, path_coeff_2, path_ind_2, 
-			  act_path_coeff_2, q_paths_2, mass, 
-			  index_onelink, index_naik );
+			  act_path_coeff_2, q_paths_2, 0.0, -1, -1 );
 
   ap->p2.num_q_paths = num_q_paths_2;
   ap->p2.q_paths = q_paths_2;
   ap->p2.act_path_coeff = act_path_coeff_2;
-  ap->p2.naik_mass = mass;
 #ifdef DM_DU0
   ap_dmdu0->p2.num_q_paths = num_q_paths_2;
   ap_dmdu0->p2.q_paths = q_paths_2;
   ap_dmdu0->p2.act_path_coeff = act_path_coeff_dmdu0; // To be completed
 #endif
+
+  num_q_paths_3 = 
+  make_path_table_hisq( QUARK_ACTION_DESCRIPTION_3, quark_action_npaths_3,
+                        MAX_NUM_3, 
+                        path_length_in_3, path_coeff_3, path_ind_3, 
+                        act_path_coeff_3, q_paths_3, 0.0, -1, -1 );
+
+  ap->p3.num_q_paths = num_q_paths_3;
+  ap->p3.q_paths = q_paths_3;
+  ap->p3.act_path_coeff = act_path_coeff_3;
+
   ap->constructed = 1;
   return 1;
 }
@@ -205,12 +217,13 @@ make_path_table_hisq( char *action_desc, int npaths, int max_paths,
     for(k=1;k< path_length[j];k++)this_coeff /= u0;
 #endif
     act_coeff[j] = this_coeff ;
+    //AB THIS SHOULD BE REMOVED
     // Apply mass correction to one-link and Naik coefficients
     if(j == index_onelink){
-      this_coeff += onelink_mass_renorm_fact * naik_term_mass * naik_term_mass;
+      ; //this_coeff += onelink_mass_renorm_fact * naik_term_mass * naik_term_mass;
     }
     if(j == index_naik){
-      this_coeff += naik_mass_renorm_fact * naik_term_mass * naik_term_mass;
+      ; //this_coeff += naik_mass_renorm_fact * naik_term_mass * naik_term_mass;
     }
     i = add_basic_path( this_q_paths, n_q_paths, paths[j],
 			path_length[j], this_coeff, max_paths );
@@ -321,7 +334,7 @@ is_path_equal( int *path1, int* path2, int length ){
 /********************************************************************/
 void 
 init_path_table(ks_action_paths *ap){
-  ap->p2.naik_mass = 0;
+//  ap->p2.naik_mass = 0;
   ap->constructed = 0;
 }
 
