@@ -4,8 +4,7 @@
 */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
-//#define IMP_QUARK_ACTION_INFO_ONLY
-#include <quark_action.h>
+#include "../include/umethod.h"
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
@@ -40,8 +39,11 @@ int i,j;
 static void  load_U_from_site(ferm_links_t *fn);
 static void  load_V_from_U(ferm_links_t *fn, ks_component_paths *ap1);
 static void  load_Y_from_V(ferm_links_t *fn, int umethod);
-void  load_W_from_Y(ferm_links_t *fn, int umethod);
-void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2);
+void  load_W_from_Y(ferm_links_t *fn, int umethod, int ugroup);
+void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2,
+                    su3_matrix **X_fatlinks, su3_matrix **X_longlink);
+static void  reorder_links(su3_matrix *link4, su3_matrix *link[]);
+
 
 /* Make the various fat links.
 	U = copy of links in site structure
@@ -55,69 +57,185 @@ void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2);
 */
 void 
 load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
-  int i,dir;
+  int i,dir,inaik;
   su3_matrix **matfield;
   hisq_links_t *hl = &fn->hl;
+  site *s;
 //   su3_matrix *Xt_fatbacklink  = fn->fatback;
 //   su3_matrix *Xt_longbacklink = fn->lngback;
 
   char myname[] = "load_ferm_links";
 
-  if( hl->valid_all_links == 1)return;
-
-  // Make sure all the required space is allocated
-  if( phases_in != 1){
-    node0_printf("BOTCH: %s needs phases in\n",myname); terminate(0);
-  }
-  for( i=0; i<6; i++){
-    switch(i){
-    case 0: matfield = hl->U_link; break;
-    case 1: matfield = hl->V_link; break;
-    case 2: matfield = hl->Y_unitlink; break;
-    case 3: matfield = hl->W_unitlink; break;
-    case 4: matfield = hl->X_fatlink; break;
-    case 5: matfield = hl->X_longlink; break;
-    default: node0_printf("load_fn_links BOTCH\n"); terminate(0); break;
+  if( !(hl->valid_all_links == 1) ) {
+    // Make sure all the required space is allocated
+    int ii, jj, ishift=4, imax=ishift+2*n_naiks;
+    if( phases_in != 1){
+      node0_printf("BOTCH: %s needs phases in\n",myname); terminate(0);
     }
-    for(dir=XUP;dir<=TUP;dir++){
-      if(matfield[dir] == NULL){
-        matfield[dir] = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
-        if(matfield[dir]==NULL){
-          printf("load_fn_links(%d): no room for matfield %d\n", this_node,i); 
-	  terminate(1);
+    for( i=0; i<imax; i++){
+      if(i<4) {
+        switch(i){
+        case 0: matfield = hl->U_link; break;
+        case 1: matfield = hl->V_link; break;
+        case 2: matfield = hl->Y_unitlink; break;
+        // 3 has to be handled in specail way, see below
+        case 3: matfield = hl->W_unitlink; break;
         }
       }
-    } // dir loop
-  } // i loop
+      if(i>3) {
+        jj = i - ishift;
+        ii = jj/2;
+        if(0==jj%2) {
+          matfield = hl->XX_fatlink[ii];
+        }
+        else {
+          matfield = hl->XX_longlink[ii];
+        }
+      }
+      if(i>=imax) {
+        node0_printf("load_fn_links BOTCH\n"); terminate(0);
+      }
+      for(dir=XUP;dir<=TUP;dir++){
+        // In U(3) case hl->W_unitlink array is not malloc'ed
+        // but set as a pointer to hl->Y_unitlink array
+        if( !(ap->ugroup==UNITARIZE_U3 && 3==i ) ) { // 3 corresponds to W_unitlink
+          if(matfield[dir] == NULL){
+            matfield[dir] = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
+            if(matfield[dir]==NULL){
+              printf("load_fn_links(%d): no room for matfield %d\n", this_node,i); 
+              terminate(1);
+            }
+          }
+        }
+        else {
+          hl->W_unitlink[dir] = hl->Y_unitlink[dir];
+        }
+      } // dir loop
+    } // i loop
 
-  if(fn->fat == NULL){
-    fn->fat = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
-    if(fn->fat==NULL){
-      printf("load_fn_links(%d): no room for fn->fat\n", this_node); 
-      terminate(1);
+    if(fn->fat == NULL){
+      fn->fat = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
+      if(fn->fat==NULL){
+        printf("load_fn_links(%d): no room for fn->fat\n", this_node); 
+        terminate(1);
+      }
     }
-  }
 
-  if(fn->lng == NULL){
-    fn->lng = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
-    if(fn->lng==NULL){
-      printf("load_fn_links(%d): no room for fn->lng\n", this_node); 
-      terminate(1);
+    if(fn->lng == NULL){
+      fn->lng = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
+      if(fn->lng==NULL){
+        printf("load_fn_links(%d): no room for fn->lng\n", this_node); 
+        terminate(1);
+      }
     }
-  }
 
-  load_U_from_site(fn);
-  load_V_from_U(fn, &ap->p1);
-  load_Y_from_V(fn,ap->umethod);
-  load_W_from_Y(fn,ap->umethod);
-  load_X_from_W(fn, &ap->p2); // Also will need to check mass and see if it is still correct
+    load_U_from_site(fn);
+    load_V_from_U(fn, &ap->p1);
+    load_Y_from_V(fn,ap->umethod);
+    load_W_from_Y(fn,ap->umethod,ap->ugroup);
+
+    // building different sets of X links SKETCH:
+    // if n_naiks > 1, say, n_naiks = 3 in this example
+    // a) calculate 3rd path table set in XX_fat/long[0]
+    // b) multiply by eps_naik[i] and store in XX_fat/long[i], i.e.
+    //    XX_fat/long[1] = eps_naik[1]*XX_fat/long[0],
+    //    XX_fat/long[2] = eps_naik[2]*XX_fat/long[0]
+    // c) calculate 2nd path table set in XX_fat/long[0],
+    //    this is the set with 0 correction
+    // d) add XX_fat/long[0] to all other sets, i.e.
+    //    XX_fat/long[1] += XX_fat/long[0],
+    //    XX_fat/long[2] += XX_fat/long[0]
+    if( n_naiks>1 ) {
+      // 3rd path table set
+      hl->valid_X_links = 0;
+      load_X_from_W(fn, &ap->p3, hl->XX_fatlink[0], hl->XX_longlink[0]);
+      for( inaik=1;inaik<n_naiks;inaik++ ) {
+        for(dir=XUP;dir<=TUP;dir++) {
+          FORALLSITES(i,s) {
+          	// multiply by epsilon correction
+            scalar_mult_su3_matrix( &( hl->XX_fatlink[0][dir][i] ),
+              eps_naik[inaik], &( hl->XX_fatlink[inaik][dir][i] ) );
+            scalar_mult_su3_matrix( &( hl->XX_longlink[0][dir][i] ),
+              eps_naik[inaik], &( hl->XX_longlink[inaik][dir][i] ) );
+          }
+        }
+      }
+      // 2nd path table set
+      hl->valid_X_links = 0;
+      load_X_from_W(fn, &ap->p2, hl->XX_fatlink[0], hl->XX_longlink[0]);
+      for( inaik=1;inaik<n_naiks;inaik++ ) {
+        for(dir=XUP;dir<=TUP;dir++) {
+          FORALLSITES(i,s) {
+            // add 2nd and 3rd path table sets
+            add_su3_matrix( &( hl->XX_fatlink[inaik][dir][i] ),
+                            &( hl->XX_fatlink[    0][dir][i] ),
+                            &( hl->XX_fatlink[inaik][dir][i] ) );
+            add_su3_matrix( &( hl->XX_longlink[inaik][dir][i] ),
+                            &( hl->XX_longlink[    0][dir][i] ),
+                            &( hl->XX_longlink[inaik][dir][i] ) );
+          }
+        }
+      }
+      hl->last_used_X_set = hl->current_X_set;
+    }
+    else {
+      // 2nd path table set only, no other terms with Naik corrections
+      load_X_from_W(fn, &ap->p2, hl->XX_fatlink[0], hl->XX_longlink[0]);
+      hl->last_used_X_set = 0;
+    }
+
+
+    // set pointers to actual arrays
+    for(dir=XUP;dir<=TUP;dir++) {
+      hl->X_fatlink[dir]=hl->XX_fatlink[hl->last_used_X_set][dir];
+      hl->X_longlink[dir]=hl->XX_longlink[hl->last_used_X_set][dir];
+    }
+
+    reorder_links(fn->fat, hl->X_fatlink);
+    reorder_links(fn->lng, hl->X_longlink);
 
 #ifdef DBLSTORE_FN
-  load_fatbacklinks(fn);
-  load_longbacklinks(fn);
+    load_fatbacklinks(fn);
+    load_longbacklinks(fn);
 #endif
 
-   hl->valid_all_links = 1;
+    hl->valid_all_links = 1;
+
+  }
+  else {
+//CHECK current_X_set AND SET POINTERS DEPENDING ON IT
+//CALL reorder_links(), THEN load_...backlinks()
+    if( hl->last_used_X_set != hl->current_X_set ) {
+#ifdef MILC_GLOBAL_DEBUG
+    	node0_printf("load_ferm_links: choosing set %d, previous set %d\n",
+    	  hl->current_X_set, hl->last_used_X_set );
+#endif
+      // set pointers to actual arrays
+      hl->last_used_X_set = hl->current_X_set;
+      for(dir=XUP;dir<=TUP;dir++) {
+        hl->X_fatlink[dir]=hl->XX_fatlink[hl->last_used_X_set][dir];
+        hl->X_longlink[dir]=hl->XX_longlink[hl->last_used_X_set][dir];
+      }
+
+      reorder_links(fn->fat, hl->X_fatlink);
+      reorder_links(fn->lng, hl->X_longlink);
+
+#ifdef DBLSTORE_FN
+      load_fatbacklinks(fn);
+      load_longbacklinks(fn);
+#endif
+    }
+    else {
+#ifdef MILC_GLOBAL_DEBUG
+    	node0_printf("load_ferm_links: nothing is done, sets are the same: %d\n",
+    	  hl->current_X_set );
+#endif
+      ;
+    }
+  }
+
+  return;
+
 }
 
 
@@ -297,7 +415,7 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
   } /* umethod */
 }
 
-void  load_W_from_Y(ferm_links_t *fn, int umethod){
+void  load_W_from_Y(ferm_links_t *fn, int umethod, int ugroup){
   int dir,i; site *s; su3_matrix tmat;
   hisq_links_t *hl = &fn->hl;
   su3_matrix **W_unitlink = hl->W_unitlink;
@@ -306,7 +424,7 @@ void  load_W_from_Y(ferm_links_t *fn, int umethod){
   if(  hl->valid_W_links )return;
   if( !hl->valid_Y_links ){node0_printf("load_W_from_Y: Link validity botched\n"); terminate(0);}
 
-#ifndef REUNITARIZE_U3_NOT_SU3
+if( ugroup==UNITARIZE_SU3 ) {
   switch(umethod){
   case UNITARIZE_NONE:
     //node0_printf("WARNING: UNITARIZE_NONE\n");
@@ -427,14 +545,15 @@ void  load_W_from_Y(ferm_links_t *fn, int umethod){
   default:
     node0_printf("Unknown unitarization method\n"); terminate(0);
   }
-#else /* REUNITARIZE_U3_NOT_SU3 */
-  FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
-    /* simply copy Y links to W links */
-    su3mat_copy( &( Y_unitlink[dir][i] ), &( W_unitlink[dir][i] ) );
-  }
+}
+//  FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
+//    /* simply copy Y links to W links */
+//    su3mat_copy( &( Y_unitlink[dir][i] ), &( W_unitlink[dir][i] ) );
+//  }
+if ( ugroup==UNITARIZE_U3 ) {
   hl->valid_W_links = hl->valid_Y_links;
   hl->phases_in_W = hl->phases_in_Y;
-#endif /* REUNITARIZE_U3_NOT_SU3 */
+}
 }
 
 /* Put links in site-major order for dslash */
@@ -450,11 +569,12 @@ reorder_links(su3_matrix *link4, su3_matrix *link[]){
   }
 }
 
-void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2){
+void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2,
+  su3_matrix **X_fatlink, su3_matrix **X_longlink){
   hisq_links_t *hl = &fn->hl;
   su3_matrix **W_unitlink = hl->W_unitlink;
-  su3_matrix **X_fatlink  = hl->X_fatlink;
-  su3_matrix **X_longlink = hl->X_longlink;
+//  su3_matrix **X_fatlink  = hl->X_fatlink;
+//  su3_matrix **X_longlink = hl->X_longlink;
 
   if(  hl->valid_X_links )return;
   if( !hl->valid_W_links ){node0_printf("load_X_from_W: Link validity botched\n"); terminate(0);}
@@ -471,12 +591,9 @@ void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2){
 
   hl->valid_X_links = hl->valid_W_links;
   hl->phases_in_Xfat = hl->phases_in_W;
-  hl->valid_Xfat_mass = ap2->naik_mass;
+//  hl->valid_Xfat_mass = ap2->naik_mass;
   hl->phases_in_Xlong = hl->phases_in_W;
-  hl->valid_Xlong_mass = ap2->naik_mass;
-
-  reorder_links(fn->fat, X_fatlink);
-  reorder_links(fn->lng, X_longlink);
+//  hl->valid_Xlong_mass = ap2->naik_mass;
 
   fn->valid = hl->valid_X_links;
 }
@@ -523,6 +640,9 @@ init_hisq_links(hisq_links_t *hl){
   hl->phases_in_Y = OFF;
   hl->phases_in_Xfat = OFF;
   hl->phases_in_Xlong = OFF;
+
+  hl->current_X_set = 0;
+  hl->last_used_X_set = 0;
 
   for(dir = 0; dir < 4; dir++){
     hl->U_link[dir] = NULL;
