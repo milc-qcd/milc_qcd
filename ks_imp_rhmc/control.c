@@ -84,13 +84,15 @@ main( int argc, char **argv )
 	/* results are printed in output file */
 	rephase(OFF);
 	g_measure( );
+	rephase(ON);
 #ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ
         g_measure_plaq( );
+#endif
 #ifdef MEASURE_AND_TUNE_HISQ
         g_measure_tune( );
 #endif /* MEASURE_AND_TUNE_HISQ */
 #endif /* MILC_GLOBAL_DEBUG */
-	rephase(ON);
 	/* Do some fermion measurements */
 #ifdef SPECTRUM 
 	/* Fix TUP Coulomb gauge - gauge links only*/
@@ -104,22 +106,44 @@ main( int argc, char **argv )
 #endif
 #endif
 
+
 	for(i=0;i<n_dyn_masses;i++){
 	  // Remake the path table if the fermion coeffs change for this mass
 // DT IT CAN"T BE RIGHT TO CALL IT WITH dyn_mass
 	  //if(make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,dyn_mass[i]))
-	  if(make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,   0.0/*TEMP*/   ))
+//AB: NOT SURE IF WE ARE DOING THIS RIGHT HERE
+//    HAVE TO THINK THROUGH HOW LINKS ARE LOADED FOR MEASUREMENTS
+//    AND WHERE NAIK CORRECTION CAN EVER POSSIBLY ENTER
+//	  if(make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,   0.0/*TEMP*/   ))
 	    {
 	      // If they change, invalidate only fat and long links
-node0_printf("INVALIDATE\n");
+	      //node0_printf("INVALIDATE\n");
 	      invalidate_all_ferm_links(&fn_links);
 #ifdef DM_DU0
 	      invalidate_all_ferm_links(&fn_links_dmdu0);
 #endif
 	    }
 	    /* Load fat and long links for fermion measurements if needed */
+#ifdef HISQ
+//AB: QUICK FIX TO USE NAIK EPSILON FOR SPECTRUM MEASUREMENTS,
+//    WORKS ONLY IF IN THE RATIONAL FUNCTION FILE naik_term_mass IS NON-ZERO
+//    FOR LAST PSEUDO-FIELD
+//    IT IS ASSUMED THAT THIS CORRECTION CORRESPONDS TO LAST DYNAMICAL MASS
+//AB: OLD WAY OF INITIALIZING THE LINKS:  fn_links.hl.current_X_set = 0;
+//    INSTEAD WE DO:
+	    if(n_dyn_masses-1==i) { // last dynamical mass, assumed to be c-quark
+	      fn_links.hl.current_X_set = n_naiks-1;
+//DT CHARM QUARK NEEDS SMALLER RESIDUAL
+//	      node0_printf("TEMP: reset rsqprop from %e to %e\n",rsqprop,1e-12*rsqprop);
+	      rsqprop *= 1e-12;
+	    }
+	    else { // light quarks
+	      fn_links.hl.current_X_set = 0;
+	    }
+#endif
 	    load_ferm_links(&fn_links, &ks_act_paths);
 #ifdef DM_DU0
+	    fn_links_dmdu0.hl.current_X_set = 0;
 	    load_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
 #endif
 	    
@@ -132,7 +156,16 @@ node0_printf("INVALIDATE\n");
 #endif
 	    
 #ifdef SPECTRUM 
-	    if(strstr(spectrum_request,",spectrum,") != NULL)
+
+	    // DT: At the moment spectrum_nd does only the first two masses
+	    // this only makes sense to get the kaon, and only works if
+	    // eps_naik is the same for both the first two quarks
+            if( strstr(spectrum_request,",spectrum_nd,") != NULL && i==0 )
+              avspect_iters += spectrum_nd( dyn_mass[0], dyn_mass[1],  1e-2, &fn_links);
+
+	    // AB: spectrum() is used only for the charm quark,
+	    // i.e., last dynamical mass
+	    if(strstr(spectrum_request,",spectrum,") != NULL && n_dyn_masses-1==i)
 	      avspect_iters += spectrum2( dyn_mass[i], F_OFFSET(phi1),
 					  F_OFFSET(xxx1), &fn_links);
 	    
@@ -140,14 +173,18 @@ node0_printf("INVALIDATE\n");
 	      avspect_iters += spectrum_fzw( dyn_mass[i], F_OFFSET(phi1),
 					     F_OFFSET(xxx1), &fn_links);
 	    
-	    if(strstr(spectrum_request,",nl_spectrum,") != NULL)
+	    // AB: nl_spectrum is used only for strange,
+	    // i.e., second mass
+	    if(strstr(spectrum_request,",nl_spectrum,") != NULL && 1==i)
 	      avspect_iters += nl_spectrum( dyn_mass[i], F_OFFSET(phi1), 
 					    F_OFFSET(xxx1), 
 					    F_OFFSET(tempmat1),
 					    F_OFFSET(staple),
 					    &fn_links);
 	    
-	    if(strstr(spectrum_request,",spectrum_mom,") != NULL)
+	    // AB: spectrum_mom is used only for charm,
+	    // i.e., last mass
+	    if(strstr(spectrum_request,",spectrum_mom,") != NULL && n_dyn_masses-1==i)
 	      avspect_iters += spectrum_mom( dyn_mass[i], dyn_mass[i], 
 					     F_OFFSET(phi1), 1e-1,
 					     &fn_links);
@@ -167,7 +204,9 @@ node0_printf("INVALIDATE\n");
 	    //	      avspect_iters += spectrum_nd( mass1, mass2, 1e-1,
 	    //					    &fn_links);
 
-	    if(strstr(spectrum_request,",spectrum_nlpi2,") != NULL)
+	    // AB: spectrum_nlpi2 is used only for up/down,
+	    // i.e., first mass
+	    if(strstr(spectrum_request,",spectrum_nlpi2,") != NULL && 0==i)
 	      avspect_iters += spectrum_nlpi2( dyn_mass[i], dyn_mass[i],
 					       F_OFFSET(phi1),1e-1,
 					       &fn_links );
@@ -193,6 +232,12 @@ node0_printf("INVALIDATE\n");
 	    rephase( ON );
 	  }
 #endif
+	    if(n_dyn_masses-1==i) { // last dynamical mass, assumed to be c-quark
+//DT CHARM QUARK NEEDS SMALLER RESIDUAL
+//AB NEED TO RETURN RESIDUAL TO THE ORIGINAL VALUE
+//	      node0_printf("TEMP: reset rsqprop from %e to %e\n",rsqprop,1e+12*rsqprop);
+	      rsqprop *= 1e+12;
+	    }
 	}
 	avs_iters += s_iters;
 	++meascount;
