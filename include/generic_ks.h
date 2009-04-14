@@ -60,16 +60,20 @@ typedef struct {
    coefficients */
 
 #ifdef HISQ
+#define MAX_NAIK 4 // max number of quarks that require Naik epsilon correction
+                   // without c quark this is normally 1, however this
+                   // constant should be set to at least 2
 typedef struct {
   Real *act_path_coeff;    /* For optimized Asqtad action */
   int num_q_paths;         /* For all actions */
   Q_path *q_paths;         /* For all actions */
-  Real naik_mass;             /* The mass last used in the Naik term */
+//  Real naik_mass;             /* The mass last used in the Naik term */
 } ks_component_paths;
 
 typedef struct {
-  ks_component_paths p1, p2;
+  ks_component_paths p1, p2, p3;
   int umethod;
+  int ugroup;
   int constructed;       /* Boolean */
 } ks_action_paths;
 
@@ -87,8 +91,12 @@ typedef struct {
   su3_matrix *V_link[4]; // first iteration of fattening
   su3_matrix *Y_unitlink[4]; // unitary projection of V_link, U(3)
   su3_matrix *W_unitlink[4]; // special unitary projection of Y_link, SU(3)
-  su3_matrix *X_fatlink[4];
-  su3_matrix *X_longlink[4];
+  su3_matrix *XX_fatlink[MAX_NAIK][4];
+  su3_matrix *XX_longlink[MAX_NAIK][4];
+  su3_matrix *X_fatlink[4]; // these arrays are only pointers,
+  su3_matrix *X_longlink[4];// they are not malloc'ed
+  int last_used_X_set; // set of X links to which X_fat/long points
+  int current_X_set;   // set of X links to which X_fat/long should switch
 } hisq_links_t;
 
 #else  /* Non-HISQ actions */
@@ -606,8 +614,7 @@ void link_transport_connection_hisq( su3_matrix * src, su3_matrix **links, su3_m
 
 /* quark_stuff.c and quark_stuff_hisq.c */
 void init_path_table(ks_action_paths *ap);
-int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0,
-		    Real mass);
+int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0);
 
 /* show_generic_ks_opts.c */
 void show_generic_ks_opts( void );
