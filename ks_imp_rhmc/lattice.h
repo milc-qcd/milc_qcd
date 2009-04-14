@@ -107,6 +107,9 @@ typedef struct {
 #ifdef HISQ_REUNITARIZATION_DEBUG
         /* store information about reunitarization */
         double RoS[4]; /* R^2/S^3 for cubic equation, normally =<1.0 */
+        double gmin[4],gmax[4]; /* min/max eigenvalues of (V^+ V) */
+        double denom[4]; /* denominator used for reunit force calculation */
+        double unitW1[4]; /* deviation of W link from unitarity */
         int on_step_Y[4]; /* time step on which Y_phases were updated */
         int on_step_W[4]; /* time step on which W_norms were updated */
         int on_step_V[4]; /* time step on which V_dets were updated */
@@ -232,5 +235,6 @@ EXTERN int n_order_naik_total;
 EXTERN int n_pseudo_naik[MAX_N_PSEUDO];
 EXTERN int n_orders_naik[MAX_N_PSEUDO];
 EXTERN Real masses_naik[MAX_N_PSEUDO];
+EXTERN Real eps_naik[MAX_N_PSEUDO]; // epsilon correction for Naik terms
 
 #endif /* _LATTICE_H */
