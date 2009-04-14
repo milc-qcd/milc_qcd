@@ -43,7 +43,6 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
   Real final_rsq;
   int i,j;
   int order, tmporder;
-  int path_coeff_changed;
   Real *residues,*allresidues;
   Real *roots;
 
@@ -62,14 +61,9 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
   iphi = 0;
   for( i=0; i<n_naiks; i++ ) {
     for( jphi=0; jphi<n_pseudo_naik[i]; jphi++ ) {
-      // remake path table for each group
-      path_coeff_changed = make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,
-           masses_naik[i]);
-      //node0_printf("UPDATE: path_coeff_changed = %d\n",path_coeff_changed);
-      if(path_coeff_changed){
-        // Invalidate only fat and long links and remake them
-        invalidate_fn_links(&fn_links);
-      }
+#ifdef HISQ
+      fn_links.hl.current_X_set = i; // which X set we need
+#endif
       load_ferm_links(&fn_links, &ks_act_paths);
 
       // Add the current pseudofermion to the current set
@@ -106,30 +100,8 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
   fflush(stdout);
 #endif /* MILC_GLOBAL_DEBUG */
 
-#ifdef HISQ_FAST_FORCE02
   eo_fermion_force_multi( eps, allresidues, multi_x,
          n_order_naik_total, prec_ff, &fn_links, &ks_act_paths );
-
-#else /* HISQ_FAST_FORCE02 */
-  /* Once multi_x is prepared, run force routine on its different parts */
-  tmporder = 0;
-  for( i=0; i<n_naiks; i++ ) {
-    path_coeff_changed = make_path_table(&ks_act_paths, &ks_act_paths_dmdu0,
-         masses_naik[i]);
-    //node0_printf("UPDATE2: path_coeff_changed = %d\n",path_coeff_changed);fflush(stdout);
-    if(path_coeff_changed){
-      // Invalidate only fat and long links and remake them
-      invalidate_fn_links(&fn_links);
-    }
-    load_ferm_links(&fn_links, &ks_act_paths);
-
-    eo_fermion_force_multi( eps, allresidues+tmporder, multi_x+tmporder, 
-		n_orders_naik[i], prec_ff, &fn_links, &ks_act_paths );
-    tmporder += n_orders_naik[i];
-  }
-
-
-#endif /* HISQ_FF_CALL_EXP */
 
   free(allresidues);
 } /* update_h_fermion */
