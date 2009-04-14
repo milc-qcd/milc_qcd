@@ -20,5 +20,13 @@
 #define UNITARIZE_HISQ 4
 #define UNITARIZE_ANALYTIC 5
 #define UNITARIZE_STOUT 6
+
+// Unitarization group
+// Choices are:
+//  UNITARIZE_U3
+//  UNITARIZE_SU3
+#define UNITARIZE_U3 0
+#define UNITARIZE_SU3 1
+
 #endif /* _UMETHOD_H */
 
