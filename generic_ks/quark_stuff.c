@@ -89,8 +89,7 @@ add_basic_path( int *vec, int length, Real coeff );
 /********************************************************************/
 /* Make table of paths in action */
 /********************************************************************/
-int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0,
-		    Real mass) {
+int make_path_table(ks_action_paths *ap, ks_action_paths *ap_dmdu0) {
 
     int i,j;
 #ifdef TADPOLE_IMPROVE
