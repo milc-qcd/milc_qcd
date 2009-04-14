@@ -67,7 +67,9 @@
         one force (should upgrade to Omelyan for each)
 */
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
-/**#include "../generic_ks/su3_mat_op.h"**/
+#ifdef MILC_GLOBAL_DEBUG
+#include "../include/su3_mat_op.h"
+#endif
 
 #define mat_invert mat_invert_uml
 /**#define mat_invert mat_invert_cg**/
@@ -85,7 +87,7 @@ int update()  {
   su3_vector **multi_x;
   int n_multi_x;	// number of vectors in multi_x
   su3_vector *sumvec;
-  int iphi, int_alg;
+  int iphi, int_alg, inaik, jphi;
   Real lambda, alpha, beta; // parameters in integration algorithms
 
   int_alg = INT_ALG;
@@ -173,16 +175,22 @@ int update()  {
   
   /* generate a pseudofermion configuration only at start*/
   // NOTE used to clear xxx here.  May want to clear all solutions for reversibility
+#ifdef HISQ
+  fn_links.hl.current_X_set = 0; // which X set we need
+#endif
   load_ferm_links(&fn_links, &ks_act_paths);
-  for(iphi = 0; iphi < n_pseudo; iphi++){
-invalidate_fn_links(&fn_links);
-//fn_links.hl.valid_X_links = 0; // overkill - should do only when coefficients change
-//fn_links.hl.valid_all_links = 0;
-make_path_table(&ks_act_paths, &ks_act_paths_dmdu0, rparam[iphi].naik_term_mass);
-load_ferm_links(&fn_links, &ks_act_paths);
-    grsource_imp_rhmc( F_OFFSET(phi[iphi]), &(rparam[iphi].GR), EVEN,
+  iphi=0;
+  for( inaik=0; inaik<n_naiks; inaik++ ) {
+    for( jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
+#ifdef HISQ
+      fn_links.hl.current_X_set = inaik; // which X set we need
+#endif
+      load_ferm_links(&fn_links, &ks_act_paths);
+      grsource_imp_rhmc( F_OFFSET(phi[iphi]), &(rparam[iphi].GR), EVEN,
 		       multi_x,sumvec, rsqmin_gr[iphi], niter_gr[iphi],
 		       prec_gr[iphi], &fn_links);
+		  iphi++;
+	  }
   }
 
   /* find action */
@@ -277,6 +285,8 @@ load_ferm_links(&fn_links, &ks_act_paths);
             double delta_phase,delta_norm;
             su3_matrix Wdiff;
             double min_det_V, max_det_V;
+            double min_eigen,max_eigen,min_denom;
+            double Wm1unit; /* norm of (W^+W - I) */
             double flag_detV=1;
             FORALLSITES(i,s) {
               for( idir=XUP;idir<=TUP;idir++ ) {
@@ -293,6 +303,10 @@ load_ferm_links(&fn_links, &ks_act_paths);
                 if( 1==flag_detV ) {
                   min_det_V = lattice[i].Vdet[idir];
                   max_det_V = min_det_V;
+                  min_eigen = lattice[i].gmin[idir];
+                  max_eigen = lattice[i].gmax[idir];
+                  min_denom = lattice[i].denom[idir];
+                  Wm1unit = lattice[i].unitW1[idir];
                   flag_detV = 0;
                 }
                 else {
@@ -300,6 +314,14 @@ load_ferm_links(&fn_links, &ks_act_paths);
                     min_det_V = lattice[i].Vdet[idir];
                   if( max_det_V < lattice[i].Vdet[idir] )
                     max_det_V = lattice[i].Vdet[idir];
+                  if( min_eigen > lattice[i].gmin[idir] )
+                    min_eigen = lattice[i].gmin[idir];
+                  if( max_eigen < lattice[i].gmax[idir] )
+                    max_eigen = lattice[i].gmax[idir];
+                  if( min_denom > lattice[i].denom[idir] )
+                    min_denom = lattice[i].denom[idir];
+                  if( Wm1unit < lattice[i].unitW1[idir] )
+                    Wm1unit = lattice[i].unitW1[idir];
                 }
               }
             }
@@ -309,10 +331,21 @@ load_ferm_links(&fn_links, &ks_act_paths);
             g_doublemax( &min_det_V );
             g_doublemax( &max_det_V );
             min_det_V = -min_det_V;
+            min_eigen = -min_eigen;
+            g_doublemax( &min_eigen );
+            g_doublemax( &max_eigen );
+            min_eigen = -min_eigen;
+            min_denom = -min_denom;
+            g_doublemax( &min_denom );
+            min_denom = -min_denom;
             node0_printf("PHASE_Y maximum jump: %28.14g\n", max_delta_phase );
             node0_printf("NORM_W maximum jump: %28.14g\n", max_delta_norm );
             node0_printf("DET_V minimum: %28.14g\n", min_det_V);
             node0_printf("DET_V maximum: %28.14g\n", max_det_V);
+            node0_printf("(V^+V) eigenvalue minimum: %28.14g\n", min_eigen);
+            node0_printf("(V^+V) eigenvalue maximum: %28.14g\n", max_eigen);
+            node0_printf("denom=ws*(us*vs-ws)  minimum: %28.14g\n", min_denom);
+            node0_printf("Deviation from unitary |W^+W-1|  maximum: %28.14g\n", Wm1unit);
             }
 #endif /* HISQ_REUNITARIZATION_DEBUG */
             global_current_time_step = step;
@@ -341,6 +374,8 @@ load_ferm_links(&fn_links, &ks_act_paths);
             double delta_phase,delta_norm;
             su3_matrix Wdiff;
             double min_det_V, max_det_V;
+            double min_eigen,max_eigen,min_denom;
+            double Wm1unit; /* norm of (W^+W - I) */
             double flag_detV=1;
             FORALLSITES(i,s) {
               for( idir=XUP;idir<=TUP;idir++ ) {
@@ -357,6 +392,10 @@ load_ferm_links(&fn_links, &ks_act_paths);
                 if( 1==flag_detV ) {
                   min_det_V = lattice[i].Vdet[idir];
                   max_det_V = min_det_V;
+                  min_eigen = lattice[i].gmin[idir];
+                  max_eigen = lattice[i].gmax[idir];
+                  min_denom = lattice[i].denom[idir];
+                  Wm1unit = lattice[i].unitW1[idir];
                   flag_detV = 0;
                 }
                 else {
@@ -364,6 +403,14 @@ load_ferm_links(&fn_links, &ks_act_paths);
                     min_det_V = lattice[i].Vdet[idir];
                   if( max_det_V < lattice[i].Vdet[idir] )
                     max_det_V = lattice[i].Vdet[idir];
+                  if( min_eigen > lattice[i].gmin[idir] )
+                    min_eigen = lattice[i].gmin[idir];
+                  if( max_eigen < lattice[i].gmax[idir] )
+                    max_eigen = lattice[i].gmax[idir];
+                  if( min_denom > lattice[i].denom[idir] )
+                    min_denom = lattice[i].denom[idir];
+                  if( Wm1unit < lattice[i].unitW1[idir] )
+                    Wm1unit = lattice[i].unitW1[idir];
                 }
               }
             }
@@ -373,10 +420,21 @@ load_ferm_links(&fn_links, &ks_act_paths);
             g_doublemax( &min_det_V );
             g_doublemax( &max_det_V );
             min_det_V = -min_det_V;
+            min_eigen = -min_eigen;
+            g_doublemax( &min_eigen );
+            g_doublemax( &max_eigen );
+            min_eigen = -min_eigen;
+            min_denom = -min_denom;
+            g_doublemax( &min_denom );
+            min_denom = -min_denom;
             node0_printf("PHASE_Y maximum jump: %28.14g\n", max_delta_phase );
             node0_printf("NORM_W maximum jump: %28.14g\n", max_delta_norm );
             node0_printf("DET_V minimum: %28.14g\n", min_det_V);
             node0_printf("DET_V maximum: %28.14g\n", max_det_V);
+            node0_printf("(V^+V) eigenvalue minimum: %28.14g\n", min_eigen);
+            node0_printf("(V^+V) eigenvalue maximum: %28.14g\n", max_eigen);
+            node0_printf("denom=ws*(us*vs-ws)  minimum: %28.14g\n", min_denom);
+            node0_printf("Deviation from unitary |W^+W-1|  maximum: %28.14g\n", Wm1unit);
             }
 #endif /* HISQ_REUNITARIZATION_DEBUG */
             /*TEMP - monitor action*/ tempaction = d_action_rhmc(multi_x,sumvec);
