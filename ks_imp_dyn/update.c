@@ -176,3 +176,12 @@ Real xrandom;
     else return(-99);
 }
 
+
+/**********************************************************************/
+/*   Accessor for string describing the option                        */
+/**********************************************************************/
+const char *ks_int_alg_opt_chr( void )
+{
+  return "INT_ALG_NEEDS_TO_BE_FIXED";
+}
+
