@@ -128,7 +128,7 @@ register site *s;
 register su3_matrix *m1,*m4;
 su3_matrix mtmp;
 double ss_sum,st_sum;
-double rtrace, rtrace3;
+double rtrace;
 msg_tag *mtag0,*mtag1;
     ss_sum = st_sum = 0.0;
 FILE *fp;
@@ -198,7 +198,7 @@ char plaq_file_name[300];
 
 
 
-
+#ifdef HISQ
 
 /* Measure plaquettes and write into file */
 void g_measure_plaq() {
@@ -217,6 +217,10 @@ void g_measure_plaq() {
   node0_printf( "Entering g_measure_plaq()\n" );
 
   /* Load fat and long links for fermion measurements if needed */
+  invalidate_all_ferm_links(&fn_links);
+#ifdef HISQ
+  fn_links.hl.current_X_set = 0;
+#endif
   load_ferm_links(&fn_links, &ks_act_paths);
 
   /* phases out */
@@ -291,16 +295,11 @@ void g_measure_tune() {
 
 
 void g_measure_hisq_plaq() {
-  double ss_plaq, st_plaq, ss_plaq_min;
-  double st_plaq_min, ss_plaq_max, st_plaq_max;
-  double **histogram,**hist_bounds;
-  int ipower, ihist, *Nhist, i;
+  int i;
   FILE *fp;
-  char hist_file_name[300];
   char hisq_level1_coeff_file[]="hisq_exp_level1_coeff.dat";
   double hisq_level1_coeff[5];
   char temp_str[300];
-  double hist_step, x;
   double fdf_eps=1e-4; /* epsilon for finite difference */
 
 
@@ -501,3 +500,4 @@ void g_measure_hisq_plaq() {
   node0_printf( "Exiting g_measure_hisq_plaq()\n" );
 }
 
+#endif /* HISQ */
