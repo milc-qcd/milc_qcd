@@ -8,7 +8,8 @@
 #include "../include/su3.h"
 
 /*********************************************************************/
-/* These definitions belong in qop.h */
+/* These definitions should come from qopqdp.h 
+   Then we can put these (or whatever we want) in generic_qopmilc.h */
 
 typedef struct {
    float real;	
@@ -58,6 +59,7 @@ typedef struct { rawfodef(D,3,3); } QOPRAW_D3_Force;
 #define QOPRAW_D3_elem_M(a,ic,jc) QOPRAW_elem_M(a,ic,jc)
 
 /*********************************************************************/
+
 /* map_milc_to_qopqdp.c */
 
 fsu3_matrix ** create_raw4_F_G (void);
