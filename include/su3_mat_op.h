@@ -1,7 +1,7 @@
 /* Temporary include file.
    These routined should eventually be included in su3.h
    Started: 071005
-   Last modified: 071029 */
+   Last modified: 081121 */
 
 
 #ifndef SU3_MAT_OP_H_
@@ -21,6 +21,12 @@
 #endif
 
 #define SU3_UNIT_DER_EPS 1.0e-6
+
+// If one runs into small eigenvalues when calculating
+// the HISQ fermion force, defining this option allows to
+// regularize them and preven large spikes in the force
+#define HISQ_FORCE_FILTER 5.0e-5
+
 
 #define SU3_ROOT_INV_MAX_ITER 100
 #define MILC_AB_PI 3.1415926535897931159979634685441852
@@ -216,6 +222,17 @@ void su3_unit_der_analytic( su3_matrix *V,
 
 /* copy rank 4 tensor: a -> b */
 void su3t4_copy( su3_tensor4 *a, su3_tensor4 *b );
+
+
+
+/* **************************************************
+   SVD stuff needs to be put into a separate file
+   ************************************************** */
+/* Input: A -- 3x3 complex matrix,
+   Output: sigma[3] -- singular values,
+           U,V -- U(3) matrices such, that
+           A=U Sigma V^+ */
+int svd3x3(double A[3][3][2], double *sigma, double U[3][3][2], double V[3][3][2]);
 
 
 #endif /* SU3_MAT_OP_H_ */
