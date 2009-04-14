@@ -14,6 +14,10 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.21  2009/04/14 17:09:24  detar
+//  AB: Calculate structure of multi_x array in terms of different Naik corrections
+//  AB: Preset Naik corrections in eps_naik[] controlled by HISQ_NAIT_ADJUSTABLE
+//
 //  Revision 1.20  2008/03/28 15:20:22  detar
 //  Bazavov changes 3/08.  Debugging and Naik term mass.
 //
@@ -98,6 +102,7 @@
 #define IMP_QUARK_ACTION_INFO_ONLY
 #include "quark_action.h"
 #include "lattice_qdp.h"
+#include "../include/su3_mat_op.h"
 
 EXTERN gauge_header start_lat_hdr;
 gauge_file *gf;
@@ -189,8 +194,29 @@ initial_set()
 #ifdef INT_ALG
     node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
 #endif
+#ifdef HISQ_NAIK_ADJUSTABLE
+    node0_printf("HISQ_NAIK_ADJUSTABLE (means Naik correction is full epsilon and not just mass)\n");
+#endif
+#ifdef HISQ_FORCE_FILTER
+    node0_printf("HISQ_FORCE_FILTER=%f\n",HISQ_FORCE_FILTER);
+#endif
+#ifdef HISQ_REUNIT_ALLOW_SVD
+    node0_printf("HISQ_REUNIT_ALLOW_SVD\n");
+#endif
+#ifdef HISQ_REUNIT_SVD_ONLY
+    node0_printf("HISQ_REUNIT_SVD_ONLY (used together with HISQ_REUNIT_ALLOW_SVD)\n");
+#endif
 #ifdef MILC_GLOBAL_DEBUG
     node0_printf("MILC_GLOBAL_DEBUG ***********************\n");
+#endif
+#ifdef HISQ_REUNITARIZATION_DEBUG
+    node0_printf("HISQ_REUNITARIZATION_DEBUG is ON\n");
+#endif
+#ifdef HISQ_FF_MULTI_WRAPPER
+    node0_printf("HISQ_FF_MULTI_WRAPPER is ON\n");
+#endif
+#ifdef HISQ_FF_DEBUG
+    node0_printf("HISQ_FF_DEBUG is ON\n");
 #endif
     status=get_prompt(stdin, &prompt);
     IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
@@ -294,14 +320,52 @@ initial_set()
     n_order_naik_total += tmporder;
     n_naiks++;
   }
-  node0_printf("Number of different Naik masses is %d\n",n_naiks);
-  for( i=0; i<n_naiks; i++ )
+  // calculate epsilon corrections for different Naik terms
+  if( 0!=masses_naik[0] ) {
+    node0_printf("IN HISQ ACTION FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
+    terminate(1);
+  }
+  eps_naik[0] = 0.0; // first set of X links always has 0 correction
+  for( i=1; i<n_naiks; i++ ) {
+#ifdef HISQ
+#ifdef HISQ_NAIK_ADJUSTABLE
+    // value read from rational function file is considered full epsilon correction
+    eps_naik[i] = masses_naik[i];
+#else
+    // value read from rational function file is considered quark mass
+    // and epsilon correction is calculated with the second order perturbation theory,
+    // HISQ_NAIK_2ND_ORDER is set in the hisq_action.h
+    eps_naik[i] = HISQ_NAIK_2ND_ORDER*masses_naik[i]*masses_naik[i];
+#endif
+#else /* HISQ */
+    // IT IS ASSUMED THAT ACTIONS OTHER THAN HISQ DO NOT HAVE
+    // ANY EPSILON CORRECTION TERMS
+    eps_naik[i] = 0;
+#endif /* HISQ */
+  }
+  node0_printf("Naik term correction structure of multi_x:\n");
+  node0_printf("n_naiks %d\n",n_naiks);
+  for( i=0; i<n_naiks; i++ ) {
     node0_printf("n_pseudo_naik[%d]=%d\n",i,n_pseudo_naik[i]);
-  for( i=0; i<n_naiks; i++ )
     node0_printf("n_orders_naik[%d]=%d\n",i,n_orders_naik[i]);
-  for( i=0; i<n_naiks; i++ )
     node0_printf("masses_naik[%d]=%f\n",i,masses_naik[i]);
+    node0_printf("eps_naik[%d]=%f\n",i,eps_naik[i]);
+  }
   node0_printf("n_order_naik_total %d\n",n_order_naik_total);
+#ifdef HISQ
+  if( n_naiks+1 > MAX_NAIK ) {
+    node0_printf("MAX_NAIK=%d < n_naiks+1=%d\n", MAX_NAIK, n_naiks+1 );
+    node0_printf("Increase MAX_NAIK\n");
+    terminate(1);
+  }
+#else /* HISQ */
+  if( n_naiks>1 ) {
+    node0_printf("FOR ACTIONS OTHER THAN HISQ EPSILON CORRECTION IS NOT USED.\n");
+    node0_printf("ONLY ONE SET OF X LINKS IS USED.\n");
+    node0_printf("SET ALL naik_mass TO 0 IN RATIONAL FUNCTION FILE.\n");
+    terminate(1);
+  }
+#endif /* HISQ */
 
   beta = par_buf.beta;
   
@@ -544,7 +608,7 @@ readin(int prompt)
   /* make tables of coefficients and permutations of paths in quark action */
   init_path_table(&ks_act_paths);
   init_path_table(&ks_act_paths_dmdu0);
-  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0, 0.);
+  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
   
   return(0);
 }
