@@ -44,21 +44,29 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
   register site *s;
   Real final_rsq;
   double sum;
-  int iphi; 
+  int iphi, inaik, jphi; 
   sum=0.0;
-  for(iphi = 0; iphi < n_pseudo; iphi++){
-    //fn_links.hl.valid_X_links = 0; // overkill - should do only when coefficients change
-    //fn_links.hl.valid_all_links = 0;
-    invalidate_fn_links(&fn_links);
-    make_path_table(&ks_act_paths, &ks_act_paths_dmdu0, rparam[iphi].naik_term_mass);
-    load_ferm_links(&fn_links, &ks_act_paths);
-    ks_ratinv( F_OFFSET(phi[iphi]), multi_x, rparam[iphi].FA.pole, 
+  iphi=0;
+  for( inaik=0; inaik<n_naiks; inaik++ ) {
+    for( jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
+//      invalidate_all_ferm_links(&fn_links);
+#ifdef HISQ
+      fn_links.hl.current_X_set = inaik; // which X set we need
+#endif
+      load_ferm_links(&fn_links, &ks_act_paths);
+//dumpmat( &(fn_links.hl.Y_unitlink[0][0]) );
+//dumpmat( &(fn_links.hl.W_unitlink[0][0]) );
+//dumpmat( &(fn_links.hl.XX_fatlink[0][0][0]) );
+//if(n_naiks>1) dumpmat( &(fn_links.hl.XX_fatlink[1][0][0]) );
+      ks_ratinv( F_OFFSET(phi[iphi]), multi_x, rparam[iphi].FA.pole, 
 	       rparam[iphi].FA.order, niter_fa[iphi], rsqmin_fa[iphi], 
 	       prec_fa[iphi], EVEN, &final_rsq, &fn_links );
-    ks_rateval( sumvec, F_OFFSET(phi[iphi]), multi_x, 
-		rparam[iphi].FA.res, rparam[iphi].FA.order, EVEN );
-    FOREVENSITES(i,s){ /* phi is defined on even sites only */
-      sum += magsq_su3vec( &(sumvec[i]) );
+      ks_rateval( sumvec, F_OFFSET(phi[iphi]), multi_x, 
+  		rparam[iphi].FA.res, rparam[iphi].FA.order, EVEN );
+      FOREVENSITES(i,s){ /* phi is defined on even sites only */
+        sum += magsq_su3vec( &(sumvec[i]) );
+      }
+      iphi++;
     }
   }
   
