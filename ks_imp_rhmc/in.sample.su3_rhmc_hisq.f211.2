@@ -1,0 +1,41 @@
+    prompt 0
+    nx 6
+    ny 6
+    nz 6
+    nt 6
+    iseed 4563421
+    n_pseudo 5
+    load_rhmc_params rationals.sample.su3_rhmc_hisq_f211
+    beta 6.7
+    n_dyn_masses 3
+    dyn_mass .01 .05 .5
+    dyn_flavors 2 1 1
+    u0  0.890
+ 
+    warms 0
+    trajecs 1
+    traj_between_meas 1
+    microcanonical_time_step .04
+    steps_per_trajectory 12
+    cgresid_md_fa_gr .0005 .0001 .0001
+    max_multicg_md_fa_gr  2500  2500  2500
+    cgprec_md_fa_gr  2 2 2
+    cgresid_md_fa_gr .000005 .000001 .000001
+    max_multicg_md_fa_gr  2500  2500  2500
+    cgprec_md_fa_gr  2 2 2
+    cgresid_md_fa_gr .000005 .000001 .000001
+    max_multicg_md_fa_gr  2500  2500  2500
+    cgprec_md_fa_gr  2 2 2
+    cgresid_md_fa_gr .000005 .000001 .000001
+    max_multicg_md_fa_gr  2500  2500  2500
+    cgprec_md_fa_gr  2 2 2
+    cgresid_md_fa_gr .000005 .000001 .000001
+    max_multicg_md_fa_gr  2500  2500  2500
+    cgprec_md_fa_gr  2 2 2
+    prec_ff 2
+    error_for_propagator .000001
+    max_cg_prop 500
+    max_cg_prop_restarts 5
+    reload_serial ../binary_samples/lat.sample.hisq.f211b670.l6666
+    forget
+ 

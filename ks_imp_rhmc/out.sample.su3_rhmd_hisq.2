@@ -1,7 +1,7 @@
 SU3 with improved KS action
 Microcanonical simulation with refreshing
 MIMD version 7 $Name:  $
-Machine = QMP (portable), with 1 nodes
+Machine = Scalar processor, with 1 nodes
 Rational function hybrid Monte Carlo algorithm
 Options selected...
 Generic double precision
@@ -13,8 +13,6 @@ KS_MULTICG=HYBRID
 KS_MULTIFF=FNMAT
 VECLENGTH=4
 INT_ALG=INT_3G1F
-HISQ_NAIK_ADJUSTABLE (means Naik correction is full epsilon and not just mass)
-HISQ_FORCE_FILTER=0.000050
 type 0 for no prompts  or 1 for prompts
 nx 6
 ny 6
@@ -429,16 +427,14 @@ pole_FA 27.9493
 pole_FA 92.735
 pole_FA 546.062
 Maximum rational func order is 11
-Naik term correction structure of multi_x:
-n_naiks 1
+Number of different Naik masses is 1
 n_pseudo_naik[0]=4
 n_orders_naik[0]=30
 masses_naik[0]=0.000000
-eps_naik[0]=0.000000
 n_order_naik_total 30
 LAYOUT = Hypercubes, options = hyper_prime,
 ON EACH NODE 6 x 6 x 6 x 6
-Mallocing 3.8 MBytes per node for lattice
+Mallocing 3.0 MBytes per node for lattice
 Made lattice
 Made nn gathers
 Made 3nn gathers
@@ -471,17 +467,17 @@ forget
 Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l6666.hisq
 Time stamp Mon Nov 19 18:42:42 2007
 Checksums c9687fe2 b52bd146 OK
-Time to reload gauge configuration = 1.828194e-03
-CHECK PLAQ: 1.8403954419120214e+00 1.8597505785271828e+00
+Time to reload gauge configuration = 6.571072e-03
+CHECK PLAQ: 1.8403954419120214e+00 1.8597505785271831e+00
 CHECK NERSC LINKTR: 1.6866463634818848e-01 CKSUM: 8e705331
-Reunitarized for double precision. Max deviation 1.95e-07 changed to 4.44e-16
-Time to check unitarity = 2.311945e-03
-Symanzik 1x1 + 1x2 + 1x1x1 action with HISQ quark loops
+Reunitarized for double precision. Max deviation 1.95e-07 changed to 1.92e-16
+Time to check unitarity = 7.955098e-03
+Symanzik 1x1 + 1x2 + 1x1x1 action with quark loops
 gauge_action: total_dyn_flavors = 3
 loop coefficients: nloop rep loop_coeff  multiplicity
                     0 0      1.000000e+00     6
-                    1 0      -4.181006e-02     12
-                    2 0      5.149203e-04     16
+                    1 0      -5.726649e-02     12
+                    2 0      -1.073977e-03     16
 MAKING PATH TABLES
 "Fat 7 (level 1)"
 path coefficients: npath  path_coeff  multiplicity
@@ -490,7 +486,6 @@ path coefficients: npath  path_coeff  multiplicity
                     2      1.562500e-02     192
                     3      -2.604167e-03     384
 Unitarization method = UNITARIZE_ANALYTIC
-Unitarizaton group = U(3)
 "Fat7 + 2xLepage"
 path coefficients: npath  path_coeff  multiplicity
                     0      1.000000e+00     8
@@ -499,10 +494,6 @@ path coefficients: npath  path_coeff  multiplicity
                     3      1.562500e-02     192
                     4      -2.604167e-03     384
                     5      -1.250000e-01     48
-"1-link + Naik"
-path coefficients: npath  path_coeff  multiplicity
-                    0      1.250000e-01     8
-                    1      -4.166667e-02     8
 WARMUPS COMPLETED
 Omelyan integration, 3 gauge for one 1 fermion step, steps= 10 eps= 2.000000e-02 alpha= 1.000000e-01 beta= 1.000000e-01
 GRSOURCE: sum = 1.9481611406e+03
@@ -510,59 +501,59 @@ GRSOURCE: sum = 1.9973772300e+03
 GRSOURCE: sum = 1.9811251702e+03
 GRSOURCE: sum = 1.9866283151e+03
 PLAQUETTE ACTION: -3.548588e+04
-ACTION: g,h,f = 1.91689566918234e+04  -1.13785561068580e+02  7.91329185549117e+03  2.69684629862460e+04
-DG = 1.916896e+04, DH = -1.137856e+02, DF = 7.913292e+03, D = 2.696846e+04
-PLAQUETTE ACTION: -3.561901e+04
-ACTION: g,h,f = 1.90558145974250e+04  -9.20251181335468e+00  7.92184938249926e+03  2.69684614681109e+04
-DG = -1.131421e+02, DH = 1.045830e+02, DF = 8.557527e+00, D = -1.518135e-03
-ACCEPT: delta S = -1.518135e-03
-PLAQ:	1.851180	1.862847
-P_LOOP:	3.804356e-01	-1.831041e-02
-G_LOOP:  0  0  4   	1.875363e+00	( 0 1 7 6  )
-G_LOOP:  0  1  4   	1.824864e+00	( 0 2 7 5  )
-G_LOOP:  0  2  4   	1.862273e+00	( 0 3 7 4  )
-G_LOOP:  0  3  4   	1.853314e+00	( 1 2 6 5  )
-G_LOOP:  0  4  4   	1.887667e+00	( 1 3 6 4  )
-G_LOOP:  0  5  4   	1.838602e+00	( 2 3 5 4  )
-G_LOOP:  1  0  6   	1.212819e+00	( 0 0 1 7 7 6  )
-G_LOOP:  1  1  6   	1.159546e+00	( 0 0 2 7 7 5  )
-G_LOOP:  1  2  6   	1.155353e+00	( 0 0 3 7 7 4  )
-G_LOOP:  1  3  6   	1.211186e+00	( 1 1 0 6 6 7  )
-G_LOOP:  1  4  6   	1.183990e+00	( 1 1 2 6 6 5  )
-G_LOOP:  1  5  6   	1.198826e+00	( 1 1 3 6 6 4  )
-G_LOOP:  1  6  6   	1.149391e+00	( 2 2 0 5 5 7  )
-G_LOOP:  1  7  6   	1.177299e+00	( 2 2 1 5 5 6  )
-G_LOOP:  1  8  6   	1.158743e+00	( 2 2 3 5 5 4  )
-G_LOOP:  1  9  6   	1.207892e+00	( 3 3 0 4 4 7  )
-G_LOOP:  1  10  6   	1.210198e+00	( 3 3 1 4 4 6  )
-G_LOOP:  1  11  6   	1.167951e+00	( 3 3 2 4 4 5  )
-G_LOOP:  2  0  6   	1.191727e+00	( 0 1 2 7 6 5  )
-G_LOOP:  2  1  6   	1.217089e+00	( 0 1 5 7 6 2  )
-G_LOOP:  2  2  6   	1.202827e+00	( 0 6 2 7 1 5  )
-G_LOOP:  2  3  6   	1.201862e+00	( 0 6 5 7 1 2  )
-G_LOOP:  2  4  6   	1.232411e+00	( 0 1 3 7 6 4  )
-G_LOOP:  2  5  6   	1.253201e+00	( 0 1 4 7 6 3  )
-G_LOOP:  2  6  6   	1.231978e+00	( 0 6 3 7 1 4  )
-G_LOOP:  2  7  6   	1.227321e+00	( 0 6 4 7 1 3  )
-G_LOOP:  2  8  6   	1.179624e+00	( 0 2 3 7 5 4  )
-G_LOOP:  2  9  6   	1.223221e+00	( 0 2 4 7 5 3  )
-G_LOOP:  2  10  6   	1.179190e+00	( 0 5 3 7 2 4  )
-G_LOOP:  2  11  6   	1.208169e+00	( 0 5 4 7 2 3  )
-G_LOOP:  2  12  6   	1.203411e+00	( 1 2 3 6 5 4  )
-G_LOOP:  2  13  6   	1.218809e+00	( 1 2 4 6 5 3  )
-G_LOOP:  2  14  6   	1.216341e+00	( 1 5 3 6 2 4  )
-G_LOOP:  2  15  6   	1.207130e+00	( 1 5 4 6 2 3  )
-GACTION: 5.960903e+00
-PBP: mass 1.800000e-03     -1.045344e-02  1.362904e-02  -9.865104e-03  -9.865261e-03 ( 1 of 1 )
-FACTION: mass = 1.800000e-03,  1.449900e+00 ( 1 of 1 )
-PBP: mass 1.800000e-02     1.374552e-02  1.907252e-02  3.346020e-02  3.346034e-02 ( 1 of 1 )
-FACTION: mass = 1.800000e-02,  1.529383e+00 ( 1 of 1 )
+ACTION: g,h,f = 1.79371999478468e+04  -1.13785561068580e+02  7.91329185550232e+03  2.57367062422805e+04
+DG = 1.793720e+04, DH = -1.137856e+02, DF = 7.913292e+03, D = 2.573671e+04
+PLAQUETTE ACTION: -3.535187e+04
+ACTION: g,h,f = 1.80542750670815e+04  -2.39753998982249e+02  7.92218576402907e+03  2.57367068321284e+04
+DG = 1.170751e+02, DH = -1.259684e+02, DF = 8.893909e+00, D = 5.898478e-04
+CHECK: delta S = 5.898478e-04
+PLAQ:	1.837309	1.848863
+P_LOOP:	3.697149e-01	-1.787235e-02
+G_LOOP:  0  0  4   	1.861638e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.810796e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.848362e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.839494e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.873614e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.824614e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.192554e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.139328e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.134852e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.190727e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.163573e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.177872e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.128931e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.156961e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.138082e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.187762e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.189298e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.147453e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.175574e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.201409e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.186677e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.185830e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.216400e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.237143e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.215719e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.211388e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.163251e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.207189e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.162908e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.192316e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.186899e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.202759e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.199968e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.190809e+00	( 1 5 4 6 2 3  )
+GACTION: 5.647609e+00
+PBP: mass 1.800000e-03     -1.019946e-02  1.337969e-02  -9.698353e-03  -9.698525e-03 ( 1 of 1 )
+FACTION: mass = 1.800000e-03,  1.449901e+00 ( 1 of 1 )
+PBP: mass 1.800000e-02     1.357437e-02  1.927528e-02  3.323025e-02  3.323037e-02 ( 1 of 1 )
+FACTION: mass = 1.800000e-02,  1.529377e+00 ( 1 of 1 )
 RUNNING COMPLETED
 average cg iters for step= 0.000000e+00
-Time = 5.005019e+01 seconds
-total_iters = 2605
+Time = 2.787302e+02 seconds
+total_iters = 2606
 
 
 get_i(0): EOF on input.
-exit: Mon May 25 20:58:57 2009
+exit: Tue Mar 25 16:13:40 2008
 
