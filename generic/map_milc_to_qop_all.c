@@ -177,7 +177,7 @@ create_raw4_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
 RAWTYPE * \
 create_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
   int coords[4]; \
-  int i,j,dir; \
+  int i,j; \
   site *s; \
   RAWTYPE *raw; \
   MILC_SRCTYPE *tmp; \
@@ -190,10 +190,8 @@ create_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
       return NULL; \
     } \
     j = QOP_node_index_raw_##T (coords, milc2qop_parity(milc_parity)); \
-    FORALLUPDIR(dir){ \
-      tmp = (MILC_SRCTYPE *)F_PT(s, src); \
-      copy_milc_to_##P##_##T(raw + j, tmp); \
-    } \
+    tmp = (MILC_SRCTYPE *)F_PT(s, src); \
+    copy_milc_to_##P##_##T(raw + j, tmp); \
   } \
   return raw; \
 }
@@ -204,7 +202,7 @@ create_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
 RAWTYPE * \
 create_raw_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
   int coords[4]; \
-  int i,j,dir; \
+  int i,j; \
   site *s; \
   RAWTYPE *raw; \
   raw = create_raw_##P##_##T(); \
@@ -216,9 +214,7 @@ create_raw_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
       return NULL; \
     } \
     j = QOP_node_index_raw_##T (coords, milc2qop_parity(milc_parity)); \
-    FORALLUPDIR(dir){ \
-      copy_milc_to_##P##_##T(raw + j, src + i); \
-    } \
+    copy_milc_to_##P##_##T(raw + j, src + i); \
   } \
   return raw; \
 }
