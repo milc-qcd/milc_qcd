@@ -48,7 +48,7 @@ void clear_wqs(wilson_quark_source *wqs){
   if(wqs->infile != NULL){
     if(wqs->type == COMPLEX_FIELD_FILE)
       r_close_complex_scidac_file(wqs->infile);
-    else if(wqs->type == VECTOR_FIELD_FILE)
+    else if(wqs->type == DIRAC_FIELD_FILE)
       r_close_w_vector_scidac_file(wqs->infile);
   }
 #endif
@@ -1458,7 +1458,9 @@ int ask_output_w_quark_source_file( FILE *fp, int prompt,
   char myname[] = "ask_output_w_quark_source_file";
 
   if (prompt!=0){
-    printf("enter 'save_serial_scidac_w_source'");
+    printf("enter 'save_serial_scidac_w_source', or");
+    printf("enter 'save_multifile_scidac_w_source', or");
+    printf("enter 'save_partition_scidac_w_source'");
     printf(", for source type\n");
   }
 
@@ -1470,6 +1472,26 @@ int ask_output_w_quark_source_file( FILE *fp, int prompt,
   if(strcmp("save_serial_scidac_w_source",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_SERIAL_SCIDAC;
+    *source_type = DIRAC_FIELD_FILE;
+    strcpy(descrp,"dirac_field");
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_multifile_scidac_w_source",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_MULTIFILE_SCIDAC;
+    *source_type = DIRAC_FIELD_FILE;
+    strcpy(descrp,"dirac_field");
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_partition_scidac_w_source",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARTITION_SCIDAC;
     *source_type = DIRAC_FIELD_FILE;
     strcpy(descrp,"dirac_field");
 #else
