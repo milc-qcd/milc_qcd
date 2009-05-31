@@ -158,7 +158,8 @@ gauge_file *reload_lattice( int flag, char *filename){
 
     dtime = -dclock();
     switch(flag){
-	case CONTINUE:	/* do nothing */
+	case CONTINUE:	/* return NULL.  We lose information if we do this  */
+ 	    node0_printf("reload_lattice: WARNING: gaugefile struct set to NULL\n");
             gf = NULL;
 	    break;
 	case FRESH:	/* cold lattice */
