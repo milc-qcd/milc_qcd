@@ -1,7 +1,7 @@
 n_pseudo 4
 
 
-naik_term_mass 0.
+naik_term_epsilon 0.
 
 # New rational function
 # Approximation bounds are [1.000000e-15,9.000000e+01]
@@ -120,7 +120,7 @@ pole_FA 1.2623335710904091e-01
 
 # CHECK: f(1.000000e-15) = 1.924501e+01 = 7.801158e+00?
 
-naik_term_mass 0.
+naik_term_epsilon 0.
 
 # New rational function
 # Approximation bounds are [1.000000e-15,9.000000e+01]
@@ -227,7 +227,7 @@ pole_FA 5.4606225005034105e+02
 
 # CHECK: f(1.000000e-15) = 1.257433e+00 = 1.257433e+00?
 
-naik_term_mass 0.
+naik_term_epsilon 0.
 
 # New rational function
 # Approximation bounds are [1.000000e-15,9.000000e+01]
@@ -343,7 +343,7 @@ pole_FA 5.4606225005034105e+02
 # Approximating the function (x+4*0.200000^2)^(1/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
 # Converged at 327 iterations, error = 2.398230e-07
 
-naik_term_mass 0.
+naik_term_epsilon 0.
 
 # Rational function for MD
 y_MD -1 0 0 0

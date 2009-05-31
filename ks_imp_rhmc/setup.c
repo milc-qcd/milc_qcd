@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.22  2009/05/31 00:50:16  detar
+//  Change naik_term_mass to naik_term_epsilon
+//
 //  Revision 1.21  2009/04/14 17:09:24  detar
 //  AB: Calculate structure of multi_x array in terms of different Naik corrections
 //  AB: Preset Naik corrections in eps_naik[] controlled by HISQ_NAIT_ADJUSTABLE
@@ -194,9 +197,9 @@ initial_set()
 #ifdef INT_ALG
     node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
 #endif
-#ifdef HISQ_NAIK_ADJUSTABLE
-    node0_printf("HISQ_NAIK_ADJUSTABLE (means Naik correction is full epsilon and not just mass)\n");
-#endif
+    //#ifdef HISQ_NAIK_ADJUSTABLE
+    //    node0_printf("HISQ_NAIK_ADJUSTABLE (means Naik correction is full epsilon and not just mass)\n");
+    //#endif
 #ifdef HISQ_FORCE_FILTER
     node0_printf("HISQ_FORCE_FILTER=%f\n",HISQ_FORCE_FILTER);
 #endif
@@ -296,16 +299,16 @@ initial_set()
 
 
   /* Determine the number of different Naik masses */
-  current_naik_mass = rparam[0].naik_term_mass;
+  current_naik_mass = rparam[0].naik_term_epsilon;
   tmporder = 0;
   n_naiks = 0;
   n_order_naik_total = 0;
   for( i=0; i<n_pseudo; i++ ) {
-    if( rparam[i].naik_term_mass != current_naik_mass ) {
+    if( rparam[i].naik_term_epsilon != current_naik_mass ) {
       if( tmporder > 0 ) {
         n_orders_naik[n_naiks] = tmporder;
         masses_naik[n_naiks] = current_naik_mass;
-        current_naik_mass = rparam[i].naik_term_mass;
+        current_naik_mass = rparam[i].naik_term_epsilon;
         n_naiks++;
         n_order_naik_total += tmporder;
         tmporder = 0;
@@ -328,15 +331,15 @@ initial_set()
   eps_naik[0] = 0.0; // first set of X links always has 0 correction
   for( i=1; i<n_naiks; i++ ) {
 #ifdef HISQ
-#ifdef HISQ_NAIK_ADJUSTABLE
+    //#ifdef HISQ_NAIK_ADJUSTABLE
     // value read from rational function file is considered full epsilon correction
     eps_naik[i] = masses_naik[i];
-#else
+    //#else
     // value read from rational function file is considered quark mass
     // and epsilon correction is calculated with the second order perturbation theory,
     // HISQ_NAIK_2ND_ORDER is set in the hisq_action.h
-    eps_naik[i] = HISQ_NAIK_2ND_ORDER*masses_naik[i]*masses_naik[i];
-#endif
+    //    eps_naik[i] = HISQ_NAIK_2ND_ORDER*masses_naik[i]*masses_naik[i];
+//#endif
 #else /* HISQ */
     // IT IS ASSUMED THAT ACTIONS OTHER THAN HISQ DO NOT HAVE
     // ANY EPSILON CORRECTION TERMS
@@ -594,7 +597,8 @@ readin(int prompt)
   if( startflag == CONTINUE ){
     rephase( OFF );
   }
-  startlat_p = reload_lattice( startflag, startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
 #ifdef FN
   invalidate_all_ferm_links(&fn_links);

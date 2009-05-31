@@ -137,9 +137,9 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
   for(i = 0; i < n_pseudo; i++){
     node0_printf("Loading rational function parameters for phi field %d\n",i);
     if(mynode()==0) { 
-      IF_OK status += get_f(fp, prompt, "naik_term_mass",&p[i].naik_term_mass);
+      IF_OK status += get_f(fp, prompt, "naik_term_epsilon",&p[i].naik_term_epsilon);
     }
-    broadcast_bytes((char *)&(p[i].naik_term_mass), sizeof(Real));
+    broadcast_bytes((char *)&(p[i].naik_term_epsilon), sizeof(Real));
     IF_OK status += read_broadcast_ratfunc(fp,"MD",&p[i].MD);
     IF_OK status += read_broadcast_ratfunc(fp,"GR",&p[i].GR);
     IF_OK status += read_broadcast_ratfunc(fp,"FA",&p[i].FA);

@@ -16,6 +16,6 @@ typedef struct {
   params_ratfunc MD;
   params_ratfunc GR;
   params_ratfunc FA;
-  Real naik_term_mass;
+  Real naik_term_epsilon;
 } params_rhmc;
 #endif /* _PARAMS_RHMC_H */
