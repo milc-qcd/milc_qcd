@@ -126,20 +126,20 @@ main( int argc, char **argv )
 	    /* Load fat and long links for fermion measurements if needed */
 #ifdef HISQ
 //AB: QUICK FIX TO USE NAIK EPSILON FOR SPECTRUM MEASUREMENTS,
-//    WORKS ONLY IF IN THE RATIONAL FUNCTION FILE naik_term_mass IS NON-ZERO
+//    WORKS ONLY IF IN THE RATIONAL FUNCTION FILE naik_term_epsilon IS NON-ZERO
 //    FOR LAST PSEUDO-FIELD
 //    IT IS ASSUMED THAT THIS CORRECTION CORRESPONDS TO LAST DYNAMICAL MASS
 //AB: OLD WAY OF INITIALIZING THE LINKS:  fn_links.hl.current_X_set = 0;
 //    INSTEAD WE DO:
-	    if(n_dyn_masses-1==i) { // last dynamical mass, assumed to be c-quark
-	      fn_links.hl.current_X_set = n_naiks-1;
+////	    if(n_dyn_masses-1==i) { // last dynamical mass, assumed to be c-quark
+////	      fn_links.hl.current_X_set = n_naiks-1;
 //DT CHARM QUARK NEEDS SMALLER RESIDUAL
-//	      node0_printf("TEMP: reset rsqprop from %e to %e\n",rsqprop,1e-12*rsqprop);
-	      rsqprop *= 1e-12;
-	    }
-	    else { // light quarks
+////	      node0_printf("TEMP: reset rsqprop from %e to %e\n",rsqprop,1e-8*rsqprop);
+////	      rsqprop *= 1e-8;
+////	    }
+////	    else { // light quarks
 	      fn_links.hl.current_X_set = 0;
-	    }
+////	    }
 #endif
 	    load_ferm_links(&fn_links, &ks_act_paths);
 #ifdef DM_DU0
@@ -232,12 +232,12 @@ main( int argc, char **argv )
 	    rephase( ON );
 	  }
 #endif
-	    if(n_dyn_masses-1==i) { // last dynamical mass, assumed to be c-quark
+//	    if(n_dyn_masses-1==i) { // last dynamical mass, assumed to be c-quark
 //DT CHARM QUARK NEEDS SMALLER RESIDUAL
 //AB NEED TO RETURN RESIDUAL TO THE ORIGINAL VALUE
-//	      node0_printf("TEMP: reset rsqprop from %e to %e\n",rsqprop,1e+12*rsqprop);
-	      rsqprop *= 1e+12;
-	    }
+//	      node0_printf("TEMP: reset rsqprop from %e to %e\n",rsqprop,1e+8*rsqprop);
+//	      rsqprop *= 1e+8;
+//	    }
 	}
 	avs_iters += s_iters;
 	++meascount;
@@ -271,3 +271,4 @@ main( int argc, char **argv )
   normal_exit(0);
   return 0;
 }
+
