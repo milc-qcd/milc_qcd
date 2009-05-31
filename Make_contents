@@ -285,7 +285,9 @@ KS_IMP_RHMC =           \
  ks_imp_rhmc/remez-milc/README* \
  ks_imp_rhmc/remez-milc/*.C     \
  ks_imp_rhmc/remez-milc/*.h     \
+ ks_imp_rhmc/remez-milc/*.pl    \
  ks_imp_rhmc/remez-milc/in.sample* \
+ ks_imp_rhmc/remez-milc/in.m013m065m838 \
  ks_imp_rhmc/remez-milc/rationals.sample* \
  ks_imp_rhmc/remez-milc/Make*
 
