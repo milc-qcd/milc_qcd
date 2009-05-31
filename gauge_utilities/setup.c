@@ -2,6 +2,9 @@
 /* MIMD version 7 */
 
 //  $Log: setup.c,v $
+//  Revision 1.3  2009/05/31 03:26:41  detar
+//  Correct fix to "continue" handling
+//
 //  Revision 1.2  2009/05/31 02:00:57  detar
 //  Fix "continue" and NULL startlat_p bug in clover_info.c and setup*.c
 //
@@ -200,7 +203,7 @@ readin(int prompt)
   if( param.stopflag != 0 )return param.stopflag;
   
   /* Get lattice no phases in this program */
-  if( startflag != CONTINUE )
+  if( param.startflag != CONTINUE )
     startlat_p = reload_lattice( param.startflag, param.startfile );
   return 0;
 }

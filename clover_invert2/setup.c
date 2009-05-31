@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.7  2009/05/31 03:26:38  detar
+//  Correct fix to "continue" handling
+//
 //  Revision 1.6  2009/05/31 02:00:56  detar
 //  Fix "continue" and NULL startlat_p bug in clover_info.c and setup*.c
 //
@@ -573,7 +576,7 @@ int readin(int prompt) {
     normal_exit(0);
 
   /* Do whatever is needed to get lattice */
-  if( startflag != CONTINUE )
+  if( param.startflag != CONTINUE )
     startlat_p = reload_lattice( param.startflag, param.startfile );
   /* Construct APE smeared links */
   ape_smear_3D( param.staple_weight, param.ape_iter );
