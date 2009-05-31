@@ -835,7 +835,7 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
 
 #ifdef HISQ_REUNIT_ALLOW_SVD
   double Qd[3][3][2];
-  complex cdet;
+  //  complex cdet;
   double a1re, a1im, a2re, a2im, a3re, a3im, detre, detim, det_check;
   double sigma[3], Uleft[3][3][2], Vright[3][3][2];
   int perform_svd=0;
@@ -1344,7 +1344,7 @@ void su3_unit_der_analytic( su3_matrix *V,
   complex der, ctmp, ctmp2;
 #else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
   double Ve[3][3][2], Qe[3][3][2], Q2e[3][3][2], Q3e[3][3][2];
-  double S1e[3][3][2], S2e[3][3][2], We[3][3][2], Q12e[3][3][2];
+  double We[3][3][2], Q12e[3][3][2];
   double VVde[3][3][2], VQe[3][3][2], QVde[3][3][2], QQVde[3][3][2];
   double VQQe[3][3][2], VQVde[3][3][2], PVde[3][3][2], RVde[3][3][2];
   double SVde[3][3][2], Vde[3][3][2];
@@ -1358,7 +1358,7 @@ void su3_unit_der_analytic( su3_matrix *V,
 
 #ifdef HISQ_REUNIT_ALLOW_SVD
   double Qd[3][3][2];
-  complex cdet;
+  //  complex cdet;
   double a1re, a1im, a2re, a2im, a3re, a3im, detre, detim, det_check;
   double sigma[3], Uleft[3][3][2], Vright[3][3][2];
   int perform_svd=0;

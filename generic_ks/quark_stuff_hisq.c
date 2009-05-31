@@ -185,7 +185,7 @@ static int
 make_path_table_hisq( char *action_desc, int npaths, int max_paths,
 		      int *path_length, Real *coeff,
 		      int paths[][MAX_LENGTH], Real *act_coeff, 
-		      Q_path *this_q_paths, Real naik_term_mass, 
+		      Q_path *this_q_paths, Real naik_term_epsilon, 
 		      int index_onelink, int index_naik ) 
 {
 
@@ -220,10 +220,10 @@ make_path_table_hisq( char *action_desc, int npaths, int max_paths,
     //AB THIS SHOULD BE REMOVED
     // Apply mass correction to one-link and Naik coefficients
     if(j == index_onelink){
-      ; //this_coeff += onelink_mass_renorm_fact * naik_term_mass * naik_term_mass;
+      ; //this_coeff += onelink_mass_renorm_fact * naik_term_epsilon * naik_term_epsilon;
     }
     if(j == index_naik){
-      ; //this_coeff += naik_mass_renorm_fact * naik_term_mass * naik_term_mass;
+      ; //this_coeff += naik_mass_renorm_fact * naik_term_epsilon * naik_term_epsilon;
     }
     i = add_basic_path( this_q_paths, n_q_paths, paths[j],
 			path_length[j], this_coeff, max_paths );

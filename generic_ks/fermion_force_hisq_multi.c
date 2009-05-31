@@ -1,4 +1,4 @@
-/****** fermion_force_fn_multi.c  -- ******************/
+/****** fermion_force_hisq_multi.c  -- ******************/
 /* MIMD version 7 */
 /* Multisource fermion force.  Includes various optimization choices.
  * 

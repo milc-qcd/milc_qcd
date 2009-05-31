@@ -1,4 +1,4 @@
-/****** hisq_links_fn.c  -- ******************/
+/****** fermion_links_hisq.c  -- ******************/
 /* MIMD version 7 */
 /* Link fattening routines for various hisq actions
 */
