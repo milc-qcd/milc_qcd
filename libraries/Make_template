@@ -63,7 +63,7 @@ SU3OBJS1 = addmat.1.o addvec.1.o cmp_ahmat.1.o cs_m_a_vec.1.o cs_m_a_mat.1.o \
 	m_amv_4vec.1.o m_mv_s_4dir.1.o flush_to_zero.1.o \
 	l_su2_hit_n.1.o r_su2_hit_a.1.o dumpsu2.1.o \
 	m_su2_mat_vec_n.1.o m_su2_mat_vec_a.1.o \
-	gaussrand.1.o z2rand.1.o  byterevn.1.o prefetch.1.o
+	gaussrand.1.o z2rand.1.o  byterevn.1.o prefetch.1.o eigen_su3_UdU.1.o
 
 SU3OBJS2 = addmat.2.o addvec.2.o cmp_ahmat.2.o cs_m_a_vec.2.o cs_m_a_mat.2.o \
 	cs_m_s_vec.2.o cs_m_vec.2.o det_su3.2.o clear_mat.2.o dumpmat.2.o \
@@ -79,7 +79,7 @@ SU3OBJS2 = addmat.2.o addvec.2.o cmp_ahmat.2.o cs_m_a_vec.2.o cs_m_a_mat.2.o \
 	m_amv_4vec.2.o m_mv_s_4dir.2.o flush_to_zero.2.o \
 	l_su2_hit_n.2.o r_su2_hit_a.2.o dumpsu2.2.o \
 	m_su2_mat_vec_n.2.o m_su2_mat_vec_a.2.o \
-	gaussrand.2.o z2rand.2.o byterevn.2.o prefetch.2.o
+	gaussrand.2.o z2rand.2.o byterevn.2.o prefetch.2.o eigen_su3_UdU.2.o
 
 WILSON_OBJS1 = wp_shrink.1.o wp_grow.1.o wp_grow_a.1.o dump_wvec.1.o \
 	clear_wvec.1.o su3_proj_w.1.o copy_wvec.1.o add_wvec.1.o sub_wvec.1.o \
