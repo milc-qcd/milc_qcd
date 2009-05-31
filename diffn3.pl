@@ -19,7 +19,7 @@
 ($file1,$file2,$errfile) = @ARGV;
 
 (defined($errfile) && defined($file2) && defined($file1)) || 
-    die "Usage $0 <file1> <file2> <tol>\n";
+    die "Usage $0 <file1> <file2> <errfile>\n";
 
 open(FILE1,$file1) || die "Couldn't open $file1: $!";
 open(FILE2,$file2) || die "Couldn't open $file2: $!";
