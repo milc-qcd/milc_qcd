@@ -449,9 +449,9 @@ su3_rhmc_susc_eos::
 
 su3_rhmd_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHISQ -DINT_ALG=INT_3G1F" \
+	"DEFINES= -DFN -DHISQ -DINT_ALG=INT_OMELYAN" \
 	"GAUGE = symanzik_1loop_nf_action.h" \
-	"QUARK = hisq/hisq_u3_action.h" \
+	"QUARK = hisq/hisq_su3_action.h" \
 	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
 	${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o control.o"
 
@@ -529,9 +529,10 @@ su3_rhmc_hisq_susc_eos::
 # HISQ spectrum 
 su3_spectrum_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHISQ -DSPECTRUM -DHISQ_REUNIT_ALLOW_SVD" \
+	"DEFINES= -DFN -DHISQ -DSPECTRUM -DHISQ_REUNIT_ALLOW_SVD \
+	-DINT_ALG=INT_3G1F" \
 	"GAUGE = symanzik_1loop_hisq_action.h" \
-	"QUARK = hisq/hisq_u3_action.h" \
+ 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
 	${SPECTRUM_OBJECTS} ${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o \
         control.o"
@@ -683,8 +684,20 @@ test_su3_paranoid_der::
         control_test_su3_paranoid.o"
 
 
+# Hacks to allow more than one test case
+su3_rhmc_hisq.f211: su3_rhmc_hisq
+		    mv su3_rhmc_hisq su3_rhmc_hisq.f211
+
+su3_rhmc_hisq.f2111: su3_rhmc_hisq
+		     mv su3_rhmc_hisq su3_rhmc_hisq.f2111
+
+
+su3_rhmc_hisq_su3.f2111: su3_rhmc_hisq
+		     mv su3_rhmc_hisq su3_rhmc_hisq_su3.f2111
+
+
 clean:
-	-/bin/rm -f *.o
+	-/bin/rm -f *.o quark_action.h gauge_action.h
 
 # Rules for generic routines
 include ../generic/Make_template
