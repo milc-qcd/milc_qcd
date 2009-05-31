@@ -25,7 +25,7 @@ PROJS = \
   su3_rhmc_hisq \
   su3_rhmc_hisq.f211 \
   su3_rhmc_hisq.f2111 \
-  su3_rhmc_hisq_su3.2111 \
+  su3_rhmc_hisq_su3.f2111 \
   su3_rhmd_hisq \
   su3_spectrum_hisq
   
