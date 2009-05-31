@@ -38,7 +38,7 @@ int main( int argc, char **argv ){
     
     dtime = -dclock();
     invalidate_all_ferm_links(&fn_links);
-    make_path_table(&ks_act_paths, &ks_act_paths_dmdu0, mass);
+    make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
     /* Load fat and long links for fermion measurements if needed */
     load_ferm_links(&fn_links, &ks_act_paths);
     /* call fermion_variable measuring routines */
