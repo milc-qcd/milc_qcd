@@ -28,6 +28,235 @@ PRECLIST = 1 2
 
 include ../Make_test_template
 
+#---------------------------------------------------------------------
+O5_ll.m0.010000.out:
+in.sample.O5_ll.m0.010000.out.${PREC}:
+out.test.O5_ll.m0.010000.out.${PREC}:
+	ln -sf O5_ll.m0.010000.out out.test.O5_ll.m0.010000.out.${PREC}
+
+O5_ll.m0.010000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=O5_ll.m0.010000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.O5_ll.m0.010000.out.$$prec;\
+	done
+
+O5_ll.m0.010000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.O5_ll.m0.010000.out.$$prec.tmp out.sample.O5_ll.m0.010000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.O5_ll.m0.010000.out.$$prec out.test.O5_ll.m0.010000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+O5_ll.m0.020000.out:
+in.sample.O5_ll.m0.020000.out.${PREC}:
+out.test.O5_ll.m0.020000.out.${PREC}:
+	ln -sf O5_ll.m0.020000.out out.test.O5_ll.m0.020000.out.${PREC}
+
+O5_ll.m0.020000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=O5_ll.m0.020000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.O5_ll.m0.020000.out.$$prec;\
+	done
+
+O5_ll.m0.020000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.O5_ll.m0.020000.out.$$prec.tmp out.sample.O5_ll.m0.020000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.O5_ll.m0.020000.out.$$prec out.test.O5_ll.m0.020000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+O5_ls.m0.010000.s0.050000.out:
+in.sample.O5_ls.m0.010000.s0.050000.out.${PREC}:
+out.test.O5_ls.m0.010000.s0.050000.out.${PREC}:
+	ln -sf O5_ls.m0.010000.s0.050000.out out.test.O5_ls.m0.010000.s0.050000.out.${PREC}
+
+O5_ls.m0.010000.s0.050000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=O5_ls.m0.010000.s0.050000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.O5_ls.m0.010000.s0.050000.out.$$prec;\
+	done
+
+O5_ls.m0.010000.s0.050000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.O5_ls.m0.010000.s0.050000.out.$$prec.tmp out.sample.O5_ls.m0.010000.s0.050000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.O5_ls.m0.010000.s0.050000.out.$$prec out.test.O5_ls.m0.010000.s0.050000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+O5_ls.m0.020000.s0.050000.out:
+in.sample.O5_ls.m0.020000.s0.050000.out.${PREC}:
+out.test.O5_ls.m0.020000.s0.050000.out.${PREC}:
+	ln -sf O5_ls.m0.020000.s0.050000.out out.test.O5_ls.m0.020000.s0.050000.out.${PREC}
+
+O5_ls.m0.020000.s0.050000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=O5_ls.m0.020000.s0.050000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.O5_ls.m0.020000.s0.050000.out.$$prec;\
+	done
+
+O5_ls.m0.020000.s0.050000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.O5_ls.m0.020000.s0.050000.out.$$prec.tmp out.sample.O5_ls.m0.020000.s0.050000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.O5_ls.m0.020000.s0.050000.out.$$prec out.test.O5_ls.m0.020000.s0.050000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+Omu_lHH.m0.010000.out:
+in.sample.Omu_lHH.m0.010000.out.${PREC}:
+out.test.Omu_lHH.m0.010000.out.${PREC}:
+	ln -sf Omu_lHH.m0.010000.out out.test.Omu_lHH.m0.010000.out.${PREC}
+
+Omu_lHH.m0.010000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=Omu_lHH.m0.010000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.Omu_lHH.m0.010000.out.$$prec;\
+	done
+
+Omu_lHH.m0.010000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.Omu_lHH.m0.010000.out.$$prec.tmp out.sample.Omu_lHH.m0.010000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.Omu_lHH.m0.010000.out.$$prec out.test.Omu_lHH.m0.010000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+Omu_lHH.m0.020000.out:
+in.sample.Omu_lHH.m0.020000.out.${PREC}:
+out.test.Omu_lHH.m0.020000.out.${PREC}:
+	ln -sf Omu_lHH.m0.020000.out out.test.Omu_lHH.m0.020000.out.${PREC}
+
+Omu_lHH.m0.020000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=Omu_lHH.m0.020000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.Omu_lHH.m0.020000.out.$$prec;\
+	done
+
+Omu_lHH.m0.020000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.Omu_lHH.m0.020000.out.$$prec.tmp out.sample.Omu_lHH.m0.020000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.Omu_lHH.m0.020000.out.$$prec out.test.Omu_lHH.m0.020000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+Omu_ll.m0.010000.out:
+in.sample.Omu_ll.m0.010000.out.${PREC}:
+out.test.Omu_ll.m0.010000.out.${PREC}:
+	ln -sf Omu_ll.m0.010000.out out.test.Omu_ll.m0.010000.out.${PREC}
+
+Omu_ll.m0.010000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=Omu_ll.m0.010000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.Omu_ll.m0.010000.out.$$prec;\
+	done
+
+Omu_ll.m0.010000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.Omu_ll.m0.010000.out.$$prec.tmp out.sample.Omu_ll.m0.010000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.Omu_ll.m0.010000.out.$$prec out.test.Omu_ll.m0.010000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+Omu_ll.m0.020000.out:
+in.sample.Omu_ll.m0.020000.out.${PREC}:
+out.test.Omu_ll.m0.020000.out.${PREC}:
+	ln -sf Omu_ll.m0.020000.out out.test.Omu_ll.m0.020000.out.${PREC}
+
+Omu_ll.m0.020000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=Omu_ll.m0.020000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.Omu_ll.m0.020000.out.$$prec;\
+	done
+
+Omu_ll.m0.020000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.Omu_ll.m0.020000.out.$$prec.tmp out.sample.Omu_ll.m0.020000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.Omu_ll.m0.020000.out.$$prec out.test.Omu_ll.m0.020000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+Omu_ls.m0.010000.s0.050000.out:
+in.sample.Omu_ls.m0.010000.s0.050000.out.${PREC}:
+out.test.Omu_ls.m0.010000.s0.050000.out.${PREC}:
+	ln -sf Omu_ls.m0.010000.s0.050000.out out.test.Omu_ls.m0.010000.s0.050000.out.${PREC}
+
+Omu_ls.m0.010000.s0.050000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=Omu_ls.m0.010000.s0.050000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.Omu_ls.m0.010000.s0.050000.out.$$prec;\
+	done
+
+Omu_ls.m0.010000.s0.050000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.Omu_ls.m0.010000.s0.050000.out.$$prec.tmp out.sample.Omu_ls.m0.010000.s0.050000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.Omu_ls.m0.010000.s0.050000.out.$$prec out.test.Omu_ls.m0.010000.s0.050000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+Omu_ls.m0.020000.s0.050000.out:
+in.sample.Omu_ls.m0.020000.s0.050000.out.${PREC}:
+out.test.Omu_ls.m0.020000.s0.050000.out.${PREC}:
+	ln -sf Omu_ls.m0.020000.s0.050000.out out.test.Omu_ls.m0.020000.s0.050000.out.${PREC}
+
+Omu_ls.m0.020000.s0.050000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=Omu_ls.m0.020000.s0.050000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.Omu_ls.m0.020000.s0.050000.out.$$prec;\
+	done
+
+Omu_ls.m0.020000.s0.050000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.Omu_ls.m0.020000.s0.050000.out.$$prec.tmp out.sample.Omu_ls.m0.020000.s0.050000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.Omu_ls.m0.020000.s0.050000.out.$$prec out.test.Omu_ls.m0.020000.s0.050000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+Omu_sHH.s0.050000.out:
+in.sample.Omu_sHH.s0.050000.out.${PREC}:
+out.test.Omu_sHH.s0.050000.out.${PREC}:
+	ln -sf Omu_sHH.s0.050000.out out.test.Omu_sHH.s0.050000.out.${PREC}
+
+Omu_sHH.s0.050000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=Omu_sHH.s0.050000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.Omu_sHH.s0.050000.out.$$prec;\
+	done
+
+Omu_sHH.s0.050000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.Omu_sHH.s0.050000.out.$$prec.tmp out.sample.Omu_sHH.s0.050000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.Omu_sHH.s0.050000.out.$$prec out.test.Omu_sHH.s0.050000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
+Omu_ss.s0.050000.out:
+in.sample.Omu_ss.s0.050000.out.${PREC}:
+out.test.Omu_ss.s0.050000.out.${PREC}:
+	ln -sf Omu_ss.s0.050000.out out.test.Omu_ss.s0.050000.out.${PREC}
+
+Omu_ss.s0.050000.out_test:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} -f Make_test "PROJ=Omu_ss.s0.050000.out" "PREC=$$prec" "PATTERNS=0 --" out.test.diff.Omu_ss.s0.050000.out.$$prec;\
+	done
+
+Omu_ss.s0.050000.out_test_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm -f out.test.Omu_ss.s0.050000.out.$$prec.tmp out.sample.Omu_ss.s0.050000.out.$$prec.tmp;\
+	     /bin/rm -f out.test.diff.Omu_ss.s0.050000.out.$$prec out.test.Omu_ss.s0.050000.out.$$prec; \
+	done
+
+#---------------------------------------------------------------------
 fnal_corr:
 in.sample.fnal_corr.${PREC}:
 out.test.fnal_corr.${PREC}:
@@ -47,6 +276,37 @@ test_fnal_clean:
 	     /bin/rm out.test.diff.fnal_corr.$$prec out.test.fnal_corr.$$prec; \
 	done
 
-check: test test_fnal
+#---------------------------------------------------------------------
 
-clean: test_clean test_fnal_clean
+test_hl_baryon:                             \
+  O5_ll.m0.010000.out_test		    \
+  O5_ll.m0.020000.out_test		    \
+  O5_ls.m0.010000.s0.050000.out_test	    \
+  O5_ls.m0.020000.s0.050000.out_test	    \
+  Omu_lHH.m0.010000.out_test		    \
+  Omu_lHH.m0.020000.out_test		    \
+  Omu_ll.m0.010000.out_test		    \
+  Omu_ll.m0.020000.out_test		    \
+  Omu_ls.m0.010000.s0.050000.out_test 	    \
+  Omu_ls.m0.020000.s0.050000.out_test 	    \
+  Omu_sHH.s0.050000.out_test     	    \
+  Omu_ss.s0.050000.out_test
+
+
+test_hl_baryon_clean:                       \
+  O5_ll.m0.010000.out_test_clean	    \
+  O5_ll.m0.020000.out_test_clean	    \
+  O5_ls.m0.010000.s0.050000.out_test_clean  \
+  O5_ls.m0.020000.s0.050000.out_test_clean  \
+  Omu_lHH.m0.010000.out_test_clean	    \
+  Omu_lHH.m0.020000.out_test_clean	    \
+  Omu_ll.m0.010000.out_test_clean	    \
+  Omu_ll.m0.020000.out_test_clean	    \
+  Omu_ls.m0.010000.s0.050000.out_test_clean \
+  Omu_ls.m0.020000.s0.050000.out_test_clean \
+  Omu_sHH.s0.050000.out_test_clean	    \
+  Omu_ss.s0.050000.out_test_clean           \
+
+check: test test_fnal test_hl_baryon
+
+clean: test_clean test_fnal_clean test_hl_baryon_clean
