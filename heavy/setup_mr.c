@@ -411,7 +411,8 @@ int readin(int prompt)
 
 
   /* Do whatever is needed to get lattice */
-  startlat_p = (gauge_file *) reload_lattice( startflag, startfile );  
+    if( startflag != CONTINUE )
+      startlat_p = (gauge_file *) reload_lattice( startflag, startfile );  
 
   return 0 ;
 }

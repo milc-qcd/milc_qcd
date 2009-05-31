@@ -217,7 +217,8 @@ int readin(int prompt) {
   dcp.U0 = u0;
 
   /* Do whatever is needed to get lattice */
-  startlat_p = reload_lattice( startflag, startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
   
   return(0);
 }

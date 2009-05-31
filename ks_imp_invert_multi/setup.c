@@ -306,7 +306,8 @@ int readin(int prompt) {
     if( startflag == CONTINUE ){
         rephase( OFF );
     }
-    startlat_p = reload_lattice( startflag, startfile );
+    if( startflag != CONTINUE )
+      startlat_p = reload_lattice( startflag, startfile );
     /* if a lattice was read in, put in KS phases and AP boundary condition */
 #ifdef FN
     invalidate_all_ferm_links(&fn_links);
@@ -321,7 +322,7 @@ int readin(int prompt) {
     make_loop_table();
     /* make table of coefficients and permutations of paths in quark action */
     init_path_table(&ks_act_paths);
-    make_path_table(&ks_act_paths, NULL, 0.);
+    make_path_table(&ks_act_paths, NULL);
 
     return(0);
 }

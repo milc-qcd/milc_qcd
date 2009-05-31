@@ -202,7 +202,8 @@ readin(int prompt)
   if( startflag == CONTINUE ){
     rephase( OFF );
   }
-  startlat_p = reload_lattice( startflag, startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
 #ifdef FN
   invalidate_all_ferm_links(&fn_links);
 #ifdef DM_DU0

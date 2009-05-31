@@ -153,7 +153,7 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
     
     /* Check the solution */
     if(check || startflag == FRESH){
-      if(make_path_table(&ks_act_paths, NULL, my_ksp->mass))
+      if(make_path_table(&ks_act_paths, NULL))
 	invalidate_all_ferm_links(&fn_links);
       load_ferm_links(&fn_links, &ks_act_paths);
 

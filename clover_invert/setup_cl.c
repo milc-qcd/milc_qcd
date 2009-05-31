@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.15  2009/05/31 02:00:56  detar
+//  Fix "continue" and NULL startlat_p bug in clover_info.c and setup*.c
+//
 //  Revision 1.14  2009/04/05 16:49:22  detar
 //  Add fixed node geometry and wave function file source
 //
@@ -357,7 +360,8 @@ int readin(int prompt) {
   scratchflag = par_buf.scratchflag;
   
   /* Do whatever is needed to get lattice */
-  startlat_p = reload_lattice( startflag, startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
 
   return(0);
 }

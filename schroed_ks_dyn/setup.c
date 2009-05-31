@@ -201,7 +201,8 @@ Real x;
     c_t11 = -(Real)(nflavors)*0.02841;
 
     /* Do whatever is needed to get lattice */
-    startlat_p = reload_lattice( startflag, startfile );
+    if( startflag != CONTINUE )
+      startlat_p = reload_lattice( startflag, startfile );
     /* put in KS phases and fermion phases, if desired */
     phases_in = OFF;
     rephase_sf( ON );

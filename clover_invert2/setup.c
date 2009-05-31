@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.6  2009/05/31 02:00:56  detar
+//  Fix "continue" and NULL startlat_p bug in clover_info.c and setup*.c
+//
 //  Revision 1.5  2009/04/05 16:43:07  detar
 //  Utilities for open meson propagators
 //
@@ -570,7 +573,8 @@ int readin(int prompt) {
     normal_exit(0);
 
   /* Do whatever is needed to get lattice */
-  startlat_p = reload_lattice( param.startflag, param.startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( param.startflag, param.startfile );
   /* Construct APE smeared links */
   ape_smear_3D( param.staple_weight, param.ape_iter );
 
@@ -582,7 +586,7 @@ int readin(int prompt) {
 
   /* make table of coefficients and permutations of paths in quark action */
   init_path_table(&ks_act_paths);
-  make_path_table(&ks_act_paths, NULL, 0.);
+  make_path_table(&ks_act_paths, NULL);
 
   return(0);
 }

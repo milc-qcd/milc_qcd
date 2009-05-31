@@ -299,13 +299,14 @@ char savebuf[128];
     strcpy(stringLFN, par_buf.stringLFN);
 
     /* Do whatever is needed to get lattice */
-    startlat_p = reload_lattice( startflag, startfile );
+    if( startflag != CONTINUE )
+      startlat_p = reload_lattice( startflag, startfile );
 #ifdef QUARK_PROP
     phases_in = OFF;
 
     /* make table of coefficients and permutations of paths in quark action */
     init_path_table(&ks_act_paths);
-    make_path_table(&ks_act_paths, NULL, 0.);
+    make_path_table(&ks_act_paths, NULL);
 #endif
 
     /* For archive writing, for now */

@@ -132,7 +132,8 @@ double dtime;
 	strcpy(stringLFN, par_buf.stringLFN);
 
     /* Do whatever is needed to get lattice */
-    startlat_p = reload_lattice( startflag, startfile );
+	if( startflag != CONTINUE )
+	  startlat_p = reload_lattice( startflag, startfile );
 
     return(0);
 }

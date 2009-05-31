@@ -230,7 +230,8 @@ int readin(int prompt)  {
   strcpy(a2_file, par_buf.a2_file);
   
   /* Do whatever is needed to get lattice */
-  startlat_p = reload_lattice( startflag, startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
   
   return(0);
 }

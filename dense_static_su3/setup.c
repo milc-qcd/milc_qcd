@@ -154,7 +154,8 @@ char savebuf[128];
     strcpy(savefile,par_buf.savefile);
 
     /* Do whatever is needed to get lattice */
-    startlat_p = reload_lattice( startflag, startfile );
+    if( startflag != CONTINUE )
+      startlat_p = reload_lattice( startflag, startfile );
     phases_in = OFF;
     return(0);
 }

@@ -1,7 +1,7 @@
 /******** setup_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.6 2008/03/28 16:18:25 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.7 2009/05/31 02:00:58 detar Exp $  ***/
 /* MIMD code version 4 */
 
 #include "prop_form_includes.h"
@@ -774,7 +774,8 @@ int readin(int prompt)
   
 
   /*** create/load the gauge configuration ****/
-  startlat_p = reload_lattice( startflag, startfile )  ;
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile )  ;
   /* We don't do any gauge fixing here */
   fixflag = NO_GAUGE_FIX;
   

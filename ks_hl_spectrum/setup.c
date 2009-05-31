@@ -185,7 +185,8 @@ int readin(int prompt)  {
   log_correlators = par_buf.log_correlators;
 
   /* Do whatever is needed to get lattice */
-  startlat_p = reload_lattice( startflag, startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
   return(0);
 }
 

@@ -2,6 +2,9 @@
 /* MIMD version 7 */
 
 //  $Log: setup.c,v $
+//  Revision 1.2  2009/05/31 02:00:57  detar
+//  Fix "continue" and NULL startlat_p bug in clover_info.c and setup*.c
+//
 //  Revision 1.1  2009/04/05 17:08:05  detar
 //  Utilities for shifting a gauge field and doing gauge fixing
 //
@@ -197,6 +200,7 @@ readin(int prompt)
   if( param.stopflag != 0 )return param.stopflag;
   
   /* Get lattice no phases in this program */
-  startlat_p = reload_lattice( param.startflag, param.startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( param.startflag, param.startfile );
   return 0;
 }

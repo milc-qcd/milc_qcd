@@ -154,7 +154,8 @@ int status;
     c_t11 = 0;
 
     /* Do whatever is needed to get lattice */
-    startlat_p = reload_lattice( startflag, startfile );
+    if( startflag != CONTINUE )
+      startlat_p = reload_lattice( startflag, startfile );
 
     return(0);
 } /*readin()*/

@@ -279,7 +279,8 @@ int readin(int prompt) {
   scratchflag = par_buf.scratchflag;
 
   /* Do whatever is needed to get lattice */
-  startlat_p = reload_lattice( startflag, startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
 
   return(0);
 }

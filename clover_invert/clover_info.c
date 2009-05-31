@@ -122,7 +122,7 @@ void write_appl_w_prop_info(FILE *fp)
 char *create_w_QCDML(){
 
   size_t bytes = 0;
-  char *info = (char *)malloc(INFOSTRING_MAX);
+  char *info;
   size_t max = INFOSTRING_MAX;
   //  char begin[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><info>";
   //  char end[] = "</info>";
@@ -131,17 +131,19 @@ char *create_w_QCDML(){
   int n_spins = 4;
   int spins[4] = {0,1,2,3};
   
+  info = (char *)malloc(INFOSTRING_MAX);  
+  info[0] = '\0';
   //  snprintf(info+bytes, max-bytes,"%s",begin);
   //  bytes = strlen(info);
   
   if(startlat_p != NULL)
     {
+      bytes = strlen(info);
       sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.filename","%s",
 			      startlat_p->filename,0,0);
       bytes = strlen(info);
       sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.time_stamp","%s",
 			      startlat_p->header->time_stamp,0,0);
-      bytes = strlen(info);
       sprintf(sums,"%x %x",startlat_p->check.sum29,startlat_p->check.sum31);
       bytes = strlen(info);
       sprint_w_prop_info_item(info+bytes, max-bytes,"gauge.checksums",

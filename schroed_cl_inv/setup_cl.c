@@ -173,7 +173,8 @@ int readin(int prompt) {
 		/* These boundary fields are actually never used here */
 
   /* Do whatever is needed to get lattice */
-  startlat_p = reload_lattice( startflag, startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
 
   /* put in fermion phases */
   if( startflag != CONTINUE) do_phases();

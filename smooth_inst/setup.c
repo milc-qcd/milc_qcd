@@ -179,7 +179,8 @@ int readin(const int prompt)
    strcpy(topofile,par_buf.topofile);
 
    /* Do whatever is needed to get lattice */
-   startlat_p = reload_lattice( startflag, startfile );
+   if( startflag != CONTINUE )
+     startlat_p = reload_lattice( startflag, startfile );
 
    return 0;
 

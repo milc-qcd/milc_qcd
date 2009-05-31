@@ -1,6 +1,6 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.8 2008/03/28 16:16:47 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.9 2009/05/31 02:00:58 detar Exp $  ***/
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
@@ -552,7 +552,8 @@ int readin(int prompt)
 
 
   /* Do whatever is needed to get lattice */
-  startlat_p = (gauge_file *) reload_lattice( startflag, startfile );  
+    if( startflag != CONTINUE )
+      startlat_p = (gauge_file *) reload_lattice( startflag, startfile );  
 
   return 0 ;
 }

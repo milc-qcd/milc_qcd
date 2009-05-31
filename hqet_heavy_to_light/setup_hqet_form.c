@@ -1,7 +1,7 @@
 /******** setup_hqet_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.6 2008/03/28 16:18:36 detar Exp $   ****/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.7 2009/05/31 02:00:57 detar Exp $   ****/
 /* MIMD code version 4 */
 
 #include "hqet_light_includes.h"
@@ -398,7 +398,8 @@ int readin(int prompt)
       velocity[ i ][ j ] = par_buf.velocity[ i ][ j ] ;
   
   /*** create/load the gauge configuration ****/
-  startlat_p = reload_lattice( startflag, startfile )  ;
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile )  ;
 
   return(0);
 }

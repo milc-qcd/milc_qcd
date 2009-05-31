@@ -188,7 +188,8 @@ Real x;
     if( startflag == CONTINUE ){
         rephase( OFF );
     }
-    startlat_p = reload_lattice( startflag, startfile );
+    if( startflag != CONTINUE )
+      startlat_p = reload_lattice( startflag, startfile );
     /* if a lattice was read in, put in KS phases and AP boundary condition */
     phases_in = OFF;
     rephase( ON );

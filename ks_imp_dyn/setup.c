@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.16  2009/05/31 02:00:57  detar
+//  Fix "continue" and NULL startlat_p bug in clover_info.c and setup*.c
+//
 //  Revision 1.15  2008/03/28 15:09:19  detar
 //  Fix coding errors for fixed geometry
 //
@@ -412,7 +415,8 @@ readin(int prompt)
   if( startflag == CONTINUE ){
     rephase( OFF );
   }
-  startlat_p = reload_lattice( startflag, startfile );
+  if( startflag != CONTINUE )
+    startlat_p = reload_lattice( startflag, startfile );
 #ifdef FN
   invalidate_all_ferm_links(&fn_links);
 #ifdef DM_DU0
@@ -427,7 +431,7 @@ readin(int prompt)
   /* make table of coefficients and permutations of paths in quark action */
   init_path_table(&ks_act_paths);
   init_path_table(&ks_act_paths_dmdu0);
-  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0, 0.);
+  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
   
   return(0);
 }
