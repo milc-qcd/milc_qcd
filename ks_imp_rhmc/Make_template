@@ -692,8 +692,8 @@ su3_rhmc_hisq.f2111: su3_rhmc_hisq
 		     mv su3_rhmc_hisq su3_rhmc_hisq.f2111
 
 
-su3_rhmc_hisq_su3.f2111: su3_rhmc_hisq
-		     mv su3_rhmc_hisq su3_rhmc_hisq_su3.f2111
+su3_rhmc_hisq_su3.f2111: su3_rhmc_hisq_su3
+		     mv su3_rhmc_hisq_su3 su3_rhmc_hisq_su3.f2111
 
 
 clean:
