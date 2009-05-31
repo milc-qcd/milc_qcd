@@ -16,6 +16,8 @@ static void
 malloc_kg_temps(){
   int dir;
   
+  for(dir=0;dir<8;dir++)wtmp[dir] = NULL;
+
   FORALLUPDIRBUT(TUP,dir){
     wtmp[dir] =(wilson_vector *)malloc(sites_on_node*sizeof(wilson_vector));
     if(wtmp[dir] == NULL){
@@ -38,14 +40,16 @@ static void
 cleanup_kg_temps(){
   int i ;
   for(i=0;i<8;i++){
-    if(wtmp[i] != NULL)
-      free(wtmp[i]) ; 
+    if(wtmp[i] != NULL){
+      free(wtmp[i]); 
+      wtmp[i] = NULL;
+    }
   }
 }
 
 /*------------------------------------------------------------*/
 /* Compute chi <- msq * psi - Lapl_3d psi
-   where Lapl_3d psi(r) = -6 psi + sum_{dir=1}^3 [psi(r+i) + psi(r-i)] */
+   where Lapl_3d psi(r) = -6 psi + sum_{dir=1}^3 [psi(r+dir) + psi(r-dir)] */
 
 static void 
 klein_gord_field(wilson_vector *psi, wilson_vector *chi, 
