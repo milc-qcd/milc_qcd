@@ -10,7 +10,7 @@
        about signs of coefficients.  See long comment at bottom
        of quark_stuff.c. */
 
-#define HISQ_NAIK_ADJUSTABLE // allow for adjustable epsilon in Naik term
+//#define HISQ_NAIK_ADJUSTABLE // allow for adjustable epsilon in Naik term
 //#define HISQ_NAIK_2ND_ORDER (-0.675)
 
 #define MAX_NUM 688  // should be obsolete, for now max of MAX_NUM_[12]
