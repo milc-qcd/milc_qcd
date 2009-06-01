@@ -35,7 +35,7 @@
 /* prototypes for functions in this directory */
 
 /* setup.c */
-int setup();
+int setup(void);
 int readin(int prompt);
 
 /* update_rhmc.c */
@@ -49,7 +49,7 @@ enum int_alg_t { INT_LEAPFROG, INT_OMELYAN, INT_2EPS_3TO1, INT_2EPS_2TO1,
 #define INT_ALG INT_OMELYAN
 #endif
 
-int update();
+int update(void);
 const char *ks_int_alg_opt_chr( void );
 
 /* update_h_rhmc.c */
@@ -105,7 +105,7 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo);
 double d_action_rhmc(su3_vector **multi_x, su3_vector *sumvec );
 void gauge_field_copy(field_offset src,field_offset dest);
 double fermion_action( su3_vector **multi_x, su3_vector *sumvec );
-double hmom_action( );
+double hmom_action(void);
 
 #endif /* KS_IMP_INCLUDES_H_ */
 

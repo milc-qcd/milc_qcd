@@ -4,7 +4,7 @@
 /* Measure total action, as needed by the hybrid Monte Carlo algorithm.  */
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
-Real ahmat_mag_sq(anti_hermitmat *pt);
+static Real ahmat_mag_sq(anti_hermitmat *pt);
 
 /*DEBUG*/
 double old_g, old_h, old_f, old_a;
@@ -75,7 +75,7 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
 }
 
 /* gauge momentum contribution to the action */
-double hmom_action() {
+double hmom_action(void) {
   register int i,dir;
   register site *s;
   double sum;

@@ -90,7 +90,7 @@ typedef float OUTPUT_TYPE;
 
 /* Open a binary file for serial writing by node 0 */
 
-gauge_file *w_serial_i(char *filename)
+static gauge_file *w_serial_i(char *filename)
 {
   /* Only node 0 opens the file filename */
   /* Returns a file structure describing the opened file */
@@ -145,7 +145,7 @@ gauge_file *w_serial_i(char *filename)
 
 /* Here only node 0 writes gauge configuration to a binary file */
 
-void w_serial_old(gauge_file *gf)
+static void w_serial_old(gauge_file *gf)
 {
   /* gf  = file descriptor as opened by w_serial_i */
 
@@ -376,7 +376,7 @@ static void send_buf_to_node0(fsu3_matrix *tbuf, int tbuf_length,
   }
 }
 
-void w_serial(gauge_file *gf)
+static void w_serial(gauge_file *gf)
 {
   /* gf  = file descriptor as opened by w_serial_i */
 
@@ -536,7 +536,7 @@ void w_serial(gauge_file *gf)
 
 /* Here only node 0 reads the gauge configuration from a binary file */
 
-void r_serial(gauge_file *gf)
+static void r_serial(gauge_file *gf)
 {
   /* gf  = gauge configuration file structure */
 
@@ -749,16 +749,13 @@ void r_serial(gauge_file *gf)
 
 /*----------------------------------------------------------------------*/
 
-void r_serial_arch(gauge_file *gf)
+static void r_serial_arch(gauge_file *gf)
 {
   /* gf  = gauge configuration file structure */
 
   FILE *fp;
-  gauge_header *gh;
   char *filename;
-  int byterevflag;
 
-  off_t gauge_check_size;   /* Size of gauge configuration checksum record */
   int rcv_rank, rcv_coords;
   int destnode;
   int i,k;
@@ -782,14 +779,10 @@ void r_serial_arch(gauge_file *gf)
   if(dataformat == ARCHIVE_3x2)realspersite = 48;
   else realspersite = 72;
   fp = gf->fp;
-  gh = gf->header;
   filename = gf->filename;
-  byterevflag = gf->byterevflag;
 
   if(this_node == 0)
     {
-      gauge_check_size = 0;
-      
       if(gf->parallel)
 	printf("%s: Attempting serial read from parallel file \n",myname);
 
@@ -986,7 +979,7 @@ void r_serial_arch(gauge_file *gf)
 /*---------------------------------------------------------------------------*/
 /* Write parallel gauge configuration in coordinate natural order */
 
-void w_parallel(gauge_file *gf)
+static void w_parallel(gauge_file *gf)
 {
   /* gf  = file descriptor as opened by w_parallel_i */
 
@@ -1175,7 +1168,7 @@ void w_parallel(gauge_file *gf)
 
 /* Write parallel gauge configuration in node dump order */
 
-void w_checkpoint(gauge_file *gf)
+static void w_checkpoint(gauge_file *gf)
 {
   /* gf  = file descriptor as opened by w_checkpoint_i */
 
@@ -1274,7 +1267,7 @@ void w_checkpoint(gauge_file *gf)
 
 /*---------------------------------------------------------------------------*/
 
-gauge_file *r_parallel_i(char *filename)
+static gauge_file *r_parallel_i(char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -1327,14 +1320,13 @@ gauge_file *r_parallel_i(char *filename)
 /*----------------------------------------------------------------------*/
 
 /* Read gauge configuration in parallel from a single file */
-void r_parallel(gauge_file *gf)
+static void r_parallel(gauge_file *gf)
 {
   /* gf  = gauge configuration file structure */
 
   FILE *fp;
   gauge_header *gh;
   char *filename;
-  int byterevflag;
   fsu3_matrix *lbuf;
   struct {
     short x,y,z,t;
@@ -1363,7 +1355,6 @@ void r_parallel(gauge_file *gf)
   gh = gf->header;
 
   filename = gf->filename;
-  byterevflag = gf->byterevflag;
 
   if(!gf->parallel)
     printf("%s: Attempting parallel read from serial file.\n",myname);

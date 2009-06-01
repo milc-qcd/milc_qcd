@@ -13,7 +13,7 @@
 
 void make_lattice(){
   register int i;		/* scratch */
-  int x,y,z,t;		/* coordinates */
+  short x,y,z,t;		/* coordinates */
   /* allocate space for lattice, fill in parity, coordinates and index */
   node0_printf("Mallocing %.1f MBytes per node for lattice\n",
 	       (double)sites_on_node * sizeof(site)/1e6);

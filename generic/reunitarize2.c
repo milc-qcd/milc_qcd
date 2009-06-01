@@ -60,7 +60,7 @@ double av_deviation;
     (*matrix).e[2][2].imag = -ti; \
  } /* define fixsu3 */
 
-int check_deviation(Real deviation)
+static int check_deviation(Real deviation)
 {
 
   if(max_deviation<deviation) max_deviation=deviation;
