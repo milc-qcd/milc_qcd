@@ -501,6 +501,8 @@ void grsource(int parity);
 void grsource_imp( field_offset dest, Real mass, int parity,
 		   ferm_links_t *fn );
 void grsource_plain( field_offset dest, int parity );
+void z2rsource_imp( field_offset dest, Real mass, int parity,
+		    ferm_links_t *fn, ks_action_paths *ap );
 void z2rsource_plain( field_offset dest, int parity );
 void checkmul_imp( field_offset src, Real mass,
 		   ferm_links_t *fn );
