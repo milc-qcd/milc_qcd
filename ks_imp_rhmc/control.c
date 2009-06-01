@@ -143,7 +143,9 @@ main( int argc, char **argv )
 #endif
 	    load_ferm_links(&fn_links, &ks_act_paths);
 #ifdef DM_DU0
+#ifdef HISQ
 	    fn_links_dmdu0.hl.current_X_set = 0;
+#endif
 	    load_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
 #endif
 	    
