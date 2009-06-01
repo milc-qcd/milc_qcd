@@ -863,7 +863,7 @@ ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
     printf("'save_serial_ksprop', ");
     printf("'save_serial_fm_ksprop', 'save_serial_scidac_ksprop', ");
     printf("'save_parallel_scidac_ksprop', 'save_multifile_scidac_ksprop', ");
-    printf("'save_partfile_scidac_ksprop' ?\n");
+    printf("'save_partition_scidac_ksprop' ?\n");
   }
 
   savebuf = get_next_tag(fp, "write ksprop command", myname);
@@ -904,7 +904,7 @@ ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
     terminate(1);
 #endif
   }
-  else if(strcmp("save_partfile_scidac_ksprop",savebuf) == 0 ) {
+  else if(strcmp("save_partition_scidac_ksprop",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_PARTITION_SCIDAC;
 #else

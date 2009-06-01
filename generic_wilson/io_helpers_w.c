@@ -1240,7 +1240,7 @@ ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
     printf("'forget_wprop', 'save_ascii_wprop', ");
     printf("'save_serial_fm_wprop', 'save_serial_fm_sc_wprop', ");
     printf("'save_serial_scidac_wprop', 'save_parallel_scidac_wprop', ");
-    printf("'save_partfile_scidac_wprop', 'save_multifile_scidac_wprop', ");
+    printf("'save_partition_scidac_wprop', 'save_multifile_scidac_wprop', ");
     printf("\n");
   }
 
@@ -1264,7 +1264,7 @@ ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
   else if(strcmp("save_parallel_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_PARALLEL_SCIDAC;
   }
-  else if(strcmp("save_partfile_scidac_wprop",savebuf) == 0 ) {
+  else if(strcmp("save_partition_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_PARTITION_SCIDAC;
   }
   else if(strcmp("save_multifile_scidac_wprop",savebuf) == 0 ) {

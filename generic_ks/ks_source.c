@@ -691,10 +691,10 @@ int ask_output_ks_quark_source_file( FILE *fp, int prompt,
   if (prompt!=0){
     printf("'save_serial_scidac_ks_source' or ");
     printf("'save_multifile_scidac_ks_source' or ");
-    printf("'save_partfile_scidac_ks_source' or ");
+    printf("'save_partition_scidac_ks_source' or ");
     printf("'save_serial_scidac_w_source' or ");
     printf("'save_multifile_scidac_w_source' or ");
-    printf("'save_partfile_scidac_w_source'? ");
+    printf("'save_partition_scidac_w_source'? ");
   }
 
   savebuf = get_next_tag(fp, "output quark source command", myname);
