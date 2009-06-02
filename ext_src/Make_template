@@ -57,8 +57,13 @@ G_OBJECTS =          \
   nersc_cksum.o       \
   project_su3_hit.o   \
   remap_stdio_from_args.o \
-  restrict_fourier.o \
-  reunitarize2.o     \
+  reunitarize2.o
+
+ifeq ($(strip ${HAVEFFTW}),true)
+  G_OBJECTS += remap_fftw_fourier.o
+else
+  G_OBJECTS += restrict_fourier.o
+endif
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS += io_scidac.o io_scidac_types.o
