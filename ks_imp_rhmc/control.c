@@ -93,6 +93,13 @@ main( int argc, char **argv )
         g_measure_tune( );
 #endif /* MEASURE_AND_TUNE_HISQ */
 #endif /* MILC_GLOBAL_DEBUG */
+
+	/************************************************************/
+	/* WARNING: The spectrum code below is under revision       */
+	/* It works only in special cases                           */
+	/* For the asqtad spectrum, please create the lattice first */
+	/* and then run the appropriate executable in ks_imp_dyn.   */
+	/************************************************************/
 	/* Do some fermion measurements */
 #ifdef SPECTRUM 
 	/* Fix TUP Coulomb gauge - gauge links only*/
