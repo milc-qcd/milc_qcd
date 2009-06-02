@@ -91,7 +91,7 @@ interpret_usqcd_w_save_flag(int *volfmt, int *serpar, int flag)
   case SAVE_MULTIFILE_SCIDAC: 
     *volfmt = QIO_MULTIFILE;
     break;
-  case SAVE_PARTITION_SCIDAC:
+  case SAVE_PARTFILE_SCIDAC:
     *volfmt = QIO_PARTFILE;
     break;
   default:
@@ -266,7 +266,7 @@ w_open_wprop(int flag, char *filename, int source_type)
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:   
   case SAVE_MULTIFILE_SCIDAC: 
-  case SAVE_PARTITION_SCIDAC:
+  case SAVE_PARTFILE_SCIDAC:
 
 #ifdef HAVE_QIO
     wpf = setup_output_w_prop_file();
@@ -341,7 +341,7 @@ w_close_wprop(int flag, w_prop_file *wpf)
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:   
   case SAVE_MULTIFILE_SCIDAC: 
-  case SAVE_PARTITION_SCIDAC:
+  case SAVE_PARTFILE_SCIDAC:
 #ifdef HAVE_QIO
     w_close_usqcd_wprop_file(wpf->outfile);
     if(wpf->prop != NULL)
@@ -504,7 +504,7 @@ save_wprop_sc_from_field( int flag, w_prop_file *wpf,
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:   
   case SAVE_MULTIFILE_SCIDAC: 
-  case SAVE_PARTITION_SCIDAC:
+  case SAVE_PARTFILE_SCIDAC:
 
 #ifdef HAVE_QIO
     file_type = wpf->file_type;
@@ -839,7 +839,7 @@ reload_wprop_to_wp_field( int flag, char *filename, wilson_quark_source *wqs,
 /* save the full propagator (src is wilson_propagator type)
    FORGET,
    SAVE_ASCII, 
-   SAVE_SERIAL_SCIDAC, SAVE_PARALLEL_SCIDAC, SAVE_PARTITION_SCIDAC,
+   SAVE_SERIAL_SCIDAC, SAVE_PARALLEL_SCIDAC, SAVE_PARTFILE_SCIDAC,
    SAVE_MULTFILE_SCIDAC
 */
 int 
@@ -878,7 +878,7 @@ save_wprop_from_field( int flag, char *filename, wilson_quark_source *wqs,
 /* save the full propagator (src is wilson_prop_field type)
    FORGET,
    SAVE_ASCII, 
-   SAVE_SERIAL_SCIDAC, SAVE_PARALLEL_SCIDAC, SAVE_PARTITION_SCIDAC,
+   SAVE_SERIAL_SCIDAC, SAVE_PARALLEL_SCIDAC, SAVE_PARTFILE_SCIDAC,
    SAVE_MULTFILE_SCIDAC
 */
 int 
@@ -1159,7 +1159,7 @@ convert_outflag_to_inflag_wprop(int outflag){
   case SAVE_SERIAL_FM_SC:                
   case SAVE_SERIAL_SCIDAC:
   case SAVE_MULTIFILE_SCIDAC:            
-  case SAVE_PARTITION_SCIDAC:            
+  case SAVE_PARTFILE_SCIDAC:            
     return RELOAD_SERIAL;
   case SAVE_PARALLEL_SCIDAC:             
     return RELOAD_PARALLEL;
@@ -1240,7 +1240,7 @@ ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
     printf("'forget_wprop', 'save_ascii_wprop', ");
     printf("'save_serial_fm_wprop', 'save_serial_fm_sc_wprop', ");
     printf("'save_serial_scidac_wprop', 'save_parallel_scidac_wprop', ");
-    printf("'save_partition_scidac_wprop', 'save_multifile_scidac_wprop', ");
+    printf("'save_partfile_scidac_wprop', 'save_multifile_scidac_wprop', ");
     printf("\n");
   }
 
@@ -1264,8 +1264,8 @@ ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
   else if(strcmp("save_parallel_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_PARALLEL_SCIDAC;
   }
-  else if(strcmp("save_partition_scidac_wprop",savebuf) == 0 ) {
-    *flag=SAVE_PARTITION_SCIDAC;
+  else if(strcmp("save_partfile_scidac_wprop",savebuf) == 0 ) {
+    *flag=SAVE_PARTFILE_SCIDAC;
   }
   else if(strcmp("save_multifile_scidac_wprop",savebuf) == 0 ) {
     *flag=SAVE_MULTIFILE_SCIDAC;

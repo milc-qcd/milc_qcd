@@ -27,11 +27,11 @@
 #define SAVE_SERIAL_ILDG                 46
 #define SAVE_PARALLEL_ILDG               47
 #define SAVE_MULTIFILE_ILDG              48
-#define SAVE_PARTITION_ILDG              49
+#define SAVE_PARTFILE_ILDG               49
 #define SAVE_SERIAL_SCIDAC               50
 #define SAVE_PARALLEL_SCIDAC             51
 #define SAVE_MULTIFILE_SCIDAC            52
-#define SAVE_PARTITION_SCIDAC            53
+#define SAVE_PARTFILE_SCIDAC             53
 #define SAVE_PARALLEL                    54
 #define SAVE_MULTIDUMP                   55
 #define SAVE_SERIAL_ARCHIVE              56
@@ -355,10 +355,10 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf);
 gauge_file *save_serial_scidac(char *filename);
 gauge_file *save_parallel_scidac(char *filename);
 gauge_file *save_multifile_scidac(char *filename);
-gauge_file *save_partition_scidac(char *filename);
+gauge_file *save_partfile_scidac(char *filename);
 gauge_file *save_serial_ildg(char *filename, char *stringLFN);
 gauge_file *save_parallel_ildg(char *filename, char *stringLFN);
-gauge_file *save_partition_ildg(char *filename, char *stringLFN);
+gauge_file *save_partfile_ildg(char *filename, char *stringLFN);
 gauge_file *save_multifile_ildg(char *filename, char *stringLFN);
 gauge_file *restore_serial_scidac(char *filename);
 gauge_file *restore_parallel_scidac(char *filename);

@@ -303,7 +303,7 @@ gauge_file *save_multifile_scidac(char *filename){
   return save_scidac(filename, QIO_MULTIFILE, QIO_SERIAL, QIO_ILDGNO, NULL);
 }
 
-gauge_file *save_partition_scidac(char *filename){
+gauge_file *save_partfile_scidac(char *filename){
   return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGNO, NULL);
 }
 
@@ -322,7 +322,7 @@ gauge_file *save_multifile_ildg(char *filename, char *stringLFN){
 		     stringLFN);
 }
 
-gauge_file *save_partition_ildg(char *filename, char *stringLFN){
+gauge_file *save_partfile_ildg(char *filename, char *stringLFN){
   return save_scidac(filename, QIO_PARTFILE, QIO_SERIAL, QIO_ILDGLAT,
 		     stringLFN);
 }

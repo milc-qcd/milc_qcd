@@ -1460,7 +1460,7 @@ int ask_output_w_quark_source_file( FILE *fp, int prompt,
   if (prompt!=0){
     printf("enter 'save_serial_scidac_w_source', or");
     printf("enter 'save_multifile_scidac_w_source', or");
-    printf("enter 'save_partition_scidac_w_source'");
+    printf("enter 'save_partfile_scidac_w_source'");
     printf(", for source type\n");
   }
 
@@ -1489,9 +1489,9 @@ int ask_output_w_quark_source_file( FILE *fp, int prompt,
     terminate(1);
 #endif
   }
-  else if(strcmp("save_partition_scidac_w_source",savebuf) == 0 ) {
+  else if(strcmp("save_partfile_scidac_w_source",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-    *flag=SAVE_PARTITION_SCIDAC;
+    *flag=SAVE_PARTFILE_SCIDAC;
     *source_type = DIRAC_FIELD_FILE;
     strcpy(descrp,"dirac_field");
 #else

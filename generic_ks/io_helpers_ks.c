@@ -93,7 +93,7 @@ interpret_usqcd_ks_save_flag(int *volfmt, int *serpar, int flag)
   case SAVE_MULTIFILE_SCIDAC: 
     *volfmt = QIO_MULTIFILE;
     break;
-  case SAVE_PARTITION_SCIDAC:
+  case SAVE_PARTFILE_SCIDAC:
     *volfmt = QIO_PARTFILE;
     break;
   default:
@@ -278,7 +278,7 @@ w_open_ksprop(int flag, char *filename, int source_type)
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:   
   case SAVE_MULTIFILE_SCIDAC: 
-  case SAVE_PARTITION_SCIDAC:
+  case SAVE_PARTFILE_SCIDAC:
 
 #ifdef HAVE_QIO
     kspf = setup_output_ksprop_file();
@@ -361,7 +361,7 @@ w_close_ksprop(int flag, ks_prop_file *kspf)
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:   
   case SAVE_MULTIFILE_SCIDAC: 
-  case SAVE_PARTITION_SCIDAC:
+  case SAVE_PARTFILE_SCIDAC:
 #ifdef HAVE_QIO
     close_usqcd_ksprop_write(kspf->outfile);
     if(kspf->prop != NULL)
@@ -521,7 +521,7 @@ save_ksprop_c_from_field( int flag, ks_prop_file *kspf,
   case SAVE_SERIAL_SCIDAC:
   case SAVE_PARALLEL_SCIDAC:   
   case SAVE_MULTIFILE_SCIDAC: 
-  case SAVE_PARTITION_SCIDAC:
+  case SAVE_PARTFILE_SCIDAC:
 
 #ifdef HAVE_QIO
     file_type = kspf->file_type;
@@ -863,7 +863,7 @@ ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
     printf("'save_serial_ksprop', ");
     printf("'save_serial_fm_ksprop', 'save_serial_scidac_ksprop', ");
     printf("'save_parallel_scidac_ksprop', 'save_multifile_scidac_ksprop', ");
-    printf("'save_partition_scidac_ksprop' ?\n");
+    printf("'save_partfile_scidac_ksprop' ?\n");
   }
 
   savebuf = get_next_tag(fp, "write ksprop command", myname);
@@ -904,9 +904,9 @@ ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
     terminate(1);
 #endif
   }
-  else if(strcmp("save_partition_scidac_ksprop",savebuf) == 0 ) {
+  else if(strcmp("save_partfile_scidac_ksprop",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-    *flag=SAVE_PARTITION_SCIDAC;
+    *flag=SAVE_PARTFILE_SCIDAC;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);

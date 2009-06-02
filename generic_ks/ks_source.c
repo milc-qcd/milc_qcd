@@ -691,10 +691,10 @@ int ask_output_ks_quark_source_file( FILE *fp, int prompt,
   if (prompt!=0){
     printf("'save_serial_scidac_ks_source' or ");
     printf("'save_multifile_scidac_ks_source' or ");
-    printf("'save_partition_scidac_ks_source' or ");
+    printf("'save_partfile_scidac_ks_source' or ");
     printf("'save_serial_scidac_w_source' or ");
     printf("'save_multifile_scidac_w_source' or ");
-    printf("'save_partition_scidac_w_source'? ");
+    printf("'save_partfile_scidac_w_source'? ");
   }
 
   savebuf = get_next_tag(fp, "output quark source command", myname);
@@ -722,9 +722,9 @@ int ask_output_ks_quark_source_file( FILE *fp, int prompt,
     terminate(1);
 #endif
   }
-  else if(strcmp("save_partition_scidac_ks_source",savebuf) == 0 ) {
+  else if(strcmp("save_partfile_scidac_ks_source",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-    *flag=SAVE_PARTITION_SCIDAC;
+    *flag=SAVE_PARTFILE_SCIDAC;
     *source_type = VECTOR_FIELD_FILE;
     strcpy(descrp,"vector_field");
 #else
@@ -752,9 +752,9 @@ int ask_output_ks_quark_source_file( FILE *fp, int prompt,
     terminate(1);
 #endif
   }
-  else if(strcmp("save_partition_scidac_w_source",savebuf) == 0 ) {
+  else if(strcmp("save_partfile_scidac_w_source",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-    *flag=SAVE_PARTITION_SCIDAC;
+    *flag=SAVE_PARTFILE_SCIDAC;
     *source_type = DIRAC_FIELD_FILE;
     strcpy(descrp,"dirac_field");
 #else

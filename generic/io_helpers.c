@@ -70,11 +70,11 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
 	    terminate(1);
 #endif
             break;
-        case SAVE_PARTITION_ILDG:
+        case SAVE_PARTFILE_ILDG:
 #ifdef HAVE_QIO
- 	    gf = save_partition_ildg(filename,stringLFN);
+ 	    gf = save_partfile_ildg(filename,stringLFN);
 #else
-	    node0_printf("save_partition_ildg requires QIO compilation\n");
+	    node0_printf("save_partfile_ildg requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
@@ -110,11 +110,11 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
 	    terminate(1);
 #endif
             break;
-        case SAVE_PARTITION_SCIDAC:
+        case SAVE_PARTFILE_SCIDAC:
 #ifdef HAVE_QIO
- 	    gf = save_partition_scidac(filename);
+ 	    gf = save_partfile_scidac(filename);
 #else
-	    node0_printf("save_partition_scidac requires QIO compilation\n");
+	    node0_printf("save_partfile_scidac requires QIO compilation\n");
 	    terminate(1);
 #endif
             break;
@@ -350,7 +350,7 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   char myname[] = "ask_ending_lattice";
   
   if (prompt!=0) printf(
-			"'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partition_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_partition_ildg', or 'save_multifile_ildg'\n");
+			"'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partfile_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_partfile_ildg', or 'save_multifile_ildg'\n");
   
   savebuf = get_next_tag(fp, "save lattice command", myname);
   if (savebuf == NULL)return 1;
@@ -395,9 +395,9 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
     terminate(1);
 #endif
   }
-  else if(strcmp("save_partition_scidac",savebuf) == 0 ) {
+  else if(strcmp("save_partfile_scidac",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-    *flag=SAVE_PARTITION_SCIDAC;
+    *flag=SAVE_PARTFILE_SCIDAC;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);
@@ -422,9 +422,9 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
     terminate(1);
 #endif
   }
-  else if(strcmp("save_partition_ildg",savebuf) == 0 ) {
+  else if(strcmp("save_partfile_ildg",savebuf) == 0 ) {
 #ifdef HAVE_QIO
-    *flag=SAVE_PARTITION_ILDG;
+    *flag=SAVE_PARTFILE_ILDG;
 #else
     node0_printf("requires QIO compilation!\n");
     terminate(1);
@@ -512,7 +512,7 @@ int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
   /* For ILDG output formats we require a logical file name next */
   if( flag == SAVE_SERIAL_ILDG ||
       flag == SAVE_PARALLEL_ILDG ||
-      flag == SAVE_PARTITION_ILDG ||
+      flag == SAVE_PARTFILE_ILDG ||
       flag == SAVE_MULTIFILE_ILDG ){
     status = get_s(fp, prompt, "ILDG_LFN", stringLFN);
   }

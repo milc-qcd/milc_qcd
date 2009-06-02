@@ -13,7 +13,7 @@ int ask_color_vector( int prompt, int *flag, char *filename ){
   int status;
   
   if (prompt!=0) 
-    printf("enter 'fresh', 'reload_serial_ks_vector' 'save_serial_ks_vector' 'save_partition_scidac_ks_vector'\n");
+    printf("enter 'fresh', 'reload_serial_ks_vector' 'save_serial_ks_vector' 'save_partfile_scidac_ks_vector'\n");
   status=scanf("%s",savebuf);
   if(status !=1) {
     printf("\nask_color_vector: ERROR IN INPUT: command \"%s\" is invalid\n",savebuf);
@@ -35,8 +35,8 @@ int ask_color_vector( int prompt, int *flag, char *filename ){
   else if(strcmp("save_serial_ks_vector",savebuf) == 0 ) {
     *flag = SAVE_SERIAL;
   }
-  else if(strcmp("save_partition_scidac_ks_vector",savebuf) == 0 ) {
-    *flag = SAVE_PARTITION_SCIDAC;
+  else if(strcmp("save_partfile_scidac_ks_vector",savebuf) == 0 ) {
+    *flag = SAVE_PARTFILE_SCIDAC;
   }
   else{
     printf("\nask_color_vector: ERROR IN INPUT: color vector command \"%s\" is invalid\n",savebuf); return(1);
@@ -59,7 +59,7 @@ int ask_color_matrix( int prompt, int *flag, char *filename ){
   int status;
   
   if (prompt!=0) 
-    printf("enter 'fresh', 'reload_serial_color_matrix' 'save_serial_color_matrix' 'save_partition_scidac_color_matrix'\n");
+    printf("enter 'fresh', 'reload_serial_color_matrix' 'save_serial_color_matrix' 'save_partfile_scidac_color_matrix'\n");
   status=scanf("%s",savebuf);
   if(status !=1) {
     printf("\nask_color_matrix: ERROR IN INPUT: command \"%s\" is invalid\n",savebuf);
@@ -81,8 +81,8 @@ int ask_color_matrix( int prompt, int *flag, char *filename ){
   else if(strcmp("save_serial_color_matrix",savebuf) == 0 ) {
     *flag = SAVE_SERIAL;
   }
-  else if(strcmp("save_partition_scidac_color_matrix",savebuf) == 0 ) {
-    *flag = SAVE_PARTITION_SCIDAC;
+  else if(strcmp("save_partfile_scidac_color_matrix",savebuf) == 0 ) {
+    *flag = SAVE_PARTFILE_SCIDAC;
   }
   else{
     printf("\nask_color_matrix: ERROR IN INPUT: color matrix command \"%s\" is invalid\n",savebuf); return(1);
