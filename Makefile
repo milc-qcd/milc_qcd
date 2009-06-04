@@ -38,6 +38,7 @@ PRECISION = 1
 
 ifeq ($(strip ${MPP}),true)
   CC = /usr/local/mvapich/bin/mpicc
+#  CC = mpixlc_r # BG/P
 else
   CC = gcc
 endif
@@ -62,7 +63,8 @@ OCFLAGS = -Wall # ( -Wall, etc )
 #OCFLAGS =  -march=pentium4 -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/24/04
 
 #------------------------ BlueGene -----------------------------------
-# OCFLAGS = -qarch=440d -qtune=440
+# OCFLAGS = -qarch=450 -qlanglvl=stdc99 # BG/P
+# OCFLAGS = -qarch=440d # BG/L
 
 #-------------- Intel icc/ecc -----------------------------------
 #OCFLAGS = -tpp2 -static
@@ -148,7 +150,7 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 #    MILC (nonoptimized MILC implementation for testing)
 #    blank if you don't want QOP
 
-WANTQOP = #QDP (or QCDOC or MILC)
+WANTQOP = #(or QCDOC or MILC)
 
 # Backward compatibility for QOPQDP:
 # As of version qopqdp 0.9.0 the normalization convention for the
@@ -180,6 +182,7 @@ QLA = ${SCIDAC}/qla
 # Either version
 QDP = ${SCIDAC}/qdp-single
 QOPQDP = ${SCIDAC}/qopqdp-single
+#QOPQDP = ${SCIDAC}/qopqdp-lapack # BG/P
 
 QOP = ${QOPQDP}
 
@@ -199,21 +202,40 @@ include ../Make_template_qop
 include ../Make_template_scidac
 
 #----------------------------------------------------------------------
-# 11. Linker
+# 11. FFTW3 Options
+
+WANTFFTW = #true
+FFTW = ${HOME}/fftw/build-gcc
+LIBFFTW = # -lfftw3 -L${FFTW}/lib
+INCFFTW = # -I${FFTW}/include
+
+#----------------------------------------------------------------------
+# 12. LAPACK Options (for qopqdp-lapack)
+
+#LIBLAPACK = -L/opt/ibmcmp/xlf/bg/11.1/lib /soft/apps/LAPACK/liblapack_bgp.a /soft/apps/LIBGOTO/libgoto.a -lxlf90 -lxlsmp # LAPACK on BG/P
+
+
+#----------------------------------------------------------------------
+# 13. Linker
 LD               = ${CC}
 
 #----------------------------------------------------------------------
-# 12. Extra linker flags
+# 14. Extra ld flags
+
 #LDFLAGS = -Xlinker   # QCDOC
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
 
 #----------------------------------------------------------------------
-# 13. Extra libraries
-LIBADD =
+# 15. Extra include paths
+INCADD = ${INCFFTW}
 
 #----------------------------------------------------------------------
-# 14. Inlining choices
+# 16. Extra libraries
+LIBADD = ${LIBFFTW} ${LIBLAPACK}
+
+#----------------------------------------------------------------------
+# 17. Inlining choices
 
 # USE INLINE SSE WITH EXTREME CAUTION!  IT MAY GIVE WRONG RESULTS.
 
@@ -239,7 +261,7 @@ LIBADD =
 
 # Choose nothing or
 #  [ C_INLINE | C_GLOBAL_INLINE ] [ SSE_INLINE | SSE_GLOBAL_INLINE ]
-INLINEOPT = -DC_GLOBAL_INLINE -DSSE_GLOBAL_INLINE #-DC_INLINE
+INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 
 # There are special single-precision macros for the AMD Opteron
 # To get them, uncomment the next line
@@ -247,7 +269,7 @@ INLINEOPT = -DC_GLOBAL_INLINE -DSSE_GLOBAL_INLINE #-DC_INLINE
 #INLINEOPT += -DSSEOPTERON
 
 #----------------------------------------------------------------------
-# 15. Miscellaneous macros for performance control and metric
+# 18. Miscellaneous macros for performance control and metric
 
 #     Define them with a -D prefix.
 
@@ -289,7 +311,7 @@ CPROF =#
 #
 # MILC_GLOBAL_DEBUG   So far applies only to ks_imp_rhmc HISQ code
 
-CDEBUG =#
+CDEBUG = # -DCHECK_MALLOC
 
 #------------------------------
 # Layout
@@ -424,7 +446,7 @@ KSRHMCINT =#
 
 #------------------------------
 # Clover inverter choice
-# Applications: clover_invert
+# Applications: clover_invert, clover_invert2
 #
 
 # CL_CG=BICG  Biconjugate gradient
@@ -432,13 +454,24 @@ KSRHMCINT =#
 # CL_CG=MR    Minimum residue
 # CL_CG=HOP   Hopping
 
-CLCG = #-DCL_CG=BICG 
+CLCG = -DCL_CG=BICG 
+
+#------------------------------
+# Propagator storage
+# Applications: clover_invert2
+#
+
+# CLOV_LEAN   Write intermediate propagators to disk, saving memory
+#             but increasing run time somewhat
+
+CLMEM = #-DCLOV_LEAN
 
 #------------------------------
 # Summary
 
 CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${CGEOM} ${KSCGSTORE} ${CPREFETCH} \
- ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${CLCG} ${CQOP} ${CQOPQDP_NORM}
+ ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${CLCG} ${CLMEM} ${CQOP} \
+ ${CQOPQDP_NORM}
 
 #----------------------------------------------------------------------
 # 16. Choose MILC library make file in libraries directory.  
@@ -483,12 +516,17 @@ ifeq ($(strip ${WANTDCAP}),true)
    LDFLAGS += -L${DCAP_DIR}/${DCAPLIB} -Wl,--rpath,${DCAP_DIR}/${DCAPLIB} -ldcap
 endif
 
+ifeq ($(strip ${WANTFFTW}),true)
+  HAVEFFTW = true
+endif
+
+
 CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC}
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 	${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DEFINES} ${DARCH} \
-	${IMPI}
+	${IMPI} ${INCADD}
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
 
