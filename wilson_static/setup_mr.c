@@ -1,6 +1,6 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.9 2009/05/31 02:00:58 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.10 2009/06/04 16:37:11 detar Exp $  ***/
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
@@ -31,6 +31,8 @@ int setup_h()
   make_lattice();
   /* set up nearest neighbor gathers */
   make_nn_gathers();
+  /* Create clover structure */
+  gen_clov = create_clov();
 
 #ifdef HAVE_QDP
   for(i=0; i<4; ++i) {
@@ -552,8 +554,10 @@ int readin(int prompt)
 
 
   /* Do whatever is needed to get lattice */
-    if( startflag != CONTINUE )
+    if( startflag != CONTINUE ){
       startlat_p = (gauge_file *) reload_lattice( startflag, startfile );  
+      invalidate_this_clov(gen_clov);
+    }
 
   return 0 ;
 }

@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.16  2009/06/04 16:37:08  detar
+//  Make clover term persistent. Accommodate changes to generic_clover/make_clov2.c
+//
 //  Revision 1.15  2009/05/31 02:00:56  detar
 //  Fix "continue" and NULL startlat_p bug in clover_info.c and setup*.c
 //
@@ -69,7 +72,9 @@ int  setup_cl()   {
   make_lattice();
   /* set up nearest neighbor gathers */
   make_nn_gathers();
-  
+  /* Create clover structure */
+  gen_clov = create_clov();
+
   return(prompt);
 }
 
@@ -360,9 +365,10 @@ int readin(int prompt) {
   scratchflag = par_buf.scratchflag;
   
   /* Do whatever is needed to get lattice */
-  if( startflag != CONTINUE )
+  if( startflag != CONTINUE ){
     startlat_p = reload_lattice( startflag, startfile );
-
+    invalidate_this_clov(gen_clov);
+  }
   return(0);
 }
 

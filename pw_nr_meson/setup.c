@@ -23,7 +23,9 @@ int prompt;
  make_lattice();
  /* set up neighbor pointers and comlink structures */
  make_nn_gathers();
- 
+ /* Create clover structure */
+ gen_clov = create_clov();
+
  return(prompt);
 }
 
@@ -230,8 +232,10 @@ int readin(int prompt)  {
   strcpy(a2_file, par_buf.a2_file);
   
   /* Do whatever is needed to get lattice */
-  if( startflag != CONTINUE )
+  if( startflag != CONTINUE ){
     startlat_p = reload_lattice( startflag, startfile );
+    invalidate_this_clov(gen_clov);
+  }
   
   return(0);
 }

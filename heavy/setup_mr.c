@@ -23,8 +23,8 @@ int setup_h()
   make_lattice();
   /* set up nearest neighbor gathers */
   make_nn_gathers();
-  /* start interrupt handler for field_pointer() requests */
-  /*start_handlers(); */
+  /* Create clover structure */
+  gen_clov = create_clov();
 
   return (prompt);
 }
@@ -411,8 +411,10 @@ int readin(int prompt)
 
 
   /* Do whatever is needed to get lattice */
-    if( startflag != CONTINUE )
+    if( startflag != CONTINUE ){
       startlat_p = (gauge_file *) reload_lattice( startflag, startfile );  
+      invalidate_this_clov(gen_clov);
+    }
 
   return 0 ;
 }

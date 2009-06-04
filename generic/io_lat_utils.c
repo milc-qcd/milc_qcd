@@ -1538,6 +1538,7 @@ gauge_file *parallel_open(int order, char *filename)
   /* All nodes open the requested file */
 
   fp = g_open(filename, "wb");
+  g_sync(); /* Make sure everyon has opened before attempting to write */
   if(fp == NULL)
     {
       printf("parallel_open: Node %d can't open file %s, error %d\n",

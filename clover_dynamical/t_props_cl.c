@@ -76,6 +76,5 @@ wilson_vector tvec;
 	    (double)aprop[i]);
 
     free(piprop); free(aprop);
-    free_clov();
     return(iters);
 }

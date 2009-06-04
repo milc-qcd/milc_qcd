@@ -54,6 +54,9 @@
 
 /*
  * $Log: d_bicgilu_cl_qop_P.c,v $
+ * Revision 1.7  2009/06/04 16:37:09  detar
+ * Make clover term persistent. Accommodate changes to generic_clover/make_clov2.c
+ *
  * Revision 1.6  2009/04/05 18:12:39  detar
  * Move #if 0
  *
@@ -78,7 +81,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.6 2009/04/05 18:12:39 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.7 2009/06/04 16:37:09 detar Exp $";
 
 #if 0
 
@@ -242,7 +245,7 @@ static void map_milc_clov_to_qop_raw(MYREAL *raw_clov, clover *milc_clov ){
 static QOP_FermionLinksWilson *
 create_qop_wilson_fermion_links( Real clov ){
 
-  clover *milc_clov;
+  clover *milc_clov = gen_clov;
   MYSU3_MATRIX **raw_links;
   MYREAL *raw_clov;
   QOP_FermionLinksWilson *qop_links;
@@ -258,11 +261,11 @@ create_qop_wilson_fermion_links( Real clov ){
 	     this_node);
       terminate(1);
     }
-    milc_clov = create_clov(clov); /* Note clov has no kappa factor! */
+    // milc_clov = create_clov(); /* Note Real clov has no kappa factor! */
     if(milc_clov == NULL) terminate(1);
-    compute_clov(milc_clov);
+    compute_clov(milc_clov,clov);
     map_milc_clov_to_qop_raw(raw_clov, milc_clov);
-    free_this_clov(milc_clov);
+    //free_this_clov(milc_clov);
   }
 
   raw_links = CREATE_RAW4_G_FROM_SITE(F_OFFSET(link), EVENANDODD);

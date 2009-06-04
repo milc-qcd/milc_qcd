@@ -49,6 +49,7 @@ int main(int argc,char *argv[])
 	STARTTIME;
 	gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
 	ENDTIME("gauge fix");
+	invalidate_this_clov(gen_clov);
       }
     else
       if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");

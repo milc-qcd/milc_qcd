@@ -107,6 +107,7 @@ double dtime;
 #ifdef SPECTRUM 
 #ifdef SCREEN 
 	      gaugefix(ZUP,(Real)1.5,500,(Real)GAUGE_FIX_TOL);
+	      invalidate_this_clov(gen_clov);
 		fixflag = COULOMB_GAUGE_FIX;
 		boundary_flip(MINUS);
 		spect_iters = s_props_cl();
@@ -114,6 +115,7 @@ double dtime;
 		boundary_flip(PLUS);
 #else	/* spectrum in time direction */
 		gaugefix(TUP,(Real)1.5,500,(Real)GAUGE_FIX_TOL);
+		invalidate_this_clov(gen_clov);
 		fixflag = COULOMB_GAUGE_FIX;
 /* commented 15 OCT 95, MBW....we'll use periodic b.c. for spect. */
 /*		boundary_flip(MINUS); */

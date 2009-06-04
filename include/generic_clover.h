@@ -131,6 +131,8 @@ int mrilu_w_field(       /* Return value is number of iterations taken */
 /* cl_solver_utilities.c */
 Real relative_residue(wilson_vector *p, wilson_vector *q, int parity);
 
+#include "../include/comdefs.h"
+
 double ilu_xfm_source(
      wilson_vector *t_dest,
      wilson_vector *r,
@@ -172,25 +174,32 @@ typedef struct { Real di[2][6]; } diagonal;
 typedef struct {
   triangular *clov;
   diagonal *clov_diag;
+  triangular *clov_raw;
+  diagonal *clov_diag_raw;
+  double trlogA;
   Real Clov_c;
+  int valid_clov;
 } clover;
 
 /* make_clov.c routines for any clover term */
-clover *create_clov(Real Clov_c);
-void compute_clov(clover *my_clov);
-double compute_clovinv(clover *my_clov, int parity);
+clover *create_clov(void);
+void compute_clov(clover *my_clov, Real Clov_c);
+void compute_clovinv(clover *my_clov, int parity);
 void mult_this_ldu_field(
   clover *my_clov,
   wilson_vector *src,  /* RECAST as wilson_block_vector */
   wilson_vector *dest, /* RECAST as wilson_block_vector */
   int parity
   );
+void tr_sigma_this_ldu_mu_nu_site( clover *my_clov, field_offset mat, int mu, 
+				   int nu );
+void invalidate_this_clov(clover *my_clov);
 void free_this_clov(clover *my_clov);
+void destroy_this_clov(clover **my_clov);
 
 /* make_clov.c routines for single clover term */
 void make_clov(Real Clov_c);
 double make_clovinv(int parity);
-void tr_sigma_ldu_mu_nu_site( field_offset mat, int mu, int nu );
 void free_clov(void);
 void mult_ldu_site(
   field_offset src,   /* type wilson_vector RECAST AS wilson_block_vector */
@@ -201,4 +210,5 @@ void mult_ldu_field(
   wilson_vector *dest,
   int parity
   );
+void invalidate_clov(void);
 #endif /* _GENERIC_CLOVER_H */

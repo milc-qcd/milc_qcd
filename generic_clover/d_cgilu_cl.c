@@ -98,17 +98,17 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
   
   is_startedo = is_startede = 0;
 
-    if(even_sites_on_node!=odd_sites_on_node){
-      printf("Need same number of even and odd sites on each node\n");
-      terminate(1);
-    }
+  if(even_sites_on_node!=odd_sites_on_node){
+    printf("Need same number of even and odd sites on each node\n");
+    terminate(1);
+  }
   
   /* Compute R_e and R_o and put in "clov" and "clov_diag" */
-  make_clov(CKU0);
+  compute_clov(gen_clov, CKU0);
 
   /* Invert R_o only, leaving R_e on even sites and 1/R_o on odd sites 
      in "clov" and "clov_diag" */
-  make_clovinv(ODD);
+  compute_clovinv(gen_clov, ODD);
   
   /* now we can allocate temporary variables and copy then */
   /* PAD may be used to avoid cache trashing */
@@ -148,7 +148,7 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
      */
 
   /* mp_o = 1/R_o srce_e */
-  mult_ldu_field(r, mp, ODD);
+  mult_this_ldu_field(gen_clov, r, mp, ODD);
   /* mp_e = D_eo/R_o srce_e */
   dslash_w_field_special(mp, mp, PLUS, EVEN, tage, is_startede);
   is_startede = 1;
@@ -221,12 +221,12 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
 
 #if 0
 	/* tmp_e = R_e dest_e */
-	mult_ldu_field(dest, tmp, EVEN);
+	mult_this_ldu_field(gen_clov, dest, tmp, EVEN);
 	/* mp_o = D_oe dest_e */
 	dslash_w_field_special(dest, mp, PLUS, ODD, tago, is_startedo);
 	is_startedo = 1;
 	/* tmp_o = 1/R_o D_oe dest_e */
-	mult_ldu_field(mp, tmp, ODD);
+	mult_this_ldu_field(gen_clov, mp, tmp, ODD);
 	/* mp_e = D_eo/R_o D_oe dest_e */
 	dslash_w_field_special(tmp, mp, PLUS, EVEN, tage, is_startede);
 	is_startede = 1;
@@ -271,10 +271,10 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
 
       /* --------- p_e = M_e_dag*r_e --------- */
 #if 0
-      mult_ldu_field(r, tmp, EVEN);
+      mult_this_ldu_field(gen_clov, r, tmp, EVEN);
       dslash_w_field_special(r, mp, MINUS, ODD, tago, is_startedo);
       is_startedo = 1;
-      mult_ldu_field(mp, tmp, ODD);
+      mult_this_ldu_field(gen_clov, mp, tmp, ODD);
       dslash_w_field_special(tmp, p, MINUS, EVEN, tage, is_startede);
       is_startede = 1;
 #endif
@@ -297,12 +297,12 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
     /* ---------  mp_e = M_e*p_e --------- */
 #if 0
     /* tmp_e = R_e p_e */
-    mult_ldu_field(p, tmp, EVEN);
+    mult_this_ldu_field(gen_clov, p, tmp, EVEN);
     /* mp_o = D_oe p_e */
     dslash_w_field_special(p, mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
     /* tmp_o = 1/R_o D_oe p_e */
-    mult_ldu_field(mp, tmp, ODD);
+    mult_this_ldu_field(gen_clov, mp, tmp, ODD);
     /* mp_e = D_eo/R_o D_oe p_e */
     dslash_w_field_special(tmp, mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
@@ -330,10 +330,10 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
     /* --------- mp_e M_e_dag*r_e --------- */
     
 #if 0
-    mult_ldu_field(r, tmp, EVEN);
+    mult_this_ldu_field(gen_clov, r, tmp, EVEN);
     dslash_w_field_special(r, mp, MINUS, ODD, tago, is_startedo);
     is_startedo = 1;
-    mult_ldu_field(mp, tmp, ODD);
+    mult_this_ldu_field(gen_clov, mp, tmp, ODD);
     dslash_w_field_special(tmp, mp, MINUS, EVEN, tage, is_startede);
     is_startede = 1;
 #endif
@@ -417,7 +417,7 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
     scalar_mult_add_wvec( &(dest[i]), &(mp[i]), Kappa, &(mp[i]) );
   }
   /* dest_o = 1/R_o dest_o + K/R_o D_oe * dest_e */
-  mult_ldu_field(mp, dest, ODD);
+  mult_this_ldu_field(gen_clov, mp, dest, ODD);
 
   is_startede = is_startedo = 0;
 #endif
@@ -430,7 +430,6 @@ int cgilu_cl_field(       /* Return value is number of iterations taken */
     if(is_startede)cleanup_gather(tage[i]);
     if(is_startede)cleanup_gather(tage[OPP_DIR(i)]);
   }
-  free_clov();
   cleanup_tmp_links();
   cleanup_dslash_wtemps();
   return(N_iter);

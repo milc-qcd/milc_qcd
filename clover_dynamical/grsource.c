@@ -43,16 +43,16 @@ register site *s;
 
 #ifdef LU
     /*  chi <- M^dagger g_rand  */
-    mult_ldu_site( F_OFFSET(g_rand), F_OFFSET(tmp), EVEN );
+    mult_this_ldu_site( gen_clov, F_OFFSET(g_rand), F_OFFSET(tmp), EVEN );
     dslash_w_site( F_OFFSET(g_rand), F_OFFSET(tmp), MINUS, ODD);
-    mult_ldu_site( F_OFFSET(tmp), F_OFFSET(g_rand), ODD );
+    mult_this_ldu_site( gen_clov, F_OFFSET(tmp), F_OFFSET(g_rand), ODD );
     dslash_w_site( F_OFFSET(g_rand), F_OFFSET(chi), MINUS, EVEN);
     FOREVENSITES(i,s){
         scalar_mult_add_wvec( &(s->tmp), &(s->chi), -kappa*kappa,
             &(s->chi) );
     }
 #else
-    mult_ldu_site( F_OFFSET(g_rand), F_OFFSET(tmp), EVENANDODD );
+    mult_this_ldu_site( gen_clov, F_OFFSET(g_rand), F_OFFSET(tmp), EVENANDODD );
     dslash_w_site( F_OFFSET(g_rand), F_OFFSET(chi), MINUS, EVENANDODD);
     cleanup_dslash_wtemps();
     FORALLSITES(i,s){
@@ -72,24 +72,24 @@ register site *s;
 
     /* multiply by M_adjoint*M */
 #ifdef LU
-    mult_ldu_site( F_OFFSET(psi), F_OFFSET(tmp), EVEN );
+    mult_this_ldu_site(gen_clov, F_OFFSET(psi), F_OFFSET(tmp), EVEN );
     dslash_w_site( F_OFFSET(psi), F_OFFSET(psi), PLUS, ODD );
-    mult_ldu_site( F_OFFSET(psi), F_OFFSET(mp),ODD );
+    mult_this_ldu_site(gen_clov, F_OFFSET(psi), F_OFFSET(mp),ODD );
     dslash_w_site( F_OFFSET(mp), F_OFFSET(mp), PLUS, EVEN);
     FOREVENSITES(i,s)
         scalar_mult_add_wvec( &(s->tmp), &(s->mp), -kappa*kappa, &(s->mp) );
-    mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), EVEN);
+    mult_this_ldu_site(gen_clov,F_OFFSET(mp), F_OFFSET(tmp), EVEN);
     dslash_w_site( F_OFFSET(mp), F_OFFSET(mp), MINUS, ODD );
-    mult_ldu_site(F_OFFSET(mp), F_OFFSET(tmp), ODD);
+    mult_this_ldu_site(gen_clov,F_OFFSET(mp), F_OFFSET(tmp), ODD);
     dslash_w_site( F_OFFSET(tmp), F_OFFSET(p) , MINUS, EVEN);
     FOREVENSITES(i,s)
         scalar_mult_add_wvec( &(s->tmp), &(s->p), -kappa*kappa, &(s->p));
 #else
-    mult_ldu_site( F_OFFSET(psi), F_OFFSET(tmp), EVENANDODD );
+    mult_this_ldu_site(gen_clov, F_OFFSET(psi), F_OFFSET(tmp), EVENANDODD );
     dslash_w_site( F_OFFSET(psi), F_OFFSET(mp), PLUS, EVENANDODD);
     FORALLSITES(i,s)
         scalar_mult_add_wvec( &(s->tmp), &(s->mp), -kappa, &(s->mp) );
-    mult_ldu_site( F_OFFSET(mp), F_OFFSET(tmp), EVENANDODD );
+    mult_this_ldu_site(gen_clov, F_OFFSET(mp), F_OFFSET(tmp), EVENANDODD );
     dslash_w_site( F_OFFSET(mp), F_OFFSET(p), MINUS, EVENANDODD);
     FORALLSITES(i,s)
         scalar_mult_add_wvec( &(s->tmp), &(s->p), -kappa, &(s->p) );

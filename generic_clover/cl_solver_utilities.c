@@ -100,7 +100,7 @@ double ilu_xfm_source(
   /* (leaving src_o = src_o)   */
 
   /* mp_o = 1/R_o srce_o */
-  mult_ldu_field(r, mp, ODD);
+  mult_this_ldu_field(gen_clov, r, mp, ODD);
   /* mp_e = D_eo/R_o srce_o */
   dslash_w_field_special(mp, mp, PLUS, EVEN, tage, *is_startede);
   *is_startede = 1;
@@ -142,12 +142,12 @@ void ilu_DRD(
   )
 {
   /* r_in_e = R_e in_e */
-  mult_ldu_field(in, r_in, EVEN);
+  mult_this_ldu_field(gen_clov, in, r_in, EVEN);
   /* drd_in_o = D_oe in_e */
   dslash_w_field_special(in, tmpo, isign, ODD, tago, *is_startedo);
   *is_startedo = 1;
   /* r_in_o = 1/R_o D_oe in_e */
-  mult_ldu_field(tmpo, r_in, ODD);
+  mult_this_ldu_field(gen_clov, tmpo, r_in, ODD);
   /* drd_in_e = D_eo/R_o D_oe in_e */
   dslash_w_field_special(r_in, drd_in, isign, EVEN, tage, *is_startede);
   *is_startede = 1;
@@ -176,7 +176,7 @@ void ilu_xfm_dest(
     scalar_mult_add_wvec( &(dest[i]), &(mp[i]), Kappa, &(mp[i]) );
   }
   /* dest_o = 1/R_o dest_o + K/R_o D_oe * dest_e */
-  mult_ldu_field(mp, dest, ODD);
+  mult_this_ldu_field(gen_clov, mp, dest, ODD);
 }
 
 /* ------------------------------------------------------------ */

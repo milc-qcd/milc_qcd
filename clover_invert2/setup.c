@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.8  2009/06/04 16:37:09  detar
+//  Make clover term persistent. Accommodate changes to generic_clover/make_clov2.c
+//
 //  Revision 1.7  2009/05/31 03:26:38  detar
 //  Correct fix to "continue" handling
 //
@@ -56,6 +59,8 @@ int setup()   {
   make_3n_gathers();
   /* set up K-S phase vectors, boundary conditions */
   phaseset();
+  /* Create clover structure */
+  gen_clov = create_clov();
 
 #ifdef HAVE_QDP
   {
@@ -576,8 +581,10 @@ int readin(int prompt) {
     normal_exit(0);
 
   /* Do whatever is needed to get lattice */
-  if( param.startflag != CONTINUE )
+  if( param.startflag != CONTINUE ){
     startlat_p = reload_lattice( param.startflag, param.startfile );
+    invalidate_this_clov(gen_clov);
+  }
   /* Construct APE smeared links */
   ape_smear_3D( param.staple_weight, param.ape_iter );
 

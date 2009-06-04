@@ -60,10 +60,10 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
   }
   
   /* Compute R_e and R_o and put in "clov" and "clov_diag" */
-  make_clov(CKU0);
+  compute_clov(gen_clov, CKU0);
   
   /* Invert BOTH R_o and R_e in place in "clov" and "clov_diag" */
-  make_clovinv(EVENANDODD);
+  compute_clovinv(gen_clov, EVENANDODD);
   
   /* now we can allocate temporary variables and copy them */
   /* PAD may be used to avoid cache trashing */
@@ -104,7 +104,7 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
   } 
 
   /* --------- dest_e <- R_e^(-1) srce_e ---------- */
-  mult_ldu_field( r, dest, EVEN);
+  mult_this_ldu_field( gen_clov, r, dest, EVEN);
   
   /* ------------ r_e <- dest_e -------------- */
   FOREVENSITESDOMAIN(i,s) {
@@ -145,12 +145,12 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
       dslash_w_field_special(r, mp, PLUS, ODD, tago, is_startedo);
       is_startedo = 1;
       /* tmp_o = 1/R_o D_oe r_e */
-      mult_ldu_field(mp, tmp, ODD);
+      mult_this_ldu_field(gen_clov, mp, tmp, ODD);
       /* mp_e = D_eo/R_o D_oe r_e */
       dslash_w_field_special(tmp, mp, PLUS, EVEN, tage, is_startede);
       is_startede = 1;
       /* r_e = 1/R_e D_eo/R_o D_oe r_e */
-      mult_ldu_field(mp, r, EVEN);
+      mult_this_ldu_field(gen_clov, mp, r, EVEN);
       /* r_e = K^2/R_e D_eo/R_o D_oe r_e */
       sr=0.0;
       FOREVENSITESDOMAIN(i,s) {
@@ -221,7 +221,6 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
   }
   is_startede = is_startedo = 0;
 
-  free_clov();
   cleanup_tmp_links();
   cleanup_dslash_wtemps();
   return(N_iter);

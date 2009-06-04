@@ -12,6 +12,7 @@
 #include "../include/macros.h"   /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
 #include "pauli_prop.h"
+#include "../include/generic_clover.h" /* For clover */
 
 /* Begin definition of site structure */
 
@@ -147,5 +148,8 @@ EXTERN int flag;
 EXTERN  block_pauli_propagator *antiquark_prop;
 EXTERN  block_pauli_propagator *quark_prop;
 EXTERN  block_pauli_propagator *quark_prop_smear;
+
+/* Storage for the clover term */
+EXTERN clover *gen_clov;
 
 #endif /* _LATTICE_H */

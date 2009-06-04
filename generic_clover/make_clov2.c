@@ -17,43 +17,76 @@
 /* The global clover term.  Used when we are working with only one
    clover term at a time */
 
-static clover *global_clov;
+static clover *global_clov = NULL;
 
 /******************* create_clov ***************************************/
 /* Allocate space for a clover term */
 
-clover *create_clov(Real Clov_c){
+clover *create_clov(void){
   
   clover *my_clov = (clover *)malloc(sizeof(clover));
   
-  my_clov->Clov_c    = Clov_c;
-  if(Clov_c == 0){
-    my_clov->clov      = NULL;
-    my_clov->clov_diag = NULL;
-  }
-  else {
-    my_clov->clov      = (triangular *)malloc(sites_on_node*sizeof(triangular));
-    my_clov->clov_diag = (diagonal *)malloc(sites_on_node*sizeof(diagonal));
-    
-    if(my_clov->clov == NULL || my_clov->clov_diag ==NULL){
-      printf("create_clov(%d): malloc failed\n",this_node);
-      free(my_clov);
-      return NULL;
-    }
-  }
+  my_clov->clov          = NULL;
+  my_clov->clov_diag     = NULL;
+  my_clov->clov_raw      = NULL;
+  my_clov->clov_diag_raw = NULL;
+  my_clov->valid_clov    = 0;
+  my_clov->trlogA        = 0.;
+
   return my_clov;
 }
 
 
-/******************* compute_clov ***************************************/
-/* Computes the clover field */
+/***************** recompute_clov_parity ************************************/
+/* Recomputes the clover field but only for sites with the specified parity */
 
-void compute_clov(clover *my_clov)
+static void recompute_clov_parity(clover *my_clov, int parity, Real Clov_c)
 {
   
-  triangular *clov = my_clov->clov;
-  diagonal *clov_diag = my_clov->clov_diag;
-  Real Clov_c = my_clov->Clov_c;
+  triangular *clov, *clov_raw;
+  diagonal *clov_diag, *clov_diag_raw;
+  register int i;
+  register site *s;
+  register int j,k;
+  char myname[] = "recompute_clov_parity";
+
+  if(my_clov == NULL){
+    printf("%s(%d): Unexpected null clover structure\n", myname, this_node);
+  }
+  if(my_clov->clov == NULL || my_clov->clov_diag == NULL ||
+     my_clov->clov_raw == NULL || my_clov->clov_diag_raw == NULL ){
+    printf("%s(%d): Unexpected null clover term\n", myname, this_node);
+    terminate(1);
+  }
+
+  /* Local defs for convenience */
+  clov = my_clov->clov;
+  clov_diag = my_clov->clov_diag;
+  clov_raw = my_clov->clov_raw;
+  clov_diag_raw = my_clov->clov_diag_raw;
+
+  /* Compute clov = 1 + Clov_c * clov_raw */
+  FORALLSITESDOMAIN(i,s){
+    for(j=0;j<6;j++){
+      clov_diag[i].di[0][j] = 1.0 + Clov_c*clov_diag_raw[i].di[0][j];
+      clov_diag[i].di[1][j] = 1.0 + Clov_c*clov_diag_raw[i].di[1][j];
+    }
+    for(k=0;k<15;k++){
+      CMULREAL(clov_raw[i].tr[0][k],Clov_c,clov[i].tr[0][k]);
+      CMULREAL(clov_raw[i].tr[1][k],Clov_c,clov[i].tr[1][k]);
+    }
+  }
+} /* compute_clov */
+
+/******************* compute_clov ***************************************/
+/* Computes the "raw" clover field as well as the clover field */
+/* clov = 1 + clov_raw * Clov_c */
+
+void compute_clov(clover *my_clov, Real Clov_c)
+{
+  
+  triangular *clov_raw;
+  diagonal *clov_diag_raw;
   register int i;
   register site *s;
   
@@ -61,16 +94,51 @@ void compute_clov(clover *my_clov)
   register complex ctmp;
   su3_matrix *f_mn;
   char myname[] = "compute_clov";
-  
-  /* Don't allocate or compute if trivial */
+
+  my_clov->Clov_c = Clov_c;
+
+  /* Don't compute if trivial */
   if(Clov_c == 0)return;
-  
+
+  /* Allocate space for clover term if not already allocated */
+  if(my_clov->clov == NULL){
+    my_clov->clov = (triangular *)malloc(sites_on_node*sizeof(triangular));
+    my_clov->valid_clov    = 0;
+  }
+
+  if(my_clov->clov_diag == NULL){
+    my_clov->clov_diag = (diagonal *)malloc(sites_on_node*sizeof(diagonal));
+    my_clov->valid_clov    = 0;
+  }
+
+  if(my_clov->clov_raw == NULL){
+    my_clov->clov_raw = (triangular *)malloc(sites_on_node*sizeof(triangular));
+    my_clov->valid_clov    = 0;
+  }
+
+  if(my_clov->clov_diag_raw == NULL){
+    my_clov->clov_diag_raw = 
+      (diagonal *)malloc(sites_on_node*sizeof(diagonal));
+    my_clov->valid_clov    = 0;
+  }
+    
+  if(my_clov->clov == NULL || my_clov->clov_diag == NULL ||
+     my_clov->clov_raw == NULL || my_clov->clov_diag_raw == NULL ){
+    printf("compute_clov(%d): malloc failed\n",this_node);
+    terminate(1);
+  }
+
+  /* Local defs for convenience */
+
+  clov_raw = my_clov->clov_raw;
+  clov_diag_raw = my_clov->clov_diag_raw;
+
+  /* Allocate temporary */
   f_mn = (su3_matrix *)malloc(sizeof(su3_matrix)*sites_on_node);
   if(f_mn == NULL){
     printf("%s(%d): Can't malloc f_mn\n",myname,this_node);
     terminate(1);
   }
-  
   
   
 /* The clover term
@@ -164,144 +232,108 @@ void compute_clov(clover *my_clov)
    
    */
 
-  f_mu_nu(f_mn, 0, 1);
-  FORALLSITESDOMAIN(i,s){
-    scalar_mult_su3_matrix( f_mn+i, Clov_c,
-			    (f_mn+i) );
-  }
-  jk=0;
-  for(j=0;j<3;j++){
-    FORALLSITESDOMAIN(i,s){
-      clov_diag[i].di[0][j] = 1.0 -
-	(f_mn+i)->e[j][j].imag;
-      clov_diag[i].di[0][j+3] = 1.0 +
-	(f_mn+i)->e[j][j].imag;
-      clov_diag[i].di[1][j] = 1.0 -
-	(f_mn+i)->e[j][j].imag;
-      clov_diag[i].di[1][j+3] = 1.0 +
-	(f_mn+i)->e[j][j].imag;
-    }
-    jk2=(j+3)*(j+2)/2+3;
-    for(k=0;k<j;k++){
+  if(!my_clov->valid_clov){
+    f_mu_nu(f_mn, 0, 1);
+    jk=0;
+    for(j=0;j<3;j++){
       FORALLSITESDOMAIN(i,s){
-	TIMESPLUSI( (f_mn+i)->e[j][k],
-		    clov[i].tr[0][jk]);
-	TIMESMINUSI( (f_mn+i)->e[j][k],
-		     clov[i].tr[0][jk2]);
-	TIMESPLUSI( (f_mn+i)->e[j][k],
-		    clov[i].tr[1][jk]);
-	TIMESMINUSI( (f_mn+i)->e[j][k],
-		     clov[i].tr[1][jk2]);
+	clov_diag_raw[i].di[0][j]   =  -(f_mn+i)->e[j][j].imag;
+	clov_diag_raw[i].di[0][j+3] =   (f_mn+i)->e[j][j].imag;
+	clov_diag_raw[i].di[1][j]   =  -(f_mn+i)->e[j][j].imag;
+	clov_diag_raw[i].di[1][j+3] =   (f_mn+i)->e[j][j].imag;
       }
-      jk++;
-      jk2++;
+      jk2=(j+3)*(j+2)/2+3;
+      for(k=0;k<j;k++){
+	FORALLSITESDOMAIN(i,s){
+	  TIMESPLUSI( (f_mn+i)->e[j][k],  clov_raw[i].tr[0][jk]);
+	  TIMESMINUSI( (f_mn+i)->e[j][k], clov_raw[i].tr[0][jk2]);
+	  TIMESPLUSI( (f_mn+i)->e[j][k],  clov_raw[i].tr[1][jk]);
+	  TIMESMINUSI( (f_mn+i)->e[j][k], clov_raw[i].tr[1][jk2]);
+	}
+	jk++;
+	jk2++;
+      }
     }
-  }
-  
-  f_mu_nu(f_mn, 2, 3);
-  FORALLSITESDOMAIN(i,s){
-    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-			    (f_mn+i) );
-  }
-  jk=0;
-  for(j=0;j<3;j++){
-    FORALLSITESDOMAIN(i,s){
-      clov_diag[i].di[0][j] +=
-	(f_mn+i)->e[j][j].imag;
-      clov_diag[i].di[0][j+3] -=
-	(f_mn+i)->e[j][j].imag;
-      clov_diag[i].di[1][j] -=
-	(f_mn+i)->e[j][j].imag;
-      clov_diag[i].di[1][j+3] +=
-	(f_mn+i)->e[j][j].imag;
-    }
-    jk2=(j+3)*(j+2)/2+3;
-    for(k=0;k<j;k++){
+    
+    f_mu_nu(f_mn, 2, 3);
+    jk=0;
+    for(j=0;j<3;j++){
       FORALLSITESDOMAIN(i,s){
-	TIMESMINUSI( (f_mn+i)->e[j][k], ctmp);
-	CADD( clov[i].tr[0][jk], ctmp, clov[i].tr[0][jk]);
-	CSUB( clov[i].tr[0][jk2], ctmp, clov[i].tr[0][jk2]);
-	CSUB( clov[i].tr[1][jk], ctmp, clov[i].tr[1][jk]);
-	CADD( clov[i].tr[1][jk2], ctmp, clov[i].tr[1][jk2]);
+	clov_diag_raw[i].di[0][j] +=	 (f_mn+i)->e[j][j].imag;
+	clov_diag_raw[i].di[0][j+3] -= (f_mn+i)->e[j][j].imag;
+	clov_diag_raw[i].di[1][j] -=   (f_mn+i)->e[j][j].imag;
+	clov_diag_raw[i].di[1][j+3] += (f_mn+i)->e[j][j].imag;
       }
-      jk++;
-      jk2++;
-    }
-  }
-  
-  f_mu_nu(f_mn, 1, 2);
-  FORALLSITESDOMAIN(i,s){
-    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-			    (f_mn+i) );
-  }
-  for(j=0;j<3;j++){
-    jk=(j+3)*(j+2)/2;
-    for(k=0;k<3;k++){
-      FORALLSITESDOMAIN(i,s){
-	TIMESPLUSI( (f_mn+i)->e[j][k],
-		    clov[i].tr[0][jk]);
-	TIMESPLUSI( (f_mn+i)->e[j][k],
-		    clov[i].tr[1][jk]);
+      jk2=(j+3)*(j+2)/2+3;
+      for(k=0;k<j;k++){
+	FORALLSITESDOMAIN(i,s){
+	  TIMESMINUSI( (f_mn+i)->e[j][k], ctmp);
+	  CADD( clov_raw[i].tr[0][jk], ctmp, clov_raw[i].tr[0][jk]);
+	  CSUB( clov_raw[i].tr[0][jk2], ctmp, clov_raw[i].tr[0][jk2]);
+	  CSUB( clov_raw[i].tr[1][jk], ctmp, clov_raw[i].tr[1][jk]);
+	  CADD( clov_raw[i].tr[1][jk2], ctmp, clov_raw[i].tr[1][jk2]);
+	}
+	jk++;
+	jk2++;
       }
-      jk++;
     }
-  }
-  
-  f_mu_nu(f_mn, 0, 3);
-  FORALLSITESDOMAIN(i,s){
-    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-			    (f_mn+i) );
-  }
-  for(j=0;j<3;j++){
-    jk=(j+3)*(j+2)/2;
-    for(k=0;k<3;k++){
-      FORALLSITESDOMAIN(i,s){
-	TIMESMINUSI( (f_mn+i)->e[j][k], ctmp);
-	CADD( clov[i].tr[0][jk], ctmp, clov[i].tr[0][jk]);
-	CSUB( clov[i].tr[1][jk], ctmp, clov[i].tr[1][jk]);
+    
+    f_mu_nu(f_mn, 1, 2);
+    for(j=0;j<3;j++){
+      jk=(j+3)*(j+2)/2;
+      for(k=0;k<3;k++){
+	FORALLSITESDOMAIN(i,s){
+	  TIMESPLUSI( (f_mn+i)->e[j][k], clov_raw[i].tr[0][jk]);
+	  TIMESPLUSI( (f_mn+i)->e[j][k], clov_raw[i].tr[1][jk]);
+	}
+	jk++;
       }
-      jk++;
     }
-  }
-  
-  f_mu_nu(f_mn, 0, 2);
-  FORALLSITESDOMAIN(i,s){
-    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-			    (f_mn+i) );
-  }
-  for(j=0;j<3;j++){
-    jk=(j+3)*(j+2)/2;
-    for(k=0;k<3;k++){
-      FORALLSITESDOMAIN(i,s){
-	CSUB( clov[i].tr[0][jk],
-	      (f_mn+i)->e[j][k], clov[i].tr[0][jk]);
-	CSUB( clov[i].tr[1][jk],
-	      (f_mn+i)->e[j][k], clov[i].tr[1][jk]);
+    
+    f_mu_nu(f_mn, 0, 3);
+    for(j=0;j<3;j++){
+      jk=(j+3)*(j+2)/2;
+      for(k=0;k<3;k++){
+	FORALLSITESDOMAIN(i,s){
+	  TIMESMINUSI( (f_mn+i)->e[j][k], ctmp);
+	  CADD( clov_raw[i].tr[0][jk], ctmp, clov_raw[i].tr[0][jk]);
+	  CSUB( clov_raw[i].tr[1][jk], ctmp, clov_raw[i].tr[1][jk]);
+	}
+	jk++;
       }
-      jk++;
     }
-  }
-  
-  f_mu_nu(f_mn, 1, 3);
-  FORALLSITESDOMAIN(i,s){
-    scalar_mult_su3_matrix( (f_mn+i), Clov_c,
-			    (f_mn+i) );
-  }
-  for(j=0;j<3;j++){
-    jk=(j+3)*(j+2)/2;
-    for(k=0;k<3;k++){
-      FORALLSITESDOMAIN(i,s){
-	CSUB( clov[i].tr[0][jk],
-	      (f_mn+i)->e[j][k], clov[i].tr[0][jk]);
-	CADD( clov[i].tr[1][jk],
-	      (f_mn+i)->e[j][k], clov[i].tr[1][jk]);
+    
+    f_mu_nu(f_mn, 0, 2);
+    for(j=0;j<3;j++){
+      jk=(j+3)*(j+2)/2;
+      for(k=0;k<3;k++){
+	FORALLSITESDOMAIN(i,s){
+	  CSUB( clov_raw[i].tr[0][jk], (f_mn+i)->e[j][k], clov_raw[i].tr[0][jk]);
+	  CSUB( clov_raw[i].tr[1][jk], (f_mn+i)->e[j][k], clov_raw[i].tr[1][jk]);
+	}
+	jk++;
       }
-      jk++;
     }
-  }
-  
+    
+    f_mu_nu(f_mn, 1, 3);
+    for(j=0;j<3;j++){
+      jk=(j+3)*(j+2)/2;
+      for(k=0;k<3;k++){
+	FORALLSITESDOMAIN(i,s){
+	  CSUB( clov_raw[i].tr[0][jk], (f_mn+i)->e[j][k], clov_raw[i].tr[0][jk]);
+	  CADD( clov_raw[i].tr[1][jk], (f_mn+i)->e[j][k], clov_raw[i].tr[1][jk]);
+	}
+	jk++;
+      }
+    }
+    my_clov->valid_clov = 1;
+  } /* valid_clov*/
+
   free(f_mn);
-  
+
+  /* Compute clov = 1 + Clov_c * clov_raw */
+  recompute_clov_parity(my_clov, EVENANDODD, Clov_c);
+
 } /* compute_clov */
 
 /******************* compute_clovinv ***********************************/
@@ -316,7 +348,7 @@ void compute_clov(clover *my_clov)
 /* Invert the "clover" term on a specified sublattice and return tr(log(A)) */
 /* (tr log needed for clover_dynamical) */
 
-double compute_clovinv(clover *my_clov, int parity) {
+void compute_clovinv(clover *my_clov, int parity) {
   
   triangular *clov = my_clov->clov;
   diagonal *clov_diag = my_clov->clov_diag;
@@ -329,8 +361,18 @@ double compute_clovinv(clover *my_clov, int parity) {
   complex v1[6],ctmp,sum;
   double trlogA;
   
-  if(Clov_c == 0)return 0;
-  
+  if(Clov_c == 0)return;
+  if(!my_clov->valid_clov){
+    printf("compute_clovinv(%d): Can't invert an invalid clover term\n",
+	   this_node);
+    terminate(1);
+  }
+
+  /* We need to start from a fresh clover term because this module
+     changes it */
+
+  recompute_clov_parity(my_clov, parity, Clov_c);
+
   /* Take the inverse on the odd sublattice for each of the 2 blocks */
   trlogA = (double)0.0;
   FORSOMEPARITYDOMAIN(i,s,parity)for(b=0;b<2;b++){
@@ -400,13 +442,27 @@ double compute_clovinv(clover *my_clov, int parity) {
 	clov[i].tr[b][lk] = v1[l];
       }
     }
-  } END_LOOP
+  } END_LOOP;
       
-      g_doublesum( &trlogA );
-  return(trlogA);
-  
+  g_doublesum( &trlogA );
+
+  my_clov->trlogA = trlogA;
+
 } /* compute_clovinv */
 
+/******************* copy_site ***********************************/
+static void copy_site(
+  field_offset src,   /* type wilson_vector RECAST AS wilson_block_vector */
+  field_offset dest,  /* type wilson_vector RECAST AS wilson_block_vector */
+  int parity
+  )
+{
+  int i;
+  site *s;
+  FORSOMEPARITYDOMAIN(i,s,parity){
+    copy_wvec( (wilson_vector *)F_PT(s,src), (wilson_vector *)F_PT(s,dest) );
+  } END_LOOP
+}
 /******************* mult_this_ldu_site *********************************/
 
 /* version of 12/29/94 by UMH */
@@ -442,6 +498,17 @@ void mult_this_ldu_site(
   register int b,j,k,jk,kj;
   register complex ctmp;
   
+  if(my_clov->Clov_c == 0){
+    copy_site(src, dest, parity);
+    return;
+  }
+
+  if(!my_clov->valid_clov){
+    printf("mult_this_ldu_site(%d): Can't use an invalid clover term\n",
+	   this_node);
+    terminate(1);
+  }
+
   FORSOMEPARITYDOMAIN(i,s,parity){
     if( i < loopend-FETCH_UP ){
       prefetch_W( (wilson_vector *)(F_PT((s+FETCH_UP),src)) );
@@ -479,6 +546,16 @@ void mult_this_ldu_site(
 } /* mult_this_ldu_site */
 
 
+/******************* copy_field ***********************************/
+static void copy_field( wilson_vector *src, wilson_vector *dest,
+			int parity )
+{
+  int i;
+  site *s;
+  FORSOMEPARITYDOMAIN(i,s,parity){
+    dest[i] = src[i];
+  } END_LOOP
+}
 /******************* mult_this_ldu_field **********************************/
 
 void mult_this_ldu_field(
@@ -497,6 +574,11 @@ void mult_this_ldu_field(
   wilson_block_vector *srcb = (wilson_block_vector *)src;
   wilson_block_vector *destb = (wilson_block_vector *)dest;
   
+  if(my_clov->Clov_c == 0){
+    copy_field(src, dest, parity);
+    return;
+  }
+
   FORSOMEPARITYDOMAIN(i,s,parity){
     if( i < loopend-FETCH_UP ){
       prefetch_W( &srcb[i+FETCH_UP] );
@@ -552,20 +634,27 @@ and sigma(nu,mu) = -sigma(mu,nu), and sums over the dirac indices.
 */
 
 
-void tr_sigma_ldu_mu_nu_site( field_offset mat, int mu, int nu )
+void tr_sigma_this_ldu_mu_nu_site( clover *my_clov, field_offset mat, 
+				   int mu, int nu )
 /* triang, diag are input & contain the color-dirac matrix
    mat is output: the resulting su3_matrix  */
 {
-  triangular *clov = global_clov->clov;
-  diagonal *clov_diag = global_clov->clov_diag;
-  Real Clov_c = global_clov->Clov_c;
+  triangular *clov;
+  diagonal *clov_diag;
+  Real Clov_c;
   register site *s;
   register int mm = 0, nn = 0;  /* dummy directions */
   register Real pm = 0;
   register int i,j,k,jk,jk2,kj;
   Real rtmp;
   complex ctmp,ctmp1;
-  char myname[] = "tr_sigma_ldu_mu_nu_site";
+  char myname[] = "tr_sigma_this_ldu_mu_nu_site";
+
+  if(my_clov == NULL){
+    printf("%s(%d): NULL clover structure\n",myname, this_node);
+  }
+
+  Clov_c = my_clov->Clov_c;
 
   if(Clov_c == 0){
     FORODDSITESDOMAIN(i,s) {
@@ -574,6 +663,14 @@ void tr_sigma_ldu_mu_nu_site( field_offset mat, int mu, int nu )
     return;
   }
   
+  if(!my_clov->valid_clov){
+    printf("%s(%d): Can't use an invalid clover term\n", myname, this_node);
+    terminate(1);
+  }
+
+  clov = my_clov->clov;
+  clov_diag = my_clov->clov_diag;
+
   /* take care of the case mu > nu by flipping them and mult. by -1 */
   if( mu < nu ) {
     mm = mu; nn = nu; pm = 1.0;
@@ -747,97 +844,113 @@ void tr_sigma_ldu_mu_nu_site( field_offset mat, int mu, int nu )
 		((su3_matrix *)F_PT(s,mat))->e[j][k] );
   }
   
-} /* tr_sigma_ldu_mu_nu_site */
+} /* tr_sigma_this_ldu_mu_nu_site */
 
 
 /******************* free_this_clov *********************************/
+/* Frees the large allocated members but not the structure itself */
 
 void free_this_clov(clover *my_clov)
 {
   
-  if(my_clov->clov != NULL)free(my_clov->clov);
-  if(my_clov->clov_diag != NULL)free(my_clov->clov_diag);
-  free(my_clov);
-
+  if(my_clov != NULL){
+    if(my_clov->clov != NULL)free(my_clov->clov);
+    if(my_clov->clov_diag != NULL)free(my_clov->clov_diag);
+    if(my_clov->clov_raw != NULL)free(my_clov->clov_raw);
+    if(my_clov->clov_diag_raw != NULL)free(my_clov->clov_diag_raw);
+    my_clov->clov = NULL;
+    my_clov->clov_diag = NULL;
+    my_clov->clov_raw = NULL;
+    my_clov->clov_diag_raw = NULL;
+  }
 } /* free_this_clov */
 
 
-/******************* make_clov ***************************************/
-/* For making only the global clover term */
+/******************* destroy_this_clov *********************************/
+/* Frees the large allocated members AND the structure itself          */
 
-void make_clov(Real Clov_c)
+void destroy_this_clov(clover **my_clov)
 {
-  global_clov = create_clov(Clov_c);
-  if(global_clov == NULL)
-    terminate(1);
   
-  compute_clov(global_clov);
+  if(*my_clov != NULL){
+    free_this_clov(*my_clov);
+    *my_clov = NULL;
+  }
+} /* destroy_this_clov */
+
+
+/******************* invalidate_clov ************************************/
+/* Mark clover term for refreshing                                      */
+
+void invalidate_this_clov(clover *my_clov){
+  if(my_clov != NULL)
+    my_clov->valid_clov = 0;
 }
 
-/******************* make_clovinv ***********************************/
-/* For inverting only the global clover term */
-
-double make_clovinv(int parity)
-{
-  return compute_clovinv(global_clov, parity);
-}
-
-/******************* copy_site ***********************************/
-static void copy_site(
-  field_offset src,   /* type wilson_vector RECAST AS wilson_block_vector */
-  field_offset dest,  /* type wilson_vector RECAST AS wilson_block_vector */
-  int parity
-  )
-{
-  int i;
-  site *s;
-  FORSOMEPARITYDOMAIN(i,s,parity){
-    copy_wvec( (wilson_vector *)F_PT(s,src), (wilson_vector *)F_PT(s,dest) );
-  } END_LOOP
-}
-/******************* copy_field ***********************************/
-static void copy_field( wilson_vector *src, wilson_vector *dest,
-			int parity )
-{
-  int i;
-  site *s;
-  FORSOMEPARITYDOMAIN(i,s,parity){
-    dest[i] = src[i];
-  } END_LOOP
-}
-/******************* mult_ldu_site ***********************************/
-/* For multiplying only by the global clover term */
-void mult_ldu_site(
-  field_offset src,   /* type wilson_vector RECAST AS wilson_block_vector */
-  field_offset dest,  /* type wilson_vector RECAST AS wilson_block_vector */
-  int parity
-  )
-{
-  if(global_clov->Clov_c == 0)
-    copy_site(src, dest, parity);
-  else
-    mult_this_ldu_site(global_clov, src, dest, parity);
-}
-
-/******************* mult_ldu_field ***********************************/
-/* For multiplying only by the global clover term */
-void mult_ldu_field(
-  wilson_vector *src,
-  wilson_vector *dest,
-  int parity
-  )
-{
-  if(global_clov->Clov_c == 0)
-    copy_field(src, dest, parity);
-  else
-    mult_this_ldu_field(global_clov, src, dest, parity);
-}
-
-/******************* free_clov ***************************************/
-
-void free_clov()
-{
-  free_this_clov(global_clov);
-
-} /* free_clov */
+// /******************* make_clov ***************************************/
+// /* For making only the global clover term */
+// 
+// void make_clov(Real Clov_c)
+// {
+//   if(global_clov == NULL){
+//     global_clov = create_clov();
+//     if(global_clov == NULL)
+//       terminate(1);
+//   }
+//   compute_clov(global_clov, Clov_c);
+// }
+// 
+// /******************* make_clovinv ***********************************/
+// /* For inverting only the global clover term */
+// 
+// double make_clovinv(int parity)
+// {
+//   compute_clovinv(global_clov, parity);
+//   return global_clov->trlogA;
+// }
+// 
+///******************* mult_ldu_site ***********************************/
+///* For multiplying only by the global clover term */
+//void mult_ldu_site(
+//  clover *my_clov;
+//  field_offset src,   /* type wilson_vector RECAST AS wilson_block_vector */
+//  field_offset dest,  /* type wilson_vector RECAST AS wilson_block_vector */
+//  int parity
+//  )
+//{
+//  if(my_clov->Clov_c == 0)
+//    copy_site(src, dest, parity);
+//  else
+//    mult_this_ldu_site(my_clov, src, dest, parity);
+//}
+//
+///******************* mult_ldu_field ***********************************/
+///* For multiplying only by the global clover term */
+//void mult_ldu_field(
+//  wilson_vector *src,
+//  wilson_vector *dest,
+//  int parity
+//  )
+//{
+//  if(global_clov->Clov_c == 0)
+//    copy_field(src, dest, parity);
+//  else
+//    mult_this_ldu_field(global_clov, src, dest, parity);
+//}
+//
+///******************* free_clov ***************************************/
+//
+//void free_clov(void)
+//{
+//  free_this_clov(global_clov);
+//  global_clov = NULL;
+//
+//} /* free_clov */
+//
+///******************* invalidate_clov ************************************/
+///* Mark clover term for refreshing                                      */
+//
+//void invalidate_clov(void){
+//  invalidate_this_clov(global_clov);
+//}
 

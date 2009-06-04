@@ -78,11 +78,11 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   //  }
   
   /* Compute R_e and R_o and put in "clov" and "clov_diag" */
-  make_clov(CKU0);
+  compute_clov(gen_clov, CKU0);
 
   /* Invert R_o only, leaving R_e on even sites and 1/R_o on odd sites 
      in "clov" and "clov_diag" */
-  make_clovinv(ODD);
+  compute_clovinv(gen_clov, ODD);
   
   /* now we can allocate temporary variables and copy them */
   /* PAD may be used to avoid cache trashing */
@@ -119,7 +119,7 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   size_src = ilu_xfm_source(dest, r, mp, Kappa, &is_startede, tage);
 #if 0
 
-  mult_ldu_field(r, mp, ODD);
+  mult_this_ldu_field(gen_clov, r, mp, ODD);
   dslash_w_field_special(mp, mp, PLUS, EVEN, tage, is_startede);
   is_startede = 1;
   
@@ -184,10 +184,10 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
 	/* r=src[1]-[L^(-1)*M*U^(-1)]*dest (even sites) */
 
 #if 0
-	mult_ldu_field(dest, tmp, EVEN);
+	mult_this_ldu_field(gen_clov, dest, tmp, EVEN);
 	dslash_w_field_special(dest, mp, PLUS, ODD, tago, is_startedo);
 	is_startedo = 1;
-	mult_ldu_field(mp, tmp, ODD);
+	mult_this_ldu_field(gen_clov, mp, tmp, ODD);
 	dslash_w_field_special(tmp, mp, PLUS, EVEN, tage, is_startede);
 	is_startede = 1;
 	FOREVENSITESDOMAIN(i,s) {
@@ -236,10 +236,10 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
 
     /*   mp = M(u)*p */
 #if 0
-    mult_ldu_field(p, tmp, EVEN);
+    mult_this_ldu_field(gen_clov, p, tmp, EVEN);
     dslash_w_field_special(p, mp, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
-    mult_ldu_field(mp, tmp, ODD);
+    mult_this_ldu_field(gen_clov, mp, tmp, ODD);
     dslash_w_field_special(tmp, mp, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
 #endif
@@ -263,10 +263,10 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
     
     /* ttt = M(u)*sss */
 #if 0
-    mult_ldu_field(sss, tmp, EVEN);
+    mult_this_ldu_field(gen_clov, sss, tmp, EVEN);
     dslash_w_field_special(sss, sss, PLUS, ODD, tago, is_startedo);
     is_startedo = 1;
-    mult_ldu_field(sss, tmp, ODD);
+    mult_this_ldu_field(gen_clov, sss, tmp, ODD);
     dslash_w_field_special(tmp, ttt, PLUS, EVEN, tage, is_startede);
     is_startede = 1;
 #endif
@@ -369,7 +369,7 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
     scalar_mult_add_wvec( &(dest[i]), &(mp[i]), Kappa, &(mp[i]) );
   }
   /* dest_o = 1/R_o dest_o + K/R_o D_oe * dest_e */
-  mult_ldu_field(mp, dest, ODD);
+  mult_this_ldu_field(gen_clov, mp, dest, ODD);
 #endif
 
   ilu_xfm_dest(dest, mp, Kappa, &is_startedo, tago);
@@ -384,7 +384,6 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   }
   is_startede = is_startedo = 0;
 
-  free_clov();
   cleanup_tmp_links();
   cleanup_dslash_wtemps();
   return(N_iter);

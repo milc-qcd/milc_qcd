@@ -1,7 +1,7 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice_w.h ********************************/
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.9 2008/03/28 16:16:47 detar Exp $   **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.10 2009/06/04 16:37:11 detar Exp $   **/
 /* include file for MIMD heavy-light, version 4
    This file defines global scalars and the fields in the lattice. */
 
@@ -13,6 +13,7 @@
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/random.h"    /* For double_prn */
 #include "../include/io_lat.h"    /* For gauge_file */
+#include "../include/generic_clover.h" /* For clover */
 
 /* Begin definition of site structure */
 
@@ -172,6 +173,7 @@ EXTERN char ** gen_pt[N_POINTERS];
    part of the lattice on this node) */
 EXTERN site *lattice;
 
-
+/* Storage for the clover term */
+EXTERN clover *gen_clov;
 
 #endif /* _LATTICE_H */

@@ -25,6 +25,8 @@ int  setup_cl()   {
   make_lattice();
   /* set up nearest neighbor gathers */
   make_nn_gathers();
+  /* Create clover structure */
+  gen_clov = create_clov();
   
   return(prompt);
 }
@@ -173,8 +175,10 @@ int readin(int prompt) {
 		/* These boundary fields are actually never used here */
 
   /* Do whatever is needed to get lattice */
-  if( startflag != CONTINUE )
+  if( startflag != CONTINUE ){
     startlat_p = reload_lattice( startflag, startfile );
+    invalidate_this_clov(gen_clov);
+  }
 
   /* put in fermion phases */
   if( startflag != CONTINUE) do_phases();

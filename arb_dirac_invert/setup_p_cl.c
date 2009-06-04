@@ -244,8 +244,9 @@ int readin(int prompt) {
   strcpy(scratchstem_w,par_buf.scratchstem_w);
   
   /* Do whatever is needed to get lattice */
-  if( startflag != CONTINUE )
+  if( startflag != CONTINUE ){
     startlat_p = reload_lattice( startflag, startfile );
+  }
 
   return(0);
 }

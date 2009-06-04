@@ -10,6 +10,7 @@
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
 #include "../include/random.h"    /* For double_prn */
+#include "../include/generic_clover.h" /* For clover */
 
 /* Begin definition of site structure */
 
@@ -162,5 +163,8 @@ EXTERN site *lattice;
 #define N_POINTERS 8	/* Number of generic pointers */
 /* NEED 8 WHEN GAUGEFIXING */
 EXTERN char ** gen_pt[N_POINTERS];
+
+/* Storage for the clover term */
+EXTERN clover *gen_clov;
 
 #endif /* _LATTICE_H */

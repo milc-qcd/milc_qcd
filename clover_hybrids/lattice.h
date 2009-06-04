@@ -10,6 +10,7 @@
 #include "../include/generic_quark_types.h"
 #include "../include/macros.h"
 #include "../include/random.h"
+#include "../include/generic_clover.h" /* For clover */
 
 /* Begin definition of site structure */
 
@@ -192,5 +193,7 @@ EXTERN site *lattice;
 /* NEED 8 WHEN GAUGEFIXING */
 EXTERN char ** gen_pt[N_POINTERS];
 
+/* Storage for the clover term */
+EXTERN clover *gen_clov;
 
 #endif /* _LATTICE_H */

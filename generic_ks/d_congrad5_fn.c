@@ -37,7 +37,7 @@ static const char *prec_label[2] = {"F", "D"};
 /* The Fermilab relative residue */
 
 static Real 
-relative_residue(su3_vector *p, su3_vector *q, int parity)
+my_relative_residue(su3_vector *p, su3_vector *q, int parity)
 {
   double residue, num, den;
   int i;
@@ -169,7 +169,7 @@ ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest,
         g_doublesum( &rsq );
 
 	if(relrsqmin > 0)
-	  relrsq = relative_residue(resid, t_dest, parity);
+	  relrsq = my_relative_residue(resid, t_dest, parity);
 
 	qic->final_rsq    = (Real)rsq/source_norm;
 	qic->final_relrsq = (Real)relrsq;
@@ -290,7 +290,7 @@ ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest,
 #endif	
 
     if(relrsqmin > 0)
-      relrsq = relative_residue(resid, t_dest, parity);
+      relrsq = my_relative_residue(resid, t_dest, parity);
     
     qic->size_r    = (Real)rsq/source_norm;
     qic->size_relr = (Real)relrsq;

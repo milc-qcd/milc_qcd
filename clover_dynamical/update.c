@@ -32,7 +32,6 @@ Real cg_time; /* simulation time for last two CG's */
  double starttrlogA, endtrlogA;
 #endif
 Real CKU0 = kappa*clov_c/(u0*u0*u0);
-double junktrlogA;
 #ifdef HMC_ALGORITHM
 double startaction = 0, endaction, change;
 Real xrandom;
@@ -50,9 +49,10 @@ Real xrandom;
         /* generate a pseudofermion configuration only at start*/
 
         if(step==1){
-          make_clov(CKU0);
+          compute_clov(gen_clov, CKU0);
 #ifdef LU
-	  starttrlogA = make_clovinv(ODD);
+	  compute_clovinv(gen_clov, ODD);
+	  starttrlogA = gen_clov->trlogA;
 #else
 	    starttrlogA = (double)0.0;
 #endif /*LU*/
@@ -75,7 +75,7 @@ Real xrandom;
         }
 #endif /*hmc*/
         if(step==1){
-	  free_clov();
+	  free_this_clov(gen_clov);
 	}
 	/* update U's to middle of interval */
      	update_u(0.5*epsilon);
@@ -89,21 +89,21 @@ Real xrandom;
        	update_u(epsilon*(0.5-nflavors/4.0));
 
         /* generate a pseudofermion configuration */
-         make_clov(CKU0);
+	compute_clov(gen_clov, CKU0);
 #ifdef LU
-	junktrlogA = make_clovinv(ODD);
+	compute_clovinv(gen_clov, ODD);
 #endif /*LU*/
      	grsource_w();
-	free_clov();
+	free_this_clov(gen_clov);
 
 	/* update U's to middle of interval */
      	update_u(epsilon*nflavors/4.0);
 #endif /* phi & R */
 
         /* do conjugate gradient to get (Madj M)inverse * chi */
-         make_clov(CKU0);
+	compute_clov(gen_clov, CKU0);
 #ifdef LU
-	  junktrlogA = make_clovinv(ODD);
+	compute_clovinv(gen_clov, ODD);
 #endif /*LU*/
 	  iters += congrad_cl(niter,rsqmin,&final_rsq);
         cg_time = ((Real)step - 0.5)*epsilon;
@@ -111,7 +111,7 @@ Real xrandom;
 
 	/* now update H by full time interval */
     	update_h(epsilon);
-	free_clov();
+	free_this_clov(gen_clov);
 
     	/* update U's by half time step to get to even time */
     	update_u(epsilon*0.5);
@@ -128,14 +128,15 @@ Real xrandom;
     /* do conjugate gradient to get (Madj M)inverse * chi */
     next_cg_time = steps*epsilon;
     predict_next_psi(&old_cg_time,&cg_time,&next_cg_time);
-    make_clov(CKU0);
+    compute_clov(gen_clov, CKU0);
 #ifdef LU
-    endtrlogA = make_clovinv(ODD);
+    compute_clovinv(gen_clov, ODD);
+    endtrlogA = gen_clov->trlogA;
 #else
     endtrlogA = (double)0.0;
 #endif /*LU*/
     iters += congrad_cl(niter,rsqmin,&final_rsq);
-    free_clov();
+    free_this_clov(gen_clov);
     cg_time = steps*epsilon;
     endaction=d_action();
     endaction -= (double)2.0 * endtrlogA;

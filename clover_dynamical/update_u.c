@@ -52,6 +52,7 @@ scalar_mult_add_su3_matrix(link,&temp1,t2,&temp2);
 	    su3mat_copy(&temp2,link);
 	}
     }
+    invalidate_this_clov(gen_clov);
 /**dtime += dclock();
 if(this_node==0)printf("LINK_UPDATE: time = %e  mflops = %e\n",
 dtime, (double)(5616.0*volume/(1.0e6*dtime*numnodes())) );**/

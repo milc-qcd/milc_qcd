@@ -12,6 +12,7 @@
 #include "../include/generic_quark_types.h" /* For wilson_quark_source */
 #include "../include/random.h"  /* For double_prn */
 #include "../include/io_lat.h"    /* For gauge_file */
+#include "../include/generic_clover.h" /* For clover */
 
 /* Begin definition of site structure */
 
@@ -143,5 +144,8 @@ EXTERN char ** gen_pt[N_POINTERS];
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
 EXTERN site *lattice;
+
+/* Storage for the clover term */
+EXTERN clover *gen_clov;
 
 #endif /* _LATTICE_H */

@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
       g_time += dclock();
       if(this_node==0)printf("Time to gauge fix = %e\n",g_time);
-      
+      invalidate_this_clov(gen_clov);
     }
     else
       if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");

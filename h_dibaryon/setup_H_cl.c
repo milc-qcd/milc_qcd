@@ -279,8 +279,10 @@ int readin(int prompt) {
   scratchflag = par_buf.scratchflag;
 
   /* Do whatever is needed to get lattice */
-  if( startflag != CONTINUE )
+  if( startflag != CONTINUE ){
     startlat_p = reload_lattice( startflag, startfile );
+    invallidate_clov();
+  }
 
   return(0);
 }
