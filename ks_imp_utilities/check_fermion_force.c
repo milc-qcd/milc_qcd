@@ -113,7 +113,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
     save_ks_vector_scidac_from_site(srcfile, "check fermion force",
 				    "source color vector field", 
 				    QIO_SINGLEFILE, QIO_SERIAL, src, 1);
-  else if(srcflag == SAVE_PARTITION_SCIDAC)
+  else if(srcflag == SAVE_PARTFILE_SCIDAC)
     save_ks_vector_scidac_from_site(srcfile, "check fermion force",
 				    "source color vector field",
                                     QIO_PARTFILE, QIO_SERIAL, src, 1);
@@ -124,7 +124,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
        recxml, QIO_SINGLEFILE,  F_OFFSET(ansmom[0]), 4);
     free_QCDML(filexml);
   }
-  else if(ansflag == SAVE_PARTITION_SCIDAC){
+  else if(ansflag == SAVE_PARTFILE_SCIDAC){
     node0_printf("Saving the momentum matrix\n");
     filexml = create_QCDML();
     save_color_matrix_scidac_from_site(ansfile, filexml, 
