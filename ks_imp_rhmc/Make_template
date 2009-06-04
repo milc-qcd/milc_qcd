@@ -488,6 +488,27 @@ su3_rhmc_hisq_su3::
 	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
 	${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o control.o"
 
+# HISQ spectrum 
+su3_spectrum_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHISQ -DSPECTRUM -DHISQ_REUNIT_ALLOW_SVD \
+	-DINT_ALG=INT_3G1F" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+ 	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
+	${SPECTRUM_OBJECTS} ${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o \
+        control.o"
+
+# HISQ spectrum with SU(3) reunitarization
+su3_spectrum_hisq_su3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHISQ -DSPECTRUM" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_su3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
+	${SPECTRUM_OBJECTS} ${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o \
+        control.o"
+
 ######################################################################
 # The su3_rhmc_hisq_eos target HAS NOT BEEN DEVELOPED.  DON'T USE IT!
 ######################################################################
@@ -537,36 +558,6 @@ su3_rhmc_hisq_susc_eos::
 	"QUARK = hisq/hisq_action.h" \
 	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
 	${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o control.o"
-
-# HISQ spectrum 
-su3_spectrum_hisq::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHISQ -DSPECTRUM -DHISQ_REUNIT_ALLOW_SVD \
-	-DINT_ALG=INT_3G1F" \
-	"GAUGE = symanzik_1loop_hisq_action.h" \
- 	"QUARK = hisq/hisq_u3_action.h" \
-	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
-	${SPECTRUM_OBJECTS} ${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o \
-        control.o"
-
-# HISQ spectrum with SU(3) reunitarization
-su3_spectrum_hisq_su3::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHISQ -DSPECTRUM" \
-	"GAUGE = symanzik_1loop_hisq_action.h" \
-	"QUARK = hisq/hisq_su3_action.h" \
-	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
-	${SPECTRUM_OBJECTS} ${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o \
-        control.o"
-
-su3_spectrum_hisq_stout::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DHISQ -DSPECTRUM -DMILC_GLOBAL_DEBUG" \
-	"GAUGE = symanzik_1loop_hisq_action.h" \
-	"QUARK = hisq/hisq_stout_action.h" \
-	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
-	${SPECTRUM_OBJECTS} ${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o \
-        control.o debug.o"
 
 ###################################################
 # DEBUGGING targets
@@ -694,6 +685,15 @@ test_su3_paranoid_der::
         "EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
         ${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o \
         control_test_su3_paranoid.o"
+
+su3_spectrum_hisq_stout::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHISQ -DSPECTRUM -DMILC_GLOBAL_DEBUG" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_stout_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${MULTI_INV_FN} ${HISQFORCE} \
+	${SPECTRUM_OBJECTS} ${SYMZK1FORCE} quark_stuff_hisq.o su3_mat_op.o \
+        control.o debug.o"
 
 
 # Hacks to allow more than one test case
