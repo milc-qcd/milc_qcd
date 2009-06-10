@@ -274,6 +274,7 @@ void restrict_fourier_field(
 			    complex numbers.  For example, an su3_vector
 			    is 3 complex numbers. */
      int isign);	 /* 1 for x -> k, -1 for k -> x */
+void cleanup_restrict_fourier(void);
 
 /* reunitarize2.c */
 void reunitarize( void );

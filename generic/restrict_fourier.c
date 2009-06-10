@@ -120,6 +120,19 @@ void setup_restrict_fourier( int *key, int *slice){
     if(notbase2)pbaserev_dir = make_gather( pbaserev_map, key,
 			 NO_INVERSE, NO_EVEN_ODD, SCRAMBLE_PARITY );
 }
+
+void cleanup_restrict_fourier(void){
+  int dir;
+
+  /* Unfortunately, we have no way to unmake gathers,
+     so we can't clean up the most important allocation here.
+     This means there will be a memory leak */
+
+  FORALLUPDIR(dir){
+    if(butterfly_dir[dir] != NULL)
+      free(butterfly_dir[dir]);
+  }
+}
   
 /* Bit reverse a single integer, which ranges from 0 to 2^n-1 ( n bits ) */
 /* This version allows for a dimension p * 2^n.
