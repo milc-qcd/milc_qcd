@@ -19,6 +19,9 @@ while(<>){
 	    print "$n $totMB $a[3]\n";
 	    $n++;
 	    $addr = $a[0];
+	    if ( defined($table{$addr}) && $table{$addr} != 0){
+		print "WARNING: expected 0 but got $table{$addr}\n";
+	    }
 	    $table{$addr} = $size;
 	}
     }
@@ -33,13 +36,15 @@ while(<>){
 	    $nelem =~ s/calloc\((\w+),\w+\)/$1/;
 	    $elsize = $a[2];
 	    $elsize =~ s/calloc\(\w+,(\w+)\)/$1/;
-	    print "nelem = $nelem elsize = $elsize\n";
 	    $size = $nelem*$elsize;
 	    $tot += $size;
 	    $totMB = $tot/1e6;
 	    print "$n $totMB $a[3]\n";
 	    $n++;
 	    $addr = $a[0];
+	    if ( defined($table{$addr}) && $table{$addr} != 0){
+		print "WARNING: expected 0 but got $table{$addr}\n";
+	    }
 	    $table{$addr} = $size;
 	}
     }
@@ -56,6 +61,7 @@ while(<>){
 	    $size =~ s/realloc\(\w+,(\w+)\)/$1/;
 	    print "addr = $addr size = $size\n";
 	    defined($table{$addr}) || die "Can't find $addr in table\n";
+	    $oldsize = $table{$addr};
 	    $tot += ($size - $oldsize);
 	    $totMB = $tot/1e6;
 	    print "$n $totMB $a[3]\n";
@@ -91,6 +97,8 @@ while(<>){
 foreach $key (sort keys %table)
 {
     if($table{$key} > 0){
+	$tot -= $table{$key};
 	print "alloc $key leaves $table{$key} bytes unfreed.\n";
+	print "$tot bytes remain unaccounted\n";
     }
 }
