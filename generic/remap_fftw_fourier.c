@@ -383,10 +383,14 @@ void ft_create_layouts(ft_layout *ftl[], ft_layout **ft_milc,
 /* Destroy FT layout */
 void ft_destroy_ft_layout(ft_layout *ftl){
   if(ftl == NULL)return;
-  if(ftl->nsquares != NULL)
+  if(ftl->nsquares != NULL){
     free(ftl->nsquares);
-  if(ftl->squaresize != NULL)
+    ftl->nsquares = NULL;
+  }
+  if(ftl->squaresize != NULL){
     free(ftl->squaresize);
+    ftl->squaresize = NULL;
+  }
 }
 
 /*----------------------------------------------------------------------*/
@@ -539,6 +543,12 @@ void setup_restrict_fourier( int *key, int *slice){
   /* Create the maps for switching layouts */
 
   ft_make_maps(layout, key, ndim);
+}
+
+/*----------------------------------------------------------------------*/
+
+void cleanup_restrict_fourier(void){
+  /* We have nothing to clean up */
 }
 
 /*----------------------------------------------------------------------*/
