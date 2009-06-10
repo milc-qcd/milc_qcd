@@ -193,7 +193,8 @@ int main(int argc, char *argv[]){
     filename = scanfilename;
   } else {
     filename = argv[1];
-    tselect = atoi(argv[2]);
+    if (argc > 2)
+      tselect = atoi(argv[2]);
   }
 
   printf("Will read %s\n", filename);
