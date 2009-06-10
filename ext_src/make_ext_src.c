@@ -5,38 +5,89 @@
 #include "ext_src_includes.h"
 
 /*--------------------------------------------------------------------*/
-static void init_timeslice_fft(int t0){
-  int slice[4] = {0,0,0,0};
-  int key[4];
+static complex *create_w_sink_smearing(wilson_quark_source *wqs){
+  int t0 = wqs->t0;
+  double vol = (double)nx*ny*nz;
+  complex *chi_cs;
+  int i;
+  site *s;
+  double dtime;
 
-  /* Set up 3D Fourier transform for smearing.  Do it only on time slice t0 */
-  slice[TUP] = t0;
+  /* No smearing for delta function at the origin */
+  if(wqs->type == POINT && wqs->x0 == 0 && wqs->y0 == 0 && wqs->z0 == 0)
+    return NULL;
 
-  key[XUP] = 1;
-  key[YUP] = 1;
-  key[ZUP] = 1;
-  key[TUP] = 2;
-  setup_restrict_fourier(key, slice);
+  chi_cs = (complex *)malloc(sizeof(complex)*sites_on_node);
+  if(chi_cs == NULL){
+    printf("create_w_sink_smearing(%d) No room for chi_cs\n",this_node);
+    terminate(1);
+  }
+
+  dtime = start_timing();
+  w_sink_field(chi_cs, wqs);
+  print_timing(dtime,"w_sink_field");
+  
+  dtime = start_timing();
+  restrict_fourier_field(chi_cs, sizeof(complex), FORWARDS);
+  print_timing(dtime, "FFT of chi and multiply");
+
+  /* Normalize, anticipating inverse FT */
+  FORALLSITES(i,s)if(s->t == t0){
+    CMULREAL(chi_cs[i], 1./vol, chi_cs[i]);
+  }
+  
+  return chi_cs;
 }
 
 /*--------------------------------------------------------------------*/
-static void sink_smear_w_src(wilson_vector *wv, wilson_quark_source *wqs){
+/* Same as create_w_sink_smearing, but uses ks_sink_field with ksqs */
+static complex *create_ks_sink_smearing(ks_quark_source *ksqs){
+  int t0 = ksqs->t0;
+  double vol = (double)nx*ny*nz;
+  complex *chi_cs;
+  int i;
+  site *s;
+  double dtime;
+
+  /* No smearing for delta function at the origin */
+  if(ksqs->type == POINT && ksqs->x0 == 0 && ksqs->y0 == 0 && ksqs->z0 == 0)
+    return NULL;
+
+  chi_cs = (complex *)malloc(sizeof(complex)*sites_on_node);
+  if(chi_cs == NULL){
+    printf("create_ks_sink_smearing(%d) No room for chi_cs\n",this_node);
+    terminate(1);
+  }
+
+  dtime = start_timing();
+  ks_sink_field(chi_cs, ksqs);
+  print_timing(dtime,"ks_sink_field");
   
+  dtime = start_timing();
+  restrict_fourier_field(chi_cs, sizeof(complex), FORWARDS);
+  print_timing(dtime, "FFT of chi and multiply");
+
+  /* Normalize, anticipating inverse FT */
+  FORALLSITES(i,s)if(s->t == t0){
+    CMULREAL(chi_cs[i], 1./vol, chi_cs[i]);
+  }
+
+  return chi_cs;
+}
+
+/*--------------------------------------------------------------------*/
+static void sink_smear_w_src(wilson_vector *wv, complex *chi_cs,
+			     wilson_quark_source *wqs){
   int c,d;
   int i;
   site *s;
-  complex *chi_cs, z;
+  complex z;
   int t0 = wqs->t0;
-  double vol = (double)nx*ny*nz;
   double dtime = start_timing();
 
   /* No smearing for delta function at the origin */
   if(wqs->type == POINT && wqs->x0 == 0 && wqs->y0 == 0 && wqs->z0 == 0)
     return;
-
-  init_timeslice_fft(t0);
-
-  chi_cs = (complex *)malloc(sizeof(complex)*sites_on_node);
 
   /* Now convolute the quark source with the given wave function for
      the smeared mesons. This is done with FFT's */
@@ -46,13 +97,9 @@ static void sink_smear_w_src(wilson_vector *wv, wilson_quark_source *wqs){
 
   print_timing(dtime,"FFT");
 
-  w_sink_field(chi_cs, wqs);
-  
-  dtime = start_timing();
-  restrict_fourier_field(chi_cs, sizeof(complex), FORWARDS);
-  
-  /* Now multiply the quark by the sink wave function on the selected
+  /* Now multiply the quark by the FT sink wave function on the selected
      time slice */
+  dtime = start_timing();
   FORALLSITES(i,s)if(s->t == t0){
     for(c=0;c<3;c++)
       for(d=0;d<4;d++){
@@ -60,44 +107,30 @@ static void sink_smear_w_src(wilson_vector *wv, wilson_quark_source *wqs){
 	CMUL(z, chi_cs[i], wv[i].d[d].c[c]);
       }
   }
-  
   print_timing(dtime, "FFT of chi and multiply");
 
   /* Inverse FFT */
   dtime = start_timing();
   /* fft quark source (in place) */
   restrict_fourier_field((complex *)wv, sizeof(wilson_vector), BACKWARDS);
-
-  /* Adjust normalization */
-  FORALLSITES(i,s)if(s->t == t0){
-    for(c=0;c<3;c++)
-      for(d=0;d<4;d++){
-	CMULREAL(wv[i].d[d].c[c], 1./vol, wv[i].d[d].c[c]);
-      }
-  }
-
   print_timing(dtime,"FFT");
-  free(chi_cs);
+
 }  
 
 /*--------------------------------------------------------------------*/
-static void sink_smear_ks_src(su3_vector *v, ks_quark_source *ksqs){
+static void sink_smear_ks_src(su3_vector *v, complex *chi_cs,
+			      ks_quark_source *ksqs){
   
   int c;
   int i;
   site *s;
-  complex *chi_cs, z;
+  complex z;
   int t0 = ksqs->t0;
-  double vol = (double)nx*ny*nz;
   double dtime = start_timing();
 
   /* No smearing for delta function at the origin */
   if(ksqs->type == POINT && ksqs->x0 == 0 && ksqs->y0 == 0 && ksqs->z0 == 0)
     return;
-
-  init_timeslice_fft(t0);
-
-  chi_cs = (complex *)malloc(sizeof(complex)*sites_on_node);
 
   /* Now convolute the quark source with the given wave function for
      the smeared mesons. This is done with FFT's */
@@ -107,34 +140,21 @@ static void sink_smear_ks_src(su3_vector *v, ks_quark_source *ksqs){
 
   print_timing(dtime,"FFT");
 
-  ks_sink_field(chi_cs, ksqs);
-  
-  dtime = start_timing();
-  restrict_fourier_field(chi_cs, sizeof(complex), FORWARDS);
-  
   /* Now multiply quark by sink wave function on the selected time slice */
+  dtime = start_timing();
   FORALLSITES(i,s)if(s->t == t0){
     for(c=0;c<3;c++){
       z = v[i].c[c];
       CMUL(z, chi_cs[i], v[i].c[c]);
     }
   }
-  
   print_timing(dtime, "FFT of chi and multiply");
 
   /* Inverse FFT */
   dtime = start_timing();
   /* fft quark source (in place) */
   restrict_fourier_field((complex *)v, sizeof(su3_vector), BACKWARDS);
-
-  /* Adjust normalization */
-  FORALLSITES(i,s)if(s->t == t0){
-    for(c=0;c<3;c++)
-      CMULREAL(v[i].c[c], 1./vol, v[i].c[c]);
-  }
-
   print_timing(dtime,"FFT");
-  free(chi_cs);
 }  
 
 /*--------------------------------------------------------------------*/
@@ -160,11 +180,16 @@ void extract_wprop_to_w_source(int startflag, char startfile[],
   int color, spin;
   int status;
   wilson_vector *wv;
+  complex *chi_cs;
   w_prop_file *fp_in; 
   char *fileinfo;
   wilson_quark_source src_wqs;
+  double dtime = 0;
 
   wv = create_wv_field();
+
+  /* Create sink smearing function */
+  chi_cs = create_w_sink_smearing(snk_wqs);
 
   init_wqs(&src_wqs);
 
@@ -181,21 +206,28 @@ void extract_wprop_to_w_source(int startflag, char startfile[],
   for(spin=0;spin<4;spin++)
     for(color=0;color<3;color++){
       
+      dtime = start_timing();
       status = reload_wprop_sc_to_field(startflag, fp_in, &src_wqs, 
 					spin, color, wv, 1);
       if(status != 0)terminate(1);
 
       /* Smear the time slice */
-      sink_smear_w_src(wv, snk_wqs);
+      dtime = start_timing();
+      sink_smear_w_src(wv, chi_cs, snk_wqs);
+      print_timing(dtime, "sink_smear_w_src");
 
       /* Multiply by the sink gamma */
+      dtime = start_timing();
       mult_sink_gamma_wv(wv, snk_gam);
+      print_timing(dtime,"mult_sink_gamma_wv");
 
       /* Write the extended source as a time slice of the propagator */
 
       dst_wqs->spin = spin;
       dst_wqs->color = color;
+      dtime = start_timing();
       w_source_write( wv, dst_wqs );
+      print_timing(dtime,"w_source_write");
       
     }
   
@@ -203,6 +235,7 @@ void extract_wprop_to_w_source(int startflag, char startfile[],
   r_close_wprop(startflag, fp_in);
   w_close_w_source(dst_wqs);
 
+  if(chi_cs != NULL)free(chi_cs);
   free_ws_XML(fileinfo);
   destroy_wv_field(wv);
 
@@ -217,11 +250,16 @@ void extract_ksprop_to_ks_source(int startflag, char startfile[],
   int color;
   int status;
   su3_vector *v;
+  complex *chi_cs;
   ks_prop_file *fp_in; 
   char *fileinfo;
   ks_quark_source src_ksqs;
+  double dtime;
 
   v = create_v_field();
+
+  /* Create sink smearing function */
+  chi_cs = create_ks_sink_smearing(snk_ksqs);
 
   init_ksqs(&src_ksqs);
 
@@ -244,12 +282,15 @@ void extract_ksprop_to_ks_source(int startflag, char startfile[],
     if(status != 0)terminate(1);
 
     /* Smear the time slice */
-    sink_smear_ks_src(v, snk_ksqs);
+    dtime = start_timing();
+    sink_smear_ks_src(v, chi_cs, snk_ksqs);
+    print_timing(dtime,"sink_smear_ks_src");
 
     /* Write the extended source as a time slice of the propagator */
-    
     dst_ksqs->color = color;
+    dtime = start_timing();
     ks_source_write( v, dst_ksqs );
+    print_timing(dtime,"ks_source_write");
     
   }
   
@@ -257,6 +298,7 @@ void extract_ksprop_to_ks_source(int startflag, char startfile[],
   r_close_ksprop(startflag, fp_in);
   w_close_ks_source(dst_ksqs);
 
+  if(chi_cs != NULL)free(chi_cs);
   free_kss_XML(fileinfo);
   destroy_v_field(v);
 }
@@ -271,9 +313,10 @@ void extract_ksprop_to_w_source(int startflag, char startfile[],
 {
   int color, spin;
   int status;
-  su3_vector *v;
+  su3_vector *v[3];
   wilson_vector *wv;
   spin_wilson_vector *swv;
+  complex *chi_cs;
   ks_prop_file *fp_in; 
   char *fileinfo;
   int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
@@ -282,9 +325,29 @@ void extract_ksprop_to_w_source(int startflag, char startfile[],
 
   swv = create_swv_field();
   wv  = create_wv_field();
-  v   = create_v_field();
+
+  for(color = 0; color < 3; color++)
+    v[color]   = create_v_field();
+
+  /* Create sink smearing function */
+  chi_cs = create_w_sink_smearing(snk_wqs);
 
   init_ksqs(&src_ksqs);
+
+  /* Open files for KS propagators, if requested */
+  fp_in  = r_open_ksprop(startflag, startfile);
+  
+  /* Read the entire staggered propagator */
+  for(color = 0; color < 3; color++){
+    
+    /* Read color vector (and source as appropriate) from file */
+    status = reload_ksprop_c_to_field(startflag, fp_in, &src_ksqs, 
+				      color, v[color], 1);
+    if(status != 0)terminate(1);
+    
+  }
+  
+  r_close_ksprop(startflag, fp_in);
 
   /* Create metadata for Dirac source file */
   fileinfo = create_ws_XML(startfile, dst_wqs);
@@ -299,43 +362,42 @@ void extract_ksprop_to_w_source(int startflag, char startfile[],
 
     node0_printf("Spin %d\n", spin);
 
-    /* Open files for KS propagators, if requested */
-    fp_in  = r_open_ksprop(startflag, startfile);
-
     for(color = 0; color < 3; color++){
     
-      /* Read color vector (and source as appropriate) from file */
-      status = reload_ksprop_c_to_field(startflag, fp_in, &src_ksqs, 
-					color, v, 1);
-      if(status != 0)terminate(1);
-      
       /* Convert KS prop to naive prop (su3_vector maps to
 	 spin_wilson_vector) for a given source color */
       
       dtime = start_timing();
-      convert_ksprop_to_wprop_swv(swv, v, ks_source_r);
+      convert_ksprop_to_wprop_swv(swv, v[color], ks_source_r);
    
       copy_wv_from_swv(wv, swv, spin);
       print_timing(dtime, "naive conversion and copy");
       
       /* Smear the time slice */
-      sink_smear_w_src(wv, snk_wqs);
+      dtime = start_timing();
+      sink_smear_w_src(wv, chi_cs, snk_wqs);
+      print_timing(dtime, "sink_smear_w_src");
 
       /* Multiply by the sink gamma */
+      dtime = start_timing();
       mult_sink_gamma_wv(wv, snk_gam);
+      print_timing(dtime, "mult_sink_gamma");
 
       /* Write the extended source as a time slice of the propagator */
       dst_wqs->color = color;
       dst_wqs->spin  = spin;
+      dtime = start_timing();
       w_source_write( wv, dst_wqs );
+      print_timing(dtime, "w_source_write");
     }
-
-    r_close_ksprop(startflag, fp_in);
   } /* spin */
   
   w_close_w_source(dst_wqs);
 
-  destroy_v_field(v); 
+  
+  if(chi_cs != NULL)free(chi_cs);
+  for(color = 0; color < 3; color++)
+    destroy_v_field(v[color]); 
   destroy_wv_field(wv); 
   destroy_swv_field(swv);
 }

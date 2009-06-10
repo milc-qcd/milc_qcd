@@ -24,6 +24,8 @@ int main(int argc, char *argv[])
   int prompt;
   int i;
   double starttime, endtime;
+  int slice[4] = {0,0,0,0};
+  int key[4] = {1,1,1,0};  /* We do all time slices, regardless */
   
   initialize_machine(&argc,&argv);
 #ifdef HAVE_QDP
@@ -36,6 +38,9 @@ int main(int argc, char *argv[])
   /* set up */
   prompt = setup();
   /* loop over input sets */
+
+  /* Initialize the FT */
+  setup_restrict_fourier(key, slice);
 
   while( readin(prompt) == 0){
     
