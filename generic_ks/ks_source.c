@@ -439,6 +439,7 @@ int ks_source_write(su3_vector *src, ks_quark_source *ksqs)
   char myname[] = "ks_source_write";
   
   int status = 0;
+  double dtime = 0;
   
   /* Unpack structure */
   int source_type           = ksqs->type;
@@ -450,6 +451,8 @@ int ks_source_write(su3_vector *src, ks_quark_source *ksqs)
   QIO_USQCDKSPropRecordInfo *recinfo;
 #endif
   
+  dtime = -dclock();
+
   if(source_type != VECTOR_FIELD_FILE){
     node0_printf("%s: Unrecognized source type for writing\n", myname);
     return 1;
@@ -471,6 +474,8 @@ int ks_source_write(su3_vector *src, ks_quark_source *ksqs)
       write_kspropsource_V_usqcd_xml(ksqs->outfile, recxml, src, t0) );
   node0_printf("Wrote source for color %d time slice %d\n", color, t0);
   QIO_string_destroy(recxml);
+  dtime += dclock();
+  node0_printf("Time to save source color %d = %e\n", color,dtime);
 #else
   node0_printf("%s: QIO compilation required for this operation\n", myname);
   terminate(1);

@@ -860,6 +860,7 @@ int w_source_write(wilson_vector *src, wilson_quark_source *wqs)
   char myname[] = "w_source_write";
   
   int status = 0;
+  double dtime = 0;
   
   /* Unpack structure */
   int source_type           = wqs->type;
@@ -872,6 +873,8 @@ int w_source_write(wilson_vector *src, wilson_quark_source *wqs)
   QIO_USQCDPropRecordInfo *recinfo;
 #endif
   
+  dtime = -dclock();
+
   if(source_type != DIRAC_FIELD_FILE){
     node0_printf("%s: Unrecognized source type for writing\n", myname);
     return 1;
@@ -894,6 +897,10 @@ int w_source_write(wilson_vector *src, wilson_quark_source *wqs)
   node0_printf("Wrote source for color %d spin %d time slice %d\n", 
 	       color, spin, t0);
   QIO_string_destroy(recxml);
+  dtime += dclock();
+  node0_printf("Time to save source spin %d color %d = %e\n",
+	       wqs->spin,wqs->color,dtime);
+  
 #else
   node0_printf("%s: QIO compilation required for this operation\n", myname);
   terminate(1);
@@ -1147,6 +1154,7 @@ static void sink_smear_prop(wilson_prop_field wp, wilson_quark_source *wqs){
 			   BACKWARDS);
   }
   print_timing(dtime,"FFT");
+  cleanup_restrict_fourier();
   free(chi_cs);
 }  
 
