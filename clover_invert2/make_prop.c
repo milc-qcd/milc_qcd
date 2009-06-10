@@ -88,11 +88,12 @@ int get_wprop_to_wp_field(int startflag, char startfile[],
       /* save solution if requested */
       save_wprop_sc_from_field( saveflag, fp_out, my_wqs, spin, color, dst, 
 				"", 1);
-      
+
       tot_iters += avs_iters;
     } /* source color, spin */
   
-  /* close files for wilson propagators */
+  /* clean up */
+  clear_wqs(my_wqs);
   r_close_wprop(startflag, fp_in);
   if(startflag != FRESH)
     node0_printf("Restored propagator from %s\n",startfile);
@@ -187,9 +188,17 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
   } /* source color */
   rephase( OFF);
   
-  /* close files for staggered propagators */
+  /* clean up */
+  clear_ksqs(my_ksqs);
   r_close_ksprop(startflag, fp_in);
   w_close_ksprop(saveflag,  fp_out);
+
+  if(startflag != FRESH)
+    node0_printf("Restored propagator from %s\n",startfile);
+
+  w_close_wprop(saveflag,  fp_out);
+  if(saveflag != FORGET)
+    node0_printf("Saved propagator to %s\n",savefile);
 
   free(dst);
 
