@@ -26,7 +26,7 @@
 int main(int argc, char *argv[])
 {
   int prompt;
-  int i, j, iq0, iq1, oldiq0, oldiq1, oldip0;
+  int i, j, k, iq0, iq1, oldiq0, oldiq1, oldip0;
   double starttime, endtime, dtime;
   wilson_prop_field prop[MAX_PROP];
   wilson_prop_field quark[MAX_QK];
@@ -186,6 +186,21 @@ int main(int argc, char *argv[])
 	quark[j] = w_sink_op(&param.snk_wqs[j], prop[i]);
 	oldip0 = i;
 	oldiq0 = -1;
+
+	/* Can we delete any props now? */
+	/* For each prop, scan ahead to see if it is no longer needed. */
+	for(i = 0; i < param.num_prop; i++)
+	  if(prop[i] != NULL){
+	    int wont_need = 1;
+	    for(k = j + 1; k < param.num_qk; k++)
+	      if(param.parent_type[k] == PROP_TYPE &&
+		 param.prop_for_qk[k] == i)
+		wont_need = 0;  /* Still need this one */
+	    if(wont_need){
+	      destroy_wp_field(prop[i]); prop[i] = NULL;
+	      node0_printf("destroy prop[%d]\n",i);
+	    }
+	  }
       }
       else { /* QUARK_TYPE */
 #ifdef CLOV_LEAN
