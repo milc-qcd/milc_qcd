@@ -86,17 +86,18 @@ int ks_invert_ksqs( /* Return value is number of iterations taken */
 {
   int tot_iters;
   su3_vector *src;
+  char myname[] = "ks_invert_ksqs";
 
   /* Make the source */
   /* PAD may be used to avoid cache trashing */
 #define PAD 0
   src = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
   if(src == NULL){
-    printf("ks_invert_field_wqs(%d): Can't allocate src\n",this_node);
+    printf("%s(%d): Can't allocate src\n",myname,this_node);
     terminate(1);
   }
   if(source_func_field(src,ksqs)){
-    printf("wilson_invert_field_wqs(%d): error getting source\n",this_node);
+    printf("%s(%d): error getting source\n",myname,this_node);
     terminate(1);
   };
 
