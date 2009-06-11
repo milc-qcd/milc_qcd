@@ -60,7 +60,8 @@ int main(int argc, char *argv[])
 	{
 	  extract_wprop_to_w_source(param.startflag_w[i], 
 				    param.startfile_w[i], 
-				    &param.dst_wqs[i],
+				    param.num_t0[i],
+				    &param.dst_wqs[i][0],
 				    &param.snk_wqs[i],
 				    param.snk_gam[i]);
 	}
@@ -70,13 +71,15 @@ int main(int argc, char *argv[])
 	  if(param.dst_type[i] == CLOVER_TYPE) /* Naive extended source */
 	    extract_ksprop_to_w_source(param.startflag_ks[i], 
 				       param.startfile_ks[i], 
-				       &param.dst_wqs[i],
+				       param.num_t0[i],
+				       &param.dst_wqs[i][0],
 				       &param.snk_wqs[i],
 				       param.snk_gam[i]);
 	  else /* KS extended source */
 	    extract_ksprop_to_ks_source(param.startflag_ks[i], 
 					param.startfile_ks[i], 
-					&param.dst_ksqs[i],
+					param.num_t0[i],
+					&param.dst_ksqs[i][0],
 					&param.snk_ksqs[i]);
 	}
     }

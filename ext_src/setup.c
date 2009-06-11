@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.4  2009/06/11 16:24:22  detar
+//  Allow writing multiple sources from the same file.  Changes parameter inputs.
+//
 //  Revision 1.3  2009/05/31 02:00:57  detar
 //  Fix "continue" and NULL startlat_p bug in clover_info.c and setup*.c
 //
@@ -127,7 +130,7 @@ int readin(int prompt) {
   
   int status;
   char savebuf[128];
-  int i;
+  int i,j;
 
   /* On node zero, read parameters and send to all other nodes */
   if(this_node==0){
@@ -158,33 +161,25 @@ int readin(int prompt) {
 	  status++;
 	}
       }
-      if(param.qk_type[i] == CLOVER_TYPE){
-	int source_type, t0, saveflag_s;
-	char descrp[MAXDESCRP];
-	char savefile_s[MAXFILENAME];
 
+      IF_OK status += get_s(stdin, prompt,"output_type", savebuf );
+      IF_OK {
+	if(strcmp(savebuf,"clover") == 0)param.dst_type[i] = CLOVER_TYPE;
+	else if(strcmp(savebuf,"KS") == 0)param.dst_type[i] = KS_TYPE;
+	else {
+	  printf("Unknown output type %s\n",savebuf);
+	  status++;
+	}
+      }
+      if(param.qk_type[i] == CLOVER_TYPE){
 	IF_OK status += ask_starting_wprop( stdin, prompt, 
 					    &param.startflag_w[i],
 					    param.startfile_w[i]);
 	
-	IF_OK status += 
-	  ask_output_w_quark_source_file( stdin, prompt, &saveflag_s,
-					  &source_type, &t0, descrp,
-					  savefile_s );
-	
 	IF_OK {
-	  if(source_type == DIRAC_FIELD_FILE){
-	    init_wqs(&param.dst_wqs[i]);
-	    param.dst_wqs[i].type = source_type;
-	    param.dst_wqs[i].t0   = t0;
-	    param.dst_wqs[i].flag = saveflag_s;
-	    strcpy(param.dst_wqs[i].descrp, descrp);
-	    strcpy(param.dst_wqs[i].source_file, savefile_s);
-	    param.dst_type[i] = CLOVER_TYPE;
-
+	  if(param.dst_type[i] == CLOVER_TYPE){
 	    init_wqs(&param.snk_wqs[i]);
 	    status += get_w_quark_sink(stdin, prompt, &param.snk_wqs[i]);
-	    param.snk_wqs[i].t0   = t0;
 	  } else {
 	    printf("Unsupported output source type\n");
 	    status++;
@@ -192,47 +187,22 @@ int readin(int prompt) {
 	}
 	
       } else {  /* KS_TYPE */
-	int source_type, t0, saveflag_s;
-	char descrp[MAXDESCRP];
-	char savefile_s[MAXFILENAME];
+	int source_type;
 
 	IF_OK status += ask_starting_ksprop( stdin, prompt, 
 					     &param.startflag_ks[i],
 					     param.startfile_ks[i]);
 	
-	IF_OK status += 
-	  ask_output_ks_quark_source_file( stdin, prompt, &saveflag_s,
-					   &source_type, &t0, descrp,
-					   savefile_s );
-	
 	/* We could generate either a staggered extended source or a
 	   naive (Dirac) extended source */
 	IF_OK {
-	  if(source_type == DIRAC_FIELD_FILE){
-	    init_wqs(&param.dst_wqs[i]);
-	    param.dst_wqs[i].type = source_type;
-	    param.dst_wqs[i].t0   = t0;
-	    param.dst_wqs[i].flag = saveflag_s;
-	    strcpy(param.dst_wqs[i].descrp, descrp);
-	    strcpy(param.dst_wqs[i].source_file, savefile_s);
-	    param.dst_type[i] = CLOVER_TYPE;
-
+	  if(param.dst_type[i] == CLOVER_TYPE){
 	    init_wqs(&param.snk_wqs[i]);
 	    status += get_w_quark_sink(stdin, prompt, &param.snk_wqs[i]);
-	    param.snk_wqs[i].t0   = t0;
 	  }
-	  else if(source_type == VECTOR_FIELD_FILE){
-	    init_ksqs(&param.dst_ksqs[i]);
-	    param.dst_ksqs[i].type = source_type;
-	    param.dst_ksqs[i].t0   = t0;
-	    param.dst_ksqs[i].flag = saveflag_s;
-	    strcpy(param.dst_ksqs[i].descrp, descrp);
-	    strcpy(param.dst_ksqs[i].source_file, savefile_s);
-	    param.dst_type[i] = KS_TYPE;
-
+	  else if(param.dst_type[i] == KS_TYPE){
 	    init_ksqs(&param.snk_ksqs[i]);
 	    status += get_ks_quark_sink(stdin, prompt, &param.snk_ksqs[i]);
-	    param.snk_ksqs[i].t0   = t0;
 	  } else {
 	    printf("Unsupported output source type\n");
 	    status++;
@@ -254,7 +224,85 @@ int readin(int prompt) {
       } else {
 	param.snk_gam[i] = -999; /* Illegal if we ever try to use it */
       }
-    }
+
+      /* Get the time slice and output source file */
+
+      IF_OK status += get_i(stdin,prompt,"number_of_time_slices", 
+			    &param.num_t0[i] );
+
+      IF_OK for(j = 0; j < param.num_t0[i]; j++){
+	if(param.qk_type[i] == CLOVER_TYPE){
+	  int source_type, t0, saveflag_s;
+	  char descrp[MAXDESCRP];
+	  char savefile_s[MAXFILENAME];
+	  
+	  IF_OK status += 
+	    ask_output_w_quark_source_file( stdin, prompt, &saveflag_s,
+					    &source_type, &t0, descrp,
+					    savefile_s );
+	
+	  IF_OK {
+	    if(source_type == DIRAC_FIELD_FILE){
+	      if(param.dst_type[i] != CLOVER_TYPE){
+		printf("Requires a Dirac field output file.\n");
+		status++;
+	      }
+	      init_wqs(&param.dst_wqs[i][j]);
+	      param.dst_wqs[i][j].type = source_type;
+	      param.dst_wqs[i][j].t0   = t0;
+	      param.dst_wqs[i][j].flag = saveflag_s;
+	      strcpy(param.dst_wqs[i][j].descrp, descrp);
+	      strcpy(param.dst_wqs[i][j].source_file, savefile_s);
+
+	    } else {
+	      printf("Unsupported output source type\n");
+	      status++;
+	    }
+	  }
+	} else {  /* KS_TYPE */
+	  int source_type, t0, saveflag_s;
+	  char descrp[MAXDESCRP];
+	  char savefile_s[MAXFILENAME];
+	  
+	  IF_OK status += 
+	    ask_output_ks_quark_source_file( stdin, prompt, &saveflag_s,
+					     &source_type, &t0, descrp,
+					     savefile_s );
+	  
+	  /* We could generate either a staggered extended source or a
+	     naive (Dirac) extended source */
+	  IF_OK {
+	    if(source_type == DIRAC_FIELD_FILE){
+	      if(param.dst_type[i] != CLOVER_TYPE){
+		  printf("Requires a Dirac field output file.\n");
+		  status++;
+	      }
+	      init_wqs(&param.dst_wqs[i][j]);
+	      param.dst_wqs[i][j].type = source_type;
+	      param.dst_wqs[i][j].t0   = t0;
+	      param.dst_wqs[i][j].flag = saveflag_s;
+	      strcpy(param.dst_wqs[i][j].descrp, descrp);
+	      strcpy(param.dst_wqs[i][j].source_file, savefile_s);
+	    }
+	    else if(source_type == VECTOR_FIELD_FILE){
+	      if(param.dst_type[i] != KS_TYPE){
+		printf("Requires a color vector field output file.\n");
+		status++;
+	      }
+	      init_ksqs(&param.dst_ksqs[i][j]);
+	      param.dst_ksqs[i][j].type = source_type;
+	      param.dst_ksqs[i][j].t0   = t0;
+	      param.dst_ksqs[i][j].flag = saveflag_s;
+	      strcpy(param.dst_ksqs[i][j].descrp, descrp);
+	      strcpy(param.dst_ksqs[i][j].source_file, savefile_s);
+	    } else {
+	      printf("Unsupported output source type\n");
+	      status++;
+	    }
+	  } /* OK */
+	} /* if KS_TYPE */
+      } /* j time slices */
+    } /* i quarks */
 
     /* End of input fields */
     if( status > 0)param.stopflag=1; else param.stopflag=0;

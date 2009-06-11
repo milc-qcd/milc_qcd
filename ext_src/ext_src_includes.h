@@ -36,14 +36,14 @@ int readin(int prompt);
 
 /* make_ext_src.c */
 void extract_wprop_to_w_source(int startflag, char startfile[], 
-			       wilson_quark_source *my_wqs,
+			       int nt0, wilson_quark_source *my_wqs,
 			       wilson_quark_source *snk_wqs,
 			       int snk_gam);
 void extract_ksprop_to_ks_source(int startflag, char startfile[], 
-				 ks_quark_source *my_ksqs,
+				 int nt0, ks_quark_source *my_ksqs,
 				 ks_quark_source *snk_ksqs);
 void extract_ksprop_to_w_source(int startflag, char startfile[], 
-				wilson_quark_source *my_wqs,
+				int nt0, wilson_quark_source *my_wqs,
 				wilson_quark_source *snk_ksqs,
 				int snk_gam);
 /* ext_src.c */

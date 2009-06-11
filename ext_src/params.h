@@ -7,6 +7,7 @@
 #include "../include/generic_wilson.h"  /* For wilson_quark_source */
 
 #define MAX_QK 6
+#define MAX_T0 32
 #define MAX_SINK_LABEL 32
 #define CLOVER_TYPE 0
 #define KS_TYPE 1
@@ -39,9 +40,10 @@ typedef struct {
   char startfile_w[MAX_QK][MAXFILENAME];
   char startfile_ks[MAX_QK][MAXFILENAME];
   int dst_type[MAX_QK];          /* Extended source type 0 clover 1 KS */
-  wilson_quark_source dst_wqs[MAX_QK];
+  int num_t0[MAX_QK];            /* Number of time slices for each quark */
+  wilson_quark_source dst_wqs[MAX_QK][MAX_T0];
   wilson_quark_source snk_wqs[MAX_QK];
-  ks_quark_source dst_ksqs[MAX_QK];
+  ks_quark_source dst_ksqs[MAX_QK][MAX_T0];
   ks_quark_source snk_ksqs[MAX_QK];
   int snk_gam[MAX_QK]; 
 }  params;
