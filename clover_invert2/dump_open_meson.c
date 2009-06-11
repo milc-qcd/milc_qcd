@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
+
 #define PRECISION 2
 
 typedef struct {   
@@ -65,6 +67,8 @@ static int nt;
 /*--------------------------------------------------------------------*/
 /* Open and read a FermiQCD header for the open meson correlator file */
 
+typedef uint32_t u_int32type;
+typedef uint64_t u_int64type;
 typedef dcomplex mdp_complex;
 static FILE* open_open_meson_file(char filename[]){
 
@@ -73,11 +77,11 @@ static FILE* open_open_meson_file(char filename[]){
     char  file_id[60];
     char  program_version[60];
     char  creation_date[60];
-    unsigned long endianess;
-    int   ndim;
-    int   box[10];
-    long  bytes_per_site;
-    long  sites;
+    u_int32type endianess;
+    u_int32type ndim;
+    u_int32type box[10];
+    u_int32type bytes_per_site;
+    u_int64type sites;
   } fermiQCD_header = 
       {
 	"File Type: MDP FIELD",

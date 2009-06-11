@@ -33,4 +33,6 @@ typedef unsigned int u_int32type;
 
 #endif
 
+typedef unsigned long long u_int64type;
+
 #endif /* _TYPE32_H */

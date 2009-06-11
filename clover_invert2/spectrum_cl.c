@@ -841,11 +841,11 @@ static FILE* open_open_meson_file(int pair){
     char  file_id[60];
     char  program_version[60];
     char  creation_date[60];
-    unsigned long endianess;
-    int   ndim;
-    int   box[10];
-    long  bytes_per_site;
-    long  sites;
+    u_int32type endianess;
+    u_int32type ndim;
+    u_int32type box[10];
+    u_int32type bytes_per_site;
+    u_int64type sites;
   } fermiQCD_header = 
       {
 	"File Type: MDP FIELD",
