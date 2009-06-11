@@ -196,7 +196,6 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
   if(startflag != FRESH)
     node0_printf("Restored propagator from %s\n",startfile);
 
-  w_close_wprop(saveflag,  fp_out);
   if(saveflag != FORGET)
     node0_printf("Saved propagator to %s\n",savefile);
 
