@@ -33,6 +33,8 @@ Here are highlights of the changes:
 
 For version 7.6.3
 
+  Standardization of byte counts for the header in the open-meson file.
+  Optimizations for memory and speed in clover_invert2 and ext_src
   Support multifile sources in ext_src.
   Latest updates of HISQ code from Alexei.
   Further changes in metadata for FNAL correlator files
