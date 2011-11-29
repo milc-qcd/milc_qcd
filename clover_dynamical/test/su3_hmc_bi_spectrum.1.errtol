@@ -1,0 +1,57 @@
+START 6e-05 6e-05 0.0001
+WARMUPS COMPLETED
+ACCEPT: delta S = 0.0007
+ACTION_V 0.001 2e-05
+ OK converged final_rsq= 3.5e-13 (cf 1e-12) rel = 3.5e-13 (cf 0) restarts = 1 iters= 12
+F2MES 0.0002 2e-05 3e-05 2e-05 0.0002 2e-05 2e-05
+GMES 6e-05 2e-05 4 6e-05 6e-05
+GFIX: Ended at step 2 Av gf action 2e-05 delta 2e-05
+ OK converged final_rsq= 6.5e-13 (cf 1e-12) rel = 7.7e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.4e-13 (cf 1e-12) rel = 2.7e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 3e-13 (cf 1e-12) rel = 3.4e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.7e-13 (cf 1e-12) rel = 3e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.5e-13 (cf 1e-12) rel = 2.6e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.4e-13 (cf 1e-12) rel = 2.6e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 3e-13 (cf 1e-12) rel = 2.9e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.7e-13 (cf 1e-12) rel = 3e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.2e-13 (cf 1e-12) rel = 2.2e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.5e-13 (cf 1e-12) rel = 2.8e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 3.3e-13 (cf 1e-12) rel = 3.2e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 3e-13 (cf 1e-12) rel = 3.5e-14 (cf 0) restarts = 1 iters= 12
+ONE_PSEUDO2 0 0.04 0.000000e+00 0.0005 2e-05
+ONE_PSEUDO2 0 0.01 0.000000e+00 0.008 2e-05
+ONE_PSEUDO2 0 0.01 0.000000e+00 0.001 2e-05
+ONE_PSEUDO2 0 0.01 0.000000e+00 0.008 2e-05
+ONE_RHO03032 0 0.04 0.000000e+00
+ONE_RHO03032 0 0.01 0.000000e+00
+ONE_RHO03032 0 0.01 0.000000e+00
+ONE_RHO03032 0 0.01 0.000000e+00
+ONE_RHO332 0 0.04 2e-05
+ONE_RHO332 0 0.01 2e-05
+ONE_RHO332 0 0.01 2e-05
+ONE_RHO332 0 0.01 2e-05
+DSL_PSEUDO2 0 0.03 6e-05 0.0009 5e-05
+DSL_PSEUDO2 0 0.008 2e-05 0.02 2e-05
+DSL_PSEUDO2 0 0.02 2e-05 0.002 2e-05
+DSL_PSEUDO2 0 0.008 5e-05 0.02 2e-05
+DSL_RHO03032 0 0.04 0.0002
+DSL_RHO03032 0 0.007 2e-05
+DSL_RHO03032 0 0.02 2e-05
+DSL_RHO03032 0 0.007 2e-05
+DSL_RHO332 0 0.03 8e-05
+DSL_RHO332 0 0.008 3e-05
+DSL_RHO332 0 0.02 2e-05
+DSL_RHO332 0 0.008 2e-05
+PROTON 0 0.2
+PROTON 0 0.03
+PROTON 0 0.02
+PROTON 0 0.03
+DELTA 0 0.2
+DELTA 0 0.03
+DELTA 0 0.02
+DELTA 0 0.03
+DELTA_N 0 0.2
+DELTA_N 0 0.03
+DELTA_N 0 0.02
+DELTA_N 0 0.03
+RUNNING COMPLETED

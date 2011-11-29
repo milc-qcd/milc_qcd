@@ -9,7 +9,6 @@
 */
 
 #include "cl_dyn_includes.h"
-#include "lattice_qdp.h"
 #include <string.h>
 int initial_set();
 #define IF_OK if(status==0)
@@ -20,9 +19,6 @@ params par_buf;
 
 int setup()   {
   int prompt;
-#ifdef HAVE_QDP
-  int i;
-#endif
 
   /* print banner, get volume, nflavors, seed */
   prompt=initial_set();
@@ -36,16 +32,6 @@ int setup()   {
   make_nn_gathers();
   /* Create clover structure */
   gen_clov = create_clov();
-
-#ifdef HAVE_QDP
-  for(i=0; i<4; ++i) {
-    shiftdirs[i] = QDP_neighbor[i];
-  }
-  for(i=0; i<4; ++i) {
-    shiftfwd[i] = QDP_forward;
-    shiftbck[i] = QDP_backward;
-  }
-#endif
 
   return(prompt);
 }
@@ -208,10 +194,16 @@ int readin(int prompt) {
   strcpy(savefile,par_buf.savefile);
 
   /* Load part of inversion control structure for generic inverters */
+  qic.prec = PRECISION;
   qic.min = 0;
   qic.max = niter;
   qic.nrestart = nrestart;
+  qic.parity = EVENANDODD;
+  qic.start_flag = 0;
+  qic.nsrc = 1;
   qic.resid = sqrt(rsqprop);  /* Note different convention for error */
+  qic.relresid = 0;
+  qic.final_restart = 0;
 
   /* Load part of Dirac matrix parameters */
   dcp.Kappa = kappa;

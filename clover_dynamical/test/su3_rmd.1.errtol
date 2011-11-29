@@ -1,0 +1,7 @@
+START 6e-05 6e-05 0.0001
+WARMUPS COMPLETED
+ACTION_V 0.001 2e-05
+ OK converged final_rsq= 1.1e-08 (cf 9e-08) rel = 1.1e-08 (cf 0) restarts = 1 iters= 10
+F2MES 0.0002 2e-05 0.0001 2e-05 0.0002 6e-05 2e-05
+GMES 6e-05 2e-05 1e+01 6e-05 6e-05
+RUNNING COMPLETED

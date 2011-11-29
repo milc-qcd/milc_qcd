@@ -20,7 +20,6 @@
 #define CONTROL
 
 #include "cl_dyn_includes.h"
-#include "lattice_qdp.h"
 
 int main(int argc, char *argv[])  {
 int meascount,todo;
@@ -34,9 +33,6 @@ complex plp;
 double dtime;
 
  initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 

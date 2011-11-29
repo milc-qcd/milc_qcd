@@ -1,0 +1,108 @@
+SU3 with Clover fermions
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+Hybrid Monte Carlo algorithm
+PHI algorithm
+With spectrum measurements
+type 0 for no prompts  or 1 for prompts
+nflavors 2
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 3190
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 1
+traj_between_meas 1
+beta 7.3
+kappa 0.114
+clov_c 1
+u0 0.8695
+microcanonical_time_step 0.03
+steps_per_trajectory 2
+max_cg_iterations 100
+max_cg_restarts 10
+error_per_site 1e-06
+error_for_propagator 1e-06
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked.  Max deviation 0.000000
+Time to check unitarity = 0.000000e+00
+
+
+Note O_2 is really O_3 in the notes! 
+
+
+loop coefficients: nloop rep loop_coeff   multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.192793e-02     12
+                    2 0      -8.018109e-03     16
+START 3.000000e+00 3.000000e+00 6.000000e+00
+WARMUPS COMPLETED
+ACCEPT: delta S = -7.802390e-01
+ACTION_V  6.452117e+01  4.200597e-02
+ OK converged final_rsq= 3.5e-13 (cf 1e-12) rel = 3.5e-13 (cf 0) restarts = 1 iters= 12
+F2MES 1.142565e+01 -1.774417e-01 -1.721921e+00 -5.761263e-01 1.181899e+01 -2.743967e-01 -1.920853e-07
+GMES 2.944702e+00 -4.088972e-05 1.200000e+01 2.944760e+00 2.943843e+00
+GFIX: Ended at step 8. Av gf action 9.969e-01, delta 8.941e-08
+ OK converged final_rsq= 6.5e-13 (cf 1e-12) rel = 7.7e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.4e-13 (cf 1e-12) rel = 2.7e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 3e-13 (cf 1e-12) rel = 3.4e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.7e-13 (cf 1e-12) rel = 3e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.5e-13 (cf 1e-12) rel = 2.6e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.4e-13 (cf 1e-12) rel = 2.6e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 3e-13 (cf 1e-12) rel = 2.9e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.7e-13 (cf 1e-12) rel = 3e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.2e-13 (cf 1e-12) rel = 2.2e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 2.5e-13 (cf 1e-12) rel = 2.8e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 3.3e-13 (cf 1e-12) rel = 3.2e-14 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 3e-13 (cf 1e-12) rel = 3.5e-14 (cf 0) restarts = 1 iters= 12
+ONE_PSEUDO2  0  2.239246e+03   0.000000e+00   3.093228e-01   1.039827e-07
+ONE_PSEUDO2  1  6.959058e+02   0.000000e+00   -4.055907e+02   -4.443200e-08
+ONE_PSEUDO2  2  5.596155e+02   0.000000e+00   1.212041e+00   -1.928415e-09
+ONE_PSEUDO2  3  6.972271e+02   0.000000e+00   4.076972e+02   4.875230e-08
+ONE_RHO03032  0  2.206990e+03   0.000000e+00
+ONE_RHO03032  1  6.887794e+02   0.000000e+00
+ONE_RHO03032  2  5.558083e+02   0.000000e+00
+ONE_RHO03032  3  6.902600e+02   0.000000e+00
+ONE_RHO332  0  2.221030e+03  -1.024764e-08
+ONE_RHO332  1  6.917151e+02  -6.317069e-10
+ONE_RHO332  2  5.571546e+02  -5.342216e-10
+ONE_RHO332  3  6.930305e+02  5.969488e-08
+DSL_PSEUDO2  0  -1.551039e+03   -1.419873e-02   -1.760230e+00   -4.648572e-02
+DSL_PSEUDO2  1  3.938448e+02   -9.735600e-03   -1.124246e+03   -2.253303e-02
+DSL_PSEUDO2  2  7.639810e+02   3.501733e-04   2.111869e+00   -1.315127e-02
+DSL_PSEUDO2  3  3.932167e+02   2.358745e-02   1.126425e+03   -3.708852e-02
+DSL_RHO03032  0  -1.778208e+03   -9.398896e-03
+DSL_RHO03032  1  3.714621e+02   1.260749e-03
+DSL_RHO03032  2  7.523789e+02   8.252468e-03
+DSL_RHO03032  3  3.719213e+02   1.640169e-02
+DSL_RHO332  0  -1.668430e+03  -2.168586e-02
+DSL_RHO332  1  3.818568e+02  -1.442290e-02
+DSL_RHO332  2  7.570612e+02  1.423596e-03
+DSL_RHO332  3  3.816108e+02  4.929636e-03
+PROTON  0  1.005926e+04
+PROTON  1  1.637066e+03
+PROTON  2  1.191715e+03
+PROTON  3  1.641714e+03
+DELTA  0  9.904327e+03
+DELTA  1  1.622287e+03
+DELTA  2  1.185064e+03
+DELTA  3  1.627255e+03
+DELTA_N  0  7.910340e+03
+DELTA_N  1  1.371557e+03
+DELTA_N  2  9.477075e+02
+DELTA_N  3  1.375882e+03
+RUNNING COMPLETED
+STOP 2.944760e+00 2.943844e+00 5.888605e+00
+average cg iters for step= 2.100000e+01
+average cg iters for measurement= 1.200000e+01
+average cg iters for spectrum = 1.440000e+02
+Time = 1.295000e+01 seconds
+total_iters = 42
+
+

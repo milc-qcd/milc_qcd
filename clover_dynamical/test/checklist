@@ -1,0 +1,6 @@
+exec su3_hmc	1	-	-	START RUNNING
+exec su3_hmc_bi	1	-	-	START RUNNING
+exec su3_hmc_bi_spectrum	1	-	-	START RUNNING
+exec su3_hmc_screen	1	-	-	START RUNNING
+exec su3_rmd	1	-	-	START RUNNING
+exec su3_rmd_bi	1	-	-	START RUNNING

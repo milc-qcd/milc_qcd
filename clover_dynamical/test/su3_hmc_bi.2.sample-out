@@ -1,0 +1,56 @@
+SU3 with Clover fermions
+Microcanonical simulation with refreshing
+MIMD version 5
+Machine = Scalar processor, with 1 nodes
+Hybrid Monte Carlo algorithm
+PHI algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 2
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 3190
+LAYOUT = Hypercubes, options = EVENFIRST,
+
+
+warms 0
+trajecs 1
+traj_between_meas 1
+beta 7.3
+kappa 0.114
+clov_c 1
+u0 0.8695
+microcanonical_time_step 0.03
+steps_per_trajectory 2
+max_cg_iterations 100
+max_cg_restarts 10
+error_per_site 1e-06
+error_for_propagator 1e-06
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked.  Max deviation 0.000000
+Time to check unitarity = 0.000000e+00
+
+
+Note O_2 is really O_3 in the notes! 
+
+
+loop coefficients: nloop rep loop_coeff   multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.192793e-02     12
+                    2 0      -8.018109e-03     16
+START 3.000000e+00 3.000000e+00 6.000000e+00
+WARMUPS COMPLETED
+ACCEPT: delta S = -7.802390e-01
+ACTION_V  6.452117e+01  4.200597e-02
+F2MES 1.142565e+01 -1.774417e-01 -1.721921e+00 -5.761263e-01 1.181899e+01 -2.743967e-01 -1.920853e-07
+GMES 2.944702e+00 -4.088972e-05 1.200000e+01 2.944760e+00 2.943843e+00
+RUNNING COMPLETED
+STOP 2.944760e+00 2.943843e+00 5.888603e+00
+average cg iters for step= 2.100000e+01
+average cg iters for measurement= 1.200000e+01
+Time = 7.170000e+00 seconds
+total_iters = 42
+
+
