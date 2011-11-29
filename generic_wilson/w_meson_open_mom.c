@@ -170,7 +170,7 @@ static wilson_propagator open_mult_swv_an( spin_wilson_vector *a,
 
 static complex ff(Real theta, char parity, complex tmp)
 {
-  complex z;
+  complex z = {0.,0.};
   
   if(parity == EVEN){
     z.real = tmp.real*cos(theta);
@@ -194,7 +194,7 @@ static complex ff(Real theta, char parity, complex tmp)
 /* Calculate normalization factor with phase */
 
 static complex phase_and_factor(int ph, Real fact){
-  complex z;
+  complex z = {0.,0.};
   complex f = cmplx(fact,0);
 
   switch(ph){
