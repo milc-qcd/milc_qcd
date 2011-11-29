@@ -41,12 +41,15 @@ struct site {
 	short x,y,z,t;
 	char parity;
 	int index;
-#ifndef NOLINKS
+	double_prn site_prn;
+#ifndef NO_GAUGE_FIELD
 	su3_matrix link[4];
 #endif
 };
 typedef struct site site;
 
 EXTERN site *lattice;
+
+EXTERN su3_matrix *ape_links;
 
 #endif /* _LATTICE_H */

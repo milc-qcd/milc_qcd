@@ -30,10 +30,6 @@
 #include "../include/io_scidac.h"
 #include "../include/io_scidac_ks.h"
 
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
-
 #include <qio.h>
 
 /*----------------------------------------------------------------------*/
@@ -110,9 +106,6 @@ int main(int argc, char *argv[])
   ksvector_file2 = argv[2];
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -181,9 +174,6 @@ int main(int argc, char *argv[])
   free(ksvector2);
   free_lattice();
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
   normal_exit(0);
 
   return 0;

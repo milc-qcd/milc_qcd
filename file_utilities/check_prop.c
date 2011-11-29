@@ -1,3 +1,4 @@
+UNSUPPORTED
 /**************************** check_prop.c **********************/
 /* MIMD version 7 */
 /* Read propagator check checksums (used in version 5) */
@@ -342,9 +343,7 @@ int main(int argc, char *argv[])
   filename = argv[1];
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
@@ -390,9 +389,6 @@ int main(int argc, char *argv[])
   /* Close file */
   r_serial_w_f(wpf);
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
   normal_exit(0);
 
   return 0;

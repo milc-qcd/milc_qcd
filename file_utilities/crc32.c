@@ -201,15 +201,28 @@ uLong crc32(uLong crc, const unsigned char *buf, size_t len)
 
 int main(int argc, char *argv[]){
 
-  char a;
   int ap;
+  unsigned char a = '\0';
   unsigned long crc = 0;
+  //  unsigned long long size;
 
+  //  size = 0;
   while((ap = fgetc(stdin)) != EOF){
+    //    size++;
     a = ap;
-    printf("%02x",a);
+    //    printf("%02x",a);
     crc = crc32(crc,&a,1);
   }
+
+//  printf("\nsize = %llu\n",size);
+//
+//
+//  for(; size != 0; size >>= 8){
+//    a = size & 0xff;
+//    printf("%02x", a);
+//    crc = crc32(crc,&a,1);
+//  }
+
   printf("\ncrc32 = %lu\n",crc);
   return 0;
 }

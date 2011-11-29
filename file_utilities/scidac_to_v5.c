@@ -2,6 +2,7 @@
 /* MIMD version 7 */
 /* Read SciDAC format gauge configuration, convert to MILC v5 format */
 /* This is single-processor code. */
+/* It converts on the fly, so the memory requirement is low */
 /* C. DeTar 5/16/05 */
 
 /* Usage ...
@@ -29,10 +30,6 @@
 #include "../include/io_wprop.h"
 #include "../include/generic.h"
 #include "../include/io_scidac.h"
-
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 
 #include <qio.h>
 
@@ -314,9 +311,6 @@ int main(int argc, char *argv[])
 			   filename_scidac, filename_milc);
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -434,9 +428,6 @@ int main(int argc, char *argv[])
 
   QIO_string_destroy(xml_record_in);
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
   normal_exit(0);
 
   return 0;

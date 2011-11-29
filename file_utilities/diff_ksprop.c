@@ -27,9 +27,6 @@
 #include "../include/generic.h"
 #include "../include/generic_ks.h"
 #include "../include/io_lat.h"
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 #ifndef HAVE_QIO
 REQUIRES QIO
 #else
@@ -101,7 +98,7 @@ int main(int argc, char *argv[])
   su3_vector ksdiff;
   su3_vector *ksprop1, *ksprop2;
   char *ksprop_file1, *ksprop_file2;
-  ks_quark_source ksqs1, ksqs2;
+  quark_source ksqs1, ksqs2;
 
   if(argc < 3){
     node0_printf("Usage %s <ksprop_file1> <ksprop_file2>\n", argv[0]);
@@ -112,15 +109,12 @@ int main(int argc, char *argv[])
   ksprop_file2 = argv[2];
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
 
-  init_ksqs(&ksqs1);
-  init_ksqs(&ksqs2);
+  init_qs(&ksqs1);
+  init_qs(&ksqs2);
 
   /* Sniff out the input file types */
   file_type1 = get_file_type(ksprop_file1);
@@ -199,9 +193,6 @@ int main(int argc, char *argv[])
   free(ksprop2);
   free_lattice();
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
   normal_exit(0);
 
   return 0;

@@ -32,6 +32,7 @@
 #include "../include/comdefs.h"
 #include "../include/io_lat.h"
 #include "../include/generic.h"
+#include <string.h>
 
 
 /*---------------------------------------------------------------------------*/

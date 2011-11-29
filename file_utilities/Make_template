@@ -1,5 +1,5 @@
 #  file_utilities
-#  MIMD version 6
+#  MIMD version 7
 #
 #  Generic make-include file for file_utilities
 #  This template file defines rules and macros common to all architectures
@@ -55,18 +55,12 @@ MY_OBJECTS=
 G_OBJECTS = \
   io_detect.o \
   io_lat_utils.o \
-  remap_stdio_from_args.o
+  remap_stdio_from_args.o \
+  field_utilities.o
 
-# Basic set from generic KS directory
-G_KS_OBJECTS = \
-  ks_utilities.o
-
-# Basic set from generic KS directory
-G_W_OBJECTS = \
-  dirac_utilities.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o
+  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
   G_KS_OBJECTS += io_scidac_ks.o
   G_W_OBJECTS += io_scidac_w.o
 endif
@@ -91,8 +85,7 @@ endif
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_W_OBJECTS} \
-	${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
@@ -123,10 +116,6 @@ ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
 ########################################################
 
-ifeq ($(strip ${QCDOC}),true)
-  DQCDOC = -DQCDOC
-endif
-
 ifeq ($(strip ${HAVEQIO}),true)
   DHAVE_QIO = -DHAVE_QIO
 endif
@@ -139,146 +128,185 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 
 # NOTE: check_prop has been discontinued since we dropped support
 # for the MILC format.  It doesn't check SciDAC formatted files, yet.
-check_prop::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_prop" \
-	"DEFINES= " \
-	"EXTRA_OBJECTS=  check_prop.o io_prop_w.o wilson_info_dummy.o \
-	gauge_info_dummy.o d_plaq4.o io_lat4.o  nersc_cksum.o"
+# check_prop::
+# 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_prop" \
+# 	"DEFINES= " \
+# 	"EXTRA_OBJECTS= ${G_W_OBJECTS} check_prop.o io_prop_w.o wilson_info_dummy.o \
+# 	gauge_utilities.o \
+# 	gauge_info_dummy.o d_plaq4.o io_lat4.o  nersc_cksum.o"
 
 check_gauge::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_gauge" \
-	"DEFINES= " \
+	"DEFINES= -DONLY_GLUON_FILES" \
 	"EXTRA_OBJECTS= check_gauge.o nersc_cksum.o \
+	gauge_utilities.o \
 	check_unitarity.o gauge_info_dummy.o d_plaq4.o io_lat4.o"
 
 diff_colormatrix::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_colormatrix" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS=  diff_colormatrix.o gauge_info_dummy.o \
+	"EXTRA_OBJECTS= ${G_KS_OBJECTS} diff_colormatrix.o gauge_info_dummy.o \
+	gauge_utilities.o \
 	d_plaq4.o io_lat4.o nersc_cksum.o"
 
 diff_ksprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksprop" \
-	"DEFINES= " \
-	"EXTRA_OBJECTS=  check_unitarity.o diff_ksprop.o io_helpers.o \
-        io_helpers_ks.o io_source_cmplx_fm.o ks_source.o \
-	io_prop_ks.o io_prop_ks_fm.o ksprop_info.o \
-	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o"
+	"DEFINES= -DNO_GAUGE_FIELD -DHAVE_KS" \
+	"EXTRA_OBJECTS= \
+	${G_KS_OBJECTS} \
+	diff_ksprop.o \
+	discretize_wf.o \
+	flavor_ops2.o \
+	gauge_info_dummy.o \
+	gauge_utilities.o \
+	io_helpers.o \
+	io_helpers_ks.o \
+	io_prop_ks.o \
+ 	io_prop_ks_fm.o \
+	io_source_cmplx_fm.o \
+	io_source_ks_fm.o \
+ 	ksprop_info.o \
+	quark_source.o \
+        quark_source_io.o \
+	quark_source_sink_op.o \
+	ranstuff.o \
+	restrict_fourier.o"
 
 diff_ksvector::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksvector" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS=  diff_ksvector.o ksprop_info.o \
+	"EXTRA_OBJECTS= ${G_KS_OBJECTS} diff_ksvector.o ksprop_info.o \
+	gauge_utilities.o \
 	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o"
 
 diff_wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_wprop" \
-	"DEFINES= " \
+	"DEFINES= -DNO_GAUGE_FIELD -DHAVE_DIRAC" \
 	"EXTRA_OBJECTS=  \
-	  ape_smear.o \
+	  ${G_KS_OBJECTS} \
+	  ${G_W_OBJECTS} \
 	  canopy2weyl_rot.o \
-	  check_unitarity.o \
-	  d_plaq4.o \
 	  discretize_wf.o \
-	  dslash_w_space.o \
 	  gammas.o \
 	  diff_wprop.o \
+	  flavor_ops2.o \
 	  gauge_info_dummy.o \
 	  gauss_smear_w.o \
+	  gauge_utilities.o \
 	  io_helpers.o \
 	  io_helpers_ks.o \
 	  io_helpers_w.o \
-	  io_lat4.o \
-	  io_prop_ks.o \
 	  io_prop_ks_fm.o \
+	  io_prop_ks.o \
 	  io_prop_w.o \
 	  io_prop_w_fm.o \
 	  io_source_cmplx_fm.o \
+	  io_source_ks_fm.o \
 	  io_source_w_fm.o \
 	  ksprop_info.o \
-	  ks_source.o \
-	  nersc_cksum.o \
 	  project_su3_hit.o \
+	  quark_source.o \
+	  quark_source_io.o \
+	  quark_source_sink_op.o \
+	  ranstuff.o \
 	  restrict_fourier.o \
-	  reunitarize2.o \
 	  staggered2naive.o \
-	  w_source.o \
 	  wprop_info.o"
 
 lattice_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= lattice_to_scidac" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS=  lattice_to_scidac.o nersc_cksum.o \
+	gauge_utilities.o \
 	check_unitarity.o gauge_info_dummy.o d_plaq4.o io_lat4.o"
 
-ksprop_2ksprop::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= " \
-	"EXTRA_OBJECTS=  \
-	  check_unitarity.o \
-          d_plaq4.o \
-	  gauge_info_dummy.o \
-          io_helpers.o \
-          io_helpers_ks.o \
-          io_lat4.o \
-  	  io_prop_ks.o \
-          io_prop_ks_fm.o \
-	  io_source_cmplx_fm.o \
-          ksprop_info.o \
-          ksprop_to_ksprop.o \
-	  ks_source.o \
-          nersc_cksum.o \
-	  reunitarize2.o"
-
-wprop_2wprop::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= " \
-	"EXTRA_OBJECTS=  \
-	  ape_smear.o \
-	  canopy2weyl_rot.o \
-	  check_unitarity.o \
-	  d_plaq4.o \
-	  discretize_wf.o \
-	  dslash_w_space.o \
-	  gammas.o \
-	  gauge_info_dummy.o \
-	  gauss_smear_w.o \
-	  io_helpers.o \
-	  io_helpers_ks.o \
-	  io_helpers_w.o \
-	  io_lat4.o \
-	  io_prop_ks.o \
-	  io_prop_ks_fm.o \
-	  io_prop_w.o \
-	  io_prop_w_fm.o \
-	  io_source_cmplx_fm.o \
-	  io_source_w_fm.o \
-	  ks_source.o \
-	  ksprop_info.o \
-	  nersc_cksum.o \
-	  project_su3_hit.o \
-	  restrict_fourier.o \
-	  reunitarize2.o \
-	  staggered2naive.o \
-	  w_source.o \
-	  wprop_info.o \
-	  wprop_to_wprop.o"
+# ksprop_2ksprop::
+# 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+# 	"DEFINES= " \
+# 	"EXTRA_OBJECTS=  \
+# 	  ${G_KS_OBJECTS} \
+# 	  check_unitarity.o \
+#           d_plaq4.o \
+# 	  discretize_wf.o \
+# 	  field_translation.o \
+# 	  field_utilities.o \
+# 	  flavor_ops2.o \
+# 	  gauge_info_dummy.o \
+# 	  gauss_smear_ks.o \
+# 	  gauge_utilities.o \
+#           io_helpers.o \
+#           io_helpers_ks.o \
+#           io_lat4.o \
+#   	  io_prop_ks.o \
+#           io_prop_ks_fm.o \
+# 	  io_source_cmplx_fm.o \
+#           io_source_ks_fm.o \
+#           ksprop_info.o \
+#           ksprop_to_ksprop.o \
+# 	  ks_source.o \
+#           nersc_cksum.o \
+# 	  ranstuff.o \
+# 	  restrict_fourier.o \
+# 	  reunitarize2.o"
+# 
+# wprop_2wprop::
+# 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+# 	"DEFINES= " \
+# 	"EXTRA_OBJECTS=  \
+# 	  ${G_W_OBJECTS}
+# 	  ape_smear.o \
+# 	  canopy2weyl_rot.o \
+# 	  check_unitarity.o \
+# 	  d_plaq4.o \
+# 	  discretize_wf.o \
+# 	  dslash_w_space.o \
+# 	  field_translation.o \
+# 	  field_utilities.o \
+# 	  flavor_ops2.o \
+# 	  gammas.o \
+# 	  gauge_info_dummy.o \
+# 	  gauss_smear_ks.o \
+# 	  gauss_smear_w.o \
+# 	  gauge_utilities.o \
+# 	  io_helpers.o \
+# 	  io_helpers_ks.o \
+# 	  io_helpers_w.o \
+# 	  io_lat4.o \
+# 	  io_prop_ks.o \
+# 	  io_prop_ks_fm.o \
+# 	  io_prop_w.o \
+# 	  io_prop_w_fm.o \
+# 	  io_source_cmplx_fm.o \
+#           io_source_ks_fm.o \
+# 	  io_source_w_fm.o \
+# 	  ks_source.o \
+# 	  ksprop_info.o \
+# 	  nersc_cksum.o \
+# 	  project_su3_hit.o \
+# 	  ranstuff.o \
+# 	  restrict_fourier.o \
+# 	  reunitarize2.o \
+# 	  staggered2naive.o \
+# 	  w_source.o \
+# 	  wprop_info.o \
+# 	  wprop_to_wprop.o"
 
 ckpt1_2v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= ckpt1_to_v5" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS=  ckpt1_to_v5.o  nersc_cksum.o \
+	"EXTRA_OBJECTS=  ckpt1_to_v5.o    gauge_utilities.o \
+	nersc_cksum.o \
 	check_unitarity.o gauge_info.o d_plaq4.o io_lat4.o"
 
 v5_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= v5_to_scidac" \
-	"DEFINES= -DNOLINKS" \
+	"DEFINES= -DNO_GAUGE_FIELD" \
 	"EXTRA_OBJECTS=  v5_to_scidac.o \
 	gauge_info_dummy.o"
 
 scidac_2v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DNOLINKS" \
+	"DEFINES= -DNO_GAUGE_FIELD" \
 	"EXTRA_OBJECTS=  scidac_to_v5.o \
 	gauge_info_scidac.o"
 
@@ -288,6 +316,10 @@ scidac_2v5::
 ###################################################
 # Compute crc32 checksum of a binary record
 crc32: crc32.o
+	${LD} $< ${LDFLAGS} -o $@ ${ILIB} -lm
+
+# Compute cksum checksum of a binary record
+cksum: cksum.o
 	${LD} $< ${LDFLAGS} -o $@ ${ILIB} -lm
 
 # Extract the binary payload of a MILC-formatted gauge file

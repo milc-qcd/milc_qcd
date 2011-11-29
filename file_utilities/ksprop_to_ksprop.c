@@ -1,3 +1,4 @@
+NO LONGER SUPPORTED
 /*************************** ksprop_to_scidac.c ************************/
 /* MIMD version 7 */
 /* Read a KS prop, convert to SciDAC format */
@@ -27,10 +28,6 @@
 #include "../include/generic_ks.h"
 #include "../include/io_lat.h"
 #include "../include/file_types.h"
-
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 
 #include <qio.h>
 
@@ -146,19 +143,17 @@ int main(int argc, char *argv[])
   int prompt;
   int dims[4],ndim;
   su3_vector *ksprop;
-  ks_quark_source ksqs;
+  quark_source ksqs;
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();
 
-  init_ksqs(&ksqs);
+  init_qs(&ksqs);
   if(this_node == 0){
     if(get_prompt(stdin, &prompt) != 0) par_buf.stopflag = 1;
     else par_buf.stopflag = 0;
@@ -223,9 +218,6 @@ int main(int argc, char *argv[])
 
   node0_printf("RUNNING COMPLETED\n");
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
   normal_exit(0);
 
   return 0;

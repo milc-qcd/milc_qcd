@@ -1,6 +1,6 @@
 /*************************** diff_wprop.c ************************/
 /* MIMD version 7 */
-/* Compare two KS prop files of any format */
+/* Compare two Wilson prop files of any format */
 /* C. DeTar 3/26/05 */
 
 /* Usage ...
@@ -30,10 +30,6 @@
 #include "../include/io_lat.h"
 #ifdef HAVE_QIO
 #include "../include/io_scidac_w.h"
-#endif
-
-#ifdef HAVE_QDP
-#include <qdp.h>
 #endif
 
 #include <qio.h>
@@ -103,7 +99,7 @@ int main(int argc, char *argv[])
   wilson_vector wdiff;
   wilson_propagator *wprop1, *wprop2;
   char *wprop_file1, *wprop_file2;
-  wilson_quark_source wqs1, wqs2;
+  quark_source wqs1, wqs2;
 
   if(argc < 3){
     node0_printf("Usage %s <wprop_file1> <wprop_file2>\n", argv[0]);
@@ -114,9 +110,6 @@ int main(int argc, char *argv[])
   wprop_file2 = argv[2];
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -234,9 +227,6 @@ int main(int argc, char *argv[])
   free(wprop2);
   free_lattice();
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
   normal_exit(0);
 
   return 0;

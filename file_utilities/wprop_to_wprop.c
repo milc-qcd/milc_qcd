@@ -1,3 +1,4 @@
+NO LONGER SUPPORTED
 /*************************** wprop_to_wprop.c ************************/
 /* MIMD version 7 */
 /* Read a Wilson prop, convert to SciDAC format */
@@ -32,10 +33,6 @@
 #include <qio.h>
 #endif
 #include "../include/io_ksprop.h"
-
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 
 #include <qio.h>
 
@@ -151,19 +148,16 @@ int main(int argc, char *argv[])
   int dims[4],ndim;
   int prompt;
   wilson_propagator *wprop;
-  wilson_quark_source wqs;
+  quark_source wqs;
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
   this_node = mynode();
   number_of_nodes = numnodes();
 
-  init_wqs(&wqs);
+  init_qs(&wqs);
   if(this_node == 0){
     if(get_prompt(stdin, &prompt) != 0) par_buf.stopflag = 1;
     else par_buf.stopflag = 0;
@@ -245,9 +239,6 @@ int main(int argc, char *argv[])
 
   node0_printf("RUNNING COMPLETED\n");
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
   normal_exit(0);
 
   return 0;
