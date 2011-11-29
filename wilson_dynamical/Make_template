@@ -52,6 +52,7 @@ MY_OBJECTS =         \
 # Basic set from generic directory
 G_OBJECTS =          \
   d_plaq4.o          \
+  field_utilities.o  \
   ${LAYOUT}.o        \
   ${IO_LAT_REAL}     \
   io_helpers.o       \

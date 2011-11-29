@@ -1,6 +1,6 @@
 /******** setup_mr.c *********/
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.10 2009/06/04 16:37:11 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/setup_mr.c,v 1.11 2011/11/29 19:07:09 detar Exp $  ***/
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
@@ -19,9 +19,6 @@ int initial_set();
 int setup_h()
 {
   int prompt;
-#ifdef HAVE_QDP
-  int i;
-#endif
 
   /* print banner, get volume */
   prompt = initial_set();
@@ -33,16 +30,6 @@ int setup_h()
   make_nn_gathers();
   /* Create clover structure */
   gen_clov = create_clov();
-
-#ifdef HAVE_QDP
-  for(i=0; i<4; ++i) {
-    shiftdirs[i] = QDP_neighbor[i];
-  }
-  for(i=0; i<4; ++i) {
-    shiftfwd[i] = QDP_forward;
-    shiftbck[i] = QDP_backward;
-  }
-#endif
 
   node0_printf("Finished setup\n"); fflush(stdout);
   return (prompt);
@@ -302,7 +289,7 @@ int readin(int prompt)
 					 par_buf.startfile );
 
 
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
     IF_OK scanf("%s",savebuf);
     IF_OK printf("%s\n",savebuf);
@@ -343,7 +330,7 @@ int readin(int prompt)
       ***/
     
     IF_OK {
-      if (prompt!=0) 
+      if (prompt==1) 
 	{
 	  
 	  printf("enter the name of the file to save the variational matrix to\n");
@@ -387,7 +374,7 @@ int readin(int prompt)
     IF_OK status += get_smearing_funcs_code( savebuf, &par_buf ) ; 
     
     IF_OK {
-      if (prompt!=0) 
+      if (prompt==1) 
 	{
 	  printf("enter the name of the file to save the smeared meson operators to\n");
 	  count=scanf("%s",par_buf.smear_meson_out);
@@ -509,7 +496,7 @@ int readin(int prompt)
     nhop = par_buf.nhop;
     flag = par_buf.flag;
     wqs = par_buf.wqs;
-    init_wqs(&wqs);
+    init_qs(&wqs);
     wqs.type = par_buf.wqs.type;
     source_parity = par_buf.source_parity;
     rsqmin = par_buf.rsqmin;

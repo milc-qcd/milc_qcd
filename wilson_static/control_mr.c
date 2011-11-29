@@ -67,9 +67,7 @@ int main(int argc, char **argv)
 
 
   initialize_machine(&argc, &argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
@@ -239,7 +237,7 @@ int main(int argc, char **argv)
 	    printf("color=%d spin=%d kappa=%f nk=%d\n", color, spin, (double) kappa, nk);
 
 	  /* load psi if requested */
-	  init_wqs(&wqstmp2);
+	  init_qs(&wqstmp2);
 	  reload_wprop_sc_to_site(startflag_w[nk], fp_in_w[nk],&wqstmp2,
 			    spin, color, F_OFFSET(psi),1);
 
@@ -266,11 +264,15 @@ int main(int argc, char **argv)
 	  if(startflag_w[nk] == FRESH)MinMR = nt/2; else MinMR = 0;
 
 	  /* Load inversion control structure */
+	  qic.prec = PRECISION;
 	  qic.min = MinMR;
 	  qic.max = MaxMR;
 	  qic.nrestart = nrestart;
-	  qic.resid = RsdMR;
+	  qic.parity = EVENANDODD;
 	  qic.start_flag = restart_flag;
+	  qic.nsrc = 1;
+	  qic.resid = RsdMR;
+	  qic.relresid = 0;
 	    
 	  /* Load Dirac matrix parameters */
 	  dwp.Kappa = kappa;

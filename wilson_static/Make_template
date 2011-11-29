@@ -67,7 +67,9 @@ MY_OBJECTS =         \
 G_OBJECTS =          \
 	check_unitarity.o  \
 	d_plaq4.o \
+        field_utilities.o \
 	gaugefix2.o \
+	gauge_utilities.o \
         io_detect.o        \
 	io_helpers.o \
 	io_lat4.o  \
@@ -75,11 +77,12 @@ G_OBJECTS =          \
         make_lattice.o \
 	nersc_cksum.o \
         remap_stdio_from_args.o \
+        report_invert_status.o \
 	restrict_fourier.o \
 	reunitarize2.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
+  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o io_scidac_w.o
 endif
 
 # Basic set from generic_clover directory
@@ -87,14 +90,6 @@ G_CLOVER_OBJECTS =   \
   f_mu_nu.o          \
   io_source_cmplx_fm.o \
   make_clov2.o
-
-# Set from generic_ks directory
-G_KS_OBJECTS =      \
-  io_helpers_ks.o   \
-  io_prop_ks.o      \
-  io_prop_ks_fm.o   \
-  ks_source.o       \
-  ks_utilities.o
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_KS_OBJECTS += io_scidac_ks.o
