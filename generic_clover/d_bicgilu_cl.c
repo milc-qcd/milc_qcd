@@ -24,7 +24,7 @@
 
    size_r = desired residual and 
    size_relr = desired relative residual, quit when we reach it.
-   (Square root def for residue size_r = sqrt(r*r)) 
+   (Square def for residue size_r = r*r) 
    */
 
 int bicgilu_cl_field(    /* Return value is number of iterations taken */
@@ -39,9 +39,9 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   int nrestart = 0;
   int restart = qic->max;            /* Restart interval */
   int MaxCG = restart*qic->max;     /* maximum number of iterations */
-  Real RsdCG = qic->resid;           /* desired residual - 
-				normalized as sqrt(r*r)/sqrt(src_e*src_e */
-  Real RRsdCG = qic->relresid;       /* desired relative residual - */
+  Real RsdCG = qic->resid * qic->resid;      /* desired residual - 
+				normalized as (r*r)/(src_e*src_e) */
+  Real RRsdCG = qic->relresid * qic->relresid;  /* desired relative residual - */
   int flag = qic->start_flag;        /* 0: use a zero initial guess; 
 					1: use dest */
   dirac_clover_param *dcp 
@@ -57,7 +57,7 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   int N_iter;
   register int i;
   register site *s;
-  Real size_src;
+  Real size_src, size_src2;
   double rsq, tsq;
   complex ctmp, a, b;
   complex omega, omegam;
@@ -71,6 +71,13 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   int is_startedo, is_startede;
   
   is_startedo = is_startede = 0;
+
+  qic->size_r = 0;
+  qic->size_relr = 0;
+  qic->final_rsq = 0;
+  qic->final_relrsq = 0;
+  qic->final_iters = 0;
+  qic->final_restart = 0;
 
   //  if(even_sites_on_node!=odd_sites_on_node){
   //    printf("Need same number of even and odd sites on each node\n");
@@ -117,6 +124,8 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
 
   /* src = L^(-1)*src */
   size_src = ilu_xfm_source(dest, r, mp, Kappa, &is_startede, tage);
+  size_src2 = size_src*size_src;
+
 #if 0
 
   mult_this_ldu_field(gen_clov, r, mp, ODD);
@@ -132,9 +141,21 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
     copy_wvec( &(r[i]), &(src[i]) );
   }
   g_doublesum(&rsq);
-  size_src = (Real)sqrt(rsq);
+  size_src2 = (Real)rsq;
 #endif
-  
+
+  /* Provision for trivial solution */
+  if(size_src2 == 0.0){
+    clear_wv_field(dest);
+    free(tmp); free(mp); free(rv); free(sss); free(r); free(p); free(ttt);
+    is_startede = is_startedo = 0;
+
+    cleanup_tmp_links();
+    cleanup_dslash_wtemps();
+    return 0;
+  }
+
+
   /* Save transformed source: Overwrite src on even sites */
   FOREVENSITESDOMAIN(i,s) {
     copy_wvec( &(r[i]), &(src[i]) );
@@ -142,7 +163,7 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
 
 #ifdef CG_DEBUG
   node0_printf("beginning inversion--size_src=%e\n",
-	       (double)size_src); fflush(stdout);
+	       (double)size_src2); fflush(stdout);
 #endif
   
   /* Initial guess */
@@ -158,15 +179,10 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   /* Start BiCG iterations, working on even sites only */
   
   N_iter = 0;
-  qic->size_r = 0;
-  qic->size_relr = 0;
-  qic->final_rsq = 0;
-  qic->final_relrsq = 0;
-
   while(1) {
     if( N_iter % restart == 0 || 
 	( ( RsdCG  <= 0 || RsdCG  > qic->size_r   ) &&
-	  ( RRsdCG <= 0 || RRsdCG > qic->size_relr) ) ) {
+	  ( RRsdCG <= 0 || RRsdCG > qic->size_relr ) ) ) {
       
       /* Provision for starting with dest = 0 the first time */
       if(flag == 0) {
@@ -214,12 +230,12 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
       g_doublesum(&rsq);
       rvr = dcmplx(rsq,(double)0.0);
 
-      qic->final_rsq    = (Real)sqrt(rsq)/size_src;
+      qic->final_rsq    = rsq/size_src2;
       qic->final_relrsq = relative_residue(r, dest, EVEN);
       
 #ifdef CG_DEBUG
       node0_printf("start,   true residue= %e, rel residue= %e\n",
-		   (double)(qic->final_rsq), (double)(qic->final_relrsq));
+		   qic->final_rsq, qic->final_relrsq);
       fflush(stdout);
 #endif
       /* Quit when true residual and true relative residual are within
@@ -227,8 +243,8 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
 
       if( N_iter >= MaxCG || 
 	  nrestart >= max_restarts ||
-	  ( ( RsdCG  <= 0 || RsdCG  > qic->final_rsq   ) &&
-	    ( RRsdCG <= 0 || RRsdCG > qic->final_relrsq) ) ) break;
+	  ( ( RsdCG  <= 0 || RsdCG  > qic->final_rsq ) &&
+	    ( RRsdCG <= 0 || RRsdCG > qic->final_relrsq ) ) ) break;
 
       nrestart++;
 
@@ -317,12 +333,12 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
       c_scalar_mult_add_wvec( &(r[i]),  &(p[i]),     &b,      &(p[i]) );
     }
     
-    qic->size_r = (Real)sqrt(rsq)/size_src;
+    qic->size_r = rsq/size_src2;
     
     N_iter++;
 #ifdef CG_DEBUG
     node0_printf("iteration= %d, residue= %e, rel residue= %e\n",N_iter,
-		 (double)(qic->size_r), (double)(qic->size_relr));
+		 qic->size_r, qic->size_relr);
     fflush(stdout);
 #endif
   }

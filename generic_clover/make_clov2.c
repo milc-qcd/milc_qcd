@@ -17,7 +17,7 @@
 /* The global clover term.  Used when we are working with only one
    clover term at a time */
 
-static clover *global_clov = NULL;
+// static clover *global_clov = NULL;
 
 /******************* create_clov ***************************************/
 /* Allocate space for a clover term */
@@ -76,7 +76,7 @@ static void recompute_clov_parity(clover *my_clov, int parity, Real Clov_c)
       CMULREAL(clov_raw[i].tr[1][k],Clov_c,clov[i].tr[1][k]);
     }
   }
-} /* compute_clov */
+} /* recompute_clov_parity */
 
 /******************* compute_clov ***************************************/
 /* Computes the "raw" clover field as well as the clover field */

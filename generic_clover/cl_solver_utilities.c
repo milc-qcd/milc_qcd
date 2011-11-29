@@ -58,7 +58,7 @@
 
  ------------------------------------------------------------ */
 
-/* The Fermilab relative residue */
+/* The Fermilab relative residue - squared norms used here! */
 
 Real relative_residue(wilson_vector *p, wilson_vector *q, int parity)
 {
@@ -76,9 +76,9 @@ Real relative_residue(wilson_vector *p, wilson_vector *q, int parity)
   g_doublesum(&residue);
 
   if(parity == EVENANDODD)
-    return sqrt(residue/volume);
+    return residue/volume;
   else
-    return sqrt(2*residue/volume);
+    return 2*residue/volume;
 }
 
 /* ---------  src = L^(-1)*src  ------------- */

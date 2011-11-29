@@ -34,7 +34,8 @@
 
 #if ( QOP_Precision == 1 )
 
-#define BGCGILU_MILC2QOP   bicgilu_cl_milc2qop_F
+#define BICGILU_CL_QOP_GENERIC bicgilu_cl_qop_generic_F
+#define BICGILU_MILC2QOP   bicgilu_cl_milc2qop_F
 #define MYREAL float
 #define MYSU3_MATRIX fsu3_matrix
 #define CREATE_RAW4_G_FROM_SITE create_raw4_F_G_from_site
@@ -42,7 +43,8 @@
 
 #else
 
-#define BGCGILU_MILC2QOP   bicgilu_cl_milc2qop_D
+#define BICGILU_CL_QOP_GENERIC bicgilu_cl_qop_generic_D
+#define BICGILU_MILC2QOP   bicgilu_cl_milc2qop_D
 #define MYREAL double
 #define MYSU3_MATRIX dsu3_matrix
 #define CREATE_RAW4_G_FROM_SITE create_raw4_D_G_from_site
@@ -54,6 +56,9 @@
 
 /*
  * $Log: d_bicgilu_cl_qop_P.c,v $
+ * Revision 1.8  2011/11/29 20:23:54  detar
+ * Set uniform convention for qic residuals.  See include/generic_quark_types.h
+ *
  * Revision 1.7  2009/06/04 16:37:09  detar
  * Make clover term persistent. Accommodate changes to generic_clover/make_clov2.c
  *
@@ -81,9 +86,9 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.7 2009/06/04 16:37:09 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.8 2011/11/29 20:23:54 detar Exp $";
 
-#if 0
+#if 1
 
 /********************************************************************/
 /* Load Wilson clover parameters                                    */
@@ -92,15 +97,13 @@ static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clov
 static void 
 load_qop_wilson_coeffs(QOP_wilson_coeffs_t *c, Real clov_c)
 {
-  c->clov_c       = clov_c;
+  c->clov_s       = clov_c;
+  c->clov_t       = clov_c;
   c->aniso        = 0.;
 }
 
-
-/* The QOP/QDP routine is not yet available */
-
 /********************************************************************/
-/* Create fermion links using QOP routine                           */
+/* Create Wilson fermion links using QOP                            */
 /********************************************************************/
 
 static QOP_FermionLinksWilson *
@@ -125,11 +128,11 @@ create_qop_wilson_fermion_links( Real clov )
 
   QOP_destroy_G(links);
 
-#ifdef FFTIME
+#ifdef FLTIME
 #ifdef REMAP
-    node0_printf("FFREMAP:  time = %e\n",remaptime);
+  node0_printf("FLREMAP:  time = %e\n",remaptime);
 #endif
-  node0_printf("FFTIME:  time = %e (cl_qop) terms = 1 mflops = %e\n",
+  node0_printf("FLTIME:  time = %e (cl_qop) terms = 1 mflops = %e\n",
 	       info.final_sec, (Real)info.final_flop/(1e6*info.final_sec) );
 #endif
   return qop_links;
@@ -137,110 +140,9 @@ create_qop_wilson_fermion_links( Real clov )
 
 #else
 
-#define DI(x) (-(1 - (x))/2.)
-#define TR(x) ((x)/2.)
-
-static void map_milc_clov_to_qop_raw(MYREAL *raw_clov, clover *milc_clov ){
-  int i,c;
-  site *s;
-  MYREAL *r;
-
-  r = raw_clov;
-  FORALLSITES(i,s){
-
-    for(c = 0; c < 3; c++){
-      r[2*c]   = DI(milc_clov->clov_diag[i].di[0][c]);      /* c0 c0 */
-      r[2*c+1] = DI(milc_clov->clov_diag[i].di[0][c+3]);    /* c1 c1 */
-    }
-      
-    r += 6;
-
-    r[ 0] = TR( milc_clov->clov[i].tr[0][ 3].real);         /* 01 00 */
-    r[ 1] = TR( milc_clov->clov[i].tr[0][ 3].imag);         /* 01 00 */
-    r[ 2] = TR( milc_clov->clov[i].tr[0][ 0].real);         /* 10 00 */
-    r[ 3] = TR( milc_clov->clov[i].tr[0][ 0].imag);         /* 10 00 */
-    r[ 4] = TR( milc_clov->clov[i].tr[0][ 6].real);         /* 11 00 */
-    r[ 5] = TR( milc_clov->clov[i].tr[0][ 6].imag);         /* 11 00 */
-    r[ 6] = TR( milc_clov->clov[i].tr[0][ 1].real);         /* 20 00 */
-    r[ 7] = TR( milc_clov->clov[i].tr[0][ 1].imag);         /* 20 00 */
-    r[ 8] = TR( milc_clov->clov[i].tr[0][10].real);         /* 21 00 */
-    r[ 9] = TR( milc_clov->clov[i].tr[0][10].imag);         /* 21 00 */
-
-    r[10] = TR( milc_clov->clov[i].tr[0][ 4].real);         /* 10 01 */
-    r[11] = TR(-milc_clov->clov[i].tr[0][ 4].imag);         /* 10 01 */
-    r[12] = TR( milc_clov->clov[i].tr[0][ 9].real);         /* 11 01 */
-    r[13] = TR( milc_clov->clov[i].tr[0][ 9].imag);         /* 11 01 */
-    r[14] = TR( milc_clov->clov[i].tr[0][ 5].real);         /* 20 01 */
-    r[15] = TR(-milc_clov->clov[i].tr[0][ 5].imag);         /* 20 01 */
-    r[16] = TR( milc_clov->clov[i].tr[0][13].real);         /* 21 01 */
-    r[17] = TR( milc_clov->clov[i].tr[0][13].imag);         /* 21 01 */
-
-    r[18] = TR( milc_clov->clov[i].tr[0][ 7].real);         /* 11 10 */
-    r[19] = TR( milc_clov->clov[i].tr[0][ 7].imag);         /* 11 10 */
-    r[20] = TR( milc_clov->clov[i].tr[0][ 2].real);         /* 20 10 */
-    r[21] = TR( milc_clov->clov[i].tr[0][ 2].imag);         /* 20 10 */
-    r[22] = TR( milc_clov->clov[i].tr[0][11].real);         /* 21 10 */
-    r[23] = TR( milc_clov->clov[i].tr[0][11].imag);         /* 21 10 */
-
-    r[24] = TR( milc_clov->clov[i].tr[0][ 8].real);         /* 20 11 */
-    r[25] = TR(-milc_clov->clov[i].tr[0][ 8].imag);         /* 20 11 */
-    r[26] = TR( milc_clov->clov[i].tr[0][14].real);         /* 21 11 */
-    r[27] = TR( milc_clov->clov[i].tr[0][14].imag);         /* 21 11 */
-
-    r[28] = TR( milc_clov->clov[i].tr[0][12].real);         /* 21 20 */
-    r[29] = TR( milc_clov->clov[i].tr[0][12].imag);         /* 21 20 */
-
-    r += 30;
-
-    for(c = 0; c < 3; c++){
-      r[2*c]   = DI(milc_clov->clov_diag[i].di[1][c]);      /* c2 c2 */
-      r[2*c+1] = DI(milc_clov->clov_diag[i].di[1][c+3]);    /* c3 c3 */
-    }
-
-    r += 6;
-
-    r[ 0] = TR( milc_clov->clov[i].tr[1][ 3].real);         /* 03 02 */
-    r[ 1] = TR( milc_clov->clov[i].tr[1][ 3].imag);         /* 03 02 */
-    r[ 2] = TR( milc_clov->clov[i].tr[1][ 0].real);         /* 12 02 */
-    r[ 3] = TR( milc_clov->clov[i].tr[1][ 0].imag);         /* 12 02 */
-    r[ 4] = TR( milc_clov->clov[i].tr[1][ 6].real);         /* 13 02 */
-    r[ 5] = TR( milc_clov->clov[i].tr[1][ 6].imag);         /* 13 02 */
-    r[ 6] = TR( milc_clov->clov[i].tr[1][ 1].real);         /* 22 02 */
-    r[ 7] = TR( milc_clov->clov[i].tr[1][ 1].imag);         /* 22 02 */
-    r[ 8] = TR( milc_clov->clov[i].tr[1][10].real);         /* 23 02 */
-    r[ 9] = TR( milc_clov->clov[i].tr[1][10].imag);         /* 23 02 */
-
-    r[10] = TR( milc_clov->clov[i].tr[1][ 4].real);         /* 12 03 */
-    r[11] = TR(-milc_clov->clov[i].tr[1][ 4].imag);         /* 12 03 */
-    r[12] = TR( milc_clov->clov[i].tr[1][ 9].real);         /* 13 03 */
-    r[13] = TR( milc_clov->clov[i].tr[1][ 9].imag);         /* 13 03 */
-    r[14] = TR( milc_clov->clov[i].tr[1][ 5].real);         /* 22 03 */
-    r[15] = TR(-milc_clov->clov[i].tr[1][ 5].imag);         /* 22 03 */
-    r[16] = TR( milc_clov->clov[i].tr[1][13].real);         /* 23 03 */
-    r[17] = TR( milc_clov->clov[i].tr[1][13].imag);         /* 23 03 */
-
-    r[18] = TR( milc_clov->clov[i].tr[1][ 7].real);         /* 13 12 */
-    r[19] = TR( milc_clov->clov[i].tr[1][ 7].imag);         /* 13 12 */
-    r[20] = TR( milc_clov->clov[i].tr[1][ 2].real);         /* 22 12 */
-    r[21] = TR( milc_clov->clov[i].tr[1][ 2].imag);         /* 22 12 */
-    r[22] = TR( milc_clov->clov[i].tr[1][11].real);         /* 23 12 */
-    r[23] = TR( milc_clov->clov[i].tr[1][11].imag);         /* 23 12 */
-
-    r[24] = TR( milc_clov->clov[i].tr[1][ 8].real);         /* 22 13 */
-    r[25] = TR(-milc_clov->clov[i].tr[1][ 8].imag);         /* 22 13 */
-    r[26] = TR( milc_clov->clov[i].tr[1][14].real);         /* 23 13 */
-    r[27] = TR( milc_clov->clov[i].tr[1][14].imag);         /* 23 13 */
-
-    r[28] = TR( milc_clov->clov[i].tr[1][12].real);         /* 23 22 */
-    r[29] = TR( milc_clov->clov[i].tr[1][12].imag);         /* 23 22 */
-
-    r += 30;
-  }
-}
-
-/* Use MILC code to construct clover term for now */
-
-/* Extract pure clover from MILC */
+/********************************************************************/
+/* Use plain MILC code to construct clover term */
+/********************************************************************/
 
 static QOP_FermionLinksWilson *
 create_qop_wilson_fermion_links( Real clov ){
@@ -314,7 +216,8 @@ set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg,
 /********************************************************************/
 
 static QOP_resid_arg_t ***
-create_qop_resid_arg( int nsrc, int nmass[], Real min_resid_sq )
+create_qop_resid_arg( int nsrc, int nmass[], Real min_resid_sq,
+		      Real min_relresid_sq)
 {
   QOP_resid_arg_t ***res_arg;
   char myname[] = "create_qop_resid_arg";
@@ -342,6 +245,7 @@ create_qop_resid_arg( int nsrc, int nmass[], Real min_resid_sq )
       }
       /* For now the residuals are the same for all sources and masses */
       res_arg[isrc][imass]->rsqmin = min_resid_sq;
+      res_arg[isrc][imass]->relmin = min_relresid_sq;
     }
   }
   return res_arg;
@@ -361,12 +265,15 @@ destroy_qop_resid_arg(QOP_resid_arg_t ***res_arg, int nsrc, int nmass[])
   free(res_arg);
 }
 
+#define MAX(a,b) ((a) >= (b) ? (a) : (b))
+
 /********************************************************************/
 /* General MILC wrapper for Level 3 inverter                        */
 /********************************************************************/
 
-static int 
-bicgilu_cl_qop_generic( QOP_FermionLinksWilson *qop_links, 
+int 
+BICGILU_CL_QOP_GENERIC( QOP_info_t *info,
+			QOP_FermionLinksWilson *qop_links, 
 			QOP_invert_arg_t *qop_invert_arg,
 			QOP_resid_arg_t  ***qop_resid_arg,
 			MYREAL *kappas[], int nkappa[], 
@@ -374,48 +281,44 @@ bicgilu_cl_qop_generic( QOP_FermionLinksWilson *qop_links,
 			QOP_DiracFermion *qop_src[], 
 			int nsrc,		    
 			int *final_restart,
-			Real *final_rsq_ptr )
+			Real *final_rsq_ptr,
+			Real *final_relrsq_ptr)
 {
   int isrc, ikappa;
   int iters;
-  QOP_info_t info;
+
+#ifdef CG_DEBUG
+  QOP_verbose(QOP_VERB_HI);
+#endif
   
   if(nsrc == 1 && nkappa[0] == 1)
-    QOP_wilson_invert( &info, qop_links, qop_invert_arg, qop_resid_arg[0][0],
+    QOP_wilson_invert( info, qop_links, qop_invert_arg, qop_resid_arg[0][0],
 		       kappas[0][0], qop_sol[0][0], qop_src[0] );
   else
-    QOP_wilson_invert_multi( &info, qop_links, qop_invert_arg, qop_resid_arg,
+    QOP_wilson_invert_multi( info, qop_links, qop_invert_arg, qop_resid_arg,
 			     kappas, nkappa, qop_sol, qop_src, nsrc );
 
   /* For now we return the largest value and total iterations */
   *final_rsq_ptr = 0;
+  *final_relrsq_ptr = 0;
   *final_restart = 0;
   iters = 0;
   for(isrc = 0; isrc < nsrc; isrc++)
     for(ikappa = 0; ikappa < nkappa[isrc]; ikappa++){
-      if(*final_rsq_ptr < qop_resid_arg[isrc][ikappa]->final_rsq)
-	*final_rsq_ptr = qop_resid_arg[isrc][ikappa]->final_rsq;
-      if(*final_restart < qop_resid_arg[isrc][ikappa]->final_restart)
-	*final_restart = qop_resid_arg[isrc][ikappa]->final_restart;
+      /* QOP routines return the ratios of the squared norms */
+      *final_rsq_ptr =    MAX(*final_rsq_ptr, qop_resid_arg[isrc][ikappa]->final_rsq);
+      *final_relrsq_ptr = MAX(*final_relrsq_ptr, qop_resid_arg[isrc][ikappa]->final_rel);
+      *final_restart =    MAX(*final_restart,  qop_resid_arg[isrc][ikappa]->final_restart);
       iters += qop_resid_arg[isrc][ikappa]->final_iter;
 #ifdef CG_DEBUG
       if(nsrc > 1 || nkappa[isrc] > 1)
-	node0_printf("CONGRAD5(src %d,kappa %d): iters = %d resid = %e\n",
+	node0_printf("CONGRAD5(src %d,kappa %d): iters = %d resid = %e relresid = %e\n",
 	       isrc, ikappa,
 	       qop_resid_arg[isrc][ikappa]->final_iter,
-	       qop_resid_arg[isrc][ikappa]->final_rsq);
+	       sqrt(qop_resid_arg[isrc][ikappa]->final_rsq),
+ 	       sqrt(qop_resid_arg[isrc][ikappa]->final_rel));
 #endif
     }
-
-#ifdef CGTIME
-  node0_printf("CGTIME: time = %e (wilson_qop %s) ",
-	       info.final_sec,qop_prec[QOP_Precision-1]);
-  for(isrc = 0; isrc < nsrc; isrc++)
-    node0_printf("nkappa[%d] = %d iters = %d ",
-		 isrc,nkappa[isrc],qop_resid_arg[isrc][0]->final_iter);
-  node0_printf("mflops = %e\n", info.final_flop/(1.0e6*info.final_sec) );
-  fflush(stdout);
-#endif
 
   return iters;
 }
@@ -447,7 +350,8 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
 	       wilson_vector *milc_srcs[], 
 	       wilson_vector **milc_sols[],
 	       int nsrc, int *final_restart,
-               Real* final_rsq_ptr, int milc_parity )
+               Real* final_rsq_ptr, Real* final_relrsq_ptr, 
+	       int milc_parity )
 {
   int isrc, ikappa;
   QOP_FermionLinksWilson *qop_links;
@@ -455,18 +359,20 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
   int iterations_used = 0;
   QOP_invert_arg_t qop_invert_arg;
   QOP_resid_arg_t  ***qop_resid_arg;
+  QOP_info_t info;
   double remaptime;
   int i;
   site *s;
+  char myname[] = "bicgilu_cl_qop";
 
   if(nsrc > MAXSRC){
-    printf("bicgilu_cl_qop: too many sources\n");
+    printf("%s: too many sources\n",myname);
     terminate(1);
   }
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
-    printf("bicbilu_cl_qop: Error initializing QOP\n");
+    printf("%s: Error initializing QOP\n",myname);
     terminate(1);
   }
 
@@ -478,7 +384,9 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
   set_qop_invert_arg( & qop_invert_arg, qic, milc_parity );
   
   /* Pointers for residual errors */
-  qop_resid_arg = create_qop_resid_arg( nsrc, nkappa, (qic->resid)*(qic->resid));
+  qop_resid_arg = create_qop_resid_arg( nsrc, nkappa, 
+					(qic->resid)*(qic->resid),
+					(qic->relresid)*(qic->relresid));
 
   remaptime = -dclock(); 
 
@@ -487,7 +395,7 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
     qop_sol[isrc] = 
       (QOP_DiracFermion **)malloc(sizeof(QOP_DiracFermion *)*nkappa[isrc]);
     if(qop_sol[isrc] == NULL){
-      printf("bicgilu_cl_qop: Can't allocate qop_sol\n");
+      printf("%s: Can't allocate qop_sol\n",myname);
       terminate(1);
     }
   }
@@ -512,11 +420,21 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
   /* Call QOP inverter */
 
   remaptime += dclock();
-  iterations_used = bicgilu_cl_qop_generic( qop_links, &qop_invert_arg,
+  iterations_used = BICGILU_CL_QOP_GENERIC( &info, qop_links, &qop_invert_arg,
     qop_resid_arg, kappas, nkappa, qop_sol, qop_src, nsrc, 
-    final_restart, final_rsq_ptr );
+    final_restart, final_rsq_ptr, final_relrsq_ptr );
   remaptime -= dclock();
-  
+
+#ifdef CGTIME
+  node0_printf("CGTIME: time = %e (wilson_qop %s) ",
+	       info.final_sec,qop_prec[QOP_Precision-1]);
+  for(isrc = 0; isrc < nsrc; isrc++)
+    node0_printf("nkappa[%d] = %d iters = %d ",
+		 isrc,nkappa[isrc],qop_resid_arg[isrc][0]->final_iter);
+  node0_printf("mflops = %e\n", info.final_flop/(1.0e6*info.final_sec) );
+  fflush(stdout);
+#endif
+
   /* Map qop solutions to MILC fields   */
 
   for(isrc = 0; isrc < nsrc; isrc++)
@@ -561,7 +479,7 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
 /* Inverter interface for specific precision                        */
 /********************************************************************/
 int 
-BGCGILU_MILC2QOP( wilson_vector *milc_src, wilson_vector *milc_sol, 
+BICGILU_MILC2QOP( wilson_vector *milc_src, wilson_vector *milc_sol, 
 		  quark_invert_control *qic, void *dmp)
 {
   int iterations_used;
@@ -578,6 +496,7 @@ BGCGILU_MILC2QOP( wilson_vector *milc_src, wilson_vector *milc_sol,
   Real U0 = dcp->U0;           /* Tadpole correction to Clov_c */
   Real clov = Clov_c/(U0*U0*U0); /* Full clover coefficient */
   Real final_rsq_val;           
+  Real final_relrsq_val;           
   int final_restart;
 
   /* Set up general source and solution pointers for one mass, one source */
@@ -594,12 +513,12 @@ BGCGILU_MILC2QOP( wilson_vector *milc_src, wilson_vector *milc_sol,
   iterations_used = 
     bicgilu_cl_qop( qic, clov, kappas, nkappa, milc_srcs,
 		    milc_sols, nsrc, &final_restart, &final_rsq_val,
-		    EVENANDODD );
+		    &final_relrsq_val, EVENANDODD );
 
   qic->size_r = 0;  /* We don't see the cumulative resid with QOP*/
   qic->size_relr = 0;
   qic->final_rsq = final_rsq_val;
-  qic->final_relrsq = 0;
+  qic->final_relrsq = final_relrsq_val;
   qic->final_iters = iterations_used;
   qic->final_restart = final_restart;
   return  iterations_used;

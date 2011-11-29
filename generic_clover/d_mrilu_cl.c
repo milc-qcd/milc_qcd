@@ -39,9 +39,9 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
   int nrestart = 0;
   int restart = qic->max;            /* Restart interval */
   int MaxCG = restart*qic->max;     /* maximum number of iterations */
-  Real RsdCG = qic->resid;	/* desired residual -
-                                 normalized as sqrt(r*r)/sqrt(src_e*src_e */
-  Real RRsdCG = qic->relresid;       /* desired relative residual - */
+  Real RsdCG = qic->resid * qic->resid;      /* desired residual - 
+				normalized as (r*r)/(src_e*src_e) */
+  Real RRsdCG = qic->relresid * qic->relresid;  /* desired relative residual - */
   int flag = qic->start_flag;	/* 0: use a zero initial guess; 1: use dest */
 
   dirac_clover_param *dcp
@@ -57,7 +57,7 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
   int N_iter;
   register int i;
   register site *s;
-  Real size_src;
+  Real size_src, size_src2;
   double rsq, c;
   complex a, ctmp;
   double_complex d;
@@ -112,6 +112,7 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
 
 
   size_src = ilu_xfm_source(dest, r, mp, Kappa, &is_startede, tage);
+  size_src2 = size_src * size_src;
 
 #if 0
   /* src = L^(-1)*src */
@@ -129,7 +130,7 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
     copy_wvec( &(r[i]), &(src[i]) );
   }
   g_doublesum(&rsq);
-  size_src = (Real)sqrt(rsq);
+  size_src2 = rsq;
 #endif
 
   /* Save transformed source: Overwrite src on even sites */
@@ -140,7 +141,7 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
   
 #ifdef CG_DEBUG
   node0_printf("beginning inversion--size_src=%e\n",
-	       (double)size_src); fflush(stdout);
+	       (double)size_src2); fflush(stdout);
 #endif
 
   /* set r = src --- nothing to do */
@@ -206,7 +207,7 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
       }
       g_doublesum(&rsq);
 
-      qic->final_rsq = (Real)sqrt(rsq)/size_src;
+      qic->final_rsq = rsq/size_src2;
       qic->final_relrsq = relative_residue(r, dest, EVEN);
 
 #ifdef CG_DEBUG
@@ -270,7 +271,7 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
       rsq += (double)magsq_wvec( &(r[i]) );
     }
     g_doublesum(&rsq);
-    qic->size_r = (Real)sqrt(rsq)/size_src;
+    qic->size_r = rsq/size_src2;
     qic->size_relr = relative_residue(r, dest, EVEN);
 
     N_iter++;

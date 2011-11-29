@@ -24,9 +24,9 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
 {
   /* Unpack required members of the structures */
   int MaxHOP = qic->max;      /* maximum number of iterations */
-  Real RsdHOP = qic->resid;  /* desired residual - 
-				 normalized as sqrt(r*r)/sqrt(src_e*src_e */
-  Real RRsdHOP = qic->relresid;       /* desired relative residual - */
+  Real RsdHOP = qic->resid * qic->resid;      /* desired residual - 
+				normalized as (r*r)/(src_e*src_e) */
+  Real RRsdHOP = qic->relresid * qic->relresid;  /* desired relative residual - */
 
   dirac_clover_param *dcp 
     = (dirac_clover_param *)dmp; /* Cast pass-through pointer */
@@ -42,7 +42,7 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
   int N_iter;
   register int i;
   register site *s;
-  Real size_src;
+  Real size_src2;
   double sr;
   register Real Ksq = Kappa*Kappa;
   Real CKU0 = Kappa*Clov_c/(U0*U0*U0);
@@ -118,11 +118,11 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
 
   /* --------- size_src = sqrt(r_e*r_e) ---------- */
   g_doublesum(&sr);
-  size_src = (Real)sqrt(sr);
+  size_src2 = sr;
   
 #ifdef CG_DEBUG
   node0_printf("beginning inversion--size_src=%e\n",
-	       (double)size_src); fflush(stdout);
+	       (double)size_src2); fflush(stdout);
 #endif
 
   qic->size_r = 0;
@@ -158,7 +158,7 @@ int hopilu_cl_field(     /* Return value is number of iterations taken */
 	sr += (double)magsq_wvec( &(r[i]) );
       }
       g_doublesum(&sr);
-      qic->size_r = (Real)sqrt(sr)/size_src;
+      qic->size_r = sr/size_src2;
       qic->size_relr = relative_residue(r, dest, EVEN);
       qic->final_rsq = qic->size_r;
       qic->final_relrsq = qic->size_relr;
