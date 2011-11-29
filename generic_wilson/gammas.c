@@ -89,6 +89,12 @@ static void make_gammas(void)
 }
 
 
+#ifdef OLD_STAGGERED2NAIVE
+
+/* This old procedure multiplies by the transpose of gamma -- i.e. 
+   multplying on the rignt.
+   We retain it for project compatibility */
+
 /************* mw_gamma.c (in su3.a) **************************/
 /*
   Multiply a "Wilson vector" by a gamma matrix
@@ -99,9 +105,9 @@ static void make_gammas(void)
 */
 
 
-void mult_w_by_gamma_mat(wilson_vector * src, 
-			 wilson_vector * dest, 
-			 gamma_matrix_t *gm)
+void mult_w_by_gamma_mat_l(wilson_vector * src, 
+			   wilson_vector * dest, 
+			   gamma_matrix_t *gm)
 {
   register int c2,s2,s;	/* column indices, color and spin */
 
@@ -129,6 +135,80 @@ void mult_w_by_gamma_mat(wilson_vector * src,
   }
 }
 
+#else
+
+/************* mw_gamma.c (in su3.a) **************************/
+/*
+  Multiply a "Wilson vector" by a gamma matrix
+  acting on the row index - equivalently, multiplying on the left
+  usage:  mult_w_by_gamma( src, dest, dir)
+	spin_wilson_vector *src,*dest;
+	int dir;    dir = any of the gamma matrix types in gammatypes.h
+*/
+
+
+void mult_w_by_gamma_mat_l(wilson_vector * src, 
+			   wilson_vector * dest, 
+			   gamma_matrix_t *gm)
+{
+  register int c2,s1,s;	/* column indices, color and spin */
+
+  if(gamma_initialized==0)make_gammas();
+
+  for(s1=0;s1<4;s1++){
+    s = gm->row[s1].column;
+    switch (gm->row[s1].phase){
+    case 0:
+      for(c2=0;c2<3;c2++){
+	dest->d[s1].c[c2] = src->d[s].c[c2];}
+      break;
+    case 1:
+      for(c2=0;c2<3;c2++){
+	TIMESPLUSI( src->d[s].c[c2], dest->d[s1].c[c2] );}
+      break;
+    case 2:
+      for(c2=0;c2<3;c2++){
+	TIMESMINUSONE( src->d[s].c[c2], dest->d[s1].c[c2] );}
+      break;
+    case 3:
+      for(c2=0;c2<3;c2++){
+	TIMESMINUSI( src->d[s].c[c2], dest->d[s1].c[c2] );}
+    }
+  }
+}
+
+#endif
+
+void mult_w_by_gamma_mat_r(wilson_vector * src, 
+			   wilson_vector * dest, 
+			   gamma_matrix_t *gm)
+{
+  register int c2,s1,s;	/* column indices, color and spin */
+
+  if(gamma_initialized==0)make_gammas();
+
+  for(s1=0;s1<4;s1++){
+    s = gm->row[s1].column;
+    switch (gm->row[s1].phase){
+    case 0:
+      for(c2=0;c2<3;c2++){
+	dest->d[s].c[c2] = src->d[s1].c[c2];}
+      break;
+    case 1:
+      for(c2=0;c2<3;c2++){
+	TIMESPLUSI( src->d[s1].c[c2], dest->d[s].c[c2] );}
+      break;
+    case 2:
+      for(c2=0;c2<3;c2++){
+	TIMESMINUSONE( src->d[s1].c[c2], dest->d[s].c[c2] );}
+      break;
+    case 3:
+      for(c2=0;c2<3;c2++){
+	TIMESMINUSI( src->d[s1].c[c2], dest->d[s].c[c2] );}
+    }
+  }
+}
+
 void mult_w_by_gamma(wilson_vector * src,
 		     wilson_vector * dest, int dir)
 {
@@ -147,7 +227,7 @@ void mult_w_by_gamma(wilson_vector * src,
 
   gm = gamma_mat(dir);
 
-  mult_w_by_gamma_mat(src, dest, &gm);
+  mult_w_by_gamma_mat_l(src, dest, &gm);
 }
 
 /************* msw_gamma_l.c (in su3.a) **************************/
@@ -217,6 +297,45 @@ void mult_sw_by_gamma_l(spin_wilson_vector * src,
   gm = gamma_mat(dir);
 
   mult_sw_by_gamma_mat_l(src, dest, &gm);
+}
+
+/* Direct product of su3_vector and gamma matrix to form
+   a spin_wilson_vector.
+
+   It is assumed that the row index of the input gamma matrix is the
+   sink spin index and the column index is the source.
+
+   For the spin_wilson_vector swv.d[s0].d[s1].c[j], the first index
+   (s0) is the source index. */
+
+void direct_prod_gamma_su3_vector(spin_wilson_vector *swv, 
+				  su3_vector *v, 
+				  gamma_matrix_t *gm)
+{
+  int c2,s1,s0;
+
+  if(gamma_initialized==0)make_gammas();
+
+  for(s1=0;s1<4;s1++){
+    s0 = gm->row[s1].column;
+    switch (gm->row[s1].phase){
+    case 0:
+      for(c2=0;c2<3;c2++){
+	swv->d[s0].d[s1].c[c2] = v->c[c2];}
+      break;
+    case 1:
+      for(c2=0;c2<3;c2++){
+	TIMESPLUSI( v->c[c2], swv->d[s0].d[s1].c[c2] );}
+      break;
+    case 2:
+      for(c2=0;c2<3;c2++){
+	TIMESMINUSONE( v->c[c2], swv->d[s0].d[s1].c[c2] );}
+      break;
+    case 3:
+      for(c2=0;c2<3;c2++){
+	TIMESMINUSI( v->c[c2], swv->d[s0].d[s1].c[c2] );}
+    }
+  }
 }
 
 /************* msw_gamma_r.c (in su3.a) **************************/
