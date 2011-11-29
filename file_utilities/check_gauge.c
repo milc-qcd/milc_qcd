@@ -62,7 +62,7 @@ float ck_unitarity(su3_matrix *work,int x, int y, int z, int t)
   mat = work;
   
   max_deviation=0;
-  for(dir = 0; dir < 3; dir++)
+  FORALLUPDIR(dir)
     {
       deviation = check_su3(&work[dir]);
       if (deviation>TOLERANCE){
@@ -71,17 +71,17 @@ float ck_unitarity(su3_matrix *work,int x, int y, int z, int t)
 	printf("SU3 matrix:\n");
 	for(ii=0;ii<=2;ii++){
 	  for(jj=0;jj<=2;jj++){
-	    printf("%f ",(*mat).e[ii][jj].real); 
-	    printf("%f ",(*mat).e[ii][jj].imag); 
+	    printf("%f ",mat[dir].e[ii][jj].real); 
+	    printf("%f ",mat[dir].e[ii][jj].imag); 
 	  }
 	  printf("\n");
 	}
 	printf("repeat in hex:\n");
 	for(ii=0;ii<=2;ii++){
 	  for(jj=0;jj<=2;jj++){
-	    ifval.fval = (*mat).e[ii][jj].real; 
+	    ifval.fval = mat[dir].e[ii][jj].real; 
 	    printf("%08x ", ifval.ival); 
-	    ifval.fval = (*mat).e[ii][jj].imag; 
+	    ifval.fval = mat[dir].e[ii][jj].imag; 
 	    printf("%08x ", ifval.ival); 
 	  }
 	  printf("\n");
@@ -307,7 +307,8 @@ void r_check(gauge_file *gf, float *max_deviation)
 	}
       else
 	{
-	  printf("Checksums not implemented in this format\n");
+	  printf("Checksums %x %x\n",test_gc.sum29,test_gc.sum31);
+	  printf("Checksums not verified in this format\n");
 	}
       fflush(stdout);
       free(lbuf);
@@ -565,9 +566,6 @@ int main(int argc, char *argv[])
   filename = argv[1];
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
 
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -625,9 +623,6 @@ int main(int argc, char *argv[])
   /* Close file */
   r_serial_f(gf);
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
   normal_exit(0);
 
   return 0;
