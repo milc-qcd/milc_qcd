@@ -1,0 +1,96 @@
+MILC inverters
+
+    Our M is    (  2m		D_eo   )
+		( -D_eo^adj	2m     )
+
+    Note D_oe = -D_eo^adj 
+
+    M^{-1} = (M^adj M)^{-1} M^adj = M^adj (M^adj M)^{-1}
+
+where
+
+    (M^adj M)^{-1} = ( (4m^2 + D_eo D_eo^adj)^{-1} 0                            )
+                     (  0                          (4m^2 + D_eo^adj D_eo)^{-1}  )
+
+
+We have several inverters:
+
+  ks_congrad  computes dest = (M^adj M)^{-1} src
+  ks_multicg_mass_* computes the same thing for multiple masses and one source
+  mat_invert_uml_* computes dest = M^{-1} src
+ 
+We need a mat_invert_multi
+
+Code structure
+
+  QOP version:
+
+    d_congrad5_fn_qop_[FD].c has these three entry points
+     All assume (M^dagger M)^{-1} and take any number of masses
+      ks_congrad_qop_[FD]_site2site     
+      ks_congrad_qop_[FD]_site2field    "
+      ks_congrad_qop_[FD]_field2field   "
+      drop screening here for EVENANDODD
+
+     The next two entry points assume (M^dagger M)^{-1} and take only one mass
+      ks_congrad_milcfield2qop
+      ks_congrad_milc2qop
+     they are internal to the qop interface
+      should check here for improper EVENANDODD
+
+    d_congrad5_fn_qop.c has these entry points, which assume (M^dagger
+    M)^{-1} and take only one mass
+      ks_congrad_field
+      ks_congrad
+
+    ks_multicg_offset_qop_P.c assumes (M^dagger M)^{-1} and takes multiple masses
+      ks_multicg_mass_field[FD] (obsolete)
+      ks_multicg_offset_field_[FD]
+
+      calls ks_congrad_qop_[FD]_field2field
+      should check here for improper EVENANDODD
+
+    ks_multicg_offset_qop.c assumes (M^dagger M)^{-1} and takes multiple masses
+
+      ks_multicg_offset_field
+
+   MILC version
+
+    ks_multicg_offset.c assumes (M^dagger M)^{-1} and takes multiple masses
+
+     ks_multicg_offset_field
+
+   The QOP version of ks_multicg_offset_field won't work for
+     EVENANDODD.  The MILC version does (M^dagger M)^{-1} for all
+     parities including EVENANDODD.
+
+   MILC and QOP
+
+    ks_multicg.c has these three entry points, which assume (M^dagger M)^{-1}
+
+      ks_multicg_field
+      ks_multicg_mass_field
+      ks_multicg_mass_site
+
+      They call ks_multicg_offset and ks_congrad_field
+
+
+    Currently we use ks_multicg inverter in these applications:
+
+       generic_ks/fpi_2.c               EVEN + ODD and multiply
+       generic_ks/multimass_inverter.c  EVEN and reconstruct
+       generic_ks/spectrum_multimom.c   EVEN and reconstruct
+       gluon_prop/quark_prop.c          EVEN and reconstruct
+       gluon_prop/quark_renorm.c        EVEN and reconstruct
+       ks_spectrum/make_prop.c          EVENANDODD and multiply
+
+       In all cases we really wanted M^{-1} and not (M^dagger M)^{-1}
+
+       In one case we need (M^dagger M)^{-1}:
+
+       ks_imp_rhmc/ks_ratinv.c
+
+    Consider a mat_invert_multi_uml and mat_invert_multi_cg.  A MILC version calls
+    ks_multicg_offset and ks_congrad_field and reconstructs.  A QOP version
+       calls ks_congrad_qop_[FD]_field2field directly with EVENANDODD.
+
