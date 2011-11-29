@@ -424,6 +424,15 @@ make_unload_L_to_fields(F, QOP_F3_FermionLinksAsqtad, fsu3_matrix, su3_matrix, f
 
 make_unload_L_to_fields(D, QOP_D3_FermionLinksAsqtad, dsu3_matrix, su3_matrix, double );
 
+//make_unload_hisq_L_to_fields(F, QOP_F3_FermionLinksHisq, fsu3_matrix, su3_matrix, float );
+
+//make_unload_hisq_L_to_fields(D, QOP_D3_FermionLinksHisq, dsu3_matrix, su3_matrix, double );
+
+/* Map MILC clover field to QOP raw */
+
+make_map_milc_clov_to_qop_raw(F, float);
+make_map_milc_clov_to_qop_raw(D, double);
+
 #endif
 
 /* map_milc_to_qopqdp.c */

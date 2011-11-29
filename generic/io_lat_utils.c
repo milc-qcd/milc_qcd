@@ -452,6 +452,8 @@ int write_gauge_info_item( FILE *fpout,    /* ascii file pointer */
 	fprintf(fpout,fmt,data);
       else if(strstr(fmt,"d") != NULL)
 	fprintf(fpout,fmt,*(int *)data);
+      else if(strstr(fmt,"u") != NULL)
+	fprintf(fpout,fmt,*(unsigned int *)data);
       else if(strstr(fmt,"lu") != NULL)
 	fprintf(fpout,fmt,*(unsigned long *)data);
       else if(strstr(fmt,"e") != NULL || 
@@ -591,7 +593,7 @@ void write_gauge_info_file(gauge_file *gf)
    by adding filename extension to lattice file name */
 
   strcpy(info_filename,gf->filename);
-  strcat(info_filename,ASCII_GAUGE_INFO_EXT);
+  strcat(info_filename,ASCII_INFO_EXT);
 
   /* Open header file */
   
@@ -845,7 +847,6 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
   int32type tmp;
   int j;
   int sixtyfourbits;
-  Real c1,c2;
   float fc1,fc2;
   char myname[] = "read_v3_gauge_hdr";
 
@@ -960,8 +961,6 @@ int read_v3_gauge_hdr(gauge_file *gf, int parallel, int *byterevflag)
 		   myname,"c1")!=0)terminate(1);
   if(psread_byteorder(*byterevflag,parallel,fp,&fc2,sizeof(float),
 		   myname,"c2")!=0)terminate(1);
-  c1=(double)fc1;
-  c2=(double)fc2;
 
   printf("Old format header parameters are %f %f\n",fc1,fc2);
   
@@ -1576,7 +1575,6 @@ fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset)
   /* gf  = file descriptor as opened by w_checkpoint_i */
 
   FILE *fp;
-  gauge_header *gh;
   fsu3_matrix *lbuf;
 
   off_t offset ;           /* File stream pointer */
@@ -1599,7 +1597,6 @@ fsu3_matrix *w_parallel_setup(gauge_file *gf, off_t *checksum_offset)
     }
 
   fp = gf->fp;
-  gh = gf->header;
 
   gauge_node_size = sites_on_node*4*sizeof(fsu3_matrix) ;
 
@@ -1832,3 +1829,44 @@ void read_lat_dim_gf(char *filename, int *ndim, int dims[]){
   r_serial_f(gf);
 }
 
+/*---------------------------------------------------------------------------*/
+#define INFO_DATA_SIZE 4096
+
+char *read_info_file(char base_filename[]){
+  char info_filename[512];
+  char *info, *buf;
+  FILE *info_fp;
+  int n;
+
+  /* Allocate space for metadata on all nodes */
+
+  info = (char *)malloc(INFO_DATA_SIZE*sizeof(char));
+  if(info == NULL){
+    printf("read_info_file: No room for info\n");
+    terminate(1);
+  }
+  info[0] = '\0';
+
+  /* Node 0 reads the file */
+  if(this_node==0)
+    {
+      /* Construct metadata file name from propagator file name 
+	 by adding filename extension to propagator file name */
+      strcpy(info_filename,base_filename);
+      strcat(info_filename,ASCII_INFO_EXT);
+
+      if((info_fp = fopen(info_filename,"r")) != NULL){
+	buf = info;
+	n = 0;
+	while(fgets(buf, INFO_DATA_SIZE-n, info_fp)){
+	  n = strlen(buf);
+	  buf = info + n;
+	}
+      }
+    }
+      
+  /* Node 0 broadcasts the result to all nodes */
+  broadcast_bytes(info, strlen(info));
+
+  return info;
+}

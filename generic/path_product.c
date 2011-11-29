@@ -27,7 +27,19 @@ for( i=0,  s=lattice ; i<loopend; i++,s++ )
 #define special_free free
 #endif
 
-void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
+static msg_tag *
+start_gather_field_strided(void *field, int stride, int size,
+			   int index, int parity, char **dest){
+  msg_tag *mt;
+  mt = declare_strided_gather( field, stride, size, index, parity, dest );
+  prepare_gather(mt);
+  do_gather(mt);
+  return mt;
+}
+
+#if 0
+void path_product_field( const int *dir, const int length, 
+			 su3_matrix *tempmat1, su3_matrix *links) {
     register int i;
     register site *s;
     msg_tag *mtag0 = NULL;
@@ -60,15 +72,19 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
 
     /* j=0 */
     if( GOES_FORWARDS(dir[0]) )  {
-	mtag0 = start_gather_site( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
-	    OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
+//	mtag0 = start_gather_site( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
+//	    OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
+      mtag0 = start_gather_field_strided( links + dir[0], 
+					  4*sizeof(su3_matrix), sizeof(su3_matrix), 
+					  OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
     }
     else{  /* if GOES_BACKWARDS(dir[0]) */
 	FORALLSITES(i,s){
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_M( &tempmat1[i+FETCHUP] );
 	  }
-	    su3_adjoint(&(s->link[OPP_DIR(dir[0])]),&tempmat1[i] );
+	  // FIX!
+	  su3_adjoint(&(s->link[OPP_DIR(dir[0])]),&tempmat1[i] );
 	} END_LOOP
     }
 
@@ -82,6 +98,7 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
 		    prefetch_M( (su3_matrix *)(gen_pt[0][i+FETCH_UP]) );
 		    prefetch_M(  &(tempmat2t[i+FETCH_UP]) );
 		  }
+		  // FIX!
 		  mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(s->link[dir[j]]),
 		    &(tempmat2t[i]) );
 	        } END_LOOP
@@ -93,6 +110,7 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
 		    prefetch_M( &(tempmat1[i+FETCH_UP]) );
 		    prefetch_M(  &(tempmat2t[i+FETCH_UP]) );
 		  }
+		  // FIX!
 		  mult_su3_nn( &tempmat1[i],&(s->link[dir[j]]),
 		    &(tempmat2t[i]) );
 	        } END_LOOP
@@ -125,6 +143,7 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
 		  prefetch_M(  &((s+FETCH_UP)->link[OPP_DIR(dir[j])]) );
 		}
 		  mult_su3_na((su3_matrix *)(gen_pt[0][i]),
+			      // FIX !
 		    &(s->link[OPP_DIR(dir[j])]), &(tempmat2t[i]) );
 	      } END_LOOP
 	      cleanup_gather(mtag0);
@@ -138,8 +157,10 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
 	      FORALLSITES(i,s){
 		if( i < loopend-FETCH_UP ){
 		  prefetch_M( (su3_matrix *)(gen_pt[0][i+FETCH_UP]) );
+		  // FIX!
 		  prefetch_M(  &((s+FETCH_UP)->link[dir[j]]) );
 		}
+		  // FIX!
 		mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(s->link[dir[j]]),
 		    &tempmat1[i] );
 	      } END_LOOP
@@ -149,8 +170,10 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
 	      FORALLSITES(i,s){
 		if( i < loopend-FETCH_UP ){
 		  prefetch_M( &(tempmat2t[i+FETCH_UP]) );
+		  // FIX!
 		  prefetch_M(  &((s+FETCH_UP)->link[dir[j]]) );
 		}
+		  // FIX!
 		mult_su3_nn( &(tempmat2t[i]),&(s->link[dir[j]]),
 		    &tempmat1[i] );
 	      } END_LOOP
@@ -181,8 +204,10 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
 	    FORALLSITES(i,s){
 	      if( i < loopend-FETCH_UP ){
 		prefetch_M( (su3_matrix *)(gen_pt[0][i+FETCH_UP]) );
+		  // FIX!
 		prefetch_M(  &((s+FETCH_UP)->link[OPP_DIR(dir[j])]) );
 	      }
+		  // FIX!
 	      mult_su3_na((su3_matrix *)(gen_pt[0][i]),
 		    &(s->link[OPP_DIR(dir[j])]), &tempmat1[i] );
 	    } END_LOOP
@@ -235,9 +260,11 @@ void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
     }
     special_free(tempmat3t);
     special_free(tempmat2t);
-} /* path_product */
+} /* path_product_field */
 
-void path_product_fields( su3_matrix *Src[4], const int *dir, const int length, su3_matrix *tempmat1) {
+#endif
+void path_product_fields( su3_matrix *Src, const int *dir, const int length, 
+			  su3_matrix *tempmat1) {
     register int i;
     register site *s;
     msg_tag *mtag0 = NULL;
@@ -270,15 +297,19 @@ void path_product_fields( su3_matrix *Src[4], const int *dir, const int length, 
 
     /* j=0 */
     if( GOES_FORWARDS(dir[0]) )  {
-	mtag0 = start_gather_field( Src[dir[0]], sizeof(su3_matrix),
-	    OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
+      mtag0 = start_gather_field_strided( Src + dir[0],
+					  4*sizeof(su3_matrix), sizeof(su3_matrix),
+					  OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
+      //	mtag0 = start_gather_field( Src[dir[0]], sizeof(su3_matrix),
+      //	    OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
     }
     else{  /* if GOES_BACKWARDS(dir[0]) */
 	FORALLSITES(i,s){
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_M( &tempmat1[i+FETCHUP] );
 	  }
-	    su3_adjoint( &(Src[OPP_DIR(dir[0])][i]),&tempmat1[i] );
+	  //	    su3_adjoint( &(Src[OPP_DIR(dir[0])][i]),&tempmat1[i] );
+	  su3_adjoint( &(Src[4*i+OPP_DIR(dir[0])]),&tempmat1[i] );
 	} END_LOOP
     }
 
@@ -292,7 +323,7 @@ void path_product_fields( su3_matrix *Src[4], const int *dir, const int length, 
 		    prefetch_M( (su3_matrix *)(gen_pt[0][i+FETCH_UP]) );
 		    prefetch_M(  &(tempmat2t[i+FETCH_UP]) );
 		  }
-		  mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(Src[dir[j]][i]),
+		  mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(Src[4*i+dir[j]]),
 		    &(tempmat2t[i]) );
 	        } END_LOOP
 	        cleanup_gather(mtag0);
@@ -303,7 +334,7 @@ void path_product_fields( su3_matrix *Src[4], const int *dir, const int length, 
 		    prefetch_M( &(tempmat1[i+FETCH_UP]) );
 		    prefetch_M(  &(tempmat2t[i+FETCH_UP]) );
 		  }
-		  mult_su3_nn( &tempmat1[i], &(Src[dir[j]][i]),
+		  mult_su3_nn( &tempmat1[i], &(Src[4*i+dir[j]]),
 		    &(tempmat2t[i]) );
 	        } END_LOOP
 	      }
@@ -332,10 +363,10 @@ void path_product_fields( su3_matrix *Src[4], const int *dir, const int length, 
 	      FORALLSITES(i,s){
 		if( i < loopend-FETCH_UP ){
 		  prefetch_M( (su3_matrix *)(gen_pt[0][i+FETCH_UP]) );
-		  prefetch_M(  &(Src[OPP_DIR(dir[j])][i+FETCH_UP]) );
+		  prefetch_M(  &(Src[4*(i+FETCH_UP)+OPP_DIR(dir[j])]) );
 		}
 		  mult_su3_na((su3_matrix *)(gen_pt[0][i]),
-		    &(Src[OPP_DIR(dir[j])][i]), &(tempmat2t[i]) );
+		    &(Src[4*i+OPP_DIR(dir[j])]), &(tempmat2t[i]) );
 	      } END_LOOP
 	      cleanup_gather(mtag0);
 	    } /* end for GOES_BACKWARDS */
@@ -348,9 +379,9 @@ void path_product_fields( su3_matrix *Src[4], const int *dir, const int length, 
 	      FORALLSITES(i,s){
 		if( i < loopend-FETCH_UP ){
 		  prefetch_M( (su3_matrix *)(gen_pt[0][i+FETCH_UP]) );
-		  prefetch_M(  &(Src[dir[j]][i+FETCH_UP]) );
+		  prefetch_M(  &(Src[4*(i+FETCH_UP)+dir[j]]) );
 		}
-		mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(Src[dir[j]][i]),
+		mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(Src[4*i+dir[j]]),
 		    &tempmat1[i] );
 	      } END_LOOP
 	      cleanup_gather(mtag0);
@@ -359,9 +390,9 @@ void path_product_fields( su3_matrix *Src[4], const int *dir, const int length, 
 	      FORALLSITES(i,s){
 		if( i < loopend-FETCH_UP ){
 		  prefetch_M( &(tempmat2t[i+FETCH_UP]) );
-		  prefetch_M(  &(Src[dir[j]][i+FETCH_UP]) );
+		  prefetch_M(  &(Src[4*(i+FETCH_UP)+dir[j]]) );
 		}
-		mult_su3_nn( &(tempmat2t[i]),&(Src[dir[j]][i]),
+		mult_su3_nn( &(tempmat2t[i]),&(Src[4*i+dir[j]]),
 		    &tempmat1[i] );
 	      } END_LOOP
 	    }
@@ -391,10 +422,10 @@ void path_product_fields( su3_matrix *Src[4], const int *dir, const int length, 
 	    FORALLSITES(i,s){
 	      if( i < loopend-FETCH_UP ){
 		prefetch_M( (su3_matrix *)(gen_pt[0][i+FETCH_UP]) );
-		prefetch_M(  &(Src[OPP_DIR(dir[j])][i+FETCH_UP]) );
+		prefetch_M(  &(Src[4*(i+FETCH_UP)+OPP_DIR(dir[j])]) );
 	      }
 	      mult_su3_na((su3_matrix *)(gen_pt[0][i]),
-		    &(Src[OPP_DIR(dir[j])][i]), &tempmat1[i] );
+		    &(Src[4*i+OPP_DIR(dir[j])]), &tempmat1[i] );
 	    } END_LOOP
 	    cleanup_gather(mtag0);
 	  } /* for GOES_BACKWARDS */
@@ -447,18 +478,30 @@ void path_product_fields( su3_matrix *Src[4], const int *dir, const int length, 
     special_free(tempmat2t);
 } /* path_product_fields */
 
+void path_product( const int *dir, const int length, su3_matrix *tempmat1) {
+  su3_matrix *links;
+
+  links = create_G_from_site();
+
+  path_product_fields(links, dir, length, tempmat1);
+
+  free(links);
+}
+
 #ifdef N_SUBL32
 /* code from symanzik_sl32/dsdu_qhb.c ****************************/
 /* U.M. Heller August 1997 */
 
 /* This is a modification of "path_product" from gauge_stuff.c
    which works only on one sublattice. */
-void path_prod_subl(const int *dir, const int length, const int subl, 
-		    su3_matrix *tempmat1)
+//void path_prod_subl(const int *dir, const int length, const int subl, 
+//		    su3_matrix *tempmat1)
+void path_prod_subl_field(const int *dir, const int length, const int subl, 
+			  su3_matrix *tempmat1, su3_matrix *links)
 {
 register int i;
 register site *s;
-msg_tag *mtag0;
+msg_tag *mtag0 = NULL;
 su3_matrix *tempmat2t, *tempmat3t;
 int j, nsubl;
 
@@ -478,9 +521,12 @@ int j, nsubl;
 
     /* j=0 */
     if( GOES_FORWARDS(dir[0]) ) {
-	nsubl = neighsubl[subl][dir[0]];
-	mtag0 = start_gather_site( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
-		OPP_DIR(dir[0]), nsubl, gen_pt[0] );
+      nsubl = neighsubl[subl][dir[0]];
+//	mtag0 = start_gather_site( F_OFFSET(link[dir[0]]), sizeof(su3_matrix),
+//		OPP_DIR(dir[0]), nsubl, gen_pt[0] );
+      mtag0 = start_gather_field_strided( links + dir[0], 4*sizeof(su3_matrix),
+					  sizeof(su3_matrix), OPP_DIR(dir[0]), 
+					  nsubl, gen_pt[0] );
     }
     else{  /* if GOES_BACKWARDS(dir[0]) */
 	nsubl = neighsubl[subl][dir[0]];
@@ -617,4 +663,14 @@ int j, nsubl;
 
 } /* path_prod_subl */
 
+void path_prod_subl(const int *dir, const int length, const int subl, 
+		    su3_matrix *tempmat1){
+  su3_matrix *links;
+
+  links = create_G_from_site();
+
+  path_prod_subl_field(dir, length, subl, tempmat1, links);
+
+  free(links);
+}
 #endif /* N_SUBL32 */

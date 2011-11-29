@@ -503,5 +503,142 @@ unload_##P##_L_to_fields( MILC_DST_TYPE *fat, MILC_DST_TYPE *lng, TYPE* qop, \
 }
 
 
+/* Extract MILC fat link and long link fields from QOP HISQ links */
+
+#define make_unload_hisq_L_to_fields(P, TYPE, MILCTYPE, MILC_DST_TYPE, MILCFLOAT) \
+void \
+unload_##P##_hisq_L_to_fields( MILC_DST_TYPE *fat, MILC_DST_TYPE *lng, TYPE* qop, \
+   int parity) \
+{ \
+  MILCTYPE **rawfat; \
+  MILCTYPE **rawlng; \
+  rawfat  = create_raw4_##P##_G(); \
+  if(rawfat == NULL)terminate(1); \
+  rawlng = create_raw4_##P##_G(); \
+  if(rawlng == NULL)terminate(1); \
+  QOP_##P##3_hisq_extract_L_to_raw((MILCFLOAT **)rawfat, \
+          (MILCFLOAT **)rawlng, qop, milc2qop_parity(parity)); \
+  unload_raw4_##P##_G_to_field(fat, rawfat, parity); \
+  if(lng != NULL) \
+  unload_raw4_##P##_G_to_field(lng, rawlng, parity); \
+  destroy_raw4_##P##_G(rawfat); rawfat = NULL; \
+  destroy_raw4_##P##_G(rawlng); rawlng = NULL; \
+  return; \
+}
+
+
+/* Map MILC clover term to raw QOP clover */
+
+
+#define DI(x) (-(1 - (x))/2.)
+#define TR(x) ((x)/2.)
+
+#define make_map_milc_clov_to_qop_raw(P, MILCFLOAT) \
+void map_milc_clov_to_qop_raw_##P(MILCFLOAT *raw_clov, clover *milc_clov ){\
+  int i,j,c;\
+  int coords[4]; \
+  site *s;\
+  MILCFLOAT *r;\
+\
+  FORALLSITES(i,s){\
+\
+    site_coords(coords,s);\
+    if(QOP_node_number_raw(coords) != this_node){\
+      printf("map_milc_clov_to_qop_raw: QOP layout is incompatible with MILC layout\n");\
+      terminate(1);\
+    }\
+    j = QOP_node_index_raw_D(coords, QOP_EVENODD);\
+    r = raw_clov + 72*j;\
+\
+    for(c = 0; c < 3; c++){\
+      r[2*c]   = DI(milc_clov->clov_diag[i].di[0][c]);      /* c0 c0 */\
+      r[2*c+1] = DI(milc_clov->clov_diag[i].di[0][c+3]);    /* c1 c1 */\
+    }\
+      \
+    r += 6;\
+\
+    r[ 0] = TR( milc_clov->clov[i].tr[0][ 3].real);         /* 01 00 */\
+    r[ 1] = TR( milc_clov->clov[i].tr[0][ 3].imag);         /* 01 00 */\
+    r[ 2] = TR( milc_clov->clov[i].tr[0][ 0].real);         /* 10 00 */\
+    r[ 3] = TR( milc_clov->clov[i].tr[0][ 0].imag);         /* 10 00 */\
+    r[ 4] = TR( milc_clov->clov[i].tr[0][ 6].real);         /* 11 00 */\
+    r[ 5] = TR( milc_clov->clov[i].tr[0][ 6].imag);         /* 11 00 */\
+    r[ 6] = TR( milc_clov->clov[i].tr[0][ 1].real);         /* 20 00 */\
+    r[ 7] = TR( milc_clov->clov[i].tr[0][ 1].imag);         /* 20 00 */\
+    r[ 8] = TR( milc_clov->clov[i].tr[0][10].real);         /* 21 00 */\
+    r[ 9] = TR( milc_clov->clov[i].tr[0][10].imag);         /* 21 00 */\
+\
+    r[10] = TR( milc_clov->clov[i].tr[0][ 4].real);         /* 10 01 */\
+    r[11] = TR(-milc_clov->clov[i].tr[0][ 4].imag);         /* 10 01 */\
+    r[12] = TR( milc_clov->clov[i].tr[0][ 9].real);         /* 11 01 */\
+    r[13] = TR( milc_clov->clov[i].tr[0][ 9].imag);         /* 11 01 */\
+    r[14] = TR( milc_clov->clov[i].tr[0][ 5].real);         /* 20 01 */\
+    r[15] = TR(-milc_clov->clov[i].tr[0][ 5].imag);         /* 20 01 */\
+    r[16] = TR( milc_clov->clov[i].tr[0][13].real);         /* 21 01 */\
+    r[17] = TR( milc_clov->clov[i].tr[0][13].imag);         /* 21 01 */\
+\
+    r[18] = TR( milc_clov->clov[i].tr[0][ 7].real);         /* 11 10 */\
+    r[19] = TR( milc_clov->clov[i].tr[0][ 7].imag);         /* 11 10 */\
+    r[20] = TR( milc_clov->clov[i].tr[0][ 2].real);         /* 20 10 */\
+    r[21] = TR( milc_clov->clov[i].tr[0][ 2].imag);         /* 20 10 */\
+    r[22] = TR( milc_clov->clov[i].tr[0][11].real);         /* 21 10 */\
+    r[23] = TR( milc_clov->clov[i].tr[0][11].imag);         /* 21 10 */\
+\
+    r[24] = TR( milc_clov->clov[i].tr[0][ 8].real);         /* 20 11 */\
+    r[25] = TR(-milc_clov->clov[i].tr[0][ 8].imag);         /* 20 11 */\
+    r[26] = TR( milc_clov->clov[i].tr[0][14].real);         /* 21 11 */\
+    r[27] = TR( milc_clov->clov[i].tr[0][14].imag);         /* 21 11 */\
+\
+    r[28] = TR( milc_clov->clov[i].tr[0][12].real);         /* 21 20 */\
+    r[29] = TR( milc_clov->clov[i].tr[0][12].imag);         /* 21 20 */\
+\
+    r += 30;\
+\
+    for(c = 0; c < 3; c++){\
+      r[2*c]   = DI(milc_clov->clov_diag[i].di[1][c]);      /* c2 c2 */\
+      r[2*c+1] = DI(milc_clov->clov_diag[i].di[1][c+3]);    /* c3 c3 */\
+    }\
+\
+    r += 6;\
+\
+    r[ 0] = TR( milc_clov->clov[i].tr[1][ 3].real);         /* 03 02 */\
+    r[ 1] = TR( milc_clov->clov[i].tr[1][ 3].imag);         /* 03 02 */\
+    r[ 2] = TR( milc_clov->clov[i].tr[1][ 0].real);         /* 12 02 */\
+    r[ 3] = TR( milc_clov->clov[i].tr[1][ 0].imag);         /* 12 02 */\
+    r[ 4] = TR( milc_clov->clov[i].tr[1][ 6].real);         /* 13 02 */\
+    r[ 5] = TR( milc_clov->clov[i].tr[1][ 6].imag);         /* 13 02 */\
+    r[ 6] = TR( milc_clov->clov[i].tr[1][ 1].real);         /* 22 02 */\
+    r[ 7] = TR( milc_clov->clov[i].tr[1][ 1].imag);         /* 22 02 */\
+    r[ 8] = TR( milc_clov->clov[i].tr[1][10].real);         /* 23 02 */\
+    r[ 9] = TR( milc_clov->clov[i].tr[1][10].imag);         /* 23 02 */\
+\
+    r[10] = TR( milc_clov->clov[i].tr[1][ 4].real);         /* 12 03 */\
+    r[11] = TR(-milc_clov->clov[i].tr[1][ 4].imag);         /* 12 03 */\
+    r[12] = TR( milc_clov->clov[i].tr[1][ 9].real);         /* 13 03 */\
+    r[13] = TR( milc_clov->clov[i].tr[1][ 9].imag);         /* 13 03 */\
+    r[14] = TR( milc_clov->clov[i].tr[1][ 5].real);         /* 22 03 */\
+    r[15] = TR(-milc_clov->clov[i].tr[1][ 5].imag);         /* 22 03 */\
+    r[16] = TR( milc_clov->clov[i].tr[1][13].real);         /* 23 03 */\
+    r[17] = TR( milc_clov->clov[i].tr[1][13].imag);         /* 23 03 */\
+\
+    r[18] = TR( milc_clov->clov[i].tr[1][ 7].real);         /* 13 12 */\
+    r[19] = TR( milc_clov->clov[i].tr[1][ 7].imag);         /* 13 12 */\
+    r[20] = TR( milc_clov->clov[i].tr[1][ 2].real);         /* 22 12 */\
+    r[21] = TR( milc_clov->clov[i].tr[1][ 2].imag);         /* 22 12 */\
+    r[22] = TR( milc_clov->clov[i].tr[1][11].real);         /* 23 12 */\
+    r[23] = TR( milc_clov->clov[i].tr[1][11].imag);         /* 23 12 */\
+\
+    r[24] = TR( milc_clov->clov[i].tr[1][ 8].real);         /* 22 13 */\
+    r[25] = TR(-milc_clov->clov[i].tr[1][ 8].imag);         /* 22 13 */\
+    r[26] = TR( milc_clov->clov[i].tr[1][14].real);         /* 23 13 */\
+    r[27] = TR( milc_clov->clov[i].tr[1][14].imag);         /* 23 13 */\
+\
+    r[28] = TR( milc_clov->clov[i].tr[1][12].real);         /* 23 22 */\
+    r[29] = TR( milc_clov->clov[i].tr[1][12].imag);         /* 23 22 */\
+\
+    r += 30;\
+  }\
+}
+
 /* map_milc_to_qop_all.c */
 

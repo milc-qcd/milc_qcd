@@ -187,9 +187,9 @@ int butterfly_map_one_int( int i, int mask, int p)
 void butterfly_map(int x,int y,int z,int t,int *arg,int fb,
 		   int *xp,int *yp,int *zp,int *tp)
 {
-  int mask,dir,level;
+  int mask,level;
   /* arg contains the direction of the butterfly and the level */
-  dir=arg[0];  level=arg[1];	/* just so I can remember them */
+  level=arg[1];	/* just so I can remember them */
   mask = 0x01 << level;	/* one in the bit we switch */
   
   *xp=x; *yp=y; *zp=z; *tp=t;

@@ -173,10 +173,10 @@ void close_scidac_input(QIO_Reader *infile)
 
 /********************************************************************/
 
-#ifdef NOLINKS
+#ifdef NO_GAUGE_FIELD
 gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
 			char *stringLFN){
-  printf("Can't save a lattice if we compile with -DNOLINKS\n");
+  printf("Can't save a lattice if we compile with -DNO_GAUGE_FIELD\n");
   terminate(1);
   return NULL;
 }
@@ -252,7 +252,7 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
   free_QCDML(info);
   return gf;
 }
-#endif /* NOLINKS */
+#endif /* NO_GAUGE_FIELD */
 
 
 /* The functions below constitute the API */
@@ -328,9 +328,9 @@ gauge_file *save_partfile_ildg(char *filename, char *stringLFN){
 }
 
 /* The QIO file is closed after reading the lattice */
-#ifdef NOLINKS
+#ifdef NO_GAUGE_FIELD
 gauge_file *restore_scidac(char *filename, int serpar){
-  printf("Can't restore a lattice if we compile with -DNOLINKS\n");
+  printf("Can't restore a lattice if we compile with -DNO_GAUGE_FIELD\n");
   terminate(1);
   return NULL;
 }

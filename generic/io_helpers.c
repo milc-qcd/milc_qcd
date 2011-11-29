@@ -12,14 +12,7 @@
 #include <qio.h>
 #endif
 
-/**static file_type gauge_list[N_GAUGE_TYPES] =
-  { {FILE_TYPE_GAUGE_V1,      GAUGE_VERSION_NUMBER_V1},
-    {FILE_TYPE_GAUGE_V5,      GAUGE_VERSION_NUMBER},
-    {FILE_TYPE_GAUGE_1996,    GAUGE_VERSION_NUMBER_1996},
-    {FILE_TYPE_GAUGE_FNAL,    IO_UNI_MAGIC},
-    {FILE_TYPE_GAUGE_ARCHIVE, GAUGE_VERSION_NUMBER_ARCHIVE},
-    {FILE_TYPE_GAUGE_SCIDAC,  LIME_MAGIC_NO}
-    };**/
+#ifndef NO_GAUGE_FIELD
 
 /* save a lattice in any of the formats:
     SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_CHECKPOINT
@@ -28,7 +21,7 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     double dtime;
     gauge_file *gf = NULL;
 
-#ifndef NOLINKS
+#ifndef NO_GAUGE_FIELD
     d_plaquette(&g_ssplaq,&g_stplaq);
     d_linktrsum(&linktrsum);
     nersc_checksum = nersc_cksum();
@@ -185,7 +178,7 @@ gauge_file *reload_lattice( int flag, char *filename){
 #ifdef SCHROED_FUN
     set_boundary_fields();
 #endif
-#ifndef NOLINKS
+#ifndef NO_GAUGE_FIELD
     d_plaquette(&g_ssplaq,&g_stplaq);
     d_linktrsum(&linktrsum);
     nersc_checksum = nersc_cksum();
@@ -222,6 +215,8 @@ gauge_file *reload_lattice( int flag, char *filename){
     if(this_node==0)printf("Time to check unitarity = %e\n",dtime);
     return gf;
 }
+
+#endif /* ifndef NO_GAUGE_FIELD */
 
 /* Get next tag, but skip past end of line if we encounter # for comments */
 #define MAX_TAG 512
@@ -298,7 +293,7 @@ int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
   int status;
   char myname[] = "ask_starting_lattice";
   
-  if (prompt!=0) printf(
+  if (prompt==1) printf(
 			"enter 'continue', 'fresh', 'reload_ascii', 'reload_serial', or 'reload_parallel'\n");
   
   savebuf = get_next_tag(fp, "read lattice command", myname);
@@ -329,7 +324,7 @@ int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
   
   /*read name of file and load it */
   if( *flag != FRESH && *flag != CONTINUE ){
-    if(prompt!=0)printf("enter name of file containing lattice\n");
+    if(prompt==1)printf("enter name of file containing lattice\n");
     status=fscanf(fp," %s",filename);
     if(status !=1) {
       printf("\n%s(%d): ERROR IN INPUT: error reading file name\n",
@@ -349,7 +344,7 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   int status;
   char myname[] = "ask_ending_lattice";
   
-  if (prompt!=0) printf(
+  if (prompt==1) printf(
 			"'forget' lattice at end,  'save_ascii', 'save_serial', 'save_parallel', 'save_checkpoint', 'save_serial_fm', 'save_serial_scidac', 'save_parallel_scidac', 'save_multifile_scidac', 'save_partfile_scidac', 'save_serial_archive', 'save_serial_ildg', 'save_parallel_ildg', 'save_partfile_ildg', or 'save_multifile_ildg'\n");
   
   savebuf = get_next_tag(fp, "save lattice command", myname);
@@ -448,7 +443,7 @@ int ask_ending_lattice(FILE *fp, int prompt, int *flag, char *filename ){
   }
   
   if( *flag != FORGET ){
-    if(prompt!=0)printf("enter filename\n");
+    if(prompt==1)printf("enter filename\n");
     status=fscanf(fp,"%s",filename);
     if(status !=1){
       printf("\nask_ending_lattice: ERROR IN INPUT: error reading filename\n"); return 1;
@@ -469,7 +464,7 @@ int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
   int status;
   char myname[] = "ask_corr_file";
 
-  if (prompt!=0)
+  if (prompt==1)
     printf("'forget_corr', 'save_corr_fnal' for correlator file type\n");
 
   savebuf = get_next_tag(fp, "output correlator file command", myname);
@@ -491,7 +486,7 @@ int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename){
   if( *flag == FORGET )
     printf("\n");
   else{
-    if(prompt!=0)printf("enter filename\n");
+    if(prompt==1)printf("enter filename\n");
     status=fscanf(fp,"%s",filename);
     if(status !=1){
       printf("\n%s: ERROR reading filename\n",myname); 
@@ -520,6 +515,8 @@ int ask_ildg_LFN(FILE *fp, int prompt, int flag, char *stringLFN){
     stringLFN[0] = '\0';
   return status;
 }
+
+#ifndef NO_GAUGE_FIELD
 
 void coldlat(void){
     /* sets link matrices to unit matrices */
@@ -566,6 +563,8 @@ void funnylat(void)  {
     }
 }
 
+#endif
+
 /* get_f is used to get a floating point number.  If prompt is non-zero,
 it will prompt for the input value with the variable_name_string.  If
 prompt is zero, it will require that variable_name_string precede the
@@ -577,7 +576,7 @@ int get_f( FILE *fp, int prompt, char *tag, Real *value ){
     char checkvalue[80];
     char myname[] = "get_f";
 
-    if(prompt)  {
+    if(prompt==1)  {
 	s = 0;
 	while(s != 1){
 	  printf("enter %s ",tag);
@@ -612,7 +611,7 @@ int get_i( FILE *fp, int prompt, char *tag, int *value ){
     char checkvalue[80];
     char myname[] = "get_i";
 
-    if(prompt)  {
+    if(prompt==1)  {
       s = 0;
       while(s != 1){
     	printf("enter %s ",tag);
@@ -641,7 +640,7 @@ int get_sn( FILE *fp, int prompt, char *tag, char *value ){
     int s;
     char myname[] = "get_sn";
 
-    if(prompt)  {
+    if(prompt==1)  {
       s = 0;
       while(s != 1){
     	printf("enter %s ",tag);
@@ -677,7 +676,7 @@ int get_vi( FILE* fp, int prompt, char *tag,
     int s,i;
     char myname[] = "get_vi";
 
-    if(prompt)  {
+    if(prompt==1)  {
       s = 0;
       printf("enter %s with %d values",tag, nvalues);
       for(i = 0; i < nvalues; i++){
@@ -711,7 +710,7 @@ int get_vf( FILE* fp, int prompt, char *tag,
     int s,i;
     char myname[] = "get_vf";
 
-    if(prompt)  {
+    if(prompt==1)  {
       s = 0;
       printf("enter %s with %d values",tag, nvalues);
       for(i = 0; i < nvalues; i++){
@@ -753,7 +752,7 @@ int get_vs( FILE *fp, int prompt, char *tag, char **value, int nvalues ){
 
   int s, i;
   
-  if(prompt)  {
+  if(prompt==1)  {
     s = 0;
     printf("enter %s with %d values", tag, nvalues);
       for(i = 0; i < nvalues; i++){
@@ -780,7 +779,8 @@ int get_vs( FILE *fp, int prompt, char *tag, char **value, int nvalues ){
 }
     
 /* get_prompt gets the initial value of prompt */
-/* 0 for reading from file, 1 prompts for input from terminal */
+/* 0 for reading from file, 1 prompts for input from terminal,
+   2 for checking input parameters without execution (for proofreading) */
 /* should be called only by node 0 */
 /* return 0 if sucessful, 1 if failure */
 int get_prompt( FILE *fp, int *prompt ){
@@ -789,7 +789,7 @@ int get_prompt( FILE *fp, int *prompt ){
     char myname[] = "get_prompt";
 
     *prompt = -1;
-    printf( "type 0 for no prompts  or 1 for prompts\n");
+    printf( "type 0 for no prompts, 1 for prompts, or 2 for proofreading\n");
     while(1){
       status = fscanf(fp, "%s",initial_prompt);
       if(status != 1){
@@ -812,8 +812,9 @@ int get_prompt( FILE *fp, int *prompt ){
     }
     else if(strcmp(initial_prompt,"0") == 0) *prompt=0;
     else if(strcmp(initial_prompt,"1") == 0) *prompt=1;
+    else if(strcmp(initial_prompt,"2") == 0) *prompt=2;
 
-    if( *prompt==0 || *prompt==1 )return 0;
+    if( *prompt==0 || *prompt==1 || *prompt==2 )return 0;
     else{
         printf("\n%s: ERROR IN INPUT: initial prompt\n",myname);
         return 1;

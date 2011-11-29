@@ -20,4 +20,8 @@ void show_generic_opts( void ){
 #ifdef SSE_GLOBAL_INLINE
   node0_printf("SSE_GLOBAL_INLINE\n");
 #endif
+
+#ifdef SINGLE_FOR_DOUBLE
+  node0_printf("SINGLE_FOR_DOUBLE\n");
+#endif
 }

@@ -16,12 +16,18 @@
 #include "generic_includes.h"
 #include <fftw3.h>
 
+#if PRECISION==1
+#define FFTWP(x) fftwf_##x
+#else
+#define FFTWP(x) fftw_##x
+#endif
+
 #ifdef CHECK_MALLOC
 
-#define fftw_malloc(_size) \
-  (( (_malloc_ptr = fftw_malloc(_size)), \
+#define FFTWP(malloc)(_size) \
+  (( (_malloc_ptr = FFTWP(malloc)(_size)), \
    (this_node == 0 ? \
-   printf("%x = fftw_malloc(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
+   printf("%x = FFTWP(malloc)(%d) %s:%d\n",_malloc_ptr,_size,__func__,__LINE__) \
    && fflush(stdout) : 0 )), _malloc_ptr)
 
 #endif
@@ -41,8 +47,8 @@ typedef struct {
 /* Data structure for the FT routine */
 
 typedef struct {
-  fftw_complex *data;
-  fftw_complex *tmp;
+  FFTWP(complex) *data;
+  FFTWP(complex) *tmp;
   int size;           /* The size in bytes of the site data */
   int dir;
 } ft_data;
@@ -73,7 +79,7 @@ static int remap_dir[5][5] = { {NODIR, NODIR, NODIR, NODIR, NODIR},
 static ft_layout *layout[NDIM+1] = { NULL, NULL, NULL, NULL, NULL};
 
 static int fwd_map[NDIM+1], bck_map[NDIM+1];
-static fftw_plan fwd_plan[NDIM], bck_plan[NDIM];
+static FFTWP(plan) fwd_plan[NDIM], bck_plan[NDIM];
 
 /*------------------------------------------------------------------*/
 /* Layout functions for FT */
@@ -293,7 +299,7 @@ void make_fftw_plans(int size, ft_data *ftd){
   int nxfm;
   unsigned flags;
   int dir;
-  double dtime = start_timing();
+  //  double dtime = start_timing();
 
   flags = FFTW_ESTIMATE;  /* Could try FFTW_MEASURE */
   rank = 1;
@@ -315,26 +321,26 @@ void make_fftw_plans(int size, ft_data *ftd){
       ostride = istride = howmany;
       
       fwd_plan[dir] = 
-	fftw_plan_many_dft(rank, n, howmany, 
-			   ftd->data, inembed, istride, idist, 
-			   ftd->tmp, onembed, ostride, odist, 
-			   FFTW_FORWARD, flags);
+	FFTWP(plan_many_dft)(rank, n, howmany, 
+			    ftd->data, inembed, istride, idist, 
+			    ftd->tmp, onembed, ostride, odist, 
+			    FFTW_FORWARD, flags);
       bck_plan[dir] = 
-	fftw_plan_many_dft(rank, n, howmany, 
-			   ftd->data, inembed, istride, idist, 
-			   ftd->tmp, onembed, ostride, odist, 
-			   FFTW_BACKWARD, flags);
+	FFTWP(plan_many_dft)(rank, n, howmany, 
+			    ftd->data, inembed, istride, idist, 
+			    ftd->tmp, onembed, ostride, odist, 
+			    FFTW_BACKWARD, flags);
     }
 
-  print_timing(dtime, "make FFTW plans");
+  // print_timing(dtime, "make FFTW plans");
 }
 
 /*----------------------------------------------------------------------*/
 void destroy_fftw_plans(){
   int dir;
   for(dir = 0; dir < NDIM; dir++){
-    fftw_destroy_plan(fwd_plan[dir]);
-    fftw_destroy_plan(bck_plan[dir]);
+    FFTWP(destroy_plan)(fwd_plan[dir]);
+    FFTWP(destroy_plan)(bck_plan[dir]);
   }
 }
 
@@ -345,7 +351,7 @@ void destroy_fftw_plans(){
 void ft_create_layouts(ft_layout *ftl[], ft_layout **ft_milc, 
 		       int ndim, int dims[], int key[]){
   int dir;
-  int dtime = start_timing();
+  //  int dtime = start_timing();
 
   /* Set up the FT layout structure for each dir needed */
   /* We don't remake the FT layout if it already exists, i.e.  the
@@ -376,7 +382,7 @@ void ft_create_layouts(ft_layout *ftl[], ft_layout **ft_milc,
     (*ft_milc)->nxfm = 0;  /* We don't run transforms with the MILC layout */
   }
 
-  print_timing(dtime, "create FFT layouts");
+  //  print_timing(dtime, "create FFT layouts");
 }
 
 /*----------------------------------------------------------------------*/
@@ -497,7 +503,7 @@ static void ft_make_map(int dirold, int dir){
 static void ft_make_maps(ft_layout *ftl[], int key[], int ndim){
 
   int dir, dirold;
-  double dtime = start_timing();
+  //  double dtime = start_timing();
 
   dirold = MILC_DIR;  /* Start from MILC layout */
   for(dir = 0; dir < ndim; dir++){
@@ -510,7 +516,7 @@ static void ft_make_maps(ft_layout *ftl[], int key[], int ndim){
   dir = MILC_DIR;
   ft_make_map(dirold, dir);
 
-  print_timing(dtime, "make FFTW gathers");
+  //  print_timing(dtime, "make FFTW gathers");
 }
 
 /*----------------------------------------------------------------------*/
@@ -554,7 +560,7 @@ void cleanup_restrict_fourier(void){
 /*----------------------------------------------------------------------*/
 /* Copy from MILC field to FFTW field */
 
-static void ft_copy_from_milc(fftw_complex *data, complex *src, int size){
+static void ft_copy_from_milc(FFTWP(complex) *data, complex *src, int size){
   int i,j;
   int ncmp = size/sizeof(complex);
 
@@ -569,7 +575,7 @@ static void ft_copy_from_milc(fftw_complex *data, complex *src, int size){
 /*----------------------------------------------------------------------*/
 /* Copy from FFTW field to MILC field */
 
-static void ft_copy_to_milc(complex *src, fftw_complex *data, int size){
+static void ft_copy_to_milc(complex *src, FFTWP(complex) *data, int size){
   int i,j;
   int ncmp = size/sizeof(complex);
 
@@ -588,7 +594,7 @@ ft_data *create_ft_data(complex *src, int size){
   char myname[] = "create_ft_data";
   ft_data *ftd;
   int ncmp;
-  double dtime = start_timing();
+  //  double dtime = start_timing();
 
   ftd = (ft_data *)malloc(sizeof(ft_data));
   if(ftd == NULL){
@@ -597,12 +603,12 @@ ft_data *create_ft_data(complex *src, int size){
   }
 
   ncmp = size/sizeof(complex);
-  ftd->size = ncmp*sizeof(fftw_complex);
+  ftd->size = ncmp*sizeof(FFTWP(complex));
   ftd->dir = MILC_DIR;
   ftd->data 
-    = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*sites_on_node*ncmp);
+    = (FFTWP(complex)*) FFTWP(malloc)(sizeof(FFTWP(complex))*sites_on_node*ncmp);
   ftd->tmp 
-    = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*sites_on_node*ncmp);
+    = (FFTWP(complex)*) FFTWP(malloc)(sizeof(FFTWP(complex))*sites_on_node*ncmp);
 
   if(ftd->data == NULL || ftd->tmp == NULL){
     printf("%s: no room\n",myname);
@@ -611,7 +617,7 @@ ft_data *create_ft_data(complex *src, int size){
   /* Copy data in */
   ft_copy_from_milc(ftd->data, src, size);
 
-  print_timing(dtime, "REMAP FFTW copy MILC");
+  //  print_timing(dtime, "REMAP FFTW copy MILC");
   return ftd;
 }
 
@@ -634,7 +640,7 @@ static void remap_data(int index, ft_data *ftd){
   msg_tag *mtag;
   char *temp;
   int i;
-  double dtime = start_timing();
+  //  double dtime = start_timing();
 
   temp = (char *)malloc(sites_on_node*ftd->size);
   if(temp==NULL){
@@ -657,7 +663,7 @@ static void remap_data(int index, ft_data *ftd){
 
   free(temp);
 
-  print_timing(dtime, "REMAP FFTW remap");
+  //  print_timing(dtime, "REMAP FFTW remap");
 }
 
 /*----------------------------------------------------------------------*/
@@ -714,20 +720,20 @@ static int remap_data_next(ft_data *ftd, int isign){
 
 void fourier_ftdata( ft_data *ftd, int isign ){
 
-  double dtime = start_timing();
+  //  double dtime = start_timing();
 
   if(isign == 1)
-    fftw_execute(fwd_plan[ftd->dir]);
+    FFTWP(execute)(fwd_plan[ftd->dir]);
   else
-    fftw_execute(bck_plan[ftd->dir]);
+    FFTWP(execute)(bck_plan[ftd->dir]);
 
-  print_timing(dtime, "FFTW transform");
-  dtime = start_timing();
+  // print_timing(dtime, "FFTW transform");
+  //  dtime = start_timing();
 
   /* Copy the result from "tmp" back to "data" */
 
   memcpy((char *)ftd->data, (char *)ftd->tmp, ftd->size*sites_on_node);
-  print_timing(dtime, "REMAP FFTW copy back");
+  //  print_timing(dtime, "REMAP FFTW copy back");
 }
 
 /*----------------------------------------------------------------------*/

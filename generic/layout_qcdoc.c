@@ -1,5 +1,6 @@
 /******** layout_qcdoc.c *********/
 /* MIMD version 7 */
+/* NO LONGER SUPPORTED C.D. 8/22/10*/
 /* ROUTINES WHICH DETERMINE THE DISTRIBUTION OF SITES ON NODES */
 
 /* This version divides each dimension by a machine determined

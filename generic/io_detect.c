@@ -12,6 +12,7 @@
 #include "generic_includes.h"
 #include "../include/file_types.h"
 #ifdef HAVE_QIO
+#include "../include/io_scidac.h"
 #include "../include/io_scidac_ks.h"
 #include "../include/io_scidac_w.h"
 #endif
@@ -68,6 +69,102 @@ int io_detect(char *filename, file_table ft[], int ntypes){
   return status;
 }
 
+#ifndef ONLY_GLUON_FILES
+/********************************************************************/
+/* Open a staggered propagator file and discover its format */
+
+#ifdef HAVE_QIO
+int io_detect_ks_usqcd(char *filename){
+
+  QIO_Layout layout;
+  QIO_Filesystem fs;
+  QIO_Reader *infile;
+  QIO_String *xml_file_in;
+  QIO_USQCDKSPropFileInfo prop_info;
+  int status, usqcd_type, milc_type;
+
+  /* Allocate for the file XML string */
+  xml_file_in = QIO_string_create();
+
+  /* Build the layout structure */
+  build_qio_layout(&layout);
+
+  /* Define the I/O nodes */
+  build_qio_filesystem(&fs);
+
+  /* Open file for reading */
+  layout.latdim = 0; /* Force discovery of dimensions */
+  infile = open_scidac_input_xml(filename, &layout, &fs, QIO_SERIAL, 
+				 xml_file_in);
+  if(infile == NULL)terminate(1);
+
+  /* Decode the file XML */
+
+  status = QIO_decode_usqcd_kspropfile_info(&prop_info, xml_file_in);
+  QIO_string_destroy(xml_file_in);
+  if(status)return -1;
+
+  milc_type = -1;
+  if(QIO_defined_usqcd_kspropfile_type(&prop_info))
+    {
+      /* Translate the file type */
+      usqcd_type = QIO_get_usqcd_kspropfile_type(&prop_info);
+      milc_type = ks_prop_usqcd_to_milc(usqcd_type);
+    }
+
+  close_scidac_input(infile);
+  return milc_type;
+}
+
+/********************************************************************/
+/* Open a Wilson propagator file and discover its format */
+
+int io_detect_w_usqcd(char *filename){
+
+  QIO_Layout layout;
+  QIO_Filesystem fs;
+  QIO_Reader *infile;
+  QIO_String *xml_file_in;
+  QIO_USQCDPropFileInfo prop_info;
+  int status, usqcd_type, milc_type;
+
+  /* Allocate for the file XML string */
+  xml_file_in = QIO_string_create();
+
+  /* Build the layout structure */
+  build_qio_layout(&layout);
+
+  /* Define the I/O nodes */
+  build_qio_filesystem(&fs);
+
+  /* Open file for reading */
+  layout.latdim = 0; /* Force discovery of dimensions */
+  infile = open_scidac_input_xml(filename, &layout, &fs, QIO_SERIAL, 
+				 xml_file_in);
+  if(infile == NULL)terminate(1);
+
+  /* Decode the file XML */
+
+  status = QIO_decode_usqcd_propfile_info(&prop_info, xml_file_in);
+  QIO_string_destroy(xml_file_in);
+  if(status)return -1;
+
+  milc_type = -1;
+  if(QIO_defined_usqcd_propfile_type(&prop_info))
+    {
+      /* Translate the file type */
+      usqcd_type = QIO_get_usqcd_propfile_type(&prop_info);
+      milc_type = w_prop_usqcd_to_milc(usqcd_type);
+    }
+
+  close_scidac_input(infile);
+  return milc_type;
+}
+
+#endif
+
+#endif
+/********************************************************************/
 /* For FNAL we base the detection on the number of elements per site */
 int io_detect_fm(char *filename){
   FILE *fp;
@@ -163,10 +260,12 @@ get_file_type(char *filename)
   /* For QIO(LIME) types, same thing */
   else if(file_type == FILE_TYPE_LIME){
 #ifdef HAVE_QIO
+#ifndef ONLY_GLUON_FILES
     file_type = io_detect_w_usqcd(filename);
     /* If this fails, try the KS propagator types */
     if(file_type < 0)
       file_type = io_detect_ks_usqcd(filename);
+#endif
     if(file_type < 0){
       node0_printf("%s: Don't recognize QIO file type for %s\n",
 		   myname,filename);

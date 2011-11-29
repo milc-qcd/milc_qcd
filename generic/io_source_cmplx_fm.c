@@ -29,7 +29,6 @@ typedef struct {
   FILE *fp;
   char filename[MAXFILENAME];
   int byterevflag;
-  int type;
 } cmplx_source_file;
 
 #ifndef PAD_SEND_BUF
@@ -38,7 +37,7 @@ typedef struct {
 #define NATURAL_ORDER 0
 
 static int 
-read_cmplx_fm_source_hdr(cmplx_source_file *csf, int source_type)
+read_cmplx_fm_source_hdr(cmplx_source_file *csf)
 {
   cmplx_source_header *csh = csf->header;
   int *dims = csh->dims;
@@ -102,20 +101,14 @@ read_cmplx_fm_source_hdr(cmplx_source_file *csf, int source_type)
     terminate(1);
   }
 
-  if( source_type == COMPLEX_FIELD_FM_FILE ){
-    if( size_of_element != sizeof(float) ||
-	elements_per_site != 2 /* complex field */)
-      {	
-	printf(" File %s is not a complex field",  csf->filename);
-	printf(" got size_of_element %d and elements_per_site %d\n",
-	       size_of_element, elements_per_site);
-	terminate(1);
-      }
-  }
-  else {
-    printf("Unknown source type %d\n",source_type);
-    terminate(1);
-  }
+  if( size_of_element != sizeof(float) ||
+      elements_per_site != 2 /* complex field */)
+    {	
+      printf(" File %s is not a complex field",  csf->filename);
+      printf(" got size_of_element %d and elements_per_site %d\n",
+	     size_of_element, elements_per_site);
+      terminate(1);
+    }
   
   /* The site order parameter is ignored */
   
@@ -126,7 +119,7 @@ read_cmplx_fm_source_hdr(cmplx_source_file *csf, int source_type)
 }
  
 static cmplx_source_file *
-setup_input_cmplx_source_file(char *filename, int source_type)
+setup_input_cmplx_source_file(char *filename)
 {
   cmplx_source_file *csf;
   cmplx_source_header *cph;
@@ -142,7 +135,6 @@ setup_input_cmplx_source_file(char *filename, int source_type)
 
   strncpy(csf->filename,filename,MAXFILENAME);
   csf->filename[MAXFILENAME-1] = '\0';
-  csf->type = source_type;
 
   /* Allocate space for the header */
 
@@ -162,7 +154,7 @@ setup_input_cmplx_source_file(char *filename, int source_type)
 } /* setup_input_cmplx_source_file */
 
 static cmplx_source_file *
-r_source_cmplx_fm_i(char *filename, int source_type)
+r_source_cmplx_fm_i(char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -170,7 +162,7 @@ r_source_cmplx_fm_i(char *filename, int source_type)
   cmplx_source_header *csh;
   int byterevflag;
 
-  csf = setup_input_cmplx_source_file(filename, source_type);
+  csf = setup_input_cmplx_source_file(filename);
   csh = csf->header;
 
   if(this_node==0){
@@ -179,7 +171,7 @@ r_source_cmplx_fm_i(char *filename, int source_type)
       printf("Can't open source file %s, error %d\n",filename,errno);
       terminate(1);
     }
-    byterevflag = read_cmplx_fm_source_hdr(csf, source_type);
+    byterevflag = read_cmplx_fm_source_hdr(csf);
 
   }
   else csf->fp = NULL;
@@ -197,9 +189,9 @@ r_source_cmplx_fm_i(char *filename, int source_type)
 
 
 static void 
-r_source_cmplx_fm(cmplx_source_file *csf, 
-	      field_offset dest_site, 
-	      complex *dest_field, int t0)
+r_source_cmplx_fm(cmplx_source_file *csf, field_offset dest_site, 
+		  complex *dest_field, int stride,
+		  int x0, int y0, int z0, int t0)
 {
   int rcv_rank, rcv_coords, status;
   int destnode;
@@ -218,21 +210,12 @@ r_source_cmplx_fm(cmplx_source_file *csf,
   complex *c;
   fcomplex cfix;
   int vol3 = nx*ny*nz;
-  int source_type;
 
   byterevflag = csf->byterevflag;
-  source_type = csf->type;
 
   if(this_node == 0)
     {
-      if(source_type == COMPLEX_FIELD_FM_FILE)
-	cbuff = (fcomplex *)malloc(MAX_BUF_LENGTH*sizeof(fcomplex));
-      else {
-	printf("r_source_cmplx_fm: Unknown source type %d\n", source_type);
-	fflush(stdout);
-	terminate(1);
-      }
-      
+      cbuff = (fcomplex *)malloc(MAX_BUF_LENGTH*sizeof(fcomplex));
       buf_length = 0;
       where_in_buf = 0;
 
@@ -255,9 +238,11 @@ r_source_cmplx_fm(cmplx_source_file *csf,
       /* We do only natural (lexicographic) order here */
       rcv_coords = rcv_rank;
       
-      x = rcv_coords % nx;   rcv_coords /= nx;
-      y = rcv_coords % ny;   rcv_coords /= ny;
-      z = rcv_coords % nz;
+      /* Include the requested translation in the conversion from
+	 lexicographic to Cartesian coordinates */
+      x = (rcv_coords + x0) % nx;   rcv_coords /= nx;
+      y = (rcv_coords + y0) % ny;   rcv_coords /= ny;
+      z = (rcv_coords + z0) % nz;
       
       if(this_node==0){
 	/* Node 0 fills its buffer, if necessary */
@@ -322,7 +307,7 @@ r_source_cmplx_fm(cmplx_source_file *csf,
 	    i = node_index(x,y,z,t);
 	    
 	    if(dest_site == (field_offset)(-1))
-		c = dest_field + i;
+		c = dest_field + i*stride;
 	    else
 		c = (complex *)F_PT(&lattice[i],dest_site);
 	    
@@ -362,29 +347,28 @@ r_source_cmplx_fm_f(cmplx_source_file *csf)
 static void 
 r_source_cmplx_fm_generic(char *filename, 
 			  field_offset dest_site,
-			  complex *dest_field, 
-			  int t0, int source_type)
+			  complex *dest_field, int stride,
+			  int x0, int y0, int z0, int t0)
 {
   cmplx_source_file *csf;
-  csf = r_source_cmplx_fm_i(filename, source_type);
-  r_source_cmplx_fm(csf, dest_site, dest_field, t0);
+  csf = r_source_cmplx_fm_i(filename);
+  r_source_cmplx_fm(csf, dest_site, dest_field, stride, x0, y0, z0, t0);
   r_source_cmplx_fm_f(csf);
   
 }
 
 /*--------------------------------------------------------------------*/
 void r_source_cmplx_fm_to_site(char *filename, field_offset dest_site,
-			       int t0, int source_type)
+			       int x0, int y0, int z0, int t0)
 {
-  r_source_cmplx_fm_generic(filename, dest_site, (complex *)NULL,
-			    t0, source_type);
+  r_source_cmplx_fm_generic(filename, dest_site, (complex *)NULL, 0, x0, y0, z0, t0);
 }
 
 /*--------------------------------------------------------------------*/
-void r_source_cmplx_fm_to_field(char *filename, complex *dest_field,
-				int t0, int source_type)
+void r_source_cmplx_fm_to_field(char *filename, complex *dest_field, int stride,
+				int x0, int y0, int z0, int t0)
 {
-  r_source_cmplx_fm_generic(filename, (field_offset)(-1), dest_field, 
-			    t0, source_type);
+  r_source_cmplx_fm_generic(filename, (field_offset)(-1), dest_field, stride,
+			    x0, y0, z0, t0);
 }
 

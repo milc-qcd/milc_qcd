@@ -1,5 +1,5 @@
 #  Generic routines for all applications
-#  MIMD version 6
+#  MIMD version 7
 #
 #  Generic make-include file for generic directory codes
 #  This template file defines rules and macros common to all applications
@@ -19,7 +19,11 @@ G_ALL = \
  com_vanilla.o \
  d_plaq2.o \
  d_plaq4.o \
+ discretize_wf.o \
  field_strength.o \
+ field_translation.o \
+ field_utilities.o \
+ file_types_milc_usqcd.o \
  gaugefix.o \
  gaugefix2.o \
  gauge_force_imp.o \
@@ -27,6 +31,8 @@ G_ALL = \
  gauge_force_symzk1_qop.o \
  gauge_force_symzk1_qop_milc.o \
  gauge_stuff.o \
+ gauge_utilities.o \
+ general_staple.o \
  glueball_op.o \
  hvy_pot.o \
  io_ansi.o \
@@ -55,8 +61,10 @@ G_ALL = \
  map_milc_to_qopqdp.o \
  milc_to_qop_utilities.o \
  make_lattice.o \
+ momentum_twist.o \
  nersc_cksum.o \
  path_product.o \
+ phases.o \
  plaquette3.o \
  plaquette4.o \
  ploop2.o \
@@ -69,11 +77,15 @@ G_ALL = \
  qop_milc_D.o \
  qop_milc_F.o \
  qop_milc_utilities.o \
+ quark_source.o \
+ quark_source_io.o \
+ quark_source_sink_op.o \
  rand_gauge.o \
  ranmom.o \
  ranstuff.o \
  remap_fftw_fourier.o \
  remap_stdio_from_args.o \
+ report_invert_status.o \
  restrict_fourier.o \
  reunitarize2.o \
  show_generic_opts.o \
@@ -123,7 +135,15 @@ d_plaq4.o: ../generic/d_plaq4.c
 	${CC} -c ${CFLAGS} $<
 d_linktrsum.o: ../generic/d_linktrsum.c
 	${CC} -c ${CFLAGS} $<
+discretize_wf.o: ../generic/discretize_wf.c
+	${CC} -c ${CFLAGS} $<
 field_strength.o: ../generic/field_strength.c
+	${CC} -c ${CFLAGS} $<
+field_translation.o: ../generic/field_translation.c
+	${CC} -c ${CFLAGS} $<
+file_types_milc_usqcd.o: ../generic/file_types_milc_usqcd.c
+	${CC} -c ${CFLAGS} $<
+field_utilities.o: ../generic/field_utilities.c
 	${CC} -c ${CFLAGS} $<
 gaugefix.o: ../generic/gaugefix.c
 	${CC} -c ${CFLAGS} $<
@@ -138,6 +158,10 @@ gauge_force_symzk1_qop.o: ../generic/gauge_force_symzk1_qop.c
 gauge_force_symzk1_qop_milc.o: ../generic/gauge_force_symzk1_qop_milc.c
 	${CC} -c ${CFLAGS} $<
 gauge_stuff.o: ../generic/gauge_stuff.c
+	${CC} -c ${CFLAGS} $<
+gauge_utilities.o: ../generic/gauge_utilities.c
+	${CC} -c ${CFLAGS} $<
+general_staple.o: ../generic/general_staple.c
 	${CC} -c ${CFLAGS} $<
 glueball_op.o: ../generic/glueball_op.c
 	${CC} -c ${CFLAGS} $<
@@ -198,9 +222,13 @@ map_milc_to_qopqdp.o: ../generic/map_milc_to_qopqdp.c ../generic/map_milc_to_qop
 	${CC} -c ${CFLAGS} $<
 milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
 	${CC} -c ${CFLAGS} $<
+momentum_twist.o: ../generic/momentum_twist.c
+	${CC} -c ${CFLAGS} $<
 nersc_cksum.o: ../generic/nersc_cksum.c
 	${CC} -c ${CFLAGS} $<
 path_product.o: ../generic/path_product.c
+	${CC} -c ${CFLAGS} $<
+phases.o: ../generic/phases.c
 	${CC} -c ${CFLAGS} $<
 plaquette3.o: ../generic/plaquette3.c
 	${CC} -c ${CFLAGS} $<
@@ -226,6 +254,12 @@ qop_milc_F.o: ../generic/qop_milc_F.c ../generic/qop_milc_D.c
 	${CC} -c ${CFLAGS} $<
 qop_milc_utilities.o: ../generic/qop_milc_utilities.c
 	${CC} -c ${CFLAGS} $<
+quark_source.o: ../generic/quark_source.c
+	${CC} -c ${CFLAGS} $<
+quark_source_io.o: ../generic/quark_source_io.c
+	${CC} -c ${CFLAGS} $<
+quark_source_sink_op.o: ../generic/quark_source_sink_op.c
+	${CC} -c ${CFLAGS} $<
 rand_gauge.o: ../generic/rand_gauge.c
 	${CC} -c ${CFLAGS} $<
 ranmom.o: ../generic/ranmom.c
@@ -237,6 +271,8 @@ remap_fftw_fourier.o: ../generic/remap_fftw_fourier.c
 remap_stdio_from_args.o: ../generic/remap_stdio_from_args.c
 	${CC} -c ${CFLAGS} $<
 restrict_fourier.o: ../generic/restrict_fourier.c
+	${CC} -c ${CFLAGS} $<
+report_invert_status.o: ../generic/report_invert_status.c
 	${CC} -c ${CFLAGS} $<
 reunitarize2.o: ../generic/reunitarize2.c
 	${CC} -c ${CFLAGS} $<

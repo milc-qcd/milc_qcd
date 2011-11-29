@@ -390,7 +390,7 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 		    int antiherm_parity[] )
 {
   int gauge_iter;
-  double current_av, old_av = 0, del_av = 0;
+  double current_av = 0.0, old_av = 0.0, del_av = 0.0;
 
   /* We require at least 8 gen_pt values for gauge fixing */
   if(N_POINTERS < 8)

@@ -27,6 +27,9 @@
 */
 
 //  $Log: layout_hyper_sl32.c,v $
+//  Revision 1.13  2011/11/29 20:11:30  detar
+//  Cosmetic fix to initialization
+//
 //  Revision 1.12  2008/04/11 15:38:18  detar
 //  Fix get_coords so it is compatible with node_index
 //
@@ -76,11 +79,13 @@ static void lex_coords(int coords[], const int dim, const int size[],
   }
 }
 
+#if 0
 /*------------------------------------------------------------------*/
 /* Parity of the coordinate */
 static int coord_parity(int r[]){
   return (r[0] + r[1] + r[2] + r[3]) % 2;
 }
+#endif
 
 /*------------------------------------------------------------------*/
 
@@ -263,6 +268,7 @@ void setup_fixed_geom(int *geom, int n){
 
 static int io_node_coords[4];
 static int nodes_per_ionode[4];
+static int *ionodegeomvals = NULL; /* ionode partitions */
 
 /*------------------------------------------------------------------*/
 /* Initialize io_node function */
@@ -272,16 +278,27 @@ static void init_io_node(){
   int i;
   int status = 0;
 
+#ifdef FIX_IONODE_GEOM
+  if(ionodegeom() == NULL){
+    ionodegeomvals = ionode_geometry;
+  } else {
+    node0_printf("init_io_node: Command line ionode geometry overrides request\n");
+    ionodegeomvals = ionodegeom();
+  }
+#endif
+
+  if(ionodegeomvals == NULL)return;
+
   /* Compute the number of nodes per I/O node along each direction */
   for(i = 0; i < 4; i++){
-    if(nsquares[i] % ionode_geometry[i] != 0)status++;
-    nodes_per_ionode[i] = nsquares[i]/ionode_geometry[i];
+    if(nsquares[i] % ionodegeomvals[i] != 0)status++;
+    nodes_per_ionode[i] = nsquares[i]/ionodegeomvals[i];
   }
   
   if(status){
     node0_printf("init_io_node: ionode geometry %d %d %d %d \n",
-		 ionode_geometry[0], ionode_geometry[1],
-		 ionode_geometry[2], ionode_geometry[3]);
+		 ionodegeomvals[0], ionodegeomvals[1],
+		 ionodegeomvals[2], ionodegeomvals[3]);
     node0_printf("is incommensurate with node geometry %d %d %d %d\n",
 		 nsquares[0], nsquares[1], nsquares[3], nsquares[3]);
     terminate(1);
@@ -325,6 +342,13 @@ void setup_layout(){
 #else
 
   /* Non QMP treatment */
+  if(nodegeom() != NULL){
+    if(geom != NULL)
+      node0_printf("fixed node_geometry\n");
+      node0_printf("setup_layout: Preallocated machine geometry overrides request\n");
+    geom = nodegeom();
+  }
+
   if(geom != NULL)
     setup_fixed_geom(geom, 4);
   else
@@ -486,6 +510,11 @@ void get_coords(int coords[], int node, int index){
 /* Map any node to its I/O node */
 int io_node(const int node){
   int i,j,k; 
+  int io_node_coords[4];
+
+  /* If we don't have I/O partitions, each node does its own I/O */
+  if(ionodegeomvals == NULL)
+    return node;
 
   /* Get the machine coordinates for the specified node */
   lex_coords(io_node_coords, 4, nsquares, node);

@@ -1,3 +1,4 @@
+OBSOLETE
 /*********************** map_milc_to_qop.c **************************/
 /* Functions for mapping MILC data layouts to raw QOP layouts       */
 /* C. DeTar 10/19/2005                                              */
@@ -234,7 +235,7 @@ copy_D_F_to_milc(anti_hermitmat *dest, dsu3_matrix *src){
 #define copy_F_V_to_milc(d,s) f2p_vec(d,s);
 #define copy_D_V_to_milc(d,s) d2p_vec(d,s);
 
-void site_coords(int coords[4],site *s){
+static void site_coords(int coords[4],site *s){
   coords[0] = s->x;
   coords[1] = s->y;
   coords[2] = s->z;
@@ -268,7 +269,7 @@ create_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
   return raw; \
 }
 
-/* Map MILC field links to raw order */
+/* Map MILC links in site-major order to raw */
 
 #define make_create_raw4_from_field(P, T, MILC_RAWTYPE, MILC_SRCTYPE) \
 MILC_RAWTYPE ** \
@@ -322,7 +323,7 @@ create_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
   return raw; \
 }
 
-/* Map MILC field field to raw */
+/* Map MILC field to raw */
 
 #define make_create_raw_from_field(P, T, MILC_RAWTYPE, MILC_SRCTYPE) \
 MILC_RAWTYPE * \
@@ -534,8 +535,6 @@ unload_##P##_##T##_to_field( MILC_DSTTYPE *dest, TYPE *qop, int parity){ \
   unload_raw_##P##_##T##_to_field(dest, raw, parity); \
   destroy_raw_##P##_##T(raw); raw = NULL; \
 }
-
-
 
 /* Storage for raw gauge field */
 

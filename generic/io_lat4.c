@@ -145,6 +145,7 @@ static gauge_file *w_serial_i(char *filename)
 
 /* Here only node 0 writes gauge configuration to a binary file */
 
+#if 0
 static void w_serial_old(gauge_file *gf)
 {
   /* gf  = file descriptor as opened by w_serial_i */
@@ -308,7 +309,8 @@ static void w_serial_old(gauge_file *gf)
       write_checksum(SERIAL,gf);
     }
   
-} /* w_serial */
+} /* w_serial_old */
+#endif
 
 /* Flush lbuf to output */
 /* buf_length is reset */
@@ -585,8 +587,6 @@ static void r_serial(gauge_file *gf)
       checksum_offset = gf->header->header_bytes + coord_list_size;
       head_size = checksum_offset + gauge_check_size;
       
-      /* Allocate space for read buffer */
-
       if(gf->parallel)
 	printf("%s: Attempting serial read from parallel file \n",myname);
 
@@ -740,6 +740,11 @@ static void r_serial(gauge_file *gf)
 	      fflush(stdout);terminate(1);   
 	    }
 	  read_checksum(SERIAL,gf,&test_gc);
+	}
+      else
+	{
+	  printf("Checksums %x %x\n",test_gc.sum29,test_gc.sum31);
+	  printf("Checksums not verified in this format\n");
 	}
       fflush(stdout);
       free(lbuf);

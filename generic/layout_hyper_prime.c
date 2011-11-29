@@ -22,6 +22,9 @@
 */
 
 // $Log: layout_hyper_prime.c,v $
+// Revision 1.16  2011/11/29 20:11:30  detar
+// Cosmetic fix to initialization
+//
 // Revision 1.15  2008/04/18 15:36:46  detar
 // Permit odd number of lattice sites per node
 //
@@ -57,6 +60,9 @@ static int squaresize[4];	   /* dimensions of hypercubes */
 static int nsquares[4];	           /* number of hypercubes in each direction */
 static int machine_coordinates[4]; /* logical machine coordinates */ 
 
+static int nodes_per_ionode[4];    /* dimensions of ionode partition */
+static int *ionodegeomvals = NULL; /* ionode partitions */
+
 int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
 # define MAXPRIMES ( sizeof(prime) / sizeof(int) )
 
@@ -81,10 +87,6 @@ static int coord_parity(int r[]){
 }
 
 /*------------------------------------------------------------------*/
-
-#ifdef FIX_IONODE_GEOM
-
-/*------------------------------------------------------------------*/
 /* Convert coordinate to linear lexicographic rank (inverse of
    lex_coords) */
 
@@ -99,14 +101,17 @@ static size_t lex_rank(const int coords[], int dim, int size[])
   return rank;
 }
 
-#endif
-
 #ifdef HAVE_QMP
 
 /*--------------------------------------------------------------------*/
 /* Sets the QMP logical topology if we need one */
 static void set_qmp_layout_grid(const int *geom, int n){
+
+  /* Has a geometry already been specified by the -geom command-line
+     argument or on the input parameter line "node_geometry"? */
+  /* If not, don't set the grid geometry here */
   if(geom == NULL)return;
+  /* If so, then pass the grid dimensions to QMP now */
   if(QMP_declare_logical_topology(geom, n) != QMP_SUCCESS){
     node0_printf("setup_layout: QMP_declare_logical_topology failed on %d %d %d %d \n",
 		 geom[0], geom[1], geom[2], geom[3] );
@@ -224,7 +229,7 @@ static void setup_hyper_prime(){
 
 /*--------------------------------------------------------------------*/
 
-void setup_fixed_geom(int *geom, int n){
+void setup_fixed_geom(int const *geom, int n){
   int i;
   int node_count;
   int len[4];
@@ -257,29 +262,35 @@ void setup_fixed_geom(int *geom, int n){
   }
 }
 
-#ifdef FIX_IONODE_GEOM
-
-static int io_node_coords[4];
-static int nodes_per_ionode[4];
-
 /*------------------------------------------------------------------*/
 /* Initialize io_node function */
 
+
+#ifdef FIX_IONODE_GEOM
 
 static void init_io_node(){
   int i;
   int status = 0;
 
+  if(ionodegeom() == NULL){
+    ionodegeomvals = ionode_geometry;
+  } else {
+    node0_printf("init_io_node: Command line ionode geometry overrides request\n");
+    ionodegeomvals = ionodegeom();
+  }
+
+  if(ionodegeomvals == NULL)return;
+
   /* Compute the number of nodes per I/O node along each direction */
   for(i = 0; i < 4; i++){
-    if(nsquares[i] % ionode_geometry[i] != 0)status++;
-    nodes_per_ionode[i] = nsquares[i]/ionode_geometry[i];
+    if(nsquares[i] % ionodegeomvals[i] != 0)status++;
+    nodes_per_ionode[i] = nsquares[i]/ionodegeomvals[i];
   }
   
   if(status){
     node0_printf("init_io_node: ionode geometry %d %d %d %d \n",
-		 ionode_geometry[0], ionode_geometry[1],
-		 ionode_geometry[2], ionode_geometry[3]);
+		 ionodegeomvals[0], ionodegeomvals[1],
+		 ionodegeomvals[2], ionodegeomvals[3]);
     node0_printf("is incommensurate with node geometry %d %d %d %d\n",
 		 nsquares[0], nsquares[1], nsquares[3], nsquares[3]);
     terminate(1);
@@ -293,15 +304,16 @@ static void init_io_node(){
 void setup_layout(){
   int k = mynode();
 #ifdef FIX_NODE_GEOM
-  int *geom = node_geometry;
+  int const *geom = node_geometry;
 #else
-  int *geom = NULL;
+  int const *geom = nodegeom();
 #endif
 
   if(k == 0)
     printf("LAYOUT = Hypercubes, options = ");
 
 #ifdef HAVE_QMP
+
   /* QMP treatment */
   /* Is there already a grid? 
      This could be a grid architecture with a preset dimension, or
@@ -313,25 +325,48 @@ void setup_layout(){
     set_qmp_layout_grid(geom, 4);
 
   /* Has a grid been set up now? */
-  if(QMP_get_msg_passing_type() == QMP_GRID)
+  if(QMP_get_msg_passing_type() == QMP_GRID){
+    /* Set the sublattice dimensions for a QMP grid machine */
     setup_qmp_grid();
-  else if(geom != NULL)
+    node0_printf("QMP with specified qmp-geom\n");
+  }
+  else if(geom != NULL){
+    /* Set the sublattice dimensions according to the specified geometry */
     setup_fixed_geom(geom, 4);
-  else
+    node0_printf("QMP with fixed node_geometry\n");
+  }
+  else{
+    /* Set the sublattice dimensions according to the hyper_prime algorithm */
     setup_hyper_prime();
+    set_qmp_layout_grid(nsquares, 4);
+    node0_printf("QMP with automatic hyper_prime layout\n");
+  }
 
 #else
 
   /* Non QMP treatment */
-  if(geom != NULL)
+
+#ifdef FIX_NODE_GEOM
+  if(geom != NULL){
+      node0_printf("setup_layout: Preallocated machine geometry overrides request\n");
+  }
+#endif
+
+  if(geom != NULL){
+    /* Set the sublattice dimensions according to the specified geometry */
+    node0_printf("with fixed node_geometry\n");
     setup_fixed_geom(geom, 4);
-  else
+  }
+  else{
+    /* Set the sublattice dimensions according to the hyper_prime algorithm */
     setup_hyper_prime();
+    node0_printf("automatic hyper_prime layout\n");
+  }
 
 #endif
 
-#ifdef FIX_IONODE_GEOM
   /* Initialize I/O node function */
+#ifdef FIX_IONODE_GEOM
   init_io_node();
 #endif
   
@@ -474,12 +509,16 @@ void get_coords(int coords[], int node, int index){
    given by nodes_per_ionode.  The I/O node is at the origin of that
    hypercube. */
 
-#ifdef FIX_IONODE_GEOM
 
 /*------------------------------------------------------------------*/
 /* Map any node to its I/O node */
 int io_node(const int node){
-  int i,j,k; 
+  int i; 
+  int io_node_coords[4];
+
+  /* If we don't have I/O partitions, each node does its own I/O */
+  if(ionodegeomvals == NULL)
+    return node;
 
   /* Get the machine coordinates for the specified node */
   lex_coords(io_node_coords, 4, nsquares, node);
@@ -493,11 +532,4 @@ int io_node(const int node){
   return (int)lex_rank(io_node_coords, 4, nsquares);
 }
 
-#else
 
-/*------------------------------------------------------------------*/
-/* If we don't have I/O partitions, each node does its own I/O */
-int io_node(int node){
-  return node;
-}
-#endif
