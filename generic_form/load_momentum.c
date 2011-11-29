@@ -103,7 +103,7 @@ int load_momentum(int prompt, char *label, int *no_mom, int mom_in[][3], int max
 
   /*** read in all the momentum that the user wants to calculate ***/
 
-  IF_OK if (prompt!=0) 
+  IF_OK if (prompt==1) 
     printf("enter 'start_of_momentum %s' \n",label);
   IF_OK scanf("%s",savebuf);
   IF_OK scanf("%s",checklabel);
@@ -132,7 +132,7 @@ int load_momentum(int prompt, char *label, int *no_mom, int mom_in[][3], int max
   while( what_to_do == read_momentum   ) 
   {
 
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter three integers for the momentum\n");
     IF_OK scanf("%s",savebuf);
 
