@@ -1,5 +1,5 @@
 /******* ks_ratinv.c - multi-mass CG for rational function approximations
- forSU3/fermions 
+ for SU3/fermions 
  Also includes a routine to evaluate the rational function after the inversion
  is done
 ****/
@@ -39,15 +39,79 @@ int ks_ratinv(	/* Return value is number of iterations taken */
     int prec,           /* desired intermediate precicion */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn      /* Fermion links */
+    imp_ferm_links_t *fn_const, /* Fermion links */
+    int naik_term_epsilon_index, /* Index of naik term common to this set */
+    Real naik_term_epsilon /* Epsilon common to this set */
     )
 {
     // Just a multimass inversion.  start at roots[1] because first term
     // in rational function expansion is just the constant term
     // It's "order" instead of "order-1" because order is order of expansion, arrays
     // have order+1 elements 
-  return ks_multicg( src, psim, roots+1, order, my_niter, rsqmin, 
-		      prec, parity, final_rsq_ptr, fn );
+  quark_invert_control *qic;
+  su3_vector *in;
+  ks_param *ksp;
+  int k;
+  imp_ferm_links_t **fn;
+  char myname[] = "update_h_rhmc";
+  int iters;
+
+  in = create_v_field_from_site_member(src);
+
+  /* Set up inversion control structure */
+  /* For molecular dynamics they are identical */
+  qic = (quark_invert_control *)malloc(order*sizeof(quark_invert_control));
+  if(qic == NULL){
+    printf("ks_ratinv: No room for qic\n");
+    terminate(1);
+  }
+
+  for(k = 0; k < order; k++){
+    qic[k].prec = prec;
+    qic[k].min = 0;
+    qic[k].max = my_niter;
+    qic[k].nrestart = nrestart;
+    qic[k].parity = parity;
+    qic[k].start_flag = 0;
+    qic[k].nsrc = 1;
+    qic[k].resid = sqrt(rsqmin);
+    qic[k].relresid = 0;
+  }
+
+  /* Load ks parameters for inverters */
+  ksp = (ks_param *)malloc(order*sizeof(ks_param));
+  if(ksp == NULL){
+    printf("%s(%d): No room\n", myname, this_node);
+    terminate(1);
+  }
+  
+  for(k = 0; k < order; k++){
+    ksp[k].offset = roots[k+1];
+#if FERM_ACTION == HISQ
+    ksp[k].naik_term_epsilon = naik_term_epsilon;
+    ksp[k].naik_term_epsilon_index = naik_term_epsilon_index;
+#endif
+  }
+
+  /* Set fn links for the inversion (all the same here) */
+  fn = (imp_ferm_links_t **)malloc(order*sizeof(imp_ferm_links_t *));
+  if(fn == NULL){
+    printf("%s(%d): No room\n", myname, this_node);
+    terminate(1);
+  }
+  
+  for(k = 0; k < order; k++)
+    fn[k] = fn_const;
+
+  iters = ks_multicg_field( in, psim, ksp, order, qic, fn );
+
+  free(fn);
+  free(ksp);
+
+  destroy_v_field(in);
+  *final_rsq_ptr = qic[0].final_rsq;
+  free(qic);
+  return iters;
 }
 
 /* evaluate the rational function approximation after all the

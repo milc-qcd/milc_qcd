@@ -30,9 +30,6 @@ OBSOLETE!! multi_x is no longer sized correctly for more than one pseudofermion
 */
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
-#define mat_invert mat_invert_uml
-/**#define mat_invert mat_invert_cg**/
-
 int update()  {
   int step, iters=0;
   Real final_rsq;
@@ -110,8 +107,9 @@ int update()  {
     if(steps > 0)
       gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-  invalidate_all_ferm_links(&fn_links);
-  invalidate_all_ferm_links(&fn_links_dmdu0);
+    invalidate_fermion_links(fn_links);
+    //  invalidate_all_ferm_links(&fn_links);
+    //  invalidate_all_ferm_links(&fn_links_dmdu0);
 #endif
     node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
   }

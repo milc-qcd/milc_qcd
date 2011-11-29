@@ -14,7 +14,8 @@
 void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
 			int parity, su3_vector **multi_x, su3_vector *sumvec,
 			Real my_rsqmin, int my_niter, int my_prec,
-			ferm_links_t *fn)
+			imp_ferm_links_t *fn, int naik_term_epsilon_index,
+			Real naik_term_epsilon)
 {
   register int i,j;
   register site *s;
@@ -39,7 +40,8 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
   }
   /*TEMP*/g_doublesum( &sum);  node0_printf("GRSOURCE: sum = %.10e\n",sum);
   ks_ratinv( F_OFFSET(g_rand), multi_x, roots, order, my_niter, 
-	     my_rsqmin, my_prec, parity, &final_rsq, fn );
+	     my_rsqmin, my_prec, parity, &final_rsq, fn, 
+	     naik_term_epsilon_index, naik_term_epsilon );
   ks_rateval( sumvec, F_OFFSET(g_rand), multi_x, residues, order, parity );
   FORSOMEPARITY(i,s,parity){ *(su3_vector *)F_PT(s,dest) = sumvec[i]; }
 }/* grsource_rhmc */

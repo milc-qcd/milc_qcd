@@ -40,8 +40,9 @@ t8 = eps/8.0;
 gf_av=gf_max=0.0;
 **END TEMP**/
 #ifdef FN
-  free_fn_links(&fn_links);
-  free_fn_links(&fn_links_dmdu0);
+ invalidate_fermion_links(fn_links);
+ //  free_fn_links(&fn_links);
+ //  free_fn_links(&fn_links_dmdu0);
 #endif
 
     FORALLSITES(i,s){

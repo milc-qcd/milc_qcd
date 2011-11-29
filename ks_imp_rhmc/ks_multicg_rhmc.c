@@ -2,7 +2,7 @@
 /* MIMD version 7 */
 
 /* Multi-mass CG inverter for staggered fermions */
-/* OBSOLETE!! CD 11/2006 */
+/* OBSOLETE!! UNSUPPORTED!! CD 11/2006 */
 
 /* Inverts M^dagger*M+offset for an array of offsets
    For "ordinary" use (not RHMC) offset = 4*mass^2
@@ -46,7 +46,7 @@ int ks_multicg_reverse(	/* Return value is number of iterations taken */
     int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn      /* Storage for fat and Naik links */
+    fn_links_t *fn      /* Storage for fat and Naik links */
     )
 {
     /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
@@ -399,7 +399,7 @@ int ks_multicg_revhyb(	/* Return value is number of iterations taken */
     int prec,           /* desired intermediate precision */
     int parity,		/* parity to be worked on */
     Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn      /* Storage for fat and Naik links */
+    fn_links_t *fn      /* Storage for fat and Naik links */
     )
 {
     int i,j,iters=0; site *s;

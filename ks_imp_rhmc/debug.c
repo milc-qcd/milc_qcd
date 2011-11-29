@@ -198,7 +198,7 @@ char plaq_file_name[300];
 
 
 
-#ifdef HISQ
+#if FERM_ACTION == HISQ
 
 /* Measure plaquettes and write into file */
 void g_measure_plaq() {
@@ -218,10 +218,10 @@ void g_measure_plaq() {
 
   /* Load fat and long links for fermion measurements if needed */
   invalidate_all_ferm_links(&fn_links);
-#ifdef HISQ
+#if FERM_ACTION == HISQ
   fn_links.hl.current_X_set = 0;
 #endif
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
 
   /* phases out */
   custom_rephase( fn_links.hl.V_link, OFF, &(fn_links.hl.phases_in_V) );
@@ -271,7 +271,7 @@ void g_measure_tune() {
   node0_printf( "Entering g_measure_tune()\n" );
 
   /* Load fat and long links for fermion measurements if needed */
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
 
   /* phases out U_link */
   custom_rephase( fn_links.hl.U_link, OFF, &(fn_links.hl.phases_in_U) );
@@ -349,7 +349,7 @@ void g_measure_hisq_plaq() {
   }
   node0_printf( "fdf_block: function\n" );
   /* Load fat and long links  */
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
   /* phases out W_unitlink */
   custom_rephase( fn_links.hl.W_unitlink, OFF, &(fn_links.hl.phases_in_W) );
   /* dump plaquettes into file */
@@ -371,7 +371,7 @@ void g_measure_hisq_plaq() {
   node0_printf( "fdf_block: function at 1p\n" );
   invalidate_all_ferm_links(&fn_links);
   /* Load fat and long links  */
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
   /* phases out W_unitlink */
   custom_rephase( fn_links.hl.W_unitlink, OFF, &(fn_links.hl.phases_in_W) );
   /* dump plaquettes into file */
@@ -500,4 +500,4 @@ void g_measure_hisq_plaq() {
   node0_printf( "Exiting g_measure_hisq_plaq()\n" );
 }
 
-#endif /* HISQ */
+#endif /* FERM_ACTION == HISQ */

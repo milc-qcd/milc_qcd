@@ -4,6 +4,7 @@
 /* Measure total action, as needed by the hybrid Monte Carlo algorithm.  */
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "../include/fermion_links.h"
 static Real ahmat_mag_sq(anti_hermitmat *pt);
 
 /*DEBUG*/
@@ -44,23 +45,23 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
   register site *s;
   Real final_rsq;
   double sum;
-  int iphi, inaik, jphi; 
+  int iphi, inaik, jphi, n; 
+  imp_ferm_links_t **fn;
   sum=0.0;
   iphi=0;
-  for( inaik=0; inaik<n_naiks; inaik++ ) {
-    for( jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
-//      invalidate_all_ferm_links(&fn_links);
-#ifdef HISQ
-      fn_links.hl.current_X_set = inaik; // which X set we need
+#if FERM_ACTION == HISQ
+  n = fermion_links_get_n_naiks(fn_links);
+#else
+  n = 1;
 #endif
-      load_ferm_links(&fn_links, &ks_act_paths);
-//dumpmat( &(fn_links.hl.Y_unitlink[0][0]) );
-//dumpmat( &(fn_links.hl.W_unitlink[0][0]) );
-//dumpmat( &(fn_links.hl.XX_fatlink[0][0][0]) );
-//if(n_naiks>1) dumpmat( &(fn_links.hl.XX_fatlink[1][0][0]) );
+  for( inaik=0; inaik<n; inaik++ ) {
+    for( jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
+      restore_fermion_links_from_site(fn_links, prec_fa[iphi]);
+      fn = get_fm_links(fn_links);
       ks_ratinv( F_OFFSET(phi[iphi]), multi_x, rparam[iphi].FA.pole, 
-	       rparam[iphi].FA.order, niter_fa[iphi], rsqmin_fa[iphi], 
-	       prec_fa[iphi], EVEN, &final_rsq, &fn_links );
+		 rparam[iphi].FA.order, niter_fa[iphi], rsqmin_fa[iphi], 
+		 prec_fa[iphi], EVEN, &final_rsq, fn[inaik], 
+		 inaik, rparam[iphi].naik_term_epsilon );
       ks_rateval( sumvec, F_OFFSET(phi[iphi]), multi_x, 
   		rparam[iphi].FA.res, rparam[iphi].FA.order, EVEN );
       FOREVENSITES(i,s){ /* phi is defined on even sites only */
@@ -106,21 +107,3 @@ Real ahmat_mag_sq(anti_hermitmat *pt){
   return(sum);
 }
 
-/* copy a gauge field - an array of four su3_matrices */
-void gauge_field_copy(field_offset src,field_offset dest){
-  register int i,dir,src2,dest2;
-  register site *s;
-  FORALLSITES(i,s){
-    src2=src; dest2=dest;
-    for(dir=XUP;dir<=TUP; dir++){
-      su3mat_copy( (su3_matrix *)F_PT(s,src2),
-		   (su3_matrix *)F_PT(s,dest2) );
-      src2 += sizeof(su3_matrix);
-      dest2 += sizeof(su3_matrix);
-    }
-  }
-#ifdef FN
-  free_fn_links(&fn_links);
-  free_fn_links(&fn_links_dmdu0);
-#endif
-}

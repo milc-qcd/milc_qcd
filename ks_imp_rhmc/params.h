@@ -4,6 +4,7 @@
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "defines.h"
 
+#define MAX_MASS_PBP 8
 /* structure for passing simulation parameters to each node */
 typedef struct {
   int stopflag;   /* 1 if it is time to stop */
@@ -38,24 +39,21 @@ typedef struct {
   int niter_md[MAX_N_PSEUDO], niter_fa[MAX_N_PSEUDO], niter_gr[MAX_N_PSEUDO];
   int prec_md[MAX_N_PSEUDO], prec_fa[MAX_N_PSEUDO], prec_gr[MAX_N_PSEUDO];
   int prec_ff;   /* fermion force precision */
-  int npbp_reps_in;   /* Number of random sources */
-  int prec_pbp;       /* Precision of pbp measurements */
   Real rsqmin_md[MAX_N_PSEUDO], rsqmin_fa[MAX_N_PSEUDO], rsqmin_gr[MAX_N_PSEUDO];
   Real rsqprop;  /* for deciding on convergence */
   Real epsilon;	/* time step */
-  char spectrum_request[MAX_SPECTRUM_REQUEST];   /* request list for spectral measurements */
-  int source_start, source_inc, n_sources; /* source time and increment */
-  int spectrum_multimom_nmasses; 
-  Real spectrum_multimom_low_mass;
-  Real spectrum_multimom_mass_step;
-  int fpi_nmasses;
-  Real fpi_mass[MAX_FPI_NMASSES];
   int startflag;  /* what to do for beginning lattice */
   int saveflag;   /* what to do with lattice at end */
   int n_pseudo; /* Number of pseudofermion fields */
   char rparamfile[MAXFILENAME];
   char startfile[MAXFILENAME],savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
+  /* PBP and related quantities */
+  int num_pbp_masses;   /* Number of masses for pbp calculation */
+  quark_invert_control qic_pbp[MAX_MASS_PBP];
+  int prec_pbp;         /* Precision of the pbp calculation (1 or 2) */
+  int npbp_reps;     /* Number of random sources for pbp calculation */
+  ks_param ksp_pbp[MAX_MASS_PBP];
 } params;
 
 #endif /* _PARAMS_H */

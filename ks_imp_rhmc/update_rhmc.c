@@ -87,8 +87,9 @@ int update()  {
   su3_vector **multi_x;
   int n_multi_x;	// number of vectors in multi_x
   su3_vector *sumvec;
-  int iphi, int_alg, inaik, jphi;
+  int iphi, int_alg, inaik, jphi, n;
   Real lambda, alpha, beta; // parameters in integration algorithms
+  imp_ferm_links_t** fn;
 
   int_alg = INT_ALG;
   switch(int_alg){
@@ -175,24 +176,24 @@ int update()  {
   
   /* generate a pseudofermion configuration only at start*/
   // NOTE used to clear xxx here.  May want to clear all solutions for reversibility
-#ifdef HISQ
-  fn_links.hl.current_X_set = 0; // which X set we need
-#endif
-  load_ferm_links(&fn_links, &ks_act_paths);
   iphi=0;
-  for( inaik=0; inaik<n_naiks; inaik++ ) {
-    for( jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
-#ifdef HISQ
-      fn_links.hl.current_X_set = inaik; // which X set we need
+#if FERM_ACTION == HISQ
+  n = fermion_links_get_n_naiks(fn_links);
+#else
+  n = 1;
 #endif
-      load_ferm_links(&fn_links, &ks_act_paths);
+  for( inaik=0; inaik<n; inaik++ ) {
+    for( jphi=0; jphi<n_pseudo_naik[inaik]; jphi++ ) {
+      restore_fermion_links_from_site(fn_links, prec_gr[iphi]);
+      fn = get_fm_links(fn_links);
       grsource_imp_rhmc( F_OFFSET(phi[iphi]), &(rparam[iphi].GR), EVEN,
-		       multi_x,sumvec, rsqmin_gr[iphi], niter_gr[iphi],
-		       prec_gr[iphi], &fn_links);
-		  iphi++;
-	  }
+			 multi_x, sumvec, rsqmin_gr[iphi], niter_gr[iphi],
+			 prec_gr[iphi], fn[inaik], inaik, 
+			 rparam[iphi].naik_term_epsilon);
+      iphi++;
+    }
   }
-
+  
   /* find action */
   startaction=d_action_rhmc(multi_x,sumvec);
 #ifdef HMC
@@ -207,7 +208,7 @@ int update()  {
         /* update U's to middle of interval */
         update_u(0.5*epsilon);
         /* now update H by full time interval */
-        update_h_rhmc( epsilon, multi_x);
+        iters += update_h_rhmc( epsilon, multi_x);
         /* update U's by half time step to get to even time */
         update_u(epsilon*0.5);
         /* reunitarize the gauge field */
@@ -220,9 +221,9 @@ int update()  {
       for(step=2; step <= steps; step+=2){
         /* update U's and H's - see header comment */
         update_u(0.5*epsilon*lambda);
-        update_h_rhmc( epsilon, multi_x);
+        iters += update_h_rhmc( epsilon, multi_x);
         update_u(epsilon*(2.0-lambda));
-        update_h_rhmc( epsilon, multi_x);
+        iters += update_h_rhmc( epsilon, multi_x);
         update_u(0.5*epsilon*lambda);
         /* reunitarize the gauge field */
         rephase( OFF ); reunitarize(); rephase( ON );
@@ -236,14 +237,14 @@ int update()  {
      	    update_u( epsilon*( (0.25-0.5*alpha) ) );
 	    update_h_gauge( 0.5*epsilon);
      	    update_u( epsilon*( (0.5-beta)-(0.25-0.5*alpha) ) );
-	    update_h_fermion( epsilon, multi_x);
+	    iters += update_h_fermion( epsilon, multi_x);
      	    update_u( epsilon*( (0.75+0.5*alpha)-(0.5-beta) ) );
 	    update_h_gauge( 0.5*epsilon);
 
      	    update_u( epsilon*( (1.25-0.5*alpha)-(0.75+0.5*alpha) ) );
 	    update_h_gauge( 0.5*epsilon);
      	    update_u( epsilon*( (1.5+beta)-(1.25-0.5*alpha) ) );
-	    update_h_fermion( epsilon, multi_x);
+	    iters += update_h_fermion( epsilon, multi_x);
      	    update_u( epsilon*( (1.75+0.5*alpha)-(1.5+beta) ) );
 	    update_h_gauge( 0.5*epsilon);
      	    update_u( epsilon*( (2.0)-(1.75+0.5*alpha) ) );
@@ -266,7 +267,7 @@ int update()  {
      	    update_u( epsilon*( (1.0/6.0-alpha/3.0) ) );
 	    update_h_gauge( epsilon/3.0);
      	    update_u( epsilon*( (0.5-beta)-(1.0/6.0-alpha/3.0) ) );
-	    update_h_fermion( epsilon, multi_x);
+	    iters += update_h_fermion( epsilon, multi_x);
      	    update_u( epsilon*( (3.0/6.0+alpha/3.0)-(0.5-beta) ) );
 	    update_h_gauge( epsilon/3.0);
 
@@ -355,7 +356,7 @@ int update()  {
      	    update_u( epsilon*( (9.0/6.0-alpha/3.0)-(7.0/6.0+alpha/3.0) ) );
 	    update_h_gauge( epsilon/3.0);
      	    update_u( epsilon*( (1.5+beta)-(9.0/6.0-alpha/3.0) ) );
-	    update_h_fermion( epsilon, multi_x);
+	    iters += update_h_fermion( epsilon, multi_x);
      	    update_u( epsilon*( (11.0/6.0+alpha/3.0)-(1.5+beta) ) );
 	    update_h_gauge( epsilon/3.0);
      	    update_u( epsilon*( (2.0)-(11.0/6.0+alpha/3.0) ) );
@@ -443,6 +444,11 @@ int update()  {
         }	/* end loop over microcanonical steps */
     break;
     case INT_2EPS_3TO1:
+#if FERM_ACTION == HISQ
+      printf("update(%d): INT_2EPS_3TO1 is not supported for HISQ\n",
+	     this_node);
+      terminate(1);
+#endif
         /* do "steps" microcanonical steps (one "step" = one force evaluation)"  */
         for(step=6; step <= steps; step+=6){
 	    /* update U's and H's - first Omelyan step */
@@ -451,12 +457,12 @@ int update()  {
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
-				   &fn_links, &ks_act_paths );
+				   fn_links );
      	    update_u(epsilon*( 1.0 + 0.5*(1-lambda) )); // to time = (3/2)*epsilon
             eo_fermion_force_rhmc( 3.0*epsilon,  &rparam[0].MD,
 				   multi_x, F_OFFSET(phi[0]), rsqmin_md[0], 
 				   niter_md[0], prec_md[0], prec_ff,
-				   &fn_links, &ks_act_paths );
+				   fn_links );
 
      	    update_u(epsilon*( 0.5*(1.0-lambda) ));
 
@@ -464,7 +470,7 @@ int update()  {
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
-				   &fn_links, &ks_act_paths );
+				   fn_links );
 
     	    update_u(0.5*epsilon*lambda);
 
@@ -475,7 +481,7 @@ int update()  {
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
-				   &fn_links, &ks_act_paths );
+				   fn_links );
 
      	    update_u(epsilon*(2.0-lambda));
 
@@ -483,7 +489,7 @@ int update()  {
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
-				   &fn_links, &ks_act_paths );
+				   fn_links );
 
     	    update_u(0.5*epsilon*lambda);
 
@@ -494,14 +500,14 @@ int update()  {
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
-				   &fn_links, &ks_act_paths );
+				   fn_links );
 
      	    update_u(epsilon*(  0.5*(1.0-lambda) )); // to time 2*epsilon + epsilon/2
 
             eo_fermion_force_rhmc( 3.0*epsilon,  &rparam[0].MD,
 				   multi_x, F_OFFSET(phi[0]), rsqmin_md[0], 
 				   niter_md[0], prec_md[0], prec_ff,
-				   &fn_links, &ks_act_paths );
+				   fn_links );
 
      	    update_u(epsilon*( 1.0 + 0.5*(1.0-lambda) ));
 
@@ -509,7 +515,7 @@ int update()  {
             eo_fermion_force_rhmc( epsilon,  &rparam[1].MD,
 				   multi_x, F_OFFSET(phi[1]), rsqmin_md[1], 
 				   niter_md[1], prec_md[1], prec_ff,
-				   &fn_links, &ks_act_paths );
+				   fn_links );
 
     	    update_u(0.5*epsilon*lambda);
 
@@ -537,8 +543,9 @@ int update()  {
     if(steps > 0)
       gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-    free_fn_links(&fn_links);
-    free_fn_links(&fn_links_dmdu0);
+    invalidate_fermion_links(fn_links);
+    //    free_fn_links(&fn_links);
+    //    free_fn_links(&fn_links_dmdu0);
 #endif
     node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
   }

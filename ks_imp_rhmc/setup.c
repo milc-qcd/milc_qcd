@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.23  2011/11/29 22:30:03  detar
+//  Support new fermion links scheme.
+//
 //  Revision 1.22  2009/05/31 00:50:16  detar
 //  Change naik_term_mass to naik_term_epsilon
 //
@@ -101,38 +104,26 @@
 /* MIMD version 7 */
 #define IF_OK if(status==0)
 
-#include "ks_imp_includes.h"	/* definitions files and prototypes */
-#define IMP_QUARK_ACTION_INFO_ONLY
+#include "ks_imp_includes.h"
 #include "quark_action.h"
 #include "lattice_qdp.h"
+#include "../include/fermion_links.h"
+#define SU3_MAT_OP_NO_STORAGE
 #include "../include/su3_mat_op.h"
-
-EXTERN gauge_header start_lat_hdr;
-gauge_file *gf;
-
-gauge_file *r_parallel_i(char *);
-void r_parallel(gauge_file *, field_offset);
-void r_parallel_f(gauge_file *);
-
-gauge_file *r_binary_i(char *);
-void r_binary(gauge_file *);
-void r_binary_f(gauge_file *);
-void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
-params par_buf;
 
-int initial_set();
-void make_3n_gathers();
+/* Forward declarations */
+static int initial_set(void);
+static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
+static void make_3n_gathers(void);
 
 int
-setup()
+setup(void)
 {
   int prompt;
-#ifdef HAVE_QDP
-  int i;
-#endif
+
   
   /* print banner, get volume, seed */
   prompt = initial_set();
@@ -144,11 +135,6 @@ setup()
   make_lattice();
   node0_printf("Made lattice\n"); fflush(stdout);
 
-  /* Mark fermion links as unallocated */
-  init_ferm_links(&fn_links);
-#ifdef DM_DU0
-  init_ferm_links(&fn_links_dmdu0);
-#endif
   /* set up neighbor pointers and comlink structures */
   make_nn_gathers();
   node0_printf("Made nn gathers\n"); fflush(stdout);
@@ -159,68 +145,47 @@ setup()
   /* set up K-S phase vectors, boundary conditions */
   phaseset();
   
-#ifdef HAVE_QDP
-  for(i=0; i<4; ++i) {
-    shiftdirs[i] = QDP_neighbor[i];
-    shiftdirs[i+4] = neighbor3[i];
-  }
-  for(i=0; i<8; ++i) {
-    shiftfwd[i] = QDP_forward;
-    shiftbck[i] = QDP_backward;
-  }
-#endif
-
   node0_printf("Finished setup\n"); fflush(stdout);
   return( prompt );
 }
 
+static int n_naiks;
+static double eps_naik[MAX_NAIK];
 
 /* SETUP ROUTINES */
-int 
-initial_set()
+static int 
+initial_set(void)
 {
   int prompt,status,i,tmporder;
-  Real current_naik_mass;
+  Real current_naik_epsilon;
 
   /* On node zero, read lattice size, seed, and send to others */
   if(mynode()==0){
     /* print banner */
     printf("SU3 with improved KS action\n");
     printf("Microcanonical simulation with refreshing\n");
-    printf("MIMD version 7 $Name:  $\n");
-    printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     printf("Rational function hybrid Monte Carlo algorithm\n");
+    printf("MIMD version %s\n",MILC_CODE_VERSION);
+    printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
+    gethostname(hostname, 128);
+    printf("Host(0) = %s\n",hostname);
+    printf("Username = %s\n", getenv("USER"));
+    time_stamp("start");
+
     /* Print list of options selected */
     node0_printf("Options selected...\n");
     show_generic_opts();
     show_generic_ks_opts();
+    show_generic_ks_md_opts();
 #ifdef INT_ALG
     node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
 #endif
-    //#ifdef HISQ_NAIK_ADJUSTABLE
-    //    node0_printf("HISQ_NAIK_ADJUSTABLE (means Naik correction is full epsilon and not just mass)\n");
-    //#endif
-#ifdef HISQ_FORCE_FILTER
-    node0_printf("HISQ_FORCE_FILTER=%f\n",HISQ_FORCE_FILTER);
+#if FERM_ACTION == HISQ
+    show_su3_mat_opts();
+    show_hisq_links_opts();
+    show_hisq_force_opts();
 #endif
-#ifdef HISQ_REUNIT_ALLOW_SVD
-    node0_printf("HISQ_REUNIT_ALLOW_SVD\n");
-#endif
-#ifdef HISQ_REUNIT_SVD_ONLY
-    node0_printf("HISQ_REUNIT_SVD_ONLY (used together with HISQ_REUNIT_ALLOW_SVD)\n");
-#endif
-#ifdef MILC_GLOBAL_DEBUG
-    node0_printf("MILC_GLOBAL_DEBUG ***********************\n");
-#endif
-#ifdef HISQ_REUNITARIZATION_DEBUG
-    node0_printf("HISQ_REUNITARIZATION_DEBUG is ON\n");
-#endif
-#ifdef HISQ_FF_MULTI_WRAPPER
-    node0_printf("HISQ_FF_MULTI_WRAPPER is ON\n");
-#endif
-#ifdef HISQ_FF_DEBUG
-    node0_printf("HISQ_FF_DEBUG is ON\n");
-#endif
+
     status=get_prompt(stdin, &prompt);
     IF_OK status += get_i(stdin, prompt,"nx", &par_buf.nx );
     IF_OK status += get_i(stdin, prompt,"ny", &par_buf.ny );
@@ -283,6 +248,13 @@ initial_set()
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;
+#ifdef HISQ_SVD_COUNTER
+  hisq_svd_counter = 0;
+#endif
+      
+#ifdef HISQ_FORCE_FILTER_COUNTER
+  hisq_force_filter_counter = 0;
+#endif
 
   /* Load rational function parameters */
   rparam = load_rhmc_params(rparamfile, n_pseudo);  
@@ -297,18 +269,18 @@ initial_set()
   }
   node0_printf("Maximum rational func order is %d\n",max_rat_order);
 
-
-  /* Determine the number of different Naik masses */
-  current_naik_mass = rparam[0].naik_term_epsilon;
+  /* Determine the number of different Naik masses
+     and fill in n_orders_naik and n_pseudo_naik        */
+  current_naik_epsilon = rparam[0].naik_term_epsilon;
   tmporder = 0;
   n_naiks = 0;
   n_order_naik_total = 0;
   for( i=0; i<n_pseudo; i++ ) {
-    if( rparam[i].naik_term_epsilon != current_naik_mass ) {
+    if( rparam[i].naik_term_epsilon != current_naik_epsilon ) {
       if( tmporder > 0 ) {
         n_orders_naik[n_naiks] = tmporder;
-        masses_naik[n_naiks] = current_naik_mass;
-        current_naik_mass = rparam[i].naik_term_epsilon;
+	eps_naik[n_naiks] = current_naik_epsilon;
+        current_naik_epsilon = rparam[i].naik_term_epsilon;
         n_naiks++;
         n_order_naik_total += tmporder;
         tmporder = 0;
@@ -319,43 +291,28 @@ initial_set()
   }
   if( tmporder > 0 ) {
     n_orders_naik[n_naiks] = tmporder;
-    masses_naik[n_naiks] = current_naik_mass;
+    eps_naik[n_naiks] = current_naik_epsilon;
     n_order_naik_total += tmporder;
     n_naiks++;
   }
+#if FERM_ACTION == HISQ
   // calculate epsilon corrections for different Naik terms
-  if( 0!=masses_naik[0] ) {
+  if( 0 != eps_naik[0] ) {
     node0_printf("IN HISQ ACTION FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
     terminate(1);
   }
-  eps_naik[0] = 0.0; // first set of X links always has 0 correction
-  for( i=1; i<n_naiks; i++ ) {
-#ifdef HISQ
-    //#ifdef HISQ_NAIK_ADJUSTABLE
-    // value read from rational function file is considered full epsilon correction
-    eps_naik[i] = masses_naik[i];
-    //#else
-    // value read from rational function file is considered quark mass
-    // and epsilon correction is calculated with the second order perturbation theory,
-    // HISQ_NAIK_2ND_ORDER is set in the hisq_action.h
-    //    eps_naik[i] = HISQ_NAIK_2ND_ORDER*masses_naik[i]*masses_naik[i];
-//#endif
-#else /* HISQ */
-    // IT IS ASSUMED THAT ACTIONS OTHER THAN HISQ DO NOT HAVE
-    // ANY EPSILON CORRECTION TERMS
-    eps_naik[i] = 0;
-#endif /* HISQ */
-  }
+#endif
   node0_printf("Naik term correction structure of multi_x:\n");
   node0_printf("n_naiks %d\n",n_naiks);
   for( i=0; i<n_naiks; i++ ) {
-    node0_printf("n_pseudo_naik[%d]=%d\n",i,n_pseudo_naik[i]);
-    node0_printf("n_orders_naik[%d]=%d\n",i,n_orders_naik[i]);
-    node0_printf("masses_naik[%d]=%f\n",i,masses_naik[i]);
-    node0_printf("eps_naik[%d]=%f\n",i,eps_naik[i]);
+    node0_printf("n_pseudo_naik[%d]=%d\n", i, n_pseudo_naik[i]);
+    node0_printf("n_orders_naik[%d]=%d\n", i, n_orders_naik[i]);
+#if FERM_ACTION == HISQ
+    node0_printf("eps_naik[%d]=%f\n", i, eps_naik[i]);
+#endif
   }
   node0_printf("n_order_naik_total %d\n",n_order_naik_total);
-#ifdef HISQ
+#if FERM_ACTION == HISQ
   if( n_naiks+1 > MAX_NAIK ) {
     node0_printf("MAX_NAIK=%d < n_naiks+1=%d\n", MAX_NAIK, n_naiks+1 );
     node0_printf("Increase MAX_NAIK\n");
@@ -390,11 +347,7 @@ readin(int prompt)
   /* argument "prompt" is 1 if prompts are to be given for input	*/
   
   int status;
-  Real x;
   int i;
-#ifdef SPECTRUM
-  char request_buf[MAX_SPECTRUM_REQUEST];
-#endif
   
   /* On node zero, read parameters and send to all other nodes */
   if(this_node==0) {
@@ -448,63 +401,44 @@ readin(int prompt)
       }
     }
 
+    /* Max restarts for cleanup solves */
+    IF_OK par_buf.nrestart = 5;
+    
     /* Precision for fermion force calculation */
     IF_OK status = get_i(stdin, prompt, "prec_ff", &par_buf.prec_ff);
 
-    /* error for propagator conjugate gradient */
-    IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
-    IF_OK par_buf.rsqprop = x*x;
+    /*------------------------------------------------------------*/
+    /* Chiral condensate and related quantities                   */
+    /*------------------------------------------------------------*/
     
-    /* maximum no. of conjugate gradient iterations for propagator
-       etc. and maximum no. of restarts */
-    IF_OK status += get_i(stdin, prompt,"max_cg_prop", &par_buf.niter );
-    IF_OK status += get_i(stdin, prompt,"max_cg_prop_restarts", 
-			  &par_buf.nrestart );
-    
-#ifdef NPBP_REPS
-    /* number of random sources npbp_reps and precision for inversions */
-    IF_OK status += get_i(stdin, prompt,"npbp_reps", &par_buf.npbp_reps_in );
-    IF_OK status += get_i(stdin, prompt,"prec_pbp", &par_buf.prec_pbp );
+    IF_OK status += get_i(stdin, prompt, "number_of_pbp_masses",
+			  &par_buf.num_pbp_masses);
+    if(par_buf.num_pbp_masses > MAX_MASS_PBP){
+      printf("Number of masses exceeds dimension %d\n",MAX_MASS_PBP);
+      status++;
+    }
+    IF_OK if(par_buf.num_pbp_masses > 0){
+      IF_OK status += get_i(stdin, prompt, "max_cg_prop",
+			    &par_buf.qic_pbp[0].max);
+      IF_OK status += get_i(stdin, prompt, "max_cg_prop_restarts",
+			    &par_buf.qic_pbp[0].nrestart);
+      IF_OK status += get_i(stdin, prompt, "npbp_reps", &par_buf.npbp_reps );
+      IF_OK status += get_i(stdin, prompt, "prec_pbp", &par_buf.prec_pbp);
+      IF_OK for(i = 0; i < par_buf.num_pbp_masses; i++){
+	IF_OK status += get_f(stdin, prompt, "mass", &par_buf.ksp_pbp[i].mass);
+#if FERM_ACTION == HISQ
+	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
+			      &par_buf.ksp_pbp[i].naik_term_epsilon);
 #endif
-    
-#ifdef SPECTRUM
-    /* request list for spectral measurments */
-    /* prepend and append a comma for ease in parsing */
-    IF_OK status += get_s(stdin, prompt,"spectrum_request", request_buf );
-    IF_OK strcpy(par_buf.spectrum_request,",");
-    IF_OK strcat(par_buf.spectrum_request,request_buf);
-    IF_OK strcat(par_buf.spectrum_request,",");
-    
-    /* source time slice and increment */
-    IF_OK status += get_i(stdin, prompt,"source_start", &par_buf.source_start );
-    IF_OK status += get_i(stdin, prompt,"source_inc", &par_buf.source_inc );
-    IF_OK status += get_i(stdin, prompt,"n_sources", &par_buf.n_sources );
-    
-    /* Additional parameters for spectrum_multimom */
-    if(strstr(par_buf.spectrum_request,",spectrum_multimom,") != NULL){
-      IF_OK status += get_i(stdin, prompt,"spectrum_multimom_nmasses",
-			    &par_buf.spectrum_multimom_nmasses );
-      IF_OK status += get_f(stdin, prompt,"spectrum_multimom_low_mass",
-			    &par_buf.spectrum_multimom_low_mass );
-      IF_OK status += get_f(stdin, prompt,"spectrum_multimom_mass_step",
-			    &par_buf.spectrum_multimom_mass_step );
-    }
-    /* Additional parameters for fpi */
-    par_buf.fpi_nmasses = 0;
-    if(strstr(par_buf.spectrum_request,",fpi,") != NULL){
-      IF_OK status += get_i(stdin, prompt,"fpi_nmasses",
-			    &par_buf.fpi_nmasses );
-      if(par_buf.fpi_nmasses > MAX_FPI_NMASSES){
-	printf("Maximum of %d exceeded.\n",MAX_FPI_NMASSES);
-	terminate(1);
+	par_buf.qic_pbp[i].min = 0;
+	par_buf.qic_pbp[i].start_flag = 0;
+	par_buf.qic_pbp[i].nsrc = 1;
+	par_buf.qic_pbp[i].max = par_buf.qic_pbp[0].max;
+	par_buf.qic_pbp[i].nrestart = par_buf.qic_pbp[0].nrestart;
+	par_buf.qic_pbp[i].prec = par_buf.prec_pbp;
+	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &par_buf.qic_pbp[i].resid);
+	IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", &par_buf.qic_pbp[i].relresid );
       }
-      for(i = 0; i < par_buf.fpi_nmasses; i++){
-	IF_OK status += get_f(stdin, prompt,"fpi_mass",
-			      &par_buf.fpi_mass[i]);
-      }
-    }
-    
-#endif /*SPECTRUM*/
 
     /* find out what kind of starting lattice to use */
     IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
@@ -516,6 +450,8 @@ readin(int prompt)
     IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
 				  par_buf.stringLFN );
     
+    }
+
     if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(this_node==0) */
   
@@ -544,24 +480,9 @@ readin(int prompt)
     prec_gr[i] = par_buf.prec_gr[i];
   }
   prec_ff = par_buf.prec_ff;
-  npbp_reps_in = par_buf.npbp_reps_in;
-  prec_pbp = par_buf.prec_pbp;
   rsqprop = par_buf.rsqprop;
   epsilon = par_buf.epsilon;
   n_pseudo = par_buf.n_pseudo;
-#ifdef SPECTRUM
-  strcpy(spectrum_request,par_buf.spectrum_request);
-  source_start = par_buf.source_start;
-  source_inc = par_buf.source_inc;
-  n_sources = par_buf.n_sources;
-  spectrum_multimom_nmasses = par_buf.spectrum_multimom_nmasses;
-  spectrum_multimom_low_mass = par_buf.spectrum_multimom_low_mass;
-  spectrum_multimom_mass_step = par_buf.spectrum_multimom_mass_step;
-  fpi_nmasses = par_buf.fpi_nmasses;
-  for(i = 0; i < fpi_nmasses; i++){
-    fpi_mass[i] = par_buf.fpi_mass[i];
-  }
-#endif /*SPECTRUM*/
   startflag = par_buf.startflag;
   saveflag = par_buf.saveflag;
   strcpy(startfile,par_buf.startfile);
@@ -593,6 +514,20 @@ readin(int prompt)
 #endif /* HISQ_REUNITARIZATION_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 
+#if FERM_ACTION == HISQ
+  /* Add PBP quantities to the eps_naik table of unique Naik epsilon
+     coefficients .  Also build the hash table for mapping a mass term to
+     its Naik epsilon index */
+
+  /* Contribution from the chiral condensate epsilons */
+  for(i = 0; i < par_buf.num_pbp_masses; i++){
+    par_buf.ksp_pbp[i].naik_term_epsilon_index = 
+      fill_eps_naik(eps_naik, &n_naiks, 
+		    par_buf.ksp_pbp[i].naik_term_epsilon);
+  }
+
+#endif
+
   /* Do whatever is needed to get lattice */
   if( startflag == CONTINUE ){
     rephase( OFF );
@@ -600,19 +535,40 @@ readin(int prompt)
   if( startflag != CONTINUE )
     startlat_p = reload_lattice( startflag, startfile );
   /* if a lattice was read in, put in KS phases and AP boundary condition */
-#ifdef FN
-  invalidate_all_ferm_links(&fn_links);
-  invalidate_all_ferm_links(&fn_links_dmdu0);
-#endif
+
   phases_in = OFF;
   rephase( ON );
   
+  /* Copy gauge links from site structure to field */
+  /* (This is a transitional step.  As we upgrade the code, we will 
+     read/construct the lattice directly in the field and drop the
+     site structure */
+
+  /* Set options for fermion links */
+#ifdef DM_DU0
+  /* We want to calculate both the links and their u0 derivatives */
+  fermion_links_want_du0(1);
+#endif
+  
+#ifdef DBLSTORE_FN
+  /* We want to double-store the links for optimization */
+  fermion_links_want_back(1);
+#endif
+  
+#if FERM_ACTION == HISQ & defined(DM_DEPS)
+  /* We want to calculate both the links and their Naik eps
+     derivatives (HISQ only) */
+  fermion_links_want_deps(1);
+#endif
+  
+#if FERM_ACTION == HISQ
+  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+#else
+  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+#endif
+    
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
-  /* make tables of coefficients and permutations of paths in quark action */
-  init_path_table(&ks_act_paths);
-  init_path_table(&ks_act_paths_dmdu0);
-  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
   
   return(0);
 }
@@ -621,13 +577,10 @@ readin(int prompt)
    make_lattice() and  make_nn_gathers() must be called first, 
    preferably just before calling make_3n_gathers().
 */
-void 
-make_3n_gathers()
+static void 
+make_3n_gathers(void)
 {
   int i;
-#ifdef HAVE_QDP
-  int disp[4]={0,0,0,0};
-#endif
   
   for(i=XUP; i<=TUP; i++) {
     make_gather(third_neighbor, &i, WANT_INVERSE,
@@ -638,20 +591,12 @@ make_3n_gathers()
      so you can use X3UP, X3DOWN, etc. as argument in calling them. */
   
   sort_eight_gathers(X3UP);
-
-#ifdef HAVE_QDP
-  for(i=0; i<4; i++) {
-    disp[i] = 3;
-    neighbor3[i] = QDP_create_shift(disp);
-    disp[i] = 0;
-  }
-#endif
 }
 
 /* this routine uses only fundamental directions (XUP..TDOWN) as directions */
 /* returning the coords of the 3rd nearest neighbor in that direction */
 
-void 
+static void 
 third_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
 	       int *xp, int *yp, int *zp, int *tp)
      /* int x,y,z,t,*dirpt,FB;  coordinates of site, direction (eg XUP), and

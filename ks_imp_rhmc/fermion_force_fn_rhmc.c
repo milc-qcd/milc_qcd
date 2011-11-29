@@ -49,7 +49,7 @@ int find_backwards_gather( Q_path *path );
 int first_force=1;	// 1 if force hasn't been called yet
 
 void fn_fermion_force_rhmc( Real eps, Real *residues, su3_vector **multi_x, 
-			    int nterms, ferm_links_t *fn, ks_action_paths *ap )
+			    int nterms, ferm_links_t *fn )
 {
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
@@ -209,7 +209,7 @@ node0_printf("STARTING fn_fermion_force_rhmc() nterms = %d\n",nterms);
 // single index array
 void fn_fermion_force_rhmc_reverse( Real eps, Real *residues, 
 				    su3_vector **multi_x, int nterms,
-				    ferm_links_t *fn, ks_action_paths *ap )
+				    ferm_links_t *fn )
 {
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
@@ -396,7 +396,7 @@ node0_printf("STARTING fn_fermion_force_rhmc_reverse() nterms = %d\n",nterms);
 
 void fn_fermion_force_rhmc_june05( Real eps, Real *residues, 
 				   su3_vector **multi_x, int nterms,
-				   ferm_links_t *fn, ks_action_paths *ap )
+				   ferm_links_t *fn )
 {
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
@@ -780,4 +780,4 @@ Examples:
   action, this means that we have to have both paths
    +X+Y+Y and +Y+Y+X to the same point, with the same coefficients.
   Alternatively, we could just use the symmetric path +Y+X+Y.
-*/  /* fermion_force_general.c */
+*/  /* fermion_force_fn_rhmc.c */

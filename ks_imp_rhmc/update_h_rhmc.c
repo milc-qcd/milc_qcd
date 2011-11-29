@@ -12,10 +12,10 @@
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
-void update_h_rhmc( Real eps, su3_vector **multi_x ){
+int update_h_rhmc( Real eps, su3_vector **multi_x ){
+  int iters;
 #ifdef FN
-  free_fn_links(&fn_links);
-  free_fn_links(&fn_links_dmdu0);
+  invalidate_fermion_links(fn_links);
 #endif
   /*  node0_printf("update_h_rhmc:\n"); */
   /* gauge field force */
@@ -24,7 +24,8 @@ void update_h_rhmc( Real eps, su3_vector **multi_x ){
   rephase(ON);
   /* fermionic force */
   
-  update_h_fermion( eps,  multi_x );
+  iters = update_h_fermion( eps,  multi_x );
+  return iters;
 } /* update_h_rhmc */
 
 // gauge and fermion force parts separately, for algorithms that use
@@ -38,16 +39,15 @@ void update_h_gauge( Real eps ){
 } /* update_h_gauge */
 
 // fermion force update grouping pseudofermions with the same path coeffs
-void update_h_fermion( Real eps, su3_vector **multi_x ){
+int update_h_fermion( Real eps, su3_vector **multi_x ){
   int iphi,jphi;
   Real final_rsq;
-  int i,j;
+  int i,j,n;
   int order, tmporder;
   Real *residues,*allresidues;
   Real *roots;
-
-  //node0_printf("update_h_rhmc: EXPERIMENTAL force call\n");
-  //fflush(stdout);
+  int iters = 0;
+  imp_ferm_links_t **fn;
 
   /* Algorithm sketch: assemble multi_x with all |X> fields,
      then call force routine for each part (so far we have to parts:
@@ -59,12 +59,15 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
   // path coefficients.
   tmporder = 0;
   iphi = 0;
-  for( i=0; i<n_naiks; i++ ) {
-    for( jphi=0; jphi<n_pseudo_naik[i]; jphi++ ) {
-#ifdef HISQ
-      fn_links.hl.current_X_set = i; // which X set we need
+#if FERM_ACTION == HISQ
+  n = fermion_links_get_n_naiks(fn_links);
+#else
+  n = 1;
 #endif
-      load_ferm_links(&fn_links, &ks_act_paths);
+  for( i=0; i<n; i++ ) {
+    for( jphi=0; jphi<n_pseudo_naik[i]; jphi++ ) {
+      restore_fermion_links_from_site(fn_links, prec_md[iphi]);
+      fn = get_fm_links(fn_links);
 
       // Add the current pseudofermion to the current set
       order = rparam[iphi].MD.order;
@@ -75,13 +78,14 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
       // Then compute M*xxx in temporary vector xxx_odd 
       /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
-      ks_ratinv( F_OFFSET(phi[iphi]), multi_x+tmporder, roots, order, 
-	         niter_md[iphi], rsqmin_md[iphi], prec_md[iphi], EVEN, 
-	         &final_rsq, &fn_links );
+      iters += ks_ratinv( F_OFFSET(phi[iphi]), multi_x+tmporder, roots, order, 
+			  niter_md[iphi], rsqmin_md[iphi], prec_md[iphi], EVEN, 
+			  &final_rsq, fn[i], 
+			  i, rparam[iphi].naik_term_epsilon );
 
       for(j=0;j<order;j++){
 	dslash_field( multi_x[tmporder+j], multi_x[tmporder+j],  ODD,
-		      &fn_links);
+		      fn[i]);
 	allresidues[tmporder+j] = residues[j+1];
 	// remember that residues[0] is constant, no force contribution.
       }
@@ -92,17 +96,21 @@ void update_h_fermion( Real eps, su3_vector **multi_x ){
 
 #ifdef MILC_GLOBAL_DEBUG
   node0_printf("update_h_rhmc: MULTI_X ASSEMBLED\n");fflush(stdout);
-  node0_printf("update_h_rhmc: n_distinct_Naik=%d\n",n_naiks);
-  for(j=0;j<n_naiks;j++)
+  node0_printf("update_h_rhmc: n_distinct_Naik=%d\n",n);
+  for(j=0;j<n;j++)
     node0_printf("update_h_rhmc: orders[%d]=%d\n",j,n_orders_naik[j]);
-  for(j=0;j<n_naiks;j++)
-    node0_printf("update_h_rhmc: masses_Naik[%d]=%f\n",j,masses_naik[j]);
+#if FERM_ACTION == HISQ
+  for(j=0;j<n;j++)
+    node0_printf("update_h_rhmc: masses_Naik[%d]=%f\n",j,fn_links.hl.eps_naik[j]);
+#endif
   fflush(stdout);
 #endif /* MILC_GLOBAL_DEBUG */
 
+  restore_fermion_links_from_site(fn_links, prec_ff);
   eo_fermion_force_multi( eps, allresidues, multi_x,
-         n_order_naik_total, prec_ff, &fn_links, &ks_act_paths );
+			  n_order_naik_total, prec_ff, fn_links );
 
   free(allresidues);
+  return iters;
 } /* update_h_fermion */
 

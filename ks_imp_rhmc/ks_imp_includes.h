@@ -22,6 +22,7 @@
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
 #include "../include/dirs.h"
+#include "../include/fermion_links.h"
 
 #ifdef FN
 #define dslash_site dslash_fn_site
@@ -32,7 +33,14 @@
 #define dslash_field dslash_eo_field
 #endif
 
+
 /* prototypes for functions in this directory */
+
+/* eo_fermion_force_rhmc.c */
+void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf, 
+			    su3_vector **multi_x, field_offset phi_off,
+			    Real my_rsqmin, int niter, int cg_prec,
+			    int ff_prec, fermion_links_t *fl );
 
 /* setup.c */
 int setup(void);
@@ -54,9 +62,9 @@ const char *ks_int_alg_opt_chr( void );
 
 /* update_h_rhmc.c */
 
-void update_h_rhmc( Real eps, su3_vector **multi_x );
+int update_h_rhmc( Real eps, su3_vector **multi_x );
 void update_h_gauge( Real eps );
-void update_h_fermion( Real eps, su3_vector **multi_x );
+int update_h_fermion( Real eps, su3_vector **multi_x );
 void update_u( Real eps );
 
 /* grsource_rhmc.c */
@@ -64,29 +72,25 @@ void update_u( Real eps );
 void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
 			int parity, su3_vector **multi_x, su3_vector *sumvec,
 			Real my_rsqmin, int my_niter, int my_prec,
-			ferm_links_t *fn);
+			imp_ferm_links_t *fn, int naik_term_epsilon_index,
+			Real naik_term_epsilon);
 
-/* fermion_force_asqtad3_rhmc.c */
-
-void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf, 
-			    su3_vector **multi_x, field_offset phi_off,
-			    Real my_rsqmin, int niter, int cg_prec,
-			    int ff_prec, ferm_links_t *fn,
-			    ks_action_paths *ap );
 /* ks_ratinv.c */
 
 int ks_ratinv(	/* Return value is number of iterations taken */
-    field_offset src,   /* source vector (type su3_vector) */
-    su3_vector **psim,  /* solution vectors */
-    Real *roots,        /* the roots */
-    int order,          /* order of rational function approx */
-    int niter,          /* maximal number of CG interations */
-    Real rsqmin,        /* desired residue squared */
+    field_offset src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    Real *roots,	/* the roots */
+    int order,		/* order of rational function approx */
+    int my_niter,	/* maximal number of CG interations */
+    Real rsqmin,	/* desired residue squared */
     int prec,           /* desired intermediate precicion */
-    int parity,         /* parity to be worked on */
-    Real *final_rsq_ptr, /* final residue squared */
-    ferm_links_t *fn      /* Fermion links */
-    );
+    int parity,		/* parity to be worked on */
+    Real *final_rsq_ptr,/* final residue squared */
+    imp_ferm_links_t *fn,     /* Fermion links */
+    int naik_term_epsilon_index, /* Index of naik term common to this set */
+    Real naik_term_epsilon /* Epsilon common to this set */
+		);
 
 int ks_rateval(
     su3_vector *dest,   /* answer vector */

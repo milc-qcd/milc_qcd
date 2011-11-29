@@ -112,7 +112,7 @@ params_rhmc *load_rhmc_params(char filename[], int n_pseudo)
     /* Read the number of pseudofermion fields and check */
     my_n_pseudo = 0;
     IF_OK status += get_i(fp,prompt,"n_pseudo",&my_n_pseudo);
-    if(my_n_pseudo != n_pseudo){
+    IF_OK if(my_n_pseudo != n_pseudo){
       printf("%s: Wrong value of n_pseudo.  Expected %d\n",myname,n_pseudo);
       status += 1;
     }
