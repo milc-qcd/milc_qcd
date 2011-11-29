@@ -12,20 +12,20 @@ job_id 203696.kaon2.fnal.gov
 LAYOUT = Hypercubes, options = QDP
 ON EACH NODE 4 x 4 x 4 x 8
 Mallocing 4.5 MBytes per node for lattice
-reload_serial ../binary_samples/lat.sample.l4448.ll
+reload_serial ../../binary_samples/lat.sample.l4448.ll
 forget 
 number_of_kappas 1
-reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
 kappa 0.124
 source_label 1S
 d1 0.09073
 number_of_smearings 1
 sink_label 1S
-smear_func_file ../binary_samples/smear_fm.sample.l4448.ll
-reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+smear_func_file ../../binary_samples/smear_fm.sample.l4448.ll
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
 mass 0.1
 save_corr_fnal out.test.fnal_corr.2
-Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4448.ll
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448.ll
 Time stamp Wed Oct  6 15:15:02 2004
 Checksums 13a3f454 a37174ec OK
 Time to reload gauge configuration = 1.558065e-03
@@ -42,7 +42,7 @@ quark.t[4].checksum  "2b2f460d f3da5621"
 quark.t[5].checksum  "d23f979 fa0caf1a"
 quark.t[6].checksum  "26f72465 c1afedc7"
 quark.t[7].checksum  "49fda91c 43d489fe"
-Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
+Read KS prop serially from file ../../binary_samples/ksprop_fm.sample.l4448.ll
 Computed 49fda91c 43d489fe.  Read 0 0.
 Time to reload ksprop = 7.579327e-04
 Reading as a Fermilab Wilson prop file
@@ -54,7 +54,7 @@ quark.t[4].checksum  "d2a13ba2 2daf8c59"
 quark.t[5].checksum  "4720052d 65bfc73d"
 quark.t[6].checksum  "90dc8731 1bcbbc90"
 quark.t[7].checksum  "637519f8 3bf07bbe"
-Read wprop serially from file ../binary_samples/wprop_fm.sample.l4448.ll
+Read wprop serially from file ../../binary_samples/wprop_fm.sample.l4448.ll
 Time to reload wprop 1.029801e-02
 BEGIN
 
@@ -898,7 +898,7 @@ _________________________________
 6 3.780143e-02 2.114854e-03
 7 -6.481958e-01 1.024316e-02
 Reading without byte reversal
-Restored smearing function from binary file  ../binary_samples/smear_fm.sample.l4448.ll
+Restored smearing function from binary file  ../../binary_samples/smear_fm.sample.l4448.ll
 
 
 SMEAR_#1, pi p000_k_0.124000

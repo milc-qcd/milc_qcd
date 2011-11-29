@@ -42,7 +42,11 @@ MY_OBJECTS = \
 G_OBJECTS =         \
   check_unitarity.o  \
   d_plaq4.o          \
+  discretize_wf.o    \
+  field_translation.o \
+  field_utilities.o \
   gaugefix2.o        \
+  gauge_utilities.o  \
   io_detect.o        \
   io_helpers.o       \
   io_lat4.o          \
@@ -68,7 +72,6 @@ endif
 G_WILSON_OBJECTS =    \
   ape_smear.o         \
   dirac_utilities.o   \
-  discretize_wf.o     \
   dslash_w_space.o    \
   gammas.o            \
   gauss_smear_w.o     \
@@ -89,6 +92,8 @@ G_KS_OBJECTS = \
   d_congrad5.o \
   d_congrad_opt.o \
   dslash.o \
+  flavor_ops2.o      \
+  gauss_smear_ks.o  \
   io_helpers_ks.o \
   io_prop_ks.o \
   io_prop_ks_fm.o   \

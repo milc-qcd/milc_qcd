@@ -1,0 +1,32 @@
+exec ks_hl_spectrum 1 "WANTQIO=true" - BEGIN RUNNING
+  extra-output fnal_corr.1
+exec ks_hl_baryon   1 "WANTQIO=true" - BEGIN RUNNING
+  extra-output O5_ll.m0.010000.1             0 --
+  extra-output O5_ll.m0.020000.1	     0 --
+  extra-output O5_ls.m0.010000.s0.050000.1   0 --
+  extra-output O5_ls.m0.020000.s0.050000.1   0 --
+  extra-output Omu_lHH.m0.010000.1	     0 --
+  extra-output Omu_lHH.m0.020000.1	     0 --
+  extra-output Omu_ll.m0.010000.1	     0 --
+  extra-output Omu_ll.m0.020000.1	     0 --
+  extra-output Omu_ls.m0.010000.s0.050000.1  0 --
+  extra-output Omu_ls.m0.020000.s0.050000.1  0 --
+  extra-output Omu_sHH.s0.050000.1	     0 --
+  extra-output Omu_ss.s0.050000.1            0 --
+
+exec ks_hl_spectrum 2 "WANTQIO=true" - BEGIN RUNNING
+  extra-output fnal_corr.2
+exec ks_hl_baryon   2 "WANTQIO=true" - BEGIN RUNNING
+  extra-output O5_ll.m0.010000.2             0 --
+  extra-output O5_ll.m0.020000.2	     0 --
+  extra-output O5_ls.m0.010000.s0.050000.2   0 --
+  extra-output O5_ls.m0.020000.s0.050000.2   0 --
+  extra-output Omu_lHH.m0.010000.2	     0 --
+  extra-output Omu_lHH.m0.020000.2	     0 --
+  extra-output Omu_ll.m0.010000.2	     0 --
+  extra-output Omu_ll.m0.020000.2	     0 --
+  extra-output Omu_ls.m0.010000.s0.050000.2  0 --
+  extra-output Omu_ls.m0.020000.s0.050000.2  0 --
+  extra-output Omu_sHH.s0.050000.2	     0 --
+  extra-output Omu_ss.s0.050000.2            0 --
+

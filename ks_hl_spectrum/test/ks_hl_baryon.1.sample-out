@@ -1,7 +1,7 @@
 Baryon spectroscpy with Kogut-Susskind light fermions and Wilson heavy quarks
 MIMD version 6
 Machine = QMP (portable), with 1 nodes
-start: Sat Mar 29 09:33:59 2008
+start: Sat Mar 29 08:56:46 2008
 
 type 0 for no prompts  or 1 for prompts
 nx 4
@@ -10,17 +10,17 @@ nz 4
 nt 8
 LAYOUT = Hypercubes, options = hyper_prime,
 ON EACH NODE 4 x 4 x 4 x 8
-Mallocing 4.6 MBytes per node for lattice
+Mallocing 2.3 MBytes per node for lattice
 number_of_kappas 1
-reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
 kappa 0.124
 number_of_light 2
-reload_serial_ksprop ../binary_samples/ks.sample.l4448_m0.0100_t0_x0_y0_z0
+reload_serial_ksprop ../../binary_samples/ks.sample.l4448_m0.0100_t0_x0_y0_z0
 m_light 0.01
-reload_serial_ksprop ../binary_samples/ks.sample.l4448_m0.0200_t0_x0_y0_z0
+reload_serial_ksprop ../../binary_samples/ks.sample.l4448_m0.0200_t0_x0_y0_z0
 m_light 0.02
 number_of_strange 1
-reload_serial_ksprop ../binary_samples/ks.sample.l4448_m0.0500_t0_x0_y0_z0
+reload_serial_ksprop ../../binary_samples/ks.sample.l4448_m0.0500_t0_x0_y0_z0
 m_strange 0.05
 BEGIN
 quark.t[0].checksum  "7e685bd9 759261a0"
@@ -31,18 +31,18 @@ quark.t[4].checksum  "d2a13ba2 2daf8c59"
 quark.t[5].checksum  "4720052d 65bfc73d"
 quark.t[6].checksum  "90dc8731 1bcbbc90"
 quark.t[7].checksum  "637519f8 3bf07bbe"
-Time to reload wprop spin 0 color 0 1.709461e-04
-Time to reload wprop spin 1 color 0 1.430511e-04
-Time to reload wprop spin 2 color 0 7.081032e-05
-Time to reload wprop spin 3 color 0 7.390976e-05
-Time to reload wprop spin 0 color 1 7.700920e-05
-Time to reload wprop spin 1 color 1 7.486343e-05
-Time to reload wprop spin 2 color 1 7.009506e-05
-Time to reload wprop spin 3 color 1 7.295609e-05
-Time to reload wprop spin 0 color 2 7.390976e-05
-Time to reload wprop spin 1 color 2 7.009506e-05
-Time to reload wprop spin 2 color 2 7.104874e-05
-Time to reload wprop spin 3 color 2 7.200241e-05
+Time to reload wprop spin 0 color 0 6.914139e-05
+Time to reload wprop spin 1 color 0 4.100800e-05
+Time to reload wprop spin 2 color 0 3.719330e-05
+Time to reload wprop spin 3 color 0 4.196167e-05
+Time to reload wprop spin 0 color 1 3.695488e-05
+Time to reload wprop spin 1 color 1 4.482269e-05
+Time to reload wprop spin 2 color 1 3.790855e-05
+Time to reload wprop spin 3 color 1 4.601479e-05
+Time to reload wprop spin 0 color 2 3.790855e-05
+Time to reload wprop spin 1 color 2 4.506111e-05
+Time to reload wprop spin 2 color 2 3.600121e-05
+Time to reload wprop spin 3 color 2 4.315376e-05
 quark.t[0].checksum  "dade0574 27fd0cd7"
 quark.t[1].checksum  "ea6161dd 24cce9ee"
 quark.t[2].checksum  "289e597c 91446872"
@@ -51,11 +51,11 @@ quark.t[4].checksum  "4031399f 7fd7df17"
 quark.t[5].checksum  "2eab4683 baacfe9b"
 quark.t[6].checksum  "617c9598 833517cc"
 quark.t[7].checksum  "72e3ea59 547f6f27"
-Read KS prop serially from file ../binary_samples/ks.sample.l4448_m0.0500_t0_x0_y0_z0
+Read KS prop serially from file ../../binary_samples/ks.sample.l4448_m0.0500_t0_x0_y0_z0
 Computed checksum 72e3ea59 547f6f27.  Read 0 0.
-Time to reload ksprop color 0 1.215935e-05
-Time to reload ksprop color 1 1.215935e-05
-Time to reload ksprop color 2 1.192093e-05
+Time to reload ksprop color 0 7.867813e-06
+Time to reload ksprop color 1 7.152557e-06
+Time to reload ksprop color 2 7.152557e-06
 quark.t[0].checksum  "8ec1b406 b934ad55"
 quark.t[1].checksum  "13708b6c 44907025"
 quark.t[2].checksum  "701baabe 484665d2"
@@ -64,11 +64,11 @@ quark.t[4].checksum  "dec3cfaa 287649be"
 quark.t[5].checksum  "fbc85a30 49fb9b51"
 quark.t[6].checksum  "c8d4407f dc7d77"
 quark.t[7].checksum  "37d1bfd6 63d0943d"
-Read KS prop serially from file ../binary_samples/ks.sample.l4448_m0.0100_t0_x0_y0_z0
+Read KS prop serially from file ../../binary_samples/ks.sample.l4448_m0.0100_t0_x0_y0_z0
 Computed checksum 37d1bfd6 63d0943d.  Read 0 0.
-Time to reload ksprop color 0 1.096725e-05
-Time to reload ksprop color 1 1.215935e-05
-Time to reload ksprop color 2 1.096725e-05
+Time to reload ksprop color 0 8.106232e-06
+Time to reload ksprop color 1 6.914139e-06
+Time to reload ksprop color 2 6.914139e-06
 
 
 2Pt O5_ll m0.010000 
@@ -97,7 +97,7 @@ quark.t[4].checksum  "40067001 bbe821cd"
 quark.t[5].checksum  "dbd4ded1 9953bd72"
 quark.t[6].checksum  "e423a80f 7f0b6a63"
 quark.t[7].checksum  "1c99d6c9 ad7d140e"
-Read KS prop serially from file ../binary_samples/ks.sample.l4448_m0.0200_t0_x0_y0_z0
+Read KS prop serially from file ../../binary_samples/ks.sample.l4448_m0.0200_t0_x0_y0_z0
 Computed checksum 1c99d6c9 ad7d140e.  Read 0 0.
 Time to reload ksprop color 0 9.059906e-06
 Time to reload ksprop color 1 8.106232e-06
@@ -133,5 +133,5 @@ _________________________________
 get_i(0): EOF on input.
 
 RUNNING COMPLETED
-exit: Sat Mar 29 09:33:59 2008
+exit: Sat Mar 29 08:56:46 2008
 

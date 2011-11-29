@@ -1,0 +1,26 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+job_id 203696.kaon2.fnal.gov
+
+reload_serial ../../binary_samples/lat.sample.l4448.ll
+forget
+
+number_of_kappas 1
+
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
+kappa 0.124
+source_label 1S
+d1 0.09073
+
+number_of_smearings 1
+sink_label 1S
+smear_func_file  ../../binary_samples/smear_fm.sample.l4448.ll
+
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
+mass 0.1
+
+save_corr_fnal fnal_corr.2.test-out
+log_correlators 1

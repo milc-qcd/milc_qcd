@@ -27,7 +27,7 @@ int main(int argc,char *argv[])
 
   wilson_vector *psi = NULL;
   w_prop_file *wpf;
-  wilson_quark_source wqs;
+  quark_source wqs;
   
   key[XUP] = 1;
   key[YUP] = 1;
@@ -35,9 +35,7 @@ int main(int argc,char *argv[])
   key[TUP] = 0;
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
@@ -48,7 +46,7 @@ int main(int argc,char *argv[])
   psi = create_wv_field();
 
   /* Initialize the source type */
-  init_wqs(&wqs);
+  init_qs(&wqs);
 
   while( readin(prompt) == 0){
     
@@ -187,10 +185,6 @@ int main(int argc,char *argv[])
   destroy_wv_field(psi);
   node0_printf("\nRUNNING COMPLETED\n"); fflush(stdout);
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
-  
   normal_exit(0);
   return 0;
 }

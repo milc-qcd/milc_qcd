@@ -33,6 +33,7 @@ int main(int argc,char *argv[])
   double starttime;
   site *s;
   double space_vol;
+  int prec = PRECISION;  /* For file names */
   
   int t, color, spin, spin1;
 
@@ -43,14 +44,11 @@ int main(int argc,char *argv[])
   /* propagators for O5, and Omu type operators */
   double_complex *(prop_5[4][4]), *(prop_mu[4][4][3][3]);
   
-  ks_quark_source ksqs, ksqs2;
-  wilson_quark_source wqs;
-  ks_prop_field ksp;
+  quark_source ksqs, ksqs2;
+  quark_source wqs;
+  ks_prop_field *ksp;
   
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
@@ -59,9 +57,9 @@ int main(int argc,char *argv[])
   space_vol = (double)(nx*ny*nz);
 
   /* Initialize the source structures */
-  init_wqs(&wqs);
-  init_ksqs(&ksqs);
-  init_ksqs(&ksqs2);
+  init_qs(&wqs);
+  init_qs(&ksqs);
+  init_qs(&ksqs2);
 
   while( readin(prompt) == 0){
     
@@ -111,14 +109,14 @@ int main(int argc,char *argv[])
       for(strange=0; strange<num_strange; strange++){
 	
 	/* Staggered strange quark (stag_strange_propagator) */
-	ksp = create_ksp_field();
+	ksp = create_ksp_field(3);
 	reload_ksprop_to_ksp_field(start_ks_strange_flag[strange], 
 				   start_ks_strange_file[strange], &ksqs, 
 				   ksp, 1);
 	FORALLSITES(i,s){
 	  for(color = 0; color < 3; color++)
 	    for(k = 0; k < 3; k++)
-	      s->stag_strange_propagator.e[color][k] = ksp[color][i].c[k];
+	      s->stag_strange_propagator.e[color][k] = ksp->v[color][i].c[k];
 	}
 	
 	destroy_ksp_field(ksp);
@@ -126,14 +124,14 @@ int main(int argc,char *argv[])
 	for(light=0; light<num_light; light++){
 
 	  /* Staggered light quark (stag_light_propagator) */
-	  ksp = create_ksp_field();
+	  ksp = create_ksp_field(3);
 	  reload_ksprop_to_ksp_field(start_ks_light_flag[light], 
 				     start_ks_light_file[light], &ksqs, 
 				     ksp, 1);
 	  FORALLSITES(i,s){
 	    for(color = 0; color < 3; color++)
 	      for(k = 0; k < 3; k++)
-		s->stag_light_propagator.e[color][k] = ksp[color][i].c[k];
+		s->stag_light_propagator.e[color][k] = ksp->v[color][i].c[k];
 	  }
 	  
 	  destroy_ksp_field(ksp);
@@ -159,7 +157,7 @@ int main(int argc,char *argv[])
 	    printf("\n\n2Pt O5_ll m%f \n_________________________________\n", 
 		   m_light[light]);
 	    /*make name of file and open it*/
-	    sprintf(fname,"O5_ll.m%f.out",m_light[light]);
+	    sprintf(fname,"O5_ll.m%f.%1d.out",m_light[light],prec);
 	    fp_out = fopen(fname,"w");
 	  }
 
@@ -202,7 +200,7 @@ int main(int argc,char *argv[])
 	    printf("\n\n2Pt Omu_ll m%f \n_________________________________\n", 
 		   m_light[light]);
 	    /*make name of file and open it*/
-	    sprintf(fname,"Omu_ll.m%f.out",m_light[light]);
+	    sprintf(fname,"Omu_ll.m%f.%1d.out",m_light[light],prec);
 	    fp_out = fopen(fname,"w");
 	  }
 	  for(t=0;t<nt;t++)
@@ -249,7 +247,7 @@ int main(int argc,char *argv[])
 	    printf("\n\n2Pt Omu_lHH m%f \n_________________________________\n", 
 		   m_light[light]);
 	    /*make name of file and open it*/
-	    sprintf(fname,"Omu_lHH.m%f.out",m_light[light]);
+	    sprintf(fname,"Omu_lHH.m%f.%1d.out",m_light[light],prec);
 	    fp_out = fopen(fname,"w");
 	  }
 	  for(t=0;t<nt;t++)
@@ -307,7 +305,7 @@ int main(int argc,char *argv[])
 	    printf("\n\n2Pt O5_ls m%f  s%f \n_________________________________\n", 
 		   m_light[light], m_strange[strange]);
 	    /*make name of file and open it*/
-	    sprintf(fname,"O5_ls.m%f.s%f.out",m_light[light],m_strange[strange]);
+	    sprintf(fname,"O5_ls.m%f.s%f.%1d.out",m_light[light],m_strange[strange],prec);
 	    fp_out = fopen(fname,"w");
 	  }
 	  for(t=0;t<nt;t++)
@@ -349,7 +347,7 @@ int main(int argc,char *argv[])
 	    printf("\n\n2Pt Omu_ls m%f  s%f \n_________________________________\n", 
 		   m_light[light], m_strange[strange]);
 	    /*make name of file and open it*/
-	    sprintf(fname,"Omu_ls.m%f.s%f.out",m_light[light],m_strange[strange]);
+	    sprintf(fname,"Omu_ls.m%f.s%f.%1d.out",m_light[light],m_strange[strange],prec);
 	    fp_out = fopen(fname,"w");
 	  }
 	  for(t=0;t<nt;t++)
@@ -406,7 +404,7 @@ int main(int argc,char *argv[])
 	  printf("\n\n2Pt Omu_ss s%f \n_________________________________\n", 
 		 m_strange[strange]);
 	  /*make name of file and open it*/
-	  sprintf(fname,"Omu_ss.s%f.out",m_strange[strange]);
+	  sprintf(fname,"Omu_ss.s%f.%1d.out",m_strange[strange],prec);
 	  fp_out = fopen(fname,"w");
 	}
 	for(t=0;t<nt;t++)
@@ -454,7 +452,7 @@ int main(int argc,char *argv[])
 	  printf("\n\n2Pt Omu_sHH s%f \n_________________________________\n", 
 		 m_strange[strange]);
 	  /*make name of file and open it*/
-	  sprintf(fname,"Omu_sHH.s%f.out",m_strange[strange]);
+	  sprintf(fname,"Omu_sHH.s%f.%1d.out",m_strange[strange],prec);
 	  fp_out = fopen(fname,"w");
 	}
 	for(t=0;t<nt;t++)
@@ -499,10 +497,6 @@ int main(int argc,char *argv[])
 
   node0_printf("\nRUNNING COMPLETED\n"); fflush(stdout);
 
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
-  
   normal_exit(0);
   return 0;
 }

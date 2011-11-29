@@ -1,0 +1,19 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+number_of_kappas 1
+reload_serial_wprop  ../../binary_samples/wprop_fm.sample.l4448.ll
+kappa 0.124
+
+number_of_light 2
+reload_serial_ksprop  ../../binary_samples/ks.sample.l4448_m0.0100_t0_x0_y0_z0
+m_light 0.01
+
+reload_serial_ksprop  ../../binary_samples/ks.sample.l4448_m0.0200_t0_x0_y0_z0
+m_light 0.02
+
+number_of_strange 1
+reload_serial_ksprop   ../../binary_samples/ks.sample.l4448_m0.0500_t0_x0_y0_z0 
+m_strange 0.05

@@ -13,15 +13,15 @@ ON EACH NODE 4 x 4 x 4 x 8
 Mallocing 2.3 MBytes per node for lattice
 # heavy quark propagators
 number_of_kappas 1
-reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
 kappa 0.124
 # light quark propagators
 number_of_light 1
-reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
 m_light 0.1
 # strange quark propagators
 number_of_strange 1
-reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
 m_strange 0.1
 BEGIN
 quark.t[0].checksum  "7e685bd9 759261a0"
@@ -52,7 +52,7 @@ quark.t[4].checksum  "2b2f460d f3da5621"
 quark.t[5].checksum  "d23f979 fa0caf1a"
 quark.t[6].checksum  "26f72465 c1afedc7"
 quark.t[7].checksum  "49fda91c 43d489fe"
-Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
+Read KS prop serially from file ../../binary_samples/ksprop_fm.sample.l4448.ll
 Computed checksum 49fda91c 43d489fe.  Read 0 0.
 Time to reload ksprop color 0 8.106232e-06
 Time to reload ksprop color 1 6.914139e-06
@@ -65,7 +65,7 @@ quark.t[4].checksum  "2b2f460d f3da5621"
 quark.t[5].checksum  "d23f979 fa0caf1a"
 quark.t[6].checksum  "26f72465 c1afedc7"
 quark.t[7].checksum  "49fda91c 43d489fe"
-Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
+Read KS prop serially from file ../../binary_samples/ksprop_fm.sample.l4448.ll
 Computed checksum 49fda91c 43d489fe.  Read 0 0.
 Time to reload ksprop color 0 6.914139e-06
 Time to reload ksprop color 1 7.152557e-06
