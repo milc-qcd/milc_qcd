@@ -57,6 +57,7 @@
    get_field()           receives a field from some other node.
    dclock()              returns a double precision time, with arbitrary zero
    time_stamp()          print wall clock time with message
+   get_utc_datetime()    get GM time as ASCII string
    sort_eight_gathers()  sorts eight contiguous gathers from order
                            XUP,XDOWN,YUP,YDOWN... to XUP,YUP,...XDOWN,YDOWN...
    make_nn_gathers()     makes all necessary lists for communications with
@@ -96,6 +97,12 @@
 			     received data.
    cleanup_general_gather()  frees all the buffers that were allocated, WHICH
                                MEANS THAT THE GATHERED DATA MAY SOON DISAPPEAR.
+   myjobid()                 The index number of this job
+   numjobs()                 Number of jobs in multijob execution
+   jobgeom()                 Dimensions of the multijob layout.  Product = numjobs
+   ionodegeom()              Dimensions of the I/O partition layout.  Product =
+                              number of files.
+   nodegeom()                Allocated dimensions of the nodes.
 
 */
 
@@ -217,6 +224,54 @@ int
 numnodes(void)
 {
   return(1);
+}
+
+/*
+**  Return my jobid
+*/
+int
+myjobid(void)
+{
+  return 0;
+}
+
+/*
+**  Return number of jobs
+*/
+int
+numjobs(void)
+{
+  return 1;
+}
+
+/*
+** Return the job geometry
+*/
+int *
+jobgeom(void)
+{
+  static int ones[4] = {1,1,1,1};
+  return ones;
+}
+
+/*
+** Return the ionode geometry
+*/
+int *
+ionodegeom(void)
+{
+  static int ones[4] = {1,1,1,1};
+  return ones;
+}
+
+/*
+** Return the allocated dimensions (node geometry) if a grid is being used
+*/
+const int *
+nodegeom(void)
+{
+  static int ones[4] = {1,1,1,1};
+  return ones;
 }
 
 /*
@@ -473,6 +528,25 @@ time_stamp(char *msg)
   time(&time_stamp);
   printf("%s: %s\n", msg, ctime(&time_stamp));
   fflush(stdout);
+}
+
+/*
+** UTC time as ASCII string
+*/
+
+void 
+get_utc_datetime(char *time_string)
+{
+  time_t time_stamp;
+  struct tm *gmtime_stamp;
+
+  time(&time_stamp);
+  gmtime_stamp = gmtime(&time_stamp);
+  strncpy(time_string,asctime(gmtime_stamp),64);
+  
+  /* Remove trailing end-of-line character */
+  if(time_string[strlen(time_string) - 1] == '\n')
+    time_string[strlen(time_string) - 1] = '\0';
 }
 
 

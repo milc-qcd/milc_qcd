@@ -34,6 +34,7 @@
    numnodes()            returns number of nodes
    g_sync()              provides a synchronization point for all nodes.
    g_floatsum()          sums a floating point number over all nodes.
+   g_intsum()            sums an integer over all nodes
    g_vecfloatsum()       sums a vector of floats over all nodes 
    g_doublesum()         sums a double over all nodes.
    g_vecdoublesum()      sums a vector of doubles over all nodes.
@@ -58,6 +59,7 @@
    get_field()           receives a field from some other node.
    dclock()              returns a double precision time, with arbitrary zero
    time_stamp()          print wall clock time with message
+   get_utc_datetime()    get GM time as ASCII string
    sort_eight_gathers()  sorts eight contiguous gathers from order
                            XUP,XDOWN,YUP,YDOWN... to XUP,YUP,...XDOWN,YDOWN...
    make_nn_gathers()     makes all necessary lists for communications with
@@ -97,12 +99,19 @@
 			     received data.
    cleanup_general_gather()  frees all the buffers that were allocated, WHICH
                                MEANS THAT THE GATHERED DATA MAY SOON DISAPPEAR.
+   myjobid()                 The index number of this job
+   numjobs()                 Number of jobs in multijob execution
+   jobgeom()                 Dimensions of the multijob layout.  Product = numjobs
+   ionodegeom()              Dimensions of the I/O partition layout.  Product =
+                              number of files.
+   nodegeom()                Allocated dimensions of the nodes.
 
 */
 
 #include <time.h>
 #include <qmp.h>
 #include "generic_includes.h"
+#include <ctype.h>
 #include "../include/config.h"
 
 #define NOWHERE -1	/* Not an index in array of fields */
@@ -258,6 +267,107 @@ static int n_gathers, gather_array_len;
 static size_t mem_align=QMP_ALIGN_DEFAULT;
 static int mem_flags=(QMP_MEM_COMMS);
 
+static int *ionodegeomvals = NULL;
+
+/**********************************************************************
+ *               MISCELLANEOUS UTILITY FUNCTIONS                      *
+ **********************************************************************/
+
+static void
+get_arg(int argc, char **argv, char *tag, int *first, int *last,
+	char **c, int **a)
+{
+  int i;
+  *first = -1;
+  *last = -1;
+  *c = NULL;
+  *a = NULL;
+  for(i=1; i<argc; i++) {
+    if(strcmp(argv[i], tag)==0) {
+      *first = i;
+      //printf("%i %i\n", i, argc);
+      if( ((i+1)<argc) && !(isdigit(argv[i+1][0])) ) {
+	//printf("c %i %s\n", i+1, argv[i+1]);
+	*c = argv[i+1];
+	*last = i+1;
+      } else {
+	//printf("a %i %s\n", i+1, argv[i+1]);
+	while( (++i<argc) && isdigit(argv[i][0]) );
+	*last = i-1;
+	int n = *last - *first;
+	if(n) {
+	  int j;
+	  *a = (int *) malloc(n*sizeof(int));
+	  //printf("%i %p\n", n, *a);
+	  for(j=0; j<n; j++) {
+	    (*a)[j] = atoi(argv[*first+1+j]);
+	    //printf(" %i", (*a)[j]);
+	  }
+	  //printf("\n");
+	}
+      }
+    }
+  }
+}
+
+static void
+remove_from_args(int *argc, char ***argv, int first, int last)
+{
+  int n = last - first;
+  if(first>=0) {
+    int i;
+    for(i=last+1; i<*argc; i++) (*argv)[i-n-1] = (*argv)[i];
+    *argc -= n + 1;
+  }
+}
+
+static void
+process_ionodes_flag(int *argc, char ***argv){
+  int nio;
+  int first, last, *a = NULL;
+  char *c = NULL;
+  char myname[] = "process_ionodes_flag";
+
+  /* process -ionodes a[0] a[1] a[2] a[3] flag */
+  /* This option allows the allocated machine to be subdivided into
+     independent I/O partitions for QIO partfile format.  This option
+     requires a defined mesh topology (usually through the -qmp-geom
+     option) */
+
+  /* The integer a[i] specifies the number of divisions of the ith
+     geom dimension */
+  /* The default a[i] = 1 for all i implies no subdivision */
+
+  get_arg(*argc, *argv, "-ionodes", &first, &last, &c, &a);
+  if( c ) {
+    printf("%s: unknown argument to -ionodes: %s\n", myname, c);
+    terminate(1);
+  }
+  nio = last - first;
+  if(nio) {
+    int i;
+    ionodegeomvals = a;
+    /* Check sanity of job partition divisions */
+    if(nodegeom() == NULL){
+      fprintf(stderr, "-ionodes requires -qmp-geom\n");
+      terminate(1);
+    }
+    if(nio!=4) {
+      printf("%s: allocated number dimensions %d != ionode dimensions %d\n", 
+	     myname, 4, nio);
+      terminate(1);
+    }
+    for(i=0; i<nio; i++){
+      if(ionodegeomvals[i]<=0){
+	printf("%s: ionode division[%i] = %d <= 0\n", myname,
+	       i, ionodegeomvals[i]);
+      }
+    }
+  }
+
+  remove_from_args(argc, argv, first, last);
+}
+
 /**********************************************************************
  *                BASIC COMMUNICATIONS FUNCTIONS                      *
  **********************************************************************/
@@ -279,24 +389,6 @@ initialize_machine(int *argc, char ***argv)
     exit(i);
   }
 
-  /* This section needed until QMP is fixed so we don't have to call
-     QMP_declare_logical_topology */
-#if 0
-  /* we do our own layout but we have to pass QMP something to make it happy */
-  //  if(QMP_get_msg_passing_type()==QMP_GRID) 
-  if(0)
-    {
-      QMP_declare_logical_topology(QMP_get_allocated_dimensions(),
-				   QMP_get_allocated_number_of_dimensions());
-    } 
-  else 
-    { /* switch */
-      int nodes;
-      nodes = QMP_get_number_of_nodes();
-      QMP_declare_logical_topology(&nodes, 1);
-    }
-#endif
-
   /* check if 32 bit int is set correctly */
 #ifdef SHORT_IS_32BIT
   if(sizeof(unsigned short)!=4) {
@@ -311,6 +403,8 @@ initialize_machine(int *argc, char ***argv)
     terminate(1);
   }
 #endif
+
+  process_ionodes_flag(argc, argv);
 
 #if 0
   num_gather_ids = 257 - GATHER_BASE_ID;
@@ -342,6 +436,25 @@ normal_exit(int status)
 }
 
 /*
+** UTC time as ASCII string
+*/
+
+void 
+get_utc_datetime(char *time_string)
+{
+  time_t time_stamp;
+  struct tm *gmtime_stamp;
+
+  time(&time_stamp);
+  gmtime_stamp = gmtime(&time_stamp);
+  strncpy(time_string,asctime(gmtime_stamp),64);
+  
+  /* Remove trailing end-of-line character */
+  if(time_string[strlen(time_string) - 1] == '\n')
+    time_string[strlen(time_string) - 1] = '\0';
+}
+
+/*
 **  version of exit for multinode processes -- kill all nodes
 */
 void
@@ -350,6 +463,7 @@ terminate(int status)
   time_stamp("termination");
   printf("Termination: node %d, status = %d\n", this_node, status);
   fflush(stdout);
+  g_sync();   /* Added for multijob operation. Is this desirable? */
   exit(status);
 }
 
@@ -379,6 +493,51 @@ int
 numnodes(void)
 {
   return QMP_get_number_of_nodes();
+}
+
+/*
+**  Return my jobid
+*/
+int
+myjobid(void)
+{
+  return QMP_get_job_number();
+}
+
+/*
+**  Return number of jobs
+*/
+int
+numjobs(void)
+{
+  return QMP_get_number_of_jobs();
+}
+
+/*
+** Return the job geometry
+*/
+int *
+jobgeom(void)
+{
+  return QMP_get_job_geometry();
+}
+
+/*
+** Return the ionode geometry
+*/
+int *
+ionodegeom(void)
+{
+  return ionodegeomvals;
+}
+
+/*
+** Return the allocated dimensions (node geometry) if a grid is being used
+*/
+int const *
+nodegeom(void)
+{
+  return QMP_get_allocated_dimensions();
 }
 
 /*

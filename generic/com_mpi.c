@@ -3,6 +3,7 @@
    MIMD version 7.
    This file is communications-scheme dependent.
    MPI version - allegedly machine independent
+   This version breaks the MPI machine into a number of separate lattices
 */
 /* Modifications
 
@@ -31,6 +32,8 @@
    machine_type()        returns string describing communications architecture
    mynode()              returns node number of this node.
    numnodes()            returns number of nodes
+   myjobid()             returns the jobid of this node.
+   numjobs()             returns number of jobs
    g_sync()              provides a synchronization point for all nodes.
    g_floatsum()          sums a floating point number over all nodes.
    g_vecfloatsum()       sums a vector of generic floats over all nodes 
@@ -57,6 +60,7 @@
    get_field()           receives a field from some other node.
    dclock()              returns a double precision time, with arbitrary zero
    time_stamp()          print wall clock time with message
+   get_utc_datetime()    get GM time as ASCII string
    sort_eight_gathers()  sorts eight contiguous gathers from order
                            XUP,XDOWN,YUP,YDOWN... to XUP,YUP,...XDOWN,YDOWN...
    make_nn_gathers()     makes all necessary lists for communications with
@@ -96,12 +100,19 @@
 			     received data.
    cleanup_general_gather()  frees all the buffers that were allocated, WHICH
                                MEANS THAT THE GATHERED DATA MAY SOON DISAPPEAR.
+   myjobid()                 The index number of this job
+   numjobs()                 Number of jobs in multijob execution
+   jobgeom()                 Dimensions of the multijob layout.  Product = numjobs
+   ionodegeom()              Dimensions of the I/O partition layout.  Product =
+                              number of files.
+   nodegeom()                Allocated dimensions of the nodes.
 
 */
 
 #include <time.h>
 #include "generic_includes.h"
 #include <mpi.h>
+#include <ctype.h>
 #if PRECISION == 1
 #define MILC_MPI_REAL MPI_FLOAT
 #else
@@ -135,6 +146,13 @@ u_int32type crc32(u_int32type crc, const unsigned char *buf, size_t len);
 #else
 #define NUM_SUBL 2
 #endif
+
+static int jobid = 0;
+static int num_jobs = 1;
+static int *geom = NULL;
+static int *jobgeomvals = NULL;
+static int *worldcoord = NULL;
+static MPI_Comm  MPI_COMM_THISJOB;
 
 
 /**********************************************************************
@@ -257,23 +275,181 @@ err_func(MPI_Comm *comm, int *stat, ...)
   terminate(*stat);
 }
 
+static void
+get_arg(int argc, char **argv, char *tag, int *first, int *last,
+	char **c, int **a)
+{
+  int i;
+  *first = -1;
+  *last = -1;
+  *c = NULL;
+  *a = NULL;
+  for(i=1; i<argc; i++) {
+    if(strcmp(argv[i], tag)==0) {
+      *first = i;
+      //printf("%i %i\n", i, argc);
+      if( ((i+1)<argc) && !(isdigit(argv[i+1][0])) ) {
+	//printf("c %i %s\n", i+1, argv[i+1]);
+	*c = argv[i+1];
+	*last = i+1;
+      } else {
+	//printf("a %i %s\n", i+1, argv[i+1]);
+	while( (++i<argc) && isdigit(argv[i][0]) );
+	*last = i-1;
+	int n = *last - *first;
+	if(n) {
+	  int j;
+	  *a = (int *) malloc(n*sizeof(int));
+	  //printf("%i %p\n", n, *a);
+	  for(j=0; j<n; j++) {
+	    (*a)[j] = atoi(argv[*first+1+j]);
+	    //printf(" %i", (*a)[j]);
+	  }
+	  //printf("\n");
+	}
+      }
+    }
+  }
+}
+
+static void
+remove_from_args(int *argc, char ***argv, int first, int last)
+{
+  int n = last - first;
+  if(first>=0) {
+    int i;
+    for(i=last+1; i<*argc; i++) (*argv)[i-n-1] = (*argv)[i];
+    *argc -= n + 1;
+  }
+}
+
+static int 
+lex_rank(const int coords[], int dim, int size[])
+{
+  int d;
+  int rank = coords[dim-1];
+
+  for(d = dim-2; d >= 0; d--){
+    rank = rank * size[d] + coords[d];
+  }
+  return rank;
+}
+
+/* Create partitions of equal size from the allocated machine, based
+   on num_jobs */
+static void
+repartition_switch_machine(void){
+  int localnodeid;
+  int num_nodes = numnodes();
+  int nodeid = mynode();
+  MPI_Comm jobcomm;
+  int localgeom;
+  int flag;
+
+  /* localgeom gives the number of nodes in the job partition */
+  if(num_nodes % num_jobs != 0){
+    printf("num_jobs %i must divide number of nodes %i\n",
+	   num_jobs, num_nodes);
+    terminate(1);
+  }
+  localgeom = num_nodes/num_jobs;
+  jobid = nodeid/localgeom;
+
+  /* Split the communicator */
+
+  flag = MPI_Comm_split(MPI_COMM_THISJOB, jobid, 0, &jobcomm);
+  if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
+
+  flag = MPI_Comm_rank(jobcomm, &localnodeid);
+  if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
+  
+  /* Make MPI on this node think I live in just this one job partition */
+  
+  flag = MPI_Comm_free(&MPI_COMM_THISJOB);
+  if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
+
+  MPI_COMM_THISJOB = jobcomm;
+}
+
+/* Create partitions of equal size from the allocated machine, based
+   on jobgeom */
+static void
+repartition_mesh_machine(void){
+  int i;
+  int localnodeid;
+  int nd = 4;
+  int flag;
+  MPI_Comm jobcomm;
+  int *jobcoord, *localgeom, *localcoord;
+
+  if(jobgeomvals == NULL)return;
+
+  /* localgeom gives the node dimensions of the job partition */
+  localgeom = (int *)malloc(sizeof(int)*nd);
+  for(i=0; i<nd; i++){
+    if(geom[i] % jobgeomvals[i] != 0){
+      printf( "job partition[%i] = %i must divide machine geometry %i\n",
+	      i, jobgeomvals[i], geom[i]);fflush(stdout);
+      terminate(1);
+    }
+    localgeom[i] = geom[i]/jobgeomvals[i];
+  }
+
+  /* jobcoord locates my job partition in the world of job partitions */
+  /* localcoord locates my node within the job partition */
+  jobcoord = (int *)malloc(sizeof(int)*nd);
+  localcoord = (int *)malloc(sizeof(int)*nd);
+
+  for(i=0; i<nd; i++){
+    localcoord[i] = worldcoord[i]%localgeom[i];
+    jobcoord[i]   = worldcoord[i]/localgeom[i];
+  }
+
+  jobid = lex_rank(jobcoord, nd, jobgeomvals);
+
+  /* Split the communicator */
+
+  flag = MPI_Comm_split(MPI_COMM_THISJOB, jobid, 0, &jobcomm);
+  if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
+  flag = MPI_Comm_rank(jobcomm, &localnodeid);
+  if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
+
+  //printf("node %d jobid %d\n", localnodeid, jobid); fflush(stdout);
+
+  /* Make MPI on this node think I live in just this one job partition */
+
+  flag = MPI_Comm_free(&MPI_COMM_THISJOB);
+  if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
+  MPI_COMM_THISJOB = jobcomm;
+  for(i=0; i<nd; i++)
+    geom[i]  = localgeom[i];
+
+  free(localcoord);
+  free(jobcoord);
+  free(localgeom);
+}
+
 /*
 **  Machine initialization
+**  This version breaks the MPI machine into a number of
+**  separate lattices.
 */
 void
 initialize_machine(int *argc, char ***argv)
 {
-  int i, flag, *tag_ub;
+  int i, n, flag, found, *tag_ub;
+  int nj, nd;
+  int first, last, *a = NULL;
+  char *c = NULL;
+  char myname[] = "initialize_machine";
+  
   MPI_Comm comm;
   MPI_Errhandler errhandler;
 
   flag = MPI_Init(argc, argv);
-  comm = MPI_COMM_WORLD;
-  if(flag) err_func(&comm, &flag);
-  flag = MPI_Errhandler_create(err_func, &errhandler);
-  if(flag) err_func(&comm, &flag);
-  flag = MPI_Errhandler_set(MPI_COMM_WORLD, errhandler);
-  if(flag) err_func(&comm, &flag);
+  flag = MPI_Comm_dup(MPI_COMM_WORLD, &MPI_COMM_THISJOB);
+  comm = MPI_COMM_THISJOB;
+  if(flag != MPI_SUCCESS) err_func(&comm, &flag);
 
   /* check if 32 bit int is set correctly */
 #ifdef SHORT_IS_32BIT
@@ -290,11 +466,117 @@ initialize_machine(int *argc, char ***argv)
   }
 #endif
 
+  /* Process and remove our command-line arguments */
+
+  /* process -geom */
+  get_arg(*argc, *argv, "-geom", &first, &last, &c, &a);
+  if( c != 0){
+    node0_printf("%s: unknown argument to -geom: %s\n",myname,c);
+    terminate(1);
+  }
+  nd = last - first;
+  if(nd <= 0){
+    geom = NULL;
+  } else {
+    if (nd != 4){
+      node0_printf("%s: found %d -geom values, but wanted 4\n",myname, nd);
+      terminate(1);
+    }
+    
+    geom = (int *)malloc(4*sizeof(int));
+    for(i = 0; i < 4; i++)
+      geom[i] = a[i];
+
+    worldcoord = (int *)malloc(4*sizeof(int));
+    n = mynode();
+    for(i=0; i<4; i++) {
+      worldcoord[i] = n % geom[i];
+      n /= geom[i];
+    }
+  }
+    
+  remove_from_args(argc, argv, first, last);
+
+  /* process -jobs */
+  /* This option causes the allocated machine to be subdivided into independent
+     partitions in which separate jobs run with the same executable.
+     -geom must first be specified. */
+
+  /* The integer a[i] specifies the number of divisions of the ith geom dimension */
+  /* The default a[i] = 1 for all i implies no subdivision */
+
+  /* default settings */
+  jobid = 0;
+  num_jobs = 1;
+
+  get_arg(*argc, *argv, "-jobs", &first, &last, &c, &a);
+  if( c ) {
+    printf("%s: unknown argument to -jobs: %s\n", myname, c);
+    terminate(1);
+  }
+  nj = last - first;
+  if(nj) {
+    int i;
+    jobgeomvals = a;
+    /* Check sanity of job partition divisions */
+    if(nj != 1 && geom == NULL){
+      fprintf(stderr, "-jobs requires -geom\n");
+      terminate(1);
+    }
+    if(geom != NULL && nj!=4) {
+      printf("%s: allocated number dimensions %d != job partition dimensions %d\n", myname, 4, nj);
+      terminate(1);
+    }
+    for(i=0; i<nj; i++){
+      if(jobgeomvals[i]<=0){
+	printf("%s: job partition division[%i] = %d <= 0\n", myname,
+	       i, jobgeomvals[i]);
+      }
+      num_jobs *= jobgeomvals[i];
+    }
+    
+    if(nj==1)
+      repartition_switch_machine();
+    else
+      repartition_mesh_machine();
+  }
+
+  remove_from_args(argc, argv, first, last);
+
+  /* process -ionodes a[0] a[1] a[2] a[3] flag */
+  get_arg(*argc, *argv, "-ionodes", &first, &last, &c, &a);
+  if(last - first > 0){
+    if(mynode()==0)printf("-ionodes option requires QIO\n");
+  }
+  remove_from_args(argc, argv, first, last);
+
+
+  /* Set error handler for this job */
+
+  /* Note: with MPI-2 MPI_Comm_create_errhandler and
+     MPI_Comm_set_errorhandler are preferred, but we keep MPI_Attr_get
+     until MPI-2 is more widely available */ 
+  flag = MPI_Errhandler_create(err_func, &errhandler);
+  if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
+  flag = MPI_Errhandler_set(MPI_COMM_THISJOB, errhandler);
+  if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
+
   /* get the number of message types */
   /* Note: with MPI-2 MPI_Comm_get_attr is preferred,
      but we keep MPI_Attr_get until MPI-2 is more widely available */ 
-  MPI_Attr_get(MPI_COMM_WORLD, MPI_TAG_UB, &tag_ub, &flag);
-  num_gather_ids = *tag_ub + 1 - GATHER_BASE_ID;
+  flag = MPI_Attr_get(MPI_COMM_THISJOB, MPI_TAG_UB, &tag_ub, &found);
+  if(flag != MPI_SUCCESS) err_func(&MPI_COMM_THISJOB, &flag);
+  if(found == 0){
+    num_gather_ids = 1024;
+    if(mynode() == 0){
+      printf("%s: MPI won't give me an upper limit on the number of message types\n", 
+	     myname);
+      printf("%s: setting the limit to %d\n",myname, num_gather_ids);
+    
+    } 
+  } else {
+    num_gather_ids = *tag_ub + 1 - GATHER_BASE_ID;
+  }
   if(num_gather_ids>1024) num_gather_ids = 1024;
 
   id_offset = 0;
@@ -313,22 +595,49 @@ void
 normal_exit(int status)
 {
   time_stamp("exit");
-  g_sync();
+  // g_sync();
+  MPI_Barrier( MPI_COMM_WORLD );  // wait for all lattices to finish?
   MPI_Finalize();
   fflush(stdout);
   exit(status);
 }
 
 /*
+** UTC time as ASCII string
+*/
+
+void 
+get_utc_datetime(char *time_string)
+{
+  time_t time_stamp;
+  struct tm *gmtime_stamp;
+
+  time(&time_stamp);
+  gmtime_stamp = gmtime(&time_stamp);
+  strncpy(time_string,asctime(gmtime_stamp),64);
+  
+  /* Remove trailing end-of-line character */
+  if(time_string[strlen(time_string) - 1] == '\n')
+    time_string[strlen(time_string) - 1] = '\0';
+}
+
+
+/*
 **  version of exit for multinode processes -- kill all nodes
 */
+// MPI_Abort has implementation dependent effects - sometimes kills
+// all processes in MPI_COMM_WORLD, sometimes not.   Also, we can't
+// decide if this is desirable.  So, for the moment, terminate()
+// really works the same as normal_exit()
 void
 terminate(int status)
 {
   time_stamp("termination");
   printf("Termination: node %d, status = %d\n", this_node, status);
   fflush(stdout);
-  MPI_Abort(MPI_COMM_WORLD, 0);
+  MPI_Barrier( MPI_COMM_WORLD );  // wait for all jobs to finish?
+  //MPI_Abort(MPI_COMM_THISLATTICE, 0);
+  MPI_Finalize();
   exit(status);
 }
 
@@ -349,7 +658,7 @@ int
 mynode(void)
 {
   int node;
-  MPI_Comm_rank( MPI_COMM_WORLD, &node );
+  MPI_Comm_rank( MPI_COMM_THISJOB, &node );
   return(node);
 }
 
@@ -360,8 +669,54 @@ int
 numnodes(void)
 {
   int nodes;
-  MPI_Comm_size( MPI_COMM_WORLD, &nodes );
+  MPI_Comm_size( MPI_COMM_THISJOB, &nodes );
   return(nodes);
+}
+
+/*
+** Return the allocated dimensions (node geometry) if a grid is being used
+*/
+int const *
+nodegeom(void)
+{
+  return geom;
+}
+
+/*
+**  Return my jobid
+*/
+int
+myjobid(void)
+{
+  return jobid;
+}
+
+/*
+**  Return number of jobs
+*/
+int
+numjobs(void)
+{
+  return num_jobs;
+}
+
+/*
+** Return the job geometry
+*/
+int *
+jobgeom(void)
+{
+  return jobgeomvals;
+}
+
+
+/*
+** Return the ionode geometry (supported only for QIO/QMP)
+*/
+int *
+ionodegeom(void)
+{
+  return NULL;
 }
 
 /*
@@ -370,7 +725,7 @@ numnodes(void)
 void
 g_sync(void)
 {
-  MPI_Barrier( MPI_COMM_WORLD );
+  MPI_Barrier( MPI_COMM_THISJOB );
 }
 
 /*
@@ -380,7 +735,7 @@ void
 g_intsum(int *ipt)
 {
   int work;
-  MPI_Allreduce( ipt, &work, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( ipt, &work, 1, MPI_INT, MPI_SUM, MPI_COMM_THISJOB );
   *ipt = work;
 }
 
@@ -393,10 +748,10 @@ g_uint32sum(u_int32type *pt)
   u_int32type work;
 #ifdef SHORT_IS_32BIT
   MPI_Allreduce( pt, &work, 1, MPI_UNSIGNED_SHORT, 
-		 MPI_SUM, MPI_COMM_WORLD );
+		 MPI_SUM, MPI_COMM_THISJOB );
 #else
   MPI_Allreduce( pt, &work, 1, MPI_UNSIGNED, 
-		 MPI_SUM, MPI_COMM_WORLD );
+		 MPI_SUM, MPI_COMM_THISJOB );
 #endif
   *pt = work;
 }
@@ -409,7 +764,7 @@ void
 g_floatsum(Real *fpt)
 {
   Real work;
-  MPI_Allreduce( fpt, &work, 1, MILC_MPI_REAL, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( fpt, &work, 1, MILC_MPI_REAL, MPI_SUM, MPI_COMM_THISJOB );
   *fpt = work;
 }
 
@@ -422,7 +777,7 @@ g_vecfloatsum(Real *fpt, int length)
   Real *work;
   int i;
   work = (Real *)malloc(length*sizeof(Real));
-  MPI_Allreduce( fpt, work, length, MILC_MPI_REAL, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( fpt, work, length, MILC_MPI_REAL, MPI_SUM, MPI_COMM_THISJOB );
   for(i=0; i<length; i++) fpt[i] = work[i];
   free(work);
 }
@@ -434,7 +789,7 @@ void
 g_doublesum(double *dpt)
 {
   double work;
-  MPI_Allreduce( dpt, &work, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( dpt, &work, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_THISJOB );
   *dpt = work;
 }
 
@@ -447,7 +802,7 @@ g_vecdoublesum(double *dpt, int ndoubles)
   double *work;
   int i;
   work = (double *)malloc(ndoubles*sizeof(double));
-  MPI_Allreduce( dpt, work, ndoubles, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( dpt, work, ndoubles, MPI_DOUBLE, MPI_SUM, MPI_COMM_THISJOB );
   for(i=0; i<ndoubles; i++) dpt[i] = work[i];
   free(work);
 }
@@ -459,7 +814,7 @@ void
 g_complexsum(complex *cpt)
 {
   complex work;
-  MPI_Allreduce( cpt, &work, 2, MILC_MPI_REAL, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( cpt, &work, 2, MILC_MPI_REAL, MPI_SUM, MPI_COMM_THISJOB );
   *cpt = work;
 }
 
@@ -472,7 +827,7 @@ g_veccomplexsum(complex *cpt, int ncomplex)
   complex *work;
   int i;
   work = (complex *)malloc(ncomplex*sizeof(complex));
-  MPI_Allreduce( cpt, work, 2*ncomplex, MILC_MPI_REAL, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( cpt, work, 2*ncomplex, MILC_MPI_REAL, MPI_SUM, MPI_COMM_THISJOB );
   for(i=0; i<ncomplex; i++) cpt[i] = work[i];
   free(work);
 }
@@ -484,7 +839,7 @@ void
 g_dcomplexsum(double_complex *cpt)
 {
   double_complex work;
-  MPI_Allreduce( cpt, &work, 2, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( cpt, &work, 2, MPI_DOUBLE, MPI_SUM, MPI_COMM_THISJOB );
   *cpt = work;
 }
 
@@ -497,7 +852,7 @@ g_vecdcomplexsum(double_complex *cpt, int ncomplex)
   double_complex *work;
   int i;
   work = (double_complex *)malloc(ncomplex*sizeof(double_complex));
-  MPI_Allreduce( cpt, work, 2*ncomplex, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( cpt, work, 2*ncomplex, MPI_DOUBLE, MPI_SUM, MPI_COMM_THISJOB );
   for(i=0; i<ncomplex; i++) cpt[i] = work[i];
   free(work);
 }
@@ -520,10 +875,10 @@ g_xor32(u_int32type *pt)
   u_int32type work;
 #ifdef SHORT_IS_32BIT
   MPI_Allreduce( pt, &work, 1, MPI_UNSIGNED_SHORT, 
-		 MPI_BXOR, MPI_COMM_WORLD );
+		 MPI_BXOR, MPI_COMM_THISJOB );
 #else
   MPI_Allreduce( pt, &work, 1, MPI_UNSIGNED, 
-		 MPI_BXOR, MPI_COMM_WORLD );
+		 MPI_BXOR, MPI_COMM_THISJOB );
 #endif
   *pt = work;
 }
@@ -535,7 +890,7 @@ void
 g_floatmax(Real *fpt)
 {
   Real work;
-  MPI_Allreduce( fpt, &work, 1, MILC_MPI_REAL, MPI_MAX, MPI_COMM_WORLD );
+  MPI_Allreduce( fpt, &work, 1, MILC_MPI_REAL, MPI_MAX, MPI_COMM_THISJOB );
   *fpt = work;
 }
 
@@ -546,7 +901,7 @@ void
 g_doublemax(double *dpt)
 {
   double work;
-  MPI_Allreduce( dpt, &work, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD );
+  MPI_Allreduce( dpt, &work, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_THISJOB );
   *dpt = work;
 }
 
@@ -556,7 +911,7 @@ g_doublemax(double *dpt)
 void
 broadcast_float(Real *fpt)
 {
-  MPI_Bcast( fpt, 1, MILC_MPI_REAL, 0, MPI_COMM_WORLD );
+  MPI_Bcast( fpt, 1, MILC_MPI_REAL, 0, MPI_COMM_THISJOB );
 }
 
 /*
@@ -565,7 +920,7 @@ broadcast_float(Real *fpt)
 void
 broadcast_double(double *dpt)
 {
-  MPI_Bcast( dpt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD );
+  MPI_Bcast( dpt, 1, MPI_DOUBLE, 0, MPI_COMM_THISJOB );
 }
 
 /*
@@ -574,7 +929,7 @@ broadcast_double(double *dpt)
 void
 broadcast_complex(complex *cpt)
 {
-  MPI_Bcast( cpt, 2, MILC_MPI_REAL, 0, MPI_COMM_WORLD );
+  MPI_Bcast( cpt, 2, MILC_MPI_REAL, 0, MPI_COMM_THISJOB );
 }
 
 /*
@@ -583,7 +938,7 @@ broadcast_complex(complex *cpt)
 void
 broadcast_dcomplex(double_complex *cpt)
 {
-  MPI_Bcast( cpt, 2, MPI_DOUBLE, 0, MPI_COMM_WORLD );
+  MPI_Bcast( cpt, 2, MPI_DOUBLE, 0, MPI_COMM_THISJOB );
 }
 
 /*
@@ -592,7 +947,7 @@ broadcast_dcomplex(double_complex *cpt)
 void
 broadcast_bytes(char *buf, int size)
 {
-  MPI_Bcast( buf, size, MPI_BYTE, 0, MPI_COMM_WORLD );
+  MPI_Bcast( buf, size, MPI_BYTE, 0, MPI_COMM_THISJOB );
 }
 
 
@@ -607,7 +962,7 @@ broadcast_bytes(char *buf, int size)
 void
 send_integer(int tonode, int *address)
 {
-  MPI_Send( address, 1, MPI_INT, tonode, SEND_INTEGER_ID, MPI_COMM_WORLD );
+  MPI_Send( address, 1, MPI_INT, tonode, SEND_INTEGER_ID, MPI_COMM_THISJOB );
 }
 
 /*
@@ -618,7 +973,7 @@ receive_integer(int fromnode, int *address)
 {
   MPI_Status status;
   MPI_Recv( address, 1, MPI_INT, fromnode, SEND_INTEGER_ID,
-	    MPI_COMM_WORLD, &status );
+	    MPI_COMM_THISJOB, &status );
 }
 
 
@@ -632,7 +987,7 @@ receive_integer(int fromnode, int *address)
 void
 send_field(char *buf, int size, int tonode)
 {
-  MPI_Send( buf, size, MPI_BYTE, tonode, SEND_FIELD_ID, MPI_COMM_WORLD );
+  MPI_Send( buf, size, MPI_BYTE, tonode, SEND_FIELD_ID, MPI_COMM_THISJOB );
 }
 
 /*
@@ -642,7 +997,7 @@ void
 get_field(char *buf, int size, int fromnode)
 {
   MPI_Status status;
-  MPI_Recv( buf, size, MPI_BYTE, fromnode, SEND_FIELD_ID, MPI_COMM_WORLD,
+  MPI_Recv( buf, size, MPI_BYTE, fromnode, SEND_FIELD_ID, MPI_COMM_THISJOB,
 	    &status );
 }
 
@@ -1024,7 +1379,7 @@ make_id_list(
 
   for(i=0; recv!=NULL; ++i, recv=recv->nextcomlink) {
     buf[i] = i;
-    MPI_Isend( &buf[i], 1, MPI_INT, recv->othernode, 0, MPI_COMM_WORLD,
+    MPI_Isend( &buf[i], 1, MPI_INT, recv->othernode, 0, MPI_COMM_THISJOB,
 	       &req[i] );
   }
   if(i!=n_recv) {printf("error i!=n_recv\n"); terminate(1);}
@@ -1032,7 +1387,7 @@ make_id_list(
   tol_next = &tol_top;
   while(send!=NULL) {
     tol = *tol_next = (id_list_t *)malloc(sizeof(id_list_t));
-    MPI_Irecv( &i, 1, MPI_INT, send->othernode, 0, MPI_COMM_WORLD, &sreq );
+    MPI_Irecv( &i, 1, MPI_INT, send->othernode, 0, MPI_COMM_THISJOB, &sreq );
     MPI_Wait( &sreq, &stat );
     tol->id_offset = i;
     tol_next = &(tol->next);
@@ -1057,7 +1412,7 @@ static int
 get_max_receives(int n_recv)
 {
   int work;
-  MPI_Allreduce( &n_recv, &work, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD );
+  MPI_Allreduce( &n_recv, &work, 1, MPI_INT, MPI_MAX, MPI_COMM_THISJOB );
   return work;
 }
 
@@ -1558,7 +1913,7 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
   for(i=0; i<mtag->nrecvs; i++) {
     /* post receive */
     MPI_Irecv( mbuf[i].msg_buf, mbuf[i].msg_size+CRCBYTES, MPI_BYTE, MPI_ANY_SOURCE,
-	       GATHER_ID(mtag->ids[mbuf[i].id_offset]), MPI_COMM_WORLD,
+	       GATHER_ID(mtag->ids[mbuf[i].id_offset]), MPI_COMM_THISJOB,
 	       &mbuf[i].msg_req );
   }
 
@@ -1600,7 +1955,7 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
     }
 #endif
     MPI_Isend( mbuf[i].msg_buf, mbuf[i].msg_size+CRCBYTES, MPI_BYTE, mbuf[i].msg_node,
-	       GATHER_ID(mtag->ids[mbuf[i].id_offset]), MPI_COMM_WORLD,
+	       GATHER_ID(mtag->ids[mbuf[i].id_offset]), MPI_COMM_THISJOB,
 	       &mbuf[i].msg_req );
   }
 }
@@ -1664,7 +2019,7 @@ wait_gather(msg_tag *mtag)
       }
     }
   }
-  MPI_Allreduce( &fail, &work, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD );
+  MPI_Allreduce( &fail, &work, 1, MPI_INT, MPI_SUM, MPI_COMM_THISJOB );
   fail = work;
   if(fail > 0)terminate(1);
 #endif
@@ -2315,7 +2670,7 @@ start_general_strided_gather(
     /* post receive */
     MPI_Irecv( mrecv[i].msg_buf, nsites*tsize, MPI_BYTE,
 	       from_nodes[i].node, GENERAL_GATHER_ID, 
-	       MPI_COMM_WORLD, &mrecv[i].msg_req );
+	       MPI_COMM_THISJOB, &mrecv[i].msg_req );
   }
 
   /* for each node whose neighbors I have */
@@ -2357,7 +2712,7 @@ start_general_strided_gather(
     nsites = to_nodes[i].count;
     MPI_Isend( msend[i].msg_buf, nsites*tsize, MPI_BYTE,
 	       to_nodes[i].node, GENERAL_GATHER_ID, 
-	       MPI_COMM_WORLD, &msend[i].msg_req );
+	       MPI_COMM_THISJOB, &msend[i].msg_req );
   }
 
   /* free temporary arrays */
@@ -2621,7 +2976,7 @@ start_general_strided_gather(
     /* post receive */
     MPI_Irecv( mrecv[i].msg_buf, nsites*tsize, MPI_BYTE,
 	       from_nodes[i].node, GENERAL_GATHER_ID,
-	       MPI_COMM_WORLD, &mrecv[i].msg_req );
+	       MPI_COMM_THISJOB, &mrecv[i].msg_req );
   }
 
   /* for each node whose neighbors I have */
@@ -2682,7 +3037,7 @@ start_general_strided_gather(
     nsites = to_nodes[i].count;
     MPI_Isend( msend[i].msg_buf, nsites*tsize, MPI_BYTE,
 	       to_nodes[i].node, GENERAL_GATHER_ID,
-	       MPI_COMM_WORLD, &msend[i].msg_req );
+	       MPI_COMM_THISJOB, &msend[i].msg_req );
   }
 
   /* free temporary arrays */
