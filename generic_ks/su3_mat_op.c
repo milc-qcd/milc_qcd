@@ -7,14 +7,22 @@
 #include <math.h>
 #include "generic_ks_includes.h"      /* definitions files and prototypes */
 #include "../include/su3_mat_op.h"
+#include "../include/info.h"
 
 
 // this is needed for
-// su3_unitarize_analytic and su3_unit_der_analytic
+// u3_unitarize_analytic and u3_unit_der_analytic
 #if(PRECISION==2)
-#define SU3_UNIT_ANALYTIC_FOLLOW_PREC
+#define U3_UNIT_ANALYTIC_FOLLOW_PREC
 #endif
 
+#ifndef HISQ_REUNIT_SVD_REL_ERROR
+#define HISQ_REUNIT_SVD_REL_ERROR 1e-8
+#endif
+
+#ifndef HISQ_REUNIT_SVD_ABS_ERROR
+#define HISQ_REUNIT_SVD_ABS_ERROR 1e-8
+#endif
 
 /* Frobenius (or Hilbert-Schmidt) norm of a matrix A:
    norm(A)=sqrt(Tr{A^+A})=sqrt(sum_ij |a_ij|^2) */
@@ -116,7 +124,7 @@ void su3_inverse( su3_matrix *a, su3_matrix *b ) {
    to give Frobenius norm of (X*X-A) and (A*Y*Y-I) 
    less then 10^-8. Therefore on average this routine
    requires 24 3x3 matrix inversions. SLOW! */
-void su3_root_inv( su3_matrix *a, su3_matrix *x, su3_matrix *y) {
+void u3_root_inv( su3_matrix *a, su3_matrix *x, su3_matrix *y) {
   su3_matrix xinv, yinv, x2, y2, diff, Unit;
   Real norm_x, norm_y;
   int iter;
@@ -151,9 +159,9 @@ void su3_root_inv( su3_matrix *a, su3_matrix *x, su3_matrix *y) {
 
     iter++;
 
-  } while( (iter<SU3_ROOT_INV_MAX_ITER) && 
-           (norm_x>SU3_ROOT_INV_NORM_EPS) &&
-           (norm_y>SU3_ROOT_INV_NORM_EPS) );
+  } while( (iter<U3_ROOT_INV_MAX_ITER) && 
+           (norm_x>U3_ROOT_INV_NORM_EPS) &&
+           (norm_y>U3_ROOT_INV_NORM_EPS) );
 
 }
 
@@ -161,14 +169,14 @@ void su3_root_inv( su3_matrix *a, su3_matrix *x, su3_matrix *y) {
 /* Unitarize 3x3 complex matrix:
    B=A*(A^+ A)^-1/2
    B is a U(3) matrix but not an SU(3) matrix(!) */
-void su3_unitarize( su3_matrix *a, su3_matrix *b ) {
+void u3_unitarize( su3_matrix *a, su3_matrix *b ) {
   su3_matrix a2, x, y;
 
   /* X=A^+ A */
   mult_su3_an( a, a, &a2 );
 
   /* X=A2^1/2, Y=A2^-1/2 */
-  su3_root_inv( &a2, &x, &y );
+  u3_root_inv( &a2, &x, &y );
 
   /* B=A*Y */
   mult_su3_nn( a, &y, b );
@@ -235,12 +243,12 @@ void su3_spec_unitarize_index( su3_matrix *a, su3_matrix *b, complex *detA,
 
 /* Derivative of the unitarized matrix with respect to the original:
    dW/dU and d(W^+)/dU (at fixed U^+ !), where W=U(U^+U)^-1/2 */
-void su3_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu ) {
+void u3_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu ) {
   su3_matrix up, um, a, b, up12, um12, upu, umu, dw, dwdag;
   int i, j, m, n;
   Real factor;
 
-  factor = 0.5/SU3_UNIT_DER_EPS;
+  factor = 0.5/U3_UNIT_DER_EPS;
 
   /* loop on components of the original matrix U */
   for( i=0; i<3; i++) {
@@ -250,16 +258,16 @@ void su3_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu ) {
       su3mat_copy( u, &um );
 
       /* add/subtract epsilon to the real part of [i][j] component */
-      (up.e[i][j]).real += SU3_UNIT_DER_EPS;
-      (um.e[i][j]).real -= SU3_UNIT_DER_EPS;
+      (up.e[i][j]).real += U3_UNIT_DER_EPS;
+      (um.e[i][j]).real -= U3_UNIT_DER_EPS;
 
       /* Up12=(U^+ Up)^-1/2 */
       mult_su3_an( u, &up, &a );
-      su3_root_inv( &a, &b, &up12 );
+      u3_root_inv( &a, &b, &up12 );
 
       /* Um12=(U^+ Um)^-1/2 */
       mult_su3_an( u, &um, &a );
-      su3_root_inv( &a, &b, &um12 );
+      u3_root_inv( &a, &b, &um12 );
 
       /* ** dW/dU ** */
       /* Upu=Up * (U^+ Up)^-1/2 */
@@ -300,7 +308,7 @@ void su3_spec_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu )
   Real factor;
   complex det;
 
-  factor = 0.5/SU3_UNIT_DER_EPS;
+  factor = 0.5/U3_UNIT_DER_EPS;
 
   /* loop on components of the original matrix U */
   for( i=0; i<3; i++) {
@@ -310,16 +318,16 @@ void su3_spec_unit_der( su3_matrix *u, su3_tensor4 *dwdu, su3_tensor4 *dwdagdu )
       su3mat_copy( u, &um );
 
       /* add/subtract epsilon to the real part of [i][j] component */
-      (up.e[i][j]).real += SU3_UNIT_DER_EPS;
-      (um.e[i][j]).real -= SU3_UNIT_DER_EPS;
+      (up.e[i][j]).real += U3_UNIT_DER_EPS;
+      (um.e[i][j]).real -= U3_UNIT_DER_EPS;
 
       /* Up12=(U^+ Up)^-1/2 */
       mult_su3_an( u, &up, &a );
-      su3_root_inv( &a, &b, &up12 );
+      u3_root_inv( &a, &b, &up12 );
 
       /* Um12=(U^+ Um)^-1/2 */
       mult_su3_an( u, &um, &a );
-      su3_root_inv( &a, &b, &um12 );
+      u3_root_inv( &a, &b, &um12 );
 
       /* ** dW/dU ** */
       /* Upu=Up * (U^+ Up)^-1/2 */
@@ -567,7 +575,7 @@ void su3_unit_der_reim( su3_matrix *u,
   int i, j, m, n;
   Real factor;
 
-  factor = 0.5/SU3_UNIT_DER_EPS;
+  factor = 0.5/U3_UNIT_DER_EPS;
 
   /* loop on components of the original matrix U */
   for( i=0; i<3; i++) {
@@ -580,22 +588,22 @@ void su3_unit_der_reim( su3_matrix *u,
       su3mat_copy( u, &umim );
 
       /* add/subtract epsilon to the real part of [i][j] component */
-      (upre.e[i][j]).real += SU3_UNIT_DER_EPS;
-      (umre.e[i][j]).real -= SU3_UNIT_DER_EPS;
-      (upim.e[i][j]).imag += SU3_UNIT_DER_EPS;
-      (umim.e[i][j]).imag -= SU3_UNIT_DER_EPS;
+      (upre.e[i][j]).real += U3_UNIT_DER_EPS;
+      (umre.e[i][j]).real -= U3_UNIT_DER_EPS;
+      (upim.e[i][j]).imag += U3_UNIT_DER_EPS;
+      (umim.e[i][j]).imag -= U3_UNIT_DER_EPS;
 
       /* Up12=(Up^+ Up)^-1/2 */
       mult_su3_an( &upre, &upre, &a );
-      su3_root_inv( &a, &b, &up12re );
+      u3_root_inv( &a, &b, &up12re );
       mult_su3_an( &upim, &upim, &a );
-      su3_root_inv( &a, &b, &up12im );
+      u3_root_inv( &a, &b, &up12im );
 
       /* Um12=(Um^+ Um)^-1/2 */
       mult_su3_an( &umre, &umre, &a );
-      su3_root_inv( &a, &b, &um12re );
+      u3_root_inv( &a, &b, &um12re );
       mult_su3_an( &umim, &umim, &a );
-      su3_root_inv( &a, &b, &um12im );
+      u3_root_inv( &a, &b, &um12im );
 
       /* ** dW/dU ** */
       /* Upu=Up * (Up^+ Up)^-1/2 */
@@ -673,7 +681,7 @@ void su3_unit_der_reim_join(
 
 
 /* Unitarization with rational approximation */
-void su3_unitarize_rational( su3_matrix *V, su3_matrix *W ) {
+void u3_unitarize_rational( su3_matrix *V, su3_matrix *W ) {
   int l;
   su3_matrix H, T, X, Z;
 
@@ -682,27 +690,27 @@ void su3_unitarize_rational( su3_matrix *V, su3_matrix *W ) {
 
   clear_su3mat( &X );
 
-  for( l=1; l<=SU3_UNIT_RAT_NTERMS; l++) {
+  for( l=1; l<=U3_UNIT_RAT_NTERMS; l++) {
     su3mat_copy( &H, &T );
 
     /* add d_l to H */
-    T.e[0][0].real += d_l_SU3_UNIT_RAT[l];
-    T.e[1][1].real += d_l_SU3_UNIT_RAT[l];
-    T.e[2][2].real += d_l_SU3_UNIT_RAT[l];
+    T.e[0][0].real += d_l_U3_UNIT_RAT[l];
+    T.e[1][1].real += d_l_U3_UNIT_RAT[l];
+    T.e[2][2].real += d_l_U3_UNIT_RAT[l];
 
     /* calculate inverse of H+d_l */
     su3_inverse( &T, &Z );
 
     /* add c_l/(H+d_l) */
-    scalar_mult_add_su3_matrix( &X, &Z, c_l_SU3_UNIT_RAT[l], &T );
+    scalar_mult_add_su3_matrix( &X, &Z, c_l_U3_UNIT_RAT[l], &T );
 
     su3mat_copy( &T, &X );
   }
 
   /* add c_0 */
-  X.e[0][0].real += c_l_SU3_UNIT_RAT[0];
-  X.e[1][1].real += c_l_SU3_UNIT_RAT[0];
-  X.e[2][2].real += c_l_SU3_UNIT_RAT[0];
+  X.e[0][0].real += c_l_U3_UNIT_RAT[0];
+  X.e[1][1].real += c_l_U3_UNIT_RAT[0];
+  X.e[2][2].real += c_l_U3_UNIT_RAT[0];
 
   mult_su3_nn( V, &X, W );
 }
@@ -710,9 +718,9 @@ void su3_unitarize_rational( su3_matrix *V, su3_matrix *W ) {
 
 
 /* Derivative of a unitarized matrix with rational approximation */
-void su3_unit_der_rational( su3_matrix *V, su3_tensor4 *dwdv, su3_tensor4 *dwdagdv ) {
+void u3_unit_der_rational( su3_matrix *V, su3_tensor4 *dwdv, su3_tensor4 *dwdagdv ) {
   int i, j, l, p, q, r, s;
-  su3_matrix Kl[ SU3_UNIT_RAT_NTERMS ]; // store intermediate inverted matrices
+  su3_matrix Kl[ U3_UNIT_RAT_NTERMS ]; // store intermediate inverted matrices
   su3_matrix Vdag, H, T, X;
   su3_tensor4 A4, B4;
   complex ftmp, ftmp2, ftmp3, ftmp4;
@@ -723,13 +731,13 @@ void su3_unit_der_rational( su3_matrix *V, su3_tensor4 *dwdv, su3_tensor4 *dwdag
   /* hermitian matrix: H=V^+V */
   mult_su3_an( V, V, &H );
 
-  for( l=1; l<=SU3_UNIT_RAT_NTERMS; l++) {
+  for( l=1; l<=U3_UNIT_RAT_NTERMS; l++) {
     su3mat_copy( &H, &T );
 
     /* add d_l to H */
-    T.e[0][0].real += d_l_SU3_UNIT_RAT[l];
-    T.e[1][1].real += d_l_SU3_UNIT_RAT[l];
-    T.e[2][2].real += d_l_SU3_UNIT_RAT[l];
+    T.e[0][0].real += d_l_U3_UNIT_RAT[l];
+    T.e[1][1].real += d_l_U3_UNIT_RAT[l];
+    T.e[2][2].real += d_l_U3_UNIT_RAT[l];
 
     /* calculate inverse of H+d_l and store in Kl array */
     su3_inverse( &T, &( Kl[l-1] ) );
@@ -751,20 +759,20 @@ void su3_unit_der_rational( su3_matrix *V, su3_tensor4 *dwdv, su3_tensor4 *dwdag
 
   clear_su3mat( &X );
 
-  for( l=1; l<=SU3_UNIT_RAT_NTERMS; l++) {
+  for( l=1; l<=U3_UNIT_RAT_NTERMS; l++) {
     /* assemble tensor4 out of Kls */
     for( p=0; p<3; p++) {
       for( r=0; r<3; r++) {
         for( s=0; s<3; s++) {
           for( q=0; q<3; q++) {
             CMUL( Kl[l-1].e[p][r], Kl[l-1].e[s][q], ftmp );
-            (B4.t4[p][r][s][q]).real += c_l_SU3_UNIT_RAT[l] * ftmp.real;
-            (B4.t4[p][r][s][q]).imag += c_l_SU3_UNIT_RAT[l] * ftmp.imag;
+            (B4.t4[p][r][s][q]).real += c_l_U3_UNIT_RAT[l] * ftmp.real;
+            (B4.t4[p][r][s][q]).imag += c_l_U3_UNIT_RAT[l] * ftmp.imag;
           }
         }
       }
     }
-    scalar_mult_add_su3_matrix( &X, &Kl[ l-1 ], c_l_SU3_UNIT_RAT[ l ], &T );
+    scalar_mult_add_su3_matrix( &X, &Kl[ l-1 ], c_l_U3_UNIT_RAT[ l ], &T );
     su3mat_copy( &T, &X );
   }
 
@@ -780,7 +788,7 @@ void su3_unit_der_rational( su3_matrix *V, su3_tensor4 *dwdv, su3_tensor4 *dwdag
             (dwdv->t4[p][r][s][q]).real = (X.e[s][q]).real;
             (dwdv->t4[p][r][s][q]).imag = (X.e[s][q]).imag;
             if( s==q ) {
-              (dwdv->t4[p][r][s][q]).real += c_l_SU3_UNIT_RAT[0];
+              (dwdv->t4[p][r][s][q]).real += c_l_U3_UNIT_RAT[0];
             }
           }
           else {
@@ -815,23 +823,24 @@ void su3_unit_der_rational( su3_matrix *V, su3_tensor4 *dwdv, su3_tensor4 *dwdag
   }
 }
 
-
-
 /* Analytic unitarization, Hasenfratz, Hoffmann, Schaefer, JHEP05 (2007) 029 */
-void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
-// unless the following switch is defined, su3_unitarize_analytic
+/* Returns 1 if SVD was used */
+void u3_unitarize_analytic( info_t *info, su3_matrix *V, su3_matrix *W ) {
+// unless the following switch is defined, u3_unitarize_analytic
 // uses double precision, if defined it follows the precision
 // set in Makefile
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   su3_matrix Q, Q2, Q3, S1, S2;
   Real c0, c1, c2, S, S3, R, R2, CQ3, RoS, theta, theta3, pi23, denom;
   Real g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   double Ve[3][3][2],Qe[3][3][2],Q2e[3][3][2],Q3e[3][3][2],S2e[3][3][2];
   double c0, c1, c2, S, S3, R, R2, CQ3, RoS, theta, theta3, pi23, denom;
   double g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
+
   int i, j;
+  size_t nflops = 0;
 
 #ifdef HISQ_REUNIT_ALLOW_SVD
   double Qd[3][3][2];
@@ -869,26 +878,33 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
        +((double)V->e[0][2].imag)*a3re+((double)V->e[0][2].real)*a3im;
   det_check=detre*detre+detim*detim;
 
+  nflops += 67;
+
 //  cdet = det_su3( V );
 //  det_check=cdet.real*cdet.real+cdet.imag*cdet.imag;
 #endif /* HISQ_REUNIT_ALLOW_SVD */
 
 
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   /* Hermitian matrix: Q=V^+ V */
   mult_su3_an( V, V, &Q );
+  nflops += 198;
 
   /* Q^2 */
   mult_su3_nn( &Q, &Q, &Q2 );
+  nflops += 198;
 
   /* Q^3 */
   mult_su3_nn( &Q2, &Q, &Q3 );
+  nflops += 198;
 
   /* (real) traces */
   c0 = Q.e[0][0].real + Q.e[1][1].real + Q.e[2][2].real;
   c1 = ( Q2.e[0][0].real + Q2.e[1][1].real + Q2.e[2][2].real ) / 2;
   c2 = ( Q3.e[0][0].real + Q3.e[1][1].real + Q3.e[2][2].real ) / 3;
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+  nflops += 8;
+
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   // perform matrix multiplications explicitly in double
 
   // convert matrix V to double
@@ -925,6 +941,7 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
       + Ve[2][2][0]*Ve[2][j][1] - Ve[2][2][1]*Ve[2][j][0];
   }
 
+  nflops += 3*6*11;
 
   /* Q^2 */
   for(i=0;i<3;i++)for(j=0;j<3;j++){
@@ -936,6 +953,8 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
     Q2e[i][j][1]+=Qe[i][2][0]*Qe[2][j][1]+Qe[i][2][1]*Qe[2][j][0];
   }
 
+  nflops += 9*22;
+
   /* Q^3 -- WE NEED ONLY DIAGONAL ELEMENTS */
   for(i=0;i<3;i++){
     Q3e[i][i][0]= Q2e[i][0][0]*Qe[0][i][0]-Q2e[i][0][1]*Qe[0][i][1];
@@ -946,18 +965,24 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
     Q3e[i][i][1]+=Q2e[i][2][0]*Qe[2][i][1]+Q2e[i][2][1]*Qe[2][i][0];
   }
 
+  nflops += 9*22;
+
   /* (real) traces */
   c0 = Qe[0][0][0] + Qe[1][1][0] + Qe[2][2][0];
   c1 = ( Q2e[0][0][0] + Q2e[1][1][0] + Q2e[2][2][0] ) / 2;
   c2 = ( Q3e[0][0][0] + Q3e[1][1][0] + Q3e[2][2][0] ) / 3;
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+  nflops += 8;
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
 
   S = c1/3 - c0 * (c0/18);
-  if( fabs(S)<SU3_UNIT_ANALYTIC_EPS ) {
+  if( fabs(S)<U3_UNIT_ANALYTIC_EPS ) {
     /* eigenvalues of Q */
     g0 = c0/3;
     g1 = c0/3;
     g2 = c0/3;
+
+    nflops += 3;
   }
   else {
     R = c2/2 - c0 * (c1/3) + c0 * c0 * (c0/27);
@@ -967,6 +992,9 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
     S3 = S*S*S;
     /* treat possible underflow: R/S^3/2>1.0 leads to acos giving NaN */
     RoS = R/S3;
+
+    nflops += 14;
+
     if( !( fabs(RoS)<1.0 ) ) {
       if( R>0 ) {
         theta = 0.0;
@@ -978,7 +1006,7 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
     else {
       theta = acos( RoS );
       if(isnan(theta)){
-        printf("Hit NaN in su3_unitarize_analytic()\n");
+        printf("Hit NaN in u3_unitarize_analytic()\n");
         printf("RoS=%24.18g\n",RoS);
         printf("Matrix V (row-wise):\n");
         for( i=0; i<3; i++ ) {
@@ -988,6 +1016,7 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
         }
         terminate(0);
       }
+      nflops += 1;
     }
 
     /* eigenvalues of Q */
@@ -996,6 +1025,8 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
     g0 = c0/3 + 2 * S * cos( theta3 );
     g1 = c0/3 + 2 * S * cos( theta3 + pi23 );
     g2 = c0/3 + 2 * S * cos( theta3 + 2*pi23 );
+
+    nflops += 20;
   }
 
 #ifdef HISQ_REUNIT_ALLOW_SVD
@@ -1005,15 +1036,17 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
 //    printf("       percentage difference     = %f\n",fabs(det_check-g0*g1*g2)/fabs(det_check)*100);
 //  }
 
-
 #ifndef HISQ_REUNIT_SVD_ONLY
+
   /* conditions to call SVD */
   if(det_check!=0) {
-    if( fabs(det_check-g0*g1*g2)/fabs(det_check)>1e-8 ) {
+    if( fabs(det_check-g0*g1*g2)/fabs(det_check)>HISQ_REUNIT_SVD_REL_ERROR ) {
       perform_svd=1;
+      nflops += 4;
     }
   }
-  if(det_check<1e-08) {
+  
+  if(det_check<HISQ_REUNIT_SVD_ABS_ERROR) {
     perform_svd=1;
   }
 #else /* HISQ_REUNIT_SVD_ONLY */
@@ -1023,28 +1056,32 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
      rarely used, which makes it harder to test, therefore one can
      SVD with this switch */
   perform_svd=1;
-#endif /* HISQ_REUNIT_SVD_ONLY */
+#endif /* ifndef HISQ_REUNIT_SVD_ONLY */
 
   if( 0!=perform_svd ) {
 
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   // convert matrix V to double
   for(i=0;i<3;i++)for(j=0;j<3;j++) {
     Qd[i][j][0]=V->e[i][j].real;
     Qd[i][j][1]=V->e[i][j].imag;
   }
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   // convert matrix V to double
   for(i=0;i<3;i++)for(j=0;j<3;j++) {
     Qd[i][j][0]=Ve[i][j][0];
     Qd[i][j][1]=Ve[i][j][1];
   }
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
 
   /* call SVD */
-  svd3x3(Qd, sigma, Uleft, Vright);
+  svd3x3(Qd, sigma, Uleft, Vright, &nflops);
+  INFO_HISQ_SVD_COUNTER(info)++;
+  
 
 #ifndef HISQ_REUNIT_SVD_ONLY
+#ifdef HISQ_SVD_VALUES_INFO
   printf("*** Resort to using SVD ***\n");
   printf("*** printing from node %d ***\n",this_node);
   printf("Eigenvalues from cubic equation:\n");
@@ -1056,6 +1093,7 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
   printf( "  g1 = %28.18f\n", sigma[1]*sigma[1] );
   printf( "  g2 = %28.18f\n", sigma[2]*sigma[2] );
 #endif
+#endif
   /* construct Uleft*Vright^+ as a reunitarized link W */
   for(i=0;i<3;i++)for(j=0;j<3;j++){
     W->e[i][j].real = Uleft[i][0][0]*Vright[j][0][0]+Uleft[i][0][1]*Vright[j][0][1];
@@ -1065,6 +1103,9 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
     W->e[i][j].real+= Uleft[i][2][0]*Vright[j][2][0]+Uleft[i][2][1]*Vright[j][2][1];
     W->e[i][j].imag+=-Uleft[i][2][0]*Vright[j][2][1]+Uleft[i][2][1]*Vright[j][2][0];
   }
+
+  nflops += 9*23;
+
 //      for(i=0;i<3;i++)for(j=0;j<3;j++) {
 //        printf( "Qd[%d][%d].re=%26.18e  Qd[%d][%d].im=%26.18e\n",
 //                i, j, Qd[i][j][0], i, j, Qd[i][j][1] );
@@ -1098,8 +1139,8 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
   us += g0sq;
   ws *= g0sq;
 
-  if( ws < SU3_UNIT_ANALYTIC_EPS ) {
-    printf( "WARNING: su3_unitarize_analytic: ws is too small!\n" );
+  if( ws < U3_UNIT_ANALYTIC_EPS ) {
+    printf( "WARNING: u3_unitarize_analytic: ws is too small!\n" );
     printf( "  g0 = %28.18f\n", g0 );
     printf( "  g1 = %28.18f\n", g1 );
     printf( "  g2 = %28.18f\n", g2 );
@@ -1112,7 +1153,9 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
   f1 = ( 2*us*vs - ws - us*us*us ) / denom;
   f2 = us / denom;
 
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+  nflops += 30;
+
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   /* assemble inverse root: Q^-1/2 = f0 + f1*Q + f2*Q^2 */
   scalar_mult_su3_matrix( &Q2, f2, &S1 );
   scalar_mult_add_su3_matrix( &S1, &Q, f1, &S2 );
@@ -1122,7 +1165,10 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
 
   /* W = V*S2 */
   mult_su3_nn( V, &S2, W );
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+  nflops += 18 + 36 + 3;
+
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   /* assemble inverse root: Q^-1/2 = f0 + f1*Q + f2*Q^2 */
   S2e[0][0][0] = f0 + f1*Qe[0][0][0] + f2*Q2e[0][0][0];
   S2e[0][0][1] =      f1*Qe[0][0][1] + f2*Q2e[0][0][1];
@@ -1152,17 +1198,21 @@ void su3_unitarize_analytic( su3_matrix *V, su3_matrix *W ) {
     W->e[i][j].real+=Ve[i][2][0]*S2e[2][j][0]-Ve[i][2][1]*S2e[2][j][1];
     W->e[i][j].imag+=Ve[i][2][0]*S2e[2][j][1]+Ve[i][2][1]*S2e[2][j][0];
   }
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+  nflops += 57 + 9*22;
+
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
 
 #ifdef HISQ_REUNIT_ALLOW_SVD
   } // end of SVD related if
 #endif /* HISQ_REUNIT_ALLOW_SVD */
 
+  info->final_flop += nflops;
 }
 
 
 /* Analytic unitarization, Hasenfratz, Hoffmann, Schaefer, JHEP05 (2007) 029 */
-void su3_unitarize_analytic_index( su3_matrix *V, su3_matrix *W, int index_site, int index_dir ) {
+void u3_unitarize_analytic_index( su3_matrix *V, su3_matrix *W, int index_site, int index_dir ) {
   su3_matrix Q, Q2, Q3, S1, S2;
   Real c0, c1, c2, S, S3, R, R2, CQ3, RoS, theta, theta3, pi23, denom;
   Real g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
@@ -1184,7 +1234,7 @@ void su3_unitarize_analytic_index( su3_matrix *V, su3_matrix *W, int index_site,
   c2 = ( Q3.e[0][0].real + Q3.e[1][1].real + Q3.e[2][2].real ) / 3;
 
   S = c1/3 - c0 * (c0/18);
-  if( fabs(S)<SU3_UNIT_ANALYTIC_EPS ) {
+  if( fabs(S)<U3_UNIT_ANALYTIC_EPS ) {
     /* eigenvalues of Q */
     g0 = c0/3;
     g1 = c0/3;
@@ -1215,7 +1265,7 @@ void su3_unitarize_analytic_index( su3_matrix *V, su3_matrix *W, int index_site,
     else {
       theta = acos( RoS );
       if(isnan(theta)){
-        printf("Hit NaN in su3_unitarize_analytic()\n");
+        printf("Hit NaN in u3_unitarize_analytic()\n");
         printf("RoS=%24.18g\n",RoS);
         printf("Matrix V (row-wise):\n");
         for( i=0; i<3; i++ ) {
@@ -1247,8 +1297,8 @@ void su3_unitarize_analytic_index( su3_matrix *V, su3_matrix *W, int index_site,
   us += g0sq;
   ws *= g0sq;
 
-  if( ws < SU3_UNIT_ANALYTIC_EPS ) {
-    printf( "WARNING: su3_unitarize_analytic: ws is too small!\n" );
+  if( ws < U3_UNIT_ANALYTIC_EPS ) {
+    printf( "WARNING: u3_unitarize_analytic: ws is too small!\n" );
   }
 
   denom = ws * ( us*vs - ws );
@@ -1329,12 +1379,13 @@ void su3_unitarize_analytic_index( su3_matrix *V, su3_matrix *W, int index_site,
 
 /* Analytic derivative of the unitarized matrix with respect to the original:
    dW/dV and d(W^+)/dV, where W=V(V^+V)^-1/2 */
-void su3_unit_der_analytic( su3_matrix *V, 
-               su3_tensor4 *dwdv, su3_tensor4 *dwdagdv ) {
-// unless the following switch is defined, su3_unitarize_analytic
+/* Returns 1 if SVD was used */
+void u3_unit_der_analytic( info_t *info, su3_matrix *V, su3_tensor4 *dwdv, 
+			   su3_tensor4 *dwdagdv ) {
+// unless the following switch is defined, u3_unitarize_analytic
 // uses double precision, if defined it follows the precision
 // set in Makefile
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   su3_matrix Q, Q2, Q3, S1, S2, W, Q12;
   su3_matrix VVd, VQ, QVd, QQVd, VQQ, VQVd, PVd, RVd, SVd, Vd;
   Real c0, c1, c2, S, S3, RoS, R, R2, CQ3, theta, theta3, pi23, denom;
@@ -1342,7 +1393,7 @@ void su3_unit_der_analytic( su3_matrix *V,
   Real u2, u3, u4, u5, u6, u7, u8, v2, v3, v4, v5, v6, w2, w3, w4, w5;
   Real b00, b01, b02, b11, b12, b22, denom3;
   complex der, ctmp, ctmp2;
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   double Ve[3][3][2], Qe[3][3][2], Q2e[3][3][2], Q3e[3][3][2];
   double We[3][3][2], Q12e[3][3][2];
   double VVde[3][3][2], VQe[3][3][2], QVde[3][3][2], QQVde[3][3][2];
@@ -1353,7 +1404,8 @@ void su3_unit_der_analytic( su3_matrix *V,
   double u2, u3, u4, u5, u6, u7, u8, v2, v3, v4, v5, v6, w2, w3, w4, w5;
   double b00, b01, b02, b11, b12, b22, denom3;
   double der_real, der_imag, ctmp_real, ctmp_imag, ctmp2_real, ctmp2_imag;
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
+
   int i, j, m, n;
 
 #ifdef HISQ_REUNIT_ALLOW_SVD
@@ -1362,6 +1414,7 @@ void su3_unit_der_analytic( su3_matrix *V,
   double a1re, a1im, a2re, a2im, a3re, a3im, detre, detim, det_check;
   double sigma[3], Uleft[3][3][2], Vright[3][3][2];
   int perform_svd=0;
+  size_t nflops = 0;
 
   /* get determinant for future comparison */
   a1re=((double)V->e[1][1].real)*((double)V->e[2][2].real)-((double)V->e[1][1].imag)*((double)V->e[2][2].imag)
@@ -1392,30 +1445,36 @@ void su3_unit_der_analytic( su3_matrix *V,
        +((double)V->e[0][2].imag)*a3re+((double)V->e[0][2].real)*a3im;
   det_check=detre*detre+detim*detim;
 
+  nflops += 67;
+
 //  cdet = det_su3( V );
 //  det_check=cdet.real*cdet.real+cdet.imag*cdet.imag;
 #endif /* HISQ_REUNIT_ALLOW_SVD */
 
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   /* adjoint */
   su3_adjoint( V, &Vd );
 
   /* Hermitian matrix: Q=V^+ V */
   mult_su3_an( V, V, &Q ); // +9*22 flops
+  nflops += 198;
 
   /* Q^2 */
   mult_su3_nn( &Q, &Q, &Q2 ); // +9*22 flops
+  nflops += 198;
 
   /* Q^3 */
   mult_su3_nn( &Q2, &Q, &Q3 ); // +9*22 flops
+  nflops += 198;
 
   /* (real) traces */
   c0 = Q.e[0][0].real + Q.e[1][1].real + Q.e[2][2].real;
   c1 = ( Q2.e[0][0].real + Q2.e[1][1].real + Q2.e[2][2].real ) / 2;
   c2 = ( Q3.e[0][0].real + Q3.e[1][1].real + Q3.e[2][2].real ) / 3;
+  nflops += 8;
   // +8 flops
 
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   // perform matrix multiplications explicitly in double
 
   // convert matrix V to double
@@ -1459,6 +1518,7 @@ void su3_unit_der_analytic( su3_matrix *V,
       + Ve[2][2][0]*Ve[2][j][1] - Ve[2][2][1]*Ve[2][j][0];
   }
 
+  nflops += 3*6*11;
 
   /* Q^2 */
   for(i=0;i<3;i++)for(j=0;j<3;j++){
@@ -1470,6 +1530,8 @@ void su3_unit_der_analytic( su3_matrix *V,
     Q2e[i][j][1]+=Qe[i][2][0]*Qe[2][j][1]+Qe[i][2][1]*Qe[2][j][0];
   }
 
+  nflops += 9*22;
+
   /* Q^3 -- WE NEED ONLY DIAGONAL ELEMENTS */
   for(i=0;i<3;i++){
     Q3e[i][i][0]= Q2e[i][0][0]*Qe[0][i][0]-Q2e[i][0][1]*Qe[0][i][1];
@@ -1480,14 +1542,18 @@ void su3_unit_der_analytic( su3_matrix *V,
     Q3e[i][i][1]+=Q2e[i][2][0]*Qe[2][i][1]+Q2e[i][2][1]*Qe[2][i][0];
   }
 
+  nflops += 9*22;
+
   /* (real) traces */
   c0 = Qe[0][0][0] + Qe[1][1][0] + Qe[2][2][0];
   c1 = ( Q2e[0][0][0] + Q2e[1][1][0] + Q2e[2][2][0] ) / 2;
   c2 = ( Q3e[0][0][0] + Q3e[1][1][0] + Q3e[2][2][0] ) / 3;
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+  nflops += 8;
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
 
   S = c1/3 - c0 * (c0/18); // +4 flops
-  if( fabs(S)<SU3_UNIT_ANALYTIC_EPS ) {
+  if( fabs(S)<U3_UNIT_ANALYTIC_EPS ) {
     /* eigenvalues of Q */
     g0 = c0/3;
     g1 = c0/3;
@@ -1502,6 +1568,9 @@ void su3_unit_der_analytic( su3_matrix *V,
     // +6 flops (sqrt counted as 1 flop)
     /* treat possible underflow: R/S^3/2>1.0 leads to acos giving NaN */
     RoS = R/S3; // +1 flops
+
+    nflops += 14;
+
     if( !( fabs(RoS)<1.0 ) ) {
       if( R>0 ) {
         theta = 0.0;
@@ -1512,9 +1581,9 @@ void su3_unit_der_analytic( su3_matrix *V,
     }
     else {
       theta = acos( RoS );
-//      if(isnan(theta)){printf("Hit NaN in su3_unit_der_analytic()\n"); terminate(0);}
+//      if(isnan(theta)){printf("Hit NaN in u3_unit_der_analytic()\n"); terminate(0);}
       if(isnan(theta)){
-        printf("Hit NaN in su3_unit_der_analytic()\n");
+        printf("Hit NaN in u3_unit_der_analytic()\n");
         printf("RoS=%24.18g\n",RoS);
         printf("Matrix V (row-wise):\n");
         for( i=0; i<3; i++ ) {
@@ -1524,6 +1593,7 @@ void su3_unit_der_analytic( su3_matrix *V,
         }
         terminate(0);
       }
+      nflops += 1;
     }
     // +1 flops (acos counted as 1 flop here)
 
@@ -1533,6 +1603,8 @@ void su3_unit_der_analytic( su3_matrix *V,
     g0 = c0/3 + 2 * S * cos( theta3 );
     g1 = c0/3 + 2 * S * cos( theta3 + pi23 );
     g2 = c0/3 + 2 * S * cos( theta3 + 2*pi23 );
+
+    nflops += 20;
     // +20 flops (cos counted as 1 flop here)
   }
 //TEMP OUTPUT EIGENVALUES OF Q
@@ -1550,11 +1622,12 @@ void su3_unit_der_analytic( su3_matrix *V,
 #ifndef HISQ_REUNIT_SVD_ONLY
   /* conditions to call SVD */
   if(det_check!=0) {
-    if( fabs(det_check-g0*g1*g2)/fabs(det_check)>1e-8 ) {
+    if( fabs(det_check-g0*g1*g2)/fabs(det_check)>HISQ_REUNIT_SVD_REL_ERROR ) {
       perform_svd=1;
+      nflops += 4;
     }
   }
-  if(det_check<1e-08) {
+  if(det_check<HISQ_REUNIT_SVD_ABS_ERROR) {
     perform_svd=1;
   }
 #else /* HISQ_REUNIT_SVD_ONLY */
@@ -1567,54 +1640,60 @@ void su3_unit_der_analytic( su3_matrix *V,
 #endif /* HISQ_REUNIT_SVD_ONLY */
 
   if( 0!=perform_svd ) {
-
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
-  // convert matrix V to double
-  for(i=0;i<3;i++)for(j=0;j<3;j++) {
-    Qd[i][j][0]=V->e[i][j].real;
-    Qd[i][j][1]=V->e[i][j].imag;
-  }
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
-  // convert matrix V to double
-  for(i=0;i<3;i++)for(j=0;j<3;j++) {
-    Qd[i][j][0]=Ve[i][j][0];
-    Qd[i][j][1]=Ve[i][j][1];
-  }
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
-
-  /* call SVD */
-  svd3x3(Qd, sigma, Uleft, Vright);
-
+    
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
+    // convert matrix V to double
+    for(i=0;i<3;i++)for(j=0;j<3;j++) {
+	Qd[i][j][0]=V->e[i][j].real;
+	Qd[i][j][1]=V->e[i][j].imag;
+      }
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
+    // convert matrix V to double
+    for(i=0;i<3;i++)for(j=0;j<3;j++) {
+	Qd[i][j][0]=Ve[i][j][0];
+	Qd[i][j][1]=Ve[i][j][1];
+      }
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
+    
+    /* call SVD */
+    svd3x3(Qd, sigma, Uleft, Vright, &nflops);
+    INFO_HISQ_SVD_COUNTER(info)++;
+    
 #ifndef HISQ_REUNIT_SVD_ONLY
-  printf("*** Resort to using svd (force) ***\n");
-  printf("*** printing from node %d ***\n",this_node);
-  printf("Eigenvalues from cubic equation:\n");
-  printf( "  g0 = %28.18f\n", g0 );
-  printf( "  g1 = %28.18f\n", g1 );
-  printf( "  g2 = %28.18f\n", g2 );
-  printf("Eigenvalues from singular value decomposition:\n");
-  printf( "  g0 = %28.18f\n", sigma[0]*sigma[0] );
-  printf( "  g1 = %28.18f\n", sigma[1]*sigma[1] );
-  printf( "  g2 = %28.18f\n", sigma[2]*sigma[2] );
+#ifdef HISQ_SVD_VALUES_INFO
+    printf("*** Resort to using svd (force) ***\n");
+    printf("*** printing from node %d ***\n",this_node);
+    printf("Eigenvalues from cubic equation:\n");
+    printf( "  g0 = %28.18f\n", g0 );
+    printf( "  g1 = %28.18f\n", g1 );
+    printf( "  g2 = %28.18f\n", g2 );
+    printf("Eigenvalues from singular value decomposition:\n");
+    printf( "  g0 = %28.18f\n", sigma[0]*sigma[0] );
+    printf( "  g1 = %28.18f\n", sigma[1]*sigma[1] );
+    printf( "  g2 = %28.18f\n", sigma[2]*sigma[2] );
 #endif
+#endif
+    
+    g0=sigma[0]*sigma[0];
+    g1=sigma[1]*sigma[1];
+    g2=sigma[2]*sigma[2];
 
-  g0=sigma[0]*sigma[0];
-  g1=sigma[1]*sigma[1];
-  g2=sigma[2]*sigma[2];
-
+    nflops += 3;
+    
   }
 #endif /* HISQ_REUNIT_ALLOW_SVD */
 
 #ifdef HISQ_FORCE_FILTER
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   Real gmin,g_epsilon;
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   double gmin,g_epsilon;
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   gmin=g0;
   if(g1<gmin) gmin=g1;
   if(g2<gmin) gmin=g2;
   if(gmin<HISQ_FORCE_FILTER) {
+    INFO_HISQ_FORCE_FILTER_COUNTER(info)++;
 /*    g_epsilon=HISQ_FORCE_FILTER-gmin;
     if(g_epsilon<0) g_epsilon=-g_epsilon;*/
     g_epsilon=HISQ_FORCE_FILTER;
@@ -1622,13 +1701,14 @@ void su3_unit_der_analytic( su3_matrix *V,
     g1 += g_epsilon;
     g2 += g_epsilon;
     // +3 flops
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   // modify also Q and Q2 matrices
   for(i=0;i<3;i++) {
     Q.e[i][i].real+=g_epsilon;
   }
   mult_su3_nn( &Q, &Q, &Q2 );
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+  nflops += 198;
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   // modify also Q and Q2 matrices
   for(i=0;i<3;i++) {
     Qe[i][i][0]+=g_epsilon;
@@ -1641,7 +1721,10 @@ void su3_unit_der_analytic( su3_matrix *V,
     Q2e[i][j][0]+=Qe[i][2][0]*Qe[2][j][0]-Qe[i][2][1]*Qe[2][j][1];
     Q2e[i][j][1]+=Qe[i][2][0]*Qe[2][j][1]+Qe[i][2][1]*Qe[2][j][0];
   }
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+  nflops += 9*22;
+
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
     printf("*** Applying eigenvalue filter in the HISQ reunit force ***\n");
@@ -1670,8 +1753,10 @@ void su3_unit_der_analytic( su3_matrix *V,
   ws *= g0sq;
   // +6 flops
 
-  if( ws < SU3_UNIT_ANALYTIC_EPS ) {
-    printf( "WARNING: su3_unit_der_analytic: ws is too small!\n" );
+  nflops += 9;
+
+  if( ws < U3_UNIT_ANALYTIC_EPS ) {
+    printf( "WARNING: u3_unit_der_analytic: ws is too small!\n" );
   }
 
   denom = ws * ( us*vs - ws );
@@ -1682,12 +1767,14 @@ void su3_unit_der_analytic( su3_matrix *V,
   f1 = ( 2*us*vs - ws - us*us*us ) / denom;
   f2 = us / denom;
   // +15 flops
+
+  nflops += 18;
 //TEMP
 //  printf( "  f0 = %28.18f\n", f0 );
 //  printf( "  f1 = %28.18f\n", f1 );
 //  printf( "  f2 = %28.18f\n", f2 );
 
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   /* assemble inverse root: Q^-1/2 = f0 + f1*Q + f2*Q^2 */
   scalar_mult_su3_matrix( &Q2, f2, &S1 ); // +18 flops
   scalar_mult_add_su3_matrix( &S1, &Q, f1, &Q12 ); // +36 flops
@@ -1695,12 +1782,16 @@ void su3_unit_der_analytic( su3_matrix *V,
   Q12.e[1][1].real += f0;
   Q12.e[2][2].real += f0;
   // +3 flops
+  nflops += 57;
 //TEMP
 //  dumpmat( &Q12 );
 
   /* W = V*Q12 */
   mult_su3_nn( V, &Q12, &W ); // +9*22 flops
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+  nflops += 198;
+
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   /* assemble inverse root: Q^-1/2 = f0 + f1*Q + f2*Q^2 */
   Q12e[0][0][0] = f0 + f1*Qe[0][0][0] + f2*Q2e[0][0][0];
   Q12e[0][0][1] =      f1*Qe[0][0][1] + f2*Q2e[0][0][1];
@@ -1721,6 +1812,7 @@ void su3_unit_der_analytic( su3_matrix *V,
   Q12e[2][2][0] = f0 + f1*Qe[2][2][0] + f2*Q2e[2][2][0];
   Q12e[2][2][1] =      f1*Qe[2][2][1] + f2*Q2e[2][2][1];
 
+  nflops += 57;
   /* W = V*Q12 */
   for(i=0;i<3;i++)for(j=0;j<3;j++){
     We[i][j][0] =Ve[i][0][0]*Q12e[0][j][0]-Ve[i][0][1]*Q12e[0][j][1];
@@ -1730,7 +1822,10 @@ void su3_unit_der_analytic( su3_matrix *V,
     We[i][j][0]+=Ve[i][2][0]*Q12e[2][j][0]-Ve[i][2][1]*Q12e[2][j][1];
     We[i][j][1]+=Ve[i][2][0]*Q12e[2][j][1]+Ve[i][2][1]*Q12e[2][j][0];
   }
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+  nflops += 9*22;
+
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
 
   denom3 = 2*denom*denom*denom; // +3 flops
 
@@ -1770,7 +1865,9 @@ void su3_unit_der_analytic( su3_matrix *V,
   b22 = -ws*u4 -v2*u3 +3*vs*ws*u2 -3*w2*us;
   b22 /= denom3; // +12 flops
 
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+  nflops += 183;
+
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   /* ** create several building blocks for derivative ** */
   mult_su3_nn( V, &Q, &VQ );
   mult_su3_na( &Q, V, &QVd );
@@ -1787,7 +1884,9 @@ void su3_unit_der_analytic( su3_matrix *V,
   scalar_mult_su3_matrix( &QVd, b12, &S1 ); // +18 flops
   scalar_mult_add_su3_matrix( &S1, &QQVd, b22, &S2 ); // +36 flops
   scalar_mult_add_su3_matrix( &S2, &Vd, b02, &SVd ); // +36 flops
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+  nflops += 1458;
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   // mult_su3_nn( V, &Q, &VQ );
   for(i=0;i<3;i++)for(j=0;j<3;j++){
     VQe[i][j][0] =Ve[i][0][0]*Qe[0][j][0]-Ve[i][0][1]*Qe[0][j][1];
@@ -1846,6 +1945,9 @@ void su3_unit_der_analytic( su3_matrix *V,
     VQVde[i][j][0]+=VQe[i][2][0]*Vde[2][j][0]-VQe[i][2][1]*Vde[2][j][1];
     VQVde[i][j][1]+=VQe[i][2][0]*Vde[2][j][1]+VQe[i][2][1]*Vde[2][j][0];
   }
+
+  nflops += 9*198;
+
   // scalar_mult_su3_matrix( &QVd, b01, &S1 );
   // scalar_mult_add_su3_matrix( &S1, &QQVd, b02, &S2 );
   // scalar_mult_add_su3_matrix( &S2, &Vd, b00, &PVd );
@@ -1865,9 +1967,12 @@ void su3_unit_der_analytic( su3_matrix *V,
     SVde[i][j][0] = b02*Vde[i][j][0] + b12*QVde[i][j][0] + b22*QQVde[i][j][0];
     SVde[i][j][1] = b02*Vde[i][j][1] + b12*QVde[i][j][1] + b22*QQVde[i][j][1];
   }
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
 
-#ifdef SU3_UNIT_ANALYTIC_FOLLOW_PREC
+  nflops += 9*30;
+
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
+
+#ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   /* assemble the derivative rank 4 tensor */
   for( i=0; i<3; i++) {
     for( j=0; j<3; j++) {
@@ -1883,7 +1988,7 @@ void su3_unit_der_analytic( su3_matrix *V,
           if( j==n ) {
             der.real += f1 * VVd.e[i][m].real + f2 * VQVd.e[i][m].real;
             der.imag += f1 * VVd.e[i][m].imag + f2 * VQVd.e[i][m].imag;
-          }
+          } // +8 flops
           CMUL( V->e[i][j], PVd.e[n][m], ctmp );
           CSUM( der, ctmp );
           CMUL( VQ.e[i][j], RVd.e[n][m], ctmp );
@@ -1910,11 +2015,13 @@ void su3_unit_der_analytic( su3_matrix *V,
           der.imag += f2 * ( ctmp.imag + ctmp2.imag );
           dwdagdv->t4[i][m][n][j].real = der.real;
           dwdagdv->t4[i][m][n][j].imag = der.imag;
+
+	  nflops += 84;
         }
       }
     } // +81*(32+50)  flops
   }
-#else /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   /* assemble the derivative rank 4 tensor */
   for( i=0; i<3; i++) {
     for( j=0; j<3; j++) {
@@ -1930,7 +2037,7 @@ void su3_unit_der_analytic( su3_matrix *V,
           if( j==n ) {
             der_real += f1 * VVde[i][m][0] + f2 * VQVde[i][m][0];
             der_imag += f1 * VVde[i][m][1] + f2 * VQVde[i][m][1];
-          }
+          } // +8 flops
           der_real += Ve[i][j][0]*PVde[n][m][0] - Ve[i][j][1]*PVde[n][m][1];
           der_imag += Ve[i][j][0]*PVde[n][m][1] + Ve[i][j][1]*PVde[n][m][0];
           der_real += VQe[i][j][0]*RVde[n][m][0] - VQe[i][j][1]*RVde[n][m][1];
@@ -1941,6 +2048,7 @@ void su3_unit_der_analytic( su3_matrix *V,
           der_imag +=f2*(VVde[i][m][0]*Qe[n][j][1] + VVde[i][m][1]*Qe[n][j][0]);
           dwdv->t4[i][m][n][j].real = (Real)der_real;
           dwdv->t4[i][m][n][j].imag = (Real)der_imag;
+	  // +32 flops
           /* dW^+/dV */
           der_real  = Vde[i][j][0]*PVde[n][m][0] - Vde[i][j][1]*PVde[n][m][1];
           der_imag  = Vde[i][j][0]*PVde[n][m][1] + Vde[i][j][1]*PVde[n][m][0];
@@ -1958,11 +2066,15 @@ void su3_unit_der_analytic( su3_matrix *V,
           der_imag += f2 * ( ctmp_imag + ctmp2_imag );
           dwdagdv->t4[i][m][n][j].real = (Real)der_real;
           dwdagdv->t4[i][m][n][j].imag = (Real)der_imag;
+	  // +48 flops
+	  nflops += 88;
         }
       }
     }
   }
-#endif /* SU3_UNIT_ANALYTIC_FOLLOW_PREC */
+#endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
+  info->final_flop += nflops;
+  
 }
 
 
@@ -2100,14 +2212,16 @@ void su3t4_copy( su3_tensor4 *a, su3_tensor4 *b ) {
 
 
 /* forward declaration */
-int svd2x2bidiag(double *a00, double *a01, double *a11, double U2[2][2], double V2[2][2]);
+int svd2x2bidiag(double *a00, double *a01, double *a11, 
+		 double U2[2][2], double V2[2][2], size_t *nflops);
 
 
 /* Input: A -- 3x3 complex matrix,
    Output: sigma[3] -- singular values,
            U,V -- U(3) matrices such, that
            A=U Sigma V^+ */
-int svd3x3(double A[3][3][2], double *sigma, double U[3][3][2], double V[3][3][2]) {
+int svd3x3(double A[3][3][2], double *sigma, double U[3][3][2], 
+	   double V[3][3][2], size_t *nf) {
   double Ad[3][3][2], P[3][3][2], Q[3][3][2];
   double U1[3][3][2], U2[3][3][2], U3[3][3][2], V1[3][3][2], V2[3][3][2];
   double UO3[3][3], VO3[3][3], v[3][2];
@@ -2115,7 +2229,7 @@ int svd3x3(double A[3][3][2], double *sigma, double U[3][3][2], double V[3][3][2
   register double a, b, c, d, factor, norm, min, max, taure, tauim, beta;
   register double m11, m12, m22, dm, lambdamax, cosphi, sinphi, tanphi, cotphi;
   register int i, j, iter;
-
+  size_t nflops = 0;
 
   /* format of external matrices A, U and V can be arbitrary,
      therefore this routine uses defines (above) to access them
@@ -2175,6 +2289,8 @@ int svd3x3(double A[3][3][2], double *sigma, double U[3][3][2], double V[3][3][2
     }
   }
   norm = factor*sqrt(c);
+
+  nflops += 15;
 
   if( norm==0 && Ad[0][0][1]==0 ) { /* no rotation needed */
 #ifdef SVD3x3_DEBUG
@@ -2319,6 +2435,8 @@ for(i=0;i<3;i++) {
     U1[2][2][0]=1-taure*a;
     U1[2][2][1]=tauim*a;
 
+    nflops += 91;
+
 
     /* apply the transformation to A matrix and store the result in P
        P=U^+A */
@@ -2371,6 +2489,7 @@ for(i=0;i<3;i++) {
               +U1[1][2][0]*Ad[1][2][1]-U1[1][2][1]*Ad[1][2][0]
               +U1[2][2][0]*Ad[2][2][1]-U1[2][2][1]*Ad[2][2][0];
 
+    nflops += 9*12;
 
   }
 #ifdef SVD3x3_DEBUG
@@ -2493,6 +2612,9 @@ printf("Left unitary matrix U1:\n");
     a=P[0][2][0]/norm; b=-P[0][2][1]/norm;
     v[2][0]=a*c+b*d;
     v[2][1]=b*c-a*d;
+
+    nflops += 27;
+
 #ifdef SVD3x3_DEBUG
 for(i=0;i<3;i++) {
   printf("v[%d].re=%28.18e  v[%d].im=%28.18e\n",i,v[i][0],i,v[i][1]);
@@ -2562,6 +2684,7 @@ for(i=0;i<3;i++) {
     Q[2][2][1]=P[2][1][0]*V1[1][2][1]+P[2][1][1]*V1[1][2][0]
               +P[2][2][0]*V1[2][2][1]+P[2][2][1]*V1[2][2][0];
 
+    nflops += 15 + 7*8;
   }
 #ifdef SVD3x3_DEBUG
 printf("Right unitary matrix V1:\n");
@@ -2681,6 +2804,8 @@ printf("Right unitary matrix V1:\n");
     a=Q[2][1][0]/norm; b=Q[2][1][1]/norm;
     v[2][0]=a*c+b*d;
     v[2][1]=b*c-a*d;
+
+    nflops += 27;
 #ifdef SVD3x3_DEBUG
 for(i=0;i<3;i++) {
   printf("v[%d].re=%28.18e  v[%d].im=%28.18e\n",i,v[i][0],i,v[i][1]);
@@ -2752,6 +2877,8 @@ printf("Left unitary matrix U2:\n");
               +U2[2][2][0]*Q[2][2][0]+U2[2][2][1]*Q[2][2][1];
     P[2][2][1]=U2[1][2][0]*Q[1][2][1]-U2[1][2][1]*Q[1][2][0]
               +U2[2][2][0]*Q[2][2][1]-U2[2][2][1]*Q[2][2][0];
+
+    nflops += 15 + 7*8;
 
   }
 
@@ -2859,7 +2986,7 @@ printf("Right unitary matrix V2:\n");
     Q[2][2][0]=P[2][2][0]*V2[2][2][0]-P[2][2][1]*V2[2][2][1];
     Q[2][2][1]=P[2][2][0]*V2[2][2][1]+P[2][2][1]*V2[2][2][0];
 
-
+    nflops += 12;
   }
 
 
@@ -2965,6 +3092,8 @@ printf("Left unitary matrix U3:\n");
     P[2][2][0]=beta;
     P[2][2][1]=0.;
 
+    nflops += 6;
+
   }
 
 
@@ -3003,6 +3132,8 @@ printf( "%+20.16e %+20.16e %+20.16e\n", b20, b21, b22 );
       b12=0;
     }
 
+    nflops += 4;
+
     /* Cases:
        b01=b12=0 -- matrix is already diagonalized,
        b01=0 -- need to work with 2x2 lower block,
@@ -3011,10 +3142,10 @@ printf( "%+20.16e %+20.16e %+20.16e\n", b20, b21, b22 );
     if( !(b01==0 && b12==0) ) {
       if( b01==0 ) {
 #ifdef SVD3x3_DEBUG
-printf( "Entering case b01==0\n" );
+	printf( "Entering case b01==0\n" );
 #endif /* SVD3x3_DEBUG */
         /* need to diagonalize 2x2 lower block */
-        svd2x2bidiag( &b11, &b12, &b22, UO2, VO2 );
+	svd2x2bidiag( &b11, &b12, &b22, UO2, VO2, &nflops );
 
         /* multiply left UO3 matrix */
         for(i=0;i<3;i++) {
@@ -3029,14 +3160,16 @@ printf( "Entering case b01==0\n" );
           VO3[i][2]=a*VO2[0][1]+b*VO2[1][1];
         }
 
+	nflops += 36;
+
       }
       else {
         if( b12==0 ) {
 #ifdef SVD3x3_DEBUG
-printf( "Entering case b12==0\n" );
+	  printf( "Entering case b12==0\n" );
 #endif /* SVD3x3_DEBUG */
           /* need to diagonalize 2x2 upper block */
-          svd2x2bidiag( &b00, &b01, &b11, UO2, VO2 );
+	  svd2x2bidiag( &b00, &b01, &b11, UO2, VO2, &nflops );
 
           /* multiply left UO3 matrix */
           for(i=0;i<3;i++) {
@@ -3051,6 +3184,7 @@ printf( "Entering case b12==0\n" );
             VO3[i][1]=a*VO2[0][1]+b*VO2[1][1];
           }
 
+	  nflops += 36;
         }
         else {
           /* normal 3x3 iteration */
@@ -3106,6 +3240,8 @@ printf( "Entering case b00==0\n" );
             /* apply to bidiagonal matrix */
             b22=b02*sinphi+b22*cosphi;
             b02=0.;
+
+	    nflops += 56;
           }
           else if( b11==0 ) {
 #ifdef SVD3x3_DEBUG
@@ -3131,6 +3267,8 @@ printf( "Entering case b11==0\n" );
             /* apply to bidiagonal matrix */
             b22=b12*sinphi+b22*cosphi;
             b12=0.;
+
+	    nflops += 27;
           }
           else if( b22==0 ) {
 #ifdef SVD3x3_DEBUG
@@ -3180,6 +3318,8 @@ printf( "Entering case b22==0\n" );
             /* apply to bidiagonal matrix */
             b00=b00*cosphi+b02*sinphi;
             b02=0.;
+	    
+	    nflops += 64;
           }
           else {
             /* full iteration with QR shift */
@@ -3234,6 +3374,7 @@ printf( "Entering case of normal QR iteration\n" );
                 cosphi=1./sqrt(1+tanphi*tanphi);
                 sinphi=tanphi*cosphi;
               }
+	      nflops += 7;
             }
             /* multiply right VO3 matrix */
             for(i=0;i<3;i++) {
@@ -3264,6 +3405,8 @@ printf( "Entering case of normal QR iteration\n" );
                 cosphi=1/sqrt(1+tanphi*tanphi);
                 sinphi=tanphi*cosphi;
               }
+
+	      nflops += 7;
             }
             /* multiply left UO3 matrix */
             for(i=0;i<3;i++) {
@@ -3296,6 +3439,8 @@ printf( "Entering case of normal QR iteration\n" );
                 cosphi=1/sqrt(1+tanphi*tanphi);
                 sinphi=tanphi*cosphi;
               }
+
+	      nflops += 7;
             }
             /* multiply right VO3 matrix */
             for(i=0;i<3;i++) {
@@ -3328,6 +3473,8 @@ printf( "Entering case of normal QR iteration\n" );
                 cosphi=1/sqrt(1+tanphi*tanphi);
                 sinphi=tanphi*cosphi;
               }
+
+	      nflops += 7;
             }
             /* multiply left UO3 matrix */
             for(i=0;i<3;i++) {
@@ -3341,6 +3488,8 @@ printf( "Entering case of normal QR iteration\n" );
             b12=a*cosphi-b*sinphi;
             b22=a*sinphi+b*cosphi;
             b21=0.;
+
+	    nflops += 127;
           }
         } /* end of normal 3x3 iteration */
       }
@@ -3424,6 +3573,8 @@ printf( "%+20.16e %+20.16e %+20.16e\n", b20, b21, b22 );
   b=Q[2][2][0]*U3[2][2][1]+Q[2][2][1]*U3[2][2][0];
   Q[2][2][0]=a; Q[2][2][1]=b;
 
+  nflops += 102;
+
   /* final U=Q*UO3
      (unitary times orthogonal that accumulated Givens rotations) */
   U00re=Q[0][0][0]*UO3[0][0]+Q[0][1][0]*UO3[1][0]+Q[0][2][0]*UO3[2][0];
@@ -3444,6 +3595,8 @@ printf( "%+20.16e %+20.16e %+20.16e\n", b20, b21, b22 );
   U21im=Q[2][0][1]*UO3[0][1]+Q[2][1][1]*UO3[1][1]+Q[2][2][1]*UO3[2][1];
   U22re=Q[2][0][0]*UO3[0][2]+Q[2][1][0]*UO3[1][2]+Q[2][2][0]*UO3[2][2];
   U22im=Q[2][0][1]*UO3[0][2]+Q[2][1][1]*UO3[1][2]+Q[2][2][1]*UO3[2][2];
+
+  nflops += 90;
 
   /* Q=V1*V2 (V1 is block diagonal with V2_11=1,
               V2 is block diagonal with V2_11=1, V2_22=1) */
@@ -3480,8 +3633,12 @@ printf( "%+20.16e %+20.16e %+20.16e\n", b20, b21, b22 );
   V22re=Q[2][0][0]*VO3[0][2]+Q[2][1][0]*VO3[1][2]+Q[2][2][0]*VO3[2][2];
   V22im=Q[2][0][1]*VO3[0][2]+Q[2][1][1]*VO3[1][2]+Q[2][2][1]*VO3[2][2];
 
+  nflops += 102;
+
   /* singular values */
   sigma[0]=b00; sigma[1]=b11; sigma[2]=b22;
+
+  *nf += nflops;
 
   return 0;
 }
@@ -3491,12 +3648,14 @@ printf( "%+20.16e %+20.16e %+20.16e\n", b20, b21, b22 );
     [ a00 a01]
     [   0 a11]
    This routine eliminates off-diagonal element, handling special cases */
-int svd2x2bidiag(double *a00, double *a01, double *a11, double U2[2][2], double V2[2][2]) {
+int svd2x2bidiag(double *a00, double *a01, double *a11, 
+		 double U2[2][2], double V2[2][2], size_t *nf) {
   register double sinphi, cosphi, tanphi, cotphi;
   register double a, b, min, max, abs00, abs01, abs11;
   register double lna01a11, lna00, ln_num, tau, t;
   register double P00, P01, P10, P11;
   register int isign;
+  size_t nflops = 0;
 
   U2[0][0]=1.; U2[0][1]=0.;
   U2[1][0]=0.; U2[1][1]=1.;
@@ -3519,6 +3678,7 @@ int svd2x2bidiag(double *a00, double *a01, double *a11, double U2[2][2], double 
         cosphi=1/sqrt(1+tanphi*tanphi);
         sinphi=tanphi*cosphi;
       }
+      nflops += 6;
     }
     /* multiply matrix A */
     (*a00)=cosphi*(*a01)-sinphi*(*a11);
@@ -3529,6 +3689,8 @@ int svd2x2bidiag(double *a00, double *a01, double *a11, double U2[2][2], double 
     /* U is just Givens rotation */
     U2[0][0]= cosphi; U2[0][1]= sinphi;
     U2[1][0]=-sinphi; U2[1][1]= cosphi;
+
+    nflops += 3;
   }
   else if( *a11==0 ) {
     if( *a01==0 ) {
@@ -3546,6 +3708,7 @@ int svd2x2bidiag(double *a00, double *a01, double *a11, double U2[2][2], double 
         cosphi=1/sqrt(1+tanphi*tanphi);
         sinphi=tanphi*cosphi;
       }
+      nflops += 7;
     }
     /* multiply matrix A */
     (*a00)=cosphi*(*a00)-sinphi*(*a01);
@@ -3553,6 +3716,7 @@ int svd2x2bidiag(double *a00, double *a01, double *a11, double U2[2][2], double 
     /* V is just Givens rotation */
     V2[0][0]= cosphi; V2[0][1]= sinphi;
     V2[1][0]=-sinphi; V2[1][1]= cosphi;
+    nflops += 3;
   }
   else if( *a01==0 ){ /* nothing to be done */
     ;
@@ -3670,6 +3834,7 @@ int svd2x2bidiag(double *a00, double *a01, double *a11, double U2[2][2], double 
         cosphi=1/sqrt(1+tanphi*tanphi);
         sinphi=tanphi*cosphi;
       }
+      nflops += 7;
     }
     *a00=P00*cosphi-P10*sinphi;
     *a01=0.;
@@ -3679,11 +3844,22 @@ int svd2x2bidiag(double *a00, double *a01, double *a11, double U2[2][2], double 
     U2[0][0]= cosphi; U2[0][1]= sinphi;
     U2[1][0]=-sinphi; U2[1][1]= cosphi;
 
+    nflops += 56;
   }
 
-
+  *nf += nflops;
 
   return 0;
 }
 
 
+void show_su3_mat_opts( void ){
+
+#ifdef MILC_GLOBAL_DEBUG
+    node0_printf("MILC_GLOBAL_DEBUG ***********************\n");
+#endif
+
+#ifdef HISQ_REUNITARIZATION_DEBUG
+  node0_printf("HISQ_REUNITARIZATION_DEBUG is ON\n");
+#endif
+}
