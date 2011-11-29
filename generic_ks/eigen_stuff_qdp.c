@@ -81,7 +81,7 @@ Matrix_Vec_mult_qdp(QDP_ColorVector *src, QDP_ColorVector *res,
   else if(subset==QDP_odd) othersubset = QDP_even;
   else othersubset = QDP_all;
 
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
   dslash_qdp_fn_special2(src, temp0, othersubset, temp1);
   dslash_qdp_fn_special2(temp0, res, subset, temp2);
   QDP_V_eqm_V(res, res, subset);
@@ -560,8 +560,8 @@ Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   else if(parity==ODD) subset = QDP_odd;
   else subset = QDP_all;
 
-  t_longlink = fn->lng;
-  t_fatlink = fn->fat;
+  t_longlink = fn->fl.lng;
+  t_fatlink = fn->fl.fat;
 
   set4_M_from_field(FATLINKS, t_fatlink, EVENANDODD);
   set4_M_from_field(LONGLINKS, t_longlink, EVENANDODD);
