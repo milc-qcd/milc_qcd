@@ -25,9 +25,7 @@ int main( int argc, char **argv )  {
    int i;
    
    initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
    
@@ -72,7 +70,7 @@ int main( int argc, char **argv )  {
 	    rsqmin=0.0001*0.0001;
 	    nflavors=1;
             grsource(EVEN);
-	    load_ferm_links(&fn_links, &ks_act_paths);
+	    load_ferm_links(&fn_links);
 	    ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 		       niter, rsqmin, PRECISION, EVEN, &rsq, &fn_links);
 	    f_measure();
