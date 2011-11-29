@@ -36,9 +36,10 @@ su3_vector **ksprop;
 int status, multiflag;
 int readflag, writeflag;
 char recxml[MAX_RECXML];
-ks_quark_source ksqs;
+quark_source ksqs;
+  imp_ferm_links_t **fn;
 
-    init_ksqs(&ksqs);
+    init_qs(&ksqs);
 
     pix = 2.*PI / (Real)nx;
     piy = 2.*PI / (Real)ny;
@@ -110,7 +111,11 @@ ks_quark_source ksqs;
     rephase( ON );	/* Turn staggered phases on */
 
     /* Create fat and long links */ 
-    load_ferm_links(&fn_links, &ks_act_paths);
+    restore_fermion_links_from_site(fn_links, PRECISION);
+    fn = get_fm_links(fn_links);
+    /* If we want HISQ support, we need the Naik term epsilon index
+        here for now we use fn[0] only, which has no epsilon
+        correction. */
 
     for(j=0; j<3; j++){
 
@@ -151,10 +156,10 @@ ks_quark_source ksqs;
 		    cgn += ks_congrad( F_OFFSET(phi), F_OFFSET(xxx1),
 				       mass[j_mass], niter, nrestart, 
 				       rsqprop, PRECISION, EVEN, &finalrsq,
-				       &fn_links);
+				       fn[0]);
 		    /* Multiply by -Madjoint */
 		    dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD,
-				 &fn_links);
+				 fn[0]);
 		    mass_x2 = 2.*mass[j_mass];
 		    FOREVENSITES(i,s){
 			scalar_mult_su3_vector( &(s->xxx1), -mass_x2, &(s->ttt));
@@ -183,34 +188,42 @@ ks_quark_source ksqs;
 	    }
 	}
 	else{
-	    /* do a multi-cg */
-	    cgn += ks_multicg_mass( F_OFFSET(phi), psim, mass, num_mass,
-			       niter, rsqprop, PRECISION, EVEN, &finalrsq,
-			       &fn_links);
-	    /* Multiply by -Madjoint */
-	    for(j_mass=0; j_mass<num_mass; j_mass++){
-		FORALLSITES(i,s){
-		    su3vec_copy( &(psim[j_mass][i]), &(s->xxx1));
-		}
-		dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD,
-			     &fn_links);
-		mass_x2 = 2.*mass[j_mass];
-		FOREVENSITES(i,s){
-		    scalar_mult_su3_vector( &(s->xxx1), -mass_x2, &(s->ttt));
-		}
-
-		/* Get contribution to color trace of the propagator */
-		FORALLSITES(i,s){
-		    CSUM( s->trace_prop[j_mass], s->ttt.c[j]);
-		}
-
-		/* save propagator if requested */
-		if( kssaveflag[j_mass] != FORGET ){
-		    FORALLSITES(i,s){
-			su3vec_copy( &(s->ttt), (ksprop[j_mass] + 3*i + j));
-		    }
-		}
+	  /* Copy pointers for fermion links.  Should be based on Naik epsilon indices */
+	  imp_ferm_links_t **fn_multi = 
+	    (imp_ferm_links_t **)malloc(sizeof(imp_ferm_links_t *)*num_mass);
+	  for(j_mass = 0; j_mass < num_mass; j_mass++)
+	    /* Here we should use the Naik epsilon index appropriate to each fermion */
+	    fn_multi[j_mass] = fn[0];
+	  
+	  /* do a multi-cg */
+	  cgn += ks_multicg_mass_site( F_OFFSET(phi), psim, mass, num_mass,
+				       niter, rsqprop, PRECISION, EVEN, &finalrsq,
+				       fn_multi);
+	  /* Multiply by -Madjoint */
+	  for(j_mass=0; j_mass<num_mass; j_mass++){
+	    FORALLSITES(i,s){
+	      su3vec_copy( &(psim[j_mass][i]), &(s->xxx1));
 	    }
+	    dslash_site( F_OFFSET(xxx1), F_OFFSET(ttt), ODD,
+			 fn_multi[j_mass]);
+	    mass_x2 = 2.*mass[j_mass];
+	    FOREVENSITES(i,s){
+	      scalar_mult_su3_vector( &(s->xxx1), -mass_x2, &(s->ttt));
+	    }
+	    
+	    /* Get contribution to color trace of the propagator */
+	    FORALLSITES(i,s){
+	      CSUM( s->trace_prop[j_mass], s->ttt.c[j]);
+	    }
+	    
+	    /* save propagator if requested */
+	    if( kssaveflag[j_mass] != FORGET ){
+	      FORALLSITES(i,s){
+		su3vec_copy( &(s->ttt), (ksprop[j_mass] + 3*i + j));
+	      }
+	    }
+	  }
+	  free(fn_multi);
 	}
     }
 

@@ -10,6 +10,9 @@
 #include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "../include/io_lat.h"	/* For gauge_file */
+#ifdef QUARK_PROP
+#include "../include/fermion_links.h" /* For fermion_links_t */
+#endif
 
 /* Begin definition of site structure */
 
@@ -150,6 +153,8 @@ EXTERN  double_prn node_prn ;
    part of the lattice on this node) */
 EXTERN site *lattice;
 
+EXTERN su3_matrix *ape_links;
+
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */
 #define N_POINTERS 16
@@ -157,8 +162,7 @@ EXTERN char ** gen_pt[N_POINTERS];
 
 #ifdef QUARK_PROP
 /* Storage for definition of the quark action */
-EXTERN ferm_links_t      fn_links;
-EXTERN ks_action_paths ks_act_paths;
+EXTERN fermion_links_t *fn_links;
 #endif
 
 

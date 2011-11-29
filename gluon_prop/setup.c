@@ -3,7 +3,6 @@
 #define IF_OK if(status==0)
 
 #include "gluon_prop_includes.h"
-#include <lattice_qdp.h>
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
@@ -13,9 +12,6 @@ int  setup()   {
 int initial_set();
 void make_3n_gathers();
 void periodic_bc();
-#ifdef HAVE_QDP
- int i;
-#endif
  int prompt;
 
         /* print banner, get volume, nflavors, seed */
@@ -30,7 +26,7 @@ void periodic_bc();
     node0_printf("Made nn gathers\n"); fflush(stdout);
 #ifdef QUARK_PROP
      /* Mark t_longlink and t_fatlink as unallocated */
-    init_ferm_links(&fn_links);
+    //    init_ferm_links(&fn_links, &ks_act_paths);
         /* set up 3rd nearest neighbor pointers and comlink structures
            code for this routine is below  */
     make_3n_gathers();
@@ -40,23 +36,16 @@ void periodic_bc();
 	/* make boundary condition in time periodic */
     periodic_bc();
 
-#ifdef HAVE_QDP
-    for(i=0; i<4; ++i) {
-        shiftdirs[i] = QDP_neighbor[i];
-        shiftdirs[i+4] = neighbor3[i];
-    }
-    for(i=0; i<8; ++i) {
-        shiftfwd[i] = QDP_forward;
-        shiftbck[i] = QDP_backward;
-    }
-#endif
-
 #endif
 
     node0_printf("Finished setup\n"); fflush(stdout);
     return(prompt);
 }
 
+#if defined(QUARK_PROP) && FERM_ACTION == HISQ
+static int n_naiks = 1;
+static double eps_naik[MAX_NAIK];
+#endif
 
 /* SETUP ROUTINES */
 int initial_set(){
@@ -159,7 +148,7 @@ char savebuf[128];
 	    par_buf.startfile );
 
  
-	IF_OK if (prompt!=0) printf(
+	IF_OK if (prompt==1) printf(
 	    "enter 'no_gauge_fix', 'landau_gauge_fix', or 'coulomb_gauge_fix'\n");
 	IF_OK status2=scanf("%s",savebuf);
 	IF_OK {
@@ -187,7 +176,7 @@ char savebuf[128];
 #endif
 	}
  
-	IF_OK if (prompt!=0) printf(
+	IF_OK if (prompt==1) printf(
 	    "enter 'no_gauge_fix', 'landau_gauge_fix', or 'coulomb_gauge_fix'\n");
 	IF_OK status2=scanf("%s",savebuf);
 	IF_OK {
@@ -305,8 +294,25 @@ char savebuf[128];
     phases_in = OFF;
 
     /* make table of coefficients and permutations of paths in quark action */
-    init_path_table(&ks_act_paths);
-    make_path_table(&ks_act_paths, NULL);
+    //init_path_table(fn_links.ap);
+    //make_path_table(fn_links.ap, NULL);
+    rephase( ON );
+  /* Set uptions for fermion links */
+  
+#ifdef DBLSTORE_FN
+  /* We want to double-store the links for optimization */
+  fermion_links_want_back(1);
+#endif
+  
+#if FERM_ACTION == HISQ
+  /* WARNING: Not fully supported.  We need to read the Naik epsilons first */
+  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+#else
+  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+#endif
+
+    rephase( OFF );
+    
 #endif
 
     /* For archive writing, for now */
@@ -325,9 +331,6 @@ char savebuf[128];
 */
 void make_3n_gathers(){
    int i;
-#ifdef HAVE_QDP
-   int disp[4]={0,0,0,0};
-#endif
    void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
  
    for(i=XUP;i<=TUP;i++) {
@@ -339,13 +342,6 @@ void make_3n_gathers(){
        so you can use X3UP, X3DOWN, etc. as argument in calling them. */
    sort_eight_gathers(X3UP);
 
-#ifdef HAVE_QDP
-    for(i=0; i<4; i++) {
-      disp[i] = 3;
-      neighbor3[i] = QDP_create_shift(disp);
-      disp[i] = 0;
-    }
-#endif
 }
  
 

@@ -9,7 +9,6 @@
 
 #define CONTROL
 #include "gluon_prop_includes.h"
-#include "lattice_qdp.h"
 #define NULL_FP -1
 
 int main(int argc, char *argv[])  {
@@ -23,9 +22,6 @@ int main(int argc, char *argv[])  {
     int first_set = 1;
 
     initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-    QDP_initialize(&argc, &argv);
-#endif
     /* Remap standard I/O */
     if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
@@ -131,7 +127,7 @@ int main(int argc, char *argv[])  {
 #ifdef QUARK_PROP
 	/* Now compute the quark propagator */
 #ifdef FN
-	invalidate_all_ferm_links(&fn_links);
+	invalidate_fermion_links(fn_links);
 #endif
 
 #ifdef QUARK_RENORM
@@ -158,9 +154,7 @@ int main(int argc, char *argv[])  {
 	    save_lattice( saveflag, savefile, stringLFN );
 	}
     }
-#ifdef HAVE_QDP
-    QDP_finalize();
-#endif
+
     normal_exit(0);
     return 0;
 }
