@@ -47,24 +47,19 @@ void write_appl_ksprop_info(FILE *fp)
 
 /* Temporary until we can create XML */
 /* TO DO: Proviso for a number of quark action paths different from 6 */
-char *create_ks_XML()
+char *create_ks_XML(void)
 {
   char *xml;
-  Real *act_path_coeff = ks_act_paths.act_path_coeff;
+  char *ac_str = get_action_parameter_string(fn_links);
   char bc[] = "antiperiodic";
 
   xml = (char *)malloc(MAX_XML);
   
-  snprintf(xml,MAX_XML,"\nDerived MILC KS field\ngauge.filename %s\npropagator.boundary_conditions space: periodic time: %s\nasqtad.u0 %7.5f\naction.path_coeff[0] %e\naction.path_coeff[1] %e\naction.path_coeff[2] %e\naction.path_coeff[3] %e\naction.path_coeff[4] %e\naction.path_coeff[5] %e\ninv_arg.rsqprop %e\n",
+  snprintf(xml,MAX_XML,"\nDerived MILC KS field\ngauge.filename %s\npropagator.boundary_conditions space: periodic time: %s\nasqtad.u0 %7.5f\n%s\ninv_arg.rsqprop %e\n",
 	   param.startfile,
 	   bc,
 	   u0,
-	   act_path_coeff[0],
-	   act_path_coeff[1],
-	   act_path_coeff[2],
-	   act_path_coeff[3],
-	   act_path_coeff[4],
-	   act_path_coeff[5],
+	   ac_str,
 	   rsqprop);
 
   xml[MAX_XML-1] = '\0';

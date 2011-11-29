@@ -3,10 +3,11 @@
 
 #include "../include/macros.h"  /* For MAXFILENAME */
 #include "../include/generic_quark_types.h"
-#include "../include/generic_ks.h" /* For ks_quark_source */
-#include "../include/generic_wilson.h"  /* For wilson_quark_source */
+#include "../include/generic_ks.h" /* For quark_source */
+#include "../include/generic_wilson.h"  /* For quark_source */
 #include "../include/gammatypes.h"
 
+#define MAX_SOURCE 24
 #define MAX_PROP 16
 #define MAX_QK 64
 #define MAX_PAIR 128
@@ -19,8 +20,12 @@
 #define MAX_CORR 200
 #define CLOVER_TYPE 0
 #define KS_TYPE 1
+#define KS4_TYPE 2
 #define PROP_TYPE 0
 #define QUARK_TYPE 1
+#define BASE_SOURCE_PARENT -1
+
+enum checktype { CHECK_NO, CHECK_YES, CHECK_SOURCE_ONLY };
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
@@ -40,6 +45,7 @@ typedef struct {
 			     Must be divisors of the node_geometry. */
 #endif
 #endif
+  int iseed;
   char job_id[MAXFILENAME]; /* Usually encoded by scripts */
 
   /*  REPEATING BLOCK */
@@ -49,25 +55,33 @@ typedef struct {
   Real staple_weight;
   int ape_iter;
   Real u0;
-  quark_invert_control qic;
+  int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
+  quark_invert_control qic[MAX_PROP];
+  int num_base_source;       /* Number of modified sources */
+  quark_source base_src_qs[MAX_SOURCE];
+  int num_modified_source;       /* Number of sources modifications */
+  quark_source_sink_op src_qs_op[MAX_SOURCE];
+  int parent_source[MAX_SOURCE];      /* base_source or source index */
   int num_prop; /* number of propagators */
   int prop_type[MAX_PROP]; /* 0 clover 1 KS */
+  int source[MAX_PROP]; /* source index for this propagator */
   int startflag_w[MAX_PROP];	/* what to do for beginning wilson prop */
   int saveflag_w[MAX_PROP];	/* what to do for saving wilson prop */
+  quark_source src_qs[MAX_PROP];
   dirac_clover_param dcp[MAX_PROP];
   char kappa_label[MAX_PROP][32];
-  wilson_quark_source src_wqs[MAX_PROP];
   int startflag_ks[MAX_PROP];	/* what to do for beginning wilson prop */
   int saveflag_ks[MAX_PROP];	/* what to do for saving KS prop */
   ks_param ksp[MAX_PROP];
   char mass_label[MAX_PROP][32];
-  ks_quark_source src_ksqs[MAX_PROP];
   int check[MAX_PROP];
+  Real bdry_phase[MAX_PROP][4];      /* For twisted boundary conditions */
   int num_qk;	              /* number of quarks */
   int parent_type[MAX_QK];      /* propagator type: quark or propagator */
   int prop_for_qk[MAX_QK];           /* Propagator or quark index for quark */
-  wilson_quark_source snk_wqs[MAX_QK];  /* Sink description for quark */
+  int naik_index[MAX_QK];            /* Naik term index for quark */
   int saveflag_q[MAX_QK];	/* what to do for saving wilson prop */
+  quark_source_sink_op snk_qs_op[MAX_QK];
   int num_pair;
   int qkpair[MAX_PAIR][2];
   int do_meson_spect[MAX_PAIR];

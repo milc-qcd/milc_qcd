@@ -65,10 +65,57 @@ typedef struct { dspin_wilson_vector c[3]; } dwilson_propagator;
 static int nt;
 
 /*--------------------------------------------------------------------*/
-/* Open and read a FermiQCD header for the open meson correlator file */
-
 typedef uint32_t u_int32type;
 typedef uint64_t u_int64type;
+
+int dobyterev;
+
+#include <assert.h>
+
+/* For doing byte reversal on n contiguous 32-bit words */
+
+void byterevn(u_int32type w[], int n)
+{
+  u_int32type old,newv;
+  int j;
+
+  assert(sizeof(u_int32type) == 4);
+  
+  for(j=0; j<n; j++)
+    {
+      old = w[j];
+      newv = old >> 24 & 0x000000ff;
+      newv |= old >> 8 & 0x0000ff00;
+      newv |= old << 8 & 0x00ff0000;
+      newv |= old << 24 & 0xff000000;
+      w[j] = newv;
+    }
+} /* byterevn */
+
+/*--------------------------------------------------------------------*/
+/* Do byte reversal on n contiguous 64-bit words */
+
+void byterevn64(u_int32type w[], int n)
+{
+  u_int32type tmp;
+  int j;
+
+  assert(sizeof(u_int32type) == 4);
+  
+  /* First swap pairs of 32-bit words */
+  for(j=0; j<n; j++){
+    tmp = w[2*j];
+    w[2*j] = w[2*j+1];
+    w[2*j+1] = tmp;
+  }
+
+  /* Then swap bytes in 32-bit words */
+  byterevn(w, 2*n);
+}
+
+/*--------------------------------------------------------------------*/
+/* Open and read a FermiQCD header for the open meson correlator file */
+
 typedef dcomplex mdp_complex;
 static FILE* open_open_meson_file(char filename[]){
 
@@ -109,6 +156,30 @@ static FILE* open_open_meson_file(char filename[]){
     return NULL;
   }
 
+  /* Do we need byte reversal? */
+  if(fermiQCD_header.endianess != 0x87654321){
+    u_int32type x = fermiQCD_header.endianess;
+    byterevn(&x,1);
+    if(x != 0x87654321){
+      printf("Quitting: Can't figure out endianess: %x\n",fermiQCD_header.endianess);
+      exit(1);
+    } else {
+      dobyterev = 1;
+      printf("Reading with byte reversal\n");
+    }
+  } else {
+    dobyterev = 0;
+  }
+
+  /* Fix the header data */
+  if(dobyterev){
+    byterevn(&fermiQCD_header.endianess,1);
+    byterevn(&fermiQCD_header.ndim,1);
+    byterevn(fermiQCD_header.box,fermiQCD_header.ndim);
+    byterevn(&fermiQCD_header.bytes_per_site,1);
+    byterevn64((u_int32type *)&fermiQCD_header.sites,1);
+  }
+
   /* Set globals */
   nt = fermiQCD_header.box[0];
 
@@ -138,6 +209,10 @@ static void read_open_meson_prop(FILE *fp, wilson_propagator *wp)
   if(fread(&c, sizeof(c), 1, fp) != 1){
     printf("read_open_meson_prop: Error writing open meson correlator\n");
     return;
+  }
+
+  if(dobyterev){
+    byterevn64((u_int32type *)&c[0][0][0][0],4*4*3*3*2);
   }
 
   /* Remap Wilson propagator elements */
@@ -184,7 +259,7 @@ int main(int argc, char *argv[]){
   FILE *corr_fp;
   int t, tselect = -1;
   char *filename;
-  char scanfilename[256];
+  char scanfilename[512];
   wilson_propagator wprop;
 
   /* Process command line args */
@@ -214,4 +289,6 @@ int main(int argc, char *argv[]){
   }
   
   close_open_meson_file(corr_fp);
+
+  return 0;
 }

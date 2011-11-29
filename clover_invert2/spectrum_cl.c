@@ -295,8 +295,8 @@ create_src_snk_gamma(int **src_g, int **snk_g, int **g_index, int *ng, int pair)
     terminate(1);
   }
 
-  /* Run through all correlators, tabulating and hashing the unique
-     momentum and parity */
+  /* Run through all correlators for this pair, tabulating and hashing
+     the unique source-sink gammas */
   for(c = 0; c < num_corr; c++){
     (*g_index)[c] = 
       hash_src_snk_gammas(*src_g, *snk_g, param.gam_src[pair][c], 
@@ -561,7 +561,7 @@ spectrum_cl_init(int pair){
 }
 
 /*--------------------------------------------------------------------*/
-static void spectrum_cl_diag_baryon(wilson_prop_field qp){
+static void spectrum_cl_diag_baryon(wilson_prop_field *qp){
   
   double dtime = start_timing();
   w_baryon(qp, qp, qp, bar_prop);
@@ -569,8 +569,8 @@ static void spectrum_cl_diag_baryon(wilson_prop_field qp){
 }
 
 /*---------------------------------------------------------------------*/
-static void spectrum_cl_offdiag_baryon(wilson_prop_field qp0, 
-				       wilson_prop_field qp1)
+static void spectrum_cl_offdiag_baryon(wilson_prop_field *qp0, 
+				       wilson_prop_field *qp1)
 {
   double dtime = start_timing();
   w_baryon_hl( qp1, qp0, qp0, bar_prop100);
@@ -605,14 +605,14 @@ static void accum_open_meson(wilson_propagator **mp, spin_wilson_vector *qp0,
 }
 
 /*--------------------------------------------------------------------*/
-static void spectrum_cl_diag_gen_meson(wilson_prop_field qp, complex **mp, 
+static void spectrum_cl_diag_gen_meson(wilson_prop_field *qp, complex **mp, 
 				       int pair){
   
   int color;
   spin_wilson_vector *qps;
   double dtime = start_timing();
 
-  for(color=0;color<3;color++){
+  for(color=0;color<qp->nc;color++){
     qps = extract_swv_from_wp(qp, color);
     accum_gen_meson(mp, qps, qps, pair);
   }
@@ -620,13 +620,13 @@ static void spectrum_cl_diag_gen_meson(wilson_prop_field qp, complex **mp,
 }
 
 /*--------------------------------------------------------------------*/
-static void spectrum_cl_diag_meson(wilson_prop_field qp, int pair){
+static void spectrum_cl_diag_meson(wilson_prop_field *qp, int pair){
   spectrum_cl_diag_gen_meson(qp, pmes_prop, pair);
 }
 
 /*--------------------------------------------------------------------*/
-static void spectrum_cl_offdiag_gen_meson(wilson_prop_field qp0, 
-					  wilson_prop_field qp1, 
+static void spectrum_cl_offdiag_gen_meson(wilson_prop_field *qp0, 
+					  wilson_prop_field *qp1, 
 					  complex **mp, int pair){
 
   spin_wilson_vector *qps0, *qps1;
@@ -634,7 +634,7 @@ static void spectrum_cl_offdiag_gen_meson(wilson_prop_field qp0,
   double dtime = start_timing();
 
   /* Off diagonal quark mass mesons */
-  for(color = 0; color < 3; color++){
+  for(color = 0; color < qp0->nc; color++){
     qps0 = extract_swv_from_wp( qp0, color);
     qps1 = extract_swv_from_wp( qp1, color);
 
@@ -645,15 +645,15 @@ static void spectrum_cl_offdiag_gen_meson(wilson_prop_field qp0,
 }
 
 /*---------------------------------------------------------------------*/
-static void spectrum_cl_offdiag_open_meson(wilson_prop_field qp0,
-					   wilson_prop_field qp1,
+static void spectrum_cl_offdiag_open_meson(wilson_prop_field *qp0,
+					   wilson_prop_field *qp1,
 					   int pair)
 {
   spin_wilson_vector *qps0, *qps1;
   int color;
   double dtime = start_timing();
 
-  for(color=0;color<3;color++){
+  for(color=0;color<qp0->nc;color++){
     qps0 = extract_swv_from_wp( qp0, color);
     qps1 = extract_swv_from_wp( qp1, color);
 
@@ -662,58 +662,12 @@ static void spectrum_cl_offdiag_open_meson(wilson_prop_field qp0,
   print_timing(dtime, "open meson");
 }
 /*--------------------------------------------------------------------*/
-static void spectrum_cl_offdiag_meson(wilson_prop_field qp0, 
-				      wilson_prop_field qp1,
+static void spectrum_cl_offdiag_meson(wilson_prop_field *qp0, 
+				      wilson_prop_field *qp1,
 				      int pair){
 
   /* Point meson */
   spectrum_cl_offdiag_gen_meson(qp0, qp1, pmes_prop, pair);
-}
-
-/*--------------------------------------------------------------------*/
-static void 
-print_start_meson_prop(int pair, int m, char sink[]){
-  if(param.saveflag_c[pair] != FORGET)return;
-  int iq0 = param.qkpair[pair][0];
-  int iq1 = param.qkpair[pair][1];
-  int ip0 = param.prop_for_qk[iq0];
-  int ip1 = param.prop_for_qk[iq1];
-  if(this_node != 0)return;
-  printf("STARTPROP\n");
-  printf("MOMENTUM: %s\n", param.mom_label[pair][m]);
-  printf("MASSES: ");
-  if(param.prop_type[ip0] == CLOVER_TYPE)
-    printf("kappa[%d]=%g ", ip0, param.dcp[ip0].Kappa);
-  else /* KS_TYPE */
-    printf("mass[%d]=%g ", ip0, param.ksp[ip0].mass);
-  if(param.prop_type[ip1] == CLOVER_TYPE)
-    printf("kappa[%d]=%g ", ip1, param.dcp[ip1].Kappa);
-  else /* KS_TYPE */
-    printf("mass[%d]=%g ", ip1, param.ksp[ip1].mass);
-  printf("\n");
-  printf("SOURCES: %s %s\n",param.src_wqs[ip0].descrp,
-	 param.src_wqs[ip1].descrp);
-  printf("SINKS: %s %s %s\n", param.snk_wqs[iq0].descrp, 
-	 param.snk_wqs[iq1].descrp, 
-	 param.meson_label[pair][m]);
-}
-		       
-/*--------------------------------------------------------------------*/
-
-static char *get_utc_datetime(void)
-{
-  time_t time_stamp;
-  struct tm *gmtime_stamp;
-  static char time_string[64];
-
-  time(&time_stamp);
-  gmtime_stamp = gmtime(&time_stamp);
-  strncpy(time_string,asctime(gmtime_stamp),64);
-  
-  /* Remove trailing end-of-line character */
-  if(time_string[strlen(time_string) - 1] == '\n')
-    time_string[strlen(time_string) - 1] = '\0';
-  return time_string;
 }
 
 /*--------------------------------------------------------------------*/
@@ -748,20 +702,65 @@ int get_ancestors(int h[], int *n, int iq){
   
   return param.prop_for_qk[h[i]];
 }
+
+/*--------------------------------------------------------------------*/
+/* Chase linked list to find the original propagator ancestor */
+
+int get_eve(int iq){
+  int i, ip;
+
+  for(i = 0; i < MAX_HISTORY-1; i++){
+    ip = param.prop_for_qk[iq];
+    if(param.parent_type[iq] == PROP_TYPE) break;
+    iq = ip;
+  }
+
+  return ip;
+}
   
+/*--------------------------------------------------------------------*/
+/* Print to stdout on node 0 in lieu of a separate correlator file */
+static void 
+print_start_meson_prop(int pair, int m, char sink[]){
+  int iq0 = param.qkpair[pair][0];
+  int iq1 = param.qkpair[pair][1];
+  int ip0 = get_eve(iq0);
+  int ip1 = get_eve(iq1);
+
+  if(this_node != 0)return;
+  /* No stdout if there is a separate correlator file */
+  if(param.saveflag_c[pair] != FORGET)return;
+  printf("STARTPROP\n");
+  printf("MOMENTUM: %s\n", param.mom_label[pair][m]);
+  printf("MASSES: ");
+  if(param.prop_type[ip0] == CLOVER_TYPE)
+    printf("kappa[%d]=%g ", ip0, param.dcp[ip0].Kappa);
+  else /* KS_TYPE */
+    printf("mass[%d]=%g ", ip0, param.ksp[ip0].mass);
+  if(param.prop_type[ip1] == CLOVER_TYPE)
+    printf("kappa[%d]=%g ", ip1, param.dcp[ip1].Kappa);
+  else /* KS_TYPE */
+    printf("mass[%d]=%g ", ip1, param.ksp[ip1].mass);
+  printf("\n");
+  printf("SOURCES: %s %s\n",param.src_qs[ip0].descrp,
+	 param.src_qs[ip1].descrp);
+  printf("SINKS: %s %s %s\n", param.snk_qs_op[iq0].descrp,
+         param.snk_qs_op[iq1].descrp,
+         param.meson_label[pair][m]);
+}
+		       
 /*--------------------------------------------------------------------*/
 static FILE* open_fnal_meson_file(int pair){
   int iq0 = param.qkpair[pair][0];
   int iq1 = param.qkpair[pair][1];
   int ih0[MAX_HISTORY], ih1[MAX_HISTORY];
   int nh0, nh1;
-  int i;
+  int k;
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
   FILE *fp;
 
-  /* Create the FNAL file only for rotated meson.  Only node 0
-     writes. */
+  /* Create the FNAL file only if requested.  Only node 0 writes. */
   if(this_node != 0 || param.saveflag_c[pair] == FORGET )
     return NULL;
 
@@ -772,59 +771,65 @@ static FILE* open_fnal_meson_file(int pair){
     return NULL;
   }
   fprintf(fp,"---\n");
-  fprintf(fp,"JobID:                  %s\n",param.job_id);
-  fprintf(fp,"date:                   \"%s UTC\"\n",get_utc_datetime());
-  fprintf(fp,"lattice_size:           %d,%d,%d,%d\n", nx, ny, nz, nt);
-  //  fprintf(fp,"spatial volume:        %g\n",((float)nx)*ny*nz);
+  fprintf(fp,"JobID:                   %s\n",param.job_id);
+  fprintf(fp,"date:                    \"%s UTC\"\n",utc_date_time);
+  fprintf(fp,"lattice_size:            %d,%d,%d,%d\n", nx, ny, nz, nt);
+  //  fprintf(fp,"spatial volume:         %g\n",((float)nx)*ny*nz);
 
-  if(param.prop_type[ip0] == CLOVER_TYPE){
-    fprintf(fp,"antiquark_type:         clover\n");
-    fprintf(fp,"antiquark_source_type:  %s\n",param.src_wqs[ip0].descrp);
-    fprintf(fp,"antiquark_source_label: %s\n",param.src_wqs[ip0].label);
-    fprintf(fp,"antiquark_source_d1:    \"%f\"\n",param.src_wqs[ip0].d1);
-  }
-  else{ /* KS_TYPE */
-    fprintf(fp,"antiquark_type:         naive\n");
-    fprintf(fp,"antiquark_source_type:  %s\n",param.src_ksqs[ip0].descrp);
-    fprintf(fp,"antiquark_source_label: %s\n",param.src_ksqs[ip0].label);
-  }
-
-  fprintf(fp,"antiquark_sink_type:    %s",param.snk_wqs[ih0[nh0-1]].descrp);
-  for(i = nh0-2; i >=0; i--)
-    fprintf(fp,"/%s",param.snk_wqs[ih0[i]].descrp);
-  fprintf(fp,"\n");
-  fprintf(fp,"antiquark_sink_label:   %s\n",param.snk_wqs[iq0].label);
-  fprintf(fp,"antiquark_sink_d1:      \"%f\"\n",param.snk_wqs[iq0].d1);
-  
   if(param.prop_type[ip0] == CLOVER_TYPE)
-    fprintf(fp,"antiquark_kappa:        \"%s\"\n",param.kappa_label[ip0]);
+    fprintf(fp,"antiquark_type:          clover\n");
+  else
+    fprintf(fp,"antiquark_type:          naive\n");
+
+  print_source_info(fp, "antiquark_source", &param.src_qs[ip0]);
+  fprintf(fp,"antiquark_source_label:  %s\n",param.src_qs[ip0].label);
+  print_field_op_info(fp, "antiquark_source", param.src_qs[ip0].op);
+
+//  fprintf(fp,"antiquark_sink_op:       %s",param.snk_qs_op[ih0[nh0-1]].descrp);
+//  for(i = nh0-2; i >=0; i--)
+//    fprintf(fp,"/%s",param.snk_qs_op[ih0[i]].descrp);
+//  fprintf(fp,"\n");
+  fprintf(fp,"antiquark_sink_label:    %s\n",param.snk_qs_op[iq0].label);
+  {
+    quark_source_sink_op **op_list = (quark_source_sink_op **)
+      malloc(sizeof(quark_source_sink_op *)*nh0);
+    for(k = 0; k < nh0; k++)
+      op_list[k] = &param.snk_qs_op[ih0[nh0-1-k]];
+    print_field_op_info_list(fp, "antiquark_sink", op_list, nh0);
+    free(op_list);
+  }
+      
+  if(param.prop_type[ip0] == CLOVER_TYPE)
+    fprintf(fp,"antiquark_kappa:         \"%s\"\n",param.kappa_label[ip0]);
   else /* KS_TYPE */
-    fprintf(fp,"antiquark_mass:         \"%s\"\n",param.mass_label[ip0]);
-
-  if(param.prop_type[ip1] == CLOVER_TYPE){
-    fprintf(fp,"quark_type:             clover\n");
-    fprintf(fp,"quark_source_type:      %s\n",param.src_wqs[ip1].descrp);
-    fprintf(fp,"quark_source_label:     %s\n",param.src_wqs[ip1].label);
-    fprintf(fp,"quark_source_d1:        \"%f\"\n",param.src_wqs[ip1].d1);
-
-  }
-  else { /* KS_TYPE */
-    fprintf(fp,"quark_type:             naive\n");
-    fprintf(fp,"quark_source_type:      %s\n",param.src_ksqs[ip1].descrp);
-    fprintf(fp,"quark_source_label:     %s\n",param.src_ksqs[ip1].label);
-  }
-
-  fprintf(fp,"quark_sink_type:        %s",param.snk_wqs[ih1[nh1-1]].descrp);
-  for(i = nh1-2; i >=0; i--)
-    fprintf(fp,"/%s",param.snk_wqs[ih1[i]].descrp);
-  fprintf(fp,"\n");
-  fprintf(fp,"quark_sink_label:       %s\n",param.snk_wqs[iq1].label);
-  fprintf(fp,"quark_sink_d1:          \"%f\"\n",param.snk_wqs[iq1].d1);
+    fprintf(fp,"antiquark_mass:          \"%s\"\n",param.mass_label[ip0]);
 
   if(param.prop_type[ip1] == CLOVER_TYPE)
-    fprintf(fp,"quark_kappa:            \"%s\"\n",param.kappa_label[ip1]);
+    fprintf(fp,"quark_type:              clover\n");
+  else
+    fprintf(fp,"quark_type:              naive\n");
+    
+  print_source_info(fp, "quark_source", &param.src_qs[ip1]);
+  fprintf(fp,"quark_source_label:      %s\n",param.src_qs[ip1].label);
+  print_field_op_info(fp, "quark_source", param.src_qs[ip1].op);
+
+//  fprintf(fp,"quark_sink_op:           %s",param.snk_qs_op[ih1[nh1-1]].descrp);
+//  for(i = nh1-2; i >=0; i--)
+//    fprintf(fp,"/%s",param.snk_qs_op[ih1[i]].descrp);
+//  fprintf(fp,"\n");
+  fprintf(fp,"quark_sink_label:        %s\n",param.snk_qs_op[iq1].label);
+  {
+    quark_source_sink_op **op_list = (quark_source_sink_op **)
+      malloc(sizeof(quark_source_sink_op *)*nh1);
+    for(k = 0; k < nh1; k++)
+      op_list[k] = &param.snk_qs_op[ih1[nh1-1-k]];
+    print_field_op_info_list(fp, "quark_sink", op_list, nh1);
+    free(op_list);
+  }
+  if(param.prop_type[ip1] == CLOVER_TYPE)
+    fprintf(fp,"quark_kappa:             \"%s\"\n",param.kappa_label[ip1]);
   else /* KS_TYPE */
-    fprintf(fp,"quark_mass:             \"%s\"\n",param.mass_label[ip1]);
+    fprintf(fp,"quark_mass:              \"%s\"\n",param.mass_label[ip1]);
 
   fprintf(fp,"...\n");
   return fp;
@@ -865,7 +870,7 @@ static FILE* open_open_meson_file(int pair){
     return NULL;
 
   /* Load any additional header values */
-  strncpy(fermiQCD_header.creation_date, get_utc_datetime(), 60);
+  strncpy(fermiQCD_header.creation_date, utc_date_time, 60);
 
   fp = fopen(filename,"wb");
   if(fp == NULL){
@@ -902,43 +907,34 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
 {
   int iq0 = param.qkpair[pair][0];
   int iq1 = param.qkpair[pair][1];
-  int ip0 = param.prop_for_qk[iq0];
-  int ip1 = param.prop_for_qk[iq1];
+  int ip0 = get_eve(iq0);
+  int ip1 = get_eve(iq1);
   int i   = lookup_corr_index(pair,m);
 
   if(this_node != 0 || param.saveflag_c[pair] == FORGET)return;
 
   fprintf(fp,"---\n");
-  fprintf(fp,"correlator:             %s\n",param.meson_label[pair][m]);
-  fprintf(fp,"momentum:               %s\n",param.mom_label[pair][m]);
-  fprintf(fp,"gamma_source:           %s\n",gamma_label(param.gam_src[pair][i]));
-  fprintf(fp,"gamma_sink:             %s\n",gamma_label(param.gam_snk[pair][i]));
+  fprintf(fp,"correlator:              %s\n",param.meson_label[pair][m]);
+  fprintf(fp,"momentum:                %s\n",param.mom_label[pair][m]);
+  fprintf(fp,"gamma_source:            %s\n",gamma_label(param.gam_src[pair][i]));
+  fprintf(fp,"gamma_sink:              %s\n",gamma_label(param.gam_snk[pair][i]));
 
   /* Print correlator key encoding metadata */
-  fprintf(fp,"correlator_key:         %s", param.meson_label[pair][m]);
+  fprintf(fp,"correlator_key:          %s", param.meson_label[pair][m]);
 
   /* Source labels */
-  if(param.prop_type[ip0] == CLOVER_TYPE){
-    if(strlen(param.src_wqs[ip0].label)>0)
-      fprintf(fp,"_%s", param.src_wqs[ip0].label);
-  } else { /* KS_TYPE */
-    if(strlen(param.src_ksqs[ip0].label)>0)
-      fprintf(fp,"_%s", param.src_ksqs[ip0].label);
-  }
-  if(param.prop_type[ip1] == CLOVER_TYPE){
-    if(strlen(param.src_wqs[ip1].label)>0)
-      fprintf(fp,"_%s", param.src_wqs[ip1].label);
-  } else { /* KS_TYPE */
-    if(strlen(param.src_ksqs[ip1].label)>0)
-      fprintf(fp,"_%s", param.src_ksqs[ip1].label);
-  }
+  if(strlen(param.src_qs[ip0].label)>0)
+    fprintf(fp,"_%s", param.src_qs[ip0].label);
+
+  if(strlen(param.src_qs[ip1].label)>0)
+    fprintf(fp,"_%s", param.src_qs[ip1].label);
 
   /* Sink labels */
-  if(strlen(param.snk_wqs[iq0].label)>0)
-    fprintf(fp,"_%s",param.snk_wqs[iq0].label);
+  if(strlen(param.snk_qs_op[iq0].label)>0)
+    fprintf(fp,"_%s",param.snk_qs_op[iq0].label);
 
-  if(strlen(param.snk_wqs[iq1].label)>0)
-    fprintf(fp,"_%s",param.snk_wqs[iq1].label);
+  if(strlen(param.snk_qs_op[iq1].label)>0)
+    fprintf(fp,"_%s",param.snk_qs_op[iq1].label);
 
   /* Mass or kappa labels */
   if(param.prop_type[ip0] == CLOVER_TYPE)
@@ -963,30 +959,30 @@ static void print_start_baryon_prop(int iq0, int iq1, int iq2, char sink[])
 
   if(this_node != 0)return;
   printf("STARTPROP\n");
-  printf("SOURCES: %s %s %s\n",param.src_wqs[ip0].descrp,
-	 param.src_wqs[ip1].descrp, param.src_wqs[ip2].descrp );
+  printf("SOURCES: %s %s %s\n",param.src_qs[ip0].descrp,
+	 param.src_qs[ip1].descrp, param.src_qs[ip2].descrp );
   printf("KAPPAS: %g %g %g\n",param.dcp[ip0].Kappa,
 	 param.dcp[ip1].Kappa, param.dcp[ip2].Kappa);
   /* Note, the metadata should be updated here to handle the case
      of nontrivial sink operators */
-  printf("SINKS: %s %s %s %s\n",param.snk_wqs[iq0].descrp,
-	 param.snk_wqs[iq1].descrp, param.snk_wqs[iq2].descrp, sink );
+  printf("SINKS: %s %s %s %s\n",param.snk_qs_op[iq0].descrp,
+	 param.snk_qs_op[iq1].descrp, param.snk_qs_op[iq2].descrp, sink );
 }
 /*--------------------------------------------------------------------*/
-static void print_meson_prop(int pair, int t, complex c)
+static void print_meson_prop(int pair, int t, dcomplex c)
 {
   if(param.saveflag_c[pair] != FORGET)return;
-  node0_printf("%d %e %e\n",t,(double)c.real,(double)c.imag);
+  node0_printf("%d %e %e\n", t, c.real, c.imag);
 }
 /*--------------------------------------------------------------------*/
-static void print_fnal_meson_prop(FILE *fp, int pair, int t, complex c)
+static void print_fnal_meson_prop(FILE *fp, int pair, int t, dcomplex c)
 {
   if(this_node != 0 || param.saveflag_c[pair] == FORGET)return;
-  fprintf(fp, "%d\t%e\t%e\n", t, (double)c.real, (double)c.imag);
+  fprintf(fp, "%d\t%e\t%e\n", t, c.real, c.imag);
 }
 /*--------------------------------------------------------------------*/
 static void write_open_meson_prop(FILE *fp, int pair, int t, 
-				  wilson_propagator *wp)
+				  dwilson_propagator *wp)
 {
   mdp_complex c[4][4][3][3];
   int c0,c1,s0,s1;
@@ -1049,6 +1045,59 @@ static void divreal_wprop(wilson_propagator *src, Real x,
 	}
 }
 /*--------------------------------------------------------------------*/
+static void mulreal_dwprop(dwilson_propagator *src, Real x, 
+			   dwilson_propagator *dest){
+  int c0,s0,c1,s1;
+  for(c0=0;c0<3;c0++)
+    for(s0=0;s0<4;s0++)
+      for(s1=0;s1<4;s1++)
+	for(c1=0;c1<3;c1++){
+	  CMULREAL(src->c[c0].d[s0].d[s1].c[c1],x,
+		   dest->c[c0].d[s0].d[s1].c[c1]);
+	}
+}
+/*--------------------------------------------------------------------*/
+static void copy_wprop(dwilson_propagator *dest, wilson_propagator *src){
+  int c0,s0,c1,s1;
+  for(c0=0;c0<3;c0++)
+    for(s0=0;s0<4;s0++)
+      for(s1=0;s1<4;s1++)
+	for(c1=0;c1<3;c1++){
+	  dest->c[c0].d[s0].d[s1].c[c1].real = src->c[c0].d[s0].d[s1].c[c1].real;
+	  dest->c[c0].d[s0].d[s1].c[c1].imag = src->c[c0].d[s0].d[s1].c[c1].imag;
+	}
+
+}
+/*--------------------------------------------------------------------*/
+static double get_meson_scale_factor(int iq0, int iq1){
+  int ip0 = get_eve(iq0);
+  int ip1 = get_eve(iq1);
+  double scale_factor = 1;
+
+  if(param.prop_type[ip0] == CLOVER_TYPE)
+    scale_factor *= param.src_qs[ip0].scale_fact;
+  if(param.prop_type[ip1] == CLOVER_TYPE)
+    scale_factor *= param.src_qs[ip1].scale_fact;
+
+  return 1./scale_factor;
+}
+/*--------------------------------------------------------------------*/
+static double get_baryon_scale_factor(int iq0, int iq1, int iq2){
+  int ip0 = get_eve(iq0);
+  int ip1 = get_eve(iq1);
+  int ip2 = get_eve(iq2);
+  double scale_factor = 1;
+
+  if(param.prop_type[ip0] == CLOVER_TYPE)
+    scale_factor *= param.src_qs[ip0].scale_fact;
+  if(param.prop_type[ip1] == CLOVER_TYPE)
+    scale_factor *= param.src_qs[ip1].scale_fact;
+  if(param.prop_type[ip2] == CLOVER_TYPE)
+    scale_factor *= param.src_qs[ip2].scale_fact;
+
+  return 1./scale_factor;
+}
+/*--------------------------------------------------------------------*/
 static void spectrum_cl_print_diag(int pair){
 
   Real space_vol;
@@ -1058,14 +1107,26 @@ static void spectrum_cl_print_diag(int pair){
   int m,b;
   int num_report = param.num_corr_report[pair];
   complex prop;
+  dcomplex dprop;
   wilson_propagator wprop;
+  dwilson_propagator dwprop;
+  double meson_scale, baryon_scale;
   
   /* Normalization factor */
   space_vol = (Real)(nx*ny*nz);
+
+  /* Rescaling */
+  meson_scale = get_meson_scale_factor(param.qkpair[pair][0],  
+				       param.qkpair[pair][1]);
+  baryon_scale = get_baryon_scale_factor(param.qkpair[pair][0], 
+					 param.qkpair[pair][0], 
+					 param.qkpair[pair][0]);
   
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
+    if(this_node == 0 && corr_fp == NULL && param.saveflag_c[pair] != FORGET)
+      terminate(1);
     
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
@@ -1077,8 +1138,10 @@ static void spectrum_cl_print_diag(int pair){
 	prop = pmes_prop[m][tp];
 	g_complexsum( &prop );
 	CDIVREAL(prop, norm_fac, prop);
-	print_meson_prop(pair, t, prop);
-	print_fnal_meson_prop(corr_fp, pair, t, prop);
+	dprop.real = prop.real;	dprop.imag = prop.imag;
+	CMULREAL(dprop, meson_scale, dprop);
+	print_meson_prop(pair, t, dprop);
+	print_fnal_meson_prop(corr_fp, pair, t, dprop);
       }
       print_end_prop(pair);
       print_end_fnal_meson_prop(corr_fp, pair);
@@ -1099,7 +1162,9 @@ static void spectrum_cl_print_diag(int pair){
 	wprop = omes_prop[m][tp];
 	g_wpropsum( &wprop );
 	divreal_wprop(&wprop, norm_fac, &wprop);
-	write_open_meson_prop(corr_fp, pair, t, &wprop);
+	copy_wprop(&dwprop, &wprop);
+	mulreal_dwprop(&dwprop, meson_scale, &dwprop);
+	write_open_meson_prop(corr_fp, pair, t, &dwprop);
       }
     } /* mesons and momenta */
     close_open_meson_file(corr_fp, pair);
@@ -1115,8 +1180,9 @@ static void spectrum_cl_print_diag(int pair){
 	prop = bar_prop[b][tp];
 	g_complexsum( &prop );
 	CDIVREAL(prop, space_vol, prop);
-	node0_printf("%d %e %e\n",t,
-		     (double)prop.real,(double)prop.imag);
+	dprop.real = prop.real;	dprop.imag = prop.imag;
+	CMULREAL(dprop, baryon_scale, dprop);
+	node0_printf("%d %e %e\n",t, dprop.real,dprop.imag);
       }
       print_end_prop(pair);
     }
@@ -1128,19 +1194,34 @@ static void spectrum_cl_print_offdiag(int pair){
   
   Real space_vol;
   Real norm_fac;
+  FILE *corr_fp;
   int t, tp;
   int m,b;
   int num_report = param.num_corr_report[pair];
   complex prop;
+  dcomplex dprop;
   wilson_propagator wprop;
-  FILE *corr_fp;
+  dwilson_propagator dwprop;
+  double meson_scale, baryon_scale1, baryon_scale2;
   
   /* Normalization factor */
   space_vol = (Real)(nx*ny*nz);
 
+  /* Rescaling */
+  meson_scale = get_meson_scale_factor(param.qkpair[pair][0],  
+				       param.qkpair[pair][1]);
+  baryon_scale1 = get_baryon_scale_factor(param.qkpair[pair][1], 
+					  param.qkpair[pair][0], 
+					  param.qkpair[pair][0]);
+  baryon_scale2 = get_baryon_scale_factor(param.qkpair[pair][1], 
+					  param.qkpair[pair][1], 
+					  param.qkpair[pair][0]);
+  
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
+    if(this_node == 0 && corr_fp == NULL && param.saveflag_c[pair] != FORGET)
+      terminate(1);
 
     /* print meson propagators */
     for(m=0;m<num_report;m++) {
@@ -1153,8 +1234,10 @@ static void spectrum_cl_print_offdiag(int pair){
 	prop = pmes_prop[m][tp];
 	g_complexsum( &prop );
 	CDIVREAL(prop, norm_fac, prop);
-	print_meson_prop(pair, t, prop);
-	print_fnal_meson_prop(corr_fp, pair, t, prop);
+	dprop.real = prop.real;	dprop.imag = prop.imag;
+	CMULREAL(dprop, meson_scale, dprop);
+	print_meson_prop(pair, t, dprop);
+	print_fnal_meson_prop(corr_fp, pair, t, dprop);
       }
       print_end_prop(pair);
       print_end_fnal_meson_prop(corr_fp, pair);
@@ -1175,7 +1258,9 @@ static void spectrum_cl_print_offdiag(int pair){
 	wprop = omes_prop[m][tp];
 	g_wpropsum( &wprop );
 	divreal_wprop(&wprop, norm_fac, &wprop);
-	write_open_meson_prop(corr_fp, pair, t, &wprop);
+	copy_wprop(&dwprop, &wprop);
+	mulreal_dwprop(&dwprop, meson_scale, &dwprop);
+	write_open_meson_prop(corr_fp, pair, t, &dwprop);
       }
     } /* mesons and momenta */
     close_open_meson_file(corr_fp, pair);
@@ -1191,8 +1276,9 @@ static void spectrum_cl_print_offdiag(int pair){
 	prop = bar_prop100[b][tp];
 	g_complexsum( &prop );
 	CDIVREAL(prop, space_vol, prop);
-	node0_printf("%d %e %e\n",t,
-		     (double)prop.real,(double)prop.imag);
+	dprop.real = prop.real;	dprop.imag = prop.imag;
+	CMULREAL(dprop, baryon_scale1, dprop);
+	node0_printf("%d %e %e\n",t, dprop.real, dprop.imag);
       }
       print_end_prop(pair);
     }
@@ -1205,8 +1291,9 @@ static void spectrum_cl_print_offdiag(int pair){
 	prop = bar_prop011[b][tp];
 	g_complexsum( &prop );
 	CDIVREAL(prop, space_vol, prop);
-	node0_printf("%d %e %e\n",t,
-		     (double)prop.real,(double)prop.imag);
+	dprop.real = prop.real;	dprop.imag = prop.imag;
+	CMULREAL(dprop, baryon_scale2, dprop);
+	node0_printf("%d %e %e\n",t, dprop.real, dprop.imag);
       }
       print_end_prop(pair);
     }
@@ -1243,12 +1330,16 @@ void spectrum_cl_cleanup(int pair){
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl(wilson_prop_field qp0, wilson_prop_field qp1, int pair)
+void spectrum_cl(wilson_prop_field *qp0, wilson_prop_field *qp1, int pair)
 {
 
   int *qkpair = param.qkpair[pair];
   double dtime;
 
+  if(qp0->nc != qp1->nc){
+    node0_printf("spectrum_cl: Inconsistent colors %d != %d\n", qp0->nc, qp1->nc);
+    terminate(1);
+  }
   spectrum_cl_init(pair);
 
   if(qkpair[0] == qkpair[1]){

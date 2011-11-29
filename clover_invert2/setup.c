@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.9  2011/11/29 22:03:51  detar
+//  Support arbitrary colors and momentum and boundary twists.
+//
 //  Revision 1.8  2009/06/04 16:37:09  detar
 //  Make clover term persistent. Accommodate changes to generic_clover/make_clov2.c
 //
@@ -35,19 +38,32 @@
 
 
 #include "cl_inv_includes.h"
-#include "lattice_qdp.h"
+//#include "lattice_qdp.h"
+#include "quark_action.h"
 #include <string.h>
-int initial_set();
-void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
-void make_3n_gathers();
+static int initial_set(void);
+static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
+static void make_3n_gathers();
 
 #include "params.h"
 
-int setup()   {
+/* Forward declarations */
+static int hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL], 
+			   char mom_label[MAX_CORR][MAX_MOM_LABEL],
+			   char *meson_label_in, char *mom_label_in, int *n);
+static char decode_parity(char *parity_label_in);
+static double decode_factor(char *factor_op, double factor);
+static void broadcast_heap_params(void);
+
+int setup(void)   {
   int prompt;
 
   /* print banner, get volume */
   prompt=initial_set();
+  if(prompt == 2)return prompt;
+
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
@@ -59,29 +75,16 @@ int setup()   {
   make_3n_gathers();
   /* set up K-S phase vectors, boundary conditions */
   phaseset();
+  twist_in = OFF;
   /* Create clover structure */
   gen_clov = create_clov();
 
-#ifdef HAVE_QDP
-  {
-    int i;
-    for(i=0; i<4; ++i) {
-      shiftdirs[i] = QDP_neighbor[i];
-      shiftdirs[i+4] = neighbor3[i];
-    }
-    for(i=0; i<8; ++i) {
-      shiftfwd[i] = QDP_forward;
-      shiftbck[i] = QDP_backward;
-    }
-  }
-#endif
-  
   return(prompt);
 }
 
 
 /* SETUP ROUTINES */
-int initial_set(){
+static int initial_set(){
   int prompt,status;
 #ifdef FIX_NODE_GEOM
   int i;
@@ -89,11 +92,24 @@ int initial_set(){
   /* On node zero, read lattice size and send to others */
   if(mynode()==0){
     /* print banner */
-    printf("SU3 clover valence fermions\n");
-    printf("MIMD version 7 $Name:  $\n");
+    printf("SU3 clover/naive valence fermions\n");
+    printf("MIMD version %s\n",MILC_CODE_VERSION);
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
+    gethostname(hostname, 128);
+    printf("Host(0) = %s\n",hostname);
+    printf("Username = %s\n", getenv("USER"));
     time_stamp("start");
+    get_utc_datetime(utc_date_time);
     
+    /* Print list of options selected */
+    node0_printf("Options selected...\n");
+    show_generic_opts();
+    show_generic_ks_opts();
+
+#if FERM_ACTION == HISQ
+    show_su3_mat_opts();
+    show_hisq_links_opts();
+#endif
     status = get_prompt(stdin,  &prompt );
     
     IF_OK status += get_i(stdin,prompt,"nx", &param.nx );
@@ -108,6 +124,7 @@ int initial_set(){
 			   param.ionode_geometry, 4);
 #endif
 #endif
+    IF_OK status += get_i(stdin, prompt,"iseed", &param.iseed );
     IF_OK status += get_s(stdin, prompt,"job_id",param.job_id);
     
     if(status>0) param.stopflag=1; else param.stopflag=0;
@@ -123,6 +140,7 @@ int initial_set(){
   ny=param.ny;
   nz=param.nz;
   nt=param.nt;
+  iseed=param.iseed;
   
 #ifdef FIX_NODE_GEOM
   for(i = 0; i < 4; i++)
@@ -139,23 +157,22 @@ int initial_set(){
   return(prompt);
 }
 
-/* Forward declarations */
-static int hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL], 
-			   char mom_label[MAX_CORR][MAX_MOM_LABEL],
-			   char *meson_label_in, char *mom_label_in, int *n);
-char decode_parity(char *parity_label_in);
-double decode_factor(char *factor_op, double factor);
-
-
 /* read in parameters and coupling constants	*/
 int readin(int prompt) {
   /* read in parameters for su3 monte carlo	*/
   /* argument "prompt" is 1 if prompts are to be given for input	*/
-  
+
   int status;
   char savebuf[128];
   int i;
   int ipair;
+  int max_cg_iterations, max_cg_restarts;
+  Real bdry_phase[4];
+#ifdef PRTIME
+  double dtime;
+#endif
+
+  STARTTIME;
 
   /* On node zero, read parameters and send to all other nodes */
   if(this_node==0){
@@ -171,7 +188,7 @@ int readin(int prompt) {
 	param.startfile );
     IF_OK status += get_f(stdin, prompt,"u0", &param.u0 );
 
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
     IF_OK scanf("%s",savebuf);
     IF_OK printf("%s\n",savebuf);
@@ -183,7 +200,7 @@ int readin(int prompt) {
 	param.fixflag = NO_GAUGE_FIX;
       }
       else{
-	printf("error in input: fixing_command is invalid\n"); status++;
+	printf("error in input: fixing_command %s is invalid\n",savebuf); status++;
       }
     }
     
@@ -199,6 +216,9 @@ int readin(int prompt) {
 			  &param.staple_weight);
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
+
+    /* Coordinate origin for KS phases and antiperiodic boundary condition */
+    IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
     
     /*------------------------------------------------------------*/
     /* Propagator inversion control                               */
@@ -206,22 +226,143 @@ int readin(int prompt) {
 
     /* maximum no. of conjugate gradient iterations */
     IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
-			  &param.qic.max );
+			  &max_cg_iterations );
     
     /* maximum no. of conjugate gradient restarts */
     IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
-			  &param.qic.nrestart );
+			  &max_cg_restarts );
     
-    /* error for clover propagator conjugate gradient */
-    IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
-			  &param.qic.resid );
-    IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
-			  &param.qic.relresid );
-    /* Precision fixed to prevailing precision for now */
-    param.qic.prec = PRECISION;
-    param.qic.parity = EVENANDODD;
-    
+    /*------------------------------------------------------------*/
+    /* Base sources                                               */
+    /*------------------------------------------------------------*/
 
+    IF_OK status += get_i(stdin,prompt,"number_of_base_sources", 
+			  &param.num_base_source);
+    IF_OK {
+      if(param.num_base_source > MAX_SOURCE){
+	printf("Exceeded dimension %d\n",MAX_SOURCE);
+	status++;
+      }
+    }
+
+    for(i = 0; i < param.num_base_source; i++){
+      
+      IF_OK init_qs(&param.base_src_qs[i]);
+      IF_OK status += get_wv_quark_source( stdin, prompt, 
+					   &param.base_src_qs[i]);
+      /* Base sources have no parents or ops */
+      IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
+      IF_OK init_qss_op(&param.src_qs_op[i]);
+
+      /* Initialize the coordinate offset for the source op from
+         the source origin itself */
+      {
+	int r0[4];
+	r0[0] = param.base_src_qs[i].x0;
+	r0[1] = param.base_src_qs[i].y0;
+	r0[2] = param.base_src_qs[i].z0;
+	r0[3] = param.base_src_qs[i].t0;
+	set_qss_op_offset(&param.src_qs_op[i], r0);
+      }
+
+      /* Get optional file for saving the base source */
+      IF_OK {
+	int source_type, saveflag_s;
+	char descrp[MAXDESCRP];
+	char savefile_s[MAXFILENAME];
+	status += 
+	  ask_output_quark_source_file( stdin, prompt, &saveflag_s,
+					&source_type, NULL, descrp,
+					savefile_s );
+	IF_OK {
+	    param.base_src_qs[i].savetype = source_type;
+	    param.base_src_qs[i].saveflag = saveflag_s;
+	    strcpy(param.base_src_qs[i].save_file, savefile_s);
+	  if(saveflag_s != FORGET && source_type != DIRAC_FIELD_FILE
+	     && source_type != VECTOR_FIELD_FILE){
+	    printf("Unsupported output source type\n");
+	    status++;
+	  }
+	} /* OK */
+      } /* OK */
+      
+    }
+
+    /*------------------------------------------------------------*/
+    /* Modified sources                                           */
+    /*------------------------------------------------------------*/
+
+    IF_OK status += get_i(stdin,prompt,"number_of_modified_sources", 
+			  &param.num_modified_source);
+
+    IF_OK {
+      if(param.num_base_source + param.num_modified_source > MAX_SOURCE){
+	printf("Total including base sources exceeds dimension %d\n",
+	       MAX_SOURCE);
+	status++;
+      }
+    }
+
+    for(i = 0; i < param.num_modified_source; i++){
+      /* We append the modified sources to the list of base sources */
+      int is = param.num_base_source + i;
+      
+      IF_OK status += get_i(stdin,prompt,"source", &param.parent_source[is]);
+      
+      IF_OK {
+	if( param.parent_source[is] >= is){
+	  printf("Source index must be less than %d here\n",is);
+	  status++;
+	}
+      }
+
+      /* Get source operator attributes */
+      IF_OK status += get_wv_field_op( stdin, prompt, &param.src_qs_op[is]);
+
+      /* Copy parent source attributes to the derived source structure */
+      IF_OK {
+	int p = param.parent_source[is];
+	param.base_src_qs[is] = param.base_src_qs[p];
+	param.base_src_qs[is].op = copy_qss_op_list(param.base_src_qs[p].op);
+	
+	/* Add the new operator to the linked list */
+	insert_qss_op(&param.base_src_qs[is], &param.src_qs_op[is]);
+	
+	/* Append the operator info to the description if the operator
+	   is nontrivial, but simply copy the label */
+	if(param.src_qs_op[is].type != IDENTITY){
+	  char *descrp = param.base_src_qs[is].descrp;
+	  char *op_descrp = param.src_qs_op[is].descrp;
+	  char *label = param.base_src_qs[is].label;
+	  char *op_label = param.src_qs_op[is].label;
+	  strncat(descrp, "/", MAXDESCRP-strlen(descrp)-1);
+	  strncat(descrp, op_descrp, MAXDESCRP-strlen(descrp)-1);
+	  strncpy(label,  op_label, MAXSRCLABEL-strlen(label)-1);
+	}
+      }
+
+      /* Get optional file for saving the modified source */
+      IF_OK {
+	int source_type, saveflag_s;
+	char descrp[MAXDESCRP];
+	char savefile_s[MAXFILENAME];
+	status += 
+	  ask_output_quark_source_file( stdin, prompt, &saveflag_s,
+					&source_type, NULL, descrp,
+					savefile_s );
+	IF_OK {
+	    param.base_src_qs[is].savetype = source_type;
+	    param.base_src_qs[is].saveflag = saveflag_s;
+	    strcpy(param.base_src_qs[is].save_file, savefile_s);
+	  if(saveflag_s != FORGET && source_type != DIRAC_FIELD_FILE &&
+	     saveflag_s != VECTOR_FIELD_FILE){
+	    printf("Unsupported output source type\n");
+	    status++;
+	  }
+	} /* OK */
+      } /* OK */
+    }
+	
     /*------------------------------------------------------------*/
     /* Propagators and their sources                              */
     /*------------------------------------------------------------*/
@@ -233,61 +374,181 @@ int readin(int prompt) {
       printf("num_prop = %d must be <= %d!\n", param.num_prop, MAX_PROP);
       status++;
     }
+    
+    /* Get propagator parameters */
 
     IF_OK for(i = 0; i < param.num_prop; i++){
-    
-      /* Propagator parameters */
+      
+
+      /* Type of propagator */
+
       IF_OK status += get_s(stdin, prompt,"propagator_type", savebuf );
       IF_OK {
 	if(strcmp(savebuf,"clover") == 0)param.prop_type[i] = CLOVER_TYPE;
 	else if(strcmp(savebuf,"KS") == 0)param.prop_type[i] = KS_TYPE;
+	else if(strcmp(savebuf,"KS4") == 0)param.prop_type[i] = KS4_TYPE;
 	else {
 	  printf("Unknown quark type %s\n",savebuf);
 	  status++;
 	}
       }
+
+      /* Mass parameters, etc */
+
       if(param.prop_type[i] == CLOVER_TYPE){
 	IF_OK status += get_s(stdin, prompt,"kappa", param.kappa_label[i]);
 	IF_OK param.dcp[i].Kappa = atof(param.kappa_label[i]);
 	IF_OK status += get_f(stdin, prompt,"clov_c", &param.dcp[i].Clov_c );
 	param.dcp[i].U0 = param.u0;
-	IF_OK status += get_s(stdin, prompt,"check", savebuf);
+
+      } else {  /* KS_TYPE || KS4_TYPE */
+	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[i] );
+	IF_OK param.ksp[i].mass = atof(param.mass_label[i]);
+#if FERM_ACTION == HISQ
+	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
+			      &param.ksp[i].naik_term_epsilon);
+#else
+	IF_OK param.ksp[i].naik_term_epsilon = 0.0;
+#endif
+      }
+
+      /* Should we solve for the propagator? */
+      IF_OK status += get_s(stdin, prompt,"check", savebuf);
+      IF_OK {
+	/* Should we be checking the propagator by running the solver? */
+	if(strcmp(savebuf,"no") == 0)param.check[i] = CHECK_NO;
+	else if(strcmp(savebuf,"sourceonly") == 0)
+	  param.check[i] = CHECK_SOURCE_ONLY;
+	else param.check[i] = CHECK_YES;
+      }
+
+      /* Error for propagator conjugate gradient or bicg */
+      
+      IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
+			    &param.qic[i].resid );
+      IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
+			    &param.qic[i].relresid );
+      IF_OK status += get_i(stdin, prompt,"precision", &param.qic[i].prec );
+#ifndef HAVE_QOP
+      if(param.qic[i].prec != PRECISION){
+	node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
+	node0_printf("QOP compilation is required for mixed precision\n");
+      }
+      param.qic[i].prec = PRECISION;
+#endif
+      param.qic[i].max = max_cg_iterations;
+      param.qic[i].nrestart = max_cg_restarts;
+      param.qic[i].parity = EVENANDODD;
+      param.qic[i].min = 0;
+      param.qic[i].start_flag = 0;
+      param.qic[i].nsrc = 1;
+      
+      /* Momentum twist and time boundary condition */
+
+      IF_OK status += get_vf(stdin, prompt, "momentum_twist",
+			     bdry_phase, 3);
+      
+      IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
+
+      if(param.prop_type[i] == CLOVER_TYPE){
+
+	/* NOTE: The Dirac built-in bc is periodic. */
 	IF_OK {
-	  /* Should we be checking the propagator by running the solver? */
-	  if(strcmp(savebuf,"no") == 0)param.check[i] = 0;
-	  else param.check[i] = 1;
+	  if(strcmp(savebuf,"antiperiodic") == 0)bdry_phase[3] = 1;
+	  else if(strcmp(savebuf,"periodic") == 0)bdry_phase[3] = 0;
+	  else{
+	    node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",
+			 savebuf);
+	    status++;
+	  }
 	}
+
+      } else {  /* KS_TYPE || KS4_TYPE */
+
+	/* NOTE: The staggered built-in bc is antiperiodic.  We use
+	   bdry_phase to alter the built-in convention. */
+	IF_OK {
+	  if(strcmp(savebuf,"antiperiodic") == 0)bdry_phase[3] = 0;
+	  else if(strcmp(savebuf,"periodic") == 0)bdry_phase[3] = 1;
+	  else{
+	    node0_printf("Expecting 'periodic' or 'antiperiodic' but found %s\n",
+			 savebuf);
+	    status++;
+	  }
+	}
+      }
+
+      IF_OK {
+	int dir;
+	FORALLUPDIR(dir)param.bdry_phase[i][dir] = bdry_phase[dir];
+      }
+
+      /* Get source index for this set */
+      IF_OK status += get_i(stdin,prompt,"source", &param.source[i]);
+      
+      /* Copy the base source to the propagator source structure */
+      
+      IF_OK {
+	int p = param.source[i];
+	init_qs(&param.src_qs[i]);
+	param.src_qs[i] = param.base_src_qs[p];
+	param.src_qs[i].op = copy_qss_op_list(param.base_src_qs[p].op);
+      }
+
+      /* Consistency check */
+      IF_OK {
+	if(param.prop_type[i] == KS_TYPE && is_dirac_source(param.src_qs[i].type)){
+	  node0_printf("ERROR: Can't build a KS propagator from a Dirac source.\n");
+	  node0_printf("For an extended Dirac source, use propagator_type KS4.\n");
+	  status++;
+	}
+      }
+
+      /* Names of propagator files input and output */
+
+      if(param.prop_type[i] == CLOVER_TYPE){
+
 	IF_OK status += ask_starting_wprop( stdin, prompt, 
 					    &param.startflag_w[i],
 					    param.startfile_w[i]);
 	
 	IF_OK status += ask_ending_wprop( stdin, prompt, &param.saveflag_w[i],
 					  param.savefile_w[i]);
+
+      } else {  /* KS_TYPE || KS4_TYPE */
 	
-	/* Get source type */
-	IF_OK init_wqs(&param.src_wqs[i]);
-	IF_OK status += get_w_quark_source( stdin, prompt, &param.src_wqs[i]);
+	/* Get propagator file names */
 	
-      } else {  /* KS_TYPE */
-	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[i] );
-	IF_OK param.ksp[i].mass = atof(param.mass_label[i]);
-	param.ksp[i].u0 = u0;
-	IF_OK status += get_s(stdin, prompt,"check", savebuf);
-	IF_OK {
-	  /* Should we be checking the propagator by running the solver? */
-	  if(strcmp(savebuf,"no") == 0)param.check[i] = 0;
-	  else param.check[i] = 1;
+	if(param.prop_type[i] == KS_TYPE){
+	  
+	  IF_OK status += ask_starting_ksprop( stdin, prompt, 
+					       &param.startflag_ks[i],
+					       param.startfile_ks[i]);
+	  
+	  IF_OK status += ask_ending_ksprop( stdin, prompt, 
+					     &param.saveflag_ks[i],
+					     param.savefile_ks[i]);
+	  
+	} else { 	  /* KS4_TYPE */
+
+
+	  /* We expect the standard start/end file specifications, but for
+	     this type there is no standard propagator input file
+	     format with four staggered fermion propagators.  Once the
+	     propagator has been computed, it is a Dirac propagator,
+	     so it is written as such */
+
+	  IF_OK status += ask_starting_wprop( stdin, prompt, 
+					      &param.startflag_w[i],
+					      param.startfile_w[i]);
+	  
+	  IF_OK status += ask_ending_wprop( stdin, prompt, 
+					    &param.saveflag_w[i],
+					    param.savefile_w[i]);
+
+	  if(param.startflag_w[i] != FRESH)
+	    printf("WARNING: Input file specification changed to 'fresh_wprop'\n");
 	}
-	IF_OK status += ask_starting_ksprop( stdin, prompt, 
-					     &param.startflag_ks[i],
-					     param.startfile_ks[i]);
-	
-	IF_OK status += ask_ending_ksprop( stdin, prompt, &param.saveflag_ks[i],
-					   param.savefile_ks[i]);
-	
-	/* Get source type */
-	IF_OK init_ksqs(&param.src_ksqs[i]);
-	IF_OK status += get_ks_quark_source( stdin, prompt, &param.src_ksqs[i]);
       }
     }
 
@@ -311,7 +572,7 @@ int readin(int prompt) {
 	 "quark" field */
       /* First we look for the type */
       IF_OK {
-	if(prompt!=0)printf("enter 'propagator' or 'quark'\n");
+	if(prompt==1)printf("enter 'propagator' or 'quark'\n");
 	check_tag = get_next_tag(stdin, "propagator or quark", "readin");
 	printf("%s ",check_tag);
 	if(strcmp(check_tag,"propagator") == 0)
@@ -325,7 +586,7 @@ int readin(int prompt) {
       }
       /* Next we get its index */
       IF_OK {
-	if(prompt!=0)printf("enter the index\n");
+	if(prompt==1)printf("enter the index\n");
 	if(scanf("%d",&param.prop_for_qk[i]) != 1){
 	  printf("\nFormat error reading index\n");
 	  status++;
@@ -346,8 +607,8 @@ int readin(int prompt) {
 	}
       }
       /* Get sink operator attributes */
-      IF_OK init_wqs(&param.snk_wqs[i]);
-      IF_OK status += get_w_quark_sink( stdin, prompt, &param.snk_wqs[i]);
+      IF_OK init_qss_op(&param.snk_qs_op[i]);
+      IF_OK status += get_wv_field_op( stdin, prompt, &param.snk_qs_op[i]);
       IF_OK status += ask_ending_wprop( stdin, prompt, &param.saveflag_q[i],
 					param.savefile_q[i]);
 	
@@ -466,9 +727,10 @@ int readin(int prompt) {
 	  factor_op[2], parity_x_in[3], parity_y_in[3], parity_z_in[3];
 	double factor;
 	
+	/* Read the meson label */
 	IF_OK status += get_sn(stdin, prompt, "correlator", meson_label_in);
 	
-	/* Read the momentum label next */
+	/* Read the momentum label */
 	IF_OK {
 	  ok = scanf("%s", mom_label_in);
 	  if(ok != 1){
@@ -478,7 +740,9 @@ int readin(int prompt) {
 	}
 	IF_OK printf(" %s", mom_label_in);
 	
-	/* Add to hash table */
+	/* Find or addd to hash table */
+	/* The tuple (meson_label, mom_label) is the correlator label */
+	/* The hash table lists the unique tuples. m is the index for the tuple. */
 	m = hash_corr_label(param.meson_label[ipair], param.mom_label[ipair],
 			    meson_label_in, mom_label_in,
 			    &param.num_corr_report[ipair]);
@@ -580,29 +844,84 @@ int readin(int prompt) {
   if( param.stopflag != 0 )
     normal_exit(0);
 
+  if(prompt==2)return 0;
+
+  /* Broadcast parameter values kept on the heap */
+  broadcast_heap_params();
+
+  /* Construct the eps_naik table of unique Naik epsilon
+     coefficients.  Also build the hash table for mapping a mass term to
+     its Naik epsilon index */
+
+  /* First term is always zero */
+  start_eps_naik(eps_naik, &n_naiks);
+  
+  /* Contribution from the propagator epsilons */
+  
+  for(i = 0; i < param.num_prop; i++)
+    if(param.prop_type[i] == CLOVER_TYPE)continue;
+    param.ksp[i].naik_term_epsilon_index = 
+      fill_eps_naik(eps_naik, 
+		    &n_naiks, param.ksp[i].naik_term_epsilon);
+
+  /* Assign Naik term indices to quarks based on inheritance from
+     propagators */
+
+  for(i = 0; i < param.num_qk; i++){
+    if(param.parent_type[i] == PROP_TYPE)
+      param.naik_index[i] = param.ksp[param.prop_for_qk[i]].naik_term_epsilon_index;
+    else
+      param.naik_index[i] = param.naik_index[param.prop_for_qk[i]];
+  }
+
   /* Do whatever is needed to get lattice */
   if( param.startflag != CONTINUE ){
     startlat_p = reload_lattice( param.startflag, param.startfile );
     invalidate_this_clov(gen_clov);
   }
-  /* Construct APE smeared links */
-  ape_smear_3D( param.staple_weight, param.ape_iter );
 
-  /* Initialization for KS operations if needed */
-#ifdef FN
-  invalidate_all_ferm_links(&fn_links);
-#endif
   phases_in = OFF;
 
-  /* make table of coefficients and permutations of paths in quark action */
-  init_path_table(&ks_act_paths);
-  make_path_table(&ks_act_paths, NULL);
+  /* Construct APE smeared links */
+  ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+
+  /* Set uptions for fermion links in case we use them */
+  
+#ifdef DBLSTORE_FN
+  /* We want to double-store the links for optimization */
+  fermion_links_want_back(1);
+#endif
+  
+  /* We start with no fermion links.
+     They are created in make_prop if we need them */
+
+  fn_links = NULL;
+
+  ENDTIME("readin");
 
   return(0);
 }
 
+/* Broadcast operator parameter values.  They are on the heap on node 0. */
+
+static void broadcast_heap_params(void){
+  int i;
+
+  for(i = 0; i < param.num_base_source + param.num_modified_source; i++){
+    broadcast_quark_source_sink_op_recursive(&param.base_src_qs[i].op);
+    broadcast_quark_source_sink_op_recursive(&param.src_qs_op[i].op);
+  }
+
+  for(i = 0; i < param.num_prop; i++)
+    broadcast_quark_source_sink_op_recursive(&param.src_qs[i].op);
+
+  for(i = 0; i < param.num_qk; i++)
+    broadcast_quark_source_sink_op_recursive(&param.snk_qs_op[i].op);
+
+}
+
 /* decode parity label */
-char decode_parity(char *parity_label_in){
+static char decode_parity(char *parity_label_in){
   if(strcmp("E",parity_label_in) == 0)return EVEN;
   else if(strcmp("O",parity_label_in) == 0)return ODD;
   else if(strcmp("EO",parity_label_in) == 0)return EVENANDODD;
@@ -613,7 +932,7 @@ char decode_parity(char *parity_label_in){
     
 /* decode real factor label */
 /* Permitted syntax is *ddd or /ddd where ddd is a real number */
-double decode_factor(char *factor_op, double factor){
+static double decode_factor(char *factor_op, double factor){
 
   if(factor == 0)
     return factor;
@@ -657,13 +976,10 @@ hash_corr_label(char meson_label[MAX_CORR][MAX_MESON_LABEL],
    make_lattice() and  make_nn_gathers() must be called first, 
    preferably just before calling make_3n_gathers().
 */
-void 
+static void 
 make_3n_gathers()
 {
   int i;
-#ifdef HAVE_QDP
-  int disp[4]={0,0,0,0};
-#endif
   
   for(i=XUP; i<=TUP; i++) {
     make_gather(third_neighbor, &i, WANT_INVERSE,
@@ -675,19 +991,12 @@ make_3n_gathers()
   
   sort_eight_gathers(X3UP);
 
-#ifdef HAVE_QDP
-  for(i=0; i<4; i++) {
-    disp[i] = 3;
-    neighbor3[i] = QDP_create_shift(disp);
-    disp[i] = 0;
-  }
-#endif
 }
 
 /* this routine uses only fundamental directions (XUP..TDOWN) as directions */
 /* returning the coords of the 3rd nearest neighbor in that direction */
 
-void 
+static void 
 third_neighbor(int x, int y, int z, int t, int *dirpt, int FB,
 	       int *xp, int *yp, int *zp, int *tp)
      /* int x,y,z,t,*dirpt,FB;  coordinates of site, direction (eg XUP), and

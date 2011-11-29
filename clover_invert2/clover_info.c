@@ -22,7 +22,15 @@
                            structure
    write_appl_w_prop_info  Writes supplementary information to the info file */
 
-#include "cl_inv_includes.h"
+#include "../include/io_wprop.h"
+#include "../include/generic_quark_types.h"
+#include "params.h"
+extern dirac_clover_param dcptmp;
+extern quark_source wqstmp;
+extern gauge_file *startlat_p;
+extern gauge_file *savelat_p;
+EXTERN  params param;           /* user input parameters */
+
 #include <string.h>
 
 /*---------------------------------------------------------------------------*/
