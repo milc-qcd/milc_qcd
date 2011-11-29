@@ -1,0 +1,378 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+# No random numbers needed
+iseed 1234
+job_id test
+ 
+# Gauge field description
+
+reload_parallel ../../binary_samples/lat.sample.l4448
+u0 0.8678
+no_gauge_fix
+forget
+staple_weight 0.1
+ape_iter 15
+coordinate_origin 0 0 0 0
+
+# Inversion control
+
+max_cg_iterations 200
+max_cg_restarts 10
+
+number_of_base_sources 1
+
+# source 0
+
+point
+subset full
+origin 0 0 0 0
+source_label p
+forget_source
+
+number_of_modified_sources 5
+
+# source 1
+
+source 0
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label G
+forget_source
+
+# source 2
+
+source 0
+deriv1
+dir x
+disp 1
+weights 1
+op_label n1
+forget_source
+
+# source 3
+
+source 0
+deriv2_B
+dir y z
+disp 1
+weights 1
+op_label b1
+forget_source
+
+# source 4
+
+source 2
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label N1
+forget_source
+
+# source 5
+
+source 3
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label B1
+forget_source
+
+# Description of propagators
+
+number_of_propagators 3
+
+# propagator 0
+
+propagator_type clover
+kappa 0.1
+clov_c 1
+check yes
+error_for_propagator 0
+rel_error_for_propagator 5e-7
+precision 2
+momentum_twist 0 0 0
+time_bc periodic
+
+source 1
+
+fresh_wprop
+forget_wprop
+
+# source
+
+# propagator 1
+
+propagator_type clover
+kappa 0.1
+clov_c 1
+check yes
+error_for_propagator 0
+rel_error_for_propagator 5e-7
+precision 2
+momentum_twist 0 0 0
+time_bc periodic
+
+source 4
+
+fresh_wprop
+forget_wprop
+
+# propagator 2 
+
+propagator_type clover
+kappa 0.1
+clov_c 1
+check yes
+error_for_propagator 0
+rel_error_for_propagator 5e-7
+precision 2
+momentum_twist 0 0 0
+time_bc periodic
+
+source 5
+
+fresh_wprop
+forget_wprop
+
+# Description of quarks
+
+number_of_quarks 6
+
+# quark 0
+
+propagator 0
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label G
+forget_wprop
+
+# quark 1
+
+quark 0
+deriv1
+dir z
+disp 1
+weights 1
+op_label N3
+forget_wprop
+
+# quark 2
+
+quark 0
+deriv2_D
+dir z y
+disp 1
+weights 1
+op_label D1
+forget_wprop
+
+# quark 3
+
+quark 0
+deriv2_B
+dir z y
+disp 1
+weights 1
+op_label B1
+forget_wprop
+
+# quark 4
+
+propagator 1
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label G
+forget_wprop
+
+# quark 5
+
+propagator 2
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label G
+forget_wprop
+
+# Description of mesons
+
+number_of_pairings 5
+
+# pair 0 (first index is for antiquark - second is quark)
+
+pair 3 0
+spectrum_request meson
+
+save_corr_fnal su3_clov.onium.2.corrfile.test-out
+r_offset 0 0 0 0
+
+# correlators for pair 0
+
+number_of_correlators 16
+
+correlator TTxG_BB1xB1 p000 -1 * 1 GT G5X 0 0 0 E E E
+
+correlator PPxG_VV1xB1 p000 -1 * 1 G5 GX 0 0 0 E E E
+correlator PTxG_VV1xB1 p000 -1 * 1 G5T GX 0 0 0 E E E
+correlator PPxG_VT1xB1 p000 -i * 1 G5 GXT 0 0 0 E E E
+correlator PTxG_VT1xB1 p000 -i * 1 G5T GXT 0 0 0 E E E
+
+correlator UUxG_AA1xB1 p000 -i * 1 G1 GYZ 0 0 0 E E E
+
+correlator VV1xG_PPxB1 p000 1 * 1 GX G5 0 0 0 E E E
+correlator VT1xG_PPxB1 p000 i * 1 GXT G5 0 0 0 E E E
+correlator VV1xG_PTxB1 p000 -1 * 1 GX G5T 0 0 0 E E E
+correlator VT1xG_PTxB1 p000 -i * 1 GXT G5T 0 0 0 E E E
+
+correlator AA1xG_UUxB1 p000 i * 1 GYZ G1 0 0 0 E E E
+correlator AA2xG_BB3xB1 p000 i * 1 GZX G5Z 0 0 0 E E E
+correlator AA3xG_BB2xB1 p000 i * 1 GXY G5Y 0 0 0 E E E
+
+correlator BB1xG_TTxB1 p000 -1 * 1 G5X GT 0 0 0 E E E
+correlator BB2xG_AA3xB1 p000 i * 1 G5Y GXY 0 0 0 E E E
+correlator BB3xG_AA2xB1 p000 i * 1 G5Z GZX 0 0 0 E E E
+
+# pair 1 (first index is for antiquark - second is quark)
+
+pair 1 4
+spectrum_request meson
+
+save_corr_fnal su3_clov.onium.2.corrfile.test-out
+r_offset 0 0 0 0
+
+# correlators for pair 1
+
+number_of_correlators 16
+
+correlator BB1xN1_BB3xN3 p000 -1 * 1 G5X G5Z 0 0 0 E E E
+
+correlator AA1xN1_AA3xN3 p000 -1 * 1 GYZ GXY 0 0 0 E E E
+
+correlator VV1xN1_VV3xN3 p000 -1 * 1 GX GZ 0 0 0 E E E
+correlator VT1xN1_VV3xN3 p000 i * 1 GXT GZ 0 0 0 E E E
+correlator VV1xN1_VT3xN3 p000 -i * 1 GX GZT 0 0 0 E E E
+correlator VT1xN1_VT3xN3 p000 -1 * 1 GXT GZT 0 0 0 E E E
+
+correlator BB2xN1_UUxN3 p000 -1 * 1 G5Y G1 0 0 0 E E E
+correlator UUxN1_BB2xN3 p000 1 * 1 G1 G5Y 0 0 0 E E E
+correlator BB3xN1_BB1xN3 p000 -1 * 1 G5Z G5X 0 0 0 E E E
+
+correlator AA2xN1_TTxN3 p000 -i * 1 GZX GT 0 0 0 E E E
+correlator TTxN1_AA2xN3 p000 i * 1 GT GZX 0 0 0 E E E
+correlator AA3xN1_AA1xN3 p000 -1 * 1 GXY GYZ 0 0 0 E E E
+
+correlator VV3xN1_VV1xN3 p000 -1 * 1 GZ GX 0 0 0 E E E
+correlator VT3xN1_VV1xN3 p000 i * 1 GZT GX 0 0 0 E E E
+correlator VV3xN1_VT1xN3 p000 -i * 1 GZ GXT 0 0 0 E E E
+correlator VT3xN1_VT1xN3 p000 -1 * 1 GZT GXT 0 0 0 E E E
+
+# pair 2 (first index is for antiquark - second is quark)
+
+pair 2 4
+spectrum_request meson
+
+save_corr_fnal su3_clov.onium.2.corrfile.test-out
+r_offset 0 0 0 0
+
+# correlators for pair 2
+
+number_of_correlators 12
+
+correlator BB3xN1_VV3xD1 p000 -1 * 1 G5Z GZ 0 0 0 E E E
+correlator BB3xN1_VT3xD1 p000 i * 1 G5Z GZT 0 0 0 E E E
+correlator BB2xN1_VV2xD1 p000 -1 * 1 G5Y GY 0 0 0 E E E
+correlator BB2xN1_VT2xD1 p000 i * 1 G5Y GYT 0 0 0 E E E
+
+correlator VV3xN1_BB3xD1 p000 -1 * 1 GZ G5Z 0 0 0 E E E
+correlator VT3xN1_BB3xD1 p000 i * 1 GZT G5Z 0 0 0 E E E
+correlator VV2xN1_BB2xD1 p000 -1 * 1 GY G5Y 0 0 0 E E E
+correlator VT2xN1_BB2xD1 p000 i * 1 GYT G5Y 0 0 0 E E E
+
+correlator BB1xN1_VV1xD1 p000 -1 * 1 G5X GX 0 0 0 E E E
+correlator BB1xN1_VT1xD1 p000 i * 1 G5X GXT 0 0 0 E E E
+
+correlator VV1xN1_BB1xD1 p000 -1 * 1 GX G5X 0 0 0 E E E
+correlator VT1xN1_BB1xD1 p000 i * 1 GXT G5X 0 0 0 E E E
+
+# pair 3 (first index is for antiquark - second is quark)
+
+pair 0 5
+spectrum_request meson
+
+save_corr_fnal su3_clov.onium.2.corrfile.test-out
+r_offset 0 0 0 0
+
+# correlators for pair 3
+
+number_of_correlators 16
+
+correlator BB1xB1_TTxG p000 -1 * 1 G5X GT 0 0 0 E E E
+
+correlator VV1xB1_PPxG p000 1 * 1 GX G5 0 0 0 E E E
+correlator VT1xB1_PPxG p000 -i * 1 GXT G5 0 0 0 E E E
+correlator VV1xB1_PTxG p000 -1 * 1 GX G5T 0 0 0 E E E
+correlator VT1xB1_PTxG p000 i * 1 GXT G5T 0 0 0 E E E
+
+correlator AA1xB1_UUxG p000 -i * 1 GYZ G1 0 0 0 E E E
+
+correlator PPxB1_VV1xG p000 -1 * 1 G5 GX 0 0 0 E E E
+correlator PTxB1_VV1xG p000 -1 * 1 G5T GX 0 0 0 E E E
+correlator PPxB1_VT1xG p000 i * 1 G5 GXT 0 0 0 E E E
+correlator PTxB1_VT1xG p000 i * 1 G5T GXT 0 0 0 E E E
+
+correlator UUxB1_AA1xG p000 i * 1 G1 GYZ 0 0 0 E E E
+correlator BB3xB1_AA2xG p000 -i * 1 G5Z GZX 0 0 0 E E E
+correlator BB2xB1_AA3xG p000 -i * 1 G5Y GXY 0 0 0 E E E
+
+correlator TTxB1_BB1xG p000 -1 * 1 GT G5X 0 0 0 E E E
+correlator AA3xB1_BB2xG p000 -i * 1 GXY G5Y 0 0 0 E E E
+correlator AA2xB1_BB3xG p000 -i * 1 GZX G5Z 0 0 0 E E E
+
+# pair 4 (first index is for antiquark - second is quark)
+
+pair 3 5
+spectrum_request meson
+
+forget_corr
+r_offset 0 0 0 0
+
+# correlators for pair 4
+
+number_of_correlators 24
+
+correlator BB1xB1_BB1xB1 p000 -1 * 1 G5X G5X 0 0 0 E E E
+
+correlator VV1xB1_VV1xB1 p000 -1 * 1 GX GX 0 0 0 E E E
+correlator VT1xB1_VV1xB1 p000 i * 1 GXT GX 0 0 0 E E E
+correlator VV1xB1_VT1xB1 p000 -i * 1 GX GXT 0 0 0 E E E
+correlator VT1xB1_VT1xB1 p000 -1 * 1 GXT GXT 0 0 0 E E E
+
+correlator AA1xB1_AA1xB1 p000 -1 * 1 GYZ GYZ 0 0 0 E E E
+
+correlator PPxB1_PPxB1 p000 1 * 1 G5 G5 0 0 0 E E E
+correlator PTxB1_PPxB1 p000 1 * 1 G5T G5 0 0 0 E E E
+correlator PPxB1_PTxB1 p000 -1 * 1 G5 G5T 0 0 0 E E E
+correlator PTxB1_PTxB1 p000 -1 * 1 G5T G5T 0 0 0 E E E
+
+correlator UUxB1_UUxB1 p000 1 * 1 G1 G1 0 0 0 E E E
+correlator BB3xB1_BB3xB1 p000 -1 * 1 G5Z G5Z 0 0 0 E E E
+correlator BB2xB1_BB2xB1 p000 -1 * 1 G5Y G5Y 0 0 0 E E E
+
+correlator VV2xB1_VV2xB1 p000 -1 * 1 GY GY 0 0 0 E E E
+correlator VT2xB1_VV2xB1 p000 i * 1 GYT GY 0 0 0 E E E
+correlator VV2xB1_VT2xB1 p000 -i * 1 GY GYT 0 0 0 E E E
+correlator VT2xB1_VT2xB1 p000 -1 * 1 GYT GYT 0 0 0 E E E
+correlator VV3xB1_VV3xB1 p000 -1 * 1 GZ GZ 0 0 0 E E E
+correlator VT3xB1_VV3xB1 p000 i * 1 GZT GZ 0 0 0 E E E
+correlator VV3xB1_VT3xB1 p000 -i * 1 GZ GZT 0 0 0 E E E
+correlator VT3xB1_VT3xB1 p000 -1 * 1 GZT GZT 0 0 0 E E E
+
+correlator TTxB1_TTxB1 p000 -1 * 1 GT GT 0 0 0 E E E
+correlator AA3xB1_AA3xB1 p000 -1 * 1 GXY GXY 0 0 0 E E E
+correlator AA2xB1_AA2xB1 p000 -1 * 1 GZX GZX 0 0 0 E E E
+

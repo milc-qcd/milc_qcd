@@ -1,0 +1,448 @@
+---
+JobID: XXX
+date: XXX XXX XXX XXX XXX XXX
+lattice_size: 8e-06
+antiquark_type: clover
+antiquark_source_type: gaussian
+antiquark_source_subset: full
+antiquark_source_origin: 0 0 0 0
+antiquark_source_r0: 0
+antiquark_source_label: 0.0002
+antiquark_sink_label: d
+antiquark_kappa: "0.1"
+quark_type: clover
+quark_source_type: gaussian
+quark_source_subset: full
+quark_source_origin: 0 0 0 0
+quark_source_r0: 0
+quark_source_label: 0.0002
+quark_sink_label: d
+quark_kappa: "0.1"
+...
+---
+correlator: PION
+momentum: p000
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PION_1S_1S_d_d_k0.1_k0.1_p000
+...
+0 0.06 0.000000e+00
+0 0.004 0.000000e+00
+0 0.0008 0.000000e+00
+0 0.003 0.000000e+00
+---
+correlator: PION
+momentum: p100
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PION_1S_1S_d_d_k0.1_k0.1_p100
+...
+0 0.02 0.000000e+00
+0 0.001 0.000000e+00
+0 0.0002 0.000000e+00
+0 0.0009 0.000000e+00
+---
+correlator: PS505
+momentum: p000
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PS505_1S_1S_d_d_k0.1_k0.1_p000
+...
+0 0.0002 0.0002
+0 0.003 0.0002
+0 0.0002 0.0002
+0 0.003 0.0002
+---
+correlator: PS505
+momentum: p100
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PS505_1S_1S_d_d_k0.1_k0.1_p100
+...
+0 0.0002 0.0002
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0009 0.0002
+---
+correlator: PS0505
+momentum: p000
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: PS0505_1S_1S_d_d_k0.1_k0.1_p000
+...
+0 0.05 0.0002
+0 0.003 0.0002
+0 0.0007 0.0002
+0 0.003 0.0002
+---
+correlator: PS0505
+momentum: p100
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: PS0505_1S_1S_d_d_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0008 0.0002
+---
+correlator: RHO
+momentum: p000
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: RHO_1S_1S_d_d_k0.1_k0.1_p000
+...
+0 0.05 0.0002
+0 0.003 0.0002
+0 0.0007 0.0002
+0 0.003 0.0002
+---
+correlator: RHO
+momentum: p100
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: RHO_1S_1S_d_d_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0009 0.0002
+---
+correlator: RHO0
+momentum: p000
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: RHO0_1S_1S_d_d_k0.1_k0.1_p000
+...
+0 0.05 XXX
+0 0.003 0.0002
+0 0.0007 0.0002
+0 0.003 0.0002
+---
+correlator: RHO0
+momentum: p100
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: RHO0_1S_1S_d_d_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0008 0.0002
+---
+correlator: SCALAR
+momentum: p000
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: SCALAR_1S_1S_d_d_k0.1_k0.1_p000
+...
+0 0.05 0.000000e+00
+0 0.0005 0.000000e+00
+0 0.0006 0.000000e+00
+0 0.0006 0.000000e+00
+---
+correlator: SCALAR
+momentum: p100
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: SCALAR_1S_1S_d_d_k0.1_k0.1_p100
+...
+0 0.02 0.000000e+00
+0 0.0002 0.000000e+00
+0 0.0002 0.000000e+00
+0 0.0002 0.000000e+00
+---
+correlator: SCAL0
+momentum: p000
+gamma_source: GX
+gamma_sink: GX
+correlator_key: SCAL0_1S_1S_d_d_k0.1_k0.1_p000
+...
+0 0.06 0.0002
+0 0.0006 3e-08
+0 0.0006 0.0002
+0 0.0006 0.0002
+---
+correlator: SCAL0
+momentum: p100
+gamma_source: GX
+gamma_sink: GX
+correlator_key: SCAL0_1S_1S_d_d_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+---
+correlator: PV
+momentum: p000
+gamma_source: GX
+gamma_sink: GX
+correlator_key: PV_1S_1S_d_d_k0.1_k0.1_p000
+...
+0 0.05 0.0002
+0 0.0005 0.0002
+0 0.0006 0.0002
+0 0.0006 0.0002
+---
+correlator: PV
+momentum: p100
+gamma_source: GX
+gamma_sink: GX
+correlator_key: PV_1S_1S_d_d_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+---
+correlator: B
+momentum: p000
+gamma_source: GY
+gamma_sink: GY
+correlator_key: B_1S_1S_d_d_k0.1_k0.1_p000
+...
+0 0.05 0.0002
+0 0.0006 0.0002
+0 0.0006 0.0002
+0 0.0006 0.0002
+---
+correlator: B
+momentum: p100
+gamma_source: GY
+gamma_sink: GY
+correlator_key: B_1S_1S_d_d_k0.1_k0.1_p100
+...
+0 0.02 2e-08
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+---
+JobID: XXX
+date: XXX XXX XXX XXX XXX XXX
+lattice_size: 0.0008
+antiquark_type: clover
+antiquark_source_type: gaussian
+antiquark_source_subset: full
+antiquark_source_origin: 0 0 0 0
+antiquark_source_r0: 0
+antiquark_source_label: 1S
+antiquark_sink_label: rot
+antiquark_sink_ops: [
+{ operation: rotate_3D
+ d1: 0
+}
+]
+antiquark_kappa: "0.1"
+quark_type: clover
+quark_source_type: gaussian
+quark_source_subset: full
+quark_source_origin: 0 0 0 0
+quark_source_r0: 0
+quark_source_label: 1S
+quark_sink_label: rot
+quark_sink_ops: [
+{ operation: rotate_3D
+ d1: 0
+}
+]
+quark_kappa: "0.1"
+...
+---
+correlator: PION
+momentum: p000
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PION_1S_1S_rot_rot_k0.1_k0.1_p000
+...
+0 0.06 0.000000e+00
+0 0.004 0.000000e+00
+0 0.0008 0.000000e+00
+0 0.003 0.000000e+00
+---
+correlator: PION
+momentum: p100
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PION_1S_1S_rot_rot_k0.1_k0.1_p100
+...
+0 0.02 0.000000e+00
+0 0.001 0.000000e+00
+0 0.0002 0.000000e+00
+0 0.001 0.000000e+00
+---
+correlator: PS505
+momentum: p000
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PS505_1S_1S_rot_rot_k0.1_k0.1_p000
+...
+0 0.0002 0.0002
+0 0.003 0.0002
+0 0.0002 0.0002
+0 0.003 0.0002
+---
+correlator: PS505
+momentum: p100
+gamma_source: G5
+gamma_sink: G5
+correlator_key: PS505_1S_1S_rot_rot_k0.1_k0.1_p100
+...
+0 0.0002 0.0002
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0009 0.0002
+---
+correlator: PS0505
+momentum: p000
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: PS0505_1S_1S_rot_rot_k0.1_k0.1_p000
+...
+0 0.05 0.0002
+0 0.003 0.0002
+0 0.0007 0.0002
+0 0.003 0.0002
+---
+correlator: PS0505
+momentum: p100
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: PS0505_1S_1S_rot_rot_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0009 0.0002
+---
+correlator: RHO
+momentum: p000
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: RHO_1S_1S_rot_rot_k0.1_k0.1_p000
+...
+0 0.05 0.0002
+0 0.003 0.0002
+0 0.0007 0.0002
+0 0.003 0.0002
+---
+correlator: RHO
+momentum: p100
+gamma_source: G5
+gamma_sink: G5T
+correlator_key: RHO_1S_1S_rot_rot_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0009 0.0002
+---
+correlator: RHO0
+momentum: p000
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: RHO0_1S_1S_rot_rot_k0.1_k0.1_p000
+...
+0 0.05 0.0002
+0 0.003 0.0002
+0 0.0007 0.0002
+0 0.003 0.0002
+---
+correlator: RHO0
+momentum: p100
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: RHO0_1S_1S_rot_rot_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0009 0.0002
+---
+correlator: SCALAR
+momentum: p000
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: SCALAR_1S_1S_rot_rot_k0.1_k0.1_p000
+...
+0 0.05 0.000000e+00
+0 0.0006 0.000000e+00
+0 0.0006 0.000000e+00
+0 0.0006 0.000000e+00
+---
+correlator: SCALAR
+momentum: p100
+gamma_source: G5T
+gamma_sink: G5T
+correlator_key: SCALAR_1S_1S_rot_rot_k0.1_k0.1_p100
+...
+0 0.02 0.000000e+00
+0 0.0002 0.000000e+00
+0 0.0002 0.000000e+00
+0 0.0002 0.000000e+00
+---
+correlator: SCAL0
+momentum: p000
+gamma_source: GX
+gamma_sink: GX
+correlator_key: SCAL0_1S_1S_rot_rot_k0.1_k0.1_p000
+...
+0 0.06 0.0002
+0 0.0006 XXX
+0 0.0006 0.0002
+0 0.0006 0.0002
+---
+correlator: SCAL0
+momentum: p100
+gamma_source: GX
+gamma_sink: GX
+correlator_key: SCAL0_1S_1S_rot_rot_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+---
+correlator: PV
+momentum: p000
+gamma_source: GX
+gamma_sink: GX
+correlator_key: PV_1S_1S_rot_rot_k0.1_k0.1_p000
+...
+0 0.05 0.0002
+0 0.0006 0.0002
+0 0.0006 0.0002
+0 0.0006 0.0002
+---
+correlator: PV
+momentum: p100
+gamma_source: GX
+gamma_sink: GX
+correlator_key: PV_1S_1S_rot_rot_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+---
+correlator: B
+momentum: p000
+gamma_source: GY
+gamma_sink: GY
+correlator_key: B_1S_1S_rot_rot_k0.1_k0.1_p000
+...
+0 0.05 0.0002
+0 0.0006 0.0002
+0 0.0006 0.0002
+0 0.0006 0.0002
+---
+correlator: B
+momentum: p100
+gamma_source: GY
+gamma_sink: GY
+correlator_key: B_1S_1S_rot_rot_k0.1_k0.1_p100
+...
+0 0.02 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002

@@ -1,0 +1,20 @@
+# List of test examples to be processed by check.pl
+
+exec su3_clov	1	-	clov	     STARTPROP RUNNING
+     extra-output   su3_clov.clov.1.corrfile --- EOF
+exec su3_clov	1	-	ks	     STARTPROP RUNNING
+     extra-output   su3_clov.ks.1.corrfile --- EOF
+exec su3_clov	1	-	onium	     STARTPROP RUNNING
+     extra-output   su3_clov.onium.1.corrfile --- EOF
+exec su3_clov	1	-	open_meson    STARTPROP RUNNING
+     extra-output   tie_open_meson.1 file_id: EOF
+     extra-output   dump_open_meson.1 --- EOF
+exec su3_clov	2	-	clov	     STARTPROP RUNNING
+     extra-output   su3_clov.clov.2.corrfile --- EOF
+exec su3_clov	2	-	ks	     STARTPROP RUNNING
+     extra-output   su3_clov.ks.2.corrfile --- EOF
+exec su3_clov	2	-	onium	     STARTPROP RUNNING
+     extra-output   su3_clov.onium.2.corrfile --- EOF
+exec su3_clov	2	-	open_meson    STARTPROP RUNNING
+     extra-output   tie_open_meson.2 file_id: EOF
+     extra-output   dump_open_meson.2 --- EOF

@@ -1,0 +1,221 @@
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.0002 0.0002 0.0002
+SINKS: point point point PROTON
+0 0.002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.0002 0.0002 0.0002
+SINKS: point point point PROTON0
+0 0.002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.0002 0.0002 0.0002
+SINKS: point point point DELTA
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.0002 0.0002 0.0002
+SINKS: point point point DELTA0
+0 0.001 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+Mesons for quarks 0 and 0
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+Mesons for quarks 0 and 0
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian PION
+0 0.6 0.0002
+0 0.04 0.0002
+0 0.009 0.0002
+0 0.04 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian PION
+0 0.2 0.0003
+0 0.008 0.0002
+0 0.001 0.0002
+0 0.006 0.0004
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian PS505
+0 0.002 0.0002
+0 0.04 0.0002
+0 0.0002 0.0002
+0 0.03 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian PS505
+0 0.0004 0.0002
+0 0.008 0.0002
+0 0.0002 0.0002
+0 0.006 0.0004
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian PS0505
+0 0.6 0.0002
+0 0.04 0.0002
+0 0.008 0.0002
+0 0.03 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian PS0505
+0 0.2 0.0006
+0 0.008 0.0002
+0 0.001 0.0002
+0 0.006 0.0004
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian RHO
+0 0.6 0.0002
+0 0.04 0.0002
+0 0.009 0.0002
+0 0.03 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian RHO
+0 0.2 0.0002
+0 0.008 0.0002
+0 0.001 0.0002
+0 0.006 0.0004
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian RHO0
+0 0.6 0.0002
+0 0.04 0.0002
+0 0.008 0.0002
+0 0.03 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian RHO0
+0 0.2 0.0003
+0 0.008 0.0002
+0 0.001 0.0002
+0 0.006 0.0004
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian SCALAR
+0 0.6 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian SCALAR
+0 0.2 0.0006
+0 0.0008 0.0002
+0 0.001 0.0002
+0 0.0007 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian SCAL0
+0 0.6 0.0002
+0 0.009 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian SCAL0
+0 0.2 0.0004
+0 0.0008 0.0002
+0 0.001 0.0002
+0 0.0006 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian PV
+0 0.6 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian PV
+0 0.2 0.0003
+0 0.0008 0.0002
+0 0.001 0.0002
+0 0.0006 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian B
+0 0.6 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+0 0.008 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0.1 kappa[0]=0.1
+SOURCES: gaussian gaussian
+SINKS: point gaussian B
+0 0.2 0.0002
+0 0.0008 0.0002
+0 0.001 0.0002
+0 0.0006 0.0002
+ENDPROP
+RUNNING COMPLETED

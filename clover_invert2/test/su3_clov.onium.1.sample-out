@@ -1,0 +1,674 @@
+SU3 clover valence fermions
+MIMD version 7 $Name:  $
+Machine = QMP (portable), with 1 nodes
+start: Wed Sep 15 02:31:35 2010
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+# No random numbers needed
+iseed 1234
+job_id test
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.5 MBytes per node for lattice
+with periodic boundary conditions in time
+
+
+# Gauge field description
+reload_parallel ../../binary_samples/lat.sample.l4448
+u0 0.8678
+no_gauge_fix
+forget 
+staple_weight 0.1
+ape_iter 15
+# Inversion control
+max_cg_iterations 200
+max_cg_restarts 10
+error_for_propagator 0
+rel_error_for_propagator 5e-05
+precision 1
+number_of_base_sources 1
+# source 0
+point
+subset full
+origin 0 0 0 0 
+source_label p
+forget_source 
+number_of_modified_sources 5
+# source 1
+source 0
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label G
+forget_source 
+# source 2
+source 0
+deriv1
+dir x 
+disp 1
+weights 1 
+op_label n1
+forget_source 
+# source 3
+source 0
+deriv2_B
+dir y z 
+disp 1
+weights 1 
+op_label b1
+forget_source 
+# source 4
+source 2
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label N1
+forget_source 
+# source 5
+source 3
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label B1
+forget_source 
+# Description of propagators
+number_of_propagators 3
+# propagator 0
+propagator_type clover
+kappa 0.1
+clov_c 1
+check yes
+momentum_twist 0 0 0 
+time_bc periodic
+source 1
+fresh_wprop 
+forget_wprop 
+# source
+# propagator 1
+propagator_type clover
+kappa 0.1
+clov_c 1
+check yes
+momentum_twist 0 0 0 
+time_bc periodic
+source 4
+fresh_wprop 
+forget_wprop 
+# propagator 2 
+propagator_type clover
+kappa 0.1
+clov_c 1
+check yes
+momentum_twist 0 0 0 
+time_bc periodic
+source 5
+fresh_wprop 
+forget_wprop 
+# Description of quarks
+number_of_quarks 6
+# quark 0
+propagator 0
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label G
+forget_wprop 
+# quark 1
+quark 0
+deriv1
+dir z 
+disp 1
+weights 1 
+op_label N3
+forget_wprop 
+# quark 2
+quark 0
+deriv2_D
+dir z y 
+disp 1
+weights 1 
+op_label D1
+forget_wprop 
+# quark 3
+quark 0
+deriv2_B
+dir z y 
+disp 1
+weights 1 
+op_label B1
+forget_wprop 
+# quark 4
+propagator 1
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label G
+forget_wprop 
+# quark 5
+propagator 2
+fat_covariant_gaussian
+r0 2.8
+source_iters 20
+op_label G
+forget_wprop 
+# Description of mesons
+number_of_pairings 5
+# pair 0 (first index is for antiquark - second is quark)
+pair 3 0 
+spectrum_request meson
+save_corr_fnal su3_clov.onium.1.corrfile.test-outt
+r_offset 0 0 0 0 
+# correlators for pair 0
+number_of_correlators 16
+correlator TTxG_BB1xB1 p000  -1 * 1.000000  GT G5X  0  0  0  E  E  E
+correlator PPxG_VV1xB1 p000  -1 * 1.000000  G5  GX  0  0  0  E  E  E
+correlator PTxG_VV1xB1 p000  -1 * 1.000000 G5T  GX  0  0  0  E  E  E
+correlator PPxG_VT1xB1 p000  -i * 1.000000  G5 GXT  0  0  0  E  E  E
+correlator PTxG_VT1xB1 p000  -i * 1.000000 G5T GXT  0  0  0  E  E  E
+correlator UUxG_AA1xB1 p000  -i * 1.000000  G1 GYZ  0  0  0  E  E  E
+correlator VV1xG_PPxB1 p000   1 * 1.000000  GX  G5  0  0  0  E  E  E
+correlator VT1xG_PPxB1 p000   i * 1.000000 GXT  G5  0  0  0  E  E  E
+correlator VV1xG_PTxB1 p000  -1 * 1.000000  GX G5T  0  0  0  E  E  E
+correlator VT1xG_PTxB1 p000  -i * 1.000000 GXT G5T  0  0  0  E  E  E
+correlator AA1xG_UUxB1 p000   i * 1.000000 GYZ  G1  0  0  0  E  E  E
+correlator AA2xG_BB3xB1 p000   i * 1.000000 GZX G5Z  0  0  0  E  E  E
+correlator AA3xG_BB2xB1 p000   i * 1.000000 GXY G5Y  0  0  0  E  E  E
+correlator BB1xG_TTxB1 p000  -1 * 1.000000 G5X  GT  0  0  0  E  E  E
+correlator BB2xG_AA3xB1 p000   i * 1.000000 G5Y GXY  0  0  0  E  E  E
+correlator BB3xG_AA2xB1 p000   i * 1.000000 G5Z GZX  0  0  0  E  E  E
+# pair 1 (first index is for antiquark - second is quark)
+pair 1 4 
+spectrum_request meson
+save_corr_fnal su3_clov.onium.1.corrfile.test-outt
+r_offset 0 0 0 0 
+# correlators for pair 1
+number_of_correlators 16
+correlator BB1xN1_BB3xN3 p000  -1 * 1.000000 G5X G5Z  0  0  0  E  E  E
+correlator AA1xN1_AA3xN3 p000  -1 * 1.000000 GYZ GXY  0  0  0  E  E  E
+correlator VV1xN1_VV3xN3 p000  -1 * 1.000000  GX  GZ  0  0  0  E  E  E
+correlator VT1xN1_VV3xN3 p000   i * 1.000000 GXT  GZ  0  0  0  E  E  E
+correlator VV1xN1_VT3xN3 p000  -i * 1.000000  GX GZT  0  0  0  E  E  E
+correlator VT1xN1_VT3xN3 p000  -1 * 1.000000 GXT GZT  0  0  0  E  E  E
+correlator BB2xN1_UUxN3 p000  -1 * 1.000000 G5Y  G1  0  0  0  E  E  E
+correlator UUxN1_BB2xN3 p000   1 * 1.000000  G1 G5Y  0  0  0  E  E  E
+correlator BB3xN1_BB1xN3 p000  -1 * 1.000000 G5Z G5X  0  0  0  E  E  E
+correlator AA2xN1_TTxN3 p000  -i * 1.000000 GZX  GT  0  0  0  E  E  E
+correlator TTxN1_AA2xN3 p000   i * 1.000000  GT GZX  0  0  0  E  E  E
+correlator AA3xN1_AA1xN3 p000  -1 * 1.000000 GXY GYZ  0  0  0  E  E  E
+correlator VV3xN1_VV1xN3 p000  -1 * 1.000000  GZ  GX  0  0  0  E  E  E
+correlator VT3xN1_VV1xN3 p000   i * 1.000000 GZT  GX  0  0  0  E  E  E
+correlator VV3xN1_VT1xN3 p000  -i * 1.000000  GZ GXT  0  0  0  E  E  E
+correlator VT3xN1_VT1xN3 p000  -1 * 1.000000 GZT GXT  0  0  0  E  E  E
+# pair 2 (first index is for antiquark - second is quark)
+pair 2 4 
+spectrum_request meson
+save_corr_fnal su3_clov.onium.1.corrfile.test-outt
+r_offset 0 0 0 0 
+# correlators for pair 2
+number_of_correlators 12
+correlator BB3xN1_VV3xD1 p000  -1 * 1.000000 G5Z  GZ  0  0  0  E  E  E
+correlator BB3xN1_VT3xD1 p000   i * 1.000000 G5Z GZT  0  0  0  E  E  E
+correlator BB2xN1_VV2xD1 p000  -1 * 1.000000 G5Y  GY  0  0  0  E  E  E
+correlator BB2xN1_VT2xD1 p000   i * 1.000000 G5Y GYT  0  0  0  E  E  E
+correlator VV3xN1_BB3xD1 p000  -1 * 1.000000  GZ G5Z  0  0  0  E  E  E
+correlator VT3xN1_BB3xD1 p000   i * 1.000000 GZT G5Z  0  0  0  E  E  E
+correlator VV2xN1_BB2xD1 p000  -1 * 1.000000  GY G5Y  0  0  0  E  E  E
+correlator VT2xN1_BB2xD1 p000   i * 1.000000 GYT G5Y  0  0  0  E  E  E
+correlator BB1xN1_VV1xD1 p000  -1 * 1.000000 G5X  GX  0  0  0  E  E  E
+correlator BB1xN1_VT1xD1 p000   i * 1.000000 G5X GXT  0  0  0  E  E  E
+correlator VV1xN1_BB1xD1 p000  -1 * 1.000000  GX G5X  0  0  0  E  E  E
+correlator VT1xN1_BB1xD1 p000   i * 1.000000 GXT G5X  0  0  0  E  E  E
+# pair 3 (first index is for antiquark - second is quark)
+pair 0 5 
+spectrum_request meson
+save_corr_fnal su3_clov.onium.1.corrfile.test-outt
+r_offset 0 0 0 0 
+# correlators for pair 3
+number_of_correlators 16
+correlator BB1xB1_TTxG p000  -1 * 1.000000 G5X  GT  0  0  0  E  E  E
+correlator VV1xB1_PPxG p000   1 * 1.000000  GX  G5  0  0  0  E  E  E
+correlator VT1xB1_PPxG p000  -i * 1.000000 GXT  G5  0  0  0  E  E  E
+correlator VV1xB1_PTxG p000  -1 * 1.000000  GX G5T  0  0  0  E  E  E
+correlator VT1xB1_PTxG p000   i * 1.000000 GXT G5T  0  0  0  E  E  E
+correlator AA1xB1_UUxG p000  -i * 1.000000 GYZ  G1  0  0  0  E  E  E
+correlator PPxB1_VV1xG p000  -1 * 1.000000  G5  GX  0  0  0  E  E  E
+correlator PTxB1_VV1xG p000  -1 * 1.000000 G5T  GX  0  0  0  E  E  E
+correlator PPxB1_VT1xG p000   i * 1.000000  G5 GXT  0  0  0  E  E  E
+correlator PTxB1_VT1xG p000   i * 1.000000 G5T GXT  0  0  0  E  E  E
+correlator UUxB1_AA1xG p000   i * 1.000000  G1 GYZ  0  0  0  E  E  E
+correlator BB3xB1_AA2xG p000  -i * 1.000000 G5Z GZX  0  0  0  E  E  E
+correlator BB2xB1_AA3xG p000  -i * 1.000000 G5Y GXY  0  0  0  E  E  E
+correlator TTxB1_BB1xG p000  -1 * 1.000000  GT G5X  0  0  0  E  E  E
+correlator AA3xB1_BB2xG p000  -i * 1.000000 GXY G5Y  0  0  0  E  E  E
+correlator AA2xB1_BB3xG p000  -i * 1.000000 GZX G5Z  0  0  0  E  E  E
+# pair 4 (first index is for antiquark - second is quark)
+pair 3 5 
+spectrum_request meson
+forget_corr 
+r_offset 0 0 0 0 
+# correlators for pair 4
+number_of_correlators 24
+correlator BB1xB1_BB1xB1 p000  -1 * 1.000000 G5X G5X  0  0  0  E  E  E
+correlator VV1xB1_VV1xB1 p000  -1 * 1.000000  GX  GX  0  0  0  E  E  E
+correlator VT1xB1_VV1xB1 p000   i * 1.000000 GXT  GX  0  0  0  E  E  E
+correlator VV1xB1_VT1xB1 p000  -i * 1.000000  GX GXT  0  0  0  E  E  E
+correlator VT1xB1_VT1xB1 p000  -1 * 1.000000 GXT GXT  0  0  0  E  E  E
+correlator AA1xB1_AA1xB1 p000  -1 * 1.000000 GYZ GYZ  0  0  0  E  E  E
+correlator PPxB1_PPxB1 p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator PTxB1_PPxB1 p000   1 * 1.000000 G5T  G5  0  0  0  E  E  E
+correlator PPxB1_PTxB1 p000  -1 * 1.000000  G5 G5T  0  0  0  E  E  E
+correlator PTxB1_PTxB1 p000  -1 * 1.000000 G5T G5T  0  0  0  E  E  E
+correlator UUxB1_UUxB1 p000   1 * 1.000000  G1  G1  0  0  0  E  E  E
+correlator BB3xB1_BB3xB1 p000  -1 * 1.000000 G5Z G5Z  0  0  0  E  E  E
+correlator BB2xB1_BB2xB1 p000  -1 * 1.000000 G5Y G5Y  0  0  0  E  E  E
+correlator VV2xB1_VV2xB1 p000  -1 * 1.000000  GY  GY  0  0  0  E  E  E
+correlator VT2xB1_VV2xB1 p000   i * 1.000000 GYT  GY  0  0  0  E  E  E
+correlator VV2xB1_VT2xB1 p000  -i * 1.000000  GY GYT  0  0  0  E  E  E
+correlator VT2xB1_VT2xB1 p000  -1 * 1.000000 GYT GYT  0  0  0  E  E  E
+correlator VV3xB1_VV3xB1 p000  -1 * 1.000000  GZ  GZ  0  0  0  E  E  E
+correlator VT3xB1_VV3xB1 p000   i * 1.000000 GZT  GZ  0  0  0  E  E  E
+correlator VV3xB1_VT3xB1 p000  -i * 1.000000  GZ GZT  0  0  0  E  E  E
+correlator VT3xB1_VT3xB1 p000  -1 * 1.000000 GZT GZT  0  0  0  E  E  E
+correlator TTxB1_TTxB1 p000  -1 * 1.000000  GT  GT  0  0  0  E  E  E
+correlator AA3xB1_AA3xB1 p000  -1 * 1.000000 GXY GXY  0  0  0  E  E  E
+correlator AA2xB1_AA2xB1 p000  -1 * 1.000000 GZX GZX  0  0  0  E  E  E
+Restored binary gauge configuration in parallel from file ../../binary_samples/lat.sample.l4448
+Time stamp Wed Oct 10 14:27:08 2001
+Checksums 13f3b413 161f7dde OK
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
+Unitarity checked.  Max deviation 2.38e-07
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -5.532857e-02     8
+                    2      -8.299286e-02     48
+                    3      2.755126e-02     192
+                    4      -6.097487e-03     384
+                    5      -1.102050e-01     48
+COULOMB GAUGE FIXING SKIPPED.
+END OF HEADER
+Kappa= 0.1 source point/fat_covariant_gaussian residue= 0 rel= 5e-05
+Kappa= 0.1 source point/deriv1/fat_covariant_gaussian residue= 0 rel= 5e-05
+Kappa= 0.1 source point/deriv2_B/fat_covariant_gaussian residue= 0 rel= 5e-05
+destroy prop[0]
+destroy prop[1]
+destroy prop[2]
+destroy prop[0]
+destroy prop[1]
+destroy prop[2]
+Mesons for quarks 3 and 0
+WMTIME: time 9.1e-03 sec 1.05219e+07 flops 1154.5 MF
+WMTIME: time 9.1e-03 sec 1.05219e+07 flops 1154.0 MF
+WMTIME: time 9.1e-03 sec 1.05219e+07 flops 1156.9 MF
+Mesons for quarks 1 and 4
+WMTIME: time 9.1e-03 sec 1.05219e+07 flops 1155.6 MF
+WMTIME: time 9.1e-03 sec 1.05219e+07 flops 1161.6 MF
+WMTIME: time 9.0e-03 sec 1.05219e+07 flops 1163.1 MF
+Mesons for quarks 2 and 4
+WMTIME: time 6.9e-03 sec 7.9001e+06 flops 1150.8 MF
+WMTIME: time 6.8e-03 sec 7.9001e+06 flops 1157.9 MF
+WMTIME: time 6.9e-03 sec 7.9001e+06 flops 1142.4 MF
+Mesons for quarks 0 and 5
+WMTIME: time 9.1e-03 sec 1.05219e+07 flops 1158.2 MF
+WMTIME: time 9.2e-03 sec 1.05219e+07 flops 1147.3 MF
+WMTIME: time 9.1e-03 sec 1.05219e+07 flops 1156.1 MF
+Mesons for quarks 3 and 5
+WMTIME: time 1.3e-02 sec 1.41925e+07 flops 1131.1 MF
+WMTIME: time 1.3e-02 sec 1.41925e+07 flops 1116.9 MF
+WMTIME: time 1.3e-02 sec 1.41925e+07 flops 1127.5 MF
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian BB1xB1_BB1xB1
+0 -1.006460e-02 -7.008218e-04
+1 3.849043e-06 4.184172e-07
+2 -2.221276e-07 -1.471096e-08
+3 -4.943381e-07 -4.488392e-08
+4 -1.893053e-07 -3.297089e-08
+5 1.977118e-07 -2.354081e-09
+6 5.957352e-07 6.783081e-08
+7 4.835700e-06 -1.000026e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VV1xB1_VV1xB1
+0 9.802872e-03 6.815922e-04
+1 3.871231e-04 2.810740e-05
+2 1.855977e-05 1.924398e-06
+3 2.576165e-06 4.292096e-08
+4 2.092796e-07 1.188120e-09
+5 3.907136e-06 2.543719e-07
+6 1.674721e-05 5.031502e-07
+7 1.920158e-04 3.447323e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VT1xB1_VV1xB1
+0 5.483104e-05 4.369820e-06
+1 -3.944213e-04 -2.864890e-05
+2 -1.870996e-05 -1.887064e-06
+3 -2.638110e-06 -4.662169e-08
+4 -4.407572e-07 -2.121479e-08
+5 3.805823e-06 2.587909e-07
+6 1.650301e-05 4.914841e-07
+7 1.937936e-04 3.479562e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VV1xB1_VT1xB1
+0 -7.171661e-05 -6.583075e-06
+1 -3.965289e-04 -2.879523e-05
+2 -1.901227e-05 -1.950328e-06
+3 -2.699357e-06 -3.866663e-08
+4 -4.439603e-07 -2.053843e-08
+5 3.801616e-06 2.565912e-07
+6 1.621975e-05 4.562130e-07
+7 1.892649e-04 3.496321e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VT1xB1_VT1xB1
+0 1.005246e-02 7.007682e-04
+1 4.045098e-04 2.938573e-05
+2 1.914299e-05 1.908764e-06
+3 2.683503e-06 4.432098e-08
+4 2.117919e-07 8.759891e-10
+5 3.812991e-06 2.568994e-07
+6 1.597859e-05 4.442959e-07
+7 1.910087e-04 3.529469e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian AA1xB1_AA1xB1
+0 9.792581e-03 6.816606e-04
+1 -2.119698e-05 -1.621363e-06
+2 -3.491314e-07 3.031867e-08
+3 3.470864e-07 2.415076e-08
+4 1.891173e-07 3.239536e-08
+5 -1.714687e-07 -2.211262e-09
+6 -7.745610e-07 2.657373e-09
+7 -7.312192e-06 -1.093028e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian PPxB1_PPxB1
+0 -9.736393e-03 -6.733985e-04
+1 -3.878736e-04 -2.791346e-05
+2 -1.798143e-05 -1.841318e-06
+3 -2.469930e-06 -3.354901e-08
+4 -1.903367e-07 2.374314e-10
+5 -3.772560e-06 -2.431702e-07
+6 -1.686864e-05 -4.602193e-07
+7 -1.894568e-04 -3.402298e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian PTxB1_PPxB1
+0 1.140021e-05 -1.315102e-06
+1 3.998592e-04 2.901014e-05
+2 1.880343e-05 1.851477e-06
+3 2.638931e-06 3.541143e-08
+4 4.619768e-07 2.146588e-08
+5 -3.715102e-06 -2.580657e-07
+6 -1.665720e-05 -5.084180e-07
+7 -2.013935e-04 -3.563178e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian PPxB1_PTxB1
+0 1.303053e-05 5.595803e-06
+1 3.890390e-04 2.784095e-05
+2 1.793448e-05 1.860644e-06
+3 2.606961e-06 4.215104e-08
+4 4.477647e-07 2.032701e-08
+5 -3.801421e-06 -2.517003e-07
+6 -1.630615e-05 -4.431131e-07
+7 -1.833176e-04 -3.394192e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian PTxB1_PTxB1
+0 -1.005521e-02 -7.046697e-04
+1 -4.018198e-04 -2.895404e-05
+2 -1.877310e-05 -1.867942e-06
+3 -2.708961e-06 -4.654845e-08
+4 -2.061615e-07 -1.443739e-09
+5 -3.863001e-06 -2.627926e-07
+6 -1.611562e-05 -4.907888e-07
+7 -1.965242e-04 -3.565116e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian UUxB1_UUxB1
+0 -1.003419e-02 -7.031632e-04
+1 5.814903e-06 2.233811e-07
+2 -3.204187e-07 -4.514820e-08
+3 -4.347235e-07 -3.343536e-08
+4 -1.961976e-07 -3.269579e-08
+5 1.111332e-07 -9.497526e-09
+6 2.817861e-07 2.318984e-09
+7 -8.219453e-07 -3.999069e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian BB3xB1_BB3xB1
+0 -9.846888e-03 -6.882742e-04
+1 1.480099e-05 1.521340e-06
+2 -3.154210e-08 -1.763821e-08
+3 -4.063130e-07 -2.768385e-08
+4 -1.836264e-07 -3.249479e-08
+5 1.952805e-07 -8.741470e-10
+6 8.982095e-07 1.174817e-08
+7 5.668317e-06 7.035967e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian BB2xB1_BB2xB1
+0 -9.877406e-03 -6.919014e-04
+1 1.741293e-05 5.150365e-07
+2 3.188066e-07 -4.670784e-08
+3 -3.214962e-07 -2.462022e-08
+4 -1.927252e-07 -3.220703e-08
+5 1.361036e-07 -4.192145e-09
+6 2.295902e-07 -8.105900e-09
+7 2.377946e-06 1.577756e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VV2xB1_VV2xB1
+0 9.841635e-03 6.847907e-04
+1 3.906810e-04 2.803365e-05
+2 1.872114e-05 1.860548e-06
+3 2.583961e-06 3.160196e-08
+4 1.983193e-07 -4.954614e-10
+5 3.703826e-06 2.384410e-07
+6 1.685533e-05 4.236335e-07
+7 1.875799e-04 3.414356e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VT2xB1_VV2xB1
+0 -1.206593e-05 -5.432366e-07
+1 -3.857941e-04 -2.838232e-05
+2 -1.858959e-05 -1.902904e-06
+3 -2.596704e-06 -2.398346e-08
+4 -4.490700e-07 -2.139300e-08
+5 3.694851e-06 2.518055e-07
+6 1.681941e-05 5.141710e-07
+7 1.989926e-04 3.619754e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VV2xB1_VT2xB1
+0 2.834560e-06 -1.234117e-06
+1 -3.927684e-04 -2.822029e-05
+2 -1.831761e-05 -1.855040e-06
+3 -2.633033e-06 -3.793539e-08
+4 -4.440012e-07 -2.020294e-08
+5 3.743058e-06 2.450794e-07
+6 1.621570e-05 4.066424e-07
+7 1.865531e-04 3.377106e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VT2xB1_VT2xB1
+0 9.894427e-03 6.925978e-04
+1 3.882204e-04 2.859965e-05
+2 1.814516e-05 1.895178e-06
+3 2.575403e-06 3.219475e-08
+4 2.062969e-07 -5.634018e-10
+5 3.841086e-06 2.536401e-07
+6 1.623165e-05 4.995850e-07
+7 1.977442e-04 3.581065e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VV3xB1_VV3xB1
+0 9.835494e-03 6.835691e-04
+1 3.876463e-04 2.852106e-05
+2 1.784113e-05 1.847784e-06
+3 2.475502e-06 2.359315e-08
+4 1.997792e-07 -1.098233e-09
+5 3.722304e-06 2.457095e-07
+6 1.586036e-05 4.096446e-07
+7 1.888254e-04 3.504124e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VT3xB1_VV3xB1
+0 -6.043180e-05 -3.854657e-06
+1 -3.979240e-04 -2.876915e-05
+2 -1.872674e-05 -1.858655e-06
+3 -2.655858e-06 -2.871818e-08
+4 -4.567667e-07 -2.024859e-08
+5 3.665496e-06 2.477096e-07
+6 1.590309e-05 3.812352e-07
+7 1.883852e-04 3.440010e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VV3xB1_VT3xB1
+0 4.546151e-05 5.328466e-07
+1 -3.774922e-04 -2.755740e-05
+2 -1.774709e-05 -1.850077e-06
+3 -2.518785e-06 -2.944068e-08
+4 -4.444809e-07 -2.122344e-08
+5 3.702376e-06 2.492474e-07
+6 1.643401e-05 4.619405e-07
+7 1.873287e-04 3.489167e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian VT3xB1_VT3xB1
+0 9.860846e-03 6.889488e-04
+1 3.870161e-04 2.775305e-05
+2 1.860090e-05 1.857691e-06
+3 2.616095e-06 3.521214e-08
+4 2.044243e-07 1.018343e-09
+5 3.760186e-06 2.475804e-07
+6 1.650179e-05 4.321851e-07
+7 1.866393e-04 3.422279e-05
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian TTxB1_TTxB1
+0 9.755420e-03 6.747046e-04
+1 -1.987428e-05 -1.911306e-06
+2 -3.596589e-07 5.408182e-09
+3 3.949521e-07 3.246521e-08
+4 1.768846e-07 3.117281e-08
+5 -2.581116e-07 -8.963582e-09
+6 -7.454790e-07 -4.096131e-08
+7 -1.063589e-05 -1.218186e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian AA3xB1_AA3xB1
+0 9.850099e-03 6.843481e-04
+1 -1.622312e-05 -9.056527e-07
+2 -3.843409e-07 1.749112e-08
+3 3.589714e-07 3.288713e-08
+4 1.861331e-07 3.206731e-08
+5 -2.018473e-07 3.590159e-10
+6 -4.895113e-07 -5.135992e-08
+7 -7.316079e-06 -3.984364e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1 
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINKS: deriv2_B fat_covariant_gaussian AA2xB1_AA2xB1
+0 9.860498e-03 6.855648e-04
+1 -1.350243e-05 -1.672444e-06
+2 -2.872611e-08 -5.394710e-09
+3 4.888435e-07 4.034617e-08
+4 1.704515e-07 3.150257e-08
+5 -2.887882e-07 -9.830607e-09
+6 -8.904885e-07 -6.558770e-08
+7 -9.833228e-06 -8.672746e-07
+ENDPROP
+RUNNING COMPLETED
+Time = 4.510466e+00 seconds
+total_iters = 1397
+destroy quark[0]
+destroy quark[1]
+destroy quark[2]
+destroy quark[3]
+destroy quark[4]
+destroy quark[5]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Wed Sep 15 02:31:40 2010
+

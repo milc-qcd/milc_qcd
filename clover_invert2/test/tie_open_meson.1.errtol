@@ -1,0 +1,16 @@
+file_id: File Type: MDP FIELD
+program_version: milc_qcd version 0
+creation_date: XXX XXX XXX XXX XXX
+endianess: 0
+ndim: 0
+box[0]: 0
+bytes_per_site: 0
+sites: 0
+0 4e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06

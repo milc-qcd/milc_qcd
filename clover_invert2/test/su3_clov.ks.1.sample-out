@@ -1,0 +1,448 @@
+SU3 clover valence fermions
+MIMD version 7 $Name:  $
+Machine = QMP (portable), with 1 nodes
+start: Tue Aug  5 12:04:31 2008
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = QDP
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.5 MBytes per node for lattice
+
+
+# Gauge field description
+reload_serial ../binary_samples/lat.sample.l4448.ll
+u0 1
+no_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+# Inversion control
+max_cg_iterations 100
+max_cg_restarts 10
+error_for_propagator 1e-06
+rel_error_for_propagator 1e-06
+# Description of quarks
+number_of_propagators 2
+# propagator 0
+propagator_type KS
+mass 0.1
+check no
+reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+save_serial_fm_ksprop ksprop.test2
+# source
+point
+origin 0 0 0 0 
+source_label d
+# propagator 1
+propagator_type clover
+kappa 0.124
+clov_c 1
+check no
+reload_serial_wprop ../binary_samples/wprop_fm.sample.l4448.ll
+save_serial_fm_wprop wprop.test1
+# source 
+gaussian
+origin 0 0 0 0 
+r0 1.5
+source_label 1S
+number_of_quarks 4
+# point sink staggered
+propagator 0
+point
+sink_label d
+forget_wprop
+# point sink clover
+propagator 1
+point
+sink_label d
+forget_wprop
+# rotated sink clover
+propagator 1
+rotate_3D
+d1 0.09073
+sink_label rot
+forget_wprop
+# smeared sink clover
+propagator 1
+complex_field_fm
+load_sink ../binary_samples/smear_fm.sample.l4448.ll
+momentum 0 0 0 
+sink_label 1S
+forget_wprop
+# Correlators
+# Description of mesons
+number_of_pairings 3
+# pair 0
+# point staggered / rotated clover
+pair 0 2 
+spectrum_request meson
+save_corr_fnal out.test.fnal_corr2.1
+r_offset 0 0 0 0
+number_of_correlators 26
+correlator A4_P5 p000   i * 1.000000  G5 G5T  0  0  0  E  E  E
+correlator A4_P5 p100   i * 1.000000  G5 G5T  1  0  0  E  E  E
+correlator A4_P5 p100   i * 1.000000  G5 G5T  0  1  0  E  E  E
+correlator A4_P5 p100   i * 1.000000  G5 G5T  0  0  1  E  E  E
+correlator A4_P5 p110   i * 1.000000  G5 G5T  1  1  0  E  E  E
+correlator A4_P5 p110   i * 1.000000  G5 G5T  0  1  1  E  E  E
+correlator A4_P5 p110   i * 1.000000  G5 G5T  1  0  1  E  E  E
+correlator A4_P5 p111   i * 1.000000  G5 G5T  1  1  1  E  E  E
+correlator A4_P5 p200   i * 1.000000  G5 G5T  2  0  0  E  E  E
+correlator A4_P5 p200   i * 1.000000  G5 G5T  0  2  0  E  E  E
+correlator A4_P5 p200   i * 1.000000  G5 G5T  0  0  2  E  E  E
+correlator A1_P5 p100  -1 * 1.000000  G5 G5X  1  0  0  O  E  E
+correlator A1_P5 p100   1 * 1.000000  G5 G5Y  0  1  0  E  O  E
+correlator A1_P5 p100  -1 * 1.000000  G5 G5Z  0  0  1  E  E  O
+correlator A1_P5 p110  -1 * 1.000000  G5 G5X  1  1  0  O  E  E
+correlator A1_P5 p110  -1 * 1.000000  G5 G5X  1  0  1  O  E  E
+correlator A1_P5 p110   1 * 1.000000  G5 G5Y  1  1  0  E  O  E
+correlator A1_P5 p110   1 * 1.000000  G5 G5Y  0  1  1  E  O  E
+correlator A1_P5 p110  -1 * 1.000000  G5 G5Z  0  1  1  E  E  O
+correlator A1_P5 p110  -1 * 1.000000  G5 G5Z  1  0  1  E  E  O
+correlator A1_P5 p111  -1 * 1.000000  G5 G5X  1  1  1  O  E  E
+correlator A1_P5 p111   1 * 1.000000  G5 G5Y  1  1  1  E  O  E
+correlator A1_P5 p111  -1 * 1.000000  G5 G5Z  1  1  1  E  E  O
+correlator A1_P5 p200  -1 * 1.000000  G5 G5X  2  0  0  O  E  E
+correlator A1_P5 p200   1 * 1.000000  G5 G5Y  0  2  0  E  O  E
+correlator A1_P5 p200  -1 * 1.000000  G5 G5Z  0  0  2  E  E  O
+# pair 1
+# point staggered / point clover
+pair 0 1 
+spectrum_request meson
+save_corr_fnal out.test.fnal_corr2.1
+r_offset 0 0 0 0
+number_of_correlators 128
+correlator pi p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator pi p100   1 * 1.000000  G5  G5  1  0  0  E  E  E
+correlator pi p100   1 * 1.000000  G5  G5  0  1  0  E  E  E
+correlator pi p100   1 * 1.000000  G5  G5  0  0  1  E  E  E
+correlator pi p110   1 * 1.000000  G5  G5  1  1  0  E  E  E
+correlator pi p110   1 * 1.000000  G5  G5  1  0  1  E  E  E
+correlator pi p110   1 * 1.000000  G5  G5  0  1  1  E  E  E
+correlator pi p111   1 * 1.000000  G5  G5  1  1  1  E  E  E
+correlator pi p200   1 * 1.000000  G5  G5  2  0  0  E  E  E
+correlator pi p200   1 * 1.000000  G5  G5  0  2  0  E  E  E
+correlator pi p200   1 * 1.000000  G5  G5  0  0  2  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  2  1  0  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  2  0  1  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  0  2  1  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  1  2  0  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  1  0  2  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  0  1  2  E  E  E
+correlator pi p211   1 * 1.000000  G5  G5  2  1  1  E  E  E
+correlator pi p211   1 * 1.000000  G5  G5  1  2  1  E  E  E
+correlator pi p211   1 * 1.000000  G5  G5  1  1  2  E  E  E
+correlator pi p220   1 * 1.000000  G5  G5  2  2  0  E  E  E
+correlator pi p220   1 * 1.000000  G5  G5  0  2  2  E  E  E
+correlator pi p220   1 * 1.000000  G5  G5  2  0  2  E  E  E
+correlator pi p300   1 * 1.000000  G5  G5  3  0  0  E  E  E
+correlator pi p300   1 * 1.000000  G5  G5  0  3  0  E  E  E
+correlator pi p300   1 * 1.000000  G5  G5  0  0  3  E  E  E
+correlator pi p221   1 * 1.000000  G5  G5  2  2  1  E  E  E
+correlator pi p221   1 * 1.000000  G5  G5  2  1  2  E  E  E
+correlator pi p221   1 * 1.000000  G5  G5  1  2  2  E  E  E
+correlator pi p400   1 * 1.000000  G5  G5  4  0  0  E  E  E
+correlator pi p400   1 * 1.000000  G5  G5  0  4  0  E  E  E
+correlator pi p400   1 * 1.000000  G5  G5  0  0  4  E  E  E
+correlator ro_1 p000   1 * 3.000000  GX  GX  0  0  0  E  E  E
+correlator ro_1 p000   1 * 3.000000  GY  GY  0  0  0  E  E  E
+correlator ro_1 p000   1 * 3.000000  GZ  GZ  0  0  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GX  GX  1  0  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GX  GX  0  1  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GX  GX  0  0  1  E  E  E
+correlator ro_1 p100   1 * 3.000000  GY  GY  1  0  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GY  GY  0  1  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GY  GY  0  0  1  E  E  E
+correlator ro_1 p100   1 * 3.000000  GZ  GZ  1  0  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GZ  GZ  0  1  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GZ  GZ  0  0  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GX  GX  1  1  0  E  E  E
+correlator ro_1 p110   1 * 3.000000  GX  GX  1  0  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GX  GX  0  1  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GY  GY  1  1  0  E  E  E
+correlator ro_1 p110   1 * 3.000000  GY  GY  1  0  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GY  GY  0  1  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GZ  GZ  1  1  0  E  E  E
+correlator ro_1 p110   1 * 3.000000  GZ  GZ  1  0  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GZ  GZ  0  1  1  E  E  E
+correlator ro_1 p111   1 * 3.000000  GX  GX  1  1  1  E  E  E
+correlator ro_1 p111   1 * 3.000000  GY  GY  1  1  1  E  E  E
+correlator ro_1 p111   1 * 3.000000  GZ  GZ  1  1  1  E  E  E
+correlator ro_1 p200   1 * 3.000000  GX  GX  2  0  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GX  GX  0  2  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GX  GX  0  0  2  E  E  E
+correlator ro_1 p200   1 * 3.000000  GY  GY  2  0  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GY  GY  0  2  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GY  GY  0  0  2  E  E  E
+correlator ro_1 p200   1 * 3.000000  GZ  GZ  2  0  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GZ  GZ  0  2  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GZ  GZ  0  0  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  2  1  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  2  0  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  0  2  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  1  2  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  1  0  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  0  1  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  2  1  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  2  0  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  0  2  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  1  2  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  1  0  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  0  1  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  2  1  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  2  0  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  0  2  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  1  2  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  1  0  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  0  1  2  E  E  E
+correlator ro_1 p211   1 * 3.000000  GX  GX  2  1  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GX  GX  1  2  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GX  GX  1  1  2  E  E  E
+correlator ro_1 p211   1 * 3.000000  GY  GY  2  1  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GY  GY  1  2  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GY  GY  1  1  2  E  E  E
+correlator ro_1 p211   1 * 3.000000  GZ  GZ  2  1  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GZ  GZ  1  2  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GZ  GZ  1  1  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GX  GX  2  2  0  E  E  E
+correlator ro_1 p220   1 * 3.000000  GX  GX  2  0  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GX  GX  0  2  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GY  GY  2  2  0  E  E  E
+correlator ro_1 p220   1 * 3.000000  GY  GY  2  0  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GY  GY  0  2  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GZ  GZ  2  2  0  E  E  E
+correlator ro_1 p220   1 * 3.000000  GZ  GZ  2  0  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GZ  GZ  0  2  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GX  GX  2  2  1  E  E  E
+correlator ro_1 p221   1 * 3.000000  GX  GX  2  1  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GX  GX  1  2  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GY  GY  2  2  1  E  E  E
+correlator ro_1 p221   1 * 3.000000  GY  GY  2  1  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GY  GY  1  2  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GZ  GZ  2  2  1  E  E  E
+correlator ro_1 p221   1 * 3.000000  GZ  GZ  2  1  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GZ  GZ  1  2  2  E  E  E
+correlator ro_1 p300   1 * 3.000000  GX  GX  3  0  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GX  GX  0  3  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GX  GX  0  0  3  E  E  E
+correlator ro_1 p300   1 * 3.000000  GY  GY  3  0  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GY  GY  0  3  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GY  GY  0  0  3  E  E  E
+correlator ro_1 p300   1 * 3.000000  GZ  GZ  3  0  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GZ  GZ  0  3  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GZ  GZ  0  0  3  E  E  E
+correlator ro_1 p400   1 * 3.000000  GX  GX  4  0  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GX  GX  0  4  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GX  GX  0  0  4  E  E  E
+correlator ro_1 p400   1 * 3.000000  GY  GY  4  0  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GY  GY  0  4  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GY  GY  0  0  4  E  E  E
+correlator ro_1 p400   1 * 3.000000  GZ  GZ  4  0  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GZ  GZ  0  4  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GZ  GZ  0  0  4  E  E  E
+# pair 2
+# point staggered / smeared clover
+pair 0 3 
+spectrum_request meson
+save_corr_fnal out.test.fnal_corr2.1
+r_offset 0 0 0 0
+number_of_correlators 128
+correlator pi p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator pi p100   1 * 1.000000  G5  G5  1  0  0  E  E  E
+correlator pi p100   1 * 1.000000  G5  G5  0  1  0  E  E  E
+correlator pi p100   1 * 1.000000  G5  G5  0  0  1  E  E  E
+correlator pi p110   1 * 1.000000  G5  G5  1  1  0  E  E  E
+correlator pi p110   1 * 1.000000  G5  G5  1  0  1  E  E  E
+correlator pi p110   1 * 1.000000  G5  G5  0  1  1  E  E  E
+correlator pi p111   1 * 1.000000  G5  G5  1  1  1  E  E  E
+correlator pi p200   1 * 1.000000  G5  G5  2  0  0  E  E  E
+correlator pi p200   1 * 1.000000  G5  G5  0  2  0  E  E  E
+correlator pi p200   1 * 1.000000  G5  G5  0  0  2  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  2  1  0  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  2  0  1  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  0  2  1  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  1  2  0  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  1  0  2  E  E  E
+correlator pi p210   1 * 1.000000  G5  G5  0  1  2  E  E  E
+correlator pi p211   1 * 1.000000  G5  G5  2  1  1  E  E  E
+correlator pi p211   1 * 1.000000  G5  G5  1  2  1  E  E  E
+correlator pi p211   1 * 1.000000  G5  G5  1  1  2  E  E  E
+correlator pi p220   1 * 1.000000  G5  G5  2  2  0  E  E  E
+correlator pi p220   1 * 1.000000  G5  G5  0  2  2  E  E  E
+correlator pi p220   1 * 1.000000  G5  G5  2  0  2  E  E  E
+correlator pi p300   1 * 1.000000  G5  G5  3  0  0  E  E  E
+correlator pi p300   1 * 1.000000  G5  G5  0  3  0  E  E  E
+correlator pi p300   1 * 1.000000  G5  G5  0  0  3  E  E  E
+correlator pi p221   1 * 1.000000  G5  G5  2  2  1  E  E  E
+correlator pi p221   1 * 1.000000  G5  G5  2  1  2  E  E  E
+correlator pi p221   1 * 1.000000  G5  G5  1  2  2  E  E  E
+correlator pi p400   1 * 1.000000  G5  G5  4  0  0  E  E  E
+correlator pi p400   1 * 1.000000  G5  G5  0  4  0  E  E  E
+correlator pi p400   1 * 1.000000  G5  G5  0  0  4  E  E  E
+correlator ro_1 p000   1 * 3.000000  GX  GX  0  0  0  E  E  E
+correlator ro_1 p000   1 * 3.000000  GY  GY  0  0  0  E  E  E
+correlator ro_1 p000   1 * 3.000000  GZ  GZ  0  0  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GX  GX  1  0  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GX  GX  0  1  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GX  GX  0  0  1  E  E  E
+correlator ro_1 p100   1 * 3.000000  GY  GY  1  0  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GY  GY  0  1  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GY  GY  0  0  1  E  E  E
+correlator ro_1 p100   1 * 3.000000  GZ  GZ  1  0  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GZ  GZ  0  1  0  E  E  E
+correlator ro_1 p100   1 * 3.000000  GZ  GZ  0  0  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GX  GX  1  1  0  E  E  E
+correlator ro_1 p110   1 * 3.000000  GX  GX  1  0  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GX  GX  0  1  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GY  GY  1  1  0  E  E  E
+correlator ro_1 p110   1 * 3.000000  GY  GY  1  0  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GY  GY  0  1  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GZ  GZ  1  1  0  E  E  E
+correlator ro_1 p110   1 * 3.000000  GZ  GZ  1  0  1  E  E  E
+correlator ro_1 p110   1 * 3.000000  GZ  GZ  0  1  1  E  E  E
+correlator ro_1 p111   1 * 3.000000  GX  GX  1  1  1  E  E  E
+correlator ro_1 p111   1 * 3.000000  GY  GY  1  1  1  E  E  E
+correlator ro_1 p111   1 * 3.000000  GZ  GZ  1  1  1  E  E  E
+correlator ro_1 p200   1 * 3.000000  GX  GX  2  0  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GX  GX  0  2  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GX  GX  0  0  2  E  E  E
+correlator ro_1 p200   1 * 3.000000  GY  GY  2  0  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GY  GY  0  2  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GY  GY  0  0  2  E  E  E
+correlator ro_1 p200   1 * 3.000000  GZ  GZ  2  0  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GZ  GZ  0  2  0  E  E  E
+correlator ro_1 p200   1 * 3.000000  GZ  GZ  0  0  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  2  1  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  2  0  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  0  2  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  1  2  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  1  0  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GX  GX  0  1  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  2  1  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  2  0  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  0  2  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  1  2  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  1  0  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GY  GY  0  1  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  2  1  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  2  0  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  0  2  1  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  1  2  0  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  1  0  2  E  E  E
+correlator ro_1 p210   1 * 3.000000  GZ  GZ  0  1  2  E  E  E
+correlator ro_1 p211   1 * 3.000000  GX  GX  2  1  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GX  GX  1  2  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GX  GX  1  1  2  E  E  E
+correlator ro_1 p211   1 * 3.000000  GY  GY  2  1  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GY  GY  1  2  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GY  GY  1  1  2  E  E  E
+correlator ro_1 p211   1 * 3.000000  GZ  GZ  2  1  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GZ  GZ  1  2  1  E  E  E
+correlator ro_1 p211   1 * 3.000000  GZ  GZ  1  1  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GX  GX  2  2  0  E  E  E
+correlator ro_1 p220   1 * 3.000000  GX  GX  2  0  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GX  GX  0  2  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GY  GY  2  2  0  E  E  E
+correlator ro_1 p220   1 * 3.000000  GY  GY  2  0  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GY  GY  0  2  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GZ  GZ  2  2  0  E  E  E
+correlator ro_1 p220   1 * 3.000000  GZ  GZ  2  0  2  E  E  E
+correlator ro_1 p220   1 * 3.000000  GZ  GZ  0  2  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GX  GX  2  2  1  E  E  E
+correlator ro_1 p221   1 * 3.000000  GX  GX  2  1  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GX  GX  1  2  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GY  GY  2  2  1  E  E  E
+correlator ro_1 p221   1 * 3.000000  GY  GY  2  1  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GY  GY  1  2  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GZ  GZ  2  2  1  E  E  E
+correlator ro_1 p221   1 * 3.000000  GZ  GZ  2  1  2  E  E  E
+correlator ro_1 p221   1 * 3.000000  GZ  GZ  1  2  2  E  E  E
+correlator ro_1 p300   1 * 3.000000  GX  GX  3  0  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GX  GX  0  3  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GX  GX  0  0  3  E  E  E
+correlator ro_1 p300   1 * 3.000000  GY  GY  3  0  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GY  GY  0  3  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GY  GY  0  0  3  E  E  E
+correlator ro_1 p300   1 * 3.000000  GZ  GZ  3  0  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GZ  GZ  0  3  0  E  E  E
+correlator ro_1 p300   1 * 3.000000  GZ  GZ  0  0  3  E  E  E
+correlator ro_1 p400   1 * 3.000000  GX  GX  4  0  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GX  GX  0  4  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GX  GX  0  0  4  E  E  E
+correlator ro_1 p400   1 * 3.000000  GY  GY  4  0  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GY  GY  0  4  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GY  GY  0  0  4  E  E  E
+correlator ro_1 p400   1 * 3.000000  GZ  GZ  4  0  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GZ  GZ  0  4  0  E  E  E
+correlator ro_1 p400   1 * 3.000000  GZ  GZ  0  0  4  E  E  E
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4448.ll
+Time stamp Wed Oct  6 15:15:02 2004
+Checksums 13a3f454 a37174ec OK
+CHECK PLAQ: 1.678835e+00 1.645193e+00
+CHECK NERSC LINKTR: 6.213168e-01 CKSUM: d94a8716
+Unitarity checked.  Max deviation 8.94e-08
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -6.250000e-02     48
+COULOMB GAUGE FIXING SKIPPED.
+END OF HEADER
+Mass= 0.1 source point residue= 1e-06 rel= 1e-06
+quark.t[0].checksum  "256fe380 c09de649"
+quark.t[1].checksum  "8ced0a1c 8cba6024"
+quark.t[2].checksum  "2017d4ff 5c84f5a7"
+quark.t[3].checksum  "65b00a8b 91ffd58a"
+quark.t[4].checksum  "2b2f460d f3da5621"
+quark.t[5].checksum  "d23f979 fa0caf1a"
+quark.t[6].checksum  "26f72465 c1afedc7"
+quark.t[7].checksum  "49fda91c 43d489fe"
+Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 49fda91c 43d489fe.  Read 0 0.
+Wrote KS prop file ksprop.test2 time stamp Tue Aug  5 12:04:31 2008
+Kappa= 0.124 source gaussian residue= 1e-06 rel= 1e-06
+quark.t[0].checksum  "7e685bd9 759261a0"
+quark.t[1].checksum  "458d636c 7fde95"
+quark.t[2].checksum  "b5a45a07 719a0afd"
+quark.t[3].checksum  "331f5357 13ec46ad"
+quark.t[4].checksum  "d2a13ba2 2daf8c59"
+quark.t[5].checksum  "4720052d 65bfc73d"
+quark.t[6].checksum  "90dc8731 1bcbbc90"
+quark.t[7].checksum  "637519f8 3bf07bbe"
+quark.t[0].checksum  "3b0da3c2 d209ced2"
+quark.t[1].checksum  "259e6f10 2449b135"
+quark.t[2].checksum  "bf8ae0a5 e16d6614"
+quark.t[3].checksum  "d9a2e218 ad46f27f"
+quark.t[4].checksum  "e31c65f1 c9c6538"
+quark.t[5].checksum  "b6aea00 62ae17fc"
+quark.t[6].checksum  "695e8744 a4001ad9"
+quark.t[7].checksum  "1741f22 5b268ca2"
+Wrote prop file wprop.test1 time stamp Tue Aug  5 12:04:31 2008
+Mesons for quarks 0 and 2
+WMTIME: time 4.9e-02 sec 5.75696e+06 flops 117.7 MF
+WMTIME: time 4.9e-02 sec 5.75696e+06 flops 116.9 MF
+WMTIME: time 4.9e-02 sec 5.75696e+06 flops 116.8 MF
+Mesons for quarks 0 and 1
+WMTIME: time 1.5e-01 sec 1.26587e+07 flops 84.9 MF
+WMTIME: time 1.5e-01 sec 1.26587e+07 flops 85.1 MF
+WMTIME: time 1.5e-01 sec 1.26587e+07 flops 85.5 MF
+Mesons for quarks 0 and 3
+WMTIME: time 1.5e-01 sec 1.26587e+07 flops 84.9 MF
+WMTIME: time 1.5e-01 sec 1.26587e+07 flops 84.9 MF
+WMTIME: time 1.5e-01 sec 1.26587e+07 flops 85.4 MF
+RUNNING COMPLETED
+Time = 1.153496e+00 seconds
+total_iters = 83699802
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Tue Aug  5 12:04:32 2008
+

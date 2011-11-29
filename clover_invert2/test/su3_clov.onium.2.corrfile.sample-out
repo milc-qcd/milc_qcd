@@ -1,0 +1,1105 @@
+---
+JobID:                   test
+date:                    "Wed Sep 15 06:38:44 2010 UTC"
+lattice_size:            4,4,4,8
+antiquark_type:          clover
+antiquark_source_type:   point/fat_covariant_gaussian
+antiquark_source_subset: full
+antiquark_source_origin: 0 0 0 0
+antiquark_source_label:  G
+antiquark_source_ops:    [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+antiquark_sink_label:    B1
+antiquark_sink_ops:      [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+},
+{ operation:             deriv2_B
+  dir1:                  2
+  dir2:                  1
+  disp:                  1
+  weights:               1
+}
+]
+antiquark_kappa:         "0.1"
+quark_type:              clover
+quark_source_type:       point/fat_covariant_gaussian
+quark_source_subset:     full
+quark_source_origin:     0 0 0 0
+quark_source_label:      G
+quark_source_ops:        [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+quark_sink_label:        G
+quark_sink_ops:          [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+quark_kappa:             "0.1"
+...
+---
+correlator:              TTxG_BB1xB1
+momentum:                p000
+gamma_source:            GT
+gamma_sink:              G5X
+correlator_key:          TTxG_BB1xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	2.541631e-03	-1.355253e-20
+1	1.991530e-05	-2.752857e-21
+2	3.125785e-07	5.293956e-22
+3	1.831620e-07	1.323489e-22
+4	1.949906e-07	-4.549493e-24
+5	-6.380114e-08	3.970467e-23
+6	2.255085e-07	-3.110199e-22
+7	5.496019e-06	1.694066e-21
+---
+correlator:              PPxG_VV1xB1
+momentum:                p000
+gamma_source:            G5
+gamma_sink:              GX
+correlator_key:          PPxG_VV1xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	1.084277e-04	7.644472e-20
+1	2.209152e-04	1.753623e-22
+2	1.086213e-05	-6.708435e-22
+3	2.574602e-06	-2.197199e-24
+4	4.635018e-08	1.854694e-24
+5	-2.487765e-06	1.201997e-22
+6	-1.207277e-05	-1.398969e-22
+7	-1.538462e-04	6.054962e-21
+---
+correlator:              PTxG_VV1xB1
+momentum:                p000
+gamma_source:            G5T
+gamma_sink:              GX
+correlator_key:          PTxG_VV1xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	-3.357765e-03	-1.355253e-20
+1	-2.327827e-04	-6.246868e-21
+2	-1.074022e-05	3.176374e-22
+3	-2.196542e-06	-7.279189e-23
+4	-2.134397e-07	-2.481542e-24
+5	-2.500591e-06	2.382280e-22
+6	-1.175741e-05	-3.176374e-22
+7	-1.746140e-04	-4.235165e-21
+---
+correlator:              PPxG_VT1xB1
+momentum:                p000
+gamma_source:            G5
+gamma_sink:              GXT
+correlator_key:          PPxG_VT1xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	-2.531028e-03	8.086518e-21
+1	-1.973601e-04	1.349959e-21
+2	-1.009539e-05	3.217733e-22
+3	-2.219119e-06	2.206246e-23
+4	-2.441322e-07	-2.539703e-24
+5	-2.392486e-06	8.863757e-23
+6	-1.085281e-05	-9.522917e-23
+7	-1.136407e-04	6.463589e-21
+---
+correlator:              PTxG_VT1xB1
+momentum:                p000
+gamma_source:            G5T
+gamma_sink:              GXT
+correlator_key:          PTxG_VT1xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	-5.910953e-05	1.355253e-19
+1	2.110615e-04	-1.545835e-20
+2	1.001932e-05	-3.176374e-22
+3	1.750998e-06	3.970467e-23
+4	7.167459e-08	-2.771055e-23
+5	-2.464423e-06	-1.588187e-22
+6	-1.073743e-05	3.176374e-22
+7	-1.383479e-04	6.776264e-21
+---
+correlator:              UUxG_AA1xB1
+momentum:                p000
+gamma_source:            G1
+gamma_sink:              GYZ
+correlator_key:          UUxG_AA1xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	3.343276e-03	-8.721792e-21
+1	6.089381e-05	-2.006740e-21
+2	1.498390e-06	1.799118e-23
+3	2.789421e-07	5.733396e-23
+4	1.960620e-07	-5.475225e-24
+5	2.306982e-07	-1.923195e-23
+6	3.787059e-06	-1.592323e-22
+7	6.655385e-05	2.162250e-21
+---
+correlator:              VV1xG_PPxB1
+momentum:                p000
+gamma_source:            GX
+gamma_sink:              G5
+correlator_key:          VV1xG_PPxB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	1.314481e-04	1.897354e-19
+1	2.088535e-04	-8.470329e-22
+2	8.860978e-06	1.588187e-21
+3	2.233014e-06	2.911676e-22
+4	4.665288e-08	9.719372e-24
+5	-2.269329e-06	9.264423e-23
+6	-1.163354e-05	6.882143e-22
+7	-1.519956e-04	1.919059e-20
+---
+correlator:              VT1xG_PPxB1
+momentum:                p000
+gamma_source:            GXT
+gamma_sink:              G5
+correlator_key:          VT1xG_PPxB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	3.407437e-03	-1.084202e-19
+1	2.271248e-04	-8.470329e-21
+2	8.467668e-06	-8.470329e-22
+3	2.065433e-06	-3.970467e-23
+4	1.923695e-07	1.158053e-23
+5	2.347492e-06	1.588187e-22
+6	1.157395e-05	4.235165e-22
+7	1.723056e-04	1.101143e-20
+---
+correlator:              VV1xG_PTxB1
+momentum:                p000
+gamma_source:            GX
+gamma_sink:              G5T
+correlator_key:          VV1xG_PTxB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	-2.418868e-03	1.694066e-20
+1	-1.825965e-04	1.016440e-20
+2	-8.275356e-06	-1.905824e-21
+3	-1.849345e-06	-2.448455e-22
+4	-2.002527e-07	6.617445e-24
+5	-2.109132e-06	2.646978e-22
+6	-1.018057e-05	1.058791e-22
+7	-1.124102e-04	2.699918e-21
+---
+correlator:              VT1xG_PTxB1
+momentum:                p000
+gamma_source:            GXT
+gamma_sink:              G5T
+correlator_key:          VT1xG_PTxB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	5.790508e-05	-2.168404e-19
+1	-2.033049e-04	3.388132e-21
+2	-7.877351e-06	4.235165e-22
+3	-1.539971e-06	-1.985233e-22
+4	-8.691824e-08	7.315379e-24
+5	2.226619e-06	-2.514629e-22
+6	1.022316e-05	1.694066e-21
+7	1.338340e-04	1.905824e-20
+---
+correlator:              AA1xG_UUxB1
+momentum:                p000
+gamma_source:            GYZ
+gamma_sink:              G1
+correlator_key:          AA1xG_UUxB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	-2.428938e-03	-3.388132e-20
+1	-1.408659e-05	-7.623297e-21
+2	-6.191467e-07	3.176374e-22
+3	-2.626675e-07	-6.183175e-23
+4	-1.699799e-07	1.033976e-23
+5	1.135501e-07	-1.323489e-23
+6	3.382163e-08	-1.455838e-22
+7	-8.342174e-06	-2.541099e-21
+---
+correlator:              AA2xG_BB3xB1
+momentum:                p000
+gamma_source:            GZX
+gamma_sink:              G5Z
+correlator_key:          AA2xG_BB3xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	-2.781098e-05	2.710505e-20
+1	5.486255e-05	3.388132e-21
+2	1.678485e-06	-5.161607e-22
+3	5.215941e-07	7.279189e-23
+4	9.291883e-08	3.577556e-23
+5	-3.155979e-07	1.654361e-23
+6	-4.315749e-06	4.235165e-22
+7	-4.641231e-05	-1.567011e-20
+---
+correlator:              AA3xG_BB2xB1
+momentum:                p000
+gamma_source:            GXY
+gamma_sink:              G5Y
+correlator_key:          AA3xG_BB2xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	1.313168e-05	6.572446e-20
+1	-3.667957e-05	-5.020986e-22
+2	-2.213858e-07	-2.895132e-23
+3	4.479120e-07	-5.159539e-23
+4	-4.263825e-08	-1.449505e-23
+5	2.940139e-07	4.288414e-23
+6	6.591493e-07	2.688337e-22
+7	3.729177e-05	4.018443e-21
+---
+correlator:              BB1xG_TTxB1
+momentum:                p000
+gamma_source:            G5X
+gamma_sink:              GT
+correlator_key:          BB1xG_TTxB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	3.400022e-03	5.759824e-20
+1	5.869597e-05	-1.244080e-20
+2	1.267872e-06	3.176374e-22
+3	3.091089e-07	-6.617445e-24
+4	1.944163e-07	-2.150670e-23
+5	2.912439e-07	-1.224227e-22
+6	3.902112e-06	-1.058791e-22
+7	7.000457e-05	-7.199780e-21
+---
+correlator:              BB2xG_AA3xB1
+momentum:                p000
+gamma_source:            G5Y
+gamma_sink:              GXY
+correlator_key:          BB2xG_AA3xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	-2.500510e-05	-2.574980e-19
+1	3.516267e-05	8.893846e-21
+2	2.560005e-07	-8.470329e-22
+3	-3.492291e-07	-6.948317e-23
+4	4.400286e-08	-1.158053e-23
+5	-2.960773e-07	-4.963084e-23
+6	-5.430628e-07	7.279189e-23
+7	-3.205506e-05	1.694066e-21
+---
+correlator:              BB3xG_AA2xB1
+momentum:                p000
+gamma_source:            G5Z
+gamma_sink:              GZX
+correlator_key:          BB3xG_AA2xB1_G_G_B1_G_k0.1_k0.1_p000
+...
+0	5.325006e-05	3.523657e-19
+1	-4.738282e-05	-8.470329e-22
+2	-1.604979e-06	-4.235165e-22
+3	-4.747899e-07	3.308722e-24
+4	-7.312254e-08	-1.240771e-23
+5	3.865797e-07	6.782881e-23
+6	4.423128e-06	-1.058791e-22
+7	4.760017e-05	-2.541099e-21
+---
+JobID:                   test
+date:                    "Wed Sep 15 06:38:44 2010 UTC"
+lattice_size:            4,4,4,8
+antiquark_type:          clover
+antiquark_source_type:   point/fat_covariant_gaussian
+antiquark_source_subset: full
+antiquark_source_origin: 0 0 0 0
+antiquark_source_label:  G
+antiquark_source_ops:    [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+antiquark_sink_label:    N3
+antiquark_sink_ops:      [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+},
+{ operation:             deriv1
+  dir:                   2
+  disp:                  1
+  weights:               1
+}
+]
+antiquark_kappa:         "0.1"
+quark_type:              clover
+quark_source_type:       point/deriv1/fat_covariant_gaussian
+quark_source_subset:     full
+quark_source_origin:     0 0 0 0
+quark_source_label:      N1
+quark_source_ops:        [
+{ operation:             deriv1
+  dir:                   0
+  disp:                  1
+  weights:               1
+},
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+quark_sink_label:        G
+quark_sink_ops:          [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+quark_kappa:             "0.1"
+...
+---
+correlator:              BB1xN1_BB3xN3
+momentum:                p000
+gamma_source:            G5X
+gamma_sink:              G5Z
+correlator_key:          BB1xN1_BB3xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	-4.923092e-04	2.054638e-05
+1	3.314577e-06	1.138530e-06
+2	-9.947923e-07	2.576337e-07
+3	-2.490926e-07	-2.259504e-08
+4	-7.134847e-08	2.343571e-09
+5	5.199325e-08	-1.928238e-08
+6	1.065496e-06	-1.285628e-08
+7	5.423515e-06	-1.429796e-06
+---
+correlator:              AA1xN1_AA3xN3
+momentum:                p000
+gamma_source:            GYZ
+gamma_sink:              GXY
+correlator_key:          AA1xN1_AA3xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	1.055275e-03	-1.960310e-06
+1	5.053608e-05	1.931258e-06
+2	2.731095e-06	5.022467e-08
+3	7.126573e-07	4.486858e-08
+4	1.518630e-07	-3.817676e-09
+5	4.223694e-07	-7.225925e-10
+6	8.064281e-06	3.304309e-07
+7	4.664858e-05	1.920996e-06
+---
+correlator:              VV1xN1_VV3xN3
+momentum:                p000
+gamma_source:            GX
+gamma_sink:              GZ
+correlator_key:          VV1xN1_VV3xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	1.046334e-03	-1.085923e-06
+1	1.064259e-04	-1.901767e-06
+2	1.009697e-05	-1.059692e-06
+3	4.589614e-08	-6.146888e-08
+4	1.502728e-07	1.335234e-08
+5	2.030314e-06	6.647298e-08
+6	2.376887e-05	6.240417e-08
+7	7.261319e-05	1.123373e-06
+---
+correlator:              VT1xN1_VV3xN3
+momentum:                p000
+gamma_source:            GXT
+gamma_sink:              GZ
+correlator_key:          VT1xN1_VV3xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	-4.762503e-05	-2.585803e-06
+1	-7.823440e-05	4.479547e-06
+2	-5.581172e-06	1.332344e-06
+3	-2.417984e-07	4.938870e-08
+4	2.325740e-07	2.173708e-08
+5	1.978347e-06	1.245802e-07
+6	2.280772e-05	4.347567e-07
+7	5.428420e-05	1.237434e-06
+---
+correlator:              VV1xN1_VT3xN3
+momentum:                p000
+gamma_source:            GX
+gamma_sink:              GZT
+correlator_key:          VV1xN1_VT3xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	-6.348852e-05	-2.656248e-06
+1	-8.476642e-05	2.186011e-06
+2	-1.049319e-05	1.036611e-06
+3	-1.339002e-07	2.381427e-08
+4	1.750641e-07	1.288546e-08
+5	1.760751e-06	8.050647e-08
+6	1.732923e-05	-1.037660e-07
+7	4.802522e-05	2.634791e-06
+---
+correlator:              VT1xN1_VT3xN3
+momentum:                p000
+gamma_source:            GXT
+gamma_sink:              GZT
+correlator_key:          VT1xN1_VT3xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	5.020237e-04	-2.125655e-05
+1	5.629028e-05	-4.899266e-06
+2	5.999539e-06	-1.300580e-06
+3	3.822722e-07	1.869153e-08
+4	2.062190e-07	2.504237e-08
+5	1.736976e-06	1.364341e-07
+6	1.609577e-05	2.422045e-07
+7	2.820202e-05	2.622575e-06
+---
+correlator:              BB2xN1_UUxN3
+momentum:                p000
+gamma_source:            G5Y
+gamma_sink:              G1
+correlator_key:          BB2xN1_UUxN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	5.153929e-05	-7.617657e-07
+1	-3.649718e-05	-1.519386e-06
+2	-3.960515e-06	-1.504260e-09
+3	-1.024967e-06	-3.959724e-08
+4	-1.620242e-07	3.784313e-08
+5	2.880347e-07	2.975418e-08
+6	9.294461e-06	1.472805e-07
+7	3.347312e-05	5.950908e-07
+---
+correlator:              UUxN1_BB2xN3
+momentum:                p000
+gamma_source:            G1
+gamma_sink:              G5Y
+correlator_key:          UUxN1_BB2xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	-4.986647e-05	2.199642e-06
+1	3.791165e-05	2.503308e-06
+2	4.112899e-06	1.251987e-07
+3	9.657600e-07	3.861495e-08
+4	9.428371e-08	-4.665861e-08
+5	-3.780404e-07	-5.065440e-08
+6	-1.041152e-05	-2.921690e-07
+7	-3.450508e-05	-1.380775e-06
+---
+correlator:              BB3xN1_BB1xN3
+momentum:                p000
+gamma_source:            G5Z
+gamma_sink:              G5X
+correlator_key:          BB3xN1_BB1xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	1.050665e-03	2.338606e-06
+1	4.785510e-05	1.652062e-06
+2	2.193941e-06	-1.039095e-08
+3	7.085601e-07	5.020783e-08
+4	1.918643e-07	1.881168e-09
+5	5.632371e-07	1.509355e-08
+6	9.797554e-06	5.127838e-07
+7	4.640459e-05	2.164886e-06
+---
+correlator:              AA2xN1_TTxN3
+momentum:                p000
+gamma_source:            GZX
+gamma_sink:              GT
+correlator_key:          AA2xN1_TTxN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	6.170857e-05	7.482836e-06
+1	-9.785421e-06	4.133344e-07
+2	1.001785e-06	2.316101e-07
+3	-4.441331e-08	-2.816352e-08
+4	-9.466149e-08	3.900984e-08
+5	-1.123211e-07	4.070274e-08
+6	-7.061466e-07	2.035785e-07
+7	1.247013e-05	2.461894e-06
+---
+correlator:              TTxN1_AA2xN3
+momentum:                p000
+gamma_source:            GT
+gamma_sink:              GZX
+correlator_key:          TTxN1_AA2xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	-6.777603e-05	-4.868712e-06
+1	1.084709e-05	-4.748433e-07
+2	-1.132425e-06	-2.708210e-07
+3	-1.842391e-08	2.163715e-08
+4	5.088807e-08	-4.603402e-08
+5	1.161909e-07	-5.281501e-08
+6	4.252363e-07	-2.732583e-07
+7	-9.735570e-06	-2.051900e-06
+---
+correlator:              AA3xN1_AA1xN3
+momentum:                p000
+gamma_source:            GXY
+gamma_sink:              GYZ
+correlator_key:          AA3xN1_AA1xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	-4.420802e-04	2.159305e-05
+1	9.631558e-06	1.098223e-06
+2	-3.705171e-07	2.252929e-07
+3	-1.989796e-07	-2.536488e-08
+4	-8.207709e-08	-2.075064e-09
+5	6.072130e-08	-1.732297e-08
+6	1.791063e-06	8.014064e-08
+7	3.608934e-06	-1.520191e-06
+---
+correlator:              VV3xN1_VV1xN3
+momentum:                p000
+gamma_source:            GZ
+gamma_sink:              GX
+correlator_key:          VV3xN1_VV1xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	-4.462119e-04	2.278130e-05
+1	-4.418810e-05	5.021252e-06
+2	-3.387956e-06	1.154909e-06
+3	-4.234679e-07	-3.848417e-08
+4	-2.299989e-07	-2.183115e-08
+5	-1.856157e-06	-1.402969e-07
+6	-1.569523e-05	-2.236877e-07
+7	-2.419921e-05	-2.528272e-06
+---
+correlator:              VT3xN1_VV1xN3
+momentum:                p000
+gamma_source:            GZT
+gamma_sink:              GX
+correlator_key:          VT3xN1_VV1xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	5.361109e-05	1.677448e-06
+1	7.505178e-05	-2.001507e-06
+2	7.816544e-06	-9.452509e-07
+3	2.377853e-07	-2.975442e-09
+4	-2.230166e-07	-1.826414e-08
+5	-1.945019e-06	-8.835413e-08
+6	-1.780322e-05	1.175269e-08
+7	-4.704675e-05	-2.438261e-06
+---
+correlator:              VV3xN1_VT1xN3
+momentum:                p000
+gamma_source:            GZ
+gamma_sink:              GXT
+correlator_key:          VV3xN1_VT1xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	6.261722e-05	6.344632e-06
+1	6.781379e-05	-4.337712e-06
+2	3.605380e-06	-1.143465e-06
+3	3.591933e-07	-2.340028e-08
+4	-2.587441e-07	-2.905527e-08
+5	-2.124792e-06	-1.354081e-07
+6	-2.279103e-05	-4.866350e-07
+7	-5.053177e-05	-1.081719e-06
+---
+correlator:              VT3xN1_VT1xN3
+momentum:                p000
+gamma_source:            GZT
+gamma_sink:              GXT
+correlator_key:          VT3xN1_VT1xN3_G_N1_N3_G_k0.1_k0.1_p000
+...
+0	-1.043742e-03	-4.235868e-06
+1	-9.679494e-05	1.612828e-06
+2	-7.923696e-06	9.462688e-07
+3	-2.613775e-07	3.572708e-08
+4	-2.037383e-07	-1.024375e-08
+5	-2.280128e-06	-8.452085e-08
+6	-2.462882e-05	-2.273231e-07
+7	-7.275584e-05	-1.189754e-06
+---
+JobID:                   test
+date:                    "Wed Sep 15 06:38:45 2010 UTC"
+lattice_size:            4,4,4,8
+antiquark_type:          clover
+antiquark_source_type:   point/fat_covariant_gaussian
+antiquark_source_subset: full
+antiquark_source_origin: 0 0 0 0
+antiquark_source_label:  G
+antiquark_source_ops:    [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+antiquark_sink_label:    D1
+antiquark_sink_ops:      [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+},
+{ operation:             deriv2_D
+  dir1:                  2
+  dir2:                  1
+  disp:                  1
+  weights:               1
+}
+]
+antiquark_kappa:         "0.1"
+quark_type:              clover
+quark_source_type:       point/deriv1/fat_covariant_gaussian
+quark_source_subset:     full
+quark_source_origin:     0 0 0 0
+quark_source_label:      N1
+quark_source_ops:        [
+{ operation:             deriv1
+  dir:                   0
+  disp:                  1
+  weights:               1
+},
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+quark_sink_label:        G
+quark_sink_ops:          [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+quark_kappa:             "0.1"
+...
+---
+correlator:              BB3xN1_VV3xD1
+momentum:                p000
+gamma_source:            G5Z
+gamma_sink:              GZ
+correlator_key:          BB3xN1_VV3xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	-4.099025e-05	-1.615772e-06
+1	-9.159932e-06	-2.438507e-06
+2	-1.739234e-06	-4.172430e-07
+3	-7.737665e-08	6.348154e-09
+4	-6.279175e-09	4.240455e-09
+5	-1.379684e-07	-4.692590e-09
+6	-1.768023e-06	-9.508253e-08
+7	4.662127e-06	2.277322e-08
+---
+correlator:              BB3xN1_VT3xD1
+momentum:                p000
+gamma_source:            G5Z
+gamma_sink:              GZT
+correlator_key:          BB3xN1_VT3xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	-1.204198e-04	-1.805173e-06
+1	-1.511505e-05	-2.746523e-06
+2	-2.351995e-06	-4.683867e-07
+3	-7.266391e-08	2.015214e-09
+4	2.715878e-08	-2.743992e-09
+5	1.955935e-07	1.391953e-08
+6	1.496048e-06	6.673681e-08
+7	-5.044922e-06	-4.046283e-08
+---
+correlator:              BB2xN1_VV2xD1
+momentum:                p000
+gamma_source:            G5Y
+gamma_sink:              GY
+correlator_key:          BB2xN1_VV2xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	9.605050e-07	-2.598336e-06
+1	-6.357481e-06	-3.188104e-06
+2	-1.190209e-06	-3.384627e-07
+3	4.016455e-08	4.506006e-09
+4	-1.076131e-08	2.842049e-09
+5	-1.970437e-07	-1.878079e-08
+6	-1.955528e-06	-2.227275e-07
+7	2.211098e-06	5.705528e-07
+---
+correlator:              BB2xN1_VT2xD1
+momentum:                p000
+gamma_source:            G5Y
+gamma_sink:              GYT
+correlator_key:          BB2xN1_VT2xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	-1.232055e-05	5.030698e-06
+1	4.531475e-07	-2.557922e-06
+2	-8.109974e-07	-3.394505e-07
+3	3.404773e-08	4.511191e-09
+4	2.653174e-08	-2.756039e-09
+5	3.173479e-07	2.151406e-08
+6	2.290808e-06	2.147261e-07
+7	-2.446210e-06	-5.492627e-07
+---
+correlator:              VV3xN1_BB3xD1
+momentum:                p000
+gamma_source:            GZ
+gamma_sink:              G5Z
+correlator_key:          VV3xN1_BB3xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	2.975784e-05	4.097963e-06
+1	-1.576515e-05	1.561072e-06
+2	1.052570e-06	2.786177e-07
+3	4.821279e-08	8.493056e-09
+4	4.697711e-09	-3.667126e-09
+5	-1.135665e-07	-1.781605e-08
+6	-3.872955e-08	-3.947496e-08
+7	9.752958e-07	3.421137e-07
+---
+correlator:              VT3xN1_BB3xD1
+momentum:                p000
+gamma_source:            GZT
+gamma_sink:              G5Z
+correlator_key:          VT3xN1_BB3xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	1.298304e-04	1.253979e-06
+1	2.255883e-05	-5.154984e-07
+2	-4.203309e-07	-2.209587e-07
+3	1.239316e-09	-4.768613e-09
+4	-1.913346e-08	1.009456e-09
+5	-1.267871e-07	-2.017698e-08
+6	1.903524e-07	-3.773497e-08
+7	3.188798e-06	3.648188e-07
+---
+correlator:              VV2xN1_BB2xD1
+momentum:                p000
+gamma_source:            GY
+gamma_sink:              G5Y
+correlator_key:          VV2xN1_BB2xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	2.366065e-05	-6.556340e-07
+1	-2.911340e-06	5.292513e-07
+2	4.155670e-06	1.913665e-07
+3	3.022327e-08	1.289813e-08
+4	-2.763149e-08	3.092321e-10
+5	-3.164571e-07	-2.012523e-08
+6	-1.752588e-06	-2.590092e-07
+7	3.815732e-07	3.262848e-07
+---
+correlator:              VT2xN1_BB2xD1
+momentum:                p000
+gamma_source:            GYT
+gamma_sink:              G5Y
+correlator_key:          VT2xN1_BB2xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	6.672765e-06	-4.528451e-06
+1	-1.935659e-06	-8.336916e-07
+2	-4.167792e-06	-2.096557e-07
+3	-2.850545e-08	-1.469459e-08
+4	-2.767002e-08	-2.085510e-09
+5	-3.549404e-07	-2.260383e-08
+6	-2.169345e-06	-2.098352e-07
+7	8.981237e-07	4.336168e-07
+---
+correlator:              BB1xN1_VV1xD1
+momentum:                p000
+gamma_source:            G5X
+gamma_sink:              GX
+correlator_key:          BB1xN1_VV1xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	-1.179032e-05	2.428135e-06
+1	9.741320e-06	-3.693982e-07
+2	2.655413e-06	-1.893060e-07
+3	6.643706e-08	5.020037e-09
+4	-2.254021e-09	7.919772e-10
+5	-1.481160e-07	-1.552613e-08
+6	-1.017010e-06	-1.496355e-07
+7	-7.520106e-06	1.479012e-07
+---
+correlator:              BB1xN1_VT1xD1
+momentum:                p000
+gamma_source:            G5X
+gamma_sink:              GXT
+correlator_key:          BB1xN1_VT1xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	6.822961e-05	1.016675e-05
+1	9.218365e-06	-7.421605e-07
+2	2.775449e-06	-1.244822e-07
+3	8.838376e-08	3.897502e-09
+4	1.586855e-09	-3.394563e-09
+5	1.595767e-07	7.679253e-09
+6	8.481129e-07	1.882724e-07
+7	7.313897e-06	-2.960499e-07
+---
+correlator:              VV1xN1_BB1xD1
+momentum:                p000
+gamma_source:            GX
+gamma_sink:              G5X
+correlator_key:          VV1xN1_BB1xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	-8.026333e-06	-4.248797e-06
+1	2.437336e-07	5.586557e-07
+2	1.627001e-06	9.645453e-08
+3	3.785009e-08	1.353183e-08
+4	6.588480e-09	-1.307139e-09
+5	-1.352147e-07	-4.527098e-08
+6	-1.745231e-06	-2.894259e-07
+7	-5.370356e-06	2.418785e-07
+---
+correlator:              VT1xN1_BB1xD1
+momentum:                p000
+gamma_source:            GXT
+gamma_sink:              G5X
+correlator_key:          VT1xN1_BB1xD1_G_N1_D1_G_k0.1_k0.1_p000
+...
+0	-7.301607e-05	-9.766655e-06
+1	-9.533970e-07	-1.195254e-06
+2	-2.097314e-06	-9.331991e-08
+3	-3.064573e-08	-1.244131e-08
+4	1.992809e-08	1.164393e-10
+5	-3.783891e-08	-3.307404e-08
+6	-1.279335e-06	-2.840983e-07
+7	-7.175482e-06	8.582334e-08
+---
+JobID:                   test
+date:                    "Wed Sep 15 06:38:45 2010 UTC"
+lattice_size:            4,4,4,8
+antiquark_type:          clover
+antiquark_source_type:   point/fat_covariant_gaussian
+antiquark_source_subset: full
+antiquark_source_origin: 0 0 0 0
+antiquark_source_label:  G
+antiquark_source_ops:    [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+antiquark_sink_label:    G
+antiquark_sink_ops:      [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+antiquark_kappa:         "0.1"
+quark_type:              clover
+quark_source_type:       point/deriv2_B/fat_covariant_gaussian
+quark_source_subset:     full
+quark_source_origin:     0 0 0 0
+quark_source_label:      B1
+quark_source_ops:        [
+{ operation:             deriv2_B
+  dir1:                  1
+  dir2:                  2
+  disp:                  1
+  weights:               1
+},
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+quark_sink_label:        G
+quark_sink_ops:          [
+{ operation:             fat_covariant_gaussian
+  r0:                    2.8
+  iters:                 20
+}
+]
+quark_kappa:             "0.1"
+...
+---
+correlator:              BB1xB1_TTxG
+momentum:                p000
+gamma_source:            G5X
+gamma_sink:              GT
+correlator_key:          BB1xB1_TTxG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	2.647173e-03	1.369811e-04
+1	2.245941e-05	1.074131e-06
+2	1.325744e-06	1.660622e-07
+3	1.963955e-07	2.491530e-08
+4	1.213449e-07	2.456610e-08
+5	2.672446e-07	2.580493e-08
+6	4.895247e-07	3.765182e-08
+7	9.597790e-07	8.717732e-07
+---
+correlator:              VV1xB1_PPxG
+momentum:                p000
+gamma_source:            GX
+gamma_sink:              G5
+correlator_key:          VV1xB1_PPxG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	-1.488166e-04	-7.697330e-06
+1	2.618994e-04	1.462937e-05
+2	3.725018e-05	2.492320e-06
+3	3.257088e-06	2.256158e-07
+4	7.922098e-08	-4.378358e-09
+5	-2.941735e-06	-3.020017e-07
+6	-2.636889e-05	-2.991295e-06
+7	-2.443598e-04	-1.788047e-05
+---
+correlator:              VT1xB1_PPxG
+momentum:                p000
+gamma_source:            GXT
+gamma_sink:              G5
+correlator_key:          VT1xB1_PPxG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	-2.629224e-03	-1.363569e-04
+1	-2.407417e-04	-1.312539e-05
+2	-3.541718e-05	-2.335575e-06
+3	-3.146474e-06	-2.217283e-07
+4	-6.908059e-07	-6.316416e-08
+5	-2.605115e-06	-2.668417e-07
+6	-1.948880e-05	-2.300036e-06
+7	-1.785029e-04	-1.121501e-05
+---
+correlator:              VV1xB1_PTxG
+momentum:                p000
+gamma_source:            GX
+gamma_sink:              G5T
+correlator_key:          VV1xB1_PTxG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	-3.354576e-03	-1.961236e-04
+1	-2.721611e-04	-1.549515e-05
+2	-3.739194e-05	-2.570784e-06
+3	-3.563624e-06	-2.277231e-07
+4	-7.076341e-07	-6.396504e-08
+5	-2.985597e-06	-3.042457e-07
+6	-2.557226e-05	-2.771162e-06
+7	-2.287930e-04	-1.898662e-05
+---
+correlator:              VT1xB1_PTxG
+momentum:                p000
+gamma_source:            GXT
+gamma_sink:              G5T
+correlator_key:          VT1xB1_PTxG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	1.238436e-04	2.101436e-05
+1	2.523499e-04	1.401621e-05
+2	3.565860e-05	2.401812e-06
+3	3.429190e-06	2.058049e-07
+4	1.625709e-07	-7.454276e-09
+5	-2.575952e-06	-2.683239e-07
+6	-1.877450e-05	-2.101800e-06
+7	-1.635278e-04	-1.244328e-05
+---
+correlator:              AA1xB1_UUxG
+momentum:                p000
+gamma_source:            GYZ
+gamma_sink:              G1
+correlator_key:          AA1xB1_UUxG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	3.332546e-03	1.951086e-04
+1	7.070054e-05	5.239234e-06
+2	8.719134e-06	4.417006e-07
+3	8.051321e-07	7.494525e-08
+4	1.516603e-07	2.616693e-08
+5	4.112035e-07	6.430379e-08
+6	-4.436014e-06	-4.761064e-08
+7	3.241906e-05	3.984151e-06
+---
+correlator:              PPxB1_VV1xG
+momentum:                p000
+gamma_source:            G5
+gamma_sink:              GX
+correlator_key:          PPxB1_VV1xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	-1.434570e-04	-6.714371e-06
+1	2.522390e-04	1.336131e-05
+2	3.183639e-05	1.963900e-06
+3	2.723192e-06	1.760146e-07
+4	1.946867e-07	8.899529e-10
+5	-2.346940e-06	-2.519738e-07
+6	-2.245321e-05	-2.515407e-06
+7	-2.338256e-04	-1.658344e-05
+---
+correlator:              PTxB1_VV1xG
+momentum:                p000
+gamma_source:            G5T
+gamma_sink:              GX
+correlator_key:          PTxB1_VV1xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	-2.538709e-03	-1.306990e-04
+1	-2.251445e-04	-1.126544e-05
+2	-2.864639e-05	-1.665793e-06
+3	-2.434365e-06	-1.556261e-07
+4	-4.724829e-07	-4.628805e-08
+5	-2.026337e-06	-2.239870e-07
+6	-1.540508e-05	-1.924368e-06
+7	-1.584498e-04	-1.049949e-05
+---
+correlator:              PPxB1_VT1xG
+momentum:                p000
+gamma_source:            G5
+gamma_sink:              GXT
+correlator_key:          PPxB1_VT1xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	3.329219e-03	1.882428e-04
+1	2.590459e-04	1.365019e-05
+2	3.350417e-05	2.121410e-06
+3	3.211113e-06	1.845422e-07
+4	5.273760e-07	5.128763e-08
+5	2.435926e-06	2.659675e-07
+6	2.128188e-05	2.373909e-06
+7	2.219278e-04	1.718175e-05
+---
+correlator:              PTxB1_VT1xG
+momentum:                p000
+gamma_source:            G5T
+gamma_sink:              GXT
+correlator_key:          PTxB1_VT1xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	-1.652583e-04	-2.042500e-05
+1	-2.350066e-04	-1.171752e-05
+2	-3.048334e-05	-1.827186e-06
+3	-3.012498e-06	-1.524253e-07
+4	-2.544926e-07	1.228505e-09
+5	2.050146e-06	2.389396e-07
+6	1.430338e-05	1.776737e-06
+7	1.492205e-04	1.128872e-05
+---
+correlator:              UUxB1_AA1xG
+momentum:                p000
+gamma_source:            G1
+gamma_sink:              GYZ
+correlator_key:          UUxB1_AA1xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	-2.565044e-03	-1.303749e-04
+1	-2.083385e-05	-1.241050e-06
+2	-2.147810e-06	-2.141868e-07
+3	-1.625418e-07	-2.496433e-08
+4	-2.233227e-08	-1.492298e-08
+5	-1.740471e-07	-8.743422e-09
+6	4.802701e-07	2.081877e-08
+7	4.007707e-06	-8.755729e-07
+---
+correlator:              BB3xB1_AA2xG
+momentum:                p000
+gamma_source:            G5Z
+gamma_sink:              GZX
+correlator_key:          BB3xB1_AA2xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	-1.069373e-04	-1.160637e-05
+1	2.794969e-05	2.436035e-06
+2	2.034055e-06	-4.090223e-08
+3	4.056268e-07	4.226944e-08
+4	1.676575e-07	8.409031e-09
+5	-3.292705e-07	-4.089007e-08
+6	-1.042249e-06	-2.100103e-07
+7	-2.405673e-05	-3.973854e-06
+---
+correlator:              BB2xB1_AA3xG
+momentum:                p000
+gamma_source:            G5Y
+gamma_sink:              GXY
+correlator_key:          BB2xB1_AA3xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	-9.660735e-05	4.298026e-06
+1	-7.125720e-05	-4.265056e-06
+2	-7.934101e-06	-6.767900e-07
+3	-8.822493e-07	-5.346845e-08
+4	-3.121301e-07	-8.896142e-09
+5	2.467533e-07	1.090550e-08
+6	-4.291823e-06	-1.404569e-07
+7	7.956115e-06	9.226312e-07
+---
+correlator:              TTxB1_BB1xG
+momentum:                p000
+gamma_source:            GT
+gamma_sink:              G5X
+correlator_key:          TTxB1_BB1xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	3.309374e-03	1.881565e-04
+1	6.455147e-05	4.430942e-06
+2	7.182283e-06	2.996506e-07
+3	5.850863e-07	6.734889e-08
+4	2.048177e-08	2.066046e-08
+5	2.325220e-07	6.774677e-08
+6	-5.863875e-06	-1.030760e-07
+7	2.499078e-05	3.568718e-06
+---
+correlator:              AA3xB1_BB2xG
+momentum:                p000
+gamma_source:            GXY
+gamma_sink:              G5Y
+correlator_key:          AA3xB1_BB2xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	9.162991e-05	-8.411094e-07
+1	7.321051e-05	4.686359e-06
+2	9.530460e-06	7.127846e-07
+3	9.715410e-07	5.391936e-08
+4	3.367398e-07	1.040328e-08
+5	-2.879457e-07	-1.193802e-08
+6	5.013113e-06	1.813033e-07
+7	-9.810691e-06	-8.018427e-07
+---
+correlator:              AA2xB1_BB3xG
+momentum:                p000
+gamma_source:            GZX
+gamma_sink:              G5Z
+correlator_key:          AA2xB1_BB3xG_G_B1_G_G_k0.1_k0.1_p000
+...
+0	8.327253e-05	1.069734e-05
+1	-2.516242e-05	-1.958614e-06
+2	-2.876020e-06	8.337768e-08
+3	-3.375592e-07	-2.960037e-08
+4	-1.414945e-07	-4.458645e-09
+5	3.823215e-07	5.082597e-08
+6	4.261963e-07	2.771296e-07
+7	1.744527e-05	3.695999e-06

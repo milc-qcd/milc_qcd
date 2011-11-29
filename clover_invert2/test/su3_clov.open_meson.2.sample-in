@@ -1,0 +1,113 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 1234
+job_id 203696.kaon2.fnal.gov
+ 
+# Gauge field description
+
+reload_serial ../../binary_samples/lat.sample.l4448.ll
+u0 1.0
+no_gauge_fix
+forget
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0
+
+# Inversion control
+
+max_cg_iterations 100
+max_cg_restarts 10
+
+# Description of base sources
+
+number_of_base_sources 1
+
+# source 0
+
+point
+subset full
+origin 0 0 0 0
+source_label d
+forget_source
+
+number_of_modified_sources 1
+
+# source 1
+
+source 0
+rotate_3D
+d1 0.09073
+op_label rot
+forget_source
+
+# Description of quarks
+
+number_of_propagators 2
+
+# propagator 0
+
+propagator_type KS
+mass 0.1
+check no
+error_for_propagator 1e-8
+rel_error_for_propagator 1e-8
+precision 2
+momentum_twist 0 0 0
+time_bc periodic
+
+source 0
+
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
+forget_ksprop
+
+# propagator 1
+
+propagator_type clover
+kappa 0.124
+clov_c 1.0
+check no
+error_for_propagator 1e-8
+rel_error_for_propagator 1e-8
+precision 2
+momentum_twist 0 0 0
+time_bc periodic
+
+source 1
+
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
+forget_wprop
+
+number_of_quarks 2
+
+# point sink staggered
+propagator 0
+identity
+op_label d
+forget_wprop
+
+# point sink clover
+propagator 1
+identity
+op_label d
+forget_wprop
+
+# Correlators
+
+# Description of mesons
+
+number_of_pairings 1
+
+# pair 0
+# point staggered / source-rotated clover
+
+pair 0 1
+spectrum_request open_meson
+
+save_corr_fnal open_meson.2.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+correlator Bs    p000  1 * 1 G5 G5 0 0 0 E E E

@@ -1,0 +1,337 @@
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: BB1xB1_BB1xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VV1xB1_VV1xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VT1xB1_VV1xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VV1xB1_VT1xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VT1xB1_VT1xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: AA1xB1_AA1xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: PPxB1_PPxB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: PTxB1_PPxB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: PPxB1_PTxB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: PTxB1_PTxB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: UUxB1_UUxB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: BB3xB1_BB3xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: BB2xB1_BB2xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VV2xB1_VV2xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VT2xB1_VV2xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VV2xB1_VT2xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VT2xB1_VT2xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VV3xB1_VV3xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VT3xB1_VV3xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VV3xB1_VT3xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: VT3xB1_VT3xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: TTxB1_TTxB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: AA3xB1_AA3xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0.1 kappa[2]=0.1
+SOURCES: point/fat_covariant_gaussian point/deriv2_B/fat_covariant_gaussian
+SINK: AA2xB1_AA2xB1
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+ENDPROP
+RUNNING COMPLETED
