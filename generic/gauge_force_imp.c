@@ -33,7 +33,7 @@ void printpath( int *path, int length );
 #endif
 
 /* update the momenta with the gauge force */
-void imp_gauge_force( Real eps, field_offset mom_off ){
+void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
     register int i,dir;
     register site *st;
     su3_matrix tmat1,tmat2;
