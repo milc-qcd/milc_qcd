@@ -1,5 +1,5 @@
 /************************** w_loop2.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This version uses gathers to get the neighbors */
 /* version of 3/16/94 by UMH */
 /* 2/19/98 Version 5 port CD */
@@ -201,7 +201,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 1;
 	disp[dir2] = -1;
-	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	/* Multiply one corner and then gather it */
@@ -352,7 +352,7 @@ void w_loop2(int tot_smear) {
 	/* Start gather of dir2-link from "2*dir1" */
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 2;
-	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	FORALLSITES(i,s){
@@ -506,7 +506,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 2;
 	disp[dir2] = -1;
-	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 
 	FORALLSITES(i,s){
@@ -877,7 +877,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 1;
 	disp[dir3] = -1;
-	gmtag = start_general_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 	mtag[5] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir3), EVENANDODD, gen_pt[5] );
@@ -922,7 +922,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir2] = 1;
 	disp[dir3] = -1;
-	gmtag = start_general_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 	mtag[3] = start_gather_site( F_OFFSET(diag), sizeof(su3_matrix),
 	    OPP_DIR(dir3), EVENANDODD, gen_pt[3] );
@@ -1091,7 +1091,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 1;
 	disp[dir2] = -1;
-	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 	mtag[6] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[6] );
@@ -1136,7 +1136,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir2] = -1;
 	disp[dir3] = 1;
-	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 	mtag[3] = start_gather_site( F_OFFSET(diag), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[3] );
@@ -1305,7 +1305,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 1;
 	disp[dir2] = -1;
-	gmtag = start_general_gather( F_OFFSET(link[dir2]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir2]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 	mtag[6] = start_gather_site( F_OFFSET(staple), sizeof(su3_matrix),
 	    OPP_DIR(dir2), EVENANDODD, gen_pt[6] );
@@ -1346,7 +1346,7 @@ void w_loop2(int tot_smear) {
 	for(i=XUP;i<=TUP;i++)disp[i]=0;
 	disp[dir1] = 1;
 	disp[dir3] = -1;
-	gmtag = start_general_gather( F_OFFSET(link[dir3]), sizeof(su3_matrix),
+	gmtag = start_general_gather_site( F_OFFSET(link[dir3]), sizeof(su3_matrix),
 	    disp, EVENANDODD, gen_pt[4] );
 	mtag[3] = start_gather_site( F_OFFSET(diag), sizeof(su3_matrix),
 	    OPP_DIR(dir3), EVENANDODD, gen_pt[3] );

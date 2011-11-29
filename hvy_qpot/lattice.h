@@ -29,7 +29,9 @@ struct site {
 	su3_matrix link[4];
 
   /*	su3_matrix s_link,s_link_f,t_link_f; */
-        su3_matrix diag,staple,tempmat1;
+#ifndef COULOMB
+        su3_matrix diag,staple,tempmat1,tempmat2;
+#endif
 };
 typedef struct site site;
 
@@ -47,6 +49,10 @@ typedef struct site site;
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;			/* volume of lattice = nx*ny*nz*nt */
+EXTERN  Real u0;
+EXTERN  int max_t, max_x;
+EXTERN  Real staple_weight;
+EXTERN  int ape_iter;
 EXTERN	int no_smear_level,smear_num[5],off_axis_flag;
 EXTERN  int tot_smear;  /* running total of smearing steps for lattice */
 EXTERN	Real smear_fac;
@@ -57,6 +63,7 @@ EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, FRESH */
 EXTERN	int saveflag;	/* do with lattice: 1=save; */
+EXTERN  int fixflag;    /* gauge fix flag */
 EXTERN	int total_iters;
 
 /* Some of these global variables are node dependent */

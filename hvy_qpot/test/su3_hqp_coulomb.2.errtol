@@ -1,0 +1,16 @@
+CHECK PLAQ: 4e-07 4e-07
+CHECK NERSC LINKTR: 2e-07 CKSUM: ba83dea8
+Reunitarized for double precision. Max deviation 2e-07 changed to 2e-07
+Time to check unitarity = XXX
+Fixing to Coulomb gauge
+GFIX: Ended at step 2e-07 Av gf action 2e-07 delta 2e-07
+hvy_pot(): MAX_T = 2e-07 MAX_X = 0
+POT_LOOP: 0 0 0 0 6e-07
+POT_LOOP: 0 0 0 0 5e-07
+POT_LOOP: 0 0 0 0 4e-07
+POT_LOOP: 0 0 0 0 4e-07
+POT_LOOP: 0 0 0 0 4e-07
+POT_LOOP: 0 0 0 0 4e-07
+POT_LOOP: 0 0 0 0 4e-07
+POT_LOOP: 0 0 0 0 4e-07
+RUNNING COMPLETED

@@ -1,6 +1,6 @@
 /******************* smearing.c ****************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* original version of 5/23/94 by UMH */
 /* 2/19/98 Version 5 port CD */
 /* 11/25/01 Removed redundant code. Changed to call ape_smear_dir CD */

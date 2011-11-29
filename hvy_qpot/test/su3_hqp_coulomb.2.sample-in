@@ -1,0 +1,13 @@
+prompt 0
+nx 6
+ny 6
+nz 6
+nt 6
+ 
+u0 1.
+staple_weight 0.0
+ape_iter 0
+max_t 1
+max_x 1 
+reload_serial ../../binary_samples/lat.sample.l6666
+forget

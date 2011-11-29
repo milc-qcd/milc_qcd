@@ -1,5 +1,5 @@
 /********************** hybrid_loop1.c *******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Computes on-axis Wilson loops appropriate for excited flux-tube
    potentials (including those relevant to hybrids) with symmetry
    \Pi_u, and Delta_g 
@@ -76,7 +76,7 @@ void hybrid_loop1(int tot_smear) {
 
   char myname[] = "hybrid_loop1";
   register int i,j,dir,r,t;
-  int dir1,dir2,trans_path1,trans_path2;
+  int dir1=0,dir2=0,trans_path1=0,trans_path2=0;
   int disp[4];
   int nth,nxh;
   register site *s;
@@ -86,6 +86,7 @@ void hybrid_loop1(int tot_smear) {
   su3_matrix *flux_links_f;
   su3_matrix *trans_links, *trans_links_f; 
   su3_matrix *flux_links;
+  su3_matrix *tempmat1;
   
   /* Names of messages used to index "mtag" and "gen_pt" */
   /* NMSGS must not exceed N_POINTERS */
@@ -174,15 +175,23 @@ void hybrid_loop1(int tot_smear) {
     terminate(1);
   }
      
+  tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+  if(tempmat1 == NULL){
+    printf("%s(%d): Can't malloc temporary\n",myname,this_node);
+    terminate(1);
+  }
+
   /* Compute and store products of transverse links */
   /* trans_links[i][j] is set to the link product for the
      jth path type that ends at site i */
   for(j = 0; j < NTRANS; j++){
-    path_product(trans_path[j].dir, trans_path[j].length);
+    path_product(trans_path[j].dir, trans_path[j].length, tempmat1);
     FORALLSITES(i,s){
-      su3mat_copy(&(s->tempmat1), TRANS_LINKS(i,j));
+      su3mat_copy(tempmat1+i, TRANS_LINKS(i,j));
     }
   }
+
+  free(tempmat1);
 
   /* Allocate space for flux-tube shapes */
   flux_links = 

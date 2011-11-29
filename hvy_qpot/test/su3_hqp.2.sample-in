@@ -1,0 +1,16 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 4
+ 
+no_smear_level 2
+smear_num[0] 5
+smear_num[1] 5
+smear_num[2] 0
+smear_num[3] 0
+smear_num[4] 0
+smear_fac 2.5
+off_axis_flag 1
+reload_serial ../../binary_samples/lat.sample.l4444
+forget

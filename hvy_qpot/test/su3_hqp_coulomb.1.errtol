@@ -1,0 +1,16 @@
+CHECK PLAQ: 4e-05 4e-05
+CHECK NERSC LINKTR: 2e-05 CKSUM: ba83dea8
+XXX XXX XXX XXX 2e-05
+Time to check unitarity = XXX
+Fixing to Coulomb gauge
+GFIX: Ended at step 2e-05 Av gf action 2e-05 delta 2e-05
+hvy_pot(): MAX_T = 2e-05 MAX_X = 0
+POT_LOOP: 0 0 0 0 6e-05
+POT_LOOP: 0 0 0 0 5e-05
+POT_LOOP: 0 0 0 0 4e-05
+POT_LOOP: 0 0 0 0 4e-05
+POT_LOOP: 0 0 0 0 4e-05
+POT_LOOP: 0 0 0 0 4e-05
+POT_LOOP: 0 0 0 0 4e-05
+POT_LOOP: 0 0 0 0 4e-05
+RUNNING COMPLETED

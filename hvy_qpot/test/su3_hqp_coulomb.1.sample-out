@@ -1,0 +1,49 @@
+Pure gauge SU3 Wilson loops
+MIMD version 6
+Machine = QMP (portable), with 1 nodes
+start: Wed Sep 23 21:56:51 2009
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 6
+ny 6
+nz 6
+nt 6
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 6 x 6 x 6 x 6
+Mallocing 0.4 MBytes per node for lattice
+
+
+u0 1
+staple_weight 0
+ape_iter 0
+max_t 1
+max_x 1
+reload_serial ../../binary_samples/lat.sample.l6666
+forget 
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
+Time stamp Sat Aug 10 10:46:56 2002
+Checksums c1d08f5 68164bef OK
+Time to reload gauge configuration = 4.536867e-03
+CHECK PLAQ: 1.9827179876982366e+00 1.9811715330156219e+00
+CHECK NERSC LINKTR: 9.0159201231658637e-01 CKSUM: ba83dea8
+Unitarity checked.  Max deviation 2.98e-07
+Time to check unitarity = 5.641937e-03
+Fixing to Coulomb gauge
+GFIX: Ended at step 1. Av gf action 9.24589996e-01, delta 1.102e-06
+hvy_pot(): MAX_T = 1, MAX_X = 1
+POT_LOOP: 0 0 0 1 	3.000000e+00
+POT_LOOP: 0 0 1 1 	2.261044e+00
+POT_LOOP: 0 1 0 1 	2.240758e+00
+POT_LOOP: 0 1 1 1 	2.154609e+00
+POT_LOOP: 1 0 0 1 	2.242611e+00
+POT_LOOP: 1 0 1 1 	2.137839e+00
+POT_LOOP: 1 1 0 1 	2.140714e+00
+POT_LOOP: 1 1 1 1 	2.110473e+00
+RUNNING COMPLETED
+Time = 3.542495e-02 seconds
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Wed Sep 23 21:56:52 2009
+

@@ -1,0 +1,4 @@
+exec su3_hqp         1      -         -        CHECK RUNNING
+exec su3_hqp         2      -         -        CHECK RUNNING
+exec su3_hqp_coulomb 1      -         -        CHECK RUNNING
+exec su3_hqp_coulomb 2      -         -        CHECK RUNNING
