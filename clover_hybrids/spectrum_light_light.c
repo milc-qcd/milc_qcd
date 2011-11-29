@@ -135,7 +135,7 @@ void light_meson_spectrum(int t_source)
 void light_baryon_spectrum(field_offset quark, int t_source)
 {
   static char *bar_kind[4] = {"PROTON","PROTON0","DELTA","DELTA0"};
-  wilson_prop_field wp;
+  wilson_prop_field *wp;
 
   int num_prop ;
   Real  space_vol = (Real)(nx*ny*nz);
@@ -165,10 +165,10 @@ void light_baryon_spectrum(field_offset quark, int t_source)
   /*** calculate the baryon spectrum ****/
 
   /* Create the appropriate field for w_baryon and copy */
-  wp = create_wp_field();
+  wp = create_wp_field(3);
   for(c = 0; c < 3; c++){
     FORALLSITES(i,s){
-      wp[c][i] = ((wilson_propagator *)F_PT(s,quark))->c[c];
+      wp->swv[c][i] = ((wilson_propagator *)F_PT(s,quark))->c[c];
     }
   }
 

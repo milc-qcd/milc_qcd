@@ -56,6 +56,7 @@ G_OBJECTS = \
   d_plaq4.o \
   field_strength.o \
   gaugefix2.o \
+  gauge_utilities.o \
   io_detect.o        \
   io_helpers.o \
   io_lat4.o          \

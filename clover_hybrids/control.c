@@ -4,9 +4,6 @@
 
 #define CONTROL
 #include "cl_hyb_includes.h"
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 
 int main(int argc,char *argv[]){
   int prompt;
@@ -18,9 +15,7 @@ int main(int argc,char *argv[]){
 
 
  initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
  g_sync();

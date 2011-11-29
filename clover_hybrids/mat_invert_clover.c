@@ -16,13 +16,17 @@ int mat_invert( field_offset src, field_offset dest ){
     FORALLSITES(i,s) s->CHI = *(wilson_vector *)F_PT(s,src);
   }
 
+
   /* Load inversion control structure */
   qic.prec = PRECISION;
   qic.min = 0;
   qic.max = niter;
   qic.nrestart = 5;
-  qic.resid = rsqprop;
+  qic.parity = EVENANDODD;
   qic.start_flag = 0;
+  qic.nsrc = 1;
+  qic.resid = sqrt(rsqprop);
+  qic.relresid = 0;
 
   /* Load Dirac matrix parameters */
   dcp.Kappa = kappa;

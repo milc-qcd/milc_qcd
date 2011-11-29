@@ -139,7 +139,7 @@ int readin(int prompt) {
 	    par_buf.startfile );
 
 	/*** gauge fixing yes or no choice *******/
-	IF_OK if (prompt!=0) 
+	IF_OK if (prompt==1) 
 	  printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
 	IF_OK scanf("%s",savebuf);
 	IF_OK printf("%s\n",savebuf);
@@ -157,7 +157,7 @@ int readin(int prompt) {
 
 
 
-	IF_OK if (prompt!=0) 
+	IF_OK if (prompt==1) 
 	  printf("enter 'local_quark_src', or 'wall_quark_src'\n");
 	IF_OK scanf("%s",savebuf);
 	IF_OK printf("%s\n",savebuf);
@@ -175,7 +175,7 @@ int readin(int prompt) {
 
 
 	/*** boundary conditions yes or no  *******/
-	IF_OK if (prompt!=0) 
+	IF_OK if (prompt==1) 
 	  printf("enter 'periodic_everywhere', or 'anti_periodic_in_time'\n");
 	IF_OK scanf("%s",savebuf);
 	IF_OK printf("%s\n",savebuf);
@@ -296,7 +296,7 @@ int  setup_operator_choice(int prompt)
 
   /*** look at all the operators that the user wants to calculate ***/
 
-  IF_OK if (prompt!=0) 
+  IF_OK if (prompt==1) 
     printf("enter 'start_of_operators' \n");
   IF_OK scanf("%s",savebuf);
   IF_OK printf("%s\n",savebuf);
@@ -325,7 +325,7 @@ int  setup_operator_choice(int prompt)
   while( what_to_do == read_operators   ) 
   {
 
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter an operator name to compute the spectrum of\n");
     IF_OK scanf("%s",savebuf);
     IF_OK printf("%s\n",savebuf);
