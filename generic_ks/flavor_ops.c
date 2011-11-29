@@ -1,5 +1,7 @@
 /******** flavor_ops.c *************/
 /* MIMD version 7*/
+
+/* THIS VERSION IS DEPRECATED.  USE flavor_ops2.c INSTEAD */ 
 /* Implementation of the flavor (\Xi_\mu) operators. 
    See Golterman & Smit Nulc. Phys. B245 (1984) 61.
    They are used for constructing the non-local pion sources
