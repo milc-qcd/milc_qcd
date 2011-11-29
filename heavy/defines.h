@@ -4,7 +4,7 @@
 /* Compiler macros common to all targets in this application */
 
 /* No random number generator used in this application, so save space */
-/* #define SITERAND */	/* Use site-based random number generators */
+#define SITERAND	/* Use site-based random number generators */
 /* Uses hack to distinguish single and double precision files */
 #define VERSION_NUMBER (59354 + 8*(sizeof(Real) - 4))
 

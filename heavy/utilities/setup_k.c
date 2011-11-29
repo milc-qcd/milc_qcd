@@ -26,7 +26,7 @@ int initial_set()
   {
     /* print banner */
     printf("SU3 Wilson valence fermions;  summing heavy-light hopping\n");
-    printf("MIMD version 6\n");
+    printf("MIMD version 7\n");
     printf("Machine = %s, with %d nodes\n", machine_type(), numnodes());
     time_stamp("start");
 

@@ -17,6 +17,8 @@ int setup_h()
 
   /* print banner, get volume */
   prompt = initial_set();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
@@ -77,6 +79,7 @@ int initial_set()
   ny=par_buf.ny;
   nz=par_buf.nz;
   nt=par_buf.nt;
+  iseed=par_buf.iseed;
   
   this_node = mynode();
   number_of_nodes = numnodes();
@@ -274,7 +277,7 @@ int readin(int prompt)
 					 par_buf.startfile );
 
 
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
     IF_OK scanf("%s",savebuf);
     IF_OK printf("%s\n",savebuf);
@@ -378,7 +381,7 @@ int readin(int prompt)
     nrestart = par_buf.nrestart;
     nhop = par_buf.nhop;
     flag = par_buf.flag;
-    init_wqs(&wqs);
+    init_qs(&wqs);
     wqs = par_buf.wqs;
     wqs.type = par_buf.wqs.type;
     source_parity = par_buf.source_parity;

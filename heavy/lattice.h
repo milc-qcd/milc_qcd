@@ -9,7 +9,7 @@
 
 #include "defines.h"
 #include "../include/generic_wilson.h" 
-#include "../include/generic_quark_types.h" /* For wilson_quark_source */
+#include "../include/generic_quark_types.h" /* For quark_source */
 #include "../include/random.h"  /* For double_prn */
 #include "../include/io_lat.h"    /* For gauge_file */
 #include "../include/generic_clover.h" /* For clover */
@@ -31,6 +31,10 @@ typedef struct {
 	char parity;
 	/* my index in the array */
 	int index;
+	/* The state information for a random number generator */
+	double_prn site_prn;
+	/* align to double word boundary (kludge for Intel compiler) */
+	int space1;
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
@@ -75,6 +79,7 @@ extern int spins[4];
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
+EXTERN  int iseed;
 EXTERN  int  volume;	/* volume of lattice = nx*ny*nz*nt */
 EXTERN  int nkap;  /****** number of kappa values ******/
 #define MAX_NKAP 20 /* maximum number of kappa values */
@@ -121,8 +126,8 @@ EXTERN  int	odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN  int	number_of_nodes;	/* number of nodes in use */
 EXTERN  int  this_node;		/* node number of this node */
 
-EXTERN wilson_quark_source wqs;
-EXTERN wilson_quark_source wqstmp, wqstmp2;  /* Temporary */
+EXTERN quark_source wqs;
+EXTERN quark_source wqstmp, wqstmp2;  /* Temporary */
 
 EXTERN quark_invert_control qic;
 EXTERN dirac_wilson_param dwp;
@@ -144,6 +149,8 @@ EXTERN char ** gen_pt[N_POINTERS];
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
 EXTERN site *lattice;
+
+EXTERN su3_matrix *ape_links;
 
 /* Storage for the clover term */
 EXTERN clover *gen_clov;

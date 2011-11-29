@@ -36,14 +36,14 @@ OUTSTEM = out.meson.120
 TESTOUTLIST = ${OUTSTEM}.static ${OUTSTEM}.100 ${OUTSTEM}.120
 OUTBIN = meson.120 meson.140
 
-utilities/su3_sum:
-	cd utilities; ${MAKE} -f Makefile su3_sum ; cd ..
+../utilities/su3_sum:
+	cd ../utilities; ${MAKE} -f Makefile su3_sum ; cd ../test
 
-${TESTOUTLIST}: utilities/su3_sum in.sample.su3_sum.${PREC} out.test.${PROJ}.${PREC} ${OUTBIN}
-	utilities/su3_sum < in.sample.su3_sum.${PREC} > out.test.su3_sum.${PREC}
+${TESTOUTLIST}: in.sample.su3_sum.${PREC} out.test.${PROJ}.${PREC}
+	../utilities/su3_sum < in.sample.su3_sum.${PREC} > out.test.su3_sum.${PREC}
 	rm -f ${OUTBIN}
 
-out.test.meson.${PROJ}.${PREC}: ${TESTOUTLIST}
+out.test.meson.${PROJ}.${PREC}: ../utilites/su3_sum ${TESTOUTLIST} ${OUTBIN}
 	echo "BEGIN_ALL" > out.test.meson.${PROJ}.${PREC}
 	for file in ${TESTOUTLIST};\
 	do\
