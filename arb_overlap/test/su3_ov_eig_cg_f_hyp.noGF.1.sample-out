@@ -1,0 +1,251 @@
+Sat May 29 08:29:30 CDT 2010
+Host = abe0636
+nHYP links with 3 smearing level(s)
+HARD-CODED alpha_smear={0.75, 0.6, 0.3}
+IR_STAB=1.000000e-06,  EPS_SQ=1.000000e-05 
+Antiperiodic boundary conditions
+MIMD version 7 $Name:  $
+Machine = MPI (portable), with 2 nodes
+start: Sat May 29 08:29:31 2010
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 3737
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 2 x 4 x 4 x 4
+Mallocing 0.2 MBytes per node for lattice
+Mallocing 0.6 MBytes per node for fields
+only enough offsets for planar action
+
+
+beta 7.3
+u0 1
+number_of_masses 1
+m0 0
+R0 1.2
+scalez 1
+prec_sign 1e-07
+zolo_min 0.02
+zolo_max 2.7
+inner_cg_iterations 1000
+inner_residue 1e-07
+inner_residue_h 1e-07
+Number_of_inner_eigenvals 4
+Number_of_h0_eigenvals 8
+Number_of_hov_eigenvals 4
+Max_Rayleigh_iters 1000
+Max_r0_iters 100
+Restart_Rayleigh 10
+Kalkreuter_iters 10
+eigenvec_quality 0.00012
+eigenval_tol_low 1e-06
+error_decr_low 0.3
+eigenval_tol_high 1e-07
+error_decr_high 0.3
+max_cg_iterations 100
+max_cg_restarts 1
+error_for_fermforce 1e-05
+error_for_fermaction 1e-05
+point
+r0 2
+reload_serial c4444.d
+topology 100
+NOT fixing the gauge
+forget 
+fresh_wprop 
+forget_wprop 
+fresh_hr0_modes
+serial_hr0_modes 
+hr0.noGF
+fresh_hov_modes
+ serial_hov_modes
+ hov.noGF
+Restored binary gauge configuration serially from file c4444.d
+Time stamp Thu Mar  2 14:40:18 2000
+read_checksum: Checksum violation. Computed b3933947 653f4512.  Read efc8e22b 40cc52b0.
+Time to reload gauge configuration = 6.171942e-03
+CHECK PLAQ: 1.501995e+00 1.522853e+00
+CHECK NERSC LINKTR: -4.691384e-03 CKSUM: 8f2b8355
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 7.295609e-05
+GAUGE FIXING SKIPPED.
+FATLINK 3.620099e-01 2.076256e-01 0.000000e+00 2.732153e+00 2.736837e+00
+shift multi mass R0 1.200000e+00
+Zolotarov inner CG order 0
+inner CG steps 1000  resid 1.000000e-07
+lmin 2.000000e-02 lmax 2.700000e+00 prec 2.671116e-08 Norder 12
+shift[ 0 ]=2.812497e-05 coeff= 6.906356e-03
+shift[ 1 ]=3.028145e-04 coeff= 8.848960e-03
+shift[ 2 ]=1.183007e-03 coeff= 1.328127e-02
+shift[ 3 ]=3.729084e-03 coeff= 2.145363e-02
+shift[ 4 ]=1.101138e-02 coeff= 3.568286e-02
+shift[ 5 ]=3.183655e-02 coeff= 6.005973e-02
+shift[ 6 ]=9.159283e-02 coeff= 1.018711e-01
+shift[ 7 ]=2.648169e-01 coeff= 1.749894e-01
+shift[ 8 ]=7.819614e-01 coeff= 3.106650e-01
+shift[ 9 ]=2.464906e+00 coeff= 6.062421e-01
+shift[ 10 ]=9.629658e+00 coeff= 1.578009e+00
+shift[ 11 ]=1.036801e+02 coeff= 1.326022e+01
+scale dslash by 1.000000e+00
+mass= 0 r0= 2 residue= 1e-05
+
+TEST PROJECTOR planar action 
+lambda = 2.018950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+random initial vectors for h(m0)
+calling hr0 with Maxr0Iter 100
+#Converged 1 eval[ 0 ]= 3.843124e-01 norm 9.569404e-07 Mvecs 80 Time 0.714275
+#Converged 2 eval[ 1 ]= 4.636754e-01 norm 9.219154e-07 Mvecs 115 Time 0.770608
+#Converged 3 eval[ 2 ]= 5.218793e-01 norm 8.758840e-07 Mvecs 167 Time 0.855148
+#Converged 4 eval[ 3 ]= 5.290691e-01 norm 9.245142e-07 Mvecs 215 Time 0.932503
+mxv operations for eigenvecs 430
+total Rayleigh iters = 430
+F3HSQ 0 3.843124e-01
+F3HSQ 1 4.636754e-01
+F3HSQ 2 5.218793e-01
+F3HSQ 3 5.290691e-01
+F3MEX 0 6.199294e-01 8.309691e-10 1.161211e-06 
+F3MEX 1 -6.809372e-01 1.700224e-09 1.292238e-06 
+F3MEX 2 -7.224121e-01 3.980759e-09 3.620518e-06 
+F3MEX 3 7.273715e-01 5.116682e-09 4.686806e-06 
+F3MES 0 6.199294e-01 8.309691e-10   8.962492e+00 1.521168e+00
+F3MES 1 -6.809372e-01 1.700224e-09   7.010906e+00 6.573128e-01
+F3MES 2 -7.224121e-01 3.980759e-09   4.821414e+00 4.837787e-01
+F3MES 3 7.273715e-01 5.116682e-09   6.013723e+00 1.069169e+00
+mxv operations for eigenvecs 438
+Opening 1 files to write 4 eigenmodes
+writing mode 0 with spin 0 color 0 file 0
+writing mode 1 with spin 1 color 0 file 0
+writing mode 2 with spin 2 color 0 file 0
+writing mode 3 with spin 3 color 0 file 0
+record[0].checksum  "0x87812fec 0x7c3554ee" 
+record[1].checksum  "0xb3a43dd4 0x726c9568" 
+record[2].checksum  "0x18aadca6 0xe76620b7" 
+record[3].checksum  "0xde5d3bbf 0xefbd845a" 
+record[4].checksum  "0x10478414 0x43d72448" 
+record[5].checksum  "0x6d6f7dc 0xb7d9ed33" 
+record[6].checksum  "0x2477fa11 0xc89dfbe5" 
+record[7].checksum  "0x6a273e7 0xea83f347" 
+record[8].checksum  "0xee1b6245 0x94343a09" 
+record[9].checksum  "0x87ebe0b0 0x3a29f69b" 
+record[10].checksum  "0x5b7dfb3e 0x51e408d5" 
+record[11].checksum  "0x7bc0d9 0x1ccaf2f2" 
+Wrote prop file hr0.noGF0 time stamp Sat May 29 08:29:32 2010
+re_setup  : lmin 6.546344e-01 lmax 2.700000e+00 prec 2.388420e-09 Norder 6
+shift[ 0 ]=2.431672e-02 coeff= 2.024448e-01
+shift[ 1 ]=2.561001e-01 coeff= 2.528313e-01
+shift[ 2 ]=9.782940e-01 coeff= 3.793733e-01
+shift[ 3 ]=3.193418e+00 coeff= 6.854250e-01
+shift[ 4 ]=1.219875e+01 coeff= 1.744953e+00
+shift[ 5 ]=1.284754e+02 coeff= 1.471513e+01
+scale dslash by 1.000000e+00
+now begin overlap eigenvalues
+
+-------------------eigenvalues of H(0)---------------------
+lambda = 3.218950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+Lock epair[ 1 ]= 2.692567e-01 norm 1.7896e-05 Mvecs 103 Time 1.6625e-01 Flag 2
+Lock epair[ 2 ]= 2.872706e-01 norm 1.5303e-05 Mvecs 120 Time 1.9394e-01 Flag 2
+Lock epair[ 3 ]= 3.826676e-01 norm 1.6907e-05 Mvecs 153 Time 2.4786e-01 Flag 2
+Lock epair[ 4 ]= 3.917522e-01 norm 1.6996e-05 Mvecs 177 Time 2.8748e-01 Flag 2
+Lock epair[ 5 ]= 5.027443e-01 norm 1.4316e-05 Mvecs 217 Time 3.5343e-01 Flag 2
+Lock epair[ 6 ]= 5.061375e-01 norm 1.3962e-05 Mvecs 241 Time 3.9313e-01 Flag 2
+Lock epair[ 7 ]= 6.053032e-01 norm 1.5568e-05 Mvecs 273 Time 4.4641e-01 Flag 2
+Lock epair[ 8 ]= 6.087173e-01 norm 1.5852e-05 Mvecs 307 Time 5.0313e-01 Flag 2
+mxv operations for eigenvecs 614
+total Rayleigh iters = 614
+lambda = 2.018950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+
+----------------find sector of lowest chirality----------------------
+loading the lowest 2 eigenvecs  of H_0^2 in the chirality sector of the minimum 
+taking positive chirality part of vector 0
+taking negative chirality part of vector 0
+#Converged 1 eval[ 0 ]= 2.946929e-01 norm 5.521209e-06 Mvecs 29 Time 1.32311
+mxv operations for eigenvecs 1975
+#Converged 1 eval[ 0 ]= 2.946929e-01 norm 3.707311e-06 Mvecs 30 Time 1.37522
+mxv operations for eigenvecs 2058
+total Rayleigh iters = 2058
+eigval 0 2.946929e-01
+eigval 1 2.946929e-01
+2 state min energy H0^2 chirality 2.946929e-01 1.000000e+00  1
+eigValcut 2.946929e-01
+TRIAL CHIRALITY 1
+
+-----------------eigenvalues of H_ov-----------------------
+pass 2, want 4 eigenmodes in chirality sector 1
+#Converged 1 eval[ 0 ]= 2.946929e-01 norm 5.565798e-06 Mvecs 6 Time 0.266267
+#Converged 2 eval[ 1 ]= 4.156786e-01 norm 3.686628e-06 Mvecs 23 Time 1.0477
+#Converged 3 eval[ 2 ]= 5.625669e-01 norm 5.470326e-06 Mvecs 38 Time 1.73791
+#Converged 4 eval[ 3 ]= 6.930940e-01 norm 5.006260e-06 Mvecs 55 Time 2.52135
+mxv operations for eigenvecs 3763
+total Rayleigh iters = 3763
+calling last analysis package
+source chirality 1
+F3HO2V 0 2.946929e-01 9.999998e-01
+F3HO2V 1 4.156786e-01 1.000000e+00
+F3HO2V 2 5.625669e-01 1.000000e+00
+F3HO2V 3 6.930940e-01 1.000000e+00
+1  modes below threshold 2.946929e-01
+Eigenvalue_hov(0)= 2.946929e-01
+ARRAY 1.227887e-01 -4.301583e-09       
+ARRAY 5.287871e-01 1.733538e-10       -1.227887e-01 -2.308628e-09       
+F3OGH02X2 0 -5.428562e-01  -2.261902e-01 0.000000e+00  -2.261901e-01
+F3OGH02X2 1 5.428562e-01  2.261901e-01 0.000000e+00  2.261901e-01
+Eigenvalue_hov(1)= 4.156786e-01
+ARRAY 1.731994e-01 4.890381e-09       
+ARRAY 6.210319e-01 8.221939e-10       -1.731993e-01 -1.638754e-08       
+F3OGH02X2 0 -6.447315e-01  -2.686379e-01 0.000000e+00  -2.686381e-01
+F3OGH02X2 1 6.447315e-01  2.686380e-01 0.000000e+00  2.686381e-01
+Eigenvalue_hov(2)= 5.625669e-01
+ARRAY 2.344029e-01 6.366804e-09       
+ARRAY 7.124761e-01 5.108252e-10       -2.344030e-01 -4.102148e-09       
+F3OGH02X2 0 -7.500447e-01  -3.125187e-01 0.000000e+00  -3.125186e-01
+F3OGH02X2 1 7.500446e-01  3.125186e-01 0.000000e+00  3.125186e-01
+Eigenvalue_hov(3)= 6.930940e-01
+ARRAY 2.887892e-01 2.749516e-10       
+ARRAY 7.808297e-01 1.249170e-10       -2.887891e-01 -1.149168e-09       
+F3OGH02X2 0 -8.325227e-01  -3.468843e-01 0.000000e+00  -3.468845e-01
+F3OGH02X2 1 8.325228e-01  3.468843e-01 0.000000e+00  3.468845e-01
+ZEROMODES 0 CHIRALITY 1
+mxv operations in build_hov: 4835
+TESTNORM 1.000000e+00 9.999998e-01
+TESTNORM 1.000000e+00 1.000000e+00
+TESTNORM 1.000000e+00 9.999995e-01
+TESTNORM 1.000000e+00 9.999999e-01
+ZEROMODES 0
+reset current TOPOLOGY 0
+Opening 1 files to write 4 eigenmodes
+writing mode 0 with spin 0 color 0 file 0
+writing mode 1 with spin 1 color 0 file 0
+writing mode 2 with spin 2 color 0 file 0
+writing mode 3 with spin 3 color 0 file 0
+record[0].checksum  "0xc729ba43 0x43e4b279" 
+record[1].checksum  "0x938fb826 0x3e8be947" 
+record[2].checksum  "0xd33b8fa2 0xa06e46f3" 
+record[3].checksum  "0xc3e1fd14 0x1b37e07" 
+record[4].checksum  "0xa8c07c4c 0x53992d32" 
+record[5].checksum  "0x5bb5ab7b 0x3298469" 
+record[6].checksum  "0x69094551 0xbd82df23" 
+record[7].checksum  "0x93c0c9ae 0xe7ff2ad4" 
+record[8].checksum  "0xe598372d 0xa155150d" 
+record[9].checksum  "0xfe220cc 0x929bd3e7" 
+record[10].checksum  "0xafbb49f5 0x1561dcd7" 
+record[11].checksum  "0xeaf5d02 0xded777da" 
+Wrote prop file hov.noGF0 time stamp Sat May 29 08:29:38 2010
+writing eigenval 0 2.946929e-01
+writing eigenval 1 4.156786e-01
+writing eigenval 2 5.625669e-01
+writing eigenval 3 6.930940e-01
+RUNNING COMPLETED
+avm_iters 0.000000e+00
+Time = 7.441460e+00 seconds
+
+
+get_f(0): EOF on input.
+exit: Sat May 29 08:29:38 2010
+
+Sat May 29 08:29:38 CDT 2010

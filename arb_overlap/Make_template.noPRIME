@@ -1,0 +1,292 @@
+#  Arbitrary overlap code
+#  MIMD version 7
+
+#  Generic make-include file for arb_overlap codes
+#  Don't use it by itself!
+#
+#	su3_ov_eig_cg_f_hyp --eigenmodes
+#       su3_ov_eig_cg_multi-- multimass propagators, point and wall sources
+#	su3_ov_eig_cg_f_hyp_per --eigenmodes, periodic b.c.
+#       su3_ov_eig_cg_multi_per-- multimass propagators, point and wall sources, periodic b.c
+
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = ${INCLUDEDIR}
+
+INLINE_HEADERS = \
+#  ../sse/include/ \
+#  ../sse2/include/ \
+  ../libraries/include/
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  arb_ov_includes.h \
+  ${ADDHEADERS}
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+
+# All required object files
+# Basic set from current directory
+MY_OBJECTS =         \
+  overlap_info.o      \
+  gauge_info.o       \
+  readinfo.o            \
+  setup_p_cl.o       \
+  delta0y.o          \
+  make_clov_field.o  \
+  mult_ldu2.o        \
+  f_mu_nu1.o         \
+  path.o             \
+  setup_offset.o     \
+  setup_links.o      \
+  hdelta0_field.o    \
+  ploop3.o           \
+  build_params_0.166.o   \
+  wp_shrink_pl_field_pf.o\
+  wp_shrink_pl_field_pf_l.o\
+  wp_grow_pl_field_pf.o \
+  wp_grow_pl_field_pf_l.o \
+  grsource.o \
+  io_modes.o \
+  copy_fields.o \
+  myclock.o
+
+
+
+OVERLAP_OBJECTS = \
+ congrad_multi_field.o \
+ hoverlap.o  
+
+EIGVAL_OBJECTS = \
+  build_hr0_field2.o \
+  build_h0.o \
+  build_lowest_chi.o \
+  build_hov.o \
+  vectorh.o  \
+  jacobi.o \
+  eigen_stuff.o
+
+# eigen_stuff.o
+# eigen_stuff_JD.o
+
+
+# Basic set from generic directory
+G_OBJECTS =          \
+  ape_smear.o        \
+  check_unitarity.o  \
+  d_plaq4.o          \
+  gaugefix2.o        \
+  io_detect.o        \
+  io_helpers.o       \
+  io_lat4.o          \
+  io_lat_utils.o     \
+  io_source_cmplx_fm.o \
+  make_lattice.o     \
+  nersc_cksum.o \
+  ranstuff.o         \
+  project_su3_hit.o  \
+  remap_stdio_from_args.o \
+  reunitarize2.o
+
+ifeq ($(strip ${HAVEFFTW}),true)
+  G_OBJECTS += remap_fftw_fourier.o
+else
+  G_OBJECTS += restrict_fourier.o
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
+endif
+
+
+# Basic set from generic_wilson directory
+G_WILSON_OBJECTS =   \
+  canopy2weyl_rot.o  \
+  dirac_utilities.o  \
+  discretize_wf.o    \
+  dslash_w_space.o   \
+  gauss_smear_w.o    \
+  io_helpers_w.o     \
+  io_prop_w.o        \
+  io_prop_w_fm.o     \
+  io_source_w_fm.o   \
+  w_source.o         \
+  boundary_flip.o      
+
+
+
+# Basic set of nhyp routines (should have its own generic_nhyp directory)
+G_NHYP_OBJECTS =     \
+  block_nhyp.o       \
+  nhyp.o
+
+
+
+
+
+# uncomment for fat links; only nHYP for now
+  FAT = -DNHYP
+
+ifdef FAT
+  DEFINES= ${FAT}
+else
+  DEFINES=
+  G_NHYP_OBJECTS=
+endif
+
+# Objects depending on architecture and software package
+
+# Selection of layout
+ifeq ($(strip ${QCDOC}),true)
+  LAYOUT = layout_qcdoc.o # Required
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    LAYOUT = layout_qdp.o # Required
+  else
+    LAYOUT = layout_hyper_prime.o # Choices possible here
+  endif
+endif
+
+# EDRAM allocation for QCDOC
+ifeq ($(strip ${QCDOC}),true)
+  QCDOC_OBJECTS = qcdoc_alloc.o
+endif
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+# Generic QOP objects
+ifeq ($(strip ${HAVEQOP}),true)
+  ADD_OBJECTS += ${GENERICQOP}
+endif
+
+
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS}  ${G_WILSON_OBJECTS}  \
+   ${G_NHYP_OBJECTS}  ${OVERLAP_OBJECTS} \
+  ${EIGVAL_OBJECTS}  ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+
+
+
+
+#Libraries for complex numbers and su3 functions
+QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a libzprimme.a
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
+
+# Default rule for C compilation
+.c.o: ; ${CC} -c ${CFLAGS} $<
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
+
+${LASTMAKE}: ${ALL_MAKES}
+	-/bin/rm -f .lastmake.*
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+# All make files used in this compilation
+ALL_MAKES = \
+  Make_template \
+  ${MAKEFILE} \
+  ../Make_template_qop \
+  ../Make_template_scidac \
+  ../generic/Make_template \
+  ../generic_wilson/Make_template
+
+# To force a remake when changing any make file, header, or target
+${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
+endif
+
+ifeq ($(strip ${HAVEQMP}),true)
+  DHAVE_QMP = -DHAVE_QMP
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DHAVE_QIO = -DHAVE_QIO
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  DHAVE_QOP = -DHAVE_QOP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
+
+##### Targets:
+
+
+
+# Common compiler macros
+
+# Optional DEFINES for timing:
+# -DIOTIME for I/O timing
+# -DPRTIME for propagator timing
+# -DCGTIME for cg timing and iterations
+
+su3_ov_eig_cg_f_hyp::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES = ${DEFINES}  -DEIG  -DEIGO  -DFIELD -DRANDOM -DPROJ   " \
+	"EXTRA_OBJECTS= control_f.o "
+
+su3_ov_eig_cg_multi::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES = ${DEFINES}  -DEIG  -DEIGO  -DFIELD -DRANDOM -DPROJ -DINV  \
+	-DMINN -DMULTI " \
+	"EXTRA_OBJECTS= control_f.o multi_cg.o multi_cg_iter.o "
+
+su3_ov_eig_cg_f_hyp_per::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES = ${DEFINES}  -DEIG  -DEIGO  -DFIELD -DRANDOM -DPROJ -DTPERIODIC  " \
+	"EXTRA_OBJECTS= control_f.o "
+
+su3_ov_eig_cg_multi_per::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES = ${DEFINES}  -DEIG  -DEIGO  -DFIELD -DRANDOM -DPROJ -DINV  \
+	-DMINN -DMULTI -DTPERIODIC " \
+	"EXTRA_OBJECTS= control_f.o multi_cg.o multi_cg_iter.o "
+
+
+
+
+
+
+clean:
+	-/bin/rm -f *.o
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
+
+
+
+
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
+	${OBJECTS} ${QCDLIB} ${ILIB}  -lm
+	touch localmake
+
+
+
+
+target: libmake localmake

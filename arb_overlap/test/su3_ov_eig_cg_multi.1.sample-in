@@ -1,0 +1,60 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 3737
+ 
+beta 7.3
+u0 1.0
+number_of_masses 4
+m0 0.01
+m0 0.02
+m0 0.05
+m0 0.1
+R0 1.2
+scalez 1.0
+prec_sign 1.e-7
+zolo_min 0.02
+zolo_max 2.7
+inner_cg_iterations 1000
+inner_residue 1.e-7
+inner_residue_h 1.e-7
+Number_of_inner_eigenvals 4
+Number_of_h0_eigenvals 8
+Number_of_hov_eigenvals 4
+Max_Rayleigh_iters 1000
+Max_r0_iters 100
+Restart_Rayleigh 10
+Kalkreuter_iters 10
+eigenvec_quality 1.2e-4
+eigenval_tol_low 1.0e-6
+error_decr_low .3
+eigenval_tol_high 1.0e-7
+error_decr_high .3
+max_cg_iterations 100
+max_cg_restarts 1
+error_for_fermforce  1.e-5
+error_for_fermforce  1.e-5
+error_for_fermforce  1.e-5
+error_for_fermforce  1.e-5
+error_for_fermaction  1.e-5
+error_for_fermaction  1.e-5
+error_for_fermaction  1.e-5
+error_for_fermaction  1.e-5
+gaussian
+subset full
+origin 0 0 0 0
+r0 2.0
+source_label G
+reload_serial ../c4444.d
+topology 100
+coulomb_gauge_fix
+forget
+fresh_wprop
+save_serial_fm_sc_wprop su3_ov_eig_cg_multi.www.1.test-out
+fresh_hr0_modes
+forget_hr0_modes
+fresh_hov_modes
+forget_hov_modes
+

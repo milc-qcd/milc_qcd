@@ -1,0 +1,529 @@
+Sat May 29 09:08:34 CDT 2010
+Host = abe0693
+nHYP links with 3 smearing level(s)
+HARD-CODED alpha_smear={0.75, 0.6, 0.3}
+IR_STAB=1.000000e-06,  EPS_SQ=1.000000e-05 
+Antiperiodic boundary conditions
+MIMD version 7 $Name:  $
+Machine = MPI (portable), with 2 nodes
+start: Sat May 29 09:08:34 2010
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 3737
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 2 x 4 x 4 x 4
+Mallocing 0.2 MBytes per node for lattice
+Mallocing 0.6 MBytes per node for fields
+only enough offsets for planar action
+
+
+beta 7.3
+u0 1
+number_of_masses 4
+m0 0.01
+m0 0.02
+m0 0.05
+m0 0.1
+R0 1.2
+scalez 1
+prec_sign 1e-07
+zolo_min 0.02
+zolo_max 2.7
+inner_cg_iterations 1000
+inner_residue 1e-07
+inner_residue_h 1e-07
+Number_of_inner_eigenvals 4
+Number_of_h0_eigenvals 8
+Number_of_hov_eigenvals 4
+Max_Rayleigh_iters 1000
+Max_r0_iters 100
+Restart_Rayleigh 10
+Kalkreuter_iters 10
+eigenvec_quality 0.00012
+eigenval_tol_low 1e-06
+error_decr_low 0.3
+eigenval_tol_high 1e-07
+error_decr_high 0.3
+max_cg_iterations 100
+max_cg_restarts 1
+error_for_fermforce 1e-05
+error_for_fermforce 1e-05
+error_for_fermforce 1e-05
+error_for_fermforce 1e-05
+error_for_fermaction 1e-05
+error_for_fermaction 1e-05
+error_for_fermaction 1e-05
+error_for_fermaction 1e-05
+point
+r0 2
+reload_serial c4444.d
+topology 100
+fixing to coulomb gauge
+forget 
+fresh_wprop 
+save_serial_fm_sc_wprop www
+fresh_hr0_modes
+serial_hr0_modes 
+hr0
+fresh_hov_modes
+ serial_hov_modes
+ hov
+Restored binary gauge configuration serially from file c4444.d
+Time stamp Thu Mar  2 14:40:18 2000
+read_checksum: Checksum violation. Computed b3933947 653f4512.  Read efc8e22b 40cc52b0.
+Time to reload gauge configuration = 1.099110e-03
+CHECK PLAQ: 1.501995e+00 1.522853e+00
+CHECK NERSC LINKTR: -4.691384e-03 CKSUM: 8f2b8355
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 6.699562e-05
+Fixing to Coulomb gauge
+GFIX: Ended at step 151. Av gf action 7.86300391e-01, delta 5.960e-08
+Time to gauge fix = 8.930802e-02
+FATLINK 3.620099e-01 2.076254e-01 0.000000e+00 2.732153e+00 2.736837e+00
+shift multi mass R0 1.200000e+00
+Zolotarov inner CG order 0
+inner CG steps 1000  resid 1.000000e-07
+lmin 2.000000e-02 lmax 2.700000e+00 prec 2.671116e-08 Norder 12
+shift[ 0 ]=2.812497e-05 coeff= 6.906356e-03
+shift[ 1 ]=3.028145e-04 coeff= 8.848960e-03
+shift[ 2 ]=1.183007e-03 coeff= 1.328127e-02
+shift[ 3 ]=3.729084e-03 coeff= 2.145363e-02
+shift[ 4 ]=1.101138e-02 coeff= 3.568286e-02
+shift[ 5 ]=3.183655e-02 coeff= 6.005973e-02
+shift[ 6 ]=9.159283e-02 coeff= 1.018711e-01
+shift[ 7 ]=2.648169e-01 coeff= 1.749894e-01
+shift[ 8 ]=7.819614e-01 coeff= 3.106650e-01
+shift[ 9 ]=2.464906e+00 coeff= 6.062421e-01
+shift[ 10 ]=9.629658e+00 coeff= 1.578009e+00
+shift[ 11 ]=1.036801e+02 coeff= 1.326022e+01
+scale dslash by 1.000000e+00
+mass= 0.01 r0= 2 residue= 1e-05
+mass= 0.02 r0= 2 residue= 1e-05
+mass= 0.05 r0= 2 residue= 1e-05
+mass= 0.1 r0= 2 residue= 1e-05
+
+TEST PROJECTOR planar action 
+lambda = 2.018950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+random initial vectors for h(m0)
+calling hr0 with Maxr0Iter 100
+#Converged 1 eval[ 0 ]= 3.843130e-01 norm 8.960894e-07 Mvecs 80 Time 0.594165
+#Converged 2 eval[ 1 ]= 4.636756e-01 norm 9.341294e-07 Mvecs 115 Time 0.65028
+#Converged 3 eval[ 2 ]= 5.218794e-01 norm 9.198947e-07 Mvecs 170 Time 0.738903
+#Converged 4 eval[ 3 ]= 5.290692e-01 norm 8.836110e-07 Mvecs 218 Time 0.816129
+mxv operations for eigenvecs 436
+total Rayleigh iters = 436
+F3HSQ 0 3.843130e-01
+F3HSQ 1 4.636756e-01
+F3HSQ 2 5.218794e-01
+F3HSQ 3 5.290692e-01
+F3MEX 0 6.199299e-01 2.902839e-09 1.000901e-06 
+F3MEX 1 -6.809375e-01 -5.583034e-09 1.247157e-06 
+F3MEX 2 -7.224121e-01 -4.266939e-09 3.791132e-06 
+F3MEX 3 7.273715e-01 1.863505e-10 4.223649e-06 
+F3MES 0 6.199299e-01 2.902839e-09   8.962481e+00 1.521173e+00
+F3MES 1 -6.809375e-01 -5.583034e-09   7.010906e+00 6.573141e-01
+F3MES 2 -7.224121e-01 -4.266939e-09   4.821423e+00 4.837831e-01
+F3MES 3 7.273715e-01 1.863505e-10   6.013725e+00 1.069171e+00
+mxv operations for eigenvecs 444
+Opening 1 files to write 4 eigenmodes
+writing mode 0 with spin 0 color 0 file 0
+writing mode 1 with spin 1 color 0 file 0
+writing mode 2 with spin 2 color 0 file 0
+writing mode 3 with spin 3 color 0 file 0
+record[0].checksum  "0xe18c8163 0xafacffab" 
+record[1].checksum  "0xeddeac2a 0x65dcf81" 
+record[2].checksum  "0x6cd65c68 0xa9d859a3" 
+record[3].checksum  "0x199a683c 0xee3f1c73" 
+record[4].checksum  "0xd5b068cd 0xb5a30200" 
+record[5].checksum  "0xbff7657f 0x4c2a8a44" 
+record[6].checksum  "0xa3d9a10d 0x909f6e14" 
+record[7].checksum  "0x9af18366 0xbcf727af" 
+record[8].checksum  "0x34a66b 0xfeb8e179" 
+record[9].checksum  "0x6fe4cdb1 0xddc5ddb6" 
+record[10].checksum  "0x2e228980 0xaa3c52c8" 
+record[11].checksum  "0x8c1d4bdf 0xc9d138e9" 
+Wrote prop file hr00 time stamp Sat May 29 09:08:35 2010
+re_setup  : lmin 6.546343e-01 lmax 2.700000e+00 prec 2.388422e-09 Norder 6
+shift[ 0 ]=2.431672e-02 coeff= 2.024448e-01
+shift[ 1 ]=2.561000e-01 coeff= 2.528313e-01
+shift[ 2 ]=9.782938e-01 coeff= 3.793733e-01
+shift[ 3 ]=3.193418e+00 coeff= 6.854250e-01
+shift[ 4 ]=1.219875e+01 coeff= 1.744953e+00
+shift[ 5 ]=1.284754e+02 coeff= 1.471513e+01
+scale dslash by 1.000000e+00
+now begin overlap eigenvalues
+
+-------------------eigenvalues of H(0)---------------------
+lambda = 3.218950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+Lock epair[ 1 ]= 2.692568e-01 norm 1.8519e-05 Mvecs 95 Time 1.5363e-01 Flag 2
+Lock epair[ 2 ]= 2.872705e-01 norm 1.7895e-05 Mvecs 112 Time 1.8125e-01 Flag 2
+Lock epair[ 3 ]= 3.826676e-01 norm 1.7022e-05 Mvecs 153 Time 2.4799e-01 Flag 2
+Lock epair[ 4 ]= 3.917522e-01 norm 1.5909e-05 Mvecs 169 Time 2.7451e-01 Flag 2
+Lock epair[ 5 ]= 5.027444e-01 norm 1.6611e-05 Mvecs 209 Time 3.4046e-01 Flag 2
+Lock epair[ 6 ]= 5.061375e-01 norm 1.7985e-05 Mvecs 233 Time 3.8048e-01 Flag 2
+Lock epair[ 7 ]= 6.053034e-01 norm 1.7083e-05 Mvecs 273 Time 4.4730e-01 Flag 2
+Lock epair[ 8 ]= 6.087175e-01 norm 1.6594e-05 Mvecs 293 Time 4.8110e-01 Flag 2
+mxv operations for eigenvecs 586
+total Rayleigh iters = 586
+lambda = 2.018950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+
+----------------find sector of lowest chirality----------------------
+loading the lowest 2 eigenvecs  of H_0^2 in the chirality sector of the minimum 
+taking positive chirality part of vector 0
+taking negative chirality part of vector 0
+#Converged 1 eval[ 0 ]= 2.946928e-01 norm 3.965825e-06 Mvecs 30 Time 1.38134
+mxv operations for eigenvecs 2058
+#Converged 1 eval[ 0 ]= 2.946928e-01 norm 4.752106e-06 Mvecs 28 Time 1.28795
+mxv operations for eigenvecs 1916
+total Rayleigh iters = 1916
+eigval 0 2.946928e-01
+eigval 1 2.946928e-01
+2 state min energy H0^2 chirality 2.946928e-01 1.000000e+00  1
+eigValcut 2.946928e-01
+TRIAL CHIRALITY 1
+
+-----------------eigenvalues of H_ov-----------------------
+pass 2, want 4 eigenmodes in chirality sector 1
+#Converged 1 eval[ 0 ]= 2.946928e-01 norm 4.069859e-06 Mvecs 6 Time 0.266717
+#Converged 2 eval[ 1 ]= 4.156786e-01 norm 4.805002e-06 Mvecs 22 Time 1.00329
+#Converged 3 eval[ 2 ]= 5.625670e-01 norm 3.656770e-06 Mvecs 38 Time 1.73718
+#Converged 4 eval[ 3 ]= 6.930942e-01 norm 3.583662e-06 Mvecs 55 Time 2.52064
+mxv operations for eigenvecs 3771
+total Rayleigh iters = 3771
+calling last analysis package
+source chirality 1
+F3HO2V 0 2.946928e-01 9.999999e-01
+F3HO2V 1 4.156786e-01 1.000000e+00
+F3HO2V 2 5.625670e-01 1.000000e+00
+F3HO2V 3 6.930942e-01 1.000000e+00
+1  modes below threshold 2.946928e-01
+Eigenvalue_hov(0)= 2.946928e-01
+ARRAY 1.227887e-01 -1.746714e-08       
+ARRAY 5.287870e-01 -1.553616e-10       -1.227887e-01 1.656999e-08       
+F3OGH02X2 0 -5.428561e-01  -2.261900e-01 0.000000e+00  -2.261900e-01
+F3OGH02X2 1 5.428561e-01  2.261901e-01 0.000000e+00  2.261900e-01
+Eigenvalue_hov(1)= 4.156786e-01
+ARRAY 1.731994e-01 9.759133e-09       
+ARRAY 6.210318e-01 2.675127e-11       -1.731993e-01 -9.254522e-09       
+F3OGH02X2 0 -6.447313e-01  -2.686378e-01 0.000000e+00  -2.686380e-01
+F3OGH02X2 1 6.447314e-01  2.686380e-01 0.000000e+00  2.686381e-01
+Eigenvalue_hov(2)= 5.625670e-01
+ARRAY 2.344029e-01 3.471686e-08       
+ARRAY 7.124761e-01 -1.700220e-10       -2.344029e-01 -4.052039e-08       
+F3OGH02X2 0 -7.500446e-01  -3.125186e-01 0.000000e+00  -3.125186e-01
+F3OGH02X2 1 7.500446e-01  3.125185e-01 0.000000e+00  3.125186e-01
+Eigenvalue_hov(3)= 6.930942e-01
+ARRAY 2.887893e-01 8.695149e-09       
+ARRAY 7.808297e-01 6.255956e-10       -2.887893e-01 -2.141135e-08       
+F3OGH02X2 0 -8.325229e-01  -3.468845e-01 0.000000e+00  -3.468845e-01
+F3OGH02X2 1 8.325229e-01  3.468845e-01 0.000000e+00  3.468845e-01
+ZEROMODES 0 CHIRALITY 1
+mxv operations in build_hov: 4843
+TESTNORM 1.000000e+00 1.000000e+00
+TESTNORM 9.999998e-01 9.999997e-01
+TESTNORM 9.999997e-01 9.999990e-01
+TESTNORM 1.000000e+00 9.999998e-01
+ZEROMODES 0
+reset current TOPOLOGY 0
+Opening 1 files to write 4 eigenmodes
+writing mode 0 with spin 0 color 0 file 0
+writing mode 1 with spin 1 color 0 file 0
+writing mode 2 with spin 2 color 0 file 0
+writing mode 3 with spin 3 color 0 file 0
+record[0].checksum  "0x3f3e914 0x429d713f" 
+record[1].checksum  "0x9ff1f9ad 0x64cbbe27" 
+record[2].checksum  "0x9a674114 0x1ceb9542" 
+record[3].checksum  "0xc7e266d4 0xb09be6b4" 
+record[4].checksum  "0x1af748d 0xabc20e78" 
+record[5].checksum  "0x9a4a191 0x6314acbc" 
+record[6].checksum  "0x25a91cf8 0x13dc3b06" 
+record[7].checksum  "0xbf866ba9 0xfdaeafcb" 
+record[8].checksum  "0xfb2b636c 0xbf33ad73" 
+record[9].checksum  "0x1408154 0x23da267b" 
+record[10].checksum  "0x15930b87 0x7a179a29" 
+record[11].checksum  "0x6e4d14cc 0xa85381de" 
+Wrote prop file hov0 time stamp Sat May 29 09:08:42 2010
+writing eigenval 0 2.946928e-01
+writing eigenval 1 4.156786e-01
+writing eigenval 2 5.625670e-01
+writing eigenval 3 6.930942e-01
+0 mass 1.000000e-02 shift0 1.000017e-04 coeff0 1.000017e+00
+1 mass 2.000000e-02 shift0 4.000278e-04 coeff0 1.000069e+00
+2 mass 5.000000e-02 shift0 2.501086e-03 coeff0 1.000434e+00
+3 mass 1.000000e-01 shift0 1.001739e-02 coeff0 1.001739e+00
+mass 1.000000e-02 mode 0 0 3.218717e-02 1.793790e+00
+mass 1.000000e-02 mode 1 0 2.231596e-02 1.493686e+00
+mass 1.000000e-02 mode 2 0 1.603698e-02 1.266270e+00
+mass 1.000000e-02 mode 3 0 1.269033e-02 1.126442e+00
+mass 2.000000e-02 mode 0 0 6.431224e-02 1.792059e+00
+mass 2.000000e-02 mode 1 0 4.460205e-02 1.492687e+00
+mass 2.000000e-02 mode 2 0 3.205853e-02 1.265661e+00
+mass 2.000000e-02 mode 3 0 2.537100e-02 1.126014e+00
+mass 5.000000e-02 mode 0 0 1.597022e-01 1.780039e+00
+mass 5.000000e-02 mode 1 0 1.109854e-01 1.485729e+00
+mass 5.000000e-02 mode 2 0 7.987745e-02 1.261415e+00
+mass 5.000000e-02 mode 3 0 6.325899e-02 1.123022e+00
+mass 1.000000e-01 mode 0 0 3.119319e-01 1.738395e+00
+mass 1.000000e-01 mode 1 0 2.183359e-01 1.461400e+00
+mass 1.000000e-01 mode 2 0 1.578634e-01 1.246480e+00
+mass 1.000000e-01 mode 3 0 1.253287e-01 1.112466e+00
+Propagator color 0 spin 0
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 -9.240591e-03 -8.210307e-03
+projector 1 1.541281e-04 1.081250e-02
+projector 2 -1.067592e-02 5.464789e-04
+projector 3 -3.254991e-03 -4.039574e-03
+inverting source color 0 spin 0 chirality 1
+congrad: source_norm = 9.995890e-01
+iter 0 residue 1.018009e-02  1.200000e-07
+iter 5 residue 4.133367e-06  2.985984e-07
+iter 10 residue 1.914571e-09  7.430085e-07
+ vector 1 converged in 12 steps 4.039872e-11
+ vector 2 converged in 12 steps 3.945371e-11
+ vector 3 converged in 12 steps 3.626031e-11
+cg iters 13 residue 4.053561e-11
+Propagator color 1 spin 0
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 1.258353e-03 -1.724171e-02
+projector 1 -1.601047e-02 -1.687477e-03
+projector 2 -5.976197e-03 6.974737e-04
+projector 3 -3.350120e-02 -7.552485e-03
+inverting source color 1 spin 0 chirality 1
+congrad: source_norm = 9.982265e-01
+iter 0 residue 1.125039e-02  8.916102e-07
+iter 5 residue 4.822073e-06  2.218612e-06
+iter 10 residue 1.192520e-09  5.520616e-06
+ vector 1 converged in 12 steps 3.857944e-11
+ vector 2 converged in 12 steps 3.768705e-11
+ vector 3 converged in 12 steps 3.466942e-11
+cg iters 13 residue 3.870868e-11
+Propagator color 2 spin 0
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 1.355162e-02 -2.166453e-02
+projector 1 -6.358033e-03 -6.230925e-03
+projector 2 3.366834e-02 -3.621674e-02
+projector 3 -3.306863e-02 -2.230826e-02
+inverting source color 2 spin 0 chirality 1
+congrad: source_norm = 9.952313e-01
+iter 0 residue 1.255366e-02  1.373706e-05
+iter 5 residue 9.420264e-06  3.418220e-05
+iter 10 residue 2.202351e-09  8.505625e-05
+ vector 1 converged in 12 steps 5.804953e-11
+ vector 2 converged in 12 steps 5.669027e-11
+ vector 3 converged in 12 steps 5.209721e-11
+cg iters 13 residue 5.824642e-11
+Propagator color 0 spin 1
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 -9.485875e-03 -1.963937e-02
+projector 1 7.207599e-03 -8.944605e-03
+projector 2 -1.795424e-03 -1.212422e-03
+projector 3 1.282823e-02 8.364192e-03
+inverting source color 0 spin 1 chirality 1
+congrad: source_norm = 9.991530e-01
+iter 0 residue 1.550313e-02  1.469772e-04
+iter 5 residue 7.251150e-06  1.763726e-04
+iter 10 residue 1.736779e-09  1.469772e-04
+ vector 1 converged in 12 steps 5.511889e-11
+ vector 2 converged in 12 steps 5.383286e-11
+ vector 3 converged in 12 steps 4.948629e-11
+cg iters 13 residue 5.530518e-11
+Propagator color 1 spin 1
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 -9.947311e-03 3.359174e-03
+projector 1 3.434012e-02 -2.590983e-03
+projector 2 -2.386453e-03 -1.612432e-02
+projector 3 2.934113e-03 2.157759e-02
+inverting source color 1 spin 1 chirality 1
+congrad: source_norm = 9.979639e-01
+iter 0 residue 1.228335e-02  8.505625e-05
+iter 5 residue 4.970517e-06  1.469772e-04
+iter 10 residue 2.345083e-09  1.224810e-04
+ vector 1 converged in 12 steps 7.118524e-11
+ vector 2 converged in 12 steps 6.951417e-11
+ vector 3 converged in 12 steps 6.386810e-11
+cg iters 13 residue 7.142732e-11
+Propagator color 2 spin 1
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 1.007867e-02 -1.763116e-03
+projector 1 -1.291944e-02 2.499140e-02
+projector 2 1.208332e-02 -2.271615e-03
+projector 3 -1.074553e-02 1.226668e-02
+inverting source color 2 spin 1 chirality 1
+congrad: source_norm = 9.986868e-01
+iter 0 residue 8.696814e-03  1.469772e-04
+iter 5 residue 2.659241e-06  1.763726e-04
+iter 10 residue 1.444455e-09  1.469772e-04
+ vector 1 converged in 12 steps 5.685502e-11
+ vector 2 converged in 12 steps 5.551720e-11
+ vector 3 converged in 12 steps 5.099773e-11
+cg iters 13 residue 5.704882e-11
+Propagator color 0 spin 2
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 -4.262414e-03 1.911194e-02
+projector 1 -5.979251e-03 1.302204e-02
+projector 2 1.219933e-02 -9.086846e-03
+projector 3 -1.195049e-02 -9.311181e-03
+inverting source color 0 spin 2 chirality -1
+congrad: source_norm = 9.989503e-01
+iter 0 residue 1.043618e-02  2.539766e-04
+iter 5 residue 3.680898e-06  1.469772e-04
+iter 10 residue 1.695098e-09  1.763726e-04
+ vector 1 converged in 12 steps 5.603136e-11
+ vector 2 converged in 12 steps 5.471465e-11
+ vector 3 converged in 12 steps 5.026624e-11
+cg iters 13 residue 5.622211e-11
+Propagator color 1 spin 2
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 -2.894335e-02 1.874895e-02
+projector 1 -6.118717e-03 -9.830512e-03
+projector 2 8.902884e-03 -2.747348e-03
+projector 3 -1.298290e-02 2.494678e-03
+inverting source color 1 spin 2 chirality -1
+congrad: source_norm = 9.984153e-01
+iter 0 residue 1.112353e-02  1.469772e-04
+iter 5 residue 3.468270e-06  1.763726e-04
+iter 10 residue 1.506030e-09  1.469772e-04
+ vector 1 converged in 12 steps 4.166144e-11
+ vector 2 converged in 12 steps 4.069760e-11
+ vector 3 converged in 12 steps 3.743840e-11
+cg iters 13 residue 4.180103e-11
+Propagator color 2 spin 2
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 -2.356285e-02 -2.258007e-02
+projector 1 2.108875e-02 -3.017396e-03
+projector 2 -1.448788e-02 1.764766e-02
+projector 3 1.749375e-03 -2.842118e-02
+inverting source color 2 spin 2 chirality -1
+congrad: source_norm = 9.971490e-01
+iter 0 residue 1.247185e-02  8.505625e-05
+iter 5 residue 5.245777e-06  1.469772e-04
+iter 10 residue 2.299784e-09  1.763726e-04
+ vector 1 converged in 12 steps 5.422398e-11
+ vector 2 converged in 12 steps 5.295810e-11
+ vector 3 converged in 12 steps 4.867982e-11
+cg iters 13 residue 5.440734e-11
+Propagator color 0 spin 3
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 1.553188e-02 5.785766e-03
+projector 1 9.055184e-04 -1.876250e-02
+projector 2 5.222599e-03 -5.725470e-03
+projector 3 1.034230e-02 1.050184e-02
+inverting source color 0 spin 3 chirality -1
+congrad: source_norm = 9.990951e-01
+iter 0 residue 1.361687e-02  2.116472e-04
+iter 5 residue 5.023928e-06  1.763726e-04
+iter 10 residue 1.929912e-09  1.469772e-04
+ vector 1 converged in 12 steps 6.890576e-11
+ vector 2 converged in 12 steps 6.729604e-11
+ vector 3 converged in 12 steps 6.185577e-11
+cg iters 13 residue 6.913894e-11
+Propagator color 1 spin 3
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 1.068547e-02 1.852584e-03
+projector 1 -1.046854e-02 -2.269434e-02
+projector 2 -2.320159e-02 2.281641e-02
+projector 3 -4.326911e-04 -5.554021e-04
+inverting source color 1 spin 3 chirality -1
+congrad: source_norm = 9.981985e-01
+iter 0 residue 1.130133e-02  1.763726e-04
+iter 5 residue 3.601749e-06  1.469772e-04
+iter 10 residue 9.524355e-10  1.763726e-04
+ vector 1 converged in 12 steps 5.865633e-11
+ vector 2 converged in 12 steps 5.729732e-11
+ vector 3 converged in 12 steps 5.270189e-11
+cg iters 13 residue 5.885315e-11
+Propagator color 2 spin 3
+Original: source_norm = 1.000000e+00
+removing 4 modes from source
+projector 0 7.809007e-03 4.690749e-03
+projector 1 2.822228e-02 2.772800e-02
+projector 2 -2.036421e-02 1.657364e-02
+projector 3 1.794407e-03 -3.568284e-02
+inverting source color 2 spin 3 chirality -1
+congrad: source_norm = 9.963858e-01
+iter 0 residue 8.642205e-03  1.020675e-04
+iter 5 residue 2.787561e-06  1.224810e-04
+iter 10 residue 1.099939e-09  1.469772e-04
+ vector 1 converged in 12 steps 3.902964e-11
+ vector 2 converged in 12 steps 3.812392e-11
+ vector 3 converged in 12 steps 3.506177e-11
+cg iters 13 residue 3.916083e-11
+record[0].checksum  "0xa8cbf699 0x7aba8aba" 
+record[1].checksum  "0x9a362e69 0x395fe4cf" 
+record[2].checksum  "0x95c1b9dc 0x164606f7" 
+record[3].checksum  "0x83ea91f9 0x193b8452" 
+record[4].checksum  "0xbfa5fd37 0x709ed12a" 
+record[5].checksum  "0xc89e8904 0x54eaebd8" 
+record[6].checksum  "0xb8b3b4bd 0x7242dc47" 
+record[7].checksum  "0xcc411db0 0x9cf8c898" 
+record[8].checksum  "0x430425cd 0xcaec2d3e" 
+record[9].checksum  "0xa331433b 0xb3f8638a" 
+record[10].checksum  "0x413a4fca 0x606675db" 
+record[11].checksum  "0x4f220655 0xbda20fe2" 
+Wrote prop file www.n0.010000 time stamp Sat May 29 09:08:42 2010
+record[0].checksum  "0x956ef418 0xaa8957a5" 
+record[1].checksum  "0x32b30586 0xa108d8d9" 
+record[2].checksum  "0x6f25f60f 0xe2004e38" 
+record[3].checksum  "0x2fef8213 0xbb473b50" 
+record[4].checksum  "0x61c8214a 0x66703b62" 
+record[5].checksum  "0x3081453e 0x5ad195b1" 
+record[6].checksum  "0x8d904836 0xf0e1bd7e" 
+record[7].checksum  "0xed82e0a8 0x92a2d12e" 
+record[8].checksum  "0xd98c339e 0x1aa0d634" 
+record[9].checksum  "0x46889812 0x912803c1" 
+record[10].checksum  "0xeacddbfd 0x8af9b7d2" 
+record[11].checksum  "0xacdd36df 0x69387ec3" 
+Wrote prop file www.n0.020000 time stamp Sat May 29 09:08:42 2010
+record[0].checksum  "0xf18f1751 0xa9d8a836" 
+record[1].checksum  "0x2f5a51d 0xd00ef73c" 
+record[2].checksum  "0xf63d5af5 0x1436e6f6" 
+record[3].checksum  "0xa1c29a42 0x921a2302" 
+record[4].checksum  "0x5ecf80ef 0x3fd941cf" 
+record[5].checksum  "0xb0146309 0x2dfce07b" 
+record[6].checksum  "0xe17c8dce 0xda627c26" 
+record[7].checksum  "0xfee40e67 0x9830d9a8" 
+record[8].checksum  "0x1a1541f2 0x5f33780e" 
+record[9].checksum  "0xec5bf331 0xedc32804" 
+record[10].checksum  "0xbffacdff 0x94b25b5a" 
+record[11].checksum  "0x8f8abb03 0xdb03cb4" 
+Wrote prop file www.n0.050000 time stamp Sat May 29 09:08:42 2010
+record[0].checksum  "0xd3b8c346 0xb70ec16f" 
+record[1].checksum  "0x11a2381b 0xba8024a6" 
+record[2].checksum  "0x3328328c 0x5f654f49" 
+record[3].checksum  "0xd9fd30b9 0xe31ec897" 
+record[4].checksum  "0x7b1f461c 0xf5e5d96e" 
+record[5].checksum  "0xa8a3272 0x47d971f4" 
+record[6].checksum  "0x5ae3c324 0x56b1d577" 
+record[7].checksum  "0x7ed51fe0 0x98cc36eb" 
+record[8].checksum  "0x652ed488 0x88ce9352" 
+record[9].checksum  "0x26c13c3b 0x80140fd7" 
+record[10].checksum  "0x649b924f 0xfbe858bb" 
+record[11].checksum  "0x9ef8c22b 0x2d8e44e9" 
+Wrote prop file www.n0.100000 time stamp Sat May 29 09:08:42 2010
+RUNNING COMPLETED
+avm_iters 1.560000e+02
+Time = 1.309732e+01 seconds
+
+
+get_f(0): EOF on input.
+exit: Sat May 29 09:08:47 2010
+
+Sat May 29 09:08:52 CDT 2010
