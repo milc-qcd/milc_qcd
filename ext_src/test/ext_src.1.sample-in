@@ -1,0 +1,62 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+job_id 203696.kaon2.fnal.gov
+
+# Description of quarks
+
+number_of_quarks 3
+
+# quark 0
+
+quark_type clover
+output_type clover
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
+ncolor 3
+
+# smearing for quark 0
+identity
+op_label d
+sink_gamma G1
+
+r_offset 0 0 0 0
+number_of_time_slices 1
+save_serial_scidac_w_source w_source.1.test-out
+t0 4
+
+# quark 1
+
+quark_type KS
+output_type KS
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
+ncolor 3
+
+# smearing for quark 1
+
+identity
+op_label d
+sink_gamma pion05
+
+r_offset 0 0 0 0
+number_of_time_slices 1
+save_serial_scidac_ks_source ks_source.1.test-out
+t0 4
+
+# quark 2
+
+quark_type KS
+output_type clover
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
+ncolor 3
+
+# smearing for quark 2
+identity
+op_label d
+sink_gamma G1
+
+r_offset 0 0 0 0
+number_of_time_slices 1
+save_serial_scidac_w_source ks_source_naive.1.test-out
+t0 4

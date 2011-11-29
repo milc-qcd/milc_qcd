@@ -1,0 +1,127 @@
+SU3 clover, staggered and naive valence fermions
+MIMD version 7.7.2.devel2
+Machine = QMP (portable), with 1 nodes
+Host = aquila.physics.utah.edu
+Username = detar
+start: Fri Jun 17 14:00:36 2011
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.1 MBytes per node for lattice
+
+
+# Description of quarks
+number_of_quarks 3
+# quark 0
+quark_type clover
+output_type clover
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
+ncolor 3
+# smearing for quark 0
+identity
+op_label d
+sink_gamma G1
+r_offset 0 0 0 0 
+number_of_time_slices 1
+save_serial_scidac_w_source w_source.1.test-out
+t0 4
+# quark 1
+quark_type KS
+output_type KS
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
+ncolor 3
+# smearing for quark 1
+identity
+op_label d
+sink_gamma pion05
+r_offset 0 0 0 0 
+number_of_time_slices 1
+save_serial_scidac_ks_source ks_source.1.test-out
+t0 4
+# quark 2
+quark_type KS
+output_type clover
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
+ncolor 3
+# smearing for quark 2
+identity
+op_label d
+sink_gamma G1
+r_offset 0 0 0 0 
+number_of_time_slices 1
+save_serial_scidac_w_source ks_source_naive.1.test-out
+t0 4
+END OF HEADER
+Quark propagator 0
+quark.t[0].checksum  "7e685bd9 759261a0"
+quark.t[1].checksum  "458d636c 7fde95"
+quark.t[2].checksum  "b5a45a07 719a0afd"
+quark.t[3].checksum  "331f5357 13ec46ad"
+quark.t[4].checksum  "d2a13ba2 2daf8c59"
+quark.t[5].checksum  "4720052d 65bfc73d"
+quark.t[6].checksum  "90dc8731 1bcbbc90"
+quark.t[7].checksum  "637519f8 3bf07bbe"
+Wrote source for color 0 spin 0 time slice 4
+Wrote source for color 0 spin 1 time slice 4
+Wrote source for color 0 spin 2 time slice 4
+Wrote source for color 0 spin 3 time slice 4
+Wrote source for color 1 spin 0 time slice 4
+Wrote source for color 1 spin 1 time slice 4
+Wrote source for color 1 spin 2 time slice 4
+Wrote source for color 1 spin 3 time slice 4
+Wrote source for color 2 spin 0 time slice 4
+Wrote source for color 2 spin 1 time slice 4
+Wrote source for color 2 spin 2 time slice 4
+Wrote source for color 2 spin 3 time slice 4
+Quark propagator 1
+quark.t[0].checksum  "256fe380 c09de649"
+quark.t[1].checksum  "8ced0a1c 8cba6024"
+quark.t[2].checksum  "2017d4ff 5c84f5a7"
+quark.t[3].checksum  "65b00a8b 91ffd58a"
+quark.t[4].checksum  "2b2f460d f3da5621"
+quark.t[5].checksum  "d23f979 fa0caf1a"
+quark.t[6].checksum  "26f72465 c1afedc7"
+quark.t[7].checksum  "49fda91c 43d489fe"
+Read KS prop serially from file ../../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 49fda91c 43d489fe.  Read 0 0.
+Wrote source for color 0 time slice 4
+Wrote source for color 1 time slice 4
+Wrote source for color 2 time slice 4
+Quark propagator 2
+quark.t[0].checksum  "256fe380 c09de649"
+quark.t[1].checksum  "8ced0a1c 8cba6024"
+quark.t[2].checksum  "2017d4ff 5c84f5a7"
+quark.t[3].checksum  "65b00a8b 91ffd58a"
+quark.t[4].checksum  "2b2f460d f3da5621"
+quark.t[5].checksum  "d23f979 fa0caf1a"
+quark.t[6].checksum  "26f72465 c1afedc7"
+quark.t[7].checksum  "49fda91c 43d489fe"
+Read KS prop serially from file ../../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 49fda91c 43d489fe.  Read 0 0.
+Wrote source for color 0 spin 0 time slice 4
+Wrote source for color 0 spin 1 time slice 4
+Wrote source for color 0 spin 2 time slice 4
+Wrote source for color 0 spin 3 time slice 4
+Wrote source for color 1 spin 0 time slice 4
+Wrote source for color 1 spin 1 time slice 4
+Wrote source for color 1 spin 2 time slice 4
+Wrote source for color 1 spin 3 time slice 4
+Wrote source for color 2 spin 0 time slice 4
+Wrote source for color 2 spin 1 time slice 4
+Wrote source for color 2 spin 2 time slice 4
+Wrote source for color 2 spin 3 time slice 4
+RUNNING COMPLETED
+Time = 7.640910e-02 seconds
+total_iters = 0
+
+
+get_i(0): EOF on input.
+exit: Fri Jun 17 14:00:36 2011
+

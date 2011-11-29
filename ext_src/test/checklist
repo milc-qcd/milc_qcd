@@ -1,0 +1,2 @@
+exec ext_src 1  "WANTQIO=true"   -  END RUNNING
+      extra-output src.1 BEGIN END

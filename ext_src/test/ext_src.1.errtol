@@ -1,0 +1,61 @@
+END OF HEADER
+Quark propagator 0
+quark.t[0].checksum  "7e685bd9 759261a0"
+quark.t[1].checksum  "458d636c 7fde95"
+quark.t[2].checksum  "b5a45a07 719a0afd"
+quark.t[3].checksum  "331f5357 13ec46ad"
+quark.t[4].checksum  "d2a13ba2 2daf8c59"
+quark.t[5].checksum  "4720052d 65bfc73d"
+quark.t[6].checksum  "90dc8731 1bcbbc90"
+quark.t[7].checksum  "637519f8 3bf07bbe"
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Quark propagator 0
+quark.t[0].checksum  "256fe380 c09de649"
+quark.t[1].checksum  "8ced0a1c 8cba6024"
+quark.t[2].checksum  "2017d4ff 5c84f5a7"
+quark.t[3].checksum  "65b00a8b 91ffd58a"
+quark.t[4].checksum  "2b2f460d f3da5621"
+quark.t[5].checksum  "d23f979 fa0caf1a"
+quark.t[6].checksum  "26f72465 c1afedc7"
+quark.t[7].checksum  "49fda91c 43d489fe"
+Read KS prop serially from file ../../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 1e-07 9e-08 Read 0 0.
+Wrote source for color 0 time slice 0
+Wrote source for color 0 time slice 0
+Wrote source for color 0 time slice 0
+Quark propagator 0
+quark.t[0].checksum  "256fe380 c09de649"
+quark.t[1].checksum  "8ced0a1c 8cba6024"
+quark.t[2].checksum  "2017d4ff 5c84f5a7"
+quark.t[3].checksum  "65b00a8b 91ffd58a"
+quark.t[4].checksum  "2b2f460d f3da5621"
+quark.t[5].checksum  "d23f979 fa0caf1a"
+quark.t[6].checksum  "26f72465 c1afedc7"
+quark.t[7].checksum  "49fda91c 43d489fe"
+Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 1e-07 9e-08 Read 0 0.
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+Wrote source for color 0 spin 0 time slice 0
+RUNNING COMPLETED
+
