@@ -2,6 +2,8 @@
 #define _P4_ACTION_H
 
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION EO_TYPE
 
     /* The Bielefeld "P4" action */
     /* Specify paths in orientation in which they appear in the
@@ -9,15 +11,15 @@
        reflections will be automatically included. Be careful
        about signs of coefficients.  See long comment at bottom
        of quark_stuff.c. */
-#define MAX_BASIC_PATHS 4
-#define MAX_LENGTH 3
-#define MAX_NUM 152
 #ifdef FN
 BOMB THE COMPILE p4 is not a "FAT" action
 #endif
 #define QUARK_ACTION_DESCRIPTION "\"Bielefeld P4, 1+3 paths\""
 
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+#define MAX_BASIC_PATHS 4
+#define MAX_LENGTH 3
+#define MAX_NUM 152
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR },
     { XUP, YUP, YUP },

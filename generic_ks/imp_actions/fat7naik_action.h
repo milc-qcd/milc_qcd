@@ -2,6 +2,8 @@
 #define _FAT7NAIK_ACTION_H
 
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION FN_TYPE
 
     /* The fat link action with seven link paths designed to zero
        couplings at momentum pi in any direction. 
@@ -11,11 +13,11 @@
        reflections will be automatically included. Be careful
        about signs of coefficients.  See long comment at bottom
        of quark_stuff.c. */
+#define QUARK_ACTION_DESCRIPTION "\"Fat7-Naik: couplings(pi)=0 plus Naik term\""
 #define MAX_BASIC_PATHS 5
 #define MAX_LENGTH 7
 #define MAX_NUM 688
-#define QUARK_ACTION_DESCRIPTION "\"Fat7-Naik: couplings(pi)=0 plus Naik term\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },	/* Naik */

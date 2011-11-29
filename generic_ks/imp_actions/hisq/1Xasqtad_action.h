@@ -3,6 +3,8 @@
 
 #include "../include/umethod.h"
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION HISQ
 
     /* Specify paths in orientation in which they appear in the
        forward part of the x component of dslash().  Rotations and
@@ -15,15 +17,16 @@
 
 #define QUARK_ACTION_DESCRIPTION "\"Asqtad action\""
 
-#define MAX_LENGTH 7	// Maximum length of path in any path table
-#define MAX_BASIC_PATHS 6  // Max. no. of basic paths in any path table
 
 // Smearing for first level
 // This is identity fattening
+#define QUARK_ACTION_DESCRIPTION_1 "\"identity\""
+
+#define MAX_LENGTH 7	// Maximum length of path in any path table
+#define MAX_BASIC_PATHS 6  // Max. no. of basic paths in any path table
 #define NUM_BASIC_PATHS_1 1
 #define MAX_NUM_1 8
-#define QUARK_ACTION_DESCRIPTION_1 "\"identity\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind_1[NUM_BASIC_PATHS_1][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR }  /* One Link */
     };
@@ -44,12 +47,13 @@
 
 
 // Smearing for second level
-#define NUM_BASIC_PATHS_2 6
-#define MAX_NUM_2 688
 //#define ASQ_OPTIMIZED_FATTENING_2
 //#define ASQ_OPTIMIZED_FORCE_2
 #define QUARK_ACTION_DESCRIPTION_2 "\"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
+#define NUM_BASIC_PATHS_2 6
+#define MAX_NUM_2 688
     static int path_ind_2[NUM_BASIC_PATHS_2][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik */
@@ -74,10 +78,11 @@
 #define INDEX_NAIK 1
 
 // Smearing for second level -- only difference in 1-link and Naik
+#define QUARK_ACTION_DESCRIPTION_3 "\"1-link + Naik\""
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
 #define NUM_BASIC_PATHS_3 2
 #define MAX_NUM_3 16
-#define QUARK_ACTION_DESCRIPTION_3 "\"1-link + Naik\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind_3[NUM_BASIC_PATHS_3][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik */

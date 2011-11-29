@@ -3,6 +3,8 @@
 
 #include "../include/umethod.h"
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION HISQ
 
     /* Specify paths in orientation in which they appear in the
        forward part of the x component of dslash().  Rotations and
@@ -18,20 +20,21 @@
 //#define V5_EXP_ACT (0.0)
 //#define U5_EXP_ACT (0.0)
 
-#define MAX_NUM 688  // should be obsolete, for now max of MAX_NUM_[12]
 #define QUARK_ACTION_DESCRIPTION "\"HISQ action version 1\""
 
-#define MAX_LENGTH 7	// Maximum length of path in any path table
-#define MAX_BASIC_PATHS 6  // Max. no. of basic paths in any path table
 
 // Smearing for first level
 // This is experimental action
-#define NUM_BASIC_PATHS_1 5
-#define MAX_NUM_1 488
 //#define ASQ_OPTIMIZED_FATTENING_1
 //#define ASQ_OPTIMIZED_FORCE_1
 #define QUARK_ACTION_DESCRIPTION_1 "\"Experimental (level 1)\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+
+#define MAX_NUM 688  // should be obsolete, for now max of MAX_NUM_[12]
+#define MAX_LENGTH 7	// Maximum length of path in any path table
+#define MAX_BASIC_PATHS 6  // Max. no. of basic paths in any path table
+#define NUM_BASIC_PATHS_1 5
+#define MAX_NUM_1 488
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind_1[NUM_BASIC_PATHS_1][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
     { YUP, XUP, YDOWN, NODIR, NODIR, NODIR, NODIR },    /* Staple */
@@ -56,12 +59,13 @@
 #define UNITARIZATION_METHOD UNITARIZE_ANALYTIC
 
 // Smearing for second level
-#define NUM_BASIC_PATHS_2 1
-#define MAX_NUM_2 8
 //#define ASQ_OPTIMIZED_FATTENING_2
 //#define ASQ_OPTIMIZED_FORCE_2
 #define QUARK_ACTION_DESCRIPTION_2 "\"No smearing (level 2)\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
+#define NUM_BASIC_PATHS_2 1
+#define MAX_NUM_2 8
     static int path_ind_2[NUM_BASIC_PATHS_2][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
     };

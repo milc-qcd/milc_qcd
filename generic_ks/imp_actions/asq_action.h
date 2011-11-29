@@ -2,6 +2,8 @@
 #define _ASQ_ACTION_H
 
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION FN_TYPE
 
     /* The fat link action with seven link paths designed to zero
        couplings at momentum pi in any direction. The term introduced
@@ -13,12 +15,12 @@
        reflections will be automatically included. Be careful
        about signs of coefficients.  See long comment at bottom
        of quark_stuff.c. */
+#define ASQ_ACTION
+#define QUARK_ACTION_DESCRIPTION "\"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors\""
 #define MAX_BASIC_PATHS 6
 #define MAX_LENGTH 7
 #define MAX_NUM 688
-#define ASQ_ACTION
-#define QUARK_ACTION_DESCRIPTION "\"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },	/* Naik */

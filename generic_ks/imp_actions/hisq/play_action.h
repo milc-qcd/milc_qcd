@@ -3,6 +3,8 @@
 
 #include "../include/umethod.h"
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION HISQ
 
     /* Specify paths in orientation in which they appear in the
        forward part of the x component of dslash().  Rotations and
@@ -19,10 +21,10 @@
 #define Cstaple_2	(-0.1)	// staple coeff in second smearing
 
 // Smearing for first level
+#define QUARK_ACTION_DESCRIPTION_1 "\"1 link plus 3-staple\""
 #define NUM_BASIC_PATHS_1 3
 #define MAX_NUM_1 56
-#define QUARK_ACTION_DESCRIPTION_1 "\"1 link plus 3-staple\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind_1[NUM_BASIC_PATHS_1][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { YUP, XUP, YDOWN, NODIR, NODIR },	/* Staple */
@@ -42,10 +44,11 @@
 #define UNITARIZATION_METHOD UNITARIZE_NONE
 
 // Smearing for second level
+#define QUARK_ACTION_DESCRIPTION_2 "\"1 link plus 3-staple\""
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
 #define NUM_BASIC_PATHS_2 2
 #define MAX_NUM_2 56
-#define QUARK_ACTION_DESCRIPTION_2 "\"1 link plus 3-staple\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind_2[NUM_BASIC_PATHS_2][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { YUP, XUP, YDOWN, NODIR, NODIR },	/* Staple */
@@ -61,10 +64,11 @@
 //FOR THE MOMENT, we keep the old stuff around.  It will be superceded by
 //two new sets of variables
 
+#define QUARK_ACTION_DESCRIPTION "\"3-staple smearing iterated twice\""
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
 #define NUM_BASIC_PATHS 9
 #define MAX_NUM (8+6*8+ 6*8+6*8+ 4*6*8+4*6*8+4*6*8+ 6*8+8) 
-#define QUARK_ACTION_DESCRIPTION "\"3-staple smearing iterated twice\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[NUM_BASIC_PATHS][MAX_LENGTH] = {
     { XUP,   NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { YUP,   XUP,   YDOWN, NODIR, NODIR },	/* Staple */

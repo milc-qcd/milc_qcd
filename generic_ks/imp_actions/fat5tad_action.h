@@ -2,6 +2,8 @@
 #define _FAT5TAD_ACTION_H
 
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION FN_TYPE
 
     /* The fat link action with five link paths designed to minimize
 	couplings at momentum pi in any direction. 3 and 5 link paths
@@ -11,12 +13,12 @@
        reflections will be automatically included. Be careful
        about signs of coefficients.  See long comment at bottom
        of quark_stuff.c. */
+#define TADPOLE_IMPROVE	/* use tadpole improvement in quark action */
+#define QUARK_ACTION_DESCRIPTION "\"Fat-5 action: five link paths, coupling(pi)=1/7, tadpole weights\""
 #define MAX_BASIC_PATHS 3
 #define MAX_LENGTH 5
 #define MAX_NUM 500
-#define TADPOLE_IMPROVE	/* use tadpole improvement in quark action */
-#define QUARK_ACTION_DESCRIPTION "\"Fat-5 action: five link paths, coupling(pi)=1/7, tadpole weights\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind[MAX_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR },
     { YUP, XUP, YDOWN, NODIR, NODIR },

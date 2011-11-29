@@ -3,6 +3,8 @@
 
 #include "../include/umethod.h"
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION HISQ
 
     /* The fat link action with seven link paths designed to zero
        couplings at momentum pi in any direction. The term introduced
@@ -17,17 +19,20 @@
 
 //FOR THE MOMENT, we keep the old stuff around.  It will be superceded by
 //two new sets of variables
+
+//#define TADPOLE_IMPROVE	/* use tadpole improvement in quark action */
+//#define ASQ_OPTIMIZED_FATTENING
+//#define ASQ_OPTIMIZED_FORCE
+#define ASQ_ACTION
+
+#define QUARK_ACTION_DESCRIPTION "\"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights\""
+
 #define MAX_LENGTH 7	// Max length of path in any table
 #define MAX_BASIC_PATHS_2 6	// Max. no. of basic paths in any table
 
 #define NUM_BASIC_PATHS 6
 #define MAX_NUM 688
-//#define TADPOLE_IMPROVE	/* use tadpole improvement in quark action */
-//#define ASQ_OPTIMIZED_FATTENING
-//#define ASQ_OPTIMIZED_FORCE
-#define ASQ_ACTION
-#define QUARK_ACTION_DESCRIPTION "\"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind[NUM_BASIC_PATHS][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },	/* Naik */
@@ -55,10 +60,11 @@
 
 
 // Smearing for first level
+#define QUARK_ACTION_DESCRIPTION_1 "\"No smearing\""
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
 #define NUM_BASIC_PATHS_1 1
 #define MAX_NUM_1 8
-#define QUARK_ACTION_DESCRIPTION_1 "\"No smearing\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind_1[NUM_BASIC_PATHS_1][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     };
@@ -74,15 +80,16 @@
 #define UNITARIZATION_METHOD UNITARIZE_NONE
 
 // Smearing for second level
-#define NUM_BASIC_PATHS_2 6
-#define MAX_NUM_2 688
 //#define TADPOLE_IMPROVE_2	/* use tadpole improvement in quark action */
 #define HAS_NAIK_2	// second level smearing action includes 3-link term
 //#define ASQ_OPTIMIZED_FATTENING_2
 //#define ASQ_OPTIMIZED_FORCE_2
 #define ASQ_ACTION_2
 #define QUARK_ACTION_DESCRIPTION_2 "\"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
+#define NUM_BASIC_PATHS_2 6
+#define MAX_NUM_2 688
     static int path_ind_2[NUM_BASIC_PATHS_2][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },	/* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },	/* Naik */

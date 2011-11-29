@@ -3,6 +3,8 @@
 
 #include "../include/umethod.h"
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION HISQ
 
     /* Specify paths in orientation in which they appear in the
        forward part of the x component of dslash().  Rotations and
@@ -10,17 +12,18 @@
        about signs of coefficients.  See long comment at bottom
        of quark_stuff.c. */
 
-#define MAX_LENGTH 7	// Maximum length of path in any path table
-#define MAX_BASIC_PATHS 688  // Max. no. of basic paths in any path table
 
 // Smearing for first level
 // This is Fat7
-#define NUM_BASIC_PATHS_1 5
-#define MAX_NUM_1 640
 //#define ASQ_OPTIMIZED_FATTENING_1
 //#define ASQ_OPTIMIZED_FORCE_1
 #define QUARK_ACTION_DESCRIPTION_1 "\"Fat 7 (level 1)\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+
+#define MAX_LENGTH 7	// Maximum length of path in any path table
+#define MAX_BASIC_PATHS 688  // Max. no. of basic paths in any path table
+#define NUM_BASIC_PATHS_1 5
+#define MAX_NUM_1 640
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind_1[NUM_BASIC_PATHS_1][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik */
@@ -49,12 +52,13 @@
 #define UNITARIZATION_METHOD UNITARIZE_APE
 
 // Smearing for second level
-#define NUM_BASIC_PATHS_2 6
-#define MAX_NUM_2 688
 //#define ASQ_OPTIMIZED_FATTENING_2
 //#define ASQ_OPTIMIZED_FORCE_2
 #define QUARK_ACTION_DESCRIPTION_2 "\"Fat7 + 2xLepage\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
+#define NUM_BASIC_PATHS_2 6
+#define MAX_NUM_2 688
     static int path_ind_2[NUM_BASIC_PATHS_2][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik */
@@ -80,10 +84,11 @@
 //two new sets of variables
 // For this action, the old stuff is meaningless, so leave it set to trivial
 
+#define QUARK_ACTION_DESCRIPTION "\"1 Link\""
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
 #define NUM_BASIC_PATHS 1
 #define MAX_NUM 8
-#define QUARK_ACTION_DESCRIPTION "\"1 Link\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
     static int path_ind[NUM_BASIC_PATHS][MAX_LENGTH] = {
     { XUP },	/* One Link */
     };
