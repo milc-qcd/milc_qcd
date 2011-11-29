@@ -466,12 +466,12 @@ void mult_1mps( int pdir, field_offset src, field_offset dest ){
 	   multiply by flavor singlet rho (includes gamma_5 for antiquark
 	   propagator) */
 	mult_by_field_strength( dir, pdir, src, F_OFFSET(cg_p) );
-	mult_rhos( dir, F_OFFSET(cg_p),F_OFFSET(ttt) );
+	mult_rhois( dir, F_OFFSET(cg_p),F_OFFSET(ttt) );
         FORALLSITES(i,s){
             add_su3_vector( (su3_vector *)F_PT(s,dest),
                 (su3_vector *)&(s->ttt), (su3_vector *)F_PT(s,dest) );
         }
-	mult_rhos( dir, src, F_OFFSET(cg_p) );
+	mult_rhois( dir, src, F_OFFSET(cg_p) );
 	mult_by_field_strength( dir, pdir, F_OFFSET(cg_p), F_OFFSET(ttt)  );
         FORALLSITES(i,s){
             add_su3_vector( (su3_vector *)F_PT(s,dest),
@@ -494,7 +494,7 @@ void mult_1mps_rev( int pdir, field_offset src, field_offset dest ){
 	/* Multiply by dir,pdir component of magnetic field, 
 	   multiply by flavor gamma_0 rho (includes gamma_5 for antiquark
 	   propagator) */
-	mult_rhos( dir, src, F_OFFSET(cg_p) );
+	mult_rhois( dir, src, F_OFFSET(cg_p) );
 	mult_by_field_strength( dir, pdir, F_OFFSET(cg_p), F_OFFSET(ttt)  );
         FORALLSITES(i,s){
             add_su3_vector( (su3_vector *)F_PT(s,dest),

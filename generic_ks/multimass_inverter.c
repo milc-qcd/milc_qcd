@@ -36,7 +36,7 @@ void d2f_vector(su3_vector *, fsu3_vector *);
 int test_converge(int t_source);
 #define MAX_RECXML 65
 
-int multimass_inverter( params_mminv *mminv, ferm_links_t *fn )
+int multimass_inverter( params_mminv *mminv, imp_ferm_links_t *fn )
 {
   /* arguments are array of masses, number of masses,
      tolerance for inverter check.
@@ -90,7 +90,7 @@ int multimass_inverter( params_mminv *mminv, ferm_links_t *fn )
 
   /* loop over "source" time slice */
   /* Initialize for I/O*/
-  init_ksqs(&ksqksource);
+  init_qs(&ksqksource);
   for(src_count=0; src_count<mminv->n_sources; src_count++){
     x_source = mminv->r0[src_count][0];
     y_source = mminv->r0[src_count][1];
@@ -118,17 +118,17 @@ int multimass_inverter( params_mminv *mminv, ferm_links_t *fn )
 		   {
 		     i=node_index(x_source,y_source,z_source,t_source);
 		     lattice[i].quark_source.c[color].real
-		                         = 1.0; 
+		       = 1.0; 
 		     /* this should have the same normalization as the
 		      * the propagators generated earlier in the decay constant
 		      * program with Fermilab */
 		   }
-
-	/* compute M^-1 * quark_source */
+		
+		/* compute M^-1 * quark_source */
 
 		/* must use the correct block of quark_props */
 		quark_props_color = &(quark_props[nmasses*color]);
-	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props_color, 
+	cgn += ks_multicg_mass_site( F_OFFSET(quark_source), quark_props_color, 
 				masses, nmasses, niter, mminv->rsqprop, 
 				prec, EVEN, &finalrsq, fn);
 	/* Multiply by Madjoint */
