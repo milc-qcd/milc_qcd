@@ -36,7 +36,7 @@
    
  */
 
-/* Compile with fermion_force_multi.c */
+/* Compile with fermion_force_fn_multi.c */
 
 /*
  * 10/01/02, flopcount for ASQ_OPTIMIZED - C. DeTar
@@ -81,6 +81,11 @@ side_link_3f_force(int mu, int nu, Real coeff[2], half_wilson_vector *Path   ,
 		   half_wilson_vector *Path_nu, half_wilson_vector *Path_mu, 
 		   half_wilson_vector *Path_numu) ;
 
+void 
+fermion_force_asqtad_multi( Real eps, Real *residues, 
+			    su3_vector **xxx, int nterms, int prec,
+			    fermion_links_t *fl );
+
 #ifdef QCDOC
 #define special_alloc qcdoc_alloc
 #define special_free qfree
@@ -110,10 +115,9 @@ side_link_3f_force(int mu, int nu, Real coeff[2], half_wilson_vector *Path   ,
 #define Popmu        tempvec[4]
 #define Pmumumu      tempvec[4]
 
-static void 
-eo_fermion_force_oneterm_field( Real eps, Real weight, su3_vector *temp_x,
-				int prec, ferm_links_t *fn, 
-				ks_action_paths *ap )
+void 
+eo_fermion_force_oneterm( Real eps, Real weight, su3_vector *temp_x,
+			  int prec, fermion_links_t *fl )
 {
   /* prec is ignored for now */
   /* note CG_solution and Dslash * solution are combined in "x_off" */
@@ -121,6 +125,7 @@ eo_fermion_force_oneterm_field( Real eps, Real weight, su3_vector *temp_x,
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
   /* For example weight = nflavors/4 */
+  ks_action_paths *ap = get_action_paths(fl);
   register int i ;
   register site *s;
   int mu,nu,rho,sig ;
@@ -128,7 +133,6 @@ eo_fermion_force_oneterm_field( Real eps, Real weight, su3_vector *temp_x,
   Real ferm_epsilon, coeff;
   Real OneLink, Lepage, Naik, FiveSt, ThreeSt, SevenSt ;
   su3_vector *tempvec[8] ;
-  Real *act_path_coeff;
 
 #ifdef FFTIME
   int nflop = 253935;
@@ -141,15 +145,15 @@ eo_fermion_force_oneterm_field( Real eps, Real weight, su3_vector *temp_x,
   /*  node0_printf("STARTING fn_fermion_force_oneterm() nterms = 1\n");*/
 
   /* Load path coefficients from table */
-  act_path_coeff = ap->act_path_coeff;
+  //act_path_coeff = ap->p.act_path_coeff;
 
   /* Path coefficients times fermion epsilon */
-  OneLink = act_path_coeff[0]*ferm_epsilon ; 
-  Naik    = act_path_coeff[1]*ferm_epsilon ;
-  ThreeSt = act_path_coeff[2]*ferm_epsilon ;
-  FiveSt  = act_path_coeff[3]*ferm_epsilon ;
-  SevenSt = act_path_coeff[4]*ferm_epsilon ;
-  Lepage  = act_path_coeff[5]*ferm_epsilon ;
+  OneLink = ap->p.act_path_coeff.one_link*ferm_epsilon ; 
+  Naik    = ap->p.act_path_coeff.naik*ferm_epsilon ;
+  ThreeSt = ap->p.act_path_coeff.three_staple*ferm_epsilon ;
+  FiveSt  = ap->p.act_path_coeff.five_staple*ferm_epsilon ;
+  SevenSt = ap->p.act_path_coeff.seven_staple*ferm_epsilon ;
+  Lepage  = ap->p.act_path_coeff.lepage*ferm_epsilon ;
   /* *************************************** */
 
   /* Initialize the DirectLink flags */
@@ -308,25 +312,13 @@ node0_printf("FFTIME:  time = %e (asqtad3) terms = 1 mflops = %e\n",dtime,
 #undef Pmumumu      
 
 void 
-eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
-			  int prec, ferm_links_t *fn, ks_action_paths *ap )
+eo_fermion_force_oneterm_site( Real eps, Real weight, field_offset x_off,
+			       int prec, fermion_links_t *fl )
 {
-  int i ;
-  site *s;
-  su3_vector *temp_x ;
-
-  /*copy x_off to a temporary vector */
-  temp_x = (su3_vector *)malloc( sites_on_node*sizeof(su3_vector) );
-  if(temp_x == NULL){
-    printf("eo_fermion_force_oneterm: No room for temporary\n");
-    terminate(1);
-  }
-
-  FORALLSITES(i,s) temp_x[i] = *(su3_vector *)F_PT(s,x_off) ;
-
-  eo_fermion_force_oneterm_field(eps, weight, temp_x, prec, fn, ap );
-
-  free(temp_x);
+  su3_vector *temp_x  = create_v_field_from_site_member(x_off);
+  eo_fermion_force_oneterm(eps, weight, temp_x, prec, fl );
+  
+  destroy_v_field(temp_x);
 }
 
 /**********************************************************************/
@@ -337,10 +329,10 @@ static su3_matrix *backwardlink[4];
 static anti_hermitmat *tempmom[4];
 
 static void 
-eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2, 
-				 half_wilson_vector *temp_x, int prec,
-				 ferm_links_t *fn, ks_action_paths *ap )
- {
+eo_fermion_force_twoterms_hwv( Real eps, Real weight1, Real weight2, 
+			       half_wilson_vector *temp_x, int prec,
+			       fermion_links_t *fl )
+{
    /* prec is ignored for now */
   /* note CG_solution and Dslash * solution are combined in "x_off" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
@@ -348,6 +340,7 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
   /* see long comment at end */
   /* For each link we need x_off transported from both ends of path. */
   /* For example weight1 = nflavor1/4; weight2 = nflavor2/4 */
+  ks_action_paths *ap = get_action_paths(fl);
   int i;
   site *s;
   int mu,nu,rho,sig;
@@ -365,7 +358,7 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
   msg_tag *mt[8];
   msg_tag *mtag[4];
   half_wilson_vector *hw[8];
-  Real *act_path_coeff;
+  char myname[] = "eo_fermion_force_twoterms_hwv";
 
 #ifdef FFSTIME
   double time;
@@ -386,7 +379,7 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
     pt = (half_wilson_vector *)
       special_alloc(sites_on_node*sizeof(half_wilson_vector));
     if(pt == NULL){
-      printf("eo_fermion_force_twoterms: No room for hw\n");
+      printf("%s: No room for hw\n", myname);
       terminate(1);
     }
     hw[mu] = pt;
@@ -395,14 +388,14 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
   Pmu = 
     (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
   if(Pmu == NULL){
-    printf("eo_fermion_force_twoterms: No room for Pmu\n");
+    printf("%s: No room for Pmu\n", myname);
     terminate(1);
   }
   
   Pmumu = 
     (half_wilson_vector *)special_alloc(sites_on_node*sizeof(half_wilson_vector));
   if(Pmumu == NULL){
-    printf("eo_fermion_force_twoterms: No room for Pmumu\n");
+    printf("%s: No room for Pmumu\n", myname);
     terminate(1);
   }
   
@@ -411,13 +404,13 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
     P3[mu]=
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(P3[mu] == NULL){
-      printf("eo_fermion_force_twoterms: No room for P3\n");
+      printf("%s: No room for P3\n", myname);
       terminate(1);
     }
     P5[mu]=
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(P5[mu] == NULL){
-      printf("eo_fermion_force_twoterms: No room for P5\n");
+      printf("%s: No room for P5\n", myname);
       terminate(1);
     }
   }
@@ -430,7 +423,7 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
     su3_matrix *pt;
     pt = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
     if(pt == NULL){
-      printf("eo_fermion_force_twoterms: No room for backwardlink\n");
+      printf("%s: No room for backwardlink\n", myname);
       terminate(1);
     }
     backwardlink[dir] = pt;
@@ -454,7 +447,7 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
     anti_hermitmat *pt;
     pt = (anti_hermitmat *)malloc(sites_on_node*sizeof(anti_hermitmat));
     if(pt == NULL){
-      printf("eo_fermion_force_twoterms: No room for tempmom\n");
+      printf("%s: No room for tempmom\n", myname);
       terminate(1);
     }
     tempmom[dir] = pt;
@@ -466,24 +459,24 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
   }
   
   /* Load path coefficients from table */
-  act_path_coeff = ap->act_path_coeff;
+  // act_path_coeff = ap->p.act_path_coeff;
 
   /* Path coefficients times fermion epsilon */
   ferm_epsilon = 2.0*weight1*eps;
-  OneLink[0] = act_path_coeff[0]*ferm_epsilon;
-  Naik[0]    = act_path_coeff[1]*ferm_epsilon; mNaik[0]    = -Naik[0];
-  ThreeSt[0] = act_path_coeff[2]*ferm_epsilon; mThreeSt[0] = -ThreeSt[0];
-  FiveSt[0]  = act_path_coeff[3]*ferm_epsilon; mFiveSt[0]  = -FiveSt[0];
-  SevenSt[0] = act_path_coeff[4]*ferm_epsilon; mSevenSt[0] = -SevenSt[0];
-  Lepage[0]  = act_path_coeff[5]*ferm_epsilon; mLepage[0]  = -Lepage[0];
+  OneLink[0] = ap->p.act_path_coeff.one_link*ferm_epsilon;
+  Naik[0]    = ap->p.act_path_coeff.naik*ferm_epsilon; mNaik[0]    = -Naik[0];
+  ThreeSt[0] = ap->p.act_path_coeff.three_staple*ferm_epsilon; mThreeSt[0] = -ThreeSt[0];
+  FiveSt[0]  = ap->p.act_path_coeff.five_staple*ferm_epsilon; mFiveSt[0]  = -FiveSt[0];
+  SevenSt[0] = ap->p.act_path_coeff.seven_staple*ferm_epsilon; mSevenSt[0] = -SevenSt[0];
+  Lepage[0]  = ap->p.act_path_coeff.lepage*ferm_epsilon; mLepage[0]  = -Lepage[0];
 
   ferm_epsilon = 2.0*weight2*eps;
-  OneLink[1] = act_path_coeff[0]*ferm_epsilon;
-  Naik[1]    = act_path_coeff[1]*ferm_epsilon; mNaik[1]    = -Naik[1];
-  ThreeSt[1] = act_path_coeff[2]*ferm_epsilon; mThreeSt[1] = -ThreeSt[1];
-  FiveSt[1]  = act_path_coeff[3]*ferm_epsilon; mFiveSt[1]  = -FiveSt[1];
-  SevenSt[1] = act_path_coeff[4]*ferm_epsilon; mSevenSt[1] = -SevenSt[1];
-  Lepage[1]  = act_path_coeff[5]*ferm_epsilon; mLepage[1]  = -Lepage[1];
+  OneLink[1] = ap->p.act_path_coeff.one_link*ferm_epsilon;
+  Naik[1]    = ap->p.act_path_coeff.naik*ferm_epsilon; mNaik[1]    = -Naik[1];
+  ThreeSt[1] = ap->p.act_path_coeff.three_staple*ferm_epsilon; mThreeSt[1] = -ThreeSt[1];
+  FiveSt[1]  = ap->p.act_path_coeff.five_staple*ferm_epsilon; mFiveSt[1]  = -FiveSt[1];
+  SevenSt[1] = ap->p.act_path_coeff.seven_staple*ferm_epsilon; mSevenSt[1] = -SevenSt[1];
+  Lepage[1]  = ap->p.act_path_coeff.lepage*ferm_epsilon; mLepage[1]  = -Lepage[1];
   /* *************************************** */
 
   /* Allocate temporary vectors */
@@ -492,7 +485,7 @@ eo_fermion_force_twoterms_field( Real eps, Real weight1, Real weight2,
     temp_hw[mu] = 
       (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
     if(temp_hw[mu] == NULL){
-      printf("eo_fermion_force_twoterms: No room for temp_hw\n");
+      printf("%s: No room for temp_hw\n", myname);
       terminate(1);
     }
   }
@@ -750,8 +743,35 @@ node0_printf("FFTIME:  time = %e (asqtad3) terms = 2 mflops = %e\n",dtime,
 
 void 
 eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
-			   field_offset x1_off, field_offset x2_off,
-			   int prec, ferm_links_t *fn, ks_action_paths *ap )
+			   su3_vector *x1_off, su3_vector *x2_off,
+			   int prec, fermion_links_t *fl ){
+
+  half_wilson_vector *temp_x;
+  int i;
+  temp_x= 
+    (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
+  if(temp_x == NULL){
+    printf("fermion_force_twoterms: No room for temporary\n");
+    terminate(1);
+  }
+  
+  FORALLFIELDSITES(i)
+    {
+      temp_x[i].h[0] = x1_off[i] ;
+      temp_x[i].h[1] = x2_off[i] ;
+    }
+  
+  eo_fermion_force_twoterms_hwv(eps, weight1, weight2, temp_x, prec, fl);
+
+  free(temp_x);
+}  
+
+
+
+void 
+eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2, 
+				field_offset x1_off, field_offset x2_off,
+				int prec, fermion_links_t *fl )
 {
   int i;
   site *s;
@@ -761,7 +781,7 @@ eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
   temp_x= 
     (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
   if(temp_x == NULL){
-    printf("eo_fermion_force_twoterms: No room for temporary\n");
+    printf("eo_fermion_force_twoterms_site: No room for temporary\n");
     terminate(1);
   }
 
@@ -771,8 +791,7 @@ eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
       temp_x[i].h[1] = *(su3_vector *)F_PT(s,x2_off);
     }
   
-  eo_fermion_force_twoterms_field(eps, weight1, weight2, temp_x, prec,
-				  fn, ap );
+  eo_fermion_force_twoterms_hwv(eps, weight1, weight2, temp_x, prec, fl );
   
   free(temp_x) ;
 }  
@@ -784,44 +803,42 @@ eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 void 
 fermion_force_asqtad_block( Real eps, Real *residues, 
 			    su3_vector **xxx, int nterms, int veclength, 
-			    int prec, ferm_links_t *fn, ks_action_paths *ap ) 
+			    int prec, fermion_links_t *fl ) 
 {
 
-  int i,j;
-  site *s;
+  int j;
 
   /* First do blocks of size veclength */
   for( j = 0;  j <= nterms-veclength; j += veclength )
-    fermion_force_asqtad_multi( eps, &(residues[j]), xxx+j, veclength,
-				prec, fn, ap );
+    fermion_force_asqtad_multi( eps, &(residues[j]), xxx+j, veclength, prec, fl );
   
   /* Continue with pairs if needed */
   if(j <= nterms-2){
-    half_wilson_vector *temp_x;
-    temp_x= 
-      (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
-    if(temp_x == NULL){
-      printf("fermion_force_asqtad_block: No room for temporary\n");
-      terminate(1);
-    }
+//    half_wilson_vector *temp_x;
+//    temp_x= 
+//      (half_wilson_vector *)malloc(sites_on_node*sizeof(half_wilson_vector));
+//    if(temp_x == NULL){
+//      printf("fermion_force_asqtad_block: No room for temporary\n");
+//      terminate(1);
+//    }
     
     for( ; j <= nterms-2 ; j+=2 ){
       
-      FORALLSITES(i,s)
-	{
-	  temp_x[i].h[0] = xxx[j  ][i] ;
-	  temp_x[i].h[1] = xxx[j+1][i] ;
-	}
+//      FORALLSITES(i,s)
+//	{
+//	  temp_x[i].h[0] = xxx[j  ][i] ;
+//	  temp_x[i].h[1] = xxx[j+1][i] ;
+//	}
       
-      eo_fermion_force_twoterms_field( eps, residues[j], residues[j+1],
-				       temp_x, prec, fn, ap );
+      eo_fermion_force_twoterms( eps, residues[j], residues[j+1],
+				 xxx[j], xxx[j + 1], prec, fl );
     }
-    free(temp_x);
+    //    free(temp_x);
   }
 
   /* Finish with a single if needed */
   for( ; j <= nterms-1; j++ ){
-    eo_fermion_force_oneterm_field( eps, residues[j], xxx[j], prec, fn, ap );
+    eo_fermion_force_oneterm( eps, residues[j], xxx[j], prec, fl );
   }
 }
 
@@ -854,7 +871,7 @@ static anti_hermitmat *tempmom[4];
 void 
 fermion_force_asqtad_multi( Real eps, Real *residues, 
 			    su3_vector **xxx, int nterms, int prec,
-			    ferm_links_t *fn, ks_action_paths *ap ) 
+			    fermion_links_t *fl ) 
 {
   /* prec is ignored for now */
   // note CG_solution and Dslash * solution are combined in "*xxx"
@@ -864,6 +881,7 @@ fermion_force_asqtad_multi( Real eps, Real *residues,
   // xxx[n][site] is the n'th inverse solution at location index "site"
   //
   // combine an arbitrary number of force terms, with weights "residues[j]"
+  ks_action_paths *ap = get_action_paths(fl);
   int i,j;
   site *s;
   int mu,nu,rho,sig;
@@ -878,7 +896,6 @@ fermion_force_asqtad_multi( Real eps, Real *residues,
   veclist *vl[8], *temp_vl[8];
   msg_tag *mt[8];
   msg_tag *mtag[4];
-  Real *act_path_coeff;
   char myname[] = "fermion_force_asqtad_multi";
 
 #ifdef FFSTIME
@@ -983,7 +1000,7 @@ fermion_force_asqtad_multi( Real eps, Real *residues,
   }
   
   /* Load path coefficients from table */
-  act_path_coeff = ap->act_path_coeff;
+  // act_path_coeff = ap->p.act_path_coeff;
 
   /* Path coefficients times fermion epsilon */
   coeff = (Real *)malloc( nterms*sizeof(Real) );
@@ -995,12 +1012,12 @@ fermion_force_asqtad_multi( Real eps, Real *residues,
   Lepage = (Real *)malloc( nterms*sizeof(Real) ); mLepage = (Real *)malloc( nterms*sizeof(Real) );
   for( j=0; j<nterms;j++ ){
     ferm_epsilon = 2.0*residues[j]*eps;
-    OneLink[j] = act_path_coeff[0]*ferm_epsilon;
-    Naik[j]    = act_path_coeff[1]*ferm_epsilon; mNaik[j]    = -Naik[j];
-    ThreeSt[j] = act_path_coeff[2]*ferm_epsilon; mThreeSt[j] = -ThreeSt[j];
-    FiveSt[j]  = act_path_coeff[3]*ferm_epsilon; mFiveSt[j]  = -FiveSt[j];
-    SevenSt[j] = act_path_coeff[4]*ferm_epsilon; mSevenSt[j] = -SevenSt[j];
-    Lepage[j]  = act_path_coeff[5]*ferm_epsilon; mLepage[j]  = -Lepage[j];
+    OneLink[j] = ap->p.act_path_coeff.one_link*ferm_epsilon;
+    Naik[j]    = ap->p.act_path_coeff.naik*ferm_epsilon; mNaik[j]    = -Naik[j];
+    ThreeSt[j] = ap->p.act_path_coeff.three_staple*ferm_epsilon; mThreeSt[j] = -ThreeSt[j];
+    FiveSt[j]  = ap->p.act_path_coeff.five_staple*ferm_epsilon; mFiveSt[j]  = -FiveSt[j];
+    SevenSt[j] = ap->p.act_path_coeff.seven_staple*ferm_epsilon; mSevenSt[j] = -SevenSt[j];
+    Lepage[j]  = ap->p.act_path_coeff.lepage*ferm_epsilon; mLepage[j]  = -Lepage[j];
   }
 
   /* *************************************** */

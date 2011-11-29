@@ -20,7 +20,7 @@
 #include "../include/generic_qopmilc.h"
 #include "../include/generic_ks_qop.h"
 #include "../include/qop_milc.h"
-#define IMP_QUARK_ACTION_INFO_ONLY
+#define IMP_QUARK_ACTION_DEFINE_PATH_TABLES
 #include <quark_action.h>
 #include "../include/prefetch.h"
 #define FETCH_UP 1
@@ -132,8 +132,8 @@ printf("\n");**/
   free(tempmat1);
 
 dtime += dclock();
-#ifdef LLTIME
-node0_printf("LLTIME(long): time =  %e (Naik) mflops = %e\n",dtime,
+#ifdef FLTIME
+node0_printf("FLTIME(long): time =  %e (Naik) mflops = %e\n",dtime,
 	     (Real)nflop*volume/(1e6*dtime*numnodes()) );
 #endif
 
@@ -154,7 +154,7 @@ node0_printf("LLTIME(long): time =  %e (Naik) mflops = %e\n",dtime,
 /* Taken from fermion_links_fn.c */
 
 /* KS phases and APBC must be in the links. See long comment at 
-   end of fermion_force_general.c */
+   end of fermion_forcee_eo_milc.c */
 static su3_matrix *create_fatlinks_qop_milc(QOP_info_t *info, 
 					  QOP_asqtad_coeffs_t *coeffs,
 					  QOP_GaugeField *gauge) {
@@ -166,7 +166,7 @@ static su3_matrix *create_fatlinks_qop_milc(QOP_info_t *info,
   su3_matrix *t_fl;
   char myname[] = "create_fatlinks_qop_milc";
 
-  Real act_path_coeff[6];
+  asqtad_coeffs_t act_path_coeff;
 
   int  nu,rho,sig ;
   Real one_link; /* needed to fix the problem with the Lepage
@@ -189,12 +189,12 @@ static su3_matrix *create_fatlinks_qop_milc(QOP_info_t *info,
   }
 
   /* Unload coeff */
-  act_path_coeff[0] =  coeffs->one_link;
-  act_path_coeff[1] =  coeffs->naik;
-  act_path_coeff[2] =  coeffs->three_staple;
-  act_path_coeff[3] =  coeffs->five_staple;
-  act_path_coeff[4] =  coeffs->seven_staple;
-  act_path_coeff[5] =  coeffs->lepage;
+  act_path_coeff.one_link =  coeffs->one_link;
+  act_path_coeff.naik =  coeffs->naik;
+  act_path_coeff.three_staple =  coeffs->three_staple;
+  act_path_coeff.five_staple =  coeffs->five_staple;
+  act_path_coeff.seven_staple =  coeffs->seven_staple;
+  act_path_coeff.lepage =  coeffs->lepage;
 
   /* Allocate space for t_fl if NULL */
   t_fl = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
@@ -221,7 +221,7 @@ static su3_matrix *create_fatlinks_qop_milc(QOP_info_t *info,
  * Path 1 is the Naik term.                                            */
  
  /* to fix up the Lepage term, included by a trick below */
- one_link = (act_path_coeff[0] - 6.0*act_path_coeff[5]);
+ one_link = (act_path_coeff.one_link - 6.0*act_path_coeff.lepage);
 
  for (dir=XUP; dir<=TUP; dir++){
    FORALLSITES(i,s) /* Intialize fat links with c_1*U_\mu(x) */
@@ -235,22 +235,22 @@ static su3_matrix *create_fatlinks_qop_milc(QOP_info_t *info,
      }
    for(nu=XUP; nu<=TUP; nu++) if(nu!=dir)
      {
-       cf = act_path_coeff[2];
+       cf = act_path_coeff.thre_staple;
        compute_gen_staple_field_qop_milc(staple,dir,nu,links+dir*sites_on_node,
 					 links, t_fl, cf);
        /* The Lepage term */
        /* Note this also involves modifying c_1 (above) */
-       cf = act_path_coeff[5];
+       cf = act_path_coeff.lepage;
        compute_gen_staple_field_qop_milc(NULL,dir,nu,staple,links,t_fl,cf);
        for(rho=XUP; rho<=TUP; rho++) if((rho!=dir)&&(rho!=nu))
 	 {
-	   cf = act_path_coeff[3];
+	   cf = act_path_coeff.five_staple;
 	   compute_gen_staple_field_qop_milc( tempmat1, dir, rho, staple, 
 					      links, t_fl, cf);
 	   for(sig=XUP; sig<=TUP; sig++)
 	     if((sig!=dir)&&(sig!=nu)&&(sig!=rho))
 	       {
-		 cf = act_path_coeff[4];
+		 cf = act_path_coeff.seven_staple;
 		 compute_gen_staple_field_qop_milc(NULL,dir,sig,
 						   tempmat1, links, t_fl, cf);
 	       } /* sig */
@@ -261,9 +261,9 @@ static su3_matrix *create_fatlinks_qop_milc(QOP_info_t *info,
   free(staple);
   free(tempmat1);
 
-#ifdef LLTIME
+#ifdef FLTIME
 dtime += dclock();
- node0_printf("LLTIME(Fat): time = %e (Asqtad opt) mflops = %e\n",dtime,
+ node0_printf("FLTIME(Fat): time = %e (Asqtad opt) mflops = %e\n",dtime,
 	      (Real)nflop*volume/(1e6*dtime*numnodes()) );
 #endif
 

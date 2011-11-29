@@ -1,10 +1,24 @@
+OBSOLETE
+
 /****** fermion_links_hisq.c  -- ******************/
 /* MIMD version 7 */
 /* Link fattening routines for various hisq actions
 */
 
+/* External entry points
+
+   init_ferm_links
+   load_ferm_links
+   load_ferm_links_dmdu0 (ifdef DM_DU0)
+   invalidate_all_ferm_links
+
+ */
+
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/umethod.h"
+#ifdef HAVE_QOP
+#include "../include/generic_ks_qop.h"
+#endif
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
@@ -56,7 +70,8 @@ static void  reorder_links(su3_matrix *link4, su3_matrix *link[]);
         X_longbacklink = adjoint of links coming in from backwards, for DBLSTORE
 */
 void 
-load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
+load_ferm_links(ferm_links_t *fn){
+  ks_action_paths *ap = fn->ap;
   int i,dir,inaik;
   su3_matrix **matfield;
   hisq_links_t *hl = &fn->hl;
@@ -64,11 +79,17 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
 //   su3_matrix *Xt_fatbacklink  = fn->fatback;
 //   su3_matrix *Xt_longbacklink = fn->lngback;
 
+  int retwist = fn->twist_in;  /* So we remember to restore the boundary twist if needed. */
   char myname[] = "load_ferm_links";
+
+  if(fn->ap == NULL){
+    printf("load_ferm_links(%d): KS action paths not initialized\n",this_node);
+    terminate(1);
+  }
 
   if( !(hl->valid_all_links == 1) ) {
     // Make sure all the required space is allocated
-    int ii, jj, ishift=4, imax=ishift+2*n_naiks;
+    int ii, jj, ishift=4, imax=ishift+2*fn->hl.n_naiks;
     if( phases_in != 1){
       node0_printf("BOTCH: %s needs phases in\n",myname); terminate(0);
     }
@@ -80,6 +101,7 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
         case 2: matfield = hl->Y_unitlink; break;
         // 3 has to be handled in specail way, see below
         case 3: matfield = hl->W_unitlink; break;
+	default: matfield = NULL;
         }
       }
       if(i>3) {
@@ -93,7 +115,7 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
         }
       }
       if(i>=imax) {
-        node0_printf("load_fn_links BOTCH\n"); terminate(0);
+        node0_printf("%s BOTCH\n",myname); terminate(0);
       }
       for(dir=XUP;dir<=TUP;dir++){
         // In U(3) case hl->W_unitlink array is not malloc'ed
@@ -102,7 +124,7 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
           if(matfield[dir] == NULL){
             matfield[dir] = (su3_matrix *)special_alloc(sites_on_node*sizeof(su3_matrix));
             if(matfield[dir]==NULL){
-              printf("load_fn_links(%d): no room for matfield %d\n", this_node,i); 
+              printf("%s(%d): no room for matfield %d\n", myname,this_node,i); 
               terminate(1);
             }
           }
@@ -113,18 +135,18 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
       } // dir loop
     } // i loop
 
-    if(fn->fat == NULL){
-      fn->fat = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
-      if(fn->fat==NULL){
-        printf("load_fn_links(%d): no room for fn->fat\n", this_node); 
+    if(fn->fl.fat == NULL){
+      fn->fl.fat = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
+      if(fn->fl.fat==NULL){
+        printf("%s(%d): no room for fn->fl.fat\n", myname,this_node); 
         terminate(1);
       }
     }
 
-    if(fn->lng == NULL){
-      fn->lng = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
-      if(fn->lng==NULL){
-        printf("load_fn_links(%d): no room for fn->lng\n", this_node); 
+    if(fn->fl.lng == NULL){
+      fn->fl.lng = (su3_matrix *)special_alloc(sites_on_node*4*sizeof(su3_matrix));
+      if(fn->fl.lng==NULL){
+        printf("%s(%d): no room for fn->fl.lng\n", myname,this_node); 
         terminate(1);
       }
     }
@@ -145,25 +167,25 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
     // d) add XX_fat/long[0] to all other sets, i.e.
     //    XX_fat/long[1] += XX_fat/long[0],
     //    XX_fat/long[2] += XX_fat/long[0]
-    if( n_naiks>1 ) {
+    if(fn->hl.n_naiks>1 ) {
       // 3rd path table set
       hl->valid_X_links = 0;
       load_X_from_W(fn, &ap->p3, hl->XX_fatlink[0], hl->XX_longlink[0]);
-      for( inaik=1;inaik<n_naiks;inaik++ ) {
+      for( inaik=1;inaik<fn->hl.n_naiks;inaik++ ) {
         for(dir=XUP;dir<=TUP;dir++) {
           FORALLSITES(i,s) {
           	// multiply by epsilon correction
             scalar_mult_su3_matrix( &( hl->XX_fatlink[0][dir][i] ),
-              eps_naik[inaik], &( hl->XX_fatlink[inaik][dir][i] ) );
+              fn->hl.eps_naik[inaik], &( hl->XX_fatlink[inaik][dir][i] ) );
             scalar_mult_su3_matrix( &( hl->XX_longlink[0][dir][i] ),
-              eps_naik[inaik], &( hl->XX_longlink[inaik][dir][i] ) );
+              fn->hl.eps_naik[inaik], &( hl->XX_longlink[inaik][dir][i] ) );
           }
         }
       }
       // 2nd path table set
       hl->valid_X_links = 0;
       load_X_from_W(fn, &ap->p2, hl->XX_fatlink[0], hl->XX_longlink[0]);
-      for( inaik=1;inaik<n_naiks;inaik++ ) {
+      for( inaik=1;inaik<fn->hl.n_naiks;inaik++ ) {
         for(dir=XUP;dir<=TUP;dir++) {
           FORALLSITES(i,s) {
             // add 2nd and 3rd path table sets
@@ -191,8 +213,9 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
       hl->X_longlink[dir]=hl->XX_longlink[hl->last_used_X_set][dir];
     }
 
-    reorder_links(fn->fat, hl->X_fatlink);
-    reorder_links(fn->lng, hl->X_longlink);
+    reorder_links(fn->fl.fat, hl->X_fatlink);
+    reorder_links(fn->fl.lng, hl->X_longlink);
+    fn->twist_in = OFF;
 
 #ifdef DBLSTORE_FN
     load_fatbacklinks(fn);
@@ -201,15 +224,27 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
 
     hl->valid_all_links = 1;
 
+    /* Reapply the boundary twist */
+    if(retwist)
+      boundary_twist_fn(fn, ON);
+
+    /* In case we are using this code in place of QOP code to manage
+       the links, we have to refresh the QOP links now that the MILC
+       fermion links may have changed. */
+#if HAVE_QOP
+    invalidate_qop_ferm_links_F(&fn->ql);
+    invalidate_qop_ferm_links_D(&fn->ql);
+#endif  
   }
   else {
 //CHECK current_X_set AND SET POINTERS DEPENDING ON IT
 //CALL reorder_links(), THEN load_...backlinks()
     if( hl->last_used_X_set != hl->current_X_set ) {
 #ifdef MILC_GLOBAL_DEBUG
-    	node0_printf("load_ferm_links: choosing set %d, previous set %d\n",
-    	  hl->current_X_set, hl->last_used_X_set );
+      node0_printf("load_ferm_links: choosing set %d, previous set %d\n",
+		   hl->current_X_set, hl->last_used_X_set );
 #endif
+      
       // set pointers to actual arrays
       hl->last_used_X_set = hl->current_X_set;
       for(dir=XUP;dir<=TUP;dir++) {
@@ -217,13 +252,26 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
         hl->X_longlink[dir]=hl->XX_longlink[hl->last_used_X_set][dir];
       }
 
-      reorder_links(fn->fat, hl->X_fatlink);
-      reorder_links(fn->lng, hl->X_longlink);
+      reorder_links(fn->fl.fat, hl->X_fatlink);
+      reorder_links(fn->fl.lng, hl->X_longlink);
+      fn->twist_in = OFF;
 
 #ifdef DBLSTORE_FN
       load_fatbacklinks(fn);
       load_longbacklinks(fn);
 #endif
+
+      /* Reapply the boundary twist */
+      if(retwist)
+	boundary_twist_fn(fn, ON);
+
+    /* In case we are using this code in place of QOP code to manage
+       the links, we have to refresh the QOP links now that the MILC
+       fermion links may have changed. */
+#if HAVE_QOP
+      invalidate_qop_ferm_links_F(&fn->ql);
+      invalidate_qop_ferm_links_D(&fn->ql);
+#endif  
     }
     else {
 #ifdef MILC_GLOBAL_DEBUG
@@ -238,6 +286,11 @@ load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
 
 }
 
+void 
+load_ferm_links_dmdu0(ferm_links_t *fn){
+  printf("load_ferm_links_dmdu0: NOT SUPPORTED YET FOR HISQ!\n");
+  terminate(1);
+}
 
 // New routines for HISQ
 static void  
@@ -319,7 +372,7 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
     // REPHASING IS NOT NEEDED IN THIS ROUTINE BUT THIS
     // HAS TO BE CHECKED FIRST FOR NONTRIVIAL V_link ARRAYS
     /* rephase (out) V_link array */
-    custom_rephase( V_link, OFF, &hl->phases_in_V );
+    rephase_field( V_link, OFF, &hl->phases_in_V );
     FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
       /* unitarize - project on U(3) */
       su3_unitarize( &( V_link[dir][i] ), &tmat );
@@ -328,9 +381,9 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
     hl->valid_Y_links = hl->valid_V_links;
     hl->phases_in_Y   = hl->phases_in_V;
     /* rephase (in) V_link array */
-    custom_rephase( V_link, ON, &hl->phases_in_V );
+    rephase_field( V_link, ON, &hl->phases_in_V );
     /* initialize status and rephase (in) Y_unitlink array */
-    custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+    rephase_field( Y_unitlink, ON, &hl->phases_in_Y );
     //printf("UNITARIZATION RESULT\n");
     //dumpmat( &( V_link[TUP][3] ) );
     //dumpmat( &( Y_unitlink[TUP][3] ) );
@@ -340,7 +393,7 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
     // REPHASING IS NOT NEEDED IN THIS ROUTINE BUT THIS
     // HAS TO BE CHECKED FIRST FOR NONTRIVIAL V_link ARRAYS
     /* rephase (out) V_link array */
-    custom_rephase( V_link, OFF, &hl->phases_in_V );
+    rephase_field( V_link, OFF, &hl->phases_in_V );
     FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
       /* unitarize - project on U(3) */
       su3_unitarize_rational( &( V_link[dir][i] ), &tmat );
@@ -349,9 +402,9 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
     hl->valid_Y_links = hl->valid_V_links;
     hl->phases_in_Y   = hl->phases_in_V;
     /* rephase (in) V_link array */
-    custom_rephase( V_link, ON, &hl->phases_in_V );
+    rephase_field( V_link, ON, &hl->phases_in_V );
     /* rephase (in) Y_unitlink array */
-    custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+    rephase_field( Y_unitlink, ON, &hl->phases_in_Y );
     //printf("UNITARIZATION RESULT\n");
     //dumpmat( &( V_link[TUP][3] ) );
     //dumpmat( &( Y_unitlink[TUP][3] ) );
@@ -361,7 +414,7 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
     // REPHASING IS NOT NEEDED IN THIS ROUTINE BUT THIS
     // HAS TO BE CHECKED FIRST FOR NONTRIVIAL V_link ARRAYS
     /* rephase (out) V_link array */
-    custom_rephase( V_link, OFF, &hl->phases_in_V );
+    rephase_field( V_link, OFF, &hl->phases_in_V );
     FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
       /* unitarize - project on U(3) */
 #ifdef MILC_GLOBAL_DEBUG
@@ -378,16 +431,16 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
     hl->valid_Y_links = hl->valid_V_links;
     hl->phases_in_Y = hl->phases_in_V;
     /* rephase (in) V_link array */
-    custom_rephase( V_link, ON, &hl->phases_in_V );
+    rephase_field( V_link, ON, &hl->phases_in_V );
     /* rephase (in) Y_unitlink array */
-    custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+    rephase_field( Y_unitlink, ON, &hl->phases_in_Y );
     //printf("UNITARIZATION RESULT\n");
     //dumpmat( &( V_link[TUP][3] ) );
     //dumpmat( &( Y_unitlink[TUP][3] ) );
     break;
   case UNITARIZE_STOUT:
-    custom_rephase( U_link, OFF, &hl->phases_in_U );
-    custom_rephase( V_link, OFF, &hl->phases_in_V );
+    rephase_field( U_link, OFF, &hl->phases_in_U );
+    rephase_field( V_link, OFF, &hl->phases_in_V );
     FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
       /* unitarize - project on SU(3) with "stout" procedure */
       stout_smear( &( Y_unitlink[dir][i] ), 
@@ -397,11 +450,11 @@ load_Y_from_V(ferm_links_t *fn, int umethod){
     hl->valid_Y_links = hl->valid_V_links;
     hl->phases_in_Y = hl->phases_in_V;
     /* rephase (in) U_link array */
-    custom_rephase( U_link, ON, &hl->phases_in_U );
+    rephase_field( U_link, ON, &hl->phases_in_U );
     /* rephase (in) V_link array */
-    custom_rephase( V_link, ON, &hl->phases_in_V );
+    rephase_field( V_link, ON, &hl->phases_in_V );
     /* rephase (in) Y_unitlink array */
-    custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+    rephase_field( Y_unitlink, ON, &hl->phases_in_Y );
     //printf("UNITARIZATION RESULT\n");
     //dumpmat( &( V_link[TUP][3] ) );
     //dumpmat( &( Y_unitlink[TUP][3] ) );
@@ -442,7 +495,7 @@ if( ugroup==UNITARIZE_SU3 ) {
       complex cdet;
       //node0_printf("WARNING: SPECIAL UNITARIZE_ROOT is performed\n");
       /* rephase (out) Y_unitlink array */
-      custom_rephase( Y_unitlink, OFF, &hl->phases_in_Y );
+      rephase_field( Y_unitlink, OFF, &hl->phases_in_Y );
       FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
 	/* special unitarize - project U(3) on SU(3)
 	   CAREFUL WITH FERMION PHASES! */
@@ -452,9 +505,9 @@ if( ugroup==UNITARIZE_SU3 ) {
       hl->valid_W_links = hl->valid_Y_links;
       hl->phases_in_W = hl->phases_in_Y;
       /* rephase (in) Y_unitlink array */
-      custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+      rephase_field( Y_unitlink, ON, &hl->phases_in_Y );
       /* rephase (in) W_unitlink array */
-      custom_rephase( W_unitlink, ON, &hl->phases_in_W );
+      rephase_field( W_unitlink, ON, &hl->phases_in_W );
       //printf("SPECIAL UNITARIZATION RESULT (ROOT)\n");
       //dumpmat( &( Y_unitlink[TUP][3] ) );
       //dumpmat( &( W_unitlink[TUP][3] ) );
@@ -465,7 +518,7 @@ if( ugroup==UNITARIZE_SU3 ) {
       complex cdet;
       //node0_printf("WARNING: SPECIAL UNITARIZE_ROOT is performed\n");
       /* rephase (out) Y_unitlink array */
-      custom_rephase( Y_unitlink, OFF, &hl->phases_in_Y );
+      rephase_field( Y_unitlink, OFF, &hl->phases_in_Y );
       FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
 	/* special unitarize - project U(3) on SU(3)
 	   CAREFUL WITH FERMION PHASES! */
@@ -475,9 +528,9 @@ if( ugroup==UNITARIZE_SU3 ) {
       hl->valid_W_links = hl->valid_Y_links;
       hl->phases_in_W = hl->phases_in_Y;
       /* rephase (in) Y_unitlink array */
-      custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+      rephase_field( Y_unitlink, ON, &hl->phases_in_Y );
       /* rephase (in) W_unitlink array */
-      custom_rephase( W_unitlink, ON, &hl->phases_in_W );
+      rephase_field( W_unitlink, ON, &hl->phases_in_W );
       //printf("SPECIAL UNITARIZATION RESULT (RATIONAL)\n");
       //dumpmat( &( Y_unitlink[TUP][3] ) );
       //dumpmat( &( W_unitlink[TUP][3] ) );
@@ -488,7 +541,7 @@ if( ugroup==UNITARIZE_SU3 ) {
       complex cdet;
       //node0_printf("WARNING: SPECIAL UNITARIZE_ROOT is performed\n");
       /* rephase (out) Y_unitlink array */
-      custom_rephase( Y_unitlink, OFF, &hl->phases_in_Y );
+      rephase_field( Y_unitlink, OFF, &hl->phases_in_Y );
       FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
 	/* special unitarize - project U(3) on SU(3)
 	   CAREFUL WITH FERMION PHASES! */
@@ -506,9 +559,9 @@ if( ugroup==UNITARIZE_SU3 ) {
       hl->valid_W_links = hl->valid_Y_links;
       hl->phases_in_W = hl->phases_in_Y;
       /* rephase (in) Y_unitlink array */
-      custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+      rephase_field( Y_unitlink, ON, &hl->phases_in_Y );
       /* rephase (in) W_unitlink array */
-      custom_rephase( W_unitlink, ON, &hl->phases_in_W );
+      rephase_field( W_unitlink, ON, &hl->phases_in_W );
 //TEMP TEST
 //{int ii,jj; complex cc; su3_matrix tmat;
 //cc = ce_itheta ( 2.0*3.1415926/3.0 );
@@ -525,7 +578,7 @@ if( ugroup==UNITARIZE_SU3 ) {
     {
       //node0_printf("WARNING: SPECIAL UNITARIZE_ROOT is performed\n");
       /* rephase (out) Y_unitlink array */
-      custom_rephase( Y_unitlink, OFF, &hl->phases_in_Y );
+      rephase_field( Y_unitlink, OFF, &hl->phases_in_Y );
       FORALLSITES(i,s)for(dir=XUP;dir<=TUP;dir++){
 	/* QUICK FIX: copy Y to W */
         su3mat_copy( &( Y_unitlink[dir][i] ), &( W_unitlink[dir][i] ) );
@@ -533,9 +586,9 @@ if( ugroup==UNITARIZE_SU3 ) {
       hl->valid_W_links = hl->valid_Y_links;
       hl->phases_in_W = hl->phases_in_Y;
       /* rephase (in) Y_unitlink array */
-      custom_rephase( Y_unitlink, ON, &hl->phases_in_Y );
+      rephase_field( Y_unitlink, ON, &hl->phases_in_Y );
       /* rephase (in) W_unitlink array */
-      custom_rephase( W_unitlink, ON, &hl->phases_in_W );
+      rephase_field( W_unitlink, ON, &hl->phases_in_W );
     }
     break;
   case UNITARIZE_HISQ:
@@ -595,7 +648,7 @@ void  load_X_from_W(ferm_links_t *fn, ks_component_paths *ap2,
   hl->phases_in_Xlong = hl->phases_in_W;
 //  hl->valid_Xlong_mass = ap2->naik_mass;
 
-  fn->valid = hl->valid_X_links;
+  fn->fl.valid = hl->valid_X_links;
 }
 
 static void
@@ -615,22 +668,26 @@ invalidate_hisq_links(hisq_links_t *hl)
 void
 invalidate_all_ferm_links(ferm_links_t *fn)
 {
-  fn->valid = 0;
+  fn->fl.valid = 0;
 
   invalidate_hisq_links(&fn->hl);
+#if HAVE_QOP
+  invalidate_qop_ferm_links_F(&fn->ql);
+  invalidate_qop_ferm_links_D(&fn->ql);
+#endif  
 }
 
 // Invalidate only the fat and long links
-void
-invalidate_fn_links(ferm_links_t *fn){
-  fn->valid = 0;
-  fn->hl.valid_X_links = 0;
-  fn->hl.valid_all_links = 0;
-}
+//void
+//invalidate_fn_links(ferm_links_t *fn){
+//  fn->fl.valid = 0;
+//  fn->hl.valid_X_links = 0;
+//  fn->hl.valid_all_links = 0;
+//}
 
 static void 
 init_hisq_links(hisq_links_t *hl){
-  int dir;
+  int i,dir;
 
   invalidate_hisq_links(hl);
 
@@ -650,21 +707,79 @@ init_hisq_links(hisq_links_t *hl){
     hl->Y_unitlink[dir] = NULL;
     hl->W_unitlink[dir] = NULL;
   }
+
+  hl->n_naiks = 0;
+  for(i = 0; i < MAX_NAIK; i++){
+    hl->eps_naik[i] = 0.;
+  }
 }
 
 void 
-init_ferm_links(ferm_links_t *fn){
+init_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
 
   invalidate_all_ferm_links(fn);
 
   fn->mass  = 0.;
-  fn->fat = NULL;
-  fn->lng = NULL;
-  fn->fatback = NULL;
-  fn->lngback = NULL;
-  fn->ap = NULL;
-
+  fn->fl.fat = NULL;
+  fn->fl.lng = NULL;
+  fn->fl.fatback = NULL;
+  fn->fl.lngback = NULL;
+  fn->ap = ap;
+  init_path_table(fn->ap);
   init_hisq_links(&fn->hl);
+}
+
+// print a value of link on site i in direction dir
+void
+look_at_link(ferm_links_t *fn, int *x, int dir){
+  int i, idir;
+  site *s;
+  su3_matrix Usum, Vsum, Ysum, Xfatsum, Xlongsum;
+  clear_su3mat( &Usum );
+  clear_su3mat( &Vsum );
+  clear_su3mat( &Ysum );
+  clear_su3mat( &Xfatsum );
+  clear_su3mat( &Xlongsum );
+  // NEED TO convert site coordinates to site number
+  i=0;
+#ifdef AB_DEBUG_ENTRY_EXIT_ROUTINES
+  printf("Enter look_at_link fermion_links_hisq.c\n");
+#endif
+  printf("*** Looking at links:\n");
+  printf("U links\n");
+  dumpmat( &(fn->hl.U_link[dir][i]) );
+  printf("V links\n");
+  dumpmat( &(fn->hl.V_link[dir][i]) );
+  printf("Y links\n");
+  dumpmat( &(fn->hl.Y_unitlink[dir][i]) );
+  printf("Xfat links\n");
+  dumpmat( &(fn->hl.X_fatlink[dir][i]) );
+  printf("Xlong links\n");
+  dumpmat( &(fn->hl.X_longlink[dir][i]) );
+  // global sum of links
+  for(idir=XUP;idir<=TUP;idir++) {
+    FORALLSITES(i,s) {
+      add_su3_matrix( &Usum, &(fn->hl.U_link[idir][i]), &Usum );
+      add_su3_matrix( &Vsum, &(fn->hl.V_link[idir][i]), &Vsum );
+      add_su3_matrix( &Ysum, &(fn->hl.Y_unitlink[idir][i]), &Ysum );
+      add_su3_matrix( &Xfatsum, &(fn->hl.X_fatlink[idir][i]), &Xfatsum );
+      add_su3_matrix( &Xlongsum, &(fn->hl.X_longlink[idir][i]), &Xlongsum );
+    }
+  }
+  printf("*** Looking at global sums of links:\n");
+  printf("U links global sum\n");
+  dumpmat( &Usum );
+  printf("V links global sum\n");
+  dumpmat( &Vsum );
+  printf("Y links global sum\n");
+  dumpmat( &Ysum );
+  printf("Xfat links global sum\n");
+  dumpmat( &Xfatsum );
+  printf("Xlong links global sum\n");
+  dumpmat( &Xlongsum );
+#ifdef AB_DEBUG_ENTRY_EXIT_ROUTINES
+  printf("Exit  look_at_link fermion_links_hisq.c\n");
+#endif
 }
 
 // end new routines

@@ -16,68 +16,34 @@
 
 /* Offsets are 4 * mass * mass and must be positive */
 int 
-ks_multicg_offset(	/* Return value is number of iterations taken */
-   field_offset src,	/* source vector (type su3_vector) */
+ks_multicg_offset_field(	/* Return value is number of iterations taken */
+   su3_vector *src,	/* source vector (type su3_vector) */
    su3_vector **psim,	/* solution vectors */
-   Real *offsets,	/* the offsets */
+   ks_param *ksp,	/* the offsets */
    int num_offsets,	/* number of offsets */
-   int niter,		/* maximal number of CG interations */
-   Real rsqmin,	        /* desired residue squared */
-   int prec,            /* internal precision for inversion */
-   int parity,		/* parity to be worked on */
-   Real *final_rsq_ptr, /* final residue squared */
-   ferm_links_t *fn       /* Storage for fat and Naik links */
+   quark_invert_control *qic,  /* inversion parameters */
+   imp_ferm_links_t *fn       /* Storage for fat and Naik links */
    )
 {
-  quark_invert_control qic;
 
-  /* Pack structure */
-  qic.prec      = prec;
-  qic.parity    = parity;
-  qic.max       = niter;
-  qic.nrestart  = 1;
-  qic.resid     = rsqmin;
-  qic.relresid  = 0;     /* Suppresses this test */
+  int i, iters;
 
-  if(prec == 1)
-    return ks_multicg_offset_F(src, psim, offsets, num_offsets, &qic, fn);
+  if(qic->prec == 1)
+    iters = ks_multicg_offset_field_F(src, psim, ksp, num_offsets, qic, fn);
   else
-    return ks_multicg_offset_D(src, psim, offsets, num_offsets, &qic, fn);
+    iters = ks_multicg_offset_field_D(src, psim, ksp, num_offsets, qic, fn);
+
+  /* Copy multimass qic results to the rest of the structures */
+  for(i = 1; i < num_offsets; i++){
+    qic[i].final_rsq     = qic[0].final_rsq;
+    qic[i].final_relrsq  = qic[0].final_relrsq;
+    qic[i].size_r        = qic[0].size_r;   
+    qic[i].size_relr     = qic[0].size_relr;
+    qic[i].final_iters   = qic[0].final_iters;
+    qic[i].final_restart = qic[0].final_restart;
+    qic[i].converged     = qic[0].converged;  
+  }
+
+  return iters;
 }
 
-#if 0
-/* Standard MILC interface for the Asqtad multimass inverter 
-   single source, multiple masses.  Uses the prevailing MILC precision */
-
-int
-ks_multicg_mass(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors (preallocated) */
-    Real *masses,	/* the masses */
-    int num_masses,	/* number of masses */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* internal precision for inversion */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn      /* Storage for fat and Naik links */
-			)
-{
-  quark_invert_control qic;
-
-  /* Pack structure */
-  qic.prec      = prec;
-  qic.parity    = parity;
-  qic.max       = niter;
-  qic.nrestart  = 1;
-  qic.resid     = rsqmin;
-  qic.relresid  = 0;     /* Suppresses this test */
-
-  if(prec == 1)
-    return ks_multicg_mass_F(src, psim, masses, num_masses, &qic, fn );
-  else
-    return ks_multicg_mass_D(src, psim, masses, num_masses, &qic, fn );
-}
-
-
-#endif

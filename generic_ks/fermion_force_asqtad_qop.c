@@ -18,6 +18,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop.c,v $
+ * Revision 1.28  2011/11/29 20:45:56  detar
+ * Support new fermion links scheme
+ *
  * Revision 1.27  2007/12/14 04:36:31  detar
  * Major modification to support HISQ.
  *
@@ -100,26 +103,38 @@
 #include "generic_ks_includes.h"
 #include "../include/generic_qop.h"
 #include "../include/generic_ks_qop.h"
+#include "../include/fermion_links.h"
 
 /* Set default if undeclared */
 #ifndef KS_MULTIFF
 #define KS_MULTIFF FNMAT
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.27 2007/12/14 04:36:31 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop.c,v 1.28 2011/11/29 20:45:56 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
    routine */
 /**********************************************************************/
-void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
-			       int prec, ferm_links_t *fn, ks_action_paths *ap)
+void eo_fermion_force_oneterm( Real eps, Real weight, su3_vector *x_off,
+			       int prec, fermion_links_t *fl)
 {
 
   if(prec == 1)
-    eo_fermion_force_oneterm_F( eps, weight, x_off, fn, ap );
+    eo_fermion_force_oneterm_F( eps, weight, x_off, fl);
   else
-    eo_fermion_force_oneterm_D( eps, weight, x_off, fn, ap );
+    eo_fermion_force_oneterm_D( eps, weight, x_off, fl);
+
+}
+
+void eo_fermion_force_oneterm_site( Real eps, Real weight, field_offset x_off_site,
+				    int prec, fermion_links_t *fl)
+{
+  su3_vector *x_off = create_v_field_from_site_member(x_off_site);
+
+  eo_fermion_force_oneterm(eps, weight, x_off, prec, fl);
+
+  destroy_v_field(x_off);
 
 }
 
@@ -128,17 +143,30 @@ void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
    routine */
 /**********************************************************************/
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
-				field_offset x1_off, field_offset x2_off,
-				int prec, ferm_links_t *fn, 
-				ks_action_paths *ap) 
+				su3_vector *x1_off, su3_vector *x2_off,
+				int prec, fermion_links_t *fl) 
 {
 
   if(prec == 1)
     eo_fermion_force_twoterms_F( eps, weight1, weight2, x1_off, x2_off, 
-				 fn, ap );
+				 fl );
   else
     eo_fermion_force_twoterms_D( eps, weight1, weight2, x1_off, x2_off,
-				 fn, ap );
+				 fl );
+}
+
+void eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2, 
+				     field_offset x1_off_site, field_offset x2_off_site,
+				     int prec, fermion_links_t *fl)
+{
+
+  su3_vector *x1_off = create_v_field_from_site_member(x1_off_site);
+  su3_vector *x2_off = create_v_field_from_site_member(x2_off_site);
+
+  eo_fermion_force_twoterms(eps, weight1, weight2, x1_off, x2_off, prec, fl);
+
+  destroy_v_field(x2_off);
+  destroy_v_field(x1_off);
 
 }
 
@@ -147,16 +175,16 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 /*   Version for asqtad.  Parallel transport nterms source vectors    */
 /**********************************************************************/
 
-void 
-fermion_force_asqtad_multi( Real eps, Real *residues, 
-			    su3_vector **xxx, int nterms, int prec,
-			    ferm_links_t *fn, ks_action_paths *ap ) 
+static void 
+fermion_force_multi( Real eps, Real *residues, 
+		     su3_vector **xxx, int nterms, int prec,
+		     fermion_links_t *fl ) 
 {
 
   if(prec == 1)
-    fermion_force_asqtad_multi_F( eps, residues, xxx, nterms, fn, ap );
+    fermion_force_multi_F( eps, residues, xxx, nterms, fl );
   else
-    fermion_force_asqtad_multi_D( eps, residues, xxx, nterms, fn, ap );
+    fermion_force_multi_D( eps, residues, xxx, nterms, fl );
 
 }
 
@@ -166,16 +194,14 @@ fermion_force_asqtad_multi( Real eps, Real *residues,
 /* Requires the xxx1 and xxx2 terms in the site structure */
 
 void 
-fermion_force_asqtad_block( Real eps, Real *residues, 
-			    su3_vector **xxx, int nterms, int veclength, 
-			    int prec, ferm_links_t *fn, ks_action_paths *ap) 
+fermion_force_block( Real eps, Real *residues, 
+		     su3_vector **xxx, int nterms, int veclength, 
+		     int prec, fermion_links_t *fl ) 
 {
   if(prec == 1)
-    fermion_force_asqtad_block_F( eps, residues, xxx, nterms, veclength,
-				  fn, ap);
+    fermion_force_block_F( eps, residues, xxx, nterms, veclength, fl );
   else
-    fermion_force_asqtad_block_D( eps, residues, xxx, nterms, veclength,
-				  fn, ap);
+    fermion_force_block_D( eps, residues, xxx, nterms, veclength, fl );
 
 }
 
@@ -183,8 +209,7 @@ fermion_force_asqtad_block( Real eps, Real *residues,
 /*   Standard MILC interface for fermion force with multiple sources  */
 /**********************************************************************/
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
-			     int nterms, int prec, ferm_links_t *fn,
-			     ks_action_paths *ap ) {
+			     int nterms, int prec, fermion_links_t *fl ) {
 
   int veclength;
 #ifdef VECLENGTH
@@ -204,23 +229,21 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
     qop_ff_opt[0].value = nterms + 1;  /* set high threshold for FNMAT */
     if(QOP_asqtad_force_set_opts(qop_ff_opt, 2) != QOP_SUCCESS)
       node0_printf("eo_fermion_force_multi: error setting QOP options\n");
-    fermion_force_asqtad_block( eps, residues, xxx, nterms, 
-				veclength, prec, fn, ap );
+    fermion_force_block( eps, residues, xxx, nterms, veclength, prec, fl );
     break;
   default:  /* FNMAT */
     qop_ff_opt[0].value = 4; /* set sensible threshold for FNMAT */
     if(QOP_asqtad_force_set_opts(qop_ff_opt, 2) != QOP_SUCCESS)
       node0_printf("eo_fermion_force_multi: error setting QOP options\n");
-    fermion_force_asqtad_multi( eps, residues, xxx, 
-				nterms, prec, fn, ap );
+    fermion_force_multi( eps, residues, xxx, nterms, prec, fl );
   }
 }
 
 /**********************************************************************/
 /*   Accessor for string describing the option                        */
 /**********************************************************************/
-const char 
-*ks_multiff_opt_chr( void )
+const char *
+ks_multiff_opt_chr( void )
 {
   switch(KS_MULTIFF){
   case ASVEC:

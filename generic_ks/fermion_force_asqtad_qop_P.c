@@ -13,13 +13,16 @@
 
    eo_fermion_force_oneterm_[FD]
    eo_fermion_force_twoterms_[FD]
-   fermion_force_asqtad_multi_[FD]
-   fermion_force_asqtad_block_[FD]
+   fermion_force_multi_[FD]
+   fermion_force_block_[FD]
 
 */
 
 /*
  * $Log: fermion_force_asqtad_qop_P.c,v $
+ * Revision 1.3  2011/11/29 20:45:56  detar
+ * Support new fermion links scheme
+ *
  * Revision 1.2  2007/12/14 04:36:31  detar
  * Major modification to support HISQ.
  *
@@ -101,8 +104,8 @@
 #define CREATE_V_FROM_FIELD        create_F_V_from_field
 #define EO_FERMION_FORCE_ONETERM   eo_fermion_force_oneterm_F
 #define EO_FERMION_FORCE_TWOTERMS  eo_fermion_force_twoterms_F
-#define FERMION_FORCE_ASQTAD_MULTI fermion_force_asqtad_multi_F
-#define FERMION_FORCE_ASQTAD_BLOCK fermion_force_asqtad_block_F
+#define FERMION_FORCE_MULTI        fermion_force_multi_F
+#define FERMION_FORCE_BLOCK        fermion_force_block_F
 #define MY_REAL                    float
 #define LOAD_QOP_ASQTAD_COEFFS     load_qop_F_asqtad_coeffs
 #define UNLOAD_F_TO_SITE4          unload_F_F_to_site4
@@ -116,8 +119,8 @@
 #define CREATE_V_FROM_FIELD        create_D_V_from_field
 #define EO_FERMION_FORCE_ONETERM   eo_fermion_force_oneterm_D
 #define EO_FERMION_FORCE_TWOTERMS  eo_fermion_force_twoterms_D
-#define FERMION_FORCE_ASQTAD_MULTI fermion_force_asqtad_multi_D
-#define FERMION_FORCE_ASQTAD_BLOCK fermion_force_asqtad_block_D
+#define FERMION_FORCE_MULTI        fermion_force_multi_D
+#define FERMION_FORCE_BLOCK        fermion_force_block_D
 #define MY_REAL                    double
 #define LOAD_QOP_ASQTAD_COEFFS     load_qop_D_asqtad_coeffs
 #define UNLOAD_F_TO_SITE4          unload_D_F_to_site4
@@ -137,14 +140,14 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop_P.c,v 1.2 2007/12/14 04:36:31 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop_P.c,v 1.3 2011/11/29 20:45:56 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
    routine */
 /**********************************************************************/
-void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off,
-			       ferm_links_t *fn, ks_action_paths *ap)
+void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, su3_vector *x_off,
+			       fermion_links_t *fl)
 {
 
   /* For example weight = nflavors/4 */
@@ -153,7 +156,7 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off,
   QOP_Force *mom;
   QOP_ColorVector *vecx;
   
-  QOP_asqtad_coeffs_t coeff;
+  QOP_asqtad_coeffs_t *coeff = get_action_coeffs(fl);
   QOP_info_t info;
 
   double remaptime = -dclock();
@@ -175,15 +178,17 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off,
   mom   = CREATE_F_FROM_SITE4(F_OFFSET(mom), EVENANDODD);
 
   /* Convert color vector to QOP format */
-  vecx = CREATE_V_FROM_SITE(x_off,EVENANDODD);
+  //  vecx = CREATE_V_FROM_SITE(x_off,EVENANDODD);
+  vecx = CREATE_V_FROM_FIELD(x_off,EVENANDODD);
 
-  /* Load coefficients */
-  LOAD_QOP_ASQTAD_COEFFS(&coeff, weight, ap->act_path_coeff);
+//  /* Load coefficients */
+//  LOAD_QOP_ASQTAD_COEFFS(&coeff, weight, ap->act_path_coeff);
 
   /* Compute fermion force */
   remaptime += dclock();
   QOP_asqtad_force_set_opts(qop_ff_opt, 2);
-  QOP_asqtad_force(&info, links, mom, &coeff, eps, vecx);
+  /* The coefficients are already loaded with weight = 0.5 */
+  QOP_asqtad_force(&info, links, mom, coeff, 2.*weight*eps, vecx);
   remaptime -= dclock();
 
   /* Unload momentum */
@@ -209,17 +214,17 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, field_offset x_off,
    routine */
 /**********************************************************************/
 void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2, 
-				field_offset x1_off, field_offset x2_off,
-				ferm_links_t *fn, ks_action_paths *ap )
+				su3_vector *x1_off, su3_vector *x2_off,
+				fermion_links_t *fl )
 {
 
   /* For example weight1 = nflavor1/4; weight2 = nflavor2/4 */
 
+  QOP_asqtad_coeffs_t *coeff = get_action_coeffs(fl);
   QOP_GaugeField *links;
   QOP_Force *mom;
   QOP_ColorVector *vecx[2];
   
-  QOP_asqtad_coeffs_t coeff;
   MY_REAL epsv[2];
   QOP_info_t info;
   QOP_opt_t qop_ff_opt[2] = {
@@ -242,17 +247,19 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
 
   /* Loop over fermion species */
   /* Convert color vectors in site structure to QOP format */
-  vecx[0] = CREATE_V_FROM_SITE(x1_off,EVENANDODD);
-  vecx[1] = CREATE_V_FROM_SITE(x2_off,EVENANDODD);
+//  vecx[0] = CREATE_V_FROM_SITE(x1_off,EVENANDODD);
+//  vecx[1] = CREATE_V_FROM_SITE(x2_off,EVENANDODD);
+  vecx[0] = CREATE_V_FROM_FIELD(x1_off,EVENANDODD);
+  vecx[1] = CREATE_V_FROM_FIELD(x2_off,EVENANDODD);
 
   /* Load coefficients */
-  epsv[0] = eps*weight1;  epsv[1] = eps*weight2;
-  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., ap->act_path_coeff);
+  epsv[0] = 2.*eps*weight1;  epsv[1] =2.* eps*weight2;
+  //  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., ap->act_path_coeff);
 
   /* Compute fermion force */
   remaptime += dclock();
   QOP_asqtad_force_set_opts(qop_ff_opt, 2);
-  QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, 2);
+  QOP_asqtad_force_multi(&info, links, mom, coeff, epsv, vecx, 2);
   remaptime -= dclock();
 
   /* Unload momentum */
@@ -266,8 +273,9 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
 
   remaptime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e (qop) terms = 2 mflops = %e\n",
-	       info.final_sec, (Real)info.final_flop/(1e6*info.final_sec) );
+  node0_printf("FFTIME:  time = %e (qop %s) terms = %d mflops = %e\n",
+	       info.final_sec, qop_prec[QOP_Precision-1],
+	       2, (Real)info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
@@ -279,20 +287,20 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
 /*   Version for asqtad.  Parallel transport nterms source vectors    */
 /**********************************************************************/
 
-void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues, 
-				 su3_vector **xxx, int nterms,
-				 ferm_links_t *fn, ks_action_paths *ap ) 
+void FERMION_FORCE_MULTI( Real eps, Real *residues, 
+			  su3_vector **xxx, int nterms,
+			  fermion_links_t *fl ) 
 {
 
+  QOP_asqtad_coeffs_t *coeff = get_action_coeffs(fl);
   QOP_GaugeField *links;
   QOP_Force *mom;
   QOP_ColorVector **vecx;
   
-  QOP_asqtad_coeffs_t coeff;
   int i;
   MY_REAL *epsv;
   QOP_info_t info;
-  char myname[] = "fermion_force_asqtad_multi";
+  char myname[] = "fermion_force_multi";
 
   double remaptime = -dclock();
 
@@ -322,12 +330,12 @@ void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues,
   /* Make space for weights */
   epsv = (MY_REAL *)malloc(sizeof(MY_REAL)*nterms);
   /* Load coefficients */
-  for(i = 0; i < nterms; i++) epsv[i] = eps*residues[i];
-  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., ap->act_path_coeff);
+  for(i = 0; i < nterms; i++) epsv[i] = 2.*eps*residues[i];
+  //  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., ap->act_path_coeff);
 
   /* Compute fermion force */
   remaptime += dclock();
-  QOP_asqtad_force_multi(&info, links, mom, &coeff, epsv, vecx, nterms);
+  QOP_asqtad_force_multi(&info, links, mom, coeff, epsv, vecx, nterms);
   remaptime -= dclock();
 
   /* Unload momentum */
@@ -358,41 +366,33 @@ void FERMION_FORCE_ASQTAD_MULTI( Real eps, Real *residues,
 /**********************************************************************/
 /*   Parallel transport vectors in blocks of veclength. Asqtad only   */
 /**********************************************************************/
-/* Requires the xxx1 and xxx2 terms in the site structure */
 
-void FERMION_FORCE_ASQTAD_BLOCK( Real eps, Real *residues, 
-				 su3_vector **xxx, int nterms, int veclength,
-				 ferm_links_t *fn, ks_action_paths *ap ) {
+void FERMION_FORCE_BLOCK( Real eps, Real *residues, 
+			  su3_vector **xxx, int nterms, int veclength,
+			  fermion_links_t *fl) {
 
-  int i,j;
-  site *s;
+  int j;
 
   /* First do blocks of size veclength */
   for( j = 0;  j <= nterms-veclength; j += veclength )
-    FERMION_FORCE_ASQTAD_MULTI( eps, &(residues[j]), xxx+j, veclength, fn, ap );
+    FERMION_FORCE_MULTI( eps, &(residues[j]), xxx+j, veclength, fl );
   
 #ifndef ONEMASS
   /* Continue with pairs if needed */
   for( ; j <= nterms-2 ; j+=2 ){
-    FORALLSITES(i,s){
-      s->xxx1 = xxx[j  ][i] ;
-      s->xxx2 = xxx[j+1][i] ;
-    }
     EO_FERMION_FORCE_TWOTERMS( eps, residues[j], residues[j+1],
-			       F_OFFSET(xxx1), F_OFFSET(xxx2), fn, ap );
+			       xxx[j], xxx[j + 1], fl );
   }
 
   /* Finish with a single if needed */
   for( ; j <= nterms-1; j++ ){
-    FORALLSITES(i,s){ s->xxx1 = xxx[j][i] ; }
-    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx1), fn, ap );
+    EO_FERMION_FORCE_ONETERM( eps, residues[j], xxx[j], fl );
   }
 #else
   /* Thrown in just to make it compile.  Probably never used. */
   /* Finish with a single if needed */
   for( ; j <= nterms-1; j++ ){
-    FORALLSITES(i,s){ s->xxx = xxx[j][i] ; }
-    EO_FERMION_FORCE_ONETERM( eps, residues[j], F_OFFSET(xxx), fn, ap );
+    EO_FERMION_FORCE_ONETERM( eps, residues[j], xxx[j], fl );
   }
 #endif
 

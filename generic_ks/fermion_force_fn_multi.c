@@ -10,13 +10,13 @@
  * fermion_force_fn_multi_june05 (disused)
 
  * For a general FN action
- * compile with fermion_force_multi.c and fermion_force_general.c
+ * compile with fermion_force_multi.c and fermion_force_eo_milc.c
 
  * For the Asqtad action
  * compile with fermion_force_asqtad.c
 
  * 
- * 1. General force for any FN-type action. Based on fermion_force_general.c
+ * 1. General force for any FN-type action. Based on fermion_forcee_eo_milc.c
  *    and optimized to transport only one set of SU(3) matrices.
  *
  * 2. Same as 1 but with indices on CG solutions reversed
@@ -80,20 +80,21 @@ static int first_force=1;	// 1 if force hasn't been called yet
 void 
 fermion_force_fn_multi( Real eps, Real *residues, 
 			su3_vector **multi_x, int nterms, int prec,
-			ferm_links_t *fn, ks_action_paths *ap ){
+			fermion_links_t *fl ){
   /* prec is ignored for now */
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
   /* For each link we need multi_x transported from both ends of path. */
+  ks_action_paths *ap = get_action_paths(fl);
   int term;
   register int i,j,k,lastdir=-99,ipath,ilink;
   register site *s;
   int length,dir,odir;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
-  int num_q_paths = ap->num_q_paths;
-  Q_path *q_paths = ap->q_paths;
+  int num_q_paths = ap->p.num_q_paths;
+  Q_path *q_paths = ap->p.q_paths;
   Q_path *this_path;	// pointer to current path
   Q_path *last_path;	// pointer to previous path
   msg_tag *mtag[2];
@@ -317,19 +318,20 @@ fermion_force_fn_multi( Real eps, Real *residues,
 void 
 fermion_force_fn_multi_reverse( Real eps, Real *residues, 
 				su3_vector **multi_x, int nterms,
-				ferm_links_t *fn, ks_action_paths *ap ){
+				fermion_links_t *fl ){
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
   /* For each link we need multi_x transported from both ends of path. */
+  ks_action_paths *ap = get_action_paths(fl);
   int term;
   register int i,j,k,lastdir=-99,ipath,ilink;
   register site *s;
   int length,dir,odir;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
-  int num_q_paths = ap->num_q_paths;
-  Q_path *q_paths = ap->q_paths;
+  int num_q_paths = ap->p.num_q_paths;
+  Q_path *q_paths = ap->p.q_paths;
   Q_path *this_path;	// pointer to current path
   Q_path *last_path;	// pointer to previous path
   msg_tag *mtag;
@@ -553,25 +555,27 @@ fermion_force_fn_multi_reverse( Real eps, Real *residues,
 } /* fermion_force_fn_multi_reverse */
 
 
+#if 0
 // OLDER VERSION BEFORE SOME OPTIMIZATIONS.  THIS IS PROBABLY CLEARER AS TO
 // WHAT IS GOING ON
 
 void 
 fermion_force_fn_multi_june05( Real eps, Real *residues, 
 			       su3_vector **multi_x, int nterms,
-			       ferm_links_t *fn, ks_action_paths *ap ){
+			       fermion_links_t *fl ){
   /* note CG_solution and Dslash * solution are combined in "multi_x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
   /* For each link we need multi_x transported from both ends of path. */
+  ks_action_paths *ap = get_action_paths(fl);
   int term;
   register int i,dir,lastdir=-99,ipath,ilink;
   register site *s;
   int length;
   su3_matrix tmat,tmat2;
   Real ferm_epsilon, coeff;
-  int num_q_paths = ap->num_q_paths;
-  Q_path *q_paths = ap->q_paths;
+  int num_q_paths = ap->p.num_q_paths;
+  Q_path *q_paths = ap->p.q_paths;
   Q_path *this_path;	// pointer to current path
   msg_tag *mtag1;
   su3_matrix *mat_outerprod,*mat_tmp0,*mat_tmp1,*tmp_matpt;
@@ -714,6 +718,8 @@ fermion_force_fn_multi_june05( Real eps, Real *residues,
 	     (Real)nflop*volume*nterms/(1e6*dtime*numnodes()) );
 #endif
 }
+
+#endif
 
 
 static int 

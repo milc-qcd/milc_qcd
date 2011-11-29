@@ -12,30 +12,15 @@
 
 #include "generic_ks_includes.h"
 
-/* Report inversion status */
-static void report_status(quark_invert_control *qic){
-
-  if(this_node != 0)return;
-  if((qic->resid > 0 && qic->size_r > qic->resid )||
-     (qic->relresid > 0 && qic->size_relr > qic->relresid))
-    printf(" NOT converged size_r= %.2g rel = %.2g restarts = %d iters= %d\n",
-	   qic->size_r, qic->size_relr, qic->final_restart, 
-	   qic->final_iters );
-  else
-    printf(" OK converged size_r= %.2g rel = %.2g restarts = %d iters= %d\n",
-	   qic->size_r, qic->size_relr, qic->final_restart,
-	   qic->final_iters );
-}
-
 int ks_invert( /* Return value is number of iterations taken */
     field_offset src,   /* type su3_vector (preloaded source) */
     field_offset dest,  /* type su3_vector (answer and initial guess) */
     int (*invert_func)(field_offset src, field_offset dest,
 		       quark_invert_control *qic,
-		       Real mass, ferm_links_t *fn),
+		       Real mass, imp_ferm_links_t *fn),
     quark_invert_control *qic, /* inverter control */
     Real mass,
-    ferm_links_t *fn
+    imp_ferm_links_t *fn
     )
 {
   int tot_iters, irestart, Minsav;
@@ -60,28 +45,30 @@ int ks_invert( /* Return value is number of iterations taken */
       if(qic->converged)
 	printf(" NOT converged size_r= %.2g iters= %d\n",
 	       qic->size_r, tot_iters);
+#ifdef CG_OK
       else
 	printf(" OK converged size_r= %.2g iters= %d\n",
 	       qic->size_r, tot_iters);
+#endif
     }
   
   qic->min = Minsav;
   return tot_iters;
 } /* ks_invert.c */
 
-/* This variant builds the source, based on the wqs specification */
+/* This variant builds the source, based on the ksqs specification */
 
 int ks_invert_ksqs( /* Return value is number of iterations taken */
-    ks_quark_source *ksqs, /* source parameters */
+    quark_source *ksqs, /* source parameters */
     int (*source_func_field)(su3_vector *src, 
-			      ks_quark_source *ksqs),  /* source function */
+			      quark_source *ksqs),  /* source function */
     su3_vector *dest,  /* answer and initial guess */
     int (*invert_func)(su3_vector *src, su3_vector *dest,
 		       quark_invert_control *qic, Real mass, 
-		       ferm_links_t *fn),
+		       imp_ferm_links_t *fn),
     quark_invert_control *qic, /* inverter control */
     Real mass,
-    ferm_links_t *fn
+    imp_ferm_links_t *fn
     )
 {
   int tot_iters;

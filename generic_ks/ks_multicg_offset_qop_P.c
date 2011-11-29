@@ -9,12 +9,11 @@
 
 /* Entry points (must be redefined to precision-specific names)
 
-   KS_MULTICG_OFFSET
-   KS_MULTICG_MASS 
+   KS_MULTICG_OFFSET_FIELD
 
    Externals (must be redefined to precision-specific names)
 
-   KS_CONGRAD_QOP_SITE2FIELD   
+   KS_CONGRAD_QOP_FIELD2FIELD   
 
 */
 
@@ -23,6 +22,9 @@
 
 /*
  * $Log: ks_multicg_offset_qop_P.c,v $
+ * Revision 1.6  2011/11/29 20:45:57  detar
+ * Support new fermion links scheme
+ *
  * Revision 1.5  2007/11/16 04:07:15  detar
  * Add parity to QDP "set" utilities
  *
@@ -56,17 +58,15 @@
 
 #if ( QOP_Precision == 1 )
 
-#define KS_MULTICG_MASS           ks_multicg_mass_F
-#define KS_MULTICG_OFFSET         ks_multicg_offset_F
-#define KS_CONGRAD_QOP_SITE2FIELD ks_congrad_qop_F_site2field
-#define MYREAL                    float
+#define KS_MULTICG_OFFSET_FIELD         ks_multicg_offset_field_F
+#define KS_CONGRAD_QOP_FIELD2FIELD      ks_congrad_qop_F_field2field
+#define MYREAL                          float
 
 #else
 
-#define KS_MULTICG_MASS           ks_multicg_mass_D
-#define KS_MULTICG_OFFSET         ks_multicg_offset_D
-#define KS_CONGRAD_QOP_SITE2FIELD ks_congrad_qop_D_site2field
-#define MYREAL                    double
+#define KS_MULTICG_OFFSET_FIELD         ks_multicg_offset_field_D
+#define KS_CONGRAD_QOP_FIELD2FIELD      ks_congrad_qop_D_field2field
+#define MYREAL                          double
 
 #endif
 
@@ -74,19 +74,19 @@
 #include "../include/generic_ks_qop.h"
 #include "../include/loopend.h"
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.5 2007/11/16 04:07:15 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.6 2011/11/29 20:45:57 detar Exp $";
 
 /* Standard MILC interface for the Asqtad multimass inverter 
    single source, multiple masses.  Uses the prevailing precision */
 
 /* Offsets are 4 * mass * mass and must be positive */
-int KS_MULTICG_OFFSET(	      /* Return value is number of iterations taken */
-    field_offset src,	      /* source vector (type su3_vector) */
+int KS_MULTICG_OFFSET_FIELD(	      /* Return value is number of iterations taken */
+    su3_vector *src,	      /* source vector (type su3_vector) */
     su3_vector **psim,	      /* solution vectors */
-    Real *offsets,	      /* the offsets */
+    ks_param *ksp,	      /* the offsets */
     int num_offsets,	      /* number of offsets */
     quark_invert_control *qic,/* inversion parameters */
-    ferm_links_t *fn            /* Storage for fat and Naik links */
+    imp_ferm_links_t *fn      /* Storage for fat and Naik links */
     )
 {
   int num_masses = num_offsets;
@@ -96,10 +96,10 @@ int KS_MULTICG_OFFSET(	      /* Return value is number of iterations taken */
   int iterations_used;
   MYREAL *masses2[1];
   int nmass[1], nsrc;
-  int parity = qic->parity;     /* MILC parity */
-  field_offset milc_srcs[1];
+  int parity = qic[0].parity;     /* MILC parity */
+  su3_vector *milc_srcs[1];
   su3_vector **milc_sols[1];
-  char myname[] = "ks_multicg_offset";
+  char myname[] = "ks_multicg_offset_field";
   
   /* Generate mass table */
   masses = (MYREAL *)malloc(sizeof(MYREAL)*num_masses);
@@ -108,12 +108,12 @@ int KS_MULTICG_OFFSET(	      /* Return value is number of iterations taken */
     terminate(1);
   }
   for(i = 0; i < num_masses; i++){
-    if(offsets[i] < 0){
-      printf("%s(%d): called with negative offset %e\n",
-	     myname, this_node,offsets[i]);
+    if(ksp[i].offset <= 0){
+      printf("%s(%d): called with nonpositive offset %e\n",
+	     myname, this_node,ksp[i].offset);
       terminate(1);
     }
-    masses[i] = sqrt(offsets[i]/4.0);
+    masses[i] = sqrt(ksp[i].offset/4.0);
   }
   
   /* Set up general source and solution pointers for one mass, one source */
@@ -133,53 +133,10 @@ int KS_MULTICG_OFFSET(	      /* Return value is number of iterations taken */
   /* Just set pointer for source 1 array of solutions */
   milc_sols[0] =  psim;
   
-  iterations_used = KS_CONGRAD_QOP_SITE2FIELD( qic, masses2, nmass, milc_srcs,
-					       milc_sols, nsrc, fn );
+  iterations_used = KS_CONGRAD_QOP_FIELD2FIELD( qic, masses2, nmass, milc_srcs,
+						milc_sols, nsrc, fn );
   
   free(masses);
   return iterations_used;
 }
 
-#if 0
-/* Standard MILC interface for the Asqtad multimass inverter 
-   single source, multiple masses.  Uses the prevailing precision */
-
-int KS_MULTICG_MASS(	      /* Return value is number of iterations taken */
-    field_offset src,	      /* source vector (type su3_vector) */
-    su3_vector **psim,	      /* solution vectors (preallocated) */
-    Real *masses,	      /* the masses */
-    int num_masses,	      /* number of masses */
-    quark_invert_control *qic, /* inversion parameters */
-    ferm_links_t *fn             /* Storage for fat and Naik links */
-    )
-{
-  
-  int iterations_used;
-  MYREAL *masses2[1];
-  int nmass[1], nsrc;
-  int i;
-  field_offset milc_srcs[1];
-  su3_vector **milc_sols[1];
-
-  /* Set up general source and solution pointers for one mass, one source */
-  nsrc = 1;
-  milc_srcs[0] = src;
-
-  nmass[0] = num_masses;
-  masses2[0] = (MYREAL *)malloc(num_masses*sizeof(MYREAL));
-  for(i=0;i<num_masses;i++)
-    masses2[0][i] = (MYREAL)masses[i];
-
-  milc_sols[0] =  psim;
-
-  iterations_used = KS_CONGRAD_QOP_SITE2FIELD( qic, masses2, nmass, 
-					       milc_srcs, milc_sols, nsrc,
-					       fn);
-
-  free(masses2[0]);
-  total_iters += iterations_used;
-  return( iterations_used );
-}
-
-
-#endif

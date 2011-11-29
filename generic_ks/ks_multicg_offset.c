@@ -30,19 +30,16 @@ static int first_multicongrad = 1;
 
 /* Interface for call with offsets = 4 * mass * mass */
 
-int ks_multicg_offset(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
+int ks_multicg_offset_field(	/* Return value is number of iterations taken */
+    su3_vector *src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
-    Real *offsets,	/* the offsets */
+    ks_param *ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* internal precision for inversion (ignored) */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn    /* Storage for fat and Naik links */
+    quark_invert_control *qic, /* inversion parameters */
+    imp_ferm_links_t *fn      /* Storage for fat and Naik links */
     )
 {
+    char myname[] = "ks_multicg_offset_field";
     /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
     register int i;
     register site *s;
@@ -53,7 +50,9 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     double rsqstop;	/* stopping residual normalized by source norm */
     int l_parity=0;	/* parity we are currently doing */
     int l_otherparity=0; /* the other parity */
+#ifdef FN
     msg_tag *tags1[16], *tags2[16];	/* tags for gathers to parity and opposite */
+#endif
     int special_started;	/* 1 if dslash_special has been called */
     int j, j_low;
     Real *shifts, offset_low, shift0;
@@ -61,6 +60,14 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     double *beta_i, *beta_im1, *alpha;
     su3_vector **pm;	/* vectors not involved in gathers */
     int *finished;      /* if converged */
+    /* Unpack qic structure.  The first qic sets the convergence criterion */
+    /* We don't restart this algorithm, so we adopt the convention of
+       taking the product here */
+    int niter        = qic[0].max*qic[0].nrestart;
+    Real rsqmin      = qic[0].resid * qic[0].resid;    /* desired squared residual - 
+					 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
+    int parity       = qic[0].parity;   /* EVEN, ODD */
+
 #ifdef CGTIME
     static const char *milc_prec[2] = {"F", "D"};
 #endif
@@ -69,7 +76,7 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 /* Timing */
 
 #ifdef CGTIME
-    double dtimed,dtimec;
+    double dtimec;
 #endif
     double nflop;
 
@@ -78,11 +85,35 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     dtimec = -dclock(); 
 #endif
 
+    /* Initialize structure */
+    for(j = 0; j < num_offsets; j++){
+      qic[j].final_rsq     = 0.;
+      qic[j].final_relrsq  = 0.; /* No relative residual in use here */
+      qic[j].size_r        = 0.;
+      qic[j].size_relr     = 0.;
+      qic[j].final_iters   = 0;
+      qic[j].final_restart = 0;  /* No restarts with this algorithm */
+      qic[j].converged     = 1;
+    }
+
     if( num_offsets==0 )return(0);
+
+    if(fn == NULL){
+      printf("%s(%d): Called with NULL fn\n", myname, this_node);
+      terminate(1);
+    }
+
+    for(j = 0; j < num_offsets; j++){
+      if(ksp[j].offset <= 0){
+	printf("ks_multicg_offset_field(%d): Called with nonpositive offset %e\n",
+	       this_node,ksp[j].offset);
+	terminate(1);
+      }
+    }
 
     finished = (int *)malloc(sizeof(int)*num_offsets);
     if(finished == NULL){
-      printf("ks_multicg_offset: No room for 'finished'\n");
+      printf("%s: No room for 'finished'\n",myname);
       terminate(1);
     }
 
@@ -113,9 +144,9 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
     offset_low = 1.0e+20;
     j_low = -1;
     for(j=0;j<num_offsets;j++){
-	shifts[j] = offsets[j];
-	if (offsets[j] < offset_low){
-	    offset_low = offsets[j];
+	shifts[j] = ksp[j].offset;
+	if (ksp[j].offset < offset_low){
+	    offset_low = ksp[j].offset;
 	    j_low = j;
 	}
     }
@@ -155,23 +186,63 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
         num_offsets_now = num_offsets;
 	source_norm = 0.0;
 	FORSOMEPARITY(i,s,l_parity){
-	    source_norm += (double) magsq_su3vec( (su3_vector *)F_PT(s,src) );
-	    su3vec_copy((su3_vector *)F_PT(s,src), &(resid[i]));
-	    su3vec_copy(&(resid[i]), &(cg_p[i]));
-	    clearvec(&(psim[j_low][i]));
+	    source_norm += (double) magsq_su3vec( src+i );
+	    su3vec_copy( src+i, resid+i);
+	    su3vec_copy(resid+i, cg_p+i);
+	    clearvec(psim[j_low]+i);
 	    for(j=0;j<num_offsets;j++) if(j!=j_low){
-		clearvec(&(psim[j][i]));
-		su3vec_copy(&(resid[i]), &(pm[j][i]));
+		clearvec(psim[j]+i);
+		su3vec_copy(resid+i, pm[j]+i);
 	    }
 	} END_LOOP
 	g_doublesum( &source_norm );
 	rsq = source_norm;
 
+	/* Special case -- trivial solution */
+	if(source_norm == 0.){
+	  for(j = 0; j < num_offsets; j++){
+	    qic[j].final_rsq     = 0.;
+	    qic[j].size_r        = 0.;
+	    qic[j].size_relr     = 0.;
+	    qic[j].final_iters   = iteration;
+	  }
+	  
+#ifdef FN
+	  if(special_started==1) {
+	    cleanup_gathers(tags1,tags2);
+	    special_started = 0;
+	  }
+#endif
+	    /* Free stuff */
+	    for(j=0;j<num_offsets;j++) if(j!=j_low) free(pm[j]);
+	    free(pm);
+
+	    free(zeta_i);
+	    free(zeta_ip1);
+	    free(zeta_im1);
+	    free(beta_i);
+	    free(beta_im1);
+	    free(alpha);
+	    free(shifts);
+#ifdef CGTIME
+	    dtimec += dclock();
+	    if(this_node==0){
+	      printf("CONGRAD5: time = %e (multicg_offset %s) masses = %d iters = %d mflops = %e\n",
+		     dtimec,milc_prec[PRECISION-1],num_offsets,iteration,
+		     (double)(nflop)*volume*
+		     iteration/(1.0e6*dtimec*numnodes()));
+		fflush(stdout);}
+#endif
+             return (iteration);
+	}
+
         iteration++ ;  /* iteration counts number of multiplications
                            by M_adjoint*M */
 	total_iters++;
 	rsqstop = rsqmin * source_norm;
-	/**node0_printf("congrad: source_norm = %e\n", (double)source_norm);**/
+#ifdef CG_DEBUG
+	node0_printf("%s: source_norm = %e\n", myname, (double)source_norm);
+#endif
 
 	for(j=0;j<num_offsets;j++){
 	    zeta_im1[j] = zeta_i[j] = 1.0;
@@ -205,8 +276,8 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 	/* pkp  <- cg_p . ttt */
 	pkp = 0.0;
 	FORSOMEPARITY(i,s,l_parity){
-	    scalar_mult_add_su3_vector( &(ttt[i]), &(cg_p[i]), shift0, &(ttt[i]) );
-	    pkp += (double)su3_rdot( &(cg_p[i]), &(ttt[i]) );
+	    scalar_mult_add_su3_vector( ttt+i, cg_p+i, shift0, ttt+i );
+	    pkp += (double)su3_rdot( cg_p+i, ttt+i );
 	} END_LOOP
 	g_doublesum( &pkp );
 	iteration++;
@@ -247,23 +318,26 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 
 	/* dest <- dest + beta*cg_p */
 	FORSOMEPARITY(i,s,l_parity){
-	    scalar_mult_add_su3_vector( &(psim[j_low][i]),
-		&(cg_p[i]), (Real)beta_i[j_low], &(psim[j_low][i]));
+	    scalar_mult_add_su3_vector( psim[j_low]+i,
+		cg_p+i, (Real)beta_i[j_low], psim[j_low]+i);
 	    for(j=0;j<num_offsets_now;j++) if(j!=j_low){
-		scalar_mult_add_su3_vector( &(psim[j][i]),
-		    &(pm[j][i]), (Real)beta_i[j], &(psim[j][i]));
+		scalar_mult_add_su3_vector( psim[j]+i,
+		    pm[j]+i, (Real)beta_i[j], psim[j]+i);
 	    }
 	} END_LOOP
 
 	/* resid <- resid + beta*ttt */
 	rsq = 0.0;
 	FORSOMEPARITY(i,s,l_parity){
-	    scalar_mult_add_su3_vector( &(resid[i]), &(ttt[i]),
-		(Real)beta_i[j_low], &(resid[i]));
-	    rsq += (double)magsq_su3vec( &(resid[i]) );
+	    scalar_mult_add_su3_vector( resid+i, ttt+i,
+		(Real)beta_i[j_low], resid+i);
+	    rsq += (double)magsq_su3vec( resid+i );
 	} END_LOOP
 	g_doublesum(&rsq);
 
+#if CG_DEBUG
+	node0_printf("%s: iter %d rsq = %g\n", myname, iteration, rsq);
+#endif
 	if( rsq <= rsqstop ){
 	    /* if parity==EVENANDODD, set up to do odd sites and go back */
 	    if(parity == EVENANDODD) {
@@ -272,7 +346,13 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 		iteration = 0;
 		goto start;
 	    }
-	    *final_rsq_ptr = (Real)rsq;
+	    for(j = 0; j < num_offsets; j++){
+	      qic[j].final_rsq     = (Real)rsq/source_norm;
+	      qic[j].size_r        = qic[j].final_rsq;
+	      qic[j].size_relr     = qic[j].final_relrsq;
+	      qic[j].final_iters   = iteration;
+	    }
+	    
 
 #ifdef FN
 	    if(special_started==1) {
@@ -324,13 +404,13 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 
 	/* cg_p  <- resid + alpha*cg_p */
 	FORSOMEPARITY(i,s,l_parity){
-	    scalar_mult_add_su3_vector( &(resid[i]), &(cg_p[i]),
-		(Real)alpha[j_low], &(cg_p[i]));
+	    scalar_mult_add_su3_vector( resid+i, cg_p+i,
+		(Real)alpha[j_low], cg_p+i);
 	    for(j=0;j<num_offsets_now;j++) if(j!=j_low){
-		scalar_mult_su3_vector( &(resid[i]),
-		    (Real)zeta_ip1[j], &(ttt[i]));
-		scalar_mult_add_su3_vector( &(ttt[i]), &(pm[j][i]),
-		    (Real)alpha[j], &(pm[j][i]));
+		scalar_mult_su3_vector( resid+i,
+		    (Real)zeta_ip1[j], ttt+i);
+		scalar_mult_add_su3_vector( ttt+i, pm[j]+i,
+		    (Real)alpha[j], pm[j]+i);
 	    }
 	} END_LOOP
 
@@ -343,9 +423,16 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 
     } while( iteration < niter );
 
+    for(j = 0; j < num_offsets; j++){
+      qic[j].final_rsq     = (Real)rsq/source_norm;
+      qic[j].size_r        = qic[j].final_rsq;
+      qic[j].final_iters   = iteration;
+      qic[j].converged     = 0;
+    }
+
     node0_printf(
-	"ks_multicg_offset: CG not converged after %d iterations, res. = %e wanted %e\n",
-	iteration, rsq, rsqstop);
+	"%s: CG NOT CONVERGED after %d iterations, res. = %e wanted %e\n",
+	myname, iteration, qic[0].final_rsq, rsqmin);
     fflush(stdout);
 
     /* if parity==EVENANDODD, set up to do odd sites and go back */
@@ -355,8 +442,6 @@ int ks_multicg_offset(	/* Return value is number of iterations taken */
 	iteration = 0;
 	goto start;
     }
-
-    *final_rsq_ptr=rsq;
 
 #ifdef FN
     if(special_started==1){	/* clean up gathers */
