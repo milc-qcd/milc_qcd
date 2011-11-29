@@ -1,0 +1,86 @@
+BEGIN
+reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+save_serial_ksprop ksprop_milc.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = Hypercubes, options = XXX
+automatic hyper_prime layout
+ON EACH NODE XXX x XXX x XXX x XXX
+Converting file ../binary_samples/ksprop_fm.sample.l4448.ll to file ksprop_milc.test.l4448.ll
+quark.t[0].checksum "256fe380 c09de649"
+quark.t[1].checksum "8ced0a1c 2e-05
+quark.t[2].checksum "2017d4ff 1e-05
+quark.t[3].checksum "65b00a8b 0.0002
+quark.t[4].checksum "2b2f460d f3da5621"
+quark.t[5].checksum "d23f979 fa0caf1a"
+quark.t[6].checksum "26f72465 c1afedc7"
+quark.t[7].checksum "49fda91c 9e-05
+Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 0.0001 9e-05 Read 0 0.
+Wrote inf file ksprop_milc.test.l4448.ll.info
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+Wrote prop file ksprop_milc.test.l4448.ll time stamp XXX XXX XXX XXX XXX
+reload_serial_ksprop ksprop_milc.test.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac1.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = Hypercubes, options = XXX
+automatic hyper_prime layout
+ON EACH NODE XXX x XXX x XXX x XXX
+Converting file ksprop_milc.test.l4448.ll to file ksprop_scidac1.test.l4448.ll
+Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
+Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
+Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+reload_serial_ksprop ../binary_samples/ksprop_fm.sample.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac2.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = Hypercubes, options = XXX
+automatic hyper_prime layout
+ON EACH NODE XXX x XXX x XXX x XXX
+Converting file ../binary_samples/ksprop_fm.sample.l4448.ll to file ksprop_scidac2.test.l4448.ll
+quark.t[0].checksum "256fe380 c09de649"
+quark.t[1].checksum "8ced0a1c 2e-05
+quark.t[2].checksum "2017d4ff 1e-05
+quark.t[3].checksum "65b00a8b 0.0002
+quark.t[4].checksum "2b2f460d f3da5621"
+quark.t[5].checksum "d23f979 fa0caf1a"
+quark.t[6].checksum "26f72465 c1afedc7"
+quark.t[7].checksum "49fda91c 9e-05
+Read KS prop serially from file ../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 0.0001 9e-05 Read 0 0.
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+reload_serial_ksprop ksprop_milc.test.l4448.ll
+save_serial_ksprop ksprop_fm.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = Hypercubes, options = XXX
+automatic hyper_prime layout
+ON EACH NODE XXX x XXX x XXX x XXX
+Converting file ksprop_milc.test.l4448.ll to file ksprop_fm.test.l4448.ll
+Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
+Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
+Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
+Wrote inf file ksprop_fm.test.l4448.ll.info
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+Wrote prop file ksprop_fm.test.l4448.ll time stamp XXX XXX XXX XXX XXX
+reload_serial_ksprop ksprop_fm.test.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac3.test.l4448.ll
+Dimensions 0 0 0 0
+LAYOUT = Hypercubes, options = XXX
+automatic hyper_prime layout
+ON EACH NODE XXX x XXX x XXX x XXX
+Converting file ksprop_fm.test.l4448.ll to file ksprop_scidac3.test.l4448.ll
+Read prop serially for color 0 from file ksprop_fm.test.l4448.ll
+Read prop serially for color 0 from file ksprop_fm.test.l4448.ll
+Read prop serially for color 0 from file ksprop_fm.test.l4448.ll
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+Time to save prop color 0 = XXX
+ask_starting_ksprop(0): EOF on input.
+RUNNING COMPLETED

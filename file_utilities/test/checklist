@@ -1,0 +1,8 @@
+exec ksprop_2ksprop 1 "WANTQIO=true" - BEGIN RUNNING
+     extra-target ksprop.test.compare
+# exec wprop_2wprop    1 "WANTQIO=true" - BEGIN RUNNING
+#      extra-target wprop.test.compare
+exec ksprop_2ksprop 2 "WANTQIO=true" - BEGIN RUNNING
+     extra-target ksprop.test.compare
+# exec wprop_2wprop    2 "WANTQIO=true" - BEGIN RUNNING
+#      extra-target wprop.test.compare

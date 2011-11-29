@@ -1,0 +1,264 @@
+type 0 for no prompts  or 1 for prompts
+BEGIN
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
+save_serial_scidac_wprop wprop_scidac.test.l4448.ll
+Dimensions 4 4 4 8
+LAYOUT = Hypercubes, options = hyper_prime,
+automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file ../../binary_samples/wprop_fm.sample.l4448.ll to file wprop_scidac.test.l4448.ll
+quark.t[0].checksum  "7e685bd9 759261a0"
+quark.t[1].checksum  "458d636c 7fde95"
+quark.t[2].checksum  "b5a45a07 719a0afd"
+quark.t[3].checksum  "331f5357 13ec46ad"
+quark.t[4].checksum  "d2a13ba2 2daf8c59"
+quark.t[5].checksum  "4720052d 65bfc73d"
+quark.t[6].checksum  "90dc8731 1bcbbc90"
+quark.t[7].checksum  "637519f8 3bf07bbe"
+Time to reload wprop spin 0 color 0 5.102158e-05
+Time to reload wprop spin 0 color 1 2.408028e-05
+Time to reload wprop spin 0 color 2 2.408028e-05
+Time to reload wprop spin 1 color 0 2.503395e-05
+Time to reload wprop spin 1 color 1 2.598763e-05
+Time to reload wprop spin 1 color 2 2.598763e-05
+Time to reload wprop spin 2 color 0 2.479553e-05
+Time to reload wprop spin 2 color 1 2.408028e-05
+Time to reload wprop spin 2 color 2 2.312660e-05
+Time to reload wprop spin 3 color 0 3.480911e-05
+Time to reload wprop spin 3 color 1 2.408028e-05
+Time to reload wprop spin 3 color 2 2.503395e-05
+Time to reload wprop 1.206558e+09
+Time to save prop spin 0 color 0 = 1.371861e-03
+Time to save prop spin 0 color 1 = 9.298325e-04
+Time to save prop spin 0 color 2 = 9.109974e-04
+Time to save prop spin 1 color 0 = 9.119511e-04
+Time to save prop spin 1 color 1 = 9.140968e-04
+Time to save prop spin 1 color 2 = 8.950233e-04
+Time to save prop spin 2 color 0 = 9.038448e-04
+Time to save prop spin 2 color 1 = 9.031296e-04
+Time to save prop spin 2 color 2 = 9.138584e-04
+Time to save prop spin 3 color 0 = 9.050369e-04
+Time to save prop spin 3 color 1 = 1.008987e-03
+Time to save prop spin 3 color 2 = 9.298325e-04
+reload_serial_wprop wprop_scidac.test.l4448.ll
+save_serial_fm_wprop wprop_fnal1.test.l4448.ll
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+Restoring binary SciDAC file wprop_scidac.test.l4448.ll
+File info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropFile><version>1.0</version><type>USQCD_DiracFermion_ScalarSource_TwelveSink</type><info>Wilson Propagator</info></usqcdPropFile>"
+Dimensions 4 4 4 8
+LAYOUT = Hypercubes, options = hyper_prime,
+automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file wprop_scidac.test.l4448.ll to file wprop_fnal1.test.l4448.ll
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+Restoring binary SciDAC file wprop_scidac.test.l4448.ll
+File info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropFile><version>1.0</version><type>USQCD_DiracFermion_ScalarSource_TwelveSink</type><info>Wilson Propagator</info></usqcdPropFile>"
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><info></info></usqcdSourceInfo>"
+Checksums e48cfcef af6761bb
+Read prop source 
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>0</spin><color>0</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums a819a9e7 79a2af6a
+Time to reload wprop spin 0 color 0 1.177073e-03
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>0</spin><color>1</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums cf8d2040 69297c0
+Time to reload wprop spin 0 color 1 8.471012e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>0</spin><color>2</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 9424b173 b3d6b94c
+Time to reload wprop spin 0 color 2 8.370876e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>1</spin><color>0</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 6a9c81db 48a4e333
+Time to reload wprop spin 1 color 0 8.380413e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>1</spin><color>1</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 8a4b810a 5ac9a38f
+Time to reload wprop spin 1 color 1 8.389950e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>1</spin><color>2</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 5a863027 63110598
+Time to reload wprop spin 1 color 2 8.280277e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>2</spin><color>0</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 5a187441 59a5a578
+Time to reload wprop spin 2 color 0 8.378029e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>2</spin><color>1</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 6e16915b 83c2c8b0
+Time to reload wprop spin 2 color 1 8.370876e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>2</spin><color>2</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 46e5eba cc9cb25f
+Time to reload wprop spin 2 color 2 8.659363e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>3</spin><color>0</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums e96ca4c 858c0372
+Time to reload wprop spin 3 color 0 8.401871e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>3</spin><color>1</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums abdc07 af503182
+Time to reload wprop spin 3 color 1 8.380413e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>3</spin><color>2</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 62cec64f 439c6191
+Time to reload wprop spin 3 color 2 8.380413e-04
+Time to reload wprop 1.206558e+09
+Time to save prop spin 0 color 0 = 4.148483e-04
+Time to save prop spin 0 color 1 = 2.384186e-05
+Time to save prop spin 0 color 2 = 2.408028e-05
+Time to save prop spin 1 color 0 = 2.598763e-05
+Time to save prop spin 1 color 1 = 2.598763e-05
+Time to save prop spin 1 color 2 = 2.694130e-05
+Time to save prop spin 2 color 0 = 2.408028e-05
+Time to save prop spin 2 color 1 = 2.408028e-05
+Time to save prop spin 2 color 2 = 2.288818e-05
+Time to save prop spin 3 color 0 = 2.598763e-05
+Time to save prop spin 3 color 1 = 2.598763e-05
+Time to save prop spin 3 color 2 = 3.004074e-05
+quark.t[0].checksum  "3b0da3c2 d209ced2"
+quark.t[1].checksum  "259e6f10 2449b135"
+quark.t[2].checksum  "bf8ae0a5 e16d6614"
+quark.t[3].checksum  "d9a2e218 ad46f27f"
+quark.t[4].checksum  "e31c65f1 c9c6538"
+quark.t[5].checksum  "b6aea00 62ae17fc"
+quark.t[6].checksum  "695e8744 a4001ad9"
+quark.t[7].checksum  "1741f22 5b268ca2"
+Wrote prop file wprop_fnal1.test.l4448.ll time stamp Sun Apr  5 20:26:32 2009
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
+save_serial_fm_wprop wprop_fnal2.test.l4448.ll
+Dimensions 4 4 4 8
+LAYOUT = Hypercubes, options = hyper_prime,
+automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file ../../binary_samples/wprop_fm.sample.l4448.ll to file wprop_fnal2.test.l4448.ll
+quark.t[0].checksum  "7e685bd9 759261a0"
+quark.t[1].checksum  "458d636c 7fde95"
+quark.t[2].checksum  "b5a45a07 719a0afd"
+quark.t[3].checksum  "331f5357 13ec46ad"
+quark.t[4].checksum  "d2a13ba2 2daf8c59"
+quark.t[5].checksum  "4720052d 65bfc73d"
+quark.t[6].checksum  "90dc8731 1bcbbc90"
+quark.t[7].checksum  "637519f8 3bf07bbe"
+Time to reload wprop spin 0 color 0 2.908707e-05
+Time to reload wprop spin 0 color 1 2.384186e-05
+Time to reload wprop spin 0 color 2 2.479553e-05
+Time to reload wprop spin 1 color 0 2.503395e-05
+Time to reload wprop spin 1 color 1 2.384186e-05
+Time to reload wprop spin 1 color 2 2.479553e-05
+Time to reload wprop spin 2 color 0 2.288818e-05
+Time to reload wprop spin 2 color 1 2.193451e-05
+Time to reload wprop spin 2 color 2 2.288818e-05
+Time to reload wprop spin 3 color 0 2.312660e-05
+Time to reload wprop spin 3 color 1 2.503395e-05
+Time to reload wprop spin 3 color 2 2.408028e-05
+Time to reload wprop 1.206558e+09
+Time to save prop spin 0 color 0 = 4.618168e-04
+Time to save prop spin 0 color 1 = 2.598763e-05
+Time to save prop spin 0 color 2 = 2.598763e-05
+Time to save prop spin 1 color 0 = 3.099442e-05
+Time to save prop spin 1 color 1 = 2.884865e-05
+Time to save prop spin 1 color 2 = 3.218651e-05
+Time to save prop spin 2 color 0 = 2.694130e-05
+Time to save prop spin 2 color 1 = 2.694130e-05
+Time to save prop spin 2 color 2 = 2.479553e-05
+Time to save prop spin 3 color 0 = 3.194809e-05
+Time to save prop spin 3 color 1 = 3.194809e-05
+Time to save prop spin 3 color 2 = 3.409386e-05
+quark.t[0].checksum  "3b0da3c2 d209ced2"
+quark.t[1].checksum  "259e6f10 2449b135"
+quark.t[2].checksum  "bf8ae0a5 e16d6614"
+quark.t[3].checksum  "d9a2e218 ad46f27f"
+quark.t[4].checksum  "e31c65f1 c9c6538"
+quark.t[5].checksum  "b6aea00 62ae17fc"
+quark.t[6].checksum  "695e8744 a4001ad9"
+quark.t[7].checksum  "1741f22 5b268ca2"
+Wrote prop file wprop_fnal2.test.l4448.ll time stamp Sun Apr  5 20:26:32 2009
+reload_serial_wprop wprop_scidac.test.l4448.ll
+save_serial_scidac_wprop wprop_scidac2.test.l4448.ll
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+Restoring binary SciDAC file wprop_scidac.test.l4448.ll
+File info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropFile><version>1.0</version><type>USQCD_DiracFermion_ScalarSource_TwelveSink</type><info>Wilson Propagator</info></usqcdPropFile>"
+Dimensions 4 4 4 8
+LAYOUT = Hypercubes, options = hyper_prime,
+automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file wprop_scidac.test.l4448.ll to file wprop_scidac2.test.l4448.ll
+QIO_open_read_nonmaster(0): Opened wprop_scidac.test.l4448.ll for reading in singlefile mode
+Restoring binary SciDAC file wprop_scidac.test.l4448.ll
+File info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropFile><version>1.0</version><type>USQCD_DiracFermion_ScalarSource_TwelveSink</type><info>Wilson Propagator</info></usqcdPropFile>"
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><info></info></usqcdSourceInfo>"
+Checksums e48cfcef af6761bb
+Read prop source 
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>0</spin><color>0</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums a819a9e7 79a2af6a
+Time to reload wprop spin 0 color 0 1.166821e-03
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>0</spin><color>1</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums cf8d2040 69297c0
+Time to reload wprop spin 0 color 1 8.399487e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>0</spin><color>2</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 9424b173 b3d6b94c
+Time to reload wprop spin 0 color 2 8.378029e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>1</spin><color>0</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 6a9c81db 48a4e333
+Time to reload wprop spin 1 color 0 8.268356e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>1</spin><color>1</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 8a4b810a 5ac9a38f
+Time to reload wprop spin 1 color 1 8.409023e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>1</spin><color>2</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 5a863027 63110598
+Time to reload wprop spin 1 color 2 8.409023e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>2</spin><color>0</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 5a187441 59a5a578
+Time to reload wprop spin 2 color 0 8.370876e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>2</spin><color>1</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 6e16915b 83c2c8b0
+Time to reload wprop spin 2 color 1 8.361340e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>2</spin><color>2</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 46e5eba cc9cb25f
+Time to reload wprop spin 2 color 2 8.640289e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>3</spin><color>0</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums e96ca4c 858c0372
+Time to reload wprop spin 3 color 0 8.401871e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>3</spin><color>1</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums abdc07 af503182
+Time to reload wprop spin 3 color 1 8.270741e-04
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdPropInfo><version>1.0</version><spin>3</spin><color>2</color><info>Converted from ../../binary_samples/wprop_fm.sample.l4448.ll</info></usqcdPropInfo>"
+Checksums 62cec64f 439c6191
+Time to reload wprop spin 3 color 2 8.409023e-04
+Time to reload wprop 1.206558e+09
+Time to save prop spin 0 color 0 = 1.213074e-03
+Time to save prop spin 0 color 1 = 9.260178e-04
+Time to save prop spin 0 color 2 = 9.098053e-04
+Time to save prop spin 1 color 0 = 9.160042e-04
+Time to save prop spin 1 color 1 = 9.210110e-04
+Time to save prop spin 1 color 2 = 9.129047e-04
+Time to save prop spin 2 color 0 = 9.131432e-04
+Time to save prop spin 2 color 1 = 9.081364e-04
+Time to save prop spin 2 color 2 = 9.238720e-04
+Time to save prop spin 3 color 0 = 9.150505e-04
+Time to save prop spin 3 color 1 = 9.958744e-04
+Time to save prop spin 3 color 2 = 9.269714e-04
+ask_starting_wprop(0): EOF on input.
+RUNNING COMPLETED
+exit: Wed Mar 26 12:00:20 2008
+

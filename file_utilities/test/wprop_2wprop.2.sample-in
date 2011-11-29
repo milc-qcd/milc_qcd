@@ -1,0 +1,16 @@
+prompt 0
+
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
+save_serial_scidac_wprop wprop_scidac.test.l4448.ll
+
+reload_serial_wprop wprop_scidac.test.l4448.ll
+save_serial_fm_wprop wprop_fnal1.test.l4448.ll
+
+reload_serial_wprop ../../binary_samples/wprop_fm.sample.l4448.ll
+save_serial_fm_wprop wprop_fnal2.test.l4448.ll
+
+reload_serial_wprop wprop_scidac.test.l4448.ll
+save_serial_scidac_wprop wprop_scidac2.test.l4448.ll
+
+
+

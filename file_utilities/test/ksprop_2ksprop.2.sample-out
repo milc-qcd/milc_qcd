@@ -1,0 +1,89 @@
+type 0 for no prompts  or 1 for prompts
+BEGIN
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
+save_serial_ksprop ksprop_milc.test.l4448.ll
+Dimensions 4 4 4 8
+LAYOUT = Hypercubes, options = QDP
+automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file ../../binary_samples/ksprop_fm.sample.l4448.ll to file ksprop_milc.test.l4448.ll
+quark.t[0].checksum  "256fe380 c09de649"
+quark.t[1].checksum  "8ced0a1c 8cba6024"
+quark.t[2].checksum  "2017d4ff 5c84f5a7"
+quark.t[3].checksum  "65b00a8b 91ffd58a"
+quark.t[4].checksum  "2b2f460d f3da5621"
+quark.t[5].checksum  "d23f979 fa0caf1a"
+quark.t[6].checksum  "26f72465 c1afedc7"
+quark.t[7].checksum  "49fda91c 43d489fe"
+Read KS prop serially from file ../../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 49fda91c 43d489fe.  Read 0 0.
+Wrote info file ksprop_milc.test.l4448.ll.info
+Time to save prop color 0 = 3.504753e-05
+Time to save prop color 1 = 3.290176e-05
+Time to save prop color 2 = 3.314018e-05
+Wrote prop file ksprop_milc.test.l4448.ll time stamp Mon Mar 24 15:10:36 2008
+reload_serial_ksprop ksprop_milc.test.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac1.test.l4448.ll
+Dimensions 4 4 4 8
+LAYOUT = Hypercubes, options = QDP
+automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file ksprop_milc.test.l4448.ll to file ksprop_scidac1.test.l4448.ll
+Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
+Read prop serially for color 1 from file ksprop_milc.test.l4448.ll
+Read prop serially for color 2 from file ksprop_milc.test.l4448.ll
+Time to save prop color 0 = 1.235008e-03
+Time to save prop color 1 = 8.430481e-04
+Time to save prop color 2 = 7.598400e-04
+reload_serial_ksprop ../../binary_samples/ksprop_fm.sample.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac2.test.l4448.ll
+Dimensions 4 4 4 8
+LAYOUT = Hypercubes, options = QDP
+automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file ../../binary_samples/ksprop_fm.sample.l4448.ll to file ksprop_scidac2.test.l4448.ll
+quark.t[0].checksum  "256fe380 c09de649"
+quark.t[1].checksum  "8ced0a1c 8cba6024"
+quark.t[2].checksum  "2017d4ff 5c84f5a7"
+quark.t[3].checksum  "65b00a8b 91ffd58a"
+quark.t[4].checksum  "2b2f460d f3da5621"
+quark.t[5].checksum  "d23f979 fa0caf1a"
+quark.t[6].checksum  "26f72465 c1afedc7"
+quark.t[7].checksum  "49fda91c 43d489fe"
+Read KS prop serially from file ../../binary_samples/ksprop_fm.sample.l4448.ll
+Computed checksum 49fda91c 43d489fe.  Read 0 0.
+Time to save prop color 0 = 1.167059e-03
+Time to save prop color 1 = 7.760525e-04
+Time to save prop color 2 = 7.629395e-04
+reload_serial_ksprop ksprop_milc.test.l4448.ll
+save_serial_ksprop ksprop_fm.test.l4448.ll
+Dimensions 4 4 4 8
+LAYOUT = Hypercubes, options = QDP
+automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file ksprop_milc.test.l4448.ll to file ksprop_fm.test.l4448.ll
+Read prop serially for color 0 from file ksprop_milc.test.l4448.ll
+Read prop serially for color 1 from file ksprop_milc.test.l4448.ll
+Read prop serially for color 2 from file ksprop_milc.test.l4448.ll
+Wrote info file ksprop_fm.test.l4448.ll.info
+Time to save prop color 0 = 3.409386e-05
+Time to save prop color 1 = 3.409386e-05
+Time to save prop color 2 = 3.314018e-05
+Wrote prop file ksprop_fm.test.l4448.ll time stamp Mon Mar 24 15:10:36 2008
+reload_serial_ksprop ksprop_fm.test.l4448.ll
+save_serial_scidac_ksprop ksprop_scidac3.test.l4448.ll
+Dimensions 4 4 4 8
+LAYOUT = Hypercubes, options = QDP
+automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Converting file ksprop_fm.test.l4448.ll to file ksprop_scidac3.test.l4448.ll
+Read prop serially for color 0 from file ksprop_fm.test.l4448.ll
+Read prop serially for color 1 from file ksprop_fm.test.l4448.ll
+Read prop serially for color 2 from file ksprop_fm.test.l4448.ll
+Time to save prop color 0 = 1.185894e-03
+Time to save prop color 1 = 7.789135e-04
+Time to save prop color 2 = 7.619858e-04
+ask_starting_ksprop(0): EOF on input.
+RUNNING COMPLETED
+exit: Mon Mar 24 15:10:36 2008
+
