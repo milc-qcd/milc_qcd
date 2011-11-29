@@ -1,4 +1,4 @@
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/control_form.c,v 1.2 2006/11/25 02:57:49 detar Exp $ **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/control_form.c,v 1.3 2011/11/29 18:04:40 detar Exp $ **/
 
 /*
 
@@ -25,9 +25,7 @@ int main(int argc,char **argv)
   /*---------- start of the calculation ----------  */
   
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   g_sync();

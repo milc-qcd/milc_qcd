@@ -22,8 +22,8 @@ typedef struct {
   int nrestart_spectator ; /* number of restarts for spectator
 			      inversion */
   Real resid_spectator;   /* resid error for cg inversion */
-  wilson_quark_source wqs_spectator[MAX_KAPPA]; /* Spectator source parameters */
-  wilson_quark_source wqs_zonked_light[MAX_KAPPA]; /* Zonked_Light source parameters */
+  quark_source wqs_spectator[MAX_KAPPA]; /* Spectator source parameters */
+  quark_source wqs_zonked_light[MAX_KAPPA]; /* Zonked_Light source parameters */
   
   Real kappa_spectator[MAX_KAPPA] ; /** Kappa values for the spectator
 					 quarks inversion **/

@@ -1,7 +1,7 @@
 /******** setup_hqet_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.7 2009/05/31 02:00:57 detar Exp $   ****/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/hqet_heavy_to_light/setup_hqet_form.c,v 1.8 2011/11/29 18:04:41 detar Exp $   ****/
 /* MIMD code version 4 */
 
 #include "hqet_light_includes.h"
@@ -186,7 +186,7 @@ int readin(int prompt)
        *   spectator propagators */
       /* It would be better to code this in w_source. CD */
       /* width: psi=exp(-(r/r0)^2) */
-      IF_OK if (prompt!=0) 
+      IF_OK if (prompt==1) 
 	printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
 
       for(i=0;i<par_buf.no_spectator;i++){
@@ -248,7 +248,7 @@ int readin(int prompt)
        *   zonked propagators */
       
       /* width: psi=exp(-(r/r0)^2) */
-      IF_OK if (prompt!=0) 
+      IF_OK if (prompt==1) 
 	printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
 
       for(i=0;i<par_buf.no_zonked_light;i++){
@@ -360,10 +360,10 @@ int readin(int prompt)
       kappa_zonked_light[ ikappa ] = par_buf.kappa_zonked_light[ ikappa ] ;
       kappa_spectator[ ikappa ]  =   par_buf.kappa_spectator[ ikappa ] ; 
       wqs_zonked_light[ ikappa ] = par_buf.wqs_zonked_light[ ikappa ];
-      init_wqs(&wqs_zonked_light[ ikappa ]);
+      init_qs(&wqs_zonked_light[ ikappa ]);
       wqs_zonked_light[ ikappa ].type = par_buf.wqs_zonked_light[ ikappa ].type;
       wqs_spectator[ ikappa ] = par_buf.wqs_spectator [ ikappa ];
-      init_wqs(&wqs_spectator_light[ ikappa ]);
+      init_qs(&wqs_spectator_light[ ikappa ]);
       wqs_spectator[ ikappa ].type = par_buf.wqs_spectator [ ikappa ].type;
       
       strcpy(qfile_spectator[ikappa] , par_buf.qfile_spectator[ikappa]);

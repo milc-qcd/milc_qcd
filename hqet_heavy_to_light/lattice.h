@@ -210,9 +210,9 @@ EXTERN Real *wall_template; /* pointer to array of wall heights */
    generator state */
 EXTERN double_prn node_prn ;
 
-EXTERN wilson_quark_source wqs_spectator[MAX_KAPPA];
-EXTERN wilson_quark_source wqs_zonked_light[MAX_KAPPA];
-EXTERN wilson_quark_source wqstmp;  /* Temporary */
+EXTERN quark_source wqs_spectator[MAX_KAPPA];
+EXTERN quark_source wqs_zonked_light[MAX_KAPPA];
+EXTERN quark_source wqstmp;  /* Temporary */
 
 EXTERN quark_invert_control qic_zonked_light;
 EXTERN quark_invert_control qic_spectator;
