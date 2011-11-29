@@ -38,7 +38,7 @@
 #include <string.h>
 
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
-		     ferm_links_t *fn );
+		     imp_ferm_links_t *fn );
 void cleanup_Matrix() ;
 void measure_chirality(su3_vector *src, double *chirality, int parity) ;
 void print_densities(su3_vector *src, char *tag, int y,int z,int t,int parity);
@@ -66,7 +66,7 @@ void normalize(su3_vector *vec,int parity) ;
 void project_out(su3_vector *vec, su3_vector **vector, int Num, int parity);
 void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
 		    double *err, int *converged, int parity,
-		    ferm_links_t *fn);
+		    imp_ferm_links_t *fn);
 void RotateBasis(su3_vector **eigVec, Matrix *V, int parity) ;
 
 void mult_spin_pseudoscalar(field_offset src, field_offset dest ) ;
@@ -91,7 +91,7 @@ static int dslash_start = 1 ; /* 1 means start dslash */
 /************************************************************************/
 
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
-		     ferm_links_t *fn )
+		     imp_ferm_links_t *fn )
 {  
   register site *s;
   register  int i;
@@ -134,7 +134,7 @@ void cleanup_Matrix(){
 /*****************************************************************************/
 /* The Matrix_Vec_mult and cleanup_Matrix() using dslash_special */
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
-		     ferm_links_t *fn ){
+		     imp_ferm_links_t *fn ){
   
   register site *s;
   register  int i;
@@ -382,7 +382,7 @@ void normalize(su3_vector *vec,int parity){
 
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
 		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
-		 int parity, ferm_links_t *fn){
+		 int parity, imp_ferm_links_t *fn){
 
   int iter ;
   double beta, cos_theta, sin_theta ;
@@ -527,7 +527,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 /* Returns the projected matrix A and the error of each eigenvector */
 void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
 		    double *err, int *converged, int parity,
-		    ferm_links_t *fn){
+		    imp_ferm_links_t *fn){
   int i,j,Nvecs ;
   su3_vector *grad ;
   double_complex cc,Aij,Aji ;
@@ -597,7 +597,7 @@ void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
 int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 	       Real RelTol, int Nvecs, int MaxIter, 
 	       int Restart, int Kiters, int parity,
-	       ferm_links_t *fn ){
+	       imp_ferm_links_t *fn ){
 
   int total_iters=0 ;
   int j;
@@ -614,6 +614,7 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 #ifdef EIGTIME
   double dtimec;
 #endif
+
 
   ToleranceG = 10.0*Tolerance ;
 

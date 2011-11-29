@@ -17,6 +17,7 @@
    reinitialize after niters iterations and try once more.
 */
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
+#include "../include/fermion_links.h"
 #include "../include/prefetch.h"
 #define FETCH_UP 1
 
@@ -56,7 +57,7 @@ relative_residue(su3_vector *p, su3_vector *q, int parity)
 static int
 ks_congrad_eo_parity( su3_vector *t_src, su3_vector *t_dest, 
 		      quark_invert_control *qic, Real mass,
-		      ferm_links_t *fn){
+		      eo_links_t *eo){
   register int i;
   register site *s;
   int iteration;	/* counter for iterations */
@@ -77,9 +78,9 @@ ks_congrad_eo_parity( su3_vector *t_src, su3_vector *t_dest,
   /* Unpack structure */
   int niter        = qic->max;      /* maximum number of iters per restart */
   int max_restarts = qic->nrestart; /* maximum restarts */
-  Real rsqmin      = qic->resid;    /* desired residual - 
+  Real rsqmin      = qic->resid * qic->resid;    /* desired squared residual - 
 			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
-  Real relrsqmin   = qic->relresid; /* desired relative residual (FNAL)*/
+  Real relrsqmin   = qic->relresid * qic->relresid; /* desired relative residual (FNAL)*/
   int parity       = qic->parity;   /* EVEN, ODD */
 
   int max_cg = max_restarts*niter; /* Maximum number of iterations */
@@ -118,6 +119,9 @@ ks_congrad_eo_parity( su3_vector *t_src, su3_vector *t_dest,
   iteration = 0;
   qic->size_r = 0;
   qic->size_relr = 0;
+  qic->final_iters   = 0;
+  qic->final_restart = 0;
+  qic->converged     = 1;
 
   while(1) {
     /* Check for completion */
@@ -136,8 +140,8 @@ ks_congrad_eo_parity( su3_vector *t_src, su3_vector *t_dest,
 	   source_norm = |src|^2
 	*/
         rsq = 0.0;
-	dslash_eo_field(t_dest, ttt, otherparity, fn);
-	dslash_eo_field(ttt, ttt, parity, fn);
+	dslash_eo_field(t_dest, ttt, otherparity, eo);
+	dslash_eo_field(ttt, ttt, parity, eo);
 	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
 	FORSOMEPARITY(i,s,parity){
 	  if( i < loopend-FETCH_UP ){
@@ -160,17 +164,21 @@ ks_congrad_eo_parity( su3_vector *t_src, su3_vector *t_dest,
 	if(relrsqmin > 0)
 	  relrsq = relative_residue(resid, t_dest, parity);
 
-	qic->final_rsq    = (Real)rsq/source_norm;
-	qic->final_relrsq = (Real)relrsq;
-
+	if(source_norm == 0){
+	  qic->final_rsq = 0.;
+	  qic->final_relrsq = 0.;
+	} else {
+	  qic->final_rsq    = (Real)rsq/source_norm;
+	  qic->final_relrsq = (Real)relrsq;
+	}
 
 	iteration++ ;  /* iteration counts number of multiplications
 			  by M_adjoint*M */
 	total_iters++;
 
 #ifdef CG_DEBUG
-	if(this_node==0)printf("CONGRAD: (re)start rsq = %.10e relrsq %.10e\n",
-			       qic->final_rsq, qic->final_relrsq);
+	if(this_node==0)printf("CONGRAD: (re)start %d rsq = %.10e relrsq %.10e\n",
+			       nrestart, qic->final_rsq, qic->final_relrsq);
 #endif
 	/* Quit when true residual and true relative residual are within
 	   tolerance or when we exhaust iterations or restarts */
@@ -203,8 +211,8 @@ ks_congrad_eo_parity( su3_vector *t_src, su3_vector *t_dest,
     pkp = 0.0;
     /* sum of neighbors */
     
-    dslash_eo_field( cg_p, ttt, otherparity, fn);
-    dslash_eo_field( ttt, ttt, parity, fn);
+    dslash_eo_field( cg_p, ttt, otherparity, eo);
+    dslash_eo_field( ttt, ttt, parity, eo);
     
     /* finish computation of M_adjoint*m*p and p*M_adjoint*m*Kp */
     /* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */
@@ -275,8 +283,11 @@ ks_congrad_eo_parity( su3_vector *t_src, su3_vector *t_dest,
     if(relrsqmin > 0)
       relrsq = relative_residue(resid, t_dest, parity);
     
-    qic->size_r    = (Real)rsq/source_norm;
-    qic->size_relr = (Real)relrsq;
+    qic->size_r        = (Real)rsq/source_norm;
+    qic->size_relr     = (Real)relrsq;
+    qic->final_iters   = iteration;
+    qic->final_restart = nrestart;
+    qic->converged     = 1;
 
 #ifdef CG_DEBUG
     if(mynode()==0){printf("iter=%d, rsq/src= %e, relrsq= %e, pkp=%e\n",
@@ -294,6 +305,7 @@ ks_congrad_eo_parity( su3_vector *t_src, su3_vector *t_dest,
   }
 
   if(nrestart == max_restarts || iteration == max_cg){
+    qic->converged = 0;
     node0_printf("ks_congrad_eo_parity: CG not converged after %d iterations, \n",
 		 iteration);
     node0_printf("rsq. = %e wanted %e relrsq = %e wanted %e\n",
@@ -311,7 +323,7 @@ ks_congrad_eo_parity( su3_vector *t_src, su3_vector *t_dest,
 
 int ks_congrad_field( su3_vector *src, su3_vector *dest, 
 			 quark_invert_control *qic, Real mass,
-			 ferm_links_t *fn )
+			 eo_links_t *eo )
 {
   int iters = 0;
   double dtimec;
@@ -324,11 +336,11 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
 
   if(parity == EVEN || parity == EVENANDODD){
     qic->parity = EVEN;
-    iters += ks_congrad_eo_parity(src, dest, qic, mass, fn);
+    iters += ks_congrad_eo_parity(src, dest, qic, mass, eo);
   }
   if(parity == ODD || parity == EVENANDODD){
     qic->parity = ODD;
-    iters += ks_congrad_eo_parity(src, dest, qic, mass, fn);
+    iters += ks_congrad_eo_parity(src, dest, qic, mass, eo);
   }
 
   qic->parity = parity;
@@ -342,6 +354,8 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
     fflush(stdout);}
 #endif
 
+  report_status(qic);
+
   return iters;
 }
 
@@ -349,7 +363,7 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
 
 int ks_congrad_site( field_offset src, field_offset dest, 
 			quark_invert_control *qic, Real mass,
-			ferm_links_t *fn )
+			eo_links_t *eo )
 {
   int i;
   site *s;
@@ -379,11 +393,11 @@ int ks_congrad_site( field_offset src, field_offset dest,
 
   if(parity == EVEN || parity == EVENANDODD){
     qic->parity = EVEN;
-    iters += ks_congrad_eo_parity(t_src, t_dest, qic, mass, fn );
+    iters += ks_congrad_eo_parity(t_src, t_dest, qic, mass, eo );
   }
   else if(parity == ODD || parity == EVENANDODD){
     qic->parity = ODD;
-    iters += ks_congrad_eo_parity(t_src, t_dest, qic, mass, fn );
+    iters += ks_congrad_eo_parity(t_src, t_dest, qic, mass, eo );
   }
 
   qic->parity = parity;
@@ -405,6 +419,8 @@ int ks_congrad_site( field_offset src, field_offset dest,
     fflush(stdout);}
 #endif
 
+  report_status(qic);
+
   return iters;
 }
 
@@ -413,21 +429,24 @@ int ks_congrad_site( field_offset src, field_offset dest,
 int ks_congrad( field_offset src, field_offset dest, Real mass,
 		   int niter, int nrestart, Real rsqmin, int prec,
 		   int parity, Real *final_rsq,
-		   ferm_links_t *fn )
+		   eo_links_t *eo )
 {
   int iters;
   quark_invert_control qic;
 
   /* Pack structure */
   qic.prec      = prec;  /* Currently ignored */
-  qic.parity    = parity;
+  qic.min       = 0;
   qic.max       = niter;
   qic.nrestart  = nrestart;
-  qic.resid     = rsqmin;
+  qic.start_flag = 0;
+  qic.nsrc      = 1;
+  qic.parity    = parity;
+  qic.resid     = sqrt(rsqmin);
   qic.relresid  = 0;     /* Suppresses this test */
 
   /* Solve the system */
-  iters = ks_congrad_site( src, dest, &qic, mass, fn );
+  iters = ks_congrad_site( src, dest, &qic, mass, eo );
 
   /* Unpack the results */
   *final_rsq    = qic.final_rsq;

@@ -1,4 +1,4 @@
-/******* d_congrad5_fn_qop.c - conjugate gradient for SU3/fermions ****/
+/******* d_congrad5_fn_qop_P.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 7 */
 
 /* This is the MILC wrapper for the SciDAC Level 3 QOP inverter */
@@ -9,10 +9,8 @@
 
 /* Entry points (must be redefined to precision-specific names)
 
-   KS_CONGRAD_QOP_SITE2SITE
-   KS_CONGRAD_QOP_SITE2FIELD   
-   KS_CONGRAD_QOP_FIELD2FIELD   
-   KS_CONGRAD_MILC2QOP
+   KS_CONGRAD_MILCFIELD2QOP
+   KS_CONGRAD_QOP_FIELD2FIELD
 
 */
 
@@ -20,33 +18,29 @@
 
 #if ( QOP_Precision == 1 )
 
-#define KS_CONGRAD_QOP_SITE2SITE  ks_congrad_qop_F_site2site
-#define KS_CONGRAD_QOP_SITE2FIELD ks_congrad_qop_F_site2field
+#define GET_ASQTADLINKS           get_F_asqtad_links
 #define KS_CONGRAD_QOP_FIELD2FIELD ks_congrad_qop_F_field2field
 #define KS_CONGRAD_MILCFIELD2QOP  ks_congrad_milcfield2qop_F
-#define KS_CONGRAD_MILC2QOP       ks_congrad_milc2qop_F
-#define CREATE_QOP_ASQTAD_FERMION_LINKS create_qop_F_asqtad_fermion_links
 #define MASSREAL float
-#define QOP_L qop_F_l
 
 #else
 
-#define KS_CONGRAD_QOP_SITE2SITE  ks_congrad_qop_D_site2site
-#define KS_CONGRAD_QOP_SITE2FIELD ks_congrad_qop_D_site2field
+#define GET_ASQTADLINKS           get_D_asqtad_links
 #define KS_CONGRAD_QOP_FIELD2FIELD ks_congrad_qop_D_field2field
 #define KS_CONGRAD_MILCFIELD2QOP  ks_congrad_milcfield2qop_D
-#define KS_CONGRAD_MILC2QOP       ks_congrad_milc2qop_D
-#define CREATE_QOP_ASQTAD_FERMION_LINKS create_qop_D_asqtad_fermion_links
 #define MASSREAL double
-#define QOP_L qop_D_l
 
 #endif
 
 /* 2/2005 D. Renner and C. Jung */
 /* 12/2005 C. DeTar upgrade to new Level 3 API */
+/* 10/1/2009 A. Bazavov, HISQ support added, requires extra macros */
 
 /*
  * $Log: d_congrad5_fn_qop_P.c,v $
+ * Revision 1.8  2011/11/29 20:38:55  detar
+ * Add
+ *
  * Revision 1.7  2007/11/17 05:16:43  detar
  * Fix nrestart treatment.
  *
@@ -107,6 +101,7 @@
  */
 
 #include "generic_ks_includes.h"
+#include <qop.h>
 #include "../include/generic_qop.h"
 #include "../include/generic_ks_qop.h"
 
@@ -114,21 +109,23 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-/*#define CGDEBUG*/
-
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.7 2007/11/17 05:16:43 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.8 2011/11/29 20:38:55 detar Exp $";
 
 
 /* Load inversion args for Level 3 inverter */
 
 static void 
 set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg, 
-		    quark_invert_control *qic )
+		    quark_invert_control *qic, int nsrc, int nmass[] )
 {
   qop_invert_arg->max_iter     = qic->nrestart * qic->max;  /* QOP convention */
   qop_invert_arg->restart      = qic->max;
   qop_invert_arg->max_restarts = qic->nrestart;
   qop_invert_arg->evenodd      = milc2qop_parity(qic->parity);
+
+  /* For multimass inversion, don't restart */
+  if(nsrc != 1 || nmass[0] != 1)
+    qop_invert_arg->restart = qop_invert_arg->max_iter;
 }
 
 
@@ -161,7 +158,8 @@ create_qop_resid_arg( int nsrc, int nmass[],
 	terminate(1);
       }
       /* For now the residuals are the same for all sources and masses */
-      res_arg[isrc][imass]->rsqmin = qic->resid;
+      res_arg[isrc][imass]->rsqmin = qic->resid * qic->resid;
+      res_arg[isrc][imass]->relmin = qic->relresid * qic->relresid;
     }
   }
   return res_arg;
@@ -195,6 +193,11 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
   int isrc, imass;
   int iters;
   QOP_info_t info;
+  char myname[] = "ks_congrad_qop_generic";
+
+#ifdef AB_DEBUG_ENTRY_EXIT_ROUTINES
+  printf("Enter ks_congrad_qop_generic in d_congrad5_fn_qop_P.c\n");
+#endif
 
 #ifndef OLD_QOPQDP_NORM  
   /* Since version 0.9.0 the conventions for QOP_asqtad_invert* do not
@@ -203,11 +206,16 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
      call and use mat_invert_uml instead.  */
 
   if(qop_invert_arg->evenodd == QOP_EVENODD){
-    printf("ks_congrad_qop_generic: EVENANDODD is currently not supported.\n");
+    node0_printf("%s: EVENANDODD is currently not supported.\n",myname);
     terminate(1);
   }
 #endif
 
+#ifdef CG_DEBUG
+  int save_qop_verb;
+  save_qop_verb = QOP_verbose(QOP_VERB_HI);
+#endif
+  
   if(nsrc == 1 && nmass[0] == 1)
     QOP_asqtad_invert( &info, qop_links, qop_invert_arg, qop_resid_arg[0][0],
 		       masses[0][0], qop_sol[0][0], qop_src[0] );
@@ -215,35 +223,60 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
     QOP_asqtad_invert_multi( &info, qop_links, qop_invert_arg, qop_resid_arg,
 			     masses, nmass, qop_sol, qop_src, nsrc );
 
+#ifdef CG_DEBUG
+  QOP_verbose(save_qop_verb);
+#endif
+
   /* For now we return the largest value and total iterations */
-  qic->final_rsq = 0;
-  qic->converged = 1;
+  qic[0].final_rsq = 0;
+  qic[0].final_relrsq = 0;
+  qic[0].converged = 1;
   iters = 0;
-  for(isrc = 0; isrc < nsrc; isrc++)
+  for(isrc = 0; isrc < nsrc; isrc++){
     for(imass = 0; imass < nmass[isrc]; imass++){
       if(this_node == 0){
-	if(qic->resid < qop_resid_arg[isrc][imass]->final_rsq){
-	  qic->converged = 0;
-	  printf("ks_congrad_qop_generic: NOT CONVERGED (src %d, mass %d),\n",
-		 isrc, imass);
-	  printf("after %d iters and %d restarts (max iters %d max %d restarts) rsq. = %e wanted %e\n",
-		 qop_resid_arg[isrc][imass]->final_iter,
-		 qop_resid_arg[isrc][imass]->final_restart,
-		 qic->max, qic->nrestart,
-		 qop_resid_arg[isrc][imass]->final_rsq,qic->resid);
+	if((qic[0].resid > 0 && qop_resid_arg[isrc][imass]->final_rsq > qic[0].resid * qic[0].resid ) ||
+	   (qic[0].relresid > 0 && qop_resid_arg[isrc][imass]->final_rel > qic[0].relresid * qic[0].relresid )){
+	  qic[0].converged = 0;
+	  node0_printf(" NOT converged (src %d, mass %d) ", isrc, imass);
+	  node0_printf("final_rsq = %.2g rel = %.2g restarts = %d iters = %d\n",
+		       qop_resid_arg[isrc][imass]->final_rsq,
+		       qop_resid_arg[isrc][imass]->final_rel,
+		       qop_resid_arg[isrc][imass]->final_restart,
+		       qop_resid_arg[isrc][imass]->final_iter);
+	  node0_printf("wanted final_rsq = %.2g rel = %.2g\n",
+		       qic[0].resid * qic[0].resid, qic[0].relresid * qic[0].relresid);
+	} else {
+#ifdef CG_DEBUG
+	  node0_printf(" OK converged (src %d, mass %d) ", isrc, imass);
+	  node0_printf("final_rsq = %.2g rel = %.2g restarts = %d iters = %d\n",
+		       qop_resid_arg[isrc][imass]->final_rsq,
+		       qop_resid_arg[isrc][imass]->final_rel,
+		       qop_resid_arg[isrc][imass]->final_restart,
+		       qop_resid_arg[isrc][imass]->final_iter);
+#endif
 	}
       }
-      if(qic->final_rsq < qop_resid_arg[isrc][imass]->final_rsq)
-	qic->final_rsq = qop_resid_arg[isrc][imass]->final_rsq;
-      iters += qop_resid_arg[isrc][imass]->final_iter;
-#ifdef CGDEBUG
+      if(qic[0].final_rsq < qop_resid_arg[isrc][imass]->final_rsq)
+	qic[0].final_rsq = qop_resid_arg[isrc][imass]->final_rsq;
+      if(qic[0].final_relrsq < qop_resid_arg[isrc][imass]->final_rel)
+	qic[0].final_relrsq = qop_resid_arg[isrc][imass]->final_rel;
+#ifdef CG_DEBUG
       if(nsrc > 1 || nmass[isrc] > 1)
-	node0_printf("CONGRAD5(src %d, mass %d): iters = %d resid = %e\n",
-	       isrc, imass,
-	       qop_resid_arg[isrc][imass]->final_iter,
-	       qop_resid_arg[isrc][imass]->final_rsq);
+	node0_printf("CONGRAD5(src %d, mass %d): iters = %d resid = %.2g rel = %.2g\n",
+		     isrc, imass,
+		     qop_resid_arg[isrc][imass]->final_iter,
+		     qop_resid_arg[isrc][imass]->final_rsq,
+		     qop_resid_arg[isrc][imass]->final_rel);
 #endif
     }
+    iters += qop_resid_arg[isrc][0]->final_iter;
+  }
+
+  // This structure isn't very friendly to multimass or multisource use
+  // So report restarts for the first mass in the list
+  qic[0].final_iters = iters;
+  qic[0].final_restart = qop_resid_arg[0][0]->final_restart;
 
 #ifdef CGTIME
   node0_printf("CONGRAD5: time = %e (fn_qop %s) ",
@@ -252,9 +285,13 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
     node0_printf("nmass[%d] = %d iters = %d ",
 		 isrc,nmass[isrc],qop_resid_arg[isrc][0]->final_iter);
   node0_printf("mflops = %e\n", info.final_flop/(1.0e6*info.final_sec) );
-  fflush(stdout);
+         fflush(stdout);
 #endif
 
+#ifdef AB_DEBUG_ENTRY_EXIT_ROUTINES
+  printf("Exit  ks_congrad_qop_generic in d_congrad5_fn_qop_P.c\n");
+#endif
+  fflush(stdout);
   return iters;
 }
 
@@ -262,20 +299,6 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 /* Starting with qopqdp-0.9.0 the normalization of the solution is changed */
 
 #define NORMFACT(a) 4.*(a)
-
-static
-void qop_to_milc_normalization_site(field_offset sol, MASSREAL mass,
-				    int parity)
-{
-  site *s;
-  int i;
-  Real x = 1/(NORMFACT(mass));
-
-  FORSOMEPARITY(i,s,parity){
-    scalar_mult_su3_vector((su3_vector *)F_PT(s,sol), x,
-			   (su3_vector *)F_PT(s,sol));
-  }
-}
 
 static
 void qop_to_milc_normalization_field(su3_vector *sol, MASSREAL mass,
@@ -287,20 +310,6 @@ void qop_to_milc_normalization_field(su3_vector *sol, MASSREAL mass,
 
   FORSOMEPARITY(i,s,parity){
     scalar_mult_su3_vector(sol+i, x, sol+i);
-  }
-}
-
-static
-void milc_to_qop_normalization_site(field_offset sol, MASSREAL mass,
-				    int parity)
-{
-  site *s;
-  int i;
-  Real x = NORMFACT(mass);
-
-  FORSOMEPARITY(i,s,parity){
-    scalar_mult_su3_vector((su3_vector *)F_PT(s,sol), x,
-			   (su3_vector *)F_PT(s,sol));
   }
 }
 
@@ -321,274 +330,42 @@ void milc_to_qop_normalization_field(su3_vector *sol, MASSREAL mass,
 
 #define MAXSRC 20
 
-/* Map MILC fields to QOP format and call generic QOP driver */
-/* This version is for site sources and site sinks */
-
-int
-KS_CONGRAD_QOP_SITE2SITE(quark_invert_control *qic,
-			 MASSREAL *masses[], int nmass[], 
-			 field_offset milc_srcs[], 
-			 field_offset *milc_sols[], int nsrc,
-			 ferm_links_t *fn)
-{
-  int isrc, imass;
-  QOP_ColorVector **qop_sol[MAXSRC], *qop_src[MAXSRC];
-  int iterations_used = 0;
-  QOP_invert_arg_t qop_invert_arg;
-  QOP_resid_arg_t  ***qop_resid_arg;
-  double remaptime;
-
-  if(nsrc > MAXSRC){
-    printf("ks_congrad_qop_site2site: too many sources\n");
-    terminate(1);
-  }
-
-  /* Initialize QOP */
-  if(initialize_qop() != QOP_SUCCESS){
-    printf("ks_congrad_qop_site2site: Error initializing QOP\n");
-    terminate(1);
-  }
-
-  /* Map MILC fat and long links to QOP links object */
-
-  CREATE_QOP_ASQTAD_FERMION_LINKS(fn);
-
-  /* Set qop_invert_arg */
-  set_qop_invert_arg( &qop_invert_arg, qic );
-  
-  /* Pointers for residual errors */
-  qop_resid_arg = create_qop_resid_arg( nsrc, nmass, qic );
-
-  remaptime = -dclock(); 
-
-  /* Pointers for solution vectors */
-  for(isrc = 0; isrc < nsrc; isrc++){
-    qop_sol[isrc] = 
-      (QOP_ColorVector **)malloc(sizeof(QOP_ColorVector *)*nmass[isrc]);
-    if(qop_sol[isrc] == NULL){
-      printf("ks_congrad_qop_site2site: Can't allocate qop_sol\n");
-      terminate(1);
-    }
-  }
-
-#ifndef OLD_QOPQDP_NORM
-  /* Convert proposed solutions from MILC to QOP normalization convention */
-
-  for(isrc = 0; isrc < nsrc; isrc++)
-    for(imass = 0; imass < nmass[isrc]; imass++)
-      milc_to_qop_normalization_site(milc_sols[isrc][imass],
-				     masses[isrc][imass],qic->parity);
-#endif
-
-  /* Map MILC source and sink to QOP fields */
-  for(isrc = 0; isrc < nsrc; isrc++){
-    qop_src[isrc] = create_V_from_site( milc_srcs[isrc], qic->parity);
-    for(imass = 0; imass < nmass[isrc]; imass++){
-      qop_sol[isrc][imass] = 
-	create_V_from_site( milc_sols[isrc][imass], qic->parity);
-    }
-  }
-  
-  /* Call QOP inverter */
-
-  remaptime += dclock();
-  iterations_used = ks_congrad_qop_generic( fn->QOP_L, &qop_invert_arg,
-    qop_resid_arg, masses, nmass, qop_sol, qop_src, nsrc, qic );
-  remaptime -= dclock();
-  
-  /* Map qop solutions to MILC site structure   */
-
-  for(isrc = 0; isrc < nsrc; isrc++)
-    for(imass = 0; imass < nmass[isrc]; imass++)
-      unload_V_to_site( milc_sols[isrc][imass], 
-			  qop_sol[isrc][imass], qic->parity );
-
-#ifndef OLD_QOPQDP_NORM
-  /* Convert solutions to MILC ks_congrad normalization convention */
-
-  for(isrc = 0; isrc < nsrc; isrc++)
-    for(imass = 0; imass < nmass[isrc]; imass++)
-      qop_to_milc_normalization_site(milc_sols[isrc][imass],
-				     masses[isrc][imass],qic->parity);
-#endif
-
-  /* Free QOP fields  */
-
-  for(isrc = 0; isrc < nsrc; isrc++){
-    QOP_destroy_V(qop_src[isrc]);    
-    qop_src[isrc] = NULL;
-    for(imass = 0; imass < nmass[isrc]; imass++){
-      QOP_destroy_V(qop_sol[isrc][imass]);     
-      free(qop_sol[isrc]);
-      qop_sol[isrc] = NULL;
-    }
-  }
-
-  remaptime += dclock();
-#ifdef CGTIME
-#ifdef REMAP
-    node0_printf("CGREMAP:  time = %e\n",remaptime);
-#endif
-#endif
-  destroy_qop_resid_arg(qop_resid_arg, nsrc, nmass);
-  qop_resid_arg = NULL;
-
-  return iterations_used;
-}
-
-/* Map MILC fields to QOP format and call generic QOP driver */
-/* This version is for site sources and field sinks */
-
-int KS_CONGRAD_QOP_SITE2FIELD(quark_invert_control *qic,
-			      MASSREAL *masses[], int nmass[], 
-			      field_offset milc_srcs[], 
-			      su3_vector **milc_sols[], int nsrc,
-			      ferm_links_t *fn )
-{
-  int isrc, imass;
-  QOP_ColorVector **qop_sol[MAXSRC], *qop_src[MAXSRC];
-  int iterations_used = 0;
-  double remaptime;
-  QOP_resid_arg_t  ***qop_resid_arg;
-  QOP_invert_arg_t qop_invert_arg;
-
-  if(nsrc > MAXSRC){
-    printf("ks_congrad_qop_site2field: too many sources\n");
-    terminate(1);
-  }
-
-  /* Initialize QOP */
-  if(initialize_qop() != QOP_SUCCESS){
-    printf("ks_congrad_qop_site2field: Error initializing QOP\n");
-    terminate(1);
-  }
-
-  /* Map MILC fat and long links to QOP links object */
-
-  CREATE_QOP_ASQTAD_FERMION_LINKS(fn);
-
-  /* Set qop_invert_arg */
-  set_qop_invert_arg( & qop_invert_arg, qic );
-
-  /* Pointers for residual errors */
-  qop_resid_arg = create_qop_resid_arg( nsrc, nmass, qic );
-
-  remaptime = -dclock(); 
-
-  /* Pointers for solution vectors */
-  for(isrc = 0; isrc < nsrc; isrc++){
-    qop_sol[isrc] = 
-      (QOP_ColorVector **)malloc(sizeof(QOP_ColorVector *)*nmass[isrc]);
-    if(qop_sol[isrc] == NULL){
-      printf("ks_congrad_qop_site2field: Can't allocate qop_sol\n");
-      terminate(1);
-    }
-  }
-
-#ifndef OLD_QOPQDP_NORM
-  /* Convert proposed solution from MILC to QOP normalization convention */
-
-  for(isrc = 0; isrc < nsrc; isrc++)
-    for(imass = 0; imass < nmass[isrc]; imass++)
-      milc_to_qop_normalization_field(milc_sols[isrc][imass],
-				      masses[isrc][imass],qic->parity);
-#endif
-
-  /* Map MILC source and sink to QOP fields */
-  for(isrc = 0; isrc < nsrc; isrc++){
-    qop_src[isrc] = create_V_from_site( milc_srcs[isrc], qic->parity);
-    for(imass = 0; imass < nmass[isrc]; imass++){
-      qop_sol[isrc][imass] = 
-	create_V_from_field( milc_sols[isrc][imass], qic->parity);
-    }
-  }
-  
-  /* Call QOP inverter */
-
-  remaptime += dclock();
-  iterations_used = ks_congrad_qop_generic( fn->QOP_L, &qop_invert_arg,
-     qop_resid_arg, masses, nmass, qop_sol, qop_src, nsrc, qic );
-  remaptime -= dclock();
-  
-  /* Map qop solutions to MILC field   */
-
-  for(isrc = 0; isrc < nsrc; isrc++)
-    for(imass = 0; imass < nmass[isrc]; imass++)
-      unload_V_to_field( milc_sols[isrc][imass], 
-			 qop_sol[isrc][imass], qic->parity );
-
-#ifndef OLD_QOPQDP_NORM
-  /* Convert solutions to MILC ks_congrad normalization convention */
-
-  for(isrc = 0; isrc < nsrc; isrc++)
-    for(imass = 0; imass < nmass[isrc]; imass++)
-      qop_to_milc_normalization_field(milc_sols[isrc][imass],
-				      masses[isrc][imass],qic->parity);
-#endif
-
-  /* Free QOP fields  */
-
-  for(isrc = 0; isrc < nsrc; isrc++){
-    QOP_destroy_V(qop_src[isrc]);    
-    qop_src[isrc] = NULL;
-    for(imass = 0; imass < nmass[isrc]; imass++){
-      QOP_destroy_V(qop_sol[isrc][imass]);     
-    }
-    free(qop_sol[isrc]);
-    qop_sol[isrc] = NULL;
-  }
-
-  remaptime += dclock();
-
-#ifdef CGTIME
-#ifdef REMAP
-    node0_printf("CGREMAP:  time = %e\n",remaptime);
-#endif
-#endif
-
-  destroy_qop_resid_arg(qop_resid_arg, nsrc, nmass);
-  qop_resid_arg = NULL;
-
-  return iterations_used;
-}
-
-
-/* Map MILC fields to QOP format and call generic QOP driver */
-/* This version is for field sources and sinks */
-
 int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
 			       MASSREAL *masses[], int nmass[], 
 			       su3_vector *milc_srcs[], 
 			       su3_vector **milc_sols[], int nsrc,
-			       ferm_links_t *fn )
+			       imp_ferm_links_t *fn )
 {
+  char myname[] = "ks_congrad_qop_field2field";
+
+#ifdef AB_DEBUG_ENTRY_EXIT_ROUTINES
+  printf("Enter KS_CONGRAD_QOP_FIELD2FIELD in d_congrad5_fn_qop_P.c\n");
+#endif
+
   int isrc, imass;
   QOP_ColorVector **qop_sol[MAXSRC], *qop_src[MAXSRC];
   int iterations_used = 0;
   double remaptime;
   QOP_resid_arg_t  ***qop_resid_arg;
   QOP_invert_arg_t qop_invert_arg;
+  QOP_FermionLinksAsqtad *qop_links = GET_ASQTADLINKS(fn);
 
   if(nsrc > MAXSRC){
-    printf("ks_congrad_qop_field2field: too many sources\n");
+    node0_printf("%s: too many sources\n",myname);
     terminate(1);
   }
 
   /* Initialize QOP */
   if(initialize_qop() != QOP_SUCCESS){
-    printf("ks_congrad_qop_field2field: Error initializing QOP\n");
+    node0_printf("%s: Error initializing QOP\n",myname);
     terminate(1);
   }
 
-  /* Map MILC fat and long links to QOP links object */
-
-  CREATE_QOP_ASQTAD_FERMION_LINKS(fn);
-
   /* Set qop_invert_arg */
-  set_qop_invert_arg( & qop_invert_arg, qic );
+  set_qop_invert_arg( & qop_invert_arg, qic+0, nsrc, nmass );
 
   /* Pointers for residual errors */
-  qop_resid_arg = create_qop_resid_arg( nsrc, nmass, qic );
+  qop_resid_arg = create_qop_resid_arg( nsrc, nmass, qic+0 );
 
   remaptime = -dclock(); 
 
@@ -597,7 +374,7 @@ int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
     qop_sol[isrc] = 
       (QOP_ColorVector **)malloc(sizeof(QOP_ColorVector *)*nmass[isrc]);
     if(qop_sol[isrc] == NULL){
-      printf("ks_congrad_qop_field2field: Can't allocate qop_sol\n");
+      printf("%s(%d): Can't allocate qop_sol\n",myname,this_node);
       terminate(1);
     }
   }
@@ -608,22 +385,22 @@ int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
   for(isrc = 0; isrc < nsrc; isrc++)
     for(imass = 0; imass < nmass[isrc]; imass++)
       milc_to_qop_normalization_field(milc_sols[isrc][imass],
-				      masses[isrc][imass],qic->parity);
+				      masses[isrc][imass],qic[0].parity);
 #endif
 
   /* Map MILC source and sink to QOP fields */
   for(isrc = 0; isrc < nsrc; isrc++){
-    qop_src[isrc] = create_V_from_field( milc_srcs[isrc], qic->parity);
+    qop_src[isrc] = create_V_from_field( milc_srcs[isrc], qic[0].parity);
     for(imass = 0; imass < nmass[isrc]; imass++){
       qop_sol[isrc][imass] = 
-	create_V_from_field( milc_sols[isrc][imass], qic->parity);
+	create_V_from_field( milc_sols[isrc][imass], qic[0].parity);
     }
   }
   
   /* Call QOP inverter */
 
   remaptime += dclock();
-  iterations_used = ks_congrad_qop_generic( fn->QOP_L, &qop_invert_arg,
+  iterations_used = ks_congrad_qop_generic( qop_links, &qop_invert_arg,
      qop_resid_arg, masses, nmass, qop_sol, qop_src, nsrc, qic );
   remaptime -= dclock();
   
@@ -632,7 +409,7 @@ int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
   for(isrc = 0; isrc < nsrc; isrc++)
     for(imass = 0; imass < nmass[isrc]; imass++)
       unload_V_to_field( milc_sols[isrc][imass], 
-			 qop_sol[isrc][imass], qic->parity );
+			 qop_sol[isrc][imass], qic[0].parity );
 
 #ifndef OLD_QOPQDP_NORM
   /* Convert solutions to MILC ks_congrad normalization convention */
@@ -640,7 +417,7 @@ int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
   for(isrc = 0; isrc < nsrc; isrc++)
     for(imass = 0; imass < nmass[isrc]; imass++)
       qop_to_milc_normalization_field(milc_sols[isrc][imass],
-				      masses[isrc][imass],qic->parity);
+				      masses[isrc][imass],qic[0].parity);
 #endif
 
   /* Free QOP fields  */
@@ -666,14 +443,17 @@ int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
   destroy_qop_resid_arg(qop_resid_arg, nsrc, nmass);
   qop_resid_arg = NULL;
 
+#ifdef AB_DEBUG_ENTRY_EXIT_ROUTINES
+  printf("Exit  KS_CONGRAD_QOP_FIELD2FIELD in d_congrad5_fn_qop_P.c\n");
+#endif
+
   return iterations_used;
 }
-
 
 int 
 KS_CONGRAD_MILCFIELD2QOP( su3_vector *milc_src, su3_vector *milc_sol, 
 			  quark_invert_control *qic, Real mass,
-			  ferm_links_t *fn )
+			  imp_ferm_links_t *fn )
 {
   int iterations_used;
   static MASSREAL t_mass;
@@ -699,31 +479,3 @@ KS_CONGRAD_MILCFIELD2QOP( su3_vector *milc_src, su3_vector *milc_sol,
   return  iterations_used;
 }
 
-int 
-KS_CONGRAD_MILC2QOP( field_offset milc_src, field_offset milc_sol, 
-		     quark_invert_control *qic, Real mass,
-		     ferm_links_t *fn )
-{
-  int iterations_used;
-  static MASSREAL t_mass;
-  MASSREAL *masses[1];
-  int nmass[1], nsrc;
-  field_offset milc_srcs[1], milc_sols0[1], *milc_sols[1];
-
-  /* Set up general source and solution pointers for one mass, one source */
-  nsrc = 1;
-  milc_srcs[0] = milc_src;
-
-  nmass[0] = 1;
-  t_mass = mass;
-  masses[0] = &t_mass;
-
-  milc_sols0[0] = milc_sol;
-  milc_sols[0] =  milc_sols0;
-
-  iterations_used = 
-    KS_CONGRAD_QOP_SITE2SITE( qic, masses, nmass, milc_srcs,
-			      milc_sols, nsrc, fn );
-  
-  return  iterations_used;
-}

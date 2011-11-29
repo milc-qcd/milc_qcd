@@ -53,8 +53,8 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
   // load fat and long links                           //
   ///////////////////////////////////////////////////////
   
-  t_fatlink = fn->fat;
-  t_longlink = fn->lng;
+  t_fatlink = fn->fl.fat;
+  t_longlink = fn->fl.lng;
   
 #ifdef CGTIME
   dtimec = -dclock(); 

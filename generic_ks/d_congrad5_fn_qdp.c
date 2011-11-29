@@ -61,10 +61,13 @@ ks_congrad(field_offset f_src, field_offset f_dest, Real mass,
 
   /* Pack structure */
   qic.prec      = prec;
-  qic.parity    = milc_parity;
+  qic.min       = 0;
   qic.max       = niter;
   qic.nrestart  = nrestart;
-  qic.resid     = rsqmin;
+  qic.parity    = milc_parity;
+  qic.start_flag = 0;
+  qic.nsrc      = 1;
+  qic.resid     = sqrt(rsqmin);
   qic.relresid  = 0;     /* Suppresses this test */
 
   if(prec == 1)

@@ -252,12 +252,12 @@ dslash_fn_site(field_offset src, field_offset dest, int parity, ferm_links_t *fn
   else subset = QDP_all;
   set_V_from_site(qsrc, src,EVENANDODD;
   set_V_from_site(qdest, dest,EVENANDODD;
-  if(!fn->valid){
+  if(!fn->fl.valid){
     printf("dslash_fn_site: invalid fn links!\n");
     terminate(1);
   }
-  set4_M_from_field(FATLINKS, fn->fat,EVENANDODD, EVENANDODD);
-  set4_M_from_field(LONGLINKS, fn->long,EVENANDODD, EVENANDODD);
+  set4_M_from_field(FATLINKS, fn->fl.fat,EVENANDODD, EVENANDODD);
+  set4_M_from_field(LONGLINKS, fn->fl.long,EVENANDODD, EVENANDODD);
   dslash_qdp_fn(qsrc, qdest, subset);
   set_site_from_V(dest, qdest,EVENANDODD);
 }
@@ -281,12 +281,12 @@ dslash_fn_site_special(field_offset src, field_offset dest,
   set_V_from_site(qsrc, src,EVENANDODD);
   set_V_from_site(qdest, dest,EVENANDODD);
   if(start) {
-    if(!fn->valid){
+    if(!fn->fl.valid){
       printf("dslash_fn_site_special: invalid fn links!\n");
       terminate(1);
     }
-    set4_M_from_field(FATLINKS, fn->fat,EVENANDODD);
-    set4_M_from_field(LONGLINKS, fn->long,EVENANDODD);
+    set4_M_from_field(FATLINKS, fn->fl.fat,EVENANDODD);
+    set4_M_from_field(LONGLINKS, fn->fl.long,EVENANDODD);
   }
   dslash_qdp_fn(qsrc, qdest, subset);
   set_site_from_V(dest, qdest,EVENANDODD);
@@ -304,12 +304,12 @@ dslash_fn_field(su3_vector *src, su3_vector *dest, int parity,
   else subset = QDP_all;
   set_V_from_field(qsrc, src,EVENANDODD);
   set_V_from_field(qdest, dest,EVENANDODD);
-  if(!fn->valid){
+  if(!fn->fl.valid){
     printf("dslash_fn_field: invalid fn links!\n");
     terminate(1);
   }
-  set4_M_from_field(FATLINKS, fn->fat,EVENANDODD);
-  set4_M_from_field(LONGLINKS, fn->long,EVENANDODD);
+  set4_M_from_field(FATLINKS, fn->fl.fat,EVENANDODD);
+  set4_M_from_field(LONGLINKS, fn->fl.lng,EVENANDODD);
   dslash_qdp_fn(qsrc, qdest, subset);
   set_site_from_V(dest, qdest,EVENANDODD);
 }
@@ -333,12 +333,12 @@ dslash_fn_field_special(su3_vector *src, su3_vector *dest,
   set_V_from_field(qsrc, src,EVENANDODD);
   set_V_from_field(qdest, dest,EVENANDODD);
   if(start) {
-    if(!fn->valid){
+    if(!fn->fl.valid){
       printf("dslash_fn_field_special: invalid fn links!\n");
       terminate(1);
     }
-    set4_M_from_field(FATLINKS, fn->fat,EVENANDODD);
-    set4_M_from_field(LONGLINKS, fn->long,EVENANDODD);
+    set4_M_from_field(FATLINKS, fn->fl.fat,EVENANDODD);
+    set4_M_from_field(LONGLINKS, fn->fl.long,EVENANDODD);
   }
   dslash_qdp_fn(qsrc, qdest, qparity);
   set_site_from_V(dest, qdest,EVENANDODD);

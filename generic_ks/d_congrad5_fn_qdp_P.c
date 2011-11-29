@@ -111,7 +111,7 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest,
   int iteration;	 /* counter for iterations */
   int niter = qic->max;
   int nrestart = qic->nrestart;
-  QLA_Real rsqmin = qic->resid;
+  QLA_Real rsqmin = qic->resid * qic->resid;
   su3_matrix *t_fatlink;
   su3_matrix *t_longlink;
 
@@ -138,8 +138,8 @@ KS_CONGRAD_QDP(QDP_ColorVector *src, QDP_ColorVector *dest,
   msq_x4 = 4.0*mass*mass;
   iteration = 0;
 
-  t_longlink = fn->lng;
-  t_fatlink = fn->fat;
+  t_longlink = fn->fl.lng;
+  t_fatlink = fn->fl.fat;
 
   remaptime = -dclock();
   set4_M_from_field(FATLINKS, t_fatlink, EVENANDODD);

@@ -59,12 +59,12 @@ dslash_fn_site( field_offset src, field_offset dest, int parity,
   su3_matrix *t_fatlink;
   su3_matrix *t_longlink;
 
-  if(!fn->valid){
+  if(!fn->fl.valid){
     printf("dslash_fn_site: invalid fn links!\n");
     terminate(1);
   }
-  t_fatlink = fn->fat;
-  t_longlink = fn->lng;
+  t_fatlink = fn->fl.fat;
+  t_longlink = fn->fl.lng;
 
   switch(parity){
     case EVEN:	otherparity = ODD; break;
@@ -217,12 +217,12 @@ dslash_fn_site_special( field_offset src, field_offset dest,
   su3_matrix *t_fatlink;
   su3_matrix *t_longlink;
 
-  if(!fn->valid){
+  if(!fn->fl.valid){
     printf("dslash_fn_site_special: invalid fn links!\n");
     terminate(1);
   }
-  t_fatlink = fn->fat;
-  t_longlink = fn->lng;
+  t_fatlink = fn->fl.fat;
+  t_longlink = fn->fl.lng;
 
   switch(parity) {
     case EVEN:	otherparity = ODD; break;
@@ -388,12 +388,12 @@ dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
     }
   templongv1=(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-  if(!fn->valid){
+  if(!fn->fl.valid){
     printf("dslash_fn_field: invalid fn links!\n");
     terminate(1);
   }
-  t_fatlink = fn->fat;
-  t_longlink = fn->lng;
+  t_fatlink = fn->fl.fat;
+  t_longlink = fn->fl.lng;
 
   switch(parity)
     {
@@ -574,12 +574,12 @@ dslash_fn_field_special(su3_vector *src, su3_vector *dest,
     }
   
   /* load fatlinks and longlinks */
-  if(!fn->valid){
+  if(!fn->fl.valid){
     printf("dslash_fn_field_special: invalid fn links!\n");
     terminate(1);
   }
-  t_fatlink = fn->fat;
-  t_longlink = fn->lng;
+  t_fatlink = fn->fl.fat;
+  t_longlink = fn->fl.lng;
 
   switch(parity)
     {
@@ -752,11 +752,11 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity,
    su3_matrix *t_dfatlink_du0;
    su3_matrix *t_longlink;
 
-   if(!fn->valid){
+   if(!fn->fl.valid){
      printf("ddslash_fn_du0_site: invalid fn links!\n");
      terminate(1);
    }
-    t_longlink = fn->lng;
+    t_longlink = fn->fl.lng;
     if(!fn_dmdu0->valid){
       printf("dslash_fn_site: invalid fn_dmdu0 links!\n");
       terminate(1);
@@ -931,12 +931,12 @@ void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity,
      }
    templongv1=(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-   if(!fn->valid){
+   if(!fn->fl.valid){
      printf("ddslash_fn_du0_site: invalid fn links!\n");
      terminate(1);
    }
-   t_longlink = fn->lng;
-   if(!fn->valid){
+   t_longlink = fn->fl.lng;
+   if(!fn->fl.valid){
      printf("ddslash_fn_du0_site: invalid fn_dmdu0 links!\n");
      terminate(1);
    }

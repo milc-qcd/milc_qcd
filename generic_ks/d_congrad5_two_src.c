@@ -17,7 +17,7 @@ int ks_congrad_two_src(	/* Return value is number of iterations taken */
     int prec,           /* internal precision for the inversion */
     int parity,		/* parity to be worked on */
     Real  *final_rsq_ptr, 	/* final residue squared */
-    ferm_links_t *fn       /* Storage for fermion links */
+    imp_ferm_links_t *fn       /* Storage for fermion links */
     )
 {
 

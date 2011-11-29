@@ -13,8 +13,10 @@
    couplings.
 */
 /* C. DeTar 3/05 Code split from quark_stuff?.c */
+/* UMH 2/11 Fix not-allocated flag */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
+#include "../include/fermion_links.h"
 
 /* Temporary work space for dslash_eo_field */ 
 static su3_vector *temp ;
@@ -28,15 +30,15 @@ void cleanup_dslash_temps(){
 }
 
 void dslash_eo_site( field_offset src, field_offset dest, int parity,
-		     ferm_links_t *fn )
+		     eo_links_t *eo )
 {
   register int i;
   register site *s;
   register int ipath,otherparity;
   register Real x; /* coefficient of path */
-  ks_action_paths *ap = fn->ap;
-  int num_q_paths = ap->num_q_paths;
-  Q_path *q_paths = ap->q_paths;
+  ks_action_paths *ap = eo->ap;
+  int num_q_paths = ap->p.num_q_paths;
+  Q_path *q_paths = ap->p.q_paths;
   switch(parity){
   case EVEN:	otherparity=ODD; break;
   case ODD:	otherparity=EVEN; break;
@@ -60,20 +62,21 @@ void dslash_eo_site( field_offset src, field_offset dest, int parity,
 } /* dslash_eo_site */
 
 void dslash_eo_field( su3_vector *src, su3_vector *dest, int parity,
-		      ferm_links_t *fn )
+		      eo_links_t *eo )
 {
   register int i;
   register site *s;
   register int ipath,otherparity;
   register Real x; /* coefficient of path */
-  ks_action_paths *ap = fn->ap;
-  int num_q_paths = ap->num_q_paths;
-  Q_path *q_paths = ap->q_paths;
+  ks_action_paths *ap = eo->ap;
+  int num_q_paths = ap->p.num_q_paths;
+  Q_path *q_paths = ap->p.q_paths;
   
   /* allocate temporary work space only if not already allocated */
   if(temp_not_allocated)
     {
       temp =(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+      temp_not_allocated = 0 ;
     }
   
   switch(parity){

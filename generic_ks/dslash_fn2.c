@@ -59,7 +59,7 @@ void cleanup_dslash_temps(){
    "longlinks" for three link transport. */
 
 void dslash_fn_site( field_offset src, field_offset dest, int parity,
-		     ferm_links_t *fn )
+		     fn_links_t *fn )
 {
    register int dir;
    msg_tag *tag[16];
@@ -85,7 +85,7 @@ void dslash_fn_site( field_offset src, field_offset dest, int parity,
   The calling program must clean up the gathers! */
 void dslash_fn_site_special( field_offset src, field_offset dest,
 			     int parity, msg_tag **tag, int start,
-			     ferm_links_t *fn)
+			     fn_links_t *fn)
 {
     register int i;
     register site *s;
@@ -93,14 +93,30 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
     register su3_matrix *fat4, *long4;
     su3_matrix *t_fatlink;
     su3_matrix *t_longlink;
+    su3_vector *tempvec,*templongvec, *templongv1;
+    char myname[] = "dslash_fn_site_special";
 
-    if(!fn->valid){
+    if(fn == NULL){
       printf("dslash_fn_site_special: invalid fn links!\n");
       terminate(1);
     }
-    t_longlink = fn->lng;
-    t_fatlink = fn->fat;
+    t_longlink = get_lnglinks(fn);
+    t_fatlink = get_fatlinks(fn);
 
+    tempvec = (su3_vector *) malloc(sizeof(su3_vector)*4*sites_on_node);
+    if(tempvec == NULL){
+      printf("%s(%d)No room for temporary\n",myname, this_node);
+      terminate(1);
+    }
+    
+    templongvec = (su3_vector *) malloc(sizeof(su3_vector)*4*sites_on_node);
+    if(templongvec == NULL){
+      printf("%s(%d)No room for temporary\n",myname, this_node);
+      terminate(1);
+    }
+    
+    templongv1 = create_v_field();
+  
     switch(parity){
 	case EVEN:	otherparity=ODD; break;
 	case ODD:	otherparity=EVEN; break;
@@ -132,40 +148,52 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	prefetch_4MV4V( 
 		       fat4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
-		       (s+FETCH_UP)->tempvec );
+		       tempvec+4*i+FETCHUP );
 	prefetch_4MV4V(
 		       long4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
-		       (s+FETCH_UP)->templongvec );
+		       templongvec+4*i+FETCH_UP );
       }
 
       fat4 = &(t_fatlink[4*i]);
       long4 = &(t_longlink[4*i]);
 	mult_adj_su3_mat_vec_4dir( fat4,
-	    (su3_vector *)F_PT(s,src), s->tempvec );
+				   (su3_vector *)F_PT(s,src), tempvec+4*i );
 	/* multiply by 3-link matrices too */
 	mult_adj_su3_mat_vec_4dir( long4,
-	    (su3_vector *)F_PT(s,src), s->templongvec );
+				   (su3_vector *)F_PT(s,src), templongvec+4*i );
     } END_LOOP
 
     /* Start gathers from negative directions */
     for( dir=XUP; dir <= TUP; dir++){
 /**printf("dslash_fn_site_special: down gathers, start=%d\n",start);**/
-	if (start==1) tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
-	    sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
-	else restart_gather_site( F_OFFSET(tempvec[dir]), sizeof(su3_vector),
-	    OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] , tag[OPP_DIR(dir)] );
+      if (start==1){
+	/* We need the strided gather so we can pick off one of a
+	   group of four vectors in tempvec */
+	tag[OPP_DIR(dir)] = 
+	  declare_strided_gather( (char *)(tempvec+dir), 4*sizeof(su3_vector), 
+				  sizeof(su3_vector), OPP_DIR( dir), parity, 
+				  gen_pt[OPP_DIR(dir)] );
+	prepare_gather(tag[OPP_DIR(dir)]);
+	do_gather(tag[OPP_DIR(dir)]);
+      }	else {
+	do_gather(tag[OPP_DIR(dir)]);
+      }
     }
-
     /* and 3rd neighbours */
     for( dir=X3UP; dir <= T3UP; dir++){
 /**printf("dslash_fn_site_special: down gathers, start=%d\n",start);**/
-	if (start==1) tag[OPP_3_DIR(dir)] = 
-	  start_gather_site( F_OFFSET(templongvec[INDEX_3RD(dir)]),
-	  sizeof(su3_vector), OPP_3_DIR(dir), parity, gen_pt[OPP_3_DIR(dir)] );
-	else restart_gather_site( F_OFFSET(templongvec[INDEX_3RD(dir)]),
-	  sizeof(su3_vector), OPP_3_DIR( dir), parity, gen_pt[OPP_3_DIR(dir)],
-	  tag[OPP_3_DIR(dir)] );
+      if (start==1){
+	tag[OPP_3_DIR(dir)] = 
+	  declare_strided_gather( (char *)(templongvec+INDEX_3RD(dir)), 
+				  4*sizeof(su3_vector), 
+				  sizeof(su3_vector), OPP_3_DIR(dir), 
+				  parity, gen_pt[OPP_3_DIR(dir)] );
+	prepare_gather(tag[OPP_3_DIR(dir)]);
+	do_gather(tag[OPP_3_DIR(dir)]);
+      }	else {
+	do_gather(tag[OPP_3_DIR(dir)]);
+      }
     }
 
     /* Wait gathers from positive directions, multiply by matrix and
@@ -194,7 +222,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 	prefetch_VV(
 		    (su3_vector *)F_PT(s+FETCH_UP,dest),
-		    (su3_vector *) &((s+FETCH_UP)->templongv1));
+		    templongv1+i+FETCH_UP);
 	prefetch_4MVVVV( 
 			fat4,
 			(su3_vector *)gen_pt[XUP][i+FETCH_UP],
@@ -227,27 +255,27 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
       mult_su3_mat_vec_sum_4dir( long4,
 	    (su3_vector *)gen_pt[X3UP][i], (su3_vector *)gen_pt[Y3UP][i],
 	    (su3_vector *)gen_pt[Z3UP][i], (su3_vector *)gen_pt[T3UP][i],
-	    (su3_vector *) &(s->templongv1));
+	    templongv1+i);
 
       sub_four_su3_vecs( (su3_vector *)F_PT(s,dest),
 	    (su3_vector *)(gen_pt[XDOWN][i]),
 	    (su3_vector *)(gen_pt[YDOWN][i]),
 	    (su3_vector *)(gen_pt[ZDOWN][i]),
 	    (su3_vector *)(gen_pt[TDOWN][i]) );
-      sub_four_su3_vecs( & (s->templongv1), 
+      sub_four_su3_vecs( templongv1+i, 
 	    (su3_vector *)(gen_pt[X3DOWN][i]),
 	    (su3_vector *)(gen_pt[Y3DOWN][i]),
 	    (su3_vector *)(gen_pt[Z3DOWN][i]),
 	    (su3_vector *)(gen_pt[T3DOWN][i]) );
         /*** Now need to add these things together ***/
-      add_su3_vector((su3_vector *)F_PT(s,dest), &(s->templongv1),
+      add_su3_vector((su3_vector *)F_PT(s,dest), templongv1+i,
 				(su3_vector *)F_PT(s,dest));
     } END_LOOP
 
 }
 
 void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
-		      ferm_links_t *fn) {
+		      fn_links_t *fn) {
    register int dir;
    msg_tag *tag[16];
 
@@ -272,7 +300,7 @@ void dslash_fn_field( su3_vector *src, su3_vector *dest, int parity,
   The calling program must clean up the gathers and temps! */
 void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			     int parity, msg_tag **tag, int start,
-			     ferm_links_t *fn){
+			     fn_links_t *fn){
   register int i;
   register site *s;
   register int dir,otherparity=0;
@@ -292,12 +320,12 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
     }
   
   /* load fatlinks and longlinks */
-  if(!fn->valid){
+  if(fn == NULL){
     printf("dslash_fn_field_speical: invalid fn links!\n");
     terminate(1);
   }
-  t_longlink = fn->lng;
-  t_fatlink = fn->fat;
+  t_longlink = get_lnglinks(fn);
+  t_fatlink = get_fatlinks(fn);
 
   switch(parity)
     {
@@ -464,8 +492,93 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 
 }
 
+void 
+dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
+	      fn_links_t *fn, int dir, int fb, 
+	      Real wtfat, Real wtlong)
+{
+  register int i ;
+  msg_tag *tag[2];
+  su3_matrix *fat = get_fatlinks(fn);
+  su3_matrix *lng = get_lnglinks(fn);
+  su3_vector tmp;
+  int do_long = (lng != NULL) && (wtlong != 0.);
+  char myname[] = "fn_shift";
+  
+  if(fat == NULL) {
+    printf("%s(%d): fat or lng member is null\n", myname, this_node);
+    terminate(1);
+  }
+  
+  if(fb > 0){
 
-#ifdef DM_DU0
+    /* Shift from forward direction */
+
+    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, 
+				 parity, gen_pt[0] );
+    if(do_long)
+      tag[1] = start_gather_field( src, sizeof(su3_vector), DIR3(dir), 
+				   parity, gen_pt[1] );
+    wait_gather(tag[0]);
+    if(do_long)
+      wait_gather(tag[1]);
+  
+    FORSOMEFIELDPARITY(i,parity)
+      {
+	mult_su3_mat_vec( fat+4*i+dir, (su3_vector *)gen_pt[0][i], &tmp );
+	scalar_mult_add_su3_vector( dest+i, &tmp, wtfat, dest+i ) ;    
+	if(do_long){
+	  mult_su3_mat_vec( lng+4*i+dir, (su3_vector *)gen_pt[1][i], &tmp );
+	  scalar_mult_add_su3_vector( dest+i, &tmp, wtlong, dest+i ) ;    
+	}
+      }
+
+  } else {
+
+    /* Shift from backward direction */
+
+    su3_vector *tvec1, *tvec2 = NULL;
+
+    tvec1 = create_v_field();
+    if(do_long)tvec2 = create_v_field();
+
+    FORSOMEFIELDPARITY(i,parity)
+      {
+	mult_adj_su3_mat_vec( fat+4*i+dir, src+i, tvec1+i ) ;
+	if(do_long)
+	  mult_adj_su3_mat_vec( lng+4*i+dir, src+i, tvec2+i ) ;
+      }
+
+    tag[0] = start_gather_field(tvec1, sizeof(su3_vector), OPP_DIR(dir), 
+				parity, gen_pt[0] );
+    if(do_long)
+      tag[1] = start_gather_field(tvec2, sizeof(su3_vector), OPP_3_DIR(DIR3(dir)), 
+				  parity, gen_pt[1] );
+  
+    wait_gather(tag[0]);
+    if(do_long)wait_gather(tag[1]);
+
+    /* Apply weights.  NOTE minus sign convention! */
+
+    FORSOMEFIELDPARITY(i,parity)
+      {
+        scalar_mult_add_su3_vector( dest+i, (su3_vector *)gen_pt[0][i], -wtfat, dest+i ) ;    
+        if(do_long)
+	  scalar_mult_add_su3_vector( dest+i, (su3_vector *)gen_pt[1][i], -wtlong, dest+i ) ;    
+      }
+
+    if(do_long)destroy_v_field(tvec2);
+    destroy_v_field(tvec1);
+
+  }
+
+  cleanup_gather(tag[0]);
+
+  if(do_long)cleanup_gather(tag[1]);
+
+}
+	 
+#if 0
 
 /* d(D_slash)/d(u0) routine - sets dest. on each site equal to sum of
    sources parallel transported to site, with minus sign for transport
@@ -480,18 +593,34 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity,
    msg_tag *tag[16];
    su3_matrix *t_dfatlink_du0;
    su3_matrix *t_longlink;
+   su3_vector *tempvec,*templongvec, *templongv1;
+   char myname[] = "ddslash_fn_du0_site";
 
-   if(!fn->valid){
+   if(!fn->fl.valid){
      printf("ddslash_fn_du0_site: invalid fn links!\n");
      terminate(1);
    }
-   t_longlink = fn->lng;
-   if(!fn_dmdu0->valid){
+   t_longlink = fn->fl.lng;
+   if(!fn_dmdu0->fl.valid){
      printf("ddslash_fn_du0_site: invalid fn_du0 links!\n");
      terminate(1);
    }
-   t_dfatlink_du0 = fn_dmdu0->fat;
+   t_dfatlink_du0 = fn_dmdu0->fl.fat;
 
+    tempvec = (su3_vector *) malloc(sizeof(su3_vector)*4*sites_on_node);
+    if(tempvec == NULL){
+      printf("%s(%d)No room for temporary\n",myname, this_node);
+      terminate(1);
+    }
+    
+    templongvec = (su3_vector *) malloc(sizeof(su3_vector)*4*sites_on_node);
+    if(templongvec == NULL){
+      printf("%s(%d)No room for temporary\n",myname, this_node);
+      terminate(1);
+    }
+    
+    templongv1 = create_v_field();
+  
     switch(parity){
 	case EVEN:	otherparity=ODD; break;
 	case ODD:	otherparity=EVEN; break;
@@ -516,38 +645,44 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity,
 	prefetch_4MV4V( 
 		       fat4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
-		       (s+FETCH_UP)->tempvec );
+		       tempvec+4*i+FETCH_UP);
 	prefetch_4MV4V(
 		       long4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
-		       (s+FETCH_UP)->templongvec );
+		       templongvec+4*i+FETCH_UP);
       }
 
       fat4 = &(t_dfatlink_du0[4*i]);
       long4 = &(t_longlink[4*i]);
 	mult_adj_su3_mat_vec_4dir( fat4,
-	    (su3_vector *)F_PT(s,src), s->tempvec );
+	    (su3_vector *)F_PT(s,src), tempvec+4*i );
 	/* multiply by 3-link matrices too */
 	mult_adj_su3_mat_vec_4dir( long4,
-	    (su3_vector *)F_PT(s,src), s->templongvec );
+	    (su3_vector *)F_PT(s,src), templongvec+4*i );
 	for( dir=XUP; dir<=TUP; dir++ )
-	  scalar_mult_su3_vector( &(s->templongvec[dir]), -2.0/u0,
-				  &(s->templongvec[dir]) );
+	  scalar_mult_su3_vector( templongvec+4*i+dir, -2.0/u0,
+				  templongvec+4*i+dir );
     } END_LOOP
 
     /* Start gathers from negative directions */
     for( dir=XUP; dir <= TUP; dir++){
-	tag[OPP_DIR(dir)] = start_gather_site( F_OFFSET(tempvec[dir]),
-	    sizeof(su3_vector), OPP_DIR( dir), parity,
-	    gen_pt[OPP_DIR(dir)] );
+	tag[OPP_DIR(dir)] = 
+	  declare_strided_gather( (char *)(tempvec+dir), 4*sizeof(su3_vector), 
+				  sizeof(su3_vector), OPP_DIR( dir), parity, 
+				  gen_pt[OPP_DIR(dir)] );
+	prepare_gather(tag[OPP_DIR(dir)]);
+	do_gather(tag[OPP_DIR(dir)]);
     }
 
     /* Start 3-neighbour gathers from negative directions */
     for( dir=X3UP; dir <= T3UP; dir++){
-	tag[OPP_3_DIR(dir)] 
-           = start_gather_site( F_OFFSET(templongvec[INDEX_3RD(dir)]),
-			   sizeof(su3_vector), OPP_3_DIR( dir), parity,
-			   gen_pt[OPP_3_DIR(dir)] );
+	tag[OPP_3_DIR(dir)] = 
+	  declare_strided_gather( (char *)(templongvec+INDEX_3RD(dir)), 
+				  4*sizeof(su3_vector), 
+				  sizeof(su3_vector), OPP_3_DIR(dir), 
+				  parity, gen_pt[OPP_3_DIR(dir)] );
+	prepare_gather(tag[OPP_3_DIR(dir)]);
+	do_gather(tag[OPP_3_DIR(dir)]);
     }
 
     /* Wait gathers from positive directions, multiply by matrix and
@@ -578,9 +713,9 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity,
       mult_su3_mat_vec_sum_4dir( long4,
 	    (su3_vector *)gen_pt[X3UP][i], (su3_vector *)gen_pt[Y3UP][i],
 	    (su3_vector *)gen_pt[Z3UP][i], (su3_vector *)gen_pt[T3UP][i],
-	    (su3_vector *) &(s->templongv1));
-      scalar_mult_su3_vector( (su3_vector *) &(s->templongv1), -2.0/u0,
-			      (su3_vector *) &(s->templongv1) );
+            templongv1+i);
+      scalar_mult_su3_vector( templongv1+i, -2.0/u0,
+			      templongv1+i );
 
       if( i < loopend-FETCH_UP ){
 	fat4 = &(t_dfatlink_du0[4*(i+FETCH_UP)]);
@@ -614,13 +749,13 @@ void ddslash_fn_du0_site( field_offset src, field_offset dest, int parity,
 	    (su3_vector *)(gen_pt[YDOWN][i]),
 	    (su3_vector *)(gen_pt[ZDOWN][i]),
 	    (su3_vector *)(gen_pt[TDOWN][i]) );
-        sub_four_su3_vecs( &(s->templongv1), 
+        sub_four_su3_vecs( templongv1+i,
 	    (su3_vector *)(gen_pt[X3DOWN][i]),
 	    (su3_vector *)(gen_pt[Y3DOWN][i]),
 	    (su3_vector *)(gen_pt[Z3DOWN][i]),
 	    (su3_vector *)(gen_pt[T3DOWN][i]) );
         /* Now need to add these things together */
-        add_su3_vector((su3_vector *)F_PT(s,dest), & (s->templongv1),
+        add_su3_vector((su3_vector *)F_PT(s,dest), templongv1+i,
 			           (su3_vector *)F_PT(s,dest));
     } END_LOOP
 
@@ -654,16 +789,16 @@ void ddslash_fn_du0_field( su3_vector *src, su3_vector *dest, int parity,
      }
    templongv1=(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
-   if(!fn->valid){
+   if(!fn->fl.valid){
      printf("ddslash_fn_du0_field: invalid fn links!\n");
      terminate(1);
    }
-   t_longlink = fn->lng;
-   if(!fn->valid){
+   t_longlink = fn->fl.lng;
+   if(!fn->fl.valid){
      printf("ddslash_fn_du0_field: invalid fn_du0 links!\n");
      terminate(1);
    }
-   t_dfatlink_du0 = fn_dmu0->fat;
+   t_dfatlink_du0 = fn_dmdu0->fl.fat;
 
    switch(parity)
      {

@@ -17,14 +17,14 @@
 
 static int 
 ks_congrad_two_src_F(	/* Return value is number of iterations taken */
-    field_offset milc_src1,     /* source vector (type su3_vector) */
-    field_offset milc_src2,
-    field_offset milc_sol1,	/* solution vectors */
-    field_offset milc_sol2,
+    field_offset src1,     /* source vector (type su3_vector) */
+    field_offset src2,
+    field_offset sol1,	/* solution vectors */
+    field_offset sol2,
     quark_invert_control *qic,
     Real mass1,
     Real mass2,
-    ferm_links_t *fn 
+    imp_ferm_links_t *fn 
     )
 {
   int iterations_used;
@@ -32,42 +32,56 @@ ks_congrad_two_src_F(	/* Return value is number of iterations taken */
   static float t_mass2;
   float *masses[2];
   int nmass[2], nsrc;
-  field_offset milc_srcs[2], milc_sols0[1], milc_sols1[1], *milc_sols[2];
+  su3_vector *srcs[2], *sols0[1], *sols1[1], **sols[2];
 
-  /* Set up general source and solution pointers for two sources,
-     one mass per source so one solution per source */
+  /* Map masses and source fields from site structure to temporary fields */
+
   nsrc = 2;
-  milc_srcs[0] = milc_src1;
-  milc_srcs[1] = milc_src2;
-
-  nmass[0] = 1; 
+  nmass[0] = 1;
   nmass[1] = 1;
   t_mass1 = mass1;
-  t_mass2 = mass2;
+  t_mass2 = mass2;  
   masses[0] = &t_mass1;
   masses[1] = &t_mass2;
+  srcs[0] = create_v_field_from_site_member(src1);
+  srcs[1] = create_v_field_from_site_member(src2);
 
-  milc_sols0[0] = milc_sol1;
-  milc_sols1[0] = milc_sol2;
-  milc_sols[0] = milc_sols0;
-  milc_sols[1] = milc_sols1;
+  /* Make room for temporary solution fields */
+
+  sols0[0] = create_v_field();
+  sols1[0] = create_v_field();
+  sols[0] = sols0;
+  sols[1] = sols1;
 
   iterations_used = 
-    ks_congrad_qop_F_site2site( qic, masses, nmass, milc_srcs,
-				milc_sols, nsrc, fn );
+    ks_congrad_qop_F_field2field( qic, masses, nmass, srcs,
+				  sols, nsrc, fn );
+
+  /* Copy solutions to site structure */
+
+  copy_site_member_from_v_field(sol1, sols0[0]);
+  copy_site_member_from_v_field(sol2, sols1[0]);
+
+  /* Cleanup */
+
+  destroy_v_field(sols0[0]);
+  destroy_v_field(sols1[0]);
+  destroy_v_field(srcs[1]);
+  destroy_v_field(srcs[0]);
+
   return iterations_used;
 }
 
 static int 
 ks_congrad_two_src_D(	/* Return value is number of iterations taken */
-    field_offset milc_src1,     /* source vector (type su3_vector) */
-    field_offset milc_src2,
-    field_offset milc_sol1,	/* solution vectors */
-    field_offset milc_sol2,
+    field_offset src1,     /* source vector (type su3_vector) */
+    field_offset src2,
+    field_offset sol1,	/* solution vectors */
+    field_offset sol2,
     quark_invert_control *qic,
-    double mass1,
-    double mass2,
-    ferm_links_t *fn 
+    Real mass1,
+    Real mass2,
+    imp_ferm_links_t *fn 
     )
 {
   int iterations_used;
@@ -75,69 +89,82 @@ ks_congrad_two_src_D(	/* Return value is number of iterations taken */
   static double t_mass2;
   double *masses[2];
   int nmass[2], nsrc;
-  field_offset milc_srcs[2], milc_sols0[1], milc_sols1[1], *milc_sols[2];
+  su3_vector *srcs[2], *sols0[1], *sols1[1], **sols[2];
 
-  /* Set up general source and solution pointers for two sources,
-     one mass per source so one solution per source */
+  /* Map masses and source fields from site structure to temporary fields */
+
   nsrc = 2;
-  milc_srcs[0] = milc_src1;
-  milc_srcs[1] = milc_src2;
-
-  nmass[0] = 1; 
+  nmass[0] = 1;
   nmass[1] = 1;
   t_mass1 = mass1;
-  t_mass2 = mass2;
+  t_mass2 = mass2;  
   masses[0] = &t_mass1;
   masses[1] = &t_mass2;
+  srcs[0] = create_v_field_from_site_member(src1);
+  srcs[1] = create_v_field_from_site_member(src2);
 
-  milc_sols0[0] = milc_sol1;
-  milc_sols1[0] = milc_sol2;
-  milc_sols[0] = milc_sols0;
-  milc_sols[1] = milc_sols1;
+  /* Make room for temporary solution fields */
+
+  sols0[0] = create_v_field();
+  sols1[0] = create_v_field();
+  sols[0] = sols0;
+  sols[1] = sols1;
 
   iterations_used = 
-    ks_congrad_qop_D_site2site( qic, masses, nmass, milc_srcs,
-				milc_sols, nsrc, fn );
+    ks_congrad_qop_D_field2field( qic, masses, nmass, srcs,
+				  sols, nsrc, fn );
+
+  /* Copy solutions to site structure */
+
+  copy_site_member_from_v_field(sol1, sols0[0]);
+  copy_site_member_from_v_field(sol2, sols1[0]);
+
+  /* Cleanup */
+
+  destroy_v_field(sols0[0]);
+  destroy_v_field(sols1[0]);
+  destroy_v_field(srcs[1]);
+  destroy_v_field(srcs[0]);
+
   return iterations_used;
 }
 
-int 
+int
 ks_congrad_two_src(	/* Return value is number of iterations taken */
-    field_offset milc_src1,     /* source vector (type su3_vector) */
-    field_offset milc_src2,
-    field_offset milc_sol1,	/* solution vectors */
-    field_offset milc_sol2,
+    field_offset src1,    /* source vector (type su3_vector) */
+    field_offset src2,
+    field_offset dest1,	/* solution vectors */
+    field_offset dest2,
     Real mass1,
     Real mass2,
-    int niter,		        /* maximal number of CG interations */
-    int nrestart,               /* maximal number of CG restarts */
-    Real rsqmin,	        /* desired residue squared */
-    int prec,                   /* internal precision for the inversion */
-    int milc_parity,		/* parity to be worked on */
-    Real  *final_rsq,     	/* final residue squared */
-    ferm_links_t *fn             /* Storage for fermion links */
+    int niter,		/* maximal number of CG interations */
+    int nrestart,       /* maximal number of CG restarts */
+    Real rsqmin,	/* desired residue squared */
+    int prec,           /* internal precision for the inversion (ignored) */
+    int parity,		/* parity to be worked on */
+    Real  *final_rsq_ptr, /* final residue squared */
+    imp_ferm_links_t *fn       /* Storage for fermion links */
     )
 {
   int iterations_used;
   quark_invert_control qic;
 
-  qic.prec      = prec;  
-  qic.parity    = milc_parity;
+  /* Pack structure */
+  qic.prec      = prec;  /* Currently ignored */
+  qic.min       = 0;
   qic.max       = niter;
   qic.nrestart  = nrestart;
-  qic.resid     = rsqmin;
+  qic.parity    = parity;
+  qic.start_flag = 0;
+  qic.nsrc      = 1;
+  qic.resid     = sqrt(rsqmin);
   qic.relresid  = 0;     /* Suppresses this test */
 
-  if(prec == 1)
-    iterations_used = 
-      ks_congrad_two_src_F( milc_src1, milc_src2, milc_sol1, milc_sol2, 
-			    &qic, mass1, mass2, fn );
+  if(PRECISION == 1)
+    iterations_used = ks_congrad_two_src_F(src1, src2, dest1, 
+					   dest2, &qic, mass1, mass2, fn);
   else
-    iterations_used = 
-      ks_congrad_two_src_D( milc_src1, milc_src2, milc_sol1, milc_sol2, 
-			    &qic, mass1, mass2, fn );
-
-  *final_rsq    = qic.final_rsq;
-  total_iters += iterations_used;
+    iterations_used = ks_congrad_two_src_D(src1, src2, dest1, 
+					   dest2, &qic, mass1, mass2, fn);
   return iterations_used;
 }

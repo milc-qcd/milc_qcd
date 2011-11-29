@@ -84,9 +84,9 @@ ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest,
   /* Unpack structure */
   int niter        = qic->max;      /* maximum number of iters per restart */
   int max_restarts = qic->nrestart; /* maximum restarts */
-  Real rsqmin      = qic->resid;    /* desired residual - 
+  Real rsqmin      = qic->resid * qic->resid;    /* desired residual - 
 			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
-  Real relrsqmin   = qic->relresid; /* desired relative residual (FNAL)*/
+  Real relrsqmin   = qic->relresid * qic->relresid; /* desired relative residual (FNAL)*/
   int parity     = qic->parity;   /* EVEN, ODD */
 
   int max_cg = max_restarts*niter; /* Maximum number of iterations */
@@ -359,6 +359,7 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
     fflush(stdout);}
 #endif
 
+  report_status(qic);
   return iters;
 }
 
@@ -417,6 +418,7 @@ int ks_congrad_site( field_offset src, field_offset dest,
     fflush(stdout);}
 #endif
 
+  report_status(qic);
   return iters;
 }
 
@@ -432,10 +434,13 @@ int ks_congrad( field_offset src, field_offset dest, Real mass,
 
   /* Pack structure */
   qic.prec      = prec;  /* Currently ignored */
-  qic.parity    = parity;
+  qic.min       = 0;
   qic.max       = niter;
   qic.nrestart  = nrestart;
-  qic.resid     = rsqmin;
+  qic.parity    = parity;
+  qic.start_flag = 0;
+  qic.nsrc      = 1;
+  qic.resid     = sqrt(rsqmin);
   qic.relresid  = 0;     /* Suppresses this test */
 
   /* Solve the system */

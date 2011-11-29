@@ -85,8 +85,8 @@ int ks_congrad( field_offset milc_src, field_offset milc_sol, Real mass,
   // load fat and long links                           //
   ///////////////////////////////////////////////////////
 
-  t_fatlink = fn->fat;
-  t_longlink = fn->lng;
+  t_fatlink = fn->fl.fat;
+  t_longlink = fn->fl.lng;
 
 #ifdef CGTIME
   dtimec = -dclock(); 
