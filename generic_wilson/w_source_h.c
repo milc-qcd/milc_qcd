@@ -14,7 +14,7 @@
 static Real *source_wall_template = NULL;
 
 /* Initialize by calling this function before using wqs */
-void init_wqs(wilson_quark_source *wqs){
+void init_qs(quark_source *wqs){
   wqs->type             = UNKNOWN;
   wqs->c_src            = NULL;
   wqs->wv_src           = NULL;
@@ -29,7 +29,7 @@ void init_wqs(wilson_quark_source *wqs){
   wqs->t0               = 0;
 }
 
-void alloc_wqs_wv_src(wilson_quark_source *wqs)
+void alloc_wqs_wv_src(quark_source *wqs)
 {
   if(wqs->wv_src == NULL)
     wqs->wv_src = (wilson_vector *)malloc(sizeof(wilson_vector)*sites_on_node);
@@ -40,7 +40,7 @@ void alloc_wqs_wv_src(wilson_quark_source *wqs)
   memset(wqs->wv_src, 0, sizeof(wilson_vector)*sites_on_node);
 }
 
-void alloc_wqs_c_src(wilson_quark_source *wqs)
+void alloc_wqs_c_src(quark_source *wqs)
 {
   if(wqs->c_src == NULL)
     wqs->c_src = (complex *)malloc(sizeof(complex)*sites_on_node);
@@ -106,7 +106,7 @@ Real *make_template(Real gamma, int cutoff)
   return my_template;
 } /* make_template */
 
-void w_source_h(field_offset src,wilson_quark_source *wqs)
+void w_source_h(field_offset src,quark_source *wqs)
 {
   register int i;
   register site *s; 
@@ -224,7 +224,7 @@ void w_source_h(field_offset src,wilson_quark_source *wqs)
   
 } /* w_source_h */
 
-int w_source_field(wilson_vector *src,wilson_quark_source *wqs)
+int w_source_field(wilson_vector *src,quark_source *wqs)
 {
   register int i;
   register site *s; 
@@ -348,7 +348,7 @@ int ask_w_quark_source( FILE *fp, int prompt, int *source_type, char *descrp)
   char *savebuf;
   char myname[] = "ask_w_quark_source";
   
-  if (prompt!=0)
+  if (prompt==1)
     printf("enter 'point', 'cutoff_gaussian', 'point_weyl', 'cutoff_gaussian_weyl' for source type\n");
 
   savebuf = get_next_tag(fp, "quark source command", myname);
