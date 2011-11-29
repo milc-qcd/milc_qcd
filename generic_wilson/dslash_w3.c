@@ -30,7 +30,7 @@ static su3_matrix *t_links;
 /* Flag indicating if temp is allocated               */
 static int tmp_links_not_set = 1;
 
-void malloc_dslash_temps(){
+static void malloc_dslash_temps(){
   int j;
 
   if(!temp_not_allocated)return;
