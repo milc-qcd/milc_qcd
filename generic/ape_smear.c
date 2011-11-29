@@ -111,7 +111,7 @@ void ape_smear_dir(
   /* Allocate temporary space for staple calculation */
   temp = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
   if(temp == NULL){
-    printf("ape_smear: No room for temp\n");
+    printf("ape_smear_dir: No room for temp\n");
     terminate(1);
   }
   
@@ -192,7 +192,7 @@ void ape_smear_dir(
       *((su3_matrix *)F_PT(s,dest)) = tmat1;
     }
   }
-  
+
   free(temp);
   
 } /* ape_smear_dir */
@@ -380,5 +380,68 @@ void ape_smear_field(
     ape_smear_field_dir(src,dir1,dest,staple_weight,
 			link_u0,space_only,nhits,tol);
   }
-} /* ape_smear */
+} /* ape_smear_field */
+
+/* Unit gauge field. See also io_helpers.c:coldlat() */
+static su3_matrix *create_unit_gauge_field(void){
+  su3_matrix *ape_links;
+  int i,j,dir;
+
+  /* Allocate and zero the field */
+  ape_links = create_G();
+
+  /* Set matrices to unity */
+  FORALLFIELDSITES(i){
+    FORALLUPDIRBUT(TUP,dir){
+      for(j = 0; j < 3; j++)
+	ape_links[4*i+dir].e[j][j].real = 1.0;
+    }
+  }
+  return ape_links;
+}
+
+/* Do 3D APE smearing of space-like links with SU(3) projection */
+su3_matrix *ape_smear_3D(Real staple_weight, int iters){
+  int space_only = 1;
+  //  int nhits = 0;   /* Turn off SU(3) projection */
+  int nhits = 10;
+  //  Real tol = 0;    /* Used only for SU(3) projection */
+  Real tol = 1e-5;    /* Used only for SU(3) projection */
+  int i,dir;
+  //  Real link_u0 = 1. - 4.*staple_weight;
+  Real link_u0 = 1.;
+  su3_matrix *s_links;
+  su3_matrix *ape_links;
+  double dtime = -dclock();
+
+  /* KLUDGE! So we get noncovariant shifts in quark_source_sink_op.c */
+  /* A negative value results in a unit gauge field */
+  if(iters < 0){
+    ape_links = create_unit_gauge_field();
+    node0_printf("APE links are set to unit matrices\n");
+    return ape_links;
+  }
+
+  /* Copy site gauge links to ape_links */
+  ape_links = create_G_from_site();
+  s_links = create_G();
+
+  for(i = 0; i < iters; i++){
+    FORALLUPDIRBUT(TUP,dir){
+      ape_smear_field_dir(ape_links, dir, s_links, staple_weight, link_u0,
+			  space_only, nhits, tol);
+    }
+    copy_G(ape_links, s_links);
+  }
+
+  destroy_G(s_links);
+  dtime += dclock();
+  node0_printf("Time to APE smear %e sec\n",dtime);
+  return ape_links;
+} /* ape_smear_3D */
+
+void destroy_ape_links_3D(su3_matrix *ape_links){
+  if(ape_links != NULL)
+    destroy_G(ape_links);
+} /* destroy_ape_links_3D */
 
