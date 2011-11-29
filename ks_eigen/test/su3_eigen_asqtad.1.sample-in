@@ -38,5 +38,5 @@ eigenval_tolerance 1.0e-7
 error_decrease .3
 
 # Input lattice
-reload_serial ../binary_samples/lat.sample.inst
+reload_serial ../../binary_samples/lat.sample.inst
 

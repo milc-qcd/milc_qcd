@@ -22,6 +22,7 @@
 #include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 #include "../include/random.h"
 #include "../include/io_lat.h"    /* For gauge_file */
+#include "../include/fermion_links.h"
 
 /* Begin definition of site structure */
 
@@ -148,9 +149,14 @@ EXTERN  int this_node;		/* node number of this node */
    generator state */
 EXTERN double_prn node_prn ;
 
+EXTERN  char utc_date_time[64];
+EXTERN  char hostname[128];
+
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
 EXTERN site *lattice;
+
+EXTERN su3_matrix *ape_links;  /* Not used in this application */
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */
@@ -158,7 +164,6 @@ EXTERN site *lattice;
 EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
-EXTERN ferm_links_t    fn_links, fn_links_dmdu0;
-EXTERN ks_action_paths ks_act_paths,ks_act_paths_dmdu0;
+EXTERN fermion_links_t    *fn_links;
 
 #endif /* _LATTICE_H */

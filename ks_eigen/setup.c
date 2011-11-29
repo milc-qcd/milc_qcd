@@ -19,8 +19,11 @@
 #define IF_OK if(status==0)
 
 #include "ks_eig_includes.h"	/* definitions files and prototypes */
-#include "lattice_qdp.h"
+//#include "lattice_qdp.h"
 #include <string.h>
+#ifdef HAVE_QOP
+#include "../include/generic_qop.h"
+#endif
 
 EXTERN gauge_header start_lat_hdr;
 gauge_file *gf;
@@ -37,33 +40,33 @@ void r_binary_f(gauge_file *);
 #include "params.h"
 params par_buf;
 
-#ifdef HAVE_QDP
-void
-initial_li(QLA_Int *li, int coords[])
-{
-  int i,t;
- 
-  t = coords[0];
-  for(i=1; i<4; i++) {
-    t = t*QDP_coord_size(i) + coords[i];
-  }
-  *li = t;
-}
- 
-void
-make_rand_seed(void)
-{
-  QDP_Int *li;
-
-  rand_state = QDP_create_S();
-  li = QDP_create_I();
-
-  QDP_I_eq_func(li, initial_li, QDP_all);
-  QDP_S_eq_seed_i_I(rand_state, iseed, li, QDP_all);
-
-  QDP_destroy_I(li);
-}
-#endif
+//#ifdef HAVE_QDP
+//void
+//initial_li(QLA_Int *li, int coords[])
+//{
+//  int i,t;
+// 
+//  t = coords[0];
+//  for(i=1; i<4; i++) {
+//    t = t*QDP_coord_size(i) + coords[i];
+//  }
+//  *li = t;
+//}
+// 
+//void
+//make_rand_seed(void)
+//{
+//  QDP_Int *li;
+//
+//  rand_state = QDP_create_S();
+//  li = QDP_create_I();
+//
+//  QDP_I_eq_func(li, initial_li, QDP_all);
+//  QDP_S_eq_seed_i_I(rand_state, iseed, li, QDP_all);
+//
+//  QDP_destroy_I(li);
+//}
+//#endif
 
 int  setup()   {
     int initial_set();
@@ -71,9 +74,9 @@ int  setup()   {
     void make_3n_gathers(),
         setup_layout();
     int prompt;
-#ifdef HAVE_QDP
-    int i;
-#endif
+//#ifdef HAVE_QDP
+//    int i;
+//#endif
 
 	/* print banner, get volume, seed */
     prompt=initial_set();
@@ -84,7 +87,7 @@ int  setup()   {
 	/* allocate space for lattice, set up coordinate fields */
     make_lattice();
     node0_printf("Made lattice\n"); fflush(stdout);
-    init_ferm_links(&fn_links);
+    //init_ferm_links(&fn_links, &ks_act_paths);
 	/* set up neighbor pointers and comlink structures
 	   code for this routine is in com_machine.c  */
     make_nn_gathers();
@@ -96,19 +99,27 @@ node0_printf("Made 3nn gathers\n"); fflush(stdout);
 	/* set up K-S phase vectors, boundary conditions */
     phaseset();
 
-#ifdef HAVE_QDP
-    make_rand_seed();
-node0_printf("Made random seed\n"); fflush(stdout);
-
-  for(i=0; i<4; ++i) {
-    shiftdirs[i] = QDP_neighbor[i];
-    shiftdirs[i+4] = neighbor3[i];
-  }
-  for(i=0; i<8; ++i) {
-    shiftfwd[i] = QDP_forward;
-    shiftbck[i] = QDP_backward;
+#if HAVE_QOP
+  /* Initialize QOP */
+  if(initialize_qop() != QOP_SUCCESS){
+    node0_printf("setup: Error initializing QOP\n");
+    terminate(1);
   }
 #endif
+
+//#ifdef HAVE_QDP
+//    make_rand_seed();
+//node0_printf("Made random seed\n"); fflush(stdout);
+//
+//  for(i=0; i<4; ++i) {
+//    shiftdirs[i] = QDP_neighbor[i];
+//    shiftdirs[i+4] = neighbor3[i];
+//  }
+//  for(i=0; i<8; ++i) {
+//    shiftfwd[i] = QDP_forward;
+//    shiftbck[i] = QDP_backward;
+//  }
+//#endif
 
 node0_printf("Finished setup\n"); fflush(stdout);
     return( prompt );
@@ -125,6 +136,22 @@ int prompt,status;
 	printf("Eigenvalues and eigenvectors\n");
 	printf("MIMD version 6\n");
 	printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
+
+	gethostname(hostname, 128);
+	printf("Host(0) = %s\n",hostname);
+	printf("Username = %s\n", getenv("USER"));
+	time_stamp("start");
+	get_utc_datetime(utc_date_time);
+	
+	/* Print list of options selected */
+	node0_printf("Options selected...\n");
+	show_generic_opts();
+	show_generic_ks_opts();
+	
+#if FERM_ACTION == HISQ
+	show_su3_mat_opts();
+	show_hisq_links_opts();
+#endif
 
 	status=get_prompt(stdin, &prompt);
 
@@ -233,11 +260,24 @@ int readin(int prompt) {
     phases_in = OFF;
     rephase( ON );
 
-    node0_printf("Calling for path table\n");fflush(stdout);
-    /* make table of coefficients and permutations of paths in quark action */
-    init_path_table(&ks_act_paths);
-    make_path_table(&ks_act_paths, NULL);
-    node0_printf("Done with path table\n");fflush(stdout);
+  /* Set uptions for fermion links */
+    
+#ifdef DBLSTORE_FN
+    /* We want to double-store the links for optimization */
+    fermion_links_want_back(1);
+#endif
+    
+#if FERM_ACTION == HISQ
+    fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+#else
+    fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+#endif
+    
+//    node0_printf("Calling for path table\n");fflush(stdout);
+//    /* make table of coefficients and permutations of paths in quark action */
+//    init_path_table(fn_links.ap);
+//    make_path_table(fn_links.ap, NULL);
+//    node0_printf("Done with path table\n");fflush(stdout);
 
     return(0);
 }
@@ -251,9 +291,9 @@ void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 
 void make_3n_gathers(){
    int i;
-#ifdef HAVE_QDP
-   int disp[4]={0,0,0,0};
-#endif
+//#ifdef HAVE_QDP
+//   int disp[4]={0,0,0,0};
+//#endif
  
    for(i=XUP;i<=TUP;i++) {
       make_gather(third_neighbor,&i,WANT_INVERSE,
@@ -265,13 +305,13 @@ void make_3n_gathers(){
 
    sort_eight_gathers(X3UP);
 
-#ifdef HAVE_QDP
-  for(i=0; i<4; i++) {
-    disp[i] = 3;
-    neighbor3[i] = QDP_create_shift(disp);
-    disp[i] = 0;
-  }
-#endif
+//#ifdef HAVE_QDP
+//  for(i=0; i<4; i++) {
+//    disp[i] = 3;
+//    neighbor3[i] = QDP_create_shift(disp);
+//    disp[i] = 0;
+//  }
+//#endif
 }
  
 

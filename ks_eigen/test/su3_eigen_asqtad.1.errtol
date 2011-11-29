@@ -20,16 +20,16 @@ Eigenvalue(17) = 5e-06 +/- 2e-06 XXX XXX
 Eigenvalue(18) = 5e-06 +/- 2e-06 XXX XXX
 Eigenvalue(19) = 5e-06 +/- 2e-06 XXX XXX
 Eigenvalue(20) = 5e-06 +/- 2e-06 XXX XXX
-Eigenvalue(21) = 5e-06 +/- 2e-06 XXX XXX
-Eigenvalue(22) = 5e-06 +/- 2e-06 XXX XXX
-Eigenvalue(23) = 2e-05 +/- 2e-06 XXX XXX
-Eigenvalue(24) = 2e-05 +/- 5e-06 XXX XXX
-Eigenvalue(25) = 2e-05 +/- 7e-06 XXX XXX
-Eigenvalue(26) = 2e-05 +/- 9e-06 XXX XXX
+Eigenvalue(21) = 5e-06 +/- 4e-06 XXX XXX
+Eigenvalue(22) = 5e-06 +/- 5e-06 XXX XXX
+Eigenvalue(23) = 2e-05 +/- 1e-05 XXX XXX
+Eigenvalue(24) = 2e-05 +/- 1e-05 XXX XXX
+Eigenvalue(25) = 2e-05 +/- 4e-05 XXX XXX
+Eigenvalue(26) = 2e-05 +/- 3e-05 XXX XXX
 Eigenvalue(27) = 2e-05 +/- 2e-05 XXX XXX
-Eigenvalue(28) = 6e-05 +/- 6e-05 XXX XXX
+Eigenvalue(28) = 6e-05 +/- 0.0003 XXX XXX
 Eigenvalue(29) = 4e-05 +/- 0.0003 XXX XXX
-Eigenvalue(30) = 5e-06 +/- 7e-06 XXX XXX
+Eigenvalue(30) = 2e-05 +/- 3e-05 XXX XXX
 Eigenvalue(31) = 0.0002 +/- 0.0002 XXX XXX
 Chirality(0): 2e-06
 Chirality(1): 2e-06
@@ -61,6 +61,6 @@ Chirality(26): 2e-06
 Chirality(27): 2e-06
 Chirality(28): 1e-05
 Chirality(29): 6e-06
-Chirality(30): 5e-05
+Chirality(30): 0.0002
 Chirality(31): 0.0005
 RUNNING COMPLETED

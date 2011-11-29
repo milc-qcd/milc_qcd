@@ -23,7 +23,6 @@
    */
 
 #include "ks_eig_includes.h"
-#define IMP_QUARK_ACTION_INFO_ONLY
 #include <quark_action.h>
 #ifdef HAVE_QIO
 #include <qio.h>

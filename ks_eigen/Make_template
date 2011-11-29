@@ -26,7 +26,8 @@ MY_HEADERS = \
   lattice.h \
   params.h \
   defines.h \
-  ks_eig_includes.h
+  ks_eig_includes.h \
+  quark_action.h
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
@@ -35,152 +36,24 @@ MY_OBJECTS = \
   gauge_info.o \
   setup.o
 
-G_OBJECTS = \
-  check_unitarity.o \
-  d_plaq4.o \
-  io_helpers.o \
-  io_lat4.o \
-  io_lat_utils.o \
-  make_lattice.o \
-  nersc_cksum.o \
-  path_product.o \
-  ranmom.o \
-  ranstuff.o \
-  remap_stdio_from_args.o \
-  reunitarize2.o \
-  stout_smear.o
 
-ifeq ($(strip ${QCDOC}),true)
-  G_OBJECTS += ploop2.o
-else
-  G_OBJECTS += ploop3.o
-endif
+LAYOUT = layout_hyper_prime.o
 
-ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o
-endif
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} eigen_stuff.o jacobi.o flavor_ops.o
 
-G_KS_OBJECTS= \
-  f_meas.o \
-  flavor_ops.o \
-  grsource_imp.o \
-  jacobi.o \
-  mat_invert.o \
-  quark_stuff.o \
-  rephase.o
+# # Generic QOP objects
+# ifeq ($(strip ${HAVEQOP}),true)
+#   ADD_OBJECTS += ${GENERICQOP}
+# endif
 
-# Selection of eigensolver program
-ifeq ($(strip ${HAVEQOP}),true)
-# Interface to access QOP
-  G_KS_OBJECTS += eigen_stuff.o
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    G_KS_OBJECTS += eigen_stuff_qdp.o
-  else
-    G_KS_OBJECTS += eigen_stuff.o
-  endif
-endif
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_KS_OBJECTS += io_scidac_ks.o
-endif
-
-G_W_OBJECTS = \
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_W_OBJECTS += io_scidac_w.o
-endif
-
-# Selection of layout
-ifeq ($(strip ${QCDOC}),true)
-  ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
-  else
-    LAYOUT = layout_qcdoc.o # Required
-  endif
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
-  else
-    LAYOUT = layout_hyper_prime.o # Choices possible here
-  endif
-endif
-
-# Selection of a non-QDP FN Dslash 
-# Choices are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
-DSLASH_FN = dslash_fn_dblstore.o
-
-# Selection of the fermion links algorithm for HISQ actions
-ifeq ($(strip ${HAVEQOP}),true)
-# Interface to access QOP
-  FLINKS_HISQ = ${FLINKS_HISQ_QOP}
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    FLINKS_HISQ = fermion_links_hisq_qdp.o fermion_links_hisq_helpers.o
-  else
-    FLINKS_HISQ = fermion_links_hisq.o fermion_links_hisq_helpers.o
-  endif
-endif
-
-# Selection of the fermion links algorithm for imp actions
-ifeq ($(strip ${HAVEQOP}),true)
-# Interface to access QOP
-  FLINKS_FN = ${FLINKS_FNQOP}
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    FLINKS_FN = fermion_links_asqtad_qdp.o fermion_links_helpers.o
-  else
-    FLINKS_FN = fermion_links_fn.o fermion_links_helpers.o
-  endif
-endif
-
-# Selection of the conjugate gradient algorithm
-ifeq ($(strip ${HAVEQOP}),true)
-# Interface to access QOP
-  INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
-  CONGRAD_FN = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
-     d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o d_congrad_opt.o
-#  CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
-  CONGRAD_FN += ${ASQINVERTQOP}
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-#    Here you may use the fn_qdp set or the fn_1sum_qdp set
-    QDP_OBJECTS = map_milc_to_qdp_D.o map_milc_to_qdp_F.o
-    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN} dslash_fn_qdp_D.o \
-      dslash_fn_qdp_F.o 
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn_qdp.o \
-       d_congrad5_fn_qdp_D.o d_congrad5_fn_qdp_F.o d_congrad_opt.o
-  else
-    # Choose a non_QDP FN conjugate gradient algorithm
-    INV_FN_OBJECTS = ${CONGRAD_FN} ${DSLASH_FN}
-    CONGRAD_FN = d_congrad5_two_src.o d_congrad5_fn.o d_congrad_opt.o
-  endif
-endif
-
-# The only choice for inverters and Dslash for EO actions
-INV_EO_OBJECTS = d_congrad5_eo.o d_congrad_opt.o dslash_eo.o
-MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
-
-# For EO actions we don't precompute the fat links for Dslash at the moment
-HISQ_OBJECTS = ${FLINKS_HISQ} ${INV_FN_OBJECTS}
-FN_OBJECTS   = ${FLINKS_FN} ${INV_FN_OBJECTS}
-EO_OBJECTS   = ${INV_EO_OBJECTS}
-
-# EDRAM allocation for QCDOC
-ifeq ($(strip ${QCDOC}),true)
-  QCDOC_OBJECTS = qcdoc_alloc.o
-endif
-
-ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
-   ${SCIDAC_OBJECTS}
-
-# Generic QOP objects
-ifeq ($(strip ${HAVEQOP}),true)
-  ADD_OBJECTS += ${GENERICQOP}
-endif
-
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} \
-  ${G_W_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+OBJECTS = \
+  ${MY_OBJECTS} \
+  ${FFT_OBJECTS} \
+  ${GAUGE_OBJECTS} \
+  ${LAYOUT} \
+  ${STANDARD_OBJECTS} \
+  ${ADD_OBJECTS} \
+  ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
@@ -194,22 +67,23 @@ LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 # To force a full remake when changing targets
 LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
 
-${LASTMAKE}:
+${LASTMAKE}: ${ALL_MAKES}
 	-/bin/rm -f .lastmake.* quark_action.h
 	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 
+# All make files used in this compilation
 ALL_MAKES = \
    Make_template \
    ${MAKEFILE} \
-   ../Make_template_qop \
+   ../Make_template_combos \
    ../Make_template_scidac \
    ../generic/Make_template \
    ../generic_ks/Make_template \
    ../generic_wilson/Make_template
 
 # To force a remake when changing any make file, header, or target
-${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
 
 fermion_links_fn.o: quark_action.h 
 fermion_links_hisq.o: quark_action.h 
@@ -257,10 +131,10 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 ##### Targets:
 
 su3_eigen_asqtad::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN" \
+	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
+	"DEFINES = -DFN" \
 	"QUARK = asqtad_action.h" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS}"
+	"EXTRA_OBJECTS = ${FN_OBJECTS}"
 
 clean:
 	-/bin/rm -f *.o

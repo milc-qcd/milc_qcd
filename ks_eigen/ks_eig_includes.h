@@ -17,6 +17,7 @@
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
 #include "../include/dirs.h"
+#include "../include/io_ksprop.h"  /* We really should get rid of this */
 
 #ifdef FN
 #define dslash_site dslash_fn_site

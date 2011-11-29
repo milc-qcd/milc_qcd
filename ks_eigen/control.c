@@ -18,14 +18,15 @@ int main( int argc, char **argv ){
   double *eigVal ;
   int total_R_iters ;
   double chirality ;
+  imp_ferm_links_t **fn;
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#ifndef QDP_PROFILE
-  QDP_profcontrol(0);
-#endif
-#endif
+//#ifdef HAVE_QDP
+//  QDP_initialize(&argc, &argv);
+//#ifndef QDP_PROFILE
+//  QDP_profcontrol(0);
+//#endif
+//#endif
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
@@ -37,23 +38,24 @@ int main( int argc, char **argv ){
   while( readin(prompt) == 0){
     
     dtime = -dclock();
-    invalidate_all_ferm_links(&fn_links);
-    make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
-    /* Load fat and long links for fermion measurements if needed */
-    load_ferm_links(&fn_links, &ks_act_paths);
+#ifdef HISQ_SVD_COUNTER
+    hisq_svd_counter = 0;
+#endif
+    restore_fermion_links_from_site(fn_links, PRECISION);
     /* call fermion_variable measuring routines */
     /* results are printed in output file */
-    f_meas_imp( F_OFFSET(phi), F_OFFSET(xxx), mass,
-		&fn_links, &fn_links_dmdu0);
+    f_meas_imp( 1, PRECISION, F_OFFSET(phi), F_OFFSET(xxx), mass,
+		0, fn_links);
     eigVal = (double *)malloc(Nvecs*sizeof(double));
     eigVec = (su3_vector **)malloc(Nvecs*sizeof(su3_vector*));
     for(i=0;i<Nvecs;i++)
       eigVec[i]=
 	(su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
     
+    fn = get_fm_links(fn_links);
     total_R_iters=Kalkreuter(eigVec, eigVal, eigenval_tol, 
 			     error_decr, Nvecs, MaxIter, Restart, 
-			     Kiters, EVEN, &fn_links) ;
+			     Kiters, EVEN, fn[0]) ;
     tmp = (su3_vector*)malloc(sites_on_node*sizeof(su3_vector));
     for(i=0;i<Nvecs;i++)
       { 
@@ -61,7 +63,7 @@ int main( int argc, char **argv ){
 	 * Note that the true odd part of the eigenvector is    *
 	 *  i/sqrt(eigVal) Dslash Psi. But since I only compute *
 	 * the chirality the i factor is irrelevant (-i)*i=1!!  */
-	dslash_fn_field(eigVec[i], tmp, ODD, &fn_links) ;
+	dslash_fn_field(eigVec[i], tmp, ODD, fn[0]) ;
 	FORSOMEPARITY(si,s,ODD){ 
 	  scalar_mult_su3_vector( &(tmp[si]),
 				  1.0/sqrt(eigVal[i]), 
@@ -88,9 +90,7 @@ int main( int argc, char **argv ){
       free(eigVec[i]) ;
     free(eigVec) ;
     free(eigVal) ;
-#ifdef FN
-    invalidate_all_ferm_links(&fn_links);
-#endif
+    invalidate_fermion_links(fn_links);
     fflush(stdout);
     
     node0_printf("RUNNING COMPLETED\n"); fflush(stdout);
@@ -99,6 +99,9 @@ int main( int argc, char **argv ){
       printf("Time = %e seconds\n",dtime);
       printf("total_iters = %d\n",total_iters);
       printf("total Rayleigh iters = %d\n",total_R_iters);
+#ifdef HISQ_SVD_COUNTER
+      printf("hisq_svd_counter = %d\n",hisq_svd_counter);
+#endif
     }
     fflush(stdout);
   }
