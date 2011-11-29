@@ -202,6 +202,7 @@ void path_transport_connection( su3_matrix *src, su3_matrix *dest, int parity,
 } /* path_transport_connection */
 
 
+/* THE FOLLOWING PROCEDURE SEEMS TO BE DISUSED - CD 7/11*/
 void path_transport_connection_hisq( su3_matrix *src, su3_matrix **links, su3_matrix *dest,
     int parity, int *dir, int length ){
 //TEST ME
@@ -316,7 +317,7 @@ void link_transport_connection( su3_matrix *src, su3_matrix *dest,
     }
 } /* link_transport_connection */
 // special case to transport a "connection" by one link, does both parities
-void link_transport_connection_hisq( su3_matrix *src, su3_matrix **links, su3_matrix *dest,
+void link_transport_connection_hisq( su3_matrix *src, su3_matrix *links, su3_matrix *dest,
   su3_matrix *work, int dir ){
 //TEST ME
     register int i;
@@ -328,14 +329,16 @@ void link_transport_connection_hisq( su3_matrix *src, su3_matrix **links, su3_ma
 	    dir, EVENANDODD, gen_pt[0] );
 	wait_gather(mtag0);
 	FORALLSITES(i,s){
-	    mult_su3_nn( &(links[dir][i]), (su3_matrix *)(gen_pt[0][i]), &(dest[i]) );
+	  //	    mult_su3_nn( &(links[dir][i]), (su3_matrix *)(gen_pt[0][i]), &(dest[i]) );
+	    mult_su3_nn( &(links[4*i+dir]), (su3_matrix *)(gen_pt[0][i]), &(dest[i]) );
 	}
 	cleanup_gather(mtag0);
     }
 
     else{ /* GOES_BACKWARDS(dir) */
 	FORALLSITES(i,s){
-	    mult_su3_an( &(links[OPP_DIR(dir)][i]), &(src[i]), &(work[i]) );
+	  //	    mult_su3_an( &(links[OPP_DIR(dir)][i]), &(src[i]), &(work[i]) );
+	    mult_su3_an( &(links[4*i+OPP_DIR(dir)]), &(src[i]), &(work[i]) );
 	}
 	mtag0 = start_gather_field( work, sizeof(su3_matrix),
 	    dir, EVENANDODD, gen_pt[0] );
