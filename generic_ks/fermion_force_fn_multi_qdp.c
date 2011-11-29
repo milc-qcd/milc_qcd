@@ -1,7 +1,8 @@
+OBSOLETE
 /**************** fermion_force_fn_qdp.c ******************************/
 /* MIMD version 7 */
 /* General force for any FN-type action.  Compile with
- * fermion_force_general.c to cover all cases of one, two, and N terms.
+ * fermion_forcee_eo_milc.c to cover all cases of one, two, and N terms.
 
  * Optimized to transport only one set of SU(3) matrices.
  * D.T. 12/05 Version  3. created for improved fermion RHMC.
@@ -157,12 +158,13 @@ static void
 fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[], 
 			    Real eps, QLA_Real *res, 
 			    QDP_ColorVector *x[], int nterms,
-			    ferm_links_t *fn, ks_action_paths *ap ){
+			    ferm_links_t *fn){
 
   /* note CG_solution and Dslash * solution are combined in "x" */
   /* New version 1/21/99.  Use forward part of Dslash to get force */
   /* see long comment at end */
   /* For each link we need x transported from both ends of path. */
+  ks_action_paths *ap = fn->ap;
   int term;
   int i,j,k,lastdir=-99,ipath,ilink;
   int length,dir,odir;
@@ -408,7 +410,7 @@ fn_fermion_force_multi_qdp( QDP_ColorMatrix *force[], QDP_ColorMatrix *gf[],
 /**********************************************************************/
 void fermion_force_fn_multi( Real eps, Real residues[], 
 			     su3_vector **multi_x, int nterms,
-			     int prec, ferm_links_t *fn, ks_action_paths *ap )
+			     int prec, ferm_links_t *fn )
 {
   /* prec is ignored for now */
   int i,dir;
@@ -454,7 +456,7 @@ void fermion_force_fn_multi( Real eps, Real residues[],
 
   /* Evaluate the fermion force */
   remaptime += dclock();
-  fn_fermion_force_multi_qdp(force, gf, eps, res, x, nterms, fn, ap);
+  fn_fermion_force_multi_qdp(force, gf, eps, res, x, nterms, fn);
   remaptime -= dclock();
   
   /* Map the force back to MILC */

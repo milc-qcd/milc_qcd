@@ -1,3 +1,4 @@
+OBSOLETE
 /****** fermion_force_asqtad_qdp.c  -- ******************/
 /* MIMD version 7 */
 /* Fermion force for Asqtad optimized with single direction QDP operations
@@ -38,27 +39,24 @@
 
 /* Standard MILC interface for the single-species Asqtad fermion force routine */
 void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
-			       int prec, ferm_links_t *fn, ks_action_paths *ap )
+			       int prec, ferm_links_t *fn )
 {
   if( prec == 1 )
-    eo_fermion_force_oneterm_F( eps, weight, x_off, fn, ap );
+    eo_fermion_force_oneterm_F( eps, weight, x_off, fn );
   else
-    eo_fermion_force_oneterm_D( eps, weight, x_off, fn, ap );
+    eo_fermion_force_oneterm_D( eps, weight, x_off, fn );
 }
 
 /* Standard MILC interface for the two-species Asqtad fermion force routine */
 
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
 				field_offset x1_off, field_offset x2_off,
-				int prec, ferm_links_t *fn, 
-				ks_action_paths *ap ) 
+				int prec, ferm_links_t *fn ) 
 {
   if( prec == 1 )
-    eo_fermion_force_twoterms_F( eps, weight1, weight2, x1_off, x2_off,
-				 fn, ap );
+    eo_fermion_force_twoterms_F( eps, weight1, weight2, x1_off, x2_off, fn );
   else
-    eo_fermion_force_twoterms_D( eps, weight1, weight2, x1_off, x2_off,
-				 fn, ap );
+    eo_fermion_force_twoterms_D( eps, weight1, weight2, x1_off, x2_off, fn );
 }
 
 /**********************************************************************/
@@ -69,14 +67,12 @@ void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 void 
 fermion_force_asqtad_block( Real eps, Real *residues, 
 			    su3_vector **xxx, int nterms, int veclength, 
-			    int prec, ferm_links_t *fn, ks_action_paths *ap) 
+			    int prec, ferm_links_t *fn ) 
 {
   if( prec == 1)
-    fermion_force_asqtad_block_F( eps, residues, xxx, nterms, veclength,
-				  fn, ap);
+    fermion_force_asqtad_block_F( eps, residues, xxx, nterms, veclength, fn );
   else
-    fermion_force_asqtad_block_D( eps, residues, xxx, nterms, veclength, 
-				  fn, ap );
+    fermion_force_asqtad_block_D( eps, residues, xxx, nterms, veclength, fn );
 }
 
 
@@ -86,12 +82,12 @@ fermion_force_asqtad_block( Real eps, Real *residues,
 void 
 fermion_force_asqtad_multi( Real eps, Real *residues, 
 			    su3_vector **xxx, int nterms, int prec,
-			    ferm_links_t *fn, ks_action_paths *ap ) 
+			    ferm_links_t *fn ) 
 {
   if( prec == 1)
-    fermion_force_asqtad_multi_F( eps, residues, xxx, nterms, fn, ap );
+    fermion_force_asqtad_multi_F( eps, residues, xxx, nterms, fn );
   else
-    fermion_force_asqtad_multi_D( eps, residues, xxx, nterms, fn, ap );
+    fermion_force_asqtad_multi_D( eps, residues, xxx, nterms, fn );
 }
 
 /**********************************************************************/
@@ -99,18 +95,18 @@ fermion_force_asqtad_multi( Real eps, Real *residues,
 /**********************************************************************/
 void eo_fermion_force_multi( Real eps, Real *residues, 
 			     su3_vector **xxx, int nterms, int prec,
-			     ferm_links_t *fn, ks_action_paths *ap ) 
+			     ferm_links_t *fn ) 
 {
   switch(KS_MULTIFF){
   case ASVEC:
     fermion_force_asqtad_block( eps, residues, xxx, nterms, VECLENGTH,
-				prec, fn, ap );
+				prec, fn );
     break;
   case FNMAT:
-    fermion_force_fn_multi( eps, residues, xxx, nterms, prec, fn, ap );
+    fermion_force_fn_multi( eps, residues, xxx, nterms, prec, fn );
     break;
   default:
-    fermion_force_asqtad_multi( eps, residues, xxx, nterms, prec, fn, ap );
+    fermion_force_asqtad_multi( eps, residues, xxx, nterms, prec, fn );
   }
 }
 

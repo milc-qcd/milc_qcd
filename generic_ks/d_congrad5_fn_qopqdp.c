@@ -1,3 +1,4 @@
+OBSOLETE
 NOT MAINTAINED!
 /******* d_congrad5_fn_qopqdp.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 7 */

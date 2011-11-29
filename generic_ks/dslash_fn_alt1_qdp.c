@@ -1,3 +1,4 @@
+OBSOLETE
 /* NOT MAINTAINED! */
 #include "generic_ks_includes.h"
 #include "../include/generic_qdp.h"

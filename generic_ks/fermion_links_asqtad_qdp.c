@@ -1,3 +1,4 @@
+OBSOLETE
 /****** fermion_links_asqtad_qdp.c  ************************************/
 /* MIMD version 7 */
 /* Compute fat links and long links using QDP
