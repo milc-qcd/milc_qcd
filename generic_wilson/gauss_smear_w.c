@@ -52,8 +52,8 @@ cleanup_kg_temps(){
    where Lapl_3d psi(r) = -6 psi + sum_{dir=1}^3 [psi(r+dir) + psi(r-dir)] */
 
 static void 
-klein_gord_field(wilson_vector *psi, wilson_vector *chi, 
-		 su3_matrix *t_links, Real msq, int t0)
+klein_gord_wv_field(wilson_vector *psi, wilson_vector *chi, 
+		    su3_matrix *t_links, Real msq, int t0)
 {
   Real ftmp = 6 + msq;  /* for 3D */
   int i, dir;
@@ -143,8 +143,8 @@ klein_gord_field(wilson_vector *psi, wilson_vector *chi,
    and Lap_3d is the discrete three dimensional Laplacian
 */
 
-void gauss_smear_field(wilson_vector *src, su3_matrix *t_links,
-		       Real width, int iters, int t0)
+void gauss_smear_wv_field(wilson_vector *src, su3_matrix *t_links,
+			  Real width, int iters, int t0)
 {
   wilson_vector *tmp;
   Real ftmp = -(width*width)/(4*iters);
@@ -171,7 +171,7 @@ void gauss_smear_field(wilson_vector *src, su3_matrix *t_links,
 	/* tmp = src * ftmp; */
 	scalar_mult_wvec(src+i, ftmp, tmp+i);
       }
-      klein_gord_field(tmp, src, t_links, ftmpinv, t0);
+      klein_gord_wv_field(tmp, src, t_links, ftmpinv, t0);
     }
 
   free(tmp);
@@ -179,8 +179,8 @@ void gauss_smear_field(wilson_vector *src, su3_matrix *t_links,
 
 /*------------------------------------------------------------*/
 
-void gauss_smear_site(field_offset src, su3_matrix *t_links, 
-		      Real width, int iters, int t0)
+void gauss_smear_wv_site(field_offset src, su3_matrix *t_links, 
+			 Real width, int iters, int t0)
 {
   wilson_vector *srctmp;
   int i;
@@ -198,7 +198,7 @@ void gauss_smear_site(field_offset src, su3_matrix *t_links,
   }
 
   /* Smear in temporary field */
-  gauss_smear_field(srctmp, t_links, width, iters, t0);
+  gauss_smear_wv_field(srctmp, t_links, width, iters, t0);
 
   FORALLSITES(i,s){
     *((wilson_vector *)F_PT(s,src)) = srctmp[i];
