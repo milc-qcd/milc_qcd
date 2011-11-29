@@ -23,7 +23,7 @@ typedef struct {
 	Real clov_c,u0;	/* clover coefficient, <Tr(U_p)>^{1/4} */
 	Real kap[MAX_KAP];	/* kappa values for multiple propagators */
 	Real resid[MAX_KAP];	/* residue for invertion convergence */
-	wilson_quark_source wqs[MAX_KAP];  /* source parameters */
+	quark_source wqs[MAX_KAP];  /* source parameters */
 	int niter; 	/* maximum number of c.g. iterations */
 	int nrestart; 	/* maximum number of c.g. restarts */
 	int source_time; 

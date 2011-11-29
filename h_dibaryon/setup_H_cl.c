@@ -123,7 +123,7 @@ int readin(int prompt) {
     IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
     
     IF_OK {
-      if (prompt!=0) 
+      if (prompt==1) 
 	printf("enter 'nr_forward, nr_backward, nr_forward_backward'\n");
       status2=scanf("%s",savebuf);
       if(status2!=1) {
@@ -158,7 +158,7 @@ int readin(int prompt) {
     IF_OK status += ask_w_quark_source( stdin, prompt, &wallflag, descrp);
 
     /* width: psi=exp(-(r/r0)^2) */
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
     for(i=0;i<par_buf.num_kap;i++){
       IF_OK status += get_f(stdin, prompt,"r0", &par_buf.wqs[i].r0 );
@@ -178,7 +178,7 @@ int readin(int prompt) {
     IF_OK status += ask_starting_lattice(stdin,  prompt, &par_buf.startflag,
 	par_buf.startfile );
 
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
     IF_OK scanf("%s",savebuf);
     IF_OK printf("%s\n",savebuf);
@@ -210,7 +210,7 @@ int readin(int prompt) {
       status += ask_ending_wprop(stdin, prompt,&par_buf.saveflag_w[i],
 		      par_buf.savefile_w[i]);
     
-    IF_OK if(prompt!=0) 
+    IF_OK if(prompt==1) 
       printf("propagator scratch file:\n enter 'serial_scratch_wprop' or 'parallel_scratch_wprop'\n");
     IF_OK status2=scanf("%s",save_w);
     IF_OK printf("%s ",save_w);
@@ -228,7 +228,7 @@ int readin(int prompt) {
 	IF_OK
 	  {
 	    /*read name of file and load it */
-	    if(prompt!=0)printf("enter name of scratch file stem for props\n");
+	    if(prompt==1)printf("enter name of scratch file stem for props\n");
 	    status2=scanf("%s",par_buf.scratchstem_w);
 	    if(status2 !=1) {
 	      printf("error in input: scratch file stem name\n"); status++;
@@ -265,7 +265,7 @@ int readin(int prompt) {
     kap[i] = par_buf.kap[i];
     resid[i] = par_buf.resid[i];
     wqs[i] = par_buf.wqs[i];
-    init_wqs(&wqs[i]);
+    init_qs(&wqs[i]);
     wqs[i].type = par_buf.wqs[i].type;
   }
   strcpy(startfile,par_buf.startfile);

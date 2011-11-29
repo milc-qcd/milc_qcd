@@ -91,9 +91,7 @@ int main(int argc,char *argv[])
   w_prop_file *fp_scr[MAX_KAP];
   
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
@@ -287,8 +285,10 @@ int main(int argc,char *argv[])
 	    qic.min = MinCG;
 	    qic.max = MaxCG;
 	    qic.nrestart = nrestart;
-	    qic.resid = RsdCG;
 	    qic.start_flag = flag;
+	    qic.nsrc = 1;
+	    qic.resid = RsdCG;
+	    qic.relresid = 0;
 	    
 	    /* Load Dirac matrix parameters */
 	    dcp.Kappa = kappa;
