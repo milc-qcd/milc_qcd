@@ -18,7 +18,7 @@ typedef struct {
 	int num_masses;	/* number of masses */
 	Real mass[MAX_MASSES];	/* masses values for multiple propagators */
 	Real resid[MAX_MASSES];	/* residue for invertion convergence */
-	wilson_quark_source wqs[MAX_MASSES];  /* source parameters */
+	quark_source wqs[MAX_MASSES];  /* source parameters */
 	int niter; 	/* maximum number of c.g. iterations */
 	int nrestart; 	/* maximum number of c.g. restarts */
 	char startfile[MAXFILENAME];

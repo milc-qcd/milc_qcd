@@ -67,6 +67,7 @@ G_OBJECTS =          \
   check_unitarity.o  \
   d_plaq4.o          \
   gaugefix2.o        \
+  gauge_utilities.o  \
   io_helpers.o       \
   io_helpers_w.o     \
   ${IO_LAT_REAL}     \

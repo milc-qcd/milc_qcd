@@ -138,8 +138,8 @@ EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
 
-EXTERN wilson_quark_source wqs[MAX_MASSES];
-EXTERN wilson_quark_source wqstmp;  /* Temporary */
+EXTERN quark_source wqs[MAX_MASSES];
+EXTERN quark_source wqstmp;  /* Temporary */
 
 
 
