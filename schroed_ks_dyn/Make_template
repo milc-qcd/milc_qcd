@@ -58,6 +58,7 @@ MY_OBJECTS =         \
 G_OBJECTS =          \
   check_unitarity.o  \
   d_plaq4.o          \
+  field_utilities.o  \
   io_helpers.o       \
   io_lat4.o          \
   io_lat_utils.o     \

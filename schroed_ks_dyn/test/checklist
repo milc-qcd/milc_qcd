@@ -1,0 +1,6 @@
+exec su3_schr_rmd     2 - - WARMUPS RUNNING
+exec su3_schr_phi     2	- - WARMUPS RUNNING
+exec su3_schr_hmc     2	- - WARMUPS RUNNING
+exec su3_schr_sw_hmc  2	- - WARMUPS RUNNING
+exec su3_schr_rmd_ph  2	- - WARMUPS RUNNING
+exec su3_schr_rw_rmd  2 - - WARMUPS RUNNING

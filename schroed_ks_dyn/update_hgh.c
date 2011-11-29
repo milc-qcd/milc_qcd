@@ -58,7 +58,7 @@ Real xrandom;
 
 	    /* do conjugate gradient to get (Madj M)inverse * phi */
 	    /* NOTE: NEED TO UPGRADE TO ASQTAD.  BUILD ks_act_paths, ETC. */
-	    load_ferm_links(&fn_links, &ks_act_paths);
+	    load_ferm_links(&fn_links);
 	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 				niter, nrestart, rsqmin, PRECISION, EVEN, 
 				&final_rsq, &fn_links);
@@ -120,7 +120,7 @@ Real xrandom;
 	/* do conjugate gradient to get (Madj M)inverse * phi */
 	next_cg_time = step*epsilon;
 	predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
-	load_ferm_links(&fn_links, &ks_act_paths);
+	load_ferm_links(&fn_links);
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, nrestart, rsqmin, PRECISION, EVEN, 
 			    &final_rsq, &fn_links);

@@ -10,11 +10,11 @@
 
 #include "schroed_ks_includes.h"
 
-void load_longlinks(ferm_links_t *fn, ks_action_paths *ap) {
+void load_longlinks(ferm_links_t *fn) {
   fn->lng = NULL;
 }
 
-void load_fatlinks(ferm_links_t *fn, ks_action_paths *ap){
+void load_fatlinks(ferm_links_t *fn) {
   fn->fat = NULL;
 }
 
@@ -26,12 +26,11 @@ void load_fatbacklinks(ferm_links_t *fn){
   fn->fatback = NULL;
 }
 
-void load_ferm_links(ferm_links_t *fn, ks_action_paths *ap){
+void load_ferm_links(ferm_links_t *fn){
   if(fn->valid == 1)return;
 
-  load_fatlinks(fn, ap);
-  load_longlinks(fn, ap);
-  fn->ap = ap;
+  load_fatlinks(fn);
+  load_longlinks(fn);
 
 #ifdef DBLSTORE_FN
   load_fatbacklinks(fn);
