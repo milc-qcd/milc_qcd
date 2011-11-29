@@ -182,13 +182,13 @@ void write_ksprop_info_file(ks_prop_file *pf)
 
   ph = pf->header;
 
-  /* Construct header file name from propagator file name 
+  /* Construct metadata file name from propagator file name 
    by adding filename extension to propagator file name */
 
   strcpy(info_filename,pf->filename);
-  strcat(info_filename,ASCII_PROP_INFO_EXT);
+  strcat(info_filename,ASCII_INFO_EXT);
 
-  /* Open header file */
+  /* Open metadata file */
   
   if((info_fp = fopen(info_filename,"w")) == NULL)
     {
@@ -221,17 +221,18 @@ void write_ksprop_info_file(ks_prop_file *pf)
 
 /* Set up the input prop file and prop header structures */
 
-ks_prop_file *setup_input_ksprop_file(char *filename)
+ks_prop_file *create_input_ksprop_file_handle(char *filename)
 {
   ks_prop_file *pf;
   ks_prop_header *ph;
+  char myname[] = "create_input_ksprop_file_handle";
 
   /* Allocate space for the file structure */
 
   pf = (ks_prop_file *)malloc(sizeof(ks_prop_file));
   if(pf == NULL)
     {
-      printf("setup_input_ksprop_file: Can't malloc pf\n");
+      printf("%s: Can't malloc pf\n", myname);
       terminate(1);
     }
 
@@ -246,12 +247,13 @@ ks_prop_file *setup_input_ksprop_file(char *filename)
   ph = (ks_prop_header *)malloc(sizeof(ks_prop_header));
   if(ph == NULL)
     {
-      printf("setup_input_ksprop_file: Can't malloc ph\n");
+      printf("%s: Can't malloc ph\n", myname);
       terminate(1);
     }
 
   pf->header       = ph;
   pf->prop         = NULL;
+  pf->info         = NULL;
   pf->byterevflag  = 0;
   pf->parallel     = 0;
   pf->info_fp      = NULL;
@@ -268,7 +270,7 @@ ks_prop_file *setup_input_ksprop_file(char *filename)
 
 /* Set up the output prop file and prop header structure */
 
-ks_prop_file *setup_output_ksprop_file(void)
+ks_prop_file *create_output_ksprop_file_handle(void)
 {
   ks_prop_file *pf;
   ks_prop_header *ph;
@@ -300,6 +302,7 @@ ks_prop_file *setup_output_ksprop_file(void)
   pf->check.sum29 = 0;
   pf->check.sum31 = 0;
   pf->prop        = NULL;
+  pf->info        = NULL;
   pf->file_type   = FILE_TYPE_UNKNOWN;
 
   /* Load header values */
@@ -334,6 +337,16 @@ ks_prop_file *setup_output_ksprop_file(void)
 
 } /* setup_output_prop_file */
 
+
+void destroy_ksprop_file_handle(ks_prop_file *kspf){
+  if(kspf == NULL)return;
+
+  if(kspf->header   != NULL)free(kspf->header);
+  if(kspf->prop     != NULL)free(kspf->prop);
+  if(kspf->info     != NULL)free(kspf->info);
+  free(kspf);
+}
+
 /*----------------------------------------------------------------------*/
 
 /* Open a binary file for serial writing by node 0 */
@@ -348,7 +361,7 @@ ks_prop_file *w_serial_ks_i(char *filename)
   ks_prop_header *ksph;
 
   /* Set up ks_prop file and ks_prop header structs and load header values */
-  kspf = setup_output_ksprop_file();
+  kspf = create_output_ksprop_file_handle();
   ksph = kspf->header;
 
   /* Indicate coordinate natural ordering */
@@ -645,8 +658,7 @@ void w_serial_ks_f(ks_prop_file *kspf)
     }
 
   /* Free header and file structures */
-  free(kspf->header);
-  free(kspf);
+  destroy_ksprop_file_handle(kspf);
 
 } /* w_serial_ks_f */
 
@@ -772,7 +784,7 @@ ks_prop_file *r_serial_ks_i(char *filename)
   /* All nodes set up a propagator file and propagator header
      structure for reading */
 
-  kspf = setup_input_ksprop_file(filename);
+  kspf = create_input_ksprop_file_handle(filename);
   ksph = kspf->header;
 
   /* File opened for serial reading */
@@ -794,12 +806,13 @@ ks_prop_file *r_serial_ks_i(char *filename)
       kspf->fp = fp;
 
       byterevflag = read_ks_prop_hdr(kspf,SERIAL);
-
     }
 
-  else kspf->fp = NULL;
+  /* Read the metadata file */
 
-  /* Broadcast the byterevflag from node 0 to all nodes */
+  kspf->info = read_info_file(filename);
+
+  /* Node 0 broadcasts the byterevflag from node 0 to all nodes */
       
   broadcast_bytes((char *)&byterevflag,sizeof(byterevflag));
   kspf->byterevflag = byterevflag;
@@ -1114,12 +1127,11 @@ void r_serial_ks_f(ks_prop_file *kspf)
 #ifdef HAVE_QIO
   if(kspf->infile   != NULL){
     QIO_close_read(kspf->infile);
+    kspf->infile = NULL;
   }
 #endif
-  if(kspf->header   != NULL)free(kspf->header);
-  if(kspf->prop     != NULL)free(kspf->prop);
-  free(kspf);
-  
+  destroy_ksprop_file_handle(kspf);
+
 } /* r_serial_ks_f */
 
 /*---------------------------------------------------------------------------*/
@@ -1144,7 +1156,7 @@ ks_prop_file *w_ascii_ks_i(char *filename)
   ks_prop_file *kspf;
   FILE *fp;
 
-  kspf = setup_output_ksprop_file();
+  kspf = create_output_ksprop_file_handle();
   ksph = kspf->header;
 
   /* node 0 does all the writing */
@@ -1186,9 +1198,9 @@ ks_prop_file *w_ascii_ks_i(char *filename)
 } /* w_ascii_ks_i */
   
 /*---------------------------------------------------------------------------*/
-/* Write ASCII propagator */
+/* Write ASCII propagator from field */
 
-void w_ascii_ks(ks_prop_file *kspf, int color, field_offset src)
+void w_ascii_ks(ks_prop_file *kspf, int color, su3_vector *src_field)
 {
   FILE *fp;
   int currentnode,newnode;
@@ -1231,7 +1243,8 @@ void w_ascii_ks(ks_prop_file *kspf, int color, field_offset src)
 	    {
 	      l=node_index(x,y,z,t);
 	      /* Copy, converting precision if necessary */
-	      d2f_vec((su3_vector *)F_PT( &(lattice[l]), src ), &pbuf);
+	      d2f_vec(src_field+3*l+color, &pbuf);
+	      //  d2f_vec((su3_vector *)F_PT( &(lattice[l]), src ), &pbuf);
 	    }
 	  else
 	    {
@@ -1253,7 +1266,8 @@ void w_ascii_ks(ks_prop_file *kspf, int color, field_offset src)
 	    {
 	      l=node_index(x,y,z,t);
 	      /* Copy, converting precision if necessary */
-	      d2f_vec((su3_vector *)F_PT( &(lattice[l]), src ), &pbuf);
+	      d2f_vec(src_field+3*l+color, &pbuf);
+	      // d2f_vec((su3_vector *)F_PT( &(lattice[l]), src ), &pbuf);
 	      send_field((char *)&pbuf,sizeof(fsu3_vector),node0);
 	    }
 	}
@@ -1282,8 +1296,8 @@ void w_ascii_ks_f(ks_prop_file *kspf)
     }
 
   /* Free header and file structures */
-  free(kspf->header);
-  free(kspf);
+  destroy_ksprop_file_handle(kspf);
+
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1298,7 +1312,7 @@ ks_prop_file *r_ascii_ks_i(char *filename)
   /* All nodes set up a propagator file and propagator header
      structure for reading */
 
-  kspf = setup_input_ksprop_file(filename);
+  kspf = create_input_ksprop_file_handle(filename);
   ksph = kspf->header;
 
   /* File opened for serial reading */
@@ -1381,19 +1395,17 @@ ks_prop_file *r_ascii_ks_i(char *filename)
 /*---------------------------------------------------------------------------*/
 /* Read a propagator */
 
-int r_ascii_ks(ks_prop_file *kspf, int color, field_offset src)
+int r_ascii_ks(ks_prop_file *kspf, int color, su3_vector *dest_field)
 {
   /* 0 normal exit code
      1 read error */
 
-  ks_prop_header *ksph;
   FILE *fp;
   int destnode;
   int i,j,x,y,z,t;
   fsu3_vector pbuf;
   int status;
 
-  ksph = kspf->header;
   fp = kspf->fp;
 
   g_sync();
@@ -1438,7 +1450,8 @@ int r_ascii_ks(ks_prop_file *kspf, int color, field_offset src)
 	    {              /* just copy su3_vector */
 	      i = node_index(x,y,z,t);
 	      /* Copy, converting precision if necessary */
-	      f2d_vec(&pbuf, (su3_vector *)F_PT( &(lattice[i]), src ));
+	      f2d_vec(&pbuf, dest_field + 3*i + color);
+	      // f2d_vec(&pbuf, (su3_vector *)F_PT( &(lattice[i]), src ));
 	    }
 	  else 
 	    {              /* send to correct node */
@@ -1455,7 +1468,8 @@ int r_ascii_ks(ks_prop_file *kspf, int color, field_offset src)
 	      get_field((char *)&pbuf, sizeof(fsu3_vector),0);
 	      i = node_index(x,y,z,t);
 	      /* Copy, converting precision if necessary */
-	      f2d_vec(&pbuf, (su3_vector *)F_PT( &(lattice[i]), src ));
+	      f2d_vec(&pbuf, dest_field + 3*i + color);
+	      // f2d_vec(&pbuf, (su3_vector *)F_PT( &(lattice[i]), src ));
 	    }
 	}
     }
@@ -1504,8 +1518,6 @@ void w_serial_ksprop_tt( char *filename, field_offset prop)
   off_t offset;             /* File stream pointer */
   off_t ks_prop_size;        /* Size of propagator blocks for all nodes */
   off_t coord_list_size;    /* Size of coordinate list in bytes */
-  off_t head_size;          /* Size of header plus coordinate list */
-  off_t body_size ;         /* Size of propagator blocks for all nodes */
   int fseek_return;  /* added by S.G. for large file debugging */
   int currentnode, newnode;
   int x,y,z,t;
@@ -1515,18 +1527,16 @@ void w_serial_ksprop_tt( char *filename, field_offset prop)
   site *s;
     
   /* Set up ks_prop file and ks_prop header structs and load header values */
-  kspf = setup_output_ksprop_file();
+  kspf = create_output_ksprop_file_handle();
   ksph = kspf->header;
   ksph->order = NATURAL_ORDER;
 
   ks_prop_size = volume*sizeof(fsu3_matrix)/nt;
-  body_size = ks_prop_size;
 
   /* No coordinate list was written because fields are to be written
      in standard coordinate list order */
   
   coord_list_size = 0;
-  head_size = ksph->header_bytes + coord_list_size;
   
   /* OLD, forget the header now:  offset = head_size; */
   offset = 0;
@@ -1676,7 +1686,7 @@ void w_ascii_ksprop_tt( char *filename, field_offset prop)
   site *s;
 
   /* Set up ks_prop file and ks_prop header structs and load header values */
-  kspf = setup_output_ksprop_file();
+  kspf = create_output_ksprop_file_handle();
   ksph = kspf->header;
   ksph->order = NATURAL_ORDER;
 
@@ -1808,7 +1818,7 @@ ks_prop_file *restore_ksprop_ascii( char *filename, field_offset prop )
 
   /* Set up a prop file and prop header structure for reading */
 
-  pf = setup_input_ksprop_file(filename);
+  pf = create_input_ksprop_file_handle(filename);
   ph = pf->header;
 
   /* File opened for serial reading */
@@ -1965,7 +1975,7 @@ ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop)
 
   /* Set up a prop file and prop header structure for reading */
 
-  pf = setup_output_ksprop_file();
+  pf = create_output_ksprop_file_handle();
   ph = pf->header;
 
   /* node 0 does all the writing */

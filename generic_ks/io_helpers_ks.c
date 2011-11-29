@@ -24,12 +24,12 @@
 /*---------------------------------------------------------------*/
 /* Set up a USQCD KS propagator file for reading */
 
-void
-setup_input_usqcd_ksprop_file(ks_prop_file *kspf)
+static void
+open_input_usqcd_ksprop_file(ks_prop_file *kspf)
 {
   /* Open the file and read the header */
-  kspf->infile = open_usqcd_ksprop_read(kspf->filename,QIO_SERIAL);
-} /* setup_input_usqcd_ksprop_file */
+  kspf->infile = open_usqcd_ksprop_read(kspf->filename,QIO_SERIAL, &kspf->info);
+} /* open_input_usqcd_ksprop_file */
 
 /*---------------------------------------------------------------*/
 /* Read an opened USQCD KS propagator file and read source and record
@@ -37,7 +37,7 @@ setup_input_usqcd_ksprop_file(ks_prop_file *kspf)
 static int 
 read_usqcd_ksprop_record(ks_prop_file *kspf, 
 			 int color, su3_vector *dest,
-			 ks_quark_source *ksqs )
+			 quark_source *ksqs )
 {
   int status = 0;
   int input_color;
@@ -47,17 +47,17 @@ read_usqcd_ksprop_record(ks_prop_file *kspf,
   if(file_type == FILE_TYPE_KS_USQCD_CV_PAIRS || 
      (file_type == FILE_TYPE_KS_USQCD_C1V3 && color == 0)){
     /* Read a complex source field into the source cache */
-    alloc_ksqs_c_src(ksqs);
+    alloc_cached_c_source(ksqs);
     status = qio_status(read_kspropsource_C_usqcd(kspf->infile, ksqs->descrp, 
-						  MAXDESCRP, ksqs->c_src));
+				  MAXDESCRP, get_cached_c_source(ksqs)));
     if(status == 0)node0_printf("Read prop source %s\n",ksqs->descrp);
     ksqs->type = COMPLEX_FIELD_STORE;
   }
   else if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
     /* Read a color vector source field into the source cache */
-    alloc_ksqs_cv_src(ksqs);
+    alloc_cached_v_source(ksqs);
     status = qio_status(read_kspropsource_V_usqcd(kspf->infile, ksqs->descrp, 
-						  MAXDESCRP, ksqs->cv_src));
+				  MAXDESCRP, get_cached_v_source(ksqs)));
     if(status == 0)node0_printf("Read prop source %s\n",ksqs->descrp);
     ksqs->type = VECTOR_FIELD_STORE;
   }
@@ -172,7 +172,7 @@ r_open_ksprop(int flag, char *filename)
   /* Interpret non-ASCII file type */
   file_type = get_file_type(filename);
   if(file_type == FILE_TYPE_UNKNOWN){
-    node0_printf("r_open_ksprop: unrecognized type file %s\n", filename);
+    node0_printf("%s: unrecognized type file %s\n", myname, filename);
     return NULL;
   }
 
@@ -218,11 +218,14 @@ r_open_ksprop(int flag, char *filename)
 	  file_type == FILE_TYPE_KS_USQCD_VV_PAIRS ||
 	  file_type == FILE_TYPE_KS_USQCD_CV_PAIRS){
     /* Create a kspf structure. (No file movement here.) */
-    kspf = setup_input_ksprop_file(filename);
+    kspf = create_input_ksprop_file_handle(filename);
     kspf->file_type = file_type;
-    setup_input_usqcd_ksprop_file(kspf);
+    open_input_usqcd_ksprop_file(kspf);
   }
 #endif
+  else {
+    node0_printf("%s: File %s is not a KS propagator file\n", myname, filename);
+  }
 
   return kspf;
 }
@@ -281,7 +284,7 @@ w_open_ksprop(int flag, char *filename, int source_type)
   case SAVE_PARTFILE_SCIDAC:
 
 #ifdef HAVE_QIO
-    kspf = setup_output_ksprop_file();
+    kspf = create_output_ksprop_file_handle();
     interpret_usqcd_ks_save_flag(&volfmt, &serpar, flag);
     file_type = choose_usqcd_ks_file_type(source_type);
     kspf->file_type = file_type;
@@ -317,13 +320,10 @@ r_close_ksprop(int flag, ks_prop_file *kspf)
     r_ascii_ks_f(kspf);
     break;
   case RELOAD_SERIAL:
-    if(kspf->prop != NULL){
-      free(kspf->prop); kspf->prop = NULL;
-    }
     r_serial_ks_f(kspf);
     break;
   case RELOAD_PARALLEL:
-    free(kspf);
+    destroy_ksprop_file_handle(kspf);
     break;
   default:
     node0_printf("r_close_ksprop: Unrecognized read flag %d",flag);
@@ -364,9 +364,7 @@ w_close_ksprop(int flag, ks_prop_file *kspf)
   case SAVE_PARTFILE_SCIDAC:
 #ifdef HAVE_QIO
     close_usqcd_ksprop_write(kspf->outfile);
-    if(kspf->prop != NULL)
-      free(kspf->prop); 
-    free(kspf);
+    destroy_ksprop_file_handle(kspf);
 #endif
     break;
   default:
@@ -382,7 +380,7 @@ w_close_ksprop(int flag, ks_prop_file *kspf)
    */
 int 
 reload_ksprop_c_to_field( int flag, ks_prop_file *kspf, 
-			  ks_quark_source *ksqs, int color, 
+			  quark_source *ksqs, int color, 
 			  su3_vector *dest, int timing)
 {
   /* 0 normal exit value
@@ -406,8 +404,7 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
     FORALLSITES(i,s)clearvec( &(dest[i]) );
     break;
   case RELOAD_ASCII:
-    node0_printf("Reloading ASCII to ksprop field not supported\n");
-    terminate(1);
+    r_ascii_ks(kspf, color, dest);
     break;
   case RELOAD_SERIAL:
     ksp = kspf->prop;
@@ -436,7 +433,6 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
 #endif
     else {
       status = r_serial_ks_to_field(kspf,color,dest); 
-      ksqs->type = UNKNOWN;  /* No source with MILC formatted file */
     }
     break;
   case RELOAD_PARALLEL:
@@ -477,7 +473,7 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
 /* recinfo is for USQCD formats */
 int 
 save_ksprop_c_from_field( int flag, ks_prop_file *kspf, 
-			  ks_quark_source *ksqs,
+			  quark_source *ksqs,
 			  int color, su3_vector *src, 
 			  char *recinfo, int timing)
 {
@@ -498,8 +494,7 @@ save_ksprop_c_from_field( int flag, ks_prop_file *kspf,
   case FORGET:
     break;
   case SAVE_ASCII:
-    node0_printf("Reading to field from ASCII is not supported\n");
-    terminate(1);
+    w_ascii_ks(kspf, color, src);
     break;
   case SAVE_SERIAL:
   case SAVE_SERIAL_FM:
@@ -529,33 +524,32 @@ save_ksprop_c_from_field( int flag, ks_prop_file *kspf,
     if(file_type == FILE_TYPE_KS_USQCD_CV_PAIRS ||
        (file_type == FILE_TYPE_KS_USQCD_C1V3 && color == 0))
       {
-	if(ksqs->c_src == NULL){
-	  su3_vector *cvtmp = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
-	  if(cvtmp == NULL){
-	    printf("%s(%d) no room for tmp\n",myname,this_node);
-	    terminate(1);
-	  }
-	  /* Create source in cvtmp and in ksqs->c_src */
-	  ks_source_field(cvtmp, ksqs);
-	  free(cvtmp);
+	complex *c_src = get_cached_c_source(ksqs);
+	int null_src = (c_src == NULL);
+	if(null_src){
+	    node0_printf("%s complex source is missing\n",myname);
+	    node0_printf("%s File will be written with a dummy zero source\n",
+		   myname);
+	    c_src = create_c_field();
 	}
 	status = write_kspropsource_C_usqcd(kspf->outfile, ksqs->descrp, 
-					    ksqs->c_src, ksqs->t0);
+				    c_src, ksqs->t0);
+	if(null_src)free(c_src);
+	if(status != 0)break;
       }
     /* Save color vector source field */
     else if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
-	if(ksqs->cv_src == NULL){
-	  su3_vector *cvtmp = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
-	  if(cvtmp == NULL){
-	    printf("%s(%d) no room for tmp\n",myname,this_node);
-	    terminate(1);
-	  }
-	  alloc_ksqs_cv_src(ksqs);
-	  ks_source_field(cvtmp, ksqs);
-	  free(cvtmp);
-	}
+      su3_vector *v_src = get_cached_v_source(ksqs);
+      int null_src = (v_src == NULL);
+      if(null_src){
+	node0_printf("%s color vector source is missing\n",myname);
+	node0_printf("%s File will be written with a dummy zero source\n",
+		     myname);
+	v_src = create_v_field();
+      }
       status = write_kspropsource_V_usqcd(kspf->outfile, ksqs->descrp, 
-					  ksqs->cv_src, ksqs->t0);
+				  v_src, ksqs->t0);
+      if(null_src)free(v_src);
       if(status != 0)break;
     }
     /* Save solution field */
@@ -588,7 +582,7 @@ save_ksprop_c_from_field( int flag, ks_prop_file *kspf,
    dest takes a triplet of color vectors per site
 */
 int 
-reload_ksprop_to_field3( int flag, char *filename, ks_quark_source *ksqs,
+reload_ksprop_to_field3( int flag, char *filename, quark_source *ksqs,
 			 su3_vector *dest, int timing)
 {
   /* 0 normal exit value
@@ -622,14 +616,14 @@ reload_ksprop_to_field3( int flag, char *filename, ks_quark_source *ksqs,
 } /* reload_ksprop_to_field3 */
 
 /*---------------------------------------------------------------*/
-/* Reload a full three-color propagator: FRESH, CONTINUE,
+/* Reload a full nc-color propagator: FRESH, CONTINUE,
    RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL
 
-   dest is an array of three field pointers, one for each color
+   dest contains an array of nc field pointers, one for each color
 */
 int 
-reload_ksprop_to_ksp_field( int flag, char *filename, ks_quark_source *ksqs,
-			    ks_prop_field dest, int timing)
+reload_ksprop_to_ksp_field( int flag, char *filename, quark_source *ksqs,
+			    ks_prop_field *dest, int timing)
 {
   /* 0 normal exit value
      1 read error */
@@ -641,8 +635,8 @@ reload_ksprop_to_ksp_field( int flag, char *filename, ks_quark_source *ksqs,
   if(kspf == NULL)return 1;
 
   status = 0;
-  for(color = 0; color < 3; color++){
-    status = reload_ksprop_c_to_field(flag, kspf, ksqs, color, dest[color], 
+  for(color = 0; color < dest->nc; color++){
+    status = reload_ksprop_c_to_field(flag, kspf, ksqs, color, dest->v[color], 
 				      timing);
     if(status != 0)break;
   }
@@ -660,7 +654,7 @@ reload_ksprop_to_ksp_field( int flag, char *filename, ks_quark_source *ksqs,
    DEPRECATED.  KEPT FOR BACKWARD COMPATIBILITY.
 */
 int 
-reload_ksprop_to_site3( int flag, char *filename, ks_quark_source *ksqs,
+reload_ksprop_to_site3( int flag, char *filename, quark_source *ksqs,
 			field_offset dest, int timing)
 {
   /* 0 normal exit value
@@ -699,7 +693,7 @@ reload_ksprop_to_site3( int flag, char *filename, ks_quark_source *ksqs,
    */
 void 
 save_ksprop_from_field3( int flag, char *filename, char *recxml, 
-			 ks_quark_source *ksqs,
+			 quark_source *ksqs,
 			 su3_vector *src, int timing)
 {
   ks_prop_file *kspf;
@@ -737,8 +731,8 @@ save_ksprop_from_field3( int flag, char *filename, char *recxml,
    */
 void 
 save_ksprop_from_ksp_field( int flag, char *filename, char *recxml, 
-			    ks_quark_source *ksqs,
-			    ks_prop_field src, int timing)
+			    quark_source *ksqs,
+			    ks_prop_field *src, int timing)
 {
   ks_prop_file *kspf;
   int  color, status;
@@ -747,8 +741,8 @@ save_ksprop_from_ksp_field( int flag, char *filename, char *recxml,
   if(kspf == NULL)return;
 
   status = 0;
-  for(color = 0; color < 3; color++){
-    status = save_ksprop_c_from_field(flag, kspf, ksqs, color, src[color], 
+  for(color = 0; color < src->nc; color++){
+    status = save_ksprop_c_from_field(flag, kspf, ksqs, color, src->v[color], 
 				      recxml, timing);
     if(status != 0)break;
   }
@@ -769,7 +763,7 @@ save_ksprop_from_ksp_field( int flag, char *filename, char *recxml,
    */
 void 
 save_ksprop_from_site3( int flag, char *filename, char *recxml, 
-			ks_quark_source *ksqs,
+			quark_source *ksqs,
 			field_offset src, int timing)
 {
   int i, color;
@@ -796,6 +790,26 @@ save_ksprop_from_site3( int flag, char *filename, char *recxml,
 } /* save_ksprop_from_site3 */
 
 /*---------------------------------------------------------------*/
+/* Translate output flag to the appropriate input flag for restoring
+   a propagator that was temporarily written to disk  */
+int
+convert_outflag_to_inflag_ksprop(int outflag){
+  switch(outflag){
+  case SAVE_ASCII:
+    return RELOAD_ASCII;
+  case SAVE_SERIAL_FM:
+  case SAVE_SERIAL_SCIDAC:
+  case SAVE_MULTIFILE_SCIDAC:            
+  case SAVE_PARTFILE_SCIDAC:            
+    return RELOAD_SERIAL;
+  case SAVE_PARALLEL_SCIDAC:             
+    return RELOAD_PARALLEL;
+  default:
+    return FRESH;  /* Error return */
+  }
+}
+
+/*---------------------------------------------------------------*/
 
 /* find out what if any KS propagator should be loaded.
    This routine is only called by node 0.
@@ -806,7 +820,7 @@ ask_starting_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
   int status;
   char myname[] = "ask_starting_ksprop";
   
-  if (prompt!=0) {
+  if (prompt==1) {
     printf("enter 'fresh_ksprop', ");
     printf("'reload_ascii_ksprop', 'reload_serial_ksprop', ");
     printf("or 'reload_parallel_ksprop' \n");
@@ -835,7 +849,7 @@ ask_starting_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
 
   /*read name of file and load it */
   if( *flag != FRESH && *flag != CONTINUE ){
-    if(prompt!=0) printf("enter name of file containing ksprop\n");
+    if(prompt==1) printf("enter name of file containing ksprop\n");
     status = scanf("%s",filename);
     if(status != 1) {
       printf("\nask_starting_ksprop: ERROR IN INPUT: Can't read filename\n");
@@ -852,18 +866,26 @@ ask_starting_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
 /* find out what do to with lattice at end, and lattice name if
    necessary.  This routine is only called by node 0.
 */
+
+static void 
+print_options(void)
+{
+    node0_printf("'forget_ksprop', 'save_ascii_ksprop', ");
+    node0_printf("'save_serial_ksprop', ");
+    node0_printf("'save_serial_fm_ksprop', 'save_serial_scidac_ksprop', ");
+    node0_printf("'save_parallel_scidac_ksprop', 'save_multifile_scidac_ksprop', ");
+    node0_printf("'save_partfile_scidac_ksprop'");
+}
+
 int 
 ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
   char *savebuf;
   int status;
   char myname[] = "ask_ending_ksprop";
 
-  if (prompt!=0) {
-    printf("'forget_ksprop', 'save_ascii_ksprop', ");
-    printf("'save_serial_ksprop', ");
-    printf("'save_serial_fm_ksprop', 'save_serial_scidac_ksprop', ");
-    printf("'save_parallel_scidac_ksprop', 'save_multifile_scidac_ksprop', ");
-    printf("'save_partfile_scidac_ksprop' ?\n");
+  if (prompt==1) {
+    print_options();
+    printf(" ?\n");
   }
 
   savebuf = get_next_tag(fp, "write ksprop command", myname);
@@ -918,11 +940,14 @@ ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename ){
   }
   else {
     node0_printf("is not a valid save KS prop command. INPUT ERROR.\n");
+    node0_printf("Choices are ");
+    print_options();
+    node0_printf("\n");
     return(1);
   }
   
   if( *flag != FORGET ){
-    if(prompt!=0)printf("enter filename\n");
+    if(prompt==1)printf("enter filename\n");
     status = scanf("%s",filename);
     if(status != 1){
       printf("\n%s(%d): ERROR IN INPUT: Can't read filename\n",

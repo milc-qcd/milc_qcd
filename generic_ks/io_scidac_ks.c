@@ -18,46 +18,6 @@ REQUIRES QIO
 #include <string.h>
 
 /********************************************************************/
-/* Translate from MILC to USQCD file type */
-int ks_prop_usqcd_to_milc(int usqcd_type){
-
-  int milc_type = -1;
-
-  switch(usqcd_type){
-  case QIO_USQCDKSPROPFILETYPE_C1V3:
-    milc_type = FILE_TYPE_KS_USQCD_C1V3;
-    break;
-  case QIO_USQCDKSPROPFILETYPE_VV_PAIRS:
-    milc_type = FILE_TYPE_KS_USQCD_VV_PAIRS;
-    break;
-  case QIO_USQCDKSPROPFILETYPE_CV_PAIRS:
-    milc_type = FILE_TYPE_KS_USQCD_CV_PAIRS;
-    break;
-  }
-  return milc_type;
-}
-
-/********************************************************************/
-/* Translate from MILC to USQCD file type */
-int ks_prop_milc_to_usqcd(int milc_type){
-
-  int usqcd_type = -1;
-
-  switch(milc_type){
-  case FILE_TYPE_KS_USQCD_C1V3:
-    usqcd_type = QIO_USQCDKSPROPFILETYPE_C1V3;
-    break;
-  case FILE_TYPE_KS_USQCD_VV_PAIRS:
-    usqcd_type = QIO_USQCDKSPROPFILETYPE_VV_PAIRS;
-    break;
-  case FILE_TYPE_KS_USQCD_CV_PAIRS:
-    usqcd_type = QIO_USQCDKSPROPFILETYPE_CV_PAIRS;
-    break;
-  }
-  return usqcd_type;
-}
-
-/********************************************************************/
 /* Generic color vector file (not USQCD)                            */
 /* Write color vectors in SciDAC format, taking data from the site
    structure */
@@ -95,7 +55,7 @@ int save_ks_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
   QIO_string_set(recxml, recinfo);
   status = write_F3_V_from_field(outfile, recxml, src, count);
   QIO_string_destroy(recxml);
-  if(status)return status;
+  if(status != QIO_SUCCESS)return status;
   
   /* Write information */
   if(volfmt == QIO_SINGLEFILE){
@@ -225,19 +185,24 @@ int read_ks_vector_scidac_xml(QIO_Reader *infile, su3_vector *dest, int count,
 {
   int status, typesize;
   QIO_RecordInfo recinfo;
+  char myname[] = "read_ks_vector_scidac_xml";
 
   /* Check the record type (double or single precision) */
   status = QIO_read_record_info(infile, &recinfo, recxml);
-  if(status)terminate(1);
+  if(status != QIO_SUCCESS)return status;
   typesize = QIO_get_typesize(&recinfo);
 
   /* Read the lattice field: "count" color vectors per site */
   if(typesize == 6*4)
     /* Read them as a single precision record */
     return read_F3_V_to_field(infile, recxml, dest, count);
-  else
+  else if(typesize == 6*8)
     /* Read them as a double precision record */
     return read_D3_V_to_field(infile, recxml, dest, count);
+  else {
+    node0_printf("%s: Incorrect data type size %d\n", myname, typesize);
+    return 1;
+  }
 
 }
 
@@ -277,7 +242,7 @@ void restore_ks_vector_scidac_to_field(char *filename, int serpar,
 
   /* Read the lattice field: "count" color vectors per site */
   status = read_ks_vector_scidac(infile, dest, count);
-  if(status)terminate(1);
+  if(status != QIO_SUCCESS)terminate(1);
 
   r_close_ks_vector_scidac_file(infile);
 }
@@ -356,7 +321,7 @@ int read_kspropsource_C_usqcd(QIO_Reader *infile, char *srcinfo, int n,
 
   /* Check the record type (double or single precision) */
   status = QIO_read_record_info(infile, &recinfo, recxml);
-  if(status)terminate(1);
+  if(status != QIO_SUCCESS)return status;
   typesize = QIO_get_typesize(&recinfo);
 
   if(typesize == 8)
@@ -393,7 +358,7 @@ int read_kspropsource_V_usqcd(QIO_Reader *infile, char *srcinfo, int n,
 
   /* Check the record type (double or single precision) */
   status = QIO_read_record_info(infile, &recinfo, recxml);
-  if(status)terminate(1);
+  if(status != QIO_SUCCESS)return status;
   typesize = QIO_get_typesize(&recinfo);
   
   if(typesize == 6*4)
@@ -501,66 +466,36 @@ void close_usqcd_ksprop_write(QIO_Writer *outfile){
 }
 
 /********************************************************************/
-/* Open a staggered propagator file and discover its format */
-
-int io_detect_ks_usqcd(char *filename){
-
-  QIO_Layout layout;
-  QIO_Filesystem fs;
-  QIO_Reader *infile;
-  QIO_String *xml_file_in;
-  QIO_USQCDKSPropFileInfo prop_info;
-  int status, usqcd_type, milc_type;
-
-  /* Allocate for the file XML string */
-  xml_file_in = QIO_string_create();
-
-  /* Build the layout structure */
-  build_qio_layout(&layout);
-
-  /* Define the I/O nodes */
-  build_qio_filesystem(&fs);
-
-  /* Open file for reading */
-  layout.latdim = 0; /* Force discovery of dimensions */
-  infile = open_scidac_input_xml(filename, &layout, &fs, QIO_SERIAL, 
-				 xml_file_in);
-  if(infile == NULL)terminate(1);
-
-  /* Decode the file XML */
-
-  status = QIO_decode_usqcd_kspropfile_info(&prop_info, xml_file_in);
-  QIO_string_destroy(xml_file_in);
-  if(status)return -1;
-
-  milc_type = -1;
-  if(QIO_defined_usqcd_kspropfile_type(&prop_info))
-    {
-      /* Translate the file type */
-      usqcd_type = QIO_get_usqcd_kspropfile_type(&prop_info);
-      milc_type = ks_prop_usqcd_to_milc(usqcd_type);
-    }
-
-  close_scidac_input(infile);
-  return milc_type;
-}
-
-/********************************************************************/
 /* Read the file header for the propagator */
 
-QIO_Reader *open_usqcd_ksprop_read(char *filename, int serpar){
+QIO_Reader *open_usqcd_ksprop_read(char *filename, int serpar, char **fileinfo){
 
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
-  QIO_String *filexml;
+  QIO_String *xml_file;
+  char *s;
+  int len;
 
-  filexml = QIO_string_create();
+  xml_file = QIO_string_create();
   build_qio_layout(&layout);
   build_qio_filesystem(&fs);
 
-  infile = open_scidac_input(filename, &layout, &fs, serpar);
+  infile = open_scidac_input_xml(filename, &layout, &fs, serpar, xml_file);
+
   if(infile == NULL)terminate(1);
+
+  /* Make a copy of the file metadata */
+  s = QIO_string_ptr(xml_file);
+  len = strlen(s);
+  *fileinfo = (char *)malloc((len+1)*sizeof(char));
+  if(*fileinfo == NULL){
+    printf("open_usqcd_ksprop_read: No room for fileinfo\n");
+    terminate(1);
+  }
+  strncpy(*fileinfo, s, len);
+  (*fileinfo)[len] = '\0';
+  QIO_string_destroy(xml_file);
 
   return infile;
 }
@@ -580,7 +515,7 @@ int read_ksproprecord_usqcd(QIO_Reader *infile, int *color, su3_vector *dest)
 
   /* Check the record type (double or single precision) */
   status = QIO_read_record_info(infile, &recinfo, recxml);
-  if(status)terminate(1);
+  if(status != QIO_SUCCESS)return status;
   typesize = QIO_get_typesize(&recinfo);
 
   if(typesize == 6*4)

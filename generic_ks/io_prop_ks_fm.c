@@ -41,6 +41,62 @@
 #define PAD_SEND_BUF 8
 #endif
 
+
+/*----------------------------------------------------------------------*/
+
+ks_prop_file *create_input_ks_fmprop_file_handle(char *filename)
+{
+  ks_prop_file *pf;
+  ks_prop_header *ph;
+  char myname[] = "create_input_ks_fmprop_file_handle";
+
+  /* Allocate space for the file structure */
+
+  pf = (ks_prop_file *)malloc(sizeof(ks_prop_file));
+  if(pf == NULL)
+    {
+      printf("%s: Can't malloc pf\n", myname);
+      terminate(1);
+    }
+
+  pf->filename = filename;
+
+  /* Allocate space for the header */
+
+  /* Make sure compilation gave us a 32 bit integer type */
+  assert(sizeof(int32type) == 4);
+
+  ph = (ks_prop_header *)malloc(sizeof(ks_prop_header));
+  if(ph == NULL)
+    {
+      printf("%s: Can't malloc ph\n", myname);
+      terminate(1);
+    }
+
+  pf->header = ph;
+  pf->check.sum29 = 0;
+  pf->check.sum31 = 0;
+  pf->file_type   = FILE_TYPE_KS_FMPROP;
+#ifdef HAVE_QIO
+  pf->infile       = NULL;
+  pf->outfile      = NULL;
+#endif
+
+  return pf;
+} /* create_input_ks_fmprop_file_handle*/
+
+
+void destroy_ks_fmprop_file_handle(ks_prop_file *kspf){
+  if(kspf == NULL)return;
+
+  if(kspf->header != NULL)
+    free(kspf->header);
+  if(kspf->info != NULL)
+    free(kspf->info);
+  free(kspf);
+
+}
+
 /*----------------------------------------------------------------------*/
 /* This subroutine writes the Fermilab compatible propagator header structure */
 /* Serial access version */
@@ -89,7 +145,7 @@ void open_write_ks_fmprop_info_file(ks_prop_file *pf)
      by adding filename extension to propagator file name */
 
   strcpy(info_filename,pf->filename);
-  strcat(info_filename,ASCII_PROP_INFO_EXT);
+  strcat(info_filename,ASCII_INFO_EXT);
 
   /* Open header file */
   
@@ -191,12 +247,14 @@ ks_prop_file *setup_output_ks_fmprop_file()
   pf->header = ph;
 
   /* Initialize */
+  pf->check.color = 0;
   pf->check.sum29 = 0;
   pf->check.sum31 = 0;
   pf->file_type   = FILE_TYPE_KS_FMPROP;
 
   /* Initialize pointer to info file */
   pf->info_fp = NULL;
+  pf->info    = NULL;
 
   /* Load header values */
 
@@ -522,8 +580,7 @@ void w_serial_ks_fm_f(ks_prop_file *kspf)
     }
 
   /* Free header and file structures */
-  free(kspf->header);
-  free(kspf);
+  destroy_ks_fmprop_file_handle(kspf);
 
 } /* w_serial_ks_fm_f */
 
@@ -651,53 +708,6 @@ int read_ks_fmprop_hdr(ks_prop_file *kspf, int parallel)
 } /* read_ks_fmprop_hdr */
 
 
-
-
-ks_prop_file *setup_input_ks_fmprop_file(char *filename)
-{
-  ks_prop_file *pf;
-  ks_prop_header *ph;
-
-  /* Allocate space for the file structure */
-
-  pf = (ks_prop_file *)malloc(sizeof(ks_prop_file));
-  if(pf == NULL)
-    {
-      printf("setup_input_ksprop_file: Can't malloc pf\n");
-      terminate(1);
-    }
-
-  pf->filename = filename;
-
-  /* Allocate space for the header */
-
-  /* Make sure compilation gave us a 32 bit integer type */
-  assert(sizeof(int32type) == 4);
-
-  ph = (ks_prop_header *)malloc(sizeof(ks_prop_header));
-  if(ph == NULL)
-    {
-      printf("setup_input_ksprop_file: Can't malloc ph\n");
-      terminate(1);
-    }
-
-  pf->header = ph;
-  pf->check.sum29 = 0;
-  pf->check.sum31 = 0;
-  pf->file_type   = FILE_TYPE_KS_FMPROP;
-#ifdef HAVE_QIO
-  pf->infile       = NULL;
-  pf->outfile      = NULL;
-#endif
-
-  return pf;
-} /* setup_input_ks_fmprop_file*/
-
-
-
-
-
-
 ks_prop_file *r_serial_ks_fm_i(char *filename)
 {
   /* Returns file descriptor for opened file */
@@ -710,7 +720,7 @@ ks_prop_file *r_serial_ks_fm_i(char *filename)
   /* All nodes set up a propagator file and propagator header
      structure for reading */
 
-  kspf = setup_input_ks_fmprop_file(filename);
+  kspf = create_input_ks_fmprop_file_handle(filename);
   ksph = kspf->header;
 
   /* File opened for serial reading */
@@ -748,7 +758,7 @@ ks_prop_file *r_serial_ks_fm_i(char *filename)
 
   return kspf;
 
-}/* r_serial_ks_i */
+}/* r_serial_ks_fm_i */
 
 
 
@@ -1012,12 +1022,16 @@ int r_serial_ks_fm(ks_prop_file *kspf, field_offset dest_site,
 
 int r_serial_ks_fm_to_site(ks_prop_file *kspf, field_offset dest_site)
 {
-  return r_serial_ks_fm(kspf, dest_site, NULL);
+  int status = r_serial_ks_fm(kspf, dest_site, NULL);
+  kspf->info = read_info_file(kspf->filename);
+  return status;
 }
 
 int r_serial_ks_fm_to_field(ks_prop_file *kspf, su3_vector *dest_field)
 {
-  return r_serial_ks_fm(kspf, (field_offset)(-1), dest_field);
+  int status = r_serial_ks_fm(kspf, (field_offset)(-1), dest_field);
+  kspf->info = read_info_file(kspf->filename);
+  return status;
 }
 
 void r_serial_ks_fm_f(ks_prop_file *kspf)
@@ -1035,7 +1049,6 @@ void r_serial_ks_fm_f(ks_prop_file *kspf)
       fflush(stdout);
     }
   
-  free(kspf->header);
-  free(kspf);
+  destroy_ks_fmprop_file_handle(kspf);
   
 } /* r_serial_ks_f */
