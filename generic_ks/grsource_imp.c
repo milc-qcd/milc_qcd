@@ -11,8 +11,11 @@
 /* "parity" is EVEN, ODD, or EVENANDODD.  The parity is the parity at
     which phi is computed.  g_rand must always be computed at all sites. */
 
-void grsource_imp( field_offset dest, Real mass, int parity,
-		   ferm_links_t *fn ) {
+#if 0
+/* OBSOLETE VERSION */
+
+void grsource_imp_old( field_offset dest, Real mass, int parity,
+		       ferm_links_t *fn ) {
 register int i,j;
 register site *s;
     FORALLSITES(i,s){
@@ -30,11 +33,48 @@ register site *s;
     scalar_mult_latvec( dest, -1.0, dest, parity );
     scalar_mult_add_latvec( dest, F_OFFSET(g_rand), 2.0*mass,
 	dest, parity );
+}/* grsource_imp_old */
+#endif
+
+/* This version uses a temporary field vector */
+
+/* DEPRECATED VERSION */
+
+void grsource_imp( field_offset dest, Real mass, int parity,
+		   imp_ferm_links_t *fn ) {
+  su3_vector *g_rand = create_v_field();
+  su3_vector *tdest = create_v_field();
+  
+  grsource_plain_field( g_rand, EVENANDODD );
+  ks_dirac_adj_op( g_rand, tdest, mass, parity, fn );
+
+  copy_site_member_from_v_field(dest, tdest);
+  
+  destroy_v_field(tdest);
+  destroy_v_field(g_rand);
+
 }/* grsource_imp */
 
 
-void z2rsource_imp( field_offset dest, Real mass, int parity,
-		    ferm_links_t *fn, ks_action_paths *ap ) {
+/* This version works entirely with field vectors */
+
+void grsource_imp_field( su3_vector *dest, Real mass, int parity,
+			 imp_ferm_links_t *fn ) {
+  su3_vector *g_rand = create_v_field();
+
+  grsource_plain_field( g_rand, EVENANDODD);
+  ks_dirac_adj_op( g_rand, dest, mass, parity, fn );
+
+  destroy_v_field(g_rand);
+
+}/* grsource_imp_field */
+
+
+#if 0
+/* OBSOLETE VERSION */
+
+void z2rsource_imp_old( field_offset dest, Real mass, int parity,
+			imp_ferm_links_t *fn ) {
 register int i,j;
 register site *s;
     FORALLSITES(i,s){
@@ -52,11 +92,32 @@ register site *s;
     scalar_mult_latvec( dest, -1.0, dest, parity );
     scalar_mult_add_latvec( dest, F_OFFSET(g_rand), 2.0*mass,
 	dest, parity );
+}/* z2rsource_imp_old */
+#endif
+
+
+/* DEPRECATED VERSION */
+
+void z2rsource_imp( field_offset dest, Real mass, int parity,
+		    imp_ferm_links_t *fn ) {
+  su3_vector *z2_rand = create_v_field();
+  su3_vector *tdest = create_v_field();
+
+  z2rsource_plain_field( z2_rand, EVENANDODD );
+  ks_dirac_adj_op( z2_rand, tdest, mass, parity, fn );
+
+  copy_site_member_from_v_field(dest, tdest);
+
+  destroy_v_field(tdest);
+  destroy_v_field(z2_rand);
+
 }/* z2rsource_imp */
 
 
 /* construct a plain gaussian random vector in the site structure  */
 /* "parity" is EVEN, ODD, or EVENANDODD. */
+
+/* DEPRECATED VERSION */
 
 void grsource_plain( field_offset dest, int parity ) {
   int i,j;
@@ -74,11 +135,34 @@ void grsource_plain( field_offset dest, int parity ) {
 #endif
     }
   }    
-}/* grsource */
+}/* grsource_plain */
+
+
+/* construct a plain gaussian random vector in the site structure  */
+/* "parity" is EVEN, ODD, or EVENANDODD. */
+
+void grsource_plain_field( su3_vector *dest, int parity ) {
+  int i,j;
+  site *s;
+
+  FORSOMEPARITY(i,s,parity){
+    for(j=0;j<3;j++){
+#ifdef SITERAND
+      dest[i].c[j].real = gaussian_rand_no(&(s->site_prn));
+      dest[i].c[j].imag = gaussian_rand_no(&(s->site_prn));
+#else
+      dest[i].c[j].real = gaussian_rand_no(&node_prn);
+      dest[i].c[j].imag = gaussian_rand_no(&node_prn);
+#endif
+    }
+  }    
+}/* grsource_plain_field */
 
 
 /* construct a plain Z(2) random vector in the site structure  */
 /* "parity" is EVEN, ODD, or EVENANDODD. */
+
+/* DEPRECATED VERSION */
 
 void z2rsource_plain( field_offset dest, int parity ) {
   int i,j;
@@ -99,11 +183,36 @@ void z2rsource_plain( field_offset dest, int parity ) {
 }/* z2rsource_plain */
 
 
+/* construct a plain Z(2) random vector in the site structure  */
+/* "parity" is EVEN, ODD, or EVENANDODD. */
+
+void z2rsource_plain_field( su3_vector *dest, int parity ) {
+  int i,j;
+  site *s;
+
+  FORSOMEPARITY(i,s,parity){
+    for(j=0;j<3;j++){
+#ifdef SITERAND
+      dest[i].c[j].real = z2_rand_no(&(s->site_prn));
+      dest[i].c[j].imag = z2_rand_no(&(s->site_prn));
+#else
+      dest[i].c[j].real = z2_rand_no(&node_prn);
+      dest[i].c[j].imag = z2_rand_no(&node_prn);
+#endif
+    }
+  }    
+}/* z2rsource_plain */
+
+
 /* Check congrad by multiplying src by M, compare result to g_rand */
 /* Before calling checkmul() you should call grsource(EVENANDODD) and
    congrad(...,EVENANDODD) */
+
+/* DEPRECATED VERSION */
+
+#if 0
 void checkmul_imp( field_offset src, Real mass,
-		   ferm_links_t *fn )
+		   imp_ferm_links_t *fn )
 {
 register int i,j;
 register site *s;
@@ -122,3 +231,5 @@ register site *s;
 /**sleep(2);**/
     }
 }/* checkmul */
+
+#endif
