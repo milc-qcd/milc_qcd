@@ -59,6 +59,7 @@ void cleanup_dslash_wtemps(){
 void cleanup_tmp_links(){
 }
 
+#ifndef FIELD_TEMPS_ONLY
 
 void dslash_w_site(field_offset src, field_offset dest, int isign, int parity)
 {
@@ -350,6 +351,8 @@ void dslash_w_site_special(field_offset src,field_offset dest,
 #endif
   } /* end loop over directions */
 } /* dslash_lean.c */
+
+#endif
 
   /********************************************************************/
 void dslash_w_field( wilson_vector *src, wilson_vector *dest, int isign, int parity)
