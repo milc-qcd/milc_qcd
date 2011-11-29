@@ -2,6 +2,8 @@
    included */
 #ifdef GAUGE_ACTION_PART1
 /* defines NREPS NLOOP MAX_LENGTH MAX_NUM */
+#undef MAX_LENGTH
+#undef MAX_NUM
 #define NREPS 1
 #define NLOOP 3
 #define MAX_LENGTH 6

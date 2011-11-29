@@ -1,6 +1,8 @@
 /* plaquette + 1x1x1 ("chair") loops, with two reps. */
 #ifdef GAUGE_ACTION_PART1
 /* defines NREPS NLOOP MAX_LENGTH MAX_NUM */
+#undef MAX_LENGTH
+#undef MAX_NUM
 #define NREPS 2
 #define NLOOP 2
 #define MAX_LENGTH 6

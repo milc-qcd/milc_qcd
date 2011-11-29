@@ -1,6 +1,8 @@
 /* plaquette + "bent 1x2" loop, 2 reps. for testing */
 #ifdef GAUGE_ACTION_PART1
 /* defines NREPS NLOOP MAX_LENGTH MAX_NUM */
+#undef MAX_LENGTH
+#undef MAX_NUM
 #define NREPS 2
 #define NLOOP 2
 #define MAX_LENGTH 6

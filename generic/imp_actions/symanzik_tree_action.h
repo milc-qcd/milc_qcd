@@ -1,6 +1,8 @@
 /* Tree level Symanzik improved gauge action */
 #ifdef GAUGE_ACTION_PART1
 /* defines NREPS NLOOP MAX_LENGTH MAX_NUM */
+#undef MAX_LENGTH
+#undef MAX_NUM
 #define NREPS 1
 #define NLOOP 2
 #define MAX_LENGTH 6

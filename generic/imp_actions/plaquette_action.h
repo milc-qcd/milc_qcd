@@ -1,6 +1,8 @@
 /* The Plaquette gauge action */
 
 #ifdef GAUGE_ACTION_PART1
+#undef MAX_LENGTH
+#undef MAX_NUM
 #define NREPS 1
 #define NLOOP 1
 #define MAX_LENGTH 4
