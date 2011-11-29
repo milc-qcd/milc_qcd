@@ -1,0 +1,377 @@
+SU3 with improved KS action
+Microcanonical simulation with refreshing
+MIMD version 7 $Name:  $
+Machine = QMP (portable), with 1 nodes
+Rational function hybrid Monte Carlo algorithm
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+KS_MULTIFF=FNMAT
+VECLENGTH=4
+INT_ALG=INT_LEAPFROG
+HISQ_FORCE_FILTER=0.000050
+type 0 for no prompts  or 1 for prompts
+nx 6
+ny 6
+nz 6
+nt 6
+iseed 3546789
+n_pseudo 2
+load_rhmc_params rationals.sample.su3_leapfrog
+beta 6.5
+n_dyn_masses 2
+dyn_mass 0.01 0.05 
+dyn_flavors 2 1 
+u0 0.862
+n_pseudo 2
+Loading rational function parameters for phi field 0
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (4,4)
+# Approximating the function (x+4*0.010000^2)^(2/4) (x+4*0.050000^2)^(-2/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Converged at 9507 iterations, error = 1.384796e-06
+naik_term_epsilon 0
+# Rational function for MD
+y_MD -2 2 0 0 
+z_MD 4 4 4 4 
+m_MD 0.01 0.05 1 1 
+order_MD 4
+Loading order 4 rational function approximation for MD:
+f(x) = (x+4*0.010000^2)^(-2/4) (x+4*0.050000^2)^(2/4)
+       (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+res_MD 1
+res_MD 0.000859712
+res_MD 0.00117508
+res_MD 0.00161114
+res_MD 0.00115347
+pole_MD 99.9
+pole_MD 0.000444626
+pole_MD 0.000919887
+pole_MD 0.00261223
+pole_MD 0.00669665
+# CHECK: f(1.000000e-15) = 4.999993e+00 = 5.000000e+00?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (6,6)
+# Approximating the function (x+4*0.010000^2)^(2/8) (x+4*0.050000^2)^(-2/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Converged at 7122 iterations, error = 1.279208e-09
+# Rational function for GR
+y_GR 2 -2 0 0 
+z_GR 8 8 8 8 
+m_GR 0.01 0.05 1 1 
+order_GR 6
+Loading order 6 rational function approximation for GR:
+f(x) = (x+4*0.010000^2)^(2/8) (x+4*0.050000^2)^(-2/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_GR 1
+res_GR -1.04657e-05
+res_GR -4.70885e-05
+res_GR -0.000150449
+res_GR -0.000405788
+res_GR -0.000837025
+res_GR -0.000949183
+pole_GR 99.9
+pole_GR 0.000468084
+pole_GR 0.00076467
+pole_GR 0.00151656
+pole_GR 0.00316093
+pole_GR 0.00605916
+pole_GR 0.00920413
+# CHECK: f(1.000000e-15) = 4.472136e-01 = 4.472136e-01?
+# Rational function for FA
+y_FA -2 2 0 0 
+z_FA 8 8 8 8 
+m_FA 0.01 0.05 1 1 
+order_FA 6
+Loading order 6 rational function approximation for FA:
+f(x) = (x+4*0.010000^2)^(-2/8) (x+4*0.050000^2)^(2/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_FA 1
+res_FA 0.000100206
+res_FA 0.000203904
+res_FA 0.000363235
+res_FA 0.000585059
+res_FA 0.000720318
+res_FA 0.000427276
+pole_FA 99.9
+pole_FA 0.000434584
+pole_FA 0.00066013
+pole_FA 0.00126537
+pole_FA 0.00263736
+pole_FA 0.00523076
+pole_FA 0.00854534
+Loading rational function parameters for phi field 1
+# CHECK: f(1.000000e-15) = 2.236068e+00 = 2.236068e+00?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (6,6)
+# Approximating the function (x+4*0.050000^2)^(3/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+# Iteration 0, spread 1.000000e+37 delta 2.500000e-01
+# Converged at 337 iterations, error = 6.040516e-05
+naik_term_epsilon 0
+# Rational function for MD
+y_MD -3 0 0 0 
+z_MD 4 4 4 4 
+m_MD 0.05 1 1 1 
+order_MD 6
+Loading order 6 rational function approximation for MD:
+f(x) = (x+4*0.050000^2)^(-3/4) (x+4*1.000000^2)^(0/4)
+       (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
+res_MD 0.00384833
+res_MD 0.265584
+res_MD 0.195698
+res_MD 0.278825
+res_MD 0.436879
+res_MD 0.721087
+res_MD 1.52517
+pole_MD 99.9
+pole_MD 0.0109781
+pole_MD 0.0354527
+pole_MD 0.195499
+pole_MD 1.2064
+pole_MD 7.81449
+pole_MD 62.5712
+# CHECK: f(1.000000e-15) = 3.162087e+01 = 3.162278e+01?
+# New rational function
+# Approximation bounds are [1.000000e-15,9.000000e+01]
+# Precision of arithmetic is 65
+# Degree of the approximation is (8,8)
+# Approximating the function (x+4*0.050000^2)^(3/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+# Iteration 0, spread 1.000000e+37 delta 2.500000e-01
+# Converged at 454 iterations, error = 2.674513e-06
+# Rational function for GR
+y_GR 3 0 0 0 
+z_GR 8 8 8 8 
+m_GR 0.05 1 1 1 
+order_GR 8
+Loading order 8 rational function approximation for GR:
+f(x) = (x+4*0.050000^2)^(3/8) (x+4*1.000000^2)^(0/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_GR 16.0169
+res_GR -0.000486134
+res_GR -0.00426614
+res_GR -0.0304158
+res_GR -0.210661
+res_GR -1.47545
+res_GR -11.1224
+res_GR -115.06
+res_GR -6051.17
+pole_GR 99.9
+pole_GR 0.015008
+pole_GR 0.0427872
+pole_GR 0.157019
+pole_GR 0.620401
+pole_GR 2.51658
+pole_GR 10.5888
+pole_GR 51.2153
+pole_GR 535.957
+# CHECK: f(1.000000e-15) = 1.778284e-01 = 1.778279e-01?
+# Rational function for FA
+y_FA -3 0 0 0 
+z_FA 8 8 8 8 
+m_FA 0.05 1 1 1 
+order_FA 8
+Loading order 8 rational function approximation for FA:
+f(x) = (x+4*0.050000^2)^(-3/8) (x+4*1.000000^2)^(0/8)
+       (x+4*1.000000^2)^(0/8) (x+4*1.000000^2)^(0/8)
+res_FA 0.0624342
+res_FA 0.0197255
+res_FA 0.041089
+res_FA 0.093058
+res_FA 0.219883
+res_FA 0.529402
+res_FA 1.31759
+res_FA 3.71585
+res_FA 18.1496
+pole_FA 99.9
+pole_FA 0.0116795
+pole_FA 0.0275783
+pole_FA 0.0950849
+pole_FA 0.369095
+pole_FA 1.4846
+pole_FA 6.13232
+pole_FA 27.4628
+pole_FA 179.744
+Maximum rational func order is 8
+Naik term correction structure of multi_x:
+n_naiks 1
+n_pseudo_naik[0]=2
+n_orders_naik[0]=10
+n_order_naik_total 10
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 6 x 6 x 6 x 6
+Mallocing 2.0 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+microcanonical_time_step 0.01
+steps_per_trajectory 12
+cgresid_md_fa_gr 2e-06 2e-06 2e-06 
+max_multicg_md_fa_gr 1750 1750 1750 
+cgprec_md_fa_gr 1 2 2 
+cgresid_md_fa_gr 2e-06 2e-06 2e-06 
+max_multicg_md_fa_gr 1750 1750 1750 
+cgprec_md_fa_gr 1 2 2 
+prec_ff 2
+error_for_propagator 1e-06
+max_cg_prop 500
+max_cg_prop_restarts 5
+reload_serial ../binary_samples/lat.sample.l6666b650m010m050
+forget 
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l6666b650m010m050
+Time stamp Mon Aug  7 14:22:30 2006
+Checksums a76176b8 5eb657fc OK
+Time to reload gauge configuration = 4.468918e-03
+CHECK PLAQ: 1.6582650740453551e+00 1.6398905968468851e+00
+CHECK NERSC LINKTR: 7.5177486227968465e-02 CKSUM: b59b771d
+Reunitarized for double precision. Max deviation 7.05e-08 changed to 4.44e-16
+Time to check unitarity = 9.248018e-03
+Symanzik 1x1 + 1x2 + 1x1x1 action
+gauge_action: total_dyn_flavors = 3
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.355018e-02     12
+                    2 0      -8.663653e-03     16
+"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
+path coefficients: npath  path_coeff  multiplicity
+                    0      6.250000e-01     8
+                    1      -5.607564e-02     8
+                    2      -8.411346e-02     48
+                    3      2.830030e-02     192
+                    4      -6.347828e-03     384
+                    5      -1.132012e-01     48
+WARMUPS COMPLETED
+Leapfrog integration, steps= 12 eps= 1.000000e-02
+GRSOURCE: sum = 1.9350216672e+03
+GRSOURCE: sum = 1.9758965992e+03
+PLAQUETTE ACTION: -2.778366e+04
+ACTION: g,h,f = 1.67770842632224e+04  -4.07208643541752e+00  3.91091826639972e+03  2.06839304431867e+04
+DG = 1.677708e+04, DH = -4.072086e+00, DF = 3.910918e+03, D = 2.068393e+04
+PLAQUETTE ACTION: -2.776246e+04
+ACTION: g,h,f = 1.67980975317460e+04  -1.87271315509776e+01  3.90456205973667e+03  2.06839324599317e+04
+DG = 2.101327e+01, DH = -1.465505e+01, DF = -6.356207e+00, D = 2.016745e-03
+PLAQUETTE ACTION: -2.774445e+04
+ACTION: g,h,f = 1.68166137140849e+04  -3.09493952464451e+01  3.89827101138738e+03  2.06839353302258e+04
+DG = 1.851618e+01, DH = -1.222226e+01, DF = -6.291048e+00, D = 2.870294e-03
+PLAQUETTE ACTION: -2.773045e+04
+ACTION: g,h,f = 1.68313979043295e+04  -4.08184511013524e+01  3.89335882236472e+03  2.06839382755929e+04
+DG = 1.478419e+01, DH = -9.869056e+00, DF = -4.912189e+00, D = 2.945367e-03
+PLAQUETTE ACTION: -2.773045e+04
+ACTION: g,h,f = 1.68313979043295e+04  -4.08184511013524e+01  3.89335882236472e+03  2.06839382755929e+04
+DG = 0.000000e+00, DH = 0.000000e+00, DF = 0.000000e+00, D = 0.000000e+00
+CHECK: delta S = 7.832406e-03
+PLAQ:	1.6526598896920550	1.6391789533077641
+P_LOOP:	2.133435e-01	-5.114452e-02
+G_LOOP:  0  0  4   	1.6386008972322359e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.6593738186565796e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.6296385146783070e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.6600049531873562e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.6389812094886114e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.6489171357563925e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	9.2705573725865997e-01	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	8.9928821990714725e-01	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	8.8052735128959381e-01	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	9.1104774404960309e-01	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	9.4425599653788861e-01	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	8.8835069530807287e-01	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	9.2327084634512946e-01	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	9.4549509409965637e-01	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.2377981735171388e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	8.9348472640853627e-01	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	8.9586092742163437e-01	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	8.9298472898804149e-01	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	9.1180853000169537e-01	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	9.7624165272872909e-01	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	9.2826730143644365e-01	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	9.5481907844964198e-01	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	9.1548067444703041e-01	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	9.2886411303985206e-01	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	9.5705326729608731e-01	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	9.4122620243856969e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	9.4982252181763427e-01	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	8.9600272373569834e-01	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	9.2772696806352917e-01	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	9.3073735712190497e-01	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	9.3858792633861998e-01	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	9.3385473259026186e-01	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	9.2906884648076926e-01	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	9.5110466394513415e-01	( 1 5 4 6 2 3  )
+GACTION: 5.994088e+00
+Leapfrog integration, steps= 12 eps= 1.000000e-02
+GRSOURCE: sum = 1.9327807386e+03
+GRSOURCE: sum = 2.0337909056e+03
+PLAQUETTE ACTION: -2.773045e+04
+ACTION: g,h,f = 1.68313979043295e+04  1.14134368487994e+02  3.96657164426809e+03  2.09121039170856e+04
+DG = 0.000000e+00, DH = 1.549528e+02, DF = 7.321282e+01, D = 2.281656e+02
+PLAQUETTE ACTION: -2.773602e+04
+ACTION: g,h,f = 1.68250311897222e+04  1.19309390351658e+02  3.96777470742737e+03  2.09121152875013e+04
+DG = -6.366715e+00, DH = 5.175022e+00, DF = 1.203063e+00, D = 1.137042e-02
+PLAQUETTE ACTION: -2.773968e+04
+ACTION: g,h,f = 1.68196090027961e+04  1.24703434154340e+02  3.96781301537252e+03  2.09121254523229e+04
+DG = -5.422187e+00, DH = 5.394044e+00, DF = 3.830795e-02, D = 1.016482e-02
+PLAQUETTE ACTION: -2.773877e+04
+ACTION: g,h,f = 1.68177000342928e+04  1.27214632886993e+02  3.96721635556965e+03  2.09121310227494e+04
+DG = -1.908969e+00, DH = 2.511199e+00, DF = -5.966598e-01, D = 5.570426e-03
+PLAQUETTE ACTION: -2.773877e+04
+ACTION: g,h,f = 1.68177000342928e+04  1.27214632886993e+02  3.96721635556965e+03  2.09121310227494e+04
+DG = 0.000000e+00, DH = 0.000000e+00, DF = 0.000000e+00, D = 0.000000e+00
+CHECK: delta S = 2.710566e-02
+PLAQ:	1.6458454285075019	1.6469810838613934
+P_LOOP:	2.149130e-01	-4.386146e-02
+G_LOOP:  0  0  4   	1.6294661719197212e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.6470483559859945e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.6301228362292175e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.6610217576167952e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.6592494995909994e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.6515709157639633e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	9.1164914336985003e-01	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	8.8528593546005330e-01	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	8.6584564719817048e-01	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	8.9245959232419902e-01	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	9.3348750484272669e-01	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	9.0852362555831778e-01	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	9.1131797497820033e-01	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	9.3998763560109899e-01	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.1179035399983521e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	9.1059811525575485e-01	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	9.2414334494319161e-01	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	9.0933991997849861e-01	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	9.1243980077850095e-01	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	9.5577172099356833e-01	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	9.3273457216003264e-01	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	9.3417629459235918e-01	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	9.2848925755764777e-01	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	9.3336677109561916e-01	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	9.3678456805888566e-01	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	9.2988771884711341e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	9.5004067675111969e-01	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	8.9539109516117443e-01	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	9.2405238715753757e-01	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	9.2319431665268092e-01	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	9.5407073586107571e-01	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	9.4525352564481346e-01	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	9.1695472031084557e-01	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	9.5505389683392916e-01	( 1 5 4 6 2 3  )
+GACTION: 5.989209e+00
+RUNNING COMPLETED
+average cg iters for step= 1.335000e+03
+Time = 1.538753e+02 seconds
+total_iters = 8573
+
+
+get_i(0): EOF on input.
+exit: Mon Sep 21 22:28:40 2009
+

@@ -1,0 +1,15 @@
+# Executable  precision  add-macro input-case  pattern1 pattern2
+
+exec su3_leapfrog      1      -         -          WARMUPS RUNNING    
+exec su3_omelyan_rhmc  1      -         -          WARMUPS RUNNING    
+exec su3_rhmc_hisq     1      -         -          delta   RUNNING    
+exec su3_rhmc_hisq     1      -         f211       delta   RUNNING    
+exec su3_rhmc_hisq     1      -         f2111      delta   RUNNING    
+exec su3_rhmd_hisq     1      -         -          delta   RUNNING    
+exec su3_leapfrog      2      -         -          WARMUPS RUNNING    
+exec su3_omelyan_rhmc  2      -         -          WARMUPS RUNNING    
+exec su3_rhmc_hisq     2      -         -          delta   RUNNING    
+exec su3_rhmc_hisq     2      -         f211       delta   RUNNING    
+exec su3_rhmc_hisq     2      -         f2111      delta   RUNNING    
+exec su3_rhmd_hisq     2      -         -          delta   RUNNING    
+
