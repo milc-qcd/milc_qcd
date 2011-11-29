@@ -32,9 +32,7 @@ site *s;
 Real rsq;
 
 initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
@@ -120,7 +118,7 @@ initialize_machine(&argc,&argv);
 
 	    /* NOTE: NEED TO CHANGE THIS TO BUILD ks_act_paths AND
 	       CALL mat_invert_uml INSTEAD OF ks_congrad with EVENANDODD */
-	    load_ferm_links(&fn_links, &ks_act_paths);
+	    load_ferm_links(&fn_links);
 	    for(j=0; j<num_src; j++){
 		/* Put source, m^\dag qprop, in phi, result in xxx */
 		dslash_fn_site( F_OFFSET(qprop[j]), F_OFFSET(phi), EVENANDODD,
