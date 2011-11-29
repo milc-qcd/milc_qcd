@@ -1,11 +1,12 @@
-/***************** make_prop.c ****************************************/
+/***************** make_est_src.c ****************************************/
 /* MIMD version 7 */
 /* Read and/or generate a propagator */
 
 #include "ext_src_includes.h"
 
 /*--------------------------------------------------------------------*/
-static complex *create_w_sink_smearing(wilson_quark_source *wqs){
+#if 0
+static complex *create_w_sink_smearing(quark_source *wqs){
   double vol = (double)nx*ny*nz;
   complex *chi_cs;
   int i;
@@ -40,7 +41,7 @@ static complex *create_w_sink_smearing(wilson_quark_source *wqs){
 
 /*--------------------------------------------------------------------*/
 /* Same as create_w_sink_smearing, but uses ks_sink_field with ksqs */
-static complex *create_ks_sink_smearing(ks_quark_source *ksqs){
+static complex *create_ks_sink_smearing(quark_source *ksqs){
   double vol = (double)nx*ny*nz;
   complex *chi_cs;
   int i;
@@ -75,7 +76,7 @@ static complex *create_ks_sink_smearing(ks_quark_source *ksqs){
 
 /*--------------------------------------------------------------------*/
 static void sink_smear_w_src(wilson_vector *wv, complex *chi_cs,
-			     wilson_quark_source *wqs){
+			     quark_source *wqs){
   int c,d;
   int i;
   site *s;
@@ -115,7 +116,7 @@ static void sink_smear_w_src(wilson_vector *wv, complex *chi_cs,
 
 /*--------------------------------------------------------------------*/
 static void sink_smear_ks_src(su3_vector *v, complex *chi_cs,
-			      ks_quark_source *ksqs){
+			      quark_source *ksqs){
   
   int c;
   int i;
@@ -151,6 +152,7 @@ static void sink_smear_ks_src(su3_vector *v, complex *chi_cs,
   restrict_fourier_field((complex *)v, sizeof(su3_vector), BACKWARDS);
   print_timing(dtime,"FFT");
 }  
+#endif
 
 /*--------------------------------------------------------------------*/
 /* Multiply the sink Wilson vectors by the sink gamma matrix */
@@ -168,74 +170,96 @@ static void mult_sink_gamma_wv(wilson_vector *wv, int snk_gam)
 
 /*--------------------------------------------------------------------*/
 
-void extract_wprop_to_w_source(int startflag, char startfile[], 
-			       int nt0, wilson_quark_source *dst_wqs,
-			       wilson_quark_source *snk_wqs, int snk_gam)
+void extract_wprop_to_w_source(int startflag, char startfile[], int ncolor,
+			       int nt0, quark_source *dst_qs,
+			       quark_source_sink_op *snk_qs_op, int snk_gam,
+			       int dst_type)
 {
-  int color, spin;
+  int color, spin, ksource;
   int status;
   int j;
+  int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
+  int r0[4] = {0,0,0,0};            /* Dummy offset */
   wilson_vector *wv;
-  complex *chi_cs;
+  //complex *chi_cs;
   w_prop_file *fp_in; 
   char *fileinfo;
-  wilson_quark_source src_wqs;
+  quark_source src_qs;
   double dtime = 0;
+#ifdef IOTIME
+  int timing = 1;
+#else
+  int timing = 0;
+#endif
+  char myname[] = "extract_wprop_to_w_source";
 
   wv = create_wv_field();
 
   /* Create sink smearing function */
-  chi_cs = create_w_sink_smearing(snk_wqs);
+  // chi_cs = create_w_sink_smearing(snk_qs_op);
 
-  init_wqs(&src_wqs);
+  init_qs(&src_qs);
+  src_qs.ncolor = ncolor;
+  src_qs.nsource = ncolor*4;
 
   /* Open input Dirac propagator file */
   fp_in  = r_open_wprop(startflag, startfile);
 
+  if(fp_in == NULL){
+    node0_printf("%s: Failed to open %s\n", myname, startfile);
+    terminate(1);
+  }
+
   /* Create metadata for Dirac source file */
-  fileinfo = create_ws_XML(startfile, dst_wqs);
+  fileinfo = create_ws_XML(startfile, dst_qs);
 
   /* Open output extended Dirac source file */
   for(j = 0; j < nt0; j++)
-    w_open_w_source(dst_wqs+j, fileinfo);
+    w_source_open_dirac(dst_qs+j, fileinfo);
 
   /* Loop over source colors and spins */
-  for(spin=0;spin<4;spin++)
-    for(color=0;color<3;color++){
-      
-      dtime = start_timing();
-      status = reload_wprop_sc_to_field(startflag, fp_in, &src_wqs, 
-					spin, color, wv, 1);
-      if(status != 0)terminate(1);
-
-      /* Smear as requested */
-      dtime = start_timing();
-      sink_smear_w_src(wv, chi_cs, snk_wqs);
-      print_timing(dtime, "sink_smear_w_src");
-
-      /* Multiply by the sink gamma */
-      dtime = start_timing();
-      mult_sink_gamma_wv(wv, snk_gam);
-      print_timing(dtime,"mult_sink_gamma_wv");
-
-      /* Write the extended source as a time slice of the propagator */
-
-      for(j = 0; j < nt0; j++){
-	dst_wqs[j].spin = spin;
-	dst_wqs[j].color = color;
-	dtime = start_timing();
-	w_source_write( wv, dst_wqs+j );
-	print_timing(dtime,"w_source_write");
-      }
-      
+  for(ksource = 0; ksource < src_qs.nsource; ksource++){
+    spin = convert_ksource_to_spin(ksource);
+    color = convert_ksource_to_color(ksource);
+    
+    dtime = start_timing();
+    status = reload_wprop_sc_to_field(startflag, fp_in, &src_qs, 
+				      spin, color, wv, timing);
+    if(status != 0)terminate(1);
+    
+    /* Smear as requested */
+    dtime = start_timing();
+    wv_field_op(wv, snk_qs_op, FULL, ALL_T_SLICES);
+    
+    /* Multiply by the sink gamma */
+    dtime = start_timing();
+    mult_sink_gamma_wv(wv, snk_gam);
+    print_timing(dtime,"mult_sink_gamma_wv");
+    
+    /* Switch back to staggered basis for KS4 */
+    /* This follows the spin convention for the naive extended
+       propagator in the clover_invert2 code */
+    if(dst_type == KS4_TYPE){
+      convert_naive_to_staggered_wv(wv, ks_source_r, r0);
     }
+
+    /* Write the extended source as a time slice of the propagator */
+    
+    for(j = 0; j < nt0; j++){
+      dst_qs[j].ksource = ksource;
+      dtime = start_timing();
+      w_source_dirac( wv, dst_qs+j );
+      print_timing(dtime,"w_source_write");
+    }
+    
+  }
   
   /* Close files */
   r_close_wprop(startflag, fp_in);
   for(j = 0; j < nt0; j++)
-    w_close_w_source(dst_wqs+j);
+    w_source_close(dst_qs+j);
 
-  if(chi_cs != NULL)free(chi_cs);
+  //  if(chi_cs != NULL)free(chi_cs);
   free_ws_XML(fileinfo);
   destroy_wv_field(wv);
 
@@ -243,56 +267,75 @@ void extract_wprop_to_w_source(int startflag, char startfile[],
 
 /*--------------------------------------------------------------------*/
 
-void extract_ksprop_to_ks_source(int startflag, char startfile[], 
-				 int nt0, ks_quark_source *dst_ksqs,
-				 ks_quark_source *snk_ksqs)
+void extract_ksprop_to_ks_source(int startflag, char startfile[], int ncolor,
+				 int nt0, quark_source *dst_qs,
+				 quark_source_sink_op *snk_qs_op, 
+				 int snk_spin_taste, int r0[])
 {
   int color;
   int status;
   int j;
-  su3_vector *v;
-  complex *chi_cs;
+  su3_vector *v,*w;
+  //complex *chi_cs;
   ks_prop_file *fp_in; 
   char *fileinfo;
-  ks_quark_source src_ksqs;
+  quark_source src_qs;
   double dtime;
+#ifdef IOTIME
+  int timing = 1;
+#else
+  int timing = 0;
+#endif
 
   v = create_v_field();
+  w = create_v_field();
 
   /* Create sink smearing function */
-  chi_cs = create_ks_sink_smearing(snk_ksqs);
+  //chi_cs = create_ks_sink_smearing(snk_qs);
 
-  init_ksqs(&src_ksqs);
+  init_qs(&src_qs);
+  src_qs.ncolor = ncolor;
 
   /* Open files for KS propagators, if requested */
   fp_in  = r_open_ksprop(startflag, startfile);
 
-  /* Create metadata for Dirac source file */
-  fileinfo = create_kss_XML(startfile, dst_ksqs);
+  /* Create metadata for staggered source file */
+  fileinfo = create_kss_XML(startfile, dst_qs);
 
-  /* Open output extended Dirac source file */
+  /* Open output extended color vector source file */
   for(j = 0; j < nt0; j++)
-    w_open_ks_source(dst_ksqs+j, fileinfo);
+    w_source_open_ks(dst_qs+j, fileinfo);
 
   /* Loop over source colors */
 
-  for(color=0;color<3;color++){
+  for(color = 0;color < ncolor; color++){
     
     /* Read color vector (and source as appropriate) from file */
-    status = reload_ksprop_c_to_field(startflag, fp_in, &src_ksqs, 
-				      color, v, 1);
+    status = reload_ksprop_c_to_field(startflag, fp_in, &src_qs, 
+				      color, v, timing);
     if(status != 0)terminate(1);
 
     /* Smear */
     dtime = start_timing();
-    sink_smear_ks_src(v, chi_cs, snk_ksqs);
+    v_field_op(v, snk_qs_op, FULL, ALL_T_SLICES);
     print_timing(dtime,"sink_smear_ks_src");
+
+    /* Apply sink spin-taste operation */
+    spin_taste_op_fn(NULL, snk_spin_taste, r0, w, v);
+    /* The spin_taste_op phases were designed for tying together two
+       forward propagators by first converting one of them to an
+       antiquark propagator.  So they include the antiquark phase
+       (-)^{x+y+z+t}.  For an extended source we don't want the
+       antiquark phase.  The next step removes it.  That way the user
+       input snk_spin_taste label describes the actual meson at the
+       extended source. */
+    spin_taste_op_fn(NULL, spin_taste_index("pion05"), r0, v, w);
 
     /* Write the extended source as a time slice of the propagator */
     for(j = 0; j < nt0; j++){
-      dst_ksqs[j].color = color;
+      dst_qs[j].color = color;
       dtime = start_timing();
-      ks_source_write( v, dst_ksqs+j );
+      w_source_ks( v, dst_qs+j );
       print_timing(dtime,"ks_source_write");
     }
     
@@ -301,10 +344,11 @@ void extract_ksprop_to_ks_source(int startflag, char startfile[],
   /* close files for staggered propagators */
   r_close_ksprop(startflag, fp_in);
   for(j = 0; j < nt0; j++)
-    w_close_ks_source(dst_ksqs+j);
+    w_source_close(dst_qs+j);
 
-  if(chi_cs != NULL)free(chi_cs);
+  //if(chi_cs != NULL)free(chi_cs);
   free_kss_XML(fileinfo);
+  destroy_v_field(w);
   destroy_v_field(v);
 }
 
@@ -312,43 +356,56 @@ void extract_ksprop_to_ks_source(int startflag, char startfile[],
 /* Convert staggered propagator to naive.  We assume that the source
    of the staggered propagator has support on hypercube corners       */
 
-void extract_ksprop_to_w_source(int startflag, char startfile[], 
-				int nt0, wilson_quark_source *dst_wqs,
-				wilson_quark_source *snk_wqs, int snk_gam)
+void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
+				int nt0, quark_source *dst_qs,
+				quark_source_sink_op *snk_qs_op, int snk_gam,
+				int dst_type)
 {
-  int color, spin;
+  int color, spin, ksource;
   int status;
   int j;
   su3_vector *v[3];
   wilson_vector *wv;
   spin_wilson_vector *swv;
-  complex *chi_cs;
+  //complex *chi_cs;
   ks_prop_file *fp_in; 
   char *fileinfo;
   int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
-  ks_quark_source src_ksqs;
+  int r0[4] = {0,0,0,0};            /* Dummy offset */
+  quark_source src_qs;
   double dtime;
+#ifdef IOTIME
+  int timing = 1;
+#else
+  int timing = 0;
+#endif
+  char myname[] = "extract_ksprop_to_w_source";
 
   swv = create_swv_field();
   wv  = create_wv_field();
 
-  for(color = 0; color < 3; color++)
-    v[color]   = create_v_field();
+  for(color = 0; color < ncolor; color++)
+    v[color] = create_v_field();
 
   /* Create sink smearing function */
-  chi_cs = create_w_sink_smearing(snk_wqs);
+  //chi_cs = create_w_sink_smearing(snk_qs_op);
 
-  init_ksqs(&src_ksqs);
+  init_qs(&src_qs);
+  src_qs.ncolor = ncolor;
 
   /* Open files for KS propagators, if requested */
   fp_in  = r_open_ksprop(startflag, startfile);
+  if(fp_in == NULL){
+    node0_printf("%s: Can't read file %s\n", myname, startfile);
+    terminate(1);
+  }
   
   /* Read the entire staggered propagator */
-  for(color = 0; color < 3; color++){
+  for(color = 0; color < ncolor; color++){
     
     /* Read color vector (and source as appropriate) from file */
-    status = reload_ksprop_c_to_field(startflag, fp_in, &src_ksqs, 
-				      color, v[color], 1);
+    status = reload_ksprop_c_to_field(startflag, fp_in, &src_qs, 
+				      color, v[color], timing);
     if(status != 0)terminate(1);
     
   }
@@ -356,56 +413,75 @@ void extract_ksprop_to_w_source(int startflag, char startfile[],
   r_close_ksprop(startflag, fp_in);
 
   /* Create metadata for Dirac source file */
-  fileinfo = create_ws_XML(startfile, dst_wqs);
+  fileinfo = create_ws_XML(startfile, dst_qs);
 
   /* Open output extended Dirac source files */
   for(j = 0; j < nt0; j++)
-    w_open_w_source(dst_wqs+j, fileinfo);
+    w_source_open_dirac(dst_qs+j, fileinfo);
   
-  /* Loop over source spins (Making spin the outer loop is awkward,
-     but it is the standard order for USQCD propagators) */
+  /* Loop over source spins and colors.  This is no longer in the
+     standard USQCD order! */
   
-  for(spin = 0; spin < 4; spin++){
+  for(ksource = 0; ksource < src_qs.nsource; ksource++){
+    spin = convert_ksource_to_spin(ksource);
+    color = convert_ksource_to_color(ksource);
     
-    node0_printf("Spin %d\n", spin);
+    /* Convert KS prop to naive prop (su3_vector maps to
+       spin_wilson_vector) for a given source color */
     
-    for(color = 0; color < 3; color++){
-      
-      /* Convert KS prop to naive prop (su3_vector maps to
-	 spin_wilson_vector) for a given source color */
-      
-      dtime = start_timing();
-      convert_ksprop_to_wprop_swv(swv, v[color], ks_source_r);
-      
-      copy_wv_from_swv(wv, swv, spin);
-      print_timing(dtime, "naive conversion and copy");
-      
-      /* Smear */
-      dtime = start_timing();
-      sink_smear_w_src(wv, chi_cs, snk_wqs);
-      print_timing(dtime, "sink_smear_w_src");
+    dtime = start_timing();
+    convert_ksprop_to_wprop_swv(swv, v[color], ks_source_r, r0);
 
-      /* Multiply by the sink gamma */
-      dtime = start_timing();
-      mult_sink_gamma_wv(wv, snk_gam);
-      print_timing(dtime, "mult_sink_gamma");
-
-      /* Write the extended source as a time slice of the propagator */
-      for(j = 0; j < nt0; j++){
-	dst_wqs[j].color = color;
-	dst_wqs[j].spin  = spin;
-	dtime = start_timing();
-	w_source_write( wv, dst_wqs+j );
-	print_timing(dtime, "w_source_write");
-      }
+    copy_wv_from_swv(wv, swv, spin);
+    print_timing(dtime, "naive conversion and copy");
+    
+#if 0
+    // DEBUG
+    {
+      wilson_vector wvtmp1, wvtmp2;
+      int y[4] = {1,1,1,2};
+      int k = node_index(y[0],y[1],y[2],y[3]);
+      wvtmp1 = wv[k];
+      if(y[3]%2 == 1){mult_w_by_gamma(&wvtmp1, &wvtmp2, GT); wvtmp1 = wvtmp2;}
+      if(y[0]%2 == 1){mult_w_by_gamma(&wvtmp1, &wvtmp2, GX); wvtmp1 = wvtmp2;}
+      if(y[1]%2 == 1){mult_w_by_gamma(&wvtmp1, &wvtmp2, GY); wvtmp1 = wvtmp2;}
+      if(y[2]%2 == 1){mult_w_by_gamma(&wvtmp1, &wvtmp2, GZ); wvtmp1 = wvtmp2;}
+      dump_wvec(&wvtmp1);
+      dumpvec(&v[color][k]);
     }
-  } /* spin */
+#endif
+
+    /* Smear */
+    dtime = start_timing();
+    wv_field_op(wv, snk_qs_op, FULL, ALL_T_SLICES);
+    print_timing(dtime, "sink_smear_w_src");
+    
+    /* Multiply by the sink gamma */
+    dtime = start_timing();
+    mult_sink_gamma_wv(wv, snk_gam);
+    print_timing(dtime, "mult_sink_gamma");
+
+    /* Switch back to staggered basis for KS4 */
+    /* This follows the spin convention for the naive extended
+       propagator in the clover_invert2 code */
+    if(dst_type == KS4_TYPE){
+      convert_naive_to_staggered_wv(wv, ks_source_r, r0);
+    }
+    
+    /* Write the extended source as a time slice of the propagator */
+    for(j = 0; j < nt0; j++){
+      dst_qs[j].ksource = ksource;
+      dtime = start_timing();
+      w_source_dirac( wv, dst_qs+j );
+      print_timing(dtime, "w_source_write");
+    }
+  } /* ksource */
   
   for(j = 0; j < nt0; j++)
-    w_close_w_source(dst_wqs+j);
+    w_source_close(dst_qs+j);
   
-  if(chi_cs != NULL)free(chi_cs);
-  for(color = 0; color < 3; color++)
+  //if(chi_cs != NULL)free(chi_cs);
+  for(color = 0; color < ncolor; color++)
     destroy_v_field(v[color]); 
   destroy_wv_field(wv); 
   destroy_swv_field(swv);

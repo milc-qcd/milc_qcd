@@ -1,14 +1,11 @@
-#  Clover inverter with spectroscopy
+#  Extended source code
 #  MIMD version 7
 
-#  Generic make-include file for clover_invert codes
-#  For BOTH flavor-diagonal and mixed flavor {heavy-light} codes
 #  This template file defines rules and macros common to all architectures
 #  It is intended to be an include file for other Makefiles.
 #  Don't use it by itself!
 #
-#	"su3_clov" compute generalized two-point correlators
-#           and point baryon correlators
+#  "ext_src" extracts an extended source from a KS or clover propagator file
 
 
 MYINCLUDEDIR = .
@@ -27,7 +24,8 @@ MY_HEADERS = \
   lattice.h \
   params.h \
   defines.h \
-  ext_src_includes.h
+  ext_src_includes.h \
+  quark_action.h
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
@@ -43,94 +41,28 @@ MY_OBJECTS =         \
   setup.o            \
   w_source_info.o
 
-# Basic set from generic directory
-G_OBJECTS =          \
-  ape_smear.o        \
-  check_unitarity.o  \
-  d_plaq4.o          \
-  io_detect.o        \
-  io_helpers.o       \
-  io_lat4.o          \
-  io_lat_utils.o     \
-  io_source_cmplx_fm.o \
-  make_lattice.o     \
-  nersc_cksum.o       \
-  project_su3_hit.o   \
-  remap_stdio_from_args.o \
-  reunitarize2.o
-
-ifeq ($(strip ${HAVEFFTW}),true)
-  G_OBJECTS += remap_fftw_fourier.o
-else
-  G_OBJECTS += restrict_fourier.o
-endif
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o
-endif
-
-# Set from generic_ks directory
-G_KS_OBJECTS =      \
-  io_helpers_ks.o   \
-  io_prop_ks.o      \
-  io_prop_ks_fm.o   \
-  ks_source.o       \
-  ks_utilities.o
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_KS_OBJECTS += io_scidac_ks.o
-endif
-
-# Basic set from generic_wilson directory
-G_WILSON_OBJECTS =   \
-  canopy2weyl_rot.o  \
-  dirac_utilities.o  \
-  discretize_wf.o    \
-  dslash_w_space.o   \
-  gammas.o           \
-  gauss_smear_w.o    \
-  io_helpers_w.o     \
-  io_prop_w.o        \
-  io_prop_w_fm.o     \
-  io_source_w_fm.o   \
-  staggered2naive.o  \
-  w_source.o
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_WILSON_OBJECTS += io_scidac_w.o
-endif
-
-# Basic set from generic_clover directory
-G_CLOVER_OBJECTS =   \
-
-# Objects depending on architecture and software package 
-
 # Selection of layout
-ifeq ($(strip ${QCDOC}),true)
-  LAYOUT = layout_qcdoc.o # Required
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
-  else
-    LAYOUT = layout_hyper_prime.o # Choices possible here
-  endif
-endif
+LAYOUT = layout_hyper_prime.o # Choices possible here
 
-# EDRAM allocation for QCDOC
-ifeq ($(strip ${QCDOC}),true)
-  QCDOC_OBJECTS = qcdoc_alloc.o
-endif
-
-ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
-   ${SCIDAC_OBJECTS}
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG}
 
 # Generic QOP objects
 ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_WILSON_OBJECTS} \
-  ${G_CLOVER_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+OBJECTS = \
+  ${MY_OBJECTS} \
+  ${CL_IO_OBJECTS} \
+  ${LAYOUT} \
+  ${FFT_OBJECTS} \
+  ${FERMION_OBJECTS} \
+  ${KS_IO_OBJECTS} \
+  ${STANDARD_CL_OBJECTS} \
+  ${STANDARD_KS_OBJECTS} \
+  ${STANDARD_OBJECTS} \
+  ${ADD_OBJECTS} \
+  ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
@@ -145,7 +77,7 @@ LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
 LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
 
 ${LASTMAKE}: ${ALL_MAKES}
-	-/bin/rm -f .lastmake.*
+	-/bin/rm -f .lastmake.* quark_action.h
 	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 
@@ -153,7 +85,7 @@ ${LASTMAKE}: ${ALL_MAKES}
 ALL_MAKES = \
   Make_template \
   ${MAKEFILE} \
-  ../Make_template_qop \
+  ../Make_template_combos \
   ../Make_template_scidac \
   ../generic/Make_template \
   ../generic_ks/Make_template \
@@ -161,7 +93,13 @@ ALL_MAKES = \
   ../generic_clover/Make_template \
 
 # To force a remake when changing any make file, header, or target
-${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
+
+# Directories where we store the improved action headers
+QUARKIMP = ../generic_ks/imp_actions
+
+quark_action.h: ${QUARKIMP}/${QUARK}
+	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
 ifeq ($(strip ${QCDOC}),true)
   DQCDOC = -DQCDOC
@@ -189,13 +127,13 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 # Common compiler macros
 
-# Optional DEFINES for timing:
-# -DIOTIME for I/O timing
-# -DCGTIME for cg timing and iterations
+# QUARK is used only if FN-type sink smearing 
+# is being applied to KS extended sources
 
 ext_src::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DIOTIME " \
+	"QUARK = asqtad_action.h" \
+	"DEFINES= -DFN -DHAVE_KS -DHAVE_DIRAC -DNO_GAUGE_FIELD" \
 	"EXTRA_OBJECTS= "
 
 clean:

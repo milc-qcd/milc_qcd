@@ -11,7 +11,7 @@
 
 #define MAX_XML 2049
 
-char *create_kss_XML(char *filename, ks_quark_source *ksqs)
+char *create_kss_XML(char *filename, quark_source *ksqs)
 {
   char *xml;
 

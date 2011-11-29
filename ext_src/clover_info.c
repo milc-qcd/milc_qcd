@@ -22,8 +22,12 @@
                            structure
    write_appl_w_prop_info  Writes supplementary information to the info file */
 
-#include "ext_src_includes.h"
+#include "../include/io_wprop.h"
+#include "../include/generic_quark_types.h"
+extern dirac_clover_param dcptmp;
+extern quark_source wqstmp;
 #include <string.h>
+
 
 /*---------------------------------------------------------------------------*/
 

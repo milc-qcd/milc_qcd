@@ -11,7 +11,7 @@
 #define INFOSTRING_MAX 2048
 
 
-char *create_ws_XML(char *filename, wilson_quark_source *wqs){
+char *create_ws_XML(char *filename, quark_source *wqs){
 
   size_t bytes = 0;
   char *info = (char *)malloc(INFOSTRING_MAX);

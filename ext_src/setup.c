@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.5  2011/11/29 22:10:38  detar
+//  New KS4 type for extended dirac propagators.  New source structure.
+//
 //  Revision 1.4  2009/06/11 16:24:22  detar
 //  Allow writing multiple sources from the same file.  Changes parameter inputs.
 //
@@ -29,20 +32,21 @@
 
 
 #include "ext_src_includes.h"
-#include "lattice_qdp.h"
 #include <string.h>
-int initial_set();
+
+static int initial_set(void);
+static void broadcast_heap_params(void);
 
 #include "params.h"
 
-int setup()   {
+int setup(void)   {
   int prompt;
-#ifdef HAVE_QDP
-  int i;
-#endif
 
   /* print banner, get volume */
   prompt=initial_set();
+  if(prompt == 2)return prompt;
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, param.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
@@ -50,23 +54,12 @@ int setup()   {
   /* set up nearest neighbor gathers */
   make_nn_gathers();
 
-#ifdef HAVE_QDP
-  for(i=0; i<4; ++i) {
-    shiftdirs[i] = QDP_neighbor[i];
-    shiftdirs[i+4] = neighbor3[i];
-  }
-  for(i=0; i<8; ++i) {
-    shiftfwd[i] = QDP_forward;
-    shiftbck[i] = QDP_backward;
-  }
-#endif
-  
   return(prompt);
 }
 
 
 /* SETUP ROUTINES */
-int initial_set(){
+static int initial_set(){
   int prompt,status;
 #ifdef FIX_NODE_GEOM
   int i;
@@ -74,9 +67,12 @@ int initial_set(){
   /* On node zero, read lattice size and send to others */
   if(mynode()==0){
     /* print banner */
-    printf("SU3 clover valence fermions\n");
-    printf("MIMD version 7 $Name:  $\n");
+    printf("SU3 clover, staggered and naive valence fermions\n");
+    printf("MIMD version %s\n",MILC_CODE_VERSION);
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
+    gethostname(hostname, 128);
+    printf("Host(0) = %s\n",hostname);
+    printf("Username = %s\n", getenv("USER"));
     time_stamp("start");
     
     status = get_prompt(stdin,  &prompt );
@@ -104,10 +100,13 @@ int initial_set(){
   if( param.stopflag != 0 )
     normal_exit(0);
 
+  if(prompt==2)return prompt;
+
   nx=param.nx;
   ny=param.ny;
   nz=param.nz;
   nt=param.nt;
+  iseed=param.iseed;
 #ifdef FIX_NODE_GEOM
   for(i = 0; i < 4; i++)
     node_geometry[i] = param.node_geometry[i];
@@ -149,9 +148,10 @@ int readin(int prompt) {
       status++;
     }
 
+    /* Quark parameters */
     IF_OK for(i = 0; i < param.num_qk; i++){
-    
-      /* Quark parameters */
+
+      /* Input propagator type */
       IF_OK status += get_s(stdin, prompt,"quark_type", savebuf );
       IF_OK {
 	if(strcmp(savebuf,"clover") == 0)param.qk_type[i] = CLOVER_TYPE;
@@ -162,47 +162,61 @@ int readin(int prompt) {
 	}
       }
 
+      /* Output propagator type */
+      /* The KS4_TYPE is designed for extended naive propagators that
+         follow the spin conventions of the clover_invert2 code. */
       IF_OK status += get_s(stdin, prompt,"output_type", savebuf );
       IF_OK {
 	if(strcmp(savebuf,"clover") == 0)param.dst_type[i] = CLOVER_TYPE;
 	else if(strcmp(savebuf,"KS") == 0)param.dst_type[i] = KS_TYPE;
+	else if(strcmp(savebuf,"KS4") == 0)param.dst_type[i] = KS4_TYPE;
 	else {
 	  printf("Unknown output type %s\n",savebuf);
 	  status++;
 	}
       }
+
+      /* Input Dirac propagator */
       if(param.qk_type[i] == CLOVER_TYPE){
+	/* Name of starting Dirac propagator file */
 	IF_OK status += ask_starting_wprop( stdin, prompt, 
 					    &param.startflag_w[i],
 					    param.startfile_w[i]);
+	IF_OK status += get_i(stdin,prompt,"ncolor", &param.ncolor[i] );
 	
+	/* Dirac sink operator */
 	IF_OK {
-	  if(param.dst_type[i] == CLOVER_TYPE){
-	    init_wqs(&param.snk_wqs[i]);
-	    status += get_w_quark_sink(stdin, prompt, &param.snk_wqs[i]);
+	  if(param.dst_type[i] == CLOVER_TYPE ||
+	     param.dst_type[i] == KS4_TYPE){
+	    IF_OK init_qss_op(&param.snk_qs_op[i]);
+	    IF_OK status += get_wv_field_op( stdin, prompt, &param.snk_qs_op[i]);
+	    
 	  } else {
 	    printf("Unsupported output source type\n");
 	    status++;
 	  }
 	}
 	
-      } else {  /* KS_TYPE */
-	int source_type;
-
+      } else {  /* Input KS propagator */
+	
+        /* Name of starting KS propagator file */
 	IF_OK status += ask_starting_ksprop( stdin, prompt, 
 					     &param.startflag_ks[i],
 					     param.startfile_ks[i]);
+
+	IF_OK status += get_i(stdin,prompt,"ncolor", &param.ncolor[i] );
 	
 	/* We could generate either a staggered extended source or a
 	   naive (Dirac) extended source */
 	IF_OK {
-	  if(param.dst_type[i] == CLOVER_TYPE){
-	    init_wqs(&param.snk_wqs[i]);
-	    status += get_w_quark_sink(stdin, prompt, &param.snk_wqs[i]);
+	  if(param.dst_type[i] == CLOVER_TYPE ||
+	     param.dst_type[i] == KS4_TYPE){
+	    IF_OK init_qss_op(&param.snk_qs_op[i]);
+	    IF_OK status += get_wv_field_op( stdin, prompt, &param.snk_qs_op[i]);
 	  }
 	  else if(param.dst_type[i] == KS_TYPE){
-	    init_ksqs(&param.snk_ksqs[i]);
-	    status += get_ks_quark_sink(stdin, prompt, &param.snk_ksqs[i]);
+	    IF_OK init_qss_op(&param.snk_qs_op[i]);
+	    IF_OK status += get_v_field_op( stdin, prompt, &param.snk_qs_op[i]);
 	  } else {
 	    printf("Unsupported output source type\n");
 	    status++;
@@ -212,18 +226,40 @@ int readin(int prompt) {
 
       /* Get the sink gamma matrix */
 
-      if(param.dst_type[i] == CLOVER_TYPE){
-	IF_OK get_s(stdin, prompt, "sink_gamma", savebuf);
-	IF_OK {
+      IF_OK get_s(stdin, prompt, "sink_gamma", savebuf);
+
+      IF_OK {
+	if(param.dst_type[i] == CLOVER_TYPE ||
+	   param.dst_type[i] == KS4_TYPE){
 	  param.snk_gam[i] = gamma_index(savebuf);
 	  if(param.snk_gam[i] < 0){
 	    printf("\n%s is not a valid gamma matrix label\n",savebuf);
 	    status ++;
 	  }
+	} else {
+	  /* For staggered quarks we use spin_taste operators with no
+	     displacement in time */
+	  param.snk_gam[i] = spin_taste_index(savebuf);
+	  if(param.snk_gam[i] < 0){
+	    printf("\n%s is not a valid spin_taste label.\n",savebuf);
+	    status ++;
+	  }
 	}
-      } else {
-	param.snk_gam[i] = -999; /* Illegal if we ever try to use it */
       }
+
+      /* FT and KS phases are computed with x,y,z,t relative to r_offset */
+      IF_OK {
+	int r[4];
+	status += get_vi(stdin,prompt, "r_offset", r, 4);
+	param.r_offset[i][0] = r[0];
+	param.r_offset[i][1] = r[1];
+	param.r_offset[i][2] = r[2];
+	param.r_offset[i][3] = r[3];
+      }
+
+      /* Set the operator coordinate offset (for some operators) */
+      
+      set_qss_op_offset(&param.snk_qs_op[i], &param.r_offset[i][0]);
 
       /* Get the time slice and output source file */
 
@@ -232,27 +268,30 @@ int readin(int prompt) {
 
       IF_OK for(j = 0; j < param.num_t0[i]; j++){
 	if(param.qk_type[i] == CLOVER_TYPE){
-	  int source_type, t0, saveflag_s;
+	  int save_type, t0, saveflag_s;
 	  char descrp[MAXDESCRP];
 	  char savefile_s[MAXFILENAME];
 	  
 	  IF_OK status += 
-	    ask_output_w_quark_source_file( stdin, prompt, &saveflag_s,
-					    &source_type, &t0, descrp,
-					    savefile_s );
+	    ask_output_quark_source_file( stdin, prompt, &saveflag_s,
+					  &save_type, &t0, descrp,
+					  savefile_s );
 	
 	  IF_OK {
-	    if(source_type == DIRAC_FIELD_FILE){
-	      if(param.dst_type[i] != CLOVER_TYPE){
-		printf("Requires a Dirac field output file.\n");
+	    if(save_type == DIRAC_FIELD_FILE){
+	      if(param.dst_type[i] != CLOVER_TYPE &&
+		 param.dst_type[i] != KS4_TYPE){
+		printf("This file type requires a Dirac field.\n");
 		status++;
 	      }
-	      init_wqs(&param.dst_wqs[i][j]);
-	      param.dst_wqs[i][j].type = source_type;
-	      param.dst_wqs[i][j].t0   = t0;
-	      param.dst_wqs[i][j].flag = saveflag_s;
-	      strcpy(param.dst_wqs[i][j].descrp, descrp);
-	      strcpy(param.dst_wqs[i][j].source_file, savefile_s);
+	      /* Set values according to the input propagator */
+	      init_qs(&param.dst_qs[i][j]);
+	      param.dst_qs[i][j].savetype = save_type;
+	      param.dst_qs[i][j].subset = FULL;
+	      param.dst_qs[i][j].t0   = t0;
+	      param.dst_qs[i][j].saveflag = saveflag_s;
+	      strcpy(param.dst_qs[i][j].descrp, descrp);
+	      strcpy(param.dst_qs[i][j].save_file, savefile_s);
 
 	    } else {
 	      printf("Unsupported output source type\n");
@@ -260,41 +299,39 @@ int readin(int prompt) {
 	    }
 	  }
 	} else {  /* KS_TYPE */
-	  int source_type, t0, saveflag_s;
+	  int save_type, t0, saveflag_s;
 	  char descrp[MAXDESCRP];
 	  char savefile_s[MAXFILENAME];
 	  
 	  IF_OK status += 
-	    ask_output_ks_quark_source_file( stdin, prompt, &saveflag_s,
-					     &source_type, &t0, descrp,
-					     savefile_s );
+	    ask_output_quark_source_file( stdin, prompt, &saveflag_s,
+					  &save_type, &t0, descrp,
+					  savefile_s );
 	  
 	  /* We could generate either a staggered extended source or a
 	     naive (Dirac) extended source */
 	  IF_OK {
-	    if(source_type == DIRAC_FIELD_FILE){
-	      if(param.dst_type[i] != CLOVER_TYPE){
-		  printf("Requires a Dirac field output file.\n");
-		  status++;
-	      }
-	      init_wqs(&param.dst_wqs[i][j]);
-	      param.dst_wqs[i][j].type = source_type;
-	      param.dst_wqs[i][j].t0   = t0;
-	      param.dst_wqs[i][j].flag = saveflag_s;
-	      strcpy(param.dst_wqs[i][j].descrp, descrp);
-	      strcpy(param.dst_wqs[i][j].source_file, savefile_s);
-	    }
-	    else if(source_type == VECTOR_FIELD_FILE){
-	      if(param.dst_type[i] != KS_TYPE){
-		printf("Requires a color vector field output file.\n");
+	    init_qs(&param.dst_qs[i][j]);
+	    /* Set values according to the iput propagator */
+	    param.dst_qs[i][j].savetype = save_type;
+	    param.dst_qs[i][j].subset = FULL;
+	    param.dst_qs[i][j].t0   = t0;
+	    param.dst_qs[i][j].saveflag = saveflag_s;
+	    strcpy(param.dst_qs[i][j].descrp, descrp);
+	    strcpy(param.dst_qs[i][j].save_file, savefile_s);
+
+	    if(save_type == DIRAC_FIELD_FILE){
+	      if(param.dst_type[i] != CLOVER_TYPE &&
+		 param.dst_type[i] != KS4_TYPE){
+		printf("This file type requires a Dirac field.\n");
 		status++;
 	      }
-	      init_ksqs(&param.dst_ksqs[i][j]);
-	      param.dst_ksqs[i][j].type = source_type;
-	      param.dst_ksqs[i][j].t0   = t0;
-	      param.dst_ksqs[i][j].flag = saveflag_s;
-	      strcpy(param.dst_ksqs[i][j].descrp, descrp);
-	      strcpy(param.dst_ksqs[i][j].source_file, savefile_s);
+	    }
+	    else if(save_type == VECTOR_FIELD_FILE){
+	      if(param.dst_type[i] != KS_TYPE){
+		printf("This file type requires a color vector field.\n");
+		status++;
+	      }
 	    } else {
 	      printf("Unsupported output source type\n");
 	      status++;
@@ -312,6 +349,21 @@ int readin(int prompt) {
   if( param.stopflag != 0 )
     normal_exit(0);
 
+  /* Broadcast parameter values kept on the heap */
+  broadcast_heap_params();
+
   return 0;
+}
+
+/* Broadcast operator parameter values.  They are on the heap on node 0. */
+
+static void broadcast_heap_params(void){
+  int i, j;
+
+  for(i = 0; i < param.num_qk; i++){
+    for(j = 0; j < param.num_t0[i]; j++)
+      broadcast_quark_source_sink_op_recursive(&param.dst_qs[i][j].op);
+    broadcast_quark_source_sink_op_recursive(&param.snk_qs_op[i].op);
+  }
 }
 

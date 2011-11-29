@@ -14,10 +14,11 @@
 #include "params.h"
 #include "../include/random.h"   /* For double_prn */
 #include "../include/io_lat.h"    /* For gauge_file */
+#include "../include/su3.h"
+#include "../include/fermion_links.h"
 
 /* Begin definition of site structure */
 
-#include "../include/su3.h"
 
 typedef struct {
     /* The first part is standard to all programs */
@@ -27,14 +28,18 @@ typedef struct {
 	char parity;
 	/* my index in the array */
 	int index;
+	/* The state information for a random number generator */
+	double_prn site_prn;
+	/* align to double word boundary (kludge for Intel compiler) */
+	int space1;
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
-	su3_matrix link[4];
+  /*	su3_matrix link[4]; */
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
- 	Real phase[4];
+  /* 	Real phase[4]; */
 
 } site;
 
@@ -51,6 +56,7 @@ typedef struct {
 
 /* The following are global scalars */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
+EXTERN  int iseed;
 EXTERN  int niter, nrestart;
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
@@ -84,12 +90,13 @@ EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
 /* Temporary for clover_info and ksprop_info */
-EXTERN ks_quark_source ksqstmp;
+EXTERN quark_source ksqstmp;
 EXTERN ks_param ksptmp;
-EXTERN wilson_quark_source wqstmp;
+EXTERN quark_source wqstmp;
 EXTERN dirac_clover_param dcptmp;
 EXTERN gauge_file *startlat_p;
 EXTERN gauge_file *savelat_p;
+EXTERN char hostname[128];
 
 /* Each node maintains a structure with the pseudorandom number
    generator state */
@@ -99,14 +106,12 @@ EXTERN  double_prn node_prn ;
    part of the lattice on this node) */
 EXTERN site *lattice;
 
+EXTERN su3_matrix *ape_links;
+
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */
 #define N_POINTERS 16	/* Number of generic pointers */
 /* NEED 8 WHEN GAUGEFIXING */
 EXTERN char ** gen_pt[N_POINTERS];
-
-/* Storage for definition of the quark action */
-EXTERN ferm_links_t        fn_links;
-EXTERN ks_action_paths ks_act_paths;
 
 #endif /* _LATTICE_H */
