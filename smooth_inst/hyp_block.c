@@ -197,7 +197,7 @@ void dsdu_ape2(register int dir1, int parity)
 void dsdu_ape_ext1(register int dir1, register int dir3, int parity) 
 {
   /* dir3 is the direction that's excluded */
-  register int i,dir2,dir4;
+  register int i,dir2,dir4 = -1;
   register site *st;
   msg_tag *tag0,*tag1,*tag2,*tag3,*tag4;
   int start;

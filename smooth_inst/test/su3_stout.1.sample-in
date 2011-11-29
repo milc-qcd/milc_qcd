@@ -4,19 +4,19 @@ ny 4
 nz 4
 nt 4
 
-ape_weight 0.45
+ape_weight 0.15
 sweeps 0
 sweeps_between_meas 1
-hits_per_sweep 9
+hits_per_sweep 0
 reload_serial ../binary_samples/lat.sample.inst
 no_gauge_fix
 forget_topo
 forget
 
-ape_weight 0.45
-sweeps 1
+ape_weight 0.15
+sweeps 2
 sweeps_between_meas 1
-hits_per_sweep 9
+hits_per_sweep 0
 continue
 no_gauge_fix
 forget_topo

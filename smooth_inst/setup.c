@@ -116,7 +116,7 @@ int readin(const int prompt)
                                            par_buf.startfile );
 
       /* what kind of gauge fixing */
-      IF_OK if (prompt!=0)
+      IF_OK if (prompt==1)
       {
          printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
       }
@@ -195,7 +195,7 @@ int ask_ending_topo( int prompt, int *flag, char *filename ){
     char savebuf[256];
     int status;
 
-    if (prompt!=0) printf(
+    if (prompt==1) printf(
         "'forget_topo' topo at end or 'save_topo',\n");
     status=scanf("%s",savebuf);
     if(status !=1) {
@@ -215,7 +215,7 @@ int ask_ending_topo( int prompt, int *flag, char *filename ){
 
 
     if( *flag != FORGET ){
-        if(prompt!=0)printf("enter filename\n");
+        if(prompt==1)printf("enter filename\n");
         status=scanf("%s",filename);
         if(status !=1){
     	    printf("ask_ending_topo: ERROR IN INPUT: save filename\n"); return(1);

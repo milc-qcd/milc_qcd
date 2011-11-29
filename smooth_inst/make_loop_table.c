@@ -27,7 +27,7 @@ void make_loop_table2(void)
    int length,iloop,i,j,k,chr[2];
    int vec[max_inst_length];
    int count,flag;
-   int jsave;
+   int jsave = 0;
    int pnum,ppnum;
 
    for(j=0;j<nist;j++){inst_num[j]=0;inst_length[j]=inst_length_in[j];}

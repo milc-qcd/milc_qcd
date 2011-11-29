@@ -9,7 +9,7 @@
 
 void save_topo(char *filenam)
 {
-   FILE *fp;
+   FILE *fp = NULL;
    int currentnode,newnode;
    int i,x,y,z,t;
    Real lbuf;

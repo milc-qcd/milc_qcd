@@ -20,9 +20,6 @@ void instanton_density(void)
 
    Real loop_pwr,sump,summ,ch_d;
 
-   /* KLUGE */
-   int l;
-
    /* these are for inst_table  */
    int ln,iloop;
 

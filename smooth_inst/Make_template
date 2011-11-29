@@ -43,6 +43,7 @@ MY_OBJECTS= \
 G_OBJECTS = \
  check_unitarity.o \
  d_plaq4.o \
+ gauge_utilities.o \
  io_helpers.o \
  io_lat4.o \
  io_lat_utils.o \
@@ -143,6 +144,11 @@ su3_fat::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS= fat.o ape_smear.o gaugefix2.o instanton_density.o"
+
+su3_stout::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= " \
+	"EXTRA_OBJECTS= smooth_stout.o ape_smear.o stout_smear.o gaugefix2.o instanton_density.o"
 
 clean:
 	-/bin/rm -f *.o

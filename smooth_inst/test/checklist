@@ -1,0 +1,3 @@
+exec su3_ape 1 - - CHECK RUNNING
+exec su3_fat 1 - - CHECK RUNNING
+exec su3_hyp 1 - - CHECK RUNNING
