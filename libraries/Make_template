@@ -136,4 +136,4 @@ checkcc:
 	@echo ================================================================
 
 clean:
-	-/bin/rm -f *.1.o *.2.o
+	-/bin/rm -f *.1.o *.2.o su3.1.a su3.2.a complex.1.a complex.2.a
