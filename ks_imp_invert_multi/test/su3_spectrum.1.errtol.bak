@@ -16,7 +16,7 @@ MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
 0 2e-07 XXX 4e-06 XXX
-0 1e-07 XXX 4e-06 XXX
+0 2e-07 XXX 4e-06 XXX
 0 2e-07 XXX 5e-06 XXX
 0 2e-07 XXX 3e-06 XXX
 0 2e-07 XXX 4e-06 XXX
@@ -42,11 +42,11 @@ MASSES: 0 0
 SOURCE: FULL_WALL
 SINKS: POINT_KAON_5 WALL_KAON_5
 0 2e-07 6e-08 4e-06 2e-06
-0 1e-07 5e-08 3e-06 5e-06
+0 3e-07 5e-08 3e-06 5e-06
 0 2e-07 1e-07 3e-06 2e-06
-0 2e-07 9e-08 2e-06 9e-06
-0 1e-07 5e-08 3e-06 2e-06
-0 1e-07 6e-08 2e-06 5e-06
+0 4e-07 9e-08 2e-06 9e-06
+0 2e-07 5e-08 3e-06 2e-06
+0 2e-07 6e-08 2e-06 5e-06
 0 1e-07 1e-07 3e-06 2e-06
 0 1e-07 1e-07 7e-06 2e-06
 ENDPROP
@@ -77,18 +77,27 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 0 2e-07 XXX 8e-06 XXX
 ENDPROP
 multimass_inverter(): source time = 0
+ OK converged final_rsq= 4e-12 rel = 0 restarts = 1 iters= 8
+ OK converged final_rsq= 4e-12 rel = 0 restarts = 1 iters= 8
+ OK converged final_rsq= 4e-12 rel = 0 restarts = 1 iters= 8
 Inversion checked, frac. error = 8e-05
 Flagged comparisons = 0
 Max err. = 6e-06 frac. = 8e-05
 Inversion checked, frac. error = 7e-05
 Flagged comparisons = 0
 Max err. = 1e-05 frac. = 0.0002
+ OK converged final_rsq= 4e-12 rel = 0 restarts = 1 iters= 8
+ OK converged final_rsq= 4e-12 rel = 0 restarts = 1 iters= 8
+ OK converged final_rsq= 4e-12 rel = 0 restarts = 1 iters= 8
 Inversion checked, frac. error = 7e-05
 Flagged comparisons = 0
 Max err. = 8e-06 frac. = 0.0002
 Inversion checked, frac. error = 0.0001
 Flagged comparisons = 0
 Max err. = 2e-05 frac. = 0.0004
+ OK converged final_rsq= 4e-12 rel = 0 restarts = 1 iters= 8
+ OK converged final_rsq= 4e-12 rel = 0 restarts = 1 iters= 8
+ OK converged final_rsq= 4e-12 rel = 0 restarts = 1 iters= 8
 Inversion checked, frac. error = 6e-05
 Flagged comparisons = 0
 Max err. = 5e-06 frac. = 0.0001

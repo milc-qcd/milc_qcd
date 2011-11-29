@@ -208,18 +208,27 @@ SINKS: POINT_KAON_5 WALL_KAON_5
 7 7.448775e-02 0.000000e+00 9.427907e-01 0.000000e+00
 ENDPROP
 multimass_inverter(): source time = 0 x,y,z = 0 0 0
+ OK converged final_rsq= 1.2e-21 rel = 0 restarts = 0 iters= 0
+ OK converged final_rsq= 4.2e-17 rel = 0 restarts = 0 iters= 0
+ OK converged final_rsq= 4.2e-17 rel = 0 restarts = 0 iters= 0
 Inversion checked, frac. error = 1.092776e-05
 Flagged comparisons = 0
 Max err. = 1.688522e-06 frac. = 3.820689e-05
 Inversion checked, frac. error = 3.446058e-05
 Flagged comparisons = 0
 Max err. = 4.830624e-06 frac. = 1.093046e-04
+ OK converged final_rsq= 1.2e-21 rel = 0 restarts = 0 iters= 0
+ OK converged final_rsq= 3.9e-17 rel = 0 restarts = 0 iters= 0
+ OK converged final_rsq= 3.9e-17 rel = 0 restarts = 0 iters= 0
 Inversion checked, frac. error = 1.313269e-05
 Flagged comparisons = 0
 Max err. = 1.654545e-06 frac. = 3.743808e-05
 Inversion checked, frac. error = 5.566304e-05
 Flagged comparisons = 0
 Max err. = 8.940358e-06 frac. = 2.022972e-04
+ OK converged final_rsq= 1.2e-21 rel = 0 restarts = 0 iters= 0
+ OK converged final_rsq= 3.9e-17 rel = 0 restarts = 0 iters= 0
+ OK converged final_rsq= 3.9e-17 rel = 0 restarts = 0 iters= 0
 Inversion checked, frac. error = 1.101933e-05
 Flagged comparisons = 0
 Max err. = 2.503443e-06 frac. = 5.664644e-05

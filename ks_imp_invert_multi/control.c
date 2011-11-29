@@ -25,9 +25,7 @@ int main( int argc, char **argv ){
   double dtime, fixtime, dclock();
   
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
@@ -63,7 +61,7 @@ int main( int argc, char **argv ){
     rephase( ON );
     
     invalidate_all_ferm_links(&fn_links);
-    load_ferm_links(&fn_links, &ks_act_paths);
+    load_ferm_links(&fn_links);
 
 #ifdef FPI
     avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3, &fn_links);
@@ -94,10 +92,6 @@ int main( int argc, char **argv ){
     }
     
   }
-#ifdef HAVE_QDP
-  QDP_finalize();
-  normal_exit(0);
-#endif
-  
+
   return 0;
 }

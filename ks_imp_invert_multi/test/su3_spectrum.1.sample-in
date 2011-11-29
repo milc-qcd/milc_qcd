@@ -26,7 +26,7 @@ nmasses_mminv 2
 mass 0.05
 mass 0.02
 error_for_propagator_mminv 5e-5
-reload_serial ../binary_samples/lat.sample.l4448.gf
+reload_serial ../../binary_samples/lat.sample.l4448.gf
 no_gauge_fix
 forget
 save_serial_fm_ksprop ks.test.l4448

@@ -1,0 +1,5 @@
+exec su3_spectrum           1 - - STARTPROP RUNNING
+exec su3_spectrum_periodic  1 - - STARTPROP RUNNING
+exec su3_spectrum           2 - - STARTPROP RUNNING
+exec su3_spectrum_periodic  2 - - STARTPROP RUNNING
+

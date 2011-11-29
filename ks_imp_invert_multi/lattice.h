@@ -106,6 +106,7 @@ typedef struct {
    u0 is tadpole improvement factor, perhaps (plaq/3)^(1/4)
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
+EXTERN  int iseed;
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 #ifdef FIX_NODE_GEOM
 EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
@@ -141,7 +142,7 @@ EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  int kssaveflag; /* save KS propagator or not */
-EXTERN  ks_quark_source ksqksource;
+EXTERN  quark_source ksqksource;
 	/* forget_ks, save_ks_ascii, save_ks_serial, save_ks_serial_fm, save_ks_serial_tslice */
 	/* FORGET, SAVE_ASCII, SAVE_SERIAL, SAVE_SERIAL_FM, SAVE_SERIAL_TSLICE */
 EXTERN  char kssavefile[MAXFILENAME]; /* where to store KS prop */
@@ -174,6 +175,8 @@ EXTERN double_prn node_prn ;
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
 EXTERN site *lattice;
+
+EXTERN su3_matrix *ape_links;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */

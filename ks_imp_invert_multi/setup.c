@@ -42,9 +42,6 @@ void make_3n_gathers();
 params par_buf;
 
 int  setup()   {
-#ifdef HAVE_QDP
-  int i;
-#endif
     int prompt;
 
 	/* print banner, get volume, seed */
@@ -56,10 +53,7 @@ int  setup()   {
 	/* allocate space for lattice, set up coordinate fields */
     make_lattice();
     node0_printf("Made lattice\n"); fflush(stdout);
-    init_ferm_links(&fn_links);
-#ifdef DM_DU0
-    init_ferm_links(&fn_links_dmdu0);
-#endif
+    init_ferm_links(&fn_links, &ks_act_paths);
 
 	/* set up neighbor pointers and comlink structures
 	   code for this routine is in com_machine.c  */
@@ -71,17 +65,6 @@ node0_printf("Made nn gathers\n"); fflush(stdout);
 node0_printf("Made 3nn gathers\n"); fflush(stdout);
 	/* set up K-S phase vectors, boundary conditions */
     phaseset();
-
-#ifdef HAVE_QDP
-  for(i=0; i<4; ++i) {
-    shiftdirs[i] = QDP_neighbor[i];
-    shiftdirs[i+4] = neighbor3[i];
-  }
-  for(i=0; i<8; ++i) {
-    shiftfwd[i] = QDP_forward;
-    shiftbck[i] = QDP_backward;
-  }
-#endif
 
 node0_printf("Finished setup\n"); fflush(stdout);
     return( prompt );
@@ -131,6 +114,7 @@ int initial_set(){
     ny=par_buf.ny;
     nz=par_buf.nz;
     nt=par_buf.nt;
+    iseed=par_buf.iseed;
 #ifdef FIX_NODE_GEOM
     for(i = 0; i < 4; i++)
       node_geometry[i] = par_buf.node_geometry[i];
@@ -238,7 +222,7 @@ int readin(int prompt) {
 	    par_buf.startfile );
 
 	/* decide about gauge fixing */
-    	IF_OK if (prompt!=0)
+    	IF_OK if (prompt==1)
       		printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
     	IF_OK scanf("%s",savebuf);
     	IF_OK printf("%s\n",savebuf);
@@ -311,9 +295,6 @@ int readin(int prompt) {
     /* if a lattice was read in, put in KS phases and AP boundary condition */
 #ifdef FN
     invalidate_all_ferm_links(&fn_links);
-#ifdef DM_DU0
-    invalidate_all_ferm_links(&fn_links_dmdu0);
-#endif
 #endif
     phases_in = OFF;
     rephase( ON );
@@ -321,9 +302,9 @@ int readin(int prompt) {
     /* make table of coefficients and permutations of loops in gauge action */
     make_loop_table();
     /* make table of coefficients and permutations of paths in quark action */
-    init_path_table(&ks_act_paths);
-    make_path_table(&ks_act_paths, NULL);
-
+    init_path_table(fn_links.ap);
+    make_path_table(fn_links.ap, NULL);
+    
     return(0);
 }
 
@@ -333,9 +314,6 @@ int readin(int prompt) {
  */
 void make_3n_gathers(){
    int i;
-#ifdef HAVE_QDP
-   int disp[4]={0,0,0,0};
-#endif
  
    for(i=XUP;i<=TUP;i++) {
       make_gather(third_neighbor,&i,WANT_INVERSE,
@@ -346,14 +324,6 @@ void make_3n_gathers(){
        so you can use X3UP, X3DOWN, etc. as argument in calling them. */
 
    sort_eight_neighborlists(X3UP);
-#ifdef HAVE_QDP
-
-   for(i=0; i<4; i++) {
-     disp[i] = 3;
-     neighbor3[i] = QDP_create_shift(disp);
-     disp[i] = 0;
-   }
-#endif
 }
  
 

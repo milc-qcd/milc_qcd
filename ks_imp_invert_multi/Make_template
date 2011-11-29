@@ -41,7 +41,6 @@ MY_HEADERS = \
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 MY_OBJECTS= \
-  clover_info.o \
   control.o \
   gauge_info.o \
   ksprop_info.o \
@@ -50,6 +49,9 @@ MY_OBJECTS= \
 G_OBJECTS= \
   check_unitarity.o \
   d_plaq4.o \
+  discretize_wf.o    \
+  field_translation.o \
+  field_utilities.o  \
   gaugefix2.o \
   io_helpers.o \
   io_lat4.o \
@@ -60,6 +62,7 @@ G_OBJECTS= \
   path_product.o \
   ranstuff.o \
   remap_stdio_from_args.o \
+  report_invert_status.o \
   reunitarize2.o
 
 ifeq ($(strip ${QCDOC}),true)
@@ -69,31 +72,32 @@ else
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o
+  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
+endif
+
+ifeq ($(strip ${HAVEFFTW}),true)
+  G_OBJECTS += remap_fftw_fourier.o
+else
+  G_OBJECTS += restrict_fourier.o
 endif
 
 G_KS_OBJECTS = \
+  flavor_ops2.o    \
+  gauss_smear_ks.o  \
   gauge_stuff.o \
   quark_stuff.o \
   io_detect.o \
   io_helpers_ks.o \
   io_prop_ks.o \
   io_prop_ks_fm.o \
+  io_source_ks_fm.o \
   ks_source.o \
   ks_utilities.o \
-  mat_invert.o \
   multimass_inverter.o \
   rephase.o
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_KS_OBJECTS += io_scidac_ks.o
-endif
-
-# Basic set from generic_wilson directory
-G_WILSON_OBJECTS = 
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_WILSON_OBJECTS += io_scidac_w.o
 endif
 
 # Objects depending on architecture and software package 
@@ -157,7 +161,7 @@ else
     ASQFORCE = fermion_force_asqtad_qdp.o fermion_force_asqtad_qdp_D.o \
 	fermion_force_asqtad_qdp_F.o fermion_force_fn_multi_qdp.o
   else
-    # For more general FN actions, try fermion_force_general.o +
+    # For more general FN actions, try fermion_force_eo_milc.o +
     #	fermion_force_fn_multi.o + fermion_force_multi.o
     ASQFORCE = fermion_force_asqtad.o fermion_force_multi.o \
 	fermion_force_fn_multi.o path_transport.o ff_opt.o
@@ -204,7 +208,7 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_WILSON_OBJECTS} \
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} \
   ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
@@ -231,7 +235,6 @@ ALL_MAKES = \
    ../Make_template_scidac \
    ../generic/Make_template \
    ../generic_ks/Make_template \
-   ../generic_wilson/Make_template \
 
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
@@ -287,7 +290,7 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 su3_spectrum::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DFPI ${DARCH}" \
+	"DEFINES= -DFN -DFPI" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} \
@@ -295,7 +298,7 @@ su3_spectrum::
 
 su3_spectrum_periodic::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN ${DARCH} -DPERIODICBC" \
+	"DEFINES= -DFN -DPERIODICBC" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN} \
@@ -303,7 +306,7 @@ su3_spectrum_periodic::
 
 su3_unimp_spectrum_periodic::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DPERIODICBC -DKS_MULTICG=HYBRID" \
+	"DEFINES= -DFN -DPERIODICBC" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${MULTI_INV_FN}"
@@ -316,9 +319,6 @@ include ../generic/Make_template
 
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
-
-# Rules for generic_wilson routines
-include ../generic_wilson/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}

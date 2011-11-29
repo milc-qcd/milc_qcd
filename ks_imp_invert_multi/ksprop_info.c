@@ -48,7 +48,7 @@ void write_appl_ksprop_info(FILE *fp)
 char *create_ks_XML()
 {
   char *xml;
-  Real *act_path_coeff = ks_act_paths.act_path_coeff;
+  asqtad_coeffs_t *act_path_coeff = &ks_act_paths.act_path_coeff;
 #ifdef PERIODICBC
   char bc[] = "periodic";
 #else
@@ -61,12 +61,12 @@ char *create_ks_XML()
 	   startfile,
 	   bc,
 	   u0,
-	   act_path_coeff[0],
-	   act_path_coeff[1],
-	   act_path_coeff[2],
-	   act_path_coeff[3],
-	   act_path_coeff[4],
-	   act_path_coeff[5],
+	   act_path_coeff->one_link,
+	   act_path_coeff->naik,
+	   act_path_coeff->three_staple,
+	   act_path_coeff->five_staple,
+	   act_path_coeff->seven_staple,
+	   act_path_coeff->lepage,
 	   rsqprop);
 
   xml[MAX_XML-1] = '\0';

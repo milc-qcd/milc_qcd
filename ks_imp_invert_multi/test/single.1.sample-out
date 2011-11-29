@@ -1,0 +1,8 @@
+SU3 with improved KS action
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+Spectrum measurements
+type 0 for no prompts  or 1 for prompts
+get_i: ERROR IN INPUT: expected nx but found nflavors1
+exit: Fri Apr  2 09:14:04 2004
+

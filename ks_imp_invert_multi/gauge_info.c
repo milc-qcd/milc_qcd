@@ -23,7 +23,6 @@
    */
 
 #include "ks_imp_includes.h"
-#define IMP_QUARK_ACTION_INFO_ONLY
 #include <quark_action.h>
 #include <string.h>
 /*---------------------------------------------------------------------------*/
