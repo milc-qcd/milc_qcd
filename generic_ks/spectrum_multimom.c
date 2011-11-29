@@ -1,3 +1,4 @@
+OBSOLETE
 /******** spectrum_multimom.c *************/
 /* MIMD version 7*/
 /* DT 4/01
@@ -128,7 +129,7 @@ if( t_source%2 != 0 ){node0_printf("Even sources only!\n"); terminate(0);}
 	}
 
 	/* compute M^-1 * quark_source */
-	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+	cgn += ks_multicg_mass_site( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, prec, EVEN, 
 				&finalrsq, fn);
 	/* Multiply by Madjoint. Note this assumes source on even sites only */

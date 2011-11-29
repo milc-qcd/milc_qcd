@@ -1,3 +1,4 @@
+OBSOLETE
 /******* ks_multicg_qdp_P.c - multi-mass CG for SU3/fermions ****/
 /* MIMD version 7 */
 
@@ -20,8 +21,8 @@
 
 #if ( QDP_Precision == 'F' )
 
-#define KS_MULTICG_MASS   ks_multicg_mass_F
-#define KS_MULTICG_OFFSET ks_multicg_offset_F
+#define KS_MULTICG_MASS_FIELD   ks_multicg_mass_field_F
+#define KS_MULTICG_OFFSET_FIELD ks_multicg_offset_field_F
 #define DSLASH_QDP_FN_SPECIAL2 dslash_qdp_F_fn_special2
 #define SETUP_DSLASH      setup_dslash_F
 #define MYREAL            float
@@ -32,8 +33,8 @@
 
 #else
 
-#define KS_MULTICG_MASS   ks_multicg_mass_D
-#define KS_MULTICG_OFFSET ks_multicg_offset_D
+#define KS_MULTICG_MASS_FIELD   ks_multicg_mass_field_D
+#define KS_MULTICG_OFFSET_FIELD ks_multicg_offset_field_D
 #define DSLASH_QDP_FN_SPECIAL2 dslash_qdp_D_fn_special2
 #define SETUP_DSLASH      setup_dslash_D
 #define MYREAL            double
@@ -78,7 +79,7 @@ setup_congrad(void)
 }
 
 static int
-ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
+ks_multicg_mass_field_qdp(	/* Return value is number of iterations taken */
 	       QDP_ColorVector *src,	/* source vector (type su3_vector) */
 	       QDP_ColorVector **dest,	/* solution vectors */
 	       QLA_Real *masses,	/* the masses */
@@ -152,8 +153,8 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
 
   if(!congrad_setup) setup_congrad();
 
-  set4_M_from_field(FATLINKS, fn->fat, EVENANDODD);
-  set4_M_from_field(LONGLINKS, fn->lng, EVENANDODD);
+  set4_M_from_field(FATLINKS, fn->fl.fat, EVENANDODD);
+  set4_M_from_field(LONGLINKS, fn->fl.lng, EVENANDODD);
   {
     QDP_ColorMatrix *tcm;
     int i;
@@ -308,7 +309,7 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
 
   } while( iteration < niter );
 
-  node0_printf("ks_multicg_mass_qdp: CG not converged after %d iterations, res. = %e wanted %e\n",
+  node0_printf("ks_multicg_mass_field_qdp: CG not converged after %d iterations, res. = %e wanted %e\n",
 	       iteration, rsq, rsqstop);
   fflush(stdout);
 
@@ -330,15 +331,12 @@ ks_multicg_mass_qdp(	/* Return value is number of iterations taken */
 }
 
 int
-KS_MULTICG_MASS(	/* Return value is number of iterations taken */
-	   field_offset f_src,	/* source vector (type su3_vector) */
+KS_MULTICG_MASS_FIELD(	/* Return value is number of iterations taken */
+	   su3_vector *f_src,	/* source vector (type su3_vector) */
 	   su3_vector **psim,	/* solution vectors */
 	   Real *masses,	/* the masses */
 	   int num_masses,	/* number of masses */
-	   int niter,		/* maximal number of CG interations */
-	   Real rsqmin,	/* desired residue squared */
-	   int parity,		/* parity to be worked on */
-	   Real *final_rsq_ptr,	/* final residue squared */
+	   quark_invert_control qic;
 	   ferm_links_t *fn       /* Storage for fat and Naik links */
 	   )
 {
@@ -364,8 +362,7 @@ KS_MULTICG_MASS(	/* Return value is number of iterations taken */
   }
   qrsqmin = (QLA_Real) rsqmin;
 
-  iteration = ks_multicg_mass_qdp(src, dest, qmasses, num_masses, niter, 
-				  qrsqmin, q_parity, &qfinal_rsq_ptr, fn);
+  iteration = ks_multicg_mass_field_qdp(src, dest, qmasses, num_masses, qic, fn);
   *final_rsq_ptr = (Real) qfinal_rsq_ptr;
 
   for(i=0; i<num_masses; i++) {
@@ -379,17 +376,14 @@ KS_MULTICG_MASS(	/* Return value is number of iterations taken */
   return(iteration);
 }
 
-/* Just a wrapper for ks_multicg_mass */
+/* Just a wrapper for ks_multicg_mass_field */
 /* Offsets are 4 * mass * mass and must be positive */
-int KS_MULTICG_OFFSET(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
+int KS_MULTICG_OFFSET_FIELD(	/* Return value is number of iterations taken */
+    su3_vector *src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     Real *offsets,	/* the offsets */
     int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
+    quark_invert_control qic;
     ferm_links_t *fn      /* Storage for fat and Naik links */
     )
 {
@@ -397,7 +391,7 @@ int KS_MULTICG_OFFSET(	/* Return value is number of iterations taken */
   Real *masses;
   int status;
   int num_masses = num_offsets;
-  char myname[] = "ks_multicg_offset";
+  char myname[] = "ks_multicg_offset_field";
 
   if( num_offsets==0 )return(0);
 
@@ -407,15 +401,14 @@ int KS_MULTICG_OFFSET(	/* Return value is number of iterations taken */
     terminate(1);
   }
   for(i = 0; i < num_offsets; i++){
-    if(offsets[i] < 0){
-      printf("%s(%d): called with negative offset %e\n",
+    if(offsets[i] <= 0){
+      printf("%s(%d): called with nonpositive offset %e\n",
 	     myname,this_node,offsets[i]);
       terminate(1);
     }
     masses[i] = sqrt(offsets[i]/4.0);
   }
-  status = KS_MULTICG_MASS(src, psim, masses, num_masses, niter, rsqmin,
-			   parity, final_rsq_ptr, fn);
+  status = KS_MULTICG_MASS_FIELD(src, psim, masses, num_masses, qic, fn);
   free(masses);
   return status;
 }

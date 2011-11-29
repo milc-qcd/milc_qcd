@@ -1,3 +1,4 @@
+OBSOLETE
 /******** spectrum_nlpi2.c *************/
 /* MIMD version 7*/
 /* DT 2/25/98 started
@@ -32,7 +33,7 @@
 
    rhoi:	local 1--: gamma_i              partner=1+-  phase=(-1)^(dir) (VT)
    rhoi0:	local 1--: gamma_i gamma_0      partner=1++  phase=(-1)^(x+y+z+t+dir) (PV)
-   rhos:	one-link 1--: 1 ("singlet")     partner=1+-
+   rhois:	one-link 1--: 1 ("singlet")     partner=1+-
    rho0:	one-link 1--: gamma_0           partner=1++
 */
 enum prop_name { 
@@ -46,7 +47,7 @@ enum prop_name {
     prop_pion0_pion0,
     prop_rhoi_rhoi,
     prop_rhoi0_rhoi0,
-    prop_rhos_rhos,
+    prop_rhois_rhois,
     prop_rho0_rho0,
     nprops		/* nprops = number of propagators */
 };
@@ -68,7 +69,7 @@ void mult_pions(field_offset src, field_offset dest ) ;
 void mult_pion0(field_offset src, field_offset dest ) ;
 void mult_rhoi( int pdir, field_offset src, field_offset dest ) ;
 void mult_rhoi0( int pdir, field_offset src, field_offset dest ) ;
-void mult_rhos( int fdir,  field_offset src, field_offset dest ) ;
+void mult_rhois( int fdir,  field_offset src, field_offset dest ) ;
 void mult_rho0( int fdir,  field_offset src, field_offset dest ) ;
 void mult_a1( int pdir,  field_offset src, field_offset dest ) ;
 void mult_b1( int pdir,  field_offset src, field_offset dest ) ;
@@ -136,7 +137,7 @@ int spectrum_nlpi2( Real qmass, Real amass, field_offset temp,
 
 	/* make antiquark source by summing over desired operators
 	   times quark source */
-	/* First source couples to pion5, pioni5, pioni, pions, rhoi, rhos */
+	/* First source couples to pion5, pioni5, pioni, pions, rhoi, rhois */
 	mult_pion5( F_OFFSET(quark_source), F_OFFSET(g_rand) );
 	mult_pioni( ZUP, F_OFFSET(quark_source), F_OFFSET(anti_prop) );
 	FORALLSITES(i,s){ add_su3_vector( &(s->g_rand), &(s->anti_prop),
@@ -182,10 +183,10 @@ int spectrum_nlpi2( Real qmass, Real amass, field_offset temp,
 	    CSUM( props[prop_rhoi_rhoi][(s->t+nt-t_source)%nt], cc );
         }
 
-        mult_rhos( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
+        mult_rhois( ZUP, F_OFFSET(quark_prop), F_OFFSET(g_rand) );
         FORALLSITES(i,s){
 	    cc = su3_dot( &(s->anti_prop), &(s->g_rand) );
-	    CSUM( props[prop_rhos_rhos][(s->t+nt-t_source)%nt], cc );
+	    CSUM( props[prop_rhois_rhois][(s->t+nt-t_source)%nt], cc );
         }
 
 	/* 2nd source for pion05, pionij, pioni0, pion0, rhoi0, rho0 */
@@ -246,7 +247,7 @@ int spectrum_nlpi2( Real qmass, Real amass, field_offset temp,
   }
   if(this_node==0){
   
-    /* First source couples to pion5, pioni5, pioni, pions, rhoi, rhos */
+    /* First source couples to pion5, pioni5, pioni, pions, rhoi, rhois */
     printf("STARTPROP\n");
     printf("MASSES:  %e   %e\n",qmass,amass);
     printf("SOURCE: FUNNYWALL1\n");
@@ -258,7 +259,7 @@ int spectrum_nlpi2( Real qmass, Real amass, field_offset temp,
         props[prop_pioni_pioni][j].real, props[prop_pioni_pioni][j].imag,
         props[prop_pions_pions][j].real, props[prop_pions_pions][j].imag,
         props[prop_rhoi_rhoi][j].real, props[prop_rhoi_rhoi][j].imag,
-        props[prop_rhos_rhos][j].real, props[prop_rhos_rhos][j].imag);
+        props[prop_rhois_rhois][j].real, props[prop_rhois_rhois][j].imag);
     }
     printf("ENDPROP\n");
   
@@ -532,7 +533,7 @@ void mult_rhoi0( int pdir,  field_offset src, field_offset dest ){
 }
 
 /* "Multiply by" the quark-antiquark one link rho operator */
-void mult_rhos( int fdir,  field_offset src, field_offset dest )
+void mult_rhois( int fdir,  field_offset src, field_offset dest )
 {
   register int i;
   register site *s;  

@@ -1,3 +1,4 @@
+OBSOLETE
 /******** fpi_2.c *************/
 /* MIMD version 7*/
 /* DT 6/01
@@ -103,10 +104,10 @@ int fpi_2( Real *masses, int nmasses, Real tol,
 	}
 
 	/* compute M^-1 * quark_source */
-	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+	cgn += ks_multicg_mass_site( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, PRECISION, 
 				EVEN, &finalrsq, fn);
-	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+	cgn += ks_multicg_mass_site( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, PRECISION, 
 				ODD, &finalrsq, fn);
 	/* Multiply by Madjoint */
@@ -157,10 +158,10 @@ int fpi_2( Real *masses, int nmasses, Real tol,
 	}
 
 	/* compute M^-1 * quark_source */
-	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+	cgn += ks_multicg_mass_site( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, PRECISION, 
 				EVEN, &finalrsq, fn);
-	cgn += ks_multicg_mass( F_OFFSET(quark_source), quark_props, masses, 
+	cgn += ks_multicg_mass_site( F_OFFSET(quark_source), quark_props, masses, 
 				nmasses, niter, rsqprop, PRECISION, 
 				ODD, &finalrsq, fn);
 	/* Multiply by Madjoint */
