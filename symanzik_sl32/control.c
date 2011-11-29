@@ -29,9 +29,7 @@ int key[4];
 #endif
 
  initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
@@ -124,9 +122,7 @@ int key[4];
 	  save_lattice( saveflag, savefile, stringLFN );
 	}
     }
-#ifdef HAVE_QDP
-    QDP_finalize();
-#endif
+
     normal_exit(0);
     return 0;
 }
