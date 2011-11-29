@@ -56,8 +56,8 @@ void dn_dMdu_dmun (int n, field_offset xxx_off,
   su3_matrix *t_longlink;
   su3_matrix *t_dfatlink_du0;
 
-  t_fatlink = fn->fat;
-  t_longlink = fn->lng;
+  t_fatlink = fn->fl.fat;
+  t_longlink = fn->fl.lng;
   t_dfatlink_du0 = fn_dmdu0->fat;
 
   trace.real = 0.0;
