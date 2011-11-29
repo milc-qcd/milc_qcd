@@ -30,6 +30,10 @@ typedef struct {
 	char parity;
 	/* my index in the array */
 	int index;
+	/* The state information for a random number generator */
+	double_prn site_prn;
+	/* align to double word boundary (kludge for Intel compiler) */
+	int space1;
 
     /* Now come the physical fields, program dependent */
 	/* gauge field */
@@ -99,8 +103,8 @@ EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
-EXTERN wilson_quark_source wqs;
-EXTERN wilson_quark_source wqstmp;  /* Temporary */
+EXTERN quark_source wqs;
+EXTERN quark_source wqstmp;  /* Temporary */
 
 EXTERN quark_invert_control qic;
 EXTERN dirac_clover_param dcp;
@@ -115,6 +119,8 @@ EXTERN  double_prn node_prn ;
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
 EXTERN site *lattice;
+
+EXTERN su3_matrix *ape_links;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */

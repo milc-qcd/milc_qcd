@@ -16,9 +16,6 @@
 #define CONTROL
 #include "cl_inv_includes.h"
 #include <string.h>
-#ifdef HAVE_QDP
-#include <qdp.h>
-#endif
 
 /* Comment these out if you want to suppress detailed timing */
 /*#define IOTIME*/
@@ -51,12 +48,10 @@ int main(int argc, char *argv[])
   w_prop_file *fp_out_w[MAX_KAP];       /* For propagator files */
 
   wilson_vector *psi = NULL;
-  wilson_prop_field quark_propagator = NULL;
+  wilson_prop_field *quark_propagator = NULL;
   
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
@@ -66,7 +61,7 @@ int main(int argc, char *argv[])
   /* loop over input sets */
 
   psi = create_wv_field();
-  quark_propagator = create_wp_field();
+  quark_propagator = create_wp_field(3);
   
   while( readin(prompt) == 0)
     {
@@ -164,11 +159,14 @@ int main(int argc, char *argv[])
 
 	    /* Load inversion control structure */
 	    qic.prec = PRECISION;
+	    qic.min = 0;
 	    qic.max = MaxCG;
 	    qic.nrestart = nrestart;
+	    qic.parity = EVENANDODD;
+	    qic.start_flag = flag;
+	    qic.nsrc = 1;
 	    qic.resid = RsdCG;
 	    qic.relresid = RRsdCG;
-	    qic.start_flag = flag;
 	    
 	    /* Load Dirac matrix parameters */
 	    dcp.Kappa = kappa;

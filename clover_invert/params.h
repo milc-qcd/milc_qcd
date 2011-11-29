@@ -3,13 +3,14 @@
 
 #include "lattice.h"  /* For MAX_KAP */
 #include "../include/macros.h"  /* For MAXFILENAME */
-#include "../include/generic_quark_types.h" /* For wilson_quark_source */
+#include "../include/generic_quark_types.h" /* For quark_source */
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
-	int stopflag;   /* 1 if it is time to stop */
-    /* INITIALIZATION PARAMETERS */
-	int nx,ny,nz,nt;	/* lattice dimensions */
+  int stopflag;   /* 1 if it is time to stop */
+  /* INITIALIZATION PARAMETERS */
+  int nx,ny,nz,nt;	/* lattice dimensions */
+  int iseed;
 #ifdef FIX_NODE_GEOM
   int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
 			    hypercubes) for the compute nodes in each
@@ -36,7 +37,7 @@ typedef struct {
 	Real relresid[MAX_KAP];	/* relative residue for invertion convergence */
         char spectrum_request[MAX_SPECTRUM_REQUEST];   /* request list for spectral measurements */
         Real sink_r0;  /* smearing for sink if requested */
-	wilson_quark_source wqs;  /* source parameters */
+	quark_source wqs;  /* source parameters */
 	int niter; 	/* maximum number of c.g. iterations */
 	int nrestart; 	/* maximum number of c.g. restarts */
 	char startfile[MAXFILENAME];

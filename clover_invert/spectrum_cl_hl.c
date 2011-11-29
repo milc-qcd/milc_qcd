@@ -61,20 +61,20 @@ void spectrum_cl_hl_init(){
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_hl_diag_baryon(wilson_prop_field qp, int k){
+void spectrum_cl_hl_diag_baryon(wilson_prop_field *qp, int k){
   double dtime = start_timing();
   w_baryon(qp, qp, qp, bar_prop_hl[k][k]);
   print_timing(dtime, "diagonal baryons");
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_hl_diag_meson(wilson_prop_field qp, int k){
+void spectrum_cl_hl_diag_meson(wilson_prop_field *qp, int k){
   /* Point meson */
   spectrum_cl_diag_gen_meson(qp, pmes_prop_hl[k][k]);
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_hl_diag_rot_meson(wilson_prop_field qp, int k){
+void spectrum_cl_hl_diag_rot_meson(wilson_prop_field *qp, int k){
   spin_wilson_vector *rqs, *qps;
   int color;
   double dtime = start_timing();
@@ -95,20 +95,20 @@ void spectrum_cl_hl_diag_rot_meson(wilson_prop_field qp, int k){
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_hl_diag_smeared_meson(wilson_prop_field qp, int k){
+void spectrum_cl_hl_diag_smeared_meson(wilson_prop_field *qp, int k){
   spectrum_cl_diag_gen_meson(qp, smes_prop_hl[k][k]);
 }
 
 /*---------------------------------------------------------------------*/
-void spectrum_cl_hl_baryon(wilson_prop_field qp1, wilson_prop_field qp2,
+void spectrum_cl_hl_baryon(wilson_prop_field *qp1, wilson_prop_field *qp2,
 			   complex *bpa[], complex *bpb[]){
   w_baryon_hl( qp2, qp1, qp1, bpa);
   w_baryon_hl( qp1, qp2, qp2, bpb);
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_hl_offdiag_baryon(wilson_prop_field qp1, 
-				   wilson_prop_field qp2, 
+void spectrum_cl_hl_offdiag_baryon(wilson_prop_field *qp1, 
+				   wilson_prop_field *qp2, 
 				   int j, int k){
   double dtime = start_timing();
   spectrum_cl_hl_baryon(qp1, qp2, bar_prop_hl[j][k], bar_prop_hl[k][j]);
@@ -116,8 +116,8 @@ void spectrum_cl_hl_offdiag_baryon(wilson_prop_field qp1,
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_hl_offdiag_gen_meson(wilson_prop_field qp1, 
-				      wilson_prop_field qp2, 
+void spectrum_cl_hl_offdiag_gen_meson(wilson_prop_field *qp1, 
+				      wilson_prop_field *qp2, 
 				      complex *mp[]){
   spin_wilson_vector *qps1, *qps2;
   int color;
@@ -135,16 +135,16 @@ void spectrum_cl_hl_offdiag_gen_meson(wilson_prop_field qp1,
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_hl_offdiag_meson(wilson_prop_field qp1, 
-				  wilson_prop_field qp2, 
+void spectrum_cl_hl_offdiag_meson(wilson_prop_field *qp1, 
+				  wilson_prop_field *qp2, 
 				  int j, int k){
   /* Point meson */
   spectrum_cl_hl_offdiag_gen_meson(qp1, qp2, pmes_prop_hl[j][k]);
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_hl_offdiag_rot_meson(wilson_prop_field qp1, 
-				      wilson_prop_field qp2, 
+void spectrum_cl_hl_offdiag_rot_meson(wilson_prop_field *qp1, 
+				      wilson_prop_field *qp2, 
 				      int j, int k){
   spin_wilson_vector *rqs, *qps1, *qps2;
   int color;
@@ -169,8 +169,8 @@ void spectrum_cl_hl_offdiag_rot_meson(wilson_prop_field qp1,
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_hl_offdiag_smeared_meson(wilson_prop_field qp1, 
-					  wilson_prop_field qp2, 
+void spectrum_cl_hl_offdiag_smeared_meson(wilson_prop_field *qp1, 
+					  wilson_prop_field *qp2, 
 					  int j, int k){
   /* Both props are FT'd and qp2 has already been smeared */
   spectrum_cl_hl_offdiag_gen_meson(qp1, qp2, smes_prop_hl[j][k]);

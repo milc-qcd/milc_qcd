@@ -11,6 +11,9 @@
    8/10/96 Revised propagator IO prompts and param file names C.D. */
 
 //  $Log: setup_cl.c,v $
+//  Revision 1.17  2011/11/29 04:06:26  detar
+//  Move regression tests to "test" directory.  Support discontinued in favor of clover_invert2
+//
 //  Revision 1.16  2009/06/04 16:37:08  detar
 //  Make clover term persistent. Accommodate changes to generic_clover/make_clov2.c
 //
@@ -34,7 +37,7 @@
 //
 //  Revision 1.9  2007/05/23 02:51:09  detar
 //  Support sink wave functions in io_source_w
-//  Move wilson_quark_source to generic_wilson.h
+//  Move quark_source to generic_wilson.h
 //
 //  Revision 1.8  2007/05/21 04:38:11  detar
 //  Reorganize spectrum computation, add QOP support, systematize inverter selection, add relative residue, add new source options
@@ -66,6 +69,8 @@ int  setup_cl()   {
 
   /* print banner, get volume */
   prompt=initial_set();
+  /* initialize the node random number generator */
+  initialize_prn( &node_prn, par_buf.iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
@@ -107,6 +112,7 @@ int initial_set(){
 			   par_buf.ionode_geometry, 4);
 #endif
 #endif
+    IF_OK status += get_i(stdin, prompt,"iseed", &par_buf.iseed );
     
     if(status>0) par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(mynode()==0) */
@@ -201,7 +207,7 @@ int readin(int prompt) {
     IF_OK strcat(par_buf.spectrum_request,",");
     
     /* Get source type */
-    init_wqs(&par_buf.wqs);
+    init_qs(&par_buf.wqs);
     IF_OK status += ask_w_quark_source(stdin,prompt,&source_type,
 				       par_buf.wqs.descrp);
     IF_OK par_buf.wqs.type  = source_type;
@@ -266,7 +272,7 @@ int readin(int prompt) {
     IF_OK status += ask_starting_lattice(stdin,  prompt, &par_buf.startflag,
 	par_buf.startfile );
 
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
     IF_OK scanf("%s",savebuf);
     IF_OK printf("%s\n",savebuf);
@@ -298,7 +304,7 @@ int readin(int prompt) {
       status += ask_ending_wprop( stdin, prompt,&par_buf.saveflag_w[i],
 		      par_buf.savefile_w[i]);
     
-    IF_OK if(prompt!=0) 
+    IF_OK if(prompt==1) 
       printf("propagator scratch file:\n enter 'serial_scratch_wprop', 'parallel_scratch_wprop' or 'multidump_scratch_wprop'\n");
     IF_OK status2=scanf("%s",save_w);
     IF_OK printf("%s ",save_w);
@@ -318,7 +324,7 @@ int readin(int prompt) {
 	IF_OK
 	  {
 	    /*read name of file and load it */
-	    if(prompt!=0)printf("enter name of scratch file stem for props\n");
+	    if(prompt==1)printf("enter name of scratch file stem for props\n");
 	    status2=scanf("%s",par_buf.scratchstem_w);
 	    if(status2 !=1) {
 	      printf("error in input: scratch file stem name\n"); status++;

@@ -43,10 +43,10 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 
 # All required object files
 # Basic set from current directory
+
 MY_OBJECTS =         \
   clover_info.o      \
   gauge_info.o       \
-  ksprop_info.o      \
   setup_cl.o         \
   spectrum_cl.o
 
@@ -55,7 +55,11 @@ G_OBJECTS =          \
   ape_smear.o        \
   check_unitarity.o  \
   d_plaq4.o          \
+  discretize_wf.o    \
+  field_utilities.o  \
+  field_translation.o \
   gaugefix2.o        \
+  gauge_utilities.o  \
   io_detect.o        \
   io_helpers.o       \
   io_lat4.o          \
@@ -64,7 +68,9 @@ G_OBJECTS =          \
   make_lattice.o     \
   nersc_cksum.o \
   project_su3_hit.o  \
+  ranstuff.o         \
   remap_stdio_from_args.o \
+  report_invert_status.o \
   reunitarize2.o
 
 ifeq ($(strip ${HAVEFFTW}),true)
@@ -74,16 +80,8 @@ else
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
+  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
 endif
-
-# Set from generic_ks directory
-G_KS_OBJECTS =      \
-  io_helpers_ks.o   \
-  io_prop_ks.o      \
-  io_prop_ks_fm.o   \
-  ks_source.o       \
-  ks_utilities.o
 
 ifeq ($(strip ${HAVEQIO}),true)
   G_KS_OBJECTS += io_scidac_ks.o
@@ -94,7 +92,6 @@ G_WILSON_OBJECTS =   \
   baryon_cont.o      \
   canopy2weyl_rot.o  \
   dirac_utilities.o  \
-  discretize_wf.o    \
   dslash_w_space.o   \
   dslash_w3.o        \
   gammas.o           \
@@ -109,6 +106,10 @@ G_WILSON_OBJECTS =   \
   wilson_invert.o    \
   w_meson.o          \
   w_source.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_WILSON_OBJECTS += io_scidac_w.o
+endif
 
 # Basic set from generic_clover directory
 G_CLOVER_OBJECTS =   \

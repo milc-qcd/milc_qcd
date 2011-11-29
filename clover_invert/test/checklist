@@ -1,0 +1,13 @@
+exec su3_clov_cg	1	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clov_bi	1	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clov_hop	1	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clhl_cg	1	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clhl_bi	1	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clhl_hop	1	"WANTQIO=true"	-	POINTPION RUNNING
+
+exec su3_clov_cg	2	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clov_bi	2	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clov_hop	2	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clhl_cg	2	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clhl_bi	2	"WANTQIO=true"	-	POINTPION RUNNING
+exec su3_clhl_hop	2	"WANTQIO=true"	-	POINTPION RUNNING

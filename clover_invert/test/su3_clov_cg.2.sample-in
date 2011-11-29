@@ -3,6 +3,7 @@ nx 4
 ny 4
 nz 4
 nt 4
+iseed 1234
  
 number_of_kappas 1
 kappa 0.1
@@ -17,7 +18,7 @@ gaussian
 origin 0 0 0 0
 r0 1.5
 sink_r0 1.5
-reload_parallel ../binary_samples/lat.sample.l4444
+reload_parallel ../../binary_samples/lat.sample.l4444
 coulomb_gauge_fix
 save_serial lat.test.gf
 fresh_wprop

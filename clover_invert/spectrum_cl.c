@@ -68,7 +68,7 @@ void spectrum_cl_init(){
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_baryon(wilson_prop_field qp, complex *bp[]){
+void spectrum_cl_baryon(wilson_prop_field *qp, complex *bp[]){
   
   double dtime = start_timing();
   w_baryon(qp, qp, qp, bp);
@@ -76,7 +76,7 @@ void spectrum_cl_baryon(wilson_prop_field qp, complex *bp[]){
 }
 
 /*--------------------------------------------------------------------*/
-void rotate_prop(spin_wilson_vector *rp, wilson_prop_field qp, int color){
+void rotate_prop(spin_wilson_vector *rp, wilson_prop_field *qp, int color){
   
   int spin;
   int i;
@@ -109,13 +109,13 @@ void rotate_prop(spin_wilson_vector *rp, wilson_prop_field qp, int color){
 }
 
 /*--------------------------------------------------------------------*/
-void sink_smear_prop(wilson_prop_field qp){
+void sink_smear_prop(wilson_prop_field *qp){
 
   int color;
   int ci,si,sf,cf;
   int i;
   site *s;
-  wilson_quark_source sink_wqs;
+  quark_source sink_wqs;
   complex *chi_cs;
   spin_wilson_vector *qps;
   double dtime = start_timing();
@@ -155,9 +155,9 @@ void sink_smear_prop(wilson_prop_field qp){
     FORALLSITES(i,s)
       for(si=0;si<4;si++)
 	for(sf=0;sf<4;sf++)for(cf=0;cf<3;cf++){
-	    CMUL(qp[ci][i].d[si].d[sf].c[cf],
+	    CMUL(qp->swv[ci][i].d[si].d[sf].c[cf],
 		 chi_cs[i],
-		 qp[ci][i].d[si].d[sf].c[cf]);
+		 qp->swv[ci][i].d[si].d[sf].c[cf]);
 	  }
   }
   
@@ -173,7 +173,7 @@ void sink_smear_prop(wilson_prop_field qp){
 }  
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_diag_gen_meson(wilson_prop_field qp, complex *mp[]){
+void spectrum_cl_diag_gen_meson(wilson_prop_field *qp, complex *mp[]){
 
   int color;
   spin_wilson_vector *qps;
@@ -187,12 +187,12 @@ void spectrum_cl_diag_gen_meson(wilson_prop_field qp, complex *mp[]){
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_diag_meson(wilson_prop_field qp){
+void spectrum_cl_diag_meson(wilson_prop_field *qp){
   spectrum_cl_diag_gen_meson(qp, pmes_prop);
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_diag_rot_meson(wilson_prop_field qp){
+void spectrum_cl_diag_rot_meson(wilson_prop_field *qp){
   spin_wilson_vector *rps, *qps;
   int color;
   double dtime = start_timing();
@@ -210,7 +210,7 @@ void spectrum_cl_diag_rot_meson(wilson_prop_field qp){
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl_diag_smeared_meson(wilson_prop_field qp){
+void spectrum_cl_diag_smeared_meson(wilson_prop_field *qp){
     sink_smear_prop(qp);
     spectrum_cl_diag_gen_meson(qp, smes_prop);
 }
@@ -305,7 +305,7 @@ void spectrum_cl_cleanup(){
 }
 
 /*--------------------------------------------------------------------*/
-void spectrum_cl(wilson_prop_field qp, int t0, int k){
+void spectrum_cl(wilson_prop_field *qp, int t0, int k){
 
   spectrum_cl_init();
   spectrum_cl_baryon(qp, bar_prop);
