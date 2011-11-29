@@ -7,8 +7,8 @@
    propagator and source files */
 
 #include "ks_imp_includes.h"
-#define IMP_QUARK_ACTION_INFO_ONLY
 #include <quark_action.h>
+#include "../include/io_ksprop.h"
 #define MAX_XML 2049
 
 /* Temporary until we can create XML */
@@ -16,21 +16,16 @@
 char *create_ks_XML()
 {
   char *xml;
-  Real *act_path_coeff = ks_act_paths.act_path_coeff;
+  char *ac_str = get_action_parameter_string(fn_links);
   
   xml = (char *)malloc(MAX_XML);
   
-  snprintf(xml,MAX_XML,"\nDerived MILC KS field\ngauge.filename %s\nlayout.boundary_conditions space: periodic time: antiperiodic\nasqtad.u0 %7.5f\nasqtad.path_coeff[0] %e\nasqtad.path_coeff[1] %e\nasqtad.path_coeff[2] %e\nasqtad.path_coeff[3] %e\nasqtad.path_coeff[4] %e\nasqtad.path_coeff[5] %e\nasqtad_arg.sign MILC-convention\ninv_arg.mass %g\ninv_arg.rsqprop %e\n",
-	  startfile,
-	  u0,
-	  act_path_coeff[0],
-	  act_path_coeff[1],
-	  act_path_coeff[2],
-	  act_path_coeff[3],
-	  act_path_coeff[4],
-	  act_path_coeff[5],
-	  mass,
-	  rsqprop);
+  snprintf(xml,MAX_XML,"\nDerived MILC KS field\ngauge.filename %s\nlayout.boundary_conditions space: periodic time: antiperiodic\nasqtad.u0 %7.5f\n%s\ninv_arg.mass %g\ninv_arg.rsqprop %e\n",
+	   startfile,
+	   u0,
+	   ac_str,
+	   mass,
+	   rsqprop);
 
   xml[MAX_XML-1] = '\0';
   return xml;
@@ -39,4 +34,22 @@ char *create_ks_XML()
 
 void free_ks_XML(char *xml){
   if(xml != NULL)free(xml);
+}
+
+/*---------------------------------------------------------------------------*/
+/* This routine writes the ASCII info file.  It is called from one of
+   the lattice output routines in ../generic_ks/io_prop_ks.c.*/
+
+void write_appl_ksprop_info(FILE *fp)
+{
+
+  /* Note that the file has already been opened and
+     the required magic number, time stamp, and lattice
+     dimensions have already been written */
+
+  /* The rest are optional */
+
+  write_ksprop_info_item(fp,"quark.mass","%f",(char *)&mass,0,0);
+
+
 }

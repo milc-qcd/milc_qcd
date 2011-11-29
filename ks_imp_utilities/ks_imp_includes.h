@@ -14,6 +14,7 @@
 #include "lattice.h"
 #include "../include/macros.h"
 #include "../include/comdefs.h"
+#include "../include/io_ksprop.h"
 #include "../include/io_lat.h"
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
@@ -46,7 +47,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
 		      field_offset tmp, Real mass);
 void check_invert2( field_offset src, field_offset dest, 
 		    field_offset temp, Real mass,
-		    Real tol, int parity, ferm_links_t *fn);
+		    Real tol, int parity, imp_ferm_links_t *fn);
 
 char *create_QCDML();
 void free_QCDML(char *qcdml);

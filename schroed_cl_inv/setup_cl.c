@@ -160,13 +160,13 @@ int readin(int prompt) {
   strcpy(startfile,par_buf.startfile);
 
   for(i=0;i<par_buf.num_kap;i++){
-    wqs[i].c_src = NULL;
-    wqs[i].wv_src = NULL;
+//    wqs[i].c_src = NULL;
+//    wqs[i].wv_src = NULL;
     wqs[i].type = 0;
-    wqs[i].x0 = 0;
-    wqs[i].y0 = 0;
-    wqs[i].z0 = 0;
-    wqs[i].t0 = 0;
+//    wqs[i].x0 = 0;
+//    wqs[i].y0 = 0;
+//    wqs[i].z0 = 0;
+//    wqs[i].t0 = 0;
     strcpy(wqs[i].descrp,"Schroedinger wall source");
   }
 
@@ -190,7 +190,7 @@ void do_phases()  {
 
   register int i,j,k,dir;
   register site *sit;
-  register Real phr,phi,ddr,ddi;
+  register Real phr,phi,ddr=0.0,ddi;
 
   for(dir=XUP;dir<=ZUP;dir++){
     if(ferm_phases[dir] != 0.0){

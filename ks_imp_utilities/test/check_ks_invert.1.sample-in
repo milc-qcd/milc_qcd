@@ -1,0 +1,39 @@
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 6823045
+
+mass 0.1
+u0   0.502
+max_cg_iterations 300
+max_cg_restarts 5
+error_for_propagator 1e-9
+reload_serial ../../binary_samples/lat.sample.l8
+forget
+forget
+forget
+reload_serial_ks_vector ../../binary_samples/ksvector.src.sample.l8
+save_serial_ks_vector ksvector.ans.MdaggerMinv.test.l8
+invert MdaggerM
+
+mass 0.1
+u0   0.502
+max_cg_iterations 300
+max_cg_restarts 5
+error_for_propagator 2e-7
+continue
+forget
+forget
+forget
+reload_serial_ks_vector ../../binary_samples/ksvector.src.sample.l8
+save_serial_ks_vector ksvector.ans.Minv.test.l8
+invert M
+
+
+
+
+
+
+

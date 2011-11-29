@@ -12,7 +12,7 @@ int ask_color_vector( int prompt, int *flag, char *filename ){
   char savebuf[256];
   int status;
   
-  if (prompt!=0) 
+  if (prompt==1) 
     printf("enter 'fresh', 'reload_serial_ks_vector' 'save_serial_ks_vector' 'save_partfile_scidac_ks_vector'\n");
   status=scanf("%s",savebuf);
   if(status !=1) {
@@ -44,7 +44,7 @@ int ask_color_vector( int prompt, int *flag, char *filename ){
 
   /*read name of file and load it */
   if( *flag != FRESH && *flag != FORGET ){
-    if(prompt!=0)printf("enter name of file containing the color vector\n");
+    if(prompt==1)printf("enter name of file containing the color vector\n");
     status=scanf("%s",filename);
     if(status !=1) {
       printf("\nask_color_vector: ERROR IN INPUT: error reading file name\n"); return(1);
@@ -58,7 +58,7 @@ int ask_color_matrix( int prompt, int *flag, char *filename ){
   char savebuf[256];
   int status;
   
-  if (prompt!=0) 
+  if (prompt==1) 
     printf("enter 'fresh', 'reload_serial_color_matrix' 'save_serial_color_matrix' 'save_partfile_scidac_color_matrix'\n");
   status=scanf("%s",savebuf);
   if(status !=1) {
@@ -90,7 +90,7 @@ int ask_color_matrix( int prompt, int *flag, char *filename ){
 
   /*read name of file and load it */
   if( *flag != FRESH && *flag != FORGET ){
-    if(prompt!=0)printf("enter name of file containing the color matrix\n");
+    if(prompt==1)printf("enter name of file containing the color matrix\n");
     status=scanf("%s",filename);
     if(status !=1) {
       printf("\nask_color_matrix: ERROR IN INPUT: error reading file name\n"); return(1);

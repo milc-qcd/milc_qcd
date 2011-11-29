@@ -21,6 +21,7 @@
 #include "../include/random.h"    /* For double_prn */
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
+#include "../include/fermion_links.h"
 
 /* Begin definition of site structure */
 
@@ -142,13 +143,14 @@ EXTERN double_prn node_prn ;
    part of the lattice on this node) */
 EXTERN site *lattice;
 
+EXTERN su3_matrix *ape_links;
+
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */
 #define N_POINTERS 16
 EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
-EXTERN ferm_links_t        fn_links;
-EXTERN ks_action_paths ks_act_paths;
+EXTERN fermion_links_t        *fn_links;
 
 #endif /* _LATTICE_H */

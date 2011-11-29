@@ -34,9 +34,6 @@ int
 setup()
 {
   int initial_set();
-#ifdef HAVE_QDP
-  int i;
-#endif
   int prompt;
 
   /* print banner, get volume, nflavors1,nflavors2, seed */
@@ -49,7 +46,7 @@ setup()
   make_lattice();
   node0_printf("Made lattice\n"); fflush(stdout);
   /* Mark t_longlink and t_fatlink unallocted */
-  init_ferm_links(&fn_links);
+  // init_ferm_links(&fn_links, &ks_act_paths);
   /* set up neighbor pointers and comlink structures
      code for this routine is in com_machine.c  */
   make_nn_gathers();
@@ -61,16 +58,6 @@ setup()
   /* set up K-S phase vectors, boundary conditions */
   phaseset();
 
-#ifdef HAVE_QDP
-  for(i=0; i<4; ++i) {
-    shiftdirs[i] = QDP_neighbor[i];
-    shiftdirs[i+4] = neighbor3[i];
-  }
-  for(i=0; i<8; ++i) {
-    shiftfwd[i] = QDP_forward;
-    shiftbck[i] = QDP_backward;
-  }
-#endif
   node0_printf("Finished setup\n"); fflush(stdout);
   return( prompt );
 }
@@ -231,18 +218,20 @@ readin(int prompt)
   }
   if( startflag != CONTINUE )
     startlat_p = reload_lattice( startflag, startfile );
-#ifdef FN
-  invalidate_all_ferm_links(&fn_links);
-#endif
+
   /* if a lattice was read in, put in KS phases and AP boundary condition */
   phases_in = OFF;
   rephase( ON );
 
+#ifdef DBLSTORE_FN
+  /* We want to double-store the links for optimization */
+  fermion_links_want_back(1);
+#endif
+
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
-  /* make table of coefficients and permutations of paths in quark action */
-  init_path_table(&ks_act_paths);
-  make_path_table(&ks_act_paths, NULL);
+
+  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
 
   return(0);
 }
@@ -255,9 +244,6 @@ void
 make_3n_gathers()
 {
   int i;
-#ifdef HAVE_QDP
-  int disp[4]={0,0,0,0};
-#endif
 
   for(i=XUP; i<=TUP; i++) {
     make_gather(third_neighbor, &i, WANT_INVERSE,
@@ -269,13 +255,6 @@ make_3n_gathers()
 
   sort_eight_gathers(X3UP);
 
-#ifdef HAVE_QDP
-  for(i=0; i<4; i++) {
-    disp[i] = 3;
-    neighbor3[i] = QDP_create_shift(disp);
-    disp[i] = 0;
-  }
-#endif
 }
 
 

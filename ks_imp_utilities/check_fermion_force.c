@@ -29,9 +29,12 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   Real tol = 1e-5;
 #endif
   int ff_prec = PRECISION;  /* Just use prevailing precision for now */
+  /* Supports only asqtad at the moment */
+  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
   
 
   /* Make a random source in xxx if we don't reload it */
+
   if(srcflag == RELOAD_SERIAL){
     restore_ks_vector_scidac_to_site (srcfile, QIO_SERIAL, src, 1);
     fflush(stdout);
@@ -39,8 +42,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
   else {
     /* generate g_rand random; phi = Mdagger g_rand */
     node0_printf("Generating a random source\n");
-    load_ferm_links(&fn_links, &ks_act_paths);
-    grsource_imp( src, mass, EVENANDODD, &fn_links);
+    grsource_imp( src, mass, EVENANDODD, fn);
   }
       
   node0_printf("Computing the fermion force\n"); fflush(stdout);
@@ -60,8 +62,7 @@ void check_fermion_force( char *srcfile, int srcflag, field_offset src,
     }
   }
 
-  eo_fermion_force_oneterm( eps, ((Real)nflavors)/4., src, ff_prec,
-			    &fn_links, &ks_act_paths );
+  eo_fermion_force_oneterm_site( eps, ((Real)nflavors)/4., src, ff_prec, fn_links );
   /**eo_fermion_force_twoterms( eps/2, 0.5*((Real)nflavors)/4., 
      1.5*((Real)nflavors)/4., src, src, ff_prec, &fn_links, &ks_act_paths );**/
 

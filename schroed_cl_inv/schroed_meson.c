@@ -76,7 +76,7 @@ int n_in,n_out;
 
 /************************** w_source.c *****************************/
 
-void w_source_sf_site(field_offset src, wilson_quark_source *wqs)
+void w_source_sf_site(field_offset src, my_quark_source *wqs)
 {
   register int i,j;
   register site *s; 
@@ -89,7 +89,7 @@ void w_source_sf_site(field_offset src, wilson_quark_source *wqs)
   color = wqs->color;
   spin = wqs->spin;
   source_type = wqs->type;
-  Kappa = wqs->r0;
+  Kappa = wqs->kappa;
 
     /*printf("WSOURCE: source = %d\n",source); */
 	

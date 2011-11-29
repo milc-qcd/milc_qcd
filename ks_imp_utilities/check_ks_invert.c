@@ -30,6 +30,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   char srcrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Sample source color vector field</title>";
   char ansMrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test answer = M^-1 source</title>";
   char ansMdMrecxml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>Test answer = answer = (MdaggerM)^-1 source</title>";
+  imp_ferm_links_t *fn = get_fm_links(fn_links)[0];
   
   /* Make a random source in phi if we don't reload it */
   if(srcflag == RELOAD_SERIAL){
@@ -50,8 +51,7 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   }
   else {
     /* generate g_rand random; phi = Mdagger g_rand */
-    load_ferm_links(&fn_links, &ks_act_paths);
-    grsource_imp( src, mass, EVENANDODD, &fn_links );
+    grsource_imp( src, mass, EVENANDODD, fn );
     node0_printf("Generating a random source\n");
   }
   
@@ -75,31 +75,28 @@ void check_ks_invert( char *srcfile, int srcflag, field_offset src,
   else {
     node0_printf("Doing the inversion\n");
     clear_latvec( ans, EVENANDODD );
-    load_ferm_links(&fn_links, &ks_act_paths);
-    if(inverttype == INVERT_M){
+   if(inverttype == INVERT_M){
       /* Compute M^-1 phi */
-      iters = mat_invert_uml( src, ans, tmp, mass, PRECISION, &fn_links );
+      iters = mat_invert_uml( src, ans, tmp, mass, PRECISION, fn );
       node0_printf("Inversion required %d iters\n",iters);
     }
     else {
       /* Compute (M^dagger M)^-1 phi */
       iters = ks_congrad( src, ans, mass,
 			  niter, nrestart, rsqprop, PRECISION, 
-			  EVENANDODD, &final_rsq, &fn_links );
+			  EVENANDODD, &final_rsq, fn );
       node0_printf("Inversion required %d iters resid %e\n",iters,final_rsq);
     }
   }
   
   /* Check the inversion */
   node0_printf("Checking the inversion\n");
-  load_ferm_links(&fn_links, &ks_act_paths);
   if(inverttype == INVERT_M)
     /* Is M xxx = phi ? */
-    check_invert( ans, src, mass, tol_M, &fn_links );
+    check_invert( ans, src, mass, tol_M, fn );
   else
     /* Is MdaggerM xxx = phi ? */
-    check_invert2( ans, src, tmp, mass, tol_MdagM, EVENANDODD,
-		   &fn_links );
+    check_invert2( ans, src, tmp, mass, tol_MdagM, EVENANDODD, fn );
   
   /* Save source and answer if requested */
 #ifdef HAVE_QIO

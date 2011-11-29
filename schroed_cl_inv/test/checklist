@@ -1,0 +1,7 @@
+exec su3_schr_cl_cg 1 - - FORW_PION RUNNING
+exec su3_schr_cl_bi 1 - - FORW_PION RUNNING
+exec su3_schr_cl_mr 1 - - FORW_PION RUNNING
+
+exec su3_schr_cl_cg 2 - - FORW_PION RUNNING
+exec su3_schr_cl_bi 2 - - FORW_PION RUNNING
+exec su3_schr_cl_mr 2 - - FORW_PION RUNNING

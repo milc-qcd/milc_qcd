@@ -7,12 +7,12 @@
 void check_invert2( field_offset src, field_offset dest, 
 		    field_offset temp, Real mass,
 		    Real tol, int parity,
-		    ferm_links_t *fn){
+		    imp_ferm_links_t *fn){
   register int i,k,flag;
   register site *s;
   Real r_diff, i_diff;
   double sum,sum2,dflag,dmaxerr,derr;
-  int otherparity;
+  int otherparity = 0;
 
   switch(parity){
   case EVEN: otherparity=ODD; break;
@@ -20,7 +20,7 @@ void check_invert2( field_offset src, field_offset dest,
   case EVENANDODD: otherparity=EVENANDODD; break;
   }
 					     
-  dslash_site( src, temp, otherparity, &fn_links);
+  dslash_site( src, temp, otherparity, fn);
   dslash_site( temp, F_OFFSET(cg_p), parity, fn);
 
   FORSOMEPARITY(i,s,parity){

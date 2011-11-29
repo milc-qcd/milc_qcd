@@ -126,7 +126,7 @@ char savebuf[128];
 
  
 #ifdef ORA_ALGORITHM
-       IF_OK if (prompt!=0) printf(
+       IF_OK if (prompt==1) printf(
            "enter 'no_gauge_fix', 'landau_gauge_fix', or 'coulomb_gauge_fix'\n");
        IF_OK status2=scanf("%s",savebuf);
        IF_OK {

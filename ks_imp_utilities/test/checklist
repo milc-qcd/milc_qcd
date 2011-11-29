@@ -1,0 +1,5 @@
+exec check_ks_invert     2 WANTQIO=true - BEGIN RUNNING
+     extra-target ksvector_compare.2
+exec check_fermion_force 2 WANTQIO=true - BEGIN RUNNING
+     extra-target colormatrix_compare.2
+

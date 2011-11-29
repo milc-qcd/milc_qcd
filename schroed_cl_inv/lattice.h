@@ -18,6 +18,14 @@
 #include "../include/su3.h"
 #include "../include/random.h"	/* For double_prn */
 
+typedef struct {
+  int color;
+  int spin;
+  int type;
+  double kappa;
+  char descrp[128];
+} my_quark_source;
+
 /* The lattice is an array of sites.  */
 typedef struct {
     /* The first part is standard to all programs */
@@ -99,7 +107,7 @@ EXTERN	int even_sites_on_node;	/* number of even sites on this node */
 EXTERN	int odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
-EXTERN wilson_quark_source wqs[MAX_KAP];
+EXTERN  my_quark_source wqs[MAX_KAP];
 EXTERN	quark_invert_control qic;
 EXTERN	dirac_clover_param dcp;
 

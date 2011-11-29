@@ -49,6 +49,7 @@ MY_OBJECTS =         \
 G_OBJECTS =          \
   check_unitarity.o  \
   d_plaq4.o          \
+  field_utilities.o  \
   io_helpers.o       \
   io_lat4.o          \
   io_lat_utils.o     \
@@ -56,10 +57,11 @@ G_OBJECTS =          \
   nersc_cksum.o \
   plaquette4.o       \
   remap_stdio_from_args.o \
+  report_invert_status.o \
   reunitarize2.o
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o
+  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
 endif
 
 # Basic set from generic_wilson directory
