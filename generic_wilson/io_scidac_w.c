@@ -17,52 +17,6 @@ REQUIRES QIO
 #include <string.h>
 
 /********************************************************************/
-/* Translate from MILC to USQCD file type */
-int w_prop_usqcd_to_milc(int usqcd_type){
-
-  int milc_type = -1;
-
-  switch(usqcd_type){
-  case QIO_USQCDPROPFILETYPE_C1D12:
-    milc_type = FILE_TYPE_W_USQCD_C1D12;
-    break;
-  case QIO_USQCDPROPFILETYPE_DD_PAIRS:
-    milc_type = FILE_TYPE_W_USQCD_DD_PAIRS;
-    break;
-  case QIO_USQCDPROPFILETYPE_CD_PAIRS:
-    milc_type = FILE_TYPE_W_USQCD_CD_PAIRS;
-    break;
-  case QIO_USQCDPROPFILETYPE_LHPC:
-    milc_type = FILE_TYPE_W_USQCD_LHPC;
-    break;
-  }
-  return milc_type;
-}
-
-/********************************************************************/
-/* Translate from MILC to USQCD file type */
-int w_prop_milc_to_usqcd(int milc_type){
-
-  int usqcd_type = -1;
-
-  switch(milc_type){
-  case FILE_TYPE_W_USQCD_C1D12:
-    usqcd_type = QIO_USQCDPROPFILETYPE_C1D12;
-    break;
-  case FILE_TYPE_W_USQCD_DD_PAIRS:
-    usqcd_type = QIO_USQCDPROPFILETYPE_DD_PAIRS;
-    break;
-  case FILE_TYPE_W_USQCD_CD_PAIRS:
-    usqcd_type = QIO_USQCDPROPFILETYPE_CD_PAIRS;
-    break;
-  case FILE_TYPE_W_USQCD_LHPC:
-    usqcd_type = QIO_USQCDPROPFILETYPE_LHPC;
-    break;
-  }
-  return usqcd_type;
-}
-
-/********************************************************************/
 /* Generic Wilson vector file (not USQCD)                           */
 /* Write Wilson vectors in SciDAC format, taking data from the site
    structure */
@@ -249,19 +203,27 @@ int read_w_vector_scidac_xml(QIO_Reader *infile, wilson_vector *dest,
 {
   int status, typesize;
   QIO_RecordInfo recinfo;
+  char myname[] = "read_w_vector_scidac_xml";
 
   /* Check the record type (double or single precision) */
   status = QIO_read_record_info(infile, &recinfo, recxml);
-  if(status)terminate(1);
+  if(status != QIO_SUCCESS){
+    printf("read_w_vector_scidac_xml: Can't read file info\n");
+    terminate(1);
+  }
   typesize = QIO_get_typesize(&recinfo);
 
   /* Read "count" vectors per site.  Each has 12 complex values  */
   if(typesize == 24*4)
     /* Read them as a single precision record */
     return read_F3_D_to_field(infile, recxml, dest, count);
-  else
+  else if(typesize == 24*8)
     /* Read them as a double precision record */
     return read_D3_D_to_field(infile, recxml, dest, count);
+  else{
+    node0_printf("%s: Incorrect data type size %d\n", myname, typesize);
+    return 1;
+  }
 
 }
 
@@ -465,51 +427,6 @@ void w_close_usqcd_wprop_file(QIO_Writer *outfile){
 }
 
 /********************************************************************/
-/* Open a Wilson propagator file and discover its format */
-
-int io_detect_w_usqcd(char *filename){
-
-  QIO_Layout layout;
-  QIO_Filesystem fs;
-  QIO_Reader *infile;
-  QIO_String *xml_file_in;
-  QIO_USQCDPropFileInfo prop_info;
-  int status, usqcd_type, milc_type;
-
-  /* Allocate for the file XML string */
-  xml_file_in = QIO_string_create();
-
-  /* Build the layout structure */
-  build_qio_layout(&layout);
-
-  /* Define the I/O nodes */
-  build_qio_filesystem(&fs);
-
-  /* Open file for reading */
-  layout.latdim = 0; /* Force discovery of dimensions */
-  infile = open_scidac_input_xml(filename, &layout, &fs, QIO_SERIAL, 
-				 xml_file_in);
-  if(infile == NULL)terminate(1);
-
-  /* Decode the file XML */
-
-  status = QIO_decode_usqcd_propfile_info(&prop_info, xml_file_in);
-  QIO_string_destroy(xml_file_in);
-  if(status)return -1;
-
-  milc_type = -1;
-  if(QIO_defined_usqcd_propfile_type(&prop_info))
-    {
-      /* Translate the file type */
-      usqcd_type = QIO_get_usqcd_propfile_type(&prop_info);
-      milc_type = w_prop_usqcd_to_milc(usqcd_type);
-    }
-
-  close_scidac_input(infile);
-  return milc_type;
-}
-
-/********************************************************************/
 /* Read the file header for the propagator */
 
 QIO_Reader *r_open_usqcd_wprop_file(char *filename, int serpar){
@@ -517,11 +434,9 @@ QIO_Reader *r_open_usqcd_wprop_file(char *filename, int serpar){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
-  QIO_String *filexml;
 
   QIO_verbose(QIO_VERB_OFF);
 
-  filexml = QIO_string_create();
   build_qio_layout(&layout);
   build_qio_filesystem(&fs);
 

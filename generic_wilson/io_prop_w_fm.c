@@ -173,7 +173,7 @@ int write_w_fm_prop_info_file(w_prop_file *wpf)
    by adding filename extension to lattice file name */
 
   strcpy(info_filename,wpf->filename);
-  strcat(info_filename,ASCII_W_PROP_INFO_EXT);
+  strcat(info_filename,ASCII_INFO_EXT);
 
   /* Open header file */
   
@@ -330,7 +330,6 @@ void w_serial_w_fm(w_prop_file *wpf, field_offset src_site,
      src  = field offset for propagator (type wilson_propagator)  */
 
   FILE *fp = NULL;
-  w_prop_header *wph;
   u_int32type *val;
   int rank29=0,rank31=0;
   fwilson_matrix *lbuf = NULL;
@@ -355,7 +354,6 @@ void w_serial_w_fm(w_prop_file *wpf, field_offset src_site,
         }
 
       fp = wpf->fp;
-      wph = wpf->header;
     }
       
   /* Buffered algorithm for writing fields in serial order */
@@ -495,7 +493,6 @@ void w_serial_w_fm_sc(w_prop_file *wpf, field_offset src_site,
      src  = field offset for propagator (type wilson_propagator)  */
 
   FILE *fp = NULL;
-  w_prop_header *wph;
   u_int32type *val;
   int rank29,rank31;
   fwilson_vector *lbuf = NULL;
@@ -521,7 +518,6 @@ void w_serial_w_fm_sc(w_prop_file *wpf, field_offset src_site,
         }
 
       fp = wpf->fp;
-      wph = wpf->header;
     }
       
   /* Buffered algorithm for writing fields in serial order */

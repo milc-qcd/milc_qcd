@@ -33,7 +33,7 @@ setup_input_usqcd_prop_file(w_prop_file *wpf)
 static int 
 read_usqcd_wprop_record(w_prop_file *wpf, 
 			int spin, int color, wilson_vector *dest,
-			wilson_quark_source *wqs )
+			quark_source *wqs )
 {
   int status = 0;
   int input_spin, input_color;
@@ -43,17 +43,17 @@ read_usqcd_wprop_record(w_prop_file *wpf,
   if(file_type == FILE_TYPE_W_USQCD_CD_PAIRS || 
      (file_type == FILE_TYPE_W_USQCD_C1D12 && spin == 0 && color == 0)){
     /* Read a complex source field */
-    alloc_wqs_c_src(wqs);
+    alloc_cached_c_source(wqs);
     status = qio_status(read_wpropsource_C_usqcd(wpf->infile, wqs->descrp, 
-						 MAXDESCRP, wqs->c_src));
+				 MAXDESCRP, get_cached_c_source(wqs)));
     if(status == 0)node0_printf("Read prop source %s\n",wqs->descrp);
     wqs->type = COMPLEX_FIELD_STORE;
   }
   else if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
     /* Read a Wilson vector source field */
-    alloc_wqs_wv_src(wqs);
+    alloc_cached_wv_source(wqs);
     status = qio_status(read_wpropsource_D_usqcd(wpf->infile, wqs->descrp, 
-						MAXDESCRP, wqs->wv_src));
+				 MAXDESCRP, get_cached_wv_source(wqs)));
     if(status == 0)node0_printf("Read prop source %s\n",wqs->descrp);
     wqs->type = DIRAC_FIELD_STORE;
   }
@@ -209,6 +209,9 @@ r_open_wprop(int flag, char *filename)
     setup_input_usqcd_prop_file(wpf);
   }
 #endif
+  else {
+    node0_printf("%s: Wrong file type for Dirac propagator\n", myname);
+  }
 
   return wpf;
 } /* r_open_wprop */
@@ -369,7 +372,7 @@ w_close_wprop(int flag, w_prop_file *wpf)
 
 int 
 reload_wprop_sc_to_field( int flag, w_prop_file *wpf, 
-			  wilson_quark_source *wqs, int spin, int color, 
+			  quark_source *wqs, int spin, int color, 
 			  wilson_vector *dest, int timing)
 {
 
@@ -461,7 +464,7 @@ reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
 /* recinfo is for USQCD formats */
 int 
 save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
-			  wilson_quark_source *wqs,
+			  quark_source *wqs,
 			  int spin, int color, wilson_vector *src, 
 			  char *recinfo, int timing)
 {
@@ -512,32 +515,32 @@ save_wprop_sc_from_field( int flag, w_prop_file *wpf,
     if(file_type == FILE_TYPE_W_USQCD_CD_PAIRS ||
        (file_type == FILE_TYPE_W_USQCD_C1D12 && spin == 0 && color == 0))
       {
-	/* If we don't have a complex source, yet, get it */
-	if(wqs->c_src == NULL){
-	  wilson_vector *wvtmp = (wilson_vector *)malloc(sizeof(wilson_vector)*sites_on_node);
-	  if(wvtmp == NULL){
-	    printf("%s(%d) no room for tmp\n",myname,this_node);
-	    terminate(1);
-	  }
-	  w_source_field(wvtmp, wqs);
-	  free(wvtmp);
+	complex *c_src = get_cached_c_source(wqs);
+	int null_src = (c_src == NULL);
+	if(null_src){
+	    node0_printf("%s complex source is missing\n",myname);
+	    node0_printf("%s File will be written with a dummy zero source\n",
+		   myname);
+	    c_src = create_c_field();
 	}
 	status = write_wpropsource_C_usqcd(wpf->outfile, wqs->descrp, 
-					   wqs->c_src, wqs->t0);
+					   c_src, wqs->t0);
+	if(null_src)free(c_src);
+	if(status != 0)break;
       }
     /* Save Dirac source field */
     else if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
-	if(wqs->wv_src == NULL){
-	  wilson_vector *wvtmp = (wilson_vector *)malloc(sizeof(wilson_vector)*sites_on_node);
-	  if(wvtmp == NULL){
-	    printf("%s(%d) no room for tmp\n",myname,this_node);
-	    terminate(1);
-	  }
-	  w_source_field(wvtmp, wqs);
-	  free(wvtmp);
-	}
+      wilson_vector *wv_src = get_cached_wv_source(wqs);
+      int null_src = (wv_src == NULL);
+      if(null_src){
+	node0_printf("%s(%d) Dirac source is NULL\n",myname,this_node);
+	node0_printf("%s(%d) File will be written with a dummy zero source\n",
+		     myname,this_node);
+	wv_src = create_wv_field();
+      }
       status = write_wpropsource_D_usqcd(wpf->outfile, wqs->descrp, 
-					 wqs->wv_src, wqs->t0);
+					 wv_src, wqs->t0);
+      if(null_src)free(wv_src);
       if(status != 0)break;
     }
     /* Save solution field */
@@ -581,7 +584,7 @@ save_wprop_sc_from_field( int flag, w_prop_file *wpf,
 
 int 
 reload_wprop_c_to_field( int flag, w_prop_file *wpf, 
-			 wilson_quark_source *wqs, int spin, int color, 
+			 quark_source *wqs, int spin, int color, 
 			 spin_wilson_vector *dest, int timing)
 {
 
@@ -682,7 +685,7 @@ reload_wprop_c_to_field( int flag, w_prop_file *wpf,
 
 */
 int 
-reload_wprop_to_field( int flag, char *filename, wilson_quark_source *wqs,
+reload_wprop_to_field( int flag, char *filename, quark_source *wqs,
 		       wilson_propagator *dest, int timing)
 {
 
@@ -725,10 +728,10 @@ reload_wprop_to_field( int flag, char *filename, wilson_quark_source *wqs,
     
     wpf = r_open_wprop(flag, filename);
     
-    /* Loop over source spins */
-    for(spin=0;spin<4;spin++){
-      /* Loop over source colors */
-      for(color=0;color<3;color++){
+    /* Loop over source colors */
+    for(color=0;color<3;color++){
+      /* Loop over source spins */
+      for(spin=0;spin<4;spin++){
 	reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, psi, timing);
 	FORALLSITES(i,s){
 	  copy_wvec(&psi[i], &dest[i].c[color].d[spin]);
@@ -773,8 +776,8 @@ reload_wprop_to_field( int flag, char *filename, wilson_quark_source *wqs,
 
 */
 int 
-reload_wprop_to_wp_field( int flag, char *filename, wilson_quark_source *wqs,
-			  wilson_prop_field dest, int timing)
+reload_wprop_to_wp_field( int flag, char *filename, quark_source *wqs,
+			  wilson_prop_field *dest, int timing)
 {
 
   double dtime = 0;
@@ -805,10 +808,10 @@ reload_wprop_to_wp_field( int flag, char *filename, wilson_quark_source *wqs,
     
     wpf = r_open_wprop(flag, filename);
     
-    /* Loop over source spins */
-    for(spin=0;spin<4;spin++){
-      /* Loop over source colors */
-      for(color=0;color<3;color++){
+    /* Loop over source colors */
+    for(color=0;color<dest->nc;color++){
+      /* Loop over source spins */
+      for(spin=0;spin<4;spin++){
 	reload_wprop_sc_to_field(flag, wpf, wqs, spin, color, psi, 0);
 	copy_wp_from_wv(dest, psi, color, spin);
       }
@@ -843,7 +846,7 @@ reload_wprop_to_wp_field( int flag, char *filename, wilson_quark_source *wqs,
    SAVE_MULTFILE_SCIDAC
 */
 int 
-save_wprop_from_field( int flag, char *filename, wilson_quark_source *wqs,
+save_wprop_from_field( int flag, char *filename, quark_source *wqs,
 		       wilson_propagator *src, char *recxml, int timing)
 {
   int spin, color;
@@ -858,8 +861,8 @@ save_wprop_from_field( int flag, char *filename, wilson_quark_source *wqs,
   wv = create_wv_field();
   wpf = w_open_wprop(flag, filename, wqs->type);
 
-  for(spin = 0; spin < 4; spin++)
-    for(color = 0; color < 3; color++)
+  for(color = 0; color < 3; color++)
+    for(spin = 0; spin < 4; spin++)
       {
 	copy_wv_from_wprop(wv, src, color, spin);
 	if( save_wprop_sc_from_field (flag, wpf, wqs, spin, color, 
@@ -882,8 +885,8 @@ save_wprop_from_field( int flag, char *filename, wilson_quark_source *wqs,
    SAVE_MULTFILE_SCIDAC
 */
 int 
-save_wprop_from_wp_field( int flag, char *filename, wilson_quark_source *wqs,
-			  wilson_prop_field src, char *recxml, int timing)
+save_wprop_from_wp_field( int flag, char *filename, quark_source *wqs,
+			  wilson_prop_field *src, char *recxml, int timing)
 {
   int spin, color;
   w_prop_file *wpf;
@@ -899,8 +902,8 @@ save_wprop_from_wp_field( int flag, char *filename, wilson_quark_source *wqs,
   wv = create_wv_field();
   wpf = w_open_wprop(flag, filename, wqs->type);
 
-  for(spin = 0; spin < 4; spin++)
-    for(color = 0; color < 3; color++)
+  for(color = 0; color < src->nc; color++)
+    for(spin = 0; spin < 4; spin++)
       {
 	copy_wv_from_wp(wv, src, color, spin);
 	if( save_wprop_sc_from_field (flag, wpf, wqs, spin, color, 
@@ -936,7 +939,7 @@ save_wprop_from_wp_field( int flag, char *filename, wilson_quark_source *wqs,
 
 int 
 reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
-			 wilson_quark_source *wqs, int spin, int color, 
+			 quark_source *wqs, int spin, int color, 
 			 field_offset dest, int timing)
 {
   int i,status = 0;
@@ -973,7 +976,7 @@ reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
 /* save a propagator one source color and spin at a time */
  
 int 
-save_wprop_sc_from_site( int flag, w_prop_file *wpf, wilson_quark_source *wqs, 
+save_wprop_sc_from_site( int flag, w_prop_file *wpf, quark_source *wqs, 
 			 int spin, int color, field_offset src, int timing)
 {
   int status;
@@ -1016,7 +1019,7 @@ save_wprop_sc_from_site( int flag, w_prop_file *wpf, wilson_quark_source *wqs,
 
 */
 int 
-reload_wprop_to_site( int flag, char *filename, wilson_quark_source *wqs,
+reload_wprop_to_site( int flag, char *filename, quark_source *wqs,
 		      field_offset dest, int timing )
 {
   int i,status;
@@ -1084,7 +1087,7 @@ reload_wprop_to_site( int flag, char *filename, wilson_quark_source *wqs,
    SAVE_ASCII, SAVE_SERIAL, SAVE_PARALLEL, SAVE_MULTIDUMP, SAVE_CHECKPOINT
 */
 int 
-save_wprop_from_site( int flag, char *filename, wilson_quark_source *wqs,
+save_wprop_from_site( int flag, char *filename, quark_source *wqs,
 		      field_offset src, char *recxml, int timing)
 {
   int spin, color;
@@ -1179,7 +1182,7 @@ ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename )
   int status;
   char myname[] = "ask_starting_wprop";
   
-  if (prompt!=0) {
+  if (prompt==1) {
     printf("loading wilson propagator:\n enter 'fresh_wprop', ");
     printf("'continue_wprop', 'reload_ascii_wprop', ");
     printf("'reload_serial_wprop', 'reload_parallel_wprop', ");
@@ -1208,12 +1211,14 @@ ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename )
     *flag = RELOAD_PARALLEL;
   }
   else{
-    printf("ERROR IN INPUT: propagator_command is invalid\n"); return(1);
+    printf("ERROR IN INPUT: starting propagator command %s is invalid\n",
+	   savebuf); 
+    return 1;
   }
   
   /*read name of file and load it */
   if( *flag != FRESH && *flag != CONTINUE ){
-    if(prompt!=0)printf("enter name of file containing props\n");
+    if(prompt==1)printf("enter name of file containing props\n");
     status=scanf("%s",filename);
     if(status !=1) {
       printf("\n%s(%d): ERROR IN INPUT: Can't read file name.\n",
@@ -1229,19 +1234,24 @@ ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename )
 /* find out what do to with propagator at end, and propagator name if
    necessary.  This routine is only called by node 0.
    */
+
+static void print_output_wprop_choices(void){
+    printf("'forget_wprop', 'save_ascii_wprop', ");
+    printf("'save_serial_fm_wprop', 'save_serial_fm_sc_wprop', ");
+    printf("'save_serial_scidac_wprop', 'save_parallel_scidac_wprop', ");
+    printf("'save_partfile_scidac_wprop', 'save_multifile_scidac_wprop', ");
+    printf("\n");
+}
+
 int 
 ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
   char *savebuf;
   int status;
   char myname[] = "ask_ending_wprop";
   
-  if (prompt!=0) {
+  if (prompt==1) {
     printf("save wilson propagator:\n enter ");
-    printf("'forget_wprop', 'save_ascii_wprop', ");
-    printf("'save_serial_fm_wprop', 'save_serial_fm_sc_wprop', ");
-    printf("'save_serial_scidac_wprop', 'save_parallel_scidac_wprop', ");
-    printf("'save_partfile_scidac_wprop', 'save_multifile_scidac_wprop', ");
-    printf("\n");
+    print_output_wprop_choices();
   }
 
   savebuf = get_next_tag(fp, "write wprop command", myname);
@@ -1275,12 +1285,15 @@ ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
     printf("\n");
   }
   else {
-    printf(" is not a valid save wprop command. INPUT ERROR.\n");
+    printf("ERROR IN INPUT: ending propagator command %s is invalid\n",
+	   savebuf);
+    printf("Choices are \n");
+    print_output_wprop_choices();
     return(1);
   }
   
   if( *flag != FORGET ){
-    if(prompt!=0)printf("enter filename\n");
+    if(prompt==1)printf("enter filename\n");
     status=scanf("%s",filename);
     if(status !=1){
       printf("\n%s(%d): ERROR IN INPUT. Can't read filename\n",

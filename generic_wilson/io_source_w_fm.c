@@ -2,9 +2,14 @@
 /* MIMD version 7 */
 /*
  *  Load the Fermilab format file for Wilson propagator sources
- *  Supports the "wavefunction" format - a 3D complex field
- *  and the "timeslice" format - one 3D Dirac field for each
- *  of 12 source colors and spins.
+ *  This version reads 12 source vectors for each site in
+ *  the so-called FNAL "timeslice" format, i.e.
+ *  one 3D Dirac field for each of 12 source colors and spins.
+ *  It converts the canopy Dirac basis to MILC Dirac basis.
+ *  Then it returns one Dirac vector of the requested spin and color.
+ *  This is inefficient, since the source must be reread and retransformed
+ *  for each spin and color.  But we are trying to get folks to use
+ *  the SciDAC/USQCD source format files instead.
  *
  */
 
@@ -31,7 +36,6 @@ typedef struct {
   FILE *fp;
   char filename[MAXFILENAME];
   int byterevflag;
-  int type;
   wilson_propagator *source;
 } w_source_file;
 
@@ -41,7 +45,7 @@ typedef struct {
 #define NATURAL_ORDER 0
 
 static int 
-read_w_fm_source_hdr(w_source_file *wsf, int source_type)
+read_w_fm_source_hdr(w_source_file *wsf)
 {
   w_source_header *wsh = wsf->header;
   int *dims = wsh->dims;
@@ -105,30 +109,14 @@ read_w_fm_source_hdr(w_source_file *wsf, int source_type)
     terminate(1);
   }
 
-  if( source_type == COMPLEX_FIELD_FM_FILE ){
-    if( size_of_element != sizeof(float) ||
-	elements_per_site != 2 /* complex field */)
-      {	
-	printf(" File %s is not a complex field",  wsf->filename);
-	printf(" got size_of_element %d and elements_per_site %d\n",
-	       size_of_element, elements_per_site);
-	terminate(1);
-      }
-  }
-  else if( source_type == DIRAC_FIELD_FM_FILE ){
-    if( size_of_element != sizeof(float) ||
-	elements_per_site != 24 /* wilson_vector */)
-      {	
-	printf(" File %s is not a Dirac field",  wsf->filename);
-	printf(" got size_of_element %d and elements_per_site %d\n",
-	       size_of_element, elements_per_site);
-	terminate(1);
-      }
-  }
-  else {
-    printf("Unknown source type %d\n",source_type);
-    terminate(1);
-  }
+  if( size_of_element != sizeof(float) ||
+      elements_per_site != 24 /* wilson_vector */)
+    {	
+      printf(" File %s is not a Dirac field",  wsf->filename);
+      printf(" got size_of_element %d and elements_per_site %d\n",
+	     size_of_element, elements_per_site);
+      terminate(1);
+    }
   
   /* The site order parameter is ignored */
   
@@ -139,7 +127,7 @@ read_w_fm_source_hdr(w_source_file *wsf, int source_type)
 }
  
 static w_source_file *
-setup_input_w_source_file(char *filename, int source_type)
+setup_input_w_source_file(char *filename)
 {
   w_source_file *wsf;
   w_source_header *wph;
@@ -155,7 +143,6 @@ setup_input_w_source_file(char *filename, int source_type)
 
   strncpy(wsf->filename,filename,MAXFILENAME);
   wsf->filename[MAXFILENAME-1] = '\0';
-  wsf->type = source_type;
 
   /* Allocate space for the header */
 
@@ -175,7 +162,7 @@ setup_input_w_source_file(char *filename, int source_type)
 } /* setup_input_w_source_file */
 
 static w_source_file *
-r_source_w_fm_i(char *filename, int source_type)
+r_source_w_fm_i(char *filename)
 {
   /* Returns file descriptor for opened file */
 
@@ -183,7 +170,7 @@ r_source_w_fm_i(char *filename, int source_type)
   w_source_header *wsh;
   int byterevflag;
 
-  wsf = setup_input_w_source_file(filename, source_type);
+  wsf = setup_input_w_source_file(filename);
   wsh = wsf->header;
 
   if(this_node==0){
@@ -192,23 +179,15 @@ r_source_w_fm_i(char *filename, int source_type)
       printf("Can't open source file %s, error %d\n",filename,errno);
       terminate(1);
     }
-    byterevflag = read_w_fm_source_hdr(wsf, source_type);
+    byterevflag = read_w_fm_source_hdr(wsf);
 
   }
   else wsf->fp = NULL;
 
   /* Make room for the whole Dirac source */
-  if(source_type == DIRAC_FIELD_FM_FILE){
-    wsf->source = 
-      (wilson_propagator *)malloc(sizeof(wilson_propagator)*sites_on_node);
-    if(wsf->source == NULL){
-      printf("r_source_w_fm_i: No room for Dirac source\n");
-      terminate(1);
-    }
-    memset(wsf->source, '\0', sizeof(wilson_propagator)*sites_on_node);
-  }
-  else
-    wsf->source = NULL;
+  wsf->source = 
+    (wilson_propagator *)malloc(sizeof(wilson_propagator)*sites_on_node);
+  memset(wsf->source, '\0', sizeof(wilson_propagator)*sites_on_node);
 
   /* Broadcast the byterevflag from node 0 to all nodes */
   broadcast_bytes((char *)&byterevflag,sizeof(byterevflag));
@@ -226,7 +205,8 @@ static void
 r_source_w_fm(w_source_file *wsf, 
 	      field_offset dest_site, 
 	      wilson_vector *dest_field,
-	      int spin, int color, int t0)
+	      int spin, int color, int x0, int y0, int z0, 
+	      int t0)
 {
   int rcv_rank, rcv_coords, status;
   int destnode;
@@ -241,41 +221,22 @@ r_source_w_fm(w_source_file *wsf,
 				  are longer */
   } wmsg;
 
-  struct {
-    fcomplex q;
-    char pad[PAD_SEND_BUF];    /* Introduced because some switches
-				  perform better if message lengths
-				  are longer */
-  } cmsg;
-
   int buf_length=0, where_in_buf=0;
   int irecord, nrecord;
   fwilson_vector *wbuff=NULL;
   fwilson_vector wfix;
-  fcomplex *cbuff=NULL;
-  fcomplex cfix;
   wilson_vector *wv;
   wilson_propagator *wp;
   int vol3 = nx*ny*nz;
-  int source_type;
 
   byterevflag = wsf->byterevflag;
-  source_type = wsf->type;
 
   if(this_node == 0)
     {
-      if(source_type == COMPLEX_FIELD_FM_FILE)
-	cbuff = (fcomplex *)malloc(MAX_BUF_LENGTH*sizeof(fcomplex));
-      else if(source_type == DIRAC_FIELD_FM_FILE)
-	wbuff = (fwilson_vector *)malloc(MAX_BUF_LENGTH*sizeof(fwilson_vector));
-      else {
-	printf("r_source_w_fm: Unknown source type %d\n", source_type);
-	fflush(stdout);
-	terminate(1);
-      }
-      if(wbuff == NULL && cbuff == NULL)
+      wbuff = (fwilson_vector *)malloc(MAX_BUF_LENGTH*sizeof(fwilson_vector));
+      if(wbuff == NULL)
 	{
-	  printf("Node %d can't malloc wbuff or cbuff\n",this_node);
+	  printf("Node %d can't malloc wbuff\n",this_node);
 	  fflush(stdout);
 	  terminate(1);
 	}
@@ -285,10 +246,7 @@ r_source_w_fm(w_source_file *wsf,
 
     } /* end of if(this_node == 0)*/
 
-  if(source_type == COMPLEX_FIELD_FM_FILE)
-    nrecord = 1;
-  else
-    nrecord = 12;
+  nrecord = 12;
 
   g_sync();
 
@@ -307,9 +265,11 @@ r_source_w_fm(w_source_file *wsf,
 	/* We do only natural (lexicographic) order here */
 	rcv_coords = rcv_rank;
 	
-	x = rcv_coords % nx;   rcv_coords /= nx;
-	y = rcv_coords % ny;   rcv_coords /= ny;
-	z = rcv_coords % nz;
+	/* Build in the requested translation in converting
+ 	   lexicographic to Cartesian coordinates */
+	x = (rcv_coords + x0) % nx;   rcv_coords /= nx;
+	y = (rcv_coords + y0) % ny;   rcv_coords /= ny;
+	z = (rcv_coords + z0) % nz;
 
 	if(this_node==0){
 	  /* Node 0 fills its buffer, if necessary */
@@ -320,10 +280,7 @@ r_source_w_fm(w_source_file *wsf,
 	      buf_length = vol3 - rcv_rank;
 	      if(buf_length > MAX_BUF_LENGTH) buf_length = MAX_BUF_LENGTH;
 	      /* then do read */
-	      if(source_type == COMPLEX_FIELD_FM_FILE)
-		a=(int)g_read(cbuff,sizeof(fcomplex),buf_length,wsf->fp);
-	      else
-		a=(int)g_read(wbuff,sizeof(fwilson_vector),buf_length,wsf->fp);
+	      a=(int)g_read(wbuff,sizeof(fwilson_vector),buf_length,wsf->fp);
 	      
 	      if( a != buf_length)
 		{
@@ -337,10 +294,7 @@ r_source_w_fm(w_source_file *wsf,
 	    }  /*** end of the buffer read ****/
 
 	  /* Save data in msg.q for further processing */
-	  if(source_type == COMPLEX_FIELD_FM_FILE)
-	    cmsg.q = cbuff[where_in_buf];
-	  else
-	    wmsg.q = wbuff[where_in_buf];
+	  wmsg.q = wbuff[where_in_buf];
 	}
 	  
 	/* Loop either over all time slices or just one time slice */
@@ -352,18 +306,12 @@ r_source_w_fm(w_source_file *wsf,
 	    /* node 0 doesn't send to itself */
 	    if(destnode != 0){
 	      /* send to correct node */
-	      if(source_type == COMPLEX_FIELD_FM_FILE)
-		send_field((char *)&cmsg, sizeof(cmsg), destnode);
-	      else
-		send_field((char *)&wmsg, sizeof(wmsg), destnode);
+	      send_field((char *)&wmsg, sizeof(wmsg), destnode);
 	    }
 	  } /* if(this_node==0) */
 	  else {	/* for all nodes other than node 0 */
 	    if(this_node==destnode){
-	      if(source_type == COMPLEX_FIELD_FM_FILE)
-		get_field((char *)&cmsg, sizeof(cmsg),0);
-	      else
-		get_field((char *)&wmsg, sizeof(wmsg),0);
+	      get_field((char *)&wmsg, sizeof(wmsg),0);
 	    }
 	  }
 	  
@@ -373,77 +321,47 @@ r_source_w_fm(w_source_file *wsf,
 	  
 	  if(this_node==destnode)
 	  {
-	      if(source_type == COMPLEX_FIELD_FM_FILE){
-		  cfix = cmsg.q;
-		  if(byterevflag==1)
-		      byterevn((int32type *)&cfix, 
-			       sizeof(fcomplex)/sizeof(int32type));
-	      } else {
-		  wfix = wmsg.q;
-		  byterevn((int32type *)&wfix, 
-			   sizeof(fwilson_vector)/sizeof(int32type));
-	      }
+	    wfix = wmsg.q;
+	    if(byterevflag==1)
+	      byterevn((int32type *)&wfix, 
+		       sizeof(fwilson_vector)/sizeof(int32type));
 	      
 	      /* Now copy the site data into the destination converting
 		 to generic precision if needed */
 	      
 	      i = node_index(x,y,z,t);
 	      
-	      /* For complex source, we copy directly to the user
-		 destination, filling only the designated spin and color
-		 with the field and zero the rest */
-	      
-	      if(source_type == COMPLEX_FIELD_FM_FILE){
-		
-		if(dest_site == (field_offset)(-1))
-		  wv = dest_field + i;
-		else
-		  wv = (wilson_vector *)F_PT(&lattice[i],dest_site);
-		
-		clear_wvec(wv);
-		wv->d[spin].c[color].real = cfix.real;
-		wv->d[spin].c[color].imag = cfix.imag;
-		//printf("WF %d %d %d %g %g\n", 
-		//	       x, y, z, cmsg.q.real, cmsg.q.imag);
-	      }
-	    
-	      /* For Dirac field source, we copy first to our buffer,
-		 filling all components */
-	      else{
-		wp = wsf->source + i;
-		for(s1=0;s1<4;s1++)for(c1=0;c1<3;c1++)
-		  {
+	      /* We copy first to our buffer, filling all components */
+	      wp = wsf->source + i;
+	      for(s1=0;s1<4;s1++)for(c1=0;c1<3;c1++)
+  	         {
 		    c0 = irecord % 3;
 		    s0 = irecord / 3;
 		    wp->c[c0].d[s0].d[s1].c[c1].real = wfix.d[s1].c[c1].real;
 		    wp->c[c0].d[s0].d[s1].c[c1].imag = wfix.d[s1].c[c1].imag;
-		  }
-	      }
-	    } /* if this_node == destnode */
+		 }
+	  } /* if this_node == destnode */
 	} /* t */
-
+	
 	where_in_buf++;
 	
       }  /* rcv_rank, irecord */
-
-  if(cbuff != NULL)free(cbuff); cbuff = NULL;
+  
   if(wbuff != NULL)free(wbuff); wbuff = NULL;
-
-  /* Finally for the Dirac source type, convert spin basis from FNAL
-     to MILC and then copy the requested MILC spin, color to the user
-     Wilson vector */
-  if(source_type == DIRAC_FIELD_FM_FILE){
-    convert_wprop_fnal_to_milc_field(wsf->source);
-    /* Copy converted source to source field for this spin and color */
-    FORALLSITES(i,s){
-
-      if(dest_site == (field_offset)(-1))
-	wv = dest_field + i;
-      else
-	wv = (wilson_vector *)F_PT(&lattice[i],dest_site);
-
-      *wv = wsf->source[i].c[color].d[spin];
-    }
+  
+  /* Finally convert spin basis from FNAL to MILC and then copy the
+     requested MILC spin, color to the user Wilson vector */
+  convert_wprop_fnal_to_milc_field(wsf->source);
+  
+  /* Copy converted source to source field for this spin and color */
+  FORALLSITES(i,s){
+    
+    if(dest_site == (field_offset)(-1))
+      wv = dest_field + i;
+    else
+      wv = (wilson_vector *)F_PT(&lattice[i],dest_site);
+    
+    *wv = wsf->source[i].c[color].d[spin];
   }
 }
 
@@ -470,30 +388,29 @@ r_source_w_fm_f(w_source_file *wsf)
 /*--------------------------------------------------------------------*/
 static void 
 r_source_w_fm_generic(char *filename, 
-			   field_offset dest_site,
-			   wilson_vector *dest_field, 
-			   int spin, int color, int t0, int source_type)
+		      field_offset dest_site, wilson_vector *dest_field, 
+		      int spin, int color, int x0, int y0, int z0, int t0)
 {
   w_source_file *wsf;
-  wsf = r_source_w_fm_i(filename, source_type);
-  r_source_w_fm(wsf, dest_site, dest_field, spin, color, t0);
+  wsf = r_source_w_fm_i(filename);
+  r_source_w_fm(wsf, dest_site, dest_field, spin, color, x0, y0, z0, t0);
   r_source_w_fm_f(wsf);
   
 }
 
 /*--------------------------------------------------------------------*/
 void r_source_w_fm_to_site(char *filename, field_offset dest_site,
-			   int spin, int color, int t0, int source_type)
+			   int spin, int color, int x0, int y0, int z0, int t0)
 {
   r_source_w_fm_generic(filename, dest_site, (wilson_vector *)NULL,
-			spin, color, t0, source_type);
+			spin, color, x0, y0, z0, t0);
 }
 
 /*--------------------------------------------------------------------*/
 void r_source_w_fm_to_field(char *filename, wilson_vector *dest_field,
-			    int spin, int color, int t0, int source_type)
+			    int spin, int color, int x0, int y0, int z0, int t0)
 {
   r_source_w_fm_generic(filename, (field_offset)(-1), dest_field, 
-			spin, color, t0, source_type);
+			spin, color, x0, y0, z0, t0);
 }
 

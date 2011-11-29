@@ -290,6 +290,11 @@ int sprint_w_prop_info_item(
 	bytes = strlen(string);
 	if(bytes >= nstring)return 1;
       }
+      else if(strstr(fmt,"lu") != NULL){
+	snprintf(string+bytes,nstring-bytes,fmt,*(unsigned long *)data);
+	bytes = strlen(string);
+	if(bytes >= nstring)return 1;
+      }
       else if(strstr(fmt,"e") != NULL || 
 	      strstr(fmt,"f") != NULL || 
 	      strstr(fmt,"g") != NULL)
@@ -328,7 +333,7 @@ int write_w_prop_info_file(w_prop_file *wpf)
    by adding filename extension to lattice file name */
 
   strcpy(info_filename,wpf->filename);
-  strcat(info_filename,ASCII_W_PROP_INFO_EXT);
+  strcat(info_filename,ASCII_INFO_EXT);
 
   /* Open header file */
   
@@ -748,14 +753,12 @@ int r_ascii_w(w_prop_file *wpf,int spin,int color,field_offset src)
   /* 0 normal exit code
      1 read error */
 
-  w_prop_header *wph;
   FILE *fp;
   int destnode;
   int i,j,x,y,z,t;
   wilson_vector lbuf;
   int status;
 
-  wph = wpf->header;
   fp = wpf->fp;
 
   g_sync();
