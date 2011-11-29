@@ -2,7 +2,7 @@
 #define _PARAMS_H
 
 #include "../include/macros.h"  /* For MAXFILENAME */
-#include "../include/generic_quark_types.h" /* For wilson_quark_source, etc. */
+#include "../include/generic_quark_types.h" /* For quark_source, etc. */
 
 
 /* structure for passing simulation parameters to each node */
@@ -25,7 +25,7 @@ typedef struct {
   
   Real kappa_spectator[MAX_KAPPA] ; /** Kappa values for the
   				       spectator quarks inversion **/
-  wilson_quark_source wqs_spectator[MAX_KAPPA]; /* Spectator source parameters */
+  quark_source wqs_spectator[MAX_KAPPA]; /* Spectator source parameters */
   int startflag_spectator[MAX_KAPPA]   ;  /** type of IO read for the
                                             spectator quark **/
   char qfile_spectator[MAX_KAPPA][MAXFILENAME];  
@@ -37,7 +37,7 @@ typedef struct {
   Real resid_zonked_light;   /* resid error for cg inversion */
   Real kappa_zonked_light[MAX_KAPPA] ; /** Kappa values for the light
                                           zonked quark **/
-  wilson_quark_source wqs_zonked_light[MAX_KAPPA]; /* Zonked_Light source parameters */
+  quark_source wqs_zonked_light[MAX_KAPPA]; /* Zonked_Light source parameters */
   int startflag_zonked_light[MAX_KAPPA]   ;  /** type of IO read for the zonked light quark **/
   int saveflag_zonked_heavy[MAX_KAPPA]   ;  /** type of IO write for the zonked heavy quark **/
 
@@ -57,7 +57,7 @@ typedef struct {
                                           zonked quark **/
   int inverter_type_zonked_heavy[MAX_KAPPA];
   int inverter_type_sequential[MAX_KAPPA];
-  wilson_quark_source wqs_zonked_heavy[MAX_KAPPA]; /* Zonked_heavy source parameters */
+  quark_source wqs_zonked_heavy[MAX_KAPPA]; /* Zonked_heavy source parameters */
   
   int  no_sequential  ;
   Real kappa_sequential[MAX_KAPPA] ; /** Kappa values for the

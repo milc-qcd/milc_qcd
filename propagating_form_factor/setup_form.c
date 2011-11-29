@@ -1,7 +1,7 @@
 /******** setup_form.c *********/
 /* MIMD version 6 */
 /*  set tabstop=2   for easy reading of this file */
-/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.7 2009/05/31 02:00:58 detar Exp $  ***/
+/* $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/setup_form.c,v 1.8 2011/11/29 18:49:04 detar Exp $  ***/
 /* MIMD code version 4 */
 
 #include "prop_form_includes.h"
@@ -122,7 +122,7 @@ int ask_ending_correlator( int prompt, int *flag, char *id,
     char savebuf[256];
     int status;
 
-    if (prompt!=0) printf(
+    if (prompt==1) printf(
         "'forget' %s correlator at end,  'save_ascii', or 'save_binary'\n",
 			  id);
     status=scanf("%s",savebuf);
@@ -163,7 +163,7 @@ int ask_ending_correlator( int prompt, int *flag, char *id,
     }
 
     if( *flag != FORGET ){
-        if(prompt!=0)printf("enter filename for %s correlator\n",id);
+        if(prompt==1)printf("enter filename for %s correlator\n",id);
         status=scanf("%s",filename);
         if(status !=1){
     	    printf("ask_ending_correlator: ERROR IN INPUT: expecting filename\n"); return(1);
@@ -178,7 +178,7 @@ int ask_quark_inverter( int prompt, int *inverter_type)
   char savebuf[256];
   int status;
 
-  if (prompt!=0)
+  if (prompt==1)
     printf("enter 'hop', or 'bicg' for heavy quark inverter type\n");
   status = scanf("%s",savebuf);
   if(status !=1) {
@@ -262,7 +262,7 @@ int readin(int prompt)
        *   spectator propagators */
       
       /* width: psi=exp(-(r/r0)^2) */
-      IF_OK if (prompt!=0) 
+      IF_OK if (prompt==1) 
 	printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
 
       for(i=0;i<par_buf.no_spectator;i++){
@@ -335,7 +335,7 @@ int readin(int prompt)
        *   zonked propagators */
       
       /* width: psi=exp(-(r/r0)^2) */
-      IF_OK if (prompt!=0) 
+      IF_OK if (prompt==1) 
 	printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
 
       for(i=0;i<par_buf.no_zonked_light;i++){
@@ -408,7 +408,7 @@ int readin(int prompt)
       /* Load in the source widths for the heavy zonked propagators */
       
       /* width: psi=exp(-(r/r0)^2) */
-      IF_OK if (prompt!=0) 
+      IF_OK if (prompt==1) 
 	printf("enter width(s) r0 as in: source=exp(-(r/r0)^2)\n");
 
       for(i=0;i<par_buf.no_zonked_heavy;i++){
@@ -694,13 +694,13 @@ int readin(int prompt)
 	par_buf.inverter_type_sequential[ ikappa ] ;
 
       wqs_spectator[ ikappa ] = par_buf.wqs_spectator [ ikappa ];
-      init_wqs(&wqs_spectator[ ikappa ]);
+      init_qs(&wqs_spectator[ ikappa ]);
       wqs_spectator[ ikappa ].type = par_buf.wqs_spectator [ ikappa ].type;
       wqs_zonked_light[ ikappa ] = par_buf.wqs_zonked_light[ ikappa ];
-      init_wqs(&wqs_zonked_light[ ikappa ]);
+      init_qs(&wqs_zonked_light[ ikappa ]);
       wqs_zonked_light[ ikappa ].type = par_buf.wqs_zonked_light[ ikappa ].type;
       wqs_zonked_heavy[ ikappa ] = par_buf.wqs_zonked_heavy[ ikappa ];
-      init_wqs(&wqs_zonked_heavy[ ikappa ]);
+      init_qs(&wqs_zonked_heavy[ ikappa ]);
       wqs_zonked_heavy[ ikappa ].type = par_buf.wqs_zonked_heavy[ ikappa ].type;
 
       startflag_spectator[ ikappa ] = par_buf.startflag_spectator[ ikappa ]   ;

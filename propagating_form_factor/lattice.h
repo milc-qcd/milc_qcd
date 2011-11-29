@@ -228,12 +228,12 @@ EXTERN  int	odd_sites_on_node;	/* number of odd sites on this node */
 EXTERN  int	number_of_nodes;	/* number of nodes in use */
 EXTERN  int  this_node;		/* node number of this node */
 
-EXTERN wilson_quark_source wqs_spectator[MAX_KAPPA];
-EXTERN wilson_quark_source wqs_zonked_light[MAX_KAPPA];
-EXTERN wilson_quark_source wqs_zonked_light_tmp[MAX_KAPPA];
-EXTERN wilson_quark_source wqs_zonked_heavy[MAX_KAPPA];
-EXTERN wilson_quark_source wqs_zonked_heavy_tmp[MAX_KAPPA];
-EXTERN wilson_quark_source wqstmp;  /* Temporary */
+EXTERN quark_source wqs_spectator[MAX_KAPPA];
+EXTERN quark_source wqs_zonked_light[MAX_KAPPA];
+EXTERN quark_source wqs_zonked_light_tmp[MAX_KAPPA];
+EXTERN quark_source wqs_zonked_heavy[MAX_KAPPA];
+EXTERN quark_source wqs_zonked_heavy_tmp[MAX_KAPPA];
+EXTERN quark_source wqstmp;  /* Temporary */
 
 EXTERN quark_invert_control qic_zonked_heavy;
 EXTERN quark_invert_control qic_zonked_light;

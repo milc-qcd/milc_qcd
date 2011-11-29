@@ -1,4 +1,4 @@
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/control_form.c,v 1.2 2006/11/25 02:57:50 detar Exp $ **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/propagating_form_factor/control_form.c,v 1.3 2011/11/29 18:49:04 detar Exp $ **/
 
 /*
 
@@ -26,9 +26,7 @@ int main(int argc,char **argv)
   total_time = dclock() ; 
 
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
