@@ -3,6 +3,8 @@
 
 #include "../include/umethod.h"
 #include "../include/dirs.h"
+#include "../generic_ks/imp_actions/imp_action_types.h"
+#define FERM_ACTION HISQ
 
     /* Specify paths in orientation in which they appear in the
        forward part of the x component of dslash().  Rotations and
@@ -13,20 +15,20 @@
 //#define HISQ_NAIK_ADJUSTABLE // allow for adjustable epsilon in Naik term
 //#define HISQ_NAIK_2ND_ORDER (-0.675)
 
-#define MAX_NUM 688  // should be obsolete, for now max of MAX_NUM_[12]
 #define QUARK_ACTION_DESCRIPTION "\"HISQ action version 1\""
-
-#define MAX_LENGTH 7	// Maximum length of path in any path table
-#define MAX_BASIC_PATHS 6  // Max. no. of basic paths in any path table
 
 // Smearing for first level
 // This is Fat7
+//#define ASQ_OPTIMIZED_FORCE_1
+#define ASQ_OPTIMIZED_FATTENING
+#define QUARK_ACTION_DESCRIPTION_1 "\"Fat 7 (level 1)\""
+
+#define MAX_NUM 688  // should be obsolete, for now max of MAX_NUM_[12]
+#define MAX_LENGTH 7	// Maximum length of path in any path table
+#define MAX_BASIC_PATHS 6  // Max. no. of basic paths in any path table
 #define NUM_BASIC_PATHS_1 4
 #define MAX_NUM_1 632
-//#define ASQ_OPTIMIZED_FATTENING_1
-//#define ASQ_OPTIMIZED_FORCE_1
-#define QUARK_ACTION_DESCRIPTION_1 "\"Fat 7 (level 1)\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind_1[NUM_BASIC_PATHS_1][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
     { YUP, XUP, YDOWN, NODIR, NODIR, NODIR, NODIR },    /* Staple */
@@ -52,12 +54,13 @@
 #define UNITARIZATION_GROUP UNITARIZE_U3
 
 // Smearing for second level
-#define NUM_BASIC_PATHS_2 6
-#define MAX_NUM_2 688
 //#define ASQ_OPTIMIZED_FATTENING_2
 //#define ASQ_OPTIMIZED_FORCE_2
 #define QUARK_ACTION_DESCRIPTION_2 "\"Fat7 + 2xLepage\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
+#define NUM_BASIC_PATHS_2 6
+#define MAX_NUM_2 688
     static int path_ind_2[NUM_BASIC_PATHS_2][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik */
@@ -86,7 +89,7 @@
 #define NUM_BASIC_PATHS_3 2
 #define MAX_NUM_3 16
 #define QUARK_ACTION_DESCRIPTION_3 "\"1-link + Naik\""
-#ifndef IMP_QUARK_ACTION_INFO_ONLY
+#ifdef IMP_QUARK_ACTION_DEFINE_PATH_TABLES
     static int path_ind_3[NUM_BASIC_PATHS_3][MAX_LENGTH] = {
     { XUP, NODIR, NODIR, NODIR, NODIR, NODIR, NODIR },  /* One Link */
     { XUP, XUP, XUP, NODIR, NODIR, NODIR, NODIR },      /* Naik */
