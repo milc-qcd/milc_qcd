@@ -213,6 +213,7 @@ static dirac_matrix mult_swv_na( spin_wilson_vector *a,
 #ifndef INLINE
   complex temp1,temp2;
   register int si,sf,s;
+  // flops 8*3*4*4*4 = 1536
   for(si=0;si<4;si++)for(sf=0;sf<4;sf++) {
     temp1.real = temp1.imag = 0.0;
     for(s=0;s<4;s++){
@@ -306,7 +307,7 @@ static double dirac_v_tr_gamma(complex *tr, dirac_matrix_v *src,
 {
   int s2,s; /* spin indices */
   int k, c, p, ph;
-  complex z;
+  complex z = {0.,0.};
   Real fact;
   double flops = 0;
   
@@ -375,7 +376,7 @@ static double dirac_v_tr_gamma(complex *tr, dirac_matrix_v *src,
     CMULREAL(z,fact,tr[k]);
   }
 
-  flops = 10*nc;
+  flops = 4*nc;
   
   return flops;
   
@@ -385,7 +386,7 @@ static double dirac_v_tr_gamma(complex *tr, dirac_matrix_v *src,
 
 static complex ff(Real theta, char parity, complex tmp)
 {
-  complex z;
+  complex z = {0.,0.};
   
   if(parity == EVEN){
     z.real = tmp.real*cos(theta);
@@ -416,7 +417,7 @@ void meson_cont_mom(
   int **q_momstore,         /* q_momstore[p] are the momentum components */
   char **q_parity,          /* q_parity[p] the parity of each mom component */
   int no_gamma_corr,        /* # of gamma src/snk combinations (gt g) */
-  int num_corr_mom[],       /* number of momentum/parity values for each corr */
+  int num_corr_mom[],       /* number of momentum/parity values for each corr (gt k) */
   int **corr_table,         /* c = corr_table[g][k] correlator index */
   int p_index[],            /* p = p_index[c] is the momentum index */
   int gout[],               /* gout[c] is the sink gamma */
@@ -459,7 +460,7 @@ void meson_cont_mom(
 
   dtime = -dclock();
   flops = 0;
-  
+
   /* Allocate temporary storage for meson propagator */
   
   if(no_q_momenta > MAXQ)
@@ -522,7 +523,7 @@ void meson_cont_mom(
       }
   }      
   
-  flops += (double)sites_on_node*68*no_q_momenta;
+  flops += (double)sites_on_node*18*no_q_momenta;
   
   
   /* Run through the table of unique source-sink gamma matrix pairs
@@ -679,19 +680,4 @@ void meson_cont_mom(
 #endif
   
 } /* end of meson_cont_mom function  */
-
-/* Map a label to the corresponding phase */
-/* Follows gammatypes.h convention for coding the phase */
-
-static char *phaselabel[4] = { "1", "i", "-1", "-i" };
-static int phase[4] = { 0, 1, 2, 3 };  
-
-int decode_phase(char *label){
-  int i;
-  for(i = 0; i < 4; i++){
-    if(strcmp(label,phaselabel[i]) == 0)return phase[i];
-  }
-  return -1;  /* Error condition */
-}
-
 
