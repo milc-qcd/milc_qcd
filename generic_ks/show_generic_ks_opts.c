@@ -1,7 +1,8 @@
-/********************** show_opts.c *************************************/
+/********************** show_generic_ks_opts.c *************************************/
 /* MIMD Version 7 */
 
 /* List options selected in the compilation */
+/* These options pertain to link construction and the inverter only */
 
 #include "generic_ks_includes.h"
 
@@ -25,14 +26,6 @@ void show_generic_ks_opts( void ){
 
 #ifdef KS_MULTICG
   node0_printf("KS_MULTICG=%s\n",ks_multicg_opt_chr());
-#endif
-
-#ifdef KS_MULTIFF
-  node0_printf("KS_MULTIFF=%s\n",ks_multiff_opt_chr());
-
-#ifdef VECLENGTH
-  node0_printf("VECLENGTH=%d\n",VECLENGTH);
-#endif
 #endif
 
 }
