@@ -289,7 +289,7 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
 	    }
 	  
 	  /* do a C.G. */
-	  load_ferm_links(&fn_links, &ks_act_paths);
+	  load_ferm_links(&fn_links);
 	  cgn += congrad(niter,rsqprop,EVEN,&finalrsq, &fn_links);
 	  /* Multiply by -Madjoint */
 	  dslash_site( temp2, temp2, ODD, &fn_links);
@@ -318,7 +318,7 @@ int nl_spectrum( Real vmass, field_offset temp1, field_offset temp2 ) {
 	    }
 	  
 	  /* do a C.G. */
-	  load_ferm_links(&fn_links, &ks_act_paths);
+	  load_ferm_links(&fn_links);
 	  cgn += congrad(niter,rsqprop,ODD,&finalrsq,&fn_links);
 	  /* Multiply by -Madjoint */
 	  dslash_site( temp2, temp2, EVEN, &fn_links);

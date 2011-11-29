@@ -516,7 +516,7 @@ int sngl_trace(Real *bb0s11)
 	 in both congrad calls in this procedure to
 	 give a comparably stringent stopping criterion 
 	 throughout */
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, rsqprop/(mass*mass), PRECISION, 
 			    EVEN,&finalrsq, &fn_links);
@@ -525,7 +525,7 @@ int sngl_trace(Real *bb0s11)
       /* Multiply by -Madjoint */
       /* Notice that this product includes an overall minus sign */
       /* which will be compensated by propmat2 */
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, &fn_links);
       scalar_mult_latvec( F_OFFSET(xxx), -mass_x2, F_OFFSET(ttt), EVEN);
       
@@ -554,7 +554,7 @@ int sngl_trace(Real *bb0s11)
       g_sync();
 
       /* do a C.G. (source in phi, result in xxx) now ODD source*/
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, rsqprop/(mass*mass), PRECISION, 
 			    ODD, &finalrsq, &fn_links);
@@ -840,7 +840,7 @@ int bar_corr()
 			     -mass_x2, F_OFFSET(phi), EVEN);
       /* Invert on even sites only */
       /* -x_e = -(4m^2a^2 - D_eo D_oe)^(-1) phi_e' */
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, rsqprop, PRECISION, EVEN, &finalrsq, &fn_links);
       cgn += this_cgn;
@@ -978,7 +978,7 @@ int bar_corr()
 			     -mass_x2, F_OFFSET(phi), EVEN);
       /* Invert on even sites only */
       /* -x_e = -(4m^2a^2 - D_eo D_oe)^(-1) phi_e' */
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, rsqprop, PRECISION, EVEN, &finalrsq,
 			    &fn_links);

@@ -11,7 +11,7 @@ void update_h( Real eps ) {
     /* fermionic force */
     /* First compute M*xxx in temporary vector ttt */
 	/* The diagonal term in M doesn't matter */
-    load_ferm_links(&fn_links, &ks_act_paths);
+    load_ferm_links(&fn_links);
     dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, &fn_links );
     fermion_force(eps);
 } /* update_h */

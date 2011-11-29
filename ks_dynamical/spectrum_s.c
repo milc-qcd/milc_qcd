@@ -40,11 +40,11 @@ int spectrum() /* return the C.G. iteration number */
 	}
 
       /* Multiply by -Madjoint */
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       dslash_site( F_OFFSET(ttt), F_OFFSET(phi), ODD, &fn_links);
       scalar_mult_latvec( F_OFFSET(ttt), -mass_x2, F_OFFSET(phi), EVEN);
       /* do a C.G. */
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       cgn += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			niter, rsqprop, PRECISION, EVENANDODD, &finalrsq,
 			&fn_links);

@@ -29,9 +29,7 @@ complex plp;
 double dtime;
 
  initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
  g_sync();
@@ -65,7 +63,7 @@ double dtime;
                 /* generate a pseudofermion configuration */
 		grsource(EVEN);
                 /* do conjugate gradient to get (Madj M)inverse * phi  */
-		load_ferm_links(&fn_links, &ks_act_paths);
+		load_ferm_links(&fn_links);
 		m_iters=ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 				   niter, rsqmin, PRECISION, EVEN, &rsq,
 				   &fn_links);

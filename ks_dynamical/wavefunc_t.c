@@ -80,7 +80,7 @@ void write_wf(field_offset src,char *string,int tmin,int tmax);
 	    }
         }
         /* do a C.G. (source in phi, result in xxx) */
-	load_ferm_links(&fn_links, &ks_act_paths);
+	load_ferm_links(&fn_links);
         cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			 niter, rsqprop, PRECISION, EVEN, &finalrsq, 
 			 &fn_links);

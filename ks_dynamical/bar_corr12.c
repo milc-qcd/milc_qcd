@@ -496,7 +496,7 @@ int sngl_trace(bb0s11)
 	 in both congrad calls in this procedure to
 	 give a comparably stringent stopping criterion 
 	 throughout */
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, rsqprop/(mass*mass), PRECISION, 
 			    EVEN,&finalrsq, &fn_links);
@@ -533,7 +533,7 @@ int sngl_trace(bb0s11)
       g_sync();
 
       /* do a C.G. (source in phi, result in xxx) now ODD source*/
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       this_cgn = ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, rsqprop/(mass*mass), PRECISION, 
 			    ODD, &finalrsq, &fn_links);
@@ -814,7 +814,7 @@ int bar_corr()
       /* Compute quark propagator from random source with LU preconditioning */
       /* Preconditioning step */
       /* -phi_e' <- -2ma phi_e + Dslash_eo phi_o */
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       dslash_site( F_OFFSET(phi), F_OFFSET(ttt), EVEN, &fn_links);
       scalar_mult_add_latvec( F_OFFSET(ttt), F_OFFSET(phi), 
 			     -mass_x2, F_OFFSET(phi), EVEN);
@@ -828,7 +828,7 @@ int bar_corr()
       /* Even sites are now OK, except for a minus sign */
       /* Multiply by 1/2ma L for odd sites */
       /* -x_o <- [Dslash_eo (-x_e) + phi_o]/2ma */
-      load_ferm_links(&fn_links, &ks_act_paths);
+      load_ferm_links(&fn_links);
       dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, &fn_links);
       FORODDSITES(i,st){
 	add_su3_vector( &(st->ttt), &(st->phi), &(st->xxx));
