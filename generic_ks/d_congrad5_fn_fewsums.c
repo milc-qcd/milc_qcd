@@ -1,3 +1,4 @@
+OBSOLETE
 /******* d_congrad5_fn_fewsums.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 7 */
 /* OBSOLETE! See d_congrad5_fn.c 5/7/07 C. DeTar */
