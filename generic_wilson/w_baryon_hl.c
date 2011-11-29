@@ -39,14 +39,19 @@
 #define Nc 3
 #define Ns 4
 
-void w_baryon_hl(wilson_prop_field src1, wilson_prop_field src2,
-		 wilson_prop_field src3, complex *prop[6]) 
+void w_baryon_hl(wilson_prop_field *src1, wilson_prop_field *src2,
+		 wilson_prop_field *src3, complex *prop[6]) 
 {
 
-int i,j,k,t;
+  int i,j,k,t;
+  
+  int eps[3][3][3], chi_b[4][4];
+  complex *prop_tmp, *prop_l;
 
-int eps[3][3][3], chi_b[4][4];
-complex *prop_tmp, *prop_l;
+  if(src1->nc != 3 || src2->nc != 3 || src3->nc != 3){
+    node0_printf("w_baryon_hl: requires 3 colors for each field\n");
+    terminate(1);
+  }
 
     prop_tmp = (complex *)malloc(nt*sizeof(complex));
     prop_l = (complex *)malloc(nt*sizeof(complex));
