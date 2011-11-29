@@ -16,22 +16,28 @@
 #define Nc 3
 #define Ns 4
 
-void baryon_cont1(wilson_prop_field src1, wilson_prop_field src2, 
-		  wilson_prop_field src3, 
+void baryon_cont1(wilson_prop_field *src1, wilson_prop_field *src2, 
+		  wilson_prop_field *src3, 
 		  int chi_b[4][4], int eps[3][3][3], complex *prop)
 {
 
-register int i;
-register site *s;
+  register int i;
+  register site *s;
+  
+  int my_t;
+  
+  int ci_1, ci_2, ci_3, si_1, si_2, si_3;
+  int cf_1, cf_2, cf_3, sf_1, sf_2, sf_3;
+  int  chi_i, chi_f, eps_f, eps_i;
+  Real factor;
+  complex diquark, diquark_temp;
 
-int my_t;
+  if(src1->nc != 3 || src2->nc != 3 || src3->nc != 3){
+    node0_printf("baryon_cont1: requires 3 colors for each field\n");
+    terminate(1);
+  }
 
-int ci_1, ci_2, ci_3, si_1, si_2, si_3;
-int cf_1, cf_2, cf_3, sf_1, sf_2, sf_3;
-int  chi_i, chi_f, eps_f, eps_i;
-Real factor;
-complex diquark, diquark_temp;
-
+  
     FORALLSITES(i,s){
 
 	my_t = s->t;
@@ -70,8 +76,8 @@ complex diquark, diquark_temp;
 
 			  factor = (Real)(eps_f*eps_i*chi_i*chi_f);
 			  CMUL(
-			       src1[cf_1][i].d[sf_1].d[si_1].c[ci_1],
-			       src2[cf_2][i].d[sf_2].d[si_2].c[ci_2],
+			       src1->swv[cf_1][i].d[sf_1].d[si_1].c[ci_1],
+			       src2->swv[cf_2][i].d[sf_2].d[si_2].c[ci_2],
 			       diquark_temp);
 			  diquark.real += factor*diquark_temp.real;
 			  diquark.imag += factor*diquark_temp.imag;
@@ -90,7 +96,7 @@ complex diquark, diquark_temp;
 	  si_3 = sf_3 = 1;
 
 	    CMUL(diquark,
-		 src3[cf_3][i].d[sf_3].d[si_3].c[ci_3],
+		 src3->swv[cf_3][i].d[sf_3].d[si_3].c[ci_3],
 		 diquark_temp);
 	    prop[my_t].real += diquark_temp.real;
 	    prop[my_t].imag += diquark_temp.imag;
@@ -117,21 +123,28 @@ complex diquark, diquark_temp;
    first and second quark propagator.
 */
 
-void baryon_cont2(wilson_prop_field src1, wilson_prop_field src2, 
-		  wilson_prop_field src3, 
+void baryon_cont2(wilson_prop_field *src1, wilson_prop_field *src2, 
+		  wilson_prop_field *src3, 
 		  int chi_b[4][4], int eps[3][3][3], complex *prop)
 {
 
-register int i;
-register site *s;
+  register int i;
+  register site *s;
+  
+  int my_t;
+  
+  int ci_1, ci_2, ci_3, si_1, si_2, si_3;
+  int cf_1, cf_2, cf_3, sf_1, sf_2, sf_3;
+  int  chi_i, chi_f, eps_f, eps_i;
+  Real factor;
+  complex diquark, diquark_temp;
 
-int my_t;
+  if(src1->nc != 3 || src2->nc != 3 || src3->nc != 3){
+    node0_printf("baryon_cont2: requires 3 colors for each field\n");
+    terminate(1);
+  }
 
-int ci_1, ci_2, ci_3, si_1, si_2, si_3;
-int cf_1, cf_2, cf_3, sf_1, sf_2, sf_3;
-int  chi_i, chi_f, eps_f, eps_i;
-Real factor;
-complex diquark, diquark_temp;
+
 
     FORALLSITES(i,s){
 
@@ -178,8 +191,8 @@ complex diquark, diquark_temp;
 
 			      factor = (Real)(eps_f*eps_i*chi_i*chi_f);
 			      CMUL(
-				   src1[cf_1][i].d[sf_1].d[si_1].c[ci_1],
-				   src2[cf_2][i].d[sf_2].d[si_2].c[ci_2],
+				   src1->swv[cf_1][i].d[sf_1].d[si_1].c[ci_1],
+				   src2->swv[cf_2][i].d[sf_2].d[si_2].c[ci_2],
 				   diquark_temp);
 			      diquark.real += factor*diquark_temp.real;
 			      diquark.imag += factor*diquark_temp.imag;
@@ -199,7 +212,7 @@ complex diquark, diquark_temp;
 	    sf_3 = 1;
 
 	      CMUL(diquark,
-		   src3[cf_3][i].d[sf_3].d[si_3].c[ci_3],
+		   src3->swv[cf_3][i].d[sf_3].d[si_3].c[ci_3],
 		   diquark_temp);
 	      prop[my_t].real += diquark_temp.real;
 	      prop[my_t].imag += diquark_temp.imag;
