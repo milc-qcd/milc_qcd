@@ -17,63 +17,78 @@
 Real check_su3(su3_matrix *c);
 
 Real check_unitarity() {
-register int i,dir;
-int ii,jj;
-register site *s;
-register su3_matrix *mat;
-Real deviation,max_deviation;
-double av_deviation;
- union {
-   Real fval;
-   int ival;
- } ifval;
- 
- max_deviation=av_deviation=0;
- FORALLSITES(i,s){
+  register int i,dir;
+  int ii,jj;
+  int status;
+  register site *s;
+  register su3_matrix *mat;
+  Real deviation,max_deviation;
+  double av_deviation;
+  union {
+    Real fval;
+    int ival;
+  } ifval;
+  
+  max_deviation=av_deviation=0;
+  
+  status = 0;
+  FORALLSITES(i,s){
 #ifdef SCHROED_FUN
-   for(dir=XUP; dir<=TUP; dir++ ) if(dir==TUP || s->t>0){
+    for(dir=XUP; dir<=TUP; dir++ ) if(dir==TUP || s->t>0){
 #else
-   for(dir=XUP; dir<=TUP; dir++ ){
+    for(dir=XUP; dir<=TUP; dir++ ){
 #endif
-     mat = (su3_matrix *)&(s->link[dir]);
-     deviation=check_su3( mat );
-     if (deviation>TOLERANCE){
-       printf("Unitarity problem on node %d, site %d, dir %d, deviation=%f\n",
-	      mynode(),i,dir,deviation);
-       printf("SU3 matrix:\n");
-       for(ii=0;ii<=2;ii++){
-	 for(jj=0;jj<=2;jj++){
-	   printf("%f ",(*mat).e[ii][jj].real); 
-	   printf("%f ",(*mat).e[ii][jj].imag); 
-	 }
-	 printf("\n");
-       }
-       printf("repeat in hex:\n");
-       for(ii=0;ii<=2;ii++){
-	 for(jj=0;jj<=2;jj++){
-	   ifval.fval = (*mat).e[ii][jj].real; 
-	   printf("%08x ", ifval.ival); 
-	   ifval.fval = (*mat).e[ii][jj].imag; 
-	   printf("%08x ", ifval.ival); 
-	 }
-	 printf("\n");
-       }
-       printf("  \n \n");
-       fflush(stdout); terminate(1);
-     }
-     if(max_deviation<deviation) max_deviation=deviation;
-     av_deviation += deviation*deviation;
-   }
- }
- av_deviation = sqrt(av_deviation/(4*i));
+      mat = (su3_matrix *)&(s->link[dir]);
+      deviation=check_su3( mat );
+      if (deviation>TOLERANCE){
+	printf("Unitarity problem on node %d, site %d, dir %d, deviation=%f\n",
+	       mynode(),i,dir,deviation);
+	printf("SU3 matrix:\n");
+	for(ii=0;ii<=2;ii++){
+	  for(jj=0;jj<=2;jj++){
+	    printf("%f ",(*mat).e[ii][jj].real); 
+	    printf("%f ",(*mat).e[ii][jj].imag); 
+	  }
+	  printf("\n");
+	}
+	printf("repeat in hex:\n");
+	for(ii=0;ii<=2;ii++){
+	  for(jj=0;jj<=2;jj++){
+	    ifval.fval = (*mat).e[ii][jj].real; 
+	    printf("%08x ", ifval.ival); 
+	    ifval.fval = (*mat).e[ii][jj].imag; 
+	    printf("%08x ", ifval.ival); 
+	  }
+	  printf("\n");
+	}
+	printf("  \n \n");
+	fflush(stdout); 
+	status++;
+	break;
+      }
+      if(status)break;
+      if(max_deviation<deviation) max_deviation=deviation;
+      av_deviation += deviation*deviation;
+    }
+    if(status)break;
+  }
+
+  /* Poll nodes for problems */
+  g_intsum(&status);
+  if(status > 0){
+    node0_printf("Terminated due to unacceptable unitarity violation(s)\n");
+    terminate(1);
+  }
+
+  av_deviation = sqrt(av_deviation/(4*i));
 #ifdef UNIDEBUG
- printf("Deviation from unitarity on node %d: max %g, avrg %g\n",
-	mynode(), max_deviation, av_deviation);
+  printf("Deviation from unitarity on node %d: max %g, avrg %g\n",
+	 mynode(), max_deviation, av_deviation);
 #endif
- if(max_deviation> TOLERANCE) 
-   printf("Unitarity problem on node %d, maximum deviation=%f\n",
-	  mynode(),max_deviation);
- return max_deviation;
+  if(max_deviation> TOLERANCE) 
+    printf("Unitarity problem on node %d, maximum deviation=%f\n",
+	   mynode(),max_deviation);
+  return max_deviation;
 }  /*check_unitarity() */
 
 Real check_su3(su3_matrix *c) {
