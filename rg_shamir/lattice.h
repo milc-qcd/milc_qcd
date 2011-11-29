@@ -147,7 +147,9 @@ EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
 EXTERN ferm_links_t        fn_links;
+EXTERN ferm_links_t        fn_links_dmdu0;
 EXTERN ks_action_paths ks_act_paths;
+EXTERN ks_action_paths ks_act_paths_dmdu0;
 
 #define smear_fac 2.5
 #endif /* _LATTICE_H */

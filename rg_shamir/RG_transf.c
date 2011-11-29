@@ -136,12 +136,16 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
 #else
   /* Do phi_s = (M^\dagger M)^{-1} src */
   /* Pack structure */
-  qic.parity    = EVENANDODD;
+  qic.prec      = PRECISION;
+  qic.min       = 0;
   qic.max       = niter;
   qic.nrestart  = 5;
-  qic.resid     = qrsqmin;
+  qic.parity    = EVENANDODD;
+  qic.start_flag = 0;
+  qic.nsrc = 1;
+  qic.resid     = sqrt(qrsqmin);
   qic.relresid  = 0;     /* Suppresses this test */
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
 #if ( QDP_Precision == 'F' )
   qic.prec      = 1;
   iter=ks_congrad_qdp_F(src, phi_s, &qic, qmass, &fn_links);
@@ -153,7 +157,7 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   set_site_from_V(F_OFFSET(ttt),phi_s,EVENANDODD);
 #endif 
   
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
   dslash_fn_site( F_OFFSET(ttt), F_OFFSET(phi2), EVENANDODD, &fn_links);
   
 #ifdef CHECK_TRACE
@@ -186,11 +190,11 @@ void RG_M_inv(QDP_ColorVector *dest, QDP_ColorVector *src)
   clear_latvec(F_OFFSET(ttt) , EVENANDODD );
   
   set_site_from_V(F_OFFSET(ttt),src,EVENANDODD);
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
   ks_congrad(F_OFFSET(ttt),F_OFFSET(cg_p),mass,niter,rsqprop,PRECISION,
 	     EVENANDODD,&final_rsq, &fn_links );
   
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
   dslash_site( F_OFFSET(cg_p), F_OFFSET(phi2), EVENANDODD, &fn_links);
   scalar_mult_add_latvec( F_OFFSET(phi2),F_OFFSET(cg_p),-2.0*mass,F_OFFSET(phi2), EVENANDODD);
   
@@ -296,9 +300,9 @@ QDP_ColorVector *dest,*phi_s,*phi_check,*phi_check1,*phi_d;
   qic.parity    = EVENANDODD;
   qic.max       = niter;
   qic.nrestart  = 5;
-  qic.resid     = qrsqmin;
+  qic.resid     = sqrt(qrsqmin);
   qic.relresid  = 0;     /* Suppresses this test */
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
 #if ( QDP_Precision == 'F' )
   qic.prec      = 1;
   iter=ks_congrad_qdp_F(src, phi_s, &qic, qmass, &fn_links );
@@ -308,7 +312,7 @@ QDP_ColorVector *dest,*phi_s,*phi_check,*phi_check1,*phi_d;
 #endif
   
   set_site_from_V(F_OFFSET(ttt),phi_s,EVENANDODD);
-  load_ferm_links(&fn_links, &ks_act_paths);
+  load_ferm_links(&fn_links);
   dslash_site( F_OFFSET(ttt), F_OFFSET(phi2), EVENANDODD, &fn_links);
   set_V_from_site(phi_d,F_OFFSET(phi2),EVENANDODD);
 

@@ -86,7 +86,7 @@ int readin(int prompt)  {
     IF_OK status += ask_starting_lattice( stdin, prompt, &(par_buf.startflag),
 					  par_buf.startfile );
     
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter 'no_gauge_fix', or 'coulomb_gauge_fix'\n");
     IF_OK scanf("%s",savebuf);
     IF_OK printf("%s\n",savebuf);
@@ -123,9 +123,11 @@ int readin(int prompt)  {
     IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
 			  &par_buf.qic.relresid );
     /* Precision fixed to prevailing precision for now */
+    par_buf.qic.min = 0;
     par_buf.qic.prec = PRECISION;
     par_buf.qic.parity = EVENANDODD;
-    
+    par_buf.qic.start_flag = 0;
+    par_buf.qic.nsrc = 1;
 
     /* Quark parameters */
 
@@ -207,10 +209,10 @@ int readin(int prompt)  {
   }
   for(i=0;i<par_buf.num_smear;i++){
     source_wqs[i] = par_buf.source_wqs[i];
-    init_wqs(&source_wqs[i]);
+    init_qs(&source_wqs[i]);
     source_wqs[i].type = par_buf.source_wqs[i].type;
     sink_wqs[i] = par_buf.sink_wqs[i];
-    init_wqs(&sink_wqs[i]);
+    init_qs(&sink_wqs[i]);
     sink_wqs[i].type = par_buf.sink_wqs[i].type;
     strcpy(source_wf_label[i],par_buf.source_wf_label[i]);
     strcpy(sink_wf_label[i],par_buf.sink_wf_label[i]);
@@ -221,7 +223,7 @@ int readin(int prompt)  {
   a_saveflag_w = par_buf.a_saveflag_w;
   strcpy(a_savefile_w, par_buf.a_savefile_w); 
   a_wqs = par_buf.a_wqs;
-  init_wqs(&a_wqs);
+  init_qs(&a_wqs);
   a_wqs.type = par_buf.a_wqs.type;
 
   strcpy(a0_file, par_buf.a0_file);

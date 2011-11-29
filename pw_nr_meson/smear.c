@@ -39,7 +39,7 @@ static void copy_swave_to_complex_swave(complex *dst, wilson_vector *src,
   
 
 static void swave_to_pwave(complex *pw, complex *sw, int dir,
-			   wilson_quark_source *wqs){
+			   quark_source *wqs){
   int i;
   site *s;
   Real xs;
@@ -59,8 +59,8 @@ static void swave_to_pwave(complex *pw, complex *sw, int dir,
 
 /* Load and allocate space for smearing functions */
 
-void load_smearing(wilson_quark_source source_wqs[], 
-		   wilson_quark_source sink_wqs[], int n){
+void load_smearing(quark_source source_wqs[], 
+		   quark_source sink_wqs[], int n){
   int k;
   wilson_vector *chi; /* Temporary field for reading source */
   
@@ -135,7 +135,7 @@ void free_smearing(int n){
 
 /* Construct smeared source by converting to P-wave */
 
-void make_pwave_source(wilson_quark_source wqs[], int ksrc, int dir){
+void make_pwave_source(quark_source wqs[], int ksrc, int dir){
 
   /* Make P-wave source in phi*/
   swave_to_pwave(phi, phi_src[ksrc], dir, &wqs[ksrc]);

@@ -68,10 +68,10 @@ EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN  char startfile_w[NSM][MAXDIR][MAXFILENAME], a_startfile_w[MAXFILENAME];
 EXTERN  char savefile_w[NSM][MAXDIR][MAXFILENAME], a_savefile_w[MAXFILENAME];
-EXTERN  wilson_quark_source source_wqs[NSM];
-EXTERN  wilson_quark_source sink_wqs[NSM];
-EXTERN  wilson_quark_source a_wqs;
-EXTERN  wilson_quark_source wqstmp;  /* Temporary */
+EXTERN  quark_source source_wqs[NSM];
+EXTERN  quark_source sink_wqs[NSM];
+EXTERN  quark_source a_wqs;
+EXTERN  quark_source wqstmp;  /* Temporary */
 EXTERN  int a_startflag_w;
 EXTERN  int a_saveflag_w;
 EXTERN	int startflag_w[NSM][MAXDIR];  
@@ -131,6 +131,8 @@ EXTERN  double_prn node_prn ;
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
 EXTERN site *lattice;
+
+EXTERN su3_matrix *ape_links;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */

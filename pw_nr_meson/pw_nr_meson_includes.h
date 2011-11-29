@@ -54,16 +54,16 @@ void rotate_w_quark(field_offset, field_offset, float);
 
 void smear_quark(int ksnk, int dir1, int dir2);
 
-void load_smearing(wilson_quark_source source_wqs[], 
-		   wilson_quark_source sink_wqs[], int n);
+void load_smearing(quark_source source_wqs[], 
+		   quark_source sink_wqs[], int n);
 void free_smearing(int n);
 
-void make_pwave_source(wilson_quark_source source_wqs[], int ksrc, int dir);
+void make_pwave_source(quark_source source_wqs[], int ksrc, int dir);
 
 int get_wprop_to_field(int startflag, char startfile[], 
 		      int saveflag, char savefile[],
 		      block_pauli_propagator *prop,
-		      wilson_quark_source *wqs,
+		      quark_source *wqs,
 		      quark_invert_control *qic,
 		      dirac_clover_param *dcp);
 

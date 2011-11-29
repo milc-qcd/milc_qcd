@@ -25,15 +25,15 @@ typedef struct {
   char a_startfile_w[MAXFILENAME];
   int a_saveflag_w;
   char a_savefile_w[MAXFILENAME];
-  wilson_quark_source a_wqs;
+  quark_source a_wqs;
   
   int startflag_w[NSM][MAXDIR];
   char startfile_w[NSM][MAXDIR][MAXFILENAME];
   
-  wilson_quark_source source_wqs[NSM];  /* source parameters */
+  quark_source source_wqs[NSM];  /* source parameters */
   int saveflag_w[NSM][MAXDIR];
   char savefile_w[NSM][MAXDIR][MAXFILENAME];
-  wilson_quark_source sink_wqs[NSM];  /* sink parameters */
+  quark_source sink_wqs[NSM];  /* sink parameters */
   char source_wf_label[NSM][MAXFILENAME];
   char sink_wf_label[NSM][MAXFILENAME];
   int  num_smear; /* number of smearings */

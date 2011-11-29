@@ -33,7 +33,7 @@ static void convert_wprop_to_block_pauli(block_pauli_propagator *bp,
 int get_wprop_to_field(int startflag, char startfile[], 
 		      int saveflag, char savefile[],
 		      block_pauli_propagator bp[],
-		      wilson_quark_source *my_wqs,
+		      quark_source *my_wqs,
 		      quark_invert_control *my_qic,
 		      dirac_clover_param *my_dcp)
 {

@@ -55,10 +55,8 @@ setup()
   node0_printf("Made lattice\n"); fflush(stdout);
 
   /* Mark t_longlink and t_fatlink as unallocated */
-  init_ferm_links(&fn_links);
-#ifdef DM_DU0
-  init_ferm_links(&fn_links_dmdu0);
-#endif
+  init_ferm_links(&fn_links, &ks_act_paths);
+  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
 
   /* set up neighbor pointers and comlink structures
      code for this routine is in com_machine.c  */
@@ -217,8 +215,9 @@ readin(int prompt)
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
   /* make table of coefficients and permutations of paths in quark action */
-  init_path_table(&ks_act_paths);
-  make_path_table(&ks_act_paths, NULL, 0.);
+  init_path_table(fn_links.ap);
+  init_path_table(fn_links_dmdu0.ap);
+  make_path_table(fn_links.ap, fn_links_dmdu0.ap);
   
   return(0);
 }
