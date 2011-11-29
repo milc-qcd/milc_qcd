@@ -22,23 +22,6 @@
 
 #include "generic_wilson_includes.h"
 
-/* Report inversion status */
-static void report_status(quark_invert_control *qic){
-
-  if(this_node != 0)return;
-  if((qic->resid > 0 && qic->final_rsq > qic->resid )||
-     (qic->relresid > 0 && qic->final_relrsq > qic->relresid))
-    printf(" NOT converged size_r= %.2g rel = %.2g restarts = %d iters= %d\n",
-	   qic->final_rsq, qic->final_relrsq, qic->final_restart, 
-	   qic->final_iters );
-  else
-    printf(" OK converged size_r= %.2g rel = %.2g restarts = %d iters= %d\n",
-	   qic->final_rsq, qic->final_relrsq, qic->final_restart, 
-	   qic->final_iters );
-}
-
-/* Site-structure-based.  Requires source to be created before calling */
-
 int wilson_invert_field( /* Return value is number of iterations taken */
     wilson_vector *src, /* type wilson_vector (where source has been created)*/
     wilson_vector *dest, /* type wilson_vector (answer and initial guess) */
@@ -62,9 +45,9 @@ int wilson_invert_field( /* Return value is number of iterations taken */
 /* This variant builds the source, based on the wqs specification */
 
 int wilson_invert_field_wqs( /* Return value is number of iterations taken */
-    wilson_quark_source *wqs, /* source parameters */
+    quark_source *wqs, /* source parameters */
     int (*source_func_field)(wilson_vector *src, 
-			      wilson_quark_source *wqs),  /* source function */
+			      quark_source *wqs),  /* source function */
     wilson_vector *dest,  /* type wilson_vector (answer and initial guess) */
     int (*invert_func_field)(wilson_vector *src, wilson_vector *dest,
 			     quark_invert_control *qic, void *dcp),
@@ -124,8 +107,8 @@ int wilson_invert_site_wqs( /* Return value is number of iterations taken */
     field_offset src,   /* type wilson_vector (where source is to be created)*/
     field_offset dest,  /* type wilson_vector (answer and initial guess) */
     void (*source_func_site)(field_offset src, 
-			wilson_quark_source *wqs),  /* source function */
-    wilson_quark_source *wqs, /* source parameters */
+			quark_source *wqs),  /* source function */
+    quark_source *wqs, /* source parameters */
     int (*invert_func_site)(field_offset src, field_offset dest,
 			quark_invert_control *qic,void *dcp),
     quark_invert_control *qic, /* inverter control */
