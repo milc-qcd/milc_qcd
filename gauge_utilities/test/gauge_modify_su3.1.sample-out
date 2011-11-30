@@ -1,0 +1,52 @@
+SU3 gauge utility program
+MIMD version 7
+Machine = Scalar processor, with 1 nodes
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 10
+beta 7.09
+n_dyn_masses 2
+dyn_mass 0.0062 0.031 
+dyn_flavors 2 1 
+u0 0.8782
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.4 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Finished setup
+
+
+reload_serial ../binary_samples/lat.sample.l4448
+coulomb_gauge_fix
+fixing to coulomb gauge
+gauge_fix_tol 1e-08
+rshift 0 0 0 0 
+save_serial lat.test.l4448.gf
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4448
+Time stamp Wed Oct 10 14:27:08 2001
+Checksums 13f3b413 161f7dde OK
+Time to reload gauge configuration = 9.450912e-04
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+CHECK NERSC LINKTR: 6.921659e-02 CKSUM: b3be9b3b
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 4.558563e-04
+GFIX: Ended at step 24. Av gf action 8.62916112e-01, delta 0.000e+00
+FIXED TO COULOMB GAUGE
+Saved gauge configuration serially to binary file lat.test.l4448.gf
+Time stamp Wed Apr 30 14:49:21 2008
+Checksums e44e6040 b8a79da4
+Wrote info file lat.test.l4448.gf.info
+Time to save = 1.514912e-03
+CHECK PLAQ: 1.723748e+00 1.690586e+00
+CHECK NERSC LINKTR: 7.632471e-01 CKSUM: f562844b
+
+
+ask_starting_lattice(0): EOF on input.
+RUNNING COMPLETED
+Time = 9.466410e-02 seconds
+exit: Wed Apr 30 14:49:21 2008
+
