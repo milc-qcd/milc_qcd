@@ -1,0 +1,231 @@
+SU3 staggered valence fermions
+MIMD version 7 $Name:  $
+Machine = QMP (portable), with 1 nodes
+start: Mon Sep 28 12:03:57 2009
+
+type 0 for no prompts  or 1 for prompts
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 1234
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.4 MBytes per node for lattice
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l4448.gf
+u0 1
+coulomb_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+boundary_twist 0 0 0 1 
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+# Description of base sources
+number_of_base_sources 1
+# base source 0
+point
+origin 0 0 0 0 
+source_label d
+# Description of completed sources
+number_of_sources 1
+# source 0
+base_source 0
+identity
+source_label I
+# Description of propagators
+number_of_sets 1
+# Parameters for set 0
+max_cg_iterations 1000
+max_cg_restarts 5
+check yes
+source 0
+number_of_propagators 2
+# propagator 0
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-10
+rel_error_for_propagator 0
+fresh_ksprop 
+save_serial_fm_ksprop ks.test.l4448_m0.05_t0_x0_y0_z0
+# propagator 1
+mass 0.02
+naik_term_epsilon 0
+error_for_propagator 1e-10
+rel_error_for_propagator 0
+fresh_ksprop 
+save_serial_fm_ksprop ks.test.l4448_m0.02_t0_x0_y0_z0
+number_of_quarks 4
+# mass 0 PP
+propagator 0
+point
+origin 0 0 0 
+sink_label d
+forget_ksprop 
+# mass 1 PP
+propagator 1
+point
+origin 0 0 0 
+sink_label d
+forget_ksprop 
+# mass 0 PW
+propagator 0
+evenandodd_wall
+sink_label EO
+forget_ksprop 
+# mass 1 PW
+propagator 1
+evenandodd_wall
+sink_label EO
+forget_ksprop 
+# Description of mesons
+number_of_mesons 6
+# pair 0 (masses 0 0 PP)
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.periodic.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^2
+correlator POINT_KAON_5 p000   1 * 0.000244  pion5  0  0  0  E  E  E
+# pair 1 (masses 0 0 PW)
+pair 2 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.periodic.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^3
+correlator WALL_KAON_5 p000   1 * 0.000004  pion5  0  0  0  E  E  E
+# pair 2 (masses 0 1 PP)
+pair 0 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.periodic.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^2
+correlator POINT_KAON_5 p000   1 * 0.000244  pion5  0  0  0  E  E  E
+# pair 3 (masses 0 1 PW)
+pair 2 3 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.periodic.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^3
+correlator WALL_KAON_5 p000   1 * 0.000004  pion5  0  0  0  E  E  E
+# pair 4 (masses 1 1 PP)
+pair 1 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.periodic.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^2
+correlator POINT_KAON_5 p000   1 * 0.000244  pion5  0  0  0  E  E  E
+# pair 5 (masses 1 1 PW)
+pair 3 3 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.periodic.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/(vol3)^3
+correlator WALL_KAON_5 p000   1 * 0.000004  pion5  0  0  0  E  E  E
+# Description of baryons
+number_of_baryons 0
+setting twisted boundary phases
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4448.gf
+Time stamp Wed Oct 10 14:39:47 2001
+Checksums 92a1404 1416736 OK
+Time to reload gauge configuration = 1.487017e-03
+CHECK PLAQ: 1.7237483097967541e+00 1.6905860453290196e+00
+CHECK NERSC LINKTR: 7.5146618382921793e-01 CKSUM: 4afa8e09
+Reunitarized for double precision. Max deviation 9.20e-08 changed to 4.44e-16
+Time to check unitarity = 2.924919e-03
+MAKING PATH TABLES
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.250000e-01     8
+                    1      -6.250000e-02     48
+                    2      1.562500e-02     192
+                    3      -2.604167e-03     384
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.000000e+00     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -1.250000e-01     48
+"1-link + Naik"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.250000e-01     8
+                    1      -4.166667e-02     8
+Time to APE smear 3.550053e-04 sec
+Fixing to Coulomb gauge
+GFIX: Ended at step 1. Av gf action 8.62916018e-01, delta 3.006e-08
+Time to gauge fix 8.474112e-03
+END OF HEADER
+Mass= 0.05 source point residue= 1e-10 rel= 0
+Mass= 0.02 source point residue= 1e-10 rel= 0
+Time to save prop color 0 = 8.702278e-05
+Time to save prop color 0 = 7.700920e-05
+Time to save prop color 1 = 3.814697e-05
+Time to save prop color 1 = 3.814697e-05
+Time to save prop color 2 = 3.790855e-05
+Time to save prop color 2 = 3.790855e-05
+Wrote KS prop file ks.test.l4448_m0.05_t0_x0_y0_z0 time stamp Mon Sep 28 12:03:57 2009
+Saved propagator to ks.test.l4448_m0.05_t0_x0_y0_z0
+Wrote KS prop file ks.test.l4448_m0.02_t0_x0_y0_z0 time stamp Mon Sep 28 12:03:57 2009
+Saved propagator to ks.test.l4448_m0.02_t0_x0_y0_z0
+Time to compute propagators 2.326615e+00
+Time to generate sink operator 4.196167e-05
+Time to generate sink operator 8.702278e-05
+Time for FFT 6.440878e-03
+Time for build sink field 1.597404e-05
+Time for FFT of chi and multiply 1.477003e-03
+Time for FFT 4.402876e-03
+Time to generate sink operator 1.247215e-02
+Time for FFT 6.330013e-03
+Time for build sink field 1.406670e-05
+Time for FFT of chi and multiply 1.451015e-03
+Time for FFT 4.685163e-03
+Time to generate sink operator 1.258302e-02
+Mesons for quarks 0 and 0
+Time for diagonal mesons 3.459454e-04
+Time for printing correlator 2.918243e-04
+Mesons for quarks 2 and 2
+Time for diagonal mesons 3.290176e-04
+Time for printing correlator 4.315376e-05
+Mesons for quarks 0 and 1
+Time for offdiag mesons 3.230572e-04
+Time for printing correlator 4.506111e-05
+Mesons for quarks 2 and 3
+Time for offdiag mesons 3.199577e-04
+Time for printing correlator 4.220009e-05
+Mesons for quarks 1 and 1
+Time for diagonal mesons 3.139973e-04
+Time for printing correlator 5.793571e-05
+Mesons for quarks 3 and 3
+Time for diagonal mesons 4.320145e-04
+Time for printing correlator 4.291534e-05
+Time to tie meson correlators 2.707958e-03
+Time to tie baryon correlators 1.907349e-06
+RUNNING COMPLETED
+Time = 2.363033e+00 seconds
+total_iters = 2196
+destroy quark[0]
+destroy quark[1]
+destroy quark[2]
+destroy quark[3]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Mon Sep 28 12:03:59 2009
+
