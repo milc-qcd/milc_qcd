@@ -9,8 +9,7 @@
 
 void close_usqcd_ksprop_read(QIO_Reader *infile);
 void close_usqcd_ksprop_write(QIO_Writer *outfile);
-int io_detect_ks_usqcd(char *filename);
-QIO_Reader *open_usqcd_ksprop_read(char *filename, int serpar);
+QIO_Reader *open_usqcd_ksprop_read(char *filename, int serpar, char **fileinfo);
 QIO_Writer *open_usqcd_ksprop_write(char *filename, int volfmt, 
 				    int serpar, int ildgstyle, 
 				    char *stringLFN, int milc_type,
