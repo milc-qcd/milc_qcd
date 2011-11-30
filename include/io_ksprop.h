@@ -28,7 +28,7 @@
 #include "../include/macros.h"
 #include "../include/io_lat.h"
 #include "../include/generic.h"
-#include "../include/generic_ks.h"
+//#include "../include/generic_ks.h"
 #include <stdio.h>
 
 #ifdef HAVE_QIO
@@ -37,7 +37,7 @@
 
 /* Used to create info file name */
 
-#define ASCII_PROP_INFO_EXT ".info"
+#define ASCII_INFO_EXT ".info"
 
 /* version numbers */
 #include "../include/file_types.h"
@@ -78,9 +78,10 @@ typedef struct {
   int              parallel;      /* 1 if file was opened in parallel
 				     0 if serial */
   ks_prop_check    check;         /* Checksum */
-  su3_vector *     prop;         /* If we have to read the data in one lump*/
+  su3_vector *     prop;          /* If we have to read the data in one lump*/
   int              file_type;     /* File format */
   FILE *           info_fp;       /* Pointer to info file */
+  char *           info;          /* ASCII metadata */
 #ifdef HAVE_QIO
   QIO_Reader *     infile;       /* For QIO reading */
   QIO_Writer *     outfile;      /* For QIO writing */
@@ -170,8 +171,9 @@ int write_ksprop_info_item( FILE *fpout, /* ascii file pointer */
 			    int stride);     /* byte stride of data if
 						count > 1 */
 
-ks_prop_file *setup_input_ksprop_file(char *filename);
-ks_prop_file *setup_output_ksprop_file(void);
+ks_prop_file *create_input_ksprop_file_handle(char *filename);
+ks_prop_file *create_output_ksprop_file_handle(void);
+void destroy_ksprop_file_handle(ks_prop_file *kspf);
 
 /**********************************************************************/
 /* In ksprop_info.c (application dependent) */
@@ -209,13 +211,11 @@ void w_serial_ksprop_tt(char *filename, field_offset prop);
 void w_ascii_ksprop_tt(char *filename, field_offset prop);
 
 ks_prop_file *r_ascii_ks_i(char *filename);
-int r_ascii_ks(ks_prop_file *kspf, int color, field_offset src);
+int r_ascii_ks(ks_prop_file *kspf, int color, su3_vector *dest_field);
 void r_ascii_ks_f(ks_prop_file *kspf);
-ks_prop_file *setup_input_ksprop_file(char *filename);
-ks_prop_file *setup_output_ksprop_file(void);
 
 ks_prop_file *w_ascii_ks_i(char *filename);
-void w_ascii_ks(ks_prop_file *kspf, int color, field_offset src);
+void w_ascii_ks(ks_prop_file *kspf, int color, su3_vector *src_field);
 void w_ascii_ks_f(ks_prop_file *kspf);
 
 
@@ -228,7 +228,8 @@ ks_prop_file *save_ksprop_ascii(char *filename, field_offset prop);
 
 void swrite_ks_fm_prop_hdr(FILE *fp, ks_prop_header *ksph);
 void write_ks_fmprop_info_file(ks_prop_file *pf);
-ks_prop_file *setup_output_ks_fmprop_file(void);
+ks_prop_file *create_input_ks_fmprop_file_handle(char *filename);
+ks_prop_file *create_output_ks_fmprop_file_handle(void);
 ks_prop_file *w_serial_ks_fm_i(char *filename);
 void w_serial_ks_fm_from_site(ks_prop_file *kspf, field_offset prop);
 void w_serial_ks_fm_from_field(ks_prop_file *kspf, su3_vector *prop);
@@ -241,7 +242,6 @@ void r_serial_ks_fm_f(ks_prop_file *kspf);
 /* Prototypes for io_helpers_ks.c */
 
 void interpret_usqcd_ks_save_flag(int *volfmt, int *serpar, int flag);
-void setup_input_usqcd_ksprop_file(ks_prop_file *kspf);
 int read_lat_dim_ksprop(char *filename, int file_type, int *ndim, int dims[]);
 
 ks_prop_file *r_open_ksprop(int flag, char *filename);
@@ -249,30 +249,39 @@ ks_prop_file *r_open_ksprop(int flag, char *filename);
 void r_close_ksprop(int flag, ks_prop_file *kspf);
 ks_prop_file *w_open_ksprop(int flag, char *filename, int source_type);
 void w_close_ksprop(int flag, ks_prop_file *kspf);
-int reload_ksprop_to_field3( int flag, char *filename, ks_quark_source *ksqs,
+int reload_ksprop_to_field3( int flag, char *filename, quark_source *ksqs,
 			     su3_vector *dest, int timing);
 int reload_ksprop_to_ksp_field( int flag, char *filename, 
-				ks_quark_source *ksqs,
-				ks_prop_field dest, int timing);
-int reload_ksprop_to_site3( int flag, char *filename, ks_quark_source *ksqs,
+				quark_source *ksqs,
+				ks_prop_field *dest, int timing);
+int reload_ksprop_to_site3( int flag, char *filename, quark_source *ksqs,
 			   field_offset dest, int timing);
 int reload_ksprop_c_to_field( int flag, ks_prop_file *kspf, 
-			      ks_quark_source *ksqs, int color, 
+			      quark_source *ksqs, int color, 
 			      su3_vector *dest, int timing);
 void save_ksprop_from_field3( int flag, char *filename, char *recxml, 
-			      ks_quark_source *ksqs,
+			      quark_source *ksqs,
 			      su3_vector *src, int timing);
 void save_ksprop_from_ksp_field( int flag, char *filename, char *recxml, 
-				 ks_quark_source *ksqs,
-				 ks_prop_field src, int timing);
+				 quark_source *ksqs,
+				 ks_prop_field *src, int timing);
 void save_ksprop_from_site3( int flag, char *filename, char *recxml, 
-			     ks_quark_source *ksqs,
+			     quark_source *ksqs,
 			     field_offset src, int timing);
 int save_ksprop_c_from_field( int flag, ks_prop_file *kspf, 
-			      ks_quark_source *ksqs,
+			      quark_source *ksqs,
 			      int color, su3_vector *src, 
 			      char *recinfo, int timing);
 int ask_starting_ksprop( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ending_ksprop( FILE *fp, int prompt, int *flag, char *filename );
+int convert_outflag_to_inflag_ksprop(int out_flag);
+
+/**********************************************************************/
+/* Declarations for I/O routines in io_source_ks_fm.c */
+
+ks_fm_source_file * r_source_ks_fm_i(char *filename);
+void r_source_ks_fm(ks_fm_source_file *kssf, su3_vector *dest_field,
+		    int x0, int y0, int z0, int t0);
+void r_source_ks_fm_f(ks_fm_source_file *kssf);
 
 #endif /* _IO_PROP_KS_H */
