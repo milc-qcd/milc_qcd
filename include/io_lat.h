@@ -187,7 +187,7 @@ extern char *gauge_info_keyword[];
 
 /* Used to create info file name */
 
-#define ASCII_GAUGE_INFO_EXT ".info"
+#define ASCII_INFO_EXT ".info"
 
 /**********************************************************************/
 /* 1996 Binary file format follows.  Note, this format was not in wide
@@ -444,7 +444,7 @@ void w_serial_f(gauge_file *gf);
 void r_serial_f(gauge_file *gf);
 void w_parallel_f(gauge_file *gf);
 void r_parallel_f(gauge_file *gf);
-
+char *read_info_file(char base_filename[]);
 
 void byterevn(int32type w[], int n);
 
