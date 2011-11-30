@@ -2,6 +2,7 @@
 #define _MACROS_H
 
 #include <defines.h>
+#include "../include/dirs.h"
 
 /* Macros common to all applications */
 
@@ -28,6 +29,7 @@
 #define NO_GAUGE_FIX 30
 #define COULOMB_GAUGE_FIX 31
 #define LANDAU_GAUGE_FIX 32
+#define AXIAL_GAUGE_FIX 33
 
 /* ---------------------------------------------------------- */
 /* "field offset" and "field pointer" */
@@ -87,15 +89,25 @@ typedef int field_offset;
 
 #define FOREVENSITES(i,s) \
     for(i=0,s=lattice;i<even_sites_on_node;i++,s++)
+#define FOREVENFIELDSITES(i) \
+    for(i=0;i<even_sites_on_node;i++)
 #define FORODDSITES(i,s) \
     for(i=even_sites_on_node,s= &(lattice[i]);i<sites_on_node;i++,s++)
+#define FORODDFIELDSITES(i) \
+    for(i=even_sites_on_node;i<sites_on_node;i++)
 #define FORSOMEPARITY(i,s,choice) \
     for( i=((choice)==ODD ? even_sites_on_node : 0 ),  \
     s= &(lattice[i]); \
     i< ( (choice)==EVEN ? even_sites_on_node : sites_on_node); \
     i++,s++)
+#define FORSOMEFIELDPARITY(i,choice) \
+    for( i=((choice)==ODD ? even_sites_on_node : 0 );	\
+    i< ( (choice)==EVEN ? even_sites_on_node : sites_on_node); \
+    i++)
 #define FORALLSITES(i,s) \
     for(i=0,s=lattice;i<sites_on_node;i++,s++)
+#define FORALLFIELDSITES(i) \
+    for(i=0;i<sites_on_node;i++)
 
 /*--------------*/
 #else	/* N_SUBL32 */
@@ -114,6 +126,8 @@ typedef int field_offset;
 */
 #define FORALLSITES(i,s) \
     for(i=0,s=lattice;i<sites_on_node;i++,s++)
+#define FORALLFIELDSITES(i) \
+    for(i=0;i<sites_on_node;i++)
 #define FORSOMESUBLATTICE(i,s,subl) \
     for( i=(subl*subl_sites_on_node), s= &(lattice[i]), \
 	 last_in_loop=((subl+1)*subl_sites_on_node); \
