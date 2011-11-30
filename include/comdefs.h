@@ -51,6 +51,11 @@ void terminate(int status);
 char *machine_type(void);
 int mynode(void);
 int numnodes(void);
+int myjobid(void);
+int numjobs(void);
+int const *nodegeom(void);
+int *jobgeom(void);
+int *ionodegeom(void);
 void g_sync(void);
 void g_intsum(int *ipt);
 void g_uint32sum(u_int32type *pt);
@@ -79,7 +84,7 @@ void get_field(char *buf, int size, int fromnode);
 double dclock_cpu(void);
 double dclock(void);
 void time_stamp(char *msg);
-
+void get_utc_datetime(char *time_string);
 void make_nn_gathers(void);
 void sort_eight_gathers(int index);
 #define sort_eight_neighborlists sort_eight_gathers
