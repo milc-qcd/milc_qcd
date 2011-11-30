@@ -4,7 +4,7 @@ DESTPATH = ${HOME}/public_html/milc
 DELIVERABLES = milcv7.html milcv7_toc.html milcv7.ps
 
 .texi.html::
-	texi2html $*.texi
+	texi2html --l2h --iftex $*.texi
 
 .dvi.ps::
 	dvips $*.dvi
