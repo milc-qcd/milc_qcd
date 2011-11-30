@@ -69,6 +69,8 @@ QOP_status_t initialize_qop(void);
 #define unload_D_to_site  unload_F_D_to_site
 #define unload_D_to_field unload_F_D_to_field
 
+#define map_milc_clov_to_qop_raw map_milc_clov_to_qop_raw_F
+
 #else
 
 #define create_raw4_G  create_raw4_D_G
@@ -122,6 +124,8 @@ QOP_status_t initialize_qop(void);
 #define unload_D_to_site  unload_D_D_to_site
 #define unload_D_to_field unload_D_D_to_field
 
+#define map_milc_clov_to_qop_raw map_milc_clov_to_qop_raw_D
+
 #endif
 
 QOP_F3_ColorVector* create_F_V_from_site(field_offset src, int parity);
@@ -153,6 +157,9 @@ QOP_F3_FermionLinksAsqtad* create_F_L_from_fields( su3_matrix *fat,
 
 void unload_F_L_to_fields( su3_matrix *fat, su3_matrix *lng, 
 			  QOP_F3_FermionLinksAsqtad* qop, int parity);
+
+void unload_F_hisq_L_to_fields( su3_matrix *fat, su3_matrix *lng, 
+			  QOP_F3_FermionLinksHisq* qop, int parity);
 
 
 QOP_D3_ColorVector* create_D_V_from_site(field_offset src, int parity);
@@ -186,4 +193,12 @@ QOP_D3_FermionLinksAsqtad* create_D_L_from_fields( su3_matrix *fat,
 void unload_D_L_to_fields( su3_matrix *fat, su3_matrix *lng, 
 			  QOP_D3_FermionLinksAsqtad* qop, int parity);
 
-#endif /* GENERIC_QOPQDP_H */
+void unload_D_hisq_L_to_fields( su3_matrix *fat, su3_matrix *lng, 
+			  QOP_D3_FermionLinksHisq* qop, int parity);
+
+#include "../include/generic_clover.h"
+
+void map_milc_clov_to_qop_raw_F(float *raw_clov, clover *milc_clov );
+void map_milc_clov_to_qop_raw_D(double *raw_clov, clover *milc_clov );
+
+#endif /* GENERIC_QOP_H */
