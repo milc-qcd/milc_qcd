@@ -7,7 +7,6 @@
 /**********************************************************************/
 /* In io_scidac_w.c */
 
-int io_detect_w_usqcd(char *filename);
 QIO_Reader *r_open_w_vector_scidac_file(char *filename, int serpar);
 void r_close_usqcd_wprop_file(QIO_Reader *infile);
 void r_close_w_vector_scidac_file(QIO_Reader *infile);
@@ -42,8 +41,6 @@ QIO_Writer *w_open_usqcd_wprop_file(char *filename, int volfmt,
 void w_close_w_vector_scidac_file(QIO_Writer *outfile);
 QIO_Writer *w_open_w_vector_scidac_file(char *filename, char *fileinfo, 
 					int volfmt, int serpar);
-int w_prop_milc_to_usqcd(int milc_type);
-int w_prop_usqcd_to_milc(int usqcd_type);
 int write_prop_usqcd_sc(QIO_Writer *outfile, wilson_vector *src, int spin, 
 			int color, char *recinfo);
 int write_wpropsource_C_usqcd(QIO_Writer *outfile, char *srcinfo, complex *src, 
