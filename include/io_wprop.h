@@ -160,7 +160,7 @@ extern char *w_prop_info_keyword[];
 
 /* Used to create info file name */
 
-#define ASCII_W_PROP_INFO_EXT ".info"
+#define ASCII_INFO_EXT ".info"
 
 /* 2. Parallel files only:
 
@@ -208,9 +208,9 @@ typedef struct {
 /**********************************************************************/
 /* Declarations for I/O routines in io_source_w_fm.c */
 void r_source_w_fm_to_site(char *filename, field_offset dest_site,
-			   int spin, int color, int t0, int sourcetype);
+			   int spin, int color, int x0, int y0, int z0, int t0);
 void r_source_w_fm_to_field(char *filename, wilson_vector *dest_field,
-			    int spin, int color, int t0, int sourcetype);
+			    int spin, int color, int x0, int y0, int z0, int t0);
 
 /* Declarations for I/O routines in io_prop_w.c */
 
@@ -318,30 +318,30 @@ int read_lat_dim_wprop(char *filename, int file_type, int *ndim, int dims[]);
 w_prop_file *r_open_wprop(int flag, char *filename);
 w_prop_file *w_open_wprop(int flag, char *filename, int source_type);
 int reload_wprop_sc_to_field( int flag, w_prop_file *wpf, 
-			      wilson_quark_source *wqs, int spin, int color, 
+			      quark_source *wqs, int spin, int color, 
 			      wilson_vector *dest, int timing);
 int save_wprop_sc_from_field( int flag, w_prop_file *wpf, 
-			      wilson_quark_source *wqs, int spin, int color, 
+			      quark_source *wqs, int spin, int color, 
 			      wilson_vector *src, char *recinfo, int timing);
-int reload_wprop_to_field( int flag, char *filename, wilson_quark_source *wqs,
+int reload_wprop_to_field( int flag, char *filename, quark_source *wqs,
 			   wilson_propagator *dest, int timing);
 int reload_wprop_to_wp_field( int flag, char *filename, 
-			      wilson_quark_source *wqs,
-			      wilson_prop_field dest, int timing);
-int save_wprop_from_field( int flag, char *filename, wilson_quark_source *wqs,
+			      quark_source *wqs,
+			      wilson_prop_field *dest, int timing);
+int save_wprop_from_field( int flag, char *filename, quark_source *wqs,
 			   wilson_propagator *src, char *recxml, int timing);
 int save_wprop_from_wp_field( int flag, char *filename, 
-			      wilson_quark_source *wqs,
-			      wilson_prop_field src, char *recxml, int timing);
+			      quark_source *wqs,
+			      wilson_prop_field *src, char *recxml, int timing);
 int reload_wprop_sc_to_site( int flag, w_prop_file *wpf,
-			     wilson_quark_source *wqs, int spin, int color, 
+			     quark_source *wqs, int spin, int color, 
 			     field_offset dest, int timing);
 int save_wprop_sc_from_site( int flag, w_prop_file *wpf, 
-			     wilson_quark_source *wqs, int spin, int color, 
+			     quark_source *wqs, int spin, int color, 
 			     field_offset src, int timing);
-int reload_wprop_to_site( int flag, char *filename, wilson_quark_source *wqs,
+int reload_wprop_to_site( int flag, char *filename, quark_source *wqs,
 			  field_offset dest, int timing);
-int save_wprop_from_site( int flag, char *filename, wilson_quark_source *wqs,
+int save_wprop_from_site( int flag, char *filename, quark_source *wqs,
 			  field_offset src, char *recxml, int timing);
 void r_close_wprop(int flag, w_prop_file *wpf);
 void w_close_wprop(int flag, w_prop_file *wpf);
