@@ -13,8 +13,9 @@
 void update_h( Real eps ){
   int ff_prec = PRECISION;  /* Just use prevailing precision for now */
 #ifdef FN
-    free_fn_links(&fn_links);
-    free_fn_links(&fn_links_dmdu0);
+//    free_fn_links(&fn_links);
+//    free_fn_links(&fn_links_dmdu0);
+  invalidate_fermion_links(fn_links);
 #endif
     /* gauge field force */
     rephase(OFF);
@@ -25,21 +26,20 @@ void update_h( Real eps ){
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
 #ifdef ONEMASS
-    eo_fermion_force_oneterm( eps, ((Real)nflavors)/4., F_OFFSET(xxx),
-			      ff_prec, &fn_links, &ks_act_paths );
+    eo_fermion_force_oneterm_site( eps, ((Real)nflavors)/4., F_OFFSET(xxx),
+				   ff_prec, fn_links );
 #else
 /**
    eo_fermion_force_oneterm( eps, ((Real)nflavors1)/4., F_OFFSET(xxx1),
-        ff_prec, &fn_links, &ks_act_paths );
+        ff_prec, fn_links );
     eo_fermion_force_oneterm( eps, ((Real)nflavors2)/4., F_OFFSET(xxx2),
-        ff_prec, &fn_links, &ks_act_paths );
+        ff_prec, fn_links );
 **/
 /**/
-    eo_fermion_force_twoterms( eps, ((Real)nflavors1)/4., 
-			       ((Real)nflavors2)/4., F_OFFSET(xxx1), 
-			       F_OFFSET(xxx2), ff_prec, &fn_links, 
-			       &ks_act_paths );
-/**/
+    eo_fermion_force_twoterms_site( eps, ((Real)nflavors1)/4., 
+				    ((Real)nflavors2)/4., F_OFFSET(xxx1), 
+				    F_OFFSET(xxx2), ff_prec, fn_links );
+    /**/
 #endif
 } /* update_h */
 

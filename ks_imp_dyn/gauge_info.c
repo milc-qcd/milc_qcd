@@ -23,7 +23,6 @@
    */
 
 #include "ks_imp_includes.h"
-#define IMP_QUARK_ACTION_INFO_ONLY
 #include <quark_action.h>
 #ifdef HAVE_QIO
 #include <qio.h>
@@ -59,7 +58,7 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf)
   write_gauge_info_item(fp,"gauge.stplaq","%f",(char *)&mystplaq,0,0);
   write_gauge_info_item(fp,"gauge.nersc_linktr","%e",
 			(char *)&(nersc_linktr),0,0);
-  write_gauge_info_item(fp,"gauge.nersc_checksum","%lu",
+  write_gauge_info_item(fp,"gauge.nersc_checksum","%u",
 			(char *)&(nersc_checksum),0,0);
   write_gauge_info_item(fp,"quark.description","%s",QUARK_ACTION_DESCRIPTION,0,0);
 #ifdef ONEMASS
@@ -119,7 +118,7 @@ char *create_MILC_info(){
   sprint_gauge_info_item(info+bytes, max-bytes,"gauge.nersc_linktr","%e",
 			 (char *)&nersc_linktr,0,0);
   bytes = strlen(info);
-  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.nersc_checksum","%lu",
+  sprint_gauge_info_item(info+bytes, max-bytes,"gauge.nersc_checksum","%u",
 			 (char *)&nersc_checksum,0,0);
   
   bytes = strlen(info);

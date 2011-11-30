@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.17  2011/11/30 01:17:50  detar
+//  Support new fermion links methodology.
+//
 //  Revision 1.16  2009/05/31 02:00:57  detar
 //  Fix "continue" and NULL startlat_p bug in clover_info.c and setup*.c
 //
@@ -90,9 +93,6 @@ int
 setup()
 {
   int initial_set();
-#ifdef HAVE_QDP
-  int i;
-#endif
   int prompt;
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
@@ -104,12 +104,8 @@ setup()
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
   /* Set pointers to NULL */
-#ifdef FN  
-  init_ferm_links(&fn_links);
-#ifdef DM_DU0
-  init_ferm_links(&fn_links_dmdu0);
-#endif
-#endif
+//  init_ferm_links(&fn_links, &ks_act_paths);
+//  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
 
   node0_printf("Made lattice\n"); fflush(stdout);
   /* set up neighbor pointers and comlink structures
@@ -123,17 +119,6 @@ setup()
   /* set up K-S phase vectors, boundary conditions */
   phaseset();
   
-#ifdef HAVE_QDP
-  for(i=0; i<4; ++i) {
-    shiftdirs[i] = QDP_neighbor[i];
-    shiftdirs[i+4] = neighbor3[i];
-  }
-  for(i=0; i<8; ++i) {
-    shiftfwd[i] = QDP_forward;
-    shiftbck[i] = QDP_backward;
-  }
-#endif
-
   node0_printf("Finished setup\n"); fflush(stdout);
   return( prompt );
 }
@@ -153,8 +138,6 @@ initial_set()
     /* print banner */
     printf("SU3 with improved KS action\n");
     printf("Microcanonical simulation with refreshing\n");
-    printf("MIMD version 7 $Name:  $\n");
-    printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
 #ifdef HMC_ALGORITHM
     printf("Hybrid Monte Carlo algorithm\n");
 #endif
@@ -166,10 +149,16 @@ initial_set()
 #ifdef SPECTRUM
     printf("With spectrum measurements\n");
 #endif
+    printf("MIMD version %s\n",MILC_CODE_VERSION);
+    printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
+    gethostname(hostname, 128);
+    printf("Host(0) = %s\n",hostname);
+    printf("Username = %s\n", getenv("USER"));
     /* Print list of options selected */
     node0_printf("Options selected...\n");
     show_generic_opts();
     show_generic_ks_opts();
+    show_generic_ks_md_opts();
 #ifdef INT_ALG
     node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
 #endif
@@ -308,11 +297,9 @@ readin(int prompt)
     IF_OK status += get_f(stdin, prompt,"error_for_propagator", &x );
     IF_OK par_buf.rsqprop = x*x;
     
-#ifdef NPBP_REPS
     /* number of random sources npbp_reps */
     IF_OK status += get_i(stdin, prompt,"npbp_reps", &par_buf.npbp_reps_in );
     IF_OK status += get_i(stdin, prompt,"prec_pbp", &par_buf.prec_pbp );
-#endif
     
 #ifdef SPECTRUM
     /* request list for spectral measurments */
@@ -417,21 +404,26 @@ readin(int prompt)
   }
   if( startflag != CONTINUE )
     startlat_p = reload_lattice( startflag, startfile );
-#ifdef FN
-  invalidate_all_ferm_links(&fn_links);
-#ifdef DM_DU0
-  invalidate_all_ferm_links(&fn_links_dmdu0);
-#endif
-#endif
+
   phases_in = OFF;
   rephase( ON );
   
+  /* Set uptions for fermion links */
+#ifdef DM_DU0
+  /* We want to calculate both the links and their u0 derivatives */
+  fermion_links_want_du0(1);
+#endif
+  
+#ifdef DBLSTORE_FN
+  /* We want to double-store the links for optimization */
+  fermion_links_want_back(1);
+#endif
+  
+  fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();
   /* make table of coefficients and permutations of paths in quark action */
-  init_path_table(&ks_act_paths);
-  init_path_table(&ks_act_paths_dmdu0);
-  make_path_table(&ks_act_paths, &ks_act_paths_dmdu0);
   
   return(0);
 }
@@ -444,9 +436,6 @@ void
 make_3n_gathers()
 {
   int i;
-#ifdef HAVE_QDP
-  int disp[4]={0,0,0,0};
-#endif
   
   for(i=XUP; i<=TUP; i++) {
     make_gather(third_neighbor, &i, WANT_INVERSE,
@@ -458,13 +447,6 @@ make_3n_gathers()
   
   sort_eight_gathers(X3UP);
 
-#ifdef HAVE_QDP
-  for(i=0; i<4; i++) {
-    disp[i] = 3;
-    neighbor3[i] = QDP_create_shift(disp);
-    disp[i] = 0;
-  }
-#endif
 }
 
 /* this routine uses only fundamental directions (XUP..TDOWN) as directions */

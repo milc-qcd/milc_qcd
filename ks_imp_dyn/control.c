@@ -31,9 +31,7 @@ main( int argc, char **argv )
   double dtime, dclock();
   
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
@@ -72,173 +70,32 @@ main( int argc, char **argv )
 	g_measure( );
 	rephase(ON);
 
-	/* Load fat and long links for fermion measurements */
-	load_ferm_links(&fn_links, &ks_act_paths);
-#ifdef DM_DU0
-	load_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
-#endif
+	restore_fermion_links_from_site(fn_links, prec_pbp);
 
 	/* Measure pbp, etc */
 #ifdef ONEMASS
-	f_meas_imp(F_OFFSET(phi),F_OFFSET(xxx),mass, &fn_links, 
-		   &fn_links_dmdu0);
+	  f_meas_imp( npbp_reps_in, prec_pbp, 
+		      F_OFFSET(phi),F_OFFSET(xxx),mass, 0, fn_links);
 #else
-	f_meas_imp( F_OFFSET(phi1), F_OFFSET(xxx1), mass1, 
-		    &fn_links, &fn_links_dmdu0);
-	f_meas_imp( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-		    &fn_links, &fn_links_dmdu0);
+	f_meas_imp( npbp_reps_in, prec_pbp, 
+		    F_OFFSET(phi1), F_OFFSET(xxx1), mass1, 0, fn_links);
+	f_meas_imp( npbp_reps_in, prec_pbp, 
+		    F_OFFSET(phi2), F_OFFSET(xxx2), mass2, 0, fn_links);
 #endif
 
 	/* Measure derivatives wrto chemical potential */
 #ifdef D_CHEM_POT
 #ifdef ONEMASS
-	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass,
-		  &fn_links, &fn_links_dmdu0);
+	Deriv_O6( npbp_reps_in, prec_pbp, F_OFFSET(phi1), 
+		  F_OFFSET(xxx1), F_OFFSET(xxx2), mass, fn_links);
 #else
-	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass1,
-		  &fn_links, &fn_links_dmdu0);
-	Deriv_O6( F_OFFSET(phi1), F_OFFSET(xxx1), F_OFFSET(xxx2), mass2,
-		  &fn_links, &fn_links_dmdu0);
+	Deriv_O6( npbp_reps_in, prec_pbp, F_OFFSET(phi1), 
+		  F_OFFSET(xxx1), F_OFFSET(xxx2), mass1, fn_links);
+	Deriv_O6( npbp_reps_in, prec_pbp, F_OFFSET(phi1), 
+		  F_OFFSET(xxx1), F_OFFSET(xxx2), mass2, fn_links);
 #endif
 #endif
 
-#ifdef SPECTRUM 
-	/* Fix TUP Coulomb gauge - gauge links only*/
-	rephase( OFF );
-	gaugefix(TUP,(Real)1.8,500,(Real)GAUGE_FIX_TOL);
-	rephase( ON );
-#ifdef FN
-	invalidate_all_ferm_links(&fn_links);
-#ifdef DM_DU0
-	invalidate_all_ferm_links(&fn_links_dmdu0);
-#endif
-#endif
-	/* Load fat and long links for fermion measurements */
-	load_ferm_links(&fn_links, &ks_act_paths);
-#ifdef DM_DU0
-	load_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
-#endif	
-	if(strstr(spectrum_request,",spectrum,") != NULL){
-#ifdef ONEMASS
-	  avspect_iters += spectrum2(mass,F_OFFSET(phi),F_OFFSET(xxx),
-				     &fn_links);
-#else
-	  avspect_iters += spectrum2( mass1, F_OFFSET(phi1),
-				      F_OFFSET(xxx1), &fn_links);
-	  avspect_iters += spectrum2( mass2, F_OFFSET(phi1),
-				      F_OFFSET(xxx1), &fn_links);
-#endif
-	}
-	
-	if(strstr(spectrum_request,",spectrum_point,") != NULL){
-#ifdef ONEMASS
-	  avspect_iters += spectrum_fzw(mass,F_OFFSET(phi),F_OFFSET(xxx),
-					&fn_links);
-#else
-	  avspect_iters += spectrum_fzw( mass1, F_OFFSET(phi1),
-					 F_OFFSET(xxx1), &fn_links);
-	  avspect_iters += spectrum_fzw( mass2, F_OFFSET(phi1),
-					 F_OFFSET(xxx1), &fn_links);
-#endif
-	}
-	
-	if(strstr(spectrum_request,",nl_spectrum,") != NULL){
-#ifdef ONEMASS
-	  avspect_iters += nl_spectrum(mass,F_OFFSET(phi),F_OFFSET(xxx),
-				       F_OFFSET(tempmat1),F_OFFSET(staple),
-				       &fn_links);
-#else
-	  avspect_iters += nl_spectrum( mass1, F_OFFSET(phi1), 
-		F_OFFSET(xxx1), F_OFFSET(tempmat1),F_OFFSET(staple),
-					&fn_links);
-#endif
-	}
-	
-	if(strstr(spectrum_request,",spectrum_mom,") != NULL){
-#ifdef ONEMASS
-	  avspect_iters += spectrum_mom(mass,mass,F_OFFSET(phi),5e-3,
-					&fn_links);
-#else
-	  avspect_iters += spectrum_mom( mass1, mass1, 
-					 F_OFFSET(phi1), 1e-1,
-					 &fn_links);
-#endif
-	}
-	
-	if(strstr(spectrum_request,",spectrum_multimom,") != NULL){
-#ifdef ONEMASS
-	  avspect_iters += spectrum_multimom(mass,
-					     spectrum_multimom_low_mass,
-					     spectrum_multimom_mass_step,
-					     spectrum_multimom_nmasses,
-					     5e-3, &fn_links);
-#else
-	  avspect_iters += spectrum_multimom(mass1,
-					     spectrum_multimom_low_mass,
-					     spectrum_multimom_mass_step,
-					     spectrum_multimom_nmasses,
-					     5e-3, &fn_links);
-
-#endif
-	}
-	
-#ifndef ONEMASS
-	if(strstr(spectrum_request,",spectrum_nd,") != NULL){
-	  avspect_iters += spectrum_nd( mass1, mass2, 1e-1,
-					&fn_links);
-	}
-#endif
-	if(strstr(spectrum_request,",spectrum_nlpi2,") != NULL){
-#ifdef ONEMASS
-	  avspect_iters += spectrum_nlpi2(mass,mass,F_OFFSET(phi),5e-3,
-					  &fn_links );
-#else
-	  avspect_iters += spectrum_nlpi2( mass1, mass1, 
-					   F_OFFSET(phi1),1e-1,
-					   &fn_links );
-	  avspect_iters += spectrum_nlpi2( mass2, mass2, 
-					   F_OFFSET(phi1),1e-1,
-					   &fn_links );
-#endif
-	}
-	
-	if(strstr(spectrum_request,",spectrum_singlets,") != NULL){
-#ifdef ONEMASS
-	  avspect_iters += spectrum_singlets(mass, 5e-3, F_OFFSET(phi),
-					     &fn_links);
-#else
-	  avspect_iters += spectrum_singlets(mass1, 5e-3, F_OFFSET(phi1),
-					     &fn_links );
-	  avspect_iters += spectrum_singlets(mass2, 5e-3, F_OFFSET(phi1),
-					     &fn_links );
-#endif
-	}
-
-	if(strstr(spectrum_request,",fpi,") != NULL)
-	  {
-	    avspect_iters += fpi_2( fpi_mass, fpi_nmasses, 2e-3,
-				    &fn_links );
-	  }
-	
-#ifdef HYBRIDS
-	if(strstr(spectrum_request,",spectrum_hybrids,") != NULL){
-#ifdef ONEMASS
-	  avspect_iters += spectrum_hybrids( mass,F_OFFSET(phi),1e-1,
-					     &fn_links);
-#else
-	  avspect_iters += spectrum_hybrids( mass1, F_OFFSET(phi1), 5e-3,
-					     &fn_links);
-	  avspect_iters += spectrum_hybrids( mass2, F_OFFSET(phi1), 2e-3,
-					     &fn_links);
-#endif
-	}
-#endif
-	if(strstr(spectrum_request,",hvy_pot,") != NULL){
-	  rephase( OFF );
-	  hvy_pot( F_OFFSET(link[XUP]) );
-	  rephase( ON );
-	}
-#endif /* SPECTRUM */
 	avs_iters += s_iters;
 	++meascount;
 	fflush(stdout);
@@ -249,10 +106,6 @@ main( int argc, char **argv )
     if(meascount>0)  {
       node0_printf("average cg iters for step= %e\n",
 		   (double)avs_iters/meascount);
-#ifdef SPECTRUM
-      node0_printf("average cg iters for spectrum = %e\n",
-		   (double)avspect_iters/meascount);
-#endif
     }
     
     dtime += dclock();
@@ -277,9 +130,7 @@ main( int argc, char **argv )
 #endif
     }
   }
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
+
   normal_exit(0);
   return 0;
 }

@@ -19,6 +19,7 @@
 #include "../include/macros.h"    /* For MAXFILENAME */
 #include "../include/io_lat.h"    /* For gauge_file */
 #include "../include/generic_ks.h" /* For fn_links and ks_act_paths */
+#include "../include/fermion_links.h"
 
 /* Begin definition of site structure */
 
@@ -198,6 +199,7 @@ EXTERN	int number_of_nodes;	/* number of nodes in use */
 EXTERN  int this_node;		/* node number of this node */
 
 EXTERN gauge_file *startlat_p;
+EXTERN char hostname[128];
 
 /* Each node maintains a structure with the pseudorandom number
    generator state */
@@ -214,9 +216,6 @@ EXTERN site *lattice;
 EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
-EXTERN ferm_links_t        fn_links;
-EXTERN ks_action_paths ks_act_paths;
-EXTERN ferm_links_t        fn_links_dmdu0;
-EXTERN ks_action_paths ks_act_paths_dmdu0;
+EXTERN fermion_links_t        *fn_links;
 
 #endif /* _LATTICE_H */

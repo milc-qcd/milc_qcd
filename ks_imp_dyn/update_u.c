@@ -38,8 +38,7 @@ t6 = eps/6.0;
 gf_av=gf_max=0.0;
 **END TEMP**/
 #ifdef FN
-    free_fn_links(&fn_links);
-    free_fn_links(&fn_links_dmdu0);
+ invalidate_fermion_links(fn_links);
 #endif
     FORALLSITES(i,s){
 	for(dir=XUP; dir <=TUP; dir++){

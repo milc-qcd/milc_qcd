@@ -11,14 +11,12 @@
 * Argument tells whether to use ordinary links or fat links.
 * Gauge must be fixed to Coulomb gauge first.
 */
-#define MAX_T (nt/4)	/* maximum time value for loops */
-#define MAX_X (nx/2-1)	/* maximum spatial distance */
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 void printpath( int *path, int length );
 void shiftmat( field_offset src, field_offset dest, int dir );
 
-void hvy_pot( field_offset links ) {
+void hvy_pot( field_offset links, int max_t, int max_x ) {
     register int i,j,k;
     register site *s;
     int t_dist, x_dist, y_dist, z_dist;
@@ -29,7 +27,7 @@ void hvy_pot( field_offset links ) {
     rephase( OFF );
 
     /* Use tempmat1 to construct t-direction path from each point */
-    for( t_dist=1; t_dist<= MAX_T; t_dist ++){
+    for( t_dist=1; t_dist<= max_t; t_dist ++){
 	if(t_dist==1 ){
 	    FORALLSITES(i,s){
 		su3mat_copy( &(((su3_matrix *)(F_PT(s,links)))[TUP]),
@@ -53,7 +51,7 @@ void hvy_pot( field_offset links ) {
 	oldmat= F_OFFSET(tempmat2);
 	newmat= F_OFFSET(staple);	/* will switch these two */
 
-	for( x_dist=0; x_dist<=MAX_X; x_dist++ ){
+	for( x_dist=0; x_dist<=max_x; x_dist++ ){
 	    for( y_dist=0; y_dist<=x_dist; y_dist+= x_dist>0?x_dist:1 ){
 		/* now gather from spatial dirs, compute products of paths */
 		FORALLSITES(i,s){

@@ -18,6 +18,7 @@
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
 #include "../include/dirs.h"
+#include "../include/fermion_links.h"
 
 #ifdef FN
 #define dslash_site dslash_fn_site
@@ -29,7 +30,7 @@
 #endif
 
 /* prototypes for functions in high level code */
-int setup();
+int setup(void);
 int readin(int prompt);
 int update();
 void update_h( Real eps );
@@ -37,8 +38,7 @@ void update_u( Real eps );
 double hmom_action( );
 double fermion_action( );
 
-
-void hvy_pot( field_offset links );
+void hvy_pot1( field_offset links, int max_x, int max_t );
 void f_measure( field_offset phi_off, field_offset xxx_off, Real mass );
 void gauge_field_copy(field_offset src,field_offset dest);
 void clear_latvec(field_offset v,int parity);
