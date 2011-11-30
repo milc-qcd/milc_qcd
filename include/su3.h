@@ -41,7 +41,10 @@ typedef struct {
 #endif
 
 /* For KS spectroscopy */
-typedef su3_vector ** ks_prop_field;
+typedef struct {
+  su3_vector ** v;  /* For the nc vector fields */
+  int nc;           /* number of vectors */
+} ks_prop_field;
 
 /* Used in HISQ codes */
 /* Rank 4 tensor for storing derivatives */
@@ -116,7 +119,11 @@ typedef struct { dspin_wilson_vector c[3]; } dwilson_propagator;
 #endif
 
 /* For Wilson spectroscopy */
-typedef spin_wilson_vector ** wilson_prop_field;
+typedef struct {
+  spin_wilson_vector ** swv;
+  int nc;
+} wilson_prop_field;
+
 
 #define GAMMAFIVE -1    /* some integer which is not a direction */
 #define PLUS 1          /* flags for selecting M or M_adjoint */
