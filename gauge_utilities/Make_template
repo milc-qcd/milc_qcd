@@ -31,12 +31,14 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 MY_OBJECTS= \
   control.o \
   gauge_info.o \
-  setup.o \
-  shift_lattice.o
+  setup.o
 
 G_OBJECTS = \
   check_unitarity.o \
   d_plaq4.o \
+  field_translation.o \
+  field_utilities.o \
+  gauge_utilities.o \
   gaugefix2.o \
   gauge_stuff.o \
   io_detect.o \
@@ -44,51 +46,21 @@ G_OBJECTS = \
   io_lat4.o \
   io_lat_utils.o \
   make_lattice.o \
+  momentum_twist.o \
   nersc_cksum.o \
   path_product.o \
+  ploop3.o \
   remap_stdio_from_args.o \
   reunitarize2.o \
   ranstuff.o
 
-ifeq ($(strip ${QCDOC}),true)
-  G_OBJECTS += ploop2.o
-else
-  G_OBJECTS += ploop3.o
-endif
-
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o
-endif
-
-G_KS_OBJECTS = \
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_KS_OBJECTS += io_scidac_ks.o
-endif
-
-G_W_OBJECTS = \
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_W_OBJECTS += io_scidac_w.o
+  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
 endif
 
 # Objects depending on architecture and software package 
 
-# Selection of layout
-ifeq ($(strip ${QCDOC}),true)
-  LAYOUT = layout_qcdoc.o # Required
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
-  else
-    LAYOUT = layout_hyper_prime.o # Choices possible here
-  endif
-endif
-
-# EDRAM allocation for QCDOC
-ifeq ($(strip ${QCDOC}),true)
-  QCDOC_OBJECTS = qcdoc_alloc.o
-endif
+LAYOUT = layout_hyper_prime.o # Choices possible here
 
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
@@ -163,8 +135,7 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 gauge_modify_su3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"GAUGE = symanzik_1loop_action.h" \
-	"EXTRA_OBJECTS= ${FN_OBJECTS} "
+	"GAUGE = symanzik_1loop_action.h"
 
 clean:
 	-/bin/rm -f *.o

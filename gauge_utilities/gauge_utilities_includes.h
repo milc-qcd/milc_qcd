@@ -23,6 +23,3 @@ int setup();
 int readin(int prompt);
 int update();
 
-void shift_gauge(int rshift[]);
-void gauge_field_copy(field_offset src,field_offset dest);
-

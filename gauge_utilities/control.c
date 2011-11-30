@@ -4,7 +4,6 @@
 
 #define CONTROL
 #include "gauge_utilities_includes.h"	/* definitions files and prototypes */
-#include "lattice_qdp.h"
 #ifdef HAVE_QIO
 #include <qio.h>
 #include "../include/io_scidac.h"
@@ -20,9 +19,7 @@ main( int argc, char **argv )
   int overrelax = 1.5;
   
   initialize_machine(&argc,&argv);
-#ifdef HAVE_QDP
-  QDP_initialize(&argc, &argv);
-#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
@@ -49,7 +46,10 @@ main( int argc, char **argv )
 
     /* translate the lattice if requested */
     shift_gauge(param.rshift);
-    
+
+    /* Introduce a boundary twist if requested */
+    momentum_twist_site(param.bdry_phase,+1);
+
     /* save lattice if requested */
     if( param.saveflag != FORGET )
       save_lattice( param.saveflag, param.savefile, param.stringLFN );
@@ -63,9 +63,6 @@ main( int argc, char **argv )
   }
   fflush(stdout);
   
-#ifdef HAVE_QDP
-  QDP_finalize();
-#endif  
   normal_exit(0);
   return 0;
 }

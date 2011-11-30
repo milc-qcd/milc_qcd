@@ -33,6 +33,7 @@ typedef struct {
   int fixflag;    /* whether to gauge fix */
   Real gauge_fix_tol;
   int rshift[4];
+  Real bdry_phase[4];      /* For introducing twisted boundary conditions */
   int startflag;  /* what to do for beginning lattice */
   int saveflag;   /* what to do with lattice at end */
   char gauge_fix_description[MAXFILENAME];

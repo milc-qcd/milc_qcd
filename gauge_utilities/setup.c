@@ -2,6 +2,9 @@
 /* MIMD version 7 */
 
 //  $Log: setup.c,v $
+//  Revision 1.4  2011/11/30 01:10:50  detar
+//  Remove obsolete QDP referencs.
+//
 //  Revision 1.3  2009/05/31 03:26:41  detar
 //  Correct fix to "continue" handling
 //
@@ -16,7 +19,6 @@
 #define IF_OK if(status==0)
 
 #include "gauge_utilities_includes.h"	/* definitions files and prototypes */
-#include "lattice_qdp.h"
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
@@ -25,9 +27,6 @@ int
 setup()
 {
   int initial_set();
-#ifdef HAVE_QDP
-  int i;
-#endif
   int prompt;
   
   /* print banner, get initial parameters */
@@ -45,16 +44,6 @@ setup()
   make_nn_gathers();
   node0_printf("Made nn gathers\n"); fflush(stdout);
   
-#ifdef HAVE_QDP
-  for(i=0; i<4; ++i) {
-    shiftdirs[i] = QDP_neighbor[i];
-  }
-  for(i=0; i<8; ++i) {
-    shiftfwd[i] = QDP_forward;
-    shiftbck[i] = QDP_backward;
-  }
-#endif
-
   node0_printf("Finished setup\n"); fflush(stdout);
   return prompt;
 }
@@ -157,7 +146,7 @@ readin(int prompt)
 					  param.startfile );
 
     /* Gauge fixing parameters */
-    IF_OK if (prompt!=0) 
+    IF_OK if (prompt==1) 
       printf("enter 'no_gauge_fix', 'landau_gauge_fix', or 'coulomb_gauge_fix'\n");
     IF_OK scanf("%s",param.gauge_fix_description);
     IF_OK printf("%s\n",param.gauge_fix_description);
@@ -189,6 +178,10 @@ readin(int prompt)
     /* Get translation vector */
     IF_OK status += get_vi(stdin, prompt, "rshift", param.rshift, 4);
 
+    /* Get boundary twist */
+    IF_OK status += get_vf(stdin, prompt, "momentum_twist",
+			   param.bdry_phase, 4);
+    
     /* find out what to do with lattice at end */
     IF_OK status += ask_ending_lattice(stdin,  prompt, &(param.saveflag),
 					param.savefile );

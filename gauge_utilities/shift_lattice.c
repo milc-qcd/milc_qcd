@@ -15,9 +15,12 @@ void shift_gauge(int rshift[]){
 
   ndim[XUP] = nx; ndim[YUP] = ny; ndim[ZUP] = nz; ndim[TUP] = nt;
 
+  /* The general gather pulls back by an amount rshift but we want to
+     push foward by the specified amount, so we reverse the rshift
+     here */
   doshift = 0;
   FORALLUPDIR(dir){
-    rshift[dir] = rshift[dir] % ndim[dir];
+    rshift[dir] = (ndim[dir] - rshift[dir]) % ndim[dir];
     if(rshift[dir] != 0)doshift = 1;
   }
 
@@ -37,22 +40,4 @@ void shift_gauge(int rshift[]){
     }
   }
   cleanup_general_gather(tag);
-}
-
-/* copy a gauge field - an array of four su3_matrices */
-void gauge_field_copy(field_offset src,field_offset dest){
-register int i,dir,src2,dest2;
-register site *s;
-    FORALLSITES(i,s){
-	src2=src; dest2=dest;
-        for(dir=XUP;dir<=TUP; dir++){
-	    su3mat_copy( (su3_matrix *)F_PT(s,src2),
-		(su3_matrix *)F_PT(s,dest2) );
-	    src2 += sizeof(su3_matrix);
-	    dest2 += sizeof(su3_matrix);
-	}
-    }
-#ifdef FN
-  invalidate_all_ferm_links(&fn_links);
-#endif
 }
