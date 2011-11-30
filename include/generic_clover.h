@@ -181,6 +181,14 @@ typedef struct {
   int valid_clov;
 } clover;
 
+void mult_this_ldu_site(
+  clover *my_clov,
+  field_offset src,   /* type wilson_vector RECAST AS wilson_block_vector */
+  field_offset dest,  /* type wilson_vector RECAST AS wilson_block_vector */
+  int parity
+			);
+
+
 /* make_clov.c routines for any clover term */
 clover *create_clov(void);
 void compute_clov(clover *my_clov, Real Clov_c);
