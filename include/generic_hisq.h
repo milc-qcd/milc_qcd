@@ -1,5 +1,9 @@
+OBSOLETE!!
 #ifndef _GENERIC_HISQ_H
 #define _GENERIC_HISQ_H
+
+/* UNUSED.  - CD */
+
 /************************ generic_hisq.h **********************************
 *									*
 *  Macros and declarations for generic_hisq routines                      *
@@ -29,7 +33,7 @@ typedef struct {
 /* Structure defining the fermion action using paths or optimized
    coefficients */
 
-#ifdef HISQ
+#if FERM_ACTION ==  HISQ
 typedef struct {
   Real *act_path_coeff;    /* For optimized Asqtad action */
   int num_q_paths;         /* For all actions */
@@ -60,12 +64,15 @@ typedef struct {
   su3_matrix *X_longlink[4];
 } hisq_links_t;
 
-#else  /* Non-HISQ actions */
+#elif FERM_ACTION == ASQTAD  /* Non-HISQ actions */
 typedef struct {
   Real *act_path_coeff;    /* For optimized Asqtad action */
   int num_q_paths;         /* For all actions */
   Q_path *q_paths;         /* For all actions */
 } ks_action_paths;
+
+#else
+  BOMB THE COMPILIATION
 #endif
 
 /* Structure defining the precomputed links for the FN actions */
@@ -77,7 +84,7 @@ typedef struct {
   su3_matrix *fatback;
   su3_matrix *lngback;
   ks_action_paths *ap;  /* For EO actions */
-#ifdef HISQ
+#if FERM_ACTION == HISQ
   Real mass;    /* The mass last used in the coefficients */
   hisq_links_t hl;
 #endif
@@ -188,8 +195,8 @@ int ks_invert( /* Return value is number of iterations taken */
 enum ks_multicg_opt_t {OFFSET, HYBRID, FAKE, REVERSE, REVHYB};
 const char *ks_multicg_opt_chr( void );
 
-int ks_multicg(	        /* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
+void ks_multicg_field(	        /* Return value is number of iterations taken */
+    su3_vector *src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     Real *offsets,	/* the offsets */
     int num_offsets,	/* number of offsets */
@@ -201,96 +208,24 @@ int ks_multicg(	        /* Return value is number of iterations taken */
     ferm_links_t *fn       /* Storage for fat and Naik links */
     );
 
-int ks_multicg_p(       /* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
+int ks_multicg_offset_field(	/* Return value is number of iterations taken */
+    su3_vector *src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     Real *offsets,	/* the offsets */
     int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* desired intermediate precision */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn       /* Storage for fat and Naik links */
-    );
-
-int ks_multicg_offset(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *offsets,	/* the offsets */
-    int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* desired intermediate precision */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
+    quark_invert_control *qic,  /* inversion parameters */
     ferm_links_t *fn      /* Storage for fat and Naik links */
     );
 
-int ks_multicg_mass(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
+int ks_multicg_mass_field(	/* Return value is number of iterations taken */
+    su3_vector *src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     Real *masses,	/* the masses */
     int num_masses,	/* number of masses */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* desired intermediate precision */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
+    quark_invert_control *qic,  /* inversion parameters */
     ferm_links_t *fn       /* Storage for fat and Naik links */
     );
 
-int ks_multicg_hybrid(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *offsets,	/* the offsets */
-    int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* desired intermediate precision */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn       /* Storage for fat and Naik links */
-    );
-
-int ks_multicg_reverse(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *masses,	/* the masses */
-    int num_masses,	/* number of masses */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* desired intermediate precision */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn      /* Storage for fat and Naik links */
-    );
-
-int ks_multicg_fake(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *offsets,	/* the offsets */
-    int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* desired internal precision */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn      /* Storage for fat and Naik links */
-    );
-
-int ks_multicg_revhyb(	/* Return value is number of iterations taken */
-    field_offset src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    Real *offsets,	/* the offsets */
-    int num_offsets,	/* number of offsets */
-    int niter,		/* maximal number of CG interations */
-    Real rsqmin,	/* desired residue squared */
-    int prec,           /* desired intermediate precision */
-    int parity,		/* parity to be worked on */
-    Real *final_rsq_ptr,/* final residue squared */
-    ferm_links_t *fn      /* Storage for fat and Naik links */
-    );
 
 /* d_congrad_opt.c */
 
@@ -330,12 +265,19 @@ int fpi_2( /* Return value is number of C.G. iterations taken */
   );
 
 /* fermion_force_asqtad*.c */
-void eo_fermion_force_oneterm( Real eps, Real weight, field_offset x_off,
+void eo_fermion_force_oneterm( Real eps, Real weight, su3_vector *x_off,
 			       int prec, ferm_links_t *fn,
 			       ks_action_paths *ap);
+void eo_fermion_force_oneterm_site( Real eps, Real weight, field_offset x_off,
+				    int prec, ferm_links_t *fn,
+				    ks_action_paths *ap);
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
-				field_offset x1_off, field_offset x2_off,
+				su3_vector *x1_off, su3_vector *x2_off,
 				int prec, ferm_links_t *fn, 
+				ks_action_paths *ap );
+void eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2,
+				     field_offset x1_off, field_offset x2_off,
+				     int prec, ferm_links_t *fn, 
 				ks_action_paths *ap );
 void fermion_force_asqtad_block( Real eps, Real *residues, 
 				 su3_vector **xxx, int nterms, int veclength, 
@@ -382,18 +324,18 @@ void load_ferm_links(ferm_links_t *fn, ks_action_paths *ap);
 void load_ferm_links_dmdu0(ferm_links_t *fn, ks_action_paths *ap);
 void invalidate_all_ferm_links(ferm_links_t *fn);
 
-/* fermion_links_helpers.c */
-void load_longlinks(ferm_links_t *fn, ks_action_paths *ap);
-void load_fatlinks(ferm_links_t *fn, ks_action_paths *ap);
+/* fermion_links_fn_load_milc.c */
+void load_longlinks(ferm_links_t *fn, ks_component_paths *p);
+void load_fatlinks(ferm_links_t *fn, ks_component_paths *p);
 void load_longbacklinks(ferm_links_t *fn);
 void load_fatbacklinks(ferm_links_t *fn);
 void free_fn_links(ferm_links_t *fn);
 void free_fn_links_dmdu0(ferm_links_t *fn);
-#ifdef HISQ
-void load_fatlinks_hisq( su3_matrix **Src, ks_component_paths *app, 
-			 su3_matrix **Dest );
-void load_longlinks_hisq( su3_matrix **Src, ks_component_paths *app, 
-			  su3_matrix **Dest );
+#if FERM_ACTION == HISQ
+//void load_fatlinks_hisq( su3_matrix *Src, ks_component_paths *app, 
+//			 su3_matrix *Dest );
+void load_longlinks_hisq( su3_matrix *Src, ks_component_paths *app, 
+			  su3_matrix *Dest );
 #endif
 void custom_rephase( su3_matrix **internal_links, int flag, int *status_now );
 
