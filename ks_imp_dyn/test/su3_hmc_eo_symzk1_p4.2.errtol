@@ -1,0 +1,130 @@
+WARMUPS COMPLETED
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+PLAQUETTE ACTION: 0.01
+ACTION: g,h,f = 0.006 4e-05 0.002 0.008
+DG = 0.006 DH = 4e-05 DF = 0.002 D = 0.008
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+PLAQUETTE ACTION: 0.01
+ACTION: g,h,f = 0.006 0.0003 0.002 0.008
+DG = 3e-05 DH = 0.0003 DF = 0.0006 D = 0.0008
+ACCEPT: delta S = 0.0008
+PLAQ: 4e-06 4e-06
+P_LOOP: 3e-06 2e-06
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 3e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+GACTION: 1e-05
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+PBP: mass 2e-06 2e-06 2e-06 0.1 0.1 XXX 2 XXX 2 XXX
+FACTION: mass = 2e-06 3e-06 XXX 2 XXX 2 XXX
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+PBP: mass 2e-06 2e-06 2e-06 0.002 0.002 XXX 2 XXX 2 XXX
+FACTION: mass = 2e-06 3e-06 XXX 2 XXX 2 XXX
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+PLAQUETTE ACTION: 0.01
+ACTION: g,h,f = 0.006 3e-05 0.002 0.008
+DG = 0.000000e+00, DH = 0.0003 DF = 0.0006 D = 0.0008
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+PLAQUETTE ACTION: 0.01
+ACTION: g,h,f = 0.006 2e-05 0.002 0.008
+DG = 4e-05 DH = 2e-05 DF = 9e-05 D = 0.0001
+ACCEPT: delta S = 0.0001
+PLAQ: 4e-06 4e-06
+P_LOOP: 3e-06 2e-06
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 4e-06 ( 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
+GACTION: 1e-05
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+PBP: mass 2e-06 2e-06 2e-06 0.07 0.07 XXX 2 XXX 2 XXX
+FACTION: mass = 2e-06 3e-06 XXX 2 XXX 2 XXX
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+PBP: mass 2e-06 2e-06 2e-06 0.1 0.1 XXX 2 XXX 2 XXX
+FACTION: mass = 2e-06 3e-06 XXX 2 XXX 2 XXX
+RUNNING COMPLETED

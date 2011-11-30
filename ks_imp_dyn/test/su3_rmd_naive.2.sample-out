@@ -1,0 +1,118 @@
+SU3 with improved KS action
+Microcanonical simulation with refreshing
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+R algorithm
+type 0 for no prompts  or 1 for prompts
+nflavors 4
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 5682304
+LAYOUT = Hypercubes, options = EVENFIRST,
+Mallocing 0.2 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+warms 0
+trajecs 2
+traj_between_meas 1
+beta 5.6
+mass 0.01
+u0 1
+microcanonical_time_step 0.02
+steps_per_trajectory 20
+max_cg_iterations 100
+error_per_site 1e-04
+error_for_propagator 1e-04
+fresh 
+save_serial lat.test
+unit gauge configuration loaded
+CHECK PLAQ: 3.000000e+00 3.000000e+00
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 3.251150e-04
+Single plaquette action
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+"Single link action"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.000000e+00     8
+WARMUPS COMPLETED
+ OK converged final_rsq= 5.1e-10 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 10
+ OK converged final_rsq= 3.5e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 1.2e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 14
+ OK converged final_rsq= 7.7e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 14
+ OK converged final_rsq= 5.7e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 15
+ OK converged final_rsq= 6.4e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 16
+ OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 17
+ OK converged final_rsq= 4.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 19
+ OK converged final_rsq= 4.8e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 20
+ OK converged final_rsq= 6.2e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 21
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 22
+ OK converged final_rsq= 8.2e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 23
+ OK converged final_rsq= 5.7e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 25
+ OK converged final_rsq= 7.4e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 26
+ OK converged final_rsq= 4.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 28
+ OK converged final_rsq= 9.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 28
+ OK converged final_rsq= 9.4e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 30
+ OK converged final_rsq= 6.1e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 31
+ OK converged final_rsq= 8.9e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 32
+ OK converged final_rsq= 6.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 33
+PLAQ:	2.091085	2.083071
+P_LOOP:	1.893435e+00	4.791534e-02
+G_LOOP:  0  0  4   	2.081799e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	2.104554e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	2.075926e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	2.086902e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	2.071543e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	2.101744e+00	( 2 3 5 4  )
+GACTION: 5.477533e+00
+ OK converged final_rsq= 7.7e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 33
+ OK converged final_rsq= 8.1e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 17
+PBP: mass 1.000000e-02     3.506310e-02  2.948826e-03  -5.483360e-02  -5.520267e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.477891e+00 ( 1 of 1 )
+ OK converged final_rsq= 6.1e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 33
+ OK converged final_rsq= 7.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 34
+ OK converged final_rsq= 8.5e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 33
+ OK converged final_rsq= 6.8e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 35
+ OK converged final_rsq= 7.2e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 35
+ OK converged final_rsq= 7.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 36
+ OK converged final_rsq= 8.2e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 38
+ OK converged final_rsq= 7.8e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 38
+ OK converged final_rsq= 7.5e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 9.8e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 40
+ OK converged final_rsq= 6.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 9.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 9.5e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 44
+ OK converged final_rsq= 6.3e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 46
+ OK converged final_rsq= 8.4e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 47
+ OK converged final_rsq= 9.8e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 44
+ OK converged final_rsq= 7.2e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 49
+ OK converged final_rsq= 8.4e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 49
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 50
+PLAQ:	1.927738	1.900057
+P_LOOP:	1.446005e+00	3.774468e-02
+G_LOOP:  0  0  4   	1.913478e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.926837e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.880338e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.942898e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.896331e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.923502e+00	( 2 3 5 4  )
+GACTION: 6.516615e+00
+ OK converged final_rsq= 9.1e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 46
+ OK converged final_rsq= 8e-09 (cf 1e-08) rel = 0 (cf 0) restarts = 1 iters= 24
+PBP: mass 1.000000e-02     -2.052821e-02  5.832087e-02  7.431824e-04  8.139479e-04 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.519525e+00 ( 1 of 1 )
+RUNNING COMPLETED
+average cg iters for step= -9.900000e+01
+Time = 1.758591e-02 seconds
+total_iters = 1375
+
+
+get_i: EOF on STDIN.
+

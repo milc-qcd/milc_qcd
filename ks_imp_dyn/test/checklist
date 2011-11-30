@@ -1,0 +1,25 @@
+# Executable  precision  add-macro input-case  pattern1 pattern2
+# NOTE: The following executables have no QOP support and
+# will fail to compile:
+# su3_hmc_eo_symzk1_p4 
+exec  su3_rmd                           1 - - WARMUPS RUNNING
+exec  su3_rmd_eos			1 - - WARMUPS RUNNING
+exec  su3_rmd_susc			1 - - WARMUPS RUNNING
+exec  su3_rmd_mu_eos			1 - - WARMUPS RUNNING
+exec  su3_hmc_eo_symzk1_p4		1 - - WARMUPS RUNNING
+exec  su3_rmd_dblstore_gath13_fewsums	1 - - WARMUPS RUNNING
+exec  su3_rmd_plaq_fat7naik		1 - - WARMUPS RUNNING
+exec  su3_rmd1				1 - - WARMUPS RUNNING
+exec  su3_rmd_plaq_fat7naik1		1 - - WARMUPS RUNNING
+exec  su3_rmd_naive                     1 - - WARMUPS RUNNING
+
+exec  su3_rmd                           2 - - WARMUPS RUNNING
+exec  su3_rmd_eos			2 - - WARMUPS RUNNING
+exec  su3_rmd_susc			2 - - WARMUPS RUNNING
+exec  su3_rmd_mu_eos			2 - - WARMUPS RUNNING
+exec  su3_hmc_eo_symzk1_p4		2 - - WARMUPS RUNNING
+exec  su3_rmd_dblstore_gath13_fewsums	2 - - WARMUPS RUNNING
+exec  su3_rmd_plaq_fat7naik		2 - - WARMUPS RUNNING
+exec  su3_rmd1				2 - - WARMUPS RUNNING
+exec  su3_rmd_plaq_fat7naik1		2 - - WARMUPS RUNNING
+exec  su3_rmd_naive                     2 - - WARMUPS RUNNING
