@@ -17,7 +17,7 @@ int read_gauge_info_d(FILE* fp, char *key, double* value);
 int main(int argc, char *argv[])
 {
   int prompt;
-  Real avm_iters;
+  Real avm_iters = 0.;
   double dssplaq,dstplaq;
   complex plp;
   int m_iters;

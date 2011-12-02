@@ -68,12 +68,13 @@ EIGVAL_OBJECTS = \
   build_lowest_chi.o \
   build_hov.o \
   vectorh.o  \
-  jacobi.o \
-  eigen_stuff_JD.o
+  jacobi.o
 
-# eigen_stuff.o
-# eigen_stuff_JD.o
-
+ifeq ($(strip ${HAVEPRIMME}),true)
+  EIGVAL_OBJECTS += eigen_stuff_JD.o
+else
+  EIGVAL_OBJECTS += eigen_stuff_local.o
+endif
 
 # Basic set from generic directory
 G_OBJECTS =          \

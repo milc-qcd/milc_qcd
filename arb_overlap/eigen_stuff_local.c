@@ -467,7 +467,6 @@ int Kalkreuter(wilson_vector **eigVec, double *eigVal, Real Tolerance,
   int j ;
   Matrix Array,V ;
   register  int i ;
-  register site* s;
   wilson_vector *vec ;
 
   wilson_vector **MeigVec ;
@@ -475,7 +474,7 @@ int Kalkreuter(wilson_vector **eigVec, double *eigVal, Real Tolerance,
   double max_error = 1.0e+10 ;
   double *grad, *err ;
   int iter = 0 ;
-  int *converged,conv_below;
+  int *converged;
   Real ToleranceG;
     /* code to adaptively vary the step function */
   Real resid_inner_hold;

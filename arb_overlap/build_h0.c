@@ -27,7 +27,7 @@ int build_h0()
   wilson_vector wtmp;
   complex ctmp,cn;
   Real chirality,cd;
-  int jplus,jminus,source_chirality;
+  int jplus,jminus,source_chirality = 0;
   int *ov_chirality;
 
   void normalize(wilson_vector *vec) ;

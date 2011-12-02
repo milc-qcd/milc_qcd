@@ -62,7 +62,7 @@ void step(
 
 #ifdef EIG
   double_complex cd;
-  complex ctmp,*cproj;
+  complex ctmp,*cproj = NULL;
   Real ener;
 #endif
 
@@ -266,7 +266,7 @@ void step_field(
 
 #ifdef EIG
   double_complex cd;
-  complex ctmp,*cproj;
+  complex ctmp,*cproj = NULL;
   Real ener;
 #endif
 

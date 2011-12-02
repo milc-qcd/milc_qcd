@@ -47,7 +47,7 @@ int build_hov(int *trial_chirality, int* jcount)
   /* for guessing eigenvectors */
   half_wilson_vector hwvec;
   complex ctmp;
-  int source_chirality;
+  int source_chirality = 0;
   int ndel;
 
   eigenval_tol=eigenval_tol_low;
