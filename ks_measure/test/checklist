@@ -1,0 +1,11 @@
+# Executable  precision  add-macro input-case  pattern1 pattern2
+#    extra-output filename pattern1 pattern2
+
+exec ks_measure_asqtad        2      -         -          PBP:         RUNNING
+exec ks_measure_asqtad_susc   2      -         -          PBP:         RUNNING
+exec ks_measure_asqtad_eos    2      -         -          PB_DMDU_P:   RUNNING
+exec ks_measure_asqtad_mu_eos 2      -         -          PB_DMDU_P:   RUNNING
+exec ks_measure_hisq          2      -         -          PBP:         RUNNING
+exec ks_measure_hisq_susc     2      -         -          PBP:         RUNNING
+exec ks_measure_hisq_eos      2      -         -          PB_DMDEPS_P: RUNNING
+exec ks_measure_hisq_mu_eos   2      -         -          PB_DMDEPS_P: RUNNING

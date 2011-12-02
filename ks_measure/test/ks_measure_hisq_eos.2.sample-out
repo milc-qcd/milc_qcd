@@ -1,0 +1,131 @@
+SU3 staggered fermion measurements
+MIMD version 7.7.2.devel2
+Machine = QMP (portable), with 1 nodes
+Host = aquila.physics.utah.edu
+Username = (null)
+start: Sat Jun 11 06:22:02 2011
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 6
+ny 6
+nz 6
+nt 6
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 6 x 6 x 6 x 6
+Mallocing 0.9 MBytes per node for lattice
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 0.8696
+forget 
+staple_weight 0
+ape_iter 0
+# Chiral condensate and related measurements
+number_of_sets 2
+# Parameters common to all members of set 0
+npbp_reps 1
+max_cg_iterations 300
+max_cg_restarts 5
+prec_pbp 2
+error_for_propagator 1e-09
+rel_error_for_propagator 0
+number_of_pbp_masses 2
+mass 0.03
+naik_term_epsilon 0
+mass 0.05
+naik_term_epsilon 0
+# Parameters common to all members of set 1
+npbp_reps 1
+max_cg_iterations 300
+max_cg_restarts 5
+prec_pbp 1
+error_for_propagator 0
+rel_error_for_propagator 4e-06
+# Number of masses in this set
+number_of_pbp_masses 1
+mass 0.07
+naik_term_epsilon -0.1
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
+Time stamp Sat Aug 10 10:46:56 2002
+Checksums c1d08f5 68164bef OK
+Time to reload gauge configuration = 3.318071e-03
+CHECK PLAQ: 1.9827179876982366e+00 1.9811715330156219e+00
+CHECK NERSC LINKTR: 9.0159201231658637e-01 CKSUM: ba83dea8
+Reunitarized for double precision. Max deviation 2.72e-07 changed to 4.44e-16
+Time to check unitarity = 6.298065e-03
+MAKING PATH TABLES
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.250000e-01     8
+                    1      -6.250000e-02     48
+                    2      1.562500e-02     192
+                    3      -2.604167e-03     384
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.000000e+00     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -1.250000e-01     48
+"1-link + Naik"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.250000e-01     8
+                    1      -4.166667e-02     8
+Time to APE smear 7.030964e-04 sec
+ OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 43
+ OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 6.8e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 43
+ OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 6.2e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
+PB_DMDEPS_P: mass 3.000000e-02  3.127454e-01  3.299927e-01 ( 1 of 1 )
+PBP: mass 3.000000e-02     3.424573e-02  1.441593e-02  2.912546e-02  2.912546e-02 ( 1 of 1 )
+FACTION: mass = 3.000000e-02,  1.522829e+00 ( 1 of 1 )
+PB_DMDMU_P: mass 3.000000e-02  2.337509e-02  1.127527e-02  -1.105341e-02  1.252770e-02 ( 1 of 1 )
+PB_D2MDMU2_P: mass 3.000000e-02  6.918222e-01  7.370323e-01  3.184613e-02  2.732585e-02 ( 1 of 1 )
+ OK converged final_rsq= 6.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 43
+ OK converged final_rsq= 6.2e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 9
+TR_MidM_MidM: mass 3.000000e-02,  3.786463e-01 ( 1 of 1 )
+PB_DMDEPS_P: mass 5.000000e-02  3.124705e-01  3.297725e-01 ( 1 of 1 )
+PBP: mass 5.000000e-02     5.012696e-02  3.082494e-02  2.915719e-02  2.915719e-02 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.523199e+00 ( 1 of 1 )
+PB_DMDMU_P: mass 5.000000e-02  2.282679e-02  1.094545e-02  -1.148863e-02  1.253227e-02 ( 1 of 1 )
+PB_D2MDMU2_P: mass 5.000000e-02  6.913663e-01  7.360780e-01  3.176299e-02  2.704115e-02 ( 1 of 1 )
+ OK converged final_rsq= 5.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 43
+ OK converged final_rsq= 3.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 8
+TR_MidM_MidM: mass 5.000000e-02,  3.827106e-01 ( 1 of 1 )
+ OK converged final_rsq= 5.6e-14 (cf 0) rel = 6.8e-11 (cf 1e-10) restarts = 5 iters= 47
+ OK converged final_rsq= 5.5e-14 (cf 0) rel = 6.8e-11 (cf 1e-10) restarts = 5 iters= 22
+PB_DMDEPS_P: mass 7.000000e-02  3.122530e-01  3.186779e-01 ( 1 of 1 )
+PBP: mass 7.000000e-02     6.883968e-02  4.398915e-02  -2.157257e-02  -2.157257e-02 ( 1 of 1 )
+FACTION: mass = 7.000000e-02,  1.473848e+00 ( 1 of 1 )
+PB_DMDMU_P: mass 7.000000e-02  3.085651e-02  -4.917314e-02  -5.389439e-03  -2.656051e-02 ( 1 of 1 )
+PB_D2MDMU2_P: mass 7.000000e-02  6.503096e-01  6.995028e-01  -1.138908e-02  6.275103e-03 ( 1 of 1 )
+ OK converged final_rsq= 8.2e-14 (cf 0) rel = 3.1e-11 (cf 1e-10) restarts = 5 iters= 43
+ OK converged final_rsq= 9.9e-14 (cf 0) rel = 3.7e-11 (cf 1e-10) restarts = 5 iters= 15
+TR_MidM_MidM: mass 7.000000e-02,  3.885561e-01 ( 1 of 1 )
+RUNNING COMPLETED
+Time = 3.994160e-01 seconds
+total_iters = 154
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Sat Jun 11 06:22:09 2011
+
