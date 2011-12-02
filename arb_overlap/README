@@ -1,0 +1,231 @@
+
+Version7.6.3 routines for overlap fermion eigenmodes and propagators.
+
+Upgrade from version 7.4.0 to 7.6.3 by UMH affected Wilson propagator
+i/o and Wilson source creation, and arguments to gaugefix.
+
+
+su3_ov_eig_cg_f_hyp --eigenmodes--one chirality of H(0). This is the workhorse program
+su3_ov_eig_cg_multi-- multimass CG for propagators, point and wall sources
+su3_ov_eig_cg_f_hyp_per --eigenmodes, periodic b.c.
+su3_ov_eig_cg_multi_per-- multimass propagators, point and wall sources, periodic b.c
+
+
+input files:
+in.4444nhyp and in.4444nhyp_gf for su3_ov_eig_cg_f_hyp,
+in.4444nhyp_inv for su3_ov_eig_cg__multi
+
+As an overview, the eigenmode finder first constructs eigenmodes of the ``kernel'' operator
+which will be used to precondition the matrix step function used in the overlap. Then it
+ finds eigenmodes of the overlap operator in three steps:
+First, it finds eigenmodes of the shifted kernel operator h(0)^2, to act as seeds
+for the overlap.
+Second, it figures out which topological sector will have zero modes, by finding one eigenvalue per
+sector. (Recall that the squared overlap operator |D(0)|^2 is diagonal in a chiral basis)
+Finally, it goes into this lowest sector and finds eigenvalues and eigenvectors of  |D(0)|^2.
+It then tried to decide if they are zero modes or nonzero modes which are ``paired'' with another
+degenerate opposite chirality eigenmode. It does this by diagonalizing H(0)=gamma_5 D(0) in 
+a 2x2 basis and seeing of the resulting eigenvalues are equal and opposite, and if <gamma_5>=
+<H>. See p. 124 of DeGrand & DeTar.
+
+There are many dirty tricks in this code; for example, in deciding if an eigenmode is a
+chiral zero mode, or not.
+
+This code uses the nHYP fat link of Hasenfratz, Hoffmann and Schaefer, slightly altered by
+ Shamir and Svetitsky so that the normalized fat link is Omega/sqrt(Q) where Q = Omega^dag Omega + IR_STAB
+
+This code uses a ``planar'' action, with the fermion footprint extending over distance 1
+(nearest neighbors) and sqrt(2) (like +x+y). This folds the free Wilson fermion eigenmodes into
+a more compact shape. It might speed up the overlap. It also improves the dispersion relation.
+I provided a clover kernel initialization routine, if you want that.
+
+I strongly recommend using a fat link in the kernel action. I have never been able to do anything
+with straight thin link Wilson overlap. It is just too expensive! 
+
+The step function uses the Zolotarov function and projects out small eigenmodes from the kernel.
+This code seems to be stable for the fat link planar action.
+
+The CG inverter is a multimass CG inverter. It inverts D(m)^\daggerD(m) in a chiral basis,
+and then multiplies the result by D(m) to produce D(m)^{-1}. It prints out the ``shifted
+and renormalized'' Dirac operator Dtilde chi = (D^{-1} chi - chi/(2R0))/(1-m/(2R0)).
+You can tell it to print inverses of D(m)^\daggerD(m) if you want (if you wanted to restart the CG).
+
+
+
+
+Here is an input file. Marker <--used shows lines we actually use. (Some are there for unknown 
+reasons, probably just software aging...)
+prompt 0 <--used
+nx 4   <--used
+ny 4   <--used
+nz 4   <--used
+nt 4   <--used
+iseed 3737   <--used
+
+beta 7.3   <--used, or at least read in
+u0 1.0   <--could be used if desired.
+number_of_masses 1   <--used
+m0 0.0   <--used in inverter routines, not in eigenmode ones (m=0 is hardwired for these)
+R0 1.2   <--used. R0=1.2 is the ``preferred'' value for the planar action
+scalez 1.0   <--not used for planar action but is must have been used at some point
+prec_sign 1.e-7   <--used in assignment of Zolotarov order and parameters
+zolo_min 0.02   <--used for Zolotarov but overwritten by smallest eigenvalue of h(-r0)
+zolo_max 2.7   <--used for the upper limit of the Zolotarov approx
+inner_cg_iterations 1000   <--used for the step function CG
+inner_residue 1.e-7   <--used used for the step function CG
+inner_residue_h 1.e-7   <--not used but  it's there (not sure why)
+Number_of_inner_eigenvals 4   <--used
+Number_of_h0_eigenvals 8   <--used. This should be at least 2x number of hov eigenvals
+Number_of_hov_eigenvals 4   <--used. This is the number of overlap eigenmodes you want
+Max_Rayleigh_iters 1000   <--used,in eigen_stuff.c, number of iterations per pass
+Max_r0_iters 100   <--used. Set to 0 if you are reading in hr0 eigenmodes
+Restart_Rayleigh 10   <--used, repeat projection and orthogonalization of one vector
+Kalkreuter_iters 10   <--used, loop over all the vectors
+eigenvec_quality 1.2e-4   <--used <- check in build_hr0 of <phi|(h-lambda)|phi>
+eigenval_tol_low 1.0e-6   <--used
+error_decr_low .3
+eigenval_tol_high 1.0e-7 <--another relic of dynamical code; not used
+error_decr_high .3
+max_cg_iterations 100 ,-- used by overlap propagator routines
+max_cg_restarts 1  <- not used
+error_for_fermforce  1.e-5 <- residue for propagator CG
+error_for_fermaction  1.e-5 <- not used (obviously a relic of the dynamical code)
+point  <- source for CG
+r0 2.0 <-radius of Gaussian source
+reload_serial c4444.d
+topology 100    <- used in dynamical code to mark Q, not used in these routines, I think    
+
+eigenvec_quality 1.2e-4 is check in build_hr0 of <phi|(h-lambda)|phi>
+
+error_decr's are parameters in eigen_stuff for convergence of Kalkreuter. Not clear
+both are needed. HIGHP flags which one is  used.
+
+Number_of_h0_eigenvals number of eigenmodes of d^\daggerd used to start the overlap calc.
+
+
+
+
+
+##########################################################################
+Defines:
+FIELD - use fieldwise variables (nearly our standard, now)
+PREFETCH --prefetching fieldwise variables
+SSE   --assembler library stuff
+HAVE_QDP ???
+IOTIME flag for i/o timing
+TPERIODIC  periodic temproal b.c. for fermions
+
+EIG  --create space for, and use, eigenmodes of h(-r0)
+EIGO --create space for, and use, eigenmodes of H(0). Not sure if the code will compile
+without either of these flags...
+H0INV -- in multi_cg.c, save the inverses of D(m)^\dagger D(m), possibly to restart the CG.
+DEBUG switches on print statements in eigen_stuff.c
+INV -  create some variables for inverter--
+RANDOM   - used in setup and .h's to create space for random number stuff:
+ setup_p_cl.c defines.h lattice.h params.h
+KNOWCHI -- in control_f.c, this flag forces the code to take the topology from an input file.
+Otherwise it reads in eigenmodes of H(0)^2 and counts zero modes.
+NHYP --use nHYP link
+NHYP_DEBUG -- print stuff if there's a problem with nhyp projection
+
+MINN --in congrad_multi_field.c,
+adaptively adjust inner CG accuracy to produce desired step fn accuracy.
+used with propagator CG. Dangerous to use this or the related MINNI flag with eigenmodes!
+
+#ifdef MINN
+    if(do_minn ==1){
+        dest_norm=0.0;
+        FORALLSITES(i,s){
+            dest_norm += (double)magsq_wvec((wilson_vector *)F_PT(s,dest));
+        }
+        g_doublesum( &dest_norm );
+
+        /* you can always increase resid_inner--up to a point! */
+        if(test_epsilon < resid_inner && resid_inner_run < 0.02 ) resid_inner_run *= 1.2;
+        /* but it should not shrink too small */
+        if((resid_inner_run >= resid_inner) &&(test_epsilon > resid_inner))
+            resid_inner_run /= 1.2;
+    }
+#endif
+                    -
+The code uses either of two ``canned'' eigenvalue finders
+1) eigen_stuff.c -- Kalkreuter code, written in standard Milc language,
+originally by Kostas Orginos for staggered fermions, then a port by T. D. 
+for Wilson type fermions
+2) eigen_stuff_JD.c, a wrapper around the ``primme'' package,
+written by Stefan Schaefer. Both codes parallelize.
+
+This needs the primme-specifics
+libzprimme.a primme.h
+and in Makefile 
+LIBADD = libzprimme.a -llapack -lblas
+
+A lot of the parameters which goven the iteration of eigenmodes become inoperative when 
+Primme is used. Primme is described in
+A. Stathopoulos, SIAM J. Sci. Comput., Vol. 29, No. 2, (2007), 481--514;
+A. Stathopoulos and J. R. McCombs, SIAM J. Sci. Comput., Vol. 29, No. 5, (2007), 2162-2188.
+and a tar file will be sent along.
+
+
+ primme is faster, but can hang if called repeatedly.
+I use it for computing overlap eigenmodes on stored configurations, but
+ I use the standard eigenmode finder for dynamical overlap.
+
+
+
+Essential routines
+
+control_f.c -- driver
+setup_p_cl.c--read stuff in
+build_params_0.166.c--sets up the planar kernel action. 
+the on site term is lambda[0], the nearest neighbor scalar term is lambda[1] and 
+the (+x,+y) term's coefficient is lambda[2]. This action uses projected links, so the vector
+term on site is rho[1]*gamma_mu where rho[1]=lambda[1], and the diagonal term is (I believe)
+rho[2] = lambda[2]/sqrt(2). The clover term is hardwired to its tree level value for this action,
+the analog of csw=1 for the clover action.
+build_params_w.c--clover kernel action. I haven't used this in years...Note usual normalization
+ in terms of mass, NOT kappa!
+
+build_hr0_field2.c--finds eigenmodes of square of kernel Dirac operator. Note the
+``failed''
+loop, we want good eigenmodes here and if we don't get them, expand the space and repeat
+(keeping only the lowest ones at the end). F3HSQ are the eigenvalues of h(-R0)^2 
+and the eigenvalues of h(-R0) are F3MEX. With the non-primme code, this may get printed several times -- 
+an F at the end of the line says that the eigenmode failed a quality test.
+
+build_h0.c --finds eigenmodes of square of shifted kernel Dirac operator, used to start the 
+actual overlap calculation
+build_lowest_chi.c--finds the topological sector, + or -, of lowest energy. 
+This is the sector with zero modes.
+build_hov.c--finds eigenmodes of the overlap operator. F3HO2V are the eigenvalues of H(0)^2
+and F3OGH02X2 are the 2x2 split modes, entries are number, eigenvalue, Re <gamma_5> Im <Gamma_5>
+(this is always zero) and eigenvalue/(2R0) which should equal <gamma_5>. F3OGH01X1 is for the unsplit
+zero modes.
+delta0y.c --the actual dslash of the planar action
+hdelta0_field.c various dslash operations
+hoverlap.c--dest=hoverlap * src
+congrad_multi_field.c--evaluates the matrix step function. The zolotarov routines are here, too.
+io_modes.c --read/write eigenmodes
+eigen_stuff.c and eigen_stuff_JD.c -- eigenmodes
+f_mu_nu1.c, make_clov_field.c and mult_ldu2.c initialize the clover term; 
+Slight difference from usual Milc ones (probably just no ``1'' term)
+
+multi_cg.c and multi_cg_iter.c --multimass CG inverter routines for overlap
+nhyp.c and block_nhyp.c generate nhyp links. Written by Schaefer, additions by Shamir and Svetitsky
+
+setup_links.c and setup_offset.c construct the links for the complicated action
+copy_fields, vectorh.c  and path.c, some useful routines
+wp_grow_pl_field_pf.c etc: routines for (1 +/- n*gamma) for the planar projector action
+
+
+
+su3_ov_eig_cg_f_hyp < in.4444nhyp > out_484.d
+su3_ov_eig_cg_f_hyp < in.4444nhyp > out_484_primm.d
+su3_ov_eig_cg_f_hyp<in.4444nhyp_gf>out_484_primme_gf.d  <-Coulomb gauge, saves eigenmodes for
+su3_ov_eig_cg_multi<in.4444nhyp_inv>out_invert.d
+
+su3_ov_eig_cg_multi doesn't have any code to actually print out hadronic correlators. I use
+the standard Wilson routines in clover_invert for that (I have a program su3_spec_only which basically
+doesn't do any CG, just reads in propagators and zips them together....)
+Also, I never run this without reading in eigenmodes to precomdition the inverter.
+(Likewise for eigenmodes of h(-R0)--never compute a 
