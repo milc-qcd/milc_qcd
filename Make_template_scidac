@@ -17,7 +17,11 @@
 # WANTQDP WANTQIO WANTQMP User requests (true or otherwise)
 # LIBQOP INCQOP LIBDEPQOP INCDEPQOP Defined in Make_template_qop
 
-HAVEQDP = ${WANTQDP}
+HAVEQOP = ${WANTQOP}
+
+ifeq ($(strip ${HAVEQOP}),true)
+   HAVEQDP = true
+endif
 
 ifeq ($(strip ${HAVEQDP}),true)
    HAVEQIO = true #
@@ -50,17 +54,12 @@ QLALIBDIR = $(strip ${QLA})/lib
 QDPINCDIR = $(strip ${QDP})/include
 QDPLIBDIR = $(strip ${QDP})/lib
 
-# Allow for QCDOC nonstandard for now
-ifeq ($(strip ${QCDOC}),true)
-  QMPINCDIR = $(strip ${QOS})/quser/include
-  IQMP = -I${QMPINCDIR}
-  QMPLIBDIR = $(strip ${QOS})/quser/gcc-lib-user
-  LQMP = -L${QMPLIBDIR} -lqmp
-else
-  IQMP = -I${QMPINCDIR}
-  QMPLIBDIR = $(strip ${QMP})/lib
-  LQMP = -L${QMPLIBDIR} -lqmp
-endif
+QOPINCDIR = $(strip ${QOPQDP})/include
+QOPLIBDIR = $(strip ${QOPQDP})/lib
+
+IQMP = -I${QMPINCDIR}
+QMPLIBDIR = $(strip ${QMP})/lib
+LQMP = -L${QMPLIBDIR} -lqmp
 
 IQIO = -I${QIOINCDIR}
 LQIO = -L${QIOLIBDIR} -lqio -llime 
@@ -72,7 +71,10 @@ LQLA = -L$(strip ${QLA})/lib \
 
 IQDP = -I$(strip ${QDP})/include
 LQDP = -L$(strip ${QDP})/lib \
-          -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_common
+          -lqdp_int -lqdp_f -lqdp_f3 -lqdp_d -lqdp_d3 -lqdp_df3 -lqdp_common
+
+IQOP = -I${QOPINCDIR}
+LQOP = -L${QOPLIBDIR} -lqopqdp
 
 ifeq ($(strip ${HAVEQMP}),true)
   LIBQMP = ${LQMP}
@@ -93,6 +95,13 @@ ifeq ($(strip ${HAVEQDP}),true)
   INCQDP = ${IQDP} ${IQLA}
   INCDEPQDP = ${QDPINCDIR} ${QLAINCDIR}
   LIBDEPQDP = ${QDPLIBDIR} ${QLALIBDIR}
+endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  LIBQOP = ${LQOP}
+  INCQOP = ${IQOP}
+  INCDEPQOP = ${QOPINCDIR}
+  LIBDEPQOP = ${QOPLIBDIR}
 endif
 
 LIBSCIDAC = ${LIBQOP} ${LIBQDP} ${LIBQIO} ${LIBQMP}
