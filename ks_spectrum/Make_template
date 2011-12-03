@@ -133,6 +133,19 @@ DARCH = ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 # -DPRTIME for propagator timing
 # -DCGTIME for cg timing and iterations
 
+# -DFN          identifies fat-Naik-like actions with only next and 3rd
+#               next neighbor linkage
+
+# -DDM_DU0      (for EOS) calculate quantities involving the deriv of
+#               action wrto u0
+
+# -DDM_DEPS     (for EOS) calculate quantities involving the deriv of
+#               HISQ action wrto eps
+
+# -DCHEM_POT    compute quantities needed for quark number susceptibility
+
+# -DD_CHEM_POT  compute quantities needed for nonzero chemical potential
+
 # Asqtad targets
 ks_spectrum_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
@@ -140,16 +153,17 @@ ks_spectrum_asqtad::
 	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -DFIELD_TEMPS_ONLY" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
-ks_spectrum_eos::
+ks_spectrum_asqtad_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -DDM_DU0" \
+	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -DDM_DU0 -DCHEM_POT" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
-ks_spectrum_mu_eos::
+ks_spectrum_asqtad_mu_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -DDM_DU0 -DD_CHEM_POT" \
+	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME \
+	-DDM_DU0 -DCHEM_POT -DD_CHEM_POT" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} mu_fast.o"
 
 # Unimproved staggered targets
@@ -179,9 +193,13 @@ HISQ_OPTIONS = "DEFINES= -DFN -DHAVE_KS \
 ks_spectrum_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS}
 
+ks_spectrum_hisq_eos::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DDM_DEPS -DCHEM_POT"
 
 ks_spectrum_hisq_mu_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DDM_DEPS -DCHEM_POT -DD_CHEM_POT" \
 	"EXTRA_OBJECTS += mu_fast.o"
 
 clean:

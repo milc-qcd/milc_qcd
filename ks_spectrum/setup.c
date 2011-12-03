@@ -5,6 +5,9 @@
 /* Modifications ... */
 
 //  $Log: setup.c,v $
+//  Revision 1.2  2011/12/03 03:44:36  detar
+//  Fix support for mu_eos
+//
 //  Revision 1.1  2011/11/30 22:11:40  detar
 //  Add
 //
@@ -974,9 +977,21 @@ int readin(int prompt) {
   fermion_links_want_aux(0);
   
 #if FERM_ACTION == HISQ
+
+#ifdef DM_DEPS
+  fermion_links_want_deps(1);
+#endif
+
   fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+
 #else
+
+#ifdef DM_DU0
+  fermion_links_want_du0(1);
+#endif
+
   fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+
 #endif
 
   /* Construct APE smeared links */
