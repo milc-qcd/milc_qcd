@@ -218,13 +218,16 @@ su3_rmd_naive::
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${GAUGE_FORCE} \
 	${ASQ_FORCE} update_onemass.o"
 
+# No QOP support for p4, so we use pure MILC routines only and
+# undefine the macros HAVE_QOP and HAVE_QDP
+
 su3_hmc_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO -DPHI_ALGORITHM -DHMC_ALGORITHM -UKS_MULTICG \
-	-UKS_MULTIFF" \
+	"DEFINES= -DEO -DPHI_ALGORITHM -DHMC_ALGORITHM \
+	-UKS_MULTICG -UKS_MULTIFF -UHAVE_QOP -UHAVE_QDP" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
-	"EXTRA_OBJECTS= ${EO_OBJECTS} ${EO_FORCE} ${GAUGE_FORCE} d_congrad5_two_src.o \
+	"EXTRA_OBJECTS= ${EO_OBJECTS} ${EO_FORCE} ${GAUGE_FORCE_MILC} d_congrad5_two_src.o \
 	 d_action.o update.o"
 
 # The following stanzas illustrate how to create targets for alternative
@@ -263,7 +266,7 @@ su3_rmd_symzk1_naik::
 
 su3_rmd_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DEO -UKS_MULTICG -UKS_MULTIFF" \
+	"DEFINES= -DEO -UKS_MULTICG -UKS_MULTIFF -UHAVE_QOP -UHAVE_QDP" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
 	"EXTRA_OBJECTS= ${EO_OBJECTS} ${EO_FORCE} ${GAUGE_FORCE} update.o"
