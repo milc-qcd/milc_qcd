@@ -87,6 +87,10 @@ destroy_hisq_links_qop(hisq_links_qop_t *hl){
   free(hl);
 }
 
+/*-------------------------------------------------------------------*/
+/* Accessors                                                         */
+/*-------------------------------------------------------------------*/
+
 QOP_F3_FermionLinksHisq *
 get_F_hisq_links_qop(hisq_links_qop_t *hl){
   return hl->hl_F;
@@ -103,7 +107,7 @@ get_D_hisq_links_qop(hisq_links_qop_t *hl){
 
 void
 set_asqtad_links_from_hisq(fn_links_qop_t *fn, hisq_links_qop_t *hl, int i){
-  char myname[] = "set_asqtad_links_from_hisq";
+  //  char myname[] = "set_asqtad_links_from_hisq";
 
   if(fn == NULL)return;
 
@@ -119,10 +123,6 @@ set_asqtad_links_from_hisq(fn_links_qop_t *fn, hisq_links_qop_t *hl, int i){
 
   /* The global hl phase information has to be copied into fn, because
      there are multiple, independent fn links. */
-
-//  if(fn->phase != NULL){
-//    printf("%s: Warning. fn->phase is not NULL\n",myname);
-//  }
 
   fn->phase = create_link_phase_info();
   copy_link_phase_info(fn->phase, hl->phase);
@@ -145,6 +145,7 @@ void
 set_asqtad_deps_links_from_hisq(fn_links_qop_t *fn, hisq_links_qop_t *hl){
 
   if(fn == NULL)return;
+
   if(hl->hl_F != NULL)
     fn->al_F = QOP_F3_get_asqtad_deps_links_from_hisq(hl->hl_F);
   else
@@ -155,7 +156,8 @@ set_asqtad_deps_links_from_hisq(fn_links_qop_t *fn, hisq_links_qop_t *hl){
   else
     fn->al_D = NULL;
 
-  fn->phase = hl->phase;
+  fn->phase = create_link_phase_info();
+  copy_link_phase_info(fn->phase, hl->phase);
 }
 
 
@@ -163,5 +165,4 @@ void
 unset_asqtad_deps_links_from_hisq(fn_links_qop_t *fn){
   unset_asqtad_links_from_hisq(fn);
 }
-
 
