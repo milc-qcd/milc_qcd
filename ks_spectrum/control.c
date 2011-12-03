@@ -10,6 +10,9 @@
 /* Modifications ... */
    
 //  $Log: control.c,v $
+//  Revision 1.2  2011/12/03 03:43:39  detar
+//  Cosmetic
+//
 //  Revision 1.1  2011/11/30 22:11:38  detar
 //  Add
 //
@@ -69,10 +72,10 @@ int main(int argc, char *argv[])
       mass = param.ksp_pbp[i].mass;
 
       f_meas_imp_field( param.npbp_reps, &param.qic_pbp[i], mass,
-			naik_index, fn_links);
+      			naik_index, fn_links);
 #ifdef D_CHEM_POT
       Deriv_O6_field( param.npbp_reps, &param.qic_pbp[i], mass,
-		      fn_links, naik_index, naik_eps);
+      		      fn_links, naik_index, naik_eps);
 #endif
     }
 
