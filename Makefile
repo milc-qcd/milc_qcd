@@ -21,11 +21,6 @@ MAKEFILE = Makefile
 # Compiling for a parallel machine?  blank for a scalar machine
 #MPP = true
 
-# Cross-compiling for the QCDOC?  blank if we are not.
-# For the QCDOC, be sure to source the QOS setup script before running make,
-# and be sure to set MPP = true
-#QCDOC = true
-
 #----------------------------------------------------------------------
 # 3. Precision 
 
@@ -35,16 +30,17 @@ PRECISION = 1
 #----------------------------------------------------------------------
 # 4. Compiler
 # Choices include mpicc cc gcc pgcc g++
+# Note: If you are linking with QUDA, you need the C++ linker,
+# so you may as well compile and link everything, including the libraries, with C++
 
 ifeq ($(strip ${MPP}),true)
-  CC = /usr/local/mvapich/bin/mpicc
+  CC = mpicc
 #  CC = mpixlc_r # BG/P
 else
   CC = gcc
 endif
 
 #CC = /usr/local/mvapich/bin/mpicc  # FNAL
-#CC = powerpc-gnu-elf-gcc           # QCDOC
 #----------------------------------------------------------------------
 # 5. Compiler optimization level
 # Choices include -g -O, etc
@@ -56,7 +52,6 @@ OPT              = -O3
 #-------------- Gnu C -------------------------------------
 OCFLAGS = -Wall # ( -Wall, etc )
 
-#OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -fprefetch-loop-arrays # QCDOC
 #OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
 #OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
@@ -143,35 +138,16 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 # Edit these "wants"
 
-# Choose the QOP package.  
-# Choices are 
-#    QCDOC for Level 3 QCDOC
-#    QDP   for Level 3 QOPQDP
-#    MILC (nonoptimized MILC implementation for testing)
-#    blank if you don't want QOP
+WANTQOP = # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
 
-WANTQOP = #(or QCDOC or MILC)
+WANTQIO = true # or blank.  Implies HAVEQMP.
 
-# Backward compatibility for QOPQDP:
-# As of version qopqdp 0.9.0 the normalization convention for the
-# staggered inverter changed.  If you are using a version of QOPQDP
-# with the old convention, define this macro:
-CQOPQDP_NORM = #-DOLD_QOPQDP_NORM
-
-# Choose "true" or blank. Implies HAVEQIO and HAVEQMP.
-WANTQDP = 
-
-# Choose "true" or "". Implies HAVEQMP.
-WANTQIO = 
-
-# Choose "true" or "".
-WANTQMP = 
-
+WANTQMP = # true or blank.
 
 # Edit these locations for the installed SciDAC packages
 # It is assumed that these are the parents of "include" and "lib"
 
-SCIDAC = ${HOME}/scidac
+SCIDAC = ${HOME}/scidac/install
 # Parallel versions
 QMPPAR = ${SCIDAC}/qmp
 QIOPAR = $(SCIDAC)/qio
@@ -180,22 +156,14 @@ QMPSNG = ${SCIDAC}/qmp-single
 QIOSNG = $(SCIDAC)/qio-single
 QLA = ${SCIDAC}/qla
 # Either version
-QDP = ${SCIDAC}/qdp-single
-QOPQDP = ${SCIDAC}/qopqdp-single
+QDP = ${SCIDAC}/qdp
+QOPQDP = ${SCIDAC}/qopqdp
 #QOPQDP = ${SCIDAC}/qopqdp-lapack # BG/P
 
 QOP = ${QOPQDP}
 
-# Make_template_qop defines these macros:
-# HAVEQOP
-# LIBQOP INCQOP
-# INCDEPQOP LIBDEPQOP
-# GENERICQOP ASQINVERTQOP ASQFORCEQOP
-
-include ../Make_template_qop
-
 # Make_template_scidac defines these macros:
-# HAVEQDP HAVEQIO HAVEQMP (Says what we are compiling with)
+# HAVEQOP HAVEQDP HAVEQIO HAVEQMP (Says what we are compiling with)
 # LIBSCIDAC INCSCIDAC (The -L and -I compiler and linker lists)
 # SCIDAC_LIBRARIES SCIDAC_HEADERS  (Lists for make dependencies)
 
@@ -205,37 +173,74 @@ include ../Make_template_scidac
 # 11. FFTW3 Options
 
 WANTFFTW = #true
-FFTW = ${HOME}/fftw/build-gcc
-LIBFFTW = # -lfftw3 -L${FFTW}/lib
-INCFFTW = # -I${FFTW}/include
+
+ifeq ($(strip ${WANTFFTW}),true)
+FFTW=${HOME}/fftw/build-gcc
+INCFFTW = -I${FFTW}/include
+LIBFFTW = -L${FFTW}/lib
+
+ifeq ($(strip ${PRECISION}),1)
+  LIBFFTW += -lfftw3f
+else
+  LIBFFTW += -lfftw3
+endif
+endif
 
 #----------------------------------------------------------------------
-# 12. LAPACK Options (for qopqdp-lapack)
+# 12. LAPACK Options (for qopqdp-lapack and arb_overlap )
 
 #LIBLAPACK = -L/opt/ibmcmp/xlf/bg/11.1/lib /soft/apps/LAPACK/liblapack_bgp.a /soft/apps/LIBGOTO/libgoto.a -lxlf90 -lxlsmp # LAPACK on BG/P
 
+LIBLAPACK = # -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -llapack -lblas -lgfortran
 
 #----------------------------------------------------------------------
-# 13. Linker
+# 13. PRIMME Options (for arb_overlap).  REQUIRES LAPACK AS WELL.
+
+WANTPRIMME = #true
+
+ifeq ($(strip ${WANTPRIMME}),true)
+  LIBPRIMME = -L${HOME}/milc/install/PRIMME -lzprimme
+endif
+
+#----------------------------------------------------------------------
+# 14. GPU/QUDA Options
+
+WANTQUDA = #true
+
+CGPU = # USE_CG_GPU USE_FL_GPU USE_REUNIT_GPU USE_FF_GPU USE_GF_GPU
+
+ifeq ($(strip ${WANTQUDA}),true)
+
+QUDA_HOME = /home/jfoley/research/git.quda
+INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
+LIBQUDA = -L${QUDA_HOME}/lib -lquda
+
+CUDA_HOME = /usr/local/cuda
+INCQUDA += -I${CUDA_HOME}/include
+LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart
+
+endif
+
+#----------------------------------------------------------------------
+# 15. Linker
 LD               = ${CC}
 
 #----------------------------------------------------------------------
-# 14. Extra ld flags
+# 16. Extra ld flags
 
-#LDFLAGS = -Xlinker   # QCDOC
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
 
 #----------------------------------------------------------------------
-# 15. Extra include paths
-INCADD = ${INCFFTW}
+# 17. Extra include paths
+INCADD = ${INCFFTW} ${INCQUDA} 
 
 #----------------------------------------------------------------------
-# 16. Extra libraries
-LIBADD = ${LIBFFTW} ${LIBLAPACK}
+# 18. Extra libraries
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA}
 
 #----------------------------------------------------------------------
-# 17. Inlining choices
+# 19. Inlining choices
 
 # USE INLINE SSE WITH EXTREME CAUTION!  IT MAY GIVE WRONG RESULTS.
 
@@ -269,7 +274,7 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 #INLINEOPT += -DSSEOPTERON
 
 #----------------------------------------------------------------------
-# 18. Miscellaneous macros for performance control and metric
+# 20. Miscellaneous macros for performance control and metric
 
 #     Define them with a -D prefix.
 
@@ -280,12 +285,14 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 # Use any combination of these
 # CGTIME CG Solver
 # FFTIME Fermion force
-# LLTIME Link fattening
+# FLTIME Link fattening
 # GFTIME Gauge force
+# IOTIME I/O timing
+# PRTIME print time (clover_invert2)
 
 # REMAP  report remapping time for QDP, QOP in conjunction with above
 
-CTIME =# -DCGTIME -DFFTIME -DLLTIME -DGFTIME -DREMAP
+CTIME = # -DCGTIME -DFFTIME -DFLTIME -DGFTIME -DREMAP -DPRTIME -DIOTIME
 
 #------------------------------
 # Profiling
@@ -302,16 +309,31 @@ CPROF =#
 # COM_CRC            Message passing test.  Checksums on all gathers.
 
 #------------------------------
-# Debugging
+# Debugging and diagnostics
 # Applications:  all
 
 # CHECK_MALLOC        Report malloc/free activity.
-#                     Process output using check_malloc.pl
+#                     (Then process stdout using check_malloc.pl)
 # CG_DEBUG            Print debugging information for the inverters.
+# CG_OK               Print inverter convergence information even when OK
+# REMAP_STDIO_APPEND  All nodes append to stdout.
 #
-# MILC_GLOBAL_DEBUG   So far applies only to ks_imp_rhmc HISQ code
+# HISQ_SVD_VALUES_INFO Print HISQ SVD diagnostics
+# HISQ_SVD_COUNTER    Print summary count of SVD uses
+# HISQ_FORCE_FILTER_COUNTER Print summary count of force filter applications.
 
-CDEBUG = # -DCHECK_MALLOC
+CDEBUG = -DCG_OK # -DCHECK_MALLOC -DREMAP_STDIO_APPEND
+
+#------------------------------
+# Backward compatibility
+
+# As of version qopqdp 0.9.0 the normalization convention for the
+# staggered inverter changed.  If you are using a version of QOPQDP
+# with the old convention, define this macro:
+CCOMPAT += #-DOLD_QOPQDP_NORM
+
+# Prior to version 7.7.2 the conversion from staggeredd to naive was peculiar.
+CCOMPAT += #-DOLD_STAGGERED2NAIVE
 
 #------------------------------
 # Layout
@@ -445,6 +467,16 @@ KSFFMULTI = -DKS_MULTIFF=FNMAT
 KSRHMCINT =#
 
 #------------------------------
+
+# Definition of taste operator shift.  If defined, the shift operator
+# based on the unfattened gauge links is one-sided (forward), instead
+# of symmetric (forward and backward).
+
+# The Fat-Naik shift, however, is always one-sided in the current code.
+
+KSSHIFT = # -DONE_SIDED_SHIFT
+
+#------------------------------
 # Clover inverter choice
 # Applications: clover_invert, clover_invert2
 #
@@ -453,6 +485,9 @@ KSRHMCINT =#
 # CL_CG=CG    Standard CG
 # CL_CG=MR    Minimum residue
 # CL_CG=HOP   Hopping
+
+# SINGLE_FOR_DOUBLE Do mixed precision inversion to get double precision result
+# SCALE_PROP  Do rescaling for the clover propagator
 
 CLCG = -DCL_CG=BICG 
 
@@ -470,8 +505,8 @@ CLMEM = #-DCLOV_LEAN
 # Summary
 
 CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${CGEOM} ${KSCGSTORE} ${CPREFETCH} \
- ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${CLCG} ${CLMEM} ${CQOP} \
- ${CQOPQDP_NORM}
+ ${KSCGMULTI} ${KSFFMULTI} ${KSRHMCINT} ${KSSHIFT} ${CLCG} ${CLMEM} ${CQOP} \
+ ${CCOMPAT}
 
 #----------------------------------------------------------------------
 # 16. Choose MILC library make file in libraries directory.  
@@ -520,23 +555,34 @@ ifeq ($(strip ${WANTFFTW}),true)
   HAVEFFTW = true
 endif
 
+ifeq ($(strip ${WANTPRIMME}),true)
+  HAVEPRIMME = true
+endif
+
+# Make_template_combos defines convenience macros for interdependent
+# groups of compilation units.  They are used to specify build lists.
+
+include ../Make_template_combos
 
 CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC}
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
-	${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DEFINES} ${DARCH} \
-	${IMPI} ${INCADD}
+	${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
+	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
 
 ILIB = ${LIBSCIDAC} ${LMPI} ${LIBADD}
 
+.PHONY: time check test_clean
 time:
 	make -f Make_time time
 
-check:
-	make -f Make_test check
+check: test_clean
+	cd test ; perl ../../check.pl ${EXEC} ${CASE} ${PREC} < checklist
 
 test_clean:
-	make -f Make_test test_clean
+	cd test ; make test_clean
+
+
 
 include Make_template
