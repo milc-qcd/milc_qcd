@@ -74,8 +74,8 @@ main( int argc, char **argv )
 
 	/* Measure pbp, etc */
 #ifdef ONEMASS
-	  f_meas_imp( npbp_reps_in, prec_pbp, 
-		      F_OFFSET(phi),F_OFFSET(xxx),mass, 0, fn_links);
+	f_meas_imp( npbp_reps_in, prec_pbp, 
+		    F_OFFSET(phi),F_OFFSET(xxx),mass, 0, fn_links);
 #else
 	f_meas_imp( npbp_reps_in, prec_pbp, 
 		    F_OFFSET(phi1), F_OFFSET(xxx1), mass1, 0, fn_links);
