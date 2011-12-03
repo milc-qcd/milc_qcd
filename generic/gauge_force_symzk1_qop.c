@@ -15,9 +15,18 @@
 void load_qop_imp_gauge_coeffs(QOP_gauge_coeffs_t *c)
 {
   Real **loop_coeff = get_loop_coeff();
+  int nloop = get_nloop();
   c->plaquette = loop_coeff[0][0];
-  c->rectangle = loop_coeff[1][0];
-  c->parallelogram  = loop_coeff[2][0];
+  if(nloop>1)
+    c->rectangle = loop_coeff[1][0];
+  else
+    /* Hack to support some unimproved actions */
+    c->rectangle = 0.;
+  if(nloop>2)
+    /* Hack to support some unimproved actions */
+    c->parallelogram  = loop_coeff[2][0];
+  else
+    c->parallelogram = 0.;
   //printf("Coefficients loaded %e %e %e\n", c->plaq, c->rect, c->pgm);
 }
 
