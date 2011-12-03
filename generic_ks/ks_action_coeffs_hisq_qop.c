@@ -23,7 +23,7 @@
 
 static QOP_hisq_unitarize_group_t 
 convert_milc_to_qop_ugroup(int ug_milc){
-  QOP_hisq_unitarize_group_t ug_qop;
+  QOP_hisq_unitarize_group_t ug_qop = QOP_UNITARIZE_U3;
   char myname[] = "convert_milc_to_qop_ugroup";
 
   switch(ug_milc){
@@ -44,7 +44,7 @@ convert_milc_to_qop_ugroup(int ug_milc){
 
 static QOP_hisq_unitarize_method_t
 convert_milc_to_qop_umethod(int um_milc){
-  QOP_hisq_unitarize_method_t um_qop;
+  QOP_hisq_unitarize_method_t um_qop = UNITARIZE_ANALYTIC;
   char myname[] = "convert_milc_to_qop_umethod";
 
   /* (Add cases when they are supported in QOP) */
