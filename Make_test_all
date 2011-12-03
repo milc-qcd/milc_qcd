@@ -17,47 +17,54 @@
 #  arb_dirac_eigen \
 #  arb_dirac_invert \
 #  clover_hybrids \
+#  clover_invert \
 #  h_dibaryon \
+#  heavy \
 #  hqet_heavy_to_light \
-#  hvy_qpot \
+#  ks_hl_spectrum \
+#  ks_imp_invert_multi \
 #  propagating_form_factor \
+#  pw_nr_meson \
 #  schroed_ks_dyn \
 #  schroed_pg \
 #  string_break \
 #  wilson_dynamical \
+#  wilson_static
+
 
 DIRS = \
+   arb_overlap \
    clover_dynamical \
-   clover_invert \
    clover_invert2 \
    ext_src \
    file_utilities \
    gauge_utilities \
    gluon_prop \
-   heavy \
+   hvy_qpot \
    ks_eigen \
-   ks_hl_spectrum \
    ks_imp_dyn \
    ks_imp_rhmc \
-   ks_imp_invert_multi \
    ks_imp_utilities \
+   ks_measure \
+   ks_spectrum \
    pure_gauge \
-   pw_nr_meson \
    schroed_cl_inv \
    smooth_inst \
    symanzik_sl32 \
-   wilson_static
 
 all:
 	for dir in ${DIRS};\
 	do\
-	    (echo "Testing $$dir"; cp Makefile $$dir ; cd $$dir; ${MAKE} -kf Make_test check ${ADDMACRO} > maketest.log 2>&1 )\
+	    echo "Testing $$dir"; \
+	    cp Makefile $$dir; \
+	    cd $$dir; \
+	    ${MAKE} -k check > maketest.log 2>&1;\
+	    cd ..;\
 	done
 
 clean:
 	for dir in ${DIRS};\
 	do\
-	    cd $$dir; \
-	    ${MAKE} -f Make_test clean;\
+	    (cd $$dir; ${MAKE} test_clean;)\
 	done
 
