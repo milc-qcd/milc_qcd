@@ -42,7 +42,7 @@
 # Change to suit...
 
 # The job is launched with the commad
-# ${LAUNCH} ./${PROJ} ${LAUNCH2} < in.sample.${PROJ} > out.test.${PROJ}
+# ${LAUNCH} ./${PROJ} ${LAUNCH2} in.sample.${PROJ} > out.test.${PROJ}
 
 # SGI Origin
 #LAUNCH = mpirun -np 4
@@ -70,47 +70,18 @@
 LAUNCH =
 LAUNCH2 = 
 
-out.test.${PROJ}.${PREC}: ${PROJ} in.sample.${PROJ}.${PREC}
-	${LAUNCH} ./${PROJ} ${LAUNCH2} < \
-	  in.sample.${PROJ}.${PREC} > \
-	  out.test.${PROJ}.${PREC}
 
-out.test.diff.${PROJ}.${PREC}: out.test${CUSTOM}.${PROJ}.${PREC} \
-	out.sample${CUSTOM}.${PROJ}.${PREC}
-	perl ../headtail.pl ${PATTERNS} < \
-	   out.test${CUSTOM}.${PROJ}.${PREC} > \
-	   out.test.${PROJ}.${PREC}.tmp
-	perl ../headtail.pl ${PATTERNS} < \
-	   out.sample${CUSTOM}.${PROJ}.${PREC} > \
-	   out.sample.${PROJ}.${PREC}.tmp
-	perl ../diffn3.pl out.test.${PROJ}.${PREC}.tmp \
-	   out.sample.${PROJ}.${PREC}.tmp \
-	   out.errtol${CUSTOM}.${PROJ}.${PREC} > \
-	   out.test.diff.${PROJ}.${PREC}
-#	   /bin/rm -f out.test.${PROJ}.${PREC}.tmp \
-#	   out.sample.${PROJ}.${PREC}.tmp
+#
+.SUFFIXES: .test-diff .test-out
 
-.PHONY: test
-test:
-	for prec in ${PRECLIST};\
-	do\
-	   for proj in ${PROJS};\
-	   do\
-	        ${MAKE} clean;\
-	        ${MAKE} $$proj "PRECISION=$$prec" ${ADDMACRO};\
-	        ${MAKE} -f Make_test "PROJ=$$proj" "PREC=$$prec" out.test.diff.$$proj.$$prec;\
-	        /bin/rm -f $$proj;\
-	        /bin/rm -f localmake*;\
-	   done;\
-	done
+${PREFIX}.test-out: ../${EXEC} ${PREFIX}.sample-in
+	${LAUNCH} ../${EXEC} ${LAUNCH2} < $*.sample-in > $*.test-out
+
+.test-out.test-diff: $*.test-tmp $*.sample-tmp
+	perl ../../headtail.pl ${PATTERNS} <  $*.test-out | grep -iv "warning" >  $*.test-tmp ;\
+	perl ../../headtail.pl ${PATTERNS} <  $*.sample-out > $*.sample-tmp ;\
+	perl ../../diffn3.pl $*.test-tmp $*.sample-tmp $*.errtol > $*.test-diff
 
 test_clean:
-	for prec in ${PRECLIST};\
-	do\
-	   for proj in ${PROJS};\
-	   do\
-	     /bin/rm -f out.test.$$proj.$$prec.tmp out.sample.$$proj.$$prec.tmp;\
-	     /bin/rm -f out.test.diff.$$proj.$$prec out.test.$$proj.$$prec; \
-	   done;\
-	done
+	-/bin/rm -f *.test-tmp *.sample-tmp *.test-diff *.test-out*;
 
