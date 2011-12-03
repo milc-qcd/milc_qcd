@@ -28,10 +28,10 @@ int main( int argc, char **argv ){
   /* set up */
   prompt = setup();
 
-  node0_printf("BEGIN\n");
   /* loop over input sets */
   while( readin(prompt) == 0){
     
+    node0_printf("BEGIN\n");
 #ifdef CHECK_INVERT
     
     check_ks_invert( srcfile, srcflag, F_OFFSET(phi), 
@@ -63,7 +63,7 @@ BOMB Checking the fermion force requires QIO compilation
       filexml = create_QCDML();
       node0_printf("Saving the long links\n");
       save_color_matrix_scidac_from_field( savelongfile, filexml, 
-	   "Long links", QIO_SINGLEFILE, get_fm_links(fn_links)[0]->lng, 4);
+         "Long links", QIO_SINGLEFILE, get_lnglinks(get_fm_links(fn_links)[0]), 4);
       free_QCDML(filexml);
 #else
       printf("ERROR: Can't save the longlinks.  Recompile with QIO\n");
@@ -76,7 +76,7 @@ BOMB Checking the fermion force requires QIO compilation
       filexml = create_QCDML();
       node0_printf("Saving the fat links\n");
       save_color_matrix_scidac_from_field( savefatfile, filexml, 
-	   "Fat links", QIO_SINGLEFILE, get_fm_links(fn_links)[0]->fat, 4);
+	   "Fat links", QIO_SINGLEFILE, get_fatlinks(get_fm_links(fn_links)[0]), 4);
       free_QCDML(filexml);
 #else
       printf("ERROR: Can't save the fatlinks.  Recompile with QIO\n");
