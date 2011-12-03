@@ -12,66 +12,69 @@
 
 # Nothing needs to be defined here if we don't want QOP
 
-@echo WANTQOP = ${WANTQOP}
-ifneq ($(strip ${WANTQOP}),)
+ifeq ($(strip ${WANTQOP}),true)
   HAVEQOP = true
 
   # Fermion links support for all QOP implementations
-  FLINKS_FNQOP = load_qop_asqtad_coeffs_D.o load_qop_asqtad_coeffs_F.o \
-     fermion_links_asqtad_qop.o fermion_links_asqtad_qop_D.o \
-     fermion_links_asqtad_qop_F.o
 
-  ifeq ($(strip ${WANTQOP}),QCDOC)
+  FLINKS_FNQOP = fn_links_qop.o fermion_links_asqtad_qop.o fermion_links_fn_twist_qop.o \
+      ks_action_coeffs_asqtad_qop.o 
 
-    #-------------------------------------
-    # QCDOC package
-    #-------------------------------------
+  FLINKS_HISQ_QOP = fn_links_qop.o hisq_links_qop.o fermion_links_hisq_qop.o  \
+      fermion_links_fn_twist_qop.o ks_action_coeffs_hisq_qop.o
 
-    # Temporary paths for QCDOC.
-    QCDOCQOP=/qcdoc/sfw/SciDAC/Asqtad_L3/v1.1
+#  ifeq ($(strip ${WANTQOP}),QCDOC)
 
-    # For qop.h 
-    QOPINCDIR = $(strip ${QCDOCQOP})/include
-
-    # The QCDOC and MILC raw formats are thus far identical
-
-    GENERICQOP =  map_milc_to_qopmilc.o milc_to_qop_utilities.o
-
-    # Gauge force (not in QCDOC: use standard MILC version)
-    SYMZK1FORCEQOP = gauge_force_imp.o
-
-    # Fermion links (not in QCDOC: use standard MILC version)
-    FLINKS_FNQOP += fermion_links_helpers.o
-
-    # For the QCDOC fermion force and inverter we need the lib path
-    QOPLIBDIR = ${QCDOCQOP}/build
-
-    # Compiler include path and linker lib path for QOP package
-    IQOP = -I${QOPINCDIR}
-    LQOP = -L${QOPLIBDIR} -lasqd
-
-    # The QCDOC L3 package can't create L from G and doesn't support
-    # the Dirac fermion types
-    CQOP = -DHAVE_NO_CREATE_L_FROM_G -DHAVE_NO_QOP_D
-
-    # For "make" dependencies
-    LIBDEPQOP = ${QOPLIBDIR}
-    INCDEPQOP = ${QOPINCDIR}
-
-  else
+#    #-------------------------------------
+#    # QCDOC package
+#    #-------------------------------------
+#
+#    # Temporary paths for QCDOC.
+#    QCDOCQOP=/qcdoc/sfw/SciDAC/Asqtad_L3/v1.1
+#
+#    # For qop.h 
+#    QOPINCDIR = $(strip ${QCDOCQOP})/include
+#
+#    # The QCDOC and MILC raw formats are thus far identical
+#
+#    GENERICQOP =  map_milc_to_qopmilc.o milc_to_qop_utilities.o
+#
+#    # Gauge force (not in QCDOC: use standard MILC version)
+#    SYMZK1FORCEQOP = gauge_force_imp.o
+#
+#    # Fermion links (not in QCDOC: use standard MILC version)
+#    FLINKS_FNQOP += fermion_links_helpers.o
+#
+#    # For the QCDOC fermion force and inverter we need the lib path
+#    QOPLIBDIR = ${QCDOCQOP}/build
+#
+#    # Compiler include path and linker lib path for QOP package
+#    IQOP = -I${QOPINCDIR}
+#    LQOP = -L${QOPLIBDIR} -lasqd
+#
+#    # The QCDOC L3 package can't create L from G and doesn't support
+#    # the Dirac fermion types
+#    CQOP = -DHAVE_NO_CREATE_L_FROM_G -DHAVE_NO_QOP_D
+#
+#    # For "make" dependencies
+#    LIBDEPQOP = ${QOPLIBDIR}
+#    INCDEPQOP = ${QOPINCDIR}
+#
+#  else
 
     #-------------------------------------
     # QOPQDP package
     #-------------------------------------
 
-    ifeq ($(strip ${WANTQOP}),QDP)
+#    ifeq ($(strip ${WANTQOP}),QDP)
+
       # Requires QDP whether or not the user requested it
       WANTQDP = true
 
       # MILC raw format differs from QOPQDP raw format
       GENERICQOP =  map_milc_to_qopqdp.o milc_to_qop_utilities.o
 
-      FLINKS_FNQOP += fermion_links_helpers.o
+      ## FLINKS_FNQOP += fermion_links_helpers.o
 
       # We always need the qop.h header
       QOPINCDIR = $(strip ${QOPQDP})/include
@@ -82,54 +85,54 @@ ifneq ($(strip ${WANTQOP}),)
       INCDEPQOP = ${QOPINCDIR}
       LQOP = -L${QOPLIBDIR} -lqopqdp
 
-    else
-
-    #-------------------------------------------------------------
-    # Default: MILC nonoptimized routines.  They are non-packaged.
-    #------------------------------------------------------------
-
-      # We always need the qop.h header
-      QOPINCDIR = $(strip ${QOP})/include
-    
-      IQOP = -I${QOPINCDIR}
-      INCDEPQOP = ${QOPINCDIR}
-
-      # MILC raw format differs from QOPQDP raw format
-      GENERICQOP =  map_milc_to_qopmilc.o milc_to_qop_utilities.o
-
-      # General requirement
-      GENERICQOP += qop_milc.o qop_milc_D.o qop_milc_F.o qop_milc_utilities.o
-
-      # Gauge force
-      SYMZK1FORCEQOP = gauge_force_symzk1_qop_milc.o
-
-      # Asqtad fermion links
-      FLINKS_FNQOP += fermion_links_fn_qop_milc_D.o \
-        fermion_links_fn_qop_milc_F.o fermion_links_helpers.o
-
-      # Wilson fermion links (clover)
-      FLINKS_WILSONQOP = fermion_links_wilson_qop_milc_D.o \
-        fermion_links_wilson_qop_milc_F.o
-
-      # Asqtad conjugate gradient
-      ASQINVERTQOP = d_congrad5_fn_qop_milc_D.o d_congrad5_fn_qop_milc_F.o \
-         dslash_fn_qop_milc_D.o dslash_fn_qop_milc_F.o
-      ASQINVERTQOP += ks_multicg_qop_milc_D.o ks_multicg_qop_milc_F.o
-
-      # Asqtad fermion force
-      ASQFORCEQOP = fermion_force_asqtad_qop_milc.o \
-	fermion_force_asqtad_qop_milc_D.o \
-	fermion_force_asqtad_qop_milc_F.o ff_opt.o
-
-      # Wilson fermion force
-      WILSONINVERTQOP = d_bicgilu_cl_qop_milc_D.o d_bicgilu_cl_qop_milc_F.o 
-    endif
-  endif
+#     else
+# 
+#     #-------------------------------------------------------------
+#     # Default: MILC nonoptimized routines.  They are non-packaged.
+#     #------------------------------------------------------------
+# 
+#       # We always need the qop.h header
+#       QOPINCDIR = $(strip ${QOP})/include
+#     
+#       IQOP = -I${QOPINCDIR}
+#       INCDEPQOP = ${QOPINCDIR}
+# 
+#       # MILC raw format differs from QOPQDP raw format
+#       GENERICQOP =  map_milc_to_qopmilc.o milc_to_qop_utilities.o
+# 
+#       # General requirement
+#       GENERICQOP += qop_milc.o qop_milc_D.o qop_milc_F.o qop_milc_utilities.o
+# 
+#       # Gauge force
+#       SYMZK1FORCEQOP = gauge_force_symzk1_qop_milc.o
+# 
+#       # Asqtad fermion links
+#       FLINKS_FNQOP += fermion_links_fn_qop_milc_D.o \
+#         fermion_links_fn_qop_milc_F.o fermion_links_helpers.o
+# 
+#       # Wilson fermion links (clover)
+#       FLINKS_WILSONQOP = fermion_links_wilson_qop_milc_D.o \
+#         fermion_links_wilson_qop_milc_F.o
+# 
+#       # Asqtad conjugate gradient
+#       ASQINVERTQOP = d_congrad5_fn_qop_milc_D.o d_congrad5_fn_qop_milc_F.o \
+#          dslash_fn_qop_milc_D.o dslash_fn_qop_milc_F.o
+#       ASQINVERTQOP += ks_multicg_qop_milc_D.o ks_multicg_qop_milc_F.o
+# 
+#       # Asqtad fermion force
+#       ASQFORCEQOP = fermion_force_asqtad_qop_milc.o \
+# 	fermion_force_asqtad_qop_milc_D.o \
+# 	fermion_force_asqtad_qop_milc_F.o ff_opt.o
+# 
+#       # Wilson fermion force
+#       WILSONINVERTQOP = d_bicgilu_cl_qop_milc_D.o d_bicgilu_cl_qop_milc_F.o 
+#     endif
+#  endif
   
-  ifneq ($(strip ${WANTQOP}),)
+#  ifneq ($(strip ${WANTQOP}),)
     LIBQOP = ${LQOP}
     INCQOP = ${IQOP}
-  endif
+#  endif
 
 else
 
