@@ -5,5 +5,11 @@
 # Run this script from the application directory
 
 target=$1
-perl ../trainerrfile.pl out.test.$target.tmp out.sample.$target.tmp out.errtol.$target
-perl ../diffn3.pl out.test.$target.tmp out.sample.$target.tmp out.errtol.$target
+if [ -z "$target" ]
+then
+  echo "Usage $0 <target>"
+  exit 1
+fi
+
+perl ../../trainerrfile.pl $target.test-tmp $target.sample-tmp $target.errtol
+perl ../../diffn3.pl $target.test-tmp $target.sample-tmp $target.errtol
