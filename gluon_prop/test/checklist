@@ -1,5 +1,5 @@
-exec su3_asqtad_quark_prop 1 - - PLAQ: RUNNING
-exec su3_asqtad_renorm     1 - - PLAQ: RUNNING
-exec su3_asqtad_quark_prop 2 - - PLAQ: RUNNING
-exec su3_asqtad_renorm     2 - - PLAQ: RUNNING
+exec su3_asqtad_quark_prop 1 - - START_QUARK_PROP: RUNNING
+exec su3_asqtad_renorm     1 - - START_QUARK_PROP: RUNNING
+exec su3_asqtad_quark_prop 2 - - START_QUARK_PROP: RUNNING
+exec su3_asqtad_renorm     2 - - START_QUARK_PROP: RUNNING
 

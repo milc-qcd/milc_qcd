@@ -13,7 +13,7 @@ register int pmu;
 register site *s;
 anti_hermitmat ahtmp;
 Real pix, piy, piz, pit;
-Real sin_pmu, prop_s, prop_l, ftmp1, ftmp2;
+Real sin_pmu, prop_s = 0., prop_l = 0., ftmp1, ftmp2;
 complex ctmp;
 su3_matrix mat;
 struct {

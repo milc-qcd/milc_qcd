@@ -13,7 +13,9 @@
 
 int main(int argc, char *argv[])  {
     int prompt;
+#ifdef QUARK_PROP
     int cg_iter;
+#endif
     double dssplaq,dstplaq;
     double dtime;
     int key[4];

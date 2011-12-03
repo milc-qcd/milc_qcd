@@ -1,27 +1,3 @@
-CHECK PLAQ: 3e-06 3e-06
-CHECK LINKTR: 4e-06 2e-06
-XXX XXX XXX XXX 2e-06 XXX XXX XXX XXX XXX
-Time to check unitarity = 0.02
-"O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
-path coefficients: npath path_coeff multiplicity
-0 2e-06 0
-0 2e-06 2e-08
-0 2e-06 0
-0 2e-06 0
-0 2e-06 2e-09
-0 2e-06 0
- OK converged final_rsq= 9.6e-11 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 283
- OK converged final_rsq= 2.8e-20 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.6e-15 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 9.6e-11 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 9e-11 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 273
- OK converged final_rsq= 7.4e-20 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.6e-15 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 9e-11 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 9e-11 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 285
- OK converged final_rsq= 2e-20 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.3e-15 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 9e-11 (cf 1e-10) rel = 0 (cf 0) restarts = 0 iters= 0
 START_QUARK_PROP
 mass_no 0 mass 2e-06
 2e-06 2e-06 2e-06 2e-06 6e-07

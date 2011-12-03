@@ -97,9 +97,12 @@ int readin(int prompt) {
 /* read in parameters for su3 gluon/quark propagator       */
 /* argument "prompt" is 1 if prompts are to be given for input */
 
-int status,status2,i;
-Real x;
-char savebuf[128];
+  int status,status2;
+#ifdef QUARK_PROP
+  int i;
+  Real x;
+#endif
+  char savebuf[128];
 
     /* On node zero, read parameters and send to all other nodes */
     if(this_node==0){

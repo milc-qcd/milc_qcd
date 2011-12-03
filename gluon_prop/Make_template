@@ -53,54 +53,16 @@ MY_OBJECTS =         \
   setup.o            \
   gauge_info.o
 
-# Basic set from generic directory
-G_OBJECTS =          \
-  check_unitarity.o  \
-  d_plaq4.o          \
-  field_translation.o \
-  field_utilities.o  \
-  gauge_utilities.o  \
-  io_detect.o        \
-  io_helpers.o       \
-  io_lat4.o          \
-  io_lat_utils.o     \
-  make_lattice.o     \
-  nersc_cksum.o      \
-  ranstuff.o         \
-  remap_stdio_from_args.o \
-  reunitarize2.o     \
-  restrict_fourier.o \
-  io_source_cmplx_fm.o \
-  path_product.o
-
 # Basic set from generic_ks directory
 QUARK_OBJECTS = \
-  discretize_wf.o    \
-  flavor_ops2.o      \
-  io_helpers_ks.o    \
-  io_prop_ks_fm.o    \
-  io_prop_ks.o       \
-  io_scidac_ks.o     \
-  io_source_ks_fm.o  \
-  quark_source.o     \
-  quark_source_io.o  \
-  quark_source_sink_op.o  \
-  ks_utilities.o \
-  ksprop_info.o
+  ${FERMION_OBJECTS} \
+  ${KS_IO_OBJECTS} \
+  ksprop_info.o \
+  ploop3.o
 
-G_W_OBJECTS = \
-  dirac_utilities.o
-
-ifeq ($(strip ${QCDOC}),true)
-  G_OBJECTS += ploop2.o
-else
-  G_OBJECTS += ploop3.o
-endif
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
-  QUARK_OBJECTS += io_scidac_w.o
-endif
+# ifeq ($(strip ${HAVEQIO}),true)
+#   QUARK_OBJECTS += io_scidac_w.o
+# endif
 
 # Objects depending on architecture and software package
 
@@ -114,7 +76,16 @@ ifeq ($(strip ${HAVEQOP}),true)
   ADD_OBJECTS += ${GENERICQOP}
 endif
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_W_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+OBJECTS = \
+  ${MY_OBJECTS} \
+  ${FFT_OBJECTS} \
+  ${G_OBJECTS} \
+  ${GAUGE_OBJECTS} \
+  ${STANDARD_OBJECTS} \
+  ${G_W_OBJECTS} \
+  ${LAYOUT} \
+  ${ADD_OBJECTS} \
+  ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
@@ -196,47 +167,47 @@ su3_gluon_prop_imp_nogfix::
 su3_gluon_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DGLUON_PROP -DGFIX" \
-	"EXTRA_OBJECTS= gluon_prop.o gaugefix2.o gaugefixfft.o"
+	"EXTRA_OBJECTS= gluon_prop.o gaugefixfft.o"
 
 su3_gluon_prop_imp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DGLUON_PROP -DGFIX -DIMP_GFIX" \
-	"EXTRA_OBJECTS= gluon_prop_imp.o gaugefix2.o gaugefixfft.o"
+	"EXTRA_OBJECTS= gluon_prop_imp.o  gaugefixfft.o"
 
 su3_ks_quark_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DQUARK_PROP -DGFIX -DHAVE_KS" \
 	"QUARK = onelink_action.h" "ADD_HEADER = quark_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} \
-	${QUARK_OBJECTS} quark_prop.o gaugefix2.o gaugefixfft.o"
+	${QUARK_OBJECTS} quark_prop.o  gaugefixfft.o"
 
 su3_fn_quark_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DQUARK_PROP -DGFIX -DNAIK -DHAVE_KS" \
 	"QUARK = naik_action.h" "ADD_HEADER = quark_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} \
-	${QUARK_OBJECTS} quark_prop.o gaugefix2.o gaugefixfft.o"
+	${QUARK_OBJECTS} quark_prop.o  gaugefixfft.o"
 
 su3_p4_quark_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DEO -DQUARK_PROP -DGFIX -DHAVE_KS" \
 	"QUARK = p4_action.h" "ADD_HEADER = quark_action.h" \
 	"EXTRA_OBJECTS= ${EO_OBJECTS} ${MULTI_INV_EO} \
-	${QUARK_OBJECTS} quark_prop.o gaugefix2.o gaugefixfft.o"
+	${QUARK_OBJECTS} quark_prop.o  gaugefixfft.o"
 
 su3_asqtad_quark_prop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DQUARK_PROP -DGFIX -DNAIK -DHAVE_KS" \
 	"QUARK = asqtad_action.h" "ADD_HEADER = quark_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} \
-	${QUARK_OBJECTS} quark_prop.o gaugefix2.o gaugefixfft.o"
+	${QUARK_OBJECTS} quark_prop.o  gaugefixfft.o"
 
 su3_asqtad_renorm::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DQUARK_PROP -DQUARK_RENORM -DGFIX -DNAIK -DHAVE_KS" \
 	"QUARK = asqtad_action.h" "ADD_HEADER = quark_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} \
-	${QUARK_OBJECTS} quark_renorm.o gaugefix2.o gaugefixfft.o"
+	${QUARK_OBJECTS} quark_renorm.o  gaugefixfft.o"
 
 clean:
 	-/bin/rm -f *.o
