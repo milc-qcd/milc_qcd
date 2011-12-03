@@ -11,9 +11,12 @@
  c Contact: <detar@physics.utah.edu> or <doug@physics.arizona.edu>
  c
  c  to compile: texi2dvi milcv7.texi, texi2html milcv7.texi
- c $Id: milcv7.texi,v 1.3 2011/12/03 14:52:29 detar Exp $
+ c $Id: milcv7.texi,v 1.4 2011/12/03 15:04:42 detar Exp $
  c
  c $Log: milcv7.texi,v $
+ c Revision 1.4  2011/12/03 15:04:42  detar
+ c Add pdf capability.  Minor edits.
+ c
  c Revision 1.3  2011/12/03 14:52:29  detar
  c Update documentation for version 7.7.3
  c
@@ -55,7 +58,7 @@ in C for doing SU(3) lattice gauge theory on several different (MIMD)
 parallel computers in current use. In scalar mode, it runs on a
 variety of workstations making it extremely versatile for both
 production and exploratory applications. This manual is for the latest
-(7.7.2) version of the code. Currently supported code runs
+(7.7.3) version of the code. Currently supported code runs
 on:
 @itemize @bullet
 @item Scalar machines
@@ -84,7 +87,7 @@ notice identical to this one except for the removal of this paragraph
 @center @titlefont{The MILC Code}
 @sp 1
 
-@center version ---7.7.2---
+@center version ---7.7.3---
 @sp 1
 @center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
 @center @strong{Tom Burch} (@emph{U. of Utah}) <tburch@@physics.utah.edu>
@@ -106,7 +109,7 @@ in C for doing SU(3) lattice gauge theory on several different (MIMD)
 parallel computers in current use. In scalar mode, it runs on a
 variety of workstations making it extremely versatile for both
 production and exploratory applications. This manual is for the latest
-(7.7.2) version of the code. Currently supported code runs
+(7.7.3) version of the code. Currently supported code runs
 on:
 @itemize @bullet
 @item Scalar machines
@@ -289,7 +292,7 @@ supported.  Multi-GPU is planned.
 @node Supported architectures,, SciDAC Support,  Obtaining the MILC Code
 @section Supported architectures
 @cindex Supported architectures
-This manual covers @strong{version 7.7.2} which is currently supposed to
+This manual covers @strong{version 7.7.3} which is currently supposed to
 run on: 
 @sp 1
 @itemize @bullet

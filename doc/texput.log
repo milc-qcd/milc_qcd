@@ -1,9 +1,21 @@
-This is TeX, Version 3.1415 (C version 6.1) (format=plain 99.11.6)  20 FEB 2000 14:50
-**tesinfodoc
+This is pdfTeX, Version 3.1415926-1.40.11 (TeX Live 2010) (format=pdflatex 2011.4.26)  3 DEC 2011 07:57
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**milcv7_12h.tex
 
 ! Emergency stop.
-<*> tesinfodoc
-              
+<*> milcv7_12h.tex
+                  
 End of file on the terminal!
 
-No pages of output.
+ 
+Here is how much of TeX's memory you used:
+ 3 strings out of 493763
+ 104 string characters out of 3136734
+ 49091 words of memory out of 3000000
+ 3404 multiletter control sequences out of 15000+200000
+ 3640 words of font info for 14 fonts, out of 3000000 for 9000
+ 715 hyphenation exceptions out of 8191
+ 0i,0n,0p,1b,6s stack positions out of 5000i,500n,10000p,200000b,50000s
+!  ==> Fatal error occurred, no output PDF file produced!
