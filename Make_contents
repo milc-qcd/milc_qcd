@@ -1,9 +1,10 @@
+OBSOLETE
 # This file is for inclusion in Make_tar and Make_unpack_*
 # It is not intended to be run stand-alone
 # 12/16/06 C. DeTar
 
 #  Change these names to suit
-VER = 7.6.3
+VER = 7.7.3
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
@@ -11,399 +12,379 @@ NAME_ROOT = milc_qcd-${VER}
 # This list is intended to be all-inclusive
 
 THIS_DIR =         \
- getints.sh             \
- Make*                  \
- README                 \
- README_RELEASE_NOTES   \
- cc.pl                  \
- check_malloc.pl        \
- compare.sh             \
- diffn.pl               \
- diffn3.pl              \
- seterrfile.pl          \
- trainerrfile.pl        \
- train.sh               \
- headtail.pl            \
- convert_f2d.sh         \
- todo
+ ${NAME_ROOT}/getints.sh             \
+ ${NAME_ROOT}/Make*                  \
+ ${NAME_ROOT}/README                 \
+ ${NAME_ROOT}/README_RELEASE_NOTES   \
+ ${NAME_ROOT}/cc.pl                  \
+ ${NAME_ROOT}/check.pl               \
+ ${NAME_ROOT}/check_malloc.pl        \
+ ${NAME_ROOT}/compare.sh             \
+ ${NAME_ROOT}/diffn.pl               \
+ ${NAME_ROOT}/diffn3.pl              \
+ ${NAME_ROOT}/seterrfile.pl          \
+ ${NAME_ROOT}/trainerrfile.pl        \
+ ${NAME_ROOT}/train.sh               \
+ ${NAME_ROOT}/headtail.pl            \
+ ${NAME_ROOT}/convert_f2d.sh         \
+ ${NAME_ROOT}/todo
 
 DOC =              \
- doc/Makefile           \
- doc/milcv6.texi        \
- doc/port_notes.txt
+ ${NAME_ROOT}/doc/Makefile           \
+ ${NAME_ROOT}/doc/milcv7.texi        \
+ ${NAME_ROOT}/doc/port_notes.txt
 
 LIBRARIES =        \
- libraries/*.c          \
- libraries/*.h          \
- libraries/*.m4         \
- libraries/*.rs6k       \
- libraries/*.t3d        \
- libraries/*.t3e        \
- libraries/*.alpha      \
- libraries/Make_*        \
- libraries/README*      \
- libraries/include/*.h
+ ${NAME_ROOT}/libraries/*.c          \
+ ${NAME_ROOT}/libraries/*.h          \
+ ${NAME_ROOT}/libraries/*.m4         \
+ ${NAME_ROOT}/libraries/*.rs6k       \
+ ${NAME_ROOT}/libraries/*.t3d        \
+ ${NAME_ROOT}/libraries/*.t3e        \
+ ${NAME_ROOT}/libraries/*.alpha      \
+ ${NAME_ROOT}/libraries/Make_*        \
+ ${NAME_ROOT}/libraries/README*      \
+ ${NAME_ROOT}/libraries/include/*.h
 
 FILE_UTILITIES =     \
- file_utilities/Make*     \
- file_utilities/*.c       \
- file_utilities/*.h       \
- file_utilities/in.sample.* \
- file_utilities/out.errtol.* \
- file_utilities/out.sample.*
+ ${NAME_ROOT}/file_utilities/Make*     \
+ ${NAME_ROOT}/file_utilities/*.c       \
+ ${NAME_ROOT}/file_utilities/*.h       \
+ ${NAME_ROOT}/file_utilities/test/*.sample-in \
+ ${NAME_ROOT}/file_utilities/test/*.errtol \
+ ${NAME_ROOT}/file_utilities/test/*.sample-out \
+ ${NAME_ROOT}/file_utilities/test/checklist \
+ ${NAME_ROOT}/file_utilities/test/Makefile
 
 GAUGE_UTILITIES =      \
- gauge_utilities/Make*     \
- gauge_utilities/*.c       \
- gauge_utilities/*.h       \
- gauge_utilities/in.sample.* \
- gauge_utilities/out.errtol.* \
- gauge_utilities/out.sample.*
+ ${NAME_ROOT}/gauge_utilities/Make*     \
+ ${NAME_ROOT}/gauge_utilities/*.c       \
+ ${NAME_ROOT}/gauge_utilities/*.h       \
+ ${NAME_ROOT}/gauge_utilities/test/*.sample-in \
+ ${NAME_ROOT}/gauge_utilities/test/*.errtol \
+ ${NAME_ROOT}/gauge_utilities/test/*.sample-out \
+ ${NAME_ROOT}/gauge_utilities/test/checklist \
+ ${NAME_ROOT}/gauge_utilities/test/Makefile
 
 
 BINARY_SAMPLES =      \
- binary_samples/colormatrix.*sample* \
- binary_samples/lat.sample*    \
- binary_samples/lprop.*sample* \
- binary_samples/in.sample.*smear* \
- binary_samples/ksprop*.sample.* \
- binary_samples/ks.sample.* \
- binary_samples/ksvector.*sample.* \
- binary_samples/wprop*.sample.* \
- binary_samples/smear*.sample.*
+ ${NAME_ROOT}/binary_samples/colormatrix.*sample* \
+ ${NAME_ROOT}/binary_samples/lat.sample*    \
+ ${NAME_ROOT}/binary_samples/lprop.*sample* \
+ ${NAME_ROOT}/binary_samples/in.sample.*smear* \
+ ${NAME_ROOT}/binary_samples/ksprop*.sample.* \
+ ${NAME_ROOT}/binary_samples/ks.sample.* \
+ ${NAME_ROOT}/binary_samples/ksvector.*sample.* \
+ ${NAME_ROOT}/binary_samples/wprop*.sample.* \
+ ${NAME_ROOT}/binary_samples/smear*.sample.*
 
 INCLUDE =        \
- include/Make_*        \
- include/*.h
+ ${NAME_ROOT}/include/Make_*        \
+ ${NAME_ROOT}/include/*.h
 
 GENERIC =        \
- generic/Make_*        \
- generic/*.c          \
- generic/*.h          \
- generic/imp_actions/*.h
+ ${NAME_ROOT}/generic/Make_*        \
+ ${NAME_ROOT}/generic/*.c          \
+ ${NAME_ROOT}/generic/*.h          \
+ ${NAME_ROOT}/generic/imp_actions/*.h
 
 GENERIC_KS =     \
- generic_ks/Make_*     \
- generic_ks/*.c       \
- generic_ks/*.cc      \
- generic_ks/*.h       \
- generic_ks/imp_actions/README \
- generic_ks/imp_actions/*.h \
- generic_ks/imp_actions/hisq/*.h
+ ${NAME_ROOT}/generic_ks/Make_*     \
+ ${NAME_ROOT}/generic_ks/*.c       \
+ ${NAME_ROOT}/generic_ks/*.cc      \
+ ${NAME_ROOT}/generic_ks/*.h       \
+ ${NAME_ROOT}/generic_ks/imp_actions/README \
+ ${NAME_ROOT}/generic_ks/imp_actions/*.h \
+ ${NAME_ROOT}/generic_ks/imp_actions/hisq/*.h
 
 GENERIC_PG =     \
- generic_pg/Make_*     \
- generic_pg/*.c       \
- generic_pg/*.h
+ ${NAME_ROOT}/generic_pg/Make_*     \
+ ${NAME_ROOT}/generic_pg/*.c       \
+ ${NAME_ROOT}/generic_pg/*.h
 
 GENERIC_SCHROED =         \
- generic_schroed/Make_*         \
- generic_schroed/*.c           \
- generic_schroed/*.h
+ ${NAME_ROOT}/generic_schroed/Make_*         \
+ ${NAME_ROOT}/generic_schroed/*.c           \
+ ${NAME_ROOT}/generic_schroed/*.h
 
 GENERIC_WILSON =     \
- generic_wilson/Make_*     \
- generic_wilson/*.c       \
- generic_wilson/*.h
+ ${NAME_ROOT}/generic_wilson/Make_*     \
+ ${NAME_ROOT}/generic_wilson/*.c       \
+ ${NAME_ROOT}/generic_wilson/*.h
 
 GENERIC_CLOVER =          \
- generic_clover/Make_*     \
- generic_clover/*.c       \
- generic_clover/*.h       \
- generic_clover/utilities/Make*  \
- generic_clover/utilities/*.c
+ ${NAME_ROOT}/generic_clover/Make_*     \
+ ${NAME_ROOT}/generic_clover/*.c       \
+ ${NAME_ROOT}/generic_clover/*.h       \
+ ${NAME_ROOT}/generic_clover/utilities/Make*  \
+ ${NAME_ROOT}/generic_clover/utilities/*.c
 
 GENERIC_FORM =     \
- generic_form/Make_*     \
- generic_form/*.c       \
- generic_form/*.h
+ ${NAME_ROOT}/generic_form/Make_*     \
+ ${NAME_ROOT}/generic_form/*.c       \
+ ${NAME_ROOT}/generic_form/*.h
 
 ARB_DIRAC_EIGEN =          \
- arb_dirac_eigen/README         \
- arb_dirac_eigen/*.c            \
- arb_dirac_eigen/*.h            \
- arb_dirac_eigen/Make_*          \
- arb_dirac_eigen/in.sample*     \
- arb_dirac_eigen/out.errtol*     \
- arb_dirac_eigen/out.sample*
+ ${NAME_ROOT}/arb_dirac_eigen/README         \
+ ${NAME_ROOT}/arb_dirac_eigen/*.c            \
+ ${NAME_ROOT}/arb_dirac_eigen/*.h            \
+ ${NAME_ROOT}/arb_dirac_eigen/Make_*          \
+ ${NAME_ROOT}/arb_dirac_eigen/test/*.sample-in     \
+ ${NAME_ROOT}/arb_dirac_eigen/test/*.errtol     \
+ ${NAME_ROOT}/arb_dirac_eigen/test/*.sample-out \
+ ${NAME_ROOT}/arb_dirac_eigen/test/checklist \
+ ${NAME_ROOT}/arb_dirac_eigen/test/Makefile
 
 ARB_DIRAC_INVERT =          \
- arb_dirac_invert/README         \
- arb_dirac_invert/*.c            \
- arb_dirac_invert/*.h            \
- arb_dirac_invert/Make_*          \
- arb_dirac_invert/in.sample*     \
- arb_dirac_invert/out.errtol*     \
- arb_dirac_invert/out.sample*
+ ${NAME_ROOT}/arb_dirac_invert/README         \
+ ${NAME_ROOT}/arb_dirac_invert/*.c            \
+ ${NAME_ROOT}/arb_dirac_invert/*.h            \
+ ${NAME_ROOT}/arb_dirac_invert/Make_*          \
+ ${NAME_ROOT}/arb_dirac_invert/test/*.sample-in     \
+ ${NAME_ROOT}/arb_dirac_invert/test/*.errtol     \
+ ${NAME_ROOT}/arb_dirac_invert/test/*.sample-out \
+ ${NAME_ROOT}/arb_dirac_invert/test/checklist \
+ ${NAME_ROOT}/arb_dirac_invert/test/Makefile
+
+ARB_OVERLAP =
+ ${NAME_ROOT}/arb_overlap/README        \
+ ${NAME_ROOT}/arb_overlap/*.c           \
+ ${NAME_ROOT}/arb_overlap/*.h           \
+ ${NAME_ROOT}/arb_overlap/Make_*        \
+ ${NAME_ROOT}/arb_overlap/c4444.d        \
+ ${NAME_ROOT}/arb_overlap/test/*.sample-in     \
+ ${NAME_ROOT}/arb_overlap/test/*.sample-out \
+ ${NAME_ROOT}/arb_overlap/test/checklist \
+ ${NAME_ROOT}/arb_overlap/test/Makefile
+
+#  arb_overlap/test/*.errtol     \
 
 CLOVER_DYNAMICAL =          \
- clover_dynamical/*.c            \
- clover_dynamical/*.h            \
- clover_dynamical/Make_*          \
- clover_dynamical/in.sample*     \
- clover_dynamical/out.errtol*     \
- clover_dynamical/out.sample*
+ ${NAME_ROOT}/clover_dynamical/*.c            \
+ ${NAME_ROOT}/clover_dynamical/*.h            \
+ ${NAME_ROOT}/clover_dynamical/Make_*          \
+ ${NAME_ROOT}/clover_dynamical/test/*.sample-in     \
+ ${NAME_ROOT}/clover_dynamical/test/*.errtol     \
+ ${NAME_ROOT}/clover_dynamical/test/*.sample-out \
+ ${NAME_ROOT}/clover_dynamical/test/checklist \
+ ${NAME_ROOT}/clover_dynamical/test/Makefile
 
 CLOVER_HYBRIDS =            \
- clover_hybrids/*.c              \
- clover_hybrids/*.h              \
- clover_hybrids/Make_*            \
- clover_hybrids/in.sample*       \
- clover_hybrids/out.sample*
+ ${NAME_ROOT}/clover_hybrids/*.c              \
+ ${NAME_ROOT}/clover_hybrids/*.h              \
+ ${NAME_ROOT}/clover_hybrids/Make_*            \
+ ${NAME_ROOT}/clover_hybrids/test/*.sample-in       \
+ ${NAME_ROOT}/clover_hybrids/test/*.sample-out \
+ ${NAME_ROOT}/clover_hybrids/test/checklist \
+ ${NAME_ROOT}/clover_hybrids/test/Makefile
 
 CLOVER_INVERT =              \
- clover_invert/*.c           \
- clover_invert/*.h           \
- clover_invert/Make_*        \
- clover_invert/in.sample*    \
- clover_invert/in.time*      \
- clover_invert/out.errtol*   \
- clover_invert/out.sample*
+ ${NAME_ROOT}/clover_invert/*.c           \
+ ${NAME_ROOT}/clover_invert/*.h           \
+ ${NAME_ROOT}/clover_invert/Make_*        \
+ ${NAME_ROOT}/clover_invert/test/*.sample-in    \
+ ${NAME_ROOT}/clover_invert/in.time*      \
+ ${NAME_ROOT}/clover_invert/test/*.errtol   \
+ ${NAME_ROOT}/clover_invert/test/*.sample-out \
+ ${NAME_ROOT}/clover_invert/test/checklist \
+ ${NAME_ROOT}/clover_invert/test/Makefile
 
 CLOVER_INVERT2 =             \
- clover_invert2/*.c          \
- clover_invert2/*.h          \
- clover_invert2/Make_*       \
- clover_invert2/in.sample*   \
- clover_invert2/out.errtol*  \
- clover_invert2/out.sample*
+ ${NAME_ROOT}/clover_invert2/*.c          \
+ ${NAME_ROOT}/clover_invert2/*.h          \
+ ${NAME_ROOT}/clover_invert2/Make_*       \
+ ${NAME_ROOT}/clover_invert2/test/*.sample-in   \
+ ${NAME_ROOT}/clover_invert2/test/*.errtol  \
+ ${NAME_ROOT}/clover_invert2/test/*.sample-out \
+ ${NAME_ROOT}/clover_invert2/test/checklist \
+ ${NAME_ROOT}/clover_invert2/test/Makefile
 
 EXT_SRC =                    \
- ext_src/*.c                 \
- ext_src/*.h                 \
- ext_src/Make_*              \
- ext_src/get_checksums_ks.sh \
- ext_src/get_checksums_w.sh  \
- ext_src/in.sample*          \
- ext_src/out.errtol*         \
- ext_src/out.sample*
-
-PW_NR_MESON =                \
- pw_nr_meson/*.c             \
- pw_nr_meson/*.h             \
- pw_nr_meson/Make_*          \
- pw_nr_meson/in.sample*      \
- pw_nr_meson/out.errtol*     \
- pw_nr_meson/out.sample*
+ ${NAME_ROOT}/ext_src/*.c                 \
+ ${NAME_ROOT}/ext_src/*.h                 \
+ ${NAME_ROOT}/ext_src/Make_*              \
+ ${NAME_ROOT}/ext_src/get_checksums_ks.sh \
+ ${NAME_ROOT}/ext_src/get_checksums_w.sh  \
+ ${NAME_ROOT}/ext_src/test/*.sample-in          \
+ ${NAME_ROOT}/ext_src/test/*.errtol         \
+ ${NAME_ROOT}/ext_src/test/*.sample-out \
+ ${NAME_ROOT}/ext_src/test/checklist \
+ ${NAME_ROOT}/ext_src/test/Makefile
 
 GLUON_PROP =                 \
- gluon_prop/GF_555_6.1       \
- gluon_prop/*.c              \
- gluon_prop/*.h              \
- gluon_prop/Make_*           \
- gluon_prop/in.sample*       \
- gluon_prop/out.errtol*      \
- gluon_prop/out.sample*
+ ${NAME_ROOT}/gluon_prop/*.c              \
+ ${NAME_ROOT}/gluon_prop/*.h              \
+ ${NAME_ROOT}/gluon_prop/Make_*           \
+ ${NAME_ROOT}/gluon_prop/test/GF_555_6.1   \
+ ${NAME_ROOT}/gluon_prop/test/*.sample-in       \
+ ${NAME_ROOT}/gluon_prop/test/*.errtol      \
+ ${NAME_ROOT}/gluon_prop/test/*.sample-out \
+ ${NAME_ROOT}/gluon_prop/test/checklist \
+ ${NAME_ROOT}/gluon_prop/test/Makefile
 
-DENSE_STATIC_SU3 =           \
- dense_static_su3/*.c        \
- dense_static_su3/*.h        \
- dense_static_su3/Make_*     
+# h_dibaryon/test/*.errtol     \
 
 H_DIBARYON =                 \
- h_dibaryon/*.c              \
- h_dibaryon/*.h              \
- h_dibaryon/Make_*           \
- h_dibaryon/in.sample*       \
-# h_dibaryon/out.errtol*     \
- h_dibaryon/out.sample*
-
-HEAVY        =         \
- heavy/Make_*          \
- heavy/*.c             \
- heavy/*.h             \
- heavy/in.sample*      \
- heavy/out.errtol*     \
- heavy/out.sample*     \
- heavy/utilities/*.c   \
- heavy/utilities/*.h   \
- heavy/utilities/Make* \
- heavy/utilities/in.sample*
-
-HQET_HEAVY_TO_LIGHT =          \
- hqet_heavy_to_light/*.c            \
- hqet_heavy_to_light/*.h            \
- hqet_heavy_to_light/Make_*          \
- hqet_heavy_to_light/in.sample*     \
- hqet_heavy_to_light/out.errtol*     \
- hqet_heavy_to_light/out.sample*
+ ${NAME_ROOT}/h_dibaryon/*.c              \
+ ${NAME_ROOT}/h_dibaryon/*.h              \
+ ${NAME_ROOT}/h_dibaryon/Make_*           \
+ ${NAME_ROOT}/h_dibaryon/test/*.sample-in       \
+ ${NAME_ROOT}/h_dibaryon/test/*.sample-out \
+ ${NAME_ROOT}/h_dibaryon/test/checklist \
+ ${NAME_ROOT}/h_dibaryon/test/Makefile
 
 HVY_QPOT     =   \
- hvy_qpot/README      \
- hvy_qpot/Make_*       \
- hvy_qpot/*.c         \
- hvy_qpot/*.h         \
- hvy_qpot/in.sample.* \
- hvy_qpot/out.errtol*     \
- hvy_qpot/out.sample*
-
-KS_DYNAMICAL =          \
- ks_dynamical/*.c            \
- ks_dynamical/*.h            \
- ks_dynamical/Make_*          \
- ks_dynamical/in.sample*     \
- ks_dynamical/in.time*       \
- ks_dynamical/out.errtol*     \
- ks_dynamical/out.sample*
+ ${NAME_ROOT}/hvy_qpot/README      \
+ ${NAME_ROOT}/hvy_qpot/Make_*       \
+ ${NAME_ROOT}/hvy_qpot/*.c         \
+ ${NAME_ROOT}/hvy_qpot/*.h         \
+ ${NAME_ROOT}/hvy_qpot/test/*.sample-in \
+ ${NAME_ROOT}/hvy_qpot/test/*.errtol     \
+ ${NAME_ROOT}/hvy_qpot/test/*.sample-out \
+ ${NAME_ROOT}/hvy_qpot/test/checklist \
+ ${NAME_ROOT}/hvy_qpot/test/Makefile
 
 KS_EIGEN =          \
- ks_eigen/README*        \
- ks_eigen/*.c            \
- ks_eigen/*.h            \
- ks_eigen/Make_*          \
- ks_eigen/in.sample*     \
- ks_eigen/out.errtol*     \
- ks_eigen/out.sample*
-
-KS_HL_SPECTRUM =    \
- ks_hl_spectrum/*.c            \
- ks_hl_spectrum/*.h            \
- ks_hl_spectrum/Make_*          \
- ks_hl_spectrum/in.sample*     \
- ks_hl_spectrum/out.errtol*     \
- ks_hl_spectrum/out.sample*
+ ${NAME_ROOT}/ks_eigen/README*        \
+ ${NAME_ROOT}/ks_eigen/*.c            \
+ ${NAME_ROOT}/ks_eigen/*.h            \
+ ${NAME_ROOT}/ks_eigen/Make_*          \
+ ${NAME_ROOT}/ks_eigen/test/*.sample-in     \
+ ${NAME_ROOT}/ks_eigen/test/*.errtol     \
+ ${NAME_ROOT}/ks_eigen/test/*.sample-out \
+ ${NAME_ROOT}/ks_eigen/test/checklist \
+ ${NAME_ROOT}/ks_eigen/test/Makefile
 
 KS_IMP_DYN =           \
- ks_imp_dyn/README          \
- ks_imp_dyn/*.c             \
- ks_imp_dyn/*.h             \
- ks_imp_dyn/Make_*           \
- ks_imp_dyn/in.sample*      \
- ks_imp_dyn/in.time*        \
- ks_imp_dyn/out.errtol*     \
- ks_imp_dyn/out.sample*
+ ${NAME_ROOT}/ks_imp_dyn/README          \
+ ${NAME_ROOT}/ks_imp_dyn/*.c             \
+ ${NAME_ROOT}/ks_imp_dyn/*.h             \
+ ${NAME_ROOT}/ks_imp_dyn/Make_*           \
+ ${NAME_ROOT}/ks_imp_dyn/test/*.sample-in      \
+ ${NAME_ROOT}/ks_imp_dyn/in.time*        \
+ ${NAME_ROOT}/ks_imp_dyn/test/*.errtol     \
+ ${NAME_ROOT}/ks_imp_dyn/test/*.sample-out \
+ ${NAME_ROOT}/ks_imp_dyn/test/checklist \
+ ${NAME_ROOT}/ks_imp_dyn/test/Makefile
 
 KS_IMP_RHMC =           \
- ks_imp_rhmc/README*         \
- ks_imp_rhmc/*.c             \
- ks_imp_rhmc/*.h             \
- ks_imp_rhmc/Make_*           \
- ks_imp_rhmc/in.sample*      \
- ks_imp_rhmc/out.errtol*     \
- ks_imp_rhmc/out.sample*     \
- ks_imp_rhmc/rationals.sample* \
- ks_imp_rhmc/remez-milc/README* \
- ks_imp_rhmc/remez-milc/*.C     \
- ks_imp_rhmc/remez-milc/*.h     \
- ks_imp_rhmc/remez-milc/*.pl    \
- ks_imp_rhmc/remez-milc/in.sample* \
- ks_imp_rhmc/remez-milc/in.m013m065m838 \
- ks_imp_rhmc/remez-milc/rationals.sample* \
- ks_imp_rhmc/remez-milc/Make*
+ ${NAME_ROOT}/ks_imp_rhmc/README*         \
+ ${NAME_ROOT}/ks_imp_rhmc/*.c             \
+ ${NAME_ROOT}/ks_imp_rhmc/*.h             \
+ ${NAME_ROOT}/ks_imp_rhmc/Make_*           \
+ ${NAME_ROOT}/ks_imp_rhmc/test/*.sample-in      \
+ ${NAME_ROOT}/ks_imp_rhmc/test/*.errtol     \
+ ${NAME_ROOT}/ks_imp_rhmc/test/*.sample-out     \
+ ${NAME_ROOT}/ks_imp_rhmc/test/checklist \
+ ${NAME_ROOT}/ks_imp_rhmc/test/Makefile     \
+ ${NAME_ROOT}/ks_imp_rhmc/test/rationals.sample* \
+ ${NAME_ROOT}/ks_imp_rhmc/remez-milc/README* \
+ ${NAME_ROOT}/ks_imp_rhmc/remez-milc/*.C     \
+ ${NAME_ROOT}/ks_imp_rhmc/remez-milc/*.h     \
+ ${NAME_ROOT}/ks_imp_rhmc/remez-milc/*.pl    \
+ ${NAME_ROOT}/ks_imp_rhmc/remez-milc/in.sample* \
+ ${NAME_ROOT}/ks_imp_rhmc/remez-milc/in.m013m065m838 \
+ ${NAME_ROOT}/ks_imp_rhmc/remez-milc/rationals.sample* \
+ ${NAME_ROOT}/ks_imp_rhmc/remez-milc/Make*
 
 
 KS_IMP_UTILITIES =           \
- ks_imp_utilities/*.c             \
- ks_imp_utilities/*.h             \
- ks_imp_utilities/Make*           \
- ks_imp_utilities/in.sample*      \
- ks_imp_utilities/out.errtol*     \
- ks_imp_utilities/out.sample*
+ ${NAME_ROOT}/ks_imp_utilities/*.c             \
+ ${NAME_ROOT}/ks_imp_utilities/*.h             \
+ ${NAME_ROOT}/ks_imp_utilities/Make*           \
+ ${NAME_ROOT}/ks_imp_utilities/test/*.sample-in      \
+ ${NAME_ROOT}/ks_imp_utilities/test/*.errtol     \
+ ${NAME_ROOT}/ks_imp_utilities/test/*.sample-out \
+ ${NAME_ROOT}/ks_imp_utilities/test/checklist \
+ ${NAME_ROOT}/ks_imp_utilities/test/Makefile
 
-KS_IMP_INVERT_MULTI =           \
- ks_imp_invert_multi/README         \
- ks_imp_invert_multi/*.c             \
- ks_imp_invert_multi/*.h             \
- ks_imp_invert_multi/Make_*           \
- ks_imp_invert_multi/in.sample*      \
- ks_imp_invert_multi/out.errtol*     \
- ks_imp_invert_multi/out.sample*
+KS_MEASURE =    \
+ ${NAME_ROOT}/ks_measure/*.c            \
+ ${NAME_ROOT}/ks_measure/*.h            \
+ ${NAME_ROOT}/ks_measure/Make_*          \
+ ${NAME_ROOT}/ks_measure/test/*.sample-in     \
+ ${NAME_ROOT}/ks_measure/test/*.errtol     \
+ ${NAME_ROOT}/ks_measure/test/*.sample-out \
+ ${NAME_ROOT}/ks_measure/test/checklist \
+ ${NAME_ROOT}/ks_measure/test/Makefile
 
-PROPAGATING_FORM_FACTOR =          \
- propagating_form_factor/*.c            \
- propagating_form_factor/*.h            \
- propagating_form_factor/Make_*          \
- propagating_form_factor/in.sample*     \
- propagating_form_factor/out.errtol*    \     \
- propagating_form_factor/out.sample*    \
- propagating_form_factor/scripts/*       \
- propagating_form_factor/utilities/*.c  \
- propagating_form_factor/utilities/*.h  \
- propagating_form_factor/utilities/Make* \
- propagating_form_factor/utilities/in.sample*
+KS_SPECTRUM =    \
+ ${NAME_ROOT}/ks_spectrum/*.c            \
+ ${NAME_ROOT}/ks_spectrum/*.h            \
+ ${NAME_ROOT}/ks_spectrum/Make_*          \
+ ${NAME_ROOT}/ks_spectrum/test/*.sample-in     \
+ ${NAME_ROOT}/ks_spectrum/test/*.errtol     \
+ ${NAME_ROOT}/ks_spectrum/test/*.sample-out \
+ ${NAME_ROOT}/ks_spectrum/test/*.sh \
+ ${NAME_ROOT}/ks_spectrum/test/*.test-param \
+ ${NAME_ROOT}/ks_spectrum/test/checklist \
+ ${NAME_ROOT}/ks_spectrum/test/Makefile \
+ ${NAME_ROOT}/ks_spectrum/test/README
 
 PURE_GAUGE =          \
- pure_gauge/*.c            \
- pure_gauge/*.h            \
- pure_gauge/Make_*          \
- pure_gauge/in.sample*     \
- pure_gauge/out.errtol*     \
- pure_gauge/out.sample*
+ ${NAME_ROOT}/pure_gauge/*.c            \
+ ${NAME_ROOT}/pure_gauge/*.h            \
+ ${NAME_ROOT}/pure_gauge/Make_*          \
+ ${NAME_ROOT}/pure_gauge/test/*.sample-in     \
+ ${NAME_ROOT}/pure_gauge/test/*.errtol     \
+ ${NAME_ROOT}/pure_gauge/test/*.sample-out \
+ ${NAME_ROOT}/pure_gauge/test/checklist \
+ ${NAME_ROOT}/pure_gauge/test/Makefile
 
 SCHROED_CL_INV =          \
- schroed_cl_inv/*.c            \
- schroed_cl_inv/*.h            \
- schroed_cl_inv/Make_*          \
- schroed_cl_inv/in.sample*     \
- schroed_cl_inv/out.errtol*     \
- schroed_cl_inv/out.sample*
+ ${NAME_ROOT}/schroed_cl_inv/*.c            \
+ ${NAME_ROOT}/schroed_cl_inv/*.h            \
+ ${NAME_ROOT}/schroed_cl_inv/Make_*          \
+ ${NAME_ROOT}/schroed_cl_inv/test/*.sample-in     \
+ ${NAME_ROOT}/schroed_cl_inv/test/*.errtol     \
+ ${NAME_ROOT}/schroed_cl_inv/test/*.sample-out \
+ ${NAME_ROOT}/schroed_cl_inv/test/checklist \
+ ${NAME_ROOT}/schroed_cl_inv/test/Makefile
 
 SCHROED_KS_DYN =          \
- schroed_ks_dyn/*.c            \
- schroed_ks_dyn/*.h            \
- schroed_ks_dyn/Make_*          \
- schroed_ks_dyn/in.sample*     \
- schroed_ks_dyn/out.errtol*     \
- schroed_ks_dyn/out.sample*
+ ${NAME_ROOT}/schroed_ks_dyn/*.c            \
+ ${NAME_ROOT}/schroed_ks_dyn/*.h            \
+ ${NAME_ROOT}/schroed_ks_dyn/Make_*          \
+ ${NAME_ROOT}/schroed_ks_dyn/test/*.sample-in     \
+ ${NAME_ROOT}/schroed_ks_dyn/test/*.errtol     \
+ ${NAME_ROOT}/schroed_ks_dyn/test/*.sample-out \
+ ${NAME_ROOT}/schroed_ks_dyn/test/checklist \
+ ${NAME_ROOT}/schroed_ks_dyn/test/Makefile
 
 SCHROED_PG =          \
- schroed_pg/*.c            \
- schroed_pg/*.h            \
- schroed_pg/Make_*          \
- schroed_pg/in.sample*     \
- schroed_pg/out.errtol*     \
- schroed_pg/out.sample*
+ ${NAME_ROOT}/schroed_pg/*.c            \
+ ${NAME_ROOT}/schroed_pg/*.h            \
+ ${NAME_ROOT}/schroed_pg/Make_*          \
+ ${NAME_ROOT}/schroed_pg/test/*.sample-in     \
+ ${NAME_ROOT}/schroed_pg/test/*.errtol     \
+ ${NAME_ROOT}/schroed_pg/test/*.sample-out \
+ ${NAME_ROOT}/schroed_pg/test/checklist \
+ ${NAME_ROOT}/schroed_pg/test/Makefile
 
 SMOOTH_INST =         \
- smooth_inst/README*       \
- smooth_inst/*.c           \
- smooth_inst/*.c.unused    \
- smooth_inst/*.h           \
- smooth_inst/Make_*         \
- smooth_inst/in.sample*    \
- smooth_inst/out.errtol*   \
- smooth_inst/out.sample*   \
- smooth_inst/utilities/*.c \
- smooth_inst/utilities/Make_utilities
-
-STRING_BREAK =          \
- string_break/*.c            \
- string_break/*.h            \
- string_break/Make_*          \
- string_break/in.sample*     \
- string_break/out.errtol*     \
- string_break/out.sample*
+ ${NAME_ROOT}/smooth_inst/README*       \
+ ${NAME_ROOT}/smooth_inst/*.c           \
+ ${NAME_ROOT}/smooth_inst/*.c.unused    \
+ ${NAME_ROOT}/smooth_inst/*.h           \
+ ${NAME_ROOT}/smooth_inst/Make_*         \
+ ${NAME_ROOT}/smooth_inst/test/*.sample-in    \
+ ${NAME_ROOT}/smooth_inst/test/*.errtol   \
+ ${NAME_ROOT}/smooth_inst/test/*.sample-out   \
+ ${NAME_ROOT}/smooth_inst/test/checklist \
+ ${NAME_ROOT}/smooth_inst/test/Makefile \
+ ${NAME_ROOT}/smooth_inst/utilities/*.c \
+ ${NAME_ROOT}/smooth_inst/utilities/Make_utilities
 
 SYMANZIK_SL32 =         \
- symanzik_sl32/*.c           \
- symanzik_sl32/*.h           \
- symanzik_sl32/Make_*         \
- symanzik_sl32/in.sample*    \
- symanzik_sl32/out.errtol*     \
- symanzik_sl32/out.sample*
+ ${NAME_ROOT}/symanzik_sl32/*.c           \
+ ${NAME_ROOT}/symanzik_sl32/*.h           \
+ ${NAME_ROOT}/symanzik_sl32/Make_*         \
+ ${NAME_ROOT}/symanzik_sl32/test/*.sample-in    \
+ ${NAME_ROOT}/symanzik_sl32/test/*.errtol     \
+ ${NAME_ROOT}/symanzik_sl32/test/*.sample-out \
+ ${NAME_ROOT}/symanzik_sl32/test/checklist \
+ ${NAME_ROOT}/symanzik_sl32/test/Makefile
 
-WILSON_DYNAMICAL =          \
- wilson_dynamical/*.c            \
- wilson_dynamical/*.h            \
- wilson_dynamical/Make_*         \
- wilson_dynamical/in.sample*     \
- wilson_dynamical/out.errtol*     \
- wilson_dynamical/out.sample*
-
-
-
-WILSON_STATIC        =   \
- wilson_static/Make_*          \
- wilson_static/*.c            \
- wilson_static/*.h            \
- wilson_static/in.sample*     \
- wilson_static/out.errtol*    \
- wilson_static/out.sample*    \
- wilson_static/read_matrix_code/Make* \
- wilson_static/read_matrix_code/*.c \
- wilson_static/matrix_to_corr/Make* \
- wilson_static/matrix_to_corr/*.c \
- wilson_static/matrix_to_corr/*.h \
 
 # We split up the archive into manageable components
 
@@ -421,51 +402,49 @@ BASIC =               \
  ${SSE2}            
 
 SSE =               \
- sse/README_SSE          \
- sse/include/*.h         \
- sse/include/Makefile    \
- sse/nas/*.s             \
- sse/bin/*.pl
+ ${NAME_ROOT}/sse/README_SSE          \
+ ${NAME_ROOT}/sse/include/*.h         \
+ ${NAME_ROOT}/sse/include/Makefile    \
+ ${NAME_ROOT}/sse/nas/*.s             \
+ ${NAME_ROOT}/sse/bin/*.pl
 
 SSE_OPTERON =                    \
- sse_opteron/README_SSE          \
- sse_opteron/include/*.h         \
- sse_opteron/include/Makefile    \
- sse_opteron/nas/*.s             \
- sse_opteron/bin/*.pl
+ ${NAME_ROOT}/sse_opteron/README_SSE          \
+ ${NAME_ROOT}/sse_opteron/include/*.h         \
+ ${NAME_ROOT}/sse_opteron/include/Makefile    \
+ ${NAME_ROOT}/sse_opteron/nas/*.s             \
+ ${NAME_ROOT}/sse_opteron/bin/*.pl
 
 SSE2 =              \
- sse2/README_SSE         \
- sse2/include/*.h        \
- sse2/include/Makefile   \
- sse2/nas/*.s            \
- sse2/bin/*.pl
+ ${NAME_ROOT}/sse2/README_SSE         \
+ ${NAME_ROOT}/sse2/include/*.h        \
+ ${NAME_ROOT}/sse2/include/Makefile   \
+ ${NAME_ROOT}/sse2/nas/*.s            \
+ ${NAME_ROOT}/sse2/bin/*.pl
 
 PG =          \
  ${GENERIC_PG}        \
  ${PURE_GAUGE}        \
- ${SYMANZIK_SL32}
-# ${HVY_QPOT}
+ ${SYMANZIK_SL32}     \
+ ${HVY_QPOT}
 
 CLOVER =              \
  ${GENERIC_CLOVER}    \
  ${CLOVER_DYNAMICAL}  \
  ${CLOVER_HYBRIDS}    \
- ${CLOVER_INVERT}     \
  ${CLOVER_INVERT2}    \
  ${EXT_SRC}           \
- ${H_DIBARYON}        \
- ${PW_NR_MESON}
-
-FORM =                \
- ${KS_HL_SPECTRUM} \
+ ${H_DIBARYON}
 
 FP =                  \
+ ${ARB_OVERLAP}       \
  ${ARB_DIRAC_INVERT}  \
  ${ARB_DIRAC_EIGEN}
 
 INST =                \
  ${SMOOTH_INST}
+
+# ${KS_IMP_INVERT_MULTI} \
 
 KS =                  \
  ${GENERIC_KS}        \
@@ -474,50 +453,46 @@ KS =                  \
  ${KS_IMP_DYN}	      \
  ${KS_IMP_RHMC}	      \
  ${KS_IMP_UTILITIES}  \
- ${KS_IMP_INVERT_MULTI}
+ ${KS_MEASURE}        \
+ ${KS_SPECTRUM}
 
-# SF =                  \
-#  ${GENERIC_SCHROED}   \
-#  ${SCHROED_CL_INV}    \
-#  ${SCHROED_PG}
+
 SF =                 \
   ${GENERIC_SCHROED} \
   ${SCHROED_CL_INV}  \
   ${SCHROED_KS_DYN}
+  ${SCHROED_PG}
 
 WILSON =              \
  ${GENERIC_WILSON} \
- ${HEAVY}  \
- ${WILSON_STATIC}
 
 # The names of the component tar files
 
-BASIC_TAR   = ${NAME_ROOT}_basic.tar
-CLOVER_TAR  = ${NAME_ROOT}_clover.tar
-FORM_TAR    = ${NAME_ROOT}_form.tar
-FP_TAR      = ${NAME_ROOT}_fp.tar
-INST_TAR    = ${NAME_ROOT}_inst.tar
-KS_TAR      = ${NAME_ROOT}_ks.tar
-PURE_GAUGE_TAR  = ${NAME_ROOT}_pure_gauge.tar
-SF_TAR      = ${NAME_ROOT}_sf.tar
-WILSON_TAR  = ${NAME_ROOT}_wilson.tar
+BASIC_TAR   = ${NAME_ROOT}/${NAME_ROOT}_basic.tar
+CLOVER_TAR  = ${NAME_ROOT}/${NAME_ROOT}_clover.tar
+FP_TAR      = ${NAME_ROOT}/${NAME_ROOT}_fp.tar
+INST_TAR    = ${NAME_ROOT}/${NAME_ROOT}_inst.tar
+KS_TAR      = ${NAME_ROOT}/${NAME_ROOT}_ks.tar
+PG_TAR      = ${NAME_ROOT}/${NAME_ROOT}_pure_gauge.tar
+SF_TAR      = ${NAME_ROOT}/${NAME_ROOT}_sf.tar
+WILSON_TAR  = ${NAME_ROOT}/${NAME_ROOT}_wilson.tar
 
 # The combined tar file
 
 TAR =          \
  ${BASIC_TAR}  \
  ${CLOVER_TAR} \
- ${FORM_TAR}   \
+ ${FP_TAR} \
  ${KS_TAR}     \
  ${INST_TAR}    \
- ${PURE_GAUGE_TAR} \
+ ${PG_TAR} \
  ${SF_TAR}     \
  ${WILSON_TAR}
 
 # Contents of the whole ball of wax
 
 WORK =              \
- README_UNPACK      \
- Make_contents      \
- Make_unpack        \
+ ${NAME_ROOT}/README_UNPACK      \
+ ${NAME_ROOT}/Make_contents      \
+ ${NAME_ROOT}/Make_unpack        \
  ${TAR}
