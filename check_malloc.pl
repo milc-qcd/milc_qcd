@@ -6,6 +6,7 @@
 $tot = 0;
 $n = 0;
 while(<>){
+    $line++;
     if(/malloc/){
 	# Line format is 
 	# 95768 = malloc(1024) make_gather:594
@@ -13,61 +14,68 @@ while(<>){
 	# Double check format
 	if($a[1] eq "="){
 	    $size = $a[2];
+	    $loc = $a[3];
 	    $size =~ s/malloc\((\w+)\)/$1/;
 	    $tot += $size;
 	    $totMB = $tot/1e6;
-	    print "$n $totMB $a[3]\n";
+	    print "$n $totMB $loc\n";
 	    $n++;
 	    $addr = $a[0];
 	    if ( defined($table{$addr}) && $table{$addr} != 0){
-		print "WARNING: expected 0 but got $table{$addr}\n";
+		print "WARNING: expected 0 above but got $table{$addr}\n";
 	    }
 	    $table{$addr} = $size;
+	    $location{$addr} = $loc;
 	}
     }
     elsif(/calloc/){
 	# Line format is 
 	# 95768 = calloc(256,8) routine:594
-	print $_;
+	print " $_";
 	@a = split(" ",$_);
 	# Double check format
 	if($a[1] eq "="){
 	    $nelem = $a[2];
+	    $loc = $a[3];
 	    $nelem =~ s/calloc\((\w+),\w+\)/$1/;
 	    $elsize = $a[2];
 	    $elsize =~ s/calloc\(\w+,(\w+)\)/$1/;
 	    $size = $nelem*$elsize;
 	    $tot += $size;
 	    $totMB = $tot/1e6;
-	    print "$n $totMB $a[3]\n";
+	    print "$n $totMB $loc\n";
 	    $n++;
 	    $addr = $a[0];
 	    if ( defined($table{$addr}) && $table{$addr} != 0){
-		print "WARNING: expected 0 but got $table{$addr}\n";
+		print "WARNING line $line: expected 0 but got $table{$addr}\n";
 	    }
 	    $table{$addr} = $size;
+	    $location{$addr} = $loc;
 	}
     }
     elsif(/realloc/){
 	# Line format is 
 	# 95e28 = realloc(92fe0,40) make_gather:590
-	print $_;
+	print "% $_";
 	@a = split(" ",$_);
 	# Double check format
 	if($a[1] eq "="){
 	    $addr = $a[2];
+	    $loc = $a[3];
 	    $addr =~ s/realloc\((\w+),\w+\)/$1/;
 	    $size = $a[2];
 	    $size =~ s/realloc\(\w+,(\w+)\)/$1/;
-	    print "addr = $addr size = $size\n";
+	    print "% addr = $addr size = $size\n";
 	    defined($table{$addr}) || die "Can't find $addr in table\n";
 	    $oldsize = $table{$addr};
+	    $table{$addr} = 0;
 	    $tot += ($size - $oldsize);
 	    $totMB = $tot/1e6;
-	    print "$n $totMB $a[3]\n";
+	    print "$n $totMB $loc\n";
 	    $n++;
 	    $addr = $a[0];
 	    $table{$addr} = $size;
+	    $location{$addr} = $loc;
 	}
     }
 
@@ -80,6 +88,9 @@ while(<>){
 	if($addr ne "0"){
 	    defined($table{$addr}) || die "Can't find $addr in table\n";
 	    $size = $table{$addr};
+	    if($size == 0){
+		printf "WARNING: line $line: Double free?\n";
+	    }
 	    $tot -= $size;
 	    $totMB = $tot/1e6;
 	    print "$n $totMB $a[1]\n";
@@ -98,7 +109,8 @@ foreach $key (sort keys %table)
 {
     if($table{$key} > 0){
 	$tot -= $table{$key};
-	print "alloc $key leaves $table{$key} bytes unfreed.\n";
-	print "$tot bytes remain unaccounted\n";
+	print "% alloc $key leaves $table{$key} bytes unfreed from $location{$key}.\n";
     }
 }
+
+print "% $tot bytes remain unaccounted\n";
