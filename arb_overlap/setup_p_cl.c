@@ -1,4 +1,4 @@
-/******** setup_p.c *********/
+/******** setup_p_cl.c *********/
 /* MIMD code version 7 */
 #define IF_OK if(status==0)
 

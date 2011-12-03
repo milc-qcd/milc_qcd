@@ -1,5 +1,5 @@
-/************************ grsource.c *****************************/
-/* MIMD version 6 */
+/************************ grsource_dirac.c *****************************/
+/* MIMD version 7 */
 
 #include "arb_ov_includes.h"
 

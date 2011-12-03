@@ -1,4 +1,5 @@
-/* ******* build_params_flat.c ********
+/********* build_params_0.166.c ********
+/* MIMD version 7 */
 
    parameter building for the selected flat action
    fit for r0=1.6 ''best massless''

@@ -1,4 +1,4 @@
-/******************** prefetch.c ***************************************
+/******************** prefetch64.c ***************************************
  *                                                                     *
  * Cache manipulation - C version for including in prefetch.c          *
  * C. DeTar 9/29/01                                                    * 

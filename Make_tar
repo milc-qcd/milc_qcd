@@ -5,12 +5,11 @@
 
 VER = 7.7.3
 NAME_ROOT = milc_qcd-${VER}
-TARLIST = tarlist.${NAME_ROOT}
 TARBALL = ${NAME_ROOT}.tar.gz
 
 include tarlist
 
 ${TARBALL}:
-	cd ..; tar -czf ${NAME_ROOT}/$@ ${TARLIST} \
-	-/bin/rm ${TARLIST}
+	cd ..; tar -czf ${NAME_ROOT}/$@ ${TARLIST}
+
 

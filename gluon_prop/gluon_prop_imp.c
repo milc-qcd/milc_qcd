@@ -1,4 +1,4 @@
-/******** gluon_prop.c *********/
+/******** gluon_prop_imp.c *********/
 /* MIMD version 7 */
 /* Initial version by UMH 12/21/00 */
 

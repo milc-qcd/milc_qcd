@@ -1,4 +1,4 @@
-/********************** ks_meson.c *********************************/
+/********************** ks_meson_mom.c *********************************/
 /* MIMD version 7 */
 
 /*  Tie together staggered propagators to make meson correlators

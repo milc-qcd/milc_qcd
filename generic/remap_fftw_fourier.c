@@ -1,4 +1,4 @@
-/************************* remap_fourier.c *********************************/
+/************************* remap_fftw_fourier.c **************************/
 /* MIMD version 7 */
 
 /* Fourier transform using remapping and scalar 1-D transforms */

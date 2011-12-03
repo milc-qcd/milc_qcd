@@ -1,5 +1,4 @@
-
-/***************** wp_grow_pl.c  (in su3.a) **************************/
+/***************** wp_grow_pl_field_pf_l.c  **************/
 /* 
   Expand the "Wilson projection" of a Wilson fermion vector.
   (1 +- gamma_j) is a projection operator, and we are given a

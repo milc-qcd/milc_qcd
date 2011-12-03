@@ -1,6 +1,6 @@
-/******************* f_mu_nu.c ****************************************/
+/******************* f_mu_nu1.c ****************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* This version uses gathers to get the neighbors */
 /* This version uses tempmat1, tempmat2 and staple! */
 /* version of 4/27/95 by UMH */

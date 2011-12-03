@@ -1,4 +1,4 @@
-/************************** d_plaq4.c *******************************/
+/******************* d_plaq4_hist.c *******************************/
 /* MIMD version 7 */
 /* This version mallocs the temporary su3_matrix */
 

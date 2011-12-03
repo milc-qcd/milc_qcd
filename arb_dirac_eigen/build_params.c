@@ -1,4 +1,4 @@
-/* ******* build_params.c ********/
+/********* build_params.c ********/
 /* MIMD version 6 */
 
 /* parameter building for the selected flat action

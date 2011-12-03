@@ -1,4 +1,4 @@
-/******* load_qop_asqtad_coeffs.c ****************/
+/******* load_qop_asqtad_coeffs_P.c ****************/
 /* MIMD version 7 */
 
 /* Loads coefficient structure for QOP routines */

@@ -1,6 +1,6 @@
-/******************* mult_ldu.c ***************************************/
+/******************* mult_ldu2.c ***************************************/
 
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* version of 12/29/94 by UMH */
 
 /* Multiply a Wilson vector (spin,color) with a block-diagonal hermition

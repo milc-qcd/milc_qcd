@@ -1,3 +1,6 @@
+/****************** eigen_stuff_JD.c ****************/
+/* MIMD version 7 */
+
 #include "arb_ov_includes.h"
 #include "primme.h"
 static int mxv_kalk;

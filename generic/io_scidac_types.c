@@ -1,4 +1,4 @@
-/*********************** map_milc_to_qop.c **************************/
+/*********************** io_scidac_types.c **************************/
 /* Functions for reading and writing MILC fields through QIO        */
 /* C. DeTar 6/7/07
 */

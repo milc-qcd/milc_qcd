@@ -1,3 +1,6 @@
+/**************** cksum.c ****************************/
+/* MIMD version 7 */
+
 /* Taken from 
    http://fxr.googlebit.com/source/usr.bin/cksum/crc.c?v=8-CURRENT#L116
    modified for SciDAC use  C. DeTar 10/11/2003 */

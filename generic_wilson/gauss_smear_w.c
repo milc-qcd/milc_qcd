@@ -1,4 +1,4 @@
-/************************** gauss_smear.c ********************************/
+/************************** gauss_smear_w.c *****************************/
 /* MIMD version 7 */
 /*
  * Create a Gauss-smeared source, Chroma style

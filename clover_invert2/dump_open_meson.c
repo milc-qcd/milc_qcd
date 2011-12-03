@@ -1,3 +1,5 @@
+/************* dump_open_meson.c ********************/
+/* MIMD version 7 */
 /* Print contents of an open meson correlator file */
 /* C. DeTar 8 June 2008 */
 

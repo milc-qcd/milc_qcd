@@ -1,5 +1,5 @@
 /******* congrad_multi_field.c - conjugate gradient for SU3/fermions ****/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /* Calls hdelta0_field.c for fermion matrix */
 
 /* version of 26 May 02 FIELDWISE version  */

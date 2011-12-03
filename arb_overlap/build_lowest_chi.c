@@ -1,5 +1,5 @@
 /************* build_lowest_chi.c ******************************/
-/* MIMD version 6.1 */
+/* MIMD version 7 */
 
 /*
 This routine takes a set of trial vectors (assumed to be ``packed'' into

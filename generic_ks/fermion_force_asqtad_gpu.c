@@ -1,3 +1,6 @@
+/****************** fermion_force_asqtad_gpu.c *******************/
+/* MIMD version 7 */
+
 #if 0
 
 

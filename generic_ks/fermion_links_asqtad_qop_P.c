@@ -1,4 +1,4 @@
-/****************** fermion_links_asqtad_qop.c ***********************/
+/****************** fermion_links_asqtad_qop_P.c ***********************/
 /* MIMD version 7 */
 
 /* This is the MILC wrapper for SciDAC Level 3 QOP link smearing */

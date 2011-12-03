@@ -1,4 +1,4 @@
-/******* d_congrad5_fn_qop_milc.c - conjugate gradient for SU3/fermions ****/
+/**** d_congrad5_fn_qop_milc_P.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 7 */
 /* Kogut-Susskind fermions -- this version for "fat plus Naik" quark
  * actions.  

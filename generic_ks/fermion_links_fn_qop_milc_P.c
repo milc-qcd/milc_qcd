@@ -1,4 +1,4 @@
-/****** fermion_links_fn_qop_milc.c  -- ******************/
+/****** fermion_links_fn_qop_milc_P.c  -- ******************/
 /* MIMD version 7 */
 /* This is a substitute MILC implementation of the QOP fermion links routine */
 /* It is used for testing the Level 3 interface */

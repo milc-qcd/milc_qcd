@@ -1,4 +1,4 @@
-/******************** report_invert_status *********************************/
+/******************** report_invert_status.c *****************************/
 /* MIMD version 7 */
 
 #include "generic_includes.h"

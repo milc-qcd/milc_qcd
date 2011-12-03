@@ -1,3 +1,6 @@
+/************ myclock.c *************************/
+/* MIMD version 7 */
+
 #include "time.h"
 #include "stdio.h"
 void myclock(int restart, char* msg)

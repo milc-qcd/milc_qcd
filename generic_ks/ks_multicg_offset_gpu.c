@@ -1,4 +1,5 @@
-
+/************** ks_multicg_offset_gpu.c **************************/
+/* MIMD version 7 */
 #include <test_util.h>
 #include <blas_reference.h>
 #include <staggered_dslash_reference.h>

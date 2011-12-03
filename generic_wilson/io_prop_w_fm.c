@@ -1,4 +1,4 @@
-/********************** io_helpers_w.c **********************************/
+/********************** io_prop_w_fm.c ***************************/
 /* MIMD version 7 */
 /* CD 4/07
    For reading and writing Fermilab formatted propagator files

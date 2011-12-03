@@ -1,4 +1,5 @@
-/************* wp_shrink_pl.c  (in su3.a) **************************/
+/************* wp_shrink_pl_field_pf.c   **************************/
+/* MIMD version 7 */
 /* 
    Compute the "Wilson projection" of a Wilson fermion vector.
    (1 +- n dot gamma_j) is a projection operator, and we want to isolate

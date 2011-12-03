@@ -1,5 +1,5 @@
 /**************************** jacobi.c ****************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 #include <malloc.h>
 #include <math.h>
 #include "../include/complex.h"

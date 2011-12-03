@@ -1,4 +1,4 @@
-/******* ks_multicg_qop.c - multi-mass CG for SU3/fermions ****/
+/******* ks_multicg_offset_qop.c - multi-mass CG for SU3/fermions ****/
 /* MIMD version 7 */
 
 /* Multi-mass CG inverter for staggered fermions */

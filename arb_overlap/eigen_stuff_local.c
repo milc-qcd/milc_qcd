@@ -1,4 +1,4 @@
-/****** eigen_stuff.c  ******************/
+/****** eigen_stuff_local.c  ******************/
 /* Eigenvalue and Eigevector computation routines.
 * K.O. 8/99 Started. 
 * MIMD version 7

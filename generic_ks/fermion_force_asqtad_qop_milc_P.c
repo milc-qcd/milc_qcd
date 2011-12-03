@@ -1,4 +1,4 @@
-/****** fermion_force_asqtad_qop_milc.c  -- ******************/
+/****** fermion_force_asqtad_qop_milc_P.c  -- ******************/
 /* MIMD version 7 */
 /* fermion force optimized for the Asqtad action
 

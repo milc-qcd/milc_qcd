@@ -1,4 +1,4 @@
-/******* ks_multicg_qop_milc.c - multi-mass CG for SU3/fermions ****/
+/******* ks_multicg_qop_milc_P.c - multi-mass CG for SU3/fermions ****/
 /* MIMD version 7 */
 
 /* This version implements the QOP API with the standard MILC algorithm
@@ -11,6 +11,9 @@
 
 /*
  * $Log: ks_multicg_qop_milc_P.c,v $
+ * Revision 1.2  2011/12/03 22:30:09  detar
+ * Cosmetic: Fix file name in top comment line
+ *
  * Revision 1.1  2006/12/09 13:52:40  detar
  * Add mixed precision capability for KS inverter in QOP and QDP
  *
@@ -29,7 +32,7 @@
 #include "generic_ks_includes.h"
 #include <qop.h>
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_qop_milc_P.c,v 1.1 2006/12/09 13:52:40 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_qop_milc_P.c,v 1.2 2011/12/03 22:30:09 detar Exp $";
 
 /* Just do repeated single inversions */
 void QOP_asqtad_invert_multi(QOP_info_t *info,

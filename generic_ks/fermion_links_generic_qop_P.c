@@ -1,4 +1,4 @@
-/****************** fermion_links_generic_qop.c ***********************/
+/****************** fermion_links_generic_qop_P.c *********************/
 /* MIMD version 7 */
 
 /* This file collects QOP fermion links utilities shared by asqtad and

@@ -1,4 +1,4 @@
-/****** fermion_forcee_eo_milc.c -- ******************/
+/****** fermion_force_eo_milc.c -- ******************/
 /* MIMD version 7 */
 /* Fermion force for a general quark action.  Not optimized.
 * (Formerly fermion_force_general.c)

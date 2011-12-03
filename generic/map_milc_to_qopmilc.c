@@ -1,4 +1,4 @@
-/*********************** map_milc_to_qop.c **************************/
+/*********************** map_milc_to_qopmilc.c **********************/
 /* Functions for mapping MILC data layouts to raw QOP layouts       */
 /* C. DeTar 10/19/2005
    C. DeTar 4/29/07    add DiracFermion = wilson_fermion

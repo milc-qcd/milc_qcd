@@ -1,3 +1,6 @@
+/***************** crc32.c ***************************/
+/* MIMD version 7 */
+
 /* DML_crc32.c */
 /* Taken from the GNU CVS distribution and
    modified for SciDAC use  C. DeTar 10/11/2003 */

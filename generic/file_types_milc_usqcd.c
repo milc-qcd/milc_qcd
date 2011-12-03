@@ -1,4 +1,4 @@
-/******************** file_types_milc_usqcd *********************************/
+/******************** file_types_milc_usqcd.c *********************************/
 /* MIMD version 7 */
 
 /* For compilation with QIO */

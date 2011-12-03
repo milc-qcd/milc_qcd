@@ -1,3 +1,6 @@
+/************** extract_gauge_v5.c ***********************/
+/* MIMD version 7 */
+
 /* Extract the binary payload from a version 5 gauge field file */
 /* No checksums are verified */
 

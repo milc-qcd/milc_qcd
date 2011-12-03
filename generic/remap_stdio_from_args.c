@@ -1,4 +1,4 @@
-/********************** remap_stdio_from_args.c****************************/
+/********************** remap_stdio_from_args.c ***************************/
 /* MIMD version 7 */
 /* CD 11/04
    AB 2/11 Add append option

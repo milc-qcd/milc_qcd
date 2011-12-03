@@ -1,4 +1,4 @@
-/******* congrad_multi_o.c - conjugate gradient for SU3/fermions ****/
+/******* multi_cg_iter.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 7 */
 /* Calls hdelta0.c for fermion matrix */
 

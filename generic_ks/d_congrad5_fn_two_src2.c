@@ -1,4 +1,4 @@
-/******* two_src_invert.c  */
+/******* d_congrad5_fn_two_src2.c  *************************/
 
 /* Two-mass CG inverter for staggered fermions */
 /*This program inverts the equations: src1=A*x1

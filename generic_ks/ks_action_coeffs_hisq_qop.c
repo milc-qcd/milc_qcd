@@ -1,4 +1,4 @@
-/******* ks_action_coeffs_asqtad_qop.c ****************/
+/******* ks_action_coeffs_hisq_qop.c ****************/
 /* MIMD version 7 */
 
 /* Loads HISQ coefficient structure for QOP routines */

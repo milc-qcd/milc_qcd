@@ -1,3 +1,5 @@
+/**************** copy_fields.c *************************/
+/* MIMD version 7 */
 #include "arb_ov_includes.h"
 
 ///* copy a gauge field - an array of four su3_matrices */

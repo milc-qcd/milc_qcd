@@ -1,5 +1,5 @@
 /************* build_hov.c ******************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*
  This routine computes eigenvectors and eigenvalues of H(0)^2 in one

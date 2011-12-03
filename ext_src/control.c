@@ -1,4 +1,4 @@
-/***************** control_ext_src.c ************************************/
+/***************** control.c ************************************/
 
 /* Extract extended source from staggered or Wilson propagator 		*/
 /* MIMD version 7 */

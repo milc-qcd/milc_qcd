@@ -1,3 +1,6 @@
+/*************** delta0y.c ***********************/
+/* MIMD version 7 */
+
 /*!\file delta0y.c
  *\brief multiply the (kernel) Dirac operator onto a vector
  */

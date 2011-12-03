@@ -1,4 +1,4 @@
-/************** fermion_links_fn_twist_milc.c **************************/
+/************** fermion_links_fn_twist_qop.c **************************/
 /* MIMD version 7 */
 
 /* Apply (or undo) a boundary twist to the fat and long links in the

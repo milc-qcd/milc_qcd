@@ -1,3 +1,6 @@
+/*************************** stuff_gauge_v5.c ********************/
+/* MIMD version 7 */
+
 /* Reconstruct a version 5 gauge field file from the binary payload */
 /* No checksums are computed */
 

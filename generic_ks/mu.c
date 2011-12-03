@@ -1,3 +1,5 @@
+/******************* mu.c *****************************/
+/* MIMD version 7 */
 /* Calculates the derivatives of the Asqtad quark matrix up to 6th order*/
  
 #include "generic_ks_includes.h"    /* definitions files and prototypes */

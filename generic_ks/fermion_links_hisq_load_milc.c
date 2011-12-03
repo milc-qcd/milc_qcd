@@ -1,4 +1,4 @@
-/**************** fermion_links_helpers.c *****************************/
+/**************** fermion_links_hisq_load_milc.c *****************************/
 /* (Formerly fermion_links_hisq.c AND fermion_links_helpers_hisq.c) */
 /* MILC Version 7 */
 /* Routines used by all of the fermion_links*.c files */

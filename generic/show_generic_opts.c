@@ -1,4 +1,4 @@
-/********************** show_opts.c *************************************/
+/****************** show_generic_opts.c ********************************/
 /* MIMD Version 7 */
 
 /* List options selected in the compilation */

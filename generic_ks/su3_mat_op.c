@@ -1,4 +1,6 @@
-/* Temporary file with additional 3x3 complex matrix routines
+/****************  su3_mat_op.c *************************/
+/* MIMD version 7 */
+/* Various utilities for 3x3 complex matrix routines
    (arbitrary, not necessarily SU(3) matrices).
    AB 071005 */
 

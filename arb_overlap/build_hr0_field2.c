@@ -1,5 +1,5 @@
-/************* build_hr0.c ****************/
-/* MIMD version 6 */
+/************* build_hr0_field2.c ****************/
+/* MIMD version 7 */
 
 #include "arb_ov_includes.h"
 

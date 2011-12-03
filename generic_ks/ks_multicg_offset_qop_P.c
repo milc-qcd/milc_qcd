@@ -1,4 +1,4 @@
-/******* ks_multicg_qop_P.c - multi-mass CG for SU3/fermions ****/
+/******* ks_multicg_offset_qop_P.c - multi-mass CG for SU3/fermions ****/
 /* MIMD version 7 */
 
 /* This is the MILC wrapper for the SciDAC Level 3 QOP inverter */
@@ -22,6 +22,9 @@
 
 /*
  * $Log: ks_multicg_offset_qop_P.c,v $
+ * Revision 1.7  2011/12/03 22:30:09  detar
+ * Cosmetic: Fix file name in top comment line
+ *
  * Revision 1.6  2011/11/29 20:45:57  detar
  * Support new fermion links scheme
  *
@@ -74,7 +77,7 @@
 #include "../include/generic_ks_qop.h"
 #include "../include/loopend.h"
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.6 2011/11/29 20:45:57 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.7 2011/12/03 22:30:09 detar Exp $";
 
 /* Standard MILC interface for the Asqtad multimass inverter 
    single source, multiple masses.  Uses the prevailing precision */

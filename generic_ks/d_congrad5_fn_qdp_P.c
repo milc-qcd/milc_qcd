@@ -1,4 +1,4 @@
-/******* d_congrad5_fn_qdp.c - conjugate gradient for SU3/fermions ****/
+/******* d_congrad5_fn_qdp_P.c - conjugate gradient for SU3/fermions ****/
 /* MIMD version 7 */
 
 /* This is the MILC standalone Level 2 QDP inverter for FN KS actions */

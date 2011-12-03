@@ -1,4 +1,4 @@
-/**** dslash_fn_qop_milc.c - dslash for improved KS fermions ****/
+/**** dslash_fn_qop_milc_P.c - dslash for improved KS fermions ****/
 /* MIMD version 7 */
 
 /* This version supports the MILC QOP API d_congrad5_fn_qop_milc.c

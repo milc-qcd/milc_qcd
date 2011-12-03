@@ -1,4 +1,4 @@
-/****** fermion_force_asqtad3_rhmc2.c  -- ******************/
+/****** eo_fermion_force_rhmc.c  -- ******************/
 /* MIMD version 7 */
 /* D.T. 12/05 First try at RHMC version
  * C.D. 10/06 Moved some code to generic_ks/fermion_force_fn_multi.c

@@ -1,5 +1,5 @@
 /*************** setup_offset.c ****************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 
 /*  label[k] labels the offset of the kth connection between psibar and psi
 by an integer 1 to 4, the separation of the paths in ``new york metric.''

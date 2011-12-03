@@ -1,4 +1,4 @@
-/******* d_mrilu_cl_lean.c - MR-ILU for  clover fermions ****/
+/******* d_mrilu_cl.c - MR-ILU for  clover fermions ****/
 /* MIMD version 7 */
 
 /* Modifications:

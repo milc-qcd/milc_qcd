@@ -1,5 +1,5 @@
-/******** build_params.c *********/
-/* MIMD code version 6 */
+/******** build_params_w.c *********/
+/* MIMD code version 7 */
 /* Good old Wilson action */
 #include "arb_ov_includes.h"
 

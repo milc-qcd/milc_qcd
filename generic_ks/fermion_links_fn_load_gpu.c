@@ -1,4 +1,4 @@
-/**************** fermion_links_fn_load_milc.c *****************************/
+/**************** fermion_links_fn_load_milc_gpu.c **********************/
 /* MILC Version 7 */
 
 /* Originally Guochun Shi and Steve Gottlieb 2010 */
