@@ -1,45 +1,16 @@
 # Makefile for building the tar file for the MILC code
-#  C. DeTar 7/13/05
+#  C. DeTar 12/02/11
 
-include Make_contents
+# Run this in the top level directory
 
-######################################################################
-# Collaboration version
+VER = 7.7.3
+NAME_ROOT = milc_qcd-${VER}
+TARLIST = tarlist.${NAME_ROOT}
+TARBALL = ${NAME_ROOT}.tar.gz
 
-# The rules for the component tar files
+include tarlist
 
-${BASIC_TAR}: ${BASIC}
-	tar -cvf $@ ${BASIC}
+${TARBALL}:
+	cd ..; tar -czf ${NAME_ROOT}/$@ ${TARLIST} \
+	-/bin/rm ${TARLIST}
 
-${PURE_GAUGE_TAR}: ${PG}
-	tar -cvf $@ ${PG}
-
-${FP_TAR}: ${FP}
-	tar -cvf $@ ${FP}
-
-${KS_TAR}: ${KS}
-	tar -cvf $@ ${KS}
-
-${WILSON_TAR}: ${WILSON}
-	tar -cvf $@ ${WILSON}
-
-${CLOVER_TAR}: ${CLOVER}
-	tar -cvf $@ ${CLOVER}
-
-${FORM_TAR}: ${FORM}
-	tar -cvf $@ ${FORM}
-
-${INST_TAR}: ${INST}
-	tar -cvf $@ ${INST}
-
-${SF_TAR}: ${SF}
-	tar -cvf $@ ${SF}
-
-${NAME_ROOT}.tar.gz: ${WORK}
-	tar -cvf ${NAME_ROOT}.tar ${WORK}
-	gzip ${NAME_ROOT}.tar
-	-/bin/rm ${TAR}
-
-all: ${NAME_ROOT}.tar.gz
-
-######################################################################
