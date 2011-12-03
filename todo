@@ -1,13 +1,40 @@
-March 28, 2008
+December 3, 2011
 
 List of code projects to be done:
+----------------------------------------------------------------------
 
-Remove nflavors1 and nflavors2 from the RHMC code and do something
-sensible with the species counting -- e.g. a ONEMASS option ?
+Add HISQ GPU fermion force interface and update.
+
+In the plain MILC version, implement Osborn's improvements to the HISQ
+fermion force
+
+Mixed precision staggered inverter.
+
+Try reliable update algorithm for clover fermions.
+
+Fix handling of file and propagator metadata.  We need to create the
+info strings from generic routines and use current info in the
+mass/kappa structures plus source structures.
+
+Allow ASCII labels for source, quark, and propagators in
+clover_invert2 and ks_spectrum.
+
+Let "EO" override the fermion type in the improved actions
+
+Fix rephasing for SU(3) for HISQ
+
+Make MILC staggered inverter interface similar to QOP's
+
+Check that all important macro options are documented in output logs.
+
+General housekeeping
+  Rationalize fermion_force interface
+  Fix file title info
+  Put make 3rd neighbors in a generic dir.
+  Make internal prototypes static
+  Clean out scrapped (commented) code
 
 Fold in Beat Jegerlehner's multimass clover inverter
-
-Build FNAL-compatible form factor code.
 
 Throughout:
   Continue moving toward field-major layout.
@@ -15,6 +42,4 @@ Throughout:
 Continue testing prefetching and layout strategies.
 
 Fix arb_dirac_eigen?  It has not been debugged for parallel running.
-
-Add QOP support for HISQ.
 
