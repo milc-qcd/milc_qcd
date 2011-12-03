@@ -3,10 +3,15 @@
 # For comparing test and sample output by hand
 # Run this script from the application directory
 
-PROJ=$1
-PATTERNS=`grep PATTERNS Make_test | awk '{print $(NF-1),$NF}'`
+# Example of usage
 
-perl ../headtail.pl $PATTERNS < out.test.$PROJ > out.test.$PROJ.tmp
-perl ../headtail.pl $PATTERNS < out.sample.$PROJ > out.sample.$PROJ.tmp
-perl ../diffn3.pl out.test.$PROJ.tmp out.sample.$PROJ.tmp out.errtol.$PROJ
+#   cd ks_spectrum
+#   ../compare.sh ks_spectrum_asqtad.fpi.1
+
+PROJ=$1
+PATTERNS=`grep ${PROJ} test/checklist | awk '{print $(NF-1),$NF}'`
+
+perl ../headtail.pl $PATTERNS < test/$PROJ.test-out > test/$PROJ.test-tmp
+perl ../headtail.pl $PATTERNS < test/$PROJ.sample-out > test/$PROJ.sample-tmp
+perl ../diffn3.pl test/$PROJ.test-tmp test/$PROJ.sample-tmp test/$PROJ.errtol
 
