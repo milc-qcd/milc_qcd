@@ -409,6 +409,7 @@ static void point_source(complex *src, int x0, int y0, int z0, int t0){
   }
 }
 
+#ifdef HAVE_KS
 
 /*--------------------------------------------------------------------*/
 /* Build color-vector-field sources */
@@ -451,6 +452,8 @@ static void random_corner_wall(su3_vector *v, int t0){
     }
   }
 }
+#endif
+
 #endif
     
 /*--------------------------------------------------------------------*/
@@ -1045,7 +1048,7 @@ int wv_source_site(field_offset src, quark_source *qs)
   int status = 0;
 
 #define PAD 0
-  t_src  = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
+  t_src  = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
   
   if(t_src == NULL){
     printf("wv_source_site(%d): Can't allocate t_src\n",this_node);
