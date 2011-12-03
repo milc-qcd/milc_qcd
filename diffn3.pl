@@ -25,7 +25,7 @@ open(FILE1,$file1) || die "Couldn't open $file1: $!";
 open(FILE2,$file2) || die "Couldn't open $file2: $!";
 open(ERR,$errfile) || die "Couldn't open $errfile: $!";
 
-print "diffn $file1 $file2 $errfile\n";
+print "$0 $file1 $file2 $errfile\n";
 $lines = 0;
 
 $difflines = 0;
@@ -60,7 +60,7 @@ while($line1 = <FILE1>){
 	# Otherwise nonumeric or zero fields should match exactly
 	# And nonzero numeric fields should differ by less than the tolerance
 	if( $tol ne "XXX" &&
-	    ((($list2[$i] + 1e-08 == 1e-08) &&
+	    ((($list2[$i] + 1e-08 == 1e-08 || $list2[$i] eq "nan" || $_ eq "nan") &&
 	     ($_ ne $list2[$i])) ||
 	     $diff > $tol ))
 	{
