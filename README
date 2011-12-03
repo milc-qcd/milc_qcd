@@ -27,7 +27,6 @@ Currently code is supposed to run on:
 1. Any scalar machine ("vanilla" version)
 2. Linux/Unix switched clusters via MPI
 3. MPP GigE mesh architectures
-4. QCDOC
 
 Overview of the code:
 
@@ -80,6 +79,9 @@ algorithms, and may also include measurements of the hadron spectrum.
 These variants are obtained by selecting the appropriate compilation
 target, as indicated in the application Make_template file.
 
+arb_overlap
+       Computes eigenvalues and eigenvectors of the overlap operator.
+
 clover_dynamical
 	Simulations with improved dynamical Wilson fermions.  Variants
 	include the "R", "phi" and hybrid Monte Carlo updating
@@ -88,19 +90,34 @@ clover_dynamical
 	measurements include hadron spectrum, screening spectrum,
 	axial current quark mass, and Landau gauge quark propagators.
 
-clover_invert
+clover_invert2
         Calculation of meson and baryon propagators with improved
-        Wilson fermions.
+        Wilson fermions or naive Dirac fermions.
+
+ext_src
+	Utility for extracting an extended source from a propagator file.
+
+file_utilities
+       A variety of utilities for converting lattice file formats, running
+       a checksum of a gauge file, and  comparing some binary files.
+
+gauge_utilities
+        A variety of utilities for manipulating the gauge field, including
+        coordinate translations, gauge fixing, and boundary twists.
 
 gluon_prop
         Calculation of the gluon propagator in a specific gauge and
         the nonperturbative renormalization of the vector and axial
         vector current.
 
-ks_hl_spectrum
-        Heavy-light meson spectrum
+hvy_qpot
+       Measures static quark potential as a function of separation.
+       Also a variety of Wilson loops.
 
-ks_imp_dyn:
+ks_eigen
+	Eigenvalues of the staggered Dirac operator.
+
+ks_imp_dyn
 	Simulations with dynamical Kogut-Susskind fermions.  Variants
 	include the "R", "phi" and hybrid Monte Carlo updating
 	algorithms.  Measurements include plaquette, Polyakov loop,
@@ -108,20 +125,33 @@ ks_imp_dyn:
 	measurements include hadron spectrum, screening spectrum,
 	and some wave functions. (includes FFT routines in wave function)
 
-ks_imp_invert_multi
-        Calculation of multiple staggered propagators.  Writes them to
-        files.  Calculates f_pi as well.
-
-ks_imp_rhmc:
+ks_imp_rhmc
         Simulations as above, but using the rational hybrid Monte
         Carlo method.
 
+ks_imp_utilities
+      Test code for the staggered fermion force and staggered inverter.
+
+ks_measure
+	Scalar operators, mainly used for the equation of state ahd
+	quark number suscptibilities.
+
+ks_spectrum
+	Calculation of meson and baryon spectra from a wide variety of
+	sources and sinks.  
+
 pure_gauge
-	Simulation of the pure gauge theory
+	Simulation of the pure gauge theory with the plaquette gauge action.
 
 schroed_cl_inv
         Schroedinger functional computations with improved Wilson
         fermions.
+
+smooth_inst
+	Topological charge.
+
+symanzik_sl32
+	Pure gauge theory with the symanzik, 1-loop improved action.
 
 Each directory should contain a README file which gives some further
 information.
@@ -136,7 +166,7 @@ How to build the code:
 3. Select a particular make target by consulting the Make_template file
    in the desired applications directory.
 
-4. Sample input and output files are provided for each target.
+4. Sample input and output files are provided for most targets.
    It is a good idea to run the compiled code with the sample input
    file and compare the results with the sample output.
 
