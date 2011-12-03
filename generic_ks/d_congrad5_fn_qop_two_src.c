@@ -166,5 +166,7 @@ ks_congrad_two_src(	/* Return value is number of iterations taken */
   else
     iterations_used = ks_congrad_two_src_D(src1, src2, dest1, 
 					   dest2, &qic, mass1, mass2, fn);
+  report_status(&qic);
+  report_status(&qic);  // So regression tests see the same number of lines
   return iterations_used;
 }

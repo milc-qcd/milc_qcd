@@ -64,10 +64,12 @@ int ks_congrad_site( field_offset src, field_offset dest,
   if(parity == EVEN || parity == EVENANDODD){
     qic->parity = EVEN;
     iters += ks_congrad_parity(t_src, t_dest, qic, mass, fn );
+    report_status(qic);
   }
   if(parity == ODD || parity == EVENANDODD){
     qic->parity = ODD;
     iters += ks_congrad_parity(t_src, t_dest, qic, mass, fn );
+    report_status(qic);
   }
 
   /* Map solution to site structure */
@@ -79,7 +81,6 @@ int ks_congrad_site( field_offset src, field_offset dest,
   qic->parity = parity;
 
   free(t_src); free(t_dest);
-  report_status(qic);
 
   return iters;
 }
