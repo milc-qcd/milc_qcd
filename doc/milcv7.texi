@@ -1,7 +1,7 @@
 \input texinfo.tex @c -*- Mode: Texinfo -*-
 @headings doubleafter
 @setfilename milcv7.info
-@settitle The MILC Code (version: 7.7.2)
+@settitle The MILC Code (version: 7.7.3)
 @footnotestyle end
 @c @setchapternewpage off
 
@@ -11,9 +11,12 @@
  c Contact: <detar@physics.utah.edu> or <doug@physics.arizona.edu>
  c
  c  to compile: texi2dvi milcv7.texi, texi2html milcv7.texi
- c $Id: milcv7.texi,v 1.2 2011/11/30 03:18:38 detar Exp $
+ c $Id: milcv7.texi,v 1.3 2011/12/03 14:52:29 detar Exp $
  c
  c $Log: milcv7.texi,v $
+ c Revision 1.3  2011/12/03 14:52:29  detar
+ c Update documentation for version 7.7.3
+ c
  c Revision 1.2  2011/11/30 03:18:38  detar
  c First draft of 7.7.2 documentation
  c
@@ -157,8 +160,8 @@ preserved on all copies.
 @end menu
 
 @node Obtaining the MILC Code, Building the MILC Code, Top, Top
-@chapter Obtaining the MILC Code
 @cindex Obtaining the MILC Code
+@chapter Obtaining the MILC Code
 
 This chapter explains how to get the code, copyright conditions and the
 installation process.
@@ -169,6 +172,7 @@ installation process.
 * Installing the MILC Code::
 * Portability::
 * SciDAC Support::
+* GPU Support::
 * Supported architectures::
 @end menu
 
@@ -204,8 +208,8 @@ Free Software Foundation.
 
 @strong{Publications of research work done using this code or
 derivatives of this code should acknowledge its use.} The MILC project
-is supported in part by grants for the US Department of Energy and
-National Science Foundation and we ask that you use (at least) the
+is supported in part by grants from the US Department of Energy and
+National Science Foundation, and we ask that you use (at least) the
 following string in publications which derive results using this
 material: 
 @sp 1
@@ -234,22 +238,13 @@ permission notice identical to this one.
 @section Installing the MILC Code
 @cindex Installing the MILC Code
 
-The major code sections are currently bundled into several tar files,
-which are, in turn, wrapped into a single compressed tar file.  Start
-unpacking in a clean directory using the command
+Unpack with the command
 @example
     tar -xzf milc_qcd*.tar.gz
 @end example
-or, if your version of tar doesn't have the @kbd{z} uncompress option,
-use
-@example
-   gzip -dc milc_qcd*.tar.gz | tar -xf -
-@end example
-You should then find a @kbd{README_UNPACK} file or
-@kbd{README_UNPACK_RELEASE} file that explains how to complete the
-unpacking.  The procedure for building the MILC code is explained later
-in this document (@pxref{Building the MILC Code}) or in the @kbd{README}
-file that accompanies the code.
+The procedure for building the MILC code is explained later in this
+document (@pxref{Building the MILC Code}) or in the @kbd{README} file
+that accompanies the code.
 
 @node Portability, SciDAC Support, Installing the MILC Code, Obtaining the MILC Code
 @section Portability
@@ -268,10 +263,10 @@ standard.
 Similarly, with regard to random numbers, care has been taken to ensure
 convenience and reproducibility. With @strong{SITERAND} set
 (@pxref{Random numbers}), the random number generator will produce
-the same sequence for a given seed, across architectures and
-varying the number of nodes.
+the same sequence for a given seed, indendent of architecture and
+the number of nodes.
 
-@node SciDAC Support, Supported architectures, Portability, Obtaining the MILC Code
+@node SciDAC Support, GPU Support, Portability, Obtaining the MILC Code
 @section SciDAC Support
 @cindex SciDAC Support
 
@@ -282,6 +277,14 @@ platforms, such as GPU clusters.  This release of the MILC code
 supports a wide variety of C-language SciDAC modules.  They are
 invoked through compilation macros described below (@pxref{Optional
 Compilation Macros}).
+
+@node GPU Support, Supported architectures, SciDAC Support, Obtaining the MILC Code
+@section GPU Support
+@cindex GPU Support
+
+Development-grade QUDA-based GPU support for staggered and HISQ
+molecular dynamics.  Currently, only single-GPU operation is
+supported.  Multi-GPU is planned.
 
 @node Supported architectures,, SciDAC Support,  Obtaining the MILC Code
 @section Supported architectures
@@ -341,6 +344,7 @@ Here are the steps required to build the code.  An explanation follows.
 @item (Optional) Build and install the FFTW packages.
 @item (Optional) Build and install LAPACK.
 @item (Optional) Build and install PRIMME.
+@item (Optional) Build and install QUDA.
 @item Run @strong{make} for the appropriate target
 @end enumerate
 
@@ -407,8 +411,9 @@ operating system.  In most cases it doesn't need to be changed.
 @item (Optional) Build and install the SciDAC packages.
 
 If you wish to compile and link against the SciDAC packages, you must
-first build and install them.  The MILC code supports the following
-packages:
+first build and install them.  Note that for full functionality of the
+code, you will need QMP and QIO.  The MILC code supports the
+following packages:
 @example
 QMP (message passing)
 QIO (file I/O)
@@ -434,8 +439,14 @@ native version is inefficient, however.
 @item (Optional) Build and install the PRIMME package.
 
 The PRIMME preconditioned multimethod eigensolver by James R. McCombs
-and Andreas Stathopoulos is required for the @strong{arb_overlap}
-application.
+and Andreas Stathopoulos is recommended but not required for the
+@strong{arb_overlap} application.
+
+@item (Optional) Build and install the QUDA package.
+
+The QUDA package, developed by the USQCD collaboration, provides
+support for GPU computations.  It is obtained from the GIT repository
+@strong{https://github.com/lattice/quda}.
 
 @item Run @strong{make} for the appropriate target
 
@@ -550,6 +561,7 @@ extensions.
 
 
 @node Command line options, General description, Building the MILC Code, Building the MILC Code, Top
+@chapter Command line options
 @cindex command line options
 @cindex qmp-geom
 @cindex qmp-jobs
@@ -611,8 +623,8 @@ mesh view of the machine, respectively.  With a single integer
 @example
   -qmp-jobs n
 @end example
-the allocated processors are divided into @strong{a0} equal sets of
-processors.  Thus @strong{a0} must be a divisor of the number of
+the allocated processors are divided into @strong{n} equal sets of
+processors.  Thus @strong{n} must be a divisor of the number of
 allocated processors.  With four parameters
 @example
   -qmp-jobs jx jy jz jt
@@ -622,7 +634,7 @@ ji must be a divisor of mi.  The number of independent jobs is the
 product n = jx * jy * jz * jt.
 
 Under multijob operation it is necessary to distinguish the sets of
-files for separate jobs.  The arguments @strong{stdin_path},
+files for separate jobs.  Therefore, arguments @strong{stdin_path},
 @strong{stdout_path}, and @strong{stderr_path} are required.  They are
 taken to be the stems of the actual file names.  Each job is assigned
 a two-digit sequence number nn as in 00, 01, 02, ... 99.  (It is
@@ -802,7 +814,7 @@ operations.
 	include the "R", "phi" and hybrid Monte Carlo updating
 	algorithms. 
 
-@item clover_invert and clover_invert2:
+@item clover_invert2:
       Inversion of the clover fermion matrix (conjugate gradient,
       MR, and BiCG algorithms) and measurements with clover or staggered
       quarks.  A wide variety of sources are supported. Lattices are
@@ -907,13 +919,13 @@ single or double precision types.
 An exception to the global precision rule is that gauge configuration
 and propagator files are always written in single precision.
 
-For some applications that supporting SciDAC QDP or QOPQDP utilities,
-the code now supports mixed precision computation.  That is, you may
-set a global precision with the @strong{PRECISION} macro, but some
-applications accept a run-time selection that allows some supporting
-calculations to be done with a different precision.  This has proven
-to be efficient for molecular dynamics evolution in which the fermion
-force calculation can be done in single precision, but the gauge field
+For some applications compiled with SciDAC QOPQDP, the code now
+supports mixed precision computation.  That is, you may set a global
+precision with the @strong{PRECISION} macro, but some applications
+accept a run-time selection that allows some supporting calculations
+to be done with a different precision.  This has proven to be
+efficient for molecular dynamics evolution in which the fermion force
+calculation can be done in single precision, but the gauge field
 updating is then done in double precision.
 
 
@@ -921,7 +933,6 @@ updating is then done in double precision.
 @section Optional Compilation Macros
 @cindex Macros, Optional
 @cindex Compilation Macros
-
 
 We list some macros affecting compilation of various sections of the
 code that may be defined by user option.  Most of these macros are
@@ -960,6 +971,34 @@ is necessary for writing staggered and clover propagators.
 communication to take place through QMP calls.  Then, depending on
 which QMP library you link with the code, you may get an
 architecture-specific implementation or a generic MPI implementation.
+
+@end itemize
+
+@item GPU package options
+
+The code includes development-grade support for GPU computations,
+currently only for single-GPU operation, but multi-GPU operation is
+planned.  The QUDA package is required.  All the basic modules for
+staggered fermion molecular dynamics evolution and spectroscopy are
+provided.
+
+@itemize @bullet
+
+@item USE_CG_GPU
+@cindex GPU staggered conjugate gradient
+
+@item USE_FL_GPU
+@cindex GPU fat link construction
+
+@item USE_REUNIT_GPU
+@cindex GPU reunitarization
+  This step is used for constructing HISQ links.
+
+@item USE_FF_GPU
+@cindex GPU staggered fermion force
+
+@item USE_GF_GPU
+@cindex GPU gauge force
 
 @end itemize
 
@@ -1018,7 +1057,7 @@ edit the code to get just the routines you want.
 @item -DFFTIME
    Print timing information for the staggered fermion force routines.
 
-@item -DLLTIME
+@item -DFLTIME
    Print timing information for the staggered link fattening routines.
 
 @item -DGFTIME
@@ -1026,6 +1065,9 @@ edit the code to get just the routines you want.
 
 @item -DIOTIME
    Print timing information for I/O routines.
+
+@item -DPRTIME
+   Print timing information for various computational steps. (Some applications.)
 
 @item -DREMAP
    In some applications it is necessary to remap data in lattice fields
@@ -1742,8 +1784,7 @@ int copy_site(field_offset off1, field_offset off2) @{
 @end example
 
 
-For ANSI prototyping, you must
- typecast the result of the
+For ANSI prototyping, you must typecast the result of the
 @strong{F_PT} macro to the appropriate pointer type.  (It naturally
 produces a character pointer).  The code for copy_site could be much
 shorter at the expense of clarity.  Here we use a macro to be defined
@@ -2065,7 +2106,7 @@ For example, the gauge links are typically defined as an array of four
 @kbd{su3_matrices}, and we typically gather only one of them.  This
 won't work with @kbd{start_gather_field}.
 
-  Don't try to implement successive gathers by using
+  Don't try to chain successive gathers by using
  @kbd{start_gather_field}
      to gather the @kbd{gen_pt fields}.  It will gather the pointers, but not
      what they point to.  This is insidious, because it will work on one
@@ -2571,8 +2612,7 @@ listing here is for the pure MILC code (non-SciDAC) compilation of the
 	Contains instructions for compiling and linking. 
 	Three routines you can make, "su3_rmd", "su3_phi" and "su3_hmc",
 	 are programs for the R algorithm, the phi algorithm, or
-        the hybrid Monte Carlo algorithm. Used with Make_MACHINE, for
-a machine-dependent target.
+        the hybrid Monte Carlo algorithm.
 @end table
 @sp 1
 
@@ -2580,64 +2620,16 @@ a machine-dependent target.
 @table @file
 @item control.c
     main program
-@item d_congrad5_fn.c
-    standard CG solver
-@item d_congrad5_two_src.c
-    CG solver for two source fields
-@item fermion_force_asqtad.c
-    fermion force claculation
-@item fermion_force_fn_multi.c
-    multi-fermion force calculation
-@item fermion_force_multi.c
-    multi-fermion force calculation
-@item fermion_links_fn.c
-    asqtad link fattening
-@item f_meas.c
-    calculate psi-bar-psi and other related quantities
-@item fpi_2.c
-    calculate staggered propagators, fpi, and meson spectrum
-@item gauge_force_imp.c
-    force for an improved gauge action
-@item grsource_imp.c
-    pseudofermion random source
-@item hvy_pot.c
-    heavy quark potential
-@item io_helpers.c
-    top level I/O control
-@item ks_multicg.c
-    multi CG solver
-@item layout_hyper_prime.c
-    distribute sites among the nodes
-@item make_lattice.c
-    allocate the lattice
-@item mat_invert.c
-    wrapper for CG solvers
-@item nl_spectrum.c
-    staggered fermion nonlocal meson spectrum.  Also nucleon and delta.
-@item ploop3.c
-    Polyakov loop calculation
-@item ranmom.c
+@item ../generic_ks/ranmom.c 
     generate Gaussian random momenta for the gauge fields
+@item ../generic_ks/grsource_imp.c
+    generate Gaussian random pseudofermion field
 @item setup.c
     interpret parameter input
-@item spectrum2.c
-    conventional staggered meson spectrum
-@item spectrum_fzw.c
-    point-to-point staggered meson spectrum
-@item spectrum_mom.c
-    degenerate-mass meson spectrum with momentum injection
-@item spectrum_multimom.c
-    non-degenerate-mass meson spectrum with momentum injection
-@item spectrum_nd.c
-    non-degenerate-mass meson and baryon spectrum
-@item spectrum_nlpi2.c
-    nonlocal staggered meson spectrum for all tastes.
-@item spectrum_singlets.c
-    singlet meson spectrum (experimental)
-@item update_h.c
-    update the gauge momenta
 @item update.c
     top-level molecular dynamics
+@item update_h.c
+    update the gauge momenta
 @item update_u.c
     update the gauge fields
 @end table
@@ -2667,62 +2659,120 @@ a machine-dependent target.
 
 @strong{LOWER LEVEL ROUTINES}
 @table @file
-@item ape_smear.c
-    APE smearing utility
-@item check_unitarity.c
-    check unitarity of the gauge field
-@item com_mpi.c
-    MPP communications.
-@item d_congrad_opt.c
-    helper routines for the CG solver
-@item d_plaq4.c
-    average plaquette calculation
-@item dslash_fn_dblstore.c
-    dslash with double storing of backward links
-@item fermion_links_helpers.c
-    link fattening utilities
-@item ff_opt.c
-    fermion force utilities
-@item flavor_ops.c
-    nonlocal staggered meson operators
-@item gaugefix2.c
-    gauge fixing
 @item gauge_info.c
-    create metadata for output gauge configuration file
-@item gauge_stuff.c
-    computations in support of the gauge action
-@item io_ansi.c
-    wrapper for ANSI standard binary I/O calls
-@item io_detect.c
-    detect file type
-@item io_lat4.c
-    MILC lattice I/O 
-@item io_lat_utils.c
-    supporting routines for lattice I/O
-@item ks_multicg_offset.c
-    multi CG solver 
-@item nersc_cksum.c
-    compute checksums for NERSC-format gauge configuration files
-@item path_product.c
-    support for the gauge connection over arbitrary paths
-@item path_transport.c
-    support for the gauge connection over arbitrary paths
-@item project_su3_hit.c
-    SU(3) projector for smearing
-@item quark_stuff.c
-    create path tables for staggered actions
-@item ranstuff.c
-    random number generator
-@item remap_stdio_from_args.c
-    switch standard input and output
-@item rephase.c
-    multiply gauge links by staggered fermion phases 
-@item reunitarize2.c
-    reunitarize gauge links
-@item show_generic_ks_opts.c
-    print staggered fermion options
-@item show_generic_opts.c
-    print other options
+      Print gauge info to file.
+@item ../generic/ape_smear.c
+      APE smearing
+@item ../generic/check_unitarity.c
+      Check unitarity
+@item ../generic/com_qmp.c
+      Communications
+@item ../generic/d_plaq4.c 
+      Plaquette
+@item ../generic/field_utilities.c
+      Creation and destruction of fields
+@item ../generic/file_types_milc_usqcd.c
+      USQCD file type translation
+@item ../generic/gauge_force_imp.c
+      Gauge force
+@item ../generic/gauge_stuff.c
+      Construction of gauge force.
+@item ../generic/gauge_utilities.c
+      Gauge field creation and destruction
+@item ../generic/gaugefix2.c 
+      Gauge fixing
+@item ../generic/general_staple.c 
+      General staple calculation
+@item ../generic/io_ansi.c
+      Interface for ANSI I/O
+@item ../generic/io_detect.c
+      File type recognition
+@item ../generic/io_helpers.c
+      Top level lattice I/O
+@item ../generic/io_lat4.c 
+      Gauge field I/O
+@item ../generic/io_lat_utils.c
+      Gauge field I/O
+@item ../generic/io_scidac.c
+      SciDAC file I/O wrapper
+@item ../generic/io_scidac_types.c
+      File type recognition
+@item ../generic/layout_hyper_prime.c
+      Lattice layout
+@item ../generic/make_lattice.c
+      Lattice creation
+@item ../generic/momentum_twist.c 
+      Momentum twist insertion, removal
+@item ../generic/nersc_cksum.c 
+      NERSC-type checksum
+@item ../generic/path_product.c
+      Paralle transport along path
+@item ../generic/ploop3.c
+      Polyakov loop
+@item ../generic/project_su3_hit.c
+      SU(3) projection
+@item ../generic/ranstuff.c
+      Random number generator
+@item ../generic/remap_stdio_from_args.c
+      Standard I/O remapping
+@item ../generic/report_invert_status.c
+      Status report
+@item ../generic/reunitarize2.c
+      Reunitarization of gauge links
+@item ../generic/show_generic_opts.c
+      List options turned on
+@item ../generic_ks/d_congrad5_fn.c
+      Conjugate gradient inverter - top level
+@item ../generic_ks/d_congrad5_fn_milc.c
+      MILC coded inverter - single mass
+@item ../generic_ks/d_congrad5_two_src.c
+      Two-source inverter
+@item ../generic_ks/d_congrad_opt.c
+      Inverter support
+@item ../generic_ks/dslash_fn_dblstore.c 
+      Dslash
+@item ../generic_ks/f_meas.c
+      Scalar operators, such as psi-bar-psi
+@item ../generic_ks/fermion_force_asqtad.c 
+      Fermion force
+@item ../generic_ks/fermion_force_fn_multi.c 
+      Fermion force
+@item ../generic_ks/fermion_force_multi.c 
+      Fermion force for multiple shifts
+@item ../generic_ks/fermion_links.c 
+      Fermion link creation/destruction
+@item ../generic_ks/fermion_links_fn_load_milc.c
+      Asqtad link fattening
+@item ../generic_ks/fermion_links_fn_twist_milc.c
+      Boundary twist
+@item ../generic_ks/fermion_links_from_site.c
+      Wrapper for creating links from gauge field
+@item ../generic_ks/fermion_links_milc.c 
+      Fermion link fattening
+@item ../generic_ks/ff_opt.c  
+      Fermion force optimization
+@item ../generic_ks/fn_links_milc.c 
+      Creation/destruction utilities for fermion links
+@item ../generic_ks/ks_action_paths.c 
+      Link fattening path
+@item ../generic_ks/ks_invert.c 
+      Wrapper for staggered inversion
+@item ../generic_ks/ks_multicg.c 
+      Multimass inverter - top level
+@item ../generic_ks/ks_multicg_offset.c 
+      Multimass inverter
+@item ../generic_ks/mat_invert.c 
+      Inverter for spectrum
+@item ../generic_ks/path_transport.c
+      Parallel transport
+@item ../generic_ks/rephase.c
+      Insert/remove KS phases
+@item ../generic_ks/show_generic_ks_md_opts.c
+      Show options in force
+@item ../generic_ks/show_generic_ks_opts.c 
+      Show options in force
+@item ../generic_ks/show_hisq_force_opts.c
+      Show options in force
 @sp 1
 @end table
 @sp 1
@@ -2832,17 +2882,19 @@ We provide, here, documentation for some of the applications.
 
 This code generates Dirac clover and naive propagators from a wide
 variety of sources and ties them together to form meson and baryon
-correlators.  The code is designed to be flexible in specifying source
-interpolating operators, propagators, sink interpolating operators,
-and the combinations to form hadrons.  In broad terms a hadron is
-contructed by tying together quark and antiquark propagators.  These
-quark propagators are generated in a succession of steps.  First a
-base source is defined.  A base source can then be modified by
-applying a sequence of source operators to complete the definition of
-the source interpolating operator.  The propagator starts from the
-source and propagates to any sink location.  At the sink a variety of
-operators can be applied to form the completed quark propagator.  They
-are then used to form the hadrons.
+correlators.  With extended sources, the code also computes
+correlators needed fo three-point and higher functions. The code is
+designed to be flexible in specifying source interpolating operators,
+propagators, sink interpolating operators, and the combinations to
+form hadrons.  In broad terms a ``meson'' is contructed by tying
+together quark and antiquark propagators.  These quark propagators are
+generated in a succession of steps.  First a base source is defined.
+A base source can then be modified by applying a sequence of source
+operators to complete the definition of the source interpolating
+operator.  The propagator starts from the source and propagates to any
+sink location.  At the sink a variety of operators can be applied to
+form the completed quark propagator.  They are then used to form the
+hadrons.
 
 Because of the high degree of flexibility in the code, the parameter
 input file is rather complex and highly structured.  We explain
@@ -2922,7 +2974,7 @@ of the corresponding value in node_geometry.
 iseed <int>
 @end example
 
-This line sets to random number seed.  It is needed for random wall sources.
+This line sets the random number seed.  It is needed for random wall sources.
 
 @example
 job_id <char[]>
@@ -2941,6 +2993,7 @@ The gauge field specification has the following required components:
 * Tadpole factor and gauge fixing::
 * Gauge field output::
 * APE smearing::
+* Coordinate origin::
 @end menu
 
 @node Gauge field input, Tadpole factor and gauge fixing, Gauge field specification, Gauge field specification, 
@@ -3039,7 +3092,7 @@ mode writes to a single file with all nodes writing.  The
 I/O partition.  The @strong{multifile_scidac} mode writes a separate
 file for each node.
 
-The @strong{ildg} mode generates and ILDG-compatible file.  It
+The @strong{ildg} mode generates an ILDG-compatible file.  It
 requires specifying the ILDG logical file name (LFN) on a separate
 line immediately following the @strong{save_XXX_ildg} line:
 
@@ -3047,7 +3100,7 @@ line immediately following the @strong{save_XXX_ildg} line:
 ILDG_LFN <char[]>
 @end example
 
-@node APE smearing, Inversion control, Gauge field output, Gauge field specification
+@node APE smearing, Coordinate origin, Gauge field output, Gauge field specification
 @subsubsection APE smearing
 @cindex  APE smearing
 
@@ -3061,6 +3114,26 @@ number of APE iterations using the specified weight.  These lines are
 required even if smearing is not desired.  In that case use zeros for
 each value.
 
+@node Coordinate origin, Inversion control, APE smearing, Gauge field specification
+@subsubsection Coordinate origin
+@cindex  coordinate origin
+
+Boundary conditions and momentum (``boundary'') twists for the Dirac
+operator depend on the coordinate origin, which establishes which
+gauge links are on the boundary.  It is common practice to boost
+statistics by computing the same hadron correlator from several
+origins on the same gauge field configuration.  It may be desirable to
+guarantee that the result is equivalent to applying a straight
+coordinate translation to the gauge field configuration and then
+computing propagators from an unshifted origin.  The coordinate origin
+parameter does this
+
+@example
+coordinate_origin <int[4]>
+@end example
+
+The order of coordinates is, as usual, x, y, z, and t.
+
 @node Inversion control, Base sources, Gauge field specification, clover_invert2, 
 @subsection Inversion control
 @cindex  Inversion control
@@ -3071,7 +3144,7 @@ max_cg_restarts <int>
 @end example
 
 These lines specify the maximum number of CG iterations allowed before
-restarting, and the maximum number of restarts.  Thus the overall
+restarting and the maximum number of restarts.  Thus the overall
 maximum number of iterations is the product of these two.  Further
 inversion control is given below for each propagator.
 
@@ -3140,11 +3213,11 @@ scale_factor <float>
 
 This line is read only if the code is compiled with the macro
 @strong{SCALE_PROP} defined.  It multiplies the source by this factor,
-and then divides the resulting hadron correlators by this factor,
-which should result in no visible modification of the result.  It is
-useful to prevent underflow in computing propagators for especially
-heavy quarks.  At the moment this factor is applied only to Dirac
-field sources.
+and then divides the resulting hadron correlators by this factor to
+compensate, which should result in no visible modification of the
+result.  It is useful to prevent exponent underflow in computing
+propagators for especially heavy quarks.  At the moment this factor is
+applied only to Dirac field sources.
 
 The @strong{source_label} should be only a couple characters long,
 since it is used in constructing a name for the hadron correlator.
@@ -3247,7 +3320,7 @@ t0 <int>
 @end example
 
 On the specified time slice this source is one at the origin of each
-2^4 hypercube and zero elsewhere.
+2^3 cube and zero elsewhere.
 
 @node even_wall, evenandodd_wall, corner_wall, Base sources
 @subsubsection even_wall
@@ -3294,7 +3367,9 @@ A Gaussian profile source centered at the origin, specified by the
 integers x, y, z, t.  This source has the value
 @tex $\exp[-(r/r0)^2]$
 @end tex
-where r is the Cartesian displacement from x, y, z an the fixed time slice t.
+where r is the Cartesian displacement from x, y, z an the fixed time
+slice t.  This is a non-gauge-covariant source, so it is common to use
+it only with Coulomb gauge fixing.
 
 @node point, wavefunction, gaussian, Base sources
 @subsubsection point
@@ -3735,16 +3810,17 @@ construct the hadron propagators.  Here we describe the
 ``propagators''.
 
 The code generates three classes of propagators, namely clover, naive,
-and extended naive.  The naive propagator is constructed starting from
-a staggered propagator and multiplying by a spin matrix that reverses
-the staggered spin rotation.  The extended naive propagator is singled
-out because the source treatment is special.  It is intended for
-applications that generate a naive propagator from a set of special
-extended Dirac sources produced by the @strong{ext_src} application.
-In that case four staggered inversions are required for each Dirac
-source, one for each of the four spin components.  The extended Dirac
-source on a single time slice is usually the value of a propagator on
-that time slice starting from an underlying source on a distant time
+and ``extended naive''.  The naive propagator is constructed starting
+from a (uually improved) staggered propagator, and multiplying by a
+spin matrix that reverses the Kawamoto-Smit staggered spin rotation.
+The extended naive propagator is singled out because the source
+treatment is special.  It is intended for applications that generate a
+naive propagator from the special extended Dirac sources produced by
+the @strong{ext_src} application.  In that case four staggered
+inversions are required for each Dirac source, one for each of the
+four spin components.  The extended Dirac source on a single time
+slice is usually the value on that time slice of a Dirac propagator
+that started propagation from an underlying source on a distant time
 slice. So there is one extended Dirac source for each spin and color
 of the underlying source.  The number of staggered inversions is
 therefore four times the number of underlying spins and colors.
@@ -3753,17 +3829,17 @@ One must pay particular attention to the spin structure in the
 conversion from a staggered to a naive propagator.  The spin matrix in
 the conversion depends on the source and sink 2^4 hypercube
 coordinates.  The sink dependence is not problematic.  The source
-dependence is, however.  The conversion fails when the source has
-support on different hypercube sites.  Thus, as a rule, the source for
-a naive propagator should be constructed with the @strong{subset
-corner} mask, so it has support on only the hypercube origins.  For
-the specialized case of an extended naive propagator, the spin
-conversion is partially done in the @strong{ext_src} application and
-completed in the @strong{clover_invert2} application.  In that case
-the extended source can have support on all spatial sites on the
-source time slice.  If the extended source is not constructed by the
-@strong{ext_src} application, it, too, should be restricted to the
-hypercube origins.
+dependence is, however.  The conversion fails when the source for the
+staggered propagator has support on different hypercube sites.  Thus,
+as a rule, the source for a naive propagator should be constructed
+with the @strong{subset corner} mask, so it has support on only the
+hypercube origins.  For the special case of an extended naive
+propagator, the spin conversion is partially done in the
+@strong{ext_src} application and completed in the
+@strong{clover_invert2} application.  In this way the extended source
+can have support on all spatial sites on the source time slice.  If
+the extended source is not constructed by the @strong{ext_src}
+application, it, too, should be restricted to the hypercube origins.
 
 The propagators are specified in a manner similar to the sources.  The
 number of propagators is specified, followed by that many stanzas, one
@@ -3818,6 +3894,8 @@ resulting in an effective clover coefficient of @strong{clov_c/u0^3}.
 @example
 propagator_type KS
 mass <float>
+# With naive HISQ quarks, we also have ...
+naik_term_epsilon <float>
 @end example
 
 These lines specify a naive propagator with its mass.
@@ -3928,16 +4006,17 @@ save_multifile_scidac_wprop <char[]> |
 @subsection Quark description
 @cindex  Quark description
 
-``Quarks'' are ``propagators'' with a sink treatment applied.  The
-sink treatment can be a trivial identity operator.  Each quark is
-constructed by operating (with one of the several operators) on a
-previoiusly defined propagator or a previously defined quark.  In this
-code hadrons are built from quarks, but not directly from
-propagators. Propagators are referred to by their sequence number,
-starting with zero.  Quarks are referred to by their sequence number,
-also starting with zero.  In this respect the convention differs from
-the convention for the base and modified sources.  The specification
-for quarks is similar to that for propagators.
+In the terminology of the code ``quarks'' are ``propagators'' with a
+sink treatment applied.  The sink treatment can be a trivial identity
+operator.  Each quark is constructed by operating (with one of the
+several operators) on a previoiusly defined propagator or a previously
+defined quark.  In this code hadrons are built from quarks, but not
+directly from propagators. Propagators are referred to by their
+sequence number, starting with zero.  Quarks are referred to by their
+sequence number, also starting with zero.  In this respect the
+convention differs from the convention for the base and modified
+sources.  The specification for quarks is similar to that for
+propagators.
 
 @example
 number_of_quarks <int q>
@@ -4080,7 +4159,7 @@ The source and sink gamma matrices are denoted G1 G5 GX GY GZ GT GXY
 GZX GYZ GXT GYT GZT G5X G5Y G5Z G5T, where G1 is the identity, and the
 others should be obvious.  Note that it has been an unfortunate but
 unbroken tradition in our code to use the wrong sign for GY, so in
-cases where that matters, this can be corrected with an appropriate
+cases where it matters, this can be corrected with an appropriate
 phase factor.
 
 The momentum px, py, pz is specified by three integers kx ky kz in
@@ -4091,7 +4170,7 @@ Rather than having to enumerate all the signs, which would double the
 number of lines in this example, and cause worse proliferation for
 momentum 1 1 1, we simply specify whether the results for opposite
 momentum components are to be added or subtracted.  With E we add
-them, so the Fourier phase factor becomes to cos(p_j*r_j).  With O we
+them, so the Fourier phase factor becomes  cos(p_j*r_j).  With O we
 subtract, so it becomes sin(p_j*r_j).  With EO the exp(ip_j*r_j) is
 kept and the correlator with the opposite momentum component is
 ignored.  This reflection parity is specified for each of the three
@@ -4414,12 +4493,12 @@ correlators with the same label/momlabel are averaged.  The correlator
 is multiplied by the specified phase and normalization factor.
 
 Unlike Dirac quarks, with staggered quarks the source spin-taste
-content is integral with the source and propagator and cannot be
-modified once the propagator is generated.  So only the sink
-spin-taste combination is specified in the @strong{correlator} stanza.
-To obtain a variety of sink spin-taste combinations from the same pair
-of quarks, it is necessary to use a broad-spectrum source, such as one
-of the wall sources.
+content is built into the source and propagator and cannot be modified
+once the propagator is generated.  So only the sink spin-taste
+combination is specified in the @strong{correlator} stanza.  To obtain
+a variety of sink spin-taste combinations from the same pair of
+quarks, it is necessary to use a broad-spectrum source, such as one of
+the wall sources.
 
 Possible sink spin-taste combinations are these:
 
