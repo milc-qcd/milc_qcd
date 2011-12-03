@@ -17,7 +17,8 @@ TARLIST = \
  \
  ${NAME_ROOT}/doc/Makefile            \
  ${NAME_ROOT}/doc/milcv7.texi         \
- ${NAME_ROOT}/doc/port_notes.txt \
+ ${NAME_ROOT}/doc/milcv7.html         \
+ ${NAME_ROOT}/doc/milcv7.pdf          \
  \
  ${NAME_ROOT}/libraries/*.c           \
  ${NAME_ROOT}/libraries/*.h           \
@@ -132,16 +133,6 @@ TARLIST = \
  ${NAME_ROOT}/clover_hybrids/test/*.sample-out  \
  ${NAME_ROOT}/clover_hybrids/test/checklist  \
  ${NAME_ROOT}/clover_hybrids/test/Makefile \
- \
- ${NAME_ROOT}/clover_invert/*.c            \
- ${NAME_ROOT}/clover_invert/*.h            \
- ${NAME_ROOT}/clover_invert/Make_*         \
- ${NAME_ROOT}/clover_invert/test/*.sample-in     \
- ${NAME_ROOT}/clover_invert/in.time*       \
- ${NAME_ROOT}/clover_invert/test/*.errtol    \
- ${NAME_ROOT}/clover_invert/test/*.sample-out  \
- ${NAME_ROOT}/clover_invert/test/checklist  \
- ${NAME_ROOT}/clover_invert/test/Makefile \
  \
  ${NAME_ROOT}/clover_invert2/*.c           \
  ${NAME_ROOT}/clover_invert2/*.h           \
