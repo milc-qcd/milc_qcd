@@ -4,7 +4,6 @@
 
 #define CONTROL
 #include "ks_eig_includes.h"	/* definitions files and prototypes */
-#include "lattice_qdp.h"
 
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 
@@ -21,12 +20,7 @@ int main( int argc, char **argv ){
   imp_ferm_links_t **fn;
 
   initialize_machine(&argc,&argv);
-//#ifdef HAVE_QDP
-//  QDP_initialize(&argc, &argv);
-//#ifndef QDP_PROFILE
-//  QDP_profcontrol(0);
-//#endif
-//#endif
+
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
