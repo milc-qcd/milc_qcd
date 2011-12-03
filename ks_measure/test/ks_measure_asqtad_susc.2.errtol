@@ -50,7 +50,7 @@ PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
 PB_DMDMU_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
- OK converged final_rsq= XXX (cf 0) rel = 8e-11 (cf 2e-10 restarts = 6 iters= 98
+ OK converged final_rsq= XXX (cf 0) rel = 2e-10 (cf 2e-10 restarts = 6 iters= 98
  OK converged final_rsq= XXX (cf 0) rel = 7e-11 (cf 2e-10 restarts = 6 iters= 9
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
 RUNNING COMPLETED
