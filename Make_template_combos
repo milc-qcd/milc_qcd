@@ -1,0 +1,389 @@
+# This is not a standalone Makefile
+# It is intended to be included in other Makefiles
+
+# It defines standard ccmbinations of generic object files for building code
+# These definitions are intended to apply to all builds.
+# If you want to customize a build, this list can be used as a starting point
+# for making changes.
+
+
+######################################################################
+# Standard lattice routines
+######################################################################
+
+# These are required for essentially all applications
+
+STANDARD_OBJECTS = \
+  field_translation.o \
+  field_utilities.o  \
+  gauge_utilities.o  \
+  io_detect.o \
+  io_helpers.o \
+  io_lat_utils.o \
+  make_lattice.o \
+  ranstuff.o \
+  remap_stdio_from_args.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  STANDARD_OBJECTS +=  file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
+endif
+
+# These use the gauge field extensively
+
+GAUGE_OBJECTS = \
+  ape_smear.o        \
+  check_unitarity.o  \
+  d_plaq4.o          \
+  gaugefix2.o        \
+  io_lat4.o \
+  momentum_twist.o \
+  nersc_cksum.o \
+  path_product.o     \
+  project_su3_hit.o  \
+  reunitarize2.o     \
+  show_generic_opts.o
+
+ifeq ($(strip ${HAVEQOP}),true)
+  GAUGE_OBJECTS += map_milc_to_qopqdp.o milc_to_qop_utilities.o
+endif
+
+ifeq ($(strip ${HAVEFFTW}),true)
+  FFT_OBJECTS = remap_fftw_fourier.o
+else
+  FFT_OBJECTS = restrict_fourier.o
+endif
+
+######################################################################
+# Standard fermion routines
+######################################################################
+
+# These are needed for either KS or Clover sources:
+
+FERMION_OBJECTS = \
+  discretize_wf.o    \
+  io_source_cmplx_fm.o \
+  phases.o \
+  quark_source.o     \
+  quark_source_io.o  \
+  quark_source_sink_op.o 
+
+# These are used to build propagators
+
+KS_LINKS_OBJECTS = \
+  fermion_links_from_site.o \
+  f_meas.o \
+  gauss_smear_ks.o \
+  grsource_imp.o    \
+  naik_eps_utilities.o \
+  rephase.o      \
+  show_generic_ks_opts.o \
+  show_hisq_links_opts.o
+
+
+# These are used to read propagators
+
+KS_IO_OBJECTS =  \
+  flavor_ops2.o  \
+  io_helpers_ks.o   \
+  io_prop_ks.o \
+  io_prop_ks_fm.o \
+  io_source_ks_fm.o
+
+# These are used to compute the spectrum
+
+KS_SPECTRUM_OBJECTS = \
+  ks_baryon.o \
+  ks_meson_mom.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  KS_IO_OBJECTS += io_scidac_ks.o
+endif
+
+# These are used to build propagators
+
+CL_LINKS_OBJECTS = \
+  gauss_smear_w.o
+
+# These are used to read propagators
+
+CL_IO_OBJECTS  = \
+  canopy2weyl_rot.o  \
+  gammas.o           \
+  io_helpers_w.o     \
+  io_prop_w.o        \
+  io_prop_w_fm.o     \
+  io_source_w_fm.o   \
+  staggered2naive.o 
+
+# These are used to compute the spectrum
+
+CL_SPECTRUM_OBJECTS = \
+  baryon_cont.o      \
+  w_baryon.o         \
+  w_baryon_hl.o      \
+  w_meson_mom.o      \
+  w_meson_open_mom.o
+
+
+ifeq ($(strip ${HAVEQIO}),true)
+  CL_IO_OBJECTS += io_scidac_w.o
+endif
+
+######################################################################
+# Staggered fermion links routines
+######################################################################
+
+# Standard MILC combinations
+
+  FLINKS =  fermion_links.o fermion_links_fn_load_milc.o fermion_links_fn_twist_milc.o \
+    general_staple.o fn_links_milc.o
+
+  FLINKS_FN_MILC_CPU = fermion_links_milc.o ${FLINKS} ks_action_paths.o
+
+  FLINKS_HISQ_MILC_CPU = fermion_links_hisq_milc.o fermion_links_hisq_load_milc.o \
+    ${FLINKS} ks_action_paths_hisq.o su3_mat_op.o stout_smear.o
+
+  FLINKS_EO_MILC = fermion_links.o fermion_links_milc.o fermion_links_eo_load_milc.o \
+    eo_links_milc.o ks_action_paths.o
+
+# GPU support
+
+  FLINKS_FN_MILC_GPU = fermion_links_milc.o fermion_links_fn_load_gpu.o \
+    fermion_links_fn_utilites_gpu.o ${FLINKS}
+  
+  FLINKS_HISQ_MILC_GPU = fermion_links_hisq_milc.o fermion_links_hisq_load_milc.o \
+    fermion_links_fn_utilites_gpu.o su3_mat_op_gpu.o ${FLINKS} 
+
+# Standard QOP combinations
+
+  FLINKS_QOP = fermion_links.o
+
+  FLINKS_FN_QOP = ${FLINKS_QOP} fn_links_qop.o fermion_links_asqtad_qop.o \
+      fermion_links_fn_twist_qop.o ks_action_coeffs_asqtad_qop.o ks_action_paths.o
+
+  FLINKS_HISQ_QOP = ${FLINKS_QOP} fn_links_qop.o hisq_links_qop.o fermion_links_hisq_qop.o \
+      fermion_links_fn_twist_qop.o ks_action_coeffs_hisq_qop.o ks_action_paths_hisq.o \
+      su3_mat_op.o
+
+# Generic actions are not supported in QOP, so we use MILC
+  FLINKS_EO_QOP = ${FLINKS_EO_MILC}
+
+ifeq ($(strip ${USE_FL_GPU}),true)
+  FLINKS_FN_MILC = ${FLINKS_FN_MILC_GPU}
+  FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_GPU}
+else
+  FLINKS_FN_MILC = ${FLINKS_FN_MILC_CPU}
+  FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_CPU}
+endif
+
+######################################################################
+# Staggered Dslash routine
+######################################################################
+
+# Standard MILC
+
+# Choices here are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o
+  DSLASH_FN_MILC = dslash_fn_dblstore.o
+
+# No other choice
+  DSLASH_EO = dslash_eo.o
+
+  DSLASH_CL =  dslash_w_space.o dslash_w3.o
+
+# Standard QOP
+
+  DSLASH_FN_QOP = dslash_fn_qop.o
+
+
+######################################################################
+# Staggered single-mass inverters
+######################################################################
+
+# Standard MILC combinations
+
+  CONGRAD_FN_BASE = mat_invert.o ks_invert.o d_congrad5_fn.o d_congrad_opt.o report_invert_status.o
+
+  CONGRAD_FN_MILC_CPU = d_congrad5_two_src.o d_congrad5_fn_milc.o ${CONGRAD_FN_BASE}
+
+# No other choice
+  CONGRAD_EO = d_congrad5_eo.o d_congrad_opt.o mat_invert.o ks_invert.o report_invert_status.o
+
+# GPU support
+
+  CONGRAD_FN_MILC_GPU = d_congrad5_fn_gpu.o
+  
+# Standard QOP combinations
+
+  CONGRAD_FN_QOP = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
+     d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o ${CONGRAD_FN_BASE}
+
+ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+  CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_GPU}
+else
+  CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
+endif
+
+######################################################################
+# Staggered multimass inverters
+######################################################################
+
+# Standard MILC combinations
+
+  MULTI_INV_FN_MILC_CPU = ks_multicg.o ks_multicg_offset.o
+
+# No other choice
+  MULTI_INV_EO = ks_multicg.o ks_multicg_offset.o
+
+# GPU support
+
+  MULTI_INV_FN_MILC_GPU = 
+  
+# Standard QOP combinations
+
+  MULTI_INV_FN_QOP = ks_multicg.o ks_multicg_offset_qop.o \
+    ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
+
+ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+  MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_GPU}
+else
+  MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
+endif
+
+######################################################################
+# Staggered fermion force routines
+######################################################################
+
+# Standard MILC combinations
+
+  FORCE = show_hisq_force_opts.o ff_opt.o 
+
+  ASQ_FORCE_MILC_CPU  = fermion_force_asqtad.o fermion_force_multi.o \
+	fermion_force_fn_multi.o path_transport.o ${FORCE}
+
+  HISQ_FORCE_MILC_CPU = fermion_force_hisq_multi.o path_transport.o ${FORCE}
+
+# No other choice
+  EO_FORCE   = fermion_force_eo_milc.o path_transport.o ${FORCE}
+
+# GPU support
+
+  ASQ_FORCE_MILC_GPU = fermion_force_asqtad_gpu.o ${FORCE}
+
+  HISQ_FORCE_MILC_GPU = fermion_force_hisq_gpu.o ${FORCE}
+  
+# Standard QOP combinations
+
+  ASQ_FORCE_QOP = fermion_force_asqtad_qop.o fermion_force_asqtad_qop_F.o \
+     fermion_force_asqtad_qop_D.o ${FORCE}
+
+  HISQ_FORCE_QOP = fermion_force_hisq_qop.o fermion_force_hisq_qop_F.o \
+     fermion_force_hisq_qop_D.o ${FORCE}
+
+ifeq ($(strip ${WANT_FF_GPU}),true)
+  ASQ_FORCE_MILC = ${ASQ_FORCE_MILC_GPU}
+  HISQ_FORCE_MILC = ${HISQ_FORCE_MILC_GPU}
+else
+  ASQ_FORCE_MILC = ${ASQ_FORCE_MILC_CPU}
+  HISQ_FORCE_MILC = ${HISQ_FORCE_MILC_CPU}
+endif
+
+######################################################################
+# Clover link creation
+######################################################################
+
+  FLINKS_CL = f_mu_nu.o make_clov2.o
+
+######################################################################
+# Clover inverters
+######################################################################
+
+  CONGRAD_CL_BASE = d_cgilu_cl.o d_hopilu_cl.o d_mrilu_cl.o cl_solver_utilities.o \
+      wilson_invert.o
+
+  CONGRAD_CL_QOP = d_bicgilu_cl_qop.o  d_bicgilu_cl_qop_D.o d_bicgilu_cl_qop_F.o \
+      ${CONGRAD_CL_BASE}
+
+  CONGRAD_CL_MILC = d_bicgilu_cl.o ${CONGRAD_CL_BASE}
+
+######################################################################
+# Gauge force routines
+######################################################################
+
+# Standard MILC combinations
+
+  GAUGE_FORCE_MILC_CPU = gauge_force_imp.o gauge_stuff.o ranmom.o
+
+# GPU support
+
+  GAUGE_FORCE_MILC_GPU =
+  
+# Standard QOP combinations
+
+  GAUGE_FORCE_QOP = gauge_force_symzk1_qop.o  gauge_stuff.o ranmom.o
+
+ifeq ($(strip ${WANT_GF_GPU}),true)
+  GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_GPU}
+else
+  GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_CPU}
+endif
+
+######################################################################
+# QOP or MILC/GPU
+######################################################################
+
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP
+  CONGRAD_CL   = ${CONGRAD_CL_QOP}
+  FLINKS_EO    = ${FLINKS_EO_QOP}
+  FLINKS_FN    = ${FLINKS_FN_QOP}
+  FLINKS_HISQ  = ${FLINKS_HISQ_QOP}
+  DSLASH_FN    = ${DSLASH_FN_QOP}
+  CONGRAD_FN   = ${CONGRAD_FN_QOP}
+  MULTI_INV_FN = ${MULTI_INV_FN_QOP}
+  GAUGE_FORCE  = ${GAUGE_FORCE_QOP}
+  ASQ_FORCE    = ${ASQ_FORCE_QOP}
+  HISQ_FORCE   = ${HISQ_FORCE_QOP}
+else
+  CONGRAD_CL   = ${CONGRAD_CL_MILC}
+  FLINKS_EO    = ${FLINKS_EO_MILC}
+  FLINKS_FN    = ${FLINKS_FN_MILC}
+  FLINKS_HISQ  = ${FLINKS_HISQ_MILC}
+  DSLASH_FN    = ${DSLASH_FN_MILC}
+  CONGRAD_FN   = ${CONGRAD_FN_MILC}
+  MULTI_INV_FN = ${MULTI_INV_FN_MILC}
+  GAUGE_FORCE  = ${GAUGE_FORCE_MILC}
+  ASQ_FORCE    = ${ASQ_FORCE_MILC}
+  HISQ_FORCE   = ${HISQ_FORCE_MILC}
+endif
+
+######################################################################
+# Standard lists of objects for staggered fermion links and inverters
+######################################################################
+
+
+CL_OBJECTS = \
+  ${CL_LINKS_OBJECTS} \
+  ${FLINKS_CL} \
+  ${CONGRAD_CL} \
+  ${DSLASH_CL}
+
+EO_OBJECTS = \
+  ${KS_LINKS_OBJECTS} \
+  ${FLINKS_EO} \
+  ${CONGRAD_EO} \
+  ${DSLASH_EO} \
+  ${MULTI_INV_EO}
+
+FN_OBJECTS = \
+  ${KS_LINKS_OBJECTS} \
+  ${FLINKS_FN} \
+  ${CONGRAD_FN} \
+  ${DSLASH_FN} \
+  ${MULTI_INV_FN}
+
+HISQ_OBJECTS = \
+  ${KS_LINKS_OBJECTS} \
+  ${FLINKS_HISQ} \
+  ${CONGRAD_FN} \
+  ${DSLASH_FN} \
+  ${MULTI_INV_FN}
