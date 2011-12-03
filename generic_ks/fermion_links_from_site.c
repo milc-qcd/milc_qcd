@@ -20,7 +20,6 @@ fermion_links_t *create_fermion_links_from_site(int prec, int n_naiks, double *e
 #endif
 
   free(links);
-
   return fl;
 }
 
