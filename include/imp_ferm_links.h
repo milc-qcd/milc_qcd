@@ -238,6 +238,14 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 	       int Restart, int iters, int parity,
 	       imp_ferm_links_t *fn );
 
+/* fn_links_qop.c  and fn_links_milc.c */
+
+su3_matrix *get_fatlinks(imp_ferm_links_t *fn);
+su3_matrix *get_lnglinks(imp_ferm_links_t *fn);
+su3_matrix *get_fatbacklinks(imp_ferm_links_t *fn);
+su3_matrix *get_lngbacklinks(imp_ferm_links_t *fn);
+
+
 /* fpi_2.c */
 int fpi_2( /* Return value is number of C.G. iterations taken */
   Real *masses,   /* array of masses */
@@ -374,6 +382,4 @@ void mult_rhos( int fdir,  field_offset src, field_offset dest ) ;
 /* spectrum_singlets */
 int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
 		       imp_ferm_links_t *fn );
-
-
 #endif /* _IMP_FERM_LINKS_H */

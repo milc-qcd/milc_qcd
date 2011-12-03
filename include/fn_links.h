@@ -9,7 +9,6 @@
 
 /* The fn_links_t "class" */
 
-
 typedef struct {
   link_phase_info_t *phase;
   su3_matrix *fat;
@@ -27,11 +26,6 @@ void destroy_fn_backlinks(fn_links_t *fn);
 
 fn_links_t *create_fn_links(void);
 void destroy_fn_links(fn_links_t *fn);
-
-su3_matrix *get_lnglinks(fn_links_t *fn);
-su3_matrix *get_fatlinks(fn_links_t *fn);
-su3_matrix *get_lngbacklinks(fn_links_t *fn);
-su3_matrix *get_fatbacklinks(fn_links_t *fn);
 
 void copy_fn(fn_links_t *fn_src, fn_links_t *fn_dst);
 void scalar_mult_fn(fn_links_t *fnsrc, Real s, fn_links_t *fndst);

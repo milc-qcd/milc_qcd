@@ -16,7 +16,10 @@ typedef struct {
   link_phase_info_t *phase;
   QOP_F3_FermionLinksAsqtad *al_F;
   QOP_D3_FermionLinksAsqtad *al_D;
+  /* Derived, read-only values extracted from al_F or al_D if needed: */
+  su3_matrix *fat, *lng;
 } fn_links_qop_t;
+
 
 
 fn_links_qop_t *create_fn_links_qop(void);
