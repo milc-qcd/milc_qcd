@@ -8,13 +8,13 @@
 
 # Usage...
 
-#    headtail pattern1 pattern2
+#    headtail.pl pattern1 pattern2
 
 # where /pattern1/ and /pattern2/ are awk/sed-type pattern-matching strings
 
 # Example
 
-#    headtail '^POINT' 'RUNNING COMPLETED'
+#    headtail.pl '^POINT' 'RUNNING COMPLETED'
 
 # starts at the first line beginning with POINT and ends at the line
 # containing the string RUNNING COMPLETED anywhere in the line.
