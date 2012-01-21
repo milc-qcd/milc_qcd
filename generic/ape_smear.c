@@ -401,6 +401,9 @@ static su3_matrix *create_unit_gauge_field(void){
 }
 
 /* Do 3D APE smearing of space-like links with SU(3) projection */
+/* The time links are copied from the underlying gauge field */
+/* NOTE A HACK: If iters < 0 we return a unit gauge field instead */
+
 su3_matrix *ape_smear_3D(Real staple_weight, int iters){
   int space_only = 1;
   //  int nhits = 0;   /* Turn off SU(3) projection */
