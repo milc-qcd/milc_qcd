@@ -11,9 +11,12 @@
  c Contact: <detar@physics.utah.edu> or <doug@physics.arizona.edu>
  c
  c  to compile: texi2dvi milcv7.texi, texi2html milcv7.texi
- c $Id: milcv7.texi,v 1.4 2011/12/03 15:04:42 detar Exp $
+ c $Id: milcv7.texi,v 1.5 2012/01/21 21:19:34 detar Exp $
  c
  c $Log: milcv7.texi,v $
+ c Revision 1.5  2012/01/21 21:19:34  detar
+ c Correct contributor list.
+ c
  c Revision 1.4  2011/12/03 15:04:42  detar
  c Add pdf capability.  Minor edits.
  c
@@ -47,6 +50,7 @@
 @center @strong{Urs Heller} (@emph{APS}) <heller@@ridge.aps.org,>
 @center @strong{James Hetrick} (@emph{U. of the Pacific}) <jhetrick@@uop.edu>
 @center @strong{Ludmila Levkova} (@emph{U. of Utah}) <ludmila@@physics.utah.edu>
+@center @strong{Craig McNeile} (@emph{Glasgow U.}) <c.mcneile@@physics.gla.ac.uk>
 @center @strong{Kostas Orginos} (@emph{College of William and Mary}) <kostas@@kostas@@jlab.org>
 @center @strong{James Osborn} (@emph{Argonne National Laboratory}) <osborn@@alcf.anl.gov>
 @center @strong{Kari Rummukainen} (@emph{Oulu University}) <kari.rummukainen@@oulu.fi>
@@ -89,10 +93,12 @@ notice identical to this one except for the removal of this paragraph
 
 @center version ---7.7.3---
 @sp 1
+@center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@quark.phy.bnl.gov>
 @center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
 @center @strong{Tom Burch} (@emph{U. of Utah}) <tburch@@physics.utah.edu>
 @center @strong{Tom DeGrand} (@emph{U. of Colorado}) <degrand@@aurinko.colorado.edu>
 @center @strong{Carleton DeTar} (@emph{U. of Utah}) <detar@@physics.utah.edu>
+@center @strong{Justin Foley} (@emph{U. of Utah}) <jfoley@@physics.utah.edu>
 @center @strong{Steve Gottlieb} (@emph{Indiana U.}) <sg@@denali.physics.indiana.edu>
 @center @strong{Urs Heller} (@emph{APS}) <heller@@ridge.aps.org,>
 @center @strong{James Hetrick} (@emph{U. of the Pacific}) <jhetrick@@uop.edu>
