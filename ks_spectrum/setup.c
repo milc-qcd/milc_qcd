@@ -5,6 +5,9 @@
 /* Modifications ... */
 
 //  $Log: setup.c,v $
+//  Revision 1.3  2012/01/21 21:35:08  detar
+//  Support general spin_taste interpolating operators for mesons.
+//
 //  Revision 1.2  2011/12/03 03:44:36  detar
 //  Fix support for mu_eos
 //
@@ -668,7 +671,7 @@ int readin(int prompt) {
       IF_OK for(i = 0; i < param.num_corr_m[ipair]; i++){
 	int ok,m;
 	char meson_label_in[MAX_MESON_LABEL], mom_label_in[MAX_MOM_LABEL],
-	  spin_taste_label[8], phase_lab[4], 
+	  spin_taste_string[8], phase_lab[4], 
 	  factor_op[2], parity_x_in[3], parity_y_in[3], parity_z_in[3];
 	double factor;
 	
@@ -694,14 +697,14 @@ int readin(int prompt) {
 	/* phase, op, factor, and spin-taste label */
 	IF_OK {
 	  ok = scanf("%s %s %lf %s",phase_lab,factor_op,&factor,
-		     spin_taste_label);
+		     spin_taste_string);
 	  if(ok != 4){
 	    printf("\nError reading phase, factor, and spin-taste\n");
 	    status++;
 	  }
 	  else {
 	    printf(" %3s %1s %g %6s",phase_lab,factor_op,factor,
-		   spin_taste_label);
+		   spin_taste_string);
 	  }
 	}
 
@@ -727,10 +730,10 @@ int readin(int prompt) {
 	
 	/* decode spin-taste sink label */
 	IF_OK {
-	  param.spin_taste_snk[ipair][i] = spin_taste_index(spin_taste_label);
+	  param.spin_taste_snk[ipair][i] = spin_taste_index(spin_taste_string);
 	  if(param.spin_taste_snk[ipair][i] < 0 ){
 	    printf("\n: Unrecognized spin-taste label %s.\n",
-		   spin_taste_label);
+		   spin_taste_string);
 	    status++;
 	  }
 	}
