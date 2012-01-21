@@ -677,9 +677,9 @@ int get_vi( FILE* fp, int prompt, char *tag,
     char myname[] = "get_vi";
 
     if(prompt==1)  {
-      s = 0;
       printf("enter %s with %d values",tag, nvalues);
       for(i = 0; i < nvalues; i++){
+	s = 0;
 	while(s != 1){
 	  printf("\n[%d] ",i);
 	  s=fscanf(fp,"%d",value+i);
@@ -711,9 +711,9 @@ int get_vf( FILE* fp, int prompt, char *tag,
     char myname[] = "get_vf";
 
     if(prompt==1)  {
-      s = 0;
       printf("enter %s with %d values",tag, nvalues);
       for(i = 0; i < nvalues; i++){
+	s = 0;
 	while(s != 1){
 	  printf("\n[%d] ",i);
 #if PRECISION == 1
