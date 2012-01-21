@@ -1409,6 +1409,7 @@ void u3_unit_der_analytic( info_t *info, su3_matrix *V, su3_tensor4 *dwdv,
 #endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
 
   int i, j, m, n;
+  size_t nflops = 0;
 
 #ifdef HISQ_REUNIT_ALLOW_SVD
   double Qd[3][3][2];
@@ -1416,7 +1417,6 @@ void u3_unit_der_analytic( info_t *info, su3_matrix *V, su3_tensor4 *dwdv,
   double a1re, a1im, a2re, a2im, a3re, a3im, detre, detim, det_check;
   double sigma[3], Uleft[3][3][2], Vright[3][3][2];
   int perform_svd=0;
-  size_t nflops = 0;
 
   /* get determinant for future comparison */
   a1re=((double)V->e[1][1].real)*((double)V->e[2][2].real)-((double)V->e[1][1].imag)*((double)V->e[2][2].imag)

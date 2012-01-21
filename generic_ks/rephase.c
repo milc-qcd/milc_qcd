@@ -29,6 +29,7 @@ hyp_coord(site *s, int r0[]){
       eta_y = (-1)^(t+x)
       eta_z = (-1)^(t+x+y)
 */
+/*      with mu = 0,1,2,3 for t,x,y,z                           */
 /*	phase of link(i,mu) = prod(nu<mu) { -1^i[nu] }		*/
 /*	all t phases for t=nt-1 time slice get extra minus sign	*/
 /*	   to give antiperiodic boundary conditions		*/

@@ -17,6 +17,9 @@
 
 /*
  * $Log: fermion_force_hisq_qop.c,v $
+ * Revision 1.2  2012/01/21 21:04:12  detar
+ * Urs Heller's upgrades to eigen_stuff*.c
+ *
  * Revision 1.1  2011/11/29 20:42:29  detar
  * Add
  *
@@ -32,7 +35,7 @@
 #define KS_MULTIFF FNMAT
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop.c,v 1.1 2011/11/29 20:42:29 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop.c,v 1.2 2012/01/21 21:04:12 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species HISQ fermion force
@@ -144,9 +147,9 @@ static void set_qop_hisq_force_opts( int fnmat_src_min, int veclength ) {
   /* Note: the want_deps and want_aux options are set in hisq_links_qop.c */
 
   /* Set values */
-  QOP_opt_t qop_hf_opt[3] = {
+  QOP_opt_t qop_hf_opt[2] = {
 
-    {.tag = "fnmat_src_min",.value=fnmat_src_min},
+    //    {.tag = "fnmat_src_min",.value=fnmat_src_min},
     {.tag = "veclength",.value=veclength},
 
 
@@ -160,7 +163,7 @@ static void set_qop_hisq_force_opts( int fnmat_src_min, int veclength ) {
 
   /* Set links options, overriding defaults */
 
-  if(QOP_hisq_force_set_opts(qop_hf_opt, 3) != QOP_SUCCESS)
+  if(QOP_hisq_force_set_opts(qop_hf_opt, 2) != QOP_SUCCESS)
     node0_printf("eo_fermion_force_multi: error setting QOP options\n");
   
 }
@@ -176,6 +179,7 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
   veclength = 4;
 #endif
 
+ // Discontinue use as of qopqdp-0.17.5
   switch(KS_MULTIFF){
   case ASVEC:
     fnmat_src_min = nterms + 1;

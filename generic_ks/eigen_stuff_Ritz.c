@@ -1,4 +1,4 @@
-/****** eigen_stuff.c  ******************/
+/****** eigen_stuff_Ritz.c  ******************/
 /* Eigenvalue and Eigevector computation routines.
 * K.O. 8/99 Started. 
 * UH did some stuff to this I think
@@ -28,7 +28,9 @@
 /* If you do not define the USE_DSLASH_SPECIAL then calls to the standard   *
  * dslash are made. If you do define USE_DSLASH_SPECIAL then DSLASH_SPECIAL *
  * is used                                                                  */
+#ifdef FN
 #define USE_DSLASH_SPECIAL
+#endif
 
 
 /* Include files */
@@ -37,167 +39,37 @@
 #include "../include/dslash_ks_redefine.h"
 #include <string.h>
 
-void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
-		     imp_ferm_links_t *fn );
-void cleanup_Matrix() ;
-void measure_chirality(su3_vector *src, double *chirality, int parity) ;
-void print_densities(su3_vector *src, char *tag, int y,int z,int t,int parity);
-
-void GramSchmidt(su3_vector **vector, int Num, int parity) ;/* Not used */
-void copy_Vector(su3_vector *src, su3_vector *res ) ; 
-void norm2(su3_vector *vec, double *norm, int parity); 
-void dot_product(su3_vector *vec1, su3_vector *vec2, 
+static void copy_Vector(su3_vector *src, su3_vector *res ) ; 
+static void norm2(su3_vector *vec, double *norm, int parity); 
+static void dot_product(su3_vector *vec1, su3_vector *vec2, 
 		 double_complex *dot, int parity) ;
-void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
+static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
 			  su3_vector *vec2, int parity) ;
-void complex_vec_mult_add(double_complex *cc, su3_vector *vec1, 
+static void complex_vec_mult_add(double_complex *cc, su3_vector *vec1, 
 			  su3_vector *vec2, int parity) ;
-void double_vec_mult(double *a, su3_vector *vec1, 
+static void double_vec_mult(double *a, su3_vector *vec1, 
 		     su3_vector *vec2, int parity) ;
-void double_vec_mult_sub(double *rr, su3_vector *vec1,  
+static void double_vec_mult_sub(double *rr, su3_vector *vec1,  
 			 su3_vector *vec2, int parity) ;
-void double_vec_mult_add(double *rr, su3_vector *vec1,  
-			 su3_vector *vec2, int parity) ;
-void dax_p_by(double *a, su3_vector *vec1, double *b, su3_vector *vec2, 
+static void dax_p_by(double *a, su3_vector *vec1, double *b, su3_vector *vec2, 
 	      int parity) ; 
-void vec_plus_double_vec_mult(su3_vector *vec1, double *a, su3_vector *vec2, 
+static void vec_plus_double_vec_mult(su3_vector *vec1, double *a, su3_vector *vec2, 
 			      int parity) ;
-void normalize(su3_vector *vec,int parity) ;
-void project_out(su3_vector *vec, su3_vector **vector, int Num, int parity);
-void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
+static void normalize(su3_vector *vec,int parity) ;
+static void project_out(su3_vector *vec, su3_vector **vector, int Num, int parity);
+static void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
 		    double *err, int *converged, int parity,
 		    imp_ferm_links_t *fn);
-void RotateBasis(su3_vector **eigVec, Matrix *V, int parity) ;
-
-void mult_spin_pseudoscalar(field_offset src, field_offset dest ) ;
+static void RotateBasis(su3_vector **eigVec, Matrix *V, int parity) ;
 
 /************************************************************************/
 
-
-/* Message tags to be used for the Matrix Vector multiplication */
-static msg_tag *tags1[16],*tags2[16];
-/* Temporary su3_vectors used for the squaring */ 
-static su3_vector *temp = NULL ;
-/* flag indicating wether to start dslash. */
-static int dslash_start = 1 ; /* 1 means start dslash */
-/* This routine is the routine that applies the Matrix, whose eigenvalues    *
- * we want to compute, to a vector. For this specific application it is the  *
- * -D_slash^2 of the KS fermions. We only compute on the "parity" sites.     *
- * Where parity can be EVEN, ODD, or ENENANDODD                              */
-
-
-#ifndef USE_DSLASH_SPECIAL
-/* The Matrix_Vec_mult and cleanup_Matrix() WITHOUT using dslash_special */
-/************************************************************************/
-
-void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
-		     imp_ferm_links_t *fn )
-{  
-  register site *s;
-  register  int i;
-  int otherparity = EVENANDODD;
-
-  if(temp == NULL ){
-    temp = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-  }
-  
-  switch(parity){
-  case EVEN:
-    otherparity = ODD ;
-    break ;
-  case ODD:
-    otherparity = EVEN ;
-    break ;
-  case EVENANDODD:
-    otherparity = EVENANDODD ;
-    break ;
-  default:
-    node0_printf("ERROR: wrong parity in eigen_stuff::Matrix_Vec_mult\n") ;
-    terminate(1) ;
-  }
-
-  dslash_fn_field(src , temp, otherparity, fn) ; 
-  dslash_fn_field(temp, res , parity     , fn) ;
-  FORSOMEPARITY(i,s,parity){ 
-    scalar_mult_su3_vector( &(res[i]), -1.0, &(res[i])) ;
-  } 
-}
-/*****************************************************************************/
-/* Deallocates the tags and the temporaries the Matrix_Vec_mult needs */
-void cleanup_Matrix(){
-  if(temp != NULL ){
-    free(temp) ;
-    temp = NULL ;
-  }
-}
-#else
-/*****************************************************************************/
-/* The Matrix_Vec_mult and cleanup_Matrix() using dslash_special */
-void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
-		     imp_ferm_links_t *fn ){
-  
-  register site *s;
-  register  int i;
-  int otherparity = EVENANDODD;
-  /* store last source so that we know when to reinitialize the message tags */
-  static su3_vector *last_src=NULL ;
-
-  if(dslash_start){
-    temp = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-  }
-
-  /*reinitialize the tags if we have a new source */
-  if(last_src != src){
-    if(!dslash_start) cleanup_gathers(tags1,tags2); 
-    dslash_start = 1 ;
-    last_src = src ;
-  }
-  switch(parity){
-  case EVEN:
-    otherparity = ODD ;
-    break ;
-  case ODD:
-    otherparity = EVEN ;
-    break ;
-  case EVENANDODD:
-    otherparity = EVENANDODD ;
-    break ;
-  default:
-    node0_printf("ERROR: wrong parity in eigen_stuff::Matrix_Vec_mult\n") ;
-    terminate(1) ;
-  }
-  
-  dslash_fn_field_special(src , temp, otherparity, tags1, dslash_start, fn) ;
-  dslash_fn_field_special(temp, res , parity     , tags2, dslash_start, fn) ;
-  
-  FORSOMEPARITY(i,s,parity){ 
-    scalar_mult_su3_vector( &(res[i]), -1.0, &(res[i])) ;
-  } 
-  dslash_start = 0 ;
-}
-/* Deallocates the tags and the temporaries the Matrix_Vec_mult needs */
-
-/************************************************************************/
-void cleanup_Matrix(){
-  if(!dslash_start) {
-    cleanup_gathers(tags1,tags2); 
-    cleanup_dslash_temps() ;
-    free(temp) ;
-  }
-  dslash_start = 1 ;
-#ifdef DEBUG
-  node0_printf("cleanup_Matrix(): done!\n") ; fflush(stdout) ;
-#endif
-}
-#endif /* USE_DSLASH_SPECIAL */
-
-/************************************************************************/
-
+#if 0
 /* Modified Gram-Schmidt orthonormalization pg. 219 Golub & Van Loan     *
  * Num is the number of vectors. vector are the vectors. They get        *
  * overwritten by the orthonormal vectors.                               *
  * parity is the parity on which we work on (EVEN,ODD,ENENANDODD).       */
-void GramSchmidt(su3_vector **vector, int Num, int parity)/* NEVER USED */{
+static void GramSchmidt(su3_vector **vector, int Num, int parity)/* NEVER USED */{
   register int i,j ;
   double norm ;
   double_complex cc ;
@@ -212,12 +84,13 @@ void GramSchmidt(su3_vector **vector, int Num, int parity)/* NEVER USED */{
     }
   }
 }
+#endif
 /************************************************************************/
 
 /*  Projects out the *vectors from the  vec. Num is the Number of vectors  *
  * and parity is the parity on which we work on.                           *
  * The vectors are assumed to be orthonormal.                              */
-void project_out(su3_vector *vec, su3_vector **vector, int Num, int parity){
+static void project_out(su3_vector *vec, su3_vector **vector, int Num, int parity){
   register int i ;
   double_complex cc ;
   for(i=Num-1;i>-1;i--){
@@ -228,13 +101,13 @@ void project_out(su3_vector *vec, su3_vector **vector, int Num, int parity){
 
 /************************************************************************/
 /* Copies scr to res */
-void copy_Vector(su3_vector *src, su3_vector *res){
+static void copy_Vector(su3_vector *src, su3_vector *res){
   memcpy((void *)res, (void *)src, sites_on_node*sizeof(su3_vector)) ;
 }
 
 /************************************************************************/
 /* Returns the 2-norm of a fermion vector */
-void norm2(su3_vector *vec, double *norm, int parity){
+static void norm2(su3_vector *vec, double *norm, int parity){
   register double n ;
   register site *s;
   register  int i;
@@ -250,7 +123,7 @@ void norm2(su3_vector *vec, double *norm, int parity){
  
 /*****************************************************************************/
 /* Returns the dot product of two fermion vectors */
-void dot_product(su3_vector *vec1, su3_vector *vec2, 
+static void dot_product(su3_vector *vec1, su3_vector *vec2, 
 		   double_complex *dot, int parity) {
   register double re,im ;
   register site *s;
@@ -270,7 +143,7 @@ void dot_product(su3_vector *vec1, su3_vector *vec2,
 
 /*****************************************************************************/
 /* Returns vec2 = vec2 - cc*vec1   cc is a double complex   */
-void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
+static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
 			  su3_vector *vec2, int parity){
 
   register site *s;
@@ -287,7 +160,7 @@ void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
 
 /*****************************************************************************/
 /* Returns vec2 = vec2 + cc*vec1   cc is a double complex   */
-void complex_vec_mult_add(double_complex *cc, su3_vector *vec1, 
+static void complex_vec_mult_add(double_complex *cc, su3_vector *vec1, 
 			  su3_vector *vec2, int parity){
   register site *s;
   register  int i;
@@ -301,7 +174,7 @@ void complex_vec_mult_add(double_complex *cc, su3_vector *vec1,
 
 /*****************************************************************************/
 /* Returns vec2 = vec2 - rr*vec1   rr is a double    */
-void double_vec_mult_sub(double *rr, su3_vector *vec1,  
+static void double_vec_mult_sub(double *rr, su3_vector *vec1,  
 			 su3_vector *vec2, int parity){
   register site *s;
   register  int i;
@@ -311,9 +184,10 @@ void double_vec_mult_sub(double *rr, su3_vector *vec1,
   }
 }
 
+#if 0
 /*****************************************************************************/
 /* Returns vec2 = vec2 + rr*vec1   rr is a double    */
-void double_vec_mult_add(double *rr, su3_vector *vec1,  
+static void double_vec_mult_add(double *rr, su3_vector *vec1,  
 			 su3_vector *vec2, int parity){
   register site *s;
   register  int i;
@@ -322,10 +196,11 @@ void double_vec_mult_add(double *rr, su3_vector *vec1,
     scalar_mult_add_su3_vector(&(vec2[i]), &(vec1[i]), (Real)*rr, &(vec2[i]));
   }
 }
+#endif
 
 /*****************************************************************************/
 /* Returns vec2 = a*vec1   a is a double vec2 can be vec1*/
-void double_vec_mult(double *a, su3_vector *vec1, 
+static void double_vec_mult(double *a, su3_vector *vec1, 
 		     su3_vector *vec2, int parity){
   
   register site *s;
@@ -338,7 +213,7 @@ void double_vec_mult(double *a, su3_vector *vec1,
 
 /*****************************************************************************/
 /* Returns vec2 = vec1 + a*vec2 */
-void vec_plus_double_vec_mult(su3_vector *vec1, double *a, su3_vector *vec2, 
+static void vec_plus_double_vec_mult(su3_vector *vec1, double *a, su3_vector *vec2, 
 			      int parity){
   register site *s;
   register  int i;
@@ -351,7 +226,7 @@ void vec_plus_double_vec_mult(su3_vector *vec1, double *a, su3_vector *vec2,
 
 /*****************************************************************************/
 /* Returns vec1 = a*vec1 + b*vec2   a,b are double    */
-void dax_p_by(double *a, su3_vector *vec1, double *b, su3_vector *vec2, 
+static void dax_p_by(double *a, su3_vector *vec1, double *b, su3_vector *vec2, 
 	      int parity) {
 
   register site *s;
@@ -366,7 +241,7 @@ void dax_p_by(double *a, su3_vector *vec1, double *b, su3_vector *vec2,
 
 /*****************************************************************************/
 /* normalizes the vecror vec. Work only on parity. */
-void normalize(su3_vector *vec,int parity){
+static void normalize(su3_vector *vec,int parity){
 
   double norm ;
   norm2(vec,&norm,parity) ;
@@ -514,7 +389,6 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 
   project_out(vec, eigVec, Nvecs, parity);
   normalize(vec,parity) ;
-  cleanup_Matrix() ;
   free(MP) ;
   free(P) ;
   free(grad) ;
@@ -525,7 +399,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 
 /*****************************************************************************/
 /* Returns the projected matrix A and the error of each eigenvector */
-void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
+static void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
 		    double *err, int *converged, int parity,
 		    imp_ferm_links_t *fn){
   int i,j,Nvecs ;
@@ -558,7 +432,7 @@ void constructArray(su3_vector **eigVec, su3_vector **MeigVec, Matrix *A,
 
 
 /*****************************************************************************/
-void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
+static void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
 
   su3_vector **Tmp ;
   register site *s;
@@ -594,10 +468,9 @@ void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
 }
 
 /*****************************************************************************/
-int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance, 
+int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int Kiters, int parity,
-	       imp_ferm_links_t *fn ){
+	       int Restart, int Kiters ){
 
   int total_iters=0 ;
   int j;
@@ -610,10 +483,14 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   double *grad, *err ;
   int iter = 0 ;
   int *converged ;
+  int parity = active_parity ;
   Real ToleranceG ;
 #ifdef EIGTIME
   double dtimec;
 #endif
+  imp_ferm_links_t **fn;
+
+  fn = get_fm_links(fn_links);
 
 
   ToleranceG = 10.0*Tolerance ;
@@ -658,7 +535,7 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 	converged[j] = 0 ;
 	copy_Vector(eigVec[j],vec) ;
 	total_iters += Rayleigh_min(vec, eigVec, ToleranceG, RelTol,
-				    j, MaxIter , Restart, parity, fn) ;
+				    j, MaxIter , Restart, parity, fn[0]) ;
 	/* Copy only wanted parity (UMH) */
 	/** copy_Vector(vec,eigVec[j]) ; **/
 	FORSOMEPARITY(i,s,parity){
@@ -674,7 +551,7 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
     /* if you didn't act on eigVec[i] last time, converged[i]=1,
        and  MeigVec hasn't changed, so don't compute it */
-    constructArray(eigVec, MeigVec, &Array, grad, converged, parity, fn) ;
+    constructArray(eigVec, MeigVec, &Array, grad, converged, parity, fn[0]) ;
 
 #ifdef DEBUG
     node0_printf("Eigenvalues before diagonalization\n");
@@ -743,6 +620,7 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
   free(err) ;
   free(grad) ;
   free(vec) ;
+  free(converged) ;
   for(i=0;i<Nvecs;i++){
     free(MeigVec[i]);
   }
@@ -753,54 +631,4 @@ int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance,
 }
 
 
-
-/*****************************************************************************/
-/* measures the chiraliry of a normalized fermion state */
-void measure_chirality(su3_vector *src, double *chirality, int parity){
-  register int i;
-  register site *s;
-  register double cc ;
-  complex tmp ;
-
-  FORSOMEPARITY(i,s,parity){
-    su3vec_copy(&src[i],&(s->tempvec[3])) ;
-  }
-
-  mult_spin_pseudoscalar(F_OFFSET(tempvec[3]),F_OFFSET(ttt)) ;
-
-  cc = 0.0 ; 
-  FORSOMEPARITY(i,s,parity){ 
-    tmp = su3_dot( &(s->tempvec[3]), &(s->ttt) ) ;
-    cc +=  tmp.real ; /* chirality is real since Gamma_5 is hermitian */
-  }
-  *chirality = cc ;
-  g_doublesum(chirality);
-}
-
-
-/*****************************************************************************/
-/* prints the density and chiral density of a normalized fermion state */
-void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
-		     int parity){
-
-  register int i;
-  register site *s;
-  complex tmp1,tmp2 ;
-
-  FORSOMEPARITY(i,s,parity){
-    su3vec_copy(&src[i],&(s->tempvec[3])) ;
-  }
-
-  mult_spin_pseudoscalar(F_OFFSET(tempvec[3]),F_OFFSET(ttt)) ;
-
-  FORSOMEPARITY(i,s,parity){ 
-    if((s->y==y)&&(s->z==z)&&(s->t==t)){
-      tmp1 = su3_dot( &(s->tempvec[3]), &(s->ttt) ) ;
-      tmp2 = su3_dot( &(s->tempvec[3]), &(s->tempvec[3]) ) ;
-      node0_printf("%s: %i %e %e %e\n",tag,
-		   s->x,tmp2.real,tmp1.real,tmp1.imag);
-    }
-  }
-
-}
 

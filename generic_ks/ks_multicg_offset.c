@@ -30,7 +30,7 @@ static int first_multicongrad = 1;
 
 /* Interface for call with offsets = 4 * mass * mass */
 
-int ks_multicg_offset_field(	/* Return value is number of iterations taken */
+int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken */
     su3_vector *src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
     ks_param *ksp,	/* the offsets */

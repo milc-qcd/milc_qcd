@@ -37,7 +37,9 @@ G_KS_ALL = \
   dslash_fn_qop.o \
   dslash_fn_qop_milc_D.o \
   dslash_fn_qop_milc_F.o \
-  eigen_stuff.o \
+  eigen_stuff_helpers.o \
+  eigen_stuff_Ritz.o \
+  eigen_stuff_PRIMME.o \
   f_meas.o \
   fermion_force_asqtad.o \
   fermion_force_asqtad_qop.o \
@@ -119,6 +121,7 @@ G_KS_ALL = \
   spectrum_mom.o \
   spectrum_nd.o \
   spectrum_singlets.o \
+  spin_taste_ops.o \
   su3_mat_op.o \
   su3_mat_op_gpu.o
 
@@ -203,7 +206,11 @@ dslash_fn_qop_milc_D.o: ../generic_ks/dslash_fn_qop_milc_D.c ../generic_ks/dslas
 	${CC} -c ${CFLAGS} $<
 dslash_fn_qop_milc_F.o: ../generic_ks/dslash_fn_qop_milc_F.c ../generic_ks/dslash_fn_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
-eigen_stuff.o: ../generic_ks/eigen_stuff.c
+eigen_stuff_helpers.o: ../generic_ks/eigen_stuff_helpers.c
+	${CC} -c ${CFLAGS} $<
+eigen_stuff_Ritz.o: ../generic_ks/eigen_stuff_Ritz.c
+	${CC} -c ${CFLAGS} $<
+eigen_stuff_PRIMME.o: ../generic_ks/eigen_stuff_PRIMME.c
 	${CC} -c ${CFLAGS} $<
 fermion_force_asqtad.o: ../generic_ks/fermion_force_asqtad.c
 	${CC} -c ${CFLAGS} $<
@@ -386,6 +393,8 @@ spectrum_mom.o: ../generic_ks/spectrum_mom.c
 spectrum_nd.o: ../generic_ks/spectrum_nd.c
 	${CC} -c ${CFLAGS} $<
 spectrum_singlets.o: ../generic_ks/spectrum_singlets.c
+	${CC} -c ${CFLAGS} $<
+spin_taste_ops.o: ../generic_ks/spin_taste_ops.c
 	${CC} -c ${CFLAGS} $<
 su3_mat_op.o: ../generic_ks/su3_mat_op.c
 	${CC} -c ${CFLAGS} $<

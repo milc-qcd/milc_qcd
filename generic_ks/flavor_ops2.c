@@ -911,81 +911,18 @@ spin_taste_op(int index, int r0[],
 /* 10/3/09 C DeTar                                                  */
 /********************************************************************/
 
+#ifndef NO_GAUGE_FIELD
+
 /* Apply the symmetric shift operator in direction "dir" *
  * Fat and long links are used instead of unfattened links          */
-
-#if 0
-// Moved to dslash*.c, where it belongs!
-void 
-sym_shift_fn_field(fn_links_t *fn, int dir, 
-		   su3_vector *src, su3_vector *dest)
-{
-  register int i ;
-  register site *s ;
-  msg_tag *tag[4];
-  su3_vector *tvec1 = create_v_field();
-  su3_vector *tvec2 = create_v_field();
-  su3_matrix *fat = get_fatlinks(fn);
-  su3_matrix *lng = get_lnglinks(fn);
-  char myname[] = "sym_shift_fn_field";
-  
-  if(fat == NULL || lng == NULL){
-    printf("%s(%d): fat or lng member is null\n", myname, this_node);
-    terminate(1);
-  }
-  
-  tag[0] = start_gather_field( src, sizeof(su3_vector), dir, 
-			       EVENANDODD, gen_pt[0] );
-  tag[1] = start_gather_field( src, sizeof(su3_vector), DIR3(dir), 
-			       EVENANDODD, gen_pt[1] );
-  FORALLSITES(i,s)
-    {
-      mult_adj_su3_mat_vec( fat+4*i+dir, src+i, tvec1+i ) ;
-      mult_adj_su3_mat_vec( lng+4*i+dir, src+i, tvec2+i ) ;
-    }
-  tag[2] = start_gather_field(tvec1, sizeof(su3_vector), OPP_DIR(dir), 
-			      EVENANDODD, gen_pt[2] );
-  tag[3] = start_gather_field(tvec2, sizeof(su3_vector), OPP_3_DIR(DIR3(dir)), 
-			      EVENANDODD, gen_pt[3] );
-  wait_gather(tag[0]);
-  wait_gather(tag[1]);
-  
-  FORALLSITES(i,s)
-    {
-      mult_su3_mat_vec( fat+4*i+dir, (su3_vector *)gen_pt[0][i], dest+i );
-      //      mult_su3_mat_vec( lng+4*i+dir, (su3_vector *)gen_pt[1][i], &tmp );
-      //      add_su3_vector( dest+i, &tmp, dest+i ) ;    
-    }
-  wait_gather(tag[2]);
-  wait_gather(tag[3]);
-  //  FORALLSITES(i,s)
-  //    {
-  //      add_su3_vector( dest+i, (su3_vector *)gen_pt[2][i], dest+i ) ;    
-  //      add_su3_vector( dest+i, (su3_vector *)gen_pt[3][i], dest+i ) ;    
-  //    }
-  /* Now divide by 2 */
-  //  FORALLSITES(i,s)
-  //    {
-  //      scalar_mult_su3_vector( dest+i, .5, dest+i );
-  //    }
-  
-  for(i=0;i<4;i++) cleanup_gather(tag[i]) ;
-  
-  destroy_v_field(tvec2);
-  destroy_v_field(tvec1);
-}
-
-#endif
-
-#ifndef NO_GAUGE_FIELD
 
 static void 
 sym_shift_fn_field(imp_ferm_links_t *fn, int dir, 
 		   su3_vector *src, su3_vector *dest)
 {
-  //char myname[] = "sym_shift_fn_field";
+  char myname[] = "sym_shift_fn_field";
   if(fn == NULL){
-    node0_printf("sym_shift_fn_field: Called with NULL FN links\n");
+    node0_printf("%s: Called with NULL FN links\n", myname);
     terminate(1);
   }
   
