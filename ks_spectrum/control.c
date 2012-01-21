@@ -10,6 +10,9 @@
 /* Modifications ... */
    
 //  $Log: control.c,v $
+//  Revision 1.3  2012/01/21 21:34:36  detar
+//  Move start time to beginning.  Remake APE links after gauge fixing.
+//
 //  Revision 1.2  2011/12/03 03:43:39  detar
 //  Cosmetic
 //
@@ -42,6 +45,9 @@ int main(int argc, char *argv[])
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
   g_sync();
+
+  starttime=dclock();
+    
   /* set up */
   STARTTIME;
   prompt = setup();
@@ -53,8 +59,6 @@ int main(int argc, char *argv[])
     
     if(prompt == 2)continue;
 
-    starttime=dclock();
-    
     total_iters=0;
 #ifdef HISQ_SVD_COUNTER
     hisq_svd_counter = 0;
@@ -95,6 +99,9 @@ int main(int argc, char *argv[])
 
 	rephase( ON );
 	invalidate_fermion_links(fn_links);
+
+	/* (Re)construct APE smeared links after gauge fixing */
+	ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
       }
     else
       if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");
