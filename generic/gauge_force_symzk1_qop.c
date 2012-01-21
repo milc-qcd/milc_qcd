@@ -81,6 +81,9 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
   /* Unload momentum */
   unload_F_to_site4( F_OFFSET(mom), mom, EVENANDODD );
 
+  QOP_destroy_G(links); links = NULL;
+  QOP_destroy_F(mom);   mom = NULL;
+
   remaptime += dclock();
 #ifdef GFTIME
   node0_printf("GFTIME:  time = %e mflops = %e\n",info.final_sec,
