@@ -22,6 +22,8 @@
                            structure
    write_appl_w_prop_info  Writes supplementary information to the info file */
 
+#include "cl_inv_includes.h"
+
 #include "../include/io_wprop.h"
 #include "../include/generic_quark_types.h"
 #include "params.h"

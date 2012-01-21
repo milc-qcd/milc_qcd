@@ -771,25 +771,25 @@ static FILE* open_fnal_meson_file(int pair){
     return NULL;
   }
   fprintf(fp,"---\n");
-  fprintf(fp,"JobID:                   %s\n",param.job_id);
-  fprintf(fp,"date:                    \"%s UTC\"\n",utc_date_time);
-  fprintf(fp,"lattice_size:            %d,%d,%d,%d\n", nx, ny, nz, nt);
+  fprintf(fp,"JobID:                        %s\n",param.job_id);
+  fprintf(fp,"date:                         \"%s UTC\"\n",utc_date_time);
+  fprintf(fp,"lattice_size:                 %d,%d,%d,%d\n", nx, ny, nz, nt);
   //  fprintf(fp,"spatial volume:         %g\n",((float)nx)*ny*nz);
 
   if(param.prop_type[ip0] == CLOVER_TYPE)
-    fprintf(fp,"antiquark_type:          clover\n");
+    fprintf(fp,"antiquark_type:               clover\n");
   else
-    fprintf(fp,"antiquark_type:          naive\n");
+    fprintf(fp,"antiquark_type:               naive\n");
 
   print_source_info(fp, "antiquark_source", &param.src_qs[ip0]);
-  fprintf(fp,"antiquark_source_label:  %s\n",param.src_qs[ip0].label);
+  fprintf(fp,"antiquark_source_label:       %s\n",param.src_qs[ip0].label);
   print_field_op_info(fp, "antiquark_source", param.src_qs[ip0].op);
 
 //  fprintf(fp,"antiquark_sink_op:       %s",param.snk_qs_op[ih0[nh0-1]].descrp);
 //  for(i = nh0-2; i >=0; i--)
 //    fprintf(fp,"/%s",param.snk_qs_op[ih0[i]].descrp);
 //  fprintf(fp,"\n");
-  fprintf(fp,"antiquark_sink_label:    %s\n",param.snk_qs_op[iq0].label);
+  fprintf(fp,"antiquark_sink_label:         %s\n",param.snk_qs_op[iq0].label);
   {
     quark_source_sink_op **op_list = (quark_source_sink_op **)
       malloc(sizeof(quark_source_sink_op *)*nh0);
@@ -800,24 +800,24 @@ static FILE* open_fnal_meson_file(int pair){
   }
       
   if(param.prop_type[ip0] == CLOVER_TYPE)
-    fprintf(fp,"antiquark_kappa:         \"%s\"\n",param.kappa_label[ip0]);
+    fprintf(fp,"antiquark_kappa:              \"%s\"\n",param.kappa_label[ip0]);
   else /* KS_TYPE */
-    fprintf(fp,"antiquark_mass:          \"%s\"\n",param.mass_label[ip0]);
+    fprintf(fp,"antiquark_mass:               \"%s\"\n",param.mass_label[ip0]);
 
   if(param.prop_type[ip1] == CLOVER_TYPE)
-    fprintf(fp,"quark_type:              clover\n");
+    fprintf(fp,"quark_type:                   clover\n");
   else
-    fprintf(fp,"quark_type:              naive\n");
+    fprintf(fp,"quark_type:                   naive\n");
     
   print_source_info(fp, "quark_source", &param.src_qs[ip1]);
-  fprintf(fp,"quark_source_label:      %s\n",param.src_qs[ip1].label);
+  fprintf(fp,"quark_source_label:           %s\n",param.src_qs[ip1].label);
   print_field_op_info(fp, "quark_source", param.src_qs[ip1].op);
 
 //  fprintf(fp,"quark_sink_op:           %s",param.snk_qs_op[ih1[nh1-1]].descrp);
 //  for(i = nh1-2; i >=0; i--)
 //    fprintf(fp,"/%s",param.snk_qs_op[ih1[i]].descrp);
 //  fprintf(fp,"\n");
-  fprintf(fp,"quark_sink_label:        %s\n",param.snk_qs_op[iq1].label);
+  fprintf(fp,"quark_sink_label:             %s\n",param.snk_qs_op[iq1].label);
   {
     quark_source_sink_op **op_list = (quark_source_sink_op **)
       malloc(sizeof(quark_source_sink_op *)*nh1);
@@ -827,9 +827,9 @@ static FILE* open_fnal_meson_file(int pair){
     free(op_list);
   }
   if(param.prop_type[ip1] == CLOVER_TYPE)
-    fprintf(fp,"quark_kappa:             \"%s\"\n",param.kappa_label[ip1]);
+    fprintf(fp,"quark_kappa:                  \"%s\"\n",param.kappa_label[ip1]);
   else /* KS_TYPE */
-    fprintf(fp,"quark_mass:              \"%s\"\n",param.mass_label[ip1]);
+    fprintf(fp,"quark_mass:                   \"%s\"\n",param.mass_label[ip1]);
 
   fprintf(fp,"...\n");
   return fp;
@@ -914,13 +914,13 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
   if(this_node != 0 || param.saveflag_c[pair] == FORGET)return;
 
   fprintf(fp,"---\n");
-  fprintf(fp,"correlator:              %s\n",param.meson_label[pair][m]);
-  fprintf(fp,"momentum:                %s\n",param.mom_label[pair][m]);
-  fprintf(fp,"gamma_source:            %s\n",gamma_label(param.gam_src[pair][i]));
-  fprintf(fp,"gamma_sink:              %s\n",gamma_label(param.gam_snk[pair][i]));
+  fprintf(fp,"correlator:                   %s\n",param.meson_label[pair][m]);
+  fprintf(fp,"momentum:                     %s\n",param.mom_label[pair][m]);
+  fprintf(fp,"gamma_source:                 %s\n",gamma_label(param.gam_src[pair][i]));
+  fprintf(fp,"gamma_sink:                   %s\n",gamma_label(param.gam_snk[pair][i]));
 
   /* Print correlator key encoding metadata */
-  fprintf(fp,"correlator_key:          %s", param.meson_label[pair][m]);
+  fprintf(fp,"correlator_key:               %s", param.meson_label[pair][m]);
 
   /* Source labels */
   if(strlen(param.src_qs[ip0].label)>0)

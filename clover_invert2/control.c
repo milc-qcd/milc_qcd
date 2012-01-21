@@ -22,7 +22,10 @@
 int main(int argc, char *argv[])
 {
   int prompt;
-  int i, j, k, iq0, iq1, oldiq0, oldiq1, oldip0;
+  int i, j, k, iq0, iq1;
+#ifdef CLOV_LEAN
+  int oldiq0, oldiq1, oldip0;
+#endif
   double starttime, endtime;
 #ifdef PRTIME
   double dtime;
@@ -37,6 +40,8 @@ int main(int argc, char *argv[])
   
   g_sync();
   
+  starttime=dclock();
+    
   /* set up */
   STARTTIME;
   prompt = setup();
@@ -47,8 +52,6 @@ int main(int argc, char *argv[])
   while( readin(prompt) == 0){
 
     if(prompt == 2)continue;
-    
-    starttime=dclock();
     
     total_iters=0;
     
@@ -76,6 +79,8 @@ int main(int argc, char *argv[])
     if( param.saveflag != FORGET ){
       savelat_p = save_lattice( param.saveflag, param.savefile, 
 				param.stringLFN );
+    } else {
+      savelat_p = NULL;
     }
 
     if(this_node==0)printf("END OF HEADER\n");
@@ -181,9 +186,11 @@ int main(int argc, char *argv[])
        to either the raw propagator or by building on an existing quark
        propagator */
     
+#ifdef CLOV_LEAN
     oldip0 = -1;
     oldiq0 = -1;
     oldiq1 = -1;
+#endif
     for(j=0; j<param.num_qk; j++){
       STARTTIME;
       i = param.prop_for_qk[j];
@@ -218,8 +225,10 @@ int main(int argc, char *argv[])
 	/* Apply sink operator quark[j] <- Op[j] prop[i] */
 	quark[j] = create_wp_field_copy(prop[i]);
 	wp_sink_op(&param.snk_qs_op[j], quark[j]);
+#ifdef CLOV_LEAN
 	oldip0 = i;
 	oldiq0 = -1;
+#endif
 
 	/* Can we delete any props now? */
 	/* For each prop, scan ahead to see if it is no longer needed. */
@@ -268,14 +277,18 @@ int main(int argc, char *argv[])
 	/* Apply sink operator quark[j] <- Op[j] quark[i] */
 	quark[j] = create_wp_field_copy(quark[i]);
 	wp_sink_op(&param.snk_qs_op[j], quark[j]);
+#ifdef CLOV_LEAN
 	oldip0 = -1;
 	oldiq0 = i;
+#endif
       }
 	
       /* Save the resulting quark[j] if requested */
       dump_wprop_from_wp_field( param.saveflag_q[j], 
 				param.savefile_q[j], quark[j]);
+#ifdef CLOS_LEAN
       oldiq1 = j;
+#endif
       ENDTIME("generate sink operator");
     }
 #ifdef CLOV_LEAN
@@ -349,8 +362,10 @@ int main(int argc, char *argv[])
       spectrum_cl(quark[iq0], quark[iq1], i);
 
       /* Remember, in case we need to free memory */
+#ifdef CLOV_LEAN
       oldiq0 = iq0;
       oldiq1 = iq1;
+#endif
     }
 #ifdef CLOV_LEAN
     /* Free any remaining quark prop memory */

@@ -229,7 +229,7 @@ antiquark_source_r0:     1.5
 antiquark_source_label:  1S
 antiquark_sink_label:    rot
 antiquark_sink_ops:      [
-{ operation:             rotate_3D
+{ operation:             rotate_3D,
   d1:                    0.1
 }
 ]
@@ -242,7 +242,7 @@ quark_source_r0:         1.5
 quark_source_label:      1S
 quark_sink_label:        rot
 quark_sink_ops:          [
-{ operation:             rotate_3D
+{ operation:             rotate_3D,
   d1:                    0.1
 }
 ]

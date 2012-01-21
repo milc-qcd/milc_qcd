@@ -17,7 +17,7 @@ quark_source_r0:         1.5
 quark_source_label:      1S
 quark_sink_label:        rot
 quark_sink_ops:          [
-{ operation:             rotate_3D
+{ operation:             rotate_3D,
   d1:                    0.09073
 }
 ]
@@ -527,7 +527,7 @@ quark_source_r0:         1.5
 quark_source_label:      1S
 quark_sink_label:        1S
 quark_sink_ops:          [
-{ operation:             complex_field_fm
+{ operation:             complex_field_fm,
   file: ../../binary_samples/smear_fm.sample.l4448.ll
 }
 ]

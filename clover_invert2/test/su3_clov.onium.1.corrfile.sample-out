@@ -7,23 +7,23 @@ antiquark_source_type:   point/fat_covariant_gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
 antiquark_source_label:  G
-antiquark_source_ops:    [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+antiquark_source_ops:        [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 antiquark_sink_label:    B1
-antiquark_sink_ops:      [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+antiquark_sink_ops:          [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 },
-{ operation:             deriv2_B
-  dir1:                  2
-  dir2:                  1
-  disp:                  1
-  weights:               1
+{ operation:             deriv2_B,
+  dir1:                      2,
+  dir2:                      1,
+  disp:                      1,
+  weights:                   1
 }
 ]
 antiquark_kappa:         "0.1"
@@ -32,17 +32,17 @@ quark_source_type:       point/fat_covariant_gaussian
 quark_source_subset:     full
 quark_source_origin:     0 0 0 0
 quark_source_label:      G
-quark_source_ops:        [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+quark_source_ops:            [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 quark_sink_label:        G
-quark_sink_ops:          [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+quark_sink_ops:              [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 quark_kappa:             "0.1"
@@ -296,22 +296,22 @@ antiquark_source_type:   point/fat_covariant_gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
 antiquark_source_label:  G
-antiquark_source_ops:    [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+antiquark_source_ops:        [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 antiquark_sink_label:    N3
-antiquark_sink_ops:      [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+antiquark_sink_ops:          [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 },
-{ operation:             deriv1
-  dir:                   2
-  disp:                  1
-  weights:               1
+{ operation:             deriv1,
+  dir:                       2,
+  disp:                      1,
+  weights:                   1
 }
 ]
 antiquark_kappa:         "0.1"
@@ -320,22 +320,22 @@ quark_source_type:       point/deriv1/fat_covariant_gaussian
 quark_source_subset:     full
 quark_source_origin:     0 0 0 0
 quark_source_label:      N1
-quark_source_ops:        [
-{ operation:             deriv1
-  dir:                   0
-  disp:                  1
-  weights:               1
+quark_source_ops:            [
+{ operation:             deriv1,
+  dir:                       0,
+  disp:                      1,
+  weights:                   1
 },
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 quark_sink_label:        G
-quark_sink_ops:          [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+quark_sink_ops:              [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 quark_kappa:             "0.1"
@@ -589,23 +589,23 @@ antiquark_source_type:   point/fat_covariant_gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
 antiquark_source_label:  G
-antiquark_source_ops:    [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+antiquark_source_ops:        [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 antiquark_sink_label:    D1
-antiquark_sink_ops:      [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+antiquark_sink_ops:          [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 },
-{ operation:             deriv2_D
-  dir1:                  2
-  dir2:                  1
-  disp:                  1
-  weights:               1
+{ operation:             deriv2_D,
+  dir1:                      2,
+  dir2:                      1,
+  disp:                      1,
+  weights:                   1
 }
 ]
 antiquark_kappa:         "0.1"
@@ -614,22 +614,22 @@ quark_source_type:       point/deriv1/fat_covariant_gaussian
 quark_source_subset:     full
 quark_source_origin:     0 0 0 0
 quark_source_label:      N1
-quark_source_ops:        [
-{ operation:             deriv1
-  dir:                   0
-  disp:                  1
-  weights:               1
+quark_source_ops:            [
+{ operation:             deriv1,
+  dir:                       0,
+  disp:                      1,
+  weights:                   1
 },
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 quark_sink_label:        G
-quark_sink_ops:          [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+quark_sink_ops:              [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 quark_kappa:             "0.1"
@@ -823,17 +823,17 @@ antiquark_source_type:   point/fat_covariant_gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
 antiquark_source_label:  G
-antiquark_source_ops:    [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+antiquark_source_ops:        [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 antiquark_sink_label:    G
-antiquark_sink_ops:      [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+antiquark_sink_ops:          [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 antiquark_kappa:         "0.1"
@@ -842,23 +842,23 @@ quark_source_type:       point/deriv2_B/fat_covariant_gaussian
 quark_source_subset:     full
 quark_source_origin:     0 0 0 0
 quark_source_label:      B1
-quark_source_ops:        [
-{ operation:             deriv2_B
-  dir1:                  1
-  dir2:                  2
-  disp:                  1
-  weights:               1
+quark_source_ops:            [
+{ operation:             deriv2_B,
+  dir1:                      1,
+  dir2:                      2,
+  disp:                      1,
+  weights:                   1
 },
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 quark_sink_label:        G
-quark_sink_ops:          [
-{ operation:             fat_covariant_gaussian
-  r0:                    2.8
-  iters:                 20
+quark_sink_ops:              [
+{ operation:             fat_covariant_gaussian,
+  r0:                        2.8,
+  iters:                     20
 }
 ]
 quark_kappa:             "0.1"
