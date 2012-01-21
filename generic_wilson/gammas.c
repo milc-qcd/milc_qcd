@@ -16,6 +16,11 @@ static char *gammalabel[MAXGAMMA] = {"GX", "GY", "GZ", "GT", "G5",
 				     "GYZ", "GZX", "GXY", "GXT", "GYT", "GZT", 
 				     "G5X", "G5Y", "G5Z", "G5T", "G1" };
 
+/* Hexadecimal representation.  Four bits correspond to directions 0321 = tzyx */
+
+static short gamma_hex_value[MAXGAMMA] = 
+  {1, 2, 4, 8, 15, 6, 5, 3, 9, 10, 12, 14, 13, 11, 7, 0};
+
 /* First four gamma matrices are initialized according to the
    conventions in gammatypes.h and the ones for gamma_x gamma_y
    gamma_z gamma_t are used to generate the rest */
@@ -465,7 +470,12 @@ int gamma_index(char *label){
 
 /* Map an index to the label */
 
-char *gamma_label(int index){
+char *gamma_label(enum gammatype index){
   return gammalabel[index];
 }
 
+/* Convert to hexadecimal representation */
+
+short gamma_hex(enum gammatype gamma_index){
+  return gamma_hex_value[gamma_index];
+}

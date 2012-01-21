@@ -134,12 +134,12 @@ void convert_ksprop_to_wprop_swv(spin_wilson_vector *swv,
   /* Initialize the propagator */
   memset(swv, 0, sites_on_node*sizeof(spin_wilson_vector));
   
-  /* Construct gamma0 = g0^r0 g1^r1 g2^r2 g3^r3 */
+  /* Construct gamma0 = Gamma(source)= g3^(r[3]-r0[3]) g0^(r[0]-r0[0]) g1^(r[1]-r0[1]) g2^(r[2]-r0[2]) */
 
   gamma0 = g1;   /* Unit gamma */
   mult_omega_l(&gamma0, r[0]-r0[0], r[1]-r0[1], r[2]-r0[2], r[3]-r0[3]);
 
-  /* Then gamma0_dag = g3^r3 g2^r2 g1^r1 g0^r0 */
+  /* Then gamma0_dag = g2^(r[2]-r0[2]) g1^(r[1]-r0[1]) g0^(r[0]-r0[0]) g3^(r[3]-r0[3]) */
   gamma_adj(&gamma0_dag, &gamma0);
 
   /* Complete the transformation. Take the direct product with the
@@ -148,10 +148,13 @@ void convert_ksprop_to_wprop_swv(spin_wilson_vector *swv,
   FORALLSITES(i,s){
 
     /* Construct omega = g5 Gamma(sink) Gamma(source)^\dagger g5 */
+
+    /* First construct Gamma(sink) Gamma(source)^\dagger */
+
     omega = gamma0_dag;
     mult_omega_l(&omega, s->x-r0[0], s->y-r0[1], s->z-r0[2], s->t-r0[3]);
 
-    /* Conjugate by gamma5 to map the MILC staggered Dslash convention
+    /* Then conjugate by gamma5 to map the MILC staggered Dslash convention
        to the MILC Dirac Dslash convention */
     
     mult_gamma_by_gamma(&g5, &omega, &omega5);
@@ -178,12 +181,12 @@ void convert_naive_to_staggered_wv(wilson_vector *wv, int r[], int r0[])
 
   init_gamma();
 
-  /* Construct gamma0 = g0^r0 g1^r1 g2^r2 g3^r3 */
+  /* Construct gamma0 = g3^(r[3]-r0[3]) g0^(r[0]-r0[0]) g1^(r[1]-r0[1]) g2^(r[2]-r0[2]) */
 
   gamma0 = g1;   /* Unit gamma */
   mult_omega_l(&gamma0, r[0]-r0[0], r[1]-r0[1], r[2]-r0[2], r[3]-r0[3]);
 
-  /* Then gamma0_dag = g3^r3 g2^r2 g1^r1 g0^r0 */
+  /* Then gamma0_dag = g2^(r[2]-r0[2]) g1^(r[1]-r0[1]) g0^(r[0]-r0[0]) g3^(r[3]-r0[3]) */
   gamma_adj(&gamma0_dag, &gamma0);
 
   FORALLSITES(i,s){
