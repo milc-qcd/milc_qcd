@@ -440,7 +440,7 @@ uLong crc32(uLong crc, const unsigned char *buf, size_t len)
 
 /*------------------------------------------------------------------*/
 /* Is this a big endian architecture? Return 1 or 0. */
-static int big_endian(void)
+int big_endian(void)
 {
   union {
     int  l;
@@ -714,7 +714,7 @@ int main(int argc, char *argv[])
     else if(sizeof(off_t) == 8)
       byterevn64((int32type *)&payload_bytes, 1);
     else{
-      printf("UNEXPECTED sizeof(off_t) = %u. Don't trust cksum!\n", 
+      printf("UNEXPECTED sizeof(off_t) = %d. Don't trust cksum!\n", 
 	     sizeof(off_t));
     }
   }
@@ -725,7 +725,7 @@ int main(int argc, char *argv[])
     state.crc = crc32(state.crc,&a,1);
   }
   
-  printf("cksum (crc32) checksum node %d %llu\n",this_node,state.crc);
+  printf("cksum (crc32) checksum node %d %lu\n",this_node,state.crc);
 
   /* Close the SciDAC file */
   QIO_close_write(outfile);
