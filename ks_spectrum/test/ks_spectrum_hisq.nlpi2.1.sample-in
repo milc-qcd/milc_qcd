@@ -116,6 +116,7 @@ max_cg_restarts 5
 check yes
 momentum_twist 0 0 0
 time_bc antiperiodic
+precision 1
 
 source 2
 

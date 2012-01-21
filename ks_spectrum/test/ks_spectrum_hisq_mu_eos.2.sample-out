@@ -1052,6 +1052,7 @@ d5_trdMdeMi_dmu5: mass 1.000000e-01,  R: 2.181445561e-02  Im: -5.247316796e-01 (
 d6_trdMdeMi_dmu6: mass 1.000000e-01,  R: -1.043565020e+02  Im: 9.126582881e-01 ( 2 of 2 )
 Fixing to Coulomb gauge
 GFIX: Ended at step 1. Av gf action 9.24589996e-01, delta 1.102e-06
+Time to APE smear 2.007961e-03 sec
 END OF HEADER
 RUNNING COMPLETED
 Time = 3.418084e+01 seconds

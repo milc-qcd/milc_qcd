@@ -971,6 +971,7 @@ d6_trdMduMi_dmu6: mass 0.0002 R: 0.2 Im: 0.03 ( 0 of 0 )
 Fixing to Coulomb gauge
 GFIX: Ended at step 0.0002 Av gf action 0.0002 delta 0.0002
 Aggregate time to gauge fix XXX
+Time to APE smear XXX sec
 END OF HEADER
 Aggregate time to compute propagators XXX
 Aggregate time to tie meson correlators XXX
