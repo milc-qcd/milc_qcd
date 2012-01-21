@@ -54,7 +54,7 @@ int numnodes(void);
 int myjobid(void);
 int numjobs(void);
 int const *nodegeom(void);
-int *jobgeom(void);
+int const *jobgeom(void);
 int *ionodegeom(void);
 void g_sync(void);
 void g_intsum(int *ipt);

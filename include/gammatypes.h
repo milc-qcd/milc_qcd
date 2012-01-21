@@ -69,4 +69,33 @@ typedef struct {
   gamma_row row[4];
 } gamma_matrix_t;
 
+/* gammas.c */
+void direct_prod_gamma_su3_vector(spin_wilson_vector *swv, 
+				  su3_vector *v, 
+				  gamma_matrix_t *gm);
+void mult_sw_by_gamma_l(spin_wilson_vector * src,spin_wilson_vector * dest, int dir);
+void mult_sw_by_gamma_mat_l(spin_wilson_vector * src, 
+			    spin_wilson_vector * dest, 
+			    gamma_matrix_t *gm);
+void mult_w_by_gamma(wilson_vector * src, wilson_vector * dest, int dir);
+void mult_w_by_gamma_mat_l(wilson_vector * src, 
+			   wilson_vector * dest, 
+			   gamma_matrix_t *gm);
+void mult_w_by_gamma_mat_r(wilson_vector * src, 
+			   wilson_vector * dest, 
+			   gamma_matrix_t *gm);
+void mult_sw_by_gamma_r(spin_wilson_vector * src,spin_wilson_vector * dest, int dir);
+void mult_sw_by_gamma_mat_r(spin_wilson_vector * src,
+			    spin_wilson_vector * dest, 
+			    gamma_matrix_t *gm);
+void mult_gamma_by_gamma(gamma_matrix_t *g1, gamma_matrix_t *g2, 
+			 gamma_matrix_t *g3);
+gamma_matrix_t gamma_mat(enum gammatype i);
+void gamma_adj(gamma_matrix_t *dest, gamma_matrix_t *src);
+void gamma_transp(gamma_matrix_t *dest, gamma_matrix_t *src);
+void gamma_conj(gamma_matrix_t *dest, gamma_matrix_t *src);
+int gamma_index(char *label);
+char *gamma_label(enum gammatype index);
+short gamma_hex(enum gammatype index);
+
 #endif /* _GAMMATYPES_H */

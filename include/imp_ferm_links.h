@@ -229,14 +229,29 @@ int mat_invert_multi(
     imp_ferm_links_t *fn[]   /* Storage for fat and Naik links */
      );
 
-/* eigen_stuff.c */
+/* eigen_stuff*.c */
+#ifdef PRIMME
+#define Kalkreuter Kalkreuter_PRIMME
+#else
+#define Kalkreuter Kalkreuter_Ritz
+#endif
+
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
 		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
 		 int parity, imp_ferm_links_t *fn);
-int Kalkreuter(su3_vector **eigVec, double *eigVal, Real Tolerance, 
+int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int iters, int parity,
-	       imp_ferm_links_t *fn );
+	       int Restart, int iters );
+int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
+	       Real RelTol, int Nvecs, int MaxIter, 
+	       int Restart, int iters );
+void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
+		     imp_ferm_links_t *fn );
+void cleanup_Matrix();
+void measure_chirality(su3_vector *src, double *chirality, int parity);
+void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
+		     int parity);
+
 
 /* fn_links_qop.c  and fn_links_milc.c */
 
@@ -253,11 +268,6 @@ int fpi_2( /* Return value is number of C.G. iterations taken */
   Real tol,       /* tolerance for inverter check. */
   imp_ferm_links_t *fn       /* Storage for fat and Naik links */
   );
-
-/* flavor_ops2.c */
-#include "../include/flavor_ops.h"
-void spin_taste_op_fn(imp_ferm_links_t *fn, int index, int r0[],
-		      su3_vector *dest, su3_vector *src);
 
 /* grsource.c */
 void grsource(int parity);
@@ -341,6 +351,8 @@ typedef struct {
 
 int multimass_inverter( params_mminv *mminv, imp_ferm_links_t *fn);
 
+#if 0  /* obsolete */
+
 /* nl_spectrum.c */
 int nl_spectrum( Real vmass, field_offset tempvec1, field_offset tempvec2,
 		 field_offset tempmat1, field_offset tempmat2,
@@ -382,4 +394,11 @@ void mult_rhos( int fdir,  field_offset src, field_offset dest ) ;
 /* spectrum_singlets */
 int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
 		       imp_ferm_links_t *fn );
+#endif
+
+/* spin_taste_ops.c */
+#include "../include/flavor_ops.h"
+void spin_taste_op_fn(imp_ferm_links_t *fn, int index, int r0[],
+		      su3_vector *dest, su3_vector *src);
+
 #endif /* _IMP_FERM_LINKS_H */
