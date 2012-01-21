@@ -1,13 +1,15 @@
-#  Kogut-Susskind fermions with improved actions
-#  MIMD version 6
-#  "ks_imp3", started 1/22/99, streamline ks_imp2
+#  Kogut-Susskind fermion eigenvalue/eigenvector computation
+#  with improved actions
+#  MIMD version 7
 #
-#  Generic make-include file for ks_imp3 codes
+#  Generic make-include file for ks_eigen codes
 #  This template file defines rules and macros common to all architectures
 #  It is intended to be an include file for other Makefiles.
 #  Don't use it by itself!
 #
-#	"make su3_eigen" is the only target
+#	su3_eigen_asqtad -- eigenvalues for asqtad improved fermions
+#	su3_eigen_hisq   -- eigenvalues for hisq improved fermions
+#	su3_eigen_p4fat3 -- eigenvalues for p4fat3 improved fermions
 #
 
 MYINCLUDEDIR = .
@@ -39,7 +41,14 @@ MY_OBJECTS = \
 
 LAYOUT = layout_hyper_prime.o
 
-ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} eigen_stuff.o jacobi.o flavor_ops.o
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} jacobi.o flavor_ops.o
+
+ADD_OBJECTS += eigen_stuff_PRIMME.o eigen_stuff_Ritz.o eigen_stuff_helpers.o
+
+# Always use PRIMME if it is provided
+ifeq ($(strip ${HAVEPRIMME}),true)
+  ADDDEFINES += -DPRIMME
+endif
 
 # # Generic QOP objects
 # ifeq ($(strip ${HAVEQOP}),true)
@@ -85,24 +94,12 @@ ALL_MAKES = \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
 
-fermion_links_fn.o: quark_action.h 
-fermion_links_hisq.o: quark_action.h 
-gauge_info.o:  quark_action.h
-setup.o: quark_action.h
-
 # Directories where we store the improved action headers
 QUARKIMP = ../generic_ks/imp_actions
 
 quark_action.h: ${QUARKIMP}/${QUARK}
+	@echo Copying quark_action.h from ${QUARKIMP}/${QUARK}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
-
-fermion_links_fn.o: quark_action.h 
-quark_stuff.o: quark_action.h 
-
-
-ifeq ($(strip ${QCDOC}),true)
-  DQCDOC = -DQCDOC
-endif
 
 ifeq ($(strip ${HAVEQMP}),true)
   DHAVE_QMP = -DHAVE_QMP
@@ -136,8 +133,20 @@ su3_eigen_asqtad::
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS = ${FN_OBJECTS}"
 
+su3_eigen_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
+	"DEFINES = -DFN" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS = ${HISQ_OBJECTS}"
+
+su3_eigen_p4fat3::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
+	"DEFINES = -DEO" \
+	"QUARK = p4fat3_action.h" \
+	"EXTRA_OBJECTS = ${EO_OBJECTS}"
+
 clean:
-	-/bin/rm -f *.o
+	-/bin/rm -f *.o quark_action.h
 
 # Rules for generic routines
 include ../generic/Make_template

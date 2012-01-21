@@ -1,0 +1,100 @@
+BEGIN RESULTS
+Eigenvalue(0) = 0.0002 2e-08 2e-08
+Eigenvalue(1) = 0.0002 2e-08 2e-08
+Eigenvalue(2) = 0.0004 2e-07 2e-07
+Eigenvalue(3) = 0.0004 5e-08 5e-08
+Eigenvalue(4) = 0.0004 8e-07 8e-07
+Eigenvalue(5) = 0.0004 4e-08 4e-08
+Eigenvalue(6) = 0.0004 2e-07 2e-07
+Eigenvalue(7) = 0.0004 0.0001 0.0001
+Eigenvalue(8) = 0.0004 2e-06 2e-06
+Eigenvalue(9) = 0.0004 8e-07 8e-07
+Eigenvalue(10) = 0.0004 5e-07 5e-07
+Eigenvalue(11) = 0.0004 7e-07 7e-07
+Eigenvalue(12) = 0.0004 3e-07 3e-07
+Eigenvalue(13) = 0.0004 9e-08 9e-08
+Eigenvalue(14) = 0.0005 3e-08 3e-08
+Eigenvalue(15) = 0.0005 6e-08 6e-08
+Eigenvalue(16) = 0.0005 1e-07 1e-07
+Eigenvalue(17) = 0.0005 5e-08 5e-08
+Eigenvalue(18) = 0.0005 7e-08 7e-08
+Eigenvalue(19) = 0.0005 2e-07 2e-07
+Eigenvalue(20) = 0.0005 2e-06 2e-06
+Eigenvalue(21) = 0.0005 3e-06 3e-06
+Eigenvalue(22) = 0.0005 2e-06 2e-06
+Eigenvalue(23) = 0.0005 4e-06 4e-06
+Eigenvalue(24) = 0.0005 2e-06 2e-06
+Eigenvalue(25) = 0.0005 4e-06 4e-06
+Eigenvalue(26) = 0.0005 3e-06 3e-06
+Eigenvalue(27) = 0.0005 3e-05 3e-05
+Eigenvalue(28) = 0.0005 2e-05 2e-05
+Eigenvalue(29) = 0.1 0.002 0.002
+Eigenvalue(30) = 0.0005 4e-06 4e-06
+Eigenvalue(31) = 0.03 1e-05 1e-05
+The above where eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0): 0.0002
+eigenval(1): 0.0002
+eigenval(2): 0.0002
+eigenval(3): 0.0002
+eigenval(4): 0.0002
+eigenval(5): 0.0002
+eigenval(6): 0.0002
+eigenval(7): 0.0002
+eigenval(8): 0.0002
+eigenval(9): 0.0002
+eigenval(10): 0.0002
+eigenval(11): 0.0002
+eigenval(12): 0.0002
+eigenval(13): 0.0002
+eigenval(14): 0.0002
+eigenval(15): 0.0002
+eigenval(16): 0.0002
+eigenval(17): 0.0002
+eigenval(18): 0.0002
+eigenval(19): 0.0002
+eigenval(20): 0.0002
+eigenval(21): 0.0002
+eigenval(22): 0.0002
+eigenval(23): 0.0002
+eigenval(24): 0.0002
+eigenval(25): 0.0002
+eigenval(26): 0.0002
+eigenval(27): 0.0002
+eigenval(28): 0.0002
+eigenval(29): 0.02
+eigenval(30): 0.0002
+eigenval(31): 0.004
+Chirality(0) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(1) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(2) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(3) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(4) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(5) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(6) -- even, odd, total: 0.0003 0.0004 0.0002
+Chirality(7) -- even, odd, total: 0.003 0.003 0.0002
+Chirality(8) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(9) -- even, odd, total: 0.0002 0.0004 0.0002
+Chirality(10) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(11) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(12) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(13) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(14) -- even, odd, total: 0.5 0.5 0.0002
+Chirality(15) -- even, odd, total: 0.4 0.4 0.0002
+Chirality(16) -- even, odd, total: 0.4 0.4 0.0002
+Chirality(17) -- even, odd, total: 0.4 0.4 0.0002
+Chirality(18) -- even, odd, total: 0.4 0.4 0.0002
+Chirality(19) -- even, odd, total: 0.2 0.2 0.0002
+Chirality(20) -- even, odd, total: 0.7 0.7 0.0002
+Chirality(21) -- even, odd, total: 0.4 0.4 0.0002
+Chirality(22) -- even, odd, total: 0.9 0.9 0.0002
+Chirality(23) -- even, odd, total: 0.3 0.3 0.0002
+Chirality(24) -- even, odd, total: 0.4 0.4 0.0002
+Chirality(25) -- even, odd, total: 0.8 0.8 0.0002
+Chirality(26) -- even, odd, total: 0.3 0.3 0.0002
+Chirality(27) -- even, odd, total: 0.4 0.4 0.0002
+Chirality(28) -- even, odd, total: 0.7 0.7 0.0002
+Chirality(29) -- even, odd, total: 0.6 0.7 0.05
+Chirality(30) -- even, odd, total: 0.005 0.005 0.0002
+Chirality(31) -- even, odd, total: 0.01 0.03 0.01
+RUNNING COMPLETED

@@ -1,5 +1,5 @@
 /************************** setup.c ***************************/
-/* MIMD version 6 */
+/* MIMD version 7 */
 /*			    -*- Mode: C -*-
 // File: setup.c
 // Created: Fri Aug  4 1995
@@ -92,10 +92,12 @@ int  setup()   {
 	   code for this routine is in com_machine.c  */
     make_nn_gathers();
 node0_printf("Made nn gathers\n"); fflush(stdout);
+#ifdef FN
 	/* set up 3rd nearest neighbor pointers and comlink structures
 	   code for this routine is below  */
     make_3n_gathers();
 node0_printf("Made 3nn gathers\n"); fflush(stdout);
+#endif
 	/* set up K-S phase vectors, boundary conditions */
     phaseset();
 
@@ -249,6 +251,11 @@ int readin(int prompt) {
     error_decr = par_buf.error_decr ;
     startflag = par_buf.startflag;
     strcpy(startfile,par_buf.startfile);
+
+#if FERM_ACTION == HISQ
+    n_naiks = 1;
+    eps_naik[0] = 0.0;
+#endif
 
     /* Do whatever is needed to get lattice */
     if( startflag == CONTINUE ){

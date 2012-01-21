@@ -1,0 +1,100 @@
+BEGIN RESULTS
+Eigenvalue(0) = 0.0002 +/- 0.0002 cvg? 0
+Eigenvalue(1) = 0.0002 +/- 0.0002 cvg? 0
+Eigenvalue(2) = 0.0003 +/- 0.0002 cvg? 0
+Eigenvalue(3) = 0.0003 +/- 0.0002 cvg? 0
+Eigenvalue(4) = 0.0003 +/- 0.0002 cvg? 0
+Eigenvalue(5) = 0.0008 +/- 0.0007 cvg? 0
+Eigenvalue(6) = 0.0003 +/- 0.0002 cvg? 0
+Eigenvalue(7) = 0.0009 +/- 0.001 cvg? 0
+Eigenvalue(8) = 0.0003 +/- 0.0002 cvg? 0
+Eigenvalue(9) = 0.02 +/- 0.02 cvg? 0
+Eigenvalue(10) = 0.0004 +/- 0.0002 cvg? 0
+Eigenvalue(11) = 0.0004 +/- 0.0004 cvg? 0
+Eigenvalue(12) = 0.01 +/- 0.02 cvg? 0
+Eigenvalue(13) = 0.0006 +/- 0.0009 cvg? 0
+Eigenvalue(14) = 0.0004 +/- 0.001 cvg? 0
+Eigenvalue(15) = 0.0004 +/- 0.001 cvg? 0
+Eigenvalue(16) = 0.0004 +/- 0.0002 cvg? 0
+Eigenvalue(17) = 0.0004 +/- 0.0002 cvg? 0
+Eigenvalue(18) = 0.0004 +/- 0.0007 cvg? 0
+Eigenvalue(19) = 0.002 +/- 0.003 cvg? 0
+Eigenvalue(20) = 0.002 +/- 0.004 cvg? 0
+Eigenvalue(21) = 0.02 +/- 0.02 cvg? 0
+Eigenvalue(22) = 0.02 +/- 0.03 cvg? 0
+Eigenvalue(23) = 0.02 +/- 0.03 cvg? 0
+Eigenvalue(24) = 0.02 +/- 0.04 cvg? 0
+Eigenvalue(25) = 0.09 +/- 0.1 cvg? 0
+Eigenvalue(26) = 0.2 +/- 0.2 cvg? 0
+Eigenvalue(27) = 0.3 +/- 0.3 cvg? 0
+Eigenvalue(28) = 0.6 +/- 0.7 cvg? 0
+Eigenvalue(29) = 0.8 +/- 1 cvg? 0
+Eigenvalue(30) = 3 +/- 3 cvg? 0
+Eigenvalue(31) = 2 +/- 4 cvg? 0
+The above where eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0): 0.0002
+eigenval(1): 0.0002
+eigenval(2): 0.0002
+eigenval(3): 0.0002
+eigenval(4): 0.0002
+eigenval(5): 0.0002
+eigenval(6): 0.0002
+eigenval(7): 0.0002
+eigenval(8): 0.0002
+eigenval(9): 0.003
+eigenval(10): 0.0002
+eigenval(11): 0.0002
+eigenval(12): 0.003
+eigenval(13): 0.0002
+eigenval(14): 0.0002
+eigenval(15): 0.0002
+eigenval(16): 0.0002
+eigenval(17): 0.0002
+eigenval(18): 0.0002
+eigenval(19): 0.0004
+eigenval(20): 0.0004
+eigenval(21): 0.003
+eigenval(22): 0.004
+eigenval(23): 0.004
+eigenval(24): 0.003
+eigenval(25): 0.02
+eigenval(26): 0.03
+eigenval(27): 0.05
+eigenval(28): 0.1
+eigenval(29): 0.1
+eigenval(30): 0.4
+eigenval(31): 0.3
+Chirality(0) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(1) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(2) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(3) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(4) -- even, odd, total: 0.0002 0.0002 0.0002
+Chirality(5) -- even, odd, total: 0.0005 0.0005 0.0002
+Chirality(6) -- even, odd, total: 0.0002 0.0005 0.0003
+Chirality(7) -- even, odd, total: 0.003 0.003 0.0002
+Chirality(8) -- even, odd, total: 0.0004 0.0003 0.0002
+Chirality(9) -- even, odd, total: 0.007 0.0005 0.004
+Chirality(10) -- even, odd, total: 0.0003 0.0004 0.0002
+Chirality(11) -- even, odd, total: 0.0008 0.0005 0.0002
+Chirality(12) -- even, odd, total: 0.02 0.02 0.002
+Chirality(13) -- even, odd, total: 0.06 0.07 0.005
+Chirality(14) -- even, odd, total: 0.1 0.1 0.01
+Chirality(15) -- even, odd, total: 0.5 0.5 0.003
+Chirality(16) -- even, odd, total: 0.4 0.4 0.0004
+Chirality(17) -- even, odd, total: 0.6 0.6 0.001
+Chirality(18) -- even, odd, total: 0.2 0.2 0.002
+Chirality(19) -- even, odd, total: 0.5 0.5 0.0004
+Chirality(20) -- even, odd, total: 0.5 0.5 0.003
+Chirality(21) -- even, odd, total: 0.08 0.07 0.009
+Chirality(22) -- even, odd, total: 0.3 0.2 0.02
+Chirality(23) -- even, odd, total: 0.3 0.3 0.01
+Chirality(24) -- even, odd, total: 0.3 0.3 0.0002
+Chirality(25) -- even, odd, total: 0.04 0.09 0.03
+Chirality(26) -- even, odd, total: 0.02 0.02 0.02
+Chirality(27) -- even, odd, total: 0.2 0.1 0.03
+Chirality(28) -- even, odd, total: 0.04 0.3 0.1
+Chirality(29) -- even, odd, total: 0.03 0.003 0.01
+Chirality(30) -- even, odd, total: 0.1 0.03 0.06
+Chirality(31) -- even, odd, total: 0.02 0.1 0.07
+RUNNING COMPLETED

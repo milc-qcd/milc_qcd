@@ -1,0 +1,198 @@
+SU3 with improved KS action
+Eigenvalues and eigenvectors
+MIMD version 6
+Machine = Scalar processor, with 1 nodes
+Host(0) = charm.nbi.dk
+Username = heller
+start: Tue Dec 20 22:51:50 2011
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+# Always 0 when this data is in a file
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 4
+# random number seed
+iseed 5682304
+LAYOUT = Hypercubes, options = with fixed node_geometry
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.3 MBytes per node for lattice
+Made lattice
+Made nn gathers
+Made 3nn gathers
+Finished setup
+
+
+# mass for psi-bar-psi
+mass 0.1
+# tadpole factor
+u0 1
+# CG for psi-bar-psi measurement (error_per_site is unused)
+max_cg_iterations 300
+max_cg_restarts 5
+error_per_site 5e-06
+error_for_propagator 2e-06
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 32
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+# Outer loop iterations
+Kalkreuter_iters 20
+# Eigenvalue tolerance
+eigenval_tolerance 1e-07
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease 0.3
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.inst
+Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 1.718027e-03
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+CHECK NERSC LINKTR: 9.916278e-01 CKSUM: a0e19040
+Unitarity checked.  Max deviation 1.46e-07
+Time to check unitarity = 1.359965e-04
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+ OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 26
+ OK converged final_rsq= 7.1e-13 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 5
+PBP: mass 1.000000e-01     9.700797e-02  1.040391e-01  6.543960e-02  6.543975e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-01,  1.416692e+00 ( 1 of 1 )
+Eigenvalues after diagonalization at iteration 20
+BEGIN RESULTS
+Eigenvalue(0) = 0.046135 +/- 1.441150e-08	 cvg? 0  
+Eigenvalue(1) = 0.046135 +/- 4.372542e-10	 cvg? 0  
+Eigenvalue(2) = 1.98424 +/- 1.693610e-07	 cvg? 0  
+Eigenvalue(3) = 1.98424 +/- 5.073972e-07	 cvg? 0  
+Eigenvalue(4) = 2.0337 +/- 4.814937e-09	 cvg? 0  
+Eigenvalue(5) = 2.0337 +/- 7.773825e-07	 cvg? 0  
+Eigenvalue(6) = 2.07399 +/- 1.859387e-07	 cvg? 0  
+Eigenvalue(7) = 2.07399 +/- 1.746760e-07	 cvg? 0  
+Eigenvalue(8) = 2.09237 +/- 9.745101e-08	 cvg? 0  
+Eigenvalue(9) = 2.09237 +/- 8.733539e-07	 cvg? 0  
+Eigenvalue(10) = 2.13513 +/- 1.339090e-06	 cvg? 0  
+Eigenvalue(11) = 2.13524 +/- 1.176339e-04	 cvg? 0  
+Eigenvalue(12) = 2.1752 +/- 1.032618e-06	 cvg? 0  
+Eigenvalue(13) = 2.1752 +/- 1.118989e-06	 cvg? 0  
+Eigenvalue(14) = 2.34722 +/- 7.773334e-08	 cvg? 0  
+Eigenvalue(15) = 2.34722 +/- 7.940806e-08	 cvg? 0  
+Eigenvalue(16) = 2.34722 +/- 1.182152e-07	 cvg? 0  
+Eigenvalue(17) = 2.34722 +/- 6.850366e-08	 cvg? 0  
+Eigenvalue(18) = 2.34722 +/- 1.289763e-07	 cvg? 0  
+Eigenvalue(19) = 2.34722 +/- 3.541284e-07	 cvg? 0  
+Eigenvalue(20) = 2.34722 +/- 4.051159e-07	 cvg? 0  
+Eigenvalue(21) = 2.34722 +/- 1.383290e-07	 cvg? 0  
+Eigenvalue(22) = 2.34722 +/- 4.521086e-07	 cvg? 0  
+Eigenvalue(23) = 2.34722 +/- 1.199225e-07	 cvg? 0  
+Eigenvalue(24) = 2.34722 +/- 9.789802e-07	 cvg? 0  
+Eigenvalue(25) = 2.34722 +/- 1.853435e-06	 cvg? 0  
+Eigenvalue(26) = 2.34723 +/- 1.662862e-06	 cvg? 0  
+Eigenvalue(27) = 2.34723 +/- 3.347599e-06	 cvg? 0  
+Eigenvalue(28) = 2.34723 +/- 2.140006e-05	 cvg? 0  
+Eigenvalue(29) = 2.34723 +/- 4.515086e-05	 cvg? 0  
+Eigenvalue(30) = 2.44518 +/- 5.701019e-06	 cvg? 0  
+Eigenvalue(31) = 2.44519 +/- 2.305952e-06	 cvg? 0  
+The above where eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.107395
+eigenval(1):   0.107395
+eigenval(2):   0.704315
+eigenval(3):   0.704315
+eigenval(4):    0.71304
+eigenval(5):    0.71304
+eigenval(6):   0.720067
+eigenval(7):   0.720067
+eigenval(8):   0.723251
+eigenval(9):   0.723251
+eigenval(10):   0.730604
+eigenval(11):   0.730622
+eigenval(12):   0.737428
+eigenval(13):   0.737428
+eigenval(14):   0.766032
+eigenval(15):   0.766032
+eigenval(16):   0.766032
+eigenval(17):   0.766032
+eigenval(18):   0.766032
+eigenval(19):   0.766032
+eigenval(20):   0.766032
+eigenval(21):   0.766032
+eigenval(22):   0.766032
+eigenval(23):   0.766033
+eigenval(24):   0.766033
+eigenval(25):   0.766033
+eigenval(26):   0.766033
+eigenval(27):   0.766033
+eigenval(28):   0.766034
+eigenval(29):   0.766034
+eigenval(30):   0.781853
+eigenval(31):   0.781855
+Chirality(0) -- even, odd, total:  -0.362081,  -0.339635,  -0.350858
+Chirality(1) -- even, odd, total:  -0.362081,  -0.339635,  -0.350858
+Chirality(2) -- even, odd, total:  0.0182724,   0.093262,  0.0557672
+Chirality(3) -- even, odd, total:  0.0182226,  0.0933097,  0.0557662
+Chirality(4) -- even, odd, total: -0.0676245,   0.155586,   0.043981
+Chirality(5) -- even, odd, total: -0.0675911,   0.155557,  0.0439831
+Chirality(6) -- even, odd, total:  -0.364672,   0.451046,  0.0431868
+Chirality(7) -- even, odd, total:   -0.36471,   0.451086,   0.043188
+Chirality(8) -- even, odd, total:   0.109128, -0.0343356,  0.0373963
+Chirality(9) -- even, odd, total:   0.108945, -0.0341393,  0.0374027
+Chirality(10) -- even, odd, total:   0.494244,  -0.429884,  0.0321799
+Chirality(11) -- even, odd, total:   0.494116,  -0.429858,  0.0321292
+Chirality(12) -- even, odd, total:   0.135972, -0.0948912,  0.0205403
+Chirality(13) -- even, odd, total:   0.136046, -0.0948905,  0.0205779
+Chirality(14) -- even, odd, total:  -0.113968,   0.113968, 2.17551e-08
+Chirality(15) -- even, odd, total:  0.0298953, -0.0298953, 5.64251e-09
+Chirality(16) -- even, odd, total:   0.152717,  -0.152717, 1.94705e-08
+Chirality(17) -- even, odd, total: 0.00206265, -0.0020626, 2.52912e-08
+Chirality(18) -- even, odd, total:  0.0608775, -0.0608775, 2.41926e-09
+Chirality(19) -- even, odd, total:  -0.112118,   0.112118, -1.67202e-08
+Chirality(20) -- even, odd, total:   0.104858,  -0.104858, -3.13157e-08
+Chirality(21) -- even, odd, total:  0.0617214, -0.0617214, -2.71757e-08
+Chirality(22) -- even, odd, total:  0.0391925, -0.0391924, 3.56845e-08
+Chirality(23) -- even, odd, total:  -0.131835,   0.131834, -7.7358e-08
+Chirality(24) -- even, odd, total: -0.0675719,  0.0675719, -9.91349e-10
+Chirality(25) -- even, odd, total:   0.170533,  -0.170532, 2.53771e-07
+Chirality(26) -- even, odd, total:  0.0441899, -0.0441907, -4.03961e-07
+Chirality(27) -- even, odd, total: -0.0753576,  0.0753577, 8.84647e-08
+Chirality(28) -- even, odd, total: -0.0264575,  0.0264577, 9.62464e-08
+Chirality(29) -- even, odd, total:  -0.138791,    0.13879, -5.13479e-07
+Chirality(30) -- even, odd, total:     0.3168,  -0.347617, -0.0154081
+Chirality(31) -- even, odd, total:   0.318984,  -0.350182,  -0.015599
+RUNNING COMPLETED
+Time = 6.948992e+00 seconds
+total_iters = 33
+total Rayleigh iters = 17357
+
+
+get_f(0): EOF on input.
+6.944u 0.048s 0:06.99 99.8%	0+0k 0+0io 0pf+0w

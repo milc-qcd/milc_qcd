@@ -1,0 +1,42 @@
+# Always 0 when this data is in a file
+prompt 0
+
+# Lattice dimensions
+nx 4
+ny 4
+nz 4
+nt 8
+# random number seed
+iseed 5682304
+
+# mass for psi-bar-psi
+mass 0.1
+
+# tadpole factor
+u0   1.0
+
+# CG for psi-bar-psi measurement (error_per_site is unused)
+max_cg_iterations 300
+max_cg_restarts 5
+error_per_site .000005
+error_for_propagator .000002
+
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 32
+
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+
+# Outer loop iterations
+Kalkreuter_iters 20
+
+# Eigenvalue tolerance
+eigenval_tolerance 1.0e-7
+
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease .3
+
+# Input lattice
+reload_serial ../../binary_samples/lat.sample.l4448
+

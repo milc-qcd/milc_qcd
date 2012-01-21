@@ -135,6 +135,7 @@ EXTERN  Real error_decr ; /* error decrease per Rayleigh minimization */
 EXTERN  int MaxIter ; /* max  Rayleigh iterations */
 EXTERN  int Restart ; /* Restart  Rayleigh every so many iterations */
 EXTERN  int Kiters ; /* Kalkreuter iterations */
+EXTERN  int active_parity ; /* parity used in eigenvalue calculation */
 /*******/
 
 /* Some of these global variables are node dependent */
@@ -165,5 +166,8 @@ EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
 EXTERN fermion_links_t    *fn_links;
+
+EXTERN int n_naiks;	/* Only one (dummy) Naik correction (for HISQ) */
+EXTERN double eps_naik[1];	/* Naik correction */
 
 #endif /* _LATTICE_H */
