@@ -29,6 +29,9 @@ int main(int argc, char *argv[])
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
   g_sync();
+
+  starttime=dclock();
+    
   /* set up */
   prompt = setup();
   /* loop over input sets */
@@ -41,8 +44,6 @@ int main(int argc, char *argv[])
     
     if(prompt == 2)continue;
 
-    starttime=dclock();
-    
     total_iters=0;
     
     if(this_node==0)printf("END OF HEADER\n");
