@@ -63,7 +63,7 @@
 #include "../include/generic_quark_types.h"
 #include "../include/io_ksprop.h"
 #include "../include/io_wprop.h"
-#include "../include/flavor_ops.h"
+//#include "../include/flavor_ops.h"
 #include <string.h>
 #ifdef HAVE_QIO
 #include <qio.h>
@@ -1181,7 +1181,7 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec2 = create_v_field();
 
     mult_pion5_field( qss_op->r_offset, src, tvec2 );
-    mult_pioni_field( ZUP, qss_op->r_offset, src, tvec1 );
+    mult_pioni_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
@@ -1196,7 +1196,7 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec2 = create_v_field();
 
     mult_pion05_field( qss_op->r_offset, src, tvec2 );
-    mult_pioni0_field( ZUP, qss_op->r_offset, src, tvec1 );
+    mult_pioni0_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi0_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
@@ -1697,7 +1697,7 @@ int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
    in the FNAL-style correlator file*/
 /*--------------------------------------------------------------------*/
 
-#define NTAG 30  /* Print line space available for a tag */
+#define NTAG 31  /* Print line space available for a tag */
 /* Create a fixed-width tag for tidy output */
 static char *make_tag(char prefix[], char tag[]){
   static char full_tag[NTAG];
@@ -1720,17 +1720,20 @@ static int print_single_op_info(FILE *fp, char prefix[],
   int status = 1;
 
   if ( op_type == COVARIANT_GAUSSIAN ){
-    fprintf(fp,"%s%g\n", make_tag(prefix, "r0"), qss_op->r0);
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%g,\n", make_tag(prefix, "r0"), qss_op->r0);
     fprintf(fp,"%s%d\n", make_tag(prefix, "iters"), qss_op->iters);
   }
   else if ( op_type == COMPLEX_FIELD_FILE ||
 	    op_type == COMPLEX_FIELD_FM_FILE ){
+    fprintf(fp,",\n");
     fprintf(fp,"%s%s\n", make_tag(prefix, "file"), qss_op->source_file);
   }
   else if( op_type == DERIV1){
     int k;
-    fprintf(fp,"%s%d\n", make_tag(prefix, "dir"), qss_op->dir1);
-    fprintf(fp,"%s%d\n", make_tag(prefix, "disp"), qss_op->disp);
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "dir"), qss_op->dir1);
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "disp"), qss_op->disp);
     fprintf(fp,"%s%g", make_tag(prefix, "weights"), qss_op->weights[0]);
     for(k = 1; k < qss_op->disp; k++)fprintf(fp," %g", qss_op->weights[k]);
     fprintf(fp,"\n");
@@ -1738,41 +1741,49 @@ static int print_single_op_info(FILE *fp, char prefix[],
   else if( op_type == DERIV2_D ||
 	   op_type == DERIV2_B ){
     int k;
-    fprintf(fp,"%s%d\n", make_tag(prefix, "dir1"), qss_op->dir1);
-    fprintf(fp,"%s%d\n", make_tag(prefix, "dir2"), qss_op->dir2);
-    fprintf(fp,"%s%d\n", make_tag(prefix, "disp"), qss_op->disp);
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "dir1"), qss_op->dir1);
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "dir2"), qss_op->dir2);
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "disp"), qss_op->disp);
     fprintf(fp,"%s%g", make_tag(prefix, "weights"), qss_op->weights[0]);
     for(k = 1; k < qss_op->disp; k++)fprintf(fp," %g", qss_op->weights[k]);
     fprintf(fp,"\n");
   }
   else if( op_type == DERIV3_A){
     int k;
-    fprintf(fp,"%s%d\n", make_tag(prefix, "disp"), qss_op->disp);
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "disp"), qss_op->disp);
     fprintf(fp,"%s%g", make_tag(prefix, "weights"), qss_op->weights[0]);
     for(k = 1; k < qss_op->disp; k++)fprintf(fp," %g", qss_op->weights[k]);
     fprintf(fp,"\n");
   }
   else if( op_type == FAT_COVARIANT_GAUSSIAN){
-    fprintf(fp,"%s%g\n", make_tag(prefix, "r0"), qss_op->r0);
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%g,\n", make_tag(prefix, "r0"), qss_op->r0);
     fprintf(fp,"%s%d\n", make_tag(prefix, "iters"), qss_op->iters);
   }
   else if ( op_type == GAUSSIAN ){
+    fprintf(fp,",\n");
     fprintf(fp,"%s%g\n", make_tag(prefix, "r0"), qss_op->r0);
   }
   else if ( op_type == ROTATE_3D ){
+    fprintf(fp,",\n");
     fprintf(fp,"%s%g\n", make_tag(prefix, "d1"), qss_op->d1);
   }
 #ifdef HAVE_KS
   else if ( op_type == SPIN_TASTE ){
+    fprintf(fp,",\n");
     fprintf(fp,"%s%s\n", make_tag(prefix, "gamma"), 
 	    spin_taste_label(qss_op->spin_taste));
   }
 #endif
   else if ( op_type == WAVEFUNCTION_FILE ){
-    fprintf(fp,"%s%s\n", make_tag(prefix, "file"), qss_op->source_file);
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "file"), qss_op->source_file);
     fprintf(fp,"%s%g\n", make_tag(prefix, "a"), qss_op->a);
   }
   else {
+    fprintf(fp,"\n");
     status = 0;
   }
 
@@ -1793,7 +1804,7 @@ void print_field_op_info(FILE *fp, char prefix[],
   fprintf(fp,"%s[\n", make_tag(prefix, "ops"));
   
   while(qs_op != NULL){
-    fprintf(fp,"{ operation:             %s\n",qs_op->descrp);
+    fprintf(fp,"{ operation:                  %s",qs_op->descrp);
     print_single_op_info(fp, "  ", qs_op);
     qs_op = qs_op->op;
     if(qs_op != NULL)fprintf(fp, "},\n");
@@ -1820,7 +1831,7 @@ void print_field_op_info_list(FILE *fp, char prefix[],
   fprintf(fp,"%s[\n", make_tag(prefix, "ops"));
   
   for(i = 0; i < n; i++){
-    fprintf(fp,"{ operation:             %s\n",qss_op[i]->descrp);
+    fprintf(fp,"{ operation:                  %s",qss_op[i]->descrp);
     print_single_op_info(fp, "  ", qss_op[i]);
     if(i < n-1)fprintf(fp, "},\n");
     else fprintf(fp, "}\n");

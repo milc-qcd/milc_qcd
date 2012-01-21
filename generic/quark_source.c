@@ -1432,7 +1432,7 @@ int get_wv_quark_source(FILE *fp, int prompt, quark_source *qs){
    in the FNAL-style correlator file*/
 /*--------------------------------------------------------------------*/
 
-#define NTAG 26
+#define NTAG 30
 /* Create a fixed-width tag for tidy output */
 static char *make_tag(char prefix[], char tag[]){
   static char full_tag[NTAG];
@@ -1450,71 +1450,71 @@ static char *make_tag(char prefix[], char tag[]){
 void print_source_info(FILE *fp, char prefix[], quark_source *qs){
   int source_type = qs->orig_type;
 
-  fprintf(fp,"%s%s\n", make_tag(prefix, "type"), qs->descrp);
-  fprintf(fp,"%s%s\n", make_tag(prefix, "subset"), decode_mask(qs->subset));
+  fprintf(fp,"%s %s\n", make_tag(prefix, "type"), qs->descrp);
+  fprintf(fp,"%s %s\n", make_tag(prefix, "subset"), decode_mask(qs->subset));
 
   if ( source_type == POINT ){
-    fprintf(fp,"%s%d %d %d %d\n", make_tag(prefix, "origin"), 
+    fprintf(fp,"%s %d %d %d %d\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
   }
   else if ( source_type == CORNER_WALL ||
 	    source_type == EVEN_WALL ||
 	    source_type == EVENANDODD_WALL ||
 	    source_type == EVENMINUSODD_WALL ){
-    fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qs->t0);
+    fprintf(fp,"%s %d\n", make_tag(prefix, "t0"), qs->t0);
   }
   else if ( source_type == COMPLEX_FIELD_FILE ||
 	    source_type == COMPLEX_FIELD_FM_FILE){
-    //    fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qs->t0);
-    fprintf(fp,"%s%d %d %d %d\n", make_tag(prefix, "origin"), 
+    //    fprintf(fp,"%s %d\n", make_tag(prefix, "t0"), qs->t0);
+    fprintf(fp,"%s %d %d %d %d\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
-    fprintf(fp,"%s%s\n", make_tag(prefix, "file"), qs->source_file);
-    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
+    fprintf(fp,"%s %s\n", make_tag(prefix, "file"), qs->source_file);
+    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
 	    qs->mom[1], qs->mom[2]);
   }
   else if ( source_type == GAUSSIAN ){
-    fprintf(fp,"%s%d %d %d %d\n", make_tag(prefix, "origin"), 
+    fprintf(fp,"%s %d %d %d %d\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
-    fprintf(fp,"%s%g\n", make_tag(prefix, "r0"), qs->r0);
+    fprintf(fp,"%s %g\n", make_tag(prefix, "r0"), qs->r0);
   }
   else if ( source_type == WAVEFUNCTION_FILE ){
-    fprintf(fp,"%s%d %d %d %d\n", make_tag(prefix, "origin"), 
+    fprintf(fp,"%s %d %d %d %d\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
-    fprintf(fp,"%s%s\n", make_tag(prefix, "file"), qs->source_file);
-    fprintf(fp,"%s%g\n", make_tag(prefix, "a"), qs->a);
-    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
+    fprintf(fp,"%s %s\n", make_tag(prefix, "file"), qs->source_file);
+    fprintf(fp,"%s %g\n", make_tag(prefix, "a"), qs->a);
+    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
 	    qs->mom[1], qs->mom[2]);
   }
   else if ( source_type == RANDOM_COLOR_WALL ){
-    fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qs->t0);
-    fprintf(fp,"%s%d\n", make_tag(prefix, "ncolor"), qs->ncolor);
-    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
+    fprintf(fp,"%s %d\n", make_tag(prefix, "t0"), qs->t0);
+    fprintf(fp,"%s %d\n", make_tag(prefix, "ncolor"), qs->ncolor);
+    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
 	    qs->mom[1], qs->mom[2]);
   }
   else if ( source_type == VECTOR_FIELD_FILE ||
 	    source_type == VECTOR_FIELD_FM_FILE ){
-    //    fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qs->t0);
-    fprintf(fp,"%s%d %d %d %d\n", make_tag(prefix, "origin"), 
+    //    fprintf(fp,"%s %d\n", make_tag(prefix, "t0"), qs->t0);
+    fprintf(fp,"%s %d %d %d %d\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
-    fprintf(fp,"%s%s\n", make_tag(prefix, "file"), qs->source_file);
-    fprintf(fp,"%s%d\n", make_tag(prefix, "ncolor"), qs->ncolor);
-    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
+    fprintf(fp,"%s %s\n", make_tag(prefix, "file"), qs->source_file);
+    fprintf(fp,"%s %d\n", make_tag(prefix, "ncolor"), qs->ncolor);
+    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
 	    qs->mom[1], qs->mom[2]);
   }
   else if ( source_type == VECTOR_PROPAGATOR_FILE ){
-    fprintf(fp,"%s%d\n", make_tag(prefix, "ncolor"), qs->ncolor);
+    fprintf(fp,"%s %d\n", make_tag(prefix, "ncolor"), qs->ncolor);
   }
   else if ( source_type == DIRAC_FIELD_FILE ||
 	    source_type == DIRAC_FIELD_FM_FILE ){
-    //    fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qs->t0);
-    fprintf(fp,"%s%d %d %d %d\n", make_tag(prefix, "origin"), 
+    //    fprintf(fp,"%s %d\n", make_tag(prefix, "t0"), qs->t0);
+    fprintf(fp,"%s %d %d %d %d\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
-    fprintf(fp,"%s%s\n", make_tag(prefix, "file"), qs->source_file);
-    fprintf(fp,"%s%d\n", make_tag(prefix, "nsource"), qs->nsource);
-    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
+    fprintf(fp,"%s %s\n", make_tag(prefix, "file"), qs->source_file);
+    fprintf(fp,"%s %d\n", make_tag(prefix, "nsource"), qs->nsource);
+    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qs->mom[0],
 	    qs->mom[1], qs->mom[2]);
   }
   else if ( source_type == DIRAC_PROPAGATOR_FILE ){
-    fprintf(fp,"%s%d\n", make_tag(prefix, "nsource"), qs->nsource);
+    fprintf(fp,"%s %d\n", make_tag(prefix, "nsource"), qs->nsource);
   }
 } /* print_source_info */
