@@ -4,7 +4,7 @@ OBSOLETE
 # 12/16/06 C. DeTar
 
 #  Change these names to suit
-VER = 7.7.3
+VER = 7.7.4
 NAME_ROOT = milc_qcd-${VER}
 
 ######################################################################
