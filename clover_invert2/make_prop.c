@@ -299,6 +299,11 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
     /* Read color vector (and source as appropriate) from file */
     status = reload_ksprop_c_to_field(startflag, fp_in, my_ksqs, 
 				      color, dst, 1);
+    if(status != 0){
+      printf("%s(%d): Error reloading propagator\n", myname, this_node);
+      terminate(1);
+    }
+      
     /* (Re)construct propagator */
     
     if(startflag == FRESH) my_qic->start_flag = START_ZERO_GUESS;
