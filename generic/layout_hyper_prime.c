@@ -22,6 +22,9 @@
 */
 
 // $Log: layout_hyper_prime.c,v $
+// Revision 1.17  2012/01/21 21:28:12  detar
+// Support new QMP
+//
 // Revision 1.16  2011/11/29 20:11:30  detar
 // Cosmetic fix to initialization
 //
@@ -105,7 +108,7 @@ static size_t lex_rank(const int coords[], int dim, int size[])
 
 /*--------------------------------------------------------------------*/
 /* Sets the QMP logical topology if we need one */
-static void set_qmp_layout_grid(const int *geom, int n){
+static void set_qmp_logical_topology(const int *geom, int n){
 
   /* Has a geometry already been specified by the -geom command-line
      argument or on the input parameter line "node_geometry"? */
@@ -120,55 +123,28 @@ static void set_qmp_layout_grid(const int *geom, int n){
 }
 
 /*--------------------------------------------------------------------*/
-static void setup_qmp_grid(){
+static void setup_qmp_grid(const int *nsquares2, int ndim2){
   int ndim = 4;
-  int len[4];
-  int ndim2, i;
-  const int *nsquares2;
-
-  len[0] = nx; len[1] = ny; len[2] = nz; len[3] = nt;
+  int len[4] = {nx, ny, nz, nt};
+  int i;
 
   if(mynode()==0){
     printf("qmp_grid,");
     printf("\n");
   }
 
-  ndim2 = QMP_get_allocated_number_of_dimensions();
-  nsquares2 = QMP_get_allocated_dimensions();
-
-  /* If the dimensions are not already allocated, use the
-     node_geometry request.  Otherwise a hardware or command line
-     specification trumps the parameter input. */
-#ifdef FIX_NODE_GEOM
-  if(ndim2 == 0){
-    ndim2 = 4;
-    nsquares2 = node_geometry;
+  for(i=0; i<ndim; i++) {
+    if(i<ndim2) nsquares[i] = nsquares2[i];
+    else nsquares[i] = 1;
   }
-  else{
-    node0_printf("setup_qmp_grid: Preallocated machine geometry overrides request\n");
-  }
-#endif
 
   if(mynode()==0){
     printf("Using machine geometry: ");
     for(i=0; i<ndim; i++){
-      printf("%d ",nsquares2[i]);
+      printf("%d ",nsquares[i]);
       if(i < ndim-1)printf("X ");
     }
     printf("\n");
-  }
-
-  /* In principle, we could now rotate coordinate axes */
-  /* Save this for a future upgrade */
-
-  set_qmp_layout_grid(nsquares2, ndim2);
-
-  ndim2 = QMP_get_logical_number_of_dimensions();
-  nsquares2 = QMP_get_logical_dimensions();
-
-  for(i=0; i<ndim; i++) {
-    if(i<ndim2) nsquares[i] = nsquares2[i];
-    else nsquares[i] = 1;
   }
 
   for(i=0; i<ndim; i++) {
@@ -234,6 +210,12 @@ void setup_fixed_geom(int const *geom, int n){
   int node_count;
   int len[4];
   int status;
+
+#ifdef FIX_NODE_GEOM
+  if(geom != NULL){
+      node0_printf("setup_layout: Preallocated machine geometry overrides request\n");
+  }
+#endif
 
   len[0] = nx; len[1] = ny; len[2] = nz; len[3] = nt;
 
@@ -303,68 +285,92 @@ static void init_io_node(){
 
 void setup_layout(){
   int k = mynode();
-#ifdef FIX_NODE_GEOM
-  int const *geom = node_geometry;
-#else
-  int const *geom = nodegeom();
-#endif
+  int nd = 0;
+  int const *geom;
 
-  if(k == 0)
-    printf("LAYOUT = Hypercubes, options = ");
+  if(k == 0) printf("LAYOUT = Hypercubes, options = ");
 
 #ifdef HAVE_QMP
 
   /* QMP treatment */
-  /* Is there already a grid? 
-     This could be a grid architecture with a preset dimension, or
-     a geometry could have been set by the -qmp-geom command line arg. 
-     In either case we have a nonzero allocated number of dimensions. 
-*/
-  if(QMP_get_allocated_number_of_dimensions() == 0)
-    /* Set the geometry if requested */
-    set_qmp_layout_grid(geom, 4);
 
-  /* Has a grid been set up now? */
-  if(QMP_get_msg_passing_type() == QMP_GRID){
-    /* Set the sublattice dimensions for a QMP grid machine */
-    setup_qmp_grid();
-    node0_printf("QMP with specified qmp-geom\n");
-  }
-  else if(geom != NULL){
-    /* Set the sublattice dimensions according to the specified geometry */
-    setup_fixed_geom(geom, 4);
-    node0_printf("QMP with fixed node_geometry\n");
-  }
-  else{
-    /* Set the sublattice dimensions according to the hyper_prime algorithm */
-    setup_hyper_prime();
-    set_qmp_layout_grid(nsquares, 4);
-    node0_printf("QMP with automatic hyper_prime layout\n");
-  }
-
-#else
-
-  /* Non QMP treatment */
-
+  /* The layout dimensions (geometry) are set as follows:
+     1. If the command line has both -qmp-geom and -job-geom we use
+        the job geometry. 
+     2. Otherwise if -qmp-geom is specified use the allocated geometry
+     3. Otherwise if FIX_NODE_GEOM is in force and node_geometry is defined
+        use node_geometry
+     4. Otherwise use the layout_hyper_prime algorithm to set the geometry
+  */
+  
+  nd = QMP_get_number_of_job_geometry_dimensions();
+  if(nd > 0){
+    /* Use job geometry */
+    geom = QMP_get_job_geometry();
+    setup_qmp_grid(geom, nd);
+    node0_printf("QMP using job_geometry_dimensions\n");
+  } else {
+    nd = QMP_get_allocated_number_of_dimensions();
+    if(nd > 0) {
+      geom = QMP_get_allocated_dimensions();
+      /* use allocated geometry */
+      setup_qmp_grid(geom, nd);
+      node0_printf("QMP using allocated_dimension\n");
+    } else {
 #ifdef FIX_NODE_GEOM
-  if(geom != NULL){
-      node0_printf("setup_layout: Preallocated machine geometry overrides request\n");
+      if(node_geometry != NULL){
+	nd = 4;
+	geom = node_geometry;
+	/* take geometry from input parameter node_geometry line */
+	setup_fixed_geom(geom, nd);
+	node0_printf("QMP with specified node_geometry\n");
+      } else {
+#endif
+	setup_hyper_prime();
+	nd = 4;
+	geom = nsquares;
+	node0_printf("QMP with automatic hyper_prime layout\n");
+#ifdef FIX_NODE_GEOM
+      }
+#endif
+    }
+  }
+  
+  set_qmp_logical_topology(geom, nd);
+  
+#else
+  
+  /* Non QMP treatment */
+  
+  /* The layout dimensions (geometry) are set as follows:
+     1. If the command line has -geom use it
+     2. Otherwise, if FIX_NODE_GEOM is in force and the
+     node_geometry parameters are specified, use them
+     3. Otherwise set the geometry with the layout_hyper_prime 
+     algorithm
+  */
+  
+  nd = 4;
+  geom = nodegeom();  /* Command line values */
+  
+#ifdef FIX_NODE_GEOM
+  if(geom == NULL){
+    geom = node_geometry; /* Input parameter values */
   }
 #endif
-
+  
   if(geom != NULL){
     /* Set the sublattice dimensions according to the specified geometry */
     node0_printf("with fixed node_geometry\n");
-    setup_fixed_geom(geom, 4);
-  }
-  else{
+    setup_fixed_geom(geom, nd);
+  } else {
     /* Set the sublattice dimensions according to the hyper_prime algorithm */
     setup_hyper_prime();
     node0_printf("automatic hyper_prime layout\n");
   }
-
+  
 #endif
-
+  
   /* Initialize I/O node function */
 #ifdef FIX_IONODE_GEOM
   init_io_node();
