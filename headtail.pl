@@ -8,9 +8,9 @@
 
 # Usage...
 
-#    headtail.pl pattern1 pattern2
+#    headtail.pl patterna patternb patterna patternb ...
 
-# where /pattern1/ and /pattern2/ are awk/sed-type pattern-matching strings
+# where /patterna/ and /patternb/ are awk/sed-type regular expression strings
 
 # Example
 
@@ -19,14 +19,23 @@
 # starts at the first line beginning with POINT and ends at the line
 # containing the string RUNNING COMPLETED anywhere in the line.
 
+# The process continues from there searching for the next patterna
+# and resumes copying until patternb, etc.
 
-$pattern1 = $ARGV[0];
-$pattern2 = $ARGV[1];
+# If patternb is not found, copying continues to the end of file.
+
 
 $start = 0;
- STDINLINE:
-    while(<STDIN>){
-	if(/$pattern1/){$start = 1;}
-	if($start){print $_;}
-	if(/$pattern2/){exit 0;}
+$patterna = shift(@ARGV);
+$patternb = shift(@ARGV);
+
+while(<STDIN>){
+    if(/$patterna/){$start = 1;}
+    if($start){print $_;}
+    if(/$patternb/){
+	if($#ARGV < 0){exit;}
+	$start = 0;
+	$patterna = shift(@ARGV);
+	$patternb = shift(@ARGV);
     }
+}
