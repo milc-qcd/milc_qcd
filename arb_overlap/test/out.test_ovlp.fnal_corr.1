@@ -1,0 +1,250 @@
+---
+JobID:                   ovlp_test.invclov2
+date:                    "Fri Dec 16 21:48:29 2011 UTC"
+lattice_size:            4,4,4,4
+antiquark_type:          clover
+antiquark_source_type:   gaussian
+antiquark_source_subset: full
+antiquark_source_origin: 0 0 0 0
+antiquark_source_r0:     1.5
+antiquark_source_label:  G
+antiquark_sink_label:    d
+antiquark_kappa:         "0.01"
+quark_type:              clover
+quark_source_type:       gaussian
+quark_source_subset:     full
+quark_source_origin:     0 0 0 0
+quark_source_r0:         1.5
+quark_source_label:      G
+quark_sink_label:        d
+quark_kappa:             "0.01"
+...
+---
+correlator:              PION
+momentum:                p000
+gamma_source:            G5
+gamma_sink:              G5
+correlator_key:          PION_G_G_d_d_k0.01_k0.01_p000
+...
+0	1.340428e+03	0.000000e+00
+1	1.342939e+03	0.000000e+00
+2	5.135104e+03	0.000000e+00
+3	1.786794e+03	0.000000e+00
+---
+correlator:              PS505
+momentum:                p000
+gamma_source:            G5
+gamma_sink:              G5T
+correlator_key:          PS505_G_G_d_d_k0.01_k0.01_p000
+...
+0	-2.886719e+00	6.728412e-21
+1	5.993336e+01	-1.428762e-20
+2	1.150997e+01	-3.625837e-20
+3	-6.341496e+01	-2.461461e-21
+---
+correlator:              PS0505
+momentum:                p000
+gamma_source:            G5T
+gamma_sink:              G5T
+correlator_key:          PS0505_G_G_d_d_k0.01_k0.01_p000
+...
+0	2.983609e-02	0.000000e+00
+1	2.316102e+01	2.095476e-09
+2	2.770264e+01	0.000000e+00
+3	2.316729e+01	6.984919e-10
+---
+correlator:              RHO
+momentum:                p000
+gamma_source:            GX
+gamma_sink:              GX
+correlator_key:          RHO_G_G_d_d_k0.01_k0.01_p000
+...
+0	2.010925e+00	9.701312e-12
+1	2.366899e+01	0.000000e+00
+2	2.736092e+01	7.761029e-11
+3	2.377911e+01	-4.656613e-10
+---
+correlator:              RHO0
+momentum:                p000
+gamma_source:            GXT
+gamma_sink:              GXT
+correlator_key:          RHO0_G_G_d_d_k0.01_k0.01_p000
+...
+0	1.004967e+00	0.000000e+00
+1	2.331580e+01	0.000000e+00
+2	2.716475e+01	0.000000e+00
+3	2.338842e+01	0.000000e+00
+---
+correlator:              SCALAR
+momentum:                p000
+gamma_source:            G1
+gamma_sink:              G1
+correlator_key:          SCALAR_G_G_d_d_k0.01_k0.01_p000
+...
+0	1.338397e+03	0.000000e+00
+1	1.296797e+03	0.000000e+00
+2	5.078870e+03	0.000000e+00
+3	1.740420e+03	0.000000e+00
+---
+correlator:              SCAL0
+momentum:                p000
+gamma_source:            GT
+gamma_sink:              GT
+correlator_key:          SCAL0_G_G_d_d_k0.01_k0.01_p000
+...
+0	1.892762e+00	-5.820772e-11
+1	-2.201479e+01	0.000000e+00
+2	-2.739594e+01	0.000000e+00
+3	-2.203934e+01	0.000000e+00
+---
+correlator:              PV
+momentum:                p000
+gamma_source:            G5X
+gamma_sink:              G5X
+correlator_key:          PV_G_G_d_d_k0.01_k0.01_p000
+...
+0	-1.294505e+00	-1.850372e-17
+1	2.173229e+01	7.761021e-11
+2	2.683767e+01	1.480297e-16
+3	2.168041e+01	0.000000e+00
+---
+correlator:              B
+momentum:                p000
+gamma_source:            GXY
+gamma_sink:              GXY
+correlator_key:          B_G_G_d_d_k0.01_k0.01_p000
+...
+0	-1.582921e+00	0.000000e+00
+1	2.182255e+01	0.000000e+00
+2	2.692311e+01	0.000000e+00
+3	2.181433e+01	0.000000e+00
+---
+JobID:                   ovlp_test.invclov2
+date:                    "Fri Dec 16 21:48:29 2011 UTC"
+lattice_size:            4,4,4,4
+antiquark_type:          clover
+antiquark_source_type:   gaussian
+antiquark_source_subset: full
+antiquark_source_origin: 0 0 0 0
+antiquark_source_r0:     1.5
+antiquark_source_label:  G
+antiquark_sink_label:    1S
+antiquark_sink_ops:          [
+{ operation:             gaussian
+  r0:                        1.5
+}
+]
+antiquark_kappa:         "0.01"
+quark_type:              clover
+quark_source_type:       gaussian
+quark_source_subset:     full
+quark_source_origin:     0 0 0 0
+quark_source_r0:         1.5
+quark_source_label:      G
+quark_sink_label:        1S
+quark_sink_ops:              [
+{ operation:             gaussian
+  r0:                        1.5
+}
+]
+quark_kappa:             "0.01"
+...
+---
+correlator:              PION
+momentum:                p000
+gamma_source:            G5
+gamma_sink:              G5
+correlator_key:          PION_G_G_1S_1S_k0.01_k0.01_p000
+...
+0	2.690701e+05	0.000000e+00
+1	2.019246e+05	0.000000e+00
+2	8.302494e+04	0.000000e+00
+3	2.363560e+05	0.000000e+00
+---
+correlator:              PS505
+momentum:                p000
+gamma_source:            G5
+gamma_sink:              G5T
+correlator_key:          PS505_G_G_1S_1S_k0.01_k0.01_p000
+...
+0	-7.330638e+02	2.904339e-19
+1	1.442642e+04	-3.000796e-18
+2	6.310312e+03	-1.157813e-18
+3	-1.576438e+04	-3.081925e-18
+---
+correlator:              PS0505
+momentum:                p000
+gamma_source:            G5T
+gamma_sink:              G5T
+correlator_key:          PS0505_G_G_1S_1S_k0.01_k0.01_p000
+...
+0	1.872961e+02	0.000000e+00
+1	4.999491e+03	1.192093e-07
+2	5.882564e+03	0.000000e+00
+3	4.999075e+03	5.960464e-08
+---
+correlator:              RHO
+momentum:                p000
+gamma_source:            GX
+gamma_sink:              GX
+correlator_key:          RHO_G_G_1S_1S_k0.01_k0.01_p000
+...
+0	3.764564e+02	2.483528e-09
+1	5.069522e+03	-1.986821e-08
+2	5.806797e+03	3.476941e-08
+3	5.088330e+03	9.934107e-09
+---
+correlator:              RHO0
+momentum:                p000
+gamma_source:            GXT
+gamma_sink:              GXT
+correlator_key:          RHO0_G_G_1S_1S_k0.01_k0.01_p000
+...
+0	2.810936e+02	0.000000e+00
+1	5.028249e+03	0.000000e+00
+2	5.814566e+03	0.000000e+00
+3	5.046178e+03	0.000000e+00
+---
+correlator:              SCALAR
+momentum:                p000
+gamma_source:            G1
+gamma_sink:              G1
+correlator_key:          SCALAR_G_G_1S_1S_k0.01_k0.01_p000
+...
+0	2.689970e+05	0.000000e+00
+1	1.921393e+05	0.000000e+00
+2	7.119300e+04	0.000000e+00
+3	2.265598e+05	0.000000e+00
+---
+correlator:              SCAL0
+momentum:                p000
+gamma_source:            GT
+gamma_sink:              GT
+correlator_key:          SCAL0_G_G_1S_1S_k0.01_k0.01_p000
+...
+0	2.368228e+02	-3.725289e-09
+1	-4.746061e+03	0.000000e+00
+2	-5.870381e+03	-1.136868e-13
+3	-4.745463e+03	-8.940697e-08
+---
+correlator:              PV
+momentum:                p000
+gamma_source:            G5X
+gamma_sink:              G5X
+correlator_key:          PV_G_G_1S_1S_k0.01_k0.01_p000
+...
+0	-3.449876e+02	-4.967054e-09
+1	4.651945e+03	0.000000e+00
+2	5.793535e+03	-3.789561e-14
+3	4.634089e+03	0.000000e+00
+---
+correlator:              B
+momentum:                p000
+gamma_source:            GXY
+gamma_sink:              GXY
+correlator_key:          B_G_G_1S_1S_k0.01_k0.01_p000
+...
+0	-2.897777e+02	0.000000e+00
+1	4.692029e+03	0.000000e+00
+2	5.806747e+03	0.000000e+00
+3	4.685472e+03	0.000000e+00

@@ -1,0 +1,860 @@
+nHYP links with 3 smearing level(s)
+HARD-CODED alpha_smear={0.75, 0.6, 0.3}
+IR_STAB=1.000000e-06,  EPS_SQ=1.000000e-05 
+Antiperiodic boundary conditions
+MIMD version 7 $Name:  $
+Machine = Scalar processor, with 1 nodes
+start: Fri Jan 20 05:26:54 2012
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 3737
+LAYOUT = Hypercubes, options = with fixed node_geometry
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.5 MBytes per node for lattice
+Mallocing 1.1 MBytes per node for fields
+only enough offsets for planar action
+
+
+beta 7.3
+u0 1
+number_of_masses 4
+m0 0.01
+m0 0.02
+m0 0.05
+m0 0.1
+R0 1.2
+scalez 1
+prec_sign 1e-07
+zolo_min 0.02
+zolo_max 2.7
+inner_cg_iterations 1000
+inner_residue 1e-07
+inner_residue_h 1e-07
+Number_of_inner_eigenvals 4
+Number_of_h0_eigenvals 8
+Number_of_hov_eigenvals 4
+Max_Rayleigh_iters 1000
+Max_r0_iters 100
+Restart_Rayleigh 10
+Kalkreuter_iters 10
+eigenvec_quality 0.00012
+eigenval_tol_low 1e-06
+error_decr_low 0.3
+eigenval_tol_high 1e-07
+error_decr_high 0.3
+max_cg_iterations 100
+max_cg_restarts 1
+error_for_fermforce 1e-05
+error_for_fermforce 1e-05
+error_for_fermforce 1e-05
+error_for_fermforce 1e-05
+error_for_fermaction 1e-05
+error_for_fermaction 1e-05
+error_for_fermaction 1e-05
+error_for_fermaction 1e-05
+gaussian
+subset full
+origin 0 0 0 0 
+r0 2
+source_label G
+reload_serial ../../binary_samples/lat.sample.inst
+topology 100
+fixing to coulomb gauge
+forget 
+fresh_wprop 
+save_serial_fm_sc_wprop su3_ov_eig_cg_multi.Ritz.www.1.test-out
+fresh_hr0_modes
+forget_hr0_modes 
+fresh_hov_modes
+ forget_hov_modes
+ Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 1.733957e-03
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+CHECK NERSC LINKTR: 9.916278e-01 CKSUM: a0e19040
+Unitarity checked.  Max deviation 1.46e-07
+Time to check unitarity = 1.421178e-04
+Fixing to Coulomb gauge
+GFIX: Ended at step 9. Av gf action 9.92502153e-01, delta 5.960e-08
+Time to gauge fix = 8.739014e-03
+FATLINK -2.817587e+00 5.205563e-09 0.000000e+00 2.976293e+00 2.976293e+00
+shift multi mass R0 1.200000e+00
+Zolotarov inner CG order 0
+inner CG steps 1000  resid 1.000000e-07
+lmin 2.000000e-02 lmax 2.700000e+00 prec 2.671116e-08 Norder 12
+shift[ 0 ]=2.812497e-05 coeff= 6.906356e-03
+shift[ 1 ]=3.028145e-04 coeff= 8.848960e-03
+shift[ 2 ]=1.183007e-03 coeff= 1.328127e-02
+shift[ 3 ]=3.729084e-03 coeff= 2.145363e-02
+shift[ 4 ]=1.101138e-02 coeff= 3.568286e-02
+shift[ 5 ]=3.183655e-02 coeff= 6.005973e-02
+shift[ 6 ]=9.159283e-02 coeff= 1.018711e-01
+shift[ 7 ]=2.648169e-01 coeff= 1.749894e-01
+shift[ 8 ]=7.819614e-01 coeff= 3.106650e-01
+shift[ 9 ]=2.464906e+00 coeff= 6.062421e-01
+shift[ 10 ]=9.629658e+00 coeff= 1.578009e+00
+shift[ 11 ]=1.036801e+02 coeff= 1.326022e+01
+scale dslash by 1.000000e+00
+mass= 0.01 r0= 2 residue= 1e-05
+mass= 0.02 r0= 2 residue= 1e-05
+mass= 0.05 r0= 2 residue= 1e-05
+mass= 0.1 r0= 2 residue= 1e-05
+
+TEST PROJECTOR planar action 
+lambda = 2.018950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+random initial vectors for h(m0)
+calling hr0 with Maxr0Iter 100
+gradient tolerance 1.000000e-06 eigVal change tolerance 1.000000e-07
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.146214 +/- 1.098901e+16 |grad|=0.451994
+quot(1) = 0.724468 +/- 1.098901e+16 |grad|=0.442697
+quot(2) = 1.15359 +/- 1.098901e+16 |grad|=0.469063
+quot(3) = 1.21541 +/- 1.098901e+16 |grad|=0.423607
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0250262 +/- 1.331730e-01 |grad|=0.0762027
+quot(1) = 0.553476 +/- 1.879034e-01 |grad|=0.114186
+quot(2) = 0.559911 +/- 6.523978e-01 |grad|=0.117936
+quot(3) = 0.699626 +/- 5.667906e-01 |grad|=0.115929
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.0222454 +/- 3.055822e-03 |grad|=0.0123452
+quot(1) = 0.541727 +/- 1.291099e-02 |grad|=0.0302746
+quot(2) = 0.545529 +/- 1.580408e-02 |grad|=0.0285703
+quot(3) = 1.11326 +/- 4.545420e-01 |grad|=0.984917
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.0221614 +/- 9.233474e-05 |grad|=0.00234279
+quot(1) = 0.54076 +/- 1.062686e-03 |grad|=0.00791838
+quot(2) = 0.545101 +/- 4.709863e-04 |grad|=0.00712026
+quot(3) = 0.725896 +/- 4.256734e-01 |grad|=0.275424
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.0221586 +/- 3.016243e-06 |grad|=0.000364022
+quot(1) = 0.540055 +/- 7.749430e-04 |grad|=0.00219512
+quot(2) = 0.545064 +/- 4.063478e-05 |grad|=0.0014693
+quot(3) = 0.550816 +/- 1.923955e-01 |grad|=0.0654827
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.0221586 +/- 3.420528e-08 |grad|=8.34697e-05
+quot(1) = 0.540049 +/- 7.109828e-06 |grad|=0.00071125
+quot(2) = 0.545062 +/- 1.996235e-06 |grad|=0.000493105
+quot(3) = 0.545244 +/- 6.123664e-03 |grad|=0.0162367
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.0221586 +/- 1.179688e-08 |grad|=2.1058e-05
+quot(1) = 0.540048 +/- 3.741984e-07 |grad|=0.000157253
+quot(2) = 0.545061 +/- 3.237571e-07 |grad|=0.000229671
+quot(3) = 0.545081 +/- 1.786581e-04 |grad|=0.00441263
+
+Eigenvalues after diagonalization at iteration 8
+quot(0) = 0.0221586 +/- 2.391366e-09 |grad|=1.21669e-05
+quot(1) = 0.540048 +/- 1.147565e-07 |grad|=0.000321353
+quot(2) = 0.545061 +/- 2.890683e-09 |grad|=0.000215888
+quot(3) = 0.545063 +/- 2.046787e-05 |grad|=0.000938778
+
+Eigenvalues after diagonalization at iteration 9
+quot(0) = 0.0221586 +/- 1.224156e-08 |grad|=1.00354e-05
+quot(1) = 0.540048 +/- 4.194669e-08 |grad|=0.00016805
+quot(2) = 0.545061 +/- 5.632830e-09 |grad|=0.000362048
+quot(3) = 0.545062 +/- 1.050452e-06 |grad|=0.00019647
+
+Eigenvalues after diagonalization at iteration 10
+quot(0) = 0.0221586 +/- 6.530470e-09 |grad|=1.09304e-05
+quot(1) = 0.540048 +/- 1.097145e-08 |grad|=0.000322669
+quot(2) = 0.545061 +/- 4.804180e-08 |grad|=0.000155922
+quot(3) = 0.545062 +/- 1.817512e-08 |grad|=0.000143113
+total Rayleigh iters = 477
+F3HSQ 0 2.215858e-02
+F3HSQ 1 5.400483e-01
+F3HSQ 2 5.450614e-01
+F3HSQ 3 5.450615e-01
+F3MEX 0 -1.488577e-01 -2.001873e-08 3.561287e-06 
+F3MEX 1 -7.348787e-01 4.685113e-09 1.142344e-03 F
+F3MEX 2 -7.382821e-01 8.074437e-09 7.664637e-04 F
+F3MEX 3 -7.382826e-01 -1.130286e-08 3.425439e-04 F
+
+RETRY 1
+calling hr0 with Maxr0Iter 100
+gradient tolerance 5.000000e-07 eigVal change tolerance 5.000000e-08
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.0221586 +/- 2.150819e-09 |grad|=1.05884e-05
+quot(1) = 0.540048 +/- 2.255077e-08 |grad|=0.00019795
+quot(2) = 0.545061 +/- 1.710796e-08 |grad|=0.000324764
+quot(3) = 0.545061 +/- 4.080127e-08 |grad|=0.000176299
+quot(4) = 1.24942 +/- 1.098901e+16 |grad|=0.317112
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0221586 +/- 1.877712e-09 |grad|=5.5586e-06
+quot(1) = 0.540048 +/- 5.713325e-08 |grad|=0.00036092
+quot(2) = 0.545061 +/- 7.764514e-08 |grad|=0.000147861
+quot(3) = 0.545061 +/- 7.318557e-08 |grad|=0.0002769
+quot(4) = 0.709037 +/- 5.938249e-01 |grad|=0.083046
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.0221586 +/- 9.974374e-10 |grad|=1.10454e-05
+quot(1) = 0.540048 +/- 1.061390e-07 |grad|=0.000205332
+quot(2) = 0.545061 +/- 7.079944e-08 |grad|=0.000292811
+quot(3) = 0.545062 +/- 9.722032e-08 |grad|=0.000338055
+quot(4) = 0.679687 +/- 3.225308e-02 |grad|=0.020401
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.0221586 +/- 6.923544e-09 |grad|=2.30835e-06
+quot(1) = 0.540048 +/- 1.407118e-07 |grad|=0.000224208
+quot(2) = 0.545061 +/- 5.104826e-08 |grad|=0.000189347
+quot(3) = 0.545062 +/- 3.208012e-09 |grad|=0.000163117
+quot(4) = 0.679418 +/- 2.951509e-04 |grad|=0.00570092
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.0221586 +/- 3.692035e-09 |grad|=6.03859e-06
+quot(1) = 0.540048 +/- 4.916262e-08 |grad|=0.000121332
+quot(2) = 0.545061 +/- 3.563031e-08 |grad|=0.000140558
+quot(3) = 0.545061 +/- 8.453169e-08 |grad|=7.88973e-05
+quot(4) = 0.679232 +/- 2.048286e-04 |grad|=0.00140036
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.0221586 +/- 7.829322e-09 |grad|=1.23685e-05
+quot(1) = 0.540048 +/- 1.350628e-07 |grad|=0.000267933
+quot(2) = 0.545061 +/- 1.952568e-08 |grad|=0.0002263
+quot(3) = 0.545062 +/- 9.649657e-08 |grad|=0.00025655
+quot(4) = 0.67923 +/- 1.730549e-06 |grad|=0.000391989
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.0221586 +/- 2.350640e-09 |grad|=9.33297e-06
+quot(1) = 0.540048 +/- 7.849237e-08 |grad|=3.12352e-05
+quot(2) = 0.545061 +/- 3.055621e-08 |grad|=0.000156509
+quot(3) = 0.545061 +/- 5.493649e-08 |grad|=0.000251266
+quot(4) = 0.67923 +/- 1.378755e-07 |grad|=0.000131311
+
+Eigenvalues after diagonalization at iteration 8
+quot(0) = 0.0221586 +/- 7.344944e-10 |grad|=1.4248e-05
+quot(1) = 0.540048 +/- 1.313275e-08 |grad|=0.000168306
+quot(2) = 0.545061 +/- 7.499492e-08 |grad|=0.000180409
+quot(3) = 0.545062 +/- 4.496669e-07 |grad|=0.00041519
+quot(4) = 0.67923 +/- 5.646500e-08 |grad|=0.000269026
+
+Eigenvalues after diagonalization at iteration 9
+quot(0) = 0.0221586 +/- 5.692568e-09 |grad|=1.12341e-05
+quot(1) = 0.540048 +/- 2.719145e-08 |grad|=0.000167263
+quot(2) = 0.545061 +/- 5.536451e-08 |grad|=0.000161976
+quot(3) = 0.545062 +/- 3.190095e-07 |grad|=0.000239899
+quot(4) = 0.67923 +/- 8.843424e-09 |grad|=0.000135315
+
+Eigenvalues after diagonalization at iteration 10
+quot(0) = 0.0221586 +/- 1.023655e-09 |grad|=7.23196e-06
+quot(1) = 0.540048 +/- 1.128324e-08 |grad|=0.000121542
+quot(2) = 0.545061 +/- 3.727855e-08 |grad|=0.000167451
+quot(3) = 0.545061 +/- 1.091216e-07 |grad|=0.00012654
+quot(4) = 0.67923 +/- 6.620284e-09 |grad|=7.84521e-05
+total Rayleigh iters = 479
+F3HSQ 0 2.215858e-02
+F3HSQ 1 5.400483e-01
+F3HSQ 2 5.450615e-01
+F3HSQ 3 5.450615e-01
+F3HSQ 4 6.792299e-01
+F3MEX 0 -1.488576e-01 -1.705147e-08 2.397772e-06 
+F3MEX 1 -7.348797e-01 -1.645907e-09 8.091276e-05 
+F3MEX 2 -7.382829e-01 -5.043052e-09 1.154841e-04 
+F3MEX 3 -7.382827e-01 -2.240252e-08 1.255581e-04 F
+
+RETRY 2
+calling hr0 with Maxr0Iter 100
+gradient tolerance 2.500000e-07 eigVal change tolerance 2.500000e-08
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.0221586 +/- 5.496554e-09 |grad|=1.80512e-05
+quot(1) = 0.540048 +/- 9.190623e-08 |grad|=0.000115707
+quot(2) = 0.545061 +/- 1.288241e-08 |grad|=0.000260807
+quot(3) = 0.545062 +/- 5.365277e-08 |grad|=0.000314106
+quot(4) = 0.67923 +/- 2.039489e-08 |grad|=0.000103449
+quot(5) = 1.21964 +/- 1.098901e+16 |grad|=0.350833
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0221586 +/- 3.045751e-10 |grad|=1.14726e-05
+quot(1) = 0.540048 +/- 3.381828e-09 |grad|=7.25591e-05
+quot(2) = 0.545061 +/- 5.364230e-08 |grad|=9.86314e-05
+quot(3) = 0.545061 +/- 6.651460e-08 |grad|=0.000140891
+quot(4) = 0.67923 +/- 3.159161e-08 |grad|=5.94865e-05
+quot(5) = 0.715341 +/- 5.541705e-01 |grad|=0.0866094
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.0221586 +/- 5.270041e-09 |grad|=1.35152e-05
+quot(1) = 0.540048 +/- 2.554060e-08 |grad|=0.000154368
+quot(2) = 0.545061 +/- 1.570443e-09 |grad|=8.05917e-05
+quot(3) = 0.545062 +/- 6.322388e-08 |grad|=0.00045692
+quot(4) = 0.67923 +/- 1.196312e-07 |grad|=0.000242958
+quot(5) = 0.708866 +/- 7.116108e-03 |grad|=0.024286
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.0221586 +/- 9.519086e-09 |grad|=1.15312e-05
+quot(1) = 0.540048 +/- 6.627857e-08 |grad|=7.44748e-05
+quot(2) = 0.545061 +/- 2.905125e-08 |grad|=0.000210714
+quot(3) = 0.545062 +/- 2.954638e-08 |grad|=0.000270612
+quot(4) = 0.67923 +/- 2.838000e-07 |grad|=0.000191865
+quot(5) = 0.708108 +/- 8.328876e-04 |grad|=0.00530035
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.0221586 +/- 8.608440e-09 |grad|=8.87206e-06
+quot(1) = 0.540048 +/- 5.740931e-08 |grad|=0.000135221
+quot(2) = 0.545061 +/- 1.172856e-08 |grad|=0.000196277
+quot(3) = 0.545061 +/- 2.741094e-08 |grad|=0.000124733
+quot(4) = 0.67923 +/- 5.461457e-07 |grad|=0.000351628
+quot(5) = 0.708087 +/- 2.287036e-05 |grad|=0.00130647
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.0221586 +/- 2.594720e-09 |grad|=2.64282e-05
+quot(1) = 0.540048 +/- 6.041436e-08 |grad|=0.000325951
+quot(2) = 0.545061 +/- 3.055074e-08 |grad|=9.98135e-05
+quot(3) = 0.545061 +/- 1.001176e-08 |grad|=0.000180211
+quot(4) = 0.67923 +/- 3.129627e-07 |grad|=0.000250857
+quot(5) = 0.708085 +/- 2.277346e-06 |grad|=0.000373121
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.0221586 +/- 1.576620e-09 |grad|=5.96616e-06
+quot(1) = 0.540048 +/- 1.612623e-07 |grad|=0.000190705
+quot(2) = 0.545061 +/- 2.024826e-09 |grad|=0.000218737
+quot(3) = 0.545061 +/- 2.545223e-08 |grad|=0.000183347
+quot(4) = 0.67923 +/- 1.801565e-07 |grad|=0.000741004
+quot(5) = 0.708085 +/- 2.316083e-07 |grad|=0.000158307
+
+Eigenvalues after diagonalization at iteration 8
+quot(0) = 0.0221586 +/- 1.045225e-08 |grad|=9.59053e-06
+quot(1) = 0.540048 +/- 2.290857e-07 |grad|=0.000144736
+quot(2) = 0.545061 +/- 2.484784e-08 |grad|=0.00018037
+quot(3) = 0.545062 +/- 8.004551e-08 |grad|=0.000211112
+quot(4) = 0.67923 +/- 2.367960e-07 |grad|=0.000171088
+quot(5) = 0.708085 +/- 4.808134e-07 |grad|=0.000528314
+
+Eigenvalues after diagonalization at iteration 9
+quot(0) = 0.0221586 +/- 5.779266e-09 |grad|=9.31008e-06
+quot(1) = 0.540048 +/- 6.515294e-08 |grad|=0.000240519
+quot(2) = 0.545061 +/- 2.881977e-08 |grad|=0.000193413
+quot(3) = 0.545061 +/- 1.278440e-07 |grad|=0.000201747
+quot(4) = 0.67923 +/- 1.992420e-08 |grad|=0.000399601
+quot(5) = 0.708085 +/- 2.166922e-07 |grad|=0.00037848
+
+Eigenvalues after diagonalization at iteration 10
+quot(0) = 0.0221586 +/- 1.155628e-09 |grad|=3.54983e-06
+quot(1) = 0.540048 +/- 3.876253e-08 |grad|=0.000257357
+quot(2) = 0.545061 +/- 1.036382e-07 |grad|=0.000128962
+quot(3) = 0.545061 +/- 8.816033e-08 |grad|=0.000101859
+quot(4) = 0.67923 +/- 1.587114e-07 |grad|=0.000117549
+quot(5) = 0.708085 +/- 2.024075e-07 |grad|=0.000140099
+total Rayleigh iters = 930
+F3HSQ 0 2.215858e-02
+F3HSQ 1 5.400483e-01
+F3HSQ 2 5.450614e-01
+F3HSQ 3 5.450615e-01
+F3HSQ 4 6.792298e-01
+F3HSQ 5 7.080848e-01
+F3MEX 0 -1.488576e-01 1.241789e-08 1.533252e-06 
+F3MEX 1 -7.348799e-01 3.393784e-09 1.004498e-04 
+F3MEX 2 -7.382827e-01 6.419995e-09 8.932984e-05 
+F3MEX 3 -7.382827e-01 1.106500e-09 9.960282e-05 
+
+START_EIGVALS of h(-r0): re im  IPR invp5
+F3MES 0 -1.488576e-01 1.241789e-08   4.881059e+01 4.628563e+01
+F3MES 1 -7.348799e-01 3.393784e-09   6.728101e+01 6.611781e+01
+F3MES 2 -7.382827e-01 6.419995e-09   5.938597e+01 5.785064e+01
+F3MES 3 -7.382827e-01 1.106500e-09   5.938690e+01 5.785170e+01
+END_EIGVALS of h(-r0)
+
+mxv operations for eigenvecs 4308
+re_setup  : lmin 6.644544e-01 lmax 2.700000e+00 prec 2.123375e-09 Norder 6
+shift[ 0 ]=2.479572e-02 coeff= 2.043963e-01
+shift[ 1 ]=2.608207e-01 coeff= 2.548626e-01
+shift[ 2 ]=9.941950e-01 coeff= 3.816785e-01
+shift[ 3 ]=3.237325e+00 coeff= 6.887395e-01
+shift[ 4 ]=1.234002e+01 coeff= 1.753045e+00
+shift[ 5 ]=1.298019e+02 coeff= 1.478854e+01
+scale dslash by 1.000000e+00
+now begin overlap eigenvalues
+
+-------------------eigenvalues of H(0)---------------------
+lambda = 3.218950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+gradient tolerance 1.000000e-05 eigVal change tolerance 1.000000e-06
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.201662 +/- 1.098901e+16 |grad|=0.630171
+quot(1) = 0.633832 +/- 1.098901e+16 |grad|=0.551484
+quot(2) = 0.656102 +/- 1.098901e+16 |grad|=0.54258
+quot(3) = 0.66932 +/- 1.098901e+16 |grad|=0.584375
+quot(4) = 0.687156 +/- 1.098901e+16 |grad|=0.722318
+quot(5) = 0.74549 +/- 1.098901e+16 |grad|=0.787436
+quot(6) = 0.783421 +/- 1.098901e+16 |grad|=0.777241
+quot(7) = 0.828255 +/- 1.098901e+16 |grad|=0.681254
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0102555 +/- 2.103368e-01 |grad|=0.147315
+quot(1) = 0.570646 +/- 6.943466e-02 |grad|=0.139947
+quot(2) = 0.586879 +/- 7.606924e-02 |grad|=0.141587
+quot(3) = 0.592288 +/- 8.465010e-02 |grad|=0.139488
+quot(4) = 0.601486 +/- 9.414344e-02 |grad|=0.137519
+quot(5) = 0.639537 +/- 1.164319e-01 |grad|=0.1284
+quot(6) = 0.6595 +/- 1.361762e-01 |grad|=0.0684844
+quot(7) = 0.668778 +/- 1.752485e-01 |grad|=0.159404
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.00391861 +/- 6.963621e-03 |grad|=0.0280107
+quot(1) = 0.532076 +/- 4.238521e-02 |grad|=0.0376704
+quot(2) = 0.53928 +/- 5.230674e-02 |grad|=0.0354033
+quot(3) = 0.541265 +/- 5.607006e-02 |grad|=0.0360811
+quot(4) = 0.542626 +/- 6.468066e-02 |grad|=0.0371219
+quot(5) = 0.543664 +/- 1.053549e-01 |grad|=0.0355054
+quot(6) = 0.545341 +/- 1.254500e-01 |grad|=0.0430372
+quot(7) = 0.559318 +/- 1.202864e-01 |grad|=0.0393679
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.00375024 +/- 1.850223e-04 |grad|=0.00351892
+quot(1) = 0.531045 +/- 1.132550e-03 |grad|=0.00971225
+quot(2) = 0.53655 +/- 3.000517e-03 |grad|=0.0102249
+quot(3) = 0.539793 +/- 1.616881e-03 |grad|=0.00876299
+quot(4) = 0.539815 +/- 3.089132e-03 |grad|=0.0107793
+quot(5) = 0.54231 +/- 1.487842e-03 |grad|=0.00984201
+quot(6) = 0.542329 +/- 3.309719e-03 |grad|=0.0105001
+quot(7) = 0.557142 +/- 2.390617e-03 |grad|=0.0115578
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.00374416 +/- 6.681597e-06 |grad|=0.000613313
+quot(1) = 0.53092 +/- 1.379101e-04 |grad|=0.00271295
+quot(2) = 0.536515 +/- 3.842113e-05 |grad|=0.0027428
+quot(3) = 0.539767 +/- 2.899522e-05 |grad|=0.00245014
+quot(4) = 0.539774 +/- 4.579291e-05 |grad|=0.00248285
+quot(5) = 0.542287 +/- 2.577721e-05 |grad|=0.00218459
+quot(6) = 0.542292 +/- 4.009917e-05 |grad|=0.00253694
+quot(7) = 0.557108 +/- 3.726997e-05 |grad|=0.00343957
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.00374411 +/- 5.511967e-08 |grad|=0.000263543
+quot(1) = 0.530917 +/- 2.778693e-06 |grad|=0.000455777
+quot(2) = 0.536502 +/- 1.404149e-05 |grad|=0.000792147
+quot(3) = 0.539764 +/- 3.156846e-06 |grad|=0.000608283
+quot(4) = 0.539764 +/- 1.047861e-05 |grad|=0.000663379
+quot(5) = 0.542282 +/- 5.899709e-06 |grad|=0.000710938
+quot(6) = 0.542282 +/- 1.161933e-05 |grad|=0.000968286
+quot(7) = 0.557086 +/- 2.488434e-05 |grad|=0.000684578
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.0037441 +/- 1.692067e-08 |grad|=0.000201105
+quot(1) = 0.530917 +/- 2.807532e-08 |grad|=0.000347064
+quot(2) = 0.536502 +/- 2.116954e-07 |grad|=0.000714879
+quot(3) = 0.539764 +/- 1.502674e-07 |grad|=0.00037618
+quot(4) = 0.539764 +/- 1.461634e-07 |grad|=0.000553102
+quot(5) = 0.542281 +/- 1.048931e-07 |grad|=0.000491638
+quot(6) = 0.542282 +/- 2.312242e-07 |grad|=0.000531524
+quot(7) = 0.557086 +/- 2.160378e-07 |grad|=0.000246458
+total Rayleigh iters = 1649
+
+START_EIGVALS of h(0)
+Eigval 0 3.744099e-03
+Eigval 1 5.309170e-01
+Eigval 2 5.365017e-01
+Eigval 3 5.397638e-01
+Eigval 4 5.397640e-01
+Eigval 5 5.422815e-01
+Eigval 6 5.422817e-01
+Eigval 7 5.570856e-01
+END_EIGVALS of h(0)
+
+Need 1 random  positive chirality vectors
+lambda = 2.018950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+
+----------------find sector of lowest chirality----------------------
+loading the lowest 2 eigenvecs  of H_0^2 in the chirality sector of the minimum 
+taking positive chirality part of vector 0
+taking negative chirality part of vector 0
+gradient tolerance 1.000000e-05 eigVal change tolerance 1.000000e-06
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.587857 +/- 1.098901e+16 |grad|=0.00355598
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.587829 +/- 3.001244e-05 |grad|=0.000572094
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.587829 +/- 1.052209e-07 |grad|=0.000384718
+gradient tolerance 1.000000e-05 eigVal change tolerance 1.000000e-06
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 2.18742e-06 +/- 1.098901e+16 |grad|=0.00168385
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = -1.45043e-07 +/- 2.563141e-06 |grad|=0.000162466
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = -1.9006e-08 +/- 1.385019e-07 |grad|=7.75644e-05
+total Rayleigh iters = 14
+
+START_EIGVALS for finding chirality of lowest eigenvalue
+eigval 0 5.878292e-01
+eigval 1 -1.900596e-08
+2 state min energy H0^2 chirality -1.900596e-08 -1.000000e+00  -1
+eigValcut 5.878292e-01
+TRIAL CHIRALITY -1
+END_EIGVALS for finding chirality of lowest eigenvalue
+
+-----------------eigenvalues of H_ov-----------------------
+pass 2, want 4 eigenmodes in chirality sector -1
+gradient tolerance 1.000000e-05 eigVal change tolerance 1.000000e-06
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 3.43715e-09 +/- 1.098901e+16 |grad|=1.96406e-05
+quot(1) = 0.58507 +/- 1.098901e+16 |grad|=0.00492475
+quot(2) = 0.58507 +/- 1.098901e+16 |grad|=0.00493569
+quot(3) = 0.717831 +/- 1.098901e+16 |grad|=0.196843
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = -1.8185e-07 +/- 2.036119e-07 |grad|=9.18736e-06
+quot(1) = 0.585056 +/- 1.550340e-05 |grad|=0.00125393
+quot(2) = 0.585056 +/- 1.555015e-05 |grad|=0.000971218
+quot(3) = 0.588269 +/- 1.423757e-01 |grad|=0.018414
+vector 0 converged
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = -1.8185e-07 +/- 3.565822e-13 |grad|=9.18727e-06
+quot(1) = 0.585055 +/- 1.034017e-06 |grad|=0.000276113
+quot(2) = 0.585055 +/- 8.052011e-07 |grad|=0.000235595
+quot(3) = 0.587863 +/- 4.457602e-04 |grad|=0.00520163
+vector 0 converged
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = -1.8185e-07 +/- 1.561719e-13 |grad|=9.18727e-06
+quot(1) = 0.585055 +/- 7.108316e-07 |grad|=0.00041278
+quot(2) = 0.585057 +/- 2.108000e-06 |grad|=0.000967539
+quot(3) = 0.587829 +/- 3.722914e-05 |grad|=0.00101009
+vector 0 converged
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = -1.8185e-07 +/- 6.994191e-14 |grad|=9.18727e-06
+quot(1) = 0.585055 +/- 6.134473e-07 |grad|=0.000429983
+quot(2) = 0.585055 +/- 2.445477e-06 |grad|=0.000132091
+quot(3) = 0.587829 +/- 2.615278e-07 |grad|=0.000155343
+vector 0 converged
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = -1.8185e-07 +/- 2.579969e-13 |grad|=9.18727e-06
+quot(1) = 0.585055 +/- 9.012025e-08 |grad|=0.000146338
+quot(2) = 0.585055 +/- 2.263345e-08 |grad|=0.000100149
+quot(3) = 0.587829 +/- 2.866988e-07 |grad|=0.00051104
+total Rayleigh iters = 229
+calling last analysis package
+
+START_EIGVALS of H_ov and other properties
+source chirality -1
+F3HO2V 0 -1.818501e-07 -1.000001e+00
+F3HO2V 1 5.850548e-01 -9.999998e-01
+F3HO2V 2 5.850550e-01 -1.000000e+00
+F3HO2V 3 5.878293e-01 -1.000000e+00
+4  modes below threshold 5.878292e-01
+Eigenvalue_hov(0)= -1.818501e-07
+F3OGH01X1 0 4.264389e-04  -1.000001e+00   1.776829e-04
+Eigenvalue_hov(1)= 5.850548e-01
+ARRAY -2.437728e-01 8.071982e-08       
+ARRAY 7.250031e-01 -1.210765e-11       2.437727e-01 -7.840614e-08       
+F3OGH02X2 0 -7.648887e-01  -3.187036e-01 0.000000e+00  -3.187036e-01
+F3OGH02X2 1 7.648886e-01  3.187034e-01 0.000000e+00  3.187036e-01
+Eigenvalue_hov(2)= 5.850550e-01
+ARRAY -2.437730e-01 -1.038454e-07       
+ARRAY 7.250029e-01 -1.627196e-10       2.437729e-01 9.214420e-08       
+F3OGH02X2 0 -7.648886e-01  -3.187038e-01 0.000000e+00  -3.187036e-01
+F3OGH02X2 1 7.648885e-01  3.187035e-01 0.000000e+00  3.187035e-01
+Eigenvalue_hov(3)= 5.878293e-01
+ARRAY -2.449290e-01 2.996497e-09       
+ARRAY 7.265257e-01 -5.663259e-11       2.449289e-01 2.986860e-10       
+F3OGH02X2 0 -7.667006e-01  -3.194583e-01 0.000000e+00  -3.194586e-01
+F3OGH02X2 1 7.667005e-01  3.194583e-01 0.000000e+00  3.194585e-01
+ZEROMODES 1 CHIRALITY -1
+END_EIGVALS of H_ov and other properties
+
+mxv operations in build_hov: 14584
+TESTNORM 9.999987e-01 0.000000e+00
+TESTNORM 9.999999e-01 9.999990e-01
+TESTNORM 1.000000e+00 9.999998e-01
+TESTNORM 9.999999e-01 9.999996e-01
+ZEROMODES -1
+reset current TOPOLOGY -1
+0 mass 1.000000e-02 shift0 1.000017e-04 coeff0 1.000017e+00
+1 mass 2.000000e-02 shift0 4.000278e-04 coeff0 1.000069e+00
+2 mass 5.000000e-02 shift0 2.501086e-03 coeff0 1.000434e+00
+3 mass 1.000000e-01 shift0 1.001739e-02 coeff0 1.001739e+00
+mass 1.000000e-02 mode 0 -1 1.000000e+02 0.000000e+00
+mass 1.000000e-02 mode 1 0 1.535395e-02 1.239015e+00
+mass 1.000000e-02 mode 2 0 1.535394e-02 1.239015e+00
+mass 1.000000e-02 mode 3 0 1.527329e-02 1.235757e+00
+mass 2.000000e-02 mode 0 -1 5.000000e+01 0.000000e+00
+mass 2.000000e-02 mode 1 0 3.069376e-02 1.238445e+00
+mass 2.000000e-02 mode 2 0 3.069374e-02 1.238445e+00
+mass 2.000000e-02 mode 3 0 3.053260e-02 1.235191e+00
+mass 5.000000e-02 mode 0 -1 2.000000e+01 0.000000e+00
+mass 5.000000e-02 mode 1 0 7.648788e-02 1.234466e+00
+mass 5.000000e-02 mode 2 0 7.648784e-02 1.234466e+00
+mass 5.000000e-02 mode 3 0 7.608756e-02 1.231244e+00
+mass 1.000000e-01 mode 0 -1 1.000000e+01 0.000000e+00
+mass 1.000000e-01 mode 1 0 1.512406e-01 1.220464e+00
+mass 1.000000e-01 mode 2 0 1.512405e-01 1.220463e+00
+mass 1.000000e-01 mode 3 0 1.504579e-01 1.217350e+00
+Propagator color 0 spin 0
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 0.000000e+00 0.000000e+00
+projector 1 -5.133079e-01 -6.317427e-01
+projector 2 3.515968e-01 8.484405e-01
+projector 3 6.597490e-01 -5.864965e-01
+inverting source color 0 spin 0 chirality 1
+congrad: source_norm = 1.066602e+01
+iter 0 residue 2.191461e+00  1.200000e-07
+iter 5 residue 3.548442e-04  1.440000e-07
+ vector 1 converged in 10 steps 8.097274e-10
+ vector 2 converged in 10 steps 7.916977e-10
+ vector 3 converged in 10 steps 7.306670e-10
+iter 10 residue 8.123381e-10  1.728000e-07
+cg iters 11 residue 8.123381e-10
+Propagator color 0 spin 1
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 0.000000e+00 0.000000e+00
+projector 1 -1.177143e+00 6.983438e-01
+projector 2 -7.322954e-01 -7.765365e-01
+projector 3 1.247118e+00 4.266033e-02
+inverting source color 0 spin 1 chirality 1
+congrad: source_norm = 8.381589e+00
+iter 0 residue 3.224424e-01  2.985984e-07
+iter 5 residue 1.967937e-04  5.159781e-07
+ vector 1 converged in 10 steps 2.350935e-10
+ vector 2 converged in 10 steps 2.298907e-10
+ vector 3 converged in 10 steps 2.122737e-10
+iter 10 residue 2.358468e-10  6.191738e-07
+cg iters 11 residue 2.358468e-10
+Propagator color 0 spin 2
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 6.478098e-01 -2.382929e-01
+projector 1 1.714568e-01 1.359212e-01
+projector 2 1.147431e-01 1.665394e-01
+projector 3 1.880127e-01 1.952343e-01
+inverting source color 0 spin 2 chirality -1
+congrad: source_norm = 1.231265e+01
+iter 0 residue 4.239905e+00  1.540703e-06
+iter 5 residue 2.095874e-04  3.833761e-06
+iter 10 residue 1.139771e-08  9.539625e-06
+ vector 1 converged in 12 steps 7.587346e-11
+ vector 2 converged in 12 steps 7.369270e-11
+ vector 3 converged in 12 steps 6.642329e-11
+cg iters 13 residue 7.619046e-11
+Propagator color 0 spin 3
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 -7.330115e-04 1.593704e-03
+projector 1 -2.645817e-01 -1.773694e-01
+projector 2 2.728316e-01 -3.678132e-02
+projector 3 5.603216e-03 1.598273e-04
+inverting source color 0 spin 3 chirality -1
+congrad: source_norm = 1.277404e+01
+iter 0 residue 4.818634e+00  3.418220e-05
+iter 5 residue 1.076235e-04  8.505625e-05
+iter 10 residue 3.024892e-09  1.020675e-04
+ vector 1 converged in 12 steps 2.392731e-10
+ vector 2 converged in 12 steps 2.322430e-10
+ vector 3 converged in 12 steps 2.088468e-10
+cg iters 13 residue 2.402955e-10
+Propagator color 1 spin 0
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 0.000000e+00 0.000000e+00
+projector 1 4.457196e-01 -1.059332e+00
+projector 2 -4.248774e-01 -1.229325e+00
+projector 3 4.176804e-02 -1.246873e+00
+inverting source color 1 spin 0 chirality 1
+congrad: source_norm = 8.382284e+00
+iter 0 residue 3.229481e-01  1.224810e-04
+iter 5 residue 1.972486e-04  7.088021e-05
+ vector 1 converged in 10 steps 2.401691e-10
+ vector 2 converged in 10 steps 2.348535e-10
+ vector 3 converged in 10 steps 2.168547e-10
+iter 10 residue 2.409387e-10  8.505625e-05
+cg iters 11 residue 2.409387e-10
+Propagator color 1 spin 1
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 0.000000e+00 0.000000e+00
+projector 1 5.132462e-01 6.309674e-01
+projector 2 -3.520255e-01 -8.486717e-01
+projector 3 -6.299410e-01 6.184010e-01
+inverting source color 1 spin 1 chirality 1
+congrad: source_norm = 1.066637e+01
+iter 0 residue 2.191774e+00  3.418220e-05
+iter 5 residue 3.548504e-04  2.848517e-05
+ vector 1 converged in 10 steps 8.176353e-10
+ vector 2 converged in 10 steps 7.994288e-10
+ vector 3 converged in 10 steps 7.378001e-10
+iter 10 residue 8.202715e-10  4.922237e-05
+cg iters 11 residue 8.202715e-10
+Propagator color 1 spin 2
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 1.593621e-03 7.330950e-04
+projector 1 -1.298882e-01 -2.288990e-01
+projector 2 -2.443588e-01 2.209481e-01
+projector 3 2.485554e-04 -5.543668e-03
+inverting source color 1 spin 2 chirality -1
+congrad: source_norm = 1.277350e+01
+iter 0 residue 4.817986e+00  8.505625e-05
+iter 5 residue 1.075856e-04  7.088021e-05
+iter 10 residue 3.975019e-09  5.906684e-05
+ vector 3 converged in 12 steps 1.228162e-09
+iter 15 residue 2.636025e-07  7.088021e-05
+ vector 2 converged in 18 steps 6.152918e-10
+ vector 1 converged in 19 steps 2.559869e-10
+iter 20 residue 2.288356e-10  8.505625e-05
+cg iters 21 residue 2.288356e-10
+Propagator color 1 spin 3
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 6.469503e-01 -2.406163e-01
+projector 1 -1.713490e-01 -1.356938e-01
+projector 2 -1.144526e-01 -1.665482e-01
+projector 3 1.821061e-01 2.008599e-01
+inverting source color 1 spin 3 chirality -1
+congrad: source_norm = 1.231277e+01
+iter 0 residue 4.239949e+00  1.469772e-04
+iter 5 residue 2.095682e-04  1.224810e-04
+iter 10 residue 2.661945e-08  1.020675e-04
+iter 15 residue 1.528719e-05  1.224810e-04
+ vector 3 converged in 18 steps 7.371827e-11
+ vector 1 converged in 19 steps 7.884013e-10
+ vector 2 converged in 19 steps 1.933887e-11
+iter 20 residue 3.938866e-10  1.469772e-04
+cg iters 21 residue 3.938866e-10
+Propagator color 2 spin 0
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 0.000000e+00 0.000000e+00
+projector 1 -2.843413e-04 -1.703699e-04
+projector 2 -1.089038e-05 -2.000389e-06
+projector 3 1.767258e-04 9.972000e-05
+inverting source color 2 spin 0 chirality 1
+congrad: source_norm = 1.295133e+01
+iter 0 residue 5.220904e+00  8.505625e-05
+ vector 1 converged in 5 steps 1.074856e-09
+ vector 2 converged in 5 steps 1.063809e-09
+ vector 3 converged in 5 steps 1.025381e-09
+iter 5 residue 1.076444e-09  1.020675e-04
+cg iters 6 residue 1.076444e-09
+Propagator color 2 spin 1
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 0.000000e+00 0.000000e+00
+projector 1 -4.913554e-04 3.583690e-04
+projector 2 1.587342e-04 3.226627e-05
+projector 3 1.350388e-04 3.211044e-05
+inverting source color 2 spin 1 chirality 1
+congrad: source_norm = 1.295133e+01
+iter 0 residue 5.220880e+00  1.224810e-04
+iter 5 residue 3.026223e-09  1.020675e-04
+ vector 1 converged in 7 steps 5.408325e-13
+ vector 2 converged in 7 steps 5.310720e-13
+ vector 3 converged in 7 steps 4.977610e-13
+cg iters 8 residue 5.422429e-13
+Propagator color 2 spin 2
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 -4.848517e-09 2.630538e-08
+projector 1 3.877679e-04 1.062535e-04
+projector 2 3.308449e-04 -2.106546e-04
+projector 3 2.106241e-04 -4.533769e-05
+inverting source color 2 spin 2 chirality -1
+congrad: source_norm = 1.295133e+01
+iter 0 residue 5.220882e+00  1.224810e-04
+iter 5 residue 2.510948e-09  1.469772e-04
+ vector 1 converged in 7 steps 6.058561e-12
+ vector 2 converged in 7 steps 5.949108e-12
+ vector 3 converged in 7 steps 5.575586e-12
+cg iters 8 residue 6.074377e-12
+Propagator color 2 spin 3
+Original: source_norm = 1.295133e+01
+removing 4 modes from source
+projector 0 -2.945849e-09 6.761061e-09
+projector 1 4.834848e-05 -7.149202e-04
+projector 2 -1.625837e-04 -2.241241e-04
+projector 3 5.884561e-05 1.624399e-06
+inverting source color 2 spin 3 chirality -1
+congrad: source_norm = 1.295133e+01
+iter 0 residue 5.220691e+00  2.539766e-04
+iter 5 residue 4.609045e-09  1.469772e-04
+ vector 1 converged in 7 steps 1.055042e-11
+ vector 2 converged in 7 steps 1.036095e-11
+ vector 3 converged in 7 steps 9.714178e-12
+cg iters 8 residue 1.057779e-11
+record[0].checksum  "0xf5fcc5fd 0x6645b6ef" 
+record[1].checksum  "0xca37ad47 0xd1596fc3" 
+record[2].checksum  "0x490a4160 0x54fb90fd" 
+record[3].checksum  "0xac0a4eed 0x7493b284" 
+record[4].checksum  "0x2e373eb6 0x43b59499" 
+record[5].checksum  "0x5f0b24c7 0x5969c22c" 
+record[6].checksum  "0x6ac29df6 0x4a3998c" 
+record[7].checksum  "0xb0be89a2 0x80b46bae" 
+record[8].checksum  "0x20550f53 0xc0b1027e" 
+record[9].checksum  "0xb62a1b6d 0xe9b80c4d" 
+record[10].checksum  "0x1f111a6b 0xeb141d8f" 
+record[11].checksum  "0x17c6fd13 0x1a23d8c0" 
+Wrote prop file su3_ov_eig_cg_multi.Ritz.www.1.test-out.n0.010000 time stamp Fri Jan 20 05:27:46 2012
+record[0].checksum  "0x5f4f5fef 0x5490b8d0" 
+record[1].checksum  "0x924a4477 0x79ec4cc2" 
+record[2].checksum  "0x32df5349 0x5f1ba2ca" 
+record[3].checksum  "0x7cdd7cbd 0xbadb8137" 
+record[4].checksum  "0xc403088 0x4978a91d" 
+record[5].checksum  "0x86be49c0 0x964e0574" 
+record[6].checksum  "0xb0744b94 0xaab0ea0" 
+record[7].checksum  "0x48aa8cb6 0x26173b6a" 
+record[8].checksum  "0x17729b0e 0x50c569a9" 
+record[9].checksum  "0x9fc55856 0x3eaeb194" 
+record[10].checksum  "0xe88071a5 0x19b38d64" 
+record[11].checksum  "0x1e333581 0x59f45b33" 
+Wrote prop file su3_ov_eig_cg_multi.Ritz.www.1.test-out.n0.020000 time stamp Fri Jan 20 05:27:46 2012
+record[0].checksum  "0xe7e5dcf0 0x5437ceea" 
+record[1].checksum  "0x2fc7dfce 0x324832c5" 
+record[2].checksum  "0x91662483 0xba389550" 
+record[3].checksum  "0x7a32426c 0x158dfb18" 
+record[4].checksum  "0x3081e989 0x383b294c" 
+record[5].checksum  "0x4ffad6bf 0xf778c3bb" 
+record[6].checksum  "0xea71b28f 0xf7aa9a20" 
+record[7].checksum  "0xed63a2ce 0xdd06743f" 
+record[8].checksum  "0x493650c6 0xec4f66ba" 
+record[9].checksum  "0x65a543cb 0x70e3ce10" 
+record[10].checksum  "0x87087054 0x80559c9c" 
+record[11].checksum  "0x3c680c7 0xa03fe722" 
+Wrote prop file su3_ov_eig_cg_multi.Ritz.www.1.test-out.n0.050000 time stamp Fri Jan 20 05:27:46 2012
+record[0].checksum  "0xec5d52cc 0x5358e949" 
+record[1].checksum  "0x2804ef5d 0x67de359f" 
+record[2].checksum  "0x52092387 0xf5fab54" 
+record[3].checksum  "0x45c3a197 0x3f7ba99d" 
+record[4].checksum  "0xb92f0d8 0x7e2d44e8" 
+record[5].checksum  "0x290e5b64 0xf6ad7cfc" 
+record[6].checksum  "0xdbabc375 0x6ef09c73" 
+record[7].checksum  "0x1e80d125 0xb13bec27" 
+record[8].checksum  "0x4ab1dcd 0x865afb6d" 
+record[9].checksum  "0xacdb0b9b 0xc717568c" 
+record[10].checksum  "0xdc9c5b63 0x9590f0b4" 
+record[11].checksum  "0x5d8c1e05 0x32318163" 
+Wrote prop file su3_ov_eig_cg_multi.Ritz.www.1.test-out.n0.100000 time stamp Fri Jan 20 05:27:46 2012
+RUNNING COMPLETED
+avm_iters 1.420000e+02
+Time = 6.725563e+01 seconds
+
+
+get_f(0): EOF on input.
+exit: Fri Jan 20 05:28:01 2012
+
+66.008u 0.232s 1:07.33 98.3%	0+0k 0+0io 0pf+0w

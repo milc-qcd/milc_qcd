@@ -7,11 +7,8 @@ iseed 3737
  
 beta 7.3
 u0 1.0
-number_of_masses 4
-m0 0.01
-m0 0.02
-m0 0.05
-m0 0.1
+number_of_masses 1
+m0 0.0
 R0 1.2
 scalez 1.0
 prec_sign 1.e-7
@@ -35,12 +32,6 @@ error_decr_high .3
 max_cg_iterations 100
 max_cg_restarts 1
 error_for_fermforce  1.e-5
-error_for_fermforce  1.e-5
-error_for_fermforce  1.e-5
-error_for_fermforce  1.e-5
-error_for_fermaction  1.e-5
-error_for_fermaction  1.e-5
-error_for_fermaction  1.e-5
 error_for_fermaction  1.e-5
 gaussian
 subset full
@@ -49,12 +40,12 @@ r0 2.0
 source_label G
 reload_serial ../../binary_samples/lat.sample.inst
 topology 100
-coulomb_gauge_fix
+no_gauge_fix
 forget
 fresh_wprop
-save_serial_fm_sc_wprop su3_ov_eig_cg_multi.write.www.1.test-out
+forget_wprop
 fresh_hr0_modes
-serial_hr0_modes su3_ov_eig_cg_multi.write.hr0.1.test-out
+forget_hr0_modes
 fresh_hov_modes
-serial_hov_modes su3_ov_eig_cg_multi.write.hov.1.test-out
+forget_hov_modes
 

@@ -47,7 +47,7 @@ subset full
 origin 0 0 0 0
 r0 2.0
 source_label G
-reload_serial ../c4444.d
+reload_serial ../../binary_samples/lat.sample.inst
 topology 100
 coulomb_gauge_fix
 forget

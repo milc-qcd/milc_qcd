@@ -1,0 +1,803 @@
+nHYP links with 3 smearing level(s)
+HARD-CODED alpha_smear={0.75, 0.6, 0.3}
+IR_STAB=1.000000e-06,  EPS_SQ=1.000000e-05 
+Antiperiodic boundary conditions
+MIMD version 7 $Name:  $
+Machine = Scalar processor, with 1 nodes
+start: Fri Jan 20 05:23:16 2012
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 3737
+LAYOUT = Hypercubes, options = with fixed node_geometry
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.4 MBytes per node for lattice
+Mallocing 1.1 MBytes per node for fields
+only enough offsets for planar action
+
+
+beta 7.3
+u0 1
+number_of_masses 1
+m0 0
+R0 1.2
+scalez 1
+prec_sign 1e-07
+zolo_min 0.02
+zolo_max 2.7
+inner_cg_iterations 1000
+inner_residue 1e-07
+inner_residue_h 1e-07
+Number_of_inner_eigenvals 4
+Number_of_h0_eigenvals 8
+Number_of_hov_eigenvals 4
+Max_Rayleigh_iters 1000
+Max_r0_iters 100
+Restart_Rayleigh 10
+Kalkreuter_iters 10
+eigenvec_quality 0.00012
+eigenval_tol_low 1e-06
+error_decr_low 0.3
+eigenval_tol_high 1e-07
+error_decr_high 0.3
+max_cg_iterations 100
+max_cg_restarts 1
+error_for_fermforce 1e-05
+error_for_fermaction 1e-05
+gaussian
+subset full
+origin 0 0 0 0 
+r0 2
+source_label G
+reload_serial ../../binary_samples/lat.sample.inst
+topology 100
+NOT fixing the gauge
+forget 
+fresh_wprop 
+forget_wprop 
+fresh_hr0_modes
+forget_hr0_modes 
+fresh_hov_modes
+ forget_hov_modes
+ Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 1.829113e-03
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+CHECK NERSC LINKTR: 9.916278e-01 CKSUM: a0e19040
+Unitarity checked.  Max deviation 1.46e-07
+Time to check unitarity = 1.390389e-04
+GAUGE FIXING SKIPPED.
+FATLINK -2.817587e+00 3.223249e-09 0.000000e+00 2.976293e+00 2.976293e+00
+shift multi mass R0 1.200000e+00
+Zolotarov inner CG order 0
+inner CG steps 1000  resid 1.000000e-07
+lmin 2.000000e-02 lmax 2.700000e+00 prec 2.671116e-08 Norder 12
+shift[ 0 ]=2.812497e-05 coeff= 6.906356e-03
+shift[ 1 ]=3.028145e-04 coeff= 8.848960e-03
+shift[ 2 ]=1.183007e-03 coeff= 1.328127e-02
+shift[ 3 ]=3.729084e-03 coeff= 2.145363e-02
+shift[ 4 ]=1.101138e-02 coeff= 3.568286e-02
+shift[ 5 ]=3.183655e-02 coeff= 6.005973e-02
+shift[ 6 ]=9.159283e-02 coeff= 1.018711e-01
+shift[ 7 ]=2.648169e-01 coeff= 1.749894e-01
+shift[ 8 ]=7.819614e-01 coeff= 3.106650e-01
+shift[ 9 ]=2.464906e+00 coeff= 6.062421e-01
+shift[ 10 ]=9.629658e+00 coeff= 1.578009e+00
+shift[ 11 ]=1.036801e+02 coeff= 1.326022e+01
+scale dslash by 1.000000e+00
+mass= 0 r0= 2 residue= 1e-05
+
+TEST PROJECTOR planar action 
+lambda = 2.018950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+random initial vectors for h(m0)
+calling hr0 with Maxr0Iter 100
+gradient tolerance 1.000000e-06 eigVal change tolerance 1.000000e-07
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.11872 +/- 1.098901e+16 |grad|=0.41807
+quot(1) = 0.716567 +/- 1.098901e+16 |grad|=0.425413
+quot(2) = 1.16312 +/- 1.098901e+16 |grad|=0.449897
+quot(3) = 1.2196 +/- 1.098901e+16 |grad|=0.407188
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0233732 +/- 1.047772e-01 |grad|=0.0590982
+quot(1) = 0.555872 +/- 1.765870e-01 |grad|=0.116191
+quot(2) = 0.559249 +/- 6.635932e-01 |grad|=0.122938
+quot(3) = 0.568841 +/- 7.151190e-01 |grad|=0.128756
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.022164 +/- 1.328866e-03 |grad|=0.00294319
+quot(1) = 0.541409 +/- 1.589428e-02 |grad|=0.0350539
+quot(2) = 0.545592 +/- 1.500776e-02 |grad|=0.0262394
+quot(3) = 0.546362 +/- 2.470219e-02 |grad|=0.0355585
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.0221587 +/- 5.844217e-06 |grad|=0.00040064
+quot(1) = 0.540147 +/- 1.386759e-03 |grad|=0.00912396
+quot(2) = 0.54509 +/- 5.512202e-04 |grad|=0.00716497
+quot(3) = 0.545118 +/- 1.366479e-03 |grad|=0.00690902
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.0221586 +/- 6.351685e-08 |grad|=8.89638e-05
+quot(1) = 0.540053 +/- 1.032857e-04 |grad|=0.00221667
+quot(2) = 0.545063 +/- 3.006387e-05 |grad|=0.00161083
+quot(3) = 0.545068 +/- 5.489869e-05 |grad|=0.00219943
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.0221586 +/- 3.159237e-10 |grad|=4.1341e-05
+quot(1) = 0.540049 +/- 4.423312e-06 |grad|=0.000651503
+quot(2) = 0.545061 +/- 1.758523e-06 |grad|=0.000426137
+quot(3) = 0.545062 +/- 7.463182e-06 |grad|=0.000485825
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.0221586 +/- 2.505805e-09 |grad|=3.02758e-05
+quot(1) = 0.540048 +/- 4.097637e-07 |grad|=0.000187613
+quot(2) = 0.545061 +/- 7.467971e-08 |grad|=0.000296817
+quot(3) = 0.545062 +/- 1.457905e-07 |grad|=0.000201803
+
+Eigenvalues after diagonalization at iteration 8
+quot(0) = 0.0221586 +/- 9.398476e-10 |grad|=1.44451e-05
+quot(1) = 0.540048 +/- 2.734426e-08 |grad|=0.000234629
+quot(2) = 0.545061 +/- 5.408255e-08 |grad|=0.000141848
+quot(3) = 0.545061 +/- 7.742434e-08 |grad|=0.000262895
+total Rayleigh iters = 224
+F3HSQ 0 2.215859e-02
+F3HSQ 1 5.400484e-01
+F3HSQ 2 5.450614e-01
+F3HSQ 3 5.450615e-01
+F3MEX 0 -1.488577e-01 -9.067303e-09 9.760892e-06 
+F3MEX 1 -7.348791e-01 -2.008332e-08 8.536852e-04 F
+F3MEX 2 -7.382827e-01 1.197364e-08 1.704220e-04 F
+F3MEX 3 -7.382829e-01 -3.984425e-09 1.684212e-04 F
+
+RETRY 1
+calling hr0 with Maxr0Iter 100
+gradient tolerance 5.000000e-07 eigVal change tolerance 5.000000e-08
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.0221586 +/- 8.640759e-10 |grad|=1.13511e-05
+quot(1) = 0.540048 +/- 3.949698e-09 |grad|=0.000271491
+quot(2) = 0.545061 +/- 3.915361e-08 |grad|=5.83141e-05
+quot(3) = 0.545061 +/- 4.384232e-08 |grad|=5.25107e-05
+quot(4) = 1.25104 +/- 1.098901e+16 |grad|=0.320403
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0221586 +/- 6.809506e-09 |grad|=9.29794e-06
+quot(1) = 0.540048 +/- 1.180743e-07 |grad|=0.000192713
+quot(2) = 0.545061 +/- 1.200027e-07 |grad|=0.000160938
+quot(3) = 0.545061 +/- 7.399459e-08 |grad|=0.000407692
+quot(4) = 0.712243 +/- 5.920847e-01 |grad|=0.0784166
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.0221586 +/- 4.980465e-09 |grad|=1.06377e-05
+quot(1) = 0.540048 +/- 1.221159e-07 |grad|=0.000208225
+quot(2) = 0.545061 +/- 6.547592e-08 |grad|=0.000195167
+quot(3) = 0.545061 +/- 9.713179e-09 |grad|=0.000189144
+quot(4) = 0.704739 +/- 8.245883e-03 |grad|=0.0232403
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.0221586 +/- 6.903668e-09 |grad|=7.02322e-06
+quot(1) = 0.540048 +/- 4.905079e-08 |grad|=0.000166554
+quot(2) = 0.545061 +/- 4.687372e-08 |grad|=0.000106126
+quot(3) = 0.545061 +/- 4.274636e-08 |grad|=0.000131846
+quot(4) = 0.679606 +/- 2.761918e-02 |grad|=0.00685018
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.0221586 +/- 2.193241e-09 |grad|=4.30694e-06
+quot(1) = 0.540048 +/- 2.359288e-08 |grad|=0.000167122
+quot(2) = 0.545061 +/- 9.902084e-08 |grad|=9.18925e-05
+quot(3) = 0.545062 +/- 9.250951e-08 |grad|=0.000149472
+quot(4) = 0.679234 +/- 4.086046e-04 |grad|=0.00171912
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.0221586 +/- 7.020952e-09 |grad|=9.75008e-06
+quot(1) = 0.540048 +/- 9.860460e-08 |grad|=0.000236926
+quot(2) = 0.545061 +/- 1.310518e-07 |grad|=6.24159e-05
+quot(3) = 0.545061 +/- 9.935016e-08 |grad|=0.000117385
+quot(4) = 0.679232 +/- 2.231152e-06 |grad|=0.000509237
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.0221586 +/- 1.432949e-10 |grad|=4.54005e-06
+quot(1) = 0.540048 +/- 4.194876e-08 |grad|=0.000182893
+quot(2) = 0.545061 +/- 1.779116e-07 |grad|=0.000233694
+quot(3) = 0.545062 +/- 3.840193e-07 |grad|=0.000694881
+quot(4) = 0.67923 +/- 1.908826e-06 |grad|=0.000366504
+
+Eigenvalues after diagonalization at iteration 8
+quot(0) = 0.0221586 +/- 8.609157e-10 |grad|=1.5037e-05
+quot(1) = 0.540048 +/- 5.288655e-08 |grad|=0.000289388
+quot(2) = 0.545061 +/- 7.671503e-08 |grad|=0.000140665
+quot(3) = 0.545061 +/- 3.535253e-07 |grad|=0.000196286
+quot(4) = 0.67923 +/- 1.682254e-07 |grad|=0.000735384
+
+Eigenvalues after diagonalization at iteration 9
+quot(0) = 0.0221586 +/- 2.889658e-09 |grad|=1.9579e-06
+quot(1) = 0.540048 +/- 2.325110e-08 |grad|=7.26708e-05
+quot(2) = 0.545061 +/- 1.517335e-08 |grad|=0.000134861
+quot(3) = 0.545062 +/- 3.914669e-08 |grad|=0.000117272
+quot(4) = 0.67923 +/- 2.540990e-07 |grad|=0.000194489
+
+Eigenvalues after diagonalization at iteration 10
+quot(0) = 0.0221586 +/- 3.100799e-09 |grad|=3.22975e-06
+quot(1) = 0.540048 +/- 4.813717e-08 |grad|=0.000170898
+quot(2) = 0.545061 +/- 1.313591e-07 |grad|=0.000307464
+quot(3) = 0.545061 +/- 5.266413e-08 |grad|=0.000266495
+quot(4) = 0.67923 +/- 2.068449e-07 |grad|=0.00021386
+total Rayleigh iters = 492
+F3HSQ 0 2.215859e-02
+F3HSQ 1 5.400483e-01
+F3HSQ 2 5.450613e-01
+F3HSQ 3 5.450615e-01
+F3HSQ 4 6.792298e-01
+F3MEX 0 -1.488577e-01 1.113123e-08 1.137083e-06 
+F3MEX 1 -7.348797e-01 -1.292620e-08 8.200259e-05 
+F3MEX 2 -7.382826e-01 2.291983e-08 1.432616e-04 F
+F3MEX 3 -7.382829e-01 -3.954646e-09 1.299105e-04 F
+
+RETRY 2
+calling hr0 with Maxr0Iter 100
+gradient tolerance 2.500000e-07 eigVal change tolerance 2.500000e-08
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.0221586 +/- 1.451276e-09 |grad|=7.08205e-06
+quot(1) = 0.540048 +/- 6.303782e-08 |grad|=8.40819e-05
+quot(2) = 0.545061 +/- 6.432848e-08 |grad|=0.000128911
+quot(3) = 0.545061 +/- 1.019854e-08 |grad|=0.000131716
+quot(4) = 0.67923 +/- 1.682806e-07 |grad|=9.79641e-05
+quot(5) = 1.22042 +/- 1.098901e+16 |grad|=0.350138
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0221586 +/- 2.236726e-09 |grad|=1.15081e-05
+quot(1) = 0.540048 +/- 1.324431e-07 |grad|=5.92722e-05
+quot(2) = 0.545061 +/- 2.541226e-08 |grad|=0.000115538
+quot(3) = 0.545061 +/- 3.070251e-08 |grad|=6.64714e-05
+quot(4) = 0.67923 +/- 1.663325e-07 |grad|=0.000274831
+quot(5) = 0.718626 +/- 5.514251e-01 |grad|=0.10504
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.0221586 +/- 3.169698e-10 |grad|=9.15871e-06
+quot(1) = 0.540048 +/- 6.918364e-08 |grad|=0.000205889
+quot(2) = 0.545061 +/- 6.748858e-08 |grad|=8.8394e-05
+quot(3) = 0.545061 +/- 4.860699e-08 |grad|=8.46891e-05
+quot(4) = 0.67923 +/- 1.211825e-07 |grad|=0.000207696
+quot(5) = 0.709365 +/- 1.017681e-02 |grad|=0.0302401
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.0221586 +/- 2.906070e-09 |grad|=1.16276e-06
+quot(1) = 0.540048 +/- 3.046474e-08 |grad|=0.000230772
+quot(2) = 0.545061 +/- 3.302203e-08 |grad|=7.27362e-05
+quot(3) = 0.545061 +/- 4.629471e-08 |grad|=5.12445e-05
+quot(4) = 0.67923 +/- 4.522685e-07 |grad|=0.000617066
+quot(5) = 0.708119 +/- 1.369094e-03 |grad|=0.00666445
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.0221586 +/- 7.033559e-10 |grad|=4.08964e-06
+quot(1) = 0.540048 +/- 9.328488e-08 |grad|=6.39971e-05
+quot(2) = 0.545061 +/- 1.295406e-08 |grad|=0.000126632
+quot(3) = 0.545061 +/- 5.562067e-08 |grad|=0.000171306
+quot(4) = 0.67923 +/- 3.801107e-07 |grad|=0.000210016
+quot(5) = 0.708088 +/- 3.469564e-05 |grad|=0.00143547
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.0221586 +/- 2.433559e-09 |grad|=6.35083e-06
+quot(1) = 0.540048 +/- 6.172226e-08 |grad|=0.00013325
+quot(2) = 0.545061 +/- 2.040287e-08 |grad|=4.18206e-05
+quot(3) = 0.545062 +/- 9.654323e-08 |grad|=0.000141216
+quot(4) = 0.67923 +/- 2.868941e-09 |grad|=0.000140161
+quot(5) = 0.708085 +/- 3.092583e-06 |grad|=0.00036324
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.0221586 +/- 4.274574e-09 |grad|=5.03584e-06
+quot(1) = 0.540048 +/- 1.941352e-08 |grad|=9.16599e-05
+quot(2) = 0.545061 +/- 7.471393e-09 |grad|=5.11162e-05
+quot(3) = 0.545061 +/- 7.165090e-08 |grad|=0.000106267
+quot(4) = 0.67923 +/- 1.717212e-08 |grad|=0.000175157
+quot(5) = 0.708085 +/- 2.641647e-07 |grad|=0.000358768
+
+Eigenvalues after diagonalization at iteration 8
+quot(0) = 0.0221586 +/- 1.202048e-08 |grad|=6.12802e-06
+quot(1) = 0.540048 +/- 1.026388e-07 |grad|=2.09894e-05
+quot(2) = 0.545061 +/- 1.795227e-09 |grad|=0.000142273
+quot(3) = 0.545061 +/- 2.081390e-08 |grad|=0.000156452
+quot(4) = 0.67923 +/- 2.211418e-08 |grad|=0.000100189
+quot(5) = 0.708087 +/- 2.409161e-06 |grad|=0.00145594
+
+Eigenvalues after diagonalization at iteration 9
+quot(0) = 0.0221586 +/- 1.028249e-08 |grad|=1.33159e-05
+quot(1) = 0.540048 +/- 7.704496e-08 |grad|=0.000210267
+quot(2) = 0.545061 +/- 4.769427e-08 |grad|=8.87437e-05
+quot(3) = 0.545061 +/- 6.118104e-08 |grad|=8.60846e-05
+quot(4) = 0.67923 +/- 6.217211e-08 |grad|=9.83622e-05
+quot(5) = 0.708085 +/- 2.353323e-06 |grad|=0.000760363
+
+Eigenvalues after diagonalization at iteration 10
+quot(0) = 0.0221586 +/- 1.898679e-10 |grad|=4.57355e-06
+quot(1) = 0.540048 +/- 1.114618e-07 |grad|=7.58145e-05
+quot(2) = 0.545061 +/- 1.328845e-07 |grad|=7.309e-05
+quot(3) = 0.545061 +/- 2.031695e-09 |grad|=0.000208916
+quot(4) = 0.67923 +/- 5.692757e-08 |grad|=0.000198797
+quot(5) = 0.708085 +/- 3.629299e-07 |grad|=0.000177697
+total Rayleigh iters = 737
+F3HSQ 0 2.215859e-02
+F3HSQ 1 5.400484e-01
+F3HSQ 2 5.450614e-01
+F3HSQ 3 5.450615e-01
+F3HSQ 4 6.792297e-01
+F3HSQ 5 7.080849e-01
+F3MEX 0 -1.488577e-01 6.714369e-09 1.463888e-06 
+F3MEX 1 -7.348799e-01 -3.730827e-08 1.117256e-04 
+F3MEX 2 -7.382829e-01 1.311611e-08 4.690314e-05 
+F3MEX 3 -7.382827e-01 -8.602790e-09 1.915523e-04 F
+
+RETRY 3
+calling hr0 with Maxr0Iter 100
+gradient tolerance 1.250000e-07 eigVal change tolerance 1.250000e-08
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.0221586 +/- 2.367821e-09 |grad|=6.78149e-06
+quot(1) = 0.540048 +/- 1.428803e-07 |grad|=1.49785e-05
+quot(2) = 0.545061 +/- 5.275445e-08 |grad|=0.000295883
+quot(3) = 0.545061 +/- 5.070001e-08 |grad|=0.000219791
+quot(4) = 0.67923 +/- 9.659227e-09 |grad|=5.42419e-05
+quot(5) = 0.708085 +/- 8.938526e-08 |grad|=0.000195279
+quot(6) = 1.30432 +/- 1.098901e+16 |grad|=0.305701
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0221586 +/- 1.138048e-09 |grad|=7.91342e-06
+quot(1) = 0.540048 +/- 5.026778e-08 |grad|=8.19415e-05
+quot(2) = 0.545061 +/- 3.070179e-08 |grad|=7.46533e-05
+quot(3) = 0.545061 +/- 4.312956e-08 |grad|=0.000254817
+quot(4) = 0.67923 +/- 7.788162e-08 |grad|=0.000124204
+quot(5) = 0.708085 +/- 1.225419e-07 |grad|=0.000122588
+quot(6) = 0.894454 +/- 4.504036e-01 |grad|=0.0901554
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.0221586 +/- 3.609205e-09 |grad|=1.1149e-05
+quot(1) = 0.540048 +/- 4.267579e-08 |grad|=0.000145248
+quot(2) = 0.545061 +/- 4.994572e-08 |grad|=0.000232667
+quot(3) = 0.545061 +/- 6.389674e-08 |grad|=0.000127357
+quot(4) = 0.67923 +/- 1.845714e-08 |grad|=7.20951e-05
+quot(5) = 0.708085 +/- 8.450432e-08 |grad|=2.87074e-05
+quot(6) = 0.86302 +/- 3.454334e-02 |grad|=0.0253381
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.0221586 +/- 3.000192e-09 |grad|=5.05162e-06
+quot(1) = 0.540048 +/- 2.498493e-08 |grad|=0.000156912
+quot(2) = 0.545061 +/- 3.157768e-08 |grad|=0.000214876
+quot(3) = 0.545061 +/- 2.511001e-08 |grad|=0.000106887
+quot(4) = 0.67923 +/- 3.781283e-08 |grad|=4.09493e-05
+quot(5) = 0.708085 +/- 7.644474e-08 |grad|=0.000110431
+quot(6) = 0.860802 +/- 2.437453e-03 |grad|=0.00625176
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.0221586 +/- 6.214991e-09 |grad|=3.43712e-05
+quot(1) = 0.540048 +/- 1.274120e-07 |grad|=4.56665e-05
+quot(2) = 0.545061 +/- 1.829896e-08 |grad|=0.000165496
+quot(3) = 0.545061 +/- 1.384405e-08 |grad|=0.000157668
+quot(4) = 0.67923 +/- 3.454234e-08 |grad|=0.000189074
+quot(5) = 0.708085 +/- 1.589238e-07 |grad|=0.000190033
+quot(6) = 0.860755 +/- 5.168478e-05 |grad|=0.00166363
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.0221586 +/- 1.314320e-09 |grad|=6.7046e-06
+quot(1) = 0.540048 +/- 1.276291e-07 |grad|=0.000140918
+quot(2) = 0.545061 +/- 1.236241e-08 |grad|=0.000152023
+quot(3) = 0.545061 +/- 4.448792e-08 |grad|=6.79585e-05
+quot(4) = 0.67923 +/- 2.062841e-09 |grad|=7.60157e-05
+quot(5) = 0.708085 +/- 9.814525e-08 |grad|=0.000165734
+quot(6) = 0.860752 +/- 2.606024e-06 |grad|=0.000438929
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.0221586 +/- 4.908804e-09 |grad|=2.52994e-05
+quot(1) = 0.540048 +/- 5.911907e-08 |grad|=3.75763e-05
+quot(2) = 0.545061 +/- 4.743810e-08 |grad|=0.000127785
+quot(3) = 0.545061 +/- 1.991022e-08 |grad|=0.000135658
+quot(4) = 0.67923 +/- 3.666760e-08 |grad|=5.76866e-05
+quot(5) = 0.708085 +/- 1.030750e-07 |grad|=0.000496904
+quot(6) = 0.860752 +/- 3.337350e-08 |grad|=0.000585428
+
+Eigenvalues after diagonalization at iteration 8
+quot(0) = 0.0221586 +/- 1.502541e-09 |grad|=6.55695e-06
+quot(1) = 0.540048 +/- 9.698878e-09 |grad|=0.000137425
+quot(2) = 0.545061 +/- 7.811748e-09 |grad|=5.82708e-05
+quot(3) = 0.545061 +/- 1.608530e-08 |grad|=4.99097e-05
+quot(4) = 0.67923 +/- 1.135371e-09 |grad|=3.90955e-05
+quot(5) = 0.708085 +/- 9.439143e-08 |grad|=8.95538e-05
+quot(6) = 0.860752 +/- 1.251626e-07 |grad|=0.000331206
+
+Eigenvalues after diagonalization at iteration 9
+quot(0) = 0.0221586 +/- 1.103635e-08 |grad|=8.38695e-06
+quot(1) = 0.540048 +/- 2.704865e-08 |grad|=6.88403e-05
+quot(2) = 0.545061 +/- 3.081740e-08 |grad|=0.000104549
+quot(3) = 0.545061 +/- 2.408666e-09 |grad|=0.000114417
+quot(4) = 0.67923 +/- 1.151258e-09 |grad|=0.00013501
+quot(5) = 0.708085 +/- 6.848400e-08 |grad|=0.000357251
+quot(6) = 0.860752 +/- 1.157916e-07 |grad|=0.0004718
+
+Eigenvalues after diagonalization at iteration 10
+quot(0) = 0.0221586 +/- 4.438272e-09 |grad|=1.48602e-05
+quot(1) = 0.540048 +/- 6.388080e-08 |grad|=0.000248143
+quot(2) = 0.545061 +/- 3.964965e-08 |grad|=0.000114994
+quot(3) = 0.545061 +/- 5.417345e-08 |grad|=0.000219638
+quot(4) = 0.67923 +/- 5.716815e-08 |grad|=0.000104196
+quot(5) = 0.708085 +/- 1.256045e-07 |grad|=0.000100665
+quot(6) = 0.860752 +/- 1.188619e-07 |grad|=0.000533895
+total Rayleigh iters = 1382
+F3HSQ 0 2.215860e-02
+F3HSQ 1 5.400482e-01
+F3HSQ 2 5.450614e-01
+F3HSQ 3 5.450615e-01
+F3HSQ 4 6.792298e-01
+F3HSQ 5 7.080848e-01
+F3HSQ 6 8.607522e-01
+F3MEX 0 -1.488577e-01 2.127821e-08 4.469918e-06 
+F3MEX 1 -7.348796e-01 -7.794315e-09 1.288370e-04 F
+F3MEX 2 -7.382826e-01 -5.001334e-09 5.220032e-05 
+F3MEX 3 -7.382828e-01 9.085083e-09 8.815175e-05 
+
+RETRY 4
+calling hr0 with Maxr0Iter 100
+gradient tolerance 6.250000e-08 eigVal change tolerance 6.250000e-09
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.0221586 +/- 7.728080e-09 |grad|=1.93746e-05
+quot(1) = 0.540048 +/- 1.226859e-07 |grad|=7.36222e-05
+quot(2) = 0.545061 +/- 6.054691e-08 |grad|=0.000134527
+quot(3) = 0.545061 +/- 8.053120e-08 |grad|=0.000107518
+quot(4) = 0.67923 +/- 4.554799e-08 |grad|=0.00028398
+quot(5) = 0.708085 +/- 6.831413e-08 |grad|=0.00014737
+quot(6) = 0.860752 +/- 2.609940e-07 |grad|=0.000241301
+quot(7) = 1.27645 +/- 1.098901e+16 |grad|=0.32647
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0221586 +/- 4.641512e-09 |grad|=2.00461e-05
+quot(1) = 0.540048 +/- 5.880258e-08 |grad|=0.000162179
+quot(2) = 0.545061 +/- 8.204121e-10 |grad|=0.000127734
+quot(3) = 0.545061 +/- 5.344089e-08 |grad|=7.4223e-05
+quot(4) = 0.67923 +/- 5.339293e-08 |grad|=0.000393118
+quot(5) = 0.708085 +/- 1.939576e-08 |grad|=0.000116729
+quot(6) = 0.860752 +/- 1.337746e-07 |grad|=0.00024643
+quot(7) = 0.914013 +/- 3.982799e-01 |grad|=0.0940815
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.0221586 +/- 9.619870e-09 |grad|=8.12339e-06
+quot(1) = 0.540048 +/- 9.425879e-09 |grad|=0.000245909
+quot(2) = 0.545061 +/- 2.435444e-08 |grad|=8.04081e-05
+quot(3) = 0.545061 +/- 5.860848e-08 |grad|=9.62604e-05
+quot(4) = 0.67923 +/- 7.999507e-08 |grad|=0.000159494
+quot(5) = 0.708085 +/- 1.968026e-09 |grad|=8.81674e-05
+quot(6) = 0.860752 +/- 3.936079e-07 |grad|=0.000569594
+quot(7) = 0.883373 +/- 3.367068e-02 |grad|=0.027925
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.0221586 +/- 1.006056e-10 |grad|=9.72354e-07
+quot(1) = 0.540048 +/- 7.391829e-09 |grad|=0.000145358
+quot(2) = 0.545061 +/- 6.879727e-08 |grad|=0.000194696
+quot(3) = 0.545061 +/- 5.682398e-08 |grad|=0.000171524
+quot(4) = 0.67923 +/- 2.799698e-08 |grad|=0.000220165
+quot(5) = 0.708085 +/- 3.539512e-08 |grad|=0.000205649
+quot(6) = 0.860752 +/- 3.811832e-07 |grad|=0.000163496
+quot(7) = 0.881124 +/- 2.470649e-03 |grad|=0.00651675
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.0221586 +/- 9.377572e-09 |grad|=1.96021e-05
+quot(1) = 0.540048 +/- 9.046690e-08 |grad|=0.000270658
+quot(2) = 0.545061 +/- 4.742122e-08 |grad|=0.00019591
+quot(3) = 0.545061 +/- 2.850967e-08 |grad|=0.000121497
+quot(4) = 0.67923 +/- 1.742703e-08 |grad|=0.000199296
+quot(5) = 0.708085 +/- 3.533809e-08 |grad|=0.000131949
+quot(6) = 0.860752 +/- 2.450358e-07 |grad|=0.000366604
+quot(7) = 0.881038 +/- 9.512926e-05 |grad|=0.00193288
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.0221586 +/- 7.304350e-09 |grad|=1.67393e-05
+quot(1) = 0.540048 +/- 3.183315e-08 |grad|=0.000144996
+quot(2) = 0.545061 +/- 4.101325e-08 |grad|=5.29693e-05
+quot(3) = 0.545062 +/- 3.461790e-08 |grad|=0.000115034
+quot(4) = 0.67923 +/- 4.796579e-08 |grad|=0.000236987
+quot(5) = 0.708085 +/- 8.282336e-08 |grad|=0.000593606
+quot(6) = 0.860752 +/- 2.136487e-07 |grad|=0.000106002
+quot(7) = 0.881031 +/- 7.758041e-06 |grad|=0.00043917
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.0221586 +/- 2.701033e-10 |grad|=8.11018e-06
+quot(1) = 0.540048 +/- 4.695438e-09 |grad|=2.87646e-05
+quot(2) = 0.545061 +/- 9.346374e-08 |grad|=7.94169e-05
+quot(3) = 0.545061 +/- 2.091018e-07 |grad|=9.21855e-05
+quot(4) = 0.67923 +/- 8.751930e-08 |grad|=5.88952e-05
+quot(5) = 0.708085 +/- 1.475118e-07 |grad|=0.000130249
+quot(6) = 0.860752 +/- 6.935273e-08 |grad|=0.000405852
+quot(7) = 0.881031 +/- 1.890825e-07 |grad|=0.000564809
+
+Eigenvalues after diagonalization at iteration 8
+quot(0) = 0.0221586 +/- 8.109233e-09 |grad|=9.94298e-06
+quot(1) = 0.540048 +/- 2.651881e-08 |grad|=0.000110682
+quot(2) = 0.545061 +/- 7.778053e-08 |grad|=8.71404e-05
+quot(3) = 0.545061 +/- 1.175269e-07 |grad|=0.00015552
+quot(4) = 0.67923 +/- 8.256967e-08 |grad|=0.000286338
+quot(5) = 0.708085 +/- 4.287171e-08 |grad|=0.000180565
+quot(6) = 0.860752 +/- 1.587148e-07 |grad|=0.000110708
+quot(7) = 0.881031 +/- 5.470400e-07 |grad|=0.000602154
+
+Eigenvalues after diagonalization at iteration 9
+quot(0) = 0.0221586 +/- 9.999684e-09 |grad|=8.02181e-06
+quot(1) = 0.540048 +/- 5.219404e-09 |grad|=3.01852e-05
+quot(2) = 0.545061 +/- 1.835311e-08 |grad|=0.000141023
+quot(3) = 0.545061 +/- 5.056911e-08 |grad|=0.000112275
+quot(4) = 0.67923 +/- 2.151400e-08 |grad|=0.000150825
+quot(5) = 0.708085 +/- 3.360851e-08 |grad|=0.000432338
+quot(6) = 0.860752 +/- 9.131277e-08 |grad|=0.000227332
+quot(7) = 0.88103 +/- 6.722731e-07 |grad|=0.000370513
+
+Eigenvalues after diagonalization at iteration 10
+quot(0) = 0.0221586 +/- 5.657123e-09 |grad|=1.35341e-05
+quot(1) = 0.540048 +/- 1.683471e-08 |grad|=0.000117769
+quot(2) = 0.545061 +/- 4.572935e-08 |grad|=0.000125206
+quot(3) = 0.545061 +/- 1.384916e-08 |grad|=0.000114113
+quot(4) = 0.67923 +/- 4.197843e-08 |grad|=0.000236355
+quot(5) = 0.708085 +/- 1.189793e-07 |grad|=0.00036051
+quot(6) = 0.860752 +/- 1.397942e-07 |grad|=0.000570996
+quot(7) = 0.88103 +/- 1.410639e-08 |grad|=0.000663334
+total Rayleigh iters = 2726
+F3HSQ 0 2.215859e-02
+F3HSQ 1 5.400483e-01
+F3HSQ 2 5.450613e-01
+F3HSQ 3 5.450614e-01
+F3HSQ 4 6.792297e-01
+F3HSQ 5 7.080850e-01
+F3HSQ 6 8.607520e-01
+F3HSQ 7 8.810304e-01
+F3MEX 0 -1.488577e-01 3.021748e-08 6.152523e-06 
+F3MEX 1 -7.348796e-01 6.767692e-09 5.298941e-05 
+F3MEX 2 -7.382827e-01 1.052903e-08 6.894999e-05 
+F3MEX 3 -7.382828e-01 -8.154693e-09 5.259320e-05 
+
+START_EIGVALS of h(-r0): re im  IPR invp5
+F3MES 0 -1.488577e-01 3.021748e-08   4.881062e+01 4.628568e+01
+F3MES 1 -7.348796e-01 6.767692e-09   6.728097e+01 6.611778e+01
+F3MES 2 -7.382827e-01 1.052903e-08   6.145942e+01 5.997224e+01
+F3MES 3 -7.382828e-01 -8.154693e-09   6.145944e+01 5.997227e+01
+END_EIGVALS of h(-r0)
+
+mxv operations for eigenvecs 12540
+re_setup  : lmin 6.644545e-01 lmax 2.700000e+00 prec 2.123372e-09 Norder 6
+shift[ 0 ]=2.479572e-02 coeff= 2.043964e-01
+shift[ 1 ]=2.608207e-01 coeff= 2.548627e-01
+shift[ 2 ]=9.941953e-01 coeff= 3.816785e-01
+shift[ 3 ]=3.237325e+00 coeff= 6.887396e-01
+shift[ 4 ]=1.234002e+01 coeff= 1.753045e+00
+shift[ 5 ]=1.298020e+02 coeff= 1.478854e+01
+scale dslash by 1.000000e+00
+now begin overlap eigenvalues
+
+-------------------eigenvalues of H(0)---------------------
+lambda = 3.218950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+gradient tolerance 1.000000e-05 eigVal change tolerance 1.000000e-06
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.326219 +/- 1.098901e+16 |grad|=0.648892
+quot(1) = 0.62278 +/- 1.098901e+16 |grad|=0.502066
+quot(2) = 0.65335 +/- 1.098901e+16 |grad|=0.601567
+quot(3) = 0.666325 +/- 1.098901e+16 |grad|=0.564117
+quot(4) = 0.713362 +/- 1.098901e+16 |grad|=0.667463
+quot(5) = 0.72705 +/- 1.098901e+16 |grad|=0.615898
+quot(6) = 0.732937 +/- 1.098901e+16 |grad|=0.686292
+quot(7) = 0.751698 +/- 1.098901e+16 |grad|=0.735516
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.0134873 +/- 3.436617e-01 |grad|=0.186881
+quot(1) = 0.548981 +/- 8.109796e-02 |grad|=0.13797
+quot(2) = 0.567009 +/- 9.487980e-02 |grad|=0.161427
+quot(3) = 0.581861 +/- 9.281779e-02 |grad|=0.145996
+quot(4) = 0.602837 +/- 1.214564e-01 |grad|=0.160957
+quot(5) = 0.624597 +/- 1.125857e-01 |grad|=0.140133
+quot(6) = 0.655265 +/- 8.535391e-02 |grad|=0.132232
+quot(7) = 0.666932 +/- 9.314935e-02 |grad|=0.143142
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.00398823 +/- 1.043856e-02 |grad|=0.0285073
+quot(1) = 0.532028 +/- 1.862976e-02 |grad|=0.0405674
+quot(2) = 0.538052 +/- 3.182084e-02 |grad|=0.0397439
+quot(3) = 0.540864 +/- 4.505176e-02 |grad|=0.0383746
+quot(4) = 0.541928 +/- 6.693259e-02 |grad|=0.0367661
+quot(5) = 0.543777 +/- 8.881356e-02 |grad|=0.0453877
+quot(6) = 0.545065 +/- 1.210983e-01 |grad|=0.0347269
+quot(7) = 0.557997 +/- 1.197088e-01 |grad|=0.0385692
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 0.00375637 +/- 2.547996e-04 |grad|=0.00596027
+quot(1) = 0.531067 +/- 1.056646e-03 |grad|=0.00999817
+quot(2) = 0.536672 +/- 1.516487e-03 |grad|=0.0110272
+quot(3) = 0.539852 +/- 1.112417e-03 |grad|=0.00972041
+quot(4) = 0.539907 +/- 2.220967e-03 |grad|=0.0119255
+quot(5) = 0.542312 +/- 1.609980e-03 |grad|=0.00919008
+quot(6) = 0.542464 +/- 2.858108e-03 |grad|=0.0132329
+quot(7) = 0.557175 +/- 9.041249e-04 |grad|=0.0109904
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 0.00374495 +/- 1.254737e-05 |grad|=0.00172333
+quot(1) = 0.530919 +/- 1.624118e-04 |grad|=0.00255962
+quot(2) = 0.536505 +/- 1.830107e-04 |grad|=0.00267501
+quot(3) = 0.539774 +/- 8.515628e-05 |grad|=0.00258099
+quot(4) = 0.539778 +/- 1.416239e-04 |grad|=0.00349952
+quot(5) = 0.542286 +/- 2.874791e-05 |grad|=0.00214115
+quot(6) = 0.542291 +/- 1.904585e-04 |grad|=0.00330698
+quot(7) = 0.557102 +/- 7.987148e-05 |grad|=0.00313534
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 0.00374416 +/- 8.629024e-07 |grad|=0.000448973
+quot(1) = 0.530917 +/- 1.779847e-06 |grad|=0.000656042
+quot(2) = 0.536502 +/- 3.919454e-06 |grad|=0.000713213
+quot(3) = 0.539764 +/- 1.111025e-05 |grad|=0.000729983
+quot(4) = 0.539765 +/- 1.383202e-05 |grad|=0.000828333
+quot(5) = 0.542282 +/- 4.596646e-06 |grad|=0.000551867
+quot(6) = 0.542283 +/- 9.207258e-06 |grad|=0.000930023
+quot(7) = 0.557086 +/- 1.781482e-05 |grad|=0.00086655
+
+Eigenvalues after diagonalization at iteration 7
+quot(0) = 0.00374412 +/- 5.231771e-08 |grad|=0.000236167
+quot(1) = 0.530917 +/- 1.718175e-07 |grad|=0.000433093
+quot(2) = 0.536502 +/- 2.016765e-07 |grad|=0.000565175
+quot(3) = 0.539764 +/- 1.868263e-07 |grad|=0.000467308
+quot(4) = 0.539764 +/- 1.444056e-06 |grad|=0.00064938
+quot(5) = 0.542282 +/- 7.042668e-08 |grad|=0.000477069
+quot(6) = 0.542283 +/- 1.831559e-07 |grad|=0.000802968
+quot(7) = 0.557086 +/- 8.093548e-08 |grad|=0.000346707
+
+Eigenvalues after diagonalization at iteration 8
+quot(0) = 0.00374411 +/- 1.056901e-08 |grad|=0.000151793
+quot(1) = 0.530917 +/- 4.886850e-08 |grad|=0.000691746
+quot(2) = 0.536502 +/- 6.287151e-08 |grad|=0.000572353
+quot(3) = 0.539764 +/- 3.120169e-08 |grad|=0.000339636
+quot(4) = 0.539764 +/- 2.054928e-07 |grad|=0.00052922
+quot(5) = 0.542281 +/- 8.646876e-08 |grad|=0.000416344
+quot(6) = 0.542282 +/- 1.689212e-07 |grad|=0.0006941
+quot(7) = 0.557086 +/- 6.140728e-09 |grad|=0.000200031
+total Rayleigh iters = 600
+
+START_EIGVALS of h(0)
+Eigval 0 3.744105e-03
+Eigval 1 5.309171e-01
+Eigval 2 5.365016e-01
+Eigval 3 5.397638e-01
+Eigval 4 5.397639e-01
+Eigval 5 5.422814e-01
+Eigval 6 5.422824e-01
+Eigval 7 5.570857e-01
+END_EIGVALS of h(0)
+
+Need 1 random  positive chirality vectors
+lambda = 2.018950e+00 -1.666660e-01 -7.856700e-02 
+clover normalization -1.278000e+00
+
+----------------find sector of lowest chirality----------------------
+loading the lowest 2 eigenvecs  of H_0^2 in the chirality sector of the minimum 
+taking positive chirality part of vector 0
+taking negative chirality part of vector 0
+gradient tolerance 1.000000e-05 eigVal change tolerance 1.000000e-06
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 0.587859 +/- 1.098901e+16 |grad|=0.0036287
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 0.587829 +/- 3.277064e-05 |grad|=0.000681307
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 0.587829 +/- 2.285410e-07 |grad|=0.000334536
+gradient tolerance 1.000000e-05 eigVal change tolerance 1.000000e-06
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = 2.23603e-06 +/- 1.098901e+16 |grad|=0.00168589
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = -2.99901e-08 +/- 2.490127e-06 |grad|=0.000162654
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = -4.60567e-08 +/- 1.765558e-08 |grad|=7.77076e-05
+total Rayleigh iters = 14
+
+START_EIGVALS for finding chirality of lowest eigenvalue
+eigval 0 5.878291e-01
+eigval 1 -4.605667e-08
+2 state min energy H0^2 chirality -4.605667e-08 -1.000000e+00  -1
+eigValcut 5.878291e-01
+TRIAL CHIRALITY -1
+END_EIGVALS for finding chirality of lowest eigenvalue
+
+-----------------eigenvalues of H_ov-----------------------
+pass 2, want 4 eigenmodes in chirality sector -1
+gradient tolerance 1.000000e-05 eigVal change tolerance 1.000000e-06
+
+Eigenvalues after diagonalization at iteration 1
+quot(0) = -9.17229e-08 +/- 1.098901e+16 |grad|=1.97143e-05
+quot(1) = 0.585069 +/- 1.098901e+16 |grad|=0.00492364
+quot(2) = 0.585071 +/- 1.098901e+16 |grad|=0.00492674
+quot(3) = 0.717659 +/- 1.098901e+16 |grad|=0.196727
+
+Eigenvalues after diagonalization at iteration 2
+quot(0) = 9.83982e-08 +/- 2.089242e-07 |grad|=9.34328e-06
+quot(1) = 0.585054 +/- 1.648463e-05 |grad|=0.00136638
+quot(2) = 0.585057 +/- 1.508234e-05 |grad|=0.0014408
+quot(3) = 0.588271 +/- 1.421854e-01 |grad|=0.0184583
+vector 0 converged
+
+Eigenvalues after diagonalization at iteration 3
+quot(0) = 9.8398e-08 +/- 2.278956e-13 |grad|=9.34319e-06
+quot(1) = 0.585054 +/- 1.081713e-08 |grad|=0.000345976
+quot(2) = 0.585056 +/- 1.588868e-06 |grad|=0.000310535
+quot(3) = 0.587863 +/- 4.476259e-04 |grad|=0.00517553
+vector 0 converged
+
+Eigenvalues after diagonalization at iteration 4
+quot(0) = 9.83979e-08 +/- 1.031107e-13 |grad|=9.34318e-06
+quot(1) = 0.585055 +/- 2.603622e-07 |grad|=0.000395278
+quot(2) = 0.585056 +/- 2.195212e-07 |grad|=0.000376986
+quot(3) = 0.587832 +/- 3.460609e-05 |grad|=0.00145229
+vector 0 converged
+
+Eigenvalues after diagonalization at iteration 5
+quot(0) = 9.8398e-08 +/- 1.028711e-13 |grad|=9.34318e-06
+quot(1) = 0.585055 +/- 1.649758e-07 |grad|=0.00035733
+quot(2) = 0.585055 +/- 1.780568e-07 |grad|=0.000495129
+quot(3) = 0.587829 +/- 2.913950e-06 |grad|=0.000367745
+vector 0 converged
+
+Eigenvalues after diagonalization at iteration 6
+quot(0) = 9.83981e-08 +/- 1.090879e-13 |grad|=9.34318e-06
+quot(1) = 0.585055 +/- 3.412592e-07 |grad|=0.000357498
+quot(2) = 0.585056 +/- 2.283776e-07 |grad|=0.00017368
+quot(3) = 0.587829 +/- 3.543947e-08 |grad|=0.000314855
+total Rayleigh iters = 110
+calling last analysis package
+
+START_EIGVALS of H_ov and other properties
+source chirality -1
+F3HO2V 0 9.839808e-08 -1.000001e+00
+F3HO2V 1 5.850545e-01 -1.000000e+00
+F3HO2V 2 5.850556e-01 -1.000000e+00
+F3HO2V 3 5.878292e-01 -9.999998e-01
+4  modes below threshold 5.878291e-01
+Eigenvalue_hov(0)= 9.839808e-08
+F3OGH01X1 0 3.136847e-04  -1.000001e+00   1.307020e-04
+Eigenvalue_hov(1)= 5.850545e-01
+ARRAY -2.437727e-01 7.020176e-08       
+ARRAY 7.250031e-01 -2.764011e-11       2.437725e-01 -6.985103e-08       
+F3OGH02X2 0 -7.648886e-01  -3.187034e-01 0.000000e+00  -3.187036e-01
+F3OGH02X2 1 7.648885e-01  3.187034e-01 0.000000e+00  3.187035e-01
+Eigenvalue_hov(2)= 5.850556e-01
+ARRAY -2.437732e-01 3.627885e-07       
+ARRAY 7.250033e-01 -4.298511e-10       2.437731e-01 -3.757497e-07       
+F3OGH02X2 0 -7.648890e-01  -3.187040e-01 0.000000e+00  -3.187038e-01
+F3OGH02X2 1 7.648889e-01  3.187036e-01 0.000000e+00  3.187037e-01
+Eigenvalue_hov(3)= 5.878292e-01
+ARRAY -2.449288e-01 -3.367571e-09       
+ARRAY 7.265248e-01 2.505177e-10       2.449285e-01 -5.143998e-09       
+F3OGH02X2 0 -7.666998e-01  -3.194586e-01 0.000000e+00  -3.194582e-01
+F3OGH02X2 1 7.666995e-01  3.194581e-01 0.000000e+00  3.194581e-01
+ZEROMODES 1 CHIRALITY -1
+END_EIGVALS of H_ov and other properties
+
+mxv operations in build_hov: 7692
+TESTNORM 9.999987e-01 0.000000e+00
+TESTNORM 1.000000e+00 1.000000e+00
+TESTNORM 9.999998e-01 9.999994e-01
+TESTNORM 1.000000e+00 9.999999e-01
+ZEROMODES -1
+reset current TOPOLOGY -1
+RUNNING COMPLETED
+avm_iters 0.000000e+00
+Time = 5.001320e+01 seconds
+
+
+get_f(0): EOF on input.
+exit: Fri Jan 20 05:24:06 2012
+
+49.888u 0.108s 0:50.10 99.7%	0+0k 0+0io 0pf+0w

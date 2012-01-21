@@ -1,0 +1,245 @@
+SU3 clover/naive valence fermions
+MIMD version 7.7.3
+Machine = Scalar processor, with 1 nodes
+Host(0) = charm.nbi.dk
+Username = heller
+start: Fri Dec 16 22:48:29 2011
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 1234
+job_id ovlp_test.invclov2
+LAYOUT = Hypercubes, options = with fixed node_geometry
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.3 MBytes per node for lattice
+
+
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.inst
+u0 1
+coulomb_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0 
+# Inversion control
+max_cg_iterations 100
+max_cg_restarts 10
+number_of_base_sources 1
+# base_source 0
+gaussian
+subset full
+origin 0 0 0 0 
+r0 1.5
+source_label G
+forget_source 
+number_of_modified_sources 0
+# Description of propagators
+number_of_propagators 1
+# propagator 0		is actually overlap
+propagator_type clover
+kappa 0.01
+clov_c 0
+check no
+error_for_propagator 1e-06
+rel_error_for_propagator 1e-06
+precision 1
+momentum_twist 0 0 0 
+time_bc periodic
+source 0
+reload_serial_wprop su3_ov_eig_cg_multi.www.1.test-out.n0.010000
+forget_wprop 
+number_of_quarks 2
+propagator 0
+identity
+op_label d
+forget_wprop 
+propagator 0
+gaussian
+r0 1.5
+op_label 1S
+forget_wprop 
+# Description of mesons
+number_of_pairings 2
+# pair 0 (first index is for antiquark - second is quark)
+pair 0 0 
+spectrum_request meson,baryon
+save_corr_fnal out.test_ovlp.fnal_corr.1
+r_offset 0 0 0 0 
+number_of_correlators 17
+correlator PION p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator PS505 p000   1 * 1.000000  G5 G5T  0  0  0  E  E  E
+correlator PS0505 p000  -1 * 1.000000 G5T G5T  0  0  0  E  E  E
+correlator RHO p000   1 * 1.000000  GX  GX  0  0  0  E  E  E
+correlator RHO p000   1 * 1.000000  GY  GY  0  0  0  E  E  E
+correlator RHO p000   1 * 1.000000  GZ  GZ  0  0  0  E  E  E
+correlator RHO0 p000   1 * 1.000000 GXT GXT  0  0  0  E  E  E
+correlator RHO0 p000   1 * 1.000000 GYT GYT  0  0  0  E  E  E
+correlator RHO0 p000   1 * 1.000000 GZT GZT  0  0  0  E  E  E
+correlator SCALAR p000   1 * 1.000000  G1  G1  0  0  0  E  E  E
+correlator SCAL0 p000   1 * 1.000000  GT  GT  0  0  0  E  E  E
+correlator PV p000   1 * 1.000000 G5X G5X  0  0  0  E  E  E
+correlator PV p000   1 * 1.000000 G5Y G5Y  0  0  0  E  E  E
+correlator PV p000   1 * 1.000000 G5Z G5Z  0  0  0  E  E  E
+correlator B p000  -1 * 1.000000 GXY GXY  0  0  0  E  E  E
+correlator B p000  -1 * 1.000000 GYZ GYZ  0  0  0  E  E  E
+correlator B p000  -1 * 1.000000 GZX GZX  0  0  0  E  E  E
+# pair 1 (first index is for antiquark - second is quark)
+pair 1 1 
+spectrum_request meson,baryon
+save_corr_fnal out.test_ovlp.fnal_corr.1
+r_offset 0 0 0 0 
+number_of_correlators 17
+correlator PION p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator PS505 p000   1 * 1.000000  G5 G5T  0  0  0  E  E  E
+correlator PS0505 p000  -1 * 1.000000 G5T G5T  0  0  0  E  E  E
+correlator RHO p000   1 * 1.000000  GX  GX  0  0  0  E  E  E
+correlator RHO p000   1 * 1.000000  GY  GY  0  0  0  E  E  E
+correlator RHO p000   1 * 1.000000  GZ  GZ  0  0  0  E  E  E
+correlator RHO0 p000   1 * 1.000000 GXT GXT  0  0  0  E  E  E
+correlator RHO0 p000   1 * 1.000000 GYT GYT  0  0  0  E  E  E
+correlator RHO0 p000   1 * 1.000000 GZT GZT  0  0  0  E  E  E
+correlator SCALAR p000   1 * 1.000000  G1  G1  0  0  0  E  E  E
+correlator SCAL0 p000   1 * 1.000000  GT  GT  0  0  0  E  E  E
+correlator PV p000   1 * 1.000000 G5X G5X  0  0  0  E  E  E
+correlator PV p000   1 * 1.000000 G5Y G5Y  0  0  0  E  E  E
+correlator PV p000   1 * 1.000000 G5Z G5Z  0  0  0  E  E  E
+correlator B p000  -1 * 1.000000 GXY GXY  0  0  0  E  E  E
+correlator B p000  -1 * 1.000000 GYZ GYZ  0  0  0  E  E  E
+correlator B p000  -1 * 1.000000 GZX GZX  0  0  0  E  E  E
+Reading as old-style gauge field configuration.
+Old format header parameters are 6.000000 0.012500
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.inst
+Checksums ed5b7449 68d34f64
+Checksums not verified in this format
+Time to reload gauge configuration = 1.591010e-03
+CHECK PLAQ: 2.973028e+00 2.973028e+00
+CHECK NERSC LINKTR: 9.916278e-01 CKSUM: a0e19040
+Unitarity checked.  Max deviation 1.46e-07
+Time to check unitarity = 1.379640e-04
+Time to APE smear 2.409060e-04 sec
+Fixing to Coulomb gauge
+GFIX: Ended at step 9. Av gf action 9.92502153e-01, delta 5.960e-08
+END OF HEADER
+Kappa= 0.01 source gaussian residue= 1e-06 rel= 1e-06
+get_wprop_to_wp_field: Generate Dirac propagator for kappa 0.01
+record[0].checksum  "f0bda954 6c4afaa3"
+record[1].checksum  "dbac49b1 cbb06a4"
+record[2].checksum  "7c4d8c24 98e9ab1a"
+record[3].checksum  "d605b6a7 c0d95dd"
+record[4].checksum  "d5e48cfb 306fcd9a"
+record[5].checksum  "5f1e7f4d 59ca2d89"
+record[6].checksum  "a0bb929 f4e26a48"
+record[7].checksum  "5e0de358 22178a0b"
+record[8].checksum  "87e529ba e5826a33"
+record[9].checksum  "d92d8938 4052ae6"
+record[10].checksum  "9da53374 a8f31c7a"
+record[11].checksum  "f6d54186 a1c43999"
+Time to reload wprop spin 0 color 0 1.388404e-05
+Time to reload wprop spin 1 color 0 1.096074e-05
+Time to reload wprop spin 2 color 0 1.101941e-05
+Time to reload wprop spin 3 color 0 1.103175e-05
+Time to reload wprop spin 0 color 1 8.044182e-06
+Time to reload wprop spin 1 color 1 1.503492e-05
+Time to reload wprop spin 2 color 1 1.404050e-05
+Time to reload wprop spin 3 color 1 1.595344e-05
+Time to reload wprop spin 0 color 2 8.912757e-06
+Time to reload wprop spin 1 color 2 1.994427e-05
+Time to reload wprop spin 2 color 2 2.002215e-05
+Time to reload wprop spin 3 color 2 1.910003e-05
+Restored propagator from su3_ov_eig_cg_multi.www.1.test-out.n0.010000
+destroy prop[0]
+destroy prop[0]
+Mesons for quarks 0 and 0
+WMTIME: time 6.4e-03 sec 6.85339e+06 flops 1072.0 MF
+WMTIME: time 6.4e-03 sec 6.85339e+06 flops 1064.3 MF
+WMTIME: time 6.4e-03 sec 6.85339e+06 flops 1069.7 MF
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.01 0.01 0.01
+SINKS: identity identity identity PROTON
+0 5.599651e-02 6.362735e-06
+1 1.270179e-01 -1.735113e-03
+2 1.327366e-02 3.892018e-03
+3 -1.458304e-01 -2.232531e-03
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.01 0.01 0.01
+SINKS: identity identity identity PROTON0
+0 1.956209e-05 2.171155e-08
+1 2.278718e-03 -5.408666e-06
+2 1.286047e-05 -8.444352e-06
+3 -2.277310e-03 -6.282516e-06
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.01 0.01 0.01
+SINKS: identity identity identity DELTA
+0 1.836510e-04 -3.209191e-07
+1 2.605609e-03 -2.687617e-06
+2 1.675894e-05 -7.936325e-06
+3 -2.606662e-03 -5.612441e-06
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.01 0.01 0.01
+SINKS: identity identity identity DELTA0
+0 3.248521e-03 -6.505240e-06
+1 2.046757e-01 1.218946e-04
+2 3.310173e-02 -1.276372e-04
+3 -2.130350e-01 8.484633e-04
+Mesons for quarks 1 and 1
+WMTIME: time 6.4e-03 sec 6.85339e+06 flops 1071.0 MF
+WMTIME: time 6.3e-03 sec 6.85339e+06 flops 1081.3 MF
+WMTIME: time 6.4e-03 sec 6.85339e+06 flops 1075.6 MF
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.01 0.01 0.01
+SINKS: gaussian gaussian gaussian PROTON
+0 1.577182e+02 5.704935e-03
+1 3.890479e+02 -8.682430e+00
+2 1.333292e+02 -2.717935e+01
+3 -4.272420e+02 -1.147721e+01
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.01 0.01 0.01
+SINKS: gaussian gaussian gaussian PROTON0
+0 3.387174e-01 7.373569e-05
+1 7.210131e+00 -1.774153e-02
+2 1.276312e-01 -2.782989e-02
+3 -7.199882e+00 -2.033385e-02
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.01 0.01 0.01
+SINKS: gaussian gaussian gaussian DELTA
+0 4.459975e-01 -6.565808e-04
+1 8.195030e+00 -8.922350e-03
+2 1.502854e-01 -2.587839e-02
+3 -8.188765e+00 -1.783717e-02
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0.01 0.01 0.01
+SINKS: gaussian gaussian gaussian DELTA0
+0 1.435669e+00 -5.253002e-03
+1 7.228826e+02 4.240560e+00
+2 3.724720e+02 6.311758e+01
+3 -7.756343e+02 8.321076e+00
+RUNNING COMPLETED
+Time = 2.589251e-01 seconds
+total_iters = 0
+destroy quark[0]
+destroy quark[1]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Fri Dec 16 22:48:29 2011
+
+0.134u 0.006s 0:00.30 43.3%	0+0k 0+0io 0pf+0w

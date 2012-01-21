@@ -52,9 +52,9 @@ topology 100
 coulomb_gauge_fix
 forget
 fresh_wprop
-save_serial_fm_sc_wprop su3_ov_eig_cg_multi.write.www.1.test-out
+save_serial_fm_sc_wprop su3_ov_eig_cg_multi.Ritz.www.1.test-out
 fresh_hr0_modes
-serial_hr0_modes su3_ov_eig_cg_multi.write.hr0.1.test-out
+forget_hr0_modes
 fresh_hov_modes
-serial_hov_modes su3_ov_eig_cg_multi.write.hov.1.test-out
+forget_hov_modes
 
