@@ -52,7 +52,7 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
   Real U0 = dcp->U0;		/* Tadpole correction to Clov_c */
   /* End of unpacking required members of structures */
 
-  wilson_vector *tmp=NULL,*mp=NULL,*r=NULL,*p=NULL;
+  wilson_vector *tmp=NULL,*mp=NULL,*r=NULL;
 
   int N_iter;
   register int i;
@@ -90,7 +90,7 @@ int mrilu_cl_field(     /* Return value is number of iterations taken */
   tmp    = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
   mp     = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
   r      = (wilson_vector *) malloc((sites_on_node+PAD)*sizeof(wilson_vector));
-  p      = r  + even_sites_on_node;
+  //  p      = r  + even_sites_on_node;
 
   if(tmp == NULL || mp == NULL || r == NULL ){
     printf("hopilu_cl_field(%d): No room for temporaries\n",this_node);
