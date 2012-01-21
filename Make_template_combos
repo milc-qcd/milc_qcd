@@ -120,7 +120,6 @@ CL_IO_OBJECTS  = \
 
 CL_SPECTRUM_OBJECTS = \
   baryon_cont.o      \
-  gammas.o           \
   w_baryon.o         \
   w_baryon_hl.o      \
   w_meson_mom.o      \
