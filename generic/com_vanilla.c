@@ -247,7 +247,7 @@ numjobs(void)
 /*
 ** Return the job geometry
 */
-int *
+int const *
 jobgeom(void)
 {
   static int ones[4] = {1,1,1,1};

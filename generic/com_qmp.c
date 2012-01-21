@@ -516,7 +516,7 @@ numjobs(void)
 /*
 ** Return the job geometry
 */
-int *
+int const *
 jobgeom(void)
 {
   return QMP_get_job_geometry();

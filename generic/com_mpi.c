@@ -703,7 +703,7 @@ numjobs(void)
 /*
 ** Return the job geometry
 */
-int *
+int const *
 jobgeom(void)
 {
   return jobgeomvals;
