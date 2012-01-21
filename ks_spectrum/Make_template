@@ -106,23 +106,6 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 	@echo Copying quark_action.h from ${QUARKIMP}/${QUARK}
 	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
-ifeq ($(strip ${HAVEQMP}),true)
-  DHAVE_QMP = -DHAVE_QMP
-endif
-
-ifeq ($(strip ${HAVEQIO}),true)
-  DHAVE_QIO = -DHAVE_QIO
-endif
-
-ifeq ($(strip ${HAVEQDP}),true)
-  DHAVE_QDP = -DHAVE_QDP
-endif
-
-ifeq ($(strip ${HAVEQOP}),true)
-  DHAVE_QOP = -DHAVE_QOP
-endif
-
-DARCH = ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 ##### Targets:
 

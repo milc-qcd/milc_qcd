@@ -255,28 +255,6 @@ gauge_action.h: ${GAUGEIMP}/${GAUGE}
 	/bin/cp ${GAUGEIMP}/${GAUGE} gauge_action.h
 
 
-ifeq ($(strip ${QCDOC}),true)
-  DQCDOC = -DQCDOC
-endif
-
-ifeq ($(strip ${HAVEQMP}),true)
-  DHAVE_QMP = -DHAVE_QMP
-endif
-
-ifeq ($(strip ${HAVEQIO}),true)
-  DHAVE_QIO = -DHAVE_QIO
-endif
-
-ifeq ($(strip ${HAVEQDP}),true)
-  DHAVE_QDP = -DHAVE_QDP
-endif
-
-ifeq ($(strip ${HAVEQOP}),true)
-  DHAVE_QOP = -DHAVE_QOP
-endif
-
-DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
-
 ########################################################
 
 # -DFN          identifies fat-Naik-like actions with only next and 3rd

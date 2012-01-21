@@ -17,6 +17,8 @@
 # WANTQDP WANTQIO WANTQMP User requests (true or otherwise)
 # LIBQOP INCQOP LIBDEPQOP INCDEPQOP Defined in Make_template_qop
 
+# SciDAC module dependencies
+
 HAVEQOP = ${WANTQOP}
 
 ifeq ($(strip ${HAVEQOP}),true)
@@ -33,6 +35,22 @@ ifeq ($(strip ${HAVEQIO}),true)
    HAVEQMP = true
 else
    HAVEQMP = ${WANTQMP}
+endif
+
+ifeq ($(strip ${HAVEQMP}),true)
+  CSCIDAC += -DHAVE_QMP
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  CSCIDAC += -DHAVE_QIO
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  CSCIDAC += -DHAVE_QDP
+endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  CSCIDAC += -DHAVE_QOP
 endif
 
 ifeq ($(strip ${MPP}),true)

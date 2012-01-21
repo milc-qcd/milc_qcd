@@ -66,23 +66,6 @@ ALL_MAKES = Make_template ../generic/Make_template \
 
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
-ifeq ($(strip ${HAVEQMP}),true)
-  DHAVE_QMP = -DHAVE_QMP
-endif
-
-ifeq ($(strip ${HAVEQIO}),true)
-  DHAVE_QIO = -DHAVE_QIO
-endif
-
-ifeq ($(strip ${HAVEQDP}),true)
-  DHAVE_QDP = -DHAVE_QDP
-endif
-
-ifeq ($(strip ${HAVEQOP}),true)
-  DHAVE_QOP = -DHAVE_QOP
-endif
-
-DARCH = ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 ########################################################
 

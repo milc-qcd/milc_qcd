@@ -61,11 +61,13 @@ endif
 
 FERMION_OBJECTS = \
   discretize_wf.o    \
+  gammas.o \
   io_source_cmplx_fm.o \
   phases.o \
   quark_source.o     \
   quark_source_io.o  \
-  quark_source_sink_op.o 
+  quark_source_sink_op.o \
+  spin_taste_ops.o
 
 # These are used to build propagators
 
@@ -75,6 +77,7 @@ KS_LINKS_OBJECTS = \
   gauss_smear_ks.o \
   grsource_imp.o    \
   naik_eps_utilities.o \
+  path_transport.o \
   rephase.o      \
   show_generic_ks_opts.o \
   show_hisq_links_opts.o
@@ -83,7 +86,6 @@ KS_LINKS_OBJECTS = \
 # These are used to read propagators
 
 KS_IO_OBJECTS =  \
-  flavor_ops2.o  \
   io_helpers_ks.o   \
   io_prop_ks.o \
   io_prop_ks_fm.o \
@@ -108,7 +110,6 @@ CL_LINKS_OBJECTS = \
 
 CL_IO_OBJECTS  = \
   canopy2weyl_rot.o  \
-  gammas.o           \
   io_helpers_w.o     \
   io_prop_w.o        \
   io_prop_w_fm.o     \
@@ -119,6 +120,7 @@ CL_IO_OBJECTS  = \
 
 CL_SPECTRUM_OBJECTS = \
   baryon_cont.o      \
+  gammas.o           \
   w_baryon.o         \
   w_baryon_hl.o      \
   w_meson_mom.o      \
@@ -168,7 +170,7 @@ endif
 # Generic actions are not supported in QOP, so we use MILC
   FLINKS_EO_QOP = ${FLINKS_EO_MILC}
 
-ifeq ($(strip ${USE_FL_GPU}),true)
+ifeq ($(strip ${HAVE_FL_GPU}),true)
   FLINKS_FN_MILC = ${FLINKS_FN_MILC_GPU}
   FLINKS_HISQ_MILC = ${FLINKS_HISQ_MILC_GPU}
 else
@@ -210,14 +212,14 @@ endif
 
 # GPU support
 
-  CONGRAD_FN_MILC_GPU = d_congrad5_fn_gpu.o
+  CONGRAD_FN_MILC_GPU = d_congrad5_fn_gpu.o ${CONGRAD_FN_MILC_CPU}
   
 # Standard QOP combinations
 
   CONGRAD_FN_QOP = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
      d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o ${CONGRAD_FN_BASE}
 
-ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
   CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_GPU}
 else
   CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
@@ -236,14 +238,14 @@ endif
 
 # GPU support
 
-  MULTI_INV_FN_MILC_GPU = 
+  MULTI_INV_FN_MILC_GPU = ks_multicg_offset_gpu.o ${MULTI_INV_FN_MILC_CPU}
   
 # Standard QOP combinations
 
   MULTI_INV_FN_QOP = ks_multicg.o ks_multicg_offset_qop.o \
     ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
 
-ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_GPU}
 else
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
@@ -258,12 +260,12 @@ endif
   FORCE = show_hisq_force_opts.o ff_opt.o 
 
   ASQ_FORCE_MILC_CPU  = fermion_force_asqtad.o fermion_force_multi.o \
-	fermion_force_fn_multi.o path_transport.o ${FORCE}
+	fermion_force_fn_multi.o ${FORCE}
 
-  HISQ_FORCE_MILC_CPU = fermion_force_hisq_multi.o path_transport.o ${FORCE}
+  HISQ_FORCE_MILC_CPU = fermion_force_hisq_multi.o ${FORCE}
 
 # No other choice
-  EO_FORCE   = fermion_force_eo_milc.o path_transport.o ${FORCE}
+  EO_FORCE   = fermion_force_eo_milc.o ${FORCE}
 
 # GPU support
 
@@ -279,7 +281,7 @@ endif
   HISQ_FORCE_QOP = fermion_force_hisq_qop.o fermion_force_hisq_qop_F.o \
      fermion_force_hisq_qop_D.o ${FORCE}
 
-ifeq ($(strip ${WANT_FF_GPU}),true)
+ifeq ($(strip ${HAVE_FF_GPU}),true)
   ASQ_FORCE_MILC = ${ASQ_FORCE_MILC_GPU}
   HISQ_FORCE_MILC = ${HISQ_FORCE_MILC_GPU}
 else
@@ -315,13 +317,13 @@ endif
 
 # GPU support
 
-  GAUGE_FORCE_MILC_GPU =
+  GAUGE_FORCE_MILC_GPU = gauge_force_imp_gpu.o ${GAUGE_FORCE_MILC_CPU}
   
 # Standard QOP combinations
 
   GAUGE_FORCE_QOP = gauge_force_symzk1_qop.o  gauge_stuff.o ranmom.o
 
-ifeq ($(strip ${WANT_GF_GPU}),true)
+ifeq ($(strip ${HAVE_GF_GPU}),true)
   GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_GPU}
 else
   GAUGE_FORCE_MILC = ${GAUGE_FORCE_MILC_CPU}
