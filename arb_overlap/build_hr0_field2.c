@@ -179,6 +179,8 @@ void build_hr0( int flag, int precflag )/*  0, fresh start, 1--restart with stor
 	free(MyeigVec0);
 	free(MyeigVal0);
 
+	node0_printf("\n");
+	node0_printf("START_EIGVALS of h(-r0): re im  IPR invp5\n");
 
 	for(j=0;j<Nvecs_h0r0;j++){
 	    /* expectation value of action r=g5 dslash chi*/
@@ -223,14 +225,13 @@ void build_hr0( int flag, int precflag )/*  0, fresh start, 1--restart with stor
 	    */
 	}
 
-
-
-
-
     } /* Maxr0Iter != 0 */
 
     else{
 	/* if we're not iterating, need to compute the eigenvalue of h(-r0) */
+	node0_printf("\n");
+	node0_printf("START_EIGVALS of h(-r0): re im  IPR invp5\n");
+
 	for(j=0;j<Nvecs_h0r0;j++){
 	    /* expectation value of action r=g5 dslash chi*/
 	    delta0_field(eigVec0[j],tmpvec,PLUS);
@@ -276,6 +277,8 @@ void build_hr0( int flag, int precflag )/*  0, fresh start, 1--restart with stor
 	}
     } /* else */
 
+    node0_printf("END_EIGVALS of h(-r0)\n");
+    node0_printf("\n");
     node0_printf("mxv operations for eigenvecs %ld\n",ndelta0+nn0);
     /*
        eigenval_tol=eigenval_tol_save;

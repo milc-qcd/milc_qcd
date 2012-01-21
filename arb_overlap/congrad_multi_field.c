@@ -282,6 +282,7 @@ void step_field(
 
   chi_re=(wilson_vector*)malloc(sites_on_node*sizeof(wilson_vector));
   copy_Vector(src,chi_re);
+
   /* added 6 Sep */
   FORALLSITES(i,s)clear_wvec(&dest[i]);
 

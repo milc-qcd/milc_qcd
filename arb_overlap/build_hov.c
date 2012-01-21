@@ -99,6 +99,8 @@ int build_hov(int *trial_chirality, int* jcount)
 
   /* now we presumably have a set of eigenvectors of H_0^2 */
   node0_printf("calling last analysis package\n");
+  node0_printf("\n");
+  node0_printf("START_EIGVALS of H_ov and other properties\n");
   fflush(stdout) ;
 
 
@@ -317,6 +319,8 @@ int build_hov(int *trial_chirality, int* jcount)
   }
  
   node0_printf("ZEROMODES %d CHIRALITY %d\n",*jcount, *trial_chirality);
+  node0_printf("END_EIGVALS of H_ov and other properties\n");
+  node0_printf("\n");
   node0_printf("mxv operations in build_hov: %i\n",(int)(ndelta0-ndel));
   (*jcount) *= *trial_chirality;
   return 0;

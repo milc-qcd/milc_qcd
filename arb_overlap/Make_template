@@ -39,6 +39,9 @@ MY_OBJECTS =         \
   readinfo.o            \
   setup_p_cl.o       \
   delta0y.o          \
+  eigen_stuff_helpers.o \
+  eigen_stuff_PRIMME.o \
+  eigen_stuff_Ritz.o \
   make_clov_field.o  \
   mult_ldu2.o        \
   f_mu_nu1.o         \
@@ -70,12 +73,6 @@ EIGVAL_OBJECTS = \
   vectorh.o  \
   jacobi.o
 
-ifeq ($(strip ${HAVEPRIMME}),true)
-  EIGVAL_OBJECTS += eigen_stuff_JD.o
-else
-  EIGVAL_OBJECTS += eigen_stuff_local.o
-endif
-
 # Basic set from generic directory
 G_OBJECTS =          \
   ape_smear.o        \
@@ -83,7 +80,6 @@ G_OBJECTS =          \
   d_plaq4.o          \
   field_translation.o \
   field_utilities.o  \
-  file_types_milc_usqcd.o \
   gaugefix2.o        \
   gauge_utilities.o  \
   io_detect.o        \
@@ -108,7 +104,7 @@ else
 endif
 
 ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o
+  G_OBJECTS += io_scidac.o io_scidac_types.o io_scidac_w.o file_types_milc_usqcd.o
 endif
 
 
@@ -147,6 +143,11 @@ ifdef FAT
 else
   DEFINES=
   G_NHYP_OBJECTS=
+endif
+
+# Always use PRIMME if it is provided
+ifeq ($(strip ${HAVEPRIMME}),true)
+  DEFINES += -DPRIMME
 endif
 
 # Objects depending on architecture and software package
@@ -210,31 +211,7 @@ ALL_MAKES = \
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
-ifeq ($(strip ${QCDOC}),true)
-  DQCDOC = -DQCDOC
-endif
-
-ifeq ($(strip ${HAVEQMP}),true)
-  DHAVE_QMP = -DHAVE_QMP
-endif
-
-ifeq ($(strip ${HAVEQIO}),true)
-  DHAVE_QIO = -DHAVE_QIO
-endif
-
-ifeq ($(strip ${HAVEQDP}),true)
-  DHAVE_QDP = -DHAVE_QDP
-endif
-
-ifeq ($(strip ${HAVEQOP}),true)
-  DHAVE_QOP = -DHAVE_QOP
-endif
-
-DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
-
 ##### Targets:
-
-
 
 # Common compiler macros
 
@@ -276,8 +253,8 @@ include ../generic/Make_template
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template
 
-# Rules for generic_wilson routines
-include ../generic_ks/Make_template
+# Rules for generic_ks routines
+#include ../generic_ks/Make_template
 
 
 

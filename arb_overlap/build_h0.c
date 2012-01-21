@@ -123,6 +123,14 @@ int build_h0()
   */
 
 
+  node0_printf("\n");
+  node0_printf("START_EIGVALS of h(0)\n");
+  for(j=0;j<Nvecs_h0;j++){
+    node0_printf("Eigval %d %e\n", j, (double)eigVal1[j]);
+  }
+  node0_printf("END_EIGVALS of h(0)\n");
+  node0_printf("\n");
+  fflush(stdout);
 
 
       /* our overlap iteration for H_0^2 wants chiral eigenvectors. Measure

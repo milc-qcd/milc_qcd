@@ -148,6 +148,9 @@ the overlap hamiltonian. We reload the pole-crossing (negative) mass */
 					 Restart, 
                                          Kiters, EVENANDODD) ;
   if(this_node==0)printf("total Rayleigh iters = %d\n",total_R_iters);
+
+  node0_printf("\n");
+  node0_printf("START_EIGVALS for finding chirality of lowest eigenvalue\n");
   for(i=0;i<2;i++){
     node0_printf("eigval %d %e\n",i,eigVal[i]);
   }
@@ -210,6 +213,7 @@ the modes after the diagonalization in the lower subspace */
   free(eigVal1) ;
 
 
- node0_printf("TRIAL CHIRALITY %d\n", *trial_chirality);
- return 0;
+  node0_printf("TRIAL CHIRALITY %d\n", *trial_chirality);
+  node0_printf("END_EIGVALS for finding chirality of lowest eigenvalue\n");
+  return 0;
 }

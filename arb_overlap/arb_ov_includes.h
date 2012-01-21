@@ -127,6 +127,30 @@ int congrad_multi_o( /* Return value is number of iterations taken */
     );
 
 
+/* linalg_stuff.c */
+void copy_Vector(wilson_vector *src, wilson_vector *res ) ; 
+void norm2(wilson_vector *vec, double *norm ); 
+void dot_product(wilson_vector *vec1, wilson_vector *vec2, 
+		 double_complex *dot) ;
+void complex_vec_mult_sub(double_complex *cc, wilson_vector *vec1, 
+			  wilson_vector *vec2) ;
+void complex_vec_mult_add(double_complex *cc, wilson_vector *vec1, 
+			  wilson_vector *vec2) ;
+void double_vec_mult(double *a, wilson_vector *vec1, 
+		     wilson_vector *vec2) ;
+void double_vec_mult_sub(double *rr, wilson_vector *vec1,  
+			 wilson_vector *vec2) ;
+void double_vec_mult_add(double *rr, wilson_vector *vec1,  
+			 wilson_vector *vec2) ;
+void dax_p_by(double *a, wilson_vector *vec1, double *b, wilson_vector *vec2) ; 
+void vec_plus_double_vec_mult(wilson_vector *vec1, double *a, wilson_vector *vec2) ; 
+
+void normalize(wilson_vector *vec) ;
+void project_out(wilson_vector *vec, wilson_vector **vector, int Num);
+void RotateBasis(wilson_vector **eigVec, Matrix *V);
+void constructArray(wilson_vector **eigVec,wilson_vector **MeigVec,
+ Matrix *A,  int *converged) ;
+
 
 /*functions for eigenvalues*/
 
@@ -146,18 +170,27 @@ void Matrix_Vec_mult(wilson_vector *src, wilson_vector *res) ;
 void cleanup_Matrix() ;
 int Rayleigh_min(wilson_vector *vec,wilson_vector **eigVec,Real Tolerance, 
                  Real RelTol,int Nvecs,int MaxIter,int Restart);
-int Kalkreuter(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+
+#ifdef PRIMME
+#define Kalkreuter Kalkreuter_PRIMME
+#else
+#define Kalkreuter Kalkreuter_Ritz
+#endif
+
+int Kalkreuter_PRIMME(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
                Real RelTol, int Nvecs, int MaxIter, 
                int Restart, int iters, int parity) ;
-void dot_product(wilson_vector *vec1, wilson_vector *vec2,
- double_complex *dot) ;
+int Kalkreuter_Ritz(wilson_vector **eigVec, double *eigVal, Real Tolerance, 
+               Real RelTol, int Nvecs, int MaxIter, 
+               int Restart, int iters, int parity) ;
+//void dot_product(wilson_vector *vec1, wilson_vector *vec2,
+// double_complex *dot) ;
 
 
 
 
 
 void grsource(int parity);
-void RotateBasis(wilson_vector **eigVec, Matrix *V);
 void boundary_flip(int sign );
 
 
@@ -205,7 +238,6 @@ void refresh_links();
 void re_setup_inner(double emin, double emax);
 Real vectornorm(wilson_vector * w1);
 void project_out_eigen(wilson_vector* vec, wilson_vector** evec, int nvec);
-void copy_Vector(wilson_vector *src, wilson_vector *res);
 
 
 #ifdef HYPSTOUT

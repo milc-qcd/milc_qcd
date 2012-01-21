@@ -1,7 +1,7 @@
-/********* build_params_0.166.c ********
+/********* build_params_0.166.c ********/
 /* MIMD version 7 */
 
-   parameter building for the selected flat action
+/* parameter building for the selected flat action
    fit for r0=1.6 ''best massless''
    and we want the eigenvalue of D(mass=0) so we just linearly
    shift the lambda[0] term
