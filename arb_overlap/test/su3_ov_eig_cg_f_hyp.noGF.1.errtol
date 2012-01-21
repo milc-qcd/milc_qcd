@@ -15,10 +15,10 @@ Eigval 0 0.0002
 Eigval 0 0.0002
 END_EIGVALS of h(0)
 START_EIGVALS for finding chirality of lowest eigenvalue
-eigval 0 0.0002
+eigval 0 0.006
 eigval 0 0.0002
 0 state min energy H0^2 chirality 0.0002 0.0002 0.0002
-eigValcut 0.0002
+eigValcut 0.006
 TRIAL CHIRALITY 0.0002
 END_EIGVALS for finding chirality of lowest eigenvalue
 START_EIGVALS of H_ov and other properties
@@ -27,7 +27,7 @@ F3HO2V 0 0.0002 0.0002
 F3HO2V 0 0.0002 0.0002
 F3HO2V 0 0.0002 0.0002
 F3HO2V 0 0.0002 0.0002
-0 modes below threshold 0.0002
+2 modes below threshold 0.006
 Eigenvalue_hov(0)= 0.0002
 F3OGH01X1 0 0.0006 0.0002 0.0002
 Eigenvalue_hov(1)= 0.0002
