@@ -138,7 +138,7 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 # Edit these "wants"
 
-WANTQOP = # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
+WANTQOP = # true or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
 
 WANTQIO = true # or blank.  Implies HAVEQMP.
 
@@ -166,6 +166,7 @@ QOP = ${QOPQDP}
 # HAVEQOP HAVEQDP HAVEQIO HAVEQMP (Says what we are compiling with)
 # LIBSCIDAC INCSCIDAC (The -L and -I compiler and linker lists)
 # SCIDAC_LIBRARIES SCIDAC_HEADERS  (Lists for make dependencies)
+# CSCIDAC (List of compiler macros for SciDAC modules)
 
 include ../Make_template_scidac
 
@@ -205,19 +206,43 @@ endif
 #----------------------------------------------------------------------
 # 14. GPU/QUDA Options
 
-WANTQUDA = #true
-
-CGPU = # USE_CG_GPU USE_FL_GPU USE_REUNIT_GPU USE_FF_GPU USE_GF_GPU
+WANTQUDA    = #true
+WANT_FN_CG_GPU = #true
+WANT_FL_GPU = #true
+WANT_FF_GPU = #true
+WANT_GF_GPU = #true
 
 ifeq ($(strip ${WANTQUDA}),true)
 
-QUDA_HOME = /home/jfoley/research/git.quda
-INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
-LIBQUDA = -L${QUDA_HOME}/lib -lquda
+  QUDA_HOME = /home/u0731948/gpu_code/quda
+  INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
+  LIBQUDA = -L${QUDA_HOME}/lib -lquda
 
-CUDA_HOME = /usr/local/cuda
-INCQUDA += -I${CUDA_HOME}/include
-LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart
+  CUDA_HOME = /usr/local/cuda
+  INCQUDA += -I${CUDA_HOME}/include
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart
+
+# Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
+
+  ifeq ($(strip ${WANT_FN_CG_GPU}),true)
+    HAVE_FN_CG_GPU = true
+    CGPU += -DUSE_CG_GPU
+  endif
+
+  ifeq ($(strip ${WANT_GF_GPU}),true)
+    HAVE_GF_GPU = true
+    CGPU += -DUSE_GF_GPU
+  endif
+
+  ifeq ($(strip ${WANT_FL_GPU}),true)
+    HAVE_FL_GPU = true
+    CGPU += -DUSE_FL_GPU
+  endif
+
+  ifeq ($(strip ${WANT_FF_GPU}),true)
+    HAVE_FF_GPU = true
+    CGPU += -DUSE_FF_GPU
+  endif
 
 endif
 
@@ -416,7 +441,7 @@ CPREFETCH = #
 
 #------------------------------
 # Multimass improved KS CG solvers
-# Applications: ks_imp_rhmc ks_imp_invert_multi
+# Applications: ks_imp_rhmc ks_measure ks_spectrum
 
 # Choices
 # KS_MULTICG=OFFSET  The basic multicg solver.
@@ -468,11 +493,13 @@ KSRHMCINT =#
 
 #------------------------------
 
-# Definition of taste operator shift.  If defined, the shift operator
-# based on the unfattened gauge links is one-sided (forward), instead
-# of symmetric (forward and backward).
+# Staggered spin-taste operator shift for applications that construct
+# nonlocal interpolating operators.  By default the shift operator is
+# symmetric (forward and backward).  This macro makes it one-sided
+# (forward).
 
-# The Fat-Naik shift, however, is always one-sided in the current code.
+# The Fat-Naik variants of the nonlocal operators are currently
+# constructed only from the forward fat links.
 
 KSSHIFT = # -DONE_SIDED_SHIFT
 
@@ -565,6 +592,7 @@ endif
 include ../Make_template_combos
 
 CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC}
+DARCH = ${CSCIDAC} ${CGPU}
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
@@ -582,7 +610,5 @@ check: test_clean
 
 test_clean:
 	cd test ; make test_clean
-
-
 
 include Make_template
