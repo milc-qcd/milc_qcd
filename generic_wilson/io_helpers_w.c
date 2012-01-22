@@ -307,8 +307,6 @@ r_close_wprop(int flag, w_prop_file *wpf)
     break;
   case RELOAD_SERIAL:
   case RELOAD_PARALLEL:
-    if(wpf->prop != NULL)
-      free(wpf->prop); wpf->prop = NULL;
     clear_input_w_prop_file(wpf);
     break;
   default:
@@ -346,10 +344,7 @@ w_close_wprop(int flag, w_prop_file *wpf)
   case SAVE_MULTIFILE_SCIDAC: 
   case SAVE_PARTFILE_SCIDAC:
 #ifdef HAVE_QIO
-    w_close_usqcd_wprop_file(wpf->outfile);
-    if(wpf->prop != NULL)
-      free(wpf->prop); 
-    free(wpf);
+    clear_output_w_prop_file(wpf);
 #endif
     break;
   default:

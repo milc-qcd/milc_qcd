@@ -246,6 +246,7 @@ void r_multidump_w_f(w_prop_file *wpf);
 w_prop_file *setup_input_w_prop_file(char *filename);
 w_prop_file *setup_output_w_prop_file(void);
 void clear_input_w_prop_file(w_prop_file *wpf);
+void clear_output_w_prop_file(w_prop_file *wpf);
 
 w_prop_file *w_ascii_w_i(char *filename);
 void w_ascii_w(w_prop_file *wpf, int spin, int color, 

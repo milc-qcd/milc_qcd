@@ -490,11 +490,27 @@ w_prop_file *setup_output_w_prop_file()
 
   build_w_prop_hdr(wph);
   
+  wpf->fp             = NULL;
   wpf->prop           = NULL;
   wpf->file_type      = FILE_TYPE_UNKNOWN;
 
   return wpf;
 } /* setup_output_w_prop_file */
+
+/*----------------------------------------------------------------------*/
+
+void clear_output_w_prop_file(w_prop_file *wpf){
+  /* Free structures associated with w_prop_file */
+      
+  if(wpf->fp       != NULL)g_close(wpf->fp);
+  if(wpf->header   != NULL)free(wpf->header);
+  if(wpf->prop     != NULL)free(wpf->prop);
+#ifdef HAVE_QIO
+  if(wpf->outfile != NULL)
+    w_close_usqcd_wprop_file(wpf->outfile);
+#endif
+  free(wpf);
+}
 
 /*---------------------------------------------------------------------------*/
 

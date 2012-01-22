@@ -19,7 +19,7 @@ void init_qs(quark_source *wqs){
   wqs->c_src            = NULL;
   wqs->wv_src           = NULL;
   wqs->file_initialized = 0;
-#ifdef HAVEQIO
+#ifdef HAVE_QIO
   wqs->infile           = NULL;
   wqs->outfile          = NULL;
 #endif

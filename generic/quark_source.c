@@ -117,7 +117,7 @@ void init_qs(quark_source *qs){
   qs->source_file[0]   = '\0';
   qs->source_file_initialized = 0;
   qs->save_file_initialized = 0;
-#ifdef HAVEQIO
+#ifdef HAVE_QIO
   qs->infile           = NULL;
   qs->outfile          = NULL;
 #endif
@@ -126,6 +126,7 @@ void init_qs(quark_source *qs){
   qs->y0               = 0;
   qs->z0               = 0;
   qs->t0               = 0;
+  qs->r0               = 0.;
   qs->descrp[0]        = '\0';
   qs->mom[0]           = 0;
   qs->mom[1]           = 0;
