@@ -36,7 +36,7 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
   QOP_Force *mom;
 
   QOP_gauge_coeffs_t coeff;
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   double remaptime = -dclock();
 
   //printf("Begin wrapper\n");
