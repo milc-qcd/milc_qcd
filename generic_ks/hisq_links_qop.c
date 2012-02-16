@@ -19,7 +19,7 @@ create_hisq_links_qop(QOP_hisq_coeffs_t *hc, int precision,
 		      su3_matrix *links, int want_deps, int want_aux){
 
   hisq_links_qop_t *hl;
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   fsu3_matrix **raw_F;
   dsu3_matrix **raw_D;
   QOP_F3_GaugeField *g_F;

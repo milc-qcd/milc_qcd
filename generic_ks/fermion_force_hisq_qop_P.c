@@ -20,6 +20,9 @@
 
 /*
  * $Log: fermion_force_hisq_qop_P.c,v $
+ * Revision 1.2  2012/02/16 16:30:29  detar
+ * Initialize QOP_info_t structure.
+ *
  * Revision 1.1  2011/11/29 20:42:28  detar
  * Add
  *
@@ -71,7 +74,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop_P.c,v 1.1 2011/11/29 20:42:28 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop_P.c,v 1.2 2012/02/16 16:30:29 detar Exp $";
 
 #if 0  /* Not supported until we decide what a HISQ one-term or two-term force means */
 /**********************************************************************/
@@ -89,7 +92,7 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, su3_vector *x_off,
   QOP_Force *mom;
   QOP_ColorVector *vecx;
   
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
 
   double remaptime = -dclock();
 
@@ -170,7 +173,7 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
   QOP_ColorVector *vecx[2];
   
   MY_REAL epsv[2];
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   QOP_opt_t qop_ff_opt[2] = {
     {.tag = "fnmat_src_min",.value=4},
     {.tag = "veclength",.value=4}
@@ -256,7 +259,7 @@ void FERMION_FORCE_MULTI( Real eps, Real *residues,
   
   int i;
   MY_REAL *epsv;
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   int nterms;
   char myname[] = "fermion_force_multi_hisq";
 

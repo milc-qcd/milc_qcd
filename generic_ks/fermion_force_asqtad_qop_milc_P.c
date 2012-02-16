@@ -602,7 +602,7 @@ void QOP_asqtad_force_multi(QOP_info_t *info,
   Real final_flop;
   double dtime = -dclock();
   Real nflop = 433968;
-  QOP_info_t info_one;
+  QOP_info_t info_one = {0., 0., 0, 0, 0};
 
   /* Parity requirements */
   for(isrc = 0; isrc < nsrc; isrc++){

@@ -285,8 +285,8 @@ QOP_FermionLinksAsqtad *
   QOP_asqtad_create_L_from_G(QOP_info_t *info,
 			     QOP_asqtad_coeffs_t *coeffs,
 			     QOP_GaugeField *gauge){
-  QOP_info_t flinfo;
-  QOP_info_t llinfo;
+  QOP_info_t flinfo = {0., 0., 0, 0, 0};
+  QOP_info_t llinfo = {0., 0., 0, 0, 0};
   QOP_FermionLinksAsqtad *lqop;
   MYSU3_MATRIX **raw_fat_links, **raw_long_links;
   su3_matrix *t_fl, *t_ll;

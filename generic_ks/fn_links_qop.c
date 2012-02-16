@@ -35,7 +35,7 @@ void
 load_fn_links_qop(fn_links_qop_t *fn, QOP_asqtad_coeffs_t *coeffs, 
 		  int precision, su3_matrix *links, int want_back){
   
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   fsu3_matrix **raw_F;
   dsu3_matrix **raw_D;
   QOP_F3_GaugeField *g_F;

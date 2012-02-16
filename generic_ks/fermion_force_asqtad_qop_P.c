@@ -20,6 +20,9 @@
 
 /*
  * $Log: fermion_force_asqtad_qop_P.c,v $
+ * Revision 1.4  2012/02/16 16:30:29  detar
+ * Initialize QOP_info_t structure.
+ *
  * Revision 1.3  2011/11/29 20:45:56  detar
  * Support new fermion links scheme
  *
@@ -140,7 +143,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop_P.c,v 1.3 2011/11/29 20:45:56 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_asqtad_qop_P.c,v 1.4 2012/02/16 16:30:29 detar Exp $";
 
 /**********************************************************************/
 /* Standard MILC interface for the single-species Asqtad fermion force
@@ -157,7 +160,7 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, su3_vector *x_off,
   QOP_ColorVector *vecx;
   
   QOP_asqtad_coeffs_t *coeff = get_action_coeffs(fl);
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
 
   double remaptime = -dclock();
 
@@ -226,7 +229,7 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
   QOP_ColorVector *vecx[2];
   
   MY_REAL epsv[2];
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   QOP_opt_t qop_ff_opt[2] = {
     {.tag = "fnmat_src_min",.value=4},
     {.tag = "veclength",.value=4}
@@ -299,7 +302,7 @@ void FERMION_FORCE_MULTI( Real eps, Real *residues,
   
   int i;
   MY_REAL *epsv;
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   char myname[] = "fermion_force_multi";
 
   double remaptime = -dclock();

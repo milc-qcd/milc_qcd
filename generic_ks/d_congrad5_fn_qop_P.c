@@ -38,6 +38,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop_P.c,v $
+ * Revision 1.9  2012/02/16 16:30:29  detar
+ * Initialize QOP_info_t structure.
+ *
  * Revision 1.8  2011/11/29 20:38:55  detar
  * Add
  *
@@ -109,7 +112,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.8 2011/11/29 20:38:55 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.9 2012/02/16 16:30:29 detar Exp $";
 
 
 /* Load inversion args for Level 3 inverter */
@@ -192,7 +195,7 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 {
   int isrc, imass;
   int iters;
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   char myname[] = "ks_congrad_qop_generic";
 
 #ifdef AB_DEBUG_ENTRY_EXIT_ROUTINES
