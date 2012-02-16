@@ -354,7 +354,7 @@ void dslash_w_site_special(field_offset src,field_offset dest,
 
 #endif
 
-  /********************************************************************/
+/********************************************************************/
 void dslash_w_field( wilson_vector *src, wilson_vector *dest, int isign, int parity)
 {
   half_wilson_vector hwv;
