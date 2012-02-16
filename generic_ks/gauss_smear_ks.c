@@ -76,7 +76,7 @@ forward2(int dir, su3_vector *dest, su3_vector *src,
 
   cleanup_gather(tag);
 
-  /* start parallel transport of src from up dir */
+  /* start parallel transport of tmp from up dir */
   tag = start_gather_field( tmp, sizeof(su3_vector),
 			    dir, EVENANDODD, gen_pt[dir] );
   wait_gather(tag);
@@ -198,41 +198,45 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
    src <- exp[-width^2/4 * Lapl_3d] src 
    by approximating exp(a) as (1 + a/iters)^iters 
    and Lap_3d is the discrete three dimensional Laplacian
+
 */
+
+void 
+gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
+		    Real width, int iters, int t0)
+{
+  su3_vector *tmp;
+  Real ftmp = -(width*width)/(4*iters);
+  Real ftmpinv = 1. / ftmp;
+  int i, j;
+  site *s;
+
+  if(t_links == NULL){
+    printf("gauss_smear_v_field(%d): NULL t_links\n",this_node);
+    terminate(1);
+  }
+
+  tmp = create_v_field();
+  
+  /* We want (1 + ftmp * Lapl ) = (Lapl + 1/ftmp)*ftmp */
+
+  for(j = 0; j < iters; j++)
+    FORALLSITES(i,s){
+      /* tmp = src * ftmp; */
+      scalar_mult_su3_vector(src+i, ftmp, tmp+i);
+    }
+  klein_gord_field(tmp, src, t_links, ftmpinv, t0);
+  
+  destroy_v_field(tmp);
+}
 
 void 
 gauss_smear_ks_prop_field(ks_prop_field *src, su3_matrix *t_links,
 			  Real width, int iters, int t0)
 {
-  su3_vector *tmp;
-  Real ftmp = -(width*width)/(4*iters);
-  Real ftmpinv = 1. / ftmp;
-  int i, j, color;
-  site *s;
+  int color;
 
-  if(t_links == NULL){
-    printf("gauss_smear_field(%d): NULL t_links\n",this_node);
-    terminate(1);
-  }
+  for(color = 0; color < src->nc; color++)
+    gauss_smear_v_field(src->v[color], t_links, width, iters, t0);
 
-  tmp = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
-  if(tmp == NULL){
-    printf("gauss_smear_site(%d): No room for temporary source\n",this_node);
-    terminate(1);
-  }
-  
-  /* We want (1 + ftmp * Lapl ) = (Lapl + 1/ftmp)*ftmp */
-
-  for(j = 0; j < iters; j++)
-    for(color = 0; color < src->nc; color++)
-      {
-	FORALLSITES(i,s){
-	  /* tmp = src * ftmp; */
-	  scalar_mult_su3_vector(src->v[color]+i, ftmp, tmp+i);
-	}
-	klein_gord_field(tmp, src->v[color], t_links, ftmpinv, t0);
-      }
-  
-  free(tmp);
 }
-
