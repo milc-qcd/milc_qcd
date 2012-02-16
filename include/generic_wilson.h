@@ -84,6 +84,8 @@ void dslash_w_3D_site( field_offset src, field_offset dest,
 		       int isign, int parity);
 void dslash_w_3D_field( wilson_vector *src, wilson_vector *dest, 
 			int isign, int parity);
+void hop_w_field( wilson_vector *src, wilson_vector *dest, 
+		  int isign, int iphase, int parity, int dir);
 
 void cleanup_dslash_w_3D_temps(void);
 void cleanup_dslash_wtemps(void);
