@@ -10,6 +10,9 @@
 /* Modifications ... */
    
 //  $Log: control.c,v $
+//  Revision 1.2  2012/02/16 16:54:33  detar
+//  Print hisq_svd_counter diagnostics only from node 0
+//
 //  Revision 1.1  2011/12/02 04:38:14  detar
 //  Add
 //
@@ -81,7 +84,7 @@ int main(int argc, char *argv[])
     node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
     node0_printf("total_iters = %d\n",total_iters);
 #ifdef HISQ_SVD_COUNTER
-      printf("hisq_svd_counter = %d\n",hisq_svd_counter);
+      node0_printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
     fflush(stdout);
 
