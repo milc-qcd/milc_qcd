@@ -114,6 +114,7 @@
 #include "../include/io_lat.h"
 #include "../include/io_wprop.h"
 #include "../include/file_types.h"
+#include "../include/io_scidac_w.h"
 #ifdef HAVE_QIO
 #include <qio.h>
 #endif
