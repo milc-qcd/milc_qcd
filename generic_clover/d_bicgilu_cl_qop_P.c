@@ -56,6 +56,9 @@
 
 /*
  * $Log: d_bicgilu_cl_qop_P.c,v $
+ * Revision 1.9  2012/02/16 16:49:56  detar
+ * Initialize QOP_info
+ *
  * Revision 1.8  2011/11/29 20:23:54  detar
  * Set uniform convention for qic residuals.  See include/generic_quark_types.h
  *
@@ -86,7 +89,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.8 2011/11/29 20:23:54 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.9 2012/02/16 16:49:56 detar Exp $";
 
 #if 1
 
@@ -110,7 +113,7 @@ static QOP_FermionLinksWilson *
 create_qop_wilson_fermion_links( Real clov )
 {
   QOP_FermionLinksWilson *qop_links = NULL;
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   QOP_GaugeField *links;
   QOP_wilson_coeffs_t coeffs;
   double remaptime;
@@ -359,7 +362,7 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
   int iterations_used = 0;
   QOP_invert_arg_t qop_invert_arg;
   QOP_resid_arg_t  ***qop_resid_arg;
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   double remaptime;
   int i;
   site *s;

@@ -44,7 +44,7 @@
 // static const char *qop_prec[2] = {"F", "D"};
 // #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_D.c,v 1.2 2011/11/29 20:23:53 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_D.c,v 1.3 2012/02/16 16:49:56 detar Exp $";
 
 #if 1
 
@@ -68,7 +68,7 @@ static QOP_FermionLinksWilson *
 create_qop_wilson_fermion_links( Real clov )
 {
   QOP_FermionLinksWilson *qop_links = NULL;
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   QOP_GaugeField *links;
   QOP_wilson_coeffs_t coeffs;
   double remaptime;
@@ -310,7 +310,7 @@ compute_qdp_residuals( QDP_D3_DiracFermion *qdp_resid[],
 		       QOP_DiracFermion **qop_sol[],  
 		       float *kappas[], int nkappa[],
 		       int nsrc, int milc_parity ){
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   QDP_D3_DiracFermion *qdp_prod = QDP_D3_create_D();
   QOP_DiracFermion *qop_prod;
   QOP_evenodd_t qop_parity = milc2qop_parity(milc_parity);
@@ -402,7 +402,7 @@ bicgilu_cl_qop_single_for_double( QOP_FermionLinksWilson *qop_links,
   Real rel_F = 0;   /* The limits of a single precision inversion */
   QOP_invert_arg_t qop_invert_arg;
   QOP_resid_arg_t  ***qop_resid_arg_F;
-  QOP_info_t info_F,info;
+  QOP_info_t info_F = {0., 0., 0, 0, 0}, info = {0., 0., 0, 0, 0};
   QDP_Subset subset = milc2qdp_subset(milc_parity);
   QOP_F3_FermionLinksWilson *qop_links_F;
   QOP_F3_DiracFermion **qop_sol_F[MAXSRC], *qop_rhs_F[MAXSRC];
