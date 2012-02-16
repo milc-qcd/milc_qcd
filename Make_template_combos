@@ -47,6 +47,10 @@ ifeq ($(strip ${HAVEQOP}),true)
   GAUGE_OBJECTS += map_milc_to_qopqdp.o milc_to_qop_utilities.o
 endif
 
+ifeq ($(strip ${WANTQUDA}),true)
+  GAUGE_OBJECTS += milc_to_quda_utilities.o
+endif
+
 ifeq ($(strip ${HAVEFFTW}),true)
   FFT_OBJECTS = remap_fftw_fourier.o
 else
@@ -136,8 +140,8 @@ endif
 
 # Standard MILC combinations
 
-  FLINKS =  fermion_links.o fermion_links_fn_load_milc.o fermion_links_fn_twist_milc.o \
-    general_staple.o fn_links_milc.o
+  FLINKS =  fermion_links.o fermion_links_fn_load_milc.o \
+    fermion_links_fn_twist_milc.o general_staple.o fn_links_milc.o
 
   FLINKS_FN_MILC_CPU = fermion_links_milc.o ${FLINKS} ks_action_paths.o
 
@@ -150,10 +154,10 @@ endif
 # GPU support
 
   FLINKS_FN_MILC_GPU = fermion_links_milc.o fermion_links_fn_load_gpu.o \
-    fermion_links_fn_utilites_gpu.o ${FLINKS}
+    ${FLINKS}
   
   FLINKS_HISQ_MILC_GPU = fermion_links_hisq_milc.o fermion_links_hisq_load_milc.o \
-    fermion_links_fn_utilites_gpu.o su3_mat_op_gpu.o ${FLINKS} 
+    su3_mat_op_gpu.o fermion_links_hisq_load_gpu.o ${FLINKS} 
 
 # Standard QOP combinations
 
@@ -162,8 +166,9 @@ endif
   FLINKS_FN_QOP = ${FLINKS_QOP} fn_links_qop.o fermion_links_asqtad_qop.o \
       fermion_links_fn_twist_qop.o ks_action_coeffs_asqtad_qop.o ks_action_paths.o
 
-  FLINKS_HISQ_QOP = ${FLINKS_QOP} fn_links_qop.o hisq_links_qop.o fermion_links_hisq_qop.o \
-      fermion_links_fn_twist_qop.o ks_action_coeffs_hisq_qop.o ks_action_paths_hisq.o \
+  FLINKS_HISQ_QOP = ${FLINKS_QOP} fn_links_qop.o hisq_links_qop.o \
+      fermion_links_hisq_qop.o fermion_links_fn_twist_qop.o \
+      ks_action_coeffs_hisq_qop.o ks_action_paths_hisq.o \
       su3_mat_op.o
 
 # Generic actions are not supported in QOP, so we use MILC
@@ -270,7 +275,7 @@ endif
 
   ASQ_FORCE_MILC_GPU = fermion_force_asqtad_gpu.o ${FORCE}
 
-  HISQ_FORCE_MILC_GPU = fermion_force_hisq_gpu.o ${FORCE}
+  HISQ_FORCE_MILC_GPU = fermion_force_hisq_multi.o ${FORCE}
   
 # Standard QOP combinations
 
@@ -316,7 +321,7 @@ endif
 
 # GPU support
 
-  GAUGE_FORCE_MILC_GPU = gauge_force_imp_gpu.o ${GAUGE_FORCE_MILC_CPU}
+  GAUGE_FORCE_MILC_GPU = gauge_force_imp_gpu.o gauge_stuff.o ranmom.o
   
 # Standard QOP combinations
 
