@@ -511,8 +511,8 @@ load_X_from_W(info_t *info, fn_links_t *fn, hisq_auxiliary_t *aux,
 */
 
 static void 
-load_hisq_aux_links(info_t *info, ks_action_paths_hisq *ap, hisq_auxiliary_t *aux,
-		    su3_matrix *links){
+load_hisq_aux_links_cpu(info_t *info, ks_action_paths_hisq *ap, hisq_auxiliary_t *aux,
+			su3_matrix *links){
   char myname[] = "load_hisq_aux_links";
   double final_flop = 0.0;
 
