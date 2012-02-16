@@ -31,7 +31,7 @@
 #include "../include/umethod.h"
 #include "../include/fermion_links.h"
 #include <string.h>
-//void printpath( int *path, int length );
+
 
 
 //AB output for debugging
@@ -99,13 +99,15 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 //    2) reunitarization
 //    3) smearing level 1
 
-#ifdef HISQ_FF_MULTI_WRAPPER
 
+/* GPU code always uses wrapper */
+#if defined(HISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
+
+#ifndef USE_FF_GPU
 static void 
-fn_fermion_force_multi_hisq_wrapper_mx( info_t *info, Real eps, Real *residues,
+fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residues,
 					su3_vector **multi_x, int nterms,
 					fermion_links_t *fl);
-
 // Contribution to the force from 0 level of smearing, force contains
 // only |X><Y| terms
 static void 
@@ -137,7 +139,24 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
 				    su3_matrix *force_accum_old[4], 
 				    fermion_links_t *fl);
 
+#else
+
+static void 
+fn_fermion_force_multi_hisq_wrapper_mx_gpu( info_t *info, Real eps, Real *residues,
+					su3_vector **multi_x, int nterms,
+					fermion_links_t *fl);
+#endif /* ifndef USE_FF_GPU */
+
+
+/* Change wrapper call for GPU */
+
+#ifdef USE_FF_GPU
+#define fn_fermion_force_multi_hisq_wrapper_mx fn_fermion_force_multi_hisq_wrapper_mx_gpu
+#else 
+#define fn_fermion_force_multi_hisq_wrapper_mx fn_fermion_force_multi_hisq_wrapper_mx_cpu
 #endif
+
+#endif /* HISQ_FF_MULTI_WRAPPER || USE_FF_GPU */
 
 /**********************************************************************/
 /*   Wrapper for fermion force routines with multiple sources         */
@@ -160,11 +179,11 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
     node0_printf("FNMATREV isn't implemented\n"); exit(0);
     break;
   case FNMAT:
-#ifdef HISQ_FF_MULTI_WRAPPER
+#if defined(HISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
     fn_fermion_force_multi_hisq_wrapper_mx(&info,  eps, residues, xxx, nterms, fl );
-#else /* HISQ_FF_MULTI_WRAPPER */
+#else
     fn_fermion_force_multi_hisq_mx(&info,  eps, residues, xxx, nterms, fl );
-#endif /* HISQ_FF_MULTI_WRAPPER */
+#endif
     break;
   default:
     fn_fermion_force_multi_hisq_mx(&info, eps, residues, xxx, nterms, fl );
@@ -1064,10 +1083,13 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 
 
 
+#if defined(HISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
 
+#ifndef USE_FF_GPU
 
-
-#ifdef HISQ_FF_MULTI_WRAPPER
+/********************************************************************/
+/* Non-GPU wrapper support                                          */
+/********************************************************************/
 
 // HISQ wrapper routine: contribution to the force due to
 //    0) smearing level 0 (outer product |X><Y|)
@@ -1076,7 +1098,7 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 //    3) smearing level 1
 
 static void 
-fn_fermion_force_multi_hisq_wrapper_mx( info_t *info, Real eps, Real *residues, 
+fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residues, 
 				     su3_vector **multi_x, int nterms,
 				     fermion_links_t *fl)
 {
@@ -1369,10 +1391,6 @@ fn_fermion_force_multi_hisq_wrapper_mx( info_t *info, Real eps, Real *residues,
 
 } //fn_fermion_force_multi_hisq_wrapper_mx
 
-#endif
-
-
-#ifdef HISQ_FF_MULTI_WRAPPER
 
 // Contribution to the force from 0 level of smearing, force contains only |X><Y| terms
 static void 
@@ -1893,7 +1911,7 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
 
     /* Sum over all nodes and update counters */
 
-  printf("nflops_all_sites = %lu\n", nflops_all_sites);
+  // printf("nflops_all_sites = %lu\n", nflops_all_sites);
 
   info->final_flop += nflops_all_sites;
 
@@ -1902,7 +1920,321 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
   rephase_field_offset( internal_Y_link, ON, NULL , r0);
 } // fn_fermion_force_multi_hisq_reunit
 
-#endif /* HISQ_FF_MULTI_WRAPER */
+#else /* ifndef USE_FF_GPU */
+
+/********************************************************************/
+/* GPU support                                                      */
+/********************************************************************/
+
+#include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
+
+static void outer_product_append( Real one_hop_coeff, Real three_hop_coeff, 
+				  Real *residues, 
+				  su3_vector **multi_x, int nterms,
+				  su3_matrix *one_hop_oprod[4], 
+				  su3_matrix *three_hop_oprod[4] )
+{
+  /* note CG_solution and Dslash * solution are combined in "multi_x" */
+  /* New version 1/21/99.  Use forward part of Dslash to get force */
+  /* see long comment at end */
+  /* For each link we need multi_x transported from both ends of path. */
+  int term;
+  int i,k;
+  int dir;
+  su3_matrix tmat;
+  
+  msg_tag *mtag[2];
+  su3_matrix *mat_tmp0;
+  // length N path has N+1 sites!!
+  su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1];
+  
+  
+  if( nterms==0 )return;
+  
+#ifdef MILC_GLOBAL_DEBUG
+#ifdef HISQ_FF_DEBUG
+  {
+    printf("WRAPPER FORCE smearing0 pseudofermion vector at site (0,0,0,0)\n");
+    dumpvec( &(multi_x[0][0]) );
+    printf("\n");
+    su3_vector su3ab;
+    clearvec( &su3ab );
+    int nnn;
+    for( nnn=0; nnn<nterms;nnn++) {
+      FORALLFIELDSITES(i){
+	add_su3_vector( &su3ab, &(multi_x[nnn][i]), &su3ab );
+      }
+    }
+    printf("WRAPPER FORCE smearing0 pseudofermion vector GLOBAL SUM\n");
+    dumpvec( &su3ab );
+    printf("\n");
+    for( nnn=0; nnn<nterms;nnn++) {
+      printf("residues[%d]=%lf\n",nnn,residues[nnn]);
+    }
+  }
+#endif /* HISQ_FF_DEBUG */
+#endif /* MILC_GLOBAL_DEBUG */
+  
+  
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+    oprod_along_path[i] = 
+      (su3_matrix *) malloc(sites_on_node*sizeof(su3_matrix) );
+  }
+  mat_tmp0 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
+  if( mat_tmp0 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
+  
+  
+  
+  
+  // clear force accumulators
+  //  for(dir=XUP;dir<=TUP;dir++)
+  //    FORALLFIELDSITES(i)clear_su3mat( &(one_hop_coeff[dir][i]) );
+  
+  //AB loop on directions, path table is not needed
+  for(dir=XUP;dir<=TUP;dir++){
+    k=0; // which gather we are using
+    //AB netbackdir is just the opposite of dir for 1x1 case
+    mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
+				  OPP_DIR(dir), EVENANDODD, gen_pt[k] );
+    FORALLFIELDSITES(i){
+      clear_su3mat(  &(oprod_along_path[0][i]) ); // actually last site in path
+    }
+    for(term=0;term<nterms;term++){
+      if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
+			       sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1-k] );
+      wait_gather(mtag[k]);
+      
+      FORALLFIELDSITES(i){
+        // build projector as usual
+        su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
+        // multiply by alpha_l in rational function expansion
+        scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, 
+				    residues[term], &(oprod_along_path[0][i]) );
+      }
+      cleanup_gather(mtag[k]);
+      k=1-k; // swap 0 and 1
+    } /* end loop over terms in rational function expansion */
+    
+    
+    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
+				 mat_tmp0, dir );
+    
+    FORALLFIELDSITES(i){
+      scalar_mult_add_su3_matrix( &(one_hop_oprod[dir][i]), 
+				  &(oprod_along_path[1][i]),
+				  one_hop_coeff, &(one_hop_oprod[dir][i]) );
+    }
+    
+  } /* end of loop on directions */
+  
+  
+  /* *** Naik part *** */
+  // clear force accumulators
+  //  for(dir=XUP;dir<=TUP;dir++)
+  //    FORALLFIELDSITES(i)clear_su3mat( &(three_hop_coeff[dir][i]) );
+  
+  for(dir=XUP;dir<=TUP;dir++){ //AB loop on directions, path table is not needed
+    k=0; // which gather we are using
+    mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
+				  OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[k] );
+    FORALLFIELDSITES(i){
+      clear_su3mat(  &(oprod_along_path[0][i]) );
+    }
+    for(term=0;term<nterms;term++){
+      if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
+	       sizeof(su3_vector), OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[1-k] );
+      wait_gather(mtag[k]);
+      
+      FORALLFIELDSITES(i){
+        // build projector as usual
+        su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
+        // multiply by alpha_l in rational function expansion
+        scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, 
+				    residues[term], &(oprod_along_path[0][i]) );
+      }
+      cleanup_gather(mtag[k]);
+      k=1-k; // swap 0 and 1
+    } /* end loop over terms in rational function expansion */
+    
+    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
+				 mat_tmp0, DIR3(dir) );
+    
+    FORALLFIELDSITES(i){
+      scalar_mult_add_su3_matrix( &(three_hop_oprod[dir][i]), 
+				  &(oprod_along_path[1][i]),
+				  three_hop_coeff, &(three_hop_oprod[dir][i]) );
+    }
+  } /* end of loop on directions */
+  
+  
+  free( mat_tmp0 );
+  for(i=0;i<=MAX_PATH_LENGTH;i++){
+    free( oprod_along_path[i] );
+  }
+  return;
+} // outer_product_append
+
+
+static void outer_product_create( Real one_hop_coeff, Real three_hop_coeff, 
+	  Real *residues, 
+	  su3_vector **multi_x, int nterms,
+	  su3_matrix *one_hop_oprod[4], su3_matrix *three_hop_oprod[4] )
+{
+  int dir, i;
+  for(dir=XUP;dir<=TUP;dir++){
+    FORALLFIELDSITES(i){ 
+      clear_su3mat( &(one_hop_oprod[dir][i]) );
+      clear_su3mat( &(three_hop_oprod[dir][i]));
+    }
+  }
+  
+  outer_product_append(one_hop_coeff, three_hop_coeff,
+		       residues, 
+		       multi_x, 
+		       nterms,
+		       one_hop_oprod,
+		       three_hop_oprod);
+  return;
+} // outer_product_create
+
+
+
+
+static void write_path_coeffs_to_array(ks_component_paths paths, double array[6])
+{
+  array[0] = paths.act_path_coeff.one_link; 
+  array[1] = paths.act_path_coeff.naik;
+  array[2] = paths.act_path_coeff.three_staple;
+  array[3] = paths.act_path_coeff.five_staple;
+  array[4] = paths.act_path_coeff.seven_staple;
+  array[5] = paths.act_path_coeff.lepage;
+  return;
+}
+
+
+static void 
+fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residues, 
+					   su3_vector **multi_x, int nterms,
+					   fermion_links_t *fl)
+{
+  // Get the terms we need from the fermion links structure */
+  ks_action_paths_hisq *ap = get_action_paths_hisq(fl);
+  hisq_auxiliary_t *aux = get_hisq_auxiliary(fl);
+  int n_naiks = fermion_links_get_n_naiks(fl);
+  double *eps_naik = fermion_links_get_eps_naik(fl);
+  su3_matrix *U_link = aux->U_link;
+  su3_matrix *V_link = aux->V_link;
+  su3_matrix *W_unitlink = aux->W_unitlink;
+  site *s;
+  int i, j, dir;
+  int inaik;
+  int n_naik_shift;
+  int n_orders_naik_current;
+  
+  su3_matrix* one_link_oprod[4];
+  su3_matrix* three_link_oprod[4];
+  su3_matrix* staple_oprod[4];
+
+  initialize_quda();
+  
+  // First construct the outer products
+  for(i=XUP; i<=TUP; ++i){
+    one_link_oprod[i] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
+    three_link_oprod[i] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
+    staple_oprod[i] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
+  }
+  
+  n_naik_shift = 0;
+  n_orders_naik_current = n_order_naik_total;
+  Real one_hop_coeff = 2.0*eps;
+  Real three_hop_coeff = ap->p2.act_path_coeff.naik*2.0*eps;   
+  
+  outer_product_create(one_hop_coeff, three_hop_coeff, residues, 
+		       multi_x, n_orders_naik_current, staple_oprod, three_link_oprod);
+  
+  for(dir=XUP; dir<=TUP; ++dir){
+    FORALLFIELDSITES(i){
+      scalar_mult_su3_matrix(&(staple_oprod[dir][i]), ap->p2.act_path_coeff.one_link, 
+			     &(one_link_oprod[dir][i]));
+    }
+  }
+  
+  n_naik_shift = n_orders_naik[0];
+  for(inaik=1; inaik<n_naiks; ++inaik){
+    n_orders_naik_current = n_orders_naik[inaik];
+    
+    one_hop_coeff = ap->p3.act_path_coeff.one_link*eps_naik[inaik]*2.0*eps;
+    three_hop_coeff = ap->p3.act_path_coeff.naik*eps_naik[inaik]*2.0*eps;
+    
+    outer_product_append(one_hop_coeff, 
+			 three_hop_coeff, 
+			 residues+n_naik_shift,
+			 multi_x+n_naik_shift, n_orders_naik_current, 
+			 one_link_oprod,
+			 three_link_oprod);
+    
+    n_naik_shift += n_orders_naik[inaik];  
+  } // end loop over inaik
+  // done constructing the outer products
+  
+  float* momentum = (float*)special_alloc(sites_on_node*4*sizeof(anti_hermitmat));
+  
+  
+  double level2_coeff[6];
+  write_path_coeffs_to_array(ap->p2, level2_coeff);
+  double fat7_coeff[6];
+  write_path_coeffs_to_array(ap->p1, fat7_coeff);
+  
+  // The following lines need to be deleted
+  const int dim[4] = {nx,ny,nz,nt};
+  QudaLayout_t layout;
+  layout.latsize = dim;
+  qudaInit(layout);
+  // end delete
+  
+  // The following lines of code are optional
+  // If the parameters are not set explicitly here, 
+  // they are set to default values the first time 
+  // qudaHisqForce is called.
+  QudaHisqParams_t params;
+  params.reunit_allow_svd = 1;
+  params.reunit_svd_only = 0;
+  params.reunit_svd_abs_error = 1e-8;
+  params.reunit_svd_rel_error = 1e-7;
+  params.force_filter = 5e-5;
+
+  qudaHisqParamsInit(params);
+  // end optional code
+		
+  qudaHisqForce(PRECISION, level2_coeff, fat7_coeff, 
+		(const void* const*)staple_oprod, 
+		(const void* const*)one_link_oprod, 
+		(const void* const*)three_link_oprod, 
+		W_unitlink, V_link, U_link, momentum);
+  
+  // append result
+  FORALLSITES(i,s){
+    for(dir=0; dir<4; ++dir){
+      for(j=0; j<10; ++j){
+	*((float*)(&(s->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
+      }
+    }
+  }
+  
+  for(i=XUP; i<=TUP; ++i){
+    free(one_link_oprod[i]);
+    free(three_link_oprod[i]);
+    free(staple_oprod[i]);
+  }
+  free(momentum);
+  
+  return;
+} //fn_fermion_force_multi_hisq_wrapper_mx_gpu
+
+#endif /* ifndef USE_FF_GPU */
+
+#endif  /* HISQ_FF_MULTI_WRAPPER || USE_FF_GPU */
 
 int 
 find_backwards_gather( Q_path *path )
@@ -2159,6 +2491,8 @@ void side_link_3f_force_list(int mu, int nu, Real *coeff,
     }
     free(m_coeff);
 }
+
+
 /* LONG COMMENTS
    Here we have combined "xxx", (offset "x_off")  which is
 (M_adjoint M)^{-1} phi, with Dslash times this vector, which goes in the
