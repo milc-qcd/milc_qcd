@@ -933,7 +933,7 @@ sym_shift_fn_field(imp_ferm_links_t *fn, int dir,
   dslash_fn_dir(src, dest, EVENANDODD, fn, dir, +1, 1., 0.);
 
   /* Add to it the Fat-Naik shift operation in backward dir */
-  //dslash_fn_dir(src, dest, EVENANDODD, fn, dir, -1, -1., -1.);
+  //dslash_fn_dir(src, dest, EVENANDODD, fn, dir, -1, 1., 1.);
 }
 
 /* "Multiply by" the quark-antiquark Fat-Naik rho operator */
