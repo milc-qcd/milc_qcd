@@ -121,6 +121,8 @@ int write_S_from_site(QIO_Writer *outfile, QIO_String *xml_record_out,
 
 int write_D_C_from_site(QIO_Writer *outfile, 
 		 QIO_String *xml_record_out, field_offset src, int count);
+int write_D3_V_from_site(QIO_Writer *outfile, 
+		 QIO_String *xml_record_out, field_offset src, int count);
 int write_D3_D_from_site(QIO_Writer *outfile, 
 		 QIO_String *xml_record_out, field_offset src, int count);
 
@@ -134,6 +136,8 @@ int write_F3_D_timeslice_from_site(QIO_Writer *outfile,
 	 QIO_String *xml_record_out, field_offset src, int count, int t0);
 
 int write_D_C_timeslice_from_site(QIO_Writer *outfile, 
+	 QIO_String *xml_record_out, field_offset src, int count, int t0);
+int write_D3_V_timeslice_from_site(QIO_Writer *outfile, 
 	 QIO_String *xml_record_out, field_offset src, int count, int t0);
 int write_D3_D_timeslice_from_site(QIO_Writer *outfile, 
 	 QIO_String *xml_record_out, field_offset src, int count, int t0);
@@ -151,6 +155,8 @@ int write_F3_D_from_field(QIO_Writer *outfile,
 
 int write_D_C_from_field(QIO_Writer *outfile, 
 		 QIO_String *xml_record_out,  complex *src, int count);
+int write_D3_V_from_field(QIO_Writer *outfile, 
+		  QIO_String *xml_record_out, su3_vector *src, int count);
 int write_D3_D_from_field(QIO_Writer *outfile, 
 		  QIO_String *xml_record_out, wilson_vector *src, int count);
 
@@ -166,6 +172,8 @@ int write_F3_D_timeslice_from_field(QIO_Writer *outfile,
 
 int write_D_C_timeslice_from_field(QIO_Writer *outfile, 
 		 QIO_String *xml_record_out,  complex *src, int count, int t0);
+int write_D3_V_timeslice_from_field(QIO_Writer *outfile, 
+	  QIO_String *xml_record_out, su3_vector *src, int count, int t0);
 int write_D3_D_timeslice_from_field(QIO_Writer *outfile, 
 	  QIO_String *xml_record_out, wilson_vector *src, int count, int t0);
 
