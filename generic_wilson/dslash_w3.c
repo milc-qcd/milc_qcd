@@ -278,108 +278,107 @@ register int dir,otherparity=0;
 } /* end (of dslash_w_site_special() ) */
 
 void dslash_w_field( wilson_vector *src, wilson_vector *dest, int isign, int parity) {
-half_wilson_vector hwvx,hwvy,hwvz,hwvt;
-
-register int i;
-register site *s;
-register int dir,otherparity=0;
-msg_tag *tag[8];
-su3_matrix *linkx,*linky,*linkz,*linkt;
-
+  half_wilson_vector hwvx,hwvy,hwvz,hwvt;
+  
+  register int i;
+  register site *s;
+  register int dir,otherparity=0;
+  msg_tag *tag[8];
+  su3_matrix *linkx,*linky,*linkz,*linkt;
+  
   /* The calling program must clean up the temps! */
   malloc_dslash_temps();
   setup_tmp_links();
-
-    switch(parity) {
-	case EVEN:      otherparity=ODD; break;
-	case ODD:       otherparity=EVEN; break;
-	case EVENANDODD:        otherparity=EVENANDODD; break;
-    }
-
-    if(N_POINTERS < 8){
-      printf("dslash: N_POINTERS must be 8 or more!\n");
-      terminate(1);
-     }
-
-
-    /* Take Wilson projection for src displaced in up direction, gather
-       it to "our site" */
-    FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir( &(src[i]), &(htmp[XUP][i]),
-	    &(htmp[YUP][i]), &(htmp[ZUP][i]), &(htmp[TUP][i]), isign);
-    }
-    for( dir=XUP; dir <= TUP; dir++) {
-	tag[dir]=start_gather_field( htmp[dir], sizeof(half_wilson_vector),
-	    dir, parity, gen_pt[dir] );
-    }
-
-        /* Take Wilson projection for src displaced in down direction,
-        multiply it by adjoint link matrix, gather it "up" */
-    FORSOMEPARITY(i,s,otherparity){
-        wp_shrink_4dir( &(src[i]), &hwvx, &hwvy, &hwvz, &hwvt, -isign);
-
-	linkx = &t_links[4*i+XUP];
-	linky = &t_links[4*i+YUP];
-	linkz = &t_links[4*i+ZUP];
-	linkt = &t_links[4*i+TUP];
-	mult_adj_su3_mat_hwvec( linkx, &hwvx, &(htmp[XDOWN][i]));
-	mult_adj_su3_mat_hwvec( linky, &hwvy, &(htmp[YDOWN][i]));
-	mult_adj_su3_mat_hwvec( linkz, &hwvz, &(htmp[ZDOWN][i]));
-	mult_adj_su3_mat_hwvec( linkt, &hwvt, &(htmp[TDOWN][i]));
-    }
-
-    for( dir=XUP; dir <= TUP; dir++) {
-	tag[OPP_DIR(dir)]=start_gather_field(htmp[OPP_DIR(dir)], 
-		sizeof(half_wilson_vector), OPP_DIR(dir),
-		parity, gen_pt[OPP_DIR(dir)] );
-    }
-
-
-	/* Set dest to zero */
-        /* Take Wilson projection for src displaced in up direction, gathered,
-		multiply it by link matrix, expand it, and add.
-		to dest */
-    for( dir=XUP; dir <= TUP; dir++) {
-	wait_gather(tag[dir]);
-    }
-    FORSOMEPARITY(i,s,parity){
-      linkx = &t_links[4*i+XUP];
-      linky = &t_links[4*i+YUP];
-      linkz = &t_links[4*i+ZUP];
-      linkt = &t_links[4*i+TUP];
-      mult_su3_mat_hwvec( linkx, 
-			   (half_wilson_vector * )(gen_pt[XUP][i]), &hwvx ); 
-      mult_su3_mat_hwvec( linky, 
-			   (half_wilson_vector * )(gen_pt[YUP][i]), &hwvy ); 
-      mult_su3_mat_hwvec( linkz, 
-			   (half_wilson_vector * )(gen_pt[ZUP][i]), &hwvz ); 
-      mult_su3_mat_hwvec( linkt, 
-			   (half_wilson_vector * )(gen_pt[TUP][i]), &hwvt ); 
-      grow_add_four_wvecs( &(dest[i]),
-	    &hwvx, &hwvy, &hwvz, &hwvt, isign, 0 ); /* "0" is NOSUM */
-    }
-    for( dir=XUP; dir <= TUP; dir++) {
-	cleanup_gather(tag[dir]);
-    }
-
-        /* Take Wilson projection for src displaced in down direction,
-        expand it, and add to dest */
-    for( dir=XUP; dir <= TUP; dir++) {
-	wait_gather(tag[OPP_DIR(dir)]);
-    }
-
-    FORSOMEPARITY(i,s,parity){
-	grow_add_four_wvecs( &(dest[i]),
-	    (half_wilson_vector *)(gen_pt[XDOWN][i]),
-	    (half_wilson_vector *)(gen_pt[YDOWN][i]),
-	    (half_wilson_vector *)(gen_pt[ZDOWN][i]),
-	    (half_wilson_vector *)(gen_pt[TDOWN][i]),
-	    -isign, 1 );	/* "1" SUMs in current dest */
-    }
-    for( dir=XUP; dir <= TUP; dir++) {
-	cleanup_gather(tag[OPP_DIR(dir)]);
-    }
-
+  
+  switch(parity) {
+  case EVEN:      otherparity=ODD; break;
+  case ODD:       otherparity=EVEN; break;
+  case EVENANDODD:        otherparity=EVENANDODD; break;
+  }
+  
+  if(N_POINTERS < 8){
+    printf("dslash: N_POINTERS must be 8 or more!\n");
+    terminate(1);
+  }
+  
+  /* Take Wilson projection for src displaced in up direction, gather
+     it to "our site" */
+  FORSOMEPARITY(i,s,otherparity){
+    wp_shrink_4dir( &(src[i]), &(htmp[XUP][i]),
+		    &(htmp[YUP][i]), &(htmp[ZUP][i]), &(htmp[TUP][i]), isign);
+  }
+  for( dir=XUP; dir <= TUP; dir++) {
+    tag[dir]=start_gather_field( htmp[dir], sizeof(half_wilson_vector),
+				 dir, parity, gen_pt[dir] );
+  }
+  
+  /* Take Wilson projection for src displaced in down direction,
+     multiply it by adjoint link matrix, gather it "up" */
+  FORSOMEPARITY(i,s,otherparity){
+    wp_shrink_4dir( &(src[i]), &hwvx, &hwvy, &hwvz, &hwvt, -isign);
+    
+    linkx = &t_links[4*i+XUP];
+    linky = &t_links[4*i+YUP];
+    linkz = &t_links[4*i+ZUP];
+    linkt = &t_links[4*i+TUP];
+    mult_adj_su3_mat_hwvec( linkx, &hwvx, &(htmp[XDOWN][i]));
+    mult_adj_su3_mat_hwvec( linky, &hwvy, &(htmp[YDOWN][i]));
+    mult_adj_su3_mat_hwvec( linkz, &hwvz, &(htmp[ZDOWN][i]));
+    mult_adj_su3_mat_hwvec( linkt, &hwvt, &(htmp[TDOWN][i]));
+  }
+  
+  for( dir=XUP; dir <= TUP; dir++) {
+    tag[OPP_DIR(dir)]=start_gather_field(htmp[OPP_DIR(dir)], 
+					 sizeof(half_wilson_vector), OPP_DIR(dir),
+					 parity, gen_pt[OPP_DIR(dir)] );
+  }
+  
+  
+  /* Set dest to zero */
+  /* Take Wilson projection for src displaced in up direction, gathered,
+     multiply it by link matrix, expand it, and add.
+     to dest */
+  for( dir=XUP; dir <= TUP; dir++) {
+    wait_gather(tag[dir]);
+  }
+  FORSOMEPARITY(i,s,parity){
+    linkx = &t_links[4*i+XUP];
+    linky = &t_links[4*i+YUP];
+    linkz = &t_links[4*i+ZUP];
+    linkt = &t_links[4*i+TUP];
+    mult_su3_mat_hwvec( linkx, 
+			(half_wilson_vector * )(gen_pt[XUP][i]), &hwvx ); 
+    mult_su3_mat_hwvec( linky, 
+			(half_wilson_vector * )(gen_pt[YUP][i]), &hwvy ); 
+    mult_su3_mat_hwvec( linkz, 
+			(half_wilson_vector * )(gen_pt[ZUP][i]), &hwvz ); 
+    mult_su3_mat_hwvec( linkt, 
+			(half_wilson_vector * )(gen_pt[TUP][i]), &hwvt ); 
+    grow_add_four_wvecs( &(dest[i]),
+			 &hwvx, &hwvy, &hwvz, &hwvt, isign, 0 ); /* "0" is NOSUM */
+  }
+  for( dir=XUP; dir <= TUP; dir++) {
+    cleanup_gather(tag[dir]);
+  }
+  
+  /* Take Wilson projection for src displaced in down direction,
+     expand it, and add to dest */
+  for( dir=XUP; dir <= TUP; dir++) {
+    wait_gather(tag[OPP_DIR(dir)]);
+  }
+  
+  FORSOMEPARITY(i,s,parity){
+    grow_add_four_wvecs( &(dest[i]),
+			 (half_wilson_vector *)(gen_pt[XDOWN][i]),
+			 (half_wilson_vector *)(gen_pt[YDOWN][i]),
+			 (half_wilson_vector *)(gen_pt[ZDOWN][i]),
+			 (half_wilson_vector *)(gen_pt[TDOWN][i]),
+			 -isign, 1 );	/* "1" SUMs in current dest */
+  }
+  for( dir=XUP; dir <= TUP; dir++) {
+    cleanup_gather(tag[OPP_DIR(dir)]);
+  }
+  
 } /* end (of dslash_w_field() ) */
 
 
@@ -496,4 +495,90 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
     }
 
 } /* end (of dslash_w_field_special() ) */
+
+/***********************************************************/
+/* hopping matrix: "dslash" for a single direction dir
+/***********************************************************/
+
+/* Apply the Wilson hopping matrix for fixed dir
+   That is, multiply by (1 + isign*gamma_mu) U_x,mu \delta_x,x+mu +
+   iphase*(1 - isign*gamma_mu) U^\dagger_(x-mu,mu) */
+
+void hop_w_field( wilson_vector *src, wilson_vector *dest, 
+		  int isign, int iphase, int parity, int dir)
+{
+  half_wilson_vector hwv;
+  wilson_vector wtmp;
+  
+  register int i;
+  register site *s;
+  register int otherparity=0;
+  msg_tag *tag[2];
+  
+  /* The calling program must clean up the temps! */
+  malloc_dslash_temps();
+
+  switch(parity) {
+  case EVEN:      otherparity=ODD; break;
+  case ODD:       otherparity=EVEN; break;
+  case EVENANDODD:        otherparity=EVENANDODD; break;
+  }
+  
+  if(N_POINTERS < 8){
+    printf("dslash: N_POINTERS must be 8 or more!\n");
+    terminate(1);
+  }
+  
+  /* Take Wilson projection for src displaced in up direction, gather
+     it to "our site" */
+  FORSOMEPARITY(i,s,otherparity){
+    wp_shrink( &src[i], &(htmp[0][i]), dir, isign);
+  }
+
+  tag[0]=start_gather_field( htmp[0], sizeof(half_wilson_vector),
+			     dir, parity, gen_pt[0] );
+  
+  /* Take Wilson projection for src displaced in down direction,
+     multiply it by adjoint link matrix, gather it "up" */
+  FORSOMEPARITY(i,s,otherparity){
+    wp_shrink( &src[i], &hwv, dir, -isign );
+    mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv, &(htmp[1][i]) );
+  }
+  
+  tag[1]=start_gather_field( htmp[1],
+			     sizeof(half_wilson_vector), OPP_DIR(dir),
+			     parity, gen_pt[1] );
+  
+  
+  /* Take Wilson projection for src displaced in up direction, gathered,
+     multiply it by link matrix, expand it, and add.
+     to dest */
+  wait_gather(tag[0]);
+
+  FORSOMEPARITYDOMAIN(i,s,parity){
+    mult_su3_mat_hwvec( &(s->link[dir]), 
+			(half_wilson_vector * )(gen_pt[0][i]), &hwv ); 
+    wp_grow( &hwv, &dest[i], dir, isign);
+  }
+ 
+  cleanup_gather(tag[0]);
+  
+  /* Take Wilson projection for src displaced in down direction,
+     expand it, and add it to or subtract it from dest */
+  wait_gather(tag[1]);
+  
+  FORSOMEPARITY(i,s,parity){
+    wp_grow( (half_wilson_vector *)(gen_pt[1][i]), &wtmp, dir, -isign);
+    if(iphase == 1)
+      add_wilson_vector(&dest[i], &wtmp, &dest[i]);
+    else
+      sub_wilson_vector(&dest[i], &wtmp, &dest[i]);
+  }
+  cleanup_gather(tag[1]);
+  cleanup_dslash_wtemps();
+  
+} /* hop_w_field */
+
+
+
 
