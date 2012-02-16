@@ -30,6 +30,7 @@
                                    (antisymm)
    deriv3_A                        Apply covariant A0type 3rd derivative 
                                    (not supported)
+   hop                             Multiply by hopping matrix
    rotate_3D                       Do 3D FNAL rotation
 
    General attributes:
@@ -63,7 +64,6 @@
 #include "../include/generic_quark_types.h"
 #include "../include/io_ksprop.h"
 #include "../include/io_wprop.h"
-//#include "../include/flavor_ops.h"
 #include <string.h>
 #ifdef HAVE_QIO
 #include <qio.h>
@@ -78,15 +78,24 @@
 
 void init_qss_op(quark_source_sink_op *qss_op){
   qss_op->type             = UNKNOWN;
-  qss_op->d1               = 0.;
+  strcpy(qss_op->descrp, "none");
+  qss_op->label[0]         = '\0';
   qss_op->a                = 0.;
+  qss_op->d1               = 0.;
+  qss_op->dir1             = -1;
+  qss_op->dir2             = -1;
+  qss_op->disp             = 0;
+  qss_op->eps_naik         = 0.;
+  qss_op->dhop             = 0;
+  qss_op->iters            = 0;
+  qss_op->r0               = 0.;
   qss_op->r_offset[0]      = 0;
   qss_op->r_offset[1]      = 0;
   qss_op->r_offset[2]      = 0;
   qss_op->r_offset[3]      = 0;
   qss_op->spin_taste       = -1;
+  qss_op->source_file[0]   = '\0';
   qss_op->op               = NULL;
-  strcpy(qss_op->descrp, "none");
 } /* init_qss_op */
 
 void set_qss_op_offset(quark_source_sink_op *qss_op, int r0[]){
@@ -660,13 +669,16 @@ static void gauss_smear_ksprop_field(ksprop_field *ksp,
     }
   
   destroy_v_field(v);
+
 } /* guass_smear_ksprop_field */
-#endif
+
+#endif /* #if 0 */
 
 
 #ifdef HAVE_DIRAC
 
 #ifndef NO_GAUGE_FIELD
+
 /*--------------------------------------------------------------------*/
 /* 3D FNAL rotation                                                   */
 /*--------------------------------------------------------------------*/
@@ -679,7 +691,6 @@ static void gauss_smear_ksprop_field(ksprop_field *ksp,
 static void rotate_3D_wvec(wilson_vector *src, Real d1)
 {
   int i;
-  site *s;
   wilson_vector *mp, *tmp;
   char myname[] = "rotate_3D_wvec";
   
@@ -695,7 +706,7 @@ static void rotate_3D_wvec(wilson_vector *src, Real d1)
   dslash_w_3D_field(src, mp,  PLUS, EVENANDODD);
   dslash_w_3D_field(src, tmp, MINUS, EVENANDODD);
   
-  FORALLSITES(i,s){
+  FORALLFIELDSITES(i){
     /* tmp <- mp - tmp = 2*Dslash*src */
     sub_wilson_vector(mp + i, tmp + i, tmp + i);
     /* src <- d1/4 * tmp + src */
@@ -706,6 +717,48 @@ static void rotate_3D_wvec(wilson_vector *src, Real d1)
   destroy_wv_field(mp); 
   destroy_wv_field(tmp);
 } /* rotate_3D_wvector */
+
+/*--------------------------------------------------------------------*/
+/* Wilson hop                                                         */
+/*--------------------------------------------------------------------*/
+
+/* Apply the Wilson hopping matrix or its "derivatives" for fixed mu.
+   That is,
+
+   for dhop even, multiply by 
+
+   (1 + gamma_mu) U_x,mu \delta_x,x+mu + (1 - gamma_mu) U^\dagger_(x-mu,mu) 
+
+   and for dhop odd, multiply by
+
+   (1 + gamma_mu) U_x,mu \delta_x,x+mu - (1 - gamma_mu) U^\dagger_(x-mu,mu) 
+*/
+
+static void hop_wvec(wilson_vector *src, int dhop, int mu)
+{
+  int i, sign = 1;
+  wilson_vector *mp;
+  char myname[] = "hop_wvec";
+  
+  if(src == NULL){
+    node0_printf("%s: Error: called with NULL arg\n", myname);
+    terminate(1);
+  }
+
+  if(dhop % 2 == 1)sign = -1;
+
+  mp  = create_wv_field();
+
+  /* Apply hopping matrix to the source field */
+  hop_w_field(src, mp, PLUS, sign, EVENANDODD, mu);
+  
+  FORALLFIELDSITES(i){
+    copy_wvec(mp + i, src + i);
+  }
+
+  destroy_wv_field(mp); 
+
+} /* hop_wvec */
 
 #endif
 
@@ -774,6 +827,7 @@ static int requires_gauge_field(int op_type){
     op_type == FUNNYWALL1 ||
     op_type == FUNNYWALL2 ||
     op_type == ROTATE_3D  ||
+    op_type == HOPPING        ||
     op_type == SPIN_TASTE;
 }
 #endif
@@ -1097,24 +1151,18 @@ static int is_cov_smear(int op_type){
 
 #ifdef HAVE_KS
 
-static void gauss_smear_v_field(su3_vector *src, su3_matrix *t_links, 
-				Real r0, int iters, int t0){
-    node0_printf("Covariant Gaussian smearing of KS field not yet supported\n");
-    terminate(1);
-}
-
 
 static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
-			   int t0){
+			     int t0){
 
-  /* Unpack structure. */
+  /* Smearing is done with coordinate stride 2 to preserve taste */
+
   int op_type       = qss_op->type;
   int iters         = qss_op->iters;
   Real r0           = qss_op->r0;
 
   if(op_type == COVARIANT_GAUSSIAN){
     int iters = qss_op->iters;
-
     static su3_matrix *t_links;
 
     t_links = create_G_from_site();
@@ -1221,6 +1269,75 @@ static void apply_spin_taste(su3_vector *src, quark_source_sink_op *qss_op){
   destroy_v_field(dst);
   
 }
+
+/*--------------------------------------------------------------------*/
+/* KS hop                                                             */
+/*--------------------------------------------------------------------*/
+
+/* Apply the staggered hopping matrix or its "derivatives" for fixed
+   direction mu
+
+   That is, for dhop = 0, multiply by 
+   \alpha_x,mu (D_x,mu \delta_x,x+mu - D^\dagger_(x-mu,mu)) +
+   \alpha_x,mu (D3_x,mu \delta_x,x+3mu - D3^\dagger_(x-3mu,mu)) 
+
+   For dhop = 1, multiply by 
+   \alpha_x,mu (D_x,mu \delta_x,x+mu + D^\dagger_(x-mu,mu)) +
+   3*\alpha_x,mu (D3_x,mu \delta_x,x+3mu + D3^\dagger_(x-3mu,mu)) 
+
+   For dhop = 2, multiply by 
+   \alpha_x,mu (D_x,mu \delta_x,x+mu - D^\dagger_(x-mu,mu)) +
+   9*\alpha_x,mu (D3_x,mu \delta_x,x+3mu - D3^\dagger_(x-3mu,mu)) 
+
+   etc.
+
+   where D are the fat links, D3 are the long links, and alpha_x,mu are
+   the staggered phases.
+*/
+
+static void hop_vec(su3_vector *src, Real eps, int dhop, int mu)
+{
+  int sign;
+  su3_vector *v;
+  char myname[] = "hop_vec";
+  Real wtfatf, wtfatb, wtlongf, wtlongb;
+#if FERM_ACTION == HISQ
+  int n_naiks = get_n_naiks_hisq(fn_links);
+  double *eps_naik = get_eps_naik_hisq(fn_links);
+  int inaik = index_eps_naik(eps_naik, n_naiks, eps);
+#else
+  int inaik = 0;
+#endif
+  imp_ferm_links_t *fn = get_fm_links(fn_links)[inaik];
+  
+  if(src == NULL){
+    node0_printf("%s: Error: called with NULL arg\n", myname);
+    terminate(1);
+  }
+
+  if(dhop % 2 == 0)
+    sign = +1;
+  else
+    sign = -1;
+
+  wtfatf = 1.;
+  wtlongf = pow(3.,dhop);
+  wtfatb = sign*wtfatf;
+  wtlongb = sign*wtlongf;
+
+  v = create_v_field();  /* Create and clear */
+
+  /* v += hop*src */
+  dslash_fn_dir(src, v, EVENANDODD, fn, mu, +1, wtfatf, wtlongf); /* forward */
+  dslash_fn_dir(src, v, EVENANDODD, fn, mu, -1, wtfatb, wtlongb); /* backward */
+  
+  /* result in src */
+  copy_v_field(src, v);
+
+  destroy_v_field(v); 
+
+} /* hop_vec */
+
 #endif /* HAVE_KS */
 
 #endif /* ifndef NO_GAUGE_FIELD */
@@ -1259,6 +1376,9 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
 
   else if(op_type == SPIN_TASTE)
     apply_spin_taste(src, qss_op);
+
+  else if(op_type == HOPPING)
+    hop_vec(src, qss_op->eps_naik, qss_op->dhop, qss_op->dir1);
 
 #endif
 
@@ -1307,12 +1427,14 @@ void wv_field_op(wilson_vector *src, quark_source_sink_op *qss_op,
   else if(is_cov_deriv(op_type))
     apply_cov_deriv_wv(src, qss_op);
 
-  else if(op_type == ROTATE_3D){
+  else if(op_type == HOPPING)
+    hop_wvec(src, qss_op->dhop, qss_op->dir1);
 
+  else if(op_type == ROTATE_3D)
     /* The MILC sign convention for gamma matrix in Dslash is
        opposite FNAL, so we rotate with -d1 */
     rotate_3D_wvec(src, -qss_op->d1);
-  }
+
 #endif
 
   else {
@@ -1401,6 +1523,7 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     printf("'fat_covariant_gaussian', ");
     printf("'funnywall1', ");
     printf("'funnywall2', ");
+    printf("'hop', ");
     printf("'rotate_3D', ");
     printf("'spin_taste',");
     printf("\n     ");
@@ -1461,7 +1584,6 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     *source_type = FAT_COVARIANT_GAUSSIAN;
     strcpy(descrp,"fat_covariant_gaussian");
   }
-
   /* Funnywall1 operator (couples to pion5, pioni5, pioni, pions, rhoi, rhos) */
   else if(strcmp("funnywall1",savebuf) == 0 ){
     *source_type = FUNNYWALL1;
@@ -1471,6 +1593,10 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
   else if(strcmp("funnywall2",savebuf) == 0 ){
     *source_type = FUNNYWALL2;
     strcpy(descrp,"FUNNYWALL2");
+  }
+  else if(strcmp("hop",savebuf) == 0 ){
+    *source_type = HOPPING;
+    strcpy(descrp,"hop");
   }
   else if(strcmp("rotate_3D",savebuf) == 0 ){
     *source_type = ROTATE_3D;
@@ -1502,6 +1628,14 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
 
 #define IF_OK if(status==0)
 
+static char *encode_dir(int dir){
+  if(dir == XUP)return "x";
+  else if(dir == YUP)return "y";
+  else if(dir == ZUP)return "z";
+  else return "?";
+}
+
+
 /* For parsing the derivative direction */
 static int decode_dir(int *dir, char c_dir[]){
   int status = 0;
@@ -1530,6 +1664,10 @@ static int get_field_op(int *status_p, FILE *fp,
   int  op_type = qss_op->type;
   char source_file[MAXFILENAME] = "";
   int  status = *status_p;
+
+  /*********************************************************************************/
+  /* Operators common to Dirac and KS                                              */
+  /*********************************************************************************/
 
   /* Convolutions */
   if ( op_type == COVARIANT_GAUSSIAN ){
@@ -1582,23 +1720,15 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_f(fp, prompt, "r0", &source_r0);
     IF_OK status += get_i(fp, prompt, "source_iters", &source_iters);
   }
-
-#ifdef HAVE_KS
-
-  else if( op_type == SPIN_TASTE){
-    char spin_taste_label[8];
-    /* Parameters for spin-taste */
-    IF_OK status += get_s(fp, prompt, "gamma", spin_taste_label);
-    IF_OK {
-      qss_op->spin_taste = spin_taste_index(spin_taste_label);
-      if(qss_op->spin_taste < 0){
-	printf("\n: Unrecognized spin-taste label %s.\n", spin_taste_label);
-	status++;
-      }
-    }
-  }
-
+  else if( op_type == HOPPING){
+    /* Parameters for hopping matrix */
+    IF_OK status += get_i(fp, prompt, "derivs",   &qss_op->dhop);
+    IF_OK status += get_vs(fp, prompt, "dir", c_dir, 1);
+    IF_OK status += decode_dir(&qss_op->dir1, c_dir[0]);
+#if FERM_ACTION == HISQ
+    IF_OK status += get_f(fp, prompt, "eps_naik", &qss_op->eps_naik);
 #endif
+  }
 
   else {
     return 0;
@@ -1613,6 +1743,8 @@ static int get_field_op(int *status_p, FILE *fp,
   return 1;
 }/* get_field_op */
   
+#ifdef HAVE_DIRAC
+
 /*--------------------------------------------------------------------*/
 /* Get parameters for operations on Dirac vector fields                     */
 /*--------------------------------------------------------------------*/
@@ -1632,10 +1764,14 @@ int get_wv_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
   /* Get source parameters */
   IF_OK {
 
+    /* Operators common to Dirac and KS */
     if( get_field_op(&status, fp, prompt, qss_op) );
+
+    /* Other operators exclusive to Dirac */
     else if ( op_type == ROTATE_3D ){
       IF_OK status += get_f(fp, prompt, "d1", &d1);
     }
+
     else {
       printf("(%s)Dirac operator type %d not supported in this application\n",
 	     myname, op_type);
@@ -1653,6 +1789,9 @@ int get_wv_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
   return status;
 } /* get_wv_field_op */
 
+#endif
+
+#ifdef HAVE_KS
 
 /*--------------------------------------------------------------------*/
 /* Get parameters for operations on color vector fields               */
@@ -1671,11 +1810,26 @@ int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
   /* Get source parameters */
   IF_OK {
 
+    /* Operators common to Dirac and KS */
     if( get_field_op(&status, fp, prompt, qss_op) );
+
+    /* Other operators exclusive to KS */
     else if ( op_type == FUNNYWALL1 ||
-	      op_type == FUNNYWALL2 ){
-      /* No additional parameters needed for these */
+	      op_type == FUNNYWALL2 );   /* No additional parameters needed for these */
+    
+    else if( op_type == SPIN_TASTE){
+      char spin_taste_label[8];
+      /* Parameters for spin-taste */
+      IF_OK status += get_s(fp, prompt, "gamma", spin_taste_label);
+      IF_OK {
+	qss_op->spin_taste = spin_taste_index(spin_taste_label);
+	if(qss_op->spin_taste < 0){
+	  printf("\n: Unrecognized spin-taste label %s.\n", spin_taste_label);
+	  status++;
+	}
+      }
     }
+
     else {
       printf("KS operator type %d not supported in this application\n", op_type);
       status++;
@@ -1689,6 +1843,8 @@ int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
   
   return status;
 } /* get_v_field_op */
+
+#endif
 
 
 /*--------------------------------------------------------------------*/
@@ -1732,7 +1888,7 @@ static int print_single_op_info(FILE *fp, char prefix[],
   else if( op_type == DERIV1){
     int k;
     fprintf(fp,",\n");
-    fprintf(fp,"%s%d,\n", make_tag(prefix, "dir"), qss_op->dir1);
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "dir"), encode_dir(qss_op->dir1));
     fprintf(fp,"%s%d,\n", make_tag(prefix, "disp"), qss_op->disp);
     fprintf(fp,"%s%g", make_tag(prefix, "weights"), qss_op->weights[0]);
     for(k = 1; k < qss_op->disp; k++)fprintf(fp," %g", qss_op->weights[k]);
@@ -1742,8 +1898,8 @@ static int print_single_op_info(FILE *fp, char prefix[],
 	   op_type == DERIV2_B ){
     int k;
     fprintf(fp,",\n");
-    fprintf(fp,"%s%d,\n", make_tag(prefix, "dir1"), qss_op->dir1);
-    fprintf(fp,"%s%d,\n", make_tag(prefix, "dir2"), qss_op->dir2);
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "dir1"), encode_dir(qss_op->dir1));
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "dir2"), encode_dir(qss_op->dir2));
     fprintf(fp,"%s%d,\n", make_tag(prefix, "disp"), qss_op->disp);
     fprintf(fp,"%s%g", make_tag(prefix, "weights"), qss_op->weights[0]);
     for(k = 1; k < qss_op->disp; k++)fprintf(fp," %g", qss_op->weights[k]);
@@ -1765,6 +1921,14 @@ static int print_single_op_info(FILE *fp, char prefix[],
   else if ( op_type == GAUSSIAN ){
     fprintf(fp,",\n");
     fprintf(fp,"%s%g\n", make_tag(prefix, "r0"), qss_op->r0);
+  }
+  else if ( op_type == HOPPING ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%d\n", make_tag(prefix, "derivs"), qss_op->dhop);
+    fprintf(fp,"%s%s\n", make_tag(prefix, "dir"), encode_dir(qss_op->dir1));
+#if FERM_ACTION == HISQ
+    fprintf(fp,"%s%g\n", make_tag(prefix, "eps_naik"), qss_op->eps_naik);
+#endif
   }
   else if ( op_type == ROTATE_3D ){
     fprintf(fp,",\n");
