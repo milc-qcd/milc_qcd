@@ -44,7 +44,7 @@ static void
 dslash_fn_field_F( su3_vector *src, su3_vector *dest, 
 		   int parity, fn_links_qop_t *fn){
 
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   int otherparity = opposite_parity(parity);
   QOP_F3_FermionLinksAsqtad *al_F = get_F_asqtad_links(fn);
   QOP_F3_ColorVector *in = create_F_V_from_field( src, otherparity);
@@ -72,7 +72,7 @@ static void
 dslash_fn_field_D( su3_vector *src, su3_vector *dest, 
 		   int parity, fn_links_qop_t *fn){
 
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   int otherparity = opposite_parity(parity);
   QOP_D3_FermionLinksAsqtad *al_D = get_D_asqtad_links(fn);
   QOP_D3_ColorVector *in = create_D_V_from_field( src, otherparity);
@@ -147,7 +147,7 @@ dslash_fn_dir_F(su3_vector *src, su3_vector *dest, int parity,
 		imp_ferm_links_t *fn, int dir, int fb, 
 		Real wtfat, Real wtlong)
 {
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   QOP_evenodd_t eo_out = milc2qop_parity(parity);
   int otherparity = opposite_parity(parity);
   QOP_F3_FermionLinksAsqtad *al_F = get_F_asqtad_links(fn);
@@ -171,7 +171,7 @@ dslash_fn_dir_D(su3_vector *src, su3_vector *dest, int parity,
 		imp_ferm_links_t *fn, int dir, int fb, 
 		Real wtfat, Real wtlong)
 {
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   QOP_evenodd_t eo_out = milc2qop_parity(parity);
   int otherparity = opposite_parity(parity);
   QOP_D3_FermionLinksAsqtad *al_D = get_D_asqtad_links(fn);

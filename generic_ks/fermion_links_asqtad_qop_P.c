@@ -169,7 +169,7 @@ create_asqtad_links(int both, ferm_links_t *fn, ks_action_paths *ap) {
   su3_matrix **t_fl = &fn->fat;
   su3_matrix **t_ll = &fn->lng;
   char myname[] = "create_asqtad_links";
-  QOP_info_t info;
+  QOP_info_t info = {0., 0., 0, 0, 0};
   QOP_asqtad_coeffs_t coeffs;
 #ifdef LLTIME
   double nflopfl = 61632;
