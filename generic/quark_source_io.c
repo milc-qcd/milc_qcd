@@ -906,8 +906,17 @@ int ask_output_quark_source_file( FILE *fp, int prompt,
   }
 
   /* Get time slice if requested */
-  if(t0 != NULL && *flag != FORGET)
-    IF_OK status += get_i(stdin, prompt, "t0", t0);
+  if(t0 != NULL && *flag != FORGET){
+    char t0_string[5];
+    IF_OK status += get_s(stdin, prompt, "t0", t0_string);
+    /* Provide for writing all time slices */
+    IF_OK {
+      if(strcmp(t0_string, "all") == 0)
+	*t0 = ALL_T_SLICES;
+      else
+	*t0 = atoi(t0_string);
+    }
+  }
 
   return status;
 } /* ask_output_quark_source_file */
