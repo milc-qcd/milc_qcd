@@ -37,7 +37,9 @@ int remap_stdio_from_args(int argc, char *argv[]){
       sprintf(newfile,"%s",argv[1]);
     } else {
       sprintf(newfile,"%s.j%02d",argv[1],jobid);
+#ifdef JOB_DEBUG
       printf("(%d:%d) input file is %s\n",jobid,mynode(),newfile);
+#endif
     }
     fp = freopen(newfile,"r",stdin);
     if(fp == NULL){
@@ -47,18 +49,15 @@ int remap_stdio_from_args(int argc, char *argv[]){
     free(newfile);
   }
 
-#ifdef QCDOC
-  /* stdout and stderr are remapped only on node 0 on the QCDOC */
-  if(mynode() != 0)return 0;
-#endif
-
   if(argc > 2){
     char *newfile = (char *)malloc(strlen(argv[2])+16);
     if(num_jobs == 1){
       sprintf(newfile,"%s",argv[2]);
     } else {
       sprintf(newfile,"%s.j%02d",argv[2],jobid);
+#ifdef JOB_DEBUG
       printf("(%d:%d) output file is %s\n",jobid,mynode(),newfile);
+#endif
     }
 
 #ifdef REMAP_STDIO_APPEND
@@ -79,7 +78,9 @@ int remap_stdio_from_args(int argc, char *argv[]){
       sprintf(newfile,"%s",argv[3]);
     } else {
       sprintf(newfile,"%s.j%02d",argv[3],jobid);
+#ifdef JOB_DEBUG
       printf("(%d:%d) error file is %s\n",jobid,mynode(),newfile);
+#endif
     }
 #ifdef REMAP_STDIO_APPEND
     fp = freopen(newfile,"a",stderr);
