@@ -245,37 +245,19 @@ su3_rhmc_hisq_su3::
 	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
 	${GAUGE_FORCE} control.o"
 
-######################################################################
-# The su3_rhmc_hisq_eos target HAS NOT BEEN DEVELOPED.  DON'T USE IT!
-######################################################################
-# Generic RHMC EOS target -- set options in Makefile
 su3_rhmc_hisq_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES+= -DHMC -DDM_DEPS0"
 
 
-######################################################################
-# The su3_rhmd_hisq_eos target HAS NOT BEEN DEVELOPED.  DON'T USE IT!
-######################################################################
-# Generic RHMC EOS target -- set options in Makefile
-# The HISQ DM_DU0 option is not supported, yet
 su3_rhmd_hisq_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES+= -DDM_DEPS"
 
-######################################################################
-# The su3_rhmd_hisq_susc target HAS NOT BEEN DEVELOPED.  DON'T USE IT!
-######################################################################
-# Generic RHMC susceptibility target -- set options in Makefile
 su3_rhmc_hisq_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES+= -DHMC -DCHEM_POT"
 
-######################################################################
-# The su3_rhmd_hisq_susc_eos target HAS NOT BEEN DEVELOPED.  DON'T USE IT!
-######################################################################
-# Generic RHMC EOS and susceptibility target -- set options in Makefile
-# The HISQ DM_DU0 option is not supported, yet
 su3_rhmc_hisq_susc_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
 	"DEFINES+= -DHMC -DCHEM_POT -DDM_DEPS"
