@@ -537,7 +537,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 	  mult_su3_mat_vec( lng+4*i+dir, (su3_vector *)gen_pt[1][i], &tmp );
 	  scalar_mult_add_su3_vector( dest+i, &tmp, wtlong, dest+i ) ;    
 	}
-      }
+      } END_LOOP
 
   } else {
 
@@ -553,7 +553,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 	mult_adj_su3_mat_vec( fat+4*i+dir, src+i, tvec1+i ) ;
 	if(do_long)
 	  mult_adj_su3_mat_vec( lng+4*i+dir, src+i, tvec2+i ) ;
-      }
+      } END_LOOP
 
     tag[0] = start_gather_field(tvec1, sizeof(su3_vector), OPP_DIR(dir), 
 				parity, gen_pt[0] );
@@ -571,7 +571,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
         scalar_mult_add_su3_vector( dest+i, (su3_vector *)gen_pt[0][i], -wtfat, dest+i ) ;    
         if(do_long)
 	  scalar_mult_add_su3_vector( dest+i, (su3_vector *)gen_pt[1][i], -wtlong, dest+i ) ;    
-      }
+      } END_LOOP
 
     if(do_long)destroy_v_field(tvec2);
     destroy_v_field(tvec1);

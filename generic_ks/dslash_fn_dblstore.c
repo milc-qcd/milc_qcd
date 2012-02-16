@@ -511,7 +511,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 	  mult_su3_mat_vec( lng+4*i+dir, (su3_vector *)gen_pt[1][i], &tmp );
 	  scalar_mult_add_su3_vector( dest+i, &tmp, wtlong, dest+i ) ;    
 	}
-      }
+      } END_LOOP
 
   } else {
 
@@ -538,7 +538,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 	  mult_su3_mat_vec( lngback+4*i+dir, (su3_vector *)gen_pt[1][i], &tmp );
 	  scalar_mult_add_su3_vector( dest+i, &tmp, -wtlong, dest+i ) ;    
 	}
-      }
+      } END_LOOP
   }
 
   cleanup_gather(tag[0]);
