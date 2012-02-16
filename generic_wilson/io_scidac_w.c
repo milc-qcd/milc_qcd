@@ -367,10 +367,17 @@ int write_wpropsource_D_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 				  wilson_vector *src, int t0){
   int status;
 
-  if(PRECISION == 1)
-    status = write_F3_D_timeslice_from_field(outfile, recxml, src, 1, t0);
-  else
-    status = write_D3_D_timeslice_from_field(outfile, recxml, src, 1, t0);
+  if(t0 == ALL_T_SLICES){
+    if(PRECISION == 1)
+      status = write_F3_D_from_field(outfile, recxml, src, 1);
+    else
+      status = write_D3_D_from_field(outfile, recxml, src, 1);
+  }  else {
+    if(PRECISION == 1)
+      status = write_F3_D_timeslice_from_field(outfile, recxml, src, 1, t0);
+    else
+      status = write_D3_D_timeslice_from_field(outfile, recxml, src, 1, t0);
+  }
   return status;
 }
 

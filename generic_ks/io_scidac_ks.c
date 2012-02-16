@@ -386,7 +386,10 @@ int read_kspropsource_V_usqcd(QIO_Reader *infile, char *srcinfo, int n,
 int write_kspropsource_C_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml, 
 			       complex *src, int t0){
   int status;
-  status = write_F_C_timeslice_from_field(outfile, recxml, src, 1, t0);
+  if(PRECISION == 1)
+    status = write_F_C_timeslice_from_field(outfile, recxml, src, 1, t0);
+  else
+    status = write_D_C_timeslice_from_field(outfile, recxml, src, 1, t0);
   return status;
 }
 
@@ -415,7 +418,17 @@ int write_kspropsource_C_usqcd(QIO_Writer *outfile, char *srcinfo,
 int write_kspropsource_V_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml,
 				   su3_vector *src, int t0){
   int status;
-  status = write_F3_V_timeslice_from_field(outfile, recxml, src, 1, t0);
+  if(t0 == ALL_T_SLICES){
+    if(PRECISION == 1)
+      status = write_F3_V_from_field(outfile, recxml, src, 1);
+    else
+      status = write_D3_V_from_field(outfile, recxml, src, 1);
+  }  else {
+    if(PRECISION == 1)
+      status = write_F3_V_timeslice_from_field(outfile, recxml, src, 1, t0);
+    else
+      status = write_D3_V_timeslice_from_field(outfile, recxml, src, 1, t0);
+  }
   return status;
 }
 
