@@ -27,6 +27,7 @@ G_ALL = \
  gaugefix.o \
  gaugefix2.o \
  gauge_force_imp.o \
+ gauge_force_imp_gpu.o \
  gauge_force_symzk1_qdp.o \
  gauge_force_symzk1_qop.o \
  gauge_force_symzk1_qop_milc.o \
@@ -60,6 +61,7 @@ G_ALL = \
  map_milc_to_qopmilc.o \
  map_milc_to_qopqdp.o \
  milc_to_qop_utilities.o \
+ milc_to_quda_utilities.o \
  make_lattice.o \
  momentum_twist.o \
  nersc_cksum.o \
@@ -151,6 +153,8 @@ gaugefix2.o: ../generic/gaugefix2.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_imp.o: ../generic/gauge_force_imp.c
 	${CC} -c ${CFLAGS} $<
+gauge_force_imp_gpu.o: ../generic/gauge_force_imp_gpu.c
+	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qdp.o: ../generic/gauge_force_symzk1_qdp.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qop.o: ../generic/gauge_force_symzk1_qop.c
@@ -221,6 +225,8 @@ map_milc_to_qopmilc.o: ../generic/map_milc_to_qopmilc.c ../generic/map_milc_to_q
 map_milc_to_qopqdp.o: ../generic/map_milc_to_qopqdp.c ../generic/map_milc_to_qop_all.c
 	${CC} -c ${CFLAGS} $<
 milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
+	${CC} -c ${CFLAGS} $<
+milc_to_quda_utilities.o: ../generic/milc_to_quda_utilities.c
 	${CC} -c ${CFLAGS} $<
 momentum_twist.o: ../generic/momentum_twist.c
 	${CC} -c ${CFLAGS} $<
