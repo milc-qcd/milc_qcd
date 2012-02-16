@@ -20,8 +20,8 @@ antiquark_sink_ops:          [
   iters:                     20
 },
 { operation:             deriv2_B,
-  dir1:                      2,
-  dir2:                      1,
+  dir1:                      z,
+  dir2:                      y,
   disp:                      1,
   weights:                   1
 }
@@ -309,7 +309,7 @@ antiquark_sink_ops:          [
   iters:                     20
 },
 { operation:             deriv1,
-  dir:                       2,
+  dir:                       z,
   disp:                      1,
   weights:                   1
 }
@@ -322,7 +322,7 @@ quark_source_origin:     0 0 0 0
 quark_source_label:      N1
 quark_source_ops:            [
 { operation:             deriv1,
-  dir:                       0,
+  dir:                       x,
   disp:                      1,
   weights:                   1
 },
@@ -602,8 +602,8 @@ antiquark_sink_ops:          [
   iters:                     20
 },
 { operation:             deriv2_D,
-  dir1:                      2,
-  dir2:                      1,
+  dir1:                      z,
+  dir2:                      y,
   disp:                      1,
   weights:                   1
 }
@@ -616,7 +616,7 @@ quark_source_origin:     0 0 0 0
 quark_source_label:      N1
 quark_source_ops:            [
 { operation:             deriv1,
-  dir:                       0,
+  dir:                       x,
   disp:                      1,
   weights:                   1
 },
@@ -844,8 +844,8 @@ quark_source_origin:     0 0 0 0
 quark_source_label:      B1
 quark_source_ops:            [
 { operation:             deriv2_B,
-  dir1:                      1,
-  dir2:                      2,
+  dir1:                      y,
+  dir2:                      z,
   disp:                      1,
   weights:                   1
 },
