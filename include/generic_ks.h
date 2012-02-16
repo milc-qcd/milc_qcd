@@ -60,6 +60,8 @@ void scalar_mult_add_latveclist( veclist *dest,
             veclist *src, Real *s, int listlength );
 
 /* gauss_smear_ks.c */
+void gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
+			 Real width, int iters, int t0);
 void gauss_smear_ks_prop_field(ks_prop_field *src, su3_matrix *t_links,
 			       Real width, int iters, int t0);
 
