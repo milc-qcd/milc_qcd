@@ -68,6 +68,7 @@ G_KS_ALL = \
   fermion_links_fn_load_milc.o \
   fermion_links_fn_utilities_gpu.o \
   fermion_links_hisq_milc.o \
+  fermion_links_hisq_load_gpu.o \
   fermion_links_hisq_load_milc.o \
   fermion_links_hisq_qop.o \
   fermion_links_milc.o \
@@ -95,6 +96,7 @@ G_KS_ALL = \
   ks_meson_mom.o \
   ks_multicg.o \
   ks_multicg_offset.o \
+  ks_multicg_offset_gpu.o \
   ks_multicg_offset_qop.o \
   ks_multicg_offset_qop_D.o \
   ks_multicg_offset_qop_F.o \
@@ -290,6 +292,8 @@ fermion_links_fn_load_milc.o: ../generic_ks/fermion_links_fn_load_milc.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_milc.o: ../generic_ks/fermion_links_hisq_milc.c
 	${CC} -c ${CFLAGS} $<
+fermion_links_hisq_load_gpu.o: ../generic_ks/fermion_links_hisq_load_gpu.c
+	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_load_milc.o: ../generic_ks/fermion_links_hisq_load_milc.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_qdp.o: ../generic_ks/fermion_links_hisq_qdp.c
@@ -335,6 +339,8 @@ ks_meson_mom.o: ../generic_ks/ks_meson_mom.c
 ks_multicg.o: ../generic_ks/ks_multicg.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset.o: ../generic_ks/ks_multicg_offset.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_gpu.o: ../generic_ks/ks_multicg_offset_gpu.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset_qop.o: ../generic_ks/ks_multicg_offset_qop.c
 	${CC} -c ${CFLAGS} $<
