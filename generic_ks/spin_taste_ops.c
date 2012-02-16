@@ -59,6 +59,8 @@ hyp_parity_bit(site *s, int r0[]){
     return 0x1;
 }
 
+#ifndef NO_GAUGE_FIELD
+
 /*------------------------------------------------------------------*/
 /* Apply the symmetric shift operator in direction "dir" *
  * This is the explicit version                           *
@@ -143,6 +145,8 @@ zeta_shift_field(int n, int *d, int r0[], su3_vector *dest,
   destroy_v_field(tvec);
 }
 
+#endif
+
 /*------------------------------------------------------------------*/
 static Real
 spin_sign(int spin, int r0[], site *s){
@@ -164,6 +168,8 @@ spin_sign(int spin, int r0[], site *s){
   return sign;
 }
 
+#ifndef NO_GAUGE_FIELD
+
 static void
 spin_sign_field(int spin, int r0[], su3_vector *dest, su3_vector *src){
   /* Apply the spin_sign operation to an entire field */
@@ -178,11 +184,15 @@ spin_sign_field(int spin, int r0[], su3_vector *dest, su3_vector *src){
   }
 }
 
+#endif
+
 /*------------------------------------------------------------------*/
 static short
 antiquark_sign_flip(int r0[], site *s){
   return hyp_parity_bit(s, r0) == 0x1;
 }
+
+#ifndef NO_GAUGE_FIELD
 
 /* Extra (-)^(x+y+z+t) to allow for antiquark */
 static void
@@ -207,6 +217,9 @@ sign_flip_field(su3_vector *dest, su3_vector *src){
     scalar_mult_su3_vector(src+i, -1.0, dest+i );
   }
 }
+
+#endif
+
 /*------------------------------------------------------------------*/
 static void 
 local(int spin, int r0[], su3_vector *dest, su3_vector *src){
@@ -333,6 +346,7 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
   switch(offset)
     {
     case 0: local(spin, r0, dest, src); break;
+#ifndef NO_GAUGE_FIELD
     case 1: one_link(spin, XUP, r0, dest, src, links); break;
     case 2: one_link(spin, YUP, r0, dest, src, links); break;
     case 3: two_link(spin, XUP, YUP, r0, dest, src, links); break;
@@ -340,6 +354,7 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
     case 5: two_link(spin, ZUP, XUP, r0, dest, src, links); break;
     case 6: two_link(spin, YUP, ZUP, r0, dest, src, links); break;
     case 7: three_link(spin, r0, dest, src, links); break;
+#endif
     default: printf("Time split operator not supported\n");
     }
 }
@@ -398,6 +413,8 @@ dir2gi0(int dir, char *myname){
   return gi0;
 }
 
+#ifndef NO_GAUGE_FIELD
+
 static enum gammatype 
 dir2g5i(int dir, char *myname){
 
@@ -431,6 +448,8 @@ dir2gij(int dir, char *myname){
 
   return gij;
 }
+
+#endif
 
 /* "Multiply by" the quark-antiquark local pion operator */
 /* Here the operator is gamma_5 x gamma_5 times (-1)^(x+y+z+t) */
@@ -851,7 +870,7 @@ gamma_gamma_style(char *label){
 
 #ifdef NO_GAUGE_FIELD
   /* If the operator requires a shift, we must have a gauge field */
-  if( gamma_hex(gamma_spin_index) ^ gamma_hex(gamma_taste_index) != 0)
+  if( ( gamma_hex(gamma_spin_index) ^ gamma_hex(gamma_taste_index) ) != 0){
     printf("spin_taste_index: ERROR IN INPUT: field operation not supported for this application\n");
     return -1;
   }
