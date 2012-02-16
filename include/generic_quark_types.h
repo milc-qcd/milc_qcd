@@ -44,6 +44,7 @@ enum source_type {
   FUNNYWALL1,
   FUNNYWALL2,
   GAUSSIAN, 
+  HOPPING, 
   IDENTITY,
   POINT, 
   POINT_WEYL, 
@@ -89,9 +90,11 @@ struct qss_op_struct {
   char label[MAXSRCLABEL]; /* Abbreviation of description */
   Real a;             /* Lattice spacing for converting wave function file */
   Real d1;            /* Fermilab 3D rotation parameter */
-  int dir1, dir2;     /* Directions for derivatives */
+  int dir1, dir2;     /* Directions for derivatives and hopping */
   int disp;           /* Stride for derivatives */
   Real weights[MAXWEIGHTS];  /* Weights for derivatives */
+  Real eps_naik;      /* Naik epsilon for KS hopping operator */
+  int dhop;           /* 0 for hop, 1 for 1st deriv of hop, 2 for 2nd */
   int iters;          /* iterations for covariant gaussian source */
   Real r0;            /* source size for gaussian, width for gauge invt  */
   int r_offset[4];    /* Coordinate offset for phases for some operators */
