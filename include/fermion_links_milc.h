@@ -107,8 +107,10 @@ load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p,
 
 #ifdef USE_FL_GPU
 #define load_fatlinks load_fatlinks_gpu
+#define load_hisq_links load_hisq_links_gpu
 #else
 #define load_fatlinks load_fatlinks_cpu
+#define load_hisq_links load_hisq_links_cpu
 #endif
 
 /* fermion_links_hisq_load_milc.c */
