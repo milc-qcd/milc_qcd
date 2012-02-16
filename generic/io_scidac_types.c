@@ -92,7 +92,6 @@ d2p_vec(su3_vector *dest, dsu3_vector *src){
   }
 }
 
-#if 0
 static void 
 p2d_vec(dsu3_vector *dest, su3_vector *src){
   int i;
@@ -102,7 +101,6 @@ p2d_vec(dsu3_vector *dest, su3_vector *src){
     dest->c[i].imag = src->c[i].imag;
   }
 }
-#endif
 
 /* Wilson vector */
 
@@ -281,6 +279,7 @@ make_vput(F, 3, M, fsu3_matrix,    su3_matrix,    f2p_mat);
 /* Double precision */
 
 make_vget(D,  , C, dcomplex,       complex,       p2d_complex);
+make_vget(D, 3, V, dsu3_vector,    su3_vector,    p2d_vec);
 make_vget(D, 3, D, dwilson_vector, wilson_vector, p2d_wvec);
 
 make_vput(D,  , C, dcomplex,       complex,       d2p_complex);
@@ -436,9 +435,10 @@ make_write_tslice(F, "F", 3, 3, 4, D, "USQCD_F3_DiracFermion", fwilson_vector, w
 /* Double precision */
 
 make_write_all(D, "D",  , 0, 0, C, "QLA_D_Complex", dcomplex, complex, double);
+make_write_all(D, "D", 3, 3, 0, V, "USQCD_D3_ColorVector", dsu3_vector, su3_vector, double);
 make_write_all(D, "D", 3, 3, 4, D, "USQCD_D3_DiracFermion", dwilson_vector, wilson_vector, double);
-
 make_write_tslice(D, "D",  , 0, 0, C, "QLA_D_Complex", dcomplex, complex, double);
+make_write_tslice(D, "D", 3, 3, 0, V, "USQCD_D3_ColorVector", dsu3_vector, su3_vector, double);
 make_write_tslice(D, "D", 3, 3, 4, D, "USQCD_D3_DiracFermion", dwilson_vector, wilson_vector, double);
 
 
