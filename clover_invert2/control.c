@@ -186,13 +186,13 @@ int main(int argc, char *argv[])
        to either the raw propagator or by building on an existing quark
        propagator */
     
+    STARTTIME;
 #ifdef CLOV_LEAN
     oldip0 = -1;
     oldiq0 = -1;
     oldiq1 = -1;
 #endif
     for(j=0; j<param.num_qk; j++){
-      STARTTIME;
       i = param.prop_for_qk[j];
 
       if(param.parent_type[j] == PROP_TYPE){
@@ -286,11 +286,11 @@ int main(int argc, char *argv[])
       /* Save the resulting quark[j] if requested */
       dump_wprop_from_wp_field( param.saveflag_q[j], 
 				param.savefile_q[j], quark[j]);
-#ifdef CLOS_LEAN
+#ifdef CLOV_LEAN
       oldiq1 = j;
 #endif
-      ENDTIME("generate sink operator");
     }
+
 #ifdef CLOV_LEAN
     /* Free remaining memory */
     if(oldip0 >= 0)
@@ -320,6 +320,7 @@ int main(int argc, char *argv[])
       destroy_wp_field(prop[i]);
       prop[i] = NULL;
     }
+    ENDTIME("generate quarks");
     
     /****************************************************************/
     /* Compute the meson propagators */
