@@ -497,7 +497,7 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
 } /* end (of dslash_w_field_special() ) */
 
 /***********************************************************/
-/* hopping matrix: "dslash" for a single direction dir
+/* hopping matrix: "dslash" for a single direction dir     */
 /***********************************************************/
 
 /* Apply the Wilson hopping matrix for fixed dir
