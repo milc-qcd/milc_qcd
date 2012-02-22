@@ -156,8 +156,10 @@ endif
   FLINKS_FN_MILC_GPU = fermion_links_milc.o fermion_links_fn_load_gpu.o \
     ${FLINKS}
   
-  FLINKS_HISQ_MILC_GPU = fermion_links_hisq_milc.o fermion_links_hisq_load_milc.o \
-    su3_mat_op_gpu.o fermion_links_hisq_load_gpu.o ${FLINKS} 
+  FLINKS_HISQ_MILC_GPU = fermion_links_hisq_milc.o \
+	fermion_links_fn_load_gpu.o \
+	fermion_links_hisq_load_milc.o fermion_links_hisq_load_gpu.o \
+	${FLINKS} ks_action_paths_hisq.o su3_mat_op.o stout_smear.o
 
 # Standard QOP combinations
 
