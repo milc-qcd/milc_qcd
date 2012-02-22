@@ -184,7 +184,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
 
   /* Then we polish using the correct Naik epsilon */
   for(i=0;i<num_offsets;i++){
-    ks_congrad_field( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
+    ks_congrad_field_cpu( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
     //    report_status(qic+i);
     iters += qic[i].final_iters;
     qic[i].final_iters += multi_iters;
@@ -612,7 +612,7 @@ static void ks_multicg_revhyb_field(	/* Return value is number of iterations tak
 //#else
 //    index = 0;
 //#endif
-    iters += ks_congrad_field( src, psim[i], qic, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
+    iters += ks_congrad_field_cpu( src, psim[i], qic, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
     report_status(qic);
   }
 }
