@@ -35,7 +35,31 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
   return iters;
 }
 
-/* New API for site arguments */
+/* API for field arguments.  This one never uses the GPU. */
+
+int ks_congrad_field_cpu( su3_vector *src, su3_vector *dest, 
+			  quark_invert_control *qic, Real mass,
+			  imp_ferm_links_t *fn)
+{
+  int iters = 0;
+  int parity = qic->parity;
+
+  if(parity == EVEN || parity == EVENANDODD){
+    qic->parity = EVEN;
+    iters += ks_congrad_parity_cpu(src, dest, qic, mass, fn);
+    report_status(qic);
+  }
+  if(parity == ODD || parity == EVENANDODD){
+    qic->parity = ODD;
+    iters += ks_congrad_parity_cpu(src, dest, qic, mass, fn);
+    report_status(qic);
+  }
+
+  qic->parity = parity;
+  return iters;
+}
+
+/* API for site arguments */
 
 int ks_congrad_site( field_offset src, field_offset dest, 
 		     quark_invert_control *qic, Real mass,
