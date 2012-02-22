@@ -30,6 +30,10 @@ void load_qop_imp_gauge_coeffs(QOP_gauge_coeffs_t *c)
   //printf("Coefficients loaded %e %e %e\n", c->plaq, c->rect, c->pgm);
 }
 
+#ifdef GFTIME
+static const char *qop_prec[2] = {"F", "D"};
+#endif
+
 void imp_gauge_force( Real eps, field_offset mom_off ){
 
   QOP_GaugeField *links;
@@ -86,7 +90,8 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
 
   remaptime += dclock();
 #ifdef GFTIME
-  node0_printf("GFTIME:  time = %e mflops = %e\n",info.final_sec,
+  node0_printf("GFTIME:  time = %e (qop %s) mflops = %e\n",
+	       info.final_sec, qop_prec[QOP_Precision-1],
 	       info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP
   node0_printf("GFREMAP:  time = %e\n",remaptime);
