@@ -114,6 +114,7 @@ G_WILSON_OBJECTS =   \
   dirac_utilities.o  \
   discretize_wf.o    \
   dslash_w_space.o   \
+  dslash_w3.o        \
   gauss_smear_w.o    \
   io_helpers_w.o     \
   io_prop_w.o        \
