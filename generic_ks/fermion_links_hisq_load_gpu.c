@@ -11,6 +11,7 @@
 
 #include "generic_ks_includes.h"
 #include "../include/info.h"
+#include <string.h>
 
 #include <quda_milc_interface.h>
 
@@ -18,7 +19,7 @@ void
 load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap, 
 			hisq_auxiliary_t *aux, su3_matrix *links)
 {
-  char myname = "load_hisq_aux_links_gpu";
+  char myname[] = "load_hisq_aux_links_gpu";
   
   printf("Calling load_hisq_aux_links\n");
 
