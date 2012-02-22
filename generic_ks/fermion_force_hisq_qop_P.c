@@ -20,6 +20,9 @@
 
 /*
  * $Log: fermion_force_hisq_qop_P.c,v $
+ * Revision 1.3  2012/02/22 03:46:31  detar
+ * Add precision tag to timing line
+ *
  * Revision 1.2  2012/02/16 16:30:29  detar
  * Initialize QOP_info_t structure.
  *
@@ -74,7 +77,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop_P.c,v 1.2 2012/02/16 16:30:29 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop_P.c,v 1.3 2012/02/22 03:46:31 detar Exp $";
 
 #if 0  /* Not supported until we decide what a HISQ one-term or two-term force means */
 /**********************************************************************/
@@ -148,8 +151,9 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, su3_vector *x_off,
 
   remaptime += dclock();
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e (qop) terms = 1 mflops = %e\n",
-	       info.final_sec, (Real)info.final_flop/(1e6*info.final_sec) );
+  node0_printf("FFTIME:  time = %e (qop %s) terms = 1 mflops = %e\n",
+	       info.final_sec, qop_prec[QOP_Precision-1],
+	       (Real)info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
 #endif
