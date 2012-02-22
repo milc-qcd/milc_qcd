@@ -11,9 +11,12 @@
  c Contact: <detar@physics.utah.edu> or <doug@physics.arizona.edu>
  c
  c  to compile: texi2dvi milcv7.texi, texi2html milcv7.texi
- c $Id: milcv7.texi,v 1.5 2012/01/21 21:19:34 detar Exp $
+ c $Id: milcv7.texi,v 1.6 2012/02/22 05:37:24 detar Exp $
  c
  c $Log: milcv7.texi,v $
+ c Revision 1.6  2012/02/22 05:37:24  detar
+ c Updates
+ c
  c Revision 1.5  2012/01/21 21:19:34  detar
  c Correct contributor list.
  c
@@ -40,7 +43,7 @@
 @center The MILC Code 
 @center version 7.7
 @sp 1
-@center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@quark.phy.bnl.gov>
+@center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@@quark.phy.bnl.gov>
 @center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
 @center @strong{Tom Burch} (@emph{U. of Utah}) <tburch@@physics.utah.edu>
 @center @strong{Tom DeGrand} (@emph{U. of Colorado}) <degrand@@aurinko.colorado.edu>
@@ -93,7 +96,7 @@ notice identical to this one except for the removal of this paragraph
 
 @center version ---7.7.3---
 @sp 1
-@center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@quark.phy.bnl.gov>
+@center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@@quark.phy.bnl.gov>
 @center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
 @center @strong{Tom Burch} (@emph{U. of Utah}) <tburch@@physics.utah.edu>
 @center @strong{Tom DeGrand} (@emph{U. of Colorado}) <degrand@@aurinko.colorado.edu>
