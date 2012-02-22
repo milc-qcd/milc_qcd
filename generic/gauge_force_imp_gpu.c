@@ -37,7 +37,7 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
   const Real eb3 = eps*beta/3.0;
   su3_matrix* links = create_G_from_site();
   
-  float* momentum = (float*)malloc(sites_on_node*4*sizeof(anti_hermitmat));
+  Real* momentum = (Real*)malloc(sites_on_node*4*sizeof(anti_hermitmat));
 
   int dir,j;
   site *st;
@@ -56,7 +56,7 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
   FORALLSITES(i,st){
     for(dir=0; dir<4; ++dir){
       for(j=0; j<10; ++j){
-	*((float*)(&(st->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
+	*((Real*)(&(st->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
       }
     }
   }

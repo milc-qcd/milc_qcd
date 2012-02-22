@@ -2178,7 +2178,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   } // end loop over inaik
   // done constructing the outer products
   
-  float* momentum = (float*)special_alloc(sites_on_node*4*sizeof(anti_hermitmat));
+  Real* momentum = (Real*)special_alloc(sites_on_node*4*sizeof(anti_hermitmat));
   
   
   double level2_coeff[6];
@@ -2217,7 +2217,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   FORALLSITES(i,s){
     for(dir=0; dir<4; ++dir){
       for(j=0; j<10; ++j){
-	*((float*)(&(s->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
+	*((Real*)(&(s->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
       }
     }
   }
