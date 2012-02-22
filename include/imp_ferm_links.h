@@ -53,6 +53,10 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
 		      quark_invert_control *qic, Real mass,
 		      imp_ferm_links_t *fn);
 
+int ks_congrad_field_cpu( su3_vector *src, su3_vector *dest, 
+			  quark_invert_control *qic, Real mass,
+			  imp_ferm_links_t *fn);
+
 int ks_congrad_site( field_offset src, field_offset dest, 
 		     quark_invert_control *qic, Real mass,
 		     imp_ferm_links_t *fn);
