@@ -11,10 +11,6 @@
 #include "../include/loopend.h"
 
 
-static su3_vector *ttt,*cg_p;
-static su3_vector *resid;
-static int first_multicongrad = 1;
-
 #ifdef CGTIME
 static const char *prec_label[2] = {"F", "D"};
 #endif
@@ -29,14 +25,12 @@ int ks_multicg_offset_field_gpu(
     )
 {
   int i,j;
-  int parity;
   char myname[] = "ks_multicg_offset_field_gpu";
 
 #ifdef CGTIME
   double dtimec = -dclock();
-#endif
   double nflop = 1205 + 15*num_offsets;
-  if(parity==EVENANDODD)nflop *=2;
+#endif
 
   if(qic[0].relresid != 0.){
     printf("%s: GPU code does not yet support a Fermilab-type relative residual\n", myname);
@@ -58,7 +52,6 @@ int ks_multicg_offset_field_gpu(
 
   QudaInvertArgs_t inv_args;
 
-  int quda_parity;
   if(qic[0].parity == EVEN){
     inv_args.evenodd = QUDA_EVEN_PARITY;
   }else if(qic[0].parity == ODD){
@@ -68,6 +61,10 @@ int ks_multicg_offset_field_gpu(
     terminate(2);
   }
 
+  if(qic[0].parity==EVENANDODD){
+    node0_printf("%s: EVENANDODD not supported\n", myname);
+    terminate(1);
+  }
 
   double* offset = (double*)malloc(num_offsets*sizeof(double));
   for(i=0; i<num_offsets; ++i) offset[i] = ksp[i].offset;
@@ -131,7 +128,7 @@ int ks_multicg_offset_field_gpu(
   dtimec += dclock();
   if(this_node==0){
     printf("CONGRAD5: time = %e (multicg_offset_QUDA %s) masses = %d iters = %d mflops = %e\n",
-	   dtimec,prec_label[PRECISION-1],num_offsets,num_iters,
+	   dtimec,prec_label[qic[0].prec-1],num_offsets,num_iters,
 	   (double)(nflop)*volume*
 	   num_iters/(1.0e6*dtimec*numnodes()));
     fflush(stdout);}
