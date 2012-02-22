@@ -359,6 +359,13 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
   return iters;
 }
 
+/* Needed for consistency with d_congrad5_fn.c. */
+int ks_congrad_field_cpu( su3_vector *src, su3_vector *dest, 
+			  quark_invert_control *qic, Real mass,
+			  eo_links_t *eo ){
+  return ks_congrad_field(src, dest, qic, mass, eo);
+}
+
 /* New API for site arguments */
 
 int ks_congrad_site( field_offset src, field_offset dest, 
