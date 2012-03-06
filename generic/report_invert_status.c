@@ -7,7 +7,7 @@
 void report_status(quark_invert_control *qic){
 
   if(this_node != 0)return;
-  if((qic->resid > 0 && qic->final_rsq > qic->resid * qic->resid ) ||
+  if((qic->resid > 0 && qic->final_rsq > qic->resid * qic->resid ) &&
      (qic->relresid > 0 && qic->final_relrsq > qic->relresid * qic->relresid ))
     printf(" NOT converged final_rsq= %.2g (cf %.2g) rel = %.2g (cf %.2g) restarts = %d iters= %d \n",
 	   qic->final_rsq, qic->resid * qic->resid, 
