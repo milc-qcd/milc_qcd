@@ -153,8 +153,9 @@ endif
 
 # GPU support
 
-  FLINKS_FN_MILC_GPU = fermion_links_milc.o fermion_links_fn_load_gpu.o \
-    ${FLINKS}
+  FLINKS_FN_MILC_GPU = fermion_links_milc.o \
+	fermion_links_fn_load_gpu.o \
+	${FLINKS} ks_action_paths.o
   
   FLINKS_HISQ_MILC_GPU = fermion_links_hisq_milc.o \
 	fermion_links_fn_load_gpu.o \
@@ -275,9 +276,9 @@ endif
 
 # GPU support
 
-  ASQ_FORCE_MILC_GPU = fermion_force_asqtad_gpu.o ${FORCE}
+  ASQ_FORCE_MILC_GPU = ${ASQ_FORCE_MILC_CPU} fermion_force_asqtad_gpu.o 
 
-  HISQ_FORCE_MILC_GPU = fermion_force_hisq_multi.o ${FORCE}
+  HISQ_FORCE_MILC_GPU = ${HISQ_FORCE_MILC_CPU}
   
 # Standard QOP combinations
 
