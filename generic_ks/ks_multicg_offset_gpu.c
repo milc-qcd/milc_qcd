@@ -83,7 +83,11 @@ int ks_multicg_offset_field_gpu(
 
   inv_args.max_iter  = qic[0].max*qic[0].nrestart;
   inv_args.restart_tolerance = 1e-1;
-
+#ifdef SINGLE_FOR_DOUBLE
+  inv_args.mixed_precision = 1;
+#else
+  inv_args.mixed_precision = 0;
+#endif
 
   int num_iters; // number of iterations taken
   su3_matrix* fatlink = get_fatlinks(fn);
