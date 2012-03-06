@@ -11,9 +11,12 @@
  c Contact: <detar@physics.utah.edu> or <doug@physics.arizona.edu>
  c
  c  to compile: texi2dvi milcv7.texi, texi2html milcv7.texi
- c $Id: milcv7.texi,v 1.6 2012/02/22 05:37:24 detar Exp $
+ c $Id: milcv7.texi,v 1.7 2012/03/06 03:27:35 detar Exp $
  c
  c $Log: milcv7.texi,v $
+ c Revision 1.7  2012/03/06 03:27:35  detar
+ c Explain "source_only" and rule for creating a writeable source
+ c
  c Revision 1.6  2012/02/22 05:37:24  detar
  c Updates
  c
@@ -3921,16 +3924,30 @@ These lines specify an extended naive propagator, starting from an
 extended @strong{KS4}-type Dirac source.  (Please see the discussion
 above about the spin conversion.)
 
-The @strong{check} line specifies whether the code should calculate or
+The @strong{check} line specifies whether the code should calculate/
 recalculate the propagator.  If the propagator is unknown, of course,
 we would want to compute it from the specified source.  If the
 propagator is being read from a file, we might still want to check it
-by handing its source and supposed solution to the inverter.  One or
-two CG iterations may be all that is needed to check it.  In both
-cases we would say @strong{check yes}.  If the propagator is being
-read from a file, and we prefer not to check it, we would say
-@strong{check no}.  In that case, it doesn't matter what source we
-associate it with, since the source would not be used.
+by handing its source and supposed solution to the inverter and
+recalculating it.  One or two CG iterations may be all that is needed
+to check it.  In both cases we would say @strong{check yes}.  If the
+propagator is being read from a file, and we prefer not to check it,
+we would say @strong{check no}.  In that case, it doesn't matter what
+source we associate it with, since the source would not be used.
+
+Since currently a source is generated and, if requested, saved to a
+file only if a propagator is built from it, in some cases we would
+still like to create the source without the propagator.  In that case
+we would write a dummy propagator stanza that calls for the source,
+but say @strong{check source_only}.
+
+There is one other subtlety with the current design.  With
+@strong{check no}, the propagator is not calculated, but it is taken
+from a file.  In that case, clearly, the source is unused and
+irrelvant.  Even so, a source must be described and specified.  In
+that case one should use the source type
+@strong{vector_propagator_file} or @strong{dirac_propagator_file} and
+specify the correct number of colors/sources in the file.
 
 The @strong{error_for_propagator} specifies the desired upper bound
 for the Cartesian norm ratio
