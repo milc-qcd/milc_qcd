@@ -14,6 +14,7 @@
 #include "../include/info.h"
 
 #include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 
 void  
 load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matrix *links)
@@ -32,6 +33,8 @@ load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matr
 			       // Need a workaround for this
   fatlink_args.use_pinned_memory = 0;
  
+  initialize_quda();
+
   qudaLoadFatLink(PRECISION, fatlink_args, path_coeff, links, fat);
   return;
 }
