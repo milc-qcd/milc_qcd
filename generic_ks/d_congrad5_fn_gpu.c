@@ -100,7 +100,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 
   su3_matrix* fatlink = get_fatlinks(fn);
   su3_matrix* longlink = get_lnglinks(fn);
-  const int quda_precision = 2;
+  const int quda_precision = qic->prec;
 
   double residual, relative_residual;
   int num_iters;
