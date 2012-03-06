@@ -363,7 +363,7 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   }
   
 #ifdef CG_DEBUG
-  if( (RsdCG > 0 && qic->final_rsq > RsdCG) || 
+  if( (RsdCG > 0 && qic->final_rsq > RsdCG) &&
       (RRsdCG > 0 && qic->final_relrsq > RRsdCG) )
     {
       node0_printf(" BiCG_ILU: Not Converged: size_r=%.2e rel %.2e \n",
