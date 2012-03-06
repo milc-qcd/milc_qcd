@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.10  2012/03/06 03:21:23  detar
+//  Select GPU inverter precision with input parameter
+//
 //  Revision 1.9  2011/11/29 22:03:51  detar
 //  Support arbitrary colors and momentum and boundary twists.
 //
@@ -429,12 +432,12 @@ int readin(int prompt) {
       IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
 			    &param.qic[i].relresid );
       IF_OK status += get_i(stdin, prompt,"precision", &param.qic[i].prec );
-#ifndef HAVE_QOP
+#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
       if(param.qic[i].prec != PRECISION){
 	node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
-	node0_printf("QOP compilation is required for mixed precision\n");
+	node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
+	param.qic[i].prec = PRECISION;
       }
-      param.qic[i].prec = PRECISION;
 #endif
       param.qic[i].max = max_cg_iterations;
       param.qic[i].nrestart = max_cg_restarts;
