@@ -773,7 +773,7 @@ local_operator(int index){
 /* The gamma-gamma operators are indexed from 128 up */
 
 static int
-encode_gamma_gamma_index(s, t){
+encode_gamma_gamma_index(int s, int t){
   return s*16+t+128;
 }
 
