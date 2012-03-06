@@ -5,6 +5,9 @@
 /* Modifications ... */
 
 //  $Log: setup.c,v $
+//  Revision 1.4  2012/03/06 03:23:26  detar
+//  Set GPU inverter precision through input parameter
+//
 //  Revision 1.3  2012/01/21 21:35:08  detar
 //  Support general spin_taste interpolating operators for mesons.
 //
@@ -21,6 +24,7 @@
 #include "lattice_qdp.h"
 #include <string.h>
 #include "params.h"
+#include <unistd.h>
 
 /* Forward declarations */
 
@@ -433,10 +437,10 @@ int readin(int prompt) {
 	  status++;
 	}
 	IF_OK status += get_i(stdin, prompt,"precision", &param.qic[0].prec );
-#ifndef HAVE_QOP
+#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
 	IF_OK if(param.qic[0].prec != PRECISION){
 	  node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
-	  node0_printf("QOP compilation is required for mixed precision\n");
+	  node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
 	  param.qic[0].prec = PRECISION;   /* Same for all members of a set*/
 	}
 #endif
