@@ -98,6 +98,9 @@
 #include "../include/io_scidac_ks.h"
 #include "../include/io_scidac_w.h"
 #endif
+#ifndef M_PI
+#define M_PI 3.14159265358979323846;
+#endif
 
 /*-------------------------------------------------------------*/
 /* Quark source utilities */
