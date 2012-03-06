@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include <quda_milc_interface.h>
+#include "../include/generic_quda.h"
 
 void 
 load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap, 
@@ -43,6 +44,8 @@ load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap,
   fatlink_args.su3_source = 1; // Is the incoming field an SU(3) gauge field? 
 			       // If so, run SU(3) optimized QUDA code.
   fatlink_args.use_pinned_memory = 0; // Use page-locked memory in QUDA?
+
+  initialize_quda();
 
   // Right now, if aux->V_link == NULL 
   // the level1 fat link is not copied from the GPU back to the CPU.
