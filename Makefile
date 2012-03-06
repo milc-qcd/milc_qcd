@@ -138,7 +138,7 @@ MACHINE_DEP_IO   = io_ansi.o # (io_ansi.o io_nonansi.o io_dcap.o)
 
 # Edit these "wants"
 
-WANTQOP = # true or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
+WANTQOP = # true # or blank. Implies HAVEQDP, HAVEQOP, HAVEQMP.
 
 WANTQIO = true # or blank.  Implies HAVEQMP.
 
