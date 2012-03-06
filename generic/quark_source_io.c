@@ -251,7 +251,7 @@ void r_source_open(quark_source *qs){
 
   else if(source_type == VECTOR_FIELD_FILE){
     xml_file = QIO_string_create();
-    qs->infile = r_open_ks_vector_scidac_file_xml(source_file, QIO_SERIAL,
+    qs->infile = r_open_ks_vector_scidac_file_xml(source_file, QIO_PARALLEL,
 						   xml_file);
     QIO_string_destroy(xml_file);
   }
@@ -262,8 +262,8 @@ void r_source_open(quark_source *qs){
 
   else if(source_type == DIRAC_FIELD_FILE){
     xml_file = QIO_string_create();
-    qs->infile = r_open_w_vector_scidac_file_xml(source_file, QIO_SERIAL,
-						  xml_file);
+    qs->infile = r_open_w_vector_scidac_file_xml(source_file, QIO_PARALLEL,
+						 xml_file);
     QIO_string_destroy(xml_file);
   }
 
@@ -522,7 +522,7 @@ int w_source_open_dirac(quark_source *qs, char *fileinfo){
   if(qs->savetype == DIRAC_FIELD_FILE ||
      qs->savetype == DIRAC_FIELD_STORE){
     qs->outfile = w_open_w_vector_scidac_file(source_file, fileinfo,
-					       volfmt, serpar);
+					      volfmt, serpar);
     if(qs->outfile == NULL)return 1;
     qs->save_file_initialized = 1;
   } 
@@ -792,9 +792,11 @@ int w_source_dirac_site(field_offset src, quark_source *qs)
 static void print_output_quark_source_choices(void){
   printf("'forget_source' or ");
   printf("'save_serial_scidac_ks_source' or ");
+  printf("'save_parallel_scidac_ks_source' or ");
   printf("'save_multifile_scidac_ks_source' or ");
   printf("'save_partfile_scidac_ks_source' or");
   printf("'save_serial_scidac_w_source', or ");
+  printf("'save_parallel_scidac_w_source', or ");
   printf("'save_multifile_scidac_w_source', or ");
   printf("'save_partfile_scidac_w_source'? ");
 }
@@ -833,6 +835,16 @@ int ask_output_quark_source_file( FILE *fp, int prompt,
     terminate(1);
 #endif
   }
+  else if(strcmp("save_parallel_scidac_ks_source",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARALLEL_SCIDAC;
+    *save_type = VECTOR_FIELD_FILE;
+    strcpy(descrp,"vector_field");
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
   else if(strcmp("save_multifile_scidac_ks_source",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_MULTIFILE_SCIDAC;
@@ -856,6 +868,16 @@ int ask_output_quark_source_file( FILE *fp, int prompt,
   else if(strcmp("save_serial_scidac_w_source",savebuf) == 0 ) {
 #ifdef HAVE_QIO
     *flag=SAVE_SERIAL_SCIDAC;
+    *save_type = DIRAC_FIELD_FILE;
+    strcpy(descrp,"dirac_field");
+#else
+    node0_printf("requires QIO compilation!\n");
+    terminate(1);
+#endif
+  }
+  else if(strcmp("save_parallel_scidac_w_source",savebuf) == 0 ) {
+#ifdef HAVE_QIO
+    *flag=SAVE_PARALLEL_SCIDAC;
     *save_type = DIRAC_FIELD_FILE;
     strcpy(descrp,"dirac_field");
 #else
