@@ -37,7 +37,7 @@ for general instructions.
 
 Here are highlights of the changes:
 
-For version 7.7.4
+For version 7.7.5
 
   Add staggered/clover hopping matrix source/sink operator for
   spectrum calculations.
