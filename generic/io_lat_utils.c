@@ -645,6 +645,8 @@ gauge_file *setup_input_gauge_file(char *filename)
       terminate(1);
     }
 
+  memset(gh, 0, sizeof(gauge_header));
+
   gf->header = gh;
   gf->rank2rcv = NULL;
   gf->check.sum29 = 0;
