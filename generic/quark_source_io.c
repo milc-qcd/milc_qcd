@@ -250,8 +250,14 @@ void r_source_open(quark_source *qs){
 #ifdef HAVE_KS
 
   else if(source_type == VECTOR_FIELD_FILE){
+    int serpar;
+    if(qs->sourceflag == RELOAD_PARALLEL)
+      serpar = QIO_PARALLEL;
+    else
+      serpar = QIO_SERIAL;
+
     xml_file = QIO_string_create();
-    qs->infile = r_open_ks_vector_scidac_file_xml(source_file, QIO_PARALLEL,
+    qs->infile = r_open_ks_vector_scidac_file_xml(source_file, serpar,
 						   xml_file);
     QIO_string_destroy(xml_file);
   }
@@ -261,8 +267,14 @@ void r_source_open(quark_source *qs){
 #ifdef HAVE_DIRAC
 
   else if(source_type == DIRAC_FIELD_FILE){
+    int serpar;
+    if(qs->sourceflag == RELOAD_PARALLEL)
+      serpar = QIO_PARALLEL;
+    else
+      serpar = QIO_SERIAL;
+
     xml_file = QIO_string_create();
-    qs->infile = r_open_w_vector_scidac_file_xml(source_file, QIO_PARALLEL,
+    qs->infile = r_open_w_vector_scidac_file_xml(source_file, serpar,
 						 xml_file);
     QIO_string_destroy(xml_file);
   }

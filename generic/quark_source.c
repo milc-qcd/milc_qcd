@@ -118,6 +118,7 @@ void init_qs(quark_source *qs){
   qs->v_src            = NULL;
   qs->wv_src           = NULL;
   qs->source_file[0]   = '\0';
+  qs->sourceflag       = RELOAD_SERIAL;
   qs->source_file_initialized = 0;
   qs->save_file_initialized = 0;
 #ifdef HAVE_QIO
@@ -1209,6 +1210,39 @@ static char *decode_mask(int mask){
     return "??";
 }
 
+static int ask_starting_source( FILE *fp, int prompt, int *flag, char *filename ){
+  char *savebuf;
+  int status;
+  char myname[] = "ask_starting_source";
+
+  if (prompt==1) printf("enter 'load_source_serial', or 'load_source_parallel'\n");
+  savebuf = get_next_tag(fp, "load source command", myname);
+  if (savebuf == NULL)return 1;
+
+  printf("%s ",savebuf);
+
+  if(strcmp("load_source_serial",savebuf) == 0 ) {
+    *flag = RELOAD_SERIAL;
+  }
+  else if(strcmp("load_source_parallel",savebuf) == 0 ) {
+    *flag = RELOAD_PARALLEL;
+  }
+  /* Backward compatibility */
+  else if(strcmp("load_source",savebuf) == 0 ) {
+    *flag = RELOAD_SERIAL;
+  }
+
+  if(prompt==1)printf("enter name of file containing the source\n");
+  status=fscanf(fp," %s",filename);
+  if(status !=1) {
+    printf("\n%s(%d): ERROR IN INPUT: error reading file name\n",
+	   myname, this_node); 
+    return 1;
+  }
+  printf("%s\n",filename);
+  return 0;
+}
+
 /* Get the additional input parameters needed to specify the source */
 #define IF_OK if(status==0)
 static int get_quark_source(int *status_p, FILE *fp, int prompt, 
@@ -1258,14 +1292,14 @@ static int get_quark_source(int *status_p, FILE *fp, int prompt,
   else if ( source_type == VECTOR_FIELD_FILE ){
     //    IF_OK status += get_i(fp, prompt, "t0", &source_loc[3]);
     IF_OK status += get_vi(fp, prompt, "origin", source_loc, 4);
-    IF_OK status += get_s(fp, prompt, "load_source", source_file);
+    IF_OK status += ask_starting_source(fp, prompt, &qs->sourceflag, source_file);
     IF_OK status += get_i(fp, prompt, "ncolor", &(qs->ncolor));
     IF_OK status += get_vi(fp, prompt, "momentum", qs->mom, 3);
   }
   else if ( source_type == VECTOR_FIELD_FM_FILE ){
     //    IF_OK status += get_i(fp, prompt, "t0", &source_loc[3]);
     IF_OK status += get_vi(fp, prompt, "origin", source_loc, 4);
-    IF_OK status += get_s(fp, prompt, "load_source", source_file);
+    IF_OK status += ask_starting_source(fp, prompt, &qs->sourceflag, source_file);
     IF_OK status += get_i(fp, prompt, "ncolor", &(qs->ncolor));
     IF_OK status += get_vi(fp, prompt, "momentum", qs->mom, 3);
   }
