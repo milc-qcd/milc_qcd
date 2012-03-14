@@ -38,6 +38,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop_P.c,v $
+ * Revision 1.10  2012/03/14 00:39:00  detar
+ * Make test of convergence agree with inverter stopping condition
+ *
  * Revision 1.9  2012/02/16 16:30:29  detar
  * Initialize QOP_info_t structure.
  *
@@ -112,7 +115,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.9 2012/02/16 16:30:29 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.10 2012/03/14 00:39:00 detar Exp $";
 
 
 /* Load inversion args for Level 3 inverter */
@@ -238,17 +241,17 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
   for(isrc = 0; isrc < nsrc; isrc++){
     for(imass = 0; imass < nmass[isrc]; imass++){
       if(this_node == 0){
-	if((qic[0].resid > 0 && qop_resid_arg[isrc][imass]->final_rsq > qic[0].resid * qic[0].resid ) ||
+	if((qic[0].resid > 0 && qop_resid_arg[isrc][imass]->final_rsq > qic[0].resid * qic[0].resid ) &&
 	   (qic[0].relresid > 0 && qop_resid_arg[isrc][imass]->final_rel > qic[0].relresid * qic[0].relresid )){
 	  qic[0].converged = 0;
 	  node0_printf(" NOT converged (src %d, mass %d) ", isrc, imass);
-	  node0_printf("final_rsq = %.2g rel = %.2g restarts = %d iters = %d\n",
+	  node0_printf("final_rsq = %.2g (cf %.2g) rel = %.2g (cf %.2g) restarts = %d iters = %d\n",
 		       qop_resid_arg[isrc][imass]->final_rsq,
+		       qic[0].resid * qic[0].resid,
 		       qop_resid_arg[isrc][imass]->final_rel,
+		       qic[0].relresid * qic[0].relresid,
 		       qop_resid_arg[isrc][imass]->final_restart,
 		       qop_resid_arg[isrc][imass]->final_iter);
-	  node0_printf("wanted final_rsq = %.2g rel = %.2g\n",
-		       qic[0].resid * qic[0].resid, qic[0].relresid * qic[0].relresid);
 	} else {
 #ifdef CG_DEBUG
 	  node0_printf(" OK converged (src %d, mass %d) ", isrc, imass);
