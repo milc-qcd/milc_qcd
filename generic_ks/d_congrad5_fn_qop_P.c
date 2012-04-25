@@ -38,6 +38,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop_P.c,v $
+ * Revision 1.11  2012/04/25 03:26:39  detar
+ * Fix iteration counting for multimass inversions.
+ *
  * Revision 1.10  2012/03/14 00:39:00  detar
  * Make test of convergence agree with inverter stopping condition
  *
@@ -115,7 +118,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.10 2012/03/14 00:39:00 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.11 2012/04/25 03:26:39 detar Exp $";
 
 
 /* Load inversion args for Level 3 inverter */
@@ -233,7 +236,7 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
   QOP_verbose(save_qop_verb);
 #endif
 
-  /* For now we return the largest value and total iterations */
+  /* For now we return the largest value of the residual and iterations */
   qic[0].final_rsq = 0;
   qic[0].final_relrsq = 0;
   qic[0].converged = 1;
@@ -276,7 +279,8 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 		     qop_resid_arg[isrc][imass]->final_rel);
 #endif
     }
-    iters += qop_resid_arg[isrc][0]->final_iter;
+    if(qop_resid_arg[isrc][0]->final_iter > iters)
+      iters = qop_resid_arg[isrc][0]->final_iter;
   }
 
   // This structure isn't very friendly to multimass or multisource use
