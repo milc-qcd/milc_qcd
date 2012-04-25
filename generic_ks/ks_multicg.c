@@ -176,16 +176,29 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
     )
 {
   int i,multi_iters=0,iters=0;
+
+#ifdef HALF_MIXED
+  /* Do multicg in single precision */
+  int prec_save = qic[0].prec;
+  qic[0].prec = 1;
+#endif
   
   /* First we invert as though all masses took the same Naik epsilon */
   multi_iters = iters = 
     ks_multicg_offset_field( src, psim, ksp, num_offsets, qic, fn_multi[0]);
   report_status(qic+0);
 
-  /* Then we polish using the correct Naik epsilon */
+#ifdef HALF_MIXED
+  qic[0].prec = prec_save;
+#endif
+
+  /* Then we refine using the correct Naik epsilon */
   for(i=0;i<num_offsets;i++){
+#ifdef NO_REFINE
+    if(fn_multi[i] == fn_multi[0])
+      continue;
+#endif
     ks_congrad_field_cpu( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
-    //    report_status(qic+i);
     iters += qic[i].final_iters;
     qic[i].final_iters += multi_iters;
   }
