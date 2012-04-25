@@ -109,6 +109,10 @@ boundary_twist_site(Real bdry_phase[4], int r0[4], int sign) {
     if( s->t == bc_coord[TUP])
       phase_mult_su3_matrix(&s->link[TUP], cphase[TUP]);
   }
+
+  FORALLUPDIR(dir){
+    boundary_phase[dir] = bdry_phase[dir];
+  }
   
 } /* boundary_twist_site */
 
