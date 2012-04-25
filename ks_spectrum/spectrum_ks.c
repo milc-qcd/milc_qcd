@@ -608,8 +608,8 @@ static FILE* open_fnal_meson_file(int pair){
   int k;
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
-  int is0 = param.source[param.set[ip0]];
-  int is1 = param.source[param.set[ip1]];
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
   FILE *fp;
 
   /* Only node 0 writes, and only if we want the file. */
@@ -631,26 +631,38 @@ static FILE* open_fnal_meson_file(int pair){
 
   fprintf(fp,"antiquark_type:               staggered\n");
 
-  {
-    quark_source_sink_op* qs_op = param.src_qs[is0].op;
-    print_source_info(fp, "antiquark_source", &param.src_qs[is0]);
-    fprintf(fp,"antiquark_source_label:       %s\n",param.src_qs[is0].label);
-    while(qs_op != NULL){
-      print_field_op_info(fp, "antiquark_source", qs_op);
-      qs_op = qs_op->op;
-    }
-  }
+//  {
+//    quark_source_sink_op* qs_op = param.src_qs[is0].op;
+  print_source_info(fp, "antiquark_source", &param.src_qs[is0]);
+  fprintf(fp,"antiquark_source_label:       %s\n",param.src_qs[is0].label);
+  print_field_op_info(fp, "antiquark_source", param.src_qs[is0].op);
+
+//    while(qs_op != NULL){
+//      print_field_op_info(fp, "antiquark_source", qs_op);
+//      qs_op = qs_op->op;
+//    }
+//  }
 
 //  fprintf(fp,"antiquark_sink_op:       %s",param.snk_qs_op[ih0[nh0-1]].descrp);
 //  for(i = nh0-2; i >=0; i--)
 //    fprintf(fp,"/%s",param.snk_qs_op[ih0[i]].descrp);
 //  fprintf(fp,"\n");
   fprintf(fp,"antiquark_sink_label:         %s\n",param.snk_qs_op[iq0].label);
-  for(k = 0; k < nh0; k++){
-    int ih = ih0[nh0-1-k];
-    print_field_op_info(fp, "antiquark_sink", &param.snk_qs_op[ih]);
-  }
+//  for(k = 0; k < nh0; k++){
+//    int ih = ih0[nh0-1-k];
+//    print_field_op_info(fp, "antiquark_sink", &param.snk_qs_op[ih]);
+//  }
   
+  {
+    quark_source_sink_op **op_list = (quark_source_sink_op **)
+      malloc(sizeof(quark_source_sink_op *)*nh0);
+    for(k = 0; k < nh0; k++)
+      op_list[k] = &param.snk_qs_op[ih0[nh0-1-k]];
+    print_field_op_info_list(fp, "antiquark_sink", op_list, nh0);
+    free(op_list);
+  }
+      
+
   fprintf(fp,"antiquark_mass:               \"%s\"\n",param.mass_label[ip0]);
 #if FERM_ACTION == HISQ
   fprintf(fp,"antiquark_epsilon:            %g\n",param.ksp[ip0].naik_term_epsilon);
@@ -658,25 +670,34 @@ static FILE* open_fnal_meson_file(int pair){
 
   fprintf(fp,"quark_type:                   staggered\n");
 
-  {
-    quark_source_sink_op *wqs_op = param.src_qs[is1].op;
-    print_source_info(fp, "quark_source", &param.src_qs[is1]);
-    fprintf(fp,"quark_source_label:           %s\n",param.src_qs[is1].label);
-    while(wqs_op != NULL){
-      print_field_op_info(fp, "quark_source", wqs_op);
-      wqs_op = wqs_op->op;
-    }
-  }
+//  {
+//    quark_source_sink_op *wqs_op = param.src_qs[is1].op;
+  print_source_info(fp, "quark_source", &param.src_qs[is1]);
+  fprintf(fp,"quark_source_label:           %s\n",param.src_qs[is1].label);
+  print_field_op_info(fp, "quark_source", param.src_qs[is1].op);
+//    while(wqs_op != NULL){
+//      print_field_op_info(fp, "quark_source", wqs_op);
+//      wqs_op = wqs_op->op;
+//    }
+//  }
 
 //  fprintf(fp,"quark_sink_op:           %s",param.snk_qs_op[ih1[nh1-1]].descrp);
 //  for(i = nh1-2; i >=0; i--)
 //    fprintf(fp,"/%s",param.snk_qs_op[ih1[i]].descrp);
 //  fprintf(fp,"\n");
   fprintf(fp,"quark_sink_label:             %s\n",param.snk_qs_op[iq1].label);
-  for(k = 0; k < nh1; k++){
-    int ih = ih1[nh1-1-k];
-    print_field_op_info(fp, "quark_sink", &param.src_qs_op[ih]);
+  {
+    quark_source_sink_op **op_list = (quark_source_sink_op **)
+      malloc(sizeof(quark_source_sink_op *)*nh1);
+    for(k = 0; k < nh1; k++)
+      op_list[k] = &param.snk_qs_op[ih1[nh1-1-k]];
+    print_field_op_info_list(fp, "quark_sink", op_list, nh1);
+    free(op_list);
   }
+//  for(k = 0; k < nh1; k++){
+//    int ih = ih1[nh1-1-k];
+//    print_field_op_info(fp, "quark_sink", &param.src_qs_op[ih]);
+//  }
 
   fprintf(fp,"quark_mass:                   \"%s\"\n",param.mass_label[ip1]);
 #if FERM_ACTION == HISQ
@@ -698,9 +719,9 @@ static FILE* open_fnal_baryon_file(int triplet){
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
   int ip2 = get_ancestors(ih2, &nh2, iq2);
-  int is0 = param.source[param.set[ip0]];
-  int is1 = param.source[param.set[ip1]];
-  int is2 = param.source[param.set[ip2]];
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
+  int is2 = param.set[ip2];
   FILE *fp;
 
   /* Only node 0 writes, and only if we want the file. */
@@ -791,8 +812,8 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
   int nh0, nh1;
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
-  int is0 = param.source[param.set[ip0]];
-  int is1 = param.source[param.set[ip1]];
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
   int i   = lookup_corr_index(pair,m);
 
   if(this_node != 0 || param.saveflag_m[pair] == FORGET)return;
@@ -838,8 +859,8 @@ print_start_meson_prop(int pair, int m){
   int nh0, nh1;
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
-  int is0 = param.source[param.set[ip0]];
-  int is1 = param.source[param.set[ip1]];
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
   if(this_node != 0)return;
   printf("STARTPROP\n");
   printf("MOMENTUM: %s\n", param.mom_label[pair][m]);
@@ -865,9 +886,9 @@ static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
   int ip2 = get_ancestors(ih2, &nh2, iq2);
-  int is0 = param.source[param.set[ip0]];
-  int is1 = param.source[param.set[ip1]];
-  int is2 = param.source[param.set[ip2]];
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
+  int is2 = param.set[ip2];
 
   if(this_node != 0 || param.saveflag_b[triplet] == FORGET)return;
 
@@ -920,9 +941,9 @@ static void print_start_baryon_prop(int triplet, int b)
   int ip0 = get_ancestors(ih0, &nh0, iq0);
   int ip1 = get_ancestors(ih1, &nh1, iq1);
   int ip2 = get_ancestors(ih2, &nh2, iq2);
-  int is0 = param.source[param.set[ip0]];
-  int is1 = param.source[param.set[ip1]];
-  int is2 = param.source[param.set[ip2]];
+  int is0 = param.set[ip0];
+  int is1 = param.set[ip1];
+  int is2 = param.set[ip2];
 
   if(this_node != 0)return;
   printf("STARTPROP\n");
