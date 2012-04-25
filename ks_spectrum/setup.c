@@ -5,6 +5,9 @@
 /* Modifications ... */
 
 //  $Log: setup.c,v $
+//  Revision 1.5  2012/04/25 03:21:29  detar
+//  Initialize boundary phase
+//
 //  Revision 1.4  2012/03/06 03:23:26  detar
 //  Set GPU inverter precision through input parameter
 //
@@ -41,7 +44,7 @@ static void broadcast_heap_params(void);
 
 
 int setup()   {
-  int prompt;
+  int prompt, dir;
 
   /* print banner, get volume */
   prompt=initial_set();
@@ -52,6 +55,9 @@ int setup()   {
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
+  FORALLUPDIR(dir){
+    boundary_phase[dir] = 0.;
+  }
   /* Initialize fermion links as unallocated */
   //  init_ferm_links(&fn_links, &ks_act_paths);
   //  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
