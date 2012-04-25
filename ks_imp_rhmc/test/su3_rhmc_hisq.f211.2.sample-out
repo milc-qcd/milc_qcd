@@ -678,16 +678,16 @@ G_LOOP:  2  13  6   	1.078566e+00	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	1.055124e+00	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	1.074606e+00	( 1 5 4 6 2 3  )
 GACTION: 6.599547e+00
- OK converged final_rsq= 7.7e-17 (cf 1e-16) rel = 0 (cf 0) restarts = 1 iters= 313
- OK converged final_rsq= 9.9e-17 (cf 1e-16) rel = 0 (cf 0) restarts = 1 iters= 17
+ OK converged final_rsq= 7.7e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 313
+ OK converged final_rsq= 9.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 17
 PBP: mass 1.000000e-02     1.140215e-02  7.964583e-02  1.450266e-03  1.450266e-03 ( 1 of 1 )
 FACTION: mass = 1.000000e-02,  1.498143e+00 ( 1 of 1 )
- OK converged final_rsq= 7.2e-17 (cf 1e-16) rel = 0 (cf 0) restarts = 1 iters= 268
- OK converged final_rsq= 7.9e-17 (cf 1e-16) rel = 0 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 7.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 268
+ OK converged final_rsq= 7.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 12
 PBP: mass 5.000000e-02     9.797594e-02  6.783265e-02  1.798223e-02  1.798223e-02 ( 1 of 1 )
 FACTION: mass = 5.000000e-02,  1.484540e+00 ( 1 of 1 )
- OK converged final_rsq= 5.2e-17 (cf 1e-16) rel = 0 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 5.2e-17 (cf 1e-16) rel = 0 (cf 0) restarts = 1 iters= 2
+ OK converged final_rsq= 5.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 5.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 2
 PBP: mass 5.000000e-01     3.508793e-01  3.786388e-01  -1.060788e-02  -1.060788e-02 ( 1 of 1 )
 FACTION: mass = 5.000000e-01,  1.477011e+00 ( 1 of 1 )
 RUNNING COMPLETED

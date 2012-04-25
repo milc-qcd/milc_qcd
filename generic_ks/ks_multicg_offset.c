@@ -88,7 +88,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     /* Initialize structure */
     for(j = 0; j < num_offsets; j++){
       qic[j].final_rsq     = 0.;
-      qic[j].final_relrsq  = 0.; /* No relative residual in use here */
+      qic[j].final_relrsq  = 1.; /* No relative residual in use here */
       qic[j].size_r        = 0.;
       qic[j].size_relr     = 0.;
       qic[j].final_iters   = 0;
