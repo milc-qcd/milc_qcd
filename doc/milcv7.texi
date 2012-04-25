@@ -11,9 +11,12 @@
  c Contact: <detar@physics.utah.edu> or <doug@physics.arizona.edu>
  c
  c  to compile: texi2dvi milcv7.texi, texi2html milcv7.texi
- c $Id: milcv7.texi,v 1.7 2012/03/06 03:27:35 detar Exp $
+ c $Id: milcv7.texi,v 1.8 2012/04/25 03:43:51 detar Exp $
  c
  c $Log: milcv7.texi,v $
+ c Revision 1.8  2012/04/25 03:43:51  detar
+ c Correct wprop->ksprop typo
+ c
  c Revision 1.7  2012/03/06 03:27:35  detar
  c Explain "source_only" and rule for creating a writeable source
  c
@@ -4021,13 +4024,13 @@ and for type @strong{KS} propagators,
 
 @example
 forget_wprop |
-save_ascii_wprop <char[]> |
-save_serial_fm_wprop <char[]> |
-save_serial_fm_sc_wprop <char[]> |
-save_serial_scidac_wprop <char[]> |
-save_parallel_scidac_wprop <char[]> |
-save_partfile_scidac_wprop <char[]> |
-save_multifile_scidac_wprop <char[]> |
+save_ascii_ksprop <char[]> |
+save_serial_fm_ksprop <char[]> |
+save_serial_fm_sc_ksprop <char[]> |
+save_serial_scidac_ksprop <char[]> |
+save_parallel_scidac_ksprop <char[]> |
+save_partfile_scidac_ksprop <char[]> |
+save_multifile_scidac_ksprop <char[]> |
 @end example
 
 
