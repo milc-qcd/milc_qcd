@@ -10,6 +10,10 @@
 #include "../include/generic_quda.h"
 #include "../include/loopend.h"
 
+/* Backward compatibility*/
+#ifdef SINGLE_FOR_DOUBLE
+#define HALF_MIXED
+#endif
 
 #ifdef CGTIME
 static const char *prec_label[2] = {"F", "D"};
@@ -83,7 +87,7 @@ int ks_multicg_offset_field_gpu(
 
   inv_args.max_iter  = qic[0].max*qic[0].nrestart;
   inv_args.restart_tolerance = 1e-1;
-#ifdef SINGLE_FOR_DOUBLE
+#if defined(MAX_MIXED) || defined(HALF_MIXED)
   inv_args.mixed_precision = 1;
 #else
   inv_args.mixed_precision = 0;
