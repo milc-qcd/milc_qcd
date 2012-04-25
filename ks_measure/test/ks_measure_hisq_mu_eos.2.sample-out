@@ -95,10 +95,10 @@ path coefficients: npath  path_coeff
                     0      1.250000e-01
                     1      -4.166667e-02
 Time to APE smear 1.146078e-03 sec
- OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 42
+ OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 42
  OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 1
  OK converged final_rsq= 6.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 1
- OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 42
+ OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 42
  OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 1
  OK converged final_rsq= 6.2e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 1
 PB_DMDEPS_P: mass 3.000000e-02  3.127454e-01  3.299927e-01 ( 1 of 1 )

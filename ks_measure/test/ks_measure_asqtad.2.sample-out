@@ -76,29 +76,29 @@ path coefficients: npath  path_coeff  multiplicity
 Time to APE smear 7.009506e-04 sec
 PBP: mass 3.000000e-02     3.354029e-02  2.019491e-02  2.498463e-02  2.498463e-02 ( 1 of 2 )
 FACTION: mass = 3.000000e-02,  1.522634e+00 ( 1 of 2 )
- OK converged final_rsq= 8.4e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 60
- OK converged final_rsq= 5.3e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 11
+ OK converged final_rsq= 8.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 60
+ OK converged final_rsq= 5.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 11
 TR_MM_INV: mass 3.000000e-02,  -4.465850e-01 ( 1 of 2 )
 PBP: mass 5.000000e-02     5.107156e-02  3.827348e-02  2.505148e-02  2.505148e-02 ( 1 of 2 )
 FACTION: mass = 5.000000e-02,  1.522874e+00 ( 1 of 2 )
- OK converged final_rsq= 6.9e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 60
- OK converged final_rsq= 8.8e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 9
+ OK converged final_rsq= 6.9e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 60
+ OK converged final_rsq= 8.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 9
 TR_MM_INV: mass 5.000000e-02,  -4.434056e-01 ( 1 of 2 )
- OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 60
- OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.8e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 60
- OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 6.8e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 60
+ OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 7.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 60
+ OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 6.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
 PBP: mass 3.000000e-02     4.207576e-02  1.290271e-02  -2.998057e-02  -2.998057e-02 ( 2 of 2 )
 FACTION: mass = 3.000000e-02,  1.472984e+00 ( 2 of 2 )
- OK converged final_rsq= 9.6e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 60
- OK converged final_rsq= 6.4e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 11
+ OK converged final_rsq= 9.6e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 60
+ OK converged final_rsq= 6.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 11
 TR_MM_INV: mass 3.000000e-02,  -4.567976e-01 ( 2 of 2 )
 PBP: mass 5.000000e-02     6.012746e-02  3.126360e-02  -2.988014e-02  -2.988014e-02 ( 2 of 2 )
 FACTION: mass = 5.000000e-02,  1.473552e+00 ( 2 of 2 )
- OK converged final_rsq= 7.7e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 60
- OK converged final_rsq= 9.6e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 9
+ OK converged final_rsq= 7.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 60
+ OK converged final_rsq= 9.6e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 9
 TR_MM_INV: mass 5.000000e-02,  -4.532314e-01 ( 2 of 2 )
  OK converged final_rsq= 8.3e-25 (cf 0) rel = 9.5e-12 (cf 1.6e-11) restarts = 1 iters= 76
  OK converged final_rsq= 2.2e-24 (cf 0) rel = 1.5e-11 (cf 1.6e-11) restarts = 1 iters= 6

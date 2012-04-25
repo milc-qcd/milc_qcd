@@ -74,12 +74,12 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -6.022150e-03     384
                     5      -1.092954e-01     48
 Time to APE smear 7.560253e-04 sec
- OK converged final_rsq= 6.1e-15 (cf 1e-14) rel = 0 (cf 0) restarts = 0 iters= 47
- OK converged final_rsq= 6.1e-15 (cf 1e-14) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.2e-15 (cf 1e-14) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.4e-15 (cf 1e-14) rel = 0 (cf 0) restarts = 0 iters= 47
- OK converged final_rsq= 5.4e-15 (cf 1e-14) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-15 (cf 1e-14) rel = 0 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 6.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 47
+ OK converged final_rsq= 6.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 5.2e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 5.4e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 47
+ OK converged final_rsq= 5.4e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 4.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 0
 PB_DMDU_P: mass 3.000000e-02  -5.031566e+00  -5.410347e+00 ( 1 of 2 )
 PBP: mass 3.000000e-02     3.354029e-02  2.019491e-02  2.498463e-02  2.498463e-02 ( 1 of 2 )
 FACTION: mass = 3.000000e-02,  1.522634e+00 ( 1 of 2 )
@@ -102,10 +102,10 @@ TR_MM_INV: mass 5.000000e-02,  -4.434056e-01 ( 1 of 2 )
  OK converged final_rsq= 6.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 46
  OK converged final_rsq= 8.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 9
 TR_MidM_MidM: mass 5.000000e-02,  3.679018e-01 ( 1 of 2 )
- OK converged final_rsq= 6.5e-15 (cf 1e-14) rel = 0 (cf 0) restarts = 0 iters= 46
+ OK converged final_rsq= 6.5e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 46
  OK converged final_rsq= 6.5e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 1
  OK converged final_rsq= 5.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 1
- OK converged final_rsq= 5.3e-15 (cf 1e-14) rel = 0 (cf 0) restarts = 0 iters= 46
+ OK converged final_rsq= 5.3e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 46
  OK converged final_rsq= 5.3e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 1
  OK converged final_rsq= 4.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 1
 PB_DMDU_P: mass 3.000000e-02  -5.168501e+00  -5.198659e+00 ( 2 of 2 )

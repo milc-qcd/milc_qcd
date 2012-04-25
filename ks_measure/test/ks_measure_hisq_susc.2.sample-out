@@ -89,25 +89,25 @@ path coefficients: npath  path_coeff  multiplicity
                     0      1.250000e-01     8
                     1      -4.166667e-02     8
 Time to APE smear 7.009506e-04 sec
- OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 43
- OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 6.8e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 43
- OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 6.2e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 43
+ OK converged final_rsq= 7.9e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 6.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 43
+ OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
+ OK converged final_rsq= 6.2e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
 PBP: mass 3.000000e-02     3.424573e-02  1.441593e-02  2.912546e-02  2.912546e-02 ( 1 of 1 )
 FACTION: mass = 3.000000e-02,  1.522829e+00 ( 1 of 1 )
 PB_DMDMU_P: mass 3.000000e-02  2.337509e-02  1.127527e-02  -1.105341e-02  1.252770e-02 ( 1 of 1 )
 PB_D2MDMU2_P: mass 3.000000e-02  6.918222e-01  7.370323e-01  3.184613e-02  2.732585e-02 ( 1 of 1 )
- OK converged final_rsq= 6.5e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 43
- OK converged final_rsq= 6.2e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 9
+ OK converged final_rsq= 6.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 6.2e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 9
 TR_MidM_MidM: mass 3.000000e-02,  3.786463e-01 ( 1 of 1 )
 PBP: mass 5.000000e-02     5.012696e-02  3.082494e-02  2.915719e-02  2.915719e-02 ( 1 of 1 )
 FACTION: mass = 5.000000e-02,  1.523199e+00 ( 1 of 1 )
 PB_DMDMU_P: mass 5.000000e-02  2.282679e-02  1.094545e-02  -1.148863e-02  1.253227e-02 ( 1 of 1 )
 PB_D2MDMU2_P: mass 5.000000e-02  6.913663e-01  7.360780e-01  3.176299e-02  2.704115e-02 ( 1 of 1 )
- OK converged final_rsq= 5.5e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 43
- OK converged final_rsq= 3.1e-19 (cf 1e-18) rel = 0 (cf 0) restarts = 1 iters= 8
+ OK converged final_rsq= 5.5e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 3.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 8
 TR_MidM_MidM: mass 5.000000e-02,  3.827106e-01 ( 1 of 1 )
  OK converged final_rsq= 1.3e-24 (cf 0) rel = 1.2e-11 (cf 1.6e-11) restarts = 1 iters= 55
  OK converged final_rsq= 1.3e-24 (cf 0) rel = 1.2e-11 (cf 1.6e-11) restarts = 1 iters= 7
