@@ -9,7 +9,13 @@
 /* QOP precision in this file is double unless explicitly declared single */
 #define QOP_Precision 2
 
-#ifndef SINGLE_FOR_DOUBLE
+/* Backward compatibility*/
+#ifdef SINGLE_FOR_DOUBLE
+#define HALF_MIXED
+#endif
+
+/* QOP supports only "single for double" */
+#if ! defined(HALF_MIXED) && ! defined(MAX_MIXED)
 
 /********************************************************************/
 /* This is the standard double-precision interface */
@@ -44,7 +50,7 @@
 // static const char *qop_prec[2] = {"F", "D"};
 // #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_D.c,v 1.3 2012/02/16 16:49:56 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_D.c,v 1.4 2012/04/25 04:00:47 detar Exp $";
 
 #if 1
 
@@ -72,6 +78,7 @@ create_qop_wilson_fermion_links( Real clov )
   QOP_GaugeField *links;
   QOP_wilson_coeffs_t coeffs;
   double remaptime;
+  double mflops = 0.;
 
   /* Load coeffs structure */
   load_qop_wilson_coeffs(&coeffs, clov);
@@ -90,8 +97,10 @@ create_qop_wilson_fermion_links( Real clov )
 #ifdef REMAP
   node0_printf("FLREMAP:  time = %e\n",remaptime);
 #endif
+  if(info.final_sec > 0)
+    mflops = (Real)info.final_flop/(1e6*info.final_sec);
   node0_printf("FLTIME:  time = %e (cl_qop) terms = 1 mflops = %e\n",
-	       info.final_sec, (Real)info.final_flop/(1e6*info.final_sec) );
+	       info.final_sec, mflops );
 #endif
   return qop_links;
 }
@@ -510,13 +519,19 @@ bicgilu_cl_qop_single_for_double( QOP_FermionLinksWilson *qop_links,
 
 
     /* Solve in single precision */
+    double dtime = -dclock();
+    info_F.final_flop = 0.;
     iters_F = bicgilu_cl_qop_generic_F( &info_F, qop_links_F, 
 	  &qop_invert_arg, qop_resid_arg_F, kappas, nkappa, qop_sol_F, 
 	  qop_rhs_F, nsrc, &final_restart_F, &final_rsq_F, &final_relrsq_F );
+    dtime += dclock();
 
 #ifdef CG_DEBUG
     node0_printf("%s: single precision iters = %d status %d final_rsq %.2e wanted %2e final_rel %.2e wanted %.2e\n",
 		 myname, iters_F, info_F.status, final_rsq_F, resid_F * resid_F, final_relrsq_F, rel_F);
+    node0_printf("time = %g flops = %e mflops = %g\n", dtime, info_F.final_flop, 
+		 info_F.final_flop/(1.0e6*dtime) );
+    fflush(stdout);
 #endif
 
     /* Add single-precision result to double precision solution (with rescaling) */
