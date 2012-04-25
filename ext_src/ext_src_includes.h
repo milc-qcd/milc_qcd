@@ -49,10 +49,6 @@ void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
 				quark_source_sink_op *snk_qs_op, int snk_gam,
 				int dst_type);
 
-/* ext_src.c */
-int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
-void spectrum_cl(wilson_prop_field qp0, wilson_prop_field qp1, int pair);
-
 /* ks_source_info.c */
 char *create_kss_XML(char *filename, quark_source *ksqs);
 void free_kss_XML(char *xml);
