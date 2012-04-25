@@ -14,6 +14,7 @@
 
 typedef struct {
   link_phase_info_t *phase;
+  int al_F_allocated;
   QOP_F3_FermionLinksAsqtad *al_F;
   QOP_D3_FermionLinksAsqtad *al_D;
   /* Derived, read-only values extracted from al_F or al_D if needed: */
@@ -31,5 +32,6 @@ void destroy_fn_links_qop(fn_links_qop_t *fn);
 
 QOP_F3_FermionLinksAsqtad *get_F_asqtad_links(fn_links_qop_t *fn);
 QOP_D3_FermionLinksAsqtad *get_D_asqtad_links(fn_links_qop_t *fn);
+void free_fn_links_qop(fn_links_qop_t *fn);
 
 #endif /* _FN_LINKS_QOP_H */

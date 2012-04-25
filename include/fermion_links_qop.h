@@ -28,6 +28,7 @@
        QOP_asqtad_coeffs_t *ac;
        fn_links_qop_t *fm
          link_phase_info_t *phase
+	 int al_F_allocated;
          QOP_F3_FermionLinksAsqtad al_F;
          QOP_D3_FermionLinksAsqtad al_D;
 
