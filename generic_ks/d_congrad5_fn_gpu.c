@@ -21,6 +21,11 @@
 static const char *prec_label[2] = {"F", "D"};
 #endif
 
+/* Backward compatibility*/
+#ifdef SINGLE_FOR_DOUBLE
+#define HALF_MIXED
+#endif
+
 // Note that the restart criterion used by QUDA is different from 
 // the restart criterion used by the MILC code
 int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest, 
@@ -97,6 +102,11 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 
   inv_args.max_iter = qic->max*qic->nrestart;
   inv_args.restart_tolerance = 1e-3;
+#if defined(MAX_MIXED) || defined(HALF_MIXED)
+  inv_args.mixed_precision = 1;
+#else
+  inv_args.mixed_precision = 0;
+#endif
 
   su3_matrix* fatlink = get_fatlinks(fn);
   su3_matrix* longlink = get_lnglinks(fn);
