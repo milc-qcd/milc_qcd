@@ -27,7 +27,7 @@
    (Square def for residue size_r = r*r) 
    */
 
-int bicgilu_cl_field(    /* Return value is number of iterations taken */
+int bicgilu_cl_field_cpu(    /* Return value is number of iterations taken */
     wilson_vector *src,  /* type wilson_vector (source vector - OVERWRITTEN!)*/
     wilson_vector *dest, /* type wilson_vector (answer and initial guess )*/
     quark_invert_control *qic, /* parameters controlling inversion */
