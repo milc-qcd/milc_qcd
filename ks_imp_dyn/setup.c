@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.18  2012/04/25 04:01:46  detar
+//  Initialize boundary phase
+//
 //  Revision 1.17  2011/11/30 01:17:50  detar
 //  Support new fermion links methodology.
 //
@@ -93,7 +96,7 @@ int
 setup()
 {
   int initial_set();
-  int prompt;
+  int prompt, dir;
   
   /* print banner, get volume, nflavors1,nflavors2, nflavors, seed */
   prompt = initial_set();
@@ -103,6 +106,9 @@ setup()
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
+  FORALLUPDIR(dir){
+    boundary_phase[dir] = 0.;
+  }
   /* Set pointers to NULL */
 //  init_ferm_links(&fn_links, &ks_act_paths);
 //  init_ferm_links(&fn_links_dmdu0, &ks_act_paths_dmdu0);
