@@ -18,12 +18,8 @@ quark_source_ops:        [
 { operation:             FUNNYWALL1
 }
 ]
-quark_sink_label:        d
-quark_sink_ops:          [
-{ operation:             FUNNYWALL1
-}
-]
-quark_mass:              "0.03"
+quark_sink_label:             d
+quark_mass:                   "0.03"
 ...
 ---
 correlator:              PION_5
@@ -118,11 +114,7 @@ quark_source_ops:        [
 }
 ]
 quark_sink_label:        d
-quark_sink_ops:          [
-{ operation:             FUNNYWALL2
-}
-]
-quark_mass:              "0.03"
+quark_mass:                   "0.03"
 ...
 ---
 correlator:              PION_05

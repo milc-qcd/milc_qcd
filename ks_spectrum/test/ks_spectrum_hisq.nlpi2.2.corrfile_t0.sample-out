@@ -19,13 +19,9 @@ quark_source_ops:        [
 { operation:             FUNNYWALL1
 }
 ]
-quark_sink_label:        d
-quark_sink_ops:          [
-{ operation:             FUNNYWALL1
-}
-]
-quark_mass:              "0.03"
-quark_epsilon:           0
+quark_sink_label:             d
+quark_mass:                   "0.03"
+quark_epsilon:                0
 ...
 ---
 correlator:              PION_5
@@ -100,31 +96,27 @@ correlator_key:          RHO_s_q_f1_d_d_m0.03_m0.03_p000
 4	3.777842e-03	-8.984840e-05
 5	5.821152e-01	5.747299e-04
 ---
-JobID:                   203696.kaon2.fnal.gov
-date:                    "Sat Jun 11 14:12:24 2011 UTC"
-lattice_size:            6,6,6,6
-antiquark_type:          staggered
-antiquark_source_type:   even_and_odd_wall
-antiquark_source_subset: full
-antiquark_source_t0:     0
-antiquark_source_label:  q
-antiquark_sink_label:    d
-antiquark_mass:          "0.03"
-antiquark_epsilon:       0
-quark_type:              staggered
-quark_source_type:       even_and_odd_wall/FUNNYWALL2
-quark_source_subset:     full
-quark_source_t0:         0
-quark_source_label:      f2
-quark_source_ops:        [
-{ operation:             FUNNYWALL2
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Wed Mar 21 20:25:12 2012 UTC"
+lattice_size:                 6,6,6,6
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         d
+antiquark_mass:               "0.03"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall/FUNNYWALL2
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           f2
+quark_source_ops:             [
+{ operation:                  FUNNYWALL2
 }
 ]
-quark_sink_label:        d
-quark_sink_ops:          [
-{ operation:             FUNNYWALL2
-}
-]
+quark_sink_label:             d
 quark_mass:              "0.03"
 quark_epsilon:           0
 ...

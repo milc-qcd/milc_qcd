@@ -52,6 +52,10 @@ quark_source_subset:     full
 quark_source_origin:     0 0 0 0
 quark_source_label:      d
 quark_sink_label:        EO
+quark_sink_ops:               [
+{ operation:                  even_and_odd_wall
+}
+]
 quark_mass:              "0.05"
 ...
 ---
@@ -122,6 +126,10 @@ quark_source_subset:     full
 quark_source_origin:     0 0 0 0
 quark_source_label:      d
 quark_sink_label:        EO
+quark_sink_ops:               [
+{ operation:                  even_and_odd_wall
+}
+]
 quark_mass:              "0.02"
 ...
 ---
@@ -192,6 +200,10 @@ quark_source_subset:     full
 quark_source_origin:     0 0 0 0
 quark_source_label:      d
 quark_sink_label:        EO
+quark_sink_ops:               [
+{ operation:                  even_and_odd_wall
+}
+]
 quark_mass:              "0.02"
 ...
 ---

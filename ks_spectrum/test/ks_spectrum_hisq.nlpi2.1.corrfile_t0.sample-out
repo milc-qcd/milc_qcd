@@ -1,31 +1,27 @@
 ---
-JobID:                   203696.kaon2.fnal.gov
-date:                    "Sat Jun 11 12:40:30 2011 UTC"
-lattice_size:            6,6,6,6
-antiquark_type:          staggered
-antiquark_source_type:   even_and_odd_wall
-antiquark_source_subset: full
-antiquark_source_t0:     0
-antiquark_source_label:  q
-antiquark_sink_label:    d
-antiquark_mass:          "0.03"
-antiquark_epsilon:       0
-quark_type:              staggered
-quark_source_type:       even_and_odd_wall/FUNNYWALL1
-quark_source_subset:     full
-quark_source_t0:         0
-quark_source_label:      f1
-quark_source_ops:        [
-{ operation:             FUNNYWALL1
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Wed Mar 21 20:23:18 2012 UTC"
+lattice_size:                 6,6,6,6
+antiquark_type:               staggered
+antiquark_source_type:        even_and_odd_wall
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       q
+antiquark_sink_label:         d
+antiquark_mass:               "0.03"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            even_and_odd_wall/FUNNYWALL1
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           f1
+quark_source_ops:             [
+{ operation:                  FUNNYWALL1
 }
 ]
-quark_sink_label:        d
-quark_sink_ops:          [
-{ operation:             FUNNYWALL1
-}
-]
-quark_mass:              "0.03"
-quark_epsilon:           0
+quark_sink_label:             d
+quark_mass:                   "0.03"
+quark_epsilon:                0
 ...
 ---
 correlator:              PION_5
@@ -120,13 +116,9 @@ quark_source_ops:        [
 { operation:             FUNNYWALL2
 }
 ]
-quark_sink_label:        d
-quark_sink_ops:          [
-{ operation:             FUNNYWALL2
-}
-]
-quark_mass:              "0.03"
-quark_epsilon:           0
+quark_sink_label:             d
+quark_mass:                   "0.03"
+quark_epsilon:                0
 ...
 ---
 correlator:              PION_05
