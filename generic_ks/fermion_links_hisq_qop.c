@@ -51,6 +51,19 @@ create_qop_hisq_ac_links_t(QOP_hisq_coeffs_t *ac, int precision,
   return hisq;
 }
 
+/* Unset copied pointers and free allocated fn link data */
+static void
+unset_qop_hisq_fn_links(qop_hisq_ac_links_t *hisq){
+  int i;
+  for(i = 0; i < hisq->ac->n_naiks; i++){
+    /* (We must first clear copied pointers to prevent double-freeing
+       allocated memory) */
+    unset_asqtad_links_from_hisq(hisq->fn[i]);
+  }
+
+  unset_asqtad_deps_links_from_hisq(hisq->fn_deps);
+}
+
 static void
 destroy_qop_hisq_ac_links_t(qop_hisq_ac_links_t *hisq){
 
@@ -69,6 +82,7 @@ destroy_qop_hisq_ac_links_t(qop_hisq_ac_links_t *hisq){
 
   unset_asqtad_deps_links_from_hisq(hisq->fn_deps);
   destroy_fn_links_qop(hisq->fn_deps);
+  hisq->fn_deps = NULL;
 
   destroy_hisq_links_qop(hisq->hl);
 
@@ -114,6 +128,7 @@ restore_qop_hisq_ac_links_t(qop_hisq_ac_links_t *hisq, int precision,
 
   /* Allocate and create the HISQ auxiliary links and the fn links */
 
+  unset_qop_hisq_fn_links(hisq);
   destroy_hisq_links_qop(hisq->hl);
   hisq->hl = create_hisq_links_qop(hisq->ac, precision, links, options->want_deps,
 				   options->want_aux);
