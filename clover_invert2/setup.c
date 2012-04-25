@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.11  2012/04/25 03:37:42  detar
+//  Initialize boundary_phase
+//
 //  Revision 1.10  2012/03/06 03:21:23  detar
 //  Select GPU inverter precision with input parameter
 //
@@ -44,6 +47,7 @@
 //#include "lattice_qdp.h"
 #include "quark_action.h"
 #include <string.h>
+#include <unistd.h>
 static int initial_set(void);
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_3n_gathers();
@@ -59,7 +63,7 @@ static double decode_factor(char *factor_op, double factor);
 static void broadcast_heap_params(void);
 
 int setup(void)   {
-  int prompt;
+  int prompt, dir;
 
   /* print banner, get volume */
   prompt=initial_set();
@@ -71,6 +75,9 @@ int setup(void)   {
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
+  FORALLUPDIR(dir){
+    boundary_phase[dir] = 0.;
+  }
   /* set up nearest neighbor gathers */
   make_nn_gathers();
   /* set up 3rd nearest neighbor pointers and comlink structures
