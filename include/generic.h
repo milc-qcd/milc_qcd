@@ -384,6 +384,7 @@ void init_qs(quark_source *qs);
 void alloc_cached_c_source(quark_source *qs);
 void alloc_cached_v_source(quark_source *qs);
 void alloc_cached_wv_source(quark_source *qs);
+int ask_starting_source( FILE *fp, int prompt, int *flag, char *filename );
 complex *get_cached_c_source(quark_source *qs);
 su3_vector *get_cached_v_source(quark_source *qs);
 wilson_vector *get_cached_wv_source(quark_source *qs);
