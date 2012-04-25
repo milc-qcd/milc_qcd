@@ -10,6 +10,9 @@
 /* Modifications ... */
    
 //  $Log: control.c,v $
+//  Revision 1.4  2012/04/25 03:23:21  detar
+//  Fix rephase flag
+//
 //  Revision 1.3  2012/01/21 21:34:36  detar
 //  Move start time to beginning.  Remake APE links after gauge fixing.
 //
@@ -108,8 +111,10 @@ int main(int argc, char *argv[])
     
     /* save lattice if requested */
     if( param.saveflag != FORGET ){
+      rephase( OFF );
       savelat_p = save_lattice( param.saveflag, param.savefile, 
 				param.stringLFN );
+      rephase( ON );
     }
 
     if(this_node==0)printf("END OF HEADER\n");
