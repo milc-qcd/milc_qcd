@@ -51,7 +51,7 @@ char *create_ks_XML(void)
 {
   char *xml;
   char *ac_str = get_action_parameter_string(fn_links);
-  char bc[] = "antiperiodic";
+  char bc[] = "antiperiodic";  /* NEEDS FIXING!!! */
 
   xml = (char *)malloc(MAX_XML);
   
