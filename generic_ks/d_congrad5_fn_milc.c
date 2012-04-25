@@ -71,7 +71,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
   double actual_rsq = 999.;      /* rsq from actual summation of resid */
   double c_tr,c_tt,tempsum[4];	/* Re<resid|ttt>, <ttt|ttt> */
 #endif
-  double rsq = 0,relrsq = 0; /* resid**2, rel resid*2 */
+  double rsq = 0,relrsq = 1.; /* resid**2, rel resid*2 */
   double oldrsq,pkp;	/*last resid*2,pkp = cg_p.K.cg_p */
   Real msq_x4;	/* 4*mass*mass */
   double source_norm;	/* squared magnitude of source vector */
@@ -136,7 +136,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
   nrestart = 0;
   iteration = 0;
   qic->size_r = 0;
-  qic->size_relr = 0;
+  qic->size_relr = 1.;
   qic->final_iters   = 0;
   qic->final_restart = 0;
   qic->converged     = 1;
@@ -156,7 +156,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
   if(this_node==0){
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
 	   dtimec, prec_label[PRECISION-1], qic->final_iters, 
-	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
+   ((double)nflop*volume*qic->final_iters)/(1.0e6*dtimec*numnodes()) );
     fflush(stdout);}
 #endif
 
