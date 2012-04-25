@@ -438,20 +438,6 @@ uLong crc32(uLong crc, const unsigned char *buf, size_t len)
   return crc ^ 0xffffffffL;
 }
 
-/*------------------------------------------------------------------*/
-/* Is this a big endian architecture? Return 1 or 0. */
-int big_endian(void)
-{
-  union {
-    int  l;
-    char c[sizeof(int)];
-  } u;
-  u.l = 1;
-
-  return (u.c[sizeof(int)-1] == 1 ? 1 : 0); 
-}
-
-
 /*----------------------------------------------------------------------*/
 /* Factory function for the SciDAC reader.  Reads the data from the
    MILC v5 file in the order this function is called regardless of "index". */
