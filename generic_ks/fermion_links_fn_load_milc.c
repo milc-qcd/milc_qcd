@@ -275,11 +275,11 @@ load_fn_links(info_t *info, fn_links_t *fn, ks_action_paths *ap,
   double final_flop = 0;
   double dtime = -dclock();
 
-  fn->fat = create_fatlinks();
+  //  fn->fat = create_fatlinks();
   load_fatlinks(info, fn->fat, p, links);
   final_flop += info->final_flop;
 
-  fn->lng = create_lnglinks();
+  //  fn->lng = create_lnglinks();
   load_lnglinks(info, fn->lng, p, links);
   final_flop += info->final_flop;
 
