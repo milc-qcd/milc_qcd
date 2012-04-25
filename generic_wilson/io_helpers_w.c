@@ -422,6 +422,7 @@ reload_wprop_sc_to_field( int flag, w_prop_file *wpf,
     }
     break;
   case RELOAD_PARALLEL:
+    file_type = wpf->file_type;
 #ifdef HAVE_QIO
     if(file_type == FILE_TYPE_W_USQCD_C1D12 ||
        file_type == FILE_TYPE_W_USQCD_DD_PAIRS ||
