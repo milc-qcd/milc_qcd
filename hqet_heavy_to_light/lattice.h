@@ -231,6 +231,7 @@ EXTERN char ** gen_pt[N_POINTERS];
 
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
+EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 #endif /* _LATTICE_H */

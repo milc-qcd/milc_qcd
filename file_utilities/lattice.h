@@ -48,6 +48,7 @@ struct site {
 };
 typedef struct site site;
 
+EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;

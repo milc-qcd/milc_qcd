@@ -1,7 +1,7 @@
 #ifndef _LATTICE_H
 #define _LATTICE_H
 /****************************** lattice_w.h ********************************/
-/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.11 2011/11/29 19:07:09 detar Exp $   **/
+/** $Header: /lqcdproj/detar/cvsroot/milc_qcd/wilson_static/lattice.h,v 1.12 2012/04/25 03:20:09 detar Exp $   **/
 /* include file for MIMD heavy-light, version 4
    This file defines global scalars and the fields in the lattice. */
 
@@ -171,6 +171,7 @@ EXTERN char ** gen_pt[N_POINTERS];
 
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
+EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 /* Storage for the clover term */

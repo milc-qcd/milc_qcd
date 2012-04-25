@@ -112,6 +112,7 @@ EXTERN  double_prn node_prn ;
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
+EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;

@@ -156,6 +156,7 @@ EXTERN gauge_file *savelat_p;
 
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
+EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 /* Vectors for addressing */

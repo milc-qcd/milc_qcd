@@ -155,6 +155,7 @@ EXTERN  char hostname[128];
 
 /* The lattice is a single global variable - (actually this is the
    part of the lattice on this node) */
+EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
 EXTERN su3_matrix *ape_links;  /* Not used in this application */
