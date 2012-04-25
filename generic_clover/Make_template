@@ -11,6 +11,7 @@
 G_CLOVER_ALL = \
     cl_solver_utilites.o \
     d_bicgilu_cl.o \
+    d_bicgilu_cl_gpu.o \
     d_bicgilu_cl_qop.o \
     d_bicgilu_cl_qop_D.o \
     d_bicgilu_cl_qop_F.o \
@@ -46,6 +47,8 @@ ${G_CLOVER_ALL} : ${G_CLOVER_ALL_DEPEND}
 cl_solver_utilities.o: ../generic_clover/cl_solver_utilities.c
 	${CC} -c ${CFLAGS} $<
 d_bicgilu_cl.o: ../generic_clover/d_bicgilu_cl.c
+	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_gpu.o: ../generic_clover/d_bicgilu_cl_gpu.c
 	${CC} -c ${CFLAGS} $<
 d_bicgilu_cl_qop.o: ../generic_clover/d_bicgilu_cl_qop.c
 	${CC} -c ${CFLAGS} $<
