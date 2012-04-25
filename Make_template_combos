@@ -312,7 +312,18 @@ endif
   CONGRAD_CL_QOP = d_bicgilu_cl_qop.o  d_bicgilu_cl_qop_D.o d_bicgilu_cl_qop_F.o \
       ${CONGRAD_CL_BASE}
 
-  CONGRAD_CL_MILC = d_bicgilu_cl.o ${CONGRAD_CL_BASE}
+# Standard MILC combinations
+  CONGRAD_CL_MILC_CPU = d_bicgilu_cl.o ${CONGRAD_CL_BASE}
+  
+# GPU support 
+  CONGRAD_CL_MILC_GPU = d_bicgilu_cl_gpu.o ${CONGRAD_CL_BASE}
+
+ifeq ($(strip ${HAVE_CL_GPU}),true)
+  CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_GPU}
+else
+  CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_CPU}
+endif
+
 
 ######################################################################
 # Gauge force routines
