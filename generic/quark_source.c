@@ -61,6 +61,7 @@
      alloc_cached_c_source
      alloc_cached_v_source
      alloc_cached_wv_source
+     ask_starting_quark_source
      get_cached_c_source
      get_cached_v_source
      get_cached_wv_source
@@ -419,8 +420,8 @@ static void point_source(complex *src, int x0, int y0, int z0, int t0){
 /*--------------------------------------------------------------------*/
 /* Build color-vector-field sources */
 /*--------------------------------------------------------------------*/
-/* Generate a random color vector, each component of which is a
-   complex U(1) number z = \exp(i\phi) with random \phi. */
+/* Generate a random color vector, each component of which is orthogonal
+   to the other and has variance 1/3 */
 
 static void random_color_wall(su3_vector *v, int t0){
   int i,jc;
@@ -1210,7 +1211,7 @@ static char *decode_mask(int mask){
     return "??";
 }
 
-static int ask_starting_source( FILE *fp, int prompt, int *flag, char *filename ){
+int ask_starting_source( FILE *fp, int prompt, int *flag, char *filename ){
   char *savebuf;
   int status;
   char myname[] = "ask_starting_source";
@@ -1389,7 +1390,7 @@ int get_wv_quark_source(FILE *fp, int prompt, quark_source *qs){
     else if ( source_type == DIRAC_FIELD_FILE ){
       //      IF_OK status += get_i(fp, prompt, "t0", &qs->t0);
       IF_OK status += get_vi(fp, prompt, "origin", source_loc, 4);
-      IF_OK status += get_s(fp, prompt, "load_source", source_file);
+      IF_OK status += ask_starting_source(fp, prompt, &qs->sourceflag, source_file);
       IF_OK status += get_i(fp, prompt, "nsource", &(qs->nsource));
       IF_OK {
 	int ncolor = convert_ksource_to_color(qs->nsource);
@@ -1410,7 +1411,7 @@ int get_wv_quark_source(FILE *fp, int prompt, quark_source *qs){
     else if ( source_type == DIRAC_FIELD_FM_FILE ){
       //      IF_OK status += get_i(fp, prompt, "t0", &qs->t0);
       IF_OK status += get_vi(fp, prompt, "origin", source_loc, 4);
-      IF_OK status += get_s(fp, prompt, "load_source", source_file);
+      IF_OK status += ask_starting_source(fp, prompt, &qs->sourceflag, source_file);
       IF_OK status += get_vi(fp, prompt, "momentum", qs->mom, 3);
       strcpy(qs->source_file,source_file);
       qs->nsource = 12;  /* Required */
