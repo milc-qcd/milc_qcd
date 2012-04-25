@@ -207,6 +207,7 @@ endif
 # 14. GPU/QUDA Options
 
 WANTQUDA    = #true
+WANT_CL_BCG_GPU = #true
 WANT_FN_CG_GPU = #true
 WANT_FL_GPU = #true
 WANT_FF_GPU = #true
@@ -223,6 +224,11 @@ ifeq ($(strip ${WANTQUDA}),true)
   LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
+
+  ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
+    HAVE_CL_GPU = true
+    CGPU += -DUSE_CL_GPU
+  endif
 
   ifeq ($(strip ${WANT_FN_CG_GPU}),true)
     HAVE_FN_CG_GPU = true
@@ -450,7 +456,11 @@ CPREFETCH = #
 # KS_MULTICG=REVERSE Iterate in reverse order
 # KS_MULTICG=REVHYB  Same as HYBRID but with vectors in reverse order.
 
-KSCGMULTI = -DKS_MULTICG=HYBRID
+# HALF_MIXED         If PRECISION=2, do multimass solve in single precision
+#                    and single-mass refinements in double
+# NO_REFINE          No refinements except for masses with nonzero Naik eps
+
+KSCGMULTI = -DKS_MULTICG=HYBRID -DHALF_MIXED # -DNO_REFINE
 
 #------------------------------
 # Multifermion force routines
@@ -513,7 +523,8 @@ KSSHIFT = # -DONE_SIDED_SHIFT
 # CL_CG=MR    Minimum residue
 # CL_CG=HOP   Hopping
 
-# SINGLE_FOR_DOUBLE Do mixed precision inversion to get double precision result
+# HALF_MIXED  Do double-precision inversion with single, or single with half (if supported)
+# MAX_MIXED   Do double-precision inversion with half-precision (if supported)
 # SCALE_PROP  Do rescaling for the clover propagator
 
 CLCG = -DCL_CG=BICG 
