@@ -113,13 +113,9 @@ set_asqtad_links_from_hisq(fn_links_qop_t *fn, hisq_links_qop_t *hl, int i){
 
   if(hl->hl_F != NULL)
     fn->al_F = QOP_F3_get_asqtad_links_from_hisq(hl->hl_F)[i];
-  else
-    fn->al_F = NULL;
 
   if(hl->hl_D != NULL)
     fn->al_D = QOP_D3_get_asqtad_links_from_hisq(hl->hl_D)[i];
-  else
-    fn->al_D = NULL;
 
   /* The global hl phase information has to be copied into fn, because
      there are multiple, independent fn links. */
@@ -135,6 +131,7 @@ unset_asqtad_links_from_hisq(fn_links_qop_t *fn){
 
   if(fn == NULL)return;
 
+  free_fn_links_qop(fn);
   fn->al_D = NULL;
   fn->al_F = NULL;
   destroy_link_phase_info(fn->phase);
