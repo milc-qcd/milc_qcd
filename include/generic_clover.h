@@ -23,12 +23,25 @@ int bicgilu_cl_site(     /* Return value is number of iterations taken */
     void *dmp            /* parameters defining the Dirac matrix */
     );
 
-int bicgilu_cl_field(    /* Return value is number of iterations taken */
+int bicgilu_cl_field_cpu(    /* Return value is number of iterations taken */
     wilson_vector *src,  /* type wilson_vector (source vector - OVERWRITTEN!)*/
     wilson_vector *dest, /* type wilson_vector (answer and initial guess )*/
     quark_invert_control *qic, /* parameters controlling inversion */
     void *dmp            /* parameters defining the Dirac matrix */
     );
+
+int bicgilu_cl_field_gpu(    /* Return value is number of iterations taken */
+    wilson_vector *src,  /* type wilson_vector (source vector - OVERWRITTEN!)*/
+    wilson_vector *dest, /* type wilson_vector (answer and initial guess )*/
+    quark_invert_control *qic, /* parameters controlling inversion */
+    void *dmp            /* parameters defining the Dirac matrix */
+    );
+
+#ifdef USE_CL_GPU
+#define bicgilu_cl_field bicgilu_cl_field_gpu
+#else
+#define bicgilu_cl_field bicgilu_cl_field_cpu
+#endif
 
 int bicgilu_w_site(       /* Return value is number of iterations taken */
     field_offset src,    /* type wilson_vector (source vector - OVERWRITTEN!)*/
