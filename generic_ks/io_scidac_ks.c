@@ -53,7 +53,13 @@ int save_ks_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
 
   recxml = QIO_string_create();
   QIO_string_set(recxml, recinfo);
+  if(PRECISION == 1)
+    status = write_F3_V_from_field(outfile, recxml, src, count);
+  else
+    status = write_D3_V_from_field(outfile, recxml, src, count); 
+
   status = write_F3_V_from_field(outfile, recxml, src, count);
+
   QIO_string_destroy(recxml);
   if(status != QIO_SUCCESS)return status;
   
@@ -466,7 +472,11 @@ int write_ksprop_usqcd_c(QIO_Writer *outfile, su3_vector *src,
   QIO_encode_usqcd_ksproprecord_info(recxml, proprecord_info);
   QIO_destroy_usqcd_ksproprecord_info(proprecord_info);
 
-  status = write_F3_V_from_field(outfile, recxml, src, 1);
+  if(PRECISION == 1)
+    status = write_F3_V_from_field(outfile, recxml, src, 1);
+  else
+    status = write_D3_V_from_field(outfile, recxml, src, 1);
+
   QIO_string_destroy(recxml);
   return status;
 }
