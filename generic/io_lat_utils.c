@@ -1260,7 +1260,7 @@ int read_gauge_hdr(gauge_file *gf, int parallel)
   QCDheader *hdr = NULL;
   int dims[4];
   int ARCHYES=0;
-  u_int32type chksum;
+  u_int32type chksum = 0;
   char *datatype;
   char *floatpt;
 
