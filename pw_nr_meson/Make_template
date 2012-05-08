@@ -179,7 +179,7 @@ OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_WILSON_OBJECTS} \
 P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
-LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
 
 # Default rule for C compilation
 .c.o:
