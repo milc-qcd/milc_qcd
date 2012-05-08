@@ -344,6 +344,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
 		      mass, jpbp_reps, npbp_reps);
 #endif
 
+#ifdef TR_MM_INV
       if(npbp_reps > 1){
 	su3_vector *MM_inv_gr = create_v_field();
 	double pbp_pbp = 0.0;
@@ -358,7 +359,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
 		     pbp_pbp, jpbp_reps+1, npbp_reps);
 	destroy_v_field(MM_inv_gr);
       }
-
+#endif
       destroy_v_field(M_inv_gr); M_inv_gr = NULL;
 
 #ifdef CHEM_POT
@@ -618,6 +619,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
 		      mass[j], jpbp_reps, npbp_reps);
 #endif
       
+#ifdef TR_MM_INV
       if(npbp_reps > 1){
 	su3_vector *MM_inv_gr = create_v_field();
 	double pbp_pbp = 0.0;
@@ -632,7 +634,7 @@ void f_meas_imp_multi( int n_masses, int npbp_reps, quark_invert_control *qic,
 		     pbp_pbp, jpbp_reps+1, npbp_reps);
 	destroy_v_field(MM_inv_gr); MM_inv_gr = NULL;
       }
-      
+#endif
       destroy_v_field(M_inv_gr[j]); M_inv_gr[j] = NULL;
       
 #ifdef CHEM_POT
