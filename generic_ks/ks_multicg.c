@@ -177,8 +177,8 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
 {
   int i,multi_iters=0,iters=0;
 
-#ifdef HALF_MIXED
-  /* Do multicg in single precision */
+#if defined(HALF_MIXED) && !defined(USE_CG_GPU)
+  /* Do multicg in single precision.  (The GPU routine does this automatically for HALF_MIXED) */
   int prec_save = qic[0].prec;
   qic[0].prec = 1;
 #endif
@@ -188,7 +188,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
     ks_multicg_offset_field( src, psim, ksp, num_offsets, qic, fn_multi[0]);
   report_status(qic+0);
 
-#ifdef HALF_MIXED
+#if defined(HALF_MIXED) && !defined(USE_CG_GPU)
   qic[0].prec = prec_save;
 #endif
 
