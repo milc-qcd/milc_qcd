@@ -724,7 +724,7 @@ void u3_unit_der_rational( su3_matrix *V, su3_tensor4 *dwdv, su3_tensor4 *dwdagd
   int i, j, l, p, q, r, s;
   su3_matrix Kl[ U3_UNIT_RAT_NTERMS ]; // store intermediate inverted matrices
   su3_matrix Vdag, H, T, X;
-  su3_tensor4 A4, B4;
+  su3_tensor4 B4;
   complex ftmp, ftmp2, ftmp3, ftmp4;
 
   /* adjoint, needed later */
@@ -750,8 +750,6 @@ void u3_unit_der_rational( su3_matrix *V, su3_tensor4 *dwdv, su3_tensor4 *dwdagd
     for( r=0; r<3; r++) {
       for( s=0; s<3; s++) {
         for( q=0; q<3; q++) {
-          (A4.t4[p][r][s][q]).real = 0.0;
-          (A4.t4[p][r][s][q]).imag = 0.0;
           (B4.t4[p][r][s][q]).real = 0.0;
           (B4.t4[p][r][s][q]).imag = 0.0;
         }
@@ -837,7 +835,7 @@ void u3_unitarize_analytic( info_t *info, su3_matrix *V, su3_matrix *W ) {
   Real g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
 #else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   double Ve[3][3][2],Qe[3][3][2],Q2e[3][3][2],Q3e[3][3][2],S2e[3][3][2];
-  double c0, c1, c2, S, S3, R, R2, CQ3, RoS, theta, theta3, pi23, denom;
+  double c0, c1, c2, S, S3, R, RoS, theta, theta3, pi23, denom;
   double g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
 #endif /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
 
@@ -988,8 +986,6 @@ void u3_unitarize_analytic( info_t *info, su3_matrix *V, su3_matrix *W ) {
   }
   else {
     R = c2/2 - c0 * (c1/3) + c0 * c0 * (c0/27);
-    R2 = R*R;
-    CQ3 = S*S*S;
     S = sqrt(S);
     S3 = S*S*S;
     /* treat possible underflow: R/S^3/2>1.0 leads to acos giving NaN */
@@ -1216,7 +1212,7 @@ void u3_unitarize_analytic( info_t *info, su3_matrix *V, su3_matrix *W ) {
 /* Analytic unitarization, Hasenfratz, Hoffmann, Schaefer, JHEP05 (2007) 029 */
 void u3_unitarize_analytic_index( su3_matrix *V, su3_matrix *W, int index_site, int index_dir ) {
   su3_matrix Q, Q2, Q3, S1, S2;
-  Real c0, c1, c2, S, S3, R, R2, CQ3, RoS, theta, theta3, pi23, denom;
+  Real c0, c1, c2, S, S3, R, RoS, theta, theta3, pi23, denom;
   Real g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
   int i, j;
 
@@ -1244,8 +1240,6 @@ void u3_unitarize_analytic_index( su3_matrix *V, su3_matrix *W, int index_site, 
   }
   else {
     R = c2/2 - c0 * (c1/3) + c0 * c0 * (c0/27);
-    R2 = R*R;
-    CQ3 = S*S*S;
     S = sqrt(S);
     S3 = S*S*S;
     /* treat possible underflow: R/S^3/2>1.0 leads to acos giving NaN */
@@ -1390,7 +1384,7 @@ void u3_unit_der_analytic( info_t *info, su3_matrix *V, su3_tensor4 *dwdv,
 #ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   su3_matrix Q, Q2, Q3, S1, S2, W, Q12;
   su3_matrix VVd, VQ, QVd, QQVd, VQQ, VQVd, PVd, RVd, SVd, Vd;
-  Real c0, c1, c2, S, S3, RoS, R, R2, CQ3, theta, theta3, pi23, denom;
+  Real c0, c1, c2, S, S3, RoS, R, theta, theta3, pi23, denom;
   Real g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
   Real u2, u3, u4, u5, u6, u7, u8, v2, v3, v4, v5, v6, w2, w3, w4, w5;
   Real b00, b01, b02, b11, b12, b22, denom3;
@@ -1401,7 +1395,7 @@ void u3_unit_der_analytic( info_t *info, su3_matrix *V, su3_tensor4 *dwdv,
   double VVde[3][3][2], VQe[3][3][2], QVde[3][3][2], QQVde[3][3][2];
   double VQQe[3][3][2], VQVde[3][3][2], PVde[3][3][2], RVde[3][3][2];
   double SVde[3][3][2], Vde[3][3][2];
-  double c0, c1, c2, S, S3, RoS, R, R2, CQ3, theta, theta3, pi23, denom;
+  double c0, c1, c2, S, S3, RoS, R, theta, theta3, pi23, denom;
   double g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
   double u2, u3, u4, u5, u6, u7, u8, v2, v3, v4, v5, v6, w2, w3, w4, w5;
   double b00, b01, b02, b11, b12, b22, denom3;
@@ -1563,8 +1557,6 @@ void u3_unit_der_analytic( info_t *info, su3_matrix *V, su3_tensor4 *dwdv,
   }
   else {
     R = c2/2 - c0 * (c1/3) + c0 * c0 * (c0/27); // +8 flops
-    R2 = R*R;
-    CQ3 = S*S*S;
     S = sqrt(S);
     S3 = S*S*S;
     // +6 flops (sqrt counted as 1 flop)
@@ -2230,7 +2222,7 @@ int svd3x3(double A[3][3][2], double *sigma, double U[3][3][2],
   double UO2[2][2], VO2[2][2];
   register double a, b, c, d, factor, norm, min, max, taure, tauim, beta;
   register double m11, m12, m22, dm, lambdamax, cosphi, sinphi, tanphi, cotphi;
-  register int i, j, iter;
+  register int i, iter;
   size_t nflops = 0;
 
   /* format of external matrices A, U and V can be arbitrary,
@@ -2250,7 +2242,7 @@ int svd3x3(double A[3][3][2], double *sigma, double U[3][3][2],
   Ad[2][2][0]=(double)A22re; Ad[2][2][1]=(double)A22im;
 
 
-  i=0; j=0;
+  i=0;
 
   /* *** Step 1: build first left reflector v,
                  calculate first left rotation U1,
@@ -2495,11 +2487,14 @@ for(i=0;i<3;i++) {
 
   }
 #ifdef SVD3x3_DEBUG
-printf("Left unitary matrix U1:\n");
+  {
+    int j;
+    printf("Left unitary matrix U1:\n");
     for(i=0;i<3;i++)for(j=0;j<3;j++) {
-      printf( "U1[%d][%d].re=%26.18e  U1[%d][%d].im=%26.18e\n",
-              i, j, U1[i][j][0], i, j, U1[i][j][1] );
-    }
+	printf( "U1[%d][%d].re=%26.18e  U1[%d][%d].im=%26.18e\n",
+		i, j, U1[i][j][0], i, j, U1[i][j][1] );
+      }
+  }
 #endif /* SVD3x3_DEBUG */
 
 

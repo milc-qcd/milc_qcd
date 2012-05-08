@@ -45,7 +45,7 @@ get_fs_from_Qs( complex f[3], su3_matrix *Q, su3_matrix *QQ){
   Real c0abs, c0max, theta;
   Real eps, sqtwo = sqrt(2.);
   Real u, w, u_sq, w_sq, xi0;
-  Real cosu, sinu, cosw, sinw, sin2u, cos2u, ucosu, usinu, ucos2u, usin2u;
+  Real cosu, sinu, cosw, sin2u, cos2u, ucosu, usinu, ucos2u, usin2u;
   Real denom, subexp1, subexp2, subexp3, subexp;
 
   mult_su3_nn ( Q, QQ, &QQQ );
@@ -180,7 +180,6 @@ get_fs_from_Qs( complex f[3], su3_matrix *Q, su3_matrix *QQ){
       cosu = cos(u);
       sinu = sin(u);
       cosw = cos(w);
-      sinw = sin(w);
       sin2u = sin(2*u);
       cos2u = cos(2*u);
       ucosu = u*cosu;

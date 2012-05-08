@@ -256,7 +256,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			     fn_links_t *fn ){
   register int i;
   register site *s;
-  register int dir,otherparity;
+  register int dir;
   register su3_matrix *fat4, *long4, *fatback4, *longback4;
   su3_vector tvec;
   su3_matrix *t_fatlink;
@@ -278,13 +278,6 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
   t_fatbacklink = get_fatbacklinks(fn);
   t_longbacklink = get_lngbacklinks(fn);
 
-  switch(parity)
-    {
-    case EVEN:	otherparity=ODD; break;
-    case ODD:	otherparity=EVEN; break;
-    case EVENANDODD:	otherparity=EVENANDODD; break;
-    }
-  
 #ifdef D_FN_GATHER13
   /* Start gathers from positive directions, first and third
      neighbors */

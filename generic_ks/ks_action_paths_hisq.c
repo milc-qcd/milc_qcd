@@ -211,14 +211,6 @@ void load_act_path_coeff_hisq(ks_action_paths_hisq *ap, int n_naiks,
 int make_path_table_hisq(ks_action_paths_hisq *ap,
 			 int n_naiks, double *eps_naik) {
 
-  int index_naik = -1, index_onelink = -1;
-
-#ifdef INDEX_NAIK
-  index_naik = INDEX_NAIK;
-  index_onelink = INDEX_ONELINK;
-#endif
-
-
   if(ap->constructed) return 0;
 
   load_act_path_coeff_hisq(ap, n_naiks, eps_naik);

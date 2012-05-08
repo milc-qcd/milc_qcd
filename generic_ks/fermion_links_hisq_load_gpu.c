@@ -22,8 +22,6 @@ load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap,
 {
   char myname[] = "load_hisq_aux_links_gpu";
   
-  printf("Calling load_hisq_aux_links\n");
-
   if(ap == NULL){
     printf("%s(%d): KS action paths not initialized\n", myname, this_node);
   }

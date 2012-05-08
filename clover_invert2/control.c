@@ -18,6 +18,9 @@
 #define CONTROL
 #include "cl_inv_includes.h"
 #include <string.h>
+#ifdef HAVE_QUDA
+#include <quda_milc_interface.h>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -410,6 +413,10 @@ int main(int argc, char *argv[])
     fn_links = NULL;
 
   } /* readin(prompt) */
+
+#ifdef HAVE_QUDA
+  qudaFinalize();
+#endif
 
   return 0;
 }

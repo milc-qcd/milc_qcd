@@ -358,7 +358,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
   su3_tensor4 dydv, dydagdv, dwdv, dwdagdv;
   su3_matrix force_tmp;
   int m, n, l;
-  complex force, ftmp;
+  complex ftmp;
   int inaik, n_naik_shift;
   int aux_stride = 4;
   size_t nflops = 0;
@@ -786,8 +786,6 @@ dumpmat( &(W_unitlink[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
 	clear_su3mat( &force_tmp );
 	for( m=0; m<3; m++) {
 	  for( n=0; n<3; n++) {
-	    force.real=0.0;
-	    force.imag=0.0;
 	    for( k=0; k<3; k++) {
 	      for( l=0; l<3; l++) {
 		CMUL( dwdv.t4[k][m][n][l], force_accum_2[dir][i].e[l][k], 
@@ -1406,7 +1404,7 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
   register int i,k;
   int dir;
   su3_matrix tmat;
-  Real ferm_epsilon, coeff;
+  Real coeff;
   size_t nflops = 0;
 
   msg_tag *mtag[2];
@@ -1450,8 +1448,6 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
   mat_tmp0 = (su3_matrix *) special_alloc(sites_on_node*sizeof(su3_matrix) );
   if( mat_tmp0 == NULL ){printf("Node %d NO ROOM\n",this_node); exit(0); }
 
-
-  ferm_epsilon = 2.0*eps; // we only do forward paths, gives factor of 2
 
 
   // clear force accumulators
@@ -1574,16 +1570,15 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
   /* For each link we need multi_x transported from both ends of path. */
   register int i,j,k,lastdir=-99,ipath,ilink;
   int length,dir,odir;
-  Real ferm_epsilon, coeff;
+  Real coeff;
   Q_path *this_path;	// pointer to current path
-  Q_path *last_path;	// pointer to previous path
   msg_tag *mtag[2];
   su3_matrix *mat_tmp0;
   su3_matrix *mat_tmp1;
   anti_hermitmat *ahmat_tmp;
   su3_matrix *oprod_along_path[MAX_PATH_LENGTH+1]; // length N path has N+1 sites!!
   su3_matrix *mats_along_path[MAX_PATH_LENGTH+1]; // 
-  int netbackdir, last_netbackdir;	// backwards direction for entire path
+  int netbackdir;	// backwards direction for entire path
   int aux_stride = 4;
   size_t nflops = 0;
 
@@ -1606,8 +1601,6 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
     special_alloc(sites_on_node*sizeof(anti_hermitmat) );
 
 	
-  ferm_epsilon = 2.0*eps; // we only do forward paths, gives factor of 2
-
 
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_FF_DEBUG
@@ -1640,8 +1633,6 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
     FORALLFIELDSITES(i)clear_su3mat( &(force_accum[dir][i]) );
 
   /* loop over paths, and loop over links in path */
-  last_netbackdir = NODIR;
-  last_path = NULL;
   for( ipath=0; ipath<internal_num_q_paths; ipath++ ){
     this_path = &(internal_q_paths_sorted[ipath]);
     if(this_path->forwback== -1)continue;	/* skip backwards dslash */
@@ -1806,7 +1797,7 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
   su3_matrix *internal_V_link = aux->V_link;
   su3_matrix *internal_Y_link = aux->Y_unitlink;
   int i, k, l, m, n, dir;
-  complex force, ftmp;
+  complex ftmp;
   su3_matrix tmat;
   su3_tensor4 dwdv, dwdagdv;
   su3_tensor4 dwdvs, dwdagdvs;
@@ -1877,8 +1868,6 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
       clear_su3mat( &( force_accum[dir][i] ) );
       for( m=0; m<3; m++) {
         for( n=0; n<3; n++) {
-          force.real=0.0;
-          force.imag=0.0;
           for( k=0; k<3; k++) {
             for( l=0; l<3; l++) {
               CMUL( dwdvs.t4[k][m][n][l], 
@@ -2295,7 +2284,7 @@ int
 sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths, 
 		  int num_back_dirs )
 {
-    int netdir,dir0,dir1,dir1tmp,thislength,num_new,i,j;
+    int netdir,dir0,dir1,dir1tmp,num_new,i,j;
 
     num_new=0; // number of paths in sorted table
     for( i=0; i<num_back_dirs; i++ ){ // loop over net_back_dirs
@@ -2304,7 +2293,6 @@ sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths,
 	  for( dir1=-1; dir1<=7; dir1++){ // NODIR, XUP ... TDOWN
 	    if( dir1==-1 )dir1tmp=NODIR; else dir1tmp=dir1;
 	    for( j=0; j<npaths; j++ ){ // pick out paths with right net displacement
-	    thislength = src_table[j].length;
 	        if( find_backwards_gather( &(src_table[j]) ) == netdir && 
 			src_table[j].dir[0]==dir0 &&
 			src_table[j].dir[1]==dir1tmp ){
