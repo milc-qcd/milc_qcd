@@ -10,6 +10,9 @@
 /* Modifications ... */
    
 //  $Log: control.c,v $
+//  Revision 1.3  2012/05/08 20:40:16  detar
+//  Call qudaFinalize to allow writing optimization file
+//
 //  Revision 1.2  2012/02/16 16:54:33  detar
 //  Print hisq_svd_counter diagnostics only from node 0
 //
@@ -21,6 +24,9 @@
 #define CONTROL
 #include "ks_measure_includes.h"
 #include <string.h>
+#ifdef HAVE_QUDA
+#include <quda_milc_interface.h>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -106,6 +112,10 @@ int main(int argc, char *argv[])
 #endif
     fn_links = NULL;
   } /* readin(prompt) */
+
+#ifdef HAVE_QUDA
+  qudaFinalize();
+#endif
 
   return 0;
 }
