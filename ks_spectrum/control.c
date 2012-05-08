@@ -10,6 +10,9 @@
 /* Modifications ... */
    
 //  $Log: control.c,v $
+//  Revision 1.5  2012/05/08 20:39:54  detar
+//  Call qudaFinalize to allow writing optimization file.
+//
 //  Revision 1.4  2012/04/25 03:23:21  detar
 //  Fix rephase flag
 //
@@ -27,6 +30,9 @@
 #define CONTROL
 #include "ks_spectrum_includes.h"
 #include <string.h>
+#ifdef HAVE_QUDA
+#include <quda_milc_interface.h>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -148,9 +154,9 @@ int main(int argc, char *argv[])
 			       param.src_qs[k].descrp,
 			       (double)param.qic[i].resid,
 			       (double)param.qic[i].relresid);
-
+	
       }
-
+      
       /* We pass the beginning addresses of the set data */
       
       total_iters += solve_ksprop(num_prop,
@@ -165,13 +171,13 @@ int main(int argc, char *argv[])
 				  param.bdry_phase[i0],
 				  param.coord_origin,
 				  param.check[i0]);
-
+      
       clear_qs(&param.src_qs[k]);
-
+      
     } /* sets */
     ENDTIME("compute propagators");
-
-
+    
+    
     /*****************************************************************/
     /* Complete the quark propagators by applying the sink operators
        to either the raw propagator or by building on an existing quark
@@ -183,12 +189,12 @@ int main(int argc, char *argv[])
     for(j=0; j<param.num_qk; j++){
       STARTTIME;
       i = param.prop_for_qk[j];
-
+      
       if(param.parent_type[j] == PROP_TYPE){
 #ifdef KS_LEAN
 	/* Restore clover prop[i] from file. */
 	/* But first destroy the old one, unless we still need it */
-
+	
 	/* If we saved the old prop to a file, we can safely free it */
 	if(oldip0 >= 0 && oldip0 != i)
 	  if(param.saveflag_ks[oldip0] != FORGET){
@@ -202,14 +208,14 @@ int main(int argc, char *argv[])
 	    destroy_ksp_field(quark[oldiq0]); quark[oldiq0] = NULL;
 	    node0_printf("destroy quark[%d]\n",oldiq0);
 	  }
-
+	
 	/* If we saved the old quark 1 to a file, we can safely free it */
 	if(oldiq1 >= 0)
 	  if(param.saveflag_q[oldiq1] != FORGET){
 	    destroy_ksp_field(quark[oldiq1]); quark[oldiq1] = NULL;
 	    node0_printf("destroy quark[%d]\n",oldiq1);
 	  }
-
+	
 	/* Fetch the prop we currently need from a file */
 	if(prop[i] == NULL)
 	  prop[i] = reread_ksprop_to_ksp_field(param.saveflag_ks[i], 
@@ -222,7 +228,7 @@ int main(int argc, char *argv[])
 	quark_nc[j] = quark[j]->nc;
 	oldip0 = i;
 	oldiq0 = -1;
-
+	
 	/* Can we delete any props now? */
 	/* For each prop, scan ahead to see if it is no longer needed. */
 	for(i = 0; i < param.num_prop[k]; i++)
@@ -242,26 +248,26 @@ int main(int argc, char *argv[])
 #ifdef KS_LEAN
 	/* Restore quark[i] from file */
 	/* But first destroy the old ones, unless we still need one of them */
-
+	
 	/* In this case we won't need the old prop */
 	if(oldip0 >= 0)
-	   if(param.saveflag_ks[oldip0] != FORGET){
-	     destroy_ksp_field(prop[oldip0]); prop[oldip0] = NULL;
-	     node0_printf("destroy prop[%d]\n",oldip0);
-	   }
-
+	  if(param.saveflag_ks[oldip0] != FORGET){
+	    destroy_ksp_field(prop[oldip0]); prop[oldip0] = NULL;
+	    node0_printf("destroy prop[%d]\n",oldip0);
+	  }
+	
 	if(oldiq0 >= 0 && oldiq0 != i)
 	  if(param.saveflag_q[oldiq0] != FORGET){
 	    destroy_ksp_field(quark[oldiq0]); quark[oldiq0] = NULL;
 	    node0_printf("destroy quark[%d]\n",oldiq0);
 	  }
-
+	
 	if(oldiq1 >= 0 && oldiq1 != i)
 	  if(param.saveflag_q[oldiq1] != FORGET){
 	    destroy_ksp_field(quark[oldiq1]); quark[oldiq1] = NULL;
 	    node0_printf("destroy quark[%d]\n",oldiq1);
 	  }
-
+	
 	if(quark[i] == NULL)
 	  quark[i] = reread_ksprop_to_ksp_field(param.saveflag_q[i], 
 						param.savefile_q[i],
@@ -275,7 +281,7 @@ int main(int argc, char *argv[])
 	oldip0 = -1;
 	oldiq0 = i;
       }
-	
+      
       /* Save the resulting quark[j] if requested */
       dump_ksprop_from_ksp_field( param.saveflag_q[j], 
 				  param.savefile_q[j], quark[j]);
@@ -285,10 +291,10 @@ int main(int argc, char *argv[])
 #ifdef KS_LEAN
     /* Free remaining memory */
     if(oldip0 >= 0)
-       if(param.saveflag_ks[oldip0] != FORGET){
-	 destroy_ksp_field(prop[oldip0]); prop[oldip0] = NULL;
-	 node0_printf("destroy prop[%d]\n",oldip0);
-       }
+      if(param.saveflag_ks[oldip0] != FORGET){
+	destroy_ksp_field(prop[oldip0]); prop[oldip0] = NULL;
+	node0_printf("destroy prop[%d]\n",oldip0);
+      }
     
     if(oldiq0 >= 0)
       if(param.saveflag_q[oldiq0] != FORGET){
@@ -302,9 +308,9 @@ int main(int argc, char *argv[])
 	node0_printf("destroy quark[%d]\n",oldiq1);
       }
 #endif
-
+    
     /* Now destroy all remaining propagator fields */
-
+    
     for(i = 0; i < param.num_prop[k]; i++){
       if(prop[i] != NULL)node0_printf("destroy prop[%d]\n",i);
       destroy_ksp_field(prop[i]);
@@ -313,20 +319,20 @@ int main(int argc, char *argv[])
     
     /****************************************************************/
     /* Compute the meson propagators */
-
+    
     STARTTIME;
     for(i = 0; i < param.num_pair; i++){
-
+      
       /* Index for the quarks making up this meson */
       iq0 = param.qkpair[i][0];
       iq1 = param.qkpair[i][1];
-
+      
       /* Naik indices for the quarks */
       naik_index0 = param.naik_index[iq0];
       naik_index1 = param.naik_index[iq1];
-
+      
       node0_printf("Mesons for quarks %d and %d\n",iq0,iq1);
-
+      
 #ifdef KS_LEAN
       /* Restore quarks from file and free old memory */
       /* We try to reuse props that are already in memory, so we don't
@@ -343,13 +349,13 @@ int main(int argc, char *argv[])
 	  destroy_ksp_field(quark[oldiq1]); quark[oldiq1] = NULL;
 	  node0_printf("destroy quark[%d]\n",oldiq1);
 	}
-
+      
       if(quark[iq0] == NULL)
 	quark[iq0] = 
 	  reread_ksprop_to_ksp_field(param.saveflag_q[iq0], 
 				     param.savefile_q[iq0],
 				     quark_nc[iq0]);
-
+      
       if(quark[iq1] == NULL){
 	quark[iq1] = 
 	  reread_ksprop_to_ksp_field(param.saveflag_q[iq1], 
@@ -357,10 +363,10 @@ int main(int argc, char *argv[])
 				     quark_nc[iq1]);
       }
 #endif
-
+      
       /* Tie together to generate hadron spectrum */
       spectrum_ks(quark[iq0], naik_index0, quark[iq1], naik_index1, i);
-
+      
       /* Remember, in case we need to free memory */
       oldiq0 = iq0;
       oldiq1 = iq1;
@@ -379,20 +385,20 @@ int main(int argc, char *argv[])
       }
 #endif
     ENDTIME("tie meson correlators");
-
+    
     /****************************************************************/
     /* Compute the baryon propagators */
-
+    
     STARTTIME;
     for(i = 0; i < param.num_triplet; i++){
-
+      
       /* Index for the quarks making up this meson */
       iq0 = param.qktriplet[i][0];
       iq1 = param.qktriplet[i][1];
       iq2 = param.qktriplet[i][2];
-
+      
       node0_printf("Baryons for quarks %d, %d, and %d\n",iq0,iq1,iq2);
-
+      
 #ifdef KS_LEAN
       /* Restore quarks from file and free old memory */
       /* We try to reuse props that are already in memory, so we don't
@@ -409,35 +415,34 @@ int main(int argc, char *argv[])
 	  destroy_ksp_field(quark[oldiq1]); quark[oldiq1] = NULL;
 	  node0_printf("destroy quark[%d]\n",oldiq1);
 	}
-
+      
       if(i > 0 && oldiq2 != iq0 && oldiq2 != iq1 && oldiq2 != iq2)
 	if(param.saveflag_q[oldiq2] != FORGET){
 	  destroy_ksp_field(quark[oldiq2]); quark[oldiq2] = NULL;
 	  node0_printf("destroy quark[%d]\n",oldiq2);
 	}
-
+      
       if(quark[iq0] == NULL)
 	quark[iq0] = 
 	  reread_ksprop_to_ksp_field(param.saveflag_q[iq0], 
 				     param.savefile_q[iq0],
 				     quark_nc[iq0]);
-
-      if(quark[iq1] == NULL){
+      
+      if(quark[iq1] == NULL)
 	quark[iq1] = 
 	  reread_ksprop_to_ksp_field(param.saveflag_q[iq1], 
 				     param.savefile_q[iq1],
 				     quark_nc[iq1]);
-      if(quark[iq2] == NULL){
+      if(quark[iq2] == NULL)
 	quark[iq2] = 
 	  reread_ksprop_to_ksp_field(param.saveflag_q[iq2], 
 				     param.savefile_q[iq2],
 				     quark_nc[iq2]);
-      }
 #endif
-
+      
       /* Tie together to generate hadron spectrum */
       spectrum_ks_baryon(quark[iq0], quark[iq1], quark[iq2], i);
-
+      
       /* Remember, in case we need to free memory */
       oldiq0 = iq0;
       oldiq1 = iq1;
@@ -462,26 +467,26 @@ int main(int argc, char *argv[])
       }
 #endif
     ENDTIME("tie baryon correlators");
-
+    
     node0_printf("RUNNING COMPLETED\n");
     endtime=dclock();
-
+    
     node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
     node0_printf("total_iters = %d\n",total_iters);
 #ifdef HISQ_SVD_COUNTER
-      printf("hisq_svd_counter = %d\n",hisq_svd_counter);
+    printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
     fflush(stdout);
-
+    
     for(i = 0; i < param.num_qk; i++){
       if(quark[i] != NULL)node0_printf("destroy quark[%d]\n",i);
       destroy_ksp_field(quark[i]); quark[i] = NULL;
     }
-
+    
     destroy_ape_links_3D(ape_links);
-
+    
     /* Destroy fermion links (created in readin() */
-
+    
 #if FERM_ACTION == HISQ
     destroy_fermion_links_hisq(fn_links);
 #else
@@ -489,6 +494,11 @@ int main(int argc, char *argv[])
 #endif
     fn_links = NULL;
   } /* readin(prompt) */
+  
 
+#ifdef HAVE_QUDA
+  qudaFinalize();
+#endif
+  
   return 0;
 }

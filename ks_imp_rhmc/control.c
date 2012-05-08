@@ -8,6 +8,9 @@
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include "lattice_qdp.h"
+#ifdef HAVE_QUDA
+#include <quda_milc_interface.h>
+#endif
 
 #ifdef MILC_GLOBAL_DEBUG
 #include "debug.h"
@@ -23,7 +26,7 @@ main( int argc, char **argv )
 {
   int i,meascount,traj_done, naik_index;
   int prompt;
-  int s_iters, avs_iters, avspect_iters, avbcorr_iters;
+  int s_iters, avs_iters, avbcorr_iters;
   double dtime, dclock();
   
   initialize_machine(&argc,&argv);
@@ -51,7 +54,7 @@ main( int argc, char **argv )
     
     /* perform measuring trajectories, reunitarizing and measuring 	*/
     meascount=0;		/* number of measurements 		*/
-    avspect_iters = avs_iters = avbcorr_iters = 0;
+    avs_iters = avbcorr_iters = 0;
 
     for( traj_done=0; traj_done < trajecs; traj_done++ ){ 
 #ifdef MILC_GLOBAL_DEBUG
@@ -153,6 +156,10 @@ main( int argc, char **argv )
 #endif
     fn_links = NULL;
   }
+
+#ifdef HAVE_QUDA
+  qudaFinalize();
+#endif
 
   normal_exit(0);
   return 0;
