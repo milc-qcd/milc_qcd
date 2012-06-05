@@ -1,0 +1,45 @@
+# Generic routines for U(1) fields
+# MIMD version 7
+#
+#  Generic make-include file for generic_u1 codes
+#  This template file defines rules and macros common to all applications
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  The paths are relative to the application directory.
+
+G_U1_ALL = \
+  io_u1lat.o \
+  u1link.o \
+  u1plaq.o \
+  u1pot.o
+
+# Must match our headers in generic_u1_includes.h
+G_U1_HEADERS = \
+  ../include/config.h \
+  lattice.h \
+  ../include/complex.h \
+  ../include/su3.h \
+  ../include/macros.h \
+  ../include/comdefs.h \
+  ../include/generic.h \
+  ../include/dirs.h \
+  ../include/check_malloc.h
+
+G_U1_ALL_DEPEND = \
+  ../generic_u1/generic_u1_includes.h \
+  ../generic_u1/Make_template \
+  ../include \
+  ${LASTMAKE} \
+  ${G_U1_HEADERS}
+
+${G_U1_ALL} : ${G_U1_ALL_DEPEND}
+
+io_u1lat.o: ../generic_u1/io_u1lat.c
+	${CC} -c ${CFLAGS} $<
+u1link.o: ../generic_u1/u1link.c
+	${CC} -c ${CFLAGS} $<
+u1plaq.o: ../generic_u1/u1plaq.c
+	${CC} -c ${CFLAGS} $<
+u1pot.o: ../generic_u1/u1pot.c
+	${CC} -c ${CFLAGS} $<
