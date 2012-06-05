@@ -1,0 +1,42 @@
+U(1) [Coulomb gauge-fixed] gauge field generation ... 
+stored as A(mu,x), convert to U(mu,x) to couple to fermions.
+Machine = QMP (portable), with 1 nodes!
+Start: Mon Jun  4 20:32:57 2012
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 1001722
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 8
+Mallocing 0.1 MBytes per node for lattice
+Made lattice!
+Made nn_gathers!
+Momentum table prepared!
+Finished setup!
+Starting U(1) gauge config generation run ...
+
+
+electron_charge 1
+fresh_u1 
+save_u1_ascii ./u1_g_4_8.1.ascii
+
+CHECK U(1) PLAQ: 1.000000e+00 1.000000e+00
+
+Saved U(1) configuration to ascii file ./u1_g_4_8.1.ascii ...
+Time stamp Mon Jun  4 20:32:57 2012
+Saved lattice to ascii file ./u1_g_4_8.1.ascii!
+Time to save = 2.761126e-03
+
+CHECK U(1) PLAQ: 7.820602e-01 7.645227e-01
+
+
+u1-ploop = ( 5.255150e-01, 0.000000e+00 )  u1-(s,t)plaq = ( 7.820602e-01, 7.645227e-01 )
+U(1) running completed!
+Time = 3.489900e-02 seconds
+
+
+get_f(0): EOF on input.

@@ -1,0 +1,15 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+iseed 1001722
+
+electron_charge 1.0
+reload_u1_ascii ./u1_g_4_8.1.ascii.sample-out
+save_u1_serial ./u1_g_4_8.1.converted.test-out
+
+electron_charge 1.0
+reload_u1_serial ./u1_g_4_8.1.converted.test-out
+save_u1_ascii ./u1_g_4_8.1.ascii2.test-out
+

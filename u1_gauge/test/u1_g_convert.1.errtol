@@ -1,0 +1,26 @@
+CHECK U(1) PLAQ: 2e-06 2e-06
+
+Saved u1 gauge configuration serially to binary file ./u1_g_4_8.1.converted.test-out
+Time stamp XXX XXX XXX XXX XXX
+Checksums XXX XXX
+Wrote inf file ./u1_g_4_8.1.converted.test-out.info
+Saved lattice to ascii file ./u1_g_4_8.1.converted.test-out!
+Time to save = XXX
+
+CHECK U(1) PLAQ: 2e-06 2e-06
+
+
+u1-ploop = ( 2e-06 0.000000e+00 ) u1-(s,t)plaq = ( 2e-06 2e-06 )
+U(1) conversion completed!
+CHECK U(1) PLAQ: 2e-06 2e-06
+
+Saved U(1) configuration to ascii file ./u1_g_4_8.1.ascii2.test-out ...
+Time stamp XXX XXX XXX XXX XXX
+Saved lattice to ascii file ./u1_g_4_8.1.ascii2.test-out!
+Time to save = XXX
+
+CHECK U(1) PLAQ: 2e-06 2e-06
+
+
+u1-ploop = ( 2e-06 0.000000e+00 ) u1-(s,t)plaq = ( 2e-06 2e-06 )
+U(1) conversion completed!

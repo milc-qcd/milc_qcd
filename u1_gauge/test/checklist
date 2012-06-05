@@ -1,0 +1,7 @@
+# Executable  precision  add-macro input-case  pattern1 pattern2
+#    extra-output filename pattern1 pattern2
+
+exec u1_g                 1      -         -          u1-ploop completed
+     extra-output      u1_g_4_8.1.ascii --- EOF
+exec u1_g_convert         1      -         -          CHECK completed CHECK completed
+     extra-output      u1_g_4_8.1.ascii2 --- EOF
