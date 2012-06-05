@@ -147,6 +147,11 @@ void shift_wilson_vector(wilson_vector *src, int rshift[]);
 double start_timing(void);
 void print_timing(double dtime, char *str);
 
+Real* create_r_field(void);
+void clear_r_field(Real *r);
+void copy_r_field(Real *dest, Real *src);
+void destroy_r_field(Real *r);
+
 complex* create_c_field(void);
 void clear_c_field(complex *c);
 void copy_c_field(complex *dest, complex *src);
