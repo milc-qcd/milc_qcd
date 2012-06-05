@@ -1,0 +1,164 @@
+#  Pure gauge U1
+#  MIMD version 7
+#
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#  "make u1_g" uses gaussian random numbers and FFT
+#
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = \
+  ${INCLUDEDIR}/config.h \
+  ${INCLUDEDIR}/complex.h \
+  ${INCLUDEDIR}/su3.h \
+  ${INCLUDEDIR}/comdefs.h \
+  ${INCLUDEDIR}/macros.h \
+  ${INCLUDEDIR}/generic.h \
+  ${INCLUDEDIR}/generic_pg.h \
+  ${INCLUDEDIR}/io_lat.h \
+  ${INCLUDEDIR}/loopend.h \
+  ${INCLUDEDIR}/dirs.h
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  ../include/io_u1lat.h \
+  include_u1g.h \
+  ${ADDHEADERS}
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+
+MY_OBJECTS =         \
+  setup.o \
+  gauge_info.o
+
+# Basic set from generic directory
+G_OBJECTS =          \
+  field_utilities.o  \
+  io_detect.o \
+  io_helpers.o \
+  io_lat_utils.o \
+  make_lattice.o \
+  remap_stdio_from_args.o \
+  ranstuff.o \
+  restrict_fourier.o
+
+# Basic set from generic_u1 directory
+G_U1_OBJECTS =       \
+  io_u1lat.o         \
+  u1link.o           \
+  u1plaq.o           \
+  u1pot.o
+
+# Objects needed for QIO support
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
+endif
+
+# Objects depending on architecture and software package 
+
+LAYOUT = layout_hyper_prime.o # Choices possible here
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+# Generic QOP objects
+ifeq ($(strip ${HAVEQOP}),true)
+  ADD_OBJECTS += ${GENERICQOP} map_milc_to_qop.o milc_to_qop_utilities.o
+endif
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_U1_OBJECTS} ${LAYOUT} \
+  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+
+#Libraries for complex numbers and su3 functions
+P = $(strip ${PRECISION})
+QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES}
+
+# Default rule for C compilation
+.c.o: ; ${CC} -c ${CFLAGS}  $*.c 
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
+
+${LASTMAKE}:
+	-/bin/rm -f .lastmake.* gauge_action.h
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+
+ALL_MAKES = \
+   Make_template \
+   ${MAKEFILE} \
+   ../Make_template_qop \
+   ../Make_template_scidac \
+   ../generic/Make_template \
+   ../generic_u1/Make_template
+
+
+# To force a remake when changing any make file, header, or target
+${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+ifeq ($(strip ${QCDOC}),true)
+  DQCDOC = -DQCDOC
+endif
+
+ifeq ($(strip ${HAVEQMP}),true)
+  DHAVE_QMP = -DHAVE_QMP
+endif
+
+ifeq ($(strip ${HAVEQIO}),true)
+  DHAVE_QIO = -DHAVE_QIO
+endif
+
+ifeq ($(strip ${HAVEQDP}),true)
+  DHAVE_QDP = -DHAVE_QDP
+endif
+
+ifeq ($(strip ${HAVEQOP}),true)
+  DHAVE_QOP = -DHAVE_QOP
+endif
+
+DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
+
+##### Targets:
+
+u1_g::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"EXTRA_OBJECTS= control.o momgauge.o" \
+	"DEFINES = -DNO_GAUGE_FIELD"
+
+u1_g_convert::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"EXTRA_OBJECTS= control_convert.o" \
+	"DEFINES = -DNO_GAUGE_FIELD"
+
+clean:
+	-/bin/rm -f *.o
+
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_u1 routines
+include ../generic_u1/Make_template
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 
