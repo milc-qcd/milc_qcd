@@ -45,9 +45,9 @@ void convert_wprop_milc_to_fnal_field(wilson_propagator *wprop);
 
 /* gauss_smear_w.c */
 void gauss_smear_wv_field(wilson_vector *src, su3_matrix *t_links,
-			  Real width, int iters, int t0);
+			  int stride, Real width, int iters, int t0);
 void gauss_smear_wv_site(field_offset src, su3_matrix *t_links,
-			 Real width, int iters, int t0);
+			 int stride, Real width, int iters, int t0);
 
 /* meson_cont.c */
 void meson_cont_site(field_offset src1,field_offset src2,
