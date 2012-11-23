@@ -348,6 +348,8 @@ void r_close_wprop(int flag, w_prop_file *wpf);
 void w_close_wprop(int flag, w_prop_file *wpf);
 int ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename );
 int ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename );
+int ask_ending_wprop_or_wsource(FILE *fp, int prompt, int *flag, int *type, 
+				int *t0, char *descrp, char *filename);
 int convert_outflag_to_inflag_wprop(int out_flag);
 
 /* Prototpyes for io_prop_w_fm.c */
