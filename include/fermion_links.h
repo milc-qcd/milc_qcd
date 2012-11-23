@@ -71,7 +71,11 @@ typedef qop_hisq_links_t ferm_links_generic_t;
 typedef milc_hisq_links_t ferm_links_generic_t;
 #endif
 
-#else
+#elif FERM_ACTION == HYPISQ
+
+typedef milc_hypisq_links_t ferm_links_generic_t;
+
+#else 
 
 #ifdef HAVE_QOP
 typedef qop_asqtad_links_t ferm_links_generic_t;

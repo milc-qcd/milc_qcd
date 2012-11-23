@@ -45,6 +45,21 @@
        fn_links_t *fn_deps
 
        (Here fn_links_t is the only option.)
+
+   Structure nesting for HYPISQ actions
+
+   milc_hypisq_links_t
+     hypisq_links_t *hypisq
+       ks_action_paths_hypisq *ap
+       hypisq_auxiliary_t *aux
+         su3_matrix *U_link;    TO BE DECIDED
+         su3_matrix *V_link;
+	 su3_matrix *Y_unitlink; 
+	 su3_matrix *W_unitlink; 
+       fn_links_t *fn[MAX_NAIK]
+       fn_links_t *fn_deps
+
+       (Here fn_links_t is the only option.)
  */
 
 /*********************************************************************/
@@ -78,6 +93,27 @@ typedef struct {
 typedef struct {
   hisq_links_t *hisq;
 } milc_hisq_links_t;
+
+/*********************************************************************/
+typedef struct {          // TO BE DECIDED
+  int phases_in;          // track KS phases in the V and Y links
+  int WeqY;               // true if W = Y
+  su3_matrix *U_link;     // original gauge matrices, stored as four fields
+  su3_matrix *V_link;     // first iteration of fattening
+  su3_matrix *Y_unitlink; // unitary projection of V_link, U(3)
+  su3_matrix *W_unitlink; // special unitary projection of Y_link, SU(3)
+} hypisq_auxiliary_t;
+
+typedef struct {
+  ks_action_paths_hypisq *ap;
+  hypisq_auxiliary_t *aux;          // Intermediate links needed for fermion force
+  imp_ferm_links_t *fn[MAX_NAIK]; // Table of links depending on epsilon
+  imp_ferm_links_t *fn_deps;      // Derivative of links wrto epsilon.
+} hypisq_links_t;
+
+typedef struct {
+  hypisq_links_t *hisq;
+} milc_hypisq_links_t;
 
 
 /********************************************************************/
