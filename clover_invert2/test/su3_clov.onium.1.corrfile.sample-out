@@ -9,6 +9,7 @@ antiquark_source_origin: 0 0 0 0
 antiquark_source_label:  G
 antiquark_source_ops:        [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -16,6 +17,7 @@ antiquark_source_ops:        [
 antiquark_sink_label:    B1
 antiquark_sink_ops:          [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 },
@@ -34,6 +36,7 @@ quark_source_origin:     0 0 0 0
 quark_source_label:      G
 quark_source_ops:            [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -41,6 +44,7 @@ quark_source_ops:            [
 quark_sink_label:        G
 quark_sink_ops:              [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -298,6 +302,7 @@ antiquark_source_origin: 0 0 0 0
 antiquark_source_label:  G
 antiquark_source_ops:        [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -305,6 +310,7 @@ antiquark_source_ops:        [
 antiquark_sink_label:    N3
 antiquark_sink_ops:          [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 },
@@ -327,6 +333,7 @@ quark_source_ops:            [
   weights:                   1
 },
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -334,6 +341,7 @@ quark_source_ops:            [
 quark_sink_label:        G
 quark_sink_ops:              [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -591,6 +599,7 @@ antiquark_source_origin: 0 0 0 0
 antiquark_source_label:  G
 antiquark_source_ops:        [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -598,6 +607,7 @@ antiquark_source_ops:        [
 antiquark_sink_label:    D1
 antiquark_sink_ops:          [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 },
@@ -621,6 +631,7 @@ quark_source_ops:            [
   weights:                   1
 },
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -628,6 +639,7 @@ quark_source_ops:            [
 quark_sink_label:        G
 quark_sink_ops:              [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -825,6 +837,7 @@ antiquark_source_origin: 0 0 0 0
 antiquark_source_label:  G
 antiquark_source_ops:        [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -832,6 +845,7 @@ antiquark_source_ops:        [
 antiquark_sink_label:    G
 antiquark_sink_ops:          [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -850,6 +864,7 @@ quark_source_ops:            [
   weights:                   1
 },
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }
@@ -857,6 +872,7 @@ quark_source_ops:            [
 quark_sink_label:        G
 quark_sink_ops:              [
 { operation:             fat_covariant_gaussian,
+  stride:                     1
   r0:                        2.8,
   iters:                     20
 }

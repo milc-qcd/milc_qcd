@@ -42,6 +42,7 @@ number_of_modified_sources 5
 # source 1
 source 0
 fat_covariant_gaussian
+stride 1
 r0 2.8
 source_iters 20
 op_label G
@@ -65,6 +66,7 @@ forget_source
 # source 4
 source 2
 fat_covariant_gaussian
+stride 1
 r0 2.8
 source_iters 20
 op_label N1
@@ -72,6 +74,7 @@ forget_source
 # source 5
 source 3
 fat_covariant_gaussian
+stride 1
 r0 2.8
 source_iters 20
 op_label B1
@@ -114,6 +117,7 @@ number_of_quarks 6
 # quark 0
 propagator 0
 fat_covariant_gaussian
+stride 1
 r0 2.8
 source_iters 20
 op_label G
@@ -145,6 +149,7 @@ forget_wprop
 # quark 4
 propagator 1
 fat_covariant_gaussian
+stride 1
 r0 2.8
 source_iters 20
 op_label G
@@ -152,6 +157,7 @@ forget_wprop
 # quark 5
 propagator 2
 fat_covariant_gaussian
+stride 1
 r0 2.8
 source_iters 20
 op_label G
