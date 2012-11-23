@@ -79,6 +79,13 @@ int bicgilu_cl_field_cpu(    /* Return value is number of iterations taken */
   qic->final_iters = 0;
   qic->final_restart = 0;
 
+  /* Handle trivial case */
+  if(Kappa == 0.){
+    copy_wv_field(dest,src);
+    return 0;
+  }
+
+
   //  if(even_sites_on_node!=odd_sites_on_node){
   //    printf("Need same number of even and odd sites on each node\n");
   //    terminate(1);

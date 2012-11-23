@@ -5,6 +5,8 @@
 #include "../include/generic_qop.h"
 #include "../include/generic_clover_qop.h"
 
+/* ========================================================== */
+
 /* Standard MILC interface for the clover inverter */
 
 int bicgilu_cl_field(    /* Return value is number of iterations taken */
@@ -15,6 +17,21 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
     )
 {
   int iterations_used = 0;
+  dirac_clover_param *dcp 
+    = (dirac_clover_param *)dmp; /* Cast pass-through pointer */
+  Real Kappa = dcp->Kappa;     /* hopping */
+
+  /* Handle trivial case */
+  if(Kappa == 0.){
+    copy_wv_field(dest,src);
+    qic->size_r = 0;
+    qic->size_relr = 0;
+    qic->final_rsq = 0;
+    qic->final_relrsq = 0;
+    qic->final_iters = 0;
+    qic->final_restart = 0;
+    return 0;
+  }
 
   /* Set initial guess at solution */
   if(qic->start_flag == START_ZERO_GUESS)
@@ -22,10 +39,10 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
 
   if(qic->prec == 1)
     iterations_used = 
-      bicgilu_cl_milc2qop_F( src, dest, qic, dmp );
+      bicgilu_cl_milc2qop_F( CLOVER_TYPE, src, dest, qic, dmp );
   else if(qic->prec == 2)
     iterations_used = 
-      bicgilu_cl_milc2qop_D( src, dest, qic, dmp );
+      bicgilu_cl_milc2qop_D( CLOVER_TYPE, src, dest, qic, dmp );
   else{
     printf("bicgilu_cl_field(%d): Bad precision selection %d\n",
 	   this_node,qic->prec);
@@ -35,6 +52,64 @@ int bicgilu_cl_field(    /* Return value is number of iterations taken */
   total_iters += iterations_used;
   return iterations_used;
 }
+
+/* ========================================================== */
+
+int bicgilu_cl_field_ifla(/* Return value is number of iterations taken */
+    wilson_vector *src,   /* type wilson_vector (source vector - OVERWRITTEN!)*/
+    wilson_vector *dest,  /* type wilson_vector (answer and initial guess )*/
+    quark_invert_control *qic, /* parameters controlling inversion */
+    void *dmp            /* parameters defining the Dirac matrix */
+			  )
+{
+
+  /* =================================     / */
+  /* Bugra : ifla'da kullaniyorum ==== \  /  */
+  /* =================================  \/   */
+  /* deneme */
+  /*
+  newaction_ifla_param *t = dmp;
+  node0_printf("c_4 = %e\n",t->c_4);
+  */
+
+  int iterations_used = 0;
+  newaction_ifla_param *t 
+    = (newaction_ifla_param *)dmp; /* Cast pass-through pointer */
+  Real kapifla = t->kapifla;     /* hopping */
+
+  /* Handle trivial case */
+  if(kapifla == 0.){
+    copy_wv_field(dest,src);
+    qic->size_r = 0;
+    qic->size_relr = 0;
+    qic->final_rsq = 0;
+    qic->final_relrsq = 0;
+    qic->final_iters = 0;
+    qic->final_restart = 0;
+    return 0;
+  }
+
+  /* Set initial guess at solution */
+  if(qic->start_flag == START_ZERO_GUESS)
+    clear_wv_field(dest);
+
+  if(qic->prec == 1)
+    iterations_used = 
+      bicgilu_cl_milc2qop_F( IFLA_TYPE, src, dest, qic, dmp );
+  else if(qic->prec == 2)
+    iterations_used = 
+      bicgilu_cl_milc2qop_D( IFLA_TYPE, src, dest, qic, dmp );
+  else{
+    printf("bicgilu_cl_field_ifla(%d): Bad precision selection %d\n",
+	   this_node,qic->prec);
+    terminate(1);
+  }
+  
+  total_iters += iterations_used;
+  return iterations_used;
+}
+
+/* ========================================================== */
 
 int bicgilu_cl_site(    /* Return value is number of iterations taken */
     field_offset src,  /* type wilson_vector (source vector - OVERWRITTEN!)*/
@@ -76,6 +151,8 @@ int bicgilu_cl_site(    /* Return value is number of iterations taken */
   return iters;
 } /* bicgilu_cl_site */
 
+/* ========================================================== */
+
 /* Plain Wilson variant */
 
 int bicgilu_w_field(     /* Return value is number of iterations taken */
@@ -92,6 +169,7 @@ int bicgilu_w_field(     /* Return value is number of iterations taken */
   return bicgilu_cl_field(src, dest, qic, (void *)&dcp);
 }
 
+/* ========================================================== */
 
 /* Site-based - kept for backward compatibility */
 int bicgilu_w_site(      /* Return value is number of iterations taken */

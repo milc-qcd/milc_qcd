@@ -32,7 +32,7 @@
 
 /* Redefinitions according to requested precision */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 
 #define BICGILU_CL_QOP_GENERIC bicgilu_cl_qop_generic_F
 #define BICGILU_MILC2QOP   bicgilu_cl_milc2qop_F
@@ -56,6 +56,9 @@
 
 /*
  * $Log: d_bicgilu_cl_qop_P.c,v $
+ * Revision 1.10  2012/11/23 23:45:47  detar
+ * Add OK action support (IFLA)
+ *
  * Revision 1.9  2012/02/16 16:49:56  detar
  * Initialize QOP_info
  *
@@ -89,7 +92,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.9 2012/02/16 16:49:56 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_P.c,v 1.10 2012/11/23 23:45:47 detar Exp $";
 
 #if 1
 
@@ -104,6 +107,30 @@ load_qop_wilson_coeffs(QOP_wilson_coeffs_t *c, Real clov_c)
   c->clov_t       = clov_c;
   c->aniso        = 0.;
 }
+
+/********************************************************************/
+/* Load Wilson clover parameters (IFLA) Bugra 09/02/09              */
+/********************************************************************/
+static void
+load_qop_wilson_ifla_coeffs(QOP_wilson_ifla_coeffs_t *c, 
+			    newaction_ifla_param *nap)
+{  
+  c->kapifla = nap->kapifla;
+  c->kappa_s = nap->kappa_s;
+  c->kappa_t = nap->kappa_t;
+  c->r_s     = nap->r_s;
+  c->r_t     = nap->r_t;
+  c->zeta    = nap->zeta;
+  c->c_E     = nap->c_E;
+  c->c_B     = nap->c_B;
+  c->c_1     = nap->c_1;
+  c->c_2     = nap->c_2;
+  c->c_3     = nap->c_3;
+  c->c_4     = nap->c_4;
+  c->c_5     = nap->c_5;
+  c->c_EE    = nap->c_EE;
+  c->u0      = nap->u0;
+};
 
 /********************************************************************/
 /* Create Wilson fermion links using QOP                            */
@@ -268,65 +295,74 @@ destroy_qop_resid_arg(QOP_resid_arg_t ***res_arg, int nsrc, int nmass[])
   free(res_arg);
 }
 
-#define MAX(a,b) ((a) >= (b) ? (a) : (b))
-
 /********************************************************************/
 /* General MILC wrapper for Level 3 inverter                        */
 /********************************************************************/
 
-int 
-BICGILU_CL_QOP_GENERIC( QOP_info_t *info,
+void
+BICGILU_CL_QOP_GENERIC( int prop_type, QOP_info_t *info,
 			QOP_FermionLinksWilson *qop_links, 
 			QOP_invert_arg_t *qop_invert_arg,
 			QOP_resid_arg_t  ***qop_resid_arg,
-			MYREAL *kappas[], int nkappa[], 
+			void *dmps[], int nkappa[],
 			QOP_DiracFermion **qop_sol[], 
 			QOP_DiracFermion *qop_src[], 
-			int nsrc,		    
-			int *final_restart,
-			Real *final_rsq_ptr,
-			Real *final_relrsq_ptr)
+			int nsrc)
 {
+  MYREAL **kappas;
   int isrc, ikappa;
-  int iters;
+  char myname[] = "bicgilu_cl_qop_generic";
+
+  
+  kappas = (MYREAL **)malloc(sizeof(MYREAL *)*nsrc);
+  for(isrc = 0; isrc < nsrc; isrc++)
+    kappas[isrc] = (MYREAL *)malloc(sizeof(MYREAL)*nkappa[isrc]);
 
 #ifdef CG_DEBUG
   QOP_verbose(QOP_VERB_HI);
 #endif
   
-  if(nsrc == 1 && nkappa[0] == 1)
-    QOP_wilson_invert( info, qop_links, qop_invert_arg, qop_resid_arg[0][0],
-		       kappas[0][0], qop_sol[0][0], qop_src[0] );
-  else
-    QOP_wilson_invert_multi( info, qop_links, qop_invert_arg, qop_resid_arg,
-			     kappas, nkappa, qop_sol, qop_src, nsrc );
+  if(prop_type == CLOVER_TYPE){
+    for(isrc = 0; isrc < nsrc; isrc++)
+      for(ikappa = 0; ikappa < nkappa[isrc]; ikappa++){
+	dirac_clover_param *dcp = (dirac_clover_param *)dmps[0];
+	kappas[isrc][ikappa] = dcp->Kappa;
+      }
 
-  /* For now we return the largest value and total iterations */
-  *final_rsq_ptr = 0;
-  *final_relrsq_ptr = 0;
-  *final_restart = 0;
-  iters = 0;
-  for(isrc = 0; isrc < nsrc; isrc++)
-    for(ikappa = 0; ikappa < nkappa[isrc]; ikappa++){
-      /* QOP routines return the ratios of the squared norms */
-      *final_rsq_ptr =    MAX(*final_rsq_ptr, qop_resid_arg[isrc][ikappa]->final_rsq);
-      *final_relrsq_ptr = MAX(*final_relrsq_ptr, qop_resid_arg[isrc][ikappa]->final_rel);
-      *final_restart =    MAX(*final_restart,  qop_resid_arg[isrc][ikappa]->final_restart);
-      iters += qop_resid_arg[isrc][ikappa]->final_iter;
-#ifdef CG_DEBUG
-      if(nsrc > 1 || nkappa[isrc] > 1)
-	node0_printf("CONGRAD5(src %d,kappa %d): iters = %d resid = %e relresid = %e\n",
-	       isrc, ikappa,
-	       qop_resid_arg[isrc][ikappa]->final_iter,
-	       sqrt(qop_resid_arg[isrc][ikappa]->final_rsq),
- 	       sqrt(qop_resid_arg[isrc][ikappa]->final_rel));
-#endif
+    if(nsrc == 1 && nkappa[0] == 1)
+      QOP_wilson_invert( info, qop_links, qop_invert_arg, qop_resid_arg[0][0],
+			 kappas[0][0], qop_sol[0][0], qop_src[0] );
+    else
+      QOP_wilson_invert_multi( info, qop_links, qop_invert_arg, qop_resid_arg,
+			       kappas, nkappa, qop_sol, qop_src, nsrc );
+
+  } else if(prop_type == IFLA_TYPE){
+
+    QOP_wilson_ifla_coeffs_t dcof;
+    /* If there are multiple kappas, we assume that the parameters
+       are the same for all kappas in this solve */
+    load_qop_wilson_ifla_coeffs(&dcof, (newaction_ifla_param *)dmps[0] );
+    kappas[0][0] = dcof.kapifla;
+
+    if(nsrc == 1 && nkappa[0] == 1){
+      QOP_wilson_ifla_invert( info, qop_links, qop_invert_arg, qop_resid_arg[0][0],
+			      kappas[0][0], &dcof, qop_sol[0][0], qop_src[0] );
+    } else {
+      node0_printf("%s: Multishift bicgilu with OK action not provided\n", myname);
+      terminate(1);
     }
 
-  return iters;
-}
+  } else {
 
-#define MAXSRC 20
+    node0_printf("%s: Unrecognized prop type\n", myname);
+    terminate(1);
+
+  }
+
+  for(isrc = 0; isrc < nsrc; isrc++)
+    free(kappas[isrc]);
+  free(kappas);
+}
 
 /* temporary hack until we get a more flexible QOP inverter that can
    handle our gamma matrix conventions */
@@ -343,29 +379,34 @@ gamma5_flip(wilson_vector *milc, int parity){
   }
 }
 
+#define MAX(a,b) ((a) >= (b) ? (a) : (b))
+#define MAXSRC 20
+
+
 /********************************************************************/
 /* Map MILC fields to QOP format and call generic QOP driver        */
 /********************************************************************/
 
 static int
-bicgilu_cl_qop(quark_invert_control *qic, Real clov,
-	       MYREAL *kappas[], int nkappa[], 
-	       wilson_vector *milc_srcs[], 
+bicgilu_cl_qop(int prop_type, int nsrc, int nkappa[], 
+	       quark_invert_control *qic,
+	       void *dmps[], wilson_vector *milc_srcs[], 
 	       wilson_vector **milc_sols[],
-	       int nsrc, int *final_restart,
-               Real* final_rsq_ptr, Real* final_relrsq_ptr, 
+	       int *final_restart,
+               Real *final_rsq_ptr, Real* final_relrsq_ptr, 
 	       int milc_parity )
 {
-  int isrc, ikappa;
+  int isrc, ikappa, iters = 0;
   QOP_FermionLinksWilson *qop_links;
   QOP_DiracFermion **qop_sol[MAXSRC], *qop_src[MAXSRC];
-  int iterations_used = 0;
   QOP_invert_arg_t qop_invert_arg;
   QOP_resid_arg_t  ***qop_resid_arg;
   QOP_info_t info = {0., 0., 0, 0, 0};
   double remaptime;
   int i;
   site *s;
+  static float t_kappa;
+  float *kappas[1] = { &t_kappa };
   char myname[] = "bicgilu_cl_qop";
 
   if(nsrc > MAXSRC){
@@ -379,12 +420,31 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
     terminate(1);
   }
 
-  /* Create QOP links object */
+  /* Create QOP links object and extract kappa */
 
-  qop_links = create_qop_wilson_fermion_links( clov );
+  if(prop_type == CLOVER_TYPE){
+    /* If there are multiple kappas, we assume that the Clov_c and u0
+       are the same for all kappas in this solve */
+    dirac_clover_param *dcp 
+      = (dirac_clover_param *)dmps[0]; /* Cast pass-through pointer */
+    Real Clov_c = dcp->Clov_c;   /* Perturbative clover coeff */
+    Real U0 = dcp->U0;           /* Tadpole correction to Clov_c */
+    Real clov = Clov_c/(U0*U0*U0); /* Full clover coefficient */
+    t_kappa = dcp->Kappa;
+    
+    qop_links = create_qop_wilson_fermion_links( clov );
+
+  } else { /* IFLA (OK) type */
+    newaction_ifla_param *nap 
+      = (newaction_ifla_param *)dmps[0]; /* Cast pass-through pointer */
+    t_kappa = nap->kapifla;
+
+    qop_links = create_qop_wilson_fermion_links( 0 );
+
+  }
 
   /* Set qop_invert_arg */
-  set_qop_invert_arg( & qop_invert_arg, qic, milc_parity );
+  set_qop_invert_arg( &qop_invert_arg, qic, milc_parity );
   
   /* Pointers for residual errors */
   qop_resid_arg = create_qop_resid_arg( nsrc, nkappa, 
@@ -423,14 +483,13 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
   /* Call QOP inverter */
 
   remaptime += dclock();
-  iterations_used = BICGILU_CL_QOP_GENERIC( &info, qop_links, &qop_invert_arg,
-    qop_resid_arg, kappas, nkappa, qop_sol, qop_src, nsrc, 
-    final_restart, final_rsq_ptr, final_relrsq_ptr );
+  BICGILU_CL_QOP_GENERIC( prop_type, &info, qop_links, 
+	&qop_invert_arg, qop_resid_arg, dmps, nkappa, qop_sol, qop_src, nsrc);
   remaptime -= dclock();
 
 #ifdef CGTIME
   node0_printf("CGTIME: time = %e (wilson_qop %s) ",
-	       info.final_sec,qop_prec[QOP_Precision-1]);
+	       info.final_sec,qop_prec[QOP_PrecisionInt-1]);
   for(isrc = 0; isrc < nsrc; isrc++)
     node0_printf("nkappa[%d] = %d iters = %d ",
 		 isrc,nkappa[isrc],qop_resid_arg[isrc][0]->final_iter);
@@ -450,6 +509,30 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
 	scalar_mult_wvec( milc_sols[isrc][ikappa]+i, 1/(2.*kappas[isrc][ikappa]),
 			  milc_sols[isrc][ikappa]+i);
       }
+    }
+
+  /* Collect performance statistics */
+
+  /* For now we return the largest value and total iterations */
+  *final_rsq_ptr = 0;
+  *final_relrsq_ptr = 0;
+  *final_restart = 0;
+  iters = 0;
+  for(isrc = 0; isrc < nsrc; isrc++)
+    for(ikappa = 0; ikappa < nkappa[isrc]; ikappa++){
+      /* QOP routines return the ratios of the squared norms */
+      *final_rsq_ptr =    MAX(*final_rsq_ptr, qop_resid_arg[isrc][ikappa]->final_rsq);
+      *final_relrsq_ptr = MAX(*final_relrsq_ptr, qop_resid_arg[isrc][ikappa]->final_rel);
+      *final_restart =    MAX(*final_restart,  qop_resid_arg[isrc][ikappa]->final_restart);
+      iters += qop_resid_arg[isrc][ikappa]->final_iter;
+#ifdef CG_DEBUG
+      if(nsrc > 1 || nkappa[isrc] > 1)
+	node0_printf("CONGRAD5(src %d,kappa %d): iters = %d resid = %e relresid = %e\n",
+	       isrc, ikappa,
+	       qop_resid_arg[isrc][ikappa]->final_iter,
+	       sqrt(qop_resid_arg[isrc][ikappa]->final_rsq),
+ 	       sqrt(qop_resid_arg[isrc][ikappa]->final_rel));
+#endif
     }
 
   /* Free QOP fields  */
@@ -475,50 +558,50 @@ bicgilu_cl_qop(quark_invert_control *qic, Real clov,
   destroy_qop_resid_arg(qop_resid_arg, nsrc, nkappa);
   qop_resid_arg = NULL;
 
-  return iterations_used;
+  return iters;
 }
 
 /********************************************************************/
 /* Inverter interface for specific precision                        */
 /********************************************************************/
 int 
-BICGILU_MILC2QOP( wilson_vector *milc_src, wilson_vector *milc_sol, 
+BICGILU_MILC2QOP( int prop_type, wilson_vector *milc_src, 
+		  wilson_vector *milc_sol, 
 		  quark_invert_control *qic, void *dmp)
 {
   int iterations_used;
-  static MYREAL t_kappa;
-  MYREAL *kappas[1];
-  int nkappa[1], nsrc;
-  wilson_vector *milc_srcs[1], *milc_sols0[1], **milc_sols[1];
 
-  dirac_clover_param *dcp 
-    = (dirac_clover_param *)dmp; /* Cast pass-through pointer */
+  /* Since the wilson QOP anticipates multiple sources with multiple
+     masses for each, we humor it by setting up its source and sink
+     arguments that way.  But for now we support only one source
+     with possibly multiple masses (kappas) for that source */
 
-  Real Kappa = dcp->Kappa;     /* hopping */
-  Real Clov_c = dcp->Clov_c;   /* Perturbative clover coeff */
-  Real U0 = dcp->U0;           /* Tadpole correction to Clov_c */
-  Real clov = Clov_c/(U0*U0*U0); /* Full clover coefficient */
+  int nsrc = 1;
+  int nkappa[1] = { 1 };
+
+  /* Provision for multiple sources */
+  wilson_vector *milc_srcs[1] = { milc_src };
+
+  /* Provision for a solution for each kappa for each source */
+  wilson_vector *milc_sols0[1] = { milc_sol };
+  wilson_vector **milc_sols[1] = { milc_sols0 };
+
+  /* Provision for separate propagator parameters (kappas) for each
+     mass (one source) */
+  void *dmps[1] = { dmp };
+
+  /* Performance results */
   Real final_rsq_val;           
   Real final_relrsq_val;           
   int final_restart;
 
-  /* Set up general source and solution pointers for one mass, one source */
-  nsrc = 1;
-  milc_srcs[0] = milc_src;
-
-  nkappa[0] = 1;
-  t_kappa = Kappa;
-  kappas[0] = &t_kappa;
-
-  milc_sols0[0] = milc_sol;
-  milc_sols[0]  = milc_sols0;
-
   iterations_used = 
-    bicgilu_cl_qop( qic, clov, kappas, nkappa, milc_srcs,
-		    milc_sols, nsrc, &final_restart, &final_rsq_val,
+    bicgilu_cl_qop( prop_type, nsrc, nkappa, qic, dmps, milc_srcs, 
+		    milc_sols, &final_restart, &final_rsq_val,
 		    &final_relrsq_val, EVENANDODD );
 
-  qic->size_r = 0;  /* We don't see the cumulative resid with QOP*/
+
+  qic->size_r = 0;  /* We don't see the cumulative resid with QOP */
   qic->size_relr = 0;
   qic->final_rsq = final_rsq_val;
   qic->final_relrsq = final_relrsq_val;
@@ -526,3 +609,4 @@ BICGILU_MILC2QOP( wilson_vector *milc_src, wilson_vector *milc_sol,
   qic->final_restart = final_restart;
   return  iterations_used;
 }
+

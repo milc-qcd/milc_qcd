@@ -5,8 +5,8 @@
 
 /* 4/29/07 C. DeTar */
 
-#undef QOP_Precision
-#define QOP_Precision 1
+#undef QOP_PrecisionInt
+#define QOP_PrecisionInt 1
 
 #include "d_bicgilu_cl_qop_P.c"
 
