@@ -18,9 +18,6 @@
 #define MAX_MESON_MOMENTUM 100
 #define MAX_MOM_LABEL 16
 #define MAX_CORR 200
-#define CLOVER_TYPE 0
-#define KS_TYPE 1
-#define KS4_TYPE 2
 #define PROP_TYPE 0
 #define QUARK_TYPE 1
 #define BASE_SOURCE_PARENT -1
@@ -69,6 +66,7 @@ typedef struct {
   int saveflag_w[MAX_PROP];	/* what to do for saving wilson prop */
   quark_source src_qs[MAX_PROP];
   dirac_clover_param dcp[MAX_PROP];
+  newaction_ifla_param nap[MAX_PROP];
   char kappa_label[MAX_PROP][32];
   int startflag_ks[MAX_PROP];	/* what to do for beginning wilson prop */
   int saveflag_ks[MAX_PROP];	/* what to do for saving KS prop */
@@ -81,6 +79,7 @@ typedef struct {
   int prop_for_qk[MAX_QK];           /* Propagator or quark index for quark */
   int naik_index[MAX_QK];            /* Naik term index for quark */
   int saveflag_q[MAX_QK];	/* what to do for saving wilson prop */
+  int savetype_q[MAX_QK];	/* type of output: source or wprop */
   quark_source_sink_op snk_qs_op[MAX_QK];
   int num_pair;
   int qkpair[MAX_PAIR][2];

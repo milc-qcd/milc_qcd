@@ -37,12 +37,12 @@ int num_mes_report(void);
 char *create_ks_XML(void);
 
 /* make_prop.c */
-int get_wprop_to_wp_field(int startflag, char startfile[], 
+int get_wprop_to_wp_field(int proptype, int startflag, char startfile[], 
 			  int saveflag, char savefile[],
 			  wilson_prop_field *wp,
 			  quark_source *my_wqs,
 			  quark_invert_control *my_qic,
-			  dirac_clover_param *my_dcp,
+			  void *my_dcp,
 			  Real bdry_phase[],
 			  int r0[],
 			  int check);
@@ -54,7 +54,7 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 			   quark_invert_control *my_qic,
 			   ks_param *my_ksp,
 			   Real *bdry_phase,
-			  int r0[],
+			   int r0[],
 			   int check);
 
 int get_ksprop4_to_wp_field(int startflag, char startfile[], 
@@ -67,7 +67,7 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
 			    int r0[],
 			    int check);
 
-void dump_wprop_from_wp_field(int saveflag, char savefile[], 
+void dump_wprop_from_wp_field(int saveflag, int savetype, char savefile[], 
 			      wilson_prop_field *wp);
 void reread_wprop_to_wp_field(int saveflag, char savefile[], wilson_prop_field *wp);
 

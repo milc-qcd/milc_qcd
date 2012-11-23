@@ -73,6 +73,12 @@ int main(int argc, char *argv[])
 	STARTTIME;
 	gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
 	ENDTIME("gauge fix");
+
+	/* (Re)construct APE smeared links after gauge fixing.  
+	   No KS phases here! */
+	destroy_ape_links_3D(ape_links);
+	ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+
 	invalidate_this_clov(gen_clov);
       }
     else
@@ -105,20 +111,26 @@ int main(int argc, char *argv[])
 	  
 	  prop[i] = create_wp_field(ncolor);
       
-	  if(this_node==0)printf("Kappa= %g source %s residue= %g rel= %g\n",
-				 (double)param.dcp[i].Kappa,
-				 param.src_qs[i].descrp,
-				 (double)param.qic[i].resid,
-				 (double)param.qic[i].relresid);
+	  node0_printf("Generate Dirac propagator\n");
+	  node0_printf("Kappa= %g source %s residue= %g rel= %g\n",
+		       (double)param.dcp[i].Kappa,
+		       param.src_qs[i].descrp,
+		       (double)param.qic[i].resid,
+		       (double)param.qic[i].relresid);
 	  
-	  total_iters += get_wprop_to_wp_field(param.startflag_w[i], 
+	  /* For clover_info */
+	  wqstmp = param.src_qs[i];
+	  dcptmp = param.dcp[i];
+
+	  total_iters += get_wprop_to_wp_field(param.prop_type[i],
+					       param.startflag_w[i], 
 					       param.startfile_w[i], 
 					       param.saveflag_w[i], 
 					       param.savefile_w[i],
 					       prop[i], 
 					       &param.src_qs[i],
 					       &param.qic[i], 
-					       &param.dcp[i],
+					       (void *)&param.dcp[i],
 					       param.bdry_phase[i],
 					       param.coord_origin,
 					       param.check[i]);
@@ -132,6 +144,46 @@ int main(int argc, char *argv[])
 #endif
 	}
 	
+      /* ------------------------------------------- */
+      else if(param.prop_type[i] == IFLA_TYPE)
+	{
+	  int ncolor = convert_ksource_to_color(param.src_qs[i].nsource);
+	  
+
+	  prop[i] = create_wp_field(ncolor);
+      
+	  node0_printf("Generate Dirac IFLA propagator\n");
+	  if(this_node==0)printf("Kappa= %g source %s residue= %g rel= %g\n",
+				 (double)param.nap[i].kapifla,
+				 param.src_qs[i].descrp,
+				 (double)param.qic[i].resid,
+				 (double)param.qic[i].relresid);
+	 
+	  /* For clover_info */
+	  wqstmp = param.src_qs[i];
+	  naptmp = param.nap[i];
+	  
+	  total_iters += get_wprop_to_wp_field(param.prop_type[i],
+					       param.startflag_w[i], 
+					       param.startfile_w[i], 
+					       param.saveflag_w[i], 
+					       param.savefile_w[i],
+					       prop[i], 
+					       &param.src_qs[i], 
+					       &param.qic[i], 
+					       (void *)&param.nap[i],
+					       param.bdry_phase[i],
+					       param.coord_origin,
+					       param.check[i]);
+#ifdef CLOV_LEAN
+	  /* Free clover prop memory if we have saved the prop to disk */
+	  if(param.saveflag_w[i] != FORGET){
+	    free_wp_field(prop[i]);
+	    clear_qs(&param.src_qs[i]);
+	    node0_printf("destroy prop[%d]\n",i);
+	  }
+#endif
+	}
       else if(param.prop_type[i] == KS_TYPE) /* KS_TYPE */
 	{
 	  prop[i] = create_wp_field(param.src_qs[i].ncolor);
@@ -287,7 +339,7 @@ int main(int argc, char *argv[])
       }
 	
       /* Save the resulting quark[j] if requested */
-      dump_wprop_from_wp_field( param.saveflag_q[j], 
+      dump_wprop_from_wp_field( param.saveflag_q[j], param.savetype_q[j],
 				param.savefile_q[j], quark[j]);
 #ifdef CLOV_LEAN
       oldiq1 = j;

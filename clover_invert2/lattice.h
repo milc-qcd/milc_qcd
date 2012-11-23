@@ -104,6 +104,7 @@ EXTERN quark_source ksqstmp;
 EXTERN ks_param ksptmp;
 EXTERN quark_source wqstmp;
 EXTERN dirac_clover_param dcptmp;
+EXTERN newaction_ifla_param naptmp;
 EXTERN gauge_file *startlat_p;
 EXTERN gauge_file *savelat_p;
 EXTERN char utc_date_time[64];

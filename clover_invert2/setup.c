@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.12  2012/11/23 23:43:21  detar
+//  Support saving propagator as source.  Add OK action (IFLA) from Bugra.  Add stride to covariant smearing.
+//
 //  Revision 1.11  2012/04/25 03:37:42  detar
 //  Initialize boundary_phase
 //
@@ -365,7 +368,7 @@ int readin(int prompt) {
 	    param.base_src_qs[is].saveflag = saveflag_s;
 	    strcpy(param.base_src_qs[is].save_file, savefile_s);
 	  if(saveflag_s != FORGET && source_type != DIRAC_FIELD_FILE &&
-	     saveflag_s != VECTOR_FIELD_FILE){
+	     source_type != VECTOR_FIELD_FILE){
 	    printf("Unsupported output source type\n");
 	    status++;
 	  }
@@ -397,6 +400,7 @@ int readin(int prompt) {
 	if(strcmp(savebuf,"clover") == 0)param.prop_type[i] = CLOVER_TYPE;
 	else if(strcmp(savebuf,"KS") == 0)param.prop_type[i] = KS_TYPE;
 	else if(strcmp(savebuf,"KS4") == 0)param.prop_type[i] = KS4_TYPE;
+	else if(strcmp(savebuf,"ifla") == 0 )param.prop_type[i] = IFLA_TYPE;
 	else {
 	  printf("Unknown quark type %s\n",savebuf);
 	  status++;
@@ -406,12 +410,39 @@ int readin(int prompt) {
       /* Mass parameters, etc */
 
       if(param.prop_type[i] == CLOVER_TYPE){
+
 	IF_OK status += get_s(stdin, prompt,"kappa", param.kappa_label[i]);
 	IF_OK param.dcp[i].Kappa = atof(param.kappa_label[i]);
 	IF_OK status += get_f(stdin, prompt,"clov_c", &param.dcp[i].Clov_c );
 	param.dcp[i].U0 = param.u0;
 
+      } else if(param.prop_type[i] == IFLA_TYPE) { 
+
+	printf("Ifla Type Fermion\n");
+#ifndef HAVE_QOP
+	printf("Compilation with the QOP package is required for this fermion type\n");
+	terminate(1);
+#endif
+	
+	IF_OK status += get_s(stdin,prompt,"kapifla",param.kappa_label[i]);
+	IF_OK param.nap[i].kapifla = atof(param.kappa_label[i]);
+	IF_OK status += get_f(stdin, prompt, "kappa_s", &param.nap[i].kappa_s);
+	IF_OK status += get_f(stdin, prompt, "kappa_t", &param.nap[i].kappa_t);
+	IF_OK status += get_f(stdin, prompt, "r_s",     &param.nap[i].r_s);
+	IF_OK status += get_f(stdin, prompt, "r_t",     &param.nap[i].r_t);
+	IF_OK status += get_f(stdin, prompt, "zeta",    &param.nap[i].zeta);
+	IF_OK status += get_f(stdin, prompt, "c_E",     &param.nap[i].c_E);
+	IF_OK status += get_f(stdin, prompt, "c_B",     &param.nap[i].c_B);
+	IF_OK status += get_f(stdin, prompt, "c_1",     &param.nap[i].c_1);
+	IF_OK status += get_f(stdin, prompt, "c_2",     &param.nap[i].c_2);
+	IF_OK status += get_f(stdin, prompt, "c_3",     &param.nap[i].c_3);
+	IF_OK status += get_f(stdin, prompt, "c_4",     &param.nap[i].c_4);
+	IF_OK status += get_f(stdin, prompt, "c_5",     &param.nap[i].c_5);
+	IF_OK status += get_f(stdin, prompt, "c_EE",    &param.nap[i].c_EE);
+	param.nap[i].u0 = param.u0;
+	
       } else {  /* KS_TYPE || KS4_TYPE */
+	
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[i] );
 	IF_OK param.ksp[i].mass = atof(param.mass_label[i]);
 #if FERM_ACTION == HISQ
@@ -619,9 +650,14 @@ int readin(int prompt) {
       /* Get sink operator attributes */
       IF_OK init_qss_op(&param.snk_qs_op[i]);
       IF_OK status += get_wv_field_op( stdin, prompt, &param.snk_qs_op[i]);
-      IF_OK status += ask_ending_wprop( stdin, prompt, &param.saveflag_q[i],
-					param.savefile_q[i]);
-	
+      /* Get sink quark save attributes */
+      IF_OK {
+	char descrp[MAXDESCRP];
+	status += 
+	  ask_ending_wprop_or_wsource( stdin, prompt, &param.saveflag_q[i], 
+				       &param.savetype_q[i], NULL, descrp,
+				       param.savefile_q[i]);
+      }
     }
     
     /*------------------------------------------------------------*/

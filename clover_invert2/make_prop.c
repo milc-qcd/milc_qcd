@@ -4,6 +4,7 @@
 
 #include "cl_inv_includes.h"
 #include "../include/fermion_links.h"
+#include <string.h>
 
 // DEBUG
 // Forces an unsophisticated static propagator -- NOT FOR MPP!
@@ -21,12 +22,12 @@ void static_prop_wv(wilson_vector *dst, wilson_vector *src, quark_source *my_qs)
 }
 
 
-int get_wprop_to_wp_field(int startflag, char startfile[], 
+int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[], 
 			  int saveflag, char savefile[],
 			  wilson_prop_field *wp,
 			  quark_source *my_wqs,
 			  quark_invert_control *my_qic,
-			  dirac_clover_param *my_dcp,
+			  void *my_dcp,
 			  Real bdry_phase[],
 			  int r0[4],
 			  int check)
@@ -47,23 +48,11 @@ int get_wprop_to_wp_field(int startflag, char startfile[],
   int io_timing = 0;
 #endif
 
-  node0_printf("%s: Generate Dirac propagator for kappa %g\n", 
-	       myname, my_dcp->Kappa);
-
   /* Local copy of bdry_phase */
   for(i = 0; i < 4; i++)
     mybdry_phase[i] = bdry_phase[i];
 
-//  r0[0] = my_wqs->x0;
-//  r0[1] = my_wqs->y0;
-//  r0[2] = my_wqs->z0;
-//  r0[3] = my_wqs->t0;
-
   dst = create_wv_field();
-
-  /* For clover_info */
-  wqstmp = *my_wqs;
-  dcptmp = *my_dcp;
 
   /* Open files for Wilson propagators, if requested */
   fp_in  = r_open_wprop(startflag, startfile);
@@ -100,10 +89,8 @@ int get_wprop_to_wp_field(int startflag, char startfile[],
        or we didn't say not to solve. */
     if(check != CHECK_NO || startflag == FRESH){
 
-      wilson_vector *src;
-
       /* Make the source */
-      src = create_wv_field();
+      wilson_vector *src = create_wv_field();
       
       /* Create the source */
       if(wv_source_field(src, my_wqs)){
@@ -136,30 +123,49 @@ int get_wprop_to_wp_field(int startflag, char startfile[],
 	mybdry_phase[3] = bdry_phase[3]; 
 	
 	/* solve for dst */
-	
-	switch (cl_cg) {
-	case BICG:
-	  avs_iters = bicgilu_cl_field(src, dst, my_qic,(void *)my_dcp);
-	  break;
-	case HOP:
-	  avs_iters = hopilu_cl_field(src, dst, my_qic,(void *)my_dcp);
-	  break;
-	case MR:
-	  avs_iters = mrilu_cl_field(src, dst, my_qic,(void *)my_dcp);
-	  break;
-	case CG:
-	  avs_iters = cgilu_cl_field(src, dst, my_qic,(void *)my_dcp);
-	  break;
-	default:
-	  node0_printf("main(%d): Inverter choice %d not supported\n",
-		       this_node,cl_cg);
+
+	if(prop_type == CLOVER_TYPE){
+	  switch (cl_cg) {
+	  case BICG:
+	    avs_iters = bicgilu_cl_field(src, dst, my_qic, my_dcp);
+	    break;
+	  case HOP:
+	    avs_iters = hopilu_cl_field(src, dst, my_qic, my_dcp);
+	    break;
+	  case MR:
+	    avs_iters = mrilu_cl_field(src, dst, my_qic, my_dcp);
+	    break;
+	  case CG:
+	    avs_iters = cgilu_cl_field(src, dst, my_qic, my_dcp);
+	    break;
+	  default:
+	    node0_printf("%s(%d): Inverter choice %d not supported\n",
+			 myname, this_node,cl_cg);
+	  }
+	} else if(prop_type == IFLA_TYPE){
+#ifdef HAVE_QOP
+	  switch (cl_cg) {
+	  case BICG:
+	    avs_iters = bicgilu_cl_field_ifla(src, dst, my_qic, my_dcp);
+	    break;
+	  default:
+	    node0_printf("%s(%d): Inverter choice %d not supported\n",
+			 myname, this_node,cl_cg);
+	  }
+#else
+	  node0_printf("%s: QOP compilation required for IFLA\n", myname);
+	  terminate(1);
+#endif
+	} else {
+	  node0_printf("%s: Unsupported propagator type\n", myname);
+	  terminate(1);
 	}
 
 	report_status(my_qic);
-
+	
 	// DEBUG
 	//static_prop_wv(dst, src, my_wqs);
-
+	
       }
 
       destroy_wv_field(src);
@@ -625,7 +631,7 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
 
 /* Dump wilson propagator field to file */
 
-void dump_wprop_from_wp_field(int saveflag, char savefile[], 
+void dump_wprop_from_wp_field(int saveflag, int savetype, char savefile[], 
 			      wilson_prop_field *wp){
   quark_source dummy_wqs;
 #ifdef IOTIME
@@ -633,26 +639,57 @@ void dump_wprop_from_wp_field(int saveflag, char savefile[],
 #else
   int io_timing = 0;
 #endif
+
+  /* Two output formats are supported.  We can write a file in
+     propagator format or source format.  The latter would be suitable
+     as an extended source. */
   
-  /* When we dump a propagator, we don't keep the source information.
-     Normally we want the source information for checking consistency
-     with the Dirac operator we are using, since if we know the
-     source, we can run the propagator through the solver to check it.
-     Here the propagator we are dumping is usually one that has
-     already had sink operators applied to it, so it won't satisfy the
-     Dirac equation, anyway.
-     
-     So we take a default source type "UNKOWN".  A minimal source
-     record is still written to the file, since we don't have any
-     propagator file formats without sources records.  The minimal
-     source record is a null complex field on time slice zero. */
-
-  /* For clover_info.c */
-
   init_qs(&dummy_wqs);
   wqstmp = dummy_wqs;   /* For clover_info.c */
-  save_wprop_from_wp_field(saveflag, savefile, &dummy_wqs, wp, "", io_timing);
-  clear_qs(&dummy_wqs); /* Free any allocations */
+
+  if(savetype == DIRAC_PROPAGATOR_FILE){
+    /* Propagator format */
+
+    /* When we dump a propagator, we don't keep the source information.
+       Normally we want the source information for checking consistency
+       with the Dirac operator we are using, since if we know the
+       source, we can run the propagator through the solver to check it.
+       Here the propagator we are dumping is usually one that has
+       already had sink operators applied to it, so it won't satisfy the
+       Dirac equation, anyway.
+       
+       So we take a default source type "UNKOWN".  A minimal source
+       record is still written to the file, since we don't have any
+       propagator file formats without sources records.  The minimal
+       source record is a null complex field on time slice zero. */
+    
+    save_wprop_from_wp_field(saveflag, savefile, &dummy_wqs, wp, "", io_timing);
+    clear_qs(&dummy_wqs); /* Free any allocations */
+  } else {
+    /* Source file format */
+    int ksource, ncolor, color, spin;
+    wilson_vector *wv = create_wv_field();
+    char fileinfo[] = "";
+
+    /* Fill relevant source structure parameters */
+    dummy_wqs.savetype = savetype;
+    /* For the moment we do this only for sources on all time slices. */  
+    dummy_wqs.t0 = ALL_T_SLICES;
+    dummy_wqs.saveflag = saveflag;
+    strcpy(dummy_wqs.save_file,savefile);
+
+    w_source_open_dirac(&dummy_wqs, fileinfo);
+    ncolor = wp->nc;
+    for(ksource = 0; ksource < 4*ncolor; ksource++){
+      dummy_wqs.ksource = ksource;
+      color = convert_ksource_to_color(ksource);
+      spin = convert_ksource_to_spin(ksource);
+      copy_wv_from_wp(wv, wp, color, spin);
+      w_source_dirac(wv, &dummy_wqs);
+    }
+    destroy_wv_field(wv);
+    w_source_close(&dummy_wqs);
+  }
 }
 
 /* Create a wilson_prop_field and restore it from a dump file */
