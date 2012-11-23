@@ -192,6 +192,15 @@ void declare_accumulate_gather_field(
 			   one of EVEN, ODD or EVENANDODD. */
   char ** dest);	/* one of the vectors of pointers */
 
+msg_tag * start_general_strided_gather(
+  char *field,	        /* source buffer aligned to desired field */
+  int stride,           /* bytes between fields in source buffer */
+  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  int *displacement,	/* displacement to gather from. four components */
+  int subl,		/* subl of sites whose neighbors we gather.
+			   It is EVENANDODD, if all sublattices are done. */
+  char ** dest);	/* one of the vectors of pointers */
+
 msg_tag * start_general_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
   int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
