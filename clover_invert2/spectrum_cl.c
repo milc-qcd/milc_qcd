@@ -1352,10 +1352,9 @@ void spectrum_cl(wilson_prop_field *qp0, wilson_prop_field *qp1, int pair)
 
     if(param.do_open_meson[pair]){
       /* We must transpose source and sink color-spin indices */
-      transpose_wp_field(qp0);
-      spectrum_cl_offdiag_open_meson(qp0, qp0, pair);
-      /* Transpose back again */
-      transpose_wp_field(qp0);
+      wilson_prop_field *qp0tmp = transpose_wp_field(qp0);
+      spectrum_cl_offdiag_open_meson(qp0tmp, qp0tmp, pair);
+      destroy_wp_field(qp0tmp);
     }
 
     dtime = start_timing();
@@ -1372,12 +1371,11 @@ void spectrum_cl(wilson_prop_field *qp0, wilson_prop_field *qp1, int pair)
     
     if(param.do_open_meson[pair]){
       /* We must transpose source and sink color-spin indices */
-      transpose_wp_field(qp0);
-      transpose_wp_field(qp1);
-      spectrum_cl_offdiag_open_meson(qp0, qp1, pair);
-      /* Transpose back again */
-      transpose_wp_field(qp0);
-      transpose_wp_field(qp1);
+      wilson_prop_field *qp0tmp = transpose_wp_field(qp0);
+      wilson_prop_field *qp1tmp = transpose_wp_field(qp1);
+      spectrum_cl_offdiag_open_meson(qp0tmp, qp1tmp, pair);
+      destroy_wp_field(qp0tmp);
+      destroy_wp_field(qp1tmp);
     }
 
     dtime = start_timing();
