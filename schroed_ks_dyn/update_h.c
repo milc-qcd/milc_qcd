@@ -3,15 +3,40 @@
 /* THIS CODE NEEDS UPGRADING, NOW */
 
 #include "schroed_ks_includes.h"
+#include "../include/dslash_ks_redefine.h"
+
+void dump_v_site(char *id, field_offset f);
+
+void dump_mom_site(char *id, field_offset f){
+  int i;
+  site *s;
+  anti_hermitmat *m;
+
+  printf("Dump of %s\n",id);
+  FORALLSITES(i,s){
+    printf("%d %d %d %d ", s->x, s->y, s->z, s->t);
+    m = (anti_hermitmat *)F_PT(s,f);
+    printf("( %e, %e) ", m->m01.real, m->m01.imag);
+    printf("( %e, %e) ", m->m02.real, m->m02.imag);
+    printf("( %e, %e) ", m->m12.real, m->m12.imag);
+    printf("%e %e %e", m->m00im, m->m11im, m->m22im );
+    printf("\n");
+  }
+}
 
 void update_h( Real eps ) {
-    /* gauge field force */
-    gauge_force(eps);
-    /* fermionic force */
-    /* First compute M*xxx in temporary vector ttt */
-	/* The diagonal term in M doesn't matter */
-    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
-    fermion_force(eps);
+  imp_ferm_links_t** fn;
+
+  /* gauge field force */
+  invalidate_fermion_links(fn_links);
+  gauge_force(eps);
+  /* fermionic force */
+  /* First compute M*xxx in temporary vector ttt */
+  /* The diagonal term in M doesn't matter */
+  restore_fermion_links_from_site(fn_links, PRECISION);
+  fn = get_fm_links(fn_links);
+  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn[0] );
+  fermion_force(eps);
 } /* update_h */
 
 /* update the momenta with the gauge force */

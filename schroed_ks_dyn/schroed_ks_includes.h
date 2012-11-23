@@ -38,3 +38,4 @@ void f_measure(Real *r_psi_bar_psi_even, Real *r_psi_bar_psi_odd,
 
 void phaseset_sf();
 void rephase_sf(int flag);
+void clear_v_site(field_offset vs);

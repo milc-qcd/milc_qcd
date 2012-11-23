@@ -178,7 +178,7 @@ Real x;
     saveflag = par_buf.saveflag;
     niter = par_buf.niter;
     nrestart = par_buf.nrestart;
-    rsqmin = par_buf.rsqmin;
+    rsqmin = rsqprop = par_buf.rsqmin;
     epsilon = par_buf.epsilon;
 #ifdef SEXT_WEIN
     n_sxw = par_buf.n_sxw;
@@ -206,6 +206,14 @@ Real x;
     /* put in KS phases and fermion phases, if desired */
     phases_in = OFF;
     rephase_sf( ON );
+
+    /* Set uptions for fermion links */
+#ifdef DBLSTORE_FN
+    /* We want to double-store the links for optimization */
+    fermion_links_want_back(1);
+#endif
+    
+    fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
 
     return(0);
 }

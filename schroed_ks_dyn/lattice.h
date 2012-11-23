@@ -7,9 +7,9 @@
 
 #include "defines.h"
 #include "../include/macros.h"	/* For MAXFILENAME, EVENFIRST */
-#include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
-#include "../include/random.h"	/* For double_prn */
+#include "../include/generic_ks.h" /* For fn_links and ks_act_paths */
 #include "../include/io_lat.h"	/* For gauge_file */
+#include "../include/fermion_links.h"  /* For fermion_links_t */
 
 /* Begin definition of site structure */
 
@@ -80,7 +80,7 @@ EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
 EXTERN	int iseed;		/* random number seed */
 EXTERN	int warms,trajecs,steps,niter,nrestart,nflavors;
 EXTERN	int bc_flag;		/* flag for gauge field bc */
-EXTERN	Real rsqmin,beta,mass;
+EXTERN	Real rsqmin,rsqprop,beta,mass;
 EXTERN	Real epsilon;
 EXTERN	Real gamma_rv;		/* Reweigh dS/deta coefficient */
 EXTERN	Real ferm_phases[3];	/* fermion phase factors */
@@ -117,11 +117,11 @@ EXTERN	site *lattice;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */
-#define N_POINTERS 8
+#define N_POINTERS 16
 EXTERN	char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
-EXTERN ferm_links_t        fn_links;
-EXTERN ks_action_paths ks_act_paths;
+EXTERN fermion_links_t  *fn_links;
+//EXTERN ks_action_paths ks_act_paths;
 
 #endif	/* _LATTICE_H */

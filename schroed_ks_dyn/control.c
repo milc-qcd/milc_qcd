@@ -26,6 +26,7 @@ Real f_energy,f_pressure;	/* fermionic energy and pressure */
 Real f_action;			/* fermionic action */
 int m_iters,s_iters,avm_iters,avs_iters;
 double dtime;
+  imp_ferm_links_t** fn;
 
  initialize_machine(&argc,&argv);
 
@@ -67,12 +68,15 @@ double dtime;
 	    }
 
 	    /* generate a pseudofermion configuration */
-	    grsource(EVEN);
+	    restore_fermion_links_from_site(fn_links, PRECISION);
+	    fn = get_fm_links(fn_links);
+	    clear_latvec( F_OFFSET(phi), EVENANDODD );
+	    grsource_imp_plus(F_OFFSET(phi), F_OFFSET(g_rand), mass, EVEN, fn[0]);
+	    clear_latvec(F_OFFSET(xxx), EVENANDODD);
 	    /* do conjugate gradient to get (Madj M)inverse * phi  */
-	    load_ferm_links(&fn_links);
-	    m_iters=ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
+	    m_iters=ks_congrad(F_OFFSET(phi), F_OFFSET(xxx), mass,
 			       niter, nrestart, rsqmin, PRECISION, EVEN,
-			       &rsq,  &fn_links);
+			       &rsq,  fn[0]);
 
 	    /* call Psi-bar-Psi and fermion energy/pressure measurement */
 	    /* it also measures the pseudofermionic action 		*/
@@ -116,3 +120,4 @@ double dtime;
     }
     return 0;
 }
+

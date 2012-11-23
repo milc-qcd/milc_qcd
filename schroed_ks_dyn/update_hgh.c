@@ -39,6 +39,7 @@ Real cg_time,old_cg_time,next_cg_time;	/* simulation time for last two CG's */
 double startaction,endaction,change;
 Real xrandom;
 #endif
+  imp_ferm_links_t** fn;
 
     /* refresh the momenta */
     ranmom();
@@ -53,15 +54,22 @@ Real xrandom;
 #ifdef PHI_ALGORITHM
 	/* generate a pseudofermion configuration only at start*/
 	if(step==1){
-	    grsource(EVEN);
+	  restore_fermion_links_from_site(fn_links, PRECISION);
+	  fn = get_fm_links(fn_links);
+	  clear_latvec( F_OFFSET(phi), EVENANDODD );
+	  grsource_imp( F_OFFSET(phi), mass, EVEN, fn[0]);
+	  clear_latvec( F_OFFSET(xxx), EVENANDODD );
+	  clear_latvec( F_OFFSET(ttt), EVENANDODD );
+	  //	    grsource(EVEN);
 	    old_cg_time = cg_time = -1.0e6;
 
 	    /* do conjugate gradient to get (Madj M)inverse * phi */
 	    /* NOTE: NEED TO UPGRADE TO ASQTAD.  BUILD ks_act_paths, ETC. */
-	    load_ferm_links(&fn_links);
+	    restore_fermion_links_from_site(fn_links, PRECISION);
+	    fn = get_fm_links(fn_links);
 	    iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 				niter, nrestart, rsqmin, PRECISION, EVEN, 
-				&final_rsq, &fn_links);
+				&final_rsq, fn[0]);
 	    cg_time = 0.0;
 	}
 #ifdef HMC_ALGORITHM
@@ -79,7 +87,7 @@ Real xrandom;
 	    /* with fermion_force only! */
 	    /* First compute M*xxx in temporary vector ttt */
 	    /* The diagonal term in M doesn't matter */
-	    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
+	  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn[0] );
 	    fermion_force(0.5*epsilon);
 #else
 	    update_h(0.5*epsilon);
@@ -120,10 +128,12 @@ Real xrandom;
 	/* do conjugate gradient to get (Madj M)inverse * phi */
 	next_cg_time = step*epsilon;
 	predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
-	load_ferm_links(&fn_links);
+	restore_fermion_links_from_site(fn_links, PRECISION);
+	fn = get_fm_links(fn_links);
+	clear_latvec( F_OFFSET(xxx), EVENANDODD );
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, nrestart, rsqmin, PRECISION, EVEN, 
-			    &final_rsq, &fn_links);
+			    &final_rsq, fn[0]);
 	cg_time = step*epsilon;
 
 	if( step < steps ){
@@ -131,10 +141,10 @@ Real xrandom;
 #ifdef SEXT_WEIN
 	    /* with fermion_force only! */
 	    /* First compute M*xxx in temporary vector ttt */
-	    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
-	    fermion_force(epsilon);
+	  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn[0] );
+	  fermion_force(epsilon);
 #else
-	    update_h(epsilon);
+	  update_h(epsilon);
 #endif
 	}
 	else{
@@ -142,10 +152,10 @@ Real xrandom;
 #ifdef SEXT_WEIN
 	    /* with fermion_force only! */
 	    /* First compute M*xxx in temporary vector ttt */
-	    dslash_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD );
-	    fermion_force(0.5*epsilon);
+	  dslash_fn_site( F_OFFSET(xxx), F_OFFSET(ttt), ODD, fn[0] );
+	  fermion_force(0.5*epsilon);
 #else
-	    update_h(0.5*epsilon);
+	  update_h(0.5*epsilon);
 #endif
 	}
 
@@ -180,6 +190,7 @@ Real xrandom;
     if( exp( -change ) < (double)xrandom ){
 	if(steps > 0)
 	    gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
+	invalidate_fermion_links(fn_links);
 	if(this_node==0)printf("REJECT: delta S = %e\n", change);
     }
     else {

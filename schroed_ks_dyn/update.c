@@ -24,6 +24,21 @@
 static void predict_next_xxx(Real *oldtime, Real *newtime, Real *nexttime);
 #endif
 
+void dump_v_site(char *id, field_offset f){
+  int i,j;
+  site *s;
+  su3_vector *v;
+
+  printf("Dump of %s\n",id);
+  FORALLSITES(i,s){
+    printf("%d %d %d %d ", s->x, s->y, s->z, s->t);
+    v = (su3_vector *)F_PT(s,f);
+    for(j = 0; j < 3; j++)
+      printf("( %e, %e) ", v->c[j].real, v->c[j].imag);
+    printf("\n");
+  }
+}
+
 int update()  {
 int step, iters=0;
 Real final_rsq;
@@ -35,6 +50,7 @@ Real old_cg_time,next_cg_time;	/* simulation time for last two CG's */
 double startaction,endaction,change;
 Real xrandom;
 #endif
+  imp_ferm_links_t** fn;
 
     /* refresh the momenta */
     ranmom();
@@ -44,17 +60,27 @@ Real xrandom;
 
 #ifdef PHI_ALGORITHM
 	/* generate a pseudofermion configuration only at start*/
-	if(step==1){grsource(EVEN); old_cg_time = cg_time = -1.0e6;}
+	if(step==1){
+	  restore_fermion_links_from_site(fn_links, PRECISION);
+	  fn = get_fm_links(fn_links);
+	  clear_latvec( F_OFFSET(phi), EVENANDODD );
+	  grsource_imp( F_OFFSET(phi), mass, EVEN, fn[0]);
+	  clear_latvec( F_OFFSET(xxx), EVENANDODD );
+	  clear_latvec( F_OFFSET(ttt), EVENANDODD );
+	  //	  grsource(EVEN); 
+	  old_cg_time = cg_time = -1.0e6;
+	}
 
 #ifdef HMC_ALGORITHM
 	/* find action */
 	/* do conjugate gradient to get (Madj M)inverse * phi */
 	if(step==1){
 	    /* do conjugate gradient to get (Madj M)inverse * phi */
-	  load_ferm_links(&fn_links);
+	  restore_fermion_links_from_site(fn_links, PRECISION);
+	  fn = get_fm_links(fn_links);
 	  iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			      niter, nrestart, rsqmin, PRECISION, EVEN,
-			      &final_rsq, &fn_links);
+			      &final_rsq, fn[0]);
 	    cg_time = 0.0;
 	    startaction=d_action();
 	    /* copy link field to old_link */
@@ -74,18 +100,27 @@ Real xrandom;
 	update_u(epsilon*(0.5-nflavors/8.0));
 
 	/* generate a pseudofermion configuration */
-	grsource(EVEN); cg_time = -1.0e6;
+	restore_fermion_links_from_site(fn_links, PRECISION);
+	fn = get_fm_links(fn_links);
+	clear_latvec( F_OFFSET(phi), EVENANDODD );
+     	grsource_imp( F_OFFSET(phi), mass, EVEN, fn[0]);
+	clear_latvec( F_OFFSET(xxx), EVENANDODD );
+	clear_latvec( F_OFFSET(ttt), EVENANDODD );
+	//	grsource(EVEN); 
+	cg_time = -1.0e6;
 
 	/* update U's to middle of interval */
 	update_u(epsilon*nflavors/8.0);
 #endif
 
 	/* do conjugate gradient to get (Madj M)inverse * phi */
-	load_ferm_links(&fn_links);
+	restore_fermion_links_from_site(fn_links, PRECISION);
+	fn = get_fm_links(fn_links);
 	iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			    niter, nrestart, rsqmin, PRECISION, EVEN, 
-			    &final_rsq, &fn_links);
+			    &final_rsq, fn[0]);
 	cg_time = ((Real)step - 0.5)*epsilon;
+
 
 	/* now update H by full time interval */
 	update_h(epsilon);
@@ -105,10 +140,11 @@ Real xrandom;
     /* do conjugate gradient to get (Madj M)inverse * phi */
     next_cg_time = steps*epsilon;
     predict_next_xxx(&old_cg_time,&cg_time,&next_cg_time);
-    load_ferm_links(&fn_links);
+    restore_fermion_links_from_site(fn_links, PRECISION);
+    fn = get_fm_links(fn_links);
     iters += ks_congrad(F_OFFSET(phi),F_OFFSET(xxx),mass,
 			niter, nrestart, rsqmin, PRECISION, EVEN, 
-			&final_rsq, &fn_links);
+			&final_rsq, fn[0]);
     cg_time = steps*epsilon;
     endaction=d_action();
     change = endaction-startaction;
@@ -137,6 +173,7 @@ Real xrandom;
     if( exp( -change ) < (double)xrandom ){
 	if(steps > 0)
 	    gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
+	invalidate_fermion_links(fn_links);
 	if(this_node==0)printf("REJECT: delta S = %e\n", change);
     }
     else {

@@ -27,6 +27,7 @@ t4 = eps/4.0;
 t5 = eps/5.0;
 t6 = eps/6.0;
 
+ invalidate_fermion_links(fn_links);
     FORALLSITES(i,s){
 	for(dir=XUP; dir <=TUP; dir++) if(dir==TUP || s->t>0){
 	    uncompress_anti_hermitian( &(s->mom[dir]) , &htemp );

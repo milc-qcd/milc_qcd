@@ -39,6 +39,7 @@ MY_HEADERS = \
   params.h \
   defines.h \
   schroed_ks_includes.h \
+  quark_action.h \
   ${ADDHEADERS}
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
@@ -48,45 +49,33 @@ HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
 MY_OBJECTS =         \
   control.o          \
   f_measure.o        \
-  fermion_links_onelink.o \
   gauge_info.o       \
+  plaquette4.o       \
   setup.o            \
   update_u.o         \
   update_h.o         \
 
+
 # Basic set from generic directory
 G_OBJECTS =          \
-  check_unitarity.o  \
-  d_plaq4.o          \
-  field_utilities.o  \
-  io_helpers.o       \
-  io_lat4.o          \
-  io_lat_utils.o     \
-  make_lattice.o     \
-  nersc_cksum.o \
-  plaquette4.o       \
-  ranstuff.o         \
+  ${GAUGE_OBJECTS}   \
+  ${STANDARD_OBJECTS} \
   ranmom.o           \
-  remap_stdio_from_args.o \
-  reunitarize2.o
-
-ifeq ($(strip ${HAVEQIO}),true)
-  G_OBJECTS += io_scidac.o io_scidac_types.o
-endif
 
 # Basic set from generic_ks directory
 G_KS_OBJECTS = \
-  grsource.o \
-  d_congrad5.o \
-  d_congrad_opt.o \
-  dslash.o
+  ${FN_OBJECTS} \
+
+
+#  grsource.o
+#  dslash.o
 
 # Basic set from generic_wilson directory
 G_WILSON_OBJECTS = 
 
-ifeq ($(strip ${HAVEQIO}),true)
-  G_WILSON_OBJECTS += io_scidac_w.o
-endif
+# ifeq ($(strip ${HAVEQIO}),true)
+#   G_WILSON_OBJECTS += io_scidac_w.o
+# endif
 
 # Basic set from generic_schroed directory
 G_SCHROED_OBJECTS =  \
@@ -139,7 +128,7 @@ LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
 LASTMAKE = .lastmake.${MAKEFILE}.${P}.${MYTARGET}
 
 ${LASTMAKE}: ${ALL_MAKES}
-	-/bin/rm -f .lastmake.*
+	-/bin/rm -f .lastmake.* quark_action.h
 	${MAKE} -f ${MAKEFILE} clean
 	touch ${LASTMAKE}
 
@@ -154,77 +143,82 @@ ALL_MAKES = \
   ../generic_schroed/Make_template \
   ../generic_wilson/Make_template
 
-# All objects should depend on these
-ALL_DEPEND = ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
-
 # To force a remake when changing any make file, header, or target
-${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+${OBJECTS} : ${LASTMAKE} ${HEADERS} ${ALL_MAKES}
+
+# Directories where we store the improved action headers
+# This application works only with unimproved (naive) staggered fermions
+QUARKIMP = ../generic_ks/imp_actions
+QUARK = onelink_action.h
+
+quark_action.h: ${QUARKIMP}/${QUARK}
+	/bin/cp ${QUARKIMP}/${QUARK} quark_action.h
 
 ########################################################
 ##### Targets:
 
 su3_schr_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= " \
+	"DEFINES= -DFN" \
 	"EXTRA_OBJECTS= update.o"
 
 su3_schr_phi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DPHI_ALGORITHM" \
+	"DEFINES= -DFN -DPHI_ALGORITHM" \
 	"EXTRA_OBJECTS= update.o"
 
 su3_schr_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DFN -DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"EXTRA_OBJECTS= d_action.o update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_sw_phi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DPHI_ALGORITHM -DSEXT_WEIN" \
+	"DEFINES= -DFN -DPHI_ALGORITHM -DSEXT_WEIN" \
 	"EXTRA_OBJECTS= update_hgh.o"
 
 su3_schr_sw_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DPHI_ALGORITHM -DHMC_ALGORITHM -DSEXT_WEIN" \
+	"DEFINES= -DFN -DPHI_ALGORITHM -DHMC_ALGORITHM -DSEXT_WEIN" \
 	"EXTRA_OBJECTS= d_action.o update_hgh.o"
 
 su3_schr_rmd_ph::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFERM_PHASES" \
+	"DEFINES= -DFN -DFERM_PHASES" \
 	"EXTRA_OBJECTS= update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_phi_ph::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFERM_PHASES -DPHI_ALGORITHM" \
+	"DEFINES= -DFN -DFERM_PHASES -DPHI_ALGORITHM" \
 	"EXTRA_OBJECTS= update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_hmc_ph::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFERM_PHASES -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DFN -DFERM_PHASES -DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"EXTRA_OBJECTS= d_action.o update.o"
 
 su3_schr_rw_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DREWEIGH" \
+	"DEFINES= -DFN -DREWEIGH" \
 	"EXTRA_OBJECTS= update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_rw_phi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DREWEIGH -DPHI_ALGORITHM" \
+	"DEFINES= -DFN -DREWEIGH -DPHI_ALGORITHM" \
 	"EXTRA_OBJECTS= update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_rw_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DREWEIGH -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DFN -DREWEIGH -DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"EXTRA_OBJECTS= d_action.o update.o"
 
 clean:
-	-/bin/rm -f *.o
+	-/bin/rm -f *.o quark_action.h 
 
 
 # Rules for generic routines
