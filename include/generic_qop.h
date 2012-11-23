@@ -16,7 +16,7 @@ QOP_status_t initialize_qop(void);
 
 /* Generic mapping */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 
 #define create_raw4_G  create_raw4_F_G
 #define create_raw4_F  create_raw4_F_F

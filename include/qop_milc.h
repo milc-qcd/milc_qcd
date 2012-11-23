@@ -5,7 +5,7 @@
 
 /* For MILC test implementation of SciDAC Level 3 routines */
 
-#if QOP_Precision == 1
+#if QOP_PrecisionInt == 1
 
 #define QOP_ColorVector_struct QOP_F3_ColorVector_struct
 #define QOP_DiracFermion_struct QOP_F3_DiracFermion_struct

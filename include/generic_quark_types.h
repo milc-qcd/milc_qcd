@@ -97,6 +97,7 @@ struct qss_op_struct {
   int dhop;           /* 0 for hop, 1 for 1st deriv of hop, 2 for 2nd */
   int iters;          /* iterations for covariant gaussian source */
   Real r0;            /* source size for gaussian, width for gauge invt  */
+  int stride;         /* Subset flag for gaussian source */
   int r_offset[4];    /* Coordinate offset for phases for some operators */
   int spin_taste;     /* For staggered fermions for some operators */
   char source_file[MAXFILENAME]; /* file name for some sources */
@@ -175,6 +176,13 @@ typedef struct {
 
 void report_status(quark_invert_control *qic);
 
+/* Propagator types */
+
+#define CLOVER_TYPE 0
+#define KS_TYPE 1
+#define KS4_TYPE 2
+#define IFLA_TYPE 3
+
 /* Structures required for specific inverters */
 
 /* Structure defining parameters of Dirac matrix for clover inversion */
@@ -198,6 +206,25 @@ typedef struct {
   Real naik_term_epsilon;
 
 } ks_param;
+
+/* This is the IFLA case */
+typedef struct {
+  Real kapifla;
+  Real kappa_s;
+  Real kappa_t;
+  Real r_s;
+  Real r_t;
+  Real zeta;
+  Real c_E;
+  Real c_B;
+  Real c_1;
+  Real c_2;
+  Real c_3;
+  Real c_4;
+  Real c_5;
+  Real c_EE;
+  Real u0;
+} newaction_ifla_param;
 
 #endif /* _GENERIC_QUARK_TYPES_H */
 
