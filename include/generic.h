@@ -191,7 +191,7 @@ wilson_prop_field * create_wp_field(int nc);
 wilson_prop_field * create_wp_field_copy(wilson_prop_field * w);
 void clear_wp_field(wilson_prop_field * wp);
 void copy_wp_field(wilson_prop_field * wpcopy, wilson_prop_field * wp);
-void transpose_wp_field(wilson_prop_field * wp);
+wilson_prop_field *transpose_wp_field(wilson_prop_field * wp);
 void free_wp_field(wilson_prop_field * wp);
 void rebuild_wp_field(wilson_prop_field * wp);
 void destroy_wp_field(wilson_prop_field * wp);
@@ -396,6 +396,8 @@ wilson_vector *get_cached_wv_source(quark_source *qs);
 void clear_qs(quark_source *qs);
 int convert_ksource_to_color(int ksource);
 int convert_ksource_to_spin(int ksource);
+char *decode_mask(int mask);
+int encode_mask(int *mask, char c_mask[]);
 void even_and_odd_wall(complex *c, int t0);
 void gaussian_source(complex *src, Real r0, 
 		     int x0, int y0, int z0, int t0);
@@ -433,6 +435,9 @@ void w_source_close(quark_source *qs);
 int w_source_ks(su3_vector *src, quark_source *qs);
 int w_source_dirac(wilson_vector *src, quark_source *qs);
 int w_source_dirac_site(field_offset src, quark_source *qs);
+void print_output_quark_source_choices(void);
+int parse_output_quark_source_choices(int *flag, int *save_type, 
+				      char *descrp, char* savebuf);
 int ask_output_quark_source_file( FILE *fp, int prompt, 
 				  int *flag, int *source_type,
 				  int *t0, char *descrp, char *filename);
