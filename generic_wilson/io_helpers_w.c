@@ -1219,11 +1219,11 @@ ask_starting_wprop( FILE *fp, int prompt, int *flag, char *filename )
     if(status !=1) {
       printf("\n%s(%d): ERROR IN INPUT: Can't read file name.\n",
 	     myname, this_node);
-      return(1);
+      return 1;
     }
     printf("%s\n",filename);
   }
-  return(0);
+  return 0;
 } /* ask_starting_wprop */
 
 /*---------------------------------------------------------------*/
@@ -1239,21 +1239,8 @@ static void print_output_wprop_choices(void){
     printf("\n");
 }
 
-int 
-ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
-  char *savebuf;
-  int status;
-  char myname[] = "ask_ending_wprop";
-  
-  if (prompt==1) {
-    printf("save wilson propagator:\n enter ");
-    print_output_wprop_choices();
-  }
-
-  savebuf = get_next_tag(fp, "write wprop command", myname);
-  if (savebuf == NULL)return 1;
-
-  printf("%s ",savebuf);
+static int
+parse_output_wprop_choices(int *flag, char *savebuf){
 
   if(strcmp("save_ascii_wprop",savebuf) == 0 )  {
     *flag=SAVE_ASCII;
@@ -1280,12 +1267,34 @@ ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
     *flag=FORGET;
     printf("\n");
   }
-  else {
+  else
+    return 1;
+
+  return 0;
+}
+
+int 
+ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
+  char *savebuf;
+  int status;
+  char myname[] = "ask_ending_wprop";
+  
+  if (prompt==1) {
+    printf("save wilson propagator:\n enter ");
+    print_output_wprop_choices();
+  }
+
+  savebuf = get_next_tag(fp, "write wprop command", myname);
+  if (savebuf == NULL)return 1;
+
+  printf("%s ",savebuf);
+
+  if(parse_output_wprop_choices(flag, savebuf) != 0){
     printf("ERROR IN INPUT: ending propagator command %s is invalid\n",
 	   savebuf);
     printf("Choices are \n");
     print_output_wprop_choices();
-    return(1);
+    return 1;
   }
   
   if( *flag != FORGET ){
@@ -1294,9 +1303,77 @@ ask_ending_wprop( FILE *fp, int prompt, int *flag, char *filename ){
     if(status !=1){
       printf("\n%s(%d): ERROR IN INPUT. Can't read filename\n",
 	     myname, this_node); 
-      return(1);
+      return 1;
     }
     printf("%s\n",filename);
   }
-  return(0);
+  return 0;
 } /* ask_ending_wprop */
+
+/* In this case we allow writing the Dirac propagator in propagator format or
+   in source format suitable for use as an extended source on the whole lattice. */
+int
+ask_ending_wprop_or_wsource(FILE *fp, int prompt, int *flag, int *type, 
+			    int *t0, char *descrp, char *filename){
+  char *savebuf;
+  int status;
+  char myname[] = "ask_ending_wprop_or_wsource";
+  
+  if (prompt==1) {
+    printf("save wilson propagator:\n enter ");
+    print_output_wprop_choices();
+    print_output_quark_source_choices();
+  }
+
+  savebuf = get_next_tag(fp, "write wprop command", myname);
+  if (savebuf == NULL)return 1;
+
+  printf("%s ",savebuf);
+
+  /* First see if a regular propagator file is requested */
+  if(parse_output_wprop_choices(flag, savebuf) == 0){
+    *type = DIRAC_PROPAGATOR_FILE;
+  } else {
+    /* If not, see if a source format file is requested */
+    if(parse_output_quark_source_choices(flag, type, descrp, savebuf) != 0){
+      printf("\n%s: ERROR IN INPUT: propagator or source file command %s is invalid\n",
+	     myname, savebuf); 
+      printf("Choices are \n");
+      print_output_wprop_choices();
+      print_output_quark_source_choices();
+      return 1;
+    }
+  }
+
+  if( *type == VECTOR_FIELD_FILE ){
+    printf("\n%s: Can't convert a Dirac propagator to a color vector source\n", myname);
+    return 1;
+  }
+
+  if( *flag != FORGET ){
+    if(prompt==1)printf("enter filename\n");
+    status=scanf("%s",filename);
+    if(status !=1){
+      printf("\n%s(%d): ERROR IN INPUT. Can't read filename\n",
+	     myname, this_node); 
+      return 1;
+    }
+    printf("%s\n",filename);
+  }
+
+  /* Read t0 line if we are looking for a t0 */
+  if(t0 != NULL && *flag != FORGET){
+    char t0_string[5];
+    int status = 0;
+    status += get_s(stdin, prompt, "t0", t0_string);
+    /* Provide for writing all time slices */
+    if(status == 0){
+      if(strcmp(t0_string, "all") == 0)
+	*t0 = ALL_T_SLICES;
+      else
+	*t0 = atoi(t0_string);
+    }
+  }
+
+  return 0;
+} /* ask_ending_wprop_or_wsource */
