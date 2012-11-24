@@ -52,6 +52,10 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf)
       write_gauge_info_item(fp,"gauge.previous.checksums","\"%s\"",sums,0,0);
     }
 
+#ifdef HYP_3D_SMEARING
+  //AB NEED TO ADD HYP SMEARING INTO GAUGE DESCRIPTION
+  //   NOTHING SO FAR
+#else /* APE smearing */
   write_gauge_info_item(fp,"gauge.fix.description","\"%s\"",
 			"\"Temporal axial with ploop copies\"",0,0);
   write_gauge_info_item(fp,"gauge.smear.description","\"%s\"",
@@ -72,6 +76,7 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf)
 
   write_gauge_info_item(fp,"gauge.smear.factor","\"%f\"",
 			(char *)&ape_weight,0,0);
+#endif
 }
 
 #define INFOSTRING_MAX 2048

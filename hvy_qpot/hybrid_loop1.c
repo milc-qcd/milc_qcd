@@ -137,7 +137,9 @@ void hybrid_loop1(int tot_smear) {
   }
   
   /* Allocate space for observables */
-  nth = nt/2;  nxh = nx/2;
+//AB  nth = nt/2;  nxh = nx/2;
+//CD  nth = nt;  nxh = nx/2;
+  nth = max_t;  nxh = nx/2;
   wils_loop1 = (Real *)malloc(nth*nxh*sizeof(Real)*NWLOOP1);
   if(wils_loop1 == NULL){
     fprintf(stderr,"%s: CAN'T MALLOC wils_loop1\n",myname);

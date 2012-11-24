@@ -101,11 +101,16 @@ int readin(int prompt){
 	IF_OK status += get_i(stdin, prompt,"smear_num[2]",&par_buf.smear_num[2]);
 	IF_OK status += get_i(stdin, prompt,"smear_num[3]",&par_buf.smear_num[3]);
 	IF_OK status += get_i(stdin, prompt,"smear_num[4]",&par_buf.smear_num[4]);
-
+#ifdef HYP_3D_SMEARING
+	IF_OK status += get_f(stdin, prompt,"hyp_alpha2",&par_buf.hyp_alpha2);
+	IF_OK status += get_f(stdin, prompt,"hyp_alpha3",&par_buf.hyp_alpha3);
+#else /* spatial APE smearing */
 	IF_OK status += get_f(stdin, prompt,"smear_fac",&par_buf.smear_fac);
-
+#endif
 	/* off_axis_flag : do off-axis Wilson loops? */
 	IF_OK status += get_i(stdin, prompt,"off_axis_flag",&par_buf.off_axis_flag);
+	/* maximum time value for loops */
+	IF_OK status += get_i(stdin, prompt,"max_t",&par_buf.max_t);
 #endif    
 	/* find out what kind of starting lattice to use */
 	IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
@@ -141,8 +146,14 @@ int readin(int prompt){
     smear_num[2] = par_buf.smear_num[2];
     smear_num[3] = par_buf.smear_num[3];
     smear_num[4] = par_buf.smear_num[4];
+#ifdef HYP_3D_SMEARING
+    hyp_alpha2 = par_buf.hyp_alpha2;
+    hyp_alpha3 = par_buf.hyp_alpha3;
+#else
     smear_fac = par_buf.smear_fac;
+#endif
     off_axis_flag = par_buf.off_axis_flag;
+    max_t = par_buf.max_t;
 #endif
     startflag = par_buf.startflag;
     saveflag = par_buf.saveflag;

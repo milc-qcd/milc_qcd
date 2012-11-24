@@ -25,7 +25,9 @@ void w_loop1(int tot_smear) {
 	return;
     }
 
-    nth = nt/2;  nxh = nx/2;
+//AB    nth = nt/2;  nxh = nx/2;
+//CD    nth = nt;  nxh = nx/2;
+    nth = max_t; nxh = nx/2;
     wils_loop1 = (Real *)malloc(nth*nxh*sizeof(Real));
     for(t=0;t<nth;t++) for(r=0;r<nxh;r++){
 	wils_loop1[r+nxh*t] = 0.0;

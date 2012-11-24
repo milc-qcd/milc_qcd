@@ -55,7 +55,12 @@ EXTERN  Real staple_weight;
 EXTERN  int ape_iter;
 EXTERN	int no_smear_level,smear_num[5],off_axis_flag;
 EXTERN  int tot_smear;  /* running total of smearing steps for lattice */
+#ifdef HYP_3D_SMEARING
+EXTERN	Real hyp_alpha2;
+EXTERN	Real hyp_alpha3;
+#else /* APE smearing */
 EXTERN	Real smear_fac;
+#endif
 EXTERN	char startfile[MAXFILENAME],savefile[MAXFILENAME];
 EXTERN  double g_ssplaq, g_stplaq;
 EXTERN  double_complex linktrsum;

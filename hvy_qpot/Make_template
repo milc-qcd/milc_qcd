@@ -32,7 +32,10 @@ MY_OBJECTS = \
   gauge_info.o \
   setup.o
 
-ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} hvy_pot.o
+G_KS_OBJECTS = \
+  fermion_links_hyp.o
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} hvy_pot.o ${G_KS_OBJECTS}
 
 OBJECTS = \
   ${MY_OBJECTS} \
@@ -69,15 +72,38 @@ ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
 ########################################################
 
-su3_hqp::
+su3_hqp_ape::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= " \
 	"EXTRA_OBJECTS= ax_gauge.o gball_simp.o \
 	  hybrid_loop1.o smearing.o  w_loop1.o w_loop2.o"
 
+su3_hqp_hyp::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DHYP_3D_SMEARING" \
+	"EXTRA_OBJECTS= ax_gauge.o gball_simp.o \
+	  hybrid_loop1.o smearing_hyp.o  w_loop1.o w_loop2.o"
+
+su3_hybrid_hqp_ape::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DHYBRIDS_MEASURE" \
+	"EXTRA_OBJECTS= ax_gauge.o gball_simp.o \
+	  hybrid_loop1.o smearing.o  w_loop1.o w_loop2.o"
+
+su3_hybrid_hqp_hyp::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DHYBRIDS_MEASURE -DHYP_3D_SMEARING" \
+	"EXTRA_OBJECTS= ax_gauge.o gball_simp.o \
+	  hybrid_loop1.o smearing_hyp.o  w_loop1.o w_loop2.o"
+
 su3_hqp_coulomb::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DCOULOMB" \
+	"EXTRA_OBJECTS= "
+
+su3_hqp_coulomb_plcor::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DCOULOMB -DPLOOPCOR_MEAS" \
 	"EXTRA_OBJECTS= "
 
 clean:
@@ -85,6 +111,7 @@ clean:
 
 # Rules for generic routines
 include ../generic/Make_template
+include ../generic_ks/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}

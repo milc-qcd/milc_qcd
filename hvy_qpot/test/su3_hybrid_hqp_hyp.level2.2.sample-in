@@ -1,0 +1,18 @@
+prompt 0
+nx 6
+ny 6
+nz 6
+nt 6
+ 
+no_smear_level 2
+smear_num[0] 1
+smear_num[1] 1
+smear_num[2] 0
+smear_num[3] 0
+smear_num[4] 0
+hyp_alpha2 0.6
+hyp_alpha3 0.3
+off_axis_flag 1
+max_t 6
+reload_serial ../../binary_samples/lat.sample.l6666
+forget

@@ -15,7 +15,7 @@
 
 int main(int argc, char *argv[])  {
 #ifndef COULOMB
-  int todo,sm_lev;
+  int todo,sm_lev,lsmeared=0;
 #else
   su3_matrix *links, *ape_links;
 #endif
@@ -71,19 +71,28 @@ int main(int argc, char *argv[])  {
       /* Do the smearing iterations */
       for(todo=smear_num[sm_lev]; todo > 0; --todo ){
 	smearing();
+        lsmeared=1;
       }
-      if(this_node==0)printf("SMEARING COMPLETED\n"); 
+
+      if(this_node==0 && lsmeared!=0)
+#ifdef HYP_3D_SMEARING
+        printf("HYP SMEARING COMPLETED\n"); 
+#else
+        printf("APE SMEARING COMPLETED\n"); 
+#endif
       tot_smear += smear_num[sm_lev];
       
       /* Compute simple, i.e one-plaquette, glueball operators */
       gball_simp(tot_smear);
       
+#ifndef HYBRIDS_MEASURE
       /* Compute on-axis time-like Wilson loops */
-      /** w_loop1(tot_smear); **/
-      
+      w_loop1(tot_smear);
+#else
       /* Compute on-axis time-like hybrid potential loops 
 	 and on-axis time-like Wilson loops */
       hybrid_loop1(tot_smear);
+#endif
       
       /* Compute off-axis time-like Wilson loops, if desired */
       if( off_axis_flag == 1 ){

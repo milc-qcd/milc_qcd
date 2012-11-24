@@ -20,7 +20,12 @@ typedef struct {
   int startflag;	/* what to do for beginning lattice */
   int saveflag;	/* what to do with lattice at end */
   Real beta;	/* gauge coupling */
+#ifdef HYP_3D_SMEARING
+  Real hyp_alpha2;      /* parameters for 3D HYP smearing */
+  Real hyp_alpha3;
+#else
   Real smear_fac;	/* smearing factor = weight of direct link */
+#endif
   char startfile[MAXFILENAME],savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
 }  params;
