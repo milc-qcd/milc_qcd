@@ -102,6 +102,7 @@ EXTERN quark_source wqstmp;
 EXTERN dirac_clover_param dcptmp;
 EXTERN gauge_file *startlat_p;
 EXTERN gauge_file *savelat_p;
+EXTERN gauge_file *start_u1lat_p;
 EXTERN char utc_date_time[64];
 EXTERN char hostname[128];
 
@@ -125,5 +126,8 @@ EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
 EXTERN fermion_links_t        *fn_links;
+
+EXTERN Real *u1_A;
+EXTERN Real g_splaq,g_tplaq;	/* global U(1) plaquette measures */
 
 #endif /* _LATTICE_H */

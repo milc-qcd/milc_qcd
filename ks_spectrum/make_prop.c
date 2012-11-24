@@ -41,6 +41,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 		 quark_source *my_ksqs,
 		 quark_invert_control my_qic[],
 		 ks_param my_ksp[],
+		 Real charge,
 		 Real bdry_phase[],
 		 int r0[4],
 		 int check)
@@ -93,7 +94,13 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
   /* Construct fermion links if we will need them */
 
   if(check != CHECK_NO || startflag[0] == FRESH ){
-    
+
+#ifdef U1_FIELD
+    /* Apply U(1) phases if we are using it */
+    u1phase_on(charge, u1_A);
+    invalidate_fermion_links(fn_links);
+#endif
+
     restore_fermion_links_from_site(fn_links, my_qic[0].prec);
     fn = get_fm_links(fn_links);
 
@@ -123,6 +130,10 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
     for(j = 0; j < num_prop; j++){
       status = reload_ksprop_c_to_field(startflag[j], fp_in[j], my_ksqs, 
 					color, ksprop[j]->v[color], 1);
+      if(status != 0){
+	node0_printf("Failed to reload propagator\n");
+	terminate(1);
+      }
     }
       
     /* Solve for the propagator if the starting guess is zero
@@ -261,6 +272,12 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
     if(saveflag[i] != FORGET)
       node0_printf("Saved propagator to %s\n",savefile[i]);
   }
+
+#ifdef U1_FIELD
+  /* Unapply the U(1) field phases */
+  u1phase_off();
+  invalidate_fermion_links(fn_links);
+#endif
 
   return tot_iters;
 

@@ -5,6 +5,9 @@
 /* Modifications ... */
 
 //  $Log: setup.c,v $
+//  Revision 1.6  2012/11/24 05:14:20  detar
+//  Add support for U(1) fields and for future HYPISQ action
+//
 //  Revision 1.5  2012/04/25 03:21:29  detar
 //  Initialize boundary phase
 //
@@ -28,6 +31,9 @@
 #include <string.h>
 #include "params.h"
 #include <unistd.h>
+#ifdef U1_FIELD
+#include "../include/io_u1lat.h"
+#endif
 
 /* Forward declarations */
 
@@ -55,6 +61,9 @@ int setup()   {
   setup_layout();
   /* allocate space for lattice, set up coordinate fields */
   make_lattice();
+#ifdef U1_FIELD
+  u1_A = create_u1_A_field();
+#endif
   FORALLUPDIR(dir){
     boundary_phase[dir] = 0.;
   }
@@ -102,6 +111,9 @@ static int initial_set(void){
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
     show_hisq_links_opts();
+#elif FERM_ACTION == HYPISQ
+    show_su3_mat_opts();
+    show_hypisq_links_opts();
 #endif
 
     status = get_prompt(stdin,  &prompt );
@@ -204,7 +216,13 @@ int readin(int prompt) {
 			     param.savefile );
     IF_OK status += ask_ildg_LFN(stdin,  prompt, param.saveflag,
 				  param.stringLFN );
-
+#ifdef U1_FIELD
+    /* what kind of starting U(1) lattice to use, read filename */
+    IF_OK status+=ask_starting_u1_lattice(stdin,prompt,
+					  &param.start_u1flag, param.start_u1file );
+    IF_OK status+=ask_ending_u1_lattice(stdin,prompt,
+					&param.save_u1flag, param.save_u1file );
+#endif
     /* Provision is made to build covariant sources from smeared
        links */
     /* APE smearing parameters (if needed) */
@@ -236,11 +254,14 @@ int readin(int prompt) {
       IF_OK status += get_i(stdin, prompt, "prec_pbp", &param.qic_pbp[0].prec);
       IF_OK for(i = 0; i < param.num_pbp_masses; i++){
 	IF_OK status += get_f(stdin, prompt, "mass", &param.ksp_pbp[i].mass);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
 			      &param.ksp_pbp[i].naik_term_epsilon);
 #else
 	param.ksp_pbp[i].naik_term_epsilon = 0.0;
+#endif
+#ifdef U1_FIELD
+	IF_OK status += get_f(stdin, prompt, "charge", &param.charge_pbp[i]);
 #endif
 	param.qic_pbp[i].min = 0;
 	param.qic_pbp[i].start_flag = 0;
@@ -452,6 +473,12 @@ int readin(int prompt) {
 #endif
       }
 
+#ifdef U1_FIELD
+      /* Charge, if U(1) */
+      IF_OK status += get_s(stdin, prompt, "charge", param.charge_label[k]);
+      IF_OK param.charge[k] = atof(param.charge_label[k]);
+#endif
+
       /* Get source index for this set */
       IF_OK status += get_i(stdin,prompt,"source", &param.source[k]);
 
@@ -477,7 +504,7 @@ int readin(int prompt) {
 
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[nprop] );
 	IF_OK param.ksp[nprop].mass = atof(param.mass_label[nprop]);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 			      &param.ksp[nprop].naik_term_epsilon );
 #else
@@ -979,6 +1006,11 @@ int readin(int prompt) {
   phases_in = OFF;
   rephase( ON );
 
+#ifdef U1_FIELD
+  /* Read the U(1) gauge field, if wanted */
+  start_u1lat_p = reload_u1_lattice( param.start_u1flag, param.start_u1file);
+#endif
+
   /* Set options for fermion links */
   
 #ifdef DBLSTORE_FN
@@ -989,7 +1021,7 @@ int readin(int prompt) {
   /* Don't need to save HISQ auxiliary links */
   fermion_links_want_aux(0);
   
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 
 #ifdef DM_DEPS
   fermion_links_want_deps(1);
@@ -1007,8 +1039,10 @@ int readin(int prompt) {
 
 #endif
 
-  /* Construct APE smeared links */
+  /* Construct APE smeared links, but without KS phases */
+  rephase( OFF );
   ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+  rephase( ON );
 
   ENDTIME("readin");
 

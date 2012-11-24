@@ -10,6 +10,9 @@
 /* Modifications ... */
    
 //  $Log: control.c,v $
+//  Revision 1.6  2012/11/24 05:14:20  detar
+//  Add support for U(1) fields and for future HYPISQ action
+//
 //  Revision 1.5  2012/05/08 20:39:54  detar
 //  Call qudaFinalize to allow writing optimization file.
 //
@@ -33,22 +36,32 @@
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
 #endif
+#ifdef U1_FIELD
+#include "../include/io_u1lat.h"
+#endif
 
 int main(int argc, char *argv[])
 {
   int prompt;
-  int i, j, k, iq0, iq1, iq2, oldiq0, oldiq1, oldiq2, oldip0;
+  int i, j, k, iq0, iq1, iq2;
+#ifdef KS_LEAN
+  int oldiq0, oldiq1, oldiq2, oldip0;
+  int quark_nc[MAX_QK];
+#endif
   int naik_index, naik_index0, naik_index1;
-  double naik_eps, mass;
+  double mass;
   double starttime, endtime;
 #ifdef PRTIME
   double dtime;
 #endif
   ks_prop_field *prop[MAX_PROP];
   ks_prop_field *quark[MAX_QK];
-  int prop_nc[MAX_PROP], quark_nc[MAX_QK];
+  int prop_nc[MAX_PROP];
   
   initialize_machine(&argc,&argv);
+
+  for(i = 0; i < MAX_PROP; i++)prop[i] = NULL;
+  for(i = 0; i < MAX_QK; i++)quark[i] = NULL;
 
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
@@ -72,6 +85,9 @@ int main(int argc, char *argv[])
 #ifdef HISQ_SVD_COUNTER
     hisq_svd_counter = 0;
 #endif
+#ifdef HYPISQ_SVD_COUNTER
+    hypisq_svd_counter = 0;
+#endif
     
     /**************************************************************/
     /* Compute chiral condensate and related quantities           */
@@ -79,16 +95,26 @@ int main(int argc, char *argv[])
     /* Make fermion links if not already done */
 
     for(i = 0; i < param.num_pbp_masses; i++){
+#ifdef U1_FIELD
+      u1phase_on(param.charge_pbp[i], u1_A);
+      invalidate_fermion_links(fn_links);
+#endif
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i].prec);
       naik_index = param.ksp_pbp[i].naik_term_epsilon_index;
-      naik_eps = param.ksp_pbp[i].naik_term_epsilon;
       mass = param.ksp_pbp[i].mass;
 
       f_meas_imp_field( param.npbp_reps, &param.qic_pbp[i], mass,
       			naik_index, fn_links);
 #ifdef D_CHEM_POT
+      
       Deriv_O6_field( param.npbp_reps, &param.qic_pbp[i], mass,
-      		      fn_links, naik_index, naik_eps);
+      		      fn_links, naik_index, 
+		      param.ksp_pbp[i].naik_term_epsilon);
+#endif
+#ifdef U1_FIELD
+      /* Unapply the U(1) field phases */
+      u1phase_off();
+      invalidate_fermion_links(fn_links);
 #endif
     }
 
@@ -106,11 +132,14 @@ int main(int argc, char *argv[])
 	//gaugefix(TUP,(Real)1.5,500,GAUGE_FIX_TOL);
 	ENDTIME("gauge fix");
 
+	/* (Re)construct APE smeared links after gauge fixing.  
+	   No KS phases here! */
+	destroy_ape_links_3D(ape_links);
+	ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+
 	rephase( ON );
 	invalidate_fermion_links(fn_links);
 
-	/* (Re)construct APE smeared links after gauge fixing */
-	ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
       }
     else
       if(this_node == 0)printf("COULOMB GAUGE FIXING SKIPPED.\n");
@@ -123,6 +152,11 @@ int main(int argc, char *argv[])
       rephase( ON );
     }
 
+#ifdef U1_FIELD
+    if( param.save_u1flag != FORGET ){
+      save_u1_lattice( param.save_u1flag, param.save_u1file );
+    }
+#endif
     if(this_node==0)printf("END OF HEADER\n");
     
 
@@ -149,11 +183,15 @@ int main(int argc, char *argv[])
 	  terminate(1);
 	}
 	
-	if(this_node==0)printf("Mass= %g source %s residue= %g rel= %g\n",
-			       (double)param.ksp[i].mass,
-			       param.src_qs[k].descrp,
-			       (double)param.qic[i].resid,
-			       (double)param.qic[i].relresid);
+	node0_printf("Mass= %g source %s ",
+		     (double)param.ksp[i].mass,
+		     param.src_qs[k].descrp);
+#ifdef U1_FIELD
+	node0_printf("Q %g ",param.charge[k]);
+#endif
+	node0_printf("residue= %g rel= %g\n",
+		     (double)param.qic[i].resid,
+		     (double)param.qic[i].relresid);
 	
       }
       
@@ -168,6 +206,7 @@ int main(int argc, char *argv[])
 				  &param.src_qs[k], 
 				  param.qic + i0, 
 				  param.ksp + i0,
+				  param.charge[k],
 				  param.bdry_phase[i0],
 				  param.coord_origin,
 				  param.check[i0]);
@@ -183,9 +222,11 @@ int main(int argc, char *argv[])
        to either the raw propagator or by building on an existing quark
        propagator */
     
+#ifdef KS_LEAN
     oldip0 = -1;
     oldiq0 = -1;
     oldiq1 = -1;
+#endif
     for(j=0; j<param.num_qk; j++){
       STARTTIME;
       i = param.prop_for_qk[j];
@@ -225,13 +266,15 @@ int main(int argc, char *argv[])
 	/* Apply sink operator quark[j] <- Op[j] prop[i] */
 	quark[j] = create_ksp_field_copy(prop[i]);
 	ksp_sink_op(&param.snk_qs_op[j], quark[j]);
+#ifdef KS_LEAN
 	quark_nc[j] = quark[j]->nc;
 	oldip0 = i;
 	oldiq0 = -1;
+#endif
 	
 	/* Can we delete any props now? */
 	/* For each prop, scan ahead to see if it is no longer needed. */
-	for(i = 0; i < param.num_prop[k]; i++)
+	for(i = 0; i <= param.end_prop[param.num_set-1]; i++)
 	  if(prop[i] != NULL){
 	    int wont_need = 1;
 	    for(k = j + 1; k < param.num_qk; k++)
@@ -277,15 +320,19 @@ int main(int argc, char *argv[])
 	/* Apply sink operator quark[j] <- Op[j] quark[i] */
 	quark[j] = create_ksp_field_copy(prop[i]);
 	ksp_sink_op(&param.snk_qs_op[j], quark[j]);
+#ifdef KS_LEAN
 	quark_nc[j] = quark[j]->nc;
 	oldip0 = -1;
 	oldiq0 = i;
+#endif
       }
       
       /* Save the resulting quark[j] if requested */
       dump_ksprop_from_ksp_field( param.saveflag_q[j], 
 				  param.savefile_q[j], quark[j]);
+#ifdef KS_LEAN
       oldiq1 = j;
+#endif
       ENDTIME("generate sink operator");
     }
 #ifdef KS_LEAN
@@ -311,10 +358,12 @@ int main(int argc, char *argv[])
     
     /* Now destroy all remaining propagator fields */
     
-    for(i = 0; i < param.num_prop[k]; i++){
-      if(prop[i] != NULL)node0_printf("destroy prop[%d]\n",i);
-      destroy_ksp_field(prop[i]);
-      prop[i] = NULL;
+    for(i = 0; i <= param.end_prop[param.num_set-1]; i++){
+      if(prop[i] != NULL){
+	node0_printf("destroy prop[%d]\n",i);
+	destroy_ksp_field(prop[i]);
+	prop[i] = NULL;
+      }
     }
     
     /****************************************************************/
@@ -367,9 +416,11 @@ int main(int argc, char *argv[])
       /* Tie together to generate hadron spectrum */
       spectrum_ks(quark[iq0], naik_index0, quark[iq1], naik_index1, i);
       
+#ifdef KS_LEAN
       /* Remember, in case we need to free memory */
       oldiq0 = iq0;
       oldiq1 = iq1;
+#endif
     }
 #ifdef KS_LEAN
     /* Free any remaining quark prop memory */
@@ -443,10 +494,12 @@ int main(int argc, char *argv[])
       /* Tie together to generate hadron spectrum */
       spectrum_ks_baryon(quark[iq0], quark[iq1], quark[iq2], i);
       
+#ifdef KS_LEAN
       /* Remember, in case we need to free memory */
       oldiq0 = iq0;
       oldiq1 = iq1;
       oldiq2 = iq2;
+#endif
     }
 #ifdef KS_LEAN
     /* Free any remaining quark prop memory */
@@ -476,6 +529,9 @@ int main(int argc, char *argv[])
 #ifdef HISQ_SVD_COUNTER
     printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
+#ifdef HYPISQ_SVD_COUNTER
+    printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
+#endif
     fflush(stdout);
     
     for(i = 0; i < param.num_qk; i++){
@@ -489,6 +545,8 @@ int main(int argc, char *argv[])
     
 #if FERM_ACTION == HISQ
     destroy_fermion_links_hisq(fn_links);
+#elif FERM_ACTION == HYPISQ
+    destroy_fermion_links_hypisq(fn_links);
 #else
     destroy_fermion_links(fn_links);
 #endif

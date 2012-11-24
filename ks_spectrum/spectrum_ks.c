@@ -663,9 +663,12 @@ static FILE* open_fnal_meson_file(int pair){
   }
       
 
-  fprintf(fp,"antiquark_mass:               \"%s\"\n",param.mass_label[ip0]);
-#if FERM_ACTION == HISQ
-  fprintf(fp,"antiquark_epsilon:            %g\n",param.ksp[ip0].naik_term_epsilon);
+  fprintf(fp,"antiquark_mass:               \"%s\"\n", param.mass_label[ip0]);
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  fprintf(fp,"antiquark_epsilon:            %g\n", param.ksp[ip0].naik_term_epsilon);
+#endif
+#if U1_FIELD
+  fprintf(fp,"antiquark_charge:             \"%s\"\n", param.charge_label[is0]);
 #endif
 
   fprintf(fp,"quark_type:                   staggered\n");
@@ -700,10 +703,12 @@ static FILE* open_fnal_meson_file(int pair){
 //  }
 
   fprintf(fp,"quark_mass:                   \"%s\"\n",param.mass_label[ip1]);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark_epsilon:                %g\n",param.ksp[ip1].naik_term_epsilon);
 #endif
-
+#if U1_FIELD
+  fprintf(fp,"quark_charge:                 \"%s\"\n", param.charge_label[is1]);
+#endif
   fprintf(fp,"...\n");
   return fp;
 }
@@ -751,8 +756,11 @@ static FILE* open_fnal_baryon_file(int triplet){
   fprintf(fp,"quark0_sink_label:           %s\n",param.snk_qs_op[iq0].label);
   
   fprintf(fp,"quark0_mass:                 \"%s\"\n",param.mass_label[ip0]);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark0_epsilon:              %g\n",param.ksp[ip0].naik_term_epsilon);
+#endif
+#if U1_FIELD
+  fprintf(fp,"quark0_charge:               \"%s\"\n", param.charge_label[is0]);
 #endif
 
   fprintf(fp,"quark1_type:                 stagered\n");
@@ -766,8 +774,11 @@ static FILE* open_fnal_baryon_file(int triplet){
   fprintf(fp,"quark1_sink_label:           %s\n",param.snk_qs_op[iq1].label);
 
   fprintf(fp,"quark1_mass:                 \"%s\"\n",param.mass_label[ip1]);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark1_epsilon:              %g\n",param.ksp[ip1].naik_term_epsilon);
+#endif
+#if U1_FIELD
+  fprintf(fp,"quark1_charge:               \"%s\"\n", param.charge_label[is1]);
 #endif
 
   fprintf(fp,"quark2_type:                 staggered\n");
@@ -781,8 +792,11 @@ static FILE* open_fnal_baryon_file(int triplet){
   fprintf(fp,"quark2_sink_label:           %s\n",param.snk_qs_op[iq2].label);
   
   fprintf(fp,"quark2_mass:                 \"%s\"\n",param.mass_label[ip2]);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"quark2_epsilon:              %g\n",param.ksp[ip2].naik_term_epsilon);
+#endif
+#if U1_FIELD
+  fprintf(fp,"quark2_charge:               \"%s\"\n", param.charge_label[is2]);
 #endif
 
   fprintf(fp,"...\n");
@@ -843,7 +857,13 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
 
   /* Mass labels */
   fprintf(fp,"_m%s", param.mass_label[ip0]);
+#if U1_FIELD
+  fprintf(fp,"_q%s", param.charge_label[is0]);
+#endif
   fprintf(fp,"_m%s", param.mass_label[ip1]);
+#if U1_FIELD
+  fprintf(fp,"_q%s", param.charge_label[is1]);
+#endif
   fprintf(fp, "_%s\n", param.mom_label[pair][m]);
 
   fprintf(fp,"...\n");
@@ -868,6 +888,12 @@ print_start_meson_prop(int pair, int m){
   printf("%g ", param.ksp[ip0].mass);
   printf("%g ", param.ksp[ip1].mass);
   printf("\n");
+#ifdef U1_FIELD
+  printf("CHARGES: ");
+  printf("%g ", param.charge[is0]);
+  printf("%g ", param.charge[is1]);
+  printf("\n");
+#endif
   printf("SOURCE: %s %s\n",param.src_qs[is0].descrp,
 	 param.src_qs[is1].descrp);
   printf("SINKOPS: %s %s\n", param.snk_qs_op[iq0].descrp, 
@@ -922,8 +948,17 @@ static void print_start_fnal_baryon_prop(FILE *fp, int triplet, int b)
 
   /* Mass labels */
   fprintf(fp,"_m%s", param.mass_label[ip0]);
+#if U1_FIELD
+  fprintf(fp,"_q%s", param.charge_label[is0]);
+#endif
   fprintf(fp,"_m%s", param.mass_label[ip1]);
+#if U1_FIELD
+  fprintf(fp,"_q%s", param.charge_label[is1]);
+#endif
   fprintf(fp,"_m%s", param.mass_label[ip2]);
+#if U1_FIELD
+  fprintf(fp,"_q%s", param.charge_label[is2]);
+#endif
   fprintf(fp, "\n");
 
   fprintf(fp,"...\n");
@@ -1009,7 +1044,7 @@ static void close_fnal_baryon_file(FILE *fp, int triplet){
 /*--------------------------------------------------------------------*/
 static void spectrum_ks_print_diag(int pair){
 
-  Real space_vol;
+  //  Real space_vol;
   Real norm_fac;
   FILE *corr_fp;
   int t, tp;
@@ -1018,7 +1053,7 @@ static void spectrum_ks_print_diag(int pair){
   complex prop;
   
   /* Normalization factor */
-  space_vol = (Real)(nx*ny*nz);
+  //  space_vol = (Real)(nx*ny*nz);
   
   /* Point sink */
   if(param.do_meson_spect[pair]){
@@ -1048,7 +1083,7 @@ static void spectrum_ks_print_diag(int pair){
 /*--------------------------------------------------------------------*/
 static void spectrum_ks_print_offdiag(int pair){
   
-  Real space_vol;
+  //  Real space_vol;
   Real norm_fac;
   int t, tp;
   int m;
@@ -1057,7 +1092,7 @@ static void spectrum_ks_print_offdiag(int pair){
   FILE *corr_fp;
   
   /* Normalization factor */
-  space_vol = (Real)(nx*ny*nz);
+  //  space_vol = (Real)(nx*ny*nz);
 
   /* Point sink */
   if(param.do_meson_spect[pair]){
@@ -1087,7 +1122,7 @@ static void spectrum_ks_print_offdiag(int pair){
 /*--------------------------------------------------------------------*/
 static void spectrum_ks_print_baryon(int triplet){
   
-  Real space_vol;
+  //  Real space_vol;
   FILE *corr_fp;
   int t, tp;
   int b;
@@ -1095,7 +1130,7 @@ static void spectrum_ks_print_baryon(int triplet){
   int num_corr = param.num_corr_b[triplet];
   
   /* Normalization factor */
-  space_vol = (Real)(nx*ny*nz);
+  //  space_vol = (Real)(nx*ny*nz);
 
   /* print baryon propagator */
   if(param.do_baryon_spect[triplet]){

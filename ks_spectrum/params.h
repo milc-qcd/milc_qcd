@@ -9,12 +9,12 @@
 #include "../include/gammatypes.h"
 
 #define MAX_MASS_PBP 8
-#define MAX_SOURCE 8
-#define MAX_SET 8
-#define MAX_PROP 32
+#define MAX_SOURCE 32
+#define MAX_SET 16
+#define MAX_PROP 64
 #define MAX_QK 64
 #define MAX_PAIR 512
-#define MAX_TRIPLET 32
+#define MAX_TRIPLET 64
 #define MAX_QKPAIR_LABEL 32
 #define MAX_MESON 32
 #define MAX_SPECTRUM_REQUEST 512
@@ -54,10 +54,12 @@ typedef struct {
 
   /*  REPEATING BLOCK */
   int startflag;	/* what to do for beginning lattice */
+  int start_u1flag;	/* what to do for beginning u(1) lattice */
   Real u0;
   int coord_origin[4];  /* Origin of coordinates for KS phases and time_bc */
   int fixflag;    /* whether to gauge fix */
   int saveflag;	/* what to do for saving lattice */
+  int save_u1flag;	/* what to do with ending u(1) lattice */
   Real staple_weight;
   int ape_iter;
   int num_pbp_masses;   /* Number of masses for pbp calculation */
@@ -65,6 +67,7 @@ typedef struct {
   int prec_pbp;         /* Precision of the pbp calculation (1 or 2) */
   int npbp_reps;     /* Number of random sources for pbp calculation */
   ks_param ksp_pbp[MAX_MASS_PBP];
+  Real charge_pbp[MAX_MASS_PBP];
   int num_base_source;  /* Number of base sources */
   quark_source base_src_qs[MAX_SOURCE];
   int num_modified_source;       /* Number of modified sources */
@@ -72,6 +75,8 @@ typedef struct {
   int parent_source[MAX_SOURCE];      /* base_source or source index */
   int num_set;  /* number of sets */
   int source[MAX_SET];      /* index of modified source for this set */
+  Real charge[MAX_SET];     /* charge for propagators in the set */
+  char charge_label[MAX_SET][32];  /* for correlator label */
   int num_prop[MAX_SET]; /* number of propagators in a set */
   quark_source src_qs[MAX_SET];
   int prop_type[MAX_PROP]; /* 0 static 1 KS */
@@ -120,6 +125,8 @@ typedef struct {
   int corr_mom[MAX_PAIR][MAX_CORR][3];
   char corr_parity[MAX_PAIR][MAX_CORR][3];
   char startfile[MAXFILENAME];  /* Gauge file */
+  char start_u1file[MAXFILENAME]; /* U(1) gauge file */
+  char save_u1file[MAXFILENAME]; /* U(1) gauge file */
   char savefile[MAXFILENAME];
   char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable ***/
   char scratchstem_w[MAXFILENAME];
