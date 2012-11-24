@@ -2,7 +2,7 @@
 /* Implementation of generic QOP API for MILC testing                   */
 /* C. DeTar 10/19/2005                                                  */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 #define MYREAL float
 #define MYSU3_VECTOR fsu3_vector
 #define MYSU3_MATRIX fsu3_matrix
