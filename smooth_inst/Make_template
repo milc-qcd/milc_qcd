@@ -52,6 +52,9 @@ G_OBJECTS = \
  remap_stdio_from_args.o \
  reunitarize2.o
 
+G_KS_OBJECTS = \
+ fermion_links_hyp.o 
+
 ifeq ($(strip ${HAVEQIO}),true)
   G_OBJECTS += io_scidac.o io_scidac_types.o
 endif
@@ -73,7 +76,7 @@ ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
 
 OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${LAYOUT} \
-  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+  ${ADD_OBJECTS} ${EXTRA_OBJECTS} ${G_KS_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
@@ -104,7 +107,7 @@ ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
 
 su3_hyp::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DHYP" \
+	"DEFINES= -DHYP -DAB_USE_GENERIC_HYP" \
 	"EXTRA_OBJECTS= hyp_block.o gaugefix2.o instanton_density.o"
 
 # Also calculates topological charge on time slices
@@ -135,6 +138,7 @@ clean:
 
 # Rules for generic routines
 include ../generic/Make_template
+include ../generic_ks/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
@@ -147,3 +151,4 @@ localmake: ${OBJECTS} ${LIBRARIES}
 	touch localmake
 
 target: libmake localmake 
+

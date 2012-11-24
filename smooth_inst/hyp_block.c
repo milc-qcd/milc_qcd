@@ -7,7 +7,8 @@
    Modified to do only one sweep and replace original links
    with result, followed by reunitarization
    Changed entry name from "ape_block_det" to 
-   "smooth" C. DeTar - August 2001 */
+   "smooth" C. DeTar - August 2001
+   A. Bazavov, Oct 2012 -- introduced field-based HYP smearing */
 /*
    the fat links are constructed in three steps.
    1)
@@ -39,6 +40,130 @@
 #include "smooth_inst_includes.h"
 
 #define Nc 3
+
+
+
+/******* NEW BLOCK *****/
+#include "../include/hyp_coeff.h"
+
+//AB AUXILIARY ROUTINES, MAY NEED TO REPLACE WITH CALLS TO GENERIC
+#ifdef QCDOC
+#define special_alloc qcdoc_alloc
+#define special_free qfree
+#else
+#define special_alloc malloc
+#define special_free free
+#endif
+
+// create a field with "n" entities on a site
+// (n=4 is a usual link field)
+static su3_matrix *create_mn_special(int n){
+  char myname[] = "create_mn_special";
+  su3_matrix *m;
+
+  m = (su3_matrix *)special_alloc(sites_on_node*n*sizeof(su3_matrix));
+
+  if(m==NULL){
+    printf("%s: no room\n",myname);
+    terminate(1);
+  }
+
+  return m;
+}
+
+static void destroy_mn_special(su3_matrix *m){
+  special_free(m);
+}
+
+/*--------------------------------------------------------------------*/
+// higher precison su3_matrix dump
+
+static void dumpmat_hp( su3_matrix *m ){
+int i,j;
+    for(i=0;i<3;i++){
+	for(j=0;j<3;j++)printf("(%.15f,%.15f)\t",
+	    m->e[i][j].real,m->e[i][j].imag);
+	printf("\n");
+    }
+    printf("\n");
+}
+/******* End of NEW BLOCK *****/
+
+
+
+#ifdef AB_USE_GENERIC_HYP
+
+/* wrapper to mimic non-generic HYP,
+   this wrapper is written explicitly for 4D */
+void smooth() {
+  su3_matrix *U_link, *hyp_link;
+  int i,dir;
+  site *st;
+  hyp_coeffs_t hc;
+
+  // create temporary storage
+  U_link = create_mn_special(4);
+  hyp_link = create_mn_special(4);
+
+  // map original links into field
+  FORALLSITES(i,st) {
+    for(dir=XUP;dir<=TUP;dir++) {
+      U_link[4*i+dir] = st->link[dir];
+    }
+  }
+
+  // set parameters
+  set_hyp_coeff( &hc, alpha, alpha2, alpha3 );
+  set_hyp_proj_method( &hc, HYP_SU3_TR_MAX, hits );
+
+  // HYP-smeared links
+  load_hyp_links(U_link, hyp_link, NODIR, &hc);
+#ifdef AB_DEBUG
+  load_hyp_links(U_link, hyp_link, TUP, &hc);
+//dumpmat_hp( &(hyp_link[4*0+1]) );
+{su3_matrix lsum;
+lsum.e[0][0].real=0;lsum.e[0][0].imag=0;
+lsum.e[0][1].real=0;lsum.e[0][1].imag=0;
+lsum.e[0][2].real=0;lsum.e[0][2].imag=0;
+lsum.e[1][0].real=0;lsum.e[1][0].imag=0;
+lsum.e[1][1].real=0;lsum.e[1][1].imag=0;
+lsum.e[1][2].real=0;lsum.e[1][2].imag=0;
+lsum.e[2][0].real=0;lsum.e[2][0].imag=0;
+lsum.e[2][1].real=0;lsum.e[2][1].imag=0;
+lsum.e[2][2].real=0;lsum.e[2][2].imag=0;
+  FORALLSITES(i,st)for(dir=XUP;dir<=TUP;dir++){
+add_su3_matrix( &lsum, &(hyp_link[4*i+dir]), &lsum );
+  }
+dumpmat_hp( &lsum );
+}
+#endif
+
+  /* Remap:
+     original links, U_link to st->blocked_link[4+dir]
+     HYP-smeared links, hyp_link to st->blocked_link[dir]
+     HYP-smeared links in-place hyp_link to st->link[dir] */
+  FORALLSITES(i,st)for(dir=XUP;dir<=TUP;dir++){
+    st->blocked_link[dir] = hyp_link[4*i+dir];
+    st->blocked_link[4+dir] = U_link[4*i+dir];
+    st->link[dir]= st->blocked_link[dir];
+  }
+
+  // free temporary storage
+  destroy_mn_special(U_link);
+  destroy_mn_special(hyp_link);
+
+  /* reunitarize the gauge field */
+  //AB: IS THIS REALLY NEEDED? FOR SOME REASON PRESENT
+  //    IN THE ORIGINAL smooth()
+  //    THIS BASICALLY REUNITARIZES THE HYP-SMEARED LINKS,
+  //    WHICH WERE ALREADY PROJECTED TO SU(3)
+  //    MAY NOT WORK RIGHT IF U(3) PROJECTION IS USED
+  reunitarize();
+
+}
+
+
+#else
 
 /* deterministic APE blocking */
 void smooth()
@@ -380,3 +505,5 @@ void dsdu_ape_ext2(register int dir1, register int dir2, int parity)
     project_su3( &(st->blocked_link[20+count]), &fatq, hits, 0.);
   }
 } /* dsdu_ape_ext2 */
+
+#endif
