@@ -486,7 +486,7 @@ void subset_mask_v(su3_vector *src, int subset, int t0)
   }
 
   else{
-    node0_printf("subset_mask_wv: Unrecognized subset type %d\n", subset);
+    node0_printf("subset_mask_v: Unrecognized subset type %d\n", subset);
     terminate(1);
   }
 }
@@ -1189,7 +1189,7 @@ static int ask_quark_source( FILE *fp, int prompt, int *source_type,
 } /* ask_quark_source */
 
 /* For parsing the subset mask */
-static int encode_mask(int *mask, char c_mask[]){
+int encode_mask(int *mask, char c_mask[]){
   int status = 0;
   if(strcmp(c_mask,"full")==0)
     *mask =  FULL;
@@ -1202,7 +1202,7 @@ static int encode_mask(int *mask, char c_mask[]){
   return status;
 }
 
-static char *decode_mask(int mask){
+char *decode_mask(int mask){
   if(mask == FULL)
     return "full";
   else if (mask == HYPERCUBE)
@@ -1504,7 +1504,6 @@ void print_source_info(FILE *fp, char prefix[], quark_source *qs){
   }
   else if ( source_type == COMPLEX_FIELD_FILE ||
 	    source_type == COMPLEX_FIELD_FM_FILE){
-    //    fprintf(fp,"%s %d\n", make_tag(prefix, "t0"), qs->t0);
     fprintf(fp,"%s %d %d %d %d\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
     fprintf(fp,"%s %s\n", make_tag(prefix, "file"), qs->source_file);
@@ -1532,7 +1531,6 @@ void print_source_info(FILE *fp, char prefix[], quark_source *qs){
   }
   else if ( source_type == VECTOR_FIELD_FILE ||
 	    source_type == VECTOR_FIELD_FM_FILE ){
-    //    fprintf(fp,"%s %d\n", make_tag(prefix, "t0"), qs->t0);
     fprintf(fp,"%s %d %d %d %d\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
     fprintf(fp,"%s %s\n", make_tag(prefix, "file"), qs->source_file);
@@ -1545,7 +1543,6 @@ void print_source_info(FILE *fp, char prefix[], quark_source *qs){
   }
   else if ( source_type == DIRAC_FIELD_FILE ||
 	    source_type == DIRAC_FIELD_FM_FILE ){
-    //    fprintf(fp,"%s %d\n", make_tag(prefix, "t0"), qs->t0);
     fprintf(fp,"%s %d %d %d %d\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
     fprintf(fp,"%s %s\n", make_tag(prefix, "file"), qs->source_file);
