@@ -4,6 +4,7 @@
 * DT 6/10/97
 * DT 7/17/97 modified to do all displacements
 * CD 9/24/09 converted site variables to field variables
+* AB 10/6/12 added Polyakov loop correlators
 * Evaluate in different spatial directions, to check rotational
 * invariance.  Gauge fix to Coulomb gauge to do spatial segments.
 *
@@ -23,6 +24,10 @@ void hvy_pot( su3_matrix *links, int max_t, int max_x ) {
     msg_tag *mtag0;
     su3_matrix *tempmat1, *tempmat2, *staple, *oldmat, *newmat, *tt;
     char myname[] = "hvy_pot";
+#ifdef PLOOPCOR_MEAS
+    double ploopcor;
+    complex ctr1, ctr2, cprod;
+#endif
 
     node0_printf("hvy_pot(): MAX_T = %d, MAX_X = %d\n",max_t,max_x);
 
@@ -89,14 +94,27 @@ void hvy_pot( su3_matrix *links, int max_t, int max_x ) {
 		for( z_dist=0; z_dist<=max_x; z_dist++ ){
 		    /* evaluate potential at this separation */
 		    wloop = 0.0;
+#ifdef PLOOPCOR_MEAS
+                    ploopcor = 0.0;
+#endif
 		    FORALLFIELDSITES(i){
 			wloop += (double)realtrace_su3( tempmat1+i,
 			    oldmat+i );
+#ifdef PLOOPCOR_MEAS
+                        ctr1 = trace_su3( tempmat1+i );
+                        ctr2 = trace_su3( oldmat+i );
+                        CMUL_J( ctr1, ctr2, cprod );
+                        ploopcor += cprod.real;
+#endif
 		    }
 		    g_doublesum( &wloop );
 		    node0_printf("POT_LOOP: %d %d %d %d \t%e\n",
 			x_dist, y_dist, z_dist, t_dist, wloop/volume );
-
+#ifdef PLOOPCOR_MEAS
+                    g_doublesum( &ploopcor );
+                    node0_printf("POL_CORR: %d %d %d %d \t%e\n",
+                        x_dist, y_dist, z_dist, t_dist, ploopcor/volume );
+#endif
 		    /* as we increment z, shift in z direction */
 		    shiftmat( oldmat, newmat, ZUP );
 		    tt=oldmat; oldmat=newmat; newmat=tt;
