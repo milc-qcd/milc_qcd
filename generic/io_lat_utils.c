@@ -694,6 +694,7 @@ gauge_file *setup_output_gauge_file()
   /* Initialize */
   gf->check.sum29 = 0;
   gf->check.sum31 = 0;
+  gf->filename = NULL;
 
   /* Load header values */
 
