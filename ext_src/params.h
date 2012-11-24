@@ -7,9 +7,6 @@
 #define MAX_QK 6
 #define MAX_T0 32
 #define MAX_SINK_LABEL 32
-#define CLOVER_TYPE 0
-#define KS_TYPE 1
-#define KS4_TYPE 2
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
