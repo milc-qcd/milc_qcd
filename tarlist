@@ -13,6 +13,7 @@ TARLIST = \
  ${NAME_ROOT}/trainerrfile.pl         \
  ${NAME_ROOT}/train.sh                \
  ${NAME_ROOT}/headtail.pl             \
+ ${NAME_ROOT}/tarlist \
  ${NAME_ROOT}/todo \
  \
  ${NAME_ROOT}/doc/Makefile            \
@@ -30,6 +31,11 @@ TARLIST = \
  ${NAME_ROOT}/libraries/Make_*         \
  ${NAME_ROOT}/libraries/README*       \
  ${NAME_ROOT}/libraries/include/*.h \
+ \
+ ${NAME_ROOT}/file_combine/Make_*     \
+ ${NAME_ROOT}/file_combine/*.c        \
+ ${NAME_ROOT}/file_combine/*.h        \
+ ${NAME_ROOT}/file_combine/test/*.sample-in  \
  \
  ${NAME_ROOT}/file_utilities/Make*      \
  ${NAME_ROOT}/file_utilities/*.c        \
@@ -82,6 +88,10 @@ TARLIST = \
  ${NAME_ROOT}/generic_schroed/Make_*          \
  ${NAME_ROOT}/generic_schroed/*.c            \
  ${NAME_ROOT}/generic_schroed/*.h \
+ \
+ ${NAME_ROOT}/generic_u1/Make_*      \
+ ${NAME_ROOT}/generic_u1/*.c        \
+ ${NAME_ROOT}/generic_u1/*.h \
  \
  ${NAME_ROOT}/generic_wilson/Make_*      \
  ${NAME_ROOT}/generic_wilson/*.c        \
@@ -302,6 +312,15 @@ TARLIST = \
  ${NAME_ROOT}/symanzik_sl32/test/*.sample-out  \
  ${NAME_ROOT}/symanzik_sl32/test/checklist  \
  ${NAME_ROOT}/symanzik_sl32/test/Makefile \
+ \
+ ${NAME_ROOT}/u1_gauge/*.c               \
+ ${NAME_ROOT}/u1_gauge/*.h               \
+ ${NAME_ROOT}/u1_gauge/Make_*            \
+ ${NAME_ROOT}/u1_gauge/test/*.sample-in  \
+ ${NAME_ROOT}/u1_gauge/test/*.errtol     \
+ ${NAME_ROOT}/u1_gauge/test/*.sample-out \
+ ${NAME_ROOT}/u1_gauge/test/checklist    \
+ ${NAME_ROOT}/u1_gauge/test/Makefile \
 \
  ${NAME_ROOT}/sse/README_SSE          \
  ${NAME_ROOT}/sse/include/*.h         \
