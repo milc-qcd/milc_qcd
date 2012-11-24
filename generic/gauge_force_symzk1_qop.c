@@ -91,7 +91,7 @@ void imp_gauge_force( Real eps, field_offset mom_off ){
   remaptime += dclock();
 #ifdef GFTIME
   node0_printf("GFTIME:  time = %e (qop %s) mflops = %e\n",
-	       info.final_sec, qop_prec[QOP_Precision-1],
+	       info.final_sec, qop_prec[QOP_PrecisionInt-1],
 	       info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP
   node0_printf("GFREMAP:  time = %e\n",remaptime);
