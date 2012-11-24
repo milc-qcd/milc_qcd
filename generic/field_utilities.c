@@ -65,6 +65,7 @@ void destroy_##ABBREV##_field(T *x){ \
 /*------------------------------------------------------------------*/
 /* Create standard create, copy, clear, destroy for standard types  */
 
+make_all_field(r, Real)
 make_all_field(c, complex)
 make_all_field(v, su3_vector)
 make_all_field(m, su3_matrix)
@@ -411,24 +412,35 @@ wilson_prop_field *create_wp_field_copy(wilson_prop_field *w){
 
 /*--------------------------------------------------------------------*/
 /* Transpose source and sink color and spin indices in place */
-void transpose_wp_field(wilson_prop_field *wp){
+wilson_prop_field *transpose_wp_field(wilson_prop_field *wp){
   int c1, c2, s1, s2, i;
   site *s;
   spin_wilson_vector swv[3];
+  spin_wilson_vector zero;
+  wilson_prop_field *twp = create_wp_field(3);
 
-  if(wp->nc != 3){
-    node0_printf("transpose_wp_field: Requires three colors to do a transpose, but have %d\n",wp->nc);
-    terminate(1);
+  if(wp->nc < 3){
+    memset(&zero, '\0', sizeof(zero));
   }
+  else 
+    if(wp->nc > 3){
+      node0_printf("transpose_wp_field: Requires max three colors to do a transpose, but have %d\n",wp->nc);
+      terminate(1);
+    }
   FORALLSITES(i,s){
-    for(c2 = 0; c2 < 3; c2++)
-      swv[c2] = wp->swv[c2][i];
+    for(c2 = 0; c2 < 3; c2++){
+      if(c2 < wp->nc)
+	swv[c2] = wp->swv[c2][i];
+      else
+	swv[c2] = zero;
+    }
     for(c2 = 0; c2 < 3; c2++)
       for(s2 = 0; s2 < 4; s2++)
 	for(s1 = 0; s1 < 4; s1++)
 	  for(c1 = 0; c1 < 3; c1++)
-	    wp->swv[c1][i].d[s1].d[s2].c[c2] = swv[c2].d[s2].d[s1].c[c1];
+	    twp->swv[c1][i].d[s1].d[s2].c[c2] = swv[c2].d[s2].d[s1].c[c1];
   }
+  return twp;
 }
 
 /*--------------------------------------------------------------------*/
