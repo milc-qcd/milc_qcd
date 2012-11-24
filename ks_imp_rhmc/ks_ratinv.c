@@ -87,7 +87,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
   
   for(k = 0; k < order; k++){
     ksp[k].offset = roots[k+1];
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
     ksp[k].naik_term_epsilon = naik_term_epsilon;
     ksp[k].naik_term_epsilon_index = naik_term_epsilon_index;
 #endif

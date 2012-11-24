@@ -146,6 +146,8 @@ EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int total_iters;
 EXTERN	int hisq_svd_counter;
 EXTERN	int hisq_force_filter_counter;
+EXTERN	int hyphisq_svd_counter;
+EXTERN  int hypisq_force_filter_counter;
         /* source time, increment for it, and number of source slices */
 
 /* Some of these global variables are node dependent */

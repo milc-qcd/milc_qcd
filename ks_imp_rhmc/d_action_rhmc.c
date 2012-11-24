@@ -49,7 +49,7 @@ double fermion_action( su3_vector **multi_x, su3_vector *sumvec) {
   imp_ferm_links_t **fn;
   sum=0.0;
   iphi=0;
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   n = fermion_links_get_n_naiks(fn_links);
 #else
   n = 1;

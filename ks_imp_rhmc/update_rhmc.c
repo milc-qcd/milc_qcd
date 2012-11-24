@@ -177,7 +177,7 @@ int update()  {
   /* generate a pseudofermion configuration only at start*/
   // NOTE used to clear xxx here.  May want to clear all solutions for reversibility
   iphi=0;
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   n = fermion_links_get_n_naiks(fn_links);
 #else
   n = 1;
@@ -444,8 +444,8 @@ int update()  {
         }	/* end loop over microcanonical steps */
     break;
     case INT_2EPS_3TO1:
-#if FERM_ACTION == HISQ
-      printf("update(%d): INT_2EPS_3TO1 is not supported for HISQ\n",
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+      printf("update(%d): INT_2EPS_3TO1 is not supported for HISQ or HYPISQ\n",
 	     this_node);
       terminate(1);
 #endif
@@ -544,8 +544,6 @@ int update()  {
       gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
     invalidate_fermion_links(fn_links);
-    //    free_fn_links(&fn_links);
-    //    free_fn_links(&fn_links_dmdu0);
 #endif
     node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
   }

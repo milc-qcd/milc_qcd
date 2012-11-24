@@ -198,7 +198,7 @@ char plaq_file_name[300];
 
 
 
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 
 /* Measure plaquettes and write into file */
 void g_measure_plaq() {
@@ -218,7 +218,7 @@ void g_measure_plaq() {
 
   /* Load fat and long links for fermion measurements if needed */
   invalidate_all_ferm_links(&fn_links);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fn_links.hl.current_X_set = 0;
 #endif
   load_ferm_links(&fn_links);

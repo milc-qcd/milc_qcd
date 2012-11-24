@@ -8,7 +8,7 @@
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
-/* NOT SUPPORTED FOR HISQ! */
+/* NOT SUPPORTED FOR HISQ OR HYPISQ! */
 
 void eo_fermion_force_rhmc( Real eps, params_ratfunc *rf, 
 			    su3_vector **multi_x, field_offset phi_off, 

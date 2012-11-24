@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.24  2012/11/24 00:20:09  detar
+//  Add support for future HYPISQ action.
+//
 //  Revision 1.23  2011/11/29 22:30:03  detar
 //  Support new fermion links scheme.
 //
@@ -184,6 +187,10 @@ initial_set(void)
     show_su3_mat_opts();
     show_hisq_links_opts();
     show_hisq_force_opts();
+#elif FERM_ACTION == HYPISQ
+    show_su3_mat_opts();
+    show_hypisq_links_opts();
+    show_hypisq_force_opts();
 #endif
 
     status=get_prompt(stdin, &prompt);
@@ -252,8 +259,16 @@ initial_set(void)
   hisq_svd_counter = 0;
 #endif
       
+#ifdef HYPISQ_SVD_COUNTER
+  hypisq_svd_counter = 0;
+#endif
+      
 #ifdef HISQ_FORCE_FILTER_COUNTER
   hisq_force_filter_counter = 0;
+#endif
+
+#ifdef HYPISQ_FORCE_FILTER_COUNTER
+  hypisq_force_filter_counter = 0;
 #endif
 
   /* Load rational function parameters */
@@ -295,10 +310,10 @@ initial_set(void)
     n_order_naik_total += tmporder;
     n_naiks++;
   }
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   // calculate epsilon corrections for different Naik terms
   if( 0 != eps_naik[0] ) {
-    node0_printf("IN HISQ ACTION FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
+    node0_printf("IN HISQ AND HYPISQ ACTIONS FIRST SET OF PSEUDO FERMION FIELDS SHOULD HAVE EPSILON CORRECTION TO NAIK TERM ZERO.\n");
     terminate(1);
   }
 #endif
@@ -307,20 +322,20 @@ initial_set(void)
   for( i=0; i<n_naiks; i++ ) {
     node0_printf("n_pseudo_naik[%d]=%d\n", i, n_pseudo_naik[i]);
     node0_printf("n_orders_naik[%d]=%d\n", i, n_orders_naik[i]);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
     node0_printf("eps_naik[%d]=%f\n", i, eps_naik[i]);
 #endif
   }
   node0_printf("n_order_naik_total %d\n",n_order_naik_total);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   if( n_naiks+1 > MAX_NAIK ) {
     node0_printf("MAX_NAIK=%d < n_naiks+1=%d\n", MAX_NAIK, n_naiks+1 );
     node0_printf("Increase MAX_NAIK\n");
     terminate(1);
   }
-#else /* HISQ */
+#else /* non HISQ */
   if( n_naiks>1 ) {
-    node0_printf("FOR ACTIONS OTHER THAN HISQ EPSILON CORRECTION IS NOT USED.\n");
+    node0_printf("FOR ACTIONS OTHER THAN HISQ AND HYPISQ EPSILON CORRECTION IS NOT USED.\n");
     node0_printf("ONLY ONE SET OF X LINKS IS USED.\n");
     node0_printf("SET ALL naik_mass TO 0 IN RATIONAL FUNCTION FILE.\n");
     terminate(1);
@@ -426,7 +441,7 @@ readin(int prompt)
       IF_OK status += get_i(stdin, prompt, "prec_pbp", &par_buf.prec_pbp);
       IF_OK for(i = 0; i < par_buf.num_pbp_masses; i++){
 	IF_OK status += get_f(stdin, prompt, "mass", &par_buf.ksp_pbp[i].mass);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 	IF_OK status += get_f(stdin, prompt, "naik_term_epsilon", 
 			      &par_buf.ksp_pbp[i].naik_term_epsilon);
 #endif
@@ -439,19 +454,18 @@ readin(int prompt)
 	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &par_buf.qic_pbp[i].resid);
 	IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", &par_buf.qic_pbp[i].relresid );
       }
+    }
 
     /* find out what kind of starting lattice to use */
     IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
-					  par_buf.startfile );
+					 par_buf.startfile );
     
     /* find out what to do with lattice at end */
     IF_OK status += ask_ending_lattice(stdin,  prompt, &(par_buf.saveflag),
-					par_buf.savefile );
+				       par_buf.savefile );
     IF_OK status += ask_ildg_LFN(stdin,  prompt, par_buf.saveflag,
-				  par_buf.stringLFN );
+				 par_buf.stringLFN );
     
-    }
-
     if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
   } /* end if(this_node==0) */
   
@@ -514,7 +528,7 @@ readin(int prompt)
 #endif /* HISQ_REUNITARIZATION_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   /* Add PBP quantities to the eps_naik table of unique Naik epsilon
      coefficients .  Also build the hash table for mapping a mass term to
      its Naik epsilon index */
@@ -555,13 +569,13 @@ readin(int prompt)
   fermion_links_want_back(1);
 #endif
   
-#if FERM_ACTION == HISQ & defined(DM_DEPS)
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )& defined(DM_DEPS)
   /* We want to calculate both the links and their Naik eps
      derivatives (HISQ only) */
   fermion_links_want_deps(1);
 #endif
   
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
 #else
   fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);

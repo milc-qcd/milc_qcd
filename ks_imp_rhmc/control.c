@@ -84,7 +84,7 @@ main( int argc, char **argv )
 	g_measure( );
 	rephase(ON);
 #ifdef MILC_GLOBAL_DEBUG
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
         g_measure_plaq( );
 #endif
 #ifdef MEASURE_AND_TUNE_HISQ
@@ -100,7 +100,7 @@ main( int argc, char **argv )
 	
 	restore_fermion_links_from_site(fn_links, par_buf.prec_pbp);
 	for(i = 0; i < par_buf.num_pbp_masses; i++){
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 	  naik_index = par_buf.ksp_pbp[i].naik_term_epsilon_index;
 #else
 	  naik_index = 0;
@@ -133,9 +133,15 @@ main( int argc, char **argv )
 #ifdef HISQ_SVD_COUNTER
       printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
+#ifdef HYPISQ_SVD_COUNTER
+      printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
+#endif
       
 #ifdef HISQ_FORCE_FILTER_COUNTER
       printf("hisq_force_filter_counter = %d\n",hisq_force_filter_counter);
+#endif
+#ifdef HYPISQ_FORCE_FILTER_COUNTER
+      printf("hypisq_force_filter_counter = %d\n",hypisq_force_filter_counter);
 #endif
     }
     fflush(stdout);
@@ -151,6 +157,8 @@ main( int argc, char **argv )
 
 #if FERM_ACTION == HISQ
     destroy_fermion_links_hisq(fn_links);
+#elif FERM_ACTION == HYPISQ
+    destroy_fermion_links_hypisq(fn_links);
 #else
     destroy_fermion_links(fn_links);
 #endif
