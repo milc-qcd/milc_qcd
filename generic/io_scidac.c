@@ -207,6 +207,9 @@ gauge_file *save_scidac(char *filename, int volfmt, int serpar, int ildgstyle,
   /* Make a dummy gauge file structure for MILC use */
   gf = setup_output_gauge_file();
 
+  /* Set the filename in the gauge_file structure */
+  gf->filename = filename;
+
   /* Open file for writing */
   filexml = QIO_string_create();
   QIO_string_set(filexml, default_file_xml);
