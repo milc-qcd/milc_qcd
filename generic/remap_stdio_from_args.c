@@ -43,7 +43,7 @@ int remap_stdio_from_args(int argc, char *argv[]){
     }
     fp = freopen(newfile,"r",stdin);
     if(fp == NULL){
-      node0_printf("Can't open stdin file %s for reading.\n",newfile);
+      if(mynode()==0)printf("Can't open stdin file %s for reading.\n",newfile);
       return 1;
     }
     free(newfile);
@@ -66,14 +66,14 @@ int remap_stdio_from_args(int argc, char *argv[]){
     fp = freopen(newfile,"w",stdout);
 #endif
     if(fp == NULL){
-      node0_printf("Can't open stdout file %s for writing\n",argv[2]);
+      if(mynode()==0)printf("Can't open stdout file %s for writing\n",argv[2]);
       return 1;
     }
     free(newfile);
   }
   
   if(argc > 3){
-    char *newfile = (char *)malloc(strlen(argv[2])+16);
+    char *newfile = (char *)malloc(strlen(argv[3])+16);
     if(num_jobs == 1){
       sprintf(newfile,"%s",argv[3]);
     } else {
@@ -88,7 +88,7 @@ int remap_stdio_from_args(int argc, char *argv[]){
     fp = freopen(newfile,"w",stderr);
 #endif
     if(fp == NULL){
-      node0_printf("Can't open stderr file %s for writing\n",newfile);
+      if(mynode()==0)printf("Can't open stderr file %s for writing\n",newfile);
       return 1;
     }
     free(newfile);
