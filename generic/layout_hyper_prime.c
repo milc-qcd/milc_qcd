@@ -22,6 +22,9 @@
 */
 
 // $Log: layout_hyper_prime.c,v $
+// Revision 1.18  2012/11/24 04:43:47  detar
+// Fix nsquares print out.
+//
 // Revision 1.17  2012/01/21 21:28:12  detar
 // Support new QMP
 //
@@ -274,7 +277,7 @@ static void init_io_node(){
 		 ionodegeomvals[0], ionodegeomvals[1],
 		 ionodegeomvals[2], ionodegeomvals[3]);
     node0_printf("is incommensurate with node geometry %d %d %d %d\n",
-		 nsquares[0], nsquares[1], nsquares[3], nsquares[3]);
+		 nsquares[0], nsquares[1], nsquares[2], nsquares[3]);
     terminate(1);
   }
 }
