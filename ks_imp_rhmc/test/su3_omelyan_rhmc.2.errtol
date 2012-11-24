@@ -354,7 +354,7 @@ PLAQUETTE ACTION: 0.0006
  OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
  OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
 ACTION: g,h,f = 0.0003 7e-05 4e-05 0.0004
-DG = 2e-06 DH = 2e-06 DF = 8e-05 D = 3e-05
+DG = 2e-06 DH = 0.0002 DF = 8e-05 D = 3e-05
 ACCEPT: delta S = 3e-05
 PLAQ: 9e-08 3e-07
 P_LOOP: 2e-08 2e-08
