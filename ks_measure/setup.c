@@ -5,6 +5,9 @@
 /* Modifications ... */
 
 //  $Log: setup.c,v $
+//  Revision 1.2  2012/11/24 05:21:42  detar
+//  Add support for future HYPISQ action
+//
 //  Revision 1.1  2011/12/02 04:38:15  detar
 //  Add
 //
@@ -78,6 +81,9 @@ initial_set(){
 #if FERM_ACTION == HISQ
     show_su3_mat_opts();
     show_hisq_links_opts();
+#elif FERM_ACTION == HYPISQ
+    show_su3_mat_opts();
+    show_hypisq_links_opts();
 #endif
     status = get_prompt(stdin,  &prompt );
     
@@ -225,7 +231,7 @@ int readin(int prompt) {
 	
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[npbp_masses] );
 	IF_OK param.ksp_pbp[npbp_masses].mass = atof(param.mass_label[npbp_masses]);
-#if FERM_ACTION == HISQ
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
 	IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", 
 			      &param.ksp_pbp[npbp_masses].naik_term_epsilon );
 #else
@@ -305,7 +311,7 @@ int readin(int prompt) {
   fermion_links_want_du0(1);
 #endif
   
-#if FERM_ACTION == HISQ & defined(DM_DEPS)
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) &  defined(DM_DEPS)
   fermion_links_want_deps(1);
 #endif
   

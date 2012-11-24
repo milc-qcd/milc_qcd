@@ -34,6 +34,9 @@ int main( int argc, char **argv ){
 #ifdef HISQ_SVD_COUNTER
     hisq_svd_counter = 0;
 #endif
+#ifdef HYPISQ_SVD_COUNTER
+    hypisq_svd_counter = 0;
+#endif
     restore_fermion_links_from_site(fn_links, PRECISION);
     /* call fermion_variable measuring routines */
     /* results are printed in output file */
@@ -123,6 +126,9 @@ int main( int argc, char **argv ){
       printf("total Rayleigh iters = %d\n",total_R_iters);
 #ifdef HISQ_SVD_COUNTER
       printf("hisq_svd_counter = %d\n",hisq_svd_counter);
+#endif
+#ifdef HYPISQ_SVD_COUNTER
+      printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
 #endif
     }
     fflush(stdout);
