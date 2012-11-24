@@ -16,8 +16,9 @@
 
    Operations exclusive to color vectors:
 
-   funnywall1                 pion5, pioni5, pioni, pions, rhoi, rhos
-   funnywall2                 pion05, pionij, pioni0, pion0, rhoi0, rho0
+   funnywall1                 pion5 + pioni5 + pioni + pions + rhoi + rhos
+   funnywall2                 pion05 + pionij + pioni0 + pion0 + rhoi0 + rho0
+   spin_taste
 
    Covariant modifications of the source:
 
@@ -90,6 +91,7 @@ void init_qss_op(quark_source_sink_op *qss_op){
   qss_op->dhop             = 0;
   qss_op->iters            = 0;
   qss_op->r0               = 0.;
+  qss_op->stride           = 1;
   qss_op->r_offset[0]      = 0;
   qss_op->r_offset[1]      = 0;
   qss_op->r_offset[2]      = 0;
@@ -638,16 +640,20 @@ static void cov_deriv_wp(wilson_prop_field *wp_dst, wilson_prop_field *wp_src,
 /* On wilson_prop_field type */
 
 static void gauss_smear_wprop_field(wilson_prop_field *wp, 
-				    su3_matrix *t_links, 
+				    su3_matrix *t_links, int subset,
 				    Real r0, int iters, int t0){
   wilson_vector *wv;
   int spin, color;
+  int subset, stride;
+
+  if(subset == FULL)stride = 1;
+  else stride = 2;
 
   wv = create_wv_field();
   for(color = 0; color < wp->nc; color++)
     for(spin=0;spin<4;spin++){
       copy_wv_from_wp(wv, wp, color, spin);
-      gauss_smear_wv_field(wv, t_links, r0, iters, t0);
+      gauss_smear_wv_field(wv, stride, t_links, r0, iters, t0);
       copy_wp_from_wv(wp, wv, color, spin);
     }
   
@@ -657,13 +663,13 @@ static void gauss_smear_wprop_field(wilson_prop_field *wp,
 /* On ks_prop_field type */
 
 static void gauss_smear_ksprop_field(ksprop_field *ksp, 
-				     su3_matrix *t_links, 
+				     su3_matrix *t_links,
 				     Real r0, int iters, int t0){
   su3_vector *v;
-  int color;
+  int color, stride;
 
   v = create_v_field();
-  for(color = 0; color < wp->nc; color++){
+  for(color = 0; color < ksp->nc; color++){
       copy_v_from_ksp(v, ksp, color);
       gauss_smear_v_field(v, t_links, r0, iters, t0);
       copy_ksp_from_v(ksp, wv, color);
@@ -1163,7 +1169,6 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
   Real r0           = qss_op->r0;
 
   if(op_type == COVARIANT_GAUSSIAN){
-    int iters = qss_op->iters;
     static su3_matrix *t_links;
 
     t_links = create_G_from_site();
@@ -1171,8 +1176,9 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
     destroy_G(t_links);
   }
 
-  else if(op_type == FAT_COVARIANT_GAUSSIAN )
+  else if(op_type == FAT_COVARIANT_GAUSSIAN ){
     gauss_smear_v_field(src, ape_links, r0, iters, t0);
+  }
 
   else
     return 0;
@@ -1191,6 +1197,7 @@ static int apply_cov_smear_wv(wilson_vector *src,
   int op_type       = qss_op->type;
   int iters         = qss_op->iters;
   Real r0           = qss_op->r0;
+  int stride        = qss_op->stride;
 
   if(op_type == COVARIANT_GAUSSIAN){
     int iters = qss_op->iters;
@@ -1198,12 +1205,12 @@ static int apply_cov_smear_wv(wilson_vector *src,
     static su3_matrix *t_links;
 
     t_links = create_G_from_site();
-    gauss_smear_wv_field(src, t_links, r0, iters, t0);
+    gauss_smear_wv_field(src, t_links, stride, r0, iters, t0);
     destroy_G(t_links);
   }
 
   else if(op_type == FAT_COVARIANT_GAUSSIAN )
-    gauss_smear_wv_field(src, ape_links, r0, iters, t0);
+    gauss_smear_wv_field(src, ape_links, stride, r0, iters, t0);
 
   else
     return 0;
@@ -1230,7 +1237,9 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec2 = create_v_field();
 
     mult_pion5_field( qss_op->r_offset, src, tvec2 );
+    rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
     mult_pioni_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
+    rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
@@ -1245,7 +1254,9 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
     su3_vector *tvec2 = create_v_field();
 
     mult_pion05_field( qss_op->r_offset, src, tvec2 );
+    rephase_field_offset( ape_links, ON, NULL, qss_op->r_offset );
     mult_pioni0_field( ZUP, qss_op->r_offset, src, tvec1, ape_links );
+    rephase_field_offset( ape_links, OFF, NULL, qss_op->r_offset );
     add_v_fields( tvec2, tvec1, tvec2 );
     mult_rhoi0_field( ZUP, qss_op->r_offset, src, tvec1 );
     add_v_fields( src, tvec1, tvec2 );
@@ -1660,6 +1671,7 @@ static int get_field_op(int *status_p, FILE *fp,
   char c_dir0[] = " ";
   char c_dir1[2] = " ";
   char *c_dir[2] = {c_dir0, c_dir1};
+  int  stride = 1;
   int  source_iters = 0;
   Real source_r0 = 0;
   int  op_type = qss_op->type;
@@ -1672,6 +1684,7 @@ static int get_field_op(int *status_p, FILE *fp,
 
   /* Convolutions */
   if ( op_type == COVARIANT_GAUSSIAN ){
+    IF_OK status += get_i(fp, prompt, "stride", &stride);
     IF_OK status += get_f(fp, prompt, "r0", &source_r0);
     IF_OK status += get_i(fp, prompt, "source_iters", &source_iters);
   }
@@ -1718,6 +1731,7 @@ static int get_field_op(int *status_p, FILE *fp,
   }
   else if( op_type == FAT_COVARIANT_GAUSSIAN){
     /* Parameters for covariant Gaussian */
+    IF_OK status += get_i(fp, prompt, "stride", &stride);
     IF_OK status += get_f(fp, prompt, "r0", &source_r0);
     IF_OK status += get_i(fp, prompt, "source_iters", &source_iters);
   }
@@ -1738,6 +1752,7 @@ static int get_field_op(int *status_p, FILE *fp,
   qss_op->a             = a;
   qss_op->iters         = source_iters;
   qss_op->r0            = source_r0;
+  qss_op->stride        = stride;
   strcpy(qss_op->source_file,source_file);
 
   *status_p = status;
@@ -1878,6 +1893,7 @@ static int print_single_op_info(FILE *fp, char prefix[],
 
   if ( op_type == COVARIANT_GAUSSIAN ){
     fprintf(fp,",\n");
+    fprintf(fp,"%s%d\n", make_tag(prefix, "stride"), qss_op->stride);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "r0"), qss_op->r0);
     fprintf(fp,"%s%d\n", make_tag(prefix, "iters"), qss_op->iters);
   }
@@ -1916,6 +1932,7 @@ static int print_single_op_info(FILE *fp, char prefix[],
   }
   else if( op_type == FAT_COVARIANT_GAUSSIAN){
     fprintf(fp,",\n");
+    fprintf(fp,"%s%d\n", make_tag(prefix, "stride"), qss_op->stride);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "r0"), qss_op->r0);
     fprintf(fp,"%s%d\n", make_tag(prefix, "iters"), qss_op->iters);
   }

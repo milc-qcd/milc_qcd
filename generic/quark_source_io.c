@@ -44,6 +44,8 @@
    w_source_ks
    w_source_dirac
    w_source_dirac_site
+   print_output_quark_source_choices
+   parse_output_quark_source_choices
    ask_output_quark_source_file
  */
 
@@ -565,9 +567,9 @@ int w_source_open_dirac(quark_source *qs, char *fileinfo){
 
 #endif
 
-/*--------------------------------------------------------------------*/
-/* C.ose either a color vector or Dirac vector source file after writing */
-/*--------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------*/
+/* Close either a color vector or Dirac vector source file after writing */
+/*-----------------------------------------------------------------------*/
 
 void w_source_close(quark_source *qs){
 
@@ -711,7 +713,7 @@ int w_source_dirac(wilson_vector *src, quark_source *qs)
     
     /* Write the Dirac source vector to the file */
     status = qio_status(
-			write_wpropsource_D_usqcd_xml(qs->outfile, recxml, src, t0) );
+		write_wpropsource_D_usqcd_xml(qs->outfile, recxml, src, t0) );
     node0_printf("Wrote source for color %d spin %d time slice %d\n", 
 		 color, spin, t0);
     
@@ -801,7 +803,7 @@ int w_source_dirac_site(field_offset src, quark_source *qs)
 
 #define IF_OK if(status==0)
 
-static void print_output_quark_source_choices(void){
+void print_output_quark_source_choices(void){
   printf("'forget_source' or ");
   printf("'save_serial_scidac_ks_source' or ");
   printf("'save_parallel_scidac_ks_source' or ");
@@ -813,24 +815,8 @@ static void print_output_quark_source_choices(void){
   printf("'save_partfile_scidac_w_source'? ");
 }
 
-int ask_output_quark_source_file( FILE *fp, int prompt, 
-				  int *flag, int *save_type,
-				  int *t0, char *descrp, char *filename)
-{
-  char *savebuf;
-  int status = 0;
-  char myname[] = "ask_output_quark_source_file";
-
-  filename[0] = '\0';  /* Set NULL default */
-
-  if (prompt==1){
-    print_output_quark_source_choices();
-  }
-
-  savebuf = get_next_tag(fp, "output quark source command", myname);
-  if (savebuf == NULL)return 1;
-
-  printf("%s ",savebuf);
+int parse_output_quark_source_choices(int *flag, int *save_type, 
+				      char *descrp, char* savebuf){
 
   if(strcmp("forget_source",savebuf) == 0 ) {
     *flag=FORGET;
@@ -917,12 +903,39 @@ int ask_output_quark_source_file( FILE *fp, int prompt,
     terminate(1);
 #endif
   }
-  else{
+  else
+    return 1;
+
+  return 0;
+}
+
+
+int ask_output_quark_source_file( FILE *fp, int prompt, 
+				  int *flag, int *save_type,
+				  int *t0, char *descrp, char *filename)
+{
+  char *savebuf;
+  int status = 0;
+  char myname[] = "ask_output_quark_source_file";
+
+  filename[0] = '\0';  /* Set NULL default */
+
+  if (prompt==1){
+    print_output_quark_source_choices();
+  }
+
+  savebuf = get_next_tag(fp, "output quark source command", myname);
+  if (savebuf == NULL)return 1;
+
+  printf("%s ",savebuf);
+
+  if(parse_output_quark_source_choices(flag, save_type, descrp, savebuf) != 0){
     printf("\n%s: ERROR IN INPUT: source file command %s is invalid\n",
 	   myname, savebuf); 
     printf("Choices are \n");
     print_output_quark_source_choices();
-    return 1;
+    status++;
+    return status;
   }
   
   /* Get file name */
@@ -951,7 +964,6 @@ int ask_output_quark_source_file( FILE *fp, int prompt,
 	*t0 = atoi(t0_string);
     }
   }
-
   return status;
 } /* ask_output_quark_source_file */
 
