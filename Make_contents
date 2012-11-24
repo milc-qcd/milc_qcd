@@ -102,6 +102,11 @@ GENERIC_PG =     \
  ${NAME_ROOT}/generic_pg/*.c       \
  ${NAME_ROOT}/generic_pg/*.h
 
+GENERIC_U1 =     \
+ ${NAME_ROOT}/generic_u1/Make_*     \
+ ${NAME_ROOT}/generic_u1/*.c       \
+ ${NAME_ROOT}/generic_u1/*.h
+
 GENERIC_SCHROED =         \
  ${NAME_ROOT}/generic_schroed/Make_*         \
  ${NAME_ROOT}/generic_schroed/*.c           \
@@ -386,6 +391,11 @@ SYMANZIK_SL32 =         \
  ${NAME_ROOT}/symanzik_sl32/test/Makefile
 
 
+U1_GAUGE =              \
+ ${NAME_ROOT}/u1_gauge/*.c            \
+ ${NAME_ROOT}/u1_gauge/*.h            \
+ ${NAME_ROOT}/u1_gauge/Make_*
+
 # We split up the archive into manageable components
 
 BASIC =               \
@@ -443,6 +453,10 @@ FP =                  \
 
 INST =                \
  ${SMOOTH_INST}
+
+U1 =                  \
+ ${GENERIC_U1}        \
+ ${U1_GAUGE}
 
 # ${KS_IMP_INVERT_MULTI} \
 
