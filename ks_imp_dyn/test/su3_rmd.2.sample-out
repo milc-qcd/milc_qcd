@@ -55,14 +55,14 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -7.199551e-03     384
                     5      -1.231132e-01     48
 WARMUPS COMPLETED
- OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 38
- OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.3e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 40
- OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 1.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 40
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
 PLAQ:	1.795188	1.776954
 P_LOOP:	1.303896e+00	2.126878e-04
 G_LOOP:  0  0  4   	1.867359e+00	( 0 1 7 6  )
@@ -100,22 +100,22 @@ G_LOOP:  2  13  6   	1.166222e+00	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	1.105839e+00	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	1.112603e+00	( 1 5 4 6 2 3  )
 GACTION: 5.291246e+00
- OK converged final_rsq= 2.4e-12 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 41
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 7
+ OK converged final_rsq= 2.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     1.664137e-01  4.386539e-02  6.991357e-02  6.991356e-02 ( 1 of 1 )
 FACTION: mass = 1.000000e-01,  1.452431e+00 ( 1 of 1 )
- OK converged final_rsq= 2.1e-12 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 43
- OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 7
+ OK converged final_rsq= 2.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
 PBP: mass 1.000000e-01     1.278000e-01  1.023675e-01  1.160821e-02  1.160821e-02 ( 1 of 1 )
 FACTION: mass = 1.000000e-01,  1.519379e+00 ( 1 of 1 )
- OK converged final_rsq= 1.5e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 40
- OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.4e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 40
- OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 0 (cf 0) restarts = 1 iters= 38
+ OK converged final_rsq= 1.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 40
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 1.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 40
+ OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
 PLAQ:	1.793290	1.784225
 P_LOOP:	1.310010e+00	1.569647e-02
 G_LOOP:  0  0  4   	1.862752e+00	( 0 1 7 6  )
@@ -153,12 +153,12 @@ G_LOOP:  2  13  6   	1.163078e+00	( 1 2 4 6 5 3  )
 G_LOOP:  2  14  6   	1.092699e+00	( 1 5 3 6 2 4  )
 G_LOOP:  2  15  6   	1.118373e+00	( 1 5 4 6 2 3  )
 GACTION: 5.267336e+00
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 41
- OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 8
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
+ OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     1.642404e-01  4.235982e-02  -5.172769e-02  -5.172769e-02 ( 1 of 1 )
 FACTION: mass = 1.000000e-01,  1.449081e+00 ( 1 of 1 )
- OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 0 (cf 0) restarts = 1 iters= 8
+ OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
 PBP: mass 1.000000e-01     1.313932e-01  1.030571e-01  -6.536272e-02  -6.536272e-02 ( 1 of 1 )
 FACTION: mass = 1.000000e-01,  1.496034e+00 ( 1 of 1 )
 RUNNING COMPLETED
