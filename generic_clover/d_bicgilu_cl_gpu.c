@@ -171,7 +171,6 @@ int bicgilu_cl_field_gpu ( // Return value is number of iterations taken
   
   QudaInvertArgs_t inv_args;
   inv_args.max_iter          = qic->max*qic->nrestart;
-  inv_args.restart_tolerance = 1e-3;
 #ifdef MAX_MIXED
   inv_args.mixed_precision = 2;
 #else
