@@ -1,9 +1,10 @@
-December 3, 2011
+July 24, 2012
 
 List of code projects to be done:
 ----------------------------------------------------------------------
 
-Add HISQ GPU fermion force interface and update.
+Detect and respond to a premature EOF in propagator, etc reading.  See
+Rachel's message of July 16.
 
 In the plain MILC version, implement Osborn's improvements to the HISQ
 fermion force
@@ -43,3 +44,23 @@ Continue testing prefetching and layout strategies.
 
 Fix arb_dirac_eigen?  It has not been debugged for parallel running.
 
+----------------------------------------------------------------------
+
+HYPISQ chores
+
+Placeholder files needing development
+
+generic_ks/fermion_force_hypisq_multi.c
+generic_ks/fermion_links_hypisq_load_milc.c
+generic_ks/fermion_links_hypisq_milc.c
+generic_ks/ks_action_paths_hypisq.c
+generic_ks/show_hypisq_force_opts.c
+generic_ks/show_hypisq_links_opts.c
+generic_ks/su3_mat_op.c
+include/fermion_links_milc.h
+
+I have assumed we want a Naik epsilon.  
+So I have added if FERM_ACTION == HYPISQ stuff in 
+generic_ks/fermion_links.c
+generic_ks/mu_fast.c
+generic_ks/f_meas.c
