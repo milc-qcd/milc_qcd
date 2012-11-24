@@ -156,7 +156,6 @@ diff_ksprop::
 	${G_KS_OBJECTS} \
 	diff_ksprop.o \
 	discretize_wf.o \
-	flavor_ops2.o \
 	gauge_info_dummy.o \
 	gauge_utilities.o \
 	io_helpers.o \
@@ -170,7 +169,9 @@ diff_ksprop::
         quark_source_io.o \
 	quark_source_sink_op.o \
 	ranstuff.o \
-	restrict_fourier.o"
+	restrict_fourier.o \
+        spin_taste_ops.o"
+
 
 diff_ksvector::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksvector" \
