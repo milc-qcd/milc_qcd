@@ -25,7 +25,6 @@
 #  ks_imp_invert_multi \
 #  propagating_form_factor \
 #  pw_nr_meson \
-#  schroed_ks_dyn \
 #  schroed_pg \
 #  string_break \
 #  wilson_dynamical \
@@ -49,6 +48,7 @@ DIRS = \
    ks_spectrum \
    pure_gauge \
    schroed_cl_inv \
+   schroed_ks_dyn \
    smooth_inst \
    symanzik_sl32 \
 
