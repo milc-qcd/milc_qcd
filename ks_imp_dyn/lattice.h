@@ -68,7 +68,7 @@ typedef struct {
 #ifdef ONEMASS
  	su3_vector phi;		/* Gaussian random source vector */
  	su3_vector xxx;		/* solution vector = Kinverse * phi */
-#ifdef PHI_ALGORITHM
+#ifdef HMC_ALGORITHM
  	su3_vector old_xxx;	/* For predicting next xxx */
 #endif
 #else
@@ -167,6 +167,7 @@ EXTERN  Real mass;
 #else
 EXTERN  Real mass1,mass2;
 #endif
+EXTERN  Real naik_term_epsilon2;
 EXTERN	Real rsqmin,rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
@@ -178,6 +179,10 @@ EXTERN  double_complex linktrsum;
 EXTERN  u_int32type nersc_checksum;
 EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN	int total_iters;
+EXTERN	int hisq_svd_counter;
+EXTERN	int hisq_force_filter_counter;
+EXTERN	int hyphisq_svd_counter;
+EXTERN  int hypisq_force_filter_counter;
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
 EXTERN  int source_start, source_inc, n_sources;
         /* source time, increment for it, and number of source slices */
@@ -219,4 +224,8 @@ EXTERN char ** gen_pt[N_POINTERS];
 /* Storage for definition of the quark action */
 EXTERN fermion_links_t        *fn_links;
 
+/* For HISQ or HYPISQ operation */
+EXTERN int n_order_naik_total;
+EXTERN int n_pseudo_naik[MAX_N_PSEUDO];
+EXTERN int n_orders_naik[MAX_N_PSEUDO];
 #endif /* _LATTICE_H */

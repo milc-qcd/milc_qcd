@@ -39,6 +39,7 @@ typedef struct {
 	Real mass;      /*  quark mass */
 #else
 	Real mass1,mass2; /*  quark masses */
+        Real naik_term_epsilon2;   /* Naik term parameter for 2nd mass */
 #endif
 	Real u0; /* tadpole parameter */
 	int niter; 	/* maximum number of c.g. iterations */

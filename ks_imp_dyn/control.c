@@ -15,6 +15,10 @@
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include "lattice_qdp.h"
+#ifdef HAVE_QUDA
+#include <quda_milc_interface.h>
+#endif
+
 #ifdef HAVE_QIO
 #include <qio.h>
 #include "../include/io_scidac.h"
@@ -27,7 +31,7 @@ main( int argc, char **argv )
 {
   int meascount,traj_done;
   int prompt;
-  int s_iters, avs_iters, avspect_iters, avbcorr_iters;
+  int s_iters, avs_iters, avbcorr_iters;
   double dtime, dclock();
   
   initialize_machine(&argc,&argv);
@@ -55,7 +59,7 @@ main( int argc, char **argv )
     
     /* perform measuring trajectories, reunitarizing and measuring 	*/
     meascount=0;		/* number of measurements 		*/
-    avspect_iters = avs_iters = avbcorr_iters = 0;
+    avs_iters = avbcorr_iters = 0;
     for( traj_done=0; traj_done < trajecs; traj_done++ ){ 
       
       /* do the trajectories */
@@ -112,6 +116,19 @@ main( int argc, char **argv )
     if(this_node==0){
       printf("Time = %e seconds\n",dtime);
       printf("total_iters = %d\n",total_iters);
+#ifdef HISQ_SVD_COUNTER
+      printf("hisq_svd_counter = %d\n",hisq_svd_counter);
+#endif
+#ifdef HYPISQ_SVD_COUNTER
+      printf("hypisq_svd_counter = %d\n",hypisq_svd_counter);
+#endif
+      
+#ifdef HISQ_FORCE_FILTER_COUNTER
+      printf("hisq_force_filter_counter = %d\n",hisq_force_filter_counter);
+#endif
+#ifdef HYPISQ_FORCE_FILTER_COUNTER
+      printf("hypisq_force_filter_counter = %d\n",hypisq_force_filter_counter);
+#endif
     }
     fflush(stdout);
     
@@ -120,6 +137,19 @@ main( int argc, char **argv )
       rephase( OFF );
       save_lattice( saveflag, savefile, stringLFN );
       rephase( ON );
+
+    /* Destroy fermion links (created in readin() */
+
+#if FERM_ACTION == HISQ
+    destroy_fermion_links_hisq(fn_links);
+#elif FERM_ACTION == HYPISQ
+    destroy_fermion_links_hypisq(fn_links);
+#else
+    destroy_fermion_links(fn_links);
+#endif
+    fn_links = NULL;
+
+
 #ifdef HAVE_QIO
 //       save_random_state_scidac_from_site("randsave", "Dummy file XML",
 //        "Random number state", QIO_SINGLEFILE, F_OFFSET(site_prn));
@@ -128,8 +158,13 @@ main( int argc, char **argv )
 //       save_color_vector_scidac_from_site("xxx2save", "Dummy file XML",
 //        "xxx vector", QIO_SINGLEFILE, F_OFFSET(xxx2),1);
 #endif
+
     }
   }
+
+#ifdef HAVE_QUDA
+  qudaFinalize();
+#endif
 
   normal_exit(0);
   return 0;

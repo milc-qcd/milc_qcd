@@ -25,6 +25,7 @@ void update_h( Real eps ){
     /* First compute M*xxx in temporary vector xxx_odd */
     /* See long comment at end of file */
 	/* The diagonal term in M doesn't matter */
+    restore_fermion_links_from_site(fn_links, PRECISION);
 #ifdef ONEMASS
     eo_fermion_force_oneterm_site( eps, ((Real)nflavors)/4., F_OFFSET(xxx),
 				   ff_prec, fn_links );

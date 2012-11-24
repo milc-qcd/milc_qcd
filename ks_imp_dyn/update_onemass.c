@@ -22,10 +22,8 @@ int step, iters=0;
 Real final_rsq;
 void predict_next_xxx(Real *oldtime,Real *newtime,Real *nexttime);
 Real cg_time;	/* simulation time for last two CG's */
-#ifdef PHI_ALGORITHM
-Real old_cg_time,next_cg_time;	/* simulation time for last two CG's */
-#endif
 #ifdef HMC_ALGORITHM
+Real old_cg_time,next_cg_time;	/* simulation time for last two CG's */
 double startaction,endaction,d_action();
 Real xrandom;
 #endif
@@ -132,7 +130,7 @@ checkmul();**/
 	if(steps > 0)
 	    gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-	invalidate_fn_links(fn_links);
+	invalidate_fermion_links(fn_links);
 #endif
 	node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
     }
@@ -145,7 +143,7 @@ checkmul();**/
     else return(-99);
 }
 
-#ifdef PHI_ALGORITHM
+#ifdef HMC_ALGORITHM
 /* use linear extrapolation to predict next conjugate gradient solution */
 /* only need even sites */
 void predict_next_xxx(Real *oldtime,Real *newtime,Real *nexttime)

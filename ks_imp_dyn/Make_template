@@ -138,7 +138,7 @@ su3_rmd1::
 
 su3_rmd_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DDM_DU0 -UKS_MULTICG" \
+	"DEFINES= -DFN  -DDM_DU0 -UKS_MULTICG -DTR_MM_INV" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQ_FORCE} ${GAUGE_FORCE} update.o"
@@ -153,14 +153,14 @@ su3_rmd_eos1::
 
 su3_rmd_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DCHEM_POT -UKS_MULTICG" \
+	"DEFINES= -DFN  -DCHEM_POT -UKS_MULTICG -DTR_MM_INV" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${ASQ_FORCE} ${GAUGE_FORCE} update.o"
 
 su3_rmd_mu_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DDM_DU0 -DD_CHEM_POT -UKS_MULTICG" \
+	"DEFINES= -DFN -DDM_DU0 -DD_CHEM_POT -UKS_MULTICG -DTR_MM_INV" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS=  ${FN_OBJECTS} ${ASQ_FORCE} ${GAUGE_FORCE} \
@@ -186,7 +186,7 @@ su3_hmc::
 
 su3_hmc1::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN  -DONEMASS -UKS_MULTICG\
+	"DEFINES= -DFN  -DONEMASS -UKS_MULTICG \
 	-DPHI_ALGORITHM -DHMC_ALGORITHM" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
@@ -195,7 +195,7 @@ su3_hmc1::
 
 su3_rmd_naive::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DONEMASS -DFN -UKS_MULTICG -UKS_MULTIFF" \
+	"DEFINES= -DONEMASS -DFN -UKS_MULTICG -UKS_MULTIFF -UD_FN_GATHER13" \
 	"GAUGE = plaquette_action.h" \
 	"QUARK = onelink_action.h" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} ${GAUGE_FORCE} \
@@ -253,6 +253,54 @@ su3_rmd_eo_symzk1_p4::
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = p4_action.h" \
 	"EXTRA_OBJECTS= ${EO_OBJECTS} ${EO_FORCE} ${GAUGE_FORCE} update.o"
+
+######################################################################
+# HISQ targets - always with the quark-loop correction
+
+# Other HISQ optsions
+# 	-DHISQ_REUNIT_SVD_ONLY
+
+HISQ_OPTIONS = "DEFINES= -DFN -UKS_MULTICG \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"GAUGE = symanzik_1loop_hisq_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE}"
+
+su3_rmd_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"EXTRA_OBJECTS += update.o"
+
+# The next one does asqtad in the guise of HISQ. The result should match su3_rmd above
+su3_rmd_hisq_debug::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" "DEFINES= -DFN -UKS_MULTICG \
+	-DHISQ_REUNIT_ALLOW_SVD -DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8 -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5" \
+	"EXTRA_OBJECTS= ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	${GAUGE_FORCE}" \
+	"QUARK = hisq/asqtad_action.h" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"EXTRA_OBJECTS += update.o"
+
+su3_rmd1_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DONEMASS" \
+	"EXTRA_OBJECTS += update_onemass.o"
+
+su3_hmc_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DPHI_ALGORITH -DHMC_ALGORITHM" \
+	"EXTRA_OBJECTS += d_action.o update.o"
+
+su3_hmc1_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	"DEFINES += -DONEMASS -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"EXTRA_OBJECTS += d_action.o update_onemass.o"
 
 clean:
 	-/bin/rm -f *.o

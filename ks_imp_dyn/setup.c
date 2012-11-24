@@ -14,6 +14,9 @@
 //              tadpole improvement
 //         Ref: Phys. Rev. D48 (1993) 2250
 //  $Log: setup.c,v $
+//  Revision 1.19  2012/11/24 00:24:21  detar
+//  Support HISQ and future HYPISQ actions
+//
 //  Revision 1.18  2012/04/25 04:01:46  detar
 //  Initialize boundary phase
 //
@@ -129,6 +132,8 @@ setup()
   return( prompt );
 }
 
+static int n_naiks;
+static double eps_naik[MAX_NAIK];
 
 /* SETUP ROUTINES */
 int 
@@ -168,6 +173,16 @@ initial_set()
 #ifdef INT_ALG
     node0_printf("INT_ALG=%s\n",ks_int_alg_opt_chr());
 #endif
+#if FERM_ACTION == HISQ
+    show_su3_mat_opts();
+    show_hisq_links_opts();
+    show_hisq_force_opts();
+#elif FERM_ACTION == HYPISQ
+    show_su3_mat_opts();
+    show_hypisq_links_opts();
+    show_hypisq_force_opts();
+#endif
+
     status=get_prompt(stdin, &prompt);
 #ifdef ONEMASS
     IF_OK status += get_i(stdin, prompt,"nflavors", &par_buf.nflavors );
@@ -239,6 +254,23 @@ initial_set()
   number_of_nodes = numnodes();
   volume=nx*ny*nz*nt;
   total_iters=0;
+
+#ifdef HISQ_SVD_COUNTER
+  hisq_svd_counter = 0;
+#endif
+      
+#ifdef HYPISQ_SVD_COUNTER
+  hypisq_svd_counter = 0;
+#endif
+      
+#ifdef HISQ_FORCE_FILTER_COUNTER
+  hisq_force_filter_counter = 0;
+#endif
+
+#ifdef HYPISQ_FORCE_FILTER_COUNTER
+  hypisq_force_filter_counter = 0;
+#endif
+
   return(prompt);
 }
 
@@ -278,6 +310,9 @@ readin(int prompt)
 #else
     IF_OK status += get_f(stdin, prompt,"mass1", &par_buf.mass1 );
     IF_OK status += get_f(stdin, prompt,"mass2", &par_buf.mass2 );
+#if FERM_ACTION == HISQ || FERM_ACTION == HYPISQ
+    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", &par_buf.naik_term_epsilon2 );
+#endif
 #endif
     IF_OK status += get_f(stdin, prompt,"u0", &par_buf.u0 );
     
@@ -382,9 +417,31 @@ readin(int prompt)
 #else
   mass1 = par_buf.mass1;
   mass2 = par_buf.mass2;
+  naik_term_epsilon2 = par_buf.naik_term_epsilon2;
   n_dyn_masses = 2;
 #endif
   u0 = par_buf.u0;
+
+#ifdef ONE_MASS
+  n_order_naik_total = 1;
+  eps_naik[0] = 0.0;
+  n_naiks = 1;
+  n_orders_naik[0] = 1;
+#else
+  n_order_naik_total = 2;
+  eps_naik[0] = 0.0;
+  if(naik_term_epsilon2 != 0.0){
+    eps_naik[1] = naik_term_epsilon2;
+    n_naiks = 2;
+    n_orders_naik[0] = 1;
+    n_orders_naik[1] = 1;
+  } else {
+    n_naiks = 1;
+    n_orders_naik[0] = 2;
+  }
+#endif
+
+
 #ifdef SPECTRUM
   strcpy(spectrum_request,par_buf.spectrum_request);
   source_start = par_buf.source_start;
@@ -425,7 +482,17 @@ readin(int prompt)
   fermion_links_want_back(1);
 #endif
   
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
+  /* We want to calculate both the links and their Naik eps
+     derivatives (HISQ only) */
+  fermion_links_want_deps(1);
+#endif
+
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
+  fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
+#else
   fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+#endif
 
   /* make table of coefficients and permutations of loops in gauge action */
   make_loop_table();

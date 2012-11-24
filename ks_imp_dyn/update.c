@@ -24,16 +24,20 @@
 #endif
 
 int update()  {
-int step, iters=0;
-Real final_rsq;
+  int step, iters=0;
+  int n;
+  Real final_rsq;
 #ifdef HMC_ALGORITHM
-double startaction,endaction,d_action();
-Real xrandom;
+  double startaction,endaction,d_action();
+  Real xrandom;
 #endif
   imp_ferm_links_t** fn;
 
     /* refresh the momenta */
     ranmom();
+
+    /* In this application, the number of naik terms is 1 or 2 only */
+    n = fermion_links_get_n_naiks(fn_links);
 
     /* do "steps" microcanonical steps"  */
     for(step=1; step <= steps; step++){
@@ -45,10 +49,10 @@ Real xrandom;
      	if(step==1){
 	  restore_fermion_links_from_site(fn_links, PRECISION);
 	  fn = get_fm_links(fn_links);
-	    clear_latvec( F_OFFSET(xxx1), EVENANDODD );
-	    grsource_imp( F_OFFSET(phi1), mass1, EVEN, fn[0]);
-	    clear_latvec( F_OFFSET(xxx2), EVENANDODD );
-	    grsource_imp( F_OFFSET(phi2), mass2, EVEN, fn[0]);
+	  clear_latvec( F_OFFSET(xxx1), EVENANDODD );
+	  grsource_imp( F_OFFSET(phi1), mass1, EVEN, fn[0]);
+	  clear_latvec( F_OFFSET(xxx2), EVENANDODD );
+	  grsource_imp( F_OFFSET(phi2), mass2, EVEN, fn[n-1]);
 	}
 
 #ifdef HMC_ALGORITHM
@@ -65,7 +69,7 @@ Real xrandom;
 	  fn = get_fm_links(fn_links);
 	    iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
 				 niter, nrestart, rsqmin, PRECISION, EVEN, 
-				 &final_rsq, fn[0]);
+				 &final_rsq, fn[n-1]);
 
      	    startaction=d_action();
             /* copy link field to old_link */
@@ -91,7 +95,7 @@ Real xrandom;
 	clear_latvec( F_OFFSET(xxx2), EVENANDODD );
 	restore_fermion_links_from_site(fn_links, PRECISION);
 	fn = get_fm_links(fn_links);
-     	grsource_imp( F_OFFSET(phi2), mass2, EVEN, fn[0]);
+     	grsource_imp( F_OFFSET(phi2), mass2, EVEN, fn[n-1]);
 
 	/* update U's to middle of interval */
      	update_u(epsilon*nflavors2/8.0);
@@ -100,20 +104,21 @@ Real xrandom;
         /* do conjugate gradient to get (Madj M)inverse * phi */
 	restore_fermion_links_from_site(fn_links, PRECISION);
 	fn = get_fm_links(fn_links);
-#if 0
-     	iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
-	    niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq, fn[0] );
-     	iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
-	    niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq, fn[0] );
-#else
+	if(n == 2){
+	  iters += ks_congrad( F_OFFSET(phi1), F_OFFSET(xxx1), mass1,
+		       niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq, fn[0] );
+	  iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
+		       niter, nrestart, rsqmin, PRECISION, EVEN, &final_rsq, fn[1] );
+	} else {
 	iters += ks_congrad_two_src( F_OFFSET(phi1), F_OFFSET(phi2),
 				     F_OFFSET(xxx1), F_OFFSET(xxx2),
 				     mass1, mass2, niter, nrestart, rsqmin, 
 				     PRECISION, EVEN, &final_rsq,
 				     fn[0]);
-#endif
+	}
+
 	dslash_site( F_OFFSET(xxx1), F_OFFSET(xxx1), ODD, fn[0]);
-	dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD, fn[0]);
+	dslash_site( F_OFFSET(xxx2), F_OFFSET(xxx2), ODD, fn[n-1]);
 	/* now update H by full time interval */
     	update_h(epsilon);
 
@@ -160,7 +165,7 @@ Real xrandom;
 			 &final_rsq, fn[0]);
     iters += ks_congrad( F_OFFSET(phi2), F_OFFSET(xxx2), mass2,
 			 niter, nrestart, rsqmin, PRECISION, EVEN, 
-			 &final_rsq, fn[0]);
+			 &final_rsq, fn[n-1]);
     endaction=d_action();
     /* decide whether to accept, if not, copy old link field back */
     /* careful - must generate only one random number for whole lattice */
@@ -170,7 +175,7 @@ Real xrandom;
 	if(steps > 0)
 	    gauge_field_copy( F_OFFSET(old_link[0]), F_OFFSET(link[0]) );
 #ifdef FN
-	invalidate_fn_links(fn_links);
+	invalidate_fermion_links(fn_links);
 #endif
 	node0_printf("REJECT: delta S = %e\n", (double)(endaction-startaction));
     }

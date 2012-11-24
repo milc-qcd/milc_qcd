@@ -9,5 +9,6 @@
 #define MAX_DYN_MASSES 2
 #define MAX_FPI_NMASSES 32
 #define MAX_SPECTRUM_REQUEST 512
+#define MAX_N_PSEUDO 2
 
 #endif /* _DEFINES_H */
