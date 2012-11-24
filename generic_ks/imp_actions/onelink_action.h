@@ -4,6 +4,7 @@
 #include "../include/dirs.h"
 #include "../generic_ks/imp_actions/imp_action_types.h"
 #define FERM_ACTION FN_TYPE
+#define NO_LONG_LINKS
 
     /* Include file for the conventional "one link" action */
     /* Specify paths in orientation in which they appear in the
