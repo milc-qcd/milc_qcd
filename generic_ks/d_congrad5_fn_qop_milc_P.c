@@ -33,7 +33,7 @@
    parity=EVENANDODD = do all sites
 */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 
 #define CLEANUP_GATHERS_QOP_MILC cleanup_gathers_qop_milc_F
 #define CLEANUP_DSLASH_QOP_MILC_TEMPS cleanup_dslash_qop_milc_temps_F
@@ -101,7 +101,7 @@ void QOP_asqtad_invert(QOP_info_t *info,
   int max_restart     = inv_arg->restart;
 
   /* Convert specific QOP precision to prevailing MILC precision */
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
   su3_vector *srcp = create_latvec_from_qop_milc_F(src_pt->v);
   su3_vector *solp = create_latvec_from_qop_milc_F(dest_pt->v);
   su3_matrix *fatlinks = create_links_from_qop_milc_F(links->fat->g);
@@ -275,7 +275,7 @@ start:
 	    } END_LOOP
 #endif
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 	    copy_latvec_to_qop_milc_F(dest_pt->v, solp);
 	    destroy_latvec_from_qop_milc_F(srcp);
 	    destroy_latvec_from_qop_milc_F(solp);
@@ -410,7 +410,7 @@ start:
 	    } END_LOOP
 #endif
 	    /* Copy the solution and free memory */
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 	    copy_latvec_to_qop_milc_F(dest_pt->v, solp);
 	    destroy_latvec_from_qop_milc_F(srcp);
 	    destroy_latvec_from_qop_milc_F(solp);
@@ -471,7 +471,7 @@ start:
     } END_LOOP
 #endif
     /* Copy the solution and free memory */
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
     copy_latvec_to_qop_milc_F(dest_pt->v, solp);
     destroy_latvec_from_qop_milc_F(srcp);
     destroy_latvec_from_qop_milc_F(solp);
@@ -496,7 +496,7 @@ start:
     info->final_sec  += dtimec;
 #ifdef CGTIME
     node0_printf("CONGRAD5: time = %e (qop_milc %s) masses = 1 iters = %d mflops = %e\n",
-		 dtimec,qop_prec[QOP_Precision-1],
+		 dtimec,qop_prec[QOP_PrecisionInt-1],
 		 iteration,final_flop/(1.0e6*dtimec) );
     fflush(stdout);
 #endif

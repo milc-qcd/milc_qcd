@@ -65,25 +65,14 @@ int ks_congrad_site( field_offset src, field_offset dest,
 		     quark_invert_control *qic, Real mass,
 		     imp_ferm_links_t *fn)
 {
-  int i;
-  site *s;
   int iters = 0;
   su3_vector *t_src, *t_dest;
   int parity = qic->parity;
 
   /* Map src and dest from site to field of correct precision */
   
-  t_src  = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
-  t_dest = (su3_vector *)malloc(sizeof(su3_vector)*sites_on_node);
-  if(t_src == NULL || t_dest == NULL){
-    printf("ks_congrad_site(%d): No room for temporaries\n",this_node);
-    terminate(1);
-  }
-
-  FORALLSITES(i,s){
-    t_src[i]  = *((su3_vector *)F_PT(s,src) );
-    t_dest[i] = *((su3_vector *)F_PT(s,dest));
-  }
+  t_src  = create_v_field_from_site_member(src);
+  t_dest = create_v_field_from_site_member(dest);
 
   if(parity == EVEN || parity == EVENANDODD){
     qic->parity = EVEN;
@@ -98,13 +87,11 @@ int ks_congrad_site( field_offset src, field_offset dest,
 
   /* Map solution to site structure */
 
-  FORALLSITES(i,s){
-    *((su3_vector *)F_PT(s,dest)) = t_dest[i];
-  }
+  copy_site_member_from_v_field(dest, t_dest);
 
   qic->parity = parity;
 
-  free(t_src); free(t_dest);
+  destroy_v_field(t_src); destroy_v_field(t_dest);
 
   return iters;
 }

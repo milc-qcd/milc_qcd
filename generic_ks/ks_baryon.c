@@ -27,25 +27,6 @@
 #include "generic_ks_includes.h"
 #include <string.h>
 
-/*------------------------------------------------------------------*/
-/* Symbolic names for propagators.  prop_SOURCE_SINK */
-/* Name by KS flavor content e.g. Goldstone pion = pion5 */
-/* operators:
-   pion5:	local 0-+:  (flavor)gamma_5     partner=0+-  phase=(1)
-   pion05:	local 0-+:  gamma_0 gamma_5     partner=0++  phase=(-1)^(x+y+z+t)
-   pioni5:	one-link 0-+:  gamma_i gamma_5	partner=0+-
-   pionij:	one-link 0-+:  gamma_i gamma_j  partner=0++
-   pioni:	two-link 0-+:  gamma_i          partner=0++
-   pioni0:	two-link 0-+:  gamma_i gamma_0	partner=0+-
-   pions:	three-link 0-+:  1 ("singlet")  partner=0++
-   pion0:	three-link 0-+:  gamma_0	partner=0+-
-
-   rhoi:	local 1--: gamma_i              partner=1+-  phase=(-1)^(dir) (VT)
-   rhoi0:	local 1--: gamma_i gamma_0      partner=1++  phase=(-1)^(x+y+z+t+dir) (PV)
-   rhos:	one-link 1--: 1 ("singlet")     partner=1+-
-   rho0:	one-link 1--: gamma_0           partner=1++
-*/
-
 enum baryon_type_type {
   nucleon,
   delta,
@@ -302,7 +283,7 @@ void ks_baryon_nd(complex *prop[],
 
     else if(baryon_type_snk[i] == delta){
       if(qp0 != qp1 || qp0 != qp2){
-	printf("WARNING: No provision for non-degenerate deltas!\n");
+	node0_printf("WARNING: No provision for non-degenerate deltas!\n");
       }
       ks_delta(qp0, prop[i]);
     }

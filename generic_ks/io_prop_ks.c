@@ -1516,8 +1516,8 @@ void w_serial_ksprop_tt( char *filename, field_offset prop)
   char *tag=".t";
 
   off_t offset;             /* File stream pointer */
-  off_t ks_prop_size;        /* Size of propagator blocks for all nodes */
-  off_t coord_list_size;    /* Size of coordinate list in bytes */
+  //  off_t ks_prop_size;        /* Size of propagator blocks for all nodes */
+  //  off_t coord_list_size;    /* Size of coordinate list in bytes */
   int fseek_return;  /* added by S.G. for large file debugging */
   int currentnode, newnode;
   int x,y,z,t;
@@ -1531,12 +1531,12 @@ void w_serial_ksprop_tt( char *filename, field_offset prop)
   ksph = kspf->header;
   ksph->order = NATURAL_ORDER;
 
-  ks_prop_size = volume*sizeof(fsu3_matrix)/nt;
+  //  ks_prop_size = volume*sizeof(fsu3_matrix)/nt;
 
   /* No coordinate list was written because fields are to be written
      in standard coordinate list order */
   
-  coord_list_size = 0;
+  //  coord_list_size = 0;
   
   /* OLD, forget the header now:  offset = head_size; */
   offset = 0;

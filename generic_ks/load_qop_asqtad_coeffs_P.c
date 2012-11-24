@@ -8,7 +8,7 @@
 
 /* CD 10/07/06 Split from fermion_force_asqtad_qop.c */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 #define LOAD_QOP_ASQTAD_COEFFS  load_qop_F_asqtad_coeffs
 #else
 #define LOAD_QOP_ASQTAD_COEFFS  load_qop_D_asqtad_coeffs

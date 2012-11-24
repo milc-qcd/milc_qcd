@@ -56,6 +56,27 @@ void grsource_imp( field_offset dest, Real mass, int parity,
 }/* grsource_imp */
 
 
+/* DEPRECATED */
+
+void grsource_imp_plus( field_offset dest, field_offset rand, Real mass, int parity,
+			imp_ferm_links_t *fn ) {
+
+  su3_vector *g_rand = create_v_field();
+  su3_vector *tdest = create_v_field();
+  
+  grsource_plain_field( g_rand, EVENANDODD );
+  copy_site_member_from_v_field(rand, g_rand);
+
+  ks_dirac_adj_op( g_rand, tdest, mass, parity, fn );
+
+  copy_site_member_from_v_field(dest, tdest);
+  
+  destroy_v_field(tdest);
+  destroy_v_field(g_rand);
+
+}/* grsource_imp */
+
+
 /* This version works entirely with field vectors */
 
 void grsource_imp_field( su3_vector *dest, Real mass, int parity,
@@ -123,17 +144,25 @@ void grsource_plain( field_offset dest, int parity ) {
   int i,j;
   site *s;
   su3_vector *rand;
-  FORSOMEPARITY(i,s,parity){
+  FORSOMEPARITYDOMAIN(i,s,parity){
+    rand = (su3_vector *)F_PT(s,dest);
     for(j=0;j<3;j++){
 #ifdef SITERAND
-      rand = (su3_vector *)F_PT(s,dest);
-            rand->c[j].real = gaussian_rand_no(&(s->site_prn));
-            rand->c[j].imag = gaussian_rand_no(&(s->site_prn));
+      rand->c[j].real = gaussian_rand_no(&(s->site_prn));
+      rand->c[j].imag = gaussian_rand_no(&(s->site_prn));
 #else
-            rand->c[j].real = gaussian_rand_no(&node_prn);
-            rand->c[j].imag = gaussian_rand_no(&node_prn);
+      rand->c[j].real = gaussian_rand_no(&node_prn);
+      rand->c[j].imag = gaussian_rand_no(&node_prn);
 #endif
     }
+#ifdef SCHROED_FUN
+  } else {
+    rand = (su3_vector *)F_PT(s,dest);
+    for(j=0;j<3;j++){
+      rand->c[j].real = 0.0;
+      rand->c[j].imag = 0.0;
+    }
+#endif
   }    
 }/* grsource_plain */
 
@@ -145,7 +174,7 @@ void grsource_plain_field( su3_vector *dest, int parity ) {
   int i,j;
   site *s;
 
-  FORSOMEPARITY(i,s,parity){
+  FORSOMEPARITYDOMAIN(i,s,parity){
     for(j=0;j<3;j++){
 #ifdef SITERAND
       dest[i].c[j].real = gaussian_rand_no(&(s->site_prn));
@@ -155,8 +184,15 @@ void grsource_plain_field( su3_vector *dest, int parity ) {
       dest[i].c[j].imag = gaussian_rand_no(&node_prn);
 #endif
     }
-  }    
-}/* grsource_plain_field */
+#ifdef SCHROED_FUN
+  } else {
+    for(j=0;j<3;j++){
+      dest[i].c[j].real = 0.0;
+      dest[i].c[j].imag = 0.0;
+    }
+#endif
+  }
+} /* grsource_plain_field */
 
 
 /* construct a plain Z(2) random vector in the site structure  */
@@ -168,15 +204,15 @@ void z2rsource_plain( field_offset dest, int parity ) {
   int i,j;
   site *s;
   su3_vector *rand;
-  FORSOMEPARITY(i,s,parity){
+  FORSOMEPARITYDOMAIN(i,s,parity){
     for(j=0;j<3;j++){
-#ifdef SITERAND
       rand = (su3_vector *)F_PT(s,dest);
-            rand->c[j].real = z2_rand_no(&(s->site_prn));
-            rand->c[j].imag = z2_rand_no(&(s->site_prn));
+#ifdef SITERAND
+      rand->c[j].real = z2_rand_no(&(s->site_prn));
+      rand->c[j].imag = z2_rand_no(&(s->site_prn));
 #else
-            rand->c[j].real = z2_rand_no(&node_prn);
-            rand->c[j].imag = z2_rand_no(&node_prn);
+      rand->c[j].real = z2_rand_no(&node_prn);
+      rand->c[j].imag = z2_rand_no(&node_prn);
 #endif
     }
   }    
@@ -201,7 +237,7 @@ void z2rsource_plain_field( su3_vector *dest, int parity ) {
 #endif
     }
   }    
-}/* z2rsource_plain */
+} /* z2rsource_plain_field */
 
 
 /* Check congrad by multiplying src by M, compare result to g_rand */

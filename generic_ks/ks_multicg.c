@@ -3,7 +3,8 @@
 
 /* Wrappers for multi-mass CG inverter for staggered fermions
 
-   8/12 C. DeTar added macros for selecting the multicg inverter option
+   12/08 C. DeTar added macros for selecting the multicg inverter option
+   5/12  R. Dowdall tweak for EO multimass.
 */
 
 
@@ -181,6 +182,19 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
   /* Do multicg in single precision.  (The GPU routine does this automatically for HALF_MIXED) */
   int prec_save = qic[0].prec;
   qic[0].prec = 1;
+
+  Real resid_save = qic[0].resid;
+  Real relresid_save =  qic[0].relresid;
+
+  Real single_prec_resid = 1e-6; 
+  Real single_prec_relresid = 1e-4;
+
+  if ( resid_save !=0 && resid_save < single_prec_resid)
+                    qic[0].resid = single_prec_resid;
+
+  if ( relresid_save != 0 && relresid_save < single_prec_relresid)
+                      qic[0].relresid = single_prec_relresid;
+  //  node0_printf("Using HALF-MIXED CG; resid = %e\n", qic[0].resid);
 #endif
   
   /* First we invert as though all masses took the same Naik epsilon */
@@ -190,6 +204,8 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
 
 #if defined(HALF_MIXED) && !defined(USE_CG_GPU)
   qic[0].prec = prec_save;
+  qic[0].resid = resid_save;
+  qic[0].relresid = relresid_save;
 #endif
 
   /* Then we refine using the correct Naik epsilon */
@@ -741,29 +757,46 @@ int mat_invert_multi(
 {
   int i, tot_iters = 0;
   
-  /* Use the single-mass inverter if there is only one mass */
-  if(num_masses == 1)
-    return mat_invert_uml_field(src, dst[0], qic+0, ksp->mass, fn_multi[0] );
+  // /* Use the single-mass inverter if there is only one mass */
+  //  if(num_masses == 1)
+  //    return mat_invert_uml_field(src, dst[0], qic+0, ksp->mass, fn_multi[0] );
   
-  /* Convert masses to offsets for ks_multicg_mass_field */
-  for(i = 0; i < num_masses; i++){
-    ksp[i].offset = 4.0*ksp[i].mass*ksp[i].mass;
+  /* Use preconditioned single-mass inverter if there are 2 or less masses */
+  /* EO preconditioning doesn't work with multimass solvers as the residual depends on m.
+     With multimass the cost will be (even+odd) * cost of lightest mass, but two individual precond
+     inversions will be mass1-precond + mass2-precond which should be faster than 
+     twice the slowest of them.
+  */
+  if (num_masses <= 2)
+  {
+    for(i = 0; i < num_masses; i++){
+      total_iters += mat_invert_uml_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
+    }
   }
+  /* For num_masses > 2, use the multimass inverter */
+  else {
 
-  /* Multimass inversion on separate "parities" to get dst = (M M_adj)^-1 src */
+    /* Convert masses to offsets for ks_multicg_mass_field */
+    for(i = 0; i < num_masses; i++){
+      ksp[i].offset = 4.0*ksp[i].mass*ksp[i].mass;
+    }
 
-  
-  for(i = 0; i < num_masses; i++)
-    qic[i].parity = EVEN;
-  tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
+    /* Multimass inversion on separate "parities" to get dst = (M M_adj)^-1 src */
 
-  for(i = 0; i < num_masses; i++)
-    qic[i].parity = ODD;
-  tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
+    for(i = 0; i < num_masses; i++)
+      qic[i].parity = EVEN;
 
-  /* Multiply all solutions by Madjoint to get dst = M^-1 * src */
-  for(i = 0; i < num_masses; i++){
-    ks_dirac_adj_op_inplace( dst[i], ksp[i].mass, EVENANDODD, fn_multi[i]);
+    tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
+    
+    for(i = 0; i < num_masses; i++)
+      qic[i].parity = ODD;
+
+    tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
+    
+    /* Multiply all solutions by Madjoint to get dst = M^-1 * src */
+    for(i = 0; i < num_masses; i++){
+      ks_dirac_adj_op_inplace( dst[i], ksp[i].mass, EVENANDODD, fn_multi[i]);
+    }
   }
   return tot_iters;
 }

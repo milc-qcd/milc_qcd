@@ -1274,7 +1274,7 @@ static void derivatives (su3_vector *phi_off, su3_vector *xxx_off,
 
 #endif
 
-#ifdef HISQ
+#if defined(HISQ) || defined(HYPISQ)
  if(eps != 0){
 
    for(i=0;i<6;i++){
@@ -1344,7 +1344,7 @@ Deriv_O6_field( int npbp_reps, quark_invert_control *qic,
    imp_ferm_links_t *fn_dmdu0 = NULL;
 #endif
 
-#if FERM_ACTION == HISQ & defined(DM_DEPS)
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
    imp_ferm_links_t *fn_deps = get_fn_deps_links(fl);
 #else 
    imp_ferm_links_t *fn_deps = NULL;
@@ -1432,7 +1432,7 @@ void Deriv_O6_multi(int num_masses, int npbp_reps, quark_invert_control *qic,
   imp_ferm_links_t **Fn_dmdu0 = NULL; 
 #endif
 
-#if FERM_ACTION == HISQ & defined(DM_DEPS)
+#if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ ) & defined(DM_DEPS)
    imp_ferm_links_t *fn_deps = get_fn_deps_links(fl);
 #else 
    imp_ferm_links_t *fn_deps = NULL;

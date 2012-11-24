@@ -764,7 +764,7 @@ node0_printf("OOOPS: NODIR\n"); exit(0);
 static int 
 sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths ){
 
-    int netdir,dir0,dir1,dir1tmp,thislength,num_new,i,j;
+    int netdir,dir0,dir1,dir1tmp,num_new,i,j;
 
     num_new=0; // number of paths in sorted table
     for( i=0; i<16; i++ ){ // loop over net_back_dirs
@@ -773,7 +773,7 @@ sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths ){
 	  for( dir1=-1; dir1<=7; dir1++){ // NODIR, XUP ... TDOWN
 	    if( dir1==-1 )dir1tmp=NODIR; else dir1tmp=dir1;
 	    for( j=0; j<npaths; j++ ){ // pick out paths with right net displacement
-	    thislength = src_table[j].length;
+	      //	    thislength = src_table[j].length;
 	        if( find_backwards_gather( &(src_table[j]) ) == netdir && 
 			src_table[j].dir[0]==dir0 &&
 			src_table[j].dir[1]==dir1tmp ){

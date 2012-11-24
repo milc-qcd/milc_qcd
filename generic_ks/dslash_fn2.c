@@ -16,6 +16,7 @@
 #include "../include/loopend.h"
 #include "../include/prefetch.h"
 #define FETCH_UP 1
+#include <quark_action.h>
 
 #define INDEX_3RD(dir) (dir - 8)      /* this gives the 'normal' direction */
 
@@ -90,17 +91,20 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
     register int i;
     register site *s;
     register int dir,otherparity = 0;
-    register su3_matrix *fat4, *long4;
+    register su3_matrix *fat4;
     su3_matrix *t_fatlink;
+    su3_vector *tempvec;
+#ifndef NO_LONG_LINKS
+    register su3_matrix *long4;
     su3_matrix *t_longlink;
-    su3_vector *tempvec,*templongvec, *templongv1;
+    su3_vector *templongvec, *templongv1;
+#endif
     char myname[] = "dslash_fn_site_special";
 
     if(fn == NULL){
       printf("dslash_fn_site_special: invalid fn links!\n");
       terminate(1);
     }
-    t_longlink = get_lnglinks(fn);
     t_fatlink = get_fatlinks(fn);
 
     tempvec = (su3_vector *) malloc(sizeof(su3_vector)*4*sites_on_node);
@@ -109,6 +113,8 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
       terminate(1);
     }
     
+#ifndef NO_LONG_LINKS
+    t_longlink = get_lnglinks(fn);
     templongvec = (su3_vector *) malloc(sizeof(su3_vector)*4*sites_on_node);
     if(templongvec == NULL){
       printf("%s(%d)No room for temporary\n",myname, this_node);
@@ -116,6 +122,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
     }
     
     templongv1 = create_v_field();
+#endif
   
     switch(parity){
 	case EVEN:	otherparity=ODD; break;
@@ -141,27 +148,30 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
     }
 
     /* Multiply by adjoint matrix at other sites */
-    FORSOMEPARITY(i,s,otherparity){
+    FORSOMEPARITYDOMAIN(i,s,otherparity){
       if( i < loopend-FETCH_UP ){
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
-	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 	prefetch_4MV4V( 
 		       fat4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
 		       tempvec+4*i+FETCHUP );
+#ifndef NO_LONG_LINKS
+	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 	prefetch_4MV4V(
 		       long4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
 		       templongvec+4*i+FETCH_UP );
       }
-
+#endif
       fat4 = &(t_fatlink[4*i]);
-      long4 = &(t_longlink[4*i]);
-	mult_adj_su3_mat_vec_4dir( fat4,
+      mult_adj_su3_mat_vec_4dir( fat4,
 				   (su3_vector *)F_PT(s,src), tempvec+4*i );
-	/* multiply by 3-link matrices too */
-	mult_adj_su3_mat_vec_4dir( long4,
+#ifndef NO_LONG_LINKS
+      /* multiply by 3-link matrices too */
+      long4 = &(t_longlink[4*i]);
+      mult_adj_su3_mat_vec_4dir( long4,
 				   (su3_vector *)F_PT(s,src), templongvec+4*i );
+#endif
     } END_LOOP
 
     /* Start gathers from negative directions */
@@ -180,6 +190,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	do_gather(tag[OPP_DIR(dir)]);
       }
     }
+#ifndef NO_LONG_LINKS
     /* and 3rd neighbours */
     for( dir=X3UP; dir <= T3UP; dir++){
 /**printf("dslash_fn_site_special: down gathers, start=%d\n",start);**/
@@ -195,7 +206,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	do_gather(tag[OPP_3_DIR(dir)]);
       }
     }
-
+#endif
     /* Wait gathers from positive directions, multiply by matrix and
 	accumulate */
     for(dir=XUP; dir<=TUP; dir++){
@@ -216,10 +227,9 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	wait_gather(tag[OPP_3_DIR(dir)]);
     }
 
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITYDOMAIN(i,s,parity){
       if( i < loopend-FETCH_UP ){
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
-	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 	prefetch_VV(
 		    (su3_vector *)F_PT(s+FETCH_UP,dest),
 		    templongv1+i+FETCH_UP);
@@ -229,6 +239,13 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 			(su3_vector *)gen_pt[YUP][i+FETCH_UP],
 			(su3_vector *)gen_pt[ZUP][i+FETCH_UP],
 			(su3_vector *)gen_pt[TUP][i+FETCH_UP] );
+	prefetch_VVVV( 
+		      (su3_vector *)gen_pt[XDOWN][i+FETCH_UP],
+		      (su3_vector *)gen_pt[YDOWN][i+FETCH_UP],
+		      (su3_vector *)gen_pt[ZDOWN][i+FETCH_UP],
+		      (su3_vector *)gen_pt[TDOWN][i+FETCH_UP] );
+#ifndef NO_LONG_LINKS
+	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 	prefetch_4MVVVV( 
 			long4,
 			(su3_vector *)gen_pt[X3UP][i+FETCH_UP],
@@ -236,32 +253,30 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 			(su3_vector *)gen_pt[Z3UP][i+FETCH_UP],
 			(su3_vector *)gen_pt[T3UP][i+FETCH_UP] );
 	prefetch_VVVV( 
-		      (su3_vector *)gen_pt[XDOWN][i+FETCH_UP],
-		      (su3_vector *)gen_pt[YDOWN][i+FETCH_UP],
-		      (su3_vector *)gen_pt[ZDOWN][i+FETCH_UP],
-		      (su3_vector *)gen_pt[TDOWN][i+FETCH_UP] );
-	prefetch_VVVV( 
 		      (su3_vector *)gen_pt[X3DOWN][i+FETCH_UP],
 		      (su3_vector *)gen_pt[Y3DOWN][i+FETCH_UP],
 		      (su3_vector *)gen_pt[Z3DOWN][i+FETCH_UP],
 		      (su3_vector *)gen_pt[T3DOWN][i+FETCH_UP] );
+#endif
       }
       fat4 = &(t_fatlink[4*i]);
-      long4 = &(t_longlink[4*i]);
       mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
 	    (su3_vector *)F_PT(s,dest));
+#ifndef NO_LONG_LINKS
+      long4 = &(t_longlink[4*i]);
       mult_su3_mat_vec_sum_4dir( long4,
 	    (su3_vector *)gen_pt[X3UP][i], (su3_vector *)gen_pt[Y3UP][i],
 	    (su3_vector *)gen_pt[Z3UP][i], (su3_vector *)gen_pt[T3UP][i],
 	    templongv1+i);
-
+#endif
       sub_four_su3_vecs( (su3_vector *)F_PT(s,dest),
 	    (su3_vector *)(gen_pt[XDOWN][i]),
 	    (su3_vector *)(gen_pt[YDOWN][i]),
 	    (su3_vector *)(gen_pt[ZDOWN][i]),
 	    (su3_vector *)(gen_pt[TDOWN][i]) );
+#ifndef NO_LONG_LINKS
       sub_four_su3_vecs( templongv1+i, 
 	    (su3_vector *)(gen_pt[X3DOWN][i]),
 	    (su3_vector *)(gen_pt[Y3DOWN][i]),
@@ -270,6 +285,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
         /*** Now need to add these things together ***/
       add_su3_vector((su3_vector *)F_PT(s,dest), templongv1+i,
 				(su3_vector *)F_PT(s,dest));
+#endif
     } END_LOOP
 
 }
@@ -304,9 +320,12 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
   register int i;
   register site *s;
   register int dir,otherparity=0;
-  register su3_matrix *fat4, *long4;
+  register su3_matrix *fat4;
   su3_matrix *t_fatlink;
+#ifndef NO_LONG_LINKS
+  register su3_matrix *long4;
   su3_matrix *t_longlink;
+#endif
   
   /* allocate temporary work space only if not already allocated */
   if(temp_not_allocated)
@@ -324,7 +343,9 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
     printf("dslash_fn_field_speical: invalid fn links!\n");
     terminate(1);
   }
+#ifndef NO_LONG_LINKS
   t_longlink = get_lnglinks(fn);
+#endif
   t_fatlink = get_fatlinks(fn);
 
   switch(parity)
@@ -341,25 +362,28 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
       {
 	tag[dir] = start_gather_field( src, sizeof(su3_vector), 
 					   dir, parity,gen_pt[dir] );
+#ifndef NO_LONG_LINKS
 	tag[DIR3(dir)] = start_gather_field(src, sizeof(su3_vector),
 						DIR3(dir),parity, 
 						gen_pt[DIR3(dir)] );
+#endif
       }
     else
       {
 	restart_gather_field( src, sizeof(su3_vector), 
 				  dir, parity,gen_pt[dir], tag[dir]);
+#ifndef NO_LONG_LINKS
 	restart_gather_field(src, sizeof(su3_vector), DIR3(dir), parity, 
 				 gen_pt[DIR3(dir)], tag[DIR3(dir)]);
+#endif
       }
   }
   
   /* Multiply by adjoint matrix at other sites */
   /* Use fat link for single link transport */
-  FORSOMEPARITY( i, s, otherparity ){
+  FORSOMEPARITYDOMAIN( i, s, otherparity ){
     if( i < loopend-FETCH_UP ){
        fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
-       long4 = &(t_longlink[4*(i+FETCH_UP)]);
        prefetch_V(&(src[i+FETCH_UP]));
        prefetch_4MVVVV( 
 		       fat4,
@@ -367,21 +391,26 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 		       &(temp[1][i+FETCH_UP]),
 		       &(temp[2][i+FETCH_UP]),
 		       &(temp[3][i+FETCH_UP]) );
+#ifndef NO_LONG_LINKS
+       long4 = &(t_longlink[4*(i+FETCH_UP)]);
        prefetch_4MVVVV( 
 		       long4,
 		       &(temp[4][i+FETCH_UP]),
 		       &(temp[5][i+FETCH_UP]),
 		       &(temp[6][i+FETCH_UP]),
 		       &(temp[7][i+FETCH_UP]) );
+#endif
     }
 
     fat4 = &(t_fatlink[4*i]);
-    long4 = &(t_longlink[4*i]);
     mult_adj_su3_mat_4vec( fat4, &(src[i]), &(temp[0][i]),
 			   &(temp[1][i]), &(temp[2][i]), &(temp[3][i]) );
+#ifndef NO_LONG_LINKS
     /* multiply by 3-link matrices too */
+    long4 = &(t_longlink[4*i]);
     mult_adj_su3_mat_4vec( long4, &(src[i]),&(temp[4][i]),
 			   &(temp[5][i]), &(temp[6][i]), &(temp[7][i]) );
+#endif
   } END_LOOP
       
   /* Start gathers from negative directions */
@@ -407,19 +436,27 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
     /* wait for the 3-neighbours from positive directions, multiply */
     for(dir=XUP; dir<=TUP; dir++){
 	wait_gather(tag[dir]);
+#ifndef NO_LONG_LINKS
 	wait_gather(tag[DIR3(dir)]);
+#endif
     }
 
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITYDOMAIN(i,s,parity){
       if( i < loopend-FETCH_UP ){
 	fat4 = &(t_fatlink[4*(i+FETCH_UP)]);
-	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 	prefetch_4MVVVV( 
 			fat4,
 			(su3_vector *)gen_pt[XUP][i+FETCH_UP],
 			(su3_vector *)gen_pt[YUP][i+FETCH_UP],
 			(su3_vector *)gen_pt[ZUP][i+FETCH_UP],
 			(su3_vector *)gen_pt[TUP][i+FETCH_UP] );
+	prefetch_VVVV( 
+		      (su3_vector *)gen_pt[XDOWN][i+FETCH_UP],
+		      (su3_vector *)gen_pt[YDOWN][i+FETCH_UP],
+		      (su3_vector *)gen_pt[ZDOWN][i+FETCH_UP],
+		      (su3_vector *)gen_pt[TDOWN][i+FETCH_UP] );
+#ifndef NO_LONG_LINKS
+	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 	prefetch_4MVVVV( 
 			long4,
 			(su3_vector *)gen_pt[X3UP][i+FETCH_UP],
@@ -427,28 +464,26 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 			(su3_vector *)gen_pt[Z3UP][i+FETCH_UP],
 			(su3_vector *)gen_pt[T3UP][i+FETCH_UP] );
 	prefetch_VVVV( 
-		      (su3_vector *)gen_pt[XDOWN][i+FETCH_UP],
-		      (su3_vector *)gen_pt[YDOWN][i+FETCH_UP],
-		      (su3_vector *)gen_pt[ZDOWN][i+FETCH_UP],
-		      (su3_vector *)gen_pt[TDOWN][i+FETCH_UP] );
-	prefetch_VVVV( 
 		      (su3_vector *)gen_pt[X3DOWN][i+FETCH_UP],
 		      (su3_vector *)gen_pt[Y3DOWN][i+FETCH_UP],
 		      (su3_vector *)gen_pt[Z3DOWN][i+FETCH_UP],
 		      (su3_vector *)gen_pt[T3DOWN][i+FETCH_UP] );
+#endif
       }
       
       fat4 = &(t_fatlink[4*i]);
-      long4 = &(t_longlink[4*i]);
       mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
 	    &(dest[i]) );
 
+#ifndef NO_LONG_LINKS
+      long4 = &(t_longlink[4*i]);
       mult_su3_mat_vec_sum_4dir( long4,
 	    (su3_vector *)gen_pt[X3UP][i], (su3_vector *)gen_pt[Y3UP][i],
 	    (su3_vector *)gen_pt[Z3UP][i], (su3_vector *)gen_pt[T3UP][i],
 	    &(temp[8][i]));
+#endif
     } END_LOOP
    
     /* Wait gathers from negative directions, accumulate (negative) */
@@ -460,7 +495,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
       wait_gather(tag[OPP_3_DIR(dir)]);
     }
 
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITYDOMAIN(i,s,parity){
       if( i < loopend-FETCH_UP ){
 	prefetch_VVVVV( 
 		       &(dest[i+FETCH_UP]),
@@ -504,6 +539,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 	      Real wtfat, Real wtlong)
 {
   register int i ;
+  site *s;
   msg_tag *tag[2];
   su3_matrix *fat = get_fatlinks(fn);
   su3_matrix *lng = get_lnglinks(fn);
@@ -529,7 +565,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
     if(do_long)
       wait_gather(tag[1]);
   
-    FORSOMEFIELDPARITY(i,parity)
+    FORSOMEPARITYDOMAIN(i,s,parity)
       {
 	mult_su3_mat_vec( fat+4*i+dir, (su3_vector *)gen_pt[0][i], &tmp );
 	scalar_mult_add_su3_vector( dest+i, &tmp, wtfat, dest+i ) ;    
@@ -548,7 +584,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
     tvec1 = create_v_field();
     if(do_long)tvec2 = create_v_field();
 
-    FORSOMEFIELDPARITY(i,parity)
+    FORSOMEPARITYDOMAIN(i,s,parity)
       {
 	mult_adj_su3_mat_vec( fat+4*i+dir, src+i, tvec1+i ) ;
 	if(do_long)
@@ -566,7 +602,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 
     /* Apply weights.  NOTE minus sign convention! */
 
-    FORSOMEFIELDPARITY(i,parity)
+    FORSOMEPARITYDOMAIN(i,parity)
       {
         scalar_mult_add_su3_vector( dest+i, (su3_vector *)gen_pt[0][i], -wtfat, dest+i ) ;    
         if(do_long)

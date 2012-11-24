@@ -25,7 +25,7 @@
 
 /* Redefinitions according to selected precision */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 
 #define MYSU3MATRIX fsu3_matrix
 #define MYREAL float
@@ -103,7 +103,7 @@ create_qop_links_from_milc_fn(ferm_links_t *fn)
 
 /* The fat and long links are created in the prevailing MILC precision
    and their pointers are stored in the structure fn.  The qop links
-   are created only in the precision defined by QOP_Precision and the
+   are created only in the precision defined by QOP_PrecisionInt and the
    pointer is also stored in the structure fn.
 
    We have two ways to create the fat and long links, depending on the

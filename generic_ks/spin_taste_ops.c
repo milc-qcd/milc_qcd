@@ -990,7 +990,10 @@ spin_taste_op(int index, int r0[], su3_vector *dest, su3_vector *src){
     spin_taste_op_links(index, r0, dest, src, NULL);
 #else
     /* Use APE links for shifts */
+
+    rephase_field_offset( ape_links, ON, NULL, r0 );
     spin_taste_op_links(index, r0, dest, src, ape_links);
+    rephase_field_offset( ape_links, OFF, NULL, r0 );
 #endif
 }
 
@@ -1060,10 +1063,34 @@ gamma_gamma_spin_taste_op(int index, int r0[],
   general_spin_taste_op(spin_index, taste_index, r0, dest, src, NULL);
 #else
   /* Use APE links for shifts */
+  rephase_field_offset( ape_links, ON, NULL, r0 );
   general_spin_taste_op(spin_index, taste_index, r0, dest, src,
 			ape_links);
+  rephase_field_offset( ape_links, OFF, NULL, r0 );
 #endif
 }
+
+
+#ifdef NO_GAUGE_FIELD
+
+/*------------------------------------------------------------------*/
+/* Spin-taste operator without the FN option                        */
+
+void 
+spin_taste_op_fn( void *fn, int index, int r0[],
+		  su3_vector *dest, su3_vector *src){
+
+  if(is_gamma_gamma_index(index))
+    gamma_gamma_spin_taste_op(index, r0, dest, src);
+
+  else {
+    
+    /* For all non-FN operators */
+    spin_taste_op(index, r0, dest, src);
+  }
+}
+
+#else
 
 /*------------------------------------------------------------------*/
 /* Spin-taste operator including the FN option                      */
@@ -1078,7 +1105,6 @@ spin_taste_op_fn( imp_ferm_links_t *fn, int index, int r0[],
   else {
     
     switch(index){
-#ifndef NO_GAUGE_FIELD
     case rhoxsfn:
       mult_rhois_fn_field(fn, XUP, r0, src, dest);
       break;
@@ -1092,7 +1118,6 @@ spin_taste_op_fn( imp_ferm_links_t *fn, int index, int r0[],
     case rhotsfn:
       mult_rhois_fn_field(fn, TUP, r0, src, dest);
       break;
-#endif
     default:
       /* For all non-FN operators */
       spin_taste_op(index, r0, dest, src);
@@ -1100,3 +1125,4 @@ spin_taste_op_fn( imp_ferm_links_t *fn, int index, int r0[],
   }
 }
 
+#endif

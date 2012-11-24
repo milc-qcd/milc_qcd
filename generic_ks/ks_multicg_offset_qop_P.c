@@ -22,6 +22,9 @@
 
 /*
  * $Log: ks_multicg_offset_qop_P.c,v $
+ * Revision 1.8  2012/11/24 00:02:53  detar
+ * Add placeholders for HYPISQ action.  Support HISQ action within ks_imp_dyn.
+ *
  * Revision 1.7  2011/12/03 22:30:09  detar
  * Cosmetic: Fix file name in top comment line
  *
@@ -59,7 +62,7 @@
  *
  */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 
 #define KS_MULTICG_OFFSET_FIELD         ks_multicg_offset_field_F
 #define KS_CONGRAD_QOP_FIELD2FIELD      ks_congrad_qop_F_field2field
@@ -77,7 +80,7 @@
 #include "../include/generic_ks_qop.h"
 #include "../include/loopend.h"
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.7 2011/12/03 22:30:09 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/ks_multicg_offset_qop_P.c,v 1.8 2012/11/24 00:02:53 detar Exp $";
 
 /* Standard MILC interface for the Asqtad multimass inverter 
    single source, multiple masses.  Uses the prevailing precision */

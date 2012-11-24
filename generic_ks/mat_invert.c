@@ -19,7 +19,7 @@ void ks_dirac_op( su3_vector *src, su3_vector *dst, Real mass,
     register site *s;
 
     dslash_field( src, dst, parity, fn);
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITYDOMAIN(i,s,parity){
       scalar_mult_add_su3_vector( dst+i, src+i, +2.0*mass, dst+i);
     }
 }
@@ -32,7 +32,7 @@ void ks_dirac_adj_op( su3_vector *src, su3_vector *dst, Real mass,
     register site *s;
 
     dslash_field( src, dst, parity, fn);
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITYDOMAIN(i,s,parity){
       scalar_mult_su3_vector( dst+i, -1.0, dst+i);
       scalar_mult_add_su3_vector( dst+i, src+i, 2.0*mass, dst+i);
     }
@@ -78,7 +78,7 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
 
     dslash_field( src, tmp, otherparity, fn);
     dslash_field( tmp, dst, parity, fn);
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITYDOMAIN(i,s,parity){
       scalar_mult_su3_vector( dst+i, -1.0, dst+i);
       scalar_mult_add_su3_vector( dst+i, src+i, msq_x4, dst+i);
     }

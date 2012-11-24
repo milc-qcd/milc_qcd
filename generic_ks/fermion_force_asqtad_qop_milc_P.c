@@ -37,7 +37,7 @@
  * Fermion force: 433968 for QOP_asqtad_force_two()
  */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 #define MYREAL float
 #define MYSU3_MATRIX fsu3_matrix
 #else
@@ -89,7 +89,7 @@ static su3_vector *temp_x;
 /*---------------------------------------------------------------------------*/
 /* Convert (or copy) four single precision su3_matrices to generic precision */
 
-#if (PRECISION==QOP_Precision)
+#if (PRECISION==QOP_PrecisionInt)
 
 
 static void 
@@ -218,7 +218,7 @@ d2f_vec(fsu3_vector *dest, dsu3_vector *src){
   }
 }
 
-#if (QOP_Precision == 1)
+#if (QOP_PrecisionInt == 1)
 
 static dsu3_matrix *get_matrix_from_qop(fsu3_matrix *g){
   int i;

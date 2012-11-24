@@ -1,8 +1,9 @@
 /****** ks_action_paths_hisq.c  -- ******************/
-/* (Formerly quark_stuff_hisq.c) */
+
+/* CD PLACEHOLDER COPIED FROM ks_action_paths_hisq.c NEEDS DEVELOPMENT
+
 /* MIMD version 7 */
 /* Construct path tables and action coefficients for improved quark actions
- * (Formerly a catch-all file for improved quark action utilities)
  *
  * D.T. 1/28/98, starting from gauge_stuff.c
  * K.O. 3/99 Added optimized fattening for Asq actions
@@ -20,7 +21,7 @@
  *                Worked with pointers where possible to avoid copying.
  * C.D. 3/05 Moved fermion force and dslash_eo to separate files.
  * C.D. 10/06 Moved compute_gen_staple to fermion_links_fn.c
- * A.B. 8/08 Third path table introduced for HISQ to speed up cases
+ * A.B. 8/08 Third path table introduced for HYPISQ to speed up cases
  *           with non-zero epsilon correction to Naik term
  
  * This code combines quark_stuff.c and quark_stuff_tmp.c
@@ -40,7 +41,6 @@
 #define IMP_QUARK_ACTION_DEFINE_PATH_TABLES
 #include "quark_action.h"
 #include "../include/ks_action_paths.h"
-#include "lattice.h"   /* Only for u0 */
 
 
     /* Specify paths in orientation in which they appear in the
@@ -120,8 +120,8 @@ build_act_path_coeff(char action_desc[], Real act_coeff[], Real coeff[],
 /* Get just the path coefficients in the action                     */
 /* but don't construct the path tables                              */
 /********************************************************************/
-void load_act_path_coeff_hisq(ks_action_paths_hisq *ap, int n_naiks,
-			      double *eps_naik){
+void load_act_path_coeff_hypisq(ks_action_paths_hypisq *ap, int n_naiks,
+				double *eps_naik){
   int i;
 
   ap->n_naiks = n_naiks;
@@ -134,7 +134,7 @@ void load_act_path_coeff_hisq(ks_action_paths_hisq *ap, int n_naiks,
   ap->p1.q_paths = NULL;
 
   // fat7 stage 
-  // convert hisq style coeffs to asqtad style 
+  // convert hypisq style coeffs to asqtad style 
   ap->p1.act_path_coeff.one_link     = act_path_coeff_1[0];
   ap->p1.act_path_coeff.three_staple = act_path_coeff_1[1];
   ap->p1.act_path_coeff.five_staple  = act_path_coeff_1[2];
@@ -209,12 +209,12 @@ void load_act_path_coeff_hisq(ks_action_paths_hisq *ap, int n_naiks,
 /* Make table of paths in action */
 /********************************************************************/
 // Returns 0 if the path table did not change. 1 if it did.
-int make_path_table_hisq(ks_action_paths_hisq *ap,
-			 int n_naiks, double *eps_naik) {
+int make_path_table_hypisq(ks_action_paths_hypisq *ap,
+			   int n_naiks, double *eps_naik) {
 
   if(ap->constructed) return 0;
 
-  load_act_path_coeff_hisq(ap, n_naiks, eps_naik);
+  load_act_path_coeff_hypisq(ap, n_naiks, eps_naik);
 
   if(mynode()==0)printf("MAKING PATH TABLES\n");
 
@@ -404,12 +404,12 @@ is_path_equal( int *path1, int* path2, int length ){
 /* API */
 /********************************************************************/
 
-ks_action_paths_hisq *
-create_path_table_hisq(void){
-  ks_action_paths_hisq *ap;
-  char myname[] = "create_path_table_hisq";
+ks_action_paths_hypisq *
+create_path_table_hypisq(void){
+  ks_action_paths_hypisq *ap;
+  char myname[] = "create_path_table_hypisq";
 
-  ap = (ks_action_paths_hisq *)malloc(sizeof(ks_action_paths_hisq));
+  ap = (ks_action_paths_hypisq *)malloc(sizeof(ks_action_paths_hypisq));
   if(ap == NULL){
     printf("%s: no room\n",myname);
     terminate(1);
@@ -420,27 +420,27 @@ create_path_table_hisq(void){
 
 }
 
-void destroy_path_table_hisq(ks_action_paths_hisq *ap){
+void destroy_path_table_hypisq(ks_action_paths_hypisq *ap){
   if(ap == NULL)return;
   free(ap);
 }
 
-int get_n_naiks(ks_action_paths_hisq *ap){
+int get_n_naiks(ks_action_paths_hypisq *ap){
   if(ap == NULL)return 0;
   return ap->n_naiks;
 }
 
-double *get_eps_naik(ks_action_paths_hisq *ap){
+double *get_eps_naik(ks_action_paths_hypisq *ap){
   if(ap == NULL)return NULL;
   return ap->eps_naik;
 }
 
-int get_umethod(ks_action_paths_hisq *ap){
+int get_umethod(ks_action_paths_hypisq *ap){
   if(ap == NULL)return 0;
   return ap->umethod;
 }
 
-int get_ugroup(ks_action_paths_hisq *ap){
+int get_ugroup(ks_action_paths_hypisq *ap){
   if(ap == NULL)return 0;
   return ap->ugroup;
 }
@@ -448,13 +448,13 @@ int get_ugroup(ks_action_paths_hisq *ap){
 #define MAX_STRING 2048
 
 char *
-get_ap_string_hisq(ks_action_paths_hisq *ap){
+get_ap_string_hypisq(ks_action_paths_hypisq *ap){
   static char str[MAX_STRING] = "";
   asqtad_coeffs_t *apc1 = &ap->p1.act_path_coeff;
   asqtad_coeffs_t *apc2 = &ap->p2.act_path_coeff;
   asqtad_coeffs_t *apc3 = &ap->p3.act_path_coeff;
   
-  snprintf(str, MAX_STRING, "action.hisq.fat7.one_link %e\naction.hisq.fat7.three_staple %e\naction.hisq.fat7.five_staple %e\naction.hisq.fat7.seven_staple %e\naction.hisq.asqtad.one_link %e\naction.hisq.asqtad.three_staple %e\naction.hisq.asqtad.five_staple %e\naction.hisq.asqtad.seven_staple %e\naction.hisq.asqtad.lepage %e\naction.hisq.asqtad.naik %e\naction.hisq.difference.one_link %e\naction.hisq.difference.naik %e\n",
+  snprintf(str, MAX_STRING, "action.hypisq.fat7.one_link %e\naction.hypisq.fat7.three_staple %e\naction.hypisq.fat7.five_staple %e\naction.hypisq.fat7.seven_staple %e\naction.hypisq.asqtad.one_link %e\naction.hypisq.asqtad.three_staple %e\naction.hypisq.asqtad.five_staple %e\naction.hypisq.asqtad.seven_staple %e\naction.hypisq.asqtad.lepage %e\naction.hypisq.asqtad.naik %e\naction.hypisq.difference.one_link %e\naction.hypisq.difference.naik %e\n",
 	   apc1->one_link, apc1->three_staple, apc1->five_staple, apc1->seven_staple, 
 	   apc2->one_link, apc2->three_staple, apc2->five_staple, apc2->seven_staple, 
 	   apc2->lepage,   apc2->naik, 
@@ -464,4 +464,4 @@ get_ap_string_hisq(ks_action_paths_hisq *ap){
   return str;
 }
 
-/* ks_action_paths_hisq.c */
+/* ks_action_paths_hypisq.c */

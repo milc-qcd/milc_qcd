@@ -7,7 +7,7 @@
    CD 9/8/06 separated from quark_stuff.c 
 */
 
-#if ( QOP_Precision == 1)
+#if ( QOP_PrecisionInt == 1)
 #define MYREAL float
 #define MYSU3_MATRIX fsu3_matrix
 #else
@@ -172,7 +172,7 @@ static su3_matrix *create_fatlinks_qop_milc(QOP_info_t *info,
   Real one_link; /* needed to fix the problem with the Lepage
 		       term */
   /* Convert specific QOP precision to prevailing MILC precision */
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
   su3_matrix *links = create_links_from_qop_milc_F(gauge->g);
 #else
   su3_matrix *links = create_links_from_qop_milc_D(gauge->g);
@@ -271,7 +271,7 @@ dtime += dclock();
  info->final_flop = ((double)nflop*volume)/numnodes();
  info->status = QOP_SUCCESS;
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
   destroy_links_from_qop_milc_F(links);
 #else
   destroy_links_from_qop_milc_D(links);
@@ -427,7 +427,7 @@ void path_product_qop_milc( const int *dir, const int length,
     register site *s;
     msg_tag *mtag0 = NULL;
     su3_matrix *tempmat2t, *tempmat3t;
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
     su3_matrix *links = create_links_from_qop_milc_F(gauge->g);
 #else
     su3_matrix *links = create_links_from_qop_milc_D(gauge->g);
@@ -659,7 +659,7 @@ void path_product_qop_milc( const int *dir, const int length,
     free(tempmat3t);
     free(tempmat2t);
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
     destroy_links_from_qop_milc_F(links);
 #else
     destroy_links_from_qop_milc_D(links);

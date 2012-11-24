@@ -51,6 +51,7 @@ G_KS_ALL = \
   fermion_force_fn_multi.o \
   fermion_force_eo_milc.o \
   fermion_force_hisq_multi.o \
+  fermion_force_hypisq_multi.o \
   fermion_force_multi.o \
   fermion_links.o \
   fermion_links_asqtad_qop.o \
@@ -71,6 +72,9 @@ G_KS_ALL = \
   fermion_links_hisq_load_gpu.o \
   fermion_links_hisq_load_milc.o \
   fermion_links_hisq_qop.o \
+  fermion_links_hyp.o \
+  fermion_links_hypisq_load_milc.o \
+  fermion_links_hypisq_milc.o \
   fermion_links_milc.o \
   ff_opt.o \
   flavor_ops.o \
@@ -81,6 +85,7 @@ G_KS_ALL = \
   gauss_smear_ks.o \
   grsource.o \
   hisq_links_qop.o \
+  hypisq_links_qop.o \
   io_helpers_ks.o \
   io_prop_ks.o \
   io_prop_ks_fm.o \
@@ -91,6 +96,7 @@ G_KS_ALL = \
   ks_action_coeffs_hisq_qop.o \
   ks_action_paths.o \
   ks_action_paths_hisq.o \
+  ks_action_paths_hypisq.o \
   ks_baryon.o \
   ks_invert.o \
   ks_meson_mom.o \
@@ -116,6 +122,8 @@ G_KS_ALL = \
   show_generic_ks_opts.o \
   show_hisq_force_opts.o \
   show_hisq_links_opts.o \
+  show_hypisq_force_opts.o \
+  show_hypisq_links_opts.o \
   spectrum.o \
   spectrum2.o \
   spectrum_fzw.o \
@@ -244,6 +252,8 @@ fermion_force_hisq_qop_F.o: ../generic_ks/fermion_force_hisq_qop_F.c
 fermion_force_hisq_qop_D.o: ../generic_ks/fermion_force_hisq_qop_D.c ../generic_ks/fermion_force_hisq_qop_P.c 
 fermion_force_hisq_qop_D.o: ../generic_ks/fermion_force_hisq_qop_D.c
 	${CC} -c ${CFLAGS} $<
+fermion_force_hypisq_multi.o: ../generic_ks/fermion_force_hypisq_multi.c
+	${CC} -c ${CFLAGS} $<
 fermion_force_multi.o: ../generic_ks/fermion_force_multi.c
 	${CC} -c ${CFLAGS} $<
 f_meas.o: ../generic_ks/f_meas.c
@@ -259,6 +269,8 @@ flavor_ops.o: ../generic_ks/flavor_ops.c
 flavor_ops2.o: ../generic_ks/flavor_ops2.c
 	${CC} -c ${CFLAGS} $<
 fermion_links.o: ../generic_ks/fermion_links.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_hyp.o: ../generic_ks/fermion_links_hyp.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_milc.o: ../generic_ks/fermion_links_milc.c
 	${CC} -c ${CFLAGS} $<
@@ -300,6 +312,10 @@ fermion_links_hisq_qdp.o: ../generic_ks/fermion_links_hisq_qdp.c
 	${CC} -c ${CFLAGS} $<
 fermion_links_hisq_qop.o: ../generic_ks/fermion_links_hisq_qop.c
 	${CC} -c ${CFLAGS} $<
+fermion_links_hypisq_milc.o: ../generic_ks/fermion_links_hypisq_milc.c
+	${CC} -c ${CFLAGS} $<
+fermion_links_hypisq_load_milc.o: ../generic_ks/fermion_links_hypisq_load_milc.c
+	${CC} -c ${CFLAGS} $<
 ff_opt.o: ../generic_ks/ff_opt.c
 	${CC} -c ${CFLAGS} $<
 gauss_smear_ks.o: ../generic_ks/gauss_smear_ks.c
@@ -309,6 +325,8 @@ grsource.o: ../generic_ks/grsource.c
 grsource_imp.o: ../generic_ks/grsource_imp.c
 	${CC} -c ${CFLAGS} $<
 hisq_links_qop.o: ../generic_ks/hisq_links_qop.c
+	${CC} -c ${CFLAGS} $<
+hypisq_links_qop.o: ../generic_ks/hypisq_links_qop.c
 	${CC} -c ${CFLAGS} $<
 io_helpers_ks.o: ../generic_ks/io_helpers_ks.c
 	${CC} -c ${CFLAGS} $<
@@ -329,6 +347,8 @@ ks_action_coeffs_hisq_qop.o: ../generic_ks/ks_action_coeffs_hisq_qop.c
 ks_action_paths.o: ../generic_ks/ks_action_paths.c
 	${CC} -c ${CFLAGS} $<
 ks_action_paths_hisq.o: ../generic_ks/ks_action_paths_hisq.c
+	${CC} -c ${CFLAGS} $<
+ks_action_paths_hypisq.o: ../generic_ks/ks_action_paths_hypisq.c
 	${CC} -c ${CFLAGS} $<
 ks_baryon.o: ../generic_ks/ks_baryon.c
 	${CC} -c ${CFLAGS} $<
@@ -385,6 +405,10 @@ show_generic_ks_opts.o: ../generic_ks/show_generic_ks_opts.c
 show_hisq_force_opts.o: ../generic_ks/show_hisq_force_opts.c
 	${CC} -c ${CFLAGS} $<
 show_hisq_links_opts.o: ../generic_ks/show_hisq_links_opts.c
+	${CC} -c ${CFLAGS} $<
+show_hypisq_force_opts.o: ../generic_ks/show_hypisq_force_opts.c
+	${CC} -c ${CFLAGS} $<
+show_hypisq_links_opts.o: ../generic_ks/show_hypisq_links_opts.c
 	${CC} -c ${CFLAGS} $<
 spectrum.o: ../generic_ks/spectrum.c
 	${CC} -c ${CFLAGS} $<

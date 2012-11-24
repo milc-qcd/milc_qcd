@@ -121,6 +121,10 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     printf("%s(%d): No room for temporaries\n",myname,this_node);
   }
 
+  memset(ttt, 0, (sites_on_node+PAD)*sizeof(su3_vector));
+  memset(cg_p, 0, (sites_on_node+PAD)*sizeof(su3_vector));
+  memset(resid, 0, (sites_on_node+PAD)*sizeof(su3_vector));
+
   /* Source norm */
   source_norm = 0.0;
   FORSOMEPARITY(i,s,parity){

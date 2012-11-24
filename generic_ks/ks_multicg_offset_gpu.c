@@ -83,10 +83,15 @@ int ks_multicg_offset_field_gpu(
   // The following arrays temporarily hold the final residuals
   double* residual = (double*)malloc(num_offsets*sizeof(double));
   double* relative_residual = (double*)malloc(num_offsets*sizeof(double));
+  double* final_residual = (double*)malloc(num_offsets*sizeof(double));
+  double* final_relative_residual = (double*)malloc(num_offsets*sizeof(double));
 
+  for(i=0; i<num_offsets; ++i){
+   residual[i]          = qic[i].resid;
+   relative_residual[i] = qic[i].relresid;
+  }
 
   inv_args.max_iter  = qic[0].max*qic[0].nrestart;
-  inv_args.restart_tolerance = 1e-1;
 #if defined(MAX_MIXED) || defined(HALF_MIXED)
   inv_args.mixed_precision = 1;
 #else
@@ -105,24 +110,27 @@ int ks_multicg_offset_field_gpu(
 		       num_offsets,
 		       offset,
 		       inv_args,
-		       qic[0].resid,
-		       qic[0].relresid,
+		       residual,
+		       relative_residual,
 		       fatlink,
 		       longlink,
 		       (void *)src,
 		       (void **)psim,
-		       residual,
-		       relative_residual,
+		       final_residual,
+		       final_relative_residual,
 		       &num_iters);
   
   for(i=0; i<num_offsets; ++i){
-    qic[i].final_rsq = residual[i]*residual[i];
-    qic[i].final_relrsq = relative_residual[i]*relative_residual[i];
+    qic[i].final_rsq = final_residual[i]*final_residual[i];
+    qic[i].final_relrsq = final_relative_residual[i]*final_relative_residual[i];
     qic[i].final_iters = num_iters;
 
     // check for convergence
-    qic[i].converged = (residual[i] <= qic[0].resid) ? 1 : 0;
-
+    if(relative_residual[i]){
+      qic[i].converged = (final_relative_residual[i] <= qic[i].relresid) ? 1 :0;
+    }else{
+      qic[i].converged = (final_residual[i] <= qic[i].resid) ? 1 : 0;
+    }
     // Cumulative residual. Not used in practice
     qic[i].size_r = 0.0;
     qic[i].size_relr = 0.0;
@@ -131,6 +139,8 @@ int ks_multicg_offset_field_gpu(
   free(offset); 
   free(residual);
   free(relative_residual);
+  free(final_residual);
+  free(final_relative_residual);
 
 #ifdef CGTIME
   dtimec += dclock();

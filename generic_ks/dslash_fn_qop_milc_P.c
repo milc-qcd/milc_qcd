@@ -16,7 +16,7 @@
 /* Jim Hetrick, Kari Rummukainen, Doug Toussaint, Steven Gottlieb */
 /* C. DeTar 9/29/01 Standardized prefetching and synced the versions */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 
 #define CLEANUP_GATHERS_QOP_MILC cleanup_gathers_qop_milc_F
 #define CLEANUP_DSLASH_QOP_MILC_TEMPS cleanup_dslash_qop_milc_temps_F

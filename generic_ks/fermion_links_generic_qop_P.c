@@ -25,7 +25,7 @@
 
 /* Redefinitions according to selected precision */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 
 #define MYSU3MATRIX fsu3_matrix
 #define MYREAL float

@@ -20,6 +20,9 @@
 
 /*
  * $Log: fermion_force_hisq_qop_P.c,v $
+ * Revision 1.4  2012/11/24 00:02:51  detar
+ * Add placeholders for HYPISQ action.  Support HISQ action within ks_imp_dyn.
+ *
  * Revision 1.3  2012/02/22 03:46:31  detar
  * Add precision tag to timing line
  *
@@ -32,7 +35,7 @@
  *
  */
 
-#if (QOP_Precision==1)
+#if (QOP_PrecisionInt==1)
 
 #define CREATE_F_FROM_SITE4        create_F_F_from_site4
 #define CREATE_V_FROM_SITE         create_F_V_from_site
@@ -77,7 +80,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop_P.c,v 1.3 2012/02/22 03:46:31 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop_P.c,v 1.4 2012/11/24 00:02:51 detar Exp $";
 
 #if 0  /* Not supported until we decide what a HISQ one-term or two-term force means */
 /**********************************************************************/
@@ -152,7 +155,7 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, su3_vector *x_off,
   remaptime += dclock();
 #ifdef FFTIME
   node0_printf("FFTIME:  time = %e (qop %s) terms = 1 mflops = %e\n",
-	       info.final_sec, qop_prec[QOP_Precision-1],
+	       info.final_sec, qop_prec[QOP_PrecisionInt-1],
 	       (Real)info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
@@ -236,7 +239,7 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
   remaptime += dclock();
 #ifdef FFTIME
   node0_printf("FFTIME:  time = %e (qop %s) terms = %d mflops = %e\n",
-	       info.final_sec, qop_prec[QOP_Precision-1],
+	       info.final_sec, qop_prec[QOP_PrecisionInt-1],
 	       2, (Real)info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP
   node0_printf("FFREMAP:  time = %e\n",remaptime);
@@ -338,7 +341,7 @@ void FERMION_FORCE_MULTI( Real eps, Real *residues,
   remaptime += dclock();
 #ifdef FFTIME
   node0_printf("FFTIME:  time = %e (qop %s) terms = %d flops/site = %d mflops = %e\n",
-	       info.final_sec, qop_prec[QOP_Precision-1],
+	       info.final_sec, qop_prec[QOP_PrecisionInt-1],
 	       nterms, (int)(info.final_flop/sites_on_node),
 	       info.final_flop/(1e6*info.final_sec) );
 #ifdef REMAP

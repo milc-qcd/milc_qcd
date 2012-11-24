@@ -1,4 +1,6 @@
-/****** fermion_force_hisq_multi.c  -- ******************/
+/****** fermion_force_hypisq_multi.c  -- ******************/
+
+/* CD PLACEHOLDER COPIED FROM fermion_force_hisq_multi.c NEEDS DEVELOPMENT */
 /* MIMD version 7 */
 /* Multisource fermion force.  Includes various optimization choices.
  * 
@@ -36,7 +38,7 @@
 
 //AB output for debugging
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
 static void dumpt4( su3_tensor4 dwdv ) {
   int i,j,k,l;
   i=j=k=l=0;
@@ -53,7 +55,7 @@ static void dumpt4( su3_tensor4 dwdv ) {
     }
   }
 }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 
 /* All routines in this file require the FN flag */
@@ -83,7 +85,7 @@ BOMB THE COMPILE
 // Forward declarations
 
 static void 
-fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues, 
+fn_fermion_force_multi_hypisq_mx( info_t *info, Real eps, Real *residues, 
 				su3_vector **multi_x, int nterms, 
 				fermion_links_t *fl );
 
@@ -93,7 +95,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 
 // Combine smearing level 2 from different multi_x,
 //               use globals from lattice.h
-// HISQ wrapper routine: contribution to the force due to
+// HYPISQ wrapper routine: contribution to the force due to
 //    0) smearing level 0 (outer product |X><Y|)
 //    1) smearing level 2 + smearing level 2 Naik corrected
 //    2) reunitarization
@@ -101,17 +103,17 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 
 
 /* GPU code always uses wrapper */
-#if defined(HISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
+#if defined(HYPISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
 
 #ifndef USE_FF_GPU
 static void 
-fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residues,
+fn_fermion_force_multi_hypisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residues,
 					su3_vector **multi_x, int nterms,
 					fermion_links_t *fl);
 // Contribution to the force from 0 level of smearing, force contains
 // only |X><Y| terms
 static void 
-fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues, 
+fn_fermion_force_multi_hypisq_smearing0( info_t *info, Real eps, Real *residues, 
 				       su3_vector **multi_x, 
 				       int nterms,
 				       su3_matrix *force_accum[4], 
@@ -121,7 +123,7 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
 // of smearing, as input it uses array of new links and the force from
 // (i-1)-th level of smearing
 static void 
-fn_fermion_force_multi_hisq_smearing( info_t *info, Real eps, 
+fn_fermion_force_multi_hypisq_smearing( info_t *info, Real eps, 
 				      Real *residues, 
 				      su3_vector **multi_x, 
 				      int nterms, 
@@ -135,14 +137,14 @@ fn_fermion_force_multi_hisq_smearing( info_t *info, Real eps,
 // Contribution to the force due to reunitarization of links:
 //   Y=V*(V^+*V)^-1/2, W=Y/(detY)^1/3
 static void 
-fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4], 
+fn_fermion_force_multi_hypisq_reunit( info_t *info, su3_matrix *force_accum[4], 
 				    su3_matrix *force_accum_old[4], 
 				    fermion_links_t *fl);
 
 #else
 
 static void 
-fn_fermion_force_multi_hisq_wrapper_mx_gpu( info_t *info, Real eps, Real *residues,
+fn_fermion_force_multi_hypisq_wrapper_mx_gpu( info_t *info, Real eps, Real *residues,
 					su3_vector **multi_x, int nterms,
 					fermion_links_t *fl);
 #endif /* ifndef USE_FF_GPU */
@@ -151,12 +153,12 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu( info_t *info, Real eps, Real *residu
 /* Change wrapper call for GPU */
 
 #ifdef USE_FF_GPU
-#define fn_fermion_force_multi_hisq_wrapper_mx fn_fermion_force_multi_hisq_wrapper_mx_gpu
+#define fn_fermion_force_multi_hypisq_wrapper_mx fn_fermion_force_multi_hypisq_wrapper_mx_gpu
 #else 
-#define fn_fermion_force_multi_hisq_wrapper_mx fn_fermion_force_multi_hisq_wrapper_mx_cpu
+#define fn_fermion_force_multi_hypisq_wrapper_mx fn_fermion_force_multi_hypisq_wrapper_mx_cpu
 #endif
 
-#endif /* HISQ_FF_MULTI_WRAPPER || USE_FF_GPU */
+#endif /* HYPISQ_FF_MULTI_WRAPPER || USE_FF_GPU */
 
 /**********************************************************************/
 /*   Wrapper for fermion force routines with multiple sources         */
@@ -179,87 +181,32 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
     node0_printf("FNMATREV isn't implemented\n"); exit(0);
     break;
   case FNMAT:
-#if defined(HISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
-    fn_fermion_force_multi_hisq_wrapper_mx(&info,  eps, residues, xxx, nterms, fl );
+#if defined(HYPISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
+    fn_fermion_force_multi_hypisq_wrapper_mx(&info,  eps, residues, xxx, nterms, fl );
 #else
-    fn_fermion_force_multi_hisq_mx(&info,  eps, residues, xxx, nterms, fl );
+    fn_fermion_force_multi_hypisq_mx(&info,  eps, residues, xxx, nterms, fl );
 #endif
     break;
   default:
-    fn_fermion_force_multi_hisq_mx(&info, eps, residues, xxx, nterms, fl );
+    fn_fermion_force_multi_hypisq_mx(&info, eps, residues, xxx, nterms, fl );
   }
 
   dtime += dclock();
   info.final_sec = dtime;
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e (HISQ %s) terms = %d flops/site = %d mflops = %e\n",
+  node0_printf("FFTIME:  time = %e (HYPISQ %s) terms = %d flops/site = %d mflops = %e\n",
 	       info.final_sec,qop_prec[PRECISION-1],nterms,
 	       (int)(info.final_flop*numnodes()/volume),
 	       info.final_flop/(1e6*info.final_sec) );
 #endif
 
   /* Sum over all nodes and update counter */
-  g_intsum(&INFO_HISQ_SVD_COUNTER(&info));
-  hisq_svd_counter += INFO_HISQ_SVD_COUNTER(&info);
+  g_intsum(&INFO_HYPISQ_SVD_COUNTER(&info));
+  hypisq_svd_counter += INFO_HYPISQ_SVD_COUNTER(&info);
   
-  g_intsum(&INFO_HISQ_FORCE_FILTER_COUNTER(&info));
-  hisq_force_filter_counter += INFO_HISQ_FORCE_FILTER_COUNTER(&info);
+  g_intsum(&INFO_HYPISQ_FORCE_FILTER_COUNTER(&info));
+  hypisq_force_filter_counter += INFO_HYPISQ_FORCE_FILTER_COUNTER(&info);
 
-}
-
-/**********************************************************************/
-/* Unoptimized wrappers to support non-RHMC evolution in ks_imp_dyn   */
-/**********************************************************************/
-
-void 
-eo_fermion_force_oneterm( Real eps, Real weight, su3_vector *temp_x,
-			  int prec, fermion_links_t *fl )
-{
-  su3_vector *xxx[1] = { temp_x };
-  int nterms = 1;
-  Real residues[1] = { weight };
-
-  eo_fermion_force_multi( eps, residues, xxx, nterms, prec, fl );
-  
-}
-
-void eo_fermion_force_oneterm_site( Real eps, Real weight, field_offset x_off,
-				    int prec, fermion_links_t *fl)
-{
-  su3_vector *temp_x = create_v_field_from_site_member(x_off);
-  su3_vector *xxx[1] = { temp_x };
-  int nterms = 1;
-  Real residues[1] = { weight };
-
-  eo_fermion_force_multi( eps, residues, xxx, nterms, prec, fl );
-
-  destroy_v_field(temp_x);
-}
-
-void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
-				su3_vector *x1_off, su3_vector *x2_off,
-				int prec, fermion_links_t *fl ){
-  su3_vector *xxx[2] = { x1_off, x2_off };
-  int nterms = 2;
-  Real residues[2] = { weight1, weight2 };
-
-  eo_fermion_force_multi( eps, residues, xxx, nterms, prec, fl );
-}
-
-void eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2,
-				     field_offset x1_off, field_offset x2_off,
-				     int prec, fermion_links_t *fl)
-{
-  su3_vector *x1 = create_v_field_from_site_member(x1_off);
-  su3_vector *x2 = create_v_field_from_site_member(x2_off);
-  su3_vector *xxx[2] = { x1, x2 };
-  int nterms = 2;
-  Real residues[2] = { weight1, weight2 };
-
-  eo_fermion_force_multi( eps, residues, xxx, nterms, prec, fl );
-
-  destroy_v_field(x1);
-  destroy_v_field(x2);
 }
 
 /**********************************************************************/
@@ -350,12 +297,12 @@ static int first_force=1;	// 1 if force hasn't been called yet
 // 3) calculate force from smearing level 1
 // This procedure is slightly more than 2 Asqtad smearing steps
 static void 
-fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues, 
+fn_fermion_force_multi_hypisq_mx( info_t *info, Real eps, Real *residues, 
 				su3_vector **multi_x, int nterms, fermion_links_t *fl)
 {
   // Get the terms we need from the fermion links structure */
-  ks_action_paths_hisq *ap = get_action_paths_hisq(fl);
-  hisq_auxiliary_t *aux = get_hisq_auxiliary(fl);
+  ks_action_paths_hypisq *ap = get_action_paths_hypisq(fl);
+  hypisq_auxiliary_t *aux = get_hypisq_auxiliary(fl);
   int n_naiks = fermion_links_get_n_naiks(fl);
   double *eps_naik = fermion_links_get_eps_naik(fl);
   su3_matrix *U_link = aux->U_link;
@@ -427,13 +374,13 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 
 //  int nflop_old = 1847016 + 6264*(n_naiks-1) 
 //    + 720*(2*n_order_naik_total-n_orders_naik[0])
-//    + 10488; // HISQ action 10/30/07 version of code;
+//    + 10488; // HYPISQ action 10/30/07 version of code;
 
 // CD 11/23/2011: With unit_der_analytic and without SVD the tally is closer to 
 // 1877780 + 6264*(n_naiks-1) + 720*(2*n_order_naik_total-n_orders_naik[0]) + 10488
 // 
   double dtime=-dclock();
-  /* node0_printf("STARTING fn_fermion_force_multi_hisq() nterms = %d\n",nterms); */
+  /* node0_printf("STARTING fn_fermion_force_multi_hypisq() nterms = %d\n",nterms); */
   if( nterms==0 )return;
 
   for(i=0;i<=MAX_PATH_LENGTH;i++){
@@ -500,7 +447,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
       clear_su3mat( &(force_accum_tmp[dir][i]) );
     }
 #ifdef MILC_GLOBAL_DEBUG
-    node0_printf("fn_fermion_force_multi_hisq_mx: eps_naik[%d]=%f\n",inaik,eps_naik[inaik]);
+    node0_printf("fn_fermion_force_multi_hypisq_mx: eps_naik[%d]=%f\n",inaik,eps_naik[inaik]);
 #endif /* MILC_GLOBAL_DEBUG */
 
 
@@ -604,7 +551,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 
     for(ilink=j;ilink>=k;ilink--){
 
-      link_transport_connection_hisq( oprod_along_path[length-ilink-1], W_unitlink,
+      link_transport_connection_hypisq( oprod_along_path[length-ilink-1], W_unitlink,
       oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  );
 
       nflops += 198;
@@ -646,7 +593,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
       }
       else { // ilink != 0
         dir = OPP_DIR(this_path->dir[ilink]);
-        link_transport_connection_hisq( mats_along_path[ilink], W_unitlink,
+        link_transport_connection_hypisq( mats_along_path[ilink], W_unitlink,
         mats_along_path[ilink+1], mat_tmp0, dir  );
 	nflops += 198;
 //tempflops+=9*22;
@@ -665,7 +612,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 
       /* add in contribution to the force */
       if( ilink<length && GOES_FORWARDS(dir) ){
-	link_gather_connection_hisq( oprod_along_path[length-ilink-1], 
+	link_gather_connection_hypisq( oprod_along_path[length-ilink-1], 
 				     mat_tmp1, NULL, dir );
 	if ( ilink==0 ){
 	   FORALLFIELDSITES(i){ mat_tmp0[i] = mat_tmp1[i]; }
@@ -697,7 +644,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 	    }
 	}
 	else {
-	    link_gather_connection_hisq( mats_along_path[ilink-1], mat_tmp1, 
+	    link_gather_connection_hypisq( mats_along_path[ilink-1], mat_tmp1, 
 					 NULL, odir );
             FORALLFIELDSITES(i){
               mult_su3_na( &(mat_tmp1[i]), 
@@ -748,28 +695,28 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 #ifdef MILC_GLOBAL_DEBUG
   {
   double tmptime=dtime+dclock();
-  node0_printf("fftime(hisq-smearing1):  time = %e \n",tmptime);
+  node0_printf("fftime(hypisq-smearing1):  time = %e \n",tmptime);
   }
 #endif /* MILC_GLOBAL_DEBUG */
 #endif
 
 
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
   anti_hermitmat ahmat_tmp;
   su3_matrix ttttmat;
 printf("Dump W_unitlink[%d][%d]\n",AB_OUT_ON_LINK,AB_OUT_ON_SITE);
 dumpmat( &(W_unitlink[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
-  printf("HISQ FORCE SMEARING 2\n");
+  printf("HYPISQ FORCE SMEARING 2\n");
   dumpmat( &(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
-  printf("HISQ FORCE SMEARING 2 ANTIHERMITIAN\n");
+  printf("HYPISQ FORCE SMEARING 2 ANTIHERMITIAN\n");
   make_anti_hermitian( &(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]), 
 		       &ahmat_tmp );
   uncompress_anti_hermitian( &ahmat_tmp, &(ttttmat) );
   dumpmat( &(ttttmat) );
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 
 
@@ -869,36 +816,36 @@ dumpmat( &(W_unitlink[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
     break;
 
   case UNITARIZE_NONE:
-    //  printf("HISQ: Proceeding with UNITARIZE_NONE\n");
+    //  printf("HYPISQ: Proceeding with UNITARIZE_NONE\n");
     break;
   default:
-    printf("HISQ: Only UNITARIZE_ROOT and UNITARIZE_RATIONAL supported so far\n");
-    printf("HISQ: Proceeding without reunitarization\n");
+    printf("HYPISQ: Only UNITARIZE_ROOT and UNITARIZE_RATIONAL supported so far\n");
+    printf("HYPISQ: Proceeding without reunitarization\n");
   } /* ap->umethod */
 
 #ifdef FFTIME
 #ifdef MILC_GLOBAL_DEBUG
   {
   double tmptime=dtime+dclock();
-  node0_printf("fftime(hisq-smearing1+reunitarization):  time = %e \n",tmptime);
+  node0_printf("fftime(hypisq-smearing1+reunitarization):  time = %e \n",tmptime);
   }
 #endif /* MILC_GLOBAL_DEBUG */
 #endif
 
 
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
   anti_hermitmat ahmat_tmp;
   su3_matrix ttttmat;
-  printf("HISQ FORCE REUNITARIZATION\n");
+  printf("HYPISQ FORCE REUNITARIZATION\n");
   dumpmat( &(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
-  printf("HISQ FORCE REUNITARIZATION ANTIHERMITIAN\n");
+  printf("HYPISQ FORCE REUNITARIZATION ANTIHERMITIAN\n");
   make_anti_hermitian( &(force_accum_2[AB_OUT_ON_LINK][AB_OUT_ON_SITE]), &ahmat_tmp );
   uncompress_anti_hermitian( &ahmat_tmp, &(ttttmat) );
   dumpmat( &(ttttmat) );
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 
 
@@ -925,11 +872,11 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 // what its gauge transformation properties are
     if( netbackdir != last_netbackdir){ // don't need to repeat this if same net disp. as last path
 	if( GOES_BACKWARDS(netbackdir) ){
-	   link_gather_connection_hisq( force_accum_2[OPP_DIR(netbackdir)],
+	   link_gather_connection_hypisq( force_accum_2[OPP_DIR(netbackdir)],
 		oprod_along_path[0], NULL, netbackdir );
 	}
 	else {
-	   link_gather_connection_hisq( force_accum_2[netbackdir],
+	   link_gather_connection_hypisq( force_accum_2[netbackdir],
 		oprod_along_path[0], NULL, netbackdir );
 	}
     }
@@ -956,7 +903,7 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
     if( GOES_BACKWARDS(this_path->dir[0]) ) k=1; else k=0;
 
     for(ilink=j;ilink>=k;ilink--){
-      link_transport_connection_hisq( oprod_along_path[length-ilink-1], U_link,
+      link_transport_connection_hypisq( oprod_along_path[length-ilink-1], U_link,
           oprod_along_path[length-ilink], mat_tmp0, this_path->dir[ilink]  );
       nflops += 198;
 //tempflops+=9*22;
@@ -991,7 +938,7 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
       }
       else { // ilink != 0
         dir = OPP_DIR(this_path->dir[ilink]);
-        link_transport_connection_hisq( mats_along_path[ilink], U_link,
+        link_transport_connection_hypisq( mats_along_path[ilink], U_link,
         mats_along_path[ilink+1], mat_tmp0, dir  );
 	nflops += 198;
 //tempflops+=9*22;
@@ -1060,7 +1007,7 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
   // END SMEARING ONE PART
 
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_REUNITARIZATION_DEBUG
+#ifdef HYPISQ_REUNITARIZATION_DEBUG
   {
   anti_hermitmat ahmat_tmp;
   su3_matrix ff_interm;
@@ -1083,22 +1030,22 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
   g_doublemax( &max_force );
   g_doublesum( &icounter );
   node0_printf( "REUNITARIZATION: fabs(RoS) > 1.0 occured on %lf link(s)\n", icounter );
-  node0_printf( "HISQ FORCE: maximum norm is %lf\n", max_force );
+  node0_printf( "HYPISQ FORCE: maximum norm is %lf\n", max_force );
   }
-#endif /* HISQ_REUNITARIZATION_DEBUG */
-#ifdef HISQ_FF_DEBUG
+#endif /* HYPISQ_REUNITARIZATION_DEBUG */
+#ifdef HYPISQ_FF_DEBUG
   {
   anti_hermitmat ahmat_tmp;
-  printf("HISQ FORCE\n");
+  printf("HYPISQ FORCE\n");
   dumpmat( &(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
-  printf("HISQ FORCE ANTIHERMITIAN\n");
+  printf("HYPISQ FORCE ANTIHERMITIAN\n");
   for(dir=XUP; dir<=TUP; dir++) FORALLFIELDSITES(i){
     make_anti_hermitian( &(force_accum_1[dir][i]), &ahmat_tmp );
     uncompress_anti_hermitian( &ahmat_tmp, &(force_accum_1[dir][i]) );
   }
   dumpmat( &(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 
 
@@ -1132,11 +1079,11 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
   info->final_sec = dtime;
 
 //printf("FF flops = %d\n",tempflops);
-} //fn_fermion_force_multi_hisq_mx
+} //fn_fermion_force_multi_hypisq_mx
 
 
 
-#if defined(HISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
+#if defined(HYPISQ_FF_MULTI_WRAPPER) || defined(USE_FF_GPU)
 
 #ifndef USE_FF_GPU
 
@@ -1144,20 +1091,20 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 /* Non-GPU wrapper support                                          */
 /********************************************************************/
 
-// HISQ wrapper routine: contribution to the force due to
+// HYPISQ wrapper routine: contribution to the force due to
 //    0) smearing level 0 (outer product |X><Y|)
 //    1) smearing level 2 + smearing level 2 Naik corrected
 //    2) reunitarization
 //    3) smearing level 1
 
 static void 
-fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residues, 
+fn_fermion_force_multi_hypisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residues, 
 				     su3_vector **multi_x, int nterms,
 				     fermion_links_t *fl)
 {
   // Get the terms we need from the fermion links structure */
-  ks_action_paths_hisq *ap = get_action_paths_hisq(fl);
-  hisq_auxiliary_t *aux = get_hisq_auxiliary(fl);
+  ks_action_paths_hypisq *ap = get_action_paths_hypisq(fl);
+  hypisq_auxiliary_t *aux = get_hypisq_auxiliary(fl);
   int n_naiks = fermion_links_get_n_naiks(fl);
   double *eps_naik = fermion_links_get_eps_naik(fl);
   su3_matrix *U_link = aux->U_link;
@@ -1183,7 +1130,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   double final_flop = 0;
 
 
-//  node0_printf("Entering fn_fermion_force_multi_hisq_wrapper_mx()\n");
+//  node0_printf("Entering fn_fermion_force_multi_hypisq_wrapper_mx()\n");
 //  for(i=0;i<n_naiks;i++)
 //    node0_printf("wrapper_mx: orders[%d]=%d\n",i,n_orders_naik[i]);
 //  node0_printf("wrapper_mx: nterms=%d\n",nterms);
@@ -1266,12 +1213,12 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
     else {
       n_orders_naik_current = n_orders_naik[inaik];
     }
-    fn_fermion_force_multi_hisq_smearing0(info, eps, residues+n_naik_shift, 
+    fn_fermion_force_multi_hypisq_smearing0(info, eps, residues+n_naik_shift, 
 	 multi_x+n_naik_shift, n_orders_naik_current, force_accum_0, 
 	   force_accum_0_naik );
     final_flop += info->final_flop;
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
   printf("WRAPPER FORCE EXP level 0\n");
   dumpmat( &(force_accum_0[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
@@ -1294,7 +1241,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   printf("WRAPPER FORCE EXP W_unitlink GLOBAL SUM\n");
   dumpmat( &su3ab2 );
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
     // smearing level 2
     if( 0==inaik ) {
@@ -1307,14 +1254,14 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
       num_q_paths_current = num_q_paths_3;
       netbackdir_table_current = netbackdir_table_3;
     }
-    fn_fermion_force_multi_hisq_smearing( info, eps, residues+n_naik_shift, 
+    fn_fermion_force_multi_hypisq_smearing( info, eps, residues+n_naik_shift, 
         multi_x+n_naik_shift, n_orders_naik_current, force_accum_1, 
         force_accum_0, force_accum_0_naik, W_unitlink, 
 	num_q_paths_current, q_paths_sorted_current, 
         netbackdir_table_current );
     final_flop += info->final_flop;
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
   printf("WRAPPER FORCE EXP level 2\n");
   dumpmat( &(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
@@ -1325,7 +1272,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   }
   dumpmat( &(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
     if( 0==inaik ) {
       coeff_mult = 1.0;
@@ -1348,7 +1295,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   switch(ap->umethod){
   case UNITARIZE_NONE:
     // smearing level 1
-    fn_fermion_force_multi_hisq_smearing( info, eps, residues, multi_x, nterms, 
+    fn_fermion_force_multi_hypisq_smearing( info, eps, residues, multi_x, nterms, 
         force_accum_1, force_accum_2, NULL,
         U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 );
     final_flop += info->final_flop;
@@ -1357,18 +1304,18 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   case UNITARIZE_RATIONAL:
   case UNITARIZE_ANALYTIC:
     // reunitarization
-    fn_fermion_force_multi_hisq_reunit(info, force_accum_1u, force_accum_2, fl );
+    fn_fermion_force_multi_hypisq_reunit(info, force_accum_1u, force_accum_2, fl );
     final_flop += info->final_flop;
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
   printf("WRAPPER FORCE EXP REUNIT\n");
   dumpmat( &(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
     // smearing level 1
-    fn_fermion_force_multi_hisq_smearing(info, eps, residues, multi_x, 
+    fn_fermion_force_multi_hypisq_smearing(info, eps, residues, multi_x, 
           nterms, force_accum_1, force_accum_1u, NULL, 
 	  U_link, num_q_paths_1, q_paths_sorted_1, netbackdir_table_1 );
     final_flop += info->final_flop;
@@ -1403,7 +1350,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   }
 
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
   printf("WRAPPER FORCE\n");
   dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
@@ -1414,7 +1361,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   }
   dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 
   /* Put antihermitian traceless part into momentum */
@@ -1442,12 +1389,12 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   info->final_sec = dtime;
   info->final_flop = final_flop + ((double)nflops)*volume/numnodes();
 
-} //fn_fermion_force_multi_hisq_wrapper_mx
+} //fn_fermion_force_multi_hypisq_wrapper_mx
 
 
 // Contribution to the force from 0 level of smearing, force contains only |X><Y| terms
 static void 
-fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues, 
+fn_fermion_force_multi_hypisq_smearing0( info_t *info, Real eps, Real *residues, 
        su3_vector **multi_x, int nterms,
        su3_matrix *force_accum[4], su3_matrix *force_accum_naik[4] )
 {
@@ -1471,7 +1418,7 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
   if( nterms==0 )return;
 
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
   printf("WRAPPER FORCE smearing0 pseudofermion vector at site (0,0,0,0)\n");
   dumpvec( &(multi_x[0][0]) );
@@ -1492,7 +1439,7 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
       printf("residues[%d]=%lf\n",nnn,residues[nnn]);
     }
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 
 
@@ -1536,7 +1483,7 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
     } /* end loop over terms in rational function expansion */
 
 
-    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
+    link_gather_connection_hypisq( oprod_along_path[0], oprod_along_path[1], 
 				 mat_tmp0, dir );
 
     coeff = 1; // fermion_eps is outside this routine in "wrapper" routine
@@ -1579,7 +1526,7 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
       k=1-k; // swap 0 and 1
     } /* end loop over terms in rational function expansion */
 
-    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
+    link_gather_connection_hypisq( oprod_along_path[0], oprod_along_path[1], 
 				 mat_tmp0, DIR3(dir) );
 
     coeff = 1; // fermion_eps is outside this routine in "wrapper" routine
@@ -1599,14 +1546,14 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
   }
 
   info->final_flop = ((double)nflops)*volume/numnodes();
-} //fn_fermion_force_multi_hisq_smearing0
+} //fn_fermion_force_multi_hypisq_smearing0
 
 // This routine calculates contribution to the force due to i-th level
 // of smearing,
 // as input it uses array of new links and the force from (i-1)-th
 // level of smearing
 static void 
-fn_fermion_force_multi_hisq_smearing( info_t *info,
+fn_fermion_force_multi_hypisq_smearing( info_t *info,
 				      Real eps, 
 				      Real *residues, 
 				      su3_vector **multi_x, 
@@ -1658,7 +1605,7 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
 	
 
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
   su3_matrix su3ab, su3ab2;
   clear_su3mat( &su3ab );
@@ -1679,7 +1626,7 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
   printf("WRAPPER FORCE smearing input links GLOBAL SUM\n");
   dumpmat( &su3ab2 );
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 
 
@@ -1699,17 +1646,17 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
        corresponds to outer product |X><Y| calculated at the endpoint
        of the path */
     if( netbackdir<8) { // Not a Naik path
-      link_gather_connection_hisq( force_accum_old[OPP_DIR(netbackdir)], 
+      link_gather_connection_hypisq( force_accum_old[OPP_DIR(netbackdir)], 
 				   oprod_along_path[0], NULL, netbackdir );
     }
     else { // Naik path
       if( NULL==force_accum_naik_old ) {
-        node0_printf( "fn_fermion_force_multi_hisq_smearing:  mismatch:\n" );
+        node0_printf( "fn_fermion_force_multi_hypisq_smearing:  mismatch:\n" );
         node0_printf( "  force_accum_naik_old is NULL, but path table contains Naik paths(!)\n" );
         terminate(1);
       }
       // CONVERSION FROM 3-LINK DIRECTION TO 1-LINK DIRECTION
-      link_gather_connection_hisq( force_accum_naik_old[OPP_DIR(netbackdir-8)], 
+      link_gather_connection_hypisq( force_accum_naik_old[OPP_DIR(netbackdir-8)], 
 				   oprod_along_path[0], NULL, netbackdir );
     }
 
@@ -1721,7 +1668,7 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
 
 
     for(ilink=j;ilink>=k;ilink--){
-        link_transport_connection_hisq( oprod_along_path[length-ilink-1], 
+        link_transport_connection_hypisq( oprod_along_path[length-ilink-1], 
 		internal_U_link, oprod_along_path[length-ilink], mat_tmp0, 
 		this_path->dir[ilink]  );
 	nflops += 198;
@@ -1759,7 +1706,7 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
       }
       else { // ilink != 0
         dir = OPP_DIR(this_path->dir[ilink]);
-        link_transport_connection_hisq( mats_along_path[ilink], 
+        link_transport_connection_hypisq( mats_along_path[ilink], 
 		internal_U_link, mats_along_path[ilink+1], mat_tmp0, dir  );
 	nflops += 198;
       }
@@ -1781,7 +1728,7 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
       /* add in contribution to the force */
       if( ilink<length && GOES_FORWARDS(dir) ){
 
-        link_gather_connection_hisq( oprod_along_path[length-ilink-1], 
+        link_gather_connection_hypisq( oprod_along_path[length-ilink-1], 
 				     mat_tmp1, NULL, dir );
 
         if(ilink==0) FORALLFIELDSITES(i){
@@ -1806,7 +1753,7 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
           su3_adjoint ( &( mat_tmp0[i] ), &( mat_tmp1[i] ) );
         }
         else{
-          link_gather_connection_hisq( mats_along_path[ilink-1], mat_tmp1, 
+          link_gather_connection_hypisq( mats_along_path[ilink-1], mat_tmp1, 
 				       NULL, odir );
           FORALLFIELDSITES(i){
             mult_su3_na( &( oprod_along_path[length-ilink][i] ), 
@@ -1837,18 +1784,18 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
   }
 
   info->final_flop = ((double)nflops)*volume/numnodes();
-}// fn_fermion_force_multi_hisq_smearing
+}// fn_fermion_force_multi_hypisq_smearing
 
 
 // Contribution to the force due to reunitarization of links:
 //   Y=V*(V^+*V)^-1/2, W=Y/(detY)^1/3
 static void 
-fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4], 
+fn_fermion_force_multi_hypisq_reunit( info_t *info, su3_matrix *force_accum[4], 
 				    su3_matrix *force_accum_old[4], 
 				    fermion_links_t *fl)
 {
-  ks_action_paths_hisq *ap = get_action_paths_hisq(fl);
-  hisq_auxiliary_t *aux = get_hisq_auxiliary(fl);
+  ks_action_paths_hypisq *ap = get_action_paths_hypisq(fl);
+  hypisq_auxiliary_t *aux = get_hypisq_auxiliary(fl);
   su3_matrix *internal_V_link = aux->V_link;
   su3_matrix *internal_Y_link = aux->Y_unitlink;
   int i, k, l, m, n, dir;
@@ -1877,7 +1824,7 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
       else if(ap->umethod == UNITARIZE_ANALYTIC ) {
 	u3_unit_der_analytic( info, &( internal_V_link[4*i+dir] ), &dwdv, &dwdagdv );
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
     if( i==0 ) {
       printf("WRAPPER FORCE REUNIT V link at site 0\n");
@@ -1887,11 +1834,11 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
       dumpt4( dwdagdv );
     }
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
       }
       else if(ap->umethod == UNITARIZE_NONE ) {
-	node0_printf("fn_fermion_force_multi_hisq_reunit should not be called for UNITARIZE_NONE\n");
+	node0_printf("fn_fermion_force_multi_hypisq_reunit should not be called for UNITARIZE_NONE\n");
 	terminate(1);
       }
       else{
@@ -1919,7 +1866,7 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
       // adjoint piece of force from the previous level
       su3_adjoint( &( force_accum_old[dir][i] ), &tmat );
 
-      // see LONG COMMENT in fermion_force_fn_multi_hisq
+      // see LONG COMMENT in fermion_force_fn_multi_hypisq
       clear_su3mat( &( force_accum[dir][i] ) );
       for( m=0; m<3; m++) {
         for( n=0; n<3; n++) {
@@ -1939,7 +1886,7 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
       
 
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
     if( i==0 ) {
       printf("WRAPPER FORCE REUNIT old force\n");
@@ -1948,7 +1895,7 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
       dumpmat( &( force_accum[dir][i] ) );
     }
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
     }
   }
@@ -1962,7 +1909,7 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
   /* phases in */
   rephase_field_offset( internal_V_link, ON, NULL , r0);
   rephase_field_offset( internal_Y_link, ON, NULL , r0);
-} // fn_fermion_force_multi_hisq_reunit
+} // fn_fermion_force_multi_hypisq_reunit
 
 #else /* ifndef USE_FF_GPU */
 
@@ -1997,7 +1944,7 @@ static void outer_product_append( Real one_hop_coeff, Real three_hop_coeff,
   if( nterms==0 )return;
   
 #ifdef MILC_GLOBAL_DEBUG
-#ifdef HISQ_FF_DEBUG
+#ifdef HYPISQ_FF_DEBUG
   {
     printf("WRAPPER FORCE smearing0 pseudofermion vector at site (0,0,0,0)\n");
     dumpvec( &(multi_x[0][0]) );
@@ -2017,7 +1964,7 @@ static void outer_product_append( Real one_hop_coeff, Real three_hop_coeff,
       printf("residues[%d]=%lf\n",nnn,residues[nnn]);
     }
   }
-#endif /* HISQ_FF_DEBUG */
+#endif /* HYPISQ_FF_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
   
   
@@ -2061,7 +2008,7 @@ static void outer_product_append( Real one_hop_coeff, Real three_hop_coeff,
     } /* end loop over terms in rational function expansion */
     
     
-    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
+    link_gather_connection_hypisq( oprod_along_path[0], oprod_along_path[1], 
 				 mat_tmp0, dir );
     
     FORALLFIELDSITES(i){
@@ -2101,7 +2048,7 @@ static void outer_product_append( Real one_hop_coeff, Real three_hop_coeff,
       k=1-k; // swap 0 and 1
     } /* end loop over terms in rational function expansion */
     
-    link_gather_connection_hisq( oprod_along_path[0], oprod_along_path[1], 
+    link_gather_connection_hypisq( oprod_along_path[0], oprod_along_path[1], 
 				 mat_tmp0, DIR3(dir) );
     
     FORALLFIELDSITES(i){
@@ -2158,13 +2105,13 @@ static void write_path_coeffs_to_array(ks_component_paths paths, double array[6]
 
 
 static void 
-fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residues, 
+fn_fermion_force_multi_hypisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residues, 
 					   su3_vector **multi_x, int nterms,
 					   fermion_links_t *fl)
 {
   // Get the terms we need from the fermion links structure */
-  ks_action_paths_hisq *ap = get_action_paths_hisq(fl);
-  hisq_auxiliary_t *aux = get_hisq_auxiliary(fl);
+  ks_action_paths_hypisq *ap = get_action_paths_hypisq(fl);
+  hypisq_auxiliary_t *aux = get_hypisq_auxiliary(fl);
   int n_naiks = fermion_links_get_n_naiks(fl);
   double *eps_naik = fermion_links_get_eps_naik(fl);
   su3_matrix *U_link = aux->U_link;
@@ -2240,18 +2187,18 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   // The following lines of code are optional
   // If the parameters are not set explicitly here, 
   // they are set to default values the first time 
-  // qudaHisqForce is called.
-  QudaHisqParams_t params;
+  // qudaHypisqForce is called.
+  QudaHypisqParams_t params;
   params.reunit_allow_svd = 1;
   params.reunit_svd_only = 0;
   params.reunit_svd_abs_error = 1e-8;
   params.reunit_svd_rel_error = 1e-7;
   params.force_filter = 5e-5;
 
-  qudaHisqParamsInit(params);
+  qudaHypisqParamsInit(params);
   // end optional code
 		
-  qudaHisqForce(PRECISION, level2_coeff, fat7_coeff, 
+  qudaHypisqForce(PRECISION, level2_coeff, fat7_coeff, 
 		(const void* const*)staple_oprod, 
 		(const void* const*)one_link_oprod, 
 		(const void* const*)three_link_oprod, 
@@ -2274,11 +2221,11 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   free(momentum);
   
   return;
-} //fn_fermion_force_multi_hisq_wrapper_mx_gpu
+} //fn_fermion_force_multi_hypisq_wrapper_mx_gpu
 
 #endif /* ifndef USE_FF_GPU */
 
-#endif  /* HISQ_FF_MULTI_WRAPPER || USE_FF_GPU */
+#endif  /* HYPISQ_FF_MULTI_WRAPPER || USE_FF_GPU */
 
 int 
 find_backwards_gather( Q_path *path )
@@ -2365,7 +2312,7 @@ sort_quark_paths( Q_path *src_table, Q_path *dest_table, int npaths,
 
 
 /**********************************************************************/
-/*   Version for HISQ.  Parallel transport nterms source vectors    */
+/*   Version for HYPISQ.  Parallel transport nterms source vectors    */
 /**********************************************************************/
 
 void u_shift_veclist_fermion(veclist *src, veclist *dest, 

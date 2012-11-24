@@ -15,6 +15,8 @@ fermion_links_t *create_fermion_links_from_site(int prec, int n_naiks, double *e
 
 #if FERM_ACTION == HISQ
   fl = create_fermion_links_hisq(prec, n_naiks, eps_naik, phases_in, links);
+#elif FERM_ACTION == HYPISQ
+  fl = create_fermion_links_hypisq(prec, n_naiks, eps_naik, phases_in, links);
 #else
   fl = create_fermion_links(prec, phases_in, links);
 #endif
@@ -32,6 +34,8 @@ void restore_fermion_links_from_site(fermion_links_t *fl, int prec){
 
 #if FERM_ACTION == HISQ
   restore_fermion_links_hisq(fl, prec, phases_in, links);
+#elif FERM_ACTION == HYPISQ
+  restore_fermion_links_hypisq(fl, prec, phases_in, links);
 #else
   restore_fermion_links(fl, prec, phases_in, links);
 #endif

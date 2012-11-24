@@ -5,8 +5,8 @@
 
 /* 12/03/06 C. DeTar */
 
-#undef QOP_Precision
-#define QOP_Precision 1
+#undef QOP_PrecisionInt
+#define QOP_PrecisionInt 1
 
 #include "d_congrad5_fn_qop_milc_P.c"
 

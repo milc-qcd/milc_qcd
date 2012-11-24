@@ -5,8 +5,8 @@
 
 /* 12/06/06 C. DeTar */
 
-#undef QOP_Precision
-#define QOP_Precision 1
+#undef QOP_PrecisionInt
+#define QOP_PrecisionInt 1
 
 #include "ks_multicg_offset_qop_P.c"
 

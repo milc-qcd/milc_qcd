@@ -16,7 +16,7 @@
 
 /* Redefinitions according to requested precision */
 
-#if ( QOP_Precision == 1 )
+#if ( QOP_PrecisionInt == 1 )
 
 #define GET_ASQTADLINKS           get_F_asqtad_links
 #define KS_CONGRAD_QOP_FIELD2FIELD ks_congrad_qop_F_field2field
@@ -38,6 +38,9 @@
 
 /*
  * $Log: d_congrad5_fn_qop_P.c,v $
+ * Revision 1.12  2012/11/24 00:02:49  detar
+ * Add placeholders for HYPISQ action.  Support HISQ action within ks_imp_dyn.
+ *
  * Revision 1.11  2012/04/25 03:26:39  detar
  * Fix iteration counting for multimass inversions.
  *
@@ -118,7 +121,7 @@
 static const char *qop_prec[2] = {"F", "D"};
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.11 2012/04/25 03:26:39 detar Exp $";
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/d_congrad5_fn_qop_P.c,v 1.12 2012/11/24 00:02:49 detar Exp $";
 
 
 /* Load inversion args for Level 3 inverter */
@@ -244,8 +247,17 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
   for(isrc = 0; isrc < nsrc; isrc++){
     for(imass = 0; imass < nmass[isrc]; imass++){
       if(this_node == 0){
-	if((qic[0].resid > 0 && qop_resid_arg[isrc][imass]->final_rsq > qic[0].resid * qic[0].resid ) &&
-	   (qic[0].relresid > 0 && qop_resid_arg[isrc][imass]->final_rel > qic[0].relresid * qic[0].relresid )){
+	if((qic[0].resid > 0 && qop_resid_arg[isrc][imass]->final_rsq <= qic[0].resid * qic[0].resid ) ||
+	   (qic[0].relresid > 0 && qop_resid_arg[isrc][imass]->final_rel <= qic[0].relresid * qic[0].relresid )){
+#ifdef CG_DEBUG
+	  node0_printf(" OK converged (src %d, mass %d) ", isrc, imass);
+	  node0_printf("final_rsq = %.2g rel = %.2g restarts = %d iters = %d\n",
+		       qop_resid_arg[isrc][imass]->final_rsq,
+		       qop_resid_arg[isrc][imass]->final_rel,
+		       qop_resid_arg[isrc][imass]->final_restart,
+		       qop_resid_arg[isrc][imass]->final_iter);
+#endif
+	} else {
 	  qic[0].converged = 0;
 	  node0_printf(" NOT converged (src %d, mass %d) ", isrc, imass);
 	  node0_printf("final_rsq = %.2g (cf %.2g) rel = %.2g (cf %.2g) restarts = %d iters = %d\n",
@@ -255,15 +267,6 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 		       qic[0].relresid * qic[0].relresid,
 		       qop_resid_arg[isrc][imass]->final_restart,
 		       qop_resid_arg[isrc][imass]->final_iter);
-	} else {
-#ifdef CG_DEBUG
-	  node0_printf(" OK converged (src %d, mass %d) ", isrc, imass);
-	  node0_printf("final_rsq = %.2g rel = %.2g restarts = %d iters = %d\n",
-		       qop_resid_arg[isrc][imass]->final_rsq,
-		       qop_resid_arg[isrc][imass]->final_rel,
-		       qop_resid_arg[isrc][imass]->final_restart,
-		       qop_resid_arg[isrc][imass]->final_iter);
-#endif
 	}
       }
       if(qic[0].final_rsq < qop_resid_arg[isrc][imass]->final_rsq)
@@ -290,7 +293,7 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 
 #ifdef CGTIME
   node0_printf("CONGRAD5: time = %e (fn_qop %s) ",
-	       info.final_sec,qop_prec[QOP_Precision-1]);
+	       info.final_sec,qop_prec[QOP_PrecisionInt-1]);
   for(isrc = 0; isrc < nsrc; isrc++)
     node0_printf("nmass[%d] = %d iters = %d ",
 		 isrc,nmass[isrc],qop_resid_arg[isrc][0]->final_iter);

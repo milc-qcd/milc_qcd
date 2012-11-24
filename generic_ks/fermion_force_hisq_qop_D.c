@@ -5,8 +5,8 @@
 
 /* 5/09/07 C. DeTar */
 
-#undef QOP_Precision
-#define QOP_Precision 2
+#undef QOP_PrecisionInt
+#define QOP_PrecisionInt 2
 
 #include "fermion_force_hisq_qop_P.c"
 

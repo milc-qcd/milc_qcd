@@ -125,7 +125,7 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   FORALLSITES(i,s){
     if(t0 == ALL_T_SLICES || s->t == t0){
       mult_adj_su3_mat_vec( t_links + 4*i + dir,  
-			    (su3_vector * )(gen_pt[dir][i]), 
+			    (su3_vector * )(gen_pt[OPP_DIR(dir)][i]), 
 			    tmp + i ); 
     }
   }
@@ -140,7 +140,7 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
 
   FORALLSITES(i,s){
     if(t0 == ALL_T_SLICES || s->t == t0){
-      su3vec_copy( (su3_vector *)gen_pt[dir][i], dest + i);
+      su3vec_copy( (su3_vector *)gen_pt[OPP_DIR(dir)][i], dest + i);
     }
   }
 

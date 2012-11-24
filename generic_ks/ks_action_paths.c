@@ -308,9 +308,8 @@ void destroy_path_table(ks_action_paths *ap){
 char *
 get_ap_string(ks_action_paths *ap){
   static char str[MAX_STRING] = "";
-  asqtad_coeffs_t *apc = &ap->p.act_path_coeff;
-
 #ifdef ASQ_ACTION
+  asqtad_coeffs_t *apc = &ap->p.act_path_coeff;
 
   snprintf(str, MAX_STRING, "action.asqtad.one_link %e\naction.asqtad.three_staple %e\naction.asqtad.five_staple %e\naction.asqtad.seven_staple %e\naction.asqtad.lepage %e\naction.asqtad.naik %e\n",
 	   apc->one_link, apc->three_staple, apc->five_staple, apc->seven_staple, 
@@ -321,7 +320,7 @@ get_ap_string(ks_action_paths *ap){
   char *buf;
 
   for(j = 0, buf = str; j < quark_action_npaths; j++, buf = str + strlen(str)) {
-    snprintf(buf, MAX_STRING-strlen(str), "action.fn.coeff[%d] %e\n", j, apc[j]);
+     snprintf(buf, MAX_STRING-strlen(str), "action.fn.coeff[%d] %e\n", j, act_path_coeff[j]);
   }
 
 #endif

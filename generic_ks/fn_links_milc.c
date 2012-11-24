@@ -116,6 +116,12 @@ create_lngbacklinks(su3_matrix *lng){
   //  char myname[] = "create_lngbacklinks";
 
   lngback = create_G_special();
+
+#ifdef NO_LONG_LINKS
+  /* No copy needed */
+  return lngback;
+#endif
+
   tempmat1 = create_m_special();
 
   /* gather backwards longlinks */

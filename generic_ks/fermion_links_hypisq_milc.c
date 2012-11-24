@@ -1,4 +1,6 @@
-/****** fermion_links_hisq_milc.c  ******************/
+/****** fermion_links_hypisq_milc.c  ******************/
+
+/* PLACEHOLDER COPIED FROM fermion_links_hisq_milc.c NEEDS REVISION
 /* MIMD version 7 */ 
 /* Mar 2011 CD */
 
@@ -11,22 +13,22 @@
 #include "../include/info.h"
 
 /*--------------------------------------------------*/
-/* Create/destroy the hisq_links_t structure      */
+/* Create/destroy the hypisq_links_t structure      */
 /*--------------------------------------------------*/
  
-static hisq_links_t *
-create_hisq_links_t(info_t *info, ks_action_paths_hisq *ap, su3_matrix *links, 
-		    ferm_links_options_t *options){
+static hypisq_links_t *
+create_hypisq_links_t(info_t *info, ks_action_paths_hypisq *ap, su3_matrix *links, 
+		      ferm_links_options_t *options){
 
   /* Allocate the structure and create the auxiliary links and fn
      links, based on the given path tables and gauge links.
   */
 
-  hisq_links_t *hl;
+  hypisq_links_t *hl;
   int i;
-  char myname[] = "create_hisq_links_t";
+  char myname[] = "create_hypisq_links_t";
 
-  hl = (hisq_links_t *)malloc(sizeof(hisq_links_t));
+  hl = (hypisq_links_t *)malloc(sizeof(hypisq_links_t));
   if(hl == NULL){
     printf("%s: no room\n",myname);
     terminate(1);
@@ -37,12 +39,12 @@ create_hisq_links_t(info_t *info, ks_action_paths_hisq *ap, su3_matrix *links,
   
   hl->ap = ap;
 
-  create_hisq_links_milc(info, hl->fn, &hl->fn_deps, &hl->aux, ap, links, 
-			 options->want_deps, options->want_back);
+  create_hypisq_links_milc(info, hl->fn, &hl->fn_deps, &hl->aux, ap, links, 
+			   options->want_deps, options->want_back);
 
   /* Free the space if so desired */
   if(!options->want_aux){
-    destroy_hisq_auxiliary_t(hl->aux);
+    destroy_hypisq_auxiliary_t(hl->aux);
     hl->aux = NULL;
   }
 
@@ -50,34 +52,34 @@ create_hisq_links_t(info_t *info, ks_action_paths_hisq *ap, su3_matrix *links,
 }
 
 static void
-destroy_hisq_links_t(hisq_links_t *hl){
+destroy_hypisq_links_t(hypisq_links_t *hl){
   
   if(hl == NULL) return;
 
   /* Destroy all members and free the structure */
 
-  destroy_hisq_links_milc(hl->ap, hl->aux, hl->fn, hl->fn_deps);
-  destroy_path_table_hisq(hl->ap);
+  destroy_hypisq_links_milc(hl->ap, hl->aux, hl->fn, hl->fn_deps);
+  destroy_path_table_hypisq(hl->ap);
 
   free(hl);
 }
 
 
 static void
-invalidate_hisq_links_t(hisq_links_t *hl){
+invalidate_hypisq_links_t(hypisq_links_t *hl){
   if(hl == NULL)return;
 
   /* Destroy the auxiliary and fn links and reset the pointers */
   /* Keep the path tables */
 
-  destroy_hisq_links_milc(hl->ap, hl->aux, hl->fn, hl->fn_deps);
+  destroy_hypisq_links_milc(hl->ap, hl->aux, hl->fn, hl->fn_deps);
   hl->aux = NULL;
   hl->fn_deps = NULL;
 }
 
 static void
-restore_hisq_links_t(info_t *info, hisq_links_t *hl, su3_matrix *links, 
-		     ferm_links_options_t *options){
+restore_hypisq_links_t(info_t *info, hypisq_links_t *hl, su3_matrix *links, 
+		       ferm_links_options_t *options){
 
   if(hl == NULL)return;
 
@@ -86,127 +88,127 @@ restore_hisq_links_t(info_t *info, hisq_links_t *hl, su3_matrix *links,
 
   if(hl->fn[0] != NULL)return;
 
-  /* Allocate and create the HISQ auxiliary links and the fn links */
+  /* Allocate and create the HYPISQ auxiliary links and the fn links */
 
-  create_hisq_links_milc(info, hl->fn, &hl->fn_deps, &hl->aux, 
-			 hl->ap, links, options->want_deps,
-			 options->want_back);
+  create_hypisq_links_milc(info, hl->fn, &hl->fn_deps, &hl->aux, 
+			   hl->ap, links, options->want_deps,
+			   options->want_back);
 
   /* Free the space if so desired */
   if(!options->want_aux){
-    destroy_hisq_auxiliary_t(hl->aux);
+    destroy_hypisq_auxiliary_t(hl->aux);
     hl->aux = NULL;
   }
 }
 
 static fn_links_t **
-get_hisq_links_t_fn(hisq_links_t *hl){
+get_hypisq_links_t_fn(hypisq_links_t *hl){
   if(hl == NULL)return NULL;
   return hl->fn;
 }
 
 static fn_links_t *
-get_hisq_links_t_fn_deps(hisq_links_t *hl){
+get_hypisq_links_t_fn_deps(hypisq_links_t *hl){
   if(hl == NULL)return NULL;
   return hl->fn_deps;
 }
 
-static ks_action_paths_hisq*
-get_hisq_links_t_ap(hisq_links_t *hl){
+static ks_action_paths_hypisq*
+get_hypisq_links_t_ap(hypisq_links_t *hl){
   if(hl == NULL)return NULL;
   return hl->ap;
 }
 
 /* We keep only one precision for MILC types */
 static int
-valid_hisq_links_t(hisq_links_t *hl, int precision){
+valid_hypisq_links_t(hypisq_links_t *hl, int precision){
   return hl->fn[0] != NULL;
 }
 
-static hisq_auxiliary_t *
-get_hisq_links_t_aux(hisq_links_t *hl){
+static hypisq_auxiliary_t *
+get_hypisq_links_t_aux(hypisq_links_t *hl){
   if(hl == NULL)return NULL;
   return hl->aux;
 }
 
 
 /*-------------------------------------------------------------------*/
-/* Create/destroy the milc_hisq_links_t structure */
+/* Create/destroy the milc_hypisq_links_t structure */
 /*-------------------------------------------------------------------*/
 
-static milc_hisq_links_t *
-create_milc_hisq_links_t(info_t *info, ks_action_paths_hisq *ap, 
-			 su3_matrix *links, 
-			 ferm_links_options_t *options){
+static milc_hypisq_links_t *
+create_milc_hypisq_links_t(info_t *info, ks_action_paths_hypisq *ap, 
+			   su3_matrix *links, 
+			   ferm_links_options_t *options){
 
-  milc_hisq_links_t *hl;
-  char myname[] = "create_milc_hisq_links_t";
+  milc_hypisq_links_t *hl;
+  char myname[] = "create_milc_hypisq_links_t";
 
-  hl = (milc_hisq_links_t *)malloc(sizeof(milc_hisq_links_t));
+  hl = (milc_hypisq_links_t *)malloc(sizeof(milc_hypisq_links_t));
   if(hl == NULL){
     printf("%s: no room\n",myname);
     terminate(1);
   }
 
-  hl->hisq = create_hisq_links_t(info, ap, links, options);
+  hl->hypisq = create_hypisq_links_t(info, ap, links, options);
 
   return hl;
 }
 
 static void 
-destroy_milc_hisq_links_t(milc_hisq_links_t *hl){
+destroy_milc_hypisq_links_t(milc_hypisq_links_t *hl){
   if(hl == NULL)return;
 
-  destroy_hisq_links_t(hl->hisq);
+  destroy_hypisq_links_t(hl->hypisq);
 
   free(hl);
 }
 
 static void
-invalidate_milc_hisq_links_t(milc_hisq_links_t *hl){
+invalidate_milc_hypisq_links_t(milc_hypisq_links_t *hl){
   if(hl == NULL)return;
-  invalidate_hisq_links_t(hl->hisq);
+  invalidate_hypisq_links_t(hl->hypisq);
 }
 
 static void
-restore_milc_hisq_links_t(info_t *info, milc_hisq_links_t *hl, 
-			  su3_matrix *links, 
-			  ferm_links_options_t *options){
+restore_milc_hypisq_links_t(info_t *info, milc_hypisq_links_t *hl, 
+			    su3_matrix *links, 
+			    ferm_links_options_t *options){
   if(hl == NULL)return;
 
-  restore_hisq_links_t(info, hl->hisq, links, options);
+  restore_hypisq_links_t(info, hl->hypisq, links, options);
 }
 
 static fn_links_t **
-get_milc_hisq_links_fn(milc_hisq_links_t *hl){
+get_milc_hypisq_links_fn(milc_hypisq_links_t *hl){
   if(hl == NULL)return NULL;
-  return get_hisq_links_t_fn(hl->hisq);
+  return get_hypisq_links_t_fn(hl->hypisq);
 }
 
 static fn_links_t *
-get_milc_hisq_links_fn_deps(milc_hisq_links_t *hl){
+get_milc_hypisq_links_fn_deps(milc_hypisq_links_t *hl){
   if(hl == NULL)return NULL;
-  return get_hisq_links_t_fn_deps(hl->hisq);
+  return get_hypisq_links_t_fn_deps(hl->hypisq);
 }
 
-static ks_action_paths_hisq *
-get_milc_hisq_links_ap(milc_hisq_links_t *hl){
+static ks_action_paths_hypisq *
+get_milc_hypisq_links_ap(milc_hypisq_links_t *hl){
   if(hl == NULL)return NULL;
-  return get_hisq_links_t_ap(hl->hisq);
+  return get_hypisq_links_t_ap(hl->hypisq);
 }
 
 static int
-valid_milc_hisq_links(milc_hisq_links_t *hl, int precision){
-  /* We assume that if the hisq links are valid,
-     so are the hisq_du0 links */
+valid_milc_hypisq_links(milc_hypisq_links_t *hl, int precision){
+  /* We assume that if the hypisq links are valid,
+     so are the hypisq_du0 links */
   if(hl == NULL)return 0;
-  return valid_hisq_links_t(hl->hisq, precision);
+  return valid_hypisq_links_t(hl->hypisq, precision);
 }
 
-static hisq_auxiliary_t *
-get_milc_hisq_links_aux(milc_hisq_links_t *hl){
+static hypisq_auxiliary_t *
+get_milc_hypisq_links_aux(milc_hypisq_links_t *hl){
   if(hl == NULL)return NULL;
-  return get_hisq_links_t_aux(hl->hisq);
+  return get_hypisq_links_t_aux(hl->hypisq);
 }
 
 /*********************************************************************/
@@ -214,7 +216,7 @@ get_milc_hisq_links_aux(milc_hisq_links_t *hl){
 /*********************************************************************/
 
 /*----------------------------------------------------*/
-/* Create the fermion_links structure for hisq      */
+/* Create the fermion_links structure for hypisq      */
 /*----------------------------------------------------*/
 
 #ifdef FLTIME
@@ -222,13 +224,13 @@ static const char *milc_prec[2] = {"F", "D"};
 #endif
 
 fermion_links_t *
-create_fermion_links_hisq(int precision, int n_naiks, 
-			  double eps_naik[], int phases_in, su3_matrix *links){
+create_fermion_links_hypisq(int precision, int n_naiks, 
+			    double eps_naik[], int phases_in, su3_matrix *links){
   
   fermion_links_t *fl;
-  ks_action_paths_hisq *ap;
+  ks_action_paths_hypisq *ap;
   info_t info = INFO_ZERO;
-  char myname[] = "create_fermion_links_hisq";
+  char myname[] = "create_fermion_links_hypisq";
 
   /* Precision for MILC is ignored: use the prevailing precision */
 
@@ -246,20 +248,20 @@ create_fermion_links_hisq(int precision, int n_naiks,
 
   /* (We copy the pointers into the fn_ap_links_t objects
      and the responsibility for freeing space is handed over to
-     "destroy_hisq_links_t") */
+     "destroy_hypisq_links_t") */
 
-  ap = create_path_table_hisq();
+  ap = create_path_table_hypisq();
 
-  make_path_table_hisq(ap, n_naiks, eps_naik);
+  make_path_table_hypisq(ap, n_naiks, eps_naik);
 
   /* Complete the structure */
 
-  fl->flg = create_milc_hisq_links_t(&info, ap, links, &fl->options);
+  fl->flg = create_milc_hypisq_links_t(&info, ap, links, &fl->options);
 
 #ifdef FLTIME
-  if(mynode()==0)printf("FLTIME: time = %e (HISQ %s) mflops = %e\n",
-	       info.final_sec,milc_prec[PRECISION-1],
-	       info.final_flop/(1e6*info.final_sec) );
+  if(mynode()==0)printf("FLTIME: time = %e (HYPISQ %s) mflops = %e\n",
+			info.final_sec,milc_prec[PRECISION-1],
+			info.final_flop/(1e6*info.final_sec) );
 #endif
   return fl;
 }
@@ -269,11 +271,11 @@ create_fermion_links_hisq(int precision, int n_naiks,
 /*----------------------------------------*/
 
 void 
-destroy_fermion_links_hisq(fermion_links_t *fl){
+destroy_fermion_links_hypisq(fermion_links_t *fl){
 
   if(fl == NULL) return;
 
-  destroy_milc_hisq_links_t(fl->flg);
+  destroy_milc_hypisq_links_t(fl->flg);
   destroy_fermion_links_t(fl);
 }
 
@@ -285,7 +287,7 @@ destroy_fermion_links_hisq(fermion_links_t *fl){
 void 
 invalidate_fermion_links(fermion_links_t *fl){
   if(fl == NULL)return;
-  invalidate_milc_hisq_links_t(fl->flg);
+  invalidate_milc_hypisq_links_t(fl->flg);
 }
 
 /*----------------------------------------*/
@@ -300,8 +302,8 @@ invalidate_fermion_links(fermion_links_t *fl){
 */
 
 void 
-restore_fermion_links_hisq(fermion_links_t *fl, int precision, 
-			   int phases_in, su3_matrix *links){
+restore_fermion_links_hypisq(fermion_links_t *fl, int precision, 
+			     int phases_in, su3_matrix *links){
 
   char myname[] = "restore_fermion_links";
   info_t info = INFO_ZERO;
@@ -320,12 +322,12 @@ restore_fermion_links_hisq(fermion_links_t *fl, int precision,
     terminate(1);
   }
   
-  restore_milc_hisq_links_t(&info, fl->flg, links, &fl->options);
+  restore_milc_hypisq_links_t(&info, fl->flg, links, &fl->options);
 
 #ifdef FLTIME
-  if(mynode()==0)printf("FLTIME: time = %e (HISQ %s) mflops = %e\n",
-	       info.final_sec,milc_prec[PRECISION-1],
-	       info.final_flop/(1e6*info.final_sec) );
+  if(mynode()==0)printf("FLTIME: time = %e (HYPISQ %s) mflops = %e\n",
+			info.final_sec,milc_prec[PRECISION-1],
+			info.final_flop/(1e6*info.final_sec) );
 #endif
 }
 
@@ -336,53 +338,53 @@ restore_fermion_links_hisq(fermion_links_t *fl, int precision,
 fn_links_t **
 get_fm_links(fermion_links_t *fl){
   if(fl == NULL)return NULL;
-  return get_milc_hisq_links_fn(fl->flg);
+  return get_milc_hypisq_links_fn(fl->flg);
 }
 
 fn_links_t *
 get_fn_deps_links(fermion_links_t *fl){
   if(fl == NULL)return NULL;
-  return get_milc_hisq_links_fn_deps(fl->flg);
+  return get_milc_hypisq_links_fn_deps(fl->flg);
 }
 
-ks_action_paths_hisq *
-get_action_paths_hisq(fermion_links_t *fl){
+ks_action_paths_hypisq *
+get_action_paths_hypisq(fermion_links_t *fl){
   if(fl == NULL)return NULL;
-  return get_milc_hisq_links_ap(fl->flg);
+  return get_milc_hypisq_links_ap(fl->flg);
 }
 
 int
-get_n_naiks_hisq(fermion_links_t *fl){
-  ks_action_paths_hisq* ap;
+get_n_naiks_hypisq(fermion_links_t *fl){
+  ks_action_paths_hypisq* ap;
   if(fl == NULL)return -1;
-  ap = get_action_paths_hisq(fl);
+  ap = get_action_paths_hypisq(fl);
   return get_n_naiks(ap);
 }
 
 double *
-get_eps_naik_hisq(fermion_links_t *fl){
-  ks_action_paths_hisq* ap;
+get_eps_naik_hypisq(fermion_links_t *fl){
+  ks_action_paths_hypisq* ap;
   if(fl == NULL)return NULL;
-  ap = get_action_paths_hisq(fl);
+  ap = get_action_paths_hypisq(fl);
   return get_eps_naik(ap);
 }
 
 int 
 valid_fermion_links(fermion_links_t *fl, int precision){
   if(fl == NULL)return 0;
-  return valid_milc_hisq_links(fl->flg, precision);
+  return valid_milc_hypisq_links(fl->flg, precision);
 }
 
-hisq_auxiliary_t *
-get_hisq_auxiliary(fermion_links_t *fl){
+hypisq_auxiliary_t *
+get_hypisq_auxiliary(fermion_links_t *fl){
   if(fl == NULL)return NULL;
-  return get_milc_hisq_links_aux(fl->flg);
+  return get_milc_hypisq_links_aux(fl->flg);
 }
 
 char *
 get_action_parameter_string(fermion_links_t *fl){
-  ks_action_paths_hisq *ap = get_action_paths_hisq(fl);
-  char *str = get_ap_string_hisq(ap);
+  ks_action_paths_hypisq *ap = get_action_paths_hypisq(fl);
+  char *str = get_ap_string_hypisq(ap);
 
   return str;
 }
