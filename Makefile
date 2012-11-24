@@ -581,7 +581,7 @@ ifeq ($(strip ${HAVEQDP}),true)
 endif
 
 ifeq ($(strip ${HAVEQOP}),true)
-  QOPPREC = -DQOP_Precision=${PRECISION}
+  QOPPREC = -DQOP_PrecisionInt=${PRECISION}
 endif
 
 ifeq ($(strip ${WANTDCAP}),true)
