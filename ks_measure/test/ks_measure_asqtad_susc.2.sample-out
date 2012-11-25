@@ -98,8 +98,6 @@ TR_MidM_MidM: mass 5.000000e-02,  3.679018e-01 ( 1 of 2 )
  OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
  OK converged final_rsq= 7.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
  OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 60
- OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 6.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
 PBP: mass 3.000000e-02     4.207576e-02  1.290271e-02  -2.998057e-02  -2.998057e-02 ( 2 of 2 )
 FACTION: mass = 3.000000e-02,  1.472984e+00 ( 2 of 2 )
 PB_DMDMU_P: mass 3.000000e-02  4.157868e-02  -4.922300e-02  -4.270828e-03  -3.215336e-03 ( 2 of 2 )

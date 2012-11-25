@@ -74,6 +74,10 @@ path coefficients: npath  path_coeff  multiplicity
                     4      -6.022150e-03     384
                     5      -1.092954e-01     48
 Time to APE smear 7.009506e-04 sec
+ OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 57
+ OK converged final_rsq= 8.6e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 12
+ OK converged final_rsq= 8.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 57
+ OK converged final_rsq= 5.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 10
 PBP: mass 3.000000e-02     3.354029e-02  2.019491e-02  2.498463e-02  2.498463e-02 ( 1 of 2 )
 FACTION: mass = 3.000000e-02,  1.522634e+00 ( 1 of 2 )
  OK converged final_rsq= 8.4e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 60
@@ -88,8 +92,6 @@ TR_MM_INV: mass 5.000000e-02,  -4.434056e-01 ( 1 of 2 )
  OK converged final_rsq= 9.7e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
  OK converged final_rsq= 7.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
  OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 60
- OK converged final_rsq= 8.3e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 6.8e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
 PBP: mass 3.000000e-02     4.207576e-02  1.290271e-02  -2.998057e-02  -2.998057e-02 ( 2 of 2 )
 FACTION: mass = 3.000000e-02,  1.472984e+00 ( 2 of 2 )
  OK converged final_rsq= 9.6e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 1 iters= 60
