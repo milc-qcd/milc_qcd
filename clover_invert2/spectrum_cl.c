@@ -735,9 +735,13 @@ print_start_meson_prop(int pair, int m, char sink[]){
   printf("MASSES: ");
   if(param.prop_type[ip0] == CLOVER_TYPE)
     printf("kappa[%d]=%g ", ip0, param.dcp[ip0].Kappa);
+  else if(param.prop_type[ip0] == IFLA_TYPE)
+    printf("kappa[%d]=%g ", ip0, param.dcp[ip0].Kappa);
   else /* KS_TYPE */
     printf("mass[%d]=%g ", ip0, param.ksp[ip0].mass);
   if(param.prop_type[ip1] == CLOVER_TYPE)
+    printf("kappa[%d]=%g ", ip1, param.dcp[ip1].Kappa);
+  else if(param.prop_type[ip1] == IFLA_TYPE)
     printf("kappa[%d]=%g ", ip1, param.dcp[ip1].Kappa);
   else /* KS_TYPE */
     printf("mass[%d]=%g ", ip1, param.ksp[ip1].mass);
@@ -778,6 +782,8 @@ static FILE* open_fnal_meson_file(int pair){
 
   if(param.prop_type[ip0] == CLOVER_TYPE)
     fprintf(fp,"antiquark_type:               clover\n");
+  else if(param.prop_type[ip0] == IFLA_TYPE)
+    fprintf(fp,"antiquark_type:               ifla\n");
   else
     fprintf(fp,"antiquark_type:               naive\n");
 
@@ -801,11 +807,15 @@ static FILE* open_fnal_meson_file(int pair){
       
   if(param.prop_type[ip0] == CLOVER_TYPE)
     fprintf(fp,"antiquark_kappa:              \"%s\"\n",param.kappa_label[ip0]);
+  else if(param.prop_type[ip0] == IFLA_TYPE)
+    fprintf(fp,"antiquark_kappa:              \"%s\"\n",param.kappa_label[ip0]);
   else /* KS_TYPE */
     fprintf(fp,"antiquark_mass:               \"%s\"\n",param.mass_label[ip0]);
 
   if(param.prop_type[ip1] == CLOVER_TYPE)
     fprintf(fp,"quark_type:                   clover\n");
+  else if(param.prop_type[ip1] == IFLA_TYPE)
+    fprintf(fp,"quark_type:                   ifla\n");
   else
     fprintf(fp,"quark_type:                   naive\n");
     
@@ -827,6 +837,8 @@ static FILE* open_fnal_meson_file(int pair){
     free(op_list);
   }
   if(param.prop_type[ip1] == CLOVER_TYPE)
+    fprintf(fp,"quark_kappa:                  \"%s\"\n",param.kappa_label[ip1]);
+  else if(param.prop_type[ip1] == IFLA_TYPE)
     fprintf(fp,"quark_kappa:                  \"%s\"\n",param.kappa_label[ip1]);
   else /* KS_TYPE */
     fprintf(fp,"quark_mass:                   \"%s\"\n",param.mass_label[ip1]);
@@ -939,9 +951,13 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
   /* Mass or kappa labels */
   if(param.prop_type[ip0] == CLOVER_TYPE)
     fprintf(fp,"_k%s", param.kappa_label[ip0]);
+  else if(param.prop_type[ip0] == IFLA_TYPE)
+    fprintf(fp,"_k%s", param.kappa_label[ip0]);
   else /* KS_TYPE */
     fprintf(fp,"_m%s", param.mass_label[ip0]);
   if(param.prop_type[ip1] == CLOVER_TYPE)
+    fprintf(fp,"_k%s", param.kappa_label[ip1]);
+  else if(param.prop_type[ip1] == IFLA_TYPE)
     fprintf(fp,"_k%s", param.kappa_label[ip1]);
   else /* KS_TYPE */
     fprintf(fp,"_m%s", param.mass_label[ip1]);
@@ -1076,7 +1092,11 @@ static double get_meson_scale_factor(int iq0, int iq1){
 
   if(param.prop_type[ip0] == CLOVER_TYPE)
     scale_factor *= param.src_qs[ip0].scale_fact;
+  else if(param.prop_type[ip0] == IFLA_TYPE)
+    scale_factor *= param.src_qs[ip0].scale_fact;
   if(param.prop_type[ip1] == CLOVER_TYPE)
+    scale_factor *= param.src_qs[ip1].scale_fact;
+  else if(param.prop_type[ip1] == IFLA_TYPE)
     scale_factor *= param.src_qs[ip1].scale_fact;
 
   return 1./scale_factor;
@@ -1090,9 +1110,15 @@ static double get_baryon_scale_factor(int iq0, int iq1, int iq2){
 
   if(param.prop_type[ip0] == CLOVER_TYPE)
     scale_factor *= param.src_qs[ip0].scale_fact;
+  else if(param.prop_type[ip0] == IFLA_TYPE)
+    scale_factor *= param.src_qs[ip0].scale_fact;
   if(param.prop_type[ip1] == CLOVER_TYPE)
     scale_factor *= param.src_qs[ip1].scale_fact;
+  else if(param.prop_type[ip1] == IFLA_TYPE)
+    scale_factor *= param.src_qs[ip1].scale_fact;
   if(param.prop_type[ip2] == CLOVER_TYPE)
+    scale_factor *= param.src_qs[ip2].scale_fact;
+  else if(param.prop_type[ip2] == IFLA_TYPE)
     scale_factor *= param.src_qs[ip2].scale_fact;
 
   return 1./scale_factor;
