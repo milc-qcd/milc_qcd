@@ -7,6 +7,9 @@
 # in numeric fields when they exceed a tolerance and lines in
 # nonnumeric fields when they are not exactly the same.  Tolerances
 # are specified by a third, error tolerance file.
+# If the error tolerance line begins with "XXXX" the entire line
+# is ignored.
+# If the error tolerance field is XXX, that field is ignored.
 
 # Usage...
 
@@ -44,6 +47,8 @@ while($line1 = <FILE1>){
     @fields1 = split(/[ \t\n]+/,$line1);
     @fields2 = split(/[ \t\n]+/,$line2);
     @errs = split(/[ \t\n]+/,$errline);
+    # Ignore the entire line if errline begins with XXXX
+    if($errs[0] eq "XXXX"){next;}
     $i = 0;
     $same = 1;
     @list1 = @fields1;
