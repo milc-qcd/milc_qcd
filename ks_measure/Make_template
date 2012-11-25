@@ -128,26 +128,27 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 ks_measure_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DIOTIME -DPRTIME" \
+	"DEFINES= -DFN -DIOTIME -DPRTIME -DTR_MM_INV" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_measure_asqtad_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
 	"DEFINES= -DFN -DIOTIME -DPRTIME -DDM_DU0 \
-	-DCHEM_POT" "EXTRA_OBJECTS= ${FN_OBJECTS}"
+	-DTR_MM_INV -DCHEM_POT" "EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_measure_asqtad_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DIOTIME -DPRTIME -DCHEM_POT" \
+	"DEFINES= -DFN -DIOTIME -DPRTIME -DCHEM_POT \
+	-DTR_MM_INV" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_measure_asqtad_mu_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
 	"DEFINES= -DFN -DIOTIME -DPRTIME -DDM_DU0 \
-	-DCHEM_POT -DD_CHEM_POT" \
+	-DTR_MM_INV -DCHEM_POT -DD_CHEM_POT" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} mu_fast.o"
 
 # HISQ targets

@@ -156,6 +156,7 @@ diff_ksprop::
 	${G_KS_OBJECTS} \
 	diff_ksprop.o \
 	discretize_wf.o \
+	gammas.o \
 	gauge_info_dummy.o \
 	gauge_utilities.o \
 	io_helpers.o \
