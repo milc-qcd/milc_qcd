@@ -37,6 +37,14 @@ for general instructions.
 
 Here are highlights of the changes:
 
+For fersion 7.7.10
+
+  Quenched U(1) spectrum
+  Quenched improved Fermilab (OK) action
+  HYP smearing for hvy_qpot
+  Variable stride for covariant Gaussian smearing
+  Some bug fixes  
+
 For version 7.7.5
 
   Add staggered/clover hopping matrix source/sink operator for
