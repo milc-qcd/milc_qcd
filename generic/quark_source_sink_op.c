@@ -1813,6 +1813,8 @@ int get_wv_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
 /* Get parameters for operations on color vector fields               */
 /*--------------------------------------------------------------------*/
 
+#include "../include/flavor_ops.h"
+
 int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
   
   int  op_type;
