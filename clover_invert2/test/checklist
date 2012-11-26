@@ -2,6 +2,8 @@
 
 exec su3_clov	1	-	clov	     STARTPROP RUNNING
      extra-output   su3_clov.clov.1.corrfile --- EOF
+exec su3_clov	1	-	ifla	     STARTPROP RUNNING
+     extra-output   su3_clov.ifla.1.corrfile --- EOF
 exec su3_clov	1	-	ks	     STARTPROP RUNNING
      extra-output   su3_clov.ks.1.corrfile --- EOF
 exec su3_clov	1	-	onium	     STARTPROP RUNNING
@@ -11,6 +13,8 @@ exec su3_clov	1	-	open_meson    STARTPROP RUNNING
      extra-output   dump_open_meson.1 --- EOF
 exec su3_clov	2	-	clov	     STARTPROP RUNNING
      extra-output   su3_clov.clov.2.corrfile --- EOF
+exec su3_clov	2	-	ifla	     STARTPROP RUNNING
+     extra-output   su3_clov.ifla.2.corrfile --- EOF
 exec su3_clov	2	-	ks	     STARTPROP RUNNING
      extra-output   su3_clov.ks.2.corrfile --- EOF
 exec su3_clov	2	-	onium	     STARTPROP RUNNING

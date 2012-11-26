@@ -1,0 +1,221 @@
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity PROTON
+0 0.006 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity PROTON0
+0 0.005 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity DELTA
+0 0.004 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity DELTA0
+0 0.004 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+0 0.0002 0.0002
+Mesons for quarks 0 and 0
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+Mesons for quarks 0 and 0
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PION
+0 1 0.0002
+0 0.03 0.0002
+0 0.002 0.0002
+0 0.02 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PION
+0 0.4 0.004
+0 0.005 0.0002
+0 0.0002 0.0002
+0 0.004 0.0003
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS505
+0 0.0003 0.0002
+0 0.03 0.0002
+0 0.0002 0.0002
+0 0.02 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS505
+0 0.0002 0.0002
+0 0.005 0.0002
+0 0.0002 0.0002
+0 0.004 0.0003
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS0505
+0 1 0.0002
+0 0.03 0.0002
+0 0.002 0.0002
+0 0.02 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS0505
+0 0.4 0.003
+0 0.005 0.0002
+0 0.0002 0.0002
+0 0.004 0.0003
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO
+0 1 0.0002
+0 0.03 0.0002
+0 0.002 0.0002
+0 0.02 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO
+0 0.4 0.004
+0 0.005 0.0002
+0 0.0002 0.0002
+0 0.004 0.0003
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO0
+0 1 0.0002
+0 0.03 0.0002
+0 0.002 0.0002
+0 0.02 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO0
+0 0.4 0.003
+0 0.005 0.0002
+0 0.0002 0.0002
+0 0.004 0.0003
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCALAR
+0 1 0.0002
+0 0.002 0.0002
+0 0.002 0.0002
+0 0.002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCALAR
+0 0.4 0.003
+0 0.0003 0.0002
+0 0.0002 0.0002
+0 0.0003 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCAL0
+0 1 0.0002
+0 0.002 0.0002
+0 0.002 0.0002
+0 0.002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCAL0
+0 0.4 0.004
+0 0.0003 0.0002
+0 0.0002 0.0002
+0 0.0003 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PV
+0 1 0.0002
+0 0.002 0.0002
+0 0.002 0.0002
+0 0.002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PV
+0 0.4 0.003
+0 0.0003 0.0002
+0 0.0002 0.0002
+0 0.0003 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian B
+0 1 0.0002
+0 0.002 0.0002
+0 0.002 0.0002
+0 0.002 0.0002
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian B
+0 0.4 0.004
+0 0.0003 0.0002
+0 0.0002 0.0002
+0 0.0003 0.0002
+ENDPROP
+RUNNING COMPLETED

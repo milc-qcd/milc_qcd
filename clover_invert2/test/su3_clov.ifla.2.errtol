@@ -1,0 +1,221 @@
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity PROTON
+0 6e-05 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity PROTON0
+0 5e-05 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity DELTA
+0 4e-05 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity DELTA0
+0 4e-05 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+0 2e-06 2e-06
+Mesons for quarks 0 and 0
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+Mesons for quarks 0 and 0
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+WMTIME: time XXX sec XXX flops XXX MF
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PION
+0 0.01 2e-06
+0 0.0003 2e-06
+0 2e-05 2e-06
+0 0.0002 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PION
+0 0.004 4e-05
+0 5e-05 2e-06
+0 2e-06 2e-06
+0 4e-05 3e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS505
+0 3e-06 2e-06
+0 0.0003 2e-06
+0 2e-06 2e-06
+0 0.0002 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS505
+0 2e-06 2e-06
+0 5e-05 2e-06
+0 2e-06 2e-06
+0 4e-05 3e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS0505
+0 0.01 2e-06
+0 0.0003 2e-06
+0 2e-05 2e-06
+0 0.0002 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS0505
+0 0.004 0.0001
+0 5e-05 2e-06
+0 2e-06 2e-06
+0 4e-05 3e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO
+0 0.01 2e-06
+0 0.0003 2e-06
+0 2e-05 2e-06
+0 0.0002 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO
+0 0.004 8e-05
+0 5e-05 2e-06
+0 2e-06 2e-06
+0 4e-05 6e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO0
+0 0.01 2e-06
+0 0.0003 2e-06
+0 2e-05 2e-06
+0 0.0002 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO0
+0 0.004 0.0001
+0 5e-05 2e-06
+0 2e-06 2e-06
+0 4e-05 3e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCALAR
+0 0.01 2e-06
+0 2e-05 2e-06
+0 2e-05 2e-06
+0 2e-05 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCALAR
+0 0.004 8e-05
+0 3e-06 2e-06
+0 2e-06 2e-06
+0 3e-06 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCAL0
+0 0.01 2e-06
+0 2e-05 2e-06
+0 2e-05 2e-06
+0 2e-05 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCAL0
+0 0.004 8e-05
+0 3e-06 2e-06
+0 2e-06 2e-06
+0 3e-06 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PV
+0 0.01 2e-06
+0 2e-05 2e-06
+0 2e-05 2e-06
+0 2e-05 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PV
+0 0.004 0.0001
+0 3e-06 2e-06
+0 2e-06 2e-06
+0 3e-06 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian B
+0 0.01 2e-06
+0 2e-05 2e-06
+0 2e-05 2e-06
+0 2e-05 2e-06
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0
+SOURCES: gaussian gaussian
+SINKS: identity gaussian B
+0 0.004 0.0001
+0 3e-06 2e-06
+0 2e-06 2e-06
+0 3e-06 2e-06
+ENDPROP
+RUNNING COMPLETED

@@ -1,0 +1,601 @@
+SU3 clover/naive valence fermions
+MIMD version 7.7.9
+Machine = QMP (portable), with 1 nodes
+Host(0) = aquila.physics.utah.edu
+Username = detar
+start: Sun Nov 25 22:57:38 2012
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 4
+ny 4
+nz 4
+nt 4
+iseed 1234
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.3 MBytes per node for lattice
+
+
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l4444
+u0 1
+coulomb_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0 
+# Inversion control
+max_cg_iterations 100
+max_cg_restarts 10
+number_of_base_sources 1
+# base_source 0
+gaussian
+subset full
+origin 0 0 0 0 
+r0 1.5
+source_label 1S
+forget_source 
+number_of_modified_sources 0
+# Description of propagators
+number_of_propagators 1
+# propagator 0
+propagator_type ifla
+Ifla Type Fermion
+kapifla 0.038
+kappa_s 1
+kappa_t 1
+r_s 1
+r_t 1
+zeta 1
+c_E 0.52191
+c_B 1
+c_1 0.35241
+c_2 -0.0857147
+c_3 -0.0857147
+c_4 0.375
+c_5 0.25
+c_EE -0.00670277
+check yes
+error_for_propagator 1e-06
+rel_error_for_propagator 1e-06
+precision 1
+momentum_twist 0 0 0 
+time_bc periodic
+source 0
+fresh_wprop 
+save_serial_fm_sc_wprop prop.test1
+number_of_quarks 3
+propagator 0
+identity
+op_label d
+forget_wprop 
+propagator 0
+rotate_3D
+d1 0.1
+op_label rot
+forget_wprop 
+propagator 0
+gaussian
+r0 1.5
+op_label 1S
+forget_wprop 
+# Description of mesons
+number_of_pairings 3
+# pair 0 (first index is for antiquark - second is quark)
+pair 0 0 
+spectrum_request meson,baryon
+save_corr_fnal su3_clov.clov.1.corrfile.test-out
+r_offset 0 0 0 0 
+number_of_correlators 68
+correlator PION p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  1  0  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  0  1  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  0  0  1  E  E  E
+correlator PS505 p000   1 * 1.000000  G5 G5T  0  0  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  1  0  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  1  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  0  1  E  E  E
+correlator PS0505 p000  -1 * 1.000000 G5T G5T  0  0  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  1  0  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  1  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  0  1  E  E  E
+correlator RHO p000   1 * 1.000000  GX  GX  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  1  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  0  1  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  0  0  1  E  E  E
+correlator RHO p000   1 * 1.000000  GY  GY  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  1  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  0  1  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  0  0  1  E  E  E
+correlator RHO p000   1 * 1.000000  GZ  GZ  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  1  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  1  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  0  1  E  E  E
+correlator RHO0 p000   1 * 1.000000 GXT GXT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  1  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  1  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  0  1  E  E  E
+correlator RHO0 p000   1 * 1.000000 GYT GYT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  1  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  1  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  0  1  E  E  E
+correlator RHO0 p000   1 * 1.000000 GZT GZT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  1  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  1  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  0  1  E  E  E
+correlator SCALAR p000   1 * 1.000000  G1  G1  0  0  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  1  0  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  1  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  0  1  E  E  E
+correlator SCAL0 p000   1 * 1.000000  GT  GT  0  0  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  1  0  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  1  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  0  1  E  E  E
+correlator PV p000   1 * 1.000000 G5X G5X  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  1  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  0  1  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  0  0  1  E  E  E
+correlator PV p000   1 * 1.000000 G5Y G5Y  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  1  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  1  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  0  1  E  E  E
+correlator PV p000   1 * 1.000000 G5Z G5Z  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  1  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  1  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  0  1  E  E  E
+correlator B p000  -1 * 1.000000 GXY GXY  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  1  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  0  1  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  0  0  1  E  E  E
+correlator B p000  -1 * 1.000000 GYZ GYZ  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  1  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  1  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  0  1  E  E  E
+correlator B p000  -1 * 1.000000 GZX GZX  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  1  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  0  1  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  0  0  1  E  E  E
+# pair 1 (first index is for antiquark - second is quark)
+# both rotated
+pair 1 1 
+spectrum_request meson
+save_corr_fnal su3_clov.clov.1.corrfile.test-out
+r_offset 0 0 0 0 
+number_of_correlators 68
+correlator PION p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  1  0  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  0  1  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  0  0  1  E  E  E
+correlator PS505 p000   1 * 1.000000  G5 G5T  0  0  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  1  0  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  1  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  0  1  E  E  E
+correlator PS0505 p000  -1 * 1.000000 G5T G5T  0  0  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  1  0  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  1  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  0  1  E  E  E
+correlator RHO p000   1 * 1.000000  GX  GX  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  1  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  0  1  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  0  0  1  E  E  E
+correlator RHO p000   1 * 1.000000  GY  GY  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  1  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  0  1  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  0  0  1  E  E  E
+correlator RHO p000   1 * 1.000000  GZ  GZ  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  1  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  1  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  0  1  E  E  E
+correlator RHO0 p000   1 * 1.000000 GXT GXT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  1  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  1  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  0  1  E  E  E
+correlator RHO0 p000   1 * 1.000000 GYT GYT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  1  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  1  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  0  1  E  E  E
+correlator RHO0 p000   1 * 1.000000 GZT GZT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  1  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  1  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  0  1  E  E  E
+correlator SCALAR p000   1 * 1.000000  G1  G1  0  0  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  1  0  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  1  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  0  1  E  E  E
+correlator SCAL0 p000   1 * 1.000000  GT  GT  0  0  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  1  0  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  1  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  0  1  E  E  E
+correlator PV p000   1 * 1.000000 G5X G5X  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  1  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  0  1  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  0  0  1  E  E  E
+correlator PV p000   1 * 1.000000 G5Y G5Y  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  1  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  1  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  0  1  E  E  E
+correlator PV p000   1 * 1.000000 G5Z G5Z  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  1  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  1  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  0  1  E  E  E
+correlator B p000  -1 * 1.000000 GXY GXY  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  1  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  0  1  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  0  0  1  E  E  E
+correlator B p000  -1 * 1.000000 GYZ GYZ  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  1  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  1  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  0  1  E  E  E
+correlator B p000  -1 * 1.000000 GZX GZX  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  1  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  0  1  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  0  0  1  E  E  E
+# pair 2
+# one point, one smeared
+pair 0 2 
+spectrum_request meson
+forget_corr 
+r_offset 0 0 0 0 
+# correlators for pair 2
+number_of_correlators 68
+correlator PION p000   1 * 1.000000  G5  G5  0  0  0  E  E  E
+correlator PION p100   1 * 1.000000  G5  G5  1  0  0 EO EO EO
+correlator PION p100   1 * 1.000000  G5  G5  0  1  0 EO EO EO
+correlator PION p100   1 * 1.000000  G5  G5  0  0  1 EO EO EO
+correlator PS505 p000   1 * 1.000000  G5 G5T  0  0  0  E  E  E
+correlator PS505 p100   1 * 1.000000  G5 G5T  1  0  0 EO EO EO
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  1  0 EO EO EO
+correlator PS505 p100   1 * 1.000000  G5 G5T  0  0  1 EO EO EO
+correlator PS0505 p000  -1 * 1.000000 G5T G5T  0  0  0  E  E  E
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  1  0  0 EO EO EO
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  1  0 EO EO EO
+correlator PS0505 p100  -1 * 1.000000 G5T G5T  0  0  1 EO EO EO
+correlator RHO p000   1 * 1.000000  GX  GX  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GX  GX  1  0  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GX  GX  0  1  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GX  GX  0  0  1 EO EO EO
+correlator RHO p000   1 * 1.000000  GY  GY  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GY  GY  1  0  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GY  GY  0  1  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GY  GY  0  0  1 EO EO EO
+correlator RHO p000   1 * 1.000000  GZ  GZ  0  0  0  E  E  E
+correlator RHO p100   1 * 1.000000  GZ  GZ  1  0  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  1  0 EO EO EO
+correlator RHO p100   1 * 1.000000  GZ  GZ  0  0  1 EO EO EO
+correlator RHO0 p000   1 * 1.000000 GXT GXT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GXT GXT  1  0  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  1  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GXT GXT  0  0  1 EO EO EO
+correlator RHO0 p000   1 * 1.000000 GYT GYT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GYT GYT  1  0  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  1  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GYT GYT  0  0  1 EO EO EO
+correlator RHO0 p000   1 * 1.000000 GZT GZT  0  0  0  E  E  E
+correlator RHO0 p100   1 * 1.000000 GZT GZT  1  0  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  1  0 EO EO EO
+correlator RHO0 p100   1 * 1.000000 GZT GZT  0  0  1 EO EO EO
+correlator SCALAR p000   1 * 1.000000  G1  G1  0  0  0  E  E  E
+correlator SCALAR p100   1 * 1.000000  G1  G1  1  0  0 EO EO EO
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  1  0 EO EO EO
+correlator SCALAR p100   1 * 1.000000  G1  G1  0  0  1 EO EO EO
+correlator SCAL0 p000   1 * 1.000000  GT  GT  0  0  0  E  E  E
+correlator SCAL0 p100   1 * 1.000000  GT  GT  1  0  0 EO EO EO
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  1  0 EO EO EO
+correlator SCAL0 p100   1 * 1.000000  GT  GT  0  0  1 EO EO EO
+correlator PV p000   1 * 1.000000 G5X G5X  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5X G5X  1  0  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5X G5X  0  1  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5X G5X  0  0  1 EO EO EO
+correlator PV p000   1 * 1.000000 G5Y G5Y  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Y G5Y  1  0  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  1  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5Y G5Y  0  0  1 EO EO EO
+correlator PV p000   1 * 1.000000 G5Z G5Z  0  0  0  E  E  E
+correlator PV p100   1 * 1.000000 G5Z G5Z  1  0  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  1  0 EO EO EO
+correlator PV p100   1 * 1.000000 G5Z G5Z  0  0  1 EO EO EO
+correlator B p000  -1 * 1.000000 GXY GXY  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GXY GXY  1  0  0 EO EO EO
+correlator B p100  -1 * 1.000000 GXY GXY  0  1  0 EO EO EO
+correlator B p100  -1 * 1.000000 GXY GXY  0  0  1 EO EO EO
+correlator B p000  -1 * 1.000000 GYZ GYZ  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GYZ GYZ  1  0  0 EO EO EO
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  1  0 EO EO EO
+correlator B p100  -1 * 1.000000 GYZ GYZ  0  0  1 EO EO EO
+correlator B p000  -1 * 1.000000 GZX GZX  0  0  0  E  E  E
+correlator B p100  -1 * 1.000000 GZX GZX  1  0  0 EO EO EO
+correlator B p100  -1 * 1.000000 GZX GZX  0  1  0 EO EO EO
+correlator B p100  -1 * 1.000000 GZX GZX  0  0  1 EO EO EO
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4444
+Time stamp Thu Feb 12 13:40:21 1998
+Checksums 2352c05 d137321d OK
+Time to reload gauge configuration = 7.560253e-04
+CHECK PLAQ: 1.794675e+00 1.774426e+00
+CHECK NERSC LINKTR: 6.467587e-01 CKSUM: ffc4bb26
+Unitarity checked.  Max deviation 2.38e-07
+Time to check unitarity = 3.240108e-04
+Time to APE smear 2.880096e-04 sec
+Fixing to Coulomb gauge
+GFIX: Ended at step 13. Av gf action 8.94051313e-01, delta 8.941e-08
+Time to APE smear 8.201599e-05 sec
+END OF HEADER
+Generate Dirac IFLA propagator
+Kappa= 0.038 source gaussian residue= 1e-06 rel= 1e-06
+Applying boundary phases 0 0 0 1 to gauge field
+ndim = 4
+numsites = 256
+len = 4 4 4 4
+nsquares = 1 1 1 1
+ OK converged final_rsq= 5.4e-13 (cf 1e-12) rel = 8.6e-10 (cf 1e-12) restarts = 0 iters= 14
+ OK converged final_rsq= 3.1e-13 (cf 1e-12) rel = 1.6e-10 (cf 1e-12) restarts = 0 iters= 15
+ OK converged final_rsq= 2.5e-13 (cf 1e-12) rel = 1.9e-10 (cf 1e-12) restarts = 0 iters= 15
+ OK converged final_rsq= 3.4e-13 (cf 1e-12) rel = 2.4e-10 (cf 1e-12) restarts = 0 iters= 15
+ OK converged final_rsq= 6.9e-13 (cf 1e-12) rel = 8.4e-10 (cf 1e-12) restarts = 0 iters= 14
+ OK converged final_rsq= 4.2e-13 (cf 1e-12) rel = 5.4e-10 (cf 1e-12) restarts = 0 iters= 14
+ OK converged final_rsq= 2e-13 (cf 1e-12) rel = 7.2e-11 (cf 1e-12) restarts = 0 iters= 15
+ OK converged final_rsq= 2.5e-13 (cf 1e-12) rel = 2.5e-10 (cf 1e-12) restarts = 0 iters= 14
+ OK converged final_rsq= 1.7e-13 (cf 1e-12) rel = 2.3e-11 (cf 1e-12) restarts = 0 iters= 15
+ OK converged final_rsq= 2.7e-13 (cf 1e-12) rel = 1.2e-10 (cf 1e-12) restarts = 0 iters= 14
+ OK converged final_rsq= 2e-13 (cf 1e-12) rel = 7.9e-11 (cf 1e-12) restarts = 0 iters= 15
+ OK converged final_rsq= 9e-13 (cf 1e-12) rel = 1.3e-09 (cf 1e-12) restarts = 0 iters= 13
+Applying boundary phases -0 -0 -0 -1 to gauge field
+record[0].checksum  "0x24e57f9 0x5b4e947e" 
+record[1].checksum  "0xb00d7a86 0x22f40a16" 
+record[2].checksum  "0xaa2db899 0xd0096efa" 
+record[3].checksum  "0x4d693423 0x1d305aed" 
+record[4].checksum  "0x6dd737bb 0x189e001c" 
+record[5].checksum  "0x8ad43a45 0x2f8d3ddb" 
+record[6].checksum  "0x3de6f1cc 0x6dbaab4d" 
+record[7].checksum  "0xcabe3733 0x75bdcc47" 
+record[8].checksum  "0x22eab76e 0xf9eabbd9" 
+record[9].checksum  "0xf0663847 0xccf95a32" 
+record[10].checksum  "0xa229da20 0xbb734c0f" 
+record[11].checksum  "0x8f284b7f 0xef31c78a" 
+Wrote prop file prop.test1 time stamp Sun Nov 25 22:57:38 2012
+Saved propagator to prop.test1
+destroy prop[0]
+destroy prop[0]
+Mesons for quarks 0 and 0
+WMTIME: time 6.7e-03 sec 8.5392e+06 flops 1271.8 MF
+WMTIME: time 6.7e-03 sec 8.5392e+06 flops 1277.4 MF
+WMTIME: time 6.7e-03 sec 8.5392e+06 flops 1267.9 MF
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity PROTON
+0 2.777936e+01 7.322834e-02
+1 5.079876e-02 -2.951802e-04
+2 3.318644e-05 -1.079591e-06
+3 -4.333492e-02 7.396040e-04
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity PROTON0
+0 2.738366e+01 7.006449e-02
+1 4.984579e-02 -2.994889e-04
+2 3.284470e-05 -8.190423e-07
+3 -4.250607e-02 7.166260e-04
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity DELTA
+0 2.203261e+01 6.233390e-02
+1 5.040501e-02 -1.680295e-04
+2 3.574929e-05 1.100180e-06
+3 -4.320492e-02 8.985005e-04
+STARTPROP
+SOURCES: gaussian gaussian gaussian
+KAPPAS: 0 0 0
+SINKS: identity identity identity DELTA0
+0 2.191273e+01 6.190692e-02
+1 5.012125e-02 -1.614017e-04
+2 3.590488e-05 3.580331e-07
+3 -4.293302e-02 8.939441e-04
+Mesons for quarks 1 and 1
+WMTIME: time 6.7e-03 sec 8.5392e+06 flops 1277.4 MF
+WMTIME: time 6.7e-03 sec 8.5392e+06 flops 1277.4 MF
+WMTIME: time 6.7e-03 sec 8.5392e+06 flops 1278.4 MF
+Mesons for quarks 0 and 2
+WMTIME: time 6.7e-03 sec 8.5392e+06 flops 1281.2 MF
+WMTIME: time 6.8e-03 sec 8.5392e+06 flops 1261.5 MF
+WMTIME: time 6.7e-03 sec 8.5392e+06 flops 1278.9 MF
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PION
+0 7.066235e+03 4.917383e-07
+1 1.346267e+02 7.241033e-08
+2 9.958364e+00 1.970329e-08
+3 1.236313e+02 5.215406e-08
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PION
+0 1.996964e+03 1.977347e+01
+1 2.683304e+01 2.021381e-01
+2 1.198578e+00 5.684151e-02
+3 2.005849e+01 1.714882e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS505
+0 1.496925e+00 1.490116e-06
+1 1.328438e+02 -3.466266e-08
+2 2.410921e-01 1.507578e-08
+3 -1.219899e+02 -8.800998e-08
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS505
+0 8.643754e-01 -1.947139e-01
+1 2.671805e+01 2.473451e-01
+2 1.914909e-01 6.963756e-02
+3 -1.982645e+01 -1.710497e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS0505
+0 6.993529e+03 6.854534e-07
+1 1.321940e+02 9.499490e-08
+2 9.783340e+00 1.571607e-08
+3 1.213966e+02 1.802109e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PS0505
+0 1.987854e+03 1.598369e+01
+1 2.667046e+01 2.030745e-01
+2 1.183395e+00 5.778177e-02
+3 1.984643e+01 1.684224e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO
+0 7.025225e+03 1.341105e-07
+1 1.331965e+02 6.263144e-08
+2 9.840442e+00 2.297262e-08
+3 1.222995e+02 9.592623e-08
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO
+0 1.987387e+03 1.844329e+01
+1 2.659610e+01 2.492662e-01
+2 1.181102e+00 5.807499e-02
+3 1.981940e+01 1.700521e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO0
+0 7.001136e+03 1.912316e-06
+1 1.323960e+02 2.770685e-08
+2 9.782811e+00 2.124095e-08
+3 1.215622e+02 1.614292e-07
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian RHO0
+0 1.984381e+03 1.718493e+01
+1 2.654356e+01 2.497703e-01
+2 1.176128e+00 5.837941e-02
+3 1.975027e+01 1.690763e+00
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCALAR
+0 6.995185e+03 -8.940697e-08
+1 -9.844518e+00 6.592018e-08
+2 -9.150230e+00 -2.526212e-08
+3 -9.405571e+00 -3.821333e-08
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCALAR
+0 1.988344e+03 1.593762e+01
+1 -1.610687e+00 -7.952824e-02
+2 -1.152900e+00 -6.828700e-02
+3 -1.456863e+00 -2.103232e-01
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCAL0
+0 7.064505e+03 6.407499e-07
+1 -9.566662e+00 5.960464e-08
+2 -9.286897e+00 -2.165325e-08
+3 -9.080122e+00 -1.490116e-08
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian SCAL0
+0 1.996462e+03 1.982311e+01
+1 -1.678310e+00 -5.449067e-02
+2 -1.165168e+00 -6.622773e-02
+3 -1.446614e+00 -9.092343e-02
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PV
+0 -7.001679e+03 8.940697e-08
+1 9.750823e+00 2.572779e-08
+2 9.163529e+00 2.693074e-08
+3 9.275739e+00 -5.401671e-08
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian PV
+0 -1.984540e+03 -1.717065e+01
+1 1.631303e+00 6.984310e-02
+2 1.150492e+00 6.654188e-02
+3 1.446966e+00 1.714815e-01
+ENDPROP
+STARTPROP
+MOMENTUM: p000
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian B
+0 -7.024664e+03 9.437402e-08
+1 9.658890e+00 -4.808923e-08
+2 9.208809e+00 2.469945e-08
+3 9.168900e+00 -1.495937e-08
+ENDPROP
+STARTPROP
+MOMENTUM: p100
+MASSES: kappa[0]=0 kappa[0]=0 
+SOURCES: gaussian gaussian
+SINKS: identity gaussian B
+0 -1.987222e+03 -1.845889e+01
+1 1.653681e+00 6.114142e-02
+2 1.154524e+00 6.583977e-02
+3 1.443445e+00 1.320927e-01
+ENDPROP
+RUNNING COMPLETED
+Time = 1.063644e+01 seconds
+total_iters = 346
+destroy quark[0]
+destroy quark[1]
+destroy quark[2]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Sun Nov 25 22:57:49 2012
+
