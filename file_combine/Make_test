@@ -1,0 +1,59 @@
+# Makefile for testing code by comparing test output with sample output
+# For ext_src
+
+#------------------------------------------------------------
+# Examples for tests:
+
+#    make -f Make_test check
+# or, for a specific project or projects
+#    make -f Make_test "PROJS=ext_src" check
+
+
+# Edit the Makefile for the appropriate architecture and the file
+# See ../Make_test_template to select the appropriate LAUNCH.
+
+# Results are in the files out.test.diff.* 
+#------------------------------------------------------------
+
+# For comparing test output with sample output
+
+PROJS = ext_src
+
+PRECLIST = 1
+
+ADDMACRO = "WANTQIO=true"
+
+PATTERNS = END RUNNING
+TOL = 1e-9
+
+include ../Make_test_template
+
+W_FILELIST = out.test.w_source.1 out.test.ks_source_naive.1
+KS_FILELIST = out.test.ks_source.1 
+
+src:
+in.sample.src.${PREC}:
+out.test.src.${PREC}: ${W_FILELIST} ${KS_FILELIST}
+	echo "BEGIN" > out.test.src.${PREC}; \
+	./get_checksums_ks.sh ${KS_FILELIST} >> out.test.src.${PREC};\
+	./get_checksums_w.sh  ${W_FILELIST}  >> out.test.src.${PREC}; \
+	echo "END" >> out.test.src.${PREC}
+
+test_src:
+	for prec in ${PRECLIST};\
+	do\
+	   ${MAKE} clean;\
+	   ${MAKE} -f Make_test "PROJ=src" "PREC=$$prec" "PATTERNS=BEGIN END" out.test.diff.src.$$prec;\
+	done
+
+test_src_clean:
+	for prec in ${PRECLIST};\
+	do\
+	     /bin/rm out.test.src.$$prec.tmp out.sample.src.$$prec.tmp;\
+	     /bin/rm out.test.diff.src.$$prec out.test.src.$$prec; \
+	done
+
+check: test test_src
+
+clean: test_clean test_src_clean
+

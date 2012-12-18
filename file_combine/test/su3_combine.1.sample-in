@@ -1,0 +1,38 @@
+prompt 0
+nx 4
+ny 4
+nz 4
+nt 8
+job_id 203696.kaon2.fnal.gov
+
+vector_field_files 2
+ncolor 4
+t0 0
+load_source_serial ../../binary_samples/ks_source1.l4448
+load_source_serial ../../binary_samples/ks_source2.l4448
+coeffs 0.5 0.25
+save_serial_scidac_ks_source ks_source.test
+
+dirac_field_files 2
+ncolor 4
+t0 0
+load_source_serial ../../binary_samples/dirac_source1.l4448
+load_source_serial ../../binary_samples/dirac_source2.l4448
+coeffs 0.5 0.25
+save_serial_scidac_w_source w_source.test
+
+vector_propagator_files 2
+ncolor 4
+t0 0
+reload_serial_ksprop ../../binary_samples/ksprop1.sample.l4448
+reload_serial_ksprop ../../binary_samples/ksprop2.sample.l4448
+coeffs 0.25 0.5
+save_serial_scidac_ksprop ksprop.test
+
+dirac_propagator_files 2
+ncolor 4
+t0 0
+reload_serial_wprop ../../binary_samples/wprop1.sample.l4448
+reload_serial_wprop ../../binary_samples/wprop2.sample.l4448
+coeffs 0.25 0.5
+save_serial_scidac_wprop wprop.test
