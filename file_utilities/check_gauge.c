@@ -119,7 +119,7 @@ void r_check(gauge_file *gf, float *max_deviation)
   off_t checksum_offset;    /* Where we put the checksum */
   int rcv_rank, rcv_coords;
   int destnode;
-  int i,k;
+  int k;
   int x,y,z,t;
   int buf_length,where_in_buf;
   gauge_check test_gc;
@@ -236,7 +236,6 @@ void r_check(gauge_file *gf, float *max_deviation)
 	  }  /*** end of the buffer read ****/
 
 	if(destnode==0){	/* just copy links */
-	  i = node_index(x,y,z,t);
 	  memcpy((void *)&work[0],
 		 (void *)&lbuf[4*where_in_buf], 4*sizeof(su3_matrix));
 	}
@@ -250,7 +249,6 @@ void r_check(gauge_file *gf, float *max_deviation)
       /* The node which contains this site reads message */
       else {	/* for all nodes other than node 0 */
 	if(this_node==destnode){
-	  i = node_index(x,y,z,t);
 	  get_field((char *)&work[0],4*sizeof(su3_matrix),0);
 	}
       }
@@ -323,14 +321,11 @@ void r_check_arch(gauge_file *gf, float *max_deviation)
   /* gf  = gauge configuration file structure */
 
   FILE *fp;
-  gauge_header *gh;
   char *filename;
-  int byterevflag;
 
-  off_t gauge_check_size;   /* Size of gauge configuration checksum record */
   int rcv_rank, rcv_coords;
   int destnode;
-  int i,k;
+  int k;
   int x,y,z,t;
   gauge_check test_gc;
   u_int32type *val;
@@ -354,14 +349,10 @@ void r_check_arch(gauge_file *gf, float *max_deviation)
   if(dataformat == ARCHIVE_3x2)realspersite = 48;
   else realspersite = 72;
   fp = gf->fp;
-  gh = gf->header;
   filename = gf->filename;
-  byterevflag = gf->byterevflag;
 
   if(this_node == 0)
     {
-      gauge_check_size = 0;
-      
       if(gf->parallel)
 	printf("%s: Attempting serial read from parallel file \n",myname);
 
@@ -478,7 +469,6 @@ void r_check_arch(gauge_file *gf, float *max_deviation)
 	}
 	
 	if(destnode==0){	/* just copy links */
-	  i = node_index(x,y,z,t);
      /*   printf("lattice node_index = %d, mu = %d\n", i, mu); */
 	  memcpy((void *)&work[0],
 		 (void *)&tmpsu3, 4*sizeof(su3_matrix));
@@ -489,7 +479,6 @@ void r_check_arch(gauge_file *gf, float *max_deviation)
       /* The node which contains this site reads message */
       else {	/* for all nodes other than node 0 */
 	if(this_node==destnode){
-	  i = node_index(x,y,z,t);
 	  get_field((char *)&work[0],4*sizeof(su3_matrix),0);
 	}
       }
@@ -578,51 +567,57 @@ int main(int argc, char *argv[])
   gh = gf->header;
 
   if(gh->magic_number == LIME_MAGIC_NO){
-    printf("Can't check a SciDAC file yet\n");
-    return 1;
-  }
+    /* SciDAC format gauge files */
 
-  if(this_node == 0)
-    {
-      nx = gh->dims[0];
-      ny = gh->dims[1];
-      nz = gh->dims[2];
-      nt = gh->dims[3];
-      printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
-      if(gh->magic_number != GAUGE_VERSION_NUMBER_ARCHIVE){
-	printf("Time stamp %s\n",gh->time_stamp);
-	if(gh->order == NATURAL_ORDER)printf("File in natural order\n");
-	if(gh->order == NODE_DUMP_ORDER)printf("File in node dump order\n");
+    node0_printf("Scanning to verify only checksums.\n");
+    gf = file_scan_serial_scidac(filename);
+    
+  } else {
+    /* MILC format gauge files */
+
+    if(this_node == 0)
+      {
+	nx = gh->dims[0];
+	ny = gh->dims[1];
+	nz = gh->dims[2];
+	nt = gh->dims[3];
+	printf("Dimensions %d %d %d %d\n",nx,ny,nz,nt);
+	if(gh->magic_number != GAUGE_VERSION_NUMBER_ARCHIVE){
+	  printf("Time stamp %s\n",gh->time_stamp);
+	  if(gh->order == NATURAL_ORDER)printf("File in natural order\n");
+	  if(gh->order == NODE_DUMP_ORDER)printf("File in node dump order\n");
+	}
       }
+    
+    broadcast_bytes((char *)&nx,sizeof(int));
+    broadcast_bytes((char *)&ny,sizeof(int));
+    broadcast_bytes((char *)&nz,sizeof(int));
+    broadcast_bytes((char *)&nt,sizeof(int));
+    
+    setup_layout();
+    
+    volume = nx*ny*nz*nt;
+    
+    if(gh->magic_number == GAUGE_VERSION_NUMBER_ARCHIVE){
+      r_check_arch(gf,&max_deviation);
+      g_floatmax(&max_deviation);
+      if(this_node==0)
+	printf("Max unitarity deviation = %0.2g\n",max_deviation);
     }
-
-  broadcast_bytes((char *)&nx,sizeof(int));
-  broadcast_bytes((char *)&ny,sizeof(int));
-  broadcast_bytes((char *)&nz,sizeof(int));
-  broadcast_bytes((char *)&nt,sizeof(int));
-
-  setup_layout();
-
-  volume = nx*ny*nz*nt;
-
-  if(gh->magic_number == GAUGE_VERSION_NUMBER_ARCHIVE){
-    r_check_arch(gf,&max_deviation);
-    g_floatmax(&max_deviation);
-    if(this_node==0)
-      printf("Max unitarity deviation = %0.2g\n",max_deviation);
-  }
-  else{
-    r_check(gf,&max_deviation);
-    g_floatmax(&max_deviation);
-    if(this_node==0)
-      printf("Max unitarity deviation = %0.2g\n",max_deviation);
+    else{
+      r_check(gf,&max_deviation);
+      g_floatmax(&max_deviation);
+      if(this_node==0)
+	printf("Max unitarity deviation = %0.2g\n",max_deviation);
+    }
+    
+    /* Close file */
+    r_serial_f(gf);
   }
 
 
+  free_input_gauge_file(gf);
   
-  /* Close file */
-  r_serial_f(gf);
-
   normal_exit(0);
 
   return 0;
