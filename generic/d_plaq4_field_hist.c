@@ -119,8 +119,8 @@ char plaq_file_name[300];
 
     g_doublesum( &ss_sum );
     g_doublesum( &st_sum );
-    *ss_plaq = ss_sum /((Real)(3*nx*ny*nz*nt));
-    *st_plaq = st_sum /((double)(3*nx*ny*nz*nt));
+    *ss_plaq = ss_sum /((Real)(3.0*nx*ny*nz*nt));
+    *st_plaq = st_sum /((double)(3.0*nx*ny*nz*nt));
 
     /* global gather histograms */
     for(ipower=0;ipower<Npowers;ipower++) {

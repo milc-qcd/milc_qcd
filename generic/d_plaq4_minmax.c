@@ -137,11 +137,11 @@ msg_tag *mtag0,*mtag1;
     g_doublesum( &ss_sum );
     g_doublesum( &st_sum );
 #ifdef SCHROED_FUN
-    *ss_plaq = ss_sum /((Real)(3*nx*ny*nz*(nt-1)));
+    *ss_plaq = ss_sum /((Real)(3.0*nx*ny*nz*(nt-1)));
 #else
-    *ss_plaq = ss_sum /((Real)(3*nx*ny*nz*nt));
+    *ss_plaq = ss_sum /((Real)(3.0*nx*ny*nz*nt));
 #endif
-    *st_plaq = st_sum /((double)(3*nx*ny*nz*nt));
+    *st_plaq = st_sum /((double)(3.0*nx*ny*nz*nt));
 
     *ss_plaq_min = -ss_min;
     *st_plaq_min = -st_min;
