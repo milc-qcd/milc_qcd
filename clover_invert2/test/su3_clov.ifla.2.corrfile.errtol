@@ -1,23 +1,23 @@
 ---
-JobID: 0.4
-date: "Mon Nov 0 1e-05 0 UTC"
+JobID: XXX
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8e-06
 antiquark_type: ifla
+antiquark_kappa: "0.038"
 antiquark_source_type: gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
 antiquark_source_r0: 3e-06
 antiquark_source_label: 2e-06
 antiquark_sink_label: d
-antiquark_kappa: "0.038"
 quark_type: ifla
+quark_kappa: "0.038"
 quark_source_type: gaussian
 quark_source_subset: full
 quark_source_origin: 0 0 0 0
 quark_source_r0: 3e-06
 quark_source_label: 2e-06
 quark_sink_label: d
-quark_kappa: "0.038"
 ...
 ---
 correlator: PION
@@ -218,10 +218,11 @@ correlator_key: B_1S_1S_d_d_k0.038_k0.038_p100
 0 2e-06 2e-06
 0 2e-06 2e-06
 ---
-JobID: 0.4
-date: "Mon Nov 0 1e-05 0 UTC"
+JobID: XXX
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8e-06
 antiquark_type: ifla
+antiquark_kappa: "0.038"
 antiquark_source_type: gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
@@ -233,8 +234,8 @@ antiquark_sink_ops: [
 d1: 2e-06
 }
 ]
-antiquark_kappa: "0.038"
 quark_type: ifla
+quark_kappa: "0.038"
 quark_source_type: gaussian
 quark_source_subset: full
 quark_source_origin: 0 0 0 0
@@ -246,7 +247,6 @@ quark_sink_ops: [
 d1: 2e-06
 }
 ]
-quark_kappa: "0.038"
 ...
 ---
 correlator: PION
@@ -301,7 +301,7 @@ correlator_key: PS0505_1S_1S_rot_rot_k0.038_k0.038_p000
 ...
 0 0.001 2e-06
 0 2e-05 2e-06
-0 2e-06 0.000000e+00
+0 2e-06 2e-06
 0 2e-05 2e-06
 ---
 correlator: PS0505

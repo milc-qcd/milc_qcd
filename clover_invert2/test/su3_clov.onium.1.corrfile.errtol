@@ -3,6 +3,7 @@ JobID: test
 date: XXX XXX XXX XXX XXX XXX
 lattice_size: 0.0008
 antiquark_type: clover
+antiquark_kappa: "0.1"
 antiquark_source_type: point/fat_covariant_gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
@@ -28,8 +29,8 @@ antiquark_sink_ops:      [
   weights:               0
 }
 ]
-antiquark_kappa: "0.1"
 quark_type: clover
+quark_kappa: "0.1"
 quark_source_type: point/fat_covariant_gaussian
 quark_source_subset: full
 quark_source_origin: 0 0 0 0
@@ -49,7 +50,6 @@ quark_sink_ops:          [
   iters:                 0
 }
 ]
-quark_kappa: "0.1"
 ...
 ---
 correlator: TTxG_BB1xB1
@@ -296,6 +296,7 @@ JobID: test
 date: XXX XXX XXX XXX XXX XXX
 lattice_size: 0.0008
 antiquark_type: clover
+antiquark_kappa: "0.1"
 antiquark_source_type: point/fat_covariant_gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
@@ -320,8 +321,8 @@ antiquark_sink_ops:      [
   weights:               0
 }
 ]
-antiquark_kappa: "0.1"
 quark_type: clover
+quark_kappa: "0.1"
 quark_source_type: point/deriv1/fat_covariant_gaussian
 quark_source_subset: full
 quark_source_origin: 0 0 0 0
@@ -346,7 +347,6 @@ quark_sink_ops:          [
   iters:                 0
 }
 ]
-quark_kappa: "0.1"
 ...
 ---
 correlator: BB1xN1_BB3xN3
@@ -593,6 +593,7 @@ JobID: test
 date: XXX XXX XXX XXX XXX XXX
 lattice_size: 0.0008
 antiquark_type: clover
+antiquark_kappa: "0.1"
 antiquark_source_type: point/fat_covariant_gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
@@ -618,8 +619,8 @@ antiquark_sink_ops:      [
   weights:               0
 }
 ]
-antiquark_kappa: "0.1"
 quark_type: clover
+quark_kappa: "0.1"
 quark_source_type: point/deriv1/fat_covariant_gaussian
 quark_source_subset: full
 quark_source_origin: 0 0 0 0
@@ -644,7 +645,6 @@ quark_sink_ops:          [
   iters:                 0
 }
 ]
-quark_kappa: "0.1"
 ...
 ---
 correlator: BB3xN1_VV3xD1
@@ -831,6 +831,7 @@ JobID: test
 date: XXX XXX XXX XXX XXX XXX
 lattice_size: 0.0008
 antiquark_type: clover
+antiquark_kappa: "0.1"
 antiquark_source_type: point/fat_covariant_gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
@@ -850,8 +851,8 @@ antiquark_sink_ops:      [
   iters:                 0
 }
 ]
-antiquark_kappa: "0.1"
 quark_type: clover
+quark_kappa: "0.1"
 quark_source_type: point/deriv2_B/fat_covariant_gaussian
 quark_source_subset: full
 quark_source_origin: 0 0 0 0
@@ -877,7 +878,6 @@ quark_sink_ops:          [
   iters:                 0
 }
 ]
-quark_kappa: "0.1"
 ...
 ---
 correlator: BB1xB1_TTxG

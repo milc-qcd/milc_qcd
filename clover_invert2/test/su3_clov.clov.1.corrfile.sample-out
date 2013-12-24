@@ -1,30 +1,30 @@
 ---
-JobID:                   203696.kaon2.fnal.gov
-date:                    "Wed Sep 15 07:43:40 2010 UTC"
-lattice_size:            4,4,4,4
-antiquark_type:          clover
-antiquark_source_type:   gaussian
-antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
-antiquark_source_r0:     1.5
-antiquark_source_label:  1S
-antiquark_sink_label:    d
-antiquark_kappa:         "0.1"
-quark_type:              clover
-quark_source_type:       gaussian
-quark_source_subset:     full
-quark_source_origin:     0 0 0 0
-quark_source_r0:         1.5
-quark_source_label:      1S
-quark_sink_label:        d
-quark_kappa:             "0.1"
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Fri May 31 17:27:51 2013 UTC"
+lattice_size:                 4,4,4,4
+antiquark_type:               clover
+antiquark_kappa:              "0.1"
+antiquark_source_type:        gaussian
+antiquark_source_subset:      full
+antiquark_source_origin:      0 0 0 0
+antiquark_source_r0:          1.5
+antiquark_source_label:       1S
+antiquark_sink_label:         d
+quark_type:                   clover
+quark_kappa:                  "0.1"
+quark_source_type:            gaussian
+quark_source_subset:          full
+quark_source_origin:          0 0 0 0
+quark_source_r0:              1.5
+quark_source_label:           1S
+quark_sink_label:             d
 ...
 ---
-correlator:             PION
-momentum:               p000
-gamma_source:           G5
-gamma_sink:             G5
-correlator_key:         PION_1S_1S_d_d_k0.1_k0.1_p000
+correlator:                   PION
+momentum:                     p000
+gamma_source:                 G5
+gamma_sink:                   G5
+correlator_key:               PION_1S_1S_d_d_k0.1_k0.1_p000
 ...
 0	2.821280e+02	0.000000e+00
 1	1.783301e+01	0.000000e+00
@@ -222,6 +222,7 @@ JobID:                   203696.kaon2.fnal.gov
 date:                    "Wed Sep 15 07:43:40 2010 UTC"
 lattice_size:            4,4,4,4
 antiquark_type:          clover
+antiquark_kappa:         "0.1"
 antiquark_source_type:   gaussian
 antiquark_source_subset: full
 antiquark_source_origin: 0 0 0 0
@@ -233,8 +234,8 @@ antiquark_sink_ops:      [
   d1:                    0.1
 }
 ]
-antiquark_kappa:         "0.1"
 quark_type:              clover
+quark_kappa:             "0.1"
 quark_source_type:       gaussian
 quark_source_subset:     full
 quark_source_origin:     0 0 0 0
@@ -246,7 +247,6 @@ quark_sink_ops:          [
   d1:                    0.1
 }
 ]
-quark_kappa:             "0.1"
 ...
 ---
 correlator:             PION
