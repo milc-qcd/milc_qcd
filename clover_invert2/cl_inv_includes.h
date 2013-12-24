@@ -55,7 +55,8 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 			   ks_param *my_ksp,
 			   Real *bdry_phase,
 			   int r0[],
-			   int check);
+			   int check,
+			   int is_ks0_type);
 
 int get_ksprop4_to_wp_field(int startflag, char startfile[], 
 			    int saveflag, char savefile[],
