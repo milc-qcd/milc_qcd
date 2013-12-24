@@ -68,6 +68,11 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
   /* Apply twist to boundary links of the gauge field in site structure */
   boundary_twist_site(mybdry_phase, r0, +1);
 
+  /* Apply twist to the APE links */
+  mybdry_phase[3] = 0; 
+  momentum_twist_links(mybdry_phase, 1, ape_links);
+  mybdry_phase[3] = bdry_phase[3]; 
+
   /* Loop over source colors and spins */
   for(ksource = 0; ksource < my_wqs->nsource; ksource++){
     spin = convert_ksource_to_spin(ksource);
@@ -166,6 +171,11 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
 	// DEBUG
 	//static_prop_wv(dst, src, my_wqs);
 	
+      } else { /* check != CHECK_SOURCE_ONLY */
+
+	/* Copy source to solution(s) so we can use it there */
+	copy_wv_field(dst, src);
+	
       }
 
       destroy_wv_field(src);
@@ -186,6 +196,11 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
     tot_iters += avs_iters;
   } /* ksource */
   
+  /* Unapply twist to the APE links */
+  mybdry_phase[3] = 0; 
+  momentum_twist_links(mybdry_phase, -1, ape_links);
+  mybdry_phase[3] = bdry_phase[3]; 
+
   /* Unapply twist to boundary links in gauge field */
   boundary_twist_site(mybdry_phase, r0, -1);
   
@@ -230,13 +245,13 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 			   ks_param *my_ksp,
 			   Real bdry_phase[],
 			   int r0[4],
-			   int check)
+			   int check,
+			   int is_ks0_type)
 {
   int i, color;
   int avs_iters = 0;
   int tot_iters = 0;
   int status;
-  int ks_source_r[4];
   int naik_epsilon_index = my_ksp->naik_term_epsilon_index;
   su3_vector *dst, *src;
   ks_prop_file *fp_in, *fp_out; 
@@ -272,7 +287,7 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
   invalidate_fermion_links(fn_links);
 
   /* Need FN links if we will call the inverter */
-  if(check || startflag == FRESH){
+  if(check == CHECK_YES || startflag == FRESH){
     if(fn_links == NULL)
       fn_links = create_fermion_links_from_site(my_qic->prec, n_naiks, eps_naik);
     else
@@ -385,12 +400,20 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
     /* save solution if requested */
     save_ksprop_c_from_field( saveflag, fp_out, my_ksqs, color, dst, "", io_timing);
     
-    /* Convert KS prop to naive prop (su3_vector maps to
-       spin_wilson_vector) for a given source color */
-    ks_source_r[0] = my_ksqs->x0;  ks_source_r[1] = my_ksqs->y0;
-    ks_source_r[2] = my_ksqs->z0;  ks_source_r[3] = my_ksqs->t0;
-    
-    convert_ksprop_to_wprop_swv(wp->swv[color], dst, ks_source_r, r0);
+    {
+      int ks_source_r[4] = {0,0,0,0};
+      
+      /* Convert KS prop to naive prop (su3_vector maps to
+	 spin_wilson_vector) for a given source color,
+	 The conversion depends on the source and sink locations.
+	 For the KS0_TYPE, the source is at the corner of the hypercube. */
+      if(!is_ks0_type){
+	ks_source_r[0] = my_ksqs->x0;  ks_source_r[1] = my_ksqs->y0;
+	ks_source_r[2] = my_ksqs->z0;  ks_source_r[3] = my_ksqs->t0;
+      }
+      
+      convert_ksprop_to_wprop_swv(wp->swv[color], dst, ks_source_r, r0);
+    }
     
     tot_iters += avs_iters;
   } /* source color */
@@ -643,6 +666,8 @@ void dump_wprop_from_wp_field(int saveflag, int savetype, char savefile[],
   /* Two output formats are supported.  We can write a file in
      propagator format or source format.  The latter would be suitable
      as an extended source. */
+
+  if(saveflag == FORGET)return;
   
   init_qs(&dummy_wqs);
   wqstmp = dummy_wqs;   /* For clover_info.c */
@@ -664,7 +689,6 @@ void dump_wprop_from_wp_field(int saveflag, int savetype, char savefile[],
        source record is a null complex field on time slice zero. */
     
     save_wprop_from_wp_field(saveflag, savefile, &dummy_wqs, wp, "", io_timing);
-    clear_qs(&dummy_wqs); /* Free any allocations */
   } else {
     /* Source file format */
     int ksource, ncolor, color, spin;
@@ -690,6 +714,7 @@ void dump_wprop_from_wp_field(int saveflag, int savetype, char savefile[],
     destroy_wv_field(wv);
     w_source_close(&dummy_wqs);
   }
+  clear_qs(&dummy_wqs); /* Free any allocations */
 }
 
 /* Create a wilson_prop_field and restore it from a dump file */
