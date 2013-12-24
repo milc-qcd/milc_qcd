@@ -13,6 +13,7 @@
 #define MAX_SET 16
 #define MAX_PROP 64
 #define MAX_QK 64
+#define MAX_COMBO 8
 #define MAX_PAIR 512
 #define MAX_TRIPLET 64
 #define MAX_QKPAIR_LABEL 32
@@ -27,6 +28,7 @@
 #define KS_TYPE 1
 #define PROP_TYPE 0
 #define QUARK_TYPE 1
+#define COMBO_TYPE 2
 #define BASE_SOURCE_PARENT -1
 
 enum checktype { CHECK_NO,  CHECK_YES, CHECK_SOURCE_ONLY };
@@ -94,6 +96,9 @@ typedef struct {
   int num_qk;	                     /* number of quarks */
   int parent_type[MAX_QK];           /* propagator type: quark or propagator */
   int prop_for_qk[MAX_QK];           /* Propagator or quark index for quark */
+  int combo_qk_index[MAX_QK][MAX_COMBO]; /* Quark index for combinations */
+  int num_combo[MAX_QK];  /* Number of quarks to combine */
+  Real combo_coeff[MAX_QK][MAX_COMBO]; /* Coefficients of linear combination */
   int naik_index[MAX_QK];            /* Naik term index for quark */
   quark_source snk_qs[MAX_QK];       /* Sink description for quark */
   int saveflag_q[MAX_QK];	     /* what to do for saving KS prop */

@@ -10,6 +10,9 @@
 /* Modifications ... */
    
 //  $Log: control.c,v $
+//  Revision 1.7  2013/12/24 05:39:00  detar
+//  Add combo operation
+//
 //  Revision 1.6  2012/11/24 05:14:20  detar
 //  Add support for U(1) fields and for future HYPISQ action
 //
@@ -287,7 +290,7 @@ int main(int argc, char *argv[])
 	    }
 	  }
       }
-      else { /* QUARK_TYPE */
+      else if(param.parent_type[j] == QUARK_TYPE) { /* QUARK_TYPE */
 #ifdef KS_LEAN
 	/* Restore quark[i] from file */
 	/* But first destroy the old ones, unless we still need one of them */
@@ -318,15 +321,28 @@ int main(int argc, char *argv[])
 	
 #endif
 	/* Apply sink operator quark[j] <- Op[j] quark[i] */
-	quark[j] = create_ksp_field_copy(prop[i]);
+	quark[j] = create_ksp_field_copy(quark[i]);
 	ksp_sink_op(&param.snk_qs_op[j], quark[j]);
 #ifdef KS_LEAN
 	quark_nc[j] = quark[j]->nc;
 	oldip0 = -1;
 	oldiq0 = i;
 #endif
-      }
-      
+      } else { /* COMBO_TYPE */
+	int k;
+	int nc = quark[param.combo_qk_index[j][0]]->nc;
+	/* Create a zero field */
+	quark[j] = create_wp_field(nc);
+	/* Compute the requested linear combination */
+	for(k = 0; k < param.num_combo[j]; k++){
+	  ks_prop_field *q = quark[param.combo_qk_index[j][k]];
+	  if(nc != q->nc){
+	    printf("Error: Attempting to combine an inconsistent number of colors: %d != %d\n",nc, q->nc);
+	    terminate(1);
+	  }
+	  scalar_mult_add_ksprop_field(quark[j], q, param.combo_coeff[j][k], quark[j]);
+	}
+      }      
       /* Save the resulting quark[j] if requested */
       dump_ksprop_from_ksp_field( param.saveflag_q[j], 
 				  param.savefile_q[j], quark[j]);
