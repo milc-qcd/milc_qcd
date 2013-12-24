@@ -22,10 +22,18 @@
 #include <quda_milc_interface.h>
 #endif
 
+/* Apply momentum twist of parent to ape_links */
+void momentum_twist_ape_links(int i, int sign){
+  int ip = get_eve(i);
+  Real *bp = param.bdry_phase[ip];
+  Real mybdry_phase[4] = {bp[0], bp[1], bp[2], 0.};
+  momentum_twist_links(mybdry_phase, sign, ape_links);
+}
+
 int main(int argc, char *argv[])
 {
   int prompt;
-  int i, j, k, iq0, iq1;
+  int i, j, iq0, iq1;
 #ifdef CLOV_LEAN
   int oldiq0, oldiq1, oldip0;
 #endif
@@ -184,7 +192,7 @@ int main(int argc, char *argv[])
 	  }
 #endif
 	}
-      else if(param.prop_type[i] == KS_TYPE) /* KS_TYPE */
+      else if(param.prop_type[i] == KS_TYPE || param.prop_type[i] == KS0_TYPE ) /* KS_TYPE */
 	{
 	  prop[i] = create_wp_field(param.src_qs[i].ncolor);
 
@@ -204,7 +212,8 @@ int main(int argc, char *argv[])
 						&param.ksp[i],
 						param.bdry_phase[i],
 						param.coord_origin,
-						param.check[i]);
+						param.check[i],
+						param.prop_type[i] == KS0_TYPE);
 #ifdef CLOV_LEAN
 	  /* (We don't free naive prop memory, since we don't save it
 	     as a clover prop in get_ksprop_to_wp_field) */
@@ -277,34 +286,39 @@ int main(int argc, char *argv[])
 	if(prop[i]->swv[0] == NULL)
 	  reread_wprop_to_wp_field(param.saveflag_w[i], param.savefile_w[i], prop[i]);
 #endif
+	/* Before applying operator, apply momentum twist to
+	   ape_links.  Use the momentum twist of the parent
+	   propagator */
+	momentum_twist_ape_links(i, +1);
 	/* Apply sink operator quark[j] <- Op[j] prop[i] */
 	quark[j] = create_wp_field_copy(prop[i]);
 	wp_sink_op(&param.snk_qs_op[j], quark[j]);
+	/* Remove twist */
+	momentum_twist_ape_links(i, -1);
 #ifdef CLOV_LEAN
 	oldip0 = i;
 	oldiq0 = -1;
 #endif
 
-	/* Can we delete any props now? */
-	/* For each prop, scan ahead to see if it is no longer needed. */
+	/* Can we delete any props and quarks now? */
+	/* If nothing later depends on a prop or quark, free it up. */
 	for(i = 0; i < param.num_prop; i++)
-	  if(prop[i]->swv[0] != NULL){
-	    int wont_need = 1;
-	    for(k = j + 1; k < param.num_qk; k++)
-	      if(param.parent_type[k] == PROP_TYPE &&
-		 param.prop_for_qk[k] == i)
-		wont_need = 0;  /* Still need this one */
-	    if(wont_need){
-	      free_wp_field(prop[i]);
-	      node0_printf("destroy prop[%d]\n",i);
-	    }
+	  if( prop[i]->swv[0] != NULL  &&  param.prop_dep_qkno[i] < j ){
+	    free_wp_field(prop[i]);
+	    node0_printf("free prop[%d]\n",i);
+	  }
+
+	for(i = 0; i < j; i++)
+	  if( quark[i]->swv[0] != NULL  &&  param.quark_dep_qkno[i] < j ){
+	    free_wp_field(quark[i]);
+	    node0_printf("free quark[%d]\n",i);
 	  }
       }
-      else { /* QUARK_TYPE */
+      else if(param.parent_type[j] == QUARK_TYPE) { /* QUARK_TYPE */
 #ifdef CLOV_LEAN
 	/* Restore quark[i] from file */
 	/* But first destroy the old ones, unless we still need one of them */
-
+	
 	/* In this case we won't need the old prop */
 	if(oldip0 >= 0)
 	   if(param.prop_type[oldip0] == CLOVER_TYPE &&
@@ -330,12 +344,28 @@ int main(int argc, char *argv[])
 	
 #endif
 	/* Apply sink operator quark[j] <- Op[j] quark[i] */
+	momentum_twist_ape_links(i, +1);
 	quark[j] = create_wp_field_copy(quark[i]);
 	wp_sink_op(&param.snk_qs_op[j], quark[j]);
+	momentum_twist_ape_links(i, -1);
 #ifdef CLOV_LEAN
 	oldip0 = -1;
 	oldiq0 = i;
 #endif
+      } else { /* COMBO_TYPE */
+	int k;
+	int nc = quark[param.combo_qk_index[j][0]]->nc;
+	/* Create a zero field */
+	quark[j] = create_wp_field(nc);
+	/* Compute the requested linear combination */
+	for(k = 0; k < param.num_combo[j]; k++){
+	  wilson_prop_field *q = quark[param.combo_qk_index[j][k]];
+	  if(nc != q->nc){
+	    printf("Error: Attempting to combine an inconsistent number of colors: %d != %d\n",nc, q->nc);
+	    terminate(1);
+	  }
+	  scalar_mult_add_wprop_field(quark[j], q, param.combo_coeff[j][k], quark[j]);
+	}
       }
 	
       /* Save the resulting quark[j] if requested */
@@ -451,6 +481,7 @@ int main(int argc, char *argv[])
     for(i = 0; i < param.num_qk; i++){
       if(quark[i] != NULL)node0_printf("destroy quark[%d]\n",i);
       destroy_wp_field(quark[i]);
+      quark[i] = NULL;
     }
 
     destroy_ape_links_3D(ape_links);
