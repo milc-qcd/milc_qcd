@@ -1831,8 +1831,7 @@ gauge_file *restore_serial(char *filename)
     {
       r_serial_f(gf);
       /* Close this reader and reread to get the header */
-      free(gf->header);
-      free(gf);
+      free_input_gauge_file(gf);
 #ifdef HAVE_QIO
       gf = restore_serial_scidac(filename);
 #else
@@ -1861,7 +1860,7 @@ gauge_file *restore_parallel(char *filename)
   gf = r_parallel_i(filename);
   if(gf->header->magic_number == LIME_MAGIC_NO)
     {
-      r_serial_f(gf);
+      r_parallel_f(gf);
       /* Close this reader and reread to get the header */
       free(gf->header);
       free(gf);
