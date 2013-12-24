@@ -21,7 +21,7 @@ void show_generic_opts( void ){
   node0_printf("SSE_GLOBAL_INLINE\n");
 #endif
 
-#ifdef SINGLE_FOR_DOUBLE
-  node0_printf("SINGLE_FOR_DOUBLE\n");
+#ifdef HALF_MIXED
+  node0_printf("HALF_MIXED\n");
 #endif
 }
