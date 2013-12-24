@@ -677,7 +677,13 @@ static void spectrum_cl_offdiag_meson(wilson_prop_field *qp0,
    The iq in the call is the index of the quark propagator.
    The history (list of quark propagators and their parents) 
    is returned in in reverse order, as is the number of generations.
-   The ancestral propagator is the return value */
+   The ancestral propagator is the return value.
+
+   This history is linear, so the method breaks when the parent is a
+   linear combination, which then requires a branching tree.
+   To get this right requires more work.
+   
+*/
 
 #define MAX_HISTORY 16
 
@@ -737,13 +743,13 @@ print_start_meson_prop(int pair, int m, char sink[]){
     printf("kappa[%d]=%g ", ip0, param.dcp[ip0].Kappa);
   else if(param.prop_type[ip0] == IFLA_TYPE)
     printf("kappa[%d]=%g ", ip0, param.dcp[ip0].Kappa);
-  else /* KS_TYPE */
+  else /* KS_TYPE, KS0_TYPE, and KS4_TYPE*/
     printf("mass[%d]=%g ", ip0, param.ksp[ip0].mass);
   if(param.prop_type[ip1] == CLOVER_TYPE)
     printf("kappa[%d]=%g ", ip1, param.dcp[ip1].Kappa);
   else if(param.prop_type[ip1] == IFLA_TYPE)
     printf("kappa[%d]=%g ", ip1, param.dcp[ip1].Kappa);
-  else /* KS_TYPE */
+  else /* KS_TYPE, KS0_TYPE, and KS4_TYPE*/
     printf("mass[%d]=%g ", ip1, param.ksp[ip1].mass);
   printf("\n");
   printf("SOURCES: %s %s\n",param.src_qs[ip0].descrp,
@@ -787,6 +793,13 @@ static FILE* open_fnal_meson_file(int pair){
   else
     fprintf(fp,"antiquark_type:               naive\n");
 
+  if(param.prop_type[ip0] == CLOVER_TYPE)
+    fprintf(fp,"antiquark_kappa:              \"%s\"\n",param.kappa_label[ip0]);
+  else if(param.prop_type[ip0] == IFLA_TYPE)
+    fprintf(fp,"antiquark_kappa:              \"%s\"\n",param.kappa_label[ip0]);
+  else /* KS_TYPE, KS0_TYPE, and KS4_TYPE*/
+    fprintf(fp,"antiquark_mass:               \"%s\"\n",param.mass_label[ip0]);
+
   print_source_info(fp, "antiquark_source", &param.src_qs[ip0]);
   fprintf(fp,"antiquark_source_label:       %s\n",param.src_qs[ip0].label);
   print_field_op_info(fp, "antiquark_source", param.src_qs[ip0].op);
@@ -804,13 +817,6 @@ static FILE* open_fnal_meson_file(int pair){
     print_field_op_info_list(fp, "antiquark_sink", op_list, nh0);
     free(op_list);
   }
-      
-  if(param.prop_type[ip0] == CLOVER_TYPE)
-    fprintf(fp,"antiquark_kappa:              \"%s\"\n",param.kappa_label[ip0]);
-  else if(param.prop_type[ip0] == IFLA_TYPE)
-    fprintf(fp,"antiquark_kappa:              \"%s\"\n",param.kappa_label[ip0]);
-  else /* KS_TYPE */
-    fprintf(fp,"antiquark_mass:               \"%s\"\n",param.mass_label[ip0]);
 
   if(param.prop_type[ip1] == CLOVER_TYPE)
     fprintf(fp,"quark_type:                   clover\n");
@@ -818,6 +824,13 @@ static FILE* open_fnal_meson_file(int pair){
     fprintf(fp,"quark_type:                   ifla\n");
   else
     fprintf(fp,"quark_type:                   naive\n");
+
+  if(param.prop_type[ip1] == CLOVER_TYPE)
+    fprintf(fp,"quark_kappa:                  \"%s\"\n",param.kappa_label[ip1]);
+  else if(param.prop_type[ip1] == IFLA_TYPE)
+    fprintf(fp,"quark_kappa:                  \"%s\"\n",param.kappa_label[ip1]);
+  else /* KS_TYPE, KS0_TYPE, and KS4_TYPE*/
+    fprintf(fp,"quark_mass:                   \"%s\"\n",param.mass_label[ip1]);
     
   print_source_info(fp, "quark_source", &param.src_qs[ip1]);
   fprintf(fp,"quark_source_label:           %s\n",param.src_qs[ip1].label);
@@ -836,12 +849,6 @@ static FILE* open_fnal_meson_file(int pair){
     print_field_op_info_list(fp, "quark_sink", op_list, nh1);
     free(op_list);
   }
-  if(param.prop_type[ip1] == CLOVER_TYPE)
-    fprintf(fp,"quark_kappa:                  \"%s\"\n",param.kappa_label[ip1]);
-  else if(param.prop_type[ip1] == IFLA_TYPE)
-    fprintf(fp,"quark_kappa:                  \"%s\"\n",param.kappa_label[ip1]);
-  else /* KS_TYPE */
-    fprintf(fp,"quark_mass:                   \"%s\"\n",param.mass_label[ip1]);
 
   fprintf(fp,"...\n");
   return fp;
@@ -953,13 +960,13 @@ static void print_start_fnal_meson_prop(FILE *fp, int pair, int m)
     fprintf(fp,"_k%s", param.kappa_label[ip0]);
   else if(param.prop_type[ip0] == IFLA_TYPE)
     fprintf(fp,"_k%s", param.kappa_label[ip0]);
-  else /* KS_TYPE */
+  else /* KS_TYPE, KS0_TYPE, and KS4_TYPE*/
     fprintf(fp,"_m%s", param.mass_label[ip0]);
   if(param.prop_type[ip1] == CLOVER_TYPE)
     fprintf(fp,"_k%s", param.kappa_label[ip1]);
   else if(param.prop_type[ip1] == IFLA_TYPE)
     fprintf(fp,"_k%s", param.kappa_label[ip1]);
-  else /* KS_TYPE */
+  else /* KS_TYPE, KS0_TYPE, and KS4_TYPE*/
     fprintf(fp,"_m%s", param.mass_label[ip1]);
   fprintf(fp, "_%s\n", param.mom_label[pair][m]);
 
@@ -1003,7 +1010,7 @@ static void write_open_meson_prop(FILE *fp, int pair, int t,
   mdp_complex c[4][4][3][3];
   int c0,c1,s0,s1;
   
-  if(this_node != 0 || param.saveflag_c[pair] == FORGET)return;
+  if(this_node != 0 || param.saveflag_c[pair] == FORGET || fp == NULL)return;
 
   /* Remap Wilson propagator elements */
   for(c0=0;c0<3;c0++)
@@ -1151,8 +1158,8 @@ static void spectrum_cl_print_diag(int pair){
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
-    if(this_node == 0 && corr_fp == NULL && param.saveflag_c[pair] != FORGET)
-      terminate(1);
+    if(this_node == 0 && corr_fp == NULL)
+      param.saveflag_c[pair] = FORGET;
     
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
@@ -1246,8 +1253,8 @@ static void spectrum_cl_print_offdiag(int pair){
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
-    if(this_node == 0 && corr_fp == NULL && param.saveflag_c[pair] != FORGET)
-      terminate(1);
+    if(this_node == 0 && corr_fp == NULL)
+      param.saveflag_c[pair] = FORGET;
 
     /* print meson propagators */
     for(m=0;m<num_report;m++) {
@@ -1367,6 +1374,19 @@ void spectrum_cl(wilson_prop_field *qp0, wilson_prop_field *qp1, int pair)
     terminate(1);
   }
   spectrum_cl_init(pair);
+
+#if 0
+  // DEBUG TEMPORARY
+  {
+    int i,j,k; site *s;
+    FORALLSITES(i,s){
+      if(s->x % 2 != 0 || s->y %2 != 0 || s->z %2 != 0)
+	for(j = 0; j < 3; j++)
+	  for(k = 0; k < 4; k++)
+	    clear_wvec(&qp0->swv[j][i].d[k]);
+    }
+  }
+#endif
 
   if(qkpair[0] == qkpair[1]){
 
