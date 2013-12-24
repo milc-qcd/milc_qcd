@@ -9,16 +9,17 @@
 
 /**#define GFTIME**/ /* For timing gauge force calculation */
 #include "generic_includes.h"	/* definitions files and prototypes */
+#include "../include/openmp_defs.h"
 
-#ifdef LOOPEND
-#undef FORALLSITES
-#define FORALLSITES(i,s) \
-{ register int loopend; loopend=sites_on_node; \
-for( i=0,  s=lattice ; i<loopend; i++,s++ )
-#define END_LOOP }
-#else
-#define END_LOOP        /* define it to be nothing */
-#endif
+//#ifdef LOOPEND
+//#undef FORALLSITES
+//#define FORALLSITES(i,s) \
+//{ register int loopend; loopend=sites_on_node; \
+ //for( i=0,  s=lattice ; i<loopend; i++,s++ )
+//#define END_LOOP }
+//#else
+//#define END_LOOP        /* define it to be nothing */
+//#endif
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
@@ -99,9 +100,9 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
     /* Loop over directions, update mom[dir] */
     for(dir=XUP; dir<=TUP; dir++){
 
-	FORALLSITES(i,st)for(j=0;j<3;j++)for(k=0;k<3;k++){
+	FORALLSITES_OMP(i,st,private(j,k))for(j=0;j<3;j++)for(k=0;k<3;k++){
 			staple[i].e[j][k]=cmplx(0.0,0.0);
-	} END_LOOP
+	} END_LOOP_OMP
 
 	ncount=0;
 	for(iloop=0;iloop<nloop;iloop++){
@@ -141,7 +142,7 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 			"at our site", so now take adjoint */
 		    /* then compute "single_action" contribution to
 			staple */
-		    FORALLSITES(i,st){
+		    FORALLSITES_OMP(i,st, private(tmat1,new_term,act2,action) ){
 			su3_adjoint( &(tempmat1[i]), &tmat1 );
 			/* first we compute the fundamental term */
 			new_term = loop_coeff[iloop][0];
@@ -163,7 +164,7 @@ node0_printf("WARNING: THIS CODE IS NOT TESTED\n"); exit(0);
 			scalar_mult_add_su3_matrix( &(staple[i]), &tmat1,
 				new_term, &(staple[i]) );
 
-		    } END_LOOP
+		    } END_LOOP_OMP
 
 		    ncount++;
 
@@ -172,14 +173,14 @@ node0_printf("WARNING: THIS CODE IS NOT TESTED\n"); exit(0);
 	} /* iloop */
 
 	/* Now multiply the staple sum by the link, then update momentum */
-	FORALLSITES(i,st){
+	FORALLSITES_OMP(i,st, private(tmat1,tmat2,momentum) ){
 	    mult_su3_na( &(st->link[dir]), &(staple[i]), &tmat1 );
 	    momentum = (anti_hermitmat *)F_PT(st,mom_off);
 	    uncompress_anti_hermitian( &momentum[dir], &tmat2 );
 	    scalar_mult_sub_su3_matrix( &tmat2, &tmat1,
 		eb3, &(staple[i]) );
 	    make_anti_hermitian( &(staple[i]), &momentum[dir] );
-	} END_LOOP
+	} END_LOOP_OMP
     } /* dir loop */
 #ifdef GFTIME
 dtime+=dclock();
