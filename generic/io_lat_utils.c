@@ -657,6 +657,17 @@ gauge_file *setup_input_gauge_file(char *filename)
 
 /*----------------------------------------------------------------------*/
 
+void free_input_gauge_file(gauge_file *gf){
+  if(gf == NULL)return;
+  if(gf->header != NULL)
+    free(gf->header);
+  if(gf->rank2rcv != NULL)
+    free(gf->rank2rcv);
+  free(gf);
+}
+
+/*----------------------------------------------------------------------*/
+
 /* Set up the output gauge file an gauge header structure */
 
 gauge_file *setup_output_gauge_file()
@@ -692,6 +703,7 @@ gauge_file *setup_output_gauge_file()
   gf->header = gh;
 
   /* Initialize */
+  gf->rank2rcv = NULL;
   gf->check.sum29 = 0;
   gf->check.sum31 = 0;
   gf->filename = NULL;
@@ -726,6 +738,19 @@ gauge_file *setup_output_gauge_file()
 
   return gf;
 } /* setup_output_gauge_file */
+
+/*----------------------------------------------------------------------*/
+
+void free_output_gauge_file(gauge_file *gf){
+  if(gf == NULL)return;
+  if(gf->header != NULL)
+    free(gf->header);
+  if(gf->rank2rcv != NULL)
+    free(gf->rank2rcv);
+  free(gf);
+}
+
+
 /*---------------------------------------------------------------------------*/
 /* Read checksum and compare.  It is assumed that the file is already
    correctly positioned.
@@ -1763,6 +1788,7 @@ void r_serial_f(gauge_file *gf)
     }
   
   if(gf->rank2rcv != NULL)free(gf->rank2rcv);
+  gf->rank2rcv = NULL;
   
   /* Do not free gf and gf->header so calling program can use them */
 
