@@ -662,7 +662,6 @@ static FILE* open_fnal_meson_file(int pair){
     free(op_list);
   }
       
-
   fprintf(fp,"antiquark_mass:               \"%s\"\n", param.mass_label[ip0]);
 #if ( FERM_ACTION == HISQ || FERM_ACTION == HYPISQ )
   fprintf(fp,"antiquark_epsilon:            %g\n", param.ksp[ip0].naik_term_epsilon);
@@ -1058,6 +1057,8 @@ static void spectrum_ks_print_diag(int pair){
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
+    if(this_node == 0 && corr_fp == NULL)
+      param.saveflag_m[pair] = FORGET;
     
     for(m=0;m<num_report;m++) {
       norm_fac = num_corr_occur[m];
@@ -1097,6 +1098,8 @@ static void spectrum_ks_print_offdiag(int pair){
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
+    if(this_node == 0 && corr_fp == NULL)
+      param.saveflag_m[pair] = FORGET;
 
     /* print meson propagators */
     for(m=0;m<num_report;m++) {
@@ -1135,6 +1138,8 @@ static void spectrum_ks_print_baryon(int triplet){
   /* print baryon propagator */
   if(param.do_baryon_spect[triplet]){
     corr_fp = open_fnal_baryon_file(triplet);
+    if(this_node == 0 && corr_fp == NULL)
+      param.saveflag_b[triplet] = FORGET;
 
     for(b=0;b<num_corr;b++){
 
