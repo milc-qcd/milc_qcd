@@ -247,6 +247,7 @@ static dump_wprop(wilson_propagator *wp, int t){
       for(ci=0;ci<3;ci++){
 	for(cf=0;cf<3;cf++)
 	  printf("( %10.3e , %10.3e )  ",
+	  //	  printf("( %16.9e , %16.9e )  ",
 		 wp->c[ci].d[si].d[sf].c[cf].real,
 		 wp->c[ci].d[si].d[sf].c[cf].imag);
 	printf("\n");
