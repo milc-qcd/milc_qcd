@@ -10,6 +10,7 @@
 #define MAX_SOURCE 24
 #define MAX_PROP 16
 #define MAX_QK 64
+#define MAX_COMBO 8
 #define MAX_PAIR 128
 #define MAX_QKPAIR_LABEL 32
 #define MAX_MESON 32
@@ -20,6 +21,7 @@
 #define MAX_CORR 200
 #define PROP_TYPE 0
 #define QUARK_TYPE 1
+#define COMBO_TYPE 2
 #define BASE_SOURCE_PARENT -1
 
 enum checktype { CHECK_NO, CHECK_YES, CHECK_SOURCE_ONLY };
@@ -60,7 +62,7 @@ typedef struct {
   quark_source_sink_op src_qs_op[MAX_SOURCE];
   int parent_source[MAX_SOURCE];      /* base_source or source index */
   int num_prop; /* number of propagators */
-  int prop_type[MAX_PROP]; /* 0 clover 1 KS */
+  int prop_type[MAX_PROP]; /* 0 clover 1 KS, etc */
   int source[MAX_PROP]; /* source index for this propagator */
   int startflag_w[MAX_PROP];	/* what to do for beginning wilson prop */
   int saveflag_w[MAX_PROP];	/* what to do for saving wilson prop */
@@ -77,6 +79,11 @@ typedef struct {
   int num_qk;	              /* number of quarks */
   int parent_type[MAX_QK];      /* propagator type: quark or propagator */
   int prop_for_qk[MAX_QK];           /* Propagator or quark index for quark */
+  int prop_dep_qkno[MAX_PROP];  /* Last quark number that prop depends on */
+  int quark_dep_qkno[MAX_QK];   /* Last quark number that quark or meson depends on */
+  int combo_qk_index[MAX_QK][MAX_COMBO]; /* Quark index for combinations */
+  int num_combo[MAX_QK];  /* Number of quarks to combine */
+  Real combo_coeff[MAX_QK][MAX_COMBO]; /* Coefficients of linear combination */
   int naik_index[MAX_QK];            /* Naik term index for quark */
   int saveflag_q[MAX_QK];	/* what to do for saving wilson prop */
   int savetype_q[MAX_QK];	/* type of output: source or wprop */
