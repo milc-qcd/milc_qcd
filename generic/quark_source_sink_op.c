@@ -66,12 +66,16 @@
 #include "../include/generic_quark_types.h"
 #include "../include/io_ksprop.h"
 #include "../include/io_wprop.h"
+#include "../include/gammatypes.h"
 #include <string.h>
 #ifdef HAVE_QIO
 #include <qio.h>
 #include "../include/io_scidac.h"
 #include "../include/io_scidac_ks.h"
 #include "../include/io_scidac_w.h"
+#endif
+#ifdef HAVE_DIRAC
+#include "../include/generic_clover.h"
 #endif
 
 /*-------------------------------------------------------------*/
@@ -97,7 +101,20 @@ void init_qss_op(quark_source_sink_op *qss_op){
   qss_op->r_offset[2]      = 0;
   qss_op->r_offset[3]      = 0;
   qss_op->spin_taste       = -1;
+  qss_op->gamma            = 0;
   qss_op->source_file[0]   = '\0';
+  qss_op->dcp.Kappa        = 0;
+  qss_op->dcp.Clov_c       = 1.;
+  qss_op->dcp.U0           = 1.;
+  qss_op->co[0]            = 0;
+  qss_op->co[1]            = 0;
+  qss_op->co[2]            = 0;
+  qss_op->co[3]            = 0;
+  qss_op->bp[0]            = 0.;
+  qss_op->bp[1]            = 0.;
+  qss_op->bp[2]            = 0.;
+  qss_op->bp[3]            = 0.;
+  qss_op->t0               = 0;
   qss_op->op               = NULL;
 } /* init_qss_op */
 
@@ -194,6 +211,20 @@ void insert_qss_op(quark_source *qs, quark_source_sink_op *qss_op){
   }
   op->op = qss_op;
 } /* insert_qss_op */
+
+/* Accessor for Naik epsilon parameter in embedded KS inverse and hopping operator */
+/* Returns 0 if a Naik epsilon is not used for this operator */
+int get_qss_eps_naik(Real *eps_naik, quark_source_sink_op *qss_op){
+  if(qss_op->type == KS_INVERSE || qss_op->type == HOPPING){
+    *eps_naik = qss_op->eps_naik;
+    return 1;
+  }
+  return 0;
+}
+
+void insert_qss_eps_naik_index(int index, quark_source_sink_op *qss_op){
+  qss_op->ksp.naik_term_epsilon_index = index;
+}
 
 /*--------------------------------------------------------------------*/
 /* Smearing (convolution) operations                                  */
@@ -769,6 +800,46 @@ static void hop_wvec(wilson_vector *src, int dhop, int mu)
 
 #endif
 
+/*--------------------------------------------------------------------*/
+/* Multiply by KS Gamma                                               */
+/*--------------------------------------------------------------------*/
+
+/* Apply the inverse of the Kawamoto Smit operator to the Dirac field */
+
+static void ks_gamma(wilson_vector *src, int r0[])
+{
+  char myname[] = "ks_gamma";
+  
+  if(src == NULL){
+    node0_printf("%s: Error: called with NULL arg\n", myname);
+    terminate(1);
+  }
+
+  /* Apply KS Gamma to the src field */
+  mult_by_ks_gamma_wv(src, r0);
+
+} /* ks_gamma */
+
+/*--------------------------------------------------------------------*/
+/* Multiply by KS Gamma inverse                                               */
+/*--------------------------------------------------------------------*/
+
+/* Apply the inverse of the Kawamoto Smit operator to the Dirac field */
+
+static void ks_gamma_inv(wilson_vector *src, int r0[])
+{
+  char myname[] = "ks_gamma_inv";
+  
+  if(src == NULL){
+    node0_printf("%s: Error: called with NULL arg\n", myname);
+    terminate(1);
+  }
+
+  /* Apply KS Gamma inverse to the source field */
+  mult_by_ks_gamma_inv_wv(src, r0);
+
+} /* ks_gamma_inv */
+
 #endif
 
 #if 0
@@ -833,8 +904,9 @@ static int requires_gauge_field(int op_type){
     op_type == FAT_COVARIANT_GAUSSIAN ||
     op_type == FUNNYWALL1 ||
     op_type == FUNNYWALL2 ||
+    op_type == HOPPING    ||
+    op_type == KS_INVERSE ||
     op_type == ROTATE_3D  ||
-    op_type == HOPPING        ||
     op_type == SPIN_TASTE;
 }
 #endif
@@ -909,7 +981,176 @@ static int apply_convolution_v(su3_vector *src, quark_source_sink_op *qss_op,
   return 1;
 }
 
+static void apply_modulation_v(su3_vector *src, 
+			       quark_source_sink_op *qss_op,
+			       int t0){
+  
+#ifndef HAVE_QIO
+  char myname[] = "apply_modulation_wv";
 #endif
+  char *modulation_file  = qss_op->source_file;
+  complex *chi_cs  = create_c_field();
+  int i,cf;
+  site *s;
+  complex z;
+
+  /* Read complex modulating field */
+
+#ifdef HAVE_QIO
+  restore_complex_scidac_to_field(modulation_file, QIO_SERIAL, chi_cs, 1);
+#else
+  node0_printf("%s QIO compilation required for this source\n", myname);
+  terminate(1);
+#endif
+  
+  /* src  <- src * chi_cs */
+  FORALLSITES(i,s){
+    if(s->t == t0 || t0 == ALL_T_SLICES){
+      for(cf=0;cf<3;cf++){
+	  z = src[i].c[cf];
+	  CMUL(z, chi_cs[i], src[i].c[cf]);
+	}
+    }
+  }
+}
+
+static void apply_momentum_v(su3_vector *src, 
+			     quark_source_sink_op *qss_op,
+			     int t0){
+  int i; site *s;
+  int c;
+  Real pi = M_PI;
+  Real th;
+  Real px, py, pz;
+  int x0, y0, z0;
+  complex z,y;
+  
+  if(qss_op->mom[0] == 0 && qss_op->mom[1] == 0 && qss_op->mom[2] == 0)return;
+
+  px = 2*pi*qss_op->mom[0]/nx;
+  py = 2*pi*qss_op->mom[1]/ny;
+  pz = 2*pi*qss_op->mom[2]/nz;
+
+  x0 = qss_op->r_offset[0];
+  y0 = qss_op->r_offset[1];
+  z0 = qss_op->r_offset[2];
+
+  FORALLSITES(i,s)if(t0 == ALL_T_SLICES || s->t == t0){
+    th = px*(s->x-x0) + py*(s->y-y0) + pz*(s->z-z0);
+    y.real = cos(th); y.imag = sin(th);
+    for(c=0;c<3;c++){
+      z = src[i].c[c];
+      CMUL(z,y,src[i].c[c]);
+    }
+  }
+}
+  
+static void apply_tslice_projection_v(su3_vector *src, 
+				      quark_source_sink_op *qss_op){
+  int i;
+  site *s;
+  FORALLSITES(i,s){
+    if(s->t != qss_op->t0)clearvec(src+i);
+  }
+}
+
+static void apply_spin_taste(su3_vector *src, quark_source_sink_op *qss_op){
+  su3_vector *dst = create_v_field();
+  
+  /* At present we do not support "fn" type spin-taste operators here */
+  spin_taste_op(qss_op->spin_taste, qss_op->r_offset, dst, src);
+
+  /* The spin_taste_op phases were designed for tying together two
+       forward propagators by first converting one of them to an
+       antiquark propagator.  So they include the antiquark phase
+       (-)^{x+y+z+t}.  For an extended source we don't want the
+       antiquark phase.  The next step removes it.  That way the user
+       input snk_spin_taste label describes the actual meson at the
+       extended source. */
+  spin_taste_op(spin_taste_index("pion05"), qss_op->r_offset, src, dst);
+
+  
+  //  copy_v_field(src, dst);
+  destroy_v_field(dst);
+  
+}
+
+static void apply_ext_src_v(su3_vector *src, 
+			    quark_source_sink_op *qss_op){
+  apply_tslice_projection_v(src, qss_op);
+  apply_spin_taste(src, qss_op);
+  apply_momentum_v(src, qss_op, qss_op->t0);
+}
+
+#ifndef NO_GAUGE_FIELD
+
+static int apply_ks_inverse(su3_vector *v, quark_source_sink_op *qss_op,
+			    int t0){
+  char myname[] = "apply_ks_inverse";
+  int i; site *s;
+  int tot_iters = 0;
+  su3_vector *src = create_v_field();
+  quark_invert_control *my_qic = &qss_op->qic;
+  ks_param *my_ksp             = &qss_op->ksp;
+  int inaik                    = my_ksp->naik_term_epsilon_index;
+  Real *bdry_phase             = qss_op->bp;
+  int *r0                      = qss_op->co;
+  Real mybdry_phase[4];
+  imp_ferm_links_t *fn;
+
+  if(src == NULL){
+    printf("%s: No room\n", myname);
+    terminate(1);
+  }
+
+  /* Copy field to source */
+  copy_v_field(src, v);
+  clear_v_field(v);
+
+  /* Clear all values except on specified time slice */
+  if(t0 != ALL_T_SLICES)
+    FORALLSITES(i,s){
+      if(s->t != t0)
+	clearvec(src+i);
+    }
+
+  /* Local copy of bdry_phase */
+  for(i = 0; i < 4; i++)
+    mybdry_phase[i] = bdry_phase[i];
+  
+  /* Get fn links appropraite to this Naik term epsilon */
+  
+  restore_fermion_links_from_site(fn_links, my_qic->prec);
+  fn = get_fm_links(fn_links)[inaik];
+
+  /* Apply twist to the boundary links of fn and reset origin of KS
+     phases if requested */
+  set_boundary_twist_fn(fn, mybdry_phase, r0);
+  boundary_twist_fn(fn, ON);
+
+  /* If we are twisting, apply the momentum twist to the source */
+  /* See ks_spectrum/make_prop.c for an explanation */
+  mybdry_phase[3] = 0; 
+  rephase_v_field(src, mybdry_phase, r0, 1);
+  mybdry_phase[3] = bdry_phase[3]; 
+  
+  /* Solve for propagator */
+  tot_iters += mat_invert_uml_field(src, v, my_qic, my_ksp->mass, fn);
+  
+  /* Undo momentum twist on sink */
+  mybdry_phase[3] = 0; 
+  rephase_v_field(v, mybdry_phase, r0, -1);
+  mybdry_phase[3] = bdry_phase[3]; 
+  
+  /* Undo twist on fn links */
+  boundary_twist_fn(fn, OFF);
+
+  destroy_v_field(src);
+  return tot_iters;
+}
+
+#endif /* ifndef NO_GAUGE_FIELD */
+#endif /* HAVE_KS */
 
 #ifdef HAVE_DIRAC
 
@@ -920,7 +1161,6 @@ static int apply_convolution_wv(wilson_vector *src,
   complex *chi_cs   = get_convolving_field(qss_op, t0);
 
   if(chi_cs == NULL){
-    free(chi_cs);
     return 0;
   }
 
@@ -933,7 +1173,162 @@ static int apply_convolution_wv(wilson_vector *src,
 
 }
 
+static void apply_modulation_wv(wilson_vector *src, 
+				quark_source_sink_op *qss_op,
+				int t0){
+  
+#ifndef HAVE_QIO
+  char myname[] = "apply_modulation_wv";
 #endif
+  char *modulation_file  = qss_op->source_file;
+  complex *chi_cs  = create_c_field();
+  int i,sf,cf;
+  site *s;
+  complex z;
+
+  /* Read complex modulating field */
+
+#ifdef HAVE_QIO
+  restore_complex_scidac_to_field(modulation_file, QIO_SERIAL, chi_cs, 1);
+#else
+  node0_printf("%s QIO compilation required for this source\n", myname);
+  terminate(1);
+#endif
+  
+  /* src  <- src * chi_cs */
+  FORALLSITES(i,s){
+    if(s->t == t0 || t0 == ALL_T_SLICES){
+      for(sf=0;sf<4;sf++)for(cf=0;cf<3;cf++){
+	  z = src[i].d[sf].c[cf];
+	  CMUL(z, chi_cs[i], src[i].d[sf].c[cf]);
+	}
+    }
+  }
+}
+
+static void apply_momentum_wv(wilson_vector *src, 
+			      quark_source_sink_op *qss_op,
+			      int t0){
+  int i; site *s;
+  int c,d;
+  Real pi = M_PI;
+  Real th;
+  Real px, py, pz;
+  int x0, y0, z0;
+  complex z,y;
+  
+  if(qss_op->mom[0] == 0 && qss_op->mom[1] == 0 && qss_op->mom[2] == 0)return;
+
+  px = 2*pi*qss_op->mom[0]/nx;
+  py = 2*pi*qss_op->mom[1]/ny;
+  pz = 2*pi*qss_op->mom[2]/nz;
+
+  x0 = qss_op->r_offset[0];
+  y0 = qss_op->r_offset[1];
+  z0 = qss_op->r_offset[2];
+
+  FORALLSITES(i,s)if(t0 == ALL_T_SLICES || s->t == t0){
+    th = px*(s->x-x0) + py*(s->y-y0) + pz*(s->z-z0);
+    y.real = cos(th); y.imag = sin(th);
+    for(c=0;c<3;c++)
+      for(d=0;d<4;d++){
+	z = src[i].d[d].c[c];
+	CMUL(z,y,src[i].d[d].c[c]);
+      }
+  }
+}
+  
+static void apply_tslice_projection_wv(wilson_vector *src, 
+				       quark_source_sink_op *qss_op){
+  int i;
+  site *s;
+  FORALLSITES(i,s){
+    if(s->t != qss_op->t0)clear_wvec(src+i);
+  }
+}
+
+static void apply_gamma(wilson_vector *src, 
+			quark_source_sink_op *qss_op){
+  int i;
+  site *s;
+  int gam = qss_op->gamma;
+  wilson_vector tmp;
+
+  FORALLSITES(i,s){
+    mult_w_by_gamma( src+i, &tmp, gam );
+    src[i] = tmp;
+  }
+}
+
+static void apply_ext_src_wv(wilson_vector *src, 
+			     quark_source_sink_op *qss_op){
+  apply_tslice_projection_wv(src, qss_op);
+  apply_gamma(src, qss_op);
+  apply_momentum_wv(src, qss_op, qss_op->t0);
+}
+
+#ifndef NO_GAUGE_FIELD 
+
+static int apply_dirac_inverse(wilson_vector *wv,
+			       quark_source_sink_op *qss_op,
+			       int t0){
+  char myname[] = "apply_dirac_inverse";
+  int i; site *s;
+  int tot_iters = 0;
+  wilson_vector *src = create_wv_field();
+  quark_invert_control *my_qic = &qss_op->qic;
+  dirac_clover_param *my_dcp   = &qss_op->dcp;
+  Real *bdry_phase             = qss_op->bp;
+  int *r0                      = qss_op->co;
+  Real mybdry_phase[4];
+
+  if(src == NULL){
+    printf("%s: No room\n", myname);
+    terminate(1);
+  }
+
+  /* Copy field to source */
+  copy_wv_field(src, wv);
+  clear_wv_field(wv);
+
+  /* Clear all values except on specified time slice */
+  if(t0 != ALL_T_SLICES)
+    FORALLSITES(i,s){
+      if(s->t != t0)
+	clear_wvec(src+i);
+    }
+
+  /* Local copy of bdry_phase */
+  for(i = 0; i < 4; i++)
+    mybdry_phase[i] = bdry_phase[i];
+
+  /* Apply twist to boundary links of the gauge field in site structure */
+  boundary_twist_site(mybdry_phase, r0, +1);
+
+  /* Do momentum twist if requested */
+  mybdry_phase[3] = 0; 
+  rephase_wv_field(src, mybdry_phase, r0, 1);
+  mybdry_phase[3] = bdry_phase[3]; 
+  
+  /* Solve for propagator */
+  tot_iters += bicgilu_cl_field(src, wv, my_qic, my_dcp);
+  report_status(my_qic);
+  
+  /* Undo momentum twist */
+  mybdry_phase[3] = 0; 
+  rephase_wv_field(wv, mybdry_phase, r0, -1);
+  mybdry_phase[3] = bdry_phase[3]; 
+  
+  /* Undo twist to boundary links in gauge field */
+  boundary_twist_site(mybdry_phase, r0, -1);
+  
+  destroy_wv_field(src);
+  return tot_iters;
+}
+
+#endif /* not NO_GAUGE_FIELD */
+
+#endif /* HAVE_DIRAC */
 
 #ifdef HAVE_KS
 
@@ -1271,17 +1666,6 @@ static int apply_funnywall(su3_vector *src, quark_source_sink_op *qss_op){
   return 1;
 }
 
-static void apply_spin_taste(su3_vector *src, quark_source_sink_op *qss_op){
-  su3_vector *dst = create_v_field();
-  
-  /* At present we do not support "fn" type spin-taste operators here */
-  spin_taste_op(qss_op->spin_taste, qss_op->r_offset, dst, src);
-  
-  copy_v_field(src, dst);
-  destroy_v_field(dst);
-  
-}
-
 /*--------------------------------------------------------------------*/
 /* KS hop                                                             */
 /*--------------------------------------------------------------------*/
@@ -1307,19 +1691,18 @@ static void apply_spin_taste(su3_vector *src, quark_source_sink_op *qss_op){
    the staggered phases.
 */
 
-static void hop_vec(su3_vector *src, Real eps, int dhop, int mu)
+static void hop_vec(su3_vector *src, ks_param *ksp, int dhop, int mu)
 {
   int sign;
   su3_vector *v;
   char myname[] = "hop_vec";
   Real wtfatf, wtfatb, wtlongf, wtlongb;
 #if FERM_ACTION == HISQ
-  int n_naiks = get_n_naiks_hisq(fn_links);
-  double *eps_naik = get_eps_naik_hisq(fn_links);
-  int inaik = index_eps_naik(eps_naik, n_naiks, eps);
+  int inaik = ksp->naik_term_epsilon_index;
 #else
   int inaik = 0;
 #endif
+  /* Note: we are not restoring the links here and don't set the precision */
   imp_ferm_links_t *fn = get_fm_links(fn_links)[inaik];
   
   if(src == NULL){
@@ -1375,7 +1758,23 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
   else if(is_convolution(op_type))
     apply_convolution_v(src, qss_op, t0);
 
+  /* Modulation and projection */
+
+  else if(op_type == MODULATION_FILE)
+    apply_modulation_v(src, qss_op, t0);
+
+  else if(op_type == MOMENTUM)
+    apply_momentum_v(src, qss_op, t0);
+
+  else if(op_type == EXT_SRC_KS)
+    apply_ext_src_v(src, qss_op);
+
+  else if(op_type == PROJECT_T_SLICE)
+    apply_tslice_projection_v(src, qss_op);
+
 #ifndef NO_GAUGE_FIELD
+  else if(op_type == KS_INVERSE)
+    apply_ks_inverse(src, qss_op, t0);
 
   else if(is_cov_deriv(op_type))
     apply_cov_deriv_v(src, qss_op);
@@ -1390,7 +1789,7 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
     apply_spin_taste(src, qss_op);
 
   else if(op_type == HOPPING)
-    hop_vec(src, qss_op->eps_naik, qss_op->dhop, qss_op->dir1);
+    hop_vec(src, &qss_op->ksp, qss_op->dhop, qss_op->dir1);
 
 #endif
 
@@ -1401,7 +1800,8 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
 
   /* Apply subset mask */
 
-  subset_mask_v(src, subset, t0);
+  // Not good. Cancels some of these ops
+  //  subset_mask_v(src, subset, t0);
 
 } /* v_field_op */
 
@@ -1432,7 +1832,27 @@ void wv_field_op(wilson_vector *src, quark_source_sink_op *qss_op,
   else if(is_convolution(op_type))
     apply_convolution_wv(src, qss_op, t0);
 
+  /* Modulation and projection */
+
+  else if(op_type == MODULATION_FILE)
+    apply_modulation_wv(src, qss_op, t0);
+
+  else if(op_type == MOMENTUM)
+    apply_momentum_wv(src, qss_op, t0);
+
+  else if(op_type == EXT_SRC_DIRAC)
+    apply_ext_src_wv(src, qss_op);
+
+  else if(op_type == PROJECT_T_SLICE)
+    apply_tslice_projection_wv(src, qss_op);
+
+  else if(op_type == GAMMA)
+    apply_gamma(src, qss_op);
+
 #ifndef NO_GAUGE_FIELD
+  else if(op_type == DIRAC_INVERSE)
+    apply_dirac_inverse(src, qss_op, t0);
+
   else if(is_cov_smear(op_type))
     apply_cov_smear_wv(src, qss_op, t0);
 
@@ -1449,6 +1869,12 @@ void wv_field_op(wilson_vector *src, quark_source_sink_op *qss_op,
 
 #endif
 
+  else if(op_type == KS_GAMMA)
+    ks_gamma(src, qss_op->r_offset);
+
+  else if(op_type == KS_GAMMA_INV)
+    ks_gamma_inv(src, qss_op->r_offset);
+
   else {
     node0_printf("%s: Unrecognized operator type %d\n", myname, op_type);
     terminate(1);
@@ -1456,7 +1882,8 @@ void wv_field_op(wilson_vector *src, quark_source_sink_op *qss_op,
 
   /* Apply subset mask */
 
-  subset_mask_wv(src, subset, t0);
+  /* Do we ever need this? */
+  //  subset_mask_wv(src, subset, t0);
 
 } /* wv_field_op */
 
@@ -1535,11 +1962,22 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     printf("'fat_covariant_gaussian', ");
     printf("'funnywall1', ");
     printf("'funnywall2', ");
+    printf("'dirac_inverse', ");
     printf("'hop', ");
+    printf("'ks_gamma', ");
+    printf("'ks_gamma_inv', ");
+    printf("'ks_inverse', ");
     printf("'rotate_3D', ");
-    printf("'spin_taste',");
+    printf("'gamma', ");
+    printf("'spin_taste', ");
     printf("\n     ");
-    printf(", for source type\n");
+    printf("'momentum', ");
+    printf("'modulation', ");
+    printf("'project_t_slice', ");
+    printf("'ext_src_ks', ");
+    printf("'ext_src_dirac', ");
+    printf("\n     ");
+    printf(", for field op\n");
   }
 
   savebuf = get_next_tag(fp, "quark source op command", myname);
@@ -1554,6 +1992,10 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     *source_type = COMPLEX_FIELD_FM_FILE;
     strcpy(descrp,"complex_field_fm");
   }
+  else if(strcmp("dirac_inverse",savebuf) == 0 ) {
+    *source_type = DIRAC_INVERSE;
+    strcpy(descrp,"dirac_inverse");
+  }
   else if(strcmp("evenandodd_wall",savebuf) == 0 ) {
     *source_type = EVENANDODD_WALL;
     strcpy(descrp,"even_and_odd_wall");
@@ -1566,11 +2008,39 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     *source_type = IDENTITY;
     strcpy(descrp,"identity");
   }
+  else if(strcmp("ks_inverse",savebuf) == 0 ) {
+    *source_type = KS_INVERSE;
+    strcpy(descrp,"ks_inverse");
+  }
   else if(strcmp("wavefunction",savebuf) == 0 ){
     *source_type = WAVEFUNCTION_FILE;
     strcpy(descrp,"wavefunction");
   }
-
+  /* Modulation and projection */
+  else if(strcmp("modulation",savebuf) == 0 ){
+    *source_type = MODULATION_FILE;
+    strcpy(descrp,"modulation");
+  }
+  else if(strcmp("momentum",savebuf) == 0 ){
+    *source_type = MOMENTUM;
+    strcpy(descrp,"momentum");
+  }
+  else if(strcmp("ext_src_ks",savebuf) == 0 ){
+    *source_type = EXT_SRC_KS;
+    strcpy(descrp,"ext_src_ks");
+  }
+  else if(strcmp("ext_src_dirac",savebuf) == 0 ){
+    *source_type = EXT_SRC_DIRAC;
+    strcpy(descrp,"ext_src_dirac");
+  }
+  else if(strcmp("project_t_slice",savebuf) == 0 ){
+    *source_type = PROJECT_T_SLICE;
+    strcpy(descrp,"project_t_slice");
+  }
+  else if(strcmp("gamma",savebuf) == 0 ){
+    *source_type = GAMMA;
+    strcpy(descrp,"gamma");
+  }
   /* Local operators */
   else if(strcmp("covariant_gaussian",savebuf) == 0 ) {
     *source_type = COVARIANT_GAUSSIAN;
@@ -1591,6 +2061,14 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
   else if(strcmp("deriv3_A",savebuf) == 0 ) {
     *source_type = DERIV3_A;
     strcpy(descrp,"deriv3_A");
+  }
+  else if(strcmp("ks_gamma",savebuf) == 0 ) {
+    *source_type = KS_GAMMA;
+    strcpy(descrp,"ks_gamma");
+  }
+  else if(strcmp("ks_gamma_inv",savebuf) == 0 ) {
+    *source_type = KS_GAMMA_INV;
+    strcpy(descrp,"ks_gamma_inv");
   }
   else if(strcmp("fat_covariant_gaussian",savebuf) == 0 ) {
     *source_type = FAT_COVARIANT_GAUSSIAN;
@@ -1616,7 +2094,7 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
   }
   else if(strcmp("spin_taste",savebuf) == 0 ){
     *source_type = SPIN_TASTE;
-    strcpy(descrp,"SPIN_TASTE");
+    strcpy(descrp,"spin_taste");
   }
   else{
     printf("%s: ERROR IN INPUT: field operation command %s is invalid\n",myname,
@@ -1706,7 +2184,60 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_s(fp, prompt, "load_source", source_file);
     IF_OK status += get_f(fp, prompt, "a", &a);
   }
-  
+
+  /* Modulation and projections */
+  else if ( op_type == MODULATION_FILE ){
+    IF_OK status += get_s(fp, prompt, "load_source", source_file);
+  }
+  else if ( op_type == MOMENTUM){
+    IF_OK status += get_vi(fp, prompt, "momentum", qss_op->mom, 3);
+  }
+  else if ( op_type == PROJECT_T_SLICE ){
+    IF_OK status += get_i(fp, prompt, "t0", &qss_op->t0);
+  }
+#ifdef HAVE_DIRAC
+  else if ( op_type == GAMMA ){
+    char gam_op_lab[MAXGAMMA];
+    IF_OK status += get_s(fp, prompt, "gamma", gam_op_lab);
+    IF_OK {
+      qss_op->gamma = gamma_index(gam_op_lab);
+      if(qss_op->gamma < 0){
+	printf("\n%s is not a valid gamma matrix label\n",gam_op_lab);
+	status++;
+      }
+    }
+  }
+#endif
+#ifdef HAVE_KS
+  else if ( op_type == EXT_SRC_KS ){
+    char gam_op_lab[MAXGAMMA];
+    IF_OK status += get_s(fp, prompt, "spin_taste", gam_op_lab);
+    IF_OK {
+      qss_op->gamma = spin_taste_index(gam_op_lab);
+      if(qss_op->gamma < 0){
+	printf("\n%s is not a valid spin-taste label\n",gam_op_lab);
+	status++;
+      }
+    }
+    IF_OK status += get_vi(fp, prompt, "momentum", qss_op->mom, 3);
+    IF_OK status += get_i(fp, prompt, "t0", &qss_op->t0);
+  }
+#endif
+#ifdef HAVE_DIRAC
+  else if ( op_type == EXT_SRC_DIRAC ){
+    char gam_op_lab[MAXGAMMA];
+    IF_OK status += get_s(fp, prompt, "gamma", gam_op_lab);
+    IF_OK {
+      qss_op->gamma = gamma_index(gam_op_lab);
+      if(qss_op->gamma < 0){
+	printf("\n%s is not a valid gamma matrix label\n",gam_op_lab);
+	status++;
+      }
+    }
+    IF_OK status += get_vi(fp, prompt, "momentum", qss_op->mom, 3);
+    IF_OK status += get_i(fp, prompt, "t0", &qss_op->t0);
+  }
+#endif
   /* Local operators */
   else if( op_type == DERIV1){
     /* Parameters for derivative */
@@ -1729,12 +2260,55 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(fp, prompt, "disp", &qss_op->disp);
     IF_OK status += get_vf(fp, prompt, "weights", qss_op->weights, qss_op->disp);
   }
+  else if( op_type == DIRAC_INVERSE){
+    char savebuf[128];
+    /* Parameters for Dirac inverse */
+    IF_OK status += get_s(stdin, prompt,"kappa", qss_op->kappa_label);
+    IF_OK qss_op->dcp.Kappa = atof(qss_op->kappa_label);
+    IF_OK status += get_f(stdin, prompt,"clov_c", &qss_op->dcp.Clov_c );
+    IF_OK status += get_f(stdin, prompt,"u0", &qss_op->dcp.U0 );
+    IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
+			  &qss_op->qic.max );
+    IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
+			  &qss_op->qic.nrestart );
+    IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
+			  &qss_op->qic.resid );
+    IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
+			  &qss_op->qic.relresid );
+    IF_OK status += get_i(stdin, prompt,"precision", &qss_op->qic.prec );
+    IF_OK qss_op->qic.parity = EVENANDODD;
+    IF_OK qss_op->qic.min = 0;
+    IF_OK qss_op->qic.start_flag = 0;
+    IF_OK qss_op->qic.nsrc = 1;
+    IF_OK status += get_vi(stdin, prompt, "coordinate_origin", qss_op->co, 4);
+    IF_OK status += get_vf(stdin, prompt, "momentum_twist", qss_op->bp, 3);
+    IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
+    IF_OK {
+      /* NOTE: The Dirac built-in bc is periodic. */
+      if(strcmp(savebuf,"antiperiodic") == 0)qss_op->bp[3] = 1;
+      else if(strcmp(savebuf,"periodic") == 0)qss_op->bp[3] = 0;
+    }
+  }
   else if( op_type == FAT_COVARIANT_GAUSSIAN){
     /* Parameters for covariant Gaussian */
     IF_OK status += get_i(fp, prompt, "stride", &stride);
     IF_OK status += get_f(fp, prompt, "r0", &source_r0);
     IF_OK status += get_i(fp, prompt, "source_iters", &source_iters);
   }
+#ifdef HAVE_KS
+  else if( op_type == SPIN_TASTE){
+    char spin_taste_label[8];
+    /* Parameters for spin-taste */
+    IF_OK status += get_s(fp, prompt, "spin_taste", spin_taste_label);
+    IF_OK {
+      qss_op->spin_taste = spin_taste_index(spin_taste_label);
+      if(qss_op->spin_taste < 0){
+	printf("\n: Unrecognized spin-taste label %s.\n", spin_taste_label);
+	status++;
+      }
+    }
+  }
+#endif
   else if( op_type == HOPPING){
     /* Parameters for hopping matrix */
     IF_OK status += get_i(fp, prompt, "derivs",   &qss_op->dhop);
@@ -1744,7 +2318,40 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_f(fp, prompt, "eps_naik", &qss_op->eps_naik);
 #endif
   }
+  else if( op_type == KS_GAMMA || op_type == KS_GAMMA_INV ){
+    /* No additional parameters needed */
+  }
 
+  else if( op_type == KS_INVERSE){
+    char savebuf[128];
+    /* Parameters for Dirac inverse */
+    IF_OK status += get_s(stdin, prompt,"mass", qss_op->mass_label);
+    IF_OK qss_op->ksp.mass = atof(qss_op->mass_label);
+    IF_OK status += get_f(stdin, prompt,"naik_term_epsilon", &qss_op->eps_naik );
+    IF_OK status += get_f(stdin, prompt,"u0", &qss_op->dcp.U0 );
+    IF_OK status += get_i(stdin,prompt,"max_cg_iterations", 
+			  &qss_op->qic.max );
+    IF_OK status += get_i(stdin,prompt,"max_cg_restarts", 
+			  &qss_op->qic.nrestart );
+    IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
+			  &qss_op->qic.resid );
+    IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
+			  &qss_op->qic.relresid );
+    IF_OK status += get_i(stdin, prompt,"precision", &qss_op->qic.prec );
+    IF_OK qss_op->qic.parity = EVENANDODD;
+    IF_OK qss_op->qic.min = 0;
+    IF_OK qss_op->qic.start_flag = 0;
+    IF_OK qss_op->qic.nsrc = 1;
+    IF_OK status += get_vi(stdin, prompt, "coordinate_origin", qss_op->co, 4);
+    IF_OK status += get_vf(stdin, prompt, "momentum_twist", qss_op->bp, 3);
+    IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
+    IF_OK {
+      /* NOTE: The KS built-in bc is antiperiodic. */
+      /* This is the reverse of the Dirac clover convention */
+      if(strcmp(savebuf,"antiperiodic") == 0)qss_op->bp[3] = 0;
+      else if(strcmp(savebuf,"periodic") == 0)qss_op->bp[3] = 1;
+    }
+  }
   else {
     return 0;
   }
@@ -1787,7 +2394,8 @@ int get_wv_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
     else if ( op_type == ROTATE_3D ){
       IF_OK status += get_f(fp, prompt, "d1", &d1);
     }
-
+    else if ( op_type == KS_GAMMA || op_type == KS_GAMMA_INV );
+    /* No additional parameters needed for these */
     else {
       printf("(%s)Dirac operator type %d not supported in this application\n",
 	     myname, op_type);
@@ -1834,19 +2442,6 @@ int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
     /* Other operators exclusive to KS */
     else if ( op_type == FUNNYWALL1 ||
 	      op_type == FUNNYWALL2 );   /* No additional parameters needed for these */
-    
-    else if( op_type == SPIN_TASTE){
-      char spin_taste_label[8];
-      /* Parameters for spin-taste */
-      IF_OK status += get_s(fp, prompt, "gamma", spin_taste_label);
-      IF_OK {
-	qss_op->spin_taste = spin_taste_index(spin_taste_label);
-	if(qss_op->spin_taste < 0){
-	  printf("\n: Unrecognized spin-taste label %s.\n", spin_taste_label);
-	  status++;
-	}
-      }
-    }
 
     else {
       printf("KS operator type %d not supported in this application\n", op_type);
@@ -1932,6 +2527,21 @@ static int print_single_op_info(FILE *fp, char prefix[],
     for(k = 1; k < qss_op->disp; k++)fprintf(fp," %g", qss_op->weights[k]);
     fprintf(fp,"\n");
   }
+  else if( op_type == DIRAC_INVERSE){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%s\n", make_tag(prefix, "kappa"), qss_op->kappa_label);
+    fprintf(fp,"%s%g,\n", make_tag(prefix, "clov_c"), qss_op->dcp.Clov_c);
+    fprintf(fp,"%s%g,\n", make_tag(prefix, "u0"), qss_op->dcp.U0);
+    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "coordinate_origin"), 
+	    qss_op->co[0], qss_op->co[1], qss_op->co[2]);
+    fprintf(fp,"%s%f %f %f\n", make_tag(prefix, "momentum_twist"), 
+	    qss_op->bp[0], qss_op->bp[1], qss_op->bp[2]);
+    if(qss_op->bp[3] == 1)
+      fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "antiperiodic");
+    else
+      fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "periodic");
+      
+  }
   else if( op_type == FAT_COVARIANT_GAUSSIAN){
     fprintf(fp,",\n");
     fprintf(fp,"%s%d\n", make_tag(prefix, "stride"), qss_op->stride);
@@ -1950,6 +2560,20 @@ static int print_single_op_info(FILE *fp, char prefix[],
     fprintf(fp,"%s%g\n", make_tag(prefix, "eps_naik"), qss_op->eps_naik);
 #endif
   }
+  else if( op_type == KS_INVERSE){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%s\n", make_tag(prefix, "mass"), qss_op->mass_label);
+    fprintf(fp,"%s%g,\n", make_tag(prefix, "eps_naik"), qss_op->eps_naik);
+    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "coordinate_origin"), 
+	    qss_op->co[0], qss_op->co[1], qss_op->co[2]);
+    fprintf(fp,"%s%f %f %f\n", make_tag(prefix, "momentum_twist"), 
+	    qss_op->bp[0], qss_op->bp[1], qss_op->bp[2]);
+    if(qss_op->bp[3] == 1)
+      fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "antiperiodic");
+    else
+      fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "periodic");
+      
+  }
   else if ( op_type == ROTATE_3D ){
     fprintf(fp,",\n");
     fprintf(fp,"%s%g\n", make_tag(prefix, "d1"), qss_op->d1);
@@ -1957,14 +2581,53 @@ static int print_single_op_info(FILE *fp, char prefix[],
 #ifdef HAVE_KS
   else if ( op_type == SPIN_TASTE ){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%s\n", make_tag(prefix, "gamma"), 
+    fprintf(fp,"%s%s\n", make_tag(prefix, "spin_taste"), 
 	    spin_taste_label(qss_op->spin_taste));
+  }
+  else if ( op_type == EXT_SRC_KS ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%s\n", make_tag(prefix, "spin_taste"), 
+	    spin_taste_label(qss_op->spin_taste));
+    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qss_op->mom[0],
+	    qss_op->mom[1], qss_op->mom[2]);
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "t0"), qss_op->t0);
   }
 #endif
   else if ( op_type == WAVEFUNCTION_FILE ){
     fprintf(fp,",\n");
     fprintf(fp,"%s%s,\n", make_tag(prefix, "file"), qss_op->source_file);
     fprintf(fp,"%s%g\n", make_tag(prefix, "a"), qss_op->a);
+  }
+  else if ( op_type == MODULATION_FILE ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "file"), qss_op->source_file);
+  }
+  else if ( op_type == MOMENTUM ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qss_op->mom[0],
+            qss_op->mom[1], qss_op->mom[2]);
+  }
+  else if ( op_type == PROJECT_T_SLICE ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "t0"), qss_op->t0);
+  }
+  else if ( op_type == GAMMA ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%s\n", make_tag(prefix, "gamma"), 
+	    gamma_label(qss_op->gamma));
+  }
+  else if ( op_type == MOMENTUM ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "momentum"), 
+	    qss_op->mom[0], qss_op->mom[1], qss_op->mom[2]);
+  }
+  else if ( op_type == EXT_SRC_DIRAC ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%s\n", make_tag(prefix, "gamma"), 
+	    gamma_label(qss_op->gamma));
+    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qss_op->mom[0],
+	    qss_op->mom[1], qss_op->mom[2]);
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "t0"), qss_op->t0);
   }
   else {
     fprintf(fp,"\n");
@@ -2015,6 +2678,8 @@ void print_field_op_info_list(FILE *fp, char prefix[],
   fprintf(fp,"%s[\n", make_tag(prefix, "ops"));
   
   for(i = 0; i < n; i++){
+    if(qss_op[i]->type == IDENTITY)
+      continue;
     fprintf(fp,"{ operation:                  %s",qss_op[i]->descrp);
     print_single_op_info(fp, "  ", qss_op[i]);
     if(i < n-1)fprintf(fp, "},\n");
