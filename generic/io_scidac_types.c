@@ -176,8 +176,6 @@ d2p_mat(su3_matrix *dest, dsu3_matrix *src){
   }
 }
 
-/* Compilation suppressed until we need it */
-#if 0
 static void 
 p2d_mat(dsu3_matrix *dest, su3_matrix *src){
   int i,j;
@@ -187,7 +185,6 @@ p2d_mat(dsu3_matrix *dest, su3_matrix *src){
     dest->e[i][j].imag = src->e[i][j].imag;
   }
 }
-#endif
 
 /* Factory function for moving data from MILC site structure to output
    buffer */
@@ -258,9 +255,18 @@ void vput_##P##C##_##T##_to_field(char *buf, size_t index, int count, \
     FUNC(dest+i, src+i); \
 }
 
+/* Dummy factory function. Does not store values */
+
+#define make_vput_to_null(P, C, T, FIXTYPE, VARTYPE, FUNC) \
+void vput_##P##C##_##T##_to_null(char *buf, size_t index, int count, \
+				 void *arg)			     \
+{ \
+}
+
 #define make_vput(P, C,  T, FIXTYPE, VARTYPE, FUNC) \
  make_vput_to_site(P, C,  T, FIXTYPE, VARTYPE, FUNC); \
- make_vput_to_field(P, C,  T, FIXTYPE, VARTYPE, FUNC);
+ make_vput_to_field(P, C,  T, FIXTYPE, VARTYPE, FUNC); \
+ make_vput_to_null(P, C,  T, FIXTYPE, VARTYPE, FUNC); \
 
 /* Single precision */
 
@@ -281,6 +287,7 @@ make_vput(F, 3, M, fsu3_matrix,    su3_matrix,    f2p_mat);
 make_vget(D,  , C, dcomplex,       complex,       p2d_complex);
 make_vget(D, 3, V, dsu3_vector,    su3_vector,    p2d_vec);
 make_vget(D, 3, D, dwilson_vector, wilson_vector, p2d_wvec);
+make_vget(D, 3, M, dsu3_matrix,    su3_matrix,    p2d_mat);
 
 make_vput(D,  , C, dcomplex,       complex,       d2p_complex);
 make_vput(D, 3, V, dsu3_vector,    su3_vector,    d2p_vec);
@@ -436,6 +443,7 @@ make_write_tslice(F, "F", 3, 3, 4, D, "USQCD_F3_DiracFermion", fwilson_vector, w
 
 make_write_all(D, "D",  , 0, 0, C, "QLA_D_Complex", dcomplex, complex, double);
 make_write_all(D, "D", 3, 3, 0, V, "USQCD_D3_ColorVector", dsu3_vector, su3_vector, double);
+make_write_all(D, "D", 3, 3, 0, M, "USQCD_D3_ColorMatrix", dsu3_matrix, su3_matrix, double);
 make_write_all(D, "D", 3, 3, 4, D, "USQCD_D3_DiracFermion", dwilson_vector, wilson_vector, double);
 make_write_tslice(D, "D",  , 0, 0, C, "QLA_D_Complex", dcomplex, complex, double);
 make_write_tslice(D, "D", 3, 3, 0, V, "USQCD_D3_ColorVector", dsu3_vector, su3_vector, double);
@@ -492,9 +500,35 @@ int read_##P##C##_##T##_to_field(QIO_Reader *infile, \
   return 0; \
 }
 
+/* Scan MILC field data but don't store values. */
+
+#define make_read_to_null(P, C, T, FIXTYPE, VARTYPE, MYREAL) \
+int read_##P##C##_##T##_to_null(QIO_Reader *infile, \
+		 QIO_String *xml_record_in, VARTYPE *dest, int count) \
+{ \
+  QIO_RecordInfo rec_info; \
+  int status; \
+  int datum_size = sizeof(FIXTYPE); \
+  int word_size = sizeof(MYREAL); \
+ \
+  /* Read the field record */ \
+  status = QIO_read(infile, &rec_info, xml_record_in,  \
+		    vput_##P##C##_##T##_to_null, datum_size*count, \
+		    word_size, (void *)dest); \
+  node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(xml_record_in)); \
+  if(status != QIO_SUCCESS)return 1; \
+ \
+  node0_printf("Checksums %x %x\n", \
+	       QIO_get_reader_last_checksuma(infile), \
+	       QIO_get_reader_last_checksumb(infile)); \
+ \
+  return 0; \
+}
+
 #define make_read(P, C, T, FIXTYPE, VARTYPE, MYREAL) \
   make_read_to_site(P, C, T, FIXTYPE, VARTYPE, MYREAL); \
-  make_read_to_field(P, C, T, FIXTYPE, VARTYPE, MYREAL);
+  make_read_to_field(P, C, T, FIXTYPE, VARTYPE, MYREAL); \
+  make_read_to_null(P, C, T, FIXTYPE, VARTYPE, MYREAL);
 
 /* Single precision */
 make_read(F,  , R, float, Real, float);
