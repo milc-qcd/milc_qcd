@@ -5,6 +5,9 @@
 /* Modifications ... */
 
 //  $Log: setup.c,v $
+//  Revision 1.7  2013/12/24 05:32:40  detar
+//  Add combo type.  Support embedded inverse.
+//
 //  Revision 1.6  2012/11/24 05:14:20  detar
 //  Add support for U(1) fields and for future HYPISQ action
 //
@@ -271,7 +274,6 @@ int readin(int prompt) {
 	param.qic_pbp[i].prec = param.qic_pbp[0].prec;
 	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &param.qic_pbp[i].resid);
 	IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", &param.qic_pbp[i].relresid );
-	param.qic_pbp[i].prec = PRECISION;
       }
     }
 
@@ -345,6 +347,9 @@ int readin(int prompt) {
 	  status++;
 	}
       }
+
+      IF_OK init_qss_op(&param.src_qs_op[is]);
+      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
 
       /* Get source operator attributes */
       IF_OK status += get_v_field_op( stdin, prompt, &param.src_qs_op[is]);
@@ -436,9 +441,15 @@ int readin(int prompt) {
       IF_OK {
 	/* Should we be checking the propagator by running the solver? */
 	if(strcmp(savebuf,"no") == 0)check = CHECK_NO;
+	else if(strcmp(savebuf,"yes") == 0)
+	  check = CHECK_YES;
 	else if(strcmp(savebuf,"sourceonly") == 0)
 	  check = CHECK_SOURCE_ONLY;
-	else check = CHECK_YES;
+	else {
+	  printf("Unrecognized check command %s\n",savebuf);
+	  printf("Choices are 'yes', 'no', 'sourceonly'\n");
+	  status++;
+	}
       }
 
       /* Boundary conditions (including twist) apply to all members of the set */
@@ -580,42 +591,79 @@ int readin(int prompt) {
 	 "quark" field */
       /* First we look for the type */
       IF_OK {
-	if(prompt==1)printf("enter 'propagator' or 'quark'\n");
-	check_tag = get_next_tag(stdin, "propagator or quark", "readin");
+	if(prompt==1)printf("enter 'propagator' or 'quark' or 'combine'\n");
+	check_tag = get_next_tag(stdin, "propagator or quark or combine", "readin");
 	printf("%s ",check_tag);
 	if(strcmp(check_tag,"propagator") == 0)
 	  param.parent_type[i] = PROP_TYPE;
 	else if(strcmp(check_tag,"quark") == 0)
 	  param.parent_type[i] = QUARK_TYPE;
+	else if(strcmp(check_tag,"combine") == 0)
+	  param.parent_type[i] = COMBO_TYPE;
 	else{
 	  printf("\nError: expected 'propagator' or 'quark'\n");
 	  status++;
 	}
       }
-      /* Next we get its index */
-      IF_OK {
-	if(prompt==1)printf("enter the index\n");
-	if(scanf("%d",&param.prop_for_qk[i]) != 1){
-	  printf("\nFormat error reading index\n");
-	  status++;
+      
+      IF_OK init_qss_op(&param.snk_qs_op[i]);
+
+      if( param.parent_type[i] == PROP_TYPE ||  param.parent_type[i] == QUARK_TYPE ){
+	/* Next we get its index */
+	IF_OK {
+	  if(prompt==1)printf("enter the index\n");
+	  if(scanf("%d",&param.prop_for_qk[i]) != 1){
+	    printf("\nFormat error reading index\n");
+	    status++;
+	  }
+	  else{
+	    printf("%d\n",param.prop_for_qk[i]);
+	    if(param.parent_type[i] == PROP_TYPE && 
+	       param.prop_for_qk[i] >= nprop){
+	      printf("Propagator index must be less than %d\n", nprop);
+	      status++;
+	    }
+	    else if(param.parent_type[i] == QUARK_TYPE && 
+		    param.prop_for_qk[i] >= i){
+	      printf("Quark index must be less than %d here\n",i);
+	      status++;
+	    }
+	  }
 	}
-	else{
-	  printf("%d\n",param.prop_for_qk[i]);
-	  if(param.parent_type[i] == PROP_TYPE && 
-	     param.prop_for_qk[i] >= nprop){
-	    printf("Propagator index must be less than %d\n", nprop);
+
+	/* Get sink operator attributes */
+	IF_OK status += get_v_field_op( stdin, prompt, &param.snk_qs_op[i]);
+	
+      } else { /* COMBO_TYPE */
+	strcpy(param.snk_qs_op[i].descrp, "combination");
+	/* Next we get its index */
+	IF_OK {
+	  if(prompt==1)printf("enter the number or quarks to combine\n");
+	  if(scanf("%d",&param.num_combo[i]) != 1){
+	    printf("\nFormat error reading index\n");
 	    status++;
+	  } else {
+	    int j;
+	    printf("%d\n",param.num_combo[i]);
+	    if(param.num_combo[i] > MAX_COMBO){
+	      printf("\nError: number to combine must not exceed %d\n", MAX_COMBO);
+	      status++;
+	    }
+	    IF_OK status += get_vi(stdin, prompt, "quarks", param.combo_qk_index[i], param.num_combo[i]);
+	    IF_OK for(j = 0; j < param.num_combo[i]; j++){
+	      if(param.combo_qk_index[i][j] >= i){
+		printf("Error: quark index %d must be less than %d here\n", param.combo_qk_index[i][j], i);
+		status++;
+	      }
+	    }
+	    IF_OK status += get_vf(stdin, prompt, "coeffs", param.combo_coeff[i], param.num_combo[i]);
 	  }
-	  else if(param.parent_type[i] == QUARK_TYPE && 
-		  param.prop_for_qk[i] >= i){
-	    printf("Quark index must be less than %d here\n",i);
-	    status++;
-	  }
+	  /* Provisional: For constructing the ancestry for the correlator file. */
+	  param.prop_for_qk[i] = param.combo_qk_index[i][0];
 	}
       }
-      /* Get sink operator attributes */
-      IF_OK init_qss_op(&param.snk_qs_op[i]);
-      IF_OK status += get_v_field_op( stdin, prompt, &param.snk_qs_op[i]);
+
+      /* Will we save this propagator? */
       IF_OK status += ask_ending_ksprop( stdin, prompt, &param.saveflag_q[i],
 					 param.savefile_q[i]);
 	
@@ -964,9 +1012,9 @@ int readin(int prompt) {
   /* Broadcast parameter values kept on the heap */
   broadcast_heap_params();
 
-  /* Construct the eps_naik table of unique Naik epsilon
-     coefficients.  Also build the hash table for mapping a mass term to
-     its Naik epsilon index */
+  /* Construct the eps_naik table of unique Naik epsilon coefficients.
+     Also build the hash table for mapping a mass term to its Naik
+     epsilon index.  We need to list any required Naik epsilons. */
 
   /* First term is always zero */
   start_eps_naik(eps_naik, &n_naiks);
@@ -984,6 +1032,27 @@ int readin(int prompt) {
     param.ksp[i].naik_term_epsilon_index = 
       fill_eps_naik(eps_naik, 
 		    &n_naiks, param.ksp[i].naik_term_epsilon);
+
+  /* Requests from any embedded inverse and hopping operators in the
+     modified ops */
+  for(i = 0; i < param.num_modified_source; i++){
+    Real eps = 0.;
+    int is = param.num_base_source + i;
+    /* If the operator uses Dslash, get the requested Naik epsilon */
+    if(get_qss_eps_naik(&eps, &param.src_qs_op[is])){
+      insert_qss_eps_naik_index(fill_eps_naik(eps_naik, &n_naiks, eps), &param.src_qs_op[is]);
+    }
+  }
+
+  /* Requests from any embedded inverse and hopping operators in
+     the sink ops */
+  for(i = 0; i < param.num_qk; i++){
+    Real eps = 0.;
+    /* If the operator uses Dslash, get the requested Naik epsilon */
+    if(get_qss_eps_naik(&eps, &param.snk_qs_op[i])){
+      insert_qss_eps_naik_index(fill_eps_naik(eps_naik, &n_naiks, eps), &param.snk_qs_op[i]);
+    }
+  }
 
   /* Assign Naik term indices to quarks based on inheritance from
      propagators */
