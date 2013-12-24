@@ -59,11 +59,16 @@ void build_qio_layout(QIO_Layout *layout){
   layout->number_of_nodes = number_of_nodes;
 }
 
+/* Default rank for serial I/O */
+static int master_node_zero(){
+  return 0;
+}
+
 void build_qio_filesystem(QIO_Filesystem *fs){
   fs->number_io_nodes = 0;
   fs->type = QIO_SINGLE_PATH;
-  fs->my_io_node = io_node;   /* Partfile I/O uses io_node from layout*.c */
-  fs->master_io_node = NULL;  /* Serial I/O uses default: node 0 */
+  fs->my_io_node = io_node;        /* Partfile I/O uses io_node from layout*.c */
+  fs->master_io_node = master_node_zero;  /* Serial I/O uses default: node 0 */
   fs->io_node = NULL;
   fs->node_path = NULL;
 }
@@ -332,13 +337,15 @@ gauge_file *save_partfile_ildg(char *filename, char *stringLFN){
 
 /* The QIO file is closed after reading the lattice */
 #ifdef NO_GAUGE_FIELD
-gauge_file *restore_scidac(char *filename, int serpar){
+static gauge_file *restore_scidac(char *filename, int serpar){
   printf("Can't restore a lattice if we compile with -DNO_GAUGE_FIELD\n");
   terminate(1);
   return NULL;
 }
+
 #else
-gauge_file *restore_scidac(char *filename, int serpar){
+
+static gauge_file *restore_scidac(char *filename, int serpar){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
@@ -394,7 +401,86 @@ gauge_file *restore_scidac(char *filename, int serpar){
 
   return gf;
 }
-#endif
+
+/* Read gauge field, but don't store the values.  Used
+   for verifying checksums */
+
+static gauge_file *file_scan_scidac(char *filename, int serpar){
+  QIO_Layout layout;
+  QIO_Filesystem fs;
+  QIO_Reader *infile;
+  QIO_RecordInfo recinfo;
+  QIO_String *recxml;
+  int status;
+  int typesize;
+  su3_matrix *dest = NULL;
+  gauge_file *gf;
+  int ndim;
+  int dims[4];
+
+  /* Read header to get lattice dimensions and close the file */
+  read_lat_dim_scidac(filename, &ndim, dims);
+  nx = dims[0]; ny = dims[1]; nz = dims[2]; nt = dims[3];
+  volume = nx*ny*nz*nt;
+
+  /* Finish setting up, now we know the dimensions */
+
+  broadcast_bytes((char *)&nx,sizeof(int));
+  broadcast_bytes((char *)&ny,sizeof(int));
+  broadcast_bytes((char *)&nz,sizeof(int));
+  broadcast_bytes((char *)&nt,sizeof(int));
+  
+  setup_layout();
+
+  /* Build the layout structure */
+  build_qio_layout(&layout);
+
+  /* Define the I/O nodes */
+  build_qio_filesystem(&fs);
+
+  /* Make a dummy gauge file structure for MILC use */
+  gf = setup_input_gauge_file(filename);
+
+  /* Set the filename in the gauge_file structure */
+  gf->filename = filename;
+
+  /* Reopen file for reading */
+  QIO_verbose(QIO_VERB_OFF);
+
+  infile = open_scidac_input(filename, &layout, &fs, serpar);
+  if(infile == NULL)terminate(1);
+
+  /* Check the record type (double or single precision) */
+  recxml = QIO_string_create();
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+
+  /* Read the lattice field as single or double precision according to
+     the type size (bytes in a single SU(3) matrix) */
+  if(typesize == 72)
+    status = read_F3_M_to_null(infile, recxml, dest, LATDIM);
+  else if (typesize == 144)
+    status = read_D3_M_to_null(infile, recxml, dest, LATDIM);
+  else
+    {
+      node0_printf("file_scan_scidac: Bad typesize %d\n",typesize);
+      terminate(1);
+    }
+  if(status){
+    node0_printf("ERROR scanning file\n");
+  } else {
+    node0_printf("SUCCESS scanning file\n");
+  }
+
+  /* Discard for now */
+  QIO_string_destroy(recxml);
+
+  /* Close the file */
+  QIO_close_read(infile);
+
+  return gf;
+}
 
 /* The QIO file is closed after reading the lattice */
 gauge_file *restore_serial_scidac(char *filename){
@@ -406,14 +492,28 @@ gauge_file *restore_parallel_scidac(char *filename){
   return restore_scidac(filename, QIO_PARALLEL);
 }
 
+/* The QIO file is closed after reading the lattice */
+gauge_file *file_scan_serial_scidac(char *filename){
+  return file_scan_scidac(filename, QIO_SERIAL);
+}
+
+/* The QIO file is closed after reading the lattice */
+gauge_file *file_scan_parallel_scidac(char *filename){
+  return file_scan_scidac(filename, QIO_PARALLEL);
+}
+
+#endif
+
 /* Read color matrices in SciDAC format */
 void restore_color_matrix_scidac_to_site(char *filename, 
-				field_offset dest, int count){
+		 field_offset dest, int count){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
   QIO_String *recxml;
-  int status;
+  int status, typesize;
+  QIO_RecordInfo recinfo;
+  char myname[] = "restore_color_matrix_scidac_to_site";
 
   QIO_verbose(QIO_VERB_OFF);
 
@@ -427,9 +527,21 @@ void restore_color_matrix_scidac_to_site(char *filename,
   infile = open_scidac_input(filename, &layout, &fs, QIO_SERIAL);
   if(infile == NULL)terminate(1);
 
-  /* Read the lattice field */
+  /* Check the record type (double or single precision) */
   recxml = QIO_string_create();
-  status = read_F3_M_to_site(infile, recxml, dest, count);
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status != QIO_SUCCESS)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+
+  /* Read the lattice field */
+  if(typesize == 18*4)
+    status = read_F3_M_to_site(infile, recxml, dest, count);
+  else if(typesize == 18*8)
+    status = read_D3_M_to_site(infile, recxml, dest, count);
+  else {
+    node0_printf("%s: Incorrect data type size %d\n", myname, typesize);
+    terminate(1);
+  }
   if(status)terminate(1);
 
   /* Discard for now */
@@ -440,12 +552,14 @@ void restore_color_matrix_scidac_to_site(char *filename,
 
 /* Read color matrices in SciDAC format to a field */
 void restore_color_matrix_scidac_to_field(char *filename, 
-				su3_matrix *dest, int count){
+		  su3_matrix *dest, int count){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
   QIO_String *recxml;
-  int status;
+  int status, typesize;
+  QIO_RecordInfo recinfo;
+  char myname[] = "restore_color_matrix_scidac_to_field";
 
   QIO_verbose(QIO_VERB_OFF);
 
@@ -459,9 +573,21 @@ void restore_color_matrix_scidac_to_field(char *filename,
   infile = open_scidac_input(filename, &layout, &fs, QIO_SERIAL);
   if(infile == NULL)terminate(1);
 
-  /* Read the lattice field */
+  /* Check the record type (double or single precision) */
   recxml = QIO_string_create();
-  status = read_F3_M_to_field(infile, recxml, dest, count);
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status != QIO_SUCCESS)terminate(1);
+  typesize = QIO_get_typesize(&recinfo);
+
+  /* Read the lattice field */
+  if(typesize == 18*4)
+    status = read_F3_M_to_field(infile, recxml, dest, count);
+  else if(typesize == 18*8)
+    status = read_D3_M_to_field(infile, recxml, dest, count);
+  else {
+    node0_printf("%s: Incorrect data type size %d\n", myname, typesize);
+    terminate(1);
+  }
   if(status)terminate(1);
 
   /* Discard for now */
@@ -473,7 +599,7 @@ void restore_color_matrix_scidac_to_field(char *filename,
 /* Write a set of color matrices in SciDAC format, taking data from the site
    structure */
 void save_color_matrix_scidac_from_site(char *filename, char *fileinfo, 
-      char *recinfo, int volfmt,  field_offset src, int count)
+	char *recinfo, int volfmt,  field_offset src, int count, int prec)
 {
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -501,7 +627,10 @@ void save_color_matrix_scidac_from_site(char *filename, char *fileinfo,
   /* Write the lattice field */
   recxml = QIO_string_create();
   QIO_string_set(recxml, recinfo);
-  status = write_F3_M_from_site(outfile, recxml, src, count);
+  if(prec == 1)
+    status = write_F3_M_from_site(outfile, recxml, src, count);
+  else
+    status = write_D3_M_from_site(outfile, recxml, src, count);
   if(status)terminate(1);
   QIO_string_destroy(recxml);
   
@@ -530,7 +659,7 @@ void save_color_matrix_scidac_from_site(char *filename, char *fileinfo,
 /* Save a set of color matrices. */
 
 void save_color_matrix_scidac_from_field(char *filename,
-        char *fileinfo, char *recinfo, int volfmt, su3_matrix *src, int count)
+  char *fileinfo, char *recinfo, int volfmt, su3_matrix *src, int count, int prec)
 {
   QIO_Layout layout;
   QIO_Writer *outfile;
@@ -558,7 +687,10 @@ void save_color_matrix_scidac_from_field(char *filename,
   /* Write the lattice field */
   recxml = QIO_string_create();
   QIO_string_set(recxml, recinfo);
-  status = write_F3_M_from_field(outfile, recxml, src, count);
+  if(prec == 1)
+    status = write_F3_M_from_field(outfile, recxml, src, count);
+  else
+    status = write_D3_M_from_field(outfile, recxml, src, count);
   if(status)terminate(1);
   QIO_string_destroy(recxml);
 
