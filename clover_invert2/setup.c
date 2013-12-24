@@ -7,6 +7,12 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.13  2013/12/24 17:49:21  detar
+//  Add support for COMBO type (linear combinations of props)
+//  Make coordinate offset inherited.
+//  Support OK action type
+//  Support KS0 type (staggered prop originating from extended Dirac)
+//
 //  Revision 1.12  2012/11/23 23:43:21  detar
 //  Support saving propagator as source.  Add OK action (IFLA) from Bugra.  Add stride to covariant smearing.
 //
@@ -266,17 +272,17 @@ int readin(int prompt) {
       /* Base sources have no parents or ops */
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
       IF_OK init_qss_op(&param.src_qs_op[i]);
-
-      /* Initialize the coordinate offset for the source op from
-         the source origin itself */
-      {
-	int r0[4];
-	r0[0] = param.base_src_qs[i].x0;
-	r0[1] = param.base_src_qs[i].y0;
-	r0[2] = param.base_src_qs[i].z0;
-	r0[3] = param.base_src_qs[i].t0;
-	set_qss_op_offset(&param.src_qs_op[i], r0);
-      }
+//
+//      /* Initialize the coordinate offset for the source op from
+//         the source origin itself */
+//      {
+//	int r0[4];
+//	r0[0] = param.base_src_qs[i].x0;
+//	r0[1] = param.base_src_qs[i].y0;
+//	r0[2] = param.base_src_qs[i].z0;
+//	r0[3] = param.base_src_qs[i].t0;
+//	set_qss_op_offset(&param.src_qs_op[i], r0);
+//      }
 
       /* Get optional file for saving the base source */
       IF_OK {
@@ -327,6 +333,21 @@ int readin(int prompt) {
 	  printf("Source index must be less than %d here\n",is);
 	  status++;
 	}
+      }
+
+      IF_OK init_qss_op(&param.src_qs_op[is]);
+
+      /* Set the default coordinate offset for the source op from
+         the parent source origin */
+      {
+//	int r0[4];
+//	int p = param.parent_source[is];
+//	r0[0] = param.base_src_qs[p].x0;
+//	r0[1] = param.base_src_qs[p].y0;
+//	r0[2] = param.base_src_qs[p].z0;
+//	r0[3] = param.base_src_qs[p].t0;
+//	set_qss_op_offset(&param.src_qs_op[is], r0);
+	set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
       }
 
       /* Get source operator attributes */
@@ -392,14 +413,22 @@ int readin(int prompt) {
 
     IF_OK for(i = 0; i < param.num_prop; i++){
       
+      /* Initialize dependency */
+      param.prop_dep_qkno[i] = 0;
 
       /* Type of propagator */
 
       IF_OK status += get_s(stdin, prompt,"propagator_type", savebuf );
       IF_OK {
+	/* Standard clover */
 	if(strcmp(savebuf,"clover") == 0)param.prop_type[i] = CLOVER_TYPE;
+	/* Standard staggered (asqtad or HISQ) to be converted to naive */
 	else if(strcmp(savebuf,"KS") == 0)param.prop_type[i] = KS_TYPE;
+	/* Same as standard staggered, but conversion to naive is based on hypercube offset 0 */
+	else if(strcmp(savebuf,"KS0") == 0)param.prop_type[i] = KS0_TYPE;
+	/* Staggered propagator originating from an extended Dirac source */
 	else if(strcmp(savebuf,"KS4") == 0)param.prop_type[i] = KS4_TYPE;
+	/* Improved fermion lattice action (OK action) */
 	else if(strcmp(savebuf,"ifla") == 0 )param.prop_type[i] = IFLA_TYPE;
 	else {
 	  printf("Unknown quark type %s\n",savebuf);
@@ -441,7 +470,7 @@ int readin(int prompt) {
 	IF_OK status += get_f(stdin, prompt, "c_EE",    &param.nap[i].c_EE);
 	param.nap[i].u0 = param.u0;
 	
-      } else {  /* KS_TYPE || KS4_TYPE */
+      } else {  /* KS_TYPE || KS0_TYPE || KS4_TYPE */
 	
 	IF_OK status += get_s(stdin, prompt,"mass", param.mass_label[i] );
 	IF_OK param.ksp[i].mass = atof(param.mass_label[i]);
@@ -504,7 +533,7 @@ int readin(int prompt) {
 	  }
 	}
 
-      } else {  /* KS_TYPE || KS4_TYPE */
+      } else {  /* KS_TYPE || KS0_TYPE || KS4_TYPE */
 
 	/* NOTE: The staggered built-in bc is antiperiodic.  We use
 	   bdry_phase to alter the built-in convention. */
@@ -538,7 +567,9 @@ int readin(int prompt) {
 
       /* Consistency check */
       IF_OK {
-	if(param.prop_type[i] == KS_TYPE && is_dirac_source(param.src_qs[i].type)){
+	if((param.prop_type[i] == KS_TYPE ||
+	    param.prop_type[i] == KS0_TYPE )
+	    && is_dirac_source(param.src_qs[i].type)){
 	  node0_printf("ERROR: Can't build a KS propagator from a Dirac source.\n");
 	  node0_printf("For an extended Dirac source, use propagator_type KS4.\n");
 	  status++;
@@ -556,11 +587,11 @@ int readin(int prompt) {
 	IF_OK status += ask_ending_wprop( stdin, prompt, &param.saveflag_w[i],
 					  param.savefile_w[i]);
 
-      } else {  /* KS_TYPE || KS4_TYPE */
+      } else {  /* KS_TYPE || KS0_TYPE || KS4_TYPE */
 	
 	/* Get propagator file names */
 	
-	if(param.prop_type[i] == KS_TYPE){
+	if(param.prop_type[i] == KS_TYPE || param.prop_type[i] == KS0_TYPE){
 	  
 	  IF_OK status += ask_starting_ksprop( stdin, prompt, 
 					       &param.startflag_ks[i],
@@ -607,44 +638,85 @@ int readin(int prompt) {
 
     IF_OK for(i = 0; i < param.num_qk; i++){
       char *check_tag;
+
+      /* Initialize dependency */
+      param.quark_dep_qkno[i] = 0;
+
       /* Get the propagator that we act on with the sink operator to
 	 form the "quark" field used in the correlator.  It might be a
 	 raw "propagator" or it might be a previously constructed
 	 "quark" field */
       /* First we look for the type */
       IF_OK {
-	if(prompt==1)printf("enter 'propagator' or 'quark'\n");
-	check_tag = get_next_tag(stdin, "propagator or quark", "readin");
+	if(prompt==1)printf("enter 'propagator' or 'quark' or 'combine'\n");
+	check_tag = get_next_tag(stdin, "propagator or quark or combine", "readin");
 	printf("%s ",check_tag);
 	if(strcmp(check_tag,"propagator") == 0)
 	  param.parent_type[i] = PROP_TYPE;
 	else if(strcmp(check_tag,"quark") == 0)
 	  param.parent_type[i] = QUARK_TYPE;
+	else if(strcmp(check_tag,"combine") == 0)
+	  param.parent_type[i] = COMBO_TYPE;
 	else{
-	  printf("\nError: expected 'propagator' or 'quark'\n");
+	  printf("\nError: expected 'propagator' or 'quark' or 'combine'\n");
 	  status++;
 	}
       }
-      /* Next we get its index */
-      IF_OK {
-	if(prompt==1)printf("enter the index\n");
-	if(scanf("%d",&param.prop_for_qk[i]) != 1){
-	  printf("\nFormat error reading index\n");
-	  status++;
-	}
-	else{
-	  printf("%d\n",param.prop_for_qk[i]);
-	  if(param.parent_type[i] == PROP_TYPE && 
-	     param.prop_for_qk[i] >= param.num_prop){
-	    printf("Propagator index must be less than %d\n",
-		   param.num_prop);
+      if( param.parent_type[i] == PROP_TYPE ||  param.parent_type[i] == QUARK_TYPE ){
+	/* Next we get its index */
+	IF_OK {
+	  if(prompt==1)printf("enter the index\n");
+	  if(scanf("%d",&param.prop_for_qk[i]) != 1){
+	    printf("\nFormat error reading index\n");
 	    status++;
+	  } else{
+	    printf("%d\n",param.prop_for_qk[i]);
+	    if(param.parent_type[i] == PROP_TYPE){
+	      if(param.prop_for_qk[i] >= param.num_prop){
+		printf("Propagator index must be less than %d\n",
+		       param.num_prop);
+		status++;
+	      }
+	      /* Update dependency */
+	      param.prop_dep_qkno[param.prop_for_qk[i]] = i;
+	    }
+	    else if(param.parent_type[i] == QUARK_TYPE){
+	      if(param.prop_for_qk[i] >= i){
+		printf("Quark index must be less than %d here\n",i);
+		status++;
+	      }
+	      /* Update depedency */
+	      param.quark_dep_qkno[param.prop_for_qk[i]] = i;
+	    }
 	  }
-	  else if(param.parent_type[i] == QUARK_TYPE && 
-		  param.prop_for_qk[i] >= i){
-	    printf("Quark index must be less than %d here\n",i);
+	} 
+      } else { /* COMBO_TYPE */
+	/* Next we get its index */
+	IF_OK {
+	  if(prompt==1)printf("enter the number or quarks to combine\n");
+	  if(scanf("%d",&param.num_combo[i]) != 1){
+	    printf("\nFormat error reading index\n");
 	    status++;
+	  } else {
+	    int j;
+	    printf("%d\n",param.num_combo[i]);
+	    if(param.num_combo[i] > MAX_COMBO){
+	      printf("\nError: number to combine must not exceed %d\n", MAX_COMBO);
+	      status++;
+	    }
+	    IF_OK status += get_vi(stdin, prompt, "quarks", param.combo_qk_index[i], param.num_combo[i]);
+	    IF_OK for(j = 0; j < param.num_combo[i]; j++){
+	      if(param.combo_qk_index[i][j] >= i){
+		printf("Error: quark index %d must be less than %d here\n", param.combo_qk_index[i][j], i);
+		status++;
+	      }
+	      /* Update depedency */
+	      param.quark_dep_qkno[param.combo_qk_index[i][j]] = i;
+	    }
+	    IF_OK status += get_vf(stdin, prompt, "coeffs", param.combo_coeff[i], param.num_combo[i]);
 	  }
+	  /* Provisional: For constructing the ancestry for the correlator file. */
+	  param.prop_for_qk[i] = param.combo_qk_index[i][0];
 	}
       }
       /* Get sink operator attributes */
@@ -686,6 +758,8 @@ int readin(int prompt) {
 		   param.qkpair[ipair][j],param.num_qk-1);
 	    status++;
 	  }
+	  /* Don't destroy this quark until the hadrons are constructed. */
+	  param.quark_dep_qkno[param.qkpair[ipair][j]] = param.num_qk;
 	}
       }
       
@@ -786,7 +860,7 @@ int readin(int prompt) {
 	}
 	IF_OK printf(" %s", mom_label_in);
 	
-	/* Find or addd to hash table */
+	/* Find or add to hash table */
 	/* The tuple (meson_label, mom_label) is the correlator label */
 	/* The hash table lists the unique tuples. m is the index for the tuple. */
 	m = hash_corr_label(param.meson_label[ipair], param.mom_label[ipair],
@@ -931,7 +1005,7 @@ int readin(int prompt) {
   /* Construct APE smeared links */
   ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
 
-  /* Set uptions for fermion links in case we use them */
+  /* Set options for fermion links in case we use them */
   
 #ifdef DBLSTORE_FN
   /* We want to double-store the links for optimization */
