@@ -75,6 +75,7 @@
      gaussian_source
      point_source
      random_color_wall
+     subset_mask_c
      subset_mask_v
      subset_mask_wv
      get_complex_source
@@ -466,6 +467,31 @@ static void random_corner_wall(su3_vector *v, int t0){
 /* Subset mask operation                                              */
 /*--------------------------------------------------------------------*/
 
+/* Apply subset mask to complex field */
+
+void subset_mask_c(complex *src, int subset, int t0)
+{
+  int i;
+  site *s;
+
+  if(subset == FULL)
+    return;
+
+  else if(subset == HYPERCUBE){
+    FORALLSITES(i,s) {
+      if(t0 != ALL_T_SLICES && s->t != t0)continue;
+      if(s->x % 2 != 0 || s->y %2 != 0 || s->z %2 != 0){
+	src[i].real = 0.; src[i].imag = 0.;
+      }
+    }
+  }
+
+  else{
+    node0_printf("subset_mask_c: Unrecognized subset type %d\n", subset);
+    terminate(1);
+  }
+}
+
 /* Apply subset mask to color vector field */
 
 void subset_mask_v(su3_vector *src, int subset, int t0)
@@ -586,12 +612,14 @@ int get_complex_source(quark_source *qs){
   
   else if(source_type == GAUSSIAN) {
     gaussian_source(qs->c_src, r0, x0, y0, z0, t0);
+    subset_mask_c(qs->c_src, qs->subset, t0);
   }      
   else if(source_type == POINT) {
     point_source(qs->c_src, x0, y0, z0, t0);
   }
   else if(source_type == WAVEFUNCTION_FILE){
     fnal_wavefunction(qs->c_src, x0, y0, z0, t0, a, source_file);
+    subset_mask_c(qs->c_src, qs->subset, t0);
   }
   else {
     return 0;
@@ -639,8 +667,10 @@ static int get_vector_source(quark_source *qs){
   /* Get a new color vector source on time slice t0 whenever the spin
      index is zero */
   
-  if(source_type == RANDOM_COLOR_WALL)
+  if(source_type == RANDOM_COLOR_WALL){
     random_color_wall(qs->v_src, t0);
+    subset_mask_v(qs->v_src, qs->subset, t0);
+  }
 
 #ifdef HAVE_KS  
   else if(source_type == VECTOR_FIELD_FILE){
@@ -744,7 +774,7 @@ static int v_base_source(su3_vector *src, quark_source *qs)
   /* Unpack structure */
   int source_type           = qs->type;
   int color                 = qs->color;
-  int t0                    = qs->t0;
+  //  int t0                    = qs->t0;
   int status = 0;
 
   /* zero src to be safe */
@@ -822,7 +852,7 @@ static int v_base_source(su3_vector *src, quark_source *qs)
 
   /* Apply subset mask */
 
-  subset_mask_v(src, qs->subset, t0);
+  //  subset_mask_v(src, qs->subset, t0);
 
   return status;
 
