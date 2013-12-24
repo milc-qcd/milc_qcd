@@ -63,6 +63,45 @@ momentum_twist_site(Real bdry_phase[4], int sign) {
   
 } /* momentum_twist_site */
 
+/* Apply phase change to gauge field in an array of four contiguous 
+   SU(3) matrices per site */
+/* Phase is applied to ALL LINKS, divided equally in each direction */
+
+void 
+momentum_twist_links(Real bdry_phase[4], int sign, su3_matrix *links) {
+  //char myname[] = "momentum_twist_site";
+  int i,dir;
+  complex cphase[4];
+  int no_twist;
+  int nmu[4] = {nx, ny, nz, nt};
+
+  /* The phases */
+
+  no_twist = 1;
+  FORALLUPDIR(dir){
+    if(bdry_phase[dir] != 0.)no_twist = 0;
+    cphase[dir] = ce_itheta(sign*PI*bdry_phase[dir]/nmu[dir]);
+  }
+
+  /* No twist needed if momentum phases are all zero */
+
+  if(no_twist)
+    return;
+
+  /* Now apply twist to link member of the site structure */
+  
+  node0_printf("Applying momentum phases %g %g %g %g to generic links\n",
+	       sign*bdry_phase[0], sign*bdry_phase[1], 
+	       sign*bdry_phase[2], sign*bdry_phase[3]);
+  
+  FORALLFIELDSITES(i){
+    FORALLUPDIR(dir) {
+      phase_mult_su3_matrix(links + 4*i + dir, cphase[dir]);
+    }
+  }
+  
+} /*  momentum_twist_links */
+
 /* Apply phase change to gauge field in site structure */
 /* Phase is applied to the BOUNDARY LINKS */
 
