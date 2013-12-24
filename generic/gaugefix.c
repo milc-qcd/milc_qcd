@@ -397,7 +397,7 @@ double get_gauge_fix_action(int gauge_dir,int parity)
   g_doublesum( &gauge_fix_action);
   
   /* Average is normalized to max of 1/2 on sites of one parity */
-  return(gauge_fix_action /((double)(6*ndir*nx*ny*nz*nt)));
+  return(gauge_fix_action /((double)(6.0*ndir*nx*ny*nz*nt)));
 } /* get_gauge_fix_action */
 
 void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
