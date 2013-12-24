@@ -1,4 +1,4 @@
-Will read out.test.open_meson.2
+Will read open_meson.2.test-out
 and dump the correlator at time 3
 file_id:            File Type: MDP FIELD
 program_version:    milc_qcd version 7
