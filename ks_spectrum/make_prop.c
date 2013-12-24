@@ -112,6 +112,12 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
       boundary_twist_fn(fn[j], ON);
     }
 
+    /* Apply twist to the APE links */
+    /* This operation applies the phase to the volume */
+    mybdry_phase[3] = 0; 
+    momentum_twist_links(mybdry_phase, 1, ape_links);
+    mybdry_phase[3] = bdry_phase[3]; 
+
     /* Copy pointers for fermion links, based on Naik epsilon indices */
     fn_multi = (imp_ferm_links_t **)
       malloc(sizeof(imp_ferm_links_t *)*num_prop);
@@ -154,6 +160,12 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	}
       }
       
+      /* Make a list of num_prop solution pointers for the current color */
+      dst = (su3_vector **)malloc(num_prop*sizeof(su3_vector *));
+      for(j = 0; j < num_prop; j++){
+	dst[j] = ksprop[j]->v[color];
+      }
+	
       if(check != CHECK_SOURCE_ONLY){
 
 	/* Apply the momentum twist to the source.  This U(1) gauge
@@ -171,12 +183,16 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	rephase_v_field(src, mybdry_phase, r0, 1);
 	mybdry_phase[3] = bdry_phase[3]; 
 	
-	/* Make a list of num_prop solution pointers for the current color */
-	dst = (su3_vector **)malloc(num_prop*sizeof(su3_vector *));
-	for(j = 0; j < num_prop; j++){
-	  dst[j] = ksprop[j]->v[color];
+	if(startflag[0] != FRESH){
+
+	  /* Apply the momentum twist to the initial guess */
+	  mybdry_phase[3] = 0; 
+	  for(j = 0; j < num_prop; j++){
+	    rephase_v_field(dst[j], mybdry_phase, r0, 1);
+	  }
+	  mybdry_phase[3] = bdry_phase[3]; 
 	}
-	
+
 	if(num_prop == 1){
 	  
 	  /* Single mass inversion */
@@ -215,59 +231,73 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	}
 	mybdry_phase[3] = bdry_phase[3]; 
 	
-	/* save solutions if requested */
-	for(i = 0; i < num_prop; i++){
-	  save_ksprop_c_from_field( saveflag[i], fp_out[i], my_ksqs, 
-				    color, dst[i], "", 1);
-	}
+      } else { /* if(check != CHECK_SOURCE_ONLY) */
+
+	/* Copy source to solution(s) so we can use it there */
+	for(j = 0; j < num_prop; j++)
+	  copy_v_field(dst[j], src);
 	
+      }
+
+      /* save solutions if requested */
+      for(i = 0; i < num_prop; i++){
+	save_ksprop_c_from_field( saveflag[i], fp_out[i], my_ksqs, 
+				  color, dst[i], "", 1);
+      }
+      
 #ifdef DEBUG_NAIVE
-	rephase( OFF );
-	for(i = 0; i < num_prop; i++)
-	  {
-	    spin_wilson_vector *swv = create_swv_field();
-	    wilson_vector *wv  = create_wv_field();
-	    wilson_vector *wvsrc = create_wv_field();
-	    su3_vector *v = create_v_field();
-	    int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
-	    int spin;
-	    
-	    convert_ksprop_to_wprop_swv(swv, dst[i], ks_source_r, r0);
-	    for(spin = 0; spin < 4; spin++){
-	      copy_wv_from_swv(wv, swv, spin);
-	      clear_wv_field(wvsrc);
-	      copy_wv_from_v(wvsrc, src, spin);
-	      check_naive(wv, wvsrc, my_ksp[i].mass, 1e-5);
-	    }
-	    
-	    destroy_v_field(v);
-	    destroy_wv_field(wv);
-	    destroy_wv_field(wvsrc);
-	    destroy_swv_field(swv);
+      rephase( OFF );
+      for(i = 0; i < num_prop; i++)
+	{
+	  spin_wilson_vector *swv = create_swv_field();
+	  wilson_vector *wv  = create_wv_field();
+	  wilson_vector *wvsrc = create_wv_field();
+	  su3_vector *v = create_v_field();
+	  int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
+	  int spin;
+	  
+	  convert_ksprop_to_wprop_swv(swv, dst[i], ks_source_r, r0);
+	  for(spin = 0; spin < 4; spin++){
+	    copy_wv_from_swv(wv, swv, spin);
+	    clear_wv_field(wvsrc);
+	    copy_wv_from_v(wvsrc, src, spin);
+	    check_naive(wv, wvsrc, my_ksp[i].mass, 1e-5);
 	  }
-	rephase( ON );
+	  
+	  destroy_v_field(v);
+	  destroy_wv_field(wv);
+	  destroy_wv_field(wvsrc);
+	  destroy_swv_field(swv);
+	}
+      rephase( ON );
 #endif
-	
-	/* Clean up */
-	free(dst);
-      } /* if(check != CHECK_SOURCE_ONLY) */
-
+      
+      /* Clean up */
+      free(dst);
+      
       destroy_v_field(src);
-
+      
     } /* if(check != CHECK_NO || startflag[0] == FRESH)} */
 
   } /* color */
 
   
+  if(check != CHECK_NO || startflag[0] == FRESH ){
+
+    /* Unapply twist to the APE links */
+    mybdry_phase[3] = 0; 
+    momentum_twist_links(mybdry_phase, -1, ape_links);
+    mybdry_phase[3] = bdry_phase[3]; 
+
   /* Unapply twisted boundary conditions on the fermion links and
      restore conventional KS phases and antiperiodic BC, if
      changed. */
-  if(check != CHECK_NO || startflag[0] == FRESH ){
     for(j = 0; j < n_naiks; j++)
       boundary_twist_fn(fn[j], OFF);
   }
     
   for(i = 0; i < num_prop; i++){
+    r_close_ksprop(startflag[i], fp_in[i]); 
     w_close_ksprop(saveflag[i],  fp_out[i]);
     if(saveflag[i] != FORGET)
       node0_printf("Saved propagator to %s\n",savefile[i]);
@@ -278,6 +308,8 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
   u1phase_off();
   invalidate_fermion_links(fn_links);
 #endif
+
+  if(fn_multi != NULL)free(fn_multi);
 
   return tot_iters;
 
