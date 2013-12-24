@@ -39,6 +39,8 @@
    g_vecfloatsum()       sums a vector of generic floats over all nodes 
    g_doublesum()         sums a double over all nodes.
    g_vecdoublesum()      sums a vector of doubles over all nodes.
+   g_longdoublesum()     sums a long double over all nodes.
+   g_veclongdoublesum()  sums a vector of long doubles over all nodes.
    g_complexsum()        sums a generic precision complex number over all nodes.
    g_veccomplexsum()     sums a vector of generic precision complex numbers
                            over all nodes.
@@ -804,6 +806,30 @@ g_vecdoublesum(double *dpt, int ndoubles)
   work = (double *)malloc(ndoubles*sizeof(double));
   MPI_Allreduce( dpt, work, ndoubles, MPI_DOUBLE, MPI_SUM, MPI_COMM_THISJOB );
   for(i=0; i<ndoubles; i++) dpt[i] = work[i];
+  free(work);
+}
+
+/*
+**  Sum long double over all nodes
+*/
+void
+g_longdoublesum(long double *dpt)
+{
+  long double work;
+  MPI_Allreduce( dpt, &work, 1, MPI_LONG_DOUBLE, MPI_SUM, MPI_COMM_THISJOB );
+  *dpt = work;
+}
+
+/*
+**  Sum a vector of long doubles over all nodes
+*/
+void
+g_veclongdoublesum(long double *dpt, int count)
+{
+  long double *work = (long double *)malloc(count*sizeof(long double));
+  int i;
+  MPI_Allreduce( dpt, work, count, MPI_LONG_DOUBLE, MPI_SUM, MPI_COMM_THISJOB );
+  for(i=0; i<count; i++) dpt[i] = work[i];
   free(work);
 }
 

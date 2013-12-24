@@ -36,6 +36,8 @@
    g_vecfloatsum()       sums a vector of Reals over all nodes 
    g_doublesum()         sums a double over all nodes.
    g_vecdoublesum()      sums a vector of doubles over all nodes.
+   g_longdoublesum()     sums a long double over all nodes.
+   g_veclongdoublesum()  sums a vector of long doubles over all nodes.
    g_complexsum()        sums a single precision complex number over all nodes.
    g_veccomplexsum()     sums a vector of single precision complex numbers
                            over all nodes.
@@ -327,6 +329,22 @@ g_doublesum(double *dpt)
 */
 void
 g_vecdoublesum(double *dpt, int ndoubles)
+{
+}
+
+/*
+**  Sum long double over all nodes
+*/
+void
+g_longdoublesum(long double *dpt)
+{
+}
+
+/*
+**  Sum a vector of long doubles over all nodes
+*/
+void
+g_veclongdoublesum(long double *dpt, int count)
 {
 }
 

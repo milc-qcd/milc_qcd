@@ -38,6 +38,8 @@
    g_vecfloatsum()       sums a vector of floats over all nodes 
    g_doublesum()         sums a double over all nodes.
    g_vecdoublesum()      sums a vector of doubles over all nodes.
+   g_longdoublesum()     sums a long double over all nodes.
+   g_veclongdoublesum()  sums a vector of long doubles over all nodes.
    g_complexsum()        sums a single precision complex number over all nodes.
    g_veccomplexsum()     sums a vector of single precision complex numbers
                            over all nodes.
@@ -574,6 +576,41 @@ g_uint32sum(u_int32type *pt)
   QMP_binary_reduction(pt, sizeof(u_int32type), sum_u32);
 }
 
+/*
+**  Sum double over all nodes
+*/
+void
+g_doublesum(double *dpt)
+{
+  QMP_sum_double(dpt);
+}
+
+/*
+**  Sum a vector of doubles over all nodes
+*/
+void
+g_vecdoublesum(double *dpt, int ndoubles)
+{
+  QMP_sum_double_array(dpt, ndoubles);
+}
+
+/*
+**  Sum long double over all nodes
+*/
+void
+g_longdoublesum(long double *dpt)
+{
+  QMP_sum_long_double(dpt);
+}
+
+/*
+**  Sum a vector of long doubles over all nodes
+*/
+void
+g_veclongdoublesum(long double *dpt, int count)
+{
+  QMP_sum_long_double_array(dpt, count);
+}
 
 /*
 **  Sum float over all nodes
@@ -591,24 +628,6 @@ void
 g_vecfloatsum(Real *fpt, int length)
 {
   QMP_sum_Real_array(fpt, length);
-}
-
-/*
-**  Sum double over all nodes
-*/
-void
-g_doublesum(double *dpt)
-{
-  QMP_sum_double(dpt);
-}
-
-/*
-**  Sum a vector of doubles over all nodes
-*/
-void
-g_vecdoublesum(double *dpt, int ndoubles)
-{
-  QMP_sum_double_array(dpt, ndoubles);
 }
 
 /*
