@@ -712,10 +712,14 @@ int w_source_dirac(wilson_vector *src, quark_source *qs)
     QIO_destroy_usqcd_proprecord_info(recinfo);
     
     /* Write the Dirac source vector to the file */
-    status = qio_status(
-		write_wpropsource_D_usqcd_xml(qs->outfile, recxml, src, t0) );
-    node0_printf("Wrote source for color %d spin %d time slice %d\n", 
-		 color, spin, t0);
+    status = qio_status(write_wpropsource_D_usqcd_xml(qs->outfile, recxml, src, t0) );
+    if(status == 0){
+      node0_printf("Wrote source for color %d spin %d time slice %d\n", 
+		   color, spin, t0);
+    } else {
+      node0_printf("FAILED to write source for color %d spin %d time slice %d\n", 
+		   color, spin, t0);
+    }
     
     QIO_string_destroy(recxml);
 
@@ -753,9 +757,12 @@ int w_source_dirac(wilson_vector *src, quark_source *qs)
 	QIO_destroy_usqcd_ksproprecord_info(recinfo);
 	
 	/* Write the color source vector to the file */
-	status = qio_status(
-			    write_kspropsource_V_usqcd_xml(qs->outfile, recxml, qs->v_src, t0) );
-	node0_printf("Wrote source for color %d time slice %d\n",  color, t0);
+	status = qio_status(write_kspropsource_V_usqcd_xml(qs->outfile, recxml, qs->v_src, t0) );
+	if(status == 0){
+	  node0_printf("Wrote source for color %d time slice %d\n",  color, t0);
+	} else {
+	  node0_printf("FAILED to write source for color %d time slice %d\n",  color, t0);
+	}
 	
 	QIO_string_destroy(recxml);
 	
