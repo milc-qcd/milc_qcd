@@ -73,7 +73,7 @@ void d_linktrsum(double_complex *linktrsum) {
   }
 
   g_dcomplexsum(linktrsum);
-  CDIVREAL(*linktrsum,(4*volume),*linktrsum);
+  CDIVREAL(*linktrsum,(4.0*volume),*linktrsum);
 
 } /* d_linktrsum */
 
