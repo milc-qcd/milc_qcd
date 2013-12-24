@@ -73,10 +73,10 @@ msg_tag *mtag0,*mtag1;
 /**{Real xxx; xxx = ss_sum; g_floatsum(&xxx); ss_sum=xxx;}
 {Real xxx; xxx = st_sum; g_floatsum(&xxx); st_sum=xxx;}**/
 #ifdef SCHROED_FUN
-    *ss_plaq = ss_sum /((Real)(3*nx*ny*nz*(nt-1)));
+    *ss_plaq = ss_sum /((Real)(3.0*nx*ny*nz*(nt-1)));
 #else
-    *ss_plaq = ss_sum /((double)(3*nx*ny*nz*nt));
+    *ss_plaq = ss_sum /((double)(3.0*nx*ny*nz*nt));
 #endif
-    *st_plaq = st_sum /((double)(3*nx*ny*nz*nt));
+    *st_plaq = st_sum /((double)(3.0*nx*ny*nz*nt));
 } /* d_plaquette2 */
 
