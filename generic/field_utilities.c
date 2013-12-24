@@ -263,6 +263,7 @@ void destroy_ksp_field(ks_prop_field *ksp){
     destroy_v_field(ksp->v[color]);
   }
   free(ksp->v);
+  free(ksp);
 }
 
 /*--------------------------------------------------------------------*/
@@ -398,6 +399,29 @@ void copy_wp_field(wilson_prop_field *wpcopy, wilson_prop_field *wp){
       wpcopy->swv[color][i] = wp->swv[color][i];
     }
   }
+}
+
+/*--------------------------------------------------------------------*/
+void scalar_mult_add_ksprop_field(ks_prop_field *a, ks_prop_field *b, 
+				  Real s, ks_prop_field *c){
+  int i,c1;
+  
+  for(c1 = 0; c1 < c->nc; c1++)
+    FORALLFIELDSITES(i){
+      scalar_mult_add_su3_vector(&a->v[c1][i], &b->v[c1][i], s, &c->v[c1][i]);
+    }
+}
+
+/*--------------------------------------------------------------------*/
+void scalar_mult_add_wprop_field(wilson_prop_field *a, wilson_prop_field *b, 
+				 Real s, wilson_prop_field *c){
+  int i,s1,c1;
+  
+  for(c1 = 0; c1 < c->nc; c1++)
+    FORALLFIELDSITES(i){
+      for(s1=0; s1<4; s1++)
+	scalar_mult_add_wvec(&a->swv[c1][i].d[s1], &b->swv[c1][i].d[s1], s, &c->swv[c1][i].d[s1]);
+    }
 }
 
 /*--------------------------------------------------------------------*/
