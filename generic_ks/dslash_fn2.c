@@ -154,7 +154,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	prefetch_4MV4V( 
 		       fat4,
 		       (su3_vector *)F_PT(s+FETCH_UP,src),
-		       tempvec+4*i+FETCHUP );
+		       tempvec+4*i+FETCH_UP );
 #ifndef NO_LONG_LINKS
 	long4 = &(t_longlink[4*(i+FETCH_UP)]);
 	prefetch_4MV4V(
