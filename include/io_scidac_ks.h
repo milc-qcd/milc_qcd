@@ -33,11 +33,11 @@ void restore_ks_vector_scidac_to_site(char *filename, int serpar,
 void save_ks_vector_scidac_from_field(char *filename, char *fileinfo,
 				      char *recinfo, 
 				      int volfmt, int serpar, 
-				      su3_vector *src, int count);
+				      su3_vector *src, int count, int prec);
 void save_ks_vector_scidac_from_site(char *filename, char *fileinfo,
 				     char *recinfo, 
 				     int volfmt, int serpar, 
-				     field_offset src, int count);
+				     field_offset src, int count, int prec);
 void w_close_ks_vector_scidac_file(QIO_Writer *outfile);
 QIO_Writer *w_open_ks_vector_scidac_file(char *filename, char *fileinfo, 
 					 int volfmt, int serpar);
