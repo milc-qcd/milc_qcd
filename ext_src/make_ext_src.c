@@ -178,8 +178,6 @@ void extract_wprop_to_w_source(int startflag, char startfile[], int ncolor,
   int color, spin, ksource;
   int status;
   int j;
-  int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
-  int r0[4] = {0,0,0,0};            /* Dummy offset */
   wilson_vector *wv;
   //complex *chi_cs;
   w_prop_file *fp_in; 
@@ -210,12 +208,19 @@ void extract_wprop_to_w_source(int startflag, char startfile[], int ncolor,
     terminate(1);
   }
 
-  /* Create metadata for Dirac source file */
-  fileinfo = create_ws_XML(startfile, dst_qs);
-
   /* Open output extended Dirac source file */
-  for(j = 0; j < nt0; j++)
-    w_source_open_dirac(dst_qs+j, fileinfo);
+  for(j = 0; j < nt0; j++){
+    /* Create metadata for Dirac source file */
+    fileinfo = create_ws_XML(startfile, dst_qs+j);
+    status = w_source_open_dirac(dst_qs+j, fileinfo);
+    if(status == 0){
+      node0_printf("Opened %s for writing\n", dst_qs[j].save_file);
+    } else {
+      node0_printf("FAILED to open %s for writing\n", dst_qs[j].save_file);
+      terminate(1);
+    }
+    free_ws_XML(fileinfo);
+  }
 
   /* Loop over source colors and spins */
   for(ksource = 0; ksource < src_qs.nsource; ksource++){
@@ -239,8 +244,12 @@ void extract_wprop_to_w_source(int startflag, char startfile[], int ncolor,
     /* Switch back to staggered basis for KS4 */
     /* This follows the spin convention for the naive extended
        propagator in the clover_invert2 code */
-    if(dst_type == KS4_TYPE){
-      convert_naive_to_staggered_wv(wv, ks_source_r, r0);
+    {
+      int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
+      int r0[4] = {0,0,0,0};            /* Dummy offset */
+      if(dst_type == KS4_TYPE){
+	convert_naive_to_staggered_wv(wv, ks_source_r, r0);
+      }
     }
 
     /* Write the extended source as a time slice of the propagator */
@@ -260,7 +269,6 @@ void extract_wprop_to_w_source(int startflag, char startfile[], int ncolor,
     w_source_close(dst_qs+j);
 
   //  if(chi_cs != NULL)free(chi_cs);
-  free_ws_XML(fileinfo);
   destroy_wv_field(wv);
 
 }
@@ -364,14 +372,12 @@ void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
   int color, spin, ksource;
   int status;
   int j;
-  su3_vector *v[3];
-  wilson_vector *wv;
-  spin_wilson_vector *swv;
+  su3_vector **v = (su3_vector *)malloc(sizeof(su3_vector *)*ncolor);
+  wilson_vector *wv = create_wv_field();
+  spin_wilson_vector *swv = create_swv_field();
   //complex *chi_cs;
   ks_prop_file *fp_in; 
   char *fileinfo;
-  int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
-  int r0[4] = {0,0,0,0};            /* Dummy offset */
   quark_source src_qs;
   double dtime;
 #ifdef IOTIME
@@ -381,9 +387,6 @@ void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
 #endif
   char myname[] = "extract_ksprop_to_w_source";
 
-  swv = create_swv_field();
-  wv  = create_wv_field();
-
   for(color = 0; color < ncolor; color++)
     v[color] = create_v_field();
 
@@ -392,6 +395,7 @@ void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
 
   init_qs(&src_qs);
   src_qs.ncolor = ncolor;
+  src_qs.nsource = ncolor*4;
 
   /* Open files for KS propagators, if requested */
   fp_in  = r_open_ksprop(startflag, startfile);
@@ -412,12 +416,18 @@ void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
   
   r_close_ksprop(startflag, fp_in);
 
-  /* Create metadata for Dirac source file */
-  fileinfo = create_ws_XML(startfile, dst_qs);
-
   /* Open output extended Dirac source files */
-  for(j = 0; j < nt0; j++)
-    w_source_open_dirac(dst_qs+j, fileinfo);
+  for(j = 0; j < nt0; j++){
+    fileinfo = create_ws_XML(startfile, dst_qs);
+    status = w_source_open_dirac(dst_qs+j, fileinfo);
+    if(status == 0){
+      node0_printf("Opened %s for writing\n", dst_qs[j].save_file);
+    } else {
+      node0_printf("FAILED to open %s for writing\n", dst_qs[j].save_file);
+      terminate(1);
+    }
+    free_ws_XML(fileinfo);
+  }
   
   /* Loop over source spins and colors.  This is no longer in the
      standard USQCD order! */
@@ -429,28 +439,16 @@ void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
     /* Convert KS prop to naive prop (su3_vector maps to
        spin_wilson_vector) for a given source color */
     
-    dtime = start_timing();
-    convert_ksprop_to_wprop_swv(swv, v[color], ks_source_r, r0);
+    {
+      int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
+      int r0[4] = {0,0,0,0};            /* Dummy offset */
+      dtime = start_timing();
+      convert_ksprop_to_wprop_swv(swv, v[color], ks_source_r, r0);
+    }
 
     copy_wv_from_swv(wv, swv, spin);
     print_timing(dtime, "naive conversion and copy");
     
-#if 0
-    // DEBUG
-    {
-      wilson_vector wvtmp1, wvtmp2;
-      int y[4] = {1,1,1,2};
-      int k = node_index(y[0],y[1],y[2],y[3]);
-      wvtmp1 = wv[k];
-      if(y[3]%2 == 1){mult_w_by_gamma(&wvtmp1, &wvtmp2, GT); wvtmp1 = wvtmp2;}
-      if(y[0]%2 == 1){mult_w_by_gamma(&wvtmp1, &wvtmp2, GX); wvtmp1 = wvtmp2;}
-      if(y[1]%2 == 1){mult_w_by_gamma(&wvtmp1, &wvtmp2, GY); wvtmp1 = wvtmp2;}
-      if(y[2]%2 == 1){mult_w_by_gamma(&wvtmp1, &wvtmp2, GZ); wvtmp1 = wvtmp2;}
-      dump_wvec(&wvtmp1);
-      dumpvec(&v[color][k]);
-    }
-#endif
-
     /* Smear */
     dtime = start_timing();
     wv_field_op(wv, snk_qs_op, FULL, ALL_T_SLICES);
@@ -464,8 +462,12 @@ void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
     /* Switch back to staggered basis for KS4 */
     /* This follows the spin convention for the naive extended
        propagator in the clover_invert2 code */
-    if(dst_type == KS4_TYPE){
-      convert_naive_to_staggered_wv(wv, ks_source_r, r0);
+    {
+      int ks_source_r[4] = {0,0,0,0};   /* Hypercube corners */
+      int r0[4] = {0,0,0,0};            /* Dummy offset */
+      if(dst_type == KS4_TYPE){
+	convert_naive_to_staggered_wv(wv, ks_source_r, r0);
+      }
     }
     
     /* Write the extended source as a time slice of the propagator */
@@ -485,5 +487,6 @@ void extract_ksprop_to_w_source(int startflag, char startfile[], int ncolor,
     destroy_v_field(v[color]); 
   destroy_wv_field(wv); 
   destroy_swv_field(swv);
+  free(v);
 }
 
