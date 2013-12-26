@@ -21,11 +21,11 @@
 /* Set up a USQCD Wilson propagator file for reading */
 
 static void
-setup_input_usqcd_prop_file(w_prop_file *wpf)
+open_input_usqcd_prop_file(w_prop_file *wpf, int serpar)
 {
 
   /* Open the file and read the header */
-  wpf->infile = r_open_usqcd_wprop_file(wpf->filename,QIO_SERIAL);
+  wpf->infile = r_open_usqcd_wprop_file(wpf->filename, serpar);
 } /* setup_input_usqcd_prop_file */
 
 /*---------------------------------------------------------------*/
@@ -46,7 +46,8 @@ read_usqcd_wprop_record(w_prop_file *wpf,
     alloc_cached_c_source(wqs);
     status = qio_status(read_wpropsource_C_usqcd(wpf->infile, wqs->descrp, 
 				 MAXDESCRP, get_cached_c_source(wqs)));
-    if(status == 0)node0_printf("Read prop source %s\n",wqs->descrp);
+    if(status == 0){node0_printf("Read prop source %s from %s\n",wqs->descrp, wpf->filename);}
+    else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", wpf->filename);}
     wqs->type = COMPLEX_FIELD_STORE;
   }
   else if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
@@ -54,7 +55,8 @@ read_usqcd_wprop_record(w_prop_file *wpf,
     alloc_cached_wv_source(wqs);
     status = qio_status(read_wpropsource_D_usqcd(wpf->infile, wqs->descrp, 
 				 MAXDESCRP, get_cached_wv_source(wqs)));
-    if(status == 0)node0_printf("Read prop source %s\n",wqs->descrp);
+    if(status == 0){node0_printf("Read prop source %s from %s\n",wqs->descrp, wpf->filename);}
+    else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", wpf->filename);}
     wqs->type = DIRAC_FIELD_STORE;
   }
 
@@ -99,6 +101,24 @@ interpret_usqcd_w_save_flag(int *volfmt, int *serpar, int flag)
   }
 } /* interpret_usqcd_w_save_flag */
 
+/*---------------------------------------------------------------*/
+/* Translate MILC flag to USQCD mode parameter */
+static int
+interpret_usqcd_w_reload_flag(int flag)
+{
+  switch(flag){
+  case RELOAD_PARALLEL:   
+    return QIO_PARALLEL;
+  case RELOAD_SERIAL:
+    return QIO_SERIAL;
+  default:
+    printf("interpret_usqcd_w_reload_flag: bad reload flag %d\n", flag);
+    terminate(1);
+  }
+
+  /* (The volume format is determined by looking at the file) */
+  return -1;
+}
 #endif  
 
 /*---------------------------------------------------------------*/
@@ -204,9 +224,14 @@ r_open_wprop(int flag, char *filename)
 	  file_type == FILE_TYPE_W_USQCD_DD_PAIRS ||
 	  file_type == FILE_TYPE_W_USQCD_CD_PAIRS){
     
+    int serpar = interpret_usqcd_w_reload_flag(flag);
     wpf = setup_input_w_prop_file(filename);
     wpf->file_type = file_type;
-    setup_input_usqcd_prop_file(wpf);
+    open_input_usqcd_prop_file(wpf, serpar);
+    if(wpf->infile == NULL){
+      printf("r_open_wprop: Failed to open %s for reading\n", filename);
+      terminate(1);
+    }
   }
 #endif
   else {
