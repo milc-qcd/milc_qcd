@@ -29,6 +29,7 @@
 
 #define LOOPEND
 #include "../include/loopend.h"
+#include "../include/openmp_defs.h"
 #include <string.h>
 
 /* The Fermilab relative residue */
@@ -41,11 +42,11 @@ my_relative_residue(su3_vector *p, su3_vector *q, int parity)
   site *s;
   
   residue = 0;
-  FORSOMEPARITY(i,s,parity){
+  FORSOMEFIELDPARITY_OMP(i,parity,private(num,den) reduction(+:residue)){
     num = (double)magsq_su3vec( &(p[i]) );
     den = (double)magsq_su3vec( &(q[i]) );
     residue += (den==0) ? 1.0 : (num/den);
-  } END_LOOP
+  } END_LOOP_OMP
 
   g_doublesum(&residue);
 
@@ -110,26 +111,11 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
   case(ODD):  otherparity=EVEN; break;
   }
 
-  /* Allocate temporary variables */
-  /* PAD may be used to avoid cache trashing */
-#define PAD 0
-  ttt = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
-  cg_p = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
-  resid = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
-
-  if(ttt == NULL || cg_p == NULL || resid == NULL){
-    printf("%s(%d): No room for temporaries\n",myname,this_node);
-  }
-
-  memset(ttt, 0, (sites_on_node+PAD)*sizeof(su3_vector));
-  memset(cg_p, 0, (sites_on_node+PAD)*sizeof(su3_vector));
-  memset(resid, 0, (sites_on_node+PAD)*sizeof(su3_vector));
-
   /* Source norm */
   source_norm = 0.0;
-  FORSOMEPARITY(i,s,parity){
+  FORSOMEFIELDPARITY_OMP(i,parity,reduction(+:source_norm)){
     source_norm += (double)magsq_su3vec( &t_src[i] );
-  } END_LOOP
+  } END_LOOP_OMP
   g_doublesum( &source_norm );
 #ifdef CG_DEBUG
   node0_printf("congrad: source_norm = %e\n", (double)source_norm);
@@ -150,10 +136,9 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
   /* Provision for trivial solution */
   if(source_norm == 0.0){
     /* Zero the solution, free space, and return zero iterations */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEFIELDPARITY_OMP(i,parity,default(shared)){
       memset(t_dest + i, 0, sizeof(su3_vector));
-    } END_LOOP
-    free(ttt); free(cg_p); free(resid);
+    } END_LOOP_OMP
 
   dtimec += dclock();
 #ifdef CGTIME
@@ -166,6 +151,21 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
     return 0;
   }
+
+  /* Allocate temporary variables */
+  /* PAD may be used to avoid cache trashing */
+#define PAD 0
+  ttt = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+  cg_p = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+  resid = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+
+  if(ttt == NULL || cg_p == NULL || resid == NULL){
+    printf("%s(%d): No room for temporaries\n",myname,this_node);
+  }
+
+  memset(ttt, 0, (sites_on_node+PAD)*sizeof(su3_vector));
+  memset(cg_p, 0, (sites_on_node+PAD)*sizeof(su3_vector));
+  memset(resid, 0, (sites_on_node+PAD)*sizeof(su3_vector));
 
 #ifdef CG_DEBUG
   node0_printf("rsqmin = %g relmin = %g\n",rsqmin,relrsqmin);
@@ -197,7 +197,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 	dslash_fn_field(t_dest, ttt, otherparity, fn);
 	dslash_fn_field(ttt, ttt, parity, fn);
 	/* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
-	FORSOMEPARITYDOMAIN(i,s,parity){
+	FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:rsq)){
 	  if( i < loopend-FETCH_UP ){
 	    prefetch_VVVV( &ttt[i+FETCH_UP], 
 			   &t_dest[i+FETCH_UP],
@@ -209,7 +209,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 	  /* remember ttt contains -M_adjoint*M*src */
 	  cg_p[i] = resid[i];
 	  rsq += (double)magsq_su3vec( &resid[i] );
-	} END_LOOP
+	} END_LOOP_OMP
 #ifdef FEWSUMS
 	actual_rsq = rsq; /* not yet summed over nodes */
 #endif
@@ -276,7 +276,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #ifdef FEWSUMS
     c_tr=0.0; c_tt=0.0;
 #endif
-    FORSOMEPARITYDOMAIN(i,s,parity){
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:pkp,c_tr,c_tt)){
       if( i < loopend-FETCH_UP ){
 	prefetch_VV( &ttt[i+FETCH_UP], &cg_p[i+FETCH_UP] );
       }
@@ -287,7 +287,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
       c_tr += (double)su3_rdot( &ttt[i], &resid[i] );
       c_tt += (double)su3_rdot( &ttt[i], &ttt[i] );
 #endif
-    } END_LOOP
+    } END_LOOP_OMP
 #ifdef FEWSUMS
     /* finally sum oldrsq over nodes, also other sums */
     tempsum[0] = pkp; tempsum[1] = c_tr; 
@@ -310,7 +310,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #else
     rsq=0.0;
 #endif
-    FORSOMEPARITYDOMAIN(i,s,parity){
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:actual_rsq,rsq)){
       if( i < loopend-FETCH_UP ){
 	prefetch_VVVV( &t_dest[i+FETCH_UP], 
 		       &cg_p[i+FETCH_UP], 
@@ -324,7 +324,7 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #else
       rsq += (double)magsq_su3vec( &resid[i] );
 #endif
-    } END_LOOP
+    } END_LOOP_OMP
 #ifdef FEWSUMS
     /**printf("XXX:  node %d\t%e\t%e\t%e\n",this_node,oldrsq,c_tr,c_tt);**/
     rsq = oldrsq + 2.0*a*c_tr + a*a*c_tt; /*TEST - should equal actual_rsq */
@@ -353,9 +353,9 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     
     b = (Real)rsq/oldrsq;
     /* cg_p  <- resid + b*cg_p */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,default(shared)){
       scalar_mult_add_su3_vector( &resid[i], &cg_p[i], b, &cg_p[i]);
-    } END_LOOP
+    } END_LOOP_OMP
   }
 
   if(nrestart == max_restarts || iteration == max_cg){

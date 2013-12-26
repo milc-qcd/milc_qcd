@@ -16,8 +16,7 @@
 /* C. DeTar 9/29/01 Standardized prefetching and synced versions */
 
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
-#define LOOPEND
-#include "../include/loopend.h"
+#include "../include/openmp_defs.h"
 #include "../include/prefetch.h"
 #include "../include/fn_links.h"
 #include <string.h>
@@ -143,7 +142,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
     }
 
     /* Multiply by adjoint matrix at other sites */
-    FORSOMEPARITYDOMAIN(i,s,otherparity){
+    FORSOMEPARITYDOMAIN_OMP(i,s,otherparity,private(fat4,long4)){
 
       fat4 = &(t_fatlink[4*i]);
       mult_adj_su3_mat_vec_4dir( fat4,
@@ -154,7 +153,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	mult_adj_su3_mat_vec_4dir( long4,
 		   (su3_vector *)F_PT(s,src), (templongvec+4*i) );
       }
-    } END_LOOP
+    } END_LOOP_OMP;
 
     /* Start gathers from negative directions */
     for( dir=XUP; dir <= TUP; dir++){
@@ -207,7 +206,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 #ifdef SCHROED_FUN
 
     /* For one-link actions ONLY! */
-    FORSOMEPARITYDOMAIN(i,s,parity){
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,private(fat4)){
       fat4 = &(t_fatlink[4*i]);
       /* Don't include last time-link in computation */
       if(s->t == (nt-1)){
@@ -223,11 +222,11 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
 	    (su3_vector *)F_PT(s,dest));
       }
-    } END_LOOP
+    } END_LOOP_OMP;
 
 #else
 
-    FORSOMEPARITYDOMAIN(i,s,parity){
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,private(fat4,long4)){
       fat4 = &(t_fatlink[4*i]);
       mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
@@ -240,7 +239,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	   (su3_vector *)gen_pt[Z3UP][i], (su3_vector *)gen_pt[T3UP][i],
 	   templongv1+i);
       }
-    } END_LOOP
+    } END_LOOP_OMP;
 
 #endif
 
@@ -257,7 +256,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
       }
     }
 
-    FORSOMEPARITYDOMAIN(i,s,parity){
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,default(shared)){
 	sub_four_su3_vecs( (su3_vector *)F_PT(s,dest),
 	    (su3_vector *)(gen_pt[XDOWN][i]),
 	    (su3_vector *)(gen_pt[YDOWN][i]),
@@ -273,7 +272,7 @@ void dslash_fn_site_special( field_offset src, field_offset dest,
 	  add_su3_vector((su3_vector *)F_PT(s,dest), templongv1+i,
 			 (su3_vector *)F_PT(s,dest));
 	}
-    } END_LOOP;
+    } END_LOOP_OMP;
 	
     if(do_long){
       destroy_v_field(templongv1);
@@ -362,7 +361,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 	/* if the first neighbor came from another node, we should be able
 	   to find it in the third neighbor list, layout permitting --
 	   it's the third neighbor of the site two back from us */
-	FORSOMEPARITYDOMAIN(i,s,parity){
+	FORSOMEPARITYDOMAIN_OMP(i,s,parity,default(shared)){
 	  if( gen_pt[dir][i] < (char *)src 
 	    || gen_pt[dir][i] >= (char *)(src+sites_on_node) ){
 	      coords[XUP]=s->x; coords[YUP]=s->y; coords[ZUP]=s->z;
@@ -377,7 +376,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 		  terminate(1);
 		}
 	  }
-	} END_LOOP
+	} END_LOOP_OMP;
     }
     else {
       restart_gather_field(src, sizeof(su3_vector), DIR3(dir), parity, 
@@ -396,7 +395,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 	  sizeof(su3_vector), OPP_3_DIR(DIR3(dir)), parity, gen_pt[OPP_3_DIR(DIR3(dir))] );
         tag[OPP_DIR(dir)] = start_gather_field( src,
 	   sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
-	FORSOMEPARITYDOMAIN(i,s,parity){
+	FORSOMEPARITYDOMAIN_OMP(i,s,parity,default(shared)){
 	  if( gen_pt[OPP_DIR(dir)][i] < (char *)src 
 	    || gen_pt[OPP_DIR(dir)][i] >= (char *)(src+sites_on_node) ){
 	      coords[XUP]=s->x; coords[YUP]=s->y; coords[ZUP]=s->z;
@@ -406,7 +405,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 	    /* don't need the check here - if it works forward it
 	       should work backward */
 	  }
-	} END_LOOP
+	} END_LOOP_OMP;
       }
       else{
 	restart_gather_field( src, sizeof(su3_vector),
@@ -424,7 +423,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
     wait_gather(tag[DIR3(dir)]);
   }
 
-#else
+#else //D_GATHER13
   /* Start gathers from positive directions */
   /* And start the 3-step gather too */
   for( dir=XUP; dir<=TUP; dir++ ){
@@ -473,12 +472,12 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
     if(do_long)
       wait_gather(tag[DIR3(dir)]);
   }
-#endif
+#endif // D_GATHER13
 
 #ifdef SCHROED_FUN  
 
   /* For one-link actions ONLY! */
-  FORSOMEPARITYDOMAIN(i,s,parity){
+  FORSOMEPARITYDOMAIN_OMP(i,s,parity,private(fat4)){
     fat4 = &(t_fatlink[4*i]);
     /* Don't include last time-link in computation */
     if(s->t == (nt-1)){
@@ -494,11 +493,12 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 	    (su3_vector *)gen_pt[ZUP][i], (su3_vector *)gen_pt[TUP][i],
 	    &(dest[i]) );
     }
-  } END_LOOP
+  } END_LOOP_OMP;
 
-#else
+#else // SCHROED_FN
    
-  FORSOMEPARITYDOMAIN(i,s,parity){
+  su3_matrix *long4;
+  FORSOMEPARITYDOMAIN_OMP(i,s,parity,private(fat4,long4,tvec)){
     fat4 = &(t_fatlink[4*i]);
     mult_su3_mat_vec_sum_4dir( fat4,
 	    (su3_vector *)gen_pt[XUP][i], (su3_vector *)gen_pt[YUP][i],
@@ -506,16 +506,16 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 	    &(dest[i]) );
 
     if(do_long){
-      su3_matrix *long4 = &(t_longlink[4*i]);
+      long4 = &(t_longlink[4*i]);
       mult_su3_mat_vec_sum_4dir( long4,
 	    (su3_vector *)gen_pt[X3UP][i], (su3_vector *)gen_pt[Y3UP][i],
 	    (su3_vector *)gen_pt[Z3UP][i], (su3_vector *)gen_pt[T3UP][i],
 	    &tvec );
       add_su3_vector(&(dest[i]), &tvec, &(dest[i]) );
     }
-  } END_LOOP;
+  } END_LOOP_OMP;
 
-#endif
+#endif // SCHROED_FN
    
 #ifdef D_FN_GATHER13
 
@@ -541,7 +541,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 
 #endif
 
-  FORSOMEPARITYDOMAIN(i,s,parity){
+  FORSOMEPARITYDOMAIN_OMP(i,s,parity,private(fatback4,longback4,tvec)){
     fatback4 = &(t_fatbacklink[4*i]);
     mult_su3_mat_vec_sum_4dir( fatback4,
 	    (su3_vector *)gen_pt[XDOWN][i], (su3_vector *)gen_pt[YDOWN][i],
@@ -557,7 +557,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 	    &tvec );
       sub_su3_vector(&(dest[i]), &tvec, &(dest[i]) );
     }
-  } END_LOOP 
+  } END_LOOP_OMP; 
 
 }
 
@@ -605,7 +605,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
     if(do_long)
       wait_gather(tag[1]);
   
-    FORSOMEPARITYDOMAIN(i,s,parity)
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,private(tmp))
       {
 	mult_su3_mat_vec( fat+4*i+dir, (su3_vector *)gen_pt[0][i], &tmp );
 	scalar_mult_add_su3_vector( dest+i, &tmp, wtfat, dest+i ) ;    
@@ -613,7 +613,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 	  mult_su3_mat_vec( lng+4*i+dir, (su3_vector *)gen_pt[1][i], &tmp );
 	  scalar_mult_add_su3_vector( dest+i, &tmp, wtlong, dest+i ) ;    
 	}
-      } END_LOOP
+      } END_LOOP_OMP
 
   } else {
 
@@ -632,7 +632,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
   
     /* NOTE minus sign convention! */
 
-    FORSOMEPARITYDOMAIN(i,s,parity)
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,private(tmp))
       {
 	mult_su3_mat_vec( fatback+4*i+dir, (su3_vector *)gen_pt[0][i], &tmp );
 	scalar_mult_add_su3_vector( dest+i, &tmp, -wtfat, dest+i ) ;    
@@ -640,7 +640,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 	  mult_su3_mat_vec( lngback+4*i+dir, (su3_vector *)gen_pt[1][i], &tmp );
 	  scalar_mult_add_su3_vector( dest+i, &tmp, -wtlong, dest+i ) ;    
 	}
-      } END_LOOP
+      } END_LOOP_OMP;
   }
 
   cleanup_gather(tag[0]);
