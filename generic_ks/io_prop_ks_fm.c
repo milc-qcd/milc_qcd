@@ -93,6 +93,8 @@ void destroy_ks_fmprop_file_handle(ks_prop_file *kspf){
     free(kspf->header);
   if(kspf->info != NULL)
     free(kspf->info);
+  if(kspf->prop != NULL)
+    free(kspf->prop);
   free(kspf);
 
 }
