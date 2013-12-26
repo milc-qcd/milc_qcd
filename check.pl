@@ -30,7 +30,7 @@ $oldprec = "";
 $oldmacro = "";
 
 while(<>){
-    if(/\#/){next;}
+    if(/^\#/){next;}
     if(/exec/){
 	($tag, $exec, $prec, $add_macro, $input_case, $patterns) = split(" ",$_,6);
 	chop($patterns);
@@ -57,7 +57,6 @@ while(<>){
 
     $macro = "";
     if($add_macro ne "-"){$macro = $add_macro;}
-
 
     if($oldexec ne $exec || $oldprec ne $prec || $oldmacro ne $macro ){
 	print "===========================================================\n";
