@@ -52,6 +52,10 @@ OPT              = -O3
 #-------------- Gnu C -------------------------------------
 OCFLAGS = -Wall # ( -Wall, etc )
 
+# Compiling with OpenMP?
+
+OMP = #true
+
 #OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
 #OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
@@ -106,6 +110,15 @@ CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE # Large files gcc only
 # With Redhat, for MPI PRO see rpm -ql mpipro | more
 #LMPI = -lmpipro_tv -lpthread
 #LMPI = -lmpipro -lvipl -lpthread
+
+ifeq ($(strip ${OMP}),true)
+  OCFLAGS += -openmp -openmp_report2
+  LDFLAGS = -openmp
+endif
+
+ifeq ($(strip ${HOST}),MIC)
+  OCFLAGS += -mmic
+endif
 
 #----------------- MVICH ----------------------------------------------
 #IMPI = -I/uufs/icebox/sys/src/mpich/1.2.0-via/include  # MVICH
@@ -263,6 +276,10 @@ LD               = ${CC}
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
 
+ifeq ($(strip ${HOST}),MIC)
+  LDFLAGS += -mmic
+endif
+
 #----------------------------------------------------------------------
 # 17. Extra include paths
 INCADD = ${INCFFTW} ${INCQUDA} 
@@ -349,6 +366,7 @@ CPROF =#
 # CG_DEBUG            Print debugging information for the inverters.
 # CG_OK               Print inverter convergence information even when OK
 # REMAP_STDIO_APPEND  All nodes append to stdout.
+# NO_FREOPEN          Don't use freopen to remap stdin and stdout
 #
 # HISQ_SVD_VALUES_INFO Print HISQ SVD diagnostics
 # HISQ_SVD_COUNTER    Print summary count of SVD uses
@@ -557,6 +575,10 @@ MAKELIBRARIES = Make_vanilla  # or Make_SSE_nasm (don't use -DSSE with this)
 #----------------------------------------------------------------------
 # End of user choices.  Please, also, check choices in include/config.h.
 #----------------------------------------------------------------------
+
+ifeq ($(strip ${OMP}),true)
+  OCFLAGS += -DOMP
+endif
 
 ifeq ($(strip ${MPP}),true)
   ifeq ($(strip ${HAVEQMP}),true)
