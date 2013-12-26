@@ -9,7 +9,7 @@
 /* Code version                                                     */
 /********************************************************************/
 
-#define MILC_CODE_VERSION "7.7.9"
+#define MILC_CODE_VERSION "7.7.10-a11"
 
 /********************************************************************/
 /* Compiler/Processor-dependent macros */
@@ -51,5 +51,8 @@
 /* #undef HAVE_FSEEKO */  
 /* Systems that don't: T3E UNICOS */
 #define HAVE_FSEEKO 1
+
+/* On some systems freopen for stdin and stdout fails, in which case, comment out */
+#define WANT_FREOPEN
 
 #endif /* _CONFIG_H */
