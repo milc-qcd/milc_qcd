@@ -143,6 +143,11 @@ int readin(int prompt) {
       if(scanf("%d", &param.nfile) != 1)status++;
       if(status > 0)printf("\n%s: bad number of file\n", myname);
       else printf("%d\n", param.nfile);
+      if(param.nfile > MAX_FILES){
+	printf("The number of files must be less than or equal to %d\n",
+	       MAX_FILES);
+	status++;
+      }
     }
 
     /*------------------------------------------------------------*/
