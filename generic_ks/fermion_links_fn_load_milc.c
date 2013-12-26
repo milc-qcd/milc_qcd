@@ -8,6 +8,7 @@
 #define IMP_QUARK_ACTION_DEFINE_PATH_TABLES
 #include <quark_action.h>
 #include "../include/info.h"
+#include "../include/openmp_defs.h"
 
 #define GOES_FORWARDS(dir) (dir<=TUP)
 #define GOES_BACKWARDS(dir) (dir>TUP)
@@ -71,10 +72,10 @@ load_lnglinks(info_t *info, su3_matrix *lng, ks_component_paths *p,
 
   for (dir=XUP; dir<=TUP; dir++){ /* loop over longlink directions */
     /* set longlink to zero */
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,private(long1)){
       long1 = lng + 4*i +dir;
       clear_su3mat( long1 );
-    }
+    } END_LOOP_OMP;
 
     /* loop over paths, checking for ones with total displacement 3*dir */
     for( ipath=0; ipath<num_q_paths; ipath++ ){  /* loop over paths */
