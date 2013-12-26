@@ -6,8 +6,8 @@
 
 /* External entry points in this file
 
-   eo_fermion_force_oneterm (unsupported)
-   eo_fermion_force_twoterms (unsupported)
+   eo_fermion_force_oneterm
+   eo_fermion_force_twoterms
    eo_fermion_force_multi
    ks_multiff_opt_chr
 
@@ -17,6 +17,10 @@
 
 /*
  * $Log: fermion_force_hisq_qop.c,v $
+ * Revision 1.3  2013/12/26 05:21:07  detar
+ * Support eo_fermion_force_oneterm, eo_fermion_force_oneterm_site,
+ *   eo_fermion_force_twoterms and eo_fermion_force_twoterms_site
+ *
  * Revision 1.2  2012/01/21 21:04:12  detar
  * Urs Heller's upgrades to eigen_stuff*.c
  *
@@ -35,75 +39,7 @@
 #define KS_MULTIFF FNMAT
 #endif
 
-//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop.c,v 1.2 2012/01/21 21:04:12 detar Exp $";
-
-/**********************************************************************/
-/* Standard MILC interface for the single-species HISQ fermion force
-   routine */
-/**********************************************************************/
-void eo_fermion_force_oneterm( Real eps, Real weight, su3_vector *x_off,
-			       int prec, fermion_links_t *fl)
-{
-
-  node0_printf("QOP wrapper for eo_fermion_force_oneterm is not supported\n");
-  terminate(1);
-//  if(prec == 1)
-//    eo_fermion_force_oneterm_F( eps, weight, x_off, fl );
-//  else
-//    eo_fermion_force_oneterm_D( eps, weight, x_off, fl );
-
-}
-
-void eo_fermion_force_oneterm_site( Real eps, Real weight, field_offset x_off_site,
-				    int prec, fermion_links_t *fl)
-{
-
-  node0_printf("QOP wrapper for eo_fermion_force_oneterm is not supported\n");
-  terminate(1);
-
-//  su3_vector *x_off;
-//  x_off = create_v_field_from_site_member(x_off_site);
-//
-//  eo_fermion_force_oneterm(eps, weight, x_off, prec, fl);
-//
-//  destroy_v_field(x_off);
-
-}
-
-/**********************************************************************/
-/* Standard MILC interface for the two-species HISQ fermion force
-   routine */
-/**********************************************************************/
-void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
-				su3_vector *x1_off, su3_vector *x2_off,
-				int prec, fermion_links_t *fl)
-{
-
-  node0_printf("QOP wrapper for eo_fermion_force_twoterms is not supported\n");
-  terminate(1);
-//  if(prec == 1)
-//    eo_fermion_force_twoterms_F( eps, weight1, weight2, x1_off, x2_off, fl );
-//  else
-//    eo_fermion_force_twoterms_D( eps, weight1, weight2, x1_off, x2_off, fl );
-
-}
-
-
-void eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2, 
-				     field_offset x1_off_site, field_offset x2_off_site,
-				     int prec, fermion_links_t *fl)
-{
-
-  su3_vector *x1_off = create_v_field_from_site_member(x1_off_site);
-  su3_vector *x2_off = create_v_field_from_site_member(x2_off_site);
-
-  eo_fermion_force_twoterms(eps, weight1, weight2, x1_off, x2_off, prec, fl);
-
-  destroy_v_field(x2_off);
-  destroy_v_field(x1_off);
-
-}
-
+//static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_ks/fermion_force_hisq_qop.c,v 1.3 2013/12/26 05:21:07 detar Exp $";
 
 /**********************************************************************/
 /*   Parallel transport nterms source vectors                        */
@@ -121,27 +57,6 @@ fermion_force_multi( Real eps, Real *residues,
     fermion_force_multi_hisq_D( eps, residues, xxx, n_orders_naik, fl );
 
 }
-
-// /**********************************************************************/
-// /*   Parallel transport vectors in blocks of veclength.               */
-// /**********************************************************************/
-// /* Requires the xxx1 and xxx2 terms in the site structure */
-// 
-// void 
-// fermion_force_block( Real eps, Real *residues, 
-// 		     su3_vector **xxx, int nterms, int veclength, 
-// 		     int prec, fermion_links_t *fl) 
-// {
-//   if(prec == 1)
-//     fermion_force_block_F( eps, residues, xxx, nterms, veclength, fl);
-//   else
-//     fermion_force_block_D( eps, residues, xxx, nterms, veclength, fl);
-// 
-// }
-
-/**********************************************************************/
-/*   Standard MILC interface for fermion force with multiple sources  */
-/**********************************************************************/
 
 static void set_qop_hisq_force_opts( int fnmat_src_min, int veclength ) {
   /* Note: the want_deps and want_aux options are set in hisq_links_qop.c */
@@ -168,6 +83,27 @@ static void set_qop_hisq_force_opts( int fnmat_src_min, int veclength ) {
   
 }
 
+// /**********************************************************************/
+// /*   Parallel transport vectors in blocks of veclength.               */
+// /**********************************************************************/
+// /* Requires the xxx1 and xxx2 terms in the site structure */
+// 
+// void 
+// fermion_force_block( Real eps, Real *residues, 
+// 		     su3_vector **xxx, int nterms, int veclength, 
+// 		     int prec, fermion_links_t *fl) 
+// {
+//   if(prec == 1)
+//     fermion_force_block_F( eps, residues, xxx, nterms, veclength, fl);
+//   else
+//     fermion_force_block_D( eps, residues, xxx, nterms, veclength, fl);
+// 
+// }
+
+/**********************************************************************/
+/*   Standard MILC interface for fermion force with multiple sources  */
+/**********************************************************************/
+
 void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx, 
 			     int nterms, int prec, fermion_links_t *fl ) {
 
@@ -192,6 +128,70 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
 
   fermion_force_multi( eps, residues, xxx, nterms, prec, fl );
 }
+
+/**********************************************************************/
+/* Standard MILC interface for the single-species HISQ fermion force
+   routine */
+/**********************************************************************/ 
+
+void eo_fermion_force_oneterm( Real eps, Real weight, su3_vector *x_off_one,
+			       int prec, fermion_links_t *fl)
+{
+
+  Real residues[1] = { weight };
+  su3_vector *xxx[1] = { x_off_one };
+  int nterms = 1;
+
+
+  eo_fermion_force_multi( eps, residues, xxx, nterms, prec, fl );
+
+}
+
+void eo_fermion_force_oneterm_site( Real eps, Real weight, field_offset x_off_site,
+				    int prec, fermion_links_t *fl)
+{
+
+  su3_vector *x_off_one = create_v_field_from_site_member(x_off_site);
+
+  eo_fermion_force_oneterm(eps, weight, x_off_one, prec, fl);
+
+  destroy_v_field(x_off_one);
+
+}
+
+/**********************************************************************/
+/* Standard MILC interface for the two-species HISQ fermion force
+   routine */
+/**********************************************************************/
+void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2, 
+				su3_vector *x1_off, su3_vector *x2_off,
+				int prec, fermion_links_t *fl)
+{
+
+  Real residues[2] = { weight1, weight2 };
+  su3_vector *xxx[2] = { x1_off, x2_off };
+  int nterms = 2;
+
+  eo_fermion_force_multi( eps, residues, xxx, nterms, prec, fl );
+
+}
+
+
+void eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2, 
+				     field_offset x1_off_site, field_offset x2_off_site,
+				     int prec, fermion_links_t *fl)
+{
+
+  su3_vector *x1_off = create_v_field_from_site_member(x1_off_site);
+  su3_vector *x2_off = create_v_field_from_site_member(x2_off_site);
+
+  eo_fermion_force_twoterms(eps, weight1, weight2, x1_off, x2_off, prec, fl);
+
+  destroy_v_field(x2_off);
+  destroy_v_field(x1_off);
+
+}
+
 
 /**********************************************************************/
 /*   Accessor for string describing the option                        */
