@@ -38,9 +38,9 @@ MY_OBJECTS= \
   ks_info.o \
   setup.o
 
-G_OBJECTS = \
-  gauge_stuff.o \
-  ploop3.o
+# G_OBJECTS = \
+#   gauge_stuff.o \
+#   ploop3.o
 
 
 # ifeq ($(strip ${QCDOC}),true)
@@ -56,7 +56,8 @@ ifeq ($(strip ${QCDOC}),true)
   LAYOUT = layout_qcdoc.o # Required
 else
   ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
+#    LAYOUT = layout_qdp.o # Required
+    LAYOUT = layout_hyper_prime.o # Choices possible here
   else
     LAYOUT = layout_hyper_prime.o # Choices possible here
   endif
@@ -143,12 +144,41 @@ check_ks_invert::
 	"EXTRA_OBJECTS=  ${FN_OBJECTS} \
 	check_invert2.o	check_ks_invert.o"
 
+check_ks_invert_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHAVE_KS -DCHECK_INVERT \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-9 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-9 \
+        -DHISQ_SVD_COUNTER \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5 \
+	-DHISQ_FORCE_FILTER_COUNTER" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} \
+	check_invert2.o check_ks_invert.o"
+
 check_fermion_force::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DHAVE_KS -DFERMION_FORCE" \
 	"GAUGE = symanzik_1loop_action.h" \
 	"QUARK = asqtad_action.h" \
 	"EXTRA_OBJECTS=  ${FN_OBJECTS} ${ASQ_FORCE} check_fermion_force.o"
+
+check_fermion_force_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"DEFINES= -DFN -DHAVE_KS -DFERMION_FORCE \
+	-DHISQ_REUNIT_ALLOW_SVD \
+	-DHISQ_REUNIT_SVD_REL_ERROR=1e-9 \
+	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-9 \
+        -DHISQ_SVD_COUNTER \
+        -DHISQ_FF_MULTI_WRAPPER \
+	-DHISQ_FORCE_FILTER=5.0e-5 \
+	-DHISQ_FORCE_FILTER_COUNTER" \
+	"GAUGE = symanzik_1loop_action.h" \
+	"QUARK = hisq/hisq_u3_action.h" \
+	"EXTRA_OBJECTS=  ${HISQ_OBJECTS} ${HISQ_FORCE} check_fermion_force.o"
 
 clean:
 	-/bin/rm -f *.o
