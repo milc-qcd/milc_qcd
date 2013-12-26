@@ -71,9 +71,6 @@
 #include "../include/su3_mat_op.h"
 #endif
 
-#define mat_invert mat_invert_uml
-/**#define mat_invert mat_invert_cg**/
-
 int update()  {
   int step, iters=0;
   double startaction,endaction;
