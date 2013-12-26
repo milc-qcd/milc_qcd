@@ -25,10 +25,10 @@
 /* Set up a USQCD KS propagator file for reading */
 
 static void
-open_input_usqcd_ksprop_file(ks_prop_file *kspf)
+open_input_usqcd_ksprop_file(ks_prop_file *kspf, int serpar)
 {
   /* Open the file and read the header */
-  kspf->infile = open_usqcd_ksprop_read(kspf->filename,QIO_SERIAL, &kspf->info);
+  kspf->infile = open_usqcd_ksprop_read(kspf->filename, serpar, &kspf->info);
 } /* open_input_usqcd_ksprop_file */
 
 /*---------------------------------------------------------------*/
@@ -50,7 +50,8 @@ read_usqcd_ksprop_record(ks_prop_file *kspf,
     alloc_cached_c_source(ksqs);
     status = qio_status(read_kspropsource_C_usqcd(kspf->infile, ksqs->descrp, 
 				  MAXDESCRP, get_cached_c_source(ksqs)));
-    if(status == 0)node0_printf("Read prop source %s\n",ksqs->descrp);
+    if(status == 0){node0_printf("Read prop source %s from %s\n",ksqs->descrp, kspf->filename);}
+    else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", kspf->filename);}
     ksqs->type = COMPLEX_FIELD_STORE;
   }
   else if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
@@ -58,7 +59,8 @@ read_usqcd_ksprop_record(ks_prop_file *kspf,
     alloc_cached_v_source(ksqs);
     status = qio_status(read_kspropsource_V_usqcd(kspf->infile, ksqs->descrp, 
 				  MAXDESCRP, get_cached_v_source(ksqs)));
-    if(status == 0)node0_printf("Read prop source %s\n",ksqs->descrp);
+    if(status == 0){node0_printf("Read prop source %s from %s\n",ksqs->descrp, kspf->filename);}
+    else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", kspf->filename);}
     ksqs->type = VECTOR_FIELD_STORE;
   }
 
@@ -99,6 +101,25 @@ interpret_usqcd_ks_save_flag(int *volfmt, int *serpar, int flag)
   default:
     *volfmt = QIO_SINGLEFILE;
   }
+}
+
+/*---------------------------------------------------------------*/
+/* Translate MILC flag to USQCD mode parameter */
+static int
+interpret_usqcd_ks_reload_flag(int flag)
+{
+  switch(flag){
+  case RELOAD_PARALLEL:   
+    return QIO_PARALLEL;
+  case RELOAD_SERIAL:
+    return QIO_SERIAL;
+  default:
+    printf("interpret_usqcd_ks_reload_flag: bad reload flag %d\n", flag);
+    terminate(1);
+    return 0;
+  }
+
+  /* (The volume format is determined by looking at the file) */
 }
 #endif  
 
@@ -218,9 +239,14 @@ r_open_ksprop(int flag, char *filename)
 	  file_type == FILE_TYPE_KS_USQCD_VV_PAIRS ||
 	  file_type == FILE_TYPE_KS_USQCD_CV_PAIRS){
     /* Create a kspf structure. (No file movement here.) */
+    int serpar = interpret_usqcd_ks_reload_flag(flag);
     kspf = create_input_ksprop_file_handle(filename);
     kspf->file_type = file_type;
-    open_input_usqcd_ksprop_file(kspf);
+    open_input_usqcd_ksprop_file(kspf, serpar);
+    if(kspf->infile == NULL){
+      printf("r_open_ksprop: Failed to open %s for reading\n", filename);
+      terminate(1);
+    }
   }
 #endif
   else {
@@ -228,7 +254,7 @@ r_open_ksprop(int flag, char *filename)
   }
 
   return kspf;
-}
+} /* r_open_ksprop */
 
 /*---------------------------------------------------------------*/
 /* Open propagator file for writing an SU(3) vector for one
@@ -436,19 +462,24 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
     }
     break;
   case RELOAD_PARALLEL:
-#ifdef HAVE_QIO
+    ksp = kspf->prop;
+    file_type = kspf->file_type;
     if(file_type == FILE_TYPE_KS_USQCD_C1V3 ||
        file_type == FILE_TYPE_KS_USQCD_VV_PAIRS ||
-       file_type == FILE_TYPE_KS_USQCD_CV_PAIRS){
+       file_type == FILE_TYPE_KS_USQCD_CV_PAIRS)
+#ifdef HAVE_QIO
       status = read_usqcd_ksprop_record(kspf, color, dest, ksqs);
+#else
+    /* No QIO */
+    {
+      node0_printf("%s: Recompile with QIO to read this file\n", myname);
+      status = 1; /* Error status */
     }
 #endif
-    /* If not SciDAC */
-    if(file_type != FILE_TYPE_KS_USQCD_C1V3 &&
-       file_type != FILE_TYPE_KS_USQCD_VV_PAIRS &&
-       file_type != FILE_TYPE_KS_USQCD_CV_PAIRS){
+    else {
       node0_printf("%s: Parallel reading with this file type not supported\n",
 		   myname);
+      status = 1;
     }
     break;
   default:
