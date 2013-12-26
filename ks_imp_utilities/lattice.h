@@ -16,6 +16,7 @@
 */
 
 #include "defines.h"
+#include "params.h"
 #include "../include/generic_quark_types.h"
 #include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 #include "../include/random.h"    /* For double_prn */
@@ -60,7 +61,7 @@ typedef struct {
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
  	Real phase[4];
-
+#if 0
 	/* 3 element complex vectors */
  	su3_vector phi;	        /* Gaussian random source vector */
  	su3_vector resid;	/* conjugate gradient residual vector */
@@ -80,6 +81,8 @@ typedef struct {
         su3_vector templongv1;
 #endif
 	su3_matrix tempmat1,staple;
+#endif
+
 } site;
 
 /* End definition of site structure */
@@ -99,14 +102,23 @@ typedef struct {
 */
 EXTERN	int nx,ny,nz,nt;	/* lattice dimensions */
 EXTERN  int volume;		/* volume of lattice = nx*ny*nz*nt */
+#ifdef FIX_NODE_GEOM
+EXTERN  int node_geometry[4];  /* Specifies fixed "nsquares" (i.e. 4D
+			    hypercubes) for the compute nodes in each
+			    coordinate direction.  Must be divisors of
+			    the lattice dimensions */
+#ifdef FIX_IONODE_GEOM
+EXTERN int ionode_geometry[4]; /* Specifies fixed "nsquares" for I/O
+			     partitions in each coordinate direction,
+			     one I/O node for each square.  The I/O
+			     node is at the origin of the square.
+			     Must be divisors of the node_geometry. */
+#endif
+#endif
 EXTERN	int iseed;		/* random number seed */
-EXTERN	int niter;
-EXTERN	int nrestart;
+EXTERN  int nmass;
 EXTERN  Real beta;
 EXTERN  Real mass,u0;
-EXTERN  int dyn_flavors[1]; 
-EXTERN  int n_dyn_masses; // number of dynamical masses
-EXTERN	Real rsqprop;
 EXTERN	int startflag;	/* beginning lattice: CONTINUE, RELOAD, RELOAD_BINARY,
 			   RELOAD_CHECKPOINT, FRESH */
 EXTERN	int saveflag;	/* do with lattice: FORGET, SAVE, SAVE_BINARY,
@@ -121,7 +133,13 @@ EXTERN  char stringLFN[MAXFILENAME];  /** ILDG LFN if applicable **/
 EXTERN  char savelongfile[MAXFILENAME],savefatfile[MAXFILENAME];
 EXTERN  char srcfile[MAXFILENAME],ansfile[MAXFILENAME];
 EXTERN  int inverttype;
+EXTERN  params par_buf;
+EXTERN  int niter;
+EXTERN  int nrestart;
+EXTERN  Real rsqprop;
 EXTERN	int total_iters;
+EXTERN	int hisq_svd_counter;
+EXTERN	int hisq_force_filter_counter;
 EXTERN  int phases_in; /* 1 if KS and BC phases absorbed into matrices */
 
 /* Some of these global variables are node dependent */
@@ -153,5 +171,9 @@ EXTERN char ** gen_pt[N_POINTERS];
 
 /* Storage for definition of the quark action */
 EXTERN fermion_links_t        *fn_links;
+
+/* Naik terms */
+EXTERN int n_order_naik_total;
+EXTERN int n_orders_naik[MAX_MASS];
 
 #endif /* _LATTICE_H */
