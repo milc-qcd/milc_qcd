@@ -85,7 +85,8 @@ LQIO = -L${QIOLIBDIR} -lqio -llime
 IQLA = -I${QLAINCDIR}
 LQLA = -L$(strip ${QLA})/lib \
           -lqla_int -lqla_f -lqla_f3 -lqla_df -lqla_d3 -lqla_df3 \
-          -lqla_dq3 -lqla_q3 -lqla_d -lqla_dq -lqla_q -lqla_random
+          -lqla_dq3 -lqla_q3 -lqla_d -lqla_dq -lqla_q -lqla_random \
+	  -lqla_cmath
 
 IQDP = -I$(strip ${QDP})/include
 LQDP = -L$(strip ${QDP})/lib \
