@@ -322,6 +322,14 @@ TARLIST = \
  ${NAME_ROOT}/u1_gauge/test/checklist    \
  ${NAME_ROOT}/u1_gauge/test/Makefile \
 \
+ ${NAME_ROOT}/wilson_flow/*.c               \
+ ${NAME_ROOT}/wilson_flow/*.h               \
+ ${NAME_ROOT}/wilson_flow/Make_*            \
+ ${NAME_ROOT}/wilson_flow/test/*.sample-in  \
+ ${NAME_ROOT}/wilson_flow/test/*.errtol     \
+ ${NAME_ROOT}/wilson_flow/test/*.sample-out \
+ ${NAME_ROOT}/wilson_flow/test/checklist    \
+ ${NAME_ROOT}/wilson_flow/test/Makefile \
  ${NAME_ROOT}/sse/README_SSE          \
  ${NAME_ROOT}/sse/include/*.h         \
  ${NAME_ROOT}/sse/include/Makefile    \
