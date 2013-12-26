@@ -112,8 +112,8 @@ G_KS_ALL = \
   load_qop_asqtad_coeffs_D.o \
   load_qop_asqtad_coeffs_F.o \
   mat_invert.o \
-  mu.c \
-  mu_fast.c \
+  mu.o \
+  mu_fast.o \
   multimass_inverter.o \
   naik_eps_utilities.o \
   path_transport.o \
