@@ -1,0 +1,135 @@
+#  Gauge utilities
+#  MIMD version 7
+#
+#  This template file defines rules and macros common to all architectures
+#  It is intended to be an include file for other Makefiles.
+#  Don't use it by itself!
+#
+#       See examples below for naming and building targets for
+#               other actions
+
+MYINCLUDEDIR = .
+INCLUDEDIR = ../include
+#Where the complex and su3 libraries are
+LIBDIR = ../libraries
+
+GLOBAL_HEADERS = ${INCLUDEDIR} ../libraries/include
+
+INLINE_HEADERS = \
+  ../sse/include/ \
+  ../sse2/include/ \
+  ../libraries/include/
+
+MY_HEADERS = \
+  lattice.h \
+  params.h \
+  defines.h \
+  wilson_flow_includes.h
+
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+
+MY_OBJECTS= \
+  control.o \
+  gauge_info.o \
+  staple.o \
+  integrate.o \
+  fmunu.o \
+  setup.o
+
+G_OBJECTS = \
+  check_unitarity.o \
+  d_plaq4.o \
+  field_strength.o  \
+  field_translation.o \
+  field_utilities.o \
+  gauge_utilities.o \
+  gaugefix2.o \
+  io_detect.o \
+  io_helpers.o \
+  io_lat4.o \
+  io_lat_utils.o \
+  make_lattice.o \
+  momentum_twist.o \
+  nersc_cksum.o \
+  path_product.o \
+  ploop3.o \
+  remap_stdio_from_args.o \
+  reunitarize2.o \
+  ranstuff.o
+
+ifeq ($(strip ${HAVEQIO}),true)
+  G_OBJECTS += file_types_milc_usqcd.o io_scidac.o io_scidac_types.o
+endif
+
+# Objects depending on architecture and software package 
+
+LAYOUT = layout_hyper_prime.o # Choices possible here
+
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
+   ${SCIDAC_OBJECTS}
+
+# Generic QOP objects
+ifeq ($(strip ${HAVEQOP}),true)
+  ADD_OBJECTS += ${GENERICQOP}
+endif
+
+OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_W_OBJECTS} ${LAYOUT} \
+  ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+
+#Libraries for complex numbers and su3 functions
+QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a 
+
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES}
+
+# Default rule for C compilation
+.c.o: ; ${CC} -c ${CFLAGS}  $*.c 
+
+# To force a full remake when changing targets
+LASTMAKE = .lastmake.${MAKEFILE}.${PRECISION}.${MYTARGET}
+
+${LASTMAKE}:
+	-/bin/rm -f .lastmake.* gauge_action.h
+	${MAKE} -f ${MAKEFILE} clean
+	touch ${LASTMAKE}
+
+ALL_MAKES = \
+   Make_template \
+   ${MAKEFILE} \
+   ../Make_template_qop \
+   ../Make_template_scidac \
+   ../generic/Make_template
+
+# To force a remake when changing any make file, header, or target
+${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
+
+
+########################################################
+##### Targets: 
+
+wilson_flow::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+
+clean:
+	-/bin/rm -f *.o
+
+# Rules for generic routines
+include ../generic/Make_template
+
+# Rules for generic_ks routines
+include ../generic_ks/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
+
+libmake:
+	@echo Building libraries with ${MAKELIBRARIES}
+	cd ${LIBDIR} ;\
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+
+localmake: ${OBJECTS} ${LIBRARIES}
+	${LD} -o ${MYTARGET} ${LDFLAGS} \
+	${OBJECTS} ${QCDLIB} ${ILIB} -lm
+	touch localmake
+
+target: libmake localmake 
+
