@@ -61,6 +61,8 @@ void meson_cont_field(spin_wilson_vector *src1, spin_wilson_vector *src2,
 
 void convert_ksprop_to_wprop_swv(spin_wilson_vector *swv, 
 				 su3_vector *ksp, int r[], int r0[]);
+void mult_by_ks_gamma_inv_wv(wilson_vector *wv, int r0[]);
+void mult_by_ks_gamma_wv(wilson_vector *wv, int r0[]);
 void convert_naive_to_staggered_wv(wilson_vector *wv, int r[], int r0[]);
 void convert_staggered_to_naive_wv(wilson_vector *wv, int r[], int r0[]);
 void check_naive(wilson_vector *dst, wilson_vector *src, Real mass, Real tol);
