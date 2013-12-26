@@ -831,7 +831,7 @@ void u3_unitarize_analytic( info_t *info, su3_matrix *V, su3_matrix *W ) {
 // set in Makefile
 #ifdef U3_UNIT_ANALYTIC_FOLLOW_PREC
   su3_matrix Q, Q2, Q3, S1, S2;
-  Real c0, c1, c2, S, S3, R, R2, CQ3, RoS, theta, theta3, pi23, denom;
+  Real c0, c1, c2, S, S3, R, RoS, theta, theta3, pi23, denom;
   Real g0, g1, g2, g0sq, g1sq, g2sq, f0, f1, f2, us, vs, ws;
 #else /* U3_UNIT_ANALYTIC_FOLLOW_PREC */
   double Ve[3][3][2],Qe[3][3][2],Q2e[3][3][2],Q3e[3][3][2],S2e[3][3][2];
