@@ -1,7 +1,7 @@
 \input texinfo.tex @c -*- Mode: Texinfo -*-
 @headings doubleafter
 @setfilename milcv7.info
-@settitle The MILC Code (version: 7.7.3)
+@settitle The MILC Code (version: 7.7.10)
 @footnotestyle end
 @c @setchapternewpage off
 
@@ -11,9 +11,12 @@
  c Contact: <detar@physics.utah.edu> or <doug@physics.arizona.edu>
  c
  c  to compile: texi2dvi milcv7.texi, texi2html milcv7.texi
- c $Id: milcv7.texi,v 1.8 2012/04/25 03:43:51 detar Exp $
+ c $Id: milcv7.texi,v 1.9 2013/12/26 15:57:20 detar Exp $
  c
  c $Log: milcv7.texi,v $
+ c Revision 1.9  2013/12/26 15:57:20  detar
+ c Updates for 7.7.10
+ c
  c Revision 1.8  2012/04/25 03:43:51  detar
  c Correct wprop->ksprop typo
  c
@@ -47,7 +50,7 @@
 @node Top, Obtaining the MILC Code, (dir), (dir)
 @top The MILC Code
 @center The MILC Code 
-@center version 7.7
+@center version 7.7.10
 @sp 1
 @center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@@quark.phy.bnl.gov>
 @center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
@@ -71,7 +74,7 @@ in C for doing SU(3) lattice gauge theory on several different (MIMD)
 parallel computers in current use. In scalar mode, it runs on a
 variety of workstations making it extremely versatile for both
 production and exploratory applications. This manual is for the latest
-(7.7.3) version of the code. Currently supported code runs
+(7.7.10) version of the code. Currently supported code runs
 on:
 @itemize @bullet
 @item Scalar machines
@@ -100,7 +103,7 @@ notice identical to this one except for the removal of this paragraph
 @center @titlefont{The MILC Code}
 @sp 1
 
-@center version ---7.7.3---
+@center version ---7.7.10---
 @sp 1
 @center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@@quark.phy.bnl.gov>
 @center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
@@ -124,7 +127,7 @@ in C for doing SU(3) lattice gauge theory on several different (MIMD)
 parallel computers in current use. In scalar mode, it runs on a
 variety of workstations making it extremely versatile for both
 production and exploratory applications. This manual is for the latest
-(7.7.3) version of the code. Currently supported code runs
+(7.7.10) version of the code. Currently supported code runs
 on:
 @itemize @bullet
 @item Scalar machines
@@ -307,7 +310,7 @@ supported.  Multi-GPU is planned.
 @node Supported architectures,, SciDAC Support,  Obtaining the MILC Code
 @section Supported architectures
 @cindex Supported architectures
-This manual covers @strong{version 7.7.3} which is currently supposed to
+This manual covers @strong{version 7.7.10} which is currently supposed to
 run on: 
 @sp 1
 @itemize @bullet
@@ -3613,7 +3616,6 @@ which can be applied to both staggered and Dirac fiels:
 The second set apply covariant smearing and derivatives, which can
 also be applied to both staggered and Dirac fiels:
 
-
 @menu
 * covariant_gaussian operator::
 * deriv1 operator::
@@ -3628,12 +3630,28 @@ The third set is peculiar to staggered fermions:
 @menu
 * funnywall1 operator::
 * funnywall2 operator::
+* ks_inverse operator::
+* spin_taste operator::
+* ext_src_ks operator::
 @end menu
 
 The fourth set is used only with Dirac fermions:
 
 @menu
 * rotate_3D operator::
+* dirac_inverse operator::
+* gamma operator::
+* ks_gamma operator::
+* ks_gamma_inv operator::
+* ext_src_dirac operator::
+@end menu
+
+The fifth set is common to both Dirac and staggered fermions:
+
+@menu
+* project_t_slice operator::
+* momentum operator::
+* modulation operator::
 @end menu
 
 Here are the operators that do convolutions with a complex field:
@@ -3798,15 +3816,59 @@ No parameters.  This operation applies the staggered fermion
 ``funnywall1'' operator that couples to a subset of tastes.  It is
 meaningful only for staggered fermion sources and propagators.
 
-@node funnywall2 operator, rotate_3D operator, funnywall1 operator, Modified sources
+@node funnywall2 operator, ks_inverse operator, funnywall1 operator, Modified sources
 @subsubsection funnywall2 operator
 @cindex funnywall2 operator
 
 Same as above, but for the ``funnywall2'' operator.
 
-@node rotate_3D operator, Propagator description, funnywall1 operator, Modified sources
+@node ks_inverse operator, spin_taste operator, funnywall2 operator, Modified sources
 @subsubsection funnywall2 operator
-@cindex funnywall2 operator
+@cindex ks_inverse operator
+
+@example
+ks_inverse
+mass <float>
+naik_term_epsilon <float>
+u0 <float>
+max_cg_iterations <int>
+max_cg_restarts <int>
+error_for_propagator <float>
+rel_error_for_propagator <float>
+precision <1|2>
+coordinate_origin <int[4]>
+momentum_twist <float[3]>
+time_bc <antiperiodic|periodic>
+@end example
+
+Applies the inverse of the asqtad or HISQ Dirac operator.
+
+@node spin_taste operator, ext_src_ks operator, ks_inverse operator, Modified sources
+@subsubsection spin_taste operator
+@cindex spin_taste operator
+
+@example
+gamma pion5
+@end example
+
+Applies staggered spin-taste offsets and phases
+
+@node ext_src_ks operator, rotate_3D operator, spin_taste operator, Modified sources
+@subsubsection ext_src_ks operator
+@cindex ext_src_ks operator
+
+@example
+spin_taste pion5
+momentum <int[3]>
+t0 <int>
+@end example
+
+Projects a propagator to the specified time slice and applies the
+specified spin-taste operator and inserts the specified momentum.
+
+@node rotate_3D operator, dirac_inverse operator, ext_src_ks operator, Modified sources
+@subsubsection rotate_3D operator
+@cindex rotate_3D operator
 
 @example
 d1 <float>
@@ -3814,6 +3876,91 @@ d1 <float>
 
 This operator applies the FNAL 3D rotation to a Dirac source or sink.
 
+@node dirac_inverse_operator, gamma operator, rotate_3D operator, Modified sources
+@subsubsection dirac_inverse operator
+@cindex dirac_inverse operator
+
+@example
+kappa <float>
+clov_c <float>
+u0 <float>
+max_cg_iterations <int>
+max_cg_restarts <int>
+error_for_propagator <float>
+rel_error_for_propagator <float>
+precision <1|2>
+coordinate_origin <int[4]>
+momentum_twist <float[3]>
+time_bc <antiperiodic|periodic>
+@end example
+
+This operator applies the inverse of the clover Dirac operator.
+
+@node gamma operator, ks_gamma operator, dirac_inverse operator, Modified sources
+@subsubsection gamma operator
+@cindex gamma operator
+
+@example
+gamma G5
+@end example
+
+This operator multiplies by the specified gamma matrix.
+
+@node ks_gamma operator, ks_gamma_inv operator, gamma operator, Modified sources
+@subsubsection ks_gamma operator
+@cindex ks_gamma operator
+
+Multiplies by the gamma matrix operator that reduces naive fermions to staggered fermions.
+
+@node ks_gamma_inv operator, ext_src_dirac operator, ks_gamma operator, Modified sources
+@subsubsection ks_gamma_inv operator
+@cindex ks_gamma_inv operator
+
+Multiplies by the inverse of the gamma matrix operator that reduces naive fermions to staggered fermions.
+
+@node ext_src_dirac operator, project_t_slice operator, ks_gamma_inv operator, Modified sources
+@subsubsection ext_src_dirac operator
+@cindex ext_src_dirac operator
+
+@example
+gamma G5
+momentum <int[3]>
+t0 {int}
+@end example
+
+Projects a propagator to the specified time slice and applies the
+specified gamma matrix operator and inserts the specified momentum.
+
+@node project_t_slice operator, momentum operator, ext_src_dirac operator, Modified sources
+@subsubsection project_t_slice operator
+@cindex project_t_slice operator
+
+@example
+t0 <int>
+@end example
+
+Projects values on the specified time slice.
+
+@node momentum operator, modulation operator, project_t_slice operator, Modified sources
+@subsubsection momentum operator
+@cindex momentum operator
+
+@example
+momentum <int[3]>
+@end example
+
+Multiplies by the plane-wave phase site-by-site.
+
+@node modulation operator, Propagator description, momentump operator, Modified sources
+@subsubsection modulation operator
+@cindex modulation operator
+
+@example
+file <char[]>
+@end example
+
+Reads the specified file containing a complex field and multiplies the
+values site-by-site.
 
 @node Propagator description, Quark description,  Modified sources, clover_invert2, 
 @subsection Propagator description
@@ -3940,14 +4087,18 @@ source we associate it with, since the source would not be used.
 
 Since currently a source is generated and, if requested, saved to a
 file only if a propagator is built from it, in some cases we would
-still like to create the source without the propagator.  In that case
-we would write a dummy propagator stanza that calls for the source,
-but say @strong{check source_only}.
+still like to create the source without evaluating the propagator.
+Also, in some cases we want the propagator to be equal to the source
+(as though the quark mass were infinite.)  In either case we would
+write a dummy propagator stanza that calls for the source, but say
+@strong{check source_only}.  The source is created, the inverter is
+not called, and the propagator is set equal to the source (with zeros
+away from the source).
 
 There is one other subtlety with the current design.  With
 @strong{check no}, the propagator is not calculated, but it is taken
 from a file.  In that case, clearly, the source is unused and
-irrelvant.  Even so, a source must be described and specified.  In
+irrelevant.  Even so, a source must be described and specified.  In
 that case one should use the source type
 @strong{vector_propagator_file} or @strong{dirac_propagator_file} and
 specify the correct number of colors/sources in the file.
@@ -4034,21 +4185,22 @@ save_multifile_scidac_ksprop <char[]> |
 @end example
 
 
-@node Quark description, Hadron description, Propagator description, clover_invert2, 
+@node Quark description, Combine description, Propagator description, clover_invert2, 
 @subsection Quark description
 @cindex  Quark description
 
 In the terminology of the code ``quarks'' are ``propagators'' with a
-sink treatment applied.  The sink treatment can be a trivial identity
-operator.  Each quark is constructed by operating (with one of the
-several operators) on a previoiusly defined propagator or a previously
-defined quark.  In this code hadrons are built from quarks, but not
-directly from propagators. Propagators are referred to by their
-sequence number, starting with zero.  Quarks are referred to by their
-sequence number, also starting with zero.  In this respect the
-convention differs from the convention for the base and modified
-sources.  The specification for quarks is similar to that for
-propagators.
+sink treatment applied.  Only quarks can be combined to make hadrons,
+so in case no sink treatment is desired, a trivial identity operator
+is provided to convert a propagator into a ``quark''. .  Each quark is
+constructed by operating (with one of the several operators) on a
+previoiusly defined propagator or a previously defined quark.  In this
+code hadrons are built from quarks, but not directly from
+propagators. Propagators are referred to by their sequence number,
+starting with zero.  Quarks are referred to by their sequence number,
+also starting with zero.  In this respect the convention differs from
+the convention for the base and modified sources.  The specification
+for quarks is similar to that for propagators.
 
 @example
 number_of_quarks <int q>
@@ -4084,6 +4236,20 @@ sources above, with the exception that the operators act on the
 propagator/quark field on all time slices.  Other parameters have the
 same function as above.
 
+
+@node Combine description, Hadron description, Quark description, clover_invert2, 
+@subsection Combine description
+@cindex  Combine description
+
+@example
+combine <int = n>
+quarks <int[n]>
+coeffs <float[n]>
+<propagator output description>
+@end example
+
+Creates a single quark from a linear combination of the listed quarks.
+The coefficients give the weights of linear combination.
 
 @node Hadron description, ks_spectrum, Quark description, clover_invert2, 
 @subsection Hadron description
@@ -4453,7 +4619,7 @@ save_partfile_scidac_ksprop <char[]> |
 save_multifile_scidac_ksprop <char[]> |
 @end example
 
-@node KS quark description, KS meson description, KS propagator set description, ks_spectrum
+@node KS quark description, KS combine description, KS propagator set description, ks_spectrum
 @subsection KS quark description
 @cindex KS quark description
 
@@ -4461,6 +4627,17 @@ The ``quarks'' are constructed exactly as with the
 @strong{clover_invert2} code, so the description is not repeated
 here. @xref{Quark description}.
 
+
+@node KS combine description, Hadron description, KS quark description, clover_invert2, 
+@subsection Combine description
+@cindex  Combine description
+
+@example
+combine <int = n>
+quarks <int[n]>
+coeffs <float[n]>
+<propagator output specification>
+@end example
 
 @node KS meson description, KS baryon description, KS quark description, ks_spectrum
 @subsection KS meson description
