@@ -191,6 +191,10 @@ wilson_prop_field * create_wp_field(int nc);
 wilson_prop_field * create_wp_field_copy(wilson_prop_field * w);
 void clear_wp_field(wilson_prop_field * wp);
 void copy_wp_field(wilson_prop_field * wpcopy, wilson_prop_field * wp);
+void scalar_mult_add_ksprop_field(ks_prop_field *a, ks_prop_field *b, 
+				  Real s, ks_prop_field *c);
+void scalar_mult_add_wprop_field(wilson_prop_field *a, wilson_prop_field *b, 
+				 Real s, wilson_prop_field *c);
 wilson_prop_field *transpose_wp_field(wilson_prop_field * wp);
 void free_wp_field(wilson_prop_field * wp);
 void rebuild_wp_field(wilson_prop_field * wp);
@@ -346,6 +350,7 @@ void make_global_fields(void);
 /* momentum_twist.c */
 void boundary_twist_site(Real bdry_phase[4], int r0[4], int sign);
 void momentum_twist_site(Real bdry_phase[4], int sign);
+void momentum_twist_links(Real bdry_phase[4], int sign, su3_matrix *links);
 void rephase_v_field(su3_vector *v, Real bdry_phase[4], int r0[4], int sign);
 void rephase_wv_field(wilson_vector *wv, Real bdry_phase[4], int r0[4], int sign);
 
@@ -413,6 +418,7 @@ int wv_source_field(wilson_vector *src, quark_source *qs);
 int wv_source_site(field_offset src, quark_source *qs);
 int get_v_quark_source(FILE *fp, int prompt, quark_source *qs);
 int get_wv_quark_source(FILE *fp, int prompt, quark_source *qs);
+void subset_mask_c(complex *src, int subset, int t0);
 void subset_mask_v(su3_vector *src, int subset, int t0);
 void subset_mask_wv(wilson_vector *src, int subset, int t0);
 void print_source_info(FILE *fp, char prefix[], quark_source *qs);
@@ -457,6 +463,7 @@ void ksp_sink_op(quark_source_sink_op *qss_op, ks_prop_field *ksp );
 void wp_sink_op(quark_source_sink_op *qss_op, wilson_prop_field *wp );
 int get_wv_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op);
 int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op);
+int get_qss_eps_naik(Real *eps_naik, quark_source_sink_op *qss_op);
 void print_field_op_info(FILE *fp, char prefix[], 
 			 quark_source_sink_op *qss_op);
 void print_field_op_info_list(FILE *fp, char prefix[], 
