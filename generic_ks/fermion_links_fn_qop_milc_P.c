@@ -467,7 +467,7 @@ void path_product_qop_milc( const int *dir, const int length,
     else{  /* if GOES_BACKWARDS(dir[0]) */
 	FORALLSITES(i,s){
 	  if( i < loopend-FETCH_UP ){
-	    prefetch_M( &tempmat1[i+FETCHUP] );
+	    prefetch_M( &tempmat1[i+FETCH_UP] );
 	  }
 	  //su3_adjoint(&(s->link[OPP_DIR(dir[0])]),&tempmat1[i] );
 	  su3_adjoint(links + OPP_DIR(dir[0])*sites_on_node + i ,&tempmat1[i] );
