@@ -108,6 +108,8 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   su3_vector *tmp = create_v_field();
 
   /* prepare parallel transport of psi from down dir */
+
+  /* dest <- U^dagger(down,dir) src */
   FORALLSITES(i,s){
     /* Work only on the specified time slice(s) */
     if(t0 == ALL_T_SLICES || s->t == t0){
@@ -116,12 +118,13 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
     }
   }
   
+  /* gen_pt_array <- shift(down,dir)(dest) */
   tag = start_gather_field(dest, 
 			   sizeof(su3_vector), OPP_DIR(dir),
 			   EVENANDODD, gen_pt[OPP_DIR(dir)] );
   wait_gather(tag);
   
-  /* chi <- chi - sum_dir U(up,dir) shift(up,dir)(psi) */
+  /* tmp <- U^dagger(down,dir) gen_pt_array */
   FORALLSITES(i,s){
     if(t0 == ALL_T_SLICES || s->t == t0){
       mult_adj_su3_mat_vec( t_links + 4*i + dir,  
@@ -132,12 +135,14 @@ backward2(int dir, su3_vector *dest, su3_vector *src,
   
   cleanup_gather(tag);
 
+  /* gen_pt_array <- shift(down,dir)(tmp) */
   tag = start_gather_field(tmp, 
 			   sizeof(su3_vector), OPP_DIR(dir),
 			   EVENANDODD, gen_pt[OPP_DIR(dir)] );
 
   wait_gather(tag);
 
+  /* dest <- gen_pt_array */
   FORALLSITES(i,s){
     if(t0 == ALL_T_SLICES || s->t == t0){
       su3vec_copy( (su3_vector *)gen_pt[OPP_DIR(dir)][i], dest + i);
@@ -167,7 +172,8 @@ klein_gord_field(su3_vector *psi, su3_vector *chi,
 
   /* chi = psi * ftmp; */
   FORALLSITES(i,s){
-    scalar_mult_su3_vector(psi + i, ftmp, chi + i);
+    if(t0 == ALL_T_SLICES || s->t == t0)
+      scalar_mult_su3_vector(psi + i, ftmp, chi + i);
   }
 
   /* do 2-link parallel transport of psi in all dirs */
@@ -221,11 +227,14 @@ gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
   /* We want (1 + ftmp * Lapl ) = (Lapl + 1/ftmp)*ftmp */
 
   for(j = 0; j < iters; j++)
-    FORALLSITES(i,s){
-      /* tmp = src * ftmp; */
-      scalar_mult_su3_vector(src+i, ftmp, tmp+i);
+    {
+      FORALLSITES(i,s){
+	/* tmp = src * ftmp; */
+	if(t0 == ALL_T_SLICES || s->t == t0)
+	  scalar_mult_su3_vector(src+i, ftmp, tmp+i);
+      }
+      klein_gord_field(tmp, src, t_links, ftmpinv, t0);
     }
-  klein_gord_field(tmp, src, t_links, ftmpinv, t0);
   
   destroy_v_field(tmp);
 }
