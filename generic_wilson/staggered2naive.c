@@ -167,7 +167,8 @@ void convert_ksprop_to_wprop_swv(spin_wilson_vector *swv,
 
 #endif
 
-/* Apply the inverse Kawamoto Smit transformation */
+/* Apply the inverse Kawamoto Smit transformation 
+   and do a gamma_5 similarity transform */
 /* This is applied in place to a Dirac vector field */
 /* r is the KS source point */
 
@@ -206,6 +207,108 @@ void convert_naive_to_staggered_wv(wilson_vector *wv, int r[], int r0[])
     mult_gamma_by_gamma(&omega_dag5, &g5, &omega_dag);
 
     mult_w_by_gamma_mat_l( wv+i, &wvtmp, &omega_dag ); 
+    wv[i] = wvtmp;
+  }
+}
+
+/* Apply one half of the inverse Kawamoto Smit transformation 
+   and do a gamma_5 similarity transform */
+/* This is applied in place to a Dirac vector field */
+/* r is the KS source point */
+
+void mult_by_ks_gamma_inv_wv(wilson_vector *wv, int r0[])
+{
+  int i;
+  site *s;
+  gamma_matrix_t omega, omega5;
+  wilson_vector wvtmp;
+
+  init_gamma();
+
+  /* Construct gamma0 = g3^(r[3]-r0[3]) g0^(r[0]-r0[0]) g1^(r[1]-r0[1]) g2^(r[2]-r0[2]) */
+
+  FORALLSITES(i,s){
+
+    /* Construct omega = g5 Gamma(sink) Gamma(source)^\dagger g5 */
+    
+    omega = g1;
+    mult_omega_l(&omega, s->x-r0[0], s->y-r0[1], s->z-r0[2], s->t-r0[3]);
+    
+    /* Conjugate by gamma5 to map the MILC Dirac Dslash convention
+       to the MILC staggered Dslash convention */
+    
+    mult_gamma_by_gamma(&g5, &omega, &omega5);
+    mult_gamma_by_gamma(&omega5, &g5, &omega);
+
+    mult_w_by_gamma_mat_l( wv+i, &wvtmp, &omega ); 
+    wv[i] = wvtmp;
+  }
+}
+
+/* Apply one half of the inverse Kawamoto Smit transformation */
+/* This is applied in place to a Dirac vector field */
+/* r is the KS source point */
+
+void mult_by_ks_gamma_wv(wilson_vector *wv, int r0[])
+{
+  int i;
+  site *s;
+  gamma_matrix_t omega, omega_dag;
+  wilson_vector wvtmp;
+
+  init_gamma();
+
+  FORALLSITES(i,s){
+
+    /* Construct omega = Gamma(sink) Gamma(source)^\dagger */
+    
+    omega = g1;
+    mult_omega_l(&omega, s->x-r0[0], s->y-r0[1], s->z-r0[2], s->t-r0[3]);
+    
+    /* Then omega_dag = Gamma(sink)^\dagger */
+    gamma_adj(&omega_dag, &omega);
+    
+    mult_w_by_gamma_mat_l( wv+i, &wvtmp, &omega_dag ); 
+    wv[i] = wvtmp;
+  }
+}
+
+/* Apply the Kawamoto Smit transformation */
+/* This is applied in place to a Dirac vector field */
+/* r is the KS source point */
+
+void convert_staggered_to_naive_wv(wilson_vector *wv, int r[], int r0[])
+{
+  int i;
+  site *s;
+  gamma_matrix_t gamma0, gamma0_dag;
+  gamma_matrix_t omega, omega5;
+  wilson_vector wvtmp;
+
+  init_gamma();
+
+  /* Construct gamma0 = g3^(r[3]-r0[3]) g0^(r[0]-r0[0]) g1^(r[1]-r0[1]) g2^(r[2]-r0[2]) */
+
+  gamma0 = g1;   /* Unit gamma */
+  mult_omega_l(&gamma0, r[0]-r0[0], r[1]-r0[1], r[2]-r0[2], r[3]-r0[3]);
+
+  /* Then gamma0_dag = g2^(r[2]-r0[2]) g1^(r[1]-r0[1]) g0^(r[0]-r0[0]) g3^(r[3]-r0[3]) */
+  gamma_adj(&gamma0_dag, &gamma0);
+
+  FORALLSITES(i,s){
+
+    /* Construct omega = g5 Gamma(sink) Gamma(source)^\dagger g5 */
+    
+    omega = gamma0_dag;
+    mult_omega_l(&omega, s->x-r0[0], s->y-r0[1], s->z-r0[2], s->t-r0[3]);
+    
+    /* Conjugate by gamma5 to map the MILC Dirac Dslash convention
+       to the MILC staggered Dslash convention */
+    
+    mult_gamma_by_gamma(&g5, &omega, &omega5);
+    mult_gamma_by_gamma(&omega5, &g5, &omega);
+
+    mult_w_by_gamma_mat_l( wv+i, &wvtmp, &omega ); 
     wv[i] = wvtmp;
   }
 }
