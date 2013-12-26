@@ -46,14 +46,14 @@ QIO_Writer *w_open_ks_vector_scidac_file(char *filename, char *fileinfo,
 }
 
 int save_ks_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
-			  int volfmt, su3_vector *src, int count)
+			  int volfmt, su3_vector *src, int count, int prec)
 {
   QIO_String *recxml;
   int status;
 
   recxml = QIO_string_create();
   QIO_string_set(recxml, recinfo);
-  if(PRECISION == 1)
+  if(prec == 1)
     status = write_F3_V_from_field(outfile, recxml, src, count);
   else
     status = write_D3_V_from_field(outfile, recxml, src, count); 
@@ -97,7 +97,7 @@ void w_close_ks_vector_scidac_file(QIO_Writer *outfile)
 void save_ks_vector_scidac_from_field(char *filename, char *fileinfo,
 				      char *recinfo, 
 				      int volfmt, int serpar, 
-				      su3_vector *src, int count)
+				      su3_vector *src, int count, int prec)
 {
   QIO_Writer *outfile;
   int status;
@@ -108,7 +108,7 @@ void save_ks_vector_scidac_from_field(char *filename, char *fileinfo,
   if(outfile == NULL)terminate(1);
 
   status = save_ks_vector_scidac(outfile, filename, recinfo, 
-				 volfmt, src, count);
+				 volfmt, src, count, prec);
   if(status)terminate(1);
   
   w_close_ks_vector_scidac_file(outfile);
@@ -122,7 +122,7 @@ void save_ks_vector_scidac_from_field(char *filename, char *fileinfo,
 void save_ks_vector_scidac_from_site(char *filename, char *fileinfo,
 				     char *recinfo, 
 				     int volfmt, int serpar, 
-				     field_offset src, int count)
+				     field_offset src, int count, int prec)
 {
 
   su3_vector *tmp;
@@ -141,7 +141,7 @@ void save_ks_vector_scidac_from_site(char *filename, char *fileinfo,
   }
 
   save_ks_vector_scidac_from_field(filename, fileinfo, recinfo, 
-				   volfmt, serpar, tmp,count);
+				   volfmt, serpar, tmp, count, prec);
   free(tmp);
 }
 
