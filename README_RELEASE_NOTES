@@ -20,6 +20,7 @@ ks_measure
 ks_spectrum
 pure_gauge
 schroed_cl_inv
+schroed_ks_dyn
 smooth_inst
 symanzik_sl32
 
@@ -29,20 +30,25 @@ arb_dirac_eigen
 arb_dirac_invert
 clover_hybrids
 h_dibaryon
-schroed_ks_dyn
 schroed_pg
 
 Build the code with GNU make.  See the README file in this directory
 for general instructions.
 
-Here are highlights of the changes:
+Here are highlights of the changes (not all of them in the alpha version):
 
-For fersion 7.7.10
+For version 7.7.10-ax
 
+  Wilson flow code
+  Some Open MP threading.
+  Support for QUDA-0.5.0 
+     (Note: no multi-GPU support for the ks_imp_dyn/su3_rmd target)
   Quenched U(1) spectrum
   Quenched improved Fermilab (OK) action
   HYP smearing for hvy_qpot
   Variable stride for covariant Gaussian smearing
+  Clover spectrum code supports linear combinations and extended sources
+  KS and clover spectrum code supports time slice projection and sequential inversion
   Some bug fixes  
 
 For version 7.7.5
