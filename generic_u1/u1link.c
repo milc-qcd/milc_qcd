@@ -52,8 +52,12 @@ void u1phase_on(Real charge, Real *A)
 
 /* ************************ */
 void u1phase_off(void){
+  int dir;
 
   gauge_field_copy_field_to_site(tlink, F_OFFSET(link[0]));
+  FORALLUPDIR(dir){
+    free(tlink[dir]);
+  }
 
   free(tlink);
 
