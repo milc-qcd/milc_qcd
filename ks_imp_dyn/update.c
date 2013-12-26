@@ -138,7 +138,7 @@ int update()  {
 	    /* Dump the computed fermion force from the site structure */
 	    filexml = create_QCDML();
 	    save_color_matrix_scidac_from_site(ansfile, filexml, 
-			     recxml, QIO_PARTFILE,  F_OFFSET(mom[0]), 4);
+		       recxml, QIO_PARTFILE,  F_OFFSET(mom[0]), 4, PRECISION);
 	    free_QCDML(filexml);
 	  }
 	}
