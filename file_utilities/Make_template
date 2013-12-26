@@ -85,7 +85,7 @@ endif
 ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
    ${SCIDAC_OBJECTS}
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
+OBJECTS = ${MY_OBJECTS} ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
@@ -138,14 +138,14 @@ DARCH = ${DQCDOC} ${DHAVE_QIO} ${DHAVE_QDP}
 check_gauge::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= check_gauge" \
 	"DEFINES= -DONLY_GLUON_FILES" \
-	"EXTRA_OBJECTS= check_gauge.o nersc_cksum.o \
+	"EXTRA_OBJECTS= ${G_OBJECTS} check_gauge.o nersc_cksum.o \
 	gauge_utilities.o \
 	check_unitarity.o gauge_info_dummy.o d_plaq4.o io_lat4.o"
 
 diff_colormatrix::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_colormatrix" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS= ${G_KS_OBJECTS} diff_colormatrix.o gauge_info_dummy.o \
+	"EXTRA_OBJECTS= ${G_OBJECTS} ${G_KS_OBJECTS} diff_colormatrix.o gauge_info_dummy.o \
 	gauge_utilities.o \
 	d_plaq4.o io_lat4.o nersc_cksum.o"
 
@@ -153,6 +153,7 @@ diff_ksprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksprop" \
 	"DEFINES= -DNO_GAUGE_FIELD -DHAVE_KS" \
 	"EXTRA_OBJECTS= \
+	${G_OBJECTS}  \
 	${G_KS_OBJECTS} \
 	diff_ksprop.o \
 	discretize_wf.o \
@@ -177,7 +178,7 @@ diff_ksprop::
 diff_ksvector::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_ksvector" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS= ${G_KS_OBJECTS} diff_ksvector.o ksprop_info.o \
+	"EXTRA_OBJECTS= ${G_OBJECTS} ${G_KS_OBJECTS} diff_ksvector.o ksprop_info.o \
 	gauge_utilities.o \
 	gauge_info_dummy.o d_plaq4.o io_lat4.o nersc_cksum.o"
 
@@ -185,6 +186,7 @@ diff_wprop::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= diff_wprop" \
 	"DEFINES= -DNO_GAUGE_FIELD -DHAVE_DIRAC" \
 	"EXTRA_OBJECTS=  \
+  	  ${G_OBJECTS}  \
 	  ${G_KS_OBJECTS} \
 	  ${G_W_OBJECTS} \
 	  canopy2weyl_rot.o \
@@ -218,9 +220,18 @@ diff_wprop::
 lattice_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= lattice_to_scidac" \
 	"DEFINES= " \
-	"EXTRA_OBJECTS=  lattice_to_scidac.o nersc_cksum.o \
+	"EXTRA_OBJECTS= ${G_OBJECTS} lattice_to_scidac.o nersc_cksum.o \
 	gauge_utilities.o \
 	check_unitarity.o gauge_info_dummy.o d_plaq4.o io_lat4.o"
+
+make_modulation::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= make_modulation" \
+	"DEFINES= -DNO_GAUGE_FIELD " \
+	"EXTRA_OBJECTS= \
+          field_utilities.o \
+	  io_scidac.o \
+	  io_scidac_types.o \
+  	  make_modulation.o"
 
 # ksprop_2ksprop::
 # 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
