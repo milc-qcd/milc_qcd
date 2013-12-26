@@ -12,6 +12,7 @@
 #include <qio.h>
 #endif
 #include "lattice_qdp.h"
+#include "params.h"
 
 EXTERN  gauge_header start_lat_hdr;     /* Input gauge field header */
 
@@ -31,20 +32,21 @@ int main( int argc, char **argv ){
   /* loop over input sets */
   while( readin(prompt) == 0){
     
+    if(prompt == 2)continue;
+    
     node0_printf("BEGIN\n");
 #ifdef CHECK_INVERT
     
-    check_ks_invert( srcfile, srcflag, F_OFFSET(phi), 
-		     ansfile, ansflag, F_OFFSET(xxx), 
-		     F_OFFSET(g_rand), mass);
+    check_ks_invert( par_buf.srcfile[0], srcflag, par_buf.ansfile, par_buf.ansflag, 
+		     par_buf.nmass, par_buf.ksp, par_buf.qic);
     
 #else
 #ifndef HAVE_QIO
-BOMB Checking the fermion force requires QIO compilation
+    BOMB Checking the fermion force requires QIO compilation;
 #endif
     
-    check_fermion_force( srcfile, srcflag, F_OFFSET(xxx), 
-			 ansfile, ansflag, mass);
+    check_fermion_force( par_buf.srcfile, srcflag, par_buf.ansfile[0], 
+			 par_buf.ansflag[0], par_buf.nmass, par_buf.ksp);
     node0_printf("Done checking fermion force\n");
 #endif
     
@@ -63,7 +65,12 @@ BOMB Checking the fermion force requires QIO compilation
       filexml = create_QCDML();
       node0_printf("Saving the long links\n");
       save_color_matrix_scidac_from_field( savelongfile, filexml, 
-         "Long links", QIO_SINGLEFILE, get_lnglinks(get_fm_links(fn_links)[0]), 4);
+		   "Long links", QIO_SINGLEFILE, 
+		   get_lnglinks(get_fm_links(fn_links)[0]), 4, PRECISION);
+      /* REMOVE NEXT STATEMENT */
+      //      save_color_matrix_scidac_from_field( "lngback.scidac", filexml, 
+      //		   "Long back links", QIO_SINGLEFILE, 
+      //                   get_lngbacklinks(get_fm_links(fn_links)[0]), 4, PRECISION);
       free_QCDML(filexml);
 #else
       printf("ERROR: Can't save the longlinks.  Recompile with QIO\n");
@@ -76,7 +83,12 @@ BOMB Checking the fermion force requires QIO compilation
       filexml = create_QCDML();
       node0_printf("Saving the fat links\n");
       save_color_matrix_scidac_from_field( savefatfile, filexml, 
-	   "Fat links", QIO_SINGLEFILE, get_fatlinks(get_fm_links(fn_links)[0]), 4);
+            "Fat links", QIO_SINGLEFILE, 
+	    get_fatlinks(get_fm_links(fn_links)[0]), 4, PRECISION);
+      /* REMOVE NEXT STATEMENT */
+      //      save_color_matrix_scidac_from_field( "fatback.scidac", filexml, 
+      //	   "Fat back links", QIO_SINGLEFILE, 
+      //	    get_fatbacklinks(get_fm_links(fn_links)[0]), 4, PRECISION);
       free_QCDML(filexml);
 #else
       printf("ERROR: Can't save the fatlinks.  Recompile with QIO\n");
@@ -86,6 +98,19 @@ BOMB Checking the fermion force requires QIO compilation
     
   }
   node0_printf("RUNNING COMPLETED\n");
+
+#ifndef CHECK_INVERT
+
+#ifdef HISQ_SVD_COUNTER
+  printf("hisq_svd_counter = %d\n", hisq_svd_counter);
+#endif
+  
+#ifdef HISQ_FORCE_FILTER_COUNTER
+  printf("hisq_force_filter_counter = %d\n", hisq_force_filter_counter);
+#endif
+
+#endif
+
   return 0;
 }
 

@@ -40,15 +40,16 @@ int readin(int prompt);
 
 int ask_color_vector( int prompt, int *flag, char *filename );
 int ask_color_matrix( int prompt, int *flag, char *filename );
-void check_fermion_force( char *srcfile, int srcflag, field_offset src, 
-			  char *ansfile, int ansflag, Real mass);
-void check_ks_invert( char *srcfile, int srcflag, field_offset src, 
-		      char *ansfile, int ansflag, field_offset ans, 
-		      field_offset tmp, Real mass);
-void check_invert2( field_offset src, field_offset dest, 
-		    field_offset temp, Real mass,
-		    Real tol, int parity, imp_ferm_links_t *fn);
-
+void check_fermion_force( char srcfile[MAX_MASS][MAXFILENAME], int srcflag,
+			  char *ansfile, int ansflag, int nmass, ks_param *ksp);
+void check_ks_invert( char *srcfile, int srcflag, 
+		      char ansfile[MAX_MASS][MAXFILENAME],
+		      int ansflag[MAX_MASS],
+		      int nmass, ks_param ksp[], 
+		      quark_invert_control qic[]);
+void check_invert2( su3_vector *src, su3_vector *dest, 
+		    Real mass, Real tol, int parity,
+		    imp_ferm_links_t *fn);
 char *create_QCDML();
 void free_QCDML(char *qcdml);
 
