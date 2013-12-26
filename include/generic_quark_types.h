@@ -33,9 +33,12 @@ enum source_type {
   DERIV2_D,
   DERIV2_B,
   DERIV3_A,
+  EXT_SRC_KS,
+  EXT_SRC_DIRAC,
   DIRAC_FIELD_FILE, 
   DIRAC_FIELD_FM_FILE, 
   DIRAC_FIELD_STORE,
+  DIRAC_INVERSE,
   DIRAC_PROPAGATOR_FILE,
   EVEN_WALL, 
   EVENANDODD_WALL, 
@@ -43,11 +46,18 @@ enum source_type {
   FAT_COVARIANT_GAUSSIAN,
   FUNNYWALL1,
   FUNNYWALL2,
+  GAMMA,
   GAUSSIAN, 
   HOPPING, 
   IDENTITY,
+  KS_GAMMA,
+  KS_GAMMA_INV,
+  KS_INVERSE,
+  MODULATION_FILE,
+  MOMENTUM,
   POINT, 
   POINT_WEYL, 
+  PROJECT_T_SLICE,
   RANDOM_COLOR_WALL,
   RANDOM_CORNER_COLOR_WALL,
   ROTATE_3D,
@@ -83,6 +93,82 @@ typedef struct {
   int byterevflag;
 } ks_fm_source_file;
 
+/* Propagator types */
+
+#define CLOVER_TYPE 0
+#define KS_TYPE 1
+#define KS0_TYPE 2
+#define KS4_TYPE 3
+#define IFLA_TYPE 4
+
+/* Structures required for specific inverters */
+
+/* Structure defining parameters of Dirac matrix for clover inversion */
+/* To be passed through to inverter. */
+typedef struct {
+  Real Kappa;        /* hopping */
+  Real Clov_c;       /* Perturbative clover coeff */
+  Real U0;           /* Tadpole correction to Clov_c */
+} dirac_clover_param;
+
+/* Same for Wilson case */
+typedef struct {
+  Real Kappa;        /* hopping */
+} dirac_wilson_param;
+
+/* Same for plain KS case */
+typedef struct {
+  Real mass;
+  Real offset;
+  int naik_term_epsilon_index;
+  Real naik_term_epsilon;
+
+} ks_param;
+
+/* This is the IFLA case */
+typedef struct {
+  Real kapifla;
+  Real kappa_s;
+  Real kappa_t;
+  Real r_s;
+  Real r_t;
+  Real zeta;
+  Real c_E;
+  Real c_B;
+  Real c_1;
+  Real c_2;
+  Real c_3;
+  Real c_4;
+  Real c_5;
+  Real c_EE;
+  Real u0;
+} newaction_ifla_param;
+
+/* Structure defining quark inversion parameters for most inverters */
+
+typedef struct {
+  int prec;           /* precision of the inversion 1 = single; 2 = double */
+  int min;            /* minimum number of iterations (being phased out) */
+  int max;            /* maximum number of iterations per restart */
+  int nrestart;       /* maximum restarts */
+  int parity;         /* EVEN, ODD, or EVENANDODD (for some inverters) */
+  int start_flag;     /* 0: use a zero initial guess; 1: use dest */
+  int nsrc;           /* Number of source vectors */
+  Real resid;         /* desired residual - NOT SQUARED!
+			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
+  Real relresid;      /* desired relative residual - NOT SQUARED! */
+  Real final_rsq;     /* Final true (absolute) residual. Norm'ed to (r*r)/(src*src) */
+  Real final_relrsq;  /* Final relative residual. Same normalization. */
+  Real size_r;        /* resulting cumulative residual. Same normalization. */
+  Real size_relr;     /* resulting cumulative relative residual. Same normalization. */
+  int converged;      /* returned 0 if not converged; 1 if converged */
+  int  final_iters;
+  int  final_restart;
+                      /* Add further parameters as needed...  */
+} quark_invert_control;
+
+void report_status(quark_invert_control *qic);
+
 /* Structure defining a quark source operator */
 struct qss_op_struct {
   int type;           /* operator type */
@@ -93,14 +179,24 @@ struct qss_op_struct {
   int dir1, dir2;     /* Directions for derivatives and hopping */
   int disp;           /* Stride for derivatives */
   Real weights[MAXWEIGHTS];  /* Weights for derivatives */
-  Real eps_naik;      /* Naik epsilon for KS hopping operator */
   int dhop;           /* 0 for hop, 1 for 1st deriv of hop, 2 for 2nd */
   int iters;          /* iterations for covariant gaussian source */
   Real r0;            /* source size for gaussian, width for gauge invt  */
   int stride;         /* Subset flag for gaussian source */
   int r_offset[4];    /* Coordinate offset for phases for some operators */
   int spin_taste;     /* For staggered fermions for some operators */
+  int gamma;          /* For Dirac fermions for some operators */
+  int mom[3];         /* insertion momentum for some operators */
   char source_file[MAXFILENAME]; /* file name for some sources */
+  dirac_clover_param dcp; /* For Dirac solver */
+  char kappa_label[32]; /* For Dirac solver */
+  ks_param ksp;        /* For KS solver */
+  char mass_label[32]; /* For KS solver */
+  Real eps_naik;      /* Naik epsilon for KS hopping operator and KS inverse */
+  quark_invert_control qic; /* For Dirac and KS solver */
+  int co[4];          /* Coordinate origin for Dirac solver boundary twist */
+  Real bp[4];         /* Boundary phase for Dirac solver */
+  int t0;             /* For time slice projection */
   struct qss_op_struct *op;   /* Next operation in the chain */
 };
 
@@ -150,81 +246,6 @@ typedef struct {
 
 } quark_source;
 
-
-/* Structure defining quark inversion parameters for most inverters */
-
-typedef struct {
-  int prec;           /* precision of the inversion 1 = single; 2 = double */
-  int min;            /* minimum number of iterations (being phased out) */
-  int max;            /* maximum number of iterations per restart */
-  int nrestart;       /* maximum restarts */
-  int parity;         /* EVEN, ODD, or EVENANDODD (for some inverters) */
-  int start_flag;     /* 0: use a zero initial guess; 1: use dest */
-  int nsrc;           /* Number of source vectors */
-  Real resid;         /* desired residual - NOT SQUARED!
-			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
-  Real relresid;      /* desired relative residual - NOT SQUARED! */
-  Real final_rsq;     /* Final true (absolute) residual. Norm'ed to (r*r)/(src*src) */
-  Real final_relrsq;  /* Final relative residual. Same normalization. */
-  Real size_r;        /* resulting cumulative residual. Same normalization. */
-  Real size_relr;     /* resulting cumulative relative residual. Same normalization. */
-  int converged;      /* returned 0 if not converged; 1 if converged */
-  int  final_iters;
-  int  final_restart;
-                      /* Add further parameters as needed...  */
-} quark_invert_control;
-
-void report_status(quark_invert_control *qic);
-
-/* Propagator types */
-
-#define CLOVER_TYPE 0
-#define KS_TYPE 1
-#define KS4_TYPE 2
-#define IFLA_TYPE 3
-
-/* Structures required for specific inverters */
-
-/* Structure defining parameters of Dirac matrix for clover inversion */
-/* To be passed through to inverter. */
-typedef struct {
-  Real Kappa;        /* hopping */
-  Real Clov_c;       /* Perturbative clover coeff */
-  Real U0;           /* Tadpole correction to Clov_c */
-} dirac_clover_param;
-
-/* Same for Wilson case */
-typedef struct {
-  Real Kappa;        /* hopping */
-} dirac_wilson_param;
-
-/* Same for plain KS case */
-typedef struct {
-  Real mass;
-  Real offset;
-  int naik_term_epsilon_index;
-  Real naik_term_epsilon;
-
-} ks_param;
-
-/* This is the IFLA case */
-typedef struct {
-  Real kapifla;
-  Real kappa_s;
-  Real kappa_t;
-  Real r_s;
-  Real r_t;
-  Real zeta;
-  Real c_E;
-  Real c_B;
-  Real c_1;
-  Real c_2;
-  Real c_3;
-  Real c_4;
-  Real c_5;
-  Real c_EE;
-  Real u0;
-} newaction_ifla_param;
 
 #endif /* _GENERIC_QUARK_TYPES_H */
 
