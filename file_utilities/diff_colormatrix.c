@@ -144,8 +144,10 @@ int main(int argc, char *argv[])
 			   colormatrix_file1,colormatrix_file2);
   
   /* Read all of both files */
-  restore_color_matrix_scidac_to_field (colormatrix_file1, colormatrix1, 4);
-  restore_color_matrix_scidac_to_field (colormatrix_file2, colormatrix2, 4);
+  restore_color_matrix_scidac_to_field (colormatrix_file1, colormatrix1, 
+					4, PRECISION);
+  restore_color_matrix_scidac_to_field (colormatrix_file2, colormatrix2, 
+					4, PRECISION);
   
   /* Compare data */
   
