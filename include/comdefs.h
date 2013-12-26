@@ -63,6 +63,8 @@ void g_floatsum(Real *fpt);
 void g_vecfloatsum(Real *fpt, int nReals);
 void g_doublesum(double *dpt);
 void g_vecdoublesum(double *dpt, int ndoubles);
+void g_longdoublesum(long double *dpt);
+void g_veclongdoublesum(long double *dpt, int count);
 void g_complexsum(complex *cpt);
 void g_veccomplexsum(complex *cpt, int ncomplex);
 void g_dcomplexsum(double_complex *cpt);
