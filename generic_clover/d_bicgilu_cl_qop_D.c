@@ -50,7 +50,7 @@
 // static const char *qop_prec[2] = {"F", "D"};
 // #endif
 
-static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_D.c,v 1.5 2012/11/23 23:45:46 detar Exp $";
+static char* cvsHeader = "$Header: /lqcdproj/detar/cvsroot/milc_qcd/generic_clover/d_bicgilu_cl_qop_D.c,v 1.6 2013/12/26 17:42:48 detar Exp $";
 
 #if 1
 
@@ -441,11 +441,11 @@ bicgilu_cl_qop_single_for_double( int prop_type,
 				  int *final_restart,
 				  Real *final_rsq_ptr )
 {
-  int i, iters, iters_F;
+  int i, iters, iters_F = 0;
   int converged;
   int nrestart;
   int max_restarts = qic->nrestart;
-#ifdef CG_DEBUG
+#ifdef CGTIME
   int isrc, ikappa;
   int final_restart_F;
   Real final_rsq_F, final_relrsq_F;
@@ -570,7 +570,7 @@ bicgilu_cl_qop_single_for_double( int prop_type,
   	  qop_rhs_F, nsrc);
     dtime += dclock();
 
-#ifdef CG_DEBUG
+#ifdef CG_TIME
     /* Report performance statistics */
     
     /* For now we return the largest value and total iterations */
