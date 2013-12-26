@@ -30,8 +30,8 @@
 #include "../include/su3.h"
 
 /* does NOT use generic_clover routines! */
-typedef struct { complex tr[2][15]; } triangular;
-typedef struct { Real di[2][6]; } diagonal;
+//typedef struct { complex tr[2][15]; } triangular;
+//typedef struct { Real di[2][6]; } diagonal;
 typedef struct { int chiral; Real coeff; Real mass; 
                  wilson_vector* src; } chiral_src;
 
