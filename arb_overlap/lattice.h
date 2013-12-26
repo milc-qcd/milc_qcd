@@ -6,6 +6,7 @@
    This file defines global scalars and the fields in the lattice. */
 
 #include "defines.h"
+#include "../include/generic_clover.h"
 #include "../include/generic_wilson.h"
 #include "../include/generic_quark_types.h"
 #include "../include/random.h"   /* For double_prn */
@@ -337,5 +338,9 @@ EXTERN Real delta_iso;
 #ifdef DOMAINX
 EXTERN int cut_x,cut_y,cut_z,cut_t;
 #endif
+
+/* Storage for the clover term */
+EXTERN clover *gen_clov;
+
 
 /* _LATTICE_H */

@@ -88,6 +88,7 @@ G_OBJECTS =          \
   io_lat_utils.o     \
   io_source_cmplx_fm.o \
   make_lattice.o     \
+  momentum_twist.o   \
   nersc_cksum.o \
   quark_source.o \
   quark_source_sink_op.o \
@@ -95,6 +96,7 @@ G_OBJECTS =          \
   ranstuff.o         \
   project_su3_hit.o  \
   remap_stdio_from_args.o \
+  report_invert_status.o \
   reunitarize2.o
 
 ifeq ($(strip ${HAVEFFTW}),true)
@@ -110,31 +112,30 @@ endif
 
 # Basic set from generic_wilson directory
 G_WILSON_OBJECTS =   \
+  boundary_flip.o    \
   canopy2weyl_rot.o  \
   dirac_utilities.o  \
   discretize_wf.o    \
-  dslash_w_space.o   \
-  dslash_w3.o        \
-  gauss_smear_w.o    \
+  gammas.o           \
   io_helpers_w.o     \
   io_prop_w.o        \
   io_prop_w_fm.o     \
   io_source_w_fm.o   \
-  boundary_flip.o      
+  staggered2naive.o
+
+#   dslash_w3.o        \
+#   dslash_w_space.o   \
+#   gauss_smear_w.o    \
 
 
-# G_KS_OBJECTS = \
-#   flavor_ops2.o \
+G_KS_OBJECTS = \
+#  spin_taste.o \
 #   io_source_ks_fm.o
 
 # Basic set of nhyp routines (should have its own generic_nhyp directory)
 G_NHYP_OBJECTS =     \
   block_nhyp.o       \
   nhyp.o
-
-
-
-
 
 # uncomment for fat links; only nHYP for now
   FAT = -DNHYP
@@ -179,10 +180,18 @@ endif
 
 
 
-OBJECTS = ${MY_OBJECTS} ${G_OBJECTS} ${G_KS_OBJECTS} ${G_WILSON_OBJECTS}  \
-   ${G_NHYP_OBJECTS}  ${OVERLAP_OBJECTS} \
-  ${EIGVAL_OBJECTS}  ${LAYOUT} ${ADD_OBJECTS} ${EXTRA_OBJECTS}
-
+OBJECTS = \
+  ${MY_OBJECTS} \
+  ${CL_OBJECTS} \
+  ${G_OBJECTS} \
+  ${G_KS_OBJECTS} \
+  ${G_WILSON_OBJECTS} \
+  ${G_NHYP_OBJECTS} \
+  ${OVERLAP_OBJECTS} \
+  ${EIGVAL_OBJECTS} \
+  ${LAYOUT} \
+  ${ADD_OBJECTS} \
+  ${EXTRA_OBJECTS}
 
 #Libraries for complex numbers and su3 functions
 QCDLIB = ${LIBDIR}/su3.${PRECISION}.a ${LIBDIR}/complex.${PRECISION}.a
@@ -205,9 +214,11 @@ ALL_MAKES = \
   Make_template \
   ${MAKEFILE} \
   ../Make_template_qop \
+  ../Make_template_combos \
   ../Make_template_scidac \
   ../generic/Make_template \
-  ../generic_wilson/Make_template
+  ../generic_wilson/Make_template \
+  ../generic_clover/Make_template \
 
 # To force a remake when changing any make file, header, or target
 ${OBJECTS} : ${HEADERS} ${LASTMAKE} ${ALL_MAKES}
@@ -253,6 +264,9 @@ include ../generic/Make_template
 
 # Rules for generic_wilson routines
 include ../generic_wilson/Make_template
+
+# Rules for generic_clover routines
+include ../generic_clover/Make_template
 
 # Rules for generic_ks routines
 #include ../generic_ks/Make_template
