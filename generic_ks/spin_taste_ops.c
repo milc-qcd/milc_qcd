@@ -849,7 +849,7 @@ gamma_gamma_style(char *label){
   hyphen = strstr(label, "-");
  
   if(hyphen == NULL){
-    printf("Can't parse the spin_taste label\n");
+    printf(" Can't parse the spin_taste label\n");
     return -1;
   }
 
@@ -911,7 +911,7 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
 		    su3_vector *src, su3_matrix *links){
   switch(index){
   case pion5:
-  copy_v_field(dest, src);
+    copy_v_field(dest, src);
     mult_pion5_field(r0, src, dest);
     break;
   case pion05:
@@ -976,26 +976,11 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
     break;
 #endif
   default:
-    printf("spin_taste_op(%d): Bad spin-taste index %d\n",this_node, index);
+    printf("spin_taste_op_links(%d): Bad spin-taste index %d\n",this_node, index);
     terminate(1);
   }
 }
 
-
-/*------------------------------------------------------------------*/
-/* Spin-taste operator without the FN option                        */
-void
-spin_taste_op(int index, int r0[], su3_vector *dest, su3_vector *src){
-#ifdef NO_GAUGE_FIELD
-    spin_taste_op_links(index, r0, dest, src, NULL);
-#else
-    /* Use APE links for shifts */
-
-    rephase_field_offset( ape_links, ON, NULL, r0 );
-    spin_taste_op_links(index, r0, dest, src, ape_links);
-    rephase_field_offset( ape_links, OFF, NULL, r0 );
-#endif
-}
 
 /********************************************************************/
 /* Fat-Naik variants                                                */
@@ -1071,10 +1056,33 @@ gamma_gamma_spin_taste_op(int index, int r0[],
 }
 
 
+/*------------------------------------------------------------------*/
+/* Spin-taste operator without the FN option                        */
+void
+spin_taste_op(int index, int r0[], su3_vector *dest, su3_vector *src){
+
+  if(is_gamma_gamma_index(index))
+    gamma_gamma_spin_taste_op(index, r0, dest, src);
+
+  else {
+    
+#ifdef NO_GAUGE_FIELD
+    spin_taste_op_links(index, r0, dest, src, NULL);
+#else
+    /* Use APE links for shifts */
+    
+    rephase_field_offset( ape_links, ON, NULL, r0 );
+    spin_taste_op_links(index, r0, dest, src, ape_links);
+    rephase_field_offset( ape_links, OFF, NULL, r0 );
+#endif
+  }
+}
+
+
 #ifdef NO_GAUGE_FIELD
 
 /*------------------------------------------------------------------*/
-/* Spin-taste operator without the FN option                        */
+/* Spin-taste operator including the FN option                        */
 
 void 
 spin_taste_op_fn( void *fn, int index, int r0[],
