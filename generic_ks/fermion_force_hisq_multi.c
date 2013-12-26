@@ -32,6 +32,8 @@
 #include "../include/fermion_links.h"
 #include <string.h>
 
+#include "../include/openmp_defs.h"
+
 
 
 //AB output for debugging
@@ -413,7 +415,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
   su3_tensor4 dydv, dydagdv, dwdv, dwdagdv;
   su3_matrix force_tmp;
   int m, n, l;
-  complex ftmp;
+  complex force, ftmp;
   int inaik, n_naik_shift;
   int aux_stride = 4;
   size_t nflops = 0;
@@ -496,9 +498,10 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
   n_naik_shift = 0;
   for( inaik=0; inaik<n_naiks; inaik++ ) {
     // clear temporary force accumulator
-    for(dir=XUP;dir<=TUP;dir++)FORALLFIELDSITES(i){
+    for(dir=XUP;dir<=TUP;dir++)FORALLFIELDSITES_OMP(i,){
       clear_su3mat( &(force_accum_tmp[dir][i]) );
     }
+    END_LOOP_OMP
 #ifdef MILC_GLOBAL_DEBUG
     node0_printf("fn_fermion_force_multi_hisq_mx: eps_naik[%d]=%f\n",inaik,eps_naik[inaik]);
 #endif /* MILC_GLOBAL_DEBUG */
@@ -549,9 +552,10 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 	k=0; // which gather we are using
         mtag[k] = start_gather_field( internal_multi_x[0], sizeof(su3_vector),
            netbackdir, EVENANDODD, gen_pt[k] );
-        FORALLFIELDSITES(i){
+        FORALLFIELDSITES_OMP(i,  ){
 	  clear_su3mat(  &oprod_along_path[0][i] ); // actually last site in path
         }
+        END_LOOP_OMP
         if( 0==inaik ) {
         	// for first set of X links full multi_x is used
           n_orders_naik_current = n_order_naik_total;
@@ -565,12 +569,13 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 	    mtag[1-k] = start_gather_field( internal_multi_x[term+1],
               sizeof(su3_vector), netbackdir, EVENANDODD, gen_pt[1-k] );
           wait_gather(mtag[k]);
-          FORALLFIELDSITES(i){
+          FORALLFIELDSITES_OMP(i,private(tmat)){
 	    su3_projector( &internal_multi_x[term][i], 
 			   (su3_vector *)gen_pt[k][i], &tmat );
 	    scalar_mult_add_su3_matrix( &oprod_along_path[0][i], &tmat, 
 	         internal_residues[term], &oprod_along_path[0][i] );
           }
+          END_LOOP_OMP
 	  nflops += 54 + 36;
           cleanup_gather(mtag[k]);
 	  k=1-k; // swap 0 and 1
@@ -632,16 +637,18 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 	    //            mtag[1] = start_gather_field( W_unitlink[dir], sizeof(su3_matrix),
 	    //                   OPP_DIR(dir), EVENANDODD, gen_pt[1] );
             wait_gather(mtag[1]);
-            FORALLFIELDSITES(i){ 
+            FORALLFIELDSITES_OMP(i,  ){ 
 	      su3_adjoint( (su3_matrix *)gen_pt[1][i], 
 			   &(mats_along_path[1][i]) ); 
 	    }
+            END_LOOP_OMP
             cleanup_gather(mtag[1]);
           }
           else{
-            FORALLFIELDSITES(i){ 
+            FORALLFIELDSITES_OMP(i,  ){ 
 	      mats_along_path[1][i] = W_unitlink[4*i+OPP_DIR(dir)]; 
 	    }
+            END_LOOP_OMP
           }
       }
       else { // ilink != 0
@@ -668,51 +675,56 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 	link_gather_connection_hisq( oprod_along_path[length-ilink-1], 
 				     mat_tmp1, NULL, dir );
 	if ( ilink==0 ){
-	   FORALLFIELDSITES(i){ mat_tmp0[i] = mat_tmp1[i]; }
+	   FORALLFIELDSITES_OMP(i,  ){ mat_tmp0[i] = mat_tmp1[i]; } END_LOOP_OMP
 	}
 	else {
-          FORALLFIELDSITES(i){
+          FORALLFIELDSITES_OMP(i,   ){
 	     mult_su3_na( &(mat_tmp1[i]),  
 			  &(mats_along_path[ilink][i]), &(mat_tmp0[i]) );
           }
+          END_LOOP_OMP
 	  nflops += 198;
 //tempflops+=9*22;
 	}
 
-        FORALLFIELDSITES(i){
+        FORALLFIELDSITES_OMP(i,  ){
 	  // sign fixed AB 9/20/07
 	  scalar_mult_add_su3_matrix( &(force_accum_tmp[dir][i]), 
 				      &(mat_tmp0[i]), coeff, 
 				      &(force_accum_tmp[dir][i]) );
 	}
+        END_LOOP_OMP
 	nflops += 36;
 //tempflops+=36;
       }
       if( ilink>0 && GOES_BACKWARDS(lastdir) ){
 	odir = OPP_DIR(lastdir);
         if ( ilink==1 ){
-	    FORALLFIELDSITES(i){ 
+	    FORALLFIELDSITES_OMP(i,  ){ 
 	      su3_adjoint( &(oprod_along_path[length-ilink][i]),
 		&( mat_tmp0[i] ) ); 
 	    }
+            END_LOOP_OMP
 	}
 	else {
 	    link_gather_connection_hisq( mats_along_path[ilink-1], mat_tmp1, 
 					 NULL, odir );
-            FORALLFIELDSITES(i){
+            FORALLFIELDSITES_OMP(i,  ){
               mult_su3_na( &(mat_tmp1[i]), 
 			   &(oprod_along_path[length-ilink][i]),  
 			   &(mat_tmp0[i]) );
             }
+            END_LOOP_OMP
 	    nflops += 198;
 //tempflops+=9*22;
 	}
-        FORALLFIELDSITES(i){
+        FORALLFIELDSITES_OMP(i,  ){
 	  // sign fixed AB 9/20/07
 	  scalar_mult_add_su3_matrix( &(force_accum_tmp[odir][i]), 
 				      &(mat_tmp0[i]), +coeff, 
 				      &(force_accum_tmp[odir][i]) );
         }
+        END_LOOP_OMP
 	nflops += 36;
 //tempflops+=36;
       }
@@ -729,16 +741,16 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
     else {
       coeff_mult = eps_naik[inaik];
     }
-    for(dir=XUP;dir<=TUP;dir++) {
-      FORALLFIELDSITES(i) {
+    FORALLFIELDSITES_OMP(i, private(dir) ) {
+      for(dir=XUP;dir<=TUP;dir++) {
 //        add_su3_matrix( &( force_accum_2[dir][i] ), &( force_accum_tmp[dir][i] ), &( force_accum_2[dir][i] ) );
         scalar_mult_add_su3_matrix( &( force_accum_2[dir][i] ), 
             &( force_accum_tmp[dir][i] ), coeff_mult,
             &( force_accum_2[dir][i] ) );
       }
-      nflops += 36;
-//tempflops+=36;
-    }
+      nflops += 4*36;
+//tempflops+=4*36;
+    } END_LOOP_OMP
     n_naik_shift += n_orders_naik[inaik];
   } /* end loop over naik epsilons */
 
@@ -784,7 +796,7 @@ dumpmat( &(W_unitlink[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
     rephase_field_offset( V_link, OFF, NULL, r0 );
     rephase_field_offset( Y_unitlink, OFF, NULL, r0 );
     
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,private(tmat,dydv,dydagdv,dwdv,dwdagdv,m,n,k,l,force_tmp,ftmp) reduction(+:nflops_all_sites) ){
       for(dir=XUP;dir<=TUP;dir++){
 	// derivatives: dY/dV, dY^+/dV
 	switch (ap->umethod){
@@ -858,6 +870,7 @@ dumpmat( &(W_unitlink[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
 	su3mat_copy( &force_tmp, &( force_accum_2[dir][i] ) );
       }
     }
+    END_LOOP_OMP
 
     nflops += nflops_all_sites*numnodes()/volume;
 
@@ -981,12 +994,18 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 	    //            mtag[1] = start_gather_field( U_link[dir], sizeof(su3_matrix),
 	    //                   OPP_DIR(dir), EVENANDODD, gen_pt[1] );
             wait_gather(mtag[1]);
-            FORALLFIELDSITES(i){ su3_adjoint( (su3_matrix *)gen_pt[1][i], &(mats_along_path[1][i]) ); }
+            FORALLFIELDSITES_OMP(i,  ){ 
+		su3_adjoint( (su3_matrix *)gen_pt[1][i], &(mats_along_path[1][i]) ); 
+	    }
+            END_LOOP_OMP
             cleanup_gather(mtag[1]);
           }
           else{
 	    //            FORALLFIELDSITES(i){ mats_along_path[1][i] = U_link[OPP_DIR(dir)][i]; }
-            FORALLFIELDSITES(i){ mats_along_path[1][i] = U_link[4*i+OPP_DIR(dir)]; }
+            FORALLFIELDSITES_OMP(i,  ){ 
+		mats_along_path[1][i] = U_link[4*i+OPP_DIR(dir)]; 
+	    }
+	    END_LOOP_OMP
           }
       }
       else { // ilink != 0
@@ -1008,45 +1027,46 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
       coeff = ferm_epsilon_1*this_path->coeff;
       if( (ilink%2)==1 )coeff = -coeff;
 
-      if(ilink==0 && GOES_FORWARDS(dir) ) FORALLFIELDSITES(i){
+      if(ilink==0 && GOES_FORWARDS(dir) ) FORALLFIELDSITES_OMP(i,  ){
 	mat_tmp0[i] = oprod_along_path[length][i]; 
-      }
+      } END_LOOP_OMP
       else if( ilink>0){
-	FORALLFIELDSITES(i){
+        FORALLFIELDSITES_OMP(i,  ){
         mult_su3_na( &(oprod_along_path[length-ilink][i]),  
 		     &(mats_along_path[ilink][i]), &(mat_tmp0[i]) );
 	}
+        END_LOOP_OMP
 	nflops += 198;
       }
 //if(ilink>0)tempflops+=9*22;
 
       /* add in contribution to the force */
       if( ilink<length && GOES_FORWARDS(dir) ){
-        FOREVENFIELDSITES(i){
+        FOREVENFIELDSITES_OMP(i,  ){
 	    scalar_mult_add_su3_matrix( &(force_accum_1[dir][i]), 
 					&(mat_tmp0[i]),
 					coeff, &(force_accum_1[dir][i]) );
-	}
-	FORODDFIELDSITES(i){
+	} END_LOOP_OMP
+	FORODDFIELDSITES_OMP(i,  ){
 	    scalar_mult_add_su3_matrix( &(force_accum_1[dir][i]), 
 					&(mat_tmp0[i]), -coeff, 
 					&(force_accum_1[dir][i]) );
-        }
+        } END_LOOP_OMP
 	nflops += 36;
 //tempflops+=36;
       }
       if( ilink>0 && GOES_BACKWARDS(lastdir) ){
 	odir = OPP_DIR(lastdir);
-        FOREVENFIELDSITES(i){
+        FOREVENFIELDSITES_OMP(i,  ){
 	    scalar_mult_add_su3_matrix( &(force_accum_1[odir][i]), 
 					&(mat_tmp0[i]), -coeff, 
 					&(force_accum_1[odir][i]) );
-	}
-        FORODDFIELDSITES(i){
+	} END_LOOP_OMP
+        FORODDFIELDSITES_OMP(i,  ){
 	    scalar_mult_add_su3_matrix( &(force_accum_1[odir][i]), 
 					&(mat_tmp0[i]), coeff, 
 					&(force_accum_1[odir][i]) );
-	}
+	} END_LOOP_OMP
 	nflops += 36;
 //tempflops+=36;
       }
@@ -1067,6 +1087,7 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
   double icounter=0;
   double max_force=0;
   Real force_interm;
+//FIXXME - need to check if there is a "maximum" reduction in OpenMP
   FORALLFIELDSITES(i) {
     for( dir=XUP; dir<=TUP; dir++ ) {
       if( fabs(s->RoS[dir])>1.0 ) icounter+=1;
@@ -1104,11 +1125,11 @@ if(this_path->forwback== -1)continue;	// CHECK THIS!!!!
 
   /* Put antihermitian traceless part into momentum */
   // add force to momentum
-  for(dir=XUP; dir<=TUP; dir++)FORALLSITES(i,s){
+  for(dir=XUP; dir<=TUP; dir++)FORALLSITES_OMP(i,s,private(tmat2) ){
      uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
      add_su3_matrix( &tmat2, &(force_accum_1[dir][i]), &tmat2 );
      make_anti_hermitian( &tmat2, &(s->mom[dir]) );
-  }
+  } END_LOOP_OMP
   nflops += 144;
 //tempflops+=4*18;
 //tempflops+=4*18;
@@ -1247,9 +1268,9 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   //  node0_printf("UNITARIZATION_METHOD=%d\n",ap->umethod);
 
   for(dir=XUP;dir<=TUP;dir++) {
-    FORALLFIELDSITES(i) {
+    FORALLFIELDSITES_OMP(i,  ){
       clear_su3mat( &( force_accum_2[dir][i] ) );
-    }
+    } END_LOOP_OMP
   }
 
   // loop on different naik epsilons
@@ -1276,19 +1297,19 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   printf("WRAPPER FORCE EXP level 0\n");
   dumpmat( &(force_accum_0[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   printf("WRAPPER FORCE ANTIHERMITIAN EXP level 0\n");
-  for(dir=XUP; dir<=TUP; dir++) FORALLFIELDSITES(i){
+  for(dir=XUP; dir<=TUP; dir++) FORALLFIELDSITES_OMP(i,  ){
     make_anti_hermitian( &(force_accum_0[dir][i]), &(ahmat_tmp[i]) );
     uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_accum_1u[dir][i]) );
-  }
+  } END_LOOP_OMP
   dumpmat( &(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   su3_matrix su3ab, su3ab2;
   clear_su3mat( &su3ab );
   clear_su3mat( &su3ab2 );
-  for(dir=XUP; dir<=TUP; dir++) FORALLFIELDSITES(i){
+  for(dir=XUP; dir<=TUP; dir++) FORALLFIELDSITES_OMP(i,firstprivate(su3ab,su3ab2) ){
     add_su3_matrix( &su3ab, &(force_accum_0[dir][i]), &su3ab );
     add_su3_matrix( &su3ab, &(force_accum_0_naik[dir][i]), &su3ab );
     add_su3_matrix( &su3ab2, &( W_unitlink[4*i+dir] ), &su3ab2 );
-  }
+  } END_LOOP_OMP
   printf("WRAPPER FORCE EXP level 0 GLOBAL SUM\n");
   dumpmat( &su3ab );
   printf("WRAPPER FORCE EXP W_unitlink GLOBAL SUM\n");
@@ -1319,10 +1340,10 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   printf("WRAPPER FORCE EXP level 2\n");
   dumpmat( &(force_accum_1[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   printf("WRAPPER FORCE ANTIHERMITIAN EXP level 2\n");
-  for(dir=XUP; dir<=TUP; dir++) FORALLFIELDSITES(i){
+  for(dir=XUP; dir<=TUP; dir++) FORALLFIELDSITES_OMP(i,  ){
     make_anti_hermitian( &(force_accum_1[dir][i]), &(ahmat_tmp[i]) );
     uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_accum_1u[dir][i]) );
-  }
+  } END_LOOP_OMP
   dumpmat( &(force_accum_1u[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   }
 #endif /* HISQ_FF_DEBUG */
@@ -1334,11 +1355,11 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
       coeff_mult = eps_naik[inaik];
     }
     for(dir=XUP;dir<=TUP;dir++) {
-      FORALLFIELDSITES(i) {
+      FORALLFIELDSITES_OMP(i,  ){
 //        add_su3_matrix( &( force_accum_2[dir][i] ), &( force_accum_1[dir][i] ), &( force_accum_2[dir][i] ) );
         scalar_mult_add_su3_matrix( &( force_accum_2[dir][i] ), 
           &( force_accum_1[dir][i] ), coeff_mult, &( force_accum_2[dir][i] ) );
-      }
+      } END_LOOP_OMP
       nflops += 36;
     }
     n_naik_shift += n_orders_naik[inaik];
@@ -1381,24 +1402,24 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   // contraction with the link in question should be done here,
   // after contributions from all levels of smearing are taken into account
   for(dir=XUP;dir<=TUP;dir++){
-    FORALLSITES(i,s){
+    FORALLSITES_OMP(i,s,  ){
       mult_su3_nn( &( s->link[dir] ), &( force_accum_1[dir][i] ), 
 		   &( force_final[dir][i] ) );
-    }
+    } END_LOOP_OMP
     nflops += 198;
   }
 
   // multiply by the time step "eps" twice (only forward paths are considered)
   // take into account even/odd parity (it is NOT done in "smearing" routine)
   for(dir=XUP;dir<=TUP;dir++){
-    FOREVENFIELDSITES(i){
+    FOREVENFIELDSITES_OMP(i,  ){
       scalar_mult_su3_matrix( &(force_final[dir][i]), 2.0*eps, 
 			      &(force_final[dir][i]) );
-    }
-    FORODDFIELDSITES(i){
+    } END_LOOP_OMP
+    FORODDFIELDSITES_OMP(i,  ){
       scalar_mult_su3_matrix( &(force_final[dir][i]), -2.0*eps, 
 			      &(force_final[dir][i]) );
-    }
+    } END_LOOP_OMP
     nflops += 36;
   }
 
@@ -1408,10 +1429,10 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
   printf("WRAPPER FORCE\n");
   dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   printf("WRAPPER FORCE ANTIHERMITIAN\n");
-  for(dir=XUP; dir<=TUP; dir++) FORALLFIELDSITES(i){
+  for(dir=XUP; dir<=TUP; dir++) FORALLFIELDSITES_OMP(i,  ){
     make_anti_hermitian( &(force_final[dir][i]), &(ahmat_tmp[i]) );
     uncompress_anti_hermitian( &(ahmat_tmp[i]), &(force_final[dir][i]) );
-  }
+  } END_LOOP_OMP
   dumpmat( &(force_final[AB_OUT_ON_LINK][AB_OUT_ON_SITE]) );
   }
 #endif /* HISQ_FF_DEBUG */
@@ -1419,11 +1440,11 @@ fn_fermion_force_multi_hisq_wrapper_mx_cpu( info_t *info, Real eps, Real *residu
 
   /* Put antihermitian traceless part into momentum */
   // add force to momentum
-  for(dir=XUP; dir<=TUP; dir++)FORALLSITES(i,s){
+  for(dir=XUP; dir<=TUP; dir++)FORALLSITES_OMP(i,s,private(tmat2)){
      uncompress_anti_hermitian( &(s->mom[dir]), &tmat2 );
      add_su3_matrix( &tmat2, &(force_final[dir][i]), &tmat2 );
      make_anti_hermitian( &tmat2, &(s->mom[dir]) );
-  }
+  } END_LOOP_OMP
 
   nflops += 18;
 
@@ -1480,9 +1501,9 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
   clearvec( &su3ab );
   int nnn;
   for( nnn=0; nnn<nterms;nnn++) {
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,firstprivate(su3ab)){
       add_su3_vector( &su3ab, &(multi_x[nnn][i]), &su3ab );
-    }
+    } END_LOOP_OMP
     nflops += 6;
   }
   printf("WRAPPER FORCE smearing0 pseudofermion vector GLOBAL SUM\n");
@@ -1507,7 +1528,7 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
 
   // clear force accumulators
   for(dir=XUP;dir<=TUP;dir++)
-    FORALLFIELDSITES(i)clear_su3mat( &(force_accum[dir][i]) );
+    FORALLFIELDSITES_OMP(i,  ){clear_su3mat( &(force_accum[dir][i]) ); } END_LOOP_OMP
 
   //AB loop on directions, path table is not needed
   for(dir=XUP;dir<=TUP;dir++){
@@ -1515,21 +1536,21 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
     //AB netbackdir is just the opposite of dir for 1x1 case
     mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
       OPP_DIR(dir), EVENANDODD, gen_pt[k] );
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,  ){
       clear_su3mat(  &(oprod_along_path[0][i]) ); // actually last site in path
-    }
+    } END_LOOP_OMP
     for(term=0;term<nterms;term++){
       if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
       sizeof(su3_vector), OPP_DIR(dir), EVENANDODD, gen_pt[1-k] );
       wait_gather(mtag[k]);
 
-      FORALLFIELDSITES(i){
+      FORALLFIELDSITES_OMP(i, private(tmat) ){
         // build projector as usual
         su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
         // multiply by alpha_l in rational function expansion
         scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, 
 				    residues[term], &(oprod_along_path[0][i]) );
-      }
+      } END_LOOP_OMP
       nflops += 54 + 36;
       cleanup_gather(mtag[k]);
       k=1-k; // swap 0 and 1
@@ -1540,11 +1561,11 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
 				 mat_tmp0, dir );
 
     coeff = 1; // fermion_eps is outside this routine in "wrapper" routine
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,  ){
       scalar_mult_add_su3_matrix( &(force_accum[dir][i]), 
 				  &(oprod_along_path[1][i]),
 				  coeff, &(force_accum[dir][i]) );
-    }
+    } END_LOOP_OMP
     nflops += 36;
 
   } /* end of loop on directions */
@@ -1553,27 +1574,27 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
   /* *** Naik part *** */
   // clear force accumulators
   for(dir=XUP;dir<=TUP;dir++)
-    FORALLFIELDSITES(i)clear_su3mat( &(force_accum_naik[dir][i]) );
+    FORALLFIELDSITES_OMP(i,  ){clear_su3mat( &(force_accum_naik[dir][i]) ); } END_LOOP_OMP
 
   for(dir=XUP;dir<=TUP;dir++){ //AB loop on directions, path table is not needed
     k=0; // which gather we are using
     mtag[k] = start_gather_field( multi_x[0], sizeof(su3_vector),
       OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[k] );
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,  ){
       clear_su3mat(  &(oprod_along_path[0][i]) );
-    }
+    } END_LOOP_OMP
     for(term=0;term<nterms;term++){
       if(term<nterms-1)mtag[1-k] = start_gather_field( multi_x[term+1],
       sizeof(su3_vector), OPP_3_DIR( DIR3(dir) ), EVENANDODD, gen_pt[1-k] );
       wait_gather(mtag[k]);
 
-      FORALLFIELDSITES(i){
+      FORALLFIELDSITES_OMP(i,private(tmat) ){
         // build projector as usual
         su3_projector( &multi_x[term][i], (su3_vector *)gen_pt[k][i], &tmat );
         // multiply by alpha_l in rational function expansion
         scalar_mult_add_su3_matrix( &(oprod_along_path[0][i]), &tmat, 
 				    residues[term], &(oprod_along_path[0][i]) );
-      }
+      } END_LOOP_OMP
       nflops += 54 + 36;
       cleanup_gather(mtag[k]);
       k=1-k; // swap 0 and 1
@@ -1583,11 +1604,11 @@ fn_fermion_force_multi_hisq_smearing0( info_t *info, Real eps, Real *residues,
 				 mat_tmp0, DIR3(dir) );
 
     coeff = 1; // fermion_eps is outside this routine in "wrapper" routine
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,  ){
       scalar_mult_add_su3_matrix( &(force_accum_naik[dir][i]), 
 				  &(oprod_along_path[1][i]),
 				  coeff, &(force_accum_naik[dir][i]) );
-    }
+    } END_LOOP_OMP
     nflops += 36;
 
   } /* end of loop on directions */
@@ -1664,13 +1685,13 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
   clear_su3mat( &su3ab );
   clear_su3mat( &su3ab2 );
   for(dir=XUP; dir<=TUP; dir++) {
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,firstprivate(su3ab,su3ab2) ){
       add_su3_matrix( &su3ab, &(force_accum_old[dir][i]), &su3ab );
       if( NULL!=force_accum_naik_old ) {
 	add_su3_matrix( &su3ab, &(force_accum_naik_old[dir][i]), &su3ab );
       }
       add_su3_matrix( &su3ab2, &( internal_U_link[4*i+dir] ), &su3ab2 );
-    }
+    } END_LOOP_OMP
   }
   nflops += 36*4;
   if( NULL!=force_accum_naik_old )nflops += 18*4;
@@ -1685,7 +1706,7 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
 
   // clear force accumulators
   for(dir=XUP;dir<=TUP;dir++)
-    FORALLFIELDSITES(i)clear_su3mat( &(force_accum[dir][i]) );
+    FORALLFIELDSITES_OMP(i,  ){clear_su3mat( &(force_accum[dir][i]) );} END_LOOP_OMP
 
   /* loop over paths, and loop over links in path */
   for( ipath=0; ipath<internal_num_q_paths; ipath++ ){
@@ -1746,15 +1767,15 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
 	    //					  sizeof(su3_matrix),
 	    //					  OPP_DIR(dir), EVENANDODD, gen_pt[1] );
             wait_gather(mtag[1]);
-            FORALLFIELDSITES(i){ su3_adjoint( (su3_matrix *)gen_pt[1][i], 
-					   &(mats_along_path[1][i]) ); }
+            FORALLFIELDSITES_OMP(i,  ){ su3_adjoint( (su3_matrix *)gen_pt[1][i], 
+					   &(mats_along_path[1][i]) ); } END_LOOP_OMP
             cleanup_gather(mtag[1]);
           }
           else{
 //            FORALLSITES(i,s){ mats_along_path[1][i] = s->link[OPP_DIR(dir)]; }
-            FORALLFIELDSITES(i){ 
+            FORALLFIELDSITES_OMP(i,  ){ 
 	      mats_along_path[1][i] = internal_U_link[4*i+OPP_DIR(dir)]; 
-	    }
+	    } END_LOOP_OMP
           }
       }
       else { // ilink != 0
@@ -1784,41 +1805,43 @@ fn_fermion_force_multi_hisq_smearing( info_t *info,
         link_gather_connection_hisq( oprod_along_path[length-ilink-1], 
 				     mat_tmp1, NULL, dir );
 
-        if(ilink==0) FORALLFIELDSITES(i){
+        if(ilink==0) FORALLFIELDSITES_OMP(i,  ){
           mat_tmp0[i] = mat_tmp1[i]; 
-        }
+        } END_LOOP_OMP
         else{
-          FORALLFIELDSITES(i){
+          FORALLFIELDSITES_OMP(i,  ){
             mult_su3_na( &( mat_tmp1[i] ),  &( mats_along_path[ilink][i] ), &(mat_tmp0[i]) );
           }
+          END_LOOP_OMP
 	  nflops += 198;
         }
-        FORALLFIELDSITES(i){
+        FORALLFIELDSITES_OMP(i,  ){
 	    scalar_mult_add_su3_matrix( &(force_accum[dir][i]), &(mat_tmp0[i]),
                 coeff, &(force_accum[dir][i]) );
-	}
+	} END_LOOP_OMP
 	nflops += 36;
       }
       if( ilink>0 && GOES_BACKWARDS(lastdir) ){
 	odir = OPP_DIR(lastdir);
-        if( ilink==1 )FORALLFIELDSITES(i){
+        if( ilink==1 )FORALLFIELDSITES_OMP(i,  ){
           mat_tmp0[i]=oprod_along_path[length-ilink][i];
           su3_adjoint ( &( mat_tmp0[i] ), &( mat_tmp1[i] ) );
-        }
+        } END_LOOP_OMP
         else{
           link_gather_connection_hisq( mats_along_path[ilink-1], mat_tmp1, 
 				       NULL, odir );
-          FORALLFIELDSITES(i){
+          FORALLFIELDSITES_OMP(i,  ){
             mult_su3_na( &( oprod_along_path[length-ilink][i] ), 
 			 &( mat_tmp1[i] ), &( mat_tmp0[i] ) );
             su3_adjoint ( &( mat_tmp0[i] ), &( mat_tmp1[i] ) );
           }
+          END_LOOP_OMP
 	  nflops += 198;
         }
-        FORALLFIELDSITES(i){
+        FORALLFIELDSITES_OMP(i,  ){
           scalar_mult_add_su3_matrix( &(force_accum[odir][i]), &(mat_tmp1[i]),
                 +coeff, &(force_accum[odir][i]) );
-        }
+        } END_LOOP_OMP
 
 	nflops += 36;
       }
@@ -2230,23 +2253,41 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   double fat7_coeff[6];
   write_path_coeffs_to_array(ap->p1, fat7_coeff);
   
-  // The following lines need to be deleted
-  const int dim[4] = {nx,ny,nz,nt};
-  QudaLayout_t layout;
-  layout.latsize = dim;
-  qudaInit(layout);
-  // end delete
-  
   // The following lines of code are optional
   // If the parameters are not set explicitly here, 
   // they are set to default values the first time 
   // qudaHisqForce is called.
   QudaHisqParams_t params;
+
+#ifdef HISQ_REUNIT_ALLOW_SVD
   params.reunit_allow_svd = 1;
+#else
+  params.reunit_allow_svd = 0;
+#endif
+
+#ifdef HISQ_REUNIT_SVD_ONLY
+  params.reunit_svd_only = 1;
+#else
   params.reunit_svd_only = 0;
+#endif
+
+#ifdef HISQ_REUNIT_SVD_REL_ERROR
+  params.reunit_svd_rel_error = HISQ_REUNIT_SVD_REL_ERROR; 
+#else
+  params.reunit_svd_rel_error = 1e-8;
+#endif
+
+#ifdef HISQ_REUNIT_SVD_ABS_ERROR
+  params.reunit_svd_abs_error = HISQ_REUNIT_SVD_ABS_ERROR;
+#else
   params.reunit_svd_abs_error = 1e-8;
-  params.reunit_svd_rel_error = 1e-7;
+#endif
+
+#ifdef HISQ_FORCE_FILTER
+  params.force_filter = HISQ_FORCE_FILTER;
+#else
   params.force_filter = 5e-5;
+#endif
 
   qudaHisqParamsInit(params);
   // end optional code
