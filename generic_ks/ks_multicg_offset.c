@@ -22,7 +22,7 @@
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/dslash_ks_redefine.h"
 
-#include "../include/loopend.h"
+#include "../include/openmp_defs.h"
 
 static su3_vector *ttt,*cg_p;
 static su3_vector *resid;
@@ -185,7 +185,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
 #endif
   num_offsets_now = num_offsets;
   source_norm = 0.0;
-  FORSOMEPARITY(i,s,l_parity){
+  FORSOMEPARITY_OMP(i,s,l_parity,private(j) reduction(+:source_norm) ){
     source_norm += (double) magsq_su3vec( src+i );
     su3vec_copy( src+i, resid+i);
     su3vec_copy(resid+i, cg_p+i);
@@ -194,7 +194,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
 	clearvec(psim[j]+i);
 	su3vec_copy(resid+i, pm[j]+i);
       }
-  } END_LOOP;
+  } END_LOOP_OMP;
   g_doublesum( &source_norm );
   rsq = source_norm;
   
@@ -277,11 +277,11 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     /* ttt  <- ttt - shift0*cg_p	*/
     /* pkp  <- cg_p . ttt */
     pkp = 0.0;
-    FORSOMEPARITY(i,s,l_parity){
+    FORSOMEPARITY_OMP(i,s,l_parity,reduction(+:pkp) ){
       scalar_mult_add_su3_vector( ttt+i, cg_p+i, shift0, ttt+i );
       pkp += (double)su3_rdot( cg_p+i, ttt+i );
-    } END_LOOP
-	g_doublesum( &pkp );
+    } END_LOOP_OMP;
+    g_doublesum( &pkp );
     iteration++;
     total_iters++;
     
@@ -319,22 +319,20 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
       }
     
     /* dest <- dest + beta*cg_p */
-    FORSOMEPARITY(i,s,l_parity){
+    rsq = 0.0;
+    FORSOMEPARITY_OMP(i,s,l_parity,private(j) reduction(+:rsq) ){
       scalar_mult_add_su3_vector( psim[j_low]+i,
 				  cg_p+i, (Real)beta_i[j_low], psim[j_low]+i);
       for(j=0;j<num_offsets_now;j++) if(j!=j_low){
 	  scalar_mult_add_su3_vector( psim[j]+i,
 				      pm[j]+i, (Real)beta_i[j], psim[j]+i);
 	}
-    } END_LOOP;
     
-    /* resid <- resid + beta*ttt */
-    rsq = 0.0;
-    FORSOMEPARITY(i,s,l_parity){
+      /* resid <- resid + beta*ttt */
       scalar_mult_add_su3_vector( resid+i, ttt+i,
 				  (Real)beta_i[j_low], resid+i);
       rsq += (double)magsq_su3vec( resid+i );
-    } END_LOOP;
+    } END_LOOP_OMP;
     g_doublesum(&rsq);
     
 #if CG_DEBUG
@@ -406,7 +404,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
       }
     
     /* cg_p  <- resid + alpha*cg_p */
-    FORSOMEPARITY(i,s,l_parity){
+    FORSOMEPARITY_OMP(i,s,l_parity,private(j) ){
       scalar_mult_add_su3_vector( resid+i, cg_p+i,
 				  (Real)alpha[j_low], cg_p+i);
       for(j=0;j<num_offsets_now;j++) if(j!=j_low){
@@ -415,7 +413,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
 	  scalar_mult_add_su3_vector( ttt+i, pm[j]+i,
 				      (Real)alpha[j], pm[j]+i);
 	}
-    } END_LOOP;
+    } END_LOOP_OMP;
     
     /* scroll the scalars */
     for(j=0;j<num_offsets_now;j++){
