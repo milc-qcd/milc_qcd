@@ -352,6 +352,8 @@ void write_appl_gauge_info(FILE *fp, gauge_file *gf);
 
 /**********************************************************************/
 /* Prototypes for io_scidac routines */
+gauge_file *file_scan_serial_scidac(char *filename);
+gauge_file *file_scan_parallel_scidac(char *filename);
 gauge_file *save_serial_scidac(char *filename);
 gauge_file *save_parallel_scidac(char *filename);
 gauge_file *save_multifile_scidac(char *filename);
@@ -426,7 +428,9 @@ int sprint_gauge_info_item(
 void write_generic_gauge_info(FILE *fp, gauge_file *gf);
 void write_gauge_info_file(gauge_file *gf);
 gauge_file *setup_input_gauge_file(char *filename);
+void free_input_gauge_file(gauge_file *gf);
 gauge_file *setup_output_gauge_file(void);
+void free_output_gauge_file(gauge_file *gf);
 void read_checksum(int parallel, gauge_file *gf, gauge_check *test_gc);
 void write_checksum(int parallel, gauge_file *gf);
 void read_site_list(int parallel,gauge_file *gf);
