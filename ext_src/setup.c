@@ -7,6 +7,9 @@
 * 5/30/07 Created from setup_cl.c */
 
 //  $Log: setup.c,v $
+//  Revision 1.6  2013/12/26 16:02:19  detar
+//  Fix error handling abort.
+//
 //  Revision 1.5  2011/11/29 22:10:38  detar
 //  New KS4 type for extended dirac propagators.  New source structure.
 //
@@ -99,8 +102,6 @@ static int initial_set(){
 
   if( param.stopflag != 0 )
     normal_exit(0);
-
-  if(prompt==2)return prompt;
 
   nx=param.nx;
   ny=param.ny;
@@ -278,6 +279,13 @@ int readin(int prompt) {
 					  savefile_s );
 	
 	  IF_OK {
+	    if(t0 >= nt){
+	      printf("Source time slice must be less than nt = %d\n", nt);
+	      status++;
+	    }
+	  }
+
+	  IF_OK {
 	    if(save_type == DIRAC_FIELD_FILE){
 	      if(param.dst_type[i] != CLOVER_TYPE &&
 		 param.dst_type[i] != KS4_TYPE){
@@ -307,6 +315,13 @@ int readin(int prompt) {
 	    ask_output_quark_source_file( stdin, prompt, &saveflag_s,
 					  &save_type, &t0, descrp,
 					  savefile_s );
+
+	  IF_OK {
+	    if(t0 >= nt){
+	      printf("Source time slice must be less than nt = %d\n", nt);
+	      status++;
+	    }
+	  }
 	  
 	  /* We could generate either a staggered extended source or a
 	     naive (Dirac) extended source */
