@@ -28,6 +28,10 @@ int m_iters,s_iters,avm_iters,avs_iters;
 double dtime;
   imp_ferm_links_t** fn;
 
+#ifdef HAVE_QOP
+BOMB THE COMPILE.  AT PRESENT QOP DOES NOT SUPPORT SCHROEDINGER FUNCTIONALS.
+COMPILE WITH WANTQOP = false.
+#endif
  initialize_machine(&argc,&argv);
 
   /* Remap standard I/O */
