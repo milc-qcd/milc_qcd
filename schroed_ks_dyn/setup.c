@@ -7,11 +7,12 @@
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
+static int initial_set(void);
+
 params par_buf;
 
 int  setup()   {
 
-  int initial_set();
   int prompt;
 
   /* print banner, get volume, nflavors, seed */
@@ -32,7 +33,7 @@ int  setup()   {
 
 
 /* SETUP ROUTINES */
-int initial_set(){
+int initial_set(void){
 int prompt,status;
     /* On node zero, read lattice size, seed, nflavors and send to others */
     if(mynode()==0){
