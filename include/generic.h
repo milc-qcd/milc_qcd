@@ -455,6 +455,7 @@ quark_source_sink_op *create_qss_op(void);
 void destroy_qss_op(quark_source_sink_op *qss_op);
 quark_source_sink_op *copy_qss_op_list(quark_source_sink_op *src_qss_op);
 void insert_qss_op(quark_source *qs, quark_source_sink_op *qss_op);
+void insert_qss_eps_naik_index(int index, quark_source_sink_op *qss_op);
 void v_field_op(su3_vector *src, quark_source_sink_op *qss_op, 
 		int subset, int t0);
 void wv_field_op(wilson_vector *src, quark_source_sink_op *qss_op, 
