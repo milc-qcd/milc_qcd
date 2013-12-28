@@ -1,5 +1,5 @@
 WARMUPS COMPLETED
- OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
+ OK converged final_rsq= XXX (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
 ACTION: g,h,f = 0.2 0.09 0.008 0.1
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40

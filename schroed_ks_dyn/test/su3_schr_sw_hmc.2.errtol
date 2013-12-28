@@ -1,5 +1,5 @@
 WARMUPS COMPLETED
- OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
+ OK converged final_rsq= XXX (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
 ACTION: g,h,f = 0.2 0.09 0.008 0.1
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
@@ -13,10 +13,10 @@ ACTION: g,h,f = 0.2 0.09 0.008 0.1
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
 ACTION: g,h,f = 0.2 0.05 0.008 0.1
 REJECT: delta S = 0.002
- OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
+ OK converged final_rsq= XXX (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
 GMES 0.001 5e-05 2 6e-05 6e-05
 FMES 2e-05 0.000000e+00 2e-05 2e-05 3e-05
- OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
+ OK converged final_rsq= XXX (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
 ACTION: g,h,f = 0.2 0.09 0.007 0.1
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
@@ -30,10 +30,10 @@ ACTION: g,h,f = 0.2 0.09 0.007 0.1
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
 ACTION: g,h,f = 0.2 0.05 0.008 0.1
 REJECT: delta S = 0.001
- OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
+ OK converged final_rsq= XXX (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
 GMES 0.001 5e-05 2 6e-05 6e-05
 FMES 2e-05 0.000000e+00 2e-05 2e-05 3e-05
- OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
+ OK converged final_rsq= XXX (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
 ACTION: g,h,f = 0.2 0.09 0.008 0.1
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40

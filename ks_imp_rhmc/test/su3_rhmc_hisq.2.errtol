@@ -1,4 +1,4 @@
-ACCEPT: delta S = 1e-05
+ACCEPT: delta S = 4e-05
 PLAQ: 8e-07 4e-07
 P_LOOP: 2e-08 2e-08
 G_LOOP: 0 0 0 3e-07 ( 0 0 0 0 )
@@ -36,12 +36,12 @@ G_LOOP: 0 0 0 3e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 3e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
 GACTION: 1e-07
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
-PBP: mass 2e-08 8e-08 2e-08 5e-08 2e-08 ( 0 of 0 )
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 2 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 2 (cf 0) restarts = 1 iters= 50
+PBP: mass 2e-08 8e-08 6e-08 5e-08 2e-08 ( 0 of 0 )
 FACTION: mass = 2e-08 3e-08 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 2 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 2 (cf 0) restarts = 1 iters= 50
 PBP: mass 2e-08 2e-06 9e-07 1e-06 1e-06 ( 0 of 0 )
 FACTION: mass = 2e-08 3e-08 ( 0 of 0 )
 RUNNING COMPLETED
