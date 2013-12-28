@@ -19,6 +19,25 @@
 # and errfile is the error tolerance file
 # A discrepancy is reported when abs(field1 - field2) > tol
 
+sub is_integer {
+    defined $_[0] && $_[0] =~ /^[+-]?\d+$/;
+}
+
+sub is_float {
+    defined $_[0] && $_[0] =~ /^[+-]?\d+(\.\d+)?$/;
+}
+
+sub is_scientific {
+    defined $_[0] && $_[0] =~ /^[+-]?\d+(\.\d*)?[eEdDg][+-]?(\d+)$/;
+}
+
+sub is_number {
+    # Allow comma after number
+    my $a = $_[0];
+    defined $a && $a =~ s/,$//;
+    is_integer($a) || is_float($a) || is_scientific($a);
+}
+
 ($file1,$file2,$errfile) = @ARGV;
 
 (defined($errfile) && defined($file2) && defined($file1)) || 
@@ -65,7 +84,7 @@ while($line1 = <FILE1>){
 	# Otherwise nonumeric or zero fields should match exactly
 	# And nonzero numeric fields should differ by less than the tolerance
 	if( $tol ne "XXX" &&
-	    ((($list2[$i] + 1e-08 == 1e-08 || $list2[$i] eq "nan" || $_ eq "nan") &&
+	    (((!is_number($list2[$i]) || $list2[$i] eq "nan" || $_ eq "nan") &&
 	     ($_ ne $list2[$i])) ||
 	     $diff > $tol ))
 	{

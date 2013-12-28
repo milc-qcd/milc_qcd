@@ -36,6 +36,25 @@
 # where file1 and file2 are to be compared and tol is a reasonable
 # tolerance.
 
+sub is_integer {
+    defined $_[0] && $_[0] =~ /^[+-]?\d+$/;
+}
+
+sub is_float {
+    defined $_[0] && $_[0] =~ /^[+-]?\d+(\.\d+)?$/;
+}
+
+sub is_scientific {
+    defined $_[0] && $_[0] =~ /^[+-]?\d+(\.\d*)?[eEdDg][+-]?(\d+)$/;
+}
+
+sub is_number {
+    # Allow comma after number
+    my $a = $_[0];
+    defined $a && $a =~ s/,$//;
+    is_integer($a) || is_float($a) || is_scientific($a);
+}
+
 ($file1,$file2,$tol) = @ARGV;
 
 (defined($tol) && defined($file2) && defined($file1)) || 
@@ -59,7 +78,7 @@ while($line1 = <FILE1>){
     for(@fields1)
     {
 	# Crude test for a numeric field. Surely, we can do better.
-	if($_ + 1e-08 != 1e-08)
+	if(is_number($_))
 	{
 	    # Numeric field
 	    if(/[^\d]/){

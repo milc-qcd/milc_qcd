@@ -23,6 +23,25 @@
 # and errfile is the error tolerance file
 # A discrepancy is reported when abs(field1 - field2) > tol
 
+sub is_integer {
+    defined $_[0] && $_[0] =~ /^[+-]?\d+$/;
+}
+
+sub is_float {
+    defined $_[0] && $_[0] =~ /^[+-]?\d+(\.\d+)?$/;
+}
+
+sub is_scientific {
+    defined $_[0] && $_[0] =~ /^[+-]?\d+(\.\d+)[eEdDg][+-]?(\d+)$/;
+}
+
+sub is_number {
+    # Allow comma after number
+    my $a = $_[0];
+    defined $a && $a =~ s/,$//;
+    is_integer($a) || is_float($a) || is_scientific($a);
+}
+
 ($file1,$file2,$errfile) = @ARGV;
 
 (defined($errfile) && defined($file2) && defined($file1)) || 
@@ -58,7 +77,7 @@ while($line1 = <FILE1>){
 	$tol = $errs[$i];
 	$diff = abs($_ - $fields2[$i]);
 	# Unless the corresponding errline field is XXX
-	if( (($fields2[$i] + 1e-08 == 1e-08) && 
+	if( ((!is_number($fields2[$i])) && 
 	     ($_ ne $fields2[$i]) && $tol ne "XXX") )
 	{
 	    $errs[$i] = "XXX";
