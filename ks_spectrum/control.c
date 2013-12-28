@@ -10,6 +10,9 @@
 /* Modifications ... */
    
 //  $Log: control.c,v $
+//  Revision 1.8  2013/12/28 20:57:27  detar
+//  Fix improper type for creating ksprop quark field
+//
 //  Revision 1.7  2013/12/24 05:39:00  detar
 //  Add combo operation
 //
@@ -332,7 +335,7 @@ int main(int argc, char *argv[])
 	int k;
 	int nc = quark[param.combo_qk_index[j][0]]->nc;
 	/* Create a zero field */
-	quark[j] = create_wp_field(nc);
+	quark[j] = create_ksp_field(nc);
 	/* Compute the requested linear combination */
 	for(k = 0; k < param.num_combo[j]; k++){
 	  ks_prop_field *q = quark[param.combo_qk_index[j][k]];
