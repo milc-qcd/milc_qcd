@@ -97,8 +97,14 @@ load_asqtad_coeffs_t(asqtad_coeffs_t *apc, Real act_path_coeff[]){
     apc->naik =	        act_path_coeff[1];
     apc->three_staple = act_path_coeff[2];
     apc->five_staple =  act_path_coeff[3];
-    apc->seven_staple = act_path_coeff[4];
-    apc->lepage =       act_path_coeff[5];
+    if(MAX_BASIC_PATHS > 4)
+      apc->seven_staple = act_path_coeff[4];
+    else
+      apc->seven_staple = 0.;
+    if(MAX_BASIC_PATHS > 5)
+      apc->lepage =       act_path_coeff[5];
+    else
+      apc->lepage = 0.;
 }
 
 /********************************************************************/
