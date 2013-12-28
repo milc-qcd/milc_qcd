@@ -84,16 +84,18 @@ G_SCHROED_OBJECTS =  \
 
 # Objects depending on architecture and software package 
 
-# Selection of layout
-ifeq ($(strip ${QCDOC}),true)
-  LAYOUT = layout_qcdoc.o # Required
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
-  else
-    LAYOUT = layout_hyper_prime.o # Choices possible here
-  endif
-endif
+# # Selection of layout
+# ifeq ($(strip ${QCDOC}),true)
+#   LAYOUT = layout_qcdoc.o # Required
+# else
+#   ifeq ($(strip ${HAVEQDP}),true)
+#     LAYOUT = layout_qdp.o # Required
+#   else
+#     LAYOUT = layout_hyper_prime.o # Choices possible here
+#   endif
+# endif
+
+LAYOUT = layout_hyper_prime.o
 
 # EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)
@@ -159,62 +161,62 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 
 su3_schr_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN" \
+	"DEFINES= -DFN -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= update.o"
 
 su3_schr_phi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DPHI_ALGORITHM" \
+	"DEFINES= -DFN -DPHI_ALGORITHM -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= update.o"
 
 su3_schr_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DFN -DPHI_ALGORITHM -DHMC_ALGORITHM -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= d_action.o update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_sw_phi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DPHI_ALGORITHM -DSEXT_WEIN" \
+	"DEFINES= -DFN -DPHI_ALGORITHM -DSEXT_WEIN -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= update_hgh.o"
 
 su3_schr_sw_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DPHI_ALGORITHM -DHMC_ALGORITHM -DSEXT_WEIN" \
+	"DEFINES= -DFN -DPHI_ALGORITHM -DHMC_ALGORITHM -DSEXT_WEIN -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= d_action.o update_hgh.o"
 
 su3_schr_rmd_ph::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DFERM_PHASES" \
+	"DEFINES= -DFN -DFERM_PHASES -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_phi_ph::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DFERM_PHASES -DPHI_ALGORITHM" \
+	"DEFINES= -DFN -DFERM_PHASES -DPHI_ALGORITHM -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_hmc_ph::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DFERM_PHASES -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DFN -DFERM_PHASES -DPHI_ALGORITHM -DHMC_ALGORITHM -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= d_action.o update.o"
 
 su3_schr_rw_rmd::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DREWEIGH" \
+	"DEFINES= -DFN -DREWEIGH -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_rw_phi::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DREWEIGH -DPHI_ALGORITHM" \
+	"DEFINES= -DFN -DREWEIGH -DPHI_ALGORITHM -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= update.o"
 
 # The next target is included for completeness, but is untested
 su3_schr_rw_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
-	"DEFINES= -DFN -DREWEIGH -DPHI_ALGORITHM -DHMC_ALGORITHM" \
+	"DEFINES= -DFN -DREWEIGH -DPHI_ALGORITHM -DHMC_ALGORITHM -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= d_action.o update.o"
 
 clean:
@@ -227,7 +229,7 @@ include ../generic/Make_template
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
 
-# Rules for generic_schroed routinesb
+# Rules for generic_schroed routines
 include ../generic_schroed/Make_template
 
 # Rules for generic_wilson routines
