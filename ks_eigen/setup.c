@@ -101,13 +101,13 @@ node0_printf("Made 3nn gathers\n"); fflush(stdout);
 	/* set up K-S phase vectors, boundary conditions */
     phaseset();
 
-#if HAVE_QOP
-  /* Initialize QOP */
-  if(initialize_qop() != QOP_SUCCESS){
-    node0_printf("setup: Error initializing QOP\n");
-    terminate(1);
-  }
-#endif
+//#if HAVE_QOP
+//  /* Initialize QOP */
+//  if(initialize_qop() != QOP_SUCCESS){
+//    node0_printf("setup: Error initializing QOP\n");
+//    terminate(1);
+//  }
+//#endif
 
 //#ifdef HAVE_QDP
 //    make_rand_seed();
