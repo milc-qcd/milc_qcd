@@ -34,16 +34,11 @@ void dslash_eo_site( field_offset src, field_offset dest, int parity,
 {
   register int i;
   register site *s;
-  register int ipath,otherparity;
+  register int ipath;
   register Real x; /* coefficient of path */
   ks_action_paths *ap = eo->ap;
   int num_q_paths = ap->p.num_q_paths;
   Q_path *q_paths = ap->p.q_paths;
-  switch(parity){
-  case EVEN:	otherparity=ODD; break;
-  case ODD:	otherparity=EVEN; break;
-  case EVENANDODD:	otherparity=EVENANDODD; break;
-  }
   
   /* Parallel transport by all the paths in the action.  
      Multiply by coefficient in table
@@ -66,7 +61,7 @@ void dslash_eo_field( su3_vector *src, su3_vector *dest, int parity,
 {
   register int i;
   register site *s;
-  register int ipath,otherparity;
+  register int ipath;
   register Real x; /* coefficient of path */
   ks_action_paths *ap = eo->ap;
   int num_q_paths = ap->p.num_q_paths;
@@ -78,12 +73,6 @@ void dslash_eo_field( su3_vector *src, su3_vector *dest, int parity,
       temp =(su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
       temp_not_allocated = 0 ;
     }
-  
-  switch(parity){
-  case EVEN:	otherparity=ODD; break;
-  case ODD:	otherparity=EVEN; break;
-  case EVENANDODD:	otherparity=EVENANDODD; break;
-  }
   
   /* Parallel transport by all the paths in the action.  
      Multiply by coefficient in table
