@@ -38,10 +38,3 @@ rel_error_for_propagator 0
 save_serial_ks_vector ksvector.ans.Minv.test.l8
 
 invert M
-
-
-
-
-
-
-

@@ -26,5 +26,7 @@ Checksums 7e+04 4
 Done checking fermion force
 
 
-get_f: EOF on STDIN.
-RUNNING COMPLETED
+ask_starting_lattice(0): EOF on input.
+exit: XXX XXX XXX XXX XXX
+
+

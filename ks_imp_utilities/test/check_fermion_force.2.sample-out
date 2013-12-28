@@ -83,5 +83,6 @@ Checksums 75cd4ee7 1fc07e0e
 Done checking fermion force
 
 
-get_f(0): EOF on input.
-RUNNING COMPLETED
+ask_starting_lattice(0): EOF on input.
+exit: Thu Dec 26 21:27:03 2013
+
