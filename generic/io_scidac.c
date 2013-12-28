@@ -552,7 +552,7 @@ void restore_color_matrix_scidac_to_site(char *filename,
 
 /* Read color matrices in SciDAC format to a field */
 void restore_color_matrix_scidac_to_field(char *filename, 
-		  su3_matrix *dest, int count){
+		  su3_matrix *dest, int count, int prec){
   QIO_Layout layout;
   QIO_Filesystem fs;
   QIO_Reader *infile;
@@ -585,7 +585,7 @@ void restore_color_matrix_scidac_to_field(char *filename,
   else if(typesize == 18*8)
     status = read_D3_M_to_field(infile, recxml, dest, count);
   else {
-    node0_printf("%s: Incorrect data type size %d\n", myname, typesize);
+    node0_printf("%s: Incorrect data type size %d prec %d\n", myname, typesize, prec);
     terminate(1);
   }
   if(status)terminate(1);
