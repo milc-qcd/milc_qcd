@@ -175,7 +175,7 @@ ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} ${QCDOC_OBJECTS} ${QDP_OBJECTS} \
 
 # Generic QOP objects
 ifeq ($(strip ${HAVEQOP}),true)
-  ADD_OBJECTS += ${GENERICQOP}
+  ADD_OBJECTS += map_milc_to_qopqdp.o milc_to_qop_utilities.o
 endif
 
 
