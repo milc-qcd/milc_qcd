@@ -9,9 +9,8 @@ WFLOW 0.0002 0.0002 0.0002 0.0002
 WFLOW 0.0002 0.0002 0.0002 0.0002
 WFLOW 0.0002 0.0002 0.0002 0.0002
 WFLOW 0.0002 0.0002 0.0002 0.0002
-Number of steps = 0
+Number of steps = 0 0.2
 Time to complete flow = XXX seconds
 
 
 ask_starting_lattice(0): EOF on input.
-RUNNING COMPLETED
