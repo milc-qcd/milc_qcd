@@ -770,7 +770,7 @@ int mat_invert_multi(
   if (num_masses <= 2)
   {
     for(i = 0; i < num_masses; i++){
-      total_iters += mat_invert_uml_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
+      tot_iters += mat_invert_uml_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
     }
   }
   /* For num_masses > 2, use the multimass inverter */
