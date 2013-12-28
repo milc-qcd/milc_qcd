@@ -29,7 +29,7 @@ QIO_Reader *r_open_complex_scidac_file(char *filename, int serpar);
 void restore_color_matrix_scidac_to_site(char *filename, 
 			 field_offset dest, int count);
 void restore_color_matrix_scidac_to_field(char *filename, 
-			  su3_matrix *dest, int count);
+			  su3_matrix *dest, int count, int prec);
 void restore_random_state_scidac_to_site(char *filename, field_offset dest);
 
 int read_lat_dim_scidac(char *filename, int *ndim, int dims[]);
