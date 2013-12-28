@@ -111,11 +111,11 @@ void check_ks_invert( char *srcfile, int srcflag,
     if(inverttype == INVERT_M){
       /* Compute M^-1 phi */
       iters += mat_invert_multi( src, ans, ksp, nmass, qic, fn );
-      report_status(qic+0);
     } else {
       /* Compute (M^dagger M)^-1 phi */
-      if(nmass == 1)
+      if(nmass == 1){
 	iters += ks_congrad_field( src, ans[0], qic+0, ksp[0].mass, fn[0]);
+      }
       else{
 	int save_parity = qic->parity;
 	qic->parity = EVEN;
@@ -124,7 +124,6 @@ void check_ks_invert( char *srcfile, int srcflag,
 	iters += ks_multicg_field( src, ans, ksp, nmass, qic, fn );
 	qic->parity = save_parity;
       }
-      report_status(qic+0);
     }
   }
   
