@@ -16,20 +16,10 @@
 #DIRS = \
 #  arb_dirac_eigen \
 #  arb_dirac_invert \
-#  clover_hybrids \
-#  clover_invert \
 #  h_dibaryon \
 #  heavy \
-#  hqet_heavy_to_light \
-#  ks_hl_spectrum \
-#  ks_imp_invert_multi \
-#  propagating_form_factor \
 #  pw_nr_meson \
 #  schroed_pg \
-#  string_break \
-#  wilson_dynamical \
-#  wilson_static
-
 
 DIRS = \
    arb_overlap \
