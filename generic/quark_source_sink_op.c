@@ -49,6 +49,7 @@
    copy_qss_op
    copy_qss_op_list
    insert_qss_op
+   insert_qss_eps_naik_index
 
    v_field_op
    wv_field_op
