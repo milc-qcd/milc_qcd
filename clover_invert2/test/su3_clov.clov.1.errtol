@@ -31,13 +31,13 @@ SINKS: point point point DELTA0
 0 0.0002 0.0002
 0 0.0002 0.0002
 Mesons for quarks 0 and 0
-WMTIME: time XXX sec 1e+05 flops XXX MF
-WMTIME: time XXX sec 1e+05 flops XXX MF
-WMTIME: time XXX sec 1e+05 flops XXX MF
+WMTIME: time 0.01 sec 2e+07 flops 2e+02 MF
+WMTIME: time 0.01 sec 2e+07 flops 2e+02 MF
+WMTIME: time 0.01 sec 2e+07 flops 2e+02 MF
 Mesons for quarks 0 and 0
-WMTIME: time XXX sec 1e+05 flops XXX MF
-WMTIME: time XXX sec 1e+05 flops XXX MF
-WMTIME: time XXX sec 1e+05 flops XXX MF
+WMTIME: time 0.01 sec 2e+07 flops 2e+02 MF
+WMTIME: time 0.01 sec 2e+07 flops 2e+02 MF
+WMTIME: time 0.01 sec 2e+07 flops 2e+02 MF
 STARTPROP
 MOMENTUM: p000
 MASSES: kappa[0]=0.1 kappa[0]=0.1
