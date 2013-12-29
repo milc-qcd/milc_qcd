@@ -28,7 +28,7 @@ sub is_integer {
 }
 
 sub is_float {
-    defined $_[0] && $_[0] =~ /^[+-]?\d+(\.\d+)?$/;
+    defined $_[0] && $_[0] =~ /^[+-]?\d+(\.\d*)?$/;
 }
 
 sub is_scientific {
@@ -36,9 +36,9 @@ sub is_scientific {
 }
 
 sub is_number {
-    # Allow comma after number
+    # Allow comma or right paren after number
     my $a = $_[0];
-    defined $a && $a =~ s/,$//;
+    defined $a && $a =~ s/[,$\)]//;
     is_integer($a) || is_float($a) || is_scientific($a);
 }
 
