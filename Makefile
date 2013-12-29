@@ -205,10 +205,15 @@ endif
 
 #LIBLAPACK = -L/opt/ibmcmp/xlf/bg/11.1/lib /soft/apps/LAPACK/liblapack_bgp.a /soft/apps/LIBGOTO/libgoto.a -lxlf90 -lxlsmp # LAPACK on BG/P
 
-LIBLAPACK = # -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -llapack -lblas -lgfortran
+# Utah physics and math
+# LIBLAPACK = -L/usr/local/lib64 -llapack -lblas -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
+
+# FNAL cluster (Jim's installation of ATLAS)
+#LIBLAPACK = -L/usr/local/atlas-3.10-lapack-3.4.2/lib -llapack -lf77blas -lcblas -latlas -lptcblas -lptf77blas /usr/lib64/libgfortran.so.1
+
 
 #----------------------------------------------------------------------
-# 13. PRIMME Options (for arb_overlap).  REQUIRES LAPACK AS WELL.
+# 13. PRIMME Options (for arb_overlap and ks_eigen).  REQUIRES LAPACK AS WELL.
 
 WANTPRIMME = #true
 
