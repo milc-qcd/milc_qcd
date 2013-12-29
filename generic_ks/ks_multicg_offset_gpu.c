@@ -36,15 +36,15 @@ int ks_multicg_offset_field_gpu(
   double nflop = 1205 + 15*num_offsets;
 #endif
 
-  if(qic[0].relresid != 0.){
-    printf("%s: GPU code does not yet support a Fermilab-type relative residual\n", myname);
-    terminate(1);
-  }
+//  if(qic[0].relresid != 0.){
+//    printf("%s: GPU code does not yet support a Fermilab-type relative residual\n", myname);
+//    terminate(1);
+//  }
 
   /* Initialize structure */
   for(j = 0; j < num_offsets; j++){
     qic[j].final_rsq     = 0.;
-    qic[j].final_relrsq  = 0.; /* No relative residual in use here */
+    qic[j].final_relrsq  = 0.;
     qic[j].size_r        = 0.;
     qic[j].size_relr     = 0.;
     qic[j].final_iters   = 0;
@@ -125,11 +125,15 @@ int ks_multicg_offset_field_gpu(
     qic[i].final_relrsq = final_relative_residual[i]*final_relative_residual[i];
     qic[i].final_iters = num_iters;
 
-    // check for convergence
-    if(relative_residual[i]){
+    // check for convergence, first with relative residual, then ordinary
+    if(relative_residual[i]>0.){
       qic[i].converged = (final_relative_residual[i] <= qic[i].relresid) ? 1 :0;
     }else{
-      qic[i].converged = (final_residual[i] <= qic[i].resid) ? 1 : 0;
+      qic[i].converged = 1;
+    }
+    if(residual[i]>0.)
+    {
+      qic[i].converged = ((final_residual[i] <= qic[i].resid) ? 1 : 0) && qic[i].converged;
     }
     // Cumulative residual. Not used in practice
     qic[i].size_r = 0.0;

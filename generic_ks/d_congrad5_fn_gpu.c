@@ -41,10 +41,10 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   double nflop = 1187;
 #endif
 
-  if(qic->relresid != 0.){
-    printf("%s: GPU code does not yet support a Fermilab-type relative residual\n",myname);
-    terminate(1);
-  }
+//  if(qic->relresid != 0.){
+//    printf("%s: GPU code does not yet support a Fermilab-type relative residual\n",myname);
+//    terminate(1);
+//  }
  
   /* Initialize qic */
   qic->size_r = 0;
