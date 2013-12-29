@@ -214,7 +214,13 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
     if(fn_multi[i] == fn_multi[0])
       continue;
 #endif
+    node0_printf("refining mass %f\n",ksp[i].mass);
+#ifdef CPU_REFINE
     ks_congrad_field_cpu( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
+#else
+    /* Note ks_congrad_parity is redefined as ks_congrad_field_cpu or ks_congrad_field_gpu */
+    ks_congrad_parity( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
+#endif
     iters += qic[i].final_iters;
     qic[i].final_iters += multi_iters;
   }
