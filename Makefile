@@ -209,7 +209,8 @@ endif
 # LIBLAPACK = -L/usr/local/lib64 -llapack -lblas -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
 
 # FNAL cluster (Jim's installation of ATLAS)
-#LIBLAPACK = -L/usr/local/atlas-3.10-lapack-3.4.2/lib -llapack -lf77blas -lcblas -latlas -lptcblas -lptf77blas /usr/lib64/libgfortran.so.1
+#LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
+#LIBS = $(LDFLAGS) -lprimme -lm  -llapack -lptf77blas -lptcblas -latlas -lgfortran -lpthread
 
 
 #----------------------------------------------------------------------
@@ -483,6 +484,7 @@ CPREFETCH = #
 # HALF_MIXED         If PRECISION=2, do multimass solve in single precision
 #                    and single-mass refinements in double
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
+# CPU_REFINE         Refine on CPU only (if at all), not GPU
 
 KSCGMULTI = -DKS_MULTICG=HYBRID -DHALF_MIXED # -DNO_REFINE
 
