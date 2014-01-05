@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
 <html>
-<!-- Created on June 1, 2012 by texi2html 1.82
+<!-- Created on January 4, 2014 by texi2html 1.82
 texi2html was written by: 
             Lionel Cons <Lionel.Cons@cern.ch> (original author)
             Karl Berry  <karl@freefriends.org>
@@ -10,10 +10,10 @@ Maintained by: Many creative people.
 Send bugs and suggestions to <texi2html-bug@nongnu.org>
 -->
 <head>
-<title>The MILC Code (version: 7.7.3)</title>
+<title>The MILC Code (version: 7.7.11)</title>
 
-<meta name="description" content="The MILC Code (version: 7.7.3)">
-<meta name="keywords" content="The MILC Code (version: 7.7.3)">
+<meta name="description" content="The MILC Code (version: 7.7.11)">
+<meta name="keywords" content="The MILC Code (version: 7.7.11)">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="Generator" content="texi2html 1.82">
@@ -350,7 +350,7 @@ supported.  Multi-GPU is planned.
 <a name="Supported-architectures-1"></a>
 <h2 class="section">1.7 Supported architectures</h2>
 <a name="index-Supported-architectures"></a>
-<p>This manual covers <strong>version 7.7.3</strong> which is currently supposed to
+<p>This manual covers <strong>version 7.7.11</strong> which is currently supposed to
 run on: 
 <br>
 </p><ul>
@@ -1052,7 +1052,7 @@ operations.
  -->
 <SPAN CLASS="MATH"><IMG
  WIDTH="60" HEIGHT="36" ALIGN="MIDDLE" BORDER="0"
- SRC="milcv7_12.png"
+ SRC="milcv7_1.png"
  ALT="$&lt;\psi\bar\psi&gt;$"></SPAN>
 </p>
 </dd>
@@ -1077,7 +1077,7 @@ operations.
  -->
 <SPAN CLASS="MATH"><IMG
  WIDTH="60" HEIGHT="36" ALIGN="MIDDLE" BORDER="0"
- SRC="milcv7_12.png"
+ SRC="milcv7_1.png"
  ALT="$&lt;\psi\bar\psi&gt;$"></SPAN>
      and a wide variety of quantities used in staggered
      thermodynamics, for the equation of state and quark number
@@ -1967,7 +1967,7 @@ typedef struct {
  -->
 <SPAN CLASS="MATH"><IMG
  WIDTH="72" HEIGHT="32" ALIGN="MIDDLE" BORDER="0"
- SRC="milcv7_13.png"
+ SRC="milcv7_2.png"
  ALT="$(1 \pm \gamma_\mu)\psi$"></SPAN>
 </p><table><tr><td>&nbsp;</td><td><pre class="example">  typedef struct { su3_vector h[2]; } half_wilson_vector;
 </pre></td></tr></table>
@@ -3451,7 +3451,7 @@ S = \sum_x \bar \psi(x) \psi(x) - \kappa(
 
 <IMG
  WIDTH="572" HEIGHT="46" BORDER="0"
- SRC="milcv7_14.png"
+ SRC="milcv7_3.png"
  ALT="\begin{displaymath}S = \sum_x \bar \psi(x) \psi(x) - \kappa(
 \sum_\mu \bar \psi...
 ...m_\mu \bar \psi(x+\mu) (1-\gamma_\mu)U_\mu^\dagger(x) \psi(x)) \end{displaymath}">
@@ -3471,7 +3471,7 @@ S = \sum_x \bar \psi(x) \psi(x) - \kappa(
 
 <IMG
  WIDTH="578" HEIGHT="46" BORDER="0"
- SRC="milcv7_15.png"
+ SRC="milcv7_4.png"
  ALT="\begin{displaymath}S = \sum_x \bar \psi(x) \psi(x) - \kappa(
 \sum_\mu \bar \psi...
 ..._\mu \bar \psi(x+\mu) (1+\gamma_\mu)U_\mu^\dagger(x) \psi(x) ) \end{displaymath}">
@@ -3481,7 +3481,7 @@ S = \sum_x \bar \psi(x) \psi(x) - \kappa(
 Furthermore, the sign convention for 
  <SPAN CLASS="MATH"><IMG
  WIDTH="20" HEIGHT="30" ALIGN="MIDDLE" BORDER="0"
- SRC="milcv7_16.png"
+ SRC="milcv7_5.png"
  ALT="$\gamma_2$"></SPAN> 
 is minus the standard convention.  Thus the MILC spinor fields differ
 from the &ldquo;conventional&rdquo; ones by a gamma-5 multiplication
@@ -3490,7 +3490,7 @@ from the &ldquo;conventional&rdquo; ones by a gamma-5 multiplication
  -->
 <SPAN CLASS="MATH"><IMG
  WIDTH="134" HEIGHT="30" ALIGN="MIDDLE" BORDER="0"
- SRC="milcv7_17.png"
+ SRC="milcv7_6.png"
  ALT="$\psi_{MILC}= \gamma_5 \psi_{usual}$"></SPAN>.
 and a reflection in the x-z plane.
   MILC uses Weyl-basis (gamma-5 diagonal)
@@ -3647,7 +3647,7 @@ this order:
 </td></tr>
 <tr><td align="left" valign="top"><a href="#Quark-description">7.1.7 Quark description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
-<tr><td align="left" valign="top"><a href="#Hadron-description">7.1.8 Hadron description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+<tr><td align="left" valign="top"><a href="#Hadron-description">7.1.9 Hadron description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 </table>
 
@@ -4389,7 +4389,7 @@ integers x, y, z, t.  This source has the value
  -->
 <SPAN CLASS="MATH"><IMG
  WIDTH="101" HEIGHT="34" ALIGN="MIDDLE" BORDER="0"
- SRC="milcv7_18.png"
+ SRC="milcv7_7.png"
  ALT="$\exp[-(r/r0)^2]$"></SPAN>
 where r is the Cartesian displacement from x, y, z an the fixed time
 slice t.  This is a non-gauge-covariant source, so it is common to use
@@ -4794,7 +4794,6 @@ which can be applied to both staggered and Dirac fiels:
 <p>The second set apply covariant smearing and derivatives, which can
 also be applied to both staggered and Dirac fiels:
 </p>
-
 <table class="menu" border="0" cellspacing="0">
 <tr><td align="left" valign="top"><a href="#covariant_005fgaussian-operator">7.1.5.7 covariant_gaussian operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
@@ -4817,12 +4816,39 @@ also be applied to both staggered and Dirac fiels:
 </td></tr>
 <tr><td align="left" valign="top"><a href="#funnywall2-operator">7.1.5.14 funnywall2 operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
+<tr><td align="left" valign="top"><a href="#ks_005finverse-operator">7.1.5.15 funnywall2 operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#spin_005ftaste-operator">7.1.5.16 spin_taste operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#ext_005fsrc_005fks-operator">7.1.5.17 ext_src_ks operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
 </table>
 
 <p>The fourth set is used only with Dirac fermions:
 </p>
 <table class="menu" border="0" cellspacing="0">
-<tr><td align="left" valign="top"><a href="#rotate_005f3D-operator">7.1.5.15 funnywall2 operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+<tr><td align="left" valign="top"><a href="#rotate_005f3D-operator">7.1.5.18 rotate_3D operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; dirac_inverse operator</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#gamma-operator">7.1.5.20 gamma operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#ks_005fgamma-operator">7.1.5.21 ks_gamma operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#ks_005fgamma_005finv-operator">7.1.5.22 ks_gamma_inv operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#ext_005fsrc_005fdirac-operator">7.1.5.23 ext_src_dirac operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<p>The fifth set is common to both Dirac and staggered fermions:
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#project_005ft_005fslice-operator">7.1.5.24 project_t_slice operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#momentum-operator">7.1.5.25 momentum operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#modulation-operator">7.1.5.26 modulation operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 </table>
 
@@ -5029,12 +5055,12 @@ and iterations. It is define by
  -->
 <SPAN CLASS="MATH"><IMG
  WIDTH="101" HEIGHT="34" ALIGN="MIDDLE" BORDER="0"
- SRC="milcv7_19.png"
+ SRC="milcv7_8.png"
  ALT="$[1 + r_0^2 D^2/n]^2$"></SPAN> 
 The discrete covariant Laplacian 
  <SPAN CLASS="MATH"><IMG
  WIDTH="25" HEIGHT="16" ALIGN="BOTTOM" BORDER="0"
- SRC="milcv7_20.png"
+ SRC="milcv7_9.png"
  ALT="$D^2$"></SPAN> 
 is constructed from
 the original unfattened gauge field.
@@ -5223,7 +5249,7 @@ meaningful only for staggered fermion sources and propagators.
 <a name="funnywall2-operator"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#funnywall1-operator" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#rotate_005f3D-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#ks_005finverse-operator" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
@@ -5244,10 +5270,10 @@ meaningful only for staggered fermion sources and propagators.
 <p>Same as above, but for the &ldquo;funnywall2&rdquo; operator.
 </p>
 <hr size="6">
-<a name="rotate_005f3D-operator"></a>
+<a name="ks_005finverse-operator"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#funnywall2-operator" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Propagator-description" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#spin_005ftaste-operator" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
@@ -5263,18 +5289,336 @@ meaningful only for staggered fermion sources and propagators.
 </tr></table>
 <a name="funnywall2-operator-1"></a>
 <h4 class="subsubsection">7.1.5.15 funnywall2 operator</h4>
-<a name="index-funnywall2-operator-1"></a>
+<a name="index-ks_005finverse-operator"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">ks_inverse
+mass &lt;float&gt;
+naik_term_epsilon &lt;float&gt;
+u0 &lt;float&gt;
+max_cg_iterations &lt;int&gt;
+max_cg_restarts &lt;int&gt;
+error_for_propagator &lt;float&gt;
+rel_error_for_propagator &lt;float&gt;
+precision &lt;1|2&gt;
+coordinate_origin &lt;int[4]&gt;
+momentum_twist &lt;float[3]&gt;
+time_bc &lt;antiperiodic|periodic&gt;
+</pre></td></tr></table>
+
+<p>Applies the inverse of the asqtad or HISQ Dirac operator.
+</p>
+<hr size="6">
+<a name="spin_005ftaste-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#ks_005finverse-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#ext_005fsrc_005fks-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="spin_005ftaste-operator-1"></a>
+<h4 class="subsubsection">7.1.5.16 spin_taste operator</h4>
+<a name="index-spin_005ftaste-operator"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">gamma pion5
+</pre></td></tr></table>
+
+<p>Applies staggered spin-taste offsets and phases
+</p>
+<hr size="6">
+<a name="ext_005fsrc_005fks-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#spin_005ftaste-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#rotate_005f3D-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="ext_005fsrc_005fks-operator-1"></a>
+<h4 class="subsubsection">7.1.5.17 ext_src_ks operator</h4>
+<a name="index-ext_005fsrc_005fks-operator"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">spin_taste pion5
+momentum &lt;int[3]&gt;
+t0 &lt;int&gt;
+</pre></td></tr></table>
+
+<p>Projects a propagator to the specified time slice and applies the
+specified spin-taste operator and inserts the specified momentum.
+</p>
+<hr size="6">
+<a name="rotate_005f3D-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#ext_005fsrc_005fks-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#dirac_005finverse_005foperator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="rotate_005f3D-operator-1"></a>
+<h4 class="subsubsection">7.1.5.18 rotate_3D operator</h4>
+<a name="index-rotate_005f3D-operator"></a>
 
 <table><tr><td>&nbsp;</td><td><pre class="example">d1 &lt;float&gt;
 </pre></td></tr></table>
 
 <p>This operator applies the FNAL 3D rotation to a Dirac source or sink.
 </p>
+<hr size="6">
+<a name="dirac_005finverse_005foperator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#rotate_005f3D-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#gamma-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="dirac_005finverse-operator-1"></a>
+<h4 class="subsubsection">7.1.5.19 dirac_inverse operator</h4>
+<a name="index-dirac_005finverse-operator"></a>
 
+<table><tr><td>&nbsp;</td><td><pre class="example">kappa &lt;float&gt;
+clov_c &lt;float&gt;
+u0 &lt;float&gt;
+max_cg_iterations &lt;int&gt;
+max_cg_restarts &lt;int&gt;
+error_for_propagator &lt;float&gt;
+rel_error_for_propagator &lt;float&gt;
+precision &lt;1|2&gt;
+coordinate_origin &lt;int[4]&gt;
+momentum_twist &lt;float[3]&gt;
+time_bc &lt;antiperiodic|periodic&gt;
+</pre></td></tr></table>
+
+<p>This operator applies the inverse of the clover Dirac operator.
+</p>
+<hr size="6">
+<a name="gamma-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#dirac_005finverse_005foperator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#ks_005fgamma-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="gamma-operator-1"></a>
+<h4 class="subsubsection">7.1.5.20 gamma operator</h4>
+<a name="index-gamma-operator"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">gamma G5
+</pre></td></tr></table>
+
+<p>This operator multiplies by the specified gamma matrix.
+</p>
+<hr size="6">
+<a name="ks_005fgamma-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#gamma-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#ks_005fgamma_005finv-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="ks_005fgamma-operator-1"></a>
+<h4 class="subsubsection">7.1.5.21 ks_gamma operator</h4>
+<a name="index-ks_005fgamma-operator"></a>
+
+<p>Multiplies by the gamma matrix operator that reduces naive fermions to staggered fermions.
+</p>
+<hr size="6">
+<a name="ks_005fgamma_005finv-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#ks_005fgamma-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#ext_005fsrc_005fdirac-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="ks_005fgamma_005finv-operator-1"></a>
+<h4 class="subsubsection">7.1.5.22 ks_gamma_inv operator</h4>
+<a name="index-ks_005fgamma_005finv-operator"></a>
+
+<p>Multiplies by the inverse of the gamma matrix operator that reduces naive fermions to staggered fermions.
+</p>
+<hr size="6">
+<a name="ext_005fsrc_005fdirac-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#ks_005fgamma_005finv-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#project_005ft_005fslice-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="ext_005fsrc_005fdirac-operator-1"></a>
+<h4 class="subsubsection">7.1.5.23 ext_src_dirac operator</h4>
+<a name="index-ext_005fsrc_005fdirac-operator"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">gamma G5
+momentum &lt;int[3]&gt;
+t0 {int
+</pre></td></tr></table>
+
+<p>Projects a propagator to the specified time slice and applies the
+specified gamma matrix operator and inserts the specified momentum.
+</p>
+<hr size="6">
+<a name="project_005ft_005fslice-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#ext_005fsrc_005fdirac-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#momentum-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="project_005ft_005fslice-operator-1"></a>
+<h4 class="subsubsection">7.1.5.24 project_t_slice operator</h4>
+<a name="index-project_005ft_005fslice-operator"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">t0 &lt;int&gt;
+</pre></td></tr></table>
+
+<p>Projects values on the specified time slice.
+</p>
+<hr size="6">
+<a name="momentum-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#project_005ft_005fslice-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#modulation-operator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="momentum-operator-1"></a>
+<h4 class="subsubsection">7.1.5.25 momentum operator</h4>
+<a name="index-momentum-operator"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">momentum &lt;int[3]&gt;
+</pre></td></tr></table>
+
+<p>Multiplies by the plane-wave phase site-by-site.
+</p>
+<hr size="6">
+<a name="modulation-operator"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#momentum-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Propagator-description" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="modulation-operator-1"></a>
+<h4 class="subsubsection">7.1.5.26 modulation operator</h4>
+<a name="index-modulation-operator"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">file &lt;char[]&gt;
+</pre></td></tr></table>
+
+<p>Reads the specified file containing a complex field and multiplies the
+values site-by-site.
+</p>
 <hr size="6">
 <a name="Propagator-description"></a>
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#rotate_005f3D-operator" title="Previous section in reading order"> &lt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="#modulation-operator" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Quark-description" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
@@ -5409,14 +5753,18 @@ source we associate it with, since the source would not be used.
 </p>
 <p>Since currently a source is generated and, if requested, saved to a
 file only if a propagator is built from it, in some cases we would
-still like to create the source without the propagator.  In that case
-we would write a dummy propagator stanza that calls for the source,
-but say <strong>check source_only</strong>.
+still like to create the source without evaluating the propagator.
+Also, in some cases we want the propagator to be equal to the source
+(as though the quark mass were infinite.)  In either case we would
+write a dummy propagator stanza that calls for the source, but say
+<strong>check source_only</strong>.  The source is created, the inverter is
+not called, and the propagator is set equal to the source (with zeros
+away from the source).
 </p>
 <p>There is one other subtlety with the current design.  With
 <strong>check no</strong>, the propagator is not calculated, but it is taken
 from a file.  In that case, clearly, the source is unused and
-irrelvant.  Even so, a source must be described and specified.  In
+irrelevant.  Even so, a source must be described and specified.  In
 that case one should use the source type
 <strong>vector_propagator_file</strong> or <strong>dirac_propagator_file</strong> and
 specify the correct number of colors/sources in the file.
@@ -5428,7 +5776,7 @@ for the Cartesian norm ratio
  -->
 <SPAN CLASS="MATH"><IMG
  WIDTH="113" HEIGHT="32" ALIGN="MIDDLE" BORDER="0"
- SRC="milcv7_21.png"
+ SRC="milcv7_10.png"
  ALT="$\vert resid\vert/\vert source\vert$"></SPAN>
 where <strong>resid</strong> is the residual vector.  Note, this is not the
 squared upper bound.  The <strong>rel_error_for_propagator</strong> specifies
@@ -5438,7 +5786,7 @@ the desired upper bound for the &ldquo;relative norm&rdquo;
  -->
 <SPAN CLASS="MATH"><IMG
  WIDTH="218" HEIGHT="37" ALIGN="MIDDLE" BORDER="0"
- SRC="milcv7_22.png"
+ SRC="milcv7_11.png"
  ALT="$\sqrt{\sum_x\vert resid(x)\vert^2/\vert soln(x)\vert^2/V}$"></SPAN>
 where <strong>|resid(x)|</strong> is the magnitude of the residual vector
 (magniude of the Dirac spinor or color vector) on a single site
@@ -5511,7 +5859,7 @@ save_multifile_scidac_ksprop &lt;char[]&gt; |
 <a name="Quark-description"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Propagator-description" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#Hadron-description" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Combine-description" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#clover_005finvert2" title="Up section"> Up </a>]</td>
@@ -5530,16 +5878,17 @@ save_multifile_scidac_ksprop &lt;char[]&gt; |
 <a name="index-Quark-description"></a>
 
 <p>In the terminology of the code &ldquo;quarks&rdquo; are &ldquo;propagators&rdquo; with a
-sink treatment applied.  The sink treatment can be a trivial identity
-operator.  Each quark is constructed by operating (with one of the
-several operators) on a previoiusly defined propagator or a previously
-defined quark.  In this code hadrons are built from quarks, but not
-directly from propagators. Propagators are referred to by their
-sequence number, starting with zero.  Quarks are referred to by their
-sequence number, also starting with zero.  In this respect the
-convention differs from the convention for the base and modified
-sources.  The specification for quarks is similar to that for
-propagators.
+sink treatment applied.  Only quarks can be combined to make hadrons,
+so in case no sink treatment is desired, a trivial identity operator
+is provided to convert a propagator into a &ldquo;quark&rdquo;. .  Each quark is
+constructed by operating (with one of the several operators) on a
+previoiusly defined propagator or a previously defined quark.  In this
+code hadrons are built from quarks, but not directly from
+propagators. Propagators are referred to by their sequence number,
+starting with zero.  Quarks are referred to by their sequence number,
+also starting with zero.  In this respect the convention differs from
+the convention for the base and modified sources.  The specification
+for quarks is similar to that for propagators.
 </p>
 <table><tr><td>&nbsp;</td><td><pre class="example">number_of_quarks &lt;int q&gt;
 
@@ -5575,9 +5924,40 @@ same function as above.
 </p>
 
 <hr size="6">
-<a name="Hadron-description"></a>
+<a name="Combine-description"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#Quark-description" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#Hadron-description" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#clover_005finvert2" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Combine-description-1"></a>
+<h3 class="subsection">7.1.8 Combine description</h3>
+<a name="index-Combine-description"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">combine &lt;int = n&gt;
+quarks &lt;int[n]&gt;
+coeffs &lt;float[n]&gt;
+&lt;propagator output description&gt;
+</pre></td></tr></table>
+
+<p>Creates a single quark from a linear combination of the listed quarks.
+The coefficients give the weights of linear combination.
+</p>
+<hr size="6">
+<a name="Hadron-description"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Combine-description" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#ks_005fspectrum" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
@@ -5593,7 +5973,7 @@ same function as above.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="Hadron-description-1"></a>
-<h3 class="subsection">7.1.8 Hadron description</h3>
+<h3 class="subsection">7.1.9 Hadron description</h3>
 <a name="index-Hadron-description"></a>
 
 <p>Hadron correlators are formed by tying together the &ldquo;quarks&rdquo; at the
@@ -5773,9 +6153,9 @@ this order:
 </td></tr>
 <tr><td align="left" valign="top"><a href="#KS-quark-description">7.2.7 KS quark description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
-<tr><td align="left" valign="top"><a href="#KS-meson-description">7.2.8 KS meson description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+<tr><td align="left" valign="top"><a href="#KS-meson-description">7.2.9 KS meson description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
-<tr><td align="left" valign="top"><a href="#KS-baryon-description">7.2.9 KS baryon description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+<tr><td align="left" valign="top"><a href="#KS-baryon-description">7.2.10 KS baryon description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 </table>
 
@@ -6088,7 +6468,7 @@ save_multifile_scidac_ksprop &lt;char[]&gt; |
 <a name="KS-quark-description"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#KS-propagator-set-description" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#KS-meson-description" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#KS-combine-description" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#ks_005fspectrum" title="Up section"> Up </a>]</td>
@@ -6112,9 +6492,37 @@ here. See section <a href="#Quark-description">Quark description</a>.
 </p>
 
 <hr size="6">
-<a name="KS-meson-description"></a>
+<a name="KS-combine-description"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#KS-quark-description" title="Previous section in reading order"> &lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#KS-meson-description" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="#ks_005fspectrum" title="Up section"> Up </a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Combine-description-2"></a>
+<h3 class="subsection">7.2.8 Combine description</h3>
+<a name="index-Combine-description-1"></a>
+
+<table><tr><td>&nbsp;</td><td><pre class="example">combine &lt;int = n&gt;
+quarks &lt;int[n]&gt;
+coeffs &lt;float[n]&gt;
+&lt;propagator output specification&gt;
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="KS-meson-description"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#KS-combine-description" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#KS-baryon-description" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
@@ -6130,7 +6538,7 @@ here. See section <a href="#Quark-description">Quark description</a>.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="KS-meson-description-1"></a>
-<h3 class="subsection">7.2.8 KS meson description</h3>
+<h3 class="subsection">7.2.9 KS meson description</h3>
 <a name="index-KS-meson-description"></a>
 
 <p>The meson and baryon specification is very similar to the
@@ -6237,7 +6645,7 @@ fat links &ndash; not the long links.
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
 <a name="KS-baryon-description-1"></a>
-<h3 class="subsection">7.2.9 KS baryon description</h3>
+<h3 class="subsection">7.2.10 KS baryon description</h3>
 <a name="index-KS-baryon-description"></a>
 
 <p>In the <strong>ks_spectrum</strong> code baryons are specified separately from
@@ -6375,6 +6783,8 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-checking-the-build">checking the build</a></td><td valign="top"><a href="#Checking-the-Build">2.2 Checking the Build</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Clover-inverter">Clover inverter</a></td><td valign="top"><a href="#Optional-Compilation-Macros">4.4 Optional Compilation Macros</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-clover_005finvert2">clover_invert2</a></td><td valign="top"><a href="#clover_005finvert2">7.1 clover_invert2</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Combine-description">Combine description</a></td><td valign="top"><a href="#Combine-description">7.1.8 Combine description</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Combine-description-1">Combine description</a></td><td valign="top"><a href="#KS-combine-description">7.2.8 Combine description</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-comdefs_002eh">comdefs.h</a></td><td valign="top"><a href="#Header-files">5.1 Header files</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-command-line-options">command line options</a></td><td valign="top"><a href="#Command-line-options">3. Command line options</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Compilation-Macros">Compilation Macros</a></td><td valign="top"><a href="#Precision">4.3 Precision</a></td></tr>
@@ -6403,6 +6813,7 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-Dirac-inverter">Dirac inverter</a></td><td valign="top"><a href="#Optional-Compilation-Macros">4.4 Optional Compilation Macros</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-dirac_005ffield-source">dirac_field source</a></td><td valign="top"><a href="#dirac_005ffield">7.1.4.14 dirac_field</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-dirac_005ffield_005ffm-source">dirac_field_fm source</a></td><td valign="top"><a href="#dirac_005ffield_005ffm">7.1.4.15 dirac_field_fm</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-dirac_005finverse-operator">dirac_inverse operator</a></td><td valign="top"><a href="#dirac_005finverse_005foperator">7.1.5.19 dirac_inverse operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-dirac_005fpropagator_005ffile-source">dirac_propagator_file source</a></td><td valign="top"><a href="#dirac_005fpropagator_005ffile">7.1.4.16 dirac_propagator_file</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Directory-Layout">Directory Layout</a></td><td valign="top"><a href="#Directory-Layout">4.1 Directory Layout</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-dirs_002eh">dirs.h</a></td><td valign="top"><a href="#Header-files">5.1 Header files</a></td></tr>
@@ -6415,6 +6826,8 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-evenandodd_005fwall-operator">evenandodd_wall operator</a></td><td valign="top"><a href="#evenandodd_005fwall-operator">7.1.5.3 evenandodd_wall operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-evenminusodd_005fwall">evenminusodd_wall</a></td><td valign="top"><a href="#evenminusodd_005fwall">7.1.4.6 evenminusodd_wall</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-even_005fwall">even_wall</a></td><td valign="top"><a href="#even_005fwall">7.1.4.4 even_wall</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ext_005fsrc_005fdirac-operator">ext_src_dirac operator</a></td><td valign="top"><a href="#ext_005fsrc_005fdirac-operator">7.1.5.23 ext_src_dirac operator</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ext_005fsrc_005fks-operator">ext_src_ks operator</a></td><td valign="top"><a href="#ext_005fsrc_005fks-operator">7.1.5.17 ext_src_ks operator</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-F">F</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-fat_005fcovariant_005fgaussian-operator">fat_covariant_gaussian operator</a></td><td valign="top"><a href="#fat_005fcovariant_005fgaussian-operator">7.1.5.12 fat_covariant_gaussian operator</a></td></tr>
@@ -6423,9 +6836,9 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-Free-Software-Foundation">Free Software Foundation</a></td><td valign="top"><a href="#Usage-conditions">1.2 Usage conditions</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-funnywall1-operator">funnywall1 operator</a></td><td valign="top"><a href="#funnywall1-operator">7.1.5.13 funnywall1 operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-funnywall2-operator">funnywall2 operator</a></td><td valign="top"><a href="#funnywall2-operator">7.1.5.14 funnywall2 operator</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-funnywall2-operator-1">funnywall2 operator</a></td><td valign="top"><a href="#rotate_005f3D-operator">7.1.5.15 funnywall2 operator</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-G">G</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-gamma-operator">gamma operator</a></td><td valign="top"><a href="#gamma-operator">7.1.5.20 gamma operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Gauge-field-input">Gauge field input</a></td><td valign="top"><a href="#Gauge-field-input">7.1.2.1 Gauge field input</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Gauge-field-output">Gauge field output</a></td><td valign="top"><a href="#Gauge-field-output">7.1.2.3 Gauge field output</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Gauge-field-specification">Gauge field specification</a></td><td valign="top"><a href="#Gauge-field-specification">7.1.2 Gauge field specification</a></td></tr>
@@ -6445,7 +6858,7 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-GPU-Support">GPU Support</a></td><td valign="top"><a href="#GPU-Support">1.6 GPU Support</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-H">H</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-Hadron-description">Hadron description</a></td><td valign="top"><a href="#Hadron-description">7.1.8 Hadron description</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Hadron-description">Hadron description</a></td><td valign="top"><a href="#Hadron-description">7.1.9 Hadron description</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-header-files">header files</a></td><td valign="top"><a href="#Header-files">5.1 Header files</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-HISQ">HISQ</a></td><td valign="top"><a href="#Overview-of-applications">4.2 Overview of Applications</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
@@ -6465,15 +6878,18 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-jobs">jobs</a></td><td valign="top"><a href="#Command-line-options">3. Command line options</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-K">K</a></th><td></td><td></td></tr>
-<tr><td></td><td valign="top"><a href="#index-KS-baryon-description">KS baryon description</a></td><td valign="top"><a href="#KS-baryon-description">7.2.9 KS baryon description</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-KS-baryon-description">KS baryon description</a></td><td valign="top"><a href="#KS-baryon-description">7.2.10 KS baryon description</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-KS-base-sources">KS base sources</a></td><td valign="top"><a href="#KS-base-sources">7.2.4 KS base sources</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-KS-gauge-field-specification">KS gauge field specification</a></td><td valign="top"><a href="#KS-gauge-field-specification">7.2.2 KS gauge field specification</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-KS-geometry-etc_002e-specification">KS geometry etc. specification</a></td><td valign="top"><a href="#KS-geometry-etc_002e-specification">7.2.1 KS geometry etc. specification</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-KS-meson-description">KS meson description</a></td><td valign="top"><a href="#KS-meson-description">7.2.8 KS meson description</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-KS-meson-description">KS meson description</a></td><td valign="top"><a href="#KS-meson-description">7.2.9 KS meson description</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-KS-modified-sources">KS modified sources</a></td><td valign="top"><a href="#KS-modified-sources">7.2.5 KS modified sources</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-KS-propagator-set-description">KS propagator set description</a></td><td valign="top"><a href="#KS-propagator-set-description">7.2.6 KS propagator set description</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-KS-quark-condensate-specification">KS quark condensate specification</a></td><td valign="top"><a href="#KS-quark-condensate-specification">7.2.3 KS quark condensate specification</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-KS-quark-description">KS quark description</a></td><td valign="top"><a href="#KS-quark-description">7.2.7 KS quark description</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ks_005fgamma-operator">ks_gamma operator</a></td><td valign="top"><a href="#ks_005fgamma-operator">7.1.5.21 ks_gamma operator</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ks_005fgamma_005finv-operator">ks_gamma_inv operator</a></td><td valign="top"><a href="#ks_005fgamma_005finv-operator">7.1.5.22 ks_gamma_inv operator</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ks_005finverse-operator">ks_inverse operator</a></td><td valign="top"><a href="#ks_005finverse-operator">7.1.5.15 funnywall2 operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-ks_005fspectrum">ks_spectrum</a></td><td valign="top"><a href="#ks_005fspectrum">7.2 ks_spectrum</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-L">L</a></th><td></td><td></td></tr>
@@ -6495,6 +6911,8 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-MILC-Homepage">MILC Homepage</a></td><td valign="top"><a href="#Web-sites">1.1 Web sites</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Mixed-Precision">Mixed Precision</a></td><td valign="top"><a href="#Precision">4.3 Precision</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Modified-sources">Modified sources</a></td><td valign="top"><a href="#Modified-sources">7.1.5 Modified sources</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-modulation-operator">modulation operator</a></td><td valign="top"><a href="#modulation-operator">7.1.5.26 modulation operator</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-momentum-operator">momentum operator</a></td><td valign="top"><a href="#momentum-operator">7.1.5.25 momentum operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Moving-around-in-the-lattice">Moving around in the lattice</a></td><td valign="top"><a href="#Moving-around-in-the-lattice">5.6 Moving around in the lattice</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-multijob-operation">multijob operation</a></td><td valign="top"><a href="#Command-line-options">3. Command line options</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
@@ -6514,6 +6932,7 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-Precision">Precision</a></td><td valign="top"><a href="#Precision">4.3 Precision</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Profiling">Profiling</a></td><td valign="top"><a href="#Optional-Compilation-Macros">4.4 Optional Compilation Macros</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Programming-with-MILC-Code">Programming with MILC Code</a></td><td valign="top"><a href="#Programming-with-MILC-Code">5. Programming with MILC Code</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-project_005ft_005fslice-operator">project_t_slice operator</a></td><td valign="top"><a href="#project_005ft_005fslice-operator">7.1.5.24 project_t_slice operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Propagator-description">Propagator description</a></td><td valign="top"><a href="#Propagator-description">7.1.6 Propagator description</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-Q">Q</a></th><td></td><td></td></tr>
@@ -6533,11 +6952,13 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-Reading-and-writing-lattices-and-propagators">Reading and writing lattices and propagators</a></td><td valign="top"><a href="#Reading-and-Writing-Lattices-and-Propagators">5.10 Reading and writing lattices and propagators</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-RHMC">RHMC</a></td><td valign="top"><a href="#Overview-of-applications">4.2 Overview of Applications</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-RHMC-1">RHMC</a></td><td valign="top"><a href="#Optional-Compilation-Macros">4.4 Optional Compilation Macros</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-rotate_005f3D-operator">rotate_3D operator</a></td><td valign="top"><a href="#rotate_005f3D-operator">7.1.5.18 rotate_3D operator</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-S">S</a></th><td></td><td></td></tr>
 <tr><td></td><td valign="top"><a href="#index-SciDAC-Support">SciDAC Support</a></td><td valign="top"><a href="#SciDAC-Support">1.5 SciDAC Support</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-setup_002ec">&lsquo;<tt>setup.c</tt>&rsquo;</a></td><td valign="top"><a href="#Global-variables">5.2 Global variables</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-site">site</a></td><td valign="top"><a href="#Lattice-storage">5.3 Lattice storage</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-spin_005ftaste-operator">spin_taste operator</a></td><td valign="top"><a href="#spin_005ftaste-operator">7.1.5.16 spin_taste operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-SSE">SSE</a></td><td valign="top"><a href="#Optional-Compilation-Macros">4.4 Optional Compilation Macros</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-stderr">stderr</a></td><td valign="top"><a href="#Command-line-options">3. Command line options</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-stdin">stdin</a></td><td valign="top"><a href="#Command-line-options">3. Command line options</a></td></tr>
@@ -6864,11 +7285,23 @@ r_offset &lt;int[4]&gt;
         <li><a name="toc-fat_005fcovariant_005fgaussian-operator-1" href="#fat_005fcovariant_005fgaussian-operator">7.1.5.12 fat_covariant_gaussian operator</a></li>
         <li><a name="toc-funnywall1-operator-1" href="#funnywall1-operator">7.1.5.13 funnywall1 operator</a></li>
         <li><a name="toc-funnywall2-operator-2" href="#funnywall2-operator">7.1.5.14 funnywall2 operator</a></li>
-        <li><a name="toc-funnywall2-operator-1" href="#rotate_005f3D-operator">7.1.5.15 funnywall2 operator</a></li>
+        <li><a name="toc-funnywall2-operator-1" href="#ks_005finverse-operator">7.1.5.15 funnywall2 operator</a></li>
+        <li><a name="toc-spin_005ftaste-operator-1" href="#spin_005ftaste-operator">7.1.5.16 spin_taste operator</a></li>
+        <li><a name="toc-ext_005fsrc_005fks-operator-1" href="#ext_005fsrc_005fks-operator">7.1.5.17 ext_src_ks operator</a></li>
+        <li><a name="toc-rotate_005f3D-operator-1" href="#rotate_005f3D-operator">7.1.5.18 rotate_3D operator</a></li>
+        <li><a name="toc-dirac_005finverse-operator-1" href="#dirac_005finverse_005foperator">7.1.5.19 dirac_inverse operator</a></li>
+        <li><a name="toc-gamma-operator-1" href="#gamma-operator">7.1.5.20 gamma operator</a></li>
+        <li><a name="toc-ks_005fgamma-operator-1" href="#ks_005fgamma-operator">7.1.5.21 ks_gamma operator</a></li>
+        <li><a name="toc-ks_005fgamma_005finv-operator-1" href="#ks_005fgamma_005finv-operator">7.1.5.22 ks_gamma_inv operator</a></li>
+        <li><a name="toc-ext_005fsrc_005fdirac-operator-1" href="#ext_005fsrc_005fdirac-operator">7.1.5.23 ext_src_dirac operator</a></li>
+        <li><a name="toc-project_005ft_005fslice-operator-1" href="#project_005ft_005fslice-operator">7.1.5.24 project_t_slice operator</a></li>
+        <li><a name="toc-momentum-operator-1" href="#momentum-operator">7.1.5.25 momentum operator</a></li>
+        <li><a name="toc-modulation-operator-1" href="#modulation-operator">7.1.5.26 modulation operator</a></li>
       </ul></li>
       <li><a name="toc-Propagator-description-1" href="#Propagator-description">7.1.6 Propagator description</a></li>
       <li><a name="toc-Quark-description-1" href="#Quark-description">7.1.7 Quark description</a></li>
-      <li><a name="toc-Hadron-description-1" href="#Hadron-description">7.1.8 Hadron description</a></li>
+      <li><a name="toc-Combine-description-1" href="#Combine-description">7.1.8 Combine description</a></li>
+      <li><a name="toc-Hadron-description-1" href="#Hadron-description">7.1.9 Hadron description</a></li>
     </ul></li>
     <li><a name="toc-ks_005fspectrum-1" href="#ks_005fspectrum">7.2 ks_spectrum</a>
     <ul class="toc">
@@ -6879,8 +7312,9 @@ r_offset &lt;int[4]&gt;
       <li><a name="toc-KS-modified-sources-1" href="#KS-modified-sources">7.2.5 KS modified sources</a></li>
       <li><a name="toc-KS-propagator-set-description-1" href="#KS-propagator-set-description">7.2.6 KS propagator set description</a></li>
       <li><a name="toc-KS-quark-description-1" href="#KS-quark-description">7.2.7 KS quark description</a></li>
-      <li><a name="toc-KS-meson-description-1" href="#KS-meson-description">7.2.8 KS meson description</a></li>
-      <li><a name="toc-KS-baryon-description-1" href="#KS-baryon-description">7.2.9 KS baryon description</a></li>
+      <li><a name="toc-Combine-description-2" href="#KS-combine-description">7.2.8 Combine description</a></li>
+      <li><a name="toc-KS-meson-description-1" href="#KS-meson-description">7.2.9 KS meson description</a></li>
+      <li><a name="toc-KS-baryon-description-1" href="#KS-baryon-description">7.2.10 KS baryon description</a></li>
     </ul>
 </li>
   </ul></li>
@@ -6898,7 +7332,7 @@ r_offset &lt;int[4]&gt;
 </tr></table>
 <h1>About This Document</h1>
 <p>
-  This document was generated by <em>Carleton DeTar</em> on <em>June 1, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>Carleton DeTar</em> on <em>January 4, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
 </p>
 <p>
   The buttons in the navigation panels have the following meaning:
@@ -7000,7 +7434,7 @@ r_offset &lt;int[4]&gt;
 <hr size="1">
 <p>
  <font size="-1">
-  This document was generated by <em>Carleton DeTar</em> on <em>June 1, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>Carleton DeTar</em> on <em>January 4, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
  </font>
  <br>
 
