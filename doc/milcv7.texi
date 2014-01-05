@@ -1,7 +1,7 @@
 \input texinfo.tex @c -*- Mode: Texinfo -*-
 @headings doubleafter
 @setfilename milcv7.info
-@settitle The MILC Code (version: 7.7.10)
+@settitle The MILC Code (version: 7.7.11)
 @footnotestyle end
 @c @setchapternewpage off
 
@@ -50,7 +50,7 @@
 @node Top, Obtaining the MILC Code, (dir), (dir)
 @top The MILC Code
 @center The MILC Code 
-@center version 7.7.10
+@center version 7.7.11
 @sp 1
 @center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@@quark.phy.bnl.gov>
 @center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
@@ -74,7 +74,7 @@ in C for doing SU(3) lattice gauge theory on several different (MIMD)
 parallel computers in current use. In scalar mode, it runs on a
 variety of workstations making it extremely versatile for both
 production and exploratory applications. This manual is for the latest
-(7.7.10) version of the code. Currently supported code runs
+(7.7.11) version of the code. Currently supported code runs
 on:
 @itemize @bullet
 @item Scalar machines
@@ -103,7 +103,7 @@ notice identical to this one except for the removal of this paragraph
 @center @titlefont{The MILC Code}
 @sp 1
 
-@center version ---7.7.10---
+@center version ---7.7.11---
 @sp 1
 @center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@@quark.phy.bnl.gov>
 @center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
@@ -127,7 +127,7 @@ in C for doing SU(3) lattice gauge theory on several different (MIMD)
 parallel computers in current use. In scalar mode, it runs on a
 variety of workstations making it extremely versatile for both
 production and exploratory applications. This manual is for the latest
-(7.7.10) version of the code. Currently supported code runs
+(7.7.11) version of the code. Currently supported code runs
 on:
 @itemize @bullet
 @item Scalar machines
@@ -310,7 +310,7 @@ supported.  Multi-GPU is planned.
 @node Supported architectures,, SciDAC Support,  Obtaining the MILC Code
 @section Supported architectures
 @cindex Supported architectures
-This manual covers @strong{version 7.7.10} which is currently supposed to
+This manual covers @strong{version 7.7.11} which is currently supposed to
 run on: 
 @sp 1
 @itemize @bullet
