@@ -2214,8 +2214,8 @@ static int get_field_op(int *status_p, FILE *fp,
     char gam_op_lab[MAXGAMMA];
     IF_OK status += get_s(fp, prompt, "spin_taste", gam_op_lab);
     IF_OK {
-      qss_op->gamma = spin_taste_index(gam_op_lab);
-      if(qss_op->gamma < 0){
+      qss_op->spin_taste = spin_taste_index(gam_op_lab);
+      if(qss_op->spin_taste < 0){
 	printf("\n%s is not a valid spin-taste label\n",gam_op_lab);
 	status++;
       }
