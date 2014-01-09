@@ -54,6 +54,7 @@
 @sp 1
 @center @strong{Alexei Bazavov} (@emph{Brookhaven National Laboratory}) <obazavov@@quark.phy.bnl.gov>
 @center @strong{Claude Bernard} (@emph{Washington U.}) <cb@@lump.wustl.edu>
+@center @strong{Nathan Brown} (@emph{Washington U.}) <zen.oehler@gmail.com>
 @center @strong{Tom Burch} (@emph{U. of Utah}) <tburch@@physics.utah.edu>
 @center @strong{Tom DeGrand} (@emph{U. of Colorado}) <degrand@@aurinko.colorado.edu>
 @center @strong{Carleton DeTar} (@emph{U. of Utah}) <detar@@physics.utah.edu>
