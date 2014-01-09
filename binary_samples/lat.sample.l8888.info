@@ -1,0 +1,14 @@
+magic_number = 20103
+time_stamp = "Tue Mar 13 15:47:22 2012"
+checksums = "4f9d000e 8d72f72e"
+nx = 8
+ny = 8
+nz = 8
+nt = 8
+action.description = "Pure gauge"
+gauge.description = "One plaquette gauge action."
+gauge.beta11 = 6.000000
+gauge.ssplaq = 1.779002
+gauge.stplaq = 1.782359
+gauge.nersc_linktr = -0.000646
+gauge.nersc_checksum = 1245429571
