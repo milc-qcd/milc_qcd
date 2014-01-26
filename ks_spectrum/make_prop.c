@@ -241,8 +241,12 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 
       /* save solutions if requested */
       for(i = 0; i < num_prop; i++){
-	save_ksprop_c_from_field( saveflag[i], fp_out[i], my_ksqs, 
-				  color, dst[i], "", 1);
+	status = save_ksprop_c_from_field( saveflag[i], fp_out[i], my_ksqs, 
+					   color, dst[i], "", 1);
+	if(status != 0){
+	  node0_printf("Failed to write propagator\n");
+	  terminate(1);
+	}
       }
       
 #ifdef DEBUG_NAIVE
