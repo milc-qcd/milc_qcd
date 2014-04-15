@@ -41,7 +41,8 @@ GAUGE_OBJECTS = \
   path_product.o     \
   project_su3_hit.o  \
   reunitarize2.o     \
-  show_generic_opts.o
+  show_generic_opts.o \
+  show_scidac_opts.o
 
 ifeq ($(strip ${HAVEQOP}),true)
   GAUGE_OBJECTS += map_milc_to_qopqdp.o milc_to_qop_utilities.o
