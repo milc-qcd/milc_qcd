@@ -510,6 +510,9 @@ int reunit_su3(su3_matrix *c);
 /* show_generic_opts.c */
 void show_generic_opts( void );
 
+/* show_scidac_opts.c */
+void show_scidac_opts( void );
+
 /* Do Morninstar-Peardon stout smearing to construct unitary W from
    smeared link V and unsmeared link U */
 void stout_smear(su3_matrix *W, su3_matrix *V, su3_matrix *U);
