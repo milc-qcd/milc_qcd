@@ -21,7 +21,7 @@
  c Correct wprop->ksprop typo
  c
  c Revision 1.7  2012/03/06 03:27:35  detar
- c Explain "source_only" and rule for creating a writeable source
+ c Explain "sourceonly" and rule for creating a writeable source
  c
  c Revision 1.6  2012/02/22 05:37:24  detar
  c Updates
@@ -582,7 +582,7 @@ Some regression tests involve secondary output files with similar
 extensions.
 
 
-@node Command line options, General description, Building the MILC Code, Building the MILC Code, Top
+@node Command line options, General description, Building the MILC Code, Top
 @chapter Command line options
 @cindex command line options
 @cindex qmp-geom
@@ -2935,6 +2935,7 @@ this order:
 * Modified sources::
 * Propagator description::
 * Quark description::
+* Combine description::
 * Hadron description::
 @end menu
 
@@ -3824,7 +3825,7 @@ meaningful only for staggered fermion sources and propagators.
 Same as above, but for the ``funnywall2'' operator.
 
 @node ks_inverse operator, spin_taste operator, funnywall2 operator, Modified sources
-@subsubsection funnywall2 operator
+@subsubsection ks_inverse operator
 @cindex ks_inverse operator
 
 @example
@@ -3877,7 +3878,7 @@ d1 <float>
 
 This operator applies the FNAL 3D rotation to a Dirac source or sink.
 
-@node dirac_inverse_operator, gamma operator, rotate_3D operator, Modified sources
+@node dirac_inverse operator, gamma operator, rotate_3D operator, Modified sources
 @subsubsection dirac_inverse operator
 @cindex dirac_inverse operator
 
@@ -3926,7 +3927,7 @@ Multiplies by the inverse of the gamma matrix operator that reduces naive fermio
 @example
 gamma G5
 momentum <int[3]>
-t0 {int}
+t0 <int>
 @end example
 
 Projects a propagator to the specified time slice and applies the
@@ -3952,7 +3953,7 @@ momentum <int[3]>
 
 Multiplies by the plane-wave phase site-by-site.
 
-@node modulation operator, Propagator description, momentump operator, Modified sources
+@node modulation operator, Propagator description, momentum operator, Modified sources
 @subsubsection modulation operator
 @cindex modulation operator
 
@@ -4092,7 +4093,7 @@ still like to create the source without evaluating the propagator.
 Also, in some cases we want the propagator to be equal to the source
 (as though the quark mass were infinite.)  In either case we would
 write a dummy propagator stanza that calls for the source, but say
-@strong{check source_only}.  The source is created, the inverter is
+@strong{check sourceonly}.  The source is created, the inverter is
 not called, and the propagator is set equal to the source (with zeros
 away from the source).
 
@@ -4412,6 +4413,7 @@ this order:
 * KS modified sources::
 * KS propagator set description::
 * KS quark description::
+* KS combine description::
 * KS meson description::
 * KS baryon description::
 @end menu
@@ -4629,7 +4631,7 @@ The ``quarks'' are constructed exactly as with the
 here. @xref{Quark description}.
 
 
-@node KS combine description, Hadron description, KS quark description, clover_invert2, 
+@node KS combine description, KS meson description, KS quark description, ks_spectrum
 @subsection Combine description
 @cindex  Combine description
 
