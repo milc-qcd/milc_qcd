@@ -113,6 +113,7 @@ static int initial_set(){
     /* print banner */
     printf("SU3 clover/naive valence fermions\n");
     printf("MIMD version %s\n",MILC_CODE_VERSION);
+    show_scidac_opts();
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
     gethostname(hostname, 128);
     printf("Host(0) = %s\n",hostname);
@@ -487,9 +488,14 @@ int readin(int prompt) {
       IF_OK {
 	/* Should we be checking the propagator by running the solver? */
 	if(strcmp(savebuf,"no") == 0)param.check[i] = CHECK_NO;
+	else if(strcmp(savebuf,"yes") == 0)
+	  param.check[i] = CHECK_YES;
 	else if(strcmp(savebuf,"sourceonly") == 0)
 	  param.check[i] = CHECK_SOURCE_ONLY;
-	else param.check[i] = CHECK_YES;
+	else{
+	  printf("Unrecognized 'check' option. Wanted 'no', 'yes', or 'sourceonly'\n");
+	  status++;
+	}
       }
 
       /* Error for propagator conjugate gradient or bicg */
