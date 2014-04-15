@@ -7,17 +7,17 @@
 #include "../include/generic_wilson.h"  /* For quark_source */
 #include "../include/gammatypes.h"
 
-#define MAX_SOURCE 24
-#define MAX_PROP 16
-#define MAX_QK 64
+#define MAX_SOURCE 30
+#define MAX_PROP 50
+#define MAX_QK 300
 #define MAX_COMBO 8
-#define MAX_PAIR 128
-#define MAX_QKPAIR_LABEL 32
-#define MAX_MESON 32
+#define MAX_PAIR 500
+#define MAX_QKPAIR_LABEL 300
+#define MAX_MESON 50
 #define MAX_SPECTRUM_REQUEST 512
-#define MAX_MESON_LABEL 32
+#define MAX_MESON_LABEL 50
 #define MAX_MESON_MOMENTUM 100
-#define MAX_MOM_LABEL 16
+#define MAX_MOM_LABEL 50
 #define MAX_CORR 200
 #define PROP_TYPE 0
 #define QUARK_TYPE 1
