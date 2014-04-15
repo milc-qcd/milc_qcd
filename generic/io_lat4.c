@@ -209,8 +209,8 @@ static void w_serial_old(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here only node 0 uses these values */
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*sites_on_node*this_node % 31;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
 
   g_sync();
   currentnode=0;
@@ -451,8 +451,8 @@ static void w_serial(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here only node 0 uses these values -- both start at 0 */ 
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*sites_on_node*this_node % 31;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
 
   g_sync();
   currentnode=0;  /* The node delivering data */
@@ -1199,8 +1199,8 @@ static void w_checkpoint(gauge_file *gf)
   gf->check.sum29 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here all nodes use these values */
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*sites_on_node*this_node % 31;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
 
   buf_length = 0;
 
@@ -1406,8 +1406,8 @@ static void r_parallel(gauge_file *gf)
   test_gc.sum31 = 0;
   /* counts 32-bit words mod 29 and mod 31 in order of appearance on file */
   /* Here all nodes use these values */
-  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*sites_on_node*this_node % 29;
-  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*sites_on_node*this_node % 31;
+  rank29 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 29;
+  rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*(long long int)sites_on_node*this_node % 31;
 
   /* Read and deal */
 
