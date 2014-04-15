@@ -794,6 +794,9 @@ void scalar_mult_add_su3_vector( su3_vector *src1, su3_vector *src2,
 
 #ifndef su3_projector
 void su3_projector( su3_vector *a, su3_vector *b, su3_matrix *c );
+#endif
+
+#ifndef su3_rdot
 Real su3_rdot( su3_vector *a, su3_vector *b );
 #endif
 
