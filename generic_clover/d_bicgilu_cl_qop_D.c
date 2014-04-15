@@ -445,11 +445,9 @@ bicgilu_cl_qop_single_for_double( int prop_type,
   int converged;
   int nrestart;
   int max_restarts = qic->nrestart;
-#ifdef CGTIME
   int isrc, ikappa;
   int final_restart_F;
   Real final_rsq_F, final_relrsq_F;
-#endif
   Real resid_F = 3e-7;   /* The limits of a single precision inversion */
   Real rel_F = 0;   /* The limits of a single precision inversion */
   QOP_invert_arg_t qop_invert_arg;
@@ -570,7 +568,6 @@ bicgilu_cl_qop_single_for_double( int prop_type,
   	  qop_rhs_F, nsrc);
     dtime += dclock();
 
-#ifdef CG_TIME
     /* Report performance statistics */
     
     /* For now we return the largest value and total iterations */
@@ -586,13 +583,14 @@ bicgilu_cl_qop_single_for_double( int prop_type,
 	final_restart_F =    MAX(final_restart_F,  qop_resid_arg_F[isrc][ikappa]->final_restart);
 	iters_F += qop_resid_arg_F[isrc][ikappa]->final_iter;
 	if(nsrc > 1 || nkappa[isrc] > 1)
-	  node0_printf("CONGRAD5(src %d,kappa %d): iters = %d resid = %e relresid = %e\n",
+	  node0_printf("BICG(src %d,kappa %d): iters = %d resid = %e relresid = %e\n",
 		       isrc, ikappa,
 		       qop_resid_arg_F[isrc][ikappa]->final_iter,
 		       sqrt(qop_resid_arg_F[isrc][ikappa]->final_rsq),
 		       sqrt(qop_resid_arg_F[isrc][ikappa]->final_rel));
       }
     
+#ifdef CGTIME
     node0_printf("%s: single precision iters = %d status %d final_rsq %.2e wanted %2e final_rel %.2e wanted %.2e\n",
 		 myname, iters_F, info_F.status, final_rsq_F, resid_F * resid_F, final_relrsq_F, rel_F);
     node0_printf("time = %g flops = %e mflops = %g\n", dtime, info_F.final_flop, 
