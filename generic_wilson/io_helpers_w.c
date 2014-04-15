@@ -304,6 +304,10 @@ w_open_wprop(int flag, char *filename, int source_type)
     fileinfo = create_w_QCDML();
     wpf->outfile = w_open_usqcd_wprop_file(filename, volfmt, serpar, QIO_ILDGNO,
 					   NULL, file_type, fileinfo);
+    if(wpf->outfile == NULL){
+      node0_printf("w_open_wprop: Cannot open %s for writing\n",filename);
+      terminate(1);
+    }
     free_w_QCDML(fileinfo);
     
 #else
@@ -880,7 +884,7 @@ save_wprop_from_field( int flag, char *filename, quark_source *wqs,
   if(flag == FORGET)return status;
   
   wv = create_wv_field();
-  wpf = w_open_wprop(flag, filename, wqs->type);
+  wpf = w_open_wprop(flag, filename, DIRAC_FIELD_FILE);
 
   for(color = 0; color < 3; color++)
     for(spin = 0; spin < 4; spin++)
@@ -921,7 +925,7 @@ save_wprop_from_wp_field( int flag, char *filename, quark_source *wqs,
   if(flag == FORGET)return status;
   
   wv = create_wv_field();
-  wpf = w_open_wprop(flag, filename, wqs->type);
+  wpf = w_open_wprop(flag, filename, DIRAC_FIELD_FILE);
 
   for(color = 0; color < src->nc; color++)
     for(spin = 0; spin < 4; spin++)
