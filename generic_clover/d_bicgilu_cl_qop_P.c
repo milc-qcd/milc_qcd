@@ -162,8 +162,12 @@ create_qop_wilson_fermion_links( Real clov )
 #ifdef REMAP
   node0_printf("FLREMAP:  time = %e\n",remaptime);
 #endif
-  node0_printf("FLTIME:  time = %e (cl_qop) terms = 1 mflops = %e\n",
-	       info.final_sec, (Real)info.final_flop/(1e6*info.final_sec) );
+  if(info.final_sec > 0){
+    double mflops = 0.;
+    mflops = (Real)info.final_flop/(1e6*info.final_sec);
+    node0_printf("FLTIME:  time = %e (cl_qop) terms = 1 mflops = %e\n",
+		 info.final_sec, mflops );
+  }
 #endif
   return qop_links;
 }
