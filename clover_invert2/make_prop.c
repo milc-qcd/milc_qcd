@@ -56,12 +56,15 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
 
   /* Open files for Wilson propagators, if requested */
   fp_in  = r_open_wprop(startflag, startfile);
-  fp_out = w_open_wprop(saveflag,  savefile, my_wqs->type);
+  fp_out = w_open_wprop(saveflag,  savefile, DIRAC_FIELD_FILE);
 
   /* Provision for writing the source to a file */
   if(my_wqs->saveflag != FORGET){
     fileinfo = create_ws_XML(startfile, my_wqs);
-    w_source_open_dirac(my_wqs, fileinfo);
+    if(w_source_open_dirac(my_wqs, fileinfo) != 0){
+      node0_printf("%s: Quitting: Can't open source file for writing\n",myname);
+      terminate(1);
+    }
     free(fileinfo);
   }
   
@@ -102,11 +105,17 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
 	printf("%s(%d): error getting source\n",myname, this_node);
 	terminate(1);
       };
+
+      /* Cache the source for writing to the propagator file */
+      if(saveflag != FORGET){
+	alloc_cached_wv_source(my_wqs);
+	copy_wv_field(my_wqs->wv_src, src);
+      }
       
-      /* Write the source, if requested */
+      /* Write the source to a source file, if requested */
       if(my_wqs->saveflag != FORGET){
 	if(w_source_dirac( src, my_wqs ) != 0){
-	  node0_printf("Error writing source\n");
+	  node0_printf("%s: Error writing source\n",myname);
 	}
       }
       
@@ -304,12 +313,15 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 
   /* Open files for KS propagators, if requested */
   fp_in  = r_open_ksprop(startflag, startfile);
-  fp_out = w_open_ksprop(saveflag, savefile, my_ksqs->savetype);
+  fp_out = w_open_ksprop(saveflag, savefile, VECTOR_FIELD_FILE);
 
   /* Provision for writing the source to a file */
   if(my_ksqs->saveflag != FORGET){
     fileinfo = create_ks_XML();
-    w_source_open_ks(my_ksqs, fileinfo);
+    if(w_source_open_ks(my_ksqs, fileinfo) != 0){
+      node0_printf("%s: Quitting: Can't open source file for writing\n",myname);
+      terminate(1);
+    }
     free(fileinfo);
   }
   
@@ -342,10 +354,16 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 	terminate(1);
       };
 
-	/* Write the source, if requested */
+      /* Cache the source for writing to the propagator file */
+      if(saveflag != FORGET){
+	alloc_cached_v_source(my_ksqs);
+	copy_v_field(my_ksqs->v_src, src);
+      }
+      
+      /* Write the source, if requested */
       if(my_ksqs->saveflag != FORGET){
 	if(w_source_ks( src, my_ksqs ) != 0)
-	  node0_printf("Error writing source\n");
+	  node0_printf("%s: Error writing source\n",myname);
       }
 
       if(check != CHECK_SOURCE_ONLY){
@@ -386,7 +404,7 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
 
 	// DEBUG
 	//static_prop_v(dst, src, my_ksqs);
-      }
+      } /* check != CHECK_SOURCE_ONLY */
 
       destroy_v_field(src);
 
@@ -395,11 +413,10 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
       rephase_v_field(dst, mybdry_phase, r0, -1);
       mybdry_phase[3] = bdry_phase[3]; 
 
-    }
+    } /* check != CHECK_NO || startflag == FRESH */
     
     /* save solution if requested */
     save_ksprop_c_from_field( saveflag, fp_out, my_ksqs, color, dst, "", io_timing);
-    
     {
       int ks_source_r[4] = {0,0,0,0};
       
@@ -534,7 +551,7 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
   }
 	
   /* Open file for Wilson propagator, if requested */
-  fp_out = w_open_wprop(saveflag, savefile, my_qs->type);
+  fp_out = w_open_wprop(saveflag, savefile, DIRAC_FIELD_FILE);
 
   /* Check (or produce) the solution if requested */
   /* Loop over source colors and spins */
@@ -562,7 +579,12 @@ int get_ksprop4_to_wp_field(int startflag, char startfile[],
 	  terminate(1);
 	};
 
-
+	/* Cache the source for writing to the propagator file */
+	if(saveflag != FORGET){
+	  alloc_cached_v_source(my_qs);
+	  copy_v_field(my_qs->v_src, src);
+	}
+      
 	/* Apply the momentum twist to the source.  This U(1) gauge
 	   transformation converts the boundary twist on the gauge field
 	   above into the desired volume twist. We do it this way to
@@ -702,7 +724,10 @@ void dump_wprop_from_wp_field(int saveflag, int savetype, char savefile[],
     dummy_wqs.saveflag = saveflag;
     strcpy(dummy_wqs.save_file,savefile);
 
-    w_source_open_dirac(&dummy_wqs, fileinfo);
+    if(w_source_open_dirac(&dummy_wqs, fileinfo) != 0){
+      node0_printf("dump_wprop_from_wp_field: Quitting: Can't open source file for writing\n");
+      terminate(1);
+    }
     ncolor = wp->nc;
     for(ksource = 0; ksource < 4*ncolor; ksource++){
       dummy_wqs.ksource = ksource;
