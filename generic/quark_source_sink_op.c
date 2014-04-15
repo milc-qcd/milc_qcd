@@ -103,6 +103,9 @@ void init_qss_op(quark_source_sink_op *qss_op){
   qss_op->r_offset[3]      = 0;
   qss_op->spin_taste       = -1;
   qss_op->gamma            = 0;
+  qss_op->mom[0]           = 0.;
+  qss_op->mom[1]           = 0.;
+  qss_op->mom[2]           = 0.;
   qss_op->source_file[0]   = '\0';
   qss_op->dcp.Kappa        = 0;
   qss_op->dcp.Clov_c       = 1.;
@@ -2491,7 +2494,7 @@ static int print_single_op_info(FILE *fp, char prefix[],
 
   if ( op_type == COVARIANT_GAUSSIAN ){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%d\n", make_tag(prefix, "stride"), qss_op->stride);
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "stride"), qss_op->stride);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "r0"), qss_op->r0);
     fprintf(fp,"%s%d\n", make_tag(prefix, "iters"), qss_op->iters);
   }
@@ -2530,12 +2533,12 @@ static int print_single_op_info(FILE *fp, char prefix[],
   }
   else if( op_type == DIRAC_INVERSE){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%s\n", make_tag(prefix, "kappa"), qss_op->kappa_label);
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "kappa"), qss_op->kappa_label);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "clov_c"), qss_op->dcp.Clov_c);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "u0"), qss_op->dcp.U0);
-    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "coordinate_origin"), 
-	    qss_op->co[0], qss_op->co[1], qss_op->co[2]);
-    fprintf(fp,"%s%f %f %f\n", make_tag(prefix, "momentum_twist"), 
+    fprintf(fp,"%s%d %d %d %d,\n", make_tag(prefix, "coordinate_origin"), 
+	    qss_op->co[0], qss_op->co[1], qss_op->co[2], qss_op->co[3]);
+    fprintf(fp,"%s%f %f %f,\n", make_tag(prefix, "momentum_twist"), 
 	    qss_op->bp[0], qss_op->bp[1], qss_op->bp[2]);
     if(qss_op->bp[3] == 1)
       fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "antiperiodic");
@@ -2545,7 +2548,7 @@ static int print_single_op_info(FILE *fp, char prefix[],
   }
   else if( op_type == FAT_COVARIANT_GAUSSIAN){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%d\n", make_tag(prefix, "stride"), qss_op->stride);
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "stride"), qss_op->stride);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "r0"), qss_op->r0);
     fprintf(fp,"%s%d\n", make_tag(prefix, "iters"), qss_op->iters);
   }
@@ -2555,19 +2558,21 @@ static int print_single_op_info(FILE *fp, char prefix[],
   }
   else if ( op_type == HOPPING ){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%d\n", make_tag(prefix, "derivs"), qss_op->dhop);
-    fprintf(fp,"%s%s\n", make_tag(prefix, "dir"), encode_dir(qss_op->dir1));
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "derivs"), qss_op->dhop);
 #if FERM_ACTION == HISQ
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "dir"), encode_dir(qss_op->dir1));
     fprintf(fp,"%s%g\n", make_tag(prefix, "eps_naik"), qss_op->eps_naik);
+#else
+    fprintf(fp,"%s%s\n", make_tag(prefix, "dir"), encode_dir(qss_op->dir1));
 #endif
   }
   else if( op_type == KS_INVERSE){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%s\n", make_tag(prefix, "mass"), qss_op->mass_label);
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "mass"), qss_op->mass_label);
     fprintf(fp,"%s%g,\n", make_tag(prefix, "eps_naik"), qss_op->eps_naik);
-    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "coordinate_origin"), 
-	    qss_op->co[0], qss_op->co[1], qss_op->co[2]);
-    fprintf(fp,"%s%f %f %f\n", make_tag(prefix, "momentum_twist"), 
+    fprintf(fp,"%s%d %d %d %d,\n", make_tag(prefix, "coordinate_origin"), 
+	    qss_op->co[0], qss_op->co[1], qss_op->co[2], qss_op->co[3]);
+    fprintf(fp,"%s%f %f %f,\n", make_tag(prefix, "momentum_twist"), 
 	    qss_op->bp[0], qss_op->bp[1], qss_op->bp[2]);
     if(qss_op->bp[3] == 1)
       fprintf(fp,"%s%s\n", make_tag(prefix, "time_bc"), "antiperiodic");
@@ -2587,11 +2592,11 @@ static int print_single_op_info(FILE *fp, char prefix[],
   }
   else if ( op_type == EXT_SRC_KS ){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%s\n", make_tag(prefix, "spin_taste"), 
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "spin_taste"), 
 	    spin_taste_label(qss_op->spin_taste));
-    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qss_op->mom[0],
+    fprintf(fp,"%s%d %d %d,\n", make_tag(prefix, "mom"), qss_op->mom[0],
 	    qss_op->mom[1], qss_op->mom[2]);
-    fprintf(fp,"%s%d,\n", make_tag(prefix, "t0"), qss_op->t0);
+    fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qss_op->t0);
   }
 #endif
   else if ( op_type == WAVEFUNCTION_FILE ){
@@ -2605,7 +2610,7 @@ static int print_single_op_info(FILE *fp, char prefix[],
   }
   else if ( op_type == MOMENTUM ){
     fprintf(fp,",\n");
-    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qss_op->mom[0],
+    fprintf(fp,"%s%d %d %d\n", make_tag(prefix, "mom"), qss_op->mom[0],
             qss_op->mom[1], qss_op->mom[2]);
   }
   else if ( op_type == PROJECT_T_SLICE ){
@@ -2624,11 +2629,11 @@ static int print_single_op_info(FILE *fp, char prefix[],
   }
   else if ( op_type == EXT_SRC_DIRAC ){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%s\n", make_tag(prefix, "gamma"), 
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "gamma"), 
 	    gamma_label(qss_op->gamma));
-    fprintf(fp,"%s %d %d %d\n", make_tag(prefix, "mom"), qss_op->mom[0],
+    fprintf(fp,"%s%d %d %d,\n", make_tag(prefix, "mom"), qss_op->mom[0],
 	    qss_op->mom[1], qss_op->mom[2]);
-    fprintf(fp,"%s%d,\n", make_tag(prefix, "t0"), qss_op->t0);
+    fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qss_op->t0);
   }
   else {
     fprintf(fp,"\n");
