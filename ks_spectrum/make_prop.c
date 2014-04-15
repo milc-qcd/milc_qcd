@@ -80,7 +80,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 
   for(j = 0; j < num_prop; j++){
     fp_in[j]  = r_open_ksprop(startflag[j], startfile[j]);
-    fp_out[j] = w_open_ksprop(saveflag[j],  savefile[j], my_ksqs->type);
+    fp_out[j] = w_open_ksprop(saveflag[j],  savefile[j], VECTOR_FIELD_FILE);
   }
 
   /* Provision for writing the source to a file */
@@ -153,6 +153,12 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
 	terminate(1);
       };
     
+      /* Cache the source for writing to the propagator file */
+      if(saveflag != FORGET){
+	alloc_cached_v_source(my_ksqs);
+	copy_v_field(my_ksqs->v_src, src);
+      }
+      
       /* Write the source, if requested */
       if(my_ksqs->saveflag != FORGET){
 	if(w_source_ks( src, my_ksqs ) != 0){
