@@ -110,8 +110,11 @@
 
 void init_qs(quark_source *qs){
   qs->type             = UNKNOWN;
+  qs->orig_type        = UNKNOWN;
   qs->subset           = FULL;
   qs->scale_fact       = 1.;
+  qs->spin_snk         = 0;
+  qs->a                = 0.;
   qs->color            = -1;  /* Counter will be preincremented */
   qs->ncolor           =  3;
   qs->ksource          = -1;  /* Counter will be preincremented */
