@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
 <html>
-<!-- Created on January 9, 2014 by texi2html 1.82
+<!-- Created on March 22, 2014 by texi2html 1.82
 texi2html was written by: 
             Lionel Cons <Lionel.Cons@cern.ch> (original author)
             Karl Berry  <karl@freefriends.org>
@@ -3647,6 +3647,8 @@ this order:
 </td></tr>
 <tr><td align="left" valign="top"><a href="#Quark-description">7.1.7 Quark description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
+<tr><td align="left" valign="top"><a href="#Combine-description">7.1.8 Combine description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
 <tr><td align="left" valign="top"><a href="#Hadron-description">7.1.9 Hadron description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 </table>
@@ -4816,7 +4818,7 @@ also be applied to both staggered and Dirac fiels:
 </td></tr>
 <tr><td align="left" valign="top"><a href="#funnywall2-operator">7.1.5.14 funnywall2 operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
-<tr><td align="left" valign="top"><a href="#ks_005finverse-operator">7.1.5.15 funnywall2 operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+<tr><td align="left" valign="top"><a href="#ks_005finverse-operator">7.1.5.15 ks_inverse operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 <tr><td align="left" valign="top"><a href="#spin_005ftaste-operator">7.1.5.16 spin_taste operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
@@ -4829,7 +4831,7 @@ also be applied to both staggered and Dirac fiels:
 <table class="menu" border="0" cellspacing="0">
 <tr><td align="left" valign="top"><a href="#rotate_005f3D-operator">7.1.5.18 rotate_3D operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
-<tr><td align="left" valign="top">&bull; dirac_inverse operator</td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+<tr><td align="left" valign="top"><a href="#dirac_005finverse-operator">7.1.5.19 dirac_inverse operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 <tr><td align="left" valign="top"><a href="#gamma-operator">7.1.5.20 gamma operator</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
@@ -5263,7 +5265,7 @@ meaningful only for staggered fermion sources and propagators.
 <td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
-<a name="funnywall2-operator-2"></a>
+<a name="funnywall2-operator-1"></a>
 <h4 class="subsubsection">7.1.5.14 funnywall2 operator</h4>
 <a name="index-funnywall2-operator"></a>
 
@@ -5287,8 +5289,8 @@ meaningful only for staggered fermion sources and propagators.
 <td valign="middle" align="left">[<a href="#Concept-Index" title="Index">Index</a>]</td>
 <td valign="middle" align="left">[<a href="#SEC_About" title="About (help)"> ? </a>]</td>
 </tr></table>
-<a name="funnywall2-operator-1"></a>
-<h4 class="subsubsection">7.1.5.15 funnywall2 operator</h4>
+<a name="ks_005finverse-operator-1"></a>
+<h4 class="subsubsection">7.1.5.15 ks_inverse operator</h4>
 <a name="index-ks_005finverse-operator"></a>
 
 <table><tr><td>&nbsp;</td><td><pre class="example">ks_inverse
@@ -5368,7 +5370,7 @@ specified spin-taste operator and inserts the specified momentum.
 <a name="rotate_005f3D-operator"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#ext_005fsrc_005fks-operator" title="Previous section in reading order"> &lt; </a>]</td>
-<td valign="middle" align="left">[<a href="#dirac_005finverse_005foperator" title="Next section in reading order"> &gt; </a>]</td>
+<td valign="middle" align="left">[<a href="#dirac_005finverse-operator" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#Modified-sources" title="Up section"> Up </a>]</td>
@@ -5392,7 +5394,7 @@ specified spin-taste operator and inserts the specified momentum.
 <p>This operator applies the FNAL 3D rotation to a Dirac source or sink.
 </p>
 <hr size="6">
-<a name="dirac_005finverse_005foperator"></a>
+<a name="dirac_005finverse-operator"></a>
 <table cellpadding="1" cellspacing="1" border="0">
 <tr><td valign="middle" align="left">[<a href="#rotate_005f3D-operator" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#gamma-operator" title="Next section in reading order"> &gt; </a>]</td>
@@ -5431,7 +5433,7 @@ time_bc &lt;antiperiodic|periodic&gt;
 <hr size="6">
 <a name="gamma-operator"></a>
 <table cellpadding="1" cellspacing="1" border="0">
-<tr><td valign="middle" align="left">[<a href="#dirac_005finverse_005foperator" title="Previous section in reading order"> &lt; </a>]</td>
+<tr><td valign="middle" align="left">[<a href="#dirac_005finverse-operator" title="Previous section in reading order"> &lt; </a>]</td>
 <td valign="middle" align="left">[<a href="#ks_005fgamma-operator" title="Next section in reading order"> &gt; </a>]</td>
 <td valign="middle" align="left"> &nbsp; </td>
 <td valign="middle" align="left">[<a href="#Documentation-for-Specific-Applications" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
@@ -5527,7 +5529,7 @@ time_bc &lt;antiperiodic|periodic&gt;
 
 <table><tr><td>&nbsp;</td><td><pre class="example">gamma G5
 momentum &lt;int[3]&gt;
-t0 {int
+t0 &lt;int&gt;
 </pre></td></tr></table>
 
 <p>Projects a propagator to the specified time slice and applies the
@@ -6152,6 +6154,8 @@ this order:
 <tr><td align="left" valign="top"><a href="#KS-propagator-set-description">7.2.6 KS propagator set description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 <tr><td align="left" valign="top"><a href="#KS-quark-description">7.2.7 KS quark description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#KS-combine-description">7.2.8 Combine description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
 <tr><td align="left" valign="top"><a href="#KS-meson-description">7.2.9 KS meson description</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
 </td></tr>
@@ -6813,7 +6817,7 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-Dirac-inverter">Dirac inverter</a></td><td valign="top"><a href="#Optional-Compilation-Macros">4.4 Optional Compilation Macros</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-dirac_005ffield-source">dirac_field source</a></td><td valign="top"><a href="#dirac_005ffield">7.1.4.14 dirac_field</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-dirac_005ffield_005ffm-source">dirac_field_fm source</a></td><td valign="top"><a href="#dirac_005ffield_005ffm">7.1.4.15 dirac_field_fm</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-dirac_005finverse-operator">dirac_inverse operator</a></td><td valign="top"><a href="#dirac_005finverse_005foperator">7.1.5.19 dirac_inverse operator</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-dirac_005finverse-operator">dirac_inverse operator</a></td><td valign="top"><a href="#dirac_005finverse-operator">7.1.5.19 dirac_inverse operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-dirac_005fpropagator_005ffile-source">dirac_propagator_file source</a></td><td valign="top"><a href="#dirac_005fpropagator_005ffile">7.1.4.16 dirac_propagator_file</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-Directory-Layout">Directory Layout</a></td><td valign="top"><a href="#Directory-Layout">4.1 Directory Layout</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-dirs_002eh">dirs.h</a></td><td valign="top"><a href="#Header-files">5.1 Header files</a></td></tr>
@@ -6889,7 +6893,7 @@ r_offset &lt;int[4]&gt;
 <tr><td></td><td valign="top"><a href="#index-KS-quark-description">KS quark description</a></td><td valign="top"><a href="#KS-quark-description">7.2.7 KS quark description</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-ks_005fgamma-operator">ks_gamma operator</a></td><td valign="top"><a href="#ks_005fgamma-operator">7.1.5.21 ks_gamma operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-ks_005fgamma_005finv-operator">ks_gamma_inv operator</a></td><td valign="top"><a href="#ks_005fgamma_005finv-operator">7.1.5.22 ks_gamma_inv operator</a></td></tr>
-<tr><td></td><td valign="top"><a href="#index-ks_005finverse-operator">ks_inverse operator</a></td><td valign="top"><a href="#ks_005finverse-operator">7.1.5.15 funnywall2 operator</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ks_005finverse-operator">ks_inverse operator</a></td><td valign="top"><a href="#ks_005finverse-operator">7.1.5.15 ks_inverse operator</a></td></tr>
 <tr><td></td><td valign="top"><a href="#index-ks_005fspectrum">ks_spectrum</a></td><td valign="top"><a href="#ks_005fspectrum">7.2 ks_spectrum</a></td></tr>
 <tr><td colspan="3"> <hr></td></tr>
 <tr><th><a name="Concept-Index-1_cp_letter-L">L</a></th><td></td><td></td></tr>
@@ -7284,12 +7288,12 @@ r_offset &lt;int[4]&gt;
         <li><a name="toc-deriv3_005fA-operator-1" href="#deriv3_005fA-operator">7.1.5.11 deriv3_A operator</a></li>
         <li><a name="toc-fat_005fcovariant_005fgaussian-operator-1" href="#fat_005fcovariant_005fgaussian-operator">7.1.5.12 fat_covariant_gaussian operator</a></li>
         <li><a name="toc-funnywall1-operator-1" href="#funnywall1-operator">7.1.5.13 funnywall1 operator</a></li>
-        <li><a name="toc-funnywall2-operator-2" href="#funnywall2-operator">7.1.5.14 funnywall2 operator</a></li>
-        <li><a name="toc-funnywall2-operator-1" href="#ks_005finverse-operator">7.1.5.15 funnywall2 operator</a></li>
+        <li><a name="toc-funnywall2-operator-1" href="#funnywall2-operator">7.1.5.14 funnywall2 operator</a></li>
+        <li><a name="toc-ks_005finverse-operator-1" href="#ks_005finverse-operator">7.1.5.15 ks_inverse operator</a></li>
         <li><a name="toc-spin_005ftaste-operator-1" href="#spin_005ftaste-operator">7.1.5.16 spin_taste operator</a></li>
         <li><a name="toc-ext_005fsrc_005fks-operator-1" href="#ext_005fsrc_005fks-operator">7.1.5.17 ext_src_ks operator</a></li>
         <li><a name="toc-rotate_005f3D-operator-1" href="#rotate_005f3D-operator">7.1.5.18 rotate_3D operator</a></li>
-        <li><a name="toc-dirac_005finverse-operator-1" href="#dirac_005finverse_005foperator">7.1.5.19 dirac_inverse operator</a></li>
+        <li><a name="toc-dirac_005finverse-operator-1" href="#dirac_005finverse-operator">7.1.5.19 dirac_inverse operator</a></li>
         <li><a name="toc-gamma-operator-1" href="#gamma-operator">7.1.5.20 gamma operator</a></li>
         <li><a name="toc-ks_005fgamma-operator-1" href="#ks_005fgamma-operator">7.1.5.21 ks_gamma operator</a></li>
         <li><a name="toc-ks_005fgamma_005finv-operator-1" href="#ks_005fgamma_005finv-operator">7.1.5.22 ks_gamma_inv operator</a></li>
@@ -7332,7 +7336,7 @@ r_offset &lt;int[4]&gt;
 </tr></table>
 <h1>About This Document</h1>
 <p>
-  This document was generated by <em>Carleton DeTar</em> on <em>January 9, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>Carleton DeTar</em> on <em>March 22, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
 </p>
 <p>
   The buttons in the navigation panels have the following meaning:
@@ -7434,7 +7438,7 @@ r_offset &lt;int[4]&gt;
 <hr size="1">
 <p>
  <font size="-1">
-  This document was generated by <em>Carleton DeTar</em> on <em>January 9, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+  This document was generated by <em>Carleton DeTar</em> on <em>March 22, 2014</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
  </font>
  <br>
 
