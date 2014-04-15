@@ -139,9 +139,13 @@ su3_eigen_hisq::
 	"QUARK = hisq/hisq_u3_action.h" \
 	"EXTRA_OBJECTS = ${HISQ_OBJECTS}"
 
+# No QOP support for p4, so we use pure MILC routines only and
+# undefine the macros HAVE_QOP and HAVE_QDP
+
 su3_eigen_p4fat3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \
-	"DEFINES = -DEO" \
+	"DEFINES = -DEO \
+	-UKS_MULTICG -UHAVE_QOP -UHAVE_QDP" \
 	"QUARK = p4fat3_action.h" \
 	"EXTRA_OBJECTS = ${EO_OBJECTS}"
 
