@@ -109,6 +109,7 @@ int main(int argc, char *argv[])
 
     STARTTIME;
     for(i=0; i<param.num_prop; i++){
+      node0_printf("******* Creating propagator %d ********\n",i);fflush(stdout);
       
       /**************************************************************/
       /* Read and/or generate quark propagator */
@@ -257,6 +258,7 @@ int main(int argc, char *argv[])
     oldiq1 = -1;
 #endif
     for(j=0; j<param.num_qk; j++){
+      node0_printf("******* Creating quark %d ********\n",j);
       i = param.prop_for_qk[j];
 
       if(param.parent_type[j] == PROP_TYPE){
@@ -299,20 +301,6 @@ int main(int argc, char *argv[])
 	oldip0 = i;
 	oldiq0 = -1;
 #endif
-
-	/* Can we delete any props and quarks now? */
-	/* If nothing later depends on a prop or quark, free it up. */
-	for(i = 0; i < param.num_prop; i++)
-	  if( prop[i]->swv[0] != NULL  &&  param.prop_dep_qkno[i] < j ){
-	    free_wp_field(prop[i]);
-	    node0_printf("free prop[%d]\n",i);
-	  }
-
-	for(i = 0; i < j; i++)
-	  if( quark[i]->swv[0] != NULL  &&  param.quark_dep_qkno[i] < j ){
-	    free_wp_field(quark[i]);
-	    node0_printf("free quark[%d]\n",i);
-	  }
       }
       else if(param.parent_type[j] == QUARK_TYPE) { /* QUARK_TYPE */
 #ifdef CLOV_LEAN
@@ -371,6 +359,20 @@ int main(int argc, char *argv[])
       /* Save the resulting quark[j] if requested */
       dump_wprop_from_wp_field( param.saveflag_q[j], param.savetype_q[j],
 				param.savefile_q[j], quark[j]);
+
+      /* Can we delete any props and quarks now? */
+      /* If nothing later depends on a prop or quark, free it up. */
+      for(i = 0; i < param.num_prop; i++)
+	if( prop[i]->swv[0] != NULL  &&  param.prop_dep_qkno[i] < j ){
+	  free_wp_field(prop[i]);
+	  node0_printf("free prop[%d]\n",i);
+	}
+      
+      for(i = 0; i < j; i++)
+	if( quark[i]->swv[0] != NULL  &&  param.quark_dep_qkno[i] < j ){
+	  free_wp_field(quark[i]);
+	  node0_printf("free quark[%d]\n",i);
+	}
 #ifdef CLOV_LEAN
       oldiq1 = j;
 #endif
