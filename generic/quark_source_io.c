@@ -84,7 +84,6 @@ int choose_usqcd_ks_file_type(int source_type){
     break;
     /* vector field sources */
   case FAT_COVARIANT_GAUSSIAN:
-  case RANDOM_CORNER_COLOR_WALL:
   case RANDOM_COLOR_WALL:
   case VECTOR_FIELD_FILE:
   case VECTOR_FIELD_FM_FILE:
