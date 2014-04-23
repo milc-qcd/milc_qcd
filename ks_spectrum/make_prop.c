@@ -154,7 +154,7 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
       };
     
       /* Cache the source for writing to the propagator file */
-      if(saveflag != FORGET){
+      if(my_ksqs->saveflag != FORGET){
 	alloc_cached_v_source(my_ksqs);
 	copy_v_field(my_ksqs->v_src, src);
       }
@@ -313,6 +313,10 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
       node0_printf("Saved propagator to %s\n",savefile[i]);
   }
 
+  if(my_ksqs->saveflag != FORGET){
+    w_source_close(my_ksqs);
+  }
+  
 #ifdef U1_FIELD
   /* Unapply the U(1) field phases */
   u1phase_off();
