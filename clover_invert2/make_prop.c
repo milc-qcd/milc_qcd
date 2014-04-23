@@ -226,6 +226,10 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
   if(saveflag != FORGET)
     node0_printf("Saved propagator to %s\n",savefile);
 
+  if(my_wqs->saveflag != FORGET){
+    w_source_close(my_wqs);
+  }
+  
   destroy_wv_field(dst);
 
   return tot_iters;
