@@ -145,14 +145,14 @@ int choose_usqcd_w_file_type(int source_type){
 static int check_color_spin(QIO_String *recxml, int color, int spin){
   int status;
   int input_color, input_spin;
-  QIO_USQCDPropRecordInfo recinfo;
+  QIO_USQCDPropSourceInfo recinfo;
   char myname[] = "check_color_spin";
 
-  status = QIO_decode_usqcd_proprecord_info(&recinfo, recxml);
+  status = QIO_decode_usqcd_propsource_info(&recinfo, recxml);
   if(status != QIO_SUCCESS) 
     return qio_status(status);
-  input_color = QIO_get_usqcd_proprecord_color(&recinfo);
-  input_spin = QIO_get_usqcd_proprecord_spin(&recinfo);
+  input_color = QIO_get_usqcd_propsource_color(&recinfo);
+  input_spin = QIO_get_usqcd_propsource_spin(&recinfo);
   if(color != input_color || spin  != input_spin ){
     node0_printf("%s(%d): Error: expected color %d and spin %d got %d and %d\n",
 		 myname, this_node, color, spin, 
@@ -174,13 +174,13 @@ static int check_color_spin(QIO_String *recxml, int color, int spin){
 static int check_color(QIO_String *recxml, int color){
   int status;
   int input_color;
-  QIO_USQCDKSPropRecordInfo recinfo;
+  QIO_USQCDKSPropSourceInfo recinfo;
   char myname[] = "check_color";
 
-  status = QIO_decode_usqcd_ksproprecord_info(&recinfo, recxml);
+  status = QIO_decode_usqcd_kspropsource_info(&recinfo, recxml);
   if(status != QIO_SUCCESS) 
     return qio_status(status);
-  input_color = QIO_get_usqcd_ksproprecord_color(&recinfo);
+  input_color = QIO_get_usqcd_kspropsource_color(&recinfo);
   if(color != input_color){
     node0_printf("%s(%d): Error: expected color %d got %d\n",
 		 myname, this_node, color, input_color);
@@ -625,7 +625,7 @@ int w_source_ks(su3_vector *src, quark_source *qs)
   int t0                    = qs->t0;
   int color                 = qs->color;
   QIO_String *recxml;
-  QIO_USQCDKSPropRecordInfo *recinfo;
+  QIO_USQCDKSPropSourceInfo *recinfo;
 #endif
   
   dtime = -dclock();
@@ -643,9 +643,9 @@ int w_source_ks(su3_vector *src, quark_source *qs)
   recxml = QIO_string_create();
 
   /* Construct the record XML */
-  recinfo = QIO_create_usqcd_ksproprecord_c_info(color, "");
-  QIO_encode_usqcd_ksproprecord_info(recxml, recinfo);
-  QIO_destroy_usqcd_ksproprecord_info(recinfo);
+  recinfo = QIO_create_usqcd_kspropsource_c_info(color, "");
+  QIO_encode_usqcd_kspropsource_info(recxml, recinfo);
+  QIO_destroy_usqcd_kspropsource_info(recinfo);
   /* Write the SU(3) source vector to the file */
   status = qio_status(
       write_kspropsource_V_usqcd_xml(qs->outfile, recxml, src, t0) );
@@ -699,16 +699,16 @@ int w_source_dirac(wilson_vector *src, quark_source *qs)
 #ifdef HAVE_QIO
 
   if(save_type == DIRAC_FIELD_FILE){
-    QIO_USQCDPropRecordInfo *recinfo;
+    QIO_USQCDPropSourceInfo *recinfo;
 
     dtime = -dclock();
 
     recxml = QIO_string_create();
     
     /* Construct the record XML - we borrow the USQCD prop record XML */
-    recinfo = QIO_create_usqcd_proprecord_sc_info(spin, color, "");
-    QIO_encode_usqcd_proprecord_info(recxml, recinfo);
-    QIO_destroy_usqcd_proprecord_info(recinfo);
+    recinfo = QIO_create_usqcd_propsource_sc_info(spin, color, "");
+    QIO_encode_usqcd_propsource_info(recxml, recinfo);
+    QIO_destroy_usqcd_propsource_info(recinfo);
     
     /* Write the Dirac source vector to the file */
     status = qio_status(write_wpropsource_D_usqcd_xml(qs->outfile, recxml, src, t0) );
