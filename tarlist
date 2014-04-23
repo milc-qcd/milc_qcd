@@ -136,14 +136,6 @@ TARLIST = \
  ${NAME_ROOT}/clover_dynamical/test/checklist  \
  ${NAME_ROOT}/clover_dynamical/test/Makefile \
  \
- ${NAME_ROOT}/clover_hybrids/*.c               \
- ${NAME_ROOT}/clover_hybrids/*.h               \
- ${NAME_ROOT}/clover_hybrids/Make_*             \
- ${NAME_ROOT}/clover_hybrids/test/*.sample-in        \
- ${NAME_ROOT}/clover_hybrids/test/*.sample-out  \
- ${NAME_ROOT}/clover_hybrids/test/checklist  \
- ${NAME_ROOT}/clover_hybrids/test/Makefile \
- \
  ${NAME_ROOT}/clover_invert2/*.c           \
  ${NAME_ROOT}/clover_invert2/*.h           \
  ${NAME_ROOT}/clover_invert2/Make_*        \
