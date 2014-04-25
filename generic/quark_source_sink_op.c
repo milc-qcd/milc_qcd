@@ -2185,6 +2185,7 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(fp, prompt, "stride", &stride);
     IF_OK status += get_f(fp, prompt, "r0", &source_r0);
     IF_OK status += get_i(fp, prompt, "source_iters", &source_iters);
+    if(stride != 1 && this_node==0)printf("NOTE: new convention for r0!\n");
   }
   else if ( op_type == COMPLEX_FIELD_FILE ||
 	    op_type == COMPLEX_FIELD_FM_FILE ){
@@ -2315,6 +2316,7 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(fp, prompt, "stride", &stride);
     IF_OK status += get_f(fp, prompt, "r0", &source_r0);
     IF_OK status += get_i(fp, prompt, "source_iters", &source_iters);
+    if(stride != 1 && this_node==0)printf("NOTE: new convention for r0!\n");
   }
   else if( op_type == FAT_COVARIANT_LAPLACIAN){
     /* Parameters for covariant Gaussian */

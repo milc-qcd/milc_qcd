@@ -299,10 +299,18 @@ void gauss_smear_wv_field(wilson_vector *src, su3_matrix *t_links,
 			  int stride, Real width, int iters, int t0)
 {
   wilson_vector *tmp;
-  Real ftmp = -(width*width)/(4*iters);
-  Real ftmpinv = 1. / ftmp;
+  Real ftmp;
+  Real ftmpinv;
   int i, j;
   site *s;
+
+  if(stride != 1 || stride != 2){
+    if(this_node==0)printf("gauss_smear_field: unsupported stride: %d\n", stride);
+    return;
+  }
+    
+  ftmp = -(width*width)/(4*iters*stride*stride);
+  ftmpinv = 1. / ftmp;
 
   if(t_links == NULL){
     printf("gauss_smear_field(%d): NULL t_links\n",this_node);

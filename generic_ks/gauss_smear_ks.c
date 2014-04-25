@@ -212,7 +212,7 @@ gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
 		    Real width, int iters, int t0)
 {
   su3_vector *tmp;
-  Real ftmp = -(width*width)/(4*iters);
+  Real ftmp = -(width*width)/(4*iters*4);  /* Extra 4 to compensate for stride 2 */
   Real ftmpinv = 1. / ftmp;
   int i, j;
   site *s;
