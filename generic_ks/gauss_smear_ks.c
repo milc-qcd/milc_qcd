@@ -239,6 +239,30 @@ gauss_smear_v_field(su3_vector *src, su3_matrix *t_links,
   destroy_v_field(tmp);
 }
 
+/*------------------------------------------------------------*/
+
+/* Computes 
+   src <- Lapl_3d src 
+*/
+
+void 
+laplacian_v_field(su3_vector *src, su3_matrix *t_links, int t0)
+{
+  su3_vector *tmp;
+
+  if(t_links == NULL){
+    printf("laplacian_v_field(%d): NULL t_links\n",this_node);
+    terminate(1);
+  }
+
+  tmp = create_v_field();
+  copy_v_field(tmp, src);
+
+  klein_gord_field(tmp, src, t_links, 0., t0);
+
+  destroy_v_field(tmp);
+}
+
 void 
 gauss_smear_ks_prop_field(ks_prop_field *src, su3_matrix *t_links,
 			  Real width, int iters, int t0)

@@ -126,7 +126,8 @@ void d_linktrsum(double_complex *linktrsum);
 void d_plaquette(double *ss_plaq,double *st_plaq);
 
 /* discretize_wf.c */
-void fnal_wavefunction(complex *wf, int x0, int y0, int z0, int t0, 
+void fnal_wavefunction(complex *wf, int stride,
+		       int x0, int y0, int z0, int t0, 
 		       Real a, char wf_file[]);
 
 /* field_strength.c */

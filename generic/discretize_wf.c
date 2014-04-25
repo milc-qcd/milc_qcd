@@ -168,7 +168,8 @@ static void setwf(complex *wf, int x, int y, int z, int t, Real f)
     }
 }
 
-static void discretize_wf ( double const a, int x0, int y0, int z0, int t0, 
+static void discretize_wf ( double const a, int stride, 
+			    int x0, int y0, int z0, int t0, 
 			    const point_vector* R, complex* wf )
 {
   double norm = 0;
@@ -181,16 +182,20 @@ static void discretize_wf ( double const a, int x0, int y0, int z0, int t0,
   if(t0 == ALL_T_SLICES){ tmin = 0; tmax = nt-1; }
   else                  { tmin = t0; tmax = t0; }
   
+  /* Assumes nx, ny, nz are even */
   for ( z = 0; z <= nz / 2; ++z )
     {
+      if ( z % stride > 0 ) continue;
       mz = z ? nz - z : 0;
       
       for ( y = 0; y <= ny / 2; ++y )
         {
+	  if ( y % stride > 0 ) continue;
           my = y ? ny - y : 0;
 	  
           for ( x = 0; x <= nx / 2; ++x )
             {
+	      if ( x % stride > 0 ) continue;
               mx = x ? nx - x : 0;
 
               r =  x * x + y * y + z * z;
@@ -254,7 +259,7 @@ static void discretize_wf ( double const a, int x0, int y0, int z0, int t0,
 
 
 void fnal_wavefunction(complex *wf, int x0, int y0, int z0, int t0, 
-		       Real a, char wf_file[]){
+		       int stride, Real a, char wf_file[]){
   point_vector *radial;
 
   // read reduced wavefunction U (r)
@@ -263,7 +268,7 @@ void fnal_wavefunction(complex *wf, int x0, int y0, int z0, int t0,
   // compute R ( r ) = U (r) / r
   compute_wf ( radial );
 
-  discretize_wf ( a, x0, y0, z0, t0, radial, wf );
+  discretize_wf ( a, stride, x0, y0, z0, t0, radial, wf );
 
   delete_point_vector( radial );
 

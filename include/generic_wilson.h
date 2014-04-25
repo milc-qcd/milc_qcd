@@ -48,6 +48,8 @@ void gauss_smear_wv_field(wilson_vector *src, su3_matrix *t_links,
 			  int stride, Real width, int iters, int t0);
 void gauss_smear_wv_site(field_offset src, su3_matrix *t_links,
 			 int stride, Real width, int iters, int t0);
+void laplacian_wv_field(wilson_vector *src, su3_matrix *t_links,
+			int stride, int t0);
 
 /* meson_cont.c */
 void meson_cont_site(field_offset src1,field_offset src2,

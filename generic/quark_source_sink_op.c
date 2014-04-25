@@ -24,6 +24,7 @@
 
    covariant_gaussian              Smear with exp(const * Laplacian)
    fat_covariant_gaussian          Same, but base covariant Laplacian on 
+   fat_covariant_laplacian         Covariant Laplacian itself
                                    APE-smeared links
    deriv1                          Apply covariant derivative
    deriv2_D                        Apply covariant D-type 2nd derivative (symm)
@@ -906,6 +907,7 @@ static int requires_gauge_field(int op_type){
     op_type == DERIV2_B ||
     op_type == DERIV3_A ||
     op_type == FAT_COVARIANT_GAUSSIAN ||
+    op_type == FAT_COVARIANT_LAPLACIAN ||
     op_type == FUNNYWALL1 ||
     op_type == FUNNYWALL2 ||
     op_type == HOPPING    ||
@@ -932,6 +934,7 @@ static complex *get_convolving_field(quark_source_sink_op *qss_op, int t0){
   Real a            = qss_op->a;
   Real r0           = qss_op->r0;
   char *sink_file   = qss_op->source_file;
+  int stride        = qss_op->stride;
 #ifndef HAVE_QIO
   char myname[] = "get_convolving_field";
 #endif
@@ -957,7 +960,7 @@ static complex *get_convolving_field(quark_source_sink_op *qss_op, int t0){
     gaussian_source(chi_cs, r0, 0, 0, 0, t0);
   }
   else if(op_type == WAVEFUNCTION_FILE){
-    fnal_wavefunction(chi_cs, 0, 0, 0, t0, a, sink_file);
+    fnal_wavefunction(chi_cs, stride, 0, 0, 0, t0, a, sink_file);
   }
   else {
     free(chi_cs);
@@ -1552,6 +1555,7 @@ static int apply_cov_deriv_wv(wilson_vector *src, quark_source_sink_op *qss_op){
 static int is_cov_smear(int op_type){
   return
     op_type == COVARIANT_GAUSSIAN ||
+    op_type == FAT_COVARIANT_LAPLACIAN ||
     op_type == FAT_COVARIANT_GAUSSIAN;
 }
 
@@ -1579,6 +1583,10 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
     gauss_smear_v_field(src, ape_links, r0, iters, t0);
   }
 
+  else if(op_type == FAT_COVARIANT_LAPLACIAN ){
+    laplacian_v_field(src, ape_links, t0);
+  }
+
   else
     return 0;
 
@@ -1590,7 +1598,7 @@ static int apply_cov_smear_v(su3_vector *src, quark_source_sink_op *qss_op,
 #ifdef HAVE_DIRAC
 
 static int apply_cov_smear_wv(wilson_vector *src, 
-			    quark_source_sink_op *qss_op, int t0){
+			      quark_source_sink_op *qss_op, int t0){
 
   /* Unpack structure. */
   int op_type       = qss_op->type;
@@ -1610,6 +1618,9 @@ static int apply_cov_smear_wv(wilson_vector *src,
 
   else if(op_type == FAT_COVARIANT_GAUSSIAN )
     gauss_smear_wv_field(src, ape_links, stride, r0, iters, t0);
+
+  else if(op_type == FAT_COVARIANT_LAPLACIAN )
+    laplacian_wv_field(src, ape_links, stride, t0);
 
   else
     return 0;
@@ -1964,6 +1975,7 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     printf("'deriv3_A', ");
     printf("\n     ");
     printf("'fat_covariant_gaussian', ");
+    printf("'fat_covariant_laplacian', ");
     printf("'funnywall1', ");
     printf("'funnywall2', ");
     printf("'dirac_inverse', ");
@@ -2078,6 +2090,10 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     *source_type = FAT_COVARIANT_GAUSSIAN;
     strcpy(descrp,"fat_covariant_gaussian");
   }
+  else if(strcmp("fat_covariant_laplacian",savebuf) == 0 ) {
+    *source_type = FAT_COVARIANT_LAPLACIAN;
+    strcpy(descrp,"fat_covariant_laplacian");
+  }
   /* Funnywall1 operator (couples to pion5, pioni5, pioni, pions, rhoi, rhos) */
   else if(strcmp("funnywall1",savebuf) == 0 ){
     *source_type = FUNNYWALL1;
@@ -2186,6 +2202,7 @@ static int get_field_op(int *status_p, FILE *fp,
   }
   else if ( op_type == WAVEFUNCTION_FILE ){
     IF_OK status += get_s(fp, prompt, "load_source", source_file);
+    IF_OK status += get_i(fp, prompt, "stride", &stride);
     IF_OK status += get_f(fp, prompt, "a", &a);
   }
 
@@ -2298,6 +2315,10 @@ static int get_field_op(int *status_p, FILE *fp,
     IF_OK status += get_i(fp, prompt, "stride", &stride);
     IF_OK status += get_f(fp, prompt, "r0", &source_r0);
     IF_OK status += get_i(fp, prompt, "source_iters", &source_iters);
+  }
+  else if( op_type == FAT_COVARIANT_LAPLACIAN){
+    /* Parameters for covariant Gaussian */
+    IF_OK status += get_i(fp, prompt, "stride", &stride);
   }
 #ifdef HAVE_KS
   else if( op_type == SPIN_TASTE){
@@ -2552,6 +2573,10 @@ static int print_single_op_info(FILE *fp, char prefix[],
     fprintf(fp,"%s%g,\n", make_tag(prefix, "r0"), qss_op->r0);
     fprintf(fp,"%s%d\n", make_tag(prefix, "iters"), qss_op->iters);
   }
+  else if( op_type == FAT_COVARIANT_LAPLACIAN){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%d\n", make_tag(prefix, "stride"), qss_op->stride);
+  }
   else if ( op_type == GAUSSIAN ){
     fprintf(fp,",\n");
     fprintf(fp,"%s%g\n", make_tag(prefix, "r0"), qss_op->r0);
@@ -2615,7 +2640,7 @@ static int print_single_op_info(FILE *fp, char prefix[],
   }
   else if ( op_type == PROJECT_T_SLICE ){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%d,\n", make_tag(prefix, "t0"), qss_op->t0);
+    fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qss_op->t0);
   }
   else if ( op_type == GAMMA ){
     fprintf(fp,",\n");

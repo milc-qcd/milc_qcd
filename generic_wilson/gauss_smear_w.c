@@ -311,7 +311,7 @@ void gauss_smear_wv_field(wilson_vector *src, su3_matrix *t_links,
 
   tmp = (wilson_vector *)malloc(sizeof(wilson_vector)*sites_on_node);
   if(tmp == NULL){
-    printf("gauss_smear_site(%d): No room for temporary source\n",this_node);
+    printf("gauss_smear_field(%d): No room for temporary source\n",this_node);
     terminate(1);
   }
   
@@ -331,6 +331,33 @@ void gauss_smear_wv_field(wilson_vector *src, su3_matrix *t_links,
     }
 
   free(tmp);
+}
+
+/*------------------------------------------------------------*/
+
+/* Computes 
+   src <- Lapl_3d] src 
+*/
+
+void laplacian_wv_field(wilson_vector *src, su3_matrix *t_links,
+			int stride, int t0)
+{
+  wilson_vector *tmp;
+
+  if(t_links == NULL){
+    printf("laplacian_wv_field(%d): NULL t_links\n",this_node);
+    terminate(1);
+  }
+
+  tmp = create_wv_field();
+  copy_wv_field(tmp, src);
+
+  if(stride == 1)
+    klein_gord_wv_field_stride1(tmp, src, t_links, 0., t0);
+  else
+    klein_gord_wv_field_stride2(tmp, src, t_links, 0., t0);
+
+  destroy_wv_field(tmp);
 }
 
 /*------------------------------------------------------------*/
