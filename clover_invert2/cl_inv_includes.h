@@ -74,6 +74,7 @@ void reread_wprop_to_wp_field(int saveflag, char savefile[], wilson_prop_field *
 
 /* spectrum_cl.c */
 int ask_corr_file( FILE *fp, int prompt, int *flag, char* filename);
+int get_eve(int iq);
 void spectrum_cl(wilson_prop_field *qp0, wilson_prop_field *qp1, int pair);
 
 /* ks_source_info.c */
