@@ -258,7 +258,7 @@ int main(int argc, char *argv[])
     oldiq1 = -1;
 #endif
     for(j=0; j<param.num_qk; j++){
-      node0_printf("******* Creating quark %d ********\n",j);
+      node0_printf("******* Creating quark %d ********\n",j); fflush(stdout);
       i = param.prop_for_qk[j];
 
       if(param.parent_type[j] == PROP_TYPE){
