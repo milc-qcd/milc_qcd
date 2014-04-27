@@ -375,7 +375,7 @@ static void sink_smear_ksprop(ks_prop_field *ksprop, quark_source *qs){
   /* Set up Fourier transform for smearing */
   setup_restrict_fourier(key, NULL);
 
-  chi_cs = (complex *)malloc(sizeof(complex)*sites_on_node);
+  chi_cs = create_c_field();
 
   /* Now convolute the quark propagator with a given wave function for
      the smeared mesons. This is done with FFT's */
@@ -429,7 +429,7 @@ static void sink_smear_ksprop(ks_prop_field *ksprop, quark_source *qs){
   }
   print_timing(dtime,"FFT");
   cleanup_restrict_fourier();
-  free(chi_cs);
+  destroy_c_field(chi_cs);
 }  /* sink_smear_ksprop */
 
 #endif
@@ -960,10 +960,10 @@ static complex *get_convolving_field(quark_source_sink_op *qss_op, int t0){
     gaussian_source(chi_cs, r0, 0, 0, 0, t0);
   }
   else if(op_type == WAVEFUNCTION_FILE){
-    fnal_wavefunction(chi_cs, stride, 0, 0, 0, t0, a, sink_file);
+    fnal_wavefunction(chi_cs, 0, 0, 0, t0, stride, a, sink_file);
   }
   else {
-    free(chi_cs);
+    destroy_c_field(chi_cs);
     return NULL;
   }
   return chi_cs;
@@ -977,13 +977,13 @@ static int apply_convolution_v(su3_vector *src, quark_source_sink_op *qss_op,
   complex *chi_cs   = get_convolving_field(qss_op, t0);
 
   if(chi_cs == NULL){
-    free(chi_cs);
+    destroy_c_field(chi_cs);
     return 0;
   }
 
   /* Do the convolution */
   smear_v_field(src, chi_cs);
-  free(chi_cs);
+  destroy_c_field(chi_cs);
 
   return 1;
 }
@@ -2629,6 +2629,7 @@ static int print_single_op_info(FILE *fp, char prefix[],
   else if ( op_type == WAVEFUNCTION_FILE ){
     fprintf(fp,",\n");
     fprintf(fp,"%s%s,\n", make_tag(prefix, "file"), qss_op->source_file);
+    fprintf(fp,"%s%d,\n", make_tag(prefix, "stride"), qss_op->stride);
     fprintf(fp,"%s%g\n", make_tag(prefix, "a"), qss_op->a);
   }
   else if ( op_type == MODULATION_FILE ){
