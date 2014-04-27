@@ -179,6 +179,11 @@ static void discretize_wf ( double const a, int stride,
   long mx, my, mz;
   int t, tmin, tmax;
 
+  if(stride <= 0){
+    node0_printf("discretize_wf: illegal stride parameter %d\n", stride);
+    return;
+  }
+
   if(t0 == ALL_T_SLICES){ tmin = 0; tmax = nt-1; }
   else                  { tmin = t0; tmax = t0; }
   
