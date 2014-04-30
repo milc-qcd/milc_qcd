@@ -304,7 +304,7 @@ void gauss_smear_wv_field(wilson_vector *src, su3_matrix *t_links,
   int i, j;
   site *s;
 
-  if(stride != 1 || stride != 2){
+  if(stride != 1 && stride != 2){
     if(this_node==0)printf("gauss_smear_field: unsupported stride: %d\n", stride);
     return;
   }
