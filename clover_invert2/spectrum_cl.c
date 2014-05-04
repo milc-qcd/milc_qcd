@@ -1249,7 +1249,7 @@ static void spectrum_cl_print_offdiag(int pair){
   baryon_scale2 = get_baryon_scale_factor(param.qkpair[pair][1], 
 					  param.qkpair[pair][1], 
 					  param.qkpair[pair][0]);
-  
+
   /* Point sink */
   if(param.do_meson_spect[pair]){
     corr_fp = open_fnal_meson_file(pair);
