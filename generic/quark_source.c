@@ -930,7 +930,9 @@ static int wv_base_source(wilson_vector *src, quark_source *qs)
   }
 
   /* Rescale the source */
-  if(qs->scale_fact != 1.0){
+  /* HACK: Don't rescale if the source was preloaded */
+  /* We need a much better way of handling the scaling! */
+  if(qs->scale_fact != 1.0 && qs->type != DIRAC_FIELD_STORE){
     int i; site *s;
     FORALLSITES(i,s){
       if(t0 == ALL_T_SLICES || s->t == t0)
