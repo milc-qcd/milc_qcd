@@ -109,7 +109,7 @@ int get_wprop_to_wp_field(int prop_type, int startflag, char startfile[],
       /* Cache the source for writing to the propagator file */
       if(saveflag != FORGET){
 	alloc_cached_wv_source(my_wqs);
-	copy_wv_field(my_wqs->wv_src, src);
+	copy_wv_field(get_cached_wv_source(my_wqs), src);
       }
       
       /* Write the source to a source file, if requested */
@@ -361,7 +361,7 @@ int get_ksprop_to_wp_field(int startflag, char startfile[],
       /* Cache the source for writing to the propagator file */
       if(saveflag != FORGET){
 	alloc_cached_v_source(my_ksqs);
-	copy_v_field(my_ksqs->v_src, src);
+	copy_v_field(get_cached_v_source(my_ksqs), src);
       }
       
       /* Write the source, if requested */
