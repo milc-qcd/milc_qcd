@@ -169,8 +169,27 @@ static int check_color_spin(QIO_String *recxml, int color, int spin){
 /********************************************************************/
 /* Parse the record XML to get the color and check it               */
 /********************************************************************/
-/* For a KS source file we use the same XML encoding as with the KS
+/* For an old-style KS source file we use the same XML encoding as with the KS
    propagator file  */
+static int check_color_old(QIO_String *recxml, int color){
+  int status;
+  int input_color;
+  QIO_USQCDKSPropRecordInfo recinfo;
+  char myname[] = "check_color";
+
+  status = QIO_decode_usqcd_ksproprecord_info(&recinfo, recxml);
+  if(status != QIO_SUCCESS)
+    return qio_status(status);
+  input_color = QIO_get_usqcd_ksproprecord_color(&recinfo);
+  if(color != input_color){
+    node0_printf("%s(%d): Error: expected color %d got %d\n",
+                 myname, this_node, color, input_color);
+    return 1;
+  }
+  return 0;
+}
+
+/* For a KS source file we use XML encoding for the KS source */
 static int check_color(QIO_String *recxml, int color){
   int status;
   int input_color;
@@ -178,8 +197,9 @@ static int check_color(QIO_String *recxml, int color){
   char myname[] = "check_color";
 
   status = QIO_decode_usqcd_kspropsource_info(&recinfo, recxml);
-  if(status != QIO_SUCCESS) 
-    return qio_status(status);
+  if(status != QIO_SUCCESS)
+    /* For backward compatibility */
+    return check_color_old(recxml, color);
   input_color = QIO_get_usqcd_kspropsource_color(&recinfo);
   if(color != input_color){
     node0_printf("%s(%d): Error: expected color %d got %d\n",
