@@ -142,6 +142,27 @@ int choose_usqcd_w_file_type(int source_type){
 /********************************************************************/
 /* For the source file we borrow the XML encoding from the USQCD
    Wilson propagator file  */
+static int check_color_spin_old(QIO_String *recxml, int color, int spin){
+  int status;
+  int input_color, input_spin;
+  QIO_USQCDPropRecordInfo recinfo;
+  char myname[] = "check_color_spin_old";
+
+  status = QIO_decode_usqcd_proprecord_info(&recinfo, recxml);
+  if(status != QIO_SUCCESS) 
+    return qio_status(status);
+  input_color = QIO_get_usqcd_proprecord_color(&recinfo);
+  input_spin = QIO_get_usqcd_proprecord_spin(&recinfo);
+  if(color != input_color || spin  != input_spin ){
+    node0_printf("%s(%d): Error: expected color %d and spin %d got %d and %d\n",
+		 myname, this_node, color, spin, 
+		 input_color, input_spin);
+    return 1;
+  }
+  return 0;
+}
+
+/* Use the propsource XML */
 static int check_color_spin(QIO_String *recxml, int color, int spin){
   int status;
   int input_color, input_spin;
@@ -150,7 +171,8 @@ static int check_color_spin(QIO_String *recxml, int color, int spin){
 
   status = QIO_decode_usqcd_propsource_info(&recinfo, recxml);
   if(status != QIO_SUCCESS) 
-    return qio_status(status);
+    /* For backward compatibility */
+    return check_color_spin_old(recxml, color, spin);
   input_color = QIO_get_usqcd_propsource_color(&recinfo);
   input_spin = QIO_get_usqcd_propsource_spin(&recinfo);
   if(color != input_color || spin  != input_spin ){
@@ -175,7 +197,7 @@ static int check_color_old(QIO_String *recxml, int color){
   int status;
   int input_color;
   QIO_USQCDKSPropRecordInfo recinfo;
-  char myname[] = "check_color";
+  char myname[] = "check_color_old";
 
   status = QIO_decode_usqcd_ksproprecord_info(&recinfo, recxml);
   if(status != QIO_SUCCESS)
