@@ -622,7 +622,7 @@ int get_complex_source(quark_source *qs){
   }
   else if(source_type == WAVEFUNCTION_FILE){
     int stride = 1;
-    if(qs->subset = HYPERCUBE)stride = 2;
+    if(qs->subset == HYPERCUBE)stride = 2;
     fnal_wavefunction(qs->c_src, stride, 
 		      x0, y0, z0, t0, a, source_file);
     subset_mask_c(qs->c_src, qs->subset, t0);
