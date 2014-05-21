@@ -419,6 +419,24 @@ static void point_source(complex *src, int x0, int y0, int z0, int t0){
   }
 }
 
+/* Generate a random complex source with variance 1 */
+
+static void random_complex_wall(complex *src, int t0){
+  int i;
+  site *s;
+  Real x;
+
+  FORALLSITES(i,s){
+    if( s->t==t0 || t0 == ALL_T_SLICES){
+	src[i].real = gaussian_rand_no(&(s->site_prn));
+	src[i].imag = gaussian_rand_no(&(s->site_prn));
+      }
+    x = 1.0/cabs( &src[i] );
+    CMULREAL( src[i], x, src[i] );
+  }
+}
+    
+
 #ifdef HAVE_KS
 
 /*--------------------------------------------------------------------*/
@@ -557,6 +575,7 @@ int is_complex_source(int source_type){
     source_type == EVENMINUSODD_WALL ||
     source_type == GAUSSIAN ||
     source_type == POINT ||
+    source_type == RANDOM_COMPLEX_WALL ||
     source_type == WAVEFUNCTION_FILE;
 }
 
@@ -619,6 +638,10 @@ int get_complex_source(quark_source *qs){
   }      
   else if(source_type == POINT) {
     point_source(qs->c_src, x0, y0, z0, t0);
+  }
+  else if(source_type == RANDOM_COMPLEX_WALL){
+    random_complex_wall(qs->c_src, t0);
+    subset_mask_c(qs->c_src, qs->subset, t0);
   }
   else if(source_type == WAVEFUNCTION_FILE){
     int stride = 1;
@@ -1132,6 +1155,7 @@ static int ask_quark_source( FILE *fp, int prompt, int *source_type,
     printf("\n     ");
     printf("'gaussian', ");
     printf("'point', ");
+    printf("'random_complex_wall', ");
     printf("'wavefunction', ");
     printf("\n     ");
     printf("'random_color_wall', ");
@@ -1180,6 +1204,10 @@ static int ask_quark_source( FILE *fp, int prompt, int *source_type,
   else if(strcmp("point",savebuf) == 0 ){
     *source_type = POINT;
     strcpy(descrp,"point");
+  }
+  else if(strcmp("random_complex_wall",savebuf) == 0 ){
+    *source_type = RANDOM_COMPLEX_WALL;
+    strcpy(descrp,"random_complex_wall");
   }
   else if(strcmp("wavefunction",savebuf) == 0 ){
     *source_type = WAVEFUNCTION_FILE;
@@ -1314,6 +1342,10 @@ static int get_quark_source(int *status_p, FILE *fp, int prompt,
     IF_OK status += get_vi(fp, prompt, "origin", source_loc, 4);
     /* width: psi=exp(-(r/r0)^2) */
     IF_OK status += get_f(fp, prompt,"r0", &source_r0 );
+  }
+  else if ( source_type == RANDOM_COMPLEX_WALL ){
+    IF_OK status += get_i(fp, prompt, "t0", &source_loc[3]);
+    IF_OK status += get_vi(fp, prompt, "momentum", qs->mom, 3);
   }
   else if ( source_type == WAVEFUNCTION_FILE ){
     IF_OK status += get_vi(fp, prompt, "origin", source_loc, 4);
@@ -1556,6 +1588,11 @@ void print_source_info(FILE *fp, char prefix[], quark_source *qs){
     fprintf(fp,"%s [ %d, %d, %d, %d ]\n", make_tag(prefix, "origin"), 
 	    qs->x0, qs->y0, qs->z0, qs->t0);
     fprintf(fp,"%s %g\n", make_tag(prefix, "r0"), qs->r0);
+  }
+  else if ( source_type == RANDOM_COMPLEX_WALL ){
+    fprintf(fp,"%s %d\n", make_tag(prefix, "t0"), qs->t0);
+    fprintf(fp,"%s [ %d, %d, %d ]\n", make_tag(prefix, "mom"), qs->mom[0],
+	    qs->mom[1], qs->mom[2]);
   }
   else if ( source_type == WAVEFUNCTION_FILE ){
     fprintf(fp,"%s [ %d, %d, %d, %d ]\n", make_tag(prefix, "origin"), 

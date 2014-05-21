@@ -3274,6 +3274,7 @@ parameters.  Complex field source names can be any of the following:
 * evenminusodd_wall::
 * gaussian::
 * point::
+* random_complex_wall::
 * wavefunction::
 @end menu
 
@@ -3394,7 +3395,7 @@ where r is the Cartesian displacement from x, y, z an the fixed time
 slice t.  This is a non-gauge-covariant source, so it is common to use
 it only with Coulomb gauge fixing.
 
-@node point, wavefunction, gaussian, Base sources
+@node point, random_complex_wall, gaussian, Base sources
 @subsubsection point
 @cindex  point source
 
@@ -3405,7 +3406,21 @@ origin <int[4]>
 A point source of strength one at the origin specified by the integers
 x, y, z, and t.
 
-@node wavefunction, random_color_wall, point, Base sources
+@node random_complex_wall, wavefunction, point, Base sources
+@subsection random_complex_wall
+@cindex random_complex source
+
+@example
+t0 <int>
+momentum <int[3]>
+@end example
+
+A random complex field of unit magnitude on the time slice
+@strong{t0}.  The same random source is used for each of three colors
+and, in the Dirac case, each of four spins.  The Fourier phase factor
+specified by the three integer momentum components multiplies the source.
+
+@node wavefunction, random_color_wall, random_complex_wall, Base sources
 @subsubsection wavefunction
 @cindex  wavefunction source
 
