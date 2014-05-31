@@ -6,7 +6,7 @@ antiquark_type:               clover
 antiquark_kappa:              "0.1"
 antiquark_source_type:        gaussian
 antiquark_source_subset:      full
-antiquark_source_origin:      0 0 0 0
+antiquark_source_origin:      [ 0, 0, 0, 0 ]
 antiquark_source_r0:          1.5
 antiquark_source_label:       1S
 antiquark_sink_label:         d
@@ -14,7 +14,7 @@ quark_type:                   clover
 quark_kappa:                  "0.1"
 quark_source_type:            gaussian
 quark_source_subset:          full
-quark_source_origin:          0 0 0 0
+quark_source_origin:          [ 0, 0, 0, 0 ]
 quark_source_r0:              1.5
 quark_source_label:           1S
 quark_sink_label:             d
@@ -225,7 +225,7 @@ antiquark_type:          clover
 antiquark_kappa:         "0.1"
 antiquark_source_type:   gaussian
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_r0:     1.5
 antiquark_source_label:  1S
 antiquark_sink_label:    rot
@@ -238,7 +238,7 @@ quark_type:              clover
 quark_kappa:             "0.1"
 quark_source_type:       gaussian
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_r0:         1.5
 quark_source_label:      1S
 quark_sink_label:        rot

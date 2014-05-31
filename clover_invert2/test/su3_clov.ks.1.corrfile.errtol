@@ -6,6 +6,7 @@ antiquark_type: naive
 antiquark_mass: "0.1"
 antiquark_source_type: vector_propagator_file
 antiquark_source_subset: full
+antiquark_source_t0:          0
 antiquark_source_ncolor: 0
 antiquark_source_label: d
 antiquark_sink_label: d
@@ -13,12 +14,12 @@ quark_type: clover
 quark_kappa: "0.124"
 quark_source_type: gaussian
 quark_source_subset: full
-quark_source_origin: 0 0 0 0
+quark_source_origin:          [ 0, 0, 0, 0 ]
 quark_source_r0: 0.0003
 quark_source_label: 0.0002
 quark_sink_label: rot
 quark_sink_ops:          [
-{ operation:             rotate_3D
+{ operation:             rotate_3D,
   d1:                    0
 }
 ]
@@ -166,6 +167,7 @@ antiquark_type: naive
 antiquark_mass: "0.1"
 antiquark_source_type: vector_propagator_file
 antiquark_source_subset: full
+antiquark_source_t0:          0
 antiquark_source_ncolor: 0
 antiquark_source_label: d
 antiquark_sink_label: d
@@ -173,7 +175,7 @@ quark_type: clover
 quark_kappa: "0.124"
 quark_source_type: gaussian
 quark_source_subset: full
-quark_source_origin: 0 0 0 0
+quark_source_origin:          [ 0, 0, 0, 0 ]
 quark_source_r0: 0.0003
 quark_source_label: 0.0002
 quark_sink_label: d
@@ -516,6 +518,7 @@ antiquark_type: naive
 antiquark_mass: "0.1"
 antiquark_source_type: vector_propagator_file
 antiquark_source_subset: full
+antiquark_source_t0:          0
 antiquark_source_ncolor: 0
 antiquark_source_label: d
 antiquark_sink_label: d
@@ -523,7 +526,7 @@ quark_type: clover
 quark_kappa: "0.124"
 quark_source_type: gaussian
 quark_source_subset: full
-quark_source_origin: 0 0 0 0
+quark_source_origin:          [ 0, 0, 0, 0 ]
 quark_source_r0: 0.0003
 quark_source_label: 0.0002
 quark_sink_label: 0.0002

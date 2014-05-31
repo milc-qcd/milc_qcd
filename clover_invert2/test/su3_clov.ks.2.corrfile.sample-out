@@ -1,25 +1,26 @@
 ---
-JobID:                   203696.kaon2.fnal.gov
-date:                    "Wed Sep 15 07:43:40 2010 UTC"
-lattice_size:            4,4,4,8
-antiquark_type:          naive
-antiquark_mass:          "0.1"
-antiquark_source_type:   vector_propagator_file
-antiquark_source_subset: full
-antiquark_source_ncolor: 3
-antiquark_source_label:  d
-antiquark_sink_label:    d
-quark_type:              clover
-quark_kappa:             "0.124"
-quark_source_type:       gaussian
-quark_source_subset:     full
-quark_source_origin:     0 0 0 0
-quark_source_r0:         1.5
-quark_source_label:      1S
-quark_sink_label:        rot
-quark_sink_ops:          [
-{ operation:             rotate_3D,
-  d1:                    0.09073
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Fri May 30 03:56:37 2014 UTC"
+lattice_size:                 4,4,4,8
+antiquark_type:               naive
+antiquark_mass:               "0.1"
+antiquark_source_type:        vector_propagator_file
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_ncolor:      3
+antiquark_source_label:       d
+antiquark_sink_label:         d
+quark_type:                   clover
+quark_kappa:                  "0.124"
+quark_source_type:            gaussian
+quark_source_subset:          full
+quark_source_origin:          [ 0, 0, 0, 0 ]
+quark_source_r0:              1.5
+quark_source_label:           1S
+quark_sink_label:             rot
+quark_sink_ops:               [
+{ operation:                  rotate_3D,
+  d1:                         0.09073
 }
 ]
 ...
@@ -159,24 +160,25 @@ correlator_key:         A1_P5_d_1S_d_rot_m0.1_k0.124_p200
 6	-3.171755e-19	-4.781253e-19
 7	8.411899e-19	-3.045410e-19
 ---
-JobID:                   203696.kaon2.fnal.gov
-date:                    "Wed Sep 15 07:43:40 2010 UTC"
-lattice_size:            4,4,4,8
-antiquark_type:          naive
-antiquark_mass:          "0.1"
-antiquark_source_type:   vector_propagator_file
-antiquark_source_subset: full
-antiquark_source_ncolor: 3
-antiquark_source_label:  d
-antiquark_sink_label:    d
-quark_type:              clover
-quark_kappa:             "0.124"
-quark_source_type:       gaussian
-quark_source_subset:     full
-quark_source_origin:     0 0 0 0
-quark_source_r0:         1.5
-quark_source_label:      1S
-quark_sink_label:        d
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Fri May 30 03:56:37 2014 UTC"
+lattice_size:                 4,4,4,8
+antiquark_type:               naive
+antiquark_mass:               "0.1"
+antiquark_source_type:        vector_propagator_file
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_ncolor:      3
+antiquark_source_label:       d
+antiquark_sink_label:         d
+quark_type:                   clover
+quark_kappa:                  "0.124"
+quark_source_type:            gaussian
+quark_source_subset:          full
+quark_source_origin:          [ 0, 0, 0, 0 ]
+quark_source_r0:              1.5
+quark_source_label:           1S
+quark_sink_label:             d
 ...
 ---
 correlator:             pi
@@ -509,27 +511,28 @@ correlator_key:         ro_1_d_1S_d_d_m0.1_k0.124_p400
 6	3.780143e-02	2.114854e-03
 7	6.481958e-01	-1.024316e-02
 ---
-JobID:                   203696.kaon2.fnal.gov
-date:                    "Wed Sep 15 07:43:40 2010 UTC"
-lattice_size:            4,4,4,8
-antiquark_type:          naive
-antiquark_mass:          "0.1"
-antiquark_source_type:   vector_propagator_file
-antiquark_source_subset: full
-antiquark_source_ncolor: 3
-antiquark_source_label:  d
-antiquark_sink_label:    d
-quark_type:              clover
-quark_kappa:             "0.124"
-quark_source_type:       gaussian
-quark_source_subset:     full
-quark_source_origin:     0 0 0 0
-quark_source_r0:         1.5
-quark_source_label:      1S
-quark_sink_label:        1S
-quark_sink_ops:          [
-{ operation:             complex_field_fm,
-  file: ../../binary_samples/smear_fm.sample.l4448.ll
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Fri May 30 03:56:37 2014 UTC"
+lattice_size:                 4,4,4,8
+antiquark_type:               naive
+antiquark_mass:               "0.1"
+antiquark_source_type:        vector_propagator_file
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_ncolor:      3
+antiquark_source_label:       d
+antiquark_sink_label:         d
+quark_type:                   clover
+quark_kappa:                  "0.124"
+quark_source_type:            gaussian
+quark_source_subset:          full
+quark_source_origin:          [ 0, 0, 0, 0 ]
+quark_source_r0:              1.5
+quark_source_label:           1S
+quark_sink_label:             1S
+quark_sink_ops:               [
+{ operation:                  complex_field_fm,
+  file:                       ../../binary_samples/smear_fm.sample.l4448.ll
 }
 ]
 ...

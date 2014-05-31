@@ -6,7 +6,7 @@ antiquark_type:          clover
 antiquark_kappa:         "0.1"
 antiquark_source_type:   point/fat_covariant_gaussian
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  G
 antiquark_source_ops:        [
 { operation:             fat_covariant_gaussian,
@@ -33,7 +33,7 @@ quark_type:              clover
 quark_kappa:             "0.1"
 quark_source_type:       point/fat_covariant_gaussian
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      G
 quark_source_ops:            [
 { operation:             fat_covariant_gaussian,
@@ -299,7 +299,7 @@ antiquark_type:          clover
 antiquark_kappa:         "0.1"
 antiquark_source_type:   point/fat_covariant_gaussian
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  G
 antiquark_source_ops:        [
 { operation:             fat_covariant_gaussian,
@@ -325,7 +325,7 @@ quark_type:              clover
 quark_kappa:             "0.1"
 quark_source_type:       point/deriv1/fat_covariant_gaussian
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      N1
 quark_source_ops:            [
 { operation:             deriv1,
@@ -596,7 +596,7 @@ antiquark_type:          clover
 antiquark_kappa:         "0.1"
 antiquark_source_type:   point/fat_covariant_gaussian
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  G
 antiquark_source_ops:        [
 { operation:             fat_covariant_gaussian,
@@ -623,7 +623,7 @@ quark_type:              clover
 quark_kappa:             "0.1"
 quark_source_type:       point/deriv1/fat_covariant_gaussian
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      N1
 quark_source_ops:            [
 { operation:             deriv1,
@@ -834,7 +834,7 @@ antiquark_type:          clover
 antiquark_kappa:         "0.1"
 antiquark_source_type:   point/fat_covariant_gaussian
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  G
 antiquark_source_ops:        [
 { operation:             fat_covariant_gaussian,
@@ -855,7 +855,7 @@ quark_type:              clover
 quark_kappa:             "0.1"
 quark_source_type:       point/deriv2_B/fat_covariant_gaussian
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      B1
 quark_source_ops:            [
 { operation:             deriv2_B,
