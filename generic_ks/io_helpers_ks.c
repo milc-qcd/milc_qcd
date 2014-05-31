@@ -52,7 +52,7 @@ read_usqcd_ksprop_record(ks_prop_file *kspf,
 				  MAXDESCRP, get_cached_c_source(ksqs)));
     if(status == 0){node0_printf("Read prop source %s from %s\n",ksqs->descrp, kspf->filename);}
     else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", kspf->filename);}
-    ksqs->type = COMPLEX_FIELD_STORE;
+    if(ksqs->type == VECTOR_PROPAGATOR_FILE)ksqs->type = COMPLEX_FIELD_STORE;
   }
   else if(file_type == FILE_TYPE_KS_USQCD_VV_PAIRS){
     /* Read a color vector source field into the source cache */
@@ -61,7 +61,7 @@ read_usqcd_ksprop_record(ks_prop_file *kspf,
 				  MAXDESCRP, get_cached_v_source(ksqs)));
     if(status == 0){node0_printf("Read prop source %s from %s\n",ksqs->descrp, kspf->filename);}
     else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", kspf->filename);}
-    ksqs->type = VECTOR_FIELD_STORE;
+    if(ksqs->type == VECTOR_PROPAGATOR_FILE)ksqs->type = VECTOR_FIELD_STORE;
   }
 
   /* Next, read the solution vector */

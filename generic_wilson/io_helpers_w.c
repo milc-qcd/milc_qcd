@@ -48,7 +48,7 @@ read_usqcd_wprop_record(w_prop_file *wpf,
 				 MAXDESCRP, get_cached_c_source(wqs)));
     if(status == 0){node0_printf("Read prop source %s from %s\n",wqs->descrp, wpf->filename);}
     else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", wpf->filename);}
-    wqs->type = COMPLEX_FIELD_STORE;
+    if(wqs->type == DIRAC_PROPAGATOR_FILE)wqs->type = COMPLEX_FIELD_STORE;
   }
   else if(file_type == FILE_TYPE_W_USQCD_DD_PAIRS){
     /* Read a Wilson vector source field */
@@ -57,7 +57,7 @@ read_usqcd_wprop_record(w_prop_file *wpf,
 				 MAXDESCRP, get_cached_wv_source(wqs)));
     if(status == 0){node0_printf("Read prop source %s from %s\n",wqs->descrp, wpf->filename);}
     else if(status == -1){node0_printf("Unexpected EOF encountered on %s\n", wpf->filename);}
-    wqs->type = DIRAC_FIELD_STORE;
+    if(wqs->type == DIRAC_PROPAGATOR_FILE)wqs->type = DIRAC_FIELD_STORE;
   }
 
   /* Next, read the solution vector */

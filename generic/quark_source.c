@@ -914,10 +914,42 @@ static int wv_base_source(wilson_vector *src, quark_source *qs)
   /* zero src to be safe */
   clear_wv_field(src);
   
+  /* Sources from storage */
+
+  if(source_type == COMPLEX_FIELD_STORE){
+    if(qs->c_src == NULL){
+      printf("%s: Can't copy from null field\n", myname);
+      terminate(1);
+    }
+    /* Load to the specified color and timeslice */
+    if(src != NULL){
+      insert_wv_from_c(src, qs->c_src, spin, color);
+    }
+  }
+
+#ifdef HAVE_KS
+
+  else if(source_type == VECTOR_FIELD_STORE){
+    if(qs->v_src == NULL){
+      printf("%s: Can't copy from null field\n", myname);
+      terminate(1);
+    }
+    insert_wv_from_v(src, qs->v_src, spin);
+  }
+
+#endif
+
+  else if(source_type == DIRAC_FIELD_STORE){
+    if(qs->wv_src == NULL){
+      printf("%s: Can't copy from null field\n", myname);
+      terminate(1);
+    }
+    copy_wv_field(src, qs->wv_src);
+  }
+
   /* Complex field sources */
 
   if(is_complex_source(source_type)){
-
     get_complex_source(qs);
     insert_wv_from_c(src, qs->c_src, spin, color);
   }
@@ -936,7 +968,6 @@ static int wv_base_source(wilson_vector *src, quark_source *qs)
   /* Dirac vector sources */
 
   else if(is_dirac_source(source_type)){
-
     get_dirac_source(qs, spin, color);
     copy_wv_field(src, qs->wv_src);
   }
