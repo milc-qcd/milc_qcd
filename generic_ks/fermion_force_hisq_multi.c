@@ -415,7 +415,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
   su3_tensor4 dydv, dydagdv, dwdv, dwdagdv;
   su3_matrix force_tmp;
   int m, n, l;
-  complex force, ftmp;
+  complex ftmp;
   int inaik, n_naik_shift;
   int aux_stride = 4;
   size_t nflops = 0;
