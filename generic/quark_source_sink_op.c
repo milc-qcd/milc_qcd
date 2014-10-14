@@ -19,6 +19,7 @@
    funnywall1                 pion5 + pioni5 + pioni + pions + rhoi + rhos
    funnywall2                 pion05 + pionij + pioni0 + pion0 + rhoi0 + rho0
    spin_taste
+   spin_taste_extend
 
    Covariant modifications of the source:
 
@@ -913,7 +914,8 @@ static int requires_gauge_field(int op_type){
     op_type == HOPPING    ||
     op_type == KS_INVERSE ||
     op_type == ROTATE_3D  ||
-    op_type == SPIN_TASTE;
+    op_type == SPIN_TASTE ||
+    op_type == SPIN_TASTE_EXTEND;
 }
 #endif
 
@@ -1067,6 +1069,17 @@ static void apply_spin_taste(su3_vector *src, quark_source_sink_op *qss_op){
   /* At present we do not support "fn" type spin-taste operators here */
   spin_taste_op(qss_op->spin_taste, qss_op->r_offset, dst, src);
 
+  copy_v_field(src, dst);
+  destroy_v_field(dst);
+  
+}
+
+static void apply_spin_taste_extend(su3_vector *src, quark_source_sink_op *qss_op){
+  su3_vector *dst = create_v_field();
+  
+  /* At present we do not support "fn" type spin-taste operators here */
+  spin_taste_op(qss_op->spin_taste, qss_op->r_offset, dst, src);
+
   /* The spin_taste_op phases were designed for tying together two
        forward propagators by first converting one of them to an
        antiquark propagator.  So they include the antiquark phase
@@ -1085,7 +1098,7 @@ static void apply_spin_taste(su3_vector *src, quark_source_sink_op *qss_op){
 static void apply_ext_src_v(su3_vector *src, 
 			    quark_source_sink_op *qss_op){
   apply_tslice_projection_v(src, qss_op);
-  apply_spin_taste(src, qss_op);
+  apply_spin_taste_extend(src, qss_op);
   apply_momentum_v(src, qss_op, qss_op->t0);
 }
 
@@ -1803,6 +1816,9 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
   else if(op_type == SPIN_TASTE)
     apply_spin_taste(src, qss_op);
 
+  else if(op_type == SPIN_TASTE_EXTEND)
+    apply_spin_taste_extend(src, qss_op);
+
   else if(op_type == HOPPING)
     hop_vec(src, &qss_op->ksp, qss_op->dhop, qss_op->dir1);
 
@@ -1986,6 +2002,7 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     printf("'rotate_3D', ");
     printf("'gamma', ");
     printf("'spin_taste', ");
+    printf("'spin_taste_extend', ");
     printf("\n     ");
     printf("'momentum', ");
     printf("'modulation', ");
@@ -2116,6 +2133,10 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     *source_type = SPIN_TASTE;
     strcpy(descrp,"spin_taste");
   }
+  else if(strcmp("spin_taste_extend",savebuf) == 0 ){
+    *source_type = SPIN_TASTE_EXTEND;
+    strcpy(descrp,"spin_taste_extend");
+  }
   else{
     printf("%s: ERROR IN INPUT: field operation command %s is invalid\n",myname,
 	   savebuf); 
@@ -2233,7 +2254,7 @@ static int get_field_op(int *status_p, FILE *fp,
 #ifdef HAVE_KS
   else if ( op_type == EXT_SRC_KS ){
     char gam_op_lab[MAXGAMMA];
-    IF_OK status += get_s(fp, prompt, "spin_taste", gam_op_lab);
+    IF_OK status += get_s(fp, prompt, "spin_taste_extend", gam_op_lab);
     IF_OK {
       qss_op->spin_taste = spin_taste_index(gam_op_lab);
       if(qss_op->spin_taste < 0){
@@ -2327,6 +2348,18 @@ static int get_field_op(int *status_p, FILE *fp,
     char spin_taste_label[8];
     /* Parameters for spin-taste */
     IF_OK status += get_s(fp, prompt, "spin_taste", spin_taste_label);
+    IF_OK {
+      qss_op->spin_taste = spin_taste_index(spin_taste_label);
+      if(qss_op->spin_taste < 0){
+	printf("\n: Unrecognized spin-taste label %s.\n", spin_taste_label);
+	status++;
+      }
+    }
+  }
+  else if( op_type == SPIN_TASTE_EXTEND){
+    char spin_taste_label[8];
+    /* Parameters for spin-taste */
+    IF_OK status += get_s(fp, prompt, "spin_taste_extend", spin_taste_label);
     IF_OK {
       qss_op->spin_taste = spin_taste_index(spin_taste_label);
       if(qss_op->spin_taste < 0){
@@ -2617,9 +2650,14 @@ static int print_single_op_info(FILE *fp, char prefix[],
     fprintf(fp,"%s%s\n", make_tag(prefix, "spin_taste"), 
 	    spin_taste_label(qss_op->spin_taste));
   }
+  else if ( op_type == SPIN_TASTE_EXTEND ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%s\n", make_tag(prefix, "spin_taste_extend"), 
+	    spin_taste_label(qss_op->spin_taste));
+  }
   else if ( op_type == EXT_SRC_KS ){
     fprintf(fp,",\n");
-    fprintf(fp,"%s%s,\n", make_tag(prefix, "spin_taste"), 
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "spin_taste_extend"), 
 	    spin_taste_label(qss_op->spin_taste));
     fprintf(fp,"%s[%d, %d, %d],\n", make_tag(prefix, "mom"), qss_op->mom[0],
 	    qss_op->mom[1], qss_op->mom[2]);
