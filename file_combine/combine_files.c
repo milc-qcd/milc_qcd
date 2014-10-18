@@ -19,8 +19,9 @@ static int check_ks_color(QIO_String *recxml, int color){
 
   status = QIO_decode_usqcd_ksproprecord_info(&recinfo, recxml);
   if(status != QIO_SUCCESS){
-    node0_printf("%s: Can't decode the record info\n", myname);
-    terminate(1);
+    node0_printf("%s: Can't decode the record info\n%s\n", myname, QIO_string_ptr(recxml));
+    //    terminate(1);
+    return 1;
   }
   input_color = QIO_get_usqcd_ksproprecord_color(&recinfo);
   if(color != input_color){
@@ -40,8 +41,9 @@ static int check_wv_color_spin(QIO_String *recxml, int color, int spin){
 
   status = QIO_decode_usqcd_proprecord_info(&recinfo, recxml);
   if(status != QIO_SUCCESS){
-    node0_printf("%s: Can't decode the record info\n", myname);
-    terminate(1);
+    node0_printf("%s: Can't decode the record info\n%s\n", myname, QIO_string_ptr(recxml));
+    //    terminate(1);
+    return 1;
   }
   input_color = QIO_get_usqcd_proprecord_color(&recinfo);
   input_spin = QIO_get_usqcd_proprecord_spin(&recinfo);
@@ -257,11 +259,23 @@ static void combine_dirac_field_files(int nfile, int ncolor, int nspin, int t0,
       recinfo = QIO_create_usqcd_proprecord_sc_info(spin, color, "");
       QIO_encode_usqcd_proprecord_info(xml_record, recinfo);
       QIO_destroy_usqcd_proprecord_info(recinfo);
-      if(PRECISION==1)
-	status = write_F3_D_from_field(outfile, xml_record, wv_dst, 1 );
-      else
-	status = write_D3_D_from_field(outfile, xml_record, wv_dst, 1 );
+
+      if(PRECISION==1) {
+        if (t0 == ALL_T_SLICES)
+	  status = write_F3_D_from_field(outfile, xml_record, wv_dst, 1 );
+        else
+	  status = write_F3_D_timeslice_from_field(outfile, xml_record, wv_dst, 1,t0);
+      }
+
+      else {
+        if (t0 == ALL_T_SLICES)
+	  status = write_D3_D_from_field(outfile, xml_record, wv_dst, 1 );
+        else
+	  status = write_D3_D_timeslice_from_field(outfile, xml_record, wv_dst, 1,t0);
+      }
+
       QIO_string_destroy(xml_record);
+
     } /* color and spin */
   
   w_close_w_vector_scidac_file(outfile);

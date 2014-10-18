@@ -39,7 +39,6 @@ my_relative_residue(su3_vector *p, su3_vector *q, int parity)
 {
   double residue, num, den;
   int i;
-  site *s;
   
   residue = 0;
   FORSOMEFIELDPARITY_OMP(i,parity,private(num,den) reduction(+:residue)){

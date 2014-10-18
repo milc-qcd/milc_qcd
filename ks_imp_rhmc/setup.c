@@ -113,6 +113,7 @@
 #include "../include/fermion_links.h"
 #define SU3_MAT_OP_NO_STORAGE
 #include "../include/su3_mat_op.h"
+#include <unistd.h>
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"

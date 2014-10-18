@@ -601,6 +601,8 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
     if(do_long)
       tag[1] = start_gather_field( src, sizeof(su3_vector), DIR3(dir), 
 				   parity, gen_pt[1] );
+    else tag[1] = NULL;
+
     wait_gather(tag[0]);
     if(do_long)
       wait_gather(tag[1]);

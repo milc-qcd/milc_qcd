@@ -13,8 +13,8 @@
 
 //#ifdef LOOPEND
 //#undef FORALLSITES
-//#define FORALLSITES(i,s) \
-//{ register int loopend; loopend=sites_on_node; \
+//#define FORALLSITES(i,s) 
+//{ register int loopend; loopend=sites_on_node; 
  //for( i=0,  s=lattice ; i<loopend; i++,s++ )
 //#define END_LOOP }
 //#else
