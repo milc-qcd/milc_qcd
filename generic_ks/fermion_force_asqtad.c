@@ -769,7 +769,7 @@ eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 
 
 void 
-eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2, 
+eo_fermion_force_twoterms_site_cpu( Real eps, Real weight1, Real weight2, 
 				field_offset x1_off, field_offset x2_off,
 				int prec, fermion_links_t *fl )
 {

@@ -492,11 +492,18 @@ load_X_from_W(info_t *info, fn_links_t *fn, hisq_auxiliary_t *aux,
   su3_matrix *fat = get_fatlinks(fn);
   su3_matrix *lng = get_lnglinks(fn);
   double final_flop = 0.0;
-
+  double dtime = -dclock();
+#ifdef USE_FL_GPU
+  load_fatlonglinks_gpu(info, fat, lng, ap, aux->W_unitlink);
+#else
   load_fatlinks(info, fat, ap, aux->W_unitlink );
   final_flop += info->final_flop;
   load_lnglinks(info, lng, ap, aux->W_unitlink );
   final_flop += info->final_flop;
+#endif
+  dtime += dclock();
+  
+  printf("Combined fattening and long-link calculation time: %lf\n",dtime);
 
   info->final_flop = final_flop;
 

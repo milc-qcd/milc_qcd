@@ -125,8 +125,11 @@ void load_eo_links(info_t *info, eo_links_t *eo, ks_action_paths *ap,
 		   su3_matrix *links, int want_back);
 
 /* fermion_links_fn_load_milc.c */
-void load_fn_links(info_t *info, fn_links_t *fm, ks_action_paths *ap, 
-		   su3_matrix *links, int want_back);
+void load_fn_links_cpu(info_t *info, fn_links_t *fm, ks_action_paths *ap,
+		       su3_matrix *links, int want_back);
+
+void load_fn_links_gpu(info_t *info, fn_links_t *fm, ks_action_paths *ap,
+		       su3_matrix *links, int want_back);
 
 void
 load_lnglinks(info_t *info, su3_matrix *lng, ks_component_paths *p,
@@ -140,6 +143,10 @@ void
 load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p, 
 		  su3_matrix *links);
 
+void
+load_fatlonglinks_gpu(info_t *info, su3_matrix *fatlinks, su3_matrix *longlinks, 
+		      ks_component_paths *p, su3_matrix *links);
+
 void 
 load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap, 
                         hisq_auxiliary_t *aux, su3_matrix *links);
@@ -148,9 +155,11 @@ load_hisq_aux_links_gpu(info_t *info, ks_action_paths_hisq *ap,
 #ifdef USE_FL_GPU
 #define load_fatlinks load_fatlinks_gpu
 #define load_hisq_aux_links load_hisq_aux_links_gpu
+#define load_fn_links load_fn_links_gpu
 #else
 #define load_fatlinks load_fatlinks_cpu
 #define load_hisq_aux_links load_hisq_aux_links_cpu
+#define load_fn_links load_fn_links_cpu
 #endif
 
 /* fermion_links_hisq_load_milc.c */

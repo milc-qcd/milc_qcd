@@ -111,7 +111,10 @@ void eo_fermion_force_oneterm_site( Real eps, Real weight, field_offset x_off,
 void eo_fermion_force_twoterms( Real eps, Real weight1, Real weight2,
 				su3_vector *x1_off, su3_vector *x2_off,
 				int prec, fermion_links_t *fn);
-void eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2,
+void eo_fermion_force_twoterms_site_cpu( Real eps, Real weight1, Real weight2,
+				     field_offset x1_off, field_offset x2_off,
+				     int prec, fermion_links_t *fn);
+void eo_fermion_force_twoterms_site_gpu( Real eps, Real weight1, Real weight2,
 				     field_offset x1_off, field_offset x2_off,
 				     int prec, fermion_links_t *fn);
 void fermion_force_asqtad_block( Real eps, Real *residues, 
@@ -129,8 +132,10 @@ eo_fermion_force_twoterms_field_gpu( Real eps, Real weight1, Real weight2,
 				     ks_action_paths *ap);
 #ifdef USE_FF_GPU
 #define eo_fermion_force_twoterms_field eo_fermion_force_twoterms_field_gpu
+#define eo_fermion_force_twoterms_site eo_fermion_force_twoterms_site_gpu
 #else
 #define eo_fermion_force_twoterms_field eo_fermion_force_twoterms_field_cpu
+#define eo_fermion_force_twoterms_site eo_fermion_force_twoterms_site_cpu
 #endif
 
 void fermion_force_block( Real eps, Real *residues, 
