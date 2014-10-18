@@ -235,6 +235,7 @@ WANT_GF_GPU = #true
 ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_HOME = ${HOME}/quda
+
   INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
@@ -269,6 +270,11 @@ ifeq ($(strip ${WANTQUDA}),true)
     HAVE_FF_GPU = true
     CGPU += -DUSE_FF_GPU
   endif
+
+# Verbosity choices: 
+# SET_QUDA_SILENT, SET_QUDA_SUMMARIZE, SET_QUDA_VERBOSE, SET_QUDA_DEBUG_VERBOSE
+
+  CGPU += -DSET_QUDA_DEBUG_VERBOSE # -DSET_QUDA_SUMMARIZE
 
 endif
 
