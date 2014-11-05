@@ -35,7 +35,30 @@ load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matr
  
   initialize_quda();
 
-  qudaLoadFatLink(PRECISION, fatlink_args, path_coeff, links, fat);
+  qudaLoadKSLink(PRECISION, fatlink_args, path_coeff, links, fat, NULL);
+  return;
+}
+
+void
+load_fatlonglinks_gpu(info_t *info, su3_matrix *fatlinks, su3_matrix *longlinks, ks_component_paths *p, su3_matrix *links)
+{
+  double path_coeff[6];
+  path_coeff[0] = p->act_path_coeff.one_link;
+  path_coeff[1] = p->act_path_coeff.naik;
+  path_coeff[2] = p->act_path_coeff.three_staple;
+  path_coeff[3] = p->act_path_coeff.five_staple;
+  path_coeff[4] = p->act_path_coeff.seven_staple;
+  path_coeff[5] = p->act_path_coeff.lepage;
+
+  QudaFatLinkArgs_t fatlink_args;
+  fatlink_args.su3_source = 0; // Cannot guarantee that the incoming field is an SU(3) gauge-field
+  // Need a workaround for this
+  fatlink_args.use_pinned_memory = 0;
+ 
+  initialize_quda();
+
+  // qudaLoadUnitarizedLink(PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks, NULL);
+  qudaLoadKSLink(PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks);
   return;
 }
 

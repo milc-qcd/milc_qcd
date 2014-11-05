@@ -11,7 +11,17 @@ static int is_quda_initialized = 0;
 int initialize_quda(void){
 
   QudaInitArgs_t init_args;
-  init_args.verbosity = QUDA_SUMMARIZE; // options are QUDA_SILENT, QUDA_SUMMARIZE, QUDA_VERBOSE, QUDA_DEBUG_VERBOSE
+
+#if defined(SET_QUDA_SILENT)
+  init_args.verbosity = QUDA_SILENT;
+#elif defined(SET_QUDA_VERBOSE)
+  init_args.verbosity = QUDA_VERBOSE;
+#elif defined(SET_QUDA_DEBUG_VERBOSE)
+  init_args.verbosity = QUDA_DEBUG_VERBOSE;
+#else
+  init_args.verbosity = QUDA_SUMMARIZE; /* default */
+#endif
+
   const int dim[4] = {nx, ny, nz, nt};
   int status = 0;
 

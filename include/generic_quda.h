@@ -6,6 +6,8 @@
 
 #include <quda_milc_interface.h>
 
+#ifdef HAVE_QUDA
 int initialize_quda(void);
+#endif
 
 #endif /* GENERIC_QUDA_H */

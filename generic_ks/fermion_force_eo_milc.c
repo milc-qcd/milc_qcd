@@ -186,7 +186,7 @@ node0_printf("FFTIME:  time = %e (1 mass) mflops = %e\n",dtime,
 /*   Version for two sets of flavors with distinct masses             */
 /**********************************************************************/
 
-void eo_fermion_force_twoterms_site( Real eps, Real weight1, Real weight2, 
+void eo_fermion_force_twoterms_site_cpu( Real eps, Real weight1, Real weight2, 
 				     field_offset x1_off, field_offset x2_off,
 				     int prec, fermion_links_t *fl)
 {

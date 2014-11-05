@@ -1996,6 +1996,61 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
 #include <quda_milc_interface.h>
 #include "../include/generic_quda.h"
 
+
+
+
+void outer_product_create_gpu(Real* one_hop_coeff, Real *three_hop_coeff,
+                              Real* one_hop_naik_coeff, Real *three_hop_naik_coeff,
+                              su3_vector** multi_x, 
+                              int num_terms, int num_naik_terms,
+                              Real one_coeff,
+                              su3_matrix *staple_oprod[4],
+                              su3_matrix *one_hop_oprod[4],
+                              su3_matrix *three_hop_oprod[4])
+    
+{  
+  int term;
+
+  double** coeff = (double**)malloc(num_terms*sizeof(double*));
+  for(term=0; term<num_terms; ++term){
+    coeff[term] = (double*)malloc(2*sizeof(double));
+    coeff[term][0] = one_hop_coeff[term];
+    coeff[term][1] = three_hop_coeff[term];
+  }
+  
+  void* oprod[2] = {staple_oprod, three_hop_oprod};
+  qudaComputeOprod(PRECISION, num_terms, coeff, multi_x, oprod);
+  
+  for(term=0; term<num_naik_terms; term++){
+    coeff[term][0] = one_hop_naik_coeff[term];
+    coeff[term][1] = three_hop_naik_coeff[term];
+  }
+
+  int dir, i;
+  for(dir=XUP; dir<=TUP; ++dir){
+    FORALLFIELDSITES(i){
+      scalar_mult_su3_matrix(&(staple_oprod[dir][i]), one_coeff,
+                             &(one_hop_oprod[dir][i]));
+    }
+  }
+  
+  oprod[0] = one_hop_oprod;
+  qudaComputeOprod(PRECISION, num_naik_terms, coeff, multi_x + (num_terms-num_naik_terms), oprod);
+
+
+  for(term=0; term<num_terms; ++term){
+    free(coeff[term]);
+  }
+  free(coeff);
+  
+  return;
+
+}
+
+
+
+
+
 static void outer_product_append( Real one_hop_coeff, Real three_hop_coeff, 
 				  Real *residues, 
 				  su3_vector **multi_x, int nterms,
@@ -2143,28 +2198,6 @@ static void outer_product_append( Real one_hop_coeff, Real three_hop_coeff,
 } // outer_product_append
 
 
-static void outer_product_create( Real one_hop_coeff, Real three_hop_coeff, 
-	  Real *residues, 
-	  su3_vector **multi_x, int nterms,
-	  su3_matrix *one_hop_oprod[4], su3_matrix *three_hop_oprod[4] )
-{
-  int dir, i;
-  for(dir=XUP;dir<=TUP;dir++){
-    FORALLFIELDSITES(i){ 
-      clear_su3mat( &(one_hop_oprod[dir][i]) );
-      clear_su3mat( &(three_hop_oprod[dir][i]));
-    }
-  }
-  
-  outer_product_append(one_hop_coeff, three_hop_coeff,
-		       residues, 
-		       multi_x, 
-		       nterms,
-		       one_hop_oprod,
-		       three_hop_oprod);
-  return;
-} // outer_product_create
-
 
 
 
@@ -2206,43 +2239,68 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   initialize_quda();
   
   // First construct the outer products
-  for(i=XUP; i<=TUP; ++i){
-    one_link_oprod[i] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
-    three_link_oprod[i] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
-    staple_oprod[i] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
+  for(dir=XUP; dir<=TUP; dir++){
+    one_link_oprod[dir] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
+    three_link_oprod[dir] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
+    staple_oprod[dir] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
   }
   
   n_naik_shift = 0;
   n_orders_naik_current = n_order_naik_total;
-  Real one_hop_coeff = 2.0*eps;
-  Real three_hop_coeff = ap->p2.act_path_coeff.naik*2.0*eps;   
-  
-  outer_product_create(one_hop_coeff, three_hop_coeff, residues, 
-		       multi_x, n_orders_naik_current, staple_oprod, three_link_oprod);
-  
-  for(dir=XUP; dir<=TUP; ++dir){
-    FORALLFIELDSITES(i){
-      scalar_mult_su3_matrix(&(staple_oprod[dir][i]), ap->p2.act_path_coeff.one_link, 
-			     &(one_link_oprod[dir][i]));
-    }
+
+  Real* one_hop_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
+  Real* three_hop_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
+
+  for(i=0; i<n_orders_naik_current; ++i){
+    one_hop_coeff[i] = 2.0*eps*residues[i];
+    three_hop_coeff[i] = ap->p2.act_path_coeff.naik*2.0*eps*residues[i];
   }
-  
+
+  n_naik_shift = n_orders_naik[0];
+  n_orders_naik_current = 0;
+  for(inaik=1; inaik<n_naiks; ++inaik){
+    n_orders_naik_current += n_orders_naik[inaik];
+  }
+
+  Real* one_hop_naik_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
+  Real* three_hop_naik_coeff = (Real*)malloc(n_orders_naik_current*sizeof(Real));
+
+  i=0;
   n_naik_shift = n_orders_naik[0];
   for(inaik=1; inaik<n_naiks; ++inaik){
-    n_orders_naik_current = n_orders_naik[inaik];
-    
-    one_hop_coeff = ap->p3.act_path_coeff.one_link*eps_naik[inaik]*2.0*eps;
-    three_hop_coeff = ap->p3.act_path_coeff.naik*eps_naik[inaik]*2.0*eps;
-    
-    outer_product_append(one_hop_coeff, 
-			 three_hop_coeff, 
-			 residues+n_naik_shift,
-			 multi_x+n_naik_shift, n_orders_naik_current, 
-			 one_link_oprod,
-			 three_link_oprod);
-    
-    n_naik_shift += n_orders_naik[inaik];  
-  } // end loop over inaik
+    for(j=0; j<n_orders_naik[inaik]; j++){
+      one_hop_naik_coeff[i] = ap->p3.act_path_coeff.one_link*eps_naik[inaik]*2.0*eps*residues[n_naik_shift+j];
+      three_hop_naik_coeff[i++] = ap->p3.act_path_coeff.naik*eps_naik[inaik]*2.0*eps*residues[n_naik_shift+j];
+    }
+    n_naik_shift += n_orders_naik[inaik];
+  }
+
+
+  for(dir=XUP;dir<=TUP;dir++){
+    FORALLFIELDSITES(i){ 
+      clear_su3mat( &(staple_oprod[dir][i]) );
+      clear_su3mat( &(three_link_oprod[dir][i]));
+    }
+  }
+
+  outer_product_create_gpu(one_hop_coeff, three_hop_coeff,
+                           one_hop_naik_coeff, three_hop_naik_coeff,
+                           multi_x,
+                           n_order_naik_total, n_orders_naik_current,
+                           ap->p2.act_path_coeff.one_link,
+                           staple_oprod,
+                           one_link_oprod,
+                           three_link_oprod);
+
+
+
+  free(one_hop_coeff);
+  free(three_hop_coeff);
+
+  free(one_hop_naik_coeff); 
+  free(three_hop_naik_coeff);
+  
+
   // done constructing the outer products
   
   Real* momentum = (Real*)special_alloc(sites_on_node*4*sizeof(anti_hermitmat));
@@ -2253,51 +2311,28 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   double fat7_coeff[6];
   write_path_coeffs_to_array(ap->p1, fat7_coeff);
   
-  // The following lines of code are optional
-  // If the parameters are not set explicitly here, 
-  // they are set to default values the first time 
-  // qudaHisqForce is called.
+
   QudaHisqParams_t params;
-
-#ifdef HISQ_REUNIT_ALLOW_SVD
   params.reunit_allow_svd = 1;
-#else
-  params.reunit_allow_svd = 0;
-#endif
-
-#ifdef HISQ_REUNIT_SVD_ONLY
-  params.reunit_svd_only = 1;
-#else
   params.reunit_svd_only = 0;
-#endif
-
-#ifdef HISQ_REUNIT_SVD_REL_ERROR
-  params.reunit_svd_rel_error = HISQ_REUNIT_SVD_REL_ERROR; 
-#else
-  params.reunit_svd_rel_error = 1e-8;
-#endif
-
-#ifdef HISQ_REUNIT_SVD_ABS_ERROR
-  params.reunit_svd_abs_error = HISQ_REUNIT_SVD_ABS_ERROR;
-#else
   params.reunit_svd_abs_error = 1e-8;
-#endif
-
-#ifdef HISQ_FORCE_FILTER
-  params.force_filter = HISQ_FORCE_FILTER;
-#else
+  params.reunit_svd_rel_error = 1e-7;
   params.force_filter = 5e-5;
-#endif
 
   qudaHisqParamsInit(params);
   // end optional code
+
+
 		
   qudaHisqForce(PRECISION, level2_coeff, fat7_coeff, 
 		(const void* const*)staple_oprod, 
 		(const void* const*)one_link_oprod, 
 		(const void* const*)three_link_oprod, 
 		W_unitlink, V_link, U_link, momentum);
-  
+ 
+
+
+ 
   // append result
   FORALLSITES(i,s){
     for(dir=0; dir<4; ++dir){
