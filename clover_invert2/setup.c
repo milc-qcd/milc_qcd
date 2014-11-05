@@ -526,7 +526,7 @@ int readin(int prompt) {
       
       IF_OK status += get_s(stdin, prompt,"time_bc", savebuf);
 
-      if(param.prop_type[i] == CLOVER_TYPE){
+      if(param.prop_type[i] == CLOVER_TYPE || param.prop_type[i] == IFLA_TYPE){
 
 	/* NOTE: The Dirac built-in bc is periodic. */
 	IF_OK {
