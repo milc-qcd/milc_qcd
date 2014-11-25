@@ -24,7 +24,6 @@ void update_u(Real eps){
   int i,dir;
   site *s;
   int j;
-  int dim[4] = {nx, ny, nz, nt};
 
 #ifdef FN
   invalidate_fermion_links(fn_links);
