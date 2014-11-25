@@ -39,7 +39,7 @@ main( int argc, char **argv )
       fflush(stdout);
     }
     else if( param.fixflag == LANDAU_GAUGE_FIX){
-      gaugefix(8, overrelax,600, param.gauge_fix_tol);
+      gaugefix(8, overrelax, 20000, param.gauge_fix_tol);
       if(this_node==0)printf("FIXED TO LANDAU GAUGE\n");
       fflush(stdout);
     }
