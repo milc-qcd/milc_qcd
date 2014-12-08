@@ -361,7 +361,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 	/* if the first neighbor came from another node, we should be able
 	   to find it in the third neighbor list, layout permitting --
 	   it's the third neighbor of the site two back from us */
-	FORSOMEPARITYDOMAIN_OMP(i,s,parity,default(shared)){
+	FORSOMEPARITYDOMAIN_OMP(i,s,parity,private(coords)){
 	  if( gen_pt[dir][i] < (char *)src 
 	    || gen_pt[dir][i] >= (char *)(src+sites_on_node) ){
 	      coords[XUP]=s->x; coords[YUP]=s->y; coords[ZUP]=s->z;
@@ -395,7 +395,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
 	  sizeof(su3_vector), OPP_3_DIR(DIR3(dir)), parity, gen_pt[OPP_3_DIR(DIR3(dir))] );
         tag[OPP_DIR(dir)] = start_gather_field( src,
 	   sizeof(su3_vector), OPP_DIR( dir), parity, gen_pt[OPP_DIR(dir)] );
-	FORSOMEPARITYDOMAIN_OMP(i,s,parity,default(shared)){
+	FORSOMEPARITYDOMAIN_OMP(i,s,parity,private(coords)){
 	  if( gen_pt[OPP_DIR(dir)][i] < (char *)src 
 	    || gen_pt[OPP_DIR(dir)][i] >= (char *)(src+sites_on_node) ){
 	      coords[XUP]=s->x; coords[YUP]=s->y; coords[ZUP]=s->z;
