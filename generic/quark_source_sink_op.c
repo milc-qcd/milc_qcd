@@ -519,7 +519,7 @@ static void cov_deriv_v(su3_vector *v_dst, su3_vector *v_src,
     /* Copy result back to vp */
     /* vp <- U shift vp */
     FORALLSITES(i,s){
-      v[i] = vp[i];
+      vp[i] = v[i];
     }
     
     /* Take the difference and accumulate with weight to complete the
