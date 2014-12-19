@@ -3865,7 +3865,7 @@ Applies the inverse of the asqtad or HISQ Dirac operator.
 @cindex spin_taste operator
 
 @example
-gamma pion5
+spin_taste pion5
 @end example
 
 Applies staggered spin-taste offsets and phases
@@ -3875,13 +3875,18 @@ Applies staggered spin-taste offsets and phases
 @cindex ext_src_ks operator
 
 @example
-spin_taste pion5
+spin_taste_extend pion5
 momentum <int[3]>
 t0 <int>
 @end example
 
 Projects a propagator to the specified time slice and applies the
 specified spin-taste operator and inserts the specified momentum.
+Note that the spin-taste operator for extended sources differs from
+the spin-taste operator for the source or sink of a two-point
+function.  Use @strong{spin_taste_extend} here.  The difference is
+that the extended operator does not insert an additional gamm5-gamma5 spin-taste
+factor.
 
 @node rotate_3D operator, dirac_inverse operator, ext_src_ks operator, Modified sources
 @subsubsection rotate_3D operator
