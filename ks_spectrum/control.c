@@ -577,5 +577,6 @@ int main(int argc, char *argv[])
   qudaFinalize();
 #endif
   
+  normal_exit(0);
   return 0;
 }

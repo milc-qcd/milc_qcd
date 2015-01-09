@@ -1004,8 +1004,7 @@ int readin(int prompt) {
   
   broadcast_bytes((char *)&param,sizeof(param));
   u0 = param.u0;
-  if( param.stopflag != 0 )
-    normal_exit(0);
+  if( param.stopflag != 0 )return param.stopflag;
 
   if(prompt==2)return 0;
 
@@ -1115,7 +1114,7 @@ int readin(int prompt) {
 
   ENDTIME("readin");
 
-  return(0);
+  return 0;
 }
 
 /* Broadcast operator parameter values.  They are on the heap on node 0. */
