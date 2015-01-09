@@ -502,6 +502,7 @@ int main(int argc, char *argv[])
 #ifdef HAVE_QUDA
   qudaFinalize();
 #endif
+  normal_exit(0);
 
   return 0;
 }
