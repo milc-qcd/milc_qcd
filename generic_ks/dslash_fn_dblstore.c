@@ -578,7 +578,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 {
   register int i ;
   site *s;
-  msg_tag *tag[2];
+  msg_tag *tag[2] = {NULL, NULL};
   su3_matrix *fat = get_fatlinks(fn);
   su3_matrix *lng = get_lnglinks(fn);
   su3_matrix *fatback = get_fatbacklinks(fn);
