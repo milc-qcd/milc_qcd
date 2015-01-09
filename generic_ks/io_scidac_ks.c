@@ -58,8 +58,6 @@ int save_ks_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
   else
     status = write_D3_V_from_field(outfile, recxml, src, count); 
 
-  status = write_F3_V_from_field(outfile, recxml, src, count);
-
   QIO_string_destroy(recxml);
   if(status != QIO_SUCCESS)return status;
   
