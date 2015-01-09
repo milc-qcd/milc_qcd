@@ -88,7 +88,8 @@ ALL_MAKES = \
   ../Make_template_qop \
   ../Make_template_scidac \
   ../generic/Make_template \
-  ../generic_ks/Make_template
+  ../generic_ks/Make_template \
+  ../generic_wilson/Make_template
 
 # To force a remake when changing any make file, header, or target
 
@@ -123,6 +124,8 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 # -DCHEM_POT    compute quantities needed for quark number susceptibility
 
 # -DD_CHEM_POT  compute quantities needed for nonzero chemical potential
+
+# -DCURRENT_DISC computes terms for measuring the disconnected current-current correlator
 
 # Asqtad targets
 ks_measure_asqtad::
@@ -167,6 +170,13 @@ ks_measure_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS}
 
+ks_measure_current_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC" \
+	"EXTRA_OBJECTS += f_meas_current.o spin_taste_ops.o \
+	gammas.o"
+
+
 ks_measure_hisq_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS}	"DEFINES += -DDM_DEPS -DCHEM_POT"
@@ -188,6 +198,9 @@ include ../generic/Make_template
 
 # Rules for generic_ks routines
 include ../generic_ks/Make_template
+
+# Rules for generic_wilson routines
+include ../generic_wilson/Make_template
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
