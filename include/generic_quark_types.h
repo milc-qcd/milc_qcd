@@ -22,6 +22,7 @@
 /* The Weyl representation types are included for w_source_h */
 enum source_type { 
   UNKNOWN = 0, 
+  ASLASH_KS_FILE,
   COMPLEX_FIELD_FILE, 
   COMPLEX_FIELD_FM_FILE, 
   COMPLEX_FIELD_STORE,
