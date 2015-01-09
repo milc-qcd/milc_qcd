@@ -181,6 +181,38 @@ void copy_site_member_from_v_field(field_offset sv, su3_vector *v);
 void add_v_fields(su3_vector *vsum, su3_vector *v1, su3_vector *v2);
 void destroy_v_field(su3_vector *v);
 
+/* array versions of the above */
+
+Real* create_r_array_field(int n);
+void clear_r_array_field(Real *r, int n);
+void copy_r_array_field(Real *dest, Real *src, int n);
+void destroy_r_array_field(Real *r, int n);
+
+complex* create_c_array_field(int n);
+void clear_c_array_field(complex *c, int n);
+void copy_c_array_field(complex *dest, complex *src, int n);
+void destroy_c_array_field(complex *c, int n);
+
+su3_matrix *create_m_array_field(int n);
+void clear_m_array_field(su3_matrix *m, int n);
+void copy_m_array_field(su3_matrix *dest, su3_matrix *src, int n);
+void destroy_m_array_field(su3_matrix *m, int n);
+
+spin_wilson_vector *create_swv_array_field(int n);
+void clear_swv_array_field(spin_wilson_vector *swv, int n);
+void copy_swv_array_field(spin_wilson_vector *dest, spin_wilson_vector *src, int n);
+void destroy_swv_array_field(spin_wilson_vector *swv, int n);
+
+wilson_vector *create_wv_array_field(int n);
+void clear_wv_array_field(wilson_vector *wv, int n);
+void copy_wv_array_field(wilson_vector *dst, wilson_vector *src, int n);
+void destroy_wv_array_field(wilson_vector *wv, int n);
+
+su3_vector *create_v_array_field(int n);
+void clear_v_array_field(su3_vector *v, int n);
+void copy_v_array_field(su3_vector *dst, su3_vector *src, int n);
+void destroy_v_array_field(su3_vector *v, int n);
+
 ks_prop_field *create_ksp_field(int nc);
 ks_prop_field *create_ksp_field_copy(ks_prop_field *k);
 void clear_ksp_field(ks_prop_field *ksp);
