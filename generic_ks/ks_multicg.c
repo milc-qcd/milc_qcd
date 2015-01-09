@@ -198,7 +198,6 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
 #endif
   
   /* First we invert as though all masses took the same Naik epsilon */
-  node0_printf("Calling ks_multicg_offset_field with fn_multi = %x\n",fn_multi[0]); fflush(stdout);
   multi_iters = iters = 
     ks_multicg_offset_field( src, psim, ksp, num_offsets, qic, fn_multi[0]);
   report_status(qic+0);
@@ -220,7 +219,6 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
     ks_congrad_field_cpu( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
 #else
     /* Note ks_congrad_parity is redefined as ks_congrad_field_cpu or ks_congrad_field_gpu */
-    node0_printf("Calling ks_congrad_parity with fn_multi = %x\n",fn_multi[i]); fflush(stdout);
     ks_congrad_parity( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
 #endif
     iters += qic[i].final_iters;
