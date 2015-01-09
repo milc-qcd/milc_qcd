@@ -50,6 +50,7 @@ typedef struct {
   int npbp_reps[MAX_SET];     /* Number of random sources for pbp calculation */
   quark_invert_control qic_pbp[MAX_MASS_PBP];
   ks_param ksp_pbp[MAX_MASS_PBP];
+  char pbp_filenames[MAX_MASS_PBP][MAXFILENAME];
   int set[MAX_MASS_PBP];  /* The set to which the propagator belongs */
   char mass_label[MAX_MASS_PBP][32];
 }  params;
