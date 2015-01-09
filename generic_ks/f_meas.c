@@ -209,7 +209,7 @@ void f_meas_imp_field( int npbp_reps, quark_invert_control *qic, Real mass,
 #ifndef Z2RSOURCE
       grsource_plain_field( gr, EVENANDODD );
 #else
-      z2rsource_plain_field( gr, mass, EVENANDODD );
+      z2rsource_plain_field( gr, EVENANDODD );
 #endif
       /* The following operation is done in the prevailing
 	 precision.  The algorithm needs to be fixed! */
