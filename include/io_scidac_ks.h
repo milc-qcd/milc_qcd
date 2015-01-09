@@ -26,6 +26,8 @@ int read_kspropsource_C_usqcd(QIO_Reader *infile, char *srcinfo, int n,
 int read_kspropsource_V_usqcd(QIO_Reader *infile, char *srcinfo, int n,
 			      su3_vector *dest);
 int read_ksproprecord_usqcd(QIO_Reader *infile, int *color, su3_vector *dest);
+int save_ks_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
+			  int volfmt, su3_vector *src, int count, int prec);
 void restore_ks_vector_scidac_to_field(char *filename, int serpar, 
 				       su3_vector *dest, int count);
 void restore_ks_vector_scidac_to_site(char *filename, int serpar,
