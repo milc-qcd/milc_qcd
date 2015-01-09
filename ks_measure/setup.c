@@ -237,6 +237,9 @@ int readin(int prompt) {
 #else
 	IF_OK param.ksp_pbp[npbp_masses].naik_term_epsilon = 0.0;
 #endif
+#ifdef CURRENT_DISC
+	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
+#endif
 
 	/* The set to which this pbp_mass belongs */
 	IF_OK param.set[npbp_masses] = k;
@@ -270,8 +273,7 @@ int readin(int prompt) {
 
   broadcast_bytes((char *)&param,sizeof(param));
   u0 = param.u0;
-  if( param.stopflag != 0 )
-    normal_exit(0);
+  if( param.stopflag != 0 )return param.stopflag;
 
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
