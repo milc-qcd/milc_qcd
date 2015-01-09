@@ -62,6 +62,42 @@ void destroy_##ABBREV##_field(T *x){ \
   make_copy_field(ABBREV, T); \
   make_destroy_field(ABBREV, T);
 
+/*--------------------------------------------------------------------*/
+/* Array versions of the above.  Each site has n copies of the type */
+
+#define make_clear_array_field(ABBREV, T) \
+void clear_##ABBREV##_array_field(T *x, int n){	 \
+  memset(x,'\0',sites_on_node*sizeof(T)*n); \
+}
+
+#define make_create_array_field(ABBREV, T) \
+T* create_##ABBREV##_array_field(int n){ \
+  T *x; \
+  x = (T *)malloc(sites_on_node*sizeof(T)*n); \
+  if(x == NULL){ \
+    printf("create_array_field: no room\n"); \
+    terminate(1); \
+  } \
+  clear_##ABBREV##_array_field(x,n); \
+  return x; \
+}
+
+#define make_copy_array_field(ABBREV, T) \
+void copy_##ABBREV##_array_field(T *dst, T *src, int n){	\
+  memcpy(dst, src, sites_on_node*sizeof(T)*n); \
+}
+
+#define make_destroy_array_field(ABBREV, T) \
+void destroy_##ABBREV##_array_field(T *x, int n){	\
+  if(x != NULL) free(x); \
+}
+
+#define make_all_array_field(ABBREV, T) \
+  make_clear_array_field(ABBREV, T); \
+  make_create_array_field(ABBREV, T); \
+  make_copy_array_field(ABBREV, T); \
+  make_destroy_array_field(ABBREV, T);
+
 /*------------------------------------------------------------------*/
 /* Create standard create, copy, clear, destroy for standard types  */
 
@@ -71,6 +107,16 @@ make_all_field(v, su3_vector)
 make_all_field(m, su3_matrix)
 make_all_field(wv, wilson_vector)
 make_all_field(swv, spin_wilson_vector)
+
+/*------------------------------------------------------------------*/
+/* Create standard create, copy, clear, destroy for standard types  */
+
+make_all_array_field(r, Real)
+make_all_array_field(c, complex)
+make_all_array_field(v, su3_vector)
+make_all_array_field(m, su3_matrix)
+make_all_array_field(wv, wilson_vector)
+make_all_array_field(swv, spin_wilson_vector)
 
 /*------------------------------------------------------------------*/
 /* copy a gauge field in the site structure - an array of four su3_matrices */
