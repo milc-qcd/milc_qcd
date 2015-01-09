@@ -1095,6 +1095,75 @@ static void apply_spin_taste_extend(su3_vector *src, quark_source_sink_op *qss_o
   
 }
 
+#define NMU 4
+
+/* Create spin-taste indices for current */
+static int *
+get_spin_taste(void){
+  
+  /* Current spin-taste list */
+  char *spin_taste_label[NMU] = {"GX-GX", "GY-GY", "GZ-GZ", "GT-GT"};
+  static int spin_taste[NMU];
+  int mu;
+  
+  /* Decode spin-taste label */
+  for(mu = 0; mu < NMU; mu++){
+    char dummy[6];
+    strncpy(dummy, spin_taste_label[mu], 6);
+    spin_taste[mu] = spin_taste_index(dummy);
+  }
+  
+  return spin_taste;
+}
+
+static void apply_aslash_v(su3_vector *src, 
+			   quark_source_sink_op *qss_op,
+			   int t0){
+  
+#ifndef HAVE_QIO
+  char myname[] = "apply_aslash";
+#endif
+  char *modulation_file  = qss_op->source_file;
+  complex *chi_cs  = create_c_array_field(4);
+  su3_vector *dst = create_v_field();
+  su3_vector *tmp = create_v_field();
+  int i,cf;
+  site *s;
+  int *spin_taste = get_spin_taste();
+  int mu;
+
+  /* Read complex modulating field */
+
+#ifdef HAVE_QIO
+  restore_complex_scidac_to_field(modulation_file, QIO_SERIAL, chi_cs, NMU);
+#else
+  node0_printf("%s QIO compilation required for this source\n", myname);
+  terminate(1);
+#endif
+
+  for(mu = 0; mu < NMU; mu++){
+    qss_op->spin_taste = spin_taste[mu];
+    copy_v_field(tmp, src);
+    /* tmp <- src * gamma_mu */
+    apply_spin_taste(tmp, qss_op);
+
+    /* dst += tmp * A_mu */
+    FORALLSITES(i,s){
+      if(s->t == t0 || t0 == ALL_T_SLICES){
+	for(cf=0;cf<3;cf++){
+	  complex z = src[i].c[cf];
+	  CMUL(z, chi_cs[NMU*i + mu], tmp[i].c[cf]);
+	  CSUM(dst[i].c[cf],z);
+	}
+      }
+    }
+  }
+  destroy_v_field(tmp);
+  spin_taste_op(spin_taste_index("pion05"), qss_op->r_offset, src, dst);
+  destroy_v_field(dst);
+  destroy_c_array_field(chi_cs, NMU);
+}
+
 static void apply_ext_src_v(su3_vector *src, 
 			    quark_source_sink_op *qss_op){
   apply_tslice_projection_v(src, qss_op);
@@ -1797,6 +1866,9 @@ void v_field_op(su3_vector *src, quark_source_sink_op *qss_op,
   else if(op_type == EXT_SRC_KS)
     apply_ext_src_v(src, qss_op);
 
+  else if(op_type == ASLASH_KS_FILE)
+    apply_aslash_v(src, qss_op, t0);
+
   else if(op_type == PROJECT_T_SLICE)
     apply_tslice_projection_v(src, qss_op);
 
@@ -2062,6 +2134,10 @@ static int ask_field_op( FILE *fp, int prompt, int *source_type, char *descrp)
     *source_type = EXT_SRC_KS;
     strcpy(descrp,"ext_src_ks");
   }
+  else if(strcmp("aslash_ks",savebuf) == 0 ){
+    *source_type = ASLASH_KS_FILE;
+    strcpy(descrp,"aslash_ks");
+  }
   else if(strcmp("ext_src_dirac",savebuf) == 0 ){
     *source_type = EXT_SRC_DIRAC;
     strcpy(descrp,"ext_src_dirac");
@@ -2263,6 +2339,10 @@ static int get_field_op(int *status_p, FILE *fp,
       }
     }
     IF_OK status += get_vi(fp, prompt, "momentum", qss_op->mom, 3);
+    IF_OK status += get_i(fp, prompt, "t0", &qss_op->t0);
+  }
+  else if ( op_type == ASLASH_KS_FILE ){
+    IF_OK status += get_s(fp, prompt, "load_source", source_file);
     IF_OK status += get_i(fp, prompt, "t0", &qss_op->t0);
   }
 #endif
@@ -2661,6 +2741,11 @@ static int print_single_op_info(FILE *fp, char prefix[],
 	    spin_taste_label(qss_op->spin_taste));
     fprintf(fp,"%s[%d, %d, %d],\n", make_tag(prefix, "mom"), qss_op->mom[0],
 	    qss_op->mom[1], qss_op->mom[2]);
+    fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qss_op->t0);
+  }
+  else if ( op_type == ASLASH_KS_FILE ){
+    fprintf(fp,",\n");
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "file"), qss_op->source_file);
     fprintf(fp,"%s%d\n", make_tag(prefix, "t0"), qss_op->t0);
   }
 #endif
