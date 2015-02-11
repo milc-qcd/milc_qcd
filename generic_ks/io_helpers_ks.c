@@ -458,7 +458,26 @@ reload_ksprop_c_to_field( int flag, ks_prop_file *kspf,
     }
 #endif
     else {
-      status = r_serial_ks_to_field(kspf,color,dest); 
+      int madeksp = 1;
+      /* We shouldn't ever reach this section of the code */
+      node0_printf("%s: INTERNAL ERROR: Why are we here?\n", myname);
+      if(ksp == NULL){
+	ksp = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector)*3);
+      } else {
+	madeksp = 0;
+      }
+      status = r_serial_ks_to_field(kspf,color,ksp); 
+      /* Copy input KS vector for this color from buffer */
+      FORALLSITES(i,s){
+	cv = dest + i;
+	for(c0=0;c0<3;c0++)
+	  {
+	    cv->c[c0].real = ksp[3*i+color].c[c0].real;
+	    cv->c[c0].imag = ksp[3*i+color].c[c0].imag;
+	  }
+      }
+      if(madeksp)
+	free(ksp);
     }
     break;
   case RELOAD_PARALLEL:
