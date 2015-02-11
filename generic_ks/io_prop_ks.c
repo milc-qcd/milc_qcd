@@ -1243,7 +1243,7 @@ void w_ascii_ks(ks_prop_file *kspf, int color, su3_vector *src_field)
 	    {
 	      l=node_index(x,y,z,t);
 	      /* Copy, converting precision if necessary */
-	      d2f_vec(src_field+3*l+color, &pbuf);
+	      d2f_vec(src_field+l, &pbuf);
 	      //  d2f_vec((su3_vector *)F_PT( &(lattice[l]), src ), &pbuf);
 	    }
 	  else
@@ -1266,7 +1266,7 @@ void w_ascii_ks(ks_prop_file *kspf, int color, su3_vector *src_field)
 	    {
 	      l=node_index(x,y,z,t);
 	      /* Copy, converting precision if necessary */
-	      d2f_vec(src_field+3*l+color, &pbuf);
+	      d2f_vec(src_field+l, &pbuf);
 	      // d2f_vec((su3_vector *)F_PT( &(lattice[l]), src ), &pbuf);
 	      send_field((char *)&pbuf,sizeof(fsu3_vector),node0);
 	    }
@@ -1450,7 +1450,7 @@ int r_ascii_ks(ks_prop_file *kspf, int color, su3_vector *dest_field)
 	    {              /* just copy su3_vector */
 	      i = node_index(x,y,z,t);
 	      /* Copy, converting precision if necessary */
-	      f2d_vec(&pbuf, dest_field + 3*i + color);
+	      f2d_vec(&pbuf, dest_field + i);
 	      // f2d_vec(&pbuf, (su3_vector *)F_PT( &(lattice[i]), src ));
 	    }
 	  else 
@@ -1468,7 +1468,7 @@ int r_ascii_ks(ks_prop_file *kspf, int color, su3_vector *dest_field)
 	      get_field((char *)&pbuf, sizeof(fsu3_vector),0);
 	      i = node_index(x,y,z,t);
 	      /* Copy, converting precision if necessary */
-	      f2d_vec(&pbuf, dest_field + 3*i + color);
+	      f2d_vec(&pbuf, dest_field + i);
 	      // f2d_vec(&pbuf, (su3_vector *)F_PT( &(lattice[i]), src ));
 	    }
 	}
