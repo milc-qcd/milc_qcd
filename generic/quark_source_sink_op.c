@@ -14,13 +14,32 @@
    gaussian                        
    wavefunction_file               
 
+   Operations exclusive to Dirac vectors:
+
+   dirac_inverse              Multiply by a Dirac propagator
+   
+   ext_src_dirac              Project to a time slice, apply momentum and gamma
+   gamma                      Multiply by a gamma factor
+   hop                        Multiply by the Dirac hopping matrix (or its derivative)
+   ks_gamma                   Multiply by the staggered gamma factor
+   ks_gamma_inv               Multiply by the inverse of the staggered gamma factor
+
    Operations exclusive to color vectors:
 
+   aslash_ks                  Insert A_mu gamma_mu (currently only staggered)
+   ext_src_ks                 Project to a time slice, apply momentum and gamma
    funnywall1                 pion5 + pioni5 + pioni + pions + rhoi + rhos
    funnywall2                 pion05 + pionij + pioni0 + pion0 + rhoi0 + rho0
+   ks_inverse                 Multiply by a staggered propagator
    spin_taste
    spin_taste_extend
 
+   Noncovariant modifications of the source:
+
+   modulation                 Multiply by a complex field
+   momentum                   Multiply by a Fourier phase
+   project_t_slice            Project to a time slice
+   
    Covariant modifications of the source:
 
    covariant_gaussian              Smear with exp(const * Laplacian)
