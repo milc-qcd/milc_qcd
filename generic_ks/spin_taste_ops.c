@@ -354,6 +354,7 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
     case 5: two_link(spin, ZUP, XUP, r0, dest, src, links); break;
     case 6: two_link(spin, YUP, ZUP, r0, dest, src, links); break;
     case 7: three_link(spin, r0, dest, src, links); break;
+    case 8: one_link(spin, TUP, r0, dest, src, links); break;
 #endif
     default: printf("Time split operator not supported\n");
     }
