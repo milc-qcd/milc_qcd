@@ -155,7 +155,7 @@ ks_spectrum_asqtad_mu_eos::
 ks_spectrum_naive::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = onelink_action.h" \
-	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME" \
+        "DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_spectrum_naive_debug::
