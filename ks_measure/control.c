@@ -67,29 +67,31 @@ int main(int argc, char *argv[])
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i0].prec);
 
       if(num_pbp_masses == 1){
+#ifdef CURRENT_DISC
+	f_meas_current( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass,
+			param.ksp_pbp[i0].naik_term_epsilon_index, fn_links,
+			param.pbp_filenames[i0] );
+#else
 	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
 			  param.ksp_pbp[i0].naik_term_epsilon_index, fn_links);
+#endif
+	
 #ifdef D_CHEM_POT
 	Deriv_O6_field(param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass,
 		       fn_links, param.ksp_pbp[i0].naik_term_epsilon_index, 
 		       param.ksp_pbp[i0].naik_term_epsilon);
 #endif
-#ifdef CURRENT_DISC
-	f_meas_current( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass,
-			param.ksp_pbp[i0].naik_term_epsilon_index, fn_links,
-			param.pbp_filenames[i0] );
-#endif
-	
       } else {
-	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
-			  &param.ksp_pbp[i0], fn_links);
-#ifdef D_CHEM_POT
-	Deriv_O6_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0],
-			&param.ksp_pbp[i0], fn_links);
-#endif
 #ifdef CURRENT_DISC
 	f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
 			     &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
+#else
+	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
+			  &param.ksp_pbp[i0], fn_links);
+#endif
+#ifdef D_CHEM_POT
+	Deriv_O6_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0],
+			&param.ksp_pbp[i0], fn_links);
 #endif
       }
     }
