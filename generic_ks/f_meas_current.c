@@ -160,6 +160,9 @@ f_meas_current( int nrand, quark_invert_control *qic, Real mass,
       int status = write_vector_current_record(outfile, jrand, mass, j_mu);
       if(status != QIO_SUCCESS)
 	node0_printf("f_meas_curent: Failed to write record to %s\n", filename);
+      else
+	node0_printf("f_meas_current: Wrote current density for source %d and mass %g on file %s\n", 
+		     jrand, mass, filename);
 
   } /* jrand */
   
@@ -278,7 +281,10 @@ f_meas_current_multi( int n_masses, int nrand, quark_invert_control *qic,
     for(j = 0; j < n_masses; j++){
       int status = write_vector_current_record(outfile[j], jrand, mass[j], j_mu[j]);
       if(status != QIO_SUCCESS)
-	node0_printf("f_meas_curent_multi: Failed to write record to %s\n", filenames[j]);
+	node0_printf("f_meas_current_multi: Failed to write record to %s\n", filenames[j]);
+      else
+	node0_printf("f_meas_current_multi: Wrote current density for source %d and mass %g on file %s\n", 
+		     jrand, mass[j], filenames[j]);
     }
   } /* jrand */
   
