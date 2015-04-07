@@ -337,14 +337,16 @@ gauge_file *save_partfile_ildg(char *filename, char *stringLFN){
 }
 
 /* The QIO file is closed after reading the lattice */
-#ifdef NO_GAUGE_FIELD
+#if 0
 static gauge_file *restore_scidac(char *filename, int serpar){
   printf("Can't restore a lattice if we compile with -DNO_GAUGE_FIELD\n");
   terminate(1);
   return NULL;
 }
 
-#else
+#endif
+
+#ifndef NO_GAUGE_FIELD
 
 static gauge_file *restore_scidac(char *filename, int serpar){
   QIO_Layout layout;
@@ -962,13 +964,41 @@ QIO_Reader *r_open_complex_scidac_file(char *filename, int serpar)
 
 /* Restore a complex field */
 
+int read_complex_scidac_xml(QIO_Reader *infile, complex *dest, int count, 
+			    QIO_String *recxml){
+  int status;
+  int typesize, datacount;
+  QIO_RecordInfo recinfo;
+
+  /* Read the lattice field: "count" complex numbers per site */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  if(status == QIO_EOF)return status;
+  if(status != QIO_SUCCESS)terminate(1);
+
+  datacount = QIO_get_datacount(&recinfo);
+  if(datacount != count){
+    node0_printf("read_complex_scidac_xml: Got datacount %d but wanted %d\n",
+		 datacount, count);
+    terminate(1);
+  }
+  typesize = QIO_get_typesize(&recinfo);
+
+  if(typesize == 2*4)
+    status = read_F_C_to_field(infile, recxml, dest, count);
+  else
+    status = read_D_C_to_field(infile, recxml, dest, count);
+
+  return status;
+}
+
 int read_complex_scidac(QIO_Reader *infile, complex *dest, int count){
   QIO_String *recxml;
   int status;
 
   /* Read the lattice field: "count" complex numbers per site */
   recxml = QIO_string_create();
-  status = read_F_C_to_field(infile, recxml, dest, count);
+
+  status = read_complex_scidac_xml(infile, dest, count, recxml);
 
   /* Discard for now */
   QIO_string_destroy(recxml);
