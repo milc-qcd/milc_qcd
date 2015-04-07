@@ -133,6 +133,9 @@ int readin(int prompt) {
   
   broadcast_bytes((char *)&param,sizeof(param));
 
-  return 0;
+  if( param.stopflag != 0 )return param.stopflag;
+
+  if(prompt==2)return 0;
+
 } /* setup.c */
 
