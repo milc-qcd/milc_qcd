@@ -37,6 +37,7 @@ void restore_real_scidac_to_field(char *filename, Real *dest, int count);
 
 void restore_real_scidac_to_site(char *filename, field_offset dest, int count);
 
+int read_complex_scidac_xml(QIO_Reader *infile, complex *dest, int count, QIO_String *recxml);
 int read_complex_scidac(QIO_Reader *infile, complex *dest, int count);
 void r_close_complex_scidac_file(QIO_Reader *infile);
 void restore_complex_scidac_to_field(char *filename, int serpar,
