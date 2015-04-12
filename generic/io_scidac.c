@@ -972,8 +972,9 @@ int read_complex_scidac_xml(QIO_Reader *infile, complex *dest, int count,
 
   /* Read the lattice field: "count" complex numbers per site */
   status = QIO_read_record_info(infile, &recinfo, recxml);
-  if(status == QIO_EOF)return status;
-  if(status != QIO_SUCCESS)terminate(1);
+  status = qio_status(status);
+  if(status < 0)return -1;
+  if(status > 0)terminate(1);
 
   datacount = QIO_get_datacount(&recinfo);
   if(datacount != count){
