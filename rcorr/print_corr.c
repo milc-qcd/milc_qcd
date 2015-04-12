@@ -114,7 +114,7 @@ print_result(Real *q, int nrand){
   /* Unbinned output for r <= RMAX */
   
   totmult = 0;
-  qtot = 0;
+  qtot = 0.;
   
   for(x = 0; x <= nx/2; x++)
     for(y = x; y <= ny/2; y++)
@@ -122,9 +122,8 @@ print_result(Real *q, int nrand){
 	for(t = 0; t <= nt/2; t++){
 	  mult = 0;
 	  myq = 0;
+	  r = radius(x,y,z,t);
 	  if(node_number(x,y,z,t) == this_node){
-	    i = node_index(x,y,z,t);
-	    r = radius(x,y,z,t);
 	    if(r <= RMAX){
 	      /* Compute multiplicity */
 	      mult = 6*16;
@@ -137,13 +136,13 @@ print_result(Real *q, int nrand){
 	      else if(x == z){mult /= 2;}
 	      else if(y == z){mult /= 2;}
 	    }
-	    myq = q[i];
+	    myq = q[node_index(x,y,z,t)];
 	  }
 
 	  g_intsum(&mult);
 	  g_doublesum(&myq);
 
-	  if(node_number(x,y,z,t) == this_node)
+	  if(this_node == 0)
 	    if(r <= RMAX){
 	      fprintf(fp, "%5d %7.3f %15.8e %2d %2d %2d %2d \n",
 		      mult,r,myq,x,y,z,t);
@@ -152,8 +151,6 @@ print_result(Real *q, int nrand){
 	    }
 	}
 
-  g_doublesum(&qtot);
-  
   /* Binned output for r > RMAX */
   
   for(x = 0; x < nx; x++)
@@ -192,8 +189,10 @@ print_result(Real *q, int nrand){
       }
     }
 
-  close_corr_file(fp);
-  node0_printf("qtot2 = %e  mult = %d\n", qtot, totmult);
+  if(this_node == 0){
+    close_corr_file(fp);
+    node0_printf("qtot2 = %e  mult = %d\n", qtot, totmult);
+  }
 
 } /* print_corr.c */
 

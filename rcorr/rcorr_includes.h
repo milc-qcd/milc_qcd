@@ -27,7 +27,7 @@ int readin(int prompt);
 /* accumulate_density.c */
 void 
 accumulate_current_density(char *filename, complex *qin[], 
-			   double charge, double *mass, int *count);
+			   double charge, double *mass, int nrand);
 /* print_corr.c */
 void
 print_result(Real *q, int nrand);

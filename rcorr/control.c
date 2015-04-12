@@ -13,11 +13,10 @@ int
 main(int argc, char *argv[])
 {
   int prompt;
-  complex *qin[MAXRAND];
+  complex **qin;
   Real *q;
   
-  int jrand, nrand = 0;
-  int jflav;
+  int jflav, k;
   int key[4] = {1,1,1,1};  /* 4D Fourier transform */
   
 
@@ -26,10 +25,6 @@ main(int argc, char *argv[])
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
 
-  /* We keep a separate field for each random source */
-  for(jrand = 0; jrand < MAXRAND; jrand++)
-    qin[jrand] = NULL;
-  
   /* set up */
   prompt = setup();
 
@@ -42,30 +37,42 @@ main(int argc, char *argv[])
     
     if(prompt == 2)continue;   /* For testing */
   
+    /* Create qin array */
+    qin = (complex **)malloc(sizeof(complex *)*param.nrand);
+    if(qin == NULL){
+      node0_printf("main: No room for qin\n");
+      terminate(1);
+    }
+    for(k = 0; k < param.nrand; k++){
+      qin[k] = create_c_array_field(NMU);
+      if(qin[k] == NULL){
+	node0_printf("main: No room for qin[%d]\n",k);
+	terminate(1);
+      }
+    }
+
     for(jflav = 0; jflav < param.nflav; jflav++){
 
       /* Allocate space and read all the data for flavor "jflav" */
       /* Accumulate the result in qin, weighted by the charge  */
 
       accumulate_current_density(param.fname[jflav], qin, param.charges[jflav], 
-				 &param.mass[jflav], &nrand);
+				 &param.mass[jflav], param.nrand);
     }
-    
-    if(nrand < 2){
-      fprintf(stderr, "You need more than 1 random source to compute correlations\n");
-      break;
-    }
-
-    param.nrand = nrand;
     
     /* Calculate the density-density correlator q */
-    q = rcorr(qin, nrand);
+    q = rcorr(qin, param.nrand);
+
+    /* Destroy qin array */
+    for(k = 0; k < param.nrand; k++)
+      destroy_c_array_field(qin[k], NMU);
+    free(qin);
 
     /* Symmetrize over hypercubic group transformations */
     symmetrize(q);
 
     /* Write the results to the specified file */
-    print_result(q, nrand);
+    print_result(q, param.nrand);
 
     destroy_r_field(q);
   

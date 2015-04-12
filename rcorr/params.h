@@ -33,7 +33,7 @@ typedef struct {
 
   /*  REPEATING BLOCK */
   int nflav;
-  int nrand;           /* Filled in later only on node 0 */
+  int nrand;           
   char fname[MAXFLAV][MAXFILENAME];
   char corrfile[MAXFILENAME];
   Real charges[MAXFLAV];
