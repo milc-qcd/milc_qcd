@@ -53,6 +53,7 @@ G_ALL = \
  io_scidac_types.o \
  io_source_cmplx_fm.o \
  layout_hyper_prime.o \
+ layout_hyper_morton_prime.o \
  layout_hyper_2or3.o \
  layout_timeslices.o \
  layout_squares.o \
@@ -208,6 +209,8 @@ io_scidac_types.o: ../generic/io_scidac_types.c
 io_source_cmplx_fm.o: ../generic/io_source_cmplx_fm.c
 	${CC} -c ${CFLAGS} $<
 layout_hyper_prime.o: ../generic/layout_hyper_prime.c
+	${CC} -c ${CFLAGS} $<
+layout_hyper_morton_prime.o: ../generic/layout_hyper_morton_prime.c
 	${CC} -c ${CFLAGS} $<
 layout_hyper_2or3.o: ../generic/layout_hyper_2or3.c
 	${CC} -c ${CFLAGS} $<
