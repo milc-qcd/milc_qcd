@@ -116,6 +116,14 @@ int readin(int prompt) {
     printf("\n\n");
     status=0;
 
+    IF_OK status += get_i(stdin, prompt, "number_of_random_sources",
+			  &param.nrand);
+
+   if(param.nrand < 2){
+      fprintf(stderr, "ERROR: need more than 1 random source to compute correlations\n");
+      status++;
+    }
+
     IF_OK status += get_i(stdin, prompt, "number_of_flavors",
 			  &param.nflav);
 
@@ -133,6 +141,9 @@ int readin(int prompt) {
   
   broadcast_bytes((char *)&param,sizeof(param));
 
-  return 0;
+  if( param.stopflag != 0 )return param.stopflag;
+
+  if(prompt==2)return 0;
+
 } /* setup.c */
 

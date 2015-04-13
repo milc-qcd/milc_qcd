@@ -97,8 +97,6 @@ rcorr(complex *qin[], int nrand){
   restrict_fourier_field((complex *)qtmp, NMU*sizeof(complex), FORWARDS);
   add_corr(out2, qtmp, NMU);
   
-  for (jrand = 0; jrand < nrand; jrand++)
-    destroy_c_array_field(qin[jrand], NMU);
   destroy_c_array_field(qtmp, NMU);
   
   /* For a consistency check. */
