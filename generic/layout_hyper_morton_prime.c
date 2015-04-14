@@ -354,7 +354,7 @@ static void morton2decimal(int *coord, int digits[], int factors[], int nfactors
   int c = digits[nfactors-1];
 
   for(k = nfactors-1; k >= 1; k--)
-    c = c*factors[k] + digits[k-1];
+    c = c*factors[k-1] + digits[k-1];
 
   *coord = c;
 }
