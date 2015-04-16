@@ -16,6 +16,12 @@
 
    6/06 C. DeTar Allow calling with offsets instead of masses
    6/06 C. DeTar Not finished with "finished"
+
+   2/15 D. Toussaint "cg_p", the vector for the single mass CG, is basically
+            pm[j_low].  Using pm[j_low] simplfies some of the loops over
+            offsets.
+            For the moment, keep cg_p as a clone of pm[j_low], since I anticipate
+            trying different layouts for pm[], and cg_p is an argument to dslash()
 */
 
 
@@ -26,14 +32,15 @@
 
 static su3_vector *ttt,*cg_p;
 static su3_vector *resid;
+int num_offsets_padded;  // padded so vectors aligned to 64 bytes
 static int first_multicongrad = 1;
 
 /* Interface for call with offsets = 4 * mass * mass */
 
 int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken */
-    su3_vector *src,	/* source vector (type su3_vector) */
-    su3_vector **psim,	/* solution vectors */
-    ks_param *ksp,	/* the offsets */
+    su3_vector * restrict src,	/* source vector (type su3_vector) */
+    su3_vector ** restrict psim,	/* solution vectors */
+    ks_param * restrict ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
     quark_invert_control *qic, /* inversion parameters */
     imp_ferm_links_t *fn      /* Storage for fat and Naik links */
@@ -42,7 +49,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   char myname[] = "ks_multicg_offset_field";
   /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
   register int i;
-  register site *s;
+  register site * restrict s;
   int iteration;	/* counter for iterations */
   int num_offsets_now; /* number of offsets still being worked on */
   double c1, c2, rsq, oldrsq, pkp;		/* pkp = cg_p.K.cg_p */
@@ -55,11 +62,13 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
 #endif
   int special_started;	/* 1 if dslash_special has been called */
   int j, j_low;
-  Real *shifts, offset_low, shift0;
-  double *zeta_i, *zeta_im1, *zeta_ip1;
-  double *beta_i, *beta_im1, *alpha;
-  su3_vector **pm;	/* vectors not involved in gathers */
-  int *finished;      /* if converged */
+  Real * restrict shifts, offset_low, shift0;
+  double * restrict zeta_i, * restrict zeta_im1, * restrict zeta_ip1;
+  double * restrict beta_i, * restrict beta_im1, * restrict alpha;
+  su3_vector ** restrict pm;	/* vectors not involved in gathers */
+  int * restrict finished;      /* if converged */
+  register int color,index,startindex;
+
   /* Unpack qic structure.  The first qic sets the convergence criterion */
   /* We don't restart this algorithm, so we adopt the convention of
      taking the product here */
@@ -85,6 +94,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   dtimec = -dclock(); 
 #endif
   
+
   /* Initialize structure */
   for(j = 0; j < num_offsets; j++){
     qic[j].final_rsq     = 0.;
@@ -132,15 +142,19 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   case(EVENANDODD):  l_parity=EVEN; l_otherparity=ODD; break;
   }
     
-  shifts = (Real *)malloc(num_offsets*sizeof(Real));
-  zeta_i = (double *)malloc(num_offsets*sizeof(double));
-  zeta_im1 = (double *)malloc(num_offsets*sizeof(double));
-  zeta_ip1 = (double *)malloc(num_offsets*sizeof(double));
-  beta_i = (double *)malloc(num_offsets*sizeof(double));
-  beta_im1 = (double *)malloc(num_offsets*sizeof(double));
-  alpha = (double *)malloc(num_offsets*sizeof(double));
+  shifts = (Real * restrict )malloc(num_offsets*sizeof(Real));
+  zeta_i = (double * restrict )malloc(num_offsets*sizeof(double));
+  zeta_im1 = (double * restrict )malloc(num_offsets*sizeof(double));
+  zeta_ip1 = (double * restrict )malloc(num_offsets*sizeof(double));
+  beta_i = (double * restrict )malloc(num_offsets*sizeof(double));
+  beta_im1 = (double * restrict )malloc(num_offsets*sizeof(double));
+  alpha = (double * restrict )malloc(num_offsets*sizeof(double));
   
-  pm = (su3_vector **)malloc(num_offsets*sizeof(su3_vector *));
+  pm = (su3_vector ** restrict )malloc(num_offsets*sizeof(su3_vector *));
+
+  if(PRECISION == 2) num_offsets_padded = (num_offsets-1)/4+4; // 4 doubles * real/imag
+  else               num_offsets_padded = (num_offsets-1)/8+8; // 8 floats * real/imag
+
   offset_low = 1.0e+20;
   j_low = -1;
   for(j=0;j<num_offsets;j++){
@@ -150,9 +164,9 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
       j_low = j;
     }
   }
-  for(j=0;j<num_offsets;j++) if(j!=j_low){
-      pm[j] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
-      shifts[j] -= shifts[j_low];
+  for(j=0;j<num_offsets;j++){ 
+      pm[j] = (su3_vector * restrict )malloc(sites_on_node*sizeof(su3_vector));
+      if( j!=j_low )shifts[j] -= shifts[j_low];
     }
   shift0 = -shifts[j_low];
   
@@ -163,9 +177,9 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   /* now we can allocate temporary variables and copy then */
   /* PAD may be used to avoid cache thrashing */
   if(first_multicongrad) {
-    ttt = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
-    cg_p = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
-    resid = (su3_vector *) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+    ttt = (su3_vector * restrict ) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+    cg_p = (su3_vector * restrict ) malloc((sites_on_node+PAD)*sizeof(su3_vector));
+    resid = (su3_vector * restrict ) malloc((sites_on_node+PAD)*sizeof(su3_vector));
     first_multicongrad = 0;
   }
   
@@ -189,8 +203,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     source_norm += (double) magsq_su3vec( src+i );
     su3vec_copy( src+i, resid+i);
     su3vec_copy(resid+i, cg_p+i);
-    clearvec(psim[j_low]+i);
-    for(j=0;j<num_offsets;j++) if(j!=j_low){
+    for(j=0;j<num_offsets;j++) {
 	clearvec(psim[j]+i);
 	su3vec_copy(resid+i, pm[j]+i);
       }
@@ -214,7 +227,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     }
 #endif
     /* Free stuff */
-    for(j=0;j<num_offsets;j++) if(j!=j_low) free(pm[j]);
+    for(j=0;j<num_offsets;j++) free(pm[j]); 
     free(pm);
     
     free(zeta_i);
@@ -287,7 +300,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     
     beta_i[j_low] = -rsq / pkp;
     
-    zeta_ip1[j_low] = 1.0;
+    zeta_ip1[j_low] = 1.0; // this doesn't change (j_low vector is ordinary one mass CG)
     for(j=0;j<num_offsets_now;j++) if(j!=j_low){
 	zeta_ip1[j] = zeta_i[j] * zeta_im1[j] * beta_im1[j_low];
 	c1 = beta_i[j_low] * alpha[j_low] * (zeta_im1[j]-zeta_i[j]);
@@ -311,26 +324,22 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
 	  finished[j] = 1;
 	  //node0_printf("SETTING A ZERO, j=%d, num_offsets_now=%d\n",j,num_offsets_now);
 	  //if(j==num_offsets_now-1)node0_printf("REDUCING OFFSETS\n");
-	  if(j==num_offsets_now-1)num_offsets_now--;
+	  if(j==num_offsets_now-1 && j>j_low) num_offsets_now--;
 	  // don't work any more on finished solutions
 	  // this only works if largest offsets are last, otherwise
 	  // just wastes time multiplying by zero
 	}
       }
     
-    /* dest <- dest + beta*cg_p */
+    /* dest <- dest + beta*cg_p ( cg_p = pm[j_low], dest = psim[j_low] ) */
     rsq = 0.0;
     FORSOMEPARITY_OMP(i,s,l_parity,private(j) reduction(+:rsq) ){
-      scalar_mult_add_su3_vector( psim[j_low]+i,
-				  cg_p+i, (Real)beta_i[j_low], psim[j_low]+i);
-      for(j=0;j<num_offsets_now;j++) if(j!=j_low){
-	  scalar_mult_add_su3_vector( psim[j]+i,
-				      pm[j]+i, (Real)beta_i[j], psim[j]+i);
-	}
-    
+      for(j=0;j<num_offsets_now;j++) {
+	scalar_mult_add_su3_vector( psim[j]+i, pm[j]+i, (Real)beta_i[j], psim[j]+i);
+      }
+
       /* resid <- resid + beta*ttt */
-      scalar_mult_add_su3_vector( resid+i, ttt+i,
-				  (Real)beta_i[j_low], resid+i);
+      scalar_mult_add_su3_vector( resid+i, ttt+i, (Real)beta_i[j_low], resid+i);
       rsq += (double)magsq_su3vec( resid+i );
     } END_LOOP_OMP;
     g_doublesum(&rsq);
@@ -362,7 +371,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
 #endif
       
       /* Free stuff */
-      for(j=0;j<num_offsets;j++) if(j!=j_low) free(pm[j]);
+      for(j=0;j<num_offsets;j++) free(pm[j]); 
       free(pm);
       
       free(zeta_i);
@@ -405,14 +414,11 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     
     /* cg_p  <- resid + alpha*cg_p */
     FORSOMEPARITY_OMP(i,s,l_parity,private(j) ){
-      scalar_mult_add_su3_vector( resid+i, cg_p+i,
-				  (Real)alpha[j_low], cg_p+i);
-      for(j=0;j<num_offsets_now;j++) if(j!=j_low){
-	  scalar_mult_su3_vector( resid+i,
-				  (Real)zeta_ip1[j], ttt+i);
-	  scalar_mult_add_su3_vector( ttt+i, pm[j]+i,
-				      (Real)alpha[j], pm[j]+i);
-	}
+      for(j=0;j<num_offsets_now;j++) {
+	scalar_mult_su3_vector( resid+i, (Real)zeta_ip1[j], ttt+i);
+	scalar_mult_add_su3_vector( ttt+i, pm[j]+i, (Real)alpha[j], pm[j]+i);
+      }
+      su3vec_copy(pm[j_low]+i,cg_p+i);
     } END_LOOP_OMP;
     
     /* scroll the scalars */
@@ -452,9 +458,9 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
 #endif
   
   /* Free stuff */
-  for(j=0;j<num_offsets;j++) if(j!=j_low) free(pm[j]);
+  for(j=0;j<num_offsets;j++){ free(pm[j]); }
   free(pm);
-  
+
   free(zeta_i);
   free(zeta_ip1);
   free(zeta_im1);
