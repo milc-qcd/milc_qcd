@@ -15,6 +15,7 @@ main(int argc, char *argv[])
   int prompt;
   complex **qin;
   Real *q;
+  double starttime, endtime;
   
   int jflav, k;
   int key[4] = {1,1,1,1};  /* 4D Fourier transform */
@@ -24,6 +25,10 @@ main(int argc, char *argv[])
 
   /* Remap standard I/O */
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
+
+  g_sync();
+
+  starttime=dclock();
 
   /* set up */
   prompt = setup();
@@ -77,6 +82,11 @@ main(int argc, char *argv[])
     destroy_r_field(q);
   
   } /* readin(prompt) */
+
+  node0_printf("RUNNING COMPLETED\n");
+  endtime=dclock();
+    
+  node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
 
   normal_exit(0);
   return 0;
