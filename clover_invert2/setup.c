@@ -983,11 +983,12 @@ int readin(int prompt) {
   
   /* Contribution from the propagator epsilons */
   
-  for(i = 0; i < param.num_prop; i++)
+  for(i = 0; i < param.num_prop; i++){
     if(param.prop_type[i] == CLOVER_TYPE)continue;
     param.ksp[i].naik_term_epsilon_index = 
       fill_eps_naik(eps_naik, 
 		    &n_naiks, param.ksp[i].naik_term_epsilon);
+  }
 
   /* Assign Naik term indices to quarks based on inheritance from
      propagators */

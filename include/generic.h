@@ -108,7 +108,9 @@ void ape_smear(
   );
 
 su3_matrix *ape_smear_3D(Real staple_weight, int iters);
+su3_matrix *ape_smear_4D(Real staple_weight, int iters);
 void destroy_ape_links_3D(su3_matrix *ape_links);
+void destroy_ape_links_4D(su3_matrix *ape_links);
 
 /* ax_gauge.c */
 void ax_gauge(void);

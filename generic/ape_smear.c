@@ -443,8 +443,57 @@ su3_matrix *ape_smear_3D(Real staple_weight, int iters){
   return ape_links;
 } /* ape_smear_3D */
 
+/* Do 4D APE smearing of space-like links with SU(3) projection */
+/* The time links are copied from the underlying gauge field */
+/* NOTE A HACK: If iters < 0 we return a unit gauge field instead */
+
+su3_matrix *ape_smear_4D(Real staple_weight, int iters){
+  int space_only = 1;
+  //  int nhits = 0;   /* Turn off SU(3) projection */
+  int nhits = 10;
+  //  Real tol = 0;    /* Used only for SU(3) projection */
+  Real tol = 1e-5;    /* Used only for SU(3) projection */
+  int i,dir;
+  //  Real link_u0 = 1. - 4.*staple_weight;
+  Real link_u0 = 1.;
+  su3_matrix *s_links;
+  su3_matrix *ape_links;
+  double dtime = -dclock();
+
+  /* KLUDGE! So we get noncovariant shifts in quark_source_sink_op.c */
+  /* A negative value results in a unit gauge field */
+  if(iters < 0){
+    ape_links = create_unit_gauge_field();
+    node0_printf("APE links are set to unit matrices\n");
+    return ape_links;
+  }
+
+  /* Copy site gauge links to ape_links */
+  ape_links = create_G_from_site();
+  s_links = create_G();
+
+  for(i = 0; i < iters; i++){
+    FORALLUPDIR(dir){
+      ape_smear_field_dir(ape_links, dir, s_links, staple_weight, link_u0,
+			  space_only, nhits, tol);
+    }
+    copy_G(ape_links, s_links);
+  }
+
+  destroy_G(s_links);
+  dtime += dclock();
+  node0_printf("Time to APE smear %e sec\n",dtime);
+  return ape_links;
+} /* ape_smear_4D */
+
 void destroy_ape_links_3D(su3_matrix *ape_links){
   if(ape_links != NULL)
     destroy_G(ape_links);
 } /* destroy_ape_links_3D */
+
+void destroy_ape_links_4D(su3_matrix *ape_links){
+  if(ape_links != NULL)
+    destroy_G(ape_links);
+} /* destroy_ape_links_4D */
+
 

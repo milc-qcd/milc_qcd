@@ -320,7 +320,7 @@ int readin(int prompt) {
   fn_links = create_fermion_links_from_site(PRECISION, n_naiks, eps_naik);
 
   /* Construct APE smeared links */
-  ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+  ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
 
   return(0);
 }

@@ -533,7 +533,7 @@ void dslash_fn_field_special(su3_vector *src, su3_vector *dest,
    parity. Accumulate result in dest */
 
 
-cxvoid 
+void 
 dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 	      fn_links_t *fn, int dir, int fb, 
 	      Real wtfat, Real wtlong)
@@ -602,7 +602,7 @@ dslash_fn_dir(su3_vector *src, su3_vector *dest, int parity,
 
     /* Apply weights.  NOTE minus sign convention! */
 
-    FORSOMEPARITYDOMAIN(i,parity)
+    FORSOMEPARITYDOMAIN(i,s,parity)
       {
         scalar_mult_add_su3_vector( dest+i, (su3_vector *)gen_pt[0][i], -wtfat, dest+i ) ;    
         if(do_long)
