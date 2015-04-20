@@ -133,7 +133,8 @@ f_meas_current( int nrand, quark_invert_control *qic, Real mass,
 #endif
 	/* Apply the appropriate spin_taste operator for
 	   a local current */
-	spin_taste_op(spin_taste[mu], r_offset, gr_mu, gr);
+	spin_taste_op(spin_taste[mu], r_offset, M_inv_gr_mu, gr);
+	spin_taste_op(spin_taste_index("pion05"), r_offset, gr_mu, M_inv_gr_mu);
 	
 	/* M_inv_gr_mu = M^{-1} gr_mu */
 	
@@ -169,6 +170,7 @@ f_meas_current( int nrand, quark_invert_control *qic, Real mass,
   
   close_vector_current_file(outfile);
   destroy_v_field(M_inv_gr_mu); M_inv_gr_mu = NULL;
+  destroy_v_field(gr_mu); gr_mu = NULL;
   destroy_v_field(gr); gr = NULL;
   destroy_c_array_field(j_mu, NMU);
 }
