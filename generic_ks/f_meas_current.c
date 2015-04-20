@@ -31,14 +31,14 @@ static int *
 get_spin_taste(void){
   
   /* Current spin-taste list */
-  char *spin_taste_label[NMU] = {"GX-G1", "GY-G1", "GZ-G1", "GT-G1"};
+  char *spin_taste_list[NMU] = {"GX-G1", "GY-G1", "GZ-G1", "GT-G1"};
   static int spin_taste[NMU];
   int mu;
   
   /* Decode spin-taste label */
   for(mu = 0; mu < NMU; mu++){
     char dummy[6];
-    strncpy(dummy, spin_taste_label[mu], 6);
+    strncpy(dummy, spin_taste_list[mu], 6);
     spin_taste[mu] = spin_taste_index(dummy);
   }
   
