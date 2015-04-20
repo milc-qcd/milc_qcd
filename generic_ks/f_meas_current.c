@@ -261,8 +261,9 @@ f_meas_current_multi( int n_masses, int nrand, quark_invert_control *qic,
 #endif
 
       /* Apply the appropriate spin_taste operator for
-	 a local current */
-      spin_taste_op(spin_taste[mu], r_offset, gr_mu, gr);
+	 a local current.  Borrow M_inv_gr_mu[0] as a temporary vector. */
+      spin_taste_op(spin_taste[mu], r_offset, M_inv_gr_mu[0], gr);
+      spin_taste_op(spin_taste_index("pion05"), r_offset, gr_mu, M_inv_gr_mu[0]);
 
       /* M_inv_gr_mu = M^{-1} gr_mu */
 
