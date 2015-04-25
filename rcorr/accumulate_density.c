@@ -40,8 +40,6 @@ accumulate_current_density(char *filename, complex *qin[],
   tmp = create_c_array_field(NMU);
   for(k = 0; k < nrand; k++){
     status = read_complex_scidac_xml(infile, tmp, NMU, recxml);
-
-    node0_printf("Record info \n\"%s\"\n",QIO_string_ptr(recxml));
     if(qio_status(status) != 0)exit(1);
 
     /* Parse metadata */
