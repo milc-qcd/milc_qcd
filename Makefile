@@ -248,6 +248,8 @@ ifeq ($(strip ${WANTQUDA}),true)
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
+  CGPU += DHAVE_QUDA
+
   ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
     HAVE_CL_GPU = true
     CGPU += -DUSE_CL_GPU
@@ -386,7 +388,7 @@ CPROF =#
 # HISQ_SVD_COUNTER    Print summary count of SVD uses
 # HISQ_FORCE_FILTER_COUNTER Print summary count of force filter applications.
 
-CDEBUG = -DCG_OK # -DCHECK_MALLOC -DREMAP_STDIO_APPEND
+CDEBUG = -DCG_OK -DREMAP_STDIO_APPEND # -DCHECK_MALLOC 
 
 #------------------------------
 # Backward compatibility
@@ -494,7 +496,7 @@ CPREFETCH = #
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
 
-KSCGMULTI = -DKS_MULTICG=HYBRID -DHALF_MIXED # -DNO_REFINE
+KSCGMULTI = -DKS_MULTICG=HYBRID # -DHALF_MIXED # -DNO_REFINE
 
 #------------------------------
 # Multifermion force routines
