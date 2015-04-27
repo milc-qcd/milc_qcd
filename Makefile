@@ -50,11 +50,13 @@ OPT              = -O3
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
-OCFLAGS = -Wall # ( -Wall, etc )
+OCFLAGS = -std=c99   # We now need C99
 
 # Compiling with OpenMP?
 
 OMP = #true
+
+OCFLAGS += -Wall # ( -Wall, etc )
 
 #OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
 #OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector

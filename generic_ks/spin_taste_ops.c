@@ -287,9 +287,11 @@ two_link(int spin, int dir1, int dir2, int r0[], su3_vector *dest,
   destroy_v_field(tvec0);
 }
 
+#if 0
 /*------------------------------------------------------------------*/
 static void 
 three_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *links){
+  /* NOTE: only for x, y, z links */
   /* For each gamma_mu in the "spin" gamma matrix, the 
      operator gets a factor (-)^x[mu] times a factor (-)^(x+y+z+t).
      Then an overall factor (-)^(x+y+z+t) for the antiquark. */
@@ -326,6 +328,110 @@ three_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *li
   destroy_v_field(tvec1);
   destroy_v_field(tvec0);
 }
+#endif
+
+/*------------------------------------------------------------------*/
+static void 
+three_link(int spin, int dir1, int dir2, int dir3, int r0[], 
+	   su3_vector *dest, su3_vector *src, su3_matrix *links){
+  /* NOTE: only for x, y, z links */
+  /* For each gamma_mu in the "spin" gamma matrix, the 
+     operator gets a factor (-)^x[mu] times a factor (-)^(x+y+z+t).
+     Then an overall factor (-)^(x+y+z+t) for the antiquark. */
+
+  int i, c;
+  site *s;
+  su3_vector *tvec0 = create_v_field();
+  su3_vector *tvec1 = create_v_field();
+  
+  /* All permutation with appropriate sign */
+  struct {
+    int d[3];
+    Real sign ;
+  } p[6]={{{dir1,dir2,dir3},+1.0/6.0},
+	  {{dir2,dir3,dir1},+1.0/6.0},
+	  {{dir3,dir1,dir2},+1.0/6.0},
+	  {{dir1,dir3,dir2},-1.0/6.0},
+	  {{dir2,dir1,dir3},-1.0/6.0},
+	  {{dir3,dir2,dir1},-1.0/6.0}}; /* The factor of 6 accounts for the *
+					 * multiplicity of the permutations */
+  
+  clear_v_field(dest);
+  spin_sign_field(spin, r0, tvec0, src);
+  for(c=0;c<6;c++)
+    {
+      zeta_shift_field(3,p[c].d,r0,tvec1,tvec0,links);
+      FORALLSITES(i,s){
+	scalar_mult_sum_su3_vector(dest+i, tvec1+i, p[c].sign );
+      }
+    }
+  /* multiply by \epsilon for the anti-quark */
+  antiquark_sign_flip_field(r0, dest, dest);
+  
+  destroy_v_field(tvec1);
+  destroy_v_field(tvec0);
+}
+
+/*------------------------------------------------------------------*/
+static void 
+four_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *links){
+  /* For each gamma_mu in the "spin" gamma matrix, the 
+     operator gets a factor (-)^x[mu] times a factor (-)^(x+y+z+t).
+     Then an overall factor (-)^(x+y+z+t) for the antiquark. */
+
+  int i, c;
+  site *s;
+  su3_vector *tvec0 = create_v_field();
+  su3_vector *tvec1 = create_v_field();
+  
+  /* All permutation with appropriate sign */
+  struct {
+    int d[4];
+    Real sign ;
+  } p[24]={{{XUP,YUP,ZUP,TUP},+1.0/24.0},
+	   {{YUP,ZUP,XUP,TUP},+1.0/24.0},
+	   {{ZUP,XUP,YUP,TUP},+1.0/24.0},
+	   {{XUP,ZUP,YUP,TUP},-1.0/24.0},
+	   {{YUP,XUP,ZUP,TUP},-1.0/24.0},
+	   {{ZUP,YUP,XUP,TUP},-1.0/24.0},
+
+	   {{TUP,XUP,YUP,ZUP},-1.0/24.0},
+	   {{TUP,YUP,ZUP,XUP},-1.0/24.0},
+	   {{TUP,ZUP,XUP,YUP},-1.0/24.0},
+	   {{TUP,XUP,ZUP,YUP},+1.0/24.0},
+	   {{TUP,YUP,XUP,ZUP},+1.0/24.0},
+	   {{TUP,ZUP,YUP,XUP},+1.0/24.0},
+	   
+	   {{XUP,TUP,YUP,ZUP},+1.0/24.0},
+	   {{YUP,TUP,ZUP,XUP},+1.0/24.0},
+	   {{ZUP,TUP,XUP,YUP},+1.0/24.0},
+	   {{XUP,TUP,ZUP,YUP},-1.0/24.0},
+	   {{YUP,TUP,XUP,ZUP},-1.0/24.0},
+	   {{ZUP,TUP,YUP,XUP},-1.0/24.0},
+	   
+	   {{XUP,YUP,TUP,ZUP},-1.0/24.0},
+	   {{YUP,ZUP,TUP,XUP},-1.0/24.0},
+	   {{ZUP,XUP,TUP,YUP},-1.0/24.0},
+	   {{XUP,ZUP,TUP,YUP},+1.0/24.0},
+	   {{YUP,XUP,TUP,ZUP},+1.0/24.0},
+	   {{ZUP,YUP,TUP,XUP},+1.0/24.0}}; /* The factor of 24 accounts for the *
+					    * multiplicity of the permutations */
+  
+  clear_v_field(dest);
+  spin_sign_field(spin, r0, tvec0, src);
+  for(c=0;c<6;c++)
+    {
+      zeta_shift_field(4,p[c].d,r0,tvec1,tvec0,links);
+      FORALLSITES(i,s){
+	scalar_mult_sum_su3_vector(dest+i, tvec1+i, p[c].sign );
+      }
+    }
+  /* multiply by \epsilon for the anti-quark */
+  antiquark_sign_flip_field(r0, dest, dest);
+  
+  destroy_v_field(tvec1);
+  destroy_v_field(tvec0);
+}
 
 #endif
 
@@ -347,16 +453,23 @@ general_spin_taste_op(enum gammatype spin_index, enum gammatype taste_index, int
     {
     case 0: local(spin, r0, dest, src); break;
 #ifndef NO_GAUGE_FIELD
-    case 1: one_link(spin, XUP, r0, dest, src, links); break;
-    case 2: one_link(spin, YUP, r0, dest, src, links); break;
-    case 3: two_link(spin, XUP, YUP, r0, dest, src, links); break;
-    case 4: one_link(spin, ZUP, r0, dest, src, links); break;
-    case 5: two_link(spin, ZUP, XUP, r0, dest, src, links); break;
-    case 6: two_link(spin, YUP, ZUP, r0, dest, src, links); break;
-    case 7: three_link(spin, r0, dest, src, links); break;
-    case 8: one_link(spin, TUP, r0, dest, src, links); break;
+    case  1: one_link(spin, XUP, r0, dest, src, links); break;
+    case  2: one_link(spin, YUP, r0, dest, src, links); break;
+    case  3: two_link(spin, XUP, YUP, r0, dest, src, links); break;
+    case  4: one_link(spin, ZUP, r0, dest, src, links); break;
+    case  5: two_link(spin, ZUP, XUP, r0, dest, src, links); break;
+    case  6: two_link(spin, YUP, ZUP, r0, dest, src, links); break;
+    case  7: three_link(spin, XUP, YUP, ZUP, r0, dest, src, links); break;
+    case  8: one_link(spin, TUP, r0, dest, src, links); break;
+    case  9: two_link(spin, XUP, TUP, r0, dest, src, links); break;
+    case 10: two_link(spin, YUP, TUP, r0, dest, src, links); break;
+    case 11: three_link(spin, XUP, YUP, TUP, r0, dest, src, links); break;
+    case 12: two_link(spin, ZUP, TUP, r0, dest, src, links); break;
+    case 13: three_link(spin, XUP, ZUP, TUP, r0, dest, src, links); break;
+    case 14: three_link(spin, YUP, ZUP, TUP, r0, dest, src, links); break;
+    case 15: four_link(spin, r0, dest, src, links); break;
 #endif
-    default: printf("Time split operator not supported\n");
+    default: printf("This operator not supported\n");
     }
 }
 

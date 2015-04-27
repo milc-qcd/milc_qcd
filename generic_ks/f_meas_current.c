@@ -31,14 +31,14 @@ static int *
 get_spin_taste(void){
   
   /* Current spin-taste list */
-  char *spin_taste_label[NMU] = {"GX-G1", "GY-G1", "GZ-G1", "GT-G1"};
+  char *spin_taste_list[NMU] = {"GX-G1", "GY-G1", "GZ-G1", "GT-G1"};
   static int spin_taste[NMU];
   int mu;
   
   /* Decode spin-taste label */
   for(mu = 0; mu < NMU; mu++){
     char dummy[6];
-    strncpy(dummy, spin_taste_label[mu], 6);
+    strncpy(dummy, spin_taste_list[mu], 6);
     spin_taste[mu] = spin_taste_index(dummy);
   }
   
@@ -50,7 +50,7 @@ static QIO_Writer *
 open_vector_current_file(char *filename){
   char default_file_xml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><title>MILC ILDG disconnected vector current</title>";
   int volfmt = QIO_SINGLEFILE;
-  int serpar = QIO_PARALLEL;
+  int serpar = QIO_SERIAL;
   QIO_String *filexml = QIO_string_create();
   QIO_string_set(filexml, default_file_xml);
   QIO_Layout layout;
@@ -120,6 +120,7 @@ f_meas_current( int nrand, quark_invert_control *qic, Real mass,
     exit(1);
   }
   
+  double wtime = 0.;
   /* Loop over random sources */
   for(jrand = 0; jrand < nrand; jrand++){
     /* Loop over directions for the current */
@@ -133,17 +134,17 @@ f_meas_current( int nrand, quark_invert_control *qic, Real mass,
 #endif
 	/* Apply the appropriate spin_taste operator for
 	   a local current */
-	spin_taste_op(spin_taste[mu], r_offset, gr_mu, gr);
+	spin_taste_op(spin_taste[mu], r_offset, M_inv_gr_mu, gr);
+	spin_taste_op(spin_taste_index("pion05"), r_offset, gr_mu, M_inv_gr_mu);
 	
 	/* M_inv_gr_mu = M^{-1} gr_mu */
 	
 	mat_invert_uml_field( gr_mu, M_inv_gr_mu, qic, mass, fn );
 	
 	/* J_mu = gr.M_inv_gr_mu */
-	double norm = 1./(double)volume;
 	FORALLFIELDSITES(i){
 	  complex cc = su3_dot( gr+i, M_inv_gr_mu+i );
-	  CMULREAL(cc, norm, j_mu[NMU*i + mu]);
+	  j_mu[NMU*i + mu] = cc;
 	}
       } /* mu */
 
@@ -157,6 +158,7 @@ f_meas_current( int nrand, quark_invert_control *qic, Real mass,
       }
 #endif
 
+      wtime -= dclock();
       int status = write_vector_current_record(outfile, jrand, mass, j_mu);
       if(status != QIO_SUCCESS){
 	node0_printf("f_meas_curent: Failed to write record to %s\n", filename);
@@ -164,11 +166,15 @@ f_meas_current( int nrand, quark_invert_control *qic, Real mass,
 	node0_printf("f_meas_current: Wrote current density for source %d and mass %g on file %s\n", 
 		     jrand, mass, filename);
       }
+      wtime += dclock();
 
   } /* jrand */
-  
+
   close_vector_current_file(outfile);
+  node0_printf("Time to write %d records = %e\n", nrand, wtime);
+  
   destroy_v_field(M_inv_gr_mu); M_inv_gr_mu = NULL;
+  destroy_v_field(gr_mu); gr_mu = NULL;
   destroy_v_field(gr); gr = NULL;
   destroy_c_array_field(j_mu, NMU);
 }
@@ -259,22 +265,21 @@ f_meas_current_multi( int n_masses, int nrand, quark_invert_control *qic,
 #endif
 
       /* Apply the appropriate spin_taste operator for
-	 a local current */
-      spin_taste_op(spin_taste[mu], r_offset, gr_mu, gr);
+	 a local current.  Borrow M_inv_gr_mu[0] as a temporary vector. */
+      spin_taste_op(spin_taste[mu], r_offset, M_inv_gr_mu[0], gr);
+      spin_taste_op(spin_taste_index("pion05"), r_offset, gr_mu, M_inv_gr_mu[0]);
 
       /* M_inv_gr_mu = M^{-1} gr_mu */
 
       total_iters += mat_invert_multi( gr_mu, M_inv_gr_mu, ksp, n_masses, qic, fn_multi );
       
       /* J_mu = gr.M_inv_gr_mu */
-      double norm = 1./(double)volume;
-
       for(j = 0; j < n_masses; j++){
 	
 	/* psi-bar-psi on even sites = gr.M_inv_gr */
 	FORALLFIELDSITES(i){
 	  complex cc = su3_dot( gr+i, M_inv_gr_mu[j]+i );
-	  CMULREAL(cc, norm, j_mu[j][NMU*i + mu]);
+	  j_mu[j][NMU*i + mu] = cc;
 	}
       } /* j */
     } /* mu */
