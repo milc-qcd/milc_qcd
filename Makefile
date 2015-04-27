@@ -248,7 +248,7 @@ ifeq ($(strip ${WANTQUDA}),true)
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
-  CGPU += DHAVE_QUDA
+ CGPU += -DHAVE_QUDA
 
   ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
     HAVE_CL_GPU = true
