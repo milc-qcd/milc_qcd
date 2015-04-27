@@ -1047,7 +1047,7 @@ static void apply_momentum_v(su3_vector *src,
 			     int t0){
   int i; site *s;
   int c;
-  Real pi = M_PI;
+  Real pi = 3.141592653589793;
   Real th;
   Real px, py, pz;
   int x0, y0, z0;
