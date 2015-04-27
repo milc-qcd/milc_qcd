@@ -67,7 +67,6 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   double * restrict beta_i, * restrict beta_im1, * restrict alpha;
   su3_vector ** restrict pm;	/* vectors not involved in gathers */
   int * restrict finished;      /* if converged */
-  register int color,index,startindex;
 
   /* Unpack qic structure.  The first qic sets the convergence criterion */
   /* We don't restart this algorithm, so we adopt the convention of
