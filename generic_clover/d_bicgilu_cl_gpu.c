@@ -188,7 +188,6 @@ int bicgilu_cl_field_gpu ( // Return value is number of iterations taken
   double residual, relative_residual;
   int num_iters = 0;
   
-  qic->relresid = 0.0;
   gamma_matrix_t g5 = gamma_mat(G5);
 
   int i;
@@ -199,6 +198,7 @@ int bicgilu_cl_field_gpu ( // Return value is number of iterations taken
   qudaCloverInvert(PRECISION, 
 		   quda_precision,
 		   kappa,
+		   CKU0,
 		   inv_args,					
 		   qic->resid,
 		   qic->relresid,
