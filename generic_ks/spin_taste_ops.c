@@ -100,8 +100,9 @@ sym_shift_field(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
     {
       scalar_mult_su3_vector( dest+i, .5, dest+i );
     }
+  cleanup_gather(tag[1]);
 #endif
-  for(i=0;i<2;i++) cleanup_gather(tag[i]) ;
+  cleanup_gather(tag[0]) ;
   
   destroy_v_field(tvec);
 }
