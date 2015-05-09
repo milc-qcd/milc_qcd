@@ -1319,7 +1319,7 @@ static void apply_momentum_wv(wilson_vector *src,
 			      int t0){
   int i; site *s;
   int c,d;
-  Real pi = M_PI;
+  Real pi = 3.14159265358979324;
   Real th;
   Real px, py, pz;
   int x0, y0, z0;
