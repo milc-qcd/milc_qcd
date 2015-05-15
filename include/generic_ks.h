@@ -93,6 +93,7 @@ void link_transport_connection_hisq( su3_matrix * src, su3_matrix *links,
     su3_matrix * dest, su3_matrix * work, int dir );
 
 /* rephase.c */
+void apply_apbc( su3_matrix *links );
 void phaseset(void);
 void rephase( int flag );
 void rephase_field_offset( su3_matrix *internal_links, int flag, 
