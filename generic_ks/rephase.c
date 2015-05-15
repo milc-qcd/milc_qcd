@@ -117,7 +117,6 @@ void phaseset() {
 }
 
 
-/************************** rephase() ******************************/
 /* put Kogut-Sussind and boundary condition phase factors into or
    out of lattice */
 
@@ -139,9 +138,8 @@ void rephase( int flag ){
   }
 
   phases_in = flag;
-} /* rephase.c */
+} /* rephase */
 
-/************************** rephase_field() ******************************/
 /* put Kogut-Sussind and boundary condition phase factors into or
    out of a field consisting of four SU(3) matrices per site.  The
    phases are defined relative to the offset origin r0. */
@@ -170,34 +168,17 @@ void rephase_field_offset( su3_matrix *internal_links, int flag,
   if(status_now != NULL)
     *status_now = flag;
 
-} /* rephase_field_offset.c */
+} /* rephase_field_offset */
 
-// /************************** rephase_offset() ******************************/
-// /* put Kogut-Sussind and anti-periodic boundary condition phase factors into or
-//    out of lattice.  Phases are defined relative to the origin r0.*/
-// 
-// void 
-// rephase_offset( int flag, int r0[] ){
-//   register int i,j,k,dir;
-//   register site *s;
-//   char myname[] = "rephase_offset";
-//   
-//   /* Check to make sure we are going in expected direction */
-//   if( !( (flag==ON && phases_in==OFF) || 
-// 	 (flag==OFF && phases_in==ON) ) ){
-//     node0_printf("%s: you fouled up the phases\n",myname);
-//     terminate(1);
-//   }
-//   FORALLSITES(i,s){
-//     short *p = alpha_apb_offset(s, r0);
-//     for(dir=XUP;dir<=TUP;dir++){
-//       for(j=0;j<3;j++)for(k=0;k<3;k++){
-// 	  s->link[dir].e[j][k].real *= p[dir];
-// 	  s->link[dir].e[j][k].imag *= p[dir];
-// 	}
-//     }
-//   }
-//   
-//   phases_in = flag;
-// } /* rephase_offset.c */
+/* conventional antiperiodic boundary conditions in Euclidean time */
+void apply_apbc( su3_matrix *links ){
 
+  int i;
+  site *s;
+
+  FORALLSITES(i,s){
+    if( s->t == nt-1){
+      scalar_mult_su3_matrix( links + 4*i + TUP, -1., links + 4*i + TUP );
+    }
+  }
+}
