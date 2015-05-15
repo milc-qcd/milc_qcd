@@ -323,6 +323,8 @@ int readin(int prompt) {
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
   rephase( ON );
+/* We put in antiperiodic bc to match what we did to the gauge field */
+  apply_apbc( ape_links );
 
   return(0);
 }
