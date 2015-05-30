@@ -383,6 +383,7 @@ u_int32type nersc_cksum( void );
 void make_global_fields(void);
 
 /* momentum_twist.c */
+void boundary_twist_field(Real bdry_phase[4], int r0[4], int sign, su3_matrix *links);
 void boundary_twist_site(Real bdry_phase[4], int r0[4], int sign);
 void momentum_twist_site(Real bdry_phase[4], int sign);
 void momentum_twist_links(Real bdry_phase[4], int sign, su3_matrix *links);
