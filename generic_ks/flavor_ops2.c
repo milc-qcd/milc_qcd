@@ -1,8 +1,6 @@
 /******************************** flavor_ops2.c *************************/
 /* MIMD version 7                                                       */
 
-/* THIS CODE IS OBSOLETE AND UNSUPPORTED.  SEE spin_taste_ops.c !!! CD 5/30/15 */
-
 /* Implementation of the spin-taste ("flavor") (\Xi_\mu) operators.
    See Golterman & Smit Nulc. Phys. B245 (1984) 61.
    They are used for constructing the non-local pion sources
