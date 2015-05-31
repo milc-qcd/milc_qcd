@@ -22,7 +22,6 @@ p2f_real(float *dest, Real *src){
   *dest = *src;
 }
 
-#if 0
 static void
 d2p_real(Real *dest, double *src){
   *dest = *src;
@@ -32,7 +31,6 @@ static void
 p2d_real(double *dest, Real *src){
   *dest = *src;
 }
-#endif
 
 /* Complex type */
 
@@ -284,6 +282,7 @@ make_vput(F, 3, M, fsu3_matrix,    su3_matrix,    f2p_mat);
 
 /* Double precision */
 
+make_vget(D,  , R, double,         Real,          p2d_real);
 make_vget(D,  , C, dcomplex,       complex,       p2d_complex);
 make_vget(D, 3, V, dsu3_vector,    su3_vector,    p2d_vec);
 make_vget(D, 3, D, dwilson_vector, wilson_vector, p2d_wvec);
@@ -441,6 +440,7 @@ make_write_tslice(F, "F", 3, 3, 4, D, "USQCD_F3_DiracFermion", fwilson_vector, w
 
 /* Double precision */
 
+make_write_all(D, "D",  , 0, 0, R, "QLA_D_Real", double, Real, double);
 make_write_all(D, "D",  , 0, 0, C, "QLA_D_Complex", dcomplex, complex, double);
 make_write_all(D, "D", 3, 3, 0, V, "USQCD_D3_ColorVector", dsu3_vector, su3_vector, double);
 make_write_all(D, "D", 3, 3, 0, M, "USQCD_D3_ColorMatrix", dsu3_matrix, su3_matrix, double);

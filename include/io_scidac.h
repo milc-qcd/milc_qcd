@@ -175,6 +175,8 @@ int write_F3_M_from_field(QIO_Writer *outfile,
 int write_F3_D_from_field(QIO_Writer *outfile, 
 		  QIO_String *xml_record_out, wilson_vector *src, int count);
 
+int write_D_R_from_field(QIO_Writer *outfile, 
+		 QIO_String *xml_record_out, Real *src, int count);
 int write_D_C_from_field(QIO_Writer *outfile, 
 		 QIO_String *xml_record_out,  complex *src, int count);
 int write_D3_V_from_field(QIO_Writer *outfile, 
