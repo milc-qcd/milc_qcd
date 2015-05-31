@@ -31,6 +31,12 @@
 
 #include "../include/gammatypes.h"
 
+enum shift_dir {
+  SHIFT_FORWARD,
+  SHIFT_BACKWARD,
+  SHIFT_SYMMETRIC
+};
+
 /*------------------------------------------------------------------*/
 /* Compute the hypercube coordinate relative to an offset.  We assume
    that all lattice dimensions are even, as they should be for
@@ -805,11 +811,16 @@ enum spin_taste_type {
   rhots,
   rhois,
   rho0,
-  rhoxsfn,
-  rhoysfn,
-  rhozsfn,
-  rhotsfn,
-  rhoisfn,
+  rhoxsffn,
+  rhoysffn,
+  rhozsffn,
+  rhotsffn,
+  rhoisffn,
+  rhoxsbfn,
+  rhoysbfn,
+  rhozsbfn,
+  rhotsbfn,
+  rhoisbfn,
   MAX_SPIN_TASTE
 };
 
@@ -836,11 +847,16 @@ static char *spin_taste_string[MAX_SPIN_TASTE]  = {
   "rhots",
   "rhois",
   "rho0",
-  "rhoxsfn",
-  "rhoysfn",
-  "rhozsfn",
-  "rhotsfn",
-  "rhoisfn",
+  "rhoxsffn",
+  "rhoysffn",
+  "rhozsffn",
+  "rhotsffn",
+  "rhoisffn",
+  "rhoxsbfn",
+  "rhoysbfn",
+  "rhozsbfn",
+  "rhotsbfn",
+  "rhoisbfn"
 };
 
 /*------------------------------------------------------------------*/
@@ -1104,27 +1120,35 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
 
 #ifndef NO_GAUGE_FIELD
 
-/* Apply the symmetric shift operator in direction "dir" *
- * Fat and long links are used instead of unfattened links          */
+/* Apply the shift operator in direction "dir" *
+ * Fat and long links are used instead of APE links          */
+
+#define LONG_SHIFT_WT 0.  /* Weight for long links (0. or 1.)*/
 
 static void 
-sym_shift_fn_field(imp_ferm_links_t *fn, int dir, 
+sym_shift_fn_field(imp_ferm_links_t *fn, int dir, enum shift_dir fb, 
 		   su3_vector *src, su3_vector *dest)
 {
-  //char myname[] = "sym_shift_fn_field";
+  char myname[] = "sym_shift_fn_field";
   if(fn == NULL){
-    node0_printf("sym_shift_fn_field: Called with NULL FN links\n");
+    node0_printf("%s: Called with NULL FN links\n", myname);
     terminate(1);
   }
   
   clear_v_field(dest);
 
-  /* Apply Fat-Naik shift operation to src in forward dir */
-  //dslash_fn_dir(src, dest, EVENANDODD, fn, dir, +1, 1., 1.);
-  dslash_fn_dir(src, dest, EVENANDODD, fn, dir, +1, 1., 0.);
 
-  /* Add to it the Fat-Naik shift operation in backward dir */
-  //dslash_fn_dir(src, dest, EVENANDODD, fn, dir, -1, -1., -1.);
+  if(fb == SHIFT_FORWARD)
+    /* Apply Fat-Naik shift operation to src in forward dir */
+    dslash_fn_dir(src, dest, EVENANDODD, fn, dir, +1, 1., LONG_SHIFT_WT);
+  else if(fb == SHIFT_BACKWARD)
+    /* Apply Fat-Naik shift operation to src in backward dir */
+    dslash_fn_dir(src, dest, EVENANDODD, fn, dir, -1, -1., -LONG_SHIFT_WT);
+  else
+    {
+      node0_printf("%s: Called with bad shift sense: %d\n", myname, fb);
+      terminate(1);;
+    }
 }
 
 /* "Multiply by" the quark-antiquark Fat-Naik rho operator */
@@ -1132,14 +1156,15 @@ sym_shift_fn_field(imp_ferm_links_t *fn, int dir,
    HISQ actions -CD */
 
 static void 
-mult_rhois_fn_field( imp_ferm_links_t *fn, int fdir, int r0[],
+mult_rhois_fn_field( imp_ferm_links_t *fn, int fdir, 
+		     enum shift_dir fb, int r0[],
 		     su3_vector *src, su3_vector *dest )
 {
   register int i;
   register site *s;  
   
   /* apply the symmetric shift FN operator (uses fat and long links) */
-  sym_shift_fn_field(fn, fdir, src, dest);
+  sym_shift_fn_field(fn, fdir, fb, src, dest);
   FORALLSITES(i,s){
     /* \eta_k already in the phases                   * 
      * only the \epsilon for the anti-quark is needed */
@@ -1228,19 +1253,37 @@ spin_taste_op_fn( imp_ferm_links_t *fn, int index, int r0[],
   else {
     
     switch(index){
-    case rhoxsfn:
-      mult_rhois_fn_field(fn, XUP, r0, src, dest);
+      /* Forward shift */
+    case rhoxsffn:
+      mult_rhois_fn_field(fn, XUP, SHIFT_FORWARD, r0, src, dest);
       break;
-    case rhoysfn:
-      mult_rhois_fn_field(fn, YUP, r0, src, dest);
+    case rhoysffn:
+      mult_rhois_fn_field(fn, YUP, SHIFT_FORWARD, r0, src, dest);
       break;
-    case rhozsfn:
-    case rhoisfn:
-      mult_rhois_fn_field(fn, ZUP, r0, src, dest);
+    case rhozsffn:
+    case rhoisffn:
+      mult_rhois_fn_field(fn, ZUP, SHIFT_FORWARD, r0, src, dest);
       break;
-    case rhotsfn:
-      mult_rhois_fn_field(fn, TUP, r0, src, dest);
+    case rhotsffn:
+      mult_rhois_fn_field(fn, TUP, SHIFT_FORWARD, r0, src, dest);
       break;
+
+      /* Backward shift */
+    case rhoxsbfn:
+      mult_rhois_fn_field(fn, XUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+    case rhoysbfn:
+      mult_rhois_fn_field(fn, YUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+    case rhozsbfn:
+    case rhoisbfn:
+      mult_rhois_fn_field(fn, ZUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+    case rhotsbfn:
+      mult_rhois_fn_field(fn, TUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+
+
     default:
       /* For all non-FN operators */
       spin_taste_op(index, r0, dest, src);
