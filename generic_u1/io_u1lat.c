@@ -661,7 +661,7 @@ gauge_file *restore_u1_serial(char *filename)
       free(gf->header);
       free(gf);
 #ifdef HAVE_QIO
-      restore_real_scidac_to_field(filename, u1_A, 4);
+      restore_real_scidac_to_field(filename, QIO_SERIAL, u1_A, 4);
 #else
       node0_printf("Looks like a SciDAC file.  Recompile with QIO.\n");
       terminate(1);

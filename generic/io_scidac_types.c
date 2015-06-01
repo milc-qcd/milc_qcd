@@ -288,6 +288,7 @@ make_vget(D, 3, V, dsu3_vector,    su3_vector,    p2d_vec);
 make_vget(D, 3, D, dwilson_vector, wilson_vector, p2d_wvec);
 make_vget(D, 3, M, dsu3_matrix,    su3_matrix,    p2d_mat);
 
+make_vput(D,  , R, double,         Real,          d2p_real);
 make_vput(D,  , C, dcomplex,       complex,       d2p_complex);
 make_vput(D, 3, V, dsu3_vector,    su3_vector,    d2p_vec);
 make_vput(D, 3, D, dwilson_vector, wilson_vector, d2p_wvec);
@@ -538,6 +539,7 @@ make_read(F, 3, M, fsu3_matrix, su3_matrix, float);
 make_read(F, 3, D, fwilson_vector, wilson_vector, float);
 
 /* Double precision */
+make_read(D,  , R, double, Real, double);
 make_read(D,  , C, dcomplex, complex, double);
 make_read(D, 3, V, dsu3_vector, su3_vector, double);
 make_read(D, 3, M, dsu3_matrix, su3_matrix, double);
