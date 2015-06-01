@@ -950,6 +950,14 @@ QIO_Reader *r_open_scidac_file_xml(char *filename, int serpar,
 
   /* Open file for reading */
   infile = open_scidac_input_xml(filename, &layout, &fs, serpar, xml_file);
+
+  if(infile == NULL)return NULL;
+
+  if(this_node==0){
+    printf("Restoring binary SciDAC file %s\n",filename);
+    printf("File info \n\"%s\"\n",QIO_string_ptr(xml_file));
+  }
+
   return infile;
 }
 

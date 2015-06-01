@@ -14,10 +14,6 @@ QIO_Writer *open_usqcd_ksprop_write(char *filename, int volfmt,
 				    int serpar, int ildgstyle, 
 				    char *stringLFN, int milc_type,
 				    char *fileinfo);
-void r_close_ks_vector_scidac_file(QIO_Reader *infile);
-QIO_Reader *r_open_ks_vector_scidac_file(char *filename, int serpar);
-QIO_Reader *r_open_ks_vector_scidac_file_xml(char *filename, int serpar,
-					     QIO_String *xml_file);
 int read_ks_vector_scidac(QIO_Reader *infile, su3_vector *dest, int count);
 int read_ks_vector_scidac_xml(QIO_Reader *infile, su3_vector *dest, int count,
 			      QIO_String *recxml);
@@ -40,9 +36,6 @@ void save_ks_vector_scidac_from_site(char *filename, char *fileinfo,
 				     char *recinfo, 
 				     int volfmt, int serpar, 
 				     field_offset src, int count, int prec);
-void w_close_ks_vector_scidac_file(QIO_Writer *outfile);
-QIO_Writer *w_open_ks_vector_scidac_file(char *filename, char *fileinfo, 
-					 int volfmt, int serpar);
 int write_kspropsource_C_usqcd(QIO_Writer *outfile, char *srcinfo, 
 			       complex *src, int t0);
 int write_kspropsource_C_usqcd_xml(QIO_Writer *outfile, QIO_String *recxml, 

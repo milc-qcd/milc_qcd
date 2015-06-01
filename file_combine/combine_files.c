@@ -103,7 +103,7 @@ static void combine_vector_field_files(int nfile, int ncolor, int t0,
 
     xml_file = QIO_string_create();
     infile[file] = 
-      r_open_ks_vector_scidac_file_xml(startfile[file], 
+      r_open_scidac_file_xml(startfile[file], 
 				       serpar, xml_file);
     QIO_string_destroy(xml_file);  /* Ignore for now */
 
@@ -119,8 +119,7 @@ static void combine_vector_field_files(int nfile, int ncolor, int t0,
   xml_file = QIO_string_create();
   sourcefile_info = QIO_create_usqcd_kspropsourcefile_info(fileinfo);
   
-  outfile = w_open_ks_vector_scidac_file(savefile, fileinfo,
-					 volfmt, serpar);
+  outfile = w_open_scidac_file(savefile, fileinfo, volfmt, serpar);
   QIO_string_destroy(xml_file);
   
   /* Loop over colors */
@@ -165,10 +164,10 @@ static void combine_vector_field_files(int nfile, int ncolor, int t0,
     QIO_string_destroy(xml_record);
   }
     
-  w_close_ks_vector_scidac_file(outfile);
+  w_close_scidac_file(outfile);
 
   for(file = 0; file < nfile; file++){
-    r_close_ks_vector_scidac_file(infile[file]);
+    r_close_scidac_file(infile[file]);
   }
 }
 

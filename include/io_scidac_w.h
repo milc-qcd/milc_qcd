@@ -9,10 +9,6 @@
 
 QIO_Reader *r_open_w_vector_scidac_file(char *filename, int serpar);
 void r_close_usqcd_wprop_file(QIO_Reader *infile);
-void r_close_w_vector_scidac_file(QIO_Reader *infile);
-QIO_Reader *r_open_w_vector_scidac_file_xml(char *filename, int serpar,
-					    QIO_String *xml_file);
-QIO_Reader *r_open_w_vector_scidac_file(char *filename, int serpar);
 void restore_w_vector_scidac_to_field(char *filename, int serpar,
 			      wilson_vector *dest, int count);
 void restore_w_vector_scidac_to_site(char *filename, int serpar,

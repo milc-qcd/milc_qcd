@@ -22,29 +22,6 @@ REQUIRES QIO
 /* Write color vectors in SciDAC format, taking data from the site
    structure */
 
-QIO_Writer *w_open_ks_vector_scidac_file(char *filename, char *fileinfo, 
-					 int volfmt, int serpar)
-{
-  QIO_Layout layout;
-  QIO_Filesystem fs;
-  QIO_Writer *outfile;
-  QIO_String *filexml;
-
-  /* Build the layout structure */
-  build_qio_layout(&layout);
-
-  /* Define the I/O nodes */
-  build_qio_filesystem(&fs);
-
-  /* Open file for writing */
-  filexml = QIO_string_create();
-  QIO_string_set(filexml, fileinfo);
-  outfile = open_scidac_output(filename, volfmt, serpar, QIO_ILDGNO,
-			       NULL, &layout, &fs, filexml);
-  QIO_string_destroy(filexml);
-  return outfile;
-}
-
 int save_ks_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
 			  int volfmt, su3_vector *src, int count, int prec)
 {
@@ -82,11 +59,6 @@ int save_ks_vector_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
   return status;
 }
 
-void w_close_ks_vector_scidac_file(QIO_Writer *outfile)
-{
-  QIO_close_write(outfile);
-}
-
 /********************************************************************/
 /* Generic color vector file (not USQCD)                            */
 /* Write color vectors in SciDAC format, taking data from the site
@@ -102,14 +74,14 @@ void save_ks_vector_scidac_from_field(char *filename, char *fileinfo,
 
   QIO_verbose(QIO_VERB_OFF);
 
-  outfile = w_open_ks_vector_scidac_file(filename, fileinfo, volfmt, serpar);
+  outfile = w_open_scidac_file(filename, fileinfo, volfmt, serpar);
   if(outfile == NULL)terminate(1);
 
   status = save_ks_vector_scidac(outfile, filename, recinfo, 
 				 volfmt, src, count, prec);
   if(status)terminate(1);
   
-  w_close_ks_vector_scidac_file(outfile);
+  w_close_scidac_file(outfile);
 }
 
 /********************************************************************/
@@ -145,44 +117,6 @@ void save_ks_vector_scidac_from_site(char *filename, char *fileinfo,
 
 /********************************************************************/
 /* Read color vectors in SciDAC format (non-USQCD)                  */
-
-QIO_Reader *r_open_ks_vector_scidac_file_xml(char *filename, int serpar,
-					     QIO_String *xml_file)
-{
-  QIO_Layout layout;
-  QIO_Filesystem fs;
-  QIO_Reader *infile;
-
-  /* Build the layout structure */
-  build_qio_layout(&layout);
-
-  /* Define the I/O nodes */
-  build_qio_filesystem(&fs);
-
-  /* Open file for reading */
-  infile = open_scidac_input_xml(filename, &layout, &fs, serpar, xml_file);
-
-  if(infile == NULL)return NULL;
-
-  if(this_node==0){
-    printf("Restoring binary SciDAC file %s\n",filename);
-    printf("File info \n\"%s\"\n",QIO_string_ptr(xml_file));
-  }
-
-  return infile;
-}
-
-QIO_Reader *r_open_ks_vector_scidac_file(char *filename, int serpar)
-{
-  QIO_Reader *infile;
-  QIO_String *xml_file;
-
-  /* Open file for reading */
-  xml_file = QIO_string_create();
-  infile = r_open_ks_vector_scidac_file_xml(filename, serpar, xml_file);
-  QIO_string_destroy(xml_file);
-  return infile;
-}
 
 int read_ks_vector_scidac_xml(QIO_Reader *infile, su3_vector *dest, int count,
 			      QIO_String *recxml)
@@ -225,11 +159,6 @@ int read_ks_vector_scidac(QIO_Reader *infile, su3_vector *dest, int count)
   return status;
 }
 
-void r_close_ks_vector_scidac_file(QIO_Reader *infile)
-{
-  QIO_close_read(infile);
-}
-
 /********************************************************************/
 /* Read color vectors in SciDAC format (non-USQCD)                  */
 /* reads "count" vectors per site                                   */
@@ -241,14 +170,14 @@ void restore_ks_vector_scidac_to_field(char *filename, int serpar,
 
   QIO_verbose(QIO_VERB_OFF);
 
-  infile = r_open_ks_vector_scidac_file(filename, serpar);
+  infile = r_open_scidac_file(filename, serpar);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: "count" color vectors per site */
   status = read_ks_vector_scidac(infile, dest, count);
   if(status != QIO_SUCCESS)terminate(1);
 
-  r_close_ks_vector_scidac_file(infile);
+  r_close_scidac_file(infile);
 }
 
 /********************************************************************/
