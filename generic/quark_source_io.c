@@ -315,8 +315,7 @@ void r_source_open(quark_source *qs){
       serpar = QIO_SERIAL;
 
     xml_file = QIO_string_create();
-    qs->infile = r_open_w_vector_scidac_file_xml(source_file, serpar,
-						 xml_file);
+    qs->infile = r_open_scidac_file_xml(source_file, serpar, xml_file);
     QIO_string_destroy(xml_file);
   }
 
@@ -573,8 +572,8 @@ int w_source_open_dirac(quark_source *qs, char *fileinfo){
 
   if(qs->savetype == DIRAC_FIELD_FILE ||
      qs->savetype == DIRAC_FIELD_STORE){
-    qs->outfile = w_open_w_vector_scidac_file(source_file, fileinfo,
-					      volfmt, serpar);
+    qs->outfile = w_open_scidac_file(source_file, fileinfo,
+				     volfmt, serpar);
     if(qs->outfile == NULL)return 1;
     qs->save_file_initialized = 1;
   } 
