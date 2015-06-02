@@ -140,8 +140,9 @@ int main(int argc, char *argv[])
 
 	/* (Re)construct APE smeared links after gauge fixing.  
 	   No KS phases here! */
-	destroy_ape_links_3D(ape_links);
-	ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+	destroy_ape_links_4D(ape_links);
+	ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+	apply_apbc( ape_links );
 
 	rephase( ON );
 	invalidate_fermion_links(fn_links);
@@ -163,6 +164,8 @@ int main(int argc, char *argv[])
       save_u1_lattice( param.save_u1flag, param.save_u1file );
     }
 #endif
+
+
     if(this_node==0)printf("END OF HEADER\n");
     
 
