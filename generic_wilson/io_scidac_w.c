@@ -167,7 +167,7 @@ void restore_w_vector_scidac_to_field(char *filename, int serpar,
   QIO_Reader *infile;
   int status;
 
-  infile = r_open_w_vector_scidac_file(filename, serpar);
+  infile = r_open_scidac_file(filename, serpar);
   if(infile == NULL)terminate(1);
 
   /* Read the lattice field: "count" vectors per site */
