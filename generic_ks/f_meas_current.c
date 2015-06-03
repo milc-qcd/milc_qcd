@@ -31,7 +31,7 @@ static int *
 get_spin_taste(void){
   
   /* Current spin-taste list */
-  char *spin_taste_list[NMU] = {"rhoxsbfn", "rhoysbfn", "rhozsbfn", "rhotsbfn"};
+  char *spin_taste_list[NMU] = {"rhoxsfape", "rhoysfape", "rhozsfape", "rhotsfape"};
   static int spin_taste[NMU];
   int mu;
   
@@ -137,9 +137,6 @@ f_meas_current( int nrand, quark_invert_control *qic, Real mass,
     /* Loop over directions for the current */
     for(mu = 0; mu < NMU; mu++){
 	
-      //      clear_v_field(gr);
-      //      gr[node_index(3,1,0,2)].c[0].real = 1.;
-
       /* Apply the appropriate spin_taste operator for
 	 a nearly conserved current.  */
       spin_taste_op_fn(fn, spin_taste[mu], r_offset, gr_mu, M_inv_gr);
