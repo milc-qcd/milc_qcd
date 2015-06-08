@@ -44,6 +44,7 @@ create_asqtad_coeffs_qop(ks_action_paths *ap){
      calling the fermion force term.
   */
 
+  *ac = QOP_ASQTAD_COEFFS_ZERO;
   ac->one_link     = act_path_coeff->one_link     ;
   ac->naik         = act_path_coeff->naik         ;
   ac->three_staple = act_path_coeff->three_staple ;

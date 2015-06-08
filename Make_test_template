@@ -78,7 +78,7 @@ ${PREFIX}.test-out: ../${EXEC} ${PREFIX}.sample-in
 	${LAUNCH} ../${EXEC} ${LAUNCH2} < $*.sample-in > $*.test-out
 
 .test-out.test-diff: $*.test-tmp $*.sample-tmp
-	perl ../../headtail.pl ${PATTERNS} <  $*.test-out | grep -iv "warning" >  $*.test-tmp ;\
+	perl ../../headtail.pl ${PATTERNS} <  $*.test-out | grep -iv "warning" | grep -v 'time =' | grep -v '^#' >  $*.test-tmp ;\
 	perl ../../headtail.pl ${PATTERNS} <  $*.sample-out > $*.sample-tmp ;\
 	perl ../../diffn3.pl $*.test-tmp $*.sample-tmp $*.errtol > $*.test-diff
 

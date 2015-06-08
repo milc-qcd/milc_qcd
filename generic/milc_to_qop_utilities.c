@@ -68,6 +68,7 @@ QOP_status_t initialize_qop(){
   layout.sites_on_node = sites_on_node;
 
   status = QOP_init(&layout);
+  //QOP_verbose(QOP_VERB_HI);
 
   if(status == QOP_SUCCESS)
       is_qop_initialized = 1;
