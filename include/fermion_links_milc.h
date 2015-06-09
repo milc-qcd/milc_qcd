@@ -23,7 +23,7 @@
    milc_fm_links_t
      fm_ap_links_t *fm_ap
        ks_action_paths *ap
-       fm_links_t *fm
+       imp_ferm_links_t *fm
      fm_ap_links_t *fm_ap_du0
        ks_action_paths *ap
        imp_ferm_links_t *fm
