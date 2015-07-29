@@ -96,7 +96,6 @@ int ks_multicg_offset_field_gpu(
 #else
        residual[i] = 0; // a unmixed solver should iterate until breakdown to agreee with CPU behavior
 #endif
-    residual[i]          = 0.;//qic[i].resid;
    }
    relative_residual[i] = qic[i].relresid;
    node0_printf("residual[%d] = %g relative %g\n",i, residual[i], relative_residual[i]);
