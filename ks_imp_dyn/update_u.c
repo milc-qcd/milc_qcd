@@ -45,11 +45,7 @@ void update_u(Real eps){
     } // dir
   }
 
-
-  printf("Calling qudaUpdateU\n");
   qudaUpdateU(PRECISION, eps, momentum, gauge);
-  printf("Call to qudaUpdateU complete\n");
-  fflush(stdout);
 
   // Copy updated gauge field back to site structure
   FORALLSITES(i,s){

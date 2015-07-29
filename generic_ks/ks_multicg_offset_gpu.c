@@ -114,7 +114,6 @@ int ks_multicg_offset_field_gpu(
 
   initialize_quda();
 
-  node0_printf("Calling qudaMultishiftInvert\n"); fflush(stdout);
   qudaMultishiftInvert(
 		       PRECISION,
 		       qic[0].prec,
