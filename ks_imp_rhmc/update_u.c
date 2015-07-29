@@ -44,7 +44,6 @@ void update_u(Real eps){
     } // dir
   }
 
-
   qudaUpdateU(PRECISION, eps, momentum, gauge);
 
   // Copy updated gauge field back to site structure
