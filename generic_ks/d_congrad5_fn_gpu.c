@@ -86,9 +86,6 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 
   /* Initialize QUDA parameters */
 
-  printf("Calling qudaInvert\n");
-  fflush(stdout);
-
   initialize_quda();
  
   if(qic->parity == EVEN){
