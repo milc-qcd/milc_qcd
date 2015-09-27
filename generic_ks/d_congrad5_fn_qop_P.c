@@ -172,6 +172,8 @@ create_qop_resid_arg( int nsrc, int nmass[],
       /* For now the residuals are the same for all sources and masses */
       res_arg[isrc][imass]->rsqmin = qic->resid * qic->resid;
       res_arg[isrc][imass]->relmin = qic->relresid * qic->relresid;
+      res_arg[isrc][imass]->final_rsq    = 0.;
+      res_arg[isrc][imass]->final_rel    = 0.;
     }
   }
   return res_arg;
