@@ -22,7 +22,7 @@ static const char *prec_label[2] = {"F", "D"};
 int ks_multicg_offset_field_gpu(
     su3_vector *src,
     su3_vector **psim,
-    ks_param *ksp, 
+    ks_param *ksp,
     int num_offsets,
     quark_invert_control *qic,
     imp_ferm_links_t *fn
@@ -88,10 +88,14 @@ int ks_multicg_offset_field_gpu(
   double* final_relative_residual = (double*)malloc(num_offsets*sizeof(double));
 
   for(i=0; i<num_offsets; ++i){
-   
+
    residual[i]          = qic[i].resid;
    if (i>0){
-    residual[i]          = 0.;//qic[i].resid;
+#if defined(MAX_MIXED) || defined(HALF_MIXED)
+       residual[i] = qic[i].resid; // for a mixed precision solver use residual for higher shifts
+#else
+       residual[i] = 0; // a unmixed solver should iterate until breakdown to agreee with CPU behavior
+#endif
    }
    relative_residual[i] = qic[i].relresid;
    node0_printf("residual[%d] = %g relative %g\n",i, residual[i], relative_residual[i]);
@@ -110,7 +114,6 @@ int ks_multicg_offset_field_gpu(
 
   initialize_quda();
 
-  node0_printf("Calling qudaMultishiftInvert\n"); fflush(stdout);
   qudaMultishiftInvert(
 		       PRECISION,
 		       qic[0].prec,
@@ -127,7 +130,7 @@ int ks_multicg_offset_field_gpu(
 		       final_residual,
 		       final_relative_residual,
 		       &num_iters);
-  
+
   for(i=0; i<num_offsets; ++i){
     qic[i].final_rsq = final_residual[i]*final_residual[i];
     qic[i].final_relrsq = final_relative_residual[i]*final_relative_residual[i];
@@ -143,8 +146,8 @@ int ks_multicg_offset_field_gpu(
     qic[i].size_r = 0.0;
     qic[i].size_relr = 0.0;
   }
-                  
-  free(offset); 
+
+  free(offset);
   free(residual);
   free(relative_residual);
   free(final_residual);
@@ -162,4 +165,3 @@ int ks_multicg_offset_field_gpu(
 
   return num_iters;
 }
-
