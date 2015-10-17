@@ -191,13 +191,15 @@ include ../Make_template_scidac
 WANTFFTW = #true
 
 ifeq ($(strip ${WANTFFTW}),true)
-FFTW=${HOME}/fftw/build-gcc
-INCFFTW = -I${FFTW}/include
-LIBFFTW = -L${FFTW}/lib
+FFTW=/usr/local/fftw
 
 ifeq ($(strip ${PRECISION}),1)
+  INCFFTW = -I${FFTW}/single-mvapich2/include
+  LIBFFTW = -L${FFTW}/single-mvapich2/lib
   LIBFFTW += -lfftw3f
 else
+  INCFFTW = -I${FFTW}/double-mvapich2/include
+  LIBFFTW = -L${FFTW}/double-mvapich2/lib
   LIBFFTW += -lfftw3
 endif
 endif
