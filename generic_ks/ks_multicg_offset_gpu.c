@@ -108,7 +108,7 @@ int ks_multicg_offset_field_gpu(
   inv_args.mixed_precision = 0;
 #endif
 
-  int num_iters; // number of iterations taken
+  int num_iters = 0; // number of iterations taken
   su3_matrix* fatlink = get_fatlinks(fn);
   su3_matrix* longlink = get_lnglinks(fn);
 
