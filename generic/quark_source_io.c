@@ -250,8 +250,7 @@ QIO_Reader *r_source_cmplx_scidac_open(char source_file[]){
   QIO_Reader *infile;
 
   xml_file = QIO_string_create();
-  infile = r_open_complex_scidac_file_xml(source_file, QIO_SERIAL,
-					  xml_file);
+  infile = r_open_scidac_file_xml(source_file, QIO_SERIAL, xml_file);
   QIO_string_destroy(xml_file);
   return infile;
 }
@@ -300,8 +299,7 @@ void r_source_open(quark_source *qs){
       serpar = QIO_SERIAL;
 
     xml_file = QIO_string_create();
-    qs->infile = r_open_ks_vector_scidac_file_xml(source_file, serpar,
-						   xml_file);
+    qs->infile = r_open_scidac_file_xml(source_file, serpar, xml_file);
     QIO_string_destroy(xml_file);
   }
 
@@ -317,8 +315,7 @@ void r_source_open(quark_source *qs){
       serpar = QIO_SERIAL;
 
     xml_file = QIO_string_create();
-    qs->infile = r_open_w_vector_scidac_file_xml(source_file, serpar,
-						 xml_file);
+    qs->infile = r_open_scidac_file_xml(source_file, serpar, xml_file);
     QIO_string_destroy(xml_file);
   }
 
@@ -366,14 +363,14 @@ void r_source_close(quark_source *qs){
 #endif
 #ifdef HAVE_QIO
   else if(qs->type == COMPLEX_FIELD_FILE)
-    r_close_complex_scidac_file(qs->infile);
+    r_close_scidac_file(qs->infile);
 #ifdef HAVE_KS
   else if(qs->type == VECTOR_FIELD_FILE)
-    r_close_ks_vector_scidac_file(qs->infile);
+    r_close_scidac_file(qs->infile);
 #endif
 #ifdef HAVE_DIRAC
   else if(qs->type == DIRAC_FIELD_FILE)
-    r_close_w_vector_scidac_file(qs->infile);
+    r_close_scidac_file(qs->infile);
 #endif
   else
     node0_printf("%s: bad source type %d\n",myname, qs->type);
@@ -535,8 +532,7 @@ int w_source_open_ks(quark_source *qs, char *fileinfo){
 
   if(qs->savetype == VECTOR_FIELD_FILE || 
      qs->savetype == VECTOR_FIELD_STORE){
-    qs->outfile = w_open_ks_vector_scidac_file(source_file, fileinfo,
-					       volfmt, serpar);
+    qs->outfile = w_open_scidac_file(source_file, fileinfo, volfmt, serpar);
     if(qs->outfile == NULL)return 1;
     qs->save_file_initialized = 1;
   }
@@ -576,8 +572,8 @@ int w_source_open_dirac(quark_source *qs, char *fileinfo){
 
   if(qs->savetype == DIRAC_FIELD_FILE ||
      qs->savetype == DIRAC_FIELD_STORE){
-    qs->outfile = w_open_w_vector_scidac_file(source_file, fileinfo,
-					      volfmt, serpar);
+    qs->outfile = w_open_scidac_file(source_file, fileinfo,
+				     volfmt, serpar);
     if(qs->outfile == NULL)return 1;
     qs->save_file_initialized = 1;
   } 
@@ -588,8 +584,7 @@ int w_source_open_dirac(quark_source *qs, char *fileinfo){
     /* In some cases the Dirac source is derived from a complex source
        or a color vector source, so we can write it as a KS vector
        source instead */
-    qs->outfile = w_open_ks_vector_scidac_file(source_file, fileinfo,
-					       volfmt, serpar);
+    qs->outfile = w_open_scidac_file(source_file, fileinfo, volfmt, serpar);
     if(qs->outfile == NULL)return 1;
     qs->save_file_initialized = 1;
   }
@@ -626,7 +621,7 @@ void w_source_close(quark_source *qs){
 #ifdef HAVE_KS
   else if(qs->savetype == VECTOR_FIELD_FILE || 
      qs->savetype == VECTOR_FIELD_STORE){
-    w_close_ks_vector_scidac_file(qs->outfile);
+    w_close_scidac_file(qs->outfile);
     qs->save_file_initialized = 0;
     qs->outfile = NULL;
   }
@@ -634,7 +629,7 @@ void w_source_close(quark_source *qs){
 #ifdef HAVE_DIRAC
   else if(qs->savetype == DIRAC_FIELD_FILE || 
 	  qs->savetype == DIRAC_FIELD_STORE){
-    w_close_w_vector_scidac_file(qs->outfile);
+    w_close_scidac_file(qs->outfile);
     qs->save_file_initialized = 0;
     qs->outfile = NULL;
   }

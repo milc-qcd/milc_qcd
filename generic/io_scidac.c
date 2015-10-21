@@ -814,6 +814,7 @@ void save_random_state_scidac_from_site(char *filename,
   close_scidac_output(outfile);
 }
 
+#if 0
 /* Restore a real field */
 
 void restore_real_scidac_to_field(char *filename, Real *dest, int count){
@@ -846,10 +847,12 @@ void restore_real_scidac_to_field(char *filename, Real *dest, int count){
   close_scidac_input(infile);
 }
 
+#endif
+
 /* Write a complex field */
 
-QIO_Writer *w_open_complex_scidac_file(char *filename, char *fileinfo, 
-				       int volfmt, int serpar)
+QIO_Writer *w_open_scidac_file(char *filename, char *fileinfo, 
+			       int volfmt, int serpar)
 {
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -904,7 +907,7 @@ int save_complex_scidac(QIO_Writer *outfile, char *filename, char *recinfo,
   return status;
 }
 
-void w_close_complex_scidac_file(QIO_Writer *outfile)
+void w_close_scidac_file(QIO_Writer *outfile)
 {
   QIO_close_write(outfile);
 }
@@ -919,7 +922,7 @@ void save_complex_scidac_from_field(char *filename, char *fileinfo,
 
     QIO_verbose(QIO_VERB_OFF);
 
-    outfile = w_open_complex_scidac_file(filename, fileinfo, volfmt, serpar);
+    outfile = w_open_scidac_file(filename, fileinfo, volfmt, serpar);
     if(outfile == NULL)terminate(1);
 
     /* Write the lattice field: "count" complex numbers per site */
@@ -927,13 +930,13 @@ void save_complex_scidac_from_field(char *filename, char *fileinfo,
 				 volfmt, src, count);
     if(status)terminate(1);
 
-    w_close_complex_scidac_file(outfile);
+    w_close_scidac_file(outfile);
 }
 
 /* Restore a complex field */
 
-QIO_Reader *r_open_complex_scidac_file_xml(char *filename, int serpar,
-					   QIO_String *xml_file)
+QIO_Reader *r_open_scidac_file_xml(char *filename, int serpar,
+				   QIO_String *xml_file)
 {
   QIO_Layout layout;
   QIO_Filesystem fs;
@@ -947,17 +950,25 @@ QIO_Reader *r_open_complex_scidac_file_xml(char *filename, int serpar,
 
   /* Open file for reading */
   infile = open_scidac_input_xml(filename, &layout, &fs, serpar, xml_file);
+
+  if(infile == NULL)return NULL;
+
+  if(this_node==0){
+    printf("Restoring binary SciDAC file %s\n",filename);
+    printf("File info \n\"%s\"\n",QIO_string_ptr(xml_file));
+  }
+
   return infile;
 }
 
-QIO_Reader *r_open_complex_scidac_file(char *filename, int serpar)
+QIO_Reader *r_open_scidac_file(char *filename, int serpar)
 {
   QIO_Reader *infile;
   QIO_String *xml_file;
 
   /* Open file for reading */
   xml_file = QIO_string_create();
-  infile = r_open_complex_scidac_file_xml(filename, serpar, xml_file);
+  infile = r_open_scidac_file_xml(filename, serpar, xml_file);
   QIO_string_destroy(xml_file);
   return infile;
 }
@@ -1007,7 +1018,7 @@ int read_complex_scidac(QIO_Reader *infile, complex *dest, int count){
   return status;
 }
 
-void r_close_complex_scidac_file(QIO_Reader *infile)
+void r_close_scidac_file(QIO_Reader *infile)
 {
   close_scidac_input(infile);
 }
@@ -1021,14 +1032,79 @@ void restore_complex_scidac_to_field(char *filename, int serpar,
 
   QIO_verbose(QIO_VERB_OFF);
 
-  infile = r_open_complex_scidac_file(filename, serpar);
+  infile = r_open_scidac_file(filename, serpar);
   if(infile == NULL)terminate(1);
   
   /* Read the lattice field: "count" complex numbers per site */
   status = read_complex_scidac(infile, dest, count);
   if(status)terminate(1);
 
-  r_close_complex_scidac_file(infile);
+  r_close_scidac_file(infile);
+}
+
+
+/* Restore a real field */
+
+int read_real_scidac_xml(QIO_Reader *infile, Real *dest, int count, 
+			    QIO_String *recxml){
+  int status;
+  int typesize, datacount;
+  QIO_RecordInfo recinfo;
+
+  /* Read the lattice field: "count" complex numbers per site */
+  status = QIO_read_record_info(infile, &recinfo, recxml);
+  status = qio_status(status);
+  if(status < 0)return -1;
+  if(status > 0)terminate(1);
+
+  datacount = QIO_get_datacount(&recinfo);
+  if(datacount != count){
+    node0_printf("read_real_scidac_xml: Got datacount %d but wanted %d\n",
+		 datacount, count);
+    terminate(1);
+  }
+  typesize = QIO_get_typesize(&recinfo);
+
+  if(typesize == 4)
+    status = read_F_R_to_field(infile, recxml, dest, count);
+  else
+    status = read_D_R_to_field(infile, recxml, dest, count);
+
+  return status;
+}
+
+int read_real_scidac(QIO_Reader *infile, Real *dest, int count){
+  QIO_String *recxml;
+  int status;
+
+  /* Read the lattice field: "count" complex numbers per site */
+  recxml = QIO_string_create();
+
+  status = read_real_scidac_xml(infile, dest, count, recxml);
+
+  /* Discard for now */
+  QIO_string_destroy(recxml);
+
+  return status;
+}
+
+/* Restore a real field */
+
+void restore_real_scidac_to_field(char *filename, int serpar,
+				  Real *dest, int count){
+  QIO_Reader *infile;
+  int status;
+
+  QIO_verbose(QIO_VERB_OFF);
+
+  infile = r_open_scidac_file(filename, serpar);
+  if(infile == NULL)terminate(1);
+  
+  /* Read the lattice field: "count" complex numbers per site */
+  status = read_real_scidac(infile, dest, count);
+  if(status)terminate(1);
+
+  r_close_scidac_file(infile);
 }
 
 

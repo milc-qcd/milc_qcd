@@ -113,10 +113,12 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
     }
 
     /* Apply twist to the APE links */
+    /* They do not carry the KS phases, but they do carry an antiperiodic bc */
     /* This operation applies the phase to the volume */
-    mybdry_phase[3] = 0; 
-    momentum_twist_links(mybdry_phase, 1, ape_links);
-    mybdry_phase[3] = bdry_phase[3]; 
+    //    mybdry_phase[3] = 0; 
+    //    momentum_twist_links(mybdry_phase, 1, ape_links);
+    //    mybdry_phase[3] = bdry_phase[3]; 
+    boundary_twist_field( mybdry_phase, r0, 1, ape_links);
 
     /* Copy pointers for fermion links, based on Naik epsilon indices */
     fn_multi = (imp_ferm_links_t **)
@@ -295,9 +297,10 @@ int solve_ksprop(int num_prop, int startflag[], char startfile[][MAXFILENAME],
   if(check != CHECK_NO || startflag[0] == FRESH ){
 
     /* Unapply twist to the APE links */
-    mybdry_phase[3] = 0; 
-    momentum_twist_links(mybdry_phase, -1, ape_links);
-    mybdry_phase[3] = bdry_phase[3]; 
+    //    mybdry_phase[3] = 0; 
+    //    momentum_twist_links(mybdry_phase, -1, ape_links);
+    //    mybdry_phase[3] = bdry_phase[3]; 
+    boundary_twist_field( mybdry_phase, r0, -1, ape_links);
 
   /* Unapply twisted boundary conditions on the fermion links and
      restore conventional KS phases and antiperiodic BC, if

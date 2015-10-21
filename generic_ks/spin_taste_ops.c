@@ -31,6 +31,12 @@
 
 #include "../include/gammatypes.h"
 
+enum shift_dir {
+  SHIFT_FORWARD,
+  SHIFT_BACKWARD,
+  SHIFT_SYMMETRIC
+};
+
 /*------------------------------------------------------------------*/
 /* Compute the hypercube coordinate relative to an offset.  We assume
    that all lattice dimensions are even, as they should be for
@@ -61,49 +67,63 @@ hyp_parity_bit(site *s, int r0[]){
 
 #ifndef NO_GAUGE_FIELD
 
-/*------------------------------------------------------------------*/
-/* Apply the symmetric shift operator in direction "dir" *
- * This is the explicit version                           *
- * Covar
- * The KS phases MUST BE in the links                     */
+/*-------------------------------------------------------------*/
+/* Apply the shift operator in direction "dir" with sign fb    *
+ * This is the explicit version                                *
+ * The KS phases MUST BE in the links                          */
+
 static void 
-sym_shift_field(int dir, su3_vector *dest, su3_vector *src, su3_matrix *links)
+shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src, 
+	    su3_matrix *links)
 {
   register int i ;
   register site *s ;
   msg_tag *tag[2];
   su3_vector *tvec = create_v_field();
 
-  tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
-  /* With ONE_SIDED_SHIFT defined, the shift is asymmetric */
-#ifndef ONE_SIDED_SHIFT
-  FORALLFIELDSITES(i)
+  if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC)
+    tag[0] = start_gather_field( src, sizeof(su3_vector), dir, EVENANDODD, gen_pt[0] );
+  
+  if(fb == SHIFT_BACKWARD || fb == SHIFT_SYMMETRIC){
+    FORALLFIELDSITES(i)
     {
       mult_adj_su3_mat_vec( links+4*i+dir, src+i, tvec+i ) ;
     }
-  tag[1] = start_gather_field(tvec, sizeof(su3_vector), OPP_DIR(dir), 
-			      EVENANDODD ,gen_pt[1] );
-#endif
-  wait_gather(tag[0]);
-  FORALLSITES(i,s)
-    {
-      mult_su3_mat_vec( links+4*i+dir, (su3_vector *)gen_pt[0][i], dest+i );
-    }
-#ifndef ONE_SIDED_SHIFT
-  wait_gather(tag[1]);
-  FORALLSITES(i,s)
-    {
-      add_su3_vector( dest+i, (su3_vector *)gen_pt[1][i], dest+i ) ;    
-    }
-  /* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
-  FORALLSITES(i,s)
-    {
-      scalar_mult_su3_vector( dest+i, .5, dest+i );
-    }
-  cleanup_gather(tag[1]);
-#endif
-  cleanup_gather(tag[0]) ;
+    tag[1] = start_gather_field(tvec, sizeof(su3_vector), OPP_DIR(dir), 
+				EVENANDODD, gen_pt[1] );
+  }
   
+  if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC){
+    wait_gather(tag[0]);
+    FORALLSITES(i,s)
+      {
+	mult_su3_mat_vec( links+4*i+dir, (su3_vector *)gen_pt[0][i], dest+i );
+      }
+    cleanup_gather(tag[0]);
+
+  } else {
+
+    clear_v_field(dest);
+
+  }
+
+  if(fb == SHIFT_BACKWARD || fb == SHIFT_SYMMETRIC){
+    wait_gather(tag[1]);
+    FORALLSITES(i,s)
+      {
+	add_su3_vector( dest+i, (su3_vector *)gen_pt[1][i], dest+i ) ;    
+      }
+    cleanup_gather(tag[1]);
+  }
+
+  if(fb == SHIFT_SYMMETRIC){
+    /* Now divide by 2 eq. (4.2b) of Golterman's Meson paper*/
+    FORALLSITES(i,s)
+      {
+	scalar_mult_su3_vector( dest+i, 0.5, dest+i );
+      }
+  }
+
   destroy_v_field(tvec);
 }
 
@@ -128,10 +148,10 @@ zeta_shift_field(int n, int *d, int r0[], su3_vector *dest,
       /* Do the shift in d[c] */ 
       if(c==0)
 	/* first time from source */
-	sym_shift_field(d[c], tvec, src, links);
+	shift_field(d[c], SHIFT_SYMMETRIC, tvec, src, links);
       else
 	/* other times from dest */
-	sym_shift_field(d[c], tvec, dest, links);
+	shift_field(d[c], SHIFT_SYMMETRIC, tvec, dest, links);
       /* Multiply by \zeta_d[c]. Because the phases are               *
        * on we multiply by \zeta * \eta = \epsilon * (-1)^coord[d[c]] */
       FORALLSITES(i,s){
@@ -809,11 +829,32 @@ enum spin_taste_type {
   rhoysfn,
   rhozsfn,
   rhotsfn,
-  rhoisfn,
+  rhoxsffn,
+  rhoysffn,
+  rhozsffn,
+  rhotsffn,
+  rhoxsbfn,
+  rhoysbfn,
+  rhozsbfn,
+  rhotsbfn,
+  rhoxsape,
+  rhoysape,
+  rhozsape,
+  rhotsape,
+  rhoxsfape,
+  rhoysfape,
+  rhozsfape,
+  rhotsfape,
+  rhoxsbape,
+  rhoysbape,
+  rhozsbape,
+  rhotsbape,
   MAX_SPIN_TASTE
 };
 
+/* NOTE: The following labels must match the above enum exactly */
 static char *spin_taste_string[MAX_SPIN_TASTE]  = { 
+  /* Traditional names for local/non-local mesons */
   "pion5",
   "pion05",
   "pioni5",
@@ -836,11 +877,40 @@ static char *spin_taste_string[MAX_SPIN_TASTE]  = {
   "rhots",
   "rhois",
   "rho0",
+  /* Operators based on the conserved vector current with 
+     the Fat and Naik gauge connection */
+  /* Symmetric shift */
   "rhoxsfn",
   "rhoysfn",
   "rhozsfn",
   "rhotsfn",
-  "rhoisfn",
+  /* Forward shift only */
+  "rhoxsffn",
+  "rhoysffn",
+  "rhozsffn",
+  "rhotsffn",
+  /* Backward shift only */
+  "rhoxsbfn",
+  "rhoysbfn",
+  "rhozsbfn",
+  "rhotsbfn",
+  /* Operators for imitating the one-link conserved vector current 
+     but using APE links in place of the fat links */
+  /* Symmetric shift */
+  "rhoxsape",
+  "rhoysape",
+  "rhozsape",
+  "rhotsape",
+  /* Forward shift only */
+  "rhoxsfape",
+  "rhoysfape",
+  "rhozsfape",
+  "rhotsfape",
+  /* Backward shift only */
+  "rhoxsbape",
+  "rhoysbape",
+  "rhozsbape",
+  "rhotsbape"
 };
 
 /*------------------------------------------------------------------*/
@@ -906,6 +976,117 @@ decode_gamma_taste_index(int index){
 static int
 is_gamma_gamma_index(int index){
   return (index >= 128);
+}
+
+/* True if the index is one of the quasi-conserved current operators */
+int
+is_rhosfn_index(int index){
+  return 
+    index == rhoxsfn ||
+    index == rhoysfn ||
+    index == rhozsfn ||
+    index == rhotsfn;
+}
+
+int
+is_rhosffn_index(int index){
+  return 
+    index == rhoxsffn ||
+    index == rhoysffn ||
+    index == rhozsffn ||
+    index == rhotsffn;
+}
+
+int
+is_rhosbfn_index(int index){
+  return 
+    index == rhoxsbfn ||
+    index == rhoysbfn ||
+    index == rhozsbfn ||
+    index == rhotsbfn;
+}
+
+/*------------------------------------------------------------------*/
+
+int
+is_rhosape_index(int index){
+  return 
+    index == rhoxsape ||
+    index == rhoysape ||
+    index == rhozsape ||
+    index == rhotsape;
+}
+
+int
+is_rhosfape_index(int index){
+  return 
+    index == rhoxsfape ||
+    index == rhoysfape ||
+    index == rhozsfape ||
+    index == rhotsfape;
+}
+
+int
+is_rhosbape_index(int index){
+  return 
+    index == rhoxsbape ||
+    index == rhoysbape ||
+    index == rhozsbape ||
+    index == rhotsbape;
+}
+
+/*------------------------------------------------------------------*/
+
+int
+forward_index(int index){
+  switch(index){
+  case rhoxsfn:
+    return rhoxsffn;
+  case rhoysfn:
+    return rhoysffn;
+  case rhozsfn:
+    return rhozsffn;
+  case rhotsfn:
+    return rhotsffn;
+
+  case rhoxsape:
+    return rhoxsfape;
+  case rhoysape:
+    return rhoysfape;
+  case rhozsape:
+    return rhozsfape;
+  case rhotsape:
+    return rhotsfape;
+
+  default:
+    return -1;
+  }
+}
+
+int
+backward_index(int index){
+  switch(index){
+  case rhoxsfn:
+    return rhoxsbfn;
+  case rhoysfn:
+    return rhoysbfn;
+  case rhozsfn:
+    return rhozsbfn;
+  case rhotsfn:
+    return rhotsbfn;
+
+  case rhoxsape:
+    return rhoxsbape;
+  case rhoysape:
+    return rhoysbape;
+  case rhozsape:
+    return rhozsbape;
+  case rhotsape:
+    return rhotsbape;
+
+  default:
+    return -1;
+  }
 }
 
 /*------------------------------------------------------------------*/
@@ -1079,8 +1260,8 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
   case rhoys:
     mult_rhois_field(YUP, r0, src, dest, links);
     break;
-  case rhozs:
   case rhois:
+  case rhozs:
     mult_rhois_field(ZUP, r0, src, dest, links);
     break;
   case rhots:
@@ -1104,45 +1285,77 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
 
 #ifndef NO_GAUGE_FIELD
 
-/* Apply the symmetric shift operator in direction "dir" *
- * Fat and long links are used instead of unfattened links          */
+/* Apply the shift operator in direction "dir" with sign fb  *
+ * Fat and long links are used instead of APE links          */
+
+#define LONG_SHIFT_WT 0.  /* Weight for long links (0. or 1.)*/
 
 static void 
-sym_shift_fn_field(imp_ferm_links_t *fn, int dir, 
-		   su3_vector *src, su3_vector *dest)
+shift_fn_field(imp_ferm_links_t *fn, int dir, enum shift_dir fb, 
+	       su3_vector *src, su3_vector *dest)
 {
-  //char myname[] = "sym_shift_fn_field";
+  char myname[] = "shift_fn_field";
   if(fn == NULL){
-    node0_printf("sym_shift_fn_field: Called with NULL FN links\n");
+    node0_printf("%s: Called with NULL FN links\n", myname);
     terminate(1);
   }
   
   clear_v_field(dest);
 
-  /* Apply Fat-Naik shift operation to src in forward dir */
-  //dslash_fn_dir(src, dest, EVENANDODD, fn, dir, +1, 1., 1.);
-  dslash_fn_dir(src, dest, EVENANDODD, fn, dir, +1, 1., 0.);
-
-  /* Add to it the Fat-Naik shift operation in backward dir */
-  //dslash_fn_dir(src, dest, EVENANDODD, fn, dir, -1, -1., -1.);
+  if(fb == SHIFT_FORWARD)
+    /* Apply Fat-Naik shift operation to src in forward dir */
+    dslash_fn_dir(src, dest, EVENANDODD, fn, dir, +1, 1., LONG_SHIFT_WT);
+  else if(fb == SHIFT_BACKWARD)
+    /* Apply Fat-Naik shift operation to src in backward dir */
+    dslash_fn_dir(src, dest, EVENANDODD, fn, dir, -1, -1., -LONG_SHIFT_WT);
+  else
+    {
+      node0_printf("%s: Called with bad shift sense: %d\n", myname, fb);
+      terminate(1);;
+    }
 }
 
+/*------------------------------------------------------------------*/
 /* "Multiply by" the quark-antiquark Fat-Naik rho operator */
 /* This is part of the conserved vector current for the asqtad and
    HISQ actions -CD */
 
 static void 
-mult_rhois_fn_field( imp_ferm_links_t *fn, int fdir, int r0[],
+mult_rhois_fn_field( imp_ferm_links_t *fn, int fdir, 
+		     enum shift_dir fb, int r0[],
 		     su3_vector *src, su3_vector *dest )
 {
   register int i;
   register site *s;  
   
   /* apply the symmetric shift FN operator (uses fat and long links) */
-  sym_shift_fn_field(fn, fdir, src, dest);
+  shift_fn_field(fn, fdir, fb, src, dest);
+
+  /* Apply an antiquark gamma_5 x gamma_5 */
   FORALLSITES(i,s){
-    /* \eta_k already in the phases                   * 
-     * only the \epsilon for the anti-quark is needed */
+    if(s->parity==ODD)
+      scalar_mult_su3_vector( dest+i, -1.0, dest+i );
+  }
+}
+
+/*------------------------------------------------------------------*/
+/* "Multiply by" the quark-antiquark rho operator                */
+/* This operator imitates a one-link conserved vector currnt     */
+/* but it uses APE-link smearing instead of the Fat link         */
+
+static void 
+mult_rhois_ape_field( int fdir, enum shift_dir fb, int r0[],
+		      su3_vector *src, su3_vector *dest )
+{
+  register int i;
+  register site *s;  
+  
+  /* apply the symmetric shift FN operator (uses fat and long links) */
+  rephase_field_offset( ape_links, ON, NULL, r0 );
+  shift_field( fdir, fb, dest, src, ape_links);
+  rephase_field_offset( ape_links, OFF, NULL, r0 );
+  /* Apply an antiquark gamma_5 x gamma_5 */
+  FORALLSITES(i,s){
     if(s->parity==ODD)
       scalar_mult_su3_vector( dest+i, -1.0, dest+i );
   }
@@ -1228,19 +1441,62 @@ spin_taste_op_fn( imp_ferm_links_t *fn, int index, int r0[],
   else {
     
     switch(index){
-    case rhoxsfn:
-      mult_rhois_fn_field(fn, XUP, r0, src, dest);
+      /* Forward shift */
+    case rhoxsffn:
+      mult_rhois_fn_field(fn, XUP, SHIFT_FORWARD, r0, src, dest);
       break;
-    case rhoysfn:
-      mult_rhois_fn_field(fn, YUP, r0, src, dest);
+    case rhoysffn:
+      mult_rhois_fn_field(fn, YUP, SHIFT_FORWARD, r0, src, dest);
       break;
-    case rhozsfn:
-    case rhoisfn:
-      mult_rhois_fn_field(fn, ZUP, r0, src, dest);
+    case rhozsffn:
+      mult_rhois_fn_field(fn, ZUP, SHIFT_FORWARD, r0, src, dest);
       break;
-    case rhotsfn:
-      mult_rhois_fn_field(fn, TUP, r0, src, dest);
+    case rhotsffn:
+      mult_rhois_fn_field(fn, TUP, SHIFT_FORWARD, r0, src, dest);
       break;
+
+      /* Backward shift */
+    case rhoxsbfn:
+      mult_rhois_fn_field(fn, XUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+    case rhoysbfn:
+      mult_rhois_fn_field(fn, YUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+    case rhozsbfn:
+      mult_rhois_fn_field(fn, ZUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+    case rhotsbfn:
+      mult_rhois_fn_field(fn, TUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+
+      /* Forward shift */
+    case rhoxsfape:
+      mult_rhois_ape_field(XUP, SHIFT_FORWARD, r0, src, dest);
+      break;
+    case rhoysfape:
+      mult_rhois_ape_field(YUP, SHIFT_FORWARD, r0, src, dest);
+      break;
+    case rhozsfape:
+      mult_rhois_ape_field(ZUP, SHIFT_FORWARD, r0, src, dest);
+      break;
+    case rhotsfape:
+      mult_rhois_ape_field(TUP, SHIFT_FORWARD, r0, src, dest);
+      break;
+
+      /* Backward shift */
+    case rhoxsbape:
+      mult_rhois_ape_field(XUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+    case rhoysbape:
+      mult_rhois_ape_field(YUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+    case rhozsbape:
+      mult_rhois_ape_field(ZUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+    case rhotsbape:
+      mult_rhois_ape_field(TUP, SHIFT_BACKWARD, r0, src, dest);
+      break;
+
     default:
       /* For all non-FN operators */
       spin_taste_op(index, r0, dest, src);

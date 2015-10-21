@@ -5,7 +5,7 @@ lattice_size:            4,4,4,8
 antiquark_type:          staggered
 antiquark_source_type:   point
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  d
 antiquark_sink_label:    d
 antiquark_mass:          "0.05"
@@ -13,7 +13,7 @@ antiquark_epsilon:       0
 quark_type:              staggered
 quark_source_type:       point
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      d
 quark_sink_label:        d
 quark_mass:              "0.05"
@@ -40,7 +40,7 @@ lattice_size:            4,4,4,8
 antiquark_type:          staggered
 antiquark_source_type:   point
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  d
 antiquark_sink_label:    EO
 antiquark_sink_ops:      [
@@ -52,11 +52,11 @@ antiquark_epsilon:       0
 quark_type:              staggered
 quark_source_type:       point
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      d
 quark_sink_label:        EO
-quark_sink_ops:               [
-{ operation:                  even_and_odd_wall
+quark_sink_ops:          [
+{ operation:             even_and_odd_wall
 }
 ]
 quark_mass:              "0.05"
@@ -83,7 +83,7 @@ lattice_size:            4,4,4,8
 antiquark_type:          staggered
 antiquark_source_type:   point
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  d
 antiquark_sink_label:    d
 antiquark_mass:          "0.05"
@@ -91,7 +91,7 @@ antiquark_epsilon:       0
 quark_type:              staggered
 quark_source_type:       point
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      d
 quark_sink_label:        d
 quark_mass:              "0.02"
@@ -118,7 +118,7 @@ lattice_size:            4,4,4,8
 antiquark_type:          staggered
 antiquark_source_type:   point
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  d
 antiquark_sink_label:    EO
 antiquark_sink_ops:      [
@@ -130,11 +130,11 @@ antiquark_epsilon:       0
 quark_type:              staggered
 quark_source_type:       point
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      d
 quark_sink_label:        EO
-quark_sink_ops:               [
-{ operation:                  even_and_odd_wall
+quark_sink_ops:          [
+{ operation:             even_and_odd_wall
 }
 ]
 quark_mass:              "0.02"
@@ -161,7 +161,7 @@ lattice_size:            4,4,4,8
 antiquark_type:          staggered
 antiquark_source_type:   point
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  d
 antiquark_sink_label:    d
 antiquark_mass:          "0.02"
@@ -169,7 +169,7 @@ antiquark_epsilon:       0
 quark_type:              staggered
 quark_source_type:       point
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      d
 quark_sink_label:        d
 quark_mass:              "0.02"
@@ -196,7 +196,7 @@ lattice_size:            4,4,4,8
 antiquark_type:          staggered
 antiquark_source_type:   point
 antiquark_source_subset: full
-antiquark_source_origin: 0 0 0 0
+antiquark_source_origin: [ 0, 0, 0, 0 ]
 antiquark_source_label:  d
 antiquark_sink_label:    EO
 antiquark_sink_ops:      [
@@ -208,11 +208,11 @@ antiquark_epsilon:       0
 quark_type:              staggered
 quark_source_type:       point
 quark_source_subset:     full
-quark_source_origin:     0 0 0 0
+quark_source_origin:     [ 0, 0, 0, 0 ]
 quark_source_label:      d
 quark_sink_label:        EO
-quark_sink_ops:               [
-{ operation:                  even_and_odd_wall
+quark_sink_ops:          [
+{ operation:             even_and_odd_wall
 }
 ]
 quark_mass:              "0.02"

@@ -163,6 +163,7 @@ void ks_meson_cont_mom(
   int **corr_table,         /* c = corr_table[k] correlator index */
   int p_index[],            /* p = p_index[c] is the momentum index */
   imp_ferm_links_t *fn_src1, /* Needed for some spin-taste operators */
+  imp_ferm_links_t *fn_src2, /* Needed for some spin-taste operators */
   int spin_taste_snk[],     /* spin_taste_snk[c] gives the s/t assignment */
   int meson_phase[],        /* meson_phase[c] is the correlator phase */
   Real meson_factor[],      /* meson_factor[c] scales the correlator */
@@ -198,15 +199,12 @@ void ks_meson_cont_mom(
 #ifdef WMTIME
   double mflops;
 #endif
-  su3_vector *antiquark;
+  su3_vector *antiquark = create_v_field();
+  su3_vector *quark = create_v_field();
 
   dtime = -dclock();
   flops = 0;
 
-  /* Allocate temporary storage for meson propagator */
-
-  antiquark = create_v_field();
-  
   if(no_q_momenta > MAXQ)
     {
       printf("%s(%d): no_q_momenta %d exceeds max %d\n",
@@ -278,8 +276,22 @@ void ks_meson_cont_mom(
       c = corr_table[g][0];  
       spin_taste = spin_taste_snk[c];
 
-      /* Apply sink spin-taste operator to src1 */
-      spin_taste_op_fn(fn_src1, spin_taste, r0, antiquark, src1);
+      /* Special treatment for vector-current operators */
+      if(is_rhosfn_index(spin_taste) || is_rhosape_index(spin_taste)){
+	/* Apply backward sink spin-taste operator to src1 */
+	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, antiquark, src1);
+	/* Apply forward sink spin-taste operator to src2 */
+	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, quark, src2);
+      } else if(is_rhosffn_index(spin_taste) || is_rhosfape_index(spin_taste)){
+	/* Apply forward sink spin-taste operator to src2 */
+	spin_taste_op_fn(fn_src2, forward_index(spin_taste), r0, quark, src2);
+      } else if(is_rhosbfn_index(spin_taste) || is_rhosbape_index(spin_taste)){
+	/* Apply backward sink spin-taste operator to src1 */
+	spin_taste_op_fn(fn_src1, backward_index(spin_taste), r0, antiquark, src1);
+      } else {
+	/* Apply sink spin-taste operator to src1 */
+	spin_taste_op_fn(fn_src1, spin_taste, r0, antiquark, src1);
+      }
 	
       /* Do FT on "meson" for momentum projection - 
 	 Result in meson_q.  We use a dumb FT because there 
@@ -299,7 +311,20 @@ void ks_meson_cont_mom(
       FORALLSITES(i,s) {
 
         /* Take dot product of propagators */
-	meson[i] = su3_dot(antiquark+i, src2+i);
+	/* Special treatment for vector-current fn spin_taste operators */
+	if(is_rhosfn_index(spin_taste) || is_rhosape_index(spin_taste)){
+	  complex db,df;
+	  db = su3_dot(antiquark+i, src2+i);
+	  df = su3_dot(src1+i, quark+i);
+	  CADD(db,df,meson[i]);
+	  CMULREAL(meson[i],0.5,meson[i]);
+	} else if(is_rhosffn_index(spin_taste) || is_rhosfape_index(spin_taste)){
+	  meson[i] = su3_dot(src1+i, quark+i);
+	} else if(is_rhosbfn_index(spin_taste) || is_rhosbape_index(spin_taste)){
+	  meson[i] = su3_dot(antiquark+i, src2+i);
+	} else {
+	  meson[i] = su3_dot(antiquark+i, src2+i);
+	}
   
 	/* To save steps below, in case this node doesn't have all
 	   time slices */
@@ -343,6 +368,7 @@ void ks_meson_cont_mom(
 
   free(meson);  free(meson_q);  free(nonzero);  free(ftfact);
 
+  destroy_v_field(quark);
   destroy_v_field(antiquark);
   
   dtime += dclock();

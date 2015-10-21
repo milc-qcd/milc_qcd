@@ -155,6 +155,63 @@ boundary_twist_site(Real bdry_phase[4], int r0[4], int sign) {
   
 } /* boundary_twist_site */
 
+/* Apply phase change to gauge field in field array */
+/* Phase is applied to the BOUNDARY LINKS */
+/* The boundary is defined relative to the origin r0 */
+
+void 
+boundary_twist_field(Real bdry_phase[4], int r0[4], int sign, su3_matrix *links) {
+  //char myname[] = "boundary_twist_site";
+  int i,dir;
+  site *s;
+  int bc_coord[4];
+  complex cphase[4];
+  int no_twist;
+
+  /* The phases */
+
+  no_twist = 1;
+  FORALLUPDIR(dir){
+    if(bdry_phase[dir] != 0.)no_twist = 0;
+    cphase[dir] = ce_itheta(sign*PI*bdry_phase[dir]);
+  }
+
+  /* Traditional antiperiodic bc */
+  CMULREAL(cphase[TUP], -1., cphase[TUP]);
+
+  /* No twist needed if boundary phases are all zero */
+
+  if(no_twist)
+    return;
+
+  /* Now apply the twist to the link member of the site structure */
+  
+  node0_printf("Applying boundary phases %g %g %g %g to gauge field\n",
+	       sign*bdry_phase[0], sign*bdry_phase[1], 
+	       sign*bdry_phase[2], sign*bdry_phase[3]);
+  
+  bc_coord[XUP] = (r0[XUP] + nx - 1) % nx;
+  bc_coord[YUP] = (r0[YUP] + ny - 1) % ny;
+  bc_coord[ZUP] = (r0[ZUP] + nz - 1) % nz;
+  bc_coord[TUP] = (r0[TUP] + nt - 1) % nt;
+
+  FORALLSITES(i,s){
+    if( s->x == bc_coord[XUP])
+      phase_mult_su3_matrix(links + 4*i + XUP, cphase[XUP]);
+    if( s->y == bc_coord[YUP])
+      phase_mult_su3_matrix(links + 4*i + YUP, cphase[YUP]);
+    if( s->z == bc_coord[ZUP])
+      phase_mult_su3_matrix(links + 4*i + ZUP, cphase[ZUP]);
+    /* Cancel/restore the conventional antiperiodic bc */
+    if( s->t == nt - 1)
+      scalar_mult_su3_matrix( links + 4*i + TUP, -1., links + 4*i + TUP );
+    /* Apply time bc where requested */
+    if( s->t == bc_coord[TUP])
+      phase_mult_su3_matrix(links + 4*i + TUP, cphase[TUP]);
+  }
+
+} /* boundary_twist_field */
+
 /*--------------------------------------------------------------------*/
 /* Apply progressive phase change to color vector field */
 /* Note, this is equivalent to the gauge field transformation above */

@@ -311,7 +311,8 @@ void ks_meson_cont_mom(
   int num_corr_mom[],       /* number of momentum/parity values (gt k)*/
   int **corr_table,         /* c = corr_table[k] correlator index */
   int p_index[],            /* p = p_index[c] is the momentum index */
-  imp_ferm_links_t *fn,         /* Needed for some spin-taste ops */
+  imp_ferm_links_t *fn_src1,/* Needed for some spin-taste ops */
+  imp_ferm_links_t *fn_src2,/* Needed for some spin-taste ops */
   int spin_taste_snk[],     /* spin_taste_snk[c] gives the s/t assignment */
   int meson_phase[],        /* meson_phase[c] is the correlator phase */
   Real meson_factor[],      /* meson_factor[c] scales the correlator */

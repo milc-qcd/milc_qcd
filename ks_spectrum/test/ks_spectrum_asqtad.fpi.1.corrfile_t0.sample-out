@@ -7,7 +7,7 @@ antiquark_source_type:        random_color_wall
 antiquark_source_subset:      full
 antiquark_source_t0:          0
 antiquark_source_ncolor:      3
-antiquark_source_mom:         0 0 0
+antiquark_source_mom:         [ 0, 0, 0 ]
 antiquark_source_label:       r
 antiquark_sink_label:         d
 antiquark_mass:               "0.005"
@@ -16,7 +16,7 @@ quark_source_type:            random_color_wall
 quark_source_subset:          full
 quark_source_t0:              0
 quark_source_ncolor:          3
-quark_source_mom:             0 0 0
+quark_source_mom:             [ 0, 0, 0 ]
 quark_source_label:           r
 quark_sink_label:             d
 quark_mass:                   "0.005"
@@ -44,7 +44,7 @@ antiquark_source_type:        random_color_wall
 antiquark_source_subset:      full
 antiquark_source_t0:          0
 antiquark_source_ncolor:      3
-antiquark_source_mom:         0 0 0
+antiquark_source_mom:         [ 0, 0, 0 ]
 antiquark_source_label:       r
 antiquark_sink_label:         EO
 antiquark_sink_ops:           [
@@ -57,7 +57,7 @@ quark_source_type:            random_color_wall
 quark_source_subset:          full
 quark_source_t0:              0
 quark_source_ncolor:          3
-quark_source_mom:             0 0 0
+quark_source_mom:             [ 0, 0, 0 ]
 quark_source_label:           r
 quark_sink_label:             EO
 quark_sink_ops:               [
@@ -163,7 +163,7 @@ antiquark_source_type:        random_color_wall
 antiquark_source_subset:      full
 antiquark_source_t0:          0
 antiquark_source_ncolor:      3
-antiquark_source_mom:         0 0 0
+antiquark_source_mom:         [ 0, 0, 0 ]
 antiquark_source_label:       r
 antiquark_sink_label:         d
 antiquark_mass:               "0.005"
@@ -172,7 +172,7 @@ quark_source_type:            random_color_wall
 quark_source_subset:          full
 quark_source_t0:              0
 quark_source_ncolor:          3
-quark_source_mom:             0 0 0
+quark_source_mom:             [ 0, 0, 0 ]
 quark_source_label:           r
 quark_sink_label:             d
 quark_mass:                   "0.007"
@@ -200,7 +200,7 @@ antiquark_source_type:        random_color_wall
 antiquark_source_subset:      full
 antiquark_source_t0:          0
 antiquark_source_ncolor:      3
-antiquark_source_mom:         0 0 0
+antiquark_source_mom:         [ 0, 0, 0 ]
 antiquark_source_label:       r
 antiquark_sink_label:         EO
 antiquark_sink_ops:           [
@@ -213,7 +213,7 @@ quark_source_type:            random_color_wall
 quark_source_subset:          full
 quark_source_t0:              0
 quark_source_ncolor:          3
-quark_source_mom:             0 0 0
+quark_source_mom:             [ 0, 0, 0 ]
 quark_source_label:           r
 quark_sink_label:             EO
 quark_sink_ops:               [
@@ -319,7 +319,7 @@ antiquark_source_type:        random_color_wall
 antiquark_source_subset:      full
 antiquark_source_t0:          0
 antiquark_source_ncolor:      3
-antiquark_source_mom:         0 0 0
+antiquark_source_mom:         [ 0, 0, 0 ]
 antiquark_source_label:       r
 antiquark_sink_label:         d
 antiquark_mass:               "0.007"
@@ -328,7 +328,7 @@ quark_source_type:            random_color_wall
 quark_source_subset:          full
 quark_source_t0:              0
 quark_source_ncolor:          3
-quark_source_mom:             0 0 0
+quark_source_mom:             [ 0, 0, 0 ]
 quark_source_label:           r
 quark_sink_label:             d
 quark_mass:                   "0.007"
@@ -356,7 +356,7 @@ antiquark_source_type:        random_color_wall
 antiquark_source_subset:      full
 antiquark_source_t0:          0
 antiquark_source_ncolor:      3
-antiquark_source_mom:         0 0 0
+antiquark_source_mom:         [ 0, 0, 0 ]
 antiquark_source_label:       r
 antiquark_sink_label:         EO
 antiquark_sink_ops:           [
@@ -369,7 +369,7 @@ quark_source_type:            random_color_wall
 quark_source_subset:          full
 quark_source_t0:              0
 quark_source_ncolor:          3
-quark_source_mom:             0 0 0
+quark_source_mom:             [ 0, 0, 0 ]
 quark_source_label:           r
 quark_sink_label:             EO
 quark_sink_ops:               [

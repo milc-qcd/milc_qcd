@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
       rephase( ON );
     }
 
-    destroy_ape_links_3D(ape_links);
+    destroy_ape_links_4D(ape_links);
 
     /* Destroy fermion links (created in readin() */
 

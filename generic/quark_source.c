@@ -204,14 +204,14 @@ void clear_qs(quark_source *qs){
 #ifdef HAVE_QIO
   if(qs->infile != NULL){
     if(qs->type == COMPLEX_FIELD_FILE)
-      r_close_complex_scidac_file(qs->infile);
+      r_close_scidac_file(qs->infile);
 #ifdef HAVE_KS
     else if(qs->type == VECTOR_FIELD_FILE)
-      r_close_ks_vector_scidac_file(qs->infile);
+      r_close_scidac_file(qs->infile);
 #endif
 #ifdef HAVE_DIRAC
     else if(qs->type == DIRAC_FIELD_FILE)
-      r_close_w_vector_scidac_file(qs->infile);
+      r_close_scidac_file(qs->infile);
 #endif
   }
 #endif

@@ -1107,9 +1107,13 @@ int readin(int prompt) {
 
 #endif
 
-  /* Construct APE smeared links, but without KS phases */
+  /* Construct APE smeared links without KS phases, but with
+     conventional antiperiodic bc.  This is the same initial
+     setup as the gauge field itself.  Later the phases are
+     adjusted according to boundary phases and momentum twists. */
   rephase( OFF );
-  ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+  ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
+  apply_apbc( ape_links );
   rephase( ON );
 
   ENDTIME("readin");
