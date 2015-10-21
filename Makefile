@@ -194,8 +194,8 @@ ifeq ($(strip ${WANTFFTW}),true)
 FFTW=/usr/local/fftw
 
 ifeq ($(strip ${PRECISION}),1)
-  INCFFTW = -I${FFTW}/single-mvapich2/include
-  LIBFFTW = -L${FFTW}/single-mvapich2/lib
+  INCFFTW = -I${FFTW}/float-mvapich2/include
+  LIBFFTW = -L${FFTW}/float-mvapich2/lib
   LIBFFTW += -lfftw3f
 else
   INCFFTW = -I${FFTW}/double-mvapich2/include
