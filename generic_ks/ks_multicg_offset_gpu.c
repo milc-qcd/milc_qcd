@@ -108,11 +108,18 @@ int ks_multicg_offset_field_gpu(
   inv_args.mixed_precision = 0;
 #endif
 
-  int num_iters; // number of iterations taken
+  int num_iters = 0; // number of iterations taken
   su3_matrix* fatlink = get_fatlinks(fn);
   su3_matrix* longlink = get_lnglinks(fn);
 
   initialize_quda();
+
+  // for newer versions of QUDA we need to invalidate the gauge field if the naik term changes to prevent caching
+  static int naik_term_epsilon_index = -1; 
+  if ( naik_term_epsilon_index != ksp[0].naik_term_epsilon_index) {
+    num_iters = -1; // temporary back door hack to invalidate gauge fields since naik index has changed
+    naik_term_epsilon_index = ksp[0].naik_term_epsilon_index;
+  }
 
   qudaMultishiftInvert(
 		       PRECISION,
