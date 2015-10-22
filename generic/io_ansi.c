@@ -11,6 +11,7 @@
 /* We need them because some systems (e.g. Intel Paragon) 
    use home-made routines, rather than using ANSI standard calls. */
 
+#define _POSIX_C_SOURCE 200112L // for fseeko
 #include "generic_includes.h"
 #include <sys/types.h>
 #include <errno.h>

@@ -194,7 +194,11 @@ void EO_FERMION_FORCE_ONETERM( Real eps, Real weight, su3_vector *x_off,
   remaptime += dclock();
   QOP_asqtad_force_set_opts(qop_ff_opt, 2);
   /* The coefficients are already loaded with weight = 0.5 */
+#ifdef QOP_HAS_VERSION // detect newer versions with changed convention
+  QOP_asqtad_force(&info, links, mom, coeff, weight*eps, vecx);
+#else
   QOP_asqtad_force(&info, links, mom, coeff, 2.*weight*eps, vecx);
+#endif
   remaptime -= dclock();
 
   /* Unload momentum */
@@ -259,7 +263,11 @@ void EO_FERMION_FORCE_TWOTERMS( Real eps, Real weight1, Real weight2,
   vecx[1] = CREATE_V_FROM_FIELD(x2_off,EVENANDODD);
 
   /* Load coefficients */
-  epsv[0] = 2.*eps*weight1;  epsv[1] =2.* eps*weight2;
+#ifdef QOP_HAS_VERSION // detect newer versions with changed convention
+  epsv[0] =    eps*weight1;  epsv[1] =    eps*weight2;
+#else
+  epsv[0] = 2.*eps*weight1;  epsv[1] = 2.*eps*weight2;
+#endif
   //  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., ap->act_path_coeff);
 
   /* Compute fermion force */
@@ -336,7 +344,11 @@ void FERMION_FORCE_MULTI( Real eps, Real *residues,
   /* Make space for weights */
   epsv = (MY_REAL *)malloc(sizeof(MY_REAL)*nterms);
   /* Load coefficients */
+#ifdef QOP_HAS_VERSION // detect newer versions with changed convention
+  for(i = 0; i < nterms; i++) epsv[i] = eps*residues[i];
+#else
   for(i = 0; i < nterms; i++) epsv[i] = 2.*eps*residues[i];
+#endif
   //  LOAD_QOP_ASQTAD_COEFFS(&coeff, 1., ap->act_path_coeff);
 
   /* Compute fermion force */
