@@ -106,6 +106,7 @@
 */
 /* MIMD version 7 */
 #define IF_OK if(status==0)
+#define _POSIX_C_SOURCE 200112L // for gethostname
 
 #include "ks_imp_includes.h"
 #include "quark_action.h"
