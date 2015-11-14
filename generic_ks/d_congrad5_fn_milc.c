@@ -274,8 +274,10 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     pkp = 0.0;
 #ifdef FEWSUMS
     c_tr=0.0; c_tt=0.0;
-#endif
     FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:pkp,c_tr,c_tt)){
+#else
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:pkp)) {
+#endif
       if( i < loopend-FETCH_UP ){
 	prefetch_VV( &ttt[i+FETCH_UP], &cg_p[i+FETCH_UP] );
       }
@@ -306,10 +308,11 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     /* resid <- resid + a*ttt */
 #ifdef FEWSUMS
     actual_rsq=0.0;
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:actual_rsq)){
 #else
     rsq=0.0;
+    FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:rsq)){
 #endif
-    FORSOMEPARITYDOMAIN_OMP(i,s,parity,reduction(+:actual_rsq,rsq)){
       if( i < loopend-FETCH_UP ){
 	prefetch_VVVV( &t_dest[i+FETCH_UP], 
 		       &cg_p[i+FETCH_UP], 

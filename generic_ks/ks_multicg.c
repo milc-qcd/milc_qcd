@@ -25,7 +25,7 @@ static int ks_multicg_fake_field(	/* Return value is number of iterations taken 
     su3_vector **psim,	/* solution vectors */
     ks_param *ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
-    quark_invert_control qic[], 
+    quark_invert_control qic[],
     imp_ferm_links_t *fn[]    /* Storage for fermion links */
 );
 
@@ -46,7 +46,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
 //     quark_invert_control *qic,
 //     imp_ferm_links_t *fn      /* Storage for fermion links */
 // );
-// 
+//
 // static void ks_multicg_revhyb_field(	/* Return value is number of iterations taken */
 //     su3_vector *src,	/* source vector (type su3_vector) */
 //     su3_vector **psim,	/* solution vectors */
@@ -133,13 +133,13 @@ static int ks_multicg_fake_field(	/* Return value is number of iterations taken 
     su3_vector **psim,	/* solution vectors */
     ks_param *ksp,	/* the offsets */
     int num_offsets,	/* number of offsets */
-    quark_invert_control qic[], 
+    quark_invert_control qic[],
     imp_ferm_links_t *fn_multi[]    /* Storage for fermion links */
     )
 {int i,iters=0;
 
   for(i=0;i<num_offsets;i++){
-    ks_congrad_field( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), 
+    ks_congrad_field( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset),
 		      fn_multi[i] );
     //    report_status(qic+i);
     iters += qic->final_iters;
@@ -157,7 +157,7 @@ static Real *create_offsets_from_ksp(ks_param *ksp, int num_offsets){
     printf("create_offsets_from_ksp(%d): No room\n",this_node);
     terminate(1);
   }
-  
+
   for(i = 0; i < num_offsets; i++){
     offsets[i] = ksp[i].offset;
   }
@@ -186,7 +186,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
   Real resid_save = qic[0].resid;
   Real relresid_save =  qic[0].relresid;
 
-  Real single_prec_resid = 1e-6; 
+  Real single_prec_resid = 1e-6;
   Real single_prec_relresid = 1e-4;
 
   if ( resid_save !=0 && resid_save < single_prec_resid)
@@ -196,9 +196,9 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
                       qic[0].relresid = single_prec_relresid;
   //  node0_printf("Using HALF-MIXED CG; resid = %e\n", qic[0].resid);
 #endif
-  
+
   /* First we invert as though all masses took the same Naik epsilon */
-  multi_iters = iters = 
+  multi_iters = iters =
     ks_multicg_offset_field( src, psim, ksp, num_offsets, qic, fn_multi[0]);
   report_status(qic+0);
 
@@ -210,7 +210,7 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
 
   /* Then we refine using the correct Naik epsilon */
   for(i=0;i<num_offsets;i++){
-#ifdef NO_REFINE
+#if defined(NO_REFINE) || defined(USE_CG_GPU) 
     if(fn_multi[i] == fn_multi[0])
       continue;
 #endif
@@ -280,10 +280,10 @@ static void ks_multicg_reverse_field(	/* Return value is number of iterations ta
     /* We don't restart this algorithm, so we adopt the convention of
        taking the product here */
     int niter        = qic->max*qic->nrestart;
-    Real rsqmin      = qic->resid * qic->resid;    /* desired squared residual - 
+    Real rsqmin      = qic->resid * qic->resid;    /* desired squared residual -
 					 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
     int parity       = qic->parity;   /* EVEN, ODD */
-    
+
 /* Timing */
 #ifdef CGTIME
     double dtimec;
@@ -320,12 +320,12 @@ static void ks_multicg_reverse_field(	/* Return value is number of iterations ta
 
 /* debug */
 #ifdef CGTIME
-    dtimec = -dclock(); 
+    dtimec = -dclock();
 #endif
 
     nflop = 1205 + 15*num_offsets;
     if(parity==EVENANDODD)nflop *=2;
-	
+
     special_started = 0;
     /* if we want both parities, we will do even first. */
     switch(parity){
@@ -372,7 +372,7 @@ static void ks_multicg_reverse_field(	/* Return value is number of iterations ta
     }
 
 #ifdef CGTIME
-    dtimec = -dclock(); 
+    dtimec = -dclock();
 #endif
 
 
@@ -418,13 +418,13 @@ static void ks_multicg_reverse_field(	/* Return value is number of iterations ta
 
 #ifdef FN
 	if(special_started==0){
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1, 
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 1,
 				     fn );
 	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 1, fn );
 	    special_started = 1;
 	}
 	else {
-	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0, 
+	    dslash_fn_field_special( cg_p, ttt, l_otherparity, tags2, 0,
 				     fn);
 	    dslash_fn_field_special( ttt, ttt, l_parity, tags1, 0, fn );
 	}
@@ -634,7 +634,7 @@ static void ks_multicg_revhyb_field(	/* Return value is number of iterations tak
     )
 {
   int i,iters=0,index;
-  
+
   /* First we invert without the Naik epsilon correction*/
   ks_multicg_reverse_field( src, psim, ksp, num_offsets, qic, fn_multi[0]);
   /* Then we polish with the correct Naik epsilon */
@@ -671,9 +671,9 @@ int ks_multicg_mass_field(	/* Return value is number of iterations taken */
   for(i = 0; i < num_masses; i++){
     ksp[i].offset = 4.0*ksp[i].mass*ksp[i].mass;
   }
-  
+
   iters = ks_multicg_field(src, psim, ksp, num_masses, qic, fn_multi);
-  
+
   return iters;
 }
 
@@ -718,12 +718,12 @@ int ks_multicg_mass_site(	/* Return value is number of iterations taken */
     qic[i].start_flag = 0;
     qic[i].resid = sqrt(rsqmin);
     qic[i].relresid = 0;
-  
+
   }
 
   /* Map MILC field to temporary */
   in = create_v_field_from_site_member(src);
-  
+
   /* Set up ksp structure */
   ksp = (ks_param *)malloc(num_masses*sizeof(ks_param));
   if(ksp == NULL){
@@ -734,12 +734,12 @@ int ks_multicg_mass_site(	/* Return value is number of iterations taken */
     ksp[i].mass = masses[i];
     ksp[i].offset = 0;
   }
-  
+
   iters = ks_multicg_mass_field(in, psim, ksp, num_masses, qic, fn_multi);
-  
+
   destroy_v_field(in);
   free(ksp);
-  
+
   *final_rsq_ptr = qic[0].final_rsq;
   free(qic);
   return iters;
@@ -761,15 +761,15 @@ int mat_invert_multi(
     )
 {
   int i, tot_iters = 0;
-  
+
   // /* Use the single-mass inverter if there is only one mass */
   //  if(num_masses == 1)
   //    return mat_invert_uml_field(src, dst[0], qic+0, ksp->mass, fn_multi[0] );
-  
+
   /* Use preconditioned single-mass inverter if there are 2 or less masses */
   /* EO preconditioning doesn't work with multimass solvers as the residual depends on m.
      With multimass the cost will be (even+odd) * cost of lightest mass, but two individual precond
-     inversions will be mass1-precond + mass2-precond which should be faster than 
+     inversions will be mass1-precond + mass2-precond which should be faster than
      twice the slowest of them.
   */
   if (num_masses <= 2)
@@ -792,12 +792,12 @@ int mat_invert_multi(
       qic[i].parity = EVEN;
 
     tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
-    
+
     for(i = 0; i < num_masses; i++)
       qic[i].parity = ODD;
 
     tot_iters += ks_multicg_mass_field(src, dst, ksp, num_masses, qic, fn_multi);
-    
+
     /* Multiply all solutions by Madjoint to get dst = M^-1 * src */
     for(i = 0; i < num_masses; i++){
       ks_dirac_adj_op_inplace( dst[i], ksp[i].mass, EVENANDODD, fn_multi[i]);

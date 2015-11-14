@@ -169,9 +169,12 @@ create_qop_resid_arg( int nsrc, int nmass[],
 	printf("%s(%d): Can't allocate res_arg\n",myname,this_node);
 	terminate(1);
       }
+      *res_arg[isrc][imass] = QOP_RESID_ARG_DEFAULT;
       /* For now the residuals are the same for all sources and masses */
       res_arg[isrc][imass]->rsqmin = qic->resid * qic->resid;
       res_arg[isrc][imass]->relmin = qic->relresid * qic->relresid;
+      res_arg[isrc][imass]->final_rsq    = 0.;
+      res_arg[isrc][imass]->final_rel    = 0.;
     }
   }
   return res_arg;
@@ -204,7 +207,7 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
 {
   int isrc, imass;
   int iters;
-  QOP_info_t info = {0., 0., 0, 0, 0};
+  QOP_info_t info = QOP_INFO_ZERO;
   char myname[] = "ks_congrad_qop_generic";
 
 #ifdef AB_DEBUG_ENTRY_EXIT_ROUTINES
@@ -360,7 +363,7 @@ int KS_CONGRAD_QOP_FIELD2FIELD(quark_invert_control *qic,
   int iterations_used = 0;
   double remaptime;
   QOP_resid_arg_t  ***qop_resid_arg;
-  QOP_invert_arg_t qop_invert_arg;
+  QOP_invert_arg_t qop_invert_arg = QOP_INVERT_ARG_DEFAULT;
   QOP_FermionLinksAsqtad *qop_links = GET_ASQTADLINKS(fn);
 
   if(nsrc > MAXSRC){
@@ -491,4 +494,3 @@ KS_CONGRAD_MILCFIELD2QOP( su3_vector *milc_src, su3_vector *milc_sol,
   
   return  iterations_used;
 }
-

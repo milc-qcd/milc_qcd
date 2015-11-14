@@ -2312,12 +2312,39 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   write_path_coeffs_to_array(ap->p1, fat7_coeff);
   
 
+  /* Set HISQ reunitarization parameters for QUDA */
+  /* Compare with default values set in su3_mat_op.c */
   QudaHisqParams_t params;
+
+#ifndef HISQ_REUNIT_ALLOW_SVD
   params.reunit_allow_svd = 1;
+#else
+  params.reunit_allow_svd = HISQ_REUNIT_ALLOW_SVD;
+#endif
+
+#ifndef HISQ_REUNIT_SVD_ONLY
   params.reunit_svd_only = 0;
+#else
+  params.reunit_svd_only = HISQ_REUNIT_SVD_ONLY;
+#endif
+
+#ifndef HISQ_REUNIT_SVD_ABS_ERROR
   params.reunit_svd_abs_error = 1e-8;
-  params.reunit_svd_rel_error = 1e-7;
+#else
+  params.reunit_svd_abs_error = HISQ_REUNIT_SVD_ABS_ERROR;
+#endif
+
+#ifndef HISQ_REUNIT_SVD_REL_ERROR
+  params.reunit_svd_rel_error = 1e-8;
+#else
+  params.reunit_svd_rel_error = HISQ_REUNIT_SVD_REL_ERROR;
+#endif
+
+#ifndef HISQ_FORCE_FILTER
   params.force_filter = 5e-5;
+#else
+  params.force_filter = HISQ_FORCE_FILTER;
+#endif
 
   qudaHisqParamsInit(params);
   // end optional code

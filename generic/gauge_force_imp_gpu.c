@@ -23,11 +23,10 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
   char myname[] = "imp_gauge_force_gpu";
   Real **loop_coeff = get_loop_coeff();
   //int max_length = get_max_length();
-  //int nloop = get_nloop();
   //int nreps = get_nreps();
 
-  const int num_loop_types = 3;
-  double quda_loop_coeff[3];
+  const int num_loop_types = get_nloop();
+  double *quda_loop_coeff = (double*)malloc(num_loop_types * sizeof(double));
   int i;
 #ifdef GFTIME
   int nflop = 153004;  /* For Symanzik1 action */
@@ -67,6 +66,7 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
 	       nflop*(double)volume/(1e6*dtime*numnodes()) );
 #endif
 
+  free(quda_loop_coeff);
   free(links);
   free(momentum);
   return;
