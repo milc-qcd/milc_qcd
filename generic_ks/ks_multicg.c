@@ -214,7 +214,6 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
     if(fn_multi[i] == fn_multi[0])
       continue;
 #endif
-    node0_printf("refining offset %f\n",ksp[i].offset);
 #ifdef CPU_REFINE
     ks_congrad_field_cpu( src, psim[i], qic+i, 0.5*sqrt(ksp[i].offset), fn_multi[i] );
 #else
