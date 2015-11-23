@@ -3640,6 +3640,7 @@ also be applied to both staggered and Dirac fiels:
 * deriv2_B operator::
 * deriv3_A operator::
 * fat_covariant_gaussian operator::
+* hop operator::
 @end menu
 
 The third set is peculiar to staggered fermions:
@@ -3812,7 +3813,7 @@ weights <float[d]>
 
 This operation is not yet supported.
 
-@node fat_covariant_gaussian operator, funnywall1 operator, deriv3_A operator,  Modified sources
+@node fat_covariant_gaussian operator, hop operator, deriv3_A operator,  Modified sources
 @subsubsection fat_covariant_gaussian operator
 @cindex fat_covariant_gaussian operator
 
@@ -3825,7 +3826,35 @@ This operation is the same as covariant_gaussian, except that the APE
 smeared links are used.  See the gauge-field description above for
 APE smearing.
 
-@node funnywall1 operator, funnywall2 operator, fat_covariant_gaussian operator, Modified sources
+@node hop operator, funnywall1 operator, deriv3_A operator,  Modified sources
+@subsubsection hop operator
+@cindex hop operator
+
+@example
+derivs <int>
+dir <"sx"|"sy"|"sz"|"st">
+eps_naik <float>
+@end example
+
+where ``s'' is ``+'', +-'', or empty. 
+Apply the hopping matrix in the mu = x, y, z, or t direction or its <int>th
+``derivative''.  That is, for <int> even, multiply by
+
+   (1 + gamma_mu) U_x,mu \delta_x,x+mu + (1 - gamma_mu) U^\dagger_(x-mu,mu)
+
+and for <int> odd, multiply by
+
+   (1 + gamma_mu) U_x,mu \delta_x,x+mu - (1 - gamma_mu) U^\dagger_(x-mu,mu)
+
+With <int> odd an s = ``+'' and ``-'' this operator can be used to
+construct the x, y, z, or t component of the conserved current.  To do
+that involves applying the + hop to the quark and the - hop to the
+antiquark before tying them together.
+
+With s = ``+'' apply only the forward hop (first term above).  With s
+= ``-'' apply only the backward hop (second term above).  With s empty, apply both.
+
+@node funnywall1 operator, funnywall2 operator, hop operator, Modified sources
 @subsubsection funnywall1 operator
 @cindex funnywall1 operator
 

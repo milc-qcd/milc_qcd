@@ -183,6 +183,7 @@ struct qss_op_struct {
   int disp;           /* Stride for derivatives */
   Real weights[MAXWEIGHTS];  /* Weights for derivatives */
   int dhop;           /* 0 for hop, 1 for 1st deriv of hop, 2 for 2nd */
+  int fb;             /* For hop: +1 = forward only, -1 = backward only, 0 = both */
   int iters;          /* iterations for covariant gaussian source */
   Real r0;            /* source size for gaussian, width for gauge invt  */
   int stride;         /* Subset flag for gaussian source */

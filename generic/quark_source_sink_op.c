@@ -797,7 +797,7 @@ static void rotate_3D_wvec(wilson_vector *src, Real d1)
    (1 + gamma_mu) U_x,mu \delta_x,x+mu - (1 - gamma_mu) U^\dagger_(x-mu,mu) 
 */
 
-static void hop_wvec(wilson_vector *src, int dhop, int mu)
+static void hop_wvec(wilson_vector *src, int dhop, int mu, int fb)
 {
   int i, sign = 1;
   wilson_vector *mp;
@@ -813,7 +813,7 @@ static void hop_wvec(wilson_vector *src, int dhop, int mu)
   mp  = create_wv_field();
 
   /* Apply hopping matrix to the source field */
-  hop_w_field(src, mp, PLUS, sign, EVENANDODD, mu);
+  hop_w_field(src, mp, PLUS, sign, EVENANDODD, mu, fb);
   
   FORALLFIELDSITES(i){
     copy_wvec(mp + i, src + i);
@@ -1982,7 +1982,7 @@ void wv_field_op(wilson_vector *src, quark_source_sink_op *qss_op,
     apply_cov_deriv_wv(src, qss_op);
 
   else if(op_type == HOPPING)
-    hop_wvec(src, qss_op->dhop, qss_op->dir1);
+    hop_wvec(src, qss_op->dhop, qss_op->dir1, qss_op->fb);
 
   else if(op_type == ROTATE_3D)
     /* The MILC sign convention for gamma matrix in Dslash is
@@ -2258,7 +2258,20 @@ static char *encode_dir(int dir){
   if(dir == XUP)return "x";
   else if(dir == YUP)return "y";
   else if(dir == ZUP)return "z";
+  else if(dir == TUP)return "t";
   else return "?";
+}
+
+static char *encode_sign_dir(int fb, int dir){
+  static char sign_dir[3] = "  ";
+  char *d = encode_dir(dir);
+
+  if(fb == 0)return d;
+  else if(fb == +1)sign_dir[0] = '+';
+  else if(fb == -1)sign_dir[0] = '-';
+  else return "?";
+  sign_dir[1] = d[0];
+  return sign_dir;
 }
 
 
@@ -2271,8 +2284,10 @@ static int decode_dir(int *dir, char c_dir[]){
     *dir = YUP;
   else if(strcmp(c_dir,"z")==0)
     *dir = ZUP;
+  else if(strcmp(c_dir,"t")==0)
+    *dir = TUP;
   else {
-    node0_printf("Expected 'x' or 'y' or 'z' but got %s\n",c_dir);
+    node0_printf("Expected 'x' or 'y' or 'z' or 't' but got %s\n",c_dir);
     status++;
   }
   return status;
@@ -2282,8 +2297,8 @@ static int get_field_op(int *status_p, FILE *fp,
 			int prompt, quark_source_sink_op *qss_op){
 
   Real a = 0;
-  char c_dir0[] = " ";
-  char c_dir1[2] = " ";
+  char c_dir0[3] = " ";
+  char c_dir1[3] = " ";
   char *c_dir[2] = {c_dir0, c_dir1};
   int  stride = 1;
   int  source_iters = 0;
@@ -2472,6 +2487,18 @@ static int get_field_op(int *status_p, FILE *fp,
     /* Parameters for hopping matrix */
     IF_OK status += get_i(fp, prompt, "derivs",   &qss_op->dhop);
     IF_OK status += get_vs(fp, prompt, "dir", c_dir, 1);
+    /* Allow a + or - sign to specify a one-sided hop */
+    IF_OK {
+      if(c_dir[0][0] == '+'){
+	qss_op->fb = +1;
+	strncpy(c_dir[0], c_dir[0]+1, 2);
+      } else if(c_dir[0][0] == '-'){
+	qss_op->fb = -1;
+	strncpy(c_dir[0], c_dir[0]+1, 2);
+      } else {
+	qss_op->fb = 0;
+      }
+    }
     IF_OK status += decode_dir(&qss_op->dir1, c_dir[0]);
 #if FERM_ACTION == HISQ
     IF_OK status += get_f(fp, prompt, "eps_naik", &qss_op->eps_naik);
@@ -2719,7 +2746,8 @@ static int print_single_op_info(FILE *fp, char prefix[],
     fprintf(fp,",\n");
     fprintf(fp,"%s%d,\n", make_tag(prefix, "derivs"), qss_op->dhop);
 #if FERM_ACTION == HISQ
-    fprintf(fp,"%s%s,\n", make_tag(prefix, "dir"), encode_dir(qss_op->dir1));
+    fprintf(fp,"%s%s,\n", make_tag(prefix, "dir"), 
+	    encode_sign_dir(qss_op->fb, qss_op->dir1));
     fprintf(fp,"%s%g\n", make_tag(prefix, "eps_naik"), qss_op->eps_naik);
 #else
     fprintf(fp,"%s%s\n", make_tag(prefix, "dir"), encode_dir(qss_op->dir1));
