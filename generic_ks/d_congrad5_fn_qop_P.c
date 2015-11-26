@@ -300,8 +300,11 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
   for(isrc = 0; isrc < nsrc; isrc++)
     node0_printf("nmass[%d] = %d iters = %d ",
 		 isrc,nmass[isrc],qop_resid_arg[isrc][0]->final_iter);
-  node0_printf("mflops = %e\n", info.final_flop/(1.0e6*info.final_sec) );
-         fflush(stdout);
+  if(info.final_sec == 0.)
+    node0_printf("mflops = 0.0\n");
+  else
+    node0_printf("mflops = %e\n", info.final_flop/(1.0e6*info.final_sec) );
+  fflush(stdout);
 #endif
 
 #ifdef AB_DEBUG_ENTRY_EXIT_ROUTINES
