@@ -35,9 +35,10 @@ PRECISION = 1
 
 ifeq ($(strip ${MPP}),true)
   CC = mpicc
-#  CC = mpixlc_r # BG/P
+  CXX = mpiCC
 else
-  CC = gcc
+  CC  = gcc
+  CXX = g++
 endif
 
 #CC = /usr/local/mvapich/bin/mpicc  # FNAL
@@ -51,6 +52,7 @@ OPT              = -O3
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
 OCFLAGS = -std=c99   # We now need C99
+#OCFLAGS = -Wall # ( -Wall, etc )
 
 # Compiling with OpenMP?
 
@@ -68,7 +70,8 @@ OCFLAGS += -Wall # ( -Wall, etc )
 # OCFLAGS = -qarch=440d # BG/L
 
 #-------------- Intel icc/ecc -----------------------------------
-#OCFLAGS = -tpp2 -static
+#OCFLAGS += -xCORE-AVX2 -parallel-source-info=2 -debug inline-debug-info -fopenmp -funroll-loops 
+#OCFLAGS += -DOMP_ENABLE_commpi -DOMP_ENABLE_gauge -DOMP_ENABLE_field
 
 #-------------- Portland Group ----------------------------
 #OCFLAGS = -tp p6 -Munroll=c:4,n:4
@@ -250,7 +253,7 @@ ifeq ($(strip ${WANTQUDA}),true)
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
- CGPU += -DHAVE_QUDA
+  CGPU += -DHAVE_QUDA
 
   ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
     HAVE_CL_GPU = true
@@ -285,11 +288,34 @@ ifeq ($(strip ${WANTQUDA}),true)
 endif
 
 #----------------------------------------------------------------------
-# 15. Linker
-LD               = ${CC}
+# 15. QPhiX
+
+WANTQPHIX = true
+
+QPHIX_HOME = ${HOME}/QPhiX/mbench
+INCQPHIX = -I${QPHIX_HOME}
+LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc
+
+ifeq ($(strip ${WANTQPHIX}),true)
+  HAVE_QPHIX = true
+  CPHI = -DHAVE_QPHIX
+endif
 
 #----------------------------------------------------------------------
-# 16. Extra ld flags
+# 16. Linker (need the C++ linker for QUDA and QPHIX)
+
+ifeq ($(strip ${WANTQUDA}),true)
+  LD               = ${CXX}
+else
+  ifeq ($(strip ${WANTQPHIX}),true)
+     LD               = ${CXX}
+  else
+     LD   = ${CC}
+  endif
+endif
+
+#----------------------------------------------------------------------
+# 17. Extra ld flags
 
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
@@ -300,11 +326,11 @@ endif
 
 #----------------------------------------------------------------------
 # 17. Extra include paths
-INCADD = ${INCFFTW} ${INCQUDA} 
+INCADD = ${INCFFTW} ${INCQUDA} ${INCQPHIX}
 
 #----------------------------------------------------------------------
 # 18. Extra libraries
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA}
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX}
 
 #----------------------------------------------------------------------
 # 19. Inlining choices
@@ -645,7 +671,7 @@ endif
 include ../Make_template_combos
 
 CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC}
-DARCH = ${CSCIDAC} ${CGPU}
+DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \

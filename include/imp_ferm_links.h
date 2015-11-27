@@ -64,15 +64,19 @@ int ks_congrad_site( field_offset src, field_offset dest,
 int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest, 
 			   quark_invert_control *qic, Real mass,
 			   imp_ferm_links_t *fn);
-int ks_congrad_parity_gpu( su3_vector *t_src, su3_vector *t_dest, 
-			   quark_invert_control *qic, Real mass,
-			   imp_ferm_links_t *fn);
+
+
 #ifdef USE_CG_GPU
 #define ks_congrad_parity ks_congrad_parity_gpu
+#elif HAVE_QPHIX
+#define ks_congrad_parity ks_congrad_parity_qphix
 #else
 #define ks_congrad_parity ks_congrad_parity_cpu
 #endif
 
+int ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest, 
+		       quark_invert_control *qic, Real mass,
+		       imp_ferm_links_t *fn);
 
 int ks_congrad_two_src(	/* Return value is number of iterations taken */
     field_offset src1,    /* source vector (type su3_vector) */

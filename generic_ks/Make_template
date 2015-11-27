@@ -15,6 +15,7 @@ G_KS_ALL = \
   d_congrad5_fn.o \
   d_congrad5_fn_gpu.o \
   d_congrad5_fn_milc.o \
+  d_congrad5_fn_qphix.o \
   d_congrad5_fn.old.o \
   d_congrad5_fn_milc.o \
   d_congrad5_fn_qop.o \
@@ -24,6 +25,7 @@ G_KS_ALL = \
   d_congrad5_fn_qop_milc_F.o \
   d_congrad5_fn_qop_two_src.o \
   d_congrad5_fn_qopqdp_two_src.o \
+  d_congrad5_fn_qphix_two_src.o \
   d_congrad5_fn_two_src2.o \
   d_congrad5_two_src.o \
   d_congrad6.o \
@@ -173,6 +175,8 @@ d_congrad5_fn_gpu.o: ../generic_ks/d_congrad5_fn_gpu.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_milc.o: ../generic_ks/d_congrad5_fn_milc.c
 	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_qphix.o: ../generic_ks/d_congrad5_fn_qphix.c
+	${CC} -c ${CFLAGS} $<
 d_congrad5_fn.old.o: ../generic_ks/d_congrad5_fn.old.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qop.o: ../generic_ks/d_congrad5_fn_qop.c
@@ -190,6 +194,8 @@ d_congrad5_fn_qop_two_src.o: ../generic_ks/d_congrad5_fn_qop_two_src.c
 d_congrad5_fn_qopqdp.o: ../generic_ks/d_congrad5_fn_qopqdp.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qopqdp_two_src.o: ../generic_ks/d_congrad5_fn_qopqdp_two_src.c
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_qphix_two_src.o: ../generic_ks/d_congrad5_fn_qphix_two_src.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_two_src.o: ../generic_ks/d_congrad5_two_src.c
 	${CC} -c ${CFLAGS} $<

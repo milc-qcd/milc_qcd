@@ -8,8 +8,13 @@
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include "lattice_qdp.h"
+
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#endif
+
+#ifdef HAVE_QPHIX
+#include "../include/generic_qphix.h"
 #endif
 
 #ifdef MILC_GLOBAL_DEBUG
@@ -37,6 +42,10 @@ main( int argc, char **argv )
   g_sync();
   /* set up */
   prompt = setup();
+
+#ifdef HAVE_QPHIX
+  initialize_qphix();
+#endif
 
   /* loop over input sets */
   while( readin(prompt) == 0) {
@@ -169,6 +178,11 @@ main( int argc, char **argv )
   qudaFinalize();
 #endif
 
+#ifdef HAVE_QPHIX
+  /* Destroy the global mbench object */
+  destroy_qphix_env();
+#endif
+  
   normal_exit(0);
   return 0;
 }

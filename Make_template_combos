@@ -52,6 +52,10 @@ ifeq ($(strip ${WANTQUDA}),true)
   GAUGE_OBJECTS += milc_to_quda_utilities.o
 endif
 
+ifeq ($(strip ${WANTQPHIX}),true)
+  GAUGE_OBJECTS += milc_to_qphix_utilities.o
+endif
+
 ifeq ($(strip ${HAVEFFTW}),true)
   FFT_OBJECTS = remap_fftw_fourier.o
 else
@@ -226,7 +230,12 @@ endif
 # GPU support
 
   CONGRAD_FN_MILC_GPU = d_congrad5_fn_gpu.o ${CONGRAD_FN_MILC_CPU}
+
+# QPHIX support
   
+  CONGRAD_FN_MILC_QPHIX = d_congrad5_two_src.o d_congrad5_fn_qphix.o d_congrad5_fn_milc.o \
+     ${CONGRAD_FN_BASE}
+
 # Standard QOP combinations
 
   CONGRAD_FN_QOP = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
@@ -235,7 +244,11 @@ endif
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
   CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_GPU}
 else
-  CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
+  ifeq ($(strip ${HAVE_QPHIX}),true)
+    CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_QPHIX}
+  else
+    CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
+  endif
 endif
 
 ######################################################################

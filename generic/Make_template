@@ -62,6 +62,7 @@ G_ALL = \
  map_milc_to_qopmilc.o \
  map_milc_to_qopqdp.o \
  milc_to_qop_utilities.o \
+ milc_to_qphix_utilities.o \
  milc_to_quda_utilities.o \
  make_lattice.o \
  momentum_twist.o \
@@ -229,6 +230,8 @@ map_milc_to_qopmilc.o: ../generic/map_milc_to_qopmilc.c ../generic/map_milc_to_q
 map_milc_to_qopqdp.o: ../generic/map_milc_to_qopqdp.c ../generic/map_milc_to_qop_all.c
 	${CC} -c ${CFLAGS} $<
 milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
+	${CC} -c ${CFLAGS} $<
+milc_to_qphix_utilities.o: ../generic/milc_to_qphix_utilities.c
 	${CC} -c ${CFLAGS} $<
 milc_to_quda_utilities.o: ../generic/milc_to_quda_utilities.c
 	${CC} -c ${CFLAGS} $<
