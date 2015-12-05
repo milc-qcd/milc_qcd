@@ -111,6 +111,8 @@ initial_set(){
   if( param.stopflag != 0 )
     normal_exit(0);
 
+  if(prompt==2)return prompt;
+
   nx=param.nx;
   ny=param.ny;
   nz=param.nz;
