@@ -207,7 +207,7 @@ int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken
 #ifdef USE_CG_GPU
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
 #elif HAVE_QPHIX
-#define ks_congrad_parity ks_multicg_offset_field_qphix
+#define ks_multicg_offset_field ks_multicg_offset_field_qphix
 #else
 #define ks_multicg_offset_field ks_multicg_offset_field_cpu
 #endif

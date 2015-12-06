@@ -26,7 +26,7 @@ int qphix_ks_multicg_offset(
 			    fptype *mass,
 			    int num_offsets,
 			    void *gll_arg[2],
-			    void *gfl_arg[2];
+			    void *gfl_arg[2]
 			    );
 
 #ifdef CGTIME
@@ -90,8 +90,8 @@ int ks_multicg_offset_field_qphix(
   qphix_qic.relresid  = qic[0].relresid * qic[0].relresid;          /* Suppresses this test */
   
   /* Map the masses */
-  // Replace ftype with QPHIX_F_Real
-  ftype* mass = (double*)malloc(num_offsets*sizeof(ftype));
+  // Replace fptype with QPHIX_F_Real
+  fptype* mass = (double*)malloc(num_offsets*sizeof(fptype));
   for(i = 0; i < num_offsets; i++)
     mass[i] = sqrt(ksp[i].offset/4.0);
 
@@ -134,8 +134,8 @@ int ks_multicg_offset_field_qphix(
 
   num_iters = qphix_ks_multicg_offset(
 				      t_src_arg,
-				      t_dest_arg[],
-				      qphix_qic,     // as defined in ks_d_congrad_fn.h
+				      t_dest_arg,
+				      &qphix_qic,     // as defined in ks_d_congrad_fn.h
 				      mass,
 				      num_offsets,
 				      gll_arg,
@@ -145,7 +145,7 @@ int ks_multicg_offset_field_qphix(
   for(i=0; i<num_offsets; ++i)
     // Suggested accessor
     // void QPHIX_F3_extract_V_to_raw(QPHIX_F_Real *dest, QPHIX_F3_ColorVector *src, QPHIX_evenodd_t evenodd);
-    set_ks_spinors_into_lattice (psim[i], t_dest_arg[i], parity)
+    set_ks_spinors_into_lattice (psim[i], t_dest_arg[i], parity);
 
   /* Unpack the inverter statistics */
   /* For now we don't support separate residuals for each mass */
@@ -167,10 +167,10 @@ int ks_multicg_offset_field_qphix(
     freeKS(t_dest_arg[i]);
   free(t_dest_arg);
 
-  freeGauge(gll[0]);
-  freeGauge(gll[1]);
-  freeGauge18(gfl[0]);
-  freeGauge18(gfl[1]);
+  freeGauge(gll_arg[0]);
+  freeGauge(gll_arg[1]);
+  freeGauge18(gfl_arg[0]);
+  freeGauge18(gfl_arg[1]);
 
 #ifdef CGTIME
   dtimec += dclock();
