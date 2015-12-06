@@ -195,8 +195,19 @@ int ks_multicg_offset_field_gpu(	/* Return value is number of iterations taken *
     imp_ferm_links_t *fn      /* Storage for fat and Naik links */
     );
 
+int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken */
+    su3_vector *src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    ks_param *ksp,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    quark_invert_control qic[], /* inversion parameters */
+    imp_ferm_links_t *fn      /* Storage for fat and Naik links */
+    );
+
 #ifdef USE_CG_GPU
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
+#elif HAVE_QPHIX
+#define ks_congrad_parity ks_multicg_offset_field_qphix
 #else
 #define ks_multicg_offset_field ks_multicg_offset_field_cpu
 #endif

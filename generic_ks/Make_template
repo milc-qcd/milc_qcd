@@ -109,6 +109,7 @@ G_KS_ALL = \
   ks_multicg_offset_qop.o \
   ks_multicg_offset_qop_D.o \
   ks_multicg_offset_qop_F.o \
+  ks_multicg_offset_qphix.o \
   ks_multicg_qop_milc_D.o \
   ks_multicg_qop_milc_F.o \
   ks_utilities.o \
@@ -376,6 +377,8 @@ ks_multicg_offset_qop.o: ../generic_ks/ks_multicg_offset_qop.c
 ks_multicg_offset_qop_D.o: ../generic_ks/ks_multicg_offset_qop_D.c  ../generic_ks/ks_multicg_offset_qop_P.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset_qop_F.o: ../generic_ks/ks_multicg_offset_qop_F.c ../generic_ks/ks_multicg_offset_qop_P.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_qphix.o: ../generic_ks/ks_multicg_offset_qphix.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_qop_milc_D.o: ../generic_ks/ks_multicg_qop_milc_D.c ../generic_ks/ks_multicg_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<
