@@ -101,7 +101,10 @@ int ks_multicg_offset_field_qphix(
   // QPHIX_F3_ColorVector *QPHIX_F3_create_V_from_raw( QPHIX_F_Real *src, QPHIX_evenodd_t evenodd);
   // So...
   // QPHIX_F3_ColorVector *qphix_src = QPHIX_F3_create_V_from_raw( src_raw, qphix_parity); 
-  void *t_src_arg = (void *)allocKS();
+#ifdef CG_DEBUG
+  node0_printf("Calling get_ks_spinors_from_lattice\n");fflush(stdout);
+#endif
+  void *t_src_arg = (void *)allocKS2();
   get_ks_spinors_from_lattice(src, t_src_arg, parity);
 
   // These allocations should be replaced by a single constructor
@@ -113,6 +116,9 @@ int ks_multicg_offset_field_qphix(
   // QPHIX_F3_FermionLinksAsqtad *qphix_links = 
   //    QPHIX_F3_asqtad_create_L_from_raw( fatlinks_raw, longlinks_raw, qphix_parity);
 
+#ifdef CG_DEBUG
+  node0_printf("Mapping gauge field\n");fflush(stdout);
+#endif
   void *gfl_arg[2], *gll_arg[2];
   gfl_arg[0] = allocGauge18();
   get_fatlinks_from_lattice(gfl_arg[0], EVEN, fn);
@@ -123,15 +129,21 @@ int ks_multicg_offset_field_qphix(
   gll_arg[1] = allocGauge();
   get_longlinks_from_lattice(gll_arg[1], ODD, fn);
   
+#ifdef CG_DEBUG
+  node0_printf("Calling get_ks_spinors_from_lattice for output\n");fflush(stdout);
+#endif
   void **t_dest_arg = (void **)malloc(num_offsets*sizeof(void *));
   for(i=0; i<num_offsets; ++i)
     // This allocations should be replaced by a single constructor
     // QPHIX_F3_ColorVector *qphix_sol[i] = QPHIX_F3_create_V_from_raw( sol_raw[i], qphix_parity); 
-    t_dest_arg[i] = (void *)allocKS();
+    t_dest_arg[i] = (void *)allocKS2();
 
   /* Check if the mbench object has been created */
   initialize_qphix();
 
+#ifdef CG_DEBUG
+  node0_printf("Calling qphix_ks_multicg_offset\n");fflush(stdout);
+#endif
   num_iters = qphix_ks_multicg_offset(
 				      t_src_arg,
 				      t_dest_arg,
@@ -142,6 +154,9 @@ int ks_multicg_offset_field_qphix(
 				      gfl_arg);
 
   /* Unpack the solutions */
+#ifdef CG_DEBUG
+  node0_printf("Extracting output\n");fflush(stdout);
+#endif
   for(i=0; i<num_offsets; ++i)
     // Suggested accessor
     // void QPHIX_F3_extract_V_to_raw(QPHIX_F_Real *dest, QPHIX_F3_ColorVector *src, QPHIX_evenodd_t evenodd);
@@ -171,6 +186,8 @@ int ks_multicg_offset_field_qphix(
   freeGauge(gll_arg[1]);
   freeGauge18(gfl_arg[0]);
   freeGauge18(gfl_arg[1]);
+
+  freeKS(t_src_arg);
 
 #ifdef CGTIME
   dtimec += dclock();
