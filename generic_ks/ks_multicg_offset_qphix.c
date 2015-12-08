@@ -91,7 +91,7 @@ int ks_multicg_offset_field_qphix(
   
   /* Map the masses */
   // Replace fptype with QPHIX_F_Real
-  fptype* mass = (double*)malloc(num_offsets*sizeof(fptype));
+  fptype* mass = (fptype *)malloc(num_offsets*sizeof(fptype));
   for(i = 0; i < num_offsets; i++)
     mass[i] = sqrt(ksp[i].offset/4.0);
 
