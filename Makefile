@@ -246,6 +246,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
+  QUDA_HEADERS = ${QUDA_HOME}/include
 
   CUDA_HOME = /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
@@ -295,6 +296,10 @@ WANTQPHIX = true
 QPHIX_HOME = ${HOME}/QPhiX/mbench
 INCQPHIX = -I${QPHIX_HOME}
 LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc
+
+QPHIX_HEADERS = ${QPHIX_HOME}
+
+HAVEQPHIX=${WANTQPHIX}
 
 ifeq ($(strip ${WANTQPHIX}),true)
   HAVE_QPHIX = true
@@ -651,6 +656,10 @@ ifeq ($(strip ${HAVEQOP}),true)
   QOPPREC = -DQOP_PrecisionInt=${PRECISION}
 endif
 
+ifeq ($(strip ${HAVEQPHIX}),true)
+  QPHIXPREC = -DQPHIX_PrecisionInt=${PRECISION}
+endif
+
 ifeq ($(strip ${WANTDCAP}),true)
    MACHINE_DEP_IO = io_dcap.o
    OCFLAGS += -I${DCAP_DIR}/include
@@ -670,7 +679,7 @@ endif
 
 include ../Make_template_combos
 
-CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC}
+CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} $QPHIXPREC}
 DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change

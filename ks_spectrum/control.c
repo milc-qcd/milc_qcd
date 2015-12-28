@@ -46,6 +46,10 @@
 #include "../include/io_u1lat.h"
 #endif
 
+#ifdef HAVE_QPHIX
+#include "../include/generic_qphix.h"
+#endif
+
 int main(int argc, char *argv[])
 {
   int prompt;
@@ -80,6 +84,10 @@ int main(int argc, char *argv[])
   STARTTIME;
   prompt = setup();
   ENDTIME("setup");
+
+#ifdef HAVE_QPHIX
+  initialize_qphix();
+#endif
 
   /* loop over input sets */
 
@@ -580,6 +588,10 @@ int main(int argc, char *argv[])
   qudaFinalize();
 #endif
   
+#ifdef HAVE_QPHIX
+  finalize_qphix();
+#endif
+
   normal_exit(0);
   return 0;
 }
