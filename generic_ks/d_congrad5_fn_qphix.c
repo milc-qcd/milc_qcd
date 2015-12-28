@@ -2,21 +2,17 @@
 /* For the QPhiX interface */
 /* MIMD version 7 */
 
-/* 11/28/15 Created by Dhiraj Khalamkar */
-
 #include "../include/generic_qphix.h"
+#include "../include/generic_ks_qphix.h"
 #include "../include/generic.h"
 #include <lattice.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
-extern qphix_env_t *g_qphix_env_obj;
-
 /*! \brief call to the qphix_ks_congrad_parity.
  *
- * Expects that setup_mbench has been called already, so that we do not have to 
- * malloc things agian.
+ * Choose the inversion precision
  */
 int
 ks_congrad_parity_qphix ( su3_vector *src
@@ -25,6 +21,21 @@ ks_congrad_parity_qphix ( su3_vector *src
 			, Real mass
 			, fn_links_t *fn)			 
 {
+  int iterations_used;
+  
+  if(qic->prec == 1)
+    iterations_used = 
+      ks_congrad_parity_qphix_F( src, sol, qic, mass, fn );
+  else
+    iterations_used = 
+      ks_congrad_parity_qphix_D( src, sol, qic, mass, fn );
+  
+  total_iters += iterations_used;
+  return iterations_used;
+}
+
+#if 0
+
     int niter        = qic->max;      /* maximum number of iters per restart */
     int nrestart     = qic->nrestart; /* maximum restarts */
     Real rsqmin      = qic->resid * qic->resid;    /* desired residual - 
@@ -211,3 +222,4 @@ ks_congrad_parity_qphix ( su3_vector *src
 }
 
 
+#endif

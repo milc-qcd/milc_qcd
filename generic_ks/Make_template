@@ -25,6 +25,8 @@ G_KS_ALL = \
   d_congrad5_fn_qop_milc_F.o \
   d_congrad5_fn_qop_two_src.o \
   d_congrad5_fn_qopqdp_two_src.o \
+  d_congrad5_fn_qphix_D.o \
+  d_congrad5_fn_qphix_F.o \
   d_congrad5_fn_qphix_two_src.o \
   d_congrad5_fn_two_src2.o \
   d_congrad5_two_src.o \
@@ -195,6 +197,10 @@ d_congrad5_fn_qop_two_src.o: ../generic_ks/d_congrad5_fn_qop_two_src.c
 d_congrad5_fn_qopqdp.o: ../generic_ks/d_congrad5_fn_qopqdp.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qopqdp_two_src.o: ../generic_ks/d_congrad5_fn_qopqdp_two_src.c
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_qphix_D.o: ../generic_ks/d_congrad5_fn_qphix_D.c ../generic_ks/d_congrad5_fn_qphix_P.c
+	${CC} -c ${CFLAGS} $<
+d_congrad5_fn_qphix_F.o: ../generic_ks/d_congrad5_fn_qphix_F.c ../generic_ks/d_congrad5_fn_qphix_P.c
 	${CC} -c ${CFLAGS} $<
 d_congrad5_fn_qphix_two_src.o: ../generic_ks/d_congrad5_fn_qphix_two_src.c
 	${CC} -c ${CFLAGS} $<
@@ -379,6 +385,10 @@ ks_multicg_offset_qop_D.o: ../generic_ks/ks_multicg_offset_qop_D.c  ../generic_k
 ks_multicg_offset_qop_F.o: ../generic_ks/ks_multicg_offset_qop_F.c ../generic_ks/ks_multicg_offset_qop_P.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_offset_qphix.o: ../generic_ks/ks_multicg_offset_qphix.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_qphix_D.o: ../generic_ks/ks_multicg_offset_qphix_D.c  ../generic_ks/ks_multicg_offset_qphix_P.c
+	${CC} -c ${CFLAGS} $<
+ks_multicg_offset_qphix_F.o: ../generic_ks/ks_multicg_offset_qphix_F.c  ../generic_ks/ks_multicg_offset_qphix_P.c
 	${CC} -c ${CFLAGS} $<
 ks_multicg_qop_milc_D.o: ../generic_ks/ks_multicg_qop_milc_D.c ../generic_ks/ks_multicg_qop_milc_P.c
 	${CC} -c ${CFLAGS} $<

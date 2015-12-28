@@ -2,54 +2,120 @@
 #ifndef _GENERIC_QPHIX_H
 #define _GENERIC_QPHIX_H
 
+#include <qphix.h>
 #include "../include/config.h"
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
 #include "../include/su3.h"
 #include "../include/dirs.h"
 #include "../include/fermion_links.h"
-#include <ks_long_dslash.h>      /* qphix_ks_dslash */
-#include <ks_d_congrad_fn.h>     /* congrad */
 #include <stdbool.h>
 
-/*! \brief QPhiX environment. */
-typedef struct qphix_env
-{
-    void *ks_src1;
-    void *ks_src2;
-    void *ks_dest1;
-    void *ks_dest2;
-    void *gll[2];
-    void *gfl[2];
-} qphix_env_t;
+/* milc_to_qphix_utilities.c */
+QPHIX_evenodd_t milc2qphix_parity(int milc_parity);
+int qphix2milc_parity(QPHIX_evenodd_t qphix_parity);
+QPHIX_status_t initialize_qphix(void);
+void finalize_qphix(void);
 
-int
-initialize_qphix(void);
+/* map_milc_to_qphix*.c */
 
-/*! \brief Constructor to create the single global qphix_env_t object. */ 
-void
-create_qphix_env ( int nx
-                 , int ny
-                 , int nz
-                 , int nt
-                 , int ncores
-                 , int threads_per_core
-                 , int min_ct
-                 //, int soalen
-                 //, int by
-                 //, int bz
-                 //, bool use_compressed12
-              );
+/* Generic mapping */
 
-/*! \brief Destroy the global mbench object */
-void
-destroy_qphix_env (void);
+#if ( QPHIX_PrecisionInt == 1 )
 
-/* Declare a global instance of the qphix environment. \fixme - Do away!  */
-extern qphix_env_t *mbench;
-/* Global flag to indicate if the mbench instance is usable. */
-extern bool is_qphix_env_setup;
+#define create_qphix_raw4_G  create_qphix_raw4_F_G
+#define create_qphix_raw4_F  create_qphix_raw4_F_F
+#define create_qphix_raw_V   create_qphix_raw_F_V
+#define create_qphix_raw_D   create_qphix_raw_F_D
 
+#define destroy_qphix_raw4_G  destroy_qphix_raw4_F_G
+#define destroy_qphix_raw4_F  destroy_qphix_raw4_F_F
+#define destroy_qphix_raw_V   destroy_qphix_raw_F_V
+#define destroy_qphix_raw_D   destroy_qphix_raw_F_D
+
+#define create_qphix_raw4_G_from_field create_qphix_raw4_F_G_from_field
+#define create_qphix_raw4_F_from_field create_qphix_raw4_F_F_from_field
+#define create_qphix_raw_V_from_field  create_qphix_raw_F_V_from_field
+#define create_qphix_raw_D_from_field  create_qphix_raw_F_D_from_field
+
+#define create_qphix_F_from_field4  create_qphix_F_F_from_field4
+#define create_qphix_G_from_field4  create_qphix_F_G_from_field4
+#define create_qphix_V_from_field   create_qphix_F_V_from_field
+#define create_qphix_D_from_field   create_qphix_F_D_from_field
+
+#define unload_qphix_raw4_G_to_field unload_qphix_raw4_F_G_to_field
+#define unload_qphix_raw4_F_to_field unload_qphix_raw4_F_F_to_field
+#define unload_qphix_raw_V_to_field  unload_qphix_raw_F_V_to_field
+#define unload_qphix_raw_D_to_field  unload_qphix_raw_F_D_to_field
+
+#define unload_qphix_F_to_field4  unload_qphix_F_F_to_field4
+#define unload_qphix_G_to_field4  unload_qphix_F_G_to_field4
+
+#define unload_qphix_V_to_field unload_qphix_F_V_to_field
+#define unload_qphix_D_to_field unload_qphix_F_D_to_field
+
+#define map_milc_clov_to_qphix_raw map_milc_clov_to_qphix_raw_F
+
+#else
+
+#define create_qphix_raw4_G  create_qphix_raw4_D_G
+#define create_qphix_raw4_F  create_qphix_raw4_D_F
+#define create_qphix_raw_V   create_qphix_raw_D_V
+#define create_qphix_raw_D   create_qphix_raw_D_D
+
+#define destroy_qphix_raw4_G  destroy_qphix_raw4_D_G
+#define destroy_qphix_raw4_F  destroy_qphix_raw4_D_F
+#define destroy_qphix_raw_V   destroy_qphix_raw_D_V
+#define destroy_qphix_raw_D   destroy_qphix_raw_D_D
+
+#define create_qphix_raw4_G_from_field create_qphix_raw4_D_G_from_field
+#define create_qphix_raw4_F_from_field create_qphix_raw4_D_F_from_field
+#define create_qphix_raw_V_from_field  create_qphix_raw_D_V_from_field
+#define create_qphix_raw_D_from_field  create_qphix_raw_D_D_from_field
+
+#define create_qphix_F_from_field4   create_qphix_D_F_from_field4
+#define create_qphix_G_from_field4   create_qphix_D_G_from_field4
+#define create_qphix_V_from_field   create_qphix_D_V_from_field
+#define create_qphix_D_from_field   create_qphix_D_D_from_field
+
+#define unload_qphix_raw4_G_to_field unload_qphix_raw4_D_G_to_field
+#define unload_qphix_raw4_F_to_field unload_qphix_raw4_D_F_to_field
+#define unload_qphix_raw_V_to_field  unload_qphix_raw_D_V_to_field
+#define unload_qphix_raw_D_to_field  unload_qphix_raw_D_D_to_field
+
+
+#define unload_qphix_F_to_field4  unload_qphix_D_F_to_field4
+#define unload_qphix_G_to_field4  unload_qphix_D_G_to_field4
+
+#define unload_qphix_V_to_field unload_qphix_D_V_to_field
+#define unload_qphix_D_to_field unload_qphix_D_D_to_field
+
+#define map_milc_clov_to_qphix_raw map_milc_clov_to_qphix_raw_D
+
+#endif
+
+QPHIX_F3_ColorVector *create_qphix_F_V_from_field(su3_vector *src, int parity);
+fsu3_matrix *create_qphix_raw4_F_G_from_field(su3_matrix *links, int parity);
+
+fsu3_vector *create_qphix_raw_F_V_from_field(su3_vector *src, int milc_parity);
+
+void unload_qphix_F_V_to_field(su3_vector *dest, QPHIX_F3_ColorVector* src, 
+			int parity);
+
+void destroy_qphix_raw4_F_G(fsu3_matrix *raw);
+
+QPHIX_D3_ColorVector *create_qphix_D_V_from_field(su3_vector *src, int parity);
+dsu3_matrix *create_qphix_raw4_D_G_from_field(su3_matrix *links, int parity);
+
+dsu3_vector *create_qphix_raw_D_V_from_field(su3_vector *src, int milc_parity);
+
+void unload_qphix_D_V_to_field(su3_vector *dest, QPHIX_D3_ColorVector* src, 
+			int parity);
+
+void destroy_qphix_raw4_D_G(dsu3_matrix *raw);
+
+
+#if 0
 /*! \brief Gather backward long-links for a site, but do not perform adjoint.
  * 
  * Copy of load_longbacklinks (fermion_links_helpers.c), without the adjoint.
@@ -87,7 +153,7 @@ void
 get_ks_spinors_from_lattice (su3_vector *ks, void* ks_spinor, int parity);
 
 void
-Sfigather_su3vectors_from_lattice (su3_vector *ks, void *ks_spinor, int parity);
+gather_su3vectors_from_lattice (su3_vector *ks, void *ks_spinor, int parity);
 
 /*!
  * Convert MILC's links into QPhiX's Gauge18 type. 
@@ -111,7 +177,6 @@ get_longlinks_from_lattice (void* gauge18s, int parity, fn_links_t *fn);
 void
 set_ks_spinors_into_lattice (su3_vector *ks, void* ks_spinor, int parity);
 
-#if 0
 /*! \brief Public API for dslash_fn_site. */ 
 void 
 qphix_dslash_fn_site ( field_offset src

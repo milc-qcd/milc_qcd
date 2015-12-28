@@ -179,8 +179,7 @@ main( int argc, char **argv )
 #endif
 
 #ifdef HAVE_QPHIX
-  /* Destroy the global mbench object */
-  destroy_qphix_env();
+  finalize_qphix();
 #endif
   
   normal_exit(0);

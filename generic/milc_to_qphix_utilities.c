@@ -14,10 +14,44 @@
 #define CG_DEBUG 1
 #define UNOPTIMIZED_PACK_UNPACK 0
 
-qphix_env_t *g_qphix_env_obj;
+//qphix_env_t *g_qphix_env_obj;
 bool is_qphix_env_setup;
 
-int
+/* The MILC layout routines list the coordinates and assume 4D */
+
+static int milc_node_number(const int coords[]){
+  return node_number(coords[0],coords[1],coords[2],coords[3]);
+}
+
+static int milc_node_index(const int coords[]){
+  return node_index(coords[0],coords[1],coords[2],coords[3]);
+}
+
+QPHIX_evenodd_t milc2qphix_parity(int milc_parity){
+  switch(milc_parity){
+  case(EVEN):       return QPHIX_EVEN;
+  case(ODD ):       return QPHIX_ODD;
+  case(EVENANDODD): return QPHIX_EVENODD;
+  default:
+    printf("milc2qphix_parity: Bad MILC parity %d\n", milc_parity);
+    terminate(1);
+  }
+  return (QPHIX_evenodd_t)-999;
+}
+
+int qphix2milc_parity(QPHIX_evenodd_t qphix_parity){
+  switch(qphix_parity){
+  case(QPHIX_EVEN):     return EVEN;
+  case(QPHIX_ODD ):     return ODD;
+  case(QPHIX_EVENODD ): return EVENANDODD;
+  default:
+    printf("qphix2milc_parity: Bad QPHIX parity %d\n", qphix_parity);
+    terminate(1);
+  }
+  return -999;
+}
+
+QPHIX_status_t 
 initialize_qphix(void){
   /* \fixme - pass the qphix params via setup */
   /* create mbench */
@@ -31,20 +65,48 @@ initialize_qphix(void){
 
   int status = 0;
 
+  static int latsize[4];
+  static QPHIX_layout_t layout;
+  
+  latsize[0] = nx;
+  latsize[1] = ny;
+  latsize[2] = nz;
+  latsize[3] = nt;
+
   if(is_qphix_env_setup)return status;
 
+  layout.node_number = milc_node_number;
+  layout.node_index = milc_node_index;
+  layout.latdim = 4;
+  layout.latsize = latsize;
+  layout.machdim = 4;
+  layout.machsize = (int *)get_logical_dimensions();
+  layout.this_node = this_node;
+  layout.even_sites_on_node = even_sites_on_node;
+  layout.sites_on_node = sites_on_node;
 
+  node0_printf("Initializing QPhiX\n");
   node0_printf("NumCores = %d, ThreadsPerCore = %d, minCt = %d\n", numCores, threads_per_core, minCt);
+
+  status = QPHIX_init(&layout);
+
+  if(status){
+    node0_printf("Error initializing QPhiX\n");
+    fflush(stdout);
+    terminate(1);
+  }
+
   fflush(stdout);
-  create_qphix_env( nx, ny, nz, nt
-               , numCores  /* number of cores   */
-               , threads_per_core   /* threads per core  */
-               , minCt              /* number of scokets */
-               );
 
   return status;
 }
 
+void
+finalize_qphix(void){
+  QPHIX_finalize();
+}
+
+#if 0
 /*! \brief Constructor to create the single global qphix_env_t object. */ 
 void
 create_qphix_env ( int nx
@@ -412,6 +474,7 @@ get_longlinks_from_lattice (void* gauges, int parity, fn_links_t *fn)
     free(t_longback);
 }
 
+
 /*! 
  * Get the su3_vectors from the site major lattice and convert them into an
  * array of ks_spinors for qphix
@@ -461,4 +524,6 @@ set_ks_spinors_into_lattice (su3_vector *ks, void* ks_spinor, int parity)
     su3_vector *spinors = ks;
 #endif
 }
+
+#endif
 

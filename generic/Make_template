@@ -60,6 +60,7 @@ G_ALL = \
  layout_hyper_sl32.o \
  layout_qcdoc.o \
  map_milc_to_qopmilc.o \
+ map_milc_to_qphixmilc.o \
  map_milc_to_qopqdp.o \
  milc_to_qop_utilities.o \
  milc_to_qphix_utilities.o \
@@ -230,6 +231,8 @@ map_milc_to_qopmilc.o: ../generic/map_milc_to_qopmilc.c ../generic/map_milc_to_q
 map_milc_to_qopqdp.o: ../generic/map_milc_to_qopqdp.c ../generic/map_milc_to_qop_all.c
 	${CC} -c ${CFLAGS} $<
 milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
+	${CC} -c ${CFLAGS} $<
+map_milc_to_qphixmilc.o: ../generic/map_milc_to_qphixmilc.c ../generic/map_milc_to_qphix_all.c
 	${CC} -c ${CFLAGS} $<
 milc_to_qphix_utilities.o: ../generic/milc_to_qphix_utilities.c
 	${CC} -c ${CFLAGS} $<

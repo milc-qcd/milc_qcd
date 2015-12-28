@@ -233,7 +233,8 @@ endif
 
 # QPHIX support
   
-  CONGRAD_FN_MILC_QPHIX = d_congrad5_two_src.o d_congrad5_fn_qphix.o d_congrad5_fn_milc.o \
+  CONGRAD_FN_MILC_QPHIX = d_congrad5_two_src.o d_congrad5_fn_qphix.o \
+     d_congrad5_fn_qphix_D.o d_congrad5_fn_qphix_F.o d_congrad5_fn_milc.o \
      ${CONGRAD_FN_BASE}
 
 # Standard QOP combinations
@@ -274,6 +275,11 @@ endif
 
   MULTI_INV_FN_QOP = ks_multicg.o ks_multicg_offset_qop.o \
     ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
+
+# Standard QPHIX combinations
+
+  MULTI_INV_FN_QPHIX = ks_multicg.o ks_multicg_offset_qphix.o \
+    ks_multicg_offset_qphix_D.o  ks_multicg_offset_qphix_F.o
 
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_GPU}
