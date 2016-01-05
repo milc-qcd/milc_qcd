@@ -299,6 +299,7 @@ int readin(int prompt) {
       /* Base sources have no parents or ops */
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
       IF_OK init_qss_op(&param.src_qs_op[i]);
+      IF_OK set_qss_op_offset(&param.src_qs_op[i], param.coord_origin);
 
       /* Get optional file for saving the base source */
       IF_OK {
@@ -320,11 +321,11 @@ int readin(int prompt) {
 	} /* OK */
       } /* OK */
     }
-  
-  /*------------------------------------------------------------*/
-  /* Modified sources                                           */
-  /*------------------------------------------------------------*/
-
+    
+    /*------------------------------------------------------------*/
+    /* Modified sources                                           */
+    /*------------------------------------------------------------*/
+    
     IF_OK status += get_i(stdin,prompt,"number_of_modified_sources", 
 			  &param.num_modified_source);
     IF_OK {
@@ -350,27 +351,16 @@ int readin(int prompt) {
 
       IF_OK init_qss_op(&param.src_qs_op[is]);
       set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
-
+      
       /* Get source operator attributes */
       IF_OK status += get_v_field_op( stdin, prompt, &param.src_qs_op[is]);
-
+      
       /* Copy parent source attributes to the derived source structure */
       IF_OK {
 	int p = param.parent_source[is];
 	param.base_src_qs[is] = param.base_src_qs[p];
 	param.base_src_qs[is].op = copy_qss_op_list(param.base_src_qs[p].op);
 	
-	/* Initialize the coordinate offset for the new source op from
-	   the source origin itself */
-	{
-	  int r0[4];
-	  r0[0] = param.base_src_qs[is].x0;
-	  r0[1] = param.base_src_qs[is].y0;
-	  r0[2] = param.base_src_qs[is].z0;
-	  r0[3] = param.base_src_qs[is].t0;
-	  set_qss_op_offset(&param.src_qs_op[is], r0);
-	}
-
 	/* Add the new operator to the linked list */
 	insert_qss_op(&param.base_src_qs[is], &param.src_qs_op[is]);
 	
@@ -386,7 +376,7 @@ int readin(int prompt) {
 	  strncpy(label,  op_label, MAXSRCLABEL-strlen(label)-1);
 	}
       }
-
+      
       /* Get optional file for saving the modified source */
       IF_OK {
 	int source_type, saveflag_s;
@@ -397,9 +387,9 @@ int readin(int prompt) {
 					&source_type, NULL, descrp,
 					savefile_s );
 	IF_OK {
-	    param.base_src_qs[is].savetype = source_type;
-	    param.base_src_qs[is].saveflag = saveflag_s;
-	    strcpy(param.base_src_qs[is].save_file, savefile_s);
+	  param.base_src_qs[is].savetype = source_type;
+	  param.base_src_qs[is].saveflag = saveflag_s;
+	  strcpy(param.base_src_qs[is].save_file, savefile_s);
 	  if(saveflag_s != FORGET && source_type != VECTOR_FIELD_FILE){
 	    printf("Unsupported output source type\n");
 	    status++;
@@ -407,13 +397,13 @@ int readin(int prompt) {
 	} /* OK */
       } /* OK */
     }
-	
+    
     /*------------------------------------------------------------*/
     /* Propagators and their sources                              */
     /*------------------------------------------------------------*/
-
+    
     /* Number of sets grouped for multimass inversion */
-
+    
     IF_OK status += get_i(stdin,prompt,"number_of_sets", &param.num_set);
     if( param.num_set>MAX_SET ){
       printf("num_set = %d must be <= %d!\n", param.num_set, MAX_SET);

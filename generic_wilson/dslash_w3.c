@@ -500,12 +500,17 @@ su3_matrix *linkx,*linky,*linkz,*linkt;
 /* hopping matrix: "dslash" for a single direction dir     */
 /***********************************************************/
 
-/* Apply the Wilson hopping matrix for fixed dir
+/* If fb = 0
+   Apply the Wilson hopping matrix for fixed dir
    That is, multiply by (1 + isign*gamma_mu) U_x,mu \delta_x,x+mu +
-   iphase*(1 - isign*gamma_mu) U^\dagger_(x-mu,mu) */
+   iphase*(1 - isign*gamma_mu) U^\dagger_(x-mu,mu) 
+
+   if fb = +1, do only forward hopping (only first term above)
+   if fb = -1, do only backward hopping (only second term above)
+*/
 
 void hop_w_field( wilson_vector *src, wilson_vector *dest, 
-		  int isign, int iphase, int parity, int dir)
+		  int isign, int iphase, int parity, int dir, int fb)
 {
   half_wilson_vector hwv;
   wilson_vector wtmp;
@@ -529,52 +534,62 @@ void hop_w_field( wilson_vector *src, wilson_vector *dest,
     terminate(1);
   }
   
-  /* Take Wilson projection for src displaced in up direction, gather
-     it to "our site" */
-  FORSOMEPARITY(i,s,otherparity){
-    wp_shrink( &src[i], &(htmp[0][i]), dir, isign);
+
+  if(fb != -1){
+
+    /* Take Wilson projection for src displaced in up direction, gather
+       it to "our site" */
+    FORSOMEPARITY(i,s,otherparity){
+      wp_shrink( &src[i], &(htmp[0][i]), dir, isign);
+    }
+    
+    tag[0]=start_gather_field( htmp[0], sizeof(half_wilson_vector),
+			       dir, parity, gen_pt[0] );
+  
   }
 
-  tag[0]=start_gather_field( htmp[0], sizeof(half_wilson_vector),
-			     dir, parity, gen_pt[0] );
+  if(fb != +1){
+    /* Take Wilson projection for src displaced in down direction,
+       multiply it by adjoint link matrix, gather it "up" */
+    FORSOMEPARITY(i,s,otherparity){
+      wp_shrink( &src[i], &hwv, dir, -isign );
+      mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv, &(htmp[1][i]) );
+    }
   
-  /* Take Wilson projection for src displaced in down direction,
-     multiply it by adjoint link matrix, gather it "up" */
-  FORSOMEPARITY(i,s,otherparity){
-    wp_shrink( &src[i], &hwv, dir, -isign );
-    mult_adj_su3_mat_hwvec( &(s->link[dir]), &hwv, &(htmp[1][i]) );
+    tag[1]=start_gather_field( htmp[1],
+			       sizeof(half_wilson_vector), OPP_DIR(dir),
+			       parity, gen_pt[1] );
   }
   
-  tag[1]=start_gather_field( htmp[1],
-			     sizeof(half_wilson_vector), OPP_DIR(dir),
-			     parity, gen_pt[1] );
-  
-  
-  /* Take Wilson projection for src displaced in up direction, gathered,
-     multiply it by link matrix, expand it, and add.
-     to dest */
-  wait_gather(tag[0]);
+  if(fb != -1){
+    /* Take Wilson projection for src displaced in up direction, gathered,
+       multiply it by link matrix, expand it, and add.
+       to dest */
+    wait_gather(tag[0]);
 
-  FORSOMEPARITYDOMAIN(i,s,parity){
-    mult_su3_mat_hwvec( &(s->link[dir]), 
-			(half_wilson_vector * )(gen_pt[0][i]), &hwv ); 
-    wp_grow( &hwv, &dest[i], dir, isign);
+    FORSOMEPARITYDOMAIN(i,s,parity){
+      mult_su3_mat_hwvec( &(s->link[dir]), 
+			  (half_wilson_vector * )(gen_pt[0][i]), &hwv ); 
+      wp_grow( &hwv, &dest[i], dir, isign);
+    }
+    cleanup_gather(tag[0]);
   }
- 
-  cleanup_gather(tag[0]);
   
-  /* Take Wilson projection for src displaced in down direction,
-     expand it, and add it to or subtract it from dest */
-  wait_gather(tag[1]);
-  
-  FORSOMEPARITY(i,s,parity){
-    wp_grow( (half_wilson_vector *)(gen_pt[1][i]), &wtmp, dir, -isign);
-    if(iphase == 1)
-      add_wilson_vector(&dest[i], &wtmp, &dest[i]);
-    else
-      sub_wilson_vector(&dest[i], &wtmp, &dest[i]);
+  if(fb != +1){
+    /* Take Wilson projection for src displaced in down direction,
+       expand it, and add it to or subtract it from dest */
+    wait_gather(tag[1]);
+    
+    FORSOMEPARITY(i,s,parity){
+      wp_grow( (half_wilson_vector *)(gen_pt[1][i]), &wtmp, dir, -isign);
+      if(iphase == 1)
+	add_wilson_vector(&dest[i], &wtmp, &dest[i]);
+      else
+	sub_wilson_vector(&dest[i], &wtmp, &dest[i]);
+    }
+    cleanup_gather(tag[1]);
   }
-  cleanup_gather(tag[1]);
+
   cleanup_dslash_wtemps();
   
 } /* hop_w_field */

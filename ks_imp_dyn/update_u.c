@@ -16,7 +16,6 @@
 #if defined HAVE_QUDA && defined USE_GF_GPU
 #include "../include/generic_quda.h"
 
-
 /* QUDA version */
 
 void update_u(Real eps){

@@ -273,17 +273,7 @@ int readin(int prompt) {
       /* Base sources have no parents or ops */
       IF_OK param.parent_source[i] = BASE_SOURCE_PARENT;
       IF_OK init_qss_op(&param.src_qs_op[i]);
-//
-//      /* Initialize the coordinate offset for the source op from
-//         the source origin itself */
-//      {
-//	int r0[4];
-//	r0[0] = param.base_src_qs[i].x0;
-//	r0[1] = param.base_src_qs[i].y0;
-//	r0[2] = param.base_src_qs[i].z0;
-//	r0[3] = param.base_src_qs[i].t0;
-//	set_qss_op_offset(&param.src_qs_op[i], r0);
-//      }
+      IF_OK set_qss_op_offset(&param.src_qs_op[i], param.coord_origin);
 
       /* Get optional file for saving the base source */
       IF_OK {
@@ -295,9 +285,9 @@ int readin(int prompt) {
 					&source_type, NULL, descrp,
 					savefile_s );
 	IF_OK {
-	    param.base_src_qs[i].savetype = source_type;
-	    param.base_src_qs[i].saveflag = saveflag_s;
-	    strcpy(param.base_src_qs[i].save_file, savefile_s);
+	  param.base_src_qs[i].savetype = source_type;
+	  param.base_src_qs[i].saveflag = saveflag_s;
+	  strcpy(param.base_src_qs[i].save_file, savefile_s);
 	  if(saveflag_s != FORGET && source_type != DIRAC_FIELD_FILE
 	     && source_type != VECTOR_FIELD_FILE){
 	    printf("Unsupported output source type\n");
@@ -305,7 +295,6 @@ int readin(int prompt) {
 	  }
 	} /* OK */
       } /* OK */
-      
     }
 
     /*------------------------------------------------------------*/
@@ -337,19 +326,7 @@ int readin(int prompt) {
       }
 
       IF_OK init_qss_op(&param.src_qs_op[is]);
-
-      /* Set the default coordinate offset for the source op from
-         the parent source origin */
-      {
-//	int r0[4];
-//	int p = param.parent_source[is];
-//	r0[0] = param.base_src_qs[p].x0;
-//	r0[1] = param.base_src_qs[p].y0;
-//	r0[2] = param.base_src_qs[p].z0;
-//	r0[3] = param.base_src_qs[p].t0;
-//	set_qss_op_offset(&param.src_qs_op[is], r0);
-	set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
-      }
+      set_qss_op_offset(&param.src_qs_op[is], param.coord_origin);
 
       /* Get source operator attributes */
       IF_OK status += get_wv_field_op( stdin, prompt, &param.src_qs_op[is]);
@@ -561,7 +538,15 @@ int readin(int prompt) {
 
       /* Get source index for this set */
       IF_OK status += get_i(stdin,prompt,"source", &param.source[i]);
-      
+
+      IF_OK {
+	int ns = param.num_base_source + param.num_modified_source;
+	if( param.source[i] >= ns){
+	  printf("Source index must be less than %d here\n",ns);
+	  status++;
+	}
+      }
+
       /* Copy the base source to the propagator source structure */
       
       IF_OK {
