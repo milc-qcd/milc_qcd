@@ -28,8 +28,7 @@
 #define COPY_MILC_TO_G copy_milc_to_F_G
 #define CREATE_BACKLINKS_WITHOUT_ADJOINT create_backlinks_without_adjoint_F
 #define DESTROY_BACKLINKS destroy_backlinks_F
-#define CREATE_L_FROM_FIELD create_qphix_F_L_from_field
-#define QPHIX_asqtad_invert QPHIX_F3_asqtad_invert
+#define CREATE_L_FROM_FN_LINKS create_qphix_F_L_from_fn_links
 
 #else
 
@@ -39,8 +38,7 @@
 #define COPY_MILC_TO_G copy_milc_to_D_G
 #define CREATE_BACKLINKS_WITHOUT_ADJOINT create_backlinks_without_adjoint_D
 #define DESTROY_BACKLINKS destroy_backlinks_D
-#define CREATE_L_FROM_FIELD create_qphix_D_L_from_field
-#define QPHIX_asqtad_invert QPHIX_D3_asqtad_invert
+#define CREATE_L_FROM_FN_LINKS create_qphix_D_L_from_fn_links
 
 #endif
 
@@ -202,7 +200,7 @@ DESTROY_BACKLINKS(MYSU3_MATRIX *t_bl){
  * Create the QPhiX fermion link structure from forward FN links
  */
 QPHIX_FermionLinksAsqtad *
-CREATE_L_FROM_FIELD (fn_links_t *fn, int parity){
+CREATE_L_FROM_FN_LINKS (fn_links_t *fn, int parity){
   MYSU3_MATRIX *raw_fat_links, *raw_lng_links, *raw_fatback_links, *raw_lngback_links;
   static QPHIX_FermionLinksAsqtad *links;
   
@@ -303,7 +301,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
   t_l   = -dclock(); 
 #endif     
   
-  links = CREATE_L_FROM_FIELD( fn, qic->parity );
+  links = CREATE_L_FROM_FN_LINKS( fn, qic->parity );
   
 #if CG_DEBUG
   t_l   += dclock(); 
@@ -328,7 +326,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
 #endif    
   
   iters = QPHIX_asqtad_invert( &info, links, &qphix_invert_arg, 
-			       qphix_resid_arg, qphix_sol, (MYREAL)mass, qphix_src );
+			       qphix_resid_arg, (MYREAL)mass, qphix_sol, qphix_src );
   
 #ifdef CG_DEBUG    
   dtime += dclock();
