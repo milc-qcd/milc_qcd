@@ -42,7 +42,7 @@ int ks_congrad_parity_qphix_D( su3_vector *src,
 
 /* ks_multicg_offset_qphix_F.c */
 
-int ks_multicg_offset_field_F(       /* Return value is number of iterations taken */
+int ks_multicg_offset_field_qphix_F(       /* Return value is number of iterations taken */
     su3_vector *src,	       /* source vector (type su3_vector) */
     su3_vector **psim,	       /* solution vectors */
     ks_param *ksp,	       /* the offsets */
@@ -53,7 +53,7 @@ int ks_multicg_offset_field_F(       /* Return value is number of iterations tak
 
 /* ks_multicg_offset_qphix_D.c */
 
-int ks_multicg_offset_field_D(       /* Return value is number of iterations taken */
+int ks_multicg_offset_field_qphix_D(       /* Return value is number of iterations taken */
     su3_vector *src,	       /* source vector (type su3_vector) */
     su3_vector **psim,	       /* solution vectors */
     ks_param *ksp,	       /* the offsets */

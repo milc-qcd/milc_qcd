@@ -21,7 +21,6 @@
 #define MYREAL QPHIX_F_Real
 #define MYSU3_MATRIX fsu3_matrix
 #define COPY_MILC_TO_G copy_milc_to_F_G
-#define QPHIX_asqtad_invert QPHIX_F3_asqtad_invert
 #define unload_qphix_V_to_field unload_qphix_F_V_to_field
 
 #else
@@ -30,7 +29,6 @@
 #define MYREAL QPHIX_D_Real
 #define MYSU3_MATRIX dsu3_matrix
 #define COPY_MILC_TO_G copy_milc_to_D_G
-#define QPHIX_asqtad_invert QPHIX_D3_asqtad_invert
 #define unload_qphix_V_to_field unload_qphix_D_V_to_field
 
 #endif
@@ -68,7 +66,7 @@ create_qphix_resid_arg( quark_invert_control *qic, int nmass)
   int imass;
 
   /* Pointers for residual errors */
-  res_arg = (QPHIX_resid_arg_t **)malloc(num_offsets*sizeof(QPHIX_resid_arg_t *));
+  res_arg = (QPHIX_resid_arg_t **)malloc(nmass*sizeof(QPHIX_resid_arg_t *));
   for(imass = 0; imass < nmass; imass++){
     res_arg[imass] = (QPHIX_resid_arg_t *)malloc(sizeof(QPHIX_resid_arg_t ));
     if(res_arg[imass] == NULL){
@@ -78,10 +76,12 @@ create_qphix_resid_arg( quark_invert_control *qic, int nmass)
     *res_arg[imass] = QPHIX_RESID_ARG_DEFAULT;
   }
   /* For now the residuals are the same for all sources and masses */
-  res_arg->resid = qic->resid * qic->resid;
-  res_arg->relresid     = 0.;  /* NOT SUPPORTED */
-  res_arg->final_rsq    = 0.;
-  res_arg->final_rel    = 0.;
+  for(imass = 0; imass < nmass; imass++){
+    res_arg[imass]->resid = qic->resid * qic->resid;
+    res_arg[imass]->relresid     = 0.;  /* NOT SUPPORTED */
+    res_arg[imass]->final_rsq    = 0.;
+    res_arg[imass]->final_rel    = 0.;
+  }
 
   return res_arg;
 }
@@ -91,7 +91,7 @@ destroy_qphix_resid_arg(QPHIX_resid_arg_t **res_arg, int nmass)
 {
   int imass;
 
-  for(imass = 0; imass < nmass[isrc]; imass++){
+  for(imass = 0; imass < nmass; imass++){
     free(res_arg[imass]);
   }
   free(res_arg);
@@ -146,7 +146,7 @@ KS_MULTICG_OFFSET_FIELD(
   set_qphix_invert_arg( & qphix_invert_arg, qic+0, nmass );
 
   /* Pointers for residual errors */
-  qphix_resid_arg = create_qphix_resid_arg( nmass, qic+0 );
+  qphix_resid_arg = create_qphix_resid_arg( qic+0, nmass );
 
   /* Map the masses */
   for(i = 0; i < nmass; i++)
@@ -154,35 +154,35 @@ KS_MULTICG_OFFSET_FIELD(
 
   /* Map the input and output fields */
 
-  qphix_src = create_V_from_field( src, qic[0].parity);
+  qphix_src = create_qphix_V_from_field( src, qic[0].parity);
 
   
-  for(imass = 0; imass < nmass; imass++){
-    qphix_sol[imass] = 
-      create_V_from_field( psim[imass], qic[0].parity);
+  for(i = 0; i < nmass; i++){
+    qphix_sol[i] = 
+      create_qphix_V_from_field( psim[i], qic[0].parity);
   }
 
-  links = create_L_from field( fn, qic->parity );
+  links = create_qphix_L_from_fn_links( fn, qic->parity );
 
 #ifdef CG_DEBUG
   node0_printf("Calling qphix_ks_multicg_offset\n");fflush(stdout);
 #endif
 
-  num_iters = QPHIX_asqtad_multi_invert( info, links, inv_arg, res_arg, mass, 
-					 nmass, qphix_dest, qphix_src );
+  num_iters = QPHIX_asqtad_invert_multi( &info, links, &qphix_invert_arg, qphix_resid_arg, 
+					 mass, nmass, qphix_sol, qphix_src );
 
   /* For now we don't support separate residuals for each mass */
   for(i=0; i<nmass; ++i){
-    qic[i].final_rsq = resid_arg[i]->final_rsq;
+    qic[i].final_rsq = qphix_resid_arg[i]->final_rsq;
     qic[i].final_relrsq = 0.; /* Not supported at the moment */
     qic[i].final_iters = num_iters;
-    qic[i].size_r = resid_arg[i]->size_r;
-    qic[i].size_relr = resid_arg[i]->size_relr;
+    qic[i].size_r = qphix_resid_arg[i]->size_r;
+    qic[i].size_relr = qphix_resid_arg[i]->size_relr;
   }
 
-    /* Free the structure */
-    destroy_qphix_resid_arg(resid_arg);
-
+  /* Free the structure */
+  destroy_qphix_resid_arg(qphix_resid_arg, nmass);
+  
   /* Unpack the solutions */
 #ifdef CG_DEBUG
   node0_printf("Extracting output\n");fflush(stdout);
@@ -190,22 +190,22 @@ KS_MULTICG_OFFSET_FIELD(
 
   for(i=0; i<nmass; ++i)
     /* Copy results back to su3_vector */
-    unload_qphix_V_to_field( sol[i], qphix_dest[i], qic->parity);
+    unload_qphix_V_to_field( psim[i], qphix_sol[i], qic->parity);
     
 
     /* Free QPHIX fields  */
     
     QPHIX_destroy_V(qphix_src);    
     QPHIX_destroy_V(qphix_src);    
-    for(imass = 0; imass < nmass; imass++)
-      QPHIX_destroy_V(qphix_sol[imass]);     
+    for(i = 0; i < nmass; i++)
+      QPHIX_destroy_V(qphix_sol[i]);     
 
 #ifdef CGTIME
   dtimec += dclock();
   if(this_node==0){
     char *prec_label[2] = {"F", "D"};
     printf("CONGRAD5: time = %e (multicg_offset_QPHIX %s) masses = %d iters = %d mflops = %e\n",
-	   dtimec,prec_label[qic[0].prec-1],num_offsets,num_iters,
+	   dtimec,prec_label[qic[0].prec-1],nmass,num_iters,
 	   (double)(nflop)*volume*
 	   num_iters/(1.0e6*dtimec*numnodes()));
     fflush(stdout);}

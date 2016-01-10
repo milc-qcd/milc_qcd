@@ -8,12 +8,25 @@
 
 /* Temporary redefines */
 
-#define QPHIX_node_number_raw node_number
-#define QPHIX_node_index_raw_G node_index
-#define QPHIX_node_index_raw_F node_index
-#define QPHIX_node_index_raw_V node_index
-#define QPHIX_node_index_raw_D node_index
+static int QPHIX_node_number_raw(int coords[]){
+  return node_number(coords[0],coords[1],coords[2],coords[3]);
+}
 
+static QPHIX_node_index_raw_G(int coords[], int milc_parity){
+  return node_index(coords[0],coords[1],coords[2],coords[3]);
+}
+
+static QPHIX_node_index_raw_F(int coords[], int milc_parity){
+  return node_index(coords[0],coords[1],coords[2],coords[3]);
+}
+
+static QPHIX_node_index_raw_V(int coords[], int milc_parity){
+  return node_index(coords[0],coords[1],coords[2],coords[3]);
+}
+
+static QPHIX_node_index_raw_D(int coords[], int milc_parity){
+  return node_index(coords[0],coords[1],coords[2],coords[3]);
+}
 
 /* Create empty raw links */
 /* Note, this version assumes four contiguous matrices per site */
@@ -232,7 +245,7 @@ create_qphix_##P##_##T##_from_site4(field_offset src, int milc_parity){ \
   QPHIXTYPE *qphix; \
   raw = create_qphix_raw4_##P##_##T##_from_site(src, milc_parity); \
   if(raw == NULL)terminate(1); \
-  qphix = QPHIX_##P##3_create_##T##_from_qphix_raw((MILCFLOAT *)raw, \
+  qphix = QPHIX_##P##3_create_##T##_from_raw((MILCFLOAT *)raw, \
            milc2qphix_parity(milc_parity)); \
   destroy_qphix_raw4_##P##_##T(raw); raw = NULL; \
   return qphix; \
@@ -248,7 +261,7 @@ create_qphix_##P##_##T##_from_field4(MILC_SRCTYPE *src, int milc_parity){ \
   QPHIXTYPE *qphix; \
   raw = create_qphix_raw4_##P##_##T##_from_field(src, milc_parity); \
   if(raw == NULL)terminate(1); \
-  qphix = QPHIX_##P##3_create_##T##_from_qphix_raw((MILCFLOAT *)raw, \
+  qphix = QPHIX_##P##3_create_##T##_from__raw((MILCFLOAT *)raw, \
            milc2qphix_parity(milc_parity)); \
   destroy_qphix_raw4_##P##_##T(raw); raw = NULL; \
   return qphix; \
@@ -263,7 +276,7 @@ create_qphix_##P##_##T##_from_site(field_offset src, int milc_parity){ \
   QPHIXTYPE *qphix; \
   raw = create_qphix_raw_##P##_##T##_from_site(src, milc_parity); \
   if(raw == NULL)terminate(1); \
-  qphix = QPHIX_##P##3_create_##T##_from_qphix_raw((MILCFLOAT *)raw, \
+  qphix = QPHIX_##P##3_create_##T##_from_raw((MILCFLOAT *)raw, \
            milc2qphix_parity(milc_parity)); \
   destroy_qphix_raw_##P##_##T(raw); raw = NULL; \
   return qphix; \
@@ -278,7 +291,7 @@ create_qphix_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
   QPHIXTYPE *qphix; \
   raw = create_qphix_raw_##P##_##T##_from_field(src, milc_parity); \
   if(raw == NULL)terminate(1); \
-  qphix = QPHIX_##P##3_create_##T##_from_qphix_raw((MILCFLOAT *)raw, \
+  qphix = QPHIX_##P##3_create_##T##_from_raw((MILCFLOAT *)raw, \
            milc2qphix_parity(milc_parity)); \
   destroy_qphix_raw_##P##_##T(raw); raw = NULL; \
   return qphix; \
@@ -377,7 +390,7 @@ unload_qphix_##P##_##T##_to_site4(field_offset dest, QPHIXTYPE *qphix, int milc_
   RAWTYPE **raw; \
   raw = create_qphix_raw4_##P##_##T(); \
   if(raw == NULL)terminate(1); \
-  QPHIX_##P##3_extract_##T##_to_qphix_raw((MILCFLOAT **)raw, qphix, \
+  QPHIX_##P##3_extract_##T##_to_raw((MILCFLOAT *)raw, qphix, \
            milc2qphix_parity(milc_parity)); \
   unload_qphix_raw4_##P##_##T##_to_site(dest, raw, milc_parity); \
   destroy_qphix_raw4_##P##_##T(raw); raw = NULL; \
@@ -389,10 +402,10 @@ unload_qphix_##P##_##T##_to_site4(field_offset dest, QPHIXTYPE *qphix, int milc_
 #define make_unload_to_field4(P, T, QPHIXTYPE, RAWTYPE, MILC_DSTTYPE, MILCFLOAT) \
 void \
  unload_qphix_##P##_##T##_to_field4(MILC_DSTTYPE *dest, QPHIXTYPE *qphix, int milc_parity){ \
-  RAWTYPE **raw; \
+  RAWTYPE *raw; \
   raw = create_qphix_raw4_##P##_##T(); \
   if(raw == NULL)terminate(1); \
-  QPHIX_##P##3_extract_##T##_to_qphix_raw((MILCFLOAT **)raw, qphix, \
+  QPHIX_##P##3_extract_##T##_to_raw((MILCFLOAT *)raw, qphix, \
            milc2qphix_parity(milc_parity)); \
   unload_qphix_raw4_##P##_##T##_to_field(dest, raw, milc_parity); \
   destroy_qphix_raw4_##P##_##T(raw); raw = NULL; \
@@ -406,7 +419,7 @@ void \
 unload_qphix_##P##_##T##_to_site( field_offset dest, TYPE *qphix, int parity){ \
   MILCTYPE *raw; \
   raw = create_qphix_raw_##P##_##T(); \
-  QPHIX_##P##3_extract_##T##_to_qphix_raw((MILCFLOAT *)raw, qphix, milc2qphix_parity(parity)); \
+  QPHIX_##P##3_extract_##T##_to_raw((MILCFLOAT *)raw, qphix, milc2qphix_parity(parity)); \
   unload_qphix_raw_##P##_##T##_to_site(dest, raw, parity); \
   destroy_qphix_raw_##P##_##T(raw); raw = NULL; \
 }
@@ -418,7 +431,7 @@ void \
 unload_qphix_##P##_##T##_to_field( MILC_DSTTYPE *dest, TYPE *qphix, int parity){ \
   MILCTYPE *raw; \
   raw = create_qphix_raw_##P##_##T(); \
-  QPHIX_##P##3_extract_##T##_to_qphix_raw((MILCFLOAT *)raw, qphix, milc2qphix_parity(parity)); \
+  QPHIX_##P##3_extract_##T##_to_raw((MILCFLOAT *)raw, qphix, milc2qphix_parity(parity)); \
   unload_qphix_raw_##P##_##T##_to_field(dest, raw, parity); \
   destroy_qphix_raw_##P##_##T(raw); raw = NULL; \
 }
@@ -431,12 +444,12 @@ TYPE * \
 create_qphix_##P##_L_from_site_gauge( QPHIX_info_t *info, \
     QPHIX_asqtad_coeffs_t *coeffs, field_offset src, int parity) \
 { \
-  MILCTYPE **raw; \
+  MILCTYPE *raw; \
   TYPE *qphix; \
   QPHIX_##P##3_GaugeField *gauge; \
   raw = create_qphix_raw4_##P##_G_from_site(src, parity); \
   if(raw == NULL)terminate(1); \
-  gauge = QPHIX_##P##3_create_G_from_qphix_raw((MILCFLOAT **)raw, \
+  gauge = QPHIX_##P##3_create_G_from_raw((MILCFLOAT *)raw, \
 				  milc2qphix_parity(parity)); \
   destroy_qphix_raw4_##P##_G(raw); raw = NULL; \
   qphix = QPHIX_##P##3_asqtad_create_L_from_G(info, coeffs, gauge); \
@@ -446,21 +459,22 @@ create_qphix_##P##_L_from_site_gauge( QPHIX_info_t *info, \
 #endif
 
 /* Map preconstructed fat and long gauge fields from MILC site to QPHIX field */
+/* THIS IS INCOMPLETE !!! DO NOT USE */
 
 #define make_create_L_from_sites(P, TYPE, MILCTYPE, MILCFLOAT) \
 TYPE * \
 create_qphix_##P##_L_from_sites( field_offset fat, field_offset lng, \
    int parity) \
 { \
-  MILCTYPE **rawfat; \
-  MILCTYPE **rawlng; \
+  MILCTYPE *rawfat; \
+  MILCTYPE *rawlng; \
   TYPE *qphix; \
   rawfat = create_qphix_raw4_##P##_G_from_site(fat, parity); \
   if(rawfat == NULL)terminate(1); \
   rawlng = create_qphix_raw4_##P##_G_from_site(lng, parity); \
   if(rawlng == NULL)terminate(1); \
-  qphix = QPHIX_##P##3_asqtad_create_L_from_qphix_raw((MILCFLOAT **)rawfat, \
-          (MILCFLOAT **)rawlng, milc2qphix_parity(parity)); \
+  qphix = QPHIX_##P##3_asqtad_create_L_from_raw((MILCFLOAT *)rawfat, \
+          (MILCFLOAT *)rawlng, milc2qphix_parity(parity)); \
   destroy_qphix_raw4_##P##_G(rawfat); rawfat = NULL; \
   destroy_qphix_raw4_##P##_G(rawlng); rawlng = NULL; \
   return qphix; \
@@ -473,10 +487,10 @@ TYPE * \
 create_qphix_##P##_L_from_fields( MILC_SRC_TYPE *fat, MILC_SRC_TYPE *lng, \
     MILC_SRC_TYPE *fatback, MILC_SRC_TYPE *lngback,int parity) \
 { \
-  MILCTYPE **rawfat; \
-  MILCTYPE **rawlng; \
-  MILCTYPE **rawfatback; \
-  MILCTYPE **rawlngback; \
+  MILCTYPE *rawfat; \
+  MILCTYPE *rawlng; \
+  MILCTYPE *rawfatback; \
+  MILCTYPE *rawlngback; \
   TYPE *qphix; \
   rawfat = create_qphix_raw4_##P##_G_from_field(fat, parity); \
   if(rawfat == NULL)terminate(1); \
@@ -486,8 +500,8 @@ create_qphix_##P##_L_from_fields( MILC_SRC_TYPE *fat, MILC_SRC_TYPE *lng, \
   if(rawfatback == NULL)terminate(1); \
   rawlngback = create_qphix_raw4_##P##_G_from_field(lngback, parity); \
   if(rawlngback == NULL)terminate(1); \
-  qphix = QPHIX_##P##3_asqtad_create_L_from_raw((MILCFLOAT **)rawfat, \
-    (MILCFLOAT **)rawlng, (MILCFLOAT **)rawfatback, (MILCFLOAT **)rawlngback, \
+  qphix = QPHIX_##P##3_asqtad_create_L_from_raw((MILCFLOAT *)rawfat, \
+    (MILCFLOAT *)rawlng, (MILCFLOAT *)rawfatback, (MILCFLOAT *)rawlngback, \
     milc2qphix_parity(parity)); \
   destroy_qphix_raw4_##P##_G(rawfat); rawfat = NULL; \
   destroy_qphix_raw4_##P##_G(rawlng); rawlng = NULL; \
@@ -503,14 +517,14 @@ void \
 unload_qphix_##P##_L_to_fields( MILC_DST_TYPE *fat, MILC_DST_TYPE *lng, TYPE* qphix, \
    int parity) \
 { \
-  MILCTYPE **rawfat; \
-  MILCTYPE **rawlng; \
+  MILCTYPE *rawfat; \
+  MILCTYPE *rawlng; \
   rawfat  = create_qphix_raw4_##P##_G(); \
   if(rawfat == NULL)terminate(1); \
   rawlng = create_qphix_raw4_##P##_G(); \
   if(rawlng == NULL)terminate(1); \
-  QPHIX_##P##3_asqtad_extract_L_to_qphix_raw((MILCFLOAT **)rawfat, \
-          (MILCFLOAT **)rawlng, qphix, milc2qphix_parity(parity)); \
+  QPHIX_##P##3_asqtad_extract_L_to_raw((MILCFLOAT *)rawfat, \
+          (MILCFLOAT *)rawlng, qphix, milc2qphix_parity(parity)); \
   unload_qphix_raw4_##P##_G_to_field(fat, rawfat, parity); \
   if(lng != NULL) \
   unload_qphix_raw4_##P##_G_to_field(lng, rawlng, parity); \
@@ -527,14 +541,14 @@ void \
 unload_qphix_##P##_hisq_L_to_fields( MILC_DST_TYPE *fat, MILC_DST_TYPE *lng, TYPE* qphix, \
    int parity) \
 { \
-  MILCTYPE **rawfat; \
-  MILCTYPE **rawlng; \
+  MILCTYPE *rawfat; \
+  MILCTYPE *rawlng; \
   rawfat  = create_qphix_raw4_##P##_G(); \
   if(rawfat == NULL)terminate(1); \
   rawlng = create_qphix_raw4_##P##_G(); \
   if(rawlng == NULL)terminate(1); \
-  QPHIX_##P##3_hisq_extract_L_to_qphix_raw((MILCFLOAT **)rawfat, \
-          (MILCFLOAT **)rawlng, qphix, milc2qphix_parity(parity)); \
+  QPHIX_##P##3_hisq_extract_L_to_raw((MILCFLOAT *)rawfat, \
+          (MILCFLOAT *)rawlng, qphix, milc2qphix_parity(parity)); \
   unload_qphix_raw4_##P##_G_to_field(fat, rawfat, parity); \
   if(lng != NULL) \
   unload_qphix_raw4_##P##_G_to_field(lng, rawlng, parity); \

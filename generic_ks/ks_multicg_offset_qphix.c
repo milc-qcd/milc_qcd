@@ -29,9 +29,9 @@ ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken */
   int i, iters;
 
   if(qic->prec == 1)
-    iters = ks_multicg_offset_field_F(src, psim, ksp, num_offsets, qic, fn);
+    iters = ks_multicg_offset_field_qphix_F(src, psim, ksp, num_offsets, qic, fn);
   else
-    iters = ks_multicg_offset_field_D(src, psim, ksp, num_offsets, qic, fn);
+    iters = ks_multicg_offset_field_qphix_D(src, psim, ksp, num_offsets, qic, fn);
 
   /* Copy multimass qic results to the rest of the structures */
   for(i = 1; i < num_offsets; i++){
