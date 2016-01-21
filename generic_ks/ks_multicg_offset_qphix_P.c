@@ -162,7 +162,7 @@ KS_MULTICG_OFFSET_FIELD(
       create_qphix_V_from_field( psim[i], qic[0].parity);
   }
 
-  links = create_qphix_L_from_fn_links( fn, qic->parity );
+  links = create_qphix_L_from_fn_links( fn, EVENANDODD );
 
 #ifdef CG_DEBUG
   node0_printf("Calling qphix_ks_multicg_offset\n");fflush(stdout);

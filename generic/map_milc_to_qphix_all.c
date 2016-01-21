@@ -35,7 +35,7 @@ static QPHIX_node_index_raw_D(int coords[], int milc_parity){
 MILCTYPE * \
 create_qphix_raw4_##P##_##T (void){ \
   MILCTYPE *raw = NULL; \
-  raw = (MILCTYPE *)malloc(4*sizeof(MILCTYPE)); \
+  raw = (MILCTYPE *)malloc(4*sites_on_node*sizeof(MILCTYPE)); \
   if(raw == NULL){				\
     printf("create4_qphix_raw: No room\n");	\
     return NULL;				\
