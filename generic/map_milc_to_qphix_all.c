@@ -40,6 +40,7 @@ create_qphix_raw4_##P##_##T (void){ \
     printf("create4_qphix_raw: No room\n");	\
     return NULL;				\
   } \
+  memset(raw, 0, 4*sites_on_node*sizeof(MILCTYPE)); \
   return raw; \
 }
 
@@ -63,6 +64,7 @@ create_qphix_raw_##P##_##T(void){ \
     printf("create_qphix_raw: No room\n"); \
     return NULL; \
   } \
+  memset(raw, 0, sites_on_node*sizeof(MILCTYPE)); \
   return raw; \
 }
 
