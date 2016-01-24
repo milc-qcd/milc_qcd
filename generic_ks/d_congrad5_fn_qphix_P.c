@@ -137,7 +137,7 @@ destroy_qphix_resid_arg(QPHIX_resid_arg_t *res_arg)
  * links.
  */
 static MYSU3_MATRIX *
-CREATE_FATBACKLINKS_WITHOUT_ADJOINT(su3_matrix *t)
+create_fatbacklinks_without_adjoint(su3_matrix *t)
 {
   MYSU3_MATRIX *t_bl = NULL;
   register int i;
@@ -147,7 +147,7 @@ CREATE_FATBACKLINKS_WITHOUT_ADJOINT(su3_matrix *t)
   msg_tag *tag[4];
   char myname[] = "create_fatbacklinks_without_adjoint";
   
-  /* Allocate space for t_lbl if NULL */
+  /* Allocate space for t_lbl */
   t_bl = (MYSU3_MATRIX *)malloc(sites_on_node*4*sizeof(MYSU3_MATRIX));
   if(t_bl==NULL){
     printf("%s(%d): no room for t_lbl\n",myname,this_node);
@@ -189,7 +189,7 @@ CREATE_FATBACKLINKS_WITHOUT_ADJOINT(su3_matrix *t)
  * links.
  */
 static MYSU3_MATRIX *
-CREATE_LNGBACKLINKS_WITHOUT_ADJOINT(su3_matrix *t)
+create_lngbacklinks_without_adjoint(su3_matrix *t)
 {
   MYSU3_MATRIX *t_bl = NULL;
   register int i;
@@ -256,14 +256,14 @@ create_qphix_L_from_fn_links(fn_links_t *fn, int parity){
   if(raw_lng_links == NULL)terminate(1);
   
   //  if(get_fatbacklinks(fn) == NULL)
-  raw_fatback_links = CREATE_FATBACKLINKS_WITHOUT_ADJOINT(get_fatlinks(fn));
+  raw_fatback_links = create_fatbacklinks_without_adjoint(get_fatlinks(fn));
   // else
   // WE MUST UNDO THE ADJOINT HERE WHEN WE COPY FROM fn
   // raw_fatback_links = create_qphix_raw4_G_from_field(get_fatbacklinks(fn), parity);
   //}
   
   //if(get_lngbacklinks(fn) == NULL)
-  raw_lngback_links = CREATE_LNGBACKLINKS_WITHOUT_ADJOINT(get_lnglinks(fn));
+  raw_lngback_links = create_lngbacklinks_without_adjoint(get_lnglinks(fn));
   //else
   // WE MUST UNDO THE ADJOINT HERE WHEN WE COPY FROM fn
   //  raw_lngback_links = create_qphix_raw4_G_from_field(get_lngbacklinks(fn), parity);
