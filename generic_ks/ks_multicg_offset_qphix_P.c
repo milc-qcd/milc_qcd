@@ -192,15 +192,14 @@ KS_MULTICG_OFFSET_FIELD(
   for(i=0; i<nmass; ++i)
     /* Copy results back to su3_vector */
     unload_qphix_V_to_field( psim[i], qphix_sol[i], qic->parity);
-    
-
-    /* Free QPHIX fields  */
-    
-    QPHIX_destroy_V(qphix_src);    
-    QPHIX_destroy_V(qphix_src);    
-    for(i = 0; i < nmass; i++)
-      QPHIX_destroy_V(qphix_sol[i]);     
-
+  
+  
+  /* Free QPHIX fields  */
+  
+  QPHIX_destroy_V(qphix_src);    
+  for(i = 0; i < nmass; i++)
+    QPHIX_destroy_V(qphix_sol[i]);     
+  
 #ifdef CGTIME
   dtimec += dclock();
   if(this_node==0){
