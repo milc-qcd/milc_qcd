@@ -14,7 +14,6 @@
 /* Entry points (must be redefined to precision-specific names)
 
    KS_CONGRAD_PARITY_QPHIX
-   CREATE_BACKLINKS_WITHOUT_ADJOINT
 
 */
 
@@ -26,9 +25,9 @@
 #define MYREAL QPHIX_F_Real
 #define MYSU3_MATRIX fsu3_matrix
 #define COPY_MILC_TO_G copy_milc_to_F_G
-#define CREATE_BACKLINKS_WITHOUT_ADJOINT create_backlinks_without_adjoint_F
+#define CREATE_FATBACKLINKS_WITHOUT_ADJOINT create_fatbacklinks_without_adjoint_F
+#define CREATE_LNGBACKLINKS_WITHOUT_ADJOINT create_lngbacklinks_without_adjoint_F
 #define DESTROY_BACKLINKS destroy_backlinks_F
-#define CREATE_L_FROM_FN_LINKS create_qphix_F_L_from_fn_links
 
 #else
 
@@ -36,9 +35,9 @@
 #define MYREAL QPHIX_D_Real
 #define MYSU3_MATRIX dsu3_matrix
 #define COPY_MILC_TO_G copy_milc_to_D_G
-#define CREATE_BACKLINKS_WITHOUT_ADJOINT create_backlinks_without_adjoint_D
+#define CREATE_FATBACKLINKS_WITHOUT_ADJOINT create_fatbacklinks_without_adjoint_D
+#define CREATE_LNGBACKLINKS_WITHOUT_ADJOINT create_lngbacklinks_without_adjoint_D
 #define DESTROY_BACKLINKS destroy_backlinks_D
-#define CREATE_L_FROM_FN_LINKS create_qphix_D_L_from_fn_links
 
 #endif
 
@@ -139,12 +138,64 @@ destroy_qphix_resid_arg(QPHIX_resid_arg_t *res_arg)
 
 
 /*!
- * Copy backlinks without the adjoint.
+ * Copy fatbacklinks without the adjoint.
  * QPhiX does the adjoint in the generated code for the dslash kernels for the back
  * links.
  */
-MYSU3_MATRIX *
-CREATE_BACKLINKS_WITHOUT_ADJOINT(su3_matrix *t)
+static MYSU3_MATRIX *
+CREATE_FATBACKLINKS_WITHOUT_ADJOINT(su3_matrix *t)
+{
+  MYSU3_MATRIX *t_bl = NULL;
+  register int i;
+  register site *s;
+  int dir;
+  su3_matrix *tempmat1 = NULL;
+  msg_tag *tag[4];
+  char myname[] = "create_fatbacklinks_without_adjoint";
+  
+  /* Allocate space for t_lbl if NULL */
+  t_bl = (MYSU3_MATRIX *)malloc(sites_on_node*4*sizeof(MYSU3_MATRIX));
+  if(t_bl==NULL){
+    printf("%s(%d): no room for t_lbl\n",myname,this_node);
+    terminate(1);
+  }
+  
+  tempmat1 = (su3_matrix *)malloc(sites_on_node*sizeof(su3_matrix));
+  if(tempmat1 == NULL){
+    printf("%s: Can't malloc temporary\n",myname);
+    terminate(1);
+  }
+  
+  /* gather backwards fatlinks */
+  for( dir=XUP; dir<=TUP; dir ++){
+    FORALLFIELDSITES_OMP(i,){
+      tempmat1[i] = t[dir+4*i];
+    } END_LOOP_OMP
+    tag[dir] = start_gather_field( tempmat1
+				   , sizeof(su3_matrix)
+				   , OPP_DIR(dir)
+				   , EVENANDODD
+				   , gen_pt[dir] );
+    wait_gather( tag[dir] );
+    FORALLFIELDSITES_OMP(i,) {
+      MYSU3_MATRIX * temp_ = (t_bl + dir + 4*i);
+      COPY_MILC_TO_G(t_bl + dir + 4*i, (su3_matrix *)gen_pt[dir][i]);
+    } END_LOOP_OMP
+    cleanup_gather( tag[dir] );
+  }
+  
+  free(tempmat1); 
+  tempmat1 = NULL;
+  return t_bl;
+}
+
+/*!
+ * Copy lngbacklinks without the adjoint.
+ * QPhiX does the adjoint in the generated code for the dslash kernels for the back
+ * links.
+ */
+static MYSU3_MATRIX *
+CREATE_LNGBACKLINKS_WITHOUT_ADJOINT(su3_matrix *t)
 {
   MYSU3_MATRIX *t_bl = NULL;
   register int i;
@@ -200,7 +251,7 @@ DESTROY_BACKLINKS(MYSU3_MATRIX *t_bl){
  * Create the QPhiX fermion link structure from forward FN links
  */
 QPHIX_FermionLinksAsqtad *
-CREATE_L_FROM_FN_LINKS (fn_links_t *fn, int parity){
+create_qphix_L_from_fn_links(fn_links_t *fn, int parity){
   MYSU3_MATRIX *raw_fat_links, *raw_lng_links, *raw_fatback_links, *raw_lngback_links;
   static QPHIX_FermionLinksAsqtad *links;
   
@@ -211,14 +262,14 @@ CREATE_L_FROM_FN_LINKS (fn_links_t *fn, int parity){
   if(raw_lng_links == NULL)terminate(1);
   
   //  if(get_fatbacklinks(fn) == NULL)
-  raw_fatback_links = CREATE_BACKLINKS_WITHOUT_ADJOINT(get_fatlinks(fn));
+  raw_fatback_links = CREATE_FATBACKLINKS_WITHOUT_ADJOINT(get_fatlinks(fn));
   // else
   // WE MUST UNDO THE ADJOINT HERE WHEN WE COPY FROM fn
   // raw_fatback_links = create_qphix_raw4_G_from_field(get_fatbacklinks(fn), parity);
   //}
   
   //if(get_lngbacklinks(fn) == NULL)
-  raw_lngback_links = CREATE_BACKLINKS_WITHOUT_ADJOINT(get_lnglinks(fn));
+  raw_lngback_links = CREATE_LNGBACKLINKS_WITHOUT_ADJOINT(get_lnglinks(fn));
   //else
   // WE MUST UNDO THE ADJOINT HERE WHEN WE COPY FROM fn
   //  raw_lngback_links = create_qphix_raw4_G_from_field(get_lngbacklinks(fn), parity);
@@ -301,7 +352,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
   t_l   = -dclock(); 
 #endif     
   
-  links = CREATE_L_FROM_FN_LINKS( fn, qic->parity );
+  links = create_qphix_L_from_fn_links( fn, qic->parity );
   
 #if CG_DEBUG
   t_l   += dclock(); 
