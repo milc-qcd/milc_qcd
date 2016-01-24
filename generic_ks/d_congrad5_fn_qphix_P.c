@@ -25,9 +25,6 @@
 #define MYREAL QPHIX_F_Real
 #define MYSU3_MATRIX fsu3_matrix
 #define COPY_MILC_TO_G copy_milc_to_F_G
-#define CREATE_FATBACKLINKS_WITHOUT_ADJOINT create_fatbacklinks_without_adjoint_F
-#define CREATE_LNGBACKLINKS_WITHOUT_ADJOINT create_lngbacklinks_without_adjoint_F
-#define DESTROY_BACKLINKS destroy_backlinks_F
 
 #else
 
@@ -35,9 +32,6 @@
 #define MYREAL QPHIX_D_Real
 #define MYSU3_MATRIX dsu3_matrix
 #define COPY_MILC_TO_G copy_milc_to_D_G
-#define CREATE_FATBACKLINKS_WITHOUT_ADJOINT create_fatbacklinks_without_adjoint_D
-#define CREATE_LNGBACKLINKS_WITHOUT_ADJOINT create_lngbacklinks_without_adjoint_D
-#define DESTROY_BACKLINKS destroy_backlinks_D
 
 #endif
 
@@ -242,8 +236,8 @@ CREATE_LNGBACKLINKS_WITHOUT_ADJOINT(su3_matrix *t)
   return t_bl;
 }
 
-void
-DESTROY_BACKLINKS(MYSU3_MATRIX *t_bl){
+static void
+destroy_backlinks(MYSU3_MATRIX *t_bl){
   free(t_bl);
 }
 
@@ -279,8 +273,8 @@ create_qphix_L_from_fn_links(fn_links_t *fn, int parity){
   
   destroy_qphix_raw4_G(raw_fat_links);
   destroy_qphix_raw4_G(raw_lng_links);
-  DESTROY_BACKLINKS(raw_fatback_links);
-  DESTROY_BACKLINKS(raw_lngback_links);
+  destroy_backlinks(raw_fatback_links);
+  destroy_backlinks(raw_lngback_links);
   
   return links;
 }
