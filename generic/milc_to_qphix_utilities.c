@@ -98,6 +98,7 @@ initialize_qphix(void){
 
   fflush(stdout);
 
+  is_qphix_env_setup = true;
   return status;
 }
 
