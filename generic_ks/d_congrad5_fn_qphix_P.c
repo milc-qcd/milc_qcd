@@ -346,7 +346,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
   t_l   = -dclock(); 
 #endif     
   
-  links = create_qphix_L_from_fn_links( fn, qic->parity );
+  links = create_qphix_L_from_fn_links( fn, EVENANDODD );
   
 #if CG_DEBUG
   t_l   += dclock(); 
@@ -370,6 +370,10 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
   dtime = -dclock();
 #endif    
   
+#ifdef CG_DEBUG
+  node0_printf("Calling QPHIX_asqtad_invert\n");fflush(stdout);
+#endif
+
   iters = QPHIX_asqtad_invert( &info, links, &qphix_invert_arg, 
 			       qphix_resid_arg, (MYREAL)mass, qphix_sol, qphix_src );
   
@@ -397,6 +401,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
   
   QPHIX_destroy_V(qphix_src);    
   QPHIX_destroy_V(qphix_sol);     
+  QPHIX_asqtad_destroy_L(links);
   
 #ifdef CG_DEBUG
   ttime +=dclock();
