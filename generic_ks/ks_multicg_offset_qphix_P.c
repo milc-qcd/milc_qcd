@@ -166,7 +166,7 @@ KS_MULTICG_OFFSET_FIELD(
   links = create_qphix_L_from_fn_links( fn, EVENANDODD );
 
 #ifdef CG_DEBUG
-  node0_printf("Calling qphix_ks_multicg_offset\n");fflush(stdout);
+  node0_printf("Calling QPHIX_ks_multicg_offset\n");fflush(stdout);
 #endif
 
   num_iters = QPHIX_asqtad_invert_multi( &info, links, &qphix_invert_arg, qphix_resid_arg, 
@@ -199,6 +199,8 @@ KS_MULTICG_OFFSET_FIELD(
   QPHIX_destroy_V(qphix_src);    
   for(i = 0; i < nmass; i++)
     QPHIX_destroy_V(qphix_sol[i]);     
+
+  QPHIX_asqtad_destroy_L(links);
   
 #ifdef CGTIME
   dtimec += dclock();
