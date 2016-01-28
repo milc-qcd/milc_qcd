@@ -538,7 +538,15 @@ int readin(int prompt) {
 
       /* Get source index for this set */
       IF_OK status += get_i(stdin,prompt,"source", &param.source[i]);
-      
+
+      IF_OK {
+	int ns = param.num_base_source + param.num_modified_source;
+	if( param.source[i] >= ns){
+	  printf("Source index must be less than %d here\n",ns);
+	  status++;
+	}
+      }
+
       /* Copy the base source to the propagator source structure */
       
       IF_OK {
