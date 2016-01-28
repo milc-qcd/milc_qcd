@@ -1,0 +1,979 @@
+PB_DMDU_P: mass 0.0002 0.001 0.001 ( 0 of 0 )
+PBP: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+FACTION: mass = 0.0002 0.0003 ( 0 of 0 )
+PB_DMDMU_P: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+PB_D2MDMU2_P: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 2 0
+TR_MM_INV: mass 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+TR_MidM_MidM: mass 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+PB_DMDU_P: mass 0.0002 0.001 0.001 ( 0 of 0 )
+PBP: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+FACTION: mass = 0.0002 0.0003 ( 0 of 0 )
+PB_DMDMU_P: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+PB_D2MDMU2_P: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+TR_MM_INV: mass 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+TR_MidM_MidM: mass 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+trM_inv: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 iters= 0 4
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 iters= 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+d1_trlnM_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trlnM_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trlnM_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trlnM_dmu4: mass 0.0002 R: 0.001 Im: 0.0002 ( 0 of 0 )
+d5_trlnM_dmu5: mass 0.0002 R: 0.0005 Im: 0.0009 ( 0 of 0 )
+d6_trlnM_dmu6: mass 0.0002 R: 0.06 Im: 0.01 ( 0 of 0 )
+d1_trMi_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trMi_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trMi_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trMi_dmu4: mass 0.0002 R: 0.003 Im: 0.0003 ( 0 of 0 )
+d5_trMi_dmu5: mass 0.0002 R: 0.004 Im: 0.002 ( 0 of 0 )
+d6_trMi_dmu6: mass 0.0002 R: 0.4 Im: 0.005 ( 0 of 0 )
+d0_trdMduMi_dmu0: mass 0.0002 R: 0.001 Im: 0.0002 ( 0 of 0 )
+d1_trdMduMi_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trdMduMi_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trdMduMi_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trdMduMi_dmu4: mass 0.0002 R: 0.002 Im: 0.0005 ( 0 of 0 )
+d5_trdMduMi_dmu5: mass 0.0002 R: 0.002 Im: 0.0009 ( 0 of 0 )
+d6_trdMduMi_dmu6: mass 0.0002 R: 0.2 Im: 0.008 ( 0 of 0 )
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+trM_inv: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 4 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 4 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+d1_trlnM_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trlnM_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trlnM_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trlnM_dmu4: mass 0.0002 R: 0.0009 Im: 0.0002 ( 0 of 0 )
+d5_trlnM_dmu5: mass 0.0002 R: 0.0005 Im: 0.0007 ( 0 of 0 )
+d6_trlnM_dmu6: mass 0.0002 R: 0.05 Im: 0.004 ( 0 of 0 )
+d1_trMi_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trMi_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trMi_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trMi_dmu4: mass 0.0002 R: 0.002 Im: 0.0004 ( 0 of 0 )
+d5_trMi_dmu5: mass 0.0002 R: 0.002 Im: 0.002 ( 0 of 0 )
+d6_trMi_dmu6: mass 0.0002 R: 0.3 Im: 0.05 ( 0 of 0 )
+d0_trdMduMi_dmu0: mass 0.0002 R: 0.001 Im: 0.0002 ( 0 of 0 )
+d1_trdMduMi_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trdMduMi_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trdMduMi_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trdMduMi_dmu4: mass 0.0002 R: 0.001 Im: 0.0004 ( 0 of 0 )
+d5_trdMduMi_dmu5: mass 0.0002 R: 0.009 Im: 0.01 ( 0 of 0 )
+d6_trdMduMi_dmu6: mass 0.0002 R: 0.1 Im: 0.008 ( 0 of 0 )
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+PB_DMDU_P: mass 0.0002 0.001 0.001 ( 0 of 0 )
+PBP: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+FACTION: mass = 0.0002 0.0003 ( 0 of 0 )
+PB_DMDMU_P: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+PB_D2MDMU2_P: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+TR_MM_INV: mass 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+TR_MidM_MidM: mass 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+PB_DMDU_P: mass 0.0002 0.001 0.001 ( 0 of 0 )
+PBP: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+FACTION: mass = 0.0002 0.0003 ( 0 of 0 )
+PB_DMDMU_P: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+PB_D2MDMU2_P: mass 0.0002 0.0002 0.0002 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+TR_MM_INV: mass 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+TR_MidM_MidM: mass 0.0002 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+trM_inv: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 4 0 4
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 iters= 0 4
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 6
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+d1_trlnM_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trlnM_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trlnM_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trlnM_dmu4: mass 0.0002 R: 0.0007 Im: 0.0002 ( 0 of 0 )
+d5_trlnM_dmu5: mass 0.0002 R: 0.0002 Im: 0.0004 ( 0 of 0 )
+d6_trlnM_dmu6: mass 0.0002 R: 0.02 Im: 0.006 ( 0 of 0 )
+d1_trMi_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trMi_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trMi_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trMi_dmu4: mass 0.0002 R: 0.004 Im: 0.0003 ( 0 of 0 )
+d5_trMi_dmu5: mass 0.0002 R: 0.0005 Im: 0.002 ( 0 of 0 )
+d6_trMi_dmu6: mass 0.0002 R: 0.5 Im: 0.007 ( 0 of 0 )
+d0_trdMduMi_dmu0: mass 0.0002 R: 0.001 Im: 0.0002 ( 0 of 0 )
+d1_trdMduMi_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trdMduMi_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trdMduMi_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trdMduMi_dmu4: mass 0.0002 R: 0.002 Im: 0.0006 ( 0 of 0 )
+d5_trdMduMi_dmu5: mass 0.0002 R: 0.007 Im: 0.001 ( 0 of 0 )
+d6_trdMduMi_dmu6: mass 0.0002 R: 0.09 Im: 0.03 ( 0 of 0 )
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 iters= 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+trM_inv: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 4 0 4
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 9e-13 0.0002 rel = 0 2 0) restarts = 0 iters= 0 4
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 XXX 0 4
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0 2
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 8e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 4e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 3e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 7e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 2 0) restarts = 0 iters= 0 4
+OK converged final_rsq= 0.0002 5e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 1e-13 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 6e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 2 0) restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 2e-14 0.0002 rel = 0 2 0) restarts = 0 2 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 2 0) restarts = 0 XXX 0
+d1_trlnM_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trlnM_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trlnM_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trlnM_dmu4: mass 0.0002 R: 0.0007 Im: 0.0002 ( 0 of 0 )
+d5_trlnM_dmu5: mass 0.0002 R: 0.0005 Im: 0.0002 ( 0 of 0 )
+d6_trlnM_dmu6: mass 0.0002 R: 0.01 Im: 0.007 ( 0 of 0 )
+d1_trMi_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trMi_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trMi_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trMi_dmu4: mass 0.0002 R: 0.004 Im: 0.0002 ( 0 of 0 )
+d5_trMi_dmu5: mass 0.0002 R: 0.0007 Im: 0.002 ( 0 of 0 )
+d6_trMi_dmu6: mass 0.0002 R: 0.5 Im: 0.002 ( 0 of 0 )
+d0_trdMduMi_dmu0: mass 0.0002 R: 0.001 Im: 0.0002 ( 0 of 0 )
+d1_trdMduMi_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d2_trdMduMi_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d3_trdMduMi_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
+d4_trdMduMi_dmu4: mass 0.0002 R: 0.002 Im: 0.0002 ( 0 of 0 )
+d5_trdMduMi_dmu5: mass 0.0002 R: 0.002 Im: 0.004 ( 0 of 0 )
+d6_trdMduMi_dmu6: mass 0.0002 R: 0.2 Im: 0.03 ( 0 of 0 )
+Fixing to Coulomb gauge
+GFIX: Ended at step 0.0002 Av gf action 0.0002 delta 0.0002
+Aggregate time to gauge fix XXX
+Time to APE smear XXX sec
+END OF HEADER
+Aggregate time to compute propagators XXX
+Aggregate time to tie meson correlators XXX
+Aggregate time to tie baryon correlators XXX
+RUNNING COMPLETED

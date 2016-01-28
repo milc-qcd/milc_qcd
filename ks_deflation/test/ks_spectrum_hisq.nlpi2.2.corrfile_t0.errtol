@@ -1,0 +1,194 @@
+---
+JobID:                   203696.kaon2.fnal.gov
+date:                    XXX XXX XXX XXX XXX UTC"
+lattice_size:            6,6,6,6
+antiquark_type:          staggered
+antiquark_source_type:   even_and_odd_wall
+antiquark_source_subset: full
+antiquark_source_t0:     0
+antiquark_source_label:  q
+antiquark_sink_label:    d
+antiquark_mass:          "0.03"
+antiquark_epsilon:       0
+quark_type:              staggered
+quark_source_type:       even_and_odd_wall/FUNNYWALL1
+quark_source_subset:     full
+quark_source_t0:         0
+quark_source_label:      f1
+quark_source_ops:        [
+{ operation:             FUNNYWALL1
+}
+]
+quark_sink_label:        d
+quark_mass:              "0.03"
+quark_epsilon:           0
+...
+---
+correlator:              PION_5
+momentum:                p000
+spin_taste_sink:         pion5
+correlator_key:          PION_5_q_f1_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              PION_i5
+momentum:                p000
+spin_taste_sink:         pioni5
+correlator_key:          PION_i5_q_f1_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              PION_i
+momentum:                p000
+spin_taste_sink:         pioni
+correlator_key:          PION_i_q_f1_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              PION_s
+momentum:                p000
+spin_taste_sink:         pions
+correlator_key:          PION_s_q_f1_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              RHO_i
+momentum:                p000
+spin_taste_sink:         rhoi
+correlator_key:          RHO_i_q_f1_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              RHO_s
+momentum:                p000
+spin_taste_sink:         rhois
+correlator_key:          RHO_s_q_f1_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+JobID:                   203696.kaon2.fnal.gov
+date:                    XXX XXX XXX XXX XXX UTC"
+lattice_size:            6,6,6,6
+antiquark_type:          staggered
+antiquark_source_type:   even_and_odd_wall
+antiquark_source_subset: full
+antiquark_source_t0:     0
+antiquark_source_label:  q
+antiquark_sink_label:    d
+antiquark_mass:          "0.03"
+antiquark_epsilon:       0
+quark_type:              staggered
+quark_source_type:       even_and_odd_wall/FUNNYWALL2
+quark_source_subset:     full
+quark_source_t0:         0
+quark_source_label:      f2
+quark_source_ops:        [
+{ operation:             FUNNYWALL2
+}
+]
+quark_sink_label:        d
+quark_mass:              "0.03"
+quark_epsilon:           0
+...
+---
+correlator:              PION_05
+momentum:                p000
+spin_taste_sink:         pion05
+correlator_key:          PION_05_q_f2_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              PION_ij
+momentum:                p000
+spin_taste_sink:         pionij
+correlator_key:          PION_ij_q_f2_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              PION_i0
+momentum:                p000
+spin_taste_sink:         pioni0
+correlator_key:          PION_i0_q_f2_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              PION_0
+momentum:                p000
+spin_taste_sink:         pion0
+correlator_key:          PION_0_q_f2_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              RHO_i0
+momentum:                p000
+spin_taste_sink:         rhoi0
+correlator_key:          RHO_i0_q_f2_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+---
+correlator:              RHO_0
+momentum:                p000
+spin_taste_sink:         rho0
+correlator_key:          RHO_0_q_f2_d_d_m0.03_m0.03_p000
+...
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05
+0 2e-05 2e-05

@@ -1,0 +1,215 @@
+---
+JobID:                   203696.kaon2.fnal.gov
+date:                    "Sat Jun 11 12:39:31 2011 UTC"
+lattice_size:            6,6,6,6
+antiquark_type:          staggered
+antiquark_source_type:   even_wall
+antiquark_source_subset: full
+antiquark_source_t0:     0
+antiquark_source_label:  E
+antiquark_sink_label:    d
+antiquark_mass:          "0.05"
+quark_type:              staggered
+quark_source_type:       even_wall
+quark_source_subset:     full
+quark_source_t0:         0
+quark_source_label:      E
+quark_sink_label:        d
+quark_mass:              "0.05"
+...
+---
+correlator:              PION_PS
+momentum:                p000
+spin_taste_sink:         pion5
+correlator_key:          PION_PS_E_E_d_d_m0.05_m0.05_p000
+...
+0	4.212934e-01	0.000000e+00
+1	4.760964e+00	0.000000e+00
+2	2.940546e-01	0.000000e+00
+3	5.234278e+00	0.000000e+00
+4	3.202438e-01	0.000000e+00
+5	4.634992e+00	0.000000e+00
+---
+correlator:              PION_SC
+momentum:                p000
+spin_taste_sink:         pion05
+correlator_key:          PION_SC_E_E_d_d_m0.05_m0.05_p000
+...
+0	-1.626965e-01	0.000000e+00
+1	-4.749905e+00	0.000000e+00
+2	-2.567209e-01	0.000000e+00
+3	-5.230391e+00	0.000000e+00
+4	-2.861203e-01	0.000000e+00
+5	-4.625035e+00	0.000000e+00
+---
+JobID:                   203696.kaon2.fnal.gov
+date:                    "Sat Jun 11 12:39:31 2011 UTC"
+lattice_size:            6,6,6,6
+antiquark_type:          staggered
+antiquark_source_type:   even_and_odd_wall
+antiquark_source_subset: full
+antiquark_source_t0:     0
+antiquark_source_label:  q
+antiquark_sink_label:    d
+antiquark_mass:          "0.05"
+quark_type:              staggered
+quark_source_type:       even_and_odd_wall
+quark_source_subset:     full
+quark_source_t0:         0
+quark_source_label:      q
+quark_sink_label:        d
+quark_mass:              "0.05"
+...
+---
+correlator:              PION_PS_a
+momentum:                p000
+spin_taste_sink:         pion5
+correlator_key:          PION_PS_a_q_q_d_d_m0.05_m0.05_p000
+...
+0	8.528146e-01	0.000000e+00
+1	9.412318e+00	0.000000e+00
+2	5.960795e-01	0.000000e+00
+3	1.051574e+01	0.000000e+00
+4	6.494812e-01	0.000000e+00
+5	9.290345e+00	0.000000e+00
+---
+JobID:                   203696.kaon2.fnal.gov
+date:                    "Sat Jun 11 12:39:31 2011 UTC"
+lattice_size:            6,6,6,6
+antiquark_type:          staggered
+antiquark_source_type:   even_minus_odd_wall
+antiquark_source_subset: full
+antiquark_source_t0:     0
+antiquark_source_label:  o
+antiquark_sink_label:    d
+antiquark_mass:          "0.05"
+quark_type:              staggered
+quark_source_type:       even_minus_odd_wall
+quark_source_subset:     full
+quark_source_t0:         0
+quark_source_label:      o
+quark_sink_label:        d
+quark_mass:              "0.05"
+...
+---
+correlator:              PION_PS_b
+momentum:                p000
+spin_taste_sink:         pion5
+correlator_key:          PION_PS_b_o_o_d_d_m0.05_m0.05_p000
+...
+0	8.523480e-01	0.000000e+00
+1	9.411419e+00	0.000000e+00
+2	5.972804e-01	0.000000e+00
+3	1.052049e+01	0.000000e+00
+4	6.476477e-01	0.000000e+00
+5	9.287594e+00	0.000000e+00
+---
+JobID:                   203696.kaon2.fnal.gov
+date:                    "Sat Jun 11 12:39:31 2011 UTC"
+lattice_size:            6,6,6,6
+antiquark_type:          staggered
+antiquark_source_type:   even_and_odd_wall
+antiquark_source_subset: full
+antiquark_source_t0:     0
+antiquark_source_label:  q
+antiquark_sink_label:    d
+antiquark_mass:          "0.05"
+quark_type:              staggered
+quark_source_type:       even_minus_odd_wall
+quark_source_subset:     full
+quark_source_t0:         0
+quark_source_label:      o
+quark_sink_label:        d
+quark_mass:              "0.05"
+...
+---
+correlator:              PION_SC
+momentum:                p000
+spin_taste_sink:         pion05
+correlator_key:          PION_SC_q_o_d_d_m0.05_m0.05_p000
+...
+0	-3.364446e-01	1.401383e-03
+1	-9.389837e+00	-1.059350e-02
+2	-5.216968e-01	-9.304819e-03
+3	-1.050998e+01	-2.968456e-02
+4	-5.794274e-01	-2.771193e-03
+5	-9.268842e+00	-1.778230e-02
+---
+JobID:                   203696.kaon2.fnal.gov
+date:                    "Sat Jun 11 12:39:31 2011 UTC"
+lattice_size:            6,6,6,6
+quark0_type:             staggered
+quark0_source_type:      even_wall
+quark0_source_label:     E
+quark0_sink_type:        identity
+quark0_sink_label:       d
+quark0_mass:             "0.05"
+quark1_type:             stagered
+quark1_source_type:      even_wall
+quark1_source_label:     E
+quark1_sink_type:        identity
+quark1_sink_label:       d
+quark1_mass:             "0.05"
+quark2_type:             staggered
+quark2_source_type:      even_wall
+quark2_source_label:     E
+quark2_sink_type:        identity
+quark2_sink_label:       d
+quark2_mass:             "0.05"
+...
+---
+correlator:              NUCLEON
+baryon_type:             nucleon
+correlator_key:          NUCLEON_E_E_E_d_d_d_m0.05_m0.05_m0.05
+...
+0	2.158791e-04	2.321178e-06
+1	4.714176e-02	1.354258e-03
+2	1.216811e-05	-2.438261e-07
+3	5.724948e-02	7.407146e-04
+4	-9.934151e-06	-6.384390e-07
+5	4.646251e-02	-1.214681e-03
+---
+JobID:                   203696.kaon2.fnal.gov
+date:                    "Sat Jun 11 12:39:31 2011 UTC"
+lattice_size:            6,6,6,6
+quark0_type:             staggered
+quark0_source_type:      even_and_odd_wall
+quark0_source_label:     q
+quark0_sink_type:        identity
+quark0_sink_label:       d
+quark0_mass:             "0.05"
+quark1_type:             stagered
+quark1_source_type:      even_and_odd_wall
+quark1_source_label:     q
+quark1_sink_type:        identity
+quark1_sink_label:       d
+quark1_mass:             "0.05"
+quark2_type:             staggered
+quark2_source_type:      even_and_odd_wall
+quark2_source_label:     q
+quark2_sink_type:        identity
+quark2_sink_label:       d
+quark2_mass:             "0.05"
+...
+---
+correlator:              NUCLEON
+baryon_type:             nucleon
+correlator_key:          NUCLEON_q_q_q_d_d_d_m0.05_m0.05_m0.05
+...
+0	9.863384e-04	1.988952e-05
+1	4.694746e-02	1.230810e-03
+2	1.360852e-04	-1.538461e-05
+3	5.689083e-02	3.478230e-04
+4	-5.441510e-04	-2.005890e-04
+5	4.681621e-02	-1.251523e-03
+---
+correlator:              DELTA
+baryon_type:             delta
+correlator_key:          DELTA_q_q_q_d_d_d_m0.05_m0.05_m0.05
+...
+0	7.100252e-03	0.000000e+00
+1	1.968697e+00	0.000000e+00
+2	-8.665218e-04	0.000000e+00
+3	2.464436e+00	0.000000e+00
+4	-3.404307e-04	0.000000e+00
+5	2.008148e+00	0.000000e+00

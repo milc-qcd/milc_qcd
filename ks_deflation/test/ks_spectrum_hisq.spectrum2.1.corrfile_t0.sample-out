@@ -1,0 +1,232 @@
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Mar 13 22:15:00 2012 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        CORNER
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       C
+antiquark_sink_label:         d
+antiquark_mass:               "0.03"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            CORNER
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           C
+quark_sink_label:             d
+quark_mass:                   "0.03"
+quark_epsilon:                0
+...
+---
+correlator:                   PION_PS
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               PION_PS_C_C_d_d_m0.03_m0.03_p000
+...
+0	3.560567e+01	0.000000e+00
+1	3.243948e+01	0.000000e+00
+2	1.318096e+01	0.000000e+00
+3	2.216325e+01	0.000000e+00
+4	6.722624e+00	0.000000e+00
+5	2.135927e+01	0.000000e+00
+6	1.111621e+01	0.000000e+00
+7	3.097986e+01	0.000000e+00
+---
+correlator:                   PION_SC
+momentum:                     p000
+spin_taste_sink:              pion05
+correlator_key:               PION_SC_C_C_d_d_m0.03_m0.03_p000
+...
+0	-3.406836e+01	0.000000e+00
+1	-3.213313e+01	0.000000e+00
+2	-1.261856e+01	0.000000e+00
+3	-2.205166e+01	0.000000e+00
+4	-6.505963e+00	0.000000e+00
+5	-2.122233e+01	0.000000e+00
+6	-1.055133e+01	0.000000e+00
+7	-3.064888e+01	0.000000e+00
+---
+correlator:                   RHO_VT
+momentum:                     p000
+spin_taste_sink:              rhox
+correlator_key:               RHO_VT_C_C_d_d_m0.03_m0.03_p000
+...
+0	2.886610e+01	0.000000e+00
+1	7.110558e+01	0.000000e+00
+2	9.140167e+00	0.000000e+00
+3	4.343780e+01	0.000000e+00
+4	3.943960e+00	0.000000e+00
+5	4.339909e+01	0.000000e+00
+6	8.195343e+00	0.000000e+00
+7	6.720668e+01	0.000000e+00
+---
+correlator:                   RHO_PV
+momentum:                     p000
+spin_taste_sink:              rhox0
+correlator_key:               RHO_PV_C_C_d_d_m0.03_m0.03_p000
+...
+0	-2.542598e+01	0.000000e+00
+1	7.092357e+01	0.000000e+00
+2	-8.032337e+00	0.000000e+00
+3	4.338314e+01	0.000000e+00
+4	-3.577020e+00	0.000000e+00
+5	4.332530e+01	0.000000e+00
+6	-7.076113e+00	0.000000e+00
+7	6.700116e+01	0.000000e+00
+---
+JobID:                        203696.kaon2.fnal.gov
+date:                         "Tue Mar 13 22:15:00 2012 UTC"
+lattice_size:                 8,8,8,8
+antiquark_type:               staggered
+antiquark_source_type:        CORNER
+antiquark_source_subset:      full
+antiquark_source_t0:          0
+antiquark_source_label:       C
+antiquark_sink_label:         d
+antiquark_mass:               "0.05"
+antiquark_epsilon:            0
+quark_type:                   staggered
+quark_source_type:            CORNER
+quark_source_subset:          full
+quark_source_t0:              0
+quark_source_label:           C
+quark_sink_label:             d
+quark_mass:                   "0.05"
+quark_epsilon:                0
+...
+---
+correlator:                   PION_PS
+momentum:                     p000
+spin_taste_sink:              pion5
+correlator_key:               PION_PS_C_C_d_d_m0.05_m0.05_p000
+...
+0	3.594593e+01	0.000000e+00
+1	3.185055e+01	0.000000e+00
+2	1.303499e+01	0.000000e+00
+3	2.118968e+01	0.000000e+00
+4	6.416226e+00	0.000000e+00
+5	2.042395e+01	0.000000e+00
+6	1.103444e+01	0.000000e+00
+7	3.042087e+01	0.000000e+00
+---
+correlator:                   PION_SC
+momentum:                     p000
+spin_taste_sink:              pion05
+correlator_key:               PION_SC_C_C_d_d_m0.05_m0.05_p000
+...
+0	-3.186052e+01	0.000000e+00
+1	-3.105595e+01	0.000000e+00
+2	-1.156367e+01	0.000000e+00
+3	-2.090574e+01	0.000000e+00
+4	-5.861740e+00	0.000000e+00
+5	-2.007728e+01	0.000000e+00
+6	-9.561541e+00	0.000000e+00
+7	-2.956718e+01	0.000000e+00
+---
+correlator:                   RHO_VT
+momentum:                     p000
+spin_taste_sink:              rhox
+correlator_key:               RHO_VT_C_C_d_d_m0.05_m0.05_p000
+...
+0	3.114038e+01	0.000000e+00
+1	6.993930e+01	0.000000e+00
+2	9.719427e+00	0.000000e+00
+3	4.174757e+01	0.000000e+00
+4	3.998737e+00	0.000000e+00
+5	4.164579e+01	0.000000e+00
+6	8.760683e+00	0.000000e+00
+7	6.608625e+01	0.000000e+00
+---
+correlator:                   RHO_PV
+momentum:                     p000
+spin_taste_sink:              rhox0
+correlator_key:               RHO_PV_C_C_d_d_m0.05_m0.05_p000
+...
+0	-2.194232e+01	0.000000e+00
+1	6.946221e+01	0.000000e+00
+2	-6.799405e+00	0.000000e+00
+3	4.160666e+01	0.000000e+00
+4	-3.052286e+00	0.000000e+00
+5	4.145697e+01	0.000000e+00
+6	-5.818956e+00	0.000000e+00
+7	6.555086e+01	0.000000e+00
+---
+JobID:                       203696.kaon2.fnal.gov
+date:                        "Tue Mar 13 22:15:00 2012 UTC"
+lattice_size:                8,8,8,8
+quark0_type:                 staggered
+quark0_source_type:          CORNER
+quark0_source_label:         C
+quark0_sink_type:            identity
+quark0_sink_label:           d
+quark0_mass:                 "0.03"
+quark0_epsilon:              0
+quark1_type:                 stagered
+quark1_source_type:          CORNER
+quark1_source_label:         C
+quark1_sink_type:            identity
+quark1_sink_label:           d
+quark1_mass:                 "0.03"
+quark1_epsilon:              0
+quark2_type:                 staggered
+quark2_source_type:          CORNER
+quark2_source_label:         C
+quark2_sink_type:            identity
+quark2_sink_label:           d
+quark2_mass:                 "0.03"
+quark2_epsilon:              0
+...
+---
+correlator:                  NUCLEON
+baryon_type:                 nucleon
+correlator_key:              NUCLEON_C_C_C_d_d_d_m0.03_m0.03_m0.03
+...
+0	1.097686e-02	-6.208858e-05
+1	2.938014e+00	1.219076e-02
+2	1.997892e-03	2.331359e-04
+3	1.435911e+00	-3.520541e-02
+4	3.764446e-05	2.069068e-04
+5	1.349015e+00	2.514386e-02
+6	-1.779164e-03	3.075451e-04
+7	2.662940e+00	-1.243581e-03
+---
+JobID:                       203696.kaon2.fnal.gov
+date:                        "Tue Mar 13 22:15:00 2012 UTC"
+lattice_size:                8,8,8,8
+quark0_type:                 staggered
+quark0_source_type:          CORNER
+quark0_source_label:         C
+quark0_sink_type:            identity
+quark0_sink_label:           d
+quark0_mass:                 "0.05"
+quark0_epsilon:              0
+quark1_type:                 stagered
+quark1_source_type:          CORNER
+quark1_source_label:         C
+quark1_sink_type:            identity
+quark1_sink_label:           d
+quark1_mass:                 "0.05"
+quark1_epsilon:              0
+quark2_type:                 staggered
+quark2_source_type:          CORNER
+quark2_source_label:         C
+quark2_sink_type:            identity
+quark2_sink_label:           d
+quark2_mass:                 "0.05"
+quark2_epsilon:              0
+...
+---
+correlator:                  NUCLEON
+baryon_type:                 nucleon
+correlator_key:              NUCLEON_C_C_C_d_d_d_m0.05_m0.05_m0.05
+...
+0	4.796219e-02	-2.615378e-04
+1	2.855106e+00	1.356318e-02
+2	8.552222e-03	9.708947e-04
+3	1.348938e+00	-3.274994e-02
+4	1.571253e-04	8.504992e-04
+5	1.265439e+00	2.227937e-02
+6	-7.601431e-03	1.280592e-03
+7	2.587082e+00	-3.959457e-03

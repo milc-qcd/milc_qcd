@@ -1,0 +1,284 @@
+SU3 staggered valence fermions
+MIMD version 7 $Name:  $
+Machine = QMP (portable), with 1 nodes
+start: Wed Sep 23 10:29:24 2009
+
+type 0 for no prompts  or 1 for prompts
+nx 6
+ny 6
+nz 6
+nt 6
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+ON EACH NODE 6 x 6 x 6 x 6
+Mallocing 0.9 MBytes per node for lattice
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 0.8696
+coulomb_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+# Description of base sources
+number_of_base_sources 3
+# base source 0
+even_wall
+t0 0
+source_label E
+# base source 1
+evenandodd_wall
+t0 0
+source_label q
+# base source 2
+evenminusodd_wall
+t0 0
+source_label o
+# Description of completed sources
+number_of_sources 3
+# source 0
+base_source 0
+identity
+source_label I
+# source 1
+base_source 1
+identity
+source_label I
+# source 2
+base_source 2
+identity
+source_label I
+# Description of propagators
+number_of_sets 3
+# Parameters for set 0
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+source 0
+number_of_propagators 1
+# propagator 0
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+# Parameters for set 1
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+source 1
+number_of_propagators 1
+# propagator 1
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+source 2
+number_of_propagators 1
+# propagator 2
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+number_of_quarks 3
+# mass 0
+propagator 0
+point
+origin 0 0 0 
+sink_label d
+forget_ksprop 
+# mass 0
+propagator 1
+point
+origin 0 0 0 
+sink_label d
+forget_ksprop 
+# mass 0
+propagator 2
+point
+origin 0 0 0 
+sink_label d
+forget_ksprop 
+# Description of mesons
+number_of_mesons 4
+# pair 0 mass 0 even wall / even wall
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 2
+correlator PION_PS p000   1 / 16.000000  pion5  0  0  0  E  E  E
+correlator PION_SC p000   1 / 16.000000 pion05  0  0  0  E  E  E
+# pair 1 mass 0 evenandodd wall / evenandodd wall
+pair 1 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator PION_PS_a p000   1 / 16.000000  pion5  0  0  0  E  E  E
+# pair 2 mass 0 evenminusodd wall / evenminusodd wall
+pair 2 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator PION_PS_b p000   1 / 16.000000  pion5  0  0  0  E  E  E
+# pair 3 mass 0 evenandodd wall / evenminusodd wall
+pair 1 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator PION_SC p000   1 / 16.000000 pion05  0  0  0  E  E  E
+# Description of baryons
+number_of_baryons 2
+# triplet 0 mass 0 even wall
+triplet 0 0 0 
+spectrum_request baryon
+save_corr_fnal ks_spectrum.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator NUCLEON   1 / 64.000000  nucleon
+# triplet 1 mass 0 evenandodd wall
+triplet 1 1 1 
+spectrum_request baryon
+save_corr_fnal ks_spectrum.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 2
+correlator NUCLEON   1 / 64.000000  nucleon
+correlator DELTA   1 / 64.000000    delta
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
+Time stamp Sat Aug 10 10:46:56 2002
+Checksums c1d08f5 68164bef OK
+Time to reload gauge configuration = 3.405094e-03
+CHECK PLAQ: 1.9827179876982366e+00 1.9811715330156219e+00
+CHECK NERSC LINKTR: 9.0159201231658637e-01 CKSUM: ba83dea8
+Reunitarized for double precision. Max deviation 2.72e-07 changed to 4.44e-16
+Time to check unitarity = 6.320953e-03
+MAKING PATH TABLES
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.250000e-01     8
+                    1      -6.250000e-02     48
+                    2      1.562500e-02     192
+                    3      -2.604167e-03     384
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.000000e+00     8
+                    1      -4.166667e-02     8
+                    2      -6.250000e-02     48
+                    3      1.562500e-02     192
+                    4      -2.604167e-03     384
+                    5      -1.250000e-01     48
+"1-link + Naik"
+path coefficients: npath  path_coeff  multiplicity
+                    0      1.250000e-01     8
+                    1      -4.166667e-02     8
+Time to APE smear 1.143932e-03 sec
+Fixing to Coulomb gauge
+GFIX: Ended at step 1. Av gf action 9.24589996e-01, delta 1.102e-06
+Time to gauge fix 2.014804e-02
+END OF HEADER
+Mass= 0.05 source even_wall residue= 1e-08 rel= 0
+LLTIME(HISQ-Fat): time = 2.219570e+00 (Asqtad opt) mflops = 0.000000e+00
+LLTIME(HISQ-Fat): time = 2.365704e+00 (Asqtad opt) mflops = 0.000000e+00
+LLTIME(long): time =  1.324606e-02 (HISQ-Naik) mflops = 0.000000e+00
+CONGRAD5: time = 8.790016e-02 (fn D) masses = 1 iters = 41 mflops = 7.175463e+02
+CONGRAD5: time = 7.099867e-03 (fn D) masses = 1 iters = 3 mflops = 6.500201e+02
+ OK converged size_r= 2.1e-17 rel = 0 restarts = 1 iters= 2
+CONGRAD5: time = 8.734679e-02 (fn D) masses = 1 iters = 41 mflops = 7.220921e+02
+CONGRAD5: time = 7.014990e-03 (fn D) masses = 1 iters = 3 mflops = 6.578849e+02
+ OK converged size_r= 2e-17 rel = 0 restarts = 1 iters= 2
+CONGRAD5: time = 8.736587e-02 (fn D) masses = 1 iters = 41 mflops = 7.219345e+02
+CONGRAD5: time = 7.009983e-03 (fn D) masses = 1 iters = 3 mflops = 6.583548e+02
+ OK converged size_r= 2.1e-17 rel = 0 restarts = 1 iters= 2
+Mass= 0.05 source even_and_odd_wall residue= 1e-08 rel= 0
+CONGRAD5: time = 8.704901e-02 (fn D) masses = 1 iters = 41 mflops = 7.245623e+02
+CONGRAD5: time = 1.976013e-02 (fn D) masses = 1 iters = 9 mflops = 7.006617e+02
+ OK converged size_r= 4.1e-17 rel = 0 restarts = 1 iters= 8
+CONGRAD5: time = 8.746004e-02 (fn D) masses = 1 iters = 41 mflops = 7.211571e+02
+CONGRAD5: time = 2.740598e-02 (fn D) masses = 1 iters = 9 mflops = 5.051879e+02
+ OK converged size_r= 4.1e-17 rel = 0 restarts = 1 iters= 8
+CONGRAD5: time = 8.807898e-02 (fn D) masses = 1 iters = 41 mflops = 7.160895e+02
+CONGRAD5: time = 1.973486e-02 (fn D) masses = 1 iters = 9 mflops = 7.015590e+02
+ OK converged size_r= 4.9e-17 rel = 0 restarts = 1 iters= 8
+Mass= 0.05 source even_minus_odd_wall residue= 1e-08 rel= 0
+CONGRAD5: time = 8.879304e-02 (fn D) masses = 1 iters = 41 mflops = 7.103308e+02
+CONGRAD5: time = 1.999307e-02 (fn D) masses = 1 iters = 9 mflops = 6.924985e+02
+ OK converged size_r= 4.2e-17 rel = 0 restarts = 1 iters= 8
+CONGRAD5: time = 8.851099e-02 (fn D) masses = 1 iters = 41 mflops = 7.125944e+02
+CONGRAD5: time = 1.994801e-02 (fn D) masses = 1 iters = 9 mflops = 6.940628e+02
+ OK converged size_r= 4.1e-17 rel = 0 restarts = 1 iters= 8
+CONGRAD5: time = 9.801602e-02 (fn D) masses = 1 iters = 41 mflops = 6.434910e+02
+CONGRAD5: time = 2.257299e-02 (fn D) masses = 1 iters = 9 mflops = 6.133510e+02
+ OK converged size_r= 4.8e-17 rel = 0 restarts = 1 iters= 8
+Time to compute propagators 5.605150e+00
+Time to generate sink operator 1.220703e-04
+Time to generate sink operator 1.330376e-04
+Time to generate sink operator 1.409054e-04
+Mesons for quarks 0 and 0
+Time for diagonal mesons 1.487017e-03
+Time for printing correlator 3.499985e-04
+Mesons for quarks 1 and 1
+Time for diagonal mesons 9.579659e-04
+Time for printing correlator 5.102158e-05
+Mesons for quarks 2 and 2
+Time for diagonal mesons 9.360313e-04
+Time for printing correlator 4.696846e-05
+Mesons for quarks 1 and 2
+Time for offdiag mesons 9.641647e-04
+Time for printing correlator 4.982948e-05
+Time to tie meson correlators 4.959822e-03
+Baryons for quarks 0, 0, and 0
+Time for baryons 7.009506e-05
+0 1.496178e-04 6.521476e-07
+1 4.178964e-02 3.512502e-04
+2 7.670393e-06 8.116513e-08
+3 5.205710e-02 4.905297e-04
+4 -7.427331e-06 -1.390693e-07
+5 4.307441e-02 2.680265e-04
+Time for printing correlator 7.796288e-05
+Baryons for quarks 1, 1, and 1
+Time for baryons 6.499290e-04
+0 3.490517e-04 2.361027e-05
+1 4.181395e-02 3.145527e-04
+2 7.978985e-05 -8.003148e-06
+3 5.210625e-02 4.211387e-04
+4 -1.284592e-04 -7.325089e-05
+5 4.311929e-02 2.317712e-04
+0 6.573640e-03 0.000000e+00
+1 1.891436e+00 0.000000e+00
+2 3.211297e-04 0.000000e+00
+3 2.299485e+00 0.000000e+00
+4 -3.597251e-04 0.000000e+00
+5 1.910995e+00 0.000000e+00
+Time for printing correlator 8.010864e-05
+Time to tie baryon correlators 9.369850e-04
+RUNNING COMPLETED
+Time = 5.631810e+00 seconds
+total_iters = 486
+destroy quark[0]
+destroy quark[1]
+destroy quark[2]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Wed Sep 23 10:29:30 2009
+

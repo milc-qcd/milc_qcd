@@ -1,0 +1,58 @@
+# Executable  precision  add-macro input-case  pattern1 pattern2
+#    extra-output filename pattern1 pattern2
+
+exec ks_spectrum_asqtad   1      -         fpi        WARMUPS RUNNING
+     extra-output      ks_spectrum_asqtad.fpi.1.corrfile_t0 --- EOF
+exec ks_spectrum_asqtad   1      -         nd         WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.nd.1.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad   1      -         nl         WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.nl.1.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad   1      -         nlpi2      WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.nlpi2.1.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad   1      -         spectrum2  WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.spectrum2.1.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad   1      -         periodic  WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.periodic.1.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad_mu_eos   1      -         -  PB_DMDU_P RUNNING
+
+exec ks_spectrum_asqtad   2      -         fpi        WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.fpi.2.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad   2      -         nd         WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.nd.2.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad   2      -         nl         WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.nl.2.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad   2      -         nlpi2      WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.nlpi2.2.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad   2      -         spectrum2  WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.spectrum2.2.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad   2      -         periodic  WARMUPS RUNNING     
+     extra-output      ks_spectrum_asqtad.periodic.2.corrfile_t0  --- EOF
+exec ks_spectrum_hisq_mu_eos     1      -         -   PB_DMDEPS_P RUNNING
+
+exec ks_spectrum_hisq     1      -         fpi        WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.fpi.1.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     1      -         nd         WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.nd.1.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     1      -         nl         WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.nl.1.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     1      -         nlpi2      WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.nlpi2.1.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     1      -         spectrum2  WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.spectrum2.1.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     1      -         periodic  WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.periodic.1.corrfile_t0  --- EOF
+exec ks_spectrum_asqtad_mu_eos   2      -         -   PB_DMDU_P RUNNING
+
+exec ks_spectrum_hisq     2      -         fpi        WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.fpi.2.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     2      -         nd         WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.nd.2.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     2      -         nl         WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.nl.2.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     2      -         nlpi2      WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.nlpi2.2.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     2      -         spectrum2  WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.spectrum2.2.corrfile_t0  --- EOF
+exec ks_spectrum_hisq     2      -         periodic  WARMUPS RUNNING     
+     extra-output      ks_spectrum_hisq.periodic.2.corrfile_t0  --- EOF
+exec ks_spectrum_hisq_mu_eos     2      -         -    PB_DMDEPS_P RUNNING

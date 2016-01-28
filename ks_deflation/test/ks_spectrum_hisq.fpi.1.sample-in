@@ -1,0 +1,381 @@
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+
+######################################################################
+# source time 0
+######################################################################
+
+# Gauge field description
+
+reload_serial ../../binary_samples/lat.sample.l8888
+u0 0.8696
+coulomb_gauge_fix
+forget
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0
+
+# Chiral condensate and related measurements
+
+number_of_pbp_masses 0
+
+# Description of base sources
+
+number_of_base_sources 2
+
+# base source 0
+
+random_color_wall
+subset full
+t0 0
+ncolor 3
+momentum 0 0 0
+source_label r
+forget_source
+
+# base source 1
+
+evenandodd_wall
+subset full
+t0 0
+source_label q
+forget_source
+
+# Description of completed sources
+
+number_of_modified_sources 0
+
+
+# Description of propagators
+
+number_of_sets 2
+
+# Parameters for set 0
+
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 1
+
+source 0
+
+number_of_propagators 2
+
+# propagator 0
+
+mass 0.005
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+
+# propagator 1
+
+mass 0.007
+naik_term_epsilon -0.1
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+
+# Parameters for set 1
+
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 1
+
+source 1
+
+number_of_propagators 2
+
+# propagator 2
+
+mass 0.005
+naik_term_epsilon 0
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+
+# propagator 3
+
+mass 0.007
+naik_term_epsilon -0.1
+error_for_propagator 1e-6
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+
+number_of_quarks 8
+
+
+# mass 0 PP
+
+propagator 0
+
+identity
+op_label d
+forget_ksprop
+
+
+# mass 1 PP
+
+propagator 1
+
+identity
+op_label d
+forget_ksprop
+
+
+# mass 0 WP
+
+propagator 2
+
+identity
+op_label d
+forget_ksprop
+
+
+# mass 1 WP
+
+propagator 3
+
+identity
+op_label d
+forget_ksprop
+
+
+# mass 0 PW
+
+propagator 0
+
+evenandodd_wall
+op_label EO
+forget_ksprop
+
+
+# mass 1 PW
+
+propagator 1
+
+evenandodd_wall
+op_label EO
+forget_ksprop
+
+
+# mass 0 WW
+
+propagator 2
+
+evenandodd_wall
+op_label EO
+forget_ksprop
+
+
+# mass 1 WW
+
+propagator 3
+
+evenandodd_wall
+op_label EO
+forget_ksprop
+
+# Description of mesons
+
+number_of_mesons 12
+
+
+# pair 0 (masses 0 0 PP)
+
+pair 0 0
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 1/[3*(vol3)^2]
+
+correlator POINT_KAON_5 p000  1 * 7.14449e-06 pion5  0 0 0 E E E
+
+# pair 1 (masses 0 0 PW)
+
+pair 4 4
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 1/[3*(vol3)^3]
+
+correlator WALL_KAON_5 p000  1 * 3.30763e-08 pion5  0 0 0 E E E
+
+# pair 2 (masses 0 0 WP)
+
+pair 2 2
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 4/[3*(vol3)^2]
+
+correlator POINT_KAON_5 p000  1 * 2.8578e-05 pion5  0 0 0 E E E
+
+# pair 3 (masses 0 0 WW)
+
+pair 6 6
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 4/[3*(vol3)^3]
+
+correlator WALL_KAON_5 p000  1 * 1.32305e-07 pion5  0 0 0 E E E
+
+
+# pair 4 (masses 0 1 PP)
+
+pair 0 1
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 1/[3*(vol3)^2]
+
+correlator POINT_KAON_5 p000  1 * 7.14449e-06 pion5  0 0 0 E E E
+
+# pair 5 (masses 0 1 PW)
+
+pair 4 5
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 1/[3*(vol3)^3]
+
+correlator WALL_KAON_5 p000  1 * 3.30763e-08 pion5  0 0 0 E E E
+
+# pair 6 (masses 0 1 WP)
+
+pair 2 3
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 4/[3*(vol3)^2]
+
+correlator POINT_KAON_5 p000  1 * 2.8578e-05 pion5  0 0 0 E E E
+
+# pair 7 (masses 0 1 WW)
+
+pair 6 7
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 4/[3*(vol3)^3]
+
+correlator WALL_KAON_5 p000  1 * 1.32305e-07 pion5  0 0 0 E E E
+
+
+# pair 8 (masses 1 1 PP)
+
+pair 1 1
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 1/[3*(vol3)^2]
+
+correlator POINT_KAON_5 p000  1 * 7.14449e-06 pion5  0 0 0 E E E
+
+# pair 9 (masses 1 1 PW)
+
+pair 5 5
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 1/[3*(vol3)^3]
+
+correlator WALL_KAON_5 p000  1 * 3.30763e-08 pion5  0 0 0 E E E
+
+# pair 10 (masses 1 1 WP)
+
+pair 3 3
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 4/[3*(vol3)^2]
+
+correlator POINT_KAON_5 p000  1 * 2.8578e-05 pion5  0 0 0 E E E
+
+# pair 11 (masses 1 1 WW)
+
+pair 7 7
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+# Normalization is 4/[3*(vol3)^3]
+
+correlator WALL_KAON_5 p000  1 * 1.32305e-07 pion5  0 0 0 E E E
+
+
+# Description of baryons
+
+number_of_baryons 0
+

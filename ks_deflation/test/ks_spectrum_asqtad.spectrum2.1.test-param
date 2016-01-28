@@ -1,0 +1,21 @@
+# Parameter file to be sourced by build_spectrum2_input.sh
+nx=6
+ny=6
+nz=6
+nt=6
+iseed=5682304
+jobid=203696.kaon2.fnal.gov
+inlat=../../binary_samples/lat.sample.l6666
+u0=0.8696
+source_start=0
+source_inc=0
+n_sources=1
+nmasses=2
+mass=( 0.03 0.05 )
+err=1e-6
+naik_term_epsilon=( 0 0 )
+error_for_propagator=( ${err} ${err} )
+max_cg_iterations=300
+corrfile=ks_spectrum_asqtad.spectrum2.1.corrfile
+action=asqtad
+precision=1

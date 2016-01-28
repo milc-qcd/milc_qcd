@@ -1,0 +1,250 @@
+prompt 0
+nx 6
+ny 6
+nz 6
+nt 6
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+
+######################################################################
+# source time 0
+######################################################################
+
+# Gauge field description
+
+reload_serial ../../binary_samples/lat.sample.l6666
+u0 0.8696
+coulomb_gauge_fix
+forget
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0
+
+# Chiral condensate and related measurements
+
+number_of_pbp_masses 0
+
+# Description of base sources
+
+number_of_base_sources 3
+
+# base source 0
+
+even_wall
+subset full
+t0 0
+source_label E
+forget_source
+
+# base source 1
+
+evenandodd_wall
+subset full
+t0 0
+source_label q
+forget_source
+
+# base source 2
+
+evenminusodd_wall
+subset full
+t0 0
+source_label o
+forget_source
+
+# Description of modified sources
+
+number_of_modified_sources 0
+
+
+# Description of propagators
+
+number_of_sets 3
+
+# Parameters for set 0
+
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 2
+
+source 0
+
+number_of_propagators 1
+
+# propagator 0
+
+mass 0.05
+
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+
+# Parameters for set 1
+
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 2
+
+source 1
+
+number_of_propagators 1
+
+# propagator 1
+
+mass 0.05
+
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 2
+
+source 2
+
+number_of_propagators 1
+
+# propagator 2
+
+mass 0.05
+
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+
+number_of_quarks 3
+
+
+# mass 0
+
+propagator 0
+
+identity
+op_label d
+forget_ksprop
+
+
+# mass 0
+
+propagator 1
+
+identity
+op_label d
+forget_ksprop
+
+
+# mass 0
+
+propagator 2
+
+identity
+op_label d
+forget_ksprop
+
+# Description of mesons
+
+number_of_mesons 4
+
+
+# pair 0 mass 0 even wall / even wall
+
+pair 0 0
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_asqtad.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 2
+
+correlator PION_PS p000  1 / 16 pion5  0 0 0 E E E
+correlator PION_SC p000  1 / 16 pion05 0 0 0 E E E           
+
+
+# pair 1 mass 0 evenandodd wall / evenandodd wall
+
+pair 1 1
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_asqtad.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_PS_a p000  1 / 16 pion5  0 0 0 E E E
+
+
+# pair 2 mass 0 evenminusodd wall / evenminusodd wall
+
+pair 2 2
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_asqtad.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_PS_b p000  1 / 16 pion5  0 0 0 E E E
+
+
+# pair 3 mass 0 evenandodd wall / evenminusodd wall
+
+pair 1 2
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_asqtad.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator PION_SC p000  1 / 16 pion05  0 0 0 E E E
+
+# Description of baryons
+
+number_of_baryons 2
+
+
+# triplet 0 mass 0 even wall
+
+triplet 0 0 0
+spectrum_request baryon
+
+save_corr_fnal ks_spectrum_asqtad.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator NUCLEON  1 / 64 nucleon
+
+
+# triplet 1 mass 0 evenandodd wall
+
+triplet 1 1 1
+spectrum_request baryon
+
+save_corr_fnal ks_spectrum_asqtad.nl.2.corrfile_t0.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 2
+
+correlator NUCLEON  1 / 64 nucleon
+correlator DELTA    1 / 64 delta
+

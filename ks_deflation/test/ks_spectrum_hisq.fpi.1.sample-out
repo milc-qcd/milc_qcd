@@ -1,0 +1,407 @@
+SU3 staggered valence fermions
+MIMD version 7.7.5
+Machine = QMP (portable), with 1 nodes
+Host(0) = aquila.physics.utah.edu
+Username = detar
+start: Tue Mar 13 15:49:32 2012
+
+Options selected...
+Generic single precision
+C_GLOBAL_INLINE
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 8 x 8 x 8 x 8
+Mallocing 1.7 MBytes per node for lattice
+Aggregate time to setup 1.010802e-01
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l8888
+u0 0.8696
+coulomb_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0 
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+# Description of base sources
+number_of_base_sources 2
+# base source 0
+random_color_wall
+subset full
+t0 0
+ncolor 3
+momentum 0 0 0 
+source_label r
+forget_source 
+# base source 1
+evenandodd_wall
+subset full
+t0 0
+source_label q
+forget_source 
+# Description of completed sources
+number_of_modified_sources 0
+# Description of propagators
+number_of_sets 2
+# Parameters for set 0
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0 
+time_bc antiperiodic
+precision 1
+source 0
+number_of_propagators 2
+# propagator 0
+mass 0.005
+naik_term_epsilon 0
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+# propagator 1
+mass 0.007
+naik_term_epsilon -0.1
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+# Parameters for set 1
+max_cg_iterations 300
+max_cg_restarts 5
+check yes
+momentum_twist 0 0 0 
+time_bc antiperiodic
+precision 1
+source 1
+number_of_propagators 2
+# propagator 2
+mass 0.005
+naik_term_epsilon 0
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+# propagator 3
+mass 0.007
+naik_term_epsilon -0.1
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+fresh_ksprop 
+forget_ksprop 
+number_of_quarks 8
+# mass 0 PP
+propagator 0
+identity
+op_label d
+forget_ksprop 
+# mass 1 PP
+propagator 1
+identity
+op_label d
+forget_ksprop 
+# mass 0 WP
+propagator 2
+identity
+op_label d
+forget_ksprop 
+# mass 1 WP
+propagator 3
+identity
+op_label d
+forget_ksprop 
+# mass 0 PW
+propagator 0
+evenandodd_wall
+op_label EO
+forget_ksprop 
+# mass 1 PW
+propagator 1
+evenandodd_wall
+op_label EO
+forget_ksprop 
+# mass 0 WW
+propagator 2
+evenandodd_wall
+op_label EO
+forget_ksprop 
+# mass 1 WW
+propagator 3
+evenandodd_wall
+op_label EO
+forget_ksprop 
+# Description of mesons
+number_of_mesons 12
+# pair 0 (masses 0 0 PP)
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/[3*(vol3)^2]
+correlator POINT_KAON_5 p000   1 * 7.14449e-06  pion5  0  0  0  E  E  E
+# pair 1 (masses 0 0 PW)
+pair 4 4 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/[3*(vol3)^3]
+correlator WALL_KAON_5 p000   1 * 3.30763e-08  pion5  0  0  0  E  E  E
+# pair 2 (masses 0 0 WP)
+pair 2 2 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 4/[3*(vol3)^2]
+correlator POINT_KAON_5 p000   1 * 2.8578e-05  pion5  0  0  0  E  E  E
+# pair 3 (masses 0 0 WW)
+pair 6 6 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 4/[3*(vol3)^3]
+correlator WALL_KAON_5 p000   1 * 1.32305e-07  pion5  0  0  0  E  E  E
+# pair 4 (masses 0 1 PP)
+pair 0 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/[3*(vol3)^2]
+correlator POINT_KAON_5 p000   1 * 7.14449e-06  pion5  0  0  0  E  E  E
+# pair 5 (masses 0 1 PW)
+pair 4 5 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/[3*(vol3)^3]
+correlator WALL_KAON_5 p000   1 * 3.30763e-08  pion5  0  0  0  E  E  E
+# pair 6 (masses 0 1 WP)
+pair 2 3 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 4/[3*(vol3)^2]
+correlator POINT_KAON_5 p000   1 * 2.8578e-05  pion5  0  0  0  E  E  E
+# pair 7 (masses 0 1 WW)
+pair 6 7 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 4/[3*(vol3)^3]
+correlator WALL_KAON_5 p000   1 * 1.32305e-07  pion5  0  0  0  E  E  E
+# pair 8 (masses 1 1 PP)
+pair 1 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/[3*(vol3)^2]
+correlator POINT_KAON_5 p000   1 * 7.14449e-06  pion5  0  0  0  E  E  E
+# pair 9 (masses 1 1 PW)
+pair 5 5 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 1/[3*(vol3)^3]
+correlator WALL_KAON_5 p000   1 * 3.30763e-08  pion5  0  0  0  E  E  E
+# pair 10 (masses 1 1 WP)
+pair 3 3 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 4/[3*(vol3)^2]
+correlator POINT_KAON_5 p000   1 * 2.8578e-05  pion5  0  0  0  E  E  E
+# pair 11 (masses 1 1 WW)
+pair 7 7 
+spectrum_request meson
+save_corr_fnal ks_spectrum_hisq.fpi.1.corrfile_t0.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+# Normalization is 4/[3*(vol3)^3]
+correlator WALL_KAON_5 p000   1 * 1.32305e-07  pion5  0  0  0  E  E  E
+# Description of baryons
+number_of_baryons 0
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l8888
+Time stamp Tue Mar 13 15:47:22 2012
+Checksums 4f9d000e 8d72f72e OK
+Time to reload gauge configuration = 2.205706e-02
+CHECK PLAQ: 1.779002e+00 1.782359e+00
+CHECK NERSC LINKTR: -6.456386e-04 CKSUM: 4a3bbf43
+Unitarity checked.  Max deviation 2.98e-07
+Time to check unitarity = 1.804590e-02
+ndim = 4
+numsites = 4096
+len = 8 8 8 8
+nsquares = 1 1 1 1
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+Time to APE smear 1.992941e-03 sec
+Aggregate time to readin 1.898104e+00
+Fixing to Coulomb gauge
+GFIX: Ended at step 85. Av gf action 8.77263784e-01, delta 1.937e-06
+Aggregate time to gauge fix 3.230418e+00
+Time to APE smear 3.439188e-03 sec
+END OF HEADER
+Mass= 0.005 source random_color_wall residue= 1e-06 rel= 0
+Mass= 0.007 source random_color_wall residue= 1e-06 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+ OK converged final_rsq= 7.6e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 78
+ OK converged final_rsq= 5.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 2
+ OK converged final_rsq= 5.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 54
+ OK converged final_rsq= 9.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 77
+ OK converged final_rsq= 5.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 2
+ OK converged final_rsq= 5.3e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 54
+solve_ksprop: color = 1
+ OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 78
+ OK converged final_rsq= 6.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 2
+ OK converged final_rsq= 5.3e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 54
+ OK converged final_rsq= 7.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 77
+ OK converged final_rsq= 5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 2
+ OK converged final_rsq= 5.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 53
+solve_ksprop: color = 2
+ OK converged final_rsq= 6.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 78
+ OK converged final_rsq= 5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 2
+ OK converged final_rsq= 5.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 54
+ OK converged final_rsq= 7.7e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 78
+ OK converged final_rsq= 5.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 2
+ OK converged final_rsq= 5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 54
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Mass= 0.005 source even_and_odd_wall residue= 1e-06 rel= 0
+Mass= 0.007 source even_and_odd_wall residue= 1e-06 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+ OK converged final_rsq= 7.2e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 87
+ OK converged final_rsq= 2.1e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 59
+ OK converged final_rsq= 1.7e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 131
+ OK converged final_rsq= 6.9e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 87
+ OK converged final_rsq= 2.2e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 63
+ OK converged final_rsq= 2e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 134
+solve_ksprop: color = 1
+ OK converged final_rsq= 8.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 86
+ OK converged final_rsq= 2.1e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 51
+ OK converged final_rsq= 1.5e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 122
+ OK converged final_rsq= 1e-12 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 86
+ OK converged final_rsq= 1.8e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 58
+ OK converged final_rsq= 1.6e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 125
+solve_ksprop: color = 2
+ OK converged final_rsq= 6.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 87
+ OK converged final_rsq= 2.2e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 60
+ OK converged final_rsq= 1.8e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 133
+ OK converged final_rsq= 6.3e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 0 iters= 87
+ OK converged final_rsq= 2e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 54
+ OK converged final_rsq= 1.8e-12 (cf 1e-12) rel = 1 (cf 0) restarts = 5 iters= 129
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Aggregate time to compute propagators 2.666372e+01
+Aggregate time to generate sink operator 4.589558e-04
+Aggregate time to generate sink operator 4.670620e-04
+Aggregate time to generate sink operator 6.389618e-04
+Aggregate time to generate sink operator 6.899834e-04
+Aggregate time to generate sink operator 1.441002e-03
+Aggregate time to generate sink operator 1.343012e-03
+Aggregate time to generate sink operator 1.339912e-03
+Aggregate time to generate sink operator 1.364946e-03
+Mesons for quarks 0 and 0
+Time for diagonal mesons 2.842903e-03
+Time for printing correlator 2.911091e-04
+Mesons for quarks 4 and 4
+Time for diagonal mesons 3.062010e-03
+Time for printing correlator 7.104874e-05
+Mesons for quarks 2 and 2
+Time for diagonal mesons 2.989054e-03
+Time for printing correlator 5.984306e-05
+Mesons for quarks 6 and 6
+Time for diagonal mesons 3.293991e-03
+Time for printing correlator 7.987022e-05
+Mesons for quarks 0 and 1
+Time for offdiag mesons 3.342867e-03
+Time for printing correlator 7.486343e-05
+Mesons for quarks 4 and 5
+Time for offdiag mesons 3.355980e-03
+Time for printing correlator 7.700920e-05
+Mesons for quarks 2 and 3
+Time for offdiag mesons 3.335953e-03
+Time for printing correlator 8.988380e-05
+Mesons for quarks 6 and 7
+Time for offdiag mesons 3.446817e-03
+Time for printing correlator 7.414818e-05
+Mesons for quarks 1 and 1
+Time for diagonal mesons 3.350019e-03
+Time for printing correlator 5.912781e-05
+Mesons for quarks 5 and 5
+Time for diagonal mesons 3.309965e-03
+Time for printing correlator 8.201599e-05
+Mesons for quarks 3 and 3
+Time for diagonal mesons 3.467083e-03
+Time for printing correlator 5.698204e-05
+Mesons for quarks 7 and 7
+Time for diagonal mesons 3.294945e-03
+Time for printing correlator 5.793571e-05
+Aggregate time to tie meson correlators 4.054999e-02
+Aggregate time to tie baryon correlators 1.192093e-06
+RUNNING COMPLETED
+Time = 3.195373e+01 seconds
+total_iters = 2272
+destroy quark[0]
+destroy quark[1]
+destroy quark[2]
+destroy quark[3]
+destroy quark[4]
+destroy quark[5]
+destroy quark[6]
+destroy quark[7]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Tue Mar 13 15:50:04 2012
+
