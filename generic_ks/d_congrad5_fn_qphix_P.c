@@ -124,6 +124,20 @@ create_qphix_resid_arg( quark_invert_control *qic )
   return res_arg;
 }
 
+/* Collect inversion statistics */
+
+static void 
+get_qphix_resid_arg( quark_invert_control *qic, 
+		     QPHIX_resid_arg_t* qphix_resid_arg, int iters )
+{
+  qic->final_rsq     = qphix_resid_arg->final_rsq;
+  qic->final_relrsq  = 0.;                          /* Not supported at the moment */
+  qic->size_r        = qphix_resid_arg->size_r;
+  qic->size_relr     = qphix_resid_arg->size_relr;
+  qic->final_iters   = iters;
+  qic->final_restart = qphix_resid_arg->final_restart;
+}
+
 static void
 destroy_qphix_resid_arg(QPHIX_resid_arg_t *res_arg)
 {
@@ -381,11 +395,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
   dtime += dclock();
 #endif
   
-  /* Unpack the results */
-  qic->final_rsq    = qphix_resid_arg->final_rsq;
-  qic->final_relrsq = 0.; /* Not supported at the moment */
-  qic->size_r = qphix_resid_arg->size_r;
-  qic->size_relr = qphix_resid_arg->size_relr;
+  get_qphix_resid_arg(qic, qphix_resid_arg, iters);
   
   /* Free the structure */
   destroy_qphix_resid_arg(qphix_resid_arg);

@@ -86,6 +86,24 @@ create_qphix_resid_arg( quark_invert_control *qic, int nmass)
   return res_arg;
 }
 
+/* Collect inversion statistics */
+
+static void 
+get_qphix_resid_arg( quark_invert_control *qic, 
+		     QPHIX_resid_arg_t **qphix_resid_arg, int nmass, int num_iters )
+{
+  /* For now we don't support separate residuals for each mass */
+  for(int i=0; i<nmass; ++i){
+    qic[i].final_rsq     = qphix_resid_arg[i]->final_rsq;
+    qic[i].final_relrsq  = 0.;                            /* Not supported at the moment */
+    qic[i].final_iters   = num_iters;
+    qic[i].size_r        = qphix_resid_arg[i]->size_r;
+    qic[i].size_relr     = qphix_resid_arg[i]->size_relr;
+    qic[i].final_iters   = qphix_resid_arg[i]->final_iter;
+    qic[i].final_restart = qphix_resid_arg[i]->final_restart;
+  }
+}
+
 static void
 destroy_qphix_resid_arg(QPHIX_resid_arg_t **res_arg, int nmass)
 {
@@ -172,14 +190,7 @@ KS_MULTICG_OFFSET_FIELD(
   num_iters = QPHIX_asqtad_invert_multi( &info, links, &qphix_invert_arg, qphix_resid_arg, 
 					 mass, nmass, qphix_sol, qphix_src );
 
-  /* For now we don't support separate residuals for each mass */
-  for(i=0; i<nmass; ++i){
-    qic[i].final_rsq = qphix_resid_arg[i]->final_rsq;
-    qic[i].final_relrsq = 0.; /* Not supported at the moment */
-    qic[i].final_iters = num_iters;
-    qic[i].size_r = qphix_resid_arg[i]->size_r;
-    qic[i].size_relr = qphix_resid_arg[i]->size_relr;
-  }
+  get_qphix_resid_arg( qic, qphix_resid_arg, nmass, num_iters);
 
   /* Free the structure */
   destroy_qphix_resid_arg(qphix_resid_arg, nmass);
