@@ -293,17 +293,16 @@ endif
 
 WANTQPHIX = true
 
-QPHIX_HOME = ${HOME}/QPhiX/mbench
-INCQPHIX = -I${QPHIX_HOME}
-LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc
-
-QPHIX_HEADERS = ${QPHIX_HOME}
-
-HAVEQPHIX=${WANTQPHIX}
-
 ifeq ($(strip ${WANTQPHIX}),true)
-  HAVE_QPHIX = true
+
   CPHI = -DHAVE_QPHIX
+
+  QPHIX_HOME = ${HOME}/QPhiX/mbench
+  INCQPHIX = -I${QPHIX_HOME}
+  LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc
+  QPHIX_LIBRARIES = ${QPHIX_HOME}
+  QPHIX_HEADERS = ${QPHIX_HOME}
+
 endif
 
 #----------------------------------------------------------------------
