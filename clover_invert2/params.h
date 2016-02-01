@@ -11,7 +11,7 @@
 #define MAX_PROP 50
 #define MAX_QK 300
 #define MAX_COMBO 8
-#define MAX_PAIR 500
+#define MAX_PAIR 600
 #define MAX_QKPAIR_LABEL 300
 #define MAX_MESON 50
 #define MAX_SPECTRUM_REQUEST 512
