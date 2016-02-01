@@ -99,6 +99,7 @@ G_KS_ALL = \
   ks_action_paths_hisq.o \
   ks_action_paths_hypisq.o \
   ks_baryon.o \
+  ks_eigcg_fn_gpu.o \
   ks_invert.o \
   ks_meson_mom.o \
   ks_multicg.o \
@@ -354,6 +355,8 @@ ks_action_paths_hisq.o: ../generic_ks/ks_action_paths_hisq.c
 ks_action_paths_hypisq.o: ../generic_ks/ks_action_paths_hypisq.c
 	${CC} -c ${CFLAGS} $<
 ks_baryon.o: ../generic_ks/ks_baryon.c
+	${CC} -c ${CFLAGS} $<
+ks_eigcg_fn_gpu.o: ../generic_ks/ks_eigcg_fn_gpu.c
 	${CC} -c ${CFLAGS} $<
 ks_invert.o: ../generic_ks/ks_invert.c
 	${CC} -c ${CFLAGS} $<

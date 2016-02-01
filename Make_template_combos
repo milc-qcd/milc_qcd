@@ -264,6 +264,19 @@ else
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
 endif
 
+
+######################################################################
+# Staggered deflated inverters
+#######################################################################
+
+  EIGCG_FN_MILC_GPU = ks_eigcg_fn_gpu.o
+
+ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
+  EIGCG_FN_MILC = ${EIGCG_FN_MILC_GPU}
+else
+  EIGCG_FN_MILC = #not supported
+endif
+
 ######################################################################
 # Staggered fermion force routines
 ######################################################################
@@ -368,6 +381,7 @@ ifeq ($(strip ${HAVEQOP}),true)
   FLINKS_HISQ   = ${FLINKS_HISQ_QOP}
   DSLASH_FN     = ${DSLASH_FN_QOP}
   CONGRAD_FN    = ${CONGRAD_FN_QOP}
+  EIGCG_FN      = 
   MULTI_INV_FN  = ${MULTI_INV_FN_QOP}
   GAUGE_FORCE   = ${GAUGE_FORCE_QOP}
   ASQ_FORCE     = ${ASQ_FORCE_QOP}
@@ -380,6 +394,7 @@ else
   FLINKS_HYPISQ = ${FLINKS_HYPISQ_MILC}
   DSLASH_FN     = ${DSLASH_FN_MILC}
   CONGRAD_FN    = ${CONGRAD_FN_MILC}
+  EIGCG_FN       = ${EIGCG_FN_MILC}  
   MULTI_INV_FN  = ${MULTI_INV_FN_MILC}
   GAUGE_FORCE   = ${GAUGE_FORCE_MILC}
   ASQ_FORCE     = ${ASQ_FORCE_MILC}
@@ -409,6 +424,7 @@ FN_OBJECTS = \
   ${KS_LINKS_OBJECTS} \
   ${FLINKS_FN} \
   ${CONGRAD_FN} \
+  ${EIGCG_FN} \
   ${DSLASH_FN} \
   ${MULTI_INV_FN}
 
@@ -416,6 +432,7 @@ HISQ_OBJECTS = \
   ${KS_LINKS_OBJECTS} \
   ${FLINKS_HISQ} \
   ${CONGRAD_FN} \
+  ${EIGCG_FN} \
   ${DSLASH_FN} \
   ${MULTI_INV_FN}
 
@@ -423,6 +440,7 @@ HYPISQ_OBJECTS = \
   ${KS_LINKS_OBJECTS} \
   ${FLINKS_HYPISQ} \
   ${CONGRAD_FN} \
+  ${EIGCG_FN} \
   ${DSLASH_FN} \
   ${MULTI_INV_FN}
 

@@ -67,6 +67,17 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 int ks_congrad_parity_gpu( su3_vector *t_src, su3_vector *t_dest, 
 			   quark_invert_control *qic, Real mass,
 			   imp_ferm_links_t *fn);
+
+int ks_eigcg_parity_gpu(int curr_rhs_idx, int last_rhs_flag, su3_vector *t_src, su3_vector *t_dest, su3_vector **ritz, Real *ritzVals, 
+                          quark_invert_control *qic, Real mass, int m, int nev, int deflation_grid, Real restart_tol,
+                          imp_ferm_links_t *fn);
+
+int ks_eigcg_field( int curr_rhs, int tot_rhs_num, su3_vector *src, su3_vector *dest, su3_vector **ritzVectors, Real *ritzVals,
+                      quark_invert_control *qic, Real mass, int m, int nev, int dgrid, Real restart_tol,  imp_ferm_links_t *fn);
+
+int ks_eigcg_uml_field( int curr_rhs, int tot_rhs_num, su3_vector *src, su3_vector *dst, su3_vector **ritzVectors, Real *ritzVals,
+                      quark_invert_control *qic, Real mass, int m, int nev, int dgrid, Real restart_tol,  imp_ferm_links_t *fn);
+
 #ifdef USE_CG_GPU
 #define ks_congrad_parity ks_congrad_parity_gpu
 #else
@@ -311,6 +322,7 @@ void ks_meson_cont_mom(
   int num_corr_mom[],       /* number of momentum/parity values (gt k)*/
   int **corr_table,         /* c = corr_table[k] correlator index */
   int p_index[],            /* p = p_index[c] is the momentum index */
+//  imp_ferm_links_t *fn,         /* Needed for some spin-taste ops */
   imp_ferm_links_t *fn_src1,/* Needed for some spin-taste ops */
   imp_ferm_links_t *fn_src2,/* Needed for some spin-taste ops */
   int spin_taste_snk[],     /* spin_taste_snk[c] gives the s/t assignment */
