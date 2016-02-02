@@ -176,7 +176,6 @@ KS_MULTICG_OFFSET_FIELD(
 
   
   for(i = 0; i < nmass; i++){
-    clear_v_field(psim[i]);
     qphix_sol[i] = 
       create_qphix_V_from_field( psim[i], qic[0].parity);
   }
