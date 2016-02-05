@@ -182,7 +182,6 @@ static int ks_multicg_hybrid_field(	/* Return value is number of iterations take
   /* Do multicg in single precision.  (The GPU routine does this automatically for HALF_MIXED) */
   int prec_save = qic[0].prec;
   qic[0].prec = 1;
-
   Real resid_save = qic[0].resid;
   Real relresid_save =  qic[0].relresid;
 
@@ -766,12 +765,21 @@ int mat_invert_multi(
   //  if(num_masses == 1)
   //    return mat_invert_uml_field(src, dst[0], qic+0, ksp->mass, fn_multi[0] );
 
-  /* Use preconditioned single-mass inverter if there are 2 or less masses */
+  /* Use preconditioned single-mass inverter if there are 2 or fewer masses 
+     or for any number of masses if we are doing deflation */
   /* EO preconditioning doesn't work with multimass solvers as the residual depends on m.
      With multimass the cost will be (even+odd) * cost of lightest mass, but two individual precond
      inversions will be mass1-precond + mass2-precond which should be faster than
      twice the slowest of them.
   */
+
+#if EIGMODE == DEFLATION || EIGMODE == EIGCG
+
+  for(i = 0; i < num_masses; i++){
+    tot_iters += mat_invert_uml_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
+		  
+#else
+
   if (num_masses <= 2)
   {
     for(i = 0; i < num_masses; i++){
@@ -803,5 +811,8 @@ int mat_invert_multi(
       ks_dirac_adj_op_inplace( dst[i], ksp[i].mass, EVENANDODD, fn_multi[i]);
     }
   }
+
+#endif
+
   return tot_iters;
 }

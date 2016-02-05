@@ -8,6 +8,8 @@
 /* The chiral condensate is computed on a supplied background field */
 
 /* Modifications ... */
+
+// CD 2/5/16 Merged Hiroshi Ohno's support for deflated and eigcg solves */
    
 //  $Log: control.c,v $
 //  Revision 1.3  2012/05/08 20:40:16  detar
@@ -31,8 +33,17 @@
 int main(int argc, char *argv[])
 {
   int prompt;
-  int k;
+  int i,k;
   double starttime, endtime;
+#ifdef PRTIME
+  double dtime;
+#endif
+
+#if EIGMODE == EIGCG || EIGMODE == DEFLATION
+  int Nvecs_curr;
+  double *resid = NULL;
+  imp_ferm_links_t **fn;
+#endif
   
   initialize_machine(&argc,&argv);
 
@@ -40,26 +51,78 @@ int main(int argc, char *argv[])
   if(remap_stdio_from_args(argc, argv) == 1)terminate(1);
   
   g_sync();
+
+    
+  starttime=dclock();
+
   /* set up */
+  STARTTIME;
   prompt = setup();
+  ENDTIME("setup");
+
   /* loop over input sets */
 
   while( readin(prompt) == 0){
     
     if(prompt == 2)continue;
 
-    starttime=dclock();
-    
     total_iters=0;
 #ifdef HISQ_SVD_COUNTER
     hisq_svd_counter = 0;
 #endif
+
+
+#if EIGMODE == DEFLATION
+    /**************************************************************/
+    /* Compute Dirac eigenpairs           */
+
+    STARTTIME;
+
+    fn = get_fm_links(fn_links);
+    Nvecs_curr = Nvecs_tot = param.Nvecs;
+
+    /* compute eigenpairs if requested */
+    if(param.ks_eigen_startflag == FRESH){
+      int total_R_iters;
+      total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
+			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters);
+      node0_printf("total Rayleigh iters = %d\n", total_R_iters);
+    }
+
+    /* Calculate and print the residues and norms of the eigenvectors */
+    resid = (double *)malloc(Nvecs_curr*sizeof(double));
+    check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
+
+    /* print eigenvalues of iDslash */
+    node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
+    node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
+    for(i=0;i<Nvecs_curr;i++){ 
+      if ( eigVal[i] > 0.0 ){
+	node0_printf("eigenval(%i): %10g\n", i, 0.5*sqrt(eigVal[i]));
+      }
+      else{
+	eigVal[i] = 0.0;
+	node0_printf("eigenval(%i): %10g\n", i, 0.0);
+      }
+    }
+
+    /* re-initialize the site random number generator */
+    int x, y, z, t;
+    for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
+      if(node_number(x,y,z,t)==mynode()){
+        i=node_index(x,y,z,t);
+        initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
+      }
+    }
+
+    ENDTIME("Dirac eigenpair calculation");
+
+#endif
     
     /**************************************************************/
-    /* Compute chiral condensate and related quantities           */
+    /* Compute chiral condensate and other observables            */
 
-    /* Make valid fermion links if not already done */
-
+    STARTTIME;
 
     for(k = 0; k < param.num_set; k++){
       int num_pbp_masses = param.num_pbp_masses[k];
@@ -69,7 +132,7 @@ int main(int argc, char *argv[])
       if(num_pbp_masses == 1){
 #ifdef CURRENT_DISC
 	f_meas_current( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass,
-			param.ksp_pbp[i0].naik_term_epsilon_index, fn_links,
+n			param.ksp_pbp[i0].naik_term_epsilon_index, fn_links,
 			param.pbp_filenames[i0] );
 #else
 	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
@@ -95,23 +158,61 @@ int main(int argc, char *argv[])
 #endif
       }
     }
-
-    node0_printf("RUNNING COMPLETED\n");
-    endtime=dclock();
-
-    node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+ 
     node0_printf("total_iters = %d\n",total_iters);
 #ifdef HISQ_SVD_COUNTER
-      node0_printf("hisq_svd_counter = %d\n",hisq_svd_counter);
+    node0_printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
-    fflush(stdout);
+
+    ENDTIME("observable calculation");
 
     /* save lattice if requested */
     if( param.saveflag != FORGET ){
+      STARTTIME;
       rephase( OFF );
       save_lattice( param.saveflag, param.savefile, param.stringLFN );
       rephase( ON );
+      ENDTIME("save lattice");
     }
+
+#if EIGMODE == EIGCG
+
+    STARTTIME;
+
+    active_parity = EVEN;
+    Nvecs_curr = param.eigcgp.Nvecs_curr;
+
+    fn = get_fm_links(fn_links);
+    resid = (double *)malloc(Nvecs_curr*sizeof(double));
+
+    if(param.ks_eigen_startflag == FRESH)
+      calc_eigenpairs(eigVal, eigVec, &param.eigcgp, active_parity);
+
+    check_eigres( resid, eigVec, eigVal, Nvecs_curr, active_parity, fn[0] );
+
+    if(param.eigcgp.H != NULL) free(param.eigcgp.H);
+
+    ENDTIME("compute eigenvectors");
+#endif
+
+#if EIGMODE == EIGCG || EIGMODE == DEFLATION
+
+    STARTTIME;
+
+    /* save eigenvectors if requested */
+    int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
+			       Nvecs_curr, eigVal, eigVec, resid, 1);
+    if(status != 0){
+      node0_printf("ERROR writing eigenvectors\n");
+    }
+
+    /* Clean up eigen storage */
+    for(i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
+    free(eigVal); free(eigVec); free(resid);
+
+    ENDTIME("save eigenvectors (if requested)");
+
+#endif
 
     destroy_ape_links_4D(ape_links);
 
@@ -123,7 +224,14 @@ int main(int argc, char *argv[])
     destroy_fermion_links(fn_links);
 #endif
     fn_links = NULL;
+
   } /* readin(prompt) */
+
+  node0_printf("RUNNING COMPLETED\n");
+  
+  endtime=dclock();
+  node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+  fflush(stdout);
 
 #ifdef HAVE_QUDA
   qudaFinalize();

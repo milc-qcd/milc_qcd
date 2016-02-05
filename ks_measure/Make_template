@@ -64,6 +64,37 @@ OBJECTS = \
   ${ADD_OBJECTS} \
   ${EXTRA_OBJECTS}
 
+DEFLATE_OBJECTS = \
+ gammas.o \
+ io_helpers_ks_eigen.o \
+ io_ks_eigen.o \
+ io_scidac_ks_eigen.o \
+ jacobi.o \
+ spin_taste_ops.o
+
+EIGCG_OBJECTS = \
+ gammas.o \
+ eigen_stuff_helpers.o \
+ inc_eigcg.o \
+ io_helpers_ks_eigen.o \
+ io_ks_eigen.o \
+ io_scidac_ks_eigen.o \
+ spin_taste_ops.o
+
+# Selection of eigensolver program
+ifeq ($(strip ${HAVEQOP}),true)
+# Interface to access QOP (not supported)
+  DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_Ritz.o
+# DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
+else
+  ifeq ($(strip ${HAVEQDP}),true)
+    DEFLATE_OBJECTS += eigen_stuff_qdp.o
+  else
+    DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_Ritz.o
+#   DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
+  endif
+endif
+
 # Libraries for complex numbers and su3 functions
 P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
@@ -170,12 +201,28 @@ ks_measure_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS}
 
+ks_measure_deflate_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DEIGMODE=DEFLATION" \
+	"EXTRA_OBJECTS += ${DEFLATE_OBJECTS}"
+
+ks_measure_eigcg_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DEIGMODE=EIGCG -DEIGEN_QIO" \
+	"EXTRA_OBJECTS += ${EIGCG_OBJECTS}"
+
 ks_measure_current_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC" \
 	"EXTRA_OBJECTS += f_meas_current.o spin_taste_ops.o \
 	gammas.o"
 
+ks_measure_current_deflate_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
+	-DEIGMODE=DEFLATION -DEIGEN_QIO" \
+	"EXTRA_OBJECTS += f_meas_current.o spin_taste_ops.o \
+	gammas.o ${DEFLATE_OBJECTS}"
 
 ks_measure_hisq_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
