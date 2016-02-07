@@ -146,11 +146,12 @@ void measure_chirality(su3_vector *src, double *chirality, int parity){
   su3_vector *tempvec, *ttt;
   int r0[4] = {0,0,0,0};
   complex tmp ;
+  char gam5Xgam1[] = "G1-G5";  /* Note, spin_taste_op inteprets this as G5-G1 */
 
   ttt = create_v_field();
   tempvec = create_v_field();
   copy_v_field(tempvec, src);
-  spin_taste_op(spin_taste_index("G5-G1"), r0, ttt, tempvec);
+  spin_taste_op(spin_taste_index(gam5Xgam1), r0, ttt, tempvec);
 
   cc = 0.0 ; 
   FORSOMEPARITY(i,s,parity){
