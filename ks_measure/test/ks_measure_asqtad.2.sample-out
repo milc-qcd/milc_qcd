@@ -106,6 +106,7 @@ TR_MM_INV: mass 5.000000e-02,  -4.532314e-01 ( 2 of 2 )
  OK converged final_rsq= 2.2e-24 (cf 0) rel = 1.5e-11 (cf 1.6e-11) restarts = 1 iters= 6
 PBP: mass 7.000000e-02     8.158549e-02  4.590987e-02  -1.383703e-02  -1.383703e-02 ( 1 of 1 )
 FACTION: mass = 7.000000e-02,  1.467903e+00 ( 1 of 1 )
+Time to calculate observables 1.493407e+00
 RUNNING COMPLETED
 Time = 1.484169e+00 seconds
 total_iters = 620

@@ -803,6 +803,7 @@ d3_trdMdeMi_dmu3: mass 7.000000e-02,  R: 1.725624752e-02  Im: 3.484576614e-03 ( 
 d4_trdMdeMi_dmu4: mass 7.000000e-02,  R: -3.247360344e+00  Im: -1.714405288e-01 ( 1 of 1 )
 d5_trdMdeMi_dmu5: mass 7.000000e-02,  R: 1.153115578e-01  Im: -1.624763468e-01 ( 1 of 1 )
 d6_trdMdeMi_dmu6: mass 7.000000e-02,  R: -1.038482988e+02  Im: 1.938717124e+01 ( 1 of 1 )
+Time to calculate observables 1.493407e+00
 RUNNING COMPLETED
 Time = 4.791203e+01 seconds
 total_iters = 17141

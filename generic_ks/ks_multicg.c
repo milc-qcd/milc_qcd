@@ -775,9 +775,9 @@ int mat_invert_multi(
 
 #if EIGMODE == DEFLATION || EIGMODE == EIGCG
 
-  for(i = 0; i < num_masses; i++){
+  for(i = 0; i < num_masses; i++)
     tot_iters += mat_invert_uml_field(src, dst[i], &qic[i], ksp[i].mass, fn_multi[i] );
-		  
+  
 #else
 
   if (num_masses <= 2)

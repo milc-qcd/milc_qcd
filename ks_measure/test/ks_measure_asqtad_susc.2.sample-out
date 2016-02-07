@@ -127,6 +127,7 @@ PB_D2MDMU2_P: mass 7.000000e-02  6.998902e-01  6.797169e-01  1.492416e-02  2.074
  OK converged final_rsq= 1.1e-30 (cf 0) rel = 6.2e-15 (cf 1e-14) restarts = 2 iters= 98
  OK converged final_rsq= 1.6e-30 (cf 0) rel = 7.3e-15 (cf 1e-14) restarts = 2 iters= 9
 TR_MidM_MidM: mass 7.000000e-02,  3.699413e-01 ( 1 of 1 )
+Time to calculate observables XXX
 RUNNING COMPLETED
 Time = 3.577057e+00 seconds
 total_iters = 1501

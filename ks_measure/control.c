@@ -53,17 +53,19 @@ int main(int argc, char *argv[])
   g_sync();
 
     
-  starttime=dclock();
-
   /* set up */
   STARTTIME;
   prompt = setup();
-  ENDTIME("setup");
+  ENDTIME("set up");
 
   /* loop over input sets */
 
-  while( readin(prompt) == 0){
+  while( 1 ){
+
+    starttime = dclock();
+    if(readin(prompt) != 0)break;
     
+    /* Skip calculations if just proofreading input parameters */
     if(prompt == 2)continue;
 
     total_iters=0;
@@ -78,6 +80,7 @@ int main(int argc, char *argv[])
 
     STARTTIME;
 
+    active_parity = EVEN;
     fn = get_fm_links(fn_links);
     Nvecs_curr = Nvecs_tot = param.Nvecs;
 
@@ -87,8 +90,23 @@ int main(int argc, char *argv[])
       total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
 			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters);
       node0_printf("total Rayleigh iters = %d\n", total_R_iters);
-    }
 
+#if 0 /* If needed for debugging */
+      /* (The Kalkreuter routine uses the random number generator to
+	 initialize the eigenvector search, so, if you want to compare
+	 results with and without deflation, you need to
+	 re-initialize here.) */
+      /* re-initialize the site random number generator */
+      int x, y, z, t;
+      for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
+	      if(node_number(x,y,z,t)==mynode()){
+		i=node_index(x,y,z,t);
+		initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
+	      }
+	    }
+#endif
+    }
+    
     /* Calculate and print the residues and norms of the eigenvectors */
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
     check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
@@ -106,16 +124,7 @@ int main(int argc, char *argv[])
       }
     }
 
-    /* re-initialize the site random number generator */
-    int x, y, z, t;
-    for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
-      if(node_number(x,y,z,t)==mynode()){
-        i=node_index(x,y,z,t);
-        initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
-      }
-    }
-
-    ENDTIME("Dirac eigenpair calculation");
+    ENDTIME("calculate Dirac eigenpairs");
 
 #endif
     
@@ -159,12 +168,11 @@ n			param.ksp_pbp[i0].naik_term_epsilon_index, fn_links,
       }
     }
  
-    node0_printf("total_iters = %d\n",total_iters);
 #ifdef HISQ_SVD_COUNTER
     node0_printf("hisq_svd_counter = %d\n",hisq_svd_counter);
 #endif
 
-    ENDTIME("observable calculation");
+    ENDTIME("calculate observables");
 
     /* save lattice if requested */
     if( param.saveflag != FORGET ){
@@ -214,6 +222,13 @@ n			param.ksp_pbp[i0].naik_term_epsilon_index, fn_links,
 
 #endif
 
+    node0_printf("RUNNING COMPLETED\n");
+    endtime = dclock();
+
+    node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
+    node0_printf("total_iters = %d\n",total_iters);
+    fflush(stdout);
+
     destroy_ape_links_4D(ape_links);
 
     /* Destroy fermion links (created in readin() */
@@ -226,12 +241,6 @@ n			param.ksp_pbp[i0].naik_term_epsilon_index, fn_links,
     fn_links = NULL;
 
   } /* readin(prompt) */
-
-  node0_printf("RUNNING COMPLETED\n");
-  
-  endtime=dclock();
-  node0_printf("Time = %e seconds\n",(double)(endtime-starttime));
-  fflush(stdout);
 
 #ifdef HAVE_QUDA
   qudaFinalize();
