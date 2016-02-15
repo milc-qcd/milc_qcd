@@ -1,7 +1,7 @@
 U(1) [Coulomb gauge-fixed] gauge field generation ... 
 stored as A(mu,x), convert to U(mu,x) to couple to fermions.
 Machine = QMP (portable), with 1 nodes!
-Start: Mon Jun  4 20:32:57 2012
+Start: Sun Feb 14 17:01:52 2016
 
 type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 4
@@ -22,21 +22,21 @@ Starting U(1) gauge config generation run ...
 
 electron_charge 1
 fresh_u1 
-save_u1_ascii ./u1_g_4_8.1.ascii
+save_u1_ascii ./u1_g_4_8.1.ascii.test-out
 
 CHECK U(1) PLAQ: 1.000000e+00 1.000000e+00
 
-Saved U(1) configuration to ascii file ./u1_g_4_8.1.ascii ...
-Time stamp Mon Jun  4 20:32:57 2012
-Saved lattice to ascii file ./u1_g_4_8.1.ascii!
-Time to save = 2.761126e-03
+Saved U(1) configuration to ascii file ./u1_g_4_8.1.ascii.test-out ...
+Time stamp Sun Feb 14 17:01:52 2016
+Saved lattice to ascii file ./u1_g_4_8.1.ascii.test-out!
+Time to save = 2.840996e-03
 
-CHECK U(1) PLAQ: 7.820602e-01 7.645227e-01
+CHECK U(1) PLAQ: 7.804998e-01 7.656085e-01
 
 
-u1-ploop = ( 5.255150e-01, 0.000000e+00 )  u1-(s,t)plaq = ( 7.820602e-01, 7.645227e-01 )
+u1-ploop = ( 3.259392e-01, 0.000000e+00 )  u1-(s,t)plaq = ( 7.804998e-01, 7.656085e-01 )
 U(1) running completed!
-Time = 3.489900e-02 seconds
+Time = 6.968975e-03 seconds
 
 
 get_f(0): EOF on input.

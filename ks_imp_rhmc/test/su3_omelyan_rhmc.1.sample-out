@@ -1,27 +1,47 @@
 SU3 with improved KS action
 Microcanonical simulation with refreshing
-MIMD version 7 $Name:  $
-Machine = Scalar processor, with 1 nodes
 Rational function hybrid Monte Carlo algorithm
+MIMD version 7.7.13
+Machine = QMP (portable), with 1 nodes
+Host(0) = kepler.physics.utah.edu
+Username = detar
+start: Mon Feb 15 09:20:11 2016
+
 Options selected...
 Generic single precision
 C_GLOBAL_INLINE
 DBLSTORE_FN
 D_FN_GATHER13
+FEWSUMS
 KS_MULTICG=HYBRID
 KS_MULTIFF=FNMAT
 VECLENGTH=4
 INT_ALG=INT_OMELYAN
-type 0 for no prompts  or 1 for prompts
-nflavors1 2
-nflavors2 1
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+# (Lines beginning with "#" are comments.)
+# Always 0 for redirected stdin
+# Lattice dimensions
 nx 6
 ny 6
 nz 6
 nt 6
+# Random number seed
 iseed 3546789
+# Number of pseudofermions -- 
+# must agree with the number in the rational function file
 n_pseudo 1
+# specification of the rational function file
+# A utility for generating it is provided with the code
 load_rhmc_params rationals.sample.su3_omelyan_rhmc
+# gauge coupling
+beta 6.5
+# number of dynamical masses and the list of masses
+n_dyn_masses 2
+dyn_mass 0.01 0.05 
+# degeneracies of flavors
+dyn_flavors 2 1 
+# tadpole factor
+u0 0.862
 n_pseudo 1
 Loading rational function parameters for phi field 0
 # Approximation bounds are [1.000000e-15,9.000000e+01]
@@ -30,6 +50,7 @@ Loading rational function parameters for phi field 0
 # Degree of the approximation is (8,8)
 # Approximating the function (x+4*0.010000^2)^(2/4) (x+4*0.050000^2)^(1/4) (x+4*1.000000^2)^(0/4) (x+4*1.000000^2)^(0/4)
 # Converged at 1074 iterations, error = 4.741443e-05
+naik_term_epsilon 0
 # Rational function for MD
 y_MD -2 -1 0 0 
 z_MD 4 4 4 4 
@@ -133,45 +154,70 @@ pole_FA 11.1773
 pole_FA 42.9109
 pole_FA 252.155
 Maximum rational func order is 12
+Naik term correction structure of multi_x:
+n_naiks 1
+n_pseudo_naik[0]=1
+n_orders_naik[0]=8
+n_order_naik_total 8
 LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
 ON EACH NODE 6 x 6 x 6 x 6
-Mallocing 1.6 MBytes per node for lattice
+Mallocing 1.5 MBytes per node for lattice
 Made lattice
 Made nn gathers
 Made 3nn gathers
 Finished setup
 
 
+# The lines from here to the end can be repeated.  
+# Here we show only one instance
+# warmup sweeps (we usually set it to zero)
 warms 0
+# trajectories
 trajecs 2
+# interval between measurements
 traj_between_meas 1
-beta 6.5
-mass1 0.01
-mass2 0.05
-u0 0.862
+# molecular dynamics integration time step
 microcanonical_time_step 0.01
+# number of steps
 steps_per_trajectory 12
-cgresid_md_fa_gr 2e-06 2e-07 2e-07 
+# conjugate gradient (CG) tolerance for 
+#  md = molecular dynamics evolution
+#  fa = fermion action calculation
+#  gr = pseudofermion Gaussian random source setup
+# precision is measured as |A x - b|/|b| where || is the L2 norm
+cgresid_md_fa_gr 2e-06 2e-06 2e-06 
+# maximum number of iterations for the CG in each instance
 max_multicg_md_fa_gr 1750 1750 1750 
+# precision of the CG solution for each instance
 cgprec_md_fa_gr 1 2 2 
-error_for_propagator 1e-07
+# precision of the fermion force calculation
+prec_ff 1
+# CG tolerance, max iterations, for the chiral condensate
+# and related quantities
+number_of_pbp_masses 2
 max_cg_prop 500
 max_cg_prop_restarts 5
-reload_serial ../binary_samples/lat.sample.l6666b650m010m050
+npbp_reps 1
+prec_pbp 1
+mass 0.01
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+mass 0.05
+error_for_propagator 1e-06
+rel_error_for_propagator 0
+# input lattice
+reload_serial ../../binary_samples/lat.sample.l6666b650m010m050
+# output lattice
 forget 
-Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l6666b650m010m050
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666b650m010m050
 Time stamp Mon Aug  7 14:22:30 2006
 Checksums a76176b8 5eb657fc OK
-Time to reload gauge configuration = 1.127911e-02
+Time to reload gauge configuration = 1.425028e-03
 CHECK PLAQ: 1.658265e+00 1.639891e+00
 CHECK NERSC LINKTR: 7.517749e-02 CKSUM: b59b771d
 Unitarity checked.  Max deviation 1.19e-07
-Time to check unitarity = 4.050016e-03
-Symanzik 1x1 + 1x2 + 1x1x1 action
-loop coefficients: nloop rep loop_coeff  multiplicity
-                    0 0      1.000000e+00     6
-                    1 0      -7.355018e-02     12
-                    2 0      -8.663654e-03     16
+Time to check unitarity = 3.430843e-04
 "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
 path coefficients: npath  path_coeff  multiplicity
                     0      6.250000e-01     8
@@ -180,415 +226,159 @@ path coefficients: npath  path_coeff  multiplicity
                     3      2.830030e-02     192
                     4      -6.347829e-03     384
                     5      -1.132012e-01     48
+Symanzik 1x1 + 1x2 + 1x1x1 action
+gauge_action: total_dyn_flavors = 3
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.355018e-02     12
+                    2 0      -8.663654e-03     16
 WARMUPS COMPLETED
 Omelyan integration, steps= 12 eps= 1.000000e-02 lambda= 8.000000e-01
-GRSOURCE: sum = 1.9350216565e+03
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 123
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 2.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 1.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 8.9e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 1.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.9e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8e-15 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
+GRSOURCE: sum = 1.9073263760e+03
+ OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 124
 PLAQUETTE ACTION: -2.778366e+04
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.9e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.9e-15 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
-ACTION: g,h,f = 1.67770842255353e+04  -4.07219550013542e+00  1.93502029605210e+03  1.87080323260873e+04
-DG = 1.677708e+04, DH = -4.072196e+00, DF = 1.935020e+03, D = 1.870803e+04
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.6e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.9e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.5e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.8e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.8e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.8e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.7e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.1e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.6e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.8e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.9e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.4e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.6e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.6e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.7e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.9e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.6e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.1e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
-PLAQUETTE ACTION: -2.772675e+04
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 112
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.8e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.9e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.8e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.6e-15 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7e-15 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
-ACTION: g,h,f = 1.68345158666585e+04  -5.57643967717886e+01  1.92928428398073e+03  1.87080357538674e+04
-DG = 5.743164e+01, DH = -5.169220e+01, DF = -5.736012e+00, D = 3.427780e-03
-ACCEPT: delta S = 3.427780e-03
-PLAQ:	1.652549	1.638851
-P_LOOP:	2.126843e-01	-5.125561e-02
-G_LOOP:  0  0  4   	1.638252e+00	( 0 1 7 6  )
-G_LOOP:  0  1  4   	1.659308e+00	( 0 2 7 5  )
-G_LOOP:  0  2  4   	1.629074e+00	( 0 3 7 4  )
-G_LOOP:  0  3  4   	1.660086e+00	( 1 2 6 5  )
-G_LOOP:  0  4  4   	1.638384e+00	( 1 3 6 4  )
-G_LOOP:  0  5  4   	1.649095e+00	( 2 3 5 4  )
-G_LOOP:  1  0  6   	9.272507e-01	( 0 0 1 7 7 6  )
-G_LOOP:  1  1  6   	8.989518e-01	( 0 0 2 7 7 5  )
-G_LOOP:  1  2  6   	8.802905e-01	( 0 0 3 7 7 4  )
-G_LOOP:  1  3  6   	9.104859e-01	( 1 1 0 6 6 7  )
-G_LOOP:  1  4  6   	9.445752e-01	( 1 1 2 6 6 5  )
-G_LOOP:  1  5  6   	8.877281e-01	( 1 1 3 6 6 4  )
-G_LOOP:  1  6  6   	9.229770e-01	( 2 2 0 5 5 7  )
-G_LOOP:  1  7  6   	9.454480e-01	( 2 2 1 5 5 6  )
-G_LOOP:  1  8  6   	9.244866e-01	( 2 2 3 5 5 4  )
-G_LOOP:  1  9  6   	8.930467e-01	( 3 3 0 4 4 7  )
-G_LOOP:  1  10  6   	8.954597e-01	( 3 3 1 4 4 6  )
-G_LOOP:  1  11  6   	8.926963e-01	( 3 3 2 4 4 5  )
-G_LOOP:  2  0  6   	9.114815e-01	( 0 1 2 7 6 5  )
-G_LOOP:  2  1  6   	9.759796e-01	( 0 1 5 7 6 2  )
-G_LOOP:  2  2  6   	9.284357e-01	( 0 6 2 7 1 5  )
-G_LOOP:  2  3  6   	9.538873e-01	( 0 6 5 7 1 2  )
-G_LOOP:  2  4  6   	9.152377e-01	( 0 1 3 7 6 4  )
-G_LOOP:  2  5  6   	9.281436e-01	( 0 1 4 7 6 3  )
-G_LOOP:  2  6  6   	9.559003e-01	( 0 6 3 7 1 4  )
-G_LOOP:  2  7  6   	9.414645e-01	( 0 6 4 7 1 3  )
-G_LOOP:  2  8  6   	9.489143e-01	( 0 2 3 7 5 4  )
-G_LOOP:  2  9  6   	8.955626e-01	( 0 2 4 7 5 3  )
-G_LOOP:  2  10  6   	9.269671e-01	( 0 5 3 7 2 4  )
-G_LOOP:  2  11  6   	9.304366e-01	( 0 5 4 7 2 3  )
-G_LOOP:  2  12  6   	9.376921e-01	( 1 2 3 6 5 4  )
-G_LOOP:  2  13  6   	9.334117e-01	( 1 2 4 6 5 3  )
-G_LOOP:  2  14  6   	9.288827e-01	( 1 5 3 6 2 4  )
-G_LOOP:  2  15  6   	9.512630e-01	( 1 5 4 6 2 3  )
-GACTION: 5.995198e+00
- OK converged final_rsq= 4.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 116
- OK converged final_rsq= 5.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 35
-PBP: mass 1.000000e-02     2.138944e-03  3.477619e-02  1.227237e-02  1.227088e-02 ( 1 of 1 )
-FACTION: mass = 1.000000e-02,  1.495681e+00 ( 1 of 1 )
- OK converged final_rsq= 5.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 108
- OK converged final_rsq= 5.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 18
-PBP: mass 5.000000e-02     8.765659e-02  8.450651e-02  -1.577927e-02  -1.577948e-02 ( 1 of 1 )
-FACTION: mass = 5.000000e-02,  1.485707e+00 ( 1 of 1 )
+ OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 113
+ACTION: g,h,f = 1.67770842255353e+04  -9.36446401476860e+01  1.90732694119215e+03  1.85907665265798e+04
+DG = 1.677708e+04, DH = -9.364464e+01, DF = 1.907327e+03, D = 1.859077e+04
+ OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 113
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 113
+ OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 113
+ OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 114
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 114
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 114
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 114
+ OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 115
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 115
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 116
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 117
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 118
+PLAQUETTE ACTION: -2.773692e+04
+restore_fermion_links_fm: Warning. Precision request replaced by 1
+ OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 119
+ACTION: g,h,f = 1.68225951988426e+04  -1.32490214347839e+02  1.90066177399457e+03  1.85907667584894e+04
+DG = 4.551097e+01, DH = -3.884557e+01, DF = -6.665167e+00, D = 2.319096e-04
+ACCEPT: delta S = 2.319096e-04
+PLAQ:	1.649426	1.643181
+P_LOOP:	1.968413e-01	-1.672139e-02
+G_LOOP:  0  0  4   	1.638460e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.659869e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.632755e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.649950e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.644629e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.652158e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	9.333249e-01	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	9.061861e-01	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	8.884494e-01	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	8.996951e-01	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	9.258541e-01	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	8.827589e-01	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	9.172679e-01	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	9.414561e-01	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.291979e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	8.909708e-01	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	8.934162e-01	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	9.033412e-01	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	9.240762e-01	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	9.781906e-01	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	9.240666e-01	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	9.479909e-01	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	9.111248e-01	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	9.253401e-01	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	9.495756e-01	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	9.325067e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	9.440116e-01	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	9.026756e-01	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	9.236429e-01	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	9.495231e-01	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	9.512936e-01	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	9.439905e-01	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	9.306075e-01	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	9.507285e-01	( 1 5 4 6 2 3  )
+GACTION: 5.990953e+00
+ OK converged final_rsq= 5.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 122
+ OK converged final_rsq= 9.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 33
+PBP: mass 1.000000e-02     2.788213e-02  6.451126e-03  -2.939370e-02  -2.939368e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.501869e+00 ( 1 of 1 )
+ OK converged final_rsq= 5.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 114
+ OK converged final_rsq= 5.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 20
+PBP: mass 5.000000e-02     1.200794e-01  6.398840e-02  1.839796e-02  1.839745e-02 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.537878e+00 ( 1 of 1 )
 Omelyan integration, steps= 12 eps= 1.000000e-02 lambda= 8.000000e-01
-GRSOURCE: sum = 2.0337909215e+03
+GRSOURCE: sum = 1.9500440775e+03
+ OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 130
+PLAQUETTE ACTION: -2.773692e+04
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 117
+ACTION: g,h,f = 1.68225951988426e+04  1.06778778791428e+02  1.95004458212852e+03  1.88794185597626e+04
+DG = 0.000000e+00, DH = 2.392690e+02, DF = 4.938281e+01, D = 2.886518e+02
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 117
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 119
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 120
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 121
+ OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 121
  OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 122
- OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 1.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 9.1e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.9e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.6e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.4e-15 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
-PLAQUETTE ACTION: -2.772675e+04
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 109
- OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.5e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.1e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 9e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.3e-15 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
-ACTION: g,h,f = 1.68345158666585e+04  4.08263452947140e+01  2.03379019010067e+03  1.89091324020539e+04
-DG = 0.000000e+00, DH = 9.659074e+01, DF = 1.045059e+02, D = 2.010966e+02
- OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 109
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 110
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 111
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.5e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.6e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 111
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.7e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 111
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.5e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.9e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 111
- OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 110
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 107
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 8.8e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 106
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 108
- OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.4e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.4e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.8e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 109
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.7e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 111
- OK converged final_rsq= 1.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.6e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.3e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
-PLAQUETTE ACTION: -2.760735e+04
- OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 111
- OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 1.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 2
- OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 1.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.7e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2e-13 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 9.4e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 4.5e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 2e-14 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 7.6e-15 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 6.3e-15 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 0
-ACTION: g,h,f = 1.69362678502944e+04  -7.69788511395454e+01  2.04984129905701e+03  1.89091302982119e+04
-DG = 1.017520e+02, DH = -1.178052e+02, DF = 1.605111e+01, D = -2.103842e-03
-ACCEPT: delta S = -2.103842e-03
-PLAQ:	1.645237	1.631989
-P_LOOP:	2.133816e-01	-6.839669e-02
-G_LOOP:  0  0  4   	1.628955e+00	( 0 1 7 6  )
-G_LOOP:  0  1  4   	1.659071e+00	( 0 2 7 5  )
-G_LOOP:  0  2  4   	1.616060e+00	( 0 3 7 4  )
-G_LOOP:  0  3  4   	1.647685e+00	( 1 2 6 5  )
-G_LOOP:  0  4  4   	1.629247e+00	( 1 3 6 4  )
-G_LOOP:  0  5  4   	1.650661e+00	( 2 3 5 4  )
-G_LOOP:  1  0  6   	9.164511e-01	( 0 0 1 7 7 6  )
-G_LOOP:  1  1  6   	9.141504e-01	( 0 0 2 7 7 5  )
-G_LOOP:  1  2  6   	8.710574e-01	( 0 0 3 7 7 4  )
-G_LOOP:  1  3  6   	8.901286e-01	( 1 1 0 6 6 7  )
-G_LOOP:  1  4  6   	9.280266e-01	( 1 1 2 6 6 5  )
-G_LOOP:  1  5  6   	8.889986e-01	( 1 1 3 6 6 4  )
-G_LOOP:  1  6  6   	9.219040e-01	( 2 2 0 5 5 7  )
-G_LOOP:  1  7  6   	9.385968e-01	( 2 2 1 5 5 6  )
-G_LOOP:  1  8  6   	9.246089e-01	( 2 2 3 5 5 4  )
-G_LOOP:  1  9  6   	8.947303e-01	( 3 3 0 4 4 7  )
-G_LOOP:  1  10  6   	8.791124e-01	( 3 3 1 4 4 6  )
-G_LOOP:  1  11  6   	8.854795e-01	( 3 3 2 4 4 5  )
-G_LOOP:  2  0  6   	9.042769e-01	( 0 1 2 7 6 5  )
-G_LOOP:  2  1  6   	9.654462e-01	( 0 1 5 7 6 2  )
-G_LOOP:  2  2  6   	9.027037e-01	( 0 6 2 7 1 5  )
-G_LOOP:  2  3  6   	9.619279e-01	( 0 6 5 7 1 2  )
-G_LOOP:  2  4  6   	8.880883e-01	( 0 1 3 7 6 4  )
-G_LOOP:  2  5  6   	9.232767e-01	( 0 1 4 7 6 3  )
-G_LOOP:  2  6  6   	9.391803e-01	( 0 6 3 7 1 4  )
-G_LOOP:  2  7  6   	9.266158e-01	( 0 6 4 7 1 3  )
-G_LOOP:  2  8  6   	9.518438e-01	( 0 2 3 7 5 4  )
-G_LOOP:  2  9  6   	8.924370e-01	( 0 2 4 7 5 3  )
-G_LOOP:  2  10  6   	9.184471e-01	( 0 5 3 7 2 4  )
-G_LOOP:  2  11  6   	9.110824e-01	( 0 5 4 7 2 3  )
-G_LOOP:  2  12  6   	9.373972e-01	( 1 2 3 6 5 4  )
-G_LOOP:  2  13  6   	9.414352e-01	( 1 2 4 6 5 3  )
-G_LOOP:  2  14  6   	9.217328e-01	( 1 5 3 6 2 4  )
-G_LOOP:  2  15  6   	9.481331e-01	( 1 5 4 6 2 3  )
-GACTION: 6.031434e+00
- OK converged final_rsq= 5.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 117
- OK converged final_rsq= 9.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 34
-PBP: mass 1.000000e-02     2.963500e-02  7.110531e-03  -2.546925e-02  -2.547094e-02 ( 1 of 1 )
-FACTION: mass = 1.000000e-02,  1.471033e+00 ( 1 of 1 )
- OK converged final_rsq= 5.3e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 106
- OK converged final_rsq= 9.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 16
-PBP: mass 5.000000e-02     1.137286e-01  7.687481e-02  -2.783972e-02  -2.783929e-02 ( 1 of 1 )
-FACTION: mass = 5.000000e-02,  1.521414e+00 ( 1 of 1 )
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 122
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 123
+ OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 124
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 124
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 124
+ OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 125
+PLAQUETTE ACTION: -2.769863e+04
+restore_fermion_links_fm: Warning. Precision request replaced by 1
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 125
+ACTION: g,h,f = 1.68516248008401e+04  6.60985075682402e+01  1.96169032904506e+03  1.88794136374534e+04
+DG = 2.902960e+01, DH = -4.068027e+01, DF = 1.164575e+01, D = -4.922309e-03
+ACCEPT: delta S = -4.922309e-03
+PLAQ:	1.647700	1.640362
+P_LOOP:	1.777962e-01	-6.012012e-02
+G_LOOP:  0  0  4   	1.621436e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.661614e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.634954e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.660049e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.630200e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.655932e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	9.113489e-01	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	8.978120e-01	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	8.904609e-01	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	9.044423e-01	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	9.320467e-01	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	8.762053e-01	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	9.081703e-01	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	9.442446e-01	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.239875e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	8.876984e-01	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	8.960685e-01	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	9.019985e-01	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	9.231983e-01	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	9.793153e-01	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	9.284680e-01	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	9.169677e-01	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	8.943855e-01	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	9.124990e-01	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	9.315422e-01	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	9.351857e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	9.512856e-01	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	9.134487e-01	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	9.163351e-01	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	9.516629e-01	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	9.597638e-01	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	9.402135e-01	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	9.278212e-01	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	9.442240e-01	( 1 5 4 6 2 3  )
+GACTION: 6.001291e+00
+ OK converged final_rsq= 5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 128
+ OK converged final_rsq= 5.6e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 36
+PBP: mass 1.000000e-02     4.550957e-02  -6.644002e-03  5.304458e-02  5.304470e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.558290e+00 ( 1 of 1 )
+ OK converged final_rsq= 5.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 2 iters= 116
+ OK converged final_rsq= 9.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 17
+PBP: mass 5.000000e-02     7.792562e-02  9.555835e-02  -3.265172e-02  -3.265212e-02 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.540508e+00 ( 1 of 1 )
 RUNNING COMPLETED
-average cg iters for step= 0.000000e+00
-Time = 2.105034e+02 seconds
-total_iters = 4398
+average cg iters for step= 1.195000e+02
+Time = 1.888923e+01 seconds
+total_iters = 4494
 
 
 get_i(0): EOF on input.
-exit: Tue Dec 12 09:35:03 2006
+exit: Mon Feb 15 09:20:30 2016
 

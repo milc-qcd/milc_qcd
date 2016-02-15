@@ -1,9 +1,20 @@
 SU3 with improved KS action
 Microcanonical simulation with refreshing
-MIMD version 6
-Machine = Scalar processor, with 1 nodes
 R algorithm
-type 0 for no prompts  or 1 for prompts
+MIMD version 7.7.13
+Machine = QMP (portable), with 1 nodes
+Host(0) = aquila.physics.utah.edu
+Username = detar
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+HALF_MIXED
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTIFF=FNMAT
+VECLENGTH=4
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nflavors1 4
 nflavors2 4
 nx 4
@@ -11,8 +22,10 @@ ny 4
 nz 4
 nt 4
 iseed 5682304
-LAYOUT = Hypercubes, options = EVENFIRST,
-Mallocing 0.3 MBytes per node for lattice
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.5 MBytes per node for lattice
 Made lattice
 Made nn gathers
 Made 3nn gathers
@@ -29,256 +42,260 @@ u0 0.8441
 microcanonical_time_step 0.02
 steps_per_trajectory 4
 max_cg_iterations 300
+max_cg_restarts 5
 error_per_site 5e-06
 error_for_propagator 2e-06
-reload_serial ../binary_samples/lat.sample.l4444
+npbp_reps 4
+prec_pbp 2
+reload_serial ../../binary_samples/lat.sample.l4444
 forget 
-Reading with byte reversal
-Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l4444
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l4444
 Time stamp Thu Feb 12 13:40:21 1998
 Checksums 2352c05 d137321d OK
-Time to reload gauge configuration = 9.587049e-03
-CHECK PLAQ: 1.794675e+00 1.774426e+00
-Unitarity checked.  Max deviation 2.38e-07
-Time to check unitarity = 4.733086e-03
-Symanzik 1x1 + 1x2 + 1x1x1 action
-loop coefficients: nloop rep loop_coeff  multiplicity
-                    0 0      1.000000e+00     6
-                    1 0      -7.762509e-02     12
-                    2 0      -1.031171e-02     16
+Time to reload gauge configuration = 4.279613e-04
+CHECK PLAQ: 1.7946751560761729e+00 1.7744257976067317e+00
+CHECK NERSC LINKTR: 6.4675873741896339e-01 CKSUM: ffc4bb26
+Reunitarized for double precision. Max deviation 2.52e-07 changed to 4.44e-16
+Time to check unitarity = 4.429817e-04
 "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
 path coefficients: npath  path_coeff  multiplicity
                     0      6.250000e-01     8
                     1      -5.847914e-02     8
                     2      -8.771871e-02     48
                     3      3.077829e-02     192
-                    4      -7.199551e-03     384
-                    5      -1.231132e-01     48
+                    4      -7.199550e-03     384
+                    5      -1.231131e-01     48
+Symanzik 1x1 + 1x2 + 1x1x1 action
+gauge_action: total_dyn_flavors = 8
+loop coefficients: nloop rep loop_coeff  multiplicity
+                    0 0      1.000000e+00     6
+                    1 0      -7.762509e-02     12
+                    2 0      -1.031171e-02     16
 WARMUPS COMPLETED
  OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
- OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 40
- OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
-PLAQ:	1.795188	1.776954
-P_LOOP:	1.303895e+00	2.127057e-04
-G_LOOP:  0  0  4   	1.867359e+00	( 0 1 7 6  )
-G_LOOP:  0  1  4   	1.761557e+00	( 0 2 7 5  )
-G_LOOP:  0  2  4   	1.767350e+00	( 0 3 7 4  )
-G_LOOP:  0  3  4   	1.756649e+00	( 1 2 6 5  )
-G_LOOP:  0  4  4   	1.770745e+00	( 1 3 6 4  )
-G_LOOP:  0  5  4   	1.792769e+00	( 2 3 5 4  )
-G_LOOP:  1  0  6   	1.263136e+00	( 0 0 1 7 7 6  )
-G_LOOP:  1  1  6   	1.127389e+00	( 0 0 2 7 7 5  )
-G_LOOP:  1  2  6   	1.125057e+00	( 0 0 3 7 7 4  )
-G_LOOP:  1  3  6   	1.236699e+00	( 1 1 0 6 6 7  )
-G_LOOP:  1  4  6   	1.143111e+00	( 1 1 2 6 6 5  )
-G_LOOP:  1  5  6   	1.141499e+00	( 1 1 3 6 6 4  )
-G_LOOP:  1  6  6   	1.169416e+00	( 2 2 0 5 5 7  )
-G_LOOP:  1  7  6   	1.170549e+00	( 2 2 1 5 5 6  )
-G_LOOP:  1  8  6   	1.193353e+00	( 2 2 3 5 5 4  )
-G_LOOP:  1  9  6   	1.205942e+00	( 3 3 0 4 4 7  )
-G_LOOP:  1  10  6   	1.244971e+00	( 3 3 1 4 4 6  )
-G_LOOP:  1  11  6   	1.245488e+00	( 3 3 2 4 4 5  )
-G_LOOP:  2  0  6   	1.118738e+00	( 0 1 2 7 6 5  )
-G_LOOP:  2  1  6   	1.169141e+00	( 0 1 5 7 6 2  )
-G_LOOP:  2  2  6   	1.145994e+00	( 0 6 2 7 1 5  )
-G_LOOP:  2  3  6   	1.130589e+00	( 0 6 5 7 1 2  )
-G_LOOP:  2  4  6   	1.123008e+00	( 0 1 3 7 6 4  )
-G_LOOP:  2  5  6   	1.127793e+00	( 0 1 4 7 6 3  )
-G_LOOP:  2  6  6   	1.159023e+00	( 0 6 3 7 1 4  )
-G_LOOP:  2  7  6   	1.203137e+00	( 0 6 4 7 1 3  )
-G_LOOP:  2  8  6   	1.180229e+00	( 0 2 3 7 5 4  )
-G_LOOP:  2  9  6   	1.149857e+00	( 0 2 4 7 5 3  )
-G_LOOP:  2  10  6   	1.185700e+00	( 0 5 3 7 2 4  )
-G_LOOP:  2  11  6   	1.176650e+00	( 0 5 4 7 2 3  )
-G_LOOP:  2  12  6   	1.141347e+00	( 1 2 3 6 5 4  )
-G_LOOP:  2  13  6   	1.166222e+00	( 1 2 4 6 5 3  )
-G_LOOP:  2  14  6   	1.105839e+00	( 1 5 3 6 2 4  )
-G_LOOP:  2  15  6   	1.112603e+00	( 1 5 4 6 2 3  )
-GACTION: 5.291246e+00
- OK converged final_rsq= 2.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-PB_DMDU_P: mass 1.000000e-01  -5.454386e+00  -5.028302e+00 ( 1 of 4 )
-PBP: mass 1.000000e-01     1.664134e-01  4.386549e-02  6.991372e-02  6.991278e-02 ( 1 of 4 )
-FACTION: mass = 1.000000e-01,  1.452431e+00 ( 1 of 4 )
- OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 46
- OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-TR_MM_INV: mass 1.000000e-01,  -5.037292e-01 ( 1 of 4 )
- OK converged final_rsq= 2.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
- OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-PB_DMDU_P: mass 1.000000e-01  -6.065494e+00  -5.509546e+00 ( 2 of 4 )
-PBP: mass 1.000000e-01     1.278003e-01  1.023660e-01  1.160797e-02  1.160745e-02 ( 2 of 4 )
-FACTION: mass = 1.000000e-01,  1.519379e+00 ( 2 of 4 )
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
- OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.533150e-01 ( 2 of 4 )
- OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-PB_DMDU_P: mass 1.000000e-01  -5.271024e+00  -5.177119e+00 ( 3 of 4 )
-PBP: mass 1.000000e-01     1.273654e-01  8.612002e-02  -4.340090e-02  -4.340114e-02 ( 3 of 4 )
-FACTION: mass = 1.000000e-01,  1.456930e+00 ( 3 of 4 )
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
- OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.120537e-01 ( 3 of 4 )
- OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-PB_DMDU_P: mass 1.000000e-01  -5.528707e+00  -5.534156e+00 ( 4 of 4 )
-PBP: mass 1.000000e-01     1.954204e-01  5.156627e-02  -2.561512e-02  -2.561499e-02 ( 4 of 4 )
-FACTION: mass = 1.000000e-01,  1.536871e+00 ( 4 of 4 )
- OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
- OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.901638e-01 ( 4 of 4 )
- OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-PB_DMDU_P: mass 1.000000e-01  -5.507434e+00  -5.161824e+00 ( 1 of 4 )
-PBP: mass 1.000000e-01     1.598620e-01  8.216430e-02  -2.084826e-02  -2.084841e-02 ( 1 of 4 )
-FACTION: mass = 1.000000e-01,  1.435102e+00 ( 1 of 4 )
- OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 46
- OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.783195e-01 ( 1 of 4 )
- OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-PB_DMDU_P: mass 1.000000e-01  -5.794584e+00  -5.279862e+00 ( 2 of 4 )
-PBP: mass 1.000000e-01     1.076457e-01  1.514505e-01  -4.435672e-02  -4.435700e-02 ( 2 of 4 )
-FACTION: mass = 1.000000e-01,  1.419024e+00 ( 2 of 4 )
- OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 46
- OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-TR_MM_INV: mass 1.000000e-01,  -6.134108e-01 ( 2 of 4 )
- OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-PB_DMDU_P: mass 1.000000e-01  -5.272883e+00  -4.879635e+00 ( 3 of 4 )
-PBP: mass 1.000000e-01     1.094842e-01  1.138522e-01  -5.809616e-02  -5.809563e-02 ( 3 of 4 )
-FACTION: mass = 1.000000e-01,  1.344243e+00 ( 3 of 4 )
- OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 46
- OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.316499e-01 ( 3 of 4 )
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-PB_DMDU_P: mass 1.000000e-01  -5.430264e+00  -5.824295e+00 ( 4 of 4 )
-PBP: mass 1.000000e-01     1.128996e-01  1.346671e-01  -1.017892e-01  -1.017909e-01 ( 4 of 4 )
-FACTION: mass = 1.000000e-01,  1.609609e+00 ( 4 of 4 )
- OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-TR_MM_INV: mass 1.000000e-01,  -5.912315e-01 ( 4 of 4 )
- OK converged final_rsq= 1.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 40
- OK converged final_rsq= 1.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 40
- OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
- OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 40
- OK converged final_rsq= 1.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 40
- OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
  OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
- OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
-PLAQ:	1.795726	1.779579
-P_LOOP:	1.271026e+00	1.432906e-02
-G_LOOP:  0  0  4   	1.858475e+00	( 0 1 7 6  )
-G_LOOP:  0  1  4   	1.767466e+00	( 0 2 7 5  )
-G_LOOP:  0  2  4   	1.787913e+00	( 0 3 7 4  )
-G_LOOP:  0  3  4   	1.761236e+00	( 1 2 6 5  )
-G_LOOP:  0  4  4   	1.771497e+00	( 1 3 6 4  )
-G_LOOP:  0  5  4   	1.779329e+00	( 2 3 5 4  )
-G_LOOP:  1  0  6   	1.269219e+00	( 0 0 1 7 7 6  )
-G_LOOP:  1  1  6   	1.146039e+00	( 0 0 2 7 7 5  )
-G_LOOP:  1  2  6   	1.121535e+00	( 0 0 3 7 7 4  )
-G_LOOP:  1  3  6   	1.229226e+00	( 1 1 0 6 6 7  )
-G_LOOP:  1  4  6   	1.147326e+00	( 1 1 2 6 6 5  )
-G_LOOP:  1  5  6   	1.142369e+00	( 1 1 3 6 6 4  )
-G_LOOP:  1  6  6   	1.195980e+00	( 2 2 0 5 5 7  )
-G_LOOP:  1  7  6   	1.173421e+00	( 2 2 1 5 5 6  )
-G_LOOP:  1  8  6   	1.193733e+00	( 2 2 3 5 5 4  )
-G_LOOP:  1  9  6   	1.201637e+00	( 3 3 0 4 4 7  )
-G_LOOP:  1  10  6   	1.241763e+00	( 3 3 1 4 4 6  )
-G_LOOP:  1  11  6   	1.214401e+00	( 3 3 2 4 4 5  )
-G_LOOP:  2  0  6   	1.134877e+00	( 0 1 2 7 6 5  )
-G_LOOP:  2  1  6   	1.172575e+00	( 0 1 5 7 6 2  )
-G_LOOP:  2  2  6   	1.147484e+00	( 0 6 2 7 1 5  )
-G_LOOP:  2  3  6   	1.125243e+00	( 0 6 5 7 1 2  )
-G_LOOP:  2  4  6   	1.117240e+00	( 0 1 3 7 6 4  )
-G_LOOP:  2  5  6   	1.121618e+00	( 0 1 4 7 6 3  )
-G_LOOP:  2  6  6   	1.148708e+00	( 0 6 3 7 1 4  )
-G_LOOP:  2  7  6   	1.194469e+00	( 0 6 4 7 1 3  )
-G_LOOP:  2  8  6   	1.195635e+00	( 0 2 3 7 5 4  )
-G_LOOP:  2  9  6   	1.198922e+00	( 0 2 4 7 5 3  )
-G_LOOP:  2  10  6   	1.171427e+00	( 0 5 3 7 2 4  )
-G_LOOP:  2  11  6   	1.174544e+00	( 0 5 4 7 2 3  )
-G_LOOP:  2  12  6   	1.147852e+00	( 1 2 3 6 5 4  )
-G_LOOP:  2  13  6   	1.169186e+00	( 1 2 4 6 5 3  )
-G_LOOP:  2  14  6   	1.099456e+00	( 1 5 3 6 2 4  )
-G_LOOP:  2  15  6   	1.110353e+00	( 1 5 4 6 2 3  )
-GACTION: 5.282886e+00
- OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-PB_DMDU_P: mass 1.000000e-01  -4.919113e+00  -5.811488e+00 ( 1 of 4 )
-PBP: mass 1.000000e-01     1.031784e-01  1.020212e-01  5.554539e-02  5.554652e-02 ( 1 of 4 )
-FACTION: mass = 1.000000e-01,  1.558838e+00 ( 1 of 4 )
- OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
- OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-TR_MM_INV: mass 1.000000e-01,  -4.930376e-01 ( 1 of 4 )
- OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-PB_DMDU_P: mass 1.000000e-01  -5.455010e+00  -5.460557e+00 ( 2 of 4 )
-PBP: mass 1.000000e-01     1.277481e-01  8.869018e-02  -5.695216e-03  -5.695672e-03 ( 2 of 4 )
-FACTION: mass = 1.000000e-01,  1.505904e+00 ( 2 of 4 )
- OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 44
- OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.197066e-01 ( 2 of 4 )
- OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-PB_DMDU_P: mass 1.000000e-01  -5.633303e+00  -5.149643e+00 ( 3 of 4 )
-PBP: mass 1.000000e-01     1.251910e-01  9.087789e-02  3.383002e-02  3.382862e-02 ( 3 of 4 )
-FACTION: mass = 1.000000e-01,  1.454490e+00 ( 3 of 4 )
- OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
- OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.186843e-01 ( 3 of 4 )
- OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-PB_DMDU_P: mass 1.000000e-01  -5.187632e+00  -5.236801e+00 ( 4 of 4 )
-PBP: mass 1.000000e-01     5.305783e-02  1.679401e-01  -4.462824e-02  -4.462830e-02 ( 4 of 4 )
-FACTION: mass = 1.000000e-01,  1.483196e+00 ( 4 of 4 )
- OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
- OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.297807e-01 ( 4 of 4 )
- OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
- OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-PB_DMDU_P: mass 1.000000e-01  -5.500569e+00  -4.774823e+00 ( 1 of 4 )
-PBP: mass 1.000000e-01     9.952402e-02  1.163060e-01  -4.716054e-03  -4.715079e-03 ( 1 of 4 )
-FACTION: mass = 1.000000e-01,  1.308929e+00 ( 1 of 4 )
- OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
- OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.149400e-01 ( 1 of 4 )
- OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 9
-PB_DMDU_P: mass 1.000000e-01  -4.739026e+00  -5.980018e+00 ( 2 of 4 )
-PBP: mass 1.000000e-01     7.237051e-02  1.655348e-01  -1.464819e-03  -1.461058e-03 ( 2 of 4 )
-FACTION: mass = 1.000000e-01,  1.644284e+00 ( 2 of 4 )
- OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
- OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
-TR_MM_INV: mass 1.000000e-01,  -5.683478e-01 ( 2 of 4 )
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
- OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 9
-PB_DMDU_P: mass 1.000000e-01  -5.355617e+00  -5.563978e+00 ( 3 of 4 )
-PBP: mass 1.000000e-01     8.402660e-02  1.488764e-01  -5.733757e-02  -5.733811e-02 ( 3 of 4 )
-FACTION: mass = 1.000000e-01,  1.518540e+00 ( 3 of 4 )
- OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 45
+ OK converged final_rsq= 1.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
+ OK converged final_rsq= 1.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
+ OK converged final_rsq= 1.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 38
+PLAQ:	1.8049050651789778	1.8027074472117539
+P_LOOP:	1.316233e+00	-3.832844e-03
+G_LOOP:  0  0  4   	1.8892128708196525e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.7626002908619909e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.7987231117379281e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.7629020338552808e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.7752519970810920e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.8341472328162425e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.2993033512119558e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.1426743627824223e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.1620034972731772e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.2463723914858467e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.1450930826218353e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.1242285698577903e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.1921874729691213e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.1872263563764951e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.2545298812001251e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.2114999716233690e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.2306510181199213e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.2709493086981976e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.1434706622249216e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.1388869362372898e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.1745496039406929e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.1612827512209718e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.1332269910731381e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.1483798807797985e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.1614072721511455e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.2445911051130460e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.2002049716554768e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.1719334025241224e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.1719315936141192e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.1577951111013280e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.1298811604689494e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.1717958197532961e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.1085558758634579e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.1251379320680557e+00	( 1 5 4 6 2 3  )
+GACTION: 5.201888e+00
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
  OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.578013e-01 ( 3 of 4 )
- OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
+PB_DMDU_P: mass 1.000000e-01  -5.222401e+00  -5.107988e+00 ( 1 of 4 )
+PBP: mass 1.000000e-01     4.789267e-02  1.628757e-01  -2.902843e-02  -2.902854e-02 ( 1 of 4 )
+FACTION: mass = 1.000000e-01,  1.402318e+00 ( 1 of 4 )
+ OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+TR_MM_INV: mass 1.000000e-01,  -5.060805e-01 ( 1 of 4 )
+ OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
+ OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+PB_DMDU_P: mass 1.000000e-01  -5.556695e+00  -5.204184e+00 ( 2 of 4 )
+PBP: mass 1.000000e-01     2.748038e-01  -2.447240e-02  2.094859e-02  2.094828e-02 ( 2 of 4 )
+FACTION: mass = 1.000000e-01,  1.500334e+00 ( 2 of 4 )
+ OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -5.948425e-01 ( 2 of 4 )
+ OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
+ OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+PB_DMDU_P: mass 1.000000e-01  -5.881943e+00  -5.604987e+00 ( 3 of 4 )
+PBP: mass 1.000000e-01     9.494008e-02  1.445328e-01  -4.609744e-03  -4.609850e-03 ( 3 of 4 )
+FACTION: mass = 1.000000e-01,  1.611672e+00 ( 3 of 4 )
+ OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+TR_MM_INV: mass 1.000000e-01,  -5.743595e-01 ( 3 of 4 )
+ OK converged final_rsq= 2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
+ OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+PB_DMDU_P: mass 1.000000e-01  -5.258229e+00  -5.967273e+00 ( 4 of 4 )
+PBP: mass 1.000000e-01     2.456784e-01  -3.819068e-03  -7.543781e-02  -7.543772e-02 ( 4 of 4 )
+FACTION: mass = 1.000000e-01,  1.633599e+00 ( 4 of 4 )
+ OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+TR_MM_INV: mass 1.000000e-01,  -5.775998e-01 ( 4 of 4 )
+ OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
+ OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+PB_DMDU_P: mass 1.000000e-01  -4.860429e+00  -5.112859e+00 ( 1 of 4 )
+PBP: mass 1.000000e-01     1.969558e-02  1.878153e-01  -3.564946e-03  -3.565119e-03 ( 1 of 4 )
+FACTION: mass = 1.000000e-01,  1.398742e+00 ( 1 of 4 )
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -4.964444e-01 ( 1 of 4 )
+ OK converged final_rsq= 2.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
+ OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+PB_DMDU_P: mass 1.000000e-01  -4.788384e+00  -5.177149e+00 ( 2 of 4 )
+PBP: mass 1.000000e-01     1.393413e-01  7.614420e-02  1.982027e-02  1.982039e-02 ( 2 of 4 )
+FACTION: mass = 1.000000e-01,  1.488862e+00 ( 2 of 4 )
+ OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -5.167631e-01 ( 2 of 4 )
+ OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
+ OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+PB_DMDU_P: mass 1.000000e-01  -5.784095e+00  -5.508644e+00 ( 3 of 4 )
+PBP: mass 1.000000e-01     1.210711e-01  1.028422e-01  1.793090e-02  1.793102e-02 ( 3 of 4 )
+FACTION: mass = 1.000000e-01,  1.533882e+00 ( 3 of 4 )
+ OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
  OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-PB_DMDU_P: mass 1.000000e-01  -5.559249e+00  -5.100256e+00 ( 4 of 4 )
-PBP: mass 1.000000e-01     2.919798e-02  2.045214e-01  8.223171e-02  8.223169e-02 ( 4 of 4 )
-FACTION: mass = 1.000000e-01,  1.427296e+00 ( 4 of 4 )
- OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 44
- OK converged final_rsq= 2.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
-TR_MM_INV: mass 1.000000e-01,  -5.608424e-01 ( 4 of 4 )
+TR_MM_INV: mass 1.000000e-01,  -5.390407e-01 ( 3 of 4 )
+ OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 40
+ OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+PB_DMDU_P: mass 1.000000e-01  -5.250780e+00  -5.598614e+00 ( 4 of 4 )
+PBP: mass 1.000000e-01     1.297646e-01  9.077206e-02  7.318186e-02  7.318130e-02 ( 4 of 4 )
+FACTION: mass = 1.000000e-01,  1.479380e+00 ( 4 of 4 )
+ OK converged final_rsq= 3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -5.286528e-01 ( 4 of 4 )
+ OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 37
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 37
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 37
+ OK converged final_rsq= 1.8e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 37
+ OK converged final_rsq= 1.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 37
+ OK converged final_rsq= 1.8e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 36
+ OK converged final_rsq= 1.8e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 37
+ OK converged final_rsq= 1.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 1 iters= 37
+PLAQ:	1.8118533148027050	1.8107929270430050
+P_LOOP:	1.332130e+00	2.291368e-02
+G_LOOP:  0  0  4   	1.8902547392629576e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.7908420447583226e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.8030265033925392e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.7544631603868288e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.7869321943979157e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.8424200833385638e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.3041766294258339e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.1607410925455313e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.1960506622819855e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.2533518280211200e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.1163443959016324e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.1113564510627107e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.2058870311949952e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.1723165763670467e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.2520634442405107e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.2184501115151176e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.2483411116890091e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.2761093163801922e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.1288372619838254e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.1553508931503307e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.1980894772486477e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.1674462684640532e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.1482368667169258e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.1669725862210976e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.1800515619615017e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.2606223206200247e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.2011219690660131e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.1675556619292915e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.1694614135739940e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.1780282644650826e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.1397991103497878e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.1464187340332317e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.1167333942208486e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.1210623102849810e+00	( 1 5 4 6 2 3  )
+GACTION: 5.161609e+00
+ OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+PB_DMDU_P: mass 1.000000e-01  -5.170104e+00  -5.740663e+00 ( 1 of 4 )
+PBP: mass 1.000000e-01     7.953044e-02  1.465838e-01  3.639728e-02  3.639712e-02 ( 1 of 4 )
+FACTION: mass = 1.000000e-01,  1.578508e+00 ( 1 of 4 )
+ OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+TR_MM_INV: mass 1.000000e-01,  -5.438041e-01 ( 1 of 4 )
+ OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+PB_DMDU_P: mass 1.000000e-01  -5.801431e+00  -5.711903e+00 ( 2 of 4 )
+PBP: mass 1.000000e-01     5.862344e-02  1.807654e-01  1.859922e-02  1.859956e-02 ( 2 of 4 )
+FACTION: mass = 1.000000e-01,  1.565875e+00 ( 2 of 4 )
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -5.737719e-01 ( 2 of 4 )
+ OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 2.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+PB_DMDU_P: mass 1.000000e-01  -5.261860e+00  -5.455746e+00 ( 3 of 4 )
+PBP: mass 1.000000e-01     1.503243e-01  5.941267e-02  -1.388759e-02  -1.388770e-02 ( 3 of 4 )
+FACTION: mass = 1.000000e-01,  1.540126e+00 ( 3 of 4 )
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -5.048264e-01 ( 3 of 4 )
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 9
+PB_DMDU_P: mass 1.000000e-01  -5.316164e+00  -5.889251e+00 ( 4 of 4 )
+PBP: mass 1.000000e-01     2.191332e-01  5.552178e-03  2.350642e-02  2.350657e-02 ( 4 of 4 )
+FACTION: mass = 1.000000e-01,  1.613949e+00 ( 4 of 4 )
+ OK converged final_rsq= 2.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 2.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+TR_MM_INV: mass 1.000000e-01,  -5.398513e-01 ( 4 of 4 )
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 2.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+PB_DMDU_P: mass 1.000000e-01  -5.349010e+00  -4.912178e+00 ( 1 of 4 )
+PBP: mass 1.000000e-01     1.302360e-01  8.826437e-02  -2.026567e-02  -2.026565e-02 ( 1 of 4 )
+FACTION: mass = 1.000000e-01,  1.377894e+00 ( 1 of 4 )
+ OK converged final_rsq= 2.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 2.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -5.235569e-01 ( 1 of 4 )
+ OK converged final_rsq= 3.3e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 2.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+PB_DMDU_P: mass 1.000000e-01  -5.498162e+00  -5.900062e+00 ( 2 of 4 )
+PBP: mass 1.000000e-01     1.636332e-01  5.504468e-02  1.309520e-03  1.309489e-03 ( 2 of 4 )
+FACTION: mass = 1.000000e-01,  1.599329e+00 ( 2 of 4 )
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 41
+ OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -5.268106e-01 ( 2 of 4 )
+ OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 3.9e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+PB_DMDU_P: mass 1.000000e-01  -5.385922e+00  -5.543420e+00 ( 3 of 4 )
+PBP: mass 1.000000e-01     5.075694e-02  1.663685e-01  9.182310e-02  9.182304e-02 ( 3 of 4 )
+FACTION: mass = 1.000000e-01,  1.471348e+00 ( 3 of 4 )
+ OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -5.215060e-01 ( 3 of 4 )
+ OK converged final_rsq= 3.1e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 39
+ OK converged final_rsq= 3.8e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 7
+PB_DMDU_P: mass 1.000000e-01  -4.900416e+00  -5.148401e+00 ( 4 of 4 )
+PBP: mass 1.000000e-01     5.118236e-02  1.450027e-01  -1.727601e-02  -1.727589e-02 ( 4 of 4 )
+FACTION: mass = 1.000000e-01,  1.365845e+00 ( 4 of 4 )
+ OK converged final_rsq= 3.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 43
+ OK converged final_rsq= 2.2e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 1 iters= 8
+TR_MM_INV: mass 1.000000e-01,  -4.708845e-01 ( 4 of 4 )
 RUNNING COMPLETED
-average cg iters for step= 7.800000e+01
-Time = 3.156906e+01 seconds
-total_iters = 2062
+average cg iters for step= 7.650000e+01
+Time = 2.421611e+00 seconds
+total_iters = 2853
 
 
-get_i: EOF on STDIN while expecting warms.
-exit: Wed Apr  6 21:52:18 2005
+get_i(0): EOF on input.
+exit: Sun Feb 14 17:51:32 2016
 
