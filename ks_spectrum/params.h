@@ -12,9 +12,9 @@
 #define MAX_SOURCE 32
 #define MAX_SET 16
 #define MAX_PROP 64
-#define MAX_QK 64
+#define MAX_QK 128
 #define MAX_COMBO 8
-#define MAX_PAIR 512
+#define MAX_PAIR 1024
 #define MAX_TRIPLET 64
 #define MAX_QKPAIR_LABEL 32
 #define MAX_MESON 32
