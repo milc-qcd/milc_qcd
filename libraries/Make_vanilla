@@ -34,6 +34,7 @@ CC               = gcc # ( cc89 gcc xlc gcc pgcc cl g++ )
 # 2. Compiler optimization level
 OPT              = -O3 # ( -g -O, etc )
 
+#OCFLAGS = -DOLD_GAUSSRAND
 #----------------------------------------------------------------------
 # 3. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
