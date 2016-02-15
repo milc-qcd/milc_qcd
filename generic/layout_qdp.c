@@ -158,6 +158,7 @@ setup_layout(void)
   c[1] = ny;
   c[2] = nz;
   c[3] = nt;
+  QDP_init_layout();
   QDP_set_latsize(4, c);
   QDP_create_layout();
   sites_on_node = QDP_sites_on_node;
