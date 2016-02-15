@@ -203,6 +203,7 @@ su3_rmd_naive::
 
 # No QOP support for p4, so we use pure MILC routines only and
 # undefine the macros HAVE_QOP and HAVE_QDP
+# Fails to compile -- needs fixing -CD
 
 su3_hmc_eo_symzk1_p4::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
