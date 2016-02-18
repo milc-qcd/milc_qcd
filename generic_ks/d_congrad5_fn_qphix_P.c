@@ -325,7 +325,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
 #endif   
   
   /* Initialize QPHIX if not already done */
-  if(initialize_qphix() != QPHIX_SUCCESS){
+  if(initialize_qphix(QPHIX_PrecisionInt) != QPHIX_SUCCESS){
     node0_printf("%s: Error initializing QPHIX\n",myname);
     terminate(1);
   }

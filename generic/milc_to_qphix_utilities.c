@@ -14,8 +14,7 @@
 #define CG_DEBUG 1
 #define UNOPTIMIZED_PACK_UNPACK 0
 
-//qphix_env_t *g_qphix_env_obj;
-bool is_qphix_env_setup;
+static int is_qphix_env_setup = 0;
 
 /* The MILC layout routines list the coordinates and assume 4D */
 
@@ -52,7 +51,7 @@ int qphix2milc_parity(QPHIX_evenodd_t qphix_parity){
 }
 
 QPHIX_status_t 
-initialize_qphix(void){
+initialize_qphix(int precision){
   /* \fixme - pass the qphix params via setup */
   /* create mbench */
 
@@ -73,7 +72,13 @@ initialize_qphix(void){
   latsize[2] = nz;
   latsize[3] = nt;
 
-  if(is_qphix_env_setup)return status;
+  if(is_qphix_env_setup == precision)
+    return status;
+  else {
+    node0_printf("ERROR. initialize_qphix: Attempting to change precision from % to %\n",
+		 is_qphix_env_setup, precision);
+    terminate(1);
+  }
 
   layout.node_number = milc_node_number;
   layout.node_index = milc_node_index;
@@ -88,7 +93,7 @@ initialize_qphix(void){
   node0_printf("Initializing QPhiX\n");
   node0_printf("NumCores = %d, ThreadsPerCore = %d, minCt = %d\n", numCores, threads_per_core, minCt);
 
-  status = QPHIX_init(&layout);
+  status = QPHIX_init(&layout, precision);
 
   if(status){
     node0_printf("Error initializing QPhiX\n");
@@ -98,7 +103,7 @@ initialize_qphix(void){
 
   fflush(stdout);
 
-  is_qphix_env_setup = true;
+  is_qphix_env_setup = precision;
   return status;
 }
 
