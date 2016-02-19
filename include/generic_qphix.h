@@ -14,7 +14,7 @@
 /* milc_to_qphix_utilities.c */
 QPHIX_evenodd_t milc2qphix_parity(int milc_parity);
 int qphix2milc_parity(QPHIX_evenodd_t qphix_parity);
-QPHIX_status_t initialize_qphix(void);
+QPHIX_status_t initialize_qphix(int precision);
 void finalize_qphix(void);
 
 /* d_congrad5_fn_qphix_P.c */
