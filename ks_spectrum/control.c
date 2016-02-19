@@ -85,10 +85,6 @@ int main(int argc, char *argv[])
   prompt = setup();
   ENDTIME("setup");
 
-#ifdef HAVE_QPHIX
-  initialize_qphix();
-#endif
-
   /* loop over input sets */
 
   while( readin(prompt) == 0){
