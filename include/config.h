@@ -9,7 +9,7 @@
 /* Code version                                                     */
 /********************************************************************/
 
-#define MILC_CODE_VERSION "7.7.13"
+#define MILC_CODE_VERSION "7.8.0-devel"
 
 /********************************************************************/
 /* Compiler/Processor-dependent macros */
