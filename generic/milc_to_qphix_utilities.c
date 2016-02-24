@@ -73,13 +73,11 @@ initialize_qphix(int precision){
   latsize[3] = nt;
 
   if(is_qphix_env_setup > 0){
-    if(is_qphix_env_setup == precision){
+    if(is_qphix_env_setup == precision)
       return status;
-    } else {
-      node0_printf("ERROR. initialize_qphix: Attempting to change precision from % to %\n",
-		   is_qphix_env_setup, precision);
-      terminate(1);
-    }
+    else 
+      /* Finalize so we can then initialize with the new precision */
+      finalize_qphix();
   }
 
   layout.node_number = milc_node_number;
@@ -92,7 +90,7 @@ initialize_qphix(int precision){
   layout.even_sites_on_node = even_sites_on_node;
   layout.sites_on_node = sites_on_node;
 
-  node0_printf("Initializing QPhiX\n");
+  node0_printf("Initializing QPhiX for precision %d\n", precision);
   node0_printf("NumCores = %d, ThreadsPerCore = %d, minCt = %d\n", numCores, threads_per_core, minCt);
 
   status = QPHIX_init(&layout, precision);
