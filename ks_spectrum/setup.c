@@ -238,6 +238,67 @@ int readin(int prompt) {
     /* Coordinate origin for KS phases and antiperiodic boundary condition */
     IF_OK status += get_vi(stdin, prompt, "coordinate_origin", param.coord_origin, 4);
     
+#if EIGMODE == EIGCG
+    /* for eigcg */
+    /* restart for Lanczos */
+    IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
+
+    /* number of eigenvectors per inversion */
+    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
+
+    if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
+      printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
+      status++;
+    }
+
+    /* maximum number of eigenvectors */
+    IF_OK status += get_i(stdin, prompt,"Max_Number_of_eigenvals",
+			  &param.eigcgp.Nvecs_max);
+
+    /* eigenvector input */
+    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					  param.ks_eigen_startfile);
+
+    /* eigenvector output */
+    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					param.ks_eigen_savefile);
+
+    param.eigcgp.Nvecs_curr = 0;
+    param.eigcgp.H = NULL;
+#endif
+
+#if EIGMODE == DEFLATION
+    /*------------------------------------------------------------*/
+    /* Dirac eigenpair calculation                                */
+    /*------------------------------------------------------------*/
+
+    /* number of eigenvectors */
+    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.Nvecs);
+
+    /* max  Rayleigh iterations */
+    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.MaxIter);
+
+    /* Restart  Rayleigh every so many iterations */
+    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.Restart);
+
+    /* Kalkreuter iterations */
+    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.Kiters);
+
+     /* Tolerance for the eigenvalue computation */
+    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigenval_tol);
+
+     /* error decrease per Rayleigh minimization */
+    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
+
+    /* eigenvector input */
+    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					  param.ks_eigen_startfile);
+
+    /* eigenvector output */
+    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					param.ks_eigen_savefile);
+#endif
+
     /*------------------------------------------------------------*/
     /* Chiral condensate and related quantities                   */
     /*------------------------------------------------------------*/
@@ -1111,6 +1172,49 @@ int readin(int prompt) {
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
   apply_apbc( ape_links );
   rephase( ON );
+
+#if EIGMODE == EIGCG
+  int Nvecs_max = param.eigcgp.Nvecs_max;
+  if(param.ks_eigen_startflag == FRESH)
+    Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
+      + param.eigcgp.m;
+  else
+    Nvecs_tot = Nvecs_max;
+
+  eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
+  eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
+  for(i = 0; i < Nvecs_tot; i++)
+    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+
+  /* Do whatever is needed to get eigenpairs */
+  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			   &Nvecs_tot, eigVal, eigVec, 1);
+  if(status != 0) normal_exit(0);
+
+  if(param.ks_eigen_startflag != FRESH){
+    param.eigcgp.Nvecs = 0;
+    param.eigcgp.Nvecs_curr = Nvecs_tot;
+    param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
+					      *sizeof(double_complex));
+    for(i = 0; i < Nvecs_max; i++){
+      for(k = 0; k < i; k++)
+	param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
+      param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
+    }
+  }
+#endif
+
+#if EIGMODE == DEFLATION
+  /* malloc for eigenpairs */
+  eigVal = (double *)malloc(param.Nvecs*sizeof(double));
+  eigVec = (su3_vector **)malloc(param.Nvecs*sizeof(su3_vector *));
+  for(i=0; i < param.Nvecs; i++)
+    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+
+  /* Do whatever is needed to get eigenpairs */
+  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			   &param.Nvecs, eigVal, eigVec, 1);
+#endif
 
   ENDTIME("readin");
 
