@@ -144,6 +144,11 @@ int readin(int prompt) {
   
   int status;
   int i, k, npbp_masses;
+#ifdef PRTIME
+  double dtime;
+#endif
+
+  STARTTIME;
 
   /* On node zero, read parameters and send to all other nodes */
   if(this_node==0){
@@ -406,12 +411,12 @@ int readin(int prompt) {
 
   /* Do whatever is needed to get eigenpairs */
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   Nvecs_max, eigVal, eigVec, 1);
+			   &Nvecs_tot, eigVal, eigVec, 1);
   if(status != 0) normal_exit(0);
 
   if(param.ks_eigen_startflag != FRESH){
     param.eigcgp.Nvecs = 0;
-    param.eigcgp.Nvecs_curr = Nvecs_max;
+    param.eigcgp.Nvecs_curr = Nvecs_tot;
     param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
 					      *sizeof(double_complex));
     for(i = 0; i < Nvecs_max; i++){
@@ -431,8 +436,10 @@ int readin(int prompt) {
 
   /* Do whatever is needed to get eigenpairs */
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
-			   param.Nvecs, eigVal, eigVec, 1);
+			   &param.Nvecs, eigVal, eigVec, 1);
 #endif
+
+  ENDTIME("readin");
 
   return(0);
 }

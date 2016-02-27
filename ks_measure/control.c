@@ -33,7 +33,7 @@
 int main(int argc, char *argv[])
 {
   int prompt;
-  int i,k;
+  int k;
   double starttime, endtime;
 #ifdef PRTIME
   double dtime;
@@ -94,16 +94,9 @@ int main(int argc, char *argv[])
 #if 0 /* If needed for debugging */
       /* (The Kalkreuter routine uses the random number generator to
 	 initialize the eigenvector search, so, if you want to compare
-	 results with and without deflation, you need to
+	 first results with and without deflation, you need to
 	 re-initialize here.) */
-      /* re-initialize the site random number generator */
-      int x, y, z, t;
-      for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
-	      if(node_number(x,y,z,t)==mynode()){
-		i=node_index(x,y,z,t);
-		initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
-	      }
-	    }
+      initialize_site_prn_from_seed(iseed);
 #endif
     }
     

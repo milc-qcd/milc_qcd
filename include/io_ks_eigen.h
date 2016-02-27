@@ -134,7 +134,7 @@ ks_eigen_file *w_open_ks_eigen(int flag, char *filename, int parity);
 
 void r_close_ks_eigen(int flag, ks_eigen_file *kseigf);
 void w_close_ks_eigen(int flag, ks_eigen_file *kseigf);
-int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
+int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
 		    su3_vector **eigVec, int timing);
 int save_ks_eigen(int flag, char *savefile, int Nvecs, double *eigVal, 
 		  su3_vector **eigVec, double *resid, int timing);

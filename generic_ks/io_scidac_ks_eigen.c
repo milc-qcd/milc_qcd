@@ -203,7 +203,7 @@ close_ks_eigen_outfile(QIO_Writer *outfile){
 /* Open the eigenvector file for reading */
 
 QIO_Reader *
-open_ks_eigen_infile(char *filename, int Nvecs, int serpar){
+open_ks_eigen_infile(char *filename, int *Nvecs, int serpar){
   char *xml;
 
   QIO_String *filexml = QIO_string_create();
@@ -226,9 +226,16 @@ open_ks_eigen_infile(char *filename, int Nvecs, int serpar){
 
   xml = QIO_string_ptr(filexml);
   parse_file_xml(&Nvecs_test, xml);
-  if(Nvecs_test != Nvecs){
+  /* Warn if the number of eigenvectors doesn't match expectations,
+     and if the number of eigenvectors is less than expected, reduce
+     the expected number */
+  if(Nvecs_test != *Nvecs){
     node0_printf("WARNING: Called for %d vectors, but found %d\n", 
-		 Nvecs, Nvecs_test);
+		 *Nvecs, Nvecs_test);
+    if(*Nvecs > Nvecs_test){
+      node0_printf("WARNING: Resetting Nvecs = %d\n", Nvecs_test);
+      *Nvecs = Nvecs_test;
+    }
   }
 
   QIO_string_destroy(filexml);
@@ -250,8 +257,10 @@ read_ks_eigenvector(QIO_Reader *infile, su3_vector *eigVec, double *eigVal){
   else
     status = read_D3_V_to_field(infile, recxml, eigVec, 1);
 
-  xml = QIO_string_ptr(recxml);
-  parse_record_xml(eigVal, xml);
+  if(status != QIO_EOF){
+    xml = QIO_string_ptr(recxml);
+    parse_record_xml(eigVal, xml);
+  }
 
   QIO_string_destroy(recxml);
 
