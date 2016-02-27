@@ -113,3 +113,15 @@ Real myrand(double_prn *prn_pt) {
 
 #endif
 
+void
+initialize_site_prn_from_seed(int iseed){
+  int x, y, z, t, i;
+
+  for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
+	  if(node_number(x,y,z,t)==mynode()){
+	    i=node_index(x,y,z,t);
+	    initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
+	  }
+	}
+}
+
