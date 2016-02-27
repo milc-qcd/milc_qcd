@@ -138,8 +138,9 @@ set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg,
   /* For multimass inversion, don't restart */
   if(nsrc != 1 || nmass[0] != 1)
     qop_invert_arg->restart = qop_invert_arg->max_iter;
-  /* TO DO: We need to experiment with mixed_rsq */
-  qop_invert_arg->mixed_rsq    = 0;
+#ifdef HALF_MIXED
+  qop_invert_arg->mixed_rsq    = qic->mixed_rsq;
+#endif
 }
 
 
