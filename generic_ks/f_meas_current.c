@@ -141,13 +141,13 @@ f_meas_current( int nrand, quark_invert_control *qic, Real mass,
 	 a nearly conserved current.  */
       spin_taste_op_fn(fn, spin_taste[mu], r_offset, gr_mu, M_inv_gr);
       spin_taste_op_fn(fn, spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
-
-	/* J_mu = imag[gr.M_inv_gr] */
-	FORALLFIELDSITES(i){
-	  complex cc = su3_dot( gr+i, gr_mu+i );
-	  j_mu[NMU*i + mu] = cc.imag;
-	}
-      } /* mu */
+      
+      /* J_mu = imag[gr.M_inv_gr] */
+      FORALLFIELDSITES(i){
+	complex cc = su3_dot( gr+i, gr_mu+i );
+	j_mu[NMU*i + mu] = cc.imag;
+      }
+    } /* mu */
 
 #if 0      
       /* DEBUG */

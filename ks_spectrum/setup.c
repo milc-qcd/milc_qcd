@@ -274,6 +274,9 @@ int readin(int prompt) {
 	param.qic_pbp[i].prec = param.qic_pbp[0].prec;
 	IF_OK status += get_f(stdin, prompt, "error_for_propagator", &param.qic_pbp[i].resid);
 	IF_OK status += get_f(stdin, prompt, "rel_error_for_propagator", &param.qic_pbp[i].relresid );
+#ifdef HALF_MIXED
+	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic_pbp[i].mixed_rsq );
+#endif
       }
     }
 
@@ -533,6 +536,9 @@ int readin(int prompt) {
 			      &param.qic[nprop].resid );
 	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
 			      &param.qic[nprop].relresid );
+#ifdef HALF_MIXED
+	IF_OK status += get_f(stdin, prompt, "mixed_rsq", &param.qic[nprop].mixed_rsq );
+#endif
 	/* Precision for all members of the set must be the same */
 	param.qic[nprop].prec = param.qic[0].prec;
 
