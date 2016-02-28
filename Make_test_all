@@ -42,6 +42,8 @@ DIRS = \
    smooth_inst \
    symanzik_sl32 \
    u1_gauge \
+   wilson_flow \
+
 
 all:
 	for dir in ${DIRS};\
