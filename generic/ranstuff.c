@@ -113,6 +113,7 @@ Real myrand(double_prn *prn_pt) {
 
 #endif
 
+#ifdef SITERAND
 void
 initialize_site_prn_from_seed(int iseed){
   int x, y, z, t, i;
@@ -124,4 +125,6 @@ initialize_site_prn_from_seed(int iseed){
 	  }
 	}
 }
+#endif
+
 
