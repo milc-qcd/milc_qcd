@@ -164,6 +164,20 @@ ks_spectrum_asqtad::
 	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
+ks_spectrum_deflate_asqtad::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = asqtad_action.h" \
+	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME" \
+	"DEFINES += -DEIGMODE=DEFLATION -DEIGEN_QIO" \
+	"EXTRA_OBJECTS += ${FN_OBJECTS} ${DEFLATE_OBJECTS}"
+
+ks_spectrum_eigcg_asqtad::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	"QUARK = asqtad_action.h" \
+	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME" \
+	"DEFINES += -DEIGMODE=EIGCG -DEIGEN_QIO" \
+	"EXTRA_OBJECTS += ${FN_OBJECTS} ${EIGCG_OBJECTS}"
+
 ks_spectrum_asqtad_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
@@ -182,11 +196,7 @@ ks_spectrum_asqtad_mu_eos::
 ks_spectrum_naive::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = onelink_action.h" \
-<<<<<<< HEAD
 	"DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -UD_FN_GATHER13" \
-=======
-        "DEFINES= -DFN -DHAVE_KS -DIOTIME -DPRTIME -UD_FN_GATHER13" \
->>>>>>> 0749648cd652a3215dcdeb3ac152262d9a2c17a9
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_spectrum_naive_debug::
