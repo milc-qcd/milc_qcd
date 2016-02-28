@@ -228,5 +228,6 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
     node0_printf("eigVal[%d] = %e ( resid = %e , ||eigVec[%d]|| = %e )\n",
 		 i, eigVal[i], resid[i], i, norm[i]);
   }
+  node0_printf("End of eigensolutions\n");
   free(norm);
 }
