@@ -1051,10 +1051,15 @@ d3_trdMdeMi_dmu3: mass 1.000000e-01,  R: -1.807740007e-02  Im: -4.743414139e-03 
 d4_trdMdeMi_dmu4: mass 1.000000e-01,  R: -3.258021865e+00  Im: 1.290627017e-01 ( 2 of 2 )
 d5_trdMdeMi_dmu5: mass 1.000000e-01,  R: 5.112073536e-01  Im: 4.716751152e-01 ( 2 of 2 )
 d6_trdMdeMi_dmu6: mass 1.000000e-01,  R: -1.036204558e+02  Im: -5.117267983e+00 ( 2 of 2 )
+Aggregate time to calculate pbp, etc 7.670963e+00
 Fixing to Coulomb gauge
 GFIX: Ended at step 1. Av gf action 9.24589992e-01, delta 1.073e-06
-Time to APE smear 1.599789e-04 sec
+Aggregate time to gauge fix 6.392956e-03
+Time to APE smear 1.480579e-04 sec
 END OF HEADER
+Aggregate time to compute propagators 0.000000e+00
+Aggregate time to tie meson correlators 0.000000e+00
+Aggregate time to tie baryon correlators 1.192093e-06
 RUNNING COMPLETED
 Time = 7.975360e+00 seconds
 total_iters = 17193
