@@ -231,7 +231,7 @@ static void RayleighRitz(int m, int n, double *eigVal, su3_vector **eigVec, doub
 			 int ldH, int parity){
 
   /* Constant */
-  int lwork = 2*n;
+  int lwork = 2*n+1;
 
   register int i;
   int j, k, info;
