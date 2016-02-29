@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     /* print eigenvalues of iDslash */
     node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
     node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
-    for(i=0;i<Nvecs_curr;i++){ 
+    for(int i=0;i<Nvecs_curr;i++){ 
       if ( eigVal[i] > 0.0 ){
 	node0_printf("eigenval(%i): %10g\n", i, 0.5*sqrt(eigVal[i]));
       }
@@ -133,9 +133,10 @@ int main(int argc, char *argv[])
 
       if(num_pbp_masses == 1){
 #ifdef CURRENT_DISC
-	f_meas_current( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass,
-			param.ksp_pbp[i0].naik_term_epsilon_index, fn_links,
-			param.pbp_filenames[i0] );
+	f_meas_current( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
+			&param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
+			param.ksp_pbp[i0].naik_term_epsilon_index, 
+			fn_links, param.pbp_filenames[i0] );
 #else
 	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
 			  param.ksp_pbp[i0].naik_term_epsilon_index, fn_links);
@@ -148,8 +149,9 @@ int main(int argc, char *argv[])
 #endif
       } else {
 #ifdef CURRENT_DISC
-	f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
-			     &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
+	f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+			      param.thinning[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], 
+			      fn_links, &param.pbp_filenames[i0] );
 #else
 	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
 			  &param.ksp_pbp[i0], fn_links);
@@ -198,8 +200,6 @@ int main(int argc, char *argv[])
 
 #if EIGMODE == EIGCG || EIGMODE == DEFLATION
 
-    STARTTIME;
-
     /* save eigenvectors if requested */
     int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
 			       Nvecs_curr, eigVal, eigVec, resid, 1);
@@ -208,10 +208,8 @@ int main(int argc, char *argv[])
     }
 
     /* Clean up eigen storage */
-    for(i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
+    for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
     free(eigVal); free(eigVec); free(resid);
-
-    ENDTIME("save eigenvectors (if requested)");
 
 #endif
 

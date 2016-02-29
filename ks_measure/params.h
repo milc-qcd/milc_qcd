@@ -68,6 +68,9 @@ typedef struct {
   int end_pbp_masses[MAX_SET]; /* index of ending propagator in this set */
   int prec_pbp[MAX_SET];         /* Precision of the pbp calculation (1 or 2) */
   int npbp_reps[MAX_SET];     /* Number of random sources for pbp calculation */
+  int nwrite[MAX_SET];        /* For some cumulative stochastic applications: 
+				 number of random sources per write */
+  int thinning[MAX_SET];        /* Interval between nonzero stochastic sources */
   quark_invert_control qic_pbp[MAX_MASS_PBP];
   ks_param ksp_pbp[MAX_MASS_PBP];
   char pbp_filenames[MAX_MASS_PBP][MAXFILENAME];

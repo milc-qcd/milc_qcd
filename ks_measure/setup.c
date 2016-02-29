@@ -258,6 +258,12 @@ int readin(int prompt) {
       /* Number of stochastic sources */
       IF_OK status += get_i(stdin, prompt, "npbp_reps", &param.npbp_reps[k] );
 
+#ifdef CURRENT_DISC
+      /* For some applications.  Random source count between writes */
+      IF_OK status += get_i(stdin, prompt, "nwrite", &param.nwrite[k] );
+      IF_OK status += get_i(stdin, prompt, "source_spacing", &param.thinning[k] );
+#endif
+
       /* The following parameters are common to the set and will be copied
 	 to each member */
 

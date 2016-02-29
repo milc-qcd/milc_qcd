@@ -221,8 +221,13 @@ ks_measure_current_deflate_hisq::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
 	-DEIGMODE=DEFLATION -DEIGEN_QIO" \
-	"EXTRA_OBJECTS += f_meas_current.o spin_taste_ops.o \
-	gammas.o ${DEFLATE_OBJECTS}"
+	"EXTRA_OBJECTS += f_meas_current.o ${DEFLATE_OBJECTS}"
+
+ks_measure_current_eigcg_hisq::
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
+	${HISQ_OPTIONS} "DEFINES += -DCURRENT_DISC \
+	-DEIGMODE=EIGCG -DEIGEN_QIO" \
+	"EXTRA_OBJECTS += f_meas_current.o ${EIGCG_OBJECTS}"
 
 ks_measure_hisq_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
