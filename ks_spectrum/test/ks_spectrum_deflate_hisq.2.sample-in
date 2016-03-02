@@ -1,0 +1,411 @@
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+
+######################################################################
+# source time 0
+######################################################################
+
+# Gauge field description
+
+reload_serial ../../binary_samples/lat.sample.l8888
+u0 1
+coulomb_gauge_fix
+forget
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0
+
+# Dirac eigenpair calculation
+
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 10
+
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+
+# Outer loop iterations
+Kalkreuter_iters 20
+
+# Eigenvalue tolerance
+eigenval_tolerance 1.0e-6
+
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease .3
+
+# eigenvector I/O
+fresh_ks_eigen
+save_serial_ks_eigen ks_eigen_deflate.test-out
+
+# Chiral condensate and related measurements
+
+number_of_pbp_masses 0
+
+number_of_base_sources 2
+
+# base source 0
+
+random_color_wall
+subset full
+t0 0
+ncolor 3
+momentum 0 0 0
+source_label r
+save_serial_scidac_ks_source test_src
+
+# base source 1
+
+point
+subset full
+origin  0 0 0 0
+source_label d
+forget_source
+
+# Description of completed sources
+
+number_of_modified_sources 1
+
+# source 2
+
+source 1
+spin_taste
+spin_taste rhox
+op_label p
+forget_source
+
+# Description of propagators
+
+number_of_sets 3
+
+# Set 0
+# Parameters common to all members of this set
+
+max_cg_iterations 1000
+max_cg_restarts 2
+check sourceonly
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 2
+
+source 0
+
+number_of_propagators 1
+
+# Propagators for mass 0
+
+# propagator 0
+
+mass 1
+naik_term_epsilon 0
+error_for_propagator 0
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+# Set 1
+# Parameters common to all members of this set
+
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 2
+
+source 1
+
+number_of_propagators 1
+
+# Propagators for mass 0
+
+# propagator 1
+
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+# Set 2
+# Parameters common to all members of this set
+
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 2
+
+source 2
+
+number_of_propagators 1
+
+# Propagators for mass 0
+
+# propagator 1
+
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+# Definition of quarks
+
+number_of_quarks 2
+
+# quark 0
+
+propagator 1
+
+identity
+op_label d
+forget_ksprop
+
+# quark 1
+
+propagator 2
+
+identity
+op_label d
+forget_ksprop
+
+# Description of mesons
+
+number_of_mesons 2
+
+pair 0 0
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_deflate_hisq.2.corrfile.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator POINT_PION p000  1 * 1 pion5 0 0 0 E E E
+
+pair 0 1
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_deflate_hisq.2.corrfile.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator RHOX p000 1 * 1 rhox 0 0 0 E E E
+
+# Description of baryons
+
+number_of_baryons 0
+
+######################################################################
+
+# Gauge field description
+
+continue
+u0 1
+no_gauge_fix
+forget
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0
+
+# Dirac eigenpair calculation
+
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 5
+
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+
+# Outer loop iterations
+Kalkreuter_iters 20
+
+# Eigenvalue tolerance
+eigenval_tolerance 1.0e-6
+
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease .3
+
+# eigenvector I/O
+reload_serial_ks_eigen ks_eigen_deflate.test-out
+forget_ks_eigen
+
+# Chiral condensate and related measurements
+
+number_of_pbp_masses 0
+
+number_of_base_sources 2
+
+# base source 0
+
+vector_field
+subset full
+origin 0 0 0 0
+load_source_serial test_src
+ncolor 3
+momentum 0 0 0
+source_label r
+forget_source
+
+# base source 1
+
+point
+subset full
+origin  0 0 0 0
+source_label d
+forget_source
+
+# Description of completed sources
+
+number_of_modified_sources 1
+
+# source 2
+
+source 1
+spin_taste
+spin_taste rhox
+op_label p
+forget_source
+
+# Description of propagators
+
+number_of_sets 3
+
+# Set 0
+# Parameters common to all members of this set
+
+max_cg_iterations 1000
+max_cg_restarts 2
+check sourceonly
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 2
+
+source 0
+
+number_of_propagators 1
+
+# Propagators for mass 0
+
+# propagator 0
+
+mass 1
+naik_term_epsilon 0
+error_for_propagator 0
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+# Set 1
+# Parameters common to all members of this set
+
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 2
+
+source 1
+
+number_of_propagators 1
+
+# Propagators for mass 0
+
+# propagator 1
+
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+# Set 2
+# Parameters common to all members of this set
+
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 2
+
+source 2
+
+number_of_propagators 1
+
+# Propagators for mass 0
+
+# propagator 1
+
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+
+fresh_ksprop
+forget_ksprop
+
+# Definition of quarks
+
+number_of_quarks 2
+
+# quark 0
+
+propagator 1
+
+identity
+op_label d
+forget_ksprop
+
+# quark 1
+
+propagator 2
+
+identity
+op_label d
+forget_ksprop
+
+# Description of mesons
+
+number_of_mesons 2
+
+pair 0 0
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_deflate_hisq.2.corrfile.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator POINT_PION p000  1 * 1 pion5 0 0 0 E E E
+
+pair 0 1
+spectrum_request meson
+
+save_corr_fnal ks_spectrum_deflate_hisq.2.corrfile.test-out
+r_offset 0 0 0 0
+
+number_of_correlators 1
+
+correlator RHOX p000 1 * 1 rhox 0 0 0 E E E
+
+# Description of baryons
+
+number_of_baryons 0
+

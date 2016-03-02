@@ -121,8 +121,7 @@ int spectrum_singlets( Real mass, Real tol, field_offset temp_offset,
      *        of them as sources for mat_invert */
     FORALLSITES(i,s){
 	for(color=0;color<3;color++){
-	    R[i].c[color].real  = gaussian_rand_no(&(s->site_prn));
-	    R[i].c[color].imag  = gaussian_rand_no(&(s->site_prn));
+	    R[i].c[color]  = complex_gaussian_rand_no(&(s->site_prn));
 	}
 	x = 2.0/sqrt( magsq_su3vec( &(R[i]) ) );
 	/* "2" because we invert 2m + 2 Dslash */

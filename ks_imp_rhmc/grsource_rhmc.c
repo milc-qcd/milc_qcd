@@ -29,11 +29,9 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
   FORSOMEPARITY(i,s,parity){
     for(j=0;j<3;j++){
 #ifdef SITERAND
-      s->g_rand.c[j].real = gaussian_rand_no(&(s->site_prn));
-      s->g_rand.c[j].imag = gaussian_rand_no(&(s->site_prn));
+      s->g_rand.c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-      s->g_rand.c[j].real = gaussian_rand_no(&node_prn);
-      s->g_rand.c[j].imag = gaussian_rand_no(&node_prn);
+      s->g_rand.c[j] = complex_gaussian_rand_no(&node_prn);
 #endif
     }
     /*TEMP*/ sum += (double)magsq_su3vec( &(s->g_rand) );

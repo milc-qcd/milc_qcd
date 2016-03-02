@@ -1,8 +1,12 @@
 SU3 with improved KS action
 Microcanonical simulation with refreshing
-MIMD version 7 $Name:  $
-Machine = QMP (portable), with 1 nodes
 Rational function hybrid Monte Carlo algorithm
+MIMD version 7.7.13
+Machine = QMP (portable), with 1 nodes
+Host(0) = kepler.physics.utah.edu
+Username = detar
+start: Mon Feb 15 09:22:45 2016
+
 Options selected...
 Generic single precision
 C_GLOBAL_INLINE
@@ -13,8 +17,12 @@ KS_MULTICG=HYBRID
 KS_MULTIFF=FNMAT
 VECLENGTH=4
 INT_ALG=INT_3G1F
-HISQ_FORCE_FILTER=0.000050
-type 0 for no prompts  or 1 for prompts
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+HISQ_FORCE_FILTER = 5e-05
+HISQ_FF_MULTI_WRAPPER is ON
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 6
 ny 6
 nz 6
@@ -435,6 +443,7 @@ n_orders_naik[0]=30
 eps_naik[0]=0.000000
 n_order_naik_total 30
 LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
 ON EACH NODE 6 x 6 x 6 x 6
 Mallocing 1.1 MBytes per node for lattice
 Made lattice
@@ -481,122 +490,177 @@ forget
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666.hisq
 Time stamp Mon Nov 19 18:42:42 2007
 Checksums c9687fe2 b52bd146 OK
-Time to reload gauge configuration = 2.324390e-02
+Time to reload gauge configuration = 2.973080e-03
 CHECK PLAQ: 1.840395e+00 1.859751e+00
 CHECK NERSC LINKTR: 1.686646e-01 CKSUM: 8e705331
 Unitarity checked.  Max deviation 2.38e-07
-Time to check unitarity = 2.182007e-03
+Time to check unitarity = 2.489090e-04
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.036307
 Symanzik 1x1 + 1x2 + 1x1x1 action with HISQ quark loops
 gauge_action: total_dyn_flavors = 3
 loop coefficients: nloop rep loop_coeff  multiplicity
                     0 0      1.000000e+00     6
                     1 0      -4.181005e-02     12
                     2 0      5.149204e-04     16
-MAKING PATH TABLES
-"Fat 7 (level 1)"
-path coefficients: npath  path_coeff  multiplicity
-                    0      1.250000e-01     8
-                    1      -6.250000e-02     48
-                    2      1.562500e-02     192
-                    3      -2.604167e-03     384
-Unitarization method = UNITARIZE_ANALYTIC
-Unitarizaton group = U(3)
-"Fat7 + 2xLepage"
-path coefficients: npath  path_coeff  multiplicity
-                    0      1.000000e+00     8
-                    1      -4.166667e-02     8
-                    2      -6.250000e-02     48
-                    3      1.562500e-02     192
-                    4      -2.604167e-03     384
-                    5      -1.250000e-01     48
-"1-link + Naik"
-path coefficients: npath  path_coeff  multiplicity
-                    0      1.250000e-01     8
-                    1      -4.166667e-02     8
 WARMUPS COMPLETED
 Omelyan integration, 3 gauge for one 1 fermion step, steps= 10 eps= 2.000000e-02 alpha= 1.000000e-01 beta= 1.000000e-01
-GRSOURCE: sum = 1.9481611428e+03
-GRSOURCE: sum = 1.9973772362e+03
-GRSOURCE: sum = 1.9811251848e+03
-GRSOURCE: sum = 1.9866283190e+03
+GRSOURCE: sum = 1.9636750663e+03
+ OK converged final_rsq= 8.6e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 40
+GRSOURCE: sum = 1.9027332576e+03
+ OK converged final_rsq= 9.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 47
+GRSOURCE: sum = 1.9328576741e+03
+ OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 47
+GRSOURCE: sum = 1.9363357361e+03
+ OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 47
 PLAQUETTE ACTION: -3.548588e+04
-ACTION: g,h,f = 1.91689577889074e+04  -1.13785634160042e+02  7.91329176107049e+03  2.69684639158178e+04
-DG = 1.916896e+04, DH = -1.137856e+02, DF = 7.913292e+03, D = 2.696846e+04
-QOP MAKING PATH TABLES
-"Fat 7 (level 1)"
-QOP path coefficients: npath  path_coeff  multiplicity
-                    0      1.250000e-01     8
-                    1      -6.250000e-02     48
-                    2      1.562500e-02     192
-                    3      -2.604167e-03     384
-QOP Unitarization method = QOP_UNITARIZE_RATIONAL
-"Fat7 + 2xLepage"
-QOP path coefficients: npath  path_coeff  multiplicity
-                    0      1.000000e+00     8
-                    1      -4.166667e-02     8
-                    2      -6.250000e-02     48
-                    3      1.562500e-02     192
-                    4      -2.604167e-03     384
-                    5      -1.250000e-01     48
-"1-link + Naik"
-QOP path coefficients: npath  path_coeff  multiplicity
-                    0      1.250000e-01     8
-                    1      -4.166667e-02     8
-PLAQUETTE ACTION: -3.561901e+04
-ACTION: g,h,f = 1.90558151507629e+04  -9.20309318602085e+00  7.92184940055013e+03  2.69684614581270e+04
-DG = -1.131426e+02, DH = 1.045825e+02, DF = 8.557639e+00, D = -2.457691e-03
-CHECK: delta S = -2.457691e-03
-PLAQ:	1.851180	1.862847
-P_LOOP:	3.804356e-01	-1.831044e-02
-G_LOOP:  0  0  4   	1.875363e+00	( 0 1 7 6  )
-G_LOOP:  0  1  4   	1.824864e+00	( 0 2 7 5  )
-G_LOOP:  0  2  4   	1.862273e+00	( 0 3 7 4  )
-G_LOOP:  0  3  4   	1.853314e+00	( 1 2 6 5  )
-G_LOOP:  0  4  4   	1.887667e+00	( 1 3 6 4  )
-G_LOOP:  0  5  4   	1.838602e+00	( 2 3 5 4  )
-G_LOOP:  1  0  6   	1.212819e+00	( 0 0 1 7 7 6  )
-G_LOOP:  1  1  6   	1.159546e+00	( 0 0 2 7 7 5  )
-G_LOOP:  1  2  6   	1.155353e+00	( 0 0 3 7 7 4  )
-G_LOOP:  1  3  6   	1.211186e+00	( 1 1 0 6 6 7  )
-G_LOOP:  1  4  6   	1.183990e+00	( 1 1 2 6 6 5  )
-G_LOOP:  1  5  6   	1.198826e+00	( 1 1 3 6 6 4  )
-G_LOOP:  1  6  6   	1.149391e+00	( 2 2 0 5 5 7  )
-G_LOOP:  1  7  6   	1.177299e+00	( 2 2 1 5 5 6  )
-G_LOOP:  1  8  6   	1.158743e+00	( 2 2 3 5 5 4  )
-G_LOOP:  1  9  6   	1.207892e+00	( 3 3 0 4 4 7  )
-G_LOOP:  1  10  6   	1.210198e+00	( 3 3 1 4 4 6  )
-G_LOOP:  1  11  6   	1.167951e+00	( 3 3 2 4 4 5  )
-G_LOOP:  2  0  6   	1.191727e+00	( 0 1 2 7 6 5  )
-G_LOOP:  2  1  6   	1.217089e+00	( 0 1 5 7 6 2  )
-G_LOOP:  2  2  6   	1.202827e+00	( 0 6 2 7 1 5  )
-G_LOOP:  2  3  6   	1.201862e+00	( 0 6 5 7 1 2  )
-G_LOOP:  2  4  6   	1.232411e+00	( 0 1 3 7 6 4  )
-G_LOOP:  2  5  6   	1.253200e+00	( 0 1 4 7 6 3  )
-G_LOOP:  2  6  6   	1.231978e+00	( 0 6 3 7 1 4  )
-G_LOOP:  2  7  6   	1.227321e+00	( 0 6 4 7 1 3  )
-G_LOOP:  2  8  6   	1.179624e+00	( 0 2 3 7 5 4  )
-G_LOOP:  2  9  6   	1.223221e+00	( 0 2 4 7 5 3  )
-G_LOOP:  2  10  6   	1.179190e+00	( 0 5 3 7 2 4  )
-G_LOOP:  2  11  6   	1.208169e+00	( 0 5 4 7 2 3  )
-G_LOOP:  2  12  6   	1.203411e+00	( 1 2 3 6 5 4  )
-G_LOOP:  2  13  6   	1.218809e+00	( 1 2 4 6 5 3  )
-G_LOOP:  2  14  6   	1.216341e+00	( 1 5 3 6 2 4  )
-G_LOOP:  2  15  6   	1.207130e+00	( 1 5 4 6 2 3  )
-GACTION: 5.960903e+00
- OK converged final_rsq= 4.6e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 2 iters= 55
- OK converged final_rsq= 8.5e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 1 iters= 25
-PBP: mass 1.800000e-03     -1.045347e-02  1.362906e-02  -9.865133e-03  -9.865286e-03 ( 1 of 1 )
-FACTION: mass = 1.800000e-03,  1.449900e+00 ( 1 of 1 )
- OK converged final_rsq= 5.1e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 2 iters= 54
- OK converged final_rsq= 8.8e-13 (cf 1e-12) rel = 0 (cf 0) restarts = 1 iters= 16
-PBP: mass 1.800000e-02     1.374551e-02  1.907255e-02  3.346020e-02  3.346032e-02 ( 1 of 1 )
-FACTION: mass = 1.800000e-02,  1.529383e+00 ( 1 of 1 )
+ OK converged final_rsq= 6.8e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 7.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 47
+ OK converged final_rsq= 7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 47
+ OK converged final_rsq= 6.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 47
+ACTION: g,h,f = 1.91689577889074e+04  -8.03776340931654e+01  7.73560159669816e+03  2.68241817515124e+04
+DG = 1.916896e+04, DH = -8.037763e+01, DF = 7.735602e+03, D = 2.682418e+04
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.035260
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 33
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 41
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.034878
+ OK converged final_rsq= 1.7e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 33
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 41
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.034685
+ OK converged final_rsq= 1.8e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 33
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.034821
+ OK converged final_rsq= 2.5e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 32
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.033768
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 32
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.034612
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 32
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.035235
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 32
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.033804
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 32
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.034395
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 32
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.034544
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 32
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 40
+PLAQUETTE ACTION: -3.570545e+04
+restore_fermion_links: Warning. Precision request replaced by 1
+Combined fattening and long-link calculation time: 0.034858
+ OK converged final_rsq= 8.1e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 39
+ OK converged final_rsq= 6.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 47
+ OK converged final_rsq= 7.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 47
+ OK converged final_rsq= 6.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 47
+ACTION: g,h,f = 1.89814624700873e+04  1.10639809951186e+02  7.73207863940299e+03  2.68241809194415e+04
+DG = -1.874953e+02, DH = 1.910174e+02, DF = -3.522957e+00, D = -8.320708e-04
+CHECK: delta S = -8.320708e-04
+PLAQ:	1.859026	1.864015
+P_LOOP:	3.168291e-01	-1.508245e-02
+G_LOOP:  0  0  4   	1.872315e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.855803e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.876120e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.848960e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.840115e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.875809e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.208726e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.186475e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.202493e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.202470e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.171388e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.163167e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.168975e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.195051e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	1.191216e+00	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	1.194084e+00	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.170547e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.227415e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.197284e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.179499e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.188904e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.199523e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.238812e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.205438e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.229702e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	1.204342e+00	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.199118e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.230803e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.189649e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.211720e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.189401e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.205404e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.197378e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.194547e+00	( 1 5 4 6 2 3  )
+GACTION: 5.937645e+00
+ OK converged final_rsq= 9.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 55
+ OK converged final_rsq= 8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 28
+PBP: mass 1.800000e-03     1.334657e-02  -1.000056e-02  -4.706673e-02  -4.706670e-02 ( 1 of 1 )
+FACTION: mass = 1.800000e-03,  1.496519e+00 ( 1 of 1 )
+ OK converged final_rsq= 9.1e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 55
+ OK converged final_rsq= 9.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 1 iters= 16
+PBP: mass 1.800000e-02     1.503085e-02  1.574956e-02  1.291386e-02  1.291378e-02 ( 1 of 1 )
+FACTION: mass = 1.800000e-02,  1.452746e+00 ( 1 of 1 )
 RUNNING COMPLETED
-average cg iters for step= 1.270000e+03
-Time = 1.672839e+02 seconds
-total_iters = 2614
+average cg iters for step= 1.520000e+02
+Time = 1.903348e+01 seconds
+total_iters = 2649
 
 
 get_i(0): EOF on input.
-exit: Thu Sep 24 09:43:11 2009
+exit: Mon Feb 15 09:23:04 2016
 

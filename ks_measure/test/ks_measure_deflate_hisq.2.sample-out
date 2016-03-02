@@ -1,0 +1,242 @@
+SU3 staggered fermion measurements
+MIMD version 7.7.13
+Machine = QMP (portable), with 1 nodes
+Host(0) = aquila.physics.utah.edu
+Username = detar
+start: Sun Feb 14 16:46:34 2016
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+HALF_MIXED
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 8 x 8 x 8 x 8
+Mallocing 2.9 MBytes per node for lattice
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../../binary_samples/lat.sample.l8888
+u0 1
+forget 
+staple_weight 0
+ape_iter 0
+# Dirac eigenpair calculation
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 10
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+# Outer loop iterations
+Kalkreuter_iters 20
+# Eigenvalue tolerance
+eigenval_tolerance 1e-06
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease 0.3
+# eigenvector I/O
+fresh_ks_eigen 
+save_serial_ks_eigen ./eigen_serial.out
+# Chiral condensate and related measurements
+number_of_sets 1
+# Parameters common to all members of set 0
+npbp_reps 1
+max_cg_iterations 300
+max_cg_restarts 5
+prec_pbp 2
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+number_of_pbp_masses 2
+mass 0.01
+naik_term_epsilon 0
+mass 0.1
+naik_term_epsilon 0
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l8888
+Time stamp Tue Mar 13 15:47:22 2012
+Checksums 4f9d000e 8d72f72e OK
+Time to reload gauge configuration = 9.887934e-03
+CHECK PLAQ: 1.7790021544584596e+00 1.7823592881385857e+00
+CHECK NERSC LINKTR: -6.4563862036388919e-04 CKSUM: 4a3bbf43
+Reunitarized for double precision. Max deviation 2.62e-07 changed to 5.55e-16
+Time to check unitarity = 1.180089e-01
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 1.576862
+Time to APE smear 6.892920e-03 sec
+Eigenvalues after diagonalization at iteration 9
+BEGIN RESULTS
+Eigenvalue(0) = 0.133305 +/- 1.293471e-08	 cvg? 0  
+Eigenvalue(1) = 0.136611 +/- 2.736016e-08	 cvg? 0  
+Eigenvalue(2) = 0.153418 +/- 3.259341e-08	 cvg? 0  
+Eigenvalue(3) = 0.157611 +/- 5.084107e-08	 cvg? 0  
+Eigenvalue(4) = 0.17824 +/- 3.505505e-08	 cvg? 0  
+Eigenvalue(5) = 0.188012 +/- 4.587285e-08	 cvg? 0  
+Eigenvalue(6) = 0.198306 +/- 5.234763e-08	 cvg? 0  
+Eigenvalue(7) = 0.203887 +/- 9.515337e-08	 cvg? 0  
+Eigenvalue(8) = 0.236513 +/- 6.679811e-08	 cvg? 0  
+Eigenvalue(9) = 0.239429 +/- 9.946291e-08	 cvg? 0  
+total Rayleigh iters = 1223
+Checking eigensolutions
+eigVal[0] = 1.333053e-01 ( resid = 1.837017e-04 , ||eigVec[0]|| = 1.000000e+00 )
+eigVal[1] = 1.366106e-01 ( resid = 3.057994e-04 , ||eigVec[1]|| = 1.000000e+00 )
+eigVal[2] = 1.534184e-01 ( resid = 3.284160e-04 , ||eigVec[2]|| = 1.000000e+00 )
+eigVal[3] = 1.576109e-01 ( resid = 4.215750e-04 , ||eigVec[3]|| = 1.000000e+00 )
+eigVal[4] = 1.782403e-01 ( resid = 3.227960e-04 , ||eigVec[4]|| = 1.000000e+00 )
+eigVal[5] = 1.880121e-01 ( resid = 3.827293e-04 , ||eigVec[5]|| = 1.000000e+00 )
+eigVal[6] = 1.983062e-01 ( resid = 4.276723e-04 , ||eigVec[6]|| = 1.000000e+00 )
+eigVal[7] = 2.038871e-01 ( resid = 5.026037e-04 , ||eigVec[7]|| = 1.000000e+00 )
+eigVal[8] = 2.365129e-01 ( resid = 4.681002e-04 , ||eigVec[8]|| = 1.000000e+00 )
+eigVal[9] = 2.394291e-01 ( resid = 4.635850e-04 , ||eigVec[9]|| = 1.000000e+00 )
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.182555
+eigenval(1):   0.184804
+eigenval(2):   0.195843
+eigenval(3):   0.198501
+eigenval(4):   0.211093
+eigenval(5):   0.216802
+eigenval(6):   0.222658
+eigenval(7):   0.225769
+eigenval(8):   0.243163
+eigenval(9):   0.244657
+ OK converged final_rsq= 7.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 81
+ OK converged final_rsq= 9.5e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 25
+ OK converged final_rsq= 8.8e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 73
+ OK converged final_rsq= 9.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 8
+PBP: mass 1.000000e-02     4.176069e-03  1.384507e-02  -1.057935e-02  -1.057935e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.479268e+00 ( 1 of 1 )
+PBP: mass 1.000000e-01     8.601250e-02  8.982017e-02  -1.095778e-02  -1.095778e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-01,  1.478984e+00 ( 1 of 1 )
+Time to save 10 eigenvectors = 4.326200e-02
+RUNNING COMPLETED
+Time = 2.876261e+01 seconds
+total_iters = 382
+
+
+######################################################################
+# Gauge field description
+continue 
+u0 1
+forget 
+staple_weight 0
+ape_iter 0
+# Dirac eigenpair calculation
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 5
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+# Outer loop iterations
+Kalkreuter_iters 20
+# Eigenvalue tolerance
+eigenval_tolerance 1e-06
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease 0.3
+# eigenvector I/O
+reload_serial_ks_eigen ./eigen_serial.out
+forget_ks_eigen 
+# Chiral condensate and related measurements
+number_of_sets 1
+# Parameters common to all members of set 0
+npbp_reps 1
+max_cg_iterations 300
+max_cg_restarts 5
+prec_pbp 2
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+number_of_pbp_masses 2
+mass 0.01
+naik_term_epsilon 0
+mass 0.1
+naik_term_epsilon 0
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 1.083089
+Time to APE smear 4.842043e-03 sec
+Opened KS eigenvector file ./eigen_serial.out for serial reading
+Read eigenvectors serially from file ./eigen_serial.out
+Closed KS eigenvector file ./eigen_serial.out
+Time to reload 5 eigenvectors = 1.187682e-02
+Checking eigensolutions
+eigVal[0] = 1.333053e-01 ( resid = 1.837017e-04 , ||eigVec[0]|| = 1.000000e+00 )
+eigVal[1] = 1.366106e-01 ( resid = 3.057994e-04 , ||eigVec[1]|| = 1.000000e+00 )
+eigVal[2] = 1.534184e-01 ( resid = 3.284160e-04 , ||eigVec[2]|| = 1.000000e+00 )
+eigVal[3] = 1.576109e-01 ( resid = 4.215750e-04 , ||eigVec[3]|| = 1.000000e+00 )
+eigVal[4] = 1.782403e-01 ( resid = 3.227960e-04 , ||eigVec[4]|| = 1.000000e+00 )
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.182555
+eigenval(1):   0.184804
+eigenval(2):   0.195843
+eigenval(3):   0.198501
+eigenval(4):   0.211093
+ OK converged final_rsq= 9.8e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 84
+ OK converged final_rsq= 8.5e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 25
+ OK converged final_rsq= 8.4e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 78
+ OK converged final_rsq= 9.1e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 8
+PBP: mass 1.000000e-02     5.043030e-03  1.272543e-02  4.092675e-03  4.092675e-03 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.482209e+00 ( 1 of 1 )
+PBP: mass 1.000000e-01     8.411202e-02  8.919704e-02  4.036858e-03  4.036858e-03 ( 1 of 1 )
+FACTION: mass = 1.000000e-01,  1.481777e+00 ( 1 of 1 )
+RUNNING COMPLETED
+Time = 5.545956e+00 seconds
+total_iters = 398
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Sun Feb 14 16:47:08 2016
+

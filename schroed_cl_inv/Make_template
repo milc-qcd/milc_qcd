@@ -89,15 +89,8 @@ G_SCHROED_OBJECTS =  \
 # Objects depending on architecture and software package 
 
 # Selection of layout
-ifeq ($(strip ${QCDOC}),true)
-  LAYOUT = layout_qcdoc.o # Required
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
-  else
-    LAYOUT = layout_hyper_prime.o # Choices possible here
-  endif
-endif
+
+LAYOUT = layout_hyper_prime.o # Choices possible here
 
 # Selection of the fermion links algorithm (i.e. clover term)
 FLINKS_WILSON = ${FLINKS_WILSONQOP}

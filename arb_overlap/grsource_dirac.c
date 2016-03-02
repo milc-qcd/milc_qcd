@@ -9,11 +9,9 @@ register site *s;
     FORALLSITES(i,s){
         for(k=0;k<4;k++)for(j=0;j<3;j++){
 #ifdef SITERAND
-            s->g_rand.d[k].c[j].real = gaussian_rand_no(&(s->site_prn));
-            s->g_rand.d[k].c[j].imag = gaussian_rand_no(&(s->site_prn));
+            s->g_rand.d[k].c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-            s->g_rand.d[k].c[j].real = gaussian_rand_no(&node_prn);
-            s->g_rand.d[k].c[j].imag = gaussian_rand_no(&node_prn);
+            s->g_rand.d[k].c[j] = complex_gaussian_rand_no(&node_prn);
 #endif
         }
     }
@@ -31,11 +29,9 @@ if (c==PLUS)
     FORALLSITES(i,s){
         for(k=0;k<2;k++)for(j=0;j<3;j++){
 #ifdef SITERAND
-            (*((wilson_vector*)F_PT(s,f))).d[k].c[j].real = gaussian_rand_no(&(s->site_prn));
-            (*((wilson_vector*)F_PT(s,f))).d[k].c[j].imag = gaussian_rand_no(&(s->site_prn));
+            (*((wilson_vector*)F_PT(s,f))).d[k].c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-            (*((wilson_vector*)F_PT(s,f))).d[k].c[j].real = gaussian_rand_no(&node_prn);
-            (*((wilson_vector*)F_PT(s,f))).d[k].c[j].imag = gaussian_rand_no(&node_prn);
+            (*((wilson_vector*)F_PT(s,f))).d[k].c[j] = complex_gaussian_rand_no(&node_prn);
 #endif
         }
         for(k=2;k<4;k++)for(j=0;j<3;j++){
@@ -54,11 +50,9 @@ else /* c==MINUS */
 	}
         for(k=2;k<4;k++)for(j=0;j<3;j++){
 #ifdef SITERAND
-            (*((wilson_vector*)F_PT(s,f))).d[k].c[j].real = gaussian_rand_no(&(s->site_prn));
-            (*((wilson_vector*)F_PT(s,f))).d[k].c[j].imag = gaussian_rand_no(&(s->site_prn));
+            (*((wilson_vector*)F_PT(s,f))).d[k].c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-            (*((wilson_vector*)F_PT(s,f))).d[k].c[j].real = gaussian_rand_no(&node_prn);
-            (*((wilson_vector*)F_PT(s,f))).d[k].c[j].imag = gaussian_rand_no(&node_prn);
+            (*((wilson_vector*)F_PT(s,f))).d[k].c[j] = complex_gaussian_rand_no(&node_prn);
 #endif
         }
 		
@@ -79,11 +73,9 @@ if (f->chiral==PLUS)
     FORALLSITES(i,s){
         for(k=0;k<2;k++)for(j=0;j<3;j++){
 #ifdef SITERAND
-            (f->src[i]).d[k].c[j].real = gaussian_rand_no(&(s->site_prn));
-            (f->src[i]).d[k].c[j].imag = gaussian_rand_no(&(s->site_prn));
+            (f->src[i]).d[k].c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-            (f->src[i]).d[k].c[j].real = gaussian_rand_no(&node_prn);
-            (f->src[i]).d[k].c[j].imag = gaussian_rand_no(&node_prn);
+            (f->src[i]).d[k].c[j] = complex_gaussian_rand_no(&node_prn);
 #endif
         }
         for(k=2;k<4;k++)for(j=0;j<3;j++){
@@ -102,11 +94,9 @@ else if (f->chiral == MINUS)/* c==MINUS */
 	}
         for(k=2;k<4;k++)for(j=0;j<3;j++){
 #ifdef SITERAND
-            (f->src[i]).d[k].c[j].real = gaussian_rand_no(&(s->site_prn));
-            (f->src[i]).d[k].c[j].imag = gaussian_rand_no(&(s->site_prn));
+            (f->src[i]).d[k].c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-            (f->src[i]).d[k].c[j].real = gaussian_rand_no(&node_prn);
-            (f->src[i]).d[k].c[j].imag = gaussian_rand_no(&node_prn);
+            (f->src[i]).d[k].c[j] = complex_gaussian_rand_no(&node_prn);
 #endif
         }
 		

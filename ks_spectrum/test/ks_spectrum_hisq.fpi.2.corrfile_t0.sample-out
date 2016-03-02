@@ -1,6 +1,6 @@
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        random_color_wall
@@ -29,17 +29,17 @@ momentum:                     p000
 spin_taste_sink:              pion5
 correlator_key:               POINT_KAON_5_r_r_d_d_m0.005_m0.005_p000
 ...
-0	1.023408e-03	0.000000e+00
-1	2.185001e-04	0.000000e+00
-2	6.443606e-05	0.000000e+00
-3	3.714243e-05	0.000000e+00
-4	1.459912e-05	0.000000e+00
-5	3.508126e-05	0.000000e+00
-6	5.849420e-05	0.000000e+00
-7	2.141517e-04	0.000000e+00
+0	1.019117e-03	0.000000e+00
+1	2.169689e-04	0.000000e+00
+2	6.306103e-05	0.000000e+00
+3	3.935845e-05	0.000000e+00
+4	1.703391e-05	0.000000e+00
+5	3.756224e-05	0.000000e+00
+6	5.656387e-05	0.000000e+00
+7	2.096280e-04	0.000000e+00
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        random_color_wall
@@ -76,17 +76,17 @@ momentum:                     p000
 spin_taste_sink:              pion5
 correlator_key:               WALL_KAON_5_r_r_EO_EO_m0.005_m0.005_p000
 ...
-0	6.977871e-03	0.000000e+00
-1	5.574932e-03	0.000000e+00
-2	2.639160e-03	0.000000e+00
-3	2.660468e-03	0.000000e+00
-4	1.346856e-03	0.000000e+00
-5	2.128204e-03	0.000000e+00
-6	1.928508e-03	0.000000e+00
-7	2.585474e-03	0.000000e+00
+0	6.415128e-03	0.000000e+00
+1	5.131935e-03	0.000000e+00
+2	3.227285e-03	0.000000e+00
+3	3.120557e-03	0.000000e+00
+4	7.347320e-04	0.000000e+00
+5	3.597631e-03	0.000000e+00
+6	1.224447e-03	0.000000e+00
+7	3.562780e-03	0.000000e+00
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        even_and_odd_wall
@@ -121,7 +121,7 @@ correlator_key:               POINT_KAON_5_q_q_d_d_m0.005_m0.005_p000
 7	6.902905e-03	0.000000e+00
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        even_and_odd_wall
@@ -164,7 +164,7 @@ correlator_key:               WALL_KAON_5_q_q_EO_EO_m0.005_m0.005_p000
 7	5.158988e+00	0.000000e+00
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        random_color_wall
@@ -193,17 +193,17 @@ momentum:                     p000
 spin_taste_sink:              pion5
 correlator_key:               POINT_KAON_5_r_r_d_d_m0.005_m0.007_p000
 ...
-0	1.033422e-03	1.759773e-09
-1	2.205518e-04	6.918139e-09
-2	6.465464e-05	-1.336484e-08
-3	3.732080e-05	1.025590e-08
-4	1.468246e-05	1.120035e-08
-5	3.523199e-05	2.386980e-08
-6	5.865811e-05	1.649710e-08
-7	2.161270e-04	3.434873e-09
+0	1.029142e-03	3.460367e-09
+1	2.189775e-04	-1.146883e-08
+2	6.327317e-05	1.006018e-09
+3	3.953063e-05	-1.669072e-08
+4	1.714526e-05	-1.438883e-08
+5	3.771896e-05	-3.770230e-08
+6	5.673387e-05	-2.771967e-08
+7	2.115691e-04	-6.120381e-08
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        random_color_wall
@@ -240,17 +240,17 @@ momentum:                     p000
 spin_taste_sink:              pion5
 correlator_key:               WALL_KAON_5_r_r_EO_EO_m0.005_m0.007_p000
 ...
-0	7.030735e-03	-1.709156e-05
-1	5.613767e-03	-2.730956e-06
-2	2.648189e-03	-7.053181e-06
-3	2.665604e-03	-4.459933e-06
-4	1.348600e-03	2.538185e-06
-5	2.130563e-03	2.405178e-06
-6	1.927707e-03	-3.474584e-07
-7	2.604347e-03	-1.600982e-06
+0	6.445784e-03	2.389962e-05
+1	5.169130e-03	-7.993979e-07
+2	3.230706e-03	8.669684e-06
+3	3.131210e-03	2.326617e-06
+4	7.374664e-04	1.515450e-06
+5	3.603711e-03	-5.015775e-06
+6	1.217055e-03	1.220153e-06
+7	3.580691e-03	-3.939650e-06
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        even_and_odd_wall
@@ -275,17 +275,17 @@ momentum:                     p000
 spin_taste_sink:              pion5
 correlator_key:               POINT_KAON_5_q_q_d_d_m0.005_m0.007_p000
 ...
-0	8.097255e-03	7.671427e-06
-1	7.343746e-03	-3.354503e-06
+0	8.097255e-03	7.671437e-06
+1	7.343746e-03	-3.354486e-06
 2	3.012632e-03	3.354793e-06
-3	5.095393e-03	-1.323305e-06
-4	1.540416e-03	2.420415e-06
-5	4.845672e-03	8.121361e-07
+3	5.095393e-03	-1.323314e-06
+4	1.540416e-03	2.420410e-06
+5	4.845672e-03	8.121172e-07
 6	2.513561e-03	4.503652e-06
-7	6.945376e-03	5.048272e-06
+7	6.945376e-03	5.048255e-06
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        even_and_odd_wall
@@ -318,17 +318,17 @@ momentum:                     p000
 spin_taste_sink:              pion5
 correlator_key:               WALL_KAON_5_q_q_EO_EO_m0.005_m0.007_p000
 ...
-0	2.537946e+00	7.405333e-03
-1	5.891399e+00	-3.722998e-03
-2	8.496532e-01	3.200813e-03
-3	3.774065e+00	-1.802204e-03
-4	3.544598e-01	1.696369e-03
-5	3.859657e+00	-4.253135e-04
-6	5.423446e-01	4.227857e-03
-7	5.189476e+00	1.914497e-03
+0	2.537946e+00	7.405338e-03
+1	5.891399e+00	-3.722984e-03
+2	8.496532e-01	3.200812e-03
+3	3.774065e+00	-1.802206e-03
+4	3.544598e-01	1.696366e-03
+5	3.859657e+00	-4.253239e-04
+6	5.423446e-01	4.227859e-03
+7	5.189476e+00	1.914480e-03
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        random_color_wall
@@ -357,17 +357,17 @@ momentum:                     p000
 spin_taste_sink:              pion5
 correlator_key:               POINT_KAON_5_r_r_d_d_m0.007_m0.007_p000
 ...
-0	1.043556e-03	0.000000e+00
-1	2.226282e-04	0.000000e+00
-2	6.487827e-05	0.000000e+00
-3	3.750293e-05	0.000000e+00
-4	1.476849e-05	0.000000e+00
-5	3.538632e-05	0.000000e+00
-6	5.882661e-05	0.000000e+00
-7	2.181259e-04	0.000000e+00
+0	1.039286e-03	0.000000e+00
+1	2.210104e-04	0.000000e+00
+2	6.349032e-05	0.000000e+00
+3	3.970660e-05	0.000000e+00
+4	1.725969e-05	0.000000e+00
+5	3.787944e-05	0.000000e+00
+6	5.690854e-05	0.000000e+00
+7	2.135340e-04	0.000000e+00
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        random_color_wall
@@ -404,17 +404,17 @@ momentum:                     p000
 spin_taste_sink:              pion5
 correlator_key:               WALL_KAON_5_r_r_EO_EO_m0.007_m0.007_p000
 ...
-0	7.084548e-03	0.000000e+00
-1	5.652996e-03	0.000000e+00
-2	2.657448e-03	0.000000e+00
-3	2.670791e-03	0.000000e+00
-4	1.350461e-03	0.000000e+00
-5	2.132995e-03	0.000000e+00
-6	1.927116e-03	0.000000e+00
-7	2.623508e-03	0.000000e+00
+0	6.477004e-03	0.000000e+00
+1	5.206726e-03	0.000000e+00
+2	3.234285e-03	0.000000e+00
+3	3.141995e-03	0.000000e+00
+4	7.403222e-04	0.000000e+00
+5	3.609861e-03	0.000000e+00
+6	1.209832e-03	0.000000e+00
+7	3.598767e-03	0.000000e+00
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        even_and_odd_wall
@@ -449,7 +449,7 @@ correlator_key:               POINT_KAON_5_q_q_d_d_m0.007_m0.007_p000
 7	6.988359e-03	0.000000e+00
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 23:14:27 2012 UTC"
+date:                         "Sun Feb 14 23:50:46 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        even_and_odd_wall

@@ -58,10 +58,8 @@ void momgauge(complex *u1gf)
 	{
 	if(latin[i]!=junk_id)
 	  {
-          u1gf[4*i+TUP].real=
-		(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lkssq/2.0));
-          u1gf[4*i+TUP].imag=
-		(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lkssq/2.0));
+	   u1gf[4*i+TUP] = complex_gaussian_rand_no(&(s->site_prn));
+	   CDIVREAL( u1gf[4*i+TUP], sqrt(hp*lkssq/2.0), u1gf[4*i+TUP] );
 	  }
 	}
      } /* FORALLSITES-ends */
@@ -95,10 +93,8 @@ void momgauge(complex *u1gf)
 	if(latin[i]!=junk_id)
 	  {
 	  for(dir=XUP;dir<=ZUP;dir++){
-	      u1gf[4*i+dir].real=
-		(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lksq/2.0));
-	      u1gf[4*i+dir].imag=
-		(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lksq/2.0));
+	      u1gf[4*i+dir] = complex_gaussian_rand_no(&(s->site_prn));
+	      CDIVREAL( u1gf[4*i+dir], sqrt(hp*lksq/2.0), u1gf[4*i+dir] );
 	     }
 	  }
 	}
@@ -109,10 +105,8 @@ void momgauge(complex *u1gf)
 	  if(latin[i]!=junk_id)
 	    {
 	    for(dir=YUP;dir<=ZUP;dir++){
-                u1gf[4*i+dir].real=
-                  (Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lksq/2.0));
-                u1gf[4*i+dir].imag=
-                  (Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lksq/2.0));
+		u1gf[4*i+dir] = complex_gaussian_rand_no(&(s->site_prn));
+		CDIVREAL( u1gf[4*i+dir], sqrt(hp*lksq/2.0), u1gf[4*i+dir] );
                }
             u1gf[4*i+XUP].real=-(lk[YUP]*u1gf[4*i+YUP].real+
                                 lk[ZUP]*u1gf[4*i+ZUP].real)/lk[XUP];
@@ -125,10 +119,8 @@ void momgauge(complex *u1gf)
 	  if(latin[i]!=junk_id)
 	    {
 	    for(dir=XUP;dir<=ZUP;dir++)if(dir!=YUP){
-                u1gf[4*i+dir].real=
-                  (Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lksq/2.0));
-                u1gf[4*i+dir].imag=
-                  (Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lksq/2.0));
+		u1gf[4*i+dir] = complex_gaussian_rand_no(&(s->site_prn));
+		CDIVREAL( u1gf[4*i+dir], sqrt(hp*lksq/2.0), u1gf[4*i+dir] );
                }
             u1gf[4*i+YUP].real=-(lk[ZUP]*u1gf[4*i+ZUP].real+
                                 lk[XUP]*u1gf[4*i+XUP].real)/lk[YUP];
@@ -141,10 +133,8 @@ void momgauge(complex *u1gf)
 	  if(latin[i]!=junk_id)
 	    {
 	    for(dir=XUP;dir<=YUP;dir++){
-                u1gf[4*i+dir].real=
-                  (Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lksq/2.0));
-                u1gf[4*i+dir].imag=
-                  (Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*lksq/2.0));
+		u1gf[4*i+dir] = complex_gaussian_rand_no(&(s->site_prn));
+		CDIVREAL( u1gf[4*i+dir], sqrt(hp*lksq/2.0), u1gf[4*i+dir] );
                }
             u1gf[4*i+ZUP].real=-(lk[XUP]*u1gf[4*i+XUP].real+
                                 lk[YUP]*u1gf[4*i+YUP].real)/lk[ZUP];
@@ -160,10 +150,10 @@ void momgauge(complex *u1gf)
             mp=lksq*(1+((sqr(lk[XUP])+sqr(lk[ZUP]))/sqr(lk[YUP])));
             r1=lk[XUP]/((Real)sqrt(sqr(lk[XUP])+sqr(lk[ZUP])));
             r2=lk[ZUP]/((Real)sqrt(sqr(lk[XUP])+sqr(lk[ZUP])));
-            Am.real=(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*mm/2.0));
-            Am.imag=(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*mm/2.0));
-            Ap.real=(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*mp/2.0));
-            Ap.imag=(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*mp/2.0));
+	    Am = complex_gaussian_rand_no(&(s->site_prn));
+	    CDIVREAL( Am, sqrt(hp*mm/2.0), Am );
+	    Ap = complex_gaussian_rand_no(&(s->site_prn));
+	    CDIVREAL( Ap, sqrt(hp*mp/2.0), Ap );
 
             u1gf[4*i+XUP].real=r2*Am.real+r1*Ap.real;
             u1gf[4*i+XUP].imag=r2*Am.imag+r1*Ap.imag;
@@ -185,10 +175,10 @@ void momgauge(complex *u1gf)
             mp=lksq*(1+((sqr(lk[XUP])+sqr(lk[YUP]))/sqr(lk[ZUP])));
             r1=lk[XUP]/((Real)sqrt(sqr(lk[XUP])+sqr(lk[YUP])));
             r2=lk[YUP]/((Real)sqrt(sqr(lk[XUP])+sqr(lk[YUP])));
-            Am.real=(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*mm/2.0));
-            Am.imag=(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*mm/2.0));
-            Ap.real=(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*mp/2.0));
-            Ap.imag=(Real)(gaussian_rand_no(&(s->site_prn))/sqrt(hp*mp/2.0));
+	    Am = complex_gaussian_rand_no(&(s->site_prn));
+	    CDIVREAL( Am, sqrt(hp*mm/2.0), Am );
+	    Ap = complex_gaussian_rand_no(&(s->site_prn));
+	    CDIVREAL( Ap, sqrt(hp*mp/2.0), Ap );
 
             u1gf[4*i+XUP].real=r2*Am.real+r1*Ap.real;
             u1gf[4*i+XUP].imag=r2*Am.imag+r1*Ap.imag;

@@ -429,6 +429,8 @@ typedef struct {
 *
 * Real gaussian_rand_no( double_prn *prn_pt )
 *	file "gaussrand.c"
+* complex complex_gaussian_rand_no( double_prn *prn_pt )
+*	file "gaussrand.c"
 * Real z2_rand_no( double_prn *prn_pt );
 *	file "z2rand.c"
 * void byterevn(int32type w[], int n)
@@ -531,6 +533,7 @@ void copy_wvec( wilson_vector *src, wilson_vector *dest );
 void dump_wilson_vec( wilson_vector *src );
 
 Real gaussian_rand_no( double_prn *prn_pt );
+complex complex_gaussian_rand_no( double_prn *prn_pt );
 Real z2_rand_no( double_prn *prn_pt );
 #include "../include/int32type.h"
 void byterevn(int32type w[], int n);

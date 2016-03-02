@@ -143,7 +143,7 @@ int readin(int prompt) {
 
   if( param.stopflag != 0 )return param.stopflag;
 
-  if(prompt==2)return 0;
+  return 0;
 
 } /* setup.c */
 

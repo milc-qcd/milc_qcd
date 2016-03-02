@@ -87,10 +87,14 @@ G_KS_ALL = \
   grsource.o \
   hisq_links_qop.o \
   hypisq_links_qop.o \
+  inc_eigcg.o \
   io_helpers_ks.o \
+  io_helpers_ks_eigen.o \
+  io_ks_eigen.o \
   io_prop_ks.o \
   io_prop_ks_fm.o \
   io_scidac_ks.o \
+  io_scidac_ks_eigen.o \
   io_source_ks_fm.o \
   jacobi.o \
   ks_action_coeffs_asqtad_qop.o \
@@ -332,13 +336,21 @@ hisq_links_qop.o: ../generic_ks/hisq_links_qop.c
 	${CC} -c ${CFLAGS} $<
 hypisq_links_qop.o: ../generic_ks/hypisq_links_qop.c
 	${CC} -c ${CFLAGS} $<
+inc_eigcg.o: ../generic_ks/inc_eigcg.c
+	${CC} -c ${CFLAGS} $<
 io_helpers_ks.o: ../generic_ks/io_helpers_ks.c
+	${CC} -c ${CFLAGS} $<
+io_helpers_ks_eigen.o: ../generic_ks/io_helpers_ks_eigen.c
+	${CC} -c ${CFLAGS} $<
+io_ks_eigen.o: ../generic_ks/io_ks_eigen.c
 	${CC} -c ${CFLAGS} $<
 io_prop_ks.o: ../generic_ks/io_prop_ks.c
 	${CC} -c ${CFLAGS} $<
 io_prop_ks_fm.o: ../generic_ks/io_prop_ks_fm.c
 	${CC} -c ${CFLAGS} $<
 io_scidac_ks.o: ../generic_ks/io_scidac_ks.c
+	${CC} -c ${CFLAGS} $<
+io_scidac_ks_eigen.o: ../generic_ks/io_scidac_ks_eigen.c
 	${CC} -c ${CFLAGS} $<
 io_source_ks_fm.o: ../generic_ks/io_source_ks_fm.c
 	${CC} -c ${CFLAGS} $<
