@@ -519,6 +519,7 @@ int remap_stdio_from_args(int argc, char *argv[]);
 /* ranstuff.c */
 void initialize_prn(double_prn *prn_pt, int seed, int index);
 Real myrand(double_prn *prn_pt);
+void initialize_site_prn_from_seed(int iseed);
 
 /* restrict_fourier.c */
 void setup_restrict_fourier( int *key, int *slice);

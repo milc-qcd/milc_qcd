@@ -212,6 +212,9 @@ endif
 # Utah physics and math
 # LIBLAPACK = -L/usr/local/lib64 -llapack -lblas -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
 
+# Utah physics and math Centos-linus
+# LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -lgfortran
+
 # FNAL cluster (Jim's installation of ATLAS)
 #LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
 #LIBS = $(LDFLAGS) -lprimme -lm  -llapack -lptf77blas -lptcblas -latlas -lgfortran -lpthread

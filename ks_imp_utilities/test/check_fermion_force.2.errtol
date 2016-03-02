@@ -19,10 +19,10 @@ inv_arg.rsqprop 0
 DML_partition_in times: read XXX  send XXS  total XXX
 Record 0
 "source color vector field"
-Checksums 0 adc0f9ee
+Checksums XXX XXX
 Computing the fermion force
 Saved KS matrix serially to binary file colormatrix.mom.test.l8
-Checksums 7e+04 4
+Checksums XXX XXX
 Done checking fermion force
 
 

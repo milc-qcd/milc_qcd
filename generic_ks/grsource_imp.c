@@ -21,11 +21,9 @@ register site *s;
     FORALLSITES(i,s){
         for(j=0;j<3;j++){
 #ifdef SITERAND
-            s->g_rand.c[j].real = gaussian_rand_no(&(s->site_prn));
-            s->g_rand.c[j].imag = gaussian_rand_no(&(s->site_prn));
+            s->g_rand.c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-            s->g_rand.c[j].real = gaussian_rand_no(&node_prn);
-            s->g_rand.c[j].imag = gaussian_rand_no(&node_prn);
+            s->g_rand.c[j] = complex_gaussian_rand_no(&node_prn);
 #endif
         }
     }
@@ -148,11 +146,9 @@ void grsource_plain( field_offset dest, int parity ) {
     rand = (su3_vector *)F_PT(s,dest);
     for(j=0;j<3;j++){
 #ifdef SITERAND
-      rand->c[j].real = gaussian_rand_no(&(s->site_prn));
-      rand->c[j].imag = gaussian_rand_no(&(s->site_prn));
+	rand->c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-      rand->c[j].real = gaussian_rand_no(&node_prn);
-      rand->c[j].imag = gaussian_rand_no(&node_prn);
+	rand->c[j] = complex_gaussian_rand_no(&(s->node_prn));
 #endif
     }
 #ifdef SCHROED_FUN
@@ -177,11 +173,9 @@ void grsource_plain_field( su3_vector *dest, int parity ) {
   FORSOMEPARITYDOMAIN(i,s,parity){
     for(j=0;j<3;j++){
 #ifdef SITERAND
-      dest[i].c[j].real = gaussian_rand_no(&(s->site_prn));
-      dest[i].c[j].imag = gaussian_rand_no(&(s->site_prn));
+	dest[i].c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-      dest[i].c[j].real = gaussian_rand_no(&node_prn);
-      dest[i].c[j].imag = gaussian_rand_no(&node_prn);
+	dest[i].c[j] = complex_gaussian_rand_no(&(s->node_prn));
 #endif
     }
 #ifdef SCHROED_FUN

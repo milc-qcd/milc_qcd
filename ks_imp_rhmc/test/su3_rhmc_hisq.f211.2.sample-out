@@ -1,8 +1,12 @@
 SU3 with improved KS action
 Microcanonical simulation with refreshing
-MIMD version 7 $Name:  $
-Machine = Scalar processor, with 1 nodes
 Rational function hybrid Monte Carlo algorithm
+MIMD version 7.7.13
+Machine = QMP (portable), with 1 nodes
+Host(0) = kepler.physics.utah.edu
+Username = detar
+start: Mon Feb 15 09:25:39 2016
+
 Options selected...
 Generic double precision
 C_GLOBAL_INLINE
@@ -13,7 +17,12 @@ KS_MULTICG=HYBRID
 KS_MULTIFF=FNMAT
 VECLENGTH=4
 INT_ALG=INT_3G1F
-type 0 for no prompts  or 1 for prompts
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+HISQ_FORCE_FILTER = 5e-05
+HISQ_FF_MULTI_WRAPPER is ON
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nx 6
 ny 6
 nz 6
@@ -28,7 +37,7 @@ dyn_flavors 2 1 1
 u0 0.89
 n_pseudo 5
 Loading rational function parameters for phi field 0
-naik_term_mass 0
+naik_term_epsilon 0
 # New rational function
 # Approximation bounds are [1.000000e-15,9.000000e+01]
 # Precision of arithmetic is 75
@@ -137,7 +146,7 @@ pole_FA 0.0973056
 pole_FA 0.141197
 Loading rational function parameters for phi field 1
 # CHECK: f(1.000000e-15) = 6.324555e+00 = 6.324555e+00?
-naik_term_mass 0
+naik_term_epsilon 0
 # New rational function
 # Approximation bounds are [1.000000e-15,9.000000e+01]
 # Precision of arithmetic is 65
@@ -234,7 +243,7 @@ pole_FA 92.735
 pole_FA 546.062
 Loading rational function parameters for phi field 2
 # CHECK: f(1.000000e-15) = 1.257433e+00 = 1.257433e+00?
-naik_term_mass 0
+naik_term_epsilon 0
 # New rational function
 # Approximation bounds are [1.000000e-15,9.000000e+01]
 # Precision of arithmetic is 65
@@ -331,7 +340,7 @@ pole_FA 92.735
 pole_FA 546.062
 Loading rational function parameters for phi field 3
 # CHECK: f(1.000000e-15) = 1.257433e+00 = 1.257433e+00?
-naik_term_mass 0
+naik_term_epsilon 0
 # New rational function
 # Approximation bounds are [1.000000e-15,9.000000e+01]
 # Precision of arithmetic is 65
@@ -428,9 +437,8 @@ pole_FA 92.735
 pole_FA 546.062
 Loading rational function parameters for phi field 4
 # CHECK: f(1.000000e-15) = 1.257433e+00 = 1.257433e+00?
-naik_term_mass 0.5
-#naik_term_mass 0.0
-#naik_term_mass 1e-6
+#naik_term_epsilon -0.152048264210358
+naik_term_epsilon -0.16875
 # New rational function
 # Approximation bounds are [1.000000e-15,9.000000e+01]
 # Precision of arithmetic is 65
@@ -530,16 +538,15 @@ Naik term correction structure of multi_x:
 n_naiks 2
 n_pseudo_naik[0]=4
 n_orders_naik[0]=30
-masses_naik[0]=0.000000
 eps_naik[0]=0.000000
 n_pseudo_naik[1]=1
 n_orders_naik[1]=7
-masses_naik[1]=0.500000
 eps_naik[1]=-0.168750
 n_order_naik_total 37
 LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
 ON EACH NODE 6 x 6 x 6 x 6
-Mallocing 3.8 MBytes per node for lattice
+Mallocing 2.8 MBytes per node for lattice
 Made lattice
 Made nn gathers
 Made 3nn gathers
@@ -567,135 +574,232 @@ cgresid_md_fa_gr 5e-06 1e-06 1e-06
 max_multicg_md_fa_gr 2500 2500 2500 
 cgprec_md_fa_gr 2 2 2 
 prec_ff 2
-error_for_propagator 1e-06
+number_of_pbp_masses 3
 max_cg_prop 500
 max_cg_prop_restarts 5
-reload_serial lat.sample.hisq.f211b670.l6666
+npbp_reps 1
+prec_pbp 2
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+mass 0.05
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+mass 0.5
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+reload_serial ../../binary_samples/lat.sample.hisq.f211b670.l6666
 forget 
-Restored binary gauge configuration serially from file lat.sample.hisq.f211b670.l6666
+Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.hisq.f211b670.l6666
 Time stamp Fri Aug 22 12:20:02 2008
 Checksums 6297e604 7bbd1714 OK
-Time to reload gauge configuration = 3.998041e-03
+Time to reload gauge configuration = 1.712799e-03
 CHECK PLAQ: 1.6833615233062336e+00 1.6726780328005630e+00
 CHECK NERSC LINKTR: 1.0759220045157648e-02 CKSUM: 129bceab
 Reunitarized for double precision. Max deviation 6.71e-08 changed to 4.44e-16
-Time to check unitarity = 5.887032e-03
-Symanzik 1x1 + 1x2 + 1x1x1 action with quark loops
+Time to check unitarity = 9.999275e-04
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+MAKING PATH TABLES
+Combined fattening and long-link calculation time: 0.001739
+Combined fattening and long-link calculation time: 0.037201
+Symanzik 1x1 + 1x2 + 1x1x1 action with HISQ quark loops
 gauge_action: total_dyn_flavors = 4
 loop coefficients: nloop rep loop_coeff  multiplicity
                     0 0      1.000000e+00     6
                     1 0      -3.316969e-02     12
                     2 0      2.809994e-03     16
-MAKING PATH TABLES
-"Fat 7 (level 1)"
-path coefficients: npath  path_coeff  multiplicity
-                    0      1.250000e-01     8
-                    1      -6.250000e-02     48
-                    2      1.562500e-02     192
-                    3      -2.604167e-03     384
-Unitarization method = UNITARIZE_ANALYTIC
-Unitarizaton group = U(3)
-"Fat7 + 2xLepage"
-path coefficients: npath  path_coeff  multiplicity
-                    0      1.000000e+00     8
-                    1      -4.166667e-02     8
-                    2      -6.250000e-02     48
-                    3      1.562500e-02     192
-                    4      -2.604167e-03     384
-                    5      -1.250000e-01     48
-"1-link + Naik"
-path coefficients: npath  path_coeff  multiplicity
-                    0      1.250000e-01     8
-                    1      -4.166667e-02     8
 WARMUPS COMPLETED
 Omelyan integration, 3 gauge for one 1 fermion step, steps= 12 eps= 4.000000e-02 alpha= 1.000000e-01 beta= 1.000000e-01
-GRSOURCE: sum = 1.9183886593e+03
-GRSOURCE: sum = 1.9564847478e+03
-GRSOURCE: sum = 1.9569753777e+03
-GRSOURCE: sum = 1.9369167365e+03
-GRSOURCE: sum = 1.9754057608e+03
+GRSOURCE: sum = 1.9606615134e+03
+ OK converged final_rsq= 8.1e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 261
+GRSOURCE: sum = 1.9419062118e+03
+ OK converged final_rsq= 7.9e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 72
+GRSOURCE: sum = 1.9778946118e+03
+ OK converged final_rsq= 7.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 72
+GRSOURCE: sum = 2.0146820926e+03
+ OK converged final_rsq= 7.5e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 73
+GRSOURCE: sum = 1.9699683313e+03
+ OK converged final_rsq= 5.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 31
 PLAQUETTE ACTION: -2.914116e+04
-ACTION: g,h,f = 2.08587742519397e+04  9.94856713096055e+01  9.74417128217304e+03  3.07024312054223e+04
-DG = 2.085877e+04, DH = 9.948567e+01, DF = 9.744171e+03, D = 3.070243e+04
-QOP MAKING PATH TABLES
-"Fat 7 (level 1)"
-QOP path coefficients: npath  path_coeff  multiplicity
-                    0      1.250000e-01     8
-                    1      -6.250000e-02     48
-                    2      1.562500e-02     192
-                    3      -2.604167e-03     384
-QOP Unitarization method = QOP_UNITARIZE_RATIONAL
-"Fat7 + 2xLepage"
-QOP path coefficients: npath  path_coeff  multiplicity
-                    0      1.000000e+00     8
-                    1      -4.166667e-02     8
-                    2      -6.250000e-02     48
-                    3      1.562500e-02     192
-                    4      -2.604167e-03     384
-                    5      -1.250000e-01     48
-"1-link + Naik"
-QOP path coefficients: npath  path_coeff  multiplicity
-                    0      1.250000e-01     8
-                    1      -4.166667e-02     8
-PLAQUETTE ACTION: -3.103609e+04
-ACTION: g,h,f = 1.91017286045445e+04  1.75814488910614e+03  9.84246077008949e+03  3.07023342637401e+04
-DG = -1.757046e+03, DH = 1.658659e+03, DF = 9.828949e+01, D = -9.694168e-02
-ACCEPT: delta S = -9.694168e-02
-PLAQ:	1.787723	1.786545
-P_LOOP:	-8.392786e-02	5.111257e-02
-G_LOOP:  0  0  4   	1.798217e+00	( 0 1 7 6  )
-G_LOOP:  0  1  4   	1.780024e+00	( 0 2 7 5  )
-G_LOOP:  0  2  4   	1.804145e+00	( 0 3 7 4  )
-G_LOOP:  0  3  4   	1.784928e+00	( 1 2 6 5  )
-G_LOOP:  0  4  4   	1.771841e+00	( 1 3 6 4  )
-G_LOOP:  0  5  4   	1.783650e+00	( 2 3 5 4  )
-G_LOOP:  1  0  6   	1.101566e+00	( 0 0 1 7 7 6  )
-G_LOOP:  1  1  6   	1.066712e+00	( 0 0 2 7 7 5  )
-G_LOOP:  1  2  6   	1.110286e+00	( 0 0 3 7 7 4  )
-G_LOOP:  1  3  6   	1.128175e+00	( 1 1 0 6 6 7  )
-G_LOOP:  1  4  6   	1.063764e+00	( 1 1 2 6 6 5  )
-G_LOOP:  1  5  6   	1.074781e+00	( 1 1 3 6 6 4  )
-G_LOOP:  1  6  6   	1.073760e+00	( 2 2 0 5 5 7  )
-G_LOOP:  1  7  6   	1.083076e+00	( 2 2 1 5 5 6  )
-G_LOOP:  1  8  6   	1.077391e+00	( 2 2 3 5 5 4  )
-G_LOOP:  1  9  6   	1.092061e+00	( 3 3 0 4 4 7  )
-G_LOOP:  1  10  6   	1.060697e+00	( 3 3 1 4 4 6  )
-G_LOOP:  1  11  6   	1.056099e+00	( 3 3 2 4 4 5  )
-G_LOOP:  2  0  6   	1.131747e+00	( 0 1 2 7 6 5  )
-G_LOOP:  2  1  6   	1.110023e+00	( 0 1 5 7 6 2  )
-G_LOOP:  2  2  6   	1.062389e+00	( 0 6 2 7 1 5  )
-G_LOOP:  2  3  6   	1.110820e+00	( 0 6 5 7 1 2  )
-G_LOOP:  2  4  6   	1.134600e+00	( 0 1 3 7 6 4  )
-G_LOOP:  2  5  6   	1.117726e+00	( 0 1 4 7 6 3  )
-G_LOOP:  2  6  6   	1.043889e+00	( 0 6 3 7 1 4  )
-G_LOOP:  2  7  6   	1.124471e+00	( 0 6 4 7 1 3  )
-G_LOOP:  2  8  6   	1.077074e+00	( 0 2 3 7 5 4  )
-G_LOOP:  2  9  6   	1.110265e+00	( 0 2 4 7 5 3  )
-G_LOOP:  2  10  6   	1.099325e+00	( 0 5 3 7 2 4  )
-G_LOOP:  2  11  6   	1.113286e+00	( 0 5 4 7 2 3  )
-G_LOOP:  2  12  6   	1.078623e+00	( 1 2 3 6 5 4  )
-G_LOOP:  2  13  6   	1.078566e+00	( 1 2 4 6 5 3  )
-G_LOOP:  2  14  6   	1.055124e+00	( 1 5 3 6 2 4  )
-G_LOOP:  2  15  6   	1.074606e+00	( 1 5 4 6 2 3  )
-GACTION: 6.599547e+00
- OK converged final_rsq= 7.7e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 313
- OK converged final_rsq= 9.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 17
-PBP: mass 1.000000e-02     1.140215e-02  7.964583e-02  1.450266e-03  1.450266e-03 ( 1 of 1 )
-FACTION: mass = 1.000000e-02,  1.498143e+00 ( 1 of 1 )
- OK converged final_rsq= 7.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 268
- OK converged final_rsq= 7.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 12
-PBP: mass 5.000000e-02     9.797594e-02  6.783265e-02  1.798223e-02  1.798223e-02 ( 1 of 1 )
-FACTION: mass = 5.000000e-02,  1.484540e+00 ( 1 of 1 )
- OK converged final_rsq= 5.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 42
- OK converged final_rsq= 5.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 2
-PBP: mass 5.000000e-01     3.508793e-01  3.786388e-01  -1.060788e-02  -1.060788e-02 ( 1 of 1 )
-FACTION: mass = 5.000000e-01,  1.477011e+00 ( 1 of 1 )
+ OK converged final_rsq= 8.2e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 260
+ OK converged final_rsq= 6.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 72
+ OK converged final_rsq= 6.7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 72
+ OK converged final_rsq= 8.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 72
+ OK converged final_rsq= 6.2e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 31
+ACTION: g,h,f = 2.08587742519397e+04  -2.05282772130477e+02  9.86511276073965e+03  3.05186042405488e+04
+DG = 2.085877e+04, DH = -2.052828e+02, DF = 9.865113e+03, D = 3.051860e+04
+Combined fattening and long-link calculation time: 0.001500
+Combined fattening and long-link calculation time: 0.036721
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 233
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 61
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001524
+Combined fattening and long-link calculation time: 0.036523
+ OK converged final_rsq= 2.5e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 243
+ OK converged final_rsq= 2.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 61
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 1.8e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001483
+Combined fattening and long-link calculation time: 0.036053
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 267
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 2.4e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001513
+Combined fattening and long-link calculation time: 0.036506
+ OK converged final_rsq= 2.3e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 275
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001496
+Combined fattening and long-link calculation time: 0.036913
+ OK converged final_rsq= 1.9e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 281
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001515
+Combined fattening and long-link calculation time: 0.036834
+ OK converged final_rsq= 2.1e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 290
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001507
+Combined fattening and long-link calculation time: 0.036281
+ OK converged final_rsq= 1.8e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 294
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 1.8e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001517
+Combined fattening and long-link calculation time: 0.036983
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 295
+ OK converged final_rsq= 1.8e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 2.3e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.8e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001492
+Combined fattening and long-link calculation time: 0.037104
+ OK converged final_rsq= 1.9e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 296
+ OK converged final_rsq= 1.9e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 2.2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.8e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001525
+Combined fattening and long-link calculation time: 0.036355
+ OK converged final_rsq= 2.1e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 292
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001537
+Combined fattening and long-link calculation time: 0.037239
+ OK converged final_rsq= 2.4e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 291
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.6e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+Combined fattening and long-link calculation time: 0.001560
+Combined fattening and long-link calculation time: 0.036668
+ OK converged final_rsq= 2.2e-07 (cf 2.5e-07) rel = 1 (cf 0) restarts = 0 iters= 263
+ OK converged final_rsq= 2.1e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.7e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 63
+ OK converged final_rsq= 2e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 62
+ OK converged final_rsq= 1.5e-11 (cf 2.5e-11) rel = 1 (cf 0) restarts = 0 iters= 27
+PLAQUETTE ACTION: -3.024933e+04
+Combined fattening and long-link calculation time: 0.001510
+Combined fattening and long-link calculation time: 0.036228
+ OK converged final_rsq= 7.4e-09 (cf 1e-08) rel = 1 (cf 0) restarts = 0 iters= 295
+ OK converged final_rsq= 9.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 71
+ OK converged final_rsq= 7.4e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 72
+ OK converged final_rsq= 7e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 72
+ OK converged final_rsq= 5.8e-13 (cf 1e-12) rel = 1 (cf 0) restarts = 0 iters= 31
+ACTION: g,h,f = 1.98409031237766e+04  8.18777619867480e+02  9.85889968181638e+03  3.05185804254605e+04
+DG = -1.017871e+03, DH = 1.024060e+03, DF = -6.213079e+00, D = -2.381509e-02
+ACCEPT: delta S = -2.381509e-02
+PLAQ:	1.7465038067187235	1.7371578349748198
+P_LOOP:	-1.366183e-01	-7.072888e-02
+G_LOOP:  0  0  4   	1.7273597067977327e+00	( 0 1 7 6  )
+G_LOOP:  0  1  4   	1.7628089624960772e+00	( 0 2 7 5  )
+G_LOOP:  0  2  4   	1.7205472640501338e+00	( 0 3 7 4  )
+G_LOOP:  0  3  4   	1.7493427508623649e+00	( 1 2 6 5  )
+G_LOOP:  0  4  4   	1.7517822025374996e+00	( 1 3 6 4  )
+G_LOOP:  0  5  4   	1.7391440383368151e+00	( 2 3 5 4  )
+G_LOOP:  1  0  6   	1.0302943488979166e+00	( 0 0 1 7 7 6  )
+G_LOOP:  1  1  6   	1.0609412421635245e+00	( 0 0 2 7 7 5  )
+G_LOOP:  1  2  6   	1.0135948207685046e+00	( 0 0 3 7 7 4  )
+G_LOOP:  1  3  6   	1.0295875500435132e+00	( 1 1 0 6 6 7  )
+G_LOOP:  1  4  6   	1.0309280772131768e+00	( 1 1 2 6 6 5  )
+G_LOOP:  1  5  6   	1.0308539101640928e+00	( 1 1 3 6 6 4  )
+G_LOOP:  1  6  6   	1.0677727457623503e+00	( 2 2 0 5 5 7  )
+G_LOOP:  1  7  6   	1.0551837955572883e+00	( 2 2 1 5 5 6  )
+G_LOOP:  1  8  6   	9.9132806263990458e-01	( 2 2 3 5 5 4  )
+G_LOOP:  1  9  6   	9.7877144363929103e-01	( 3 3 0 4 4 7  )
+G_LOOP:  1  10  6   	1.0687866785657274e+00	( 3 3 1 4 4 6  )
+G_LOOP:  1  11  6   	1.0340117753280520e+00	( 3 3 2 4 4 5  )
+G_LOOP:  2  0  6   	1.0299577534847957e+00	( 0 1 2 7 6 5  )
+G_LOOP:  2  1  6   	1.0400467686254307e+00	( 0 1 5 7 6 2  )
+G_LOOP:  2  2  6   	1.0192218715811885e+00	( 0 6 2 7 1 5  )
+G_LOOP:  2  3  6   	1.0130738423437264e+00	( 0 6 5 7 1 2  )
+G_LOOP:  2  4  6   	1.0172414689394886e+00	( 0 1 3 7 6 4  )
+G_LOOP:  2  5  6   	1.0151679396766411e+00	( 0 1 4 7 6 3  )
+G_LOOP:  2  6  6   	1.0107638346771708e+00	( 0 6 3 7 1 4  )
+G_LOOP:  2  7  6   	9.8103536814846726e-01	( 0 6 4 7 1 3  )
+G_LOOP:  2  8  6   	1.0234652726595614e+00	( 0 2 3 7 5 4  )
+G_LOOP:  2  9  6   	1.0416180079623769e+00	( 0 2 4 7 5 3  )
+G_LOOP:  2  10  6   	1.0355858268477371e+00	( 0 5 3 7 2 4  )
+G_LOOP:  2  11  6   	1.0096788881109080e+00	( 0 5 4 7 2 3  )
+G_LOOP:  2  12  6   	1.0205225772405588e+00	( 1 2 3 6 5 4  )
+G_LOOP:  2  13  6   	1.0097450342163334e+00	( 1 2 4 6 5 3  )
+G_LOOP:  2  14  6   	1.0458248839618092e+00	( 1 5 3 6 2 4  )
+G_LOOP:  2  15  6   	1.0211057314076699e+00	( 1 5 4 6 2 3  )
+GACTION: 6.854928e+00
+ OK converged final_rsq= 8.4e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 332
+ OK converged final_rsq= 9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 17
+PBP: mass 1.000000e-02     -1.565282e-02  1.059817e-01  3.647317e-02  3.647316e-02 ( 1 of 1 )
+FACTION: mass = 1.000000e-02,  1.541479e+00 ( 1 of 1 )
+ OK converged final_rsq= 8.3e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 295
+ OK converged final_rsq= 8.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 13
+PBP: mass 5.000000e-02     8.648185e-02  1.585682e-01  1.131316e-02  1.131316e-02 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.456610e+00 ( 1 of 1 )
+ OK converged final_rsq= 5.1e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 42
+ OK converged final_rsq= 5.1e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 2
+PBP: mass 5.000000e-01     3.502533e-01  3.810562e-01  -6.466879e-03  -6.466879e-03 ( 1 of 1 )
+FACTION: mass = 5.000000e-01,  1.473375e+00 ( 1 of 1 )
 RUNNING COMPLETED
-average cg iters for step= 3.673000e+03
-Time = 1.145140e+02 seconds
-total_iters = 1262
+average cg iters for step= 4.900000e+02
+Time = 2.875959e+01 seconds
+total_iters = 8736
 
 
 get_i(0): EOF on input.
-exit: Wed May 27 16:25:35 2009
+exit: Mon Feb 15 09:26:08 2016
 

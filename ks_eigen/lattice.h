@@ -158,7 +158,7 @@ EXTERN  char hostname[128];
 EXTERN Real boundary_phase[4];
 EXTERN site *lattice;
 
-EXTERN su3_matrix *ape_links;  /* Not used in this application */
+EXTERN su3_matrix *ape_links;
 
 /* Vectors for addressing */
 /* Generic pointers, for gather routines */

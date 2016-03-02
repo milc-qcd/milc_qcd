@@ -251,6 +251,9 @@ int mat_invert_multi(
 #define Kalkreuter Kalkreuter_Ritz
 #endif
 
+#define DEFLATION 1
+#define EIGCG 2
+
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
 		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
 		 int parity, imp_ferm_links_t *fn);
@@ -266,6 +269,8 @@ void cleanup_Matrix();
 void measure_chirality(su3_vector *src, double *chirality, int parity);
 void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
 		     int parity);
+void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
+		  int Nvecs, int parity, imp_ferm_links_t *fn);
 
 
 /* fn_links_qop.c  and fn_links_milc.c */
@@ -302,6 +307,24 @@ void z2rsource_plain( field_offset dest, int parity );
 void z2rsource_plain_field( su3_vector *dest, int parity );
 void checkmul_imp( field_offset src, Real mass,
 		   imp_ferm_links_t *fn );
+
+/* inc_eigcg.c */
+#define ORTHO_EPS 1e-15
+typedef struct {
+  int m;             /* Number of vectors kept for the Lanczos part before restart */
+  int Nvecs;         /* Number of eigenpairs computed per inversion */
+  int Nvecs_curr;    /* Number of eigenpairs currently computed */
+  int Nvecs_max;     /* Maximum number of eigenpairs computed in entire incremental eigCG */
+  double_complex *H; /* H = -U^+ Dslash^2 U, U: projection onto smaller subspace */
+} eigcg_params;
+void calc_eigenpairs(double *eigVal, su3_vector **eigVec, eigcg_params *eigcgp, int parity);
+void calc_eigresid(int Nvecs, double *resid, double *norm, double *eigVal,
+		   su3_vector **eigVec, int parity, imp_ferm_links_t *fn);
+int ks_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal, su3_vector **eigVec,
+		     int m, int Nvecs, quark_invert_control *qic, Real mass, imp_ferm_links_t *fn);
+int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
+			 su3_vector **eigVec, eigcg_params *eigcgp, quark_invert_control *qic,
+			 Real mass, imp_ferm_links_t *fn);
 
 /* ks_baryon.c */
 int baryon_type_index(char *label);

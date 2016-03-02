@@ -512,10 +512,7 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
   /* Initiallize all the eigenvectors to a random vector */
   for(j=0;j<Nvecs;j++) {
     grad[j] = 1.0e+10 ;
-    grsource_plain(F_OFFSET(g_rand), parity);  
-    FORSOMEPARITY(i,s,parity){
-      su3vec_copy(&(s->g_rand),&(eigVec[j][i]));
-    }
+    grsource_plain_field( eigVec[j], parity);
     eigVal[j] = 1.0e+16 ;
   }
 

@@ -143,21 +143,26 @@ void measure_chirality(su3_vector *src, double *chirality, int parity){
   register int i;
   register site *s;
   register double cc ;
+  su3_vector *tempvec, *ttt;
+  int r0[4] = {0,0,0,0};
   complex tmp ;
+  char gam5Xgam1[] = "G1-G5";  /* Note, spin_taste_op inteprets this as G5-G1 */
 
-  FORSOMEPARITY(i,s,parity){
-    su3vec_copy(&src[i],&(s->tempvec[3])) ;
-  }
-
-  mult_spin_pseudoscalar(F_OFFSET(tempvec[3]),F_OFFSET(ttt)) ;
+  ttt = create_v_field();
+  tempvec = create_v_field();
+  copy_v_field(tempvec, src);
+  spin_taste_op(spin_taste_index(gam5Xgam1), r0, ttt, tempvec);
 
   cc = 0.0 ; 
-  FORSOMEPARITY(i,s,parity){ 
-    tmp = su3_dot( &(s->tempvec[3]), &(s->ttt) ) ;
+  FORSOMEPARITY(i,s,parity){
+    tmp = su3_dot( tempvec+i, ttt+i );
     cc +=  tmp.real ; /* chirality is real since Gamma_5 is hermitian */
   }
   *chirality = cc ;
   g_doublesum(chirality);
+
+  destroy_v_field(tempvec);
+  destroy_v_field(ttt);
 }
 
 
@@ -168,22 +173,61 @@ void print_densities(su3_vector *src, char *tag, int y,int z,int t,
 
   register int i;
   register site *s;
+  su3_vector *tempvec, *ttt;
+  int r0[4] = {0,0,0,0};
   complex tmp1,tmp2 ;
 
-  FORSOMEPARITY(i,s,parity){
-    su3vec_copy(&src[i],&(s->tempvec[3])) ;
-  }
-
-  mult_spin_pseudoscalar(F_OFFSET(tempvec[3]),F_OFFSET(ttt)) ;
+  ttt = create_v_field();
+  tempvec = create_v_field();
+  copy_v_field(tempvec, src);
+  spin_taste_op(spin_taste_index("G5-G1"), r0, ttt, tempvec);
 
   FORSOMEPARITY(i,s,parity){ 
     if((s->y==y)&&(s->z==z)&&(s->t==t)){
-      tmp1 = su3_dot( &(s->tempvec[3]), &(s->ttt) ) ;
-      tmp2 = su3_dot( &(s->tempvec[3]), &(s->tempvec[3]) ) ;
+      tmp1 = su3_dot( tempvec+i, ttt+i ) ;
+      tmp2 = su3_dot( tempvec+i, tempvec+i ) ;
       node0_printf("%s: %i %e %e %e\n",tag,
 		   s->x,tmp2.real,tmp1.real,tmp1.imag);
     }
   }
-
 }
 
+/*****************************************************************************/
+/* Check the residues and norms of the eigenvectors                          */
+/* Hiroshi Ono */
+
+void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
+		  int Nvecs, int parity, imp_ferm_links_t *fn){
+
+  su3_vector *ttt;
+  int i,j;
+  int otherparity = (parity == EVEN) ? ODD : EVEN;
+
+  /* compute residual and norm of eigenvectors */
+  double *norm = (double *)malloc(Nvecs*sizeof(double));
+  ttt = create_v_field();
+  for(i = 0; i < Nvecs; i++){
+    resid[i] = (double)0.0;
+    norm[i]  = (double)0.0;
+    dslash_fn_field(eigVec[i], ttt, otherparity, fn);
+    dslash_fn_field(ttt, ttt, parity, fn);
+    FOREVENFIELDSITES(j){
+      scalar_mult_sum_su3_vector(ttt+j, eigVec[i]+j, eigVal[i]);
+      resid[i] += magsq_su3vec(ttt+j);
+      norm[i] += magsq_su3vec(eigVec[i]+j);
+    }
+  }
+  destroy_v_field(ttt);
+  g_vecdoublesum(resid, Nvecs);
+  g_vecdoublesum(norm, Nvecs);
+
+  node0_printf("Checking eigensolutions\n");
+  for(i = 0; i < Nvecs; i++){
+    resid[i] = sqrt(resid[i]/norm[i]);
+    norm[i] = sqrt(norm[i]);
+    node0_printf("eigVal[%d] = %e ( resid = %e , ||eigVec[%d]|| = %e )\n",
+		 i, eigVal[i], resid[i], i, norm[i]);
+  }
+  node0_printf("End of eigensolutions\n");
+  free(norm);
+}

@@ -1,0 +1,666 @@
+SU3 staggered valence fermions
+MIMD version 7.8.0-devel
+Machine = QMP (portable), with 1 nodes
+Host(0) = kepler.physics.utah.edu
+Username = detar
+start: Sat Feb 27 16:08:02 2016
+
+Options selected...
+Generic double precision
+C_GLOBAL_INLINE
+HALF_MIXED
+DBLSTORE_FN
+D_FN_GATHER13
+FEWSUMS
+KS_MULTICG=HYBRID
+HISQ_REUNIT_ALLOW_SVD
+HISQ_REUNIT_SVD_REL_ERROR = 1e-08
+HISQ_REUNIT_SVD_ABS_ERROR = 1e-08
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 8 x 8 x 8 x 8
+Mallocing 2.9 MBytes per node for lattice
+Aggregate time to setup 1.063395e-02
+
+
+######################################################################
+# source time 0
+######################################################################
+# Gauge field description
+reload_serial ../binary_samples/lat.sample.l8888
+u0 1
+coulomb_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0 
+# Dirac eigenpair calculation
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 10
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+# Outer loop iterations
+Kalkreuter_iters 20
+# Eigenvalue tolerance
+eigenval_tolerance 1e-06
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease 0.3
+# eigenvector I/O
+fresh_ks_eigen 
+save_serial_ks_eigen ks_eigen_deflate.test-out
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+number_of_base_sources 2
+# base source 0
+random_color_wall
+subset full
+t0 0
+ncolor 3
+momentum 0 0 0 
+source_label r
+save_serial_scidac_ks_source test_src
+# base source 1
+point
+subset full
+origin 0 0 0 0 
+source_label d
+forget_source 
+# Description of completed sources
+number_of_modified_sources 1
+# source 2
+source 1
+spin_taste
+spin_taste rhox
+op_label p
+forget_source 
+# Description of propagators
+number_of_sets 3
+# Set 0
+# Parameters common to all members of this set
+max_cg_iterations 1000
+max_cg_restarts 2
+check sourceonly
+momentum_twist 0 0 0 
+time_bc antiperiodic
+precision 2
+source 0
+number_of_propagators 1
+# Propagators for mass 0
+# propagator 0
+mass 1
+naik_term_epsilon 0
+error_for_propagator 0
+rel_error_for_propagator 0
+mixed_rsq 0
+fresh_ksprop 
+forget_ksprop 
+# Set 1
+# Parameters common to all members of this set
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0 
+time_bc antiperiodic
+precision 2
+source 1
+number_of_propagators 1
+# Propagators for mass 0
+# propagator 1
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+mixed_rsq 0
+fresh_ksprop 
+save_serial_scidac_ksprop test_prop
+# Set 2
+# Parameters common to all members of this set
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0 
+time_bc antiperiodic
+precision 2
+source 2
+number_of_propagators 1
+# Propagators for mass 0
+# propagator 1
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+mixed_rsq 0
+fresh_ksprop 
+forget_ksprop 
+# Definition of quarks
+number_of_quarks 2
+# quark 0
+propagator 1
+identity
+op_label d
+forget_ksprop 
+# quark 1
+propagator 2
+identity
+op_label d
+forget_ksprop 
+# Description of mesons
+number_of_mesons 2
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_deflate_hisq.2.corrfile.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator POINT_PION p000   1 * 1  pion5  0  0  0  E  E  E
+pair 0 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_deflate_hisq.2.corrfile.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator RHOX p000   1 * 1   rhox  0  0  0  E  E  E
+# Description of baryons
+number_of_baryons 0
+Restored binary gauge configuration serially from file ../binary_samples/lat.sample.l8888
+Time stamp Tue Mar 13 15:47:22 2012
+Checksums 4f9d000e 8d72f72e OK
+Time to reload gauge configuration = 6.659031e-03
+CHECK PLAQ: 1.7790021544584596e+00 1.7823592881385857e+00
+CHECK NERSC LINKTR: -6.4563862036388919e-04 CKSUM: 4a3bbf43
+Reunitarized for double precision. Max deviation 2.62e-07 changed to 5.55e-16
+Time to check unitarity = 7.972956e-03
+ndim = 4
+numsites = 4096
+len = 8 8 8 8
+nsquares = 1 1 1 1
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+FLTIME: time = 1.839361e-01 (HISQ qop D) flops/site = 126642 mflops = 2.820140e+03
+Time to APE smear 1.690865e-03 sec
+Aggregate time to readin 2.566450e-01
+Eigenvalues after diagonalization at iteration 9
+BEGIN RESULTS
+Eigenvalue(0) = 0.133305 +/- 1.293471e-08	 cvg? 0  
+Eigenvalue(1) = 0.136611 +/- 2.736016e-08	 cvg? 0  
+Eigenvalue(2) = 0.153418 +/- 3.259341e-08	 cvg? 0  
+Eigenvalue(3) = 0.157611 +/- 5.084107e-08	 cvg? 0  
+Eigenvalue(4) = 0.17824 +/- 3.505505e-08	 cvg? 0  
+Eigenvalue(5) = 0.188012 +/- 4.587285e-08	 cvg? 0  
+Eigenvalue(6) = 0.198306 +/- 5.234763e-08	 cvg? 0  
+Eigenvalue(7) = 0.203887 +/- 9.515337e-08	 cvg? 0  
+Eigenvalue(8) = 0.236513 +/- 6.679811e-08	 cvg? 0  
+Eigenvalue(9) = 0.239429 +/- 9.946291e-08	 cvg? 0  
+total Rayleigh iters = 1223
+Checking eigensolutions
+eigVal[0] = 1.333053e-01 ( resid = 1.837017e-04 , ||eigVec[0]|| = 1.000000e+00 )
+eigVal[1] = 1.366106e-01 ( resid = 3.057994e-04 , ||eigVec[1]|| = 1.000000e+00 )
+eigVal[2] = 1.534184e-01 ( resid = 3.284160e-04 , ||eigVec[2]|| = 1.000000e+00 )
+eigVal[3] = 1.576109e-01 ( resid = 4.215750e-04 , ||eigVec[3]|| = 1.000000e+00 )
+eigVal[4] = 1.782403e-01 ( resid = 3.227960e-04 , ||eigVec[4]|| = 1.000000e+00 )
+eigVal[5] = 1.880121e-01 ( resid = 3.827293e-04 , ||eigVec[5]|| = 1.000000e+00 )
+eigVal[6] = 1.983062e-01 ( resid = 4.276723e-04 , ||eigVec[6]|| = 1.000000e+00 )
+eigVal[7] = 2.038871e-01 ( resid = 5.026037e-04 , ||eigVec[7]|| = 1.000000e+00 )
+eigVal[8] = 2.365129e-01 ( resid = 4.681002e-04 , ||eigVec[8]|| = 1.000000e+00 )
+eigVal[9] = 2.394291e-01 ( resid = 4.635850e-04 , ||eigVec[9]|| = 1.000000e+00 )
+End of eigensolutions
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.182555
+eigenval(1):   0.184804
+eigenval(2):   0.195843
+eigenval(3):   0.198501
+eigenval(4):   0.211093
+eigenval(5):   0.216802
+eigenval(6):   0.222658
+eigenval(7):   0.225769
+eigenval(8):   0.243163
+eigenval(9):   0.244657
+Aggregate time to calculate Dirac eigenpairs 7.229346e+00
+Aggregate time to calculate pbp, etc 0.000000e+00
+Fixing to Coulomb gauge
+GFIX: Ended at step 85. Av gf action 8.77263803e-01, delta 1.980e-06
+Aggregate time to gauge fix 8.827808e-01
+Time to APE smear 2.053976e-03 sec
+END OF HEADER
+Mass= 1 source random_color_wall residue= 0 rel= 0
+FLTIME: time = 1.547410e-01 (HISQ qop D) flops/site = 126642 mflops = 3.352217e+03
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+Wrote source for color 0 time slice 0
+Time to save source color 0 = 9.779930e-04
+solve_ksprop: color = 1
+Wrote source for color 1 time slice 0
+Time to save source color 1 = 8.008480e-04
+solve_ksprop: color = 2
+Wrote source for color 2 time slice 0
+Time to save source color 2 = 7.989407e-04
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Mass= 0.01 source point residue= 1e-08 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+CONGRAD5: time = 1.340532e-01 (fn_qop D) nmass[0] = 1 iters = 120 mflops = 4.333925e+03
+CGREMAP:  time = 1.177073e-03
+ OK converged final_rsq= 6.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 120
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.127958e-03
+ OK converged final_rsq= 6.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+save_ksprop_c_from_field color vector source is missing
+save_ksprop_c_from_field File will be written with a dummy zero source
+Time to save prop color 0 = 3.024101e-03
+solve_ksprop: color = 1
+CONGRAD5: time = 1.311591e-01 (fn_qop D) nmass[0] = 1 iters = 119 mflops = 4.392645e+03
+CGREMAP:  time = 1.163006e-03
+ OK converged final_rsq= 8.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 119
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.131773e-03
+ OK converged final_rsq= 8.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+save_ksprop_c_from_field color vector source is missing
+save_ksprop_c_from_field File will be written with a dummy zero source
+Time to save prop color 1 = 2.920866e-03
+solve_ksprop: color = 2
+CONGRAD5: time = 1.312950e-01 (fn_qop D) nmass[0] = 1 iters = 119 mflops = 4.388098e+03
+CGREMAP:  time = 1.154900e-03
+ OK converged final_rsq= 7.5e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 119
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.122236e-03
+ OK converged final_rsq= 7.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+save_ksprop_c_from_field color vector source is missing
+save_ksprop_c_from_field File will be written with a dummy zero source
+Time to save prop color 2 = 2.919912e-03
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Saved propagator to test_prop
+Mass= 0.01 source point/spin_taste residue= 1e-08 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+CONGRAD5: time = 1.346941e-01 (fn_qop D) nmass[0] = 1 iters = 120 mflops = 4.313304e+03
+CGREMAP:  time = 1.194954e-03
+ OK converged final_rsq= 6.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 120
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.113176e-03
+ OK converged final_rsq= 6.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+solve_ksprop: color = 1
+CONGRAD5: time = 1.298482e-01 (fn_qop D) nmass[0] = 1 iters = 119 mflops = 4.436989e+03
+CGREMAP:  time = 1.192093e-03
+ OK converged final_rsq= 8.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 119
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.152992e-03
+ OK converged final_rsq= 8.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+solve_ksprop: color = 2
+CONGRAD5: time = 1.313818e-01 (fn_qop D) nmass[0] = 1 iters = 119 mflops = 4.385199e+03
+CGREMAP:  time = 1.158237e-03
+ OK converged final_rsq= 7.5e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 119
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.123905e-03
+ OK converged final_rsq= 7.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Aggregate time to compute propagators 1.371696e+00
+destroy prop[0]
+destroy prop[1]
+Aggregate time to generate sink operator 4.789829e-04
+destroy prop[2]
+Aggregate time to generate sink operator 4.599094e-04
+Mesons for quarks 0 and 0
+Time for diagonal mesons 1.230097e-02
+Time for printing correlator 4.760504e-02
+Mesons for quarks 0 and 1
+Time for offdiag mesons 1.210904e-02
+Time for printing correlator 3.811002e-02
+Aggregate time to tie meson correlators 1.101830e-01
+Aggregate time to tie baryon correlators 1.192093e-06
+Time to save 10 eigenvectors = 3.340850e-01
+Aggregate time to save eigenvectors (if requested) 3.340988e-01
+RUNNING COMPLETED
+Time = 1.020165e+01 seconds
+total_iters = 1432
+destroy quark[0]
+destroy quark[1]
+
+
+######################################################################
+# Gauge field description
+continue 
+u0 1
+no_gauge_fix
+forget 
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0 
+# Dirac eigenpair calculation
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 5
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+# Outer loop iterations
+Kalkreuter_iters 20
+# Eigenvalue tolerance
+eigenval_tolerance 1e-06
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease 0.3
+# eigenvector I/O
+reload_serial_ks_eigen ks_eigen_deflate.test-out
+forget_ks_eigen 
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+number_of_base_sources 2
+# base source 0
+vector_field
+subset full
+origin 0 0 0 0 
+load_source_serial test_src
+ncolor 3
+momentum 0 0 0 
+source_label r
+forget_source 
+# base source 1
+point
+subset full
+origin 0 0 0 0 
+source_label d
+forget_source 
+# Description of completed sources
+number_of_modified_sources 1
+# source 2
+source 1
+spin_taste
+spin_taste rhox
+op_label p
+forget_source 
+# Description of propagators
+number_of_sets 3
+# Set 0
+# Parameters common to all members of this set
+max_cg_iterations 1000
+max_cg_restarts 2
+check sourceonly
+momentum_twist 0 0 0 
+time_bc antiperiodic
+precision 2
+source 0
+number_of_propagators 1
+# Propagators for mass 0
+# propagator 0
+mass 1
+naik_term_epsilon 0
+error_for_propagator 0
+rel_error_for_propagator 0
+mixed_rsq 0
+fresh_ksprop 
+forget_ksprop 
+# Set 1
+# Parameters common to all members of this set
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0 
+time_bc antiperiodic
+precision 2
+source 1
+number_of_propagators 1
+# Propagators for mass 0
+# propagator 1
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+mixed_rsq 0
+fresh_ksprop 
+save_serial_scidac_ksprop test_prop
+# Set 2
+# Parameters common to all members of this set
+max_cg_iterations 1000
+max_cg_restarts 2
+check yes
+momentum_twist 0 0 0 
+time_bc antiperiodic
+precision 2
+source 2
+number_of_propagators 1
+# Propagators for mass 0
+# propagator 1
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-08
+rel_error_for_propagator 0
+mixed_rsq 0
+fresh_ksprop 
+forget_ksprop 
+# Definition of quarks
+number_of_quarks 2
+# quark 0
+propagator 1
+identity
+op_label d
+forget_ksprop 
+# quark 1
+propagator 2
+identity
+op_label d
+forget_ksprop 
+# Description of mesons
+number_of_mesons 2
+pair 0 0 
+spectrum_request meson
+save_corr_fnal ks_spectrum_deflate_hisq.2.corrfile.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator POINT_PION p000   1 * 1  pion5  0  0  0  E  E  E
+pair 0 1 
+spectrum_request meson
+save_corr_fnal ks_spectrum_deflate_hisq.2.corrfile.test-out
+r_offset 0 0 0 0 
+number_of_correlators 1
+correlator RHOX p000   1 * 1   rhox  0  0  0  E  E  E
+# Description of baryons
+number_of_baryons 0
+"Fat 7 (level 1)"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -6.250000e-02
+                    2      1.562500e-02
+                    3      -2.604167e-03
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath  path_coeff
+                    0      1.000000e+00
+                    1      -4.166667e-02
+                    2      -6.250000e-02
+                    3      1.562500e-02
+                    4      -2.604167e-03
+                    5      -1.250000e-01
+"1-link + Naik"
+path coefficients: npath  path_coeff
+                    0      1.250000e-01
+                    1      -4.166667e-02
+FLTIME: time = 1.533430e-01 (HISQ qop D) flops/site = 126642 mflops = 3.382781e+03
+Time to APE smear 1.716852e-03 sec
+WARNING: Called for 5 vectors, but found 10
+DML_partition_in times: read 0.00  send 0.00  total 0.00
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.333053285586451031e-01</eigVal><resid>1.837017e-04</resid></info>"
+Checksums 6a53eaf2 5cff800d
+DML_partition_in times: read 0.00  send 0.00  total 0.00
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.366105707181098916e-01</eigVal><resid>3.057994e-04</resid></info>"
+Checksums 204602c1 fc230f89
+DML_partition_in times: read 0.00  send 0.00  total 0.00
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.534184341618279601e-01</eigVal><resid>3.284160e-04</resid></info>"
+Checksums 3c315c92 77550c41
+DML_partition_in times: read 0.00  send 0.00  total 0.00
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.576108780716969915e-01</eigVal><resid>4.215750e-04</resid></info>"
+Checksums 104d53c5 99ba8c57
+DML_partition_in times: read 0.00  send 0.00  total 0.00
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.782402661911605124e-01</eigVal><resid>3.227960e-04</resid></info>"
+Checksums bf9c7a8a a8a3a4a4
+Time to reload 5 eigenvectors = 1.353192e-02
+Aggregate time to readin 1.789148e-01
+Checking eigensolutions
+eigVal[0] = 1.333053e-01 ( resid = 1.134841e+01 , ||eigVec[0]|| = 1.000000e+00 )
+eigVal[1] = 1.366106e-01 ( resid = 1.136987e+01 , ||eigVec[1]|| = 1.000000e+00 )
+eigVal[2] = 1.534184e-01 ( resid = 1.132168e+01 , ||eigVec[2]|| = 1.000000e+00 )
+eigVal[3] = 1.576109e-01 ( resid = 1.130078e+01 , ||eigVec[3]|| = 1.000000e+00 )
+eigVal[4] = 1.782403e-01 ( resid = 1.110037e+01 , ||eigVec[4]|| = 1.000000e+00 )
+End of eigensolutions
+The above were eigenvalues of -Dslash^2 in MILC normalization
+Here we also list eigenvalues of iDslash in continuum normalization
+eigenval(0):   0.182555
+eigenval(1):   0.184804
+eigenval(2):   0.195843
+eigenval(3):   0.198501
+eigenval(4):   0.211093
+Aggregate time to calculate Dirac eigenpairs 2.541780e-02
+Aggregate time to calculate pbp, etc 0.000000e+00
+COULOMB GAUGE FIXING SKIPPED.
+END OF HEADER
+Mass= 1 source vector_field residue= 0 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+Restoring binary SciDAC file test_src
+File info 
+"
+Derived MILC KS field
+gauge.filename ../binary_samples/lat.sample.l8888
+propagator.boundary_conditions space: periodic time: antiperiodic
+asqtad.u0 1.00000
+action.hisq.fat7.one_link 1.250000e-01
+action.hisq.fat7.three_staple -6.250000e-02
+action.hisq.fat7.five_staple 1.562500e-02
+action.hisq.fat7.seven_staple -2.604167e-03
+action.hisq.asqtad.one_link 1.000000e+00
+action.hisq.asqtad.three_staple -6.250000e-02
+action.hisq.asqtad.five_staple 1.562500e-02
+action.hisq.asqtad.seven_staple -2.604167e-03
+action.hisq.asqtad.lepage -1.250000e-01
+action.hisq.asqtad.naik -4.166667e-02
+action.hisq.difference.one_link 1.250000e-01
+action.hisq.difference.naik -4.166667e-02
+
+inv_arg.rsqprop 0.000000e+00
+"
+DML_partition_in times: read 0.00  send 0.00  total 0.00
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>0</color><info></info></usqcdSourceInfo>"
+Checksums 500441fb ffe93bf9
+solve_ksprop: color = 1
+DML_partition_in times: read 0.00  send 0.00  total 0.00
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>1</color><info></info></usqcdSourceInfo>"
+Checksums 299f0f4b 654dd76b
+solve_ksprop: color = 2
+DML_partition_in times: read 0.00  send 0.00  total 0.00
+Record info 
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>2</color><info></info></usqcdSourceInfo>"
+Checksums 4df5416a 327fcf14
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Mass= 0.01 source point residue= 1e-08 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+CONGRAD5: time = 1.303711e-01 (fn_qop D) nmass[0] = 1 iters = 119 mflops = 4.419194e+03
+CGREMAP:  time = 1.199961e-03
+ OK converged final_rsq= 9.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 119
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.115084e-03
+ OK converged final_rsq= 8.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+save_ksprop_c_from_field color vector source is missing
+save_ksprop_c_from_field File will be written with a dummy zero source
+Time to save prop color 0 = 2.974033e-03
+solve_ksprop: color = 1
+CONGRAD5: time = 1.297989e-01 (fn_qop D) nmass[0] = 1 iters = 118 mflops = 4.401376e+03
+CGREMAP:  time = 1.161098e-03
+ OK converged final_rsq= 9.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 118
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.149893e-03
+ OK converged final_rsq= 9.8e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+save_ksprop_c_from_field color vector source is missing
+save_ksprop_c_from_field File will be written with a dummy zero source
+Time to save prop color 1 = 2.923012e-03
+solve_ksprop: color = 2
+CONGRAD5: time = 1.318161e-01 (fn_qop D) nmass[0] = 1 iters = 119 mflops = 4.370748e+03
+CGREMAP:  time = 1.169920e-03
+ OK converged final_rsq= 8.8e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 119
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.116991e-03
+ OK converged final_rsq= 8.5e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+save_ksprop_c_from_field color vector source is missing
+save_ksprop_c_from_field File will be written with a dummy zero source
+Time to save prop color 2 = 2.940893e-03
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Saved propagator to test_prop
+Mass= 0.01 source point/spin_taste residue= 1e-08 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+CONGRAD5: time = 1.313989e-01 (fn_qop D) nmass[0] = 1 iters = 119 mflops = 4.384626e+03
+CGREMAP:  time = 1.168966e-03
+ OK converged final_rsq= 9.2e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 119
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.145124e-03
+ OK converged final_rsq= 8.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+solve_ksprop: color = 1
+CONGRAD5: time = 1.304712e-01 (fn_qop D) nmass[0] = 1 iters = 118 mflops = 4.378695e+03
+CGREMAP:  time = 1.167774e-03
+ OK converged final_rsq= 9.9e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 118
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.133919e-03
+ OK converged final_rsq= 9.8e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+solve_ksprop: color = 2
+CONGRAD5: time = 1.313229e-01 (fn_qop D) nmass[0] = 1 iters = 119 mflops = 4.387166e+03
+CGREMAP:  time = 1.177311e-03
+ OK converged final_rsq= 8.8e-17 (cf 1e-16) rel = 1 (cf 0) restarts = 1 iters= 119
+CONGRAD5: time = 0.000000e+00 (fn_qop D) nmass[0] = 1 iters = 0 mflops = 0.0
+CGREMAP:  time = 1.195908e-03
+ OK converged final_rsq= 8.5e-17 (cf 1e-16) rel = 1 (cf 0) restarts = -1 iters= 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Aggregate time to compute propagators 1.127264e+00
+destroy prop[0]
+destroy prop[1]
+Aggregate time to generate sink operator 4.799366e-04
+destroy prop[2]
+Aggregate time to generate sink operator 4.370213e-04
+Mesons for quarks 0 and 0
+Time for diagonal mesons 1.274776e-02
+Time for printing correlator 4.678321e-02
+Mesons for quarks 0 and 1
+Time for offdiag mesons 1.289392e-02
+Time for printing correlator 5.399013e-02
+Aggregate time to tie meson correlators 1.264799e-01
+Aggregate time to tie baryon correlators 9.536743e-07
+Aggregate time to save eigenvectors (if requested) 4.053116e-06
+RUNNING COMPLETED
+Time = 1.166069e+01 seconds
+total_iters = 1424
+destroy quark[0]
+destroy quark[1]
+
+
+ask_starting_lattice(0): EOF on input.
+exit: Sat Feb 27 16:08:14 2016
+

@@ -39,11 +39,12 @@ void make_lattice(){
       lattice[i].index = x+nx*(y+ny*(z+nz*t));
       if( (x+y+z+t)%2 == 0)lattice[i].parity=EVEN;
       else	         lattice[i].parity=ODD;
-#ifdef SITERAND
-      initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
-#endif
     }
   }
+#ifdef SITERAND
+  initialize_site_prn_from_seed(iseed);
+#endif
+
 }
 
 void free_lattice()

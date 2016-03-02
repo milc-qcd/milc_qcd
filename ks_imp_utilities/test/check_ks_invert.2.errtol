@@ -16,7 +16,7 @@ asqtad_arg.sign MILC-convention
 inv_arg.mass 0
 inv_arg.rsqprop 0
 "
-DML_partition_in times: read XXX send XXX total 0.02
+DML_partition_in times: read XXX send XXX total XXX
 Record info
 "source color vector field"
 Checksums XXX XXX
@@ -28,7 +28,7 @@ Inversion checked, frac. error = 6e-07
 Flagged comparisons = 0
 Max err. = 1e-4 frac. = 1e-6
 Saved KS vector serially to binary file ksvector.ans.MdaggerMinv.test.l8
-Checksums 4e+04 8e+01
+Checksums XXX XXX
 total_iters = 124
 
 
@@ -89,5 +89,5 @@ total_iters = 4
 
 
 ask_starting_lattice(0): EOF on input.
-exit: XXX XXX XXX 1e+01 XXX
+exit: XXX XXX XXX XXX XXX
 

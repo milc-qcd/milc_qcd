@@ -45,8 +45,7 @@ if(flag==0){
     /* gaussian random vector */
 FORALLSITES(i,s){
         for(k=0;k<4;k++)for(j=0;j<3;j++){
-            s->source.d[k].c[j].real = gaussian_rand_no(&node_prn);
-            s->source.d[k].c[j].imag = gaussian_rand_no(&node_prn);
+            s->source.d[k].c[j] = complex_gaussian_rand_no(&node_prn);
 	}
     }
 

@@ -134,7 +134,6 @@ QIO_Reader *open_scidac_input_xml(char *filename, QIO_Layout *layout,
 #ifdef QIO_TRELEASE
   QIO_set_trelease(0,QIO_TRELEASE);
 #endif
-  node0_printf("%s: Opening file %s for reading\n", myname, filename);
   infile = QIO_open_read(xml_file_in, filename, layout, fs, &iflag);
   if(infile == NULL){
     printf("%s(%d): QIO_open_read returns NULL.\n",myname,this_node);

@@ -994,7 +994,7 @@ int readin(int prompt) {
   phases_in = OFF;
 
   /* Construct APE smeared links */
-  ape_links = ape_smear_3D( param.staple_weight, param.ape_iter );
+  ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
 
   /* Set options for fermion links in case we use them */
   

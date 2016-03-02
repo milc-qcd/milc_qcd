@@ -103,15 +103,8 @@ endif
 # Objects depending on architecture and software package 
 
 # Selection of layout
-ifeq ($(strip ${QCDOC}),true)
-  LAYOUT = layout_qcdoc.o # Required
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
-  else
-    LAYOUT = layout_hyper_prime.o # Choices possible here
-  endif
-endif
+
+LAYOUT = layout_hyper_prime.o # Choices possible here
 
 # Selection of a non-QDP FN Dslash 
 # Choices are dslash_fn.o dslash_fn2.o dslash_fn_dblstore.o

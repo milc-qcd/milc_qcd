@@ -2262,6 +2262,8 @@ static char *encode_dir(int dir){
   else return "?";
 }
 
+#if FERM_ACTION == HISQ
+
 static char *encode_sign_dir(int fb, int dir){
   static char sign_dir[3] = "  ";
   char *d = encode_dir(dir);
@@ -2273,6 +2275,8 @@ static char *encode_sign_dir(int fb, int dir){
   sign_dir[1] = d[0];
   return sign_dir;
 }
+
+#endif
 
 
 /* For parsing the derivative direction */

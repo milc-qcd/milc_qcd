@@ -138,6 +138,9 @@ set_qop_invert_arg( QOP_invert_arg_t* qop_invert_arg,
   /* For multimass inversion, don't restart */
   if(nsrc != 1 || nmass[0] != 1)
     qop_invert_arg->restart = qop_invert_arg->max_iter;
+#ifdef HALF_MIXED
+  qop_invert_arg->mixed_rsq    = qic->mixed_rsq;
+#endif
 }
 
 
@@ -250,6 +253,11 @@ ks_congrad_qop_generic( QOP_FermionLinksAsqtad* qop_links,
   for(isrc = 0; isrc < nsrc; isrc++){
     for(imass = 0; imass < nmass[isrc]; imass++){
       if(this_node == 0){
+	/* Temporary to prevent garbage qopqdp output when no iterations were taken */
+	if(qop_resid_arg[isrc][imass]->final_iter == 0){
+	  qop_resid_arg[isrc][imass]->final_rsq = 0;
+	  qop_resid_arg[isrc][imass]->final_rel = 0;
+	}
 	if((qic[0].resid > 0 && qop_resid_arg[isrc][imass]->final_rsq <= qic[0].resid * qic[0].resid ) ||
 	   (qic[0].relresid > 0 && qop_resid_arg[isrc][imass]->final_rel <= qic[0].relresid * qic[0].relresid )){
 #ifdef CG_DEBUG

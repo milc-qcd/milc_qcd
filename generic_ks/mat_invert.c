@@ -202,15 +202,49 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     su3_vector *tmp = create_v_field();
     su3_vector *ttt = create_v_field();
     int even_iters;
+#if EIGMODE ==  DEFLATION
+    int j;
+    double_complex cc;
+    double_complex *c;
+#endif
 
     /* "Precondition" both even and odd sites */
     /* temp <- M_adj * src */
 
     ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
 
+#if EIGMODE == DEFLATION
+    /* init-CG */
+    /* dst_e <- sum_j ((eigVec_e[j].tmp_e)/(eigVal[j]+4*mass*mass)) eigVec_e[j] */
+    FOREVENSITES(i,s){
+      clearvec( dst+i );
+    }
+    c = (double_complex *)malloc(param.Nvecs*sizeof(double_complex));
+    for( j = 0; j < param.Nvecs; j++){
+      c[j] = dcmplx((double)0.0,(double)0.0);
+      FOREVENSITES(i,s){
+	cc = su3_dot( eigVec[j]+i, tmp+i );
+	CSUM( c[j], cc );
+      }
+    }
+    g_vecdcomplexsum( c, param.Nvecs );
+    for( j = 0; j < param.Nvecs; j++){
+      CDIVREAL( c[j], eigVal[j]+4.0*mass*mass, c[j] );
+      FOREVENSITES(i,s){
+	c_scalar_mult_add_su3vec( dst+i, c+j, eigVec[j]+i );
+      }
+    }
+    free(c);
+#endif
+
     /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
     qic->parity     = EVEN;
+#if EIGMODE == EIGCG
+    cgn = ks_inc_eigCG_parity(tmp, dst, eigVal, eigVec, &param.eigcgp, qic, mass, fn);
+    report_status(qic);
+#else
     cgn = ks_congrad_field( tmp, dst, qic, mass, fn );
+#endif
     even_iters = qic->final_iters;
 
     /* reconstruct odd site solution */

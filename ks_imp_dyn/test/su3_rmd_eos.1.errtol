@@ -44,7 +44,7 @@ G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
 GACTION: 2e-06
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PB_DMDU_P: mass 2e-07 2e-05 4e-06 ( 0 of 0 )
 PBP: mass 2e-07 1e-06 2e-06 2e-07 2e-06 ( 0 of 0 )
@@ -56,7 +56,7 @@ TR_MM_INV: mass 2e-07 2e-06 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PB_DMDU_P: mass 2e-07 1e-05 2e-06 ( 0 of 0 )
 PBP: mass 2e-07 6e-07 3e-06 2e-07 8e-07 ( 0 of 0 )
-FACTION: mass = 2e-07 3e-07 ( 0 of 0 )
+FACTION: mass = 2e-07 2e-06 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 TR_MM_INV: mass 2e-07 2e-06 ( 0 of 0 )
@@ -74,19 +74,19 @@ PB_DMDU_P: mass 2e-07 2e-05 2e-06 ( 0 of 0 )
 PBP: mass 2e-07 6e-07 4e-06 4e-07 1e-06 ( 0 of 0 )
 FACTION: mass = 2e-07 3e-07 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 TR_MM_INV: mass 2e-07 1e-06 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PB_DMDU_P: mass 2e-07 2e-05 2e-06 ( 0 of 0 )
 PBP: mass 2e-07 2e-07 2e-06 2e-07 2e-06 ( 0 of 0 )
 FACTION: mass = 2e-07 3e-07 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 TR_MM_INV: mass 2e-07 8e-07 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
-PB_DMDU_P: mass 2e-07 2e-05 1e-06 ( 0 of 0 )
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+PB_DMDU_P: mass 2e-07 2e-05 2e-06 ( 0 of 0 )
 PBP: mass 2e-07 6e-07 2e-06 2e-07 1e-06 ( 0 of 0 )
 FACTION: mass = 2e-07 2e-06 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
@@ -106,7 +106,7 @@ PB_DMDU_P: mass 2e-07 3e-05 6e-06 ( 0 of 0 )
 PBP: mass 2e-07 2e-07 1e-06 6e-07 3e-06 ( 0 of 0 )
 FACTION: mass = 2e-07 3e-07 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 TR_MM_INV: mass 2e-07 1e-06 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
@@ -138,7 +138,7 @@ G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 0 0 )
@@ -166,18 +166,18 @@ TR_MM_INV: mass 2e-07 8e-07 ( 0 of 0 )
 PB_DMDU_P: mass 2e-07 2e-05 4e-06 ( 0 of 0 )
 PBP: mass 2e-07 1e-06 2e-06 2e-07 2e-06 ( 0 of 0 )
 FACTION: mass = 2e-07 3e-07 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
 TR_MM_INV: mass 2e-07 2e-06 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PB_DMDU_P: mass 2e-07 2e-05 2e-06 ( 0 of 0 )
 PBP: mass 2e-07 8e-07 2e-06 2e-07 2e-06 ( 0 of 0 )
 FACTION: mass = 2e-07 2e-06 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 TR_MM_INV: mass 2e-07 2e-06 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PB_DMDU_P: mass 2e-07 2e-05 2e-06 ( 0 of 0 )
 PBP: mass 2e-07 5e-07 3e-06 2e-07 3e-06 ( 0 of 0 )
@@ -185,20 +185,20 @@ FACTION: mass = 2e-07 3e-07 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
 TR_MM_INV: mass 2e-07 8e-07 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PB_DMDU_P: mass 2e-07 1e-05 2e-06 ( 0 of 0 )
 PBP: mass 2e-07 2e-07 1e-06 5e-07 3e-06 ( 0 of 0 )
 FACTION: mass = 2e-07 3e-07 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
 TR_MM_INV: mass 2e-07 4e-07 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PB_DMDU_P: mass 2e-07 2e-05 2e-06 ( 0 of 0 )
 PBP: mass 2e-07 5e-07 1e-06 2e-07 7e-06 ( 0 of 0 )
 FACTION: mass = 2e-07 2e-06 ( 0 of 0 )
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 TR_MM_INV: mass 2e-07 2e-06 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
