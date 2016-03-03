@@ -72,11 +72,21 @@ static void initCG(su3_vector *src, su3_vector *dest, int Nvecs_curr, int Nvecs_
 
   /* c[i] = eigVec[i].resid */
   for(j = 0; j < Nvecs_curr; j++){
-    c[j] = zzero;
-    FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:c[j])){
+//    c[j] = zzero;
+//    FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:c[j])){
+//      cc = su3_dot(eigVec[j]+i, resid+i);
+//      CSUM(c[j], cc);
+//    } END_LOOP_OMP
+
+    double cctotr=0., cctoti=0.;
+    FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:cctotr,cctoti)){
       cc = su3_dot(eigVec[j]+i, resid+i);
-      CSUM(c[j], cc);
-    } END_LOOP_OMP
+      cctotr += cc.real;
+      cctoti += cc.imag;
+    } END_LOOP_OMP;
+    c[j].real == cctotr;
+    c[j].imag == cctoti;
+
   }
   g_vecdcomplexsum(c, Nvecs_curr);
 
@@ -129,11 +139,21 @@ static int orthogonalize(int Nvecs, int Nvecs_curr, su3_vector **eigVec, int par
     /* Modified Gram-Schmidt
        Orthogonality is better but more communications are needed */
     for(k = 0; k < j; k++){
-      c[k] = dcmplx((double)0.0,(double)0.0);
-      FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:c[k])){
+//      c[k] = dcmplx((double)0.0,(double)0.0);
+//      FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:c[k])){
+//	cc = su3_dot(eigVec[k]+i, eigVec[j]+i);
+//	CSUM(c[k], cc);
+//      } END_LOOP_OMP;
+
+      double cctotr=0., cctoti=0.;
+      FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:cctotr,cctoti)){
 	cc = su3_dot(eigVec[k]+i, eigVec[j]+i);
-	CSUM(c[k], cc);
-      } END_LOOP_OMP
+	cctotr += cc.real;
+	cctoti += cc.imag;
+      } END_LOOP_OMP;
+      c[k].real == cctotr;
+      c[k].imag == cctoti;
+
       g_dcomplexsum(c+k);
       FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
 	c_scalar_mult_sub_su3vec(eigVec[j]+i, c+k, eigVec[k]+i);
@@ -212,11 +232,22 @@ static void extend_H(int Nvecs, int Nvecs_curr, int Nvecs_max, su3_vector **eigV
     for(k = 0; k < Nvecs_curr+Nvecs; k++){
       /* H_{k,j} = -eigVec[k].ttt  */
       kk = k + Nvecs_max*j;
-      H[kk] = dcmplx((double)0.0, (double)0.0);
-      FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:H[kk])){
+//      H[kk] = dcmplx((double)0.0, (double)0.0);
+//      FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:H[kk])){
+//	cc = su3_dot(eigVec[k]+i, ttt+i);
+//	CSUM(H[kk], cc);
+//      } END_LOOP_OMP;
+
+      double cctotr=0., cctoti=0.;
+      FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:cctotr,cctoti)){
 	cc = su3_dot(eigVec[k]+i, ttt+i);
-	CSUM(H[kk], cc);
-      } END_LOOP_OMP
+	cctotr += cc.real;
+	cctoti += cc.imag;
+      } END_LOOP_OMP;
+      H[kk].real == cctotr;
+      H[kk].imag == cctoti;
+
+
       CNEGATE(H[kk], H[kk]);
     }
     g_vecdcomplexsum(H+Nvecs_max*j, Nvecs_curr+Nvecs);
@@ -625,11 +656,23 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 
 	/* T_{j,k+1} = eigVec[j].ttt2/sqrt(rsq) */
 	for(j = 0; j < Nvecs_x2; j++){
-	  tau[j] = zzero;
-	  FORSOMEFIELDPARITY_OMP(i, parity, private(work[0]) reduction(+:tau[j])){
-	    work[0] = su3_dot(eigVec[j]+i, ttt2+i);
-	    CSUM(tau[j], work[0]);
-	  } END_LOOP_OMP
+
+//	  tau[j] = zzero;
+//	  FORSOMEFIELDPARITY_OMP(i, parity, private(work[0]) reduction(+:tau[j])){
+//	    work[0] = su3_dot(eigVec[j]+i, ttt2+i);
+//	    CSUM(tau[j], work[0]);
+//	  } END_LOOP_OMP;
+
+	  double cctotr=0., cctoti=0.;
+	  double_complex cc;
+	  FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:cctotr,cctoti)){
+	    cc = su3_dot(eigVec[j]+i, ttt2+i);
+	    cctotr += cc.real;
+	    cctoti += cc.imag;
+	  } END_LOOP_OMP;
+	  tau[j].real == cctotr;
+	  tau[j].imag == cctoti;
+
 	}
 	g_vecdcomplexsum(tau, Nvecs_x2);
 	for(j = 0; j < Nvecs_x2; j++)
