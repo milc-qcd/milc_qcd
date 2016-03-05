@@ -133,10 +133,18 @@ int main(int argc, char *argv[])
 
       if(num_pbp_masses == 1){
 #ifdef CURRENT_DISC
-	f_meas_current( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
-			&param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
-			param.ksp_pbp[i0].naik_term_epsilon_index, 
-			fn_links, param.pbp_filenames[i0] );
+	if(param.truncate_diff[k])
+	  f_meas_current_diff( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
+			       &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+			       param.ksp_pbp[i0].mass, 
+			       param.ksp_pbp[i0].naik_term_epsilon_index, 
+			       fn_links, param.pbp_filenames[i0] );
+	else
+	  f_meas_current( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
+			  &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
+			  param.ksp_pbp[i0].naik_term_epsilon_index, 
+			  fn_links, param.pbp_filenames[i0] );
+
 #else
 	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
 			  param.ksp_pbp[i0].naik_term_epsilon_index, fn_links);
@@ -149,9 +157,14 @@ int main(int argc, char *argv[])
 #endif
       } else {
 #ifdef CURRENT_DISC
-	f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
-			      param.thinning[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], 
-			      fn_links, &param.pbp_filenames[i0] );
+	if(param.truncate_diff[k])
+	  f_meas_current_multi_diff( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+				     param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+				     &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
+	else
+	  f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+				param.thinning[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], 
+				fn_links, &param.pbp_filenames[i0] );
 #else
 	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
 			  &param.ksp_pbp[i0], fn_links);

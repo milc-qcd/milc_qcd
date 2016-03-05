@@ -254,6 +254,10 @@ int readin(int prompt) {
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts, prec_pbp;
       Real error_for_propagator, rel_error_for_propagator;
+#ifdef CURRENT_DISC
+      int max_cg_iterations_sloppy, max_cg_restarts_sloppy, prec_pbp_sloppy;
+      Real error_for_propagator_sloppy, rel_error_for_propagator_sloppy;
+#endif
 
       /* Number of stochastic sources */
       IF_OK status += get_i(stdin, prompt, "npbp_reps", &param.npbp_reps[k] );
@@ -262,6 +266,18 @@ int readin(int prompt) {
       /* For some applications.  Random source count between writes */
       IF_OK status += get_i(stdin, prompt, "nwrite", &param.nwrite[k] );
       IF_OK status += get_i(stdin, prompt, "source_spacing", &param.thinning[k] );
+      /* For truncated solver Take difference of sloppy and precise?*/
+      char savebuf[128];
+      IF_OK status += get_s(stdin, prompt, "take_truncate_diff", savebuf);
+      IF_OK {
+	if(strcmp(savebuf,"no") == 0)param.truncate_diff[k] = 0;
+	else if(strcmp(savebuf,"yes") == 0)param.truncate_diff[k] = 1;
+	else {
+	  printf("Unrecognized response %s\n",savebuf);
+	  printf("Choices are 'yes' and 'no'\n");
+	  status++;
+	}
+      }
 #endif
 
       /* The following parameters are common to the set and will be copied
@@ -278,11 +294,37 @@ int readin(int prompt) {
       IF_OK status += get_i(stdin, prompt, "prec_pbp", 
 			    &prec_pbp );
 
-      /* error for clover propagator conjugate gradient */
+      /* error for staggered propagator conjugate gradient */
       IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
 			    &error_for_propagator );
       IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
 			    &rel_error_for_propagator );
+
+#ifdef CURRENT_DISC
+      /* If we are taking the difference between a sloppy and a precise solve,
+	 get the sloppy solve parameters */
+      if(param.truncate_diff[k]){
+	/* The following parameters are common to the set and will be copied
+	   to each member */
+	
+	/* maximum no. of conjugate gradient iterations */
+	IF_OK status += get_i(stdin,prompt,"max_cg_iterations_sloppy", 
+			      &max_cg_iterations_sloppy );
+	
+	/* maximum no. of conjugate gradient restarts */
+	IF_OK status += get_i(stdin,prompt,"max_cg_restarts_sloppy", 
+			      &max_cg_restarts_sloppy );
+	
+	IF_OK status += get_i(stdin, prompt, "prec_pbp_sloppy", 
+			      &prec_pbp_sloppy );
+	
+	/* error for staggered propagator conjugate gradient */
+	IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy", 
+			      &error_for_propagator_sloppy );
+	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator_sloppy", 
+			      &rel_error_for_propagator_sloppy );
+      }
+#endif
 
       /* Number of pbp masses in this set */
       IF_OK status += get_i(stdin, prompt, "number_of_pbp_masses",
@@ -336,6 +378,33 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].min = 0;
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
+
+#ifdef CURRENT_DISC
+      /* If we are taking the difference between a sloppy and a precise solve,
+	 get the sloppy solve parameters */
+      if(param.truncate_diff[k]){
+
+	/* maximum no. of conjugate gradient iterations */
+	param.qic_pbp_sloppy[npbp_masses].max = max_cg_iterations_sloppy;
+      
+	/* maximum no. of conjugate gradient restarts */
+	param.qic_pbp_sloppy[npbp_masses].nrestart = max_cg_restarts_sloppy;
+      
+	/* precision */
+	param.qic_pbp_sloppy[npbp_masses].prec = prec_pbp_sloppy;
+
+	/* errors */
+	param.qic_pbp_sloppy[npbp_masses].resid = error_for_propagator_sloppy;
+	param.qic_pbp_sloppy[npbp_masses].relresid = rel_error_for_propagator_sloppy;
+
+	param.qic_pbp_sloppy[npbp_masses].parity = EVENANDODD;
+	param.qic_pbp_sloppy[npbp_masses].min = 0;
+	param.qic_pbp_sloppy[npbp_masses].start_flag = 0;
+	param.qic_pbp_sloppy[npbp_masses].nsrc = 1;
+
+      }
+
+#endif
 
 	npbp_masses++;
       }
