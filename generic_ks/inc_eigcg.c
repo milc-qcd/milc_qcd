@@ -84,8 +84,8 @@ static void initCG(su3_vector *src, su3_vector *dest, int Nvecs_curr, int Nvecs_
       cctotr += cc.real;
       cctoti += cc.imag;
     } END_LOOP_OMP;
-    c[j].real == cctotr;
-    c[j].imag == cctoti;
+    c[j].real = cctotr;
+    c[j].imag = cctoti;
 
   }
   g_vecdcomplexsum(c, Nvecs_curr);
@@ -151,8 +151,8 @@ static int orthogonalize(int Nvecs, int Nvecs_curr, su3_vector **eigVec, int par
 	cctotr += cc.real;
 	cctoti += cc.imag;
       } END_LOOP_OMP;
-      c[k].real == cctotr;
-      c[k].imag == cctoti;
+      c[k].real = cctotr;
+      c[k].imag = cctoti;
 
       g_dcomplexsum(c+k);
       FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
@@ -244,8 +244,8 @@ static void extend_H(int Nvecs, int Nvecs_curr, int Nvecs_max, su3_vector **eigV
 	cctotr += cc.real;
 	cctoti += cc.imag;
       } END_LOOP_OMP;
-      H[kk].real == cctotr;
-      H[kk].imag == cctoti;
+      H[kk].real = cctotr;
+      H[kk].imag = cctoti;
 
 
       CNEGATE(H[kk], H[kk]);
@@ -670,8 +670,8 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 	    cctotr += cc.real;
 	    cctoti += cc.imag;
 	  } END_LOOP_OMP;
-	  tau[j].real == cctotr;
-	  tau[j].imag == cctoti;
+	  tau[j].real = cctotr;
+	  tau[j].imag = cctoti;
 
 	}
 	g_vecdcomplexsum(tau, Nvecs_x2);
