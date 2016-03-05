@@ -350,6 +350,8 @@ int readin(int prompt) {
   u0 = param.u0;
   if( param.stopflag != 0 )return param.stopflag;
 
+  if(prompt==2)return 0;
+
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
      its Naik epsilon index */
