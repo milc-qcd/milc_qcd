@@ -250,7 +250,7 @@ eigVal[171] = 6e-05 ( resid = 2e-05 , ||eigVec[171]|| = 2e-05 )
 eigVal[172] = 6e-05 ( resid = 2e-05 , ||eigVec[172]|| = 2e-05 )
 eigVal[173] = 6e-05 ( resid = 3e-05 , ||eigVec[173]|| = 2e-05 )
 eigVal[174] = 6e-05 ( resid = 3e-05 , ||eigVec[174]|| = 2e-05 )
-eigVal[175] = 6e-05 ( resid = 3e-05 , ||eigVec[175]|| = 2e-05 )
+eigVal[175] = 6e-05 ( resid = 6e-05 , ||eigVec[175]|| = 2e-05 )
 eigVal[176] = 7e-05 ( resid = 3e-05 , ||eigVec[176]|| = 2e-05 )
 eigVal[177] = 7e-05 ( resid = 3e-05 , ||eigVec[177]|| = 2e-05 )
 eigVal[178] = 7e-05 ( resid = 3e-05 , ||eigVec[178]|| = 2e-05 )
@@ -275,7 +275,8 @@ eigVal[196] = 0.0002 ( resid = 0.0001 , ||eigVec[196]|| = 2e-05 )
 eigVal[197] = 0.0002 ( resid = 0.0001 , ||eigVec[197]|| = 2e-05 )
 eigVal[198] = 0.0003 ( resid = 9e-05 , ||eigVec[198]|| = 2e-05 )
 eigVal[199] = 0.0003 ( resid = 0.0001 , ||eigVec[199]|| = 2e-05 )
-Time to save 0 eigenvectors = XXX
+End of eigensolutions
+Time to save 0 eigenvectors = 7
 RUNNING COMPLETED
 PBP: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 FACTION: mass = 2e-05 3e-05 ( 0 of 0 )
@@ -454,4 +455,5 @@ eigVal[96] = 3e-05 ( resid = 2e-05 , ||eigVec[96]|| = 2e-05 )
 eigVal[97] = 3e-05 ( resid = 2e-05 , ||eigVec[97]|| = 2e-05 )
 eigVal[98] = 3e-05 ( resid = 2e-05 , ||eigVec[98]|| = 2e-05 )
 eigVal[99] = 3e-05 ( resid = 2e-05 , ||eigVec[99]|| = 2e-05 )
+End of eigensolutions
 RUNNING COMPLETED
