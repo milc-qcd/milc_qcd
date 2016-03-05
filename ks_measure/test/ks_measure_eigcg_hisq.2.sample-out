@@ -374,6 +374,7 @@ eigVal[196] = 1.193036e+01 ( resid = 5.647622e+00 , ||eigVec[196]|| = 1.000000e+
 eigVal[197] = 1.205796e+01 ( resid = 5.658530e+00 , ||eigVec[197]|| = 1.000000e+00 )
 eigVal[198] = 1.248324e+01 ( resid = 5.811228e+00 , ||eigVec[198]|| = 1.000000e+00 )
 eigVal[199] = 1.289034e+01 ( resid = 5.656403e+00 , ||eigVec[199]|| = 1.000000e+00 )
+End of eigensolutions
 Time to save 200 eigenvectors = 1.737996e+00
 RUNNING COMPLETED
 Time = 6.598623e+01 seconds
@@ -1017,6 +1018,7 @@ eigVal[96] = 1.387672e+00 ( resid = 9.146952e-02 , ||eigVec[96]|| = 1.000000e+00
 eigVal[97] = 1.396338e+00 ( resid = 1.138986e-01 , ||eigVec[97]|| = 1.000000e+00 )
 eigVal[98] = 1.420562e+00 ( resid = 1.120839e-01 , ||eigVec[98]|| = 1.000000e+00 )
 eigVal[99] = 1.428327e+00 ( resid = 1.316945e-01 , ||eigVec[99]|| = 1.000000e+00 )
+End of eigensolutions
 RUNNING COMPLETED
 Time = 2.617062e+01 seconds
 total_iters = 2744
