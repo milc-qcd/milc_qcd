@@ -460,7 +460,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 
     dtimec += dclock();
 #ifdef CGTIME
-    node0_printf("CONGRAD5_EIGCG: time = %e (fn %s) masses = 1 iters = %d\n",
+    node0_printf("CONGRAD5_EIGCG: time = %e (fn_eigcg %s) masses = 1 iters = %d\n",
 		 dtimec, prec_label[PRECISION-1], qic->final_iters);
 #endif
 
