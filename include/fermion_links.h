@@ -275,8 +275,8 @@ void f_meas_current( int nrand, int nwrite, int thinning, quark_invert_control *
 		     Real mass, int naik_term_epsilon_index, fermion_links_t *fl, 
 		     char *filename);
 void f_meas_current_diff( int nrand, int nwrite, int thinning, 
-			  quark_invert_control *qic_sloppy, 
 			  quark_invert_control *qic_precise, 
+			  quark_invert_control *qic_sloppy, 
 			  Real mass, int naik_term_epsilon_index, fermion_links_t *fl, 
 			  char *filename);
 void f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
@@ -284,8 +284,8 @@ void f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
 			   fermion_links_t *fl, 
 			   char filenames[][MAXFILENAME]);
 void f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
-				quark_invert_control *qic_sloppy, 
 				quark_invert_control *qic_precise,
+				quark_invert_control *qic_sloppy, 
 				ks_param *ksp, fermion_links_t *fl, 
 				char filenames[][MAXFILENAME]);
 
