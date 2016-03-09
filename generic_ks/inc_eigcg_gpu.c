@@ -33,8 +33,7 @@ static const char *prec_label[2] = {"F", "D"};
 
    reinitialize after niters iterations and try once more.
 */
-int ks_eigCG_parity_gpu(su3_vector *src, su3_vector *dest, double *eigVal, su3_vector **eigVec, int Nvec_curr, int Nvecs_max, int last_rhs_flag,
-		    int m, int Nvecs, quark_invert_control *qic, Real mass, imp_ferm_links_t *fn){
+int ks_eigCG_parity_gpu(su3_vector *src, su3_vector *dest, double *eigVal, su3_vector **eigVec, int m, int Nvecs, int Nvecs_max, int curr_idx, int last_rhs_flag, quark_invert_control *qic, Real mass, imp_ferm_links_t *fn){
 
   /*************/
   char myname[] = "ks_eigCG_parity_gpu";
@@ -52,7 +51,6 @@ int ks_eigCG_parity_gpu(su3_vector *src, su3_vector *dest, double *eigVal, su3_v
   int parity       = qic->parity;                 /* EVEN, ODD */
 
   int otherparity = (parity == EVEN) ? ODD : EVEN;
-  int max_cg = max_restarts*niter;                /* Maximum number of iterations */
 
   if(fn == NULL){
     printf("%s(%d): Called with NULL fn\n", myname, this_node);
@@ -105,8 +103,9 @@ int ks_eigCG_parity_gpu(su3_vector *src, su3_vector *dest, double *eigVal, su3_v
 #else
   inv_args.mixed_precision = 0;
 #endif
-  inv_args.mixed_precision = 0;//enforce full precision, for test only!!
-
+#ifdef CG_DEBUG
+  inv_args.mixed_precision = 0;//enforce full precision
+#endif
   su3_matrix* fatlink = get_fatlinks(fn);
   su3_matrix* longlink = get_lnglinks(fn);
 
@@ -116,7 +115,7 @@ int ks_eigCG_parity_gpu(su3_vector *src, su3_vector *dest, double *eigVal, su3_v
   double residual, relative_residual;
   int iteration; 
   int deflation_grid = Nvecs_max / Nvecs;
-  double restart_tol = 5e+3*rsqmin;
+  double restart_tol = 5e+3*rsqmin;//hardcoded for a moment
 
   qudaEigCGInvert(PRECISION,
 	          quda_precision, 
@@ -129,44 +128,55 @@ int ks_eigCG_parity_gpu(su3_vector *src, su3_vector *dest, double *eigVal, su3_v
                   u0,//??
 	          src, 
 	          dest,
-                  eigVec,//array of ritz vectors
+                  (void*)eigVec,//array of ritz vectors
                   eigVals,
                   ritz_precision,
                   m, Nvecs,
                   deflation_grid,
                   restart_tol,//e.g.: 5e+3*target_residual
-                  Nvec_curr,//current rhs
+                  curr_idx,//current rhs
                   last_rhs_flag,//is this the last rhs to solve?
 	          &residual,
 	          &relative_residual, 
 	          &iteration);
 
+   qic->size_r        = (Real)residual;
+   qic->size_relr     = relative_residual;
+   qic->final_iters   = iteration;
+   qic->final_restart = 0;
+   qic->converged     = 1;
+
+#ifdef CG_DEBUG
+   node0_printf("iter=%d, rsq/src= %e, relrsq= %e,\n",
+		 iteration, (double)qic->size_r, (double)qic->size_relr);
+#endif
+
   return iteration;
 }
 
 /* Incremental eigCG */
-/* !!! This computes eigenpairs of -Dslash^2 !!! */
-/* Since this routine only comupte H = -U^+ Dslash^2 U, calc_eigenpairs() must be called
-   if eigenpairs are really needed. */
+/* !!! This computes eigenpairs of 4m^2-Dslash^2 !!! */
+
 int ks_inc_eigCG_parity_gpu( su3_vector *src, su3_vector *dest, double *eigVal,
 			 su3_vector **eigVec, eigcg_params *eigcgp, quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn ){
 
-  int i, parity, m, Nvecs, Nvecs_curr, Nvecs_max, iteration, last_rhs;
+  int i, parity, m, Nvecs, Nvecs_max, iteration, last_rhs;
+  static int curr_rhs;
 
   dtimec = -dclock();
 
   parity = qic->parity;
   m = eigcgp->m;
   Nvecs = eigcgp->Nvecs;
-  Nvecs_curr = eigcgp->Nvecs_curr;
+  //Nvecs_curr = eigcgp->Nvecs_curr;
   Nvecs_max = eigcgp->Nvecs_max;
 
   last_rhs = eigcgp->last_rhs;//not defined!
   
   /* Solve a linear equation */
   dtimec3 = -dclock();
-  iteration = ks_eigCG_parity_gpu(src, dest, eigVal, eigVec, Nvecs_curr, Nvecs_max, last_rhs,  m, Nvecs, qic, mass, fn);
+  iteration = ks_eigCG_parity_gpu(src, dest, eigVal, eigVec, m, Nvecs, Nvecs_max, curr_rhs, last_rhs, qic, mass, fn);
 
   dtimec += dclock();
 

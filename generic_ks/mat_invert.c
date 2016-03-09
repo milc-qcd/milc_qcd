@@ -196,12 +196,14 @@ where  A = (4m^2+D_eo D_eo^adj)^-1 and B = (4m^2+D_oe^adj D_oe)^-1
 int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
 			 quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn ){
+
     int cgn;
     register int i;
     register site *s;
     su3_vector *tmp = create_v_field();
     su3_vector *ttt = create_v_field();
     int even_iters;
+#ifndef USE_EIGCG_GPU
 #if EIGMODE ==  DEFLATION
     int j;
     double_complex cc;
@@ -245,6 +247,20 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 #else
     cgn = ks_congrad_field( tmp, dst, qic, mass, fn );
 #endif
+
+#else //gpu version:
+    /* "Precondition" both even and odd sites */
+    /* temp <- M_adj * src */
+
+    ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
+    /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
+    qic->parity     = EVEN;
+
+    cgn = ks_inc_eigCG_parity_gpu(tmp, dst, eigVal, eigVec, &param.eigcgp, qic, mass, fn);
+    report_status(qic);
+
+#endif
+
     even_iters = qic->final_iters;
 
     /* reconstruct odd site solution */

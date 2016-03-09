@@ -316,6 +316,7 @@ typedef struct {
   int Nvecs_curr;    /* Number of eigenpairs currently computed */
   int Nvecs_max;     /* Maximum number of eigenpairs computed in entire incremental eigCG */
   double_complex *H; /* H = -U^+ Dslash^2 U, U: projection onto smaller subspace */
+  int last_rhs;      /* flag for GPU eigCG/initCG solver to signal the last system to solve*/
 } eigcg_params;
 void calc_eigenpairs(double *eigVal, su3_vector **eigVec, eigcg_params *eigcgp, int parity);
 void calc_eigresid(int Nvecs, double *resid, double *norm, double *eigVal,
@@ -325,6 +326,16 @@ int ks_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal, su3_vect
 int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
 			 su3_vector **eigVec, eigcg_params *eigcgp, quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn);
+
+//GPU versions of the above:
+int ks_eigCG_parity_gpu(su3_vector *src, su3_vector *dest, double *eigVal, su3_vector **eigVec, 
+                        int m, int Nvecs, int Nvecs_max, int curr_idx, int last_rhs_flag, 
+                        quark_invert_control *qic, Real mass, imp_ferm_links_t *fn);
+
+int ks_inc_eigCG_parity_gpu( su3_vector *src, su3_vector *dest, double *eigVal,
+			 su3_vector **eigVec, eigcg_params *eigcgp, quark_invert_control *qic,
+			 Real mass, imp_ferm_links_t *fn );
+
 
 /* ks_baryon.c */
 int baryon_type_index(char *label);

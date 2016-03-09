@@ -76,6 +76,7 @@ EIGCG_OBJECTS = \
  gammas.o \
  eigen_stuff_helpers.o \
  inc_eigcg.o \
+ inc_eigcg_gpu.o \ 
  io_helpers_ks_eigen.o \
  io_ks_eigen.o \
  io_scidac_ks_eigen.o \
