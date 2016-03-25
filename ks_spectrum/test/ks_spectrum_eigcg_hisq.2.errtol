@@ -1,0 +1,670 @@
+Checking eigensolutions
+eigVal[0] = 2e-06 ( resid = 2e-06 , ||eigVec[0]|| = 2e-06 )
+eigVal[1] = 2e-06 ( resid = 2e-06 , ||eigVec[1]|| = 2e-06 )
+eigVal[2] = 2e-06 ( resid = 2e-06 , ||eigVec[2]|| = 2e-06 )
+eigVal[3] = 2e-06 ( resid = 2e-06 , ||eigVec[3]|| = 2e-06 )
+eigVal[4] = 2e-06 ( resid = 2e-06 , ||eigVec[4]|| = 2e-06 )
+eigVal[5] = 2e-06 ( resid = 2e-06 , ||eigVec[5]|| = 2e-06 )
+eigVal[6] = 2e-06 ( resid = 2e-06 , ||eigVec[6]|| = 2e-06 )
+eigVal[7] = 2e-06 ( resid = 2e-06 , ||eigVec[7]|| = 2e-06 )
+eigVal[8] = 2e-06 ( resid = 2e-06 , ||eigVec[8]|| = 2e-06 )
+eigVal[9] = 2e-06 ( resid = 2e-06 , ||eigVec[9]|| = 2e-06 )
+eigVal[10] = 2e-06 ( resid = 2e-06 , ||eigVec[10]|| = 2e-06 )
+eigVal[11] = 2e-06 ( resid = 2e-06 , ||eigVec[11]|| = 2e-06 )
+eigVal[12] = 2e-06 ( resid = 2e-06 , ||eigVec[12]|| = 2e-06 )
+eigVal[13] = 2e-06 ( resid = 2e-06 , ||eigVec[13]|| = 2e-06 )
+eigVal[14] = 2e-06 ( resid = 2e-06 , ||eigVec[14]|| = 2e-06 )
+eigVal[15] = 2e-06 ( resid = 2e-06 , ||eigVec[15]|| = 2e-06 )
+eigVal[16] = 2e-06 ( resid = 2e-06 , ||eigVec[16]|| = 2e-06 )
+eigVal[17] = 2e-06 ( resid = 2e-06 , ||eigVec[17]|| = 2e-06 )
+eigVal[18] = 2e-06 ( resid = 2e-06 , ||eigVec[18]|| = 2e-06 )
+eigVal[19] = 2e-06 ( resid = 2e-06 , ||eigVec[19]|| = 2e-06 )
+eigVal[20] = 2e-06 ( resid = 2e-06 , ||eigVec[20]|| = 2e-06 )
+eigVal[21] = 2e-06 ( resid = 2e-06 , ||eigVec[21]|| = 2e-06 )
+eigVal[22] = 2e-06 ( resid = 2e-06 , ||eigVec[22]|| = 2e-06 )
+eigVal[23] = 2e-06 ( resid = 2e-06 , ||eigVec[23]|| = 2e-06 )
+eigVal[24] = 2e-06 ( resid = 2e-06 , ||eigVec[24]|| = 2e-06 )
+eigVal[25] = 2e-06 ( resid = 2e-06 , ||eigVec[25]|| = 2e-06 )
+eigVal[26] = 2e-06 ( resid = 2e-06 , ||eigVec[26]|| = 2e-06 )
+eigVal[27] = 2e-06 ( resid = 2e-06 , ||eigVec[27]|| = 2e-06 )
+eigVal[28] = 2e-06 ( resid = 2e-06 , ||eigVec[28]|| = 2e-06 )
+eigVal[29] = 2e-06 ( resid = 2e-06 , ||eigVec[29]|| = 2e-06 )
+eigVal[30] = 2e-06 ( resid = 2e-06 , ||eigVec[30]|| = 2e-06 )
+eigVal[31] = 2e-06 ( resid = 2e-06 , ||eigVec[31]|| = 2e-06 )
+eigVal[32] = 2e-06 ( resid = 2e-06 , ||eigVec[32]|| = 2e-06 )
+eigVal[33] = 2e-06 ( resid = 2e-06 , ||eigVec[33]|| = 2e-06 )
+eigVal[34] = 2e-06 ( resid = 2e-06 , ||eigVec[34]|| = 2e-06 )
+eigVal[35] = 2e-06 ( resid = 2e-06 , ||eigVec[35]|| = 2e-06 )
+eigVal[36] = 2e-06 ( resid = 2e-06 , ||eigVec[36]|| = 2e-06 )
+eigVal[37] = 2e-06 ( resid = 2e-06 , ||eigVec[37]|| = 2e-06 )
+eigVal[38] = 2e-06 ( resid = 2e-06 , ||eigVec[38]|| = 2e-06 )
+eigVal[39] = 2e-06 ( resid = 2e-06 , ||eigVec[39]|| = 2e-06 )
+eigVal[40] = 2e-06 ( resid = 2e-06 , ||eigVec[40]|| = 2e-06 )
+eigVal[41] = 2e-06 ( resid = 2e-06 , ||eigVec[41]|| = 2e-06 )
+eigVal[42] = 2e-06 ( resid = 2e-06 , ||eigVec[42]|| = 2e-06 )
+eigVal[43] = 2e-06 ( resid = 2e-06 , ||eigVec[43]|| = 2e-06 )
+eigVal[44] = 2e-06 ( resid = 2e-06 , ||eigVec[44]|| = 2e-06 )
+eigVal[45] = 2e-06 ( resid = 2e-06 , ||eigVec[45]|| = 2e-06 )
+eigVal[46] = 2e-06 ( resid = 2e-06 , ||eigVec[46]|| = 2e-06 )
+eigVal[47] = 2e-06 ( resid = 2e-06 , ||eigVec[47]|| = 2e-06 )
+eigVal[48] = 2e-06 ( resid = 2e-06 , ||eigVec[48]|| = 2e-06 )
+eigVal[49] = 3e-06 ( resid = 2e-06 , ||eigVec[49]|| = 2e-06 )
+eigVal[50] = 3e-06 ( resid = 2e-06 , ||eigVec[50]|| = 2e-06 )
+eigVal[51] = 3e-06 ( resid = 2e-06 , ||eigVec[51]|| = 2e-06 )
+eigVal[52] = 3e-06 ( resid = 2e-06 , ||eigVec[52]|| = 2e-06 )
+eigVal[53] = 3e-06 ( resid = 2e-06 , ||eigVec[53]|| = 2e-06 )
+eigVal[54] = 1e-05 ( resid = 9e-06 , ||eigVec[54]|| = 2e-06 )
+eigVal[55] = 1e-05 ( resid = 1e-05 , ||eigVec[55]|| = 2e-06 )
+eigVal[56] = 1e-05 ( resid = 1e-05 , ||eigVec[56]|| = 2e-06 )
+eigVal[57] = 1e-05 ( resid = 1e-05 , ||eigVec[57]|| = 2e-06 )
+eigVal[58] = 1e-05 ( resid = 1e-05 , ||eigVec[58]|| = 2e-06 )
+eigVal[59] = 2e-05 ( resid = 1e-05 , ||eigVec[59]|| = 2e-06 )
+End of eigensolutions
+Aggregate time to compute eigenvectors 0.01
+Time to save 0 eigenvectors = 0.1
+Aggregate time to save eigenvectors (if requested) 0.1
+RUNNING COMPLETED
+Time = 0.6 seconds
+total_iters = 0
+destroy quark[0]
+destroy quark[1]
+
+
+######################################################################
+continue
+u0 0
+no_gauge_fix
+forget
+staple_weight 0
+ape_iter 0
+coordinate_origin 0 0 0 0
+# EigCG
+# restart for Lanczos
+restart_lanczos 0
+# Number of eigenvalues to compute
+Number_of_eigenvals 0
+# Max number of eigenvalues
+Max_Number_of_eigenvals 0
+# eigenvector I/O
+reload_serial_ks_eigen ks_eigen_eigcg.test-out
+forget_ks_eigen
+# Chiral condensate and related measurements
+number_of_pbp_masses 0
+number_of_base_sources 0
+# base source 0
+vector_field
+subset full
+origin 0 0 0 0
+load_source_serial test_src
+ncolor 0
+momentum 0 0 0
+source_label r
+forget_source
+# base source 0
+point
+subset full
+origin 0 0 0 0
+source_label d
+forget_source
+# Description of completed sources
+number_of_modified_sources 0
+# source 0
+source 0
+spin_taste
+spin_taste rhox
+op_label p
+forget_source
+# Description of propagators
+number_of_sets 0
+# Set 0
+# Parameters common to all members of this set
+max_cg_iterations 0
+max_cg_restarts 0
+check sourceonly
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 0
+source 0
+number_of_propagators 0
+# Propagators for mass 0
+# propagator 0
+mass 0
+naik_term_epsilon 0
+error_for_propagator 0
+rel_error_for_propagator 0
+mixed_rsq 0
+fresh_ksprop
+forget_ksprop
+# Set 0
+# Parameters common to all members of this set
+max_cg_iterations 0
+max_cg_restarts 0
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 0
+source 0
+number_of_propagators 0
+# Propagators for mass 0
+# propagator 0
+mass 2e-06
+naik_term_epsilon 0
+error_for_propagator 2e-06
+rel_error_for_propagator 0
+mixed_rsq 0
+fresh_ksprop
+XXX
+# Set 0
+# Parameters common to all members of this set
+max_cg_iterations 0
+max_cg_restarts 0
+check yes
+momentum_twist 0 0 0
+time_bc antiperiodic
+precision 0
+source 0
+number_of_propagators 0
+# Propagators for mass 0
+# propagator 0
+mass 2e-06
+naik_term_epsilon 0
+error_for_propagator 2e-06
+rel_error_for_propagator 0
+mixed_rsq 0
+fresh_ksprop
+forget_ksprop
+# Definition of quarks
+number_of_quarks 0
+# quark 0
+propagator 0
+identity
+op_label d
+forget_ksprop
+# quark 0
+propagator 0
+identity
+op_label d
+forget_ksprop
+# Description of mesons
+number_of_mesons 0
+pair 0 0
+spectrum_request meson
+save_corr_fnal ks_spectrum_eigcg_hisq.2.corrfile.test-out
+r_offset 0 0 0 0
+number_of_correlators 0
+correlator POINT_PION p000 0 * 0 pion5 0 0 0 E E E
+pair 0 0
+spectrum_request meson
+save_corr_fnal ks_spectrum_eigcg_hisq.2.corrfile.test-out
+r_offset 0 0 0 0
+number_of_correlators 0
+correlator RHOX p000 0 * 0 rhox 0 0 0 E E E
+# Description of baryons
+number_of_baryons 0
+"Fat 0 (level 1)"
+path coefficients: npath path_coeff
+0 2e-06
+0 2e-06
+0 2e-06
+0 2e-06
+Unitarization method = UNITARIZE_ANALYTIC
+Unitarizaton group = U(3)
+"Fat7 + 2xLepage"
+path coefficients: npath path_coeff
+0 2e-06
+0 2e-06
+0 2e-06
+0 2e-06
+0 2e-06
+0 2e-06
+"1-link + Naik"
+path coefficients: npath path_coeff
+0 2e-06
+0 2e-06
+FLTIME: time = 0.001 (HISQ qop D) flops/site = 0 mflops = 3e+01
+Time to APE smear 7e-05 sec
+WARNING: Called for 0 vectors, but found 0
+WARNING: Resetting Nvecs = 0
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.333052999996916788e-01</eigVal><resid>1.085373e-06</resid></info>"
+Checksums 39a9f393 e5c17594
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.366105002043123684e-01</eigVal><resid>7.792692e-07</resid></info>"
+Checksums ee3edb4f 2ace0f22
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.534183372781420251e-01</eigVal><resid>1.613671e-06</resid></info>"
+Checksums 488b21b6 0.1
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.576105105228750858e-01</eigVal><resid>3.141319e-06</resid></info>"
+Checksums 3f332730 14b6f061
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.782401387447258290e-01</eigVal><resid>7.405677e-06</resid></info>"
+Checksums ef804842 e3eb85af
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.880116984686197035e-01</eigVal><resid>2.256082e-06</resid></info>"
+Checksums 18045aab 4cd7655b
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.983055650873461750e-01</eigVal><resid>9.335888e-06</resid></info>"
+Checksums 6e+07 7576c7f7
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.038863943366697462e-01</eigVal><resid>7.770948e-06</resid></info>"
+Checksums f30681ad 897f842f
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.365125873290618019e-01</eigVal><resid>2.271179e-05</resid></info>"
+Checksums 925c9907 89b9ff56
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.394281862847276454e-01</eigVal><resid>1.433783e-05</resid></info>"
+Checksums 4dda6b9b 57f9df16
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.486601543277286719e-01</eigVal><resid>2.791063e-05</resid></info>"
+Checksums 3e30c9f0 772b0326
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.543883929004916444e-01</eigVal><resid>2.777588e-05</resid></info>"
+Checksums b11d4085 b873255f
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.590372617902824137e-01</eigVal><resid>3.260619e-05</resid></info>"
+Checksums 6c8ec7ed 0
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>2.652589142941098599e-01</eigVal><resid>2.997420e-05</resid></info>"
+Checksums 404b07b9 c624fd66
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.058316683321247176e-01</eigVal><resid>4.646546e-05</resid></info>"
+Checksums 9e+86 97600b8c
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.136837708986685014e-01</eigVal><resid>2.629987e-05</resid></info>"
+Checksums 62b81056 17be0ca0
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.413915951241037194e-01</eigVal><resid>5.818452e-05</resid></info>"
+Checksums 36997fb d729c9bc
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>3.499269864089936122e-01</eigVal><resid>7.361979e-05</resid></info>"
+Checksums f1779cc9 89887b33
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.475981950550179667e-01</eigVal><resid>5.526693e-04</resid></info>"
+Checksums 6c76e3bf 5494346f
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.501430391753952764e-01</eigVal><resid>6.867501e-04</resid></info>"
+Checksums 448b3f18 62914b63
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.610625773300300878e-01</eigVal><resid>5.782392e-04</resid></info>"
+Checksums 434c6eb5 9c4b7c61
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.650340779932941593e-01</eigVal><resid>4.971029e-04</resid></info>"
+Checksums 0.001 cacf63b6
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.813070496093791450e-01</eigVal><resid>6.653430e-04</resid></info>"
+Checksums 2f924b82 e9dea493
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>4.841319957280340591e-01</eigVal><resid>1.039770e-03</resid></info>"
+Checksums acfbcd02 3acc3fb
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.030647590516993395e-01</eigVal><resid>1.615151e-03</resid></info>"
+Checksums 57dc10e0 6a575c3b
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.085149814297788007e-01</eigVal><resid>1.585530e-03</resid></info>"
+Checksums 154f5cd0 7ef7c34d
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.980741508489282321e-01</eigVal><resid>7.313850e-03</resid></info>"
+Checksums bad8cb14 decb5920
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.056176137085458322e-01</eigVal><resid>1.298539e-02</resid></info>"
+Checksums 3c74e868 b3c9dbf9
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.475476010887579736e-01</eigVal><resid>2.047287e-02</resid></info>"
+Checksums 56c80888 d9237957
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.508559987950801595e-01</eigVal><resid>1.456573e-02</resid></info>"
+Checksums d8b9d911 d3793d8c
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.587478191584593690e-01</eigVal><resid>3.091471e-02</resid></info>"
+Checksums bb88cd3 5be6e2fb
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.707283244518170706e-01</eigVal><resid>3.419352e-02</resid></info>"
+Checksums a9b5aaec 9a2ac00d
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.919419512581413967e-01</eigVal><resid>5.482236e-02</resid></info>"
+Checksums 6549861b cb9de1c5
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>7.040100731004492740e-01</eigVal><resid>4.596533e-02</resid></info>"
+Checksums ad19e0cd da1b7050
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>7.290219844639755920e-01</eigVal><resid>5.488045e-02</resid></info>"
+Checksums 8996562f dd5eb5d1
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>7.432140805153290009e-01</eigVal><resid>9.380964e-02</resid></info>"
+Checksums b4ccb58d c3546ce4
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>7.618435169678401397e-01</eigVal><resid>1.787000e-01</resid></info>"
+Checksums b3e4aa12 ee5c5184
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>7.912222251138487650e-01</eigVal><resid>1.091325e-01</resid></info>"
+Checksums 0 3defdcb3
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>8.121281972595495446e-01</eigVal><resid>1.155398e-01</resid></info>"
+Checksums eae96814 3c8c2ce0
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>8.287328357816547975e-01</eigVal><resid>1.076264e-01</resid></info>"
+Checksums 8fd00935 d4846b32
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>8.473305206646065679e-01</eigVal><resid>1.019699e-01</resid></info>"
+Checksums 699e74d2 c841aa7b
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>8.799121744951077240e-01</eigVal><resid>1.824821e-01</resid></info>"
+Checksums dc47ab9f df69a3d
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>9.140058000978031894e-01</eigVal><resid>2.317443e-01</resid></info>"
+Checksums d737b230 9f0d3528
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>9.310725261141264975e-01</eigVal><resid>1.239242e-01</resid></info>"
+Checksums 4af69378 10a414e5
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>9.753853867914435982e-01</eigVal><resid>2.571968e-01</resid></info>"
+Checksums d43233d3 bb5ed71a
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.000767684655101908e+00</eigVal><resid>1.926520e-01</resid></info>"
+Checksums 67199b8b 28d2fe00
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.101608454444414686e+00</eigVal><resid>4.595748e-01</resid></info>"
+Checksums 6ef3b2e2 9227a892
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.145675946082750585e+00</eigVal><resid>3.272108e-01</resid></info>"
+Checksums 2f7e9fc1 71a4b6f9
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.189996752102541633e+00</eigVal><resid>5.584161e-01</resid></info>"
+Checksums 6b2dcdd2 49c9e78f
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.299794217987004341e+00</eigVal><resid>7.114518e-01</resid></info>"
+Checksums eb5c8508 c2adf12c
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.341060529768575815e+00</eigVal><resid>6.016160e-01</resid></info>"
+Checksums 34a025c8 9cbd3df
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.408795491179172243e+00</eigVal><resid>9.460210e-01</resid></info>"
+Checksums af86eb32 a17c1d0f
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.526059573293558680e+00</eigVal><resid>8.983170e-01</resid></info>"
+Checksums 5af7754e f545ae56
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>1.637775734552105122e+00</eigVal><resid>9.414704e-01</resid></info>"
+Checksums 570b2a54 135f9cef
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.176077703361208648e+00</eigVal><resid>4.558138e+00</resid></info>"
+Checksums 3c14bc7e 71147b3b
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>5.714864781429148444e+00</eigVal><resid>4.910508e+00</resid></info>"
+Checksums 6d8d4b94 4d57dc22
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.122745155812409301e+00</eigVal><resid>5.065582e+00</resid></info>"
+Checksums 892fd7ce 59a609e0
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>6.459028230619780153e+00</eigVal><resid>5.246761e+00</resid></info>"
+Checksums af9dbf36 0.2
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>7.011528811331813493e+00</eigVal><resid>5.348533e+00</resid></info>"
+Checksums ed8db5c3 e6e5fede
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><info><eigVal>7.611668701791921343e+00</eigVal><resid>5.508047e+00</resid></info>"
+Checksums 2f2f4799 ed2c2434
+Time to reload 0 eigenvectors = 0.002
+Aggregate time to readin 0.007
+Aggregate time to calculate pbp, etc 2e-06
+COULOMB GAUGE FIXING SKIPPED.
+END OF HEADER
+Mass= 0 source vector_field residue= 0 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+Restoring binary SciDAC file test_src
+File info
+"
+Derived MILC KS field
+gauge.filename XXX
+propagator.boundary_conditions space: periodic time: antiperiodic
+asqtad.u0 2e-06
+action.hisq.fat7.one_link 2e-06
+action.hisq.fat7.three_staple 2e-06
+action.hisq.fat7.five_staple 2e-06
+action.hisq.fat7.seven_staple 2e-06
+action.hisq.asqtad.one_link 2e-06
+action.hisq.asqtad.three_staple 2e-06
+action.hisq.asqtad.five_staple 2e-06
+action.hisq.asqtad.seven_staple 2e-06
+action.hisq.asqtad.lepage 2e-06
+action.hisq.asqtad.naik 2e-06
+action.hisq.difference.one_link 2e-06
+action.hisq.difference.naik 2e-06
+
+inv_arg.rsqprop 2e-06
+"
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>0</color><info></info></usqcdSourceInfo>"
+Checksums 5806ee9c 9110647e
+solve_ksprop: color = 0
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>1</color><info></info></usqcdSourceInfo>"
+Checksums 1e9b9a56 547f82e
+solve_ksprop: color = 0
+DML_partition_in times: read 2e-06 send 2e-06 total 2e-06
+Record info
+"<?xml version="1.0" encoding="UTF-8"?><usqcdSourceInfo><version>1.0</version><color>2</color><info></info></usqcdSourceInfo>"
+Checksums 7a00af5e bc8e131d
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Mass= 2e-06 source point residue= 2e-06 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+CONGRAD5: time = 0.03 time_eig = 2e-06 (fn D) masses = 0 iters = 0
+INC_EIGCG: time for init-CG 0.0002
+INC_EIGCG: time for eigCG 0.03
+INC_EIGCG: time for orthogonalization 2e-06
+INC_EIGCG: time for extending H 2e-06
+INC_EIGCG: total time 0.03
+OK converged final_rsq= 2e-06 (cf 2e-06 rel = 0 (cf 2e-06 restarts = 0 iters= 0
+CONGRAD5: time = 2e-06 (fn_qop D) nmass[0] = 0 iters = 0 mflops = 2e-06
+CGREMAP: time = 2e-05
+OK converged final_rsq= 2e-06 (cf 2e-06 rel = 0 (cf 2e-06 restarts = 2e-06 iters= 0
+XXX color XXX 0
+XXX XXX XXX 0.6 XXX XXX 2e-06 XXX XXX XXX XXX 0 XXX XXX 0
+XXX XXX XXX XXX 0.02
+XXX XXX XXX XXX 0.6
+XXX time XXX XXX 2e-06
+INC_EIGCG: time for XXX XXX 2e-06
+INC_EIGCG: XXX XXX 0.6
+XXX XXX XXX 2e-06 XXX 2e-06 XXX XXX 0 XXX 2e-06 XXX XXX 0 XXX 0
+XXX time XXX 2e-06 XXX XXX XXX XXX 0 XXX XXX 0 XXX XXX 2e-06
+XXX XXX XXX 0.6
+OK converged final_rsq= 2e-06 (cf 2e-06 rel = 0 (cf 2e-06 restarts = 4 iters= 0
+XXX XXX = 0
+XXX time = 0.6 XXX XXX 2e-06 XXX XXX XXX XXX 0 XXX XXX 0
+XXX XXX XXX XXX 0.02
+XXX XXX XXX XXX 0.6
+XXX XXX XXX XXX 2e-06
+XXX XXX XXX XXX XXX 2
+XXX XXX XXX 3
+XXX XXX XXX 0.6 XXX 2e-06 XXX XXX 0 XXX 2e-06 XXX XXX 0 XXX 0
+XXX time XXX 2e-06 XXX XXX XXX XXX 0 XXX XXX 0 XXX XXX 2e-06
+XXX time XXX 0.002
+XXX XXX XXX 2e-06 XXX 2e-06 XXX XXX 0 XXX 2e-06 XXX XXX 2 XXX 0
+XXX XXX XXX XXX 0 0 0 0 XXX XXX XXX XXX 0 0 0 0
+XXX 0.02 XXX XXX XXX 2e-06 XXX 0
+XXX XXX XXX XXX 0 0 0 0 XXX XXX XXX XXX 0 0 0 0
+XXX XXX = 0
+XXX time = 0.6 XXX XXX 2e-06 XXX XXX XXX XXX 0 XXX XXX 0
+XXX XXX XXX XXX 0.02
+XXX XXX XXX XXX 0.6
+XXX XXX XXX XXX 2e-06
+XXX XXX XXX XXX XXX 4
+XXX XXX XXX 0.6
+XXX XXX XXX 2e-06 XXX 2e-06 XXX XXX 0 XXX 2e-06 XXX XXX 0 XXX 0
+XXX XXX XXX 2e-06 XXX XXX XXX XXX 0 XXX XXX 0 XXX XXX 2e-06
+XXX XXX XXX 0.002
+XXX XXX XXX 2e-06 XXX 2e-06 XXX XXX 0 XXX 2e-06 XXX XXX 2 XXX 0
+XXX XXX = 0
+XXX time XXX 0.6 XXX XXX 2e-06 XXX XXX XXX XXX 0 XXX XXX 0
+INC_EIGCG: time for XXX 0.6
+INC_EIGCG: time for XXX 0.6
+INC_EIGCG: time for XXX 2e-06
+INC_EIGCG: XXX XXX XXX XXX 2e-06
+XXX XXX XXX 0.6
+XXX XXX XXX 2e-06 XXX 2e-06 XXX = 0 XXX 2e-06 XXX XXX 0 XXX 0
+XXX time = 0.002 XXX XXX XXX XXX 0 XXX XXX 0 XXX XXX 2e-06
+XXX XXX XXX 0.002
+XXX XXX XXX 2 XXX 2e-06 XXX XXX 0 XXX 2e-06 XXX XXX 2 XXX 0
+XXX XXX = 0
+XXX time XXX 0.6 XXX XXX 2e-06 XXX XXX XXX XXX 0 XXX XXX 0
+INC_EIGCG: time for XXX 0.6
+INC_EIGCG: time for XXX 0.6
+INC_EIGCG: time for XXX 2e-06
+INC_EIGCG: XXX XXX XXX XXX 2e-06
+XXX XXX XXX 0.7
+XXX XXX XXX 2e-06 XXX 2e-06 XXX = 0 XXX 2e-06 XXX XXX 0 XXX 0
+XXX time = 0.002 XXX XXX XXX XXX 0 XXX XXX 0 XXX XXX 2e-06
+XXX XXX XXX 0.002
+XXX XXX XXX 4 XXX 2e-06 XXX XXX 0 XXX 2e-06 XXX XXX 2 XXX 0
+XXX XXX XXX XXX 0 0 0 0 XXX XXX XXX XXX 0 0 0 0
+XXX time XXX XXX XXX 4
+XXX XXX
+XXX XXX
+XXX time XXX XXX XXX XXX 0.0009
+XXX XXX
+XXX XXX XXX XXX XXX XXX 0.0009
+XXX XXX XXX 0 XXX 0
+XXX XXX XXX XXX 0.02
+XXX XXX XXX XXX 0.09
+XXX XXX XXX 0 XXX 0
+XXX XXX XXX XXX 0.02
+XXX XXX XXX XXX 0.09
+XXX XXX XXX XXX XXX XXX 0.2
+Aggregate time to XXX XXX XXX 0.0009
+XXX XXX
+XXX XXX 0.3 XXX XXX XXX 0.0009 XXX XXX XXX 2 XXX
+XXX XXX 0.3 XXX XXX XXX 2e-06 XXX XXX XXX 2 XXX
+XXX XXX 0.3 XXX XXX XXX 3e-06 XXX XXX XXX 2 XXX
+XXX XXX 0.3 XXX XXX XXX 6e-06 XXX XXX XXX 2 XXX
+XXX XXX 0.4 XXX XXX XXX 1e-05 XXX XXX XXX 2 XXX
+XXX XXX 0.4 XXX XXX XXX 5e-06 XXX XXX XXX 2 XXX
+XXX XXX 0.4 XXX XXX XXX 2e-05 XXX XXX XXX 2 XXX
+XXX XXX 0.4 XXX XXX XXX 0.2 XXX XXX XXX 2 XXX
+XXX XXX 0.5 XXX XXX XXX 5e-05 XXX XXX XXX 2 XXX
+XXX XXX 0.5 XXX XXX XXX 3e-05 XXX XXX XXX 2 XXX
+XXX = 0.2 ( resid = 5e-05 , XXX = 2e-06 )
+XXX = 0.2 ( resid = 5e-05 , XXX = 2e-06 )
+XXX = 0.2 ( resid = 6e-05 , XXX = 2e-06 )
+XXX = 0.2 ( resid = 5e-05 , XXX = 2e-06 )
+XXX = 0.3 ( resid = 8e-05 , XXX = 2e-06 )
+XXX = 0.3 ( resid = 5e-05 , XXX = 2e-06 )
+XXX = 0.3 ( resid = 0.0001 , XXX = 2e-06 )
+XXX = 0.3 ( resid = 0.0001 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.001 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.001 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.001 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.0009 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.001 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.002 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.003 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.003 , XXX = 2e-06 )
+XXX = 0.5 ( resid = 0.01 , XXX = 2e-06 )
+XXX = 0.5 ( resid = 0.03 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.04 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.03 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.06 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.07 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.1 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.09 , XXX = 2e-06 )
+XXX = 0.5 ( resid = 0.1 , XXX = 2e-06 )
+XXX = 0.5 ( resid = 0.2 , XXX = 2e-06 )
+XXX = 0.3 ( resid = 0.3 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.2 , XXX = 2e-06 )
+XXX = 0.3 ( resid = 0.2 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.2 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.1 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.3 , XXX = 2e-06 )
+XXX = 0.4 ( resid = 0.4 , XXX = 2e-06 )
+XXX = 0.5 ( resid = 0.2 , XXX = 2e-06 )
+XXX = 0.5 ( resid = 0.4 , XXX = 2e-06 )
+XXX = 0.5 ( resid = 0.2 , XXX = 2e-06 )
+XXX = 0.7 ( resid = 0.6 , XXX = 2e-06 )
+XXX = 0.7 ( resid = 0.4 , XXX = 2e-06 )
+XXX = 0.8 ( resid = 0.9 , XXX = 2e-06 )
+XXX = 0.9 ( resid = 1 , XXX = 2e-06 )
+XXX = 1 ( resid = 1 , XXX = 2e-06 )
+XXX = 1 ( resid = 2 , XXX = 2e-06 )
+XXX = 1 ( resid = 1 , XXX = 2e-06 )
+XXX = 1 ( resid = 2 , XXX = 2e-06 )
+XXX = 8 ( resid = 9 , XXX = 2e-06 )
+XXX = 9 ( resid = 9 , XXX = 2e-06 )
+XXX = 1e+01 ( resid = 9 , XXX = 2e-06 )
+XXX = 1e+01 ( resid = 1e+01 , XXX = 2e-06 )
+XXX = 1e+01 ( resid = 1e+01 , XXX = 2e-06 )
+XXX = 1e+01 ( resid = 1e+01 , XXX = 2e-06 )
+XXX XXX XXX
+XXX XXX XXX XXX XXX 0.5
+XXX XXX XXX XXX XXX XXX XXX 2e-05
+XXX XXX
+XXX = 1e+01 XXX
+XXX = 0
+XXX XXX
+XXX XXX
+
+
+XXX XXX XXX XXX

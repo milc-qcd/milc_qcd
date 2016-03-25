@@ -132,7 +132,25 @@ int main( int argc, char **argv ){
 #endif
     }
     fflush(stdout);
-  }
+
+    destroy_ape_links_4D(ape_links);
+
+    /* Destroy fermion links (created in readin() */
+
+#if FERM_ACTION == HISQ
+    destroy_fermion_links_hisq(fn_links);
+#else
+    destroy_fermion_links(fn_links);
+#endif
+    fn_links = NULL;
+
+  } /* readin(prompt) */
+
+#ifdef HAVE_QUDA
+  qudaFinalize();
+#endif
+
+  normal_exit(0);
   return 0;
 }
 

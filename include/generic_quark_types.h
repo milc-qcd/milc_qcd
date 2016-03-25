@@ -160,6 +160,7 @@ typedef struct {
   Real resid;         /* desired residual - NOT SQUARED!
 			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
   Real relresid;      /* desired relative residual - NOT SQUARED! */
+  Real mixed_rsq;     /* For QOP single-mass mixed-precision solver */
   Real final_rsq;     /* Final true (absolute) residual. Norm'ed to (r*r)/(src*src) */
   Real final_relrsq;  /* Final relative residual. Same normalization. */
   Real size_r;        /* resulting cumulative residual. Same normalization. */

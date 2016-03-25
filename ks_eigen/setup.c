@@ -232,6 +232,13 @@ int readin(int prompt) {
 	IF_OK status += ask_starting_lattice(stdin,  prompt, &(par_buf.startflag),
 	    par_buf.startfile );
 
+	/* APE smearing parameters (if needed) */
+	/* Zero suppresses APE smearing */
+	IF_OK status += get_f(stdin, prompt, "staple_weight", 
+			      &par_buf.staple_weight);
+	IF_OK status += get_i(stdin, prompt, "ape_iter",
+			      &par_buf.ape_iter);
+	
 	if( status > 0)par_buf.stopflag=1; else par_buf.stopflag=0;
     } /* end if(this_node==0) */
 
@@ -283,6 +290,15 @@ int readin(int prompt) {
     fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
 #endif
     
+    /* Construct APE smeared links, but without KS phases */
+    /* (We need these for the chirality calculation in some targets) */
+    rephase( OFF );
+    ape_links = ape_smear_4D( par_buf.staple_weight, par_buf.ape_iter );
+    rephase( ON );
+    
+/* We put in antiperiodic bc to match what we did to the gauge field */
+    apply_apbc( ape_links );
+
 //    node0_printf("Calling for path table\n");fflush(stdout);
 //    /* make table of coefficients and permutations of paths in quark action */
 //    init_path_table(fn_links.ap);

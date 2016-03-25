@@ -21,7 +21,7 @@ sum_c_field(complex *dest, Real *src, Real wt, int nrand){
 
 void 
 accumulate_current_density(char *filename, complex *qin[], 
-			   double charge, double *mass, int nrand)
+			   Real charge, Real *mass, int nrand)
 {
   QIO_Reader *infile;
   int status = 0;

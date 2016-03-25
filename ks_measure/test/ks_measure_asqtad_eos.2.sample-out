@@ -1,13 +1,14 @@
 SU3 staggered fermion measurements
-MIMD version 7.7.2.devel2
+MIMD version 7.7.13
 Machine = QMP (portable), with 1 nodes
-Host = aquila.physics.utah.edu
-Username = (null)
-start: Sat Jun 11 06:21:21 2011
+Host(0) = aquila.physics.utah.edu
+Username = detar
+start: Sun Feb 14 16:37:01 2016
 
 Options selected...
 Generic double precision
 C_GLOBAL_INLINE
+HALF_MIXED
 DBLSTORE_FN
 D_FN_GATHER13
 FEWSUMS
@@ -23,6 +24,7 @@ LAYOUT = Hypercubes, options = hyper_prime,
 QMP with automatic hyper_prime layout
 ON EACH NODE 6 x 6 x 6 x 6
 Mallocing 0.9 MBytes per node for lattice
+Time to set up 2.093315e-02
 
 
 ######################################################################
@@ -41,7 +43,7 @@ npbp_reps 2
 max_cg_iterations 300
 max_cg_restarts 5
 prec_pbp 2
-error_for_propagator 1e-09
+error_for_propagator 1e-07
 rel_error_for_propagator 0
 # Number of masses in this set
 number_of_pbp_masses 2
@@ -53,18 +55,18 @@ max_cg_iterations 300
 max_cg_restarts 5
 prec_pbp 1
 error_for_propagator 0
-rel_error_for_propagator 1e-09
+rel_error_for_propagator 1e-05
 # Number of masses in this set
 number_of_pbp_masses 1
 mass 0.07
 Restored binary gauge configuration serially from file ../../binary_samples/lat.sample.l6666
 Time stamp Sat Aug 10 10:46:56 2002
 Checksums c1d08f5 68164bef OK
-Time to reload gauge configuration = 3.247023e-03
+Time to reload gauge configuration = 7.272005e-03
 CHECK PLAQ: 1.9827179876982366e+00 1.9811715330156219e+00
 CHECK NERSC LINKTR: 9.0159201231658637e-01 CKSUM: ba83dea8
 Reunitarized for double precision. Max deviation 2.72e-07 changed to 4.44e-16
-Time to check unitarity = 6.348848e-03
+Time to check unitarity = 8.290052e-03
 "O(a^2): couplings(pi)=0, Naik term, No O(a^2) errors, tadpole weights"
 path coefficients: npath  path_coeff  multiplicity
                     0      6.250000e-01     8
@@ -73,74 +75,75 @@ path coefficients: npath  path_coeff  multiplicity
                     3      2.732385e-02     192
                     4      -6.022150e-03     384
                     5      -1.092954e-01     48
-Time to APE smear 7.560253e-04 sec
- OK converged final_rsq= 6.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 47
- OK converged final_rsq= 6.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.2e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 0
- OK converged final_rsq= 5.4e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 47
-PB_DMDU_P: mass 3.000000e-02  -5.031566e+00  -5.410347e+00 ( 1 of 2 )
-PBP: mass 3.000000e-02     3.354029e-02  2.019491e-02  2.498463e-02  2.498463e-02 ( 1 of 2 )
-FACTION: mass = 3.000000e-02,  1.522634e+00 ( 1 of 2 )
-PB_DMDMU_P: mass 3.000000e-02  1.681601e-02  1.402704e-02  -3.214834e-03  -1.156943e-02 ( 1 of 2 )
-PB_D2MDMU2_P: mass 3.000000e-02  6.994124e-01  7.174218e-01  2.562904e-02  2.180757e-02 ( 1 of 2 )
- OK converged final_rsq= 6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 47
- OK converged final_rsq= 7.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 11
-TR_MM_INV: mass 3.000000e-02,  -4.465850e-01 ( 1 of 2 )
- OK converged final_rsq= 7.4e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 46
- OK converged final_rsq= 5.5e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 11
-TR_MidM_MidM: mass 3.000000e-02,  3.636905e-01 ( 1 of 2 )
-PB_DMDU_P: mass 5.000000e-02  -5.025848e+00  -5.405044e+00 ( 1 of 2 )
-PBP: mass 5.000000e-02     5.107156e-02  3.827348e-02  2.505148e-02  2.505148e-02 ( 1 of 2 )
-FACTION: mass = 5.000000e-02,  1.522874e+00 ( 1 of 2 )
-PB_DMDMU_P: mass 5.000000e-02  1.601478e-02  1.375416e-02  -3.278754e-03  -1.188960e-02 ( 1 of 2 )
-PB_D2MDMU2_P: mass 5.000000e-02  6.988662e-01  7.168577e-01  2.503109e-02  2.104262e-02 ( 1 of 2 )
- OK converged final_rsq= 5.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 47
- OK converged final_rsq= 6.4e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 9
-TR_MM_INV: mass 5.000000e-02,  -4.434056e-01 ( 1 of 2 )
- OK converged final_rsq= 6.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 46
- OK converged final_rsq= 8.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 9
-TR_MidM_MidM: mass 5.000000e-02,  3.679018e-01 ( 1 of 2 )
- OK converged final_rsq= 6.5e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 46
- OK converged final_rsq= 6.5e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 1
- OK converged final_rsq= 5.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 1
- OK converged final_rsq= 5.3e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 46
-PB_DMDU_P: mass 3.000000e-02  -5.168501e+00  -5.198659e+00 ( 2 of 2 )
-PBP: mass 3.000000e-02     4.207576e-02  1.290271e-02  -2.998057e-02  -2.998057e-02 ( 2 of 2 )
-FACTION: mass = 3.000000e-02,  1.472984e+00 ( 2 of 2 )
-PB_DMDMU_P: mass 3.000000e-02  4.157869e-02  -4.922301e-02  -4.270821e-03  -3.215335e-03 ( 2 of 2 )
-PB_D2MDMU2_P: mass 3.000000e-02  6.587538e-01  7.035098e-01  -1.976882e-02  1.411775e-03 ( 2 of 2 )
- OK converged final_rsq= 6.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 47
- OK converged final_rsq= 7.8e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 11
-TR_MM_INV: mass 3.000000e-02,  -4.567976e-01 ( 2 of 2 )
- OK converged final_rsq= 4.3e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 47
- OK converged final_rsq= 8.4e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 10
-TR_MidM_MidM: mass 3.000000e-02,  3.926454e-01 ( 2 of 2 )
-PB_DMDU_P: mass 5.000000e-02  -5.162329e+00  -5.195466e+00 ( 2 of 2 )
-PBP: mass 5.000000e-02     6.012745e-02  3.126361e-02  -2.988013e-02  -2.988014e-02 ( 2 of 2 )
-FACTION: mass = 5.000000e-02,  1.473552e+00 ( 2 of 2 )
-PB_DMDMU_P: mass 5.000000e-02  4.186329e-02  -4.855355e-02  -5.041583e-03  -2.949259e-03 ( 2 of 2 )
-PB_D2MDMU2_P: mass 5.000000e-02  6.584113e-01  7.029017e-01  -2.035034e-02  1.098160e-03 ( 2 of 2 )
- OK converged final_rsq= 5.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 47
- OK converged final_rsq= 6.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 9
-TR_MM_INV: mass 5.000000e-02,  -4.532314e-01 ( 2 of 2 )
- OK converged final_rsq= 8.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 46
- OK converged final_rsq= 5.4e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 0 iters= 10
-TR_MidM_MidM: mass 5.000000e-02,  3.975787e-01 ( 2 of 2 )
- OK converged final_rsq= 6.3e-14 (cf 0) rel = 7.9e-11 (cf 1e-10) restarts = 5 iters= 60
- OK converged final_rsq= 6.2e-14 (cf 0) rel = 8.1e-11 (cf 1e-10) restarts = 5 iters= 27
-PB_DMDU_P: mass 7.000000e-02  -5.480814e+00  -5.211917e+00 ( 1 of 1 )
-PBP: mass 7.000000e-02     8.158548e-02  4.590986e-02  -1.383703e-02  -1.383705e-02 ( 1 of 1 )
-FACTION: mass = 7.000000e-02,  1.467903e+00 ( 1 of 1 )
-PB_DMDMU_P: mass 7.000000e-02  -1.077913e-02  4.308445e-03  -1.625331e-03  -2.312731e-02 ( 1 of 1 )
-PB_D2MDMU2_P: mass 7.000000e-02  6.998902e-01  6.797169e-01  1.492416e-02  2.074326e-02 ( 1 of 1 )
- OK converged final_rsq= 9.1e-14 (cf 0) rel = 3.9e-11 (cf 1e-10) restarts = 5 iters= 54
- OK converged final_rsq= 9.1e-14 (cf 0) rel = 3.5e-11 (cf 1e-10) restarts = 5 iters= 18
-TR_MidM_MidM: mass 7.000000e-02,  3.699412e-01 ( 1 of 1 )
+Time to APE smear 1.550198e-03 sec
+ OK converged final_rsq= 6.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 45
+ OK converged final_rsq= 5.2e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 11
+ OK converged final_rsq= 9.8e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 44
+ OK converged final_rsq= 6.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 10
+PB_DMDU_P: mass 3.000000e-02  -5.235790e+00  -5.365010e+00 ( 1 of 2 )
+PBP: mass 3.000000e-02     3.191284e-02  2.070346e-02  6.887816e-03  6.887811e-03 ( 1 of 2 )
+FACTION: mass = 3.000000e-02,  1.525468e+00 ( 1 of 2 )
+PB_DMDMU_P: mass 3.000000e-02  6.188880e-02  -3.099860e-02  -3.845465e-02  -1.966253e-03 ( 1 of 2 )
+PB_D2MDMU2_P: mass 3.000000e-02  6.915350e-01  7.116129e-01  1.279402e-02  -1.637073e-02 ( 1 of 2 )
+ OK converged final_rsq= 6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 47
+ OK converged final_rsq= 9.8e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 10
+TR_MM_INV: mass 3.000000e-02,  -4.373876e-01 ( 1 of 2 )
+ OK converged final_rsq= 9.5e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 46
+ OK converged final_rsq= 9.3e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 11
+TR_MidM_MidM: mass 3.000000e-02,  4.412801e-01 ( 1 of 2 )
+PB_DMDU_P: mass 5.000000e-02  -5.229918e+00  -5.360505e+00 ( 1 of 2 )
+PBP: mass 5.000000e-02     4.918024e-02  3.832229e-02  6.871474e-03  6.871466e-03 ( 1 of 2 )
+FACTION: mass = 5.000000e-02,  1.525675e+00 ( 1 of 2 )
+PB_DMDMU_P: mass 5.000000e-02  6.278804e-02  -2.946340e-02  -3.741306e-02  -2.246047e-03 ( 1 of 2 )
+PB_D2MDMU2_P: mass 5.000000e-02  6.905352e-01  7.111659e-01  1.310922e-02  -1.635401e-02 ( 1 of 2 )
+ OK converged final_rsq= 5.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 47
+ OK converged final_rsq= 6.2e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 9
+TR_MM_INV: mass 5.000000e-02,  -4.345387e-01 ( 1 of 2 )
+ OK converged final_rsq= 7.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 46
+ OK converged final_rsq= 5.1e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 10
+TR_MidM_MidM: mass 5.000000e-02,  4.453509e-01 ( 1 of 2 )
+ OK converged final_rsq= 6.3e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 45
+ OK converged final_rsq= 4.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 11
+ OK converged final_rsq= 9.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 44
+ OK converged final_rsq= 6.7e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 10
+PB_DMDU_P: mass 3.000000e-02  -5.203473e+00  -5.308125e+00 ( 2 of 2 )
+PBP: mass 3.000000e-02     6.214982e-02  -8.206810e-03  -2.889266e-02  -2.889266e-02 ( 2 of 2 )
+FACTION: mass = 3.000000e-02,  1.498164e+00 ( 2 of 2 )
+PB_DMDMU_P: mass 3.000000e-02  -4.369716e-02  2.410634e-02  -2.910779e-02  1.224498e-02 ( 2 of 2 )
+PB_D2MDMU2_P: mass 3.000000e-02  6.527072e-01  7.115555e-01  -6.559223e-02  -6.863485e-02 ( 2 of 2 )
+ OK converged final_rsq= 4.2e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 47
+ OK converged final_rsq= 7.5e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 10
+TR_MM_INV: mass 3.000000e-02,  -4.482525e-01 ( 2 of 2 )
+ OK converged final_rsq= 9.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 46
+ OK converged final_rsq= 9.6e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 11
+TR_MidM_MidM: mass 3.000000e-02,  3.561909e-01 ( 2 of 2 )
+PB_DMDU_P: mass 5.000000e-02  -5.194898e+00  -5.305986e+00 ( 2 of 2 )
+PBP: mass 5.000000e-02     8.001326e-02  9.666787e-03  -2.890998e-02  -2.890998e-02 ( 2 of 2 )
+FACTION: mass = 5.000000e-02,  1.499571e+00 ( 2 of 2 )
+PB_DMDMU_P: mass 5.000000e-02  -4.297311e-02  2.493620e-02  -2.883596e-02  1.268715e-02 ( 2 of 2 )
+PB_D2MDMU2_P: mass 5.000000e-02  6.517154e-01  7.113599e-01  -6.492941e-02  -6.783001e-02 ( 2 of 2 )
+ OK converged final_rsq= 9.4e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 46
+ OK converged final_rsq= 5.3e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 10
+TR_MM_INV: mass 5.000000e-02,  -4.449048e-01 ( 2 of 2 )
+ OK converged final_rsq= 8.8e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 46
+ OK converged final_rsq= 9.9e-15 (cf 1e-14) rel = 1 (cf 0) restarts = 1 iters= 9
+TR_MidM_MidM: mass 5.000000e-02,  3.617430e-01 ( 2 of 2 )
+ OK converged final_rsq= 5.3e-23 (cf 0) rel = 7.7e-11 (cf 1e-10) restarts = 1 iters= 70
+ OK converged final_rsq= 7.1e-23 (cf 0) rel = 8.7e-11 (cf 1e-10) restarts = 1 iters= 8
+PB_DMDU_P: mass 7.000000e-02  -5.328994e+00  -5.204878e+00 ( 1 of 1 )
+PBP: mass 7.000000e-02     2.646632e-02  1.004217e-01  -4.613057e-03  -4.613057e-03 ( 1 of 1 )
+FACTION: mass = 7.000000e-02,  1.463640e+00 ( 1 of 1 )
+PB_DMDMU_P: mass 7.000000e-02  -5.355533e-02  1.899599e-03  -1.019269e-02  5.201530e-02 ( 1 of 1 )
+PB_D2MDMU2_P: mass 7.000000e-02  7.177377e-01  6.993885e-01  -3.593782e-02  -7.486118e-02 ( 1 of 1 )
+ OK converged final_rsq= 2.2e-22 (cf 0) rel = 9.1e-11 (cf 1e-10) restarts = 1 iters= 70
+ OK converged final_rsq= 2.8e-22 (cf 0) rel = 9.9e-11 (cf 1e-10) restarts = 1 iters= 8
+TR_MidM_MidM: mass 7.000000e-02,  4.103172e-01 ( 1 of 1 )
+Time to calculate observables 6.483582e+00
 RUNNING COMPLETED
-Time = 2.170888e+00 seconds
-total_iters = 880
+Time = 7.617388e+00 seconds
+total_iters = 1083
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Sat Jun 11 06:21:23 2011
+exit: Sun Feb 14 16:37:09 2016
 

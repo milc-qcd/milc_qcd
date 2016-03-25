@@ -15,6 +15,7 @@
 #include "params.h"
 #include "../include/random.h"   /* For double_prn */
 #include "../include/io_lat.h"    /* For gauge_file */
+#include "../include/io_ks_eigen.h"    /* For ks_eigen_file */
 #include "../include/generic_ks.h" /* For ferm_links_t and ks_action_paths */
 //#include "../include/generic_clover.h" /* For clover */
 #include "../include/fermion_links.h" /* For fermion_links_t */
@@ -128,5 +129,13 @@ EXTERN fermion_links_t    *fn_links;
 //EXTERN ferm_links_t    fn_links_dmdu0;
 //EXTERN ks_action_paths ks_act_paths;
 //EXTERN ks_action_paths ks_act_paths_dmdu0;
+
+/* For eigenpair calculation */
+#if EIGMODE == EIGCG || EIGMODE == DEFLATION
+EXTERN int active_parity ; /* parity used in eigenvalue calculation */
+EXTERN int Nvecs_tot;
+EXTERN double *eigVal; /* eigenvalues of M^adj M */
+EXTERN su3_vector **eigVec; /* eigenvectors */
+#endif
 
 #endif /* _LATTICE_H */

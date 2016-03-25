@@ -95,19 +95,21 @@ Time to APE smear 7.019043e-04 sec
  OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 43
  OK converged final_rsq= 7.1e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
  OK converged final_rsq= 6.2e-19 (cf 1e-18) rel = 1 (cf 0) restarts = 0 iters= 0
-PBP: mass 3.000000e-02     3.424573e-02  1.441593e-02  2.912546e-02  2.912546e-02 ( 1 of 1 )
-FACTION: mass = 3.000000e-02,  1.522829e+00 ( 1 of 1 )
-PBP: mass 5.000000e-02     5.012696e-02  3.082494e-02  2.915719e-02  2.915719e-02 ( 1 of 1 )
-FACTION: mass = 5.000000e-02,  1.523199e+00 ( 1 of 1 )
- OK converged final_rsq= 1.3e-24 (cf 0) rel = 1.2e-11 (cf 1.6e-11) restarts = 1 iters= 55
- OK converged final_rsq= 1.3e-24 (cf 0) rel = 1.2e-11 (cf 1.6e-11) restarts = 1 iters= 7
-PBP: mass 7.000000e-02     6.883968e-02  4.398915e-02  -2.157257e-02  -2.157257e-02 ( 1 of 1 )
-FACTION: mass = 7.000000e-02,  1.473848e+00 ( 1 of 1 )
+PBP: mass 3.000000e-02     2.032856e-02  2.732725e-02  7.536157e-03  7.536157e-03 ( 1 of 1 )
+FACTION: mass = 3.000000e-02,  1.524922e+00 ( 1 of 1 )
+PBP: mass 5.000000e-02     3.590084e-02  4.339250e-02  7.510332e-03  7.510332e-03 ( 1 of 1 )
+FACTION: mass = 5.000000e-02,  1.524757e+00 ( 1 of 1 )
+ OK converged final_rsq= 4.7e-23 (cf 0) rel = 6.9e-11 (cf 1e-10) restarts = 1 iters= 51
+ OK converged final_rsq= 2.6e-23 (cf 0) rel = 5.4e-11 (cf 1e-10) restarts = 1 iters= 7
+PBP: mass 7.000000e-02     8.827944e-02  2.745726e-02  -3.024949e-02  -3.024949e-02 ( 1 of 1 )
+FACTION: mass = 7.000000e-02,  1.500311e+00 ( 1 of 1 )
 RUNNING COMPLETED
-Time = 3.855400e-01 seconds
-total_iters = 154
+Time = 3.101258e-01 seconds
+total_iters = 270
 
 
 ask_starting_lattice(0): EOF on input.
-exit: Sat Jun 11 06:21:38 2011
+exit: Sat Mar  5 06:41:27 2016
+
+
 

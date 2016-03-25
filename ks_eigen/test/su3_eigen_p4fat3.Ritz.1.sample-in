@@ -39,4 +39,5 @@ error_decrease .3
 
 # Input lattice
 reload_serial ../../binary_samples/lat.sample.inst
-
+staple_weight 0
+ape_iter 0

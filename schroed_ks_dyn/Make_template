@@ -84,18 +84,9 @@ G_SCHROED_OBJECTS =  \
 
 # Objects depending on architecture and software package 
 
-# # Selection of layout
-# ifeq ($(strip ${QCDOC}),true)
-#   LAYOUT = layout_qcdoc.o # Required
-# else
-#   ifeq ($(strip ${HAVEQDP}),true)
-#     LAYOUT = layout_qdp.o # Required
-#   else
-#     LAYOUT = layout_hyper_prime.o # Choices possible here
-#   endif
-# endif
+# Selection of layout
 
-LAYOUT = layout_hyper_prime.o
+LAYOUT = layout_hyper_prime.o # Choices possible here
 
 # EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)

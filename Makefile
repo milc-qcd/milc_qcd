@@ -212,10 +212,15 @@ endif
 # Utah physics and math
 # LIBLAPACK = -L/usr/local/lib64 -llapack -lblas -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
 
+# Utah physics and math Centos-linus
+# LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -lgfortran
+
 # FNAL cluster (Jim's installation of ATLAS)
 #LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
 #LIBS = $(LDFLAGS) -lprimme -lm  -llapack -lptf77blas -lptcblas -latlas -lgfortran -lpthread
 
+# NERSC Cori
+# LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/14.0/haswell/lib -l sci_intel
 
 #----------------------------------------------------------------------
 # 13. PRIMME Options (for arb_overlap and ks_eigen).  REQUIRES LAPACK AS WELL.
@@ -250,7 +255,7 @@ ifeq ($(strip ${WANTQUDA}),true)
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
- CGPU += -DHAVE_QUDA
+  CGPU += -DHAVE_QUDA
 
   ifeq ($(strip ${WANT_CL_BCG_GPU}),true)
     HAVE_CL_GPU = true
@@ -285,11 +290,35 @@ ifeq ($(strip ${WANTQUDA}),true)
 endif
 
 #----------------------------------------------------------------------
-# 15. Linker
-LD               = ${CC}
+#----------------------------------------------------------------------
+# 15. QPhiX
+
+WANTQPHIX = #true
+
+QPHIX_HOME = ${HOME}/QPhiX/mbench
+
+ifeq ($(strip ${WANTQPHIX}),true)
+  INCQPHIX = -I${QPHIX_HOME}
+  LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc
+  HAVE_QPHIX = true
+  CPHI = -DHAVE_QPHIX
+endif
 
 #----------------------------------------------------------------------
-# 16. Extra ld flags
+# 16. Linker (need the C++ linker for QUDA and QPHIX)
+
+ifeq ($(strip ${WANTQUDA}),true)
+  LD               = ${CXX}
+else
+  ifeq ($(strip ${WANTQPHIX}),true)
+     LD               = ${CXX}
+  else
+     LD   = ${CC}
+  endif
+endif
+
+#----------------------------------------------------------------------
+# 17. Extra ld flags
 
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
@@ -300,11 +329,11 @@ endif
 
 #----------------------------------------------------------------------
 # 17. Extra include paths
-INCADD = ${INCFFTW} ${INCQUDA} 
+INCADD = ${INCFFTW} ${INCQUDA} ${INCQPHIX}
 
 #----------------------------------------------------------------------
 # 18. Extra libraries
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA}
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX}
 
 #----------------------------------------------------------------------
 # 19. Inlining choices
@@ -645,7 +674,7 @@ endif
 include ../Make_template_combos
 
 CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC}
-DARCH = ${CSCIDAC} ${CGPU}
+DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \

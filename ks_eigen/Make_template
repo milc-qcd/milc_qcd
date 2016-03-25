@@ -41,7 +41,7 @@ MY_OBJECTS = \
 
 LAYOUT = layout_hyper_prime.o
 
-ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} jacobi.o flavor_ops.o
+ADD_OBJECTS = ${MACHINE_DEP_IO} ${COMMPKG} jacobi.o spin_taste_ops.o gammas.o
 
 ADD_OBJECTS += eigen_stuff_PRIMME.o eigen_stuff_Ritz.o eigen_stuff_helpers.o
 
@@ -141,6 +141,7 @@ su3_eigen_hisq::
 
 # No QOP support for p4, so we use pure MILC routines only and
 # undefine the macros HAVE_QOP and HAVE_QDP
+# Currently not supported.  Needs fixing.
 
 su3_eigen_p4fat3::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET = $@" \

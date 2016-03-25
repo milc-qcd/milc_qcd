@@ -56,4 +56,5 @@ PB_D2MDMU2_P: mass 2e-05 2e-05 2e-05 2e-05 2e-05 ( 0 of 0 )
 XXXX converged final_rsq= 2e-05 (cf 0) rel = 2e-05 (cf 2e-05 restarts = 0 iters= 0
 XXXX converged final_rsq= 2e-05 (cf 0) rel = 2e-05 (cf 2e-05 restarts = 0 iters= 0
 TR_MidM_MidM: mass 2e-05 2e-05 ( 0 of 0 )
+Time to calculate observables XXX
 RUNNING COMPLETED

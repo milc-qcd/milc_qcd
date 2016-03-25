@@ -23,6 +23,7 @@ schroed_cl_inv
 schroed_ks_dyn
 smooth_inst
 symanzik_sl32
+u1_gauge
 
 The following are provided, but not supported:
 
@@ -35,7 +36,17 @@ schroed_pg
 Build the code with GNU make.  See the README file in this directory
 for general instructions.
 
-Here are highlights of the changes (not all of them in the alpha version):
+Here are highlights of the changes
+
+For version 7.8.0
+
+Added Hiroshi Ono's staggered CG deflation and eigcg support to ks_measure
+Added Doug's updated random number generator for thread-safe operation and large lattices
+
+For version 7.7.13
+
+More quark source/sink operators
+Added u1_gauge
 
 For version 7.7.11
 
@@ -282,5 +293,5 @@ For previous versions 7
 
 
 C. DeTar, Utah
-29 December 2013
+15 February 2016
 

@@ -10,6 +10,8 @@ typedef struct {
     /*  REPEATING BLOCK */
 	Real mass; /* gauge coupling, quark mass */
 	Real u0; /* tadpole parameter */
+        Real staple_weight;
+        int ape_iter;
 	int niter; 	/* maximum number of c.g. iterations */
 	int nrestart; 	/* maximum number of c.g. restarts */
 	Real rsqmin,rsqprop;  /* for deciding on convergence */

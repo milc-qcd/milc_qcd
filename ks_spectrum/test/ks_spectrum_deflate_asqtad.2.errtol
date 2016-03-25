@@ -1,0 +1,12 @@
+Checking eigensolutions
+eigVal[0] = 2e-06 ( resid = 2e-06 , ||eigVec[0]|| = 2e-06 )
+eigVal[1] = 2e-06 ( resid = 2e-06 , ||eigVec[1]|| = 2e-06 )
+eigVal[2] = 2e-06 ( resid = 2e-06 , ||eigVec[2]|| = 2e-06 )
+eigVal[3] = 2e-06 ( resid = 2e-06 , ||eigVec[3]|| = 2e-06 )
+eigVal[4] = 2e-06 ( resid = 2e-06 , ||eigVec[4]|| = 2e-06 )
+eigVal[5] = 2e-06 ( resid = 2e-06 , ||eigVec[5]|| = 2e-06 )
+eigVal[6] = 2e-06 ( resid = 2e-06 , ||eigVec[6]|| = 2e-06 )
+eigVal[7] = 2e-06 ( resid = 2e-06 , ||eigVec[7]|| = 2e-06 )
+eigVal[8] = 2e-06 ( resid = 2e-06 , ||eigVec[8]|| = 2e-06 )
+eigVal[9] = 2e-06 ( resid = 2e-06 , ||eigVec[9]|| = 2e-06 )
+End of eigensolutions

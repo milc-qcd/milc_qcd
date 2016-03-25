@@ -1,0 +1,113 @@
+GFIX: Ended at step 0 Av gf action 0 delta 0
+Aggregate time to gauge fix 0.003
+Time to APE smear 1e-05 sec
+END OF HEADER
+Mass= 0 source random_color_wall residue= 0 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+Wrote source for color 0 time slice 0
+Time to save source color 0 = 1e-05
+solve_ksprop: color = 0
+Wrote source for color 0 time slice 0
+Time to save source color 0 = 2e-05
+solve_ksprop: color = 0
+Wrote source for color 0 time slice 0
+Time to save source color 0 = 8e-06
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Mass= 0 source point residue= 0 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+CONGRAD5: time = 0.08 time_eig = 0.003 (fn D) masses = 0 iters = 0
+INC_EIGCG: time for init-CG 0
+INC_EIGCG: time for eigCG 0.08
+INC_EIGCG: time for orthogonalization 0.0002
+INC_EIGCG: time for extending H 0.002
+INC_EIGCG: total time 0.08
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+CONGRAD5: time = 0 (fn_qop D) nmass[0] = 0 iters = 0 mflops = 0
+CGREMAP: time = 2e-05
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+save_ksprop_c_from_field color vector source is missing
+save_ksprop_c_from_field File will be written with a dummy zero source
+Time to save prop color 0 = 3e-05
+solve_ksprop: color = 0
+CONGRAD5: time = 0.1 time_eig = 0.008 (fn D) masses = 0 iters = 0
+INC_EIGCG: time for init-CG 0.0004
+INC_EIGCG: time for eigCG 0.1
+INC_EIGCG: time for orthogonalization 0.0004
+INC_EIGCG: time for extending H 0.01
+INC_EIGCG: total time 0.1
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+CONGRAD5: time = 0 (fn_qop D) nmass[0] = 0 iters = 0 mflops = 0
+CGREMAP: time = 2e-05
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+save_ksprop_c_from_field color vector source is missing
+save_ksprop_c_from_field File will be written with a dummy zero source
+Time to save prop color 0 = 7e-05
+solve_ksprop: color = 0
+CONGRAD5: time = 0.07 time_eig = 0.002 (fn D) masses = 0 iters = 0
+INC_EIGCG: time for init-CG 0.001
+INC_EIGCG: time for eigCG 0.07
+INC_EIGCG: time for orthogonalization 0.0001
+INC_EIGCG: time for extending H 0.009
+INC_EIGCG: total time 0.08
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+CONGRAD5: time = 0 (fn_qop D) nmass[0] = 0 iters = 0 mflops = 0
+CGREMAP: time = 2e-05
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+save_ksprop_c_from_field color vector source is missing
+save_ksprop_c_from_field File will be written with a dummy zero source
+Time to save prop color 0 = 2e-05
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Saved propagator to test_prop
+Mass= 0 source point/spin_taste residue= 0 rel= 0
+Turning ON boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+solve_ksprop: color = 0
+CONGRAD5: time = 0.1 time_eig = 0.001 (fn D) masses = 0 iters = 0
+INC_EIGCG: time for init-CG 0.0004
+INC_EIGCG: time for eigCG 0.1
+INC_EIGCG: time for orthogonalization 0.003
+INC_EIGCG: time for extending H 0.008
+INC_EIGCG: total time 0.1
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+CONGRAD5: time = 0.0001 (fn_qop D) nmass[0] = 0 iters = 0 mflops = 6e+01
+CGREMAP: time = 3e-05
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+solve_ksprop: color = 0
+CONGRAD5: time = 0.1 time_eig = 0.0007 (fn D) masses = 0 iters = 0
+INC_EIGCG: time for init-CG 0.0006
+INC_EIGCG: time for eigCG 0.1
+INC_EIGCG: time for orthogonalization 7e-05
+INC_EIGCG: time for extending H 0.01
+INC_EIGCG: total time 0.1
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+CONGRAD5: time = 0 (fn_qop D) nmass[0] = 0 iters = 0 mflops = 0
+CGREMAP: time = 4e-06
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+solve_ksprop: color = 0
+CONGRAD5: time = 0.09 time_eig = 0.002 (fn D) masses = 0 iters = 0
+INC_EIGCG: time for init-CG 0.0002
+INC_EIGCG: time for eigCG 0.09
+INC_EIGCG: time for orthogonalization 0.0002
+INC_EIGCG: time for extending H 0.005
+INC_EIGCG: total time 0.1
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+CONGRAD5: time = 0 (fn_qop D) nmass[0] = 0 iters = 0 mflops = 0
+CGREMAP: time = 1e-05
+OK converged final_rsq= 0 (cf 0 rel = 0 (cf 0 restarts = 0 iters= 0
+Turning OFF boundary phases 0 0 0 0 to FN links r0 0 0 0 0
+Aggregate time to compute propagators 0.7
+destroy prop[0]
+destroy prop[1]
+Aggregate time to generate sink operator 8e-06
+destroy prop[2]
+Aggregate time to generate sink operator 9e-06
+Mesons for quarks 0 and 0
+Time for diagonal mesons 2e-05
+Time for printing correlator 0.02
+Mesons for quarks 0 and 0
+Time for offdiag mesons 0.001
+Time for printing correlator 0.02
+Aggregate time to tie meson correlators 0.03
+Aggregate time to tie baryon correlators 0
+Checking eigensolutions
