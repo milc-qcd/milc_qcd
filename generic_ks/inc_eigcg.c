@@ -18,6 +18,8 @@
 static const char *prec_label[2] = {"F", "D"};
 #endif
 
+#define CG_DEBUG
+
 /* The Fermilab relative residue */
 static Real my_relative_residue(su3_vector *p, su3_vector *q, int parity){
 
@@ -604,6 +606,10 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
     if(Nvecs > 0){
       dtimec3 = - dclock();
 
+#ifdef CG_DEBuG
+      node0_printf("ks_eigCG_parity computing Ritz pairs\n");
+#endif    
+
       if(k == m1){
 	/* Solve T_m Y1 = Y1 M1 for the lowest Nvecs eigenpairs */
 	zcopy_(&mm, T, &ione, T2, &ione);
@@ -832,7 +838,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 
   dtimec += dclock();
 #ifdef CGTIME
-  node0_printf("CONGRAD5: time = %e time_eig = %e (fn %s) masses = 1 iters = %d\n",
+  node0_printf("CONGRAD5: time = %e time_eig = %e (fn_eigcg %s) masses = 1 iters = %d\n",
 	       dtimec, dtimec2, prec_label[PRECISION-1], qic->final_iters);
 #endif
 
@@ -876,6 +882,10 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
     dtimec2 += dclock();
   }
 
+#ifdef CG_DEBuG
+    node0_printf("Calling ks_eigCG_parity with Nvecs_curr = %d\n", Nvecs_curr);
+#endif    
+
   /* Solve a linear equation */
   dtimec3 = -dclock();
   iteration = ks_eigCG_parity(src, dest, eigVal+Nvecs_curr, eigVec+Nvecs_curr, m, Nvecs,
@@ -883,6 +893,11 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
   dtimec3 += dclock();
 
   if(Nvecs > 0){
+
+#ifdef CG_DEBuG
+    node0_printf("Orthogonalization step with Nvecs_curr = %d\n", Nvecs_curr);
+#endif    
+
     /* Orthogonalize vectors */
     dtimec4 = -dclock();
     Nvecs_add = orthogonalize(Nvecs, Nvecs_curr, eigVec, parity);

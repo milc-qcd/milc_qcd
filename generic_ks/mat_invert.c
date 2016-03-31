@@ -216,6 +216,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 #if EIGMODE == DEFLATION
     /* init-CG */
     /* dst_e <- sum_j ((eigVec_e[j].tmp_e)/(eigVal[j]+4*mass*mass)) eigVec_e[j] */
+    node0_printf("deflating for mass %g with %d eigenvec\n", mass, param.Nvecs);
     FOREVENSITES(i,s){
       clearvec( dst+i );
     }
