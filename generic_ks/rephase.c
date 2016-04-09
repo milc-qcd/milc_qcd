@@ -2,6 +2,7 @@
 /* MIMD version 7*/
 
 #include "generic_ks_includes.h"
+#include "../include/openmp_defs.h"
 
 /********* phaseset() - set up KS phase vectors **********/
 /* ANTIPERIODIC bc's in t and PERIODIC in x,y,z */
@@ -128,14 +129,14 @@ void rephase( int flag ){
     node0_printf("rephase: DUMMY: you fouled up the phases\n");
     terminate(1);
   }
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     for(dir=XUP;dir<=TUP;dir++){
       for(j=0;j<3;j++)for(k=0;k<3;k++){
 	  s->link[dir].e[j][k].real *= s->phase[dir];
 	  s->link[dir].e[j][k].imag *= s->phase[dir];
 	}
     }
-  }
+  } END_LOOP_OMP;
 
   phases_in = flag;
 } /* rephase */

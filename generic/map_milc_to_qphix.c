@@ -7,6 +7,7 @@
 #include "generic_includes.h"
 #include "../include/generic_qphix.h"
 #include "../include/generic_qphixmilc.h"
+#include "../include/openmp_defs.h"
 
 /* Copy types with possible conversion */
 

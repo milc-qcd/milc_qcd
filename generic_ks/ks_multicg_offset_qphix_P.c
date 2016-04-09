@@ -41,6 +41,9 @@
 #include "../include/loopend.h"
 #include "../include/openmp_defs.h"
 #include <assert.h>
+#ifdef VTUNE
+#include <ittnotify.h>
+#endif
 
 /* Load inversion args for Level 3 inverter */
 
@@ -154,14 +157,20 @@ KS_MULTICG_OFFSET_FIELD(
   assert(qic[0].parity != EVENANDODD && "EVENANDODD not yet implemented");
     
   if(qic[0].relresid != 0.){
-    printf("%s: QPhiX code does not yet support a Fermilab-type relative residual\n", myname);
+    node0_printf("%s: QPhiX code does not yet support a Fermilab-type relative residual\n", myname);
     terminate(1);
   }
 
   if( nmass==0 )return 0;
 
+#ifdef VTUNE
+  node0_printf("Starting VTune\n");
+  __itt_resume();
+#endif
+  double dtimet = -dclock();
   /* Set qphix_invert_arg */
   set_qphix_invert_arg( & qphix_invert_arg, qic+0, nmass );
+  node0_printf("set_qphix_invert_arg: time = %.6e sec\n", dclock()+dtimet);
 
   /* Pointers for residual errors */
   qphix_resid_arg = create_qphix_resid_arg( qic+0, nmass );
@@ -171,16 +180,24 @@ KS_MULTICG_OFFSET_FIELD(
     mass[i] = sqrt(ksp[i].offset/4.0);
 
   /* Map the input and output fields */
-
+  dtimet = -dclock();
   qphix_src = create_qphix_V_from_field( src, qic[0].parity);
-
+  node0_printf("create_qphix_V_from_field: time = %.6e sec\n", dclock()+dtimet);
+  fflush(stdout);
   
+  dtimet = -dclock();
   for(i = 0; i < nmass; i++){
     qphix_sol[i] = 
       create_qphix_V_from_field( psim[i], qic[0].parity);
   }
+  node0_printf("create_qphix_V_from_field x %d: time = %.6e sec\n", 
+	       nmass, dclock()+dtimet);
+  fflush(stdout);
 
+  dtimet = -dclock();
   links = create_qphix_L_from_fn_links( fn, EVENANDODD );
+  node0_printf("create_qphix_L_from_fn_links: time = %.6e sec\n", dclock()+dtimet);
+  fflush(stdout);
 
 #ifdef CG_DEBUG
   node0_printf("Calling QPHIX_ks_multicg_offset\n");fflush(stdout);
@@ -199,10 +216,13 @@ KS_MULTICG_OFFSET_FIELD(
   node0_printf("Extracting output\n");fflush(stdout);
 #endif
 
+  dtimet = -dclock();
   for(i=0; i<nmass; ++i)
     /* Copy results back to su3_vector */
     unload_qphix_V_to_field( psim[i], qphix_sol[i], qic->parity);
-  
+  node0_printf("unload_qphix_V_to_field x %d: time = %.6e sec\n", 
+	       nmass, dclock()+dtimet);
+  fflush(stdout);
   
   /* Free QPHIX fields  */
   
@@ -212,6 +232,11 @@ KS_MULTICG_OFFSET_FIELD(
 
   QPHIX_asqtad_destroy_L(links);
   
+#ifdef VTUNE
+  __itt_pause();
+  node0_printf("Ending VTune\n");
+#endif
+
 #ifdef CGTIME
   dtimec += dclock();
   if(this_node==0){
