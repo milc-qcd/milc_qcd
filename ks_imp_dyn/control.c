@@ -48,14 +48,6 @@ main( int argc, char **argv )
   /* set up */
   prompt = setup();
 
-#ifdef HAVE_QPHIX
-  initialize_qphix();
-#endif
-
-//  restore_random_state_scidac_to_site("randsave", F_OFFSET(site_prn));
-//  restore_color_vector_scidac_to_site("xxx1save", F_OFFSET(xxx1),1);
-//  restore_color_vector_scidac_to_site("xxx2save", F_OFFSET(xxx2),1);
-
   /* loop over input sets */
   while( readin(prompt) == 0) {
     
