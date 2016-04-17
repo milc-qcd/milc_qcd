@@ -23,7 +23,7 @@ HEADERS = \
   ../include/su3.h
 
 # To force a full remake when switching or updating Makefiles
-LASTMAKE = .lastmake.${MAKEFILE}
+LASTMAKE = .lastmake.${MAKEFILE}.${ARCH}
 
 ALLMAKES = ${MAKEFILE} Make_template
 

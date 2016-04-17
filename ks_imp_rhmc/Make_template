@@ -212,10 +212,10 @@ HISQ_OPTIONS = "DEFINES= -DFN -DINT_ALG=INT_3G1F \
 # Generic RHMC and RHMD targets -- set options in Makefile
 
 su3_rhmd_hisq::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS}
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS}
 
 su3_rhmc_hisq::
-	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" ${HISQ_OPTIONS} \
+	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@${BINEXT}" ${HISQ_OPTIONS} \
 	"DEFINES+= -DHMC"
 
 #######################################################################
@@ -381,7 +381,7 @@ include ../generic_ks/Make_template
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
 	cd ${LIBDIR} ;\
-	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" all
+	${MAKE} -f ${MAKELIBRARIES} "APP_CC=${CC}" "PRECISION=${PRECISION}" "ARCH=${ARCH}" all
 
 localmake: ${OBJECTS} ${LIBRARIES}
 	${LD} -o ${MYTARGET} ${LDFLAGS} \

@@ -47,6 +47,20 @@ OPT              = -O3 # ( -g -O, etc )
 #-------------- Intel icc/ecc -----------------------------------
 #OCFLAGS = -tpp2 -static
 
+# Architecture choices: knl, knc, hsw
+ifeq ($(strip ${ARCH}),knl)
+  OCFLAGS +=  -xMIC-AVX512 
+else ifeq ($(strip ${ARCH}),knc)
+  OCFLAGS +=  -mmic
+else ifeq ($(strip ${ARCH}),hsw)
+  OCFLAGS += -xCORE-AVX2
+else
+#  OCFLAGS += -xavx  # Uncomment for SandyBridge
+endif
+
+# Debugging and optimization
+OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+
 #-------------- Portland Group ----------------------------
 #OCFLAGS = -tp p6 -Munroll=c:4,n:4
 

@@ -11,12 +11,13 @@ MAKEFILE = Makefile
 #----------------------------------------------------------------------
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
-# 1. Shell (if it really matters)
+# 1. Machine architecture.  Controls optimization flags here and in libraries.
+#    Can control BINEXT below, a suffix appended to the name of the executable.
 
-#SHELL = /bin/bash
+ARCH = # knl knc hsw
 
 #----------------------------------------------------------------------
-# 2. Architecture
+# 2. MPP vs Scalar
 
 # Compiling for a parallel machine?  blank for a scalar machine
 #MPP = true
@@ -34,11 +35,11 @@ PRECISION = 1
 # so you may as well compile and link everything, including the libraries, with C++
 
 ifeq ($(strip ${MPP}),true)
-  CC = mpicc
-  CXX = mpiCC
+  CC = mpicc  # mpiicc for Intel
+  CXX = mpiCC # mpiicpc for Intel
 else
-  CC  = gcc
-  CXX = g++
+  CC  = gcc # icc for Intel
+  CXX = g++ # icpc for Intel
 endif
 
 #CC = /usr/local/mvapich/bin/mpicc  # FNAL
@@ -46,32 +47,49 @@ endif
 # 5. Compiler optimization level
 # Choices include -g -O, etc
 
-OPT              = -O3
+OPT              = -O3 -g
 
 #----------------------------------------------------------------------
 # 6. Other compiler optimization flags.  Uncomment stanza to suit.
+
 #-------------- Gnu C -------------------------------------
 OCFLAGS = -std=c99   # We now need C99
-#OCFLAGS = -Wall # ( -Wall, etc )
+OCFLAGS = -Wall # ( -Wall, etc )
 
 # Compiling with OpenMP?
 
 OMP = #true
 
-OCFLAGS += -Wall # ( -Wall, etc )
-
-#OCFLAGS = -fexpensive-optimizations -fpeephole -fstrength-reduce -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
-#OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -march=i586 # works best for matrix x vector
-#OCFLAGS =  -march=pentium4 -mfpmath=sse -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/20/04
-#OCFLAGS =  -march=pentium4 -funroll-loops -fprefetch-loop-arrays -fomit-frame-pointer # J. Osborn 10/24/04
-
 #------------------------ BlueGene -----------------------------------
-# OCFLAGS = -qarch=450 -qlanglvl=stdc99 # BG/P
-# OCFLAGS = -qarch=440d # BG/L
+# OCFLAGS = -qarch=450 -qlanglvl=stdc99 # BG/P BG/Q
 
 #-------------- Intel icc/ecc -----------------------------------
-#OCFLAGS += -xCORE-AVX2 -parallel-source-info=2 -debug inline-debug-info -fopenmp -funroll-loops 
-#OCFLAGS += -DOMP_ENABLE_commpi -DOMP_ENABLE_gauge -DOMP_ENABLE_field
+
+# OCFLAGS += -std=c99
+
+ifeq ($(strip ${ARCH}),knl)
+ARCH_FLAG = -xMIC-AVX512
+BINEXT=.knl
+else ifeq ($(strip ${ARCH}),knc)
+ARCH_FLAG = -mmic
+BINEXT=.knc
+else ifeq ($(strip ${ARCH}),hsw)
+ARCH_FLAG = -xCORE-AVX2
+BINEXT=.hsw
+else
+#ARCH_FLAG = -mavx # Uncomment for SandyBridge
+BINEXT=
+endif
+
+OCFLAGS += ${ARCH_FLAG}
+LDFLAGS += ${ARCH_FLAG}
+
+# OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+# 
+# ifeq ($(strip ${OMP}),true)
+#   OCFLAGS += -qopenmp
+#   LDFLAGS = -qopenmp
+# endif
 
 #-------------- Portland Group ----------------------------
 #OCFLAGS = -tp p6 -Munroll=c:4,n:4
@@ -115,15 +133,6 @@ CLFS = -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE # Large files gcc only
 # With Redhat, for MPI PRO see rpm -ql mpipro | more
 #LMPI = -lmpipro_tv -lpthread
 #LMPI = -lmpipro -lvipl -lpthread
-
-ifeq ($(strip ${OMP}),true)
-  OCFLAGS += -openmp -openmp_report2
-  LDFLAGS = -openmp
-endif
-
-ifeq ($(strip ${HOST}),MIC)
-  OCFLAGS += -mmic
-endif
 
 #----------------- MVICH ----------------------------------------------
 #IMPI = -I/uufs/icebox/sys/src/mpich/1.2.0-via/include  # MVICH
@@ -212,8 +221,12 @@ endif
 
 #LIBLAPACK = -L/opt/ibmcmp/xlf/bg/11.1/lib /soft/apps/LAPACK/liblapack_bgp.a /soft/apps/LIBGOTO/libgoto.a -lxlf90 -lxlsmp # LAPACK on BG/P
 
-# Utah physics and math
-# LIBLAPACK = -L/usr/local/lib64 -llapack -lblas -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
+# Utah physics and math Redhat-linux
+# LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
+# LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -lgfortran
+
+# Utah physics and math Centos-linus
+# LIBLAPACK = -L/usr/local/lib64  -llapack-3.6.0-gfortran -lblas-3.6.0-gfortran -lgfortran
 
 # FNAL cluster (Jim's installation of ATLAS)
 #LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
@@ -246,7 +259,6 @@ ifeq ($(strip ${WANTQUDA}),true)
   INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
-  QUDA_HEADERS = ${QUDA_HOME}/include
 
   CUDA_HOME = /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
@@ -291,17 +303,44 @@ endif
 #----------------------------------------------------------------------
 # 15. QPhiX
 
-WANTQPHIX = true
+# enable QPHIX
+# ENABLEQPHIX = true
 
-ifeq ($(strip ${WANTQPHIX}),true)
+# QPHIX_HOME = /panfs/projects/milc_wg/detar/QPHIX/mbench
 
-  CPHI = -DHAVE_QPHIX
-
-  QPHIX_HOME = ${HOME}/QPhiX/mbench
+ifeq ($(strip ${ENABLEQPHIX}), true)
+  WANTQPHIX = true
   INCQPHIX = -I${QPHIX_HOME}
-  LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc
-  QPHIX_LIBRARIES = ${QPHIX_HOME}
-  QPHIX_HEADERS = ${QPHIX_HOME}
+
+  HAVE_QPHIX = true
+  CPHI = -DHAVE_QPHIX
+endif
+
+ifeq ($(strip ${MPP}),true)
+
+# MPI versions
+
+ifeq ($(strip ${ARCH}),knl)
+  LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx512 -lrt
+else ifeq ($(strip ${ARCH}),knc)
+  LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic -lrt
+else ifeq ($(strip ${ARCH}),hsw)
+  LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2 -lrt
+else
+endif
+
+else
+
+# Non-MPI versions
+
+ifeq ($(strip ${ARCH}),knl)
+  LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx512_single -lrt
+else ifeq ($(strip ${ARCH}),knc)
+  LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_mic_single -lrt
+else ifeq ($(strip ${ARCH}),hsw)
+  LIBQPHIX = -L${QPHIX_HOME} -lqphixmilc_avx2_single -lrt
+else
+endif
 
 endif
 
@@ -309,14 +348,13 @@ endif
 # 16. Linker (need the C++ linker for QUDA and QPHIX)
 
 ifeq ($(strip ${WANTQUDA}),true)
-  LD               = ${CXX}
+  LD  = ${CXX}
+else ifeq ($(strip ${WANTQPHIX}),true)
+  LD  = ${CXX}
 else
-  ifeq ($(strip ${WANTQPHIX}),true)
-     LD               = ${CXX}
-  else
-     LD   = ${CC}
-  endif
+  LD  = ${CC}
 endif
+
 
 #----------------------------------------------------------------------
 # 17. Extra ld flags
@@ -324,20 +362,36 @@ endif
 #LDFLAGS          = -fast     # Sun SPARC
 #LDFLAGS          = -64 -L/usr/lib64 # SGIPC
 
-ifeq ($(strip ${HOST}),MIC)
-  LDFLAGS += -mmic
+# IMPI = -I/opt/intel/impi/5.1.3.181/compilers_and_libraries_2016.2.181/linux/mpi/intel64/include
+# 
+# ifeq ($(strip ${HOST}),MIC)
+#   LMPI = -L/opt/intel/compiler/latest/compilers_and_libraries_2016/linux/mpi/mic/lib
+# else
+#   LMPI = -L/opt/intel/compiler/latest/compilers_and_libraries_2016/linux/mpi/intel64/lib
+# endif
+
+# VTune
+
+VTUNE_VERSION = 2016u2
+INCVTUNE = -I/opt/intel/vtune/${VTUNE_VERSION}/vtune_amplifier_xe_2016/include
+LIBVTUNE = -L/opt/intel/vtune/${VTUNE_VERSION}/vtune_amplifier_xe_2016/lib64 -l ittnotify
+
+OCFLAGS += -DVTUNE
+
+#----------------------------------------------------------------------
+# 18. Extra include paths
+INCADD = ${INCFFTW} ${INCQUDA} ${INCQPHIX} ${INCVTUNE}
+
+#----------------------------------------------------------------------
+# 19. Extra libraries
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBVTUNE}
+
+ifeq ($(strip ${WANTQPHIX}), true)
+  LIBADD += ${LIBQPHIX}
 endif
 
 #----------------------------------------------------------------------
-# 17. Extra include paths
-INCADD = ${INCFFTW} ${INCQUDA} ${INCQPHIX}
-
-#----------------------------------------------------------------------
-# 18. Extra libraries
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX}
-
-#----------------------------------------------------------------------
-# 19. Inlining choices
+# 20. Inlining choices
 
 # USE INLINE SSE WITH EXTREME CAUTION!  IT MAY GIVE WRONG RESULTS.
 
@@ -371,7 +425,7 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 #INLINEOPT += -DSSEOPTERON
 
 #----------------------------------------------------------------------
-# 20. Miscellaneous macros for performance control and metric
+# 21. Miscellaneous macros for performance control and metric
 
 #     Define them with a -D prefix.
 
@@ -615,11 +669,10 @@ CODETYPE = ${CTIME} ${CPROF} ${CDEBUG} ${CGEOM} ${KSCGSTORE} ${CPREFETCH} \
  ${CCOMPAT}
 
 #----------------------------------------------------------------------
-# 16. Choose MILC library make file in libraries directory.  
+# 22. Choose MILC library make file in libraries directory.  
 #    CHECK IT FOR FURTHER OPTIONS!
 
-MAKELIBRARIES = Make_vanilla  # or Make_SSE_nasm (don't use -DSSE with this)
-# Other choices Make_RS6K  Make_alpha
+MAKELIBRARIES = Make_vanilla
 
 #----------------------------------------------------------------------
 # End of user choices.  Please, also, check choices in include/config.h.
@@ -655,7 +708,7 @@ ifeq ($(strip ${HAVEQOP}),true)
   QOPPREC = -DQOP_PrecisionInt=${PRECISION}
 endif
 
-ifeq ($(strip ${HAVEQPHIX}),true)
+ifeq ($(strip ${ENABLEQPHIX}),true)
   QPHIXPREC = -DQPHIX_PrecisionInt=${PRECISION}
 endif
 
