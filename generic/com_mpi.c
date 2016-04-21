@@ -145,7 +145,9 @@ u_int32type crc32(u_int32type crc, const unsigned char *buf, size_t len);
 /* hacks needed to unify even/odd and 32 sublattice cases */
 #ifdef N_SUBL32
 #define NUM_SUBL 32
+#undef FORSOMEPARITY
 #define FORSOMEPARITY FORSOMESUBLATTICE
+#undef FORSOMEPARITY_OMP
 #define FORSOMEPARITY_OMP FORSOMESUBLATTICE_OMP
 #else
 #define NUM_SUBL 2
@@ -1906,7 +1908,9 @@ prepare_gather(msg_tag *mtag)
     /* set pointers in sites to correct location */
     gmem = mrecv[i].gmem;
     do {
-#pragma omp parallel for private(localtpt)
+#ifdef OMP
+#pragma omp parallel for private(j,localtpt)
+#endif
       for(j=0; j<gmem->num; ++j) {
         localtpt = tpt + j * gmem->size;
         ((char **)gmem->mem)[gmem->sitelist[j]] = localtpt;
@@ -1956,7 +1960,9 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
     tpt = mbuf[i].msg_buf;
     gmem = mbuf[i].gmem;
     do {
-#pragma omp parallel for private(localtpt)
+#ifdef OMP
+#pragma omp parallel for private(j,localtpt)
+#endif
       for(j=0; j<gmem->num; ++j){
         localtpt = tpt + j * gmem->size;
         memcpy( tpt, gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
@@ -2630,7 +2636,7 @@ start_general_strided_gather(
 	}
       }
     }
-  }
+  } END_LOOP;
 
   /* scan sites of parity we are sending, make list of nodes to which
      we must send messages and the number of messages to each. */
@@ -2665,7 +2671,7 @@ start_general_strided_gather(
 	}
       }
     }
-  }
+  } END_LOOP;
 
   mtag = (msg_tag *)malloc(sizeof(msg_tag));
 
@@ -2740,7 +2746,7 @@ start_general_strided_gather(
       memcpy( tpt+2*sizeof(int), field+i*stride, size);
       to_nodes[j].count++;
     }
-  }
+  } END_LOOP;
 
   /* start the sends */
   for(i=0; i<n_send_msgs; i++) {

@@ -117,7 +117,9 @@
 /* hacks needed to unify even/odd and 32 sublattice cases */
 #ifdef N_SUBL32
 #define NUM_SUBL 32
+#undef FORSOMEPARITY
 #define FORSOMEPARITY FORSOMESUBLATTICE
+#undef FORSOMEPARITY_OMP
 #define FORSOMEPARITY_OMP FORSOMESUBLATTICE_OMP
 #else
 #define NUM_SUBL 2
