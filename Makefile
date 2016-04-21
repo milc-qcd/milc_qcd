@@ -678,7 +678,7 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCQUDA} ${INCQPHIX}
+INCADD = ${INCFFTW} ${INCQUDA} ${INCQPHIX} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries
