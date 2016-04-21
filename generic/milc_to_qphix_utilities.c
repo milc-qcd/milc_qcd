@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <omp.h>
 
 #define CG_DEBUG 1
 #define UNOPTIMIZED_PACK_UNPACK 0
