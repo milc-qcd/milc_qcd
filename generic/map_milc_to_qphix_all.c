@@ -12,19 +12,19 @@ static int QPHIX_node_number_raw(int coords[]){
   return node_number(coords[0],coords[1],coords[2],coords[3]);
 }
 
-static QPHIX_node_index_raw_G(int coords[], int milc_parity){
+static int QPHIX_node_index_raw_G(int coords[], int milc_parity){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
-static QPHIX_node_index_raw_F(int coords[], int milc_parity){
+static int QPHIX_node_index_raw_F(int coords[], int milc_parity){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
-static QPHIX_node_index_raw_V(int coords[], int milc_parity){
+static int QPHIX_node_index_raw_V(int coords[], int milc_parity){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
-static QPHIX_node_index_raw_D(int coords[], int milc_parity){
+static int QPHIX_node_index_raw_D(int coords[], int milc_parity){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
