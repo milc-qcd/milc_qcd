@@ -1746,15 +1746,14 @@ prepare_gather(msg_tag *mtag)
     gmem = mrecv[i].gmem;
     do {
 #ifdef OMP
-#pragma omp parallel for private(j,localtpt)
+#pragma omp parallel for private(j,tpt)
 #endif
-      for(j=0; j<gmem->num; ++j) {
-        localtpt = tpt + j * gmem->size;
-        ((char **)gmem->mem)[gmem->sitelist[j]] = localtpt;
+      for(j=0; j<gmem->num; ++j,tpt+=gmem->size) {
+	((char **)gmem->mem)[gmem->sitelist[j]] = tpt;
       }
-      tpt += gmem->num * gmem->size;
     } while((gmem=gmem->next)!=NULL);
   }
+
   if(mtag->nrecvs==1) {
     mtag->mhrecv = mtag->mhrecvlist[0];
   } else if(mtag->nrecvs>1) {
@@ -1822,14 +1821,13 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
     gmem = mbuf[i].gmem;
     do {
 #ifdef OMP
-#pragma omp parallel for private(j,localtpt)
+#pragma omp parallel for private(j,tpt)
 #endif
-      for(j=0; j<gmem->num; ++j){
-        localtpt = tpt + j * gmem->size;
-        memcpy( tpt, gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
+      for(j=0; j<gmem->num; ++j,tpt+=gmem->size) {
+	memcpy( tpt, gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
       }
-      tpt += gmem->num * gmem->size;
     } while((gmem=gmem->next)!=NULL);
+
     /* start the send */
 #ifdef COM_CRC
     {
