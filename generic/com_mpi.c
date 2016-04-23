@@ -1865,7 +1865,7 @@ prepare_gather(msg_tag *mtag)
   int *ids;
   msg_sr_t *mrecv,*msend;
   gmem_t *gmem;
-  char *tpt,*localtpt;
+  char *tpt;
 
   if(mtag->ids!=NULL) {
     printf("error: already prepared\n");
@@ -1909,13 +1909,11 @@ prepare_gather(msg_tag *mtag)
     gmem = mrecv[i].gmem;
     do {
 #ifdef OMP
-#pragma omp parallel for private(j,localtpt)
+#pragma omp parallel for private(j,tpt)
 #endif
-      for(j=0; j<gmem->num; ++j) {
-        localtpt = tpt + j * gmem->size;
-        ((char **)gmem->mem)[gmem->sitelist[j]] = localtpt;
+      for(j=0; j<gmem->num; ++j,tpt+=gmem->size) {
+	((char **)gmem->mem)[gmem->sitelist[j]] = tpt;
       }
-      tpt += gmem->num * gmem->size;
     } while((gmem=gmem->next)!=NULL);
   }
 
@@ -1938,7 +1936,6 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
 {
   register int i,j;	/* scratch */
   register char *tpt;	/* scratch pointer in buffers */
-  char *localtpt;
   msg_sr_t *mbuf;
   gmem_t *gmem;
 
@@ -1961,14 +1958,13 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
     gmem = mbuf[i].gmem;
     do {
 #ifdef OMP
-#pragma omp parallel for private(j,localtpt)
+#pragma omp parallel for private(j,tpt)
 #endif
-      for(j=0; j<gmem->num; ++j){
-        localtpt = tpt + j * gmem->size;
-        memcpy( tpt, gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
+      for(j=0; j<gmem->num; ++j,tpt+=gmem->size) {
+	memcpy( tpt, gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
       }
-      tpt += gmem->num * gmem->size;
     } while((gmem=gmem->next)!=NULL);
+
     /* start the send */
 #ifdef COM_CRC
     {
