@@ -8,6 +8,7 @@
 #include <quda.h>
 #include <quda_milc_interface.h>
 #include "../include/generic_quda.h"
+#define LOOPEND
 #include "../include/loopend.h"
 
 /* Backward compatibility*/
@@ -53,6 +54,37 @@ int ks_multicg_offset_field_gpu(
   }
 
   if( num_offsets==0 )return(0);
+
+  /* Compute source norm */
+  double source_norm = 0.0;
+  FORSOMEFIELDPARITY(i,qic[0].parity){
+    source_norm += (double)magsq_su3vec( &src[i] );
+  } END_LOOP;
+  g_doublesum( &source_norm );
+#ifdef CG_DEBUG
+  node0_printf("ks_multicg_offset_gpu: source_norm = %e\n", (double)source_norm);
+#endif
+
+  /* Provide for trivial solution */
+  if(source_norm == 0.0){
+    /* Zero the solutions and return zero iterations */
+    for(j = 0; j < num_offsets; j++){
+      FORSOMEFIELDPARITY(i,qic->parity){
+	memset(psim[j] + i, 0, sizeof(su3_vector));
+      } END_LOOP;
+    }
+
+  dtimec += dclock();
+#ifdef CGTIME
+  if(this_node==0){
+    printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
+	   dtimec, prec_label[PRECISION-1], qic->final_iters, 
+	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
+    fflush(stdout);}
+#endif
+
+    return 0;
+  }
 
   QudaInvertArgs_t inv_args;
 
