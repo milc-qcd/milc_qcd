@@ -32,6 +32,8 @@ ifeq ($(strip ${COMPILER}),intel)
   CC = icc
 else ifeq ($(strip ${COMPILER}),gnu)
   CC = gcc
+else ifeq ($(strip ${COMPILER}),cray-intel)
+  CC = icc
 endif
 
 # Override
