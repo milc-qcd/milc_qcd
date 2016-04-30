@@ -693,6 +693,14 @@ void byterevn64(int32type w[], int n);
 #define su3_rdot(...) _inline_C_su3_rdot(__VA_ARGS__)
 #endif
 
+#ifndef su3mat_copy
+//#define su3mat_copy(...) _inline_C_su3mat_copy(__VA_ARGS__)
+#endif
+
+#ifndef sub_su3_matrix
+#define sub_su3_matrix(...) _inline_C_sub_su3_matrix(__VA_ARGS__)
+#endif
+
 #ifndef sub_su3_vector
 #define sub_su3_vector(...) _inline_C_sub_su3_vector(__VA_ARGS__)
 #endif
@@ -803,6 +811,10 @@ Real su3_rdot( su3_vector *a, su3_vector *b );
 #ifndef sub_four_su3_vecs
 void sub_four_su3_vecs( su3_vector *a, su3_vector *b1, su3_vector *b2,
 	su3_vector *b3, su3_vector *b4 );
+#endif
+
+#ifndef sub_su3_matrix
+void sub_su3_matrix( su3_matrix *a, su3_matrix *b, su3_matrix *c );
 #endif
 
 #ifndef sub_su3_vector
