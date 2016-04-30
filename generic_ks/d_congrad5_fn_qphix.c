@@ -193,12 +193,12 @@ ks_congrad_parity_qphix ( su3_vector *src
 #ifdef CGTIME
     tot_cg_time +=dclock();
     if(this_node==0) {
-        node0_printf("QPhiX-CONGRAD5: total cg-time = %e "
+        node0_printf("CONGRAD5: total cg-time = %e "
 #if CG_DEBUG
                "solve-time = %e "
                "layout-conversion-time = %e "
 #endif            
-               "(fn %s) masses = 1 iters = "
+               "(QPHIX %s) masses = 1 iters = "
                "%d mflops = %e "
 #ifdef CG_DEBUG
                "mflops(ignore data-conv.) = %e"
