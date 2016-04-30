@@ -19,7 +19,7 @@ ARCH = # knl knc hsw
 #----------------------------------------------------------------------
 # 2. Compiler family
 
-COMPILER = gnu # intel, ibm, portland, cray
+COMPILER = gnu # intel, ibm, portland, cray-intel
 
 #----------------------------------------------------------------------
 # 3. MPP vs Scalar
@@ -42,6 +42,16 @@ ifeq ($(strip ${COMPILER}),intel)
   ifeq ($(strip ${MPP}),true)
     CC = mpiicc
     CXX = mpiicpc
+  else
+    CC  = icc
+    CXX = icpc
+  endif
+
+else ifeq ($(strip ${COMPILER}),cray-intel)
+
+  ifeq ($(strip ${MPP}),true)
+    CC = cc
+    CXX = CC
   else
     CC  = icc
     CXX = icpc
@@ -114,6 +124,37 @@ endif
 #-------------- Intel icc/ecc -----------------------------------
 
 ifeq ($(strip ${COMPILER}),intel)
+
+  OCFLAGS += -std=c99
+
+  ifeq ($(strip ${ARCH}),knl)
+  ARCH_FLAG = -xMIC-AVX512
+  BINEXT=.knl
+  else ifeq ($(strip ${ARCH}),knc)
+  ARCH_FLAG = -mmic
+  BINEXT=.knc
+  else ifeq ($(strip ${ARCH}),hsw)
+  ARCH_FLAG = -xCORE-AVX2
+  BINEXT=.hsw
+  else
+  ARCH_FLAG = -mavx
+  BINEXT=
+  endif
+
+  OCFLAGS += ${ARCH_FLAG}
+  LDFLAGS += ${ARCH_FLAG}
+  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+
+  ifeq ($(strip ${OMP}),true)
+    OCFLAGS += -qopenmp
+    LDFLAGS = -qopenmp
+  endif
+
+endif
+
+#-------------- Cray-Intel  -----------------------------------
+
+ifeq ($(strip ${COMPILER}),cray-intel)
 
   OCFLAGS += -std=c99
 
