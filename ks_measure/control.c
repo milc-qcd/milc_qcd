@@ -174,7 +174,8 @@ int main(int argc, char *argv[])
 			&param.ksp_pbp[i0], fn_links);
 #endif
       }
-    }
+      normal_exit(1);
+    } /* k num_set */
  
 #ifdef HISQ_SVD_COUNTER
     node0_printf("hisq_svd_counter = %d\n",hisq_svd_counter);
