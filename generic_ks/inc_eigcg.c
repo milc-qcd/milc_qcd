@@ -19,6 +19,7 @@ static const char *prec_label[2] = {"F", "D"};
 #endif
 
 #define CG_DEBUG
+#define EIGCG_DEBUG
 
 /* The Fermilab relative residue */
 static Real my_relative_residue(su3_vector *p, su3_vector *q, int parity){
@@ -450,7 +451,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
   } END_LOOP_OMP
   g_doublesum(&source_norm);
 #ifdef CG_DEBUG
-  node0_printf("congrad: source_norm = %e\n", (double)source_norm);
+  node0_printf("congrad: source_norm = %e\n", (double)source_norm); fflush(stdout);
 #endif
 
   /* Provision for trivial solution */
@@ -503,7 +504,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
   /* Start CG iterations */
 
 #ifdef CG_DEBUG
-  node0_printf("rsqmin = %g relmin = %g\n", rsqmin, relrsqmin);
+  node0_printf("rsqmin = %g relmin = %g\n", rsqmin, relrsqmin); fflush(stdout);
 #endif
   while(1) {
     /* Check for completion */
@@ -555,7 +556,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 
 #ifdef CG_DEBUG
       node0_printf("CONGRAD: (re)start %d rsq = %.10e relrsq %.10e\n",
-		   nrestart, qic->final_rsq, qic->final_relrsq);
+		   nrestart, qic->final_rsq, qic->final_relrsq); fflush(stdout);
 #endif
       /* Quit when true residual and true relative residual are within
 	 tolerance or when we exhaust iterations or restarts */
@@ -606,8 +607,8 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
     if(Nvecs > 0){
       dtimec3 = - dclock();
 
-#ifdef CG_DEBuG
-      node0_printf("ks_eigCG_parity computing Ritz pairs\n");
+#ifdef CG_DEBUG
+      node0_printf("ks_eigCG_parity computing Ritz pairs with k %d and m1 %d\n",k,m1); fflush(stdout);
 #endif    
 
       if(k == m1){
@@ -638,6 +639,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 	/* eigVec[j] <- sum_jj eigVec[jj]*(QZ)[jj][j] */
 	zgemm_("N", "N", &m, &Nvecs_x2, &Nvecs_x2, &zone, Y, &m, T, &Nvecs_x2, &zzero,
 	       T2, &m);
+
 	FORSOMEFIELDPARITY_OMP(i, parity, private(j, jj) default(shared)){
 	  for(j = 0; j < Nvecs_x2; j++){
 	    clearvec( tmp+j );
@@ -692,13 +694,19 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 	for(j = 0; j < Nvecs; j++){
 	  dslash_fn_field(eigVec[j], ttt2, otherparity, fn);
 	  dslash_fn_field(ttt2, ttt2, parity, fn);
-	  rwork[2*j] = dzero;
-	  rwork[2*j + 1] = dzero;
-	  FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:rwork[2*j], rwork[2*j + 1])){
+
+	  
+	  double rw0 = 0., rw1 = 0.;
+	  //rwork[2*j] = dzero;
+	  //rwork[2*j + 1] = dzero;
+	  //FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:rwork[2*j], rwork[2*j + 1])){
+	  FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:rw0, rw1)){
 	    scalar_mult_sum_su3_vector(ttt2+i, eigVec[j]+i, eigVal[j] - msq_x4);
-	    rwork[2*j] += magsq_su3vec(ttt2+i);
-	    rwork[2*j + 1] += magsq_su3vec(eigVec[j]+i);
-	  } END_LOOP_OMP
+	    rw0 += magsq_su3vec(ttt2+i);
+	    rw1 += magsq_su3vec(eigVec[j]+i);
+	  } END_LOOP_OMP;
+	  rwork[2*j] = rw0;
+	  rwork[2*j + 1] = rw1;
         }
 	g_vecdoublesum(rwork, 2*Nvecs);
 	for(j = 0; j < Nvecs; j++){
@@ -719,10 +727,10 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
       /* eigVec[k] = resid/sqrt(rsq) */
       FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
 	scalar_mult_su3_vector(resid+i, done/sqrt(rsq), eigVec[k]+i);
-      } END_LOOP_OMP
+      } END_LOOP_OMP;
 
-       /* T_{k,k} = 1/a + b_old/a_old */
-       T[(m+1)*k] = dcmplx(b/a, dzero);
+      /* T_{k,k} = 1/a + b_old/a_old */
+      T[(m+1)*k] = dcmplx(b/a, dzero);
 
       dtimec2 += dclock() + dtimec3;
     }
@@ -746,7 +754,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
       scalar_mult_sum_su3_vector(dest+i, cg_p+i, a);
       scalar_mult_sum_su3_vector(resid+i, ttt+i, a);
       rsq += (double)magsq_su3vec(resid+i);
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
     g_doublesum(&rsq);
 
     if(relrsqmin > 0)
@@ -764,6 +772,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 #ifdef CG_DEBUG
     node0_printf("iter=%d, rsq/src= %e, relrsq= %e, pkp=%e\n",
 		 iteration, (double)qic->size_r, (double)qic->size_relr, (double)pkp);
+    fflush(stdout);
 #endif
 
     /* b <- rsq/oldrsq */
@@ -838,7 +847,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 
   dtimec += dclock();
 #ifdef CGTIME
-  node0_printf("CONGRAD5: time = %e time_eig = %e (fn_eigcg %s) masses = 1 iters = %d\n",
+  node0_printf("CONGRAD5_EIGCG: time = %e time_eig = %e (fn_eigcg %s) masses = 1 iters = %d\n",
 	       dtimec, dtimec2, prec_label[PRECISION-1], qic->final_iters);
 #endif
 
@@ -857,7 +866,7 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
   double dtimec, dtimec2=0.0, dtimec3, dtimec4=0.0, dtimec5=0.0;
   double_complex *H;
 #ifdef EIGCG_DEBUG
-  double *resid, *norm;
+  double *resid_debug, *norm;
 #endif
 
   dtimec = -dclock();
@@ -882,20 +891,22 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
     dtimec2 += dclock();
   }
 
-#ifdef CG_DEBuG
-    node0_printf("Calling ks_eigCG_parity with Nvecs_curr = %d\n", Nvecs_curr);
+#ifdef CG_DEBUG
+    node0_printf("Calling ks_eigCG_parity with Nvecs_curr = %d\n", Nvecs_curr); fflush(stdout);
 #endif    
 
   /* Solve a linear equation */
   dtimec3 = -dclock();
+  //iteration = ks_eigCG_parity(src, dest, eigVal+Nvecs_curr, eigVec+Nvecs_curr, m, Nvecs,
+			       //		      qic, mass, fn);
   iteration = ks_eigCG_parity(src, dest, eigVal+Nvecs_curr, eigVec+Nvecs_curr, m, Nvecs,
 			      qic, mass, fn);
   dtimec3 += dclock();
 
   if(Nvecs > 0){
 
-#ifdef CG_DEBuG
-    node0_printf("Orthogonalization step with Nvecs_curr = %d\n", Nvecs_curr);
+#ifdef CG_DEBUG
+    node0_printf("Orthogonalization step with Nvecs_curr = %d\n", Nvecs_curr); fflush(stdout);
 #endif    
 
     /* Orthogonalize vectors */
@@ -919,13 +930,13 @@ int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
   //  norm = (double *)malloc(Nvecs_curr*sizeof(double));
   calc_eigenpairs(eigVal, eigVec, eigcgp, parity);
 
-  resid = (double *)malloc(Nvecs_curr*sizeof(double));
-  check_eigres( resid, eigVec, eigVal, Nvecs_curr, parity, fn );
-//  calc_eigresid(Nvecs_curr, resid, norm, eigVal, eigVec, parity, fn);
+  resid_debug = (double *)malloc(Nvecs_curr*sizeof(double));
+  check_eigres( resid_debug, eigVec, eigVal, Nvecs_curr, parity, fn );
+//  calc_eigresid(Nvecs_curr, resid_debug, norm, eigVal, eigVec, parity, fn);
 //  for(i = 0; i < Nvecs_curr; i++)
 //    node0_printf("eigVal[%d] = %e, resid = %e, ||eigVec[%d]|| = %e\n",
 //		 i, eigVal[i], resid[i], i, norm[i]);
-  free(resid); // free(norm);
+  free(resid_debug); // free(norm);
 #endif
 
 #ifdef CGTIME

@@ -476,13 +476,15 @@ int readin(int prompt) {
 #if EIGMODE == EIGCG
   int Nvecs_max = param.eigcgp.Nvecs_max;
   if(param.ks_eigen_startflag == FRESH)
-    Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
-      + param.eigcgp.m;
+    //    Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
+    //      + param.eigcgp.m;
+    Nvecs_tot = Nvecs_max + param.eigcgp.m - 1
   else
     Nvecs_tot = Nvecs_max;
 
   eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
   eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
+  node0_printf("Allocating space for %d eigenvectors\n", Nvecs_tot);
   for(i = 0; i < Nvecs_tot; i++)
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
