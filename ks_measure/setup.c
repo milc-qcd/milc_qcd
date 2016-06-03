@@ -478,7 +478,7 @@ int readin(int prompt) {
   if(param.ks_eigen_startflag == FRESH)
     //    Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
     //      + param.eigcgp.m;
-    Nvecs_tot = Nvecs_max + param.eigcgp.m - 1
+    Nvecs_tot = Nvecs_max + param.eigcgp.m - 1;
   else
     Nvecs_tot = Nvecs_max;
 
