@@ -83,15 +83,23 @@ EIGCG_OBJECTS = \
 
 # Selection of eigensolver program
 ifeq ($(strip ${HAVEQOP}),true)
-# Interface to access QOP (not supported)
-  DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_Ritz.o
-# DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
+# Interface to access QOP (not supported, so same as below)
+  ifeq ($(strip ${HAVEPRIMME}),true)
+     DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_PRIMME.o
+     ADDDEFINES += -DPRIMME
+  else
+     DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_Ritz.o
+  endif
 else
   ifeq ($(strip ${HAVEQDP}),true)
     DEFLATE_OBJECTS += eigen_stuff_qdp.o
   else
-    DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_Ritz.o
-#   DEFLATE_OBJECTS += eigen_stuff_PRIMME.o
+    ifeq ($(strip ${HAVEPRIMME}),true)
+       DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_PRIMME.o
+       ADDDEFINES += -DPRIMME
+    else
+       DEFLATE_OBJECTS += eigen_stuff_helpers.o eigen_stuff_Ritz.o
+    endif
   endif
 endif
 
@@ -162,26 +170,26 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 ks_measure_asqtad::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DIOTIME -DPRTIME -DTR_MM_INV" \
+	"DEFINES = ${DEFINES} -DFN -DIOTIME -DPRTIME -DTR_MM_INV" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_measure_asqtad_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DIOTIME -DPRTIME -DDM_DU0 \
+	"DEFINES = ${DEFINES}  -DFN -DIOTIME -DPRTIME -DDM_DU0 \
 	-DTR_MM_INV -DCHEM_POT" "EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_measure_asqtad_susc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DIOTIME -DPRTIME -DCHEM_POT \
+	"DEFINES = ${DEFINES}  -DFN -DIOTIME -DPRTIME -DCHEM_POT \
 	-DTR_MM_INV" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS}"
 
 ks_measure_asqtad_mu_eos::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
-	"DEFINES= -DFN -DIOTIME -DPRTIME -DDM_DU0 \
+	"DEFINES = ${DEFINES}  -DFN -DIOTIME -DPRTIME -DDM_DU0 \
 	-DTR_MM_INV -DCHEM_POT -DD_CHEM_POT" \
 	"EXTRA_OBJECTS= ${FN_OBJECTS} mu_fast.o"
 
@@ -190,7 +198,7 @@ ks_measure_asqtad_mu_eos::
 # Other HISQ optsions
 #       -DHISQ_REUNIT_SVD_ONLY \
 
-HISQ_OPTIONS = "DEFINES= -DFN -DHAVE_KS \
+HISQ_OPTIONS = "DEFINES = -DFN -DHAVE_KS \
 	-DHISQ_REUNIT_ALLOW_SVD \
 	-DHISQ_REUNIT_SVD_REL_ERROR=1e-8 \
 	-DHISQ_REUNIT_SVD_ABS_ERROR=1e-8" \
