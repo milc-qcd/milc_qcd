@@ -162,8 +162,8 @@ f_meas_current_diff( int nrand, int nwrite, int thinning,
     z2rsource_plain_field( gr0, EVENANDODD );
 #endif
     
-    /* Iterate over displacements within a d^4 cube */
-    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++){
+    /* Iterate over 8 even displacements within a d^4 cube */
+    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
 	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
@@ -173,6 +173,7 @@ f_meas_current_diff( int nrand, int nwrite, int thinning,
 	    
 	    /* First, sloppy solution */
 	    /* M_inv_gr = M^{-1} gr */
+	    node0_printf("Solving sloppily for %d %d %d %d\n", ex, ey, ez, et);
 	    mat_invert_uml_field( gr, M_inv_gr, qic_sloppy, mass, fn );
 	    
 	    /* Loop over directions for the current */
@@ -193,6 +194,7 @@ f_meas_current_diff( int nrand, int nwrite, int thinning,
 	    
 	    /* Next, continue to a "precise" solution from the same source */
 	    /* M_inv_gr = M^{-1} gr (same random source for each mass) */
+	    node0_printf("Solving precisely for %d %d %d %d\n", ex, ey, ez, et);
 	    mat_invert_uml_field( gr, M_inv_gr, qic_precise, mass, fn );
 	    
 	    /* Loop over directions for the current */
@@ -289,7 +291,7 @@ f_meas_current( int nrand, int nwrite, int thinning, quark_invert_control *qic,
 #endif
 
     /* Iterate over displacements within a d^4 cube */
-    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++){
+    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
 	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
@@ -298,6 +300,7 @@ f_meas_current( int nrand, int nwrite, int thinning, quark_invert_control *qic,
 	    thin_random_source( gr, d, ex, ey, ez, et );
 	    
 	    /* M_inv_gr = M^{-1} gr */
+	    node0_printf("Solving for %d %d %d %d\n", ex, ey, ez, et);
 	    mat_invert_uml_field( gr, M_inv_gr, qic, mass, fn );
 	    
 	    /* Loop over directions for the current */
@@ -422,7 +425,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 #endif
     
     /* Iterate over displacements within a d^4 cube */
-    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++){
+    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
 	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
@@ -434,6 +437,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 	      
 	      /* First, sloppy solution */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
+	      node0_printf("Solving sloppily for %d %d %d %d\n", ex, ey, ez, et);
 	      mat_invert_uml_field( gr, M_inv_gr, qic_sloppy, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
@@ -454,6 +458,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 	      
 	      /* Next, continue to a "precise" solution from the same source */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
+	      node0_printf("Solving precisely for %d %d %d %d\n", ex, ey, ez, et);
 	      mat_invert_uml_field( gr, M_inv_gr, qic_precise, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
@@ -576,7 +581,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
 #endif
     
     /* Iterate over displacements within a d^4 cube */
-    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++){
+    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
 	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
@@ -713,7 +718,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 #endif
     
     /* Iterate over displacements within a d^4 cube */
-    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++){
+    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
 	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
@@ -864,7 +869,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
 #endif
     
     /* Iterate over displacements within a d^4 cube */
-    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++){
+    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
 	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 

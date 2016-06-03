@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
       int total_R_iters;
       total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
 			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters);
-      node0_printf("total Rayleigh iters = %d\n", total_R_iters);
+      node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
 
 #if 0 /* If needed for debugging */
       /* (The Kalkreuter routine uses the random number generator to
@@ -174,7 +174,6 @@ int main(int argc, char *argv[])
 			&param.ksp_pbp[i0], fn_links);
 #endif
       }
-      normal_exit(1);
     } /* k num_set */
  
 #ifdef HISQ_SVD_COUNTER
