@@ -128,14 +128,17 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   /* Initiallize all the eigenvectors to a random vector and
      convert to double precision temporary fields */
+  
+  su3_vector *gr0 = create_v_field();
   for(j=0;j<Nvecs;j++) {
-    grsource_plain(F_OFFSET(g_rand), parity);  
+    grsource_plain_field( gr0, parity);  
     xx = (double*)&(evecs[0].real)+2*j*maxn;
-    FORSOMEPARITY(i,s,parity){
-      yy = &(lattice[i].g_rand.c[0].real);
+    FORSOMEFIELDPARITY(i,parity){
+      yy = &gr0[i].c[0].real;
       for(k=0;k<6;k++) *(xx++) = *(yy++);
     }
   }
+  destroy_v_field(gr0);
 
   /*set the parameters of the EV finder*/
   primme_initialize(&primme);
@@ -167,11 +170,13 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 #endif
 
   /* call the actual EV finder*/
+  ret = zprimme(NULL, NULL, NULL, &primme);
+  printf("PRIMME workspace int = %d long int = %ld\n", primme.intWorkSize, primme.realWorkSize); fflush(stdout);
   ret = zprimme(evals, (Complex_Z*)evecs, rnorms, &primme);
 
-  if (ret!=0) /*check return value */
-  {
-    node0_printf("Return Value %i !\n",ret);
+  if (ret!=0){ /*check return value */
+    node0_printf("Kalkreuter_PRIMME: zprimme error\nCall stack:\n");
+    primme_PrintStackTrace(primme);
     fflush(stdout);
     exit(1);
   }
