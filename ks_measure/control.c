@@ -85,11 +85,12 @@ int main(int argc, char *argv[])
     Nvecs_curr = Nvecs_tot = param.Nvecs;
 
     /* compute eigenpairs if requested */
-    if(param.ks_eigen_startflag == FRESH){
-      int total_R_iters;
-      total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
-			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters);
-      node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
+    //    if(param.ks_eigen_startflag == FRESH){
+    int total_R_iters;
+    total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
+			     Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 
+			     param.ks_eigen_startflag == FRESH);
+    node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
 
 #if 0 /* If needed for debugging */
       /* (The Kalkreuter routine uses the random number generator to
@@ -98,7 +99,7 @@ int main(int argc, char *argv[])
 	 re-initialize here.) */
       initialize_site_prn_from_seed(iseed);
 #endif
-    }
+      //    }
     
     /* Calculate and print the residues and norms of the eigenvectors */
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
@@ -157,6 +158,20 @@ int main(int argc, char *argv[])
 #endif
       } else {
 #ifdef CURRENT_DISC
+#if EIGMODE == DEFLATION
+	if(param.truncate_diff[k])
+	  f_meas_current_multi_diff_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+					 param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+					 eigVec, eigVal, Nvecs_curr,
+					 &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
+	else
+	  f_meas_current_multi_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+				    param.thinning[k], &param.qic_pbp[i0], 
+				    eigVec, eigVal, Nvecs_curr,
+				    &param.ksp_pbp[i0], 
+				    fn_links, &param.pbp_filenames[i0] );
+	
+#else
 	if(param.truncate_diff[k])
 	  f_meas_current_multi_diff( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
 				     param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
@@ -165,6 +180,7 @@ int main(int argc, char *argv[])
 	  f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
 				param.thinning[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], 
 				fn_links, &param.pbp_filenames[i0] );
+#endif
 #else
 	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
 			  &param.ksp_pbp[i0], fn_links);
