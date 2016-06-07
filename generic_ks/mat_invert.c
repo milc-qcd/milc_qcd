@@ -157,6 +157,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
     return cgn;
 }
 
+
 /* Invert using Leo's UML trick */
 
 /* Our M is     (  2m		D_eo   )
@@ -186,6 +187,8 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
              ( - B D_oe        2m B   )
 
 where  A = (4m^2+D_eo D_eo^adj)^-1 and B = (4m^2+D_oe^adj D_oe)^-1
+
+    Note: -D_oe = D_eo^adj and  B D_eo^adj = D_eo^adj A
 
 */
          
