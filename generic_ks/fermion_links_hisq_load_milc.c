@@ -503,7 +503,7 @@ load_X_from_W(info_t *info, fn_links_t *fn, hisq_auxiliary_t *aux,
 #endif
   dtime += dclock();
   
-  printf("Combined fattening and long-link calculation time: %lf\n",dtime);
+  node0_printf("Combined fattening and long-link calculation time: %lf\n",dtime);
 
   info->final_flop = final_flop;
 
