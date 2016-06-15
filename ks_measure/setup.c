@@ -514,6 +514,7 @@ int readin(int prompt) {
     eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
 
   /* Do whatever is needed to get eigenpairs */
+  node0_printf("Reading %d eigenvectors\n", param.Nvecs); fflush(stdout);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &param.Nvecs, eigVal, eigVec, 1);
 #endif
