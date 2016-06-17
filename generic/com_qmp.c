@@ -2624,7 +2624,7 @@ start_general_strided_gather(
       memcpy( tpt+2*sizeof(int), field+i*stride, size);
       to_nodes[j].count++;
     }
-  }
+  } END_LOOP;
 
   /* start the sends */
   for(i=0; i<n_send_msgs; i++) {
