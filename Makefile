@@ -303,9 +303,6 @@ endif
 # LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
 
 # Utah physics and math Centos-linus
-# LIBLAPACK = -L/usr/local/lib64  -llapack-3.6.0-gfortran -lblas-3.6.0-gfortran -lgfortran
-
-# Utah physics and math Centos-linus
 # LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -lgfortran
 
 # FNAL cluster (Jim's installation of ATLAS)
