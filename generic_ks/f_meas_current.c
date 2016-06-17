@@ -13,7 +13,16 @@
 
     Entry points
 
+    f_meas_current_diff
     f_meas_current
+    f_meas_current_multi_diff
+    f_meas_current_multi
+
+    With EIGMODE defined:
+
+    f_meas_current_multi_diff_eig
+    f_meas_current_multi_diff
+    f_meas_current_multi_eig
     f_meas_current_multi
 */
 
@@ -135,7 +144,7 @@ f_meas_current_diff( int nrand, int nwrite, int thinning,
 		     Real mass, int naik_term_epsilon_index, fermion_links_t *fl, 
 		     char *filename){
   
-  char myname[] = "f_meas_current";
+  char myname[] = "f_meas_current_diff";
 
   imp_ferm_links_t* fn = get_fm_links(fl)[naik_term_epsilon_index];
 
@@ -158,7 +167,7 @@ f_meas_current_diff( int nrand, int nwrite, int thinning,
   /* Open file for writing */
   QIO_Writer *outfile = open_vector_current_file(filename);
   if(outfile == NULL){
-    node0_printf("f_meas_current: Failed to open %s\n", filename);
+    node0_printf("%s: Failed to open %s\n", myname, filename);
     exit(1);
   }
   
@@ -287,7 +296,7 @@ f_meas_current( int nrand, int nwrite, int thinning, quark_invert_control *qic,
   /* Open file for writing */
   QIO_Writer *outfile = open_vector_current_file(filename);
   if(outfile == NULL){
-    node0_printf("f_meas_current: Failed to open %s\n", filename);
+    node0_printf("%s: Failed to open %s\n", myname, filename);
     exit(1);
   }
   
@@ -414,10 +423,15 @@ static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1,
 static void project_out(su3_vector *vec, su3_vector **vector, int Num, int parity){
   register int i ;
   double_complex cc ;
+  double ptime = -dclock();
+
   for(i=Num-1;i>-1;i--){
     dot_product(vector[i], vec, &cc, parity) ;
     complex_vec_mult_sub(&cc, vector[i], vec, parity);
   }
+
+  ptime += dclock();
+  node0_printf("Time to project out low modes %g\n", ptime);
 }
 
 /************************************************************************/
@@ -479,6 +493,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
     fn_multi[j] = fn[ksp[j].naik_term_epsilon_index];
   
   double wtime = 0.;
+
   /* Loop over random sources */
   for(jrand = 0; jrand < nrand; jrand++){
     
@@ -490,10 +505,11 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 #endif
     
     /* Iterate over displacements within a d^4 cube. Use even displacements only */
-    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
+    for(ex=0;ex<d;ex+=2)for(ey=0;ey<d;ey+=2)for(ez=0;ez<d;ez+=2)for(et=0;et<d;et+=2){
 	      
-	      // Can't do this now that we are doing deflation.
-	      //	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
+      // Can't do this now that we are doing deflation.
+      // We would need to rephase the eigenvectors
+      //	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
 	    /* Apply source thinning */
 	    copy_v_field(gr, gr0);
@@ -507,6 +523,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	      /* First, the sloppy high-mode solution */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving sloppily for %d %d %d %d\n", ex, ey, ez, et);
+	      clear_v_field(M_inv_gr);
 	      mat_invert_uml_field( gr, M_inv_gr, qic_sloppy, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
@@ -669,6 +686,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 	      /* First, sloppy solution */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving sloppily for %d %d %d %d\n", ex, ey, ez, et);
+	      clear_v_field(M_inv_gr);
 	      mat_invert_uml_field( gr, M_inv_gr, qic_sloppy, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
@@ -781,6 +799,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
   imp_ferm_links_t *fn_multi[n_masses];
   QIO_Writer *outfile[n_masses];
   imp_ferm_links_t **fn = get_fm_links(fl);
+  double wtime = 0.;
  
   /* Create fields for current densities, one for each mass */
   for(j = 0; j < n_masses; j++){
@@ -805,26 +824,27 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
   for(j = 0; j < n_masses; j++)
     fn_multi[j] = fn[ksp[j].naik_term_epsilon_index];
   
-  double wtime = 0.;
-
   /* Compute exact low-mode current density */
+  double dtime = -dclock();
   for(n = 0; n < Nvecs; n++){
     for(j = 0; j < n_masses; j++){
       dslash_fn_field(eigVec[n], gr, ODD, fn_multi[j]);
       for(mu = 0; mu < NMU; mu++){
-      /* Add in the exact low-mode solution */
-	spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, gr);
-	spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
+	/* Add in the exact low-mode solution */
+        spin_taste_op_fn(fn_multi[j], spin_taste[mu], r_offset, gr_mu, gr);
+        spin_taste_op_fn(fn_multi[j], spin_taste_index("pion05"), r_offset, gr_mu, gr_mu);
 	
-	FOREVENFIELDSITES(i){
-	  complex z;
-	  z = su3_dot( eigVec[n] + i, gr_mu + i);
-	  jlow_mu[j][NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass[j]*mass[j]);
-	} /* i */
+        FOREVENFIELDSITES(i){
+          complex z;
+          z = su3_dot( eigVec[n] + i, gr_mu + i);
+          jlow_mu[j][NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass[j]*mass[j]);
+        } /* i */
       } /* mu */
     } /* j */
   } /* n */
-
+  dtime += dclock();
+  node0_printf("Time for exact low modes %g\n", dtime);
+  
   /* Loop over random sources */
   for(jrand = 0; jrand < nrand; jrand++){
     
@@ -842,10 +862,11 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     //    }
     
     /* Iterate over displacements within a d^4 cube. Use even displacements only */
-    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
+    for(ex=0;ex<d;ex+=2)for(ey=0;ey<d;ey+=2)for(ez=0;ez<d;ez+=2)for(et=0;et<d;et+=2){
 
-	      // Can't do this now that we are doing deflation.
-	      //	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
+      // Can't do this now that we are doing deflation.
+      // We would need to rephase the eigenvectors
+      //	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
 	    /* Apply source thinning */
 	    copy_v_field(gr, gr0);
@@ -857,6 +878,8 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
 	    for(j = 0; j < n_masses; j++){
 	      
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
+	      node0_printf("Solving for %d %d %d %d mass %g\n", ex, ey, ez, et, mass[j]);
+	      clear_v_field(M_inv_gr);
 	      mat_invert_uml_field( gr, M_inv_gr, qic, mass[j], fn_multi[j]);
 	      
 #if 0
@@ -935,7 +958,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     if((jrand+1) % nwrite == 0){
       wtime -= dclock();
       for(j = 0; j < n_masses; j++){
-#if 1
+#if 0
 	/* DEBUG */
 	FOREVENFIELDSITES(i){
 	  printf("%d %d %d %d ",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t);
@@ -946,11 +969,11 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
 #endif
 	average_vector_current_and_sum(nwrite, j_mu[j], jlow_mu[j]);
 	int status = write_vector_current_record(outfile[j], jrand, nwrite, mass[j], j_mu[j]);
+	clear_r_array_field(j_mu[j], NMU);
+	wtime += dclock();
 	if(status != QIO_SUCCESS){
 	  node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
 	} 
-	clear_r_array_field(j_mu[j], NMU);
-	wtime += dclock();
       } /* j */
     } /* if write */
   } /* jrand */
@@ -969,6 +992,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
   destroy_v_field(gr0); gr0 = NULL;
 } /* f_meas_current_multi_eig */
 
+/************************************************************************/
 /* Entry point for multiple masses with iterated single-mass inverter.
    Designed for use with deflation or eigcg */
 
@@ -1045,6 +1069,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
 	    for(j = 0; j < n_masses; j++){
 	      
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
+	      clear_v_field(M_inv_gr);
 	      mat_invert_uml_field( gr, M_inv_gr, qic, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
@@ -1254,7 +1279,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
   destroy_v_field(gr_mu); gr_mu = NULL;
   destroy_v_field(gr); gr = NULL;
   destroy_v_field(gr0); gr0 = NULL;
-}
+} /* f_meas_current_multi_diff */
 
 /* Entry point for multiple masses.  Uses the multimass inverter */
 
@@ -1379,7 +1404,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
   destroy_v_field(gr_mu); gr_mu = NULL;
   destroy_v_field(gr); gr = NULL;
   destroy_v_field(gr0); gr0 = NULL;
-}
+} /* f_meas_current_multi */
 
 #endif
 
