@@ -473,8 +473,8 @@ static void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
 
 /*****************************************************************************/
 int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance, 
-	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int Kiters ){
+		    Real RelTol, int Nvecs, int MaxIter, 
+		    int Restart, int Kiters, int init ){
 
   int total_iters=0 ;
   int j;
@@ -513,11 +513,14 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
     MeigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
   }
 
-  /* Initiallize all the eigenvectors to a random vector */
+  /* If init is true, initiallize all the eigenvectors to a random
+     vector. Otherwise, start from the eigenpairs we are given.*/
   for(j=0;j<Nvecs;j++) {
     grad[j] = 1.0e+10 ;
-    grsource_plain_field( eigVec[j], parity);
-    eigVal[j] = 1.0e+16 ;
+    if(init){
+      grsource_plain_field( eigVec[j], parity);
+      eigVal[j] = 1.0e+16 ;
+    }
   }
 
 #ifdef EIGTIME
@@ -612,7 +615,7 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   node0_printf("BEGIN RESULTS\n");
   for(i=0;i<Nvecs;i++){
-    node0_printf("Eigenvalue(%i) = %g +/- %8e\t cvg? %d  \n",
+    node0_printf("Eigenvalue(%i) = %.16g +/- %8e\t cvg? %d  \n",
 		 i,eigVal[i],err[i],converged[i]);
   }
 
