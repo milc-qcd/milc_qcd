@@ -307,13 +307,13 @@ ckpt1_2v5::
 v5_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= v5_to_scidac" \
 	"DEFINES= -DNO_GAUGE_FIELD" \
-	"EXTRA_OBJECTS=  v5_to_scidac.o \
+	"EXTRA_OBJECTS= ${G_OBJECTS} v5_to_scidac.o \
 	gauge_info_dummy.o"
 
 scidac_2v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DNO_GAUGE_FIELD" \
-	"EXTRA_OBJECTS=  scidac_to_v5.o \
+	"EXTRA_OBJECTS= ${G_OBJECTS} scidac_to_v5.o \
 	gauge_info_scidac.o"
 
 
