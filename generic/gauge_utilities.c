@@ -2,6 +2,7 @@
 /* MIMD version 7 */
 /*--------------------------------------------------------------------*/
 #include "generic_includes.h"
+#include "../include/openmp_defs.h"
 
 /*--------------------------------------------------------------------*/
 /* A "G" type field has four su3_matrices per site                    */
@@ -30,11 +31,11 @@ su3_matrix * create_G_from_site(void){
 
   t_links = create_G();
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(dir)){
     FORALLUPDIR(dir){
       t_links[4*i+dir] = lattice[i].link[dir];
     }
-  }
+  } END_LOOP_OMP;
   return t_links;
 }
 
