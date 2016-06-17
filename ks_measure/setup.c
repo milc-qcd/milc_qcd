@@ -491,7 +491,7 @@ int readin(int prompt) {
   /* Do whatever is needed to get eigenpairs */
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &Nvecs_tot, eigVal, eigVec, 1);
-  if(status != 0) normal_exit(0);
+  if(status != 0) terminate(1);
 
   if(param.ks_eigen_startflag != FRESH){
     param.eigcgp.Nvecs = 0;
@@ -517,6 +517,7 @@ int readin(int prompt) {
   node0_printf("Reading %d eigenvectors\n", param.Nvecs); fflush(stdout);
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &param.Nvecs, eigVal, eigVec, 1);
+  if(status != 0)terminate(1);
 #endif
 
   ENDTIME("readin");
