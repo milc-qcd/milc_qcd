@@ -87,10 +87,12 @@ int main(int argc, char *argv[])
     /* compute eigenpairs if requested */
     //    if(param.ks_eigen_startflag == FRESH){
     int total_R_iters;
-    total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
-			     Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 
-			     param.ks_eigen_startflag == FRESH);
-    node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
+    if(param.ks_eigen_startflag == FRESH){
+      total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
+			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 
+			       param.ks_eigen_startflag == FRESH);
+      node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
+    }
 
 #if 0 /* If needed for debugging */
       /* (The Kalkreuter routine uses the random number generator to
@@ -130,6 +132,9 @@ int main(int argc, char *argv[])
     for(k = 0; k < param.num_set; k++){
       int num_pbp_masses = param.num_pbp_masses[k];
       int i0 = param.begin_pbp_masses[k];
+
+      initialize_site_prn_from_seed(iseed);  /* Reset random number seed for each set */
+
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i0].prec);
 
       if(num_pbp_masses == 1){
@@ -158,7 +163,11 @@ int main(int argc, char *argv[])
 #endif
       } else {
 #ifdef CURRENT_DISC
+	
+	initialize_site_prn_from_seed(iseed); /* Use the same random number sequence for all sets */
+
 #if EIGMODE == DEFLATION
+
 	if(param.truncate_diff[k])
 	  f_meas_current_multi_diff_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
 					 param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],

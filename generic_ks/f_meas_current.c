@@ -524,7 +524,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving sloppily for %d %d %d %d\n", ex, ey, ez, et);
 	      clear_v_field(M_inv_gr);
-	      mat_invert_uml_field( gr, M_inv_gr, qic_sloppy, mass[j], fn_multi[j]);
+	      mat_invert_uml_field( gr, M_inv_gr, qic_sloppy + j, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
 	      for(mu = 0; mu < NMU; mu++){
@@ -546,7 +546,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	      /* Next, continue to a "precise" solution from the same source */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving precisely for %d %d %d %d\n", ex, ey, ez, et);
-	      mat_invert_uml_field( gr, M_inv_gr, qic_precise, mass[j], fn_multi[j]);
+	      mat_invert_uml_field( gr, M_inv_gr, qic_precise + j, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
 	      for(mu = 0; mu < NMU; mu++){
@@ -687,7 +687,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving sloppily for %d %d %d %d\n", ex, ey, ez, et);
 	      clear_v_field(M_inv_gr);
-	      mat_invert_uml_field( gr, M_inv_gr, qic_sloppy, mass[j], fn_multi[j]);
+	      mat_invert_uml_field( gr, M_inv_gr, qic_sloppy + j, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
 	      for(mu = 0; mu < NMU; mu++){
@@ -708,7 +708,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
 	      /* Next, continue to a "precise" solution from the same source */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving precisely for %d %d %d %d\n", ex, ey, ez, et);
-	      mat_invert_uml_field( gr, M_inv_gr, qic_precise, mass[j], fn_multi[j]);
+	      mat_invert_uml_field( gr, M_inv_gr, qic_precise + j, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
 	      for(mu = 0; mu < NMU; mu++){

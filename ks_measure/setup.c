@@ -294,12 +294,6 @@ int readin(int prompt) {
       IF_OK status += get_i(stdin, prompt, "prec_pbp", 
 			    &prec_pbp );
 
-      /* error for staggered propagator conjugate gradient */
-      IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
-			    &error_for_propagator );
-      IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
-			    &rel_error_for_propagator );
-
 #ifdef CURRENT_DISC
       /* If we are taking the difference between a sloppy and a precise solve,
 	 get the sloppy solve parameters */
@@ -318,11 +312,6 @@ int readin(int prompt) {
 	IF_OK status += get_i(stdin, prompt, "prec_pbp_sloppy", 
 			      &prec_pbp_sloppy );
 	
-	/* error for staggered propagator conjugate gradient */
-	IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy", 
-			      &error_for_propagator_sloppy );
-	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator_sloppy", 
-			      &rel_error_for_propagator_sloppy );
       }
 #endif
 
@@ -354,6 +343,20 @@ int readin(int prompt) {
 #else
 	IF_OK param.ksp_pbp[npbp_masses].naik_term_epsilon = 0.0;
 #endif
+	/* error for staggered propagator conjugate gradient */
+	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
+			      &error_for_propagator );
+	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
+			      &rel_error_for_propagator );
+	
+	if(param.truncate_diff[k]){
+	  /* error for staggered propagator conjugate gradient */
+	  IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy", 
+				&error_for_propagator_sloppy );
+	  IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator_sloppy", 
+				&rel_error_for_propagator_sloppy );
+	}
+
 #ifdef CURRENT_DISC
 	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
 #endif
@@ -382,34 +385,34 @@ int readin(int prompt) {
 #ifdef CURRENT_DISC
       /* If we are taking the difference between a sloppy and a precise solve,
 	 get the sloppy solve parameters */
-      if(param.truncate_diff[k]){
-
-	/* maximum no. of conjugate gradient iterations */
-	param.qic_pbp_sloppy[npbp_masses].max = max_cg_iterations_sloppy;
-      
-	/* maximum no. of conjugate gradient restarts */
-	param.qic_pbp_sloppy[npbp_masses].nrestart = max_cg_restarts_sloppy;
-      
-	/* precision */
-	param.qic_pbp_sloppy[npbp_masses].prec = prec_pbp_sloppy;
-
-	/* errors */
-	param.qic_pbp_sloppy[npbp_masses].resid = error_for_propagator_sloppy;
-	param.qic_pbp_sloppy[npbp_masses].relresid = rel_error_for_propagator_sloppy;
-
-	param.qic_pbp_sloppy[npbp_masses].parity = EVENANDODD;
-	param.qic_pbp_sloppy[npbp_masses].min = 0;
-	param.qic_pbp_sloppy[npbp_masses].start_flag = 0;
-	param.qic_pbp_sloppy[npbp_masses].nsrc = 1;
-
-      }
-
+	if(param.truncate_diff[k]){
+	  
+	  /* maximum no. of conjugate gradient iterations */
+	  param.qic_pbp_sloppy[npbp_masses].max = max_cg_iterations_sloppy;
+	  
+	  /* maximum no. of conjugate gradient restarts */
+	  param.qic_pbp_sloppy[npbp_masses].nrestart = max_cg_restarts_sloppy;
+	  
+	  /* precision */
+	  param.qic_pbp_sloppy[npbp_masses].prec = prec_pbp_sloppy;
+	  
+	  /* errors */
+	  param.qic_pbp_sloppy[npbp_masses].resid = error_for_propagator_sloppy;
+	  param.qic_pbp_sloppy[npbp_masses].relresid = rel_error_for_propagator_sloppy;
+	  
+	  param.qic_pbp_sloppy[npbp_masses].parity = EVENANDODD;
+	  param.qic_pbp_sloppy[npbp_masses].min = 0;
+	  param.qic_pbp_sloppy[npbp_masses].start_flag = 0;
+	  param.qic_pbp_sloppy[npbp_masses].nsrc = 1;
+	  
+	}
+	
 #endif
-
+	
 	npbp_masses++;
       }
     }
-
+    
     /* End of input fields */
     if( status > 0)param.stopflag=1; else param.stopflag=0;
   } /* end if(this_node==0) */
