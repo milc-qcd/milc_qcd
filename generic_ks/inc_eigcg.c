@@ -18,8 +18,8 @@
 static const char *prec_label[2] = {"F", "D"};
 #endif
 
-#define CG_DEBUG
-#define EIGCG_DEBUG
+//#define CG_DEBUG
+//#define EIGCG_DEBUG
 
 /* The Fermilab relative residue */
 static Real my_relative_residue(su3_vector *p, su3_vector *q, int parity){
