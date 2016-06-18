@@ -259,7 +259,7 @@ f_meas_current_diff( int nrand, int nwrite, int thinning,
   } /* jrand */
 
   close_vector_current_file(outfile);
-  node0_printf("Time to write %d records = %e\n", nrand, wtime);
+  node0_printf("Time to write %d records = %e sed\n", nrand, wtime);
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;
@@ -366,7 +366,7 @@ f_meas_current( int nrand, int nwrite, int thinning, quark_invert_control *qic,
   } /* jrand */
 
   close_vector_current_file(outfile);
-  node0_printf("Time to write %d records = %e\n", nrand, wtime);
+  node0_printf("Time to write %d records = %e sec\n", nrand, wtime);
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;
@@ -431,7 +431,7 @@ static void project_out(su3_vector *vec, su3_vector **vector, int Num, int parit
   }
 
   ptime += dclock();
-  node0_printf("Time to project out low modes %g\n", ptime);
+  node0_printf("Time to project out low modes %g sec\n", ptime);
 }
 
 /************************************************************************/
@@ -595,7 +595,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
     destroy_r_array_field(j_mu[j], NMU);
   }
   
-  node0_printf("Time to write %d records for %d masses = %e\n", nrand/nwrite, n_masses, wtime);
+  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;
@@ -757,7 +757,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
     destroy_r_array_field(j_mu[j], NMU);
   }
   
-  node0_printf("Time to write %d records for %d masses = %e\n", nrand/nwrite, n_masses, wtime);
+  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;
@@ -843,7 +843,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     } /* j */
   } /* n */
   dtime += dclock();
-  node0_printf("Time for exact low modes %g\n", dtime);
+  node0_printf("Time for exact low modes %g sec\n", dtime);
   
   /* Loop over random sources */
   for(jrand = 0; jrand < nrand; jrand++){
@@ -984,7 +984,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     destroy_r_array_field(jlow_mu[j], NMU);
   }
   
-  node0_printf("Time to write %d records for %d masses = %e\n", nrand/nwrite, n_masses, wtime);
+  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;
@@ -1118,7 +1118,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
     destroy_r_array_field(j_mu[j], NMU);
   }
   
-  node0_printf("Time to write %d records for %d masses = %e\n", nrand/nwrite, n_masses, wtime);
+  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;
@@ -1274,7 +1274,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
     destroy_v_field(M_inv_gr[j]); M_inv_gr[j] = NULL;
   }
   
-  node0_printf("Time to write %d records for %d masses = %e\n", nrand/nwrite, n_masses, wtime);
+  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
   
   destroy_v_field(gr_mu); gr_mu = NULL;
   destroy_v_field(gr); gr = NULL;
@@ -1399,7 +1399,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
     destroy_v_field(M_inv_gr[j]); M_inv_gr[j] = NULL;
   }
 
-  node0_printf("Time to write %d records for %d masses = %e\n", nrand/nwrite, n_masses, wtime);
+  node0_printf("Time to write %d records for %d masses = %e sec\n", nrand/nwrite, n_masses, wtime);
 
   destroy_v_field(gr_mu); gr_mu = NULL;
   destroy_v_field(gr); gr = NULL;
