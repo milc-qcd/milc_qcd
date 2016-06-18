@@ -49,7 +49,6 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   char myname[] = "ks_multicg_offset_field";
   /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
   register int i;
-  register site * restrict s;
   int iteration;	/* counter for iterations */
   int num_offsets_now; /* number of offsets still being worked on */
   double c1, c2, rsq, oldrsq, pkp;		/* pkp = cg_p.K.cg_p */

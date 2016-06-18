@@ -298,6 +298,8 @@ int readin(int prompt) {
       /* If we are taking the difference between a sloppy and a precise solve,
 	 get the sloppy solve parameters */
       if(param.truncate_diff[k]){
+	Real error_for_propagator_sloppy, rel_error_for_propagator_sloppy;
+
 	/* The following parameters are common to the set and will be copied
 	   to each member */
 	
@@ -349,6 +351,7 @@ int readin(int prompt) {
 	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
 			      &rel_error_for_propagator );
 	
+#ifdef CURRENT_DISC
 	if(param.truncate_diff[k]){
 	  /* error for staggered propagator conjugate gradient */
 	  IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy", 
@@ -357,7 +360,6 @@ int readin(int prompt) {
 				&rel_error_for_propagator_sloppy );
 	}
 
-#ifdef CURRENT_DISC
 	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
 #endif
 
