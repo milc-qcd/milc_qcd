@@ -118,6 +118,8 @@ void
 initialize_site_prn_from_seed(int iseed){
   int x, y, z, t, i;
 
+  node0_printf("WARNING!!: Resetting random seed\n");
+
   for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
 	  if(node_number(x,y,z,t)==mynode()){
 	    i=node_index(x,y,z,t);
