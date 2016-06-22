@@ -880,7 +880,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving for %d %d %d %d mass %g\n", ex, ey, ez, et, mass[j]);
 	      clear_v_field(M_inv_gr);
-	      mat_invert_uml_field( gr, M_inv_gr, qic, mass[j], fn_multi[j]);
+	      mat_invert_uml_field( gr, M_inv_gr, qic + j, mass[j], fn_multi[j]);
 	      
 #if 0
 	      /* DEBUG */
@@ -1070,7 +1070,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
 	      
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      clear_v_field(M_inv_gr);
-	      mat_invert_uml_field( gr, M_inv_gr, qic, mass[j], fn_multi[j]);
+	      mat_invert_uml_field( gr, M_inv_gr, qic + j, mass[j], fn_multi[j]);
 	      
 	      /* Apply current in various directions at the sink */
 	      for(mu = 0; mu < NMU; mu++){
