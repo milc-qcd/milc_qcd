@@ -116,20 +116,23 @@ int readin(int prompt) {
     printf("\n\n");
     status=0;
 
-    IF_OK status += get_i(stdin, prompt, "number_of_random_sources",
-			  &param.nrand);
+    IF_OK status += get_i(stdin, prompt, "number_of_sloppy_random_sources",
+			  &param.nrand_sloppy);
+    IF_OK status += get_i(stdin, prompt, "number_of_diff_random_sources",
+			  &param.nrand_diff);
 
-   if(param.nrand < 2){
-      fprintf(stderr, "ERROR: need more than 1 random source to compute correlations\n");
-      status++;
-    }
+//   if(param.nrand < 2){
+//      fprintf(stderr, "ERROR: need more than 1 random source to compute correlations\n");
+//      status++;
+//    }
 
     IF_OK status += get_i(stdin, prompt, "number_of_flavors",
 			  &param.nflav);
 
     for(jflav = 0; jflav < param.nflav; jflav++){
       IF_OK status += get_f(stdin, prompt, "charge", &param.charges[jflav]);
-      IF_OK status += get_s(stdin, prompt, "file", param.fname[jflav]);
+      IF_OK status += get_s(stdin, prompt, "file_sloppy", param.fname_sloppy[jflav]);
+      IF_OK status += get_s(stdin, prompt, "file_diff", param.fname_diff[jflav]);
     }
 
     IF_OK status += get_s(stdin, prompt, "save_corr", param.corrfile);

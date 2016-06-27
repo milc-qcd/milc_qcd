@@ -28,11 +28,21 @@ open_corr_file(void){
   fprintf(fp,"JobID:                        %s\n",param.job_id);
   fprintf(fp,"date:                         \"%s UTC\"\n",utc_date_time);
   fprintf(fp,"lattice_size:                 %d,%d,%d,%d\n", nx, ny, nz, nt);
-  fprintf(fp,"random_sources:               %d\n", param.nrand);
-  fprintf(fp,"files:                        [\n");
+  fprintf(fp,"random_sources_sloppy:        %d\n", param.nrand_sloppy);
+  fprintf(fp,"random_sources_diff:          %d\n", param.nrand_diff);
+  fprintf(fp,"files_sloppy:                 [\n");
   for(jflav = 0; jflav < param.nflav; jflav++){
     fprintf(fp,"{ charge: %g , mass: %g , file: %s }", 
-	    param.charges[jflav], param.mass[jflav], param.fname[jflav]);
+	    param.charges[jflav], param.mass[jflav], param.fname_sloppy[jflav]);
+    if(jflav < param.nflav-1)fprintf(fp,",");
+    fprintf(fp,"\n");
+  }
+  fprintf(fp,"]\n");
+
+  fprintf(fp,"files_diff:                 [\n");
+  for(jflav = 0; jflav < param.nflav; jflav++){
+    fprintf(fp,"{ charge: %g , mass: %g , file: %s }", 
+	    param.charges[jflav], param.mass[jflav], param.fname_diff[jflav]);
     if(jflav < param.nflav-1)fprintf(fp,",");
     fprintf(fp,"\n");
   }
@@ -93,7 +103,7 @@ bin2r(int k){
 #endif
 
 void
-print_result(Real *q, int nrand){
+print_result(Real *q){
   double rhovsr[MAXBIN];
   int nvsr[MAXBIN];
   double rvsr[MAXBIN];
@@ -143,7 +153,8 @@ print_result(Real *q, int nrand){
 	  g_doublesum(&myq);
 
 	  if(this_node == 0)
-	    if(r <= RMAX){
+	    //	    if(r <= RMAX){
+	    if(r <= RMAX && x%2==0 && y%2==0 && z%2==0 && t%2==0){
 	      fprintf(fp, "%5d %7.3f %15.8e %2d %2d %2d %2d \n",
 		      mult,r,myq,x,y,z,t);
 	      totmult += mult;
@@ -153,10 +164,14 @@ print_result(Real *q, int nrand){
 
   /* Binned output for r > RMAX */
   
-  for(x = 0; x < nx; x++)
-    for(y = 0; y < ny; y++)
-      for(z = 0; z < nz; z++)
-	for(t = 0; t < nt; t++){
+//  for(x = 0; x < nx; x++)
+//    for(y = 0; y < ny; y++)
+//      for(z = 0; z < nz; z++)
+//	for(t = 0; t < nt; t++){
+  for(x = 0; x < nx; x+=2)
+    for(y = 0; y < ny; y+=2)
+      for(z = 0; z < nz; z+=2)
+	for(t = 0; t < nt; t+=2){
 	  if(node_number(x,y,z,t) == this_node){
 	    r = radius(x,y,z,t);
 	    if(r > RMAX){

@@ -33,8 +33,10 @@ typedef struct {
 
   /*  REPEATING BLOCK */
   int nflav;
-  int nrand;           
-  char fname[MAXFLAV][MAXFILENAME];
+  int nrand_sloppy;           
+  int nrand_diff;           
+  char fname_sloppy[MAXFLAV][MAXFILENAME];
+  char fname_diff[MAXFLAV][MAXFILENAME];
   char corrfile[MAXFILENAME];
   Real charges[MAXFLAV];
   Real mass[MAXFLAV];   /* Filled in later only on node 0 */
