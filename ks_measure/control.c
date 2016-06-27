@@ -133,8 +133,6 @@ int main(int argc, char *argv[])
       int num_pbp_masses = param.num_pbp_masses[k];
       int i0 = param.begin_pbp_masses[k];
 
-      //      initialize_site_prn_from_seed(iseed);  /* Reset random number seed for each set */
-
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i0].prec);
 
       if(num_pbp_masses == 1){
@@ -164,7 +162,7 @@ int main(int argc, char *argv[])
       } else {
 #ifdef CURRENT_DISC
 	
-	initialize_site_prn_from_seed(iseed); /* Use the same random number sequence for all sets */
+	// initialize_site_prn_from_seed(iseed); /* Use the same random number sequence for all sets */
 
 #if EIGMODE == DEFLATION
 
