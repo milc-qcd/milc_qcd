@@ -125,7 +125,7 @@ write_vector_current_record(QIO_Writer *outfile, int jrand, int nwrite, Real mas
   QIO_String *recxml = QIO_string_create();
   char recinfo[NRECINFO];
 
-  snprintf(recinfo, NRECINFO, "source index %d mass %g", jrand, mass);
+  snprintf(recinfo, NRECINFO, "source index %d mass %g", jrand/nwrite, mass);
   QIO_string_set(recxml, recinfo);
   if(PRECISION == 1)
     status = write_F_R_from_field(outfile, recxml, j_mu, NMU);
