@@ -74,8 +74,8 @@ int ks_multicg_offset_field_gpu(
       } END_LOOP;
     }
 
-  dtimec += dclock();
 #ifdef CGTIME
+  dtimec += dclock();
   if(this_node==0){
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
 	   dtimec, prec_label[PRECISION-1], qic->final_iters, 
