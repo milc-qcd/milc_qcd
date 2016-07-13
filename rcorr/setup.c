@@ -120,14 +120,13 @@ int readin(int prompt) {
 			  &param.nrand_sloppy);
     IF_OK status += get_i(stdin, prompt, "number_of_diff_random_sources",
 			  &param.nrand_diff);
+    IF_OK status += get_i(stdin, prompt, "number_of_random_block_sizes",
+			  &param.nblock);
+    for(int i = 0; i < param.nblock; i++){
+      IF_OK status += get_i(stdin, prompt, "block_size", &param.block_size[i]);
+    }
 
-//   if(param.nrand < 2){
-//      fprintf(stderr, "ERROR: need more than 1 random source to compute correlations\n");
-//      status++;
-//    }
-
-    IF_OK status += get_i(stdin, prompt, "number_of_flavors",
-			  &param.nflav);
+    IF_OK status += get_i(stdin, prompt, "number_of_flavors", &param.nflav);
 
     for(jflav = 0; jflav < param.nflav; jflav++){
       IF_OK status += get_f(stdin, prompt, "charge", &param.charges[jflav]);

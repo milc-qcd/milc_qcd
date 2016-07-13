@@ -9,13 +9,28 @@
 #include "rcorr_includes.h"
 
 static void
+sum_c_field_mask(complex *dest, Real *src, Real wt, int count){
+  int i, j;
+  site *s;
+
+  FORALLSITES(i,s){
+    if(s->x%2==0 && s->y%2==0 && s->z%2==0 && s->t%2==0){
+      for(j = 0; j < count; j++){
+	dest[count*i+j].real += src[count*i+j]*wt;
+      }
+    }
+  }
+}
+
+static void
 sum_c_field(complex *dest, Real *src, Real wt, int count){
   int i, j;
+  site *s;
 
-  FORALLFIELDSITES(i){
+  FOREVENFIELDSITES(i){
     for(j = 0; j < count; j++){
       dest[count*i+j].real += src[count*i+j]*wt;
-    }    
+    }
   }
 }
 
@@ -23,7 +38,7 @@ sum_c_field(complex *dest, Real *src, Real wt, int count){
 //accumulate_current_density(char *filename, complex *qin[], 
 //			   Real charge, Real *mass, int nrand)
 void 
-accumulate_current_density(char *filename, complex *qin, 
+accumulate_current_density(char *filename, complex *qin[], 
 			   Real charge, Real *mass, int nrand)
 {
   QIO_Reader *infile;
@@ -53,8 +68,9 @@ accumulate_current_density(char *filename, complex *qin,
       terminate(1);
     }
 
-    //    sum_c_field(qin[k], tmp, charge, NMU);
-    sum_c_field(qin, tmp, charge, NMU);
+    /* Add in the new values, but only for even coordinates */
+    // sum_c_field_mask(qin[k], tmp, charge, NMU);
+    sum_c_field(qin[k], tmp, charge, NMU);
   }
   destroy_r_array_field(tmp, NMU);
   r_close_scidac_file(infile);

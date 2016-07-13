@@ -505,7 +505,8 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 #endif
     
     /* Iterate over displacements within a d^4 cube. Use even displacements only */
-    for(ex=0;ex<d;ex+=2)for(ey=0;ey<d;ey+=2)for(ez=0;ez<d;ez+=2)for(et=0;et<d;et+=2){
+    //    for(ex=0;ex<d;ex+=2)for(ey=0;ey<d;ey+=2)for(ez=0;ez<d;ez+=2)for(et=0;et<d;et+=2){
+    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 	      
       // Can't do this now that we are doing deflation.
       // We would need to rephase the eigenvectors
@@ -837,7 +838,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
         FOREVENFIELDSITES(i){
           complex z;
           z = su3_dot( eigVec[n] + i, gr_mu + i);
-          jlow_mu[j][NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass[j]*mass[j]);
+	  jlow_mu[j][NMU*i + mu] += -z.imag/(eigVal[n]+4.0*mass[j]*mass[j]);
         } /* i */
       } /* mu */
     } /* j */
@@ -862,7 +863,8 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     //    }
     
     /* Iterate over displacements within a d^4 cube. Use even displacements only */
-    for(ex=0;ex<d;ex+=2)for(ey=0;ey<d;ey+=2)for(ez=0;ez<d;ez+=2)for(et=0;et<d;et+=2){
+    // for(ex=0;ex<d;ex+=2)for(ey=0;ey<d;ey+=2)for(ez=0;ez<d;ez+=2)for(et=0;et<d;et+=2){
+    for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
       // Can't do this now that we are doing deflation.
       // We would need to rephase the eigenvectors
@@ -1374,7 +1376,6 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
 		FORALLFIELDSITES(i){
 		  complex cc = su3_dot( gr+i, gr_mu+i );
 		  j_mu[j][NMU*i + mu] += cc.imag;
-		}
 	      } /* mu */
 	    } /* j */
 	  } /* ex, ey, ez, et */
