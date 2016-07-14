@@ -185,7 +185,7 @@ f_meas_current_diff( int nrand, int nwrite, int thinning,
     /* Iterate over 8 even displacements within a d^4 cube */
     for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
-	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
+	      //r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
 	    /* Apply source thinning */
 	    copy_v_field(gr, gr0);
@@ -314,7 +314,7 @@ f_meas_current( int nrand, int nwrite, int thinning, quark_invert_control *qic,
     /* Iterate over displacements within a d^4 cube */
     for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
-	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
+	      //r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
 	    /* Apply source thinning */
 	    copy_v_field(gr, gr0);
@@ -505,7 +505,6 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 #endif
     
     /* Iterate over displacements within a d^4 cube. Use even displacements only */
-    //    for(ex=0;ex<d;ex+=2)for(ey=0;ey<d;ey+=2)for(ez=0;ez<d;ez+=2)for(et=0;et<d;et+=2){
     for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 	      
       // Can't do this now that we are doing deflation.
@@ -676,7 +675,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
     /* Iterate over displacements within a d^4 cube */
     for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
-	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
+	      //r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
 	    /* Apply source thinning */
 	    copy_v_field(gr, gr0);
@@ -863,7 +862,6 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     //    }
     
     /* Iterate over displacements within a d^4 cube. Use even displacements only */
-    // for(ex=0;ex<d;ex+=2)for(ey=0;ey<d;ey+=2)for(ez=0;ez<d;ez+=2)for(et=0;et<d;et+=2){
     for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
       // Can't do this now that we are doing deflation.
@@ -1062,7 +1060,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
     /* Iterate over displacements within a d^4 cube */
     for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
-	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
+	      //r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
 	    /* Apply source thinning */
 	    copy_v_field(gr, gr0);
@@ -1201,7 +1199,7 @@ f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
     /* Iterate over displacements within a d^4 cube */
     for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
-	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
+	      //r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
 	    /* Apply source thinning */
 	    copy_v_field(gr, gr0);
@@ -1353,7 +1351,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
     /* Iterate over displacements within a d^4 cube */
     for(ex=0;ex<d;ex++)for(ey=0;ey<d;ey++)for(ez=0;ez<d;ez++)for(et=0;et<d;et++)if((ex+ey+ez+et)%2==0){
 
-	    r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
+	      // r_offset[0] = ex; r_offset[1] = ey; r_offset[2] = ez; r_offset[3] = et;
 
 	    /* Apply source thinning */
 	    copy_v_field(gr, gr0);
@@ -1376,6 +1374,7 @@ f_meas_current_multi( int n_masses, int nrand, int nwrite, int thinning,
 		FORALLFIELDSITES(i){
 		  complex cc = su3_dot( gr+i, gr_mu+i );
 		  j_mu[j][NMU*i + mu] += cc.imag;
+		}
 	      } /* mu */
 	    } /* j */
 	  } /* ex, ey, ez, et */
