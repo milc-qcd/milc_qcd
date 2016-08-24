@@ -5,6 +5,7 @@
 #include "generic_ks_includes.h"
 #include "../include/fn_links.h"
 #include <string.h>
+#include "../include/openmp_defs.h"
 
 #ifdef QCDOC
 #define special_alloc qcdoc_alloc
@@ -126,15 +127,17 @@ create_lngbacklinks(su3_matrix *lng){
 
   /* gather backwards longlinks */
   for( dir=XUP; dir<=TUP; dir ++){
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,default(shared)){
       tempmat1[i] = lng[dir+4*i];
     }
+    END_LOOP_OMP;
     tag[dir] = start_gather_field( tempmat1,
       sizeof(su3_matrix), OPP_3_DIR(DIR3(dir)), EVENANDODD, gen_pt[dir] );
     wait_gather( tag[dir] );
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,default(shared)){
       su3_adjoint( (su3_matrix *)gen_pt[dir][i], lngback + dir + 4*i );
     }
+    END_LOOP_OMP;
     cleanup_gather( tag[dir] );
   }
 
@@ -171,16 +174,18 @@ create_fatbacklinks(su3_matrix *fat){
 
   /* gather backwards fatlinks */
   for( dir=XUP; dir<=TUP; dir ++){
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,default(shared)){
       tempmat1[i] = fat[dir+4*i];
     }
+    END_LOOP_OMP;
     tag[dir] = start_gather_field( tempmat1,
       sizeof(su3_matrix), OPP_DIR(dir), EVENANDODD, gen_pt[dir] );
     wait_gather( tag[dir] );
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,default(shared)){
       su3_adjoint( (su3_matrix *)gen_pt[dir][i],
       fatback + dir + 4*i );
     }
+    END_LOOP_OMP;
     cleanup_gather( tag[dir] );
   }
 
@@ -303,7 +308,7 @@ copy_fn(fn_links_t *fn_src, fn_links_t *fn_dst){
 
   if(fn_src == fn_dst)return;
 
-  FORALLFIELDSITES(i) {
+  FORALLFIELDSITES_OMP(i,private(dir)) {
     for(dir=XUP;dir<=TUP;dir++) {
       fatdst[4*i + dir] = fatsrc[4*i + dir];
       lngdst[4*i + dir] = lngsrc[4*i + dir];
@@ -313,6 +318,7 @@ copy_fn(fn_links_t *fn_src, fn_links_t *fn_dst){
 	lngbackdst[4*i + dir] = lngbacksrc[4*i + dir];
     }
   }
+  END_LOOP_OMP;
 }
 
 /* Multipy by scalar: fndst = fnsrc * s.  OK to do this in place. */
@@ -331,7 +337,7 @@ scalar_mult_fn(fn_links_t *fn_src, Real s, fn_links_t *fn_dst){
   su3_matrix *fatbackdst = get_fatbacklinks(fn_dst);
   su3_matrix *lngbackdst = get_lngbacklinks(fn_dst);
 
-  FORALLFIELDSITES(i) {
+  FORALLFIELDSITES_OMP(i,private(dir)) {
     for(dir=XUP;dir<=TUP;dir++) {
       scalar_mult_su3_matrix( fatsrc + 4*i + dir, s, fatdst + 4*i + dir );
       scalar_mult_su3_matrix( lngsrc + 4*i + dir, s, lngdst + 4*i + dir );
@@ -341,6 +347,7 @@ scalar_mult_fn(fn_links_t *fn_src, Real s, fn_links_t *fn_dst){
 	scalar_mult_su3_matrix( lngbacksrc + 4*i + dir, s, lngbackdst + 4*i + dir );
     }
   }
+  END_LOOP_OMP;
 }
 
 /* Add fnC = fnA + fnB */
@@ -364,7 +371,7 @@ add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
   su3_matrix *fatbackC = get_fatbacklinks(fn_C);
   su3_matrix *lngbackC = get_lngbacklinks(fn_C);
 
-  FORALLFIELDSITES(i) {
+  FORALLFIELDSITES_OMP(i,private(dir)) {
     for(dir=XUP;dir<=TUP;dir++) {
       add_su3_matrix( fatA + 4*i + dir, fatB + 4*i + dir, fatC + 4*i + dir );
       add_su3_matrix( lngA + 4*i + dir, lngB + 4*i + dir, lngC + 4*i + dir );
@@ -374,5 +381,6 @@ add_fn(fn_links_t *fn_A, fn_links_t *fn_B, fn_links_t *fn_C){
 	add_su3_matrix( lngbackA + 4*i + dir, lngbackB + 4*i + dir, lngbackC + 4*i + dir );
     }
   }
+  END_LOOP_OMP;
 }
 
