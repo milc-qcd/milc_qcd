@@ -17,6 +17,7 @@
 #include "ks_measure_includes.h"
 #include <string.h>
 #include <unistd.h>
+extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #include "params.h"
 
 /* Forward declarations */

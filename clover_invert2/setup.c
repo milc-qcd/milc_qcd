@@ -57,6 +57,7 @@
 #include "quark_action.h"
 #include <string.h>
 #include <unistd.h>
+extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 static int initial_set(void);
 static void third_neighbor(int, int, int, int, int *, int, int *, int *, int *, int *);
 static void make_3n_gathers();
