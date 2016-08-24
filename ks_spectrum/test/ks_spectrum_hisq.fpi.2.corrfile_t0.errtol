@@ -29,14 +29,14 @@ momentum: p000
 spin_taste_sink: pion5
 correlator_key: POINT_KAON_5_r_r_d_d_m0.005_m0.005_p000
 ...
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
+0 2e-06 3e-22
+0 2e-06 3e-23
+0 2e-06 6e-23
+0 2e-06 2e-23
+0 2e-06 2e-23
+0 2e-06 4e-24
+0 2e-06 3e-23
+0 2e-06 1e-22
 ---
 JobID: 203696.kaon2.fnal.gov
 date: XXX XXX XXX XXX XXX UTC"
@@ -63,8 +63,8 @@ quark_source_ncolor: 0
 quark_source_mom: 0 0 0
 quark_source_label: r
 quark_sink_label: EO
-quark_sink_ops:               [
-{ operation:                  even_and_odd_wall
+quark_sink_ops: [
+{ operation: even_and_odd_wall
 }
 ]
 quark_mass: "0.005"
@@ -76,14 +76,14 @@ momentum: p000
 spin_taste_sink: pion5
 correlator_key: WALL_KAON_5_r_r_EO_EO_m0.005_m0.005_p000
 ...
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
+0 2e-06 3e-20
+0 2e-06 7e-20
+0 2e-06 2e-20
+0 2e-06 2e-20
+0 2e-06 4e-21
+0 2e-06 6e-20
+0 2e-06 5e-21
+0 2e-06 4e-20
 ---
 JobID: 203696.kaon2.fnal.gov
 date: XXX XXX XXX XXX XXX UTC"
@@ -111,14 +111,14 @@ momentum: p000
 spin_taste_sink: pion5
 correlator_key: POINT_KAON_5_q_q_d_d_m0.005_m0.005_p000
 ...
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
+0 2e-06 1e-20
+0 2e-06 4e-22
+0 2e-06 1e-21
+0 2e-06 3e-21
+0 2e-06 2e-21
+0 2e-06 1e-21
+0 2e-06 2e-21
+0 2e-06 1e-21
 ---
 JobID: 203696.kaon2.fnal.gov
 date: XXX XXX XXX XXX XXX UTC"
@@ -141,8 +141,8 @@ quark_source_subset: full
 quark_source_t0: 0
 quark_source_label: q
 quark_sink_label: EO
-quark_sink_ops:               [
-{ operation:                  even_and_odd_wall
+quark_sink_ops: [
+{ operation: even_and_odd_wall
 }
 ]
 quark_mass: "0.005"
@@ -154,14 +154,14 @@ momentum: p000
 spin_taste_sink: pion5
 correlator_key: WALL_KAON_5_q_q_EO_EO_m0.005_m0.005_p000
 ...
-0 5e-06 0.000000e+00
-0 1e-05 0.000000e+00
-0 2e-06 0.000000e+00
-0 8e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 8e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 1e-05 0.000000e+00
+0 5e-06 9e-18
+0 1e-05 8e-17
+0 2e-06 3e-20
+0 8e-06 2e-18
+0 2e-06 1e-17
+0 8e-06 5e-17
+0 2e-06 3e-18
+0 1e-05 8e-17
 ---
 JobID: 203696.kaon2.fnal.gov
 date: XXX XXX XXX XXX XXX UTC"
@@ -227,8 +227,8 @@ quark_source_ncolor: 0
 quark_source_mom: 0 0 0
 quark_source_label: r
 quark_sink_label: EO
-quark_sink_ops:               [
-{ operation:                  even_and_odd_wall
+quark_sink_ops: [
+{ operation: even_and_odd_wall
 }
 ]
 quark_mass: "0.007"
@@ -305,8 +305,8 @@ quark_source_subset: full
 quark_source_t0: 0
 quark_source_label: q
 quark_sink_label: EO
-quark_sink_ops:               [
-{ operation:                  even_and_odd_wall
+quark_sink_ops: [
+{ operation: even_and_odd_wall
 }
 ]
 quark_mass: "0.007"
@@ -357,14 +357,14 @@ momentum: p000
 spin_taste_sink: pion5
 correlator_key: POINT_KAON_5_r_r_d_d_m0.007_m0.007_p000
 ...
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
+0 2e-06 2e-22
+0 2e-06 1e-22
+0 2e-06 1e-22
+0 2e-06 1e-23
+0 2e-06 1e-25
+0 2e-06 3e-23
+0 2e-06 3e-23
+0 2e-06 6e-23
 ---
 JobID: 203696.kaon2.fnal.gov
 date: XXX XXX XXX XXX XXX UTC"
@@ -391,8 +391,8 @@ quark_source_ncolor: 0
 quark_source_mom: 0 0 0
 quark_source_label: r
 quark_sink_label: EO
-quark_sink_ops:               [
-{ operation:                  even_and_odd_wall
+quark_sink_ops: [
+{ operation: even_and_odd_wall
 }
 ]
 quark_mass: "0.007"
@@ -404,14 +404,14 @@ momentum: p000
 spin_taste_sink: pion5
 correlator_key: WALL_KAON_5_r_r_EO_EO_m0.007_m0.007_p000
 ...
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
+0 2e-06 4e-21
+0 2e-06 9e-20
+0 2e-06 4e-20
+0 2e-06 1e-19
+0 2e-06 8e-21
+0 2e-06 2e-20
+0 2e-06 9e-21
+0 2e-06 3e-20
 ---
 JobID: 203696.kaon2.fnal.gov
 date: XXX XXX XXX XXX XXX UTC"
@@ -439,14 +439,14 @@ momentum: p000
 spin_taste_sink: pion5
 correlator_key: POINT_KAON_5_q_q_d_d_m0.007_m0.007_p000
 ...
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 2e-06 0.000000e+00
+0 2e-06 4e-21
+0 2e-06 1e-22
+0 2e-06 2e-21
+0 2e-06 2e-21
+0 2e-06 2e-21
+0 2e-06 4e-21
+0 2e-06 4e-22
+0 2e-06 1e-21
 ---
 JobID: 203696.kaon2.fnal.gov
 date: XXX XXX XXX XXX XXX UTC"
@@ -469,8 +469,8 @@ quark_source_subset: full
 quark_source_t0: 0
 quark_source_label: q
 quark_sink_label: EO
-quark_sink_ops:               [
-{ operation:                  even_and_odd_wall
+quark_sink_ops: [
+{ operation: even_and_odd_wall
 }
 ]
 quark_mass: "0.007"
@@ -482,11 +482,11 @@ momentum: p000
 spin_taste_sink: pion5
 correlator_key: WALL_KAON_5_q_q_EO_EO_m0.007_m0.007_p000
 ...
-0 5e-06 0.000000e+00
-0 1e-05 0.000000e+00
-0 2e-06 0.000000e+00
-0 8e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 8e-06 0.000000e+00
-0 2e-06 0.000000e+00
-0 1e-05 0.000000e+00
+0 5e-06 2e-17
+0 1e-05 1e-16
+0 2e-06 3e-18
+0 8e-06 2e-16
+0 2e-06 4e-18
+0 8e-06 1e-16
+0 2e-06 4e-19
+0 1e-05 1e-16
