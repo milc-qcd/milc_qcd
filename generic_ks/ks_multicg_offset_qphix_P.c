@@ -248,5 +248,6 @@ KS_MULTICG_OFFSET_FIELD(
     fflush(stdout);}
 #endif
 
+  total_iters += num_iters;
   return num_iters;
 }

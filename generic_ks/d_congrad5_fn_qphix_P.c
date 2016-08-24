@@ -446,7 +446,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
     fflush(stdout);
   }
 #endif
-  
+
   return iters;
 }
 
