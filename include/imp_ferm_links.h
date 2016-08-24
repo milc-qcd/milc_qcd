@@ -263,10 +263,10 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 		 int parity, imp_ferm_links_t *fn);
 int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 		    Real RelTol, int Nvecs, int MaxIter, 
-		    int Restart, int iters, int init );
+		    int Restart, int Kiters, int init );
 int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 		      Real RelTol, int Nvecs, int MaxIter, 
-		      int Restart, int iters, int init );
+		      int Restart, int Kiters, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
 		     imp_ferm_links_t *fn );
 void cleanup_Matrix();
