@@ -70,6 +70,10 @@
 LAUNCH =
 LAUNCH2 = 
 
+# Cori
+#LAUNCH = srun -n 16 -c 2
+#LAUNCH2 =
+# SFX = .hsw
 
 #
 .SUFFIXES: .test-diff .test-out
