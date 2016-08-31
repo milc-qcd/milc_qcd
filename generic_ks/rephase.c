@@ -15,7 +15,7 @@
    that all lattice dimensions are even, as they should be for
    staggered fermions! */
 static void
-hyp_coord(short h[], site *s, int r0[]){
+hyp_coord(short h[], const site *s, int r0[]){
   h[XUP] = (s->x - r0[XUP]) & 0x1;
   h[YUP] = (s->y - r0[YUP]) & 0x1;
   h[ZUP] = (s->z - r0[ZUP]) & 0x1;
@@ -34,7 +34,7 @@ hyp_coord(short h[], site *s, int r0[]){
 /*	   to give antiperiodic boundary conditions		*/
 
 static void
-alpha_offset(short h[], short phase[], site *sit, int r0[]){
+alpha_offset(short h[], short phase[], const site *sit, int r0[]){
 
   hyp_coord(h, sit, r0);
 
@@ -128,10 +128,14 @@ void rephase( int flag ){
     terminate(1);
   }
   FORALLSITES_OMP(i,s,private(dir,j,k)){
+#pragma unroll
     for(dir=XUP;dir<=TUP;dir++){
-      for(j=0;j<3;j++)for(k=0;k<3;k++){
-	  s->link[dir].e[j][k].real *= s->phase[dir];
-	  s->link[dir].e[j][k].imag *= s->phase[dir];
+#pragma unroll
+      for(j=0;j<3;j++)
+#pragma unroll
+	for(k=0;k<3;k++){
+	  lattice[i].link[dir].e[j][k].real *= lattice[i].phase[dir];
+	  lattice[i].link[dir].e[j][k].imag *= lattice[i].phase[dir];
 	}
     }
   } END_LOOP_OMP;
@@ -146,7 +150,8 @@ void rephase_field_offset( su3_matrix *internal_links, int flag,
 			   int* status_now, int r0[] ){
   register int i,j,k,dir;
   register site *s;
-  short h[4], p[4];
+  short h[4] __attribute__ ((aligned (8)));
+  short p[4] __attribute__ ((aligned (8)));
 
   /* Check to make sure we are going in expected direction */
   if( status_now != NULL)
