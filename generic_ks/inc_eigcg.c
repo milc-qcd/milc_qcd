@@ -343,7 +343,7 @@ void calc_eigresid(int Nvecs, double *resid, double *norm, double *eigVal,
 
     dvec[2*j] = dzero;
     dvec[2*j + 1] = dzero;
-    FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:dvec[j], dvec[2*j + 1])){
+    FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:dvec[2*j], dvec[2*j + 1])){
       scalar_mult_sum_su3_vector(ttt+i, eigVec[j]+i, eigVal[j]);
       dvec[2*j] += magsq_su3vec(ttt+i);
       dvec[2*j + 1] += magsq_su3vec(eigVec[j]+i);
