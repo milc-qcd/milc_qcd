@@ -133,6 +133,27 @@ void site_coords(int coords[4],site *s){
   coords[3] = s->t;
 }
 
+static int layout_compatibility_checked = 0;
+
+static void check_layout_compatibility(void){
+  int i;
+  site *s;
+  int coords[4];
+
+  if(layout_compatibility_checked)return;
+
+  FORALLSITES_OMP(i,s,private(coords)){
+    site_coords(coords,s);
+    if(QPHIX_node_number_raw(coords) != this_node){
+      printf("ERROR on node(%d): incompatible QPHIX_node_number in layout\n", this_node);
+      terminate(1);
+    }
+  } END_LOOP_OMP;
+  layout_compatibility_checked = 1;
+  return;
+}
+
+
 /* Map MILC site links to raw order */
 /* Note that unlike QOP we want four contiguous SU(3) matrices per site */
 
@@ -146,14 +167,10 @@ create_qphix_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
   MILC_SRCTYPE *tmp; \
   raw = create_qphix_raw4_##P##_##T (); \
   if(raw == NULL)return NULL; \
+  check_layout_compatibility(); \
   FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j,dir,tmp)){	\
     site_coords(coords,s); \
-    if(QPHIX_node_number_raw(coords) != this_node){ \
-      printf("create_qphix_raw4_from_site: ERROR: incompatible layout\n"); \
-      status = 1; j = 0; /* Pick something safe */ \
-    } else { \
-      j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
-    } \
+    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
     FORALLUPDIR(dir){ \
       tmp = (MILC_SRCTYPE *)F_PT(s, src); \
       copy_milc_to_##P##_##T(raw + 4*j + dir, tmp + dir); \
@@ -180,14 +197,10 @@ create_qphix_raw4_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
   MILC_SRCTYPE *tmp; \
   raw = create_qphix_raw4_##P##_##T (); \
   if(raw == NULL)return NULL; \
+  check_layout_compatibility(); \
   FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j,dir,tmp)){	\
     site_coords(coords,s); \
-    if(QPHIX_node_number_raw(coords) != this_node){ \
-      printf("create_qphix_raw4_from_field: ERROR: incompatible layout\n"); \
-      status = 1; j = 0; /* Pick something safe */ \
-    } else { \
-      j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
-    } \
+    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
     FORALLUPDIR(dir){ \
       tmp = src + 4*i; \
       copy_milc_to_##P##_##T(raw + 4*j + dir, tmp + dir); \
@@ -213,14 +226,10 @@ create_qphix_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
   MILC_SRCTYPE *tmp; \
   raw = create_qphix_raw_##P##_##T(); \
   if(raw == NULL)return NULL; \
+  check_layout_compatibility(); \
   FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j,tmp)){	\
     site_coords(coords,s); \
-    if(QPHIX_node_number_raw(coords) != this_node){ \
-      printf("create_qphix_raw_from_site: ERROR: incompatible layout\n"); \
-      status = 1; j = 0; /* Pick something safe */ \
-    } else { \
-      j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
-    } \
+    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
     tmp = (MILC_SRCTYPE *)F_PT(s, src); \
     copy_milc_to_##P##_##T(raw + j, tmp); \
   } END_LOOP_OMP; \
@@ -243,14 +252,10 @@ create_qphix_raw_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
   RAWTYPE *raw; \
   raw = create_qphix_raw_##P##_##T(); \
   if(raw == NULL)return NULL; \
+  check_layout_compatibility(); \
   FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j)){	\
     site_coords(coords,s); \
-    if(QPHIX_node_number_raw(coords) != this_node){ \
-      printf("create_qphix_raw_from_field: ERROR: incompatible layout\n"); \
-      status = 1; j = 0; /* Pick something safe */ \
-    } else { \
-      j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
-    } \
+    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
     copy_milc_to_##P##_##T(raw + j, src + i); \
   } END_LOOP_OMP; \
   if(status == 1){ \
@@ -334,14 +339,10 @@ unload_qphix_raw4_##P##_##T##_to_site(field_offset dest, RAWTYPE *raw, \
   int i,j,dir,status=0;	 \
   site *s; \
   MILC_DSTTYPE *tmp; \
+  check_layout_compatibility(); \
   FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,dir,j,tmp)){	\
     site_coords(coords,s); \
-    if(QPHIX_node_number_raw(coords) != this_node){ \
-      printf("unload_qphix_raw4_to_site: ERROR: incompatible layout\n"); \
-      status = 1; j = 0; /* Pick something safe */ \
-    } else { \
-      j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
-    } \
+    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
     FORALLUPDIR(dir){ \
       tmp = (MILC_DSTTYPE *)F_PT(s, dest); \
       copy_##P##_##T##_to_milc(&tmp[dir], raw + 4*j + dir); \
@@ -360,14 +361,10 @@ unload_qphix_raw4_##P##_##T##_to_field(MILC_DSTTYPE *dest, RAWTYPE *raw, \
   int i,j,dir,status=0;	 \
   site *s; \
   MILC_DSTTYPE *tmp; \
+  check_layout_compatibility(); \
   FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j,dir,tmp)){	\
     site_coords(coords,s); \
-    if(QPHIX_node_number_raw(coords) != this_node){ \
-      printf("unload_qphix_raw4_to_field: ERROR: incompatible layout\n"); \
-      status = 1; j = 0; /* Pick something safe */ \
-    } else { \
-      j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
-    } \
+    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
     FORALLUPDIR(dir){ \
       tmp = dest + 4*i; \
       copy_##P##_##T##_to_milc(&tmp[dir], raw + 4*j + dir); \
@@ -383,14 +380,10 @@ unload_qphix_raw_##P##_##T##_to_site(field_offset dest, RAWTYPE *raw, \
   int coords[4]; \
   int i,j,status=0; \
   site *s; \
+  check_layout_compatibility(); \
   FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j)){	\
     site_coords(coords,s); \
-    if(QPHIX_node_number_raw(coords) != this_node){ \
-      printf("unload_qphix_raw_to_site: ERROR: incompatible layout\n"); \
-      status = 1; j = 0; /* Pick something safe */ \
-    } else { \
-      j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
-    } \
+    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
     copy_##P##_##T##_to_milc((MILC_DSTTYPE *)F_PT(s,dest), raw + j); \
   } END_LOOP_OMP; \
   if(status==1)terminate(1); \
@@ -403,14 +396,10 @@ unload_qphix_raw_##P##_##T##_to_field(MILC_DSTTYPE *dest, RAWTYPE *raw, \
   int coords[4]; \
   int i,j,status=0;  \
   site *s; \
+  check_layout_compatibility(); \
   FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j)){	\
     site_coords(coords,s); \
-    if(QPHIX_node_number_raw(coords) != this_node){ \
-      printf("unload_qphix_raw_V_to_field: ERROR: incompatible layout\n"); \
-      status = 1; j = 0; /* Pick something safe */ \
-    } else { \
-      j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
-    } \
+    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
     copy_##P##_##T##_to_milc(dest + i, raw + j); \
   } END_LOOP_OMP; \
   if(status==1)terminate(1); \
@@ -605,15 +594,11 @@ void map_milc_clov_to_qphix_raw_##P(MILCFLOAT *raw_clov, clover *milc_clov ){\
   site *s;\
   MILCFLOAT *r;\
 \
+  check_layout_compatibility(); \
   FORALLSITES_OMP(i,s,private(coords,j,c,r)){	\
 \
     site_coords(coords,s);\
-    if(QPHIX_node_number_raw(coords) != this_node){\
-      printf("map_milc_clov_to_qphix_raw: ERROR: QPHIX layout is incompatible with MILC layout\n");\
-      status = 1; j = 0; /* Pick something safe */ \
-    } else { \
-      j = QPHIX_node_index_raw_D(coords, QPHIX_EVENODD);\
-    }\
+    j = QPHIX_node_index_raw_D(coords, QPHIX_EVENODD);	\
     r = raw_clov + 72*j;\
 \
     for(c = 0; c < 3; c++){\
