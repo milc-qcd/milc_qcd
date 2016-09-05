@@ -131,6 +131,11 @@ DARCH = ${DQCDOC} ${DHAVE_QMP} ${DHAVE_QIO} ${DHAVE_QDP} ${DHAVE_QOP}
 
 ##### Targets:
 
+ifeq ($(strip ${MPP}),true)
+@echo WARNING!!: MPP is not supported with this code
+endif
+
+
 u1_g::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"EXTRA_OBJECTS= control.o momgauge.o" \
