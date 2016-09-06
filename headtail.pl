@@ -30,7 +30,7 @@ $patterna = shift(@ARGV);
 $patternb = shift(@ARGV);
 
 while(<STDIN>){
-    if(/$patterna/){$start = 1;print "Found $patterna \n";}
+    if(/$patterna/){$start = 1;}
     if($start){
 	print $_;
 	if(/$patternb/){
