@@ -1,4 +1,4 @@
-#! /usr/local/bin/perl
+#! /usr/bin/perl
 
 # headtail
 # C. DeTar 18 Oct 1997
@@ -30,12 +30,14 @@ $patterna = shift(@ARGV);
 $patternb = shift(@ARGV);
 
 while(<STDIN>){
-    if(/$patterna/){$start = 1;}
-    if($start){print $_;}
-    if(/$patternb/){
-	if($#ARGV < 0){exit;}
-	$start = 0;
-	$patterna = shift(@ARGV);
-	$patternb = shift(@ARGV);
+    if(/$patterna/){$start = 1;print "Found $patterna \n";}
+    if($start){
+	print $_;
+	if(/$patternb/){
+	    if($#ARGV < 0){exit;}
+	    $start = 0;
+	    $patterna = shift(@ARGV);
+	    $patternb = shift(@ARGV);
+	}
     }
 }
