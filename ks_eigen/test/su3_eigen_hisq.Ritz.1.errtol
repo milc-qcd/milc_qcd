@@ -4,10 +4,10 @@ Eigenvalue(1) = 0.0002 2e-08 2e-08
 Eigenvalue(2) = 0.0004 3e-07 3e-07
 Eigenvalue(3) = 0.0004 8e-07 8e-07
 Eigenvalue(4) = 0.0004 4e-09 2e-06
-Eigenvalue(5) = 0.0004 1e-06 1e-06
+Eigenvalue(5) = 0.0004 1e-06 2e-06
 Eigenvalue(6) = 0.0004 7e-07 7e-07
 Eigenvalue(7) = 0.0004 9e-06 9e-06
-Eigenvalue(8) = 0.0004 7e-07 7e-07
+Eigenvalue(8) = 0.0004 7e-07 2e-06
 Eigenvalue(9) = 0.0004 6e-07 3e-06
 Eigenvalue(10) = 0.0004 2e-07 3e-06
 Eigenvalue(11) = 0.0004 0.0002 0.0002
@@ -76,13 +76,13 @@ Chirality(7) -- even, odd, total: 0.0005 0.0006 0.0002
 Chirality(8) -- even, odd, total: 0.0002 0.0002 0.0002
 Chirality(9) -- even, odd, total: 0.0007 0.0007 0.0002
 Chirality(10) -- even, odd, total: 0.0002 0.0002 0.0002
-Chirality(11) -- even, odd, total: 0.0003 0.0002 0.0002
+Chirality(11) -- even, odd, total: 0.0003 0.0004 0.0002
 Chirality(12) -- even, odd, total: 0.0002 0.0002 0.0002
 Chirality(13) -- even, odd, total: 0.0009 0.0006 0.0002
 Chirality(14) -- even, odd, total: 0.6 0.6 0.0002
 Chirality(15) -- even, odd, total: 0.6 0.6 0.0002
 Chirality(16) -- even, odd, total: 0.8 0.8 0.0002
-Chirality(17) -- even, odd, total: 0.2 0.2 0.0002
+Chirality(17) -- even, odd, total: 0.5 0.5 0.0002
 Chirality(18) -- even, odd, total: 0.8 0.8 0.0002
 Chirality(19) -- even, odd, total: 0.4 0.4 0.0002
 Chirality(20) -- even, odd, total: 0.7 0.7 0.0002
@@ -91,7 +91,7 @@ Chirality(22) -- even, odd, total: 0.6 0.6 0.0002
 Chirality(23) -- even, odd, total: 0.2 0.2 0.0002
 Chirality(24) -- even, odd, total: 0.9 0.9 0.0002
 Chirality(25) -- even, odd, total: 0.4 0.4 0.0002
-Chirality(26) -- even, odd, total: 0.2 0.2 0.0002
+Chirality(26) -- even, odd, total: 0.4 0.4 0.0002
 Chirality(27) -- even, odd, total: 0.5 0.5 0.0002
 Chirality(28) -- even, odd, total: 0.5 0.5 0.0002
 Chirality(29) -- even, odd, total: 0.9 1 0.03
