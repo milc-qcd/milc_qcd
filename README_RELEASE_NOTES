@@ -38,6 +38,15 @@ for general instructions.
 
 Here are highlights of the changes
 
+For version 7.8.1
+
+Added support for QPhiX single and multimass staggered inversions
+Upgraded regression tests for ks_spectrum to allow QPhiX testing
+Added path product optimization by Rama Maladi and Steve Gottlieb
+Added improved QPhiX remapping
+More threading
+Restructured the top-level Makefile to provide variations for different architectures
+
 For version 7.8.0
 
 Added Hiroshi Ono's staggered CG deflation and eigcg support to ks_measure

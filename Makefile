@@ -302,8 +302,9 @@ endif
 # Utah physics and math Redhat-linux
 # LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
 
-# Utah physics and math Centos-linus
-# LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -lgfortran
+# Utah physics and math Centos-linux.  Must link with gfortran. 
+#LIBLAPACK = -L/usr/local/lib64 -llapack -lblas
+# LDLAPACK = gfortran
 
 # FNAL cluster (Jim's installation of ATLAS)
 #LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
@@ -436,12 +437,16 @@ endif
 #----------------------------------------------------------------------
 # 17. Linker (need the C++ linker for QUDA and QPHIX)
 
-ifeq ($(strip ${WANTQUDA}),true)
-  LD  = ${CXX}
-else ifeq ($(strip ${WANTQPHIX}),true)
-  LD  = ${CXX}
+ifeq ($(strip ${LDLAPACK}),)
+  ifeq ($(strip ${WANTQUDA}),true)
+    LD  = ${CXX}
+  else ifeq ($(strip ${WANTQPHIX}),true)
+    LD  = ${CXX}
+  else
+    LD  = ${CC}
+  endif
 else
-  LD  = ${CC}
+  LD = ${LDLAPACK}
 endif
 
 #----------------------------------------------------------------------
