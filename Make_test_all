@@ -16,33 +16,34 @@
 #DIRS = \
 #  arb_dirac_eigen \
 #  arb_dirac_invert \
-#  file_utilities \
 #  h_dibaryon \
 #  heavy \
 #  pw_nr_meson \
 #  schroed_pg \
-#   arb_overlap \
-#   clover_dynamical \
-#   clover_invert2 \
-#   ext_src \
-#   gauge_utilities \
-#   hvy_qpot \
-#   ks_imp_utilities \
-#   gluon_prop \
-#   ks_imp_rhmc \
-#   pure_gauge \
-#   schroed_cl_inv \
-#   smooth_inst \
-#   wilson_flow \
+#  wilson_static \
 
 DIRS = \
+   arb_overlap \
+   clover_dynamical \
+   clover_invert2 \
+   ext_src \
+   file_utilities \
+   gauge_utilities \
+   gluon_prop \
+   hvy_qpot \
    ks_eigen \
    ks_imp_dyn \
+   ks_imp_rhmc \
+   ks_imp_utilities \
    ks_measure \
    ks_spectrum \
+   pure_gauge \
+   schroed_cl_inv \
    schroed_ks_dyn \
+   smooth_inst \
    symanzik_sl32 \
    u1_gauge \
+   wilson_flow \
 
 
 all:
