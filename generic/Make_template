@@ -28,6 +28,9 @@ G_ALL = \
  gaugefix2.o \
  gauge_force_imp.o \
  gauge_force_imp_gpu.o \
+ gauge_force_symzk1_qphix.o \
+ gauge_force_symzk1_qphix_D.o \
+ gauge_force_symzk1_qphix_F.o \
  gauge_force_symzk1_qdp.o \
  gauge_force_symzk1_qop.o \
  gauge_force_symzk1_qop_milc.o \
@@ -158,6 +161,12 @@ gaugefix2.o: ../generic/gaugefix2.c
 gauge_force_imp.o: ../generic/gauge_force_imp.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_imp_gpu.o: ../generic/gauge_force_imp_gpu.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_symzk1_qphix.o: ../generic/gauge_force_symzk1_qphix.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_symzk1_qphix_D.o: ../generic/gauge_force_symzk1_qphix_D.c
+	${CC} -c ${CFLAGS} $<
+gauge_force_symzk1_qphix_F.o: ../generic/gauge_force_symzk1_qphix_F.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qdp.o: ../generic/gauge_force_symzk1_qdp.c
 	${CC} -c ${CFLAGS} $<

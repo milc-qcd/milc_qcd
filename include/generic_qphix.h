@@ -136,6 +136,17 @@ void unload_qphix_D_V_to_field(su3_vector *dest, QPHIX_D3_ColorVector* src,
 
 void destroy_qphix_raw4_D_G(dsu3_matrix *raw);
 
+QPHIX_F3_Force *create_qphix_F_F_from_site4(field_offset mom, int milc_parity);
+void unload_qphix_F_F_to_site4(field_offset mom_milc, QPHIX_F3_Force *mom, int milc_parity);
+
+QPHIX_D3_Force *create_qphix_D_F_from_site4(field_offset mom, int milc_parity);
+void unload_qphix_D_F_to_site4(field_offset mom_milc, QPHIX_D3_Force *mom, int milc_parity);
+
+QPHIX_F3_GaugeField *create_qphix_F_G_from_site4(field_offset links, int milc_parity);
+
+QPHIX_D3_GaugeField *create_qphix_D_G_from_site4(field_offset links, int milc_parity);
+
+
 /* gauge_force_imp_qphix.c */
 
 void imp_gauge_force_qphix ( Real eps, field_offset mom_off );

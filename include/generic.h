@@ -286,6 +286,9 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 /* gauge_force_imp_*.c */
 void imp_gauge_force_cpu( Real eps, field_offset mom_off );
 void imp_gauge_force_gpu( Real eps, field_offset mom_off );
+
+/* gauge_force_symzk1_qphix.c */
+
 void imp_gauge_force_qphix( Real eps, field_offset mom_off );
 
 #ifdef USE_GF_GPU

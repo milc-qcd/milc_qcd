@@ -157,9 +157,9 @@ static void check_layout_compatibility(void){
 /* Map MILC site links to raw order */
 /* Note that unlike QOP we want four contiguous SU(3) matrices per site */
 
-#define make_create_raw4_from_site(P, T, RAWTYPE, MILC_SRCTYPE) \
+#define make_create_raw4_from_site4(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE * \
-create_qphix_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
+create_qphix_raw4_##P##_##T##_from_site4(field_offset src, int milc_parity){ \
   int coords[4]; \
   int i,j,dir,status=0; \
   site *s; \
@@ -274,7 +274,7 @@ QPHIXTYPE * \
 create_qphix_##P##_##T##_from_site4(field_offset src, int milc_parity){ \
   RAWTYPE *raw; \
   QPHIXTYPE *qphix; \
-  raw = create_qphix_raw4_##P##_##T##_from_site(src, milc_parity); \
+  raw = create_qphix_raw4_##P##_##T##_from_site4(src, milc_parity); \
   if(raw == NULL)terminate(1); \
   qphix = QPHIX_##P##3_create_##T##_from_raw((MILCFLOAT *)raw, \
            milc2qphix_parity(milc_parity)); \
@@ -331,9 +331,9 @@ create_qphix_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
 /* Map raw links to MILC site structure */
 /* Note that unlike QOP we want four contiguous SU(3) matrices per site */
 
-#define make_unload_raw4_to_site(P, T, MILC_DSTTYPE, RAWTYPE) \
+#define make_unload_raw4_to_site4(P, T, MILC_DSTTYPE, RAWTYPE) \
 void \
-unload_qphix_raw4_##P##_##T##_to_site(field_offset dest, RAWTYPE *raw, \
+unload_qphix_raw4_##P##_##T##_to_site4(field_offset dest, RAWTYPE *raw, \
          int milc_parity){ \
   int coords[4]; \
   int i,j,dir,status=0;	 \
@@ -410,12 +410,12 @@ unload_qphix_raw_##P##_##T##_to_field(MILC_DSTTYPE *dest, RAWTYPE *raw, \
 #define make_unload_to_site4(P, T, QPHIXTYPE, RAWTYPE, MILCFLOAT) \
 void \
 unload_qphix_##P##_##T##_to_site4(field_offset dest, QPHIXTYPE *qphix, int milc_parity){ \
-  RAWTYPE **raw; \
+  RAWTYPE *raw; \
   raw = create_qphix_raw4_##P##_##T(); \
   if(raw == NULL)terminate(1); \
   QPHIX_##P##3_extract_##T##_to_raw((MILCFLOAT *)raw, qphix, \
            milc2qphix_parity(milc_parity)); \
-  unload_qphix_raw4_##P##_##T##_to_site(dest, raw, milc_parity); \
+  unload_qphix_raw4_##P##_##T##_to_site4(dest, raw, milc_parity); \
   destroy_qphix_raw4_##P##_##T(raw); raw = NULL; \
   return; \
 }
@@ -492,9 +492,9 @@ create_qphix_##P##_L_from_sites( field_offset fat, field_offset lng, \
   MILCTYPE *rawfat; \
   MILCTYPE *rawlng; \
   TYPE *qphix; \
-  rawfat = create_qphix_raw4_##P##_G_from_site(fat, parity); \
+  rawfat = create_qphix_raw4_##P##_G_from_site4(fat, parity); \
   if(rawfat == NULL)terminate(1); \
-  rawlng = create_qphix_raw4_##P##_G_from_site(lng, parity); \
+  rawlng = create_qphix_raw4_##P##_G_from_site4(lng, parity); \
   if(rawlng == NULL)terminate(1); \
   qphix = QPHIX_##P##3_asqtad_create_L_from_raw((MILCFLOAT *)rawfat, \
           (MILCFLOAT *)rawlng, milc2qphix_parity(parity)); \

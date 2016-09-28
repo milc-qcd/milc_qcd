@@ -256,8 +256,8 @@ make_destroy_raw(D, D, dwilson_vector);
 
 /* Map gauge field from site to raw */
 
-make_create_raw4_from_site(F, G, fsu3_matrix, su3_matrix);
-make_create_raw4_from_site(D, G, dsu3_matrix, su3_matrix);
+make_create_raw4_from_site4(F, G, fsu3_matrix, su3_matrix);
+make_create_raw4_from_site4(D, G, dsu3_matrix, su3_matrix);
 
 /* Map gauge field from field to raw */
 
@@ -266,8 +266,8 @@ make_create_raw4_from_field(D, G, dsu3_matrix, su3_matrix);
 
 /* Map gauge momentum from site to raw */
 
-make_create_raw4_from_site(F, F, fsu3_matrix, anti_hermitmat);
-make_create_raw4_from_site(D, F, dsu3_matrix, anti_hermitmat);
+make_create_raw4_from_site4(F, F, fsu3_matrix, anti_hermitmat);
+make_create_raw4_from_site4(D, F, dsu3_matrix, anti_hermitmat);
 
 /* Map gauge momentum from field to raw */
 
@@ -301,8 +301,8 @@ make_create_raw_from_field(D, D, dwilson_vector, wilson_vector);
 
 /* Map gauge field from raw to site */
 
-make_unload_raw4_to_site(F, G, su3_matrix, fsu3_matrix);
-make_unload_raw4_to_site(D, G, su3_matrix, dsu3_matrix);
+make_unload_raw4_to_site4(F, G, su3_matrix, fsu3_matrix);
+make_unload_raw4_to_site4(D, G, su3_matrix, dsu3_matrix);
 
 /* Map gauge field from raw to field */
 
@@ -311,8 +311,8 @@ make_unload_raw4_to_field(D, G, su3_matrix, dsu3_matrix);
 
 /* Map gauge momentum from raw to site */
 
-make_unload_raw4_to_site(F, F, anti_hermitmat, fsu3_matrix);
-make_unload_raw4_to_site(D, F, anti_hermitmat, dsu3_matrix);
+make_unload_raw4_to_site4(F, F, anti_hermitmat, fsu3_matrix);
+make_unload_raw4_to_site4(D, F, anti_hermitmat, dsu3_matrix);
 
 /* Map gauge momentum from raw to field */
 
@@ -428,6 +428,8 @@ make_unload_to_site(D, D, QPHIX_D3_DiracFermion, dwilson_vector, double);
 make_unload_to_field(F, D, QPHIX_F3_DiracFermion, fwilson_vector, wilson_vector, float);
 make_unload_to_field(D, D, QPHIX_D3_DiracFermion, dwilson_vector, wilson_vector, double);
 
+#endif
+
 /* Map QPHIX gauge force to site */
 
 make_unload_to_site4(F, F, QPHIX_F3_Force, fsu3_matrix, float);
@@ -447,6 +449,8 @@ make_unload_to_site4(D, G, QPHIX_D3_GaugeField, dsu3_matrix, double);
 
 make_unload_to_field4(F, G, QPHIX_F3_GaugeField, fsu3_matrix, su3_matrix, float);
 make_unload_to_field4(D, G, QPHIX_D3_GaugeField, dsu3_matrix, su3_matrix, double);
+
+#if 0
 
 /* Map preconstructed MILC fat and long links in site to QPHIX fermion links */
 
