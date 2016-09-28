@@ -283,13 +283,15 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 		    int nantiherm, field_offset antiherm_offset[], 
 		    int antiherm_parity[] );
 
-/* gauge_force_imp.c and gauge_force_symzk1_qop.c */
-/* gauge_force_imp.c and gauge_force_symzk1_qop.c */
+/* gauge_force_imp_*.c */
 void imp_gauge_force_cpu( Real eps, field_offset mom_off );
 void imp_gauge_force_gpu( Real eps, field_offset mom_off );
+void imp_gauge_force_qphix( Real eps, field_offset mom_off );
 
 #ifdef USE_GF_GPU
 #define imp_gauge_force imp_gauge_force_gpu
+#elif USE_GF_QPHIX
+#define imp_gauge_force imp_gauge_force_qphix
 #else
 #define imp_gauge_force imp_gauge_force_cpu
 #endif

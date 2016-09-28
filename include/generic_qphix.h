@@ -17,8 +17,6 @@ int qphix2milc_parity(QPHIX_evenodd_t qphix_parity);
 QPHIX_status_t initialize_qphix(int precision);
 void finalize_qphix(void);
 
-/* d_congrad5_fn_qphix_P.c */
-
 /* Generic mapping */
 
 #if ( QPHIX_PrecisionInt == 1 )
@@ -138,114 +136,17 @@ void unload_qphix_D_V_to_field(su3_vector *dest, QPHIX_D3_ColorVector* src,
 
 void destroy_qphix_raw4_D_G(dsu3_matrix *raw);
 
+/* gauge_force_imp_qphix.c */
 
-#if 0
-/*! \brief Gather backward long-links for a site, but do not perform adjoint.
- * 
- * Copy of load_longbacklinks (fermion_links_helpers.c), without the adjoint.
- * We do the adjoint on the backlinks in the QPhiX-codegen generated code for 
- * the dslash kernels.
- */
-su3_matrix *
-load_longbacklinks_without_adjoint (fn_links_t *fn);
+void imp_gauge_force_qphix ( Real eps, field_offset mom_off );
 
-/*! \brief Gather backward fat-links for a site, but do not perform the adjoint.
- *
- * Copy of load_fatbacklinks (fermion_links_helpers.c), without the adjoint.
- * We do adjoint on the backlinks in the QPhiX-codegen generated code for the 
- * dslash kernels.
- */
-su3_matrix *
-load_fatbacklinks_without_adjoint (fn_links_t *fn);
+/* gauge_force_imp_qphix_F.c */
 
-/*! \brief Extract su3vector(spinors) from the lattice.
- *
- * Convenience function to create and array of su3_vectors from the lattice 
- * site array. The argument defines if we want to copy over the source or the
- * destination spinors.
- */
-su3_vector *
-get_su3_vectors_from_lattice (field_offset ft);
+void imp_gauge_force_qphix_F( Real eps, field_offset mom_off);
+
+/* gauge_force_imp_qphix_D.c */
+
+void imp_gauge_force_qphix_D( Real eps, field_offset mom_off);
 
 
-/*! \brief Convert the su3vector array into QPhiX's SOA layout.
- *
- * Get the su3_vectors from the site major lattice and convert them into an
- * array of ks_spinors for qphix
- */
-void
-get_ks_spinors_from_lattice (su3_vector *ks, void* ks_spinor, int parity);
-
-void
-gather_su3vectors_from_lattice (su3_vector *ks, void *ks_spinor, int parity);
-
-/*!
- * Convert MILC's links into QPhiX's Gauge18 type. 
- */
-void
-get_links_from_lattice (void* fgauge[2], void* lgauge[2], fn_links_t *fn);
-
-/*!
- * Convert MILC's fatlinks into QPhiX's Gauge18 type. 
- */
-void
-get_fatlinks_from_lattice (void* gauge18s, int parity, fn_links_t *fn);
-
-/*!
- * Convert MILC's longlinks into QPhiX's Gauge type. 
- */
-void
-get_longlinks_from_lattice (void* gauge18s, int parity, fn_links_t *fn);
-
-/*! Write back ks_spinors to the lattice */
-void
-set_ks_spinors_into_lattice (su3_vector *ks, void* ks_spinor, int parity);
-
-/*! \brief Public API for dslash_fn_site. */ 
-void 
-qphix_dslash_fn_site ( field_offset src
-                     , field_offset dest
-                     , int parity
-                     , fn_links_t *fn 
-                     );
-
-/*! \brief Wrapper to call QPhiX's CG for MILC. */
-int
-qphix_ks_congrad ( field_offset src
-                 , field_offset dest
-                 , Real mass
-                 , int niter
-                 , int nrestart
-                 , Real rsqmin
-                 , int prec
-                 , int parity
-                 , Real *final_rsq
-                 , fn_links_t *fn
-                 );
-
-/*! \brief Wrapper to call QPhiX's two-src CG for MILC. */
-int
-qphix_ks_congrad_two_src ( field_offset src1
-                         , field_offset src2
-                         , field_offset dest1
-                         , field_offset dest2
-                         , Real mass1
-                         , Real mass2
-                         , int niter
-                         , int nrestart
-                         , Real rsqmin
-                         , int prec
-                         , int parity
-                         , Real *final_rsq
-                         , fn_links_t *fn
-                         );
-
-int
-qphix_ks_congrad_site ( field_offset src
-                      , field_offset dest
-                      , quark_invert_control *qic
-                      , Real mass
-                      , fn_links_t *fn
-                      );                  
-#endif
 #endif // _GENERIC_QPHIX_H
