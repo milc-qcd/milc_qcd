@@ -36,8 +36,9 @@ dot_corr( complex *dest, complex *src, int count )
   int i, j;
 
   FORALLFIELDSITES(i){
+    dest[i].real = 0.;
     for(j = 0; j < count; j++)
-      dest[i].real = 
+      dest[i].real += 
 	(src[i*count+j].real*src[i*count+j].real + src[i*count+j].imag*src[i*count+j].imag)/volume; 
     
     dest[i].imag = 0.;
@@ -115,7 +116,8 @@ rcorr(Real *qblock[], Real *q2block[],
     sum_c_array_field(qcorr, qin_diff[jrand], NMU);
 
   /* Average the accumulated results */
-  mulreal_c_field(qcorr, 1./((double) nrand_diff), NMU);
+  if(nrand_diff > 0)
+    mulreal_c_field(qcorr, 1./((double) nrand_diff), NMU);
 
   /* Correct the sloppy results for each random block by adding the
      difference between precise and sloppy*/
