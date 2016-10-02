@@ -21,14 +21,13 @@ void destroy_qphix_raw_F_D (fwilson_vector *raw);
 QPHIX_F3_FermionLinksAsqtad *create_qphix_F_L_from_fields(su3_matrix *fat, 
    su3_matrix *lng, su3_matrix *fatback, su3_matrix *lngback, int milc_parity);
 
-fsu3_matrix * create_qphix_raw4_F_G_from_site(field_offset src, int milc_parity);
-fsu3_matrix * create_qphix_raw4_F_F_from_site(field_offset src, int milc_parity);
+fsu3_matrix * create_qphix_raw4_F_G_from_site4(field_offset links, int milc_parity);
+fsu3_matrix * create_qphix_raw4_F_F_from_site4(field_offset mom, int milc_parity);
 fsu3_vector * create_qphix_raw_F_V_from_site(field_offset src, int milc_parity);
 fwilson_vector * create_qphix_raw_F_D_from_site(field_offset src, int milc_parity);
 
-fsu3_matrix * create_qphix_raw4_F_G_from_field(su3_matrix *src, int milc_parity);
-fsu3_matrix * create_qphix_raw4_F_F_from_field(anti_hermitmat *src, 
-					  int milc_parity);
+fsu3_matrix * create_qphix_raw4_F_G_from_field(su3_matrix *links, int milc_parity);
+fsu3_matrix * create_qphix_raw4_F_F_from_field(anti_hermitmat *mom, int milc_parity);
 fsu3_vector * create_qphix_raw_F_V_from_field(su3_vector *src, int milc_parity);
 fwilson_vector * create_qphix_raw_F_D_from_field(wilson_vector *src, int milc_parity);
 
@@ -63,18 +62,17 @@ void destroy_qphix_raw_D_D (dwilson_vector *raw);
 QPHIX_D3_FermionLinksAsqtad *create_qphix_D_L_from_fields(su3_matrix *fat, 
    su3_matrix *lng, su3_matrix *fatback, su3_matrix *lngback, int milc_parity);
 
-dsu3_matrix * create_qphix_raw4_D_G_from_site(field_offset src, int milc_parity);
+dsu3_matrix * create_qphix_raw4_D_G_from_site4(field_offset src, int milc_parity);
+dsu3_vector * create_qphix_raw_D_V_from_site(field_offset src, int milc_parity);
+dwilson_vector * create_qphix_raw_D_D_from_site(field_offset src, int milc_parity);
+
+dsu3_matrix * create_qphix_raw4_D_G_from_field(su3_matrix *links, int milc_parity);
+dsu3_matrix * create_qphix_raw4_D_F_from_site4(field_offset mom, int milc_parity);
 dsu3_vector * create_qphix_raw_D_V_from_site(field_offset src, int milc_parity);
 dwilson_vector * create_qphix_raw_D_D_from_site(field_offset src, int milc_parity);
 
 dsu3_matrix * create_qphix_raw4_D_G_from_field(su3_matrix *src, int milc_parity);
-dsu3_matrix * create_qphix_raw4_D_F_from_site(field_offset src, int milc_parity);
-dsu3_vector * create_qphix_raw_D_V_from_site(field_offset src, int milc_parity);
-dwilson_vector * create_qphix_raw_D_D_from_site(field_offset src, int milc_parity);
-
-dsu3_matrix * create_qphix_raw4_D_G_from_field(su3_matrix *src, int milc_parity);
-dsu3_matrix * create_qphix_raw4_D_F_from_field(anti_hermitmat *src, 
-					  int milc_parity);
+dsu3_matrix * create_qphix_raw4_D_F_from_field(anti_hermitmat *src, int milc_parity);
 dsu3_vector * create_qphix_raw_D_V_from_field(su3_vector *src, int milc_parity);
 dwilson_vector * create_qphix_raw_D_D_from_field(wilson_vector *src, int milc_parity);
 

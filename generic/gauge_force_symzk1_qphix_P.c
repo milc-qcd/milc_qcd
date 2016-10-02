@@ -15,12 +15,15 @@
 */
 
 #include "../include/generic_qphix.h"
-#include "../include/generic_ks_qphix.h"
+#include "../include/generic_qphixmilc.h"
 #include "../include/generic.h"
 #include <lattice.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define LOOPEND
+#include "../include/loopend.h"
+#include "../include/openmp_defs.h"
 #include <assert.h>
 #include <math.h>
 
@@ -29,60 +32,31 @@
 #if ( QPHIX_PrecisionInt == 1 )
 #define CREATE_F_FROM_SITE4       create_qphix_F_F_from_site4
 #define CREATE_G_FROM_SITE4       create_qphix_F_G_from_site4
+#define CREATE_RAW_F_FROM_SITE4   create_qphix_raw4_F_F_from_site4
+#define CREATE_RAW_G              create_qphix_raw4_F_G
+#define CREATE_RAW_G_FROM_SITE4   create_qphix_raw4_F_F_from_site4
+#define DESTROY_RAW_F             destroy_qphix_raw4_F_F
+#define DESTROY_RAW_G             destroy_qphix_raw4_F_G
 #define IMP_GAUGE_FORCE_QPHIX     imp_gauge_force_qphix_F
+#define MYREAL                    float
+#define MYSU3_MATRIX              fsu3_matrix
 #define UNLOAD_F_TO_SITE4         unload_qphix_F_F_to_site4
 
 #else
 
 #define CREATE_F_FROM_SITE4       create_qphix_D_F_from_site4
 #define CREATE_G_FROM_SITE4       create_qphix_D_G_from_site4
+#define CREATE_RAW_F_FROM_SITE4   create_qphix_raw4_D_F_from_site4
+#define CREATE_RAW_G              create_qphix_raw4_D_G
+#define CREATE_RAW_G_FROM_SITE4   create_qphix_raw4_D_F_from_site4
+#define DESTROY_RAW_F             destroy_qphix_raw4_D_F
+#define DESTROY_RAW_G             destroy_qphix_raw4_D_G
 #define IMP_GAUGE_FORCE_QPHIX     imp_gauge_force_qphix_D
+#define MYREAL                    double
+#define MYSU3_MATRIX              dsu3_matrix
 #define UNLOAD_F_TO_SITE4         unload_qphix_D_F_to_site4
 
 #endif
-
-/* Redefinition according to the prevailing precision */
-
-#if (PRECISION==1)
-
-static void 
-p2d_mat(dsu3_matrix *dest, su3_matrix *src){
-  int i,j;
-  
-  for(i = 0; i < 3; i++)for(j = 0; j < 3; j++){
-    dest->e[i][j].real = src->e[i][j].real;
-    dest->e[i][j].imag = src->e[i][j].imag;
-  }
-}
-
-static void 
-p2f_mat(fsu3_matrix *dest, su3_matrix *src){
-  memcpy((void *)dest, (void *)src, sizeof(fsu3_matrix));
-}
-
-#else
-
-/* Convert (or copy) su3_matrix from prevailing to single precision */
-static void 
-p2f_mat(fsu3_matrix *dest, su3_matrix *src){
-  int i,j;
-  
-  for(i = 0; i < 3; i++)for(j = 0; j < 3; j++){
-    dest->e[i][j].real = src->e[i][j].real;
-    dest->e[i][j].imag = src->e[i][j].imag;
-  }
-}
-
-static void 
-p2d_mat(dsu3_matrix *dest, su3_matrix *src){
-  memcpy((void *)dest, (void *)src, sizeof(dsu3_matrix));
-}
-
-#endif
-
-#define copy_milc_to_F_G(d,s) p2f_mat(d,s);
-#define copy_milc_to_D_G(d,s) p2d_mat(d,s);
-
 
 /* Standard hack to extract macros defined in the action header, */
 
@@ -132,13 +106,67 @@ make_gauge_action_coeffs(void){
   return &coeffs;
 }
 
+/*!
+ * Copy backward raw links/momentum without the adjoint.
+ * QPhiX does the adjoint in the generated code for the dslash kernels for the back
+ * links.
+ */
+static MYSU3_MATRIX *
+create_backlinks_without_adjoint(MYSU3_MATRIX *t)
+{
+  MYSU3_MATRIX *t_bl = NULL;
+  register int i;
+  register site *s;
+  int dir;
+  MYSU3_MATRIX *tempmat1 = NULL;
+  msg_tag *tag[4];
+  char myname[] = "create_backlinks_without_adjoint";
+  
+  /* Allocate space for t_lbl */
+  t_bl = CREATE_RAW_G();
+  if(t_bl==NULL){
+    printf("%s(%d): no room for t_lbl\n",myname,this_node);
+    terminate(1);
+  }
+  
+  tempmat1 = CREATE_RAW_G();
+  if(tempmat1 == NULL){
+    printf("%s: Can't malloc temporary\n",myname);
+    terminate(1);
+  }
+  
+  /* gather backwards fatlinks */
+  for( dir=XUP; dir<=TUP; dir ++){
+    FORALLFIELDSITES_OMP(i,){
+      tempmat1[i] = t[dir+4*i];
+    } END_LOOP_OMP
+    tag[dir] = start_gather_field( tempmat1
+				   , sizeof(su3_matrix)
+				   , OPP_DIR(dir)
+				   , EVENANDODD
+				   , gen_pt[dir] );
+    wait_gather( tag[dir] );
+    FORALLFIELDSITES_OMP(i,) {
+      MYSU3_MATRIX * temp_ = (t_bl + dir + 4*i);
+      t_bl[dir + 4*i] = *((MYSU3_MATRIX *)gen_pt[dir][i]);
+    } END_LOOP_OMP
+    cleanup_gather( tag[dir] );
+  }
+  
+  DESTROY_RAW_G(tempmat1); 
+  tempmat1 = NULL;
+  return t_bl;
+}
+
 void
 IMP_GAUGE_FORCE_QPHIX ( Real eps, field_offset mom_off )
 {
   char myname[] = "imp_gauge_force_qphix";
   int nflop = 153004;  /* For Symanzik1 action, based on MILC standard */
   QPHIX_Force *mom;
+  MYSU3_MATRIX *fwdrawmom, *bckrawmom;
   QPHIX_GaugeField *gauge;
+  MYSU3_MATRIX *fwdrawgauge, *bckrawgauge;
   QPHIX_info_t info;
   QPHIX_gauge_coeffs_t* coeffs;
 #ifdef GFTIME
@@ -152,10 +180,18 @@ IMP_GAUGE_FORCE_QPHIX ( Real eps, field_offset mom_off )
   coeffs = make_gauge_action_coeffs();
 
   /* Convert the site momentum to QPhiX format */
-  mom = CREATE_F_FROM_SITE4(F_OFFSET(mom), EVENANDODD);
+  fwdrawmom = CREATE_RAW_F_FROM_SITE4(F_OFFSET(mom), EVENANDODD);
+  bckrawmom = create_backlinks_without_adjoint(fwdrawmom);
+  mom = QPHIX_create_F_from_raw((MYREAL *)fwdrawmom, (MYREAL *)bckrawmom, milc2qphix_parity(EVENANDODD));
+  DESTROY_RAW_F(fwdrawmom);
+  DESTROY_RAW_F(bckrawmom);
 
   /* Convert the gauge field to QPhiX format */
-  gauge = CREATE_G_FROM_SITE4(F_OFFSET(link[0]), EVENANDODD);
+  fwdrawgauge = CREATE_RAW_G_FROM_SITE4(F_OFFSET(link[0]), EVENANDODD);
+  bckrawgauge = create_backlinks_without_adjoint(fwdrawgauge);
+  gauge = QPHIX_create_G_from_raw((MYREAL *)fwdrawgauge, (MYREAL *)bckrawgauge, milc2qphix_parity(EVENANDODD));
+  DESTROY_RAW_G(fwdrawgauge);
+  DESTROY_RAW_G(bckrawgauge);
 
   /* Update the mom, based on the gauge force */
   QPHIX_symanzik_1loop_gauge_force( &info, gauge, mom, coeffs, eps);
@@ -172,6 +208,7 @@ IMP_GAUGE_FORCE_QPHIX ( Real eps, field_offset mom_off )
   /* Clean up */
 
   QPHIX_destroy_F(mom);
+  QPHIX_destroy_G(gauge);
 
 #ifdef GFTIME
   dtime+=dclock();

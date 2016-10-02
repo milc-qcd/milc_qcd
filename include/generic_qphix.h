@@ -55,6 +55,8 @@ create_qphix_D_L_from_fn_links (fn_links_t *fn, int parity);
 
 #define create_qphix_raw4_G_from_field create_qphix_raw4_F_G_from_field
 #define create_qphix_raw4_F_from_field create_qphix_raw4_F_F_from_field
+#define create_qphix_raw4_G_from_site4 create_qphix_raw4_F_G_from_site4
+#define create_qphix_raw4_F_from_site4 create_qphix_raw4_F_F_from_site4
 #define create_qphix_raw_V_from_field  create_qphix_raw_F_V_from_field
 #define create_qphix_raw_D_from_field  create_qphix_raw_F_D_from_field
 
@@ -92,6 +94,8 @@ create_qphix_D_L_from_fn_links (fn_links_t *fn, int parity);
 
 #define create_qphix_raw4_G_from_field create_qphix_raw4_D_G_from_field
 #define create_qphix_raw4_F_from_field create_qphix_raw4_D_F_from_field
+#define create_qphix_raw4_G_from_site4 create_qphix_raw4_D_G_from_site4
+#define create_qphix_raw4_F_from_site4 create_qphix_raw4_D_F_from_site4
 #define create_qphix_raw_V_from_field  create_qphix_raw_D_V_from_field
 #define create_qphix_raw_D_from_field  create_qphix_raw_D_D_from_field
 
@@ -117,24 +121,14 @@ create_qphix_D_L_from_fn_links (fn_links_t *fn, int parity);
 #endif
 
 QPHIX_F3_ColorVector *create_qphix_F_V_from_field(su3_vector *src, int parity);
-fsu3_matrix *create_qphix_raw4_F_G_from_field(su3_matrix *links, int parity);
-
-fsu3_vector *create_qphix_raw_F_V_from_field(su3_vector *src, int milc_parity);
 
 void unload_qphix_F_V_to_field(su3_vector *dest, QPHIX_F3_ColorVector* src, 
 			int parity);
 
-void destroy_qphix_raw4_F_G(fsu3_matrix *raw);
-
 QPHIX_D3_ColorVector *create_qphix_D_V_from_field(su3_vector *src, int parity);
-dsu3_matrix *create_qphix_raw4_D_G_from_field(su3_matrix *links, int parity);
-
-dsu3_vector *create_qphix_raw_D_V_from_field(su3_vector *src, int milc_parity);
 
 void unload_qphix_D_V_to_field(su3_vector *dest, QPHIX_D3_ColorVector* src, 
 			int parity);
-
-void destroy_qphix_raw4_D_G(dsu3_matrix *raw);
 
 QPHIX_F3_Force *create_qphix_F_F_from_site4(field_offset mom, int milc_parity);
 void unload_qphix_F_F_to_site4(field_offset mom_milc, QPHIX_F3_Force *mom, int milc_parity);

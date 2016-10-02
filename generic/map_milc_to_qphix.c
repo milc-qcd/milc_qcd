@@ -351,6 +351,8 @@ make_unload_raw_to_field(D, D, wilson_vector, dwilson_vector);
 /* Procedures involving MILC and QPHIX fields                         */
 /********************************************************************/
 
+#if 0
+
 make_create_from_site4(F, G, QPHIX_F3_GaugeField, fsu3_matrix, float);
 make_create_from_site4(D, G, QPHIX_D3_GaugeField, dsu3_matrix, double);
 
@@ -368,6 +370,8 @@ make_create_from_site4(D, F, QPHIX_D3_Force, dsu3_matrix, double);
 
 make_create_from_field4(F, F, QPHIX_F3_Force, fsu3_matrix, anti_hermitmat, float);
 make_create_from_field4(D, F, QPHIX_D3_Force, dsu3_matrix, anti_hermitmat, double);
+
+#endif
 
 /* Map color vector from site to QPHIX */
 

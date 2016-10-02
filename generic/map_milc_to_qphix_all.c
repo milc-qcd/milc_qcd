@@ -153,7 +153,6 @@ static void check_layout_compatibility(void){
   return;
 }
 
-
 /* Map MILC site links to raw order */
 /* Note that unlike QOP we want four contiguous SU(3) matrices per site */
 

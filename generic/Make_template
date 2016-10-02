@@ -164,9 +164,9 @@ gauge_force_imp_gpu.o: ../generic/gauge_force_imp_gpu.c
 	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qphix.o: ../generic/gauge_force_symzk1_qphix.c
 	${CC} -c ${CFLAGS} $<
-gauge_force_symzk1_qphix_D.o: ../generic/gauge_force_symzk1_qphix_D.c
+gauge_force_symzk1_qphix_D.o: ../generic/gauge_force_symzk1_qphix_D.c ../generic/gauge_force_symzk1_qphix_P.c 
 	${CC} -c ${CFLAGS} $<
-gauge_force_symzk1_qphix_F.o: ../generic/gauge_force_symzk1_qphix_F.c
+gauge_force_symzk1_qphix_F.o: ../generic/gauge_force_symzk1_qphix_F.c ../generic/gauge_force_symzk1_qphix_P.c 
 	${CC} -c ${CFLAGS} $<
 gauge_force_symzk1_qdp.o: ../generic/gauge_force_symzk1_qdp.c
 	${CC} -c ${CFLAGS} $<
