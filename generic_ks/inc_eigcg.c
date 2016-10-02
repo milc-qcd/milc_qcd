@@ -9,13 +9,15 @@
 #include "generic_ks_includes.h"
 #include "../include/blas_lapack.h"
 #include "../include/prefetch.h"
-#define FETCH_UP 1
-#include "../include/loopend.h"
 #include "../include/openmp_defs.h"
 #include <string.h>
 
 #ifdef CGTIME
 static const char *prec_label[2] = {"F", "D"};
+#endif
+
+#if (PRECISION==1)
+#error Requires double precision!
 #endif
 
 //#define CG_DEBUG
@@ -32,7 +34,7 @@ static Real my_relative_residue(su3_vector *p, su3_vector *q, int parity){
     num = (double)magsq_su3vec(p+i);
     den = (double)magsq_su3vec(q+i);
     residue += (den==0) ? 1.0 : (num/den);
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
   g_doublesum(&residue);
 
   if(parity == EVENANDODD)
@@ -71,7 +73,7 @@ static void initCG(su3_vector *src, su3_vector *dest, int Nvecs_curr, int Nvecs_
   FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
     scalar_mult_sum_su3_vector(resid+i, dest+i, -msq_x4);
     add_su3_vector(resid+i, src+i, resid+i);
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
 
   /* c[i] = eigVec[i].resid */
   for(j = 0; j < Nvecs_curr; j++){
@@ -79,7 +81,7 @@ static void initCG(su3_vector *src, su3_vector *dest, int Nvecs_curr, int Nvecs_
 //    FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:c[j])){
 //      cc = su3_dot(eigVec[j]+i, resid+i);
 //      CSUM(c[j], cc);
-//    } END_LOOP_OMP
+//    } END_LOOP_OMP;
 
     double cctotr=0., cctoti=0.;
     FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:cctotr,cctoti)){
@@ -113,7 +115,7 @@ static void initCG(su3_vector *src, su3_vector *dest, int Nvecs_curr, int Nvecs_
   for(j = 0; j < Nvecs_curr; j++){
     FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
       c_scalar_mult_add_su3vec(dest+i, c+j, eigVec[j]+i);
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
   }
 
   free(c);
@@ -160,7 +162,7 @@ static int orthogonalize(int Nvecs, int Nvecs_curr, su3_vector **eigVec, int par
       g_dcomplexsum(c+k);
       FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
 	c_scalar_mult_sub_su3vec(eigVec[j]+i, c+k, eigVec[k]+i);
-      } END_LOOP_OMP
+      } END_LOOP_OMP;
     }
     /* Gram-Schmidt
        Less communications but
@@ -171,19 +173,19 @@ static int orthogonalize(int Nvecs, int Nvecs_curr, su3_vector **eigVec, int par
       FORSOMEFIELDPARITY_OMP(i, parity, private(cc) reduction(+:c[k])){
 	cc = su3_dot(eigVec[k]+i, eigVec[j]+i);
 	CSUM(c[k], cc);
-      } END_LOOP_OMP
+      } END_LOOP_OMP;
     }
     g_vecdcomplexsum(c, j);
     for(k = 0; k < j; k++){
       FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
 	c_scalar_mult_sub_su3vec(eigVec[j]+i, c+k, eigVec[k]+i);
-      } END_LOOP_OMP
+      } END_LOOP_OMP;
     }
     */
     norm = (double)0.0;
     FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:norm)){
       norm += magsq_su3vec(eigVec[j]+i);
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
     g_doublesum(&norm);
     norm = sqrt(norm);
     if( norm < ORTHO_EPS ){
@@ -192,14 +194,14 @@ static int orthogonalize(int Nvecs, int Nvecs_curr, su3_vector **eigVec, int par
       for(k = j; k < n; k++){
 	FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
 	  eigVec[k][i] = eigVec[k+1][i];
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
       }
     }
     else{
       norm = 1.0/norm;
       FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
 	scalar_mult_su3_vector(eigVec[j]+i, norm, eigVec[j]+i);
-      } END_LOOP_OMP
+      } END_LOOP_OMP;
       j++;
     }
   }
@@ -284,14 +286,14 @@ static void RayleighRitz(int m, int n, double *eigVal, su3_vector **eigVec, doub
   ttt = (su3_vector *)malloc(m*sizeof(su3_vector));
 
   /* eigVec = QZ */
-  FORSOMEFIELDPARITY_OMP(i, parity, private(j, k) default(shared)){
+  FORSOMEFIELDPARITY(i, parity){
     for(j = 0; j < m; j++){
       clearvec( ttt+j );
       for(k = 0; k < n; k++)
 	c_scalar_mult_add_su3vec(ttt+j, H+k+ldH*j, eigVec[k]+i);
     }
     for(j = 0; j < m; j++) eigVec[j][i] = ttt[j];
-  } END_LOOP_OMP
+  } END_LOOP;
 
   free(ttt);
 }
@@ -343,11 +345,11 @@ void calc_eigresid(int Nvecs, double *resid, double *norm, double *eigVal,
 
     dvec[2*j] = dzero;
     dvec[2*j + 1] = dzero;
-    FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:dvec[j], dvec[2*j + 1])){
+    FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:dvec[2*j], dvec[2*j + 1])){
       scalar_mult_sum_su3_vector(ttt+i, eigVec[j]+i, eigVal[j]);
       dvec[2*j] += magsq_su3vec(ttt+i);
       dvec[2*j + 1] += magsq_su3vec(eigVec[j]+i);
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
   }
   g_vecdoublesum(dvec, 2*Nvecs);
   for(j = 0; j < Nvecs; j++){
@@ -448,7 +450,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
   source_norm = dzero;
   FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:source_norm)){
     source_norm += (double)magsq_su3vec(src+i);
-  } END_LOOP_OMP
+  } END_LOOP_OMP;
   g_doublesum(&source_norm);
 #ifdef CG_DEBUG
   node0_printf("congrad: source_norm = %e\n", (double)source_norm); fflush(stdout);
@@ -459,7 +461,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
     /* Zero the solution and return zero iterations */
     FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
       memset(dest+i, 0, sizeof(su3_vector));
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
 
     dtimec += dclock();
 #ifdef CGTIME
@@ -531,17 +533,13 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
       dslash_fn_field(dest, ttt, otherparity, fn);
       dslash_fn_field(ttt, ttt, parity, fn);
       /* ttt  <- ttt - msq_x4*src	(msq = mass squared) */
-      FORSOMEFIELDPARITY_OMP(i, parity, private(j) reduction(+:rsq)){
-	if(i < loopend-FETCH_UP){
-	  j = i + FETCH_UP;
-	  prefetch_VVVV(ttt+j, dest+j, src+j, resid+j)
-	}
+      FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:rsq)){
 	scalar_mult_sum_su3_vector(ttt+i, dest+i, -msq_x4);
 	add_su3_vector(src+i, ttt+i, resid+i);
 	/* remember ttt contains -M_adjoint*M*src */
 	cg_p[i] = resid[i];
 	rsq += (double)magsq_su3vec(resid+i);
-      } END_LOOP_OMP
+      } END_LOOP_OMP;
       g_doublesum(&rsq);
 
       if(relrsqmin > 0)
@@ -592,14 +590,10 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
     /* ttt  <- ttt - msq_x4*cg_p	(msq = mass squared) */
     /* pkp  <- cg_p.(ttt - msq*cg_p) = (-1)*cg_p.M_adjoint*M.cg_p */
     pkp = dzero;
-    FORSOMEFIELDPARITY_OMP(i, parity, private(j) reduction(+:pkp)){
-      if(i < loopend-FETCH_UP){
-	j = i + FETCH_UP;
-	prefetch_VV(ttt+j, cg_p+j);
-      }
+    FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:pkp)){
       scalar_mult_sum_su3_vector(ttt+i, cg_p+i, -msq_x4);
       pkp += (double)su3_rdot(cg_p+i, ttt+i);
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
     g_doublesum(&pkp);
 
     /*** EigCG ***/
@@ -640,15 +634,15 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 	zgemm_("N", "N", &m, &Nvecs_x2, &Nvecs_x2, &zone, Y, &m, T, &Nvecs_x2, &zzero,
 	       T2, &m);
 
-	FORSOMEFIELDPARITY_OMP(i, parity, private(j, jj) default(shared)){
+	FORSOMEFIELDPARITY(i, parity){
 	  for(j = 0; j < Nvecs_x2; j++){
 	    clearvec( tmp+j );
 	    for(jj = 0; jj < m; jj++)
 	      c_scalar_mult_add_su3vec(tmp+j, T2+jj+m*j, eigVec[jj]+i);
 	  }
 	  for(j = 0; j < Nvecs_x2; j++) eigVec[j][i] = tmp[j];
-	} END_LOOP_OMP
-
+	} END_LOOP;
+	
 	/* T <- M */
 	for(j = 0; j < Nvecs_x2; j++){
 	  for(jj = 0; jj < j; jj++) T[jj + m*j] = zzero;
@@ -660,7 +654,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
 	/* ttt2 < ttt2 - ttt, where ttt2 = b*ttt_old */
 	FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
 	  sub_su3_vector(ttt2+i, ttt+i, ttt2+i);
-        } END_LOOP_OMP
+        } END_LOOP_OMP;
 
 	/* T_{j,k+1} = eigVec[j].ttt2/sqrt(rsq) */
 	for(j = 0; j < Nvecs_x2; j++){
@@ -746,11 +740,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
     */
     b = rsq;
     rsq = dzero;
-    FORSOMEFIELDPARITY_OMP(i, parity, private(j) reduction(+:rsq)){
-      if( i < loopend-FETCH_UP ){
-	j = i + FETCH_UP;
-	prefetch_VVVV(dest+j, cg_p+j, resid+j, ttt+j);
-      }
+    FORSOMEFIELDPARITY_OMP(i, parity, reduction(+:rsq)){
       scalar_mult_sum_su3_vector(dest+i, cg_p+i, a);
       scalar_mult_sum_su3_vector(resid+i, ttt+i, a);
       rsq += (double)magsq_su3vec(resid+i);
@@ -781,7 +771,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
     /* cg_p  <- resid + b*cg_p */
     FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
       scalar_mult_add_su3_vector(resid+i, cg_p+i, b, cg_p+i);
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
 
     /*** EigCG ***/
     if( Nvecs > 0 ){
@@ -794,7 +784,7 @@ int ks_eigCG_parity(su3_vector *src, su3_vector *dest, double *eigVal, su3_vecto
       if(k == m1){
 	FORSOMEFIELDPARITY_OMP(i, parity, default(shared)){
 	  scalar_mult_su3_vector(ttt+i, b, ttt2+i);
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
       }
 
       dtimec2 += dclock() + dtimec3;

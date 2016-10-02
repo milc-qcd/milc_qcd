@@ -20,6 +20,7 @@
 #  heavy \
 #  pw_nr_meson \
 #  schroed_pg \
+#  wilson_static \
 
 DIRS = \
    arb_overlap \

@@ -78,7 +78,7 @@ static void ks_mxv(void *x, void *y, int *blockSize, primme_params *primme){
 /*****************************************************************************/
 int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 		      Real RelTol, int Nvecs, int MaxIter, 
-		      int Restart, int Kiters, init init ){
+		      int Restart, int Kiters, int init ){
 
   int maxnev=Nvecs;       /* number of eigenvalues to compute*/
   int maxn;
@@ -228,8 +228,8 @@ static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme
 /* Stub to allow compilation (but not execution) in case PRIMME is not available */
 
 int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
-	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int Kiters )
+		      Real RelTol, int Nvecs, int MaxIter, 
+		      int Restart, int Kiters, int init )
 {
   node0_printf("Kalkreuter_PRIMME: Requires compilation with the PRIMME package\n");
   terminate(1);

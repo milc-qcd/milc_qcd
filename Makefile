@@ -302,24 +302,36 @@ endif
 # Utah physics and math Redhat-linux
 # LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -L/usr/lib/gcc/x86_64-redhat-linux/4.1.2 -lgfortran
 
-# Utah physics and math Centos-linus
-# LIBLAPACK = -L/usr/local/lib64  -llapack-gfortran -lblas-gfortran -lgfortran
+# Utah physics and math Centos-linux.  Must link with gfortran. 
+#LIBLAPACK = -L/usr/local/lib64 -llapack -lblas
+# LDLAPACK = gfortran
 
 # FNAL cluster (Jim's installation of ATLAS)
 #LDFLAGS = -Wl,-rpath,"/usr/local/atlas-3.10-lapack-3.4.2/lib" -L/usr/local/atlas-3.10-lapack-3.4.2/lib
 #LIBS = $(LDFLAGS) -lprimme -lm  -llapack -lptf77blas -lptcblas -latlas -lgfortran -lpthread
 
 # NERSC Cori
-# LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/14.0/haswell/lib -l sci_intel
+# LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/haswell/lib -lsci_intel
+
+# NERSC Edison
+# LIBLAPACK = -L${LIBSCI_BASE_DIR}/INTEL/15.0/ivybridge/lib -lsci_intel
 
 #----------------------------------------------------------------------
 # 14. PRIMME Options (for arb_overlap and ks_eigen).  REQUIRES LAPACK AS WELL.
 
 WANTPRIMME = #true
 
+# PRIMME version 1.1
+
 ifeq ($(strip ${WANTPRIMME}),true)
   LIBPRIMME = -L${HOME}/milc/install/PRIMME -lzprimme
 endif
+
+# PRIMME version 1.2
+
+# ifeq ($(strip ${WANTPRIMME}),true)
+#   LIBPRIMME = -L${HOME}/milc/install/PRIMME -lprimme
+# endif
 
 #----------------------------------------------------------------------
 # 15. GPU/QUDA Options
@@ -425,12 +437,16 @@ endif
 #----------------------------------------------------------------------
 # 17. Linker (need the C++ linker for QUDA and QPHIX)
 
-ifeq ($(strip ${WANTQUDA}),true)
-  LD  = ${CXX}
-else ifeq ($(strip ${WANTQPHIX}),true)
-  LD  = ${CXX}
+ifeq ($(strip ${LDLAPACK}),)
+  ifeq ($(strip ${WANTQUDA}),true)
+    LD  = ${CXX}
+  else ifeq ($(strip ${WANTQPHIX}),true)
+    LD  = ${CXX}
+  else
+    LD  = ${CC}
+  endif
 else
-  LD  = ${CC}
+  LD = ${LDLAPACK}
 endif
 
 #----------------------------------------------------------------------
@@ -600,7 +616,7 @@ CGEOM +=# -DFIX_IONODE_GEOM
 #                For now, works only with dslash_fn_dblstore.o
 # FEWSUMS        Fewer CG reduction calls
 
-KSCGSTORE = -DDBLSTORE_FN -DD_FN_GATHER13 -DFEWSUMS
+KSCGSTORE = -DDBLSTORE_FN -DFEWSUMS -DD_FN_GATHER13 
 
 #------------------------------
 # Staggered fermion force routines

@@ -14,14 +14,12 @@
 /* Compute the hypercube coordinate relative to an offset.  We assume
    that all lattice dimensions are even, as they should be for
    staggered fermions! */
-static short *
-hyp_coord(site *s, int r0[]){
-  static short h[4];
+static void
+hyp_coord(short h[], const site *s, int r0[]){
   h[XUP] = (s->x - r0[XUP]) & 0x1;
   h[YUP] = (s->y - r0[YUP]) & 0x1;
   h[ZUP] = (s->z - r0[ZUP]) & 0x1;
   h[TUP] = (s->t - r0[TUP]) & 0x1;
-  return h;
 }
 
 /* STANDARD MILC STAGGERED PHASES */
@@ -35,24 +33,24 @@ hyp_coord(site *s, int r0[]){
 /*	all t phases for t=nt-1 time slice get extra minus sign	*/
 /*	   to give antiperiodic boundary conditions		*/
 
-static short *
-alpha_offset(site *sit, int r0[]){
-  static short phase[4];
-  short *h = hyp_coord(sit, r0);
+static void
+alpha_offset(short h[], short phase[], const site *sit, int r0[]){
+
+  hyp_coord(h, sit, r0);
 
   phase[TUP] = 1;
   if( h[TUP]%2 == 1) phase[XUP] = -1;  else phase[XUP] = 1;
   if( h[XUP]%2 == 1) phase[YUP] = -phase[XUP]; else phase[YUP] = phase[XUP];
   if( h[YUP]%2 == 1) phase[ZUP] = -phase[YUP]; else phase[ZUP] = phase[YUP];
-
-  return phase;
 }
 
 #if 0
-static short *
-alpha_apb_offset(site *sit, int r0[]){
+static void
+alpha_apb_offset(short phase[], site *sit, int r0[]){
 
-  short *phase = alpha_offset(sit, r0);
+  short h[4];
+
+  alpha_offset(h, phase, sit, r0);
 
   /* antiperiodic boundary conditions in Euclidean time */
   if( ((sit->t - r0[TUP] + nt ) % nt) == nt-1) {
@@ -129,11 +127,15 @@ void rephase( int flag ){
     node0_printf("rephase: DUMMY: you fouled up the phases\n");
     terminate(1);
   }
-  FORALLSITES_OMP(i,s,default(shared)){
+  FORALLSITES_OMP(i,s,private(dir,j,k)){
+#pragma unroll
     for(dir=XUP;dir<=TUP;dir++){
-      for(j=0;j<3;j++)for(k=0;k<3;k++){
-	  s->link[dir].e[j][k].real *= s->phase[dir];
-	  s->link[dir].e[j][k].imag *= s->phase[dir];
+#pragma unroll
+      for(j=0;j<3;j++)
+#pragma unroll
+	for(k=0;k<3;k++){
+	  lattice[i].link[dir].e[j][k].real *= lattice[i].phase[dir];
+	  lattice[i].link[dir].e[j][k].imag *= lattice[i].phase[dir];
 	}
     }
   } END_LOOP_OMP;
@@ -148,6 +150,8 @@ void rephase_field_offset( su3_matrix *internal_links, int flag,
 			   int* status_now, int r0[] ){
   register int i,j,k,dir;
   register site *s;
+  short h[4] __attribute__ ((aligned (8)));
+  short p[4] __attribute__ ((aligned (8)));
 
   /* Check to make sure we are going in expected direction */
   if( status_now != NULL)
@@ -156,8 +160,8 @@ void rephase_field_offset( su3_matrix *internal_links, int flag,
       node0_printf("rephase_field: DUMMY: you fouled up the phases\n");
       terminate(1);
     }
-  FORALLSITES(i,s){
-    short *p = alpha_offset(s, r0);
+  FORALLSITES_OMP(i,s,private(dir,j,k,h,p)){
+    alpha_offset(h, p, s, r0);
     for(dir=XUP;dir<=TUP;dir++){
       for(j=0;j<3;j++)for(k=0;k<3;k++){
         (internal_links[4*i+dir].e[j][k]).real *= p[dir];
@@ -165,6 +169,7 @@ void rephase_field_offset( su3_matrix *internal_links, int flag,
       }
     }
   }
+  END_LOOP_OMP;
 
   if(status_now != NULL)
     *status_now = flag;
@@ -177,9 +182,10 @@ void apply_apbc( su3_matrix *links ){
   int i;
   site *s;
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     if( s->t == nt-1){
       scalar_mult_su3_matrix( links + 4*i + TUP, -1., links + 4*i + TUP );
     }
   }
+  END_LOOP_OMP;
 }

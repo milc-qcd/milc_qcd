@@ -34,6 +34,7 @@
 #include <string.h>
 #include "params.h"
 #include <unistd.h>
+extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #ifdef U1_FIELD
 #include "../include/io_u1lat.h"
 #endif

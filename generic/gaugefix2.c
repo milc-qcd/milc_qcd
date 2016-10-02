@@ -149,7 +149,7 @@ void do_hit(int gauge_dir, int parity, int p, int q, Real relax_boost,
 
   accum_gauge_hit(gauge_dir,parity);
 
-  node0_printf("Doing gauge hit\n"); fflush(stdout);
+  //  node0_printf("Doing gauge hit\n"); fflush(stdout);
 
   /* TODO FOR OMP: There are several procedure calls that prevent vectorization
      so need inline versions */
@@ -252,11 +252,12 @@ double get_gauge_fix_action(int gauge_dir,int parity)
   register site *s;
   register su3_matrix *m1, *m2;
   double gauge_fix_action;
-  complex trace;
+  // complex trace;
 
   gauge_fix_action = 0.0;
   
-  FORSOMEPARITY_OMP(i,s,parity,private(dir,m1,m2,trace) reduction(+:gauge_fix_action))
+  //  FORSOMEPARITY_OMP(i,s,parity,private(dir,m1,m2,trace) reduction(+:gauge_fix_action))
+  FORSOMEPARITY_OMP(i,s,parity,private(dir,m1,m2) reduction(+:gauge_fix_action))
     {
       FORALLUPDIRBUT(gauge_dir,dir)
 	{
@@ -322,7 +323,7 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 
       /* Total gauge fixing action for sites of this parity: Before */
       gauge_fix_action = get_gauge_fix_action(gauge_dir,parity);
-      node0_printf("Gauge fix action before hit %e\n", gauge_fix_action); fflush(stdout);
+      //      node0_printf("Gauge fix action before hit %e\n", gauge_fix_action); fflush(stdout);
 
       /* Do optimum gauge hit on various subspaces */
 
@@ -337,7 +338,7 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 		   nantiherm, antiherm_offset, antiherm_parity);
 
       /* Total gauge fixing action for sites of this parity: After */
-      node0_printf("Gauge fix action after hit %e\n", gauge_fix_action); fflush(stdout);
+      //      node0_printf("Gauge fix action after hit %e\n", gauge_fix_action); fflush(stdout);
       gauge_fix_action = get_gauge_fix_action(gauge_dir,parity);
       
       *av_gauge_fix_action += gauge_fix_action;
@@ -429,7 +430,7 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 
   for (gauge_iter=0; gauge_iter < max_gauge_iter; gauge_iter++)
     {
-      node0_printf("Calling gaugefixstep %d\n", gauge_iter); fflush(stdout);
+      //      node0_printf("Calling gaugefixstep %d\n", gauge_iter); fflush(stdout);
       gaugefixstep(gauge_dir,&current_av,relax_boost,
 		   nvector, vector_offset, vector_parity,
 		   nantiherm, antiherm_offset, antiherm_parity);
