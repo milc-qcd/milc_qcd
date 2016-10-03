@@ -212,10 +212,10 @@ IMP_GAUGE_FORCE_QPHIX ( Real eps, field_offset mom_off )
 
 #ifdef GFTIME
   dtime+=dclock();
-  qtime = info->final_sec;
+  qtime = info.final_sec;
   node0_printf("GFTIME_QPHIX:   time = %e (QPhiX Symanzik1) mflops = %e\n",
 	       qtime, 
-	       info->final_flop*(double)volume/(1e6*qtime*numnodes()) );
+	       info.final_flop*(double)volume/(1e6*qtime*numnodes()) );
   node0_printf("GFTIME:   time = %e (QPhiX Symanzik1) mflops = %e\n",
 	       dtime,
 	       nflop*(double)volume/(1e6*dtime*numnodes()) );
