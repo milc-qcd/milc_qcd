@@ -353,7 +353,7 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   CUDA_HOME = /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
