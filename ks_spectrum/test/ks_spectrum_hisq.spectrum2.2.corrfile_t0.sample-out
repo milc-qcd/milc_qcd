@@ -1,6 +1,6 @@
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 22:25:05 2012 UTC"
+date:                         "Tue Sep  6 16:03:40 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        CORNER
@@ -77,7 +77,7 @@ correlator_key:               RHO_PV_C_C_d_d_m0.03_m0.03_p000
 7	6.700117e+01	0.000000e+00
 ---
 JobID:                        203696.kaon2.fnal.gov
-date:                         "Tue Mar 13 22:25:05 2012 UTC"
+date:                         "Tue Sep  6 16:03:40 2016 UTC"
 lattice_size:                 8,8,8,8
 antiquark_type:               staggered
 antiquark_source_type:        CORNER
@@ -134,9 +134,9 @@ correlator_key:               RHO_VT_C_C_d_d_m0.05_m0.05_p000
 1	6.993930e+01	0.000000e+00
 2	9.719427e+00	0.000000e+00
 3	4.174757e+01	0.000000e+00
-4	3.998737e+00	0.000000e+00
+4	3.998738e+00	0.000000e+00
 5	4.164579e+01	0.000000e+00
-6	8.760682e+00	0.000000e+00
+6	8.760683e+00	0.000000e+00
 7	6.608625e+01	0.000000e+00
 ---
 correlator:                   RHO_PV
@@ -145,16 +145,16 @@ spin_taste_sink:              rhox0
 correlator_key:               RHO_PV_C_C_d_d_m0.05_m0.05_p000
 ...
 0	-2.194232e+01	0.000000e+00
-1	6.946220e+01	0.000000e+00
+1	6.946221e+01	0.000000e+00
 2	-6.799405e+00	0.000000e+00
 3	4.160667e+01	0.000000e+00
-4	-3.052287e+00	0.000000e+00
+4	-3.052288e+00	0.000000e+00
 5	4.145697e+01	0.000000e+00
 6	-5.818956e+00	0.000000e+00
 7	6.555085e+01	0.000000e+00
 ---
 JobID:                       203696.kaon2.fnal.gov
-date:                        "Tue Mar 13 22:25:05 2012 UTC"
+date:                        "Tue Sep  6 16:03:40 2016 UTC"
 lattice_size:                8,8,8,8
 quark0_type:                 staggered
 quark0_source_type:          CORNER
@@ -184,16 +184,16 @@ baryon_type:                 nucleon
 correlator_key:              NUCLEON_C_C_C_d_d_d_m0.03_m0.03_m0.03
 ...
 0	1.097686e-02	-6.208862e-05
-1	2.938014e+00	1.219115e-02
+1	2.938014e+00	1.219114e-02
 2	1.997892e-03	2.331358e-04
 3	1.435912e+00	-3.520551e-02
 4	3.764436e-05	2.069067e-04
-5	1.349015e+00	2.514393e-02
+5	1.349015e+00	2.514391e-02
 6	-1.779165e-03	3.075449e-04
-7	2.662940e+00	-1.243851e-03
+7	2.662940e+00	-1.243852e-03
 ---
 JobID:                       203696.kaon2.fnal.gov
-date:                        "Tue Mar 13 22:25:05 2012 UTC"
+date:                        "Tue Sep  6 16:03:40 2016 UTC"
 lattice_size:                8,8,8,8
 quark0_type:                 staggered
 quark0_source_type:          CORNER
@@ -222,11 +222,11 @@ correlator:                  NUCLEON
 baryon_type:                 nucleon
 correlator_key:              NUCLEON_C_C_C_d_d_d_m0.05_m0.05_m0.05
 ...
-0	4.796219e-02	-2.615381e-04
-1	2.855106e+00	1.356343e-02
-2	8.552222e-03	9.708945e-04
-3	1.348938e+00	-3.274998e-02
-4	1.571250e-04	8.504990e-04
-5	1.265439e+00	2.227948e-02
-6	-7.601433e-03	1.280591e-03
-7	2.587082e+00	-3.959860e-03
+0	4.796219e-02	-2.615382e-04
+1	2.855106e+00	1.356339e-02
+2	8.552222e-03	9.708944e-04
+3	1.348938e+00	-3.274997e-02
+4	1.571250e-04	8.504991e-04
+5	1.265439e+00	2.227950e-02
+6	-7.601434e-03	1.280592e-03
+7	2.587082e+00	-3.959745e-03

@@ -110,13 +110,17 @@
 
 #include <time.h>
 #include "generic_includes.h"
+#include "../include/openmp_defs.h"
 
 #define NOWHERE -1      /* Not an index in array of fields */
 
 /* hacks needed to unify even/odd and 32 sublattice cases */
 #ifdef N_SUBL32
 #define NUM_SUBL 32
+#undef FORSOMEPARITY
 #define FORSOMEPARITY FORSOMESUBLATTICE
+#undef FORSOMEPARITY_OMP
+#define FORSOMEPARITY_OMP FORSOMESUBLATTICE_OMP
 #else
 #define NUM_SUBL 2
 #endif
@@ -787,11 +791,11 @@ make_gather(
 
   /* RECEIVE LISTS: */
   /* Fill in pointers to sites */
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(x,y,z,t)){
     /* find coordinates of neighbor who sends us data */
     func( s->x, s->y, s->z, s->t, args, FORWARDS, &x, &y, &z, &t );
     gather_array[dir].neighbor[i] = node_index(x,y,z,t);
-  }
+  } END_LOOP_OMP;
 
   if( inverse != WANT_INVERSE ) {
     free(send_subl);
@@ -894,13 +898,13 @@ declare_strided_gather(
   /* set pointers in sites whose neighbors are on this node.  (If all
      neighbors are on this node, this is the only thing done.) */
   if(subl==EVENANDODD) {
-    FORALLSITES(i,s){ if(gt->neighbor[i] != NOWHERE){
+    FORALLSITES_OMP(i,s,){ if(gt->neighbor[i] != NOWHERE){
       dest[i] = (char *)field + gt->neighbor[i]*stride;
-    }}
+    }} END_LOOP_OMP;
   } else {
-    FORSOMEPARITY(i,s,subl){ if(gt->neighbor[i] != NOWHERE){
+    FORSOMEPARITY_OMP(i,s,subl,){ if(gt->neighbor[i] != NOWHERE){
       dest[i] = (char *)field + gt->neighbor[i]*stride;
-    }}
+    }} END_LOOP_OMP;
   }
 
   return(NULL);
@@ -1254,7 +1258,7 @@ start_general_strided_gather(
      neighbors are on this node, this is the only thing done.) Make
      list of nodes from whom we expect messages */
   if( subl == EVENANDODD ) {
-    FORALLSITES(i,s) {
+    FORALLSITES_OMP(i,s,private(tx,ty,tz,tt)) {
       if(displacement[XUP]!=0)tx = (s->x + displacement[XUP] + nx)%nx;
       else    tx = s->x;
       if(displacement[YUP]!=0)ty = (s->y + displacement[YUP] + ny)%ny;
@@ -1264,9 +1268,9 @@ start_general_strided_gather(
       if(displacement[TUP]!=0)tt = (s->t + displacement[TUP] + nt)%nt;
       else    tt = s->t;
       dest[i] = field + stride*node_index(tx,ty,tz,tt);
-    }
+    } END_LOOP_OMP;
   } else {
-    FORSOMEPARITY(i,s,subl) {
+    FORSOMEPARITY_OMP(i,s,subl,private(tx,ty,tz,tt)) {
       if(displacement[XUP]!=0)tx = (s->x + displacement[XUP] + nx)%nx;
       else    tx = s->x;
       if(displacement[YUP]!=0)ty = (s->y + displacement[YUP] + ny)%ny;
@@ -1276,7 +1280,7 @@ start_general_strided_gather(
       if(displacement[TUP]!=0)tt = (s->t + displacement[TUP] + nt)%nt;
       else    tt = s->t;
       dest[i] = field + stride*node_index(tx,ty,tz,tt);
-    }
+    } END_LOOP_OMP;
   }
 
   /* mark gather in progress and return */

@@ -52,6 +52,10 @@ ifeq ($(strip ${WANTQUDA}),true)
   GAUGE_OBJECTS += milc_to_quda_utilities.o
 endif
 
+ifeq ($(strip ${WANTQPHIX}),true)
+  GAUGE_OBJECTS += map_milc_to_qphix.o milc_to_qphix_utilities.o
+endif
+
 ifeq ($(strip ${HAVEFFTW}),true)
   FFT_OBJECTS = remap_fftw_fourier.o
 else
@@ -225,17 +229,27 @@ endif
 
 # GPU support
 
-  CONGRAD_FN_MILC_GPU = d_congrad5_fn_gpu.o ${CONGRAD_FN_MILC_CPU}
+  CONGRAD_FN_GPU = d_congrad5_fn_gpu.o ${CONGRAD_FN_MILC_CPU}
+
+# QPHIX support
   
+  CONGRAD_FN_QPHIX = d_congrad5_two_src.o d_congrad5_fn_qphix.o \
+     d_congrad5_fn_qphix_D.o d_congrad5_fn_qphix_F.o d_congrad5_fn_milc.o \
+     ${CONGRAD_FN_BASE}
+
 # Standard QOP combinations
 
   CONGRAD_FN_QOP = d_congrad5_fn_qop_two_src.o d_congrad5_fn_qop.o \
      d_congrad5_fn_qop_D.o d_congrad5_fn_qop_F.o ${CONGRAD_FN_BASE}
 
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
-  CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_GPU}
+  CONGRAD_FN_MILC = ${CONGRAD_FN_GPU}
 else
-  CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
+  ifeq ($(strip ${WANTQPHIX}),true)
+    CONGRAD_FN_MILC = ${CONGRAD_FN_QPHIX}
+  else
+    CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
+  endif
 endif
 
 ######################################################################
@@ -251,17 +265,31 @@ endif
 
 # GPU support
 
-  MULTI_INV_FN_MILC_GPU = ks_multicg_offset_gpu.o ${MULTI_INV_FN_MILC_CPU}
+  MULTI_INV_FN_GPU = ks_multicg_offset_gpu.o ${MULTI_INV_FN_MILC_CPU}
+  
+# QPhiX support
+
+  MULTI_INV_FN_QPHIX = ks_multicg_offset_qphix.o ${MULTI_INV_FN_MILC_CPU} \
+    ks_multicg_offset_qphix_D.o  ks_multicg_offset_qphix_F.o
   
 # Standard QOP combinations
 
   MULTI_INV_FN_QOP = ks_multicg.o ks_multicg_offset_qop.o \
     ks_multicg_offset_qop_D.o  ks_multicg_offset_qop_F.o
 
+# Standard QPHIX combinations
+
+  MULTI_INV_FN_QPHIX = ks_multicg.o ks_multicg_offset_qphix.o \
+    ks_multicg_offset_qphix_D.o  ks_multicg_offset_qphix_F.o
+
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
-  MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_GPU}
+  MULTI_INV_FN_MILC = ${MULTI_INV_FN_GPU}
 else
-  MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
+  ifeq ($(strip ${WANTQPHIX}),true)
+    MULTI_INV_FN_MILC = ${MULTI_INV_FN_QPHIX}
+  else
+    MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
+  endif
 endif
 
 
@@ -370,7 +398,7 @@ else
 endif
 
 ######################################################################
-# QOP or MILC/GPU
+# QOP or MILC/GPU or QPHIX
 ######################################################################
 
 ifeq ($(strip ${HAVEQOP}),true)

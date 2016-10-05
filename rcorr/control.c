@@ -13,11 +13,11 @@ int
 main(int argc, char *argv[])
 {
   int prompt;
-  complex **qin;
-  Real *q;
+  complex **qin_sloppy, **qin_diff;
+  Real *q, **qblock, **q2block;
   double starttime, endtime;
   
-  int jflav, k;
+  int jflav, k, j, ib;
   int key[4] = {1,1,1,1};  /* 4D Fourier transform */
   
 
@@ -42,44 +42,73 @@ main(int argc, char *argv[])
     
     if(prompt == 2)continue;   /* For testing */
   
-    /* Create qin array */
-    qin = (complex **)malloc(sizeof(complex *)*param.nrand);
-    if(qin == NULL){
+    /* Create qin arrays */
+    qin_sloppy = (complex **)malloc(sizeof(complex *)*param.nrand_sloppy);
+    if(qin_sloppy == NULL){
       node0_printf("main: No room for qin\n");
       terminate(1);
     }
-    for(k = 0; k < param.nrand; k++){
-      qin[k] = create_c_array_field(NMU);
-      if(qin[k] == NULL){
-	node0_printf("main: No room for qin[%d]\n",k);
-	terminate(1);
-      }
+    for(k = 0; k < param.nrand_sloppy; k++){
+      qin_sloppy[k] = create_c_array_field(NMU);
+    }
+
+    qin_diff = (complex **)malloc(sizeof(complex *)*param.nrand_diff);
+    if(qin_diff == NULL){
+      node0_printf("main: No room for qin\n");
+      terminate(1);
+    }
+    for(k = 0; k < param.nrand_diff; k++){
+      qin_diff[k] = create_c_array_field(NMU);
+    }
+
+    /* Create q array and array of variances of the mean over blocks
+       of random sources */
+    qblock = (Real **)malloc(sizeof(Real *)*param.nblock);
+    q2block = (Real **)malloc(sizeof(Real *)*param.nblock);
+    for(ib = 0; ib < param.nblock; ib++){
+      qblock[ib] = create_r_field();
+      q2block[ib] = create_r_field();
     }
 
     for(jflav = 0; jflav < param.nflav; jflav++){
 
-      /* Allocate space and read all the data for flavor "jflav" */
+      /* Read all the data for flavor "jflav" */
       /* Accumulate the result in qin, weighted by the charge  */
 
-      accumulate_current_density(param.fname[jflav], qin, param.charges[jflav], 
-				 &param.mass[jflav], param.nrand);
+      accumulate_current_density(param.fname_sloppy[jflav], qin_sloppy, param.charges[jflav], 
+				 &param.mass[jflav], param.nrand_sloppy);
+      accumulate_current_density(param.fname_diff[jflav], qin_diff, param.charges[jflav], 
+				 &param.mass[jflav], param.nrand_diff);
     }
-    
-    /* Calculate the density-density correlator q */
-    q = rcorr(qin, param.nrand);
 
-    /* Destroy qin array */
-    for(k = 0; k < param.nrand; k++)
-      destroy_c_array_field(qin[k], NMU);
-    free(qin);
+    /* Calculate the density-density correlator qblock for each random source blocking size */
+    /* Calculate the variance q2block over random source blocks */
+    rcorr(qblock, q2block, qin_sloppy, param.nrand_sloppy, qin_diff, param.nrand_diff, 
+	  param.nblock, param.block_size);
+
+    /* Destroy qin arrays */
+    for(k = 0; k < param.nrand_sloppy; k++)
+      destroy_c_array_field(qin_sloppy[k], NMU);
+    free(qin_sloppy);
+
+    for(k = 0; k < param.nrand_diff; k++)
+      destroy_c_array_field(qin_diff[k], NMU);
+    free(qin_diff);
 
     /* Symmetrize over hypercubic group transformations */
-    symmetrize(q);
+    for(ib = 0; ib < param.nblock; ib++)
+      symmetrize(qblock[ib], q2block[ib]);
 
-    /* Write the results to the specified file */
-    print_result(q, param.nrand);
+    /* Extrapolate to infinite block size and 
+       write the results to the specified file */
+    print_result(qblock, q2block, param.nblock, param.block_size);
 
-    destroy_r_field(q);
+    /* Free qblock array */
+    for(ib = 0; ib < param.nblock; ib++){
+      destroy_r_field(qblock[ib]);
+      destroy_r_field(q2block[ib]);
+    }
+    free(qblock);
   
   } /* readin(prompt) */
 

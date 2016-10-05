@@ -157,6 +157,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
     return cgn;
 }
 
+
 /* Invert using Leo's UML trick */
 
 /* Our M is     (  2m		D_eo   )
@@ -186,6 +187,8 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
              ( - B D_oe        2m B   )
 
 where  A = (4m^2+D_eo D_eo^adj)^-1 and B = (4m^2+D_oe^adj D_oe)^-1
+
+    Note: -D_oe = D_eo^adj and  B D_eo^adj = D_eo^adj A
 
 */
          
@@ -218,6 +221,8 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
 #if EIGMODE == DEFLATION
     /* init-CG */
     /* dst_e <- sum_j ((eigVec_e[j].tmp_e)/(eigVal[j]+4*mass*mass)) eigVec_e[j] */
+    double dtime = - dclock();
+    node0_printf("deflating for mass %g with %d eigenvec\n", mass, param.Nvecs);
     FOREVENSITES(i,s){
       clearvec( dst+i );
     }
@@ -237,6 +242,8 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
       }
     }
     free(c);
+    dtime += dclock();
+    node0_printf("Time to deflate %g\n", dtime);
 #endif
 
     /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */

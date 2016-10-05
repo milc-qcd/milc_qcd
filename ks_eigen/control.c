@@ -53,7 +53,7 @@ int main( int argc, char **argv ){
     active_parity = EVEN;
     total_R_iters=Kalkreuter(eigVec, eigVal, eigenval_tol, 
 			     error_decr, Nvecs, MaxIter, Restart, 
-			     Kiters);
+			     Kiters, 1);
 
     node0_printf("The above where eigenvalues of -Dslash^2 in MILC normalization\n");
     node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");

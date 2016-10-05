@@ -27,8 +27,17 @@ MAKEFILE = Make_vanilla
 #  User choices - edit to suit 
 #----------------------------------------------------------------------
 # 1. Compiler
-CC               = gcc # ( cc89 gcc xlc gcc pgcc cl g++ )
-#CC = env GCC_EXEC_PREFIX=$(GCC_EXEC_PREFIX) powerpc-gnu-elf-gcc # QCDOC
+
+ifeq ($(strip ${COMPILER}),intel)
+  CC = icc
+else ifeq ($(strip ${COMPILER}),gnu)
+  CC = gcc
+else ifeq ($(strip ${COMPILER}),cray-intel)
+  CC = icc
+endif
+
+# Override
+# CC = # ( cc89 gcc xlc gcc pgcc cl g++ )
 
 #----------------------------------------------------------------------
 # 2. Compiler optimization level
@@ -38,40 +47,36 @@ OPT              = -O3 # ( -g -O, etc )
 #----------------------------------------------------------------------
 # 3. Other compiler optimization flags.  Uncomment stanza to suit.
 #-------------- Gnu C -------------------------------------
-#OCFLAGS = -Wall
-
-#OCFLAGS = -fexpensive-optimizations -funroll-loops -fpeephole -fstrength-reduce -fschedule-insns2 -fprefetch-loop-arrays # QCDOC
-#OCFLAGS =  -fexpensive-optimizations   -fpeephole   -fstrength-reduce  -march=i586  # Simone's pick for PIII/gcc version 2.95.2.1 19991024 (release)
+ifeq ($(strip ${COMPILER}),gnu)
+  #OCFLAGS = -Wall
+endif
 #------------------------ BlueGene -----------------------------------
-# OCFLAGS = -qarch=440d -qtune=440
+ifeq ($(strip ${COMPILER}),ibm)
+   OCFLAGS = -qarch=440d -qtune=440
+endif
 
 #-------------- Intel icc/ecc -----------------------------------
-#OCFLAGS = -tpp2 -static
+ifeq ($(strip ${COMPILER}),intel)
+  
+  # Architecture choices: knl, knc, hsw
+  ifeq ($(strip ${ARCH}),knl)
+    OCFLAGS +=  -xMIC-AVX512 
+  else ifeq ($(strip ${ARCH}),knc)
+    OCFLAGS +=  -mmic
+  else ifeq ($(strip ${ARCH}),hsw)
+    OCFLAGS += -xCORE-AVX2
+  else
+    OCFLAGS += -xavx
+  endif
+  
+  # Debugging and optimization
+  OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+endif
 
 #-------------- Portland Group ----------------------------
-#OCFLAGS = -tp p6 -Munroll=c:4,n:4
-
-#-------------- SUN SPARC ---------------------------------
-#OCFLAGS= -fast -dalign -libmil -fsimple=2 -fns  #Ultra
-
-#-------------- IBM RS6000 --------------------------------
-#CARCH = -qarch=pwr3 -qtune=pwr3   # Architecture: ( ppc pwr2 )
-#OCFLAGS= ${CARCH} -bmaxdata:0x40000000 -bmaxstack:0x8000000
-
-#-------------- MIPS --------------------------------------
-#OCFLAGS= -f 
-
-#-------------- SGI Origin single node  -------------------
-#OCFLAGS=  -64 -mips4 -r10000 -OPT:IEEE_arithmetic=3:roundoff=3:alias=restrict -TENV:X=1 
-
-#-------------- DEC Alpha ---------------------------------
-#OCFLAGS = -float -fptm n 
-
-#-------------- Convex Exemplar ----------------------------
-#OCFLAGS = +Oinfo +Onofltacc +Oaggressive +Onoautopar 	#NPACI Exemplar
-
-#-------------- NT cl compiler -----------------------------
-#OCFLAGS = -Fo$*.o -Ox -Oa -G6
+ifeq ($(strip ${COMPILER}),portland)
+  OCFLAGS = -tp p6 -Munroll=c:4,n:4
+endif
 
 #----------------------------------------------------------------------
 # 4. Code alternatives 
@@ -79,7 +84,7 @@ CODETYPE         = -DFAST # usually unchanged
 
 #----------------------------------------------------------------------
 # 5. Choose archiver to match compiler for the QCDOC
-#AR = powerpc-gnu-elf-ar  # QCDOC nonstandard for now
+
 AR = ar
 
 #----------------------------------------------------------------------

@@ -231,7 +231,7 @@ static void setup_hyper_prime(){
 
 /*--------------------------------------------------------------------*/
 
-void setup_fixed_geom(int *geom, int n){
+void setup_fixed_geom(int const *geom, int n){
   int i;
   int node_count;
   int len[4];
@@ -312,9 +312,9 @@ static void init_io_node(){
 void setup_layout(){
   int k = mynode();
 #ifdef FIX_NODE_GEOM
-  int *geom = node_geometry;
+  int const *geom = node_geometry;
 #else
-  int *geom = NULL;
+  int const *geom = NULL;
 #endif
 
   if(k == 0)

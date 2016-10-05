@@ -312,6 +312,10 @@ su3_matrix * create_G(void);
 su3_matrix * create_G_from_site(void);
 void copy_G(su3_matrix *dst, su3_matrix *src);
 void destroy_G(su3_matrix *t_links);
+su3_matrix * create_G2(void);
+su3_matrix * create_G2_from_site(void);
+void copy_G2(su3_matrix *dst, su3_matrix *src);
+void destroy_G2(su3_matrix *t_links);
 
 /* general_staple.c */
 void 

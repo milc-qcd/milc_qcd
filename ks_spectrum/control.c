@@ -46,6 +46,10 @@
 #include "../include/io_u1lat.h"
 #endif
 
+#ifdef HAVE_QPHIX
+#include "../include/generic_qphix.h"
+#endif
+
 int main(int argc, char *argv[])
 {
   int prompt;
@@ -114,7 +118,7 @@ int main(int argc, char *argv[])
     if(param.ks_eigen_startflag == FRESH){
       int total_R_iters;
       total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
-			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters);
+			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 1);
       node0_printf("total Rayleigh iters = %d\n", total_R_iters);
 
 #if 0 /* If needed for debugging */
@@ -675,6 +679,10 @@ int main(int argc, char *argv[])
   qudaFinalize();
 #endif
   
+#ifdef HAVE_QPHIX
+  finalize_qphix();
+#endif
+
   normal_exit(0);
   return 0;
 }

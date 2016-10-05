@@ -40,6 +40,8 @@
 */
 
 #include "generic_ks_includes.h"
+#include "../include/openmp_defs.h"
+
 
 /*----------------------------------------------------------*/
 /* Create, set, copy, destroy the link phase info structure */
@@ -105,6 +107,7 @@ destroy_link_phase_info(link_phase_info_t *lp){
 static void 
 negate_su3_matrix(su3_matrix *link){
   int j,k;
+#pragma unroll
   for(j=0;j<3;j++)for(k=0;k<3;k++){
       CNEGATE(link->e[j][k],link->e[j][k]);
     }
@@ -148,14 +151,12 @@ switch_time_apbc(fn_links_t *fn, int t0_old, int t0_new){
 /* Compute the hypercube coordinate relative to an offset.  We assume
    that all lattice dimensions are even, as they should be for
    staggered fermions! */
-static short *
-hyp_coord(site *s, int r0[]){
-  static short h[4];
+static void
+hyp_coord(short h[], const site *s, int r0[]){
   h[XUP] = (s->x - r0[XUP]) & 0x1;
   h[YUP] = (s->y - r0[YUP]) & 0x1;
   h[ZUP] = (s->z - r0[ZUP]) & 0x1;
   h[TUP] = (s->t - r0[TUP]) & 0x1;
-  return h;
 }
 
 /* STANDARD MILC STAGGERED PHASES */
@@ -168,16 +169,16 @@ hyp_coord(site *s, int r0[]){
 /*	all t phases for t=nt-1 time slice get extra minus sign	*/
 /*	   to give antiperiodic boundary conditions		*/
        
-void 
-alpha_offset(short phase[], site *sit, int r0[]){
-  short *h = hyp_coord(sit, r0);
+static void
+alpha_offset(short h[], short phase[], const site *sit, int r0[]){
+
+  hyp_coord(h, sit, r0);
 
   phase[TUP] = 1;
   if( h[TUP]%2 == 1) phase[XUP] = -1;  else phase[XUP] = 1;
   if( h[XUP]%2 == 1) phase[YUP] = -phase[XUP]; else phase[YUP] = phase[XUP];
   if( h[YUP]%2 == 1) phase[ZUP] = -phase[YUP]; else phase[ZUP] = phase[YUP];
 }
-
 
 /* Switch KS phases from origin r0_old to origin r0_new */
 
@@ -188,8 +189,10 @@ switch_KS_phases(fn_links_t *fn, int r0_old[], int r0_new[]){
   su3_matrix *fatback = get_fatbacklinks(fn);
   su3_matrix *lngback = get_lngbacklinks(fn);
   int i, dir;
-  short p_old[4], p_new[4];
   site *s;
+  short p_old[4]  __attribute__ ((aligned (8)));
+  short p_new[4]  __attribute__ ((aligned (8)));
+  short h[4] __attribute__ ((aligned (8)));
 
   /* Nothing to do if we are just shifting 2^4 hypercubes */
 
@@ -199,9 +202,10 @@ switch_KS_phases(fn_links_t *fn, int r0_old[], int r0_new[]){
      (r0_old[3]-r0_new[3])%2 == 0)
     return;
   
-  FORALLSITES(i,s){
-    alpha_offset(p_old, s, r0_old);
-    alpha_offset(p_new, s, r0_new);
+  FORALLSITES_OMP(i,s,private(dir,h,p_old,p_new)){
+    alpha_offset(h, p_old, s, r0_old);
+    alpha_offset(h, p_new, s, r0_new);
+#pragma unroll
     FORALLUPDIR(dir){
       if(p_old[dir]*p_new[dir] == -1){
 	negate_su3_matrix(fat+4*i+dir);
@@ -210,7 +214,7 @@ switch_KS_phases(fn_links_t *fn, int r0_old[], int r0_new[]){
 	if(lngback != NULL) negate_su3_matrix(lngback+4*i+dir);
       }
     }
-  }
+  } END_LOOP_OMP;
 }
 
 /*--------------------------------------------------------------------*/

@@ -25,6 +25,8 @@
 #define special_free free
 #endif
 
+/* Indexing for the temporary gauge field*/
+#define GIDX(dir, i) (dir) + 4*(i)
 
 static msg_tag *
 start_gather_field_strided(void *field, int stride, int size,
@@ -61,7 +63,7 @@ void path_product_field( const int *dir, const int length,
 	clear_su3mat(&tempmat1[i]);
 	tempmat1[i].e[0][0].real = tempmat1[i].e[1][1].real 
 	  = tempmat1[i].e[2][2].real = 1.;
-      } END_LOOP_OMP
+      } END_LOOP_OMP;
       return;
     }
 
@@ -80,7 +82,7 @@ void path_product_field( const int *dir, const int length,
     else{  /* if GOES_BACKWARDS(dir[0]) */
 	FORALLSITES_OMP(i,s, ){
 	  su3_adjoint(&(s->link[OPP_DIR(dir[0])]),&tempmat1[i] );
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
     }
 
     for(j=1;j<length;j++) {
@@ -91,14 +93,14 @@ void path_product_field( const int *dir, const int length,
 	        FORALLSITES_OMP(i,s,){
 		  mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(s->link[dir[j]]),
 		    &(tempmat2t[i]) );
-	        } END_LOOP_OMP
+	        } END_LOOP_OMP;
 	        cleanup_gather(mtag0);
 	      }
 	      else{ /* last link was backwards */
 	        FORALLSITES_OMP(i,s, ){
 		  mult_su3_nn( &tempmat1[i],&(s->link[dir[j]]),
 		    &(tempmat2t[i]) );
-	        } END_LOOP_OMP
+	        } END_LOOP_OMP;
 	      }
 	      mtag0 = start_gather_field( tempmat2t, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
@@ -109,7 +111,7 @@ void path_product_field( const int *dir, const int length,
 	        wait_gather(mtag0);
 	        FORALLSITES_OMP(i,s,){
 	          su3mat_copy((su3_matrix *)(gen_pt[0][i]),&(tempmat3t[i]) );
-	        } END_LOOP_OMP
+	        } END_LOOP_OMP;
 	        cleanup_gather(mtag0);
 	        mtag0 = start_gather_field( tempmat3t, sizeof(su3_matrix),
 		  OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
@@ -123,7 +125,7 @@ void path_product_field( const int *dir, const int length,
 		  mult_su3_na((su3_matrix *)(gen_pt[0][i]),
 			      // FIX !
 		    &(s->link[OPP_DIR(dir[j])]), &(tempmat2t[i]) );
-	      } END_LOOP_OMP
+	      } END_LOOP_OMP;
 	      cleanup_gather(mtag0);
 	    } /* end for GOES_BACKWARDS */
 	} /* end for j=odd */
@@ -135,14 +137,14 @@ void path_product_field( const int *dir, const int length,
 	      FORALLSITES_OMP(i,s,){
 		mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(s->link[dir[j]]),
 		    &tempmat1[i] );
-	      } END_LOOP_OMP
+	      } END_LOOP_OMP;
 	      cleanup_gather(mtag0);
 	    }
 	    else{ /* last link goes backwards */
 	      FORALLSITES_OMP(i,s,){
 		mult_su3_nn( &(tempmat2t[i]),&(s->link[dir[j]]),
 		    &tempmat1[i] );
-	      } END_LOOP_OMP
+	      } END_LOOP_OMP;
 	    }
 	    mtag0 = start_gather_field( tempmat1, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
@@ -153,7 +155,7 @@ void path_product_field( const int *dir, const int length,
 	      wait_gather(mtag0);
 	      FORALLSITES_OMP(i,s,){
 	        su3mat_copy((su3_matrix *)(gen_pt[0][i]),&(tempmat3t[i]) ); 
-	      } END_LOOP_OMP
+	      } END_LOOP_OMP;
 	      cleanup_gather(mtag0);
 	      mtag0 = start_gather_field( tempmat3t, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
@@ -166,7 +168,7 @@ void path_product_field( const int *dir, const int length,
 	    FORALLSITES_OMP(i,s,){
 	      mult_su3_na((su3_matrix *)(gen_pt[0][i]),
 		    &(s->link[OPP_DIR(dir[j])]), &tempmat1[i] );
-	    } END_LOOP_OMP
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	  } /* for GOES_BACKWARDS */
 	} /* for j=even */
@@ -179,13 +181,13 @@ void path_product_field( const int *dir, const int length,
 	wait_gather(mtag0);
 	  FORALLSITES_OMP(i,s,){
 	    su3mat_copy((su3_matrix *)(gen_pt[0][i]),&tempmat1[i] ); 
-	} END_LOOP_OMP
+	  } END_LOOP_OMP;
 	cleanup_gather(mtag0);
       }
       else{
 	FORALLSITES_OMP(i,s,){
 	  su3mat_copy(&(tempmat2t[i]),&tempmat1[i] );
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
       }
     }
     else{ /* odd length path */
@@ -193,11 +195,11 @@ void path_product_field( const int *dir, const int length,
 	wait_gather(mtag0);
 	FORALLSITES_OMP(i,s,){
 	  su3mat_copy( (su3_matrix *)(gen_pt[0][i]), &(tempmat3t[i]) );
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
 	cleanup_gather(mtag0);
 	FORALLSITES_OMP(i,s,){
 	  su3mat_copy( &(tempmat3t[i]), &tempmat1[i] );
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
       }
       else{
       }
@@ -210,6 +212,7 @@ void path_product_field( const int *dir, const int length,
 void path_product_fields( su3_matrix *Src, const int *dir, const int length, 
 			  su3_matrix *tempmat1) {
     register int i;
+    int idx;
     register site *s;
     msg_tag *mtag0 = NULL;
     su3_matrix *tempmat2t, *tempmat3t;
@@ -231,7 +234,7 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 	clear_su3mat(&tempmat1[i]);
 	tempmat1[i].e[0][0].real = tempmat1[i].e[1][1].real 
 	  = tempmat1[i].e[2][2].real = 1.;
-      } END_LOOP_OMP
+      } END_LOOP_OMP;
       return;
     }
 
@@ -241,17 +244,19 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 
     /* j=0 */
     if( GOES_FORWARDS(dir[0]) )  {
-      mtag0 = start_gather_field_strided( Src + dir[0],
+      idx = GIDX(dir[0],0);
+      mtag0 = start_gather_field_strided( Src + idx,
 					  4*sizeof(su3_matrix), sizeof(su3_matrix),
 					  OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
       //	mtag0 = start_gather_field( Src[dir[0]], sizeof(su3_matrix),
       //	    OPP_DIR(dir[0]), EVENANDODD, gen_pt[0] );
     }
     else{  /* if GOES_BACKWARDS(dir[0]) */
-	FORALLSITES_OMP(i,s,){
+	FORALLSITES_OMP(i,s,private(idx)){
+          idx = GIDX(OPP_DIR(dir[0]),i);
 	  //	    su3_adjoint( &(Src[OPP_DIR(dir[0])][i]),&tempmat1[i] );
-	  su3_adjoint( &(Src[4*i+OPP_DIR(dir[0])]),&tempmat1[i] );
-	} END_LOOP_OMP
+	  su3_adjoint( &(Src[idx]),&tempmat1[i] );
+	} END_LOOP_OMP;
     }
 
     for(j=1;j<length;j++) {
@@ -259,17 +264,19 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 	    if( GOES_FORWARDS(dir[j]) ) {
 	      if( GOES_FORWARDS(dir[j-1]) ){
 	        wait_gather(mtag0);
-	        FORALLSITES_OMP(i,s,){
-		  mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(Src[4*i+dir[j]]),
+	        FORALLSITES_OMP(i,s,private(idx)){
+		  idx = GIDX(dir[j],i);
+		  mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(Src[idx]),
 		    &(tempmat2t[i]) );
-	        } END_LOOP_OMP
+	        } END_LOOP_OMP;
 	        cleanup_gather(mtag0);
 	      }
 	      else{ /* last link was backwards */
-	        FORALLSITES_OMP(i,s,){
-		  mult_su3_nn( &tempmat1[i], &(Src[4*i+dir[j]]),
+	        FORALLSITES_OMP(i,s,private(idx)){
+		  idx = GIDX(dir[j],i);
+		  mult_su3_nn( &tempmat1[i], &(Src[idx]),
 		    &(tempmat2t[i]) );
-	        } END_LOOP_OMP
+	        } END_LOOP_OMP;
 	      }
 	      mtag0 = start_gather_field( tempmat2t, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
@@ -280,7 +287,7 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 	        wait_gather(mtag0);
 	        FORALLSITES_OMP(i,s,){
 	          su3mat_copy((su3_matrix *)(gen_pt[0][i]),&(tempmat3t[i]) );
-	        } END_LOOP_OMP
+	        } END_LOOP_OMP;
 	        cleanup_gather(mtag0);
 	        mtag0 = start_gather_field( tempmat3t, sizeof(su3_matrix),
 		  OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
@@ -290,10 +297,11 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 		  OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	      }
 	      wait_gather(mtag0);
-	      FORALLSITES_OMP(i,s,){
-		  mult_su3_na((su3_matrix *)(gen_pt[0][i]),
-		    &(Src[4*i+OPP_DIR(dir[j])]), &(tempmat2t[i]) );
-	      } END_LOOP_OMP
+	      FORALLSITES_OMP(i,s,private(idx)){
+		idx = GIDX(OPP_DIR(dir[j]),i);
+		mult_su3_na((su3_matrix *)(gen_pt[0][i]),
+			    &(Src[idx]), &(tempmat2t[i]) );
+	      } END_LOOP_OMP;
 	      cleanup_gather(mtag0);
 	    } /* end for GOES_BACKWARDS */
 	} /* end for j=odd */
@@ -302,17 +310,19 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 	  if( GOES_FORWARDS(dir[j]) ) {
 	    if( GOES_FORWARDS(dir[j-1]) ){
 	      wait_gather(mtag0);
-	      FORALLSITES_OMP(i,s,){
-		mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(Src[4*i+dir[j]]),
+	      FORALLSITES_OMP(i,s,private(idx)){
+		idx = GIDX(dir[j],i);
+		mult_su3_nn( (su3_matrix *)(gen_pt[0][i]), &(Src[idx]),
 		    &tempmat1[i] );
-	      } END_LOOP_OMP
+	      } END_LOOP_OMP;
 	      cleanup_gather(mtag0);
 	    }
 	    else{ /* last link goes backwards */
-	      FORALLSITES_OMP(i,s,){
-		mult_su3_nn( &(tempmat2t[i]),&(Src[4*i+dir[j]]),
+	      FORALLSITES_OMP(i,s,private(idx)){
+		idx = GIDX(dir[j],i);
+		mult_su3_nn( &(tempmat2t[i]),&(Src[idx]),
 		    &tempmat1[i] );
-	      } END_LOOP_OMP
+	      } END_LOOP_OMP;
 	    }
 	    mtag0 = start_gather_field( tempmat1, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
@@ -323,7 +333,7 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 	      wait_gather(mtag0);
 	      FORALLSITES_OMP(i,s,){
 	        su3mat_copy((su3_matrix *)(gen_pt[0][i]),&(tempmat3t[i]) ); 
-	      } END_LOOP_OMP
+	      } END_LOOP_OMP;
 	      cleanup_gather(mtag0);
 	      mtag0 = start_gather_field( tempmat3t, sizeof(su3_matrix),
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
@@ -333,10 +343,11 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 		OPP_DIR(dir[j]), EVENANDODD, gen_pt[0] );
 	    }
 	    wait_gather(mtag0);
-	    FORALLSITES_OMP(i,s,){
+	    FORALLSITES_OMP(i,s,private(idx)){
+	      idx = GIDX(OPP_DIR(dir[j]),i);
 	      mult_su3_na((su3_matrix *)(gen_pt[0][i]),
-		    &(Src[4*i+OPP_DIR(dir[j])]), &tempmat1[i] );
-	    } END_LOOP_OMP
+		    &(Src[idx]), &tempmat1[i] );
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	  } /* for GOES_BACKWARDS */
 	} /* for j=even */
@@ -349,13 +360,13 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 	wait_gather(mtag0);
 	  FORALLSITES_OMP(i,s,){
 	    su3mat_copy((su3_matrix *)(gen_pt[0][i]),&tempmat1[i] ); 
-	} END_LOOP_OMP
+	  } END_LOOP_OMP;
 	cleanup_gather(mtag0);
       }
       else{
 	FORALLSITES_OMP(i,s,){
 	  su3mat_copy(&(tempmat2t[i]),&tempmat1[i] );
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
       }
     }
     else{ /* odd length path */
@@ -363,11 +374,11 @@ void path_product_fields( su3_matrix *Src, const int *dir, const int length,
 	wait_gather(mtag0);
 	FORALLSITES_OMP(i,s,){
 	  su3mat_copy( (su3_matrix *)(gen_pt[0][i]), &(tempmat3t[i]) );
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
 	cleanup_gather(mtag0);
 	FORALLSITES_OMP(i,s,){
 	  su3mat_copy( &(tempmat3t[i]), &tempmat1[i] );
-	} END_LOOP_OMP
+	} END_LOOP_OMP;
       }
       else{
       }

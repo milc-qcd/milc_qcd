@@ -10,6 +10,8 @@
 #include "inline_C_s_m_a_hwvec_proj.h"
 #include "inline_C_s_m_a_mat.h"
 #include "inline_C_s_m_a_vec.h"
+#include "inline_C_submat.h"
+#include "inline_C_su3mat_copy.h"
 #include "inline_C_su3_proj.h"
 #include "inline_C_su3_rdot.h"
 #include "inline_C_subvec.h"

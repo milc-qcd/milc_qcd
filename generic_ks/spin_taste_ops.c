@@ -1350,7 +1350,7 @@ mult_rhois_ape_field( int fdir, enum shift_dir fb, int r0[],
   register int i;
   register site *s;  
   
-  /* apply the symmetric shift FN operator (uses fat and long links) */
+  /* apply the symmetric shift FN operator (uses APE links) */
   rephase_field_offset( ape_links, ON, NULL, r0 );
   shift_field( fdir, fb, dest, src, ape_links);
   rephase_field_offset( ape_links, OFF, NULL, r0 );

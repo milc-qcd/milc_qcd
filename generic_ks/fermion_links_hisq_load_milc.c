@@ -8,6 +8,7 @@
 #include "../include/fermion_links.h"
 #include "../include/info.h"
 #include <string.h>
+#include "../include/openmp_defs.h"
 
 #include "../include/umethod.h"
 #ifdef HAVE_QOP
@@ -96,14 +97,16 @@ int i,j;
 
 static void  
 load_U_from_field(info_t *info, hisq_auxiliary_t *aux, su3_matrix *links){
-  //  int dir,i;
+  int i;
   su3_matrix * U_link = aux->U_link;
 
-//  FORALLFIELDSITES(i){
-//    for(dir=XUP;dir<=TUP;dir++) 
-//      U_link[dir][i] = links[4*i + dir];
-//  }
-  memcpy(U_link, links, 4*sizeof(su3_matrix)*sites_on_node);
+  FORALLFIELDSITES_OMP(i,default(shared)){
+    //for(dir=XUP;dir<=TUP;dir++) 
+    //  U_link[dir][i] = links[4*i + dir];
+    memcpy(U_link + 4*i, links + 4*i, 4*sizeof(su3_matrix));
+  }
+  END_LOOP_OMP;
+//  memcpy(U_link, links, 4*sizeof(su3_matrix)*sites_on_node);
 }
 
 /*--------------------------------------------------------------------*/
@@ -119,7 +122,7 @@ load_V_from_U(info_t *info, hisq_auxiliary_t *aux, ks_component_paths *ap1){
 #ifdef HISQ_REUNITARIZATION_DEBUG
   int i, idir;
   complex cdetV;
-  FORALLSITES(i,s) {
+  FORALLSITES_OMP(i,s,private(idir,cdetV)) 
     for(idir=XUP;idir<=TUP;idir++) {
       if( lattice[i].on_step_V[idir] < global_current_time_step ) {
         lattice[i].on_step_V[idir] = global_current_time_step;
@@ -127,7 +130,7 @@ load_V_from_U(info_t *info, hisq_auxiliary_t *aux, ks_component_paths *ap1){
         lattice[i].Vdet[idir] = cabs( &cdetV );
       }
     }
-  }
+  END_LOOP_OMP;
 #endif /* HISQ_REUNITARIZATION_DEBUG */
 #endif /* MILC_GLOBAL_DEBUG */
 }
@@ -150,9 +153,10 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
 
   switch(umethod){
     case UNITARIZE_NONE:
-      FORALLFIELDSITES(i) for(dir=XUP; dir<=TUP; ++dir)
+      FORALLFIELDSITES_OMP(i,private(dir)) for(dir=XUP; dir<=TUP; ++dir)
 	      Y_unitlink[4*i+dir] = V_link[4*i+dir];
-	    break;
+      END_LOOP_OMP;
+      break;
 
     case UNITARIZE_ANALYTIC:
 	    unitarize_field_analytic_gpu(Y_unitlink, V_link);  // this needs to be defined elsewhere
@@ -198,21 +202,23 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
 
   case UNITARIZE_NONE:
     //node0_printf("WARNING: UNITARIZE_NONE\n");
-    FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++) 
+    FORALLFIELDSITES_OMP(i,private(dir))for(dir=XUP;dir<=TUP;dir++) 
       Y_unitlink[4*i+dir] = V_link[4*i+dir];
+    END_LOOP_OMP;
     break;
 
   case UNITARIZE_APE:
     node0_printf("UNITARIZE_APE: derivative is not ready for this method\n"); 
     terminate(0);
     
-    FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++){
+    FORALLFIELDSITES_OMP(i,private(dir,tmat))for(dir=XUP;dir<=TUP;dir++){
       /* Use partially reunitarized link for guess */
       tmat = V_link[4*i+dir];
       reunit_su3(&tmat);
       project_su3(&tmat, &(V_link[4*i+dir]), nhits, tol);
       Y_unitlink[4*i+dir] = tmat;
     }
+    END_LOOP_OMP;
     break;
 
   case UNITARIZE_ROOT:
@@ -222,11 +228,12 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
 
     /* rephase (out) V_link array */
     rephase_field_offset( V_link, OFF, NULL , r0);
-    FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++){
+    FORALLFIELDSITES_OMP(i,private(dir,tmat))for(dir=XUP;dir<=TUP;dir++){
       /* unitarize - project on U(3) */
       u3_unitarize( &( V_link[4*i+dir] ), &tmat );
       Y_unitlink[4*i+dir] = tmat;
     }
+    END_LOOP_OMP;
 
     /* rephase (in) Y_unitlink array */
     rephase_field_offset( Y_unitlink, ON, NULL , r0);
@@ -242,11 +249,12 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
 
     /* rephase (out) V_link array */
     rephase_field_offset( V_link, OFF, NULL , r0);
-    FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++){
+    FORALLFIELDSITES_OMP(i,private(dir,tmat))for(dir=XUP;dir<=TUP;dir++){
       /* unitarize - project on U(3) */
       u3_unitarize_rational( &( V_link[4*i+dir] ), &tmat );
       Y_unitlink[4*i+dir] = tmat;
     }
+    END_LOOP_OMP;
     rephase_field_offset( V_link, ON, NULL , r0);
 
     /* rephase (in) Y_unitlink array */
@@ -262,7 +270,7 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
     // HAS TO BE CHECKED FIRST FOR NONTRIVIAL V_link ARRAYS
     /* rephase (out) V_link array */
     rephase_field_offset( V_link, OFF, NULL , r0);
-    FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++){
+    FORALLFIELDSITES_OMP(i,private(dir,tmat))for(dir=XUP;dir<=TUP;dir++){
       /* unitarize - project on U(3) */
 #ifdef MILC_GLOBAL_DEBUG
 #ifdef HISQ_REUNITARIZATION_DEBUG
@@ -275,6 +283,7 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
 #endif /* MILC_GLOBAL_DEBUG */
       Y_unitlink[4*i+dir] = tmat;
     }
+    END_LOOP_OMP;
     /* rephase (in) V_link array */
     rephase_field_offset( V_link, ON, NULL , r0);
 
@@ -290,12 +299,13 @@ load_Y_from_V(info_t *info, hisq_auxiliary_t *aux, int umethod){
 
     rephase_field_offset( U_link, OFF, NULL , r0);
     rephase_field_offset( V_link, OFF, NULL , r0);
-    FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++){
+    FORALLFIELDSITES_OMP(i,private(dir))for(dir=XUP;dir<=TUP;dir++){
       /* unitarize - project on SU(3) with "stout" procedure */
       stout_smear( &( Y_unitlink[4*i+dir] ), 
                    &( V_link[4*i+dir] ),
                    &( U_link[4*i+dir] ) );
     }
+    END_LOOP_OMP;
     rephase_field_offset( U_link, ON, NULL , r0);
     rephase_field_offset( V_link, ON, NULL , r0);
 
@@ -348,8 +358,9 @@ load_W_from_Y(info_t *info, hisq_auxiliary_t *aux, int umethod, int ugroup){
     
   case UNITARIZE_NONE:
     //node0_printf("WARNING: UNITARIZE_NONE\n");
-    FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++) 
+    FORALLFIELDSITES_OMP(i,private(dir))for(dir=XUP;dir<=TUP;dir++)
       W_unitlink[4*i+dir] = Y_unitlink[4*i+dir];
+    END_LOOP_OMP;
     break;
     
   case UNITARIZE_APE:
@@ -363,12 +374,13 @@ load_W_from_Y(info_t *info, hisq_auxiliary_t *aux, int umethod, int ugroup){
       //node0_printf("WARNING: SPECIAL UNITARIZE_ROOT is performed\n");
       /* rephase (out) Y_unitlink array */
       rephase_field_offset( Y_unitlink, OFF, NULL , r0);
-      FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++){
+      FORALLFIELDSITES_OMP(i,private(dir,tmat,cdet))for(dir=XUP;dir<=TUP;dir++){
 	/* special unitarize - project U(3) on SU(3)
 	   CAREFUL WITH FERMION PHASES! */
 	su3_spec_unitarize( &( Y_unitlink[4*i+dir] ), &tmat, &cdet );
 	W_unitlink[4*i+dir] = tmat;
       }
+      END_LOOP_OMP;
       rephase_field_offset( Y_unitlink, ON, NULL , r0);
       
       /* rephase (in) W_unitlink array */
@@ -385,12 +397,13 @@ load_W_from_Y(info_t *info, hisq_auxiliary_t *aux, int umethod, int ugroup){
       //node0_printf("WARNING: SPECIAL UNITARIZE_ROOT is performed\n");
       /* rephase (out) Y_unitlink array */
       rephase_field_offset( Y_unitlink, OFF, NULL , r0);
-      FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++){
+      FORALLFIELDSITES_OMP(i,private(dir,tmat,cdet))for(dir=XUP;dir<=TUP;dir++){
 	/* special unitarize - project U(3) on SU(3)
 	   CAREFUL WITH FERMION PHASES! */
 	su3_spec_unitarize( &( Y_unitlink[4*i+dir] ), &tmat, &cdet );
 	W_unitlink[4*i+dir] = tmat;
       }
+      END_LOOP_OMP;
       rephase_field_offset( Y_unitlink, ON, NULL , r0);
       
       /* rephase (in) W_unitlink array */
@@ -407,7 +420,8 @@ load_W_from_Y(info_t *info, hisq_auxiliary_t *aux, int umethod, int ugroup){
       //node0_printf("WARNING: SPECIAL UNITARIZE_ROOT is performed\n");
       /* rephase (out) Y_unitlink array */
       rephase_field_offset( Y_unitlink, OFF, NULL , r0);
-      FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++){
+      FORALLFIELDSITES_OMP(i,private(dir,tmat,cdet))for(dir=XUP;dir<=TUP;dir++){
+
 	/* special unitarize - project U(3) on SU(3)
 	   CAREFUL WITH FERMION PHASES! */
 #ifdef MILC_GLOBAL_DEBUG
@@ -422,6 +436,7 @@ load_W_from_Y(info_t *info, hisq_auxiliary_t *aux, int umethod, int ugroup){
 #endif /* MILC_GLOBAL_DEBUG */
 	W_unitlink[4*i+dir] = tmat;
       }
+      END_LOOP_OMP;
       rephase_field_offset( Y_unitlink, ON, NULL , r0);
       
       /* rephase (in) W_unitlink array */
@@ -444,10 +459,11 @@ load_W_from_Y(info_t *info, hisq_auxiliary_t *aux, int umethod, int ugroup){
       //node0_printf("WARNING: SPECIAL UNITARIZE_ROOT is performed\n");
       /* rephase (out) Y_unitlink array */
       rephase_field_offset( Y_unitlink, OFF, NULL , r0);
-      FORALLFIELDSITES(i)for(dir=XUP;dir<=TUP;dir++){
+      FORALLFIELDSITES_OMP(i,private(dir))for(dir=XUP;dir<=TUP;dir++){
 	/* QUICK FIX: copy Y to W */
 	su3mat_copy( &( Y_unitlink[4*i+dir] ), &( W_unitlink[4*i+dir] ) );
       }
+      END_LOOP_OMP;
       rephase_field_offset( Y_unitlink, ON, NULL , r0);
       
       /* rephase (in) W_unitlink array */
@@ -475,9 +491,10 @@ reorder_links(su3_matrix *link4, su3_matrix *link[]){
   int i, dir;
 
   for(dir = 0; dir < 4; dir++){
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,default(shared)){
       link4[4*i+dir] = link[4*dir][i];
     }
+    END_LOOP_OMP;
   }
 }
 #endif
@@ -503,7 +520,7 @@ load_X_from_W(info_t *info, fn_links_t *fn, hisq_auxiliary_t *aux,
 #endif
   dtime += dclock();
   
-  printf("Combined fattening and long-link calculation time: %lf\n",dtime);
+  node0_printf("Combined fattening and long-link calculation time: %lf\n",dtime);
 
   info->final_flop = final_flop;
 

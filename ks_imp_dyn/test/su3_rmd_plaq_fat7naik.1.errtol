@@ -7,7 +7,7 @@ WARMUPS COMPLETED
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
-PLAQ: 3e-09 3e-09
+PLAQ: 3e-09 2e-06
 P_LOOP: 2e-09 6e-08
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
@@ -15,7 +15,7 @@ G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
 G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 )
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
-GACTION: 2e-06
+GACTION: 6e-06
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PBP: mass 0 8e-07 2e-06 2e-07 2e-06 ( 0 of 0 )
@@ -32,15 +32,15 @@ FACTION: mass = 0 2e-06 ( 0 of 0 )
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
-PLAQ: 3e-09 2e-06
-P_LOOP: 2e-08 8e-08
+PLAQ: 2e-06 2e-06
+P_LOOP: 2e-06 8e-08
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
 G_LOOP: 0 0 0 3e-09 ( 0 0 0 0 )
-GACTION: 2e-06
+GACTION: 6e-06
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PBP: mass 0 1e-06 2e-06 2e-07 3e-06 ( 0 of 0 )
