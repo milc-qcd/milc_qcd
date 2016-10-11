@@ -194,7 +194,7 @@ IMP_GAUGE_FORCE_QPHIX ( Real eps, field_offset mom_off )
   DESTROY_RAW_G(bckrawgauge);
 
   /* Update the mom, based on the gauge force */
-  QPHIX_symanzik_1loop_gauge_force( &info, gauge, mom, coeffs, eps);
+  QPHIX_symanzik_1loop_gauge_force( &info, gauge, mom, coeffs, eps*beta/3.);
 
   if(info.status != 0){
     node0_printf("Quitting because of gauge force error\n");
