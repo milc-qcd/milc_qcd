@@ -34,7 +34,7 @@
 #define CREATE_G_FROM_SITE4       create_qphix_F_G_from_site4
 #define CREATE_RAW_F_FROM_SITE4   create_qphix_raw4_F_F_from_site4
 #define CREATE_RAW_G              create_qphix_raw4_F_G
-#define CREATE_RAW_G_FROM_SITE4   create_qphix_raw4_F_F_from_site4
+#define CREATE_RAW_G_FROM_SITE4   create_qphix_raw4_F_G_from_site4
 #define DESTROY_RAW_F             destroy_qphix_raw4_F_F
 #define DESTROY_RAW_G             destroy_qphix_raw4_F_G
 #define IMP_GAUGE_FORCE_QPHIX     imp_gauge_force_qphix_F
@@ -48,7 +48,7 @@
 #define CREATE_G_FROM_SITE4       create_qphix_D_G_from_site4
 #define CREATE_RAW_F_FROM_SITE4   create_qphix_raw4_D_F_from_site4
 #define CREATE_RAW_G              create_qphix_raw4_D_G
-#define CREATE_RAW_G_FROM_SITE4   create_qphix_raw4_D_F_from_site4
+#define CREATE_RAW_G_FROM_SITE4   create_qphix_raw4_D_G_from_site4
 #define DESTROY_RAW_F             destroy_qphix_raw4_D_F
 #define DESTROY_RAW_G             destroy_qphix_raw4_D_G
 #define IMP_GAUGE_FORCE_QPHIX     imp_gauge_force_qphix_D
