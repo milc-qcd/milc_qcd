@@ -132,7 +132,10 @@ int main(int argc, char *argv[])
     
     /* Calculate and print the residues and norms of the eigenvectors */
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
+    node0_printf("Even site residuals\n");
     check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
+    node0_printf("Odd site residuals\n");
+    check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn[0] );
 
     /* print eigenvalues of iDslash */
     node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
