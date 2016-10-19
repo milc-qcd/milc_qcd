@@ -211,7 +211,7 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
     norm[i]  = (double)0.0;
     dslash_fn_field(eigVec[i], ttt, otherparity, fn);
     dslash_fn_field(ttt, ttt, parity, fn);
-    FOREVENFIELDSITES(j){
+    FORSOMEFIELDPARITY(j,parity){
       scalar_mult_sum_su3_vector(ttt+j, eigVec[i]+j, eigVal[i]);
       resid[i] += magsq_su3vec(ttt+j);
       norm[i] += magsq_su3vec(eigVec[i]+j);
@@ -231,3 +231,84 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
   node0_printf("End of eigensolutions\n");
   free(norm);
 }
+
+/**********************************************************************************/
+/* Returns the squared norm of a list of n su3_vector fields over the
+   lattice parity subset */
+
+static void dvecmagsq(double magsq[], su3_vector *vec[], int parity, int n) {
+  int i,j;
+  
+  for(j = 0; j < n; j++){
+    FORSOMEFIELDPARITY(i,parity){
+      magsq[j] += magsq_su3vec( vec[j]+i );
+    }
+  }
+
+  g_vecdoublesum(magsq, n);
+}
+
+/*****************************************************************************/
+/* Returns vec2 = a*vec1   a is a double vec2 can be vec1*/
+static void double_vec_mult(double *a, su3_vector *vec1, 
+		     su3_vector *vec2, int parity){
+  
+  register site *s;
+  register  int i;
+  
+  FORSOMEPARITY(i,s,parity){ 
+    scalar_mult_su3_vector( &(vec1[i]),(Real)*a, &(vec2[i])) ;
+  }
+}
+
+/*****************************************************************************/
+/* Construct odd-site eigenvectors from even                                 */
+/* (Simply multiply even-site vectors by dslash and normalize                */
+
+void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], int Nvecs){
+  
+  char myname[] = "construct_eigen_odd";
+  imp_ferm_links_t **fn;
+  int i,j;
+  double *magsq;
+
+  if(active_parity != EVEN){
+    node0_printf("%s: ERROR. active_parity must be EVEN\n", myname);
+    terminate(1);
+  }
+
+  fn = get_fm_links(fn_links);
+
+  for(j = 0; j < Nvecs; j++){
+    FORODDFIELDSITES(i){
+      clearvec(eigVec[j]+i);
+    }
+    dslash_field(eigVec[j], eigVec[j], ODD, fn[0]);
+  }
+
+  /* If we calculate the 2-norms all at once we do only one large
+     reduction sum */
+  magsq = (double *)malloc(sizeof(double)*Nvecs);
+  if(magsq == NULL){
+    node0_printf("dvecnorm2: no room\n");
+    terminate(1);
+  }
+
+  dvecmagsq(magsq, eigVec, ODD, Nvecs);
+
+  /* Normalize the odd-site vectors */
+  for(j = 0; j < Nvecs; j++){
+    double fact;
+    if(magsq[j] != 0.){
+      fact = 1./sqrt(magsq[j]);
+    } else {
+      node0_printf("%s: ERROR. zero norm for eigenvector %d.", myname, j);
+      fact = 0.;
+    }
+    double_vec_mult(&fact, eigVec[j], eigVec[j], ODD);
+  }
+  
+  free(magsq);
+}
+
+
