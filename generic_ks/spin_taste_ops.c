@@ -78,7 +78,7 @@ shift_field(int dir, enum shift_dir fb, su3_vector *dest, su3_vector *src,
 {
   register int i ;
   register site *s ;
-  msg_tag *tag[2];
+  msg_tag *tag[2] = {NULL, NULL};
   su3_vector *tvec = create_v_field();
 
   if(fb == SHIFT_FORWARD || fb == SHIFT_SYMMETRIC)
