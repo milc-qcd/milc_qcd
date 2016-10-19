@@ -128,11 +128,8 @@ void rephase( int flag ){
     terminate(1);
   }
   FORALLSITES_OMP(i,s,private(dir,j,k)){
-#pragma unroll
     for(dir=XUP;dir<=TUP;dir++){
-#pragma unroll
       for(j=0;j<3;j++)
-#pragma unroll
 	for(k=0;k<3;k++){
 	  lattice[i].link[dir].e[j][k].real *= lattice[i].phase[dir];
 	  lattice[i].link[dir].e[j][k].imag *= lattice[i].phase[dir];
