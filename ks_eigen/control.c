@@ -16,6 +16,7 @@ int main( int argc, char **argv ){
   su3_vector *tmp ;
   double *eigVal ;
   int total_R_iters ;
+  double *resid = NULL;
   double chirality, chir_ev, chir_od ;
   imp_ferm_links_t **fn;
 
@@ -54,8 +55,17 @@ int main( int argc, char **argv ){
     total_R_iters=Kalkreuter(eigVec, eigVal, eigenval_tol, 
 			     error_decr, Nvecs, MaxIter, Restart, 
 			     Kiters, 1);
+    construct_eigen_odd(eigVec, eigVal, Nvecs);
 
-    node0_printf("The above where eigenvalues of -Dslash^2 in MILC normalization\n");
+    /* Calculate and print the residues and norms of the eigenvectors */
+    resid = (double *)malloc(Nvecs*sizeof(double));
+    node0_printf("Even site residuals\n");
+    check_eigres( resid, eigVec, eigVal, Nvecs, EVEN, fn[0] );
+    node0_printf("Odd site residuals\n");
+    check_eigres( resid, eigVec, eigVal, Nvecs, ODD, fn[0] );
+
+    /* print eigenvalues of iDslash */
+    node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
     node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
     for(i=0;i<Nvecs;i++)
       { 

@@ -114,7 +114,77 @@ Eigenvalue(28) = 2.34724 +/- 2.454646e-05	 cvg? 0
 Eigenvalue(29) = 2.34724 +/- 5.448541e-05	 cvg? 0  
 Eigenvalue(30) = 2.42137 +/- 5.318278e-06	 cvg? 0  
 Eigenvalue(31) = 2.42137 +/- 1.830021e-06	 cvg? 0  
-The above where eigenvalues of -Dslash^2 in MILC normalization
+Even site residuals
+Checking eigensolutions
+eigVal[0] = 3.344213e-02 ( resid = 2.119318e-05 , ||eigVec[0]|-1| = -3.924288e-08 )
+eigVal[1] = 3.344214e-02 ( resid = 1.302083e-05 , ||eigVec[1]|-1| = -4.583853e-08 )
+eigVal[2] = 1.946452e+00 ( resid = 7.267947e-04 , ||eigVec[2]|-1| = -6.877567e-10 )
+eigVal[3] = 1.946452e+00 ( resid = 1.398375e-03 , ||eigVec[3]|-1| = 1.744551e-08 )
+eigVal[4] = 1.955962e+00 ( resid = 4.074694e-04 , ||eigVec[4]|-1| = 4.057074e-08 )
+eigVal[5] = 1.955963e+00 ( resid = 6.938571e-04 , ||eigVec[5]|-1| = 1.923763e-08 )
+eigVal[6] = 1.981036e+00 ( resid = 1.874108e-03 , ||eigVec[6]|-1| = 5.762558e-09 )
+eigVal[7] = 1.981040e+00 ( resid = 4.000650e-03 , ||eigVec[7]|-1| = -2.817251e-08 )
+eigVal[8] = 2.013302e+00 ( resid = 8.411240e-04 , ||eigVec[8]|-1| = -8.213101e-08 )
+eigVal[9] = 2.013303e+00 ( resid = 1.436272e-03 , ||eigVec[9]|-1| = -7.561175e-08 )
+eigVal[10] = 2.117685e+00 ( resid = 9.418588e-04 , ||eigVec[10]|-1| = -2.824891e-08 )
+eigVal[11] = 2.117706e+00 ( resid = 4.906449e-03 , ||eigVec[11]|-1| = 3.688183e-08 )
+eigVal[12] = 2.146502e+00 ( resid = 1.001594e-03 , ||eigVec[12]|-1| = 2.280050e-08 )
+eigVal[13] = 2.146505e+00 ( resid = 3.384736e-03 , ||eigVec[13]|-1| = 3.150239e-08 )
+eigVal[14] = 2.347221e+00 ( resid = 4.998335e-04 , ||eigVec[14]|-1| = -8.003553e-10 )
+eigVal[15] = 2.347221e+00 ( resid = 4.382072e-04 , ||eigVec[15]|-1| = -3.284549e-08 )
+eigVal[16] = 2.347221e+00 ( resid = 4.775989e-04 , ||eigVec[16]|-1| = -1.455192e-08 )
+eigVal[17] = 2.347221e+00 ( resid = 7.164795e-04 , ||eigVec[17]|-1| = -6.612391e-08 )
+eigVal[18] = 2.347221e+00 ( resid = 6.280620e-04 , ||eigVec[18]|-1| = 2.296474e-08 )
+eigVal[19] = 2.347221e+00 ( resid = 7.600289e-04 , ||eigVec[19]|-1| = 6.635673e-09 )
+eigVal[20] = 2.347222e+00 ( resid = 1.017350e-03 , ||eigVec[20]|-1| = 3.509922e-08 )
+eigVal[21] = 2.347222e+00 ( resid = 1.154697e-03 , ||eigVec[21]|-1| = -1.266017e-08 )
+eigVal[22] = 2.347223e+00 ( resid = 1.752972e-03 , ||eigVec[22]|-1| = -5.244510e-08 )
+eigVal[23] = 2.347224e+00 ( resid = 1.720032e-03 , ||eigVec[23]|-1| = -8.731149e-09 )
+eigVal[24] = 2.347225e+00 ( resid = 1.935667e-03 , ||eigVec[24]|-1| = 7.217750e-09 )
+eigVal[25] = 2.347227e+00 ( resid = 2.292012e-03 , ||eigVec[25]|-1| = 1.239823e-08 )
+eigVal[26] = 2.347229e+00 ( resid = 2.314343e-03 , ||eigVec[26]|-1| = -4.071808e-09 )
+eigVal[27] = 2.347230e+00 ( resid = 2.577826e-03 , ||eigVec[27]|-1| = 8.963980e-09 )
+eigVal[28] = 2.347235e+00 ( resid = 2.400145e-03 , ||eigVec[28]|-1| = -3.608875e-09 )
+eigVal[29] = 2.347240e+00 ( resid = 3.288477e-03 , ||eigVec[29]|-1| = 2.614252e-08 )
+eigVal[30] = 2.421367e+00 ( resid = 1.873669e-03 , ||eigVec[30]|-1| = 3.845707e-08 )
+eigVal[31] = 2.421375e+00 ( resid = 2.258013e-03 , ||eigVec[31]|-1| = -2.284651e-09 )
+End of eigensolutions
+Odd site residuals
+Checking eigensolutions
+eigVal[0] = 3.344213e-02 ( resid = 4.742953e-04 , ||eigVec[0]|-1| = -1.294393e-08 )
+eigVal[1] = 3.344214e-02 ( resid = 2.601971e-04 , ||eigVec[1]|-1| = 1.495937e-08 )
+eigVal[2] = 1.946452e+00 ( resid = 1.542657e-03 , ||eigVec[2]|-1| = -3.475017e-08 )
+eigVal[3] = 1.946452e+00 ( resid = 2.825059e-03 , ||eigVec[3]|-1| = 3.058113e-08 )
+eigVal[4] = 1.955962e+00 ( resid = 7.913430e-04 , ||eigVec[4]|-1| = 4.179310e-08 )
+eigVal[5] = 1.955963e+00 ( resid = 1.322993e-03 , ||eigVec[5]|-1| = -7.101335e-09 )
+eigVal[6] = 1.981036e+00 ( resid = 5.231652e-03 , ||eigVec[6]|-1| = 3.754394e-08 )
+eigVal[7] = 1.981040e+00 ( resid = 1.018504e-02 , ||eigVec[7]|-1| = -2.549496e-08 )
+eigVal[8] = 2.013302e+00 ( resid = 1.943228e-03 , ||eigVec[8]|-1| = 4.236426e-08 )
+eigVal[9] = 2.013303e+00 ( resid = 2.835378e-03 , ||eigVec[9]|-1| = -2.405432e-08 )
+eigVal[10] = 2.117685e+00 ( resid = 1.880640e-03 , ||eigVec[10]|-1| = 2.118395e-08 )
+eigVal[11] = 2.117706e+00 ( resid = 1.071823e-02 , ||eigVec[11]|-1| = -4.024696e-08 )
+eigVal[12] = 2.146502e+00 ( resid = 1.782329e-03 , ||eigVec[12]|-1| = -3.575566e-08 )
+eigVal[13] = 2.146505e+00 ( resid = 8.469226e-03 , ||eigVec[13]|-1| = 2.676983e-08 )
+eigVal[14] = 2.347221e+00 ( resid = 1.023013e-03 , ||eigVec[14]|-1| = -9.167707e-09 )
+eigVal[15] = 2.347221e+00 ( resid = 8.628654e-04 , ||eigVec[15]|-1| = 4.062895e-08 )
+eigVal[16] = 2.347221e+00 ( resid = 9.781655e-04 , ||eigVec[16]|-1| = -2.846355e-08 )
+eigVal[17] = 2.347221e+00 ( resid = 1.483354e-03 , ||eigVec[17]|-1| = 4.001777e-08 )
+eigVal[18] = 2.347221e+00 ( resid = 1.282205e-03 , ||eigVec[18]|-1| = 1.628359e-08 )
+eigVal[19] = 2.347221e+00 ( resid = 1.459493e-03 , ||eigVec[19]|-1| = -3.658352e-08 )
+eigVal[20] = 2.347222e+00 ( resid = 1.951022e-03 , ||eigVec[20]|-1| = -2.214802e-08 )
+eigVal[21] = 2.347222e+00 ( resid = 2.117649e-03 , ||eigVec[21]|-1| = -1.348963e-08 )
+eigVal[22] = 2.347223e+00 ( resid = 3.238337e-03 , ||eigVec[22]|-1| = 1.300941e-08 )
+eigVal[23] = 2.347224e+00 ( resid = 3.337401e-03 , ||eigVec[23]|-1| = 1.289663e-09 )
+eigVal[24] = 2.347225e+00 ( resid = 3.586279e-03 , ||eigVec[24]|-1| = 1.581793e-08 )
+eigVal[25] = 2.347227e+00 ( resid = 4.296931e-03 , ||eigVec[25]|-1| = 1.423177e-08 )
+eigVal[26] = 2.347229e+00 ( resid = 4.107675e-03 , ||eigVec[26]|-1| = -2.979505e-08 )
+eigVal[27] = 2.347230e+00 ( resid = 4.672595e-03 , ||eigVec[27]|-1| = -3.073001e-08 )
+eigVal[28] = 2.347235e+00 ( resid = 4.586021e-03 , ||eigVec[28]|-1| = -2.438901e-08 )
+eigVal[29] = 2.347240e+00 ( resid = 5.756322e-03 , ||eigVec[29]|-1| = -3.792229e-08 )
+eigVal[30] = 2.421367e+00 ( resid = 3.801045e-03 , ||eigVec[30]|-1| = 1.213630e-08 )
+eigVal[31] = 2.421375e+00 ( resid = 4.934931e-03 , ||eigVec[31]|-1| = 1.580338e-08 )
+End of eigensolutions
+The above were eigenvalues of -Dslash^2 in MILC normalization
 Here we also list eigenvalues of iDslash in continuum normalization
 eigenval(0):  0.0914359
 eigenval(1):   0.091436
