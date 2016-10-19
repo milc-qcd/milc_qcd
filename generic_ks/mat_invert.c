@@ -150,7 +150,7 @@ static void project_out(su3_vector *vec, int Num, int parity){
 
 static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int parity){
   int i, j;
-  double_complex cc, *c;
+  double_complex *c;
 
   /* Remove the Num low eigenmodes from the trial solution, leaving the
      high eigenmode trial solution */
@@ -164,7 +164,7 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
   for( j = 0; j < Num; j++){
     c[j] = dcmplx((double)0.0,(double)0.0);
     FORSOMEFIELDPARITY(i,parity){
-      cc = su3_dot( eigVec[j]+i, src+i );
+      complex cc = su3_dot( eigVec[j]+i, src+i );
       CSUM( c[j], cc );
     }
   }
