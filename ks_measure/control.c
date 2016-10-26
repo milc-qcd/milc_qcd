@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
       total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
 			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 
 			       param.ks_eigen_startflag == FRESH);
-      construct_eigen_odd(eigVec, eigVal, Nvecs_curr);
+      construct_eigen_odd(eigVec, eigVal, Nvecs_curr, fn[0]);
       node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
     }
 
@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
     node0_printf("Even site residuals\n");
     check_eigres( resid, eigVec, eigVal, Nvecs_curr, EVEN, fn[0] );
+    construct_eigen_odd(eigVec, eigVal, Nvecs_curr, fn[0]);
     node0_printf("Odd site residuals\n");
     check_eigres( resid, eigVec, eigVal, Nvecs_curr, ODD, fn[0] );
 
