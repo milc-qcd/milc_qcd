@@ -215,6 +215,7 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
       scalar_mult_sum_su3_vector(ttt+j, eigVec[i]+j, eigVal[i]);
       resid[i] += magsq_su3vec(ttt+j);
       norm[i] += magsq_su3vec(eigVec[i]+j);
+      int c = 1;
     }
   }
   destroy_v_field(ttt);
@@ -240,6 +241,7 @@ static void dvecmagsq(double magsq[], su3_vector *vec[], int parity, int n) {
   int i,j;
   
   for(j = 0; j < n; j++){
+    magsq[j] = 0.;
     FORSOMEFIELDPARITY(i,parity){
       magsq[j] += magsq_su3vec( vec[j]+i );
     }
@@ -265,10 +267,9 @@ static void double_vec_mult(double *a, su3_vector *vec1,
 /* Construct odd-site eigenvectors from even                                 */
 /* (Simply multiply even-site vectors by dslash and normalize                */
 
-void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], int Nvecs){
+void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], int Nvecs, imp_ferm_links_t *fn){
   
   char myname[] = "construct_eigen_odd";
-  imp_ferm_links_t **fn;
   int i,j;
   double *magsq;
 
@@ -277,20 +278,18 @@ void construct_eigen_odd(su3_vector *eigVec[], double eigVal[], int Nvecs){
     terminate(1);
   }
 
-  fn = get_fm_links(fn_links);
-
   for(j = 0; j < Nvecs; j++){
     FORODDFIELDSITES(i){
       clearvec(eigVec[j]+i);
     }
-    dslash_field(eigVec[j], eigVec[j], ODD, fn[0]);
+    dslash_field(eigVec[j], eigVec[j], ODD, fn);
   }
 
   /* If we calculate the 2-norms all at once we do only one large
      reduction sum */
   magsq = (double *)malloc(sizeof(double)*Nvecs);
   if(magsq == NULL){
-    node0_printf("dvecnorm2: no room\n");
+    node0_printf("magsq: no room\n");
     terminate(1);
   }
 
