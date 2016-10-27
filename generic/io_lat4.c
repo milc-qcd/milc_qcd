@@ -1002,7 +1002,7 @@ static void w_parallel(gauge_file *gf)
     fsu3_matrix link[4];
   } msg;
   int isite,ksite,site_block;
-  int rcv_coords,rcv_rank;
+  size_t rcv_coords,rcv_rank;
   int destnode,sendnode;
   char myname[] = "w_parallel";
 
