@@ -142,11 +142,6 @@ symmetrize(Real *q, Real *q2){
   FORALLFIELDSITES(i){
     qxz[i] = *((double *)gen_pt[1][i]);
   }
-
-  FORALLFIELDSITES(i){
-    q[i] = (q[i] + qxy[i] + qxz[i])/3.;
-  }
-
   wait_gather(mtagxy2);
   FORALLFIELDSITES(i){
     qxy2[i] = *((double *)gen_pt[2][i]);
