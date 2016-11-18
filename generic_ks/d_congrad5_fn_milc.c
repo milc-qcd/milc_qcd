@@ -137,9 +137,9 @@ ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
     /* Zero the solution, free space, and return zero iterations */
     FORSOMEFIELDPARITY_OMP(i,parity,default(shared)){
       memset(t_dest + i, 0, sizeof(su3_vector));
-    } END_LOOP_OMP
+    } END_LOOP_OMP;
 
-  dtimec += dclock();
+    dtimec += dclock();
 #ifdef CGTIME
   if(this_node==0){
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
