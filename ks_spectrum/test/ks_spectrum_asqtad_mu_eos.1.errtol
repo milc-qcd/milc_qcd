@@ -975,8 +975,8 @@ step 0 av gf action 0.0002 delta 0.0002
 step 0 av gf action 0.0002 delta 0.0002
 step 0 av gf action 0.0002 delta 0.0002
 GFIX: Ended at step 0.02 Av gf action 0.0002 delta 0.0002
-Aggregate time to gauge fix XXX
-Time to APE smear XXX sec
+Aggregate time to gauge fix 0.1
+Time to APE smear 0.0002 sec
 END OF HEADER
 Aggregate time to compute propagators 4e-06
 Aggregate time to tie meson correlators XXX

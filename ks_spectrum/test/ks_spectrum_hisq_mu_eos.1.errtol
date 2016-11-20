@@ -888,40 +888,44 @@ OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -960,6 +964,6 @@ step 0 av gf action 0.0002 delta 0.0002
 step 0 av gf action 0.0002 delta 0.0002
 step 0 av gf action 0.0002 delta 0.0002
 GFIX: Ended at step 0.02 Av gf action 0.0002 delta 0.0002
-Time to APE smear XXX sec
+Time to APE smear 0.002 sec
 END OF HEADER
 RUNNING COMPLETED

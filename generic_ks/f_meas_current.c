@@ -113,8 +113,10 @@ average_vector_current_and_sum(int nwrite, Real *j_mu, Real *jadd_mu){
   int i, mu;
   /* Compute average in place */
   FORALLFIELDSITES(i){
-    for(mu = 0; mu < NMU; mu++)
+    for(mu = 0; mu < NMU; mu++){
       j_mu[NMU*i + mu] = j_mu[NMU*i + mu]/nwrite + jadd_mu[NMU*i + mu];
+      printf("j_mu  %d %d %d %d %d %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, j_mu[NMU*i+mu]);
+    }
   }
 }
 
@@ -259,7 +261,7 @@ f_meas_current_diff( int nrand, int nwrite, int thinning,
   } /* jrand */
 
   close_vector_current_file(outfile);
-  node0_printf("Time to write %d records = %e sed\n", nrand, wtime);
+  node0_printf("Time to write %d records = %e sec\n", nrand, wtime);
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;
@@ -470,6 +472,8 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
   imp_ferm_links_t *fn_multi[n_masses];
   QIO_Writer *outfile[n_masses];
   imp_ferm_links_t **fn = get_fm_links(fl);
+
+  node0_printf("Entered %s\n", myname); fflush(stdout);
  
   /* Create fields for current densities, one for each mass */
   for(j = 0; j < n_masses; j++)
@@ -517,9 +521,9 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 
 	    /* Project out the low mode part, based on the given eigenvectors */
 	    project_out(gr, eigVec, Nvecs, EVEN);
-	    
+
 	    for(j = 0; j < n_masses; j++){
-	      
+
 	      /* First, the sloppy high-mode solution */
 	      /* M_inv_gr = M^{-1} gr (same random source for each mass) */
 	      node0_printf("Solving sloppily for %d %d %d %d\n", ex, ey, ez, et);
@@ -579,6 +583,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	  printf("\n");
 	}
 #endif
+	node0_printf("For rand %d and mass %g\n", jrand, mass[j]);
 	average_vector_current(nwrite, j_mu[j]);
 	int status = write_vector_current_record(outfile[j], jrand, nwrite, mass[j], j_mu[j]);
 	clear_r_array_field(j_mu[j], NMU);
@@ -586,7 +591,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
 	if(status != QIO_SUCCESS){
 	  node0_printf("%s: Failed to write record to %s\n", myname, filenames[j]);
 	} 
-      }
+      } /* j */
     } /* if write */
   } /* jrand */
   
@@ -608,7 +613,7 @@ f_meas_current_multi_diff_eig( int n_masses, int nrand, int nwrite, int thinning
    This variant does two solves from the same source -- sloppy and precise --
    and calculates the average of the difference between the resulting current
    densities.
-   Designed for use with deflation or eigcg */
+*/
 
 void 
 f_meas_current_multi_diff( int n_masses, int nrand, int nwrite, int thinning,
@@ -801,6 +806,20 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
   imp_ferm_links_t **fn = get_fm_links(fl);
   double wtime = 0.;
  
+  node0_printf("Entered %s\n", myname); fflush(stdout);
+
+#if 1
+  /* DEBUG */
+  /* Check orthonormality of a few eigenvectors */
+  for(j = 0; j < Nvecs; j += 8)
+    for(i = j; i < Nvecs; i += 8){
+      double_complex cc ;
+      dot_product(eigVec[i], eigVec[j], &cc, EVEN) ;
+      if(i == j && fabs(cc.real - 1) > 1e-8 || i != j && fabs(cc.real) > 1e-8)
+	node0_printf("vec[%d] * vec[%d] = %g %g\n", i, j, cc.real, cc.imag);
+    }
+#endif
+
   /* Create fields for current densities, one for each mass */
   for(j = 0; j < n_masses; j++){
     j_mu[j] = create_r_array_field(NMU);
@@ -842,6 +861,18 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
       } /* mu */
     } /* j */
   } /* n */
+
+#if 1
+  for(j = 0; j < n_masses; j++){
+    for(mu = 0; mu < NMU; mu++){
+      node0_printf("For mass %g\n", mass[j]);
+      FOREVENFIELDSITES(i){
+	node0_printf("j_mu_low  %d %d %d %d %d %g\n",lattice[i].x, lattice[i].y, lattice[i].z, lattice[i].t, mu, jlow_mu[j][NMU*i+mu]);
+      }
+    }
+  }
+#endif
+
   dtime += dclock();
   node0_printf("Time for exact low modes %g sec\n", dtime);
 
@@ -856,7 +887,8 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
       clear_r_array_field(j_mu[j], NMU);
     }
   }
-  
+
+
   /* Loop over random sources */
   for(jrand = 0; jrand < nrand; jrand++){
     
@@ -886,6 +918,14 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
 
 	    /* Project out the low mode part, based on the given eigenvectors */
 	    project_out(gr, eigVec, Nvecs, EVEN);
+	    
+#if 1
+	    /* DEBUG */
+	    /* Check the norm of the reduced source */
+	    double_complex dd;
+	    dot_product(gr, gr, &dd, EVEN);
+	    node0_printf("Deflated source norm %g\n", dd.real);
+#endif
 	    
 	    for(j = 0; j < n_masses; j++){
 	      
@@ -979,6 +1019,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
 	  printf("\n");
 	}
 #endif
+	node0_printf("For rand %d and mass %g\n", jrand, mass[j]);
 	average_vector_current_and_sum(nwrite, j_mu[j], jlow_mu[j]);
 	int status = write_vector_current_record(outfile[j], jrand, nwrite, mass[j], j_mu[j]);
 	clear_r_array_field(j_mu[j], NMU);
