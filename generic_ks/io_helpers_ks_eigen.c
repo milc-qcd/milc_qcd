@@ -27,7 +27,7 @@ void restore_eigVec(int Nvecs, double *eigVal, su3_vector **eigVec, int parity,
 		    imp_ferm_links_t *fn){
 
   register int i, j;
-  double_complex c;
+  complex c;
   su3_vector *ttt = NULL;
   char myname[] = "restore_eigVec";
 
@@ -40,7 +40,7 @@ void restore_eigVec(int Nvecs, double *eigVal, su3_vector **eigVec, int parity,
   for(i=0; i < Nvecs; i++){
     dslash_fn_field(eigVec[i], ttt, parity, fn);
     FORSOMEFIELDPARITY(j, parity){
-      c = dcmplx((double)0.0,1.0/sqrt(eigVal[i]));
+      c = cmplx(0.0,1.0/sqrt(eigVal[i]));
       c_scalar_mult_su3vec(ttt + j, &c, eigVec[i] + j) ;
     }
   }
