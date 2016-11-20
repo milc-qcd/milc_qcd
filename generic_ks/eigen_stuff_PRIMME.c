@@ -21,18 +21,23 @@
 
 #ifdef PRIMME
 
+/* NOTE: The PRIMME release version has clashing definitions for complex functions, so we provide
+   a stripped-down version.  This must be checked against future releases. 
+   Also, watch out for the definition of PRIMME_INT = long? */
 #include "../include/primme.h"
 #include "../include/dslash_ks_redefine.h"
 #include <string.h>
 
 static int mxv_kalk;
 static imp_ferm_links_t **fn;
-static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params *primme) ;
+static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params *primme, int *ierr) ;
 
 /************************************************************************/
+//static void ks_mxv(void *x, void *y, int *blockSize, primme_params *primme){
 
-/* The matrix times vector routine give to PRIMME */
-static void ks_mxv(void *x, void *y, int *blockSize, primme_params *primme){
+/* The matrix times vector routine given to PRIMME */
+static void ks_mxv(void *x, long *ldx, void *y, long *ldy,
+		   int *blockSize, struct primme_params *primme, int *ierr){
   site* s;
   int i,j,iblock;
   int maxn;
@@ -72,6 +77,7 @@ static void ks_mxv(void *x, void *y, int *blockSize, primme_params *primme){
 
   }
 
+  *ierr = 0 ;
 }
 
 
@@ -149,11 +155,11 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   primme.numProcs=number_of_nodes;          
   primme.procID=this_node;
-  primme.globalSumDouble=par_GlobalSumDouble;	/* the wrapper function to do global sums */
+  primme.globalSumReal=par_GlobalSumDouble;	/* the wrapper function to do global sums */
 
   primme.matrixMatvec =ks_mxv;			/* the matrix on vector product */
 
-  ret = primme_set_method(DEFAULT_MIN_MATVECS, &primme);
+  ret = primme_set_method(PRIMME_DEFAULT_MIN_MATVECS, &primme);
 
   primme.printLevel=2;
   primme.target=primme_smallest;
@@ -172,11 +178,12 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
   /* call the actual EV finder*/
   ret = zprimme(NULL, NULL, NULL, &primme);
   printf("PRIMME workspace int = %d long int = %ld\n", primme.intWorkSize, primme.realWorkSize); fflush(stdout);
+  primme_display_params(primme);
   ret = zprimme(evals, (Complex_Z*)evecs, rnorms, &primme);
 
   if (ret!=0){ /*check return value */
     node0_printf("Kalkreuter_PRIMME: zprimme error\nCall stack:\n");
-    primme_PrintStackTrace(primme);
+    /**    primme_PrintStackTrace(primme); NOT SUPPORTED in 2.0**/ 
     fflush(stdout);
     exit(1);
   }
@@ -208,19 +215,20 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
   free(evals);
   free(evecs);
   free(rnorms);
-  primme_Free(&primme);
+  primme_free(&primme);
   cleanup_Matrix() ;
   return mxv_kalk;
 }
 
 /*****************************************************************************/
 
-static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params *primme) 
+static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params *primme, int *ierr) 
 {
     int i;
     for (i=0;i<*count;i++) *((double*)recvBuf+i)=*((double*)sendBuf+i);
     g_vecdoublesum((double*)recvBuf,*count);
 
+    *ierr = 0 ;
 }
 
 #else

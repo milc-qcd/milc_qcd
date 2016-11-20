@@ -34,43 +34,31 @@
 
 #define PRIMME_MAX_NAME_LENGTH 128
 
-typedef enum {
-   Primme_dprimme,
-   Primme_zprimme,
-   Primme_check_input,
-   Primme_allocate_workspace,
-   Primme_main_iter,
-   Primme_init_basis,
-   Primme_init_block_krylov,
-   Primme_init_krylov,
-   Primme_ortho,
-   Primme_solve_h,
-   Primme_restart,
-   Primme_restart_h,
-   Primme_insert_submatrix,
-   Primme_lock_vectors,
-   Primme_num_dsyev,
-   Primme_num_zheev,
-   Primme_num_dspev,
-   Primme_num_zhpev,
-   Primme_ududecompose,
-   Primme_udusolve,
-   Primme_apply_projected_preconditioner,
-   Primme_apply_skew_projector,
-   Primme_inner_solve,
-   Primme_solve_correction,
-   Primme_fopen,
-   Primme_malloc
-} primme_function;
-
+#define PRIMME_INT long
 
 typedef enum {
-   primme_smallest,
-   primme_largest,
-   primme_closest_geq,
-   primme_closest_leq,
-   primme_closest_abs
+   primme_smallest,        /* leftmost eigenvalues */
+   primme_largest,         /* rightmost eigenvalues */
+   primme_closest_geq,     /* leftmost but greater than the target shift */
+   primme_closest_leq,     /* rightmost but less than the target shift */
+   primme_closest_abs,     /* the closest to the target shift */
+   primme_largest_abs      /* the farthest to the target shift */
 } primme_target;
+
+/* projection methods for extraction */
+typedef enum {
+   primme_proj_default,
+   primme_proj_RR,          /* Rayleigh-Ritz */
+   primme_proj_harmonic,    /* Harmonic Rayleigh-Ritz */
+   primme_proj_refined      /* refined with fixed target */
+} primme_projection;
+
+typedef enum {         /* Initially fill up the search subspace with: */
+   primme_init_default,
+   primme_init_krylov, /* a) Krylov with the last vector provided by the user or random */
+   primme_init_random, /* b) just random vectors */
+   primme_init_user    /* c) provided vectors or a single random vector */
+} primme_init;
 
 
 typedef enum {
@@ -83,26 +71,28 @@ typedef enum {
    primme_full_LTolerance,
    primme_decreasing_LTolerance,
    primme_adaptive_ETolerance,
-   primme_adaptive,
+   primme_adaptive
 } primme_convergencetest;
 
 
-typedef struct stackTraceNode {
-   primme_function callingFunction;
-   primme_function failedFunction;
-   int errorCode;
-   int lineNumber;
-   char fileName[PRIMME_MAX_NAME_LENGTH];
-   struct stackTraceNode *nextNode;
-} stackTraceNode;
-
-
 typedef struct primme_stats {
-   int numOuterIterations;
-   int numRestarts;
-   int numMatvecs;
-   int numPreconds;
+   PRIMME_INT numOuterIterations;
+   PRIMME_INT numRestarts;
+   PRIMME_INT numMatvecs;
+   PRIMME_INT numPreconds;
+   PRIMME_INT numGlobalSum;         /* times called globalSumReal */
+   PRIMME_INT volumeGlobalSum;      /* number of SCALARs reduced by globalSumReal */
+   double numOrthoInnerProds;       /* number of inner prods done by Ortho */
    double elapsedTime; 
+   double timeMatvec;               /* time expend by matrixMatvec */
+   double timePrecond;              /* time expend by applyPreconditioner */
+   double timeOrtho;                /* time expend by ortho  */
+   double timeGlobalSum;            /* time expend by globalSumReal  */
+   double estimateMinEVal;          /* the leftmost Ritz value seen */
+   double estimateMaxEVal;          /* the rightmost Ritz value seen */
+   double estimateLargestSVal;      /* absolute value of the farthest to zero Ritz value seen */
+   double maxConvTol;               /* largest norm residual of a locked eigenpair */
+   double estimateResidualError;    /* accumulated error in V and W */
 } primme_stats;
    
 typedef struct JD_projectors {
@@ -113,6 +103,10 @@ typedef struct JD_projectors {
    int SkewQ;
    int SkewX;
 } JD_projectors;
+
+typedef struct projection_params {
+   primme_projection projection;
+} projection_params;
 
 typedef struct correction_params {
    int precondition;
@@ -134,25 +128,29 @@ typedef struct restarting_params {
 typedef struct primme_params {
 
    // The user must input at least the following two arguments 
-   int n;
+   PRIMME_INT n;
    void (*matrixMatvec)
-      ( void *x,  void *y, int *blockSize, struct primme_params *primme);
+      ( void *x, PRIMME_INT *ldx, void *y, PRIMME_INT *ldy, int *blockSize,
+        struct primme_params *primme, int *ierr);
 
    // Preconditioner applied on block of vectors (if available) 
    void (*applyPreconditioner)
-      ( void *x,  void *y, int *blockSize, struct primme_params *primme);
+      ( void *x, PRIMME_INT *ldx,  void *y, PRIMME_INT *ldy, int *blockSize,
+        struct primme_params *primme, int *ierr);
 
    // Matrix times a multivector for mass matrix B for generalized Ax = xBl
    void (*massMatrixMatvec)
-      ( void *x,  void *y, int *blockSize, struct primme_params *primme);
+      ( void *x, PRIMME_INT *ldx, void *y, PRIMME_INT *ldy, int *blockSize,
+        struct primme_params *primme, int *ierr);
 
    // input for the following is only required for parallel programs 
    int numProcs;
    int procID;
-   int nLocal;
+   PRIMME_INT nLocal;
    void *commInfo;
-   void (*globalSumDouble)
-      (void *sendBuf, void *recvBuf, int *count, struct primme_params *primme );
+   void (*globalSumReal)
+      (void *sendBuf, void *recvBuf, int *count, struct primme_params *primme,
+       int *ierr );
 
    // Though primme_initialize will assign defaults, most users will set these
    int numEvals;          
@@ -168,11 +166,11 @@ typedef struct primme_params {
    int maxBasisSize;
    int minRestartSize;
    int maxBlockSize;
-   int maxMatvecs;
-   int maxOuterIterations;
+   PRIMME_INT maxMatvecs;
+   PRIMME_INT maxOuterIterations;
    int intWorkSize;
-   long int realWorkSize;
-   int iseed[4];
+   size_t realWorkSize;
+   PRIMME_INT iseed[4];
    int *intWork;
    void *realWork;
    double aNorm;
@@ -184,34 +182,40 @@ typedef struct primme_params {
    void *matrix;
    void *preconditioner;
    double *ShiftsForPreconditioner;
+   primme_init initBasisMode;
+   PRIMME_INT ldevecs;
+   PRIMME_INT ldOPs;
 
+   struct projection_params projectionParams; 
    struct restarting_params restartingParams;
    struct correction_params correctionParams;
    struct primme_stats stats;
-   struct stackTraceNode *stackTrace;
    
+   void (*convTestFun)(double *eval, void *evec, double *rNorm, int *isconv, 
+         struct primme_params *primme, int *ierr);
 } primme_params;
 //-----------------------------------------------------------------------------
 
 typedef enum {
-   DYNAMIC,
-   DEFAULT_MIN_TIME,
-   DEFAULT_MIN_MATVECS,
-   Arnoldi,
-   GD,
-   GD_plusK,
-   GD_Olsen_plusK,
-   JD_Olsen_plusK,
-   RQI,
-   JDQR,
-   JDQMR,
-   JDQMR_ETol,
-   SUBSPACE_ITERATION,
-   LOBPCG_OrthoBasis,
-   LOBPCG_OrthoBasis_Window
+   PRIMME_DEFAULT_METHOD,
+   PRIMME_DYNAMIC,
+   PRIMME_DEFAULT_MIN_TIME,
+   PRIMME_DEFAULT_MIN_MATVECS,
+   PRIMME_Arnoldi,
+   PRIMME_GD,
+   PRIMME_GD_plusK,
+   PRIMME_GD_Olsen_plusK,
+   PRIMME_JD_Olsen_plusK,
+   PRIMME_RQI,
+   PRIMME_JDQR,
+   PRIMME_JDQMR,
+   PRIMME_JDQMR_ETol,
+   PRIMME_SUBSPACE_ITERATION,
+   PRIMME_LOBPCG_OrthoBasis,
+   PRIMME_LOBPCG_OrthoBasis_Window
 } primme_preset_method;
 
-
+#undef PRIMME_INT
 
 int dprimme(double *evals, double *evecs, double *resNorms, 
             primme_params *primme);
@@ -222,13 +226,15 @@ int  primme_set_method(primme_preset_method method, primme_params *params);
 void primme_display_params(primme_params primme);
 void *primme_valloc(size_t byteSize, const char *target);
 void *primme_calloc(size_t nelem, size_t elsize, const char *target);
-void primme_Free(primme_params *primme);
+void primme_free(primme_params *primme);
 void primme_seq_globalSumDouble(void *sendBuf, void *recvBuf, int *count,
 					           primme_params *params);
+/**
 void primme_PushErrorMessage(const primme_function callingFunction, 
      const primme_function failedFunction, const int errorCode, 
      const char *fileName, const int lineNumber, primme_params *primme);
 void primme_PrintStackTrace(const primme_params primme);
 void primme_DeleteStackTrace(primme_params *primme);
+**/
 
 #endif /* PRIMME_H */
