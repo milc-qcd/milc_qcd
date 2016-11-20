@@ -26,7 +26,7 @@ coordinate_origin 0 0 0 0
 Number_of_eigenvals 10
 
 # CG for Rayleigh-Ritz minimization
-Max_Rayleigh_iters 100
+Max_Rayleigh_iters 1000
 Restart_Rayleigh 10
 
 # Outer loop iterations
