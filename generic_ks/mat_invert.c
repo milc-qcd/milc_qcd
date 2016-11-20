@@ -172,7 +172,8 @@ static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int pa
   for( j = 0; j < Num; j++){
     CDIVREAL( c[j], eigVal[j]+4.0*mass*mass, c[j] );
     FORSOMEFIELDPARITY(i,parity){
-      c_scalar_mult_add_su3vec( dst+i, c+j, eigVec[j]+i );
+      complex ctmp = cmplx(c[j].real, ctmp.imag);
+      c_scalar_mult_add_su3vec( dst+i, &ctmp, eigVec[j]+i );
     }
   }
   free(c);
