@@ -637,7 +637,7 @@ fn_fermion_force_multi_hisq_mx( info_t *info, Real eps, Real *residues,
 	    //            mtag[1] = start_gather_field( W_unitlink[dir], sizeof(su3_matrix),
 	    //                   OPP_DIR(dir), EVENANDODD, gen_pt[1] );
             wait_gather(mtag[1]);
-            FORALLFIELDSITES_OMP(i,  ){ 
+            FORALLFIELDSITES_OMP(i,  ){
 	      su3_adjoint( (su3_matrix *)gen_pt[1][i], 
 			   &(mats_along_path[1][i]) ); 
 	    }
@@ -2019,7 +2019,7 @@ void outer_product_create_gpu(Real* one_hop_coeff, Real *three_hop_coeff,
   }
   
   void* oprod[2] = {staple_oprod, three_hop_oprod};
-  qudaComputeOprod(PRECISION, num_terms, coeff, multi_x, oprod);
+  qudaComputeOprod(PRECISION, num_terms, coeff, (void**)multi_x, oprod);
   
   for(term=0; term<num_naik_terms; term++){
     coeff[term][0] = one_hop_naik_coeff[term];
@@ -2028,14 +2028,14 @@ void outer_product_create_gpu(Real* one_hop_coeff, Real *three_hop_coeff,
 
   int dir, i;
   for(dir=XUP; dir<=TUP; ++dir){
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i, ){
       scalar_mult_su3_matrix(&(staple_oprod[dir][i]), one_coeff,
                              &(one_hop_oprod[dir][i]));
-    }
+    } END_LOOP_OMP
   }
-  
+
   oprod[0] = one_hop_oprod;
-  qudaComputeOprod(PRECISION, num_naik_terms, coeff, multi_x + (num_terms-num_naik_terms), oprod);
+  qudaComputeOprod(PRECISION, num_naik_terms, coeff, (void**)(multi_x + (num_terms-num_naik_terms)), oprod);
 
 
   for(term=0; term<num_terms; ++term){
@@ -2240,9 +2240,9 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
   
   // First construct the outer products
   for(dir=XUP; dir<=TUP; dir++){
-    one_link_oprod[dir] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
-    three_link_oprod[dir] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
-    staple_oprod[dir] = (su3_matrix*)malloc(sites_on_node*sizeof(su3_matrix));
+    one_link_oprod[dir] = (su3_matrix*)qudaAllocatePinned(sites_on_node*sizeof(su3_matrix));
+    three_link_oprod[dir] = (su3_matrix*)qudaAllocatePinned(sites_on_node*sizeof(su3_matrix));
+    staple_oprod[dir] = (su3_matrix*)qudaAllocatePinned(sites_on_node*sizeof(su3_matrix));
   }
   
   n_naik_shift = 0;
@@ -2277,10 +2277,10 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
 
 
   for(dir=XUP;dir<=TUP;dir++){
-    FORALLFIELDSITES(i){ 
+    FORALLFIELDSITES_OMP(i, ){
       clear_su3mat( &(staple_oprod[dir][i]) );
       clear_su3mat( &(three_link_oprod[dir][i]));
-    }
+    } END_LOOP_OMP
   }
 
   outer_product_create_gpu(one_hop_coeff, three_hop_coeff,
@@ -2303,7 +2303,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
 
   // done constructing the outer products
   
-  Real* momentum = (Real*)special_alloc(sites_on_node*4*sizeof(anti_hermitmat));
+  Real* momentum = (Real*)qudaAllocatePinned(sites_on_node*4*sizeof(anti_hermitmat));
   
   
   double level2_coeff[6];
@@ -2361,20 +2361,20 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
 
  
   // append result
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(dir,j)){
     for(dir=0; dir<4; ++dir){
       for(j=0; j<10; ++j){
 	*((Real*)(&(s->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
       }
     }
-  }
+  } END_LOOP_OMP
   
   for(i=XUP; i<=TUP; ++i){
-    free(one_link_oprod[i]);
-    free(three_link_oprod[i]);
-    free(staple_oprod[i]);
+    qudaFreePinned(one_link_oprod[i]);
+    qudaFreePinned(three_link_oprod[i]);
+    qudaFreePinned(staple_oprod[i]);
   }
-  free(momentum);
+  qudaFreePinned(momentum);
   
   return;
 } //fn_fermion_force_multi_hisq_wrapper_mx_gpu

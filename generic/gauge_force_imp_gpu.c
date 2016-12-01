@@ -10,14 +10,13 @@
 /**#define GFTIME**/ /* For timing gauge force calculation */
 #include "generic_includes.h"	/* definitions files and prototypes */
 
-// Added by J.F.
 #include <quda.h>
 #include <quda_milc_interface.h>
+#include "../include/openmp_defs.h"
 
 #include "../include/generic_quda.h"
 
 // gpu code 
-// Only works for the Symanzik gauge action
 void imp_gauge_force_gpu(Real eps, field_offset mom_off)
 {
   char myname[] = "imp_gauge_force_gpu";
@@ -34,31 +33,36 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
 #endif
 
   const Real eb3 = eps*beta/3.0;
-  su3_matrix* links = create_G_from_site();
   
-  Real* momentum = (Real*)malloc(sites_on_node*4*sizeof(anti_hermitmat));
+  initialize_quda();
+
+  su3_matrix *links = qudaAllocatePinned(sites_on_node*4*sizeof(su3_matrix));
+  anti_hermitmat* momentum = qudaAllocatePinned(sites_on_node*4*sizeof(anti_hermitmat));
 
   int dir,j;
   site *st;
 
   for(i=0; i<num_loop_types; ++i) quda_loop_coeff[i] = loop_coeff[i][0];
 
-  if(momentum == NULL){
-    printf("%s(%d): Can't malloc temporary momentum\n",myname,this_node);
-    terminate(1);
-  }
-
-  initialize_quda();
+  FORALLSITES_OMP(i,st,private(dir)){
+    for(dir=XUP; dir<=TUP; ++dir){
+      links[4*i + dir] = st->link[dir];
+    } // dir
+  } END_LOOP_OMP
 
   qudaGaugeForce(PRECISION,num_loop_types,quda_loop_coeff,eb3,links,momentum);
 
-  FORALLSITES(i,st){
-    for(dir=0; dir<4; ++dir){
+  FORALLSITES_OMP(i,st,private(dir,j)){
+    for(dir=XUP; dir<TUP; ++dir){
       for(j=0; j<10; ++j){
-	*((Real*)(&(st->mom[dir])) + j) += *(momentum + (4*i+ dir)*10 + j);
+	((Real*)&(st->mom[dir]))[j] += ((Real*)(momentum + 4*i+dir))[j];
       }
     }
-  }
+  } END_LOOP_OMP
+
+  free(quda_loop_coeff);
+  qudaFreePinned(links);
+  qudaFreePinned(momentum);
 
 #ifdef GFTIME
   dtime+=dclock();
@@ -66,9 +70,6 @@ void imp_gauge_force_gpu(Real eps, field_offset mom_off)
 	       nflop*(double)volume/(1e6*dtime*numnodes()) );
 #endif
 
-  free(quda_loop_coeff);
-  free(links);
-  free(momentum);
   return;
 }
 
