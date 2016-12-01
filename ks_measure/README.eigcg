@@ -1,0 +1,55 @@
+******************* Note on eigCG ******************
+Dec 03, 2014, H. Ohno
+
+About eigCG algorithm,
+see A. Stathopoulos and K. Orginos [arXiv:0707.0131]
+****************************************************
+
+General information :
+
+EigCG is a method to compute eigenpairs by the (restartd) Lanczos
+algorithm within the conjugate gradient method. One can get a certain
+number of approximate eigenpairs and also solve an inversion at the
+same time. However it is hard to get accurate enough eigenpairs
+in only one inversion. Therefore eigepairs are iteratively improved
+through many inversions, which is so called incremental eigCG.
+
+Related files :
+
+- include/blas_lapack.h
+A header file for declarations of blas and lapack routines.
+
+- include/imp_ferm_links.h
+Some definitions and Routines related to eigCG are written here.
+
+-egeneric_ks/inc_eigcg.c
+A source file of the incremental eigCG.
+This code needs blas and lapack libraries, so they should be linked.
+
+For detailed information, see comments in those files. 
+
+Input parameters :
+ 
+- restart_lanczos
+The number of vectors kept for the Lanczos part in eigCG before restart.
+Larger restart_lanczos decrease the number of restarts for the Lanczos
+part and thus decrease computation cost. However this doesn't help to
+get more accurate low-lying eigenpairs. Optimal value depends on amount
+of memory you can use.
+
+- Number_of_eigenvals
+The number of eigenpairs computed per inversion.
+Optimal value depends on restart_lanczos (see Note1 and Note2 below).
+Larger value would be better.
+
+- Max_Number_of_eigenvals
+The maximum number of eigenpairs computed in the entire incrementral eigCG.
+
+* Note1
+restart_lanczos and Number_of_eigenvals should hold a following relation:
+[restart_lanczos > 2*Number_of_eigenvals]
+
+* Note2
+The Lanczos part in eigCG restarts every (restart_lanczos - 2*Number_of_eigenvals) CG iterations.
+More computaion cost is needed as this difference gets smaller because of larger number of restarts.
+

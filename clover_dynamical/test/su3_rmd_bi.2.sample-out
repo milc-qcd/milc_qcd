@@ -1,16 +1,21 @@
 SU3 with Clover fermions
 Microcanonical simulation with refreshing
-MIMD version 5
-Machine = Scalar processor, with 1 nodes
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
 R algorithm
-type 0 for no prompts  or 1 for prompts
+start: Sun Feb 14 16:22:48 2016
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nflavors 2
 nx 4
 ny 4
 nz 4
 nt 4
 iseed 3190
-LAYOUT = Hypercubes, options = EVENFIRST,
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 1.1 MBytes per node for lattice
 
 
 warms 0
@@ -26,10 +31,13 @@ max_cg_iterations 100
 max_cg_restarts 10
 error_per_site 1e-06
 error_for_propagator 1e-06
+fresh 
+forget 
 unit gauge configuration loaded
-CHECK PLAQ: 3.000000e+00 3.000000e+00
-Unitarity checked
-Time to check unitarity = 1.000000e-02
+CHECK PLAQ: 3.0000000000000000e+00 3.0000000000000000e+00
+CHECK NERSC LINKTR: 1.0000000000000000e+00 CKSUM: 0
+Reunitarized for double precision. Max deviation 0.00e+00 changed to 0.00e+00
+Time to check unitarity = 3.299713e-04
 
 
 Note O_2 is really O_3 in the notes! 
@@ -38,17 +46,21 @@ Note O_2 is really O_3 in the notes!
 loop coefficients: nloop rep loop_coeff   multiplicity
                     0 0      1.000000e+00     6
                     1 0      -7.192793e-02     12
-                    2 0      -8.018109e-03     16
+                    2 0      -8.018107e-03     16
 START 3.000000e+00 3.000000e+00 6.000000e+00
 WARMUPS COMPLETED
-ACTION_V  6.452242e+01  4.200678e-02
-F2MES 1.134544e+01 -4.065479e-02 -1.546914e+00 -6.374818e-01 1.173981e+01 -2.071632e-01 2.293382e-08
-GMES 2.944689e+00 -5.027902e-05 1.300000e+01 2.944755e+00 2.943843e+00
+ACTION_V  6.438634e+01  4.191819e-02
+ OK converged final_rsq= 7.1e-14 (cf 1e-12) rel = 7.1e-14 (cf 0) restarts = 1 iters= 13
+F2MES 1.167168e+01 -1.062542e-02 -1.561412e+00 -4.814272e-01 1.201433e+01 -5.661630e-02 1.478231e-08
+GMES 2.941968e+00 -6.719361e-05 1.300000e+01 2.945102e+00 2.943882e+00
 RUNNING COMPLETED
-STOP 2.944755e+00 2.943843e+00 5.888598e+00
+STOP 2.945102e+00 2.943882e+00 5.888984e+00
 average cg iters for step= 1.400000e+01
 average cg iters for measurement= 1.300000e+01
-Time = 7.300000e+00 seconds
+Time = 6.578622e-01 seconds
 total_iters = 29
 
+
+get_i(0): EOF on input.
+exit: Sun Feb 14 16:22:48 2016
 

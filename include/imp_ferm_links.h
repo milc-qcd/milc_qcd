@@ -64,15 +64,19 @@ int ks_congrad_site( field_offset src, field_offset dest,
 int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest, 
 			   quark_invert_control *qic, Real mass,
 			   imp_ferm_links_t *fn);
-int ks_congrad_parity_gpu( su3_vector *t_src, su3_vector *t_dest, 
-			   quark_invert_control *qic, Real mass,
-			   imp_ferm_links_t *fn);
+
+
 #ifdef USE_CG_GPU
 #define ks_congrad_parity ks_congrad_parity_gpu
+#elif HAVE_QPHIX
+#define ks_congrad_parity ks_congrad_parity_qphix
 #else
 #define ks_congrad_parity ks_congrad_parity_cpu
 #endif
 
+int ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest, 
+		       quark_invert_control *qic, Real mass,
+		       imp_ferm_links_t *fn);
 
 int ks_congrad_two_src(	/* Return value is number of iterations taken */
     field_offset src1,    /* source vector (type su3_vector) */
@@ -191,8 +195,19 @@ int ks_multicg_offset_field_gpu(	/* Return value is number of iterations taken *
     imp_ferm_links_t *fn      /* Storage for fat and Naik links */
     );
 
+int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken */
+    su3_vector *src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    ks_param *ksp,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    quark_invert_control qic[], /* inversion parameters */
+    imp_ferm_links_t *fn      /* Storage for fat and Naik links */
+    );
+
 #ifdef USE_CG_GPU
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
+#elif HAVE_QPHIX
+#define ks_multicg_offset_field ks_multicg_offset_field_qphix
 #else
 #define ks_multicg_offset_field ks_multicg_offset_field_cpu
 #endif
@@ -240,21 +255,26 @@ int mat_invert_multi(
 #define Kalkreuter Kalkreuter_Ritz
 #endif
 
+#define DEFLATION 1
+#define EIGCG 2
+
 int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance, 
 		 Real RelTol, int Nvecs, int MaxIter, int Restart, 
 		 int parity, imp_ferm_links_t *fn);
 int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance, 
-	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int iters );
+		    Real RelTol, int Nvecs, int MaxIter, 
+		    int Restart, int Kiters, int init );
 int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
-	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int iters );
+		      Real RelTol, int Nvecs, int MaxIter, 
+		      int Restart, int Kiters, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
 		     imp_ferm_links_t *fn );
 void cleanup_Matrix();
 void measure_chirality(su3_vector *src, double *chirality, int parity);
 void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
 		     int parity);
+void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
+		  int Nvecs, int parity, imp_ferm_links_t *fn);
 
 
 /* fn_links_qop.c  and fn_links_milc.c */
@@ -291,6 +311,24 @@ void z2rsource_plain( field_offset dest, int parity );
 void z2rsource_plain_field( su3_vector *dest, int parity );
 void checkmul_imp( field_offset src, Real mass,
 		   imp_ferm_links_t *fn );
+
+/* inc_eigcg.c */
+#define ORTHO_EPS 1e-15
+typedef struct {
+  int m;             /* Number of vectors kept for the Lanczos part before restart */
+  int Nvecs;         /* Number of eigenpairs computed per inversion */
+  int Nvecs_curr;    /* Number of eigenpairs currently computed */
+  int Nvecs_max;     /* Maximum number of eigenpairs computed in entire incremental eigCG */
+  double_complex *H; /* H = -U^+ Dslash^2 U, U: projection onto smaller subspace */
+} eigcg_params;
+void calc_eigenpairs(double *eigVal, su3_vector **eigVec, eigcg_params *eigcgp, int parity);
+void calc_eigresid(int Nvecs, double *resid, double *norm, double *eigVal,
+		   su3_vector **eigVec, int parity, imp_ferm_links_t *fn);
+int ks_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal, su3_vector **eigVec,
+		     int m, int Nvecs, quark_invert_control *qic, Real mass, imp_ferm_links_t *fn);
+int ks_inc_eigCG_parity( su3_vector *src, su3_vector *dest, double *eigVal,
+			 su3_vector **eigVec, eigcg_params *eigcgp, quark_invert_control *qic,
+			 Real mass, imp_ferm_links_t *fn);
 
 /* ks_baryon.c */
 int baryon_type_index(char *label);

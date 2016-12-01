@@ -91,6 +91,7 @@ create_hisq_coeffs_qop(ks_action_paths_hisq *ap){
     terminate(1);
   }
 
+  *ac = QOP_HISQ_COEFFS_ZERO;
   ac->n_naiks = n_naiks;
   for(i = 0; i < n_naiks; i++)
     ac->eps_naik[i] = eps_naik[i];

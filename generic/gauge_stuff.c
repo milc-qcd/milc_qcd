@@ -243,6 +243,7 @@ double imp_gauge_action() {
     double g_action;
     double action,act2,total_action;
     su3_matrix *tempmat1;
+    su3_matrix *links;
     int length;
 
     /* these are for loop_table  */
@@ -254,15 +255,17 @@ double imp_gauge_action() {
     if(tempmat1 == NULL){
       printf("imp_gauge_action: Can't malloc temporary\n");
       terminate(1);
-  }
+    }
 
+    links = create_G_from_site();
+    
     /* gauge action */
     for(iloop=0;iloop<NLOOP;iloop++){
 	length=loop_length[iloop];
 	/* loop over rotations and reflections */
 	for(ln=0;ln<loop_num[iloop];ln++){
 
-	    path_product( loop_table[iloop][ln] , length, tempmat1 );
+	    path_product_fields(links, loop_table[iloop][ln] , length, tempmat1 );
 
 	    FORALLSITES(i,s){
 		trace=trace_su3( &tempmat1[i] );
@@ -282,6 +285,7 @@ double imp_gauge_action() {
     } /* iloop */
 
     g_doublesum( &g_action );
+    destroy_G(links);
     special_free(tempmat1);
     return( g_action );
 } /* imp_gauge_action */
@@ -302,6 +306,7 @@ void g_measure( ){
     double average[NREPS],action,act2,total_action;
     int length;
     su3_matrix *tempmat1;
+    su3_matrix *links;
     /* these are for loop_table  */
     int ln,iloop,rep;
 
@@ -310,6 +315,7 @@ void g_measure( ){
       printf("g_measure: Can't malloc temporary\n");
       terminate(1);
     }
+    links = create_G_from_site();
 
     /* KS and BC minus signs should be out for this routine */
     d_plaquette( &ss_plaquette, &st_plaquette );
@@ -328,7 +334,7 @@ void g_measure( ){
 	/* loop over rotations and reflections */
 	for(ln=0;ln<loop_num[iloop];ln++){
 
-	    path_product( loop_table[iloop][ln] , length, tempmat1 );
+	    path_product_fields(links, loop_table[iloop][ln] , length, tempmat1 );
 
 	    for(rep=0;rep<NREPS;rep++)average[rep] = 0.0;
 	    FORALLSITES(i,s){
@@ -362,6 +368,7 @@ void g_measure( ){
     /**node0_printf("CHECK:   %e   %e\n",total_action,imp_gauge_action() );**/
 
     if(this_node==0)fflush(stdout);
+    destroy_G(links);
     special_free(tempmat1);
 }
 

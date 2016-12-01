@@ -10,6 +10,9 @@
 #include <math.h>
 #include "../include/complex.h"
 #include "../include/su3.h"
+#include <stdio.h>
+
+#ifdef OLD_GAUSSRAND
 
 void random_anti_hermitian( anti_hermitmat *mat_antihermit, double_prn *prn_pt) {
 Real r3,r8;
@@ -29,3 +32,22 @@ Real sqrt_third;
 	mat_antihermit->m12.imag=gaussian_rand_no(prn_pt);
 
 }/*random_anti_hermitian_*/
+
+#else
+
+void random_anti_hermitian( anti_hermitmat *mat_antihermit, double_prn *prn_pt) {
+complex r38;
+Real sqrt_third;
+
+	sqrt_third = sqrt( (double)(1.0/3.0) );
+	r38 = complex_gaussian_rand_no(prn_pt);
+	mat_antihermit->m00im=r38.real+sqrt_third*r38.imag;
+	mat_antihermit->m11im= -r38.real+sqrt_third*r38.imag;
+	mat_antihermit->m22im= -2.0*sqrt_third*r38.imag;
+	mat_antihermit->m01=complex_gaussian_rand_no(prn_pt);
+	mat_antihermit->m02=complex_gaussian_rand_no(prn_pt);
+	mat_antihermit->m12=complex_gaussian_rand_no(prn_pt);
+
+}/*random_anti_hermitian_*/
+
+#endif

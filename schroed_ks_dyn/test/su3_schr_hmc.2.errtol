@@ -46,7 +46,7 @@ ACTION: g,h,f = 0.1 0.09 0.008 0.04
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
- OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
+ OK converged final_rsq= 5.2e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
  OK converged final_rsq= 5e-11 (cf 1e-10) rel = 1 (cf 0) restarts = 2 iters= 40
 ACTION: g,h,f = 0.1 0.08 0.008 0.04
 REJECT: delta S = 0.003

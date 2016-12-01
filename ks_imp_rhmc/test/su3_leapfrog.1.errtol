@@ -1,40 +1,12 @@
 WARMUPS COMPLETED
 Leapfrog integration, steps= 0 eps= 2e-08
 GRSOURCE: sum = 4e-05
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 2e-13 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
 GRSOURCE: sum = 4e-05
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
 PLAQUETTE ACTION: 0.0006
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
 ACTION: g,h,f = 0.0003 0.0002 0.01 0.01
 DG = 0.0003 DH = 0.0002 DF = 0.01 D = 0.02
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
@@ -43,12 +15,26 @@ DG = 0.0003 DH = 0.0002 DF = 0.01 D = 0.02
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
+PLAQUETTE ACTION: 0.02
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ACTION: g,h,f = 0.01 0.002 0.01 0.01
+DG = 0.01 DH = 0.002 DF = 0.001 D = 0.01
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
+PLAQUETTE ACTION: 0.02
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ACTION: g,h,f = 0.01 0.004 0.01 0.01
+DG = 0.001 DH = 0.002 DF = 0.002 D = 0.004
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
@@ -57,245 +43,55 @@ DG = 0.0003 DH = 0.0002 DF = 0.01 D = 0.02
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
+PLAQUETTE ACTION: 0.02
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-PLAQUETTE ACTION: 0.0006
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-ACTION: g,h,f = 0.003 0.002 0.01 0.01
-DG = 0.003 DH = 0.002 DF = 0.001 D = 0.003
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-PLAQUETTE ACTION: 0.0006
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-ACTION: g,h,f = 0.003 0.004 0.01 0.01
-DG = 0.0004 DH = 0.002 DF = 0.002 D = 0.004
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-PLAQUETTE ACTION: 0.0006
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-ACTION: g,h,f = 0.003 0.008 0.007 0.01
+ACTION: g,h,f = 0.01 0.008 0.007 0.01
 DG = 0.001 DH = 0.004 DF = 0.003 D = 0.006
-PLAQUETTE ACTION: 0.0006
+PLAQUETTE ACTION: 0.02
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-ACTION: g,h,f = 0.003 0.008 0.007 0.01
+ACTION: g,h,f = 0.01 0.008 0.007 0.01
 DG = 0.000000e+00, DH = 0.000000e+00, DF = 0.000000e+00, D = XXX
 XXX delta S = 0.008
-PLAQ: 3e-07 1e-07
+PLAQ: 2e-06 1e-07
 P_LOOP: 4e-07 3e-07
 G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 )
 G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 )
-G_LOOP: 0 0 0 1e-07 ( 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 )
 G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 2e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-GACTION: 2e-06
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+GACTION: 4e-06
+ OK converged final_rsq= 2e-14 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 4 iters= 50
 PBP: mass 2e-08 2e-07 1e-05 2e-07 6e-06 ( 0 of 0 )
 FACTION: mass = 2e-08 3e-08 ( 0 of 0 )
@@ -306,107 +102,25 @@ FACTION: mass = 2e-08 3e-08 ( 0 of 0 )
 Leapfrog integration, steps= 0 eps= 2e-08
 GRSOURCE: sum = 4e-05
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 GRSOURCE: sum = 4e-05
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-PLAQUETTE ACTION: 0.0006
+PLAQUETTE ACTION: 0.02
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-ACTION: g,h,f = 0.003 0.0002 0.01 0.01
+ACTION: g,h,f = 0.01 0.0002 0.01 0.01
 DG = 0.000000e+00, DH = 0.008 DF = 0.004 D = 0.01
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= XXX (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
+ OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+PLAQUETTE ACTION: 0.02
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-PLAQUETTE ACTION: 0.0006
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-ACTION: g,h,f = 0.003 0.003 0.01 0.01
+ACTION: g,h,f = 0.01 0.003 0.01 0.01
 DG = 0.0005 DH = 0.003 DF = 0.0007 D = 0.005
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
@@ -416,64 +130,10 @@ DG = 0.0005 DH = 0.003 DF = 0.0007 D = 0.005
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
 PLAQUETTE ACTION: 0.0006
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-ACTION: g,h,f = 0.004 0.003 0.009 0.008
+ACTION: g,h,f = 0.01 0.003 0.009 0.008
 DG = 0.0005 DH = 0.002 DF = 0.002 D = 0.003
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
@@ -483,123 +143,55 @@ DG = 0.0005 DH = 0.002 DF = 0.002 D = 0.003
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
 PLAQUETTE ACTION: 0.02
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-ACTION: g,h,f = 0.004 0.01 0.005 0.01
+ACTION: g,h,f = 0.01 0.01 0.005 0.01
 DG = 0.0009 DH = 0.008 DF = 0.003 D = 0.004
 PLAQUETTE ACTION: 0.02
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = 0 (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= XXX
-ACTION: g,h,f = 0.004 0.01 0.005 0.01
+ACTION: g,h,f = 0.01 0.01 0.005 0.01
 DG = 0.000000e+00, DH = 0.000000e+00, DF = 0.000000e+00, D = XXX
 XXX delta S = 0.005
 PLAQ: 2e-06 3e-08
 P_LOOP: 4e-07 4e-07
-G_LOOP: 0 0 0 8e-08 ( 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 )
 G_LOOP: 0 0 0 5e-07 ( 0 0 0 0 )
 G_LOOP: 0 0 0 1e-07 ( 0 0 0 0 )
-G_LOOP: 0 0 0 7e-07 ( 0 0 0 0 )
+G_LOOP: 0 0 0 2e-06 ( 0 0 0 0 )
 G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 )
 G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
-G_LOOP: 0 0 0 4e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
+G_LOOP: 0 0 0 8e-07 ( 0 0 0 0 0 0 )
 G_LOOP: 0 0 0 6e-07 ( 0 0 0 0 0 0 )
 GACTION: 4e-06
- OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
+ OK converged final_rsq= 6e-14 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
  OK converged final_rsq= 5e-8 (cf 1e-06) rel = XXX (cf 0) restarts = 1 iters= 50
 PBP: mass 2e-08 2e-07 5e-06 2e-07 5e-06 ( 0 of 0 )
 FACTION: mass = 2e-08 3e-08 ( 0 of 0 )

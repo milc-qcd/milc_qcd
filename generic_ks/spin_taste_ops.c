@@ -440,7 +440,7 @@ four_link(int spin, int r0[], su3_vector *dest, su3_vector *src, su3_matrix *lin
   
   clear_v_field(dest);
   spin_sign_field(spin, r0, tvec0, src);
-  for(c=0;c<6;c++)
+  for(c=0;c<24;c++)
     {
       zeta_shift_field(4,p[c].d,r0,tvec1,tvec0,links);
       FORALLSITES(i,s){
@@ -1350,7 +1350,7 @@ mult_rhois_ape_field( int fdir, enum shift_dir fb, int r0[],
   register int i;
   register site *s;  
   
-  /* apply the symmetric shift FN operator (uses fat and long links) */
+  /* apply the symmetric shift FN operator (uses APE links) */
   rephase_field_offset( ape_links, ON, NULL, r0 );
   shift_field( fdir, fb, dest, src, ape_links);
   rephase_field_offset( ape_links, OFF, NULL, r0 );

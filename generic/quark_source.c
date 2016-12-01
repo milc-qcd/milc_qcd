@@ -428,8 +428,7 @@ static void random_complex_wall(complex *src, int t0){
 
   FORALLSITES(i,s){
     if( s->t==t0 || t0 == ALL_T_SLICES){
-	src[i].real = gaussian_rand_no(&(s->site_prn));
-	src[i].imag = gaussian_rand_no(&(s->site_prn));
+	src[i] = complex_gaussian_rand_no(&(s->site_prn));
       }
     x = 1.0/cabs( &src[i] );
     CMULREAL( src[i], x, src[i] );
@@ -453,8 +452,7 @@ static void random_color_wall(su3_vector *v, int t0){
   FORALLSITES(i,s){
     if( s->t==t0 || t0 == ALL_T_SLICES){
       for(jc=0;jc<3;jc++){
-	v[i].c[jc].real = gaussian_rand_no(&(s->site_prn));
-	v[i].c[jc].imag = gaussian_rand_no(&(s->site_prn));
+	v[i].c[jc] = complex_gaussian_rand_no(&(s->site_prn));
       }
       x = 1.0/sqrt( magsq_su3vec( v+i ) );
       scalar_mult_su3_vector( v+i, x, v+i );
@@ -472,8 +470,7 @@ static void random_corner_wall(su3_vector *v, int t0){
     if( (s->t==t0 || t0 == ALL_T_SLICES) && 
 	s->x%2==0 && s->y%2==0 && s->z%2==0 ){
       for(jc=0;jc<3;jc++){
-	v[i].c[jc].real = gaussian_rand_no(&(s->site_prn));
-	v[i].c[jc].imag = gaussian_rand_no(&(s->site_prn));
+	v[i].c[jc] = complex_gaussian_rand_no(&(s->site_prn));
       }
       x = 1.0/sqrt( magsq_su3vec( v+i ) );
       scalar_mult_su3_vector( v+i, x, v+i );

@@ -97,13 +97,14 @@ printf("\n");**/
 //			    tempmat1, links );
 	path_product_fields( links, q_paths[ipath].dir, q_paths[ipath].length, 
 			     tempmat1 );
-	FORALLFIELDSITES(i){
+	FORALLFIELDSITES_OMP(i,private(long1)){
 	  su3_adjoint( &tempmat1[i], &staple[i] );
 	  long1 = lng + 4*i + dir;
           scalar_mult_add_su3_matrix( long1,
 	    &staple[i], -q_paths[ipath].coeff, long1 );
 		/* minus sign in coeff. because we used backward path*/
 	}
+        END_LOOP_OMP;
     } /* ipath */
 
   } /* loop over directions */
@@ -166,10 +167,11 @@ load_fatlinks_cpu(info_t *info, su3_matrix *fat, ks_component_paths *p,
 #ifndef  ASQ_OPTIMIZED_FATTENING   /* general case code */
   for (dir=XUP; dir<=TUP; dir++){ /* loop over fatlink directions */
     /* set fatlink to zero */
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,private(fat1)){
       fat1 = fat + 4*i + dir;
       clear_su3mat( fat1 );
     }
+    END_LOOP_OMP;
     
     /* loop over paths, checking for ones with total displacement 1*dir */
     for( ipath=0; ipath<num_q_paths; ipath++ ){  /* loop over paths */
@@ -192,13 +194,14 @@ printf("\n");**/
 //			    tempmat1, links );
 	path_product_fields( links, q_paths[ipath].dir, q_paths[ipath].length, 
 			     tempmat1 );
-	FORALLFIELDSITES(i){
+	FORALLFIELDSITES_OMP(i,private(fat1)){
 	  su3_adjoint( &tempmat1[i], &staple[i] );
 	  fat1 = fat +  4*i + dir;
           scalar_mult_add_su3_matrix( fat1,
 	    &staple[i], -q_paths[ipath].coeff, fat1 );
 		/* minus sign in coeff. because we used backward path*/
 	}
+        END_LOOP_OMP
     } /* ipath */
   } /* loop over directions */
 #else	/* ASQ_OPTIMIZED_FATTENING, for Asq and Asqtad actions */
@@ -211,12 +214,13 @@ printf("\n");**/
  one_link = (p->act_path_coeff.one_link - 6.0*p->act_path_coeff.lepage);
  
  for (dir=XUP; dir<=TUP; dir++){
-   FORALLFIELDSITES(i) /* Intialize fat links with c_1*U_\mu(x) */
+   FORALLFIELDSITES_OMP(i,private(fat1)) /* Intialize fat links with c_1*U_\mu(x) */
      {
        fat1 = fat +  4*i + dir;
        scalar_mult_su3_matrix(links + 4*i + dir, one_link,
 			      fat1 );
      }
+     END_LOOP_OMP
    /* Skip the rest of the calculation if the remaining coefficients vanish */
    if( p->act_path_coeff.three_staple == 0.0 &&
        p->act_path_coeff.lepage == 0.0 &&

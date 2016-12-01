@@ -106,6 +106,7 @@
 */
 /* MIMD version 7 */
 #define IF_OK if(status==0)
+#define _POSIX_C_SOURCE 200112L // for gethostname
 
 #include "ks_imp_includes.h"
 #include "quark_action.h"
@@ -114,6 +115,7 @@
 #define SU3_MAT_OP_NO_STORAGE
 #include "../include/su3_mat_op.h"
 #include <unistd.h>
+extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"

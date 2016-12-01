@@ -160,6 +160,7 @@ typedef struct {
   Real resid;         /* desired residual - NOT SQUARED!
 			 normalized as sqrt(r*r)/sqrt(src_e*src_e) */
   Real relresid;      /* desired relative residual - NOT SQUARED! */
+  Real mixed_rsq;     /* For QOP single-mass mixed-precision solver */
   Real final_rsq;     /* Final true (absolute) residual. Norm'ed to (r*r)/(src*src) */
   Real final_relrsq;  /* Final relative residual. Same normalization. */
   Real size_r;        /* resulting cumulative residual. Same normalization. */
@@ -183,6 +184,7 @@ struct qss_op_struct {
   int disp;           /* Stride for derivatives */
   Real weights[MAXWEIGHTS];  /* Weights for derivatives */
   int dhop;           /* 0 for hop, 1 for 1st deriv of hop, 2 for 2nd */
+  int fb;             /* For hop: +1 = forward only, -1 = backward only, 0 = both */
   int iters;          /* iterations for covariant gaussian source */
   Real r0;            /* source size for gaussian, width for gauge invt  */
   int stride;         /* Subset flag for gaussian source */

@@ -53,7 +53,7 @@ int main( int argc, char **argv ){
     active_parity = EVEN;
     total_R_iters=Kalkreuter(eigVec, eigVal, eigenval_tol, 
 			     error_decr, Nvecs, MaxIter, Restart, 
-			     Kiters);
+			     Kiters, 1);
 
     node0_printf("The above where eigenvalues of -Dslash^2 in MILC normalization\n");
     node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
@@ -132,7 +132,25 @@ int main( int argc, char **argv ){
 #endif
     }
     fflush(stdout);
-  }
+
+    destroy_ape_links_4D(ape_links);
+
+    /* Destroy fermion links (created in readin() */
+
+#if FERM_ACTION == HISQ
+    destroy_fermion_links_hisq(fn_links);
+#else
+    destroy_fermion_links(fn_links);
+#endif
+    fn_links = NULL;
+
+  } /* readin(prompt) */
+
+#ifdef HAVE_QUDA
+  qudaFinalize();
+#endif
+
+  normal_exit(0);
   return 0;
 }
 

@@ -16,6 +16,8 @@
 
 #include "ks_measure_includes.h"
 #include <string.h>
+#include <unistd.h>
+extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 #include "params.h"
 
 /* Forward declarations */
@@ -111,6 +113,8 @@ initial_set(){
   if( param.stopflag != 0 )
     normal_exit(0);
 
+  if(prompt==2)return prompt;
+
   nx=param.nx;
   ny=param.ny;
   nz=param.nz;
@@ -141,6 +145,11 @@ int readin(int prompt) {
   
   int status;
   int i, k, npbp_masses;
+#ifdef PRTIME
+  double dtime;
+#endif
+
+  STARTTIME;
 
   /* On node zero, read parameters and send to all other nodes */
   if(this_node==0){
@@ -171,6 +180,67 @@ int readin(int prompt) {
     IF_OK status += get_i(stdin, prompt, "ape_iter",
 			  &param.ape_iter);
 
+#if EIGMODE == EIGCG
+    /* for eigcg */
+    /* restart for Lanczos */
+    IF_OK status += get_i(stdin, prompt,"restart_lanczos", &param.eigcgp.m);
+
+    /* number of eigenvectors per inversion */
+    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.eigcgp.Nvecs);
+
+    if(param.eigcgp.m <= 2*param.eigcgp.Nvecs){
+      printf("restart_lanczos should be larger than 2*Number_of_eigenvals!\n");
+      status++;
+    }
+
+    /* maximum number of eigenvectors */
+    IF_OK status += get_i(stdin, prompt,"Max_Number_of_eigenvals",
+			  &param.eigcgp.Nvecs_max);
+
+    /* eigenvector input */
+    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					  param.ks_eigen_startfile);
+
+    /* eigenvector output */
+    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					param.ks_eigen_savefile);
+
+    param.eigcgp.Nvecs_curr = 0;
+    param.eigcgp.H = NULL;
+#endif
+
+#if EIGMODE == DEFLATION
+    /*------------------------------------------------------------*/
+    /* Dirac eigenpair calculation                                */
+    /*------------------------------------------------------------*/
+
+    /* number of eigenvectors */
+    IF_OK status += get_i(stdin, prompt,"Number_of_eigenvals", &param.Nvecs);
+
+    /* max  Rayleigh iterations */
+    IF_OK status += get_i(stdin, prompt,"Max_Rayleigh_iters", &param.MaxIter);
+
+    /* Restart  Rayleigh every so many iterations */
+    IF_OK status += get_i(stdin, prompt,"Restart_Rayleigh", &param.Restart);
+
+    /* Kalkreuter iterations */
+    IF_OK status += get_i(stdin, prompt,"Kalkreuter_iters", &param.Kiters);
+
+     /* Tolerance for the eigenvalue computation */
+    IF_OK status += get_f(stdin, prompt,"eigenval_tolerance", &param.eigenval_tol);
+
+     /* error decrease per Rayleigh minimization */
+    IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
+
+    /* eigenvector input */
+    IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
+					  param.ks_eigen_startfile);
+
+    /* eigenvector output */
+    IF_OK status += ask_ending_ks_eigen(stdin, prompt, &param.ks_eigen_saveflag,
+					param.ks_eigen_savefile);
+#endif
+
     /*------------------------------------------------------------*/
     /* Chiral condensate and related quantities                   */
     /*------------------------------------------------------------*/
@@ -185,9 +255,31 @@ int readin(int prompt) {
     IF_OK for(k = 0; k < param.num_set; k++){
       int max_cg_iterations, max_cg_restarts, prec_pbp;
       Real error_for_propagator, rel_error_for_propagator;
+#ifdef CURRENT_DISC
+      int max_cg_iterations_sloppy, max_cg_restarts_sloppy, prec_pbp_sloppy;
+      Real error_for_propagator_sloppy, rel_error_for_propagator_sloppy;
+#endif
 
       /* Number of stochastic sources */
       IF_OK status += get_i(stdin, prompt, "npbp_reps", &param.npbp_reps[k] );
+
+#ifdef CURRENT_DISC
+      /* For some applications.  Random source count between writes */
+      IF_OK status += get_i(stdin, prompt, "nwrite", &param.nwrite[k] );
+      IF_OK status += get_i(stdin, prompt, "source_spacing", &param.thinning[k] );
+      /* For truncated solver Take difference of sloppy and precise?*/
+      char savebuf[128];
+      IF_OK status += get_s(stdin, prompt, "take_truncate_diff", savebuf);
+      IF_OK {
+	if(strcmp(savebuf,"no") == 0)param.truncate_diff[k] = 0;
+	else if(strcmp(savebuf,"yes") == 0)param.truncate_diff[k] = 1;
+	else {
+	  printf("Unrecognized response %s\n",savebuf);
+	  printf("Choices are 'yes' and 'no'\n");
+	  status++;
+	}
+      }
+#endif
 
       /* The following parameters are common to the set and will be copied
 	 to each member */
@@ -203,11 +295,28 @@ int readin(int prompt) {
       IF_OK status += get_i(stdin, prompt, "prec_pbp", 
 			    &prec_pbp );
 
-      /* error for clover propagator conjugate gradient */
-      IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
-			    &error_for_propagator );
-      IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
-			    &rel_error_for_propagator );
+#ifdef CURRENT_DISC
+      /* If we are taking the difference between a sloppy and a precise solve,
+	 get the sloppy solve parameters */
+      if(param.truncate_diff[k]){
+	Real error_for_propagator_sloppy, rel_error_for_propagator_sloppy;
+
+	/* The following parameters are common to the set and will be copied
+	   to each member */
+	
+	/* maximum no. of conjugate gradient iterations */
+	IF_OK status += get_i(stdin,prompt,"max_cg_iterations_sloppy", 
+			      &max_cg_iterations_sloppy );
+	
+	/* maximum no. of conjugate gradient restarts */
+	IF_OK status += get_i(stdin,prompt,"max_cg_restarts_sloppy", 
+			      &max_cg_restarts_sloppy );
+	
+	IF_OK status += get_i(stdin, prompt, "prec_pbp_sloppy", 
+			      &prec_pbp_sloppy );
+	
+      }
+#endif
 
       /* Number of pbp masses in this set */
       IF_OK status += get_i(stdin, prompt, "number_of_pbp_masses",
@@ -237,7 +346,21 @@ int readin(int prompt) {
 #else
 	IF_OK param.ksp_pbp[npbp_masses].naik_term_epsilon = 0.0;
 #endif
+	/* error for staggered propagator conjugate gradient */
+	IF_OK status += get_f(stdin, prompt,"error_for_propagator", 
+			      &error_for_propagator );
+	IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator", 
+			      &rel_error_for_propagator );
+	
 #ifdef CURRENT_DISC
+	if(param.truncate_diff[k]){
+	  /* error for staggered propagator conjugate gradient */
+	  IF_OK status += get_f(stdin, prompt,"error_for_propagator_sloppy", 
+				&error_for_propagator_sloppy );
+	  IF_OK status += get_f(stdin, prompt,"rel_error_for_propagator_sloppy", 
+				&rel_error_for_propagator_sloppy );
+	}
+
 	IF_OK status += get_s(stdin, prompt, "save_file", param.pbp_filenames[npbp_masses] );
 #endif
 
@@ -262,10 +385,37 @@ int readin(int prompt) {
 	param.qic_pbp[npbp_masses].start_flag = 0;
 	param.qic_pbp[npbp_masses].nsrc = 1;
 
+#ifdef CURRENT_DISC
+      /* If we are taking the difference between a sloppy and a precise solve,
+	 get the sloppy solve parameters */
+	if(param.truncate_diff[k]){
+	  
+	  /* maximum no. of conjugate gradient iterations */
+	  param.qic_pbp_sloppy[npbp_masses].max = max_cg_iterations_sloppy;
+	  
+	  /* maximum no. of conjugate gradient restarts */
+	  param.qic_pbp_sloppy[npbp_masses].nrestart = max_cg_restarts_sloppy;
+	  
+	  /* precision */
+	  param.qic_pbp_sloppy[npbp_masses].prec = prec_pbp_sloppy;
+	  
+	  /* errors */
+	  param.qic_pbp_sloppy[npbp_masses].resid = error_for_propagator_sloppy;
+	  param.qic_pbp_sloppy[npbp_masses].relresid = rel_error_for_propagator_sloppy;
+	  
+	  param.qic_pbp_sloppy[npbp_masses].parity = EVENANDODD;
+	  param.qic_pbp_sloppy[npbp_masses].min = 0;
+	  param.qic_pbp_sloppy[npbp_masses].start_flag = 0;
+	  param.qic_pbp_sloppy[npbp_masses].nsrc = 1;
+	  
+	}
+	
+#endif
+	
 	npbp_masses++;
       }
     }
-
+    
     /* End of input fields */
     if( status > 0)param.stopflag=1; else param.stopflag=0;
   } /* end if(this_node==0) */
@@ -274,6 +424,8 @@ int readin(int prompt) {
   broadcast_bytes((char *)&param,sizeof(param));
   u0 = param.u0;
   if( param.stopflag != 0 )return param.stopflag;
+
+  if(prompt==2)return 0;
 
   /* Construct the eps_naik table of unique Naik epsilon
      coefficients.  Also build the hash table for mapping a mass term to
@@ -323,8 +475,58 @@ int readin(int prompt) {
   rephase( OFF );
   ape_links = ape_smear_4D( param.staple_weight, param.ape_iter );
   rephase( ON );
+
 /* We put in antiperiodic bc to match what we did to the gauge field */
   apply_apbc( ape_links );
+
+#if EIGMODE == EIGCG
+  int Nvecs_max = param.eigcgp.Nvecs_max;
+  if(param.ks_eigen_startflag == FRESH)
+    //    Nvecs_tot = ((Nvecs_max - 1)/param.eigcgp.Nvecs)*param.eigcgp.Nvecs
+    //      + param.eigcgp.m;
+    Nvecs_tot = Nvecs_max + param.eigcgp.m - 1;
+  else
+    Nvecs_tot = Nvecs_max;
+
+  eigVal = (double *)malloc(Nvecs_tot*sizeof(double));
+  eigVec = (su3_vector **)malloc(Nvecs_tot*sizeof(su3_vector *));
+  node0_printf("Allocating space for %d eigenvectors\n", Nvecs_tot);
+  for(i = 0; i < Nvecs_tot; i++)
+    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+
+  /* Do whatever is needed to get eigenpairs */
+  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			   &Nvecs_tot, eigVal, eigVec, 1);
+  if(status != 0) terminate(1);
+
+  if(param.ks_eigen_startflag != FRESH){
+    param.eigcgp.Nvecs = 0;
+    param.eigcgp.Nvecs_curr = Nvecs_tot;
+    param.eigcgp.H = (double_complex *)malloc(Nvecs_max*Nvecs_max
+					      *sizeof(double_complex));
+    for(i = 0; i < Nvecs_max; i++){
+      for(k = 0; k < i; k++)
+	param.eigcgp.H[k + Nvecs_max*i] = dcmplx((double)0.0, (double)0.0);
+      param.eigcgp.H[(Nvecs_max+1)*i] = dcmplx(eigVal[i], (double)0.0);
+    }
+  }
+#endif
+
+#if EIGMODE == DEFLATION
+  /* malloc for eigenpairs */
+  eigVal = (double *)malloc(param.Nvecs*sizeof(double));
+  eigVec = (su3_vector **)malloc(param.Nvecs*sizeof(su3_vector *));
+  for(i=0; i < param.Nvecs; i++)
+    eigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+
+  /* Do whatever is needed to get eigenpairs */
+  node0_printf("Reading %d eigenvectors\n", param.Nvecs); fflush(stdout);
+  status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
+			   &param.Nvecs, eigVal, eigVec, 1);
+  if(status != 0)terminate(1);
+#endif
+
+  ENDTIME("readin");
 
   return(0);
 }

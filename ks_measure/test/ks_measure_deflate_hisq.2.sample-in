@@ -1,0 +1,115 @@
+prompt 0
+nx 8
+ny 8
+nz 8
+nt 8
+iseed 5682304
+job_id 203696.kaon2.fnal.gov
+
+######################################################################
+# source time 0
+######################################################################
+
+# Gauge field description
+
+reload_serial ../../binary_samples/lat.sample.l8888
+u0 1.0
+forget
+staple_weight 0
+ape_iter 0
+
+# Dirac eigenpair calculation
+
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 10
+
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+
+# Outer loop iterations
+Kalkreuter_iters 20
+
+# Eigenvalue tolerance
+eigenval_tolerance 1.0e-6
+
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease .3
+
+# eigenvector I/O
+fresh_ks_eigen
+save_serial_ks_eigen ./eigen_serial.out
+
+# Chiral condensate and related measurements
+
+number_of_sets 1
+
+# Parameters common to all members of set 0
+
+npbp_reps 1
+max_cg_iterations 300
+max_cg_restarts 5
+prec_pbp 2
+
+number_of_pbp_masses 2
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+mass 0.1
+naik_term_epsilon 0
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+
+######################################################################
+
+# Gauge field description
+
+continue
+u0 1.0
+forget
+staple_weight 0
+ape_iter 0
+
+# Dirac eigenpair calculation
+
+# Number of eigenvalues to compute (storage required for all eigenvectors)
+Number_of_eigenvals 5
+
+# CG for Rayleigh-Ritz minimization
+Max_Rayleigh_iters 100
+Restart_Rayleigh 10
+
+# Outer loop iterations
+Kalkreuter_iters 20
+
+# Eigenvalue tolerance
+eigenval_tolerance 1.0e-6
+
+# See README.ks_eigen - For optimizing the RR CG
+error_decrease .3
+
+# eigenvector I/O
+reload_serial_ks_eigen ./eigen_serial.out
+forget_ks_eigen
+
+# Chiral condensate and related measurements
+
+number_of_sets 1
+
+# Parameters common to all members of set 0
+
+npbp_reps 1
+max_cg_iterations 300
+max_cg_restarts 5
+prec_pbp 2
+
+number_of_pbp_masses 2
+mass 0.01
+naik_term_epsilon 0
+error_for_propagator 1e-8
+rel_error_for_propagator 0
+mass 0.1
+naik_term_epsilon 0
+error_for_propagator 1e-8
+rel_error_for_propagator 0

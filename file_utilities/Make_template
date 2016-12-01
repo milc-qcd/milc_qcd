@@ -68,15 +68,8 @@ endif
 # Objects depending on architecture and software package 
 
 # Layout
-ifeq ($(strip ${QCDOC}),true)
-  LAYOUT = layout_qcdoc.o # Required
-else
-  ifeq ($(strip ${HAVEQDP}),true)
-    LAYOUT = layout_qdp.o # Required
-  else
-    LAYOUT = layout_hyper_prime.o # Choices possible here
-  endif
-endif
+
+LAYOUT = layout_hyper_prime.o # Choices possible here
 
 ifeq ($(strip ${QCDOC}),true)
   QCDOC_OBJECTS = qcdoc_alloc.o
@@ -314,13 +307,13 @@ ckpt1_2v5::
 v5_2scidac::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= v5_to_scidac" \
 	"DEFINES= -DNO_GAUGE_FIELD" \
-	"EXTRA_OBJECTS=  v5_to_scidac.o \
+	"EXTRA_OBJECTS= ${G_OBJECTS} v5_to_scidac.o \
 	gauge_info_dummy.o"
 
 scidac_2v5::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DNO_GAUGE_FIELD" \
-	"EXTRA_OBJECTS=  scidac_to_v5.o \
+	"EXTRA_OBJECTS= ${G_OBJECTS} scidac_to_v5.o \
 	gauge_info_scidac.o"
 
 

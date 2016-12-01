@@ -22,11 +22,9 @@ register site *s;
 #endif
 	    for(j=0;j<3;j++){
 #ifdef SITERAND
-		s->g_rand.c[j].real = gaussian_rand_no(&(s->site_prn));
-		s->g_rand.c[j].imag = gaussian_rand_no(&(s->site_prn));
+		s->g_rand.c[j] = complex_gaussian_rand_no(&(s->site_prn));
 #else
-		s->g_rand.c[j].real = gaussian_rand_no(&node_prn);
-		s->g_rand.c[j].imag = gaussian_rand_no(&node_prn);
+		s->g_rand.c[j] = complex_gaussian_rand_no(&node_prn);
 #endif
 	    }
 #ifdef SCHROED_FUN

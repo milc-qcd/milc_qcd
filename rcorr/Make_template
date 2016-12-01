@@ -27,6 +27,7 @@ MY_OBJECTS =         \
   accumulate_density.o \
   control.o     \
   gauge_info.o  \
+  linearlsq.o \
   print_corr.o \
   rcorr.o \
   setup.o \

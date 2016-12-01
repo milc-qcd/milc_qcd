@@ -68,6 +68,7 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 
     int ncount;
     char myname[] = "imp_gauge_force";
+    su3_matrix *links;
 
 #ifdef GFTIME
     dtime=-dclock();
@@ -96,6 +97,7 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
     }
 
     eb3 = eps*beta/3.0;
+    links = create_G_from_site();
 
     /* Loop over directions, update mom[dir] */
     for(dir=XUP; dir<=TUP; dir++){
@@ -135,7 +137,7 @@ void imp_gauge_force_cpu( Real eps, field_offset mom_off ){
 			    OPP_DIR(dirs[(k+j+1)%length]);
 		    }
 /**if(dir==XUP)printf("X_UPDATE PATH: "); printpath( path_dir, path_length );**/
-		    path_product(path_dir,path_length, tempmat1);
+		    path_product_fields(links, path_dir, path_length, tempmat1);
 
 		    /* We took the path in the other direction from our
 			old convention in order to get it to end up
@@ -189,6 +191,7 @@ node0_printf("GFTIME:   time = %e (Symanzik1) mflops = %e\n",dtime,
 #endif
  free(path_dir);
  free(dirs);
+ destroy_G(links);
  special_free(staple); 
  special_free(tempmat1); 
 } /* imp_gauge_force.c */

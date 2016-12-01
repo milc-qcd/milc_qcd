@@ -27,17 +27,25 @@ int readin(int prompt);
 /* accumulate_density.c */
 void 
 accumulate_current_density(char *filename, complex *qin[], 
-			   double charge, double *mass, int nrand);
+			   Real charge, Real *mass, int nrand);
+
+/* linearlsq2 */
+double linearlsq(Real *m, Real *sdm, Real *b, Real *sdb,
+		 Real x[], Real y[], Real sd[], int n);
+
 /* print_corr.c */
 void
-print_result(Real *q, int nrand);
+print_result(Real *q[], Real *q2[], int nb, int rb[]);
 
 /* rcorr.c */
-Real *
-rcorr(complex *qin[], int nrand);
+void
+rcorr(Real *qblock[], Real *qblock2[], 
+      complex *qin_sloppy[], int nrand_sloppy, 
+      complex *qin_diff[], int nrand_diff,
+      int nblock, int rand_block[]);
 
 /* symmetrize.c */
 void
-symmetrize(Real *q);
+symmetrize(Real *q, Real *q2);
 
 /* rcorr_includes.h */

@@ -8,8 +8,13 @@
 #define CONTROL
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 #include "lattice_qdp.h"
+
 #ifdef HAVE_QUDA
 #include <quda_milc_interface.h>
+#endif
+
+#ifdef HAVE_QPHIX
+#include "../include/generic_qphix.h"
 #endif
 
 #ifdef MILC_GLOBAL_DEBUG
@@ -169,6 +174,10 @@ main( int argc, char **argv )
   qudaFinalize();
 #endif
 
+#ifdef HAVE_QPHIX
+  finalize_qphix();
+#endif
+  
   normal_exit(0);
   return 0;
 }

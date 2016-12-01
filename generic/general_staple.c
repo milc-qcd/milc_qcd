@@ -2,6 +2,7 @@
 /* MILC Version 7 */
 
 #include "generic_includes.h"	/* definitions files and prototypes */
+#include "../include/openmp_defs.h"
 
 /* Computes the staple :
                    mu
@@ -63,22 +64,22 @@ compute_gen_staple_field(su3_matrix *staple, int mu, int nu,
   wait_gather(mtag1);
   
   if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
+    FORALLSITES_OMP(i,s,private(tmat1)){
       mult_su3_na( (su3_matrix *)gen_pt[0][i],
 		   (su3_matrix *)gen_pt[1][i], &tmat1 );
       //      mult_su3_nn( &(s->link[nu]), &tmat1, &staple[i] );
       mult_su3_nn( links + 4*i + nu, &tmat1, staple + i );
-    }
+    } END_LOOP_OMP;
   }
   else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
+    FORALLSITES_OMP(i,s,private(tmat1,tmat2,fat1)){
       mult_su3_na( (su3_matrix *)gen_pt[0][i],
 		   (su3_matrix *)gen_pt[1][i], &tmat1 );
       //      mult_su3_nn( &(s->link[nu]), &tmat1, &tmat2 );
       mult_su3_nn( links + 4*i + nu, &tmat1, &tmat2 );
       fat1 = &(fatlink[4*i+mu]);
       scalar_mult_add_su3_matrix(fat1, &tmat2, coef, fat1) ;
-    }
+    } END_LOOP_OMP;
   }
   cleanup_gather(mtag0);
   cleanup_gather(mtag1);
@@ -90,31 +91,31 @@ compute_gen_staple_field(su3_matrix *staple, int mu, int nu,
   mtag0 = start_gather_field_strided( links + nu, 4*sizeof(su3_matrix),
 			sizeof(su3_matrix), mu, EVENANDODD, gen_pt[0] );
   wait_gather(mtag0);
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(tmat1)){
     //    mult_su3_an( &(s->link[nu]),&link[i], &tmat1 );
     mult_su3_an( links + 4*i + nu, link + stride*i, &tmat1 );
     mult_su3_nn( &(tmat1),(su3_matrix *)gen_pt[0][i], &(tempmat[i]) );
-  }
+  } END_LOOP_OMP;
   cleanup_gather(mtag0);
   mtag0 = start_gather_field( tempmat, sizeof(su3_matrix),
 			      OPP_DIR(nu), EVENANDODD, gen_pt[0] );
   wait_gather(mtag0);
 
   if(staple!=NULL){/* Save the staple */
-    FORALLSITES(i,s){
+    FORALLSITES_OMP(i,s,private(fat1)){
       add_su3_matrix( staple + i,(su3_matrix *)gen_pt[0][i], 
 		      staple + i );
       fat1 = &(fatlink[4*i+mu]);
       scalar_mult_add_su3_matrix( fat1, staple + i, coef, fat1 );
-    }
+    } END_LOOP_OMP;
   }
   else{ /* No need to save the staple. Add it to the fatlinks */
-    FORALLSITES(i,s){
+    FORALLSITES_OMP(i,s,private(fat1)){
       fat1 = &(fatlink[4*i+mu]);
       scalar_mult_add_su3_matrix( fat1,
 				 (su3_matrix *)gen_pt[0][i], coef, 
 				 fat1 );
-    }
+    } END_LOOP_OMP;
   }
 
   special_free(tempmat); tempmat = NULL;

@@ -1,18 +1,23 @@
 SU3 with Clover fermions
 Microcanonical simulation with refreshing
-MIMD version 5
-Machine = Scalar processor, with 1 nodes
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
 Hybrid Monte Carlo algorithm
 PHI algorithm
 With spectrum measurements
-type 0 for no prompts  or 1 for prompts
+start: Sun Feb 14 16:21:57 2016
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nflavors 2
 nx 4
 ny 4
 nz 4
 nt 4
 iseed 3190
-LAYOUT = Hypercubes, options = EVENFIRST,
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 2.3 MBytes per node for lattice
 
 
 warms 0
@@ -28,10 +33,13 @@ max_cg_iterations 100
 max_cg_restarts 10
 error_per_site 1e-06
 error_for_propagator 1e-06
+fresh 
+forget 
 unit gauge configuration loaded
-CHECK PLAQ: 3.000000e+00 3.000000e+00
-Unitarity checked.  Max deviation 0.000000
-Time to check unitarity = 0.000000e+00
+CHECK PLAQ: 3.0000000000000000e+00 3.0000000000000000e+00
+CHECK NERSC LINKTR: 1.0000000000000000e+00 CKSUM: 0
+Reunitarized for double precision. Max deviation 0.00e+00 changed to 0.00e+00
+Time to check unitarity = 3.478527e-04
 
 
 Note O_2 is really O_3 in the notes! 
@@ -40,24 +48,29 @@ Note O_2 is really O_3 in the notes!
 loop coefficients: nloop rep loop_coeff   multiplicity
                     0 0      1.000000e+00     6
                     1 0      -7.192793e-02     12
-                    2 0      -8.018109e-03     16
+                    2 0      -8.018107e-03     16
 START 3.000000e+00 3.000000e+00 6.000000e+00
 WARMUPS COMPLETED
-ACCEPT: delta S = -7.802390e-01
-ACTION_V  6.452117e+01  4.200597e-02
-F2MES 1.142565e+01 -1.774418e-01 -1.721921e+00 -5.761264e-01 1.181898e+01 -2.743966e-01 -4.936010e-08
-GMES 2.944702e+00 -4.088972e-05 1.500000e+01 2.944760e+00 2.943843e+00
-GFIX: Ended at step 9. Av gf action 9.968e-01, delta 5.960e-08
-SPROPS 0 0 4.7952843e+01 4.7518334e-01
-SPROPS 0 1 7.0889831e+00 -3.1080625e+00
-SPROPS 0 2 3.0672886e+00 8.9813583e-02
-SPROPS 0 3 7.2366061e+00 3.3107700e+00
+ACCEPT: delta S = -7.916439e-01
+ACTION_V  6.439368e+01  4.192297e-02
+ OK converged final_rsq= 8e-13 (cf 1e-12) rel = 7.7e-13 (cf 0) restarts = 1 iters= 15
+F2MES 1.157188e+01 2.083080e-01 -1.097668e+00 -5.708387e-01 1.189224e+01 -2.917576e-01 5.724587e-17
+GMES 2.941932e+00 -6.629651e-05 1.500000e+01 2.945096e+00 2.943872e+00
+GFIX: Ended at step 8. Av gf action 9.96802707e-01, delta 9.051e-08
+ OK converged final_rsq= 4.3e-13 (cf 1e-12) rel = 6.2e-13 (cf 0) restarts = 1 iters= 15
+SPROPS 0 0 4.7820239e+01 -6.5999338e-04
+SPROPS 0 1 7.1472288e+00 -3.2144315e+00
+SPROPS 0 2 3.0439004e+00 -2.6450202e-02
+SPROPS 0 3 7.1160020e+00 3.1645589e+00
 RUNNING COMPLETED
-STOP 2.944761e+00 2.943845e+00 5.888605e+00
+STOP 2.945096e+00 2.943872e+00 5.888969e+00
 average cg iters for step= 2.100000e+01
 average cg iters for measurement= 1.500000e+01
 average cg iters for spectrum = 1.500000e+01
-Time = 8.070000e+00 seconds
+Time = 7.061679e-01 seconds
 total_iters = 42
 
+
+get_i(0): EOF on input.
+exit: Sun Feb 14 16:21:57 2016
 

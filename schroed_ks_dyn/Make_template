@@ -84,18 +84,9 @@ G_SCHROED_OBJECTS =  \
 
 # Objects depending on architecture and software package 
 
-# # Selection of layout
-# ifeq ($(strip ${QCDOC}),true)
-#   LAYOUT = layout_qcdoc.o # Required
-# else
-#   ifeq ($(strip ${HAVEQDP}),true)
-#     LAYOUT = layout_qdp.o # Required
-#   else
-#     LAYOUT = layout_hyper_prime.o # Choices possible here
-#   endif
-# endif
+# Selection of layout
 
-LAYOUT = layout_hyper_prime.o
+LAYOUT = layout_hyper_prime.o # Choices possible here
 
 # EDRAM allocation for QCDOC
 ifeq ($(strip ${QCDOC}),true)
@@ -180,6 +171,7 @@ su3_schr_sw_phi::
 	"DEFINES= -DFN -DPHI_ALGORITHM -DSEXT_WEIN -UD_FN_GATHER13" \
 	"EXTRA_OBJECTS= update_hgh.o"
 
+# THE NEXT TARGET IS BROKEN IN MPP MODE 
 su3_schr_sw_hmc::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"DEFINES= -DFN -DPHI_ALGORITHM -DHMC_ALGORITHM -DSEXT_WEIN -UD_FN_GATHER13" \

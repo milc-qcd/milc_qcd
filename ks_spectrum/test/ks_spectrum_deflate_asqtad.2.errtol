@@ -1,0 +1,19 @@
+Checking eigensolutions
+eigVal[0] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+eigVal[1] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+eigVal[2] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+eigVal[3] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+eigVal[4] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+eigVal[5] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+eigVal[6] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+eigVal[7] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+eigVal[8] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+eigVal[9] = 4e-06 ( resid = 4e-06 , XXX = 2 )
+End of eigensolutions
+Checking eigensolutions
+eigVal[0] = 4e-06 ( resid = 3e-05 , XXX = 2 )
+eigVal[1] = 4e-06 ( resid = 3e-05 , XXX = 2 )
+eigVal[2] = 4e-06 ( resid = 3e-05 , XXX = 2 )
+eigVal[3] = 4e-06 ( resid = 3e-05 , XXX = 2 )
+eigVal[4] = 4e-06 ( resid = 3e-05 , XXX = 2 )
+End of eigensolutions

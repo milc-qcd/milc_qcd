@@ -68,6 +68,8 @@
    scratch space. */
 
 #include "generic_includes.h"
+#define LOOPEND
+#include "../include/openmp_defs.h"
 #define REUNIT_INTERVAL 20
 
 /*    CDIF(a,b)         a -= b						      */
@@ -94,15 +96,15 @@ void accum_gauge_hit(int gauge_dir,int parity)
 
   /* Clear sumvec and diffmat */
 
-  FORSOMEPARITY(i,s,parity)
+  FORSOMEFIELDPARITY_OMP(i,parity,)
     {
       clear_su3mat(&diffmatp[i]);
       clearvec(&sumvecp[i]);
-    }
+    } END_LOOP_OMP;
   
   /* Subtract upward link contributions */
 
-  FORSOMEPARITY(i,s,parity)
+  FORSOMEPARITY_OMP(i,s,parity,private(dir,j,m1))
     {
       FORALLUPDIRBUT(gauge_dir,dir)
 	{
@@ -111,11 +113,11 @@ void accum_gauge_hit(int gauge_dir,int parity)
 	  sub_su3_matrix( &diffmatp[i], m1, &diffmatp[i]); 
 	  for(j=0;j<3;j++)CSUM( sumvecp[i].c[j],m1->e[j][j]);
 	}
-    }
+    } END_LOOP_OMP;
 
   /* Add downward link contributions */
 
-  FORSOMEPARITY(i,s,parity)
+  FORSOMEPARITY_OMP(i,s,parity,private(dir,m2,j))
     {
       FORALLUPDIRBUT(gauge_dir,dir)
 	{
@@ -126,7 +128,7 @@ void accum_gauge_hit(int gauge_dir,int parity)
 
 	  /* Add diagonal elements to sumvec  */
 	}
-    }
+    } END_LOOP_OMP;
 } /* accum_gauge_hit */
 
 
@@ -147,7 +149,11 @@ void do_hit(int gauge_dir, int parity, int p, int q, Real relax_boost,
 
   accum_gauge_hit(gauge_dir,parity);
 
-  FORSOMEPARITY(i,s,parity)
+  //  node0_printf("Doing gauge hit\n"); fflush(stdout);
+
+  /* TODO FOR OMP: There are several procedure calls that prevent vectorization
+     so need inline versions */
+  FORSOMEPARITY_OMP(i,s,parity,private(a0,a1,a2,a3,asq,a0sq,x,r,xdr,u,dir,j,htemp))
     {
       /* The SU(2) hit matrix is represented as a0 + i * Sum j (sigma j * aj)*/
       /* The locally optimum unnormalized components a0, aj are determined */
@@ -179,12 +185,20 @@ void do_hit(int gauge_dir, int parity, int p, int q, Real relax_boost,
 
       /* Elements of SU(2) matrix */
 
-      u.e[0][0] = cmplx( a0, a3);
-      u.e[0][1] = cmplx( a2, a1);
-      u.e[1][0] = cmplx(-a2, a1);
-      u.e[1][1] = cmplx( a0,-a3);
+      //      u.e[0][0] = cmplx( a0, a3);
+      //      u.e[0][1] = cmplx( a2, a1);
+      //      u.e[1][0] = cmplx(-a2, a1);
+      //      u.e[1][1] = cmplx( a0,-a3);
 
-      
+      u.e[0][0].real =  a0;
+      u.e[0][0].imag =  a3;
+      u.e[0][1].real =  a2;
+      u.e[0][1].imag =  a1;
+      u.e[1][0].real = -a2;
+      u.e[1][0].imag =  a1;
+      u.e[1][1].real =  a0;
+      u.e[1][1].imag = -a3;
+
       /* Do SU(2) hit on all upward links */
 
       FORALLUPDIR(dir)
@@ -222,7 +236,7 @@ void do_hit(int gauge_dir, int parity, int p, int q, Real relax_boost,
 	    make_anti_hermitian( &htemp, 
 		     (anti_hermitmat *)F_PT(s,antiherm_offset[j]));
 	  }
-    }
+    } END_LOOP_OMP;  /* do_hit */
   
   /* Exit with modified downward links left in communications buffer */
 } /* do_hit */
@@ -238,24 +252,29 @@ double get_gauge_fix_action(int gauge_dir,int parity)
   register site *s;
   register su3_matrix *m1, *m2;
   double gauge_fix_action;
-  complex trace;
+  // complex trace;
 
   gauge_fix_action = 0.0;
   
-  FORSOMEPARITY(i,s,parity)
+  //  FORSOMEPARITY_OMP(i,s,parity,private(dir,m1,m2,trace) reduction(+:gauge_fix_action))
+  FORSOMEPARITY_OMP(i,s,parity,private(dir,m1,m2) reduction(+:gauge_fix_action))
     {
       FORALLUPDIRBUT(gauge_dir,dir)
 	{
 	  m1 = &(s->link[dir]);
 	  m2 = (su3_matrix *)gen_pt[dir][i];
+	  
+	  //trace = trace_su3(m1);
+	  //gauge_fix_action += (double)trace.real;
+	  //
+	  //trace = trace_su3(m2); 
+ 	  //gauge_fix_action += (double)trace.real;
 
-	  trace = trace_su3(m1);
-	  gauge_fix_action += (double)trace.real;
-
-	  trace = trace_su3(m2); 
- 	  gauge_fix_action += (double)trace.real;
+	  /* Vectorizable (threadable) version */
+	  gauge_fix_action += m1->e[0][0].real + m1->e[1][1].real + m1->e[2][2].real;
+	  gauge_fix_action += m2->e[0][0].real + m2->e[1][1].real + m2->e[2][2].real;
 	}
-    }
+    } END_LOOP_OMP;
 
   /* Count number of terms to average */
   ndir = 0; FORALLUPDIRBUT(gauge_dir,dir)ndir++;
@@ -304,6 +323,7 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 
       /* Total gauge fixing action for sites of this parity: Before */
       gauge_fix_action = get_gauge_fix_action(gauge_dir,parity);
+      //      node0_printf("Gauge fix action before hit %e\n", gauge_fix_action); fflush(stdout);
 
       /* Do optimum gauge hit on various subspaces */
 
@@ -318,6 +338,7 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 		   nantiherm, antiherm_offset, antiherm_parity);
 
       /* Total gauge fixing action for sites of this parity: After */
+      //      node0_printf("Gauge fix action after hit %e\n", gauge_fix_action); fflush(stdout);
       gauge_fix_action = get_gauge_fix_action(gauge_dir,parity);
       
       *av_gauge_fix_action += gauge_fix_action;
@@ -335,10 +356,10 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 	  /* First copy modified link for this dir */
 	  /* from comm buffer or node to diffmat */
 
-	  FORSOMEPARITY(i,s,parity)
+	  FORSOMEPARITY_OMP(i,s,parity,)
 	    {
 	      su3mat_copy((su3_matrix *)(gen_pt[dir][i]), &diffmatp[i]);
-	    }
+	    } END_LOOP_OMP;
 	  
 	  /* Now we are finished with gen_pt[dir] */
 	  cleanup_gather(mtag[dir]);
@@ -354,9 +375,9 @@ void gaugefixstep(int gauge_dir,double *av_gauge_fix_action,Real relax_boost,
 	  wait_gather(mtag[dir]);
 
          /* Copy modified matrices into proper location */
-
-         FORSOMEPARITY(i,s,OPP_PAR(parity))
-	      su3mat_copy((su3_matrix *)(gen_pt[dir][i]),&(s->link[dir]));
+	  FORSOMEPARITY_OMP(i,s,OPP_PAR(parity),){
+	    su3mat_copy((su3_matrix *)(gen_pt[dir][i]),&(s->link[dir]));
+	  } END_LOOP_OMP;
 
 	  cleanup_gather(mtag[dir]);
 	}
@@ -409,6 +430,7 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
 
   for (gauge_iter=0; gauge_iter < max_gauge_iter; gauge_iter++)
     {
+      //      node0_printf("Calling gaugefixstep %d\n", gauge_iter); fflush(stdout);
       gaugefixstep(gauge_dir,&current_av,relax_boost,
 		   nvector, vector_offset, vector_parity,
 		   nantiherm, antiherm_offset, antiherm_parity);
@@ -423,8 +445,8 @@ void gaugefix_combo(int gauge_dir,Real relax_boost,int max_gauge_iter,
       /* Reunitarize when iteration count is a multiple of REUNIT_INTERVAL */
       if((gauge_iter % REUNIT_INTERVAL) == (REUNIT_INTERVAL - 1))
 	{
-/**	  node0_printf("step %d av gf action %.8e, delta %.3e\n",
-		       gauge_iter,current_av,del_av); **/
+	  node0_printf("step %d av gf action %.8e, delta %.3e\n",
+		       gauge_iter,current_av,del_av); fflush(stdout);
 	  reunitarize();
 	}
     }

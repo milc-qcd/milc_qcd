@@ -1,17 +1,22 @@
 SU3 with Clover fermions
 Microcanonical simulation with refreshing
-MIMD version 5
-Machine = Scalar processor, with 1 nodes
+MIMD version 7
+Machine = QMP (portable), with 1 nodes
 Hybrid Monte Carlo algorithm
 PHI algorithm
-type 0 for no prompts  or 1 for prompts
+start: Sun Feb 14 16:04:21 2016
+
+type 0 for no prompts, 1 for prompts, or 2 for proofreading
 nflavors 2
 nx 4
 ny 4
 nz 4
 nt 4
 iseed 3190
-LAYOUT = Hypercubes, options = EVENFIRST,
+LAYOUT = Hypercubes, options = hyper_prime,
+QMP with automatic hyper_prime layout
+ON EACH NODE 4 x 4 x 4 x 4
+Mallocing 0.6 MBytes per node for lattice
 
 
 warms 0
@@ -26,11 +31,14 @@ steps_per_trajectory 2
 max_cg_iterations 100
 max_cg_restarts 10
 error_per_site 1e-06
-error_for_propagator 1e-06
+error_for_propagator 0.0003
+fresh 
+forget 
 unit gauge configuration loaded
 CHECK PLAQ: 3.000000e+00 3.000000e+00
-Unitarity checked.  Max deviation 0.000000
-Time to check unitarity = 0.000000e+00
+CHECK NERSC LINKTR: 1.000000e+00 CKSUM: 0
+Unitarity checked.  Max deviation 0.00e+00
+Time to check unitarity = 1.239777e-04
 
 
 Note O_2 is really O_3 in the notes! 
@@ -42,16 +50,19 @@ loop coefficients: nloop rep loop_coeff   multiplicity
                     2 0      -8.018109e-03     16
 START 3.000000e+00 3.000000e+00 6.000000e+00
 WARMUPS COMPLETED
-ACCEPT: delta S = -7.802390e-01
-ACTION_V  6.452117e+01  4.200597e-02
- OK converged final_rsq= 1.1e-08 (cf 9e-08) rel = 1.1e-08 (cf 0) restarts = 1 iters= 10
-F2MES 1.142565e+01 -1.774418e-01 -1.721921e+00 -5.761264e-01 1.181898e+01 -2.743966e-01 -4.936010e-08
-GMES 2.944702e+00 -4.088972e-05 1.500000e+01 2.944760e+00 2.943843e+00
+ACCEPT: delta S = -7.917520e-01
+ACTION_V  6.439363e+01  4.192294e-02
+ OK converged final_rsq= 1.2e-08 (cf 9e-08) rel = 1.2e-08 (cf 0) restarts = 1 iters= 10
+F2MES 1.157187e+01 2.083262e-01 -1.097652e+00 -5.708521e-01 1.189223e+01 -2.917396e-01 -2.468005e-08
+GMES 2.941931e+00 -6.629751e-05 1.000000e+01 2.945097e+00 2.943873e+00
 RUNNING COMPLETED
-STOP 2.944760e+00 2.943843e+00 5.888603e+00
+STOP 2.945097e+00 2.943873e+00 5.888969e+00
 average cg iters for step= 2.100000e+01
-average cg iters for measurement= 1.500000e+01
-Time = 7.060000e+00 seconds
+average cg iters for measurement= 1.000000e+01
+Time = 1.377835e+00 seconds
 total_iters = 42
 
+
+get_i(0): EOF on input.
+exit: Sun Feb 14 16:04:22 2016
 
