@@ -50,6 +50,14 @@ _Pragma( STR(omp parallel for private(i,s) omp_args) )\
   
   //note extra bracket so all these loops can use the same END_LOOP_OMP
 
+#define FORSOMESUBLATTICE_OMP(i,s,subl,omp_args) \
+  { \
+_Pragma( STR(omp parallel for private(i,s,subl,last_in_loop) omp_args) ) \
+    for( i=(subl*subl_sites_on_node), s= &(lattice[i]), \
+	 last_in_loop=((subl+1)*subl_sites_on_node); \
+	 i< last_in_loop; i++,s++){
+  //note extra bracket so all these loops can use the same END_LOOP_OMP
+
 #define FORALLFIELDSITES_OMP(i,omp_args) \
   { \
 _Pragma( STR(omp parallel for private(i) omp_args) )\
@@ -82,6 +90,7 @@ _Pragma( STR(omp parallel for private(i,s) omp_args) )\
 _Pragma( STR(omp parallel for private(i) omp_args) )\
   for( i=loopstart; i<loopend; i++){
 
+
 #ifdef SCHROED_FUN
 #define FOREVENSITESDOMAIN_OMP(i,s,omp_args)	\
   FOREVENSITES_OMP(i,s,omp_args) if(s->t > 0)
@@ -104,6 +113,7 @@ _Pragma( STR(omp parallel for private(i) omp_args) )\
 #else // Not OMP
 
 
+#define FORSOMESUBLATTICE_OMP(i,s,subl,omp_args) FORSOMESUBLATTICE(i,s,subl){
 #define FORALLSITES_OMP(i,s,omp_args) FORALLSITES(i,s){
 #define FOREVENSITES_OMP(i,s,omp_args) FOREVENSITES(i,s){
 #define FORODDSITES_OMP(i,s,omp_args) FORODDSITES(i,s){

@@ -49,7 +49,6 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   char myname[] = "ks_multicg_offset_field";
   /* Site su3_vector's resid, cg_p and ttt are used as temporaies */
   register int i;
-  register site * restrict s;
   int iteration;	/* counter for iterations */
   int num_offsets_now; /* number of offsets still being worked on */
   double c1, c2, rsq, oldrsq, pkp;		/* pkp = cg_p.K.cg_p */
@@ -198,7 +197,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
 #endif
   num_offsets_now = num_offsets;
   source_norm = 0.0;
-  FORSOMEPARITY_OMP(i,s,l_parity,private(j) reduction(+:source_norm) ){
+  FORSOMEFIELDPARITY_OMP(i,l_parity,private(j) reduction(+:source_norm) ){
     source_norm += (double) magsq_su3vec( src+i );
     su3vec_copy( src+i, resid+i);
     su3vec_copy(resid+i, cg_p+i);
@@ -289,7 +288,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     /* ttt  <- ttt - shift0*cg_p	*/
     /* pkp  <- cg_p . ttt */
     pkp = 0.0;
-    FORSOMEPARITY_OMP(i,s,l_parity,reduction(+:pkp) ){
+    FORSOMEFIELDPARITY_OMP(i,l_parity,reduction(+:pkp) ){
       scalar_mult_add_su3_vector( ttt+i, cg_p+i, shift0, ttt+i );
       pkp += (double)su3_rdot( cg_p+i, ttt+i );
     } END_LOOP_OMP;
@@ -332,7 +331,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     
     /* dest <- dest + beta*cg_p ( cg_p = pm[j_low], dest = psim[j_low] ) */
     rsq = 0.0;
-    FORSOMEPARITY_OMP(i,s,l_parity,private(j) reduction(+:rsq) ){
+    FORSOMEFIELDPARITY_OMP(i,l_parity,private(j) reduction(+:rsq) ){
       for(j=0;j<num_offsets_now;j++) {
 	scalar_mult_add_su3_vector( psim[j]+i, pm[j]+i, (Real)beta_i[j], psim[j]+i);
       }
@@ -412,7 +411,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
       }
     
     /* cg_p  <- resid + alpha*cg_p */
-    FORSOMEPARITY_OMP(i,s,l_parity,private(j) ){
+    FORSOMEFIELDPARITY_OMP(i,l_parity,private(j) ){
       for(j=0;j<num_offsets_now;j++) {
 	scalar_mult_su3_vector( resid+i, (Real)zeta_ip1[j], ttt+i);
 	scalar_mult_add_su3_vector( ttt+i, pm[j]+i, (Real)alpha[j], pm[j]+i);

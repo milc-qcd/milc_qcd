@@ -154,7 +154,7 @@ void w_close_ks_eigen(int flag, ks_eigen_file *kseigf){
    0 is normal exit code
    >1 for seek, read error, or missing data error 
 */
-int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
+int reload_ks_eigen(int flag, char *eigfile, int *Nvecs, double *eigVal,
 		    su3_vector **eigVec, int timing){
   
   register int i, j;
@@ -169,7 +169,7 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
   
   switch(flag){
   case FRESH:
-    for(i = 0; i < Nvecs; i++){
+    for(i = 0; i < *Nvecs; i++){
       FORALLFIELDSITES(j){
 	clearvec(eigVec[i]+j);
       }
@@ -186,11 +186,16 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
       status = 1;
       break;
     }
-    for(int i = 0; i < Nvecs; i++){
+    for(int i = 0; i < *Nvecs; i++){
       qio_status = read_ks_eigenvector(infile, eigVec[i], &eigVal[i]);
       if(qio_status != QIO_SUCCESS){
-	node0_printf("ERROR: Can't read an eigenvector\n");
-	status = 1;
+	if(qio_status == QIO_EOF){
+	  node0_printf("WARNING: Premature EOF at %d eigenvectors\n", i);
+	  *Nvecs = i;
+	} else {
+	  node0_printf("ERROR: Can't read an eigenvector\n");
+	  status = 1;
+	}
 	break;
       }
     }
@@ -203,7 +208,7 @@ int reload_ks_eigen(int flag, char *eigfile, int Nvecs, double *eigVal,
   
   if(timing && flag != FRESH){
     dtime += dclock();
-    node0_printf("Time to reload %d eigenvectors = %e\n", Nvecs, dtime);
+    node0_printf("Time to reload %d eigenvectors = %e\n", *Nvecs, dtime);
   }
 
   return status;

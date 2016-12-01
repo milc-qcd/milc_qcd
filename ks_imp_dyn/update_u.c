@@ -13,7 +13,7 @@
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
 
-#ifdef USE_GF_GPU
+#if defined HAVE_QUDA && defined USE_GF_GPU
 #include "../include/generic_quda.h"
 
 /* QUDA version */

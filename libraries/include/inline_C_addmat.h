@@ -14,3 +14,33 @@
     } \
   }
 
+#if 0
+// For mysterious reasons, the following version doesn't work in all use cases */
+
+/* void add_su3_matrix( su3_matrix *a, su3_matrix *b,	su3_matrix *c) * 
+* C <- A + B,   A,B and C matrices 					*
+*/
+#define _inline_C_add_su3_matrix(aa,bb,cc) \
+  (cc)->e[0][0].real = (aa)->e[0][0].real + (bb)->e[0][0].real; \
+  (cc)->e[0][0].imag = (aa)->e[0][0].imag + (bb)->e[0][0].imag; \
+  (cc)->e[0][1].real = (aa)->e[0][1].real + (bb)->e[0][1].real; \
+  (cc)->e[0][1].imag = (aa)->e[0][1].imag + (bb)->e[0][1].imag; \
+  (cc)->e[0][2].real = (aa)->e[0][2].real + (bb)->e[0][2].real; \
+  (cc)->e[0][2].imag = (aa)->e[0][2].imag + (bb)->e[0][2].imag; \
+\
+  (cc)->e[1][0].real = (aa)->e[1][0].real + (bb)->e[1][0].real; \
+  (cc)->e[1][0].imag = (aa)->e[1][0].imag + (bb)->e[1][0].imag; \
+  (cc)->e[1][1].real = (aa)->e[1][1].real + (bb)->e[1][1].real; \
+  (cc)->e[1][1].imag = (aa)->e[1][1].imag + (bb)->e[1][1].imag; \
+  (cc)->e[1][2].real = (aa)->e[1][2].real + (bb)->e[1][2].real; \
+  (cc)->e[1][2].imag = (aa)->e[1][2].imag + (bb)->e[1][2].imag; \
+\
+  (cc)->e[2][0].real = (aa)->e[2][0].real + (bb)->e[2][0].real; \
+  (cc)->e[2][0].imag = (aa)->e[2][0].imag + (bb)->e[2][0].imag; \
+  (cc)->e[2][1].real = (aa)->e[2][1].real + (bb)->e[2][1].real; \
+  (cc)->e[2][1].imag = (aa)->e[2][1].imag + (bb)->e[2][1].imag; \
+  (cc)->e[2][2].real = (aa)->e[2][2].real + (bb)->e[2][2].real; \
+  (cc)->e[2][2].imag = (aa)->e[2][2].imag + (bb)->e[2][2].imag;
+
+
+#endif

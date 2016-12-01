@@ -10,7 +10,7 @@
 *  These routines are for the computation of the Eigenvalues and Eigevectors
 * of the Kogut-Susskind dslash^2. 
 */
-/**#define DEBUG**/
+#define DEBUG
 /* This Variable controls the tollerence of the JACOBI iteration */
 #define JACOBI_TOL 1.110223e-16
 #define MINITER 5
@@ -287,6 +287,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
   quot = cc.real ;
 #ifdef DEBUG
   node0_printf("Rayleigh_min: Start -- quot=%g,%g\n", quot,cc.imag) ;
+  fflush(stdout);
 #endif  
   /* Compute the grad=M*vec - quot*vec */
   copy_Vector(Mvec,grad) ;
@@ -299,6 +300,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
   start_g_norm = g_norm ;
 #ifdef DEBUG
   node0_printf("Rayleigh_min: Start -- g_norm=%g\n", g_norm) ;
+  fflush(stdout);
 #endif  
 
   iter = 0 ;
@@ -330,6 +332,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
       node0_printf("Renormalizing...");
       norm2(vec,&vec_norm,parity) ;
       node0_printf("  norm: %g\n",1.0/vec_norm);
+      fflush(stdout);
 #endif
       /* Project vec on the orthogonal complement of eigVec */
       project_out(vec, eigVec, Nvecs, parity);
@@ -359,6 +362,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 #ifdef DEBUG
     node0_printf("Rayleigh_min: %i, quot=%8g g=%8g b=%6g P:%6g\n",
 		 iter,cc.real,g_norm,beta,P_norm) ;
+    fflush(stdout);
 #endif      
     old_g_norm = g_norm ;
        
@@ -469,8 +473,8 @@ static void RotateBasis(su3_vector **eigVec, Matrix *V, int parity){
 
 /*****************************************************************************/
 int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance, 
-	       Real RelTol, int Nvecs, int MaxIter, 
-	       int Restart, int Kiters ){
+		    Real RelTol, int Nvecs, int MaxIter, 
+		    int Restart, int Kiters, int init ){
 
   int total_iters=0 ;
   int j;
@@ -509,11 +513,14 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
     MeigVec[i] = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
   }
 
-  /* Initiallize all the eigenvectors to a random vector */
+  /* If init is true, initiallize all the eigenvectors to a random
+     vector. Otherwise, start from the eigenpairs we are given.*/
   for(j=0;j<Nvecs;j++) {
     grad[j] = 1.0e+10 ;
-    grsource_plain_field( eigVec[j], parity);
-    eigVal[j] = 1.0e+16 ;
+    if(init){
+      grsource_plain_field( eigVec[j], parity);
+      eigVal[j] = 1.0e+16 ;
+    }
   }
 
 #ifdef EIGTIME
@@ -555,6 +562,7 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
     for(i=0;i<Nvecs;i++){
       node0_printf("quot(%i) = %g |grad|=%g\n",i,Array.M[i][i].real,grad[i]);
     }
+    fflush(stdout);
 #endif
 
     Jacobi(&Array, &V, JACOBI_TOL) ;
@@ -607,7 +615,7 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   node0_printf("BEGIN RESULTS\n");
   for(i=0;i<Nvecs;i++){
-    node0_printf("Eigenvalue(%i) = %g +/- %8e\t cvg? %d  \n",
+    node0_printf("Eigenvalue(%i) = %.16g +/- %8e\t cvg? %d  \n",
 		 i,eigVal[i],err[i],converged[i]);
   }
 

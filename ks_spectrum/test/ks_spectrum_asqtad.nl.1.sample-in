@@ -1,8 +1,8 @@
 prompt 0
-nx 6
-ny 6
-nz 6
-nt 6
+nx 8
+ny 8
+nz 8
+nt 8
 iseed 5682304
 job_id 203696.kaon2.fnal.gov
 
@@ -12,7 +12,7 @@ job_id 203696.kaon2.fnal.gov
 
 # Gauge field description
 
-reload_serial ../../binary_samples/lat.sample.l6666
+reload_serial ../../binary_samples/lat.sample.l8888
 u0 0.8696
 coulomb_gauge_fix
 forget
@@ -78,7 +78,7 @@ number_of_propagators 1
 
 mass 0.05
 
-error_for_propagator 1e-6
+error_for_propagator 3e-6
 rel_error_for_propagator 0
 
 fresh_ksprop
@@ -102,7 +102,7 @@ number_of_propagators 1
 
 mass 0.05
 
-error_for_propagator 1e-6
+error_for_propagator 3e-6
 rel_error_for_propagator 0
 
 fresh_ksprop
@@ -124,7 +124,7 @@ number_of_propagators 1
 
 mass 0.05
 
-error_for_propagator 1e-6
+error_for_propagator 3e-6
 rel_error_for_propagator 0
 
 fresh_ksprop

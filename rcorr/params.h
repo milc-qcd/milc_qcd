@@ -10,6 +10,7 @@
 #define MAXRAND 64  /* Maximum number of random sources in a file */
 #define NMU 4       /* Number of vector current components per site */
 #define MAXFLAV 4   /* Max number of flavors */
+#define MAXBLOCK 32 /* Maximum number of random-sample block sizes */
 
 /* structure for passing simulation parameters to each node */
 typedef struct {
@@ -33,8 +34,12 @@ typedef struct {
 
   /*  REPEATING BLOCK */
   int nflav;
-  int nrand;           
-  char fname[MAXFLAV][MAXFILENAME];
+  int nrand_sloppy;           
+  int nrand_diff;           
+  int nblock;
+  int block_size[MAXBLOCK];
+  char fname_sloppy[MAXFLAV][MAXFILENAME];
+  char fname_diff[MAXFLAV][MAXFILENAME];
   char corrfile[MAXFILENAME];
   Real charges[MAXFLAV];
   Real mass[MAXFLAV];   /* Filled in later only on node 0 */

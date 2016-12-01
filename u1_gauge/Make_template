@@ -135,11 +135,13 @@ u1_g::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"EXTRA_OBJECTS= control.o momgauge.o" \
 	"DEFINES = -DNO_GAUGE_FIELD"
+	@echo WARNING!!: MPP IS NOT SUPPORTED WITH THIS CODE!!
 
 u1_g_convert::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"EXTRA_OBJECTS= control_convert.o" \
 	"DEFINES = -DNO_GAUGE_FIELD"
+	@echo WARNING!!: MPP IS NOT SUPPORTED WITH THIS CODE!!
 
 clean:
 	-/bin/rm -f *.o

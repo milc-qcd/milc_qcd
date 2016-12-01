@@ -120,6 +120,7 @@
 #else
 #define MILC_MPI_REAL MPI_DOUBLE
 #endif
+#include "../include/openmp_defs.h"
 
 #define NOWHERE -1	/* Not an index in array of fields */
 
@@ -144,7 +145,10 @@ u_int32type crc32(u_int32type crc, const unsigned char *buf, size_t len);
 /* hacks needed to unify even/odd and 32 sublattice cases */
 #ifdef N_SUBL32
 #define NUM_SUBL 32
+#undef FORSOMEPARITY
 #define FORSOMEPARITY FORSOMESUBLATTICE
+#undef FORSOMEPARITY_OMP
+#define FORSOMEPARITY_OMP FORSOMESUBLATTICE_OMP
 #else
 #define NUM_SUBL 2
 #endif
@@ -1560,14 +1564,14 @@ make_gather(
   /* RECEIVE LISTS: */
   /* Fill in pointers to sites which are on this node, NOWHERE if
      they are off-node */
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(x,y,z,t,j)){
     /* find coordinates of neighbor who sends us data */
     func( s->x, s->y, s->z, s->t, args, FORWARDS, &x,&y,&z,&t);
     j = node_number(x,y,z,t);	/* node for neighbor site */
     /* if neighbor is on node, set up pointer */
     if( j == mynode() ) gather_array[dir].neighbor[i] = node_index(x,y,z,t);
     else		gather_array[dir].neighbor[i] = NOWHERE;
-  }
+  } END_LOOP_OMP;
 
   /* make lists of sites which get data from other nodes.  */
   gather_array[dir].neighborlist =
@@ -1748,13 +1752,13 @@ declare_strided_gather(
   /* set pointers in sites whose neighbors are on this node.  (If all
      neighbors are on this node, this is the only thing done.) */
   if(subl==EVENANDODD) {
-    FORALLSITES(i,s){ if(gt->neighbor[i] != NOWHERE){
-      dest[i] = (char *)field + gt->neighbor[i]*stride;
-    }}
+    FORALLSITES_OMP(i,s,){ if(gt->neighbor[i] != NOWHERE){
+	dest[i] = (char *)field + gt->neighbor[i]*stride;
+    }} END_LOOP_OMP;
   } else {
-    FORSOMEPARITY(i,s,subl){ if(gt->neighbor[i] != NOWHERE){
-      dest[i] = (char *)field + gt->neighbor[i]*stride;
-    }}
+    FORSOMEPARITY_OMP(i,s,subl,){ if(gt->neighbor[i] != NOWHERE){
+	dest[i] = (char *)field + gt->neighbor[i]*stride;
+    }} END_LOOP_OMP;
   }
 
 #ifndef N_SUBL32
@@ -1904,6 +1908,9 @@ prepare_gather(msg_tag *mtag)
     /* set pointers in sites to correct location */
     gmem = mrecv[i].gmem;
     do {
+#ifdef OMP
+#pragma omp parallel for private(j,tpt)
+#endif
       for(j=0; j<gmem->num; ++j,tpt+=gmem->size) {
 	((char **)gmem->mem)[gmem->sitelist[j]] = tpt;
       }
@@ -1950,10 +1957,14 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
     tpt = mbuf[i].msg_buf;
     gmem = mbuf[i].gmem;
     do {
+#ifdef OMP
+#pragma omp parallel for private(j,tpt)
+#endif
       for(j=0; j<gmem->num; ++j,tpt+=gmem->size) {
 	memcpy( tpt, gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
       }
     } while((gmem=gmem->next)!=NULL);
+
     /* start the send */
 #ifdef COM_CRC
     {
@@ -2621,7 +2632,7 @@ start_general_strided_gather(
 	}
       }
     }
-  }
+  } END_LOOP;
 
   /* scan sites of parity we are sending, make list of nodes to which
      we must send messages and the number of messages to each. */
@@ -2656,7 +2667,7 @@ start_general_strided_gather(
 	}
       }
     }
-  }
+  } END_LOOP;
 
   mtag = (msg_tag *)malloc(sizeof(msg_tag));
 
@@ -2731,7 +2742,7 @@ start_general_strided_gather(
       memcpy( tpt+2*sizeof(int), field+i*stride, size);
       to_nodes[j].count++;
     }
-  }
+  } END_LOOP;
 
   /* start the sends */
   for(i=0; i<n_send_msgs; i++) {

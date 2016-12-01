@@ -20,6 +20,7 @@
 #  heavy \
 #  pw_nr_meson \
 #  schroed_pg \
+#  wilson_static \
 
 DIRS = \
    arb_overlap \
@@ -42,6 +43,8 @@ DIRS = \
    smooth_inst \
    symanzik_sl32 \
    u1_gauge \
+   wilson_flow \
+
 
 all:
 	for dir in ${DIRS};\

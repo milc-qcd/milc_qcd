@@ -33,7 +33,7 @@
 int main(int argc, char *argv[])
 {
   int prompt;
-  int i,k;
+  int k;
   double starttime, endtime;
 #ifdef PRTIME
   double dtime;
@@ -85,27 +85,23 @@ int main(int argc, char *argv[])
     Nvecs_curr = Nvecs_tot = param.Nvecs;
 
     /* compute eigenpairs if requested */
+    //    if(param.ks_eigen_startflag == FRESH){
+    int total_R_iters;
     if(param.ks_eigen_startflag == FRESH){
-      int total_R_iters;
       total_R_iters=Kalkreuter(eigVec, eigVal, param.eigenval_tol, param.error_decr,
-			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters);
-      node0_printf("total Rayleigh iters = %d\n", total_R_iters);
+			       Nvecs_curr, param.MaxIter, param.Restart, param.Kiters, 
+			       param.ks_eigen_startflag == FRESH);
+      node0_printf("total Rayleigh iters = %d\n", total_R_iters); fflush(stdout);
+    }
 
 #if 0 /* If needed for debugging */
       /* (The Kalkreuter routine uses the random number generator to
 	 initialize the eigenvector search, so, if you want to compare
-	 results with and without deflation, you need to
+	 first results with and without deflation, you need to
 	 re-initialize here.) */
-      /* re-initialize the site random number generator */
-      int x, y, z, t;
-      for(t=0;t<nt;t++)for(z=0;z<nz;z++)for(y=0;y<ny;y++)for(x=0;x<nx;x++){
-	      if(node_number(x,y,z,t)==mynode()){
-		i=node_index(x,y,z,t);
-		initialize_prn( &(lattice[i].site_prn) , iseed, lattice[i].index);
-	      }
-	    }
+      initialize_site_prn_from_seed(iseed);
 #endif
-    }
+      //    }
     
     /* Calculate and print the residues and norms of the eigenvectors */
     resid = (double *)malloc(Nvecs_curr*sizeof(double));
@@ -114,7 +110,7 @@ int main(int argc, char *argv[])
     /* print eigenvalues of iDslash */
     node0_printf("The above were eigenvalues of -Dslash^2 in MILC normalization\n");
     node0_printf("Here we also list eigenvalues of iDslash in continuum normalization\n");
-    for(i=0;i<Nvecs_curr;i++){ 
+    for(int i=0;i<Nvecs_curr;i++){ 
       if ( eigVal[i] > 0.0 ){
 	node0_printf("eigenval(%i): %10g\n", i, 0.5*sqrt(eigVal[i]));
       }
@@ -124,7 +120,7 @@ int main(int argc, char *argv[])
       }
     }
 
-    ENDTIME("calculate Dirac eigenpairs");
+    ENDTIME("calculate Dirac eigenpairs"); fflush(stdout);
 
 #endif
     
@@ -136,13 +132,23 @@ int main(int argc, char *argv[])
     for(k = 0; k < param.num_set; k++){
       int num_pbp_masses = param.num_pbp_masses[k];
       int i0 = param.begin_pbp_masses[k];
+
       restore_fermion_links_from_site(fn_links, param.qic_pbp[i0].prec);
 
       if(num_pbp_masses == 1){
 #ifdef CURRENT_DISC
-	f_meas_current( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass,
-			param.ksp_pbp[i0].naik_term_epsilon_index, fn_links,
-			param.pbp_filenames[i0] );
+	if(param.truncate_diff[k])
+	  f_meas_current_diff( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
+			       &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+			       param.ksp_pbp[i0].mass, 
+			       param.ksp_pbp[i0].naik_term_epsilon_index, 
+			       fn_links, param.pbp_filenames[i0] );
+	else
+	  f_meas_current( param.npbp_reps[k], param.nwrite[k], param.thinning[k],
+			  &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
+			  param.ksp_pbp[i0].naik_term_epsilon_index, 
+			  fn_links, param.pbp_filenames[i0] );
+
 #else
 	f_meas_imp_field( param.npbp_reps[k], &param.qic_pbp[i0], param.ksp_pbp[i0].mass, 
 			  param.ksp_pbp[i0].naik_term_epsilon_index, fn_links);
@@ -155,8 +161,33 @@ int main(int argc, char *argv[])
 #endif
       } else {
 #ifdef CURRENT_DISC
-	f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
-			     &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
+	
+	// initialize_site_prn_from_seed(iseed); /* Use the same random number sequence for all sets */
+
+#if EIGMODE == DEFLATION
+
+	if(param.truncate_diff[k])
+	  f_meas_current_multi_diff_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+					 param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+					 eigVec, eigVal, Nvecs_curr,
+					 &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
+	else
+	  f_meas_current_multi_eig( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+				    param.thinning[k], &param.qic_pbp[i0], 
+				    eigVec, eigVal, Nvecs_curr,
+				    &param.ksp_pbp[i0], 
+				    fn_links, &param.pbp_filenames[i0] );
+	
+#else
+	if(param.truncate_diff[k])
+	  f_meas_current_multi_diff( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+				     param.thinning[k], &param.qic_pbp[i0], &param.qic_pbp_sloppy[i0],
+				     &param.ksp_pbp[i0], fn_links, &param.pbp_filenames[i0] );
+	else
+	  f_meas_current_multi( param.num_pbp_masses[k], param.npbp_reps[k], param.nwrite[k], 
+				param.thinning[k], &param.qic_pbp[i0], &param.ksp_pbp[i0], 
+				fn_links, &param.pbp_filenames[i0] );
+#endif
 #else
 	f_meas_imp_multi( param.num_pbp_masses[k], param.npbp_reps[k], &param.qic_pbp[i0], 
 			  &param.ksp_pbp[i0], fn_links);
@@ -166,7 +197,7 @@ int main(int argc, char *argv[])
 			&param.ksp_pbp[i0], fn_links);
 #endif
       }
-    }
+    } /* k num_set */
  
 #ifdef HISQ_SVD_COUNTER
     node0_printf("hisq_svd_counter = %d\n",hisq_svd_counter);
@@ -205,8 +236,6 @@ int main(int argc, char *argv[])
 
 #if EIGMODE == EIGCG || EIGMODE == DEFLATION
 
-    STARTTIME;
-
     /* save eigenvectors if requested */
     int status = save_ks_eigen(param.ks_eigen_saveflag, param.ks_eigen_savefile,
 			       Nvecs_curr, eigVal, eigVec, resid, 1);
@@ -215,10 +244,8 @@ int main(int argc, char *argv[])
     }
 
     /* Clean up eigen storage */
-    for(i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
+    for(int i = 0; i < Nvecs_tot; i++) free(eigVec[i]);
     free(eigVal); free(eigVec); free(resid);
-
-    ENDTIME("save eigenvectors (if requested)");
 
 #endif
 

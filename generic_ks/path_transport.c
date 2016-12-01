@@ -59,34 +59,34 @@ void path_transport_field( su3_vector *src, su3_vector *dest, int parity,
 	}
 
 	if( j==length-1 ){
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 	        tmp_src[i] = src[i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
 	    mtag0 = start_gather_field( tmp_src, sizeof(su3_vector),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		mult_su3_mat_vec( &(s->link[dir[j]]),
 		    (su3_vector *)(gen_pt[0][i]),
 		    &(tmp_dest[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 
 	else{ /* GOES_BACKWARDS(dir[j]) */
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 		mult_adj_su3_mat_vec( &(s->link[OPP_DIR(dir[j])]),
 		    &(tmp_src[i]), &(tmp_work[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    mtag0 = start_gather_field( tmp_work, sizeof(su3_vector),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		 tmp_dest[i] = *(su3_vector *)gen_pt[0][i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 	
@@ -100,9 +100,9 @@ void path_transport_field( su3_vector *src, su3_vector *dest, int parity,
     free(tmp_src); free(tmp_dest); free(tmp_work);
   } /* end if(length>0) */
   else if( src != dest ){ /* for length=0 */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         dest[i] = src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
   }
 } /* path_transport_field */
 
@@ -155,34 +155,34 @@ void path_transport_connection( su3_matrix *src, su3_matrix *dest, int parity,
 	}
 
 	if( j==length-1 ){
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 	        tmp_src[i] = src[i];
-	    } END_LOOP
+	  } END_LOOP_OMP;
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
 	    mtag0 = start_gather_field( tmp_src, sizeof(su3_matrix),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		mult_su3_nn( &(s->link[dir[j]]),
 		    (su3_matrix *)(gen_pt[0][i]),
 		    &(tmp_dest[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 
 	else{ /* GOES_BACKWARDS(dir[j]) */
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 		mult_su3_an( &(s->link[OPP_DIR(dir[j])]),
 		    &(tmp_src[i]), &(tmp_work[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    mtag0 = start_gather_field( tmp_work, sizeof(su3_matrix),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		 tmp_dest[i] = *(su3_matrix *)gen_pt[0][i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 	
@@ -190,15 +190,15 @@ void path_transport_connection( su3_matrix *src, su3_matrix *dest, int parity,
 	tmp_pt=tmp_src; tmp_src=tmp_dest; tmp_dest=tmp_pt;
     }  /* j=link in path */
     /* done, copy result into real dest. (tmp_src now points to result) */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         dest[i] = tmp_src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
     free(tmp_src); free(tmp_dest); free(tmp_work);
   } /* end if(length>0) */
   else if( src != dest ){ /* for length=0 */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         dest[i] = src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
   }
 } /* path_transport_connection */
 
@@ -240,32 +240,32 @@ void path_transport_connection_hisq( su3_matrix *src, su3_matrix **links, su3_ma
 	}
 
 	if( j==length-1 ){
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 	        tmp_src[i] = src[i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
 	    mtag0 = start_gather_field( tmp_src, sizeof(su3_matrix),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		mult_su3_nn( &(links[dir[j]][i]), (su3_matrix *)(gen_pt[0][i]),
 		    &(tmp_dest[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 
 	else{ /* GOES_BACKWARDS(dir[j]) */
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 		mult_su3_an( &(links[OPP_DIR(dir[j])][i]), &(tmp_src[i]), &(tmp_work[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    mtag0 = start_gather_field( tmp_work, sizeof(su3_matrix),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		 tmp_dest[i] = *(su3_matrix *)gen_pt[0][i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 	
@@ -273,15 +273,15 @@ void path_transport_connection_hisq( su3_matrix *src, su3_matrix **links, su3_ma
 	tmp_pt=tmp_src; tmp_src=tmp_dest; tmp_dest=tmp_pt;
     }  /* j=link in path */
     /* done, copy result into real dest. (tmp_src now points to result) */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         dest[i] = tmp_src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
     free(tmp_src); free(tmp_dest); free(tmp_work);
   } /* end if(length>0) */
   else if( src != dest ){ /* for length=0 */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         dest[i] = src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
   }
 } /* path_transport_connection_hisq */
 
@@ -296,25 +296,25 @@ void link_transport_connection( su3_matrix *src, su3_matrix *dest,
 	mtag0 = start_gather_field( src, sizeof(su3_matrix),
 	    dir, EVENANDODD, gen_pt[0] );
 	wait_gather(mtag0);
-	FORALLSITES(i,s){
+	FORALLSITES_OMP(i,s,){
 	    mult_su3_nn( &(s->link[dir]), (su3_matrix *)(gen_pt[0][i]),
 		&(dest[i]) );
-	}
+	} END_LOOP_OMP;
 	cleanup_gather(mtag0);
     }
 
     else{ /* GOES_BACKWARDS(dir) */
-	FORALLSITES(i,s){
+      FORALLSITES_OMP(i,s,){
 	    mult_su3_an( &(s->link[OPP_DIR(dir)]),
 		&(src[i]), &(work[i]) );
-	}
-	mtag0 = start_gather_field( work, sizeof(su3_matrix),
-	    dir, EVENANDODD, gen_pt[0] );
-	wait_gather(mtag0);
-	FORALLSITES(i,s){
-	    dest[i] = *(su3_matrix *)gen_pt[0][i];
-	}
-	cleanup_gather(mtag0);
+      } END_LOOP_OMP;
+      mtag0 = start_gather_field( work, sizeof(su3_matrix),
+				  dir, EVENANDODD, gen_pt[0] );
+      wait_gather(mtag0);
+      FORALLSITES_OMP(i,s,){
+	dest[i] = *(su3_matrix *)gen_pt[0][i];
+      } END_LOOP_OMP;
+      cleanup_gather(mtag0);
     }
 } /* link_transport_connection */
 // special case to transport a "connection" by one link, does both parities
@@ -344,9 +344,9 @@ void link_transport_connection_hisq( su3_matrix *src, su3_matrix *links, su3_mat
 	mtag0 = start_gather_field( work, sizeof(su3_matrix),
 	    dir, EVENANDODD, gen_pt[0] );
 	wait_gather(mtag0);
-	FORALLSITES(i,s){
-	    dest[i] = *(su3_matrix *)gen_pt[0][i];
-	}
+	FORALLSITES_OMP(i,s,){
+	  dest[i] = *(su3_matrix *)gen_pt[0][i];
+	} END_LOOP_OMP;
 	cleanup_gather(mtag0);
     }
 } /* link_transport_connection_hisq */
@@ -363,7 +363,7 @@ void link_gather_connection_hisq( su3_matrix *src, su3_matrix *dest,
     mtag0 = start_gather_field( src, sizeof(su3_matrix),
 	dir, EVENANDODD, gen_pt[0] );
     wait_gather(mtag0);
-    FORALLSITES(i,s){ dest[i] = *(su3_matrix *)(gen_pt[0][i]); }
+    FORALLSITES_OMP(i,s,){ dest[i] = *(su3_matrix *)(gen_pt[0][i]); } END_LOOP_OMP;
     cleanup_gather(mtag0);
 } /* link_gather_connection_hisq */
 
@@ -411,34 +411,34 @@ void path_transport_hwv_field( half_wilson_vector *src, half_wilson_vector * des
 	}
 
 	if( j==length-1 ){
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 	        tmp_src[i] = src[i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
 	    mtag0 = start_gather_field( tmp_src,
 		sizeof(half_wilson_vector), dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		mult_su3_mat_hwvec( &(s->link[dir[j]]),
 		    (half_wilson_vector *)(gen_pt[0][i]),
 		    &(tmp_dest[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 
 	else{ /* GOES_BACKWARDS(dir[j]) */
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 		mult_adj_su3_mat_hwvec( &(s->link[OPP_DIR(dir[j])]),
 		    &(tmp_src[i]), &(tmp_work[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    mtag0 = start_gather_field( tmp_work,
 		sizeof(half_wilson_vector), dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		 tmp_dest[i] = *(half_wilson_vector *)gen_pt[0][i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 	
@@ -446,15 +446,15 @@ void path_transport_hwv_field( half_wilson_vector *src, half_wilson_vector * des
 	tmp_pt=tmp_src; tmp_src=tmp_dest; tmp_dest=tmp_pt;
     }  /* j=link in path */
     /* done, copy result into real dest. (tmp_src now points to result) */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         dest[i] = tmp_src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
     free(tmp_src); free(tmp_dest); free(tmp_work);
   } /* end if(length>0) */
   else if( src != dest ){ /* for length=0 */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         dest[i] = src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
   }
 } /* path_transport_hwv_field */
 
@@ -502,34 +502,34 @@ void path_transport( field_offset src, field_offset dest, int parity,
 	}
 
 	if( j==length-1 ){
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 	        tmp_src[i] = *(su3_vector *)F_PT(s,src);
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
 	    mtag0 = start_gather_field( tmp_src, sizeof(su3_vector),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		mult_su3_mat_vec( &(s->link[dir[j]]),
 		    (su3_vector *)(gen_pt[0][i]),
 		    &(tmp_dest[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 
 	else{ /* GOES_BACKWARDS(dir[j]) */
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 		mult_adj_su3_mat_vec( &(s->link[OPP_DIR(dir[j])]),
 		    &(tmp_src[i]), &(tmp_work[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    mtag0 = start_gather_field( tmp_work, sizeof(su3_vector),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		 tmp_dest[i] = *(su3_vector *)gen_pt[0][i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 	
@@ -537,15 +537,15 @@ void path_transport( field_offset src, field_offset dest, int parity,
 	tmp_pt=tmp_src; tmp_src=tmp_dest; tmp_dest=tmp_pt;
     }  /* j=link in path */
     /* done, copy result into real dest. (tmp_src now points to result) */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         *(su3_vector *)F_PT(s,dest) = tmp_src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
     free(tmp_src); free(tmp_dest); free(tmp_work);
   } /* end if(length>0) */
   else if( src != dest ){ /* for length=0 */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         *(su3_vector *)F_PT(s,dest) = *(su3_vector *)F_PT(s,src);
-    } END_LOOP;
+    } END_LOOP_OMP;
   }
 } /* path_transport */
 
@@ -590,34 +590,34 @@ void path_transport_hwv( field_offset src, field_offset dest, int parity,
 	}
 
 	if( j==length-1 ){
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 	        tmp_src[i] = *(half_wilson_vector *)F_PT(s,src);
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
 	    mtag0 = start_gather_field( tmp_src,
 		sizeof(half_wilson_vector), dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		mult_su3_mat_hwvec( &(s->link[dir[j]]),
 		    (half_wilson_vector *)(gen_pt[0][i]),
 		    &(tmp_dest[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 
 	else{ /* GOES_BACKWARDS(dir[j]) */
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 		mult_adj_su3_mat_hwvec( &(s->link[OPP_DIR(dir[j])]),
 		    &(tmp_src[i]), &(tmp_work[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    mtag0 = start_gather_field( tmp_work,
 		sizeof(half_wilson_vector), dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		 tmp_dest[i] = *(half_wilson_vector *)gen_pt[0][i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 	
@@ -625,16 +625,16 @@ void path_transport_hwv( field_offset src, field_offset dest, int parity,
 	tmp_pt=tmp_src; tmp_src=tmp_dest; tmp_dest=tmp_pt;
     }  /* j=link in path */
     /* done, copy result into real dest. (tmp_src now points to result) */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         *(half_wilson_vector *)F_PT(s,dest) = tmp_src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
     free(tmp_src); free(tmp_dest); free(tmp_work);
   } /* end if(length>0) */
   else if( src != dest ){ /* for length=0 */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         *(half_wilson_vector *)F_PT(s,dest) =
 	  *(half_wilson_vector *)F_PT(s,src);
-    } END_LOOP;
+    } END_LOOP_OMP;
   }
 } /* path_transport_hwv_field */
 
@@ -682,34 +682,34 @@ void path_transport_site( field_offset src, field_offset dest, int parity,
 	}
 
 	if( j==length-1 ){
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 	        tmp_src[i] = *(su3_vector *)F_PT(s,src);
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
 	    mtag0 = start_gather_field( tmp_src, sizeof(su3_vector),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		mult_su3_mat_vec( &(s->link[dir[j]]),
 		    (su3_vector *)(gen_pt[0][i]),
 		    &(tmp_dest[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 
 	else{ /* GOES_BACKWARDS(dir[j]) */
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 		mult_adj_su3_mat_vec( &(s->link[OPP_DIR(dir[j])]),
 		    &(tmp_src[i]), &(tmp_work[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    mtag0 = start_gather_field( tmp_work, sizeof(su3_vector),
 	        dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		 tmp_dest[i] = *(su3_vector *)gen_pt[0][i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 	
@@ -717,15 +717,15 @@ void path_transport_site( field_offset src, field_offset dest, int parity,
 	tmp_pt=tmp_src; tmp_src=tmp_dest; tmp_dest=tmp_pt;
     }  /* j=link in path */
     /* done, copy result into real dest. (tmp_src now points to result) */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         *(su3_vector *)F_PT(s,dest) = tmp_src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
     free(tmp_src); free(tmp_dest); free(tmp_work);
   } /* end if(length>0) */
   else if( src != dest ){ /* for length=0 */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         *(su3_vector *)F_PT(s,dest) = *(su3_vector *)F_PT(s,src);
-    } END_LOOP;
+    } END_LOOP_OMP;
   }
 } /* path_transport_site */
 
@@ -770,34 +770,34 @@ void path_transport_hwv_site( field_offset src, field_offset dest, int parity,
 	}
 
 	if( j==length-1 ){
-	    FORSOMEPARITY(i,s,tmp_otherparity){
-	        tmp_src[i] = *(half_wilson_vector *)F_PT(s,src);
-	    } END_LOOP;
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
+	    tmp_src[i] = *(half_wilson_vector *)F_PT(s,src);
+	  } END_LOOP_OMP;
 	}
 
 	if( GOES_FORWARDS(dir[j]) ) {
 	    mtag0 = start_gather_field( tmp_src,
 		sizeof(half_wilson_vector), dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		mult_su3_mat_hwvec( &(s->link[dir[j]]),
 		    (half_wilson_vector *)(gen_pt[0][i]),
 		    &(tmp_dest[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 
 	else{ /* GOES_BACKWARDS(dir[j]) */
-	    FORSOMEPARITY(i,s,tmp_otherparity){
+	  FORSOMEPARITY_OMP(i,s,tmp_otherparity,){
 		mult_adj_su3_mat_hwvec( &(s->link[OPP_DIR(dir[j])]),
 		    &(tmp_src[i]), &(tmp_work[i]) );
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    mtag0 = start_gather_field( tmp_work,
 		sizeof(half_wilson_vector), dir[j], tmp_parity, gen_pt[0] );
 	    wait_gather(mtag0);
-	    FORSOMEPARITY(i,s,tmp_parity){
+	    FORSOMEPARITY_OMP(i,s,tmp_parity,){
 		 tmp_dest[i] = *(half_wilson_vector *)gen_pt[0][i];
-	    } END_LOOP;
+	    } END_LOOP_OMP;
 	    cleanup_gather(mtag0);
 	}
 	
@@ -805,16 +805,16 @@ void path_transport_hwv_site( field_offset src, field_offset dest, int parity,
 	tmp_pt=tmp_src; tmp_src=tmp_dest; tmp_dest=tmp_pt;
     }  /* j=link in path */
     /* done, copy result into real dest. (tmp_src now points to result) */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         *(half_wilson_vector *)F_PT(s,dest) = tmp_src[i];
-    } END_LOOP;
+    } END_LOOP_OMP;
     free(tmp_src); free(tmp_dest); free(tmp_work);
   } /* end if(length>0) */
   else if( src != dest ){ /* for length=0 */
-    FORSOMEPARITY(i,s,parity){
+    FORSOMEPARITY_OMP(i,s,parity,){
         *(half_wilson_vector *)F_PT(s,dest) =
 	  *(half_wilson_vector *)F_PT(s,src);
-    } END_LOOP;
+    } END_LOOP_OMP;
   }
 } /* path_transport_hwv_site */
 

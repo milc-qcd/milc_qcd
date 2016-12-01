@@ -253,7 +253,6 @@ DG = 1.677708e+04, DH = -9.364464e+01, DF = 1.907327e+03, D = 1.859077e+04
  OK converged final_rsq= 3.7e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 117
  OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 118
 PLAQUETTE ACTION: -2.773692e+04
-restore_fermion_links_fm: Warning. Precision request replaced by 1
  OK converged final_rsq= 3.4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 119
 ACTION: g,h,f = 1.68225951988426e+04  -1.32490214347839e+02  1.90066177399457e+03  1.85907667584894e+04
 DG = 4.551097e+01, DH = -3.884557e+01, DF = -6.665167e+00, D = 2.319096e-04
@@ -323,7 +322,6 @@ DG = 0.000000e+00, DH = 2.392690e+02, DF = 4.938281e+01, D = 2.886518e+02
  OK converged final_rsq= 4e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 124
  OK converged final_rsq= 3.5e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 125
 PLAQUETTE ACTION: -2.769863e+04
-restore_fermion_links_fm: Warning. Precision request replaced by 1
  OK converged final_rsq= 3.6e-12 (cf 4e-12) rel = 1 (cf 0) restarts = 0 iters= 125
 ACTION: g,h,f = 1.68516248008401e+04  6.60985075682402e+01  1.96169032904506e+03  1.88794136374534e+04
 DG = 2.902960e+01, DH = -4.068027e+01, DF = 1.164575e+01, D = -4.922309e-03
