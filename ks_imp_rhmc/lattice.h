@@ -51,13 +51,13 @@ typedef struct {
 	/* gauge field */
 	su3_matrix link[4];	/* the fundamental field */
 
+	/* antihermitian momentum matrices in each direction */
+ 	anti_hermitmat mom[4];
+
 #ifdef HMC
  	su3_matrix old_link[4];
 	/* For accept/reject */
 #endif
-
-	/* antihermitian momentum matrices in each direction */
- 	anti_hermitmat mom[4];
 
 	/* The Kogut-Susskind phases, which have been absorbed into 
 		the matrices.  Also the antiperiodic boundary conditions.  */
