@@ -261,7 +261,7 @@ f_meas_current_diff( int nrand, int nwrite, int thinning,
   } /* jrand */
 
   close_vector_current_file(outfile);
-  node0_printf("Time to write %d records = %e sed\n", nrand, wtime);
+  node0_printf("Time to write %d records = %e sec\n", nrand, wtime);
   
   destroy_v_field(M_inv_gr); M_inv_gr = NULL;
   destroy_v_field(gr_mu); gr_mu = NULL;

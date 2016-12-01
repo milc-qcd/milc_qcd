@@ -1190,6 +1190,10 @@ int readin(int prompt) {
   /* Do whatever is needed to get eigenpairs */
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &Nvecs_tot, eigVal, eigVec, 1);
+
+  if(param.fixflag != NO_GAUGE_FIX){
+    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+  }
   if(status != 0) normal_exit(0);
 
   if(param.ks_eigen_startflag != FRESH){
@@ -1215,6 +1219,9 @@ int readin(int prompt) {
   /* Do whatever is needed to get eigenpairs */
   status = reload_ks_eigen(param.ks_eigen_startflag, param.ks_eigen_startfile, 
 			   &param.Nvecs, eigVal, eigVec, 1);
+  if(param.fixflag != NO_GAUGE_FIX){
+    node0_printf("WARNING: Gauge fixing does not readjust the eigenvectors");
+  }
 #endif
 
   ENDTIME("readin");

@@ -992,7 +992,7 @@ static void w_parallel(gauge_file *gf)
   fsu3_matrix *lbuf;
   int buf_length,where_in_buf;
   u_int32type *val;
-  int rank29,rank31;
+  size_t rank29,rank31;
   off_t checksum_offset;
   register int i;
   int j,k;
@@ -1002,7 +1002,7 @@ static void w_parallel(gauge_file *gf)
     fsu3_matrix link[4];
   } msg;
   int isite,ksite,site_block;
-  int rcv_coords,rcv_rank;
+  size_t rcv_coords,rcv_rank,tmp_rank;
   int destnode,sendnode;
   char myname[] = "w_parallel";
 
@@ -1050,7 +1050,7 @@ static void w_parallel(gauge_file *gf)
 	    /* This is the coordinate natural (typewriter) rank
 	       of the site the destnode needs next */
 	    
-	    rcv_rank = rcv_coords = destnode*sites_on_node + isite;
+	    rcv_rank = rcv_coords = destnode*(long long int)sites_on_node + isite;
 	    
 	    /* The coordinate corresponding to this site */
 	    
@@ -1090,14 +1090,14 @@ static void w_parallel(gauge_file *gf)
 		   where it goes in the write buffer */
 		get_field((char *)&msg,sizeof(msg),sendnode);
 		/* Reconstruct rank from message coordinates */
-		i = msg.x+nx*(msg.y+ny*(msg.z+nz*msg.t));
+		tmp_rank = msg.x+nx*(msg.y+ny*(msg.z+(size_t)nz*msg.t));
 		/* The buffer location is then */
-		where_in_buf = (i % sites_on_node) % MAX_BUF_LENGTH;
+		where_in_buf = (tmp_rank % sites_on_node) % MAX_BUF_LENGTH;
 
 		/* Move data to buffer */
 		memcpy((void *)&lbuf[4*where_in_buf],
 		       (void *)msg.link,4*sizeof(fsu3_matrix));
-		rank29 = rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*i;
+		rank29 = rank31 = 4*sizeof(fsu3_matrix)/sizeof(int32type)*tmp_rank;
 	      }
 
 	      /* Receiving node accumulates checksums as the values

@@ -511,8 +511,10 @@ void print_field_op_info_list(FILE *fp, char prefix[],
 			      quark_source_sink_op *qss_op[], int n);
 void set_qss_op_offset(quark_source_sink_op *qss_op, int r0[]);
 
-/* rand_gauge.c */
-void rand_gauge(field_offset G);
+/* rand_gauge2.c */
+su3_matrix *create_random_m_field(void);
+void gauge_transform_links(su3_matrix *G);
+void gauge_transform_v_field(su3_vector *v, su3_matrix *G);
 
 /* ranmom.c */
 void ranmom( void );

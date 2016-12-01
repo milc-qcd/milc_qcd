@@ -321,17 +321,12 @@ endif
 
 WANTPRIMME = #true
 
-# PRIMME version 1.1
+# PRIMME version 2.0
 
 ifeq ($(strip ${WANTPRIMME}),true)
-  LIBPRIMME = -L${HOME}/milc/install/PRIMME -lzprimme
+  INCPRIMME = -I${HOME}/milc/install/PRIMME/include
+  LIBPRIMME = -L${HOME}/milc/install/PRIMME/lib -lprimme
 endif
-
-# PRIMME version 1.2
-
-# ifeq ($(strip ${WANTPRIMME}),true)
-#   LIBPRIMME = -L${HOME}/milc/install/PRIMME -lprimme
-# endif
 
 #----------------------------------------------------------------------
 # 15. GPU/QUDA Options
@@ -734,7 +729,7 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCQUDA} ${INCQPHIX} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries

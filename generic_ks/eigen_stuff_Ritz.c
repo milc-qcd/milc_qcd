@@ -10,7 +10,7 @@
 *  These routines are for the computation of the Eigenvalues and Eigevectors
 * of the Kogut-Susskind dslash^2. 
 */
-#define DEBUG
+//#define DEBUG
 /* This Variable controls the tollerence of the JACOBI iteration */
 #define JACOBI_TOL 1.110223e-16
 #define MINITER 5
@@ -260,7 +260,7 @@ int Rayleigh_min(su3_vector *vec, su3_vector **eigVec, Real Tolerance,
 		 int parity, imp_ferm_links_t *fn){
 
   int iter ;
-  double beta, cos_theta, sin_theta ;
+  double beta = 0., cos_theta, sin_theta ;
   double quot, old_quot, P_norm, theta, real_vecMp, pMp ;
 #ifdef DEBUG
   double vec_norm ;
@@ -634,6 +634,4 @@ int Kalkreuter_Ritz(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   return total_iters ;
 }
-
-
 

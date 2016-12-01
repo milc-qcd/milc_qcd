@@ -218,6 +218,14 @@ p2d_wvec(dwilson_vector *dest, wilson_vector *src){
 /********************************************************************/
 
 
+/* Hash tables for optimizing data mapping */
+
+make_create_hash(G);
+make_create_hash(F);
+make_create_hash(V);
+make_create_hash(D);
+
+
 /* Storage for raw gauge field */
 
 make_create_raw4(F, G, fsu3_matrix);

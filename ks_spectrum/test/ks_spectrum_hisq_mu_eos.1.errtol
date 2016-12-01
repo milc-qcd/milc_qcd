@@ -34,15 +34,15 @@ OK converged final_rsq= 0.0002 5e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 2
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 7e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 2
+OK converged final_rsq= 0.0002 1e-11 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 2e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
+OK converged final_rsq= 0.0002 4e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -54,7 +54,7 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -64,16 +64,16 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
+OK converged final_rsq= 0.0002 4e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
@@ -131,11 +131,11 @@ OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 6e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 2
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 9e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 2
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 5e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 2
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -153,16 +153,16 @@ OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 9e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 2
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-11 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 3e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -187,7 +187,7 @@ OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 9e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 2
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -224,13 +224,13 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
+OK converged final_rsq= 0.0002 4e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
+OK converged final_rsq= 0.0002 4e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 d1_trlnM_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
@@ -268,7 +268,7 @@ OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -298,7 +298,7 @@ OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 1e-11 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 2e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -324,10 +324,10 @@ OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 2e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -347,7 +347,7 @@ OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 1e-11 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 3e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 9e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -362,14 +362,14 @@ OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 1e-11 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -423,7 +423,7 @@ OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 1e-11 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 3e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 9e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -498,9 +498,9 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 trM_inv: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -508,12 +508,12 @@ OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 7e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -532,11 +532,11 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -546,7 +546,7 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-11 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
+OK converged final_rsq= 0.0002 2e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0 2
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -564,7 +564,7 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -580,9 +580,9 @@ OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -592,17 +592,17 @@ OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 9e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 2
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -610,7 +610,7 @@ OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -622,7 +622,7 @@ OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -630,59 +630,59 @@ OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 9e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -696,12 +696,12 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 9e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
@@ -729,14 +729,14 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 trM_inv: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -752,7 +752,7 @@ OK converged final_rsq= 0.0002 7e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -760,7 +760,7 @@ OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -775,7 +775,7 @@ OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
@@ -806,7 +806,7 @@ OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters=
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -823,11 +823,11 @@ OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -842,7 +842,7 @@ OK converged final_rsq= 0.0002 5e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -855,21 +855,21 @@ OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
+OK converged final_rsq= 0.0002 1e-11 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 6e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 2
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
@@ -880,61 +880,61 @@ OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iter
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 6e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 8e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 2e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 XXX 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 1e-12 0.0002 rel = 0 (cf 0.0002 restarts = 0 2 0 4
 OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
-OK converged final_rsq= 0.0002 (cf 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
+OK converged final_rsq= 0.0002 4e-13 0.0002 rel = 0 (cf 0.0002 restarts = 0 iters= 0
 d1_trlnM_dmu1: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
 d2_trlnM_dmu2: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
 d3_trlnM_dmu3: mass 0.0002 R: 0.0002 Im: 0.0002 ( 0 of 0 )
@@ -960,6 +960,6 @@ step 0 av gf action 0.0002 delta 0.0002
 step 0 av gf action 0.0002 delta 0.0002
 step 0 av gf action 0.0002 delta 0.0002
 GFIX: Ended at step 0.02 Av gf action 0.0002 delta 0.0002
-Time to APE smear 0.002 sec
+Time to APE smear 0.005 sec
 END OF HEADER
 RUNNING COMPLETED

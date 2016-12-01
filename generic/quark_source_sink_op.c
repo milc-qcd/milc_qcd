@@ -2615,7 +2615,7 @@ int get_wv_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
 
 int get_v_field_op(FILE *fp, int prompt, quark_source_sink_op *qss_op){
   
-  int  op_type;
+  int  op_type = UNKNOWN;
   char op_label[MAXSRCLABEL];
   int  status = 0;
   

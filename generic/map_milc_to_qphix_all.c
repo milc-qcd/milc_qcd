@@ -6,7 +6,7 @@
    /* NOTE: This is an include file for map_milc_to_qphixqdp.c and
       map_milc_to_qphixmilc.c. */
 
-/* Temporary redefines */
+/* Temporary redefines. These definitions belong in the QPhiX interface. */
 
 static int QPHIX_node_number_raw(int coords[]){
   return node_number(coords[0],coords[1],coords[2],coords[3]);
@@ -153,6 +153,29 @@ static void check_layout_compatibility(void){
   return;
 }
 
+/* Note, there is actually no dependence on parity here */
+
+#define make_create_hash(T)				\
+static int hash_created_##T = 0;		\
+static int *hash_m2q_##T;						\
+static int *hash_q2m_##T;						\
+								\
+static void							\
+ create_hash_##T(int milc_parity){				\
+  site *s;						\
+  int i, j, coords[4];					\
+  if(hash_created_##T){					\
+     hash_m2q_##T = (int *)malloc(sizeof(int)*sites_on_node); \
+     hash_q2m_##T = (int *)malloc(sizeof(int)*sites_on_node); \
+     FORALLSITES_OMP(i,s,private(j,coords)){					\
+       site_coords(coords,s);						\
+       j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
+       hash_m2q_##T[i] = j;							\
+       hash_q2m_##T[j] = i;							\
+     } END_LOOP_OMP;							\
+     hash_created_##T = 1;						\
+  }									\
+}									\
 
 /* Map MILC site links to raw order */
 /* Note that unlike QOP we want four contiguous SU(3) matrices per site */
@@ -160,7 +183,6 @@ static void check_layout_compatibility(void){
 #define make_create_raw4_from_site(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE * \
 create_qphix_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
-  int coords[4]; \
   int i,j,dir,status=0; \
   site *s; \
   RAWTYPE *raw; \
@@ -168,9 +190,9 @@ create_qphix_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
   raw = create_qphix_raw4_##P##_##T (); \
   if(raw == NULL)return NULL; \
   check_layout_compatibility(); \
-  FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j,dir,tmp)){	\
-    site_coords(coords,s); \
-    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
+  create_hash_##T(milc_parity);					\
+  FORSOMEPARITY_OMP(i,s,milc_parity,private(j,dir,tmp)){	\
+    j = hash_m2q_##T[i];	   \
     FORALLUPDIR(dir){ \
       tmp = (MILC_SRCTYPE *)F_PT(s, src); \
       copy_milc_to_##P##_##T(raw + 4*j + dir, tmp + dir); \
@@ -190,7 +212,6 @@ create_qphix_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
 #define make_create_raw4_from_field(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE * \
 create_qphix_raw4_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
-  int coords[4]; \
   int i,j,dir,status=0;	 \
   site *s; \
   RAWTYPE *raw = NULL; \
@@ -198,9 +219,9 @@ create_qphix_raw4_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
   raw = create_qphix_raw4_##P##_##T (); \
   if(raw == NULL)return NULL; \
   check_layout_compatibility(); \
-  FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j,dir,tmp)){	\
-    site_coords(coords,s); \
-    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
+  create_hash_##T(milc_parity);					\
+  FORSOMEPARITY_OMP(i,s,milc_parity,private(j,dir,tmp)){	\
+    j = hash_m2q_##T[i];	   \
     FORALLUPDIR(dir){ \
       tmp = src + 4*i; \
       copy_milc_to_##P##_##T(raw + 4*j + dir, tmp + dir); \
@@ -219,7 +240,6 @@ create_qphix_raw4_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
 #define make_create_raw_from_site(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE * \
 create_qphix_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
-  int coords[4]; \
   int i,j,status=0; \
   site *s; \
   RAWTYPE *raw; \
@@ -227,9 +247,9 @@ create_qphix_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
   raw = create_qphix_raw_##P##_##T(); \
   if(raw == NULL)return NULL; \
   check_layout_compatibility(); \
-  FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j,tmp)){	\
-    site_coords(coords,s); \
-    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
+  create_hash_##T(milc_parity);					\
+  FORSOMEPARITY_OMP(i,s,milc_parity,private(j,tmp)){	\
+    j = hash_m2q_##T[i];	   \
     tmp = (MILC_SRCTYPE *)F_PT(s, src); \
     copy_milc_to_##P##_##T(raw + j, tmp); \
   } END_LOOP_OMP; \
@@ -246,16 +266,15 @@ create_qphix_raw_##P##_##T##_from_site(field_offset src, int milc_parity){ \
 #define make_create_raw_from_field(P, T, RAWTYPE, MILC_SRCTYPE) \
 RAWTYPE * \
 create_qphix_raw_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
-  int coords[4]; \
   int i,j,status=0; \
   site *s; \
   RAWTYPE *raw; \
   raw = create_qphix_raw_##P##_##T(); \
   if(raw == NULL)return NULL; \
   check_layout_compatibility(); \
-  FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j)){	\
-    site_coords(coords,s); \
-    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
+  create_hash_##T(milc_parity);					\
+  FORSOMEPARITY_OMP(i,s,milc_parity,private(j)){	\
+    j = hash_m2q_##T[i];	   \
     copy_milc_to_##P##_##T(raw + j, src + i); \
   } END_LOOP_OMP; \
   if(status == 1){ \
@@ -335,14 +354,13 @@ create_qphix_##P##_##T##_from_field(MILC_SRCTYPE *src, int milc_parity){ \
 void \
 unload_qphix_raw4_##P##_##T##_to_site(field_offset dest, RAWTYPE *raw, \
          int milc_parity){ \
-  int coords[4]; \
   int i,j,dir,status=0;	 \
   site *s; \
   MILC_DSTTYPE *tmp; \
   check_layout_compatibility(); \
-  FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,dir,j,tmp)){	\
-    site_coords(coords,s); \
-    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
+  create_hash_##T(milc_parity);					\
+  FORSOMEPARITY_OMP(i,s,milc_parity,private(dir,j,tmp)){	\
+    j = hash_q2m_##T[i];	   \
     FORALLUPDIR(dir){ \
       tmp = (MILC_DSTTYPE *)F_PT(s, dest); \
       copy_##P##_##T##_to_milc(&tmp[dir], raw + 4*j + dir); \
@@ -357,14 +375,13 @@ unload_qphix_raw4_##P##_##T##_to_site(field_offset dest, RAWTYPE *raw, \
 void \
 unload_qphix_raw4_##P##_##T##_to_field(MILC_DSTTYPE *dest, RAWTYPE *raw, \
          int milc_parity){ \
-  int coords[4]; \
   int i,j,dir,status=0;	 \
   site *s; \
   MILC_DSTTYPE *tmp; \
   check_layout_compatibility(); \
-  FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j,dir,tmp)){	\
-    site_coords(coords,s); \
-    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
+  create_hash_##T(milc_parity);					\
+  FORSOMEPARITY_OMP(i,s,milc_parity,private(j,dir,tmp)){	\
+    j = hash_q2m_##T[i];	   \
     FORALLUPDIR(dir){ \
       tmp = dest + 4*i; \
       copy_##P##_##T##_to_milc(&tmp[dir], raw + 4*j + dir); \
@@ -377,13 +394,12 @@ unload_qphix_raw4_##P##_##T##_to_field(MILC_DSTTYPE *dest, RAWTYPE *raw, \
 void \
 unload_qphix_raw_##P##_##T##_to_site(field_offset dest, RAWTYPE *raw, \
        int milc_parity){ \
-  int coords[4]; \
   int i,j,status=0; \
   site *s; \
   check_layout_compatibility(); \
-  FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j)){	\
-    site_coords(coords,s); \
-    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
+  create_hash_##T(milc_parity);					\
+  FORSOMEPARITY_OMP(i,s,milc_parity,private(j)){	\
+    j = hash_q2m_##T[i];	   \
     copy_##P##_##T##_to_milc((MILC_DSTTYPE *)F_PT(s,dest), raw + j); \
   } END_LOOP_OMP; \
   if(status==1)terminate(1); \
@@ -393,13 +409,12 @@ unload_qphix_raw_##P##_##T##_to_site(field_offset dest, RAWTYPE *raw, \
 void \
 unload_qphix_raw_##P##_##T##_to_field(MILC_DSTTYPE *dest, RAWTYPE *raw, \
        int milc_parity){ \
-  int coords[4]; \
   int i,j,status=0;  \
   site *s; \
   check_layout_compatibility(); \
-  FORSOMEPARITY_OMP(i,s,milc_parity,private(coords,j)){	\
-    site_coords(coords,s); \
-    j = QPHIX_node_index_raw_##T(coords, milc2qphix_parity(milc_parity)); \
+  create_hash_##T(milc_parity);					\
+  FORSOMEPARITY_OMP(i,s,milc_parity,private(j)){	\
+    j = hash_q2m_##T[i];	   \
     copy_##P##_##T##_to_milc(dest + i, raw + j); \
   } END_LOOP_OMP; \
   if(status==1)terminate(1); \
@@ -590,15 +605,14 @@ unload_qphix_##P##_hisq_L_to_fields( MILC_DST_TYPE *fat, MILC_DST_TYPE *lng, TYP
 #define make_map_milc_clov_to_raw(P, MILCFLOAT) \
 void map_milc_clov_to_qphix_raw_##P(MILCFLOAT *raw_clov, clover *milc_clov ){\
   int i,j,c,status=0;  \
-  int coords[4]; \
   site *s;\
   MILCFLOAT *r;\
 \
   check_layout_compatibility(); \
-  FORALLSITES_OMP(i,s,private(coords,j,c,r)){	\
+  create_hash_##T(milc_parity);					\
+  FORALLSITES_OMP(i,s,private(j,c,r)){	\
 \
-    site_coords(coords,s);\
-    j = QPHIX_node_index_raw_D(coords, QPHIX_EVENODD);	\
+    j = hash_m2q_##T[i];	   \
     r = raw_clov + 72*j;\
 \
     for(c = 0; c < 3; c++){\

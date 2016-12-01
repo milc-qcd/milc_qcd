@@ -11,6 +11,7 @@
 #include "generic_ks_includes.h"
 #include "../include/dslash_ks_redefine.h"
 
+/*****************************************************************************/
 /* dst = M src. With parity selection */
 
 void ks_dirac_op( su3_vector *src, su3_vector *dst, Real mass, 
@@ -24,6 +25,7 @@ void ks_dirac_op( su3_vector *src, su3_vector *dst, Real mass,
     }
 }
 
+/*****************************************************************************/
 /* dst = Madj src. With parity selection */
 
 void ks_dirac_adj_op( su3_vector *src, su3_vector *dst, Real mass,
@@ -38,6 +40,7 @@ void ks_dirac_adj_op( su3_vector *src, su3_vector *dst, Real mass,
     }
 }
 
+/*****************************************************************************/
 /* dst = Madj dst. With parity selection */
 
 void ks_dirac_adj_op_inplace( su3_vector *dst, Real mass,
@@ -54,6 +57,7 @@ void ks_dirac_adj_op_inplace( su3_vector *dst, Real mass,
     destroy_v_field(tvec);
 }
 
+/*****************************************************************************/
 /* dst = Madj M src with parity selection */
 
 void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
@@ -86,6 +90,99 @@ void ks_dirac_opsq( su3_vector *src, su3_vector *dst, Real mass, int parity,
     free(tmp);
 }
 
+#if EIGMODE ==  DEFLATION
+
+/*****************************************************************************/
+/* Returns the dot product of two fermion vectors */
+static void dot_product(su3_vector *vec1, su3_vector *vec2, 
+			double_complex *dot, int parity) {
+  register double re,im ;
+  register  int i;
+  complex cc ;
+  
+  re=im=0.0;
+  FORSOMEFIELDPARITY(i,parity){
+    cc = su3_dot( &(vec1[i]), &(vec2[i]) );
+    re += cc.real ;
+    im += cc.imag ;
+  }
+  dot->real = re ; 
+  dot->imag = im ;
+  g_dcomplexsum(dot);
+}
+
+/*****************************************************************************/
+/* Returns vec2 = vec2 - cc*vec1   cc is a double complex   */
+static void complex_vec_mult_sub(double_complex *cc, su3_vector *vec1, 
+			  su3_vector *vec2, int parity){
+
+  register  int i;
+  complex sc ;
+  
+  sc.real= (Real)(cc->real) ; 
+  sc.imag= (Real)(cc->imag) ;
+
+  FORSOMEFIELDPARITY(i,parity){
+    c_scalar_mult_sub_su3vec(&(vec2[i]), (&sc), &(vec1[i])) ;
+  }
+}
+
+/*****************************************************************************/
+/*  Projects out the eigVec from the vec. Num is the Number of vectors  *
+ *  The vectors are assumed to be orthonormal.                             */
+static void project_out(su3_vector *vec, int Num, int parity){
+  register int i ;
+  double_complex cc ;
+  double ptime = -dclock();
+
+  for(i=Num-1;i>-1;i--){
+    dot_product(eigVec[i], vec, &cc, parity) ;
+    complex_vec_mult_sub(&cc, eigVec[i], vec, parity);
+  }
+
+  ptime += dclock();
+  node0_printf("Time to project out %d modes %g sec\n", Num, ptime);
+}
+
+/*****************************************************************************/
+/* Construct the exact solution in the space spanned by eigVec 
+   keep the trial solution in the complementary space */
+
+static void deflate(su3_vector *dst, su3_vector *src, Real mass, int Num, int parity){
+  int i, j;
+  double_complex *c;
+
+  /* Remove the Num low eigenmodes from the trial solution, leaving the
+     high eigenmode trial solution */
+
+  project_out(dst, Num, parity);
+
+  /* Then add the exact solution back */
+  /* dst_e <- sum_j ((eigVec_e[j].src_e)/(eigVal[j]+4*mass*mass)) eigVec_e[j] */
+  
+  c = (double_complex *)malloc(Num*sizeof(double_complex));
+  for( j = 0; j < Num; j++){
+    c[j] = dcmplx((double)0.0,(double)0.0);
+    FORSOMEFIELDPARITY(i,parity){
+      complex cc = su3_dot( eigVec[j]+i, src+i );
+      CSUM( c[j], cc );
+    }
+  }
+  g_vecdcomplexsum( c, Num );
+  for( j = 0; j < Num; j++){
+    CDIVREAL( c[j], eigVal[j]+4.0*mass*mass, c[j] );
+    FORSOMEFIELDPARITY(i,parity){
+      complex ctmp = cmplx(c[j].real, ctmp.imag);
+      c_scalar_mult_add_su3vec( dst+i, &ctmp, eigVec[j]+i );
+    }
+  }
+  free(c);
+}
+
+
+#endif
+
+/*****************************************************************************/
 /* This algorithm solves even and odd sites separately */
 
 int mat_invert_cg_field(su3_vector *src, su3_vector *dst, 
@@ -109,9 +206,31 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     /* We don't call with EVENANDODD anymore because we are
        transitioning to the QOP/QDP standard */
 
+#if EIGMODE == DEFLATION
+
+    double dtime = - dclock();
+    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+
+    deflate(dst, tmp, mass, param.Nvecs, EVEN);
+
+    dtime += dclock();
+    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
+#endif
+
     /* dst_e <- (M_adj M)^-1 temp_e  (even sites only) */
     qic->parity = EVEN;
     cgn = ks_congrad_field( tmp, dst, qic, mass, fn );
+
+#if EIGMODE == DEFLATION
+
+    dtime = - dclock();
+    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+
+    deflate(dst, tmp, mass, param.Nvecs, ODD);
+
+    dtime += dclock();
+    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
+#endif
 
     /* dst_o <- (M_adj M)^-1 temp_o  (odd sites only) */
     qic->parity = ODD;
@@ -124,6 +243,7 @@ int mat_invert_cg_field(su3_vector *src, su3_vector *dst,
     return cgn;
 }
 
+/*****************************************************************************/
 /* Compute M^-1 * phi, answer in dest
   Uses phi, ttt, resid, xxx, and cg_p as workspace */
 int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
@@ -157,7 +277,7 @@ int mat_invert_cg( field_offset src, field_offset dest, field_offset temp,
     return cgn;
 }
 
-
+/*****************************************************************************/
 /* Invert using Leo's UML trick */
 
 /* Our M is     (  2m		D_eo   )
@@ -192,6 +312,7 @@ where  A = (4m^2+D_eo D_eo^adj)^-1 and B = (4m^2+D_oe^adj D_oe)^-1
 
 */
          
+/*****************************************************************************/
 /* This algorithm solves even sites, reconstructs odd and then polishes
    to compensate for loss of significance in the reconstruction
 */
@@ -205,11 +326,6 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     su3_vector *tmp = create_v_field();
     su3_vector *ttt = create_v_field();
     int even_iters;
-#if EIGMODE ==  DEFLATION
-    int j;
-    double_complex cc;
-    double_complex *c;
-#endif
 
     /* "Precondition" both even and odd sites */
     /* temp <- M_adj * src */
@@ -217,31 +333,14 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     ks_dirac_adj_op( src, tmp, mass, EVENANDODD, fn );
 
 #if EIGMODE == DEFLATION
-    /* init-CG */
-    /* dst_e <- sum_j ((eigVec_e[j].tmp_e)/(eigVal[j]+4*mass*mass)) eigVec_e[j] */
+
     double dtime = - dclock();
-    node0_printf("deflating for mass %g with %d eigenvec\n", mass, param.Nvecs);
-    FOREVENSITES(i,s){
-      clearvec( dst+i );
-    }
-    c = (double_complex *)malloc(param.Nvecs*sizeof(double_complex));
-    for( j = 0; j < param.Nvecs; j++){
-      c[j] = dcmplx((double)0.0,(double)0.0);
-      FOREVENSITES(i,s){
-	cc = su3_dot( eigVec[j]+i, tmp+i );
-	CSUM( c[j], cc );
-      }
-    }
-    g_vecdcomplexsum( c, param.Nvecs );
-    for( j = 0; j < param.Nvecs; j++){
-      CDIVREAL( c[j], eigVal[j]+4.0*mass*mass, c[j] );
-      FOREVENSITES(i,s){
-	c_scalar_mult_add_su3vec( dst+i, c+j, eigVec[j]+i );
-      }
-    }
-    free(c);
+    node0_printf("deflating on even sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+
+    deflate(dst, tmp, mass, param.Nvecs, EVEN);
+
     dtime += dclock();
-    node0_printf("Time to deflate %g\n", dtime);
+    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
 #endif
 
     /* dst_e <- (M_adj M)^-1 tmp_e  (even sites only) */
@@ -262,6 +361,16 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
       scalar_mult_su3_vector( dst+i, 1.0/(2.0*mass), dst+i );
     }
 
+#if EIGMODE == DEFLATION
+    dtime = - dclock();
+    node0_printf("deflating on odd sites for mass %g with %d eigenvec\n", mass, param.Nvecs);
+
+    deflate(dst, tmp, mass, param.Nvecs, ODD);
+
+    dtime += dclock();
+    node0_printf("Time to deflate %d modes %g\n", param.Nvecs, dtime);
+#endif
+
     /* Polish off odd sites to correct for possible roundoff error */
     /* dst_o <- (M_adj M)^-1 temp_o  (odd sites only) */
     qic->parity = ODD;
@@ -275,6 +384,7 @@ int mat_invert_uml_field(su3_vector *src, su3_vector *dst,
     return cgn;
 }
 
+/*****************************************************************************/
 int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 		   Real mass, int prec, imp_ferm_links_t *fn ){
     int cgn;
@@ -306,6 +416,7 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
     return cgn;
 }
 
+/*****************************************************************************/
 /* FOR TESTING: multiply src by matrix and check against dest */
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
 			 Real tol, imp_ferm_links_t *fn){
@@ -358,6 +469,7 @@ void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
     destroy_v_field(tmp);
 }
 
+/*****************************************************************************/
 /* FOR TESTING: multiply src by matrix and check against dest */
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol, imp_ferm_links_t *fn){
@@ -371,6 +483,7 @@ void check_invert( field_offset src, field_offset dest, Real mass,
   destroy_v_field(tsrc);
 }
 
+/*****************************************************************************/
 /* FOR TESTING: multiply src by Madj M and check against dest */
 void check_invert_field2( su3_vector *src, su3_vector *dest, Real mass,
 			  Real tol, imp_ferm_links_t *fn){

@@ -275,6 +275,7 @@ void print_densities(su3_vector *src, char *tag, int y,int z,int t,
 		     int parity);
 void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn);
+void construct_eigen_odd(su3_vector **eigVec, double *eigVal, int Nvecs, imp_ferm_links_t *fn);
 
 
 /* fn_links_qop.c  and fn_links_milc.c */
