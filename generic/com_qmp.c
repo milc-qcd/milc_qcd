@@ -1572,11 +1572,11 @@ declare_strided_gather(
   if(subl==EVENANDODD) {
     FORALLSITES_OMP(i,s,){ if(gt->neighbor[i] != NOWHERE){
 	dest[i] = ((char *)field) + gt->neighbor[i]*stride;
-    }} END_LOOP_OMP;
+      }} END_LOOP_OMP;
   } else {
     FORSOMEPARITY_OMP(i,s,subl,){ if(gt->neighbor[i] != NOWHERE){
 	dest[i] = ((char *)field) + gt->neighbor[i]*stride;
-    }} END_LOOP_OMP;
+      }} END_LOOP_OMP;
   }
 
 #ifndef N_SUBL32
@@ -1746,11 +1746,10 @@ prepare_gather(msg_tag *mtag)
     gmem = mrecv[i].gmem;
     do {
 #ifdef OMP
-#pragma omp parallel for private(j,tpt)
+#pragma omp parallel for private(j)
 #endif
       for(j=0; j<gmem->num; ++j) {
-	((char **)gmem->mem)[gmem->sitelist[j]] = tpt;
-	tpt+=gmem->size;
+	((char **)gmem->mem)[gmem->sitelist[j]] = tpt + j*gmem->size;
       }
     } while((gmem=gmem->next)!=NULL);
   }
@@ -1822,11 +1821,11 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
     gmem = mbuf[i].gmem;
     do {
 #ifdef OMP
-#pragma omp parallel for private(j,tpt)
+#pragma omp parallel for private(j)
 #endif
       for(j=0; j<gmem->num; ++j) {
-	memcpy( tpt, gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
-	tpt+=gmem->size;
+	memcpy( tpt+j*gmem->size, 
+		gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
       }
     } while((gmem=gmem->next)!=NULL);
 
