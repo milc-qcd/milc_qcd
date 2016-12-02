@@ -194,10 +194,17 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
   dtime += dclock();
   info.final_sec = dtime;
 #ifdef FFTIME
-  node0_printf("FFTIME:  time = %e (HISQ %s) terms = %d flops/site = %d mflops = %e\n",
+#ifdef USE_FF_GPU
+  node0_printf("FFTIME:  time = %e (HISQ QUDA %s) terms = %d flops/site = %d mflops = %e\n",
 	       info.final_sec,qop_prec[PRECISION-1],nterms,
 	       (int)(info.final_flop*numnodes()/volume),
 	       info.final_flop/(1e6*info.final_sec) );
+#else
+  node0_printf("FFTIME:  time = %e (HISQ MILC %s) terms = %d flops/site = %d mflops = %e\n",
+	       info.final_sec,qop_prec[PRECISION-1],nterms,
+	       (int)(info.final_flop*numnodes()/volume),
+	       info.final_flop/(1e6*info.final_sec) );
+#endif
 #endif
 
   /* Sum over all nodes and update counter */

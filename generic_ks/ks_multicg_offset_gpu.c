@@ -10,6 +10,7 @@
 #include "../include/generic_quda.h"
 #define LOOPEND
 #include "../include/loopend.h"
+#include <string.h>
 
 /* Backward compatibility*/
 #ifdef SINGLE_FOR_DOUBLE

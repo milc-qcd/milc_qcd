@@ -303,7 +303,6 @@ void load_fn_links_gpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
 		       su3_matrix *links, int want_back)
 {
   ks_component_paths *p = &ap->p;
-  double final_flop = 0;
   double dtime = -dclock();
 
   load_fatlonglinks_gpu(info, fn->fat, fn->lng, p, links);
@@ -313,9 +312,18 @@ void load_fn_links_gpu(info_t *info, fn_links_t *fn, ks_action_paths *ap,
   else
     destroy_fn_backlinks(fn);
 
+  /* Use MILC algorithm flop count until QUDA can give us one */
+  /* Fatlinks */
+  info->final_flop = 61632.*volume/numnodes();
+  if( p->act_path_coeff.three_staple == 0.0 &&
+      p->act_path_coeff.lepage == 0.0 &&
+      p->act_path_coeff.five_staple == 0.0)
+    info->final_flop = 72.*volume/numnodes();
+  /* Longlinks */
+  info->final_flop += 1728.*volume/numnodes();  /* (formerly 1804) */
+
   dtime += dclock();
   info->final_sec = dtime;
-  info->final_flop = final_flop;
 }
 #endif
 
