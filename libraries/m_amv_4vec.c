@@ -42,7 +42,8 @@ void mult_adj_su3_mat_4vec( su3_matrix *mat, su3_vector *src,
   cc[2] = dest2 ; cc[3] = dest3 ;
 
   a = mat ; c=dest0 ; b = src;
-  for(n=0;n<4;n++,a++,c=cc[n]){
+  for(n=0;n<4;n++,a++){
+  c=cc[n];
 
   br=b->c[0].real;    bi=b->c[0].imag;
   a0=a->e[0][0].real;

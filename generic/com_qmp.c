@@ -1748,8 +1748,9 @@ prepare_gather(msg_tag *mtag)
 #ifdef OMP
 #pragma omp parallel for private(j,tpt)
 #endif
-      for(j=0; j<gmem->num; ++j,tpt+=gmem->size) {
+      for(j=0; j<gmem->num; ++j) {
 	((char **)gmem->mem)[gmem->sitelist[j]] = tpt;
+	tpt+=gmem->size;
       }
     } while((gmem=gmem->next)!=NULL);
   }
@@ -1823,8 +1824,9 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
 #ifdef OMP
 #pragma omp parallel for private(j,tpt)
 #endif
-      for(j=0; j<gmem->num; ++j,tpt+=gmem->size) {
+      for(j=0; j<gmem->num; ++j) {
 	memcpy( tpt, gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
+	tpt+=gmem->size;
       }
     } while((gmem=gmem->next)!=NULL);
 
