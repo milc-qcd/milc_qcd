@@ -14,7 +14,7 @@ MAKEFILE = Makefile
 # 1. Machine architecture.  Controls optimization flags here and in libraries.
 #    Can control BINEXT below, a suffix appended to the name of the executable.
 
-ARCH = # knl knc hsw
+ARCH = # knl knc hsw pow8
 
 #----------------------------------------------------------------------
 # 2. Compiler family
@@ -101,7 +101,10 @@ ifeq ($(strip ${COMPILER}),gnu)
 
   OCFLAGS += -std=c99
 
- 
+  ifeq ($(strip ${ARCH}),pow8)
+    ARCH_FLAG = -mcpu=power8
+  endif
+
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -fopenmp
     LDFLAGS = -fopenmp
@@ -348,7 +351,7 @@ ifeq ($(strip ${WANTQUDA}),true)
 
   CUDA_HOME = /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
-  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart
+  LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
@@ -647,7 +650,7 @@ CPREFETCH = #
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
 
-KSCGMULTI = -DKS_MULTICG=HYBRID # -DHALF_MIXED # -DNO_REFINE
+KSCGMULTI = -DKS_MULTICG=HYBRID -DNO_REFINE # -DHALF_MIXED
 
 #------------------------------
 # Multifermion force routines
