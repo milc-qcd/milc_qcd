@@ -433,12 +433,57 @@ ifeq ($(strip ${WANTQPHIX}), true)
 endif
 
 #----------------------------------------------------------------------
-# 17. Linker (need the C++ linker for QUDA and QPHIX)
+# 16. Grid Options
+
+WANTGRID = #true
+
+GRID_HOME = ${HOME}/grid/mbench
+
+ifeq ($(strip ${WANTGRID}), true)
+
+  INCGRID = -I${GRID_HOME}
+  HAVE_GRID = true
+  CPHI = -DHAVE_GRID
+
+  ifeq ($(strip ${MPP}),true)
+
+  # MPI versions of GRID
+
+  ifeq ($(strip ${ARCH}),knl)
+    LIBGRID = -L${GRID_HOME} -lgridmilc_avx512 -lrt
+  else ifeq ($(strip ${ARCH}),knc)
+    LIBGRID = -L${GRID_HOME} -lgridmilc_mic -lrt
+  else ifeq ($(strip ${ARCH}),hsw)
+    LIBGRID = -L${GRID_HOME} -lgridmilc_avx2 -lrt
+  else
+  endif
+
+  else
+
+  # Non-MPI versions
+
+  ifeq ($(strip ${ARCH}),knl)
+    LIBGRID = -L${GRID_HOME} -lgridmilc_avx512_single -lrt
+  else ifeq ($(strip ${ARCH}),knc)
+    LIBGRID = -L${GRID_HOME} -lgridmilc_mic_single -lrt
+  else ifeq ($(strip ${ARCH}),hsw)
+    LIBGRID = -L${GRID_HOME} -lgridmilc_avx2_single -lrt
+  else
+  endif
+
+  endif
+
+endif
+
+#----------------------------------------------------------------------
+# 17. Linker (need the C++ linker for QUDA, QPHIX, GRID)
 
 ifeq ($(strip ${LDLAPACK}),)
   ifeq ($(strip ${WANTQUDA}),true)
     LD  = ${CXX}
   else ifeq ($(strip ${WANTQPHIX}),true)
+    LD  = ${CXX}
+  else ifeq ($(strip ${WANTGRID}),true)
     LD  = ${CXX}
   else
     LD  = ${CC}
@@ -732,16 +777,16 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCGRID} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries
 
-LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBVTUNE}
+LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBQPHIX} ${LIBGRID} ${LIBVTUNE}
 
-ifeq ($(strip ${WANTQPHIX}), true)
-  LIBADD += ${LIBQPHIX}
-endif
+#ifeq ($(strip ${WANTQPHIX}), true)
+#  LIBADD += ${LIBQPHIX}
+#endif
 
 #------------------------------
 # Summary
@@ -794,6 +839,10 @@ ifeq ($(strip ${WANTQPHIX}),true)
   QPHIXPREC = -DQPHIX_PrecisionInt=${PRECISION}
 endif
 
+ifeq ($(strip ${WANTGRID}),true)
+  GRIDPREC = -DGRID_PrecisionInt=${PRECISION}
+endif
+
 ifeq ($(strip ${WANTDCAP}),true)
    MACHINE_DEP_IO = io_dcap.o
    OCFLAGS += -I${DCAP_DIR}/include
@@ -813,7 +862,7 @@ endif
 
 include ../Make_template_combos
 
-CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC}
+CPREC = -DPRECISION=${PRECISION} ${QDPPREC} ${QOPPREC} ${QPHIXPREC} ${GRIDPREC}
 DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change

@@ -70,6 +70,8 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 #define ks_congrad_parity ks_congrad_parity_gpu
 #elif HAVE_QPHIX
 #define ks_congrad_parity ks_congrad_parity_qphix
+#elif HAVE_GRID
+#define ks_congrad_parity ks_congrad_parity_grid
 #else
 #define ks_congrad_parity ks_congrad_parity_cpu
 #endif
@@ -195,6 +197,15 @@ int ks_multicg_offset_field_gpu(	/* Return value is number of iterations taken *
     imp_ferm_links_t *fn      /* Storage for fat and Naik links */
     );
 
+int ks_multicg_offset_field_grid(	/* Return value is number of iterations taken */
+    su3_vector *src,	/* source vector (type su3_vector) */
+    su3_vector **psim,	/* solution vectors */
+    ks_param *ksp,	/* the offsets */
+    int num_offsets,	/* number of offsets */
+    quark_invert_control qic[], /* inversion parameters */
+    imp_ferm_links_t *fn      /* Storage for fat and Naik links */
+    );
+
 int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken */
     su3_vector *src,	/* source vector (type su3_vector) */
     su3_vector **psim,	/* solution vectors */
@@ -206,6 +217,8 @@ int ks_multicg_offset_field_qphix(	/* Return value is number of iterations taken
 
 #ifdef USE_CG_GPU
 #define ks_multicg_offset_field ks_multicg_offset_field_gpu
+#elif HAVE_GRID
+#define ks_multicg_offset_field ks_multicg_offset_field_grid
 #elif HAVE_QPHIX
 #define ks_multicg_offset_field ks_multicg_offset_field_qphix
 #else

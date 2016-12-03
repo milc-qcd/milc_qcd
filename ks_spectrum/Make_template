@@ -32,7 +32,7 @@ MY_HEADERS = \
   quark_action.h
 
 HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
-  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${SCIDAC_HEADERS}
+  ${QUDA_HEADERS} ${QPHIX_HEADERS} ${GRID_HEADERS} ${SCIDAC_HEADERS}
 
 # All required object files
 # Basic set from current directory
@@ -106,7 +106,7 @@ endif
 P = $(strip ${PRECISION})
 QCDLIB = ${LIBDIR}/su3.${P}.a ${LIBDIR}/complex.${P}.a 
 
-LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES} ${QPHIX_LIBRARIES}
+LIBRARIES = ${QCDLIB} ${SCIDAC_LIBRARIES} ${QUDA_LIBRARIES} ${QPHIX_LIBRARIES} ${GRID_LIBRARIES}
 
 # Default rule for C compilation
 .c.o: ; ${CC} -c ${CFLAGS} $<
