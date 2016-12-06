@@ -2,7 +2,7 @@
 #ifndef _GENERIC_GRID_H
 #define _GENERIC_GRID_H
 
-#include <grid.h>
+#include <mGrid.h>
 #include "../include/config.h"
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
