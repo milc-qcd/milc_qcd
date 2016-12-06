@@ -270,25 +270,24 @@ create_grid_L_from_fn_links(fn_links_t *fn, int parity){
   if(raw_lng_links == NULL)terminate(1);
   
   //  if(get_fatbacklinks(fn) == NULL)
-  raw_fatback_links = create_fatbacklinks_without_adjoint(get_fatlinks(fn));
+  //  raw_fatback_links = create_fatbacklinks_without_adjoint(get_fatlinks(fn));
   // else
   // WE MUST UNDO THE ADJOINT HERE WHEN WE COPY FROM fn
   // raw_fatback_links = create_grid_raw4_G_from_field(get_fatbacklinks(fn), parity);
   //}
   
   //if(get_lngbacklinks(fn) == NULL)
-  raw_lngback_links = create_lngbacklinks_without_adjoint(get_lnglinks(fn));
+  // raw_lngback_links = create_lngbacklinks_without_adjoint(get_lnglinks(fn));
   //else
   // WE MUST UNDO THE ADJOINT HERE WHEN WE COPY FROM fn
   //  raw_lngback_links = create_grid_raw4_G_from_field(get_lngbacklinks(fn), parity);
   
-  links = GRID_asqtad_create_L_from_raw( (MYREAL *)raw_fat_links, (MYREAL *)raw_lng_links, 
-					  (MYREAL *)raw_fatback_links, (MYREAL *)raw_lngback_links, parity);
+  links = GRID_asqtad_create_L_from_raw( (MYREAL *)raw_fat_links, (MYREAL *)raw_lng_links, parity);
   
   destroy_grid_raw4_G(raw_fat_links);
   destroy_grid_raw4_G(raw_lng_links);
-  destroy_backlinks(raw_fatback_links);
-  destroy_backlinks(raw_lngback_links);
+  //  destroy_backlinks(raw_fatback_links);
+  //  destroy_backlinks(raw_lngback_links);
   
   return links;
 }
@@ -389,7 +388,7 @@ KS_CONGRAD_PARITY_GRID ( su3_vector *src
 #endif
 
   iters = GRID_asqtad_invert( &info, links, &grid_invert_arg, 
-			       grid_resid_arg, (MYREAL)mass, grid_sol, grid_src );
+			      grid_resid_arg, (MYREAL)mass, grid_sol, grid_src );
   
 #ifdef CG_DEBUG    
   dtime += dclock();
