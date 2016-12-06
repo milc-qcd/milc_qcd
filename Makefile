@@ -352,6 +352,7 @@ ifeq ($(strip ${WANTQUDA}),true)
   CUDA_HOME = /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
   LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
+  QUDA_HEADERS = ${QUDA_HOME}/include
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
 
@@ -444,6 +445,7 @@ ifeq ($(strip ${WANTGRID}), true)
   INCGRID = -I${GRID_HOME}
   HAVE_GRID = true
   CPHI = -DHAVE_GRID
+  GRID_HEADERS = ${GRID_HOME}
 
   ifeq ($(strip ${MPP}),true)
 
