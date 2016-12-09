@@ -210,7 +210,7 @@ typedef struct gather_t {
 typedef struct gmem_t {
   char *mem;            /* source (destination) address for send (receive) */
   size_t size;          /* size of sent field */
-  int stride;           /* stride of source/destination field */
+  size_t stride;        /* stride of source/destination field */
   int num;              /* number of sites in sitelist */
   int *sitelist;        /* sites gathered to/from */
   struct gmem_t *next;  /* linked list */
@@ -1730,7 +1730,7 @@ make_gather(
 msg_tag *
 declare_strided_gather(
   void *field,	        /* source buffer aligned to desired field */
-  int stride,           /* bytes between fields in source buffer */
+  size_t stride,        /* bytes between fields in source buffer */
   size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
@@ -2449,7 +2449,7 @@ static void
 declare_accumulate_strided_gather(
   msg_tag **mmtag,      /* tag to accumulate gather into */
   void *field,	        /* which field? Some member of structure "site" */
-  int stride,           /* bytes between fields in source buffer */
+  size_t stride,        /* bytes between fields in source buffer */
   size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
@@ -2548,7 +2548,7 @@ static char ** tdest;	    /* tdest is copy of dest */
 msg_tag *
 start_general_strided_gather(
   char *field,	        /* source buffer aligned to desired field */
-  int stride,           /* bytes between fields in source buffer */
+  size_t stride,        /* bytes between fields in source buffer */
   size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */
   int parity,		/* parity of sites to which we gather.
@@ -2768,7 +2768,7 @@ start_general_strided_gather(
 msg_tag *
 start_general_strided_gather(
   char *field,	        /* source buffer aligned to desired field */
-  int stride,           /* bytes between fields in source buffer */
+  size_t stride,        /* bytes between fields in source buffer */
   size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */
   int subl,		/* subl of sites whose neighbors we gather.

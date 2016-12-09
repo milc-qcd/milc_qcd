@@ -143,7 +143,7 @@ msg_tag * declare_gather_field(
 
 msg_tag * declare_strided_gather(
   void *field,	        /* source buffer aligned to desired field */
-  int stride,           /* bytes between fields in source buffer */
+  size_t stride,        /* bytes between fields in source buffer */
   size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
@@ -196,7 +196,7 @@ void declare_accumulate_gather_field(
 
 msg_tag * start_general_strided_gather(
   char *field,	        /* source buffer aligned to desired field */
-  int stride,           /* bytes between fields in source buffer */
+  size_t stride,        /* bytes between fields in source buffer */
   size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */
   int subl,		/* subl of sites whose neighbors we gather.
