@@ -1821,7 +1821,7 @@ declare_strided_gather(
     if(compt->n_subl_connected[subl]==0) continue;
     mrecv[i].msg_node = compt->othernode;
     mrecv[i].id_offset = i;
-    mrecv[i].msg_size = size*(size_t)compt->n_subl_connected[subl];
+    mrecv[i].msg_size = size*compt->n_subl_connected[subl];
     mrecv[i].msg_buf = NULL;
     gmem = (gmem_t *)malloc(sizeof(gmem_t));
     mrecv[i].gmem = gmem;
@@ -1840,7 +1840,7 @@ declare_strided_gather(
     if(compt->n_subl_connected[subl]==0) continue;
     msend[i].msg_node = compt->othernode;
     msend[i].id_offset = idl->id_offset;
-    msend[i].msg_size = size*(size_t)compt->n_subl_connected[subl];
+    msend[i].msg_size = size*compt->n_subl_connected[subl];
     msend[i].msg_buf = NULL;
     gmem = (gmem_t *)malloc(sizeof(gmem_t));
     msend[i].gmem = gmem;
@@ -1908,12 +1908,11 @@ prepare_gather(msg_tag *mtag)
     /* set pointers in sites to correct location */
     gmem = mrecv[i].gmem;
     do {
-      size_t jj;
 #ifdef OMP
 #pragma omp parallel for private(jj)
 #endif
-      for(jj=0; jj<gmem->num; ++jj) {
-        ((char **)gmem->mem)[gmem->sitelist[jj]] = tpt + jj*gmem->size;
+      for(j=0; j<gmem->num; ++j) {
+        ((char **)gmem->mem)[gmem->sitelist[j]] = tpt + j*gmem->size;
       }
     } while((gmem=gmem->next)!=NULL);
   }
@@ -1958,13 +1957,12 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
     tpt = mbuf[i].msg_buf;
     gmem = mbuf[i].gmem;
     do {
-      size_t jj;
 #ifdef OMP
-#pragma omp parallel for private(jj)
+#pragma omp parallel for private(j)
 #endif
-      for(jj=0; jj<gmem->num; ++jj) {
-	memcpy( tpt+jj*gmem->size, 
-		gmem->mem + gmem->sitelist[jj]*gmem->stride, gmem->size );
+      for(j=0; j<gmem->num; ++j) {
+	memcpy( tpt+j*gmem->size, 
+		gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
       }
     } while((gmem=gmem->next)!=NULL);
 
