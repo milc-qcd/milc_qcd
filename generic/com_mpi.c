@@ -1909,7 +1909,7 @@ prepare_gather(msg_tag *mtag)
     gmem = mrecv[i].gmem;
     do {
 #ifdef OMP
-#pragma omp parallel for private(jj)
+#pragma omp parallel for private(j)
 #endif
       for(j=0; j<gmem->num; ++j) {
         ((char **)gmem->mem)[gmem->sitelist[j]] = tpt + j*gmem->size;
