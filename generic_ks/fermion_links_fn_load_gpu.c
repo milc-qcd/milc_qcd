@@ -59,7 +59,7 @@ load_fatlonglinks_gpu(info_t *info, su3_matrix *fatlinks, su3_matrix *longlinks,
 
   // qudaLoadUnitarizedLink(PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks, NULL);
   qudaLoadKSLink(PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks);
-  return;
+
 }
 
 /* fermion_links_fn_load_gpu.c */

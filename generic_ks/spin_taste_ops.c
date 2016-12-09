@@ -1207,7 +1207,6 @@ spin_taste_op_links(int index, int r0[], su3_vector *dest,
 		    su3_vector *src, su3_matrix *links){
   switch(index){
   case pion5:
-    copy_v_field(dest, src);
     mult_pion5_field(r0, src, dest);
     break;
   case pion05:

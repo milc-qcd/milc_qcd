@@ -2,6 +2,7 @@
 /* MIMD version 7 */
 
 /* The following headers are supplied with the MILC code */
+#include <string.h>
 #include "generic_ks_includes.h"	/* definitions files and prototypes */
 #include "../include/dslash_ks_redefine.h"
 
@@ -10,6 +11,7 @@
 #include "../include/generic_quda.h"
 #define LOOPEND
 #include "../include/loopend.h"
+#include <string.h>
 
 /* Backward compatibility*/
 #ifdef SINGLE_FOR_DOUBLE

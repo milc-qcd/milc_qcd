@@ -56,6 +56,10 @@ ifeq ($(strip ${WANTQPHIX}),true)
   GAUGE_OBJECTS += map_milc_to_qphix.o milc_to_qphix_utilities.o
 endif
 
+ifeq ($(strip ${WANTQPHIXJ}),true)
+  GAUGE_OBJECTS += map_milc_to_qphixj.o milc_to_qphixj_utilities.o
+endif
+
 ifeq ($(strip ${HAVEFFTW}),true)
   FFT_OBJECTS = remap_fftw_fourier.o
 else
@@ -355,8 +359,14 @@ endif
 # GPU support 
   CONGRAD_CL_MILC_GPU = d_bicgilu_cl_gpu.o ${CONGRAD_CL_BASE}
 
+# QPHIXJ support
+  CONGRAD_CL_QPHIXJ =  ${CONGRAD_CL_BASE}
+
+
 ifeq ($(strip ${HAVE_CL_GPU}),true)
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_GPU}
+elif ($(strip ${HAVE_CL_QPHIXJ}),true)
+  CONGRAD_CL_MILC = ${CONGRAD_CL_QPHIXJ}
 else
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_CPU}
 endif
