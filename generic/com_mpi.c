@@ -220,7 +220,7 @@ typedef struct gmem_t {
 typedef struct {
   int msg_node;         /* node sending or receiving message */
   int id_offset;        /* id offset for this message */
-  int msg_size;         /* size of message in bytes */
+  size_t msg_size;      /* size of message in bytes */
   char *msg_buf;        /* address of buffer malloc'd for message */
   gmem_t *gmem;         /* linked list explaining detailed usage for buffer */
   MPI_Request msg_req;  /* message handle returned by system call */
@@ -1821,7 +1821,7 @@ declare_strided_gather(
     if(compt->n_subl_connected[subl]==0) continue;
     mrecv[i].msg_node = compt->othernode;
     mrecv[i].id_offset = i;
-    mrecv[i].msg_size = size*compt->n_subl_connected[subl];
+    mrecv[i].msg_size = size*(size_t)compt->n_subl_connected[subl];
     mrecv[i].msg_buf = NULL;
     gmem = (gmem_t *)malloc(sizeof(gmem_t));
     mrecv[i].gmem = gmem;
@@ -1840,7 +1840,7 @@ declare_strided_gather(
     if(compt->n_subl_connected[subl]==0) continue;
     msend[i].msg_node = compt->othernode;
     msend[i].id_offset = idl->id_offset;
-    msend[i].msg_size = size*compt->n_subl_connected[subl];
+    msend[i].msg_size = size*(size_t)compt->n_subl_connected[subl];
     msend[i].msg_buf = NULL;
     gmem = (gmem_t *)malloc(sizeof(gmem_t));
     msend[i].gmem = gmem;
@@ -1908,11 +1908,12 @@ prepare_gather(msg_tag *mtag)
     /* set pointers in sites to correct location */
     gmem = mrecv[i].gmem;
     do {
+      size_t jj;
 #ifdef OMP
-#pragma omp parallel for private(j)
+#pragma omp parallel for private(jj)
 #endif
-      for(j=0; j<gmem->num; ++j) {
-        ((char **)gmem->mem)[gmem->sitelist[j]] = tpt + j*gmem->size;
+      for(jj=0; jj<gmem->num; ++jj) {
+        ((char **)gmem->mem)[gmem->sitelist[jj]] = tpt + jj*gmem->size;
       }
     } while((gmem=gmem->next)!=NULL);
   }
@@ -1957,19 +1958,20 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
     tpt = mbuf[i].msg_buf;
     gmem = mbuf[i].gmem;
     do {
+      size_t jj;
 #ifdef OMP
-#pragma omp parallel for private(j)
+#pragma omp parallel for private(jj)
 #endif
-      for(j=0; j<gmem->num; ++j) {
-	memcpy( tpt+j*gmem->size, 
-		gmem->mem + gmem->sitelist[j]*gmem->stride, gmem->size );
+      for(jj=0; jj<gmem->num; ++jj) {
+	memcpy( tpt+jj*gmem->size, 
+		gmem->mem + gmem->sitelist[jj]*gmem->stride, gmem->size );
       }
     } while((gmem=gmem->next)!=NULL);
 
     /* start the send */
 #ifdef COM_CRC
     {
-      int msg_size;
+      size_t msg_size;
       char *crc_pt;
       u_int32type *crc;
 
@@ -2026,7 +2028,7 @@ wait_gather(msg_tag *mtag)
       u_int32type crcgot;
       msg_sr_t *mbuf;
       char *tpt;
-      int msg_size;
+      size_t msg_size;
       char *crc_pt;
       u_int32type *crc;
 
@@ -2534,7 +2536,7 @@ struct msg_tmp { int node, count; }; /* temporary structure for keeping track
 					of messages to be sent or received */
 static struct msg_tmp *to_nodes, *from_nodes;	/* arrays for messages */
 static int g_gather_flag=0; /* flag to tell if general gather in progress */
-static int tsize;	    /* size of entry in messages =2*sizeof(int)+size */
+static size_t tsize;	    /* size of entry in messages =2*sizeof(int)+size */
 static char ** tdest;	    /* tdest is copy of dest */
 /* from_nodes, tsize and tdest are global because they are set in 
    start_general_gather_site() and used in wait_general_gather().  This
