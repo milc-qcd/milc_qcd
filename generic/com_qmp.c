@@ -210,8 +210,8 @@ typedef struct gather_t {
 /* structure to keep track of details of a declared gather */
 typedef struct gmem_t {
   char *mem;            /* source (destination) address for send (receive) */
-  int size;             /* size of sent field */
-  int stride;           /* stride of source/destination field */
+  size_t size;             /* size of sent field */
+  size_t stride;           /* stride of source/destination field */
   int num;              /* number of sites in sitelist */
   int *sitelist;        /* sites gathered to/from */
   struct gmem_t *next;  /* linked list */
@@ -221,7 +221,7 @@ typedef struct gmem_t {
 typedef struct {
   int msg_node;         /* node sending or receiving message */
   //  int id_offset;        /* id offset for this message */
-  int msg_size;         /* size of message in bytes */
+  size_t msg_size;         /* size of message in bytes */
   QMP_mem_t *qmp_mem;
   char *msg_buf;        /* address of buffer malloc'd for message */
   gmem_t *gmem;         /* linked list explaining detailed usage for buffer */
@@ -749,7 +749,7 @@ broadcast_dcomplex(double_complex *cpt)
 **  Broadcast bytes from node 0 to all others
 */
 void
-broadcast_bytes(char *buf, int size)
+broadcast_bytes(char *buf, size_t size)
 {
   QMP_broadcast(buf, size);
 }
@@ -803,7 +803,7 @@ receive_integer(int fromnode, int *address)
 **  send_field is to be called only by the node doing the sending
 */
 void
-send_field(char *buf, int size, int tonode)
+send_field(char *buf, size_t size, int tonode)
 {
   QMP_msgmem_t mm;
   QMP_msghandle_t mh;
@@ -820,7 +820,7 @@ send_field(char *buf, int size, int tonode)
 **  get_field is to be called only by the node to which the field was sent
 */
 void
-get_field(char *buf, int size, int fromnode)
+get_field(char *buf, size_t size, int fromnode)
 {
   QMP_msgmem_t mm;
   QMP_msghandle_t mh;
@@ -1548,8 +1548,8 @@ make_gather(
 msg_tag *
 declare_strided_gather(
   void *field,	        /* source buffer aligned to desired field */
-  int stride,           /* bytes between fields in source buffer */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t stride,        /* bytes between fields in source buffer */
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int subl,		/* subl of sites whose neighbors we gather.
@@ -1832,7 +1832,7 @@ do_gather(msg_tag *mtag)  /* previously returned by start_gather_site */
     /* start the send */
 #ifdef COM_CRC
     {
-      int msg_size;
+      size_t msg_size;
       char *crc_pt;
       u_int32type *crc;
 
@@ -1893,7 +1893,7 @@ wait_gather(msg_tag *mtag)
       u_int32type crcgot;
       msg_sr_t *mbuf;
       char *tpt;
-      int msg_size;
+      size_t msg_size;
       char *crc_pt;
       u_int32type *crc;
 
@@ -1997,7 +1997,7 @@ cleanup_gather(msg_tag *mtag)
 msg_tag *
 declare_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int parity,		/* parity of sites whose neighbors we gather.
@@ -2014,7 +2014,7 @@ declare_gather_site(
 msg_tag *
 start_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int parity,		/* parity of sites whose neighbors we gather.
@@ -2039,7 +2039,7 @@ start_gather_site(
 void
 restart_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int parity,		/* parity of sites whose neighbors we gather.
@@ -2085,7 +2085,7 @@ restart_gather_site(
 msg_tag *
 declare_gather_field(
   void * field,		/* which field? Pointer returned by malloc() */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int parity,		/* parity of sites whose neighbors we gather.
@@ -2101,7 +2101,7 @@ declare_gather_field(
 msg_tag *
 start_gather_field(
   void * field,		/* which field? Pointer returned by malloc() */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int parity,		/* parity of sites whose neighbors we gather.
@@ -2125,7 +2125,7 @@ start_gather_field(
 void
 restart_gather_field(
   void *field,		/* which field? Pointer returned by malloc() */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int parity,		/* parity of sites whose neighbors we gather.
@@ -2329,8 +2329,8 @@ static void
 declare_accumulate_strided_gather(
   msg_tag **mmtag,      /* tag to accumulate gather into */
   void *field,	        /* which field? Some member of structure "site" */
-  int stride,           /* bytes between fields in source buffer */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t stride,        /* bytes between fields in source buffer */
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int parity,		/* parity of sites whose neighbors we gather.
@@ -2355,7 +2355,7 @@ void
 declare_accumulate_gather_site(
   msg_tag **mmtag,
   field_offset field,	/* which field? Some member of structure "site" */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int parity,		/* parity of sites whose neighbors we gather.
@@ -2373,7 +2373,7 @@ void
 declare_accumulate_gather_field(
   msg_tag **mmtag,
   void * field,		/* which field? Pointer returned by malloc() */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int index,		/* direction to gather from. eg XUP - index into
 			   neighbor tables */
   int parity,		/* parity of sites whose neighbors we gather.
@@ -2416,7 +2416,7 @@ struct msg_tmp { int node, count; }; /* temporary structure for keeping track
 					of messages to be sent or received */
 static struct msg_tmp *to_nodes, *from_nodes;	/* arrays for messages */
 static int g_gather_flag=0; /* flag to tell if general gather in progress */
-static int tsize;	    /* size of entry in messages =2*sizeof(int)+size */
+static size_t tsize;	    /* size of entry in messages =2*sizeof(int)+size */
 static char ** tdest;	    /* tdest is copy of dest */
 /* from_nodes, tsize and tdest are global because they are set in 
    start_general_gather_site() and used in wait_general_gather().  This
@@ -2428,8 +2428,8 @@ static char ** tdest;	    /* tdest is copy of dest */
 msg_tag *
 start_general_strided_gather(
   char *field,	        /* source buffer aligned to desired field */
-  int stride,           /* bytes between fields in source buffer */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t stride,        /* bytes between fields in source buffer */
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */
   int parity,		/* parity of sites to which we gather.
 			   one of EVEN, ODD or EVENANDODD. */
@@ -2647,8 +2647,8 @@ start_general_strided_gather(
 msg_tag *
 start_general_strided_gather(
   char *field,	        /* source buffer aligned to desired field */
-  int stride,           /* bytes between fields in source buffer */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t stride,        /* bytes between fields in source buffer */
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */
   int subl,		/* subl of sites whose neighbors we gather.
 			   It is EVENANDODD, if all sublattices are done. */
@@ -2971,7 +2971,7 @@ start_general_strided_gather(
 msg_tag *
 start_general_gather_site(
   field_offset field,	/* which field? Some member of structure "site" */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */
   int parity,		/* parity of sites to which we gather.
 			   one of EVEN, ODD or EVENANDODD. */
@@ -2984,7 +2984,7 @@ start_general_gather_site(
 msg_tag *
 start_general_gather_field(
   void * field,	        /* which field? Pointer returned by malloc() */
-  int size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
+  size_t size,		/* size in bytes of the field (eg sizeof(su3_vector))*/
   int *displacement,	/* displacement to gather from. four components */
   int parity,		/* parity of sites to which we gather.
 			   one of EVEN, ODD or EVENANDODD. */

@@ -164,7 +164,7 @@ static void							\
  create_hash_##T(int milc_parity){				\
   site *s;						\
   int i, j, coords[4];					\
-  if(hash_created_##T){					\
+  if(!hash_created_##T){					\
      hash_m2q_##T = (int *)malloc(sizeof(int)*sites_on_node); \
      hash_q2m_##T = (int *)malloc(sizeof(int)*sites_on_node); \
      FORALLSITES_OMP(i,s,private(j,coords)){					\
