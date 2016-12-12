@@ -365,7 +365,7 @@ endif
 
 ifeq ($(strip ${HAVE_CL_GPU}),true)
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_GPU}
-elif ($(strip ${HAVE_CL_QPHIXJ}),true)
+else ifeq ($(strip ${HAVE_CL_QPHIXJ}),true)
   CONGRAD_CL_MILC = ${CONGRAD_CL_QPHIXJ}
 else
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_CPU}
