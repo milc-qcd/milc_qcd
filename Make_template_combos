@@ -254,9 +254,9 @@ endif
 
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
   CONGRAD_FN_MILC = ${CONGRAD_FN_GPU}
-elif ($(strip ${WANTGRID}),true)
+else ifeq ($(strip ${WANTGRID}),true)
   CONGRAD_FN_MILC = ${CONGRAD_FN_GRID}
-elif ($(strip ${WANTQPHIX}),true)
+else ifeq ($(strip ${WANTQPHIX}),true)
   CONGRAD_FN_MILC = ${CONGRAD_FN_QPHIX}
 else
   CONGRAD_FN_MILC = ${CONGRAD_FN_MILC_CPU}
@@ -304,9 +304,9 @@ endif
 
 ifeq ($(strip ${HAVE_FN_CG_GPU}),true)
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_GPU}
-elif ($(strip ${WANTGRID}),true)
+else ifeq ($(strip ${WANTGRID}),true)
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_GRID}
-elif ($(strip ${WANTQPHIX}),true)
+else ifeq ($(strip ${WANTQPHIX}),true)
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_QPHIX}
 else
   MULTI_INV_FN_MILC = ${MULTI_INV_FN_MILC_CPU}
