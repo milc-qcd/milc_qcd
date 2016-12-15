@@ -8,23 +8,23 @@
 
 /* Temporary redefines. These definitions belong in the Grid interface. */
 
-static int GRID_node_number_raw(int coords[]){
+int GRID_node_number_raw(int coords[]){
   return node_number(coords[0],coords[1],coords[2],coords[3]);
 }
 
-static int GRID_node_index_raw_G(int coords[], int milc_parity){
+int GRID_node_index_raw_G(int coords[], GRID_evenodd_t evenodd){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
-static int GRID_node_index_raw_F(int coords[], int milc_parity){
+int GRID_node_index_raw_F(int coords[], GRID_evenodd_t evenodd){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
-static int GRID_node_index_raw_V(int coords[], int milc_parity){
+int GRID_node_index_raw_V(int coords[], GRID_evenodd_t evenodd){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
-static int GRID_node_index_raw_D(int coords[], int milc_parity){
+int GRID_node_index_raw_D(int coords[], GRID_evenodd_t evenodd){
   return node_index(coords[0],coords[1],coords[2],coords[3]);
 }
 
@@ -539,8 +539,7 @@ create_grid_##P##_L_from_fields( MILC_SRC_TYPE *fat, MILC_SRC_TYPE *lng, \
   rawlngback = create_grid_raw4_##P##_G_from_field(lngback, parity); \
   if(rawlngback == NULL)terminate(1); \
   grid = GRID_##P##3_asqtad_create_L_from_raw((MILCFLOAT *)rawfat, \
-    (MILCFLOAT *)rawlng, (MILCFLOAT *)rawfatback, (MILCFLOAT *)rawlngback, \
-    milc2grid_parity(parity)); \
+  (MILCFLOAT *)rawlng,  milc2grid_parity(parity)); \
   destroy_grid_raw4_##P##_G(rawfat); rawfat = NULL; \
   destroy_grid_raw4_##P##_G(rawlng); rawlng = NULL; \
   destroy_grid_raw4_##P##_G(rawfatback); rawfatback = NULL; \
