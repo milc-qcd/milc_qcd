@@ -54,10 +54,6 @@ set_qphix_invert_arg( QPHIX_invert_arg_t* qphix_invert_arg,
   qphix_invert_arg->parity       = milc2qphix_parity(qic->parity);
   qphix_invert_arg->max          = qic->max;
   qphix_invert_arg->nrestart     = qic->nrestart;
-
-  /* For multimass inversion, don't restart */
-  if(nmass != 1)
-    qphix_invert_arg->nrestart = 1;
 }
 
 
@@ -154,8 +150,6 @@ KS_MULTICG_OFFSET_FIELD(
   double nflop = 1205 + 15*nmass;
 #endif
 
-  assert(qic[0].parity != EVENANDODD && "EVENANDODD not yet implemented");
-    
   if(qic[0].relresid != 0.){
     node0_printf("%s: QPhiX code does not yet support a Fermilab-type relative residual\n", myname);
     terminate(1);
