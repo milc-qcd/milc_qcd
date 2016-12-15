@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <omp.h>
+#include <mGrid.h>
 
 static int is_grid_env_setup = 0;
 
@@ -91,7 +92,7 @@ initialize_grid(int precision){
   node0_printf("Initializing Grid for precision %d\n", precision);
   node0_printf("NumCores = %d, ThreadsPerCore = %d, minCt = %d\n", numCores, threads_per_core, minCt);
 
-  status = GRID_init(&layout, precision);
+  status = GRID_init(&layout);
 
   if(status){
     node0_printf("Error initializing Grid\n");
