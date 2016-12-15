@@ -4,7 +4,7 @@
 *  MIMD version 7 		  				       *
 */
 
-#include <grid.h>
+#include <mGrid.h>
 #include "../include/generic_ks.h"
 
 
