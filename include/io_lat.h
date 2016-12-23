@@ -18,6 +18,7 @@
 #define RELOAD_SERIAL                    13
 #define RELOAD_MULTIDUMP                 18
 #define RELOAD_PARALLEL                  19
+#define WARM                             20
 #define FORGET                           40
 #define SAVE_ASCII                       41
 #define SAVE_SERIAL                      42
