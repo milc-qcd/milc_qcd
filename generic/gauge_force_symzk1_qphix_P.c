@@ -164,9 +164,9 @@ IMP_GAUGE_FORCE_QPHIX ( Real eps, field_offset mom_off )
   char myname[] = "imp_gauge_force_qphix";
   int nflop = 153004;  /* For Symanzik1 action, based on MILC standard */
   QPHIX_Force *mom;
-  MYSU3_MATRIX *fwdrawmom, *bckrawmom;
+  MYSU3_MATRIX *fwdrawmom;
   QPHIX_GaugeField *gauge;
-  MYSU3_MATRIX *fwdrawgauge, *bckrawgauge;
+  MYSU3_MATRIX *fwdrawgauge;
   QPHIX_info_t info;
   QPHIX_gauge_coeffs_t* coeffs;
 #ifdef GFTIME
@@ -181,17 +181,19 @@ IMP_GAUGE_FORCE_QPHIX ( Real eps, field_offset mom_off )
 
   /* Convert the site momentum to QPhiX format */
   fwdrawmom = CREATE_RAW_F_FROM_SITE4(F_OFFSET(mom), EVENANDODD);
-  bckrawmom = create_backlinks_without_adjoint(fwdrawmom);
-  mom = QPHIX_create_F_from_raw((MYREAL *)fwdrawmom, (MYREAL *)bckrawmom, milc2qphix_parity(EVENANDODD));
+  //  bckrawmom = create_backlinks_without_adjoint(fwdrawmom);
+  //  mom = QPHIX_create_F_from_raw((MYREAL *)fwdrawmom, (MYREAL *)bckrawmom, milc2qphix_parity(EVENANDODD));
+  mom = QPHIX_create_F_from_raw((MYREAL *)fwdrawmom, milc2qphix_parity(EVENANDODD));
   DESTROY_RAW_F(fwdrawmom);
-  DESTROY_RAW_F(bckrawmom);
+  //  DESTROY_RAW_F(bckrawmom);
 
   /* Convert the gauge field to QPhiX format */
   fwdrawgauge = CREATE_RAW_G_FROM_SITE4(F_OFFSET(link[0]), EVENANDODD);
-  bckrawgauge = create_backlinks_without_adjoint(fwdrawgauge);
-  gauge = QPHIX_create_G_from_raw((MYREAL *)fwdrawgauge, (MYREAL *)bckrawgauge, milc2qphix_parity(EVENANDODD));
+  //  bckrawgauge = create_backlinks_without_adjoint(fwdrawgauge);
+  //  gauge = QPHIX_create_G_from_raw((MYREAL *)fwdrawgauge, (MYREAL *)bckrawgauge, milc2qphix_parity(EVENANDODD));
+  gauge = QPHIX_create_G_from_raw((MYREAL *)fwdrawgauge, milc2qphix_parity(EVENANDODD));
   DESTROY_RAW_G(fwdrawgauge);
-  DESTROY_RAW_G(bckrawgauge);
+  //  DESTROY_RAW_G(bckrawgauge);
 
   /* Update the mom, based on the gauge force */
   QPHIX_symanzik_1loop_gauge_force( &info, gauge, mom, coeffs, eps*beta/3.);
