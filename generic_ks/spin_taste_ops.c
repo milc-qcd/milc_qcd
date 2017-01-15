@@ -1327,7 +1327,7 @@ mult_rhois_fn_field( imp_ferm_links_t *fn, int fdir,
   register int i;
   register site *s;  
   
-  /* apply the symmetric shift FN operator (uses fat and long links) */
+  /* apply the shift FN operator (uses fat links) */
   shift_fn_field(fn, fdir, fb, src, dest);
 
   /* Apply an antiquark gamma_5 x gamma_5 */

@@ -64,7 +64,7 @@ else ifeq ($(strip ${COMPILER}),gnu)
     CXX = mpiCC
   else
     CC  = gcc
-    CXX = CC
+    CXX = g++
   endif
 
 endif
@@ -393,14 +393,13 @@ endif
 # 16. QPhiX Options
 
 WANTQPHIX = #true
-
-QPHIX_HOME = ${HOME}/QPhiX/mbench
+WANT_FN_CG_QPHIX = true
+WANT_GF_QPHIX = true
 
 ifeq ($(strip ${WANTQPHIX}), true)
 
+  QPHIX_HOME = ${HOME}/QPhiX/mbench
   INCQPHIX = -I${QPHIX_HOME}
-  HAVE_QPHIX = true
-  CPHI = -DHAVE_QPHIX
 
   ifeq ($(strip ${MPP}),true)
 
@@ -428,6 +427,18 @@ ifeq ($(strip ${WANTQPHIX}), true)
   else
   endif
 
+  endif
+
+  CPHI += -DHAVE_QPHIX
+
+  ifeq ($(strip ${WANT_FN_CG_QPHIX}),true)
+    HAVE_FN_CG_QPHIX = true
+    CPHI += -DUSE_CG_QPHIX
+  endif
+
+  ifeq ($(strip ${WANT_GF_QPHIX}),true)
+    HAVE_GF_QPHIX = true
+    CPHI += -DUSE_GF_QPHIX
   endif
 
 endif
