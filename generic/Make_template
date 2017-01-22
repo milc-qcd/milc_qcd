@@ -60,10 +60,12 @@ G_ALL = \
  layout_hyper_sl32.o \
  layout_qcdoc.o \
  map_milc_to_qopmilc.o \
- map_milc_to_qphix.o \
  map_milc_to_qopqdp.o \
+ map_milc_to_qphix.o \
+ map_milc_to_qphixj.o \
  milc_to_qop_utilities.o \
  milc_to_qphix_utilities.o \
+ milc_to_qphixj_utilities.o \
  milc_to_quda_utilities.o \
  make_lattice.o \
  momentum_twist.o \
@@ -230,11 +232,15 @@ map_milc_to_qopmilc.o: ../generic/map_milc_to_qopmilc.c ../generic/map_milc_to_q
 	${CC} -c ${CFLAGS} $<
 map_milc_to_qopqdp.o: ../generic/map_milc_to_qopqdp.c ../generic/map_milc_to_qop_all.c
 	${CC} -c ${CFLAGS} $<
-milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
-	${CC} -c ${CFLAGS} $<
 map_milc_to_qphix.o: ../generic/map_milc_to_qphix.c ../generic/map_milc_to_qphix_all.c
 	${CC} -c ${CFLAGS} $<
+map_milc_to_qphixj.o: ../generic/map_milc_to_qphixj.c ../generic/map_milc_to_qphixj_all.c
+	${CC} -c ${CFLAGS} $<
+milc_to_qop_utilities.o: ../generic/milc_to_qop_utilities.c
+	${CC} -c ${CFLAGS} $<
 milc_to_qphix_utilities.o: ../generic/milc_to_qphix_utilities.c
+	${CC} -c ${CFLAGS} $<
+milc_to_qphixj_utilities.o: ../generic/milc_to_qphixj_utilities.c
 	${CC} -c ${CFLAGS} $<
 milc_to_quda_utilities.o: ../generic/milc_to_quda_utilities.c
 	${CC} -c ${CFLAGS} $<
