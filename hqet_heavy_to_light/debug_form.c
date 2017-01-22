@@ -130,7 +130,7 @@ void wilson_vector_pion(field_offset prop)
 
 
 
-void dump_wilson_vector(field_offset prop)
+void dump_wilson_vec(field_offset prop)
 {
   int i ;
   register site *s;

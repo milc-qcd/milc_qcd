@@ -377,9 +377,9 @@ void check_naive(wilson_vector *dst, wilson_vector *src, Real mass, Real tol){
     d = magsq_wvec(&diff);
     if(d > tol){
       printf("site %d expected \n",i);
-      dump_wvec(src + i);
+      dump_wilson_vec(src + i);
       printf("got\n");
-      dump_wvec(tmp + i);
+      dump_wilson_vec(tmp + i);
     }
     dmag += d;
   }
