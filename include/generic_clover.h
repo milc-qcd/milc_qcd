@@ -39,6 +39,8 @@ int bicgilu_cl_field_gpu(    /* Return value is number of iterations taken */
 
 #ifdef USE_CL_GPU
 #define bicgilu_cl_field bicgilu_cl_field_gpu
+#elif HAVE_QPHIXJ
+#define bicgilu_cl_field bicgilu_cl_field_qphixj
 #else
 #define bicgilu_cl_field bicgilu_cl_field_cpu
 #endif

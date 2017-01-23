@@ -15,6 +15,7 @@ G_CLOVER_ALL = \
     d_bicgilu_cl_qop.o \
     d_bicgilu_cl_qop_D.o \
     d_bicgilu_cl_qop_F.o \
+    d_bicgilu_cl_qphixj.o \
     d_cgilu_cl.o \
     d_congrad2_cl.o \
     d_hopilu_cl.o \
@@ -55,6 +56,8 @@ d_bicgilu_cl_qop.o: ../generic_clover/d_bicgilu_cl_qop.c
 d_bicgilu_cl_qop_D.o: ../generic_clover/d_bicgilu_cl_qop_D.c ../generic_clover/d_bicgilu_cl_qop_P.c
 	${CC} -c ${CFLAGS} $<
 d_bicgilu_cl_qop_F.o: ../generic_clover/d_bicgilu_cl_qop_F.c ../generic_clover/d_bicgilu_cl_qop_P.c
+	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_qphixj.o: ../generic_clover/d_bicgilu_cl_qphixj.c
 	${CC} -c ${CFLAGS} $<
 d_cgilu_cl.o: ../generic_clover/d_cgilu_cl.c
 	${CC} -c ${CFLAGS} $<
