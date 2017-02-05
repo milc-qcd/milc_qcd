@@ -436,6 +436,16 @@ ifeq ($(strip ${WANTQPHIX}), true)
   QPHIX_HEADERS   = ${QPHIX_HOME}
   QPHIX_LIBRARIES = ${QPHIX_HOME}
 
+  ifeq ($(strip ${WANT_FN_CG_QPHIX}),true)
+    HAVE_FN_CG_QPHIX = true
+    CPHI += -DUSE_CG_QPHIX
+  endif
+
+  ifeq ($(strip ${WANT_GF_QPHIX}),true)
+    HAVE_GF_QPHIX = true
+    CPHI += -DUSE_GF_QPHIX
+  endif
+
 endif
 
 #----------------------------------------------------------------------
