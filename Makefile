@@ -344,6 +344,7 @@ WANT_GF_GPU = #true
 ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_HOME = ${HOME}/quda
+  QUDA_HEADERS = ${QUDA_HOME}/include
 
   INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
@@ -396,10 +397,13 @@ WANTQPHIX = #true
 WANT_FN_CG_QPHIX = true
 WANT_GF_QPHIX = true
 
+QPHIX_HOME = ${HOME}/QPhiX/mbench
+
 ifeq ($(strip ${WANTQPHIX}), true)
 
-  QPHIX_HOME = ${HOME}/QPhiX/mbench
   INCQPHIX = -I${QPHIX_HOME}
+  HAVE_QPHIX = true
+  CPHI = -DHAVE_QPHIX
 
   ifeq ($(strip ${MPP}),true)
 
@@ -429,7 +433,8 @@ ifeq ($(strip ${WANTQPHIX}), true)
 
   endif
 
-  CPHI += -DHAVE_QPHIX
+  QPHIX_HEADERS   = ${QPHIX_HOME}
+  QPHIX_LIBRARIES = ${QPHIX_HOME}
 
   ifeq ($(strip ${WANT_FN_CG_QPHIX}),true)
     HAVE_FN_CG_QPHIX = true
