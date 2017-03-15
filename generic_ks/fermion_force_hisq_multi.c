@@ -1899,7 +1899,7 @@ fn_fermion_force_multi_hisq_reunit( info_t *info, su3_matrix *force_accum[4],
   rephase_field_offset( internal_Y_link, OFF, NULL , r0);
   
   FORALLFIELDSITES_OMP(i, private(dwdv, dwdagdv, dir, tmat, dwdvs, dwdagdvs, m, n, k, l, ftmp)
-		       reduction(+:nflops_all_sites){
+ 		       reduction(+:nflops_all_sites)){
     for(dir=XUP;dir<=TUP;dir++){
       // calculate derivatives
       if(ap->umethod == UNITARIZE_ROOT )
