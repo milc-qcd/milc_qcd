@@ -40,7 +40,7 @@ create_qphix_raw4_##P##_##T (void){ \
     printf("create4_qphix_raw: No room\n");	\
     return NULL;				\
   } \
-  FORALLFIELDSITES_OMP(i,)){ \
+  FORALLFIELDSITES_OMP(i,){ \
     memset(raw+4*i, 0, 4*sizeof(MILCTYPE));	\
   } END_LOOP_OMP; \
   return raw; \
