@@ -189,7 +189,6 @@ print_result(Real *q[], Real *q2[], int nblock, int block_size[]){
 	}
 
   /* Binned output for r > RMAX */
-  /* We have output only for stride 2 */
   
   for(i = 0; i < MAXBIN; i++){
     nvsr[i] = 0;
