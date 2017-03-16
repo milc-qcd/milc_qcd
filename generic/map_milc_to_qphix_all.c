@@ -35,12 +35,13 @@ static int QPHIX_node_index_raw_D(int coords[], int milc_parity){
 MILCTYPE * \
 create_qphix_raw4_##P##_##T (void){ \
   MILCTYPE *raw = NULL; \
+  int i; \
   raw = (MILCTYPE *)malloc(4*sites_on_node*sizeof(MILCTYPE)); \
   if(raw == NULL){				\
     printf("create4_qphix_raw: No room\n");	\
     return NULL;				\
   } \
-  FORALLFIELDSITES_OMP(i,){ \
+  FORALLFIELDSITES_OMP(i, ){ \
     memset(raw+4*i, 0, 4*sizeof(MILCTYPE));	\
   } END_LOOP_OMP; \
   return raw; \
@@ -61,14 +62,15 @@ destroy_qphix_raw4_##P##_##T (MILCTYPE *raw){ \
 MILCTYPE * \
 create_qphix_raw_##P##_##T(void){ \
   MILCTYPE *raw = NULL; \
+  int i; \
   raw = (MILCTYPE *)malloc(sites_on_node*sizeof(MILCTYPE)); \
   if(raw == NULL){ \
     printf("create_qphix_raw: No room\n"); \
     return NULL; \
   } \
-  FORALLFIELDSITES(i,){ \
+  FORALLFIELDSITES_OMP(i, ){ \
     memset(raw + i, 0, sizeof(MILCTYPE)); \
-  } END_LOOP_OMP;
+  } END_LOOP_OMP; \
   return raw; \
 }
 
