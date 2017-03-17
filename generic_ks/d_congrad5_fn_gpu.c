@@ -159,3 +159,8 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 
   return num_iters;
 }
+
+int ks_congrad_block_parity_gpu(int nsrc, su3_vector **t_src, su3_vector **t_dest, 
+				quark_invert_control *qic, Real mass,
+				imp_ferm_links_t *fn){
+}
