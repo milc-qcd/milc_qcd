@@ -53,6 +53,10 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
 		      quark_invert_control *qic, Real mass,
 		      imp_ferm_links_t *fn);
 
+int ks_congrad_block_field( int nsrc, su3_vector **src, su3_vector **dest, 
+			    quark_invert_control *qic, Real mass,
+			    imp_ferm_links_t *fn);
+
 int ks_congrad_field_cpu( su3_vector *src, su3_vector *dest, 
 			  quark_invert_control *qic, Real mass,
 			  imp_ferm_links_t *fn);
@@ -68,15 +72,28 @@ int ks_congrad_parity_cpu( su3_vector *t_src, su3_vector *t_dest,
 
 #ifdef USE_CG_GPU
 #define ks_congrad_parity ks_congrad_parity_gpu
+#ifdef BLOCKCG
+#define ks_congrad_block_parity ks_congrad_block_parity_gpu
+#endif
 #elif USE_CG_QPHIX
 #define ks_congrad_parity ks_congrad_parity_qphix
+#ifdef BLOCKCG
+#define ks_congrad_block_parity ks_congrad_block_parity_qphix
+#endif
 #else
 #define ks_congrad_parity ks_congrad_parity_cpu
+#ifdef BLOCKCG
+#define ks_congrad_block_parity ks_congrad_block_parity_cpu
+#endif
 #endif
 
 int ks_congrad_parity( su3_vector *t_src, su3_vector *t_dest, 
 		       quark_invert_control *qic, Real mass,
 		       imp_ferm_links_t *fn);
+
+int ks_congrad_block_parity( int nsrc, su3_vector **t_src, su3_vector **t_dest, 
+			     quark_invert_control *qic, Real mass,
+			     imp_ferm_links_t *fn);
 
 int ks_congrad_two_src(	/* Return value is number of iterations taken */
     field_offset src1,    /* source vector (type su3_vector) */
@@ -376,6 +393,9 @@ int mat_invert_uml(field_offset src, field_offset dest, field_offset temp,
 int mat_invert_uml_field(su3_vector *src, su3_vector *dst, 
 			 quark_invert_control *qic,
 			 Real mass, imp_ferm_links_t *fn );
+int mat_invert_block_uml_field(int nsrc, su3_vector **src, su3_vector **dst, 
+			       quark_invert_control *qic,
+			       Real mass, imp_ferm_links_t *fn );
 void check_invert( field_offset src, field_offset dest, Real mass,
 		   Real tol, imp_ferm_links_t *fn );
 void check_invert_field( su3_vector *src, su3_vector *dest, Real mass,
