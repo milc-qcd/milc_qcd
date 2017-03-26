@@ -132,7 +132,8 @@ copy_D_F_to_milc(anti_hermitmat *dest, dsu3_matrix *src){
 #define copy_F_D_to_milc(d,s) f2p_wvec(d,s);
 #define copy_D_D_to_milc(d,s) d2p_wvec(d,s);
 
-void site_coords(int coords[4],site *s){
+static void 
+site_coords(int coords[4],site *s){
   coords[0] = s->x;
   coords[1] = s->y;
   coords[2] = s->z;
