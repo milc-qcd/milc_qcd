@@ -223,3 +223,12 @@ ks_congrad_parity_qphix ( su3_vector *src
 
 
 #endif
+
+int ks_congrad_block_parity_qphix(int nsrc, su3_vector **t_src, su3_vector **t_dest, 
+				  quark_invert_control *qic, Real mass,
+				  imp_ferm_links_t *fn)
+{
+
+  node0_printf("ks_congrad_block_parity_qphix: NOT IMPLEMENTED\n");
+  terminate(1);
+}
