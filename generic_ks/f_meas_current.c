@@ -862,7 +862,7 @@ f_meas_current_multi_eig( int n_masses, int nrand, int nwrite, int thinning,
     } /* j */
   } /* n */
 
-#if 1
+#if 0
   for(j = 0; j < n_masses; j++){
     for(mu = 0; mu < NMU; mu++){
       node0_printf("For mass %g\n", mass[j]);

@@ -22,6 +22,7 @@
 
 /* Each node has a params structure for passing simulation parameters */
 #include "params.h"
+extern int gethostname (char *__name, size_t __len); // Should get this from unistd.h
 
 int
 setup()
@@ -31,6 +32,7 @@ setup()
   
   /* print banner, get initial parameters */
   prompt = initial_set();
+  if(prompt == 2)return prompt;
   /* initialize the node random number generator */
   initialize_prn( &node_prn, iseed, volume+mynode() );
   /* Initialize the layout functions, which decide where sites live */
@@ -61,9 +63,15 @@ initial_set()
   if(mynode()==0){
     /* print banner */
     printf("SU3 gauge utility program\n");
-    printf("MIMD version 7\n");
+    printf("MIMD version %s\n",MILC_CODE_VERSION);
     printf("Machine = %s, with %d nodes\n",machine_type(),numnodes());
+    gethostname(hostname, 128);
+    printf("Host(0) = %s\n",hostname);
+    printf("Username = %s\n", getenv("USER"));
+    time_stamp("start");
+
     status=get_prompt(stdin, &prompt);
+
     IF_OK status += get_i(stdin, prompt,"nx", &param.nx );
     IF_OK status += get_i(stdin, prompt,"ny", &param.ny );
     IF_OK status += get_i(stdin, prompt,"nz", &param.nz );
@@ -194,6 +202,7 @@ readin(int prompt)
   broadcast_bytes((char *)&param,sizeof(param));
   
   if( param.stopflag != 0 )return param.stopflag;
+  if(prompt==2)return 0;
   
   /* Get lattice no phases in this program */
   if( param.startflag != CONTINUE )

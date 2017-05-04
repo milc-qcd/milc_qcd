@@ -140,6 +140,7 @@ gauge_file *save_lattice( int flag, char *filename, char *stringLFN){
     RELOAD_ASCII, RELOAD_SERIAL, RELOAD_PARALLEL
 */
 void coldlat(void);
+void warmlat(void);
 
 gauge_file *reload_lattice( int flag, char *filename){
     double dtime;
@@ -159,6 +160,10 @@ gauge_file *reload_lattice( int flag, char *filename){
 	    coldlat();
             gf = NULL;
 	    break;
+	case WARM:	/* warm lattice */
+	    warmlat();
+            gf = NULL;
+	    break;
 	case RELOAD_ASCII:	/* read Ascii lattice */
 	    gf = restore_ascii(filename);
 	    break;
@@ -173,7 +178,7 @@ gauge_file *reload_lattice( int flag, char *filename){
 	    terminate(1);
     }
     dtime += dclock();
-    if(flag != FRESH && flag != CONTINUE)
+    if(flag != FRESH && flag != WARM && flag != CONTINUE)
       node0_printf("Time to reload gauge configuration = %e\n",dtime);
 #ifdef SCHROED_FUN
     set_boundary_fields();
@@ -300,8 +305,12 @@ int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
   if (savebuf == NULL)return 1;
   
   printf("%s ",savebuf);
-  if(strcmp("fresh",savebuf) == 0 ){
+  if(strcmp("fresh",savebuf) == 0 ) {
     *flag = FRESH;
+    printf("\n");
+  }
+  else if(strcmp("warm",savebuf) == 0 ) {
+    *flag = WARM;
     printf("\n");
   }
   else if(strcmp("continue",savebuf) == 0 ) {
@@ -323,7 +332,7 @@ int ask_starting_lattice( FILE *fp, int prompt, int *flag, char *filename ){
   }
   
   /*read name of file and load it */
-  if( *flag != FRESH && *flag != CONTINUE ){
+  if( *flag != FRESH && *flag != WARM && *flag != CONTINUE ){
     if(prompt==1)printf("enter name of file containing lattice\n");
     status=fscanf(fp," %s",filename);
     if(status !=1) {
@@ -539,6 +548,31 @@ void coldlat(void){
     }
 
     node0_printf("unit gauge configuration loaded\n");
+}
+
+void warmlat(void)
+{
+  int i,j,k,dir;
+  site *sit;
+
+  FORALLSITES(i,sit) {
+    for(dir=XUP;dir<=TUP;dir++) {
+      for(j=0; j<3; j++)  {
+	for(k=0; k<3; k++)  {
+	  Real x = 0.7*gaussian_rand_no(&(sit->site_prn));
+	  Real y = 0.7*gaussian_rand_no(&(sit->site_prn));
+	  if (j != k)  {
+	    sit->link[dir].e[j][k] = cmplx(x,y);
+	  }
+	  else  {
+	    sit->link[dir].e[j][k] = cmplx(1.0+x,y);
+	  }
+	}
+      }
+      reunit_su3((su3_matrix *)&(sit->link[dir]));
+    }
+  }
+  node0_printf("warm gauge configuration loaded\n");
 }
 
 void funnylat(void)  {

@@ -124,6 +124,10 @@ int readin(int prompt) {
 			  &param.nblock);
     for(int i = 0; i < param.nblock; i++){
       IF_OK status += get_i(stdin, prompt, "block_size", &param.block_size[i]);
+      IF_OK if(param.block_size[i] > param.nrand_sloppy){
+	node0_printf("Block size %d exceeds number of sloppy random sources %d\n", param.block_size[i], param.nrand_sloppy);
+	status++;
+      }
     }
 
     IF_OK status += get_i(stdin, prompt, "number_of_flavors", &param.nflav);
