@@ -63,8 +63,8 @@ main(int argc, char *argv[])
 
     /* Create q array and array of variances of the mean over blocks
        of random sources */
-    qblock = (Real **)malloc(sizeof(Real *)*param.nblock);
-    q2block = (Real **)malloc(sizeof(Real *)*param.nblock);
+    qblock = (Real **)malloc(sizeof(Real *)*param.nblock); // nblock = # ways to partition the given random vectors into blocks
+    q2block = (Real **)malloc(sizeof(Real *)*param.nblock);// variance over blocks of given size.
     for(ib = 0; ib < param.nblock; ib++){
       qblock[ib] = create_r_field();
       q2block[ib] = create_r_field();
@@ -81,7 +81,7 @@ main(int argc, char *argv[])
 				 &param.mass[jflav], param.nrand_diff);
     }
 
-    /* Calculate the density-density correlator qblock for each random source blocking size */
+    /* Calculate the density-density correlator qblock for each random source blocking size (qblock = array of correlator fields) */
     /* Calculate the variance q2block over random source blocks */
     rcorr(qblock, q2block, qin_sloppy, param.nrand_sloppy, qin_diff, param.nrand_diff, 
 	  param.nblock, param.block_size);

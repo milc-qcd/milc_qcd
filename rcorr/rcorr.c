@@ -107,7 +107,7 @@ rcorr(Real *qblock[], Real *q2block[],
   int jrand;
 
   /* Average qin_diff, the differnece between precise and sloppy. */
-  /* Result in qcorr */
+  /* Result in qcorr (corr means correlation) */
   complex *qcorr = create_c_array_field(NMU);
 
   /* Add up the results in qin_diff */
@@ -135,14 +135,14 @@ rcorr(Real *qblock[], Real *q2block[],
     clear_r_field(qblock[ib]);
     clear_r_field(q2block[ib]);
     int bs = block_size[ib];   /* Size of one block */
-    int nsamp = 0;  /* Number of blocks */
+    int nsamp = 0;  /* Number of blocks of the given size */
 
     for(jrand = 0; jrand < nrand_sloppy; jrand += bs){
 
       /* Compute average of current density for this block */
       clear_c_array_field(qtmp, NMU);
-      for(int ib = 0; ib < bs; ib++)
-	sum_c_array_field(qtmp, qin_sloppy[jrand+ib], NMU);
+      for(int i = 0; i < bs; i++)
+	sum_c_array_field(qtmp, qin_sloppy[jrand+i], NMU);
       mulreal_c_field(qtmp, 1./((double) bs), NMU);
   
       /* The forward FT is done separately for each current component */
@@ -181,5 +181,3 @@ rcorr(Real *qblock[], Real *q2block[],
   destroy_c_field(out);
 
 } /* rcorr.c */
-
-
