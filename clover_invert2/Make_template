@@ -31,7 +31,8 @@ MY_HEADERS = \
   cl_inv_includes.h \
   quark_action.h
 
-HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} ${SCIDAC_HEADERS}
+HEADERS = ${GLOBAL_HEADERS} ${MY_HEADERS} ${INLINE_HEADERS} \
+	${SCIDAC_HEADERS} ${PACKAGE_HEADERS}
 
 # All required object files
 # Basic set from current directory

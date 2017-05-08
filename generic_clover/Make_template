@@ -59,6 +59,10 @@ d_bicgilu_cl_qop_F.o: ../generic_clover/d_bicgilu_cl_qop_F.c ../generic_clover/d
 	${CC} -c ${CFLAGS} $<
 d_bicgilu_cl_qphixj.o: ../generic_clover/d_bicgilu_cl_qphixj.c
 	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_qphixj_D.o: ../generic_clover/d_bicgilu_cl_qphixj_D.c ../generic_clover/d_bicgilu_cl_qphixj_P.c
+	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_qphixj_F.o: ../generic_clover/d_bicgilu_cl_qphixj_F.c ../generic_clover/d_bicgilu_cl_qphixj_P.c
+	${CC} -c ${CFLAGS} $<
 d_cgilu_cl.o: ../generic_clover/d_cgilu_cl.c
 	${CC} -c ${CFLAGS} $<
 d_congrad2_cl.o: ../generic_clover/d_congrad2_cl.c

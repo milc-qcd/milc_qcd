@@ -360,7 +360,8 @@ endif
   CONGRAD_CL_MILC_GPU = d_bicgilu_cl_gpu.o ${CONGRAD_CL_BASE}
 
 # QPHIXJ support 
-  CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o ${CONGRAD_CL_BASE}
+  CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o d_bicgilu_cl_qphixj_F.o \
+      d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
 
 ifeq ($(strip ${HAVE_CL_GPU}),true)
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_GPU}
