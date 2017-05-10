@@ -286,6 +286,8 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 		      int Restart, int Kiters, int init );
 void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
 		     imp_ferm_links_t *fn );
+void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
+			     imp_ferm_links_t *fn );
 void cleanup_Matrix();
 void measure_chirality(su3_vector *src, double *chirality, int parity);
 void print_densities(su3_vector *src, char *tag, int y,int z,int t, 

@@ -109,12 +109,10 @@ poly( double am, double aM, int p, double x) {
 /************************************************************************/
 /* Matrix vector operators                                              */
 
-#ifdef CHEBYSHEV_EIGEN
-
 /* Use Chebyshev preconditioned operator p(DdagD) vec */
 
 static void 
-Matvec( su3_vector *res, su3_vector *src, int parity, imp_ferm_links_t *fn )
+PDdagD( su3_vector *res, su3_vector *src, int parity, imp_ferm_links_t *fn )
 
 {
   /* Chebyshev operator */
@@ -177,20 +175,6 @@ Matvec( su3_vector *res, su3_vector *src, int parity, imp_ferm_links_t *fn )
   destroy_v_field(x0);
 }
 
-#else
-
-/* Use the unpreconditioned operator */
-
-static void 
-Matvec( su3_vector *res, su3_vector *src, int parity, imp_ferm_links_t *fn )
-{
-  
-  DdagD(res, src, parity, fn);
-
-}
-
-#endif /* CHEBYSHEV_EIGEN */
-
 /*****************************************************************************/
 /* The Matrix_Vec_mult and cleanup_Matrix() */
 
@@ -212,7 +196,37 @@ void Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
     last_src = src ;
   }
 
-  Matvec(res, src, parity, fn);
+#ifdef MATVEC_PRECOND
+  PDdagD(res, src, parity, fn);
+#else
+  DdagD(res, src, parity, fn);
+#endif
+
+  dslash_start = 0 ;
+}
+
+/*****************************************************************************/
+/* The Matrix_Vec_mult and cleanup_Matrix() */
+
+void Precond_Matrix_Vec_mult(su3_vector *src, su3_vector *res, int parity,
+			     imp_ferm_links_t *fn ){
+
+  int otherparity = opposite_parity(parity);
+  /* store last source so that we know when to reinitialize the message tags */
+  static su3_vector *last_src=NULL ;
+
+  if(dslash_start){
+    temp = (su3_vector *)malloc(sites_on_node*sizeof(su3_vector));
+  }
+
+  /*reinitialize the tags if we have a new source */
+  if(last_src != src){
+    if(!dslash_start) cleanup_gathers(tags1,tags2);
+    dslash_start = 1 ;
+    last_src = src ;
+  }
+
+  PDdagD(res, src, parity, fn);
 
   dslash_start = 0 ;
 }

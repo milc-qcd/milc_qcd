@@ -20,6 +20,7 @@
 #include <string.h>
 
 static int mxv_kalk;
+static int mxv_precond_kalk;
 static imp_ferm_links_t **fn;
 static void par_GlobalSumDouble(void *sendBuf, void *recvBuf, int *count, primme_params *primme, int *ierr) ;
 
@@ -72,6 +73,55 @@ static void ks_mxv(void *x, long *ldx, void *y, long *ldy,
 }
 
 
+/* The matrix times vector preconditioning routine given to PRIMME */
+static void ks_precond_mxv(void *x, long *ldx, void *y, long *ldy,
+			   int *blockSize, struct primme_params *primme, 
+			   int *ierr){
+  site* s;
+  int i,j,iblock;
+  int maxn;
+  int parity = active_parity;
+  double* xx;
+  Real* yy;
+  su3_vector tmp1[sites_on_node], tmp2[sites_on_node];
+
+  node0_printf("ks_precond_mxv called\n");
+
+  mxv_precond_kalk++;
+  if(parity == EVENANDODD){
+    maxn=sites_on_node*3;                       /*local size of matrix*/
+  }
+  else
+    maxn=sites_on_node*3/2;                     /*local size of matrix*/
+
+  /* This routine gets a number of vectors (stored consequtively) which
+   * need to be mutliplied by the matrix */
+    
+  for (iblock=0;iblock<*blockSize;iblock++)
+  {
+    /* Copy double precsion vector to single precision su3_vectors */
+    xx=((double*) x)+2*iblock*maxn;
+    FORSOMEPARITY(i,s,parity){
+      clearvec(&tmp1[i]);
+      yy= &(tmp1[i].c[0].real);
+      for(j=0;j<6;j++) *(yy++) = *(xx++);
+    }
+
+    Precond_Matrix_Vec_mult(tmp1,tmp2,parity,fn[0]);
+	
+    /* And copy the result back to a complex vector */
+    xx=((double*) y)+2*iblock*maxn;
+    FORSOMEPARITY(i,s,parity){
+      yy= &(tmp2[i].c[0].real);
+      for(j=0;j<6;j++) *(xx++) = *(yy++);
+    }
+
+  }
+
+  *ierr = 0 ;
+}
+
+
 /*****************************************************************************/
 int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance, 
 		      Real RelTol, int Nvecs, int MaxIter, 
@@ -107,6 +157,7 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 #endif
 
   mxv_kalk = 0;
+  mxv_precond_kalk = 0;
   fn = get_fm_links(fn_links);
 
   if(parity == EVENANDODD){
@@ -150,10 +201,11 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 
   primme.matrixMatvec =ks_mxv;			/* the matrix on vector product */
 
-  ret = primme_set_method(PRIMME_DEFAULT_MIN_MATVECS, &primme);
+  //  ret = primme_set_method(PRIMME_DEFAULT_MIN_MATVECS, &primme);
+  ret = primme_set_method(PRIMME_DYNAMIC, &primme);
 
   primme.printLevel=2;
-#ifdef CHEBYSHEV_EIGEN
+#ifdef MATVEC_PRECOND
   primme.target=primme_largest;
 #else
   primme.target=primme_smallest;
@@ -161,6 +213,9 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
   primme.eps=Tolerance;
   primme.numEvals=maxnev;
   primme.initSize=Nvecs;
+#ifdef PRIMME_PRECOND
+  primme.applyPreconditioner = ks_precond_mxv;
+#endif
 
   /*
   primme_display_params(primme);
@@ -196,7 +251,7 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
     }
   }
 
-#ifdef CHEBYSHEV_EIGEN
+#ifdef MATVEC_PRECOND
   /* Reset eigenvalues from eigenvectors */
   reset_eigenvalues(eigVec, eigVal, Nvecs, parity, fn[0]);
 #endif
@@ -208,7 +263,7 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
 #endif
 
   node0_printf("mxv operations for eigenvecs %d\n",mxv_kalk);
-
+  node0_printf("mxv precond operations for eigenvecs %d\n",mxv_precond_kalk);
   node0_printf("BEGIN RESULTS\n");
   for(i=0;i<Nvecs;i++){
     node0_printf("Eigenvalue(%i) = %g \n", i,eigVal[i]);

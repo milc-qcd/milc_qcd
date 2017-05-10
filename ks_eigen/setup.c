@@ -230,7 +230,7 @@ int readin(int prompt) {
 
 #ifdef CHEBYSHEV_EIGEN
 	/* Chebyshev preconditioner */
-	IF_OK status += get_f(stdin, prompt,"chebyshev_order", &par_buf.cheb_p);
+	IF_OK status += get_i(stdin, prompt,"chebyshev_order", &par_buf.cheb_p);
 	IF_OK status += get_f(stdin, prompt,"chebyshev_minE", &par_buf.minE);
 	IF_OK status += get_f(stdin, prompt,"chebyshev_maxE", &par_buf.maxE);
 #endif
