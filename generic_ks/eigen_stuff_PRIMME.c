@@ -7,15 +7,6 @@
 * of the Kogut-Susskind dslash^2. 
 */
 
-
-/* If you do not define the USE_DSLASH_SPECIAL then calls to the standard   *
- * dslash are made. If you do define USE_DSLASH_SPECIAL then DSLASH_SPECIAL *
- * is used                                                                  */
-#ifdef FN
-#define USE_DSLASH_SPECIAL
-#endif
-
-
 /* Include files */
 #include "generic_ks_includes.h"
 
@@ -162,7 +153,11 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
   ret = primme_set_method(PRIMME_DEFAULT_MIN_MATVECS, &primme);
 
   primme.printLevel=2;
+#ifdef CHEBYSHEV_EIGEN
+  primme.target=primme_largest;
+#else
   primme.target=primme_smallest;
+#endif
   primme.eps=Tolerance;
   primme.numEvals=maxnev;
   primme.initSize=Nvecs;
@@ -188,6 +183,8 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
     exit(1);
   }
 
+  cleanup_Matrix() ;
+
   /* copy Evectors and Evalues in global arrays 
   * (convert from double to single precision) */
   for(j=0;j<Nvecs;j++) {
@@ -199,9 +196,14 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
     }
   }
 
+#ifdef CHEBYSHEV_EIGEN
+  /* Reset eigenvalues from eigenvectors */
+  reset_eigenvalues(eigVec, eigVal, Nvecs, parity, fn[0]);
+#endif
+
 #ifdef EIGTIME
   dtimec += dclock();
-  node0_printf("KAULKRITER: time = %e iters = %d iters/vec = %e\n",
+  node0_printf("KAULKREUTER: time = %e iters = %d iters/vec = %e\n",
 	   dtimec,total_iters, (double)(total_iters)/Nvecs);
 #endif
 
@@ -216,7 +218,6 @@ int Kalkreuter_PRIMME(su3_vector **eigVec, double *eigVal, Real Tolerance,
   free(evecs);
   free(rnorms);
   primme_free(&primme);
-  cleanup_Matrix() ;
   return mxv_kalk;
 }
 

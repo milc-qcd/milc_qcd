@@ -290,6 +290,8 @@ void cleanup_Matrix();
 void measure_chirality(su3_vector *src, double *chirality, int parity);
 void print_densities(su3_vector *src, char *tag, int y,int z,int t, 
 		     int parity);
+void reset_eigenvalues(su3_vector *eigVec[], double *eigVal,
+		       int Nvecs, int parity, imp_ferm_links_t *fn);
 void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
 		  int Nvecs, int parity, imp_ferm_links_t *fn);
 void construct_eigen_odd(su3_vector **eigVec, double *eigVal, int Nvecs, imp_ferm_links_t *fn);

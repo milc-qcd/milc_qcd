@@ -5,6 +5,7 @@
 /* (Plus a timing utility) */
 
 #include "generic_includes.h"
+#include "../include/openmp_defs.h"
 
 /*--------------------------------------------------------------------*/
 double start_timing(void){
@@ -117,6 +118,36 @@ make_all_array_field(v, su3_vector)
 make_all_array_field(m, su3_matrix)
 make_all_array_field(wv, wilson_vector)
 make_all_array_field(swv, spin_wilson_vector)
+
+/*------------------------------------------------------------------*/
+/* Linear operations on fields                                      */
+/* w = a*x + b*y                                                    */
+
+void 
+saxpby_v_field(su3_vector *w, Real a, su3_vector *x, Real b, su3_vector *y){
+  int i, j;
+  FORALLFIELDSITES_OMP(i,private(j)){
+    for(j = 0; j < 3; j++){
+      w[i].c[j].real = a*x[i].c[j].real + b*y[i].c[j].real;
+      w[i].c[j].imag = a*x[i].c[j].imag + b*y[i].c[j].imag;
+    }
+  } END_LOOP_OMP;
+}
+
+/*------------------------------------------------------------------*/
+/* w = a*x + b*y + c*z                                              */
+
+void 
+saxpbypcz_v_field(su3_vector *w, Real a, su3_vector *x, 
+		  Real b, su3_vector *y, Real c, su3_vector *z){
+  int i, j;
+  FORALLFIELDSITES_OMP(i,private(j)){
+    for(j = 0; j < 3; j++){
+      w[i].c[j].real = a*x[i].c[j].real + b*y[i].c[j].real + c*z[i].c[j].real;
+      w[i].c[j].imag = a*x[i].c[j].imag + b*y[i].c[j].imag + c*z[i].c[j].imag;
+    }
+  } END_LOOP_OMP;
+}
 
 /*------------------------------------------------------------------*/
 /* copy a gauge field in the site structure - an array of four su3_matrices */
