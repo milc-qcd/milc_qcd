@@ -352,7 +352,7 @@ void check_eigres(double *resid, su3_vector *eigVec[], double *eigVal,
     norm[i]  = (double)0.0;
     dslash_fn_field(eigVec[i], ttt, otherparity, fn);
     dslash_fn_field(ttt, ttt, parity, fn);
-    FORSOMEFIELDPARITY_OMP(j,parity,private(ttt) reduction(+:resid[i],norm[i])){
+    FORSOMEFIELDPARITY_OMP(j,parity, reduction(+:resid[i],norm[i])){
       scalar_mult_sum_su3_vector(ttt+j, eigVec[i]+j, eigVal[i]);
       resid[i] += magsq_su3vec(ttt+j);
       norm[i] += magsq_su3vec(eigVec[i]+j);

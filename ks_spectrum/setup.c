@@ -291,6 +291,12 @@ int readin(int prompt) {
      /* error decrease per Rayleigh minimization */
     IF_OK status += get_f(stdin, prompt,"error_decrease", &param.error_decr);
 
+#ifdef CHEBYSHEV_EIGEN
+	/* Chebyshev preconditioner */
+	IF_OK status += get_i(stdin, prompt,"chebyshev_order", &param.cheb_p);
+	IF_OK status += get_f(stdin, prompt,"chebyshev_minE", &param.minE);
+	IF_OK status += get_f(stdin, prompt,"chebyshev_maxE", &param.maxE);
+#endif
     /* eigenvector input */
     IF_OK status += ask_starting_ks_eigen(stdin, prompt, &param.ks_eigen_startflag,
 					  param.ks_eigen_startfile);
@@ -1068,6 +1074,13 @@ int readin(int prompt) {
 
   /* Broadcast parameter values kept on the heap */
   broadcast_heap_params();
+
+#if CHEBYSHEV_EIGEN
+  /* Parameters for Chebyshev preconditioning */
+    cheb_p = param.cheb_p;
+    minE = param.minE;
+    maxE = param.maxE;
+#endif
 
   /* Construct the eps_naik table of unique Naik epsilon coefficients.
      Also build the hash table for mapping a mass term to its Naik
