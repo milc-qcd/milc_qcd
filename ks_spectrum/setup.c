@@ -530,10 +530,10 @@ int readin(int prompt) {
 	  status++;
 	}
 	IF_OK status += get_i(stdin, prompt,"precision", &param.qic[0].prec );
-#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU)
+#if ! defined(HAVE_QOP) && ! defined(USE_CG_GPU) && !defined(HAVE_QPHIX)
 	IF_OK if(param.qic[0].prec != PRECISION){
 	  node0_printf("WARNING: Compiled precision %d overrides request\n",PRECISION);
-	  node0_printf("QOP or CG_GPU compilation is required for mixed precision\n");
+	  node0_printf("QOP or CG_GPU or QPHIX compilation is required for mixed precision\n");
 	  param.qic[0].prec = PRECISION;   /* Same for all members of a set*/
 	}
 #endif
