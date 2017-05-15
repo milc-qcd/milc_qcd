@@ -1075,7 +1075,7 @@ int readin(int prompt) {
   /* Broadcast parameter values kept on the heap */
   broadcast_heap_params();
 
-#if CHEBYSHEV_EIGEN
+#if EIGMODE == DEFLATION && defined(CHEBYSHEV_EIGEN)
   /* Parameters for Chebyshev preconditioning */
     cheb_p = param.cheb_p;
     minE = param.minE;
