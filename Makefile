@@ -327,8 +327,8 @@ WANTPRIMME = #true
 # PRIMME version 2.0
 
 ifeq ($(strip ${WANTPRIMME}),true)
-  INCPRIMME = -I${HOME}/milc/install/PRIMME/include
-  LIBPRIMME = -L${HOME}/milc/install/PRIMME/lib -lprimme
+  INCPRIMME = -I${HOME}/PRIMME/include
+  LIBPRIMME = -L${HOME}/PRIMME/lib -lprimme
 endif
 
 #----------------------------------------------------------------------
