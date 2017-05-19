@@ -131,6 +131,7 @@ void BICGILU_CL_QPHIXJ_INNER(clover *milc_clov, Real kappa, wilson_vector r[],
 
   /* Map clover term to raw with possible precision conversion */
   char myname[] = "bicgilu_cl_qphixj_inner";
+  double dtime = -dclock();
 
   MYREAL *raw_clov     = (MYREAL*)malloc(72*sites_on_node*sizeof(MYREAL));
   if(raw_clov == NULL){
@@ -141,7 +142,13 @@ void BICGILU_CL_QPHIXJ_INNER(clover *milc_clov, Real kappa, wilson_vector r[],
   map_milc_clov_to_qphixj_raw(raw_clov, milc_clov, -4.*MKsq);
   
   initialize_qphixj();
+
+  dtime += dclock();
+#ifdef CGTIME
+  node0_printf("Time to initialize qphixj %.2e\n", dtime);
+#endif
   
+  dtime = -dclock();
   /* Backward gauge links with possible precision conversion */
   MYSU3_MATRIX* fieldback = create_backlinks_with_adjoint_from_site();
 
@@ -154,6 +161,10 @@ void BICGILU_CL_QPHIXJ_INNER(clover *milc_clov, Real kappa, wilson_vector r[],
   QPHIXJ_DiracFermion *in = create_qphixj_D_from_field( r, QPHIXJ_EVEN );
   QPHIXJ_DiracFermion *out = create_qphixj_D_from_field( dest, QPHIXJ_EVEN );
   
+  dtime += dclock();
+#ifdef CGTIME
+  node0_printf("Time to import fields %.2e\n", dtime);
+#endif
   QPHIXJ_invert_arg_t inv_arg;
   inv_arg.max  = qic->max*qic->nrestart;
   inv_arg.restart = qic->max;
@@ -169,8 +180,13 @@ void BICGILU_CL_QPHIXJ_INNER(clover *milc_clov, Real kappa, wilson_vector r[],
   QPHIXJ_wilson_invert( &info, wilson, &inv_arg, &res_arg,
 			kappa, out, in);
 
+  dtime = -dclock();
   /* Map QPhiXJ out to MILC dest with possible precision conversion */
   unload_qphixj_D_to_field( dest, out, EVEN );
+  dtime += dclock();
+#ifdef CGTIME
+  node0_printf("Time to export fields %.2e\n", dtime);
+#endif
 
   /* Convergence data */
   qic->final_rsq     = res_arg.final_rsq;
