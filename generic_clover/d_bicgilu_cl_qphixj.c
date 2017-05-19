@@ -31,10 +31,6 @@ int bicgilu_cl_field_qphixj ( // Return value is number of iterations taken
   Real u0     = dcp->U0; 
   Real CKU0   = kappa*clov_c/(u0*u0*u0);
 
-#ifdef CGTIME
-  double dtime = -dclock();
-#endif
-  
   /* We don't do precision conversions yet */
   assert(PRECISION == QPHIXJ_PrecisionInt);
   
@@ -68,6 +64,7 @@ int bicgilu_cl_field_qphixj ( // Return value is number of iterations taken
     terminate(1);
   }
   
+  double dtime2 = -dclock();
   /* Compute R_e and R_o and put in "clov" and "clov_diag" */
   compute_clov(milc_clov, CKU0); // CKU0 = coefficient of the clover term
 
@@ -75,6 +72,16 @@ int bicgilu_cl_field_qphixj ( // Return value is number of iterations taken
      in "clov" and "clov_diag" */
   compute_clovinv(milc_clov, ODD);
 
+  dtime2 += dclock();
+#ifdef CGTIME
+  node0_printf("Time to compute clover term %.2e\n", dtime2);
+#endif
+
+#ifdef CGTIME
+  double dtime = -dclock();
+#endif
+  
+  dtime2 = -dclock();
   /* LU transformation of the source -- result returned in place */
   /* r = L^(-1)*r. See cl_solver_utilities.c for notation. */
   /* Set up the LU decomposition */
@@ -90,6 +97,11 @@ int bicgilu_cl_field_qphixj ( // Return value is number of iterations taken
   /* src = L^(-1)*src */
   Real size_src = ilu_xfm_source(NULL, r, tmp, kappa, &is_startede, tage);
   Real size_src2 = size_src*size_src;
+
+  dtime2 += dclock();
+#ifdef CGTIME
+  node0_printf("Time for RB preconditioning %.2e\n", dtime2);
+#endif
 
   /* Provision for trivial solution */
   if(size_src2 == 0.0){
@@ -118,9 +130,20 @@ int bicgilu_cl_field_qphixj ( // Return value is number of iterations taken
   else
     bicgilu_cl_qphixj_inner_D(milc_clov, kappa, r, dest, qic);
 
+  dtime2 += dclock();
+#ifdef CGTIME
+  node0_printf("Time in bicbilu_cl_qphixj_inner_P %.2e\n", dtime2);
+#endif
+
+  dtime2 = -dclock();
   /* Reconstruct the solution on odd sites */
   ilu_xfm_dest(dest, tmp, kappa, &is_startedo, tago);
   
+  dtime2 += dclock();
+#ifdef CGTIME
+  node0_printf("Time to reconstruct odd-site solution %.2e\n", dtime2);
+#endif
+
   num_iters = qic->final_iters;
   
   /* Clean up */
@@ -142,6 +165,7 @@ int bicgilu_cl_field_qphixj ( // Return value is number of iterations taken
 	     (double)8742*qic->final_iters*even_sites_on_node/(dtime*1e6));
     }
 #endif
+    fflush(stdout);
   }    
   
   for(int i=XUP; i <= TUP; i++) {
