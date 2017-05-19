@@ -200,7 +200,6 @@ create_qphixj_raw4_##P##_##T##_from_site(field_offset src, int milc_parity){ \
   create_hash_##T(milc_parity);					\
   FORSOMEPARITY_OMP(i,s,milc_parity,private(j,dir,tmp)){	\
     j = hash_m2q_##T[i];	   \
-    if(i == 0)node0_printf("Hash for %d is %d\n",i,j);  \
     FORALLUPDIR(dir){ \
       tmp = (MILC_SRCTYPE *)F_PT(s, src); \
       copy_milc_to_##P##_##T(raw + 4*j + dir, tmp + dir); \
