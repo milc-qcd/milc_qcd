@@ -80,7 +80,7 @@ void phaseset() {
   /*	all t phases for t=nt-1 time slice get extra minus sign	*/
   /*	   to give antiperiodic boundary conditions		*/
   
-  FORALLSITES(i,sit){
+  FORALLSITES_OMP(i,sit,default(shared)){
     sit->phase[TUP] = 1.0;
     if( (sit->t)%2 == 1) sit->phase[XUP] = -1.0;
     else sit->phase[XUP] = 1.0;
@@ -112,7 +112,7 @@ void phaseset() {
       sit->phase[TUP] = -sit->phase[TUP];
     }
     //#endif
-  }
+  } END_LOOP_OMP
 }
 
 
