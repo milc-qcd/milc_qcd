@@ -28,7 +28,7 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
   double dtimec = -dclock();
   
   sum=0.0;
-  FORSOMEPARITY_OMP(i,s,parity,private(j)){
+  FORSOMEPARITY_OMP(i,s,parity,private(j) reduction(+:sum)){
     for(j=0;j<3;j++){
 #ifdef SITERAND
       s->g_rand.c[j] = complex_gaussian_rand_no(&(s->site_prn));
