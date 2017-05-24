@@ -12,11 +12,11 @@
  */
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "../include/openmp_defs.h"
 
 #ifdef USE_GF_GPU
 
 #include "../include/generic_quda.h"
-#include "../include/openmp_defs.h"
 
 /* QUDA version */
 
@@ -109,7 +109,7 @@ void update_u( Real eps ){
   invalidate_fermion_links(fn_links);
 #endif
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(dir,link,temp1,temp2,htemp)) {
     for(dir=XUP; dir <=TUP; dir++){
       uncompress_anti_hermitian( &(s->mom[dir]) , &htemp );
       link = &(s->link[dir]);
@@ -131,7 +131,7 @@ void update_u( Real eps ){
       scalar_mult_add_su3_matrix(link,&temp1,eps    ,&temp2); 
       su3mat_copy(&temp2,link);
     }
-  }
+  } END_LOOP_OMP
 
 #ifdef GFTIME
   dtime += dclock();

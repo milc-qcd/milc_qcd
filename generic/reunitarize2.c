@@ -11,6 +11,7 @@
 */
 
 #include "generic_includes.h"
+#include "../include/openmp_defs.h"
 
 #define TOLERANCE (0.0001)
 #define MAXERRCOUNT 100
@@ -210,7 +211,7 @@ void reunitarize() {
   max_deviation = 0.;
   av_deviation = 0.;
   
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(dir,mat,errors) reduction(+:errcount) ){
 #ifdef SCHROED_FUN
   for(dir=XUP; dir<=TUP; dir++ ) if(dir==TUP || s->t>0 ){
 #else
@@ -220,13 +221,13 @@ void reunitarize() {
       errors = reunit_su3( mat );
       errcount += errors;
       if(errors)reunit_report_problem_matrix(mat,i,dir);
-      if(errcount > MAXERRCOUNT)
-	{
+    }
+  } END_LOOP_OMP
+  if(errcount > MAXERRCOUNT)
+     {
 	  printf("Unitarity error count exceeded.\n");
 	  terminate(1);
-	}
-    }
-  }
+     }
 
 #ifdef UNIDEBUG
   printf("Deviation from unitarity on node %d: max %.3e, avrg %.3e\n",
