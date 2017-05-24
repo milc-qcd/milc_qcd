@@ -193,7 +193,7 @@ correlator_key: NUCLEON_E_E_E_d_d_d_m0.05_m0.05_m0.05
 0 2e-05 2e-05
 ---
 JobID: 203696.kaon2.fnal.gov
-date:  XXX XXX XXX XXX UTC"
+date: XXX XXX XXX XXX XXX UTC"
 lattice_size: 8,8,8,8
 quark0_type: staggered
 quark0_source_type: even_and_odd_wall

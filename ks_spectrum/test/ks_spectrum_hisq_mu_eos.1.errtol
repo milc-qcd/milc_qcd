@@ -960,6 +960,6 @@ step 0 av gf action 0.0002 delta 0.0002
 step 0 av gf action 0.0002 delta 0.0002
 step 0 av gf action 0.0002 delta 0.0002
 GFIX: Ended at step 0.02 Av gf action 0.0002 delta 0.0002
-Time to APE smear 0.002 sec
+Time to APE smear XXX sec
 END OF HEADER
 RUNNING COMPLETED
