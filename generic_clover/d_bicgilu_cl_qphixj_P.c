@@ -1,6 +1,7 @@
 /******* d_bicgilu_cl_qphixj_P.c - BiCG ILU ***********************/
 /* MIMD version 7 */
 /* 4/27/17 C. DeTar */
+/* Modified to map straight from MILC to QPhiX without going through raw fields */
 
 /* This is the MILC wrapper for the Balint Joo's QPhiX clover inverter */
 /* MILC fields are in the MILC generic precision.  They are converted to
@@ -15,65 +16,20 @@
 #include "generic_clover_includes.h"
 #include "../include/generic_qphixj.h"
 #include "../include/openmp_defs.h"
+#include "../include/qphixj/qphixj.h"
 
 /* Redefinitions according to requested precision */
 
 #if ( QPHIXJ_PrecisionInt == 1 )
-
 #define BICGILU_CL_QPHIXJ_INNER bicgilu_cl_qphixj_inner_F
-#define MYREAL float
-#define MYSU3_MATRIX fsu3_matrix
-#define MYWILSON_VECTOR fwilson_vector
-
 #else
-
 #define BICGILU_CL_QPHIXJ_INNER bicgilu_cl_qphixj_inner_D
-#define MYREAL double
-#define MYSU3_MATRIX dsu3_matrix
-#define MYWILSON_VECTOR dwilson_vector
-
 #endif
-
-static void  
-map_milc_clov_to_qphixj_raw(MYREAL *raw_clov, clover *milc_clov, double scale){ 
-  int i,j;								
-  MYREAL *r;
-  
-  FOREVENFIELDSITES_OMP(i, private(r,j)){	
-    
-    r = raw_clov + 72*i;
-    for(j=0; j<6; j++){
-      r[j]    = milc_clov->clov_diag[i].di[0][j]; 
-      r[j+36] = milc_clov->clov_diag[i].di[1][j]; 
-    } 
-    for(j=0; j<15; j++){
-      r[2*j+6]  = milc_clov->clov[i].tr[0][j].real; 
-      r[2*j+7]  = milc_clov->clov[i].tr[0][j].imag; 
-      r[2*j+42] = milc_clov->clov[i].tr[1][j].real; 
-      r[2*j+43] = milc_clov->clov[i].tr[1][j].imag; 
-    } 
-  } END_LOOP_OMP; 
-
-  FORODDFIELDSITES_OMP(i, private(r,j)){	
-
-    r = raw_clov + 72*i;
-    for(j=0; j<6; j++){
-      r[j]    = milc_clov->clov_diag[i].di[0][j]*scale; 
-      r[j+36] = milc_clov->clov_diag[i].di[1][j]*scale; 
-    } 
-    for(j=0; j<15; j++){
-      r[2*j+6]  = milc_clov->clov[i].tr[0][j].real*scale; 
-      r[2*j+7]  = milc_clov->clov[i].tr[0][j].imag*scale; 
-      r[2*j+42] = milc_clov->clov[i].tr[1][j].real*scale; 
-      r[2*j+43] = milc_clov->clov[i].tr[1][j].imag*scale; 
-    } 
-  } END_LOOP_OMP;
-}
 
 /* adjoint of an SU3 matrix with no precision conversion */
 /* result in b */
 static void 
-su3_adjoint_p( su3_matrix *a, MYSU3_MATRIX *b )
+su3_adjoint_p( su3_matrix *a, su3_matrix *b )
 {
   register int i,j;
   for(i=0;i<3;i++)for(j=0;j<3;j++){
@@ -81,14 +37,13 @@ su3_adjoint_p( su3_matrix *a, MYSU3_MATRIX *b )
   }
 }
 
-
 /*!
  * Copy backlinks with adjoint
  */
-static MYSU3_MATRIX *
+static su3_matrix *
 create_backlinks_with_adjoint_from_site(void)
 {
-  MYSU3_MATRIX *t_bl = NULL;
+  su3_matrix *t_bl = NULL;
   register int i;
   register site *s;
   int dir;
@@ -96,7 +51,7 @@ create_backlinks_with_adjoint_from_site(void)
   char myname[] = "create_backlinks_with_adjoint_from_site";
   
   /* Allocate space for t_lbl */
-  t_bl = (MYSU3_MATRIX *)malloc(sites_on_node*4*sizeof(MYSU3_MATRIX));
+  t_bl = (su3_matrix *)malloc(sites_on_node*4*sizeof(su3_matrix));
   if(t_bl==NULL){
     printf("%s(%d): no room for t_lbl\n",myname,this_node);
     terminate(1);
@@ -120,7 +75,7 @@ create_backlinks_with_adjoint_from_site(void)
 }
 
 static void
-destroy_backlinks(MYSU3_MATRIX *t_bl)
+destroy_backlinks(su3_matrix *t_bl)
 {
   free(t_bl);
 }
@@ -133,14 +88,6 @@ void BICGILU_CL_QPHIXJ_INNER(clover *milc_clov, Real kappa, wilson_vector r[],
   char myname[] = "bicgilu_cl_qphixj_inner";
   double dtime = -dclock();
 
-  MYREAL *raw_clov     = (MYREAL*)malloc(72*sites_on_node*sizeof(MYREAL));
-  if(raw_clov == NULL){
-    printf("%s(%d): no room for raw_clov\n", myname, this_node);
-    terminate(1);
-  }
-  double MKsq = -kappa*kappa;
-  map_milc_clov_to_qphixj_raw(raw_clov, milc_clov, -4.*MKsq);
-  
   initialize_qphixj();
 
   dtime += dclock();
@@ -150,16 +97,16 @@ void BICGILU_CL_QPHIXJ_INNER(clover *milc_clov, Real kappa, wilson_vector r[],
   
   dtime = -dclock();
   /* Backward gauge links with possible precision conversion */
-  MYSU3_MATRIX* fieldback = create_backlinks_with_adjoint_from_site();
+  su3_matrix* fieldback = create_backlinks_with_adjoint_from_site();
 
   /* Create QPHIX objects */
   QPHIXJ_FermionLinksWilson  *wilson = 
-    create_qphixj_L_from_fieldback_and_sites( raw_clov, fieldback, QPHIXJ_EVEN );
+    QPHIXJ_wilson_create_L_from_MILC( fieldback, milc_clov, kappa, QPHIXJ_EVEN );
 
   destroy_backlinks(fieldback);
-  free(raw_clov);
-  QPHIXJ_DiracFermion *in = create_qphixj_D_from_field( r, QPHIXJ_EVEN );
-  QPHIXJ_DiracFermion *out = create_qphixj_D_from_field( dest, QPHIXJ_EVEN );
+
+  QPHIXJ_DiracFermion *in = QPHIXJ_create_D_from_wvec( r, QPHIXJ_EVEN );
+  QPHIXJ_DiracFermion *out = QPHIXJ_create_D_from_wvec( dest, QPHIXJ_EVEN );
   
   dtime += dclock();
 #ifdef CGTIME
@@ -176,13 +123,13 @@ void BICGILU_CL_QPHIXJ_INNER(clover *milc_clov, Real kappa, wilson_vector r[],
   res_arg.resid = qic->resid*qic->resid;
   res_arg.relresid = qic->relresid*qic->relresid;
 
-  /* Do the inversion on the even sites */
+  /* Do the inversion on the even sites. Note: kappa is ignored here.  See create_L above */
   QPHIXJ_wilson_invert( &info, wilson, &inv_arg, &res_arg,
 			kappa, out, in);
 
   dtime = -dclock();
   /* Map QPhiXJ out to MILC dest with possible precision conversion */
-  unload_qphixj_D_to_field( dest, out, EVEN );
+  QPHIXJ_extract_D_to_wvec( dest, out, EVEN );
   dtime += dclock();
 #ifdef CGTIME
   node0_printf("Time to export fields %.2e\n", dtime);

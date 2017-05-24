@@ -2,7 +2,7 @@
 #ifndef _GENERIC_QPHIXJ_H
 #define _GENERIC_QPHIXJ_H
 
-#include <api/qphixj.h>
+#include <../include/qphixj/qphixj.h>
 #include "../include/config.h"
 #include "../include/generic_ks.h"
 #include "../include/generic.h"
@@ -15,7 +15,6 @@
 QPHIXJ_evenodd_t milc2qphixj_parity(int milc_parity);
 int qphixj2milc_parity(QPHIXJ_evenodd_t qphixj_parity);
 QPHIXJ_status_t initialize_qphixj(void);
-void finalize_qphixj(void);
 
 /* d_bicgilu_qphixj_*.c */
 

@@ -21,7 +21,8 @@ G_CLOVER_ALL = \
     d_hopilu_cl.o \
     d_mrilu_cl.o \
     f_mu_nu.o \
-    make_clov2.o
+    make_clov2.o \
+    qphixjClovInvert.o
 
 # Must match our headers in generic_clover_includes.h
 G_CLOVER_HEADERS = \
@@ -75,4 +76,6 @@ f_mu_nu.o: ../generic_clover/f_mu_nu.c
 	${CC} -c ${CFLAGS} $<
 make_clov2.o: ../generic_clover/make_clov2.c
 	${CC} -c ${CFLAGS} $<
+qphixjClovInvert.o: ../generic_clover/qphixjClovInvert.cc ../generic_clover/qphixjClovInvert.h
+	${CXX} -c ${CXXFLAGS} $<
 

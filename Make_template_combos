@@ -57,7 +57,7 @@ ifeq ($(strip ${WANTQPHIX}),true)
 endif
 
 ifeq ($(strip ${WANTQPHIXJ}),true)
-  GAUGE_OBJECTS += map_milc_to_qphixj.o milc_to_qphixj_utilities.o
+  GAUGE_OBJECTS += qphixjClovMap.o milc_to_qphixj_utilities.o
 endif
 
 ifeq ($(strip ${HAVEFFTW}),true)
@@ -360,8 +360,12 @@ endif
   CONGRAD_CL_MILC_GPU = d_bicgilu_cl_gpu.o ${CONGRAD_CL_BASE}
 
 # QPHIXJ support 
-  CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o d_bicgilu_cl_qphixj_F.o \
-      d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
+#  CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o d_bicgilu_cl_qphixj_F.o \
+#      d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
+
+# QPHIXJ support 
+  CONGRAD_CL_MILC_QPHIXJ = d_bicgilu_cl_qphixj.o qphixjClovInvert.o \
+      d_bicgilu_cl_qphixj_F.o d_bicgilu_cl_qphixj_D.o ${CONGRAD_CL_BASE}
 
 ifeq ($(strip ${HAVE_CL_GPU}),true)
   CONGRAD_CL_MILC = ${CONGRAD_CL_MILC_GPU}
