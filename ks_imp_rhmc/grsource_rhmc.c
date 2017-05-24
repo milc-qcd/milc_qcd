@@ -39,10 +39,12 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
     /*TEMP*/ sum += (double)magsq_su3vec( &(s->g_rand) );
   } END_LOOP_OMP
   /*TEMP*/g_doublesum( &sum);  node0_printf("GRSOURCE: sum = %.10e\n",sum);
+  dtimec += dclock();
   ks_ratinv( F_OFFSET(g_rand), multi_x, roots, order, my_niter, 
 	     my_rsqmin, my_prec, parity, &final_rsq, fn, 
 	     naik_term_epsilon_index, naik_term_epsilon );
   ks_rateval( sumvec, F_OFFSET(g_rand), multi_x, residues, order, parity );
+  dtimec -= dclock();
   FORSOMEPARITY_OMP(i,s,parity,default(shared) ){ *(su3_vector *)F_PT(s,dest) = sumvec[i]; } END_LOOP_OMP
   dtimec += dclock();
   node0_printf("GRSOURCETIME: time = %e\n",dtimec);
