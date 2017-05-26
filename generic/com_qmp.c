@@ -469,8 +469,9 @@ terminate(int status)
   time_stamp("termination");
   printf("Termination: node %d, status = %d\n", this_node, status);
   fflush(stdout);
-  g_sync();   /* Added for multijob operation. Is this desirable? */
-  exit(status);
+  //g_sync();   /* Added for multijob operation. Is this desirable? */
+  //exit(status);
+  QMP_abort(status);
 }
 
 /*

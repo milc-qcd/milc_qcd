@@ -167,6 +167,7 @@ KS_MULTICG_OFFSET_FIELD(
   node0_printf("set_qphix_invert_arg: time = %.6e sec\n", dclock()+dtimet);
 
   /* Pointers for residual errors */
+  node0_printf("Calling create_qphix_resid_arg\n"); fflush(stdout);
   qphix_resid_arg = create_qphix_resid_arg( qic+0, nmass );
 
   /* Map the masses */
@@ -175,6 +176,7 @@ KS_MULTICG_OFFSET_FIELD(
 
   /* Map the input and output fields */
   dtimet = -dclock();
+  node0_printf("Calling create_qphix_V_from_field\n"); fflush(stdout);
   qphix_src = create_qphix_V_from_field( src, qic[0].parity);
   node0_printf("create_qphix_V_from_field: time = %.6e sec\n", dclock()+dtimet);
   fflush(stdout);
@@ -189,6 +191,7 @@ KS_MULTICG_OFFSET_FIELD(
   fflush(stdout);
 
   dtimet = -dclock();
+  node0_printf("Calling create_qphix_L\n"); fflush(stdout);
   links = create_qphix_L_from_fn_links( fn, EVENANDODD );
   node0_printf("create_qphix_L_from_fn_links: time = %.6e sec\n", dclock()+dtimet);
   fflush(stdout);
@@ -197,8 +200,10 @@ KS_MULTICG_OFFSET_FIELD(
   node0_printf("Calling QPHIX_ks_multicg_offset\n");fflush(stdout);
 #endif
 
+  node0_printf("Calling QPHIX_asqtad_invert_multi\n"); fflush(stdout);
   num_iters = QPHIX_asqtad_invert_multi( &info, links, &qphix_invert_arg, qphix_resid_arg, 
 					 mass, nmass, qphix_sol, qphix_src );
+  node0_printf("Done with QPHIX_asqtad_invert_multi\n"); fflush(stdout);
 
   get_qphix_resid_arg( qic, qphix_resid_arg, nmass, num_iters);
 

@@ -15,12 +15,14 @@ G_CLOVER_ALL = \
     d_bicgilu_cl_qop.o \
     d_bicgilu_cl_qop_D.o \
     d_bicgilu_cl_qop_F.o \
+    d_bicgilu_cl_qphixj.o \
     d_cgilu_cl.o \
     d_congrad2_cl.o \
     d_hopilu_cl.o \
     d_mrilu_cl.o \
     f_mu_nu.o \
-    make_clov2.o
+    make_clov2.o \
+    qphixjClovInvert.o
 
 # Must match our headers in generic_clover_includes.h
 G_CLOVER_HEADERS = \
@@ -56,6 +58,12 @@ d_bicgilu_cl_qop_D.o: ../generic_clover/d_bicgilu_cl_qop_D.c ../generic_clover/d
 	${CC} -c ${CFLAGS} $<
 d_bicgilu_cl_qop_F.o: ../generic_clover/d_bicgilu_cl_qop_F.c ../generic_clover/d_bicgilu_cl_qop_P.c
 	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_qphixj.o: ../generic_clover/d_bicgilu_cl_qphixj.c
+	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_qphixj_D.o: ../generic_clover/d_bicgilu_cl_qphixj_D.c ../generic_clover/d_bicgilu_cl_qphixj_P.c
+	${CC} -c ${CFLAGS} $<
+d_bicgilu_cl_qphixj_F.o: ../generic_clover/d_bicgilu_cl_qphixj_F.c ../generic_clover/d_bicgilu_cl_qphixj_P.c
+	${CC} -c ${CFLAGS} $<
 d_cgilu_cl.o: ../generic_clover/d_cgilu_cl.c
 	${CC} -c ${CFLAGS} $<
 d_congrad2_cl.o: ../generic_clover/d_congrad2_cl.c
@@ -68,4 +76,6 @@ f_mu_nu.o: ../generic_clover/f_mu_nu.c
 	${CC} -c ${CFLAGS} $<
 make_clov2.o: ../generic_clover/make_clov2.c
 	${CC} -c ${CFLAGS} $<
+qphixjClovInvert.o: ../generic_clover/qphixjClovInvert.cc ../generic_clover/qphixjClovInvert.h
+	${CXX} -c ${CXXFLAGS} $<
 

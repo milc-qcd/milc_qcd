@@ -2,6 +2,10 @@
 *.a
 *~
 *#*
+*.optrpt
+*.bak
+*.sav
+*.log
 .lastmake.*
 localmake
 *.sample-tmp
