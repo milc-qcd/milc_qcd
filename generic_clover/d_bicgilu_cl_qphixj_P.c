@@ -110,7 +110,7 @@ void BICGILU_CL_QPHIXJ_INNER(clover *milc_clov, Real kappa, wilson_vector r[],
   
   dtime += dclock();
 #ifdef CGTIME
-  node0_printf("Time to import fields %.2e\n", dtime);
+  node0_printf("Time to create back links and import fields %.2e\n", dtime);
 #endif
   QPHIXJ_invert_arg_t inv_arg;
   inv_arg.max  = qic->max*qic->nrestart;

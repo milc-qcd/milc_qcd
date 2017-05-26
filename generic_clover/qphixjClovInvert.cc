@@ -5,14 +5,9 @@
 #include <qphix/clover_dslash_body.h>
 #include <qphix/clover.h>
 
-#include <qphix/blas.h>
 #include <qphix/invcg.h>
 #include <qphix/invbicgstab.h>
 #include <qphix/print_utils.h>
-
-#include "../include/qphixj/qphixj_internal.h"
-#include "../include/qphixj/qphixj.h"
-#include "../include/qphixj/qphixj_arch.h"
 
 #include <cstdlib>
 #include <assert.h>
@@ -21,13 +16,10 @@ using namespace std;
 using namespace QPhiX;
 
 extern QPHIXJ_vec_layout_t vecLayout;
-extern QPHIXJ_layout_t layout;
 
 template<typename FT, int V>
 void
-QPHIXJClovInvert::runClov(const int lattSize[], 
-			  const int qmp_geom[], 
-			  QPHIXJ_info_t *info,
+QPHIXJClovInvert::runClov(QPHIXJ_info_t *info,
 			  QPHIXJ_FermionLinksWilson_struct<FT, V> *ql, 
 			  QPHIXJ_invert_arg_t *inv_arg, 
 			  QPHIXJ_resid_arg_t *res_arg, FT kappa,  // Unused!!
@@ -41,18 +33,10 @@ QPHIXJClovInvert::runClov(const int lattSize[],
   bool verbose = false;
 
   // Work out local lattice size
-  int subLattSize[4];
-  for(int mu=0; mu < 4; mu++){ 
-    subLattSize[mu]=lattSize[mu]/layout.machsize[mu];
-  }
+  const int *machsize = get_logical_dimensions();
+  int subLattSize[4] = { nx/machsize[0], ny/machsize[1], nz/machsize[2], nt/machsize[3] };
 
   // Work out the size of checkerboarded X-dimension
-  int X1h = lattSize[0]/2;
-  int Nx = lattSize[0];
-  int Ny = lattSize[1];
-  int Nz = lattSize[2];
-  int Nt = lattSize[3];
-
   int lX1h = subLattSize[0]/2;
   int lY = subLattSize[1];
   int lZ = subLattSize[2];
@@ -122,7 +106,7 @@ QPHIXJClovInvert::runClov(const int lattSize[],
     
     masterPrintf("\t %d iterations in %e seconds\n", iters, time);
     masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
-    double Gflops = 1824.0f*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
+    double Gflops = 1824.0f*(double)(iters)*(double)((nx/2)*ny*ny*nt)/1.0e9;
     double perf = Gflops/time;
     masterPrintf("\t Performance: %g GFLOPS total\n", perf);
     masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
@@ -157,7 +141,7 @@ QPHIXJClovInvert::runClov(const int lattSize[],
     masterPrintf("\t %d iterations in %e seconds\n", iters, time);
     masterPrintf("\t %e usec/iteration\n", 1.0e6*time/(double)iters);
     double flops_per_iter = 3696.0f;
-    double Gflops = flops_per_iter*(double)(iters)*(double)(X1h*Ny*Nz*Nt)/1.0e9;
+    double Gflops = flops_per_iter*(double)(iters)*(double)((nx/2)*ny*nz*nt)/1.0e9;
     double perf = Gflops/time;
     masterPrintf("\t Performance: %g GFLOPS total\n", perf);
     masterPrintf("\t              %g GFLOPS / node\n", perf/(double)CommsUtils::numNodes());
@@ -221,7 +205,7 @@ QPHIXJClovInvert::runClov(const int lattSize[],
 
 template<typename FT, int V>
 void
-QPHIXJClovInvert::run(const int lattSize[], const int qmp_geom[], QPHIXJ_info_t *info,
+QPHIXJClovInvert::run(QPHIXJ_info_t *info,
 		      QPHIXJ_FermionLinksWilson_struct<FT, V> *ql, QPHIXJ_invert_arg_t *inv_arg,
 		      QPHIXJ_resid_arg_t *res_arg, FT kappa,
 		      QPHIXJ_DiracFermion_struct<FT, V> *qdf_out, 
@@ -234,10 +218,10 @@ QPHIXJClovInvert::run(const int lattSize[], const int qmp_geom[], QPHIXJ_info_t 
   }
   
   if ( compress12 ) { 
-    runClov<FT,V>(lattSize, qmp_geom, info, ql, inv_arg, res_arg, kappa, qdf_out, qdf_in);
+    runClov<FT,V>(info, ql, inv_arg, res_arg, kappa, qdf_out, qdf_in);
   }
   else { 
-    runClov<FT,V>(lattSize, qmp_geom, info, ql, inv_arg, res_arg, kappa, qdf_out, qdf_in);
+    runClov<FT,V>(info, ql, inv_arg, res_arg, kappa, qdf_out, qdf_in);
   }
 }  
 
@@ -260,7 +244,7 @@ void QPHIXJ_F3_wilson_invert(QPHIXJ_info_t *info,
 			     QPHIXJ_F3_DiracFermion *qdf_in)
 {
   QPHIXJClovInvert CI(&vecLayout, do_dslash, do_m, do_bicgstab);
-  CI.run<float, VECLEN_SP>(layout.latsize, layout.machsize, info, ql, inv_arg, res_arg, kappa, 
+  CI.run<float, VECLEN_SP>(info, ql, inv_arg, res_arg, kappa, 
 			   qdf_out, qdf_in);
 }
 
@@ -273,7 +257,7 @@ void QPHIXJ_D3_wilson_invert(QPHIXJ_info_t *info,
 			     QPHIXJ_D3_DiracFermion *qdf_in)
 {
   QPHIXJClovInvert CI(&vecLayout, do_dslash, do_m, do_bicgstab);
-  CI.run<double, VECLEN_DP>(layout.latsize, layout.machsize, info, ql, inv_arg, res_arg, kappa, 
+  CI.run<double, VECLEN_DP>(info, ql, inv_arg, res_arg, kappa, 
 			    qdf_out, qdf_in);
 }
 

@@ -5,15 +5,18 @@
 #include "../include/qphixj/qphixj_arch.h"
 #include "../include/qphixj/qphixj_internal.h"
 #include "../include/qphixj/qphixj.h"
+
+extern "C" {
 #include "generic_includes.h"
+}
 
 class QPHIXJClovMap {
 
  public:
 
- QPHIXJClovMap( QPHIXJ_layout_t *l, int *geometry, QPHIXJ_vec_layout_t *vl ) :
-            lX(l->latsize[0]/geometry[0]), lY(l->latsize[1]/geometry[1]), 
-	    lZ(l->latsize[2]/geometry[2]), lT(l->latsize[3]/geometry[3]), 
+ QPHIXJClovMap( const int *geometry, QPHIXJ_vec_layout_t *vl ) :
+            lX(nx/geometry[0]), lY(ny/geometry[1]), 
+	    lZ(nz/geometry[2]), lT(nt/geometry[3]), 
 	    By(vl->By), Bz(vl->Bz), NCores(vl->NCores), Sy(vl->Sy), Sz(vl->Sz), PadXY(vl->PadXY), 
 	    PadXYZ(vl->PadXYZ), MinCt(vl->MinCt), S(QPHIX_SOALEN) {
 	    subLattSize[0] = lX; subLattSize[1] = lY; subLattSize[2] = lZ; subLattSize[3] = lT;}

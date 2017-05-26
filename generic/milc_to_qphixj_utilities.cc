@@ -15,7 +15,6 @@ extern "C" {
 }
 
 QPHIXJ_vec_layout_t vecLayout;
-QPHIXJ_layout_t layout;
 
 using namespace std;
 using namespace QPhiX;
@@ -56,29 +55,16 @@ static int qphixj2milc_parity(QPHIXJ_evenodd_t qphixj_parity){
   return -999;
 }
 
-void QPHIXJ_init(QPHIXJ_layout_t *user_layout, QPHIXJ_vec_layout_t *user_vecLayout){
-
-  // Copy layout
-  layout = *user_layout;
+void QPHIXJ_init(QPHIXJ_vec_layout_t *user_vecLayout){
 
   // Copy vector layout
   vecLayout = *user_vecLayout;
+  const int *machsize = get_logical_dimensions();
 
-  int *lattSize = layout.latsize;
-
-  bool verbose = false;
   // Work out local lattice size
-  int subLattSize[4];
-  for(int mu=0; mu < 4; mu++){ 
-    subLattSize[mu]=lattSize[mu]/layout.machsize[mu];
-  }
+  int subLattSize[4] = { nx/machsize[0], ny/machsize[1], nz/machsize[2], nt/machsize[3] };
 
-  // Work out the size of checkerboarded X-dimension
-  int X1h = lattSize[0]/2;
-  int Nx = lattSize[0];
-  int Ny = lattSize[1];
-  int Nz = lattSize[2];
-  int Nt = lattSize[3];
+  // Size of checkerboarded X-dimension
 
   int lX1h = subLattSize[0]/2;
   int lY = subLattSize[1];
@@ -95,18 +81,15 @@ void QPHIXJ_init(QPHIXJ_layout_t *user_layout, QPHIXJ_vec_layout_t *user_vecLayo
   int NCores = vecLayout.NCores;
   int Sy = vecLayout.Sy;
   int Sz = vecLayout.Sz;
-  int MinCt = vecLayout.MinCt;
 
   // Diagnostic information:
 
   masterPrintf("Declared topology is: %d %d %d %d\n", 
-	   layout.machsize[0], layout.machsize[1], layout.machsize[2], layout.machsize[3]);
+	   machsize[0], machsize[1], machsize[2], machsize[3]);
 
   masterPrintf("VECLEN_DP=%d VECLEN_SP=%d VECLEN_HP=%d SOALEN=%d\n", VECLEN_DP, VECLEN_SP, VECLEN_HP, S);
   masterPrintf("Global Lattice Size = ");
-  for(int mu=0; mu < 4; mu++){ 
-    masterPrintf(" %d", lattSize[mu]);
-  }
+  masterPrintf(" %d\n %d\n %d\n %d\n", nx, ny, nz, nt);
   masterPrintf("\n");
 
   masterPrintf("Local Lattice Size = ");
@@ -147,38 +130,20 @@ initialize_qphixj(void){
 
   QPHIXJ_status_t status = QPHIXJ_SUCCESS;
 
-  static int latsize[4];
-  static QPHIXJ_layout_t layout;
   static QPHIXJ_vec_layout_t vec_layout = QPHIXJ_VEC_LAYOUT_DEFAULT;
   
-  latsize[0] = nx;
-  latsize[1] = ny;
-  latsize[2] = nz;
-  latsize[3] = nt;
-
   if(is_qphixj_env_setup > 0){
     /* Finalize so we can then reinitialize */
     QPHIXJ_finalize();
   }
 
-  layout.node_number = milc_node_number;
-  layout.node_index = milc_node_index;
-  layout.latdim = 4;
-  layout.latsize = latsize;
-  layout.machdim = 4;
-  layout.machsize = (int *)get_logical_dimensions();
-  layout.this_node = this_node;
-  layout.even_sites_on_node = even_sites_on_node;
-  layout.sites_on_node = sites_on_node;
-
   vec_layout.NCores = numCores;
   vec_layout.MinCt = minCt;
 
-  node0_printf("Initializing Qphixj\n");
+  node0_printf("Initializing QPhiX JLab\n");
   node0_printf("NumCores = %d, ThreadsPerCore = %d, minCt = %d\n", numCores, threads_per_core, minCt);
 
-  //status = QPHIXJ_init(&layout, precision, &vec_layout);
-  QPHIXJ_init(&layout, &vec_layout);
+  QPHIXJ_init(&vec_layout);
 
   if(status != QPHIXJ_SUCCESS){
     node0_printf("Error initializing Qphixj\n");

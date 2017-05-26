@@ -3,6 +3,11 @@
 
 #include "../include/qphixj/qphixj_internal.h"
 #include "../include/qphixj/qphixj.h"
+#include "../include/qphixj/qphixj_arch.h"
+
+extern "C" {
+#include "generic_clover_includes.h"
+}
 
 class QPHIXJClovInvert { 
 
@@ -14,7 +19,7 @@ QPHIXJClovInvert( QPHIXJ_vec_layout_t *vl, bool do_dslash_, bool do_m_, bool do_
     do_dslash(do_dslash_), do_m(do_m_), do_bicgstab(do_bicgstab_) {}
 
 template<typename FT, int V>
-  void run(const int lattSize[], const int qmp_geom[], QPHIXJ_info_t *info,
+  void run(QPHIXJ_info_t *info,
 	   QPHIXJ_FermionLinksWilson_struct<FT, V> *ql, QPHIXJ_invert_arg_t *inv_arg,
 	   QPHIXJ_resid_arg_t *res_arg, FT kappa,
 	   QPHIXJ_DiracFermion_struct<FT, V> *qdf_out, 
@@ -23,7 +28,7 @@ template<typename FT, int V>
 private:
 
 template<typename FT, int V>
-  void runClov(const int lattSize[], const int qmp_geom[], QPHIXJ_info_t *info,
+  void runClov(QPHIXJ_info_t *info,
 	       QPHIXJ_FermionLinksWilson_struct<FT, V> *ql, QPHIXJ_invert_arg_t *inv_arg,
 	       QPHIXJ_resid_arg_t *res_arg, FT kappa,
 	       QPHIXJ_DiracFermion_struct<FT, V> *qdf_out, 

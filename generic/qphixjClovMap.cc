@@ -5,26 +5,16 @@
 #include <qphix/clover_dslash_def.h>
 #include <qphix/clover_dslash_body.h>
 #include <qphix/clover.h>
-#include <qphix/blas.h>
 #include <qphix/invcg.h>
 #include <qphix/invbicgstab.h>
 
-#include "../include/qphixj/qphixj_internal.h"
-#include "../include/qphixj/qphixj.h"
-#include "../include/qphixj/qphixj_arch.h"
-
 #include <cstdlib>
 #include <assert.h>
-
-extern "C" {
-#include "generic_includes.h"
-}
 
 using namespace std;
 using namespace QPhiX;
 
 extern QPHIXJ_vec_layout_t vecLayout;
-extern QPHIXJ_layout_t layout;
 
 template<typename FT, int V>
 QPHIXJ_DiracFermion_struct<FT, V> *
@@ -63,9 +53,7 @@ QPHIXJClovMap::create_D_from_wvec( wilson_vector *src, QPHIXJ_evenodd_t evenodd)
 		    x_coord = 2*(x + s*S) + cb;
 		  else
 		    x_coord = 2*(x + s*S) + 1 - cb;
-		  int coordsMILC[4] = {x_coord, y, z, t};
-		  // int indMILC = 2*(12*layout.node_index(coordsMILC) + 3*spin + col);
-		  int indMILC = layout.node_index(coordsMILC);
+		  int indMILC = node_index(x_coord, y, z, t);
 		  if( (cb == 0) && (evenodd != QPHIXJ_ODD)
 		   || (cb == 1) && (evenodd != QPHIXJ_EVEN))
 		    {
@@ -134,9 +122,7 @@ void QPHIXJClovMap::extract_D_to_wvec( wilson_vector *dest, QPHIXJ_DiracFermion_
 		    x_coord = 2*(x + s*S) + cb;
 		  else
 		    x_coord = 2*(x + s*S) + 1 - cb;
-		  int coordsMILC[4] = {x_coord, y, z, t};
-		  // int indMILC = 2*(12*layout.node_index(coordsMILC) + 3*spin + col);
-		  int indMILC = layout.node_index(coordsMILC);
+		  int indMILC = node_index(x_coord, y, z, t);
 		  if( (cb == 0) && (evenodd != QPHIXJ_ODD)
 		   || (cb == 1) && (evenodd != QPHIXJ_EVEN))
 		    {
@@ -224,9 +210,7 @@ QPHIXJClovMap::wilson_create_L_from_MILC( su3_matrix *backlinks, clover *clov, R
 		x_coord = 2*(x + S*s) + cb;
 	      else
 		x_coord = 2*(x + S*s) + 1-cb;
-	      int coordsMILC[4] = {x_coord, y, z, t};
-	      //int indMILC = 72*layout.node_index(coordsMILC);
-	      int indMILC = layout.node_index(coordsMILC);
+	      int indMILC = node_index(x_coord, y, z, t);
 	      // MILC clov must have the inverse on the other checkerboard, scaled by 4*kappa^2
 	      for(int i=0; i < 6; i++){ 
 		if( (cb == 0) && (evenodd == QPHIXJ_EVEN)
@@ -299,10 +283,7 @@ QPHIXJClovMap::wilson_create_L_from_MILC( su3_matrix *backlinks, clover *clov, R
 		      x_coord = 2*(x + S*s) + cb;
 		    else
 		      x_coord = 2*(x + S*s) + 1-cb;
-		    int coordsMILC[4] = {x_coord, y, z, t};
-		    //int indMILC = 4*(9*layout.node_index(coordsMILC));
-		    //int e = indMILC + 9*(mu/2) + 3*c + c2;
-		    int indMILC = layout.node_index(coordsMILC);
+		    int indMILC = node_index(x_coord, y, z, t);
 		    int dir = mu/2;
 		    if(mu%2 == 0){
 		      // Row and column indices are reversed from MILC
@@ -361,75 +342,74 @@ QPHIXJClovMap::wilson_destroy_L( QPHIXJ_FermionLinksWilson_struct<FT, V> *ql ){
 // The QPHIXJ C API for mapping between MILC and QPHIXJ types
 
 extern QPHIXJ_vec_layout_t vecLayout;
-extern QPHIXJ_layout_t layout;
 
 // Map a Dirac vector field from MILC layout to QPhiX layout
 QPHIXJ_F3_DiracFermion *
 QPHIXJ_F3_create_D_from_wvec( wilson_vector *src, QPHIXJ_evenodd_t evenodd ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   return CM.create_D_from_wvec<float, VECLEN_SP>( src, evenodd );
 }
   
 // Map a Dirac vector field from MILC layout to QPhiX layout
 QPHIXJ_D3_DiracFermion *
 QPHIXJ_D3_create_D_from_wvec( wilson_vector *src, QPHIXJ_evenodd_t evenodd ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   return CM.create_D_from_wvec<double, VECLEN_DP>( src, evenodd );
 }
   
 // Map a Dirac vector field from QPhiX layout to MILC layout
 void 
 QPHIXJ_F3_extract_D_to_wvec( wilson_vector *dest, QPHIXJ_F3_DiracFermion *qdf, QPHIXJ_evenodd_t evenodd ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   CM.extract_D_to_wvec<float, VECLEN_SP>( dest, qdf, evenodd );
 }
 
 // Map a Dirac vector field from QPhiX layout to MILC layout
 void 
 QPHIXJ_D3_extract_D_to_wvec( wilson_vector *dest, QPHIXJ_D3_DiracFermion *qdf, QPHIXJ_evenodd_t evenodd ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   CM.extract_D_to_wvec<double, VECLEN_DP>( dest, qdf, evenodd );
 }
 
 // free Dirac vector
 void  
 QPHIXJ_F3_destroy_D( QPHIXJ_F3_DiracFermion *qdf ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   return CM.destroy_D<float, VECLEN_SP>( qdf );
 }
 
 // free Dirac vector
 void  
 QPHIXJ_D3_destroy_D( QPHIXJ_D3_DiracFermion *qdf ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   return CM.destroy_D<double, VECLEN_DP>( qdf );
 }
 
 // create wilson fermion links from MILC
 QPHIXJ_F3_FermionLinksWilson  *
 QPHIXJ_F3_wilson_create_L_from_MILC( su3_matrix *backlinks, clover *clov, Real kappa, QPHIXJ_evenodd_t evenodd ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   return CM.wilson_create_L_from_MILC<float, VECLEN_SP>( backlinks, clov, kappa, evenodd );
 }
 
 // create wilson fermion links from MILC
 QPHIXJ_D3_FermionLinksWilson  *
 QPHIXJ_D3_wilson_create_L_from_MILC( su3_matrix *backlinks, clover *clov, Real kappa, QPHIXJ_evenodd_t evenodd ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   return CM.wilson_create_L_from_MILC<double, VECLEN_DP>( backlinks, clov, kappa, evenodd );
 }
 
 // free wilson fermion links
 void  
 QPHIXJ_F3_wilson_destroy_L( QPHIXJ_F3_FermionLinksWilson *ql ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   return CM.wilson_destroy_L<float, VECLEN_SP>( ql );
 }
 
 // free wilson fermion links
 void  
 QPHIXJ_D3_wilson_destroy_L( QPHIXJ_D3_FermionLinksWilson *ql ){
-  QPHIXJClovMap CM( &layout, layout.machsize, &vecLayout);
+  QPHIXJClovMap CM( get_logical_dimensions(), &vecLayout);
   return CM.wilson_destroy_L<double, VECLEN_DP>( ql );
 }
 

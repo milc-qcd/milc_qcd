@@ -125,6 +125,7 @@ int bicgilu_cl_field_qphixj ( // Return value is number of iterations taken
 
   /* Solve the preconditioned problem on even sites */
   /* Precision conversion is possible */
+  dtime2 = -dclock();
   if(qic->prec == 1)
     bicgilu_cl_qphixj_inner_F(milc_clov, kappa, r, dest, qic);
   else
