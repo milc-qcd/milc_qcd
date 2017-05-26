@@ -100,6 +100,7 @@ OMP = #true
 ifeq ($(strip ${COMPILER}),gnu)
 
   OCFLAGS += -std=c99
+  OCXXFLAGS += -std=c++11
 
   ifeq ($(strip ${ARCH}),pow8)
     ARCH_FLAG = -mcpu=power8
@@ -107,6 +108,7 @@ ifeq ($(strip ${COMPILER}),gnu)
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -fopenmp
+    OCXXFLAGS += -fopenmp
     LDFLAGS = -fopenmp
   endif
 
@@ -121,6 +123,7 @@ endif
 ifeq ($(strip ${COMPILER}),ibm)
 
   OCFLAGS = -qarch=450 -qlanglvl=stdc99 # BG/P BG/Q
+  OCXXFLAGS += -qarch=450 -qlanglvl=stdc++11
 
 endif
 
@@ -129,6 +132,7 @@ endif
 ifeq ($(strip ${COMPILER}),intel)
 
   OCFLAGS += -std=c99
+  OCXXFLAGS += -std=c++11
 
   ifeq ($(strip ${ARCH}),knl)
   ARCH_FLAG = -xMIC-AVX512
@@ -145,11 +149,14 @@ ifeq ($(strip ${COMPILER}),intel)
   endif
 
   OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
   LDFLAGS += ${ARCH_FLAG}
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
+  OCXXFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
+    OCXXFLAGS += -qopenmp
     LDFLAGS = -qopenmp
   endif
 
@@ -160,6 +167,7 @@ endif
 ifeq ($(strip ${COMPILER}),cray-intel)
 
   OCFLAGS += -std=c99
+  OCXXFLAGS += -std=c++11
 
   ifeq ($(strip ${ARCH}),knl)
   ARCH_FLAG = -xMIC-AVX512
@@ -176,11 +184,13 @@ ifeq ($(strip ${COMPILER}),cray-intel)
   endif
 
   OCFLAGS += ${ARCH_FLAG}
+  OCXXFLAGS += ${ARCH_FLAG}
   LDFLAGS += ${ARCH_FLAG}
   OCFLAGS += -parallel-source-info=2 -debug inline-debug-info -qopt-report=5
 
   ifeq ($(strip ${OMP}),true)
     OCFLAGS += -qopenmp
+    OCXXFLAGS += -qopenmp
     LDFLAGS = -qopenmp
   endif
 
@@ -287,15 +297,20 @@ ifeq ($(strip ${WANTFFTW}),true)
 FFTW=/usr/local/fftw
 
 ifeq ($(strip ${PRECISION}),1)
-  INCFFTW = -I${FFTW}/float-mvapich2/include
+  FFTW_HEADERS = ${FFTW}/float-mvapich2/include
+  INCFFTW = -I${FFTW_HEADERS}
   LIBFFTW = -L${FFTW}/float-mvapich2/lib
   LIBFFTW += -lfftw3f
 else
-  INCFFTW = -I${FFTW}/double-mvapich2/include
+  FFTW_HEADERS = ${FFTW}/double-mvapich2/include
+  INCFFTW = -I${FFTW_HEADERS}
   LIBFFTW = -L${FFTW}/double-mvapich2/lib
   LIBFFTW += -lfftw3
 endif
+  PACKAGE_HEADERS += ${FFTW_HEADERS}
 endif
+
+WANTFFTW = true    # On cori, loaded by default
 
 #----------------------------------------------------------------------
 # 13. LAPACK Options (for qopqdp-lapack and arb_overlap )
@@ -327,7 +342,9 @@ WANTPRIMME = #true
 # PRIMME version 2.0
 
 ifeq ($(strip ${WANTPRIMME}),true)
-  INCPRIMME = -I${HOME}/milc/install/PRIMME/include
+  PRIMME_HEADERS = ${HOME}/milc/install/PRIMME/include
+  INCPRIMME = -I${PRIMME_HEADERS}
+  PACKAGE_HEADERS += ${PRIMME_HEADERS}
   LIBPRIMME = -L${HOME}/milc/install/PRIMME/lib -lprimme
 endif
 
@@ -344,13 +361,17 @@ WANT_GF_GPU = #true
 ifeq ($(strip ${WANTQUDA}),true)
 
   QUDA_HOME = ${HOME}/quda
+  QUDA_HEADERS = ${QUDA_HOME}/include
+  PACKAGE_HEADERS += ${QUDA_HEADERS}
 
   INCQUDA = -I${QUDA_HOME}/include -I/lib -I${QUDA_HOME}/tests
+  PACKAGE_HEADERS += ${QUDA_HOME}/include
   LIBQUDA = -L${QUDA_HOME}/lib -lquda
   QUDA_LIBRARIES = ${QUDA_HOME}/lib
 
   CUDA_HOME = /usr/local/cuda
   INCQUDA += -I${CUDA_HOME}/include
+  PACKAGE_HEADERS += ${CUDA_HOME}/include
   LIBQUDA += -L${CUDA_HOME}/lib64 -lcudart -lcuda
 
 # Definitions of compiler macros -- don't change.  Could go into a Make_template_QUDA
@@ -393,12 +414,15 @@ endif
 # 16. QPhiX Options
 
 WANTQPHIX = #true
+WANT_FN_CG_QPHIX = true
+WANT_GF_QPHIX = true
 
-QPHIX_HOME = ${HOME}/QPhiX/mbench
+QPHIX_HOME = ${HOME}/QPhiX/milc-qphix
 
 ifeq ($(strip ${WANTQPHIX}), true)
 
   INCQPHIX = -I${QPHIX_HOME}
+  PACKAGE_HEADERS += ${QPHIX_HOME}
   HAVE_QPHIX = true
   CPHI = -DHAVE_QPHIX
 
@@ -430,6 +454,62 @@ ifeq ($(strip ${WANTQPHIX}), true)
 
   endif
 
+  QPHIX_HEADERS   = ${QPHIX_HOME}
+  PACKAGE_HEADERS += ${QPHIX_HEADERS}
+  QPHIX_LIBRARIES = ${QPHIX_HOME}
+
+  ifeq ($(strip ${WANT_FN_CG_QPHIX}),true)
+    HAVE_FN_CG_QPHIX = true
+    CPHI += -DUSE_CG_QPHIX
+  endif
+
+  ifeq ($(strip ${WANT_GF_QPHIX}),true)
+    HAVE_GF_QPHIX = true
+    CPHI += -DUSE_GF_QPHIX
+  endif
+
+endif
+
+#----------------------------------------------------------------------
+# 16. QPhiXJ (JLab) Options
+
+WANTQPHIXJ = true
+
+ifeq ($(strip ${WANTQPHIXJ}), true)
+
+  HAVE_QPHIXJ = true
+  CPHI += -DHAVE_QPHIXJ
+
+  ifeq ($(strip ${MPP}),true)
+
+  # QMP versions of QPHIXJ
+
+  ifeq ($(strip ${ARCH}),knl)
+    QPHIXJ_HOME = ${HOME}/QPhiX_git/avx512/install
+    LIBQPHIXJ = -L${QPHIXJ_HOME}/dslash-avx512-s4/lib -lqphix_solver 
+    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/dslash-avx512-s4/include
+    INCQPHIXJ = -I${QPHIXJ_HEADERS}
+    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/dslash-avx512-s4/lib
+  else
+    QPHIXJ_HOME = ${HOME}/QPhiX_git/avx2/install
+    LIBQPHIXJ = -L${QPHIXJ_HOME}/dslash-avx2-s4/lib -lqphix_solver
+    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/dslash-avx2-s4/include
+    INCQPHIXJ = -I${QPHIXJ_HEADERS}
+    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/dslash-avx2-s4/lib
+  endif
+
+  else
+
+  # Scalar version ???
+    QPHIXJ_HOME = ${HOME}/QPhiX_JLab/avx2/install
+    LIBQPHIXJ = -L${QPHIXJ_HOME}/dslash-avx2-s4/lib -lclov_wrapper -lqphix_solver
+    QPHIXJ_HEADERS = ${QPHIXJ_HOME}/dslash-avx2-s4/include
+    INCQPHIXJ = -I${QPHIXJ_HEADERS}
+    QPHIXJ_LIBRARIES = ${QPHIXJ_HOME}/dslash-avx2-s4/lib
+
+  endif
+  PACKAGE_HEADERS += ${QPHIXJ_HEADERS}
+
 endif
 
 #----------------------------------------------------------------------
@@ -439,6 +519,8 @@ ifeq ($(strip ${LDLAPACK}),)
   ifeq ($(strip ${WANTQUDA}),true)
     LD  = ${CXX}
   else ifeq ($(strip ${WANTQPHIX}),true)
+    LD  = ${CXX}
+  else ifeq ($(strip ${WANTQPHIXJ}),true)
     LD  = ${CXX}
   else
     LD  = ${CC}
@@ -650,7 +732,7 @@ CPREFETCH = #
 # NO_REFINE          No refinements except for masses with nonzero Naik eps
 # CPU_REFINE         Refine on CPU only (if at all), not GPU
 
-KSCGMULTI = -DKS_MULTICG=HYBRID -DNO_REFINE # -DHALF_MIXED
+KSCGMULTI = -DKS_MULTICG=HYBRID # -DNO_REFINE # -DHALF_MIXED
 
 #------------------------------
 # Multifermion force routines
@@ -732,7 +814,7 @@ CLMEM = #-DCLOV_LEAN
 #----------------------------------------------------------------------
 # Extra include paths
 
-INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCVTUNE}
+INCADD = ${INCFFTW} ${INCPRIMME} ${INCQUDA} ${INCQPHIX} ${INCQPHIXJ} ${INCVTUNE}
 
 #----------------------------------------------------------------------
 #  Extra libraries
@@ -741,6 +823,10 @@ LIBADD = ${LIBFFTW} ${LIBPRIMME} ${LIBLAPACK} ${LIBQUDA} ${LIBVTUNE}
 
 ifeq ($(strip ${WANTQPHIX}), true)
   LIBADD += ${LIBQPHIX}
+endif
+
+ifeq ($(strip ${WANTQPHIXJ}), true)
+  LIBADD += ${LIBQPHIXJ}
 endif
 
 #------------------------------
@@ -762,6 +848,7 @@ MAKELIBRARIES = Make_vanilla
 
 ifeq ($(strip ${OMP}),true)
   OCFLAGS += -DOMP
+  OCXXFLAGS += -DOMP
 endif
 
 ifeq ($(strip ${MPP}),true)
@@ -794,6 +881,10 @@ ifeq ($(strip ${WANTQPHIX}),true)
   QPHIXPREC = -DQPHIX_PrecisionInt=${PRECISION}
 endif
 
+ifeq ($(strip ${WANTQPHIXJ}),true)
+  QPHIXPREC = -DQPHIXJ_PrecisionInt=${PRECISION}
+endif
+
 ifeq ($(strip ${WANTDCAP}),true)
    MACHINE_DEP_IO = io_dcap.o
    OCFLAGS += -I${DCAP_DIR}/include
@@ -818,6 +909,9 @@ DARCH = ${CSCIDAC} ${CGPU} ${CPHI}
 
 # Complete set of compiler flags - do not change
 CFLAGS = ${OPT} ${OCFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
+	${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
+	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
+CXXFLAGS = ${OPT} ${OCXXFLAGS} -D${COMMTYPE} ${CODETYPE} ${INLINEOPT} \
 	${CPREC} ${CLFS} ${INCSCIDAC} -I${MYINCLUDEDIR} ${DARCH} \
 	${DEFINES} ${ADDDEFINES} ${IMPI} ${INCADD}
 
