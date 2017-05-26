@@ -325,13 +325,6 @@ QPHIXJClovMap::wilson_create_L_from_MILC( su3_matrix *backlinks, clover *clov, R
 
   end = omp_get_wtime();
   masterPrintf(" %g sec\n", end - start);
-  masterPrintf("u_packed[0][0][0][0][0][0][0] = %g\n",u_packed[0][0][0][0][0][0][0]);
-  masterPrintf("u_packed[0][0][0][0][0][1][0] = %g\n",u_packed[0][0][0][0][0][1][0]);
-  masterPrintf("u_packed[0][0][1][0][0][0][0] = %g\n",u_packed[0][0][1][0][0][0][0]);
-  masterPrintf("u_packed[0][0][1][0][0][1][0] = %g\n",u_packed[0][0][1][0][0][1][0]);
-  masterPrintf("A_cb0[0].off_diag1[0][0][0] = %g\n",A_cb0[0].off_diag1[0][0][0]);
-  masterPrintf("A_cb0[0].off_diag1[0][1][0] = %g\n",A_cb0[0].off_diag1[0][1][0]);
-  masterPrintf("A_inv_cb1[0].off_diag1[0][0][0] = %g\n",A_inv_cb1[0].off_diag1[0][0][0]);
 
   // Pack and return the wilson fermion links structure
 
