@@ -28,6 +28,7 @@
 
 
 #include "ks_imp_includes.h"	/* definitions files and prototypes */
+#include "../include/openmp_defs.h"
 
 int ks_ratinv(	/* Return value is number of iterations taken */
     field_offset src,	/* source vector (type su3_vector) */
@@ -53,7 +54,7 @@ int ks_ratinv(	/* Return value is number of iterations taken */
   ks_param *ksp;
   int k;
   imp_ferm_links_t **fn;
-  char myname[] = "update_h_rhmc";
+  char myname[] = "ks_ratinv";
   int iters;
 
   in = create_v_field_from_site_member(src);
@@ -126,11 +127,11 @@ int ks_rateval(
     )
 {
    register int i,j; register site *s;
-   FORSOMEPARITY(i,s,parity){
+   FORSOMEPARITY_OMP(i,s,parity,private(j)){
       scalar_mult_su3_vector( (su3_vector *)F_PT(s,src), residues[0], &(dest[i]) );
       for(j=1;j<=order;j++){
         scalar_mult_add_su3_vector( &(dest[i]), &(psim[j-1][i]), residues[j], &(dest[i]) );
       }
-   }
+   } END_LOOP_OMP
    return 0;
 }
