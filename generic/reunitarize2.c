@@ -220,7 +220,8 @@ void reunitarize() {
       mat = (su3_matrix *)&(s->link[dir]);
       errors = reunit_su3( mat );
       errcount += errors;
-      if(errors)reunit_report_problem_matrix(mat,i,dir);
+      if(errors && errcount <= MAXERRCOUNT)
+	reunit_report_problem_matrix(mat,i,dir);
     }
   } END_LOOP_OMP
   if(errcount > MAXERRCOUNT)
