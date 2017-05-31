@@ -5,6 +5,7 @@
 /* (Plus a timing utility) */
 
 #include "generic_includes.h"
+#include "../include/openmp_defs.h"
 
 /*--------------------------------------------------------------------*/
 double start_timing(void){
@@ -123,7 +124,7 @@ make_all_array_field(swv, spin_wilson_vector)
 void gauge_field_copy(field_offset src, field_offset dest){
   register int i,dir,src2,dest2;
   register site *s;
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(src2,dest2,dir)){
     src2=src; dest2=dest;
     for(dir=XUP;dir<=TUP; dir++){
       su3mat_copy( (su3_matrix *)F_PT(s,src2),
@@ -131,7 +132,7 @@ void gauge_field_copy(field_offset src, field_offset dest){
       src2 += sizeof(su3_matrix);
       dest2 += sizeof(su3_matrix);
     }
-  }
+  } END_LOOP_OMP
 }
 
 /*------------------------------------------------------------------*/
@@ -154,12 +155,12 @@ su3_matrix **gauge_field_copy_site_to_field(field_offset src){
     }
   }
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(tmp,dir)){
     tmp = (su3_matrix *)F_PT(s, src);		\
     FORALLUPDIR(dir){
       su3mat_copy( tmp + dir, dest[dir] + i );
     }
-  }
+  } END_LOOP_OMP
 
   return dest;
 }
@@ -174,12 +175,12 @@ void gauge_field_copy_field_to_site(su3_matrix **src, field_offset dest){
   site *s;
   su3_matrix *tmp;
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(tmp,dir)){
     tmp = (su3_matrix *)F_PT(s, dest);		\
     FORALLUPDIR(dir){
       su3mat_copy( src[dir] + i, tmp + dir );
     }
-  }
+  } END_LOOP_OMP
 }
 
 
@@ -205,9 +206,9 @@ su3_vector *create_v_field_from_site_member(field_offset sv){
 
   v = create_v_field();
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){  /* would this be faster if sv were private */
     memcpy(v+i, F_PT(s,sv), sizeof(su3_vector));
-  }
+  } END_LOOP_OMP
 
   return v;
 }
@@ -216,9 +217,9 @@ su3_vector *create_v_field_from_site_member(field_offset sv){
 void copy_site_member_from_v_field(field_offset sv, su3_vector *v){
   int i; site *s;
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     memcpy(F_PT(s,sv), v+i, sizeof(su3_vector));
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -226,26 +227,26 @@ void add_v_fields(su3_vector *vsum, su3_vector *v1, su3_vector *v2){
   int i;
   site *s;
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     add_su3_vector(v1+i, v2+i, vsum+i);
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
 void extract_c_from_v(complex *c, su3_vector *v, int color){
   int i; site *s;
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     c[i] = v[i].c[color];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
 /* Insert complex field into su3_vector field */
 void insert_v_from_c(su3_vector *v, complex *c, int color){
   int i; site *s;
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     v[i].c[color] = c[i];
-  }
+  } END_LOOP_OMP
 }
 /*--------------------------------------------------------------------*/
 ks_prop_field *create_ksp_field(int nc){
@@ -317,9 +318,9 @@ void copy_v_from_ksp(su3_vector *v, ks_prop_field *ksp, int color){
   int i;
   site *s;
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     v[i] = ksp->v[color][i];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -327,9 +328,9 @@ void insert_ksp_from_v(ks_prop_field *ksp, su3_vector *v, int color){
   int i;
   site *s;
 
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     ksp->v[color][i] = v[i];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -337,9 +338,9 @@ void insert_ksp_from_v(ks_prop_field *ksp, su3_vector *v, int color){
 void extract_c_from_wv(complex *c, wilson_vector *wv, 
 		       int spin, int color){
   int i; site *s;
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     c[i] = wv[i].d[spin].c[color];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -347,9 +348,9 @@ void extract_c_from_wv(complex *c, wilson_vector *wv,
 void insert_wv_from_c(wilson_vector *wv, complex *c, 
 		      int spin, int color){
   int i; site *s;
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,default(shared)){
     wv[i].d[spin].c[color] = c[i];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -357,10 +358,10 @@ void insert_wv_from_c(wilson_vector *wv, complex *c,
 void insert_wv_from_v(wilson_vector *wv, su3_vector *v, int spin){
   int i; site *s;
   int c;
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(c)){
     for(c = 0; c < 3; c++)
       wv[i].d[spin].c[c] = v[i].c[c];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -368,10 +369,10 @@ void insert_wv_from_v(wilson_vector *wv, su3_vector *v, int spin){
 void extract_v_from_wv(su3_vector *v, wilson_vector *wv, int spin){
   int i; site *s;
   int c;
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(c)){
     for(c = 0; c < 3; c++)
       v[i].c[c] = wv[i].d[spin].c[c];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -441,9 +442,9 @@ void copy_wp_field(wilson_prop_field *wpcopy, wilson_prop_field *wp){
 
   wpcopy->nc = wp->nc;
   for(color = 0; color < wp->nc; color++){
-    FORALLSITES(i,s){
+    FORALLSITES_OMP(i,s,default(shared)){
       wpcopy->swv[color][i] = wp->swv[color][i];
-    }
+    } END_LOOP_OMP
   }
 }
 
@@ -453,9 +454,9 @@ void scalar_mult_add_ksprop_field(ks_prop_field *a, ks_prop_field *b,
   int i,c1;
   
   for(c1 = 0; c1 < c->nc; c1++)
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,default(shared)){
       scalar_mult_add_su3_vector(&a->v[c1][i], &b->v[c1][i], s, &c->v[c1][i]);
-    }
+    } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -464,10 +465,10 @@ void scalar_mult_add_wprop_field(wilson_prop_field *a, wilson_prop_field *b,
   int i,s1,c1;
   
   for(c1 = 0; c1 < c->nc; c1++)
-    FORALLFIELDSITES(i){
+    FORALLFIELDSITES_OMP(i,private(s1)){
       for(s1=0; s1<4; s1++)
 	scalar_mult_add_wvec(&a->swv[c1][i].d[s1], &b->swv[c1][i].d[s1], s, &c->swv[c1][i].d[s1]);
-    }
+    } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -497,7 +498,7 @@ wilson_prop_field *transpose_wp_field(wilson_prop_field *wp){
       node0_printf("transpose_wp_field: Requires max three colors to do a transpose, but have %d\n",wp->nc);
       terminate(1);
     }
-  FORALLSITES(i,s){
+  FORALLSITES_OMP(i,s,private(c1,c2,s1,s2)){
     for(c2 = 0; c2 < 3; c2++){
       if(c2 < wp->nc)
 	swv[c2] = wp->swv[c2][i];
@@ -509,7 +510,7 @@ wilson_prop_field *transpose_wp_field(wilson_prop_field *wp){
 	for(s1 = 0; s1 < 4; s1++)
 	  for(c1 = 0; c1 < 3; c1++)
 	    twp->swv[c1][i].d[s1].d[s2].c[c2] = swv[c2].d[s2].d[s1].c[c1];
-  }
+  } END_LOOP_OMP
   return twp;
 }
 
@@ -517,52 +518,48 @@ wilson_prop_field *transpose_wp_field(wilson_prop_field *wp){
 void copy_wv_from_v(wilson_vector *wv, su3_vector *v, int spin){
   int i;
   
-  FORALLFIELDSITES(i){
+  FORALLFIELDSITES_OMP(i,default(shared)){
     wv[i].d[spin] = v[i];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
 void copy_wv_from_wp(wilson_vector *wv, wilson_prop_field *wp, 
 		     int color, int spin){
   int i;
-  site *s;
   
-  FORALLSITES(i,s){
+  FORALLFIELDSITES_OMP(i,default(shared)){
     wv[i] = wp->swv[color][i].d[spin];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
 void copy_wv_from_wprop(wilson_vector *wv, wilson_propagator *wprop, 
 			int color, int spin){
   int i;
-  site *s;
   
-  FORALLSITES(i,s){
+  FORALLFIELDSITES_OMP(i,default(shared)){
     wv[i] = wprop[i].c[color].d[spin];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
 void copy_wv_from_swv(wilson_vector *wv, spin_wilson_vector *swv, int spin){
   int i;
-  site *s;
   
-  FORALLSITES(i,s){
+  FORALLFIELDSITES_OMP(i,default(shared)){
     wv[i] = swv[i].d[spin];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
 void copy_wp_from_wv(wilson_prop_field *wp, wilson_vector *wv, 
 		     int color, int spin){
   int i;
-  site *s;
   
-  FORALLSITES(i,s){
+  FORALLFIELDSITES_OMP(i,default(shared)){
     wp->swv[color][i].d[spin] = wv[i];
-  }
+  } END_LOOP_OMP
 }
 
 /*--------------------------------------------------------------------*/
@@ -592,12 +589,11 @@ void destroy_wp_field(wilson_prop_field *wp){
 wilson_vector *create_wv_from_swv(spin_wilson_vector *swv, int spin){
   
   int i;
-  site *s;
   wilson_vector *wv = create_wv_field();
   
-  FORALLSITES(i,s){
+  FORALLFIELDSITES_OMP(i,default(shared)){
     wv[i] = swv[i].d[spin];
-  }
+  } END_LOOP_OMP
   return wv;
 }
 
@@ -606,11 +602,9 @@ wilson_vector *create_wv_from_swv(spin_wilson_vector *swv, int spin){
 void insert_swv_from_wv(spin_wilson_vector *swv, int spin, wilson_vector *wv){
   
   int i;
-  site *s;
   
-  FORALLSITES(i,s){
+  FORALLFIELDSITES_OMP(i,default(shared)){
     swv[i].d[spin] = wv[i];
-  }
-
+  } END_LOOP_OMP
 }
 

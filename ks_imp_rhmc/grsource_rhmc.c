@@ -43,6 +43,7 @@ void grsource_imp_rhmc( field_offset dest, params_ratfunc *rf,
   ks_ratinv( F_OFFSET(g_rand), multi_x, roots, order, my_niter, 
 	     my_rsqmin, my_prec, parity, &final_rsq, fn, 
 	     naik_term_epsilon_index, naik_term_epsilon );
+  dtimec -= dclock();
   ks_rateval( sumvec, F_OFFSET(g_rand), multi_x, residues, order, parity );
   dtimec -= dclock();
   FORSOMEPARITY_OMP(i,s,parity,default(shared) ){ *(su3_vector *)F_PT(s,dest) = sumvec[i]; } END_LOOP_OMP
