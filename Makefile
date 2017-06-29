@@ -575,6 +575,13 @@ INLINEOPT = -DC_GLOBAL_INLINE # -DSSE_GLOBAL_INLINE #-DC_INLINE
 
 #INLINEOPT += -DSSEOPTERON
 
+# At present inlining and threading do not mix
+# The inline code could introduce new variables that need to be declared private
+
+ifeq ($(strip ${OMP}),true)
+  INLINEOPT =
+endif
+
 #----------------------------------------------------------------------
 # 20. Miscellaneous macros for performance control and metric
 
