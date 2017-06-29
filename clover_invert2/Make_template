@@ -114,13 +114,6 @@ quark_action.h: ${QUARKIMP}/${QUARK}
 
 ##### Targets:
 
-# Common compiler macros
-
-# Optional DEFINES for timing:
-# -DIOTIME for I/O timing
-# -DPRTIME for propagator timing
-# -DCGTIME for cg timing and iterations
-
 su3_clov::
 	${MAKE} -f ${MAKEFILE} target "MYTARGET= $@" \
 	"QUARK = asqtad_action.h" \
@@ -165,6 +158,13 @@ include ../generic_wilson/Make_template
 # Rules for generic_clover routines
 include ../generic_clover/Make_template
 
+# Rules for packages
+QPhiX_JLab:
+	@echo Building QPhiX_JLab
+	cd ../QPhiX_JLab && \
+	./build.sh ${QPHIXJ_ARCH} ${QPHIXJ_SOALEN} ${CC} ${CXX}
+
+packagemake: ${PACKAGE_DEPS}
 
 libmake:
 	@echo Building libraries with ${MAKELIBRARIES}
@@ -177,4 +177,4 @@ localmake: ${OBJECTS} ${LIBRARIES}
 	${OBJECTS} ${QCDLIB} ${ILIB} -lm
 	touch localmake
 
-target: libmake localmake 
+target: packagemake libmake localmake 
