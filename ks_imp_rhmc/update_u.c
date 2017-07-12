@@ -50,7 +50,7 @@ void update_u(Real eps){
     } // dir
   } END_LOOP_OMP
 
-  qudaUpdateU(PRECISION, eps, momentum, gauge);
+  qudaUpdateU(MILC_PRECISION, eps, momentum, gauge);
 
   // Copy updated gauge field back to site structure
   FORALLSITES_OMP(i,s,private(dir)){

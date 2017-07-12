@@ -124,7 +124,7 @@ int readin(int prompt)  {
 			  &par_buf.qic.relresid );
     /* Precision fixed to prevailing precision for now */
     par_buf.qic.min = 0;
-    par_buf.qic.prec = PRECISION;
+    par_buf.qic.prec = MILC_PRECISION;
     par_buf.qic.parity = EVENANDODD;
     par_buf.qic.start_flag = 0;
     par_buf.qic.nsrc = 1;

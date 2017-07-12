@@ -38,10 +38,10 @@ int main( int argc, char **argv ){
 #ifdef HYPISQ_SVD_COUNTER
     hypisq_svd_counter = 0;
 #endif
-    restore_fermion_links_from_site(fn_links, PRECISION);
+    restore_fermion_links_from_site(fn_links, MILC_PRECISION);
     /* call fermion_variable measuring routines */
     /* results are printed in output file */
-    f_meas_imp( 1, PRECISION, F_OFFSET(phi), F_OFFSET(xxx), mass,
+    f_meas_imp( 1, MILC_PRECISION, F_OFFSET(phi), F_OFFSET(xxx), mass,
 		0, fn_links);
 
     eigVal = (double *)malloc(Nvecs*sizeof(double));

@@ -214,7 +214,7 @@ Real x;
     fermion_links_want_back(1);
 #endif
     
-    fn_links = create_fermion_links_from_site(PRECISION, 0, NULL);
+    fn_links = create_fermion_links_from_site(MILC_PRECISION, 0, NULL);
 
     return(0);
 }
