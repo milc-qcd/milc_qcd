@@ -60,7 +60,7 @@ fermion_force_oprod_site(Real eps, Real weight1, Real weight2,
 
   void* oprod[2] = {one_hop_oprod, three_hop_oprod};
 
-  qudaComputeOprod(PRECISION, 2, combined_coeff, v, oprod);
+  qudaComputeOprod(MILC_PRECISION, 2, combined_coeff, v, oprod);
 
   free(combined_coeff[0]);
   free(combined_coeff[1]);
@@ -133,7 +133,7 @@ eo_fermion_force_twoterms_site_gpu(Real eps, Real weight1, Real weight2,
 
 
   // Call the quda function
-  qudaAsqtadForce(PRECISION, act_path_coeff, 
+  qudaAsqtadForce(MILC_PRECISION, act_path_coeff, 
       (const void* const*)one_link_oprod,
       (const void* const*)three_link_oprod,
       gauge , momentum);

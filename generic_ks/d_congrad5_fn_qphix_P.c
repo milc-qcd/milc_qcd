@@ -49,7 +49,7 @@
 
 /* Conversions from prevailing MILC formats to specified formats */
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 
 static void 
 p2d_mat(dsu3_matrix *dest, su3_matrix *src){
@@ -437,7 +437,7 @@ KS_CONGRAD_PARITY_QPHIX ( su3_vector *src
 #ifdef CG_DEBUG
 		 , dtime, dctime
 #endif
-		 , prec_label[PRECISION-1], iters
+		 , prec_label[MILC_PRECISION-1], iters
 		 , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
 #ifdef CG_DEBUG
 		 , (double)(nflop*volume*iters/(1.0e6*dtime*numnodes()))

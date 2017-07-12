@@ -89,7 +89,7 @@ static su3_vector *temp_x;
 /*---------------------------------------------------------------------------*/
 /* Convert (or copy) four single precision su3_matrices to generic precision */
 
-#if (PRECISION==QOP_PrecisionInt)
+#if (MILC_PRECISION==QOP_PrecisionInt)
 
 
 static void 

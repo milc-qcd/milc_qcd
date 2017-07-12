@@ -208,7 +208,7 @@ ks_congrad_parity_qphix ( su3_vector *src
 #ifdef CG_DEBUG
                , dtime, dctime
 #endif
-               , prec_label[PRECISION-1], iters
+               , prec_label[MILC_PRECISION-1], iters
                , (double)(nflop*volume*iters/(1.0e6*tot_cg_time*numnodes()))
 #ifdef CG_DEBUG
                , (double)(nflop*volume*iters/(1.0e6*dtime*numnodes()))

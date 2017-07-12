@@ -6,7 +6,7 @@
    prevailing MILC precision is single or double */
 
 /* We assume that the MILC precision for site and field variables
-   is uniformly set by PRECISION, but the QDP precision can be set
+   is uniformly set by MILC_PRECISION, but the QDP precision can be set
    in each call if so desired */
 
 /* 12/01/06 C. DeTar adapted from stuff_qdp.c */
@@ -14,7 +14,7 @@
 #undef QDP_Precision
 #define QDP_Precision 'F'
 
-#if (PRECISION==1)
+#if (MILC_PRECISION==1)
 
 #define copy_types(macro) \
 macro(F, R, Real, Real); \

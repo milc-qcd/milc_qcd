@@ -150,7 +150,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
   
   pm = (su3_vector ** restrict )malloc(num_offsets*sizeof(su3_vector *));
 
-  if(PRECISION == 2) num_offsets_padded = (num_offsets-1)/4+4; // 4 doubles * real/imag
+  if(MILC_PRECISION == 2) num_offsets_padded = (num_offsets-1)/4+4; // 4 doubles * real/imag
   else               num_offsets_padded = (num_offsets-1)/8+8; // 8 floats * real/imag
 
   offset_low = 1.0e+20;
@@ -240,7 +240,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
     dtimec += dclock();
     if(this_node==0){
       printf("CONGRAD5: time = %e (multicg_offset %s) masses = %d iters = %d mflops = %e\n",
-	     dtimec,milc_prec[PRECISION-1],num_offsets,iteration,
+	     dtimec,milc_prec[MILC_PRECISION-1],num_offsets,iteration,
 	     (double)(nflop)*volume*
 	     iteration/(1.0e6*dtimec*numnodes()));
       fflush(stdout);
@@ -385,7 +385,7 @@ int ks_multicg_offset_field_cpu( /* Return value is number of iterations taken *
       dtimec += dclock();
       if(this_node==0){
 	printf("CONGRAD5: time = %e (multicg_offset %s) masses = %d iters = %d mflops = %e\n",
-	       dtimec,milc_prec[PRECISION-1],num_offsets,iteration,
+	       dtimec,milc_prec[MILC_PRECISION-1],num_offsets,iteration,
 	       (double)(nflop)*volume*
 	       iteration/(1.0e6*dtimec*numnodes()));
 	fflush(stdout);}

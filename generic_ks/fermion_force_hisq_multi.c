@@ -172,9 +172,9 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
   double dtime = -dclock();
   info_t info = INFO_ZERO;
 
-  if(prec != PRECISION){
+  if(prec != MILC_PRECISION){
     node0_printf("eo_fermion_force_multi: WARNING, precision requests not supported. Using %d.\n",
-		 PRECISION);
+		 MILC_PRECISION);
   }
   switch(KS_MULTIFF){
   case FNMATREV:
@@ -196,12 +196,12 @@ void eo_fermion_force_multi( Real eps, Real *residues, su3_vector **xxx,
 #ifdef FFTIME
 #ifdef USE_FF_GPU
   node0_printf("FFTIME:  time = %e (HISQ QUDA %s) terms = %d flops/site = %d mflops = %e\n",
-	       info.final_sec,qop_prec[PRECISION-1],nterms,
+	       info.final_sec,qop_prec[MILC_PRECISION-1],nterms,
 	       (int)(info.final_flop*numnodes()/volume),
 	       info.final_flop/(1e6*info.final_sec) );
 #else
   node0_printf("FFTIME:  time = %e (HISQ MILC %s) terms = %d flops/site = %d mflops = %e\n",
-	       info.final_sec,qop_prec[PRECISION-1],nterms,
+	       info.final_sec,qop_prec[MILC_PRECISION-1],nterms,
 	       (int)(info.final_flop*numnodes()/volume),
 	       info.final_flop/(1e6*info.final_sec) );
 #endif
@@ -2026,7 +2026,7 @@ void outer_product_create_gpu(Real* one_hop_coeff, Real *three_hop_coeff,
   }
   
   void* oprod[2] = {staple_oprod, three_hop_oprod};
-  qudaComputeOprod(PRECISION, num_terms, coeff, (void**)multi_x, oprod);
+  qudaComputeOprod(MILC_PRECISION, num_terms, coeff, (void**)multi_x, oprod);
   
   for(term=0; term<num_naik_terms; term++){
     coeff[term][0] = one_hop_naik_coeff[term];
@@ -2042,7 +2042,7 @@ void outer_product_create_gpu(Real* one_hop_coeff, Real *three_hop_coeff,
   }
 
   oprod[0] = one_hop_oprod;
-  qudaComputeOprod(PRECISION, num_naik_terms, coeff, (void**)(multi_x + (num_terms-num_naik_terms)), oprod);
+  qudaComputeOprod(MILC_PRECISION, num_naik_terms, coeff, (void**)(multi_x + (num_terms-num_naik_terms)), oprod);
 
 
   for(term=0; term<num_terms; ++term){
@@ -2358,7 +2358,7 @@ fn_fermion_force_multi_hisq_wrapper_mx_gpu(info_t* info, Real eps, Real *residue
 
 
 		
-  qudaHisqForce(PRECISION, level2_coeff, fat7_coeff, 
+  qudaHisqForce(MILC_PRECISION, level2_coeff, fat7_coeff, 
 		(const void* const*)staple_oprod, 
 		(const void* const*)one_link_oprod, 
 		(const void* const*)three_link_oprod, 

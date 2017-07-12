@@ -60,7 +60,7 @@ int multimass_inverter( params_mminv *mminv, imp_ferm_links_t *fn )
   char kssavefile_tmp[MAXFILENAME],extension[48];
   int len1,len2;
   char recxml[MAX_RECXML];
-  int prec = PRECISION; /* Make CG precision the same as the
+  int prec = MILC_PRECISION; /* Make CG precision the same as the
 			   prevailing precision */
   cgn=0; /* number of CG iterations */
   czero.real = czero.imag = 0.0;

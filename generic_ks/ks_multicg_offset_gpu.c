@@ -80,7 +80,7 @@ int ks_multicg_offset_field_gpu(
   dtimec += dclock();
   if(this_node==0){
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
-	   dtimec, prec_label[PRECISION-1], qic->final_iters, 
+	   dtimec, prec_label[MILC_PRECISION-1], qic->final_iters, 
 	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
@@ -156,7 +156,7 @@ int ks_multicg_offset_field_gpu(
   }
 
   qudaMultishiftInvert(
-		       PRECISION,
+		       MILC_PRECISION,
 		       qic[0].prec,
 		       num_offsets,
 		       offset,

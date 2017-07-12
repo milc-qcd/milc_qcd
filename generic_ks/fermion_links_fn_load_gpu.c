@@ -35,7 +35,7 @@ load_fatlinks_gpu(info_t *info, su3_matrix *fat, ks_component_paths *p, su3_matr
  
   initialize_quda();
 
-  qudaLoadKSLink(PRECISION, fatlink_args, path_coeff, links, fat, NULL);
+  qudaLoadKSLink(MILC_PRECISION, fatlink_args, path_coeff, links, fat, NULL);
   return;
 }
 
@@ -57,8 +57,8 @@ load_fatlonglinks_gpu(info_t *info, su3_matrix *fatlinks, su3_matrix *longlinks,
  
   initialize_quda();
 
-  // qudaLoadUnitarizedLink(PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks, NULL);
-  qudaLoadKSLink(PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks);
+  // qudaLoadUnitarizedLink(MILC_PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks, NULL);
+  qudaLoadKSLink(MILC_PRECISION, fatlink_args, path_coeff, links, fatlinks, longlinks);
 
 }
 

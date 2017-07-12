@@ -354,7 +354,7 @@ int ks_congrad_field( su3_vector *src, su3_vector *dest,
 #ifdef CGTIME
   if(this_node==0){
     printf("CONGRAD5: time = %e (naive %s) masses = 1 iters = %d mflops = %e\n",
-	   dtimec, prec_label[PRECISION-1], iters, 
+	   dtimec, prec_label[MILC_PRECISION-1], iters, 
 	   (double)(nflop*volume*iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
@@ -413,7 +413,7 @@ int ks_congrad_site( field_offset src, field_offset dest,
 #ifdef CGTIME
   if(this_node==0){
     printf("CONGRAD5: time = %e (naive %s) masses = 1 iters = %d mflops = %e\n",
-	   dtimec, prec_label[PRECISION-1], iters, 
+	   dtimec, prec_label[MILC_PRECISION-1], iters, 
 	   (double)(nflop*volume*iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif

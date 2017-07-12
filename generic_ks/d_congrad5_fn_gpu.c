@@ -76,7 +76,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
 #ifdef CGTIME
   if(this_node==0){
     printf("CONGRAD5: time = %e (fn %s) masses = 1 iters = %d mflops = %e\n",
-	   dtimec, prec_label[PRECISION-1], qic->final_iters, 
+	   dtimec, prec_label[MILC_PRECISION-1], qic->final_iters, 
 	   (double)(nflop*volume*qic->final_iters/(1.0e6*dtimec*numnodes())) );
     fflush(stdout);}
 #endif
@@ -111,7 +111,7 @@ int ks_congrad_parity_gpu(su3_vector *t_src, su3_vector *t_dest,
   double residual, relative_residual;
   int num_iters;
 
-  qudaInvert(PRECISION,
+  qudaInvert(MILC_PRECISION,
 	     quda_precision, 
 	     mass,
 	     inv_args,
